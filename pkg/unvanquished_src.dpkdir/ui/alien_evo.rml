@@ -106,7 +106,7 @@ div.infobox {
 <circlemenu id="default" source="alienEvolveList.default" fields="num" formatter="CMAlienEvolve" onCancel="Events.pushevent('hide alien_evo', event)"/>
 <div class="infobox">
 <h2><datasource_single source="alienEvolveList.default" fields="name" targetid="default" /></h2>
-<p class="text"><datasource_single source="alienEvolveList.default" fields="description" targetid="default" /></p>
+<p class="text">Price: <datasource_single source="alienEvolveList.default" fields="price" targetid="default" /> morph points<br /><datasource_single source="alienEvolveList.default" fields="description" targetid="default" /></p>
 </div>
 </panel>
 </tabset>

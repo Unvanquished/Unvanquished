@@ -41,6 +41,7 @@
 		ui/options_mouse.rml
 		ui/options_sound.rml
 		ui/options_ui.rml
+		ui/options_welcome.rml
 
 		ui/help_textentry.rml
 		ui/help_gameplay.rml
