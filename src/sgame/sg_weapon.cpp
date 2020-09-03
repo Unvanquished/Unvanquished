@@ -1950,6 +1950,9 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 				case WP_HBUILD:
 					FireMarkDeconstruct( self );
 					break;
+
+				default:
+					break;
 			}
 			break;
 		}
@@ -1962,6 +1965,9 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 				case WP_HBUILD:
 					DeconstructSelectTarget( self );
 					break;
+
+				default:
+					break;
 			}
 			break;
 		}
@@ -1973,6 +1979,9 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 				case WP_ABUILD2:
 				case WP_HBUILD:
 					FireForceDeconstruct( self );
+					break;
+
+				default:
 					break;
 			}
 			break;
