@@ -5,7 +5,7 @@
 		<link type="text/rcss" href="menu.rcss" />
 	</head>
 
-	<body id="menu_main" class="mainmenu" nohide onShow='Events.pushevent("play 2 sound/ui/heartbeat sound/ui/heartbeat1", event)'>
+	<body id="menu_main" class="mainmenu" nohide onShow='welcome(event, document) Events.pushevent("play 2 sound/ui/heartbeat sound/ui/heartbeat1", event)'>
 		<img class="gradient" src="/ui/assets/background/bg" />
 		<img class="gradient black" src="/ui/assets/background/black" />
 		<img class="circles" src="/ui/assets/background/circles1" />

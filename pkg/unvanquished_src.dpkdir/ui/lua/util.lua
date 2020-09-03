@@ -43,3 +43,13 @@ function detectEscape(event, document)
 		end
 	end
 end
+
+function welcome(event, document)
+  if Cvar.get("cg_welcome") ~= "1" then
+    if Cvar.get("name") == "UnnamedPlayer" then
+      Cvar.set("name", "Player#" .. math.ceil(math.random()*10000000))
+    end
+    Events.pushevent("show options_welcome", event)
+    Cvar.set("cg_welcome", "1")
+  end
+end
