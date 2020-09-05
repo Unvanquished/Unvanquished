@@ -180,6 +180,7 @@ vmCvar_t           g_layoutAuto;
 vmCvar_t           g_emoticonsAllowedInNames;
 vmCvar_t           g_unnamedNumbering;
 vmCvar_t           g_unnamedNamePrefix;
+vmCvar_t           g_unnamedBotNamePrefix;
 
 vmCvar_t           g_admin;
 vmCvar_t           g_adminWarn;
@@ -321,7 +322,8 @@ static cvarTable_t gameCvarTable[] =
 	// clients: misc
 	{ &g_geoip,                       "g_geoip",                       "1",                                0,                                               0, false    , nullptr       },
 	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "-1",                               0,                                               0, false    , nullptr       },
-	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  0,                                               0, false    , nullptr       },
+	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER "#",                 0,                                               0, false    , nullptr       },
+	{ &g_unnamedBotNamePrefix,        "g_unnamedBotNamePrefix",        UNNAMED_BOT "#",                    0,                                               0, false    , nullptr       },
 
 	// admin system
 	{ &g_admin,                       "g_admin",                       "admin.dat",                        0,                                               0, false    , nullptr       },

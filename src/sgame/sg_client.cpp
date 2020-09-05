@@ -644,6 +644,14 @@ bool G_IsUnnamed( const char *name )
 		return true;
 	}
 
+	length = strlen( g_unnamedBotNamePrefix.string );
+
+	if ( g_unnamedNumbering.integer && length &&
+	     !Q_strnicmp( testName, g_unnamedBotNamePrefix.string, length ) )
+	{
+		return true;
+	}
+
 	return false;
 }
 
@@ -710,9 +718,23 @@ static const char *G_UnnamedClientName( gclient_t *client )
 	}
 
 	client->pers.namelog->unnamedNumber = number;
-	Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-	             g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER"#",
-	             number );
+
+	gentity_t *ent;
+	int clientNum = client - level.clients;
+	ent = g_entities + clientNum;
+
+	if ( ent->r.svFlags & SVF_BOT )
+	{
+		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
+			g_unnamedBotNamePrefix.string[ 0 ] ? g_unnamedBotNamePrefix.string : UNNAMED_BOT "#",
+			number );
+	}
+	else
+	{
+		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
+			g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER "#",
+			number );
+	}
 
 	return name;
 }
