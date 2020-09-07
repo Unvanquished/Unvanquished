@@ -103,11 +103,13 @@ void G_RecoverBuildPoints() {
 	float rate = g_buildPointRecoveryInititalRate.value /
 	             std::pow(2.0f, (float)level.matchTime /
 	                            (60000.0f * g_buildPointRecoveryRateHalfLife.value));
-	int interval = (int)(60000.0f / rate);
-	int nextBuildPointTime = level.time + interval;
+	float interval = 60000.0f / rate;
 
-	// The interval grows exponentially, so check for an overflow.
-	if (nextBuildPointTime < level.time) return;
+	// The interval grows exponentially, so check for an excessively large value which could cause overflow.
+	// The maximum allowed game time is 0x70000000 (7 << 28); limit interval to 1 << 27.
+	if (interval > 0x1.0p27f) return;
+
+	int nextBuildPointTime = level.time + int(interval);
 
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
 		if (!level.team[team].queuedBudget) {
