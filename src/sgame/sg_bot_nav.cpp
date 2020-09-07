@@ -616,7 +616,7 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 		cmd->forwardmove = ClampChar( highestforward );
 		cmd->rightmove = ClampChar( highestright );
 	}
-	else
+	else if ( rightmove != 0 )
 	{
 		float highestright = rightmove < 0 ? -speed : speed;
 
@@ -624,6 +624,11 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 
 		cmd->forwardmove = ClampChar( highestforward );
 		cmd->rightmove = ClampChar( highestright );
+	}
+	else
+	{
+		cmd->forwardmove = 0;
+		cmd->rightmove = 0;
 	}
 }
 
