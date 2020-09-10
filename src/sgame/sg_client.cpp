@@ -1880,7 +1880,14 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// set default animations
 	client->ps.torsoAnim = TORSO_STAND;
-	client->ps.legsAnim = LEGS_IDLE;
+	if ( client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL )
+	{
+		client->ps.legsAnim = NSPA_STAND;
+	}
+	else
+	{
+		client->ps.legsAnim = LEGS_IDLE;
+	}
 
 	if ( level.intermissiontime )
 	{

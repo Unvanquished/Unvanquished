@@ -204,6 +204,12 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 					bp->modelAnimation.frameLerp = p->lifeTime / bp->modelAnimation.numFrames;
 					bp->modelAnimation.initialLerp = p->lifeTime / bp->modelAnimation.numFrames;
 				}
+				else if ( bp->modelAnimation.frameLerp == 0 )
+				{
+					// Bypass calculations in CG_RunLerpFrame if there is no modelAnimation
+					// since it will try to divide by frameLerp
+					p->lf.animationTime = std::numeric_limits<int>::max();
+				}
 			}
 
 			if ( !CG_AttachmentPoint( &ps->attachment, attachmentPoint ) )

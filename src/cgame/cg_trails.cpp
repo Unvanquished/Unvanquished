@@ -92,6 +92,12 @@ alphaRange = tb->class_->backAlpha -
 		totalDistance += nodeDistances[ j ];
 	}
 
+	if ( !( totalDistance > 0 ) )
+	{
+		// HACK: prevent division by zero
+		totalDistance = 1e-6f;
+	}
+
 	for ( j = 0, i = tb->nodes; i; i = i->next, j++ )
 	{
 		if ( tb->class_->textureType == TBTT_STRETCH )
