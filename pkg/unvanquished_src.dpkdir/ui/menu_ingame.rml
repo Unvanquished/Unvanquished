@@ -12,7 +12,7 @@
 		<img class="circles" src="/ui/assets/background/circles2" />
 		<img class="black2" src="/ui/assets/background/black2" />
 
-		<div style="position: absolute; bottom: 1em; left: 1em; color: rgba(255, 0, 0, 100); font-size: 80%;">This game version is part of the Unvanquished beta development program, game experience and depicted assets may not represent the final game.</div>
+		<div style="position: absolute; bottom: 1em; left: 1em; color: rgba(255, 0, 0, 100); font-size: 80%;">This is a beta version of Unvanquished. Gameplay and assets are still under development.</div>
 
 		<sidebar>
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
