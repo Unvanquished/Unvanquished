@@ -339,6 +339,7 @@ void Rocket_Init()
 
 	// Initialize Lua
 	Rocket::Core::Lua::Interpreter::Initialise();
+	Rocket::Core::Lua::Interpreter::DoString("math.randomseed(os.time())");
 	Rocket::Controls::Lua::RegisterTypes(Rocket::Core::Lua::Interpreter::GetLuaState());
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cvar>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cmd>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
