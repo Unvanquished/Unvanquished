@@ -27,13 +27,23 @@ selector
 
 			decorator timer( 1000 )
 			{
-				sequence
+				selector
 				{
-					condition ( healScore <= 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
-					action heal
+					sequence
+					{
+						condition alertedToEnemy
+						condition team == TEAM_ALIENS
+						condition ( distanceTo( E_A_OVERMIND ) <= 100 || distanceTo( E_A_BOOSTER ) <= 100 )
+						action fight
+					}
+					sequence
+					{
+						condition ( healScore <= 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
+						action heal
+					}
 				}
 			}
-			
+
 			action fight
 		}
 	}
