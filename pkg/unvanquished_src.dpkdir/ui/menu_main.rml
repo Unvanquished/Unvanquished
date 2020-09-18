@@ -123,7 +123,7 @@
 						<br />
 
 						<blocklink class="rightfloat" onClick='Events.pushevent("exec quit", event)'> Quit game</blocklink>
-						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.51 </blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Alpha <version /></blocklink>
 					</sidesection>
 
 				</window>
