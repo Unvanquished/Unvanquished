@@ -3332,6 +3332,11 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	Rocket_SetInnerRML( s.c_str(), 0 );
 }
 
+static void CG_Rocket_DrawVersion()
+{
+	Rocket_SetInnerRML( PRODUCT_VERSION, 0 );
+}
+
 static void CG_Rocket_DrawVote()
 {
 	CG_Rocket_DrawVote_internal( TEAM_NONE );
@@ -3615,6 +3620,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },
 	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
 	{ "unlocked_items", &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
+	{ "version", &CG_Rocket_DrawVersion, ELEMENT_ALL },
 	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
 	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
 	{ "warmup_time", &CG_Rocket_DrawWarmup, ELEMENT_GAME },
