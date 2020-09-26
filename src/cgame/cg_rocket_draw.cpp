@@ -3445,6 +3445,14 @@ static void CG_Rocket_DrawLevelName()
 	Rocket_SetInnerRML( CG_ConfigString( CS_MESSAGE ), RP_QUAKE );
 }
 
+static void CG_Rocket_DrawWinner()
+{
+	char winnerMessage[ MAX_STRING_CHARS ];
+
+	trap_Cvar_VariableStringBuffer( "ui_winner", winnerMessage, sizeof( winnerMessage ) );
+	Rocket_SetInnerRML( winnerMessage, 0 );
+}
+
 static void CG_Rocket_DrawMOTD()
 {
 	const char *s;
@@ -3624,6 +3632,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
 	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
 	{ "warmup_time", &CG_Rocket_DrawWarmup, ELEMENT_GAME },
+	{ "winner", &CG_Rocket_DrawWinner, ELEMENT_ALL },
 };
 
 static const size_t elementRenderCmdListCount = ARRAY_LEN( elementRenderCmdList );
