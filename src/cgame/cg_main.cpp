@@ -56,6 +56,7 @@ vmCvar_t        cg_drawCrosshairHit;
 vmCvar_t        cg_drawCrosshairFriendFoe;
 vmCvar_t        cg_drawCrosshairNames;
 vmCvar_t        cg_drawBuildableHealth;
+vmCvar_t        cg_drawBuildableHealthThreshold;
 vmCvar_t        cg_drawMinimap;
 vmCvar_t        cg_minimapActive;
 vmCvar_t        cg_crosshairSize;
@@ -215,6 +216,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawCrosshairFriendFoe,      "cg_drawCrosshairFriendFoe",      "0",            0                            },
 	{ &cg_drawCrosshairNames,          "cg_drawCrosshairNames",          "1",            0                            },
 	{ &cg_drawBuildableHealth,         "cg_drawBuildableHealth",         "1",            0                            },
+	{ &cg_drawBuildableHealthThreshold,"cg_drawBuildableHealthThreshold","0.98",         0                            },
 	{ &cg_drawMinimap,                 "cg_drawMinimap",                 "1",            0                            },
 	{ &cg_minimapActive,               "cg_minimapActive",               "0",            0                            },
 	{ &cg_crosshairSize,               "cg_crosshairSize",               "1",            0                            },

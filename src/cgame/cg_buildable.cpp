@@ -2130,6 +2130,10 @@ void CG_DrawBuildableStatus()
 {
 	centity_t     *cent;
 	entityState_t *es;
+	const buildableAttributes_t *attr;
+	const playerState_t *ps = &cg.predictedPlayerState;
+	int team = ps->persistant[ PERS_TEAM ];
+
 	int           buildableList[ MAX_ENTITIES_IN_SNAPSHOT ];
     unsigned      buildables = 0;
 
@@ -2142,8 +2146,23 @@ void CG_DrawBuildableStatus()
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		es = &cent->currentState;
+		attr = BG_Buildable( es->modelindex );
 
-		if ( es->eType == entityType_t::ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es->modelindex ) )
+		if ( es->eType != entityType_t::ET_BUILDABLE || team != attr->team )
+		{
+			continue;
+		}
+
+		bool isBuilder = CG_PlayerIsBuilder( (buildable_t) es->modelindex );
+		bool markedBuilding = es->eFlags & EF_B_MARKED;
+		bool damagedBuilding = ( (float) es->generic1 / (float) attr->health ) < cg_drawBuildableHealthThreshold.value;
+		bool mainBuilding = ( es->modelindex == BA_A_OVERMIND || es->modelindex == BA_H_REACTOR );
+
+		if ( ( mainBuilding && damagedBuilding ) ||
+		     ( cg_drawBuildableHealth.integer <= 2 && isBuilder ) ||
+				 ( cg_drawBuildableHealth.integer == 2 && damagedBuilding  ) ||
+		     ( cg_drawBuildableHealth.integer == 3 && isBuilder && ( markedBuilding || damagedBuilding ) ) ||
+		     ( cg_drawBuildableHealth.integer == 4 && ( ( isBuilder && markedBuilding ) || damagedBuilding ) ) )
 		{
 			buildableList[ buildables++ ] = cg.snap->entities[ i ].number;
 		}

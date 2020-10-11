@@ -1757,6 +1757,7 @@ extern  vmCvar_t            cg_drawCrosshairHit;
 extern  vmCvar_t            cg_drawCrosshairFriendFoe;
 extern  vmCvar_t            cg_drawCrosshairNames;
 extern  vmCvar_t            cg_drawBuildableHealth;
+extern  vmCvar_t            cg_drawBuildableHealthThreshold;
 extern  vmCvar_t            cg_drawMinimap;
 extern  vmCvar_t            cg_minimapActive;
 extern  vmCvar_t            cg_crosshairSize;
