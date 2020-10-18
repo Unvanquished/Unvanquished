@@ -2583,22 +2583,48 @@ Use_func_spawn
 */
 void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
-  if( self->r.linked )
-    trap_UnlinkEntity( self );
-  else
-  {
-    trap_LinkEntity( self );
-    if( !( self->spawnflags & 2 ) )
-      G_KillBrushModel( self, activator );
-  }
+	vec3_t    mins, maxs;
+
+	if( self->r.linked )
+	{
+		if ( self->obstacleHandle )
+		{
+			trap_BotRemoveObstacle( self->obstacleHandle );
+			self->obstacleHandle = 0;
+		}
+		trap_UnlinkEntity( self );
+	}
+	else
+	{
+		VectorAdd( self->restingPosition, self->r.mins, mins );
+		VectorAdd( self->restingPosition, self->r.maxs, maxs );
+		trap_BotAddObstacle( mins, maxs, &self->obstacleHandle );
+		trap_LinkEntity( self );
+		if( !( self->spawnflags & 2 ) )
+			G_KillBrushModel( self, activator );
+	}
 }
 
 void func_spawn_reset( gentity_t *self )
 {
+	vec3_t    mins, maxs;
+
 	if( self->spawnflags & 1 )
+	{
+		VectorAdd( self->restingPosition, self->r.mins, mins );
+		VectorAdd( self->restingPosition, self->r.maxs, maxs );
+		trap_BotAddObstacle( mins, maxs, &self->obstacleHandle );
 		trap_LinkEntity( self );
+	}
 	else
+	{
+		if ( self->obstacleHandle )
+		{
+			trap_BotRemoveObstacle( self->obstacleHandle );
+			self->obstacleHandle = 0;
+		}
 		trap_UnlinkEntity( self );
+	}
 }
 /*
 ====================
