@@ -731,8 +731,8 @@ void CG_InitBuildables()
 		//icon
 		if ( ( buildableIcon = BG_Buildable( buildable )->icon ) )
 		{
-		        cg_buildables[ buildable ].buildableIcon = trap_R_RegisterShader( buildableIcon, RSF_DEFAULT );
-                }
+			cg_buildables[ buildable ].buildableIcon = trap_R_RegisterShader( buildableIcon, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+		}
 
 		cg.buildablesFraction = ( float ) buildable / ( float )( BA_NUM_BUILDABLES - 1 );
 		trap_UpdateScreen();
@@ -1432,8 +1432,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->frameShader = trap_R_RegisterShader(s,
-									RSF_DEFAULT);
+				bs->frameShader = trap_R_RegisterShader( s, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 			}
 
 			continue;
@@ -1442,8 +1441,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->overlayShader = trap_R_RegisterShader(s,
-									  RSF_DEFAULT);
+				bs->overlayShader = trap_R_RegisterShader( s, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 			}
 
 			continue;
@@ -1452,8 +1450,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->noPowerShader = trap_R_RegisterShader(s,
-									  RSF_DEFAULT);
+				bs->noPowerShader = trap_R_RegisterShader( s, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 			}
 
 			continue;
@@ -1462,8 +1459,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->markedShader = trap_R_RegisterShader(s,
-									 RSF_DEFAULT);
+				bs->markedShader = trap_R_RegisterShader( s, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 			}
 
 			continue;

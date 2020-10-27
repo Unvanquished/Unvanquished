@@ -69,7 +69,7 @@ void CG_RegisterUpgrade( int upgradeNum )
 	icon = BG_Upgrade( upgradeNum )->icon;
 	if ( icon )
 	{
-		upgradeInfo->upgradeIcon = trap_R_RegisterShader( icon, RSF_DEFAULT );
+		upgradeInfo->upgradeIcon = trap_R_RegisterShader( icon, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 	}
 }
 
@@ -393,8 +393,7 @@ static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_
 				break;
 			}
 
-			wim->impactMark = trap_R_RegisterShader(token,
-								RSF_DEFAULT);
+			wim->impactMark = trap_R_RegisterShader(token, RSF_DEFAULT);
 			wim->impactMarkSize = size;
 
 			if ( !wim->impactMark )
@@ -1011,8 +1010,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				break;
 			}
 
-			wi->weaponIcon = wi->ammoIcon = trap_R_RegisterShader(token,
-									      RSF_DEFAULT);
+			wi->weaponIcon = wi->ammoIcon = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 
 			if ( !wi->weaponIcon )
 			{
@@ -1030,7 +1028,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				break;
 			}
 
-			wi->crossHair = trap_R_RegisterShader( token, RSF_DEFAULT );
+			wi->crossHair = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 
 			if ( !wi->crossHair )
 			{
@@ -1048,7 +1046,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				break;
 			}
 
-			wi->crossHairIndicator = trap_R_RegisterShader( token, RSF_DEFAULT );
+			wi->crossHairIndicator = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 
 			if ( !wi->crossHairIndicator )
 			{
