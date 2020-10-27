@@ -3752,7 +3752,7 @@ void CG_InitClasses()
 
 		if ( icon )
 		{
-			cg_classes[ i ].classIcon = trap_R_RegisterShader( icon, RSF_DEFAULT );
+			cg_classes[ i ].classIcon = trap_R_RegisterShader( icon, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
 
 			if ( !cg_classes[ i ].classIcon )
 			{
