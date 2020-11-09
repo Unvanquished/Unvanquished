@@ -52,7 +52,7 @@ colorPrintf () {
 }
 
 listCdn () {
-	(sed -e 's/#.*//g;s/[ \t]*//g' | grep -v '^$') <<-EOF
+	(sed -e 's/#.*//g;s/\[ \t\]*//g' | grep -v '^$') <<-EOF
 	# official
 	http://cdn.unvanquished.net
 	# Viech
