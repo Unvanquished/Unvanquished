@@ -21,6 +21,8 @@ xdgHomeDir="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
 # Version of Unvanquished for which this script is built
 version=0.51.1
 
+tab="$(printf '\t')"
+
 exitStatus ()
 {
 	RET="${?}"
@@ -52,7 +54,7 @@ colorPrintf () {
 }
 
 listCdn () {
-	(sed -e 's/#.*//g;s/[ \t]*//g' | grep -v '^$') <<-EOF
+	(sed -e 's/#.*//g;s/['"${tab}"' ]*//g' | grep -v '^$') <<-EOF
 	# official
 	http://cdn.unvanquished.net
 	# Viech
@@ -118,8 +120,6 @@ cache_dir=''
 unique_base_url=''
 do_check='true'
 do_download='true'
-
-tab="$(printf '\t')"
 
 program_name="$(basename "${0}")"
 
