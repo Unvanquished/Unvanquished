@@ -520,6 +520,58 @@ char *ConcatArgsPrintable( int start )
 
 /*
 ==================
+Cmd_Devteam_f
+
+Change team and spawn as builder at the current position
+==================
+*/
+void Cmd_Devteam_f( gentity_t *ent )
+{
+	gentity_t *spawn;
+
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( "\"" N_("usage: devteam [a|h]") "\"" );
+		return;
+	}
+
+	spawn = G_NewEntity();
+	VectorCopy( ent->s.pos.trBase, spawn->s.pos.trBase );
+	VectorCopy( ent->s.angles, spawn->s.angles );
+	VectorCopy( ent->s.origin, spawn->s.origin );
+	VectorCopy( ent->s.angles2, spawn->s.angles2 );
+
+	switch ( G_TeamFromString( ConcatArgs( 1 ) ) )
+	{
+		case TEAM_ALIENS:
+			G_LeaveTeam( ent );
+			ent->client->pers.team = TEAM_ALIENS;
+			ent->client->pers.classSelection = PCL_ALIEN_BUILDER0_UPG;
+			ent->client->ps.stats[ STAT_CLASS ] = PCL_ALIEN_BUILDER0_UPG;
+			break;
+		case TEAM_HUMANS:
+			G_LeaveTeam( ent );
+			ent->client->pers.team = TEAM_HUMANS;
+			ent->client->pers.humanItemSelection = WP_HBUILD;
+			ent->client->pers.classSelection = PCL_HUMAN_NAKED;
+			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
+			break;
+		default:
+			ADMP( "\"" N_("usage: devteam [a|h]") "\"" );
+			return;
+	}
+
+	ent->client->pers.teamChangeTime = level.time;
+	ent->client->pers.teamInfo = level.startTime - 1;
+	ent->client->sess.spectatorState = SPECTATOR_NOT;
+
+	G_UpdateTeamConfigStrings();
+	ClientUserinfoChanged( ent->client->ps.clientNum, false );
+	ClientSpawn( ent, spawn, ent->client->ps.origin, nullptr );
+}
+
+/*
+==================
 Cmd_Give_f
 
 Give items to a client
@@ -4365,6 +4417,7 @@ static const commands_t cmds[] =
 	{ "class",           CMD_TEAM,                            Cmd_Class_f            },
 	{ "damage",          CMD_CHEAT | CMD_ALIVE,               Cmd_Damage_f           },
 	{ "deconstruct",     CMD_TEAM | CMD_ALIVE,                Cmd_Deconstruct_f      },
+	{ "devteam",         CMD_CHEAT,                           Cmd_Devteam_f          },
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },
