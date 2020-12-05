@@ -30,7 +30,7 @@
 
 		<tabset>
 			<tab> Presets </tab>
-			<panel id="presets">
+			<panel class="presets">
 				<h2>Presets</h2>
 				<row>
 					<button onClick='Events.pushevent("exec preset presets/graphics/lowest.cfg", event)'>Lowest</button>
