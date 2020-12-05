@@ -178,16 +178,16 @@ button {
 	margin: 0.5em;
 }
 
-#presets row {
+.presets row {
 	vertical-align: middle;
 }
 
-#presets button {
+.presets button {
 	float: left;
 	margin: .2em .4em .4em 0em;
 }
 
-#presets span {
+.presets span {
 	display: block;
 }
 
