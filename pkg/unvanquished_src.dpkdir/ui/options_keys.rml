@@ -10,6 +10,27 @@
 		<p> Press Escape to cancel changing a key binding. </p>
 
 		<tabset>
+			<tab>Presets</tab>
+			<panel class="presets">
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/input/wasd.cfg", event)'>WASD</button>
+					<span>Classic First Person Shooter binds,<br/>keys will be adjusted to your layout.</span>
+				</row>
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/input/esdf.cfg", event)'>ESDF</button>
+					<span>One column shifted to the right,<br/>keys will be adjusted to your layout.</span>
+				</row>
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/input/ltouchpad.cfg", event)'>LTouchpad</button>
+					<span>Special binds for left-handed,<br/>touchpad users.</span>
+				</row>
+				<if cvar="in_joystick" condition="==" value="1">
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/input/gamepad.cfg", event)'>Gamepad</button>
+					<span>Does not work in menus yet,<br/>Experimental.</span>
+				</row>
+				</if>
+			</panel>
 			<tab>Move</tab>
 			<panel>
 				<row>
