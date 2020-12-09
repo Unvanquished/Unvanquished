@@ -33,6 +33,11 @@ std::string CG_KeyDisplayName(Key key) {
     switch (key.kind()) {
     case Key::Kind::SCANCODE:
     {
+        for (auto& functionKey : Keyboard::leftRightFunctionKeys) {
+            if (functionKey.scancode == key.AsScancode()) {
+                return functionKey.name;
+            }
+        }
         int character = trap_Key_GetCharForScancode(key.AsScancode());
         if (character) {
             return Keyboard::CharToString(character);
