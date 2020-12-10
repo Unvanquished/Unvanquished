@@ -2472,7 +2472,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			if( index < 0 || index >= 4 )
 				Log::Warn( "Invalid beacon icon index %i in %s", index, filename );
 			else
-				ba->icon[ 0 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+				ba->icon[ 0 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 #endif
 		}
 		else if ( !Q_stricmp( token, "hlIcon" ) )
@@ -2486,7 +2486,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			if( index < 0 || index >= 4 )
 				Log::Warn( "Invalid beacon highlighted icon index %i in %s", index, filename );
 			else
-				ba->icon[ 1 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+				ba->icon[ 1 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 #endif
 		}
 		else if ( !Q_stricmp( token, "inSound" ) )
