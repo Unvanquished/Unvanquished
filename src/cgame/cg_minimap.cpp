@@ -104,7 +104,7 @@ static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
                 Log::Warn("error while parsing the image name while parsing 'image'" );
             }
 
-            z->image = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+            z->image = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
             if( !ParseFloats( z->imageMin, 2, text) || !ParseFloats( z->imageMax, 2, text) )
             {
@@ -649,8 +649,8 @@ void CG_InitMinimap()
         Log::Warn("the minimap did not define any zone." );
     }
 
-    m->gfx.playerArrow = trap_R_RegisterShader( "gfx/feedback/minimap/player-arrow", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
-    m->gfx.teamArrow = trap_R_RegisterShader( "gfx/feedback/minimap/team-arrow", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+    m->gfx.playerArrow = trap_R_RegisterShader( "gfx/feedback/minimap/player-arrow", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+    m->gfx.teamArrow = trap_R_RegisterShader( "gfx/feedback/minimap/team-arrow", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
     CG_UpdateMinimapActive( m );
 }

@@ -1059,24 +1059,24 @@ static void CG_RegisterGraphics()
 	CG_UpdateLoadingStep( LOAD_ASSETS );
 	for ( i = 0; i < 11; i++ )
 	{
-		cgs.media.numberShaders[ i ] = trap_R_RegisterShader(sb_nums[i], (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+		cgs.media.numberShaders[ i ] = trap_R_RegisterShader(sb_nums[i], (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 	}
 
-	cgs.media.viewBloodShader = trap_R_RegisterShader("gfx/feedback/painblend", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.viewBloodShader = trap_R_RegisterShader("gfx/feedback/painblend", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
-	cgs.media.connectionShader = trap_R_RegisterShader("gfx/feedback/net", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.connectionShader = trap_R_RegisterShader("gfx/feedback/net", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 	cgs.media.creepShader = trap_R_RegisterShader("gfx/buildables/creep/creep", (RegisterShaderFlags_t) RSF_DEFAULT );
 
-	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/feedback/scanner/blip", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/feedback/scanner/blip", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
-	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/feedback/scanner/blip_bldg", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/feedback/scanner/blip_bldg", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
-	cgs.media.scannerLineShader = trap_R_RegisterShader("gfx/feedback/scanner/stalk", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.scannerLineShader = trap_R_RegisterShader("gfx/feedback/scanner/stalk", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer", (RegisterShaderFlags_t) RSF_DEFAULT);
 
-	cgs.media.backTileShader = trap_R_RegisterShader("gfx/colors/backtile", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.backTileShader = trap_R_RegisterShader("gfx/colors/backtile", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 	// building shaders
 	cgs.media.greenBuildShader = trap_R_RegisterShader("gfx/buildables/common/greenbuild",(RegisterShaderFlags_t) RSF_DEFAULT );
@@ -1104,7 +1104,7 @@ static void CG_RegisterGraphics()
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "particles/feedback/disconnect" );
 
-	cgs.media.scopeShader = trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.scopeShader = trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 	CG_UpdateMediaFraction( 0.7f );
 
@@ -1155,11 +1155,11 @@ static void CG_RegisterGraphics()
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
 
-	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/feedback/beacons/arrow", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
-	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/feedback/beacons/no-target", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
-	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/feedback/beacons/tagscore", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/feedback/beacons/arrow", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/feedback/beacons/no-target", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/feedback/beacons/tagscore", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
-	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/feedback/damage/font", (RegisterShaderFlags_t) ( RSF_DEFAULT | RSF_NOMIP ) );
+	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/feedback/damage/font", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
