@@ -2407,12 +2407,27 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				if ( cost != CANT_EVOLVE )
 				{
 
-					if ( ( cost < 0 || ( cost == 0 && currentClass == PCL_ALIEN_LEVEL0 ) )	&& ( G_DistanceToBase( ent ) >= g_devolveMaxBaseDistance.Get() ) ) {
-						if ( report )
-						{
-							G_TriggerMenu( clientNum, MN_A_NOTINBASE );
+					if ( ( cost < 0 || ( cost == 0 && currentClass == PCL_ALIEN_LEVEL0 ) ) ) {
+						if ( G_DistanceToBase( ent ) >= g_devolveMaxBaseDistance.Get() ) {
+							if ( report )
+							{
+								G_TriggerMenu( clientNum, MN_A_NOTINBASE );
+							}
+							return false;
 						}
-						return false;
+						if ( ent->client->lastDamageTime &&
+						     ent->client->lastDamageTime + g_devolveDamageCooldown.Get() * 1000 > level.time) {
+							if ( report )
+ 							{
+								float remaining = ( ( ent->client->lastDamageTime + g_devolveDamageCooldown.Get() * 1000 ) - level.time ) / 1000;
+								char* msg = va( "%s %i %.0f", QQ( N_("You cannot devolve until $1$ after combat. Try again in $2$s.") ),
+								                g_devolveDamageCooldown.Get(), remaining );
+								trap_SendServerCommand( ent - g_entities, va( "print_tr %s", msg ) );
+								trap_SendServerCommand( ent - g_entities, va( "cp_tr %s", msg ) );
+
+ 							}
+ 							return false;
+						}
 					}
 
 					ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();

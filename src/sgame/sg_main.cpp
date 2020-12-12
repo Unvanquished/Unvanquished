@@ -209,6 +209,7 @@ Cvar::Cvar<bool>   g_neverEnd("g_neverEnd", "cheat to never end a game, helpful 
 
 Cvar::Cvar<float>  g_evolveAroundHumans("g_evolveAroundHumans", "Ratio of alien buildings to human entities that always allow evolution", Cvar::NONE, 1.5f);
 Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Overmind distance to allow devolving", Cvar::NONE, 1000.0f);
+Cvar::Cvar<int>    g_devolveDamageCooldown("g_devolveDamageCooldown", "Time without damage required for devolving", Cvar::NONE, 5);
 
 // <bot stuff>
 

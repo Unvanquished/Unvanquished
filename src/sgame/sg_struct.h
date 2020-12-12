@@ -531,6 +531,7 @@ struct gclient_s
 	int        medKitIncrementTime;
 	int        lastCreepSlowTime; // time until creep can be removed
 	int        lastCombatTime; // time of last damage received/dealt from/to clients
+	int        lastDamageTime; // time of last damage received/dealt 
 	int        lastAmmoRefillTime;
 	int        lastFuelRefillTime;
 

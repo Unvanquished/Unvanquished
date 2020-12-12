@@ -130,6 +130,10 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		client->lastCombatTime = entity.oldEnt->client->lastCombatTime = level.time;
 	}
 
+	// Update damage timers
+	if ( source->client ) source->client->lastDamageTime = level.time;
+	if ( client ) client->lastDamageTime = entity.oldEnt->client->lastDamageTime = level.time;
+
 	if (client) {
 		// Save damage w/o armor modifier.
 		client->damage_received += (int)(amount + 0.5f);

@@ -171,6 +171,7 @@ extern  vmCvar_t g_instantBuilding;
 
 extern  Cvar::Cvar<float> g_evolveAroundHumans;
 extern  Cvar::Cvar<float> g_devolveMaxBaseDistance;
+extern  Cvar::Cvar<int>   g_devolveDamageCooldown;
 
 // bot buy cvars
 extern vmCvar_t g_bot_buy;
