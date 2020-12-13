@@ -460,6 +460,7 @@ struct clientPersistant_s
 
 	class_t           classSelection; // player class (copied to ent->client->ps.stats[ STAT_CLASS ] once spawned)
 	float             evolveHealthFraction;
+	int               devolveReturningCredits;
 	weapon_t          humanItemSelection; // humans have a starting item
 
 	int               teamChangeTime; // level.time of last team change

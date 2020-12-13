@@ -30,6 +30,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 bool ClientInactivityTimer( gentity_t *ent, bool active );
 
+static Cvar::Cvar<float> g_devolveReturnRate(
+	"g_devolveReturnRate", "Evolution points per second returned after devolving", Cvar::NONE, 0.4);
+
 /*
 ===============
 P_DamageFeedback
@@ -1065,6 +1068,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
 			}
 		}
+
+		int devolveReturnedCredits = std::min(
+			static_cast<int>(g_devolveReturnRate.Get() * CREDITS_PER_EVO), client->pers.devolveReturningCredits );
+		client->pers.devolveReturningCredits -= devolveReturnedCredits;
+		G_AddCreditToClient( client, devolveReturnedCredits, true );
 	}
 
 	while ( client->time10000 >= 10000 )

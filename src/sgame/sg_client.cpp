@@ -1721,6 +1721,10 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		client->ps.weaponTime = savedWeaponTime;
 	}
+	else
+	{
+		client->pers.devolveReturningCredits = 0;
+	}
 	client->noclip = savedNoclip;
 	client->cliprcontents = savedCliprcontents;
 
