@@ -1610,7 +1610,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
 
-	ClientSpawnCBSE(ent, ent == spawn);
+	bool evolving = ent == spawn;
+	ClientSpawnCBSE(ent, evolving);
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -1701,6 +1702,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	saved = client->pers;
 	savedSess = client->sess;
 	savedPing = client->ps.ping;
+	int savedWeaponTime = client->ps.weaponTime;
 	savedNoclip = client->noclip;
 	savedCliprcontents = client->cliprcontents;
 
@@ -1715,6 +1717,10 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->pers = saved;
 	client->sess = savedSess;
 	client->ps.ping = savedPing;
+	if (evolving)
+	{
+		client->ps.weaponTime = savedWeaponTime;
+	}
 	client->noclip = savedNoclip;
 	client->cliprcontents = savedCliprcontents;
 
@@ -1910,7 +1916,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
-	client->ps.commandTime = level.time - 100;
+	// use smaller move duration when evolving to prevent cheats such as
+	// evolving several times to run down the attack cooldown
+	client->ps.commandTime = level.time - (evolving ? 1 : 100);
 	ent->client->pers.cmd.serverTime = level.time;
 	ClientThink( ent - g_entities );
 
