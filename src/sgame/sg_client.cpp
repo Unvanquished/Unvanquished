@@ -1754,9 +1754,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// calculate each client's acceleration
 	ent->evaluateAcceleration = true;
 
-	client->ps.stats[ STAT_MISC ] = 0;
-	client->ps.weaponTime = 0;
-
 	client->ps.eFlags = flags;
 	client->ps.clientNum = index;
 
@@ -1792,13 +1789,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	client->ps.persistant[ PERS_TEAM ] = client->pers.team;
 
-	// TODO: Check whether stats can be cleared at once instead of per field
 	client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 	client->ps.stats[ STAT_FUEL ]    = JETPACK_FUEL_MAX;
 	client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
-	client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-	client->ps.stats[ STAT_PREDICTION ] = 0;
-	client->ps.stats[ STAT_STATE ] = 0;
 
 	VectorSet( client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 
