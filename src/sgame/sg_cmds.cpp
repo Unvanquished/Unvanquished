@@ -2427,7 +2427,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 					}
 
 					if ( cost < 0 ){
-						ent->client->pers.devolveReturningCredits -= cost * DEVOLVE_RETURN_RATE * ent->client->pers.evolveHealthFraction;
+						ent->client->pers.devolveReturningCredits -= cost * DEVOLVE_RETURN_FRACTION * ent->client->pers.evolveHealthFraction;
 					}
 					else
 					{

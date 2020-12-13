@@ -1127,7 +1127,7 @@ enum buttonNumber_t
   BUTTON_DECONSTRUCT = 13,
 };
 
-#define DEVOLVE_RETURN_RATE 0.9f
+#define DEVOLVE_RETURN_FRACTION 0.9f
 #define CANT_EVOLVE -999
 
 //---------------------------------------------------------
