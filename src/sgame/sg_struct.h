@@ -95,7 +95,7 @@ class Entity;
 // was formed.
 struct GentityRef
 {
-	struct gentity_s *entity = nullptr;
+	struct gentity_s *entity;
 	unsigned generation;
 
 	GentityRef& operator=(struct gentity_s *ent);
