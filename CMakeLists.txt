@@ -24,7 +24,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.12)
 project(Unvanquished C CXX)
 
 # When we build in the source dir, the daemon executable cannot be create
