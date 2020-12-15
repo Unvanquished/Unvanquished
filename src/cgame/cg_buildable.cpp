@@ -1154,7 +1154,6 @@ CG_GhostBuildable
 */
 void CG_GhostBuildable( int buildableInfo )
 {
-	static refEntity_t ent; // static for proper alignment in QVMs
 	playerState_t *ps;
 	vec3_t        angles, entity_origin;
 	vec3_t        mins, maxs;
@@ -1165,7 +1164,7 @@ void CG_GhostBuildable( int buildableInfo )
 
 	ps = &cg.predictedPlayerState;
 
-	memset( &ent, 0, sizeof( ent ) );
+	refEntity_t ent{};
 
 	BG_BuildableBoundingBox( buildable, mins, maxs );
 
@@ -2139,7 +2138,6 @@ CG_Buildable
 */
 void CG_Buildable( centity_t *cent )
 {
-	static refEntity_t ent; // static for proper alignment in QVMs
 	entityState_t *es = &cent->currentState;
 	vec3_t        angles;
 	vec3_t        surfNormal, xNormal, mins, maxs;
@@ -2173,7 +2171,7 @@ void CG_Buildable( centity_t *cent )
 		return;
 	}
 
-	memset( &ent, 0, sizeof( ent ) );
+	refEntity_t ent{};
 
 	VectorCopy( es->origin2, surfNormal );
 

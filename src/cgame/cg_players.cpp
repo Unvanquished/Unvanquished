@@ -2417,12 +2417,6 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
-	static refEntity_t jetpack; // static for proper alignment in QVMs
-
-	// TODO: Remove this QVM relic.
-	// jetpack and battpack are never both in use together
-#	define radar jetpack
-
 	int           held, publicFlags;
 	entityState_t *es = &cent->currentState;
 
@@ -2432,7 +2426,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	// jetpack model and effects
 	if ( held & ( 1 << UP_JETPACK ) )
 	{
-		memset( &jetpack, 0, sizeof( jetpack ) );
+		refEntity_t jetpack{};
 		VectorCopy( torso->lightingOrigin, jetpack.lightingOrigin );
 		jetpack.renderfx = torso->renderfx;
 
@@ -2529,7 +2523,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	// battery pack
 	if ( held & ( 1 << UP_RADAR ) )
 	{
-		memset( &radar, 0, sizeof( radar ) );
+		refEntity_t radar{};
 		VectorCopy( torso->lightingOrigin, radar.lightingOrigin );
 		radar.renderfx = torso->renderfx;
 
@@ -2579,7 +2573,6 @@ Float a sprite over the player's head
 static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 {
 	int         rf;
-	static refEntity_t ent; // static for proper alignment in QVMs
 
 	if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson )
 	{
@@ -2590,7 +2583,7 @@ static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 		rf = 0;
 	}
 
-	memset( &ent, 0, sizeof( ent ) );
+	refEntity_t ent{};
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	ent.origin[ 2 ] += 48;
 	ent.reType = refEntityType_t::RT_SPRITE;
@@ -2912,11 +2905,6 @@ CG_Player
 void CG_Player( centity_t *cent )
 {
 	clientInfo_t *ci;
-
-	// NOTE: legs is used for nonsegmented and skeletal models
-	//       this helps reduce code to be changed
-	refEntity_t legs, torso, head;
-
 	int           clientNum;
 	int           renderfx;
 	entityState_t *es = &cent->currentState;
@@ -2986,9 +2974,9 @@ void CG_Player( centity_t *cent )
 		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 	}
 
-	memset( &legs,    0, sizeof( legs ) );
-	memset( &torso,   0, sizeof( torso ) );
-	memset( &head,    0, sizeof( head ) );
+	// NOTE: legs is used for nonsegmented and skeletal models
+	//       this helps reduce code to be changed
+	refEntity_t legs{}, torso{}, head{};
 
 	VectorCopy( cent->lerpAngles, angles );
 	AnglesToAxis( cent->lerpAngles, tempAxis );
@@ -3422,7 +3410,6 @@ CG_Corpse
 */
 void CG_Corpse( centity_t *cent )
 {
-	refEntity_t   legs, torso, head;
 	clientInfo_t  *ci;
 	entityState_t *es = &cent->currentState;
 	int           corpseNum;
@@ -3446,9 +3433,7 @@ void CG_Corpse( centity_t *cent )
 		return;
 	}
 
-	memset( &legs, 0, sizeof( legs ) );
-	memset( &torso, 0, sizeof( torso ) );
-	memset( &head, 0, sizeof( head ) );
+	refEntity_t legs{}, torso{}, head{};
 
 	VectorCopy( cent->lerpOrigin, origin );
 	BG_ClassBoundingBox( es->clientNum, liveZ, nullptr, nullptr, deadZ, deadMax );

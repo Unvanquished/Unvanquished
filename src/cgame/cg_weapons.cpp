@@ -1459,9 +1459,6 @@ sound should only be done on the world model case.
 */
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent )
 {
-	refEntity_t  gun;
-	refEntity_t  barrel;
-	refEntity_t  flash;
 	vec3_t       angles;
 	weapon_t     weaponNum;
 	weaponMode_t weaponMode;
@@ -1498,9 +1495,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	}
 
 	// add the weapon
-	Com_Memset( &gun, 0, sizeof( gun ) );
-	Com_Memset( &barrel, 0, sizeof( barrel ) );
-	Com_Memset( &flash, 0, sizeof( flash ) );
+	refEntity_t gun{}, barrel{}, flash{};
 
 	VectorCopy( parent->lightingOrigin, gun.lightingOrigin );
 	gun.renderfx = parent->renderfx;
@@ -1761,7 +1756,6 @@ Add the weapon, and flash for the player's view
 
 void CG_AddViewWeapon( playerState_t *ps )
 {
-	refEntity_t  hand;
 	centity_t    *cent;
 	clientInfo_t *ci;
 	float        fovOffset;
@@ -1859,7 +1853,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	fovOffset = -0.03f * cg.refdef.fov_y;
 
-	Com_Memset( &hand, 0, sizeof( hand ) );
+	refEntity_t hand{};
 
 	// set up gun position
 	CG_CalculateWeaponPosition( hand.origin, angles );
