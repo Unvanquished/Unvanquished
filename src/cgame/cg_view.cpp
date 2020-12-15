@@ -76,8 +76,8 @@ void CG_TestModel_f()
 {
 	vec3_t angles;
 
-	memset( &cg.testModelEntity, 0, sizeof( cg.testModelEntity ) );
-	memset( &cg.testModelBarrelEntity, 0, sizeof( cg.testModelBarrelEntity ) );
+	cg.testModelEntity = {};
+	cg.testModelBarrelEntity = {};
 
 	if ( trap_Argc() < 2 )
 	{

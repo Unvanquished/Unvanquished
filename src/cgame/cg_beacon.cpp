@@ -49,7 +49,7 @@ void CG_LoadBeaconsConfig()
 	vh = cgs.glconfig.vidHeight;
 	base = std::min( vw, vh );
 
-	memset( bc, 0, sizeof( beaconsConfig_t ) );
+	*bc = {};
 
 	bc->hudCenter[ 0 ] = vw / 2;
 	bc->hudCenter[ 1 ] = vh / 2;

@@ -528,7 +528,7 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 
 		if ( !ps->valid )
 		{
-			memset( ps, 0, sizeof( particleSystem_t ) );
+			*ps = {};
 
 			//found a free slot
 			ps->class_ = bps;
@@ -2526,7 +2526,6 @@ Actually render a particle
 */
 static void CG_RenderParticle( particle_t *p )
 {
-	static refEntity_t   re; // static for proper alignment in QVMs
 	float                timeFrac, scale;
 	int                  index;
 	baseParticle_t       *bp = p->class_;
@@ -2535,7 +2534,7 @@ static void CG_RenderParticle( particle_t *p )
 	vec3_t               alight, dlight, lightdir;
 	vec3_t               up = { 0.0f, 0.0f, 1.0f };
 
-	memset( &re, 0, sizeof( refEntity_t ) );
+	refEntity_t re{};
 
 	timeFrac = CG_CalculateTimeFrac( p->birthTime, p->lifeTime, 0 );
 
