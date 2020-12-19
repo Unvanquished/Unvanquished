@@ -1837,13 +1837,11 @@ void ClientThink_real( gentity_t *self )
 	if ( ucmd->serverTime > level.time + 200 )
 	{
 		ucmd->serverTime = level.time + 200;
-//    Log::Debug("serverTime <<<<<" );
 	}
 
 	if ( ucmd->serverTime < level.time - 1000 )
 	{
 		ucmd->serverTime = level.time - 1000;
-//    Log::Debug("serverTime >>>>>" );
 	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
