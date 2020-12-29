@@ -910,7 +910,8 @@ public:
 		if ( evos != value )
 		{
 			evos = value;
-			SetText( va( "%1.1f", evos ) );
+			// display it rounded down
+			SetText( va( "%1.1f", floorf(evos*10)/10 ) );
 		}
 	}
 
