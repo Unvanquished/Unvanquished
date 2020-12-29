@@ -13,7 +13,7 @@ body {
 }
 
 p {
-	display:block;
+	display: block;
 	margin-bottom: 0.3em;
 }
 
@@ -42,12 +42,12 @@ h2 {
 
 h3 {
 	display: block;
-	color:white;
+	color: white;
 	height: 1.3em; /* Same as input boxes */
 }
 
 indent {
-	display:block;
+	display: block;
 	margin-left: 1.5em;
 }
 
@@ -55,31 +55,31 @@ indent {
 /* #### Links #### */
 /* Inline */
 ilink {
-	color:#136D67;   /* Dark cyan */
+	color: #136D67;   /* Dark cyan */
 	tab-index: auto;
 
 }
-ilink:hover{
-	color:#00F8FF;   /* Bright cyan */
+ilink:hover {
+	color: #00F8FF;   /* Bright cyan */
 }
 
 /* Block-style link, used in main menu */
 blocklink {
 	display: block;
-	color:#999999;
+	color: #999999;
 	tab-index: auto;
 
 }
-blocklink:hover{
-	color:white;
+blocklink:hover {
+	color: white;
 }
-blocklink.fake:hover{
-	color:#999999;
+blocklink.fake:hover {
+	color: #999999;
 }
 
 
 /* ##### Scroll-bars #### */
-scrollbarvertical{
+scrollbarvertical {
 	width: .8em;
 	margin-right: -.8em;
 	/* window's border-right is .17em but makes it a bit larger to
@@ -88,25 +88,25 @@ scrollbarvertical{
 	background-color: rgba(0,0,0,0);
 }
 
-scrollbarvertical sliderbar{
+scrollbarvertical sliderbar {
 	background-color: #136D6788;   /* Dark cyan */
 }
 
-scrollbarvertical sliderbar:hover{
+scrollbarvertical sliderbar:hover {
 	background-color: #00F8FF44;   /* Bright cyan */
 }
 
 /* #### Useful classes #### */
 
-.hidden{
+.hidden {
 	display: none;
 }
 
-.right{
-	float:right;
+.right {
+	float: right;
 }
 
-.inline{
+.inline {
 	display: inline;
 }
 

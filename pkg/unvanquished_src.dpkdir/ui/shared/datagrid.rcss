@@ -1,16 +1,16 @@
 
 /* ##### Stripey data-grids ##### */
 
-datagridbody{
+datagridbody {
 	overflow-y: auto;
 }
 
-datagridcell{
+datagridcell {
 	padding-top: 0.2em;
 	padding-bottom: 0.2em;
 }
 
-datagridheader{
+datagridheader {
 	margin-top: 1em;
 }
 
@@ -22,10 +22,10 @@ datagridrow:nth-child(odd) {
 	background-color: #222222;
 }
 
-datagridrow:hover{
+datagridrow:hover {
 	background-color:#666666;
 }
 
-datagridrow:selected{
+datagridrow:selected {
 	background-color:#136D67;   /* Dark cyan */
 }
