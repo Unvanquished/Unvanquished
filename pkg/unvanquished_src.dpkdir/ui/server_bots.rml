@@ -73,6 +73,10 @@
 					<h3> SMG </h3>
 				</row>
 				<row>
+					<input cvar="g_bot_painsaw" type="checkbox" />
+					<h3> Painsaw </h3>
+				</row>
+				<row>
 					<input cvar="g_bot_shotgun" type="checkbox" />
 					<h3> Shotgun </h3>
 				</row>
@@ -81,28 +85,24 @@
 					<h3> Lasgun </h3>
 				</row>
 				<row>
+					<input cvar="g_bot_mdriver" type="checkbox" />
+					<h3> Mass Driver </h3>
+				</row>
+				<row>
 					<input cvar="g_bot_chain" type="checkbox" />
 					<h3> Chaingun </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_flamer" type="checkbox" />
-					<h3> Flame-thrower </h3>
-				</row>
-				<row>
-					<input cvar="g_bot_mdriver" type="checkbox" />
-					<h3> Mass driver </h3>
-				</row>
-				<row>
-					<input cvar="g_bot_painsaw" type="checkbox" />
-					<h3> Pain-saw </h3>
+					<h3> Flamethrower </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_prifle" type="checkbox" />
-					<h3> Plasma rifle </h3>
+					<h3> Pulse Rifle </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_lcannon" type="checkbox" />
-					<h3> Lucifer cannon </h3>
+					<h3> Lucifer Cannon </h3>
 				</row>
 
 			</panel>
@@ -118,27 +118,27 @@
 				<h2> Individually </h2>
 				<row>
 					<input cvar="g_bot_level1" type="checkbox" />
-					<h3> Level 1 </h3>
+					<h3> Mantis </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_level2" type="checkbox" />
-					<h3> Level 2 </h3>
+					<h3> Marauder </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_level2upg" type="checkbox" />
-					<h3> Level 2 advanced </h3>
+					<h3> Advanced Marauder </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_level3" type="checkbox" />
-					<h3> Level 3 </h3>
+					<h3> Dragoon </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_level3upg" type="checkbox" />
-					<h3> Level 3 advanced </h3>
+					<h3> Advanced Dragoon </h3>
 				</row>
 				<row>
 					<input cvar="g_bot_level4" type="checkbox" />
-					<h3> Level 4 </h3>
+					<h3> Tyrant </h3>
 				</row>
 			</panel>
 
