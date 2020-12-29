@@ -172,14 +172,33 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 	Rocket_DataFormatterFormattedData( handle, va( "<button class='armourybuy %s' onMouseover='Events.pushevent(\"setDS armouryBuyList weapons %s\", event)' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].ammoIcon )), false );
 }
 
+// inspired by Cmd_Sell_upgrades in src/sgame/sg_cmds.cpp
+static bool CanAffordUpgrade(upgrade_t upgrade, int stats[])
+{
+	playerState_t *ps = &cg.snap->ps;
+	int credits = ps->persistant[ PERS_CREDIT ];
+
+	const int slots = BG_Upgrade( upgrade )->slots;
+
+	for ( int i = UP_NONE; i < UP_NUM_UPGRADES; i++ )
+	{
+		bool usesTheSameSlot = slots & BG_Upgrade( i )->slots;
+		if ( BG_InventoryContainsUpgrade( i, stats ) && usesTheSameSlot )
+		{
+			// conflicting item that will be replaced, add it to funds
+			credits += BG_Upgrade( i )->price;
+		}
+	}
+
+	return BG_Upgrade( upgrade )->price <= credits;
+}
+
 static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 {
 	upgrade_t upgrade = (upgrade_t) atoi( Info_ValueForKey( data, "1" ) );
 	const char *Class = "";
 	const char *Icon = "";
 	const char *action = "";
-	playerState_t *ps = &cg.snap->ps;
-	int credits = ps->persistant[ PERS_CREDIT ];
 
 	if( BG_InventoryContainsUpgrade( upgrade, cg.predictedPlayerState.stats ) ){
 		Class = "active";
@@ -194,7 +213,7 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if(BG_Upgrade( upgrade )->price > credits){
+	else if( !CanAffordUpgrade( upgrade, cg.predictedPlayerState.stats ) ){
 
 		Class = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
