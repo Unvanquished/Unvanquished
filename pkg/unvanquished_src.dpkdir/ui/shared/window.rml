@@ -6,7 +6,7 @@
 
 		/* #### Dialog window #### */
 		window {
-			display:block;
+			display: block;
 			z-index: 5;
 			overflow: auto;
 			padding: 1.5em;
@@ -20,7 +20,7 @@
 		}
 
 		closebutton {
-			display:block;
+			display: block;
 			width: 1em;
 			height: 1em;
 
@@ -33,7 +33,7 @@
 		}
 
 		closebutton:hover {
-			background-image:/ui/assets/widgets/close_cross_hover;
+			background-image: /ui/assets/widgets/close_cross_hover;
 		}
 
 		row {
@@ -57,7 +57,7 @@
 			/*
 			text-align: center;
 
-			float:left;
+			float: left;
 			width: 5em;
 
 			border-style: solid;
@@ -68,7 +68,7 @@
 		}
 		tab:selected {
 			color: red;
-			color:#00F8FF;   /* Bright cyan */
+			color: #00F8FF;   /* Bright cyan */
 			border-color: #00F8FF;   /* Bright cyan */
 		}
 
@@ -83,7 +83,7 @@
 
 		/* Vertical bar that content sits in */
 		panel {
-			float:right;
+			float: right;
 			width: 70%;
 		}
 

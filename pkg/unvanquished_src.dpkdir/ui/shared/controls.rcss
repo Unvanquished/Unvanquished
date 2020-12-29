@@ -37,41 +37,35 @@ colorinput:hover, dataselect:hover, select:hover, input.text:hover {
 
 /* #### Drop-down menu boxes #### */
 select selectbox option,
-dataselect selectbox option
-{
+dataselect selectbox option {
 	/* FIXME: Borders don't work here */
 	border-style: solid;
 	border-width: .1em;
 	border-color:  #FFFFFF;
 
 	padding: .16em;
-
 }
 
 /* Alternate shades of grey. */
 select selectbox option:nth-child(even),
-dataselect selectbox option:nth-child(even)
-{
+dataselect selectbox option:nth-child(even) {
 	background-color: #333333;
 }
 select selectbox option:nth-child(odd),
-dataselect selectbox option:nth-child(odd)
-{
+dataselect selectbox option:nth-child(odd) {
 	background-color: #222222;
 }
 
 /* hover */
 select selectbox option:hover,
-dataselect selectbox option:hover
-{
+dataselect selectbox option:hover {
 	background-color: #136D67;
 }
 
 
 /* #### Images for controls inside boxes #### */
 select selectarrow,
-dataselect selectarrow
-{
+dataselect selectarrow {
 	margin-right: .03em;
 	margin-top: .06em;
 	width: 1.3em;
@@ -131,10 +125,10 @@ input.radio:checked, input.radio:checked:hover, input.radio.checked:active
 
 /* #### Sliders #### */
 
-input.range{
+input.range {
 }
 
-input.range slidertrack{
+input.range slidertrack {
 	background:#83fff522;
 	border-style:solid;
 	border-width: .1em;
@@ -144,11 +138,11 @@ input.range slidertrack{
 	width: 4.1em;
 }
 
-input.range sliderbar{
-	border-style:solid;
+input.range sliderbar {
+	border-style: solid;
 	border-width: .1em;
-	border-color:#83fff588;
-	background:#136D67;
+	border-color: #83fff588;
+	background: #136D67;
 	height: 1.2em;
 	width: .6em;
 }
@@ -164,7 +158,6 @@ keybind {
 	color:white;;
 
 	tab-index: auto;
-
 }
 
 
