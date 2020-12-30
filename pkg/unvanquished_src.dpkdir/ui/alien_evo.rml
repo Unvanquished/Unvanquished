@@ -65,6 +65,10 @@ body
 	opacity:.7;
 }
 
+.circlemenu button.doublegranger {
+	display: none;
+}
+
 .circlemenu button{
 	position:relative;
 	icon-color-multiplier: red;
