@@ -1552,6 +1552,7 @@ struct cgMedia_t
 	qhandle_t   healthCross;
 	qhandle_t   healthCross2X;
 	qhandle_t   healthCross3X;
+	qhandle_t   healthCross4X;
 	qhandle_t   healthCrossMedkit;
 	qhandle_t   healthCrossPoisoned;
 
