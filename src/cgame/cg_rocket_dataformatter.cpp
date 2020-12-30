@@ -404,44 +404,48 @@ static void CG_Rocket_DFCMHumanBuildables( int handle, const char *data )
 static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 {
 	class_t alienClass = (class_t) atoi( Info_ValueForKey( data, "1" ) );
-	const char *Class = "";
+	const char *FunctionalClass = "";
+	const char *CosmeticClass = "";
 	const char *Icon = "";
 	const char *action = "";
 	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ] );
 
-	if ( ( alienClass == PCL_ALIEN_BUILDER0 && ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) && !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) ) )||
-			 ( alienClass == PCL_ALIEN_BUILDER0_UPG && ( !BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ) ) )
-	{
-		Rocket_DataFormatterFormattedData( handle, "", false );
-		return;
-	}
-
 	if( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
 	{
-		Class = "active";
+		FunctionalClass = "active";
 		//Check mark icon. UTF-8 encoding of \uf00c
 		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
 	else if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) )
 	{
-		Class = "locked";
+		FunctionalClass = "locked";
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
 	else if ( cost == CANT_EVOLVE )
 	{
 
-		Class = "expensive";
+		FunctionalClass = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
 		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
 	else
 	{
-		Class = "available";
-		action =  va( "onClick='Cmd.exec(\"class %s\") Events.pushevent(\"hide %s\", event)'", BG_Class( alienClass )->name, rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id );
+		FunctionalClass = "available";
+		action = va( "onClick='Cmd.exec(\"class %s\") Events.pushevent(\"hide %s\", event)'", BG_Class( alienClass )->name, rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id );
 	}
 
-	Rocket_DataFormatterFormattedData( handle, va( "<button class='alienevo %s' alienclass='%s' %s>%s<img src='/%s'/></button>", Class, Info_ValueForKey( data, "2" ), action, Icon, CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon )), false );
+	if ( ( alienClass == PCL_ALIEN_BUILDER0 && BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) && !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) )
+			|| ( alienClass == PCL_ALIEN_BUILDER0_UPG && ( !BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ) ) )
+	{
+		CosmeticClass = "doublegranger";
+	}
+
+	const char *formatted = va( "<button class='alienevo %s %s' %s>%s<img src='/%s'/></button>",
+			FunctionalClass, CosmeticClass, action, Icon,
+			CG_GetShaderNameFromHandle( cg_classes[ alienClass ].classIcon ));
+
+	Rocket_DataFormatterFormattedData( handle, formatted, false );
 }
 
 static void CG_Rocket_DFCMBeacons( int handle, const char *data )
