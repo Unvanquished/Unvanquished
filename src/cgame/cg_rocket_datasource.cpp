@@ -1646,25 +1646,28 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 
 		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
 		{
-			if ( BG_Class( i )->team == TEAM_ALIENS )
+			// We are building the list for alien evolutions
+			if ( BG_Class( i )->team != TEAM_ALIENS )
 			{
-				buf[ 0 ] = '\0';
-				price = BG_CostToEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], i );
-				if( price == CANT_EVOLVE){
-					price = 0;
-				}
-				if( price < 0 ){
-					price *= (( float ) cg.predictedPlayerState.stats[ STAT_HEALTH ] / ( float ) BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->health ) * DEVOLVE_RETURN_FRACTION;
-				}
-				Info_SetValueForKey( buf, "num", va( "%d", i ), false );
-				Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, false );
-				Info_SetValueForKey( buf, "description", BG_Class( i )->info, false );
-				Info_SetValueForKey( buf, "price", va( "%.1f", price / CREDITS_PER_EVO ), false );
-
-				Rocket_DSAddRow( "alienEvolveList", "default", buf );
-
-				rocketInfo.data.alienEvolveList[ rocketInfo.data.alienEvolveListCount++ ] = i;
+				continue;
 			}
+
+			buf[ 0 ] = '\0';
+			price = BG_CostToEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], i );
+			if( price == CANT_EVOLVE){
+				price = 0;
+			}
+			if( price < 0 ){
+				price *= (( float ) cg.predictedPlayerState.stats[ STAT_HEALTH ] / ( float ) BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->health ) * DEVOLVE_RETURN_FRACTION;
+			}
+			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
+			Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, false );
+			Info_SetValueForKey( buf, "description", BG_Class( i )->info, false );
+			Info_SetValueForKey( buf, "price", va( "%.1f", price / CREDITS_PER_EVO ), false );
+
+			Rocket_DSAddRow( "alienEvolveList", "default", buf );
+
+			rocketInfo.data.alienEvolveList[ rocketInfo.data.alienEvolveListCount++ ] = i;
 		}
 	}
 }
@@ -1709,19 +1712,22 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
-			if ( BG_Buildable( i )->team == TEAM_HUMANS )
+			// We are building the human buildable list
+			if ( BG_Buildable( i )->team != TEAM_HUMANS )
 			{
-				buf[ 0 ] = '\0';
-
-				Info_SetValueForKey( buf, "num", va( "%d", i ), false );
-				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
-				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
-				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
-
-				Rocket_DSAddRow( "humanBuildList", "default", buf );
-
-				rocketInfo.data.humanBuildList[ rocketInfo.data.humanBuildListCount++ ] = i;
+				continue;
 			}
+
+			buf[ 0 ] = '\0';
+
+			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
+			Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
+			Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
+			Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
+
+			Rocket_DSAddRow( "humanBuildList", "default", buf );
+
+			rocketInfo.data.humanBuildList[ rocketInfo.data.humanBuildListCount++ ] = i;
 		}
 	}
 }
@@ -1766,19 +1772,21 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
-			if ( BG_Buildable( i )->team == TEAM_ALIENS )
+			if ( BG_Buildable( i )->team != TEAM_ALIENS )
 			{
-				buf[ 0 ] = '\0';
-
-				Info_SetValueForKey( buf, "num", va( "%d", (int) i ), false );
-				Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
-				Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
-				Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
-
-				Rocket_DSAddRow( "alienBuildList", "default", buf );
-
-				rocketInfo.data.alienBuildList[ rocketInfo.data.alienBuildListCount++ ] = i;
+				continue;
 			}
+
+			buf[ 0 ] = '\0';
+
+			Info_SetValueForKey( buf, "num", va( "%d", (int) i ), false );
+			Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
+			Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
+			Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
+
+			Rocket_DSAddRow( "alienBuildList", "default", buf );
+
+			rocketInfo.data.alienBuildList[ rocketInfo.data.alienBuildListCount++ ] = i;
 		}
 	}
 }
