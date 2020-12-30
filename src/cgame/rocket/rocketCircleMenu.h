@@ -313,7 +313,7 @@ public:
 					{
 						if ( GetChild( i ) == button )
 						{
-							parameters.Set( "index", button->GetAttribute< int >( "alienclass", 0 ) );
+							parameters.Set( "index", va( "%d", i - 1 ) );
 							parameters.Set( "datasource", data_source->GetDataSourceName() );
 							parameters.Set( "table", data_table );
 
@@ -340,35 +340,49 @@ protected:
 	{
 		dirty_layout = false;
 
-		int numChildren = 0;
+		int i;
+		int numVisibleChildren = 0;
 		float width, height;
+		Rocket::Core::Element *cancel;
 		Rocket::Core::Element *child;
 		Rocket::Core::Vector2f offset = GetRelativeOffset();
 
 		// First child is the cancel button. It should go in the center.
-		child = GetFirstChild();
-		width = child->GetOffsetWidth();
-		height = child->GetOffsetHeight();
-		child->SetProperty( "position", "absolute" );
-		child->SetProperty( "top", va( "%fpx", offset.y + ( dimensions.y / 2 ) - ( height / 2 ) ) );
-		child->SetProperty( "left", va( "%fpx", offset.x + ( dimensions.x / 2 ) - ( width / 2 ) ) );
+		cancel = GetFirstChild();
+		width = cancel->GetOffsetWidth();
+		height = cancel->GetOffsetHeight();
+		cancel->SetProperty( "position", "absolute" );
+		cancel->SetProperty( "top", va( "%fpx", offset.y + ( dimensions.y / 2 ) - ( height / 2 ) ) );
+		cancel->SetProperty( "left", va( "%fpx", offset.x + ( dimensions.x / 2 ) - ( width / 2 ) ) );
+
+		for ( child = cancel ; child; child = child->GetNextSibling() )
+		{
+			if ( child->IsVisible() )
+			{
+				++numVisibleChildren;
+			}
+		}
 
 		// No other children
-		if ( ( numChildren = GetNumChildren() ) <= 1 )
+		if ( numVisibleChildren <= 1 )
 		{
 			return;
 		}
 
-		float angle = 360.0f / ( numChildren - 1 );
+		float angle = 360.0f / ( numVisibleChildren - 1 );
 
-		// Rest are the circular buttons
-		for ( int i = 1; i < numChildren; ++i )
+		// Place the buttons, skipping the first
+		for ( i = 0, child = cancel->GetNextSibling() ; child; child = child->GetNextSibling() )
 		{
-			child = GetChild( i );
+			if ( !child->IsVisible() )
+			{
+				continue;
+			}
+
 			width = child->GetOffsetWidth();
 			height = child->GetOffsetHeight();
-			float y = sin( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
-			float x = cos( angle * ( i - 1 ) * ( M_PI / 180.0f ) ) * radius;
+			float y = sin( angle * i * ( M_PI / 180.0f ) ) * radius;
+			float x = cos( angle * i * ( M_PI / 180.0f ) ) * radius;
 
 			// This gets 12px on 1920×1080 screen, which is libRocket default for 1em
 			int fontSize = std::min(cgs.glconfig.vidWidth, cgs.glconfig.vidHeight) / 90;
@@ -376,6 +390,8 @@ protected:
 			child->SetProperty( "position", "absolute" );
 			child->SetProperty( "left", va( "%fpx", ( dimensions.x / 2 ) - ( width / 2 ) + offset.x + x * fontSize ) );
 			child->SetProperty( "top", va( "%fpx", ( dimensions.y / 2 ) - ( height / 2 ) + offset.y + y * fontSize ) );
+
+			++i;
 		}
 	}
 
