@@ -1092,6 +1092,7 @@ static void CG_RegisterGraphics()
 	cgs.media.healthCross = trap_R_RegisterShader("ui/assets/neutral/cross", RSF_DEFAULT);
 	cgs.media.healthCross2X = trap_R_RegisterShader("ui/assets/neutral/cross2", RSF_DEFAULT);
 	cgs.media.healthCross3X = trap_R_RegisterShader("ui/assets/neutral/cross3", RSF_DEFAULT);
+	cgs.media.healthCross4X = trap_R_RegisterShader("ui/assets/neutral/cross4", RSF_DEFAULT);
 	cgs.media.healthCrossMedkit = trap_R_RegisterShader("ui/assets/neutral/cross_medkit", RSF_DEFAULT);
 	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison", RSF_DEFAULT);
 
