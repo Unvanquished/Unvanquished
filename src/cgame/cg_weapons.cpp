@@ -2573,8 +2573,8 @@ static void DrawTracer( vec3_t source, vec3_t dest, float chance, float length, 
 	}
 
 	// Guarantee a minimum length of 1/4 * length.
-	begin = random() * Q_clamp( distance - 0.25f * length, TRACER_MIN_DISTANCE, distance );
-	end   = Q_clamp( begin + length, begin, distance );
+	begin = random() * Math::Clamp( distance - 0.25f * length, TRACER_MIN_DISTANCE, distance );
+	end   = Math::Clamp( begin + length, begin, distance );
 
 	VectorMA( source, begin, forward, start );
 	VectorMA( source, end, forward, finish );

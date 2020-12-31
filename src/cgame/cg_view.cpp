@@ -1301,7 +1301,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 
 		dist = trap_CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
 		weight = 1.0f - dist / cgs.gameGradingDistances[i];
-		weight = Q_clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
+		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
 		// search 3 greatest weights
 		if( weight <= selectedWeight[2] )
@@ -1494,7 +1494,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 
 		dist = trap_CM_DistanceToModel( loc, cgs.gameReverbModels[i] );
 		weight = 1.0f - dist / cgs.gameReverbDistances[i];
-		weight = Q_clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
+		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
 		// search 3 greatest weights
 		if( weight <= selectedWeight[2] )
