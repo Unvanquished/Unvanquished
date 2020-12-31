@@ -608,10 +608,10 @@ void CG_Rocket_Frame( cgClientState_t state )
 
 			case connstate_t::CA_ACTIVE:
 				Rocket_DocumentAction( "", "blurall" );
-                break;
+				break;
 
-            default:
-                break;
+			default:
+				break;
 		}
 
 		oldConnState = rocketInfo.cstate.connState;
@@ -744,8 +744,8 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 			return false;
 
-        default:
-            return false;
+		default:
+			return false;
 	}
 
 	return false;

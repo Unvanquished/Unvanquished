@@ -977,11 +977,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_JETPACK_ENABLE:
-      cent->jetpackAnim = JANIM_SLIDEOUT;
+			cent->jetpackAnim = JANIM_SLIDEOUT;
 			break;
 
 		case EV_JETPACK_DISABLE:
-      cent->jetpackAnim = JANIM_SLIDEIN;
+			cent->jetpackAnim = JANIM_SLIDEIN;
 			break;
 
 		case EV_JETPACK_IGNITE:

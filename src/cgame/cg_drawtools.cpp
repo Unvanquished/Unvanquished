@@ -247,7 +247,7 @@ DrawStretchPic seems to reset the scissor
 */
 void CG_EnableScissor( bool enable )
 {
-    trap_R_ScissorEnable(enable);
+	trap_R_ScissorEnable(enable);
 }
 
 /*
@@ -257,8 +257,8 @@ CG_SetScissor
 */
 void CG_SetScissor( int x, int y, int w, int h )
 {
-    //Converts the Y axis
-    trap_R_ScissorSet( x, cgs.glconfig.vidHeight - y - h, w, h );
+	//Converts the Y axis
+	trap_R_ScissorSet( x, cgs.glconfig.vidHeight - y - h, w, h );
 }
 
 /*
@@ -503,7 +503,7 @@ void CG_DrawSphere( const vec3_t center, float radius, int customShader, const C
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-    re.shaderRGBA = shaderRGBA;
+	re.shaderRGBA = shaderRGBA;
 
 	VectorCopy( center, re.origin );
 

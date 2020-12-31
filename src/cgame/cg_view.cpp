@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
 =============================================================================
 
-  MODEL TESTING
+MODEL TESTING
 
 The viewthing and gun positioning tools from Q2 have been integrated and
 enhanced into a single model testing facility.
@@ -1409,7 +1409,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
-        *fadeRate = 0.004;
+		*fadeRate = 0.004;
 	}
 	//no other effects for now
 	else
@@ -1556,43 +1556,44 @@ static void CG_AddReverbEffects( vec3_t loc )
 
 	for(; i < 3; i++ )
 	{
-        totalWeight += selectedWeight[i];
+		totalWeight += selectedWeight[i];
 	}
 
-    if (haveGlobal)
-    {
-        if (totalWeight > 1.0f)
-        {
-            selectedWeight[0] = 0;
-        }
-        else
-        {
-            selectedWeight[0] = 1.0f - totalWeight;
-            totalWeight = 1.0f;
-        }
-    }
+	if (haveGlobal)
+	{
+		if (totalWeight > 1.0f)
+		{
+			selectedWeight[0] = 0;
+		}
+		else
+		{
+			selectedWeight[0] = 1.0f - totalWeight;
+			totalWeight = 1.0f;
+		}
+	}
 
-    if (totalWeight == 0.0f)
-    {
-        for(i = 0; i < 3; i++)
-        {
-            selectedWeight[i] = 0.0f;
-        }
-    }
-    else
-    {
-        for(i = 0; i < 3; i++)
-        {
-            selectedWeight[i] /= totalWeight;
-        }
-    }
+	if (totalWeight == 0.0f)
+	{
+		for(i = 0; i < 3; i++)
+		{
+			selectedWeight[i] = 0.0f;
+		}
+	}
+	else
+	{
+		for(i = 0; i < 3; i++)
+		{
+			selectedWeight[i] /= totalWeight;
+		}
+	}
 
-    for (i = 0; i < 3; i++)
-    {
-        // The mapper defined intensity is between 0 and 2 to have saner defaults (the presets are very strong)
-        trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i] / 2.0f * cgs.gameReverbIntensities[selectedIdx[i]]);
-    }
+	for (i = 0; i < 3; i++)
+	{
+		// The mapper defined intensity is between 0 and 2 to have saner defaults (the presets are very strong)
+		trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i] / 2.0f * cgs.gameReverbIntensities[selectedIdx[i]]);
+	}
 }
+
 /*
 ===============
 CG_StartShadowCaster

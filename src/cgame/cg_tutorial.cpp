@@ -69,17 +69,17 @@ CG_RefreshBindings
 */
 static void CG_RefreshBindings()
 {
-    std::vector<std::string> binds;
+	std::vector<std::string> binds;
 
-    for (unsigned i = 0; i < numBindings; i++) {
-        binds.push_back(bindings[i].command);
-    }
+	for (unsigned i = 0; i < numBindings; i++) {
+		binds.push_back(bindings[i].command);
+	}
 
-    std::vector<std::vector<Keyboard::Key>> keys = trap_Key_GetKeysForBinds(CG_CurrentBindTeam(), binds);
+	std::vector<std::vector<Keyboard::Key>> keys = trap_Key_GetKeysForBinds(CG_CurrentBindTeam(), binds);
 
-    for (unsigned i = 0; i < numBindings; i++) {
-        bindings[i].keys = keys[i];
-    }
+	for (unsigned i = 0; i < numBindings; i++) {
+		bindings[i].keys = keys[i];
+	}
 }
 
 /*

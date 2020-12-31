@@ -462,7 +462,7 @@ Allocate a new particle ejector
 ===============
 */
 static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe,
-    particleSystem_t *parent )
+		particleSystem_t *parent )
 {
 	int               i;
 	particleEjector_t *pe = nullptr;

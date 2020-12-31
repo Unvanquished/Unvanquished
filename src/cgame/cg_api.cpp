@@ -57,7 +57,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                     VM::InitializeProxies(milliseconds);
                     FS::Initialize();
                     srand(time(nullptr));
-					cmdBuffer.Init();
+		    cmdBuffer.Init();
                 });
                 break;
 

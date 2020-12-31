@@ -1406,7 +1406,7 @@ Allocate a new trail beam
 ===============
 */
 static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
-    trailSystem_t *parent )
+		trailSystem_t *parent )
 {
 	int           i;
 	trailBeam_t   *tb = nullptr;

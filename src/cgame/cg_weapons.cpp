@@ -219,14 +219,13 @@ void CG_InitUpgrades()
 	}
 }
 
- /*
+/*
 ============================
 CG_ParseWeaponAnimationFile
 
 Reads the animation.cfg for weapons
 ============================
 */
-
 static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
 {
 	const char         *text_p;
@@ -595,8 +594,8 @@ static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_
 	return false;
 }
 
-bool CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, bool loop, bool reversed,
-    bool clearOrigin )
+bool CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, bool loop,
+		bool reversed, bool clearOrigin )
 {
 	int frameRate;
 

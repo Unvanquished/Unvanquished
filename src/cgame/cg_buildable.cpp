@@ -85,13 +85,13 @@ enum shorthand_t {
 
 // Buildable animation names.
 static const char* shorthandToName[ NUM_SHORTHANDS ] = {
-    nullptr,
+	nullptr,
 
 	"idle",
 	"idle2",
 	"powerdown",
 	"idle_unpowered",
-    "construct",
+	"construct",
 	"construct2",
 	"attack",
 	"attack2",
@@ -542,7 +542,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 }
 
 static bool CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *modelName, int anim, const char *animName,
-    bool loop, bool reversed, bool clearOrigin, bool iqm )
+		bool loop, bool reversed, bool clearOrigin, bool iqm )
 {
 	char filename[ MAX_QPATH ];
 	int  frameRate;
@@ -1065,9 +1065,9 @@ CG_PositionAndOrientateBuildable
 ===============
 */
 static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t inOrigin,
-    const vec3_t normal, const int skipNumber,
-    const vec3_t mins, const vec3_t maxs,
-    vec3_t outAxis[ 3 ], vec3_t outOrigin )
+		const vec3_t normal, const int skipNumber,
+		const vec3_t mins, const vec3_t maxs,
+		vec3_t outAxis[ 3 ], vec3_t outOrigin )
 {
 	vec3_t  forward, end;
 	trace_t tr;
@@ -2127,7 +2127,7 @@ void CG_DrawBuildableStatus()
 	centity_t     *cent;
 	entityState_t *es;
 	int           buildableList[ MAX_ENTITIES_IN_SNAPSHOT ];
-    unsigned      buildables = 0;
+	unsigned      buildables = 0;
 
 	if ( !cg_drawBuildableHealth.integer )
 	{
@@ -2155,7 +2155,7 @@ void CG_DrawBuildableStatus()
 	if ( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK )
 	{
 // 		CG_GhostBuildableStatus( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] );
-        }
+	}
 }
 
 #define BUILDABLE_SOUND_PERIOD 500
