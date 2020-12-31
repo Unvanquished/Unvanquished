@@ -3028,17 +3028,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	CG_FillRect( x, y, w, h, color );
 
 	// draw momentum bar
-	fraction = rawFraction = momentum / MOMENTUM_MAX;
-
-	if ( fraction < 0.0f )
-	{
-		fraction = 0.0f;
-	}
-
-	else if ( fraction > 1.0f )
-	{
-		fraction = 1.0f;
-	}
+	fraction = Math::Clamp( rawFraction = momentum / MOMENTUM_MAX, 0.0f, 1.0f );
 
 	if ( vertical )
 	{

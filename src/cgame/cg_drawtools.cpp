@@ -378,15 +378,13 @@ CG_FadeAlpha
 */
 float CG_FadeAlpha( int startMsec, int totalMsec )
 {
-	float         fade;
-	int           t;
+	float fade = 1.0f;
+	int   t = cg.time - startMsec;
 
 	if ( startMsec == 0 )
 	{
 		return 0;
 	}
-
-	t = cg.time - startMsec;
 
 	if ( t >= totalMsec )
 	{
@@ -396,16 +394,12 @@ float CG_FadeAlpha( int startMsec, int totalMsec )
 	// fade out
 	if ( totalMsec - t < FADE_TIME )
 	{
-		fade = ( totalMsec - t ) * 1.0 / FADE_TIME;
+		fade = static_cast<float>( totalMsec - t ) / FADE_TIME;
 	}
 	// fade in
 	else if ( t < FADE_TIME )
 	{
-		fade = ( t * 1.0f ) / FADE_TIME;
-	}
-	else
-	{
-		fade = 1.0;
+		fade = static_cast<float>(t) / FADE_TIME;
 	}
 
 	return fade;

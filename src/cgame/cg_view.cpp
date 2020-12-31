@@ -94,7 +94,7 @@ void CG_TestModel_f()
 
 	if ( trap_Argc() == 3 )
 	{
-		cg.testModelEntity.backlerp = atof( CG_Argv( 2 ) );
+		cg.testModelEntity.backlerp = static_cast<float>( atof( CG_Argv( 2 ) ) );
 		cg.testModelEntity.frame = 1;
 		cg.testModelEntity.oldframe = 0;
 	}
@@ -371,14 +371,7 @@ void CG_OffsetThirdPersonView()
 		// may not be pitch, so just let it go.
 		if ( surfNormal[ 2 ] > 0.5f || surfNormal[ 2 ] < -0.5f )
 		{
-			if ( rotationAngles[ PITCH ] > 85.0f )
-			{
-				rotationAngles[ PITCH ] = 85.0f;
-			}
-			else if ( rotationAngles[ PITCH ] < -85.0f )
-			{
-				rotationAngles[ PITCH ] = -85.0f;
-			}
+			rotationAngles[ PITCH ] = Math::Clamp( rotationAngles[ PITCH ], -85.0f, 85.0f );
 		}
 
 		// Perform the rotations specified by rotationAngles.
@@ -508,12 +501,8 @@ void CG_OffsetShoulderView()
 
 	// Handle pitch.
 	rotationAngles[ PITCH ] = mousePitch;
-
 	rotationAngles[ PITCH ] = AngleNormalize180( rotationAngles[ PITCH ] + AngleNormalize180( cg.refdefViewAngles[ PITCH ] ) );
-
-	if ( rotationAngles [ PITCH ] < -90.0f ) { rotationAngles [ PITCH ] = -90.0f; }
-
-	if ( rotationAngles [ PITCH ] > 90.0f ) { rotationAngles [ PITCH ] = 90.0f; }
+	rotationAngles[ PITCH ] = Math::Clamp( rotationAngles[ PITCH ], -90.0f, 90.0f );
 
 	// Yaw and Roll are much easier.
 	rotationAngles[ YAW ] = SHORT2ANGLE( cmd.angles[ YAW ] ) + cg.refdefViewAngles[ YAW ];

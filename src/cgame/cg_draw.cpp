@@ -402,13 +402,11 @@ static void CG_PainBlend()
 		                     cg_painBlendDownRate.value;
 	}
 
-	if ( cg.painBlendValue > 1.0f )
+	cg.painBlendValue = Math::Clamp( cg.painBlendValue, 0.0f, 1.0f );
+
+	// no work to do
+	if ( cg.painBlendValue == 0.0f )
 	{
-		cg.painBlendValue = 1.0f;
-	}
-	else if ( cg.painBlendValue <= 0.0f )
-	{
-		cg.painBlendValue = 0.0f;
 		return;
 	}
 
@@ -531,16 +529,13 @@ static void CG_DrawBinaryShadersFinalPhases()
 		return;
 	}
 
-	ss = cg_binaryShaderScreenScale.value;
+	ss = Math::Clamp( cg_binaryShaderScreenScale.value, 0.0f, 1.0f );
 
-	if ( ss <= 0.0f )
+	// no work to do
+	if ( ss == 0.0f )
 	{
 		cg.numBinaryShadersUsed = 0;
 		return;
-	}
-	else if ( ss > 1.0f )
-	{
-		ss = 1.0f;
 	}
 
 	ss = sqrt( ss );
