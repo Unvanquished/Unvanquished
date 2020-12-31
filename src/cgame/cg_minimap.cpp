@@ -575,7 +575,9 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 		ProjectPointOntoRectangleOutwards( pos2d, center, dir, bounds );
 	}
 	else
+	{
 		clamped = false;
+	}
 
 	Color::Color color = b->color;
 	color.SetAlpha( cgs.bc.minimapAlpha );

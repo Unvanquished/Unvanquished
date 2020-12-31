@@ -1571,7 +1571,7 @@ struct cgMedia_t
 	sfxHandle_t timerBeaconExpiredSound;
 
 	qhandle_t   damageIndicatorFont;
-  sfxHandle_t killSound;
+	sfxHandle_t killSound;
 };
 
 struct buildStat_t

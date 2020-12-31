@@ -1296,9 +1296,9 @@ void CG_Rocket_CleanUpHumanSpawnItems( const char* )
 
 enum
 {
-    ROCKETDS_BOTH,
-    ROCKETDS_WEAPONS,
-    ROCKETDS_UPGRADES
+	ROCKETDS_BOTH,
+	ROCKETDS_WEAPONS,
+	ROCKETDS_UPGRADES
 };
 
 void CG_Rocket_CleanUpArmouryBuyList( const char *table )

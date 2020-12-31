@@ -205,7 +205,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			                             origin, angles );
 			break;
 
-        case traceType_t::TT_BISPHERE:
+		case traceType_t::TT_BISPHERE:
 			ASSERT(maxs != nullptr);
 			ASSERT(mins != nullptr);
 			trap_CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,

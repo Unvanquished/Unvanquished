@@ -304,8 +304,8 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	return true;
 }
 
-static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName, int anim, const char *animName,
-                                            bool loop, bool reversed, bool clearOrigin )
+static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName, int anim,
+		const char *animName, bool loop, bool reversed, bool clearOrigin )
 {
 	char filename[ MAX_QPATH ], newModelName[ MAX_QPATH ];
 	int  frameRate;
@@ -1677,7 +1677,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 {
 	bool animChanged = false;
 
-    // see if the animation sequence is switching
+	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
 		CG_SetLerpFrameAnimation( ci, lf, newAnimation, skel );

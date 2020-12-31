@@ -3144,8 +3144,8 @@ static INLINE qhandle_t CG_GetUnlockableIcon( int num )
 		case UNLT_CLASS:
 			return cg_classes[ index ].classIcon;
 
-        default:
-            return 0;
+		default:
+			return 0;
 	}
 }
 
@@ -3159,11 +3159,11 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	team_t    team;
 
 	// display
-	float     x, y, w, h, iw, ih, borderSize;
+	float x, y, w, h, iw, ih, borderSize;
 	bool  vertical;
 
-	int       icons, counts;
-	int       count[ 32 ] = { 0 };
+	int   icons, counts;
+	int   count[ 32 ] = { 0 };
 	struct
 	{
 		qhandle_t shader;

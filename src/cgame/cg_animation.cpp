@@ -121,12 +121,12 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 
 void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, bool animChanged )
 {
-    if (animChanged)
-    {
-        lf->frame = lf->oldFrame = 0;
-        lf->frameTime = lf->oldFrameTime = cg.time;
-    }
-    CG_RunLerpFrame(lf, scale);
+	if (animChanged)
+	{
+		lf->frame = lf->oldFrame = 0;
+		lf->frameTime = lf->oldFrameTime = cg.time;
+	}
+	CG_RunLerpFrame(lf, scale);
 }
 
 /*
