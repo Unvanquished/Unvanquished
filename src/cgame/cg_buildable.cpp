@@ -2326,7 +2326,7 @@ void CG_Buildable( centity_t *cent )
 			// The roll of Bone_barrel is the mgturret's barrel roll.
 			if ( es->modelindex == BA_H_MGTURRET )
 			{
-				roll  = Q_clamp( ( 1.0f / MGTURRET_ATTACK_PERIOD ) *
+				roll = Math::Clamp( ( 1.0f / MGTURRET_ATTACK_PERIOD ) *
 				        120.0f * ( cg.time - cent->muzzleFlashTime ), 0.0f, 120.0f );
 
 				QuatFromAngles( rotation, 0, 0, roll );
