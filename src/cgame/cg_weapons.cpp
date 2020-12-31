@@ -286,7 +286,7 @@ static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi 
 		}
 
 		token = COM_Parse2( &text_p );
-		fps = atof( token );
+		fps = static_cast<float>( atof( token ) );
 
 		if ( fps == 0 )
 		{
@@ -413,16 +413,7 @@ static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_
 				break;
 			}
 
-			index = atoi( token );
-
-			if ( index < 0 )
-			{
-				index = 0;
-			}
-			else if ( index > 3 )
-			{
-				index = 3;
-			}
+			index = Math::Clamp( atoi( token ), 0, 3 );
 
 			token = COM_Parse( text_p );
 
@@ -446,16 +437,7 @@ static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_
 				break;
 			}
 
-			index = atoi( token );
-
-			if ( index < 0 )
-			{
-				index = 0;
-			}
-			else if ( index > 3 )
-			{
-				index = 3;
-			}
+			index = Math::Clamp( atoi( token ), 0, 3 );
 
 			token = COM_Parse( text_p );
 
@@ -483,7 +465,7 @@ static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_
 				break;
 			}
 
-			wim->flashDlight = atof( token );
+			wim->flashDlight = static_cast<float>( atof( token ) );
 
 			continue;
 		}
@@ -496,7 +478,7 @@ static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_
 				break;
 			}
 
-			wim->flashDlightIntensity = atof( token );
+			wim->flashDlightIntensity = static_cast<float>( atof( token ) );
 
 			continue;
 		}
@@ -511,7 +493,7 @@ static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_
 					break;
 				}
 
-				wim->flashDlightColor[ i ] = atof( token );
+				wim->flashDlightColor[ i ] = static_cast<float>( atof( token ) );
 			}
 
 			continue;
@@ -546,16 +528,7 @@ static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_
 				break;
 			}
 
-			index = atoi( token );
-
-			if ( index < 0 )
-			{
-				index = 0;
-			}
-			else if ( index > 3 )
-			{
-				index = 3;
-			}
+			index = Math::Clamp( atoi( token ), 0, 3 );
 
 			token = COM_Parse( text_p );
 
@@ -757,7 +730,6 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				switch( weapon )
 				{
 					case WP_MACHINEGUN:
-						DAEMON_FALLTHROUGH;
 					case WP_SHOTGUN:
 					case WP_MASS_DRIVER:
 					case WP_PULSE_RIFLE:
@@ -791,7 +763,6 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 						break;
 
 					case WP_ALEVEL1:
-						DAEMON_FALLTHROUGH;
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
@@ -823,6 +794,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 													va( "%s_view.iqm:fire6", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK7 ],
 													va( "%s_view.iqm:fire7", token2 ), false, false, false );
+						break;
 				}
 			}
 			else if ( CG_FileExists( va( "%s_view.md5mesh", token2 ) ) &&
@@ -850,7 +822,6 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 				switch( weapon )
 				{
 					case WP_MACHINEGUN:
-						DAEMON_FALLTHROUGH;
 					case WP_SHOTGUN:
 					case WP_MASS_DRIVER:
 					case WP_PULSE_RIFLE:
@@ -885,7 +856,6 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 						break;
 
 					case WP_ALEVEL1:
-						DAEMON_FALLTHROUGH;
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
@@ -917,6 +887,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 									    va( "%s_view_fire6.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK7 ],
 									    va( "%s_view_fire7.md5anim", token2 ), false, false, false );
+						break;
 				}
 			}
 			else
@@ -1094,7 +1065,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 					break;
 				}
 
-				wi->rotation[ i ] = atof( token );
+				wi->rotation[ i ] = static_cast<float>( atof( token ) );
 			}
 
 			continue;
@@ -1110,7 +1081,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 					break;
 				}
 
-				wi->posOffs[ i ] = atof( token );
+				wi->posOffs[ i ] = static_cast<float>( atof( token ) );
 			}
 
 			continue;
@@ -1127,7 +1098,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 
 			if ( token )
 			{
-				wi->scale = atof( token );
+				wi->scale = static_cast<float>( atof( token ) );
 			}
 
 			continue;
@@ -1193,7 +1164,7 @@ void CG_RegisterWeapon( int weaponNum )
 
 	for ( i = 0; i < 3; i++ )
 	{
-		weaponInfo->weaponMidpoint[ i ] = mins[ i ] + 0.5 * ( maxs[ i ] - mins[ i ] );
+		weaponInfo->weaponMidpoint[ i ] = mins[ i ] + 0.5f * ( maxs[ i ] - mins[ i ] );
 	}
 }
 
@@ -1380,9 +1351,9 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	if( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob )
 	{
 		offsets.bob = Vec3(
-			cg.xyspeed * cg.bobfracsin * 0.005,
-			scale * cg.bobfracsin * 0.005,
-			scale * cg.bobfracsin * 0.01 );
+			cg.xyspeed * cg.bobfracsin * 0.005f,
+			scale * cg.bobfracsin * 0.005f,
+			scale * cg.bobfracsin * 0.01f );
 	}
 
 	// weapon inertia
@@ -1442,7 +1413,7 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 CG_MachinegunSpinAngle
 ======================
 */
-#define   SPIN_SPEED 0.9
+#define   SPIN_SPEED 0.9f
 #define   COAST_TIME 1000
 static float CG_MachinegunSpinAngle( centity_t *cent, bool firing )
 {
@@ -1463,7 +1434,7 @@ static float CG_MachinegunSpinAngle( centity_t *cent, bool firing )
 			delta = COAST_TIME;
 		}
 
-		speed = 0.5 * ( SPIN_SPEED + ( float )( COAST_TIME - delta ) / COAST_TIME );
+		speed = 0.5f * ( SPIN_SPEED + ( float )( COAST_TIME - delta ) / COAST_TIME );
 		angle = cent->pe.barrelAngle + delta * speed;
 	}
 
@@ -1790,7 +1761,7 @@ Add the weapon, and flash for the player's view
 
 void CG_AddViewWeapon( playerState_t *ps )
 {
-	static refEntity_t  hand; // static for proper alignment in QVMs
+	refEntity_t  hand;
 	centity_t    *cent;
 	clientInfo_t *ci;
 	float        fovOffset;
@@ -1813,20 +1784,10 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	wi = &cg_weapons[ weapon ];
 
-	switch ( cg_drawGun.integer )
+	if ( !cg_drawGun.integer || BG_Weapon( weapon )->team == TEAM_ALIENS )
 	{
-		case 0:
-			drawGun = false;
-			break;
-
-		case 1:
-			if ( BG_Weapon( weapon )->team == TEAM_ALIENS )
-			{
-				drawGun = false;
-			}
-			break;
+		drawGun = false;
 	}
-
 
 	if ( !wi->registered )
 	{
@@ -1904,10 +1865,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
 	VectorMA( hand.origin, ( cg_gun_x.value + fovOffset + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
-	if( cg_mirrorgun.integer )
-		VectorMA( hand.origin, -( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
-	else
-		VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
+	VectorMA( hand.origin, (cg_mirrorgun.integer ? -1 : 1) * ( cg_gun_y.value + wi->posOffs[ 1 ] ),
+			cg.refdef.viewaxis[ 1 ], hand.origin );
 	VectorMA( hand.origin, ( cg_gun_z.value + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
@@ -2151,7 +2110,7 @@ void CG_DrawItemSelectText()
 
 	alpha = CG_FadeAlpha( cg.weaponSelectTime, WEAPON_SELECT_TIME );
 
-	if ( !alpha )
+	if ( alpha == 0.0f )
 	{
 		Rocket_SetInnerRML( "&nbsp;", false );
 		return;
@@ -2531,55 +2490,61 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 
 	target = &cg_entities[ targetNum ];
 
-	if ( cg_blood.integer && target->currentState.eType == entityType_t::ET_PLAYER )
+	switch ( target->currentState.eType )
 	{
+	case entityType_t::ET_PLAYER:
 		team = cgs.clientinfo[ targetNum ].team;
 
-		if ( team == TEAM_ALIENS )
-		{
-			psHandle = cgs.media.alienBleedPS;
-		}
-		else if ( team == TEAM_HUMANS )
-		{
-			psHandle = cgs.media.humanBleedPS;
-		}
-		else
+		if (!cg_blood.integer)
 		{
 			return;
 		}
-	}
-	else if ( target->currentState.eType == entityType_t::ET_BUILDABLE )
-	{
+
+		switch ( team )
+		{
+		case TEAM_ALIENS:
+			psHandle = cgs.media.alienBuildableBleedPS;
+			break;
+		case TEAM_HUMANS:
+			psHandle = cgs.media.humanBuildableBleedPS;
+			break;
+		default:
+			return;
+		}
+		break;
+
+	case entityType_t::ET_BUILDABLE:
 		team = BG_Buildable( target->currentState.modelindex )->team;
 
-		if ( team == TEAM_ALIENS )
+		switch ( team )
 		{
+		case TEAM_ALIENS:
 			psHandle = cgs.media.alienBuildableBleedPS;
-		}
-		else if ( team == TEAM_HUMANS )
-		{
+			break;
+		case TEAM_HUMANS:
 			psHandle = cgs.media.humanBuildableBleedPS;
-		}
-		else
-		{
+			break;
+		default:
 			return;
 		}
-	}
-	else
-	{
+		break;
+
+	default:
 		return;
 	}
 
 	ps = CG_SpawnNewParticleSystem( psHandle );
 
-	if ( CG_IsParticleSystemValid( &ps ) )
+	if ( !CG_IsParticleSystemValid( &ps ) )
 	{
-		CG_SetAttachmentPoint( &ps->attachment, origin );
-		CG_SetAttachmentCent( &ps->attachment, &cg_entities[ targetNum ] );
-		CG_AttachToPoint( &ps->attachment );
-
-		CG_SetParticleSystemNormal( ps, normal );
+		return;
 	}
+
+	CG_SetAttachmentPoint( &ps->attachment, origin );
+	CG_SetAttachmentCent( &ps->attachment, &cg_entities[ targetNum ] );
+	CG_AttachToPoint( &ps->attachment );
+
+	CG_SetParticleSystemNormal( ps, normal );
 }
 
 #define TRACER_MIN_DISTANCE 100.0f
@@ -2593,7 +2558,7 @@ static void DrawTracer( vec3_t source, vec3_t dest, float chance, float length, 
 	float      distance, begin, end;
 	vec3_t     start, finish;
 
-	if ( random() >= chance )
+	if ( random() > chance )
 	{
 		return;
 	}
@@ -2966,23 +2931,21 @@ float CG_ChargeProgress()
 	float progress;
 	int   min = 0, max = 0;
 
-	if ( cg.snap->ps.weapon ==  WP_ALEVEL1 )
+	switch ( cg.snap->ps.weapon )
 	{
+	case WP_ALEVEL1:
 		min = 0;
 		max = LEVEL1_POUNCE_COOLDOWN;
-	}
-	else if ( cg.snap->ps.weapon == WP_ALEVEL3 )
-	{
+		break;
+	case WP_ALEVEL3:
 		min = LEVEL3_POUNCE_TIME_MIN;
 		max = LEVEL3_POUNCE_TIME;
-	}
-	else if ( cg.snap->ps.weapon == WP_ALEVEL3_UPG )
-	{
+		break;
+	case WP_ALEVEL3_UPG:
 		min = LEVEL3_POUNCE_TIME_MIN;
 		max = LEVEL3_POUNCE_TIME_UPG;
-	}
-	else if ( cg.snap->ps.weapon == WP_ALEVEL4 )
-	{
+		break;
+	case WP_ALEVEL4:
 		if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_CHARGING )
 		{
 			min = 0;
@@ -2993,19 +2956,20 @@ float CG_ChargeProgress()
 			min = LEVEL4_TRAMPLE_CHARGE_MIN;
 			max = LEVEL4_TRAMPLE_CHARGE_MAX;
 		}
-	}
-	else if ( cg.snap->ps.weapon == WP_LUCIFER_CANNON )
-	{
+		break;
+	case WP_LUCIFER_CANNON:
 		min = LCANNON_CHARGE_TIME_MIN;
 		max = LCANNON_CHARGE_TIME_MAX;
-	}
-	else if ( cg.snap->ps.weapon == WP_ABUILD || cg.snap->ps.weapon == WP_ABUILD2 || cg.snap->ps.weapon == WP_HBUILD )
-	{
+		break;
+	case WP_ABUILD:
+	case WP_ABUILD2:
+	case WP_HBUILD:
 		min = BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE;
 		max = BUILDER_LONG_DECONSTRUCT_CHARGE;
+		break;
 	}
 
-	if ( max - min <= 0.0f )
+	if ( max - min <= 0 )
 	{
 		return 0.0f;
 	}
@@ -3013,15 +2977,5 @@ float CG_ChargeProgress()
 	progress = ( ( float ) cg.predictedPlayerState.weaponCharge - min ) /
 	( max - min );
 
-	if ( progress > 1.0f )
-	{
-		return 1.0f;
-	}
-
-	if ( progress < 0.0f )
-	{
-		return 0.0f;
-	}
-
-	return progress;
+	return Math::Clamp( progress, 0.0f, 1.0f );
 }

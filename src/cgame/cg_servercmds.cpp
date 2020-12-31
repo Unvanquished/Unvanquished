@@ -1328,14 +1328,8 @@ static void CG_PmoveParams_f() {
 
 	cg.pmoveParams.synchronous = atoi(arg1);
 	cg.pmoveParams.fixed = atoi(arg2);
-	cg.pmoveParams.msec = atoi(arg3);
+	cg.pmoveParams.msec = Math::Clamp( atoi(arg3), 8, 33 );
 	cg.pmoveParams.accurate = atoi(arg4);
-
-	if (cg.pmoveParams.msec < 8) {
-		cg.pmoveParams.msec = 8;
-	} else if (cg.pmoveParams.msec > 33) {
-		cg.pmoveParams.msec = 33;
-	}
 }
 
 static const consoleCommand_t svcommands[] =

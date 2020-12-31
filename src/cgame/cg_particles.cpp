@@ -2170,16 +2170,7 @@ static float CG_CalculateTimeFrac( int birth, int life, int delay )
 
 	frac = ( ( float ) cg.time - ( float )( birth + delay ) ) / ( float )( life - delay );
 
-	if ( frac < 0.0f )
-	{
-		frac = 0.0f;
-	}
-	else if ( frac > 1.0f )
-	{
-		frac = 1.0f;
-	}
-
-	return frac;
+	return Math::Clamp( frac, 0.0f, 1.0f );
 }
 
 /*
@@ -2295,14 +2286,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 		float r2 = DotProduct( acceleration, acceleration );  // = radius^2
 		float scale = ( MAX_ACC_RADIUS - r2 ) / MAX_ACC_RADIUS;
 
-		if ( scale > 1.0f )
-		{
-			scale = 1.0f;
-		}
-		else if ( scale < 0.1f )
-		{
-			scale = 0.1f;
-		}
+		scale = Math::Clamp( scale, 0.1f, 1.0f );
 
 		scale *= CG_RandomiseValue( bp->accMoveValues.mag, bp->accMoveValues.magRandFrac );
 

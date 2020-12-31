@@ -1612,14 +1612,7 @@ static Color::Color HealthColorFade( float healthFrac, buildStat_t *bs )
 {
 	float frac;
 
-	if ( healthFrac > 1.0f )
-	{
-		healthFrac = 1.0f;
-	}
-	else if ( healthFrac < 0.0f )
-	{
-		healthFrac = 0.0f;
-	}
+	healthFrac = Math::Clamp( healthFrac, 0.0f, 1.0f );
 
 	if ( healthFrac == 1.0f )
 	{
@@ -1648,14 +1641,7 @@ static Color::Color HealthColorFade( float healthFrac, buildStat_t *bs )
 
 static Color::Color DepletionColorFade( float frac, buildStat_t *bs )
 {
-	if ( frac > 1.0f )
-	{
-		frac = 1.0f;
-	}
-	else if ( frac < 0.0f )
-	{
-		frac = 0.0f;
-	}
+	frac = Math::Clamp( frac, 0.0f, 1.0f );
 
 	frac = frac * 0.6f + 0.4f;
 
@@ -1673,7 +1659,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthFrac, mineEfficiencyFrac = 0;
+	float         healthFrac, mineEfficiencyFrac = 0.0f;
 	int           health;
 	float         x, y;
 	bool          powered, marked, showMineEfficiency;
@@ -1813,7 +1799,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	{
 		if ( cent->buildableStatus.lastTime + STATUS_FADE_TIME > cg.time )
 		{
-			color.SetAlpha( ( float )( cg.time - cent->buildableStatus.lastTime ) / STATUS_FADE_TIME );
+			color.SetAlpha( static_cast<float>( cg.time - cent->buildableStatus.lastTime ) / STATUS_FADE_TIME );
 		}
 	}
 
@@ -1822,7 +1808,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	{
 		if ( cent->buildableStatus.lastTime + STATUS_FADE_TIME > cg.time )
 		{
-			color.SetAlpha( 1.0f - ( float )( cg.time - cent->buildableStatus.lastTime ) / STATUS_FADE_TIME );
+			color.SetAlpha( 1.0f - static_cast<float>( cg.time - cent->buildableStatus.lastTime ) / STATUS_FADE_TIME );
 		}
 		else
 		{
@@ -1836,34 +1822,20 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	// calculate mine efficiency bar size
 	if ( showMineEfficiency )
 	{
-		mineEfficiencyFrac = (float)es->weaponAnim / 255.0f;
+		mineEfficiencyFrac = static_cast<float>(es->weaponAnim) / 255.0f;
 
-		if ( mineEfficiencyFrac < 0.0f )
-		{
-			mineEfficiencyFrac = 0.0f;
-		}
-		else if ( mineEfficiencyFrac > 1.0f )
-		{
-			mineEfficiencyFrac = 1.0f;
-		}
+		mineEfficiencyFrac = Math::Clamp( mineEfficiencyFrac, 0.0f, 1.0f );
 	}
 
 	// calculate health bar size
 	{
 		health     = es->generic1;
-		healthFrac = (float)health / (float)attr->health;
+		healthFrac = static_cast<float>(health) / static_cast<float>(attr->health);
+		healthFrac = Math::Clamp( healthFrac, 0.0f, 1.0f );
 
-		if ( health > 0 && healthFrac < 0.01f )
+		if ( health > 0.0f && healthFrac < 0.01f )
 		{
 			healthFrac = 0.01f;
-		}
-		else if ( healthFrac < 0.0f )
-		{
-			healthFrac = 0.0f;
-		}
-		else if ( healthFrac > 1.0f )
-		{
-			healthFrac = 1.0f;
 		}
 	}
 
@@ -2261,14 +2233,15 @@ void CG_Buildable( centity_t *cent )
 	{
 		sfxHandle_t prebuildSound = cgs.media.humanBuildablePrebuild;
 
-		if ( team == TEAM_HUMANS )
+		switch ( team )
 		{
+		case TEAM_HUMANS:
 			ent.customShader = cgs.media.humanSpawningShader;
 			prebuildSound = cgs.media.humanBuildablePrebuild;
-		}
-		else if ( team == TEAM_ALIENS )
-		{
+			break;
+		case TEAM_ALIENS:
 			prebuildSound = cgs.media.alienBuildablePrebuild;
+			break;
 		}
 
 		trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, prebuildSound );
@@ -2327,7 +2300,7 @@ void CG_Buildable( centity_t *cent )
 		bool  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
 		float realScale = spawned ? scale :
-			scale * (float) sin ( 0.5f * (cg.time - es->time) / ba->buildTime * M_PI );
+			scale * static_cast<float>( sin( (cg.time - es->time) / ba->buildTime * M_PI/2.0f ) );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )

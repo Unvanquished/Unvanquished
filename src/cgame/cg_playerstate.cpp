@@ -122,26 +122,8 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 		cg.damageY = up / dist;
 	}
 
-	// clamp the position
-	if ( cg.damageX > 1.0 )
-	{
-		cg.damageX = 1.0;
-	}
-
-	if ( cg.damageX < -1.0 )
-	{
-		cg.damageX = -1.0;
-	}
-
-	if ( cg.damageY > 1.0 )
-	{
-		cg.damageY = 1.0;
-	}
-
-	if ( cg.damageY < -1.0 )
-	{
-		cg.damageY = -1.0;
-	}
+	cg.damageX = Math::Clamp( cg.damageX, -1.0f, 1.0f );
+	cg.damageY = Math::Clamp( cg.damageY, -1.0f, 1.0f );
 
 	// don't let the screen flashes vary as much
 	if ( kick > 10 )

@@ -897,14 +897,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 					cg.stepChange = oldStep + step;
 				}
 
-				if ( cg.stepChange > MAX_STEP_CHANGE )
-				{
-					cg.stepChange = MAX_STEP_CHANGE;
-				}
-				else if ( cg.stepChange < -MAX_STEP_CHANGE )
-				{
-					cg.stepChange = -MAX_STEP_CHANGE;
-				}
+				cg.stepChange = Math::Clamp( cg.stepChange, -MAX_STEP_CHANGE, +MAX_STEP_CHANGE );
 
 				cg.stepTime = cg.time;
 				break;
