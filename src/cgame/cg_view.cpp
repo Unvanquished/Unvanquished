@@ -881,7 +881,7 @@ static int CG_CalcFov()
 	float     zoomFov;
 	float     f;
 	int       inwater;
-	int       attribFov;
+	float     attribFov;
 	usercmd_t cmd;
 	usercmd_t oldcmd;
 	int       cmdNum;
@@ -926,32 +926,16 @@ static int CG_CalcFov()
 	else
 	{
 		// don't lock the fov globally - we need to be able to change it
-		if ( ( attribFov = trap_Cvar_VariableIntegerValue( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fovCvar ) ) )
+		if ( ( attribFov = trap_Cvar_VariableValue( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fovCvar ) ) != 0.0f )
 		{
-			if ( attribFov < 80 )
-			{
-				attribFov = 80;
-			}
-			else if ( attribFov >= 140 )
-			{
-				attribFov = 140;
-			}
+			attribFov = Math::Clamp( attribFov, 80.0f, 140.0f );
 		}
 		else
 		{
 			attribFov = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fov;
 		}
 		attribFov *= 0.75;
-		fov_y = attribFov;
-
-		if ( fov_y < 1.0f )
-		{
-			fov_y = 1.0f;
-		}
-		else if ( fov_y > MAX_FOV_Y )
-		{
-			fov_y = MAX_FOV_Y;
-		}
+		fov_y = Math::Clamp( attribFov, 1.0f, MAX_FOV_Y );
 
 		if ( cg.spawnTime > ( cg.time - FOVWARPTIME ) &&
 		     BG_ClassHasAbility( cg.predictedPlayerState.stats[ STAT_CLASS ], SCA_FOVWARPS ) )
@@ -963,15 +947,7 @@ static int CG_CalcFov()
 
 		// account for zooms
 		zoomFov = BG_Weapon( cg.predictedPlayerState.weapon )->zoomFov * 0.75f;
-
-		if ( zoomFov < 1.0f )
-		{
-			zoomFov = 1.0f;
-		}
-		else if ( zoomFov > attribFov )
-		{
-			zoomFov = attribFov;
-		}
+		zoomFov = Math::Clamp( zoomFov, 1.0f, attribFov );
 
 		// only do all the zoom stuff if the client CAN zoom
 		// FIXME: zoom control is currently hard coded to WBUTTON_ATTACK2
