@@ -609,7 +609,7 @@ void HMedistat_Think( gentity_t *self )
 	}
 
 	// clear target on power loss
-	if ( !self->powered )
+	if ( !self->powered || Entities::IsDead(self) )
 	{
 		self->medistationIsHealing = false;
 		self->target = nullptr;
