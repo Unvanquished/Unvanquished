@@ -453,55 +453,13 @@ static void SpawnCorpse( gentity_t *ent )
 	body->think = BodySink;
 	body->nextthink = level.time + 20000;
 
-	body->s.legsAnim = ent->s.legsAnim;
-
-	if ( !body->nonSegModel )
-	{
-		switch ( body->s.legsAnim & ~ANIM_TOGGLEBIT )
-		{
-			case BOTH_DEATH1:
-			case BOTH_DEAD1:
-				body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD1;
-				break;
-
-			case BOTH_DEATH2:
-			case BOTH_DEAD2:
-				body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD2;
-				break;
-
-			case BOTH_DEATH3:
-			case BOTH_DEAD3:
-			default:
-				body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD3;
-				break;
-		}
-	}
-	else
-	{
-		switch ( body->s.legsAnim & ~ANIM_TOGGLEBIT )
-		{
-			case NSPA_DEATH1:
-			case NSPA_DEAD1:
-				body->s.legsAnim = NSPA_DEAD1;
-				break;
-
-			case NSPA_DEATH2:
-			case NSPA_DEAD2:
-				body->s.legsAnim = NSPA_DEAD2;
-				break;
-
-			case NSPA_DEATH3:
-			case NSPA_DEAD3:
-			default:
-				body->s.legsAnim = NSPA_DEAD3;
-				break;
-		}
-	}
+	body->s.torsoAnim = body->s.legsAnim = ent->s.legsAnim;
 
 	//change body dimensions
 	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, nullptr, nullptr, body->r.mins, body->r.maxs );
 
 	//drop down to match the *model* origins of ent and body
+	// FIXME: find some way to handle when DEATH2 and DEATH3 need a different min
 	origin[2] += mins[ 2 ] - body->r.mins[ 2 ];
 
 	G_SetOrigin( body, origin );
