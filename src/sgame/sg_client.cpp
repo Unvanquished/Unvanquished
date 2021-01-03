@@ -1610,7 +1610,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
 
-	ClientSpawnCBSE(ent, ent == spawn);
+	bool evolving = ent == spawn;
+	ClientSpawnCBSE(ent, evolving);
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -1701,6 +1702,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	saved = client->pers;
 	savedSess = client->sess;
 	savedPing = client->ps.ping;
+	int savedWeaponTime = client->ps.weaponTime;
 	savedNoclip = client->noclip;
 	savedCliprcontents = client->cliprcontents;
 
@@ -1715,6 +1717,14 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->pers = saved;
 	client->sess = savedSess;
 	client->ps.ping = savedPing;
+	if (evolving)
+	{
+		client->ps.weaponTime = savedWeaponTime;
+	}
+	else
+	{
+		client->pers.devolveReturningCredits = 0;
+	}
 	client->noclip = savedNoclip;
 	client->cliprcontents = savedCliprcontents;
 
@@ -1754,9 +1764,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// calculate each client's acceleration
 	ent->evaluateAcceleration = true;
 
-	client->ps.stats[ STAT_MISC ] = 0;
-	client->ps.weaponTime = 0;
-
 	client->ps.eFlags = flags;
 	client->ps.clientNum = index;
 
@@ -1781,10 +1788,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	maxClips = BG_Weapon( weapon )->maxClips;
 	client->ps.stats[ STAT_WEAPON ] = weapon;
 	client->ps.ammo = maxAmmo;
-	if( ent->client->pers.classSelection == PCL_ALIEN_LEVEL3_UPG )
-	{
-		client->ps.ammo = 1;
-	}
 	client->ps.clips = maxClips;
 
 	// We just spawned, not changing weapons
@@ -1792,13 +1795,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	client->ps.persistant[ PERS_TEAM ] = client->pers.team;
 
-	// TODO: Check whether stats can be cleared at once instead of per field
 	client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 	client->ps.stats[ STAT_FUEL ]    = JETPACK_FUEL_MAX;
 	client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
-	client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-	client->ps.stats[ STAT_PREDICTION ] = 0;
-	client->ps.stats[ STAT_STATE ] = 0;
 
 	VectorSet( client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 
@@ -1917,7 +1916,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
-	client->ps.commandTime = level.time - 100;
+	// use smaller move duration when evolving to prevent cheats such as
+	// evolving several times to run down the attack cooldown
+	client->ps.commandTime = level.time - (evolving ? 1 : 100);
 	ent->client->pers.cmd.serverTime = level.time;
 	ClientThink( ent - g_entities );
 

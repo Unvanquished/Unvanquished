@@ -2427,10 +2427,13 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 					}
 
 					if ( cost < 0 ){
-						 cost = cost * ent->client->pers.evolveHealthFraction * DEVOLVE_RETURN_RATE;
+						ent->client->pers.devolveReturningCredits -= cost * DEVOLVE_RETURN_FRACTION * ent->client->pers.evolveHealthFraction;
 					}
-					//remove credit
-					G_AddCreditToClient( ent->client, -cost, true );
+					else
+					{
+						//remove credit
+						G_AddCreditToClient( ent->client, -cost, true );
+					}
 					ent->client->pers.classSelection = newClass;
 					ClientUserinfoChanged( clientNum, false );
 					VectorCopy( infestOrigin, ent->s.pos.trBase );
