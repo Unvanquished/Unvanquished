@@ -2299,8 +2299,8 @@ void CG_Buildable( centity_t *cent )
 		// If buildable has spawned or is a human buildable, don't alter the size
 		bool  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
-		float realScale = spawned ? scale :
-			scale * static_cast<float>( sin( (cg.time - es->time) / ba->buildTime * M_PI/2.0f ) );
+		float adjustScale = spawned ? 1.0f :
+			static_cast<float>( sin( (cg.time - es->time) / ba->buildTime * M_PI/2.0f ) );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )
@@ -2406,7 +2406,7 @@ void CG_Buildable( centity_t *cent )
 			QuatMultiply2( ent.skeleton.bones[ 38 ].t.rot, rotation );
 		}
 
-		CG_TransformSkeleton( &ent.skeleton, realScale );
+		CG_TransformSkeleton( &ent.skeleton, adjustScale );
 	}
 
 	if ( es->generic1 <= 0 )
