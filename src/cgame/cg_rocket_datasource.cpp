@@ -1661,7 +1661,13 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 			Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, false );
 			Info_SetValueForKey( buf, "description", BG_Class( i )->info, false );
-			Info_SetValueForKey( buf, "price", va( "%.1f", price / CREDITS_PER_EVO ), false );
+			if (price >= 0.0f) {
+				Info_SetValueForKey( buf, "price", va( "Price: %.1f", price / CREDITS_PER_EVO ), false );
+			}
+			else
+			{
+				Info_SetValueForKey( buf, "price", va( "Returned: %.1f", -price / CREDITS_PER_EVO ), false );
+			}
 
 			Rocket_DSAddRow( "alienEvolveList", "default", buf );
 
