@@ -408,7 +408,7 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	const char *CosmeticClass = "";
 	const char *Icon = "";
 	const char *action = "";
-	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ] );
+	evolveInfo_t info = BG_ClassEvolveInfoFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass );
 
 	if( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
 	{
@@ -416,13 +416,13 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		//Check mark icon. UTF-8 encoding of \uf00c
 		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
-	else if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) )
+	else if ( !info.classIsUnlocked )
 	{
 		FunctionalClass = "locked";
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if ( cost == CANT_EVOLVE )
+	else if ( cg.predictedPlayerState.persistant[ PERS_CREDIT ] < info.evolveCost )
 	{
 
 		FunctionalClass = "expensive";

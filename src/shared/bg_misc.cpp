@@ -412,63 +412,68 @@ bool BG_ClassHasAbility( int pClass, int ability )
 
 /*
 ==============
-BG_CostToEvolve
+BG_ClassCanEvolveFromTo
+
+Returns if an evolution is possible (unlocked), and how much
+it would cost. Note that you still need to check if you want
+to allow devolving, or if you can afford the upgrade.
 ==============
 */
-int BG_CostToEvolve( int from, int to )
+evolveInfo_t BG_ClassEvolveInfoFromTo( const int from, const int to )
 {
+	bool classIsUnlocked;
+	bool isDevolving;
 	int fromCost, toCost;
+	int evolveCost;
 
 	if ( from == to ||
-			 from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
-			 to <= PCL_NONE || to >= PCL_NUM_CLASSES )
+	     from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
+	     to <= PCL_NONE || to >= PCL_NUM_CLASSES )
 	{
-		return CANT_EVOLVE;
+		return { false, false, 0 };
 	}
+
+	classIsUnlocked = BG_ClassUnlocked( to )
+		&& !BG_ClassDisabled( to );
 
 	fromCost = BG_Class( from )->cost;
 	toCost = BG_Class( to )->cost;
 
+	evolveCost = toCost - fromCost;
 
-	return toCost - fromCost;
-}
-
-/*
-==============
-BG_ClassCanEvolveFromTo
-==============
-*/
-int BG_ClassCanEvolveFromTo( int from, int to, int credits )
-{
-	int evolveCost;
-
-	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
+	isDevolving = evolveCost <= 0;
+	// exception for peolpe evolving to dretch
+	if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) && to == PCL_ALIEN_LEVEL0 ) {
+		isDevolving = false;
+	}
+	// and to adv granger
+	if ( from == PCL_ALIEN_BUILDER0 && to == PCL_ALIEN_BUILDER0_UPG )
 	{
-		return CANT_EVOLVE;
+		isDevolving = false;
 	}
 
-	evolveCost = BG_CostToEvolve( from, to );
-
-	if ( credits < evolveCost )
-	{
-		return CANT_EVOLVE;
-	}
-
-	return evolveCost;
+	return { classIsUnlocked, isDevolving, evolveCost };
 }
 
 /*
 ==============
 BG_AlienCanEvolve
+
+answers true if the alien can evolve to any other form.
+
+FIXME: this function will always return true because it will notice you can
+       devolve to dretch or granger, even when far from the overmind
 ==============
 */
 bool BG_AlienCanEvolve( int from, int credits )
 {
 	int to;
+	evolveInfo_t info;
 
 	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( from, to, credits ) != CANT_EVOLVE )
+		info = BG_ClassEvolveInfoFromTo( from, to );
+		if ( info.classIsUnlocked && credits >= info.evolveCost )
 		{
 			return true;
 		}
