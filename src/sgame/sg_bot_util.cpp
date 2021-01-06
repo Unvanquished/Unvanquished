@@ -241,8 +241,11 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
-	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass,
-	                                  self->client->ps.persistant[PERS_CREDIT] ) >= 1 );
+	int fromClass = self->client->ps.stats[STAT_CLASS];
+	evolveInfo_t info = BG_ClassEvolveInfoFromTo( fromClass, newClass );
+
+	return info.classIsUnlocked && info.evolveCost > 0 // no devolving
+		&& self->client->ps.persistant[PERS_CREDIT] >= info.evolveCost;
 }
 
 bool WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
@@ -1703,7 +1706,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 	int i;
 	vec3_t infestOrigin;
 	class_t currentClass = ent->client->pers.classSelection;
-	int numLevels;
+	evolveInfo_t evolveInfo;
 	int entityList[ MAX_GENTITIES ];
 	vec3_t range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
 	vec3_t mins, maxs;
@@ -1746,26 +1749,19 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 			return false;
 		}
 
-		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ] );
+		evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
 
 		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{
 			//...check we can evolve to that class
-			if ( numLevels >= 1 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
+			if ( evolveInfo.classIsUnlocked && evolveInfo.evolveCost > 0 /* no devolving */ &&
+					ent->client->ps.persistant[ PERS_CREDIT ] >= evolveInfo.evolveCost )
 			{
-				ent->client->pers.evolveHealthFraction = Entities::HealthFraction(ent);
-
-				if ( ent->client->pers.evolveHealthFraction < 0.0f )
-				{
-					ent->client->pers.evolveHealthFraction = 0.0f;
-				}
-				else if ( ent->client->pers.evolveHealthFraction > 1.0f )
-				{
-					ent->client->pers.evolveHealthFraction = 1.0f;
-				}
+				ent->client->pers.evolveHealthFraction =
+					Math::Clamp( Entities::HealthFraction(ent), 0.0f, 1.0f );
 
 				//remove credit
-				G_AddCreditToClient( ent->client, -( short )numLevels, true );
+				G_AddCreditToClient( ent->client, -( short )evolveInfo.evolveCost, true );
 				ent->client->pers.classSelection = newClass;
 				BotSetNavmesh( ent, newClass );
 				ClientUserinfoChanged( clientNum, false );

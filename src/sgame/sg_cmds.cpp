@@ -2379,7 +2379,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 		//if we are not currently spectating, we are attempting evolution
 		if ( ent->client->pers.classSelection != PCL_NONE )
 		{
-			int cost;
+			evolveInfo_t evolveInfo;
 
 			//check that we have an overmind
 			if ( !G_ActiveOvermind() )
@@ -2452,14 +2452,13 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				return false;
 			}
 
-			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit );
+			evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
 
 			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 			{
-				if ( cost != CANT_EVOLVE )
+				if ( evolveInfo.classIsUnlocked && ent->client->pers.credit >= evolveInfo.evolveCost )
 				{
-
-					if ( ( cost < 0 || ( cost == 0 && currentClass == PCL_ALIEN_LEVEL0 ) )	&& ( G_DistanceToBase( ent ) >= g_devolveMaxBaseDistance.Get() ) ) {
+					if ( evolveInfo.isDevolving && G_DistanceToBase( ent ) >= g_devolveMaxBaseDistance.Get() ) {
 						if ( report )
 						{
 							G_TriggerMenu( clientNum, MN_A_NOTINBASE );
@@ -2467,24 +2466,18 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 						return false;
 					}
 
-					ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();
+					ent->client->pers.evolveHealthFraction =
+					       Math::Clamp( ent->entity->Get<HealthComponent>()->HealthFraction(), 0.0f, 1.0f );
 
-					if ( ent->client->pers.evolveHealthFraction < 0.0f )
-					{
-						ent->client->pers.evolveHealthFraction = 0.0f;
-					}
-					else if ( ent->client->pers.evolveHealthFraction > 1.0f )
-					{
-						ent->client->pers.evolveHealthFraction = 1.0f;
-					}
-
-					if ( cost < 0 ){
-						ent->client->pers.devolveReturningCredits -= cost * DEVOLVE_RETURN_FRACTION * ent->client->pers.evolveHealthFraction;
+					if ( evolveInfo.evolveCost < 0 ){
+						ent->client->pers.devolveReturningCredits -=
+							evolveInfo.evolveCost * DEVOLVE_RETURN_FRACTION
+								* ent->client->pers.evolveHealthFraction;
 					}
 					else
 					{
 						//remove credit
-						G_AddCreditToClient( ent->client, -cost, true );
+						G_AddCreditToClient( ent->client, -(short)evolveInfo.evolveCost, true );
 					}
 					ent->client->pers.classSelection = newClass;
 					ClientUserinfoChanged( clientNum, false );

@@ -1653,11 +1653,9 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 			}
 
 			buf[ 0 ] = '\0';
-			price = BG_CostToEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ], i );
-			if( price == CANT_EVOLVE){
-				price = 0;
-			}
-			if( price < 0 ){
+			price = static_cast<float>( BG_ClassEvolveInfoFromTo(
+						cg.predictedPlayerState.stats[ STAT_CLASS ], i ).evolveCost );
+			if( price < 0.0f ){
 				price *= (( float ) cg.predictedPlayerState.stats[ STAT_HEALTH ] / ( float ) BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->health ) * DEVOLVE_RETURN_FRACTION;
 			}
 			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
@@ -1680,8 +1678,9 @@ void CG_Rocket_SetAlienEvolveList( const char*, int index )
 void CG_Rocket_ExecAlienEvolveList( const char* )
 {
 	class_t evo = ( class_t ) rocketInfo.data.alienEvolveList[ rocketInfo.data.selectedAlienEvolve ];
+	evolveInfo_t info = BG_ClassEvolveInfoFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo );
 
-	if ( BG_Class( evo ) && BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) >= 0 )
+	if ( BG_Class( evo ) && info.classIsUnlocked && cg.predictedPlayerState.persistant[ PERS_CREDIT ] >= info.evolveCost )
 	{
 		trap_SendClientCommand( va( "class %s", BG_Class( evo )->name ) );
 		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id, "hide" );

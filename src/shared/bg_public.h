@@ -133,6 +133,13 @@ struct playerState_t
 	int           misc[ MAX_MISC ]; // misc data
 };
 
+// the possibility and the cost of evolving to an alien form
+struct evolveInfo_t {
+	bool classIsUnlocked;
+	bool isDevolving;
+	int  evolveCost;
+};
+
 // player teams
 enum team_t
 {
@@ -1128,7 +1135,6 @@ enum buttonNumber_t
 };
 
 #define DEVOLVE_RETURN_FRACTION 0.9f
-#define CANT_EVOLVE -999
 
 //---------------------------------------------------------
 
@@ -1498,8 +1504,7 @@ void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t
 team_t                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
-int                         BG_CostToEvolve(int from, int to);
-int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
+evolveInfo_t            BG_ClassEvolveInfoFromTo(int from, int to);
 bool                    BG_AlienCanEvolve(int from, int credits);
 
 int                       BG_GetBarbRegenerationInterval(const playerState_t& ps);
