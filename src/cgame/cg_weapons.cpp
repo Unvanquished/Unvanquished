@@ -2519,10 +2519,10 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 		switch ( team )
 		{
 		case TEAM_ALIENS:
-			psHandle = cgs.media.alienBuildableBleedPS;
+			psHandle = cgs.media.alienBleedPS;
 			break;
 		case TEAM_HUMANS:
-			psHandle = cgs.media.humanBuildableBleedPS;
+			psHandle = cgs.media.humanBleedPS;
 			break;
 		default:
 			return;
