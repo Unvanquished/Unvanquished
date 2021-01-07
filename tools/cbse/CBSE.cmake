@@ -24,7 +24,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-find_package(Python REQUIRED)
+# Allow overriding the python path with a cached variable.
+set(DAEMON_CBSE_PYTHON_PATH "NOTFOUND" CACHE FILEPATH "")
+if (NOT ${DAEMON_CBSE_PYTHON_PATH})
+    find_package(Python REQUIRED)
+set(DAEMON_CBSE_PYTHON_PATH "${Python_EXECUTABLE}" CACHE FILEPATH "" FORCE)
+endif()
+message(STATUS "Using CBSE Python executable: ${DAEMON_CBSE_PYTHON_PATH}")
 
 function(maybe_add_dep target dep)
     if (TARGET ${target})
@@ -36,7 +42,7 @@ function(CBSE target definition output)
     # Check if python has all the dependencies
     # TODO: Execute pip directly here and install them
     execute_process(
-        COMMAND ${Python_EXECUTABLE} -c "import jinja2, yaml, collections, argparse, sys, os.path, re"
+        COMMAND ${DAEMON_CBSE_PYTHON_PATH} -c "import jinja2, yaml, collections, argparse, sys, os.path, re"
         RESULT_VARIABLE RET)
     if (NOT RET EQUAL 0)
         message(FATAL_ERROR "Missing dependences for CBSE generation. Please ensure you have python ≥ 2, python-yaml, and python-jinja installed.
@@ -59,7 +65,7 @@ function(CBSE target definition output)
                 ${CMAKE_SOURCE_DIR}/src/utils/cbse/templates/Helper.h
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src/utils/cbse
         COMMAND
-                ${Python_EXECUTABLE}
+                ${DAEMON_CBSE_PYTHON_PATH}
                 ${CMAKE_SOURCE_DIR}/src/utils/cbse/CBSE.py
                 -s -o
                 "${output}"
