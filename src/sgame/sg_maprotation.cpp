@@ -1468,15 +1468,13 @@ bool G_MapRotationActive()
 
 /*
 ===============
-G_InitMapRotations
+G_LoadMaprotation
 
-Load and initialise the map rotations
+Load a maprotation file if it exists
 ===============
 */
-void G_InitMapRotations()
+void G_LoadMaprotation( const char *fileName )
 {
-	const char *fileName = "maprotation.cfg";
-
 	// Load the file if it exists
 	if ( trap_FS_FOpenFile( fileName, nullptr, fsMode_t::FS_READ ) )
 	{
@@ -1489,6 +1487,19 @@ void G_InitMapRotations()
 	{
 		Log::Warn( "%s file not found.", fileName );
 	}
+}
+
+/*
+===============
+G_InitMapRotations
+
+Load and initialise the map rotations
+===============
+*/
+void G_InitMapRotations()
+{
+	G_LoadMaprotation( "default/maprotation.cfg" );
+	G_LoadMaprotation( "maprotation.cfg" );
 
 	if ( g_currentMapRotation.integer == NOT_ROTATING )
 	{
