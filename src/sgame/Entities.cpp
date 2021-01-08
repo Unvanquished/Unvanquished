@@ -119,8 +119,9 @@ bool Entities::AntiHumanRadiusDamage(Entity& entity, float amount, float range, 
 	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent& humanClassComponent) {
 		// TODO: Add LocationComponent.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
-		float damage   = amount * (1.0f - distance / range);
+		float damage   = amount * (1.0f - 0.7f * distance / range);
 
+		if (distance > range) return;
 		if (damage <= 0.0f) return;
 		if (!G_IsVisible(entity.oldEnt, other.oldEnt, MASK_SOLID)) return;
 
