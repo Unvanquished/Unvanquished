@@ -3,6 +3,10 @@
 
 static Log::Logger healthLogger("sgame.health");
 
+static Cvar::Cvar<float>  g_friendlyFireAlienMultiplier("g_friendlyFireAlienMultiplier", "Damage multiplier for alien-to-alien damage (doesn't include buildings, or self)", Cvar::NONE, 0.5f);
+static Cvar::Cvar<float>  g_friendlyFireHumanMultiplier("g_friendlyFireHumanMultiplier", "Damage multiplier for human-to-human damage (doesn't include buildings, or self)", Cvar::NONE, 1.0f);
+static Cvar::Cvar<bool>   g_friendlyBuildableFire("g_friendlyBuildableFire", "Can one hurt the team's buildable?", Cvar::NONE, true);
+
 HealthComponent::HealthComponent(Entity& entity, float maxHealth)
 	: HealthComponentBase(entity, maxHealth), health(maxHealth)
 {}
@@ -72,13 +76,12 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		return;
 	}
 
+	float take = amount;
+
 	// Check for protection.
 	if (!(flags & DAMAGE_NO_PROTECTION)) {
 		// Check for protection from friendly damage.
 		if (entity.oldEnt != source && G_OnSameTeam(entity.oldEnt, source)) {
-			// Check if friendly fire has been disabled.
-			if (!g_friendlyFire.integer) return;
-
 			// Never do friendly damage on movement attacks.
 			switch (meansOfDeath) {
 				case MOD_LEVEL3_POUNCE:
@@ -104,6 +107,18 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 
 				return;
 			}
+
+			// reduce team damage according to the team, ignoring buildings.
+			// Note that team damage is reduced only for the *other* members of the
+			// team, otherwise you could simply, say, sit on a grenade and lure
+			// aliens to come to you.
+			if (entity.oldEnt->s.eType != entityType_t::ET_BUILDABLE) {
+				if (G_Team(source) == TEAM_ALIENS) {
+					take *= g_friendlyFireAlienMultiplier.Get();
+				} else {
+					take *= g_friendlyFireHumanMultiplier.Get();
+				}
+			}
 		}
 
 		// Check for protection from friendly buildable damage. Never protect from building actions.
@@ -111,17 +126,21 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		if (entity.oldEnt->s.eType == entityType_t::ET_BUILDABLE && source->client &&
 		    meansOfDeath != MOD_DECONSTRUCT && meansOfDeath != MOD_SUICIDE &&
 		    meansOfDeath != MOD_REPLACE) {
-			if (G_OnSameTeam(entity.oldEnt, source) && !g_friendlyBuildableFire.integer) {
+			if (G_OnSameTeam(entity.oldEnt, source) && !g_friendlyBuildableFire.Get()) {
 				return;
 			}
 		}
 	}
 
-	float take = amount;
-
 	// Apply damage modifiers.
 	if (!(flags & DAMAGE_PURE)) {
 		entity.ApplyDamageModifier(take, location, direction, flags, meansOfDeath);
+	}
+
+	// if we don't actually take damage, stop here
+	if ( take == 0.0f )
+	{
+		return;
 	}
 
 	// Update combat timers.
