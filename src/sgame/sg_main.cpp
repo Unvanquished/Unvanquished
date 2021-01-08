@@ -58,8 +58,6 @@ gclient_t          *g_clients;
 vmCvar_t           g_showHelpOnConnection;
 
 vmCvar_t           g_timelimit;
-vmCvar_t           g_friendlyFire;
-vmCvar_t           g_friendlyBuildableFire;
 vmCvar_t           g_dretchPunt;
 vmCvar_t           g_password;
 vmCvar_t           g_needpass;
@@ -366,8 +364,6 @@ static cvarTable_t gameCvarTable[] =
 
 	// gameplay: basic
 	{ &g_timelimit,                   "timelimit",                     "45",                               CVAR_SERVERINFO,                                 0, true     , nullptr       },
-	{ &g_friendlyFire,                "g_friendlyFire",                "1",                                CVAR_SERVERINFO,                                 0, true     , nullptr       },
-	{ &g_friendlyBuildableFire,       "g_friendlyBuildableFire",       "1",                                CVAR_SERVERINFO,                                 0, true     , nullptr       },
 
 	// gameplay: team balance
 	{ &g_teamForceBalance,            "g_teamForceBalance",            "0",                                0,                                               0, true     , nullptr       },
