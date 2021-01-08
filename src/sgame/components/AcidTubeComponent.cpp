@@ -1,7 +1,7 @@
 #include "AcidTubeComponent.h"
 #include "../Entities.h"
 
-const float AcidTubeComponent::ATTACK_DAMAGE      = 26.7f;
+const float AcidTubeComponent::ATTACK_DAMAGE      = 20.0f;
 const float AcidTubeComponent::ATTACK_RANGE       = ACIDTUBE_RANGE;
 const int   AcidTubeComponent::ATTACK_ANIM_PERIOD = 2000;
 
