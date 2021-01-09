@@ -778,7 +778,7 @@ void Cmd_Noclip_f( gentity_t *ent )
 Cmd_Kill_f
 =================
 */
-void Cmd_Kill_f( gentity_t *ent )
+void Cmd_Killme_f( gentity_t *ent )
 {
 	if ( g_cheats.integer )
 	{
