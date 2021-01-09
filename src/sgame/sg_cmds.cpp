@@ -788,8 +788,8 @@ void Cmd_Kill_f( gentity_t *ent )
 	{
 		if ( ent->suicideTime == 0 )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You will suicide in 20 seconds") "\"" );
-			ent->suicideTime = level.time + 20000;
+			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You will commit suicide in 10 seconds") "\"" );
+			ent->suicideTime = level.time + 10000;
 		}
 		else if ( ent->suicideTime > level.time )
 		{
