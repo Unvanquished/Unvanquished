@@ -31,27 +31,39 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 =================
-CG_SizeUp_f
+SizeUp
 
 Keybinding command
 =================
 */
-static void CG_SizeUp_f()
-{
-	trap_Cvar_Set( "cg_viewsize", va( "%i", std::min( cg_viewsize.integer + 10, 100 ) ) );
-}
+class SizeUpCmd : public Cmd::StaticCmd {
+	public:
+		SizeUpCmd(): StaticCmd("sizeup", Cmd::KEY_BINDING, "Scale up the view size") {
+		}
+
+		virtual void Run(const Cmd::Args&) const override {
+			trap_Cvar_Set( "cg_viewsize", va( "%i", std::min( cg_viewsize.integer + 10, 100 ) ) );
+		}
+};
+static SizeUpCmd sizeUpRegistration;
 
 /*
 =================
-CG_SizeDown_f
+SizeDown
 
 Keybinding command
 =================
 */
-static void CG_SizeDown_f()
-{
-	trap_Cvar_Set( "cg_viewsize", va( "%i", std::max( cg_viewsize.integer - 10, 30 ) ) );
-}
+class SizeDownCmd : public Cmd::StaticCmd {
+	public:
+		SizeDownCmd(): StaticCmd("sizedown", Cmd::KEY_BINDING, "Scale up the view size") {
+		}
+
+		virtual void Run(const Cmd::Args&) const override {
+			trap_Cvar_Set( "cg_viewsize", va( "%i", std::max( cg_viewsize.integer - 10, 30 ) ) );
+		}
+};
+static SizeDownCmd sizeDownRegistration;
 
 /*
 =============
@@ -498,8 +510,6 @@ static const struct
 	{ "sell",             0,                       CG_CompleteSell  },
 	{ "setviewpos",       0,                       0                },
 	{ "showScores",       CG_ShowScores_f,         0                },
-	{ "sizedown",         CG_SizeDown_f,           0                },
-	{ "sizeup",           CG_SizeUp_f,             0                },
 	{ "team",             0,                       0                },
 	{ "teamvote",         0,                       0                },
 	{ "testcgrade",       CG_TestCGrade_f,         0                },
