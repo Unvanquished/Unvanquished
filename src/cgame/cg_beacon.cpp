@@ -537,7 +537,7 @@ static void DrawBeacon( cbeacon_t *b )
 		b->color.SetAlpha( 1.0f );
 
 	// calculate HUD size
-	b->size = Math::Clamp( cgs.bc.hudSize / sqrt( b->dist ),
+	b->size = Math::Clamp( cgs.bc.hudSize / static_cast<float>( sqrt( b->dist ) ),
 			cgs.bc.hudMinSize, cgs.bc.hudMaxSize );
 	b->size *= b->scale;
 
