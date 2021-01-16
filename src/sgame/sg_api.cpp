@@ -45,7 +45,11 @@ int VM::VM_API_VERSION = GAME_API_VERSION;
 
 void VM::VMInit() {
 	// Allocate entities and clients shared memory region
+#if defined(__wasm__)
+    // TODO(WASM): Figure out what to do with shmRegion
+#else
 	shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
+#endif
 	char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
 	g_entities = reinterpret_cast<gentity_t*>(shmBase);
 	g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
