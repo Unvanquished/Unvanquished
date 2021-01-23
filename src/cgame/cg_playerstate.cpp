@@ -257,8 +257,10 @@ void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
 		return;
 	}
 
-	// health changes of more than -1 should make pain sounds
-	if ( ps->stats[ STAT_HEALTH ] < ops->stats[ STAT_HEALTH ] - 1 )
+	// health changes of more than -1 should make pain sounds, unless
+	// we devolved
+	if ( ps->stats[ STAT_HEALTH ] < ops->stats[ STAT_HEALTH ] - 1
+	  && ps->stats[ STAT_CLASS ] == ops->stats[ STAT_CLASS ] )
 	{
 		if ( ps->stats[ STAT_HEALTH ] > 0 )
 		{
