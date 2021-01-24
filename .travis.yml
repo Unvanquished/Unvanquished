@@ -26,11 +26,11 @@ matrix:
       os: linux
       compiler: clang
       env: MODE=2
+  allow_failures:
     - name: "macOS game-native-dll (clang)"
       os: osx
       compiler: clang
       env: MODE=1
-  allow_failures:
     - name: "macOS nacl-nexe (pnacl-clang)"
       os: osx
       compiler: clang
