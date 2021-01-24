@@ -49,5 +49,6 @@ build_script:
   - cmd: cmake --version
   - cmd: call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
   - cmd: cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "NMake Makefiles"
-         -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0 -DBUILD_GAME_NACL=0 -DCMAKE_BUILD_TYPE=Debug -H. -Bbuild
+         -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0 -DBUILD_GAME_NACL=0 -DCMAKE_BUILD_TYPE=Debug
+         -DDAEMON_CBSE_PYTHON_PATH=%PYTHON%\python.exe -H. -Bbuild
   - cmd: cmake --build build
