@@ -427,43 +427,13 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	else if ( gEnt->r.contents & ( CONTENTS_SOLID | CONTENTS_BODY ) )
 	{
 		// assume that x/y are equal and symetric
-		i = gEnt->r.maxs[ 0 ];
-
-		if ( i < 1 )
-		{
-			i = 1;
-		}
-
-		if ( i > 255 )
-		{
-			i = 255;
-		}
+		i = Math::Clamp( gEnt->r.maxs[ 0 ], 1.0f, 255.0f );
 
 		// z is not symetric
-		j = ( -gEnt->r.mins[ 2 ] );
-
-		if ( j < 1 )
-		{
-			j = 1;
-		}
-
-		if ( j > 255 )
-		{
-			j = 255;
-		}
+		j = Math::Clamp( -gEnt->r.mins[ 2 ], 1.0f, 255.0f );
 
 		// and z maxs can be negative...
-		k = ( gEnt->r.maxs[ 2 ] + 32 );
-
-		if ( k < 1 )
-		{
-			k = 1;
-		}
-
-		if ( k > 255 )
-		{
-			k = 255;
-		}
+		k = Math::Clamp( gEnt->r.maxs[ 2 ] + 32.0f, 1.0f, 255.0f );
 
 		gEnt->s.solid = ( k << 16 ) | ( j << 8 ) | i;
 	}
@@ -646,7 +616,9 @@ void G_CM_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 		if ( gcheck->r.absmin[ 0 ] > ap->maxs[ 0 ]
 		     || gcheck->r.absmin[ 1 ] > ap->maxs[ 1 ]
 		     || gcheck->r.absmin[ 2 ] > ap->maxs[ 2 ]
-		     || gcheck->r.absmax[ 0 ] < ap->mins[ 0 ] || gcheck->r.absmax[ 1 ] < ap->mins[ 1 ] || gcheck->r.absmax[ 2 ] < ap->mins[ 2 ] )
+		     || gcheck->r.absmax[ 0 ] < ap->mins[ 0 ]
+		     || gcheck->r.absmax[ 1 ] < ap->mins[ 1 ]
+		     || gcheck->r.absmax[ 2 ] < ap->mins[ 2 ] )
 		{
 			continue;
 		}

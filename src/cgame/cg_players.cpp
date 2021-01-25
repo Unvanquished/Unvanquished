@@ -2417,11 +2417,10 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
-	int           held, publicFlags;
 	entityState_t *es = &cent->currentState;
 
-	held        = es->modelindex;
-	publicFlags = es->modelindex2;
+	int held        = es->modelindex;
+	int publicFlags = es->modelindex2;
 
 	// jetpack model and effects
 	if ( held & ( 1 << UP_JETPACK ) )
