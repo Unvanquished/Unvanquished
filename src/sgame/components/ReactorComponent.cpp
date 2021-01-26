@@ -22,6 +22,9 @@ void ReactorComponent::Think(int timeDelta) {
 		// Respect the no-target flag.
 		if (other.oldEnt->flags & FL_NOTARGET) return;
 
+		// Don't zap through walls
+		if ( !G_LineOfSight( entity.oldEnt, other.oldEnt, MASK_SOLID, false ) ) return;
+
 		// TODO: Add LocationComponent and Utility::BBOXDistance.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 
