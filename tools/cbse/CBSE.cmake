@@ -25,10 +25,10 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Allow overriding the python path with a cached variable.
-set(DAEMON_CBSE_PYTHON_PATH "NOTFOUND" CACHE FILEPATH "")
-if (NOT ${DAEMON_CBSE_PYTHON_PATH})
+set(DAEMON_CBSE_PYTHON_PATH "NOTFOUND" CACHE FILEPATH "Python executable for CBSE code generation")
+if (NOT DAEMON_CBSE_PYTHON_PATH)
     find_package(Python REQUIRED)
-set(DAEMON_CBSE_PYTHON_PATH "${Python_EXECUTABLE}" CACHE FILEPATH "" FORCE)
+    set(DAEMON_CBSE_PYTHON_PATH "${Python_EXECUTABLE}" CACHE FILEPATH "Python executable for CBSE code generation" FORCE)
 endif()
 message(STATUS "Using CBSE Python executable: ${DAEMON_CBSE_PYTHON_PATH}")
 
