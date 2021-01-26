@@ -2144,7 +2144,7 @@ void CG_Buildable( centity_t *cent )
 	vec3_t        angles;
 	vec3_t        surfNormal, xNormal, mins, maxs;
 	vec3_t        refNormal = { 0.0f, 0.0f, 1.0f };
-	float         rotAngle, scale;
+	float         scale;
 	int           health;
 	buildable_t   buildable = (buildable_t)es->modelindex;
 	const buildableAttributes_t  *ba  = BG_Buildable( buildable );
@@ -2432,7 +2432,6 @@ void CG_Buildable( centity_t *cent )
 
 	CrossProduct( surfNormal, refNormal, xNormal );
 	VectorNormalize( xNormal );
-	rotAngle = RAD2DEG( acos( DotProduct( surfNormal, refNormal ) ) );
 
 	// weapon effects
 	if ( es->eFlags & EF_FIRING )
