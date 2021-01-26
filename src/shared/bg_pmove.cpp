@@ -1052,6 +1052,8 @@ static bool PM_CheckPounce()
 /*
 =============
 PM_CheckWallJump
+
+Used by marauders.
 =============
 */
 static bool PM_CheckWallJump()
@@ -1181,6 +1183,8 @@ static bool PM_CheckWallJump()
 /*
 =============
 PM_CheckWallRun
+
+Used by humans.
 =============
 */
 static bool PM_CheckWallRun()
@@ -1194,6 +1198,12 @@ static bool PM_CheckWallRun()
 
 	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLRUNNER ) )
 		return false;
+
+	// can't wallrun when firing jetpack
+	if ( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
+	{
+		return false;
+	}
 
 	if ( pm->ps->pm_flags & PMF_RESPAWNED )
 		return false; // don't allow jump until all buttons are up
