@@ -1214,10 +1214,29 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 	}
 	else if ( isTargetBuildable || targetTeam == TEAM_ALIENS )
 	{
-		//make lucifer cannons aim ahead based on the target's velocity
-		if ( self->client->ps.weapon == WP_LUCIFER_CANNON && self->botMind->botSkill.level >= 5 )
+		//make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
+		if ( self->botMind->botSkill.level >= 5 )
 		{
-			VectorMA( aimLocation, Distance( self->s.origin, aimLocation ) / LCANNON_SPEED, target.ent->s.pos.trDelta, aimLocation );
+			//would be better if it was possible to do self.weapon->speed directly
+			int weapon_speed = 0;
+			switch ( self->client->ps.weapon ) {
+			case WP_BLASTER:
+				weapon_speed = BLASTER_SPEED;
+				break;
+			case WP_FLAMER:
+				weapon_speed = FLAMER_SPEED;
+				break;
+			case WP_PULSE_RIFLE:
+				weapon_speed = PRIFLE_SPEED;
+				break;
+			case WP_LUCIFER_CANNON:
+				weapon_speed = LCANNON_SPEED;
+				break;
+			}
+			if( weapon_speed )
+			{
+				VectorMA( aimLocation, Distance( self->s.origin, aimLocation ) / weapon_speed, target.ent->s.pos.trDelta, aimLocation );
+			}
 		}
 	}
 }
