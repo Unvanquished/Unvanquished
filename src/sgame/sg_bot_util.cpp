@@ -355,14 +355,21 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	usableCapital -= BG_Upgrade( upgrades[numUpgrades] )->price;
 	numUpgrades += upgrades[numUpgrades] == UP_NONE ? 0 : 1;
 
-	if ( BG_UpgradeUnlocked( UP_RADAR )
-			&& ( BG_Upgrade( upgrades[0] )->slots & BG_Upgrade( UP_RADAR )->slots ) == 0
-			&& usableCapital >= BG_Upgrade( UP_RADAR )->price )
+	//TODO this really needs more generic code, but that would require
+	//deeper refactoring (probably move equipments and classes into structs)
+	//and code to make bots _actually_ use other equipments.
+	unsigned int alliesNumbers[MAX_CLIENTS] = {};
+	int nbAllies = FindAllies( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
+	int nbRadars = numTeamUpgrades[UP_RADAR];
+	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / ( 1 + nbAllies ) < 75;
+	if ( teamNeedsRadar && g_bot_radar.integer
+			&& BG_UpgradeUnlocked( UP_RADAR ) && usableCapital >= BG_Upgrade( UP_RADAR )->price
+			&& ( BG_Upgrade( upgrades[0] )->slots & BG_Upgrade( UP_RADAR )->slots ) == 0 )
 	{
 		upgrades[numUpgrades] = UP_RADAR;
+		usableCapital -= BG_Upgrade( upgrades[numUpgrades] )->price;
+		numUpgrades ++;
 	}
-	usableCapital -= BG_Upgrade( upgrades[numUpgrades] )->price;
-	numUpgrades += upgrades[numUpgrades] == UP_NONE ? 0 : 1;
 
 	// manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
 	struct
@@ -1402,12 +1409,13 @@ int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 	int numBots = 0;
 	int i;
 	memset( botEntityNumbers, 0, sizeof( int )*maxBots );
-	for ( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS && numBots < maxBots; i++ )
 	{
 		testEntity = &g_entities[i];
+		// testEntity->r.svFlags => "SVF_NOCLIENT, SVF_BROADCAST, etc..." good thing grep exists!
 		if ( testEntity->r.svFlags & SVF_BOT )
 		{
-			if ( testEntity->client->pers.team == team && numBots < maxBots )
+			if ( testEntity->client->pers.team == team )
 			{
 				botEntityNumbers[numBots++] = i;
 			}
