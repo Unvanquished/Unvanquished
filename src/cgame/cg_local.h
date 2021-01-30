@@ -1960,7 +1960,7 @@ void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float ra
 void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, Color::Color rgba );
 
 #define CG_ExponentialFade( value, target, lambda ) \
-ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001 );
+		ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001f );
 
 //
 // cg_draw.c

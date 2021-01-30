@@ -15,7 +15,7 @@
 
 /** A helper to register component thinkers. */
 #define REGISTER_THINKER(METHOD, SCHEDULER, PERIOD) \
-	GetThinkingComponent().RegisterThinker([this](int i){this->METHOD(i);}, SCHEDULER, PERIOD)
+	GetThinkingComponent().RegisterThinker([this](int i){this->METHOD(i);}, (SCHEDULER), (PERIOD))
 
 // ----------------
 
