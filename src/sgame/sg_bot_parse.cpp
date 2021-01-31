@@ -519,7 +519,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 		{
 			numParams++;
 		}
-		else if ( parse->token.string[ 0 ] != ',' )
+		else if ( parse->token.string[ 0 ] != ',' && parse->token.string[ 0 ] != '-' )
 		{
 			Log::Warn( "Invalid token %s in parameter list on line %d", parse->token.string, parse->token.line );
 			*list = parenEnd->next; // skip invalid function expression
@@ -918,7 +918,7 @@ static const struct AIActionMap_s
 	{ "aimAtGoal",         BotActionAimAtGoal,         0, 0 },
 	{ "alternateStrafe",   BotActionAlternateStrafe,   0, 0 },
 	{ "buy",               BotActionBuy,               1, 4 },
-	{ "changeGoal",        BotActionChangeGoal,        1, 1 },
+	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
 	{ "classDodge",        BotActionClassDodge,        0, 0 },
 	{ "deactivateUpgrade", BotActionDeactivateUpgrade, 1, 1 },
 	{ "equip",             BotActionBuy,               0, 0 },
