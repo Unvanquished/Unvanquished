@@ -621,10 +621,25 @@ AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t* )
 AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
-	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
-	botEntityAndDistance_t e = AIEntityToGentity( self, et );
 
-	if ( !BotChangeGoalEntity( self, e.ent ) )
+	if( a->nparams == 1 )
+	{
+		AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
+		botEntityAndDistance_t e = AIEntityToGentity( self, et );
+		if ( !BotChangeGoalEntity( self, e.ent ) )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+	else if( a->nparams == 3 )
+	{
+		vec3_t pos = { AIUnBoxFloat(a->params[0]), AIUnBoxFloat(a->params[1]), AIUnBoxFloat(a->params[2]) };
+		if ( !BotChangeGoalPos( self, pos ) )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+	else
 	{
 		return STATUS_FAILURE;
 	}
