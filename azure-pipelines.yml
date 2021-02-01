@@ -1,0 +1,23 @@
+pool:
+  vmImage: 'macOS-10.15'
+
+steps:
+- bash: |
+    set -e
+    curl -fsSL https://gitlab.com/illwieckz/git-checkout-modules/raw/master/git-checkout-modules -o ~/git-checkout-modules
+    chmod +x ~/git-checkout-modules
+    SOURCE_BRANCH=$(sed -e 's!^refs/heads/users/[^/]*/!!' <<< "$SOURCE_REF")
+    ~/git-checkout-modules --update "--sub-ref=${TARGET_BRANCH}:has=/sync" "--sub-ref=${SOURCE_BRANCH}:has=/sync" --print
+  env:
+    # For example: "master"
+    TARGET_BRANCH: $(System.PullRequest.TargetBranch)
+    # For example: "refs/heads/users/raisa/new-feature"
+    SOURCE_REF: $(System.PullRequest.SourceBranch)
+  displayName: 'Check out submodules'
+
+- script: |
+    set -e
+    pip3 install -r src/utils/cbse/requirements.txt
+    cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG_OPTIMIZE=0 -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0 -H. -Bbuild
+    cmake --build build -- -j`sysctl -n hw.logicalcpu`
+  displayName: 'Build'
