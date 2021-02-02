@@ -782,7 +782,7 @@ void G_InitDamageLocations()
 }
 
 // TODO: Move to HealthComponent.
-void G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
+void G_SelectiveDamage( gentity_t *targ, gentity_t * /*inflictor*/, gentity_t *attacker,
                         vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team )
 {
 	if ( targ->client && ( team != targ->client->pers.team ) )

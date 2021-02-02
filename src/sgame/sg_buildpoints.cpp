@@ -71,7 +71,7 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
 
 	buildpointLogger.Debug("Predicted efficiency of new miner itself: %f.", delta);
 
-	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
+	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent&) {
 		if (G_Team(miner.oldEnt) != team) return;
 
 		delta += RGSPredictEfficiencyLoss(miner, origin);
@@ -208,7 +208,7 @@ void G_GetTotalBuildableValues(int *buildableValuesByTeam)
 		buildableValuesByTeam[team] = 0;
 	}
 
-	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
+	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent&) {
 		buildableValuesByTeam[G_Team(entity.oldEnt)] += G_BuildableDeconValue(entity.oldEnt);
 	});
 }

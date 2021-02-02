@@ -34,7 +34,7 @@ void MGTurretComponent::HandlePowerDown() {
 	GetTurretComponent().LowerPitch();
 }
 
-void MGTurretComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
+void MGTurretComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	// Lower head.
 	GetTurretComponent().LowerPitch();
 }

@@ -30,8 +30,8 @@ SpikerComponent::SpikerComponent(
 	RegisterSlowThinker();
 }
 
-void SpikerComponent::HandleDamage(float amount, gentity_t *source, Util::optional<Vec3> location,
-                                   Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
+void SpikerComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util::optional<Vec3> /*location*/,
+                                   Util::optional<Vec3> /*direction*/, int /*flags*/, meansOfDeath_t /*meansOfDeath*/) {
 	if (!GetAlienBuildableComponent().GetBuildableComponent().Active()) {
 		return;
 	}
@@ -53,7 +53,7 @@ void SpikerComponent::SetGravityCompensation() {
 	gravityCompensation = -uprightness * sinf(DEG2RAD(0.5f * GRAVITY_COMPENSATION_ANGLE));
 }
 
-void SpikerComponent::Think(int timeDelta) {
+void SpikerComponent::Think(int /*timeDelta*/) {
 	// Don't act if recovering from shot or disabled.
 	if (!GetAlienBuildableComponent().GetBuildableComponent().Active() || level.time < restUntil) {
 		lastExpectedDamage = 0.0f;

@@ -4,8 +4,8 @@ MainBuildableComponent::MainBuildableComponent(Entity& entity, BuildableComponen
 	: MainBuildableComponentBase(entity, r_BuildableComponent)
 {}
 
-void MainBuildableComponent::HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location,
-                                          Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
+void MainBuildableComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util::optional<Vec3> /*location*/,
+                                          Util::optional<Vec3> /*direction*/, int /*flags*/, meansOfDeath_t meansOfDeath) {
 	// Warn the team about an attack.
 	if (G_IsWarnableMOD(meansOfDeath)) {
 		float healthFraction = GetBuildableComponent().GetHealthComponent().HealthFraction();
@@ -26,7 +26,7 @@ void MainBuildableComponent::HandleDamage(float amount, gentity_t* source, Util:
 	}
 }
 
-void MainBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
+void MainBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t meansOfDeath) {
 	G_UpdateBuildPointBudgets();
 
 	if (G_IsWarnableMOD(meansOfDeath)) {

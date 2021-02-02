@@ -8,7 +8,7 @@ HumanBuildableComponent::HumanBuildableComponent(Entity& entity, BuildableCompon
 	: HumanBuildableComponentBase(entity, r_BuildableComponent, r_TeamComponent)
 {}
 
-void HumanBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
+void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	switch (GetBuildableComponent().GetState()) {
 		// Regular death, fully constructed.
 		case BuildableComponent::CONSTRUCTED:
@@ -45,7 +45,7 @@ void HumanBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansO
 	}
 }
 
-void HumanBuildableComponent::Blast(int timeDelta) {
+void HumanBuildableComponent::Blast(int /*timeDelta*/) {
 	float          splashDamage = (float)entity.oldEnt->splashDamage;
 	float          splashRadius = (float)entity.oldEnt->splashRadius;
 	meansOfDeath_t splashMOD    = (meansOfDeath_t)entity.oldEnt->splashMethodOfDeath;

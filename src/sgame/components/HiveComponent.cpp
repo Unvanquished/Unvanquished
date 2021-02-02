@@ -15,8 +15,8 @@ HiveComponent::HiveComponent(Entity& entity, AlienBuildableComponent& r_AlienBui
 }
 
 void HiveComponent::HandleDamage(
-	float amount, gentity_t* source, Util::optional<Vec3> location, Util::optional<Vec3> direction,
-	int flags, meansOfDeath_t meansOfDeath)
+	float /*amount*/, gentity_t* source, Util::optional<Vec3> /*location*/, Util::optional<Vec3> /*direction*/,
+	int /*flags*/, meansOfDeath_t /*meansOfDeath*/)
 {
 	if (!GetAlienBuildableComponent().GetBuildableComponent().Active()) {
 		return;
@@ -29,7 +29,7 @@ void HiveComponent::HandleDamage(
 	}
 }
 
-void HiveComponent::Think(int timeDelta) {
+void HiveComponent::Think(int /*timeDelta*/) {
 	if (insectsActiveSince + ATTACK_PERIOD < level.time) {
 		insectsReady = true;
 	}
@@ -52,7 +52,7 @@ void HiveComponent::Think(int timeDelta) {
 Entity* HiveComponent::FindTarget() {
 	Entity* target = nullptr;
 
-	ForEntities<HumanClassComponent>([&](Entity& candidate, HumanClassComponent& humanClassComponent) {
+	ForEntities<HumanClassComponent>([&](Entity& candidate, HumanClassComponent&) {
 		// Check if target is valid and in sense range.
 		if (!TargetValid(candidate, true)) return;
 

@@ -13,8 +13,8 @@ AlienBuildableComponent::AlienBuildableComponent(Entity& entity, BuildableCompon
 	GetBuildableComponent().REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 500);
 }
 
-void AlienBuildableComponent::HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location,
-                                           Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
+void AlienBuildableComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util::optional<Vec3> /*location*/,
+                                           Util::optional<Vec3> /*direction*/, int /*flags*/, meansOfDeath_t /*meansOfDeath*/) {
 	if (GetBuildableComponent().GetState() != BuildableComponent::CONSTRUCTED) return;
 
 	// TODO: Move animation code to BuildableComponent.
@@ -23,12 +23,12 @@ void AlienBuildableComponent::HandleDamage(float amount, gentity_t* source, Util
 	}
 }
 
-void AlienBuildableComponent::Think(int timeDelta) {
+void AlienBuildableComponent::Think(int /*timeDelta*/) {
 	// TODO: Find an elegant way to access per-buildable configuration.
 	float creepSize = (float)BG_Buildable((buildable_t)entity.oldEnt->s.modelindex)->creepSize;
 
 	// Slow close humans.
-	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent& humanClassComponent) {
+	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent&) {
 		// TODO: Add LocationComponent.
 		if (G_Distance(entity.oldEnt, other.oldEnt) > creepSize) return;
 
@@ -40,7 +40,7 @@ void AlienBuildableComponent::Think(int timeDelta) {
 	});
 }
 
-void AlienBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
+void AlienBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	// Set blast timer.
 	int blastDelay = 0;
 	if (entity.oldEnt->spawned && GetBuildableComponent().GetHealthComponent().Health() /
@@ -55,7 +55,7 @@ void AlienBuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansO
 	GetBuildableComponent().REGISTER_THINKER(Blast, ThinkingComponent::SCHEDULER_BEFORE, blastDelay);
 }
 
-void AlienBuildableComponent::Blast(int timeDelta) {
+void AlienBuildableComponent::Blast(int /*timeDelta*/) {
 	float          splashDamage = (float)entity.oldEnt->splashDamage;
 	float          splashRadius = (float)entity.oldEnt->splashRadius;
 	meansOfDeath_t splashMOD    = (meansOfDeath_t)entity.oldEnt->splashMethodOfDeath;
@@ -77,7 +77,7 @@ void AlienBuildableComponent::Blast(int timeDelta) {
 }
 
 // TODO: Move this to the client side.
-void AlienBuildableComponent::CreepRecede(int timeDelta) {
+void AlienBuildableComponent::CreepRecede(int /*timeDelta*/) {
 	alienBuildableLogger.Debug("Starting creep recede.");
 
 	G_AddEvent(entity.oldEnt, EV_BUILD_DESTROY, 0);
@@ -97,7 +97,7 @@ void AlienBuildableComponent::CreepRecede(int timeDelta) {
 	GetBuildableComponent().GetThinkingComponent().UnregisterActiveThinker();
 }
 
-void AlienBuildableComponent::Remove(int timeDelta) {
+void AlienBuildableComponent::Remove(int /*timeDelta*/) {
 	alienBuildableLogger.Debug("Removing alien buildable.");
 
 	entity.FreeAt(DeferredFreeingComponent::FREE_AFTER_THINKING);
