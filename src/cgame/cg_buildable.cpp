@@ -2225,6 +2225,8 @@ void CG_Buildable( centity_t *cent )
 		case TEAM_ALIENS:
 			prebuildSound = cgs.media.alienBuildablePrebuild;
 			break;
+		default:
+			ASSERT_UNREACHABLE();
 		}
 
 		trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin, prebuildSound );
