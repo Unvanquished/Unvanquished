@@ -2144,18 +2144,18 @@ Find next weapon in inventory.
 */
 weapon_t CG_FindNextWeapon( playerState_t *ps )
 {
-	int currentWeapon = cg.snap->ps.weapon;
+	int currentWeapon = ps->weapon;
 
 	for ( int w = currentWeapon; ++w < WP_NUM_WEAPONS; )
 	{
-		if ( BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		if ( BG_InventoryContainsWeapon( w, ps->stats ) )
 		{
 			return static_cast<weapon_t>(w);
 		}
 	}
 	for ( int w = WP_NONE; ++w < currentWeapon; )
 	{
-		if ( BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		if ( BG_InventoryContainsWeapon( w, ps->stats ) )
 		{
 			return static_cast<weapon_t>(w);
 		}
@@ -2251,18 +2251,18 @@ Find previous weapon in inventory.
 */
 weapon_t CG_FindPrevWeapon( playerState_t *ps )
 {
-	int currentWeapon = cg.snap->ps.weapon;
+	int currentWeapon = ps->weapon;
 
 	for ( int w = currentWeapon; --w > WP_NONE; )
 	{
-		if ( BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		if ( BG_InventoryContainsWeapon( w, ps->stats ) )
 		{
 			return static_cast<weapon_t>(w);
 		}
 	}
 	for ( int w = WP_NUM_WEAPONS; --w > currentWeapon; )
 	{
-		if ( BG_InventoryContainsWeapon( w, cg.snap->ps.stats ) )
+		if ( BG_InventoryContainsWeapon( w, ps->stats ) )
 		{
 			return static_cast<weapon_t>(w);
 		}
