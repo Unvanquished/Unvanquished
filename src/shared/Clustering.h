@@ -30,7 +30,7 @@ namespace Clustering {
 	class EuclideanCluster {
 		public:
 			typedef Math::Vector<Dim, float>                                      point_type;
-			typedef std::pair<Data, point_type>                                   record_type;
+			typedef std::pair<const Data, point_type>                             record_type;
 			typedef typename std::unordered_map<Data, point_type>::const_iterator iter_type;
 
 			EuclideanCluster() = default;
@@ -174,9 +174,9 @@ namespace Clustering {
 			typedef EuclideanCluster<Data, Dim>                      cluster_type;
 			typedef typename EuclideanCluster<Data, Dim>::point_type point_type;
 			typedef Data                                             vertex_type;
-			typedef std::pair<Data, point_type>                      vertex_record_type;
+			typedef std::pair<const Data, point_type>                vertex_record_type;
 			typedef std::pair<Data, Data>                            edge_type;
-			typedef std::pair<float, edge_type>                      edge_record_type;
+			typedef std::pair<const float, edge_type>                edge_record_type;
 			typedef typename std::vector<cluster_type>::iterator     iter_type;
 
 			/**
