@@ -108,7 +108,7 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 	}
 }
 
-void CG_MouseEvent( int dx, int dy )
+void CG_MouseEvent( int /*dx*/, int /*dy*/ )
 {
 }
 

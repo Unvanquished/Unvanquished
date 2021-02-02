@@ -1274,7 +1274,7 @@ CG_MapTorsoToWeaponFrame
 
 =================
 */
-static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, int anim )
+static int CG_MapTorsoToWeaponFrame( int frame, int anim )
 {
 	if ( anim == -1 ) { return 0; }
 
@@ -1757,7 +1757,6 @@ Add the weapon, and flash for the player's view
 void CG_AddViewWeapon( playerState_t *ps )
 {
 	centity_t    *cent;
-	clientInfo_t *ci;
 	float        fovOffset;
 	vec3_t       angles;
 	weaponInfo_t *wi;
@@ -1891,10 +1890,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 	else
 	{
-		// get clientinfo for animation map
-		ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
-		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
+		hand.frame = CG_MapTorsoToWeaponFrame( cent->pe.torso.frame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
+		hand.oldframe = CG_MapTorsoToWeaponFrame( cent->pe.torso.oldFrame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
 		hand.backlerp = cent->pe.torso.backlerp;
 	}
 
