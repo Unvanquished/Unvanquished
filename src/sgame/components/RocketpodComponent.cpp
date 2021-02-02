@@ -59,7 +59,7 @@ void RocketpodComponent::HandlePowerDown() {
 	}
 }
 
-void RocketpodComponent::HandleDie(gentity_t *killer, meansOfDeath_t meansOfDeath) {
+void RocketpodComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	if (safeMode && GetBuildableComponent().GetState() == BuildableComponent::PRE_BLAST) {
 
 		// Overwrite animation set just before in BuildableComponent.
@@ -237,7 +237,7 @@ bool RocketpodComponent::EnemyClose() {
 
 	bool enemyClose = false;
 
-	ForEntities<ClientComponent>([&](Entity& other, ClientComponent& clientComponent) {
+	ForEntities<ClientComponent>([&](Entity& other, ClientComponent&) {
 		if (enemyClose) return;
 
 		if (other.Get<SpectatorComponent>()) return;

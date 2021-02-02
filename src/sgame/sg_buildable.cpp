@@ -48,7 +48,7 @@ bool G_IsWarnableMOD(meansOfDeath_t mod) {
 static gentity_t *FindBuildable(buildable_t buildable) {
 	gentity_t* found = nullptr;
 
-	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
+	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent&) {
 		if (entity.oldEnt->s.modelindex == buildable) {
 			found = entity.oldEnt;
 		}

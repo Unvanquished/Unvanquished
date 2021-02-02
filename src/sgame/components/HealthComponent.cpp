@@ -28,7 +28,7 @@ void HealthComponent::HandlePrepareNetCode() {
 	}
 }
 
-void HealthComponent::HandleHeal(float amount, gentity_t* source) {
+void HealthComponent::HandleHeal(float amount, gentity_t* /*source*/) {
 	if (health <= 0.0f) return;
 	if (health >= maxHealth) return;
 
@@ -248,7 +248,7 @@ void HealthComponent::ScaleDamageAccounts(float healthRestored) {
 	// Get total damage account and remember relevant clients.
 	float totalAccreditedDamage = 0.0f;
 	std::vector<Entity*> relevantClients;
-	ForEntities<ClientComponent>([&](Entity& other, ClientComponent& client) {
+	ForEntities<ClientComponent>([&](Entity& other, ClientComponent&) {
 		float clientDamage = entity.oldEnt->credits[other.oldEnt->s.number].value;
 		if (clientDamage > 0.0f) {
 			totalAccreditedDamage += clientDamage;

@@ -33,7 +33,7 @@ void MiningComponent::HandleFinishConstruction() {
 	G_UpdateBuildPointBudgets();
 }
 
-void MiningComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
+void MiningComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	active = false;
 
 	// Efficiency will be zero from now on.

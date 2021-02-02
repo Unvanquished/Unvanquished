@@ -116,7 +116,7 @@ float Entities::HealthFraction(gentity_t* ent) {
 bool Entities::AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod) {
 	bool hit = false;
 
-	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent& humanClassComponent) {
+	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent&) {
 		// TODO: Add LocationComponent.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 		float damage   = amount * (1.0f - 0.7f * distance / range);
@@ -139,7 +139,7 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 	// FIXME: Only considering entities with HealthComponent.
 	// TODO: Allow ForEntities to iterate over all entities.
 
-	ForEntities<HealthComponent>([&] (Entity& other, HealthComponent& healthComponent) {
+	ForEntities<HealthComponent>([&] (Entity& other, HealthComponent&) {
 		// TODO: Add LocationComponent.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 		float damage   = amount * (1.0f - distance / range);
