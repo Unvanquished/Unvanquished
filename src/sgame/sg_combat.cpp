@@ -150,7 +150,7 @@ void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
  * @param self
  * @param killer
  */
-static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *killer, team_t *team )
+static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t *killer, TeamIndex *team )
 {
 	const gentity_t *assistant = nullptr;
 	float           damage;
@@ -202,18 +202,18 @@ void G_RewardAttackers( gentity_t *self )
 	float     value, share, reward, enemyDamage, damageShare;
 	int       playerNum, maxHealth;
 	gentity_t *player;
-	team_t    ownTeam, playerTeam;
+	TeamIndex    ownTeam, playerTeam;
 
 	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		ownTeam   = (team_t) self->client->pers.team;
+		ownTeam   = (TeamIndex) self->client->pers.team;
 		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
 		value     = BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == entityType_t::ET_BUILDABLE )
 	{
-		ownTeam   = (team_t) self->buildableTeam;
+		ownTeam   = (TeamIndex) self->buildableTeam;
 		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
 
 		if ( self->entity->Get<MainBuildableComponent>() )
@@ -247,7 +247,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player     = &g_entities[ playerNum ];
-		playerTeam = (team_t) player->client->pers.team;
+		playerTeam = (TeamIndex) player->client->pers.team;
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -267,7 +267,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player      = &g_entities[ playerNum ];
-		playerTeam  = (team_t) player->client->pers.team;
+		playerTeam  = (TeamIndex) player->client->pers.team;
 		damageShare = self->credits[ playerNum ].value;
 
 		// Clear reward array
@@ -324,7 +324,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	const gentity_t *assistantEnt;
 	int             assistant = ENTITYNUM_NONE;
 	const char      *assistantName = nullptr;
-	team_t          assistantTeam = TEAM_NONE;
+	TeamIndex          assistantTeam = TI_NONE;
 
 	if ( self->client->ps.pm_type == PM_DEAD )
 	{
@@ -937,7 +937,7 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 }
 
 bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
-                         float radius, gentity_t *ignore, int dflags, int mod, team_t testHit )
+                         float radius, gentity_t *ignore, int dflags, int mod, TeamIndex testHit )
 {
 	float     points, dist;
 	gentity_t *ent;
@@ -1010,7 +1010,7 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 				hitSomething = ent->entity->Damage(points, attacker, Vec3::Load(origin), Vec3::Load(dir),
 				                                   (DAMAGE_NO_LOCDAMAGE | dflags), (meansOfDeath_t)mod);
 			}
-			else if ( G_Team( ent ) == testHit && Entities::IsAlive( ent ) )
+			else if ( G_TeamIndex( ent ) == testHit && Entities::IsAlive( ent ) )
 			{
 				return true;
 			}
@@ -1081,7 +1081,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	if ( actor->client && actor->client->pers.team ==
 	     BG_Buildable( self->s.modelindex )->team )
 	{
-		G_TeamCommand( (team_t) actor->client->pers.team,
+		G_TeamCommand( (TeamIndex) actor->client->pers.team,
 		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$\n") ) :
 						   QQ( N_("$1$ ^3DESTROYED^* by $2$\n") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),

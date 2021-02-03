@@ -182,7 +182,7 @@ static bool LoadExplicitBeacons()
 		beacon->mtime = es->bc_mtime;
 		beacon->type = (beaconType_t)es->bc_type;
 		beacon->data = es->bc_data;
-		beacon->ownerTeam = (team_t)es->bc_team;
+		beacon->ownerTeam = (TeamIndex)es->bc_team;
 		beacon->owner = es->bc_owner;
 		beacon->flags = es->eFlags;
 		beacon->target = es->bc_target;
@@ -222,6 +222,7 @@ static bool LoadExplicitBeacons()
  */
 static bool LoadImplicitBeacons()
 {
+#if 0 //XXX
 	// All alive aliens have enemy sense.
 	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_ALIENS &&
 	     cg.predictedPlayerState.persistant[ PERS_SPECSTATE ] == SPECTATOR_NOT &&
@@ -298,7 +299,7 @@ static bool LoadImplicitBeacons()
 			if( cg.beaconCount >= MAX_CBEACONS ) return false;
 		}
 	}
-
+#endif
 	return true;
 }
 
@@ -385,8 +386,10 @@ static inline bool IsHighlighted( const cbeacon_t *b )
 	return cg.highlightedBeacon == b;
 }
 
-static team_t TargetTeam( const cbeacon_t *beacon )
+static TeamIndex TargetTeam( const cbeacon_t *beacon )
 {
+	return TI_NONE; //XXX
+#if 0
 	if ( beacon->type != BCT_TAG && beacon->type != BCT_BASE )
 		return TEAM_NONE;
 
@@ -395,6 +398,7 @@ static team_t TargetTeam( const cbeacon_t *beacon )
 		return TEAM_HUMANS;
 	else
 		return TEAM_ALIENS;
+#endif
 }
 
 /**
@@ -734,8 +738,8 @@ const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 		return "b->type out of range";
 	}
 
-	team_t ownTeam    = (team_t)cg.predictedPlayerState.persistant[ PERS_TEAM ];
-	team_t beaconTeam = TargetTeam( b );
+	TeamIndex ownTeam    = (TeamIndex)cg.predictedPlayerState.persistant[ PERS_TEAM ];
+	TeamIndex beaconTeam = TargetTeam( b );
 
 	switch( b->type )
 	{

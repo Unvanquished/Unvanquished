@@ -49,7 +49,7 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 	// Note that this->state is adjusted in (Alien|Human)BuildableComponent::HandleDie so they have
 	// access to its current value.
 
-	TeamComponent::team_t team = GetTeamComponent().Team();
+	TeamIndex team = GetTeamComponent().Team();
 
 	// TODO: Move animation code to BuildableComponent.
 	G_SetBuildableAnim(entity.oldEnt, Powered() ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, true);

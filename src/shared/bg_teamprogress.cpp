@@ -41,8 +41,8 @@ struct unlockable_t
 {
 	int      type;
 	int      num;
-	team_t   team;
-	bool     unlocked;
+	TeamType   team;
+	bool     unlocked[NUM_TEAMS];
 	bool     statusKnown;
 	int      unlockThreshold;
 	int      lockThreshold;
@@ -53,7 +53,7 @@ struct unlockable_t
 // ----
 
 bool         unlockablesDataAvailable;
-team_t           unlockablesTeamKnowledge;
+TeamIndex           unlockablesTeamKnowledge;
 
 unlockable_t     unlockables[ NUM_UNLOCKABLES ];
 int              unlockablesMask[ NUM_TEAMS ];
@@ -162,9 +162,9 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 }
 #endif // BUILD_CGAME
 
-static INLINE bool Unlocked( unlockableType_t type, int itemNum )
+static INLINE bool Unlocked( unlockableType_t type, int itemNum, TeamIndex team )
 {
-	return unlockables[ unlockablesTypeOffset[ type ] + itemNum ].unlocked;
+	return unlockables[ unlockablesTypeOffset[ type ] + itemNum ].unlocked[ team ];
 }
 
 static INLINE void CheckStatusKnowledge( unlockableType_t type, int itemNum )
@@ -231,7 +231,7 @@ static float UnlockToLockThreshold( float unlockThreshold )
 void BG_InitUnlockackables()
 {
 	unlockablesDataAvailable = false;
-	unlockablesTeamKnowledge = TEAM_NONE;
+	unlockablesTeamKnowledge = TI_NONE;
 
 	memset( unlockables, 0, sizeof( unlockables ) );
 	memset( unlockablesMask, 0, sizeof( unlockablesMask ) );
@@ -246,12 +246,12 @@ void BG_InitUnlockackables()
 #endif
 }
 
-void BG_ImportUnlockablesFromMask( int team, int mask )
+void BG_ImportUnlockablesFromMask( TeamIndex team, int mask )
 {
 	int              unlockableNum, teamUnlockableNum = 0, itemNum = 0, unlockThreshold;
 	unlockable_t     *unlockable;
 	int unlockableType = 0;
-	team_t           currentTeam;
+	TeamType           currentTeam;
 	bool         newStatus;
 #ifdef BUILD_CGAME
 	int              statusChanges[ NUM_UNLOCKABLES ];
@@ -260,7 +260,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 
 	// maintain a cache to prevent redundant imports
 	static int    lastMask = 0;
-	static team_t lastTeam = TEAM_NONE;
+	static TeamIndex lastTeam = TI_NONE;
 
 	// just import if data is unavailable, cached mask is outdated or team has changed
 	if ( unlockablesDataAvailable && team == lastTeam && mask == lastMask )
@@ -270,7 +270,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 
 	// cache input
 	lastMask = mask;
-	lastTeam = (team_t) team;
+	lastTeam = team;
 
 #ifdef BUILD_CGAME
 	// no status change yet
@@ -327,16 +327,16 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 		if ( !unlockThreshold )
 		{
 			unlockable->statusKnown = true;
-			unlockable->unlocked    = true;
+			unlockable->unlocked[ team ]    = true;
 		}
-		else if ( currentTeam == team )
+		else if ( currentTeam == i2t( team ) )
 		{
 			newStatus = mask & ( 1 << teamUnlockableNum );
 
 #ifdef BUILD_CGAME
 			// notify client about single status change
 			if ( unlockablesTeamKnowledge == team && unlockable->statusKnown &&
-			     unlockable->unlocked != newStatus )
+			     unlockable->unlocked[ team ] != newStatus )
 			{
 				statusChanges[ unlockableNum ] = newStatus ? 1 : -1;
 				statusChangeCount++;
@@ -344,14 +344,14 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 #endif
 
 			unlockable->statusKnown = true;
-			unlockable->unlocked    = newStatus;
+			unlockable->unlocked[ team ]    = newStatus;
 
 			teamUnlockableNum++;
 		}
 		else
 		{
 			unlockable->statusKnown = false;
-			unlockable->unlocked    = false;
+			unlockable->unlocked[ team ]    = false;
 		}
 
 		itemNum++;
@@ -370,13 +370,13 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 
 	// we only know the state for one team
 	unlockablesDataAvailable = true;
-	unlockablesTeamKnowledge = (team_t) team;
+	unlockablesTeamKnowledge = team;
 
 	// save mask for later use
 	unlockablesMask[ team ] = mask;
 }
 
-int BG_UnlockablesMask( int team )
+int BG_UnlockablesMask( TeamIndex team )
 {
 	if ( unlockablesTeamKnowledge != team && unlockablesTeamKnowledge != TEAM_ALL )
 	{
@@ -396,42 +396,42 @@ int BG_UnlockableTypeIndex( int num )
 	return ( (unsigned) num < NUM_UNLOCKABLES ) ? unlockables[ num ].num : 0;
 }
 
-bool BG_WeaponUnlocked( int weapon )
+bool BG_WeaponUnlocked( int weapon, TeamIndex team )
 {
 	CheckStatusKnowledge( UNLT_WEAPON, weapon);
 
-	return Unlocked( UNLT_WEAPON, weapon);
+	return Unlocked( UNLT_WEAPON, weapon, team );
 }
 
-bool BG_UpgradeUnlocked( int upgrade )
+bool BG_UpgradeUnlocked( int upgrade, TeamIndex team )
 {
 	CheckStatusKnowledge( UNLT_UPGRADE, upgrade);
 
-	return Unlocked( UNLT_UPGRADE, upgrade);
+	return Unlocked( UNLT_UPGRADE, upgrade, team );
 }
 
-bool BG_BuildableUnlocked( int buildable )
+bool BG_BuildableUnlocked( int buildable, TeamIndex team )
 {
 	CheckStatusKnowledge( UNLT_BUILDABLE, buildable);
 
-	return Unlocked( UNLT_BUILDABLE, buildable);
+	return Unlocked( UNLT_BUILDABLE, buildable, team );
 }
 
-bool BG_ClassUnlocked( int class_ )
+bool BG_ClassUnlocked( int class_, TeamIndex team )
 {
 	CheckStatusKnowledge( UNLT_CLASS, class_);
 
-	return Unlocked( UNLT_CLASS, class_);
+	return Unlocked( UNLT_CLASS, class_, team );
 }
 
-static int MomentumNextThreshold( int threshold )
+static int MomentumNextThreshold( int threshold, TeamIndex team )
 {
 	int next = 1 << 30;
 	int i;
 
 	for ( i = 0; i < NUM_UNLOCKABLES; ++i )
 	{
-		int thisThreshold = unlockables[ i ].unlocked ? unlockables[ i ].lockThreshold : unlockables[ i ].unlockThreshold;
+		int thisThreshold = unlockables[ i ].unlocked[ team ] ? unlockables[ i ].lockThreshold : unlockables[ i ].unlockThreshold;
 
 		if ( thisThreshold > threshold && thisThreshold < next )
 		{
@@ -442,7 +442,7 @@ static int MomentumNextThreshold( int threshold )
 	return next < ( 1 << 30 ) ? next : 0;
 }
 
-momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, bool *unlocked )
+momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, TeamIndex team, int *threshold, bool *unlocked )
 {
 	static const momentumThresholdIterator_t finished = { -1, 0 };
 
@@ -454,11 +454,11 @@ momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdItera
 	for ( ++unlockableIter.num; unlockableIter.num < NUM_UNLOCKABLES; unlockableIter.num++ )
 	{
 		unlockable_t unlockable = unlockables[ unlockableIter.num ];
-		int          thisThreshold = unlockable.unlocked ? unlockable.lockThreshold : unlockable.unlockThreshold;
+		int          thisThreshold = unlockable.unlocked[ team ] ? unlockable.lockThreshold : unlockable.unlockThreshold;
 
-		if ( unlockable.team == team && unlockable.unlockThreshold && ( !unlockableIter.threshold || unlockableIter.threshold == thisThreshold ) )
+		if ( unlockable.team == i2t( team ) && unlockable.unlockThreshold && ( !unlockableIter.threshold || unlockableIter.threshold == thisThreshold ) )
 		{
-			*unlocked = unlockable.unlocked;
+			*unlocked = unlockable.unlocked[ team ];
 			*threshold = thisThreshold;
 
 			return unlockableIter;
@@ -467,7 +467,7 @@ momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdItera
 
 	if ( unlockableIter.threshold )
 	{
-		unlockableIter.threshold = MomentumNextThreshold( unlockableIter.threshold );
+		unlockableIter.threshold = MomentumNextThreshold( unlockableIter.threshold, team );
 
 		if ( unlockableIter.threshold )
 		{
@@ -487,9 +487,8 @@ momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdItera
 static void UpdateUnlockablesMask()
 {
 	int    unlockable, unlockableNum[ NUM_TEAMS ];
-	int    team;
 
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
+	for ( TeamIndex team: {TT_1, TT_2} )
 	{
 		unlockableNum[ team ] = 0;
 		unlockablesMask[ team ] = 0;
@@ -497,9 +496,11 @@ static void UpdateUnlockablesMask()
 
 	for ( unlockable = 0; unlockable < NUM_UNLOCKABLES; unlockable++ )
 	{
-		if ( unlockables[ unlockable ].unlockThreshold )
+		if ( !unlockables[ unlockable ].unlockThreshold ) continue;
+
+		for (TeamIndex team: {TT_1, TT_2})
 		{
-			team = unlockables[ unlockable ].team;
+			if ( i2t( team ) != unlockables[ unlockable ].team ) continue;
 
 			if ( unlockableNum[ team ] > 15 ) // 16 bit available for transmission
 			{
@@ -511,7 +512,7 @@ static void UpdateUnlockablesMask()
 				Sys::Error( "UpdateUnlockablesMask: Called before G_UpdateUnlockables" );
 			}
 
-			if ( unlockables[ unlockable ].unlocked )
+			if ( unlockables[ unlockable ].unlocked[ team ] )
 			{
 				unlockablesMask[ team ] |= ( 1 << unlockableNum[ team ] );
 			}
@@ -529,7 +530,7 @@ void G_UpdateUnlockables()
 	float            momentum;
 	unlockable_t     *unlockable;
 	int              unlockableType = 0;
-	team_t           team;
+	TeamType           team;
 
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
 	{
@@ -570,7 +571,6 @@ void G_UpdateUnlockables()
 		}
 
 		unlockThreshold = std::max( unlockThreshold, 0 );
-		momentum = level.team[ team ].momentum;
 
 		unlockable->type            = unlockableType;
 		unlockable->num             = itemNum;
@@ -580,10 +580,13 @@ void G_UpdateUnlockables()
 		unlockable->lockThreshold   = UnlockToLockThreshold( unlockThreshold );
 
 		// calculate the item's locking state
-		unlockable->unlocked = (
-		    !unlockThreshold || momentum >= unlockThreshold ||
-		    ( unlockable->unlocked && momentum >= unlockable->lockThreshold )
-		);
+		for (TeamIndex teamIndex: {TI_1, TI_2}) {
+			momentum = level.team[ teamIndex ].momentum;
+			unlockable->unlocked = (
+				!unlockThreshold || momentum >= unlockThreshold ||
+				( unlockable->unlocked && momentum >= unlockable->lockThreshold )
+			);
+		}
 
 		itemNum++;
 
@@ -609,6 +612,6 @@ void G_UpdateUnlockables()
 #ifdef BUILD_CGAME
 void CG_UpdateUnlockables( playerState_t *ps )
 {
-	BG_ImportUnlockablesFromMask( ps->persistant[ PERS_TEAM ], ps->persistant[ PERS_UNLOCKABLES ] );
+	BG_ImportUnlockablesFromMask( (TeamIndex) ps->persistant[ PERS_TEAM ], ps->persistant[ PERS_UNLOCKABLES ] );
 }
 #endif

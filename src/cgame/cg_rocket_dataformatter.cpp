@@ -150,7 +150,7 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 		//Check mark icon. UTF-8 encoding of \uf00c
 		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
-	else if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
+	else if ( !BG_WeaponUnlocked( weapon, (TeamIndex)ps->persistant[ PERS_TEAM ] ) || BG_WeaponDisabled( weapon ) )
 	{
 		Class = "locked";
 		//Padlock icon. UTF-8 encoding of \uf023
@@ -188,7 +188,7 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
 
-	else if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
+	else if ( !BG_UpgradeUnlocked( upgrade, (TeamIndex)ps->persistant[ PERS_TEAM ] ) || BG_UpgradeDisabled( upgrade ) )
 	{
 		Class = "locked";
 		//Padlock icon. UTF-8 encoding of \uf023
@@ -331,7 +331,7 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 	}
 }
 
-static void BuildMenuHelper( int handle, const char *data, team_t team )
+static void BuildMenuHelper( int handle, const char *data, TeamType team )
 {
 	buildable_t buildable = ( buildable_t ) atoi( Info_ValueForKey( data, "1" ) );
 
@@ -345,7 +345,7 @@ static void BuildMenuHelper( int handle, const char *data, team_t team )
 	int queuedBudget    = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
 	int availableBudget = std::max( 0, totalBudet - ((spentBudget - markedBudget) + queuedBudget));
 
-	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
+	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable, (TeamIndex)cg.snap->ps.persistant[ PERS_TEAM ] ) )
 	{
 		Class = "locked";
 		Icon = "<icon>\xEF\x80\xA3</icon>"; // Padlock icon. UTF-8 encoding of \uf023.
@@ -389,9 +389,9 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	const char *Icon = "";
 	const char *action = "";
 	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ] );
-
-	if ( ( alienClass == PCL_ALIEN_BUILDER0 && ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) && !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) ) )||
-			 ( alienClass == PCL_ALIEN_BUILDER0_UPG && ( !BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ) ) )
+	auto team = (TeamIndex)cg.snap->ps.persistant[ PERS_TEAM ];
+	if ( ( alienClass == PCL_ALIEN_BUILDER0 && ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG, team ) && !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) ) )||
+			 ( alienClass == PCL_ALIEN_BUILDER0_UPG && ( !BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG, team ) ) ) )
 	{
 		Rocket_DataFormatterFormattedData( handle, "", false );
 		return;
@@ -403,7 +403,7 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		//Check mark icon. UTF-8 encoding of \uf00c
 		Icon = "<icon class=\"current\">\xEF\x80\x8C</icon>";
 	}
-	else if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) )
+	else if ( !BG_ClassUnlocked( alienClass, team ) || BG_ClassDisabled( alienClass ) )
 	{
 		Class = "locked";
 		//Padlock icon. UTF-8 encoding of \uf023

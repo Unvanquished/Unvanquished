@@ -193,7 +193,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 			// TODO: Move damage account array to HealthComponent.
 			entity.oldEnt->credits[source->client->ps.clientNum].value += loss;
 			entity.oldEnt->credits[source->client->ps.clientNum].time = level.time;
-			entity.oldEnt->credits[source->client->ps.clientNum].team = (team_t)source->client->pers.team;
+			entity.oldEnt->credits[source->client->ps.clientNum].team = (TeamIndex)source->client->pers.team;
 		}
 	}
 

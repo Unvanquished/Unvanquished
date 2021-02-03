@@ -280,7 +280,7 @@ static void Svcmd_ForceTeam_f()
 {
 	gclient_t *cl;
 	char      str[ MAX_TOKEN_CHARS ];
-	team_t    team;
+	TeamIndex    team;
 
 	if ( trap_Argc() != 3 )
 	{
@@ -387,7 +387,7 @@ static void Svcmd_LayoutLoad_f()
 
 static void Svcmd_AdmitDefeat_f()
 {
-	int  team;
+	TeamIndex team;
 	char teamNum[ 2 ];
 
 	if ( trap_Argc() != 2 )
@@ -399,14 +399,14 @@ static void Svcmd_AdmitDefeat_f()
 	trap_Argv( 1, teamNum, sizeof( teamNum ) );
 	team = G_TeamFromString( teamNum );
 
-	if ( team == TEAM_ALIENS )
+	if ( i2t( team ) == TEAM_ALIENS )
 	{
-		G_TeamCommand( TEAM_ALIENS, "cp \"Hivemind Link Broken\" 1" );
+		G_TeamCommand( team, "cp \"Hivemind Link Broken\" 1" );
 		trap_SendServerCommand( -1, "print_tr \"" N_("Alien team has admitted defeat\n") "\"" );
 	}
-	else if ( team == TEAM_HUMANS )
+	else if ( i2t( team ) == TEAM_HUMANS )
 	{
-		G_TeamCommand( TEAM_HUMANS, "cp \"Life Support Terminated\" 1" );
+		G_TeamCommand( team, "cp \"Life Support Terminated\" 1" );
 		trap_SendServerCommand( -1, "print_tr \"" N_("Human team has admitted defeat\n") "\"" );
 	}
 	else
@@ -415,26 +415,22 @@ static void Svcmd_AdmitDefeat_f()
 		return;
 	}
 
-	level.surrenderTeam = (team_t) team;
-	G_BaseSelfDestruct( (team_t) team );
+	level.surrenderTeam = team;
+	G_BaseSelfDestruct( team );
 }
 
 static void Svcmd_TeamWin_f()
 {
 	// this is largely made redundant by admitdefeat <team>
 	char cmd[ 6 ];
-	team_t team;
+	TeamIndex team;
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
 	team = G_TeamFromString( cmd );
 
-	if ( TEAM_ALIENS == team )
+	if ( team > 0 && team < NUM_TEAMS )
 	{
-		G_BaseSelfDestruct( TEAM_HUMANS );
-	}
-	if ( TEAM_HUMANS == team )
-	{
-		G_BaseSelfDestruct( TEAM_ALIENS );
+		G_BaseSelfDestruct( team );
 	}
 }
 
@@ -471,7 +467,7 @@ static void Svcmd_MapRotation_f()
 static void Svcmd_TeamMessage_f()
 {
 	char   teamNum[ 2 ];
-	team_t team;
+	TeamIndex team;
 	char   *arg;
 
 	if ( trap_Argc() < 3 )
@@ -620,7 +616,7 @@ static void Svcmd_Pr_f()
 
 static void Svcmd_PrintQueue_f()
 {
-	team_t team;
+	TeamIndex team;
 	char teamName[ MAX_STRING_CHARS ];
 
 	if ( trap_Argc() != 2 )
@@ -632,7 +628,7 @@ static void Svcmd_PrintQueue_f()
 	trap_Argv( 1, teamName, sizeof( teamName ) );
 
 	team = G_TeamFromString(teamName);
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+	if ( TI_1 == team || TI_2 == team )
 	{
 		G_PrintSpawnQueue( &level.team[ team ].spawnQueue );
 	}

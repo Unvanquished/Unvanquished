@@ -48,7 +48,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
 // player teams
-enum team_t
+enum TeamType
 {
   TEAM_ALL = -1,
   TEAM_NONE,
@@ -57,6 +57,16 @@ enum team_t
 
   NUM_TEAMS
 };
+
+enum TeamIndex {
+	TI_NONE,
+	TI_1,
+	TI_2,
+};
+
+inline TeamType i2t(TeamIndex i) {
+	return (TeamType)i;
+}
 
 //
 // config strings are a general means of communicating variable length strings
@@ -1106,7 +1116,7 @@ struct classAttributes_t
 	const char *icon;
 	const char *fovCvar;
 
-	team_t   team;
+	TeamType   team;
 
 	int      unlockThreshold;
 
@@ -1197,7 +1207,7 @@ struct buildableAttributes_t
 	weapon_t    weapon; // used to look up weaponInfo_t for clientside effects
 	int         meansOfDeath;
 
-	team_t      team;
+	TeamType      team;
 	weapon_t    buildWeapon;
 
 	int         buildTime;
@@ -1260,7 +1270,7 @@ struct weaponAttributes_t
 	bool purchasable;
 	bool longRanged;
 
-	team_t   team;
+	TeamType   team;
 };
 
 // upgrade record
@@ -1282,7 +1292,7 @@ struct upgradeAttributes_t
 	bool  purchasable;
 	bool  usable;
 
-	team_t    team;
+	TeamType    team;
 };
 
 // missile record
@@ -1395,7 +1405,7 @@ classModelConfig_t          *BG_ClassModelConfig( int pClass );
 
 void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
                                                  vec3_t dmins, vec3_t dmaxs );
-team_t                      BG_ClassTeam( int pClass );
+TeamType                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
 int                         BG_CostToEvolve(int from, int to);
@@ -1454,16 +1464,16 @@ struct momentumThresholdIterator_t {
 };
 
 void     BG_InitUnlockackables();
-void     BG_ImportUnlockablesFromMask( int team, int mask );
-int      BG_UnlockablesMask( int team );
-bool BG_WeaponUnlocked( int weapon );
-bool BG_UpgradeUnlocked( int upgrade );
-bool BG_BuildableUnlocked( int buildable );
-bool BG_ClassUnlocked( int class_ );
+void     BG_ImportUnlockablesFromMask( TeamIndex team, int mask );
+int      BG_UnlockablesMask( TeamIndex team );
+bool BG_WeaponUnlocked( int weapon, TeamIndex team );
+bool BG_UpgradeUnlocked( int upgrade, TeamIndex team );
+bool BG_BuildableUnlocked( int buildable, TeamIndex team );
+bool BG_ClassUnlocked( int class_, TeamIndex team );
 
 unlockableType_t              BG_UnlockableType( int num );
 int                           BG_UnlockableTypeIndex( int num );
-momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, team_t team, int *threshold, bool *unlocked );
+momentumThresholdIterator_t BG_IterateMomentumThresholds( momentumThresholdIterator_t unlockableIter, TeamIndex team, int *threshold, bool *unlocked );
 #ifdef BUILD_SGAME
 void     G_UpdateUnlockables();
 #endif
@@ -1568,10 +1578,10 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
 
 int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 
-const char *BG_TeamName( int team );
-const char *BG_TeamNamePlural( int team );
+const char *BG_TeamName( TeamType team );
+const char *BG_TeamNamePlural( TeamType team );
 
-team_t BG_PlayableTeamFromString( const char* s );
+TeamIndex BG_PlayableTeamFromString( const char* s );
 
 struct dummyCmd_t
 {

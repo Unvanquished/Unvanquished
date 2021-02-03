@@ -1237,7 +1237,7 @@ void AddHumanSpawnItem( weapon_t weapon )
 {
 	static char data[ MAX_STRING_CHARS ];
 
-	if ( !BG_WeaponUnlocked( weapon ) )
+	if ( !BG_WeaponUnlocked( weapon, (TeamIndex)cg.snap->ps.persistant[ PERS_TEAM ] ) )
 	{
 		return;
 	}
@@ -1803,7 +1803,7 @@ void AddAlienSpawnClass( class_t _class )
 {
 	static char data[ MAX_STRING_CHARS ];
 
-	if ( !BG_ClassUnlocked( _class ) )
+	if ( !BG_ClassUnlocked( _class, (TeamIndex)cg.snap->ps.persistant[ PERS_TEAM ] ) )
 	{
 		return;
 	}
@@ -1829,7 +1829,7 @@ void CG_Rocket_BuildAlienSpawnList( const char *table )
 	{
 		AddAlienSpawnClass( PCL_ALIEN_LEVEL0 );
 
-		if ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) )
+		if ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG, (TeamIndex)cg.snap->ps.persistant[ PERS_TEAM ] ) )
 		{
 			AddAlienSpawnClass( PCL_ALIEN_BUILDER0_UPG );
 		}
@@ -1862,7 +1862,7 @@ void CG_Rocket_ExecAlienSpawnList( const char* )
 			break;
 
 		case 1:
-			_class = BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ? "builderupg" : "builder";
+			_class = BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG, (TeamIndex)cg.snap->ps.persistant[ PERS_TEAM ] ) ? "builderupg" : "builder";
 			break;
 	}
 

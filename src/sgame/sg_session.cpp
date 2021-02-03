@@ -98,7 +98,7 @@ void G_ReadSessionData( gclient_t *client )
 	      );
 
 	client->sess.spectatorState = ( spectatorState_t ) spectatorState;
-	client->sess.restartTeam = ( team_t ) restartTeam;
+	client->sess.restartTeam = ( TeamIndex ) restartTeam;
 	client->sess.botSkill = botSkill;
 	Q_strncpyz( client->sess.botTree, botTree, sizeof( client->sess.botTree ) );
 	Com_ClientListParse( &client->sess.ignoreList, ignorelist );

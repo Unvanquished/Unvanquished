@@ -88,6 +88,7 @@ void game_end_act( gentity_t *self, gentity_t*, gentity_t* )
 
 void SP_game_end( gentity_t *self )
 {
+	//XXX
 	if(!Q_stricmp(self->classname, "target_human_win"))
 	{
 		self->conditions.team = TEAM_HUMANS;

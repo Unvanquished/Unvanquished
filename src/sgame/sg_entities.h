@@ -281,9 +281,9 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player );
 //
 // g_spawn_sensor.c
 //
-void G_notify_sensor_stage(team_t team, int previousStage, int newStage );
+void G_notify_sensor_stage(TeamIndex team, int previousStage, int newStage );
 void G_notify_sensor_start( );
-void G_notify_sensor_end( team_t winningTeam );
+void G_notify_sensor_end( TeamIndex winningTeam );
 
 //
 // g_spawn_shared.c

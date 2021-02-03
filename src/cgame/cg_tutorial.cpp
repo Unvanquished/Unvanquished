@@ -627,9 +627,9 @@ const char *CG_TutorialText()
 					break;
 			}
 
-			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS )
+			if ( i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) == TEAM_ALIENS )
 			{
-				if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ], ps->persistant[ PERS_CREDIT ] ) )
+				//XXX if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ], ps->persistant[ PERS_CREDIT ] ) )
 				{
 					Q_strcat( text, MAX_TUTORIAL_TEXT,
 					          va( _( "Press %s to evolve\n" ),

@@ -111,7 +111,7 @@ namespace Beacon //this should eventually become a class
 	 * @return A pointer to the new entity.
 	 */
 	gentity_t *New( const vec3_t origin, beaconType_t type, int data,
-	                team_t team, int owner, beaconConflictHandler_t conflictHandler )
+	                TeamIndex team, int owner, beaconConflictHandler_t conflictHandler )
 	{
 		gentity_t *ent;
 		int decayTime;
@@ -155,7 +155,7 @@ namespace Beacon //this should eventually become a class
 	 * @brief Create and set up an area beacon (i.e. "Defend").
 	 * @return A pointer to the new beacon entity.
 	 */
-	gentity_t *NewArea( beaconType_t type, const vec3_t point, team_t team )
+	gentity_t *NewArea( beaconType_t type, const vec3_t point, TeamIndex team )
 	{
 		vec3_t origin;
 		gentity_t *beacon;
@@ -366,7 +366,7 @@ namespace Beacon //this should eventually become a class
 	{
 		ent->r.svFlags = SVF_BROADCAST | SVF_CLIENTMASK;
 
-		G_TeamToClientmask( (team_t)ent->s.bc_team, &ent->r.loMask, &ent->r.hiMask );
+		G_TeamToClientmask( (TeamIndex)ent->s.bc_team, &ent->r.loMask, &ent->r.hiMask );
 
 		// Don't send enemy bases or tagged enemy entities to spectators.
 		if ( ent->s.eFlags & EF_BC_ENEMY )
@@ -377,7 +377,7 @@ namespace Beacon //this should eventually become a class
 		else
 		{
 			int loMask, hiMask;
-			G_TeamToClientmask( TEAM_NONE, &loMask, &hiMask );
+			G_TeamToClientmask( TI_NONE, &loMask, &hiMask );
 			ent->r.loMask |= loMask;
 			ent->r.hiMask |= hiMask;
 		}
@@ -534,9 +534,10 @@ namespace Beacon //this should eventually become a class
 			ent->s.bc_etime = level.time + 2000;
 	}
 
-	static inline bool CheckRefreshTag( gentity_t *ent, team_t team )
+	static inline bool CheckRefreshTag( gentity_t *ent, TeamIndex team )
 	{
-		gentity_t *existingTag = ( team == TEAM_ALIENS ) ? ent->alienTag : ent->humanTag;
+		//XXX
+		gentity_t *existingTag = ( (TeamType)team == TEAM_ALIENS ) ? ent->alienTag : ent->humanTag;
 
 		if( existingTag )
 			RefreshTag( existingTag );
@@ -550,7 +551,7 @@ namespace Beacon //this should eventually become a class
 	 * @param team Tagging team.
 	 * @param trace Whether the tag is done manually by looking at an entity.
 	 */
-	bool EntityTaggable( int num, team_t team, bool trace )
+	bool EntityTaggable( int num, TeamIndex team, bool trace )
 	{
 		gentity_t *ent;
 
@@ -600,7 +601,7 @@ namespace Beacon //this should eventually become a class
 	 * @param team           Team the caller belongs to.
 	 * @param refreshTagged  Refresh all already tagged entities's tags and exclude these entities from further consideration.
 	 */
-	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, bool refreshTagged )
+	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, TeamIndex team, bool refreshTagged )
 	{
 		tagtrace_ent_t list[ MAX_GENTITIES ];
 		int i, count = 0;
@@ -670,13 +671,14 @@ namespace Beacon //this should eventually become a class
 	/**
 	 * @brief Tags an entity.
 	 */
-	void Tag( gentity_t *ent, team_t team, bool permanent )
+	void Tag( gentity_t *ent, TeamIndex team, bool permanent )
 	{
+#if 0 //XXX
 		int data;
 		vec3_t origin, mins, maxs;
 		bool dead, player;
 		gentity_t *beacon, **attachment;
-		team_t targetTeam;
+		TeamIndex targetTeam;
 
 		// Get the beacon attachment owned by the tagging team.
 		switch( team ) {
@@ -701,7 +703,7 @@ namespace Beacon //this should eventually become a class
 				break;
 
 			case entityType_t::ET_PLAYER:
-				targetTeam = (team_t)ent->client->pers.team;
+				targetTeam = (TeamIndex)ent->client->pers.team;
 				dead       = Entities::IsDead( ent );
 				player     = true;
 				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, nullptr, nullptr, nullptr );
@@ -748,4 +750,5 @@ namespace Beacon //this should eventually become a class
 
 		Propagate( beacon );
 	}
+#endif
 }

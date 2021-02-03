@@ -69,7 +69,7 @@ struct botMemory_t
 	int enemyLastSeen;
 
 	//team the bot is on when added
-	team_t botTeam;
+	TeamIndex botTeam;
 
 	botTarget_t goal;
 
@@ -98,8 +98,8 @@ constexpr int BOT_DEFAULT_SKILL = 5;
 const char BOT_DEFAULT_BEHAVIOR[] = "default";
 const char BOT_NAME_FROM_LIST[] = "*";
 
-bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler = false );
-bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
+bool G_BotAdd( const char *name, TeamIndex team, int skill, const char *behavior, bool filler = false );
+bool G_BotSetDefaults( int clientNum, TeamIndex team, int skill, const char* behavior );
 void     G_BotDel( int clientNum );
 void     G_BotDelAllBots();
 void     G_BotThink( gentity_t *self );
@@ -107,7 +107,7 @@ void     G_BotSpectatorThink( gentity_t *self );
 void     G_BotIntermissionThink( gclient_t *client );
 void     G_BotListNames( gentity_t *ent );
 bool G_BotClearNames();
-int      G_BotAddNames(team_t team, int arg, int last);
+int      G_BotAddNames(TeamType team, int arg, int last);
 void     G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void     G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void     G_BotInit();

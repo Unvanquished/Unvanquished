@@ -236,7 +236,8 @@ G_notify_sensor_stage
 Called when stages change
 ===============
 */
-void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
+//XXX type or index?
+void G_notify_sensor_stage( TeamIndex team, int previousStage, int newStage )
 {
 	gentity_t *entities = nullptr;
 
@@ -277,7 +278,7 @@ sensor_end
 =================================================================================
 */
 
-void G_notify_sensor_end( team_t winningTeam )
+void G_notify_sensor_end( TeamIndex winningTeam )
 {
 	gentity_t *entity = nullptr;
 
@@ -534,17 +535,14 @@ void sensor_support_think( gentity_t *self )
 		return;
 	}
 
-	switch (self->conditions.team) {
+	switch (self->conditions.team) { //XXX
 		case TEAM_HUMANS:
-			self->powered = (G_ActiveReactor() != nullptr);
-			break;
-
 		case TEAM_ALIENS:
-			self->powered = (G_ActiveOvermind() != nullptr);
+			self->powered = (G_ActiveMainBuildable(self->conditions.team) != nullptr);
 			break;
 
 		case TEAM_ALL:
-			self->powered = (G_ActiveReactor() != nullptr && G_ActiveOvermind() != nullptr);
+			self->powered = (G_ActiveMainBuildable(TI_1) != nullptr && G_ActiveMainBuildable(TI_2) != nullptr);
 			break;
 
 		default:
@@ -589,7 +587,7 @@ void sensor_power_think( gentity_t *self )
 		return;
 	}
 
-	self->powered = (G_ActiveReactor() != nullptr);
+	self->powered = (G_ActiveMainBuildable(G_TeamIndex(self)) != nullptr);
 
 	if(self->powered)
 		G_FireEntity( self, nullptr );
@@ -620,7 +618,7 @@ void sensor_creep_think( gentity_t *self )
 		return;
 	}
 
-	self->powered = (G_ActiveOvermind() != nullptr);
+	self->powered = (G_ActiveMainBuildable(G_TeamIndex(self)) != nullptr);
 
 	if(self->powered)
 		G_FireEntity( self, nullptr );

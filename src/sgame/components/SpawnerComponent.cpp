@@ -30,7 +30,7 @@ void SpawnerComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath)
 }
 
 void SpawnerComponent::OnLoss() {
-	TeamComponent::team_t team = GetTeamComponent().Team();
+	TeamIndex team = GetTeamComponent().Team();
 
 	int newNumSpawns = --level.team[team].numSpawns;
 

@@ -45,7 +45,7 @@ static struct
 	} name[MAX_CLIENTS];
 } botNames[NUM_TEAMS];
 
-static void G_BotListTeamNames( gentity_t *ent, const char *heading, team_t team, const char *marker )
+static void G_BotListTeamNames( gentity_t *ent, const char *heading, TeamType team, const char *marker )
 {
 	int i;
 
@@ -105,7 +105,8 @@ bool G_BotClearNames()
 	return true;
 }
 
-int G_BotAddNames( team_t team, int arg, int last )
+//XXX should this per TeamType or TeamIndex?
+int G_BotAddNames( TeamType team, int arg, int last )
 {
 	int  i = botNames[team].count;
 	int  added = 0;
@@ -142,7 +143,7 @@ int G_BotAddNames( team_t team, int arg, int last )
 	return added;
 }
 
-static char *G_BotSelectName( team_t team )
+static char *G_BotSelectName( TeamType team )
 {
 	unsigned int choice;
 
@@ -165,7 +166,7 @@ static char *G_BotSelectName( team_t team )
 	return nullptr;
 }
 
-static void G_BotNameUsed( team_t team, const char *name, bool inUse )
+static void G_BotNameUsed( TeamType team, const char *name, bool inUse )
 {
 	for ( int i = 0; i < botNames[team].count; ++i )
 	{
@@ -177,7 +178,7 @@ static void G_BotNameUsed( team_t team, const char *name, bool inUse )
 	}
 }
 
-bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
+bool G_BotSetDefaults( int clientNum, TeamIndex team, int skill, const char* behavior )
 {
 	botMemory_t *botMind;
 	gentity_t *self = &g_entities[ clientNum ];
@@ -220,7 +221,7 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 	return true;
 }
 
-bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler )
+bool G_BotAdd( const char *name, TeamIndex team, int skill, const char *behavior, bool filler )
 {
 	int clientNum;
 	char userinfo[MAX_INFO_STRING];
@@ -249,7 +250,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 
 	if ( !Q_stricmp( name, BOT_NAME_FROM_LIST ) )
 	{
-		name = G_BotSelectName( team );
+		name = G_BotSelectName( i2t( team ) );
 		autoname = name != nullptr;
 	}
 
@@ -347,7 +348,7 @@ void G_BotDelAllBots()
 		botNames[TEAM_HUMANS].name[i].inUse = false;
 	}
 
-	for (team_t team : {TEAM_ALIENS, TEAM_HUMANS})
+	for (TeamIndex team : {TI_1, TI_2})
 	{
 		level.team[team].botFillTeamSize = 0;
 	}
@@ -544,7 +545,7 @@ void G_BotFill(bool immediately)
 	}
 	nextCheck = level.time + 2000;
 
-	for (team_t team : {TEAM_ALIENS, TEAM_HUMANS}) {
+	for (TeamIndex team : {TI_1, TI_2}) {
 		auto& t = level.team[team];
 		int teamSize = t.numClients;
 		if (teamSize > t.botFillTeamSize && t.numBots > 0) {

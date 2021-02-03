@@ -393,7 +393,7 @@ void BG_ClassBoundingBox( int pClass,
 	}
 }
 
-team_t BG_ClassTeam( int pClass )
+TeamType BG_ClassTeam( int pClass )
 {
 	return BG_Class( pClass )->team;
 }
@@ -442,10 +442,12 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 {
 	int evolveCost;
 
+#if 0 //XXX
 	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
 	{
 		return CANT_EVOLVE;
 	}
+#endif
 
 	evolveCost = BG_CostToEvolve( from, to );
 
@@ -2737,7 +2739,7 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 BG_TeamName
 ============
 */
-const char *BG_TeamName( int team )
+const char *BG_TeamName( TeamType team )
 {
 	if ( team == TEAM_NONE )
 	{
@@ -2757,7 +2759,7 @@ const char *BG_TeamName( int team )
 	return "<team>";
 }
 
-const char *BG_TeamNamePlural( int team )
+const char *BG_TeamNamePlural( TeamType team )
 {
 	if ( team == TEAM_NONE )
 	{
@@ -2779,17 +2781,17 @@ const char *BG_TeamNamePlural( int team )
 
 // Matches a playable team i.e. humans or aliens
 // Return of TEAM_NONE means no match rather than spectator
-team_t BG_PlayableTeamFromString( const char* s )
+TeamIndex BG_PlayableTeamFromString( const char* s )
 {
 	if ( !Q_stricmp( s, "a" ) || !Q_stricmp( s, "aliens" ) )
 	{
-		return team_t::TEAM_ALIENS;
+		return TI_1; //XXX
 	}
 	if ( !Q_stricmp( s, "h" ) || !Q_stricmp( s, "humans" ) )
 	{
-		return team_t::TEAM_HUMANS;
+		return TI_2; //XXX
 	}
-	return team_t::TEAM_NONE;
+	return TI_NONE;
 }
 
 int cmdcmp( const void *a, const void *b )

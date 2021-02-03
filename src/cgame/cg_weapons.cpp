@@ -2423,7 +2423,7 @@ static void DrawGenericHitEffect( vec3_t origin, vec3_t normal, qhandle_t psHand
 
 static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 {
-	team_t           team;
+	TeamType           team;
 	qhandle_t        psHandle;
 	particleSystem_t *ps;
 	centity_t        *target;
@@ -2432,7 +2432,7 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 
 	if ( cg_blood.integer && target->currentState.eType == entityType_t::ET_PLAYER )
 	{
-		team = cgs.clientinfo[ targetNum ].team;
+		team = i2t( cgs.clientinfo[ targetNum ].team );
 
 		if ( team == TEAM_ALIENS )
 		{

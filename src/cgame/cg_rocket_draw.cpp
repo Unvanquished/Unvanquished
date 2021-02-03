@@ -1516,7 +1516,7 @@ static void CG_ScanForCrosshairEntity()
 {
 	trace_t       trace;
 	vec3_t        start, end;
-	team_t        ownTeam, targetTeam;
+	TeamIndex        ownTeam, targetTeam;
 	entityState_t *targetState;
 
 	if ( cg.snap == nullptr )
@@ -1545,7 +1545,7 @@ static void CG_ScanForCrosshairEntity()
 		return;
 	}
 
-	ownTeam = ( team_t ) cg.snap->ps.persistant[ PERS_TEAM ];
+	ownTeam = ( TeamIndex ) cg.snap->ps.persistant[ PERS_TEAM ];
 	targetState = &cg_entities[ trace.entityNum ].currentState;
 
 	if ( trace.entityNum >= MAX_CLIENTS )
@@ -1555,7 +1555,8 @@ static void CG_ScanForCrosshairEntity()
 		// set friend/foe if it's a living buildable
 		if ( targetState->eType == entityType_t::ET_BUILDABLE && targetState->generic1 > 0 )
 		{
-			targetTeam = BG_Buildable( targetState->modelindex )->team;
+			//XXX don't know how to find TeamIndex
+			targetTeam = (TeamIndex) BG_Buildable( targetState->modelindex )->team;
 
 			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
 			{
@@ -1579,7 +1580,7 @@ static void CG_ScanForCrosshairEntity()
 	else
 	{
 		// we have a client entity
-		targetTeam = cgs.clientinfo[ trace.entityNum ].team;
+		targetTeam = (TeamIndex) cgs.clientinfo[ trace.entityNum ].team;
 
 		// only react to living clients
 		if ( targetState->generic1 > 0 )
@@ -1707,7 +1708,7 @@ public:
 	void DoOnUpdate()
 	{
 		float momentum;
-		team_t team;
+		TeamIndex team;
 
 		if ( cg.intermissionStarted )
 		{
@@ -1715,7 +1716,7 @@ public:
 			return;
 		}
 
-		team = ( team_t ) cg.snap->ps.persistant[ PERS_TEAM ];
+		team = ( TeamIndex ) cg.snap->ps.persistant[ PERS_TEAM ];
 
 		if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 		{
@@ -2982,7 +2983,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	playerState_t *ps;
 	float         momentum, rawFraction, fraction, glowFraction, glowOffset, borderSize;
 	int           threshold;
-	team_t        team;
+	TeamIndex        team;
 	bool      unlocked;
 
 	momentumThresholdIterator_t unlockableIter = { -1, 0 };
@@ -3002,7 +3003,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 
 	ps = &cg.predictedPlayerState;
 
-	team = ( team_t ) ps->persistant[ PERS_TEAM ];
+	team = ( TeamIndex ) ps->persistant[ PERS_TEAM ];
 	momentum = ps->persistant[ PERS_MOMENTUM ] / 10.0f;
 
 	x = rect.x;
@@ -3156,7 +3157,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	momentumThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
 
 	// data
-	team_t    team;
+	TeamIndex    team;
 
 	// display
 	float     x, y, w, h, iw, ih, borderSize;
@@ -3175,7 +3176,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	CG_GetRocketElementColor( foreColour );
 	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
 
-	team = ( team_t ) cg.predictedPlayerState.persistant[ PERS_TEAM ];
+	team = ( TeamIndex ) cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
 	w = rect.w - 2 * borderSize;
 	h = rect.h - 2 * borderSize;
@@ -3295,7 +3296,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	trap_R_ClearColor();
 }
 
-static void CG_Rocket_DrawVote_internal( team_t team )
+static void CG_Rocket_DrawVote_internal( TeamIndex team )
 {
 	int    sec;
 
@@ -3334,12 +3335,12 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 
 static void CG_Rocket_DrawVote()
 {
-	CG_Rocket_DrawVote_internal( TEAM_NONE );
+	CG_Rocket_DrawVote_internal( TI_NONE );
 }
 
 static void CG_Rocket_DrawTeamVote()
 {
-	CG_Rocket_DrawVote_internal( ( team_t ) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+	CG_Rocket_DrawVote_internal( ( TeamIndex ) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 }
 
 static void CG_Rocket_DrawSpawnQueuePosition()

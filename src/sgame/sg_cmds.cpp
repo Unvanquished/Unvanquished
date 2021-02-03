@@ -627,7 +627,7 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = atof( name + strlen("momentum") );
 		}
 
-		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
+		G_AddMomentumGeneric( (TeamIndex) ent->client->pers.team, amount );
 	}
 
 	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
@@ -806,18 +806,18 @@ Cmd_Team_f
 */
 void Cmd_Team_f( gentity_t *ent )
 {
-	team_t   team;
-	team_t   oldteam = (team_t) ent->client->pers.team;
+	TeamIndex   team;
+	TeamIndex   oldteam = (TeamIndex) ent->client->pers.team;
 	char     s[ MAX_TOKEN_CHARS ];
 	bool force = G_admin_permission( ent, ADMF_FORCETEAMCHANGE );
 	int      players[ NUM_TEAMS ];
 	int      t;
 	const g_admin_spec_t *specOnly;
 
-	players[ TEAM_ALIENS ] = level.team[ TEAM_ALIENS ].numClients;
-	players[ TEAM_HUMANS ] = level.team[ TEAM_HUMANS ].numClients;
+	players[ TI_1 ] = level.team[ TI_1 ].numClients;
+	players[ TI_2 ] = level.team[ TI_2 ].numClients;
 
-	if ( TEAM_ALIENS == oldteam || TEAM_HUMANS == oldteam )
+	if ( TI_1 == oldteam || TI_2 == oldteam )
 	{
 		players[ oldteam ]--;
 	}
@@ -864,72 +864,72 @@ void Cmd_Team_f( gentity_t *ent )
 
 	if ( !Q_stricmp( s, "auto" ) )
 	{
-		if ( level.team[ TEAM_HUMANS ].locked && level.team[ TEAM_ALIENS ].locked )
+		if ( level.team[ TI_1 ].locked && level.team[ TI_2 ].locked )
 		{
-			team = TEAM_NONE;
+			team = TI_NONE;
 		}
-		else if ( level.team[ TEAM_HUMANS ].locked || players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
+		else if ( level.team[ TI_2 ].locked || players[ TI_2 ] > players[ TI_1 ] )
 		{
-			team = TEAM_ALIENS;
+			team = TI_1;
 		}
 
-		else if ( level.team[ TEAM_ALIENS ].locked || players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ] )
+		else if ( level.team[ TI_1 ].locked || players[ TI_1 ] > players[ TI_2 ] )
 		{
-			team = TEAM_HUMANS;
+			team = TI_2;
 		}
 		else
 		{
-			team = (team_t) ( TEAM_ALIENS + rand() / ( RAND_MAX / 2 + 1 ) );
+			team = (TeamIndex) ( TI_1 + rand() / ( RAND_MAX / 2 + 1 ) );
 		}
 	}
 	else
 	{
 		switch ( G_TeamFromString( s ) )
 		{
-			case TEAM_NONE:
-				team = TEAM_NONE;
+			case TI_NONE:
+				team = TI_NONE;
 				break;
 
-			case TEAM_ALIENS:
+			case TI_1:
 				//TODO move code in a function common with next case
-				if ( level.team[ TEAM_ALIENS ].locked )
+				if ( level.team[ TI_1 ].locked )
 				{
 					G_TriggerMenu( ent - g_entities, MN_A_TEAMLOCKED );
 					return;
 				}
-				else if ( level.team[ TEAM_HUMANS ].locked )
+				else if ( level.team[ TI_2 ].locked )
 				{
 					force = true;
 				}
 
-				if ( !force && g_teamForceBalance.integer && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ])
+				if ( !force && g_teamForceBalance.integer && players[ TI_1 ] > players[ TI_2 ])
 				{
 					G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 					return;
 				}
 
-				team = TEAM_ALIENS;
+				team = TI_1;
 				break;
 
 			case TEAM_HUMANS:
 				//TODO move code in a function common with previous case
-				if ( level.team[ TEAM_HUMANS ].locked )
+				if ( level.team[ TI_2 ].locked )
 				{
 					G_TriggerMenu( ent - g_entities, MN_H_TEAMLOCKED );
 					return;
 				}
-				else if ( level.team[ TEAM_ALIENS ].locked )
+				else if ( level.team[ TI_1 ].locked )
 				{
 					force = true;
 				}
 
-				if ( !force && g_teamForceBalance.integer && players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
+				if ( !force && g_teamForceBalance.integer && players[ TI_2 ] > players[ TI_1 ] )
 				{
 					G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
 					return;
 				}
 
-				team = TEAM_HUMANS;
+				team = TI_2;
 				break;
 
 			default:
@@ -942,7 +942,7 @@ void Cmd_Team_f( gentity_t *ent )
 	// Cannot join a team for a while after a locking putteam.
 	t = Com_GMTime( nullptr );
 
-	if ( team != TEAM_NONE && ( specOnly = G_admin_match_spec( ent ) ) )
+	if ( team != TI_NONE && ( specOnly = G_admin_match_spec( ent ) ) )
 	{
 		if ( specOnly->expires == -1 )
 		{
@@ -967,7 +967,7 @@ void Cmd_Team_f( gentity_t *ent )
 		return;
 	}
 
-	if ( team != TEAM_NONE && g_maxGameClients.integer &&
+	if ( team != TI_NONE && g_maxGameClients.integer &&
 	     level.numPlayingClients >= g_maxGameClients.integer )
 	{
 		G_TriggerMenu( ent - g_entities, MN_PLAYERLIMIT );
@@ -1398,7 +1398,7 @@ void Cmd_VSay_f( gentity_t *ent )
 			break;
 
 		case VOICE_CHAN_TEAM:
-			G_TeamCommand( (team_t) ent->client->pers.team, va(
+			G_TeamCommand( (TeamIndex) ent->client->pers.team, va(
 			                 "voice %ld %d %d %d %s",
 			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( arg ) ) );
 			break;
@@ -1487,7 +1487,7 @@ static const struct {
 G_CheckStopVote
 ==================
 */
-bool G_CheckStopVote( team_t team )
+bool G_CheckStopVote( TeamIndex team )
 {
 	return level.team[ team ].voteTime && voteInfo[ level.team[ team ].voteType ].stopOnIntermission;
 }
@@ -1508,11 +1508,11 @@ void Cmd_CallVote_f( gentity_t *ent )
 	int    clientNum = -1;
 	int    id = -1;
 	int    voteId;
-	team_t team;
+	TeamIndex team;
 	int    i;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
-	team = (team_t) ( ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TEAM_NONE );
+	team = (TeamIndex) ( ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TEAM_NONE );
 
 	if ( !g_allowVote.integer )
 	{
@@ -2072,13 +2072,13 @@ Cmd_Vote_f
 void Cmd_Vote_f( gentity_t *ent )
 {
 	char   cmd[ MAX_TOKEN_CHARS ], vote[ MAX_TOKEN_CHARS ];
-	team_t team = (team_t) ent->client->pers.team;
+	TeamIndex team = (TeamIndex)ent->client->pers.team;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
 	if ( Q_stricmp( cmd, "teamvote" ) )
 	{
-		team = TEAM_NONE;
+		team = TI_NONE;
 	}
 
 	if ( !level.team[ team ].voteTime )
@@ -2275,13 +2275,13 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		team_t team;
+		TeamType team;
 		if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
 		{
 			G_StopFollowing( ent );
 		}
 
-		team = (team_t) ent->client->pers.team;
+		team = i2t( (TeamIndex) ent->client->pers.team );
 		if ( team == TEAM_ALIENS )
 		{
 			if ( newClass != PCL_ALIEN_BUILDER0 &&
@@ -2315,7 +2315,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 
 			// spawn from an egg
 			//TODO merge with human's code
-			if ( G_PushSpawnQueue( &level.team[ team ].spawnQueue, clientNum ) )
+			if ( G_PushSpawnQueue( &level.team[ ent->client->pers.team ].spawnQueue, clientNum ) )
 			{
 				ent->client->pers.classSelection = newClass;
 				ent->client->ps.stats[ STAT_CLASS ] = newClass;
@@ -2348,7 +2348,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			// spawn from a telenode
 			//TODO merge with alien's code
 			newClass = PCL_HUMAN_NAKED;
-			if ( G_PushSpawnQueue( &level.team[ team ].spawnQueue, clientNum ) )
+			if ( G_PushSpawnQueue( &level.team[ ent->client->pers.team ].spawnQueue, clientNum ) )
 			{
 				ent->client->pers.classSelection = newClass;
 				ent->client->ps.stats[ STAT_CLASS ] = newClass;
@@ -2382,7 +2382,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			int cost;
 
 			//check that we have an overmind
-			if ( !G_ActiveOvermind() )
+			if ( !G_ActiveMainBuildable( G_TeamIndex( ent ) ) )
 			{
 				if ( report )
 				{
@@ -4277,7 +4277,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 {
 	char         type_str[ 64 ];
 	beaconType_t type;
-	team_t       team;
+	TeamIndex       team;
 	int          flags;
 	vec3_t       origin, end, forward;
 	trace_t      tr;
@@ -4307,7 +4307,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	type  = battr->number;
 	flags = battr->flags;
-	team  = (team_t)ent->client->pers.team;
+	team  = (TeamIndex)ent->client->pers.team;
 
 	// Trace in view direction.
 	BG_GetClientViewOrigin( &ent->client->ps, origin );

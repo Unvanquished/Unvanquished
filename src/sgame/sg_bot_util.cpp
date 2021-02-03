@@ -587,7 +587,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	gentity_t *bestVisibleEnemy = nullptr;
 	gentity_t *bestInvisibleEnemy = nullptr;
 	gentity_t *target;
-	team_t    team = BotGetEntityTeam( self );
+	TeamType    team = i2t( BotGetEntityTeam( self ) );
 	bool  hasRadar = ( team == TEAM_ALIENS ) ||
 	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 
@@ -913,15 +913,15 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	routeTarget->polyExtents[ 1 ] += self->r.maxs[ 1 ] + 10;
 }
 
-team_t BotGetEntityTeam( gentity_t *ent )
+TeamIndex BotGetEntityTeam( gentity_t *ent )
 {
 	if ( !ent )
 	{
-		return TEAM_NONE;
+		return TI_NONE;
 	}
 	if ( ent->client )
 	{
-		return ( team_t )ent->client->pers.team;
+		return ( TeamIndex )ent->client->pers.team;
 	}
 	else if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 	{
@@ -929,11 +929,11 @@ team_t BotGetEntityTeam( gentity_t *ent )
 	}
 	else
 	{
-		return TEAM_NONE;
+		return TI_NONE;
 	}
 }
 
-team_t BotGetTargetTeam( botTarget_t target )
+TeamIndex BotGetTargetTeam( botTarget_t target )
 {
 	if ( BotTargetIsEntity( target ) )
 	{
@@ -941,7 +941,7 @@ team_t BotGetTargetTeam( botTarget_t target )
 	}
 	else
 	{
-		return TEAM_NONE;
+		return TI_NONE;
 	}
 }
 
@@ -1348,7 +1348,7 @@ Bot Team Querys
 ========================
 */
 
-int FindBots( int *botEntityNumbers, int maxBots, team_t team )
+int FindBots( int *botEntityNumbers, int maxBots, TeamIndex team )
 {
 	gentity_t *testEntity;
 	int numBots = 0;
@@ -1435,7 +1435,7 @@ bool BotTeamateHasWeapon( gentity_t *self, int weapon )
 {
 	int botNumbers[MAX_CLIENTS];
 	int i;
-	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( team_t ) self->client->pers.team );
+	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( TeamIndex ) self->client->pers.team );
 
 	for ( i = 0; i < numBots; i++ )
 	{
@@ -1741,7 +1741,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 			}
 		}
 
-		if ( !G_ActiveOvermind() )
+		if ( !G_ActiveMainBuildable( G_TeamIndex ( ent ) ) )
 		{
 			return false;
 		}

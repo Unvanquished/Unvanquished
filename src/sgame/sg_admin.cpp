@@ -2990,7 +2990,7 @@ bool G_admin_putteam( gentity_t *ent )
 	char      name[ MAX_NAME_LENGTH ], team[ sizeof( "spectators" ) ],
 	          err[ MAX_STRING_CHARS ];
 	gentity_t *vic;
-	team_t    teamnum = TEAM_NONE;
+	TeamIndex    teamnum = TI_NONE;
 
 	RETURN_IF_INTERMISSION;
 
@@ -4071,7 +4071,7 @@ bool G_admin_endvote( gentity_t *ent )
 {
 	char     teamName[ sizeof( "spectators" ) ] = { "s" };
 	char     command[ MAX_ADMIN_CMD_LEN ];
-	team_t   team;
+	TeamIndex   team;
 	bool cancel;
 	char     *msg;
 
@@ -4288,7 +4288,7 @@ bool G_admin_restart( gentity_t *ent )
 				continue;
 			}
 
-			cl->sess.restartTeam = (team_t) cl->pers.team;
+			cl->sess.restartTeam = (TeamIndex) cl->pers.team;
 		}
 
 		trap_Cvar_Set( "g_mapRestarted", "yk" );
@@ -4578,7 +4578,7 @@ bool G_admin_lock( gentity_t *ent )
 {
 	char     command[ MAX_ADMIN_CMD_LEN ];
 	char     teamName[ sizeof( "aliens" ) ];
-	team_t   team;
+	TeamIndex   team;
 	bool lock, fail = false;
 
 	RETURN_IF_INTERMISSION;
@@ -5630,8 +5630,8 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 		return false;
 	}
 
-	team_t team = BG_PlayableTeamFromString( args[3].data() );
-	if ( team == team_t::TEAM_NONE )
+	TeamIndex team = BG_PlayableTeamFromString( args[3].data() );
+	if ( team == TI_NONE )
 	{
 		ADMP( QQ( N_( "Invalid team name" ) ) );
 		BotUsage( ent );
@@ -5666,11 +5666,11 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		return false;
 	}
 	int count = atoi( args[2].data() );
-	std::vector<team_t> teams;
+	std::vector<TeamIndex> teams;
 	if ( args.Argc() >= 4 )
 	{
-		team_t team = BG_PlayableTeamFromString(args[3].data());
-		if (team == team_t::TEAM_NONE)
+		TeamIndex team = BG_PlayableTeamFromString(args[3].data());
+		if (team == TI_NONE)
 		{
 			BotUsage( ent );
 			return false;
@@ -5679,11 +5679,11 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	}
 	else
 	{
-		teams = { team_t::TEAM_ALIENS, team_t::TEAM_HUMANS };
+		teams = { TI_1, TI_2 };
 	}
 	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : BOT_DEFAULT_SKILL;
 
-	for (team_t team : teams)
+	for (TeamIndex team : teams)
 	{
 		level.team[team].botFillTeamSize = count;
 		level.team[team].botFillSkillLevel = skill;
@@ -5736,16 +5736,16 @@ bool G_admin_bot( gentity_t *ent )
 	else if ( !Q_stricmp( arg1, "names" ) && args.Argc() >= 3 )
 	{
 		const char *name = args[2].data();
-		team_t team = BG_PlayableTeamFromString( name );
+		TeamType team = (TeamType) BG_PlayableTeamFromString( name );
 
-		if ( team == team_t::TEAM_HUMANS )
+		if ( team == TEAM_HUMANS )
 		{
-			int i = G_BotAddNames( team_t::TEAM_HUMANS, 3, trap_Argc() );
+			int i = G_BotAddNames( TEAM_HUMANS, 3, trap_Argc() );
 			ADMP( va( "%s %d", Quote( P_( "added $1$ human bot name", "added $1$ human bot names", i ) ), i ) );
 		}
-		else if ( team == team_t::TEAM_ALIENS )
+		else if ( team == TEAM_ALIENS )
 		{
-			int i = G_BotAddNames( team_t::TEAM_ALIENS, 3, trap_Argc() );
+			int i = G_BotAddNames( TEAM_ALIENS, 3, trap_Argc() );
 			ADMP( va( "%s %d", Quote( P_( "added $1$ alien bot name", "added $1$ alien bot names", i ) ), i ) );
 		}
 		else if ( !Q_stricmp( name, "clear" ) || !Q_stricmp( name, "c" ) )

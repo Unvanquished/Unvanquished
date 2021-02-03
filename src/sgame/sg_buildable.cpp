@@ -45,7 +45,7 @@ bool G_IsWarnableMOD(meansOfDeath_t mod) {
 	}
 }
 
-static gentity_t *FindBuildable(buildable_t buildable) {
+static gentity_t *FindBuildable(buildable_t buildable, TeamIndex team) {
 	gentity_t* found = nullptr;
 
 	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
@@ -96,67 +96,38 @@ static gentity_t *LookupMainBuildableChache(buildable_t buildable, bool construc
 	return cache;
 }
 
-gentity_t *LookupOvermindCache(bool constructed, bool alive) {
-	return LookupMainBuildableChache(BA_A_OVERMIND, constructed, alive);
+gentity_t* G_MainBuildable(TeamIndex team)
+{
+	gentity_t* found = nullptr;
+	ForEntities<MainBuildableComponent>([&](Entity& entity, OvermindComponent&) {
+		if (G_TeamIndex(entity.oldEnt) == team ) {
+			found = entity.oldEnt;
+		}
+	});
+	return found;
 }
 
-gentity_t *LookupReactorCache(bool constructed, bool alive) {
-	return LookupMainBuildableChache(BA_H_REACTOR, constructed, alive);
+gentity_t* G_AliveMainBuildable(TeamIndex team)
+{
+	gentity_t* found = G_MainBuildable(team);
+	if (!found || !found->entity->Get<HealthComponent>()->Alive())
+		return nullptr;
+	return found;
 }
 
-gentity_t *G_Overmind() {
-	return LookupOvermindCache(false, false);
-}
-
-gentity_t *G_AliveOvermind() {
-	return LookupOvermindCache(false, true);
-}
-
-gentity_t *G_ActiveOvermind() {
-	return LookupOvermindCache(true, true);
-}
-
-gentity_t *G_Reactor() {
-	return LookupReactorCache(false, false);
-}
-
-gentity_t *G_AliveReactor() {
-	return LookupReactorCache(false, true);
-}
-
-gentity_t *G_ActiveReactor() {
-	return LookupReactorCache(true, true);
-}
-
-gentity_t *G_MainBuildable(team_t team) {
-	switch (team) {
-		case TEAM_ALIENS: return G_Overmind();
-		case TEAM_HUMANS: return G_Reactor();
-		default:          return nullptr;
-	}
-}
-
-gentity_t *G_AliveMainBuildable(team_t team) {
-	switch (team) {
-		case TEAM_ALIENS: return G_AliveOvermind();
-		case TEAM_HUMANS: return G_AliveReactor();
-		default:          return nullptr;
-	}
-}
-
-gentity_t *G_ActiveMainBuildable(team_t team) {
-	switch (team) {
-		case TEAM_ALIENS: return G_ActiveOvermind();
-		case TEAM_HUMANS: return G_ActiveReactor();
-		default:          return nullptr;
-	}
+gentity_t* G_ActiveMainBuildable(TeamIndex team)
+{
+	gentity_t* found = G_AliveMainBuildable(team);
+	if (!found || found->entity->Get<BuildableComponent>()->GetState() == BuildableComponent::CONSTRUCTING)
+		return nullptr;
+	return found;
 }
 
 /**
  * @return The distance of an entity to its own base or a huge value if the base is not found.
  */
 float G_DistanceToBase(gentity_t *self) {
-	gentity_t *mainBuilding = G_MainBuildable(G_Team(self));
+	gentity_t *mainBuilding = G_MainBuildable(G_TeamIndex(self));
 
 	if (mainBuilding) {
 		return G_Distance(self, mainBuilding);
@@ -172,7 +143,7 @@ float G_DistanceToBase(gentity_t *self) {
  * @todo Use base clustering.
  */
 bool G_InsideBase(gentity_t *self) {
-	gentity_t *mainBuilding = G_MainBuildable(G_Team(self));
+	gentity_t *mainBuilding = G_MainBuildable(G_TeamIndex(self));
 
 	if (G_DistanceToBase(self) >= INSIDE_BASE_MAX_DISTANCE) {
 		return false;
@@ -776,14 +747,14 @@ void G_UpdateBuildablePowerStates()
 {
 	gentity_t* activeMainBuildable;
 
-	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+	for (TeamIndex team = TI_NONE; (team = G_IterateTeams(team)); ) {
 		std::vector<Entity*> poweredBuildables;
 		std::vector<Entity*> unpoweredBuildables;
 		int unpoweredBuildableTotal = 0;
 		activeMainBuildable = G_ActiveMainBuildable(team);
 
 		ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
-			if (G_Team(entity.oldEnt) != team) return;
+			if (G_TeamIndex(entity.oldEnt) != team) return;
 
 			// Never shut down the main buildable or miners.
 			if (entity.Get<MainBuildableComponent>()) return;
@@ -1241,6 +1212,8 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
  */
 static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3_t origin )
 {
+	return IBE_NONE; //XXX
+#if 0
 	int              entNum, listLen;
 	gentity_t        *ent, *list[ MAX_GENTITIES ];
 	const buildableAttributes_t *attr;
@@ -1300,7 +1273,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		if (collisionError != IBE_NONE) return;
 
 		buildable_t otherBuildable = (buildable_t)entity.oldEnt->s.modelindex;
-		team_t      otherTeam      = entity.oldEnt->buildableTeam;
+		TeamIndex      otherTeam      = entity.oldEnt->buildableTeam;
 
 		if (BuildablesIntersect(buildable, origin, otherBuildable, entity.oldEnt->s.origin)) {
 			if (otherTeam != attr->team) {
@@ -1419,6 +1392,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		// shouldn't really happen
 		return IBE_NOHUMANBP;
 	}
+#endif
 }
 
 static void SetBuildableLinkState( bool link )
@@ -1512,12 +1486,12 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	{
 		reason = replacementError;
 	}
-	else if ( ent->client->pers.team == TEAM_ALIENS )
+	else if ( i2t( (TeamIndex) ent->client->pers.team ) == TEAM_ALIENS )
 	{
 		// Check for Overmind
 		if ( buildable != BA_A_OVERMIND )
 		{
-			if ( !G_ActiveOvermind() )
+			if ( !G_ActiveMainBuildable( G_TeamIndex( ent ) ) )
 			{
 				reason = IBE_NOOVERMIND;
 			}
@@ -1540,7 +1514,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		// Check for Reactor
 		if ( buildable != BA_H_REACTOR )
 		{
-			if ( !G_ActiveReactor() )
+			if ( !G_ActiveMainBuildable( G_TeamIndex( ent ) ) )
 			{
 				reason = IBE_NOREACTOR;
 			}
@@ -1562,7 +1536,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	// Can we only have one of these?
 	if ( BG_Buildable( buildable )->uniqueTest )
 	{
-		tempent = FindBuildable( buildable );
+		tempent = FindBuildable( buildable, G_TeamIndex( ent ) );
 
 		if ( tempent && !tempent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 		{
@@ -1770,7 +1744,8 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	built->classname = attr->entityName;
 	built->s.modelindex = buildable;
 	built->s.modelindex2 = attr->team;
-	built->buildableTeam = (team_t) built->s.modelindex2;
+	// XXX how to have layouts?
+	built->buildableTeam = builder->client ? G_TeamIndex(builder) : (TeamIndex)attr->team;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->splashDamage = attr->splashDamage;
@@ -1936,7 +1911,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	if ( builder->client )
 	{
 	        // readable and the model name shouldn't need quoting
-		G_TeamCommand( (team_t) builder->client->pers.team,
+		G_TeamCommand( (TeamIndex) builder->client->pers.team,
 		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
 						QQ( N_("$1$ ^2built^* by $2$^*, ^3replacing^* $3$\n") ) :
 						QQ( N_("$1$ ^2built^* by $2$$3$\n") ),
@@ -1963,7 +1938,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	}
 
 	if( builder->client )
-		Beacon::Tag( built, (team_t)builder->client->pers.team, true );
+		Beacon::Tag( built, (TeamIndex)builder->client->pers.team, true );
 
 	return built;
 }
@@ -2097,7 +2072,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 
 	trap_LinkEntity( built );
 
-	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, true );
+	Beacon::Tag( built, G_TeamIndex( ent ), true );
 
 	return built;
 }
@@ -2418,7 +2393,7 @@ void G_LayoutLoad()
 	BG_Free( layoutHead );
 }
 
-void G_BaseSelfDestruct( team_t team )
+void G_BaseSelfDestruct( TeamIndex team )
 {
 	int       i;
 	gentity_t *ent;
@@ -2616,7 +2591,7 @@ void G_BuildLogRevert( int id )
 
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
 	{
-		G_AddMomentumGenericStep( (team_t) team, momentumChange[ team ] );
+		G_AddMomentumGenericStep( (TeamIndex) team, momentumChange[ team ] );
 	}
 
 	G_AddMomentumEnd();

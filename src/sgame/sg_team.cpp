@@ -34,7 +34,7 @@ G_TeamFromString
 Return the team referenced by a string
 ================
 */
-team_t G_TeamFromString( const char *str )
+TeamIndex G_TeamFromString( const char *str )
 {
 	switch ( Str::ctolower( *str ) )
 	{
@@ -43,11 +43,11 @@ team_t G_TeamFromString( const char *str )
 			return TEAM_NONE;
 
 		case '1':
-		case 'a':
+		//case 'a':
 			return TEAM_ALIENS;
 
 		case '2':
-		case 'h':
+		//case 'h':
 			return TEAM_HUMANS;
 
 		default:
@@ -62,7 +62,7 @@ G_TeamCommand
 Broadcasts a command to only a specific team
 ================
 */
-void G_TeamCommand( team_t team, const char *cmd )
+void G_TeamCommand( TeamIndex team, const char *cmd )
 {
 	int i;
 
@@ -93,7 +93,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	int    num, i;
 	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
 	vec3_t mins, maxs;
-	team_t team = (team_t) ent->client->pers.team;
+	TeamIndex team = (TeamIndex) ent->client->pers.team;
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -118,11 +118,11 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 }
 
 // TODO: Add a TeamComponent.
-team_t G_Team( gentity_t *ent )
+TeamIndex G_TeamIndex( gentity_t *ent )
 {
 	if ( ent->client )
 	{
-		return (team_t)ent->client->pers.team;
+		return (TeamIndex)ent->client->pers.team;
 	}
 	else if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 	{
@@ -130,14 +130,14 @@ team_t G_Team( gentity_t *ent )
 	}
 	else
 	{
-		return TEAM_NONE;
+		return TI_NONE;
 	}
 }
 
 bool G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
-	team_t team1 = G_Team( ent1 );
-	return ( team1 != TEAM_NONE && team1 == G_Team( ent2 ) );
+	TeamIndex team1 = G_TeamIndex( ent1 );
+	return ( team1 != TEAM_NONE && team1 == G_TeamIndex( ent2 ) );
 }
 
 /*
@@ -145,7 +145,7 @@ bool G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 G_ClientListForTeam
 ==================
 */
-static clientList_t G_ClientListForTeam( team_t team )
+static clientList_t G_ClientListForTeam( TeamIndex team )
 {
 	int          i;
 	clientList_t clientList;
@@ -206,7 +206,7 @@ G_LeaveTeam
 
 void G_LeaveTeam( gentity_t *self )
 {
-	team_t    team = (team_t) self->client->pers.team;
+	TeamIndex    team = (TeamIndex) self->client->pers.team;
 	gentity_t *ent;
 	int       i;
 
@@ -269,9 +269,9 @@ G_ChangeTeam
 =================
 */
 
-void G_ChangeTeam( gentity_t *ent, team_t newTeam )
+void G_ChangeTeam( gentity_t *ent, TeamIndex newTeam )
 {
-	team_t oldTeam = (team_t) ent->client->pers.team;
+	TeamIndex oldTeam = (TeamIndex) ent->client->pers.team;
 
 	if ( oldTeam == newTeam )
 	{

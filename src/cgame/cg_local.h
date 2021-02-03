@@ -651,7 +651,7 @@ struct cbeacon_t
 	int           etime;
 	int           mtime;
 	int           data;
-	team_t        ownerTeam;
+	TeamIndex        ownerTeam;
 	int           owner;
 	int           target;
 	float         alphaMod; // A modifier that can be set before the drawing phase begins.
@@ -847,7 +847,7 @@ struct clientInfo_t
 	bool infoValid;
 
 	char     name[ MAX_NAME_LENGTH ];
-	team_t   team;
+	TeamIndex   team;
 
 	int      score; // updated by score servercmds
 	int      location; // location index for team mode

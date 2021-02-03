@@ -1482,17 +1482,17 @@ static void CG_StatusMessages( clientInfo_t *new_, clientInfo_t *old )
 		if ( new_->team == TEAM_NONE )
 		{
 			Log::Notice(_( "%s^* left the %s"), new_->name,
-			           BG_TeamNamePlural( old->team ) );
+			           BG_TeamNamePlural( i2t( old->team ) ) );
 		}
 		else if ( old->team == TEAM_NONE )
 		{
 			Log::Notice(_( "%s^* joined the %s"), new_->name,
-			           BG_TeamNamePlural( new_->team ) );
+			           BG_TeamNamePlural( i2t( new_->team ) ) );
 		}
 		else
 		{
 			Log::Notice(_( "%s^* left the %s and joined the %s"),
-			           new_->name, BG_TeamNamePlural( old->team ), BG_TeamNamePlural( new_->team ) );
+			           new_->name, BG_TeamNamePlural( i2t( old->team ) ), BG_TeamNamePlural( i2t( new_->team ) ) );
 		}
 	}
 }
@@ -1535,7 +1535,7 @@ void CG_NewClientInfo( int clientNum )
 
 	// team
 	v = Info_ValueForKey( configstring, "t" );
-	newInfo.team = (team_t) atoi( v );
+	newInfo.team = (TeamIndex) atoi( v );
 
 	// model
 	v = Info_ValueForKey( configstring, "model" );

@@ -72,19 +72,19 @@ namespace BaseClustering {
 	/**
 	 * @return Clustering identifier by team and enemy flag.
 	 */
-	static inline baseClusteringLayer_t GetClusteringLayer(team_t team, bool enemy) {
-		if (team == TEAM_ALIENS) return enemy ? BCL_ALIEN_ENEMY : BCL_ALIEN_FRIENDLY;
-		if (team == TEAM_HUMANS) return enemy ? BCL_HUMAN_ENEMY : BCL_HUMAN_FRIENDLY;
+	static inline baseClusteringLayer_t GetClusteringLayer(TeamIndex team, bool enemy) {
+		//XXX if (team == TEAM_ALIENS) return enemy ? BCL_ALIEN_ENEMY : BCL_ALIEN_FRIENDLY;
+		//XXX if (team == TEAM_HUMANS) return enemy ? BCL_HUMAN_ENEMY : BCL_HUMAN_FRIENDLY;
 		return NUM_BC_LAYERS;
 	}
 
 	/**
 	 * @return The team that receives information about the bases.
 	 */
-	static inline team_t GetInformedTeam(baseClusteringLayer_t layer) {
-		if (layer == BCL_ALIEN_FRIENDLY || layer == BCL_ALIEN_ENEMY) return TEAM_ALIENS;
-		if (layer == BCL_HUMAN_FRIENDLY || layer == BCL_HUMAN_ENEMY) return TEAM_HUMANS;
-		return TEAM_NONE;
+	static inline TeamIndex GetInformedTeam(baseClusteringLayer_t layer) {
+		//XXX if (layer == BCL_ALIEN_FRIENDLY || layer == BCL_ALIEN_ENEMY) return TEAM_ALIENS;
+		//XXX if (layer == BCL_HUMAN_FRIENDLY || layer == BCL_HUMAN_ENEMY) return TEAM_HUMANS;
+		return TI_NONE;
 	}
 
 	/**
@@ -102,7 +102,7 @@ namespace BaseClustering {
 		std::unordered_set<gentity_t*> &oldBeacons = beacons[layer];
 		std::unordered_set<gentity_t*> newBeacons;
 
-		team_t team  = GetInformedTeam(layer);
+		TeamIndex team  = GetInformedTeam(layer);
 		bool   enemy = MarksEnemyBase(layer);
 
 		// Add a beacon for every cluster.
@@ -191,7 +191,7 @@ namespace BaseClustering {
 	 */
 	void Update(gentity_t *beacon) {
 		baseClusteringLayer_t layer =
-			GetClusteringLayer((team_t)beacon->s.generic1, (beacon->s.eFlags & EF_BC_ENEMY));
+			GetClusteringLayer((TeamIndex)beacon->s.generic1, (beacon->s.eFlags & EF_BC_ENEMY));
 		bases[layer].Update(beacon);
 		PostChangeHook(layer);
 	}
@@ -201,7 +201,7 @@ namespace BaseClustering {
 	 */
 	void Remove(gentity_t *beacon) {
 		baseClusteringLayer_t layer =
-			GetClusteringLayer((team_t)beacon->s.generic1, (beacon->s.eFlags & EF_BC_ENEMY));
+			GetClusteringLayer((TeamIndex)beacon->s.generic1, (beacon->s.eFlags & EF_BC_ENEMY));
 		if (bases[layer].Remove(beacon)) PostChangeHook(layer);
 	}
 }

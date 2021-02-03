@@ -66,13 +66,13 @@ static float RGSPredictEfficiencyLoss(Entity& miner, vec3_t newMinerOrigin) {
  * @return Predicted efficiency delta in percent points.
  * @todo Consider RGS set for deconstruction.
  */
-float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
+float G_RGSPredictEfficiencyDelta(vec3_t origin, TeamIndex team) {
 	float delta = G_RGSPredictOwnEfficiency(origin);
 
 	buildpointLogger.Debug("Predicted efficiency of new miner itself: %f.", delta);
 
 	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent& miningComponent) {
-		if (G_Team(miner.oldEnt) != team) return;
+		if (G_TeamIndex(miner.oldEnt) != team) return;
 
 		delta += RGSPredictEfficiencyLoss(miner, origin);
 	});
@@ -87,12 +87,12 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
  * @brief Calculate the build point budgets for both teams.
  */
 void G_UpdateBuildPointBudgets() {
-	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+	for (TeamIndex team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
 		level.team[team].totalBudget = g_buildPointInitialBudget.Get();
 	}
 
 	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
-		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
+		level.team[G_TeamIndex(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
 		                                                 g_buildPointBudgetPerMiner.Get();
 	});
 }
@@ -109,7 +109,7 @@ void G_RecoverBuildPoints() {
 	// The interval grows exponentially, so check for an overflow.
 	if (nextBuildPointTime < level.time) return;
 
-	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+	for (TeamIndex team = TI_NONE; (team = G_IterateTeams(team)); ) {
 		if (!level.team[team].queuedBudget) {
 			nextBuildPoint[team] = -1;
 			continue;
@@ -130,7 +130,7 @@ void G_RecoverBuildPoints() {
 /**
  * @brief Get the potentially negative number of free build points for a team.
  */
-int G_GetFreeBudget(team_t team)
+int G_GetFreeBudget(TeamIndex team)
 {
 	return (int)level.team[team].totalBudget - (level.team[team].spentBudget + level.team[team].queuedBudget);
 }
@@ -138,13 +138,13 @@ int G_GetFreeBudget(team_t team)
 /**
  * @brief Get the number of marked build points for a team.
  */
-int G_GetMarkedBudget(team_t team)
+int G_GetMarkedBudget(TeamIndex team)
 {
 	int sum = 0;
 
 	ForEntities<BuildableComponent>(
 	[&](Entity& entity, BuildableComponent& buildableComponent) {
-		if (G_Team(entity.oldEnt) == team && buildableComponent.MarkedForDeconstruction()) {
+		if (G_TeamIndex(entity.oldEnt) == team && buildableComponent.MarkedForDeconstruction()) {
 			sum += G_BuildableDeconValue(entity.oldEnt);
 		}
 	});
@@ -156,12 +156,12 @@ int G_GetMarkedBudget(team_t team)
  * @brief Get the potentially negative number of build points a team can spend, including those from
  *        marked buildables.
  */
-int G_GetSpendableBudget(team_t team)
+int G_GetSpendableBudget(TeamIndex team)
 {
 	return G_GetFreeBudget(team) + G_GetMarkedBudget(team);
 }
 
-void G_FreeBudget( team_t team, int immediateAmount, int queuedAmount )
+void G_FreeBudget( TeamIndex team, int immediateAmount, int queuedAmount )
 {
 	if ( G_IsPlayableTeam( team ) )
 	{
@@ -177,7 +177,7 @@ void G_FreeBudget( team_t team, int immediateAmount, int queuedAmount )
 	}
 }
 
-void G_SpendBudget( team_t team, int amount )
+void G_SpendBudget( TeamIndex team, int amount )
 {
 	if ( G_IsPlayableTeam( team ) )
 	{
@@ -202,11 +202,11 @@ int G_BuildableDeconValue(gentity_t *ent)
  */
 void G_GetTotalBuildableValues(int *buildableValuesByTeam)
 {
-	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+	for (TeamIndex team = TI_NONE; (team = G_IterateTeams(team)); ) {
 		buildableValuesByTeam[team] = 0;
 	}
 
 	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
-		buildableValuesByTeam[G_Team(entity.oldEnt)] += G_BuildableDeconValue(entity.oldEnt);
+		buildableValuesByTeam[G_TeamIndex(entity.oldEnt)] += G_BuildableDeconValue(entity.oldEnt);
 	});
 }

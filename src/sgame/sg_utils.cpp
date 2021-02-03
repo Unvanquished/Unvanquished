@@ -411,7 +411,7 @@ G_BroadcastEvent
 Sends an event to every client
 ===============
 */
-void G_BroadcastEvent( int event, int eventParm, team_t team )
+void G_BroadcastEvent( int event, int eventParm, TeamIndex team )
 {
 	gentity_t *ent;
 
@@ -791,7 +791,7 @@ G_TeamToClientmask
 Calculates loMask/hiMask as used by SVF_CLIENTMASK type events to match all clients in a team.
 ===============
 */
-void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
+void G_TeamToClientmask( TeamIndex team, int *loMask, int *hiMask )
 {
 	int       clientNum;
 	gclient_t *client;
@@ -862,19 +862,19 @@ bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }
 
-bool G_IsPlayableTeam( team_t team )
+bool G_IsPlayableTeam( TeamIndex team )
 {
 	return ( team > TEAM_NONE && team < NUM_TEAMS );
 }
 
 bool G_IsPlayableTeam( int team )
 {
-	return G_IsPlayableTeam( (team_t)team );
+	return G_IsPlayableTeam( (TeamIndex)team );
 }
 
-team_t G_IterateTeams( team_t team )
+TeamIndex G_IterateTeams( TeamIndex team )
 {
-	team_t nextTeam = (team_t)(std::max((int)team, (int)TEAM_NONE) + 1);
+	TeamIndex nextTeam = (TeamIndex)(std::max((int)team, (int)TEAM_NONE) + 1);
 
 	if ( nextTeam >= NUM_TEAMS )
 	{

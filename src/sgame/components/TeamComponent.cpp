@@ -1,5 +1,5 @@
 #include "TeamComponent.h"
 
-TeamComponent::TeamComponent(Entity& entity, team_t team)
+TeamComponent::TeamComponent(Entity& entity, TeamIndex team)
 	: TeamComponentBase(entity, team)
 {}

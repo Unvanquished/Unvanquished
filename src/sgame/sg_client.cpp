@@ -261,22 +261,22 @@ G_SelectUnvanquishedSpawnPoint
 Chooses a player start, deathmatch start, etc
 ============
 */
-gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles )
+gentity_t *G_SelectUnvanquishedSpawnPoint( TeamIndex team, vec3_t preference, vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot = nullptr;
 
 	/* team must exist, or there will be a sigsegv */
-	ASSERT(team == TEAM_HUMANS || team == TEAM_ALIENS);
+	ASSERT(team == TI_1 || team == TI_2);
 	if( level.team[ team ].numSpawns <= 0 )
 	{
 		return nullptr;
 	}
 
-	if ( team == TEAM_ALIENS )
+	if ( i2t( team ) == TEAM_ALIENS )
 	{
 		spot = G_SelectSpawnBuildable( preference, BA_A_SPAWN );
 	}
-	else if ( team == TEAM_HUMANS )
+	else if ( i2t( team ) == TEAM_HUMANS )
 	{
 		spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN );
 	}
@@ -1290,7 +1290,7 @@ Cut-down version of ClientConnect.
 Doesn't do things not relevant to bots (which are local GUIDless clients).
 ============
 */
-const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
+const char *ClientBotConnect( int clientNum, bool firstTime, TeamIndex team )
 {
 	const char      *userInfoError;
 	gclient_t       *client;
@@ -1934,7 +1934,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// (re)tag the client for its team
 	Beacon::DeleteTags( ent );
-	Beacon::Tag( ent, (team_t)ent->client->ps.persistant[ PERS_TEAM ], true );
+	Beacon::Tag( ent, (TeamIndex)ent->client->ps.persistant[ PERS_TEAM ], true );
 }
 
 /*

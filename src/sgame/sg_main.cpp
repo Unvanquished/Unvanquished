@@ -876,7 +876,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	BG_PrintVoices( level.voices, g_debugVoices.integer );
 
 	// Spend build points for layout buildables.
-	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+	for (TeamIndex team = TI_NONE; (team = G_IterateTeams(team)); ) {
 		G_SpendBudget(team, level.team[team].layoutBuildPoints);
 	}
 
@@ -912,7 +912,7 @@ static void G_ClearVotes( bool all )
 
 	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
-		if ( all || G_CheckStopVote( (team_t) i ) )
+		if ( all || G_CheckStopVote( (TeamIndex) i ) )
 		{
 			level.team[ i ].voteTime = 0;
 			trap_SetConfigstring( CS_VOTE_TIME + i, "" );
@@ -1319,7 +1319,7 @@ G_SpawnClients
 Spawn queued clients
 ============
 */
-void G_SpawnClients( team_t team )
+void G_SpawnClients( TeamIndex team )
 {
 	int          clientNum;
 	gentity_t    *ent, *spawn;
@@ -1327,7 +1327,7 @@ void G_SpawnClients( team_t team )
 	spawnQueue_t *sq = nullptr;
 	int          numSpawns = 0;
 
-	ASSERT(team == TEAM_ALIENS || team == TEAM_HUMANS);
+	ASSERT(team == TI_1 || team == TI_2);
 	sq = &level.team[ team ].spawnQueue;
 
 	numSpawns = level.team[ team ].numSpawns;
@@ -1948,7 +1948,7 @@ static void G_LogGameplayStats( int state )
 				num[ team ] = level.team[ team ].numClients;
 				Mom[ team ] = ( int )level.team[ team ].momentum;
 				TBP[ team ] = ( int )level.team[ team ].totalBudget;
-				UBP[ team ] = ( int )G_GetFreeBudget( ( team_t )team );
+				UBP[ team ] = ( int )G_GetFreeBudget( ( TeamIndex )team );
 			}
 
 			G_GetTotalBuildableValues( BRV );
@@ -2298,7 +2298,7 @@ void CheckExitRules()
 G_Vote
 ==================
 */
-void G_Vote( gentity_t *ent, team_t team, bool voting )
+void G_Vote( gentity_t *ent, TeamIndex team, bool voting )
 {
 	if ( !level.team[ team ].voteTime )
 	{
@@ -2359,7 +2359,7 @@ void G_Vote( gentity_t *ent, team_t team, bool voting )
 	}
 }
 
-void G_ResetVote( team_t team )
+void G_ResetVote( TeamIndex team )
 {
 	int i;
 
@@ -2388,7 +2388,7 @@ FUNCTIONS CALLED EVERY FRAME
 ========================================================================
 */
 
-void G_ExecuteVote( team_t team )
+void G_ExecuteVote( TeamIndex team )
 {
 	level.team[ team ].voteExecuteTime = 0;
 
@@ -2412,7 +2412,7 @@ void G_ExecuteVote( team_t team )
 G_CheckVote
 ==================
 */
-void G_CheckVote( team_t team )
+void G_CheckVote( TeamIndex team )
 {
 	float    votePassThreshold = ( float ) level.team[ team ].voteThreshold / 100.0f;
 	bool pass = false;
@@ -2837,7 +2837,7 @@ void G_RunFrame( int levelTime )
 	// cancel vote if timed out
 	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
-		G_CheckVote( (team_t) i );
+		G_CheckVote( (TeamIndex) i );
 	}
 
 	trap_BotUpdateObstacles();

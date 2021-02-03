@@ -315,7 +315,7 @@ CG_KeyBinding
 The team argument corresponds to Keyboard::BindTeam, not team_t
 ================
 */
-std::string CG_KeyBinding( const char* bind, int team )
+std::string CG_KeyBinding( const char* bind, int /*TeamType*/ team )
 {
 	std::vector<Keyboard::Key> keys = trap_Key_GetKeysForBinds( team, {bind} )[0];
 

@@ -392,12 +392,12 @@ static void CG_SetPVars()
 	        return;
 	}
 
-	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->persistant[ PERS_TEAM ] ) );
+	trap_Cvar_Set( "p_teamname", BG_TeamName( i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) ) );
 
 	switch ( ps->persistant[ PERS_TEAM ] )
 	{
-		case TEAM_ALIENS:
-		case TEAM_HUMANS:
+		case TI_1:
+		case TI_2:
 			break;
 
 		default:
@@ -438,6 +438,7 @@ static void CG_SetPVars()
 	first = true;
 	*buffer = 0;
 
+#if 0 //XXX
 	for ( i = BA_NONE; i < BA_NUM_BUILDABLES; ++i )
 	{
 		const buildableAttributes_t *buildable = BG_Buildable( i );
@@ -453,6 +454,7 @@ static void CG_SetPVars()
 	}
 
 	trap_Cvar_Set( "p_availableBuildings", buffer );
+#endif
 }
 
 /*
@@ -610,12 +612,13 @@ void CG_NotifyHooks()
 	{
 		if( lastTeam != ps->persistant[ PERS_TEAM ] )
 		{
-			trap_notify_onTeamChange( ps->persistant[ PERS_TEAM ] );
+			TeamType type = i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] );
+			trap_notify_onTeamChange( type );
 
-			CG_SetBindTeam( static_cast<team_t>( ps->persistant[ PERS_TEAM ] ) );
+			CG_SetBindTeam( type );
 
 			/* execute team-specific config files */
-			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->persistant[ PERS_TEAM ] ) ), config, sizeof( config ) );
+			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( type ) ), config, sizeof( config ) );
 			if ( config[ 0 ] )
 			{
 				trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );

@@ -37,7 +37,7 @@ struct variatingTime_s
  */
 struct gentityConditions_s
 {
-	team_t   team;
+	TeamIndex   team;
 	int      stage;
 
 	class_t     classes[ PCL_NUM_CLASSES ];
@@ -305,7 +305,7 @@ struct gentity_s
 	int       customNumber;
 
 
-	team_t      buildableTeam; // buildable item team
+	TeamIndex      buildableTeam; // buildable item team
 	struct namelog_s *builtBy; // clientNum of person that built this
 
 	int         pain_debounce_time;
@@ -327,7 +327,7 @@ struct gentity_s
 	struct {
 	 	float  value;
 		int    time;
-		team_t team;
+		TeamIndex team;
 	}           credits[ MAX_CLIENTS ];
 
 	int         killedBy; // clientNum of killer
@@ -368,7 +368,7 @@ struct clientSession_s
 	int              spectatorTime; // for determining next-in-line to play
 	spectatorState_t spectatorState;
 	int              spectatorClient; // for chasecam and follow mode
-	team_t           restartTeam; //for !restart keepteams and !restart switchteams
+	TeamIndex           restartTeam; //for !restart keepteams and !restart switchteams
 	int              botSkill;
 	char             botTree[ MAX_QPATH ];
 	clientList_t     ignoreList;
@@ -400,7 +400,7 @@ struct namelog_s
 
 	int              score;
 	int              credits;
-	team_t           team;
+	TeamIndex           team;
 
 	int              id;
 };
@@ -578,7 +578,7 @@ struct buildLog_s
 	buildFate_t fate;
 	namelog_t   *actor;
 	namelog_t   *builtBy;
-	team_t      buildableTeam;
+	TeamIndex      buildableTeam;
 	buildable_t modelindex;
 	float       momentumEarned;
 	bool        markedForDeconstruction;
@@ -666,11 +666,11 @@ struct level_locals_s
 	gentity_t        *markedBuildables[ MAX_GENTITIES ];
 	int              numBuildablesForRemoval;
 
-	team_t           lastWin;
+	TeamType           lastWin;
 
 	timeWarning_t    timelimitWarning;
 
-	team_t           unconditionalWin;
+	TeamIndex           unconditionalWin;
 
 	int              pausedTime;
 
@@ -679,7 +679,7 @@ struct level_locals_s
 
 	char             layout[ MAX_QPATH ];
 
-	team_t           surrenderTeam;
+	TeamIndex           surrenderTeam;
 	int              lastTeamImbalancedTime;
 	int              numTeamImbalanceWarnings;
 

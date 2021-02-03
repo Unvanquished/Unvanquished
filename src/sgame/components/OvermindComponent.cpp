@@ -73,18 +73,18 @@ Entity* OvermindComponent::FindTarget() {
 }
 
 bool OvermindComponent::CompareTargets(Entity& a, Entity& b) const {
-	team_t aTeam = G_Team(a.oldEnt);
-	team_t bTeam = G_Team(b.oldEnt);
+	bool aEnemy = Entities::OnOpposingTeams(this->entity, a);
+	bool bEnemy = Entities::OnOpposingTeams(this->entity, b);
 
 	// Prefer humans.
-	if (aTeam == TEAM_HUMANS && bTeam != TEAM_HUMANS) return true;
-	if (aTeam != TEAM_HUMANS && bTeam == TEAM_HUMANS) return false;
+	if (aEnemy && !bEnemy) return true;
+	if (!aEnemy && bEnemy) return false;
 
 	float aDistance = G_Distance(entity.oldEnt, a.oldEnt);
 	float bDistance = G_Distance(entity.oldEnt, b.oldEnt);
 
 	// Rules for humans.
-	if (aTeam == TEAM_HUMANS && bTeam == TEAM_HUMANS) {
+	if (aEnemy && bEnemy) {
 		// Prefer the one in attack range.
 		if (aDistance < ATTACK_RANGE && bDistance > ATTACK_RANGE) return true;
 		if (aDistance > ATTACK_RANGE && bDistance < ATTACK_RANGE) return false;

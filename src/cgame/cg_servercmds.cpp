@@ -771,7 +771,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	char prefix[ 21 ] = "";
 	const char *ignore = "";
 	const char *location = "";
-	team_t team = TEAM_NONE;
+	TeamIndex team = TI_NONE;
 
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
@@ -780,11 +780,11 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 		name = ci->name;
 		team = ci->team;
-		if ( ci->team == TEAM_ALIENS )
+		if ( ci->team == TI_1 )
 		{
 			tcolor = Color::Red;
 		}
-		else if ( ci->team == TEAM_HUMANS )
+		else if ( ci->team == TI_2 )
 		{
 			tcolor = Color::Cyan;
 		}
@@ -793,7 +793,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		{
 			Com_sprintf( prefix, sizeof( prefix ), "[%s%c^*] ",
 			             Color::ToString( tcolor ).c_str(),
-			             Str::ctoupper( * ( BG_TeamName( ci->team ) ) ) );
+			             Str::ctoupper( * ( BG_TeamName( i2t( ci->team ) ) ) ) );
 		}
 
 		if ( Com_ClientListContains( &cgs.ignoreList, clientNum ) )

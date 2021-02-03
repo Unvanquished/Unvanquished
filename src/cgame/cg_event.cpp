@@ -41,7 +41,7 @@ static const struct {
 	char     icon[16];
 	bool envKill;
 	bool showAssist;
-	team_t   team;
+	TeamType   team;
 } meansOfDeath[] = {
 	// Icon            Envkill Assist? (Team)
 	{ "☠",             false, false, TEAM_HUMANS },
@@ -116,12 +116,12 @@ static void CG_Obituary( entityState_t *ent )
 	char         assistantName[ MAX_NAME_LENGTH ];
 	gender_t     gender;
 	clientInfo_t *ci;
-	team_t       attackerTeam, assistantTeam = TEAM_NONE;
+	TeamIndex       attackerTeam, assistantTeam = TI_NONE;
 
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
 	assistant = ent->otherEntityNum3;
-	assistantTeam = (team_t) ( ent->generic1 & 0xFF ); // ugly hack allowing for future expansion(!)
+	assistantTeam = (TeamIndex) ( ent->generic1 & 0xFF ); // ugly hack allowing for future expansion(!)
 	mod = ent->eventParm;
 
 	if ( target < 0 || target >= MAX_CLIENTS )
@@ -136,7 +136,7 @@ static void CG_Obituary( entityState_t *ent )
 	{
 		attacker = ENTITYNUM_WORLD;
 		attackerInfo = nullptr;
-		attackerTeam = TEAM_NONE;
+		attackerTeam = TI_NONE;
 		strcpy( attackerName, "noname" );
 	}
 	else
@@ -163,7 +163,7 @@ static void CG_Obituary( entityState_t *ent )
 
 	if ( assistantTeam < TEAM_NONE || assistantTeam >= NUM_TEAMS )
 	{
-		assistantTeam = TEAM_NONE;
+		assistantTeam = TI_NONE;
 	}
 
 	if ( !assistantInfo )
@@ -195,7 +195,7 @@ static void CG_Obituary( entityState_t *ent )
 
 		if ( meansOfDeath[ mod ].team )
 		{
-			attackerTeam = meansOfDeath[ mod ].team;
+			//XXX attackerTeam = meansOfDeath[ mod ].team;
 		}
 
 		// if the long form is needed, show it; but we need a kill icon for this kill type
@@ -211,6 +211,7 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				if ( meansOfDeath[ mod ].showAssist && assistantInfo )
 				{
+					//XXX waht is this team tag stuff
 					Log::Notice( "%s (+ %s%s^*) %s %s%s", teamTag[ attackerTeam ], teamTag[ assistantTeam ], assistantName, meansOfDeath[ mod ].icon, teamTag[ ci->team ], targetName );
 				}
 				else
