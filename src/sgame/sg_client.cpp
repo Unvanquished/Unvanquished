@@ -207,7 +207,7 @@ find the nearest buildable of the right type that is
 spawned/healthy/unblocked etc.
 ================
 */
-static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildable )
+static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildable, TeamIndex team )
 {
 	gentity_t *search = nullptr;
 	gentity_t *spot = nullptr;
@@ -220,6 +220,11 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 		}
 
 		if ( Entities::IsDead( search ) )
+		{
+			continue;
+		}
+
+		if ( search->buildableTeam != team )
 		{
 			continue;
 		}
@@ -274,11 +279,13 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( TeamIndex team, vec3_t preference, ve
 
 	if ( i2t( team ) == TEAM_ALIENS )
 	{
-		spot = G_SelectSpawnBuildable( preference, BA_A_SPAWN );
+		spot = G_SelectSpawnBuildable( preference, BA_A_SPAWN, team );
+		if (!spot) spot = spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN, team );
 	}
 	else if ( i2t( team ) == TEAM_HUMANS )
 	{
-		spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN );
+		spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN, team );
+		if (!spot) spot = spot = G_SelectSpawnBuildable( preference, BA_A_SPAWN, team );
 	}
 
 	if ( !spot )

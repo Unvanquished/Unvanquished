@@ -116,8 +116,9 @@ float Entities::HealthFraction(gentity_t* ent) {
 bool Entities::AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod) {
 	bool hit = false;
 
-	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent& humanClassComponent) {
+	ForEntities<ClientComponent>([&] (Entity& other, ClientComponent& humanClassComponent) {
 		// TODO: Add LocationComponent.
+		if (Entities::OnSameTeam(entity, other)) return;
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 		float damage   = amount * (1.0f - distance / range);
 

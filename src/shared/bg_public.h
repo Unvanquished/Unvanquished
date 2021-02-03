@@ -68,7 +68,14 @@ enum TeamIndex {
 };
 
 inline TeamType i2t(TeamIndex i) {
-	return (TeamType)i;
+	switch (i) {
+	case TI_1:
+		return TEAM_HUMANS;
+	case TI_2:
+		return TEAM_ALIENS;
+	default:
+		return (TeamType)i;
+	}
 }
 
 //
