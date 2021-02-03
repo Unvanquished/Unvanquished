@@ -317,6 +317,7 @@ static int CompareBeaconsByDist( const void *a, const void *b )
  */
 static void MarkRelevantBeacons()
 {
+#if 0
 	const playerState_t *ps = &cg.predictedPlayerState;
 	int team = ps->persistant[ PERS_TEAM ];
 	bool lowammo, energy;
@@ -359,6 +360,7 @@ static void MarkRelevantBeacons()
 			}
 		}
 	}
+#endif
 }
 
 static void SetHighlightedBeacon()
@@ -406,6 +408,7 @@ static TeamIndex TargetTeam( const cbeacon_t *beacon )
  */
 static void DrawBeacon( cbeacon_t *b )
 {
+#if 0
 	float alpha; // target
 	int time_in, time_left;
 	float t_fadein, t_fadeout; // t_ stands for "parameter", not "time"
@@ -511,7 +514,7 @@ static void DrawBeacon( cbeacon_t *b )
 	}
 */
 	// color
-	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE ||
+	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TI_NONE ||
 	    b->type == BCT_TAG || b->type == BCT_BASE )
 	{
 		switch( b->ownerTeam )
@@ -580,6 +583,7 @@ static void DrawBeacon( cbeacon_t *b )
 	}
 	else
 		b->clamped = false;
+#endif
 }
 
 /**
@@ -587,6 +591,7 @@ static void DrawBeacon( cbeacon_t *b )
  */
 static void HandHLBeaconToUI()
 {
+#if 0
 	cbeacon_t *beacon;
 	beaconRocket_t * const br = &cg.beaconRocket;
 	bool showIcon     = false,
@@ -663,6 +668,7 @@ static void HandHLBeaconToUI()
 	CG_ExponentialFade( &br->distanceAlpha, showDistance ? 1 : 0, 10 );
 	CG_ExponentialFade( &br->ageAlpha,      showAge      ? 1 : 0, 10 );
 	CG_ExponentialFade( &br->ownerAlpha,    showOwner    ? 1 : 0, 10 );
+#endif
 }
 
 /**
@@ -713,6 +719,8 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 
 qhandle_t CG_BeaconDescriptiveIcon( const cbeacon_t *b )
 {
+	return 0;
+#if 0
 	if ( b->type == BCT_TAG ) {
 		if( b->flags & EF_BC_TAG_PLAYER ) {
 			switch ( TargetTeam( b ) ) {
@@ -729,10 +737,13 @@ qhandle_t CG_BeaconDescriptiveIcon( const cbeacon_t *b )
 	} else {
 		return CG_BeaconIcon( b );
 	}
+#endif
 }
 
 const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 {
+	return "";
+#if 0
 	if( b->type <= BCT_NONE || b->type > NUM_BEACON_TYPES ) {
 		return strncpy( out, "b->type out of range", len );
 		return "b->type out of range";
@@ -745,7 +756,7 @@ const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 	{
 		case BCT_TAG:
 			if( b->flags & EF_BC_TAG_PLAYER ) {
-				if ( ownTeam == TEAM_NONE || ownTeam == beaconTeam ) {
+				if ( ownTeam == TI_NONE || ownTeam == beaconTeam ) {
 					return strncpy( out, cgs.clientinfo[ b->target ].name, len ); // Player name
 				} else if ( beaconTeam == TEAM_ALIENS ) {
 					return strncpy( out, BG_ClassModelConfig( b->data )->humanName, len ); // Class name
@@ -765,8 +776,8 @@ const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 		{
 			const char *prefix, *suffix;
 
-			if ( ownTeam == TEAM_NONE ) {
-				switch ( TargetTeam( b ) ) {
+			if ( ownTeam == TI_NONE ) {
+				switch ( i2t( TargetTeam( b ) ) ) {
 					case TEAM_ALIENS: prefix = "Alien"; break;
 					case TEAM_HUMANS: prefix = "Human"; break;
 					default:          prefix = "Neutral";
@@ -793,4 +804,5 @@ const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 			// All other beacons have a fixed name.
 			return strncpy( out, BG_Beacon( b->type )->text[ 0 ], len );
 	}
+#endif
 }

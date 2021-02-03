@@ -221,11 +221,11 @@ static int GetClientMass( gentity_t *ent )
 {
 	int entMass = 100;
 
-	if ( ent->client->pers.team == TEAM_ALIENS )
+	if ( i2t( ent->client->pers.team ) == TEAM_ALIENS )
 	{
 		entMass = BG_Class( ent->client->pers.classSelection )->health;
 	}
-	else if ( ent->client->pers.team == TEAM_HUMANS )
+	else if ( i2t( ent->client->pers.team ) == TEAM_HUMANS )
 	{
 		if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, ent->client->ps.stats ) )
 		{
@@ -549,7 +549,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 
 	// Check to see if we are in the spawn queue
 	// Also, do some other checks and updates which players need while spectating
-	if ( team == TEAM_ALIENS || team == TEAM_HUMANS )
+	if ( team == TI_1 || team == TI_2 )
 	{
 		client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
 		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
@@ -573,7 +573,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		}
 
 		//be sure that only valid team "numbers" can be used.
-		ASSERT(team == TEAM_ALIENS || team == TEAM_HUMANS);
+		ASSERT(team == TI_1 || team == TI_2);
 		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
 
 		client->pers.classSelection = PCL_NONE;
@@ -592,15 +592,15 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	}
 	else if ( attackReleased )
 	{
-		if ( team == TEAM_NONE )
+		if ( team == TI_NONE )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_TEAM );
 		}
-		else if ( team == TEAM_ALIENS )
+		else if ( i2t( team ) == TEAM_ALIENS )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_A_CLASS );
 		}
-		else if ( team == TEAM_HUMANS )
+		else if ( i2t( team ) == TEAM_HUMANS )
 		{
 			G_TriggerMenu( client->ps.clientNum, MN_H_SPAWN );
 		}
@@ -659,7 +659,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		if ( client->ps.pm_flags & PMF_QUEUED )
 		{
 			/* team must exist, or there will be a sigsegv */
-			ASSERT(team == TEAM_HUMANS || team == TEAM_ALIENS);
+			ASSERT(team == TI_1 || team == TI_2);
 			client->ps.persistant[ PERS_SPAWNQUEUE ] = level.team[ team ].numSpawns;
 			client->ps.persistant[ PERS_SPAWNQUEUE ] |= G_GetPosInSpawnQueue( &level.team[ team ].spawnQueue,
 			                                                                  client->ps.clientNum ) << 8;
@@ -739,7 +739,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 	}
 
 	client = self->client;
-	if ( !client || client->pers.team != TEAM_HUMANS )
+	if ( !client || i2t( client->pers.team ) != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -840,7 +840,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 		// Tag entity directly hit and entities in human radar range, make sure the latter are also
 		// in vis and, for buildables, are in a line of sight.
 		if( ( target == traceEnt ) ||
-		    ( team == TEAM_HUMANS &&
+		    ( i2t( team ) == TEAM_HUMANS &&
 		      BG_InventoryContainsUpgrade( UP_RADAR, client->ps.stats ) &&
 		      Distance( self->s.origin, target->s.origin ) < RADAR_RANGE &&
 		      Beacon::EntityTaggable( target->s.number, team, false ) &&
@@ -1027,14 +1027,14 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		}
 
 		// turn off life support when a team admits defeat
-		if ( client->pers.team == TEAM_ALIENS &&
-		     level.surrenderTeam == TEAM_ALIENS )
+		if ( i2t( client->pers.team ) == TEAM_ALIENS &&
+		     i2t( level.surrenderTeam ) == TEAM_ALIENS )
 		{
 			ent->entity->Damage((float)BG_Class(client->ps.stats[STAT_CLASS])->regenRate,
 			                    nullptr, Util::nullopt, Util::nullopt, DAMAGE_PURE, MOD_SUICIDE);
 		}
-		else if ( client->pers.team == TEAM_HUMANS &&
-		          level.surrenderTeam == TEAM_HUMANS )
+		else if ( i2t( client->pers.team ) == TEAM_HUMANS &&
+		          i2t( level.surrenderTeam ) == TEAM_HUMANS )
 		{
 			ent->entity->Damage(5.0f, nullptr, Util::nullopt, Util::nullopt, DAMAGE_PURE, MOD_SUICIDE);
 		}
@@ -1055,11 +1055,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		     client->pers.aliveSeconds % g_freeFundPeriod.integer == 0 )
 		{
 			// Give clients some credit periodically
-			if ( client->pers.team == TEAM_ALIENS )
+			if ( i2t( client->pers.team ) == TEAM_ALIENS )
 			{
 				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
 			}
-			else if ( client->pers.team == TEAM_HUMANS )
+			else if ( i2t( client->pers.team ) == TEAM_HUMANS )
 			{
 				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
 			}
@@ -1695,7 +1695,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	client = self->client;
 
 	// Check if client is an alien and has the healing ability
-	if ( !client || client->pers.team != TEAM_ALIENS || Entities::IsDead( self )
+	if ( !client || i2t( client->pers.team ) != TEAM_ALIENS || Entities::IsDead( self )
 	     || level.surrenderTeam == client->pers.team )
 	{
 		return;
@@ -2197,7 +2197,7 @@ void ClientThink_real( gentity_t *self )
 				}
 			}
 
-			if ( !ent && client->pers.team == TEAM_ALIENS )
+			if ( !ent && i2t( client->pers.team ) == TEAM_ALIENS )
 			{
 				G_TriggerMenu( client->ps.clientNum, MN_A_INFEST );
 			}

@@ -154,7 +154,8 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 	}
 
 	if ( es->eType == entityType_t::ET_BUILDABLE &&
-	     ps->persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
+		//XXX
+	     i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) == BG_Buildable( es->modelindex )->team )
 	{
 		return es;
 	}
@@ -502,7 +503,7 @@ CG_SpectatorText
 */
 static void CG_SpectatorText( char *text, playerState_t *ps )
 {
-	if ( cgs.clientinfo[ cg.clientNum ].team != TEAM_NONE )
+	if ( cgs.clientinfo[ cg.clientNum ].team != TI_NONE )
 	{
 		if ( ps->pm_flags & PMF_QUEUED )
 		{
@@ -532,7 +533,7 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 			          va( _( "Press %s to switch to chase-cam spectator mode\n" ),
 			              CG_KeyNameForCommand( "+useitem" ) ) );
 		}
-		else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
+		else if ( cgs.clientinfo[ cg.clientNum ].team == TI_NONE )
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
 			          va( _( "Press %s to return to free spectator mode\n" ),

@@ -76,7 +76,7 @@ struct botMemory_t
 	botSkill_t botSkill;
 	botEntityAndDistance_t bestEnemy;
 	botEntityAndDistance_t closestDamagedBuilding;
-	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
+	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];  //XXX does not conisder team
 
 	AIBehaviorTree_t *behaviorTree;
 	AIGenericNode_t  *currentNode;

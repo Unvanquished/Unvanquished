@@ -109,7 +109,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 	{
 		dead = true;
 	}
-	else if ( BotGetTargetTeam( *goal ) == TEAM_NONE )
+	else if ( BotGetTargetTeam( *goal ) == TI_NONE )
 	{
 		dead = true;
 	}
@@ -262,12 +262,12 @@ static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t humanMomentum( gentity_t*, const AIValue_t* )
 {
-	return AIBoxInt( level.team[ TEAM_HUMANS ].momentum );
+	return AIBoxInt( level.team[ (int)TEAM_HUMANS ].momentum );
 }
 
 static AIValue_t alienMomentum( gentity_t*, const AIValue_t* )
 {
-	return AIBoxInt( level.team[ TEAM_ALIENS ].momentum );
+	return AIBoxInt( level.team[ (int)TEAM_ALIENS ].momentum );
 }
 
 static AIValue_t randomChance( gentity_t*, const AIValue_t* )

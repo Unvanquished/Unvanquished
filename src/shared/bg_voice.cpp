@@ -183,11 +183,11 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 
 				if ( !Q_stricmp( token.string, "humans" ) )
 				{
-					voiceTrack->team |= 1 << TEAM_HUMANS;
+					voiceTrack->team |= 1 << (int)TEAM_HUMANS;
 				}
 				else if ( !Q_stricmp( token.string, "aliens" ) )
 				{
-					voiceTrack->team |= 1 << TEAM_ALIENS;
+					voiceTrack->team |= 1 << (int)TEAM_ALIENS;
 				}
 				else
 				{

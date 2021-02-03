@@ -554,7 +554,7 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 		}
 
 		G_SpawnBuildable( spawnedEntity, buildable );
-		level.team[ attr->team ].layoutBuildPoints += attr->buildPoints;
+		level.team[ (TeamIndex)attr->team ].layoutBuildPoints += attr->buildPoints; //XXX
 
 		return true;
 	}

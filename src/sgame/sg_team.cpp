@@ -71,7 +71,7 @@ void G_TeamCommand( TeamIndex team, const char *cmd )
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
 			if ( level.clients[ i ].pers.team == team ||
-			     ( level.clients[ i ].pers.team == TEAM_NONE &&
+			     ( level.clients[ i ].pers.team == TI_NONE &&
 			       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 			{
 				trap_SendServerCommand( i, cmd );
@@ -137,7 +137,7 @@ TeamIndex G_TeamIndex( gentity_t *ent )
 bool G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
 {
 	TeamIndex team1 = G_TeamIndex( ent1 );
-	return ( team1 != TEAM_NONE && team1 == G_TeamIndex( ent2 ) );
+	return ( team1 != TI_NONE && team1 == G_TeamIndex( ent2 ) );
 }
 
 /*
@@ -187,15 +187,15 @@ void G_UpdateTeamConfigStrings()
 		Com_Memset( &humanTeam, 0, sizeof( clientList_t ) );
 	}
 
-	trap_SetConfigstringRestrictions( CS_VOTE_TIME + TEAM_ALIENS,   &humanTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_STRING + TEAM_ALIENS, &humanTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_YES + TEAM_ALIENS,    &humanTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_NO + TEAM_ALIENS,     &humanTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_TIME + TI_1,   &humanTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_STRING + TI_1, &humanTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_YES + TI_1,    &humanTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_NO + TI_1,     &humanTeam );
 
-	trap_SetConfigstringRestrictions( CS_VOTE_TIME + TEAM_HUMANS,   &alienTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_STRING + TEAM_HUMANS, &alienTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_YES + TEAM_HUMANS,    &alienTeam );
-	trap_SetConfigstringRestrictions( CS_VOTE_NO + TEAM_HUMANS,     &alienTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_TIME + TI_2,   &alienTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_STRING + TI_2, &alienTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_YES + TI_2,    &alienTeam );
+	trap_SetConfigstringRestrictions( CS_VOTE_NO + TI_2,     &alienTeam );
 }
 
 /*
@@ -210,7 +210,7 @@ void G_LeaveTeam( gentity_t *self )
 	gentity_t *ent;
 	int       i;
 
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+	if ( TI_1 == team || TI_2 == team )
 	{
 		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, self->client->ps.clientNum );
 	}
@@ -285,14 +285,14 @@ void G_ChangeTeam( gentity_t *ent, TeamIndex newTeam )
 	ent->client->pers.classSelection = PCL_NONE;
 	ClientSpawn( ent, nullptr, nullptr, nullptr );
 
-	if ( oldTeam == TEAM_HUMANS && newTeam == TEAM_ALIENS )
+	if ( i2t( oldTeam ) == TEAM_HUMANS && i2t( newTeam ) == TEAM_ALIENS )
 	{
 		// Convert from human to alien credits
 		ent->client->pers.credit =
 		  ( int )( ent->client->pers.credit *
 		           ALIEN_MAX_CREDITS / HUMAN_MAX_CREDITS + 0.5f );
 	}
-	else if ( oldTeam == TEAM_ALIENS && newTeam == TEAM_HUMANS )
+	else if ( i2t( oldTeam ) == TEAM_ALIENS && i2t( newTeam ) == TEAM_HUMANS )
 	{
 		// Convert from alien to human credits
 		ent->client->pers.credit =
@@ -377,7 +377,8 @@ void TeamplayInfoMessage( gentity_t *ent )
 	char      entry[ 24 ];
 	char      string[ ( MAX_CLIENTS - 1 ) * ( sizeof( entry ) - 1 ) + 1 ];
 	int       i, j;
-	int       team, stringlength;
+	int       stringlength;
+	TeamIndex team;
 	gentity_t *player;
 	gclient_t *cl;
 	upgrade_t upgrade = UP_NONE;
@@ -394,7 +395,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		return;
 	}
 
-	if ( ent->client->pers.team == TEAM_NONE )
+	if ( ent->client->pers.team == TI_NONE )
 	{
 		if ( ent->client->sess.spectatorState == SPECTATOR_FREE ||
 		     ent->client->sess.spectatorClient < 0 )
@@ -435,7 +436,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 			curWeaponClass = WP_NONE;
 			upgrade = UP_NONE;
 		}
-		else if ( cl->pers.team == TEAM_HUMANS )
+		else if ( i2t( cl->pers.team ) == TEAM_HUMANS )
 		{
 			curWeaponClass = cl->ps.weapon;
 
@@ -461,14 +462,14 @@ void TeamplayInfoMessage( gentity_t *ent )
 			}
 			health = static_cast<int>( std::ceil( Entities::HealthOf(player) ) );
 		}
-		else if ( cl->pers.team == TEAM_ALIENS )
+		else if ( i2t( cl->pers.team ) == TEAM_ALIENS )
 		{
 			curWeaponClass = cl->ps.stats[ STAT_CLASS ];
 			upgrade = UP_NONE;
 			health = static_cast<int>( std::ceil( Entities::HealthOf(player) ) );
 		}
 
-		if( team == TEAM_ALIENS ) // aliens don't have upgrades
+		if( i2t( team ) == TEAM_ALIENS ) // aliens don't have upgrades
 		{
 			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i", i,
 						 cl->pers.location,
@@ -524,8 +525,8 @@ void CheckTeamStatus()
 				continue;
 			}
 
-			if ( ent->inuse && ( ent->client->pers.team == TEAM_HUMANS ||
-			                     ent->client->pers.team == TEAM_ALIENS ) )
+			if ( ent->inuse && ( ent->client->pers.team == TI_1 ||
+			                     ent->client->pers.team == TI_2 ) )
 			{
 				loc = GetCloseLocationEntity( ent );
 
@@ -569,15 +570,15 @@ void CheckTeamStatus()
 	{
 		level.lastTeamImbalancedTime = level.time;
 
-		if ( level.team[ TEAM_ALIENS ].numSpawns > 0 &&
-		     level.team[ TEAM_HUMANS ].numClients - level.team[ TEAM_ALIENS ].numClients > 2 )
+		if ( level.team[ TI_1 ].numSpawns > 0 &&
+		     level.team[ TI_2 ].numClients - level.team[ TI_1 ].numClients > 2 )
 		{
 			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
 			                        "Humans have more players.") "\"" );
 			level.numTeamImbalanceWarnings++;
 		}
-		else if ( level.team[ TEAM_HUMANS ].numSpawns > 0 &&
-		          level.team[ TEAM_ALIENS ].numClients - level.team[ TEAM_HUMANS ].numClients > 2 )
+		else if ( level.team[ TI_2 ].numSpawns > 0 &&
+		          level.team[ TI_1 ].numClients - level.team[ TI_2 ].numClients > 2 )
 		{
 			trap_SendServerCommand( -1, "print_tr \"" N_("Teams are imbalanced. "
 			                        "Aliens have more players.") "\"" );

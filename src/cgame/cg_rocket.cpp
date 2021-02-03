@@ -712,7 +712,7 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 	switch( type )
 	{
 		case ELEMENT_ALIENS:
-			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
+			if ( i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) == TEAM_ALIENS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
 				return true;
 			}
@@ -720,7 +720,7 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return false;
 
 		case ELEMENT_HUMANS:
-			if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
+			if ( i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) == TEAM_HUMANS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
 				return true;
 			}
@@ -728,7 +728,7 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return false;
 
 		case ELEMENT_BOTH:
-			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
+			if ( i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) != TEAM_NONE && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
 				return true;
 			}
@@ -737,7 +737,7 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 		case ELEMENT_DEAD:
 			// If you're on a team and spectating, you're probably dead
-			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+			if ( i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) != TEAM_NONE && ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 			{
 				return true;
 			}

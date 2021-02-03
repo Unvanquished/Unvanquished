@@ -3114,7 +3114,7 @@ bool G_admin_speclock( gentity_t *ent )
 	admin_log( va( "%d (%s) \"%s^*\" SPECTATE %s%s", pid, vic->client->pers.guid,
 	               vic->client->pers.netname, time, duration ) );
 
-	if ( vic->client->pers.team != TEAM_NONE )
+	if ( vic->client->pers.team != TI_NONE )
 	{
 		G_ChangeTeam( vic, TI_NONE );
 		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock:^* $1$^* put $2$^* on to the spectators team and blocked team-change for $3$$4t$") ),
@@ -4054,7 +4054,7 @@ bool G_admin_allready( gentity_t *ent )
 			continue;
 		}
 
-		if ( cl->pers.team == TEAM_NONE )
+		if ( cl->pers.team == TI_NONE )
 		{
 			continue;
 		}
@@ -4107,7 +4107,7 @@ bool G_admin_endvote( gentity_t *ent )
 	level.team[ team ].quorum = 0;
 	G_CheckVote( team );
 
-	if ( team == TEAM_NONE )
+	if ( team == TI_NONE )
 	{
 		AP( msg );
 	}
@@ -4140,7 +4140,7 @@ bool G_admin_spec999( gentity_t *ent )
 			continue;
 		}
 
-		if ( vic->client->pers.team == TEAM_NONE )
+		if ( vic->client->pers.team == TI_NONE )
 		{
 			continue;
 		}
@@ -4283,7 +4283,7 @@ bool G_admin_restart( gentity_t *ent )
 				continue;
 			}
 
-			if ( cl->pers.team == TEAM_NONE )
+			if ( cl->pers.team == TI_NONE )
 			{
 				continue;
 			}
@@ -4595,7 +4595,7 @@ bool G_admin_lock( gentity_t *ent )
 	trap_Argv( 1, teamName, sizeof( teamName ) );
 	team = G_TeamFromString( teamName );
 
-	if ( team == TEAM_ALIENS || team== TEAM_HUMANS )
+	if ( team == TI_1 || team == TI_2 )
 	{
 		if ( level.team[ team ].locked == lock )
 		{
@@ -4995,7 +4995,7 @@ bool G_admin_builder( gentity_t *ent )
 
 	AngleVectors( ent->client->ps.viewangles, forward, right, up );
 
-	if ( ent->client->pers.team != TEAM_NONE &&
+	if ( ent->client->pers.team != TI_NONE &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		G_CalcMuzzlePoint( ent, forward, right, up, start );
@@ -5015,7 +5015,7 @@ bool G_admin_builder( gentity_t *ent )
 		const char *builder, *buildingName;
 
 		if ( !buildlog &&
-		     ent->client->pers.team != TEAM_NONE &&
+		     ent->client->pers.team != TI_NONE &&
 		     ent->client->pers.team != traceEnt->buildableTeam )
 		{
 			ADMP( QQ( N_("^3builder:^* structure not owned by your team" ) ) );
@@ -5130,7 +5130,7 @@ bool G_admin_buildlog( gentity_t *ent )
 	admin = !ent || G_admin_permission( ent, "buildlog_admin" );
 	team = admin ? TI_NONE : ent->client->pers.team;
 
-	if ( !admin && team == TEAM_NONE )
+	if ( !admin && team == TI_NONE )
 	{
 		ADMP( QQ( N_("^3buildlog:^* spectators have no buildings") ) );
 		return false;
@@ -5195,9 +5195,9 @@ bool G_admin_buildlog( gentity_t *ent )
 		return false;
 	}
 
-	if ( ent && ent->client->pers.team != TEAM_NONE )
+	if ( ent && ent->client->pers.team != TI_NONE )
 	{
-		if ( team == TEAM_NONE )
+		if ( team == TI_NONE )
 		{
 			trap_SendServerCommand( -1,
 			                        va( "print_tr %s %s", QQ( N_("^3buildlog:^* $1$^* requested a log of recent building activity") ),
@@ -5247,7 +5247,7 @@ bool G_admin_buildlog( gentity_t *ent )
 				continue;
 			}
 		}
-		else if ( !admin && BG_Buildable( log->modelindex )->team != team )
+		else if ( !admin && log->buildableTeam != team )
 		{
 			continue;
 		}

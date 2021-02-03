@@ -1058,7 +1058,8 @@ public:
 		es = &cg_entities[ trace.entityNum ].currentState;
 
 		if ( es->eType == entityType_t::ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-			cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
+			//XXX
+			i2t( (TeamIndex) cg.predictedPlayerState.persistant[ PERS_TEAM ] ) == BG_Buildable( es->modelindex )->team )
 		{
 			//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
 			if ( es->modelindex == BA_H_REACTOR &&
@@ -1555,15 +1556,14 @@ static void CG_ScanForCrosshairEntity()
 		// set friend/foe if it's a living buildable
 		if ( targetState->eType == entityType_t::ET_BUILDABLE && targetState->generic1 > 0 )
 		{
-			//XXX don't know how to find TeamIndex
-			targetTeam = (TeamIndex) BG_Buildable( targetState->modelindex )->team;
+			targetTeam = (TeamIndex)targetState->modelindex2;
 
-			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
+			if ( targetTeam == ownTeam && ownTeam != TI_NONE )
 			{
 				cg.crosshairFriend = true;
 			}
 
-			else if ( targetTeam != TEAM_NONE )
+			else if ( targetTeam != TI_NONE )
 			{
 				cg.crosshairFoe = true;
 			}
@@ -1586,7 +1586,7 @@ static void CG_ScanForCrosshairEntity()
 		if ( targetState->generic1 > 0 )
 		{
 			// set friend/foe
-			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
+			if ( targetTeam == ownTeam && ownTeam != TI_NONE )
 			{
 				cg.crosshairFriend = true;
 
@@ -1595,11 +1595,11 @@ static void CG_ScanForCrosshairEntity()
 				cg.crosshairClientTime = cg.time;
 			}
 
-			else if ( targetTeam != TEAM_NONE )
+			else if ( targetTeam != TI_NONE )
 			{
 				cg.crosshairFoe = true;
 
-				if ( ownTeam == TEAM_NONE )
+				if ( ownTeam == TI_NONE )
 				{
 					// spectating, so show the name
 					cg.crosshairClientNum = trace.entityNum;
@@ -1668,7 +1668,7 @@ public:
 
 		// add health from overlay info to the crosshair client name
 		if ( cg_teamOverlayUserinfo.integer &&
-			cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE &&
+			cg.snap->ps.persistant[ PERS_TEAM ] != TI_NONE &&
 			cgs.teamInfoReceived &&
 			cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
 		{
@@ -1718,7 +1718,7 @@ public:
 
 		team = ( TeamIndex ) cg.snap->ps.persistant[ PERS_TEAM ];
 
-		if ( team <= TEAM_NONE || team >= NUM_TEAMS )
+		if ( team <= TI_NONE || team >= NUM_TEAMS )
 		{
 			Clear();
 			return;
@@ -2381,7 +2381,7 @@ void CG_Rocket_DrawPlayerHealthCross()
 
 	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
 	{
-		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+		if ( i2t( (TeamIndex) cg.snap->ps.persistant[ PERS_TEAM ] ) == TEAM_ALIENS )
 		{
 			shader = cgs.media.healthCross2X;
 		}
@@ -2400,7 +2400,7 @@ void CG_Rocket_DrawPlayerHealthCross()
 	// Pick the alpha value
 	color = ref_color;
 
-	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
+	if ( i2t( (TeamIndex) cg.snap->ps.persistant[ PERS_TEAM ] ) == TEAM_HUMANS &&
 			cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
 	{
 		color = Color::Red;
@@ -3321,13 +3321,13 @@ static void CG_Rocket_DrawVote_internal( TeamIndex team )
 	}
 
 	int bindTeam = CG_CurrentBindTeam();
-	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
-	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
+	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TI_NONE ? "" : "team" ), bindTeam ) );
+	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TI_NONE ? "" : "team" ), bindTeam ) );
 
 	std::string s = Str::Format( "%sVOTE(%i): %s\n"
 			"    Called by: \"%s\"\n"
 			"    [%s][<span class='material-icon'>&#xe8dc;</span>]:%i [%s][<span class='material-icon'>&#xe8db;</span>]:%i\n",
-			team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ],
+			team == TI_NONE ? "" : "TEAM", sec, cgs.voteString[ team ],
 			cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
 	Rocket_SetInnerRML( s.c_str(), 0 );

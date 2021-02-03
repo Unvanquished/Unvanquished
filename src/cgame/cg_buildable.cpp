@@ -2666,8 +2666,9 @@ void CG_Buildable( centity_t *cent )
 	// smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );
 
+	TeamIndex buildableTeam = (TeamIndex)cent->currentState.modelindex2;
 	// draw range marker if enabled
-	if( team == cg.predictedPlayerState.persistant[ PERS_TEAM ] ) {
+	if( buildableTeam == cg.predictedPlayerState.persistant[ PERS_TEAM ] ) {
 		bool drawRange;
 		float dist, maxDist = std::max( RADAR_RANGE, ALIENSENSE_RANGE );
 

@@ -397,7 +397,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 
 	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
 
-	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
+	if ( i2t( (TeamIndex) pm->ps->persistant[ PERS_TEAM ] ) == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
 		bool wasSprinting, sprint;
 
@@ -1263,7 +1263,7 @@ static bool PM_CheckJetpack()
 	int                 sideVelocity;
 
 	if ( pm->ps->pm_type != PM_NORMAL ||
-	     pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS ||
+	     i2t( (TeamIndex) pm->ps->persistant[ PERS_TEAM ] ) != TEAM_HUMANS ||
 	     !BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) )
 	{
 		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1551,7 +1551,7 @@ static bool PM_CheckJump()
 	jetpackJump     = false;
 
 	// humans need stamina or jetpack to jump
-	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
+	if ( ( i2t( (TeamIndex) pm->ps->persistant[ PERS_TEAM ] ) == TEAM_HUMANS ) &&
 	     ( pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost ) )
 	{
 		// use jetpack instead of stamina to take off
@@ -1567,7 +1567,7 @@ static bool PM_CheckJump()
 	}
 
 	// take some stamina off
-	if ( !jetpackJump && pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( !jetpackJump && i2t( (TeamIndex) pm->ps->persistant[ PERS_TEAM ] ) == TEAM_HUMANS )
 	{
 		pm->ps->stats[ STAT_STAMINA ] -= staminaJumpCost;
 	}
@@ -4720,7 +4720,7 @@ static void PM_HumanStaminaEffects()
 	int      *stats;
 	bool crouching, stopped, walking;
 
-	if ( pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS )
+	if ( i2t( (TeamIndex) pm->ps->persistant[ PERS_TEAM ] ) != TEAM_HUMANS )
 	{
 		return;
 	}

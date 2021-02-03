@@ -464,7 +464,7 @@ char CG_GetColorCharForHealth( int clientnum )
 	int  maxHealth;
 	int  curWeaponClass = cgs.clientinfo[ clientnum ].curWeaponClass;
 
-	if ( cgs.clientinfo[ clientnum ].team == TEAM_ALIENS )
+	if ( i2t( cgs.clientinfo[ clientnum ].team ) == TEAM_ALIENS )
 	{
 		maxHealth = BG_Class( curWeaponClass )->health;
 	}

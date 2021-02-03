@@ -104,21 +104,19 @@ void CG_ClientList_f()
 
 		switch ( ci->team )
 		{
-			case TEAM_ALIENS:
+			case TI_1:
 				Log::Notice( "%2d %sA   ^*%s\n", i,
 				            Color::ToString( Color::Red ),
 				            ci->name );
 				break;
 
-			case TEAM_HUMANS:
+			case TI_2:
 				Log::Notice( "%2d %sH   ^*%s\n", i,
 				            Color::ToString( Color::Cyan ),
 				            ci->name );
 				break;
 
 			default:
-			case TEAM_NONE:
-			case NUM_TEAMS:
 				Log::Notice( "%2d S   %s\n", i, ci->name );
 				break;
 		}
@@ -139,7 +137,7 @@ static void CG_CompleteClass()
 {
 	int i = 0;
 
-	if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
+	if ( i2t( cgs.clientinfo[ cg.clientNum ].team ) == TEAM_ALIENS )
 	{
 		// TODO: Add iterator for alien/human classes
 		for ( i = PCL_ALIEN_BUILDER0; i < PCL_HUMAN_NAKED; i++ )
@@ -147,7 +145,7 @@ static void CG_CompleteClass()
 			trap_CompleteCallback( BG_Class( i )->name );
 		}
 	}
-	else if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_HUMANS )
+	else if ( i2t( cgs.clientinfo[ cg.clientNum ].team ) == TEAM_HUMANS )
 	{
 		trap_CompleteCallback( BG_Weapon( WP_HBUILD )->name );
 		trap_CompleteCallback( BG_Weapon( WP_MACHINEGUN )->name );
@@ -199,7 +197,7 @@ static void CG_CompleteBuy_internal( bool negatives )
 
 static void CG_CompleteBuy()
 {
-	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
+	if( i2t( cgs.clientinfo[ cg.clientNum ].team ) != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -212,7 +210,7 @@ static void CG_CompleteBuy()
 
 static void CG_CompleteSell()
 {
-	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
+	if( i2t( cgs.clientinfo[ cg.clientNum ].team ) != TEAM_HUMANS )
 	{
 		return;
 	}
@@ -245,7 +243,7 @@ static void CG_CompleteBuild()
 	for ( i = 0; i < BA_NUM_BUILDABLES; i++ )
 	{
 		const buildableAttributes_t *item = BG_Buildable( i );
-		if ( item->team == cgs.clientinfo[ cg.clientNum ].team )
+		if ( item->team == i2t( cgs.clientinfo[ cg.clientNum ].team ) )
 		{
 			trap_CompleteCallback( item->name );
 		}
@@ -330,7 +328,7 @@ static void CG_CompleteItem()
 {
 	int i = 0;
 
-	if( cgs.clientinfo[ cg.clientNum ].team == TEAM_ALIENS )
+	if( i2t( cgs.clientinfo[ cg.clientNum ].team ) == TEAM_ALIENS )
 	{
 		return;
 	}

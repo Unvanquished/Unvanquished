@@ -2335,13 +2335,13 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 				vec3_t    dir;
 				gentity_t *tent;
 
-				if ( other->buildableTeam == TEAM_ALIENS )
+				if ( i2t( other->buildableTeam ) == TEAM_ALIENS )
 				{
 					VectorCopy( other->s.origin2, dir );
 					tent = G_NewTempEntity( other->s.origin, EV_ALIEN_BUILDABLE_EXPLOSION );
 					tent->s.eventParm = DirToByte( dir );
 				}
-				else if ( other->buildableTeam == TEAM_HUMANS )
+				else if ( i2t( other->buildableTeam ) == TEAM_HUMANS )
 				{
 					VectorSet( dir, 0.0f, 0.0f, 1.0f );
 					tent = G_NewTempEntity( other->s.origin, EV_HUMAN_BUILDABLE_EXPLOSION );

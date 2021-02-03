@@ -480,11 +480,11 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t* )
 	if ( self->conditions.team && ( activator->client->pers.team != self->conditions.team ) )
 		return;
 
-	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->pers.team == TEAM_HUMANS )
+	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && i2t( activator->client->pers.team ) == TEAM_HUMANS )
 	{
 		shouldFire = sensor_equipment_match( self, activator );
 	}
-	else if ( self->conditions.classes[0] && activator->client->pers.team == TEAM_ALIENS )
+	else if ( self->conditions.classes[0] && i2t( activator->client->pers.team ) == TEAM_ALIENS )
 	{
 		shouldFire = sensor_class_match( self, activator );
 	}

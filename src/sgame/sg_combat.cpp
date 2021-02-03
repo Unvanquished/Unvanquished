@@ -175,7 +175,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	{
 		const gentity_t *player = &g_entities[ playerNum ];
 
-		if ( player == killer || player == self || self->credits[ playerNum ].team <= TEAM_NONE )
+		if ( player == killer || player == self || self->credits[ playerNum ].team <= TI_NONE )
 		{
 			continue;
 		}
@@ -250,7 +250,7 @@ void G_RewardAttackers( gentity_t *self )
 		playerTeam = player->client->pers.team;
 
 		// Player must be on the other team
-		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
+		if ( playerTeam == ownTeam || playerTeam <= TI_NONE || playerTeam >= NUM_TEAMS )
 		{
 			continue;
 		}
@@ -274,7 +274,7 @@ void G_RewardAttackers( gentity_t *self )
 		self->credits[ playerNum ].value = 0.0f;
 
 		// Player must be on the other team
-		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
+		if ( playerTeam == ownTeam || playerTeam <= TI_NONE || playerTeam >= NUM_TEAMS )
 		{
 			continue;
 		}
@@ -422,12 +422,12 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		if ( ( attacker == self || G_OnSameTeam( self, attacker ) ) )
 		{
 			//punish team kills and suicides
-			if ( attacker->client->pers.team == TEAM_ALIENS )
+			if ( i2t( attacker->client->pers.team ) == TEAM_ALIENS )
 			{
 				G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, true );
 				G_AddCreditsToScore( attacker, -ALIEN_TK_SUICIDE_PENALTY );
 			}
-			else if ( attacker->client->pers.team == TEAM_HUMANS )
+			else if ( i2t( attacker->client->pers.team ) == TEAM_HUMANS )
 			{
 				G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, true );
 				G_AddCreditsToScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
@@ -442,11 +442,11 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 	else if ( attacker->s.eType != entityType_t::ET_BUILDABLE )
 	{
-		if ( self->client->pers.team == TEAM_ALIENS )
+		if ( i2t( self->client->pers.team ) == TEAM_ALIENS )
 		{
 			G_AddCreditsToScore( self, -ALIEN_TK_SUICIDE_PENALTY );
 		}
-		else if ( self->client->pers.team == TEAM_HUMANS )
+		else if ( i2t( self->client->pers.team ) == TEAM_HUMANS )
 		{
 			G_AddCreditsToScore( self, -HUMAN_TK_SUICIDE_PENALTY );
 		}
@@ -999,7 +999,7 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 
 		if ( G_CanDamage( ent, origin ) )
 		{
-			if ( testHit == TEAM_NONE )
+			if ( testHit == TI_NONE )
 			{
 				VectorSubtract( ent->r.currentOrigin, origin, dir );
 				// push the center of mass higher than the origin so players
@@ -1043,8 +1043,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 		default:
 			if ( actor->client )
 			{
-				if ( actor->client->pers.team ==
-				     BG_Buildable( self->s.modelindex )->team )
+				if ( G_OnSameTeam( self, actor ) )
 				{
 					fate = BF_TEAMKILL;
 				}
@@ -1078,8 +1077,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	             mod == MOD_DECONSTRUCT ? "deconstructed" : "destroyed",
 	             actor->client ? actor->client->pers.netname : "<world>" );
 
-	if ( actor->client && actor->client->pers.team ==
-	     BG_Buildable( self->s.modelindex )->team )
+	if ( actor->client && G_OnSameTeam( self, actor ) )
 	{
 		G_TeamCommand( actor->client->pers.team,
 		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$\n") ) :

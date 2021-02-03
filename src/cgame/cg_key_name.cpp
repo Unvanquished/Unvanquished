@@ -61,7 +61,7 @@ void CG_SetBindTeam(TeamType team) {
         bindTeam = static_cast<int>(team);
         break;
     default:
-        Log::Warn("Invalid team %d", team);
+        Log::Warn("Invalid team %d", (int)team);
     }
 }
 

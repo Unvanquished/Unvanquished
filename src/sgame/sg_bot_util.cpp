@@ -89,7 +89,7 @@ float BotGetHealScore( gentity_t *self )
 	float distToHealer = 0;
 	float percentHealth = 0;
 
-	if ( self->client->pers.team == TEAM_ALIENS )
+	if ( i2t( self->client->pers.team ) == TEAM_ALIENS )
 	{
 		if ( self->botMind->closestBuildings[ BA_A_BOOSTER ].ent )
 		{
@@ -451,7 +451,7 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 			continue;
 		}
 		if ( target->s.eType == entityType_t::ET_BUILDABLE && target->s.modelindex == buildingType &&
-		     ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) &&
+		     ( i2t( target->buildableTeam ) == TEAM_ALIENS || ( target->powered && target->spawned ) ) &&
 		     Entities::IsAlive( target ) )
 		{
 			newDistance = DistanceSquared( self->s.origin, target->s.origin );
@@ -503,7 +503,7 @@ void BotFindClosestBuildings( gentity_t *self )
 		}
 
 		//skip human buildings that are currently building or arn't powered
-		if ( testEnt->buildableTeam == TEAM_HUMANS && ( !testEnt->powered || !testEnt->spawned ) )
+		if ( i2t( testEnt->buildableTeam ) == TEAM_HUMANS && ( !testEnt->powered || !testEnt->spawned ) )
 		{
 			continue;
 		}
@@ -606,7 +606,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			continue;
 		}
 
-		if ( target->s.eType == entityType_t::ET_PLAYER && self->client->pers.team == TEAM_HUMANS
+		if ( target->s.eType == entityType_t::ET_PLAYER && i2t( self->client->pers.team ) == TEAM_HUMANS
 		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
 		{
 			continue;
@@ -678,7 +678,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 		}
 
 		//ignore neutrals
-		if ( BotGetEntityTeam( target ) == TEAM_NONE )
+		if ( BotGetEntityTeam( target ) == TI_NONE )
 		{
 			continue;
 		}
@@ -711,7 +711,7 @@ botTarget_t BotGetRushTarget( gentity_t *self )
 {
 	botTarget_t target;
 	gentity_t* rushTarget = nullptr;
-	if ( BotGetEntityTeam( self ) == TEAM_HUMANS )
+	if ( i2t( BotGetEntityTeam( self ) ) == TEAM_HUMANS ) //XXX
 	{
 		if ( self->botMind->closestBuildings[BA_A_SPAWN].ent )
 		{
@@ -742,7 +742,7 @@ botTarget_t BotGetRetreatTarget( gentity_t *self )
 	botTarget_t target;
 	gentity_t* retreatTarget = nullptr;
 	//FIXME, this seems like it could be done better...
-	if ( self->client->pers.team == TEAM_HUMANS )
+	if ( i2t( self->client->pers.team ) == TEAM_HUMANS )
 	{
 		if ( self->botMind->closestBuildings[BA_H_REACTOR].ent )
 		{
@@ -1143,7 +1143,7 @@ bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
 
 	if ( self->client->pers.team != BotGetEntityTeam( &g_entities[trace.entityNum] )
-		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
+		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TI_NONE
 		&& Distance( muzzle, trace.endpos ) <= std::max( range, secondaryRange ) )
 	{
 		return true;
@@ -1197,14 +1197,14 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 	//get the position of the target
 	BotGetTargetPos( target, aimLocation );
 
-	if ( BotGetTargetType( target ) != entityType_t::ET_BUILDABLE && BotTargetIsEntity( target ) && BotGetTargetTeam( target ) == TEAM_HUMANS )
+	if ( BotGetTargetType( target ) != entityType_t::ET_BUILDABLE && BotTargetIsEntity( target ) && i2t( BotGetTargetTeam( target ) ) == TEAM_HUMANS )
 	{
 
 		//aim at head
 		aimLocation[2] += target.ent->r.maxs[2] * 0.85;
 
 	}
-	else if ( BotGetTargetType( target ) == entityType_t::ET_BUILDABLE || BotGetTargetTeam( target ) == TEAM_ALIENS )
+	else if ( BotGetTargetType( target ) == entityType_t::ET_BUILDABLE || i2t( BotGetTargetTeam( target ) ) == TEAM_ALIENS )
 	{
 		//make lucifer cannons aim ahead based on the target's velocity
 		if ( self->client->ps.weapon == WP_LUCIFER_CANNON && self->botMind->botSkill.level >= 5 )
@@ -1377,7 +1377,7 @@ bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 	int botPos = 0, lastPlayerPos = 0;
 	spawnQueue_t *sq;
 
-	if ( self->client->pers.team > TEAM_NONE &&
+	if ( self->client->pers.team > TI_NONE &&
 	     self->client->pers.team < NUM_TEAMS )
 	{
 		sq = &level.team[ self->client->pers.team ].spawnQueue;
@@ -1735,8 +1735,8 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 		{
 			other = &g_entities[ entityList[ i ] ];
 
-			if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
-				( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
+			if ( ( other->client && i2t( other->client->pers.team ) == TEAM_HUMANS ) ||
+				( other->s.eType == entityType_t::ET_BUILDABLE && i2t( other->buildableTeam ) == TEAM_HUMANS ) )
 			{
 				return false;
 			}
@@ -1954,7 +1954,7 @@ void BotSellWeapons( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY, G_TeamIndex(self) ) )
 	{
 		return;
 	}
@@ -1994,7 +1994,7 @@ void BotSellAll( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY, G_TeamIndex(self) ) )
 	{
 		return;
 	}
@@ -2106,7 +2106,7 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 		return false;
 	}
 
-	if ( BotGetEntityTeam( enemy ) == TEAM_NONE )
+	if ( BotGetEntityTeam( enemy ) == TI_NONE )
 	{
 		return false;
 	}
@@ -2121,7 +2121,7 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 
 void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
-	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->pers.team )
+	if ( BotGetEntityTeam( attacker ) != TI_NONE && BotGetEntityTeam( attacker ) != self->client->pers.team )
 	{
 		if ( attacker->s.eType == entityType_t::ET_PLAYER )
 		{

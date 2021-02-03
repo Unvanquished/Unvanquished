@@ -77,7 +77,7 @@ gentity_t         *G_ActiveMainBuildable(TeamIndex team);
 float             G_DistanceToBase(gentity_t *self);
 bool              G_InsideBase(gentity_t *self);
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
-bool              G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
+bool              G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable, TeamIndex team );
 void              G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
 itemBuildError_t  G_CanBuild( gentity_t *ent, buildable_t buildable, int distance, vec3_t origin, vec3_t normal, int *groundEntNum );
 bool              G_BuildIfValid( gentity_t *ent, buildable_t buildable );

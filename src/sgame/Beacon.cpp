@@ -446,7 +446,7 @@ namespace Beacon //this should eventually become a class
 			BG_MoveOriginToBBOXCenter( center, mins, maxs );
 
 			// Also update weapon for humans.
-			if( parent->client->pers.team == TEAM_HUMANS )
+			if( i2t( parent->client->pers.team ) == TEAM_HUMANS )
 			{
 				ent->s.bc_data = BG_GetPlayerWeapon( &parent->client->ps );
 			}
@@ -574,7 +574,7 @@ namespace Beacon //this should eventually become a class
 				if( !ent->client )
 					return false;
 				// don't tag teammates
-				if( team != TEAM_NONE &&
+				if( team != TI_NONE &&
 				    ent->client->pers.team == team )
 					return false;
 				return true;

@@ -230,7 +230,7 @@ void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t* )
 	gclient_t *client = other->client;
 	int       client_z, min_z;
 
-	if ( !client || client->pers.team != TEAM_ALIENS )
+	if ( !client || !G_OnSameTeam( self, other ) )
 	{
 		return;
 	}
@@ -291,7 +291,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 		return;
 	}
 
-	if ( client->pers.team == TEAM_HUMANS )
+	if ( !G_OnSameTeam( self, other ) )
 	{
 		return;
 	}
@@ -391,7 +391,7 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return false;
 	}
 
-	if ( target->client->pers.team == TEAM_ALIENS ) // one of us?
+	if ( G_OnSameTeam( self, target ) ) // one of us?
 	{
 		return false;
 	}
@@ -500,7 +500,7 @@ void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 		return;
 	}
 
-	if ( activator->client->pers.team != TEAM_HUMANS )
+	if ( !G_OnSameTeam( self, activator ) )
 	{
 		return;
 	}
@@ -583,7 +583,7 @@ void HMedistat_Think( gentity_t *self )
 		client = player->client;
 
 		// only react to humans
-		if ( !client || client->pers.team != TEAM_HUMANS )
+		if ( !client || !G_OnSameTeam( self, player ) )
 		{
 			continue;
 		}
@@ -852,16 +852,16 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 }
 
 /**
- * @return Whether origin is within a distance of radius of a buildable of the given type.
+ * @return Whether origin is within a distance of radius of a buildable of the given type on the same team.
  */
-bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
+bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable, TeamIndex team )
 {
 	gentity_t *neighbor = nullptr;
 
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
 	{
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !neighbor->spawned || Entities::IsDead( neighbor ) ||
-		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
+		     ( i2t( neighbor->buildableTeam ) == TEAM_HUMANS && !neighbor->powered ) || neighbor->buildableTeam != team )
 		{
 			continue;
 		}
@@ -944,14 +944,15 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	// If the only spawn is marked, prefer it last
 	if ( cmpBuildable == BA_A_SPAWN || cmpBuildable == BA_H_SPAWN )
 	{
-		if ( ( buildableA->s.modelindex == BA_A_SPAWN && level.team[ TEAM_ALIENS ].numSpawns == 1 ) ||
-		     ( buildableA->s.modelindex == BA_H_SPAWN && level.team[ TEAM_HUMANS ].numSpawns == 1 ) )
+		TeamIndex team = buildableA->buildableTeam;
+		if ( ( buildableA->s.modelindex == BA_A_SPAWN && level.team[ team ].numSpawns == 1 ) ||
+		     ( buildableA->s.modelindex == BA_H_SPAWN && level.team[ team ].numSpawns == 1 ) )
 		{
 			return 1;
 		}
 
-		if ( ( buildableB->s.modelindex == BA_A_SPAWN && level.team[ TEAM_ALIENS ].numSpawns == 1 ) ||
-		     ( buildableB->s.modelindex == BA_H_SPAWN && level.team[ TEAM_HUMANS ].numSpawns == 1 ) )
+		if ( ( buildableB->s.modelindex == BA_A_SPAWN && level.team[ team ].numSpawns == 1 ) ||
+		     ( buildableB->s.modelindex == BA_H_SPAWN && level.team[ team ].numSpawns == 1 ) )
 		{
 			return -1;
 		}
@@ -1154,6 +1155,7 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 		return IBE_MAINSTRUCTURE;
 	}
 
+#if 0 //XXX
 	// don't replace last spawn with a non-spawn
 	if (    ( oldBuildable == BA_H_SPAWN && newBuildable != BA_H_SPAWN &&
 	          level.team[ TEAM_HUMANS ].numSpawns == 1 )
@@ -1162,6 +1164,7 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 	{
 		return IBE_LASTSPAWN;
 	}
+#endif
 
 	return IBE_NONE;
 }
@@ -1470,7 +1473,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 			reason = IBE_DISABLED;
 		}
 	}
-	else if ( ent->client->pers.team == TEAM_HUMANS )
+	else if ( i2t( ent->client->pers.team ) == TEAM_HUMANS )
 	{
 		// Check for Reactor
 		if ( buildable != BA_H_REACTOR )
@@ -1704,9 +1707,9 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	built->killedBy = ENTITYNUM_NONE;
 	built->classname = attr->entityName;
 	built->s.modelindex = buildable;
-	built->s.modelindex2 = attr->team;
 	// XXX how to have layouts?
 	built->buildableTeam = builder->client ? G_TeamIndex(builder) : (TeamIndex)attr->team;
+	built->s.modelindex2 = built->buildableTeam;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->splashDamage = attr->splashDamage;
@@ -2344,7 +2347,7 @@ void G_LayoutLoad()
 			else
 			{
 				LayoutBuildItem( (buildable_t) buildable, origin, angles, origin2, angles2 );
-				level.team[ attr->team ].layoutBuildPoints += attr->buildPoints;
+				level.team[ (TeamIndex)attr->team ].layoutBuildPoints += attr->buildPoints; //XXX
 			}
 		}
 
@@ -2550,7 +2553,7 @@ void G_BuildLogRevert( int id )
 		}
 	}
 
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
+	for ( team = TI_NONE + 1; team < NUM_TEAMS; ++team )
 	{
 		G_AddMomentumGenericStep( (TeamIndex) team, momentumChange[ team ] );
 	}

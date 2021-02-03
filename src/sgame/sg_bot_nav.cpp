@@ -324,7 +324,7 @@ bool BotJump( gentity_t *self )
 {
 	int staminaJumpCost;
 
-	if ( self->client->pers.team == TEAM_HUMANS )
+	if ( i2t( self->client->pers.team ) == TEAM_HUMANS )
 	{
 		staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 
@@ -351,7 +351,7 @@ bool BotSprint( gentity_t *self, bool enable )
 
 	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 
-	if ( self->client->pers.team == TEAM_HUMANS
+	if ( i2t( self->client->pers.team ) == TEAM_HUMANS
 	     && self->client->ps.stats[ STAT_STAMINA ] > staminaJumpCost
 	     && self->botMind->botSkill.level >= 5 )
 	{
@@ -684,7 +684,7 @@ void BotMoveToGoal( gentity_t *self )
 	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 
 	//dont sprint or dodge if we dont have enough stamina and are about to slow
-	if ( self->client->pers.team == TEAM_HUMANS
+	if ( i2t( self->client->pers.team )== TEAM_HUMANS
 	     && self->client->ps.stats[ STAT_STAMINA ] < staminaJumpCost )
 	{
 		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;

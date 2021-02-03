@@ -356,7 +356,7 @@ void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t* )
 		return;
 	}
 
-	if ( other->client->pers.team != TEAM_HUMANS )
+	if ( i2t( other->client->pers.team ) != TEAM_HUMANS )
 	{
 		return;
 	}

@@ -50,7 +50,7 @@ void G_AddCreditToClient( gclient_t *client, short credit, bool cap )
 
 	if ( cap && credit > 0 )
 	{
-		capAmount = client->pers.team == TEAM_ALIENS ?
+		capAmount = i2t( client->pers.team ) == TEAM_ALIENS ?
 		            ALIEN_MAX_CREDITS : HUMAN_MAX_CREDITS;
 
 		if ( client->pers.credit < capAmount )
@@ -439,7 +439,7 @@ static void SpawnCorpse( gentity_t *ent )
 	body->s.clientNum = ent->client->ps.stats[ STAT_CLASS ];
 	body->nonSegModel = ent->client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL;
 
-	if ( ent->client->pers.team == TEAM_HUMANS )
+	if ( i2t( ent->client->pers.team ) == TEAM_HUMANS )
 	{
 		body->classname = "humanCorpse";
 	}
@@ -1273,7 +1273,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	CalculateRanks();
 
 	// if this is after !restart keepteams or !restart switchteams, apply said selection
-	if ( client->sess.restartTeam != TEAM_NONE )
+	if ( client->sess.restartTeam != TI_NONE )
 	{
 		G_ChangeTeam( ent, client->sess.restartTeam );
 		client->sess.restartTeam = TI_NONE;
@@ -1625,7 +1625,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	}
 
 	// only start client if chosen a class and joined a team
-	if ( client->pers.classSelection == PCL_NONE && teamLocal == TEAM_NONE )
+	if ( client->pers.classSelection == PCL_NONE && teamLocal == TI_NONE )
 	{
 		client->sess.spectatorState = SPECTATOR_FREE;
 	}
@@ -1655,15 +1655,15 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// ranging doesn't count this client
 	if ( client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		if ( teamLocal == TEAM_NONE )
+		if ( teamLocal == TI_NONE )
 		{
 			spawnPoint = G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
 		}
-		else if ( teamLocal == TEAM_ALIENS )
+		else if ( teamLocal == TI_1 )
 		{
 			spawnPoint = G_SelectAlienLockSpawnPoint( spawn_origin, spawn_angles );
 		}
-		else if ( teamLocal == TEAM_HUMANS )
+		else if ( teamLocal == TI_2 )
 		{
 			spawnPoint = G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
 		}
@@ -1681,11 +1681,11 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		{
 			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, true );
 
-			if ( spawnPoint->buildableTeam == TEAM_ALIENS )
+			if ( i2t( spawnPoint->buildableTeam ) == TEAM_ALIENS )
 			{
 				spawnPoint->clientSpawnTime = ALIEN_SPAWN_REPEAT_TIME;
 			}
-			else if ( spawnPoint->buildableTeam == TEAM_HUMANS )
+			else if ( i2t( spawnPoint->buildableTeam ) == TEAM_HUMANS )
 			{
 				spawnPoint->clientSpawnTime = HUMAN_SPAWN_REPEAT_TIME;
 			}
@@ -1815,7 +1815,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	//give aliens some spawn velocity
 	if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	     client->pers.team == TEAM_ALIENS )
+	     i2t( client->pers.team ) == TEAM_ALIENS )
 	{
 		if ( ent == spawn )
 		{
@@ -1842,7 +1842,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		}
 	}
 	else if ( client->sess.spectatorState == SPECTATOR_NOT &&
-	          client->pers.team == TEAM_HUMANS )
+	          i2t( client->pers.team ) == TEAM_HUMANS )
 	{
 		spawn_angles[ YAW ] += 180.0f;
 		AngleNormalize360( spawn_angles[ YAW ] );
@@ -1859,7 +1859,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		trap_LinkEntity( ent );
 
 		// force the base weapon up
-		if ( client->pers.team == TEAM_HUMANS )
+		if ( i2t( client->pers.team ) == TEAM_HUMANS )
 		{
 			G_ForceWeaponChange( ent, weapon );
 		}

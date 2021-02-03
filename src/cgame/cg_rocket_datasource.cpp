@@ -983,18 +983,18 @@ void CG_Rocket_BuildPlayerList( const char* )
 
 		switch ( score->team )
 		{
-			case TEAM_ALIENS:
-				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TEAM_ALIENS ]++ ] = i;
+			case TI_1:
+				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TI_1 ]++ ] = i;
 				Rocket_DSAddRow( "playerList", "aliens", buf );
 				break;
 
-			case TEAM_HUMANS:
-				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerIndex[ TEAM_HUMANS ]++ ] = i;
+			case TI_2:
+				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerIndex[ TI_2 ]++ ] = i;
 				Rocket_DSAddRow( "playerList", "humans", buf );
 				break;
 
-			case TEAM_NONE:
-				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TEAM_NONE ]++ ] = i;
+			case TI_NONE:
+				rocketInfo.data.playerList[ score->team ][ rocketInfo.data.playerCount[ TI_NONE ]++ ] = i;
 				Rocket_DSAddRow( "playerList", "spectators", buf );
 				break;
 		}
@@ -1033,9 +1033,9 @@ void CG_Rocket_SortPlayerList( const char*, const char *sortBy )
 
 	if ( !Q_stricmp( "score", sortBy ) )
 	{
-		qsort( rocketInfo.data.playerList[ TEAM_NONE ], rocketInfo.data.playerCount[ TEAM_NONE ], sizeof( int ), &PlayerListCmpByScore );
-		qsort( rocketInfo.data.playerList[ TEAM_ALIENS ], rocketInfo.data.playerCount[ TEAM_ALIENS ], sizeof( int ), &PlayerListCmpByScore );
-		qsort( rocketInfo.data.playerList[ TEAM_HUMANS ], rocketInfo.data.playerIndex[ TEAM_HUMANS ], sizeof( int ), &PlayerListCmpByScore );
+		qsort( rocketInfo.data.playerList[ TI_NONE ], rocketInfo.data.playerCount[ TI_NONE ], sizeof( int ), &PlayerListCmpByScore );
+		qsort( rocketInfo.data.playerList[ TI_1 ], rocketInfo.data.playerCount[ TI_1 ], sizeof( int ), &PlayerListCmpByScore );
+		qsort( rocketInfo.data.playerList[ TI_2 ], rocketInfo.data.playerIndex[ TI_2 ], sizeof( int ), &PlayerListCmpByScore );
 	}
 
 	// Clear old values. Always build all three teams.
@@ -1043,9 +1043,9 @@ void CG_Rocket_SortPlayerList( const char*, const char *sortBy )
 	Rocket_DSClearTable( "playerList", "aliens" );
 	Rocket_DSClearTable( "playerList", "humans" );
 
-	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_NONE ]; ++i )
+	for ( i = 0; i < rocketInfo.data.playerCount[ TI_NONE ]; ++i )
 	{
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_NONE ][ i ] ];
+		score = &cg.scores[ rocketInfo.data.playerList[ TI_NONE ][ i ] ];
 		ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
@@ -1065,9 +1065,9 @@ void CG_Rocket_SortPlayerList( const char*, const char *sortBy )
 		Rocket_DSAddRow( "playerList", "spectators", buf );
 	}
 
-	for ( i = 0; i < rocketInfo.data.playerIndex[ TEAM_HUMANS ]; ++i )
+	for ( i = 0; i < rocketInfo.data.playerIndex[ TI_2 ]; ++i )
 	{
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_HUMANS ][ i ] ];
+		score = &cg.scores[ rocketInfo.data.playerList[ TI_2 ][ i ] ];
 		ci = &cgs.clientinfo[ score->client ];
 
 		if ( !ci->infoValid )
@@ -1086,10 +1086,10 @@ void CG_Rocket_SortPlayerList( const char*, const char *sortBy )
 		Rocket_DSAddRow( "playerList", "humans", buf );
 	}
 
-	for ( i = 0; i < rocketInfo.data.playerCount[ TEAM_ALIENS ]; ++i )
+	for ( i = 0; i < rocketInfo.data.playerCount[ TI_1 ]; ++i )
 	{
-		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TEAM_ALIENS ][ i ] ];
-		score = &cg.scores[ rocketInfo.data.playerList[ TEAM_ALIENS ][ i ] ];
+		ci = &cgs.clientinfo[ rocketInfo.data.playerList[ TI_1 ][ i ] ];
+		score = &cg.scores[ rocketInfo.data.playerList[ TI_1 ][ i ] ];
 
 		if ( !ci->infoValid )
 		{
@@ -1150,9 +1150,9 @@ void CG_Rocket_SetMapListIndex( const char*, int index )
 
 void CG_Rocket_CleanUpPlayerList( const char* )
 {
-	rocketInfo.data.playerCount[ TEAM_ALIENS ] = 0;
-	rocketInfo.data.playerIndex[ TEAM_HUMANS ] = 0;
-	rocketInfo.data.playerCount[ TEAM_NONE ] = 0;
+	rocketInfo.data.playerCount[ TI_1  ] = 0;
+	rocketInfo.data.playerIndex[ TI_2 ] = 0;
+	rocketInfo.data.playerCount[ TI_NONE ] = 0;
 }
 
 void CG_Rocket_SetPlayerListPlayer( const char*, int )

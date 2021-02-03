@@ -831,7 +831,7 @@ struct score_t
 	int       score;
 	int       ping;
 	int       time;
-	int       team;
+	TeamIndex      team;
 	weapon_t  weapon;
 	upgrade_t upgrade;
 };

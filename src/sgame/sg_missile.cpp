@@ -224,7 +224,7 @@ static int ImpactLockblock( gentity_t*, trace_t*, gentity_t *hitEnt )
 {
 	vec3_t dir;
 
-	if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
+	if ( hitEnt->client /*&& hitEnt->client->pers.team == TEAM_HUMANS*/ )
 	{
 		hitEnt->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
 		hitEnt->client->lastLockTime = level.time;
@@ -257,7 +257,7 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 		}
 	}
 
-	if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
+	if ( hitEnt->client /*&& hitEnt->client->pers.team == TEAM_HUMANS*/ )
 	{
 		if( !ABUILDER_BLOB_LOCK_TIME || hitEnt->client->pers.classSelection == PCL_HUMAN_BSUIT )
 		{
@@ -273,10 +273,10 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 		}
 
 	}
-	else if ( hitEnt->s.eType == entityType_t::ET_BUILDABLE && hitEnt->buildableTeam == TEAM_ALIENS )
+	/*else if ( hitEnt->s.eType == entityType_t::ET_BUILDABLE && hitEnt->buildableTeam == TEAM_ALIENS )
 	{
 		impactFlags &= ~MIF_NO_DAMAGE;
-	}
+	}*/
 
 	return impactFlags;
 }
@@ -305,7 +305,7 @@ static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 		ent->nextthink = level.time + FRAMETIME;
 
 		// Damage only humans and do so quietly.
-		if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
+		if ( hitEnt->client && !G_OnSameTeam(ent->parent, hitEnt) )
 		{
 			return MIF_NO_EFFECT;
 		}

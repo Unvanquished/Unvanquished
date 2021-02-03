@@ -48,15 +48,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
 // player teams
-enum TeamType
+enum class TeamType
 {
-  TEAM_ALL = -1,
-  TEAM_NONE,
-  TEAM_ALIENS,
-  TEAM_HUMANS,
-
-  NUM_TEAMS
+  NONE,
+  ALIENS,
+  HUMANS,
 };
+
+#define TEAM_NONE TeamType::NONE
+#define TEAM_ALIENS TeamType::ALIENS
+#define TEAM_HUMANS TeamType::HUMANS
+#define TEAM_ALL (-1)
+#define NUM_TEAMS 3
 
 enum TeamIndex {
 	TI_NONE,

@@ -1479,12 +1479,12 @@ static void CG_StatusMessages( clientInfo_t *new_, clientInfo_t *old )
 
 	if ( old->team != new_->team )
 	{
-		if ( new_->team == TEAM_NONE )
+		if ( new_->team == TI_NONE )
 		{
 			Log::Notice(_( "%s^* left the %s"), new_->name,
 			           BG_TeamNamePlural( old->team ) );
 		}
-		else if ( old->team == TEAM_NONE )
+		else if ( old->team == TI_NONE )
 		{
 			Log::Notice(_( "%s^* joined the %s"), new_->name,
 			           BG_TeamNamePlural( new_->team ) );
@@ -1691,7 +1691,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		// blend old and current animation
 		CG_BlendLerpFrame( lf );
 
-		if( ci->team != TEAM_NONE )
+		if( ci->team != TI_NONE )
 			CG_BuildAnimSkeleton( lf, skel, &oldSkeleton );
 	}
 	else

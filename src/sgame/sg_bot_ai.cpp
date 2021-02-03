@@ -526,7 +526,7 @@ to the rest of the behavior tree
 
 AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t* ) 
 {
-	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), &self->client->ps ) && self->client->pers.team == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), &self->client->ps ) && i2t( self->client->pers.team ) == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -971,7 +971,7 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( self->client->pers.team == TEAM_HUMANS )
+	if ( i2t( self->client->pers.team ) == TEAM_HUMANS )
 	{
 		return BotActionHealH( self, node );
 	}
@@ -1086,7 +1086,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( self->client->pers.team != TEAM_ALIENS )
+	if ( i2t( self->client->pers.team ) != TEAM_ALIENS )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1141,7 +1141,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 	bool fullyHealed = Entities::HasFullHealth(self) &&
 	                   BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
-	if ( self->client->pers.team != TEAM_HUMANS )
+	if ( i2t( self->client->pers.team ) != TEAM_HUMANS )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1295,7 +1295,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( BotGetEntityTeam( self ) != TEAM_HUMANS )
+	if ( i2t( BotGetEntityTeam( self ) ) != TEAM_HUMANS )
 	{
 		return STATUS_FAILURE;
 	}

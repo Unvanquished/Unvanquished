@@ -80,7 +80,7 @@ game_end
 */
 void game_end_act( gentity_t *self, gentity_t*, gentity_t* )
 {
-	if ( level.unconditionalWin == TEAM_NONE ) // only if not yet triggered
+	if ( level.unconditionalWin == TI_NONE ) // only if not yet triggered
 	{
 		level.unconditionalWin = self->conditions.team;
 	}

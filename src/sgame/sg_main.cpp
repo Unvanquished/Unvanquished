@@ -864,8 +864,8 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	G_InitMapRotations();
 
-	G_InitSpawnQueue( &level.team[ TEAM_ALIENS ].spawnQueue );
-	G_InitSpawnQueue( &level.team[ TEAM_HUMANS ].spawnQueue );
+	G_InitSpawnQueue( &level.team[ TI_1 ].spawnQueue );
+	G_InitSpawnQueue( &level.team[ TI_2 ].spawnQueue );
 
 	if ( g_debugMapRotation.integer )
 	{
@@ -888,8 +888,8 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	if ( g_lockTeamsAtStart.integer )
 	{
-		level.team[ TEAM_ALIENS ].locked = true;
-		level.team[ TEAM_HUMANS ].locked = true;
+		level.team[ TI_1 ].locked = true;
+		level.team[ TI_2 ].locked = true;
 		trap_Cvar_Set( "g_lockTeamsAtStart", "0" );
 	}
 
@@ -1378,7 +1378,7 @@ void G_CalculateAvgPlayers()
 		return;
 	}
 
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
+	for ( team = TI_NONE + 1; team < NUM_TEAMS; team++ )
 	{
 		samples        = &level.team[ team ].numSamples;
 		currentPlayers =  level.team[ team ].numPlayers;
@@ -1428,7 +1428,7 @@ void CalculateRanks()
 	level.numPlayingBots      = 0;
 	level.numAliveClients     = 0;
 
-	for ( team = TEAM_NONE; team < NUM_TEAMS; team++ )
+	for ( team = TI_NONE; team < NUM_TEAMS; team++ )
 	{
 		level.team[ team ].numClients      = 0;
 		level.team[ team ].numPlayers      = 0;
@@ -1480,7 +1480,7 @@ void CalculateRanks()
 			}
 
 			// clients on a team are "playing"
-			if ( team != TEAM_NONE )
+			if ( team != TI_NONE )
 			{
 				level.numPlayingClients++;
 
@@ -1505,7 +1505,7 @@ void CalculateRanks()
 
 	// voting code expects level.team[ TEAM_NONE ].numPlayers to be all players, spectating or playing
 	// TODO: Use TEAM_ALL or the latter version for this everywhere
-	level.team[ TEAM_NONE ].numPlayers += level.numPlayingPlayers;
+	level.team[ TI_NONE ].numPlayers += level.numPlayingPlayers;
 
 	P[ clientNum ] = '\0';
 	trap_Cvar_Set( "P", P );
@@ -1835,7 +1835,7 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 	gclient_t *client;
 	int       team;
 
-	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	for ( team = TI_1 ; team < NUM_TEAMS ; ++team)
 	{
 		teamCnt[ team ] = 0;
 		teamCredits[ team ] = 0;
@@ -1859,7 +1859,7 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 		teamCnt[ team ]++;
 	}
 
-	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	for ( team = TI_1 ; team < NUM_TEAMS ; ++team)
 	{
 		teamCredits[ team ] = ( teamCnt[ team ] == 0 ) ? 0 : ( teamCredits[ team ] / teamCnt[ team ] );
 		teamValue[ team ] = ( teamCnt[ team ] == 0 ) ? 0 : ( teamValue[ team ] / teamCnt[ team ] );
@@ -1943,7 +1943,7 @@ static void G_LogGameplayStats( int state )
 			time = level.matchTime / 1000;
 			XXX  = 0;
 
-			for( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
+			for( team = TI_1 + 1; team < NUM_TEAMS; team++ )
 			{
 				num[ team ] = level.team[ team ].numClients;
 				Mom[ team ] = ( int )level.team[ team ].momentum;
@@ -1956,10 +1956,10 @@ static void G_LogGameplayStats( int state )
 
 			Com_sprintf( logline, sizeof( logline ),
 			             "%4i %2i %2i %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i %4i\n",
-			             time, num[ TEAM_ALIENS ], num[ TEAM_HUMANS ], Mom[ TEAM_ALIENS ], Mom[ TEAM_HUMANS ],
-			             XXX, TBP[ TEAM_ALIENS ], TBP[ TEAM_HUMANS ], UBP[ TEAM_ALIENS ], UBP[ TEAM_HUMANS ],
-			             BRV[ TEAM_ALIENS ], BRV[ TEAM_HUMANS ], Cre[ TEAM_ALIENS ], Cre[ TEAM_HUMANS ],
-			             Val[ TEAM_ALIENS ], Val[ TEAM_HUMANS ] );
+			             time, num[ TI_1 ], num[ TI_2 ], Mom[ TI_1 ], Mom[ TI_2 ],
+			             XXX, TBP[ TI_1 ], TBP[ TI_2 ], UBP[ TI_1 ], UBP[ TI_2 ],
+			             BRV[ TI_1 ], BRV[ TI_2 ], Cre[ TI_1 ], Cre[ TI_2 ],
+			             Val[ TI_1 ], Val[ TI_2 ] );
 			break;
 		}
 		case LOG_GAMEPLAY_STATS_FOOTER:
@@ -1990,15 +1990,15 @@ static void G_LogGameplayStats( int state )
 			             "# Match duration:  %i:%02i\n"
 			             "# Winning team:    %s\n"
 			             "# Average Players: %.1f + %.1f\n"
-			             "# Average Aliens:  %.1f + %.1f\n"
-			             "# Average Humans:  %.1f + %.1f\n"
+			             "# Average Team1:   %.1f + %.1f\n"
+			             "# Average Team2:   %.1f + %.1f\n"
 			             "#\n",
 			             min, sec,
 			             winner,
-			             level.team[ TEAM_ALIENS ].averageNumPlayers + level.team[ TEAM_HUMANS ].averageNumPlayers,
-			             level.team[ TEAM_ALIENS ].averageNumBots    + level.team[ TEAM_HUMANS ].averageNumBots,
-			             level.team[ TEAM_ALIENS ].averageNumPlayers, level.team[ TEAM_ALIENS ].averageNumBots,
-			             level.team[ TEAM_HUMANS ].averageNumPlayers, level.team[ TEAM_HUMANS ].averageNumBots);
+			             level.team[ TI_1].averageNumPlayers + level.team[ TI_2 ].averageNumPlayers,
+			             level.team[ TI_1 ].averageNumBots    + level.team[ TI_2 ].averageNumBots,
+			             level.team[ TI_1 ].averageNumPlayers, level.team[ TI_1 ].averageNumBots,
+			             level.team[ TI_2 ].averageNumPlayers, level.team[ TI_2 ].averageNumBots);
 			break;
 		}
 		default:
@@ -2051,7 +2051,7 @@ void LogExit( const char *string )
 
 		cl = &level.clients[ level.sortedClients[ i ] ];
 
-		if ( cl->pers.team == TEAM_NONE )
+		if ( cl->pers.team == TI_NONE )
 		{
 			continue;
 		}
@@ -2108,7 +2108,7 @@ void CheckIntermissionExit()
 			continue;
 		}
 
-		if ( cl->pers.team == TEAM_NONE )
+		if ( cl->pers.team == TI_NONE )
 		{
 			continue;
 		}
@@ -2251,28 +2251,28 @@ void CheckExitRules()
 		}
 	}
 
-	if ( level.unconditionalWin == TEAM_HUMANS ||
-	     ( level.unconditionalWin != TEAM_ALIENS &&
+	if ( /*level.unconditionalWin == TEAM_HUMANS ||
+	     ( level.unconditionalWin != TEAM_ALIENS &&   XXX*/(
 	       ( level.time > level.startTime + 1000 ) &&
-	       ( level.team[ TEAM_ALIENS ].numSpawns == 0 ) &&
-	       ( level.team[ TEAM_ALIENS ].numAliveClients == 0 ) ) )
+	       ( level.team[ TI_1 ].numSpawns == 0 ) &&
+	       ( level.team[ TI_1 ].numAliveClients == 0 ) ) )
 	{
 		//humans win
-		level.lastWin = TEAM_HUMANS;
+		level.lastWin = i2t( TI_2 );
 		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
 		G_notify_sensor_end( TI_2 ); //XXX
 		LogExit( "Humans win." );
 		G_MapLog_Result( 'h' );
 	}
-	else if ( level.unconditionalWin == TEAM_ALIENS ||
-	          ( level.unconditionalWin != TEAM_HUMANS &&
+	else if ( /*level.unconditionalWin == TEAM_ALIENS ||
+	          ( level.unconditionalWin != TEAM_HUMANS &&   XXX*/(
 	            ( level.time > level.startTime + 1000 ) &&
-	            ( level.team[ TEAM_HUMANS ].numSpawns == 0 ) &&
-	            ( level.team[ TEAM_HUMANS ].numAliveClients == 0 ) ) )
+	            ( level.team[ TI_2 ].numSpawns == 0 ) &&
+	            ( level.team[ TI_2 ].numAliveClients == 0 ) ) )
 	{
 		//aliens win
-		level.lastWin = TEAM_ALIENS;
+		level.lastWin = i2t( TI_1 );
 		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Aliens Win" );
 		G_notify_sensor_end( TI_1 ); //XXX
@@ -2282,7 +2282,7 @@ void CheckExitRules()
 	else if ( g_emptyTeamsSkipMapTime.integer &&
 		( level.time - level.startTime ) / 60000 >=
 		g_emptyTeamsSkipMapTime.integer &&
-		level.team[ TEAM_ALIENS ].numPlayers == 0 && level.team[ TEAM_HUMANS ].numPlayers == 0 )
+		level.team[ TI_1 ].numPlayers == 0 && level.team[ TI_2 ].numPlayers == 0 )
 	{
 		// nobody wins because the teams are empty after x amount of game time
 		level.lastWin = TEAM_NONE;
@@ -2462,27 +2462,27 @@ void G_CheckVote( TeamIndex team )
 	}
 
 	G_LogPrintf( "EndVote: %s %s %d %d %d %d",
-	             team == TEAM_NONE ? "global" : BG_TeamName( team ),
+	             team == TI_NONE ? "global" : BG_TeamName( team ),
 	             pass ? "pass" : "fail",
 	             level.team[ team ].voteYes, level.team[ team ].voteNo, level.team[ team ].numPlayers, level.team[ team ].voted );
 
 	if ( !quorum )
 	{
-		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ of $2$; quorum not reached)") ) : QQ( N_("Team vote failed ($1$ of $2$; quorum not reached)") ),
+		cmd = va( "print_tr %s %d %d", ( team == TI_NONE ) ? QQ( N_("Vote failed ($1$ of $2$; quorum not reached)") ) : QQ( N_("Team vote failed ($1$ of $2$; quorum not reached)") ),
 		            level.team[ team ].voteYes + level.team[ team ].voteNo, level.team[ team ].numPlayers );
 	}
 	else if ( pass )
 	{
-		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ — $2$)") ) : QQ( N_("Team vote passed ($1$ — $2$)") ),
+		cmd = va( "print_tr %s %d %d", ( team == TI_NONE ) ? QQ( N_("Vote passed ($1$ — $2$)") ) : QQ( N_("Team vote passed ($1$ — $2$)") ),
 		            level.team[ team ].voteYes, level.team[ team ].voteNo );
 	}
 	else
 	{
-		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ — $2$; $3$% needed)") ) : QQ( N_("Team vote failed ($1$ — $2$; $3$% needed)") ),
+		cmd = va( "print_tr %s %d %d %.0f", ( team == TI_NONE ) ? QQ( N_("Vote failed ($1$ — $2$; $3$% needed)") ) : QQ( N_("Team vote failed ($1$ — $2$; $3$% needed)") ),
 		            level.team[ team ].voteYes, level.team[ team ].voteNo, votePassThreshold * 100 );
 	}
 
-	if ( team == TEAM_NONE )
+	if ( team == TI_NONE )
 	{
 		trap_SendServerCommand( -1, cmd );
 	}

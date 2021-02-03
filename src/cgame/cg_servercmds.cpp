@@ -116,7 +116,7 @@ static void CG_ParseTeamInfo()
 		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
 		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
 
-		if( cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
+		if( i2t( (TeamIndex) cg.snap->ps.persistant[ PERS_TEAM ] ) != TEAM_ALIENS )
 		{
 			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( ++i ) );
 		}
@@ -286,19 +286,19 @@ static void CG_ConfigStringModified()
 		cgs.voteTime[ num - CS_VOTE_TIME ] = atoi( str );
 		cgs.voteModified[ num - CS_VOTE_TIME ] = true;
 
-		if ( num - CS_VOTE_TIME == TEAM_NONE )
+		if ( num - CS_VOTE_TIME == TI_NONE )
 		{
-			trap_Cvar_Set( "ui_voteActive", cgs.voteTime[ TEAM_NONE ] ? "1" : "0" );
+			trap_Cvar_Set( "ui_voteActive", cgs.voteTime[ TI_NONE ] ? "1" : "0" );
 		}
-		else if ( num - CS_VOTE_TIME == TEAM_ALIENS )
+		else if ( num - CS_VOTE_TIME == TI_1 )  //XXX
 		{
 			trap_Cvar_Set( "ui_alienTeamVoteActive",
-			               cgs.voteTime[ TEAM_ALIENS ] ? "1" : "0" );
+			               cgs.voteTime[ TI_1 ] ? "1" : "0" );
 		}
-		else if ( num - CS_VOTE_TIME == TEAM_HUMANS )
+		else if ( num - CS_VOTE_TIME == TI_2 )
 		{
 			trap_Cvar_Set( "ui_humanTeamVoteActive",
-			               cgs.voteTime[ TEAM_HUMANS ] ? "1" : "0" );
+			               cgs.voteTime[ TI_2 ] ? "1" : "0" );
 		}
 	}
 	else if ( num >= CS_VOTE_YES && num < CS_VOTE_YES + NUM_TEAMS )
@@ -391,7 +391,7 @@ static void CG_MapRestart()
 
 	cg.intermissionStarted = false;
 
-	cgs.voteTime[ TEAM_NONE ] = 0;
+	cgs.voteTime[ TI_NONE ] = 0;
 
 	cg.mapRestart = true;
 
@@ -929,12 +929,12 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		case SAY_TEAM:
 		case SAY_AREA:
 		case SAY_TPRIVMSG:
-			if ( cgs.clientinfo[ clientNum ].team == TEAM_ALIENS )
+			if ( i2t( cgs.clientinfo[ clientNum ].team ) == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienTalkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 				break;
 			}
-			else if ( cgs.clientinfo[ clientNum ].team == TEAM_HUMANS )
+			else if ( i2t( cgs.clientinfo[ clientNum ].team ) == TEAM_HUMANS )
 			{
 				trap_S_StartLocalSound( cgs.media.humanTalkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 				break;

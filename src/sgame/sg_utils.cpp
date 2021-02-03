@@ -864,7 +864,7 @@ bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 
 bool G_IsPlayableTeam( TeamIndex team )
 {
-	return ( team > TEAM_NONE && team < NUM_TEAMS );
+	return ( team > TI_NONE && team < NUM_TEAMS );
 }
 
 bool G_IsPlayableTeam( int team )

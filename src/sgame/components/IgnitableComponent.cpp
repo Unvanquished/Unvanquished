@@ -141,7 +141,7 @@ void IgnitableComponent::DamageArea(int timeDelta) {
 	float damage = SPLASH_DAMAGE * timeDelta * 0.001f;
 
 	if (G_SelectiveRadiusDamage(entity.oldEnt->s.origin, fireStarter, damage, SPLASH_DAMAGE_RADIUS,
-			entity.oldEnt, MOD_BURN, TEAM_NONE)) {
+			entity.oldEnt, MOD_BURN, TI_NONE)) {
 		fireLogger.Debug("Area burn damage of %.1f (%.1f/s) was dealt.", damage, SPLASH_DAMAGE);
 	}
 }

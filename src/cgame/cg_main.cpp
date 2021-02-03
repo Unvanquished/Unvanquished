@@ -613,7 +613,7 @@ void CG_NotifyHooks()
 		if( lastTeam != ps->persistant[ PERS_TEAM ] )
 		{
 			TeamType type = i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] );
-			trap_notify_onTeamChange( type );
+			trap_notify_onTeamChange( (int)type );
 
 			CG_SetBindTeam( type );
 
@@ -1315,7 +1315,7 @@ void CG_BuildSpectatorString()
 
 	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
-		if ( cgs.clientinfo[ i ].infoValid && cgs.clientinfo[ i ].team == TEAM_NONE )
+		if ( cgs.clientinfo[ i ].infoValid && cgs.clientinfo[ i ].team == TI_NONE )
 		{
 			Q_strcat( cg.spectatorList, sizeof( cg.spectatorList ),
 			          va( "^*%s     ", cgs.clientinfo[ i ].name ) );
@@ -1502,15 +1502,15 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	// copy vote display strings so they don't show up blank if we see
 	// the same one directly after connecting
-	Q_strncpyz( cgs.voteString[ TEAM_NONE ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_NONE ),
+	Q_strncpyz( cgs.voteString[ TI_NONE ],
+	            CG_ConfigString( CS_VOTE_STRING + TI_NONE ),
 	            sizeof( cgs.voteString ) );
-	Q_strncpyz( cgs.voteString[ TEAM_ALIENS ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_ALIENS ),
-	            sizeof( cgs.voteString[ TEAM_ALIENS ] ) );
-	Q_strncpyz( cgs.voteString[ TEAM_HUMANS ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_HUMANS ),
-	            sizeof( cgs.voteString[ TEAM_HUMANS ] ) );
+	Q_strncpyz( cgs.voteString[ (int)TEAM_ALIENS ],
+	            CG_ConfigString( CS_VOTE_STRING + (int)TEAM_ALIENS ),
+	            sizeof( cgs.voteString[ (int)TEAM_ALIENS ] ) );
+	Q_strncpyz( cgs.voteString[ (int)TEAM_HUMANS ],
+	            CG_ConfigString( CS_VOTE_STRING + (int)TEAM_HUMANS ),
+	            sizeof( cgs.voteString[ (int)TEAM_HUMANS ] ) );
 
 	// check version
 	s = CG_ConfigString( CS_GAME_VERSION );

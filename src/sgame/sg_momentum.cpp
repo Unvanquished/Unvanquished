@@ -86,7 +86,7 @@ void MomentumChanged()
 
 		team = client->pers.team;
 
-		if ( team > TEAM_NONE && team < NUM_TEAMS )
+		if ( team > TI_NONE && team < NUM_TEAMS )
 		{
 			client->ps.persistant[ PERS_MOMENTUM ] = ( short )
 				( level.team[ team ].momentum * 10.0f + 0.5f );
@@ -145,8 +145,8 @@ static INLINE float MomentumTimeMod()
  */
 static INLINE float MomentumPlayerCountMod()
 {
-	int playerCount = std::max( 2, level.team[ TEAM_ALIENS ].numClients +
-	                               level.team[ TEAM_HUMANS ].numClients );
+	int playerCount = std::max( 2, level.team[ TI_1 ].numClients +
+	                               level.team[ TI_2 ].numClients );
 
 	// HACK: This uses the average number of players taking part in development games so that the
 	//       average momentum gain through all matches remains unchanged for now.
@@ -223,7 +223,7 @@ static float AddMomentum( momentum_t type, TeamIndex team, float amount,
 	gclient_t *client;
 	const char *clientName;
 
-	if ( team <= TEAM_NONE || team >= NUM_TEAMS )
+	if ( team <= TI_NONE || team >= NUM_TEAMS )
 	{
 		return 0.0f;
 	}
@@ -334,7 +334,7 @@ void G_DecreaseMomentum()
 	}
 
 	// decrease momentum
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
+	for ( team = TI_NONE + 1; team < NUM_TEAMS; team++ )
 	{
 		amount = level.team[ team ].momentum * ( decreaseFactor - 1.0f );
 

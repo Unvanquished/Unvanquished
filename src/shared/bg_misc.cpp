@@ -2741,7 +2741,7 @@ BG_TeamName
 */
 const char *BG_TeamName( TeamIndex team )
 {
-	if ( team == TEAM_NONE )
+	if ( team == TI_NONE )
 	{
 		return N_("spectator");
 	}
@@ -2781,7 +2781,7 @@ const char *BG_TeamName( TeamType team )
 
 const char *BG_TeamNamePlural( TeamIndex team )
 {
-	if ( team == TEAM_NONE )
+	if ( team == TI_NONE )
 	{
 		return N_("spectators");
 	}

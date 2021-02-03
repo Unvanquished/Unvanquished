@@ -112,7 +112,7 @@ static void EnqueueDamageIndicator(Vec3 point, int flags, float value,
 	if (flags & HIT_BUILDING) {
 		bool alien;
 
-		alien = (cg.predictedPlayerState.persistant[PERS_TEAM]
+		alien = (i2t( (TeamIndex) cg.predictedPlayerState.persistant[PERS_TEAM] )
 		         == TEAM_ALIENS) ^ !(flags & HIT_FRIENDLY);
 
 		if (alien)

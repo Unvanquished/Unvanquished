@@ -368,7 +368,7 @@ void ScoreboardMessage( gentity_t *ent )
 		}
 
 		if ( cl->sess.spectatorState == SPECTATOR_NOT &&
-		     ( ent->client->pers.team == TEAM_NONE ||
+		     ( ent->client->pers.team == TI_NONE ||
 		       cl->pers.team == ent->client->pers.team ) )
 		{
 			weapon = (weapon_t) cl->ps.weapon;
@@ -420,7 +420,7 @@ void ScoreboardMessage( gentity_t *ent )
 	}
 
 	trap_SendServerCommand( ent - g_entities, va( "scores %i %i%s",
-	                        level.team[ TEAM_ALIENS ].kills, level.team[ TEAM_HUMANS ].kills, string ) );
+	                        level.team[ TI_1 ].kills, level.team[ TI_2 ].kills, string ) );
 }
 
 /*
@@ -609,7 +609,7 @@ void Cmd_Give_f( gentity_t *ent )
 		else
 		{
 			amount = atof( name + strlen("funds") ) *
-			          ( ent->client->pers.team == TEAM_ALIENS ? CREDITS_PER_EVO : 1.0f );
+			          ( i2t( ent->client->pers.team ) == TEAM_ALIENS ? CREDITS_PER_EVO : 1.0f );
 			// clamp credits as G_AddCreditToClient() expects a short int
 			amount = Math::Clamp(amount, -30000.0f, 30000.0f);
 		}
@@ -669,7 +669,7 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( Q_stricmp( name, "poison" ) == 0 )
 	{
-		if ( ent->client->pers.team == TEAM_HUMANS )
+		if ( i2t( ent->client->pers.team ) == TEAM_HUMANS )
 		{
 			ent->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
 			ent->client->lastPoisonTime = level.time;
@@ -1010,7 +1010,7 @@ static bool G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const cha
 	if ( ( ent && !G_OnSameTeam( ent, other ) ) &&
 	     ( mode == SAY_TEAM || mode == SAY_AREA || mode == SAY_TPRIVMSG ) )
 	{
-		if ( other->client->pers.team != TEAM_NONE )
+		if ( other->client->pers.team != TI_NONE )
 		{
 			return false;
 		}
@@ -1045,7 +1045,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 
 	// check if blocked by g_specChat 0
 	if ( ( !g_specChat.integer ) && ( mode != SAY_TEAM ) &&
-	     ( ent ) && ( ent->client->pers.team == TEAM_NONE ) &&
+	     ( ent ) && ( ent->client->pers.team == TI_NONE ) &&
 	     ( !G_admin_permission( ent, ADMF_NOCENSORFLOOD ) ) )
 	{
 		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("say: Global chatting for "
@@ -1141,7 +1141,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 	//Send to ADMF_SPEC_ALLCHAT candidates
 	for ( i = 0; i < level.maxclients; i++ )
 	{
-		if ( g_entities[ i ].client->pers.team == TEAM_NONE &&
+		if ( g_entities[ i ].client->pers.team == TI_NONE &&
 		     G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
 		{
 			G_SayTo( ent, &g_entities[ i ], SAY_AREA, msg );
@@ -1190,7 +1190,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 	//Send to ADMF_SPEC_ALLCHAT candidates
 	for ( i = 0; i < level.maxclients; i++ )
 	{
-		if ( g_entities[ i ].client->pers.team == TEAM_NONE &&
+		if ( g_entities[ i ].client->pers.team == TI_NONE &&
 		     G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
 		{
 			G_SayTo( ent, &g_entities[ i ], SAY_AREA_TEAM, msg );
@@ -1542,8 +1542,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 	// look up the vote detail
 	for ( voteId = 0; voteInfo[voteId].name; ++voteId )
 	{
-		if ( ( team == TEAM_NONE && voteInfo[voteId].type == V_TEAM   ) ||
-		     ( team != TEAM_NONE && voteInfo[voteId].type == V_PUBLIC ) )
+		if ( ( team == TI_NONE && voteInfo[voteId].type == V_TEAM   ) ||
+		     ( team != TI_NONE && voteInfo[voteId].type == V_PUBLIC ) )
 		{
 			continue;
 		}
@@ -1559,7 +1559,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		bool added = false;
 
 		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("Invalid vote string") "\"" );
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", team == TEAM_NONE ? QQ( N_("Valid vote commands are: ") ) :
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s", team == TI_NONE ? QQ( N_("Valid vote commands are: ") ) :
 			QQ( N_("Valid team-vote commands are: ") ) ) );
 		cmd[0] = '\0';
 
@@ -1567,8 +1567,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		for( voteId = 0; voteInfo[voteId].name; ++voteId )
 		{
-			if ( ( team == TEAM_NONE && voteInfo[voteId].type != V_TEAM   ) ||
-			     ( team != TEAM_NONE && voteInfo[voteId].type != V_PUBLIC ) )
+			if ( ( team == TI_NONE && voteInfo[voteId].type != V_TEAM   ) ||
+			     ( team != TI_NONE && voteInfo[voteId].type != V_PUBLIC ) )
 			{
 				if ( !voteInfo[voteId].percentage || voteInfo[voteId].percentage->integer > 0 )
 				{
@@ -1763,7 +1763,7 @@ vote_is_disabled:
 			return;
 		}
 
-		if ( team != TEAM_NONE &&
+		if ( team != TI_NONE &&
 			 ent->client->pers.team != level.clients[ clientNum ].pers.team )
 		{
 			trap_SendServerCommand( ent - g_entities,
@@ -1803,7 +1803,7 @@ vote_is_disabled:
 		for ( i = 0; i < MAX_CLIENTS; ++i )
 		{
 			if ( g_entities[i].r.svFlags & SVF_BOT &&
-			     g_entities[i].client->pers.team != TEAM_NONE )
+			     g_entities[i].client->pers.team != TI_NONE )
 			{
 				break;
 			}
@@ -2015,10 +2015,10 @@ vote_is_disabled:
 	}
 
 	G_LogPrintf( "%s: %d \"%s^*\": %s",
-	             team == TEAM_NONE ? "CallVote" : "CallTeamVote",
+	             team == TI_NONE ? "CallVote" : "CallTeamVote",
 	             ( int )( ent - g_entities ), ent->client->pers.netname, level.team[ team ].voteString );
 
-	if ( team == TEAM_NONE )
+	if ( team == TI_NONE )
 	{
 		trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^* called a vote: $2$") ),
 		                                Quote( ent->client->pers.netname ), Quote( level.team[ team ].voteDisplayString ) ) );
@@ -2032,7 +2032,7 @@ vote_is_disabled:
 			if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 			{
 				if ( level.clients[ i ].pers.team == team ||
-				     ( level.clients[ i ].pers.team == TEAM_NONE &&
+				     ( level.clients[ i ].pers.team == TI_NONE &&
 				       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 				{
 					trap_SendServerCommand( i, va( "print_tr %s %s %s", QQ( N_("$1$^* called a team vote: $2t$") ),
@@ -2367,7 +2367,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 		return true; // dead, can't evolve; no point in trying other classes (if any listed)
 	}
 
-	if ( ent->client->pers.team == TEAM_ALIENS )
+	if ( i2t( ent->client->pers.team ) == TEAM_ALIENS )
 	{
 		if ( newClass == PCL_NONE )
 		{
@@ -2407,8 +2407,8 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			{
 				other = &g_entities[ entityList[ i ] ];
 
-				if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
-				     ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
+				if ( ( other->client && !G_OnSameTeam( ent, other ) ) ||
+				     ( other->s.eType == entityType_t::ET_BUILDABLE && !G_OnSameTeam( ent, other ) &&
 				       other->powered ) )
 				{
 					humansInRange++;
@@ -2418,7 +2418,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 					}
 
 				}
-				else if ( ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS ) )
+				else if ( ( other->s.eType == entityType_t::ET_BUILDABLE && G_OnSameTeam( other, ent ) ) )
 				{
 					alienBuildingsInRange++;
 				}
@@ -2524,7 +2524,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			}
 		}
 	}
-	else if ( ent->client->pers.team == TEAM_HUMANS )
+	else if ( i2t( ent->client->pers.team ) == TEAM_HUMANS )
 	{
 		if ( report )
 		{
@@ -2928,7 +2928,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 	upgrade_t upgrade;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY, G_TeamIndex(ent) ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		return false;
@@ -3082,7 +3082,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 	upgrade = BG_UpgradeByName( s )->number;
 
 	// check if armoury is in reach
-	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY, G_TeamIndex(ent) ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 
@@ -3486,7 +3486,7 @@ void G_StopFollowing( gentity_t *ent )
 {
 	ent->client->ps.persistant[ PERS_TEAM ] = ent->client->pers.team;
 
-	if ( ent->client->pers.team == TEAM_NONE )
+	if ( ent->client->pers.team == TI_NONE )
 	{
 		ent->client->sess.spectatorState = SPECTATOR_FREE;
 		ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_FREE;
@@ -3498,11 +3498,11 @@ void G_StopFollowing( gentity_t *ent )
 		ent->client->sess.spectatorState = SPECTATOR_LOCKED;
 		ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_LOCKED;
 
-		if ( ent->client->pers.team == TEAM_ALIENS )
+		if ( ent->client->pers.team == TI_1 )
 		{
 			G_SelectAlienLockSpawnPoint( spawn_origin, spawn_angles );
 		}
-		else if ( ent->client->pers.team == TEAM_HUMANS )
+		else if ( ent->client->pers.team == TI_2 )
 		{
 			G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
 		}
@@ -3525,7 +3525,7 @@ void G_StopFollowing( gentity_t *ent )
 	ent->client->ps.clientNum = ent - g_entities;
 	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit;
 
-	if ( ent->client->pers.team == TEAM_NONE )
+	if ( ent->client->pers.team == TI_NONE )
 	{
 		vec3_t viewOrigin, angles;
 
@@ -3564,11 +3564,11 @@ void G_FollowLockView( gentity_t *ent )
 	ent->client->ps.viewangles[ PITCH ] = 0.0f;
 
 	// Put the view at the team spectator lock position
-	if ( level.clients[ clientNum ].pers.team == TEAM_ALIENS )
+	if ( level.clients[ clientNum ].pers.team == TI_1 )
 	{
 		G_SelectAlienLockSpawnPoint( spawn_origin, spawn_angles );
 	}
-	else if ( level.clients[ clientNum ].pers.team == TEAM_HUMANS )
+	else if ( level.clients[ clientNum ].pers.team == TI_2 )
 	{
 		G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
 	}
@@ -3653,7 +3653,7 @@ bool G_FollowNewClient( gentity_t *ent, int dir )
 		}
 
 		// can't follow a spectator
-		if ( level.clients[ clientnum ].pers.team == TEAM_NONE )
+		if ( level.clients[ clientnum ].pers.team == TI_NONE )
 		{
 			continue;
 		}
@@ -3666,7 +3666,7 @@ bool G_FollowNewClient( gentity_t *ent, int dir )
 		}
 
 		// can only follow teammates when dead and on a team
-		if ( ent->client->pers.team != TEAM_NONE &&
+		if ( ent->client->pers.team != TI_NONE &&
 		     ( level.clients[ clientnum ].pers.team !=
 		       ent->client->pers.team ) )
 		{
@@ -3755,7 +3755,7 @@ void Cmd_Follow_f( gentity_t *ent )
 		}
 
 		// if not on team spectator, you can only follow teammates
-		if ( ent->client->pers.team != TEAM_NONE &&
+		if ( ent->client->pers.team != TI_NONE &&
 		     ( level.clients[ i ].pers.team !=
 		       ent->client->pers.team ) )
 		{
@@ -4140,13 +4140,13 @@ void G_MapLog_Result( char result )
 		return;
 	}
 
-	if ( level.surrenderTeam != TEAM_NONE )
+	if ( level.surrenderTeam != TI_NONE )
 	{
-		if ( result == 'a' && level.surrenderTeam == TEAM_HUMANS )
+		if ( result == 'a' && level.surrenderTeam == TI_1 ) //XXX
 		{
 			result = 'A';
 		}
-		else if ( result == 'h' && level.surrenderTeam == TEAM_ALIENS )
+		else if ( result == 'h' && level.surrenderTeam == TI_2 ) //XXX
 		{
 			result = 'H';
 		}
@@ -4514,14 +4514,14 @@ void ClientCommand( int clientNum )
 	}
 
 	if ( (command->cmdFlags & CMD_TEAM) &&
-	     ent->client->pers.team == TEAM_NONE )
+	     ent->client->pers.team == TI_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_TEAM );
 		return;
 	}
 
 	if ( (command->cmdFlags & CMD_CHEAT_TEAM) && !g_cheats.integer &&
-	     ent->client->pers.team != TEAM_NONE )
+	     ent->client->pers.team != TI_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT_TEAM );
 		return;
@@ -4535,14 +4535,14 @@ void ClientCommand( int clientNum )
 	}
 
 	if ( (command->cmdFlags & CMD_ALIEN) &&
-	     ent->client->pers.team != TEAM_ALIENS )
+	     i2t( ent->client->pers.team ) != TEAM_ALIENS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIEN );
 		return;
 	}
 
 	if ( (command->cmdFlags & CMD_HUMAN) &&
-	     ent->client->pers.team != TEAM_HUMANS )
+	     i2t( ent->client->pers.team ) != TEAM_HUMANS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_HUMAN );
 		return;

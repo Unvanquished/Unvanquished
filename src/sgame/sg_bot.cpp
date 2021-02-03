@@ -49,14 +49,14 @@ static void G_BotListTeamNames( gentity_t *ent, const char *heading, TeamType te
 {
 	int i;
 
-	if ( botNames[team].count )
+	if ( botNames[(int)team].count )
 	{
 		ADMP( heading );
 		ADMBP_begin();
 
-		for ( i = 0; i < botNames[team].count; ++i )
+		for ( i = 0; i < botNames[(int)team].count; ++i )
 		{
-			ADMBP( va( "  %s^* %s", botNames[team].name[i].inUse ? marker : " ", botNames[team].name[i].name ) );
+			ADMBP( va( "  %s^* %s", botNames[(int)team].name[i].inUse ? marker : " ", botNames[(int)team].name[i].name ) );
 		}
 
 		ADMBP_end();
@@ -73,34 +73,34 @@ bool G_BotClearNames()
 {
 	int i;
 
-	for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
+	for ( i = 0; i < botNames[(int)TEAM_ALIENS].count; ++i )
 	{
-		if ( botNames[TEAM_ALIENS].name[i].inUse )
+		if ( botNames[(int)TEAM_ALIENS].name[i].inUse )
 		{
 			return false;
 		}
 	}
 
-	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
+	for ( i = 0; i < botNames[(int)TEAM_HUMANS].count; ++i )
 	{
-		if ( botNames[TEAM_HUMANS].name[i].inUse )
+		if ( botNames[(int)TEAM_HUMANS].name[i].inUse )
 		{
 			return false;
 		}
 	}
 
-	for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
+	for ( i = 0; i < botNames[(int)TEAM_ALIENS].count; ++i )
 	{
-		BG_Free( botNames[TEAM_ALIENS].name[i].name );
+		BG_Free( botNames[(int)TEAM_ALIENS].name[i].name );
 	}
 
-	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
+	for ( i = 0; i < botNames[(int)TEAM_HUMANS].count; ++i )
 	{
-		BG_Free( botNames[TEAM_HUMANS].name[i].name );
+		BG_Free( botNames[(int)TEAM_HUMANS].name[i].name );
 	}
 
-	botNames[TEAM_ALIENS].count = 0;
-	botNames[TEAM_HUMANS].count = 0;
+	botNames[(int)TEAM_ALIENS].count = 0;
+	botNames[(int)TEAM_HUMANS].count = 0;
 
 	return true;
 }
@@ -108,7 +108,7 @@ bool G_BotClearNames()
 //XXX should this per TeamType or TeamIndex?
 int G_BotAddNames( TeamType team, int arg, int last )
 {
-	int  i = botNames[team].count;
+	int  i = botNames[(int)team].count;
 	int  added = 0;
 	char name[MAX_NAME_LENGTH];
 
@@ -130,10 +130,10 @@ int G_BotAddNames( TeamType team, int arg, int last )
 			}
 		}
 
-		botNames[team].name[i].name = ( char * )BG_Alloc( strlen( name ) + 1 );
-		strcpy( botNames[team].name[i].name, name );
+		botNames[(int)team].name[i].name = ( char * )BG_Alloc( strlen( name ) + 1 );
+		strcpy( botNames[(int)team].name[i].name, name );
 
-		botNames[team].count = ++i;
+		botNames[(int)team].count = ++i;
 		++added;
 
 		next:
@@ -147,20 +147,20 @@ static char *G_BotSelectName( TeamType team )
 {
 	unsigned int choice;
 
-	if ( botNames[team].count < 1 )
+	if ( botNames[(int)team].count < 1 )
 	{
 		return nullptr;
 	}
 
-	choice = rand() % botNames[team].count;
+	choice = rand() % botNames[(int)team].count;
 
-	for ( int i = 0; i < botNames[team].count; ++i )
+	for ( int i = 0; i < botNames[(int)team].count; ++i )
 	{
-		if ( !botNames[team].name[choice].inUse )
+		if ( !botNames[(int)team].name[choice].inUse )
 		{
-			return botNames[team].name[choice].name;
+			return botNames[(int)team].name[choice].name;
 		}
-		choice = ( choice + 1 ) % botNames[team].count;
+		choice = ( choice + 1 ) % botNames[(int)team].count;
 	}
 
 	return nullptr;
@@ -168,11 +168,11 @@ static char *G_BotSelectName( TeamType team )
 
 static void G_BotNameUsed( TeamType team, const char *name, bool inUse )
 {
-	for ( int i = 0; i < botNames[team].count; ++i )
+	for ( int i = 0; i < botNames[(int)team].count; ++i )
 	{
-		if ( !Q_stricmp( name, botNames[team].name[i].name ) )
+		if ( !Q_stricmp( name, botNames[(int)team].name[i].name ) )
 		{
-			botNames[team].name[i].inUse = inUse;
+			botNames[(int)team].name[i].inUse = inUse;
 			return;
 		}
 	}
@@ -211,7 +211,7 @@ bool G_BotSetDefaults( int clientNum, TeamIndex team, int skill, const char* beh
 
 	g_entities[clientNum].r.svFlags |= SVF_BOT;
 
-	if ( team != TEAM_NONE )
+	if ( team != TI_NONE )
 	{
 		level.clients[clientNum].sess.restartTeam = team;
 	}
@@ -338,14 +338,14 @@ void G_BotDelAllBots()
 		}
 	}
 
-	for ( i = 0; i < botNames[TEAM_ALIENS].count; ++i )
+	for ( i = 0; i < botNames[(int)TEAM_ALIENS].count; ++i )
 	{
-		botNames[TEAM_ALIENS].name[i].inUse = false;
+		botNames[(int)TEAM_ALIENS].name[i].inUse = false;
 	}
 
-	for ( i = 0; i < botNames[TEAM_HUMANS].count; ++i )
+	for ( i = 0; i < botNames[(int)TEAM_HUMANS].count; ++i )
 	{
-		botNames[TEAM_HUMANS].name[i].inUse = false;
+		botNames[(int)TEAM_HUMANS].name[i].inUse = false;
 	}
 
 	for (TeamIndex team : {TI_1, TI_2})
@@ -446,7 +446,7 @@ void G_BotSpectatorThink( gentity_t *self )
 		//check for humans in the spawn que
 		{
 			spawnQueue_t *sq;
-			if ( self->client->pers.team != TEAM_NONE )
+			if ( self->client->pers.team != TI_NONE )
 			{
 				sq = &level.team[ self->client->pers.team ].spawnQueue;
 			}
@@ -475,12 +475,12 @@ void G_BotSpectatorThink( gentity_t *self )
 	self->botMind->numRunningNodes = 0;
 	memset( self->botMind->runningNodes, 0, sizeof( self->botMind->runningNodes ) );
 
-	if ( self->client->sess.restartTeam == TEAM_NONE )
+	if ( self->client->sess.restartTeam == TI_NONE )
 	{
-		int teamnum = self->client->pers.team;
+		TeamIndex teamnum = self->client->pers.team;
 		int clientNum = self->client->ps.clientNum;
 
-		if ( teamnum == TEAM_HUMANS )
+		if ( i2t(teamnum) == TEAM_HUMANS )
 		{
 			self->client->pers.classSelection = PCL_HUMAN_NAKED;
 			self->client->ps.stats[STAT_CLASS] = PCL_HUMAN_NAKED;
@@ -495,7 +495,7 @@ void G_BotSpectatorThink( gentity_t *self )
 				self->client->pers.humanItemSelection = WP_HBUILD;
 			}
 		}
-		else if ( teamnum == TEAM_ALIENS )
+		else if ( i2t(teamnum) == TEAM_ALIENS )
 		{
 			self->client->pers.classSelection = PCL_ALIEN_LEVEL0;
 			self->client->ps.stats[STAT_CLASS] = PCL_ALIEN_LEVEL0;

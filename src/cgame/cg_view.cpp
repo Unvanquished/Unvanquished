@@ -818,7 +818,7 @@ void CG_OffsetFirstPersonView()
 	}
 
 	// this *feels* more realistic for humans <- this comment feels very descriptive
-	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
+	if ( i2t( (TeamIndex) cg.predictedPlayerState.persistant[ PERS_TEAM ] ) == TEAM_HUMANS &&
 	     cg.predictedPlayerState.pm_type == PM_NORMAL )
 	{
 		angles[ PITCH ] += cg.bobfracsin * bob2 * 0.5;
@@ -1396,8 +1396,8 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade, float* fadeRate )
 {
 	int health = ps->stats[ STAT_HEALTH ];
-	int team = ps->persistant[ PERS_TEAM ];
-	bool playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
+	TeamIndex team = (TeamIndex) ps->persistant[ PERS_TEAM ];
+	bool playing = team == TI_1 || team == TI_2;
 
 	//the player has spawned once and is dead or in the intermission
 	if ( cg_spawnEffects.integer && playing && ( health <= 0 || cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )

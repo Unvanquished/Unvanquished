@@ -161,7 +161,7 @@ static void CG_Obituary( entityState_t *ent )
 		assistantInfo = CG_ConfigString( CS_PLAYERS + assistant );
 	}
 
-	if ( assistantTeam < TEAM_NONE || assistantTeam >= NUM_TEAMS )
+	if ( assistantTeam < TI_NONE || assistantTeam >= NUM_TEAMS )
 	{
 		assistantTeam = TI_NONE;
 	}
@@ -193,7 +193,7 @@ static void CG_Obituary( entityState_t *ent )
 			mod = MOD_UNKNOWN;
 		}
 
-		if ( meansOfDeath[ mod ].team )
+		//if ( meansOfDeath[ mod ].team )
 		{
 			//XXX attackerTeam = meansOfDeath[ mod ].team;
 		}
@@ -618,7 +618,7 @@ void CG_OnPlayerWeaponChange()
 	Rocket_ShowHud( ps->weapon );
 
 	// Rebuild weapon lists if UI is in focus.
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) == TEAM_HUMANS )
 	{
 		CG_Rocket_BuildArmourySellList( "default" );
 		CG_Rocket_BuildArmouryBuyList( "default" );
@@ -642,7 +642,7 @@ void CG_OnPlayerUpgradeChange()
 	playerState_t *ps = &cg.snap->ps;
 
 	// Rebuild weapon lists if UI is in focus.
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) == TEAM_HUMANS )
 	{
 		CG_Rocket_BuildArmourySellList( "default" );
 		CG_Rocket_BuildArmouryBuyList( "default" );
@@ -1196,7 +1196,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				break;
 			}
 
-			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
+			switch ( i2t ( (TeamIndex) cg.predictedPlayerState.persistant[ PERS_TEAM ] ) )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindAttack, soundChannel_t::CHAN_ANNOUNCER );
@@ -1218,7 +1218,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_MAIN_DYING:
-			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
+			switch ( i2t ( (TeamIndex) cg.predictedPlayerState.persistant[ PERS_TEAM ] ) )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindDying, soundChannel_t::CHAN_ANNOUNCER );
@@ -1276,7 +1276,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_NO_SPAWNS:
-			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
+			switch ( i2t ( (TeamIndex) cg.predictedPlayerState.persistant[ PERS_TEAM ] ) )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, soundChannel_t::CHAN_ANNOUNCER );

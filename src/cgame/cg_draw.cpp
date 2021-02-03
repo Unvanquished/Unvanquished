@@ -413,11 +413,11 @@ static void CG_PainBlend()
 	}
 
 	Color::Color color;
-	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+	if ( i2t( (TeamIndex) cg.snap->ps.persistant[ PERS_TEAM ] ) == TEAM_ALIENS )
 	{
 		color = { 0.43f, 0.8f, 0.37f };
 	}
-	else if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	else if ( i2t( (TeamIndex) cg.snap->ps.persistant[ PERS_TEAM ] ) == TEAM_HUMANS )
 	{
 		color = { 0.8f, 0.0f, 0.0f };
 	}

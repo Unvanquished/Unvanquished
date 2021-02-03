@@ -1,5 +1,6 @@
 #include "HealthComponent.h"
 #include "math.h"
+#include "sgame/Entities.h"
 
 static Log::Logger healthLogger("sgame.health");
 
@@ -151,7 +152,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		// If boosted poison every attack.
 		// TODO: Add a poison message and a PoisonableComponent.
 		if (source->client && (source->client->ps.stats[STAT_STATE] & SS_BOOSTED) &&
-		    client->pers.team == TEAM_HUMANS && client->poisonImmunityTime < level.time) {
+		    Entities::OnOpposingTeams(*source->entity, this->entity) && client->poisonImmunityTime < level.time) {
 			switch (meansOfDeath) {
 				case MOD_POISON:
 				case MOD_LEVEL2_ZAP:

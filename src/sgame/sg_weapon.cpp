@@ -190,7 +190,7 @@ bool G_RefillFuel( gentity_t *self, bool triggerEvent )
 	}
 
 	// needs a human with jetpack
-	if ( self->client->ps.persistant[ PERS_TEAM ] != TEAM_HUMANS ||
+	if ( i2t( (TeamIndex) self->client->ps.persistant[ PERS_TEAM ] ) != TEAM_HUMANS ||
 	     !BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
 	{
 		return false;
@@ -718,7 +718,7 @@ static void HiveMissileThink( gentity_t *self )
 		if ( !ent->inuse ) continue;
 		if ( ent->flags & FL_NOTARGET ) continue;
 
-		if ( ent->client && Entities::IsAlive( ent ) && ent->client->pers.team == TEAM_HUMANS &&
+		if ( ent->client && Entities::IsAlive( ent ) && Entities::OnOpposingTeams(*self->entity, *ent->entity) &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
 			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
@@ -895,7 +895,7 @@ static void FirebombMissileThink( gentity_t *self )
 	neighbor = nullptr;
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, FIREBOMB_IGNITE_RANGE ) ) )
 	{
-		if ( neighbor->s.eType == entityType_t::ET_BUILDABLE && neighbor->buildableTeam == TEAM_ALIENS &&
+		if ( neighbor->s.eType == entityType_t::ET_BUILDABLE && i2t( neighbor->buildableTeam ) == TEAM_ALIENS &&
 		     G_LineOfSight( self, neighbor ) )
 		{
 			neighbor->entity->Ignite( self->parent );
@@ -1096,7 +1096,7 @@ void G_CheckCkitRepair( gentity_t *self )
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->s.eType == entityType_t::ET_BUILDABLE &&
-	     traceEnt->buildableTeam == TEAM_HUMANS )
+	     G_OnSameTeam( self, traceEnt ) )
 	{
 		HealthComponent *healthComponent = traceEnt->entity->Get<HealthComponent>();
 
@@ -1284,9 +1284,9 @@ static void FindZapChainTargets( zap_t *zap )
 		distance = Distance( ent->s.origin, enemy->s.origin );
 
 		if ( ( ( enemy->client &&
-		         enemy->client->pers.team == TEAM_HUMANS ) ||
+		         !G_OnSameTeam( ent, enemy ) ) ||
 		       ( enemy->s.eType == entityType_t::ET_BUILDABLE &&
-		         BG_Buildable( enemy->s.modelindex )->team == TEAM_HUMANS ) ) &&
+		         !G_OnSameTeam( ent, enemy ) ) ) &&
 		     Entities::IsAlive( enemy ) &&
 		     distance <= LEVEL2_AREAZAP_CHAIN_RANGE )
 		{
@@ -1464,7 +1464,7 @@ static void FireAreaZap( gentity_t *ent )
 		return;
 	}
 
-	if ( ( traceEnt->client && traceEnt->client->pers.team == TEAM_HUMANS ) ||
+	if ( ( traceEnt->client && !G_OnSameTeam( ent, traceEnt ) ) ||
 	     ( traceEnt->s.eType == entityType_t::ET_BUILDABLE &&
 	       BG_Buildable( traceEnt->s.modelindex )->team == TEAM_HUMANS ) )
 	{
@@ -1599,7 +1599,7 @@ GENERIC
 
 static INLINE meansOfDeath_t ModWeight( const gentity_t *self )
 {
-	return self->client->pers.team == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
+	return i2t( self->client->pers.team ) == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
 }
 
 void G_ImpactAttack( gentity_t *self, gentity_t *victim )
