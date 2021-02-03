@@ -144,7 +144,7 @@ Color::Color UI_GetChatColour( int which, int team )
 		case SAY_TEAM:
 			switch ( team )
 			{
-				case TEAM_NONE:
+				case TI_NONE:
 					return Color::Yellow;
 				default:
 					return Color::Cyan;

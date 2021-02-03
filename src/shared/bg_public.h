@@ -61,7 +61,7 @@ enum class TeamType
 #define TEAM_ALL (-1)
 #define NUM_TEAMS 3
 
-enum TeamIndex {
+enum TeamIndex : int {
 	TI_NONE,
 	TI_1,
 	TI_2,

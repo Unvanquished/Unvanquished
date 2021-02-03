@@ -1990,7 +1990,7 @@ int BG_GetValueOfPlayer( playerState_t *ps )
 
 	price = 0;
 
-	switch ( ps->persistant[ PERS_TEAM ] )
+	switch ( i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) )
 	{
 		case TEAM_HUMANS:
 			// Add upgrade price

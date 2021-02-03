@@ -140,7 +140,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 	}
 
 	// TODO: Add sound for items being locked for each team
-	switch ( cg.snap->ps.persistant[ PERS_TEAM ] )
+	switch ( i2t( (TeamIndex) cg.snap->ps.persistant[ PERS_TEAM ] ) )
 	{
 		case TEAM_ALIENS:
 			if ( unlocked )

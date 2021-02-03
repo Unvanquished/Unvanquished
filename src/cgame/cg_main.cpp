@@ -401,7 +401,7 @@ static void CG_SetPVars()
 			break;
 
 		default:
-		case TEAM_NONE:
+		case TI_NONE:
 			trap_Cvar_Set( "p_classname", "Spectator" );
 			trap_Cvar_Set( "p_weaponname", "Nothing" );
 

@@ -536,8 +536,8 @@ void sensor_support_think( gentity_t *self )
 	}
 
 	switch (self->conditions.team) { //XXX
-		case TEAM_HUMANS:
-		case TEAM_ALIENS:
+		case TI_1:
+		case TI_2:
 			self->powered = (G_ActiveMainBuildable(self->conditions.team) != nullptr);
 			break;
 

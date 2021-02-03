@@ -120,7 +120,7 @@ void SpawnerComponent::WarnBlocker(Entity& blocker, bool lastWarning) {
 	std::string message = lastWarning ? Color::ToString(Color::Red)
 	                                  : Color::ToString(Color::Yellow);
 
-	switch (GetTeamComponent().Team()) {
+	switch (i2t(GetTeamComponent().Team())) {
 		case TEAM_ALIENS:
 			message += "You are blocking an egg!";
 			break;

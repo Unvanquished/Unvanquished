@@ -118,7 +118,7 @@ void BuildableComponent::Think(int timeDelta) {
 					int   regenWait;
 					float regenRate = (float)BG_Buildable(entity.oldEnt->s.modelindex)->regenRate;
 
-					switch (entity.oldEnt->buildableTeam) {
+					switch (i2t(entity.oldEnt->buildableTeam)) {
 						case TEAM_ALIENS: regenWait = ALIEN_BUILDABLE_REGEN_WAIT; break;
 						case TEAM_HUMANS: regenWait = HUMAN_BUILDABLE_REGEN_WAIT; break;
 						default:          regenWait = 0;                          break;
