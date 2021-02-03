@@ -545,7 +545,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		}
 	}
 
-	team = (TeamIndex) client->pers.team;
+	team = client->pers.team;
 
 	// Check to see if we are in the spawn queue
 	// Also, do some other checks and updates which players need while spectating
@@ -705,7 +705,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 				                        va( "print_tr %s %s %s", QQ( N_("$1$^* moved from $2$ to spectators due to inactivity\n") ),
 				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->pers.team ) ) ) );
 				G_LogPrintf( "Inactivity: %d\n", (int)( client - level.clients ) );
-				G_ChangeTeam( ent, TEAM_NONE );
+				G_ChangeTeam( ent, TI_NONE );
 			}
 			else
 			{
@@ -823,7 +823,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 
 	if ( !( client = self->client ) ) return;
 
-	team = (TeamIndex)client->pers.team;
+	team = client->pers.team;
 
 	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
 	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
@@ -2205,7 +2205,7 @@ void ClientThink_real( gentity_t *self )
 	}
 
 	client->ps.persistant[ PERS_SPENTBUDGET ]  = level.team[client->pers.team].spentBudget;
-	client->ps.persistant[ PERS_MARKEDBUDGET ] = G_GetMarkedBudget( (TeamIndex)client->pers.team );
+	client->ps.persistant[ PERS_MARKEDBUDGET ] = G_GetMarkedBudget( client->pers.team );
 	client->ps.persistant[ PERS_TOTALBUDGET ]  = (int)level.team[client->pers.team].totalBudget;
 	client->ps.persistant[ PERS_QUEUEDBUDGET ] = level.team[client->pers.team].queuedBudget;
 

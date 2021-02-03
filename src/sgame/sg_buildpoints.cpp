@@ -87,7 +87,7 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, TeamIndex team) {
  * @brief Calculate the build point budgets for both teams.
  */
 void G_UpdateBuildPointBudgets() {
-	for (TeamIndex team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
+	for (TeamIndex team = TI_NONE; (team = G_IterateTeams(team)); ) {
 		level.team[team].totalBudget = g_buildPointInitialBudget.Get();
 	}
 

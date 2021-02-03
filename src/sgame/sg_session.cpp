@@ -139,7 +139,7 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 		}
 	}
 
-	sess->restartTeam = TEAM_NONE;
+	sess->restartTeam = TI_NONE;
 	sess->spectatorState = SPECTATOR_FREE;
 	sess->spectatorTime = level.time;
 	sess->spectatorClient = -1;

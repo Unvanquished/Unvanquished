@@ -20,7 +20,7 @@ void OvermindComponent::HandlePrepareNetCode() {
 
 void OvermindComponent::HandleFinishConstruction() {
 	// TODO: Make an event and move to MainBuildableComponent.
-	G_TeamCommand(TEAM_ALIENS, "cp \"The Overmind has awakened!\"");
+	G_TeamCommand(this->entity.Get<TeamComponent>()->Team(), "cp \"The Overmind has awakened!\"");
 }
 
 void OvermindComponent::Think(int timeDelta) {

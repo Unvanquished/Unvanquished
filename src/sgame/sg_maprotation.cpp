@@ -706,8 +706,8 @@ static const char *G_RotationNode_ToString( const mrNode_t *node )
 					           node->u.condition.intValue );
 
 				case CV_LASTWIN:
-					return va( MAP_CONTROL "condition: lastWin %s",
-					           BG_TeamName( node->u.condition.lastWin ) );
+					return va( MAP_CONTROL "condition: lastWin %d",
+					           node->u.condition.lastWin );
 
 				default:
 					return MAP_CONTROL "condition: ???";

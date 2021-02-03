@@ -57,49 +57,10 @@ static gentity_t *FindBuildable(buildable_t buildable, TeamIndex team) {
 	return found;
 }
 
-static gentity_t *LookupMainBuildableChache(buildable_t buildable, bool constructed, bool alive) {
-	static gentity_t *reactor  = nullptr;
-	static gentity_t *overmind = nullptr;
-
-	gentity_t* cache;
-
-	switch (buildable) {
-		case BA_A_OVERMIND:
-			cache = overmind;
-			break;
-
-		case BA_H_REACTOR:
-			cache = reactor;
-			break;
-
-		default:
-			return nullptr;
-	}
-
-	if (!cache || cache->s.eType != entityType_t::ET_BUILDABLE || cache->s.modelindex != buildable) {
-		cache = FindBuildable( buildable );
-	}
-
-	if (!cache) {
-		return nullptr;
-	}
-
-	if (constructed && cache->entity->Get<BuildableComponent>()->GetState() ==
-	    BuildableComponent::CONSTRUCTING) {
-		return nullptr;
-	}
-
-	if (alive && !cache->entity->Get<HealthComponent>()->Alive()) {
-		return nullptr;
-	}
-
-	return cache;
-}
-
 gentity_t* G_MainBuildable(TeamIndex team)
 {
 	gentity_t* found = nullptr;
-	ForEntities<MainBuildableComponent>([&](Entity& entity, OvermindComponent&) {
+	ForEntities<MainBuildableComponent>([&](Entity& entity, MainBuildableComponent&) {
 		if (G_TeamIndex(entity.oldEnt) == team ) {
 			found = entity.oldEnt;
 		}
@@ -1486,7 +1447,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	{
 		reason = replacementError;
 	}
-	else if ( i2t( (TeamIndex) ent->client->pers.team ) == TEAM_ALIENS )
+	else if ( i2t( ent->client->pers.team ) == TEAM_ALIENS )
 	{
 		// Check for Overmind
 		if ( buildable != BA_A_OVERMIND )
@@ -1911,7 +1872,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	if ( builder->client )
 	{
 	        // readable and the model name shouldn't need quoting
-		G_TeamCommand( (TeamIndex) builder->client->pers.team,
+		G_TeamCommand( builder->client->pers.team,
 		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
 						QQ( N_("$1$ ^2built^* by $2$^*, ^3replacing^* $3$\n") ) :
 						QQ( N_("$1$ ^2built^* by $2$$3$\n") ),
@@ -1938,7 +1899,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	}
 
 	if( builder->client )
-		Beacon::Tag( built, (TeamIndex)builder->client->pers.team, true );
+		Beacon::Tag( built, builder->client->pers.team, true );
 
 	return built;
 }
@@ -1960,7 +1921,7 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	{
 		case IBE_NONE:
 			SpawnBuildable( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
-			G_SpendBudget( BG_Buildable( buildable )->team, BG_Buildable( buildable )->buildPoints );
+			G_SpendBudget( G_TeamIndex( ent ), BG_Buildable( buildable )->buildPoints );
 			return true;
 
 		case IBE_NOALIENBP:

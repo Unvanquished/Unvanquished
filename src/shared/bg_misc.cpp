@@ -2739,6 +2739,26 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 BG_TeamName
 ============
 */
+const char *BG_TeamName( TeamIndex team )
+{
+	if ( team == TEAM_NONE )
+	{
+		return N_("spectator");
+	}
+
+	if ( i2t(team) == TEAM_ALIENS )
+	{
+		return va("alien%d", team);
+	}
+
+	if ( i2t(team) == TEAM_HUMANS )
+	{
+		return va("human%d", team);
+	}
+
+	return "<team>";
+}
+
 const char *BG_TeamName( TeamType team )
 {
 	if ( team == TEAM_NONE )
@@ -2759,22 +2779,23 @@ const char *BG_TeamName( TeamType team )
 	return "<team>";
 }
 
-const char *BG_TeamNamePlural( TeamType team )
+const char *BG_TeamNamePlural( TeamIndex team )
 {
 	if ( team == TEAM_NONE )
 	{
 		return N_("spectators");
 	}
 
-	if ( team == TEAM_ALIENS )
+	if ( i2t(team) == TEAM_ALIENS )
 	{
-		return N_("aliens");
+		return va("aliens%d", team);
 	}
 
-	if ( team == TEAM_HUMANS )
+	if ( i2t(team) == TEAM_HUMANS )
 	{
-		return N_("humans");
+		return va("humans%d", team);
 	}
+
 
 	return "<team>";
 }

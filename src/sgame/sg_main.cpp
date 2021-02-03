@@ -986,7 +986,7 @@ void G_ShutdownGame( int /* restart */ )
 	BG_UnloadAllConfigs();
 
 	level.restarted = false;
-	level.surrenderTeam = TEAM_NONE;
+	level.surrenderTeam = TI_NONE;
 	trap_SetConfigstring( CS_WINNER, "" );
 
 	/*
@@ -2232,7 +2232,7 @@ void CheckExitRules()
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit") "\"" );
 			trap_SetConfigstring( CS_WINNER, "Stalemate" );
-			G_notify_sensor_end( TEAM_NONE );
+			G_notify_sensor_end( TI_NONE );
 			LogExit( "Timelimit hit." );
 			G_MapLog_Result( 't' );
 			return;
@@ -2261,7 +2261,7 @@ void CheckExitRules()
 		level.lastWin = TEAM_HUMANS;
 		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
-		G_notify_sensor_end( TEAM_HUMANS );
+		G_notify_sensor_end( TI_2 ); //XXX
 		LogExit( "Humans win." );
 		G_MapLog_Result( 'h' );
 	}
@@ -2275,7 +2275,7 @@ void CheckExitRules()
 		level.lastWin = TEAM_ALIENS;
 		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Aliens Win" );
-		G_notify_sensor_end( TEAM_ALIENS );
+		G_notify_sensor_end( TI_1 ); //XXX
 		LogExit( "Aliens win." );
 		G_MapLog_Result( 'a' );
 	}
@@ -2816,8 +2816,8 @@ void G_RunFrame( int levelTime )
 
 	G_DecreaseMomentum();
 	G_CalculateAvgPlayers();
-	G_SpawnClients( TEAM_ALIENS );
-	G_SpawnClients( TEAM_HUMANS );
+	G_SpawnClients( TI_1 );
+	G_SpawnClients( TI_2 );
 	G_UpdateZaps( msec );
 	Beacon::Frame( );
 

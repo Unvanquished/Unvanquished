@@ -84,7 +84,7 @@ void MomentumChanged()
 			continue;
 		}
 
-		team = (TeamIndex) client->pers.team;
+		team = client->pers.team;
 
 		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
@@ -475,7 +475,7 @@ float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker,
 		return 0.0f;
 	}
 
-	team = (TeamIndex) attacker->client->pers.team;
+	team = attacker->client->pers.team;
 
 	return AddMomentum( CONF_DESTROYING, team, amount, attacker, true );
 }
@@ -503,7 +503,7 @@ float G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float
 	}
 
 	value = BG_GetValueOfPlayer( &victim->client->ps ) * MOMENTUM_PER_CREDIT * share;
-	team  = (TeamIndex) attacker->client->pers.team;
+	team  = attacker->client->pers.team;
 
 	return AddMomentum( CONF_KILLING, team, value, attacker, true );
 }

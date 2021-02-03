@@ -878,7 +878,7 @@ TeamIndex G_IterateTeams( TeamIndex team )
 
 	if ( nextTeam >= NUM_TEAMS )
 	{
-		return TEAM_NONE;
+		return TI_NONE;
 	}
 	else
 	{

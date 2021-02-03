@@ -527,6 +527,7 @@ Change team and spawn as builder at the current position
 */
 void Cmd_Devteam_f( gentity_t *ent )
 {
+#if 0 //XXX
 	gentity_t *spawn;
 
 	if ( trap_Argc() < 2 )
@@ -568,6 +569,7 @@ void Cmd_Devteam_f( gentity_t *ent )
 	G_UpdateTeamConfigStrings();
 	ClientUserinfoChanged( ent->client->ps.clientNum, false );
 	ClientSpawn( ent, spawn, ent->client->ps.origin, nullptr );
+#endif
 }
 
 /*
@@ -627,7 +629,7 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = atof( name + strlen("momentum") );
 		}
 
-		G_AddMomentumGeneric( (TeamIndex) ent->client->pers.team, amount );
+		G_AddMomentumGeneric( ent->client->pers.team, amount );
 	}
 
 	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
@@ -807,7 +809,7 @@ Cmd_Team_f
 void Cmd_Team_f( gentity_t *ent )
 {
 	TeamIndex   team;
-	TeamIndex   oldteam = (TeamIndex) ent->client->pers.team;
+	TeamIndex   oldteam = ent->client->pers.team;
 	char     s[ MAX_TOKEN_CHARS ];
 	bool force = G_admin_permission( ent, ADMF_FORCETEAMCHANGE );
 	int      players[ NUM_TEAMS ];
@@ -1398,7 +1400,7 @@ void Cmd_VSay_f( gentity_t *ent )
 			break;
 
 		case VOICE_CHAN_TEAM:
-			G_TeamCommand( (TeamIndex) ent->client->pers.team, va(
+			G_TeamCommand( ent->client->pers.team, va(
 			                 "voice %ld %d %d %d %s",
 			                 ( long )( ent - g_entities ), vchan, cmdNum, trackNum, Quote( arg ) ) );
 			break;
@@ -1512,7 +1514,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	int    i;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
-	team = (TeamIndex) ( ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TEAM_NONE );
+	team = ( ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TI_NONE );
 
 	if ( !g_allowVote.integer )
 	{
@@ -2072,7 +2074,7 @@ Cmd_Vote_f
 void Cmd_Vote_f( gentity_t *ent )
 {
 	char   cmd[ MAX_TOKEN_CHARS ], vote[ MAX_TOKEN_CHARS ];
-	TeamIndex team = (TeamIndex)ent->client->pers.team;
+	TeamIndex team = ent->client->pers.team;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
@@ -2281,7 +2283,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			G_StopFollowing( ent );
 		}
 
-		team = i2t( (TeamIndex) ent->client->pers.team );
+		team = i2t( ent->client->pers.team );
 		if ( team == TEAM_ALIENS )
 		{
 			if ( newClass != PCL_ALIEN_BUILDER0 &&
@@ -2304,7 +2306,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				return false;
 			}
 
-			if ( !BG_ClassUnlocked( newClass ) )
+			if ( !BG_ClassUnlocked( newClass, G_TeamIndex( ent ) ) )
 			{
 				if ( report )
 				{
@@ -3109,7 +3111,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
+		if ( !BG_WeaponUnlocked( weapon, G_TeamIndex( ent ) ) || BG_WeaponDisabled( weapon ) )
 		{
 			goto cant_buy;
 		}
@@ -3185,7 +3187,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
+		if ( !BG_UpgradeUnlocked( upgrade, G_TeamIndex( ent ) ) || BG_UpgradeDisabled( upgrade ) )
 		{
 			goto cant_buy;
 		}
@@ -3356,7 +3358,7 @@ void Cmd_Build_f( gentity_t *ent )
 
 	if ( buildable != BA_NONE &&
 	     ( ( 1 << ent->client->ps.weapon ) & BG_Buildable( buildable )->buildWeapon ) &&
-	     !BG_BuildableDisabled( buildable ) && BG_BuildableUnlocked( buildable ) )
+	     !BG_BuildableDisabled( buildable ) && BG_BuildableUnlocked( buildable, G_TeamIndex( ent ) ) )
 	{
 		dynMenu_t err;
 		vec3_t forward, aimDir;
@@ -4307,7 +4309,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 
 	type  = battr->number;
 	flags = battr->flags;
-	team  = (TeamIndex)ent->client->pers.team;
+	team  = ent->client->pers.team;
 
 	// Trace in view direction.
 	BG_GetClientViewOrigin( &ent->client->ps, origin );

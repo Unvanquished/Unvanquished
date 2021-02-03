@@ -703,7 +703,7 @@ namespace Beacon //this should eventually become a class
 				break;
 
 			case entityType_t::ET_PLAYER:
-				targetTeam = (TeamIndex)ent->client->pers.team;
+				targetTeam = ent->client->pers.team;
 				dead       = Entities::IsDead( ent );
 				player     = true;
 				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, nullptr, nullptr, nullptr );
@@ -749,6 +749,6 @@ namespace Beacon //this should eventually become a class
 		if ( ent->s.eType == entityType_t::ET_BUILDABLE ) BaseClustering::Update( beacon );
 
 		Propagate( beacon );
-	}
 #endif
+	}
 }

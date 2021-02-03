@@ -131,9 +131,9 @@ void trigger_multiple_compat_reset( gentity_t *self )
 	if (!!( self->spawnflags & 1 ) != !!( self->spawnflags & 2 )) //if both are set or none are set we assume TEAM_ALL
 	{
 		if ( self->spawnflags & 1 )
-			self->conditions.team = TEAM_HUMANS;
+			self->conditions.team = TI_2; //XXX
 		else if ( self->spawnflags & 2 )
-			self->conditions.team = TEAM_ALIENS;
+			self->conditions.team = TI_1; //XXX
 	}
 
 	if ( self->spawnflags && g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower

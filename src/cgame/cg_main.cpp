@@ -392,7 +392,7 @@ static void CG_SetPVars()
 	        return;
 	}
 
-	trap_Cvar_Set( "p_teamname", BG_TeamName( i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) ) );
+	trap_Cvar_Set( "p_teamname", BG_TeamName( (TeamIndex) ps->persistant[ PERS_TEAM ] ) );
 
 	switch ( ps->persistant[ PERS_TEAM ] )
 	{

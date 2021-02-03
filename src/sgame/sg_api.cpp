@@ -85,7 +85,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 
 		case GAME_CLIENT_CONNECT:
 			IPC::HandleMsg<GameClientConnectMsg>(VM::rootChannel, std::move(reader), [](int clientNum, bool firstTime, int isBot, bool& denied, std::string& reason) {
-				const char* deniedStr = isBot ? ClientBotConnect(clientNum, firstTime, TEAM_NONE) : ClientConnect(clientNum, firstTime);
+				const char* deniedStr = isBot ? ClientBotConnect(clientNum, firstTime, TI_NONE) : ClientConnect(clientNum, firstTime);
 				denied = deniedStr != nullptr;
 				if (denied)
 					reason = deniedStr;

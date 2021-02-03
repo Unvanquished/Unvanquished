@@ -3116,7 +3116,7 @@ bool G_admin_speclock( gentity_t *ent )
 
 	if ( vic->client->pers.team != TEAM_NONE )
 	{
-		G_ChangeTeam( vic, TEAM_NONE );
+		G_ChangeTeam( vic, TI_NONE );
 		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock:^* $1$^* put $2$^* on to the spectators team and blocked team-change for $3$$4t$") ),
 		        G_quoted_admin_name( ent ),
 		        Quote( vic->client->pers.netname ), Quote( time ), duration ) );
@@ -3684,11 +3684,11 @@ bool G_admin_listplayers( gentity_t *ent )
 		{
 			t = Str::ctoupper( * ( BG_TeamName( p->pers.team ) ) );
 
-			if ( p->pers.team == TEAM_HUMANS )
+			if ( p->pers.team == TI_2 )
 			{
 				color = Color::Cyan;
 			}
-			else if ( p->pers.team == TEAM_ALIENS )
+			else if ( p->pers.team == TI_1 )
 			{
 				color = Color::Red;
 			}
@@ -4147,7 +4147,7 @@ bool G_admin_spec999( gentity_t *ent )
 
 		if ( vic->client->ps.ping == 999 )
 		{
-			G_ChangeTeam( vic, TEAM_NONE );
+			G_ChangeTeam( vic, TI_NONE );
 			AP( va( "print_tr %s %s %s", QQ( N_("^3spec999:^* $1$^* moved $2$^* to spectators") ),
 			        G_quoted_admin_name( ent ),
 			        Quote( vic->client->pers.netname ) ) );
@@ -4288,7 +4288,7 @@ bool G_admin_restart( gentity_t *ent )
 				continue;
 			}
 
-			cl->sess.restartTeam = (TeamIndex) cl->pers.team;
+			cl->sess.restartTeam = cl->pers.team;
 		}
 
 		trap_Cvar_Set( "g_mapRestarted", "yk" );
@@ -4304,13 +4304,13 @@ bool G_admin_restart( gentity_t *ent )
 				continue;
 			}
 
-			if ( cl->pers.team == TEAM_HUMANS )
+			if ( cl->pers.team == TI_2 )
 			{
-				cl->sess.restartTeam = TEAM_ALIENS;
+				cl->sess.restartTeam = TI_1;
 			}
-			else if ( cl->pers.team == TEAM_ALIENS )
+			else if ( cl->pers.team == TI_1 )
 			{
-				cl->sess.restartTeam = TEAM_HUMANS;
+				cl->sess.restartTeam = TI_2;
 			}
 		}
 
@@ -4351,7 +4351,7 @@ bool G_admin_nextmap( gentity_t *ent )
 	        G_quoted_admin_name( ent ) ) );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
-	G_notify_sensor_end( TEAM_NONE );
+	G_notify_sensor_end( TI_NONE );
 	LogExit( va( "nextmap was run by %s", G_admin_name( ent ) ) );
 	G_MapLog_Result( 'N' );
 	return true;
@@ -5123,12 +5123,12 @@ bool G_admin_buildlog( gentity_t *ent )
 	int        time;
 	int        start = MAX_CLIENTS + level.buildId - level.numBuildLogs;
 	int        i = 0, j;
-	int        team;
+	TeamIndex        team;
 	bool   admin;
 	buildLog_t *log;
 
 	admin = !ent || G_admin_permission( ent, "buildlog_admin" );
-	team = admin ? TEAM_NONE : ent->client->pers.team;
+	team = admin ? TI_NONE : ent->client->pers.team;
 
 	if ( !admin && team == TEAM_NONE )
 	{

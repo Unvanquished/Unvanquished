@@ -291,7 +291,7 @@ bool G_BotAdd( const char *name, TeamIndex team, int skill, const char *behavior
 
 	if ( autoname )
 	{
-		G_BotNameUsed( team, name, true );
+		G_BotNameUsed( i2t( team ), name, true );
 	}
 
 	ClientBegin( clientNum );
@@ -318,7 +318,7 @@ void G_BotDel( int clientNum )
 	autoname = Info_ValueForKey( userinfo, "autoname" );
 	if ( autoname && *autoname )
 	{
-		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, false );
+		G_BotNameUsed( i2t( BotGetEntityTeam( bot ) ), autoname, false );
 	}
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^* disconnected" ) ),

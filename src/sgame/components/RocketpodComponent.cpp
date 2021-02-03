@@ -179,11 +179,11 @@ bool RocketpodComponent::CompareTargets(Entity &a, Entity &b) {
 	);
 
 	bool safeToShootAtA = SafeShot(
-		entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.pos.trBase), directionToA
+		entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.pos.trBase), directionToA, entity.Get<TeamComponent>()->Team()
 	);
 
 	bool safeToShootAtB = SafeShot(
-		entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.pos.trBase), directionToB
+		entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.pos.trBase), directionToB, entity.Get<TeamComponent>()->Team()
 	);
 
 	if        ( safeToShootAtA && !safeToShootAtB) {
@@ -208,10 +208,10 @@ bool RocketpodComponent::SafeShot() {
 	Vec3 aimDirection;
 	AngleVectors(entity.oldEnt->buildableAim, aimDirection.Data(), nullptr, nullptr);
 
-	return SafeShot(entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.pos.trBase), aimDirection);
+	return SafeShot(entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.pos.trBase), aimDirection, this->entity.Get<TeamComponent>()->Team());
 }
 
-bool RocketpodComponent::SafeShot(int passEntityNumber, const Vec3& origin, const Vec3& direction) {
+bool RocketpodComponent::SafeShot(int passEntityNumber, const Vec3& origin, const Vec3& direction, TeamIndex team) {
 	const missileAttributes_t* missileAttributes = BG_Missile(MIS_ROCKET);
 
 	float missileSize = missileAttributes->size;
@@ -228,7 +228,7 @@ bool RocketpodComponent::SafeShot(int passEntityNumber, const Vec3& origin, cons
 	// TODO: Refactor area damage (testing) helpers.
 	return !G_RadiusDamage(
 		trace.endpos, nullptr, missileAttributes->splashDamage, missileAttributes->splashRadius,
-		nullptr, 0, MOD_ROCKETPOD, TEAM_HUMANS
+		nullptr, 0, MOD_ROCKETPOD, team
 	);
 }
 

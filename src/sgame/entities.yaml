@@ -86,7 +86,7 @@ components:
 
     Team:
         parameters:
-            team: TeamIndex
+            team: TeamType #XXX dummy
 
     Ignitable:
         parameters:

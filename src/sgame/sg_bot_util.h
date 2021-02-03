@@ -38,7 +38,7 @@ void BotCalculateStuckTime( gentity_t *self );
 void BotResetStuckTime( gentity_t *self );
 
 // entity queries
-int        FindBots( int *botEntityNumbers, int maxBots, team_t team );
+int        FindBots( int *botEntityNumbers, int maxBots, TeamIndex team );
 gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
 void       BotFindClosestBuildings( gentity_t *self );
@@ -63,8 +63,8 @@ bool    BotTargetInAttackRange( gentity_t *self, botTarget_t target );
 void        BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
 int         BotGetTargetEntityNumber( botTarget_t target );
 void        BotGetTargetPos( botTarget_t target, vec3_t rVec );
-team_t      BotGetEntityTeam( gentity_t *ent );
-team_t      BotGetTargetTeam( botTarget_t target );
+TeamIndex      BotGetEntityTeam( gentity_t *ent );
+TeamIndex      BotGetTargetTeam( botTarget_t target );
 entityType_t         BotGetTargetType( botTarget_t target );
 botTarget_t BotGetRoamTarget( gentity_t *self );
 botTarget_t BotGetRetreatTarget( gentity_t *self );

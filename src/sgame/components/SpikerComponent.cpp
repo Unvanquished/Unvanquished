@@ -67,7 +67,7 @@ void SpikerComponent::Think(int timeDelta) {
 
 	// Calculate expected damage to decide on the best moment to shoot.
 	ForEntities<HealthComponent>([&](Entity& other, HealthComponent& healthComponent) {
-		if (G_TeamType(other.oldEnt) == TEAM_NONE)                            return;
+		if (G_TeamIndex(other.oldEnt) == TI_NONE)                         return;
 		if (G_OnSameTeam(entity.oldEnt, other.oldEnt))                    return;
 		if ((other.oldEnt->flags & FL_NOTARGET))                          return;
 		if (!healthComponent.Alive())                                     return;

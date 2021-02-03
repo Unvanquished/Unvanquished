@@ -1276,7 +1276,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	if ( client->sess.restartTeam != TEAM_NONE )
 	{
 		G_ChangeTeam( ent, client->sess.restartTeam );
-		client->sess.restartTeam = TEAM_NONE;
+		client->sess.restartTeam = TI_NONE;
 	}
 
 	return nullptr;
@@ -1807,7 +1807,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		ent->credits[ i ].value = 0.0f;
 		ent->credits[ i ].time = 0;
-		ent->credits[ i ].team = TEAM_NONE;
+		ent->credits[ i ].team = TI_NONE;
 	}
 
 	G_SetOrigin( ent, spawn_origin );
@@ -1964,7 +1964,7 @@ void ClientDisconnect( int clientNum )
 
 	G_LeaveTeam( ent );
 	G_namelog_disconnect( ent->client );
-	G_Vote( ent, TEAM_NONE, false );
+	G_Vote( ent, TI_NONE, false );
 
 	// stop any following clients
 	for ( i = 0; i < level.maxclients; i++ )

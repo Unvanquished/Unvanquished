@@ -48,7 +48,7 @@ class RocketpodComponent: public RocketpodComponentBase {
 		// ///////////////////// //
 
 		// TODO: Make protected and add the rocket pod missile's component as a friend class.
-		static bool SafeShot(int passEntityNumber, const Vec3& origin, const Vec3& direction);
+		static bool SafeShot(int passEntityNumber, const Vec3& origin, const Vec3& direction, TeamIndex team);
 
 	private:
 

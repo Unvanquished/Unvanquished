@@ -264,7 +264,6 @@ void              G_UnregisterCommands();
 TeamIndex            G_TeamFromString( const char *str );
 void              G_TeamCommand( TeamIndex team, const char *cmd );
 void              G_AreaTeamCommand( gentity_t *ent, const char *cmd );
-TeamType G_TeamType( gentity_t *ent );
 TeamIndex G_TeamIndex( gentity_t *ent );
 
 bool          G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 );

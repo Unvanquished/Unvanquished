@@ -800,9 +800,9 @@ static void RocketThink( gentity_t *self )
 
 	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
 	if (    !RocketpodComponent::SafeShot(
-			ENTITYNUM_NONE, Vec3::Load( self->r.currentOrigin ), Vec3::Load( newDir )
+			ENTITYNUM_NONE, Vec3::Load( self->r.currentOrigin ), Vec3::Load( newDir ), G_TeamIndex( self )
 		) && RocketpodComponent::SafeShot(
-			ENTITYNUM_NONE, Vec3::Load( self->r.currentOrigin ), Vec3::Load( currentDir )
+			ENTITYNUM_NONE, Vec3::Load( self->r.currentOrigin ), Vec3::Load( currentDir ), G_TeamIndex( self )
 		)
 	) {
 		return;

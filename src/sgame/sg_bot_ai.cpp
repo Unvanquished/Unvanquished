@@ -663,7 +663,7 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 // TODO: Move decision making out of these actions and into the rest of the behavior tree
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
-	TeamType myTeam = i2t( (TeamIndex)self->client->pers.team );
+	TeamType myTeam = i2t( self->client->pers.team );
 
 	if ( self->botMind->currentNode != node )
 	{
@@ -1024,7 +1024,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 		}
 	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) &&
-	          ( !BG_ClassUnlocked( PCL_ALIEN_LEVEL3_UPG ) ||!g_bot_level2upg.integer ||
+	          ( !BG_ClassUnlocked( PCL_ALIEN_LEVEL3_UPG, G_TeamIndex( self ) ) ||!g_bot_level2upg.integer ||
 	            !g_bot_level3upg.integer ) && g_bot_level3.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3 ) )

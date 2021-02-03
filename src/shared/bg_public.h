@@ -1578,8 +1578,9 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
 
 int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 
+const char *BG_TeamName( TeamIndex team );
 const char *BG_TeamName( TeamType team );
-const char *BG_TeamNamePlural( TeamType team );
+const char *BG_TeamNamePlural( TeamIndex team );
 
 TeamIndex BG_PlayableTeamFromString( const char* s );
 

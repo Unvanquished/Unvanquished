@@ -313,35 +313,36 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	int equipmentPrice = BotValueOfWeapons( self ) + BotValueOfUpgrades( self );
 	int credits = self->client->ps.persistant[PERS_CREDIT];
 	int usableCapital = credits + equipmentPrice;
+	TeamIndex team = G_TeamIndex(self);
 
 	//decide what upgrade(s) to buy
-	if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_BATTLESUIT ) &&
+	if ( BG_WeaponUnlocked( WP_PAIN_SAW, team ) && BG_UpgradeUnlocked( UP_BATTLESUIT, team ) &&
 	     usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) )
 	{
 		upgrades[0] = UP_BATTLESUIT;
 		*numUpgrades = 1;
 	}
-	else if ( BG_WeaponUnlocked( WP_SHOTGUN ) && BG_UpgradeUnlocked( UP_MEDIUMARMOUR ) && BG_UpgradeUnlocked( UP_RADAR ) &&
+	else if ( BG_WeaponUnlocked( WP_SHOTGUN, team ) && BG_UpgradeUnlocked( UP_MEDIUMARMOUR, team ) && BG_UpgradeUnlocked( UP_RADAR, team ) &&
 	          usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_MEDIUMARMOUR )->price + BG_Upgrade( UP_RADAR )->price ) )
 	{
 		upgrades[0] = UP_MEDIUMARMOUR;
 		upgrades[1] = UP_RADAR;
 		*numUpgrades = 2;
 	}
-	else if ( BG_WeaponUnlocked( WP_SHOTGUN ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR ) && BG_UpgradeUnlocked( UP_RADAR ) &&
+	else if ( BG_WeaponUnlocked( WP_SHOTGUN, team ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR, team ) && BG_UpgradeUnlocked( UP_RADAR, team ) &&
 	          usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_RADAR )->price ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
 		upgrades[1] = UP_RADAR;
 		*numUpgrades = 2;
 	}
-	else if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_MEDIUMARMOUR ) &&
+	else if ( BG_WeaponUnlocked( WP_PAIN_SAW, team ) && BG_UpgradeUnlocked( UP_MEDIUMARMOUR, team ) &&
 	          usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_MEDIUMARMOUR )->price ) )
 	{
 		upgrades[0] = UP_MEDIUMARMOUR;
 		*numUpgrades = 1;
 	}
-	else if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR ) &&
+	else if ( BG_WeaponUnlocked( WP_PAIN_SAW, team ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR, team ) &&
 	          usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_LIGHTARMOUR )->price ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
@@ -358,39 +359,39 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	}
 
 	//now decide what weapon to buy
-	if ( g_bot_lcannon.integer && BG_WeaponUnlocked( WP_LUCIFER_CANNON ) && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price )
+	if ( g_bot_lcannon.integer && BG_WeaponUnlocked( WP_LUCIFER_CANNON, team ) && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price )
 	{
 		*weapon = WP_LUCIFER_CANNON;;
 	}
-	else if ( g_bot_chaingun.integer && BG_WeaponUnlocked( WP_CHAINGUN ) && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT )
+	else if ( g_bot_chaingun.integer && BG_WeaponUnlocked( WP_CHAINGUN, team ) && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT )
 	{
 		*weapon = WP_CHAINGUN;
 	}
-	else if ( g_bot_flamer.integer && BG_WeaponUnlocked( WP_FLAMER ) && usableCapital >= BG_Weapon( WP_FLAMER )->price )
+	else if ( g_bot_flamer.integer && BG_WeaponUnlocked( WP_FLAMER, team ) && usableCapital >= BG_Weapon( WP_FLAMER )->price )
 	{
 		*weapon = WP_FLAMER;
 	}
-	else if ( g_bot_prifle.integer && BG_WeaponUnlocked( WP_PULSE_RIFLE ) && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price )
+	else if ( g_bot_prifle.integer && BG_WeaponUnlocked( WP_PULSE_RIFLE, team ) && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price )
 	{
 		*weapon = WP_PULSE_RIFLE;
 	}
-	else if ( g_bot_chaingun.integer && BG_WeaponUnlocked( WP_CHAINGUN ) && usableCapital >= BG_Weapon( WP_CHAINGUN )->price )
+	else if ( g_bot_chaingun.integer && BG_WeaponUnlocked( WP_CHAINGUN, team ) && usableCapital >= BG_Weapon( WP_CHAINGUN )->price )
 	{
 		*weapon = WP_CHAINGUN;;
 	}
-	else if ( g_bot_mdriver.integer && BG_WeaponUnlocked( WP_MASS_DRIVER ) && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price )
+	else if ( g_bot_mdriver.integer && BG_WeaponUnlocked( WP_MASS_DRIVER, team ) && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price )
 	{
 		*weapon = WP_MASS_DRIVER;
 	}
-	else if ( g_bot_lasgun.integer && BG_WeaponUnlocked( WP_LAS_GUN ) && usableCapital >= BG_Weapon( WP_LAS_GUN )->price )
+	else if ( g_bot_lasgun.integer && BG_WeaponUnlocked( WP_LAS_GUN, team ) && usableCapital >= BG_Weapon( WP_LAS_GUN )->price )
 	{
 		*weapon = WP_LAS_GUN;
 	}
-	else if ( g_bot_shotgun.integer && BG_WeaponUnlocked( WP_SHOTGUN ) && usableCapital >= BG_Weapon( WP_SHOTGUN )->price )
+	else if ( g_bot_shotgun.integer && BG_WeaponUnlocked( WP_SHOTGUN, team ) && usableCapital >= BG_Weapon( WP_SHOTGUN )->price )
 	{
 		*weapon = WP_SHOTGUN;
 	}
-	else if ( g_bot_painsaw.integer && BG_WeaponUnlocked( WP_PAIN_SAW ) && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price )
+	else if ( g_bot_painsaw.integer && BG_WeaponUnlocked( WP_PAIN_SAW, team ) && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price )
 	{
 		*weapon = WP_PAIN_SAW;
 	}
@@ -921,7 +922,7 @@ TeamIndex BotGetEntityTeam( gentity_t *ent )
 	}
 	if ( ent->client )
 	{
-		return ( TeamIndex )ent->client->pers.team;
+		return ent->client->pers.team;
 	}
 	else if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 	{
@@ -1435,7 +1436,7 @@ bool BotTeamateHasWeapon( gentity_t *self, int weapon )
 {
 	int botNumbers[MAX_CLIENTS];
 	int i;
-	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( TeamIndex ) self->client->pers.team );
+	int numBots = FindBots( botNumbers, MAX_CLIENTS, self->client->pers.team );
 
 	for ( i = 0; i < numBots; i++ )
 	{
@@ -1751,7 +1752,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{
 			//...check we can evolve to that class
-			if ( numLevels >= 1 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
+			if ( numLevels >= 1 && BG_ClassUnlocked( newClass, G_TeamIndex( ent ) ) && !BG_ClassDisabled( newClass ) )
 			{
 				ent->client->pers.evolveHealthFraction = Entities::HealthFraction(ent);
 
@@ -1814,7 +1815,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
+		if ( !BG_WeaponUnlocked( weapon, G_TeamIndex( self ) ) || BG_WeaponDisabled( weapon ) )
 		{
 			return;
 		}
@@ -1891,7 +1892,7 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		}
 
 		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
+		if ( !BG_UpgradeUnlocked( upgrade, G_TeamIndex( self ) ) || BG_UpgradeDisabled( upgrade ) )
 		{
 			return;
 		}

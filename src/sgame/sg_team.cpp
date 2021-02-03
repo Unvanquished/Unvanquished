@@ -40,18 +40,18 @@ TeamIndex G_TeamFromString( const char *str )
 	{
 		case '0':
 		case 's':
-			return TEAM_NONE;
+			return TI_NONE;
 
 		case '1':
 		//case 'a':
-			return TEAM_ALIENS;
+			return TI_1;
 
 		case '2':
 		//case 'h':
-			return TEAM_HUMANS;
+			return TI_2;
 
 		default:
-			return NUM_TEAMS;
+			return (TeamIndex)NUM_TEAMS;
 	}
 }
 
@@ -93,7 +93,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 	int    num, i;
 	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
 	vec3_t mins, maxs;
-	TeamIndex team = (TeamIndex) ent->client->pers.team;
+	TeamIndex team = ent->client->pers.team;
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -122,7 +122,7 @@ TeamIndex G_TeamIndex( gentity_t *ent )
 {
 	if ( ent->client )
 	{
-		return (TeamIndex)ent->client->pers.team;
+		return ent->client->pers.team;
 	}
 	else if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 	{
@@ -177,8 +177,8 @@ G_UpdateTeamConfigStrings
 */
 void G_UpdateTeamConfigStrings()
 {
-	clientList_t alienTeam = G_ClientListForTeam( TEAM_ALIENS );
-	clientList_t humanTeam = G_ClientListForTeam( TEAM_HUMANS );
+	clientList_t alienTeam = G_ClientListForTeam( TI_1 ); //XXX
+	clientList_t humanTeam = G_ClientListForTeam( TI_2 ); //XXX
 
 	if ( level.intermissiontime )
 	{
@@ -206,7 +206,7 @@ G_LeaveTeam
 
 void G_LeaveTeam( gentity_t *self )
 {
-	TeamIndex    team = (TeamIndex) self->client->pers.team;
+	TeamIndex    team = self->client->pers.team;
 	gentity_t *ent;
 	int       i;
 
@@ -271,7 +271,7 @@ G_ChangeTeam
 
 void G_ChangeTeam( gentity_t *ent, TeamIndex newTeam )
 {
-	TeamIndex oldTeam = (TeamIndex) ent->client->pers.team;
+	TeamIndex oldTeam = ent->client->pers.team;
 
 	if ( oldTeam == newTeam )
 	{

@@ -488,7 +488,7 @@ static void UpdateUnlockablesMask()
 {
 	int    unlockable, unlockableNum[ NUM_TEAMS ];
 
-	for ( TeamIndex team: {TT_1, TT_2} )
+	for ( TeamIndex team: {TI_1, TI_2} )
 	{
 		unlockableNum[ team ] = 0;
 		unlockablesMask[ team ] = 0;
@@ -498,7 +498,7 @@ static void UpdateUnlockablesMask()
 	{
 		if ( !unlockables[ unlockable ].unlockThreshold ) continue;
 
-		for (TeamIndex team: {TT_1, TT_2})
+		for (TeamIndex team: {TI_1, TI_2})
 		{
 			if ( i2t( team ) != unlockables[ unlockable ].team ) continue;
 
@@ -582,7 +582,7 @@ void G_UpdateUnlockables()
 		// calculate the item's locking state
 		for (TeamIndex teamIndex: {TI_1, TI_2}) {
 			momentum = level.team[ teamIndex ].momentum;
-			unlockable->unlocked = (
+			unlockable->unlocked[ teamIndex ] = (
 				!unlockThreshold || momentum >= unlockThreshold ||
 				( unlockable->unlocked && momentum >= unlockable->lockThreshold )
 			);
@@ -598,7 +598,7 @@ void G_UpdateUnlockables()
 
 	// GAME knows about all teams
 	unlockablesDataAvailable = true;
-	unlockablesTeamKnowledge = TEAM_ALL;
+	unlockablesTeamKnowledge = (TeamIndex)TEAM_ALL;
 
 	// generate masks for network transmission
 	UpdateUnlockablesMask();

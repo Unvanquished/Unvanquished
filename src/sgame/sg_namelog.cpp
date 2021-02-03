@@ -122,7 +122,7 @@ void G_namelog_update_score( gclient_t *client )
 		return;
 	}
 
-	n->team = (TeamIndex) client->pers.team;
+	n->team = client->pers.team;
 	n->score = client->ps.persistant[ PERS_SCORE ];
 	n->credits = client->pers.credit;
 }

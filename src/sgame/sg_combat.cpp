@@ -207,7 +207,7 @@ void G_RewardAttackers( gentity_t *self )
 	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		ownTeam   = (TeamIndex) self->client->pers.team;
+		ownTeam   = self->client->pers.team;
 		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
 		value     = BG_GetValueOfPlayer( &self->client->ps );
 	}
@@ -247,7 +247,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player     = &g_entities[ playerNum ];
-		playerTeam = (TeamIndex) player->client->pers.team;
+		playerTeam = player->client->pers.team;
 
 		// Player must be on the other team
 		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
@@ -267,7 +267,7 @@ void G_RewardAttackers( gentity_t *self )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player      = &g_entities[ playerNum ];
-		playerTeam  = (TeamIndex) player->client->pers.team;
+		playerTeam  = player->client->pers.team;
 		damageShare = self->credits[ playerNum ].value;
 
 		// Clear reward array
@@ -1081,7 +1081,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	if ( actor->client && actor->client->pers.team ==
 	     BG_Buildable( self->s.modelindex )->team )
 	{
-		G_TeamCommand( (TeamIndex) actor->client->pers.team,
+		G_TeamCommand( actor->client->pers.team,
 		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$\n") ) :
 						   QQ( N_("$1$ ^3DESTROYED^* by $2$\n") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),

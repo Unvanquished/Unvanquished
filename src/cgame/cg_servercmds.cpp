@@ -793,7 +793,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		{
 			Com_sprintf( prefix, sizeof( prefix ), "[%s%c^*] ",
 			             Color::ToString( tcolor ).c_str(),
-			             Str::ctoupper( * ( BG_TeamName( i2t( ci->team ) ) ) ) );
+			             Str::ctoupper( * ( BG_TeamName( ci->team ) ) ) );
 		}
 
 		if ( Com_ClientListContains( &cgs.ignoreList, clientNum ) )

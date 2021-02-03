@@ -436,7 +436,7 @@ struct clientPersistant_s
 
 	// These have a copy in playerState_t.persistent but we use them in GAME so they don't get invalidated by
 	// SPECTATOR_FOLLOW mode
-	int team;
+	TeamIndex team;
 	int credit;
 
 	int voted;

@@ -59,12 +59,12 @@ void target_print_act( gentity_t *self, gentity_t*, gentity_t *activator )
 	{
 		if ( self->spawnflags & 1 )
 		{
-			G_TeamCommand( TEAM_HUMANS, va( "cp %s", Quote( self->message ) ) );
+			G_TeamCommand( TI_2, va( "cp %s", Quote( self->message ) ) );
 		}
 
 		if ( self->spawnflags & 2 )
 		{
-			G_TeamCommand( TEAM_ALIENS, va( "cp %s", Quote( self->message ) ) );
+			G_TeamCommand( TI_1, va( "cp %s", Quote( self->message ) ) );
 		}
 
 		return;

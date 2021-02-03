@@ -88,14 +88,13 @@ void game_end_act( gentity_t *self, gentity_t*, gentity_t* )
 
 void SP_game_end( gentity_t *self )
 {
-	//XXX
 	if(!Q_stricmp(self->classname, "target_human_win"))
 	{
-		self->conditions.team = TEAM_HUMANS;
+		self->conditions.team = TI_2; //XXX
 	}
 	else if(!Q_stricmp(self->classname, "target_alien_win"))
 	{
-		self->conditions.team = TEAM_ALIENS;
+		self->conditions.team = TI_1; //XXX
 	}
 
 	self->act = game_end_act;
