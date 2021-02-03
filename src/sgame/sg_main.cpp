@@ -123,6 +123,14 @@ Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
 		[](int) {
 			G_UpdateBuildPointBudgets();
 		});
+
+Cvar::Range<Cvar::Cvar<int>> g_team1var("g_team1",
+    "team type (1=alien 2=human)", CVAR_SERVERINFO, 1, 1, 2);
+Cvar::Range<Cvar::Cvar<int>> g_team2var("g_team2",
+    "team type (1=alien 2=human)", CVAR_SERVERINFO, 2, 1, 2);
+TeamType g_team1, g_team2;
+
+
 vmCvar_t           g_buildPointRecoveryInititalRate;
 vmCvar_t           g_buildPointRecoveryRateHalfLife;
 
@@ -684,6 +692,8 @@ G_InitGame
 */
 void G_InitGame( int levelTime, int randomSeed, bool inClient )
 {
+	g_team1 = (TeamType)g_team1var.Get();
+	g_team2 = (TeamType)g_team2var.Get();
 	int i;
 
 	srand( randomSeed );

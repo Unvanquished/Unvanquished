@@ -68,11 +68,12 @@ enum TeamIndex {
 };
 
 inline TeamType i2t(TeamIndex i) {
+	extern TeamType g_team1, g_team2;
 	switch (i) {
 	case TI_1:
-		return TEAM_ALIENS;
+		return g_team1;
 	case TI_2:
-		return TEAM_ALIENS;
+		return g_team2;
 	default:
 		return (TeamType)i;
 	}
