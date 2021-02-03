@@ -70,7 +70,7 @@ enum TeamIndex {
 inline TeamType i2t(TeamIndex i) {
 	switch (i) {
 	case TI_1:
-		return TEAM_HUMANS;
+		return TEAM_ALIENS;
 	case TI_2:
 		return TEAM_ALIENS;
 	default:

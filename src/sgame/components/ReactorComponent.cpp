@@ -1,4 +1,5 @@
 #include "ReactorComponent.h"
+#include "sgame/Entities.h"
 
 const float ReactorComponent::ATTACK_RANGE  = 200.0f;
 const float ReactorComponent::ATTACK_DAMAGE = 30.0f;
@@ -18,9 +19,11 @@ void ReactorComponent::Think(int timeDelta) {
 	float baseDamage = ATTACK_DAMAGE * ((float)timeDelta / 1000.0f);
 
 	// Zap close enemies.
-	ForEntities<AlienClassComponent>([&](Entity& other, AlienClassComponent&) {
+	ForEntities<ClientComponent>([&](Entity& other, ClientComponent&) {
 		// Respect the no-target flag.
 		if (other.oldEnt->flags & FL_NOTARGET) return;
+
+		if (Entities::OnSameTeam(this->entity, other)) return;
 
 		// TODO: Add LocationComponent and Utility::BBOXDistance.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
