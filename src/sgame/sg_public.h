@@ -313,7 +313,6 @@ bool          G_LineOfSight( const vec3_t point1, const vec3_t point2 );
 bool              G_IsPlayableTeam( team_t team );
 bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
-team_t            G_Enemy( team_t team );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
 
 // sg_weapon.c
