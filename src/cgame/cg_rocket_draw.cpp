@@ -1058,8 +1058,7 @@ public:
 		es = &cg_entities[ trace.entityNum ].currentState;
 
 		if ( es->eType == entityType_t::ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-			//XXX
-			i2t( (TeamIndex) cg.predictedPlayerState.persistant[ PERS_TEAM ] ) == BG_Buildable( es->modelindex )->team )
+			cg.predictedPlayerState.persistant[ PERS_TEAM ] == es->modelindex2 )
 		{
 			//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
 			if ( es->modelindex == BA_H_REACTOR &&

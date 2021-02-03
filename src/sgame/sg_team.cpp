@@ -43,11 +43,11 @@ TeamIndex G_TeamFromString( const char *str )
 			return TI_NONE;
 
 		case '1':
-		//case 'a':
+		case 'a': //XXX
 			return TI_1;
 
 		case '2':
-		//case 'h':
+		case 'h': //XXX
 			return TI_2;
 
 		default:

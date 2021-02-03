@@ -1271,9 +1271,10 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( WP_HBUILD );
 
 	// add teams
-	D( TEAM_ALIENS );
-	D( TEAM_HUMANS );
-	D( TEAM_NONE );
+	// XXX
+	D2( TEAM_ALIENS, TI_1 );
+	D2( TEAM_HUMANS, TI_2 );
+	D2( TEAM_NONE, TI_NONE );
 
 	// add AIEntitys
 	D( E_NONE );

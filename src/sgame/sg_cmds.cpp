@@ -913,7 +913,7 @@ void Cmd_Team_f( gentity_t *ent )
 				team = TI_1;
 				break;
 
-			case TEAM_HUMANS:
+			case TI_2:
 				//TODO move code in a function common with previous case
 				if ( level.team[ TI_2 ].locked )
 				{

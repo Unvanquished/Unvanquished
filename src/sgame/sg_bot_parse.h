@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define allocNode(T) ( T * ) BG_Alloc( sizeof( T ) );
 #define stringify2(T, val) va( #T " %d", val )
-#define D2(T, val) Parse_AddGlobalDefine( stringify2( T, val ) )
+#define D2(T, val) Parse_AddGlobalDefine( va( #T " %d", (val) ) )
 #define D(T) D2(T, T)
 
 // FIXME: copied from parse.c
