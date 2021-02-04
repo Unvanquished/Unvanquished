@@ -49,7 +49,7 @@ static gentity_t *FindBuildable(buildable_t buildable, TeamIndex team) {
 	gentity_t* found = nullptr;
 
 	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
-		if (entity.oldEnt->s.modelindex == buildable) {
+		if (entity.oldEnt->s.modelindex == buildable && entity.Get<TeamComponent>()->Team() == team) {
 			found = entity.oldEnt;
 		}
 	});
@@ -1146,7 +1146,7 @@ static bool IsSetForDeconstruction( gentity_t *ent )
 	return false;
 }
 
-static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, buildable_t newBuildable )
+static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, buildable_t newBuildable, TeamIndex team )
 {
 	// don't replace the main buildable with any other buildable
 	if (    ( oldBuildable == BA_H_REACTOR  && newBuildable != BA_H_REACTOR  )
@@ -1155,16 +1155,14 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 		return IBE_MAINSTRUCTURE;
 	}
 
-#if 0 //XXX
 	// don't replace last spawn with a non-spawn
 	if (    ( oldBuildable == BA_H_SPAWN && newBuildable != BA_H_SPAWN &&
-	          level.team[ TEAM_HUMANS ].numSpawns == 1 )
+	          level.team[ team ].numSpawns == 1 )
 	     || ( oldBuildable == BA_A_SPAWN && newBuildable != BA_A_SPAWN &&
-	          level.team[ TEAM_ALIENS ].numSpawns == 1 ) )
+	          level.team[ team ].numSpawns == 1 ) )
 	{
 		return IBE_LASTSPAWN;
 	}
-#endif
 
 	return IBE_NONE;
 }
@@ -1174,10 +1172,8 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
  *
  * Sets level.markedBuildables and level.numBuildablesForRemoval.
  */
-static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3_t origin )
+static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3_t origin, TeamIndex team )
 {
-	return IBE_NONE; //XXX
-#if 0
 	int              entNum, listLen;
 	gentity_t        *ent, *list[ MAX_GENTITIES ];
 	const buildableAttributes_t *attr;
@@ -1195,7 +1191,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 	if ( buildable == BA_H_REACTOR )
 	{
-		ent = G_Reactor();
+		ent = FindBuildable( BA_H_REACTOR, team );
 
 		if ( ent )
 		{
@@ -1211,7 +1207,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 	else if ( buildable == BA_A_OVERMIND )
 	{
-		ent = G_Overmind();
+		ent = FindBuildable( BA_A_OVERMIND, team );
 
 		if ( ent )
 		{
@@ -1240,7 +1236,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		TeamIndex      otherTeam      = entity.oldEnt->buildableTeam;
 
 		if (BuildablesIntersect(buildable, origin, otherBuildable, entity.oldEnt->s.origin)) {
-			if (otherTeam != attr->team) {
+			if (otherTeam != team) {
 				collisionError = IBE_NOROOM;
 				return;
 			}
@@ -1251,9 +1247,9 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 			}
 
 			// Ignore main buildable replacement since it will already be on the list.
-			if (!(BG_IsMainStructure(buildable) && BG_IsMainStructure(otherBuildable))) {
+			if (!(BG_IsMainStructure(buildable) && BG_IsMainStructure(otherBuildable) && buildable == otherBuildable)) {
 				// Apply general replacement rules.
-				if ((collisionError = BuildableReplacementChecks((buildable_t)entity.oldEnt->s.modelindex, buildable)) != IBE_NONE) {
+				if ((collisionError = BuildableReplacementChecks((buildable_t)entity.oldEnt->s.modelindex, buildable, team)) != IBE_NONE) {
 					return;
 				}
 
@@ -1282,7 +1278,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 
 	// check if we can already afford the new buildable
-	if ( G_GetFreeBudget( attr->team ) >= cost )
+	if ( G_GetFreeBudget( team ) >= cost )
 	{
 		return IBE_NONE;
 	}
@@ -1295,7 +1291,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		ent = &g_entities[ entNum ];
 
 		// check if buildable of own team
-		if ( ent->s.eType != entityType_t::ET_BUILDABLE || ent->buildableTeam != attr->team )
+		if ( ent->s.eType != entityType_t::ET_BUILDABLE || ent->buildableTeam != team )
 		{
 			continue;
 		}
@@ -1313,7 +1309,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		}
 
 		// apply general replacement rules
-		if ( BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable ) != IBE_NONE )
+		if ( BuildableReplacementChecks( (buildable_t) ent->s.modelindex, buildable, team ) != IBE_NONE )
 		{
 			continue;
 		}
@@ -1335,7 +1331,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		cost -= G_BuildableDeconValue( ent );
 
 		// check if we have enough resources now
-		if ( G_GetFreeBudget( attr->team ) >= cost )
+		if ( G_GetFreeBudget( team ) >= cost )
 		{
 			return IBE_NONE;
 		}
@@ -1356,7 +1352,6 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		// shouldn't really happen
 		return IBE_NOHUMANBP;
 	}
-#endif
 }
 
 static void SetBuildableLinkState( bool link )
@@ -1446,7 +1441,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 	// Prepare replacement of other buildables.
 	itemBuildError_t replacementError;
-	if ( ( replacementError = PrepareBuildableReplacement( buildable, origin ) ) != IBE_NONE )
+	if ( ( replacementError = PrepareBuildableReplacement( buildable, origin, G_TeamIndex( ent ) ) ) != IBE_NONE )
 	{
 		reason = replacementError;
 	}

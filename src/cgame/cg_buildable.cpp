@@ -2080,15 +2080,14 @@ static int CG_SortDistance( const void *a, const void *b )
 CG_PlayerIsBuilder
 ==================
 */
-static bool CG_PlayerIsBuilder( buildable_t buildable )
+static bool CG_PlayerIsBuilder( entityState_t* esBuildable )
 {
 	switch ( cg.predictedPlayerState.weapon )
 	{
 		case WP_ABUILD:
 		case WP_ABUILD2:
 		case WP_HBUILD:
-			return BG_Buildable( buildable )->team ==
-			       BG_Weapon( cg.predictedPlayerState.weapon )->team;
+			return cg.predictedPlayerState.persistant[ PERS_TEAM ] == esBuildable->modelindex2;
 
 		default:
 			return false;
@@ -2143,7 +2142,7 @@ void CG_DrawBuildableStatus()
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		es = &cent->currentState;
 
-		if ( es->eType == entityType_t::ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es->modelindex ) )
+		if ( es->eType == entityType_t::ET_BUILDABLE && CG_PlayerIsBuilder( es ) )
 		{
 			buildableList[ buildables++ ] = cg.snap->entities[ i ].number;
 		}
@@ -2319,7 +2318,7 @@ void CG_Buildable( centity_t *cent )
 		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
 
-	if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
+	if ( CG_PlayerIsBuilder( es ) && CG_BuildableRemovalPending( es->number ) )
 	{
 		ent.customShader = cgs.media.redBuildShader;
 	}
@@ -2502,7 +2501,7 @@ void CG_Buildable( centity_t *cent )
 			turretBarrel.nonNormalizedAxes = false;
 		}
 
-		if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
+		if ( CG_PlayerIsBuilder( es ) && CG_BuildableRemovalPending( es->number ) )
 		{
 			turretBarrel.customShader = cgs.media.redBuildShader;
 		}
@@ -2552,7 +2551,7 @@ void CG_Buildable( centity_t *cent )
 			turretTop.nonNormalizedAxes = false;
 		}
 
-		if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
+		if ( CG_PlayerIsBuilder( es ) && CG_BuildableRemovalPending( es->number ) )
 		{
 			turretTop.customShader = cgs.media.redBuildShader;
 		}

@@ -52,9 +52,11 @@ void HiveComponent::Think(int timeDelta) {
 Entity* HiveComponent::FindTarget() {
 	Entity* target = nullptr;
 
-	ForEntities<HumanClassComponent>([&](Entity& candidate, HumanClassComponent& humanClassComponent) {
+	ForEntities<ClientComponent>([&](Entity& candidate, ClientComponent& humanClassComponent) {
 		// Check if target is valid and in sense range.
 		if (!TargetValid(candidate, true)) return;
+
+		if (!Entities::OnOpposingTeams(this->entity, candidate)) return;
 
 		// Check if better target.
 		if (!target || CompareTargets(candidate, *target)) {

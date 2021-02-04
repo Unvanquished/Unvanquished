@@ -27,9 +27,10 @@ void AlienBuildableComponent::Think(int timeDelta) {
 	// TODO: Find an elegant way to access per-buildable configuration.
 	float creepSize = (float)BG_Buildable((buildable_t)entity.oldEnt->s.modelindex)->creepSize;
 
-	// Slow close humans.
-	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent& humanClassComponent) {
+	// Slow close enemies.
+	ForEntities<ClientComponent>([&] (Entity& other, ClientComponent& humanClassComponent) {
 		// TODO: Add LocationComponent.
+		if (!Entities::OnOpposingTeams(this->entity, other)) return;
 		if (G_Distance(entity.oldEnt, other.oldEnt) > creepSize) return;
 
 		// TODO: Send (Creep)Slow message instead.

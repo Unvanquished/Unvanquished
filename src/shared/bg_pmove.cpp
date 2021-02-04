@@ -478,28 +478,28 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		{
 			cmd->upmove = 0;
 		}
+	}
 
-		// Apply creepslow modifier
-		// TODO: Move modifer into upgrade/class config files of armour items/classes
-		if ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
+	// Apply creepslow modifier
+	// TODO: Move modifer into upgrade/class config files of armour items/classes
+	if ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
+	{
+		if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
+			    BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, pm->ps->stats ) ||
+			    BG_InventoryContainsUpgrade( UP_BATTLESUIT,  pm->ps->stats ) )
 		{
-			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
-			     BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, pm->ps->stats ) ||
-			     BG_InventoryContainsUpgrade( UP_BATTLESUIT,  pm->ps->stats ) )
-			{
-				modifier *= CREEP_ARMOUR_MODIFIER;
-			}
-			else
-			{
-				modifier *= CREEP_MODIFIER;
-			}
+			modifier *= CREEP_ARMOUR_MODIFIER;
 		}
+		else
+		{
+			modifier *= CREEP_MODIFIER;
+		}
+	}
 
-		// Apply level1 slow modifier
-		if ( pm->ps->stats[ STAT_STATE2 ] & SS2_LEVEL1SLOW )
-		{
-			modifier *= LEVEL1_SLOW_MOD;
-		}
+	// Apply level1 slow modifier
+	if ( pm->ps->stats[ STAT_STATE2 ] & SS2_LEVEL1SLOW )
+	{
+		modifier *= LEVEL1_SLOW_MOD;
 	}
 
 	// Go faster when using the Tyrant charge attack
