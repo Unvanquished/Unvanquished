@@ -316,7 +316,7 @@ Sets buildable particle system to a fire effect if buildable is burning
 static void CG_OnFire( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
-	TeamType        team = BG_Buildable( es->modelindex )->team;
+	race_t        team = BG_Buildable( es->modelindex )->team;
 
 	if ( es->eType != entityType_t::ET_BUILDABLE )
 	{
@@ -1354,7 +1354,7 @@ CG_BuildableParticleEffects
 static void CG_BuildableParticleEffects( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
-	TeamType        team = BG_Buildable( es->modelindex )->team;
+	race_t        team = BG_Buildable( es->modelindex )->team;
 	int           health = es->generic1;
 	float         healthFrac = ( float ) health / BG_Buildable( es->modelindex )->health;
 
@@ -2180,7 +2180,7 @@ void CG_Buildable( centity_t *cent )
 	buildable_t   buildable = (buildable_t)es->modelindex;
 	const buildableAttributes_t  *ba  = BG_Buildable( buildable );
 	const buildableModelConfig_t *bmc = BG_BuildableModelConfig( buildable );
-	TeamType        team = ba->team;
+	race_t        team = ba->team;
 
 	//must be before EF_NODRAW check
 	if ( team == TEAM_ALIENS )

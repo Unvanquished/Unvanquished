@@ -45,7 +45,7 @@ static struct
 	} name[MAX_CLIENTS];
 } botNames[NUM_TEAMS];
 
-static void G_BotListTeamNames( gentity_t *ent, const char *heading, TeamType team, const char *marker )
+static void G_BotListTeamNames( gentity_t *ent, const char *heading, race_t team, const char *marker )
 {
 	int i;
 
@@ -105,8 +105,8 @@ bool G_BotClearNames()
 	return true;
 }
 
-//XXX should this per TeamType or TeamIndex?
-int G_BotAddNames( TeamType team, int arg, int last )
+//XXX should this per race_t or TeamIndex?
+int G_BotAddNames( race_t team, int arg, int last )
 {
 	int  i = botNames[(int)team].count;
 	int  added = 0;
@@ -143,7 +143,7 @@ int G_BotAddNames( TeamType team, int arg, int last )
 	return added;
 }
 
-static char *G_BotSelectName( TeamType team )
+static char *G_BotSelectName( race_t team )
 {
 	unsigned int choice;
 
@@ -166,7 +166,7 @@ static char *G_BotSelectName( TeamType team )
 	return nullptr;
 }
 
-static void G_BotNameUsed( TeamType team, const char *name, bool inUse )
+static void G_BotNameUsed( race_t team, const char *name, bool inUse )
 {
 	for ( int i = 0; i < botNames[(int)team].count; ++i )
 	{

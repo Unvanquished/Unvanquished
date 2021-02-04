@@ -41,7 +41,7 @@ struct unlockable_t
 {
 	int      type;
 	int      num;
-	TeamType   team;
+	race_t   team;
 	bool     unlocked[NUM_TEAMS];
 	bool     statusKnown;
 	int      unlockThreshold;
@@ -251,7 +251,7 @@ void BG_ImportUnlockablesFromMask( TeamIndex team, int mask )
 	int              unlockableNum, teamUnlockableNum = 0, itemNum = 0, unlockThreshold;
 	unlockable_t     *unlockable;
 	int unlockableType = 0;
-	TeamType           currentTeam;
+	race_t           currentTeam;
 	bool         newStatus;
 #ifdef BUILD_CGAME
 	int              statusChanges[ NUM_UNLOCKABLES ];
@@ -530,7 +530,7 @@ void G_UpdateUnlockables()
 	float            momentum;
 	unlockable_t     *unlockable;
 	int              unlockableType = 0;
-	TeamType           team;
+	race_t           team;
 
 	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
 	{

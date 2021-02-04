@@ -51,7 +51,7 @@ std::string CG_KeyDisplayName(Key key) {
 
 static int bindTeam;
 
-void CG_SetBindTeam(TeamType team) {
+void CG_SetBindTeam(race_t team) {
     switch (team) {
     case TEAM_NONE:
         bindTeam = 3; // BIND_TEAM_SPECTATORS

@@ -537,7 +537,7 @@ namespace Beacon //this should eventually become a class
 	static inline bool CheckRefreshTag( gentity_t *ent, TeamIndex team )
 	{
 		//XXX
-		gentity_t *existingTag = ( (TeamType)team == TEAM_ALIENS ) ? ent->alienTag : ent->humanTag;
+		gentity_t *existingTag = ( (race_t)team == TEAM_ALIENS ) ? ent->alienTag : ent->humanTag;
 
 		if( existingTag )
 			RefreshTag( existingTag );

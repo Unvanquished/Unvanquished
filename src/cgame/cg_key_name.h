@@ -29,7 +29,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 
 std::string CG_KeyDisplayName(Keyboard::Key key);
 
-void CG_SetBindTeam(TeamType team);
+void CG_SetBindTeam(race_t team);
 
 int CG_CurrentBindTeam();
 

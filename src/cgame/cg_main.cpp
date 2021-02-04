@@ -612,7 +612,7 @@ void CG_NotifyHooks()
 	{
 		if( lastTeam != ps->persistant[ PERS_TEAM ] )
 		{
-			TeamType type = i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] );
+			race_t type = i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] );
 			trap_notify_onTeamChange( (int)type );
 
 			CG_SetBindTeam( type );

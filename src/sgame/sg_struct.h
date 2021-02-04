@@ -666,7 +666,7 @@ struct level_locals_s
 	gentity_t        *markedBuildables[ MAX_GENTITIES ];
 	int              numBuildablesForRemoval;
 
-	TeamType           lastWin;
+	race_t           lastWin;
 
 	timeWarning_t    timelimitWarning;
 

@@ -5736,7 +5736,7 @@ bool G_admin_bot( gentity_t *ent )
 	else if ( !Q_stricmp( arg1, "names" ) && args.Argc() >= 3 )
 	{
 		const char *name = args[2].data();
-		TeamType team = (TeamType) BG_PlayableTeamFromString( name );
+		race_t team = (race_t) BG_PlayableTeamFromString( name );
 
 		if ( team == TEAM_HUMANS )
 		{

@@ -58,7 +58,7 @@ typedef struct condition_s
 	conditionOperator_t operator_;
 
 	int                 intValue;
-	TeamType              lastWin;
+	race_t              lastWin;
 } mrCondition_t;
 
 typedef struct map_s

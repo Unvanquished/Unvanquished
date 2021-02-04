@@ -663,7 +663,7 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 // TODO: Move decision making out of these actions and into the rest of the behavior tree
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
-	TeamType myTeam = i2t( self->client->pers.team );
+	race_t myTeam = i2t( self->client->pers.team );
 
 	if ( self->botMind->currentNode != node )
 	{

@@ -41,7 +41,7 @@ static const struct {
 	char     icon[16];
 	bool envKill;
 	bool showAssist;
-	TeamType   team;
+	race_t   team;
 } meansOfDeath[] = {
 	// Icon            Envkill Assist? (Team)
 	{ "☠",             false, false, TEAM_HUMANS },

@@ -393,7 +393,7 @@ void BG_ClassBoundingBox( int pClass,
 	}
 }
 
-TeamType BG_ClassTeam( int pClass )
+race_t BG_ClassTeam( int pClass )
 {
 	return BG_Class( pClass )->team;
 }
@@ -2757,7 +2757,7 @@ const char *BG_TeamName( TeamIndex team )
 	return "<team>";
 }
 
-const char *BG_TeamName( TeamType team )
+const char *BG_TeamName( race_t team )
 {
 	if ( team == TEAM_NONE )
 	{

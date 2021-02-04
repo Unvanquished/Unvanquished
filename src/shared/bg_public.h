@@ -48,16 +48,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
 // player teams
-enum class TeamType
+enum class race_t
 {
   NONE,
   ALIENS,
   HUMANS,
 };
 
-#define TEAM_NONE TeamType::NONE
-#define TEAM_ALIENS TeamType::ALIENS
-#define TEAM_HUMANS TeamType::HUMANS
+#define TEAM_NONE race_t::NONE
+#define TEAM_ALIENS race_t::ALIENS
+#define TEAM_HUMANS race_t::HUMANS
 #define TEAM_ALL (-1)
 #define NUM_TEAMS 3
 
@@ -67,15 +67,15 @@ enum TeamIndex : int {
 	TI_2,
 };
 
-inline TeamType i2t(TeamIndex i) {
-	extern TeamType g_team1, g_team2;
+inline race_t i2t(TeamIndex i) {
+	extern race_t g_team1, g_team2;
 	switch (i) {
 	case TI_1:
 		return g_team1;
 	case TI_2:
 		return g_team2;
 	default:
-		return (TeamType)i;
+		return (race_t)i;
 	}
 }
 
@@ -1127,7 +1127,7 @@ struct classAttributes_t
 	const char *icon;
 	const char *fovCvar;
 
-	TeamType   team;
+	race_t   team;
 
 	int      unlockThreshold;
 
@@ -1218,7 +1218,7 @@ struct buildableAttributes_t
 	weapon_t    weapon; // used to look up weaponInfo_t for clientside effects
 	int         meansOfDeath;
 
-	TeamType      team;
+	race_t      team;
 	weapon_t    buildWeapon;
 
 	int         buildTime;
@@ -1281,7 +1281,7 @@ struct weaponAttributes_t
 	bool purchasable;
 	bool longRanged;
 
-	TeamType   team;
+	race_t   team;
 };
 
 // upgrade record
@@ -1303,7 +1303,7 @@ struct upgradeAttributes_t
 	bool  purchasable;
 	bool  usable;
 
-	TeamType    team;
+	race_t    team;
 };
 
 // missile record
@@ -1416,7 +1416,7 @@ classModelConfig_t          *BG_ClassModelConfig( int pClass );
 
 void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
                                                  vec3_t dmins, vec3_t dmaxs );
-TeamType                      BG_ClassTeam( int pClass );
+race_t                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
 int                         BG_CostToEvolve(int from, int to);
@@ -1590,7 +1590,7 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
 int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
 
 const char *BG_TeamName( TeamIndex team );
-const char *BG_TeamName( TeamType team );
+const char *BG_TeamName( race_t team );
 const char *BG_TeamNamePlural( TeamIndex team );
 
 TeamIndex BG_PlayableTeamFromString( const char* s );

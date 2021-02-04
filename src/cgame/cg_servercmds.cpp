@@ -133,7 +133,7 @@ This is called explicitly when the gamestate is first received,
 and whenever the server updates any serverinfo flagged cvars
 ================
 */
-TeamType g_team1, g_team2;
+race_t g_team1, g_team2;
 void CG_ParseServerinfo()
 {
 	const char *info;
@@ -154,9 +154,9 @@ void CG_ParseServerinfo()
 	cgs.buildPointRecoveryRateHalfLife = atof( Info_ValueForKey( info, "g_BPRecoveryRateHalfLife" ) );
 
 	if (g_team1 == TEAM_NONE) {
-		g_team1 = (TeamType)atoi(Info_ValueForKey(info, "g_team1"));
+		g_team1 = (race_t)atoi(Info_ValueForKey(info, "g_team1"));
 		if (g_team1 != TEAM_HUMANS && g_team1 != TEAM_ALIENS) Sys::Error("team1");
-		g_team2 = (TeamType)atoi(Info_ValueForKey(info, "g_team2"));
+		g_team2 = (race_t)atoi(Info_ValueForKey(info, "g_team2"));
 		if (g_team2 != TEAM_HUMANS && g_team2 != TEAM_ALIENS) Sys::Error("team2");
 		Log::Notice("cgame team types %d %d", (int)g_team1, (int)g_team2);
 	}

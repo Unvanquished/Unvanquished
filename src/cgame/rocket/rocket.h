@@ -80,7 +80,7 @@ public:
 std::string CG_EscapeHTMLText( Str::StringRef text );
 
 Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
-std::string CG_KeyBinding( const char *bind, int /*TeamType*/ team );
+std::string CG_KeyBinding( const char *bind, int /*race_t*/ team );
 
 void Rocket_AddEvent( RocketEvent_t *event );
 

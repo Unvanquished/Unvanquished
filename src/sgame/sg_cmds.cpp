@@ -2277,7 +2277,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		TeamType team;
+		race_t team;
 		if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
 		{
 			G_StopFollowing( ent );

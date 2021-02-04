@@ -107,7 +107,7 @@ void     G_BotSpectatorThink( gentity_t *self );
 void     G_BotIntermissionThink( gclient_t *client );
 void     G_BotListNames( gentity_t *ent );
 bool G_BotClearNames();
-int      G_BotAddNames(TeamType team, int arg, int last);
+int      G_BotAddNames(race_t team, int arg, int last);
 void     G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void     G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void     G_BotInit();

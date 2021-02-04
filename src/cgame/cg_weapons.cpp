@@ -2423,7 +2423,7 @@ static void DrawGenericHitEffect( vec3_t origin, vec3_t normal, qhandle_t psHand
 
 static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 {
-	TeamType           team;
+	race_t           team;
 	qhandle_t        psHandle;
 	particleSystem_t *ps;
 	centity_t        *target;

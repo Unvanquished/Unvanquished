@@ -355,7 +355,7 @@ bool BG_ReadWholeFile( const char *filename, char *buffer, int size)
 	return true;
 }
 
-static TeamType ParseTeam(const char* token)
+static race_t ParseTeam(const char* token)
 {
 	if ( !Q_strnicmp( token, "alien", 5 ) ) // alien(s)
 	{

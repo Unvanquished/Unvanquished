@@ -588,7 +588,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	gentity_t *bestVisibleEnemy = nullptr;
 	gentity_t *bestInvisibleEnemy = nullptr;
 	gentity_t *target;
-	TeamType    team = i2t( BotGetEntityTeam( self ) );
+	race_t    team = i2t( BotGetEntityTeam( self ) );
 	bool  hasRadar = ( team == TEAM_ALIENS ) ||
 	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 

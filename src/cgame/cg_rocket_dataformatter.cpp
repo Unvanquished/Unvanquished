@@ -331,7 +331,7 @@ static void CG_Rocket_DFGearOrReady( int handle, const char *data )
 	}
 }
 
-static void BuildMenuHelper( int handle, const char *data, TeamType team )
+static void BuildMenuHelper( int handle, const char *data, race_t team )
 {
 	buildable_t buildable = ( buildable_t ) atoi( Info_ValueForKey( data, "1" ) );
 
