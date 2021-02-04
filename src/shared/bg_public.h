@@ -1420,8 +1420,8 @@ TeamType                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
 int                         BG_CostToEvolve(int from, int to);
-int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
-bool                    BG_AlienCanEvolve(int from, int credits);
+int                         BG_ClassCanEvolveFromTo(int from, int to, int credits, TeamIndex team);
+bool                    BG_AlienCanEvolve(int from, int credits, TeamIndex team);
 
 int                       BG_GetBarbRegenerationInterval(const playerState_t& ps);
 

@@ -2454,7 +2454,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				return false;
 			}
 
-			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit );
+			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit, G_TeamIndex( ent ) );
 
 			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 			{

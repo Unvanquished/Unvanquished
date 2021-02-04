@@ -1678,7 +1678,8 @@ void CG_Rocket_ExecAlienEvolveList( const char* )
 {
 	class_t evo = ( class_t ) rocketInfo.data.alienEvolveList[ rocketInfo.data.selectedAlienEvolve ];
 
-	if ( BG_Class( evo ) && BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo, cg.predictedPlayerState.persistant[ PERS_CREDIT ] ) >= 0 )
+	if ( BG_Class( evo ) && BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo, cg.predictedPlayerState.persistant[ PERS_CREDIT ],
+		                                             (TeamIndex) cg.predictedPlayerState.persistant[ PERS_TEAM ] ) >= 0 )
 	{
 		trap_SendClientCommand( va( "class %s", BG_Class( evo )->name ) );
 		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id, "hide" );

@@ -242,7 +242,7 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
 	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass,
-	                                  self->client->ps.persistant[PERS_CREDIT] ) >= 1 );
+	                                  self->client->ps.persistant[PERS_CREDIT], G_TeamIndex( self ) ) >= 1 );
 }
 
 bool WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
@@ -1747,7 +1747,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 			return false;
 		}
 
-		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ] );
+		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ], G_TeamIndex( ent ) );
 
 		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{

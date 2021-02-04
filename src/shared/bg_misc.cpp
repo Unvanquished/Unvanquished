@@ -438,16 +438,14 @@ int BG_CostToEvolve( int from, int to )
 BG_ClassCanEvolveFromTo
 ==============
 */
-int BG_ClassCanEvolveFromTo( int from, int to, int credits )
+int BG_ClassCanEvolveFromTo( int from, int to, int credits, TeamIndex team )
 {
 	int evolveCost;
 
-#if 0 //XXX
-	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
+	if ( !BG_ClassUnlocked( to, team ) || BG_ClassDisabled( to ) )
 	{
 		return CANT_EVOLVE;
 	}
-#endif
 
 	evolveCost = BG_CostToEvolve( from, to );
 
@@ -464,13 +462,13 @@ int BG_ClassCanEvolveFromTo( int from, int to, int credits )
 BG_AlienCanEvolve
 ==============
 */
-bool BG_AlienCanEvolve( int from, int credits )
+bool BG_AlienCanEvolve( int from, int credits, TeamIndex team )
 {
 	int to;
 
 	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( from, to, credits ) != CANT_EVOLVE )
+		if ( BG_ClassCanEvolveFromTo( from, to, credits, team ) != CANT_EVOLVE )
 		{
 			return true;
 		}

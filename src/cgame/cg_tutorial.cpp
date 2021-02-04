@@ -154,8 +154,7 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 	}
 
 	if ( es->eType == entityType_t::ET_BUILDABLE &&
-		//XXX
-	     i2t( (TeamIndex) ps->persistant[ PERS_TEAM ] ) == BG_Buildable( es->modelindex )->team )
+	     ps->persistant[ PERS_TEAM ] == es->modelindex2 )
 	{
 		return es;
 	}

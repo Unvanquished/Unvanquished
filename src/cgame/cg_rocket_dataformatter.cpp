@@ -388,7 +388,8 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 	const char *Class = "";
 	const char *Icon = "";
 	const char *action = "";
-	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ] );
+	int cost = BG_ClassCanEvolveFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass, cg.predictedPlayerState.persistant[ PERS_CREDIT ],
+		                                (TeamIndex) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
 	auto team = (TeamIndex)cg.snap->ps.persistant[ PERS_TEAM ];
 	if ( ( alienClass == PCL_ALIEN_BUILDER0 && ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG, team ) && !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) ) )||
 			 ( alienClass == PCL_ALIEN_BUILDER0_UPG && ( !BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG, team ) ) ) )
