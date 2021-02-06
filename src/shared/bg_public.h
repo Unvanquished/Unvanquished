@@ -320,11 +320,11 @@ void Pmove( pmove_t *pmove );
 enum statIndex_t
 {
   STAT_HEALTH,
-  STAT_ITEMS,
+	STAT_ITEMS,      // bitfield of all possible upgrades, probably only for humans.
   STAT_ACTIVEITEMS,
-  STAT_WEAPON,     // current primary weapon
+  STAT_WEAPON,     // current primary weapon. Works for humans and aliens. For aliens, is related to STAT_CLASS.
   STAT_MAX_HEALTH, // health limit
-  STAT_CLASS,      // player class
+  STAT_CLASS,      // player class. Human's armor or alien's form. Do not use to guess team (which is done in some places), instead use PERS_TEAM
   STAT_STATE2,     // more client states
   STAT_STAMINA,    // humans: stamina
   STAT_STATE,      // client states
