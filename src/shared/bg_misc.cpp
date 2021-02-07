@@ -840,7 +840,6 @@ struct meansOfDeathData_t
 
 static const meansOfDeathData_t bg_meansOfDeathData[] =
 {
-	{ MOD_ABUILDER_CLAW, "MOD_ABUILDER_CLAW" },
 	{ MOD_UNKNOWN, "MOD_UNKNOWN" },
 	{ MOD_SHOTGUN, "MOD_SHOTGUN" },
 	{ MOD_BLASTER, "MOD_BLASTER" },
