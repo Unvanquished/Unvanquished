@@ -234,6 +234,11 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( false );
 }
 
+static AIValue_t matchTime( gentity_t*, const AIValue_t* )
+{
+	return AIBoxInt( level.matchTime );
+}
+
 static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
@@ -354,6 +359,7 @@ static const struct AIConditionMap_s
 	{ "humanMomentum",     VALUE_INT,   humanMomentum,     0 },
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
+	{ "matchTime",         VALUE_INT,   matchTime,         0 },
 	{ "percentAmmo",       VALUE_FLOAT, percentAmmo,       0 },
 	{ "percentHealth",     VALUE_FLOAT, percentHealth,     1 },
 	{ "random",            VALUE_FLOAT, randomChance,      0 },
