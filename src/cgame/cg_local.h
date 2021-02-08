@@ -1617,9 +1617,6 @@ struct cgs_t
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 
-	// TODO: Remove this one.
-	int      powerReactorRange;
-
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
 	float    unlockableMinTime;  // used for momentum bar (un)lock markers
 
