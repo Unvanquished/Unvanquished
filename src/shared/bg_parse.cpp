@@ -757,10 +757,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			ba->invertNormal = true;
 		}
-		else if ( !Q_stricmp( token, "needsCreep" ) )
-		{
-			ba->creepTest = true;
-		}
 		else if ( !Q_stricmp( token, "creepSize" ) )
 		{
 			PARSE(text, token);
