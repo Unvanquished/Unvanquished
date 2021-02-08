@@ -1074,7 +1074,7 @@ static void CG_RegisterGraphics()
 
 	cgs.media.scannerLineShader = trap_R_RegisterShader("gfx/feedback/scanner/stalk", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
-	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer", RSF_DEFAULT);
+	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer", RSF_NOMIP);
 
 	cgs.media.backTileShader = trap_R_RegisterShader("gfx/colors/backtile", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
@@ -1085,16 +1085,16 @@ static void CG_RegisterGraphics()
 
 	for ( i = 0; i < 8; i++ )
 	{
-		cgs.media.buildWeaponTimerPie[ i ] = trap_R_RegisterShader(buildWeaponTimerPieShaders[i], RSF_DEFAULT);
+		cgs.media.buildWeaponTimerPie[ i ] = trap_R_RegisterShader(buildWeaponTimerPieShaders[i], RSF_NOMIP);
 	}
 
 	// player health cross shaders
-	cgs.media.healthCross = trap_R_RegisterShader("ui/assets/neutral/cross", RSF_DEFAULT);
-	cgs.media.healthCross2X = trap_R_RegisterShader("ui/assets/neutral/cross2", RSF_DEFAULT);
-	cgs.media.healthCross3X = trap_R_RegisterShader("ui/assets/neutral/cross3", RSF_DEFAULT);
-	cgs.media.healthCross4X = trap_R_RegisterShader("ui/assets/neutral/cross4", RSF_DEFAULT);
-	cgs.media.healthCrossMedkit = trap_R_RegisterShader("ui/assets/neutral/cross_medkit", RSF_DEFAULT);
-	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison", RSF_DEFAULT);
+	cgs.media.healthCross = trap_R_RegisterShader("ui/assets/neutral/cross", RSF_NOMIP);
+	cgs.media.healthCross2X = trap_R_RegisterShader("ui/assets/neutral/cross2", RSF_NOMIP);
+	cgs.media.healthCross3X = trap_R_RegisterShader("ui/assets/neutral/cross3", RSF_NOMIP);
+	cgs.media.healthCross4X = trap_R_RegisterShader("ui/assets/neutral/cross4", RSF_NOMIP);
+	cgs.media.healthCrossMedkit = trap_R_RegisterShader("ui/assets/neutral/cross_medkit", RSF_NOMIP);
+	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison", RSF_NOMIP);
 
 	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.media.neutralCgrade = trap_R_RegisterShader("gfx/cgrading/neutral", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
