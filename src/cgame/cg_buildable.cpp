@@ -752,16 +752,6 @@ static bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker
 
 	switch ( bType )
 	{
-		case BA_A_SPAWN:
-			*range = CREEP_BASESIZE;
-			shc = SHC_LIGHT_GREEN;
-			break;
-
-		case BA_A_OVERMIND:
-			*range = CREEP_BASESIZE;
-			shc = SHC_DARK_GREEN;
-			break;
-
 		case BA_A_ACIDTUBE:
 			*range = ACIDTUBE_RANGE;
 			shc = SHC_ORANGE;
@@ -805,11 +795,6 @@ static bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker
 		case BA_H_DRILL:
 			*range = RGS_RANGE;
 			shc = SHC_GREY;
-			break;
-
-		case BA_H_REACTOR:
-			*range = cgs.powerReactorRange;
-			shc = SHC_DARK_BLUE;
 			break;
 
 		default:
