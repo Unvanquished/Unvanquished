@@ -1306,7 +1306,6 @@ struct buildableAttributes_t
 	float       minNormal;
 	bool    invertNormal;
 
-	bool    creepTest;
 	int         creepSize;
 
 	bool    transparentTest;
