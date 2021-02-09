@@ -553,9 +553,9 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		return 0;
 	}
 
-	total = sqrt( total );
+	total = sqrtf( total );
 
-	scale = ( float ) pm->ps->speed * max / ( 127.0 * total ) * modifier;
+	scale = pm->ps->speed * max / ( 127.0f * total ) * modifier;
 
 	return scale;
 }
@@ -813,7 +813,7 @@ static bool PM_CheckPounce()
 	{
 		case WP_ALEVEL1:
 			// wallwalking (ground surface normal is off more than 45° from Z direction)
-			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acos( pml.groundTrace.plane.normal[ 2 ] ) > M_PI_4 )
+			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acosf( pml.groundTrace.plane.normal[ 2 ] ) > M_PI_4 )
 			{
 				// get jump magnitude
 				jumpMagnitude = LEVEL1_WALLPOUNCE_MAGNITUDE;
@@ -950,10 +950,10 @@ static bool PM_CheckPounce()
 				jumpDirection[ 2 ] = fabs( jumpDirection[ 2 ] );
 
 				// get pitch towards ground surface
-				pitchToGround = M_PI_2 - acos( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
+				pitchToGround = M_PI_2 - acosf( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
 
 				// get pitch towards XY reference plane
-				pitchToRef = M_PI_2 - acos( DotProduct( up, jumpDirection ) );
+				pitchToRef = M_PI_2 - acosf( DotProduct( up, jumpDirection ) );
 
 				// use the advantageous pitch; allows using an upwards gradiant as a ramp
 				pitch = std::min( pitchToGround, pitchToRef );
@@ -969,7 +969,7 @@ static bool PM_CheckPounce()
 				}
 
 				// calculate jump magnitude for given pitch so that jump length is fixed
-				jumpMagnitude = ( int )sqrt( LEVEL1_POUNCE_DISTANCE * pm->ps->gravity / sin( 2.0f * pitch ) );
+				jumpMagnitude = ( int )sqrtf( LEVEL1_POUNCE_DISTANCE * pm->ps->gravity / sinf( 2.0f * pitch ) );
 
 				// add cooldown
 				pm->ps->weaponCharge = LEVEL1_POUNCE_COOLDOWN;
@@ -1329,8 +1329,8 @@ static bool PM_CheckJetpack()
 	// check ignite conditions
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_WARM ) )
 	{
-		sideVelocity = sqrt( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ] +
-		                     pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ] );
+		sideVelocity = sqrtf( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ] +
+		                      pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ] );
 
 		// we got off ground by jumping and are not yet in free fall, where free fall is defined as
 		// (1) fall speed bigger than sideways speed (not strafe jumping)
@@ -1450,10 +1450,10 @@ static void PM_LandJetpack( bool force )
 		force = true;
 	}
 
-	sideVelocity = sqrt( pml.previous_velocity[ 0 ] * pml.previous_velocity[ 0 ] +
-	                     pml.previous_velocity[ 1 ] * pml.previous_velocity[ 1 ] );
+	sideVelocity = sqrtf( pml.previous_velocity[ 0 ] * pml.previous_velocity[ 0 ] +
+	                      pml.previous_velocity[ 1 ] * pml.previous_velocity[ 1 ] );
 
-	angle = atan2( -pml.previous_velocity[ 2 ], sideVelocity );
+	angle = atan2f( -pml.previous_velocity[ 2 ], sideVelocity );
 
 	// allow the player to jump instead of land for some impacts
 	if ( !force )
@@ -2396,10 +2396,10 @@ static void PM_CrashLand()
 		return;
 	}
 
-	t = ( -b - sqrt( den ) ) / ( 2 * a );
+	t = ( -b - sqrtf( den ) ) / ( 2 * a );
 
 	delta = vel + t * acc;
-	delta = delta * delta * 0.0001;
+	delta = delta * delta * 0.0001f;
 
 	// never take falling damage if completely underwater
 	if ( pm->waterlevel == 3 )
@@ -2713,7 +2713,7 @@ static void PM_GroundClimbTrace()
 
 			case GCT_ATP_CEILING:
 				// attach to the ceiling if we get close enough during a jump that goes roughly upwards
-				if ( velocityDir[ 2 ] > 0.2f ) // acos( 0.2f ) ~= 80°
+				if ( velocityDir[ 2 ] > 0.2f ) // acosf( 0.2f ) ~= 80°
 				{
 					VectorMA( pm->ps->origin, -16.0f, ceilingNormal, point );
 					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
@@ -2763,7 +2763,7 @@ static void PM_GroundClimbTrace()
 
 			// calculate angle between surf and trace
 			traceDOTsurf = DotProduct( trace.plane.normal, surfNormal );
-			traceANGsurf = RAD2DEG( acos( traceDOTsurf ) );
+			traceANGsurf = RAD2DEG( acosf( traceDOTsurf ) );
 
 			if ( traceANGsurf > 180.0f )
 			{
@@ -2772,7 +2772,7 @@ static void PM_GroundClimbTrace()
 
 			// calculate angle between trace and ref
 			traceDOTref = DotProduct( trace.plane.normal, refNormal );
-			traceANGref = RAD2DEG( acos( traceDOTref ) );
+			traceANGref = RAD2DEG( acosf( traceDOTref ) );
 
 			if ( traceANGref > 180.0f )
 			{
@@ -2781,7 +2781,7 @@ static void PM_GroundClimbTrace()
 
 			// calculate angle between surf and ref
 			surfDOTref = DotProduct( surfNormal, refNormal );
-			surfANGref = RAD2DEG( acos( surfDOTref ) );
+			surfANGref = RAD2DEG( acosf( surfDOTref ) );
 
 			if ( surfANGref > 180.0f )
 			{
@@ -2809,7 +2809,7 @@ static void PM_GroundClimbTrace()
 
 					//calculate angle between refTOtrace and refTOsurfTOtrace
 					rTtDOTrTsTt = DotProduct( refTOtrace, refTOsurfTOtrace );
-					rTtANGrTsTt = ANGLE2SHORT( RAD2DEG( acos( rTtDOTrTsTt ) ) );
+					rTtANGrTsTt = ANGLE2SHORT( RAD2DEG( acosf( rTtDOTrTsTt ) ) );
 
 					if ( rTtANGrTsTt > 32768 )
 					{
@@ -3388,14 +3388,14 @@ static void PM_Footsteps()
 	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLCLIMBER ) && ( pml.groundPlane ) )
 	{
 		// FIXME: yes yes i know this is wrong
-		pm->xyspeed = sqrt( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ]
-		                    + pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ]
-		                    + pm->ps->velocity[ 2 ] * pm->ps->velocity[ 2 ] );
+		pm->xyspeed = sqrtf( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ]
+		                   + pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ]
+		                   + pm->ps->velocity[ 2 ] * pm->ps->velocity[ 2 ] );
 	}
 	else
 	{
-		pm->xyspeed = sqrt( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ]
-		                    + pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ] );
+		pm->xyspeed = sqrtf( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ]
+		                   + pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ] );
 	}
 
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )

@@ -50,7 +50,7 @@ void SpikerComponent::SetGravityCompensation() {
 	Vec3 upwards = Vec3({0.0f, 0.0f, 1.0f});
 	float uprightness = Math::Dot(dorsal, upwards);
 	// A negative value means the Spiker's radius of damage increases.
-	gravityCompensation = -uprightness * std::sin(DEG2RAD(0.5f * GRAVITY_COMPENSATION_ANGLE));
+	gravityCompensation = -uprightness * sinf(DEG2RAD(0.5f * GRAVITY_COMPENSATION_ANGLE));
 }
 
 void SpikerComponent::Think(int timeDelta) {
@@ -198,7 +198,7 @@ bool SpikerComponent::Fire() {
 	float totalPerimeter = 0.0f;
 	for (int row = 0; row < MISSILEROWS; row++) {
 		float rowAltitude = (((float)row + 0.5f) * M_PI_2) / (float)MISSILEROWS;
-		float rowPerimeter = 2.0f * M_PI * cos(rowAltitude);
+		float rowPerimeter = 2.0f * M_PI * cosf(rowAltitude);
 		totalPerimeter += rowPerimeter;
 	}
 
@@ -213,7 +213,7 @@ bool SpikerComponent::Fire() {
 	for (int row = 0; row < MISSILEROWS; row++) {
 		// Set the base altitude and get the perimeter for the current row.
 		float rowAltitude = (((float)row + 0.5f) * M_PI_2) / (float)MISSILEROWS;
-		float rowPerimeter = 2.0f * M_PI * cos(rowAltitude);
+		float rowPerimeter = 2.0f * M_PI * cosf(rowAltitude);
 
 		// Attempt to distribute spikes with equal expected angular distance on all rows.
 		int spikes = (int)round(((float)MISSILES * rowPerimeter) / totalPerimeter);

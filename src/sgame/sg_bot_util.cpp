@@ -570,7 +570,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 		if ( distSqr < minDistSqr )
 		{
 			self->botMind->closestDamagedBuilding.ent = target;
-			self->botMind->closestDamagedBuilding.distance = sqrt( distSqr );
+			self->botMind->closestDamagedBuilding.distance = sqrtf( distSqr );
 			minDistSqr = distSqr;
 		}
 	}
@@ -1541,7 +1541,7 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	initialHeight = startPos[2];
 	targetPos[2] -= initialHeight;
 	startPos[2] -= initialHeight;
-	distance2D = sqrt( Square( startPos[0] - targetPos[0] ) + Square( startPos[1] - targetPos[1] ) );
+	distance2D = sqrtf( Square( startPos[0] - targetPos[0] ) + Square( startPos[1] - targetPos[1] ) );
 	targetPos[0] = distance2D;
 
 	//for readability's sake
@@ -1562,8 +1562,8 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	}
 
 	//calculate required angle of launch
-	angle1 = atanf( ( Square( v ) + sqrt( check ) ) / ( g * x ) );
-	angle2 = atanf( ( Square( v ) - sqrt( check ) ) / ( g * x ) );
+	angle1 = atanf( ( Square( v ) + sqrtf( check ) ) / ( g * x ) );
+	angle2 = atanf( ( Square( v ) - sqrtf( check ) ) / ( g * x ) );
 
 	//take the smaller angle
 	angle = ( angle1 < angle2 ) ? angle1 : angle2;

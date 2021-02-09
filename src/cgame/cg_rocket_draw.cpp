@@ -2287,13 +2287,13 @@ public:
 
 				// avoid sudden jumps in opacity
 				t0 = cg.time;
-				if ( cosOld >= 0.0 )
+				if ( cosOld >= 0.0f )
 				{
-					offset = asin( sinOld );
+					offset = asinf( sinOld );
 				}
 				else
 				{
-					offset = M_PI - asin( sinOld );
+					offset = M_PI - asinf( sinOld );
 				}
 				regenerationInterval = interval;
 			}
@@ -2323,12 +2323,12 @@ private:
 
 	float GetSin()
 	{
-		return sin( GetParam() );
+		return sinf( GetParam() );
 	}
 
 	float GetCos()
 	{
-		return cos( GetParam() );
+		return cosf( GetParam() );
 	}
 
 	float GetParam()

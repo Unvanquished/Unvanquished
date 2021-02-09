@@ -432,7 +432,7 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 	}
 
 	// Normalize the horizontal components of the vector difference to the "radius" of the bounding box
-	mag = sqrt( normal[ 0 ] * normal[ 0 ] + normal[ 1 ] * normal[ 1 ] );
+	mag = sqrtf( normal[ 0 ] * normal[ 0 ] + normal[ 1 ] * normal[ 1 ] );
 	radius = target->r.maxs[ 0 ] * 1.21f;
 
 	if ( mag > radius )
@@ -527,8 +527,8 @@ static void FireBullet( gentity_t *self, float spread, float damage, int mod )
 	gentity_t *target;
 
 	r = random() * M_PI * 2.0f;
-	u = sin( r ) * crandom() * spread * 16;
-	r = cos( r ) * crandom() * spread * 16;
+	u = sinf( r ) * crandom() * spread * 16;
+	r = cosf( r ) * crandom() * spread * 16;
 	VectorMA( muzzle, 8192 * 16, forward, end );
 	VectorMA( end, r, right, end );
 	VectorMA( end, u, up, end );
@@ -592,8 +592,8 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 		r = Q_crandom( &seed ) * M_PI;
 		a = Q_random( &seed ) * SHOTGUN_SPREAD * 16;
 
-		u = sin( r ) * a;
-		r = cos( r ) * a;
+		u = sinf( r ) * a;
+		r = cosf( r ) * a;
 
 		VectorMA( origin, SHOTGUN_RANGE, forward, end );
 		VectorMA( end, r, right, end );
@@ -794,7 +794,7 @@ static void RocketThink( gentity_t *self )
 
 	// Calculate new direction. Use a fixed turning angle.
 	CrossProduct( currentDir, targetDir, rotAxis );
-	rotAngle = RAD2DEG( acos( DotProduct( currentDir, targetDir ) ) );
+	rotAngle = RAD2DEG( acosf( DotProduct( currentDir, targetDir ) ) );
 	RotatePointAroundVector( newDir, rotAxis, currentDir,
 	                         Math::Clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
 

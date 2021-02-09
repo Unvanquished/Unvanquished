@@ -68,7 +68,7 @@ void think_aimAtTarget( gentity_t *self )
 	float     distance;
 
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
-	VectorScale( origin, 0.5, origin );
+	VectorScale( origin, 0.5f, origin );
 
 	pickedTarget = G_PickRandomTargetFor( self );
 
@@ -80,7 +80,7 @@ void think_aimAtTarget( gentity_t *self )
 
 	height = pickedTarget->s.origin[ 2 ] - origin[ 2 ];
 	gravity = g_gravity.value;
-	time = sqrt( height / ( 0.5 * gravity ) );
+	time = sqrtf( height / ( 0.5f * gravity ) );
 
 	if ( !time )
 	{

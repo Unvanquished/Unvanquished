@@ -418,8 +418,8 @@ bool CG_WorldToScreen( vec3_t point, float *x, float *y )
 	float  z;
 	bool front = true;
 
-	px = tan( cg.refdef.fov_x * M_PI / 360.0f );
-	py = tan( cg.refdef.fov_y * M_PI / 360.0f );
+	px = tanf( cg.refdef.fov_x * M_PI / 360.0f );
+	py = tanf( cg.refdef.fov_y * M_PI / 360.0f );
 
 	VectorSubtract( point, cg.refdef.vieworg, trans );
 
