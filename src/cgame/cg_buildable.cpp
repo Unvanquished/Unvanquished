@@ -268,7 +268,7 @@ static void CG_Creep( centity_t *cent )
 
 		if ( msec >= 0 && msec < scaleUpTime )
 		{
-			frac = ( float ) sin ( 0.5f * msec / scaleUpTime * M_PI );
+			frac = sinf( 0.5f * msec / scaleUpTime * M_PI );
 		}
 		else
 		{
@@ -2283,7 +2283,7 @@ void CG_Buildable( centity_t *cent )
 		bool  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
 		float adjustScale = spawned ? 1.0f :
-			static_cast<float>( sin( (cg.time - es->time) / ba->buildTime * M_PI/2.0f ) );
+			sinf( (cg.time - es->time) / ba->buildTime * M_PI/2.0f );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )
