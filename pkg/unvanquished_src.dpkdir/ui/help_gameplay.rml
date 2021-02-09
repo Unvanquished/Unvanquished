@@ -23,40 +23,95 @@
 				Welcome
 			</tab>
 			<panel>
-				In this section you will find a summary of major gameplay changes since Tremulous GPP.
+				In this section you will find a summary of major gameplay
+				elements to know to become a successful player.
 				<br />
 				<br />
 				Feel free to take part in our weekly development games, each
 				<span clas="red">Sunday</span>
 				at
-				<span class="red">20:00 UTC</span>
-				on the »Dev &amp; Testing Server«!
+				<span class="red">20:00 UTC</span>!
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/tyrant" />
+				Income &amp; evolution
+			</tab>
+			<panel>
+				<img class="emoticon" src="/emoticons/dretch" />
+				Aliens can earn evolution points by killing humans
+				and destroying human buildables,
+				then they can use those evolution points to evolve into
+				<img class="emoticon" src="/emoticons/dragoon" />
+				more advanced forms.
+				<br />
+				<br />
+				Aliens can evolve from everywhere if not in line of sight
+				of an human player or buildable. Aliens can also devolve to
+				<img class="emoticon" src="/emoticons/granger" />
+				less advanced forms (at some cost) when being near the
+				<img class="emoticon" src="/emoticons/overmind" />
+				overmind.
+				<br />
+				<br />
+				Build an overmind with a
+				<img class="emoticon" src="/emoticons/granger" />
+				granger if missing, you need a live overmind to evolve!
+				<br />
+				<br />
+				<img class="emoticon" src="/emoticons/human" />
+				Humans can earn credits by killing aliens and destroying alien buildables,
+				then they can uses those credits to buy new
+				<img class="emoticon" src="/emoticons/lcannon" />
+				weapons, body armours or
+				<img class="emoticon" src="/emoticons/bsuit" />
+				battlesuit, and accessories like a radar or a jetpack.
+				<br />
+				<br />
+				Humans buy and sell weapons at the
+				<img class="emoticon" src="/emoticons/armoury" />
+				armoury, make sure one is built! Use the construction kit
+				to build an armoury if it's missing.
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/drill" />
-				Resources
+				Powering buildables
 			</tab>
 			<panel>
-				Building a structure requires build points, which are now a one-time
-				payment – if the buildable gets destroyed, the build points spent on it
-				are lost.
+				Like the
+				<img class="emoticon" src="/emoticons/overmind" />
+				overmind the
+				<img class="emoticon" src="/emoticons/reactor" />
+				reactor now supplies power to every place on the map, but
+				there is a limited amount of energy per region. Human buildables will
+				compete for power and shut down if they don't get enough.
 				<br />
 				<br />
-				Your team will start with a small pool of build points but more can be
-				acquired by building a mining structure.
+				When the power consumption in a region is too high, the smallest possible
+				number of buildables will power down so that the other structures have
+				enough energy to remain operational.
+				<br />
+				<br />
+				Building a structure requires build points. Your team will start with a
+				small pool of build points but if you want to place a greater number of
+				buildables in an area, you can build a
+				<img class="emoticon" src="/emoticons/leech" />
+				mining structure to increase the available power and provide more build points.
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/leech" />
-				Resource generation
+				Mining structures
 			</tab>
 			<panel>
-				Build points are acquired via two structures – the human
+				Build points are acquired via two mining structures: the human
 				<img class="emoticon" src="/emoticons/drill" />
 				drill and
 				the alien
 				<img class="emoticon" src="/emoticons/leech" />
-				leech. These buildings need to be spread out for
-				efficiency.
+				leech. These buildings need to be spread out for efficiency.
+				<br />
+				<br />
+				Don't build mining structures too close together or they will compete
+				with each other and ultimately cost build resources!
 				<br />
 				<br />
 				Builders will see another bar above the health bar of a resource generator
@@ -81,40 +136,6 @@
 				lose access to new items. Existing upgrades will remain functional.
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/ckit" />
-				Human building 1
-			</tab>
-			<panel>
-				The
-				<img class="emoticon" src="/emoticons/reactor" />
-				reactor now supplies power to every point on the map, but
-				there is a limited amount of energy per region. Human buildables will
-				compete for power and shut down if they don't get enough.
-				<br />
-				<br />
-				Human builders will see a new bar below the health bar of their
-				buildables, which shows the spare power a buildable can share with
-				potential neighbors.
-				<br />
-				<br />
-				If you want to place a greater number of buildables in an area, you can
-				build a
-				<img class="emoticon" src="/emoticons/repeater" />
-				repeater to increase the available power.
-				Be warned that repeaters will deal significant damage to close structures
-				when they explode.
-				<br />
-				When the power consumption in a region is too high, the smallest possible
-				number of buildables will power down so that the other strucutres have
-				enough energy to remain operational.
-				<br />
-				<br />
-				The
-				<img class="emoticon" src="/emoticons/drill" />
-				drill is the only buildable that requires a close repeater or
-				reactor to work, since resources are transmitted via the power grid.
-			</panel>
-			<tab>
 				<img class="emoticon" src="/emoticons/flamer" />
 				Wildfire
 			</tab>
@@ -131,45 +152,122 @@
 				unfortunate neighbors.
 				<br />
 				<br />
-				A small fire has a good chance to go out after a while but a group of
+				A small
+				<img class="emoticon" src="/emoticons/fire" />
+				fire has a good chance to go out after a while but a group of
 				burning structures will keep itself hot enough for greater mayhem.
 				<br />
 				<br />
 				The
 				<img class="emoticon" src="/emoticons/advgranger" />
 				advanced granger's spit attack can be used to put out
-				fires.
+				fires or slow down intruders!
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/lcannon" />
 				Under attack
 			</tab>
 			<panel>
-				Destroying buildings will trigger ‘under attack’ warnings for the owning
+				Destroying buildings will trigger “under attack” warnings for the owning
 				team if the buildings are in range of (for humans) the
 				<img class="emoticon" src="/emoticons/reactor" />
 				reactor
-				or a
-				<img class="emoticon" src="/emoticons/repeater" />
-				repeater or (for aliens) the
+				or (for aliens) the
 				<img class="emoticon" src="/emoticons/overmind" />
-				Overmind.
-				The name of the location of the repeater will be given if available.
+				overmind.
 				<br />
 				<br />
-				The reactor and the Overmind will issue warnings to the team when at
+				The reactor and the overmind will issue warnings to the team when at
 				75% health, at 25% health and when destroyed.
 			</panel>
 			<tab>
-				<img class="emoticon" src="/emoticons/dev" />
-				Miscellaneous
+				<img class="emoticon" src="/emoticons/medstat" />
+				Healing
 			</tab>
 			<panel>
-				The human dodge has been removed, stamina has been increased.
+				Dying feeds the ennemy, you may want to save your life!
 				<br />
 				<br />
-				All alien evo costs and gains have been doubled. The new maximum of evos
-				an alien can store is 20 (formerly 9).
+				<img class="emoticon" src="/emoticons/dretch" />
+				Aliens heal slowly whatever they are, but they heal faster
+				in groups and near alien buildables. Building forward ones
+				can be decisive!
+				<br/>
+				<br/>
+				The
+				<img class="emoticon" src="/emoticons/booster" />
+				The booster gives rapid healing for nearby aliens, build one as soon
+				as you can, try to unlock it the soonest possible. The booster
+				will also gives you some poison to make your attacks more deadly.
+				<br />
+				<br />
+				The
+				<img class="emoticon" src="/emoticons/overmind" />
+				overmind has a high healing rate too, if there is no booster yet,
+				returning to the overmind is a wise choice.
+				<br />
+				<br />
+				<img class="emoticon" src="/emoticons/human" />
+				Humans carry with them a medkit they can use to heal once,
+				after that they have to return to the
+				<img class="emoticon" src="/emoticons/medstat" />
+				medistation to heal and refill their medkit.
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/dretch" />
+				Wallwalking
+			</tab>
+			<panel>
+				Some alien forms like the
+				<img class="emoticon" src="/emoticons/dretch" />
+				dretch, the
+				<img class="emoticon" src="/emoticons/basilisk" />
+				mantis and the
+				<img class="emoticon" src="/emoticons/advgranger" />
+				advanced granger can walk on walls!
+				<br />
+				<br />
+				Use this to reach special places or use shortcuts
+				through vents.
+				<br />
+				<br />
+				Alien defensive structures like trapper and spiker
+				work better on walls, building them on ceiling
+				will protect them from grenades.
+				<br />
+				<br />
+				The advanced granger can be unlocked with momentum.
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/dev" />
+				Since Tremulous
+			</tab>
+			<panel>
+				Since Tremulous, the stamina has been increased.
+				<br />
+				<br />
+				All alien evolution costs and gains have been doubled.
+				The new maximum of evos an alien can store is 20 (formerly 9).
+				<br />
+				<br />
+				Stages were replace with momentum, and build points are to be mined.
+				<br />
+				<br />
+				Humans no longer have the Tesla defense tower nor the defense
+				computer but they can build rocket pods.
+				<br />
+				<br />
+				Aliens got the spiker buildable that can deeply hurt imprudent humans,
+				but that's a very vulnerable structure, don't put it in plain sight!
+				<br />
+				<br />
+				The basilisk was replaced by the mantis, it cannot grab anymore but its
+				bite slows down their victims, and it can lunge for very fast approachs.
+				<br />
+				<br />
+				Aliens can devolve near the overmind, and the advanced granger spit can
+				do interesting things, try it on fire or humans!
+				<img class="emoticon" src="/emoticons/granger" />
 			</panel>
 		</tabset>
 	</body>
