@@ -53,7 +53,7 @@ bool BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
 	// create a 2D representation of the problem by cutting out the plane that contains
 	// the trajectory
 	t2[ 1 ] = t3[ 2 ];
-	t2[ 0 ] = sqrt( t3[ 0 ] * t3[ 0 ] + t3[ 1 ] * t3[ 1 ] );
+	t2[ 0 ] = sqrtf( t3[ 0 ] * t3[ 0 ] + t3[ 1 ] * t3[ 1 ] );
 
 	// calculate the angles
 	tmp = v02 * v02 - g * ( g * t2[ 0 ] * t2[ 0 ] + 2.0f * t2[ 1 ] * v02 );
@@ -64,7 +64,7 @@ bool BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
 		return false;
 	}
 
-	tmp = sqrt( tmp );
+	tmp = sqrtf( tmp );
 
 	angles[ 0 ] = atanf( ( v02 + tmp ) / ( g * t2[ 0 ] ) );
 	angles[ 1 ] = atanf( ( v02 - tmp ) / ( g * t2[ 0 ] ) );
@@ -86,8 +86,8 @@ bool BG_GetTrajectoryPitch( vec3_t origin, vec3_t target, float v0, float g,
 		VectorNormalize( dir2 );
 
 		// angles are in ]-pi/2,pi/2[, so cos != 0
-		dir1[ 2 ] = sqrt( 1.0f / cos( angles[ 0 ] ) - 1.0f );
-		dir2[ 2 ] = sqrt( 1.0f / cos( angles[ 1 ] ) - 1.0f );
+		dir1[ 2 ] = sqrtf( 1.0f / cosf( angles[ 0 ] ) - 1.0f );
+		dir2[ 2 ] = sqrtf( 1.0f / cosf( angles[ 1 ] ) - 1.0f );
 
 		if ( angles[ 0 ] < 0.0f )
 		{

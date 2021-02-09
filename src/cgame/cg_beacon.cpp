@@ -134,7 +134,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
 			if( !PC_Float_Parse( fd, &angle ) )
 				break;
 
-			bc->highlightAngle = cos( angle / 180.0 * M_PI );
+			bc->highlightAngle = cosf( angle / 180.0 * M_PI );
 		}
 		else
 			Log::Warn( "bad keyword \"%s\" in \"%s\"\n", token.string, path );
@@ -146,7 +146,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
 	Parse_FreeSourceHandle( fd  );
 }
 
-#define Distance2(a,b) sqrt(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
+#define Distance2(a,b) sqrtf(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
 
 /**
  * @brief Fills cg.beacons with explicit (ET_BEACON entity) beacons.

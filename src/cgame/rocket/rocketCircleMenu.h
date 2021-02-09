@@ -381,8 +381,8 @@ protected:
 
 			width = child->GetOffsetWidth();
 			height = child->GetOffsetHeight();
-			float y = sin( angle * i * ( M_PI / 180.0f ) ) * radius;
-			float x = cos( angle * i * ( M_PI / 180.0f ) ) * radius;
+			float y = sinf( angle * i * ( M_PI / 180.0f ) ) * radius;
+			float x = cosf( angle * i * ( M_PI / 180.0f ) ) * radius;
 
 			// This gets 12px on 1920×1080 screen, which is libRocket default for 1em
 			int fontSize = std::min(cgs.glconfig.vidWidth, cgs.glconfig.vidHeight) / 90;

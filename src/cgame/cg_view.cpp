@@ -726,7 +726,7 @@ void CG_OffsetFirstPersonView()
 			fraction1 = 1.0f;
 		}
 
-		fraction2 = -sin( fraction1 * M_PI_2 );
+		fraction2 = -sinf( fraction1 * M_PI_2 );
 
 		VectorMA( origin, LEVEL3_FEEDBACK * fraction2, forward, origin );
 	}
@@ -998,8 +998,8 @@ static int CG_CalcFov()
 		}
 	}
 
-	y = cg.refdef.height / tan( 0.5f * DEG2RAD( fov_y ) );
-	fov_x = atan2( cg.refdef.width, y );
+	y = cg.refdef.height / tanf( 0.5f * DEG2RAD( fov_y ) );
+	fov_x = atan2f( cg.refdef.width, y );
 	fov_x = 2.0f * RAD2DEG( fov_x );
 
 	// warp if underwater
@@ -1008,7 +1008,7 @@ static int CG_CalcFov()
 	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) )
 	{
 		phase = cg.time / 1000.0f * WAVE_FREQUENCY * M_PI * 2.0f;
-		v = WAVE_AMPLITUDE * sin( phase );
+		v = WAVE_AMPLITUDE * sinf( phase );
 		fov_x += v;
 		fov_y -= v;
 		inwater = true;
@@ -1152,7 +1152,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		}
 		else
 		{
-			rotAngle = RAD2DEG( acos( ( rotAngle - 1.0f ) / 2.0f ) );
+			rotAngle = RAD2DEG( acosf( ( rotAngle - 1.0f ) / 2.0f ) );
 		}
 
 		CrossProduct( lastAxis[ 0 ], inAxis[ 0 ], temp );
@@ -1179,7 +1179,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		if ( cg.time < cg.sList[ i ].time + smoothTime )
 		{
 			stLocal = 1.0f - ( ( ( cg.sList[ i ].time + smoothTime ) - cg.time ) / smoothTime );
-			sFraction = - ( cos( stLocal * M_PI ) + 1.0f ) / 2.0f;
+			sFraction = - ( cosf( stLocal * M_PI ) + 1.0f ) / 2.0f;
 
 			RotatePointAroundVector( outAxis[ 0 ], cg.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cg.sList[ i ].rotAngle );
@@ -1238,7 +1238,7 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		if ( cg.time < cg.sList[ i ].time + cg_wwSmoothTime.integer )
 		{
 			stLocal = ( ( cg.sList[ i ].time + cg_wwSmoothTime.integer ) - cg.time ) / cg_wwSmoothTime.integer;
-			sFraction = 1.0f - ( ( cos( stLocal * M_PI * 2.0f ) + 1.0f ) / 2.0f );
+			sFraction = 1.0f - ( ( cosf( stLocal * M_PI * 2.0f ) + 1.0f ) / 2.0f );
 
 			RotatePointAroundVector( outAxis[ 0 ], cg.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cg.sList[ i ].rotAngle );
@@ -1640,9 +1640,9 @@ static int CG_CalcViewValues()
 	}
 
 	cg.bobcycle = ( ps->bobCycle & 128 ) >> 7;
-	cg.bobfracsin = fabs( sin( ( ps->bobCycle & 127 ) / 127.0 * M_PI ) );
-	cg.xyspeed = sqrt( ps->velocity[ 0 ] * ps->velocity[ 0 ] +
-	                   ps->velocity[ 1 ] * ps->velocity[ 1 ] );
+	cg.bobfracsin = fabs( sinf( ( ps->bobCycle & 127 ) / 127.0 * M_PI ) );
+	cg.xyspeed = sqrtf( ps->velocity[ 0 ] * ps->velocity[ 0 ] +
+	                    ps->velocity[ 1 ] * ps->velocity[ 1 ] );
 
 	// to avoid jerking, the bob velocity shouldn't be too high
 	if ( cg.xyspeed > 300.0f )
@@ -1757,8 +1757,8 @@ void CG_SetupFrustum()
 	float           ang;
 
 	ang = cg.refdef.fov_x / 180 * M_PI_2;
-	xs = sin(ang);
-	xc = cos(ang);
+	xs = sinf(ang);
+	xc = cosf(ang);
 
 	VectorScale(cg.refdef.viewaxis[0], xs, frustum[0].normal);
 	VectorMA(frustum[0].normal, xc, cg.refdef.viewaxis[1], frustum[0].normal);
@@ -1767,8 +1767,8 @@ void CG_SetupFrustum()
 	VectorMA(frustum[1].normal, -xc, cg.refdef.viewaxis[1], frustum[1].normal);
 
 	ang = cg.refdef.fov_y / 180 * M_PI_2;
-	xs = sin(ang);
-	xc = cos(ang);
+	xs = sinf(ang);
+	xc = cosf(ang);
 
 	VectorScale(cg.refdef.viewaxis[0], xs, frustum[2].normal);
 	VectorMA(frustum[2].normal, xc, cg.refdef.viewaxis[2], frustum[2].normal);

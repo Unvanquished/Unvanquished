@@ -747,7 +747,7 @@ static void CG_LightFlare( centity_t *cent )
 	if ( maxAngle > 0.0f )
 	{
 		float radiusMod = 1.0f - ( 180.0f - RAD2DEG(
-						   acos( DotProduct( delta, forward ) ) ) ) / maxAngle;
+						   acosf( DotProduct( delta, forward ) ) ) ) / maxAngle;
 
 		if ( radiusMod < 0.0f )
 		{

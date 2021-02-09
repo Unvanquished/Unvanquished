@@ -1377,8 +1377,8 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	// offset angles and origin
 
 	angles += offsets.bob;
-	origin += up * atan( offsets.angvel[ 0 ] * scaleY ) * limitY;
-	origin += right * atan( offsets.angvel[ 1 ] * scaleX ) * limitX;
+	origin += up * atanf( offsets.angvel[ 0 ] * scaleY ) * limitY;
+	origin += right * atanf( offsets.angvel[ 1 ] * scaleX ) * limitX;
 
 	// FIXME: is this of any use?
 	/*if( !weapon->md5 && !weapon->noDrift )
@@ -1390,18 +1390,18 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 
 		if ( delta < LAND_DEFLECT_TIME )
 		{
-			origin += Vec3( 0, 0, cg.landChange * 0.25 * delta / LAND_DEFLECT_TIME );
+			origin += Vec3( 0, 0, cg.landChange * 0.25f * delta / LAND_DEFLECT_TIME );
 		}
 		else if ( delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME )
 		{
-			origin += Vec3( 0, 0, cg.landChange * 0.25 *
+			origin += Vec3( 0, 0, cg.landChange * 0.25f *
 			          ( LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta ) / LAND_RETURN_TIME );
 		}
 
 		// idle drift
 		scale = cg.xyspeed + 40;
-		fracsin = sin( cg.time * 0.001 );
-		angles += Vec3( scale * fracsin * 0.01 );
+		fracsin = sinf( cg.time * 0.001f );
+		angles += Vec3( scale * fracsin * 0.01f );
 	}*/
 
 	origin.Store( out_origin );
@@ -2642,8 +2642,8 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 		r = Q_crandom( &seed ) * M_PI;
 		a = Q_random( &seed ) * SHOTGUN_SPREAD * 16;
 
-		u = sin( r ) * a;
-		r = cos( r ) * a;
+		u = sinf( r ) * a;
+		r = cosf( r ) * a;
 
 		VectorMA( origin, 8192 * 16, forward, end );
 		VectorMA( end, r, right, end );

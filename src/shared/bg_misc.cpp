@@ -142,8 +142,8 @@ void BG_InitBuildableAttributes()
 		ba->entityName = bh->classname;
 
 		ba->traj = trType_t::TR_GRAVITY;
-		ba->bounce = 0.0;
-		ba->minNormal = 0.0;
+		ba->bounce = 0.0f;
+		ba->minNormal = 0.0f;
 
 		BG_ParseBuildableAttributeFile( va( "configs/buildables/%s.attr.cfg", ba->name ), ba );
 	}
@@ -1124,13 +1124,13 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 			break;
 
 		case trType_t::TR_LINEAR:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			break;
 
 		case trType_t::TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
-			phase = sin( deltaTime * M_PI * 2 );
+			phase = sinf( deltaTime * M_PI * 2 );
 			VectorMA( tr->trBase, phase, tr->trDelta, result );
 			break;
 
@@ -1140,26 +1140,26 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 				atTime = tr->trTime + tr->trDuration;
 			}
 
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 
-			if ( deltaTime < 0 )
+			if ( deltaTime < 0.0f )
 			{
-				deltaTime = 0;
+				deltaTime = 0.0f;
 			}
 
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			break;
 
 		case trType_t::TR_GRAVITY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-			result[ 2 ] -= 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
+			result[ 2 ] -= 0.5f * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 			break;
 
 		case trType_t::TR_BUOYANCY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-			result[ 2 ] += 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
+			result[ 2 ] += 0.5f * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 			break;
 
 		default:
@@ -1192,7 +1192,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 
 		case trType_t::TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
-			phase = cos( deltaTime * M_PI * 2 );  // derivative of sin = cos
+			phase = cosf( deltaTime * M_PI * 2 );  // derivative of sin = cos
 			phase *= 2 * M_PI * 1000 / tr->trDuration;
 			VectorScale( tr->trDelta, phase, result );
 			break;
@@ -1208,13 +1208,13 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 			break;
 
 		case trType_t::TR_GRAVITY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorCopy( tr->trDelta, result );
 			result[ 2 ] -= DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			break;
 
 		case trType_t::TR_BUOYANCY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorCopy( tr->trDelta, result );
 			result[ 2 ] += DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			break;
@@ -1869,7 +1869,7 @@ bool BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
 	//can't rotate with no rotation vector
 	if ( VectorLength( xNormal ) != 0.0f )
 	{
-		rotAngle = RAD2DEG( acos( DotProduct( localNormal, refNormal ) ) );
+		rotAngle = RAD2DEG( acosf( DotProduct( localNormal, refNormal ) ) );
 
 		if ( inverse )
 		{
@@ -2092,9 +2092,9 @@ found:
 	*energy = wattr->usesEnergy;
 
 	if( wattr->maxClips )
-		return ( ps->clips <= wattr->maxClips * 0.25 );
+		return ( ps->clips <= wattr->maxClips * 0.25f );
 
-	return ( ps->ammo <= wattr->maxAmmo * 0.25 );
+	return ( ps->ammo <= wattr->maxAmmo * 0.25f );
 }
 
 /*
