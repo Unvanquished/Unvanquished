@@ -41,17 +41,8 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 	char  num[ 16 ], *ptr;
 	int   l;
 	int   frame;
-	float charWidth, charHeight;
-
-	if ( !( charWidth = cw ) )
-	{
-		charWidth = CGAME_CHAR_WIDTH;
-	}
-
-	if ( !( charHeight = ch ) )
-	{
-		charHeight = CGAME_CHAR_HEIGHT;
-	}
+	float charWidth = (cw != 0.0f ? cw : CGAME_CHAR_WIDTH);
+	float charHeight = (ch != 0.0f ? ch : CGAME_CHAR_HEIGHT);
 
 	if ( width < 1 )
 	{
