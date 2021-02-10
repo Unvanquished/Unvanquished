@@ -1617,6 +1617,8 @@ struct cgs_t
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 
+	float    devolveMaxBaseDistance; // used for evolve/devolve ui
+
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
 	float    unlockableMinTime;  // used for momentum bar (un)lock markers
 
@@ -1999,6 +2001,8 @@ void     CG_InitBuildables();
 void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
 void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
+const centity_t *CG_LookupMainBuildable();
+float    CG_DistanceToBase();
 
 //
 // cg_animation.c

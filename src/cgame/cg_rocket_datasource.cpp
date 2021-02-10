@@ -1749,7 +1749,10 @@ static Str::StringRef EvolveAvailability( class_t alienClass )
 
 	if ( cg.predictedPlayerState.persistant[ PERS_CREDIT ] < info.evolveCost )
 		return "expensive";
-	
+
+	if ( info.isDevolving && CG_DistanceToBase() > cgs.devolveMaxBaseDistance )
+		return "overmindfar";
+
 	return "available";
 }
 
