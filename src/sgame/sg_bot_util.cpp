@@ -1198,21 +1198,21 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 {
 	//get the position of the target
 	BotGetTargetPos( target, aimLocation );
-	bool target_buildable = BotGetTargetType( target ) == entityType_t::ET_BUILDABLE;
+	bool isTargetBuildable = BotGetTargetType( target ) == entityType_t::ET_BUILDABLE;
 	//this retrieves the target's species, to aim at weak point:
 	// * for humans, it's the head (but code only applies an offset here, with the hope it's the head)
 	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (for luci)
-	team_t target_team = BotGetTargetTeam( target );
+	team_t targetTeam = BotGetTargetTeam( target );
 
-	if ( !target_buildable && BotTargetIsEntity( target ) && target_team == TEAM_HUMANS )
+	if ( !isTargetBuildable && BotTargetIsEntity( target ) && targetTeam == TEAM_HUMANS )
 	{
 
 		//aim at head
-		//FIXME: do not rely on hard-coded offset but evaluate which point have lower arm
+		//FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
 		aimLocation[2] += target.ent->r.maxs[2] * 0.85;
 
 	}
-	else if ( target_buildable || target_team == TEAM_ALIENS )
+	else if ( isTargetBuildable || targetTeam == TEAM_ALIENS )
 	{
 		//make lucifer cannons aim ahead based on the target's velocity
 		if ( self->client->ps.weapon == WP_LUCIFER_CANNON && self->botMind->botSkill.level >= 5 )
