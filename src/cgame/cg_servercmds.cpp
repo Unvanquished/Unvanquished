@@ -142,6 +142,8 @@ void CG_ParseServerinfo()
 	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 
+	cgs.devolveMaxBaseDistance = atof( Info_ValueForKey( info, "g_devolveMaxBaseDistance" ) );
+
 	cgs.momentumHalfLife  = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
 	cgs.unlockableMinTime = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
 

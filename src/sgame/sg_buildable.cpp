@@ -105,6 +105,8 @@ gentity_t *G_ActiveMainBuildable(team_t team) {
 
 /**
  * @return The distance of an entity to its own base or a huge value if the base is not found.
+ *
+ * Please keep it in sync with CG_DistanceToBase
  */
 float G_DistanceToBase(gentity_t *self) {
 	gentity_t *mainBuilding = G_MainBuildable(G_Team(self));

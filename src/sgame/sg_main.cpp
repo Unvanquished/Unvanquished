@@ -210,7 +210,7 @@ vmCvar_t           g_emptyTeamsSkipMapTime;
 Cvar::Cvar<bool>   g_neverEnd("g_neverEnd", "cheat to never end a game, helpful to load a map without spawn for testing purpose", Cvar::NONE, false);
 
 Cvar::Cvar<float>  g_evolveAroundHumans("g_evolveAroundHumans", "Ratio of alien buildings to human entities that always allow evolution", Cvar::NONE, 1.5f);
-Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Overmind distance to allow devolving", Cvar::NONE, 1000.0f);
+Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Overmind distance to allow devolving", Cvar::SERVERINFO, 1000.0f);
 
 Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, true);
 

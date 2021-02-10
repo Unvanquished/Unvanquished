@@ -2557,3 +2557,32 @@ void CG_Buildable( centity_t *cent )
 		CG_EndShadowCaster( );
 	}
 }
+
+// maybe move this to shared/ and add a prototype?
+static bool IsMainBuildable(buildable_t buildable)
+{
+	return buildable == BA_A_OVERMIND || buildable == BA_H_REACTOR;
+}
+
+const centity_t *CG_LookupMainBuildable()
+{
+	for( int beaconNum = 0; beaconNum < cg.beaconCount; beaconNum++ ) {
+		const auto b = cg.beacons[ beaconNum ];
+		if ( b->type == BCT_TAG && !(b->flags & (EF_BC_TAG_PLAYER|EF_BC_ENEMY))
+				&& IsMainBuildable( static_cast<buildable_t>(b->data) ) )
+		{
+			return &cg_entities[ b->target ];
+		}
+	}
+
+	return nullptr;
+}
+
+// keep in sync with G_DistanceToBase
+float CG_DistanceToBase()
+{
+	const centity_t *ent = CG_LookupMainBuildable();
+	if (!ent)
+		return 1e+37f; // in accordance to sgame
+	return Distance(cg.predictedPlayerEntity.lerpOrigin, ent->lerpOrigin);
+}
