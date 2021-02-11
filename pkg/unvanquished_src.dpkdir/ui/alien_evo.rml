@@ -31,34 +31,39 @@ body
 }
 .circlemenu button.locked:hover img,
 .circlemenu button.locked:hover icon,
+.circlemenu button.overmindfar:hover img,
+.circlemenu button.overmindfar:hover icon,
 .circlemenu button.expensive:hover img,
 .circlemenu button.expensive:hover icon{
 	opacity:1;
 }
 
+.circlemenu button.overmindfar img,
 .circlemenu button.locked img{
 	opacity:.6;
 }
+.circlemenu button.overmindfar icon,
 .circlemenu button.locked icon{
 	color:#ffffff;
 	opacity:.6;
 }
 
+.circlemenu button.overmindfar,
 .circlemenu button.expensive{
 	icon-image: /ui/assets/circlemenu/circle.png;
 	icon-color-multiplier: rgb(100,0,0);
 }
+.circlemenu button.overmindfar:hover,
 .circlemenu button.expensive:hover{
 	icon-image: /ui/assets/circlemenu/circle.png;
 	icon-color-multiplier: rgb(120,0,0);
 }
 
+.circlemenu button.overmindfar img,
 .circlemenu button.expensive img{
 	opacity:.6;
 }
-.circlemenu button.expensive:hover img{
-	opacity:1;
-}
+.circlemenu button.overmindfar icon,
 .circlemenu button.expensive icon{
 	color:#C5000A;
 	opacity:.7;
