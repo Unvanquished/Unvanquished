@@ -2283,7 +2283,7 @@ void CG_Buildable( centity_t *cent )
 		bool  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
 		float adjustScale = spawned ? 1.0f :
-			sinf( (cg.time - es->time) / ba->buildTime * M_PI/2.0f );
+			sinf( static_cast<float>(cg.time - es->time) / ba->buildTime * M_PI/2.0f );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )
