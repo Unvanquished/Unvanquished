@@ -161,7 +161,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			char* token = COM_Parse2( &text_p );
 			if ( !token || *token != '{' )
 			{
-				Log::Notice( "^1ERROR^*: Expected '{' but found '%s' in %s's character.cfg", token, ci->modelName );
+				Log::Warn( "Expected '{' but found '%s' in %s's character.cfg, skipping", token, ci->modelName );
 				continue;
 			}
 			while ( 1 )
