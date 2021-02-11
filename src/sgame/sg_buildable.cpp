@@ -844,7 +844,12 @@ void G_UpdateBuildablePowerStates()
 			std::sort(unpoweredBuildables.begin(), unpoweredBuildables.end(), CompareBuildablesForPowerSaving);
 			for (auto it = unpoweredBuildables.rbegin(); it != unpoweredBuildables.rend(); ++it) {
 				int buildableCost = BG_Buildable((*it)->oldEnt->s.modelindex)->buildPoints;
+
+				// not cheap enough
 				if (surplus < buildableCost) continue;
+				// don't switch on unpowered buildables on destruction
+				if (!(*it)->Get<HealthComponent>()->Alive()) continue;
+
 				(*it)->Get<BuildableComponent>()->SetPowerState(true);
 				surplus -= buildableCost;
 			}
