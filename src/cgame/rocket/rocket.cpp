@@ -442,6 +442,8 @@ void Rocket_Shutdown()
 	trap_RemoveCommand( "rocketDebug" );
 }
 
+static bool drawMenu;
+
 void Rocket_Render()
 {
 	if ( cg_draw2D.integer && hudContext )
@@ -450,7 +452,7 @@ void Rocket_Render()
 	}
 
 	// Render menus on top of the HUD
-	if ( menuContext )
+	if ( drawMenu && menuContext )
 	{
 		menuContext->Render();
 	}
@@ -459,7 +461,7 @@ void Rocket_Render()
 
 void Rocket_Update()
 {
-	if ( menuContext )
+	if ( drawMenu && menuContext )
 	{
 		menuContext->Update();
 	}
@@ -728,6 +730,7 @@ void Rocket_SetActiveContext( int catcher )
 	{
 		case KEYCATCH_UI:
 			engineCursor.Show( true );
+			drawMenu = true;
 			break;
 
 		default:
@@ -736,6 +739,7 @@ void Rocket_SetActiveContext( int catcher )
 				engineCursor.Show( false );
 			}
 
+			drawMenu = false;
 			break;
 	}
 }
