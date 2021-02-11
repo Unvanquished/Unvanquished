@@ -464,7 +464,7 @@ void Rocket_Update()
 		menuContext->Update();
 	}
 
-	if ( hudContext )
+	if ( cg_draw2D.integer && hudContext )
 	{
 		hudContext->Update();
 	}
