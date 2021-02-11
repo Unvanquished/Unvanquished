@@ -281,7 +281,7 @@ static void CG_Creep( centity_t *cent )
 
 		if ( msec >= 0 && msec < CREEP_SCALEDOWN_TIME )
 		{
-			frac = ( float ) cos ( 0.5f * msec / CREEP_SCALEDOWN_TIME * M_PI );
+			frac = cosf( 0.5f * msec / CREEP_SCALEDOWN_TIME * M_PI );
 		}
 		else
 		{
