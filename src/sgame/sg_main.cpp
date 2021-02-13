@@ -678,9 +678,11 @@ void G_MapConfigs( const char *mapname )
 
 	if ( trap_Cvar_VariableIntegerValue( "g_mapConfigsLoaded" ) )
 	{
+		Log::Notice("Not doing anything");
 		return;
 	}
 
+	Log::Notice("execing default.cfg");
 	trap_SendConsoleCommand( va( "exec %s/default.cfg", Quote( g_mapConfigs.string ) ) );
 
 	trap_SendConsoleCommand( va( "exec %s/%s.cfg", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
@@ -797,6 +799,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 		char map[ MAX_CVAR_VALUE_STRING ] = { "" };
 
 		trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
+		Log::Notice("Calling G_MapConfigs from G_InitGame");
 		G_MapConfigs( map );
 	}
 

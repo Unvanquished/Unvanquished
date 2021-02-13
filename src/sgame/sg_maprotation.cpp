@@ -1105,6 +1105,7 @@ static void G_IssueMapChange( int index, int rotation )
 	}
 
 	// Load up map defaults if g_mapConfigs is set
+	Log::Notice("Calling G_MapConfigs from G_IssueMapChange");
 	G_MapConfigs( map->name );
 
 	if ( strlen( map->postCommand ) > 0 )
