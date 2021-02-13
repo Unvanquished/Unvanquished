@@ -130,6 +130,11 @@ Cvar::Range<Cvar::Cvar<int>> g_team2var("g_team2",
     "team type (1=alien 2=human)", CVAR_SERVERINFO, 2, 1, 2);
 race_t g_team1, g_team2;
 
+Cvar::Cvar<int> g_team1latch("g_team1latch",
+    "next game team type (1=alien 2=human)", Cvar::NONE, 0);
+Cvar::Cvar<int> g_team2latch("g_team2latch",
+    "next game team type (1=alien 2=human)", Cvar::NONE, 0);
+
 
 vmCvar_t           g_buildPointRecoveryInititalRate;
 vmCvar_t           g_buildPointRecoveryRateHalfLife;
@@ -692,6 +697,10 @@ G_InitGame
 */
 void G_InitGame( int levelTime, int randomSeed, bool inClient )
 {
+	if (g_team1latch.Get())
+		g_team1var.Set(g_team1latch.Get());
+	if (g_team2latch.Get())
+		g_team2var.Set(g_team2latch.Get());
 	g_team1 = (race_t)g_team1var.Get();
 	g_team2 = (race_t)g_team2var.Get();
 	int i;
