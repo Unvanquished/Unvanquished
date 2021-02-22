@@ -296,7 +296,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, false    , nullptr       },
 	{ &g_enableVsays,                 "g_voiceChats",                  "1",                                0,                                               0, false    , nullptr       },
 	{ &g_inactivity,                  "g_inactivity",                  "0",                                0,                                               0, true     , nullptr       },
-	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                CVAR_LATCH,                                      0, false    , nullptr       },
+	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                0,                                               0, false    , nullptr       },
 	{ &g_privateMessages,             "g_privateMessages",             "1",                                0,                                               0, false    , nullptr       },
 	{ &g_specChat,                    "g_specChat",                    "1",                                0,                                               0, false    , nullptr       },
 
