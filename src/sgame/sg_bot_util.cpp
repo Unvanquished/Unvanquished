@@ -658,47 +658,11 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 			continue;
 		}
 
-		// Only consider living targets.
-		if ( !Entities::IsAlive( target ) )
+		if ( !BotEnemyIsValid( self, target ) )
 		{
 			continue;
 		}
 
-		//ignore buildings if we cant attack them
-		if ( target->s.eType == entityType_t::ET_BUILDABLE )
-		{
-			if ( !g_bot_attackStruct.integer )
-			{
-				continue;
-			}
-
-			// dretches can only bite buildables in construction
-			if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && target->spawned )
-			{
-				continue;
-			}
-		}
-
-		//ignore neutrals
-		if ( BotGetEntityTeam( target ) == TEAM_NONE )
-		{
-			continue;
-		}
-
-		//ignore teamates
-		if ( BotGetEntityTeam( target ) == BotGetEntityTeam( self ) )
-		{
-			continue;
-		}
-
-		//ignore spectators
-		if ( target->client )
-		{
-			if ( target->client->sess.spectatorState != SPECTATOR_NOT )
-			{
-				continue;
-			}
-		}
 		newDistance = DistanceSquared( self->s.origin, target->s.origin );
 		if ( newDistance <= minDistance )
 		{
@@ -2115,23 +2079,31 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 		return false;
 	}
 
-	//ignore buildings if we cant attack them
-	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
-	                                         self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
+	// ignore buildings if we can't attack them
+	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.integer )
 	{
 		return false;
 	}
 
-	if ( BotGetEntityTeam( enemy ) == self->client->pers.team )
+	// dretch limitations
+	if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && !G_DretchCanDamageEntity( self, enemy ) )
 	{
 		return false;
 	}
 
+	// ignore neutrals
 	if ( BotGetEntityTeam( enemy ) == TEAM_NONE )
 	{
 		return false;
 	}
 
+	// ignore teamates
+	if ( BotGetEntityTeam( enemy ) == BotGetEntityTeam( self ) )
+	{
+		return false;
+	}
+
+	// ignore spectators
 	if ( enemy->client && enemy->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		return false;

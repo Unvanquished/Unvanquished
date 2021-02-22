@@ -140,12 +140,7 @@ bool G_DretchCanDamageEntity( const gentity_t *self, const gentity_t *ent )
 			return true;
 		case entityType_t::ET_BUILDABLE:
 			// dretches can only bite buildables in construction or turrets
-			if ( !ent->spawned || BG_Buildable( ent->s.modelindex )->dretchAttackable )
-			{
-				return true;
-			}
-			return false;
-
+			return !ent->spawned || BG_Buildable( ent->s.modelindex )->dretchAttackable;
 		default:
 			ASSERT_UNREACHABLE();
 	}
