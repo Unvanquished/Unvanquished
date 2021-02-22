@@ -1664,7 +1664,12 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
                                  int pClass, int weapon,
                                  int enthusiasm, int *trackNum );
 
-int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
+struct emoticonData_t
+{
+	std::string imageFile;
+};
+void BG_LoadEmoticons();
+const emoticonData_t* BG_Emoticon( const std::string& name );
 
 const char *BG_TeamName( int team );
 const char *BG_TeamNamePlural( int team );

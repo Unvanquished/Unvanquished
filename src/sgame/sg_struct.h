@@ -720,9 +720,6 @@ struct level_locals_s
 
 	voice_t          *voices;
 
-	emoticon_t       emoticons[ MAX_EMOTICONS ];
-	int              emoticonCount;
-
 	namelog_t        *namelogs;
 
 	buildLog_t       buildLog[ MAX_BUILDLOG ];

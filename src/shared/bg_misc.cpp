@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bg_misc.c -- both games misc functions, all completely stateless
 
 #include "engine/qcommon/q_shared.h"
+#include "common/FileSystem.h"
 #include "bg_public.h"
 
 #define N_(x) x
@@ -2672,68 +2673,44 @@ weapon_t BG_PrimaryWeapon( int stats[] )
 	return WP_NONE;
 }
 
+static std::unordered_map<std::string, emoticonData_t, Str::IHash, Str::IEqual> emoticons;
 /*
 ============
 BG_LoadEmoticons
 ============
 */
-int BG_LoadEmoticons( emoticon_t *emoticons, int num )
+void BG_LoadEmoticons()
 {
-	int  numFiles;
-	char fileList[ MAX_EMOTICONS * ( MAX_EMOTICON_NAME_LEN + 9 ) ] = { "" };
-	int  i;
-	char *filePtr;
-	int  fileLen;
-	int  count;
-
-	numFiles = trap_FS_GetFileList( "emoticons", "x1.crn", fileList,
-	                                sizeof( fileList ) );
-
-	if ( numFiles < 1 )
-	{
-		return 0;
-	}
-
-	filePtr = fileList;
-	fileLen = 0;
-	count = 0;
-
-	for ( i = 0; i < numFiles && count < num; i++, filePtr += fileLen + 1 )
-	{
-		fileLen = strlen( filePtr );
-
-		if ( fileLen < 9 || filePtr[ fileLen - 8 ] != '_' ||
-		     filePtr[ fileLen - 7 ] < '1' || filePtr[ fileLen - 7 ] > '9' )
+	int count = 0;
+	for ( const std::string& filename : FS::PakPath::ListFiles( "emoticons/" ) ) {
+		// TODO: allow any extension
+		if ( FS::Path::Extension( filename ) != ".crn" )
 		{
-			Log::Notice( "^3skipping invalidly named emoticon \"%s\"\n",
-			            filePtr );
 			continue;
 		}
 
-		if ( fileLen - 8 >= MAX_EMOTICON_NAME_LEN )
+		std::string name = FS::Path::StripExtension( filename );
+		emoticonData_t& data = emoticons[ name ];
+		if ( !data.imageFile.empty() )
 		{
-			Log::Notice( "^3emoticon file name \"%s\" too long (≥ %d)\n",
-			            filePtr, MAX_EMOTICON_NAME_LEN + 8 );
+			Log::Warn( "Conflicting emoticon images found: %s and emoticons/%s", data.imageFile, filename );
 			continue;
 		}
-
-		if ( !trap_FS_FOpenFile( va( "emoticons/%s", filePtr ), nullptr, fsMode_t::FS_READ ) )
-		{
-			Log::Notice( "^3could not open \"emoticons/%s\"\n", filePtr );
-			continue;
-		}
-
-		Q_strncpyz( emoticons[ count ].name, filePtr, fileLen - 8 + 1 );
-#ifndef BUILD_SGAME
-		emoticons[ count ].width = filePtr[ fileLen - 7 ] - '0';
-#endif
+		data.imageFile = "emoticons/" + filename;
 		count++;
 	}
 
-	// Log::Notice( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n", // FIXME PLURAL
-	//             count, numFiles, MAX_EMOTICONS );
+	Log::Verbose( "Loaded %d emoticons", count );
+}
 
-	return count;
+const emoticonData_t* BG_Emoticon( const std::string& name )
+{
+	auto iter = emoticons.find( name );
+	if ( iter != emoticons.end() )
+	{
+		return &iter->second;
+	}
+	return nullptr;
 }
 
 /*
