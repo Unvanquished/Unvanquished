@@ -2683,13 +2683,12 @@ void BG_LoadEmoticons()
 {
 	int count = 0;
 	for ( const std::string& filename : FS::PakPath::ListFiles( "emoticons/" ) ) {
-		// TODO: allow any extension
-		if ( FS::Path::Extension( filename ) != ".crn" )
+		// Assume any file with a dot in its name is an image
+		std::string name = FS::Path::StripExtension( filename );
+		if ( name.size() + 1 >= filename.size() )
 		{
 			continue;
 		}
-
-		std::string name = FS::Path::StripExtension( filename );
 		emoticonData_t& data = emoticons[ name ];
 		if ( !data.imageFile.empty() )
 		{
