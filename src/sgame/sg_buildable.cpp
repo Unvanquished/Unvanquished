@@ -132,6 +132,25 @@ bool G_InsideBase(gentity_t *self) {
 	return trap_InPVSIgnorePortals(self->s.origin, mainBuilding->s.origin);
 }
 
+bool G_DretchCanDamageEntity( const gentity_t *self, const gentity_t *ent )
+{
+	switch (ent->s.eType)
+	{
+		case entityType_t::ET_PLAYER:
+			return true;
+		case entityType_t::ET_BUILDABLE:
+			// dretches can only bite buildables in construction or turrets
+			if ( !ent->spawned || BG_Buildable( ent->s.modelindex )->dretchAttackable )
+			{
+				return true;
+			}
+			return false;
+
+		default:
+			ASSERT_UNREACHABLE();
+	}
+}
+
 /**
  * @brief Triggers client side buildable animation.
  */
