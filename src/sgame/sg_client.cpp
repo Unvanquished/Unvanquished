@@ -714,7 +714,7 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 
 	for ( const auto& token : Color::Parser( in ) )
 	{
-		if ( out_string.size() + token.Size() > outSize )
+		if ( out_string.size() + token.Size() >= outSize )
 		{
 			break;
 		}
@@ -741,7 +741,7 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 			// single trailing ^ will mess up some things
 			if ( cp == Color::Constants::ESCAPE && !*token.End() )
 			{
-				if ( out_string.size() + 2 > outSize )
+				if ( out_string.size() + 2 >= outSize )
 				{
 					break;
 				}
@@ -749,7 +749,7 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 			}
 			else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped_emote ) )
 			{
-				if ( out_string.size() + 2 + token.Size() > outSize )
+				if ( out_string.size() + 2 + token.Size() >= outSize )
 				{
 					break;
 				}
