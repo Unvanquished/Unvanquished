@@ -531,7 +531,7 @@ void respawn( gentity_t *ent )
 	}
 }
 
-static bool G_IsEmoticon( const char *s, bool *escaped )
+static bool G_IsEmoticon( const char *s )
 {
 	int        i, j;
 	const char *p = s;
@@ -545,12 +545,6 @@ static bool G_IsEmoticon( const char *s, bool *escaped )
 
 	p++;
 
-	if ( *p == '[' )
-	{
-		escape = true;
-		p++;
-	}
-
 	i = 0;
 
 	while ( *p && i < ( MAX_EMOTICON_NAME_LEN - 1 ) )
@@ -561,7 +555,6 @@ static bool G_IsEmoticon( const char *s, bool *escaped )
 			{
 				if ( !Q_stricmp( emoticon, level.emoticons[ j ].name ) )
 				{
-					*escaped = escape;
 					return true;
 				}
 			}
@@ -711,6 +704,7 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 	std::string out_string;
 	bool        hasletter = false;
 	int         spaces = 0;
+	std::string lastColor = "^*";
 
 	for ( const auto& token : Color::Parser( in ) )
 	{
@@ -737,7 +731,6 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 				continue;
 			}
 
-			bool escaped_emote = false;
 			// single trailing ^ will mess up some things
 			if ( cp == Color::Constants::ESCAPE && !*token.End() )
 			{
@@ -746,19 +739,6 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 					break;
 				}
 				out_string += Color::Constants::ESCAPE;
-			}
-			else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped_emote ) )
-			{
-				if ( out_string.size() + 2 + token.Size() >= outSize )
-				{
-					break;
-				}
-
-				out_string += "[[";
-				if ( escaped_emote )
-				{
-					continue;
-				}
 			}
 
 			if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
@@ -786,8 +766,21 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 		{
 			has_visible_characters = true;
 		}
+		else if ( token.Type() == Color::Token::TokenType::COLOR )
+		{
+			lastColor.assign( token.Begin(), token.End() );
+		}
 
 		out_string.append(token.Begin(), token.Size());
+
+		if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( token.Begin() ) )
+		{
+			if ( out_string.size() + lastColor.size() >= outSize )
+			{
+				break;
+			}
+			out_string += lastColor; // Prevent the emoticon parsing by inserting a color code
+		}
 	}
 
 	bool invalid = false;
