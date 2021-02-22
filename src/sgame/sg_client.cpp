@@ -531,43 +531,22 @@ void respawn( gentity_t *ent )
 	}
 }
 
+// Is there a known emoticon starting at s?
 static bool G_IsEmoticon( const char *s )
 {
-	int        i, j;
-	const char *p = s;
-	char       emoticon[ MAX_EMOTICON_NAME_LEN ] = { "" };
-	bool   escape = false;
-
-	if ( *p != '[' )
+	if ( *s != '[' )
 	{
 		return false;
 	}
 
-	p++;
-
-	i = 0;
-
-	while ( *p && i < ( MAX_EMOTICON_NAME_LEN - 1 ) )
+	const char* bracket = strpbrk( s + 1, "[]" );
+	if ( bracket == nullptr || *bracket != ']' )
 	{
-		if ( *p == ']' )
-		{
-			for ( j = 0; j < level.emoticonCount; j++ )
-			{
-				if ( !Q_stricmp( emoticon, level.emoticons[ j ].name ) )
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		emoticon[ i++ ] = *p;
-		emoticon[ i ] = '\0';
-		p++;
+		return false;
 	}
 
-	return false;
+	std::string name(s + 1, bracket);
+	return BG_Emoticon( name ) != nullptr;
 }
 
 /*

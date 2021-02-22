@@ -829,7 +829,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	trap_LocateGameData( level.num_entities, sizeof( gentity_t ),
 	                     sizeof( level.clients[ 0 ] ) );
 
-	level.emoticonCount = BG_LoadEmoticons( level.emoticons, MAX_EMOTICONS );
+	BG_LoadEmoticons();
 
 	trap_SetConfigstring( CS_INTERMISSION, "0" );
 
