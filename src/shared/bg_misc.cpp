@@ -2713,6 +2713,24 @@ const emoticonData_t* BG_Emoticon( const std::string& name )
 	return nullptr;
 }
 
+// Is there a known emoticon starting at s?
+const emoticonData_t* BG_EmoticonAt( const char *s )
+{
+	if ( *s != '[' )
+	{
+		return nullptr;
+	}
+
+	const char* bracket = strpbrk( s + 1, "[]" );
+	if ( bracket == nullptr || *bracket != ']' )
+	{
+		return nullptr;
+	}
+
+	std::string name(s + 1, bracket);
+	return BG_Emoticon( name );
+}
+
 /*
 ============
 BG_TeamName

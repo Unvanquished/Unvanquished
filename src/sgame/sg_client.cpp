@@ -531,24 +531,6 @@ void respawn( gentity_t *ent )
 	}
 }
 
-// Is there a known emoticon starting at s?
-static bool G_IsEmoticon( const char *s )
-{
-	if ( *s != '[' )
-	{
-		return false;
-	}
-
-	const char* bracket = strpbrk( s + 1, "[]" );
-	if ( bracket == nullptr || *bracket != ']' )
-	{
-		return false;
-	}
-
-	std::string name(s + 1, bracket);
-	return BG_Emoticon( name ) != nullptr;
-}
-
 /*
 ===========
 G_IsUnnamed
@@ -752,7 +734,7 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 
 		out_string.append(token.Begin(), token.Size());
 
-		if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( token.Begin() ) )
+		if ( !g_emoticonsAllowedInNames.integer && BG_EmoticonAt( token.Begin() ) )
 		{
 			if ( out_string.size() + lastColor.size() >= outSize )
 			{
