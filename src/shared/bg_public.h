@@ -1670,6 +1670,7 @@ struct emoticonData_t
 };
 void BG_LoadEmoticons();
 const emoticonData_t* BG_Emoticon( const std::string& name );
+const emoticonData_t* BG_EmoticonAt( const char *s );
 
 const char *BG_TeamName( int team );
 const char *BG_TeamNamePlural( int team );

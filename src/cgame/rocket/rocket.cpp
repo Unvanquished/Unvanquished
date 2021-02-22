@@ -473,21 +473,6 @@ void Rocket_Update()
 	Rocket::Core::Lua::Timer::Update(rocketInfo.realtime);
 }
 
-static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
-{
-	const char invalid[][2] = { "*", "/", "\\", ".", " ", "<", ">", "!", "@", "#", "$", "%", "^", "&", "(", ")", "-", "_", "+", "=", ",", "?", "[", "]", "{", "}", "|", ":", ";", "'", "\"", "`", "~" };
-
-	for ( unsigned i = 0; i < ARRAY_LEN( invalid ); ++i )
-	{
-		if ( emoticon.Find( invalid[ i ] ) != Rocket::Core::String::npos )
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 std::string CG_EscapeHTMLText( Str::StringRef text )
 {
 	std::string out;
@@ -518,16 +503,14 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	bool span = false;
 	bool spanHasContent = false;
 
-	if ( !*in )
+	Color::Parser parser(in, Color::Color());
+	for ( auto iter = parser.begin(); iter != parser.end(); ++iter )
 	{
-		return "";
-	}
-
-	for ( const auto& token : Color::Parser( in, Color::Color() ) )
-	{
+		const Color::Token& token = *iter;
 		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			char c = *token.Begin();
+			const emoticonData_t *emoticon;
 			if ( c == '<' )
 			{
 				if ( span && !spanHasContent )
@@ -560,6 +543,19 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Append( span && spanHasContent ? "</span><br />" : "<br />" );
 				span = false;
 				spanHasContent = false;
+			}
+			else if ( ( parseFlags & RP_EMOTICONS ) && ( emoticon = BG_EmoticonAt( token.Begin() ) ) )
+			{
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.Append( spanstr );
+				}
+				out.Append( va( "<img class='trem-emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				while ( *iter->Begin() != ']' )
+				{
+					++iter;
+				}
 			}
 			else
 			{
@@ -610,55 +606,6 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	if ( span && spanHasContent )
 	{
 		out.Append( "</span>" );
-	}
-
-	if ( parseFlags & RP_EMOTICONS )
-	{
-		// Parse emoticons
-		size_t openBracket = 0;
-		size_t closeBracket = 0;
-		size_t currentPosition = 0;
-
-		while ( 1 )
-		{
-			Rocket::Core::String emoticon;
-			const char *path;
-
-			openBracket = out.Find( "[", currentPosition );
-			if ( openBracket == Rocket::Core::String::npos )
-			{
-				break;
-			}
-
-			closeBracket = out.Find( "]", openBracket );
-			if ( closeBracket == Rocket::Core::String::npos )
-			{
-				break;
-			}
-
-			emoticon = out.Substring( openBracket + 1, closeBracket - openBracket - 1 );
-
-			// Certain characters are invalid
-			if ( emoticon.Empty() || IsInvalidEmoticon( emoticon ) )
-			{
-				currentPosition = closeBracket + 1;
-				continue;
-			}
-
-			// TODO: Dont hardcode the extension.
-			path =  va( "emoticons/%s.crn", emoticon.CString() );
-			if ( CG_FileExists( path ) )
-			{
-				out.Erase( openBracket, closeBracket - openBracket + 1 );
-				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );
-				out.Insert( openBracket, path );
-				currentPosition = openBracket + strlen( path );
-			}
-			else
-			{
-				currentPosition = closeBracket + 1;
-			}
-		}
 	}
 
 	return out;
