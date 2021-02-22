@@ -2082,7 +2082,7 @@ void ClientThink_real( gentity_t *self )
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
-			if ( !G_CheckVenomAttack( self ) )
+			if ( !G_CheckDretchAttack( self ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
 			}

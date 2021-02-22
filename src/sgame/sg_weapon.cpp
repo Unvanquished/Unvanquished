@@ -1258,7 +1258,7 @@ LEVEL0
 ======================================================================
 */
 
-bool G_CheckVenomAttack( gentity_t *self )
+bool G_CheckDretchAttack( gentity_t *self )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
