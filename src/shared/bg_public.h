@@ -1310,6 +1310,7 @@ struct buildableAttributes_t
 
 	bool    transparentTest;
 	bool    uniqueTest;
+	bool    dretchAttackable;
 };
 
 struct buildableModelConfig_t

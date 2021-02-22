@@ -607,6 +607,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 	text = text_buffer;
 
+	ba->dretchAttackable = false; //FIXME
 	while ( 1 )
 	{
 		PARSE(text, token);
@@ -777,6 +778,10 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			ba->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
+		}
+		else if ( !Q_stricmp( token, "dretchAttackable" ) )
+		{
+			ba->dretchAttackable = true;
 		}
 		else if( (var = BG_FindConfigVar( va( "b_%s_%s", ba->name, token ) ) ) != nullptr )
 		{
