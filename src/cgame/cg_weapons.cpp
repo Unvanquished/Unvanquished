@@ -2505,7 +2505,7 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 		break;
 
 	case entityType_t::ET_BUILDABLE:
-		team = BG_Buildable( target->currentState.modelindex )->team;
+		team = (team_t) target->currentState.modelindex2;
 
 		switch ( team )
 		{
@@ -2789,7 +2789,7 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 		PlayHitSound( origin, wim->impactFleshSound );
 	}
 	else if ( victim->currentState.eType == entityType_t::ET_BUILDABLE &&
-			  BG_Buildable( victim->currentState.modelindex )->team == TEAM_ALIENS )
+			  victim->currentState.modelindex2 == TEAM_ALIENS )
 	{
 		PlayHitSound( origin, wim->impactFleshSound );
 	}

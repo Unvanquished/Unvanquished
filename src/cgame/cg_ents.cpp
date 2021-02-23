@@ -1381,3 +1381,38 @@ void CG_AddPacketEntities()
 		}
 	}
 }
+
+// see also G_Team in src/sgame/sg_ents.cpp
+team_t CG_Team(const centity_t *ent)
+{
+	const entityState_t &es = ent->currentState;
+	switch (es.eType)
+	{
+		case entityType_t::ET_PLAYER:
+		case entityType_t::ET_CORPSE:
+		{
+			clientInfo_t &ci = cgs.clientinfo[es.clientNum];
+			return (team_t) ci.team;
+		}
+		case entityType_t::ET_BUILDABLE:
+			return (team_t) ent->currentState.modelindex2;
+		default:
+			ASSERT_UNREACHABLE();
+	}
+}
+
+bool CG_IsAlive(const centity_t *ent)
+{
+	const entityState_t &es = ent->currentState;
+	switch (es.eType)
+	{
+		case entityType_t::ET_PLAYER:
+		case entityType_t::ET_BUILDABLE:
+			return es.generic1 > 0;
+
+		case entityType_t::ET_MISSILE: // dubious
+		case entityType_t::ET_CORPSE:
+		default:
+			return false;
+	}
+}

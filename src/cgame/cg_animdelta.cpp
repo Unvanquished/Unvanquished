@@ -51,7 +51,7 @@ bool AnimDelta::ParseConfiguration(clientInfo_t* ci, const char* token2, const c
 	char* token = COM_Parse2( data_p );
 	if ( !token || token[0] != '{' )
 	{
-		Log::Notice( "^1ERROR^*: Expected '{' but found '%s' in %s's character.cfg", token, ci->modelName );
+		Log::Warn( "Expected '{' but found '%s' in %s's AnimDelta", token, ci->modelName );
 		return true;
 	}
 	while ( 1 )

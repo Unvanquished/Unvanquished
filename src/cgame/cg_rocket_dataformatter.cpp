@@ -429,6 +429,12 @@ static void CG_Rocket_DFCMAlienEvolve( int handle, const char *data )
 		//$1 bill icon. UTF-8 encoding of \uf0d6
 		Icon = "<icon>\xEF\x83\x96</icon>";
 	}
+	else if ( info.isDevolving && CG_DistanceToMainBuildable() > cgs.devolveMaxBaseDistance )
+	{
+		FunctionalClass = "overmindfar";
+		// house icon, UTF-8 encoding of \u2302
+		Icon = "<icon>\xE2\x8C\x82</icon>";
+	}
 	else
 	{
 		FunctionalClass = "available";

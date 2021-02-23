@@ -1059,7 +1059,7 @@ public:
 		es = &cg_entities[ trace.entityNum ].currentState;
 
 		if ( es->eType == entityType_t::ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-			cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
+			cg.predictedPlayerState.persistant[ PERS_TEAM ] == es->modelindex2 )
 		{
 			//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
 			if ( es->modelindex == BA_H_REACTOR &&
@@ -1555,7 +1555,7 @@ static void CG_ScanForCrosshairEntity()
 		// set friend/foe if it's a living buildable
 		if ( targetState->eType == entityType_t::ET_BUILDABLE && targetState->generic1 > 0 )
 		{
-			targetTeam = BG_Buildable( targetState->modelindex )->team;
+			targetTeam = (team_t) targetState->modelindex2;
 
 			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
 			{

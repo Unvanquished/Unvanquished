@@ -57,7 +57,7 @@ static gentity_t *FindBuildable(buildable_t buildable) {
 	return found;
 }
 
-static gentity_t *LookupMainBuildableChache(buildable_t buildable, bool constructed, bool alive) {
+static gentity_t *LookupMainBuildableCache(buildable_t buildable, bool constructed, bool alive) {
 	static gentity_t *reactor  = nullptr;
 	static gentity_t *overmind = nullptr;
 
@@ -97,11 +97,11 @@ static gentity_t *LookupMainBuildableChache(buildable_t buildable, bool construc
 }
 
 gentity_t *LookupOvermindCache(bool constructed, bool alive) {
-	return LookupMainBuildableChache(BA_A_OVERMIND, constructed, alive);
+	return LookupMainBuildableCache(BA_A_OVERMIND, constructed, alive);
 }
 
 gentity_t *LookupReactorCache(bool constructed, bool alive) {
-	return LookupMainBuildableChache(BA_H_REACTOR, constructed, alive);
+	return LookupMainBuildableCache(BA_H_REACTOR, constructed, alive);
 }
 
 gentity_t *G_Overmind() {
