@@ -1292,7 +1292,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	if ( buy->nparams == 0 )
 	{
 		// equip action
-		BotGetDesiredBuy( self, &weapon, upgrades, &numUpgrades );
+		numUpgrades = BotGetDesiredBuy( self, weapon, upgrades, 4 );
 	}
 	else
 	{

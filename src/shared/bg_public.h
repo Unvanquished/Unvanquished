@@ -1369,8 +1369,7 @@ struct upgradeAttributes_t
 
 	int       price;
 	int       unlockThreshold;
-
-	int       slots;
+	int       slots; // uses a combination of SLOT_... defines
 
 	const char *name;
 	const char *humanName;

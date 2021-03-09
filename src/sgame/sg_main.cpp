@@ -218,6 +218,7 @@ Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, 
 
 // bot buy cvars
 vmCvar_t g_bot_buy;
+// human weapons
 vmCvar_t g_bot_rifle;
 vmCvar_t g_bot_painsaw;
 vmCvar_t g_bot_shotgun;
