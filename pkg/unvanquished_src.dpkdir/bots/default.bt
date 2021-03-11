@@ -1,107 +1,11 @@
 selector
 {
-	decorator return( STATUS_FAILURE )
-	{
-		sequence
-		{
-			condition haveWeapon( WP_HBUILD ) && distanceTo( E_GOAL ) <= 100
-			action resetStuckTime
-		}
-	}
-
-	behavior unstick
-
-	sequence
-	{
-		condition alertedToEnemy
-		selector
-		{
-			condition haveWeapon( WP_HBUILD ) && ( !buildingIsDamaged || teamateHasWeapon( WP_HBUILD ) )
-			{
-				selector
-				{
-					action equip
-					action flee
-				}
-			}
-
-			decorator timer( 1000 )
-			{
-				selector
-				{
-					sequence
-					{
-						condition alertedToEnemy
-						condition team == TEAM_ALIENS
-						condition ( distanceTo( E_A_OVERMIND ) <= 100 || distanceTo( E_A_BOOSTER ) <= 100 )
-						action fight
-					}
-					sequence
-					{
-						condition ( healScore <= 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
-						action heal
-					}
-				}
-			}
-
-			action fight
-		}
-	}
-
-	selector
-	{
-		sequence
-		{
-			condition team == TEAM_ALIENS
-			condition healScore <= 0.25
-			action heal
-		}
-
-		sequence
-		{
-			condition team == TEAM_HUMANS
-			condition !haveUpgrade( UP_MEDKIT )
-			condition healScore <= 0.25
-			action heal
-		}
-	}
-
-	condition team == TEAM_ALIENS
-	{
-		action evolve
-	}
-
-	sequence
-	{
-		condition team == TEAM_HUMANS
-		condition !teamateHasWeapon( WP_HBUILD )
-		condition buildingIsDamaged
-		decorator timer( 50000 )
-		{
-			selector
-			{
-				condition !haveWeapon( WP_HBUILD )
-				{
-					action buy( WP_HBUILD )
-				}
-
-				condition haveWeapon( WP_HBUILD )
-				{
-					action repair
-				}
-			}
-		}
-	}
-
 	condition team == TEAM_HUMANS
 	{
-		action equip
+		behavior defaultHumans
 	}
-
-	condition baseRushScore > 0.5
+	condition team == TEAM_ALIENS
 	{
-		action rush
+		behavior defaultAliens
 	}
-
-	action roam
 }
