@@ -375,35 +375,35 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	struct
 	{
 		int authorized;
+		int price;
 		weapon_t weapon;
 	} weapons[] =
 	{
-		{ g_bot_lcannon.integer , WP_LUCIFER_CANNON },
-		{ g_bot_flamer.integer  , WP_FLAMER },
+		{ g_bot_lcannon.integer , BG_Weapon( WP_LUCIFER_CANNON )->price, WP_LUCIFER_CANNON },
+		{ g_bot_flamer.integer  , BG_Weapon( WP_FLAMER )->price        , WP_FLAMER },
 		// pulse rifle has lower priority to keep previous "correct" behavior
-		{ g_bot_prifle.integer  , WP_PULSE_RIFLE },
-		{ g_bot_chaingun.integer, WP_CHAINGUN },
-		{ g_bot_mdriver.integer , WP_MASS_DRIVER },
-		{ g_bot_lasgun.integer  , WP_LAS_GUN },
-		{ g_bot_shotgun.integer , WP_SHOTGUN },
-		{ g_bot_painsaw.integer , WP_PAIN_SAW },
-		{ g_bot_rifle.integer   , WP_MACHINEGUN },
+		{ g_bot_prifle.integer  , BG_Weapon( WP_PULSE_RIFLE )->price   , WP_PULSE_RIFLE },
+		{ g_bot_chaingun.integer, BG_Weapon( WP_CHAINGUN )->price      , WP_CHAINGUN },
+		{ g_bot_mdriver.integer , BG_Weapon( WP_MASS_DRIVER )->price   , WP_MASS_DRIVER },
+		{ g_bot_lasgun.integer  , BG_Weapon( WP_LAS_GUN )->price       , WP_LAS_GUN },
+		{ g_bot_shotgun.integer , BG_Weapon( WP_SHOTGUN )->price       , WP_SHOTGUN },
+		{ g_bot_painsaw.integer , BG_Weapon( WP_PAIN_SAW )->price      , WP_PAIN_SAW },
+		{ g_bot_rifle.integer   , BG_Weapon( WP_MACHINEGUN )->price    , WP_MACHINEGUN },
 	};
 
 	for ( auto const &wp : weapons )
 	{
-		if ( wp.authorized && BG_WeaponUnlocked( wp.weapon ) && usableCapital >= BG_Weapon( wp.weapon )->price )
+		if ( wp.authorized && BG_WeaponUnlocked( wp.weapon ) && usableCapital >= wp.price )
 		{
 			if ( wp.weapon == WP_FLAMER && numTeamWeapons[WP_FLAMER] > numTeamWeapons[WP_PULSE_RIFLE] )
 			{
 				continue;
 			}
 			weapon = wp.weapon;
+			usableCapital -= wp.price;
 			break;
 		}
 	}
-
-	usableCapital -= BG_Weapon( weapon )->price;
 
 	//now test to see if we already have all of these items
 	//check if we already have everything
