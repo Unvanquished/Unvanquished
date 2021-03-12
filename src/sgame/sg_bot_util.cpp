@@ -321,6 +321,13 @@ int BotValueOfUpgrades( gentity_t *self )
 // * "upgrades" contains a list of upgrades to use
 // * "weapon" contains weapon to use
 // * Returns number of upgrades to buy (does not includes weapons)
+//
+// will favor better armor above everything else, then team-utilies
+// and finally the most expensive gun possible.
+// TODO: allow bots to buy jetpack and grenades, despite the fact
+//   they can't use them (yet. For grenades it should not be that
+//   hard?): since default cVar prevent bots to buy those, that
+//   will be one less thing to change later and would have no impact.
 int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], size_t upgradesSize )
 {
 	ASSERT( self && upgrades );
@@ -340,36 +347,18 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		upgrades[i] = UP_NONE;
 	}
 
-	if ( BG_UpgradeUnlocked( UP_BATTLESUIT ) && usableCapital >= BG_Upgrade( UP_BATTLESUIT )->price )
+	// manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
+	struct
 	{
-		upgrades[numUpgrades] = UP_BATTLESUIT;
-	}
-	else if ( BG_UpgradeUnlocked( UP_MEDIUMARMOUR ) && usableCapital >= BG_Upgrade( UP_MEDIUMARMOUR )->price )
+		int authorized;
+		int price;
+		upgrade_t upgrade;
+	} armors[] =
 	{
-		upgrades[numUpgrades] = UP_MEDIUMARMOUR;
-	}
-	else if ( usableCapital >= BG_Upgrade( UP_LIGHTARMOUR )->price )
-	{
-		upgrades[numUpgrades] = UP_LIGHTARMOUR;
-	}
-	usableCapital -= BG_Upgrade( upgrades[numUpgrades] )->price;
-	numUpgrades += upgrades[numUpgrades] == UP_NONE ? 0 : 1;
-
-	//TODO this really needs more generic code, but that would require
-	//deeper refactoring (probably move equipments and classes into structs)
-	//and code to make bots _actually_ use other equipments.
-	unsigned int alliesNumbers[MAX_CLIENTS] = {};
-	int nbAllies = FindAllies( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
-	int nbRadars = numTeamUpgrades[UP_RADAR];
-	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / ( 1 + nbAllies ) < 75;
-	if ( teamNeedsRadar && g_bot_radar.integer
-			&& BG_UpgradeUnlocked( UP_RADAR ) && usableCapital >= BG_Upgrade( UP_RADAR )->price
-			&& ( BG_Upgrade( upgrades[0] )->slots & BG_Upgrade( UP_RADAR )->slots ) == 0 )
-	{
-		upgrades[numUpgrades] = UP_RADAR;
-		usableCapital -= BG_Upgrade( upgrades[numUpgrades] )->price;
-		numUpgrades ++;
-	}
+		{ g_bot_battlesuit.integer  , BG_Upgrade( UP_BATTLESUIT )->price, UP_BATTLESUIT },
+		{ g_bot_mediumarmour.integer, BG_Upgrade( UP_MEDIUMARMOUR )->price, UP_MEDIUMARMOUR },
+		{ g_bot_lightarmour.integer , BG_Upgrade( UP_LIGHTARMOUR )->price, UP_LIGHTARMOUR },
+	};
 
 	// manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
 	struct
@@ -390,6 +379,34 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		{ g_bot_painsaw.integer , BG_Weapon( WP_PAIN_SAW )->price      , WP_PAIN_SAW },
 		{ g_bot_rifle.integer   , BG_Weapon( WP_MACHINEGUN )->price    , WP_MACHINEGUN },
 	};
+
+	for ( auto const &armor : armors )
+	{
+		if ( armor.authorized
+				&& BG_UpgradeUnlocked( armor.upgrade ) && usableCapital >= armor.price )
+		{
+			upgrades[numUpgrades] = armor.upgrade;
+			usableCapital -= armor.price;
+			numUpgrades++;
+			break;
+		}
+	}
+
+	//TODO this really needs more generic code, but that would require
+	//deeper refactoring (probably move equipments and classes into structs)
+	//and code to make bots _actually_ use other equipments.
+	unsigned int alliesNumbers[MAX_CLIENTS] = {};
+	int nbAllies = FindAllies( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
+	int nbRadars = numTeamUpgrades[UP_RADAR];
+	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / ( 1 + nbAllies ) < 75;
+	if ( teamNeedsRadar && g_bot_radar.integer
+			&& BG_UpgradeUnlocked( UP_RADAR ) && usableCapital >= BG_Upgrade( UP_RADAR )->price
+			&& ( BG_Upgrade( upgrades[0] )->slots & BG_Upgrade( UP_RADAR )->slots ) == 0 )
+	{
+		upgrades[numUpgrades] = UP_RADAR;
+		usableCapital -= BG_Upgrade( upgrades[numUpgrades] )->price;
+		numUpgrades ++;
+	}
 
 	for ( auto const &wp : weapons )
 	{
