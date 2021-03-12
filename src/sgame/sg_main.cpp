@@ -216,6 +216,8 @@ Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, 
 
 // bot buy cvars
 vmCvar_t g_bot_buy;
+// human weapons
+vmCvar_t g_bot_ckit;
 vmCvar_t g_bot_rifle;
 vmCvar_t g_bot_painsaw;
 vmCvar_t g_bot_shotgun;
@@ -225,9 +227,21 @@ vmCvar_t g_bot_chaingun;
 vmCvar_t g_bot_prifle;
 vmCvar_t g_bot_flamer;
 vmCvar_t g_bot_lcannon;
+// human armors
+vmCvar_t g_bot_battlesuit;
+vmCvar_t g_bot_mediumarmour;
+vmCvar_t g_bot_lightarmour;
+// human upgrades
+vmCvar_t g_bot_radar;
+vmCvar_t g_bot_jetpack;
+vmCvar_t g_bot_grenade;
+vmCvar_t g_bot_firebomb;
 
 // bot evolution cvars
 vmCvar_t g_bot_evolve;
+vmCvar_t g_bot_builder;
+vmCvar_t g_bot_builderupg;
+vmCvar_t g_bot_level0;
 vmCvar_t g_bot_level1;
 vmCvar_t g_bot_level2;
 vmCvar_t g_bot_level2upg;
@@ -409,26 +423,39 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_emptyTeamsSkipMapTime,       "g_emptyTeamsSkipMapTime",       "0",                                0,                                               0, true     , nullptr       },
 
-	// bots: buying
+	// bots: buying weapons
 	{ &g_bot_buy, "g_bot_buy", "1",  0, 0, false, nullptr },
-	{ &g_bot_rifle, "g_bot_rifle", "1",  0, 0, false, nullptr },
-	{ &g_bot_painsaw, "g_bot_painsaw", "1",  0, 0, false, nullptr },
-	{ &g_bot_shotgun, "g_bot_shotgun", "1",  0, 0, false, nullptr },
-	{ &g_bot_lasgun, "g_bot_lasgun", "1",  0, 0, false, nullptr },
-	{ &g_bot_mdriver, "g_bot_mdriver", "1",  0, 0, false, nullptr },
-	{ &g_bot_chaingun, "g_bot_chain", "1",  0, 0, false, nullptr },
-	{ &g_bot_prifle, "g_bot_prifle", "1",  0, 0, false, nullptr },
-	{ &g_bot_flamer, "g_bot_flamer", "1",  0, 0, false, nullptr },
-	{ &g_bot_lcannon, "g_bot_lcannon", "1",  0, 0, false, nullptr },
+	{ &g_bot_ckit    , "g_bot_ckit"   , "1", 0, 0, false, nullptr },
+	{ &g_bot_rifle   , "g_bot_rifle"  , "1", 0, 0, false, nullptr },
+	{ &g_bot_painsaw , "g_bot_painsaw", "1", 0, 0, false, nullptr },
+	{ &g_bot_shotgun , "g_bot_shotgun", "1", 0, 0, false, nullptr },
+	{ &g_bot_lasgun  , "g_bot_lasgun" , "1", 0, 0, false, nullptr },
+	{ &g_bot_mdriver , "g_bot_mdriver", "1", 0, 0, false, nullptr },
+	{ &g_bot_chaingun, "g_bot_chain"  , "1", 0, 0, false, nullptr },
+	{ &g_bot_prifle  , "g_bot_prifle" , "1", 0, 0, false, nullptr },
+	{ &g_bot_flamer  , "g_bot_flamer" , "1", 0, 0, false, nullptr },
+	{ &g_bot_lcannon , "g_bot_lcannon", "1", 0, 0, false, nullptr },
+	// bots: buying armors
+	{ &g_bot_battlesuit  , "g_bot_battlesuit"  , "1",  0, 0, false, nullptr },
+	{ &g_bot_mediumarmour, "g_bot_mediumarmour", "1",  0, 0, false, nullptr },
+	{ &g_bot_lightarmour , "g_bot_lightarmour" , "1",  0, 0, false, nullptr },
+	// bots: buying upgrades
+	{ &g_bot_radar   , "g_bot_radar"   , "1",  0, 0, false, nullptr },
+	{ &g_bot_jetpack , "g_bot_jetpack" , "0",  0, 0, false, nullptr },
+	{ &g_bot_grenade , "g_bot_grenade" , "0",  0, 0, false, nullptr },
+	{ &g_bot_firebomb, "g_bot_firebomb", "0",  0, 0, false, nullptr },
 
 	// bots: evolution
 	{ &g_bot_evolve, "g_bot_evolve", "1", 0, 0, false, nullptr },
-	{ &g_bot_level1, "g_bot_level1", "1", 0, 0, false, nullptr },
-	{ &g_bot_level2, "g_bot_level2", "1", 0, 0, false, nullptr },
-	{ &g_bot_level2upg, "g_bot_level2upg", "1", 0, 0, false, nullptr },
-	{ &g_bot_level3, "g_bot_level3", "1", 0, 0, false, nullptr },
-	{ &g_bot_level3upg, "g_bot_level3upg", "1", 0, 0, false, nullptr },
-	{ &g_bot_level4, "g_bot_level4", "1", 0, 0, false, nullptr },
+	{ &g_bot_builder   , "g_bot_builder"   , "0", 0, 0, false, nullptr },
+	{ &g_bot_builderupg, "g_bot_builderupg", "0", 0, 0, false, nullptr },
+	{ &g_bot_level0    , "g_bot_level0"    , "1", 0, 0, false, nullptr },
+	{ &g_bot_level1    , "g_bot_level1"    , "1", 0, 0, false, nullptr },
+	{ &g_bot_level2    , "g_bot_level2"    , "1", 0, 0, false, nullptr },
+	{ &g_bot_level2upg , "g_bot_level2upg" , "1", 0, 0, false, nullptr },
+	{ &g_bot_level3    , "g_bot_level3"    , "1", 0, 0, false, nullptr },
+	{ &g_bot_level3upg , "g_bot_level3upg" , "1", 0, 0, false, nullptr },
+	{ &g_bot_level4    , "g_bot_level4"    , "1", 0, 0, false, nullptr },
 
 	// bots: misc
 	{ &g_bot_attackStruct, "g_bot_attackStruct", "1",  0, 0, false, nullptr },
