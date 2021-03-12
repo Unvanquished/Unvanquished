@@ -1074,69 +1074,6 @@ AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* )
 /*
 	alien specific actions
 */
-AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
-{
-	AINodeStatus_t status = STATUS_FAILURE;
-	if ( !g_bot_evolve.integer )
-	{
-		return status;
-	}
-
-	if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL4 ) && g_bot_level4.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL4 ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3_UPG ) && g_bot_level3upg.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3_UPG ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) &&
-	          ( !BG_ClassUnlocked( PCL_ALIEN_LEVEL3_UPG ) ||!g_bot_level2upg.integer ||
-	            !g_bot_level3upg.integer ) && g_bot_level3.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3 ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2_UPG ) && g_bot_level2upg.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL2_UPG ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2 ) && g_bot_level2.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL2 ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1 ) && g_bot_level1.integer )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1 ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL0 ) )
-	{
-		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL0 ) )
-		{
-			status = STATUS_SUCCESS;
-		}
-	}
-
-	return status;
-}
-
 static AINodeStatus_t BotActionReachHealA( gentity_t *self )
 {
 	if ( G_Team( self ) != TEAM_ALIENS )
@@ -1234,14 +1171,15 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *buy = ( AIActionNode_t * ) node;
 	weapon_t  weapon;
-	upgrade_t upgrades[4];
+	const size_t ARRAY_LENGTH = 4;
+	upgrade_t upgrades[ARRAY_LENGTH];
 	int numUpgrades;
 	int i;
 
 	if ( buy->nparams == 0 )
 	{
 		// equip action
-		BotGetDesiredBuy( self, &weapon, upgrades, &numUpgrades );
+		numUpgrades = BotGetDesiredBuy( self, weapon, upgrades, ARRAY_LENGTH);
 	}
 	else
 	{
