@@ -228,6 +228,12 @@ vmCvar_t g_bot_chaingun;
 vmCvar_t g_bot_prifle;
 vmCvar_t g_bot_flamer;
 vmCvar_t g_bot_lcannon;
+// human armors
+vmCvar_t g_bot_battlesuit;
+vmCvar_t g_bot_mediumarmour;
+vmCvar_t g_bot_lightarmour;
+// human upgrades
+vmCvar_t g_bot_radar;
 
 // bot evolution cvars
 vmCvar_t g_bot_evolve;
@@ -414,7 +420,7 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_emptyTeamsSkipMapTime,       "g_emptyTeamsSkipMapTime",       "0",                                0,                                               0, true     , nullptr       },
 
-	// bots: buying
+	// bots: buying weapons
 	{ &g_bot_buy, "g_bot_buy", "1",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_rifle, "g_bot_rifle", "1",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_painsaw, "g_bot_painsaw", "1",  CVAR_NORESTART, 0, false, nullptr },
@@ -425,6 +431,12 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_prifle, "g_bot_prifle", "1",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_flamer, "g_bot_flamer", "1",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_lcannon, "g_bot_lcannon", "1",  CVAR_NORESTART, 0, false, nullptr },
+	// bots: buying armors
+	{ &g_bot_battlesuit, "g_bot_battlesuit", "1",  CVAR_NORESTART, 0, false, nullptr },
+	{ &g_bot_mediumarmour, "g_bot_mediumarmour", "1",  CVAR_NORESTART, 0, false, nullptr },
+	{ &g_bot_lightarmour, "g_bot_lightarmour", "1",  CVAR_NORESTART, 0, false, nullptr },
+	// bots: buying upgrades
+	{ &g_bot_radar, "g_bot_radar", "1",  CVAR_NORESTART, 0, false, nullptr },
 
 	// bots: evolution
 	{ &g_bot_evolve, "g_bot_evolve", "1", CVAR_NORESTART, 0, false, nullptr },

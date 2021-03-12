@@ -173,7 +173,7 @@ extern  vmCvar_t g_instantBuilding;
 extern  Cvar::Cvar<float> g_evolveAroundHumans;
 extern  Cvar::Cvar<float> g_devolveMaxBaseDistance;
 
-// bot buy cvars
+// bots: buying weapons cvars
 extern vmCvar_t g_bot_buy;
 extern vmCvar_t g_bot_rifle;
 extern vmCvar_t g_bot_painsaw;
@@ -184,6 +184,12 @@ extern vmCvar_t g_bot_chaingun;
 extern vmCvar_t g_bot_prifle;
 extern vmCvar_t g_bot_flamer;
 extern vmCvar_t g_bot_lcannon;
+// bots: buying armors cvars
+extern vmCvar_t g_bot_battlesuit;
+extern vmCvar_t g_bot_mediumarmour;
+extern vmCvar_t g_bot_lightarmour;
+// bots: buying other equipments cvars
+extern vmCvar_t g_bot_radar;
 
 // bot evolution cvars
 extern vmCvar_t g_bot_evolve;
