@@ -39,6 +39,16 @@ Maryland 20850 USA.
 #include <Rocket/Controls/DataQuery.h>
 #include "cgame/cg_local.h"
 
+// Lua function to request the datasource be (re)built, e.g.
+// CDataSource.Build('beaconList', 'default')
+static int CDataSource_Build(lua_State* L)
+{
+	const char* sourceName = luaL_checkstring(L, 1);
+	const char* table = luaL_checkstring(L, 2);
+	CG_Rocket_BuildDataSource(sourceName, table);
+	return 0;
+}
+
 // Lua function to read selected columns of a data source, e.g.
 // CDataSource.Read('beaconList', 'default', 'name,desc')
 // -> [["Pointer", "Attract teammates' attention to a very specific point."], ["Attack", "Tell your team to attack a specific place."], ...]
@@ -73,6 +83,8 @@ static int CDataSource_Read(lua_State* L)
 void CG_Rocket_RegisterLuaCDataSource(lua_State* L)
 {
 	lua_newtable(L);
+	lua_pushcfunction(L, CDataSource_Build);
+	lua_setfield(L, -2, "Build");
 	lua_pushcfunction(L, CDataSource_Read);
 	lua_setfield(L, -2, "Read");
 	lua_setglobal(L, "CDataSource");
