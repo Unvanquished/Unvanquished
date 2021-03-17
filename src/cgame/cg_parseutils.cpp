@@ -31,7 +31,7 @@ PC_SourceWarning
 void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 {
 	int         line;
-	char        filename[ 128 ];
+	char        filename[ MAX_QPATH ];
 	va_list     argptr;
 	static char string[ 4096 ];
 
@@ -54,7 +54,7 @@ PC_SourceError
 void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
 {
 	int         line;
-	char        filename[ 128 ];
+	char        filename[ MAX_QPATH ];
 	va_list     argptr;
 	static char string[ 4096 ];
 
