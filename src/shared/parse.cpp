@@ -180,12 +180,6 @@ struct script_t
 
 #define DEFINE_FIXED  0x0001
 
-#define BUILTIN_LINE  1
-#define BUILTIN_FILE  2
-#define BUILTIN_DATE  3
-#define BUILTIN_TIME  4
-#define BUILTIN_STDC  5
-
 #define INDENT_IF     0x0001
 #define INDENT_ELSE   0x0002
 #define INDENT_ELIF   0x0004
@@ -197,7 +191,6 @@ struct define_t
 {
 	char            *name; //define name
 	int             flags; //define flags
-	int             builtin; // > 0 if builtin define
 	int             numparms; //number of define parameters
 	token_t         *parms; //define parameters
 	token_t         *tokens; //macro tokens (possibly containing parm tokens)
@@ -1741,88 +1734,6 @@ static void Parse_FreeDefine( define_t *define )
 
 /*
 ===============
-Parse_ExpandBuiltinDefine
-===============
-*/
-static int Parse_ExpandBuiltinDefine( source_t *source, token_t *deftoken, define_t *define,
-                                      token_t **firsttoken, token_t **lasttoken )
-{
-	token_t *token;
-	time_t  t;
-
-	char    *curtime;
-
-	token = Parse_CopyToken( deftoken );
-
-	switch ( define->builtin )
-	{
-		case BUILTIN_LINE:
-			{
-				sprintf( token->string, "%d", deftoken->line );
-				token->intvalue = deftoken->line;
-				token->floatvalue = deftoken->line;
-				token->type = tokenType_t::TT_NUMBER;
-				token->subtype = TT_DECIMAL | TT_INTEGER;
-				*firsttoken = token;
-				*lasttoken = token;
-				break;
-			}
-
-		case BUILTIN_FILE:
-			{
-				Q_strncpyz( token->string, source->scriptstack->filename, sizeof(token->string) );
-				token->type = tokenType_t::TT_NAME;
-				token->subtype = strlen( token->string );
-				*firsttoken = token;
-				*lasttoken = token;
-				break;
-			}
-
-		case BUILTIN_DATE:
-			{
-				t = time( nullptr );
-				curtime = ctime( &t );
-				strcpy( token->string, "\"" );
-				strncat( token->string, curtime + 4, 7 );
-				strncat( token->string + 7, curtime + 20, 4 );
-				strcat( token->string, "\"" );
-				free( curtime );
-				token->type = tokenType_t::TT_NAME;
-				token->subtype = strlen( token->string );
-				*firsttoken = token;
-				*lasttoken = token;
-				break;
-			}
-
-		case BUILTIN_TIME:
-			{
-				t = time( nullptr );
-				curtime = ctime( &t );
-				strcpy( token->string, "\"" );
-				strncat( token->string, curtime + 11, 8 );
-				strcat( token->string, "\"" );
-				free( curtime );
-				token->type = tokenType_t::TT_NAME;
-				token->subtype = strlen( token->string );
-				*firsttoken = token;
-				*lasttoken = token;
-				break;
-			}
-
-		case BUILTIN_STDC:
-		default:
-			{
-				*firsttoken = nullptr;
-				*lasttoken = nullptr;
-				break;
-			}
-	}
-
-	return true;
-}
-
-/*
-===============
 Parse_ExpandDefine
 ===============
 */
@@ -1832,12 +1743,6 @@ static int Parse_ExpandDefine( source_t *source, token_t *deftoken, define_t *de
 	token_t *parms[ MAX_DEFINEPARMS ], *dt, *pt, *t;
 	token_t *t1, *t2, *first, *last, *nextpt, token;
 	int     parmnum, i;
-
-	//if it is a builtin define
-	if ( define->builtin )
-	{
-		return Parse_ExpandBuiltinDefine( source, deftoken, define, firsttoken, lasttoken );
-	}
 
 	//if the define has parameters
 	if ( define->numparms )
@@ -4112,7 +4017,6 @@ static define_t *Parse_CopyDefine( define_t *define )
 	newdefine->name = ( char * ) newdefine + sizeof( define_t );
 	Q_strncpyz( newdefine->name, define->name, sizeof newdefine->name );
 	newdefine->flags = define->flags;
-	newdefine->builtin = define->builtin;
 	newdefine->numparms = define->numparms;
 	//the define is not linked
 	newdefine->next = nullptr;
