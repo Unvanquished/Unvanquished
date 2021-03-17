@@ -52,6 +52,6 @@ int Parse_AddGlobalDefine(const char *string);
 int Parse_LoadSourceHandle(const char *filename);
 int Parse_FreeSourceHandle(int handle);
 bool Parse_ReadTokenHandle(int handle, pc_token_t *pc_token);
-int Parse_SourceFileAndLine(int handle, char *filename, int *line);
+int Parse_SourceFileAndLine(int handle, char (&filename)[MAX_QPATH], int *line);
 
 #endif // SHARED_PARSE_H_

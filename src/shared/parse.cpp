@@ -1593,7 +1593,7 @@ static int Parse_StringizeTokens( token_t *tokens, token_t *token )
 	token->whitespace_p = nullptr;
 	token->endwhitespace_p = nullptr;
 	token->string[ 0 ] = '\0';
-	strcat( token->string, "\"" );
+	Q_strcat( token->string, sizeof(token->string), "\"" );
 
 	for ( t = tokens; t; t = t->next )
 	{
@@ -1614,7 +1614,7 @@ static int Parse_MergeTokens( token_t *t1, token_t *t2 )
 	//merging of a name with a name or number
 	if ( t1->type == tokenType_t::TT_NAME && ( t2->type == tokenType_t::TT_NAME || t2->type == tokenType_t::TT_NUMBER ) )
 	{
-		strcat( t1->string, t2->string );
+		Q_strcat( t1->string, sizeof(t1->string), t2->string );
 		return true;
 	}
 
@@ -1624,7 +1624,7 @@ static int Parse_MergeTokens( token_t *t1, token_t *t2 )
 		//remove trailing double quote
 		t1->string[ strlen( t1->string ) - 1 ] = '\0';
 		//concat without leading double quote
-		strcat( t1->string, &t2->string[ 1 ] );
+		Q_strcat( t1->string, sizeof(t1->string), &t2->string[ 1 ] );
 		return true;
 	}
 
@@ -1735,6 +1735,7 @@ static void Parse_FreeDefine( define_t *define )
 	}
 
 	//free the define
+	free( define->name );
 	Z_Free( define );
 }
 
@@ -1769,7 +1770,7 @@ static int Parse_ExpandBuiltinDefine( source_t *source, token_t *deftoken, defin
 
 		case BUILTIN_FILE:
 			{
-				strcpy( token->string, source->scriptstack->filename );
+				Q_strncpyz( token->string, source->scriptstack->filename, sizeof(token->string) );
 				token->type = tokenType_t::TT_NAME;
 				token->subtype = strlen( token->string );
 				*firsttoken = token;
@@ -2990,16 +2991,14 @@ static int Parse_Directive_include( source_t *source )
 
 		if ( !script )
 		{
-			// buffer too small?
-			path[ MAX_QPATH - 1 ] = 0;
-			strncpy( path, source->includepath, MAX_QPATH - 1 );
-			strncat( path, token.string, MAX_QPATH - 1 );
+			Q_strncpyz( path, source->includepath, sizeof(path) );
+			Q_strcat( path, sizeof(path), token.string );
 			script = Parse_LoadScriptFile( path );
 		}
 	}
 	else if ( token.type == tokenType_t::TT_PUNCTUATION && *token.string == '<' )
 	{
-		strcpy( path, source->includepath );
+		Q_strncpyz( path, source->includepath, sizeof(path) );
 
 		while ( Parse_ReadSourceToken( source, &token ) )
 		{
@@ -3011,7 +3010,7 @@ static int Parse_Directive_include( source_t *source )
 
 			if ( token.type == tokenType_t::TT_PUNCTUATION && *token.string == '>' ) { break; }
 
-			strncat( path, token.string, MAX_QPATH - 1 );
+			Q_strcat( path, sizeof(path), token.string );
 		}
 
 		if ( *token.string != '>' )
@@ -3182,7 +3181,7 @@ static int Parse_Directive_error( source_t *source )
 {
 	token_t token;
 
-	strcpy( token.string, "" );
+	*token.string = '\0';
 	Parse_ReadSourceToken( source, &token );
 	Parse_SourceError( source, "#error directive: %s", token.string );
 	return false;
@@ -3547,10 +3546,8 @@ static int Parse_Directive_define( source_t *source )
 	}
 
 	//allocate define
-	define = ( define_t * ) Z_Malloc( sizeof( define_t ) + strlen( token.string ) + 1 );
-	Com_Memset( define, 0, sizeof( define_t ) );
-	define->name = ( char * ) define + sizeof( define_t );
-	strcpy( define->name, token.string );
+	define = (define_t *) Z_Malloc( sizeof( define_t ) );
+	define->name = strdup( token.string );
 	//add the define to the source
 	Parse_AddDefineToHash( define, source->definehash );
 
@@ -3945,7 +3942,7 @@ static bool Parse_ReadToken( source_t *source, token_t *token )
 						return false;
 					}
 
-					strcat( token->string, newtoken.string + 1 );
+					Q_strcat( token->string, sizeof(token->string), newtoken.string + 1 );
 				}
 				else
 				{
@@ -4113,7 +4110,7 @@ static define_t *Parse_CopyDefine( define_t *define )
 	newdefine = ( define_t * ) Z_Malloc( sizeof( define_t ) + strlen( define->name ) + 1 );
 	//copy the define name
 	newdefine->name = ( char * ) newdefine + sizeof( define_t );
-	strcpy( newdefine->name, define->name );
+	Q_strncpyz( newdefine->name, define->name, sizeof newdefine->name );
 	newdefine->flags = define->flags;
 	newdefine->builtin = define->builtin;
 	newdefine->numparms = define->numparms;
@@ -4335,7 +4332,7 @@ bool Parse_ReadTokenHandle( int handle, pc_token_t *pc_token )
 	}
 
 	ret = Parse_ReadToken( sourceFiles[ handle ], &token );
-	strcpy( pc_token->string, token.string );
+	Q_strncpyz( pc_token->string, token.string, sizeof pc_token->string );
 	pc_token->type = token.type;
 	pc_token->subtype = token.subtype;
 	pc_token->intvalue = token.intvalue;
@@ -4354,7 +4351,7 @@ bool Parse_ReadTokenHandle( int handle, pc_token_t *pc_token )
 Parse_SourceFileAndLine
 ===============
 */
-int Parse_SourceFileAndLine( int handle, char *filename, int *line )
+int Parse_SourceFileAndLine( int handle, char (&filename)[ MAX_QPATH ], int *line )
 {
 	if ( handle < 1 || handle >= MAX_SOURCEFILES )
 	{
@@ -4366,7 +4363,7 @@ int Parse_SourceFileAndLine( int handle, char *filename, int *line )
 		return false;
 	}
 
-	strcpy( filename, sourceFiles[ handle ]->filename );
+	memcpy( filename, sourceFiles[ handle ]->filename, MAX_QPATH );
 
 	if ( sourceFiles[ handle ]->scriptstack )
 	{
