@@ -1924,6 +1924,7 @@ void CG_Rocket_BuildBeaconList( const char *table )
 			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 			Info_SetValueForKey( buf, "name", ba->humanName, false );
 			Info_SetValueForKey( buf, "desc", ba->desc, false );
+			Info_SetValueForKey( buf, "icon", CG_GetShaderNameFromHandle( ba->icon[ 0 ][ 0 ] ), false );
 
 			Rocket_DSAddRow( "beaconList", "default", buf );
 
