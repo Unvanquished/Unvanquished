@@ -651,7 +651,14 @@ void Cmd_Give_f( gentity_t *ent )
 		else
 		{
 			float amount = atof( name + strlen("health") );
-			ent->entity->Heal(amount, nullptr);
+			if (amount < 0)
+			{
+				ent->entity->Damage(-amount, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
+			}
+			else
+			{
+				ent->entity->Heal(amount, nullptr);
+			}
 		}
 	}
 
