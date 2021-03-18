@@ -138,7 +138,7 @@ enum class punctuationSub_t {
 //punctuation
 struct punctuation_t
 {
-	const char           *p; //punctuation character(s)
+	const char *p; //punctuation character(s)
 	punctuationSub_t n; //punctuation indication
 	punctuation_t *next; //next punctuation
 };
@@ -320,8 +320,7 @@ punctuation_t   Default_Punctuations[] =
 } // namespace
 
 static bool Parse_ReadToken( source_t *source, token_t *token );
-static bool Parse_AddDefineToSourceFromString( source_t *source,
-    char *string );
+static bool Parse_AddDefineToSourceFromString( source_t *source, const char *string );
 
 /*
 ===============
@@ -379,7 +378,7 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 Parse_ScriptError
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_ScriptError( script_t *script, const char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_ScriptError( const script_t *script, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -397,7 +396,7 @@ static void QDECL PRINTF_LIKE(2) Parse_ScriptError( script_t *script, const char
 Parse_ScriptWarning
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_ScriptWarning( script_t *script, const char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_ScriptWarning( const script_t *script, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -765,7 +764,7 @@ static int Parse_ReadName( script_t *script, token_t *token )
 Parse_NumberValue
 ===============
 */
-static void Parse_NumberValue( char *string, int subtype, unsigned long int *intvalue,
+static void Parse_NumberValue( const char *string, int subtype, unsigned long int *intvalue,
                                double *floatvalue )
 {
 	unsigned long int dotfound = 0;
@@ -1140,7 +1139,7 @@ static void Parse_StripDoubleQuotes( char *string )
 Parse_EndOfScript
 ===============
 */
-static int Parse_EndOfScript( script_t *script )
+static int Parse_EndOfScript( const script_t *script )
 {
 	return script->script_p >= script->end_p;
 }
@@ -1242,7 +1241,7 @@ static void Parse_FreeScript( script_t *script )
 Parse_SourceError
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_SourceError( source_t *source, const char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_SourceError( const source_t *source, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1258,7 +1257,7 @@ static void QDECL PRINTF_LIKE(2) Parse_SourceError( source_t *source, const char
 Parse_SourceWarning
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_SourceWarning( source_t *source, const char *str, ... )
+static void QDECL PRINTF_LIKE(2) Parse_SourceWarning( const source_t *source, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1341,7 +1340,7 @@ static void Parse_PushScript( source_t *source, script_t *script )
 Parse_CopyToken
 ===============
 */
-static token_t *Parse_CopyToken( token_t *token )
+static token_t *Parse_CopyToken( const token_t *token )
 {
 	token_t *t;
 
@@ -1447,7 +1446,7 @@ static int Parse_ReadSourceToken( source_t *source, token_t *token )
 Parse_UnreadSourceToken
 ===============
 */
-static int Parse_UnreadSourceToken( source_t *source, token_t *token )
+static int Parse_UnreadSourceToken( source_t *source, const token_t *token )
 {
 	token_t *t;
 
@@ -1462,7 +1461,7 @@ static int Parse_UnreadSourceToken( source_t *source, token_t *token )
 Parse_ReadDefineParms
 ===============
 */
-static int Parse_ReadDefineParms( source_t *source, define_t *define, token_t **parms, int maxparms )
+static int Parse_ReadDefineParms( source_t *source, const define_t *define, token_t **parms, int maxparms )
 {
 	token_t token, *t, *last;
 	int     i, done, lastcomma, numparms, indent;
@@ -1578,9 +1577,9 @@ static int Parse_ReadDefineParms( source_t *source, define_t *define, token_t **
 Parse_StringizeTokens
 ===============
 */
-static int Parse_StringizeTokens( token_t *tokens, token_t *token )
+static int Parse_StringizeTokens( const token_t *tokens, token_t *token )
 {
-	token_t *t;
+	const token_t *t;
 
 	token->type = tokenType_t::TT_STRING;
 	token->whitespace_p = nullptr;
@@ -1737,7 +1736,7 @@ static void Parse_FreeDefine( define_t *define )
 Parse_ExpandDefine
 ===============
 */
-static int Parse_ExpandDefine( source_t *source, token_t *deftoken, define_t *define,
+static int Parse_ExpandDefine( source_t *source, define_t *define,
                                token_t **firsttoken, token_t **lasttoken )
 {
 	token_t *parms[ MAX_DEFINEPARMS ], *dt, *pt, *t;
@@ -1872,7 +1871,6 @@ static int Parse_ExpandDefine( source_t *source, token_t *deftoken, define_t *de
 		}
 	}
 
-	//
 	return true;
 }
 
@@ -1881,11 +1879,11 @@ static int Parse_ExpandDefine( source_t *source, token_t *deftoken, define_t *de
 Parse_ExpandDefineIntoSource
 ===============
 */
-static int Parse_ExpandDefineIntoSource( source_t *source, token_t *deftoken, define_t *define )
+static int Parse_ExpandDefineIntoSource( source_t *source, define_t *define )
 {
 	token_t *firsttoken, *lasttoken;
 
-	if ( !Parse_ExpandDefine( source, deftoken, define, &firsttoken, &lasttoken ) ) { return false; }
+	if ( !Parse_ExpandDefine( source, define, &firsttoken, &lasttoken ) ) { return false; }
 
 	if ( firsttoken && lasttoken )
 	{
@@ -2075,7 +2073,7 @@ static int Parse_OperatorPriority( punctuationSub_t op )
 Parse_EvaluateTokens
 ===============
 */
-static int Parse_EvaluateTokens( source_t *source, token_t *tokens, signed long int *intvalue,
+static int Parse_EvaluateTokens( const source_t *source, token_t *tokens, signed long int *intvalue,
                                  double *floatvalue, int integer )
 {
 	operator_t *o, *firstoperator, *lastoperator;
@@ -2702,7 +2700,7 @@ static int Parse_Evaluate( source_t *source, signed long int *intvalue,
 					return false;
 				}
 
-				if ( !Parse_ExpandDefineIntoSource( source, &token, define ) )
+				if ( !Parse_ExpandDefineIntoSource( source, define ) )
 				{
 					Parse_FreeTokens( firsttoken );
 					return false;
@@ -2816,7 +2814,7 @@ static int Parse_DollarEvaluate( source_t *source, signed long int *intvalue,
 					return false;
 				}
 
-				if ( !Parse_ExpandDefineIntoSource( source, &token, define ) )
+				if ( !Parse_ExpandDefineIntoSource( source, define ) )
 				{
 					Parse_FreeTokens( firsttoken );
 					return false;
@@ -3869,7 +3867,7 @@ static bool Parse_ReadToken( source_t *source, token_t *token )
 			if ( define )
 			{
 				//expand the defined macro
-				if ( !Parse_ExpandDefineIntoSource( source, token, define ) ) { return false; }
+				if ( !Parse_ExpandDefineIntoSource( source, define ) ) { return false; }
 
 				continue;
 			}
@@ -3943,8 +3941,7 @@ static define_t *Parse_DefineFromString( const char *string )
 Parse_AddDefineToSourceFromString
 ===============
 */
-static bool Parse_AddDefineToSourceFromString( source_t *source,
-    char *string )
+static bool Parse_AddDefineToSourceFromString( source_t *source, const char *string )
 {
 	Parse_PushScript( source, Parse_LoadScriptMemory( string, strlen( string ),
 	                  "*extern" ) );
@@ -4007,7 +4004,7 @@ int Parse_AddGlobalDefine( const char *string )
 Parse_CopyDefine
 ===============
 */
-static define_t *Parse_CopyDefine( define_t *define )
+static define_t *Parse_CopyDefine( const define_t *define )
 {
 	define_t *newdefine;
 	token_t  *token, *newtoken, *lasttoken;
@@ -4057,7 +4054,7 @@ static define_t *Parse_CopyDefine( define_t *define )
 Parse_AddGlobalDefinesToSource
 ===============
 */
-static void Parse_AddGlobalDefinesToSource( source_t *source )
+static void Parse_AddGlobalDefinesToSource( const source_t *source )
 {
 	define_t *define, *newdefine;
 
