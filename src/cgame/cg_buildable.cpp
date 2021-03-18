@@ -614,7 +614,7 @@ void CG_InitBuildables()
 	//default sounds
 	for ( j = BANIM_NONE + 1; j < MAX_BUILDABLE_ANIMATIONS; j++ )
 	{
-		strcpy( soundfile, cg_buildableSoundNames[ j - 1 ] );
+		Q_strncpyz( soundfile, cg_buildableSoundNames[ j - 1 ], sizeof soundfile );
 
 		Com_sprintf( filename, sizeof( filename ), "sound/buildables/alien/%s", soundfile );
 		defaultAlienSounds[ j ] = trap_S_RegisterSound( filename, false );
@@ -707,7 +707,7 @@ void CG_InitBuildables()
 		//sounds
 		for ( j = BANIM_NONE + 1; j < MAX_BUILDABLE_ANIMATIONS; j++ )
 		{
-			strcpy( soundfile, cg_buildableSoundNames[ j - 1 ] );
+			Q_strncpyz( soundfile, cg_buildableSoundNames[ j - 1 ], sizeof soundfile );
 			Com_sprintf( filename, sizeof( filename ), "sound/buildables/%s/%s", buildableName, soundfile );
 
 			if ( cg_buildables[ buildable ].sounds[ j ].enabled )

@@ -184,8 +184,8 @@ void CG_LoadArenas()
 	for ( i = 0; i < numdirs; i++, dirptr += dirlen + 1 )
 	{
 		dirlen = strlen( dirptr );
-		strcpy( filename, "meta/" );
-		strcat( filename, dirptr );
+		Q_strncpyz( filename, "meta/", sizeof filename );
+		Q_strcat( filename, sizeof filename, dirptr );
 		CG_LoadArenasFromFile( filename );
 	}
 

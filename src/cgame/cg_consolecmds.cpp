@@ -261,7 +261,7 @@ static void CG_CompleteName()
 	{
 		char name[ MAX_NAME_LENGTH ];
 		ci = &cgs.clientinfo[ i ];
-		strcpy( name, ci->name );
+		Q_strncpyz( name, ci->name, sizeof name );
 
 		if ( !ci->infoValid )
 		{
