@@ -1883,8 +1883,8 @@ void CG_LoadParticleSystems()
 	for ( i = 0; i < numFiles; i++, filePtr += fileLen + 1 )
 	{
 		fileLen = strlen( filePtr );
-		strcpy( fileName, "scripts/" );
-		strcat( fileName, filePtr );
+		Q_strncpyz( fileName, "scripts/", sizeof fileName );
+		Q_strcat( fileName, sizeof fileName, filePtr );
 		// Log::Notice(_( "...loading '%s'"), fileName );
 		CG_ParseParticleFile( fileName );
 	}
