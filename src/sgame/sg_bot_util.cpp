@@ -331,6 +331,10 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	int usableCapital = credits + equipmentPrice;
 	int numUpgrades = 0;
 
+	unsigned int numTeamUpgrades[UP_NUM_UPGRADES] = {};
+	unsigned int numTeamWeapons[WP_NUM_WEAPONS] = {};
+
+	ListTeamEquipment( self, numTeamUpgrades, UP_NUM_UPGRADES, numTeamWeapons, WP_NUM_WEAPONS );
 	for ( size_t i = 0; i < upgradesSize; ++i )
 	{
 		upgrades[i] = UP_NONE;
@@ -383,6 +387,10 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	{
 		if ( wp.authorized && BG_WeaponUnlocked( wp.weapon ) && usableCapital >= BG_Weapon( wp.weapon )->price )
 		{
+			if ( wp.weapon == WP_FLAMER && numTeamWeapons[WP_FLAMER] > numTeamWeapons[WP_PULSE_RIFLE] )
+			{
+				continue;
+			}
 			weapon = wp.weapon;
 			break;
 		}
