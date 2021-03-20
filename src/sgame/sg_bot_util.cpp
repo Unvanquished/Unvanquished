@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 
 static void ListTeamEquipment( gentity_t *self, unsigned int numUpgrades[], size_t numUpgradesSize, unsigned int numWeapons[], size_t numWeaponsSize );
-static unsigned int FindAllies( unsigned int allies[], size_t alliesSize, team_t team );
+static unsigned int ListTeamMembers( unsigned int allies[], size_t alliesSize, team_t team );
 
 /*
 =======================
@@ -396,7 +396,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	//deeper refactoring (probably move equipments and classes into structs)
 	//and code to make bots _actually_ use other equipments.
 	unsigned int alliesNumbers[MAX_CLIENTS] = {};
-	int nbAllies = FindAllies( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
+	int nbAllies = ListTeamMembers( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
 	int nbRadars = numTeamUpgrades[UP_RADAR];
 	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / ( 1 + nbAllies ) < 75;
 	if ( teamNeedsRadar && g_bot_radar.integer
@@ -1396,7 +1396,7 @@ float BotAimAngle( gentity_t *self, vec3_t pos )
 // * allies memory is initialized
 // * there are less than MAX_CLIENTS players in team
 // * there is enough space to store all team's player's references into allies
-unsigned int FindAllies( unsigned int allies[], size_t alliesSize, team_t team )
+unsigned int ListTeamMembers( unsigned int allies[], size_t alliesSize, team_t team )
 {
 	ASSERT( G_IsPlayableTeam( team ) );
 	gentity_t *testEntity;
@@ -1520,7 +1520,7 @@ void ListTeamEquipment( gentity_t *self, unsigned int numUpgrades[], size_t numU
 	const team_t team = static_cast<team_t>( self->client->pers.team );
 	unsigned int alliesNumbers[MAX_CLIENTS];
 	memset( alliesNumbers, 0, sizeof( alliesNumbers ) );
-	unsigned int numAllies = FindAllies( alliesNumbers, MAX_CLIENTS, team );
+	unsigned int numAllies = ListTeamMembers( alliesNumbers, MAX_CLIENTS, team );
 
 	for ( unsigned int i = 0; i < numAllies; ++i )
 	{
