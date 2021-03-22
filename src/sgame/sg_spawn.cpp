@@ -815,7 +815,14 @@ void G_SpawnGEntityFromSpawnVars()
 	 */
 	if( level.numSpawnVars <= 1 )
 	{
-		Log::Warn("encountered ghost-entity #%i with only one field: %s = %s", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		if ( level.numSpawnVars == 1 )
+		{
+			Log::Warn("encountered ghost-entity #%i with only one field: %s = %s", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		}
+		else
+		{
+			Log::Warn("encountered ghost entity #%i with no fields", spawningEntity->s.number);
+		}
 		G_FreeEntity( spawningEntity );
 		return;
 	}
