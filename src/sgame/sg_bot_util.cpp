@@ -529,7 +529,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 
 	minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
 
-	for ( target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities - 1]; target++ )
+	for ( target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities]; target++ )
 	{
 		float distSqr;
 
