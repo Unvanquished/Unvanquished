@@ -72,13 +72,10 @@ namespace Beacon
 // sg_buildable.c
 bool              G_IsWarnableMOD(meansOfDeath_t mod);
 gentity_t         *G_Overmind();
-gentity_t         *G_AliveOvermind();
 gentity_t         *G_ActiveOvermind();
 gentity_t         *G_Reactor();
-gentity_t         *G_AliveReactor();
 gentity_t         *G_ActiveReactor();
 gentity_t         *G_MainBuildable(team_t team);
-gentity_t         *G_AliveMainBuildable(team_t team);
 gentity_t         *G_ActiveMainBuildable(team_t team);
 float             G_DistanceToBase(gentity_t *self);
 bool              G_InsideBase(gentity_t *self);
