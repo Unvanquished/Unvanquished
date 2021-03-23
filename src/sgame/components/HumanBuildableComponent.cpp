@@ -64,7 +64,7 @@ void HumanBuildableComponent::Blast(int timeDelta) {
 	G_AddEvent(entity.oldEnt, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte(blastDirection.Data()));
 	GetBuildableComponent().SetState(BuildableComponent::POST_BLAST); // Makes entity invisible.
 
-	// Remove right after blast.
+	// Remove after the explosion event expires.
 	entity.oldEnt->freeAfterEvent = true;
 	GetBuildableComponent().GetThinkingComponent().UnregisterActiveThinker();
 }

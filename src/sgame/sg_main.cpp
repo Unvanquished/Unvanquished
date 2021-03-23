@@ -2730,7 +2730,7 @@ void G_RunFrame( int levelTime )
 			}
 		}
 
-		// temporary entities don't think
+		// temporary entities or ones about to be removed don't think
 		if ( ent->freeAfterEvent ) continue;
 
 		// calculate the acceleration of this entity
@@ -2785,10 +2785,11 @@ void G_RunFrame( int levelTime )
 
 	// ThinkingComponent should have been called already but who knows maybe we forgot some.
 	ForEntities<ThinkingComponent>([](Entity& entity, ThinkingComponent& thinkingComponent) {
-		// A newly created entity can randomly run things, or not, in the G_RunFrames loop over
+		// A newly created entity can randomly run things, or not, in the above loop over
 		// entities depending on whether it was added in a hole in g_entities or at the end, so
 		// ignore the entity if it was created this frame.
-		if (entity.oldEnt->creationTime != level.time && thinkingComponent.GetLastThinkTime() != level.time) {
+		if (entity.oldEnt->creationTime != level.time && thinkingComponent.GetLastThinkTime() != level.time
+			&& !entity.oldEnt->freeAfterEvent) {
 			Log::Warn("ThinkingComponent was not called");
 			thinkingComponent.Think();
 		}
