@@ -108,20 +108,12 @@ gentity_t *G_Overmind() {
 	return LookupOvermindCache(false, false);
 }
 
-gentity_t *G_AliveOvermind() {
-	return LookupOvermindCache(false, true);
-}
-
 gentity_t *G_ActiveOvermind() {
 	return LookupOvermindCache(true, true);
 }
 
 gentity_t *G_Reactor() {
 	return LookupReactorCache(false, false);
-}
-
-gentity_t *G_AliveReactor() {
-	return LookupReactorCache(false, true);
 }
 
 gentity_t *G_ActiveReactor() {
@@ -132,14 +124,6 @@ gentity_t *G_MainBuildable(team_t team) {
 	switch (team) {
 		case TEAM_ALIENS: return G_Overmind();
 		case TEAM_HUMANS: return G_Reactor();
-		default:          return nullptr;
-	}
-}
-
-gentity_t *G_AliveMainBuildable(team_t team) {
-	switch (team) {
-		case TEAM_ALIENS: return G_AliveOvermind();
-		case TEAM_HUMANS: return G_AliveReactor();
 		default:          return nullptr;
 	}
 }
