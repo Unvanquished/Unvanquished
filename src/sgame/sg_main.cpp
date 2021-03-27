@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 #include "backend/CBSEBackend.h"
+#include "botlib/bot_api.h"
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -2858,6 +2859,7 @@ void G_RunFrame( int levelTime )
 		G_CheckVote( (team_t) i );
 	}
 
+	BotDebugDrawMesh();
 	trap_BotUpdateObstacles();
 	level.frameMsec = trap_Milliseconds();
 }

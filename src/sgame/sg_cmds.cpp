@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
+#include "botlib/bot_api.h"
 #include <common/FileSystem.h>
 #include "Entities.h"
 #include "CBSE.h"
@@ -4355,6 +4356,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
+	{ "addcon",          CMD_CHEAT,                           Cmd_AddConnection      },
 	{ "asay",            CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
 	{ "beacon",          CMD_TEAM | CMD_ALIVE,                Cmd_Beacon_f           },
 	{ "build",           CMD_TEAM | CMD_ALIVE,                Cmd_Build_f            },
@@ -4383,6 +4385,8 @@ static const commands_t cmds[] =
 	{ "me",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
 	{ "me_team",         CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
 	{ "mt",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
+	{ "navedit",         CMD_CHEAT,                           Cmd_NavEdit            },
+	{ "navtest",         CMD_CHEAT,                           Cmd_NavTest            },
 	{ "noclip",          CMD_CHEAT_TEAM,                      Cmd_Noclip_f           },
 	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Notarget_f         },
 	{ "pubkey_identify", CMD_INTERMISSION,                    Cmd_Pubkey_Identify_f  },

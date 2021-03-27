@@ -24,7 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_bot_util.h"
-#include "engine/botlib/bot_types.h"
+#include "botlib/bot_types.h"
+#include "botlib/bot_api.h"
 
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;

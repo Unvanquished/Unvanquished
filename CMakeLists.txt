@@ -95,6 +95,21 @@ if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
     include_directories(${ROCKET_INCLUDE_DIRS})
 endif()
 
+if (BUILD_SGAME)
+    # Fastlz
+    add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
+    set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-fastlz)
+
+    # Detour
+    add_library(srclibs-detour EXCLUDE_FROM_ALL ${DETOURLIST})
+    set_target_properties(srclibs-detour PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    include_directories(${LIB_DIR}/recastnavigation/Detour/Include
+                        ${LIB_DIR}/recastnavigation/DetourTileCache/Include
+                        ${LIB_DIR}/recastnavigation/DebugUtils/Include
+                        ${LIB_DIR}/recastnavigation/DetourCrowd/Include)
+endif()
+
 # Warning options
 # keep
 try_flag(WARNINGS           "/wd4068")
@@ -127,6 +142,9 @@ if (BUILD_SGAME)
         FILES
             ${SGAMELIST}
             ${sgame_GENERATED_CBSE}
+        LIBS
+            srclibs-detour
+            srclibs-fastlz
     )
 endif()
 
