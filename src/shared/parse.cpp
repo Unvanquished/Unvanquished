@@ -4009,10 +4009,9 @@ static define_t *Parse_CopyDefine( const define_t *define )
 	define_t *newdefine;
 	token_t  *token, *newtoken, *lasttoken;
 
-	newdefine = ( define_t * ) Z_Malloc( sizeof( define_t ) + strlen( define->name ) + 1 );
+	newdefine = ( define_t * ) Z_Malloc( sizeof( define_t ) );
 	//copy the define name
-	newdefine->name = ( char * ) newdefine + sizeof( define_t );
-	Q_strncpyz( newdefine->name, define->name, sizeof newdefine->name );
+	newdefine->name = strdup( define->name );
 	newdefine->flags = define->flags;
 	newdefine->numparms = define->numparms;
 	//the define is not linked
