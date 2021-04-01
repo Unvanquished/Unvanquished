@@ -1326,6 +1326,79 @@ void CG_Rocket_CleanUpArmouryBuyList( const char *table )
 	rocketInfo.data.armouryBuyListCount[ tblIndex ] = 0;
 }
 
+static Str::StringRef WeaponAvailability( int weapon )
+{
+	playerState_t *ps = &cg.snap->ps;
+	int credits = ps->persistant[ PERS_CREDIT ];
+	weapon_t currentweapon = BG_PrimaryWeapon( ps->stats );
+	credits += BG_Weapon( currentweapon )->price;
+
+	if ( BG_InventoryContainsWeapon( weapon, cg.predictedPlayerState.stats ) )
+		return "active";
+
+	if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
+		return "locked";
+
+	if ( BG_Weapon( weapon )->price > credits )
+		return "expensive";
+
+	return "available";
+}
+
+static const char* WeaponDamage( weapon_t weapon )
+{
+	switch( weapon )
+	{
+		case WP_HBUILD: return "0";
+		case WP_MACHINEGUN: return "10";
+		case WP_PAIN_SAW: return "90";
+		case WP_SHOTGUN: return "40";
+		case WP_LAS_GUN: return "30";
+		case WP_MASS_DRIVER: return "50";
+		case WP_CHAINGUN: return "60";
+		case WP_FLAMER: return "70";
+		case WP_PULSE_RIFLE: return "70";
+		case WP_LUCIFER_CANNON: return "100";
+		default: return "0";
+	}
+}
+
+static const char* WeaponRange( weapon_t weapon )
+{
+	switch( weapon )
+	{
+		case WP_HBUILD: return "0";
+		case WP_MACHINEGUN: return "75";
+		case WP_PAIN_SAW: return "10";
+		case WP_SHOTGUN: return "30";
+		case WP_LAS_GUN: return "100";
+		case WP_MASS_DRIVER: return "100";
+		case WP_CHAINGUN: return "50";
+		case WP_FLAMER: return "25";
+		case WP_PULSE_RIFLE: return "80";
+		case WP_LUCIFER_CANNON: return "75";
+		default: return "0";
+	}
+}
+
+static const char* WeaponRateOfFire( weapon_t weapon )
+{
+	switch( weapon )
+	{
+		case WP_HBUILD: return "0";
+		case WP_MACHINEGUN: return "70";
+		case WP_PAIN_SAW: return "100";
+		case WP_SHOTGUN: return "100";
+		case WP_LAS_GUN: return "40";
+		case WP_MASS_DRIVER: return "20";
+		case WP_CHAINGUN: return "80";
+		case WP_FLAMER: return "70";
+		case WP_PULSE_RIFLE: return "70";
+		case WP_LUCIFER_CANNON: return "10";
+		default: return "0";
+	}
+}
+
 static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 {
 	static char buf[ MAX_STRING_CHARS ];
@@ -1339,11 +1412,33 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 		Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, false );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Weapon( i )->price ), false );
 		Info_SetValueForKey( buf, "description", BG_Weapon( i )->info, false );
+		Info_SetValueForKey( buf, "icon", CG_GetShaderNameFromHandle( cg_weapons[ i ].ammoIcon ), false );
+		Info_SetValueForKey( buf, "availability", WeaponAvailability( i ).c_str(), false );
+		Info_SetValueForKey( buf, "cmdName", BG_Weapon( i )->name, false );
+		Info_SetValueForKey( buf, "damage", WeaponDamage( weapon_t(i) ), false );
+		Info_SetValueForKey( buf, "rate", WeaponRateOfFire( weapon_t(i) ), false );
+		Info_SetValueForKey( buf, "range", WeaponRange( weapon_t(i) ), false );
 
 		Rocket_DSAddRow( "armouryBuyList", table, buf );
 
 		rocketInfo.data.armouryBuyList[ tblIndex ][ rocketInfo.data.armouryBuyListCount[ tblIndex ]++ ] = i;
 	}
+}
+
+static Str::StringRef UpgradeAvailability( upgrade_t upgrade )
+{
+	bool CG_CanAffordUpgrade(upgrade_t upgrade, int stats[]);
+
+	if ( BG_InventoryContainsUpgrade( upgrade, cg.snap->ps.stats ) )
+		return "active";
+
+	if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
+		return "locked";
+
+	if ( !CG_CanAffordUpgrade( upgrade, cg.snap->ps.stats ) )
+		return "expensive";
+
+	return "available";
 }
 
 static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
@@ -1365,6 +1460,9 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, false );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), false );
 		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, false );
+		Info_SetValueForKey( buf, "availability", UpgradeAvailability( upgrade_t(i) ).c_str(), false );
+		Info_SetValueForKey( buf, "cmdName", BG_Upgrade( i )->name, false );
+		Info_SetValueForKey( buf, "icon", CG_GetShaderNameFromHandle( cg_upgrades[ i ].upgradeIcon ), false );
 
 		Rocket_DSAddRow( "armouryBuyList", table, buf );
 

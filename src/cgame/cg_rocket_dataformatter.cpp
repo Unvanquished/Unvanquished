@@ -173,7 +173,7 @@ static void CG_Rocket_DFCMArmouryBuyWeapon( int handle, const char *data )
 }
 
 // inspired by Cmd_Sell_upgrades in src/sgame/sg_cmds.cpp
-static bool CanAffordUpgrade(upgrade_t upgrade, int stats[])
+bool CG_CanAffordUpgrade(upgrade_t upgrade, int stats[])
 {
 	playerState_t *ps = &cg.snap->ps;
 	int credits = ps->persistant[ PERS_CREDIT ];
@@ -213,7 +213,7 @@ static void CG_Rocket_DFCMArmouryBuyUpgrade( int handle, const char *data )
 		//Padlock icon. UTF-8 encoding of \uf023
 		Icon = "<icon>\xEF\x80\xA3</icon>";
 	}
-	else if( !CanAffordUpgrade( upgrade, cg.predictedPlayerState.stats ) ){
+	else if( !CG_CanAffordUpgrade( upgrade, cg.predictedPlayerState.stats ) ){
 
 		Class = "expensive";
 		//$1 bill icon. UTF-8 encoding of \uf0d6
