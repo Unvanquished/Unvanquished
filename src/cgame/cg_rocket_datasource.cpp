@@ -1797,6 +1797,23 @@ void CG_Rocket_CleanUpHumanBuildList( const char*)
 	rocketInfo.data.humanBuildListCount = 0;
 }
 
+static Str::StringRef BuildableAvailability( buildable_t buildable )
+{
+	int spentBudget     = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
+	int markedBudget    = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
+	int totalBudet      = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
+	int queuedBudget    = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
+	int availableBudget = std::max( 0, totalBudet - ((spentBudget - markedBudget) + queuedBudget));
+
+	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
+		return "locked";
+
+	if ( BG_Buildable( buildable )->buildPoints > availableBudget )
+		return "expensive";
+
+	return "available";
+}
+
 void CG_Rocket_BuildHumanBuildList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
@@ -1827,6 +1844,9 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 			Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
 			Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
 			Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
+			Info_SetValueForKey( buf, "icon", BG_Buildable( i )->icon, false );
+			Info_SetValueForKey( buf, "cmdName", BG_Buildable( i )->name, false );
+			Info_SetValueForKey( buf, "availability", BuildableAvailability( buildable_t(i) ).c_str(), false );
 
 			Rocket_DSAddRow( "humanBuildList", "default", buf );
 
@@ -1886,6 +1906,9 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 			Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
 			Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
 			Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
+			Info_SetValueForKey( buf, "icon", BG_Buildable( i )->icon, false );
+			Info_SetValueForKey( buf, "cmdName", BG_Buildable( i )->name, false );
+			Info_SetValueForKey( buf, "availability", BuildableAvailability( buildable_t(i) ).c_str(), false );
 
 			Rocket_DSAddRow( "alienBuildList", "default", buf );
 
