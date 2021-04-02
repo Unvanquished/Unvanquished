@@ -6,7 +6,6 @@
 		<style>
 			body
 			{
-				padding-top:10%;
 				width:100%;
 				height:100%;
 				background:#00000066;
@@ -85,44 +84,107 @@
 .circlemenu button.active .sell{
 	display:none;
 }
-
-div.infobox {
-	position: absolute;
-	top: 40%;
-	right: 10%;
-	float: right;
-	width: 45%;
-	height: 50%;
-}
-
-
 		</style>
+		<script>
+			function WeaponClick(idx)
+				-- Query again in case credits/momentum changed
+				CDataSource.Build("armouryBuyList", "weapons")
+				local data = CDataSource.Read("armouryBuyList", "weapons", "availability,cmdName")[idx]
+				if data[1] == "available" then
+					Cmd.exec("buy +" .. data[2])
+				elseif data[1] == "active" then
+					Cmd.exec("sell " .. data[2])
+				end
+			end
+			function WeaponClear(document)
+				document:GetElementById("w_name").inner_rml = ""
+				document:GetElementById("w_price").inner_rml = ""
+				document:GetElementById("w_rate").style.width = "0"
+				document:GetElementById("w_range").style.width = "0"
+				document:GetElementById("w_damage").style.width = "0"
+				document:GetElementById("w_description").inner_rml = ""
+			end
+			function WeaponHover(document, idx)
+				WeaponClear(document)
+				local data = weapons[idx]
+				document:GetElementById("w_name").inner_rml = data[2]
+				document:GetElementById("w_price").inner_rml = data[4]
+				document:GetElementById("w_rate").style.width = data[6] .. '%'
+				document:GetElementById("w_range").style.width = data[7] .. '%'
+				document:GetElementById("w_damage").style.width = data[8] .. '%'
+				document:GetElementById("w_description").inner_rml = data[3]
+			end
+			function BuildWeaponMenu(document)
+				CDataSource.Build("armouryBuyList", "weapons")
+				weapons = CDataSource.Read("armouryBuyList", "weapons", "icon,name,description,price,availability,rate,range,damage")
+				local circlemenu = document:GetElementById("weapons")
+				circlemenu.inner_rml = CirclemenuSkeleton(#weapons)
+				for i=1,#weapons do
+					circlemenu.child_nodes[i].inner_rml = string.format(
+						'<button class="%s" onclick="WeaponClick(%d)" onmouseover="WeaponHover(document,%d)">%s<img src="/%s"/></button>',
+						weapons[i][5], i, i, AvailabilityIcon(weapons[i][5]), weapons[i][1])
+				end
+			end
+			function UpgradeClick(idx)
+				-- Query again in case credits/momentum changed
+				CDataSource.Build("armouryBuyList", "upgrades")
+				local data = CDataSource.Read("armouryBuyList", "upgrades", "availability,cmdName")[idx]
+				if data[1] == "available" then
+					Cmd.exec("buy +" .. data[2])
+				elseif data[1] == "active" then
+					Cmd.exec("sell " .. data[2])
+				end
+			end
+			function UpgradeClear(document)
+				document:GetElementById("u_name").inner_rml = ""
+				document:GetElementById("u_price").inner_rml = ""
+				document:GetElementById("u_description").inner_rml = ""
+			end
+			function UpgradeHover(document, idx)
+				UpgradeClear(document)
+				local data = upgrades[idx]
+				document:GetElementById("u_name").inner_rml = data[2]
+				document:GetElementById("u_price").inner_rml = data[4]
+				document:GetElementById("u_description").inner_rml = data[3]
+			end
+			function BuildUpgradeMenu(document)
+				CDataSource.Build("armouryBuyList", "upgrades")
+				upgrades = CDataSource.Read("armouryBuyList", "upgrades", "icon,name,description,price,availability")
+				local circlemenu = document:GetElementById("upgrades")
+				circlemenu.inner_rml = CirclemenuSkeleton(#upgrades)
+				for i=1,#upgrades do
+					circlemenu.child_nodes[i].inner_rml = string.format(
+						'<button class="%s" onclick="UpgradeClick(%d)" onmouseover="UpgradeHover(document,%d)">%s<img src="/%s"/></button>',
+						upgrades[i][5], i, i, AvailabilityIcon(upgrades[i][5]), upgrades[i][1])
+				end
+			end
+		</script>
 	</head>
-	<body id="human_buy" class="circlemenu human" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS armouryBuyList weapons; buildDS armouryBuyList upgrades", event)'>
-	<div id="foo">
+	<body id="human_buy" class="circlemenu human" onkeydown="detectEscape(event, document)"
+	 onshow="WeaponClear(document) UpgradeClear(document) BuildWeaponMenu(document) BuildUpgradeMenu(document)"
+	 onrefreshdata="BuildWeaponMenu(document) BuildUpgradeMenu(document)">
 	<tabset class="circlemenu">
-		<tab>Weapons</tab>
+		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">Weapons</tab>
 		<panel>
-		<circlemenu id="weapons" source="armouryBuyList.weapons" fields="num" formatter="CMArmouryBuyWeapons" onCancel="Events.pushevent('hide human_buy', event)"/>
+		<div class="circlemenu-circle" id="weapons"/>
 			<div class="infobox">
-			<h2><datasource_single source="armouryBuyList.weapons" fields="name" targetid="weapons" /></h2>
-			<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="price" targetid="weapons" /></div></p>
-			<p><div class="attr">Range:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRange" targetid="weapons" /></div></p>
-			<p><div class="attr">Damage:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponDamage" targetid="weapons" /></div></p>
-			<p><div class="attr">Fire Rate:</div><div class="bar"><datasource_single source="armouryBuyList.weapons" fields="num" formatter="GWeaponRateOfFire" targetid="weapons" /></div></p>
-			<p class="text"><datasource_single source="armouryBuyList.weapons" fields="description" targetid="weapons" /></p>
+			<h2 id="w_name"></h2>
+			<p><div class="attr">Price:</div><div class="bar"><div id="w_price"></div></div></p>
+			<p><div class="attr">Range:</div><div class="bar"><div id="w_range" class="barValue"></div></div></p>
+			<p><div class="attr">Damage:</div><div class="bar"><div id="w_damage" class="barValue"></div></div></p>
+			<p><div class="attr">Fire Rate:</div><div class="bar"><div id="w_rate" class="barValue"></div></div></p>
+			<p class="text" id="w_description"></p>
 			</div>
 		</panel>
-		<tab>Upgrades</tab>
+		<tab onclick="UpgradeClear(document) BuildUpgradeMenu(document)">Upgrades</tab>
 		<panel>
-		<circlemenu id="upgrades" source="armouryBuyList.upgrades" fields="num" formatter="CMArmouryBuyUpgrades" onCancel="Events.pushevent('hide human_buy', event)"/>
+		<div class="circlemenu-circle" id="upgrades"/>
 			<div class="infobox">
-			<h2><datasource_single source="armouryBuyList.upgrades" fields="name" targetid="upgrades" /></h2>
-			<p><div class="attr">Price:</div><div class="bar"><datasource_single source="armouryBuyList.upgrades" fields="price" targetid="upgrades" /></div></p>
-			<p class="text"><datasource_single source="armouryBuyList.upgrades" fields="description" targetid="upgrades" /></p>
+			<h2 id="u_name"></h2>
+			<p><div class="attr">Price:</div><div class="bar"><div id="u_price"></div></div></p>
+			<p class="text" id="u_description"></p>
 			</div>
 		</panel>
 	</tabset>
-	</div>
 	</body>
 </rml>

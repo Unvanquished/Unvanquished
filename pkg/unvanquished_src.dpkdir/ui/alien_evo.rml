@@ -6,7 +6,6 @@
 <style>
 body
 {
-	padding-top:10%;
 	width:100%;
 	height:100%;
 	background:#00000066;
@@ -65,10 +64,6 @@ body
 	opacity:.7;
 }
 
-.circlemenu button.doublegranger {
-	display: none;
-}
-
 .circlemenu button{
 	position:relative;
 	icon-color-multiplier: red;
@@ -91,29 +86,59 @@ body
 tabs {
 	display: none;
 }
-div.infobox {
-	position: absolute;
-	top: 40%;
-	right: 10%;
-	float: right;
-	width: 45%;
-	height: 50%;
-}
 </style>
 <script src="lua/util.lua" />
+<script>
+	function ClearEvolveInfo(document)
+		document:GetElementById("e_name").inner_rml = ""
+		document:GetElementById("e_price").inner_rml = ""
+		document:GetElementById("e_desc").inner_rml = ""
+	end
+	function EvolutionClick(idx, event)
+		CDataSource.Build("alienEvolveList", "default")
+		local data = CDataSource.Read("alienEvolveList", "default", "availability,cmdName")[idx]
+		if data[1] == "available" then
+			Cmd.exec("class " .. data[2])
+			Events.pushevent("hide alien_evo", event)
+		end
+	end
+	function EvolutionHover(document, idx)
+		local evolution = evolutions[idx]
+		document:GetElementById("e_name").inner_rml = evolution[2]
+		document:GetElementById("e_price").inner_rml = evolution[5]
+		document:GetElementById("e_desc").inner_rml = evolution[3]
+	end
+	function BuildEvolveMenu(document)
+		ClearEvolveInfo(document)
+		CDataSource.Build("alienEvolveList", "default")
+		evolutions = CDataSource.Read("alienEvolveList", "default", "icon,name,description,availability,price,visible")
+		local button_to_index = {}
+		for i = 1,#evolutions do
+			if evolutions[i][6] == "true" then
+				table.insert(button_to_index, i)
+			end
+		end
+		local circlemenu = document:GetElementById("evolveMenu")
+		circlemenu.inner_rml = CirclemenuSkeleton(#button_to_index)
+		for b = 1,#button_to_index do
+			i = button_to_index[b]
+			circlemenu.child_nodes[b].inner_rml = string.format(
+				'<button class=%s onclick="EvolutionClick(%d,event)" onmouseover="EvolutionHover(document,%d)">%s<img src="/%s"/></button>',
+				evolutions[i][4], i, i, AvailabilityIcon(evolutions[i][4]), evolutions[i][1])
+		end
+	end
+</script>
 </head>
-<body id="alien_evo" class="circlemenu alien" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS alienEvolveList default; buildDS alienEvolveList upgrades", event)'>
-<div id="foo">
+<body id="alien_evo" class="circlemenu alien" onkeydown="detectEscape(event, document)" onshow="BuildEvolveMenu(document)">
 <tabset class="circlemenu">
 <tab></tab>
 <panel>
-<circlemenu id="default" source="alienEvolveList.default" fields="num" formatter="CMAlienEvolve" onCancel="Events.pushevent('hide alien_evo', event)"/>
+<div class="circlemenu-circle" id="evolveMenu"/>
 <div class="infobox">
-<h2><datasource_single source="alienEvolveList.default" fields="name" targetid="default" /></h2>
-<p class="text"><!--Price: --><datasource_single source="alienEvolveList.default" fields="price" targetid="default" /> morph points<br /><datasource_single source="alienEvolveList.default" fields="description" targetid="default" /></p>
+<h2 id="e_name"></h2>
+<p class="text"><!--Price: --><span id="e_price"/> morph points<br /><span id="e_desc"/></p>
 </div>
 </panel>
 </tabset>
-</div>
 </body>
 </rml>

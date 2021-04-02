@@ -6,7 +6,6 @@
 		<style>
 			body
 			{
-				padding-top:10%;
 				width:100%;
 				height:100%;
 				background:#00000066;
@@ -37,38 +36,55 @@
 				color:#9AFFBD;
 			}
 
-			div.infobox {
-				position: absolute;
-				top: 40%;
-				right: 10%;
-				float: right;
-				width: 45%;
-				height: 50%;
-			}
-
 			.circlemenu button img
 			{
 				color: rgb(230,230,230);
 			}
 		</style>
 		<script src="lua/util.lua" />
+		<script>
+			function BeaconClick(idx, event)
+				Cmd.exec("beacon " .. beacons[idx][2])
+				Events.pushevent("hide ingame_beaconmenu", event)
+			end
+			function BeaconHover(document, idx)
+				ClearBeaconInfo(document)
+				local beacon = beacons[idx]
+				document:GetElementById("beaconName"):AppendChild(document:CreateTextNode(beacon[2]))
+				document:GetElementById("beaconDesc"):AppendChild(document:CreateTextNode(beacon[3]))
+			end
+			function ClearBeaconInfo(document)
+				document:GetElementById("beaconName").inner_rml = ""
+				document:GetElementById("beaconDesc").inner_rml = ""
+			end
+			function BuildBeaconMenu(document)
+				ClearBeaconInfo(document)
+				if beacons == nil then
+					CDataSource.Build("beaconList", "default")
+					beacons = CDataSource.Read("beaconList", "default", "icon,name,desc")
+				end
+				local circlemenu = document:GetElementById("beaconMenu")
+				circlemenu.inner_rml = CirclemenuSkeleton(#beacons)
+				for i=1,#beacons do
+					circlemenu.child_nodes[i].inner_rml = string.format(
+						'<button onclick="BeaconClick(%d, event)" onmouseover="BeaconHover(document,%d)"><img src="/%s"/></button>',
+						i, i, beacons[i][1])
+				end
+			end
+		</script>
 	</head>
-	<body id="ingame_beaconmenu" class="circlemenu" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS beaconList default", event)'>
-		<div id="foo">
-			<tabset class="circlemenu">
-				<tab>Beacons</tab>
-				<panel>
-				<circlemenu id="default" source="beaconList.default" fields="num" formatter="CMBeacons" onCancel="Events.pushevent('hide ingame_beaconmenu', event)"/>
+	<body id="ingame_beaconmenu" class="circlemenu" onkeydown="detectEscape(event, document)" onshow="BuildBeaconMenu(document)">
+		<tabset class="circlemenu">
+			<tab>Beacons</tab>
+			<panel>
+				<div class="circlemenu-circle" id="beaconMenu"/>
+				<div style="position: absolute; left: 0; width: 40%;">
 					<div class="infobox">
-						<h2>
-							<datasource_single source="beaconList.default" fields="name" targetid="default"/>
-						</h2>
-						<p class="text" style="text-align: left;">
-							<datasource_single source="beaconList.default" fields="desc" targetid="default"/>
-						</p>
+						<h2 id="beaconName"></h2>
+						<p class="text" style="text-align: left;" id="beaconDesc"></p>
 					</div>
-				</panel>
-			</tabset>
-		</div>
+				</div>
+			</panel>
+		</tabset>
 	</body>
 </rml>

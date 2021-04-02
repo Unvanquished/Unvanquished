@@ -1,14 +1,19 @@
 /* infobox (for circlemenus) */
 
+div.infobox {
+	position: absolute;
+	left: 15em;
+	top: -12em;
+	width: 18em;
+}
+
 .infobox p {
 	display: block;
 }
 
 .infobox h2 {
-	position: absolute;
-	top: -2em;
 	margin: auto;
-	margin-left: -1em;
+	margin-bottom: 0.8em;
 	font-size: 2em;
 	display: block;
 	text-align: center;
