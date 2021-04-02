@@ -94,6 +94,7 @@ tabs {
 		document:GetElementById("b_desc").inner_rml = ""
 	end
 	function HumanBuildableClick(idx, event)
+		if idx > #human_buildables then return end
 		CDataSource.Build("humanBuildList", "default")
 		local data = CDataSource.Read("humanBuildList", "default", "availability,cmdName")[idx]
 		if data[1] == "available" then
@@ -121,7 +122,7 @@ tabs {
 	end
 </script>
 </head>
-<body id="human_build" class="circlemenu human" onkeydown="detectEscape(event, document)" onshow="BuildHumanBuildMenu(document)">
+<body id="human_build" class="circlemenu human" onkeydown="CirclemenuHandleKey(event, document, HumanBuildableClick)" onshow="BuildHumanBuildMenu(document)">
 <tabset class="circlemenu">
 <tab></tab>
 <panel>

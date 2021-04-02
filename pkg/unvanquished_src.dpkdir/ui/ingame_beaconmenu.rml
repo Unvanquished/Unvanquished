@@ -44,6 +44,7 @@
 		<script src="lua/util.lua" />
 		<script>
 			function BeaconClick(idx, event)
+				if idx > #beacons then return end
 				Cmd.exec("beacon " .. beacons[idx][2])
 				Events.pushevent("hide ingame_beaconmenu", event)
 			end
@@ -73,7 +74,7 @@
 			end
 		</script>
 	</head>
-	<body id="ingame_beaconmenu" class="circlemenu" onkeydown="detectEscape(event, document)" onshow="BuildBeaconMenu(document)">
+	<body id="ingame_beaconmenu" class="circlemenu" onkeydown="CirclemenuHandleKey(event, document, BeaconClick)" onshow="BuildBeaconMenu(document)">
 		<tabset class="circlemenu">
 			<tab>Beacons</tab>
 			<panel>

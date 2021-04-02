@@ -95,6 +95,8 @@ tabs {
 		document:GetElementById("e_desc").inner_rml = ""
 	end
 	function EvolutionClick(idx, event)
+		idx = button_to_index[idx]
+		if idx == nil then return end
 		CDataSource.Build("alienEvolveList", "default")
 		local data = CDataSource.Read("alienEvolveList", "default", "availability,cmdName")[idx]
 		if data[1] == "available" then
@@ -112,7 +114,7 @@ tabs {
 		ClearEvolveInfo(document)
 		CDataSource.Build("alienEvolveList", "default")
 		evolutions = CDataSource.Read("alienEvolveList", "default", "icon,name,description,availability,price,visible")
-		local button_to_index = {}
+		button_to_index = {}
 		for i = 1,#evolutions do
 			if evolutions[i][6] == "true" then
 				table.insert(button_to_index, i)
@@ -124,12 +126,12 @@ tabs {
 			i = button_to_index[b]
 			circlemenu.child_nodes[b].inner_rml = string.format(
 				'<button class=%s onclick="EvolutionClick(%d,event)" onmouseover="EvolutionHover(document,%d)">%s<img src="/%s"/></button>',
-				evolutions[i][4], i, i, AvailabilityIcon(evolutions[i][4]), evolutions[i][1])
+				evolutions[i][4], b, i, AvailabilityIcon(evolutions[i][4]), evolutions[i][1])
 		end
 	end
 </script>
 </head>
-<body id="alien_evo" class="circlemenu alien" onkeydown="detectEscape(event, document)" onshow="BuildEvolveMenu(document)">
+<body id="alien_evo" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, EvolutionClick)" onshow="BuildEvolveMenu(document)">
 <tabset class="circlemenu">
 <tab></tab>
 <panel>

@@ -71,6 +71,22 @@ function CirclemenuSkeleton(num_items)
 	return rml
 end
 
+-- The num_handler callback will be given two arguments: an integer in
+-- [1, 10] indicating which item the user selects, and the key event
+function CirclemenuHandleKey(event, document, num_handler)
+	local key = event.parameters["key_identifier"]
+	local index
+	if key == rocket.key_identifier["0"] then
+		index = 10
+	elseif key >= rocket.key_identifier["1"] and key <= rocket.key_identifier["9"] then
+		index = key - rocket.key_identifier["1"] + 1
+	else
+		detectEscape(event, document)
+		return
+	end
+	num_handler(index, event)
+end
+
 function welcome(event, document)
   if Cvar.get("cg_welcome") ~= "1" and Cvar.get("name") == "UnnamedPlayer" then
     Cvar.set("name", "Player#" .. math.ceil(math.random()*10000000))
