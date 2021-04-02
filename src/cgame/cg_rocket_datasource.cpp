@@ -1514,8 +1514,14 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 
 	if ( tblIndex != ROCKETDS_UPGRADES )
 	{
+		// Make ckit first so that it can be accessed with a low number key in circlemenus
+		AddWeaponToBuyList( WP_HBUILD, "default", ROCKETDS_BOTH );
+		AddWeaponToBuyList( WP_HBUILD, "weapons", ROCKETDS_WEAPONS );
+
 		for ( i = 0; i <= WP_NUM_WEAPONS; ++i )
 		{
+			if ( i == WP_HBUILD ) continue;
+
 			AddWeaponToBuyList( i, "default", ROCKETDS_BOTH );
 			AddWeaponToBuyList( i, "weapons", ROCKETDS_WEAPONS );
 		}
