@@ -1,4 +1,4 @@
-/* infobx */
+/* infobox (for circlemenus) */
 
 .infobox p {
 	display: block;
