@@ -94,6 +94,7 @@ tabs {
 		document:GetElementById("b_desc").inner_rml = ""
 	end
 	function AlienBuildableClick(idx, event)
+		if idx > #alien_buildables then return end
 		CDataSource.Build("alienBuildList", "default")
 		local data = CDataSource.Read("alienBuildList", "default", "availability,cmdName")[idx]
 		if data[1] == "available" then
@@ -121,7 +122,7 @@ tabs {
 	end
 </script>
 </head>
-<body id="alien_build" class="circlemenu alien" onkeydown="detectEscape(event, document)" onshow="BuildAlienBuildMenu(document)">
+<body id="alien_build" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, AlienBuildableClick)" onshow="BuildAlienBuildMenu(document)">
 <tabset class="circlemenu">
 <tab></tab>
 <panel>

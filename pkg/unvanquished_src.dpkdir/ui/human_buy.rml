@@ -87,6 +87,7 @@
 		</style>
 		<script>
 			function WeaponClick(idx)
+				if idx > #weapons then return end
 				-- Query again in case credits/momentum changed
 				CDataSource.Build("armouryBuyList", "weapons")
 				local data = CDataSource.Read("armouryBuyList", "weapons", "availability,cmdName")[idx]
@@ -126,6 +127,7 @@
 				end
 			end
 			function UpgradeClick(idx)
+				if idx > #upgrades then return end
 				-- Query again in case credits/momentum changed
 				CDataSource.Build("armouryBuyList", "upgrades")
 				local data = CDataSource.Read("armouryBuyList", "upgrades", "availability,cmdName")[idx]
@@ -158,12 +160,17 @@
 						upgrades[i][5], i, i, AvailabilityIcon(upgrades[i][5]), upgrades[i][1])
 				end
 			end
+			function HumanBuyHandleKey(event, document)
+				local tabset = Element.As.ElementTabSet(document:GetElementById("tabset"))
+				local handler = ({[0]=WeaponClick, [1]=UpgradeClick})[tabset.active_tab]
+				CirclemenuHandleKey(event, document, handler)
+			end
 		</script>
 	</head>
-	<body id="human_buy" class="circlemenu human" onkeydown="detectEscape(event, document)"
+	<body id="human_buy" class="circlemenu human" onkeydown="HumanBuyHandleKey(event, document)"
 	 onshow="WeaponClear(document) UpgradeClear(document) BuildWeaponMenu(document) BuildUpgradeMenu(document)"
 	 onrefreshdata="BuildWeaponMenu(document) BuildUpgradeMenu(document)">
-	<tabset class="circlemenu">
+	<tabset class="circlemenu" id="tabset">
 		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">Weapons</tab>
 		<panel>
 		<div class="circlemenu-circle" id="weapons"/>
