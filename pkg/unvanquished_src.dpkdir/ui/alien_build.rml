@@ -6,7 +6,6 @@
 <style>
 body
 {
-	padding-top:10%;
 	width:100%;
 	height:100%;
 	background:#00000066;
@@ -86,30 +85,53 @@ body
 tabs {
 	display: none;
 }
-div.infobox {
-	position: absolute;
-	top: 40%;
-	right: 10%;
-	float: right;
-	width: 45%;
-	height: 50%;
-}
 </style>
 <script src="lua/util.lua" />
+<script>
+	function ClearAlienBuildableInfo(document)
+		document:GetElementById("b_name").inner_rml = ""
+		document:GetElementById("b_price").inner_rml = ""
+		document:GetElementById("b_desc").inner_rml = ""
+	end
+	function AlienBuildableClick(idx, event)
+		CDataSource.Build("alienBuildList", "default")
+		local data = CDataSource.Read("alienBuildList", "default", "availability,cmdName")[idx]
+		if data[1] == "available" then
+			Cmd.exec("build " .. data[2])
+			Events.pushevent("hide alien_build", event)
+		end
+	end
+	function AlienBuildableHover(document, idx)
+		buildable = alien_buildables[idx]
+		document:GetElementById("b_name").inner_rml = buildable[2]
+		document:GetElementById("b_price").inner_rml = buildable[4]
+		document:GetElementById("b_desc").inner_rml = buildable[3]
+	end
+	function BuildAlienBuildMenu(document)
+		ClearAlienBuildableInfo(document)
+		CDataSource.Build("alienBuildList", "default")
+		alien_buildables = CDataSource.Read("alienBuildList", "default", "icon,name,description,cost,availability")
+		local circlemenu = document:GetElementById("alienBuildMenu")
+		circlemenu.inner_rml = CirclemenuSkeleton(#alien_buildables)
+		for i = 1,#alien_buildables do
+			circlemenu.child_nodes[i].inner_rml = string.format(
+				'<button class=%s onclick="AlienBuildableClick(%d,event)" onmouseover="AlienBuildableHover(document,%d)">%s<img src="/%s"/></button>',
+				alien_buildables[i][5], i, i, AvailabilityIcon(alien_buildables[i][5]), alien_buildables[i][1])
+		end
+	end
+</script>
 </head>
-<body id="alien_build" class="circlemenu alien" onKeyDown="detectEscape(event, document)" onShow='Events.pushevent("buildDS alienBuildList default; buildDS alienBuildList upgrades", event)'>
-<div id="foo">
+<body id="alien_build" class="circlemenu alien" onkeydown="detectEscape(event, document)" onshow="BuildAlienBuildMenu(document)">
 <tabset class="circlemenu">
 <tab></tab>
 <panel>
-<circlemenu id="default" source="alienBuildList.default" fields="num" formatter="CMAlienBuildables" onCancel="Events.pushevent('hide alien_build', event)"/>
+<div class="circlemenu-circle" id="alienBuildMenu"/>
 <div class="infobox">
-<h2><datasource_single source="alienBuildList.default" fields="name" targetid="default" /></h2>
-<p class="text">Price: <datasource_single source="alienBuildList.default" fields="cost" targetid="default" /><br/>
-<datasource_single source="alienBuildList.default" fields="description" targetid="default" /></p>
+<h2 id="b_name"></h2>
+<p class="text">Price: <span id="b_price" /><br/>
+<span id="b_desc" /></p>
 </div>
 </panel>
 </tabset>
-</div>
 </body>
 </rml>
