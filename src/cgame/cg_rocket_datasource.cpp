@@ -1725,6 +1725,22 @@ void CG_Rocket_CleanUpAlienEvolveList( const char* )
 
 }
 
+static Str::StringRef EvolveAvailability( class_t alienClass )
+{
+	evolveInfo_t info = BG_ClassEvolveInfoFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass );
+
+	if ( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
+		return "active";
+
+	if ( !info.classIsUnlocked )
+		return "locked";
+
+	if ( cg.predictedPlayerState.persistant[ PERS_CREDIT ] < info.evolveCost )
+		return "expensive";
+	
+	return "available";
+}
+
 void CG_Rocket_BuildAlienEvolveList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
@@ -1759,6 +1775,9 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 			Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, false );
 			Info_SetValueForKey( buf, "description", BG_Class( i )->info, false );
+			Info_SetValueForKey( buf, "availability", EvolveAvailability( class_t(i) ).c_str(), false );
+			Info_SetValueForKey( buf, "icon", BG_Class( i )->icon, false );
+			Info_SetValueForKey( buf, "cmdName", BG_Class( i )->name, false );
 			if (price >= 0.0f) {
 				Info_SetValueForKey( buf, "price", va( "Price: %.1f", price / CREDITS_PER_EVO ), false );
 			}
@@ -1766,6 +1785,9 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 			{
 				Info_SetValueForKey( buf, "price", va( "Returned: %.1f", -price / CREDITS_PER_EVO ), false );
 			}
+			bool doublegranger = ( i == PCL_ALIEN_BUILDER0 && BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) && !BG_ClassDisabled( PCL_ALIEN_BUILDER0_UPG ) )
+				|| ( i == PCL_ALIEN_BUILDER0_UPG && ( !BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ) );
+			Info_SetValueForKey( buf, "visible", (doublegranger ? "false" : "true"), false );
 
 			Rocket_DSAddRow( "alienEvolveList", "default", buf );
 
