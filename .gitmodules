@@ -4,6 +4,9 @@
 [submodule "libs/libRocket"]
 	path = libs/libRocket
 	url = https://github.com/Unvanquished/libRocket.git
+[submodule "libs/recastnavigation"]
+	path = libs/recastnavigation
+	url = https://github.com/DaemonEngine/recastnavigation.git
 [submodule "daemon"]
 	path = daemon
 	url = https://github.com/DaemonEngine/Daemon.git

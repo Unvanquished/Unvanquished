@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "sg_local.h"
 #include "sg_cm_world.h"
+#include "botlib/bot_api.h"
 #include "engine/server/sg_msgdef.h"
 #include "shared/VMMain.h"
 #include "shared/CommonProxies.h"
@@ -205,4 +206,70 @@ void trap_AdjustAreaPortalState(gentity_t *ent, bool open)
 {
 	VM::SendMsg<AdjustAreaPortalStateMsg>(ent - g_entities, open);
 	G_CM_AdjustAreaPortalState( ent, open );
+}
+
+bool trap_BotSetupNav(const botClass_t* botClass, qhandle_t* navHandle)
+{
+	return BotSetupNav(botClass, navHandle);
+}
+
+void trap_BotShutdownNav()
+{
+	BotShutdownNav();
+}
+
+void trap_BotSetNavMesh(int botClientNum, qhandle_t navHandle)
+{
+	BotSetNavMesh(botClientNum, navHandle);
+}
+
+bool trap_BotFindRoute(int botClientNum, const botRouteTarget_t* target, bool allowPartial)
+{
+	return BotFindRouteExt(botClientNum, target, allowPartial);
+}
+
+bool trap_BotUpdatePath(int botClientNum, const botRouteTarget_t* target, botNavCmd_t* cmd)
+{
+	BotUpdateCorridor(botClientNum, target, cmd);
+	return false; // Amanieu: This always returns false, but the value isn't used
+}
+
+bool trap_BotNavTrace(int botClientNum, botTrace_t* botTrace, const vec3_t start, const vec3_t end)
+{
+	return BotNavTrace(botClientNum, botTrace, start, end);
+}
+
+void trap_BotFindRandomPoint(int botClientNum, vec3_t point)
+{
+	BotFindRandomPoint(botClientNum, point);
+}
+
+bool trap_BotFindRandomPointInRadius(int botClientNum, const vec3_t origin, vec3_t point, float radius)
+{
+	return BotFindRandomPointInRadius(botClientNum, origin, point, radius);
+}
+
+void trap_BotEnableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
+{
+	BotEnableArea(origin, mins, maxs);
+}
+
+void trap_BotDisableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
+{
+	BotDisableArea(origin, mins, maxs);
+}
+
+void trap_BotAddObstacle(const vec3_t mins, const vec3_t maxs, qhandle_t* handle)
+{
+	BotAddObstacle(mins, maxs, handle);
+}
+
+void trap_BotRemoveObstacle(qhandle_t handle)
+{
+	BotRemoveObstacle(handle);
+}
+
+void trap_BotUpdateObstacles()
+{
+	BotUpdateObstacles();
 }
