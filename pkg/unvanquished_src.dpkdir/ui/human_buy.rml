@@ -84,6 +84,37 @@
 .circlemenu button.active .sell{
 	display:none;
 }
+
+.tabkey {
+	background-color: #99999999;
+	color: #CCCCCC;
+	font-size: 0.8em;
+	line-height: 0.85em;
+	padding-left: 0.1em;
+	padding-right: 0.1em;
+	border-top-style: solid;
+	border-bottom-style: solid;
+	border-right-style: solid;
+	border-left-style: solid;
+	border-top-width: .1em;
+	border-bottom-width: .1em;
+	border-right-width: .1em;
+	border-left-width: .1em;
+	border-top-color: #CCCCCC;
+	border-bottom-color: #CCCCCC;
+	border-right-color: #CCCCCC;
+	border-left-color: #CCCCCC;
+}
+tab:selected .tabkey {
+	display: none;
+}
+tab {
+	position: relative;
+	top: 0.4em;
+}
+tab:selected {
+	top: 0;
+}
 		</style>
 		<script>
 			function WeaponClick(idx)
@@ -164,8 +195,12 @@
 			end
 			function HumanBuyHandleKey(event, document)
 				local tabset = Element.As.ElementTabSet(document:GetElementById("tabset"))
-				local handler = ({[0]=WeaponClick, [1]=UpgradeClick})[tabset.active_tab]
-				CirclemenuHandleKey(event, document, handler)
+				if event.parameters.key_identifier == rocket.key_identifier.TAB then
+					tabset.active_tab = 1 - tabset.active_tab
+				else
+					local handler = ({[0]=WeaponClick, [1]=UpgradeClick})[tabset.active_tab]
+					CirclemenuHandleKey(event, document, handler)
+				end
 			end
 		</script>
 	</head>
@@ -173,7 +208,10 @@
 	 onshow="WeaponClear(document) UpgradeClear(document) BuildWeaponMenu(document) BuildUpgradeMenu(document)"
 	 onrefreshdata="BuildWeaponMenu(document) BuildUpgradeMenu(document)">
 	<tabset class="circlemenu" id="tabset">
-		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">Weapons</tab>
+		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">
+			<p>Weapons</p>
+			<div class="tabkey">TAB</div>
+		</tab>
 		<panel>
 		<div class="circlemenu-circle" id="weaponKeyboardHints"/>
 		<div class="circlemenu-circle" id="weapons"/>
@@ -186,7 +224,10 @@
 			<p class="text" id="w_description"></p>
 			</div>
 		</panel>
-		<tab onclick="UpgradeClear(document) BuildUpgradeMenu(document)">Upgrades</tab>
+		<tab onclick="UpgradeClear(document) BuildUpgradeMenu(document)">
+			<p>Upgrades</p>
+			<div class="tabkey">TAB</div>
+		</tab>
 		<panel>
 		<div class="circlemenu-circle" id="upgradeKeyboardHints"/>
 		<div class="circlemenu-circle" id="upgrades"/>
