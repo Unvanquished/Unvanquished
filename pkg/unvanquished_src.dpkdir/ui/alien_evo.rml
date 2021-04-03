@@ -128,6 +128,7 @@ tabs {
 				'<button class=%s onclick="EvolutionClick(%d,event)" onmouseover="EvolutionHover(document,%d)">%s<img src="/%s"/></button>',
 				evolutions[i][4], b, i, AvailabilityIcon(evolutions[i][4]), evolutions[i][1])
 		end
+		document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#button_to_index)
 	end
 </script>
 </head>
@@ -135,6 +136,7 @@ tabs {
 <tabset class="circlemenu">
 <tab></tab>
 <panel>
+<div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="evolveMenu"/>
 <div class="infobox">
 <h2 id="e_name"></h2>

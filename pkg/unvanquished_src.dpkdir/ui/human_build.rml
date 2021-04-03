@@ -119,6 +119,7 @@ tabs {
 				'<button class=%s onclick="HumanBuildableClick(%d,event)" onmouseover="HumanBuildableHover(document,%d)">%s<img src="/%s"/></button>',
 				human_buildables[i][5], i, i, AvailabilityIcon(human_buildables[i][5]), human_buildables[i][1])
 		end
+		document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#human_buildables)
 	end
 </script>
 </head>
@@ -126,6 +127,7 @@ tabs {
 <tabset class="circlemenu">
 <tab></tab>
 <panel>
+<div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="humanBuildMenu"/>
 <div class="infobox">
 <h2 id="b_name"></h2>

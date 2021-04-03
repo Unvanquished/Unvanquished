@@ -71,6 +71,18 @@ function CirclemenuSkeleton(num_items)
 	return rml
 end
 
+function CirclemenuKeyboardHints(num_items)
+	local rml = ""
+	local radius_em = 6.3
+	for i=1,num_items do
+		local angle = 2 * math.pi / num_items * (i - 1)
+		local x = radius_em * math.sin(angle)
+		local y = radius_em * -math.cos(angle)
+		rml = rml .. string.format('<div style="position: absolute; left: %.1fem; top: %.1fem;"><p class="key">%d</p></div>', x, y, i % 10)
+	end
+	return rml
+end
+
 -- The num_handler callback will be given two arguments: an integer in
 -- [1, 10] indicating which item the user selects, and the key event
 function CirclemenuHandleKey(event, document, num_handler)

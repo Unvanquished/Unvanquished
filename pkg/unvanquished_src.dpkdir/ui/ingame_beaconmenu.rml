@@ -71,6 +71,7 @@
 						'<button onclick="BeaconClick(%d, event)" onmouseover="BeaconHover(document,%d)"><img src="/%s"/></button>',
 						i, i, beacons[i][1])
 				end
+				document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#beacons)
 			end
 		</script>
 	</head>
@@ -78,6 +79,7 @@
 		<tabset class="circlemenu">
 			<tab>Beacons</tab>
 			<panel>
+				<div class="circlemenu-circle" id="keyboardHints"/>
 				<div class="circlemenu-circle" id="beaconMenu"/>
 				<div style="position: absolute; left: 0; width: 40%;">
 					<div class="infobox">

@@ -119,6 +119,7 @@ tabs {
 				'<button class=%s onclick="AlienBuildableClick(%d,event)" onmouseover="AlienBuildableHover(document,%d)">%s<img src="/%s"/></button>',
 				alien_buildables[i][5], i, i, AvailabilityIcon(alien_buildables[i][5]), alien_buildables[i][1])
 		end
+		document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#alien_buildables)
 	end
 </script>
 </head>
@@ -126,6 +127,7 @@ tabs {
 <tabset class="circlemenu">
 <tab></tab>
 <panel>
+<div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="alienBuildMenu"/>
 <div class="infobox">
 <h2 id="b_name"></h2>
