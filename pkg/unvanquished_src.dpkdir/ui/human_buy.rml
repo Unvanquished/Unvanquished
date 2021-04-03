@@ -125,6 +125,7 @@
 						'<button class="%s" onclick="WeaponClick(%d)" onmouseover="WeaponHover(document,%d)">%s<img src="/%s"/></button>',
 						weapons[i][5], i, i, AvailabilityIcon(weapons[i][5]), weapons[i][1])
 				end
+				document:GetElementById("weaponKeyboardHints").inner_rml = CirclemenuKeyboardHints(#weapons)
 			end
 			function UpgradeClick(idx)
 				if idx > #upgrades then return end
@@ -159,6 +160,7 @@
 						'<button class="%s" onclick="UpgradeClick(%d)" onmouseover="UpgradeHover(document,%d)">%s<img src="/%s"/></button>',
 						upgrades[i][5], i, i, AvailabilityIcon(upgrades[i][5]), upgrades[i][1])
 				end
+				document:GetElementById("upgradeKeyboardHints").inner_rml = CirclemenuKeyboardHints(#upgrades)
 			end
 			function HumanBuyHandleKey(event, document)
 				local tabset = Element.As.ElementTabSet(document:GetElementById("tabset"))
@@ -173,6 +175,7 @@
 	<tabset class="circlemenu" id="tabset">
 		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">Weapons</tab>
 		<panel>
+		<div class="circlemenu-circle" id="weaponKeyboardHints"/>
 		<div class="circlemenu-circle" id="weapons"/>
 			<div class="infobox">
 			<h2 id="w_name"></h2>
@@ -185,6 +188,7 @@
 		</panel>
 		<tab onclick="UpgradeClear(document) BuildUpgradeMenu(document)">Upgrades</tab>
 		<panel>
+		<div class="circlemenu-circle" id="upgradeKeyboardHints"/>
 		<div class="circlemenu-circle" id="upgrades"/>
 			<div class="infobox">
 			<h2 id="u_name"></h2>

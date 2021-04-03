@@ -85,3 +85,15 @@ div.circlemenu-circle {
 	height: 4.2em;
 	margin: auto;
 }
+
+.circlemenu .key {
+	color: #CCCCCC;
+	icon-image: /ui/assets/circlemenu/circle.png;
+	icon-decorator: image;
+	position: absolute;
+	left: -.7em;
+	top: -.7em;
+	width: 1.4em;
+	height: 1.4em;
+	text-align: center;
+}
