@@ -5598,6 +5598,7 @@ static void BotUsage( gentity_t *ent )
 	                                        "            bot del (<name> | all)\n"
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
+	                                        "            bot behavior (<name> | <slot#>) <behavior>\n"
 	                                        "            bot debug_reload" ) );
 	ADMP( bot_usage );
 }
@@ -5732,6 +5733,22 @@ bool G_admin_bot( gentity_t *ent )
 			}
 			G_BotDel( clientNum ); //delete the bot
 		}
+	}
+	else if ( !Q_stricmp( arg1, "behavior" ) && args.Argc() == 4 )
+	{
+		RETURN_IF_INTERMISSION;
+
+		char err[MAX_STRING_CHARS];
+		const char *name = args[2].data();
+		int clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
+		if ( clientNum == -1 ) //something went wrong when finding the client Number
+		{
+			ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "bot", Quote( err ) ) );
+			return false;
+		}
+		const char *behavior = args[3].data();
+		G_BotChangeBehavior( clientNum, behavior );
+
 	}
 	else if ( !Q_stricmp( arg1, "names" ) && args.Argc() >= 3 )
 	{

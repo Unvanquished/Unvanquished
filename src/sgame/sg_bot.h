@@ -101,6 +101,8 @@ const char BOT_DEFAULT_BEHAVIOR[] = "default";
 const char BOT_NAME_FROM_LIST[] = "*";
 
 bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler = false );
+void G_BotChangeBehavior( int clientNum, const char* behavior );
+bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior );
 bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
 void     G_BotDel( int clientNum );
 void     G_BotDelAllBots();
