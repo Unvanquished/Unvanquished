@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cg_event.c -- handle entity events at snapshot or playerstate transitions
 
 #include "cg_local.h"
+#include "rocket/rocket.h"
 
 /*
 =============
@@ -621,6 +622,12 @@ void CG_OnPlayerWeaponChange()
 	{
 		CG_Rocket_BuildArmourySellList( "default" );
 		CG_Rocket_BuildArmouryBuyList( "default" );
+
+		Rocket::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
+		if ( document->IsVisible() )
+		{
+			document->DispatchEvent( "refreshdata", {} );
+		}
 	}
 
 	cg.weaponOffsetsFilter.Reset( );
@@ -645,6 +652,12 @@ void CG_OnPlayerUpgradeChange()
 	{
 		CG_Rocket_BuildArmourySellList( "default" );
 		CG_Rocket_BuildArmouryBuyList( "default" );
+
+		Rocket::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
+		if ( document->IsVisible() )
+		{
+			document->DispatchEvent( "refreshdata", {} );
+		}
 	}
 }
 
