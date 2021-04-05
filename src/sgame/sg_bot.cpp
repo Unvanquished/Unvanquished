@@ -177,15 +177,21 @@ static void G_BotNameUsed( team_t team, const char *name, bool inUse )
 	}
 }
 
-bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
+void G_BotChangeBehavior( int clientNum, const char* behavior )
 {
-	botMemory_t *botMind;
-	gentity_t *self = &g_entities[ clientNum ];
-	botMind = self->botMind = &g_botMind[clientNum];
+	gentity_t *bot = &g_entities[clientNum];
 
-	botMind->botTeam = team;
-	BotSetNavmesh( self, (class_t) self->client->ps.stats[ STAT_CLASS ] );
+	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
+	{
+		Log::Warn( "'^7%s^*' is not a bot", bot->client->pers.netname );
+		return;
+	}
 
+	G_BotSetBehavior( bot->botMind, behavior );
+}
+
+bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
+{
 	memset( botMind->runningNodes, 0, sizeof( botMind->runningNodes ) );
 	botMind->numRunningNodes = 0;
 	botMind->currentNode = nullptr;
@@ -205,7 +211,22 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 			return false;
 		}
 	}
+	return true;
+}
 
+bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
+{
+	botMemory_t *botMind;
+	gentity_t *self = &g_entities[ clientNum ];
+	botMind = self->botMind = &g_botMind[clientNum];
+
+	botMind->botTeam = team;
+	BotSetNavmesh( self, (class_t) self->client->ps.stats[ STAT_CLASS ] );
+
+	if ( !G_BotSetBehavior( botMind, behavior ) )
+	{
+		return false;
+	}
 	BotSetSkillLevel( &g_entities[clientNum], skill );
 
 	g_entities[clientNum].r.svFlags |= SVF_BOT;
