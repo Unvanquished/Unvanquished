@@ -1,7 +1,6 @@
 <rml>
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
-		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
 		<style>
 
 			body {
