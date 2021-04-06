@@ -270,6 +270,11 @@ static AIValue_t alienMomentum( gentity_t*, const AIValue_t* )
 	return AIBoxInt( level.team[ TEAM_ALIENS ].momentum );
 }
 
+static AIValue_t aliveTime( gentity_t*self, const AIValue_t* )
+{
+	return AIBoxInt( level.time - self->botMind->spawnTime );
+}
+
 static AIValue_t randomChance( gentity_t*, const AIValue_t* )
 {
 	return AIBoxFloat( random() );
@@ -329,7 +334,8 @@ static const struct AIConditionMap_s
 } conditionFuncs[] =
 {
 	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
-	{ "alienMomentum",   VALUE_INT,   alienMomentum,   0 },
+	{ "alienMomentum",     VALUE_INT,   alienMomentum,     0 },
+	{ "aliveTime",         VALUE_INT,   aliveTime,         0 },
 	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
 	{ "canEvolveTo",       VALUE_INT,   botCanEvolveTo,    1 },
@@ -345,7 +351,7 @@ static const struct AIConditionMap_s
 	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
 	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
 	{ "healScore",         VALUE_FLOAT, healScore,         0 },
-	{ "humanMomentum",   VALUE_INT,   humanMomentum,   0 },
+	{ "humanMomentum",     VALUE_INT,   humanMomentum,     0 },
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
 	{ "percentAmmo",       VALUE_FLOAT, percentAmmo,       0 },
