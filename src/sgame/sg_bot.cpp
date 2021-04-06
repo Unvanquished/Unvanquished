@@ -462,6 +462,8 @@ void G_BotSpectatorThink( gentity_t *self )
 	//MUST be done
 	while ( trap_BotGetServerCommand( self->client->ps.clientNum, buf, sizeof( buf ) ) );
 
+	self->botMind->spawnTime = level.time;
+
 	if ( self->client->ps.pm_flags & PMF_QUEUED )
 	{
 		//we're queued to spawn, all good

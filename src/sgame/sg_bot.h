@@ -94,6 +94,8 @@ struct botMemory_t
 	int lastThink;
 	int stuckTime;
 	vec3_t stuckPosition;
+
+	int spawnTime;
 };
 
 constexpr int BOT_DEFAULT_SKILL = 5;
