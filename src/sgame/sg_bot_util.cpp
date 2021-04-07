@@ -322,8 +322,9 @@ int BotValueOfUpgrades( gentity_t *self )
 // * "weapon" contains weapon to use
 // * Returns number of upgrades to buy (does not includes weapons)
 //
-// will favor better armor above everything else, then team-utilies
-// and finally the most expensive gun possible.
+// will favor better armor above everything else. If it is possible
+// to buy an armor, then evaluate other team-utilies and finally choose
+// the most expensive gun possible.
 // TODO: allow bots to buy jetpack and grenades, despite the fact
 //   they can't use them (yet. For grenades it should not be that
 //   hard?): since default cVar prevent bots to buy those, that
@@ -399,7 +400,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	int nbAllies = ListTeamMembers( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
 	int nbRadars = numTeamUpgrades[UP_RADAR];
 	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / ( 1 + nbAllies ) < 75;
-	if ( teamNeedsRadar && g_bot_radar.integer
+	if ( numUpgrades > 0 && teamNeedsRadar && g_bot_radar.integer
 			&& BG_UpgradeUnlocked( UP_RADAR ) && usableCapital >= BG_Upgrade( UP_RADAR )->price
 			&& ( BG_Upgrade( upgrades[0] )->slots & BG_Upgrade( UP_RADAR )->slots ) == 0 )
 	{
