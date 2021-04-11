@@ -437,8 +437,8 @@ evolveInfo_t BG_ClassEvolveInfoFromTo( const int from, const int to )
 	classIsUnlocked = BG_ClassUnlocked( to )
 		&& !BG_ClassDisabled( to );
 
-	fromCost = BG_Class( from )->cost;
-	toCost = BG_Class( to )->cost;
+	fromCost = BG_Class( from )->price;
+	toCost = BG_Class( to )->price;
 
 	evolveCost = toCost - fromCost;
 
@@ -2017,7 +2017,7 @@ int BG_GetValueOfPlayer( playerState_t *ps )
 			break;
 
 		case TEAM_ALIENS:
-			price += BG_Class( ps->stats[ STAT_CLASS ] )->cost;
+			price += BG_Class( ps->stats[ STAT_CLASS ] )->price;
 			break;
 
 		default:
