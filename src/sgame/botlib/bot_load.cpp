@@ -51,7 +51,7 @@ FastLZCompressor comp;
 // Recast uses NDEBUG to determine whether assertions are enabled.
 // Make sure this is in sync with DEBUG_BUILD
 #if defined(DEBUG_BUILD) != !defined(NDEBUG)
-#error
+#error "this probably happens because you forgot to update submodues. Try \"git submodule update --init --recursive\""
 #endif
 
 #ifdef DEBUG_BUILD
