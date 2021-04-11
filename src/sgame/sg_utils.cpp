@@ -886,17 +886,6 @@ team_t G_IterateTeams( team_t team )
 	}
 }
 
-// TODO: Add TeamComponent
-team_t G_Enemy( team_t team )
-{
-	switch ( team )
-	{
-		case TEAM_ALIENS: return TEAM_HUMANS;
-		case TEAM_HUMANS: return TEAM_ALIENS;
-		default:          return TEAM_NONE;
-	}
-}
-
 // TODO: Add LocationComponent
 float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
 	return Distance(ent1->s.origin, ent2->s.origin);

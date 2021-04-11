@@ -57,89 +57,40 @@ static gentity_t *FindBuildable(buildable_t buildable) {
 	return found;
 }
 
-static gentity_t *LookupMainBuildableChache(buildable_t buildable, bool constructed, bool alive) {
-	static gentity_t *reactor  = nullptr;
-	static gentity_t *overmind = nullptr;
-
-	gentity_t* cache;
-
-	switch (buildable) {
-		case BA_A_OVERMIND:
-			cache = overmind;
-			break;
-
-		case BA_H_REACTOR:
-			cache = reactor;
-			break;
-
-		default:
-			return nullptr;
-	}
-
-	if (!cache || cache->s.eType != entityType_t::ET_BUILDABLE || cache->s.modelindex != buildable) {
-		cache = FindBuildable( buildable );
-	}
-
-	if (!cache) {
-		return nullptr;
-	}
-
-	if (constructed && cache->entity->Get<BuildableComponent>()->GetState() ==
-	    BuildableComponent::CONSTRUCTING) {
-		return nullptr;
-	}
-
-	if (alive && !cache->entity->Get<HealthComponent>()->Alive()) {
-		return nullptr;
-	}
-
-	return cache;
-}
-
-gentity_t *LookupOvermindCache(bool constructed, bool alive) {
-	return LookupMainBuildableChache(BA_A_OVERMIND, constructed, alive);
-}
-
-gentity_t *LookupReactorCache(bool constructed, bool alive) {
-	return LookupMainBuildableChache(BA_H_REACTOR, constructed, alive);
+template<typename Component>
+static gentity_t *LookUpMainBuildable(bool requireActive)
+{
+	gentity_t *answer = nullptr;
+	ForEntities<Component>([&](Entity& entity, Component&) {
+		if (!requireActive ||
+		    entity.Get<BuildableComponent>()->GetState() == BuildableComponent::CONSTRUCTED)
+		{
+			answer = entity.oldEnt;
+		}
+	});
+	return answer;
 }
 
 gentity_t *G_Overmind() {
-	return LookupOvermindCache(false, false);
-}
-
-gentity_t *G_AliveOvermind() {
-	return LookupOvermindCache(false, true);
+	return LookUpMainBuildable<OvermindComponent>(false);
 }
 
 gentity_t *G_ActiveOvermind() {
-	return LookupOvermindCache(true, true);
+	return LookUpMainBuildable<OvermindComponent>(true);
 }
 
 gentity_t *G_Reactor() {
-	return LookupReactorCache(false, false);
-}
-
-gentity_t *G_AliveReactor() {
-	return LookupReactorCache(false, true);
+	return LookUpMainBuildable<ReactorComponent>(false);
 }
 
 gentity_t *G_ActiveReactor() {
-	return LookupReactorCache(true, true);
+	return LookUpMainBuildable<ReactorComponent>(true);
 }
 
 gentity_t *G_MainBuildable(team_t team) {
 	switch (team) {
 		case TEAM_ALIENS: return G_Overmind();
 		case TEAM_HUMANS: return G_Reactor();
-		default:          return nullptr;
-	}
-}
-
-gentity_t *G_AliveMainBuildable(team_t team) {
-	switch (team) {
-		case TEAM_ALIENS: return G_AliveOvermind();
-		case TEAM_HUMANS: return G_AliveReactor();
 		default:          return nullptr;
 	}
 }
