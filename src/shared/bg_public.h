@@ -1244,8 +1244,7 @@ struct classAttributes_t
 	int      staminaWalkRestore;
 	int      staminaStopRestore;
 
-	int      cost;
-	int      value;
+	int      price;
 };
 
 struct classModelConfig_t
