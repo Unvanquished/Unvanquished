@@ -270,7 +270,7 @@ void              G_UnregisterCommands();
 team_t            G_TeamFromString( const char *str );
 void              G_TeamCommand( team_t team, const char *cmd );
 void              G_AreaTeamCommand( gentity_t *ent, const char *cmd );
-team_t            G_Team( gentity_t *ent );
+team_t            G_Team( const gentity_t *ent );
 bool          G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
 void              G_LeaveTeam( gentity_t *self );
 void              G_ChangeTeam( gentity_t *ent, team_t newTeam );

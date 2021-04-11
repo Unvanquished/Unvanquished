@@ -118,7 +118,7 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 }
 
 // TODO: Add a TeamComponent.
-team_t G_Team( gentity_t *ent )
+team_t G_Team( const gentity_t *ent )
 {
 	if ( ent->client )
 	{
