@@ -999,7 +999,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		STOPSPEED          = 1 << 12,
 		JUMPMAGNITUDE      = 1 << 13,
 		ICON               = 1 << 14,
-		COST               = 1 << 15,
+		PRICE              = 1 << 15,
 		SPRINTMOD          = 1 << 16,
 		UNUSED_17          = 1 << 17,
 		MASS               = 1 << 18,
@@ -1182,11 +1182,12 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			ca->jumpMagnitude = atof( token );
 			defined |= JUMPMAGNITUDE;
 		}
-		else if ( !Q_stricmp( token, "cost" ) )
+		// "cost" is legacy. It has been replaced by "price" to increase consistency in interfaces.
+		else if ( !Q_stricmp( token, "cost" ) || !Q_stricmp( token, "price" ) )
 		{
 			PARSE(text, token);
-			ca->cost = atoi( token );
-			defined |= COST;
+			ca->price = atoi( token );
+			defined |= PRICE;
 		}
 		else if ( !Q_stricmp( token, "sprintMod" ) )
 		{
@@ -1263,7 +1264,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		else if ( !( defined & STOPSPEED ) )       { token = "stopSpeed"; }
 		else if ( !( defined & JUMPMAGNITUDE ) )   { token = "jumpMagnitude"; }
 		else if ( !( defined & ICON ) )            { token = "icon"; }
-		else if ( !( defined & COST ) )            { token = "cost"; }
+		else if ( !( defined & PRICE ) )           { token = "price"; }
 		else                                       { token = nullptr; }
 
 		if ( token )
