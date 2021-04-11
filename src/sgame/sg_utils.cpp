@@ -451,7 +451,7 @@ bool G_ClientIsLagging( gclient_t *client )
 {
 	if ( client )
 	{
-		if ( client->ps.ping >= 999 )
+		if ( client->ps.ping >= 999 || client->ps.ping == 0 )
 		{
 			return true;
 		}
