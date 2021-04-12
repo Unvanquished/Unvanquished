@@ -210,7 +210,7 @@ void G_LeaveTeam( gentity_t *self )
 	gentity_t *ent;
 	int       i;
 
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+	if ( G_IsPlayableTeam( team ) )
 	{
 		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, self->client->ps.clientNum );
 	}
@@ -526,8 +526,7 @@ void CheckTeamStatus()
 				continue;
 			}
 
-			if ( ent->inuse && ( ent->client->pers.team == TEAM_HUMANS ||
-			                     ent->client->pers.team == TEAM_ALIENS ) )
+			if ( ent->inuse && G_IsPlayableTeam( ent->client->pers.team ) )
 			{
 				loc = GetCloseLocationEntity( ent );
 

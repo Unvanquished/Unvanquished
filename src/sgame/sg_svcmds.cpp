@@ -632,7 +632,7 @@ static void Svcmd_PrintQueue_f()
 	trap_Argv( 1, teamName, sizeof( teamName ) );
 
 	team = G_TeamFromString(teamName);
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+	if ( G_IsPlayableTeam( team ) )
 	{
 		G_PrintSpawnQueue( &level.team[ team ].spawnQueue );
 	}

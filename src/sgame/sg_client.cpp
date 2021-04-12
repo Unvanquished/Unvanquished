@@ -266,7 +266,7 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 	gentity_t *spot = nullptr;
 
 	/* team must exist, or there will be a sigsegv */
-	ASSERT(team == TEAM_HUMANS || team == TEAM_ALIENS);
+	ASSERT( G_IsPlayableTeam( team ) );
 	if( level.team[ team ].numSpawns <= 0 )
 	{
 		return nullptr;

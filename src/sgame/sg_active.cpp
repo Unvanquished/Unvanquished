@@ -552,7 +552,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 
 	// Check to see if we are in the spawn queue
 	// Also, do some other checks and updates which players need while spectating
-	if ( team == TEAM_ALIENS || team == TEAM_HUMANS )
+	if ( G_IsPlayableTeam( team ) )
 	{
 		client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
 		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
@@ -576,7 +576,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		}
 
 		//be sure that only valid team "numbers" can be used.
-		ASSERT(team == TEAM_ALIENS || team == TEAM_HUMANS);
+		ASSERT( G_IsPlayableTeam( team ) );
 		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
 
 		client->pers.classSelection = PCL_NONE;
@@ -663,7 +663,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		if ( client->ps.pm_flags & PMF_QUEUED )
 		{
 			/* team must exist, or there will be a sigsegv */
-			ASSERT(team == TEAM_HUMANS || team == TEAM_ALIENS);
+			ASSERT( G_IsPlayableTeam( team ) );
 			client->ps.persistant[ PERS_SPAWNQUEUE ] = level.team[ team ].numSpawns;
 			client->ps.persistant[ PERS_SPAWNQUEUE ] |= G_GetPosInSpawnQueue( &level.team[ team ].spawnQueue,
 			                                                                  client->ps.clientNum ) << 8;
