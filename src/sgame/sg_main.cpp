@@ -116,7 +116,7 @@ vmCvar_t           g_maxNameChanges;
 // gameplay: mining
 Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget(
 		"g_BPInitialBudget",
-		"Initial Budget",
+		"Initial build points count",
 		Cvar::SERVERINFO,
 		DEFAULT_BP_INITIAL_BUDGET,
 		[](int) {
@@ -177,10 +177,33 @@ vmCvar_t           g_freeFundPeriod;
 
 vmCvar_t           g_unlagged;
 
-vmCvar_t           g_disabledEquipment;
-vmCvar_t           g_disabledClasses;
-vmCvar_t           g_disabledBuildables;
-vmCvar_t           g_disabledVoteCalls;
+Cvar::Callback<Cvar::Cvar<std::string>> g_disabledEquipment(
+		"g_disabledEquipment",
+		"Forbidden weapons and gear humans can buy, example: " QQ("lcanon, flamer, gren, firebomb, bsuit, larmor"),
+		Cvar::SERVERINFO,
+		"", // everything is allowed by default
+		BG_SetForbiddenEquipment
+		);
+Cvar::Callback<Cvar::Cvar<std::string>> g_disabledClasses(
+		"g_disabledClasses",
+		"Forbidden alien classes, like " QQ("level3,level3upg,builder"),
+		Cvar::SERVERINFO,
+		"", // everything is allowed by default
+		BG_SetForbiddenClasses
+		);
+Cvar::Callback<Cvar::Cvar<std::string>> g_disabledBuildables(
+		"g_disabledBuildables",
+		"Forbidden (human and alien) buildings, like " QQ("acid_tube, barricade, medistat, drill, mgturret, rocketpod"),
+		Cvar::SERVERINFO,
+		"", // everything is allowed by default
+		BG_SetForbiddenBuildables
+		);
+Cvar::Cvar<std::string> g_disabledVoteCalls(
+		"g_disabledVoteCalls",
+		"Forbidden votes, like " QQ("kickbots, nextmap, spectate"),
+		Cvar::SERVERINFO,
+		"" // everything is allowed by default
+		);
 
 vmCvar_t           g_debugMapRotation;
 vmCvar_t           g_currentMapRotation;
@@ -331,7 +354,6 @@ static cvarTable_t gameCvarTable[] =
 	// clients: voting
 	{ &g_allowVote,                   "g_allowVote",                   "1",                                0,                                               0, false    , nullptr       },
 	{ &g_voteLimit,                   "g_voteLimit",                   "5",                                0,                                               0, false    , nullptr       },
-	{ &g_disabledVoteCalls,           "g_disabledVoteCalls",           "",                                 0,                                               0, false    , nullptr       },
 	{ &g_extendVotesPercent,          "g_extendVotesPercent",          "74",                               0,                                               0, false    , nullptr       },
 	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               0,                                               0, false    , nullptr       },
 	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "51",                               0,                                               0, true     , nullptr       },
@@ -411,11 +433,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_momentumBuildMod,            "g_momentumBuildMod",            DEFAULT_MOMENTUM_BUILD_MOD,         0,                                               0, false    , nullptr       },
 	{ &g_momentumDeconMod,            "g_momentumDeconMod",            DEFAULT_MOMENTUM_DECON_MOD,         0,                                               0, false    , nullptr       },
 	{ &g_momentumDestroyMod,          "g_momentumDestroyMod",          DEFAULT_MOMENTUM_DESTROY_MOD,       0,                                               0, false    , nullptr       },
-
-	// gameplay: limits
-	{ &g_disabledEquipment,           "g_disabledEquipment",           "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
-	{ &g_disabledClasses,             "g_disabledClasses",             "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
-	{ &g_disabledBuildables,          "g_disabledBuildables",          "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
 
 	// gameplay: misc
 	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                0,                                               0, false    , nullptr       },
@@ -794,9 +811,8 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// initialise whether bot vote kicks are allowed. the map rotation may clear this flag.
 	trap_Cvar_Set( "g_botKickVotesAllowedThisMap", g_botKickVotesAllowed.integer ? "1" : "0" );
 
-	// clear these now; they'll be set, if needed, from rotation
+	// clear this now; it'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
-	trap_Cvar_Set( "g_disabledVoteCalls", "" );
 
 	// retrieve map name and load per-map configuration
 	{
@@ -873,9 +889,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// setup bot code
 	G_BotInit();
-
-	// the map might disable some things
-	BG_InitAllowedGameElements();
 
 	// Initialize item locking state
 	BG_InitUnlockackables();

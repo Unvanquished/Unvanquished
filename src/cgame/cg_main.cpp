@@ -1434,8 +1434,6 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	cgs.media.whiteShader = trap_R_RegisterShader("gfx/colors/white", RSF_DEFAULT);
 	cgs.media.outlineShader = trap_R_RegisterShader("gfx/outline", RSF_DEFAULT);
 
-	BG_InitAllowedGameElements();
-
 	// Initialize item locking state
 	BG_InitUnlockackables();
 

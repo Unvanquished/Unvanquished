@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "engine/qcommon/q_unicode.h"
 #include "botlib/bot_api.h"
 #include <common/FileSystem.h>
+#include "shared/parse.h"
 #include "Entities.h"
 #include "CBSE.h"
 
@@ -1502,6 +1503,23 @@ bool G_CheckStopVote( team_t team )
 
 /*
 ==================
+isDisabledVoteType
+
+Check for disabled vote types.
+Does not distinguish between public and team votes.
+==================
+*/
+static bool isDisabledVoteType(const char *vote)
+{
+	for (Parse_WordListSplitter i(g_disabledVoteCalls.Get()); *i; ++i)
+	{
+		if (Q_stricmp(vote, *i) == 0) return true;
+	}
+	return false;
+}
+
+/*
+==================
 Cmd_CallVote_f
 ==================
 */
@@ -1590,45 +1608,6 @@ void Cmd_CallVote_f( gentity_t *ent )
 		return;
 	}
 
-	// Check for disabled vote types
-	// Does not distinguish between public and team votes
-	{
-		int        voteNameLength = strlen( vote );
-		const char *dv = g_disabledVoteCalls.string;
-
-		while ( *dv )
-		{
-			const char *delim;
-
-			// skip spaces (and commas)
-			while ( *dv && ( *dv == ' ' || *dv == ',' ) )
-			{
-				++dv;
-			}
-
-			if ( !*dv )
-			{
-				break;
-			}
-
-			delim = dv;
-
-			// find the end of this token
-			while ( *delim && *delim != ' ' && *delim != ',' )
-			{
-				++delim;
-			}
-
-			// match? if so, complain
-			if ( delim - dv == voteNameLength && !Q_strnicmp( dv, vote, voteNameLength ) )
-			{
-				goto vote_is_disabled; // yes, goto
-			}
-
-			dv = delim; // point past the current token
-		}
-	}
-
 	if ( g_voteLimit.integer > 0 &&
 	     ent->client->pers.namelog->voteCount >= g_voteLimit.integer &&
 	     !G_admin_permission( ent, ADMF_NO_VOTE_LIMIT ) )
@@ -1639,24 +1618,22 @@ void Cmd_CallVote_f( gentity_t *ent )
 		return;
 	}
 
-	level.team[ team ].voteType = (voteType_t) voteId;
-
-	// Vote time, percentage for pass, quorum
-	level.team[ team ].voteDelay = 0;
-	level.team[ team ].voteThreshold = voteInfo[voteId].percentage ? voteInfo[voteId].percentage->integer : 50;
-	level.team[ team ].quorum = voteInfo[voteId].quorum;
-
-	if ( level.team[ team ].voteThreshold <= 0)
+	int voteThreshold = voteInfo[voteId].percentage ?
+		voteInfo[voteId].percentage->integer : 50;
+	if ( voteThreshold <= 0 || isDisabledVoteType(vote) )
 	{
-vote_is_disabled:
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled") ), voteInfo[voteId].name ) );
 		return;
 	}
-
-	if ( level.team[ team ].voteThreshold > 100)
+	if ( voteThreshold > 100)
 	{
-		level.team[ team ].voteThreshold = 100;
+		voteThreshold = 100;
 	}
+
+	level.team[ team ].voteType = (voteType_t) voteId;
+	level.team[ team ].quorum = voteInfo[voteId].quorum;
+	level.team[ team ].voteDelay = 0;
+	level.team[ team ].voteThreshold = voteThreshold;
 
 	switch ( voteInfo[voteId].special )
 	{

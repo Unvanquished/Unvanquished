@@ -200,16 +200,19 @@ shared field spawn functions
 void SP_ConditionFields( gentity_t *self ) {
 	char *buffer;
 
-	if ( G_SpawnString( "buildables", "", &buffer ) )
-		BG_ParseCSVBuildableList( buffer, self->conditions.buildables, BA_NUM_BUILDABLES );
+	if ( G_SpawnString( "buildables", "", &buffer ) ) {
+		self->conditions.buildables = BG_ParseBuildableList( buffer );
+	}
 
-	if ( G_SpawnString( "classes", "", &buffer ) )
-		BG_ParseCSVClassList( buffer, self->conditions.classes, PCL_NUM_CLASSES );
+	if ( G_SpawnString( "classes", "", &buffer ) ) {
+		self->conditions.classes = BG_ParseClassList( buffer );
+	}
 
-	if ( G_SpawnString( "equipment", "", &buffer ) )
-		BG_ParseCSVEquipmentList( buffer, self->conditions.weapons, WP_NUM_WEAPONS,
-	                          self->conditions.upgrades, UP_NUM_UPGRADES );
-
+	if ( G_SpawnString( "equipment", "", &buffer ) ) {
+		auto pair = BG_ParseEquipmentList( buffer );
+		self->conditions.weapons = pair.first;
+		self->conditions.upgrades = pair.second;
+	}
 }
 
 void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance ) {
