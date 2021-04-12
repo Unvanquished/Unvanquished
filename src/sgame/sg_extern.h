@@ -104,8 +104,8 @@ extern  vmCvar_t g_momentumBuildMod;
 extern  vmCvar_t g_momentumDeconMod;
 extern  vmCvar_t g_momentumDestroyMod;
 
-extern  vmCvar_t g_humanAllowBuilding;
-extern  vmCvar_t g_alienAllowBuilding;
+extern Cvar::Cvar<bool> g_humanAllowBuilding;
+extern Cvar::Cvar<bool> g_alienAllowBuilding;
 
 extern  vmCvar_t g_alienOffCreepRegenHalfLife;
 

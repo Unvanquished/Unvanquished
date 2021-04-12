@@ -137,8 +137,18 @@ vmCvar_t           g_momentumBuildMod;
 vmCvar_t           g_momentumDeconMod;
 vmCvar_t           g_momentumDestroyMod;
 
-vmCvar_t           g_humanAllowBuilding;
-vmCvar_t           g_alienAllowBuilding;
+
+Cvar::Cvar<bool> g_humanAllowBuilding(
+		"g_humanAllowBuilding",
+		"can human build",
+		Cvar::NONE,
+		true);
+
+Cvar::Cvar<bool> g_alienAllowBuilding(
+		"g_alienAllowBuilding",
+		"can aliens build",
+		Cvar::NONE,
+		true);
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
@@ -390,8 +400,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_momentumDestroyMod,          "g_momentumDestroyMod",          DEFAULT_MOMENTUM_DESTROY_MOD,       0,                                               0, false    , nullptr       },
 
 	// gameplay: limits
-	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, false    , nullptr       },
-	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, false    , nullptr       },
 	{ &g_disabledEquipment,           "g_disabledEquipment",           "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
 	{ &g_disabledClasses,             "g_disabledClasses",             "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
 	{ &g_disabledBuildables,          "g_disabledBuildables",          "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },

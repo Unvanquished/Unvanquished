@@ -1594,7 +1594,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	// Does not distinguish between public and team votes
 	{
 		int        voteNameLength = strlen( vote );
-		const char *dv = g_disabledVoteCalls.string;
+		const char *dv = g_disabledVoteCalls.Get().c_str();
 
 		while ( *dv )
 		{
