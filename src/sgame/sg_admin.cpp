@@ -4635,7 +4635,7 @@ bool G_admin_lock( gentity_t *ent )
 	trap_Argv( 1, teamName, sizeof( teamName ) );
 	team = G_TeamFromString( teamName );
 
-	if ( team == TEAM_ALIENS || team== TEAM_HUMANS )
+	if ( G_IsPlayableTeam( team ) )
 	{
 		if ( level.team[ team ].locked == lock )
 		{
