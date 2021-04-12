@@ -60,29 +60,22 @@ bool G_SpawnString( const char *key, const char *defaultString, char **out )
 }
 
 /**
- * spawns a string and sets it as a cvar.
- *
- * use this with caution, as it might persist unprepared cvars (see cvartable)
+ * spawns a string and sets it as a cvar, or reset the cvar to its default
+ * value if not set.
+ * This allows loading values from the map, without keeping the garbage from
+ * the previous map if nothing is set.
  */
-static bool G_SpawnStringIntoCVarIfSet( const char *key, const char *cvarName )
+static void G_SpawnStringIntoCVar( const char *key, Cvar::CvarProxy& cvar )
 {
-	char     *tmpString;
-
-	if ( G_SpawnString( key, "", &tmpString ) )
+	char *str = nullptr;
+	if ( G_SpawnString( key, nullptr, &str ) )
 	{
-		trap_Cvar_Set( cvarName, tmpString );
-		return true;
+		Cvar::SetValue( cvar.Name(), str );
 	}
-
-	return false;
-}
-
-static void G_SpawnStringIntoCVar( const char *key, const char *cvarName )
-{
-	char     *tmpString;
-
-	G_SpawnString( key, "", &tmpString );
-	trap_Cvar_Set( cvarName, tmpString );
+	else
+	{
+		cvar.Reset();
+	}
 }
 
 bool G_SpawnBoolean( const char *key, bool defaultqboolean )
@@ -1064,14 +1057,18 @@ void SP_worldspawn()
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
-	G_SpawnStringIntoCVarIfSet( "gravity", "g_gravity" );
+	G_SpawnStringIntoCVar( "gravity", g_gravity );
 
-	G_SpawnStringIntoCVarIfSet( "humanBuildPoints", "g_humanBuildPoints" );
-	G_SpawnStringIntoCVarIfSet( "alienBuildPoints", "g_alienBuildPoints" );
+	G_SpawnStringIntoCVar( "humanAllowBuilding", g_humanAllowBuilding );
+	G_SpawnStringIntoCVar( "alienAllowBuilding", g_alienAllowBuilding );
 
-	G_SpawnStringIntoCVar( "disabledEquipment", "g_disabledEquipment" );
-	G_SpawnStringIntoCVar( "disabledClasses", "g_disabledClasses" );
-	G_SpawnStringIntoCVar( "disabledBuildables", "g_disabledBuildables" );
+	G_SpawnStringIntoCVar( "BPInitialBudget", g_buildPointInitialBudget );
+	G_SpawnStringIntoCVar( "BPBudgetPerMiner", g_buildPointBudgetPerMiner );
+	G_SpawnStringIntoCVar( "BPRecoveryRateHalfLife", g_buildPointRecoveryRateHalfLife );
+
+	G_SpawnStringIntoCVar( "disabledEquipment", g_disabledEquipment );
+	G_SpawnStringIntoCVar( "disabledClasses", g_disabledClasses );
+	G_SpawnStringIntoCVar( "disabledBuildables", g_disabledBuildables );
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;

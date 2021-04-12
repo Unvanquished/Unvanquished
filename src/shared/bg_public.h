@@ -1599,11 +1599,16 @@ void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_
 float    atof_neg( char *token, bool allowNegative );
 int      atoi_neg( char *token, bool allowNegative );
 
-void     BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weaponsSize,
-                                   upgrade_t *upgrades, int upgradesSize );
-void     BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize );
-void     BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize );
-void     BG_InitAllowedGameElements();
+std::vector<buildable_t> BG_ParseBuildableList( const std::string& );
+std::vector<class_t> BG_ParseClassList( const std::string& );
+std::pair<std::vector<weapon_t>, std::vector<upgrade_t>> BG_ParseEquipmentList( const std::string& );
+
+// You are not supposed to call these, these are meant to be used by
+// g_disabled* cvar callbacks
+void BG_SetForbiddenEquipment(std::string forbidden_csv);
+void BG_SetForbiddenClasses(std::string forbidden_csv);
+void BG_SetForbiddenBuildables(std::string forbidden_csv);
+
 bool BG_WeaponDisabled( int weapon );
 bool BG_UpgradeDisabled( int upgrade );
 

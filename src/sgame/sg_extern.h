@@ -112,10 +112,10 @@ extern  vmCvar_t g_freeFundPeriod;
 
 extern  vmCvar_t g_unlagged;
 
-extern  vmCvar_t g_disabledEquipment;
-extern  vmCvar_t g_disabledClasses;
-extern  vmCvar_t g_disabledBuildables;
-extern  vmCvar_t g_disabledVoteCalls;
+extern Cvar::Callback<Cvar::Cvar<std::string>> g_disabledEquipment;
+extern Cvar::Callback<Cvar::Cvar<std::string>> g_disabledClasses;
+extern Cvar::Callback<Cvar::Cvar<std::string>> g_disabledBuildables;
+extern Cvar::Cvar<std::string> g_disabledVoteCalls;
 
 extern  vmCvar_t g_debugMapRotation;
 extern  vmCvar_t g_currentMapRotation;

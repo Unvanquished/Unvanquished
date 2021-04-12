@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "engine/qcommon/q_shared.h"
 #include "common/FileSystem.h"
 #include "bg_public.h"
+#include "parse.h"
 
 #define N_(x) x
 
@@ -2313,256 +2314,130 @@ int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int cou
 	return i;
 }
 
-/*
-===============
-BG_ParseCSVEquipmentList
-===============
-*/
-void BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weaponsSize,
-                               upgrade_t *upgrades, int upgradesSize )
+static struct gameElements_t
 {
-	char     buffer[ MAX_STRING_CHARS ];
-	int      i = 0, j = 0;
-	char     *p, *q;
-	bool EOS = false;
-
-	Q_strncpyz( buffer, string, MAX_STRING_CHARS );
-
-	p = q = buffer;
-
-	while ( *p != '\0' )
-	{
-		//skip to first , or EOS
-		while ( *p != ',' && *p != '\0' )
-		{
-			p++;
-		}
-
-		if ( *p == '\0' )
-		{
-			EOS = true;
-		}
-
-		*p = '\0';
-
-		//strip leading whitespace
-		while ( *q == ' ' )
-		{
-			q++;
-		}
-
-		if ( weaponsSize )
-		{
-			weapons[ i ] = BG_WeaponNumberByName( q );
-		}
-
-		if ( upgradesSize )
-		{
-			upgrades[ j ] = BG_UpgradeByName( q )->number;
-		}
-
-		if ( weaponsSize && weapons[ i ] == WP_NONE &&
-		     upgradesSize && upgrades[ j ] == UP_NONE )
-		{
-			Log::Warn( "unknown equipment %s", q );
-		}
-		else if ( weaponsSize && weapons[ i ] != WP_NONE )
-		{
-			i++;
-		}
-		else if ( upgradesSize && upgrades[ j ] != UP_NONE )
-		{
-			j++;
-		}
-
-		if ( !EOS )
-		{
-			p++;
-			q = p;
-		}
-		else
-		{
-			break;
-		}
-
-		if ( i == ( weaponsSize - 1 ) || j == ( upgradesSize - 1 ) )
-		{
-			break;
-		}
-	}
-
-	if ( weaponsSize )
-	{
-		weapons[ i ] = WP_NONE;
-	}
-
-	if ( upgradesSize )
-	{
-		upgrades[ j ] = UP_NONE;
-	}
-}
-
-/*
-===============
-BG_ParseCSVClassList
-===============
-*/
-void BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize )
-{
-	char     buffer[ MAX_STRING_CHARS ];
-	int      i = 0;
-	char     *p, *q;
-	bool EOS = false;
-
-	Q_strncpyz( buffer, string, MAX_STRING_CHARS );
-
-	p = q = buffer;
-
-	while ( *p != '\0' && i < classesSize - 1 )
-	{
-		//skip to first , or EOS
-		while ( *p != ',' && *p != '\0' )
-		{
-			p++;
-		}
-
-		if ( *p == '\0' )
-		{
-			EOS = true;
-		}
-
-		*p = '\0';
-
-		//strip leading whitespace
-		while ( *q == ' ' )
-		{
-			q++;
-		}
-
-		classes[ i ] = BG_ClassByName( q )->number;
-
-		if ( classes[ i ] == PCL_NONE )
-		{
-			Log::Warn( "unknown class %s", q );
-		}
-		else
-		{
-			i++;
-		}
-
-		if ( !EOS )
-		{
-			p++;
-			q = p;
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	classes[ i ] = PCL_NONE;
-}
-
-/*
-===============
-BG_ParseCSVBuildableList
-===============
-*/
-void BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int buildablesSize )
-{
-	char     buffer[ MAX_STRING_CHARS ];
-	int      i = 0;
-	char     *p, *q;
-	bool EOS = false;
-
-	Q_strncpyz( buffer, string, MAX_STRING_CHARS );
-
-	p = q = buffer;
-
-	while ( *p != '\0' && i < buildablesSize - 1 )
-	{
-		//skip to first , or EOS
-		while ( *p != ',' && *p != '\0' )
-		{
-			p++;
-		}
-
-		if ( *p == '\0' )
-		{
-			EOS = true;
-		}
-
-		*p = '\0';
-
-		//strip leading whitespace
-		while ( *q == ' ' )
-		{
-			q++;
-		}
-
-		buildables[ i ] = BG_BuildableByName( q )->number;
-
-		if ( buildables[ i ] == BA_NONE )
-		{
-			Log::Warn( "unknown buildable %s", q );
-		}
-		else
-		{
-			i++;
-		}
-
-		if ( !EOS )
-		{
-			p++;
-			q = p;
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	buildables[ i ] = BA_NONE;
-}
-
-struct gameElements_t
-{
-	buildable_t buildables[ BA_NUM_BUILDABLES ];
-	class_t     classes[ PCL_NUM_CLASSES ];
-	weapon_t    weapons[ WP_NUM_WEAPONS ];
-	upgrade_t   upgrades[ UP_NUM_UPGRADES ];
-};
-
-static gameElements_t bg_disabledGameElements;
+	std::vector<buildable_t> buildables;
+	std::vector<class_t>     classes;
+	std::vector<weapon_t>    weapons;
+	std::vector<upgrade_t>   upgrades;
+} bg_disabledGameElements;
 
 /*
 ============
-BG_InitAllowedGameElements
+BG_ParseEquipmentList
 ============
 */
-void BG_InitAllowedGameElements()
+std::pair<std::vector<weapon_t>, std::vector<upgrade_t>> BG_ParseEquipmentList(const std::string &equipment)
 {
-	char cvar[ MAX_CVAR_VALUE_STRING ];
+	std::vector<weapon_t> weapons;
+	std::vector<upgrade_t> upgrades;
 
-	trap_Cvar_VariableStringBuffer( "g_disabledEquipment",
-	                                cvar, MAX_CVAR_VALUE_STRING );
+	for (Parse_WordListSplitter i(equipment); *i; ++i)
+	{
+		weapon_t result_w = BG_WeaponNumberByName(*i);
+		upgrade_t result_u = BG_UpgradeByName(*i)->number;
 
-	BG_ParseCSVEquipmentList( cvar,
-	                          bg_disabledGameElements.weapons, WP_NUM_WEAPONS,
-	                          bg_disabledGameElements.upgrades, UP_NUM_UPGRADES );
+		if (result_w != WP_NONE)
+		{
+			weapons.push_back(result_w);
+		}
+		else if (result_u != UP_NONE)
+		{
+			upgrades.push_back(result_u);
+		}
+		else
+		{
+			Log::Warn( "unknown equipment %s", *i );
+		}
+	}
 
-	trap_Cvar_VariableStringBuffer( "g_disabledClasses",
-	                                cvar, MAX_CVAR_VALUE_STRING );
+	return { weapons, upgrades };
+}
 
-	BG_ParseCSVClassList( cvar,
-	                      bg_disabledGameElements.classes, PCL_NUM_CLASSES );
+/*
+============
+BG_ParseClassList
+============
+*/
+std::vector<class_t> BG_ParseClassList(const std::string &classes)
+{
+	std::vector<class_t> results;
 
-	trap_Cvar_VariableStringBuffer( "g_disabledBuildables",
-	                                cvar, MAX_CVAR_VALUE_STRING );
+	for (Parse_WordListSplitter i(classes); *i; ++i)
+	{
+		class_t result = BG_ClassByName(*i)->number;
 
-	BG_ParseCSVBuildableList( cvar,
-	                          bg_disabledGameElements.buildables, BA_NUM_BUILDABLES );
+		if (result != PCL_NONE)
+		{
+			results.push_back(result);
+		}
+		else
+		{
+			Log::Warn( "unknown class %s", *i );
+		}
+	}
+
+	return results;
+}
+
+/*
+============
+BG_ParseBuildableList
+============
+*/
+std::vector<buildable_t> BG_ParseBuildableList(const std::string &allowed)
+{
+	std::vector<buildable_t> results;
+
+	for (Parse_WordListSplitter i(allowed); *i; ++i)
+	{
+		buildable_t result = BG_BuildableByName(*i)->number;
+
+		if (result != BA_NONE)
+		{
+			results.push_back(result);
+		}
+		else
+		{
+			Log::Warn( "unknown buildable %s", *i );
+		}
+	}
+
+	return results;
+}
+
+/*
+============
+BG_SetForbiddenEquipment
+============
+*/
+void BG_SetForbiddenEquipment(std::string forbidden_csv)
+{
+	auto pair = BG_ParseEquipmentList( forbidden_csv );
+	bg_disabledGameElements.weapons = pair.first;
+	bg_disabledGameElements.upgrades = pair.second;
+}
+
+/*
+============
+BG_SetForbiddenClasses
+============
+*/
+void BG_SetForbiddenClasses(std::string forbidden_csv)
+{
+	bg_disabledGameElements.classes =
+		BG_ParseClassList( forbidden_csv );
+}
+
+/*
+============
+BG_SetForbiddenBuildables
+============
+*/
+void BG_SetForbiddenBuildables(std::string forbidden_csv)
+{
+	bg_disabledGameElements.buildables =
+		BG_ParseBuildableList( forbidden_csv );
 }
 
 /*
@@ -2572,17 +2447,11 @@ BG_WeaponIsAllowed
 */
 bool BG_WeaponDisabled( int weapon )
 {
-	int i;
-
-	for ( i = 0; i < WP_NUM_WEAPONS &&
-	      bg_disabledGameElements.weapons[ i ] != WP_NONE; i++ )
-	{
-		if ( bg_disabledGameElements.weapons[ i ] == weapon )
-		{
+	for ( auto w : bg_disabledGameElements.weapons ) {
+		if ( w == weapon ) {
 			return true;
 		}
 	}
-
 	return false;
 }
 
@@ -2593,17 +2462,11 @@ BG_UpgradeIsAllowed
 */
 bool BG_UpgradeDisabled( int upgrade )
 {
-	int i;
-
-	for ( i = 0; i < UP_NUM_UPGRADES &&
-	      bg_disabledGameElements.upgrades[ i ] != UP_NONE; i++ )
-	{
-		if ( bg_disabledGameElements.upgrades[ i ] == upgrade )
-		{
+	for ( auto u : bg_disabledGameElements.upgrades ) {
+		if ( u == upgrade ) {
 			return true;
 		}
 	}
-
 	return false;
 }
 
@@ -2614,17 +2477,11 @@ BG_ClassDisabled
 */
 bool BG_ClassDisabled( int class_ )
 {
-	int i;
-
-	for ( i = 0; i < PCL_NUM_CLASSES &&
-	      bg_disabledGameElements.classes[ i ] != PCL_NONE; i++ )
-	{
-		if ( bg_disabledGameElements.classes[ i ] == class_ )
-		{
+	for ( auto c : bg_disabledGameElements.classes ) {
+		if ( c == class_ ) {
 			return true;
 		}
 	}
-
 	return false;
 }
 
@@ -2635,17 +2492,11 @@ BG_BuildableIsAllowed
 */
 bool BG_BuildableDisabled( int buildable )
 {
-	int i;
-
-	for ( i = 0; i < BA_NUM_BUILDABLES &&
-	      bg_disabledGameElements.buildables[ i ] != BA_NONE; i++ )
-	{
-		if ( bg_disabledGameElements.buildables[ i ] == buildable )
-		{
+	for ( auto b : bg_disabledGameElements.buildables ) {
+		if ( b == buildable ) {
 			return true;
 		}
 	}
-
 	return false;
 }
 
