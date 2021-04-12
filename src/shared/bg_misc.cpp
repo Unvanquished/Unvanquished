@@ -826,8 +826,8 @@ void BG_InitMissileAttributes()
 		ma->number = md->number;
 
 		// for simplicity, read both from a single file
-		BG_ParseMissileAttributeFile( va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
-		BG_ParseMissileDisplayFile(   va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
+		BG_ParseMissileAttributeFile( va( "configs/missiles/%s.attr.cfg", ma->name ), ma );
+		BG_ParseMissileDisplayFile(   va( "configs/missiles/%s.model.cfg", ma->name ), ma );
 	}
 }
 
