@@ -352,8 +352,8 @@ extern int   MEDKIT_STARTUP_SPEED;
 #define RGS_RANGE                          1000.0f // must be > 0
 #define DEFAULT_BP_INITIAL_BUDGET          80      // in BP
 #define DEFAULT_BP_BUDGET_PER_MINER        50      // in BP
-#define DEFAULT_BP_RECOVERY_INITIAL_RATE   "16"    // in BP/min
-#define DEFAULT_BP_RECOVERY_RATE_HALF_LIFE "10"    // in min
+#define DEFAULT_BP_RECOVERY_INITIAL_RATE   16      // in BP/min
+#define DEFAULT_BP_RECOVERY_RATE_HALF_LIFE 10      // in min
 
 // momentum
 #define MOMENTUM_MAX                     300.0f

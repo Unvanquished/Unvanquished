@@ -1597,7 +1597,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		}
 
 		// Check level permissions
-		if ( !g_alienAllowBuilding.integer )
+		if ( !g_alienAllowBuilding.Get() )
 		{
 			reason = IBE_DISABLED;
 		}
@@ -1620,7 +1620,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		}
 
 		// Check level permissions
-		if ( !g_humanAllowBuilding.integer )
+		if ( !g_humanAllowBuilding.Get() )
 		{
 			reason = IBE_DISABLED;
 		}
