@@ -89,8 +89,8 @@ extern  vmCvar_t g_smoothClients;
 
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner;
-extern  vmCvar_t g_buildPointRecoveryInititalRate;
-extern  vmCvar_t g_buildPointRecoveryRateHalfLife;
+extern  Cvar::Cvar<int> g_buildPointRecoveryInitialRate;
+extern  Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife;
 
 extern  vmCvar_t g_debugMomentum;
 extern  vmCvar_t g_momentumHalfLife;
@@ -102,8 +102,8 @@ extern  vmCvar_t g_momentumBuildMod;
 extern  vmCvar_t g_momentumDeconMod;
 extern  vmCvar_t g_momentumDestroyMod;
 
-extern  vmCvar_t g_humanAllowBuilding;
-extern  vmCvar_t g_alienAllowBuilding;
+extern Cvar::Cvar<bool> g_humanAllowBuilding;
+extern Cvar::Cvar<bool> g_alienAllowBuilding;
 
 extern  vmCvar_t g_alienOffCreepRegenHalfLife;
 

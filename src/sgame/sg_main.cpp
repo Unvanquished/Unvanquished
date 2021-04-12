@@ -106,6 +106,7 @@ vmCvar_t           pmove_accurate;
 vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
+// gameplay: mining
 Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget(
 		"g_BPInitialBudget",
 		"Initial Budget",
@@ -122,8 +123,16 @@ Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
 		[](int) {
 			G_UpdateBuildPointBudgets();
 		});
-vmCvar_t           g_buildPointRecoveryInititalRate;
-vmCvar_t           g_buildPointRecoveryRateHalfLife;
+Cvar::Cvar<int> g_buildPointRecoveryInitialRate(
+		"g_BPRecoveryInitialRate",
+		"The initial speed at which BP will be recovered (in BP per minute)",
+		Cvar::SERVERINFO,
+		DEFAULT_BP_RECOVERY_INITIAL_RATE);
+Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife(
+		"g_BPRecoveryRateHalfLife",
+		"The duration one will wait before BP recovery gets twice as slow (in minutes)",
+		Cvar::SERVERINFO,
+		DEFAULT_BP_RECOVERY_RATE_HALF_LIFE);
 
 vmCvar_t           g_debugMomentum;
 vmCvar_t           g_momentumHalfLife;
@@ -135,8 +144,18 @@ vmCvar_t           g_momentumBuildMod;
 vmCvar_t           g_momentumDeconMod;
 vmCvar_t           g_momentumDestroyMod;
 
-vmCvar_t           g_humanAllowBuilding;
-vmCvar_t           g_alienAllowBuilding;
+
+Cvar::Cvar<bool> g_humanAllowBuilding(
+		"g_humanAllowBuilding",
+		"can human build",
+		Cvar::NONE,
+		true);
+
+Cvar::Cvar<bool> g_alienAllowBuilding(
+		"g_alienAllowBuilding",
+		"can aliens build",
+		Cvar::NONE,
+		true);
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
@@ -371,10 +390,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_warmup,                      "g_warmup",                      "10",                               0,                                               0, true     , nullptr       },
 	{ &g_doWarmup,                    "g_doWarmup",                    "0",                                0,                                               0, true     , nullptr       },
 
-	// gameplay: mining
-	{ &g_buildPointRecoveryInititalRate, "g_BPRecoveryInitialRate",    DEFAULT_BP_RECOVERY_INITIAL_RATE,   CVAR_SERVERINFO,                                 0, false    , nullptr       },
-	{ &g_buildPointRecoveryRateHalfLife, "g_BPRecoveryRateHalfLife",   DEFAULT_BP_RECOVERY_RATE_HALF_LIFE, CVAR_SERVERINFO,                                 0, false    , nullptr       },
-
 	// gameplay: momentum
 	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, false    , nullptr       },
 	{ &g_momentumHalfLife,            "g_momentumHalfLife",            DEFAULT_MOMENTUM_HALF_LIFE,         CVAR_SERVERINFO,                                 0, false    , nullptr       },
@@ -386,8 +401,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_momentumDestroyMod,          "g_momentumDestroyMod",          DEFAULT_MOMENTUM_DESTROY_MOD,       0,                                               0, false    , nullptr       },
 
 	// gameplay: limits
-	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, false    , nullptr       },
-	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, false    , nullptr       },
 	{ &g_disabledEquipment,           "g_disabledEquipment",           "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
 	{ &g_disabledClasses,             "g_disabledClasses",             "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
 	{ &g_disabledBuildables,          "g_disabledBuildables",          "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
