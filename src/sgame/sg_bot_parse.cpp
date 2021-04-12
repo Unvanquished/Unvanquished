@@ -265,14 +265,19 @@ static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( BotCanEvolveToClass( self, c ) );
 }
 
-static AIValue_t humanMomentum( gentity_t*, const AIValue_t* )
+// Returns a team's momentum for use in behavior trees.
+// If the team number is invalid, debug builds will have assertion failure
+// and release builds will return the value 0, so that it's clear invalid
+// team won't have bought anything
+static AIValue_t momentum( gentity_t* self, const AIValue_t *params )
 {
-	return AIBoxInt( level.team[ TEAM_HUMANS ].momentum );
-}
-
-static AIValue_t alienMomentum( gentity_t*, const AIValue_t* )
-{
-	return AIBoxInt( level.team[ TEAM_ALIENS ].momentum );
+	int requestedTeam = AIUnBoxInt( params[ 0 ] ); //is really a team_t
+	ASSERT( G_IsPlayableTeam( requestedTeam ) );
+	if( !G_IsPlayableTeam( requestedTeam ) )
+	{
+		return AIBoxInt( 0 );
+	}
+	return AIBoxInt( level.team[ requestedTeam ].momentum );
 }
 
 static AIValue_t aliveTime( gentity_t*self, const AIValue_t* )
@@ -339,7 +344,7 @@ static const struct AIConditionMap_s
 } conditionFuncs[] =
 {
 	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
-	{ "alienMomentum",     VALUE_INT,   alienMomentum,     0 },
+	{ "momentum",          VALUE_INT,   momentum,          1 },
 	{ "aliveTime",         VALUE_INT,   aliveTime,         0 },
 	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
@@ -356,7 +361,6 @@ static const struct AIConditionMap_s
 	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
 	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
 	{ "healScore",         VALUE_FLOAT, healScore,         0 },
-	{ "humanMomentum",     VALUE_INT,   humanMomentum,     0 },
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
 	{ "matchTime",         VALUE_INT,   matchTime,         0 },
