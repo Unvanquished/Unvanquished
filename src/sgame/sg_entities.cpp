@@ -61,6 +61,11 @@ void G_InitGentity( gentity_t *entity )
 	entity->s.number = entity - g_entities;
 	entity->r.ownerNum = ENTITYNUM_NONE;
 	entity->creationTime = level.time;
+	
+	if ( g_debugEntities.integer > 2 )
+	{
+		Log::Debug("Initing Entity %i", entity - g_entities );
+	}
 }
 
 /*
@@ -80,45 +85,48 @@ angles and bad trails.
 */
 gentity_t *G_NewEntity()
 {
-	int       i, force;
-	gentity_t *newEntity;
+	// we iterate through all the entities and look for a free one that was allocated enough time ago,
+	// as well as one that died recently in case the first kind is not available
+	gentity_t *newEntity = &g_entities[ MAX_CLIENTS ];
+	gentity_t *forcedEnt = nullptr;
+	int i;
 
-	newEntity = nullptr; // shut up warning
-	i = 0; // shut up warning
-
-	for ( force = 0; force < 2; force++ )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++, newEntity++ )
 	{
-		// if we go through all entities first and can't find a free one,
-		// then try again a second time, this time ignoring times
-		newEntity = &g_entities[ MAX_CLIENTS ];
-
-		for ( i = MAX_CLIENTS; i < level.num_entities; i++, newEntity++ )
+		if ( newEntity->inuse )
 		{
-			if ( newEntity->inuse )
-			{
-				continue;
-			}
-
-			// the first couple seconds of server time can involve a lot of
-			// freeing and allocating, so relax the replacement policy
-			if ( !force && newEntity->freetime > level.startTime + 2000 && level.time - newEntity->freetime < 1000 )
-			{
-				continue;
-			}
-
-			// reuse this slot
-			G_InitGentity( newEntity );
-			return newEntity;
+			continue;
 		}
 
-		if ( i != MAX_GENTITIES )
+		// the first couple seconds of server time can involve a lot of
+		// freeing and allocating, so relax the replacement policy
+		if ( newEntity->freetime > level.startTime + 2000 && level.time - newEntity->freetime < 1000 )
 		{
-			break;
+			if( ! forcedEnt || newEntity->freetime < forcedEnt->freetime ) {
+				forcedEnt = newEntity;
+			}
+			continue;
 		}
+		
+		 // reuse this slot
+		 G_InitGentity( newEntity );
+		 return newEntity;
 	}
 
 	if ( i == ENTITYNUM_MAX_NORMAL )
 	{
+		// no more entities available! let's force-reuse one if possible, or die
+		if ( forcedEnt )
+		{
+			if ( g_debugEntities.integer ) {
+				Log::Verbose( "Reusing Entity %i, freed at %i (%ims ago)",
+				              forcedEnt-g_entities, forcedEnt->freetime, level.time - forcedEnt->freetime );
+			}
+			// reuse this slot
+			G_InitGentity( forcedEnt );
+			return forcedEnt;
+		}
+
 		for ( i = 0; i < MAX_GENTITIES; i++ )
 		{
 			Log::Warn( "%4i: %s", i, g_entities[ i ].classname );
