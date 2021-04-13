@@ -3453,7 +3453,7 @@ static void CG_Rocket_DrawHostname()
 {
 	const char *info;
 	info = CG_ConfigString( CS_SERVERINFO );
-	Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE );
+	Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE | RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawDownloadName()
