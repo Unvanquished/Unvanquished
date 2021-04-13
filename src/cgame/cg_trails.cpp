@@ -575,6 +575,14 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 			GetPerpendicularViewVector( cg.refdef.vieworg, i->position, prev->position, up );
 			VectorSubtract( i->position, prev->position, forward );
 		}
+		else
+		{
+			//we are alone, let's set something
+			VectorSet( up, 0.0f, 0.0f, 1.0f );
+			VectorSet( forward, 0.75f, 0.55f, 0.0f );
+			// TODO: investigate why this happens all the time;
+			// is this normal? This branch didn't exist originally
+		}
 
 		VectorNormalize( forward );
 		CrossProduct( forward, up, right );

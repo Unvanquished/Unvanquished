@@ -2072,7 +2072,7 @@ Also returns whether the gun uses energy or not
 */
 bool BG_PlayerLowAmmo( const playerState_t *ps, bool *energy )
 {
-  int weapon;
+	int weapon;
 	const weaponAttributes_t *wattr;
 
 	// look for the primary weapon
