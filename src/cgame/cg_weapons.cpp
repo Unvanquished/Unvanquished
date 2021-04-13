@@ -1358,6 +1358,7 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 
 	// weapon inertia
 	offsets.angles = angles;
+	offsets.angvel = {};
 
 	if( !filter.IsEmpty( ) )
 	{
