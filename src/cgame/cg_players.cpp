@@ -338,7 +338,7 @@ static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName,
 	{
 		if ( cg_debugAnim.integer )
 		{
-			Log::Notice( "Failed to load animation file %s\n", filename );
+			Log::Warn( "Failed to load animation file %s", filename );
 		}
 
 		return false;
@@ -1175,7 +1175,7 @@ NSPA_STAND, "idle", true, false, false )
 
 	if ( !CG_ParseAnimationFile( filename, ci ) )
 	{
-		Log::Notice( "Failed to load animation file %s\n", filename );
+		Log::Warn( "Failed to load animation file %s", filename );
 		return false;
 	}
 

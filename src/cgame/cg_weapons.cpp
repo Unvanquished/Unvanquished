@@ -576,7 +576,7 @@ bool CG_RegisterWeaponAnimation( animation_t *anim, const char *filename, bool l
 
 	if ( !anim->handle )
 	{
-		Log::Notice( "Failed to load animation file %s\n", filename );
+		Log::Warn( "Failed to load animation file %s", filename );
 		return false;
 	}
 
