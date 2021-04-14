@@ -2081,6 +2081,7 @@ bool BG_PlayerLowAmmo( const playerState_t *ps, bool *energy )
 			if( BG_InventoryContainsWeapon( weapon, ps->stats ) )
 				goto found;
 
+	*energy = false;
 	return false; // got only blaster
 
 found:
