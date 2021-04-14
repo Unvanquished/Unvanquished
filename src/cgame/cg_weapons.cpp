@@ -746,8 +746,11 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 													va( "%s_view.iqm:raise", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
 													va( "%s_view.iqm:lower", token2 ), false, false, false );
-						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-													va( "%s_view.iqm:reload", token2 ), false, false, false );
+						if ( BG_Weapon( weapon )->maxClips > 0 )
+						{
+							CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
+							                            va( "%s_view.iqm:reload", token2 ), false, false, false );
+						}
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
 													va( "%s_view.iqm:fire", token2 ), false, false, false );
 						break;
@@ -828,8 +831,11 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 									    va( "%s_view_raise.md5anim", token2 ), false, false, false );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
 									    va( "%s_view_lower.md5anim", token2 ), false, false, false );
-						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-									    va( "%s_view_reload.md5anim", token2 ), false, false, false );
+						if ( BG_Weapon( weapon )->maxClips > 0 )
+						{
+							CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
+							                            va( "%s_view_reload.md5anim", token2 ), false, false, false );
+						}
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
 									    va( "%s_view_fire.md5anim", token2 ), false, false, false );
 						break;
