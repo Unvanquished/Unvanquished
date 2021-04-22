@@ -576,8 +576,11 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 		spawnedEntity->spawned = true;
 
 		if ( g_debugEntities.integer > 2 )
-			Log::Warn("Successfully spawned entity ^5#%i^* as ^3#%i^*th instance of ^5%s",
-					spawnedEntity->s.number, spawnedEntity->eclass->instanceCounter, spawnedClass->name);
+		{
+			std::string count = spawnedEntity->eclass ? std::to_string(spawnedEntity->eclass->instanceCounter) : "??";
+			Log::Notice("Successfully spawned entity ^5#%i^* as ^3#%s^*th instance of ^5%s",
+			            spawnedEntity->s.number, count, spawnedClass->name);
+		}
 
 		/*
 		 *  to allow each spawn function to test and handle for itself,
