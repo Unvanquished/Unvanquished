@@ -613,7 +613,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
 		mapRotation_t *mr = &mapRotations.rotations[ i ];
-		int           mapCount = 0;
+		bool empty = true;
 
 		for ( j = 0; j < mr->numNodes; j++ )
 		{
@@ -621,7 +621,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 
 			if ( node->type == NT_MAP )
 			{
-				mapCount++;
+				empty = false;
 
 				if ( !G_MapExists( node->u.map.name ) )
 				{
@@ -648,19 +648,23 @@ static bool G_ParseMapRotationFile( const char *fileName )
 				}
 			}
 
-			if ( ( node->type == NT_GOTO || node->type == NT_RESUME ) &&
-			     !G_LabelExists( i, node->u.label.name ) &&
-			     !G_RotationExists( node->u.label.name ) )
+			if ( node->type == NT_GOTO || node->type == NT_RESUME )
 			{
-				Log::Warn("goto destination named \"%s\" doesn't exist",
-				          node->u.label.name );
-				return false;
+				if ( G_RotationExists( node->u.label.name ) )
+				{
+					empty = false;
+				}
+				else if ( !G_LabelExists( i, node->u.label.name ) )
+				{
+					Log::Warn( "goto destination named \"%s\" doesn't exist", node->u.label.name );
+					return false;
+				}
 			}
 		}
 
-		if ( mapCount == 0 )
+		if ( empty )
 		{
-			Log::Warn("rotation \"%s\" needs at least one map entry",
+			Log::Warn("rotation \"%s\" has no maps",
 			          mr->name );
 			return false;
 		}
