@@ -23,7 +23,7 @@
 		}
 
 		region.votes {
-			bottom: 35%;
+			bottom: 60%;
 			text-align: left;
 			width: 40%;
 			left: .5em;
