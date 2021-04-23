@@ -2460,6 +2460,15 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				return false;
 			}
 
+			if ( ent->client->ps.weaponTime > 0 )
+			{
+				if ( report )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEWEAPONTIMER );
+				}
+				return false;
+			}
+
 			evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
 
 			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )

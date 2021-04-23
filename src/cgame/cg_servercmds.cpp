@@ -696,6 +696,10 @@ void CG_Menu( int menuType, int arg )
 			shortMsg = _("You cannot evolve until your build timer expires");
 			break;
 
+		case MN_A_EVOLVEWEAPONTIMER:
+			shortMsg = _("Wait a second after attacking or evolving");
+			break;
+
 		case MN_A_INFEST:
 			trap_Cvar_Set( "ui_currentClass",
 			               va( "%d %d", cg.snap->ps.stats[ STAT_CLASS ],

@@ -1641,7 +1641,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	saved = client->pers;
 	savedSess = client->sess;
 	savedPing = client->ps.ping;
-	int savedWeaponTime = client->ps.weaponTime;
 	savedNoclip = client->noclip;
 	savedCliprcontents = client->cliprcontents;
 
@@ -1658,7 +1657,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.ping = savedPing;
 	if (evolving)
 	{
-		client->ps.weaponTime = savedWeaponTime;
+		client->ps.weaponTime = 500;
 	}
 	else
 	{
