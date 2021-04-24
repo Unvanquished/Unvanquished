@@ -128,12 +128,12 @@
 				</row>
 				<row>
 					<h3>Dynamic lights</h3>
-					<input cvar="r_dynamiclight" type="checkbox" checked-value="2" />
+					<input cvar="r_dynamicLight" type="checkbox" checked-value="2" />
 					<p>Lighting made by weapons and buildings.</p>
 				</row>
 				<row>
 					<h3>Rim lighting</h3>
-					<input cvar="r_rimlighting" type="checkbox" />
+					<input cvar="r_rimLighting" type="checkbox" />
 					<p>Light the edges of models from behind.</p>
 				</row>
 				<row>
@@ -190,7 +190,7 @@
 				</row>
 				<row>
 
-					<select cvar="r_texturemode">
+					<select cvar="r_textureMode">
 						<option value="GL_LINEAR_MIPMAP_NEAREST">Bilinear</option>
 						<option value="GL_LINEAR_MIPMAP_LINEAR">Trilinear (better)</option>
 					</select>
