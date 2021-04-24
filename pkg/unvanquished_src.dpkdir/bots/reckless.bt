@@ -14,7 +14,10 @@ selector
 	
 	condition team == TEAM_ALIENS
 	{
-		action evolve
+		condition ( aliveTime > 1500 )
+		{
+			action evolve
+		}
 	}
 	
 	action rush
