@@ -39,7 +39,7 @@
 				<h3> Method </h3>
 			</row>
 			<row>
-				<dataselect source="mapList.default" fields="name" name="map" cvar="ui_dialogCvar1"/>
+				<dataselect source="mapList.default" fields="mapName" valuefield="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
 				<h3> Map </h3>
 			</row>
 

@@ -6,7 +6,7 @@
 	</head>
 	<body id="server_general" template="window" style="width: 32em; margin: 1em;">
 		<h1> Server Setup </h1>
-		
+
 		<h2> General </h2>
 		<row>
 			<input cvar="g_friendlyFire" type="checkbox" />
@@ -19,7 +19,7 @@
 		<row>
 			<input type="range" min="0" max="30" step="1" cvar="g_initialMineRate"/>
 			<h3> Initial mining rate</h3>
-			<p class="inline"> 
+			<p class="inline">
 				Current: <inlinecvar cvar="g_initialMineRate" type="number" format="%.0f"/>
 				<ilink onclick='Events.pushevent("exec reset g_initialMineRate", event)'> (reset) </ilink>
 			</p>
@@ -34,8 +34,8 @@
 			<h3> Do warmups at every game start</h3>
 			<p> Gives players on slower computers time to join. </p>
 		</row>
-		
-		
+
+
 		<h2> Teams </h2>
 		<row>
 			<input cvar="g_alienAllowBuilding" type="checkbox" />
@@ -45,13 +45,13 @@
 			<input cvar="g_humanAllowBuilding" type="checkbox" />
 			<h3> Allow human building</h3>
 		</row>
-		
-		
+
+
 		<h2> Physics </h2>
 		<row>
 			<input type="range" min="-100" max="2000" step="10" cvar="g_gravity"/>
 			<h3> Gravity</h3>
-			<p class="inline"> 
+			<p class="inline">
 				Current: <inlinecvar cvar="g_gravity" type="number" format="%.0f"/>
 				<ilink onclick='Events.pushevent("exec reset g_gravity", event)'> (reset) </ilink>
 			</p>

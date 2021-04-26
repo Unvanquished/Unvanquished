@@ -16,6 +16,8 @@
 		<img class="black2" src="/ui/assets/background/black2" />
 		<img class="logo" src="/ui/assets/logos/fuzzy_blue" />
 
+		<div style="position: absolute; bottom: 1em; left: 1em; color: rgba(255, 0, 0, 100); font-size: 80%;">This is a beta version of Unvanquished. Gameplay and assets are still under development.</div>
+
 		<sidebar>
 				<!-- HACK: Add some extra spacing atop the main menu -->
 				<hackyspacer />
@@ -46,7 +48,7 @@
 								<ilink onClick='Events.pushevent("exec teamvote no", event)'>no</ilink>
 							</blocklink>
 							<blocklink onClick='Events.pushevent("exec callvote kickbots", event)'> Kick bots </blocklink>
-							<!-- <blocklink onClick='Events.pushevent("show callvote_map", event)'> Change map </blocklink> -->
+							<blocklink onClick='Events.pushevent("show callvote_map", event)'> Change map </blocklink>
 							<blocklink onClick='Events.pushevent("exec callvote extend", event)'> Extend timelimit </blocklink>
 							<blocklink onClick='Events.pushevent("show callvote_draw", event)'> Call a draw </blocklink>
 							<blocklink onClick='Events.pushevent("exec callteamvote admitdefeat", event)'> Admit defeat </blocklink>
@@ -121,7 +123,7 @@
 						<br />
 
 						<blocklink class="rightfloat" onClick='Events.pushevent("exec quit", event)'> Quit game</blocklink>
-						<blocklink class="leftalign fake" style="color: #666666;"> Alpha 0.51 </blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;"> Beta <version /></blocklink>
 					</sidesection>
 
 				</window>

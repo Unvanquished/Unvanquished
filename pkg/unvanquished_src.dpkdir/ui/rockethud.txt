@@ -54,6 +54,8 @@ ckit.hudgroup
 	hud_jetpack
 	hud_human
 
+	hud_chargebar
+
 	hud_builder
 }
 
@@ -122,6 +124,8 @@ abuild.hudgroup
 
 	hud_alien
 
+	hud_chargebar
+
 	hud_bp
 	hud_builder
 }
@@ -133,6 +137,8 @@ abuildupg.hudgroup
 	hud_messagebuffer
 
 	hud_alien
+
+	hud_chargebar
 
 	hud_bp
 	hud_builder

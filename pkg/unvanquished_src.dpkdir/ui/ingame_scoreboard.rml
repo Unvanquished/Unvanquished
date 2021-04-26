@@ -13,8 +13,17 @@
 			background-color: rgba( 10%, 10%, 10%, 70%);
 		}
 
+		.winner {
+			display: block;
+			position: absolute;
+			top: .7em;
+			text-align: center;
+			font-size: 130%;
+		}
+
 		half
 		{
+			margin-top: 1.5em;
 			display:block;
 			width: 50%;
 			float: left;
@@ -142,6 +151,7 @@
 </head>
 
 <body  id="scoreboard">
+	<inlinecvar cvar="ui_winner" class="winner" />
 
 	<half>
 		<teamname> Aliens </teamname>

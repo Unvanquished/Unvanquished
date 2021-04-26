@@ -10,6 +10,27 @@
 		<p> Press Escape to cancel changing a key binding. </p>
 
 		<tabset>
+			<tab>Presets</tab>
+			<panel class="presets">
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/input/wasd.cfg", event)'>WASD</button>
+					<span>Classic First Person Shooter binds,<br/>keys will be adjusted to your layout.</span>
+				</row>
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/input/esdf.cfg", event)'>ESDF</button>
+					<span>One column shifted to the right,<br/>keys will be adjusted to your layout.</span>
+				</row>
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/input/ltouchpad.cfg", event)'>LTouchpad</button>
+					<span>Special binds for left-handed,<br/>touchpad users.</span>
+				</row>
+				<if cvar="in_joystick" condition="==" value="1">
+				<row>
+					<button onClick='Events.pushevent("exec preset presets/input/gamepad.cfg", event)'>Gamepad</button>
+					<span>Does not work in menus yet,<br/>Experimental.</span>
+				</row>
+				</if>
+			</panel>
 			<tab>Move</tab>
 			<panel>
 				<row>
@@ -41,7 +62,6 @@
 					<p>Jump:</p>
 				</row>
 				<row>
-
 					<keybind cmd="+movedown" team="humans" />
 					<p>Crouch:</p>
 				</row>
@@ -49,7 +69,6 @@
 					<keybind cmd="+movedown" team="aliens" />
 					<p>Wallwalk:</p>
 				</row>
-
 			</panel>
 			<tab>Abilities</tab>
 			<panel>
@@ -62,8 +81,12 @@
 					<p>Secondary Attack:</p>
 				</row>
 				<row>
-					<keybind cmd="+useitem" team="aliens" />
+					<keybind cmd="+attack3" team="aliens" />
 					<p>Shoot Barb:</p>
+				</row>
+				<row>
+					<keybind cmd="itemact grenade" team="humans" />
+					<p>Throw grenade:</p>
 				</row>
 				<row>
 					<keybind cmd="reload" team="humans" />
@@ -72,10 +95,6 @@
 				<row>
 					<keybind cmd="itemact medkit" team="humans" />
 					<p>Use Medkit:</p>
-				</row>
-				<row>
-					<keybind cmd="itemact grenade" team="humans" />
-					<p>Throw grenade</p>
 				</row>
 				<row>
 					<keybind cmd="+activate" team="humans" />
@@ -128,18 +147,24 @@
 					<p>Show Scores:</p>
 				</row>
 				<row>
-					<keybind cmd='modcase alt "/deconstruct marked" /deconstruct' />
-					<p>Deconstruct Structure:</p>
+					<keybind cmd='+deconstruct' />
+					<p>Mark structure for replacement:</p>
 				</row>
+				<p>Hold the key to deconstruct structure.
+				</p>
 				<row>
 					<keybind cmd='beaconMenu' />
 					<p>Beacon menu:</p>
 				</row>
 				<row>
-					<keybind cmd="modcase shift /screenshotPNG /screenshotJPEG" />
+					<keybind cmd="<console>" />
+					<p>Toggle console:</p>
+				</row>
+				<row>
+					<keybind cmd="modcase SHIFT screenshotPNG screenshotJPEG" />
 					<p>Screenshot:</p>
 				</row>
-				<p> Hold shift when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG. </p>
+				<p>Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG.</p>
 			</panel>
 			<tab>Quake-look</tab>
 			<panel>

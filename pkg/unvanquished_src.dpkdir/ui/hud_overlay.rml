@@ -24,8 +24,9 @@
 </head>
 <body id="hud_overlay">
 <div>
-	<center_print/>
 	<warmup_time/>
+	<br/>
+	<center_print/>
 </div>
 </body>
 </rml>

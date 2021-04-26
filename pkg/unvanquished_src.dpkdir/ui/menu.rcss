@@ -1,32 +1,30 @@
 body {
-	width:100%;
-	height:100%;
+	width: 100%;
+	height: 100%;
 	z-index: -10;
 }
 
 body.ingame {
 	background-color: rgba(0%,0%,0%,0%);
-
 }
 
 /* Ugly table-like hacks to have two options side-by-side */
-blocklink.rightfloat{
+blocklink.rightfloat {
 	width: 10em;
 	text-align: right;
 	margin-top: .5em;
-	float:right;
+	float: right;
 }
 
-blocklink.leftalign{
+blocklink.leftalign {
 	margin-top: .5em;
 	margin-left: 0em;
 }
 
-blocklink.leftversion{
+blocklink.leftversion {
 	margin-top: .5em;
 	margin-left: 0em;
 }
-
 
 /* innersidebar is grey box, sidebar holds this for scrolling */
 window.innersidebar {
@@ -57,88 +55,81 @@ img.logo {
 }
 
 hackyspacer {
-	display:block;
+	display: block;
 	height: 12em;
-
 }
 
-.gradient, .black, .black2, .fog, .human, .tyrant,.circles, .logo{
-
-    position:absolute;
+.gradient, .black, .black2, .fog, .human, .tyrant, .circles, .logo {
+	position: absolute;
 }
 
-body.mainmenu{
-	background-color:#000;
+body.mainmenu {
+	background-color: #000;
 }
 
-body.ingame{
-	background-color:#00000044;
+body.ingame {
+	background-color: #00000044;
 }
 
-.gradient{
-
-      width: 100%;
-      height:100%;
-      top: 0em;
-      left: 0em;
-      opacity: 1;
-
+.gradient {
+	width: 100%;
+	height: 100%;
+	top: 0em;
+	left: 0em;
+	opacity: 1;
 }
 
-.black{
-    opacity:.3;
+.black {
+	opacity: .3;
 }
 
-.black2{
-      width: 100%;
-      height:40%;
-      bottom: 0em;
-      left: 0em;
-      opacity: .3;
+.black2 {
+	width: 100%;
+	height: 40%;
+	bottom: 0em;
+	left: 0em;
+	opacity: .3;
 }
 
-body.ingame .black2{
+body.ingame .black2 {
 	opacity: .8;
 }
 
-
-.fog{
-     width:100%;
-       height:30%;
-       opacity: .7;
-       bottom: 0em;
-       left: 0em;
+.fog {
+	width: 100%;
+	height: 30%;
+	opacity: .7;
+	bottom: 0em;
+	left: 0em;
 }
 
-.human{
-
-     width:30%;
-       height:auto;
-       bottom: 0em;
-       left:13%;
+.human {
+	width: 30%;
+	height: auto;
+	bottom: 0em;
+	left: 13%;
 }
 
-.tyrant{
-     width:68%;
-       height:auto;
-       bottom: 0em;
-       right:4%;
+.tyrant {
+	width: 68%;
+	height: auto;
+	bottom: 0em;
+	right: 4%;
 }
 
-.circles{
-
-     width:100%;
-       height:auto;
-       left: 0em;
-       bottom:0%;
-       opacity:.6;
+.circles {
+	width: 100%;
+	height: auto;
+	left: 0em;
+	bottom: 0%;
+	opacity: .6;
 }
 
-.logo{
-		color: #69f3faee;
-       width:20%;
-       height:auto;
-       left:7%;
-       top:13%;
-       opacity:.6;
+.logo {
+	color: #69f3faee;
+	width: 20%;
+	height: auto;
+	left: 7%;
+	top: 13%;
+	opacity: .6;
 }
