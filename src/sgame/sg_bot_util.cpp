@@ -241,8 +241,11 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
-	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass,
-	                                  self->client->ps.persistant[PERS_CREDIT] ) >= 1 );
+	int fromClass = self->client->ps.stats[STAT_CLASS];
+	evolveInfo_t info = BG_ClassEvolveInfoFromTo( fromClass, newClass );
+
+	return info.classIsUnlocked && info.evolveCost > 0 // no devolving
+		&& self->client->ps.persistant[PERS_CREDIT] >= info.evolveCost;
 }
 
 bool WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
@@ -567,7 +570,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 		if ( distSqr < minDistSqr )
 		{
 			self->botMind->closestDamagedBuilding.ent = target;
-			self->botMind->closestDamagedBuilding.distance = sqrt( distSqr );
+			self->botMind->closestDamagedBuilding.distance = sqrtf( distSqr );
 			minDistSqr = distSqr;
 		}
 	}
@@ -655,47 +658,11 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 			continue;
 		}
 
-		// Only consider living targets.
-		if ( !Entities::IsAlive( target ) )
+		if ( !BotEnemyIsValid( self, target ) )
 		{
 			continue;
 		}
 
-		//ignore buildings if we cant attack them
-		if ( target->s.eType == entityType_t::ET_BUILDABLE )
-		{
-			if ( !g_bot_attackStruct.integer )
-			{
-				continue;
-			}
-
-			// dretches can only bite buildables in construction
-			if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && target->spawned )
-			{
-				continue;
-			}
-		}
-
-		//ignore neutrals
-		if ( BotGetEntityTeam( target ) == TEAM_NONE )
-		{
-			continue;
-		}
-
-		//ignore teamates
-		if ( BotGetEntityTeam( target ) == BotGetEntityTeam( self ) )
-		{
-			continue;
-		}
-
-		//ignore spectators
-		if ( target->client )
-		{
-			if ( target->client->sess.spectatorState != SPECTATOR_NOT )
-			{
-				continue;
-			}
-		}
 		newDistance = DistanceSquared( self->s.origin, target->s.origin );
 		if ( newDistance <= minDistance )
 		{
@@ -1195,20 +1162,45 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 {
 	//get the position of the target
 	BotGetTargetPos( target, aimLocation );
+	bool isTargetBuildable = BotGetTargetType( target ) == entityType_t::ET_BUILDABLE;
+	//this retrieves the target's species, to aim at weak point:
+	// * for humans, it's the head (but code only applies an offset here, with the hope it's the head)
+	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (for luci)
+	team_t targetTeam = BotGetTargetTeam( target );
 
-	if ( BotGetTargetType( target ) != entityType_t::ET_BUILDABLE && BotTargetIsEntity( target ) && BotGetTargetTeam( target ) == TEAM_HUMANS )
+	if ( !isTargetBuildable && BotTargetIsEntity( target ) && targetTeam == TEAM_HUMANS )
 	{
 
 		//aim at head
+		//FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
 		aimLocation[2] += target.ent->r.maxs[2] * 0.85;
 
 	}
-	else if ( BotGetTargetType( target ) == entityType_t::ET_BUILDABLE || BotGetTargetTeam( target ) == TEAM_ALIENS )
+	else if ( isTargetBuildable || targetTeam == TEAM_ALIENS )
 	{
-		//make lucifer cannons aim ahead based on the target's velocity
-		if ( self->client->ps.weapon == WP_LUCIFER_CANNON && self->botMind->botSkill.level >= 5 )
+		//make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
+		if ( self->botMind->botSkill.level >= 5 )
 		{
-			VectorMA( aimLocation, Distance( self->s.origin, aimLocation ) / LCANNON_SPEED, target.ent->s.pos.trDelta, aimLocation );
+			//would be better if it was possible to do self.weapon->speed directly
+			int weapon_speed = 0;
+			switch ( self->client->ps.weapon ) {
+			case WP_BLASTER:
+				weapon_speed = BLASTER_SPEED;
+				break;
+			case WP_FLAMER:
+				weapon_speed = FLAMER_SPEED;
+				break;
+			case WP_PULSE_RIFLE:
+				weapon_speed = PRIFLE_SPEED;
+				break;
+			case WP_LUCIFER_CANNON:
+				weapon_speed = LCANNON_SPEED;
+				break;
+			}
+			if( weapon_speed )
+			{
+				VectorMA( aimLocation, Distance( self->s.origin, aimLocation ) / weapon_speed, target.ent->s.pos.trDelta, aimLocation );
+			}
 		}
 	}
 }
@@ -1470,7 +1462,7 @@ void BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer )
 	}
 	else if ( mode == WPM_TERTIARY )
 	{
-		usercmdPressButton( botCmdBuffer->buttons, BUTTON_USE_HOLDABLE );
+		usercmdPressButton( botCmdBuffer->buttons, BUTTON_ATTACK3 );
 	}
 }
 void BotClassMovement( gentity_t *self, bool inAttackRange )
@@ -1538,7 +1530,7 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	initialHeight = startPos[2];
 	targetPos[2] -= initialHeight;
 	startPos[2] -= initialHeight;
-	distance2D = sqrt( Square( startPos[0] - targetPos[0] ) + Square( startPos[1] - targetPos[1] ) );
+	distance2D = sqrtf( Square( startPos[0] - targetPos[0] ) + Square( startPos[1] - targetPos[1] ) );
 	targetPos[0] = distance2D;
 
 	//for readability's sake
@@ -1559,8 +1551,8 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	}
 
 	//calculate required angle of launch
-	angle1 = atanf( ( Square( v ) + sqrt( check ) ) / ( g * x ) );
-	angle2 = atanf( ( Square( v ) - sqrt( check ) ) / ( g * x ) );
+	angle1 = atanf( ( Square( v ) + sqrtf( check ) ) / ( g * x ) );
+	angle2 = atanf( ( Square( v ) - sqrtf( check ) ) / ( g * x ) );
 
 	//take the smaller angle
 	angle = ( angle1 < angle2 ) ? angle1 : angle2;
@@ -1630,7 +1622,7 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
-			else if ( self->client->ps.stats[ STAT_MISC ] == 0 )
+			else if ( self->client->ps.weaponCharge == 0 )
 			{
 				BotMoveInDir( self, MOVE_FORWARD );
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
@@ -1650,7 +1642,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3:
-			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME )
+			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1666,7 +1658,7 @@ void BotFireWeaponAI( gentity_t *self )
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 			}
-			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_UPG )
+			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1677,7 +1669,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL4:
-			if ( distance > LEVEL4_CLAW_RANGE && self->client->ps.stats[STAT_MISC] < LEVEL4_TRAMPLE_CHARGE_MAX )
+			if ( distance > LEVEL4_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL4_TRAMPLE_CHARGE_MAX )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );    //rant charge
 			}
@@ -1687,7 +1679,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_LUCIFER_CANNON:
-			if ( self->client->ps.stats[STAT_MISC] < LCANNON_CHARGE_TIME_MAX * Com_Clamp( 0.5, 1, random() ) )
+			if ( self->client->ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Com_Clamp( 0.5, 1, random() ) )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
 			}
@@ -1703,7 +1695,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 	int i;
 	vec3_t infestOrigin;
 	class_t currentClass = ent->client->pers.classSelection;
-	int numLevels;
+	evolveInfo_t evolveInfo;
 	int entityList[ MAX_GENTITIES ];
 	vec3_t range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
 	vec3_t mins, maxs;
@@ -1746,26 +1738,19 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 			return false;
 		}
 
-		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ] );
+		evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
 
 		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{
 			//...check we can evolve to that class
-			if ( numLevels >= 1 && BG_ClassUnlocked( newClass ) && !BG_ClassDisabled( newClass ) )
+			if ( evolveInfo.classIsUnlocked && evolveInfo.evolveCost > 0 /* no devolving */ &&
+					ent->client->ps.persistant[ PERS_CREDIT ] >= evolveInfo.evolveCost )
 			{
-				ent->client->pers.evolveHealthFraction = Entities::HealthFraction(ent);
-
-				if ( ent->client->pers.evolveHealthFraction < 0.0f )
-				{
-					ent->client->pers.evolveHealthFraction = 0.0f;
-				}
-				else if ( ent->client->pers.evolveHealthFraction > 1.0f )
-				{
-					ent->client->pers.evolveHealthFraction = 1.0f;
-				}
+				ent->client->pers.evolveHealthFraction =
+					Math::Clamp( Entities::HealthFraction(ent), 0.0f, 1.0f );
 
 				//remove credit
-				G_AddCreditToClient( ent->client, -( short )numLevels, true );
+				G_AddCreditToClient( ent->client, -( short )evolveInfo.evolveCost, true );
 				ent->client->pers.classSelection = newClass;
 				BotSetNavmesh( ent, newClass );
 				ClientUserinfoChanged( clientNum, false );
@@ -1843,6 +1828,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 
 		//set build delay/pounce etc to 0
 		self->client->ps.stats[ STAT_MISC ] = 0;
+		self->client->ps.weaponCharge = 0;
 
 		//subtract from funds
 		G_AddCreditToClient( self->client, -( short )BG_Weapon( weapon )->price, false );
@@ -2093,23 +2079,31 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 		return false;
 	}
 
-	//ignore buildings if we cant attack them
-	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && ( !g_bot_attackStruct.integer ||
-	                                         self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
+	// ignore buildings if we can't attack them
+	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.integer )
 	{
 		return false;
 	}
 
-	if ( BotGetEntityTeam( enemy ) == self->client->pers.team )
+	// dretch limitations
+	if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && !G_DretchCanDamageEntity( self, enemy ) )
 	{
 		return false;
 	}
 
+	// ignore neutrals
 	if ( BotGetEntityTeam( enemy ) == TEAM_NONE )
 	{
 		return false;
 	}
 
+	// ignore teamates
+	if ( BotGetEntityTeam( enemy ) == BotGetEntityTeam( self ) )
+	{
+		return false;
+	}
+
+	// ignore spectators
 	if ( enemy->client && enemy->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		return false;

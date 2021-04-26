@@ -29,11 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "engine/qcommon/q_shared.h"
 
-// HACK: Redefine these names so they can coexist with the q_shared.h versions until those are deleted.
-// TODO(0.52): Remove.
-#define tokenType_t GAMELOGIC_tokenType_t
-#define pc_token_t GAMELOGIC_pc_token_t
-
 //token types
 enum class tokenType_t {
     TT_STRING, // string
@@ -57,6 +52,6 @@ int Parse_AddGlobalDefine(const char *string);
 int Parse_LoadSourceHandle(const char *filename);
 int Parse_FreeSourceHandle(int handle);
 bool Parse_ReadTokenHandle(int handle, pc_token_t *pc_token);
-int Parse_SourceFileAndLine(int handle, char *filename, int *line);
+int Parse_SourceFileAndLine(int handle, char (&filename)[MAX_QPATH], int *line);
 
 #endif // SHARED_PARSE_H_

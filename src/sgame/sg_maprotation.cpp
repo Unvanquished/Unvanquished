@@ -613,7 +613,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
 		mapRotation_t *mr = &mapRotations.rotations[ i ];
-		int           mapCount = 0;
+		bool empty = true;
 
 		for ( j = 0; j < mr->numNodes; j++ )
 		{
@@ -621,7 +621,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 
 			if ( node->type == NT_MAP )
 			{
-				mapCount++;
+				empty = false;
 
 				if ( !G_MapExists( node->u.map.name ) )
 				{
@@ -648,19 +648,23 @@ static bool G_ParseMapRotationFile( const char *fileName )
 				}
 			}
 
-			if ( ( node->type == NT_GOTO || node->type == NT_RESUME ) &&
-			     !G_LabelExists( i, node->u.label.name ) &&
-			     !G_RotationExists( node->u.label.name ) )
+			if ( node->type == NT_GOTO || node->type == NT_RESUME )
 			{
-				Log::Warn("goto destination named \"%s\" doesn't exist",
-				          node->u.label.name );
-				return false;
+				if ( G_RotationExists( node->u.label.name ) )
+				{
+					empty = false;
+				}
+				else if ( !G_LabelExists( i, node->u.label.name ) )
+				{
+					Log::Warn( "goto destination named \"%s\" doesn't exist", node->u.label.name );
+					return false;
+				}
 			}
 		}
 
-		if ( mapCount == 0 )
+		if ( empty )
 		{
-			Log::Warn("rotation \"%s\" needs at least one map entry",
+			Log::Warn("rotation \"%s\" has no maps",
 			          mr->name );
 			return false;
 		}
@@ -1162,7 +1166,7 @@ static bool G_GotoLabel( int rotation, int nodeIndex, char *name,
 	return false;
 }
 
-static bool G_EvaluateIntegerCondition( mrCondition_t *localCondition, int valueCompared ) 
+static bool G_EvaluateIntegerCondition( mrCondition_t *localCondition, int valueCompared )
 {
 	switch ( localCondition->operator_ )
 	{
@@ -1468,15 +1472,13 @@ bool G_MapRotationActive()
 
 /*
 ===============
-G_InitMapRotations
+G_LoadMaprotation
 
-Load and initialise the map rotations
+Load a maprotation file if it exists
 ===============
 */
-void G_InitMapRotations()
+void G_LoadMaprotation( const char *fileName )
 {
-	const char *fileName = "maprotation.cfg";
-
 	// Load the file if it exists
 	if ( trap_FS_FOpenFile( fileName, nullptr, fsMode_t::FS_READ ) )
 	{
@@ -1489,12 +1491,29 @@ void G_InitMapRotations()
 	{
 		Log::Warn( "%s file not found.", fileName );
 	}
+}
+
+/*
+===============
+G_InitMapRotations
+
+Load and initialise the map rotations
+===============
+*/
+void G_InitMapRotations()
+{
+	G_LoadMaprotation( "default/maprotation.cfg" );
+	G_LoadMaprotation( "maprotation.cfg" );
 
 	if ( g_currentMapRotation.integer == NOT_ROTATING )
 	{
 		if ( g_initialMapRotation.string[ 0 ] != 0 )
 		{
-			G_StartMapRotation( g_initialMapRotation.string, false, true, false, 0 );
+			if( !G_StartMapRotation( g_initialMapRotation.string, false, true, false, 0 ) )
+			{
+				Log::Warn( "failed to load g_initialMapRotation: %s", g_initialMapRotation.string );
+				G_StartMapRotation( "defaultRotation", false, true, false, 0 );
+			}
 
 			trap_Cvar_Set( "g_initialMapRotation", "" );
 			trap_Cvar_Update( &g_initialMapRotation );

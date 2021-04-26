@@ -910,7 +910,8 @@ public:
 		if ( evos != value )
 		{
 			evos = value;
-			SetText( va( "%1.1f", evos ) );
+			// display it rounded down
+			SetText( va( "%1.1f", floorf(evos*10)/10 ) );
 		}
 	}
 
@@ -1290,8 +1291,7 @@ static void CG_Rocket_DrawDisconnect()
 	x = 640 - 48;
 	y = 480 - 48;
 
-	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader( "gfx/feedback/net",
-				RSF_DEFAULT ) );
+	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader( "gfx/feedback/net", (RegisterShaderFlags_t) ( RSF_NOMIP ) ) );
 }
 
 #define MAX_LAGOMETER_PING  900
@@ -2287,13 +2287,13 @@ public:
 
 				// avoid sudden jumps in opacity
 				t0 = cg.time;
-				if ( cosOld >= 0.0 )
+				if ( cosOld >= 0.0f )
 				{
-					offset = asin( sinOld );
+					offset = asinf( sinOld );
 				}
 				else
 				{
-					offset = M_PI - asin( sinOld );
+					offset = M_PI - asinf( sinOld );
 				}
 				regenerationInterval = interval;
 			}
@@ -2323,12 +2323,12 @@ private:
 
 	float GetSin()
 	{
-		return sin( GetParam() );
+		return sinf( GetParam() );
 	}
 
 	float GetCos()
 	{
-		return cos( GetParam() );
+		return cosf( GetParam() );
 	}
 
 	float GetParam()
@@ -2375,16 +2375,20 @@ void CG_Rocket_DrawPlayerHealthCross()
 
 	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
 	{
-		shader = cgs.media.healthCross3X;
+		shader = cgs.media.healthCross4X;
 	}
 
 	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
+	{
+		shader = cgs.media.healthCross3X;
+	}
+
+	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 	{
 		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
 			shader = cgs.media.healthCross2X;
 		}
-
 		else
 		{
 			shader = cgs.media.healthCrossMedkit;
@@ -3028,17 +3032,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	CG_FillRect( x, y, w, h, color );
 
 	// draw momentum bar
-	fraction = rawFraction = momentum / MOMENTUM_MAX;
-
-	if ( fraction < 0.0f )
-	{
-		fraction = 0.0f;
-	}
-
-	else if ( fraction > 1.0f )
-	{
-		fraction = 1.0f;
-	}
+	fraction = Math::Clamp( rawFraction = momentum / MOMENTUM_MAX, 0.0f, 1.0f );
 
 	if ( vertical )
 	{
@@ -3144,8 +3138,8 @@ static INLINE qhandle_t CG_GetUnlockableIcon( int num )
 		case UNLT_CLASS:
 			return cg_classes[ index ].classIcon;
 
-        default:
-            return 0;
+		default:
+			return 0;
 	}
 }
 
@@ -3159,11 +3153,11 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	team_t    team;
 
 	// display
-	float     x, y, w, h, iw, ih, borderSize;
+	float x, y, w, h, iw, ih, borderSize;
 	bool  vertical;
 
-	int       icons, counts;
-	int       count[ 32 ] = { 0 };
+	int   icons, counts;
+	int   count[ 32 ] = { 0 };
 	struct
 	{
 		qhandle_t shader;
@@ -3332,6 +3326,11 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	Rocket_SetInnerRML( s.c_str(), 0 );
 }
 
+static void CG_Rocket_DrawVersion()
+{
+	Rocket_SetInnerRML( PRODUCT_VERSION, 0 );
+}
+
 static void CG_Rocket_DrawVote()
 {
 	CG_Rocket_DrawVote_internal( TEAM_NONE );
@@ -3454,7 +3453,7 @@ static void CG_Rocket_DrawHostname()
 {
 	const char *info;
 	info = CG_ConfigString( CS_SERVERINFO );
-	Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE );
+	Rocket_SetInnerRML( Info_ValueForKey( info, "sv_hostname" ), RP_QUAKE | RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawDownloadName()
@@ -3615,6 +3614,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },
 	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
 	{ "unlocked_items", &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
+	{ "version", &CG_Rocket_DrawVersion, ELEMENT_ALL },
 	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
 	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
 	{ "warmup_time", &CG_Rocket_DrawWarmup, ELEMENT_GAME },

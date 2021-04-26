@@ -49,7 +49,7 @@ void CG_LoadBeaconsConfig()
 	vh = cgs.glconfig.vidHeight;
 	base = std::min( vw, vh );
 
-	memset( bc, 0, sizeof( beaconsConfig_t ) );
+	*bc = {};
 
 	bc->hudCenter[ 0 ] = vw / 2;
 	bc->hudCenter[ 1 ] = vh / 2;
@@ -134,7 +134,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
 			if( !PC_Float_Parse( fd, &angle ) )
 				break;
 
-			bc->highlightAngle = cos( angle / 180.0 * M_PI );
+			bc->highlightAngle = cosf( angle / 180.0 * M_PI );
 		}
 		else
 			Log::Warn( "bad keyword \"%s\" in \"%s\"\n", token.string, path );
@@ -146,7 +146,7 @@ else if( !Q_stricmp( token.string, #x ) ) \
 	Parse_FreeSourceHandle( fd  );
 }
 
-#define Distance2(a,b) sqrt(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
+#define Distance2(a,b) sqrtf(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
 
 /**
  * @brief Fills cg.beacons with explicit (ET_BEACON entity) beacons.
@@ -537,11 +537,8 @@ static void DrawBeacon( cbeacon_t *b )
 		b->color.SetAlpha( 1.0f );
 
 	// calculate HUD size
-	b->size = cgs.bc.hudSize / sqrt( b->dist );
-	if( b->size > cgs.bc.hudMaxSize )
-		b->size = cgs.bc.hudMaxSize;
-	else if ( b->size < cgs.bc.hudMinSize )
-		b->size = cgs.bc.hudMinSize;
+	b->size = Math::Clamp( cgs.bc.hudSize / sqrtf( b->dist ),
+			cgs.bc.hudMinSize, cgs.bc.hudMaxSize );
 	b->size *= b->scale;
 
 	// project onto screen

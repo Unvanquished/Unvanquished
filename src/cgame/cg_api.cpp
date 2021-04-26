@@ -57,7 +57,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                     VM::InitializeProxies(milliseconds);
                     FS::Initialize();
                     srand(time(nullptr));
-					cmdBuffer.Init();
+		    cmdBuffer.Init();
                 });
                 break;
 
@@ -91,12 +91,6 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
                 IPC::HandleMsg<CGameDrawActiveFrameMsg>(VM::rootChannel, std::move(reader), [] (int serverTime, bool demoPlayback) {
                     CG_DrawActiveFrame(serverTime, demoPlayback);
                     cmdBuffer.TryFlush();
-                });
-                break;
-
-            case CG_CROSSHAIR_PLAYER:
-                IPC::HandleMsg<CGameCrosshairPlayerMsg>(VM::rootChannel, std::move(reader), [] (int& player) {
-                    player = CG_CrosshairPlayer();
                 });
                 break;
 

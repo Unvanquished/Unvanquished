@@ -92,6 +92,12 @@ alphaRange = tb->class_->backAlpha -
 		totalDistance += nodeDistances[ j ];
 	}
 
+	if ( !( totalDistance > 0 ) )
+	{
+		// HACK: prevent division by zero
+		totalDistance = 1e-6f;
+	}
+
 	for ( j = 0, i = tb->nodes; i; i = i->next, j++ )
 	{
 		if ( tb->class_->textureType == TBTT_STRETCH )
@@ -568,6 +574,14 @@ static void CG_ApplyJitters( trailBeam_t *tb )
 			//this is the back
 			GetPerpendicularViewVector( cg.refdef.vieworg, i->position, prev->position, up );
 			VectorSubtract( i->position, prev->position, forward );
+		}
+		else
+		{
+			//we are alone, let's set something
+			VectorSet( up, 0.0f, 0.0f, 1.0f );
+			VectorSet( forward, 0.75f, 0.55f, 0.0f );
+			// TODO: investigate why this happens all the time;
+			// is this normal? This branch didn't exist originally
 		}
 
 		VectorNormalize( forward );
@@ -1336,8 +1350,8 @@ void CG_LoadTrailSystems()
 	for ( i = 0; i < numFiles; i++, filePtr += fileLen + 1 )
 	{
 		fileLen = strlen( filePtr );
-		strcpy( fileName, "scripts/" );
-		strcat( fileName, filePtr );
+		Q_strncpyz( fileName, "scripts/", sizeof fileName );
+		Q_strcat( fileName, sizeof fileName, filePtr );
 		// Log::Notice(_( "...loading '%s'"), fileName );
 		CG_ParseTrailFile( fileName );
 	}
@@ -1400,7 +1414,7 @@ Allocate a new trail beam
 ===============
 */
 static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
-    trailSystem_t *parent )
+		trailSystem_t *parent )
 {
 	int           i;
 	trailBeam_t   *tb = nullptr;
@@ -1462,7 +1476,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 
 		if ( !ts->valid )
 		{
-			memset( ts, 0, sizeof( trailSystem_t ) );
+			*ts = {};
 
 			//found a free slot
 			ts->class_ = bts;

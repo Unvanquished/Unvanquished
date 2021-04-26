@@ -187,7 +187,7 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 		ret.distance = 0;
 		return ret;
 	}
-	
+
 	return ret;
 }
 
@@ -320,7 +320,7 @@ AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 {
 	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
-	
+
 	AINodeStatus_t status = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 0 ] );
 
 	BotEvaluateNode( self, dec->child );
@@ -465,7 +465,7 @@ AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node )
 ======================
 BotEvaluateNode
 
-Generic node running routine that properly handles 
+Generic node running routine that properly handles
 running information for sequences and selectors
 This should always be used instead of the node->run function pointer
 ======================
@@ -524,7 +524,7 @@ to the rest of the behavior tree
 ======================
 */
 
-AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t* ) 
+AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t* )
 {
 	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), &self->client->ps ) && self->client->pers.team == TEAM_HUMANS )
 	{
@@ -537,6 +537,14 @@ AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t* )
 	}
 
 	BotFireWeaponAI( self );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionTeleport( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *action = ( AIActionNode_t * ) node;
+	vec3_t pos = {AIUnBoxFloat(action->params[0]),AIUnBoxFloat(action->params[1]),AIUnBoxFloat(action->params[2])};
+	VectorCopy( pos,self->client->ps.origin );
 	return STATUS_SUCCESS;
 }
 
@@ -621,10 +629,25 @@ AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t* )
 AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
-	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
-	botEntityAndDistance_t e = AIEntityToGentity( self, et );
 
-	if ( !BotChangeGoalEntity( self, e.ent ) )
+	if( a->nparams == 1 )
+	{
+		AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
+		botEntityAndDistance_t e = AIEntityToGentity( self, et );
+		if ( !BotChangeGoalEntity( self, e.ent ) )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+	else if( a->nparams == 3 )
+	{
+		vec3_t pos = { AIUnBoxFloat(a->params[0]), AIUnBoxFloat(a->params[1]), AIUnBoxFloat(a->params[2]) };
+		if ( !BotChangeGoalPos( self, pos ) )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+	else
 	{
 		return STATUS_FAILURE;
 	}
@@ -748,7 +771,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 			{
 				if ( self->botMind->botSkill.level >= 3 && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
 				        && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->botSkill.level < 5 )
-				        && self->client->ps.weapon != WP_PAIN_SAW )
+				        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
 				{
 					BotMoveInDir( self, MOVE_BACKWARD );
 				}
@@ -764,8 +787,10 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 					{
 						BotStandStill( self );
 					}
-
-					BotStrafeDodge( self );
+					else
+					{
+						BotStrafeDodge( self );
+					}
 				}
 
 				if ( inAttackRange && BotGetTargetType( self->botMind->goal ) == entityType_t::ET_BUILDABLE )
@@ -893,7 +918,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	float radius = 0;
 	AIActionNode_t *moveTo = ( AIActionNode_t * ) node;
 	AIEntity_t ent = ( AIEntity_t ) AIUnBoxInt( moveTo->params[ 0 ] );
-	
+
 	if ( moveTo->nparams > 1 )
 	{
 		radius = std::max( AIUnBoxFloat( moveTo->params[ 1 ] ), 0.0f );
@@ -995,6 +1020,13 @@ AINodeStatus_t BotActionJump( gentity_t *self, AIGenericNode_t* )
 AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t* )
 {
 	BotResetStuckTime( self );
+	return AINodeStatus_t::STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* )
+{
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	usercmdPressButton( botCmdBuffer->buttons, BUTTON_GESTURE );
 	return AINodeStatus_t::STATUS_SUCCESS;
 }
 
@@ -1380,7 +1412,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		{
 			G_ForceWeaponChange( self, weapon );
 		}
-		
+
 		return STATUS_SUCCESS;
 	}
 

@@ -50,7 +50,7 @@ void OvermindComponent::Think(int timeDelta) {
 Entity* OvermindComponent::FindTarget() {
 	Entity* target = nullptr;
 
-	ForEntities<ClientComponent>([&](Entity& candidate, ClientComponent& clientComponent) {
+	ForEntities<ClientComponent>([&](Entity& candidate, ClientComponent&) {
 		// Do not target spectators.
 		if (candidate.Get<SpectatorComponent>()) return;
 

@@ -19,7 +19,7 @@ export LANG=C.UTF-8
 xdgHomeDir="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
 
 # Version of Unvanquished for which this script is built
-version=0.51.1
+version=0.52.0
 
 tab="$(printf '\t')"
 

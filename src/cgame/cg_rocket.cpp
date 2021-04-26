@@ -88,6 +88,8 @@ void CG_Rocket_Init( glconfig_t gl )
 	oldConnState = connstate_t::CA_UNINITIALIZED;
 	cgs.glconfig = gl;
 
+	BG_LoadEmoticons();
+
 	// Init Rocket
 	Rocket_Init();
 
@@ -608,10 +610,10 @@ void CG_Rocket_Frame( cgClientState_t state )
 
 			case connstate_t::CA_ACTIVE:
 				Rocket_DocumentAction( "", "blurall" );
-                break;
+				break;
 
-            default:
-                break;
+			default:
+				break;
 		}
 
 		oldConnState = rocketInfo.cstate.connState;
@@ -744,8 +746,8 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 			return false;
 
-        default:
-            return false;
+		default:
+			return false;
 	}
 
 	return false;

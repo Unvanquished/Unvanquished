@@ -24,7 +24,7 @@ SpawnerComponent::~SpawnerComponent() {
 	}
 }
 
-void SpawnerComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
+void SpawnerComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	OnLoss();
 	dying = true;
 }

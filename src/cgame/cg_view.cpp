@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
 =============================================================================
 
-  MODEL TESTING
+MODEL TESTING
 
 The viewthing and gun positioning tools from Q2 have been integrated and
 enhanced into a single model testing facility.
@@ -76,8 +76,8 @@ void CG_TestModel_f()
 {
 	vec3_t angles;
 
-	memset( &cg.testModelEntity, 0, sizeof( cg.testModelEntity ) );
-	memset( &cg.testModelBarrelEntity, 0, sizeof( cg.testModelBarrelEntity ) );
+	cg.testModelEntity = {};
+	cg.testModelBarrelEntity = {};
 
 	if ( trap_Argc() < 2 )
 	{
@@ -94,7 +94,7 @@ void CG_TestModel_f()
 
 	if ( trap_Argc() == 3 )
 	{
-		cg.testModelEntity.backlerp = atof( CG_Argv( 2 ) );
+		cg.testModelEntity.backlerp = static_cast<float>( atof( CG_Argv( 2 ) ) );
 		cg.testModelEntity.frame = 1;
 		cg.testModelEntity.oldframe = 0;
 	}
@@ -371,14 +371,7 @@ void CG_OffsetThirdPersonView()
 		// may not be pitch, so just let it go.
 		if ( surfNormal[ 2 ] > 0.5f || surfNormal[ 2 ] < -0.5f )
 		{
-			if ( rotationAngles[ PITCH ] > 85.0f )
-			{
-				rotationAngles[ PITCH ] = 85.0f;
-			}
-			else if ( rotationAngles[ PITCH ] < -85.0f )
-			{
-				rotationAngles[ PITCH ] = -85.0f;
-			}
+			rotationAngles[ PITCH ] = Math::Clamp( rotationAngles[ PITCH ], -85.0f, 85.0f );
 		}
 
 		// Perform the rotations specified by rotationAngles.
@@ -508,12 +501,8 @@ void CG_OffsetShoulderView()
 
 	// Handle pitch.
 	rotationAngles[ PITCH ] = mousePitch;
-
 	rotationAngles[ PITCH ] = AngleNormalize180( rotationAngles[ PITCH ] + AngleNormalize180( cg.refdefViewAngles[ PITCH ] ) );
-
-	if ( rotationAngles [ PITCH ] < -90.0f ) { rotationAngles [ PITCH ] = -90.0f; }
-
-	if ( rotationAngles [ PITCH ] > 90.0f ) { rotationAngles [ PITCH ] = 90.0f; }
+	rotationAngles[ PITCH ] = Math::Clamp( rotationAngles[ PITCH ], -90.0f, 90.0f );
 
 	// Yaw and Roll are much easier.
 	rotationAngles[ YAW ] = SHORT2ANGLE( cmd.angles[ YAW ] ) + cg.refdefViewAngles[ YAW ];
@@ -674,9 +663,9 @@ void CG_OffsetFirstPersonView()
 	//give a charging player some feedback
 	if ( ps->weapon == WP_ALEVEL4 )
 	{
-		if ( ps->stats[ STAT_MISC ] > 0 )
+		if ( ps->weaponCharge > 0 )
 		{
-			float fraction = ( float ) ps->stats[ STAT_MISC ] /
+			float fraction = ( float ) ps->weaponCharge /
 			                 LEVEL4_TRAMPLE_CHARGE_MAX;
 
 			if ( fraction > 1.0f )
@@ -721,7 +710,7 @@ void CG_OffsetFirstPersonView()
 	//provide some feedback for pouncing
 	if ( ( cg.predictedPlayerState.weapon == WP_ALEVEL3 ||
 	       cg.predictedPlayerState.weapon == WP_ALEVEL3_UPG ) &&
-	     cg.predictedPlayerState.stats[ STAT_MISC ] > 0 )
+	     cg.predictedPlayerState.weaponCharge > 0 )
 	{
 		float  fraction1, fraction2;
 		vec3_t forward;
@@ -729,7 +718,7 @@ void CG_OffsetFirstPersonView()
 		AngleVectors( angles, forward, nullptr, nullptr );
 		VectorNormalize( forward );
 
-		fraction1 = ( float ) cg.predictedPlayerState.stats[ STAT_MISC ] /
+		fraction1 = ( float ) cg.predictedPlayerState.weaponCharge /
 		            LEVEL3_POUNCE_TIME_UPG;
 
 		if ( fraction1 > 1.0f )
@@ -737,7 +726,7 @@ void CG_OffsetFirstPersonView()
 			fraction1 = 1.0f;
 		}
 
-		fraction2 = -sin( fraction1 * M_PI_2 );
+		fraction2 = -sinf( fraction1 * M_PI_2 );
 
 		VectorMA( origin, LEVEL3_FEEDBACK * fraction2, forward, origin );
 	}
@@ -892,7 +881,7 @@ static int CG_CalcFov()
 	float     zoomFov;
 	float     f;
 	int       inwater;
-	int       attribFov;
+	float     attribFov;
 	usercmd_t cmd;
 	usercmd_t oldcmd;
 	int       cmdNum;
@@ -901,8 +890,8 @@ static int CG_CalcFov()
 	trap_GetUserCmd( cmdNum, &cmd );
 	trap_GetUserCmd( cmdNum - 1, &oldcmd );
 
-	// switch follow modes if necessary: cycle between free -> follow -> third-person follow
-	if ( usercmdButtonPressed( cmd.buttons, BUTTON_USE_HOLDABLE ) && !usercmdButtonPressed( oldcmd.buttons, BUTTON_USE_HOLDABLE ) )
+	// Cycle between follow and third-person follow modes on mouse middle click.
+	if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK3 ) && !usercmdButtonPressed( oldcmd.buttons, BUTTON_ATTACK3 ) )
 	{
 		if ( cg.snap->ps.pm_flags & PMF_FOLLOW )
 		{
@@ -913,10 +902,15 @@ static int CG_CalcFov()
 			else
 			{
 				cg.chaseFollow = false;
-				trap_SendClientCommand( "follow\n" );
 			}
 		}
-		else if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+	}
+
+	// Start and stoop to follow on mouse right click.
+	if ( usercmdButtonPressed( cmd.buttons, BUTTON_ATTACK2 ) && !usercmdButtonPressed( oldcmd.buttons, BUTTON_ATTACK2 ) )
+	{
+		if ( ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+			|| ( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
 		{
 			trap_SendClientCommand( "follow\n" );
 		}
@@ -932,32 +926,16 @@ static int CG_CalcFov()
 	else
 	{
 		// don't lock the fov globally - we need to be able to change it
-		if ( ( attribFov = trap_Cvar_VariableIntegerValue( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fovCvar ) ) )
+		if ( ( attribFov = trap_Cvar_VariableValue( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fovCvar ) ) != 0.0f )
 		{
-			if ( attribFov < 80 )
-			{
-				attribFov = 80;
-			}
-			else if ( attribFov >= 140 )
-			{
-				attribFov = 140;
-			}
+			attribFov = Math::Clamp( attribFov, 80.0f, 140.0f );
 		}
 		else
 		{
 			attribFov = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fov;
 		}
 		attribFov *= 0.75;
-		fov_y = attribFov;
-
-		if ( fov_y < 1.0f )
-		{
-			fov_y = 1.0f;
-		}
-		else if ( fov_y > MAX_FOV_Y )
-		{
-			fov_y = MAX_FOV_Y;
-		}
+		fov_y = Math::Clamp( attribFov, 1.0f, MAX_FOV_Y );
 
 		if ( cg.spawnTime > ( cg.time - FOVWARPTIME ) &&
 		     BG_ClassHasAbility( cg.predictedPlayerState.stats[ STAT_CLASS ], SCA_FOVWARPS ) )
@@ -969,15 +947,7 @@ static int CG_CalcFov()
 
 		// account for zooms
 		zoomFov = BG_Weapon( cg.predictedPlayerState.weapon )->zoomFov * 0.75f;
-
-		if ( zoomFov < 1.0f )
-		{
-			zoomFov = 1.0f;
-		}
-		else if ( zoomFov > attribFov )
-		{
-			zoomFov = attribFov;
-		}
+		zoomFov = Math::Clamp( zoomFov, 1.0f, attribFov );
 
 		// only do all the zoom stuff if the client CAN zoom
 		// FIXME: zoom control is currently hard coded to WBUTTON_ATTACK2
@@ -1028,8 +998,8 @@ static int CG_CalcFov()
 		}
 	}
 
-	y = cg.refdef.height / tan( 0.5f * DEG2RAD( fov_y ) );
-	fov_x = atan2( cg.refdef.width, y );
+	y = cg.refdef.height / tanf( 0.5f * DEG2RAD( fov_y ) );
+	fov_x = atan2f( cg.refdef.width, y );
 	fov_x = 2.0f * RAD2DEG( fov_x );
 
 	// warp if underwater
@@ -1038,7 +1008,7 @@ static int CG_CalcFov()
 	if ( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) )
 	{
 		phase = cg.time / 1000.0f * WAVE_FREQUENCY * M_PI * 2.0f;
-		v = WAVE_AMPLITUDE * sin( phase );
+		v = WAVE_AMPLITUDE * sinf( phase );
 		fov_x += v;
 		fov_y -= v;
 		inwater = true;
@@ -1182,7 +1152,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		}
 		else
 		{
-			rotAngle = RAD2DEG( acos( ( rotAngle - 1.0f ) / 2.0f ) );
+			rotAngle = RAD2DEG( acosf( ( rotAngle - 1.0f ) / 2.0f ) );
 		}
 
 		CrossProduct( lastAxis[ 0 ], inAxis[ 0 ], temp );
@@ -1209,7 +1179,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		if ( cg.time < cg.sList[ i ].time + smoothTime )
 		{
 			stLocal = 1.0f - ( ( ( cg.sList[ i ].time + smoothTime ) - cg.time ) / smoothTime );
-			sFraction = - ( cos( stLocal * M_PI ) + 1.0f ) / 2.0f;
+			sFraction = - ( cosf( stLocal * M_PI ) + 1.0f ) / 2.0f;
 
 			RotatePointAroundVector( outAxis[ 0 ], cg.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cg.sList[ i ].rotAngle );
@@ -1268,7 +1238,7 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 		if ( cg.time < cg.sList[ i ].time + cg_wwSmoothTime.integer )
 		{
 			stLocal = ( ( cg.sList[ i ].time + cg_wwSmoothTime.integer ) - cg.time ) / cg_wwSmoothTime.integer;
-			sFraction = 1.0f - ( ( cos( stLocal * M_PI * 2.0f ) + 1.0f ) / 2.0f );
+			sFraction = 1.0f - ( ( cosf( stLocal * M_PI * 2.0f ) + 1.0f ) / 2.0f );
 
 			RotatePointAroundVector( outAxis[ 0 ], cg.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cg.sList[ i ].rotAngle );
@@ -1331,7 +1301,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 
 		dist = trap_CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
 		weight = 1.0f - dist / cgs.gameGradingDistances[i];
-		weight = Q_clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
+		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
 		// search 3 greatest weights
 		if( weight <= selectedWeight[2] )
@@ -1404,7 +1374,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
-        *fadeRate = 0.004;
+		*fadeRate = 0.004;
 	}
 	//no other effects for now
 	else
@@ -1524,7 +1494,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 
 		dist = trap_CM_DistanceToModel( loc, cgs.gameReverbModels[i] );
 		weight = 1.0f - dist / cgs.gameReverbDistances[i];
-		weight = Q_clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
+		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
 		// search 3 greatest weights
 		if( weight <= selectedWeight[2] )
@@ -1551,43 +1521,44 @@ static void CG_AddReverbEffects( vec3_t loc )
 
 	for(; i < 3; i++ )
 	{
-        totalWeight += selectedWeight[i];
+		totalWeight += selectedWeight[i];
 	}
 
-    if (haveGlobal)
-    {
-        if (totalWeight > 1.0f)
-        {
-            selectedWeight[0] = 0;
-        }
-        else
-        {
-            selectedWeight[0] = 1.0f - totalWeight;
-            totalWeight = 1.0f;
-        }
-    }
+	if (haveGlobal)
+	{
+		if (totalWeight > 1.0f)
+		{
+			selectedWeight[0] = 0;
+		}
+		else
+		{
+			selectedWeight[0] = 1.0f - totalWeight;
+			totalWeight = 1.0f;
+		}
+	}
 
-    if (totalWeight == 0.0f)
-    {
-        for(i = 0; i < 3; i++)
-        {
-            selectedWeight[i] = 0.0f;
-        }
-    }
-    else
-    {
-        for(i = 0; i < 3; i++)
-        {
-            selectedWeight[i] /= totalWeight;
-        }
-    }
+	if (totalWeight == 0.0f)
+	{
+		for(i = 0; i < 3; i++)
+		{
+			selectedWeight[i] = 0.0f;
+		}
+	}
+	else
+	{
+		for(i = 0; i < 3; i++)
+		{
+			selectedWeight[i] /= totalWeight;
+		}
+	}
 
-    for (i = 0; i < 3; i++)
-    {
-        // The mapper defined intensity is between 0 and 2 to have saner defaults (the presets are very strong)
-        trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i] / 2.0f * cgs.gameReverbIntensities[selectedIdx[i]]);
-    }
+	for (i = 0; i < 3; i++)
+	{
+		// The mapper defined intensity is between 0 and 2 to have saner defaults (the presets are very strong)
+		trap_S_SetReverb(i, cgs.gameReverbEffects[selectedIdx[i]], selectedWeight[i] / 2.0f * cgs.gameReverbIntensities[selectedIdx[i]]);
+	}
 }
+
 /*
 ===============
 CG_StartShadowCaster
@@ -1669,9 +1640,9 @@ static int CG_CalcViewValues()
 	}
 
 	cg.bobcycle = ( ps->bobCycle & 128 ) >> 7;
-	cg.bobfracsin = fabs( sin( ( ps->bobCycle & 127 ) / 127.0 * M_PI ) );
-	cg.xyspeed = sqrt( ps->velocity[ 0 ] * ps->velocity[ 0 ] +
-	                   ps->velocity[ 1 ] * ps->velocity[ 1 ] );
+	cg.bobfracsin = fabs( sinf( ( ps->bobCycle & 127 ) / 127.0 * M_PI ) );
+	cg.xyspeed = sqrtf( ps->velocity[ 0 ] * ps->velocity[ 0 ] +
+	                    ps->velocity[ 1 ] * ps->velocity[ 1 ] );
 
 	// to avoid jerking, the bob velocity shouldn't be too high
 	if ( cg.xyspeed > 300.0f )
@@ -1786,8 +1757,8 @@ void CG_SetupFrustum()
 	float           ang;
 
 	ang = cg.refdef.fov_x / 180 * M_PI_2;
-	xs = sin(ang);
-	xc = cos(ang);
+	xs = sinf(ang);
+	xc = cosf(ang);
 
 	VectorScale(cg.refdef.viewaxis[0], xs, frustum[0].normal);
 	VectorMA(frustum[0].normal, xc, cg.refdef.viewaxis[1], frustum[0].normal);
@@ -1796,8 +1767,8 @@ void CG_SetupFrustum()
 	VectorMA(frustum[1].normal, -xc, cg.refdef.viewaxis[1], frustum[1].normal);
 
 	ang = cg.refdef.fov_y / 180 * M_PI_2;
-	xs = sin(ang);
-	xc = cos(ang);
+	xs = sinf(ang);
+	xc = cosf(ang);
 
 	VectorScale(cg.refdef.viewaxis[0], xs, frustum[2].normal);
 	VectorMA(frustum[2].normal, xc, cg.refdef.viewaxis[2], frustum[2].normal);

@@ -63,6 +63,7 @@ Maryland 20850 USA.
 #include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
 #include <Rocket/Debugger.h>
+#include "lua/CDataSource.h"
 #include "lua/Cvar.h"
 #include "lua/Cmd.h"
 #include "lua/Events.h"
@@ -339,11 +340,13 @@ void Rocket_Init()
 
 	// Initialize Lua
 	Rocket::Core::Lua::Interpreter::Initialise();
+	Rocket::Core::Lua::Interpreter::DoString("math.randomseed(os.time())");
 	Rocket::Controls::Lua::RegisterTypes(Rocket::Core::Lua::Interpreter::GetLuaState());
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cvar>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Cmd>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Events>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
 	Rocket::Core::Lua::LuaType<Rocket::Core::Lua::Timer>::Register(Rocket::Core::Lua::Interpreter::GetLuaState());
+	CG_Rocket_RegisterLuaCDataSource(Rocket::Core::Lua::Interpreter::GetLuaState());
 
 	// Set backup font
 	Rocket::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
@@ -441,6 +444,8 @@ void Rocket_Shutdown()
 	trap_RemoveCommand( "rocketDebug" );
 }
 
+static bool drawMenu;
+
 void Rocket_Render()
 {
 	if ( cg_draw2D.integer && hudContext )
@@ -449,7 +454,7 @@ void Rocket_Render()
 	}
 
 	// Render menus on top of the HUD
-	if ( menuContext )
+	if ( drawMenu && menuContext )
 	{
 		menuContext->Render();
 	}
@@ -458,31 +463,16 @@ void Rocket_Render()
 
 void Rocket_Update()
 {
-	if ( menuContext )
+	if ( drawMenu && menuContext )
 	{
 		menuContext->Update();
 	}
 
-	if ( hudContext )
+	if ( cg_draw2D.integer && hudContext )
 	{
 		hudContext->Update();
 	}
 	Rocket::Core::Lua::Timer::Update(rocketInfo.realtime);
-}
-
-static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
-{
-	const char invalid[][2] = { "*", "/", "\\", ".", " ", "<", ">", "!", "@", "#", "$", "%", "^", "&", "(", ")", "-", "_", "+", "=", ",", "?", "[", "]", "{", "}", "|", ":", ";", "'", "\"", "`", "~" };
-
-	for ( unsigned i = 0; i < ARRAY_LEN( invalid ); ++i )
-	{
-		if ( emoticon.Find( invalid[ i ] ) != Rocket::Core::String::npos )
-		{
-			return true;
-		}
-	}
-
-	return false;
 }
 
 std::string CG_EscapeHTMLText( Str::StringRef text )
@@ -515,16 +505,14 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	bool span = false;
 	bool spanHasContent = false;
 
-	if ( !*in )
+	Color::Parser parser(in, Color::Color());
+	for ( auto iter = parser.begin(); iter != parser.end(); ++iter )
 	{
-		return "";
-	}
-
-	for ( const auto& token : Color::Parser( in, Color::Color() ) )
-	{
+		const Color::Token& token = *iter;
 		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
 			char c = *token.Begin();
+			const emoticonData_t *emoticon;
 			if ( c == '<' )
 			{
 				if ( span && !spanHasContent )
@@ -557,6 +545,19 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				out.Append( span && spanHasContent ? "</span><br />" : "<br />" );
 				span = false;
 				spanHasContent = false;
+			}
+			else if ( ( parseFlags & RP_EMOTICONS ) && ( emoticon = BG_EmoticonAt( token.Begin() ) ) )
+			{
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.Append( spanstr );
+				}
+				out.Append( va( "<img class='trem-emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				while ( *iter->Begin() != ']' )
+				{
+					++iter;
+				}
 			}
 			else
 			{
@@ -607,55 +608,6 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	if ( span && spanHasContent )
 	{
 		out.Append( "</span>" );
-	}
-
-	if ( parseFlags & RP_EMOTICONS )
-	{
-		// Parse emoticons
-		size_t openBracket = 0;
-		size_t closeBracket = 0;
-		size_t currentPosition = 0;
-
-		while ( 1 )
-		{
-			Rocket::Core::String emoticon;
-			const char *path;
-
-			openBracket = out.Find( "[", currentPosition );
-			if ( openBracket == Rocket::Core::String::npos )
-			{
-				break;
-			}
-
-			closeBracket = out.Find( "]", openBracket );
-			if ( closeBracket == Rocket::Core::String::npos )
-			{
-				break;
-			}
-
-			emoticon = out.Substring( openBracket + 1, closeBracket - openBracket - 1 );
-
-			// Certain characters are invalid
-			if ( emoticon.Empty() || IsInvalidEmoticon( emoticon ) )
-			{
-				currentPosition = closeBracket + 1;
-				continue;
-			}
-
-			// TODO: Dont hardcode the extension.
-			path =  va( "emoticons/%s.crn", emoticon.CString() );
-			if ( CG_FileExists( path ) )
-			{
-				out.Erase( openBracket, closeBracket - openBracket + 1 );
-				path = va( "<img class='trem-emoticon' src='/emoticons/%s' />", emoticon.CString() );
-				out.Insert( openBracket, path );
-				currentPosition = openBracket + strlen( path );
-			}
-			else
-			{
-				currentPosition = closeBracket + 1;
-			}
-		}
 	}
 
 	return out;
@@ -727,6 +679,7 @@ void Rocket_SetActiveContext( int catcher )
 	{
 		case KEYCATCH_UI:
 			engineCursor.Show( true );
+			drawMenu = true;
 			break;
 
 		default:
@@ -735,6 +688,7 @@ void Rocket_SetActiveContext( int catcher )
 				engineCursor.Show( false );
 			}
 
+			drawMenu = false;
 			break;
 	}
 }

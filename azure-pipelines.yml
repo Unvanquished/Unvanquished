@@ -1,0 +1,36 @@
+pool:
+  vmImage: 'macOS-10.15'
+
+steps:
+- bash: |
+    set -e
+    echo "Variables: PR_TARGET_BRANCH=${PR_TARGET_BRANCH} PR_SOURCE_REF=${PR_SOURCE_REF} BUILD_SOURCE_BRANCH=${BUILD_SOURCE_BRANCH}"
+    curl -fsSL https://gitlab.com/illwieckz/git-checkout-modules/raw/master/git-checkout-modules -o ~/git-checkout-modules
+    chmod +x ~/git-checkout-modules
+    if ! [[ "$PR_SOURCE_REF" == '$('* ]]; then  # It is a pull request
+        SOURCE_BRANCH=$(sed -e 's!^refs/heads/users/[^/]*/!!' <<< "$PR_SOURCE_REF")
+        SYNC_ARGS=("--sub-ref=${PR_TARGET_BRANCH}:has=/sync" "--sub-ref=${SOURCE_BRANCH}:has=/sync")
+    elif [[ "$BUILD_SOURCE_BRANCH" == refs/heads/* ]]; then  # It is a branch build
+        BRANCH=$(sed -e 's!^refs/heads/!!' <<< "$BUILD_SOURCE_BRANCH")
+        SYNC_ARGS=("--sub-ref=${BRANCH}:has=/sync")
+    fi
+    echo "${#SYNC_ARGS[@]} branch-name-based checkout arg(s): ${SYNC_ARGS[@]}"
+    ~/git-checkout-modules --update ${SYNC_ARGS[@]} --print
+  env:
+    # For example: "master" (on pull requests only)
+    PR_TARGET_BRANCH: $(System.PullRequest.TargetBranch)
+    # For example: "0.52.0/sync" (pull request from within repository)
+    # For example: "refs/heads/users/raisa/new-feature" (pull request from other user)
+    # For example: "$(System.PullRequest.TargetBranch)" (when it's not a PR-triggered build)
+    PR_SOURCE_REF: $(System.PullRequest.SourceBranch)
+    # For example: "refs/heads/master" for a build of the 'master' branch
+    # Other formats exist for builds on pull requests or tags
+    BUILD_SOURCE_BRANCH: $(Build.SourceBranch)
+  displayName: 'Check out submodules'
+
+- script: |
+    set -e
+    pip3 install -r src/utils/cbse/requirements.txt
+    cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG_OPTIMIZE=0 -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0 -H. -Bbuild
+    cmake --build build -- -j`sysctl -n hw.logicalcpu`
+  displayName: 'Build'

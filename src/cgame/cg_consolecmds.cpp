@@ -261,7 +261,7 @@ static void CG_CompleteName()
 	{
 		char name[ MAX_NAME_LENGTH ];
 		ci = &cgs.clientinfo[ i ];
-		strcpy( name, ci->name );
+		Q_strncpyz( name, ci->name, sizeof name );
 
 		if ( !ci->infoValid )
 		{
@@ -442,6 +442,7 @@ static const struct
 	{ "+scores",           CG_ShowScores_f,        0                },
 	{ "-scores",           CG_HideScores_f,        0                },
 	{ "a",                0,                       0                },
+	{ "addcon",           0,                       0                },
 	{ "asay",             0,                       0                },
 	{ "beacon",           0,                       CG_CompleteBeacon },
 	{ "beaconMenu",       CG_BeaconMenu_f,         0                },
@@ -480,6 +481,8 @@ static const struct
 	{ "message_team",     CG_MessageTeam_f,        0                },
 	{ "me_team",          0,                       0                },
 	{ "mt",               0,                       CG_CompleteName  },
+	{ "navedit",          0,                       0                },
+	{ "navtest",          0,                       0                },
 	{ "nextframe",        CG_TestModelNextFrame_f, 0                },
 	{ "nextskin",         CG_TestModelNextSkin_f,  0                },
 	{ "noclip",           0,                       0                },
@@ -579,9 +582,10 @@ void CG_InitConsoleCommands()
 		trap_AddCommand( commands[ i ].cmd );
 	}
 
+	// Defined in src/engine/qcommon/q_shared.h, see BUTTON_ATTACK etc.
 	trap_RegisterButtonCommands(
-	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.
-	      "attack,,useitem,taunt,,sprint,activate,,attack2,,,,,,rally"
+	    // 0      123     45      6        78       9       ABCD           E      <- bit nos.
+	      "attack,,,taunt,,sprint,activate,,attack2,attack3,,,,deconstruct,rally"
 	    );
 }
 

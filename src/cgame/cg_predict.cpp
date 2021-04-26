@@ -205,7 +205,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			                             origin, angles );
 			break;
 
-        case traceType_t::TT_BISPHERE:
+		case traceType_t::TT_BISPHERE:
 			ASSERT(maxs != nullptr);
 			ASSERT(mins != nullptr);
 			trap_CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
@@ -627,6 +627,12 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 		{
 			return 16;
 		}
+	}
+
+	int weaponChargeDiff = pps->weaponCharge - ps->weaponCharge;
+	if ( weaponChargeDiff <= -50 || weaponChargeDiff >= 50 )
+	{
+		return 17;
 	}
 
 	if ( pps->generic1 != ps->generic1 ||

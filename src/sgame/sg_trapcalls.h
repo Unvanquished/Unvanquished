@@ -41,7 +41,7 @@ int              trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void             trap_FS_Rename( const char *from, const char *to );
 void             trap_FS_FCloseFile( fileHandle_t f );
 int              trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
-void             trap_LocateGameData( int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient );
+void             trap_LocateGameData( int numGEntities, int sizeofGEntity_t, int sizeofGClient );
 void             trap_DropClient( int clientNum, const char *reason );
 void             trap_SendServerCommand( int clientNum, const char *text );
 void             trap_SetConfigstring( int num, const char *string );
@@ -68,8 +68,6 @@ bool         trap_GetEntityToken( char *buffer, int bufferSize );
 void             trap_AddCommand( const char *cmdName );
 void             trap_RemoveCommand( const char *cmdName );
 int              trap_BotGetServerCommand( int clientNum, char *message, int size );
-void             trap_SendMessage(int clientNum, const std::vector<uint8_t>& message);
-messageStatus_t  trap_MessageStatus( int clientNum );
 
 int              trap_RSA_GenerateMessage( const char *public_key, char *cleartext, char *encrypted );
 

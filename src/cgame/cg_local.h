@@ -56,7 +56,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ZOOM_TIME                      150
 #define MUZZLE_FLASH_TIME              20
 
-#define MAX_STEP_CHANGE                32
+#define MAX_STEP_CHANGE                32.0f
 
 #define MAX_VERTS_ON_POLY              10
 #define MAX_MARK_POLYS                 256
@@ -1206,7 +1206,7 @@ struct cg_t
 	int                     spawnTime; // fovwarp
 	int                     weapon1Time; // time when BUTTON_ATTACK went t->f f->t
 	int                     weapon2Time; // time when BUTTON_ATTACK2 went t->f f->t
-	int                     weapon3Time; // time when BUTTON_USE_HOLDABLE went t->f f->t
+	int                     weapon3Time; // time when BUTTON_ATTACK3 went t->f f->t
 	bool                weapon1Firing;
 	bool                weapon2Firing;
 	bool                weapon3Firing;
@@ -1552,6 +1552,7 @@ struct cgMedia_t
 	qhandle_t   healthCross;
 	qhandle_t   healthCross2X;
 	qhandle_t   healthCross3X;
+	qhandle_t   healthCross4X;
 	qhandle_t   healthCrossMedkit;
 	qhandle_t   healthCrossPoisoned;
 
@@ -1571,7 +1572,7 @@ struct cgMedia_t
 	sfxHandle_t timerBeaconExpiredSound;
 
 	qhandle_t   damageIndicatorFont;
-  sfxHandle_t killSound;
+	sfxHandle_t killSound;
 };
 
 struct buildStat_t
@@ -1616,8 +1617,7 @@ struct cgs_t
 	int      maxclients;
 	char     mapname[ MAX_QPATH ];
 
-	// TODO: Remove this one.
-	int      powerReactorRange;
+	float    devolveMaxBaseDistance; // used for evolve/devolve ui
 
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
 	float    unlockableMinTime;  // used for momentum bar (un)lock markers
@@ -1959,7 +1959,7 @@ void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float ra
 void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, Color::Color rgba );
 
 #define CG_ExponentialFade( value, target, lambda ) \
-ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001 );
+		ExponentialFade( (value), (target), (lambda), (float)cg.frametime * 0.001f );
 
 //
 // cg_draw.c
@@ -2001,6 +2001,8 @@ void     CG_InitBuildables();
 void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
 void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
+const centity_t *CG_LookupMainBuildable();
+float    CG_DistanceToBase();
 
 //
 // cg_animation.c
@@ -2059,9 +2061,11 @@ void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 //
 // cg_weapons.c
 //
+weapon_t CG_FindNextWeapon( playerState_t *ps );
 void CG_NextWeapon_f();
 void CG_PrevWeapon_f();
 void CG_Weapon_f();
+void CG_SelectNextInventoryItem_f();
 
 void CG_InitUpgrades();
 void CG_RegisterUpgrade( int upgradeNum );

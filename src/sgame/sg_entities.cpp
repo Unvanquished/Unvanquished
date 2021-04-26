@@ -55,6 +55,7 @@ void G_InitGentityMinimal( gentity_t *entity )
 void G_InitGentity( gentity_t *entity )
 {
 	G_InitGentityMinimal( entity );
+	++entity->generation;
 	entity->inuse = true;
 	entity->enabled = true;
 	entity->classname = "noclass";
@@ -140,7 +141,7 @@ gentity_t *G_NewEntity()
 
 	// let the server system know that there are more entities
 	trap_LocateGameData( level.num_entities, sizeof( gentity_t ),
-	                     &level.clients[ 0 ].ps, sizeof( level.clients[ 0 ] ) );
+	                     sizeof( level.clients[ 0 ] ) );
 
 	G_InitGentity( newEntity );
 	return newEntity;
@@ -183,7 +184,9 @@ void G_FreeEntity( gentity_t *entity )
 		delete entity->entity;
 	}
 
+	unsigned generation = entity->generation;
 	memset( entity, 0, sizeof( *entity ) );
+	entity->generation = generation + 1;
 	entity->entity = level.emptyEntity;
 	entity->classname = "freent";
 	entity->freetime = level.time;
@@ -586,7 +589,7 @@ gentity_t *G_ResolveEntityKeyword( gentity_t *self, char *keyword )
 	else if (!Q_stricmp(keyword, "$parent"))
 		resolution = self->parent;
 	else if (!Q_stricmp(keyword, "$target"))
-		resolution = self->target;
+		resolution = self->target ? self->target.entity : nullptr;
 	//TODO $tracker for entities, that currently target, track or aim for this entity, is the reverse to "target"
 
 	if(!resolution || !resolution->inuse)

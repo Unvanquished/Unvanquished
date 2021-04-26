@@ -90,6 +90,24 @@ struct entityClass_s
 
 class Entity;
 
+// Replacement for gentity_t* that can detect the case where an entity has been recycled.
+// operator bool checks that the entity is non-null and has not been freed since the reference
+// was formed.
+struct GentityRef
+{
+	struct gentity_s *entity;
+	unsigned generation;
+
+	GentityRef& operator=(struct gentity_s *ent);
+
+	operator bool();
+
+	struct gentity_s * operator->()
+	{
+		return entity;
+	}
+};
+
 struct gentity_s
 {
 	entityState_t  s; // communicated by server to clients
@@ -104,9 +122,10 @@ struct gentity_s
 
 	struct gclient_s *client; // nullptr if not a client
 
-	bool     inuse;
+	unsigned generation; // used with GentityRef
 	int          freetime; // level.time when the object was freed
 	int          eventTime; // events will be cleared EVENT_VALID_MSEC after set
+	bool     inuse;
 	bool     freeAfterEvent;
 	bool     unlinkAfterEvent;
 
@@ -182,7 +201,8 @@ struct gentity_s
 	 */
 	int          targetCount;
 	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
-	gentity_t    *target;  /*< the currently selected target to aim at/for, is the reverse to "tracker" */
+
+	GentityRef   target; // target of trapper, medistation, hive, rocketpod, builder's +deconstruct
 
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
@@ -357,6 +377,20 @@ struct gentity_s
 	int         tagScoreTime;
 };
 
+inline GentityRef& GentityRef::operator=(struct gentity_s *ent)
+{
+	entity = ent;
+	if (ent) {
+		generation = ent->generation;
+	}
+	return *this;
+}
+
+inline GentityRef::operator bool()
+{
+	return entity != nullptr && entity->generation == generation;
+}
+
 /**
  * client data that stays across multiple levels or map restarts
  * this is achieved by writing all the data to cvar strings at game shutdown
@@ -426,6 +460,7 @@ struct clientPersistant_s
 
 	class_t           classSelection; // player class (copied to ent->client->ps.stats[ STAT_CLASS ] once spawned)
 	float             evolveHealthFraction;
+	int               devolveReturningCredits;
 	weapon_t          humanItemSelection; // humans have a starting item
 
 	int               teamChangeTime; // level.time of last team change
@@ -684,9 +719,6 @@ struct level_locals_s
 	int              numTeamImbalanceWarnings;
 
 	voice_t          *voices;
-
-	emoticon_t       emoticons[ MAX_EMOTICONS ];
-	int              emoticonCount;
 
 	namelog_t        *namelogs;
 

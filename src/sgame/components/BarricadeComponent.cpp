@@ -4,8 +4,8 @@ BarricadeComponent::BarricadeComponent(Entity& entity, AlienBuildableComponent& 
 	: BarricadeComponentBase(entity, r_AlienBuildableComponent)
 {}
 
-void BarricadeComponent::HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location,
-                                      Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
+void BarricadeComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util::optional<Vec3> /*location*/,
+                                      Util::optional<Vec3> /*direction*/, int /*flags*/, meansOfDeath_t /*meansOfDeath*/) {
 	if (GetAlienBuildableComponent().GetBuildableComponent().GetState() != BuildableComponent::CONSTRUCTED) {
 		return;
 	}
@@ -13,7 +13,7 @@ void BarricadeComponent::HandleDamage(float amount, gentity_t* source, Util::opt
 	G_SetBuildableAnim(entity.oldEnt, entity.oldEnt->shrunkTime ? BANIM_PAIN2 : BANIM_PAIN1, false);
 }
 
-void BarricadeComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeath) {
+void BarricadeComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	if(!entity.oldEnt->shrunkTime) {
 		// The barricade is extended, use a death animation that also shrinks it.
 		G_SetBuildableAnim(entity.oldEnt, BANIM_DESTROY, true);

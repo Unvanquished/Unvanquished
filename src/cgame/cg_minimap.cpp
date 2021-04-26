@@ -104,7 +104,7 @@ static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
                 Log::Warn("error while parsing the image name while parsing 'image'" );
             }
 
-            z->image = trap_R_RegisterShader( token, RSF_DEFAULT );
+            z->image = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
             if( !ParseFloats( z->imageMin, 2, text) || !ParseFloats( z->imageMax, 2, text) )
             {
@@ -280,8 +280,8 @@ static void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* mi
 
     scale = transformScale * MINIMAP_MAP_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
 
-    s = sin(angle) * scale;
-    c = cos(angle) * scale;
+    s = sinf(angle) * scale;
+    c = cosf(angle) * scale;
 
     //Simply a 2x2 rotoscale matrix
     transform[0] =  c;
@@ -575,26 +575,28 @@ static void CG_MinimapDrawBeacon( const cbeacon_t *b, float size, const vec2_t c
 		ProjectPointOntoRectangleOutwards( pos2d, center, dir, bounds );
 	}
 	else
+	{
 		clamped = false;
+	}
 
 	Color::Color color = b->color;
 	color.SetAlpha( cgs.bc.minimapAlpha );
 	trap_R_SetColor( color );
 
-	trap_R_DrawRotatedPic( pos2d[ 0 ], pos2d[ 1 ], size, size, 0.0, 0.0, 1.0, 1.0, CG_BeaconIcon( b ), 0.0 );
+	trap_R_DrawRotatedPic( pos2d[ 0 ], pos2d[ 1 ], size, size, 0.0f, 0.0f, 1.0f, 1.0f, CG_BeaconIcon( b ), 0.0f );
 	if( b->flags & EF_BC_DYING )
-		trap_R_DrawStretchPic( pos2d[ 0 ] - size/2 * 0.3,
-		                       pos2d[ 1 ] - size/2 * 0.3,
-		                       size * 1.3, size * 1.3,
+		trap_R_DrawStretchPic( pos2d[ 0 ] - size/2 * 0.3f,
+		                       pos2d[ 1 ] - size/2 * 0.3f,
+		                       size * 1.3, size * 1.3f,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconNoTarget );
 	if( clamped )
-		trap_R_DrawRotatedPic( pos2d[ 0 ] - size * 0.25,
-		                       pos2d[ 1 ] - size * 0.25,
-		                       size * 1.5, size * 1.5,
-		                       0.0, 0.0, 1.0, 1.0,
+		trap_R_DrawRotatedPic( pos2d[ 0 ] - size * 0.25f,
+		                       pos2d[ 1 ] - size * 0.25f,
+		                       size * 1.5, size * 1.5f,
+		                       0.0f, 0.0f, 1.0f, 1.0f,
 		                       cgs.media.beaconIconArrow,
-		                       270.0 - atan2( dir[ 1 ], dir[ 0 ] ) * 180 / M_PI );
+		                       270.0f - atan2f( dir[ 1 ], dir[ 0 ] ) * 180 / M_PI );
 }
 
 /*
@@ -649,8 +651,8 @@ void CG_InitMinimap()
         Log::Warn("the minimap did not define any zone." );
     }
 
-    m->gfx.playerArrow = trap_R_RegisterShader( "gfx/feedback/minimap/player-arrow", RSF_DEFAULT );
-    m->gfx.teamArrow = trap_R_RegisterShader( "gfx/feedback/minimap/team-arrow", RSF_DEFAULT );
+    m->gfx.playerArrow = trap_R_RegisterShader( "gfx/feedback/minimap/player-arrow", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+    m->gfx.teamArrow = trap_R_RegisterShader( "gfx/feedback/minimap/team-arrow", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
     CG_UpdateMinimapActive( m );
 }

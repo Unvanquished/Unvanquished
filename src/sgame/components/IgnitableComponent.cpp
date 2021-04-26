@@ -198,7 +198,7 @@ void IgnitableComponent::ConsiderStop(int timeDelta) {
 	}
 }
 
-void IgnitableComponent::ConsiderSpread(int timeDelta) {
+void IgnitableComponent::ConsiderSpread(int /*timeDelta*/) {
 	if (!onFire) return;
 	if (level.time < spreadAt) return;
 

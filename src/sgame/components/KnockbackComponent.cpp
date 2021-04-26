@@ -7,8 +7,8 @@ KnockbackComponent::KnockbackComponent(Entity& entity)
 {}
 
 // TODO: Consider location as well as direction when both given.
-void KnockbackComponent::HandleDamage(float amount, gentity_t* source, Util::optional<Vec3> location,
-                                      Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
+void KnockbackComponent::HandleDamage(float amount, gentity_t* /*source*/, Util::optional<Vec3> /*location*/,
+                                      Util::optional<Vec3> direction, int flags, meansOfDeath_t /*meansOfDeath*/) {
 	if (!(flags & DAMAGE_KNOCKBACK)) return;
 	if (amount <= 0.0f) return;
 

@@ -6,10 +6,6 @@ cache: ccache
 addons:
   apt:
     update: true
-  homebrew:
-    packages:
-    - ninja
-    - ccache
 
 matrix:
   fast_finish: true
@@ -26,16 +22,6 @@ matrix:
       os: linux
       compiler: clang
       env: MODE=2
-  allow_failures:
-    - name: "macOS game-native-dll (clang)"
-      os: osx
-      compiler: clang
-      env: MODE=1
-    - name: "macOS nacl-nexe (pnacl-clang)"
-      os: osx
-      compiler: clang
-      env: MODE=2
-    # osx links gcc to clang; so skip
 
 install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
@@ -45,20 +31,11 @@ install:
         liblua5.2-dev
         ninja-build python-yaml python-jinja2;
     fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      brew update;
-      touch BrewFile;
-      echo 'brew "ccache"' >> BrewFile;
-      echo 'brew "ninja"' >> BrewFile;
-      brew bundle;
-    fi
   - |
     # workarounds to make ccache work
     if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" == "clang++" ]; then
       sudo ln -s $(which ccache) /usr/lib/ccache/clang
       sudo ln -s $(which ccache) /usr/lib/ccache/clang++
-    elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      export PATH="/usr/local/opt/ccache/libexec:$PATH"
     fi
   - pip2 install --user -r src/utils/cbse/requirements.txt
   - curl https://gitlab.com/illwieckz/git-checkout-modules/raw/master/git-checkout-modules -o ~/git-checkout-modules

@@ -25,6 +25,16 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #ifndef G_GAMEPLAY_H_
 #define G_GAMEPLAY_H_
 
+/* Common constants for the build weapons for both teams.
+ */
+
+// Pressing +deconstruct for less than this many milliseconds toggles the deconstruction mark
+#define BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE 200
+// Holding +deconstruct for this many milliseconds force-deconstructs a buildable
+#define BUILDER_LONG_DECONSTRUCT_CHARGE 800
+
+#define BUILDER_DECONSTRUCT_RANGE 100
+
 /*
  * ALIEN weapons
  */
@@ -50,7 +60,7 @@ extern float LEVEL1_CLAW_RANGE;
 extern float LEVEL1_CLAW_U_RANGE;
 extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_POUNCE_DISTANCE        300 // pitch between LEVEL1_POUNCE_MINPITCH and pi/4 results in this distance
-#define LEVEL1_POUNCE_MINPITCH        M_PI / 12.0f // 15°, minimum pitch that will result in full pounce distance
+#define LEVEL1_POUNCE_MINPITCH        (M_PI / 12.0f) // 15°, minimum pitch that will result in full pounce distance
 #define LEVEL1_POUNCE_COOLDOWN        2000
 #define LEVEL1_WALLPOUNCE_MAGNITUDE   600
 #define LEVEL1_WALLPOUNCE_COOLDOWN    1200
@@ -286,8 +296,8 @@ extern int   MEDKIT_STARTUP_SPEED;
 #define JETPACK_FUEL_USAGE            6     // in 1/ms
 #define JETPACK_FUEL_PER_DMG          300   // per damage point received (before armor mod is applied)
 #define JETPACK_FUEL_RESTORE          3     // in 1/ms
-#define JETPACK_FUEL_IGNITE           JETPACK_FUEL_MAX / 20        // used when igniting the engine
-#define JETPACK_FUEL_LOW              JETPACK_FUEL_MAX / 5         // jetpack doesn't start from a jump below this
+#define JETPACK_FUEL_IGNITE           (JETPACK_FUEL_MAX / 20)      // used when igniting the engine
+#define JETPACK_FUEL_LOW              (JETPACK_FUEL_MAX / 5)       // jetpack doesn't start from a jump below this
 #define JETPACK_FUEL_STOP             (JETPACK_FUEL_RESTORE * 150) // jetpack doesn't activate below this
 #define JETPACK_FUEL_REFUEL           (JETPACK_FUEL_MAX - JETPACK_FUEL_USAGE * 1000)
 

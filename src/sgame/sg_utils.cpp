@@ -890,3 +890,20 @@ team_t G_IterateTeams( team_t team )
 float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
 	return Distance(ent1->s.origin, ent2->s.origin);
 }
+
+float G_DistanceToBBox( const vec3_t origin, gentity_t* ent )
+{
+	float distanceSquared = 0.0f;
+	for ( int i = 0; i < 3; i++ )
+	{
+		if ( origin[ i ] < ent->r.absmin [i ] )
+		{
+			distanceSquared += Square( ent->r.absmin[ i ] - origin[ i ] );
+		}
+		else if ( origin[ i ] > ent->r.absmax[ i ] )
+		{
+			distanceSquared += Square( origin[ i ] - ent->r.absmax[ i ] );
+		}
+	}
+	return sqrtf( distanceSquared );
+}

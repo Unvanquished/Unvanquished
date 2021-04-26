@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
 
+#define UNNAMED_BOT "[bot] Bot"
+
 struct botEntityAndDistance_t
 {
 	gentity_t *ent;
@@ -92,6 +94,8 @@ struct botMemory_t
 	int lastThink;
 	int stuckTime;
 	vec3_t stuckPosition;
+
+	int spawnTime;
 };
 
 constexpr int BOT_DEFAULT_SKILL = 5;
@@ -99,6 +103,8 @@ const char BOT_DEFAULT_BEHAVIOR[] = "default";
 const char BOT_NAME_FROM_LIST[] = "*";
 
 bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler = false );
+void G_BotChangeBehavior( int clientNum, const char* behavior );
+bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior );
 bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
 void     G_BotDel( int clientNum );
 void     G_BotDelAllBots();

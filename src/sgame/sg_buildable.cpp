@@ -48,7 +48,7 @@ bool G_IsWarnableMOD(meansOfDeath_t mod) {
 static gentity_t *FindBuildable(buildable_t buildable) {
 	gentity_t* found = nullptr;
 
-	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
+	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent&) {
 		if (entity.oldEnt->s.modelindex == buildable) {
 			found = entity.oldEnt;
 		}
@@ -105,6 +105,8 @@ gentity_t *G_ActiveMainBuildable(team_t team) {
 
 /**
  * @return The distance of an entity to its own base or a huge value if the base is not found.
+ *
+ * Please keep it in sync with CG_DistanceToBase
  */
 float G_DistanceToBase(gentity_t *self) {
 	gentity_t *mainBuilding = G_MainBuildable(G_Team(self));
@@ -130,6 +132,20 @@ bool G_InsideBase(gentity_t *self) {
 	}
 
 	return trap_InPVSIgnorePortals(self->s.origin, mainBuilding->s.origin);
+}
+
+bool G_DretchCanDamageEntity( const gentity_t *self, const gentity_t *ent )
+{
+	switch (ent->s.eType)
+	{
+		case entityType_t::ET_PLAYER:
+			return true;
+		case entityType_t::ET_BUILDABLE:
+			// dretches can only bite buildables in construction or turrets
+			return !ent->spawned || BG_Buildable( ent->s.modelindex )->dretchAttackable;
+		default:
+			ASSERT_UNREACHABLE();
+	}
 }
 
 /**
@@ -330,7 +346,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 
 void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 {
-	gentity_t *target = self->target;
+	gentity_t *target = self->target.entity;
 	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
 	float     distanceToTarget = LOCKBLOB_RANGE;
@@ -380,7 +396,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	self->customNumber = level.time + firespeed;
 }
 
-bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
+bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range )
 {
 	vec3_t  distance;
 	trace_t trace;
@@ -395,7 +411,7 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return false;
 	}
 
-	if ( target == self ) // is the target us?
+	if ( target.entity == self ) // is the target us?
 	{
 		return false;
 	}
@@ -420,7 +436,7 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 		return false;
 	}
 
-	if ( Entities::IsDead( target ) ) // is the target still alive?
+	if ( Entities::IsDead( target.entity ) ) // is the target still alive?
 	{
 		return false;
 	}
@@ -458,7 +474,7 @@ bool ATrapper_CheckTarget( gentity_t *self, gentity_t *target, int range )
 
 void ATrapper_FindEnemy( gentity_t *ent, int range )
 {
-	gentity_t *target;
+	GentityRef target;
 	int       i;
 	int       start;
 
@@ -554,9 +570,13 @@ void HMedistat_Think( gentity_t *self )
 	{
 		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
 	}
+	else
+	{
+		self->target = nullptr;
+	}
 
 	// clear target on power loss
-	if ( !self->powered )
+	if ( !self->powered || Entities::IsDead(self) )
 	{
 		self->medistationIsHealing = false;
 		self->target = nullptr;
@@ -582,7 +602,7 @@ void HMedistat_Think( gentity_t *self )
 		player = &g_entities[ entityList[ playerNum ] ];
 		client = player->client;
 
-		if ( self->target == player && PM_Live( client->ps.pm_type ) &&
+		if ( self->target.entity == player && PM_Live( client->ps.pm_type ) &&
 			 ( !player->entity->Get<HealthComponent>()->FullHealth() ||
 		       client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
 		{
@@ -646,7 +666,7 @@ void HMedistat_Think( gentity_t *self )
 	// if we have a target, heal it
 	if ( self->target && self->target->client )
 	{
-		player = self->target;
+		player = self->target.entity;
 		client = player->client;
 		client->ps.stats[ STAT_STATE ] |= SS_HEALING_2X;
 
@@ -791,7 +811,12 @@ void G_UpdateBuildablePowerStates()
 			std::sort(unpoweredBuildables.begin(), unpoweredBuildables.end(), CompareBuildablesForPowerSaving);
 			for (auto it = unpoweredBuildables.rbegin(); it != unpoweredBuildables.rend(); ++it) {
 				int buildableCost = BG_Buildable((*it)->oldEnt->s.modelindex)->buildPoints;
+
+				// not cheap enough
 				if (surplus < buildableCost) continue;
+				// don't switch on unpowered buildables on destruction
+				if (!(*it)->Get<HealthComponent>()->Alive()) continue;
+
 				(*it)->Get<BuildableComponent>()->SetPowerState(true);
 				surplus -= buildableCost;
 			}
@@ -1037,6 +1062,50 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	return aPrecedence - bPrecedence;
 }
 
+gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
+{
+	vec3_t viewOrigin, forward, end;
+	trace_t trace;
+	gentity_t *buildable;
+
+	// Check for revoked building rights.
+	if ( ent->client->pers.namelog->denyBuild )
+	{
+		G_TriggerMenu( ent->client->ps.clientNum, MN_B_REVOKED );
+		return nullptr;
+	}
+
+	// Trace for target.
+	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
+	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
+	VectorMA( viewOrigin, BUILDER_DECONSTRUCT_RANGE, forward, end );
+	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	buildable = &g_entities[ trace.entityNum ];
+
+	// Check if target is valid.
+	if ( trace.fraction >= 1.0f ||
+	     buildable->s.eType != entityType_t::ET_BUILDABLE ||
+	     !G_OnSameTeam( ent, buildable ) )
+	{
+		return nullptr;
+	}
+
+	return buildable;
+}
+
+bool G_DeconstructDead( gentity_t *buildable )
+{
+	// Always let the builder prevent the explosion of a buildable.
+	if ( Entities::IsDead( buildable ) )
+	{
+		G_RewardAttackers( buildable );
+		G_FreeEntity( buildable );
+		return true;
+	}
+
+	return false;
+}
+
 void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
 	if ( !self || self->s.eType != entityType_t::ET_BUILDABLE )
@@ -1063,6 +1132,53 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 
 	// TODO: Check if freeing needs to be deferred.
 	G_FreeEntity( self );
+}
+
+// Returns true and warns the player if they are not allowed to decon it
+bool G_CheckDeconProtectionAndWarn( gentity_t *buildable, gentity_t *player )
+{
+	if ( g_instantBuilding.integer )
+	{
+		return false;
+	}
+	switch ( buildable->s.modelindex )
+	{
+		case BA_A_OVERMIND:
+		case BA_H_REACTOR:
+			G_TriggerMenu( player->client->ps.clientNum, MN_B_MAINSTRUCTURE );
+			return true;
+
+		case BA_A_SPAWN:
+		case BA_H_SPAWN:
+			if ( level.team[ player->client->ps.persistant[ PERS_TEAM ] ].numSpawns <= 1 )
+			{
+				G_TriggerMenu( player->client->ps.clientNum, MN_B_LASTSPAWN );
+				return true;
+			}
+			break;
+	}
+	return false;
+}
+
+void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
+{
+	if ( !g_instantBuilding.integer )
+	{
+		// Check if the buildable is protected from instant deconstruction.
+		G_CheckDeconProtectionAndWarn( buildable, ent );
+
+		// Deny if build timer active.
+		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
+		{
+			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+			return;
+		}
+
+		// Add to build timer.
+		ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
+	}	
+
+	G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
 }
 
 /**

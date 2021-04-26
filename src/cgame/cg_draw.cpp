@@ -41,17 +41,8 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 	char  num[ 16 ], *ptr;
 	int   l;
 	int   frame;
-	float charWidth, charHeight;
-
-	if ( !( charWidth = cw ) )
-	{
-		charWidth = CGAME_CHAR_WIDTH;
-	}
-
-	if ( !( charHeight = ch ) )
-	{
-		charHeight = CGAME_CHAR_HEIGHT;
-	}
+	float charWidth = (cw != 0.0f ? cw : CGAME_CHAR_WIDTH);
+	float charHeight = (ch != 0.0f ? ch : CGAME_CHAR_HEIGHT);
 
 	if ( width < 1 )
 	{
@@ -117,7 +108,7 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 	}
 }
 
-void CG_MouseEvent( int dx, int dy )
+void CG_MouseEvent( int /*dx*/, int /*dy*/ )
 {
 }
 
@@ -220,19 +211,19 @@ static void CG_DrawBeacon( cbeacon_t *b )
 	                       CG_BeaconIcon( b ) );
 
 	if( b->flags & EF_BC_DYING )
-		trap_R_DrawStretchPic( b->pos[ 0 ] - b->size/2 * 1.3,
-		                       b->pos[ 1 ] - b->size/2 * 1.3,
-		                       b->size * 1.3, b->size * 1.3,
+		trap_R_DrawStretchPic( b->pos[ 0 ] - b->size/2 * 1.3f,
+		                       b->pos[ 1 ] - b->size/2 * 1.3f,
+		                       b->size * 1.3f, b->size * 1.3f,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconNoTarget );
 
 	if ( b->clamped )
-		trap_R_DrawRotatedPic( b->pos[ 0 ] - b->size/2 * 1.5,
-		                       b->pos[ 1 ] - b->size/2 * 1.5,
-		                       b->size * 1.5, b->size * 1.5,
+		trap_R_DrawRotatedPic( b->pos[ 0 ] - b->size/2 * 1.5f,
+		                       b->pos[ 1 ] - b->size/2 * 1.5f,
+		                       b->size * 1.5f, b->size * 1.5f,
 		                       0, 0, 1, 1,
 		                       cgs.media.beaconIconArrow,
-		                       270.0 - ( angle = atan2( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 / M_PI );
+		                       270.0f - ( angle = atan2f( b->clamp_dir[ 1 ], b->clamp_dir[ 0 ] ) ) * 180 / M_PI );
 
 	if( b->type == BCT_TIMER )
 	{
@@ -247,7 +238,7 @@ static void CG_DrawBeacon( cbeacon_t *b )
 			vec2_t pos, dir, rect[ 2 ];
 			int i, l, frame;
 
-			h = b->size * 0.4;
+			h = b->size * 0.4f;
 			p = va( "%d", num );
 			l = strlen( p );
 			tw = h * l;
@@ -402,13 +393,11 @@ static void CG_PainBlend()
 		                     cg_painBlendDownRate.value;
 	}
 
-	if ( cg.painBlendValue > 1.0f )
+	cg.painBlendValue = Math::Clamp( cg.painBlendValue, 0.0f, 1.0f );
+
+	// no work to do
+	if ( cg.painBlendValue == 0.0f )
 	{
-		cg.painBlendValue = 1.0f;
-	}
-	else if ( cg.painBlendValue <= 0.0f )
-	{
-		cg.painBlendValue = 0.0f;
 		return;
 	}
 
@@ -531,24 +520,21 @@ static void CG_DrawBinaryShadersFinalPhases()
 		return;
 	}
 
-	ss = cg_binaryShaderScreenScale.value;
+	ss = Math::Clamp( cg_binaryShaderScreenScale.value, 0.0f, 1.0f );
 
-	if ( ss <= 0.0f )
+	// no work to do
+	if ( ss == 0.0f )
 	{
 		cg.numBinaryShadersUsed = 0;
 		return;
 	}
-	else if ( ss > 1.0f )
-	{
-		ss = 1.0f;
-	}
 
-	ss = sqrt( ss );
+	ss = sqrtf( ss );
 
 	trap_Cvar_VariableStringBuffer( "r_znear", str, sizeof( str ) );
 	f = atof( str ) + 0.01;
-	l = f * tan( DEG2RAD( cg.refdef.fov_x / 2 ) ) * ss;
-	u = f * tan( DEG2RAD( cg.refdef.fov_y / 2 ) ) * ss;
+	l = f * tanf( DEG2RAD( cg.refdef.fov_x / 2 ) ) * ss;
+	u = f * tanf( DEG2RAD( cg.refdef.fov_y / 2 ) ) * ss;
 
 	VectorMA( cg.refdef.vieworg, f, cg.refdef.viewaxis[ 0 ], verts[ 0 ].xyz );
 	VectorMA( verts[ 0 ].xyz, l, cg.refdef.viewaxis[ 1 ], verts[ 0 ].xyz );

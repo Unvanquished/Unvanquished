@@ -161,7 +161,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			char* token = COM_Parse2( &text_p );
 			if ( !token || *token != '{' )
 			{
-				Log::Notice( "^1ERROR^*: Expected '{' but found '%s' in %s's character.cfg", token, ci->modelName );
+				Log::Warn( "Expected '{' but found '%s' in %s's character.cfg, skipping", token, ci->modelName );
 				continue;
 			}
 			while ( 1 )
@@ -304,8 +304,8 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	return true;
 }
 
-static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName, int anim, const char *animName,
-                                            bool loop, bool reversed, bool clearOrigin )
+static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName, int anim,
+		const char *animName, bool loop, bool reversed, bool clearOrigin )
 {
 	char filename[ MAX_QPATH ], newModelName[ MAX_QPATH ];
 	int  frameRate;
@@ -338,7 +338,7 @@ static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName,
 	{
 		if ( cg_debugAnim.integer )
 		{
-			Log::Notice( "Failed to load animation file %s\n", filename );
+			Log::Warn( "Failed to load animation file %s", filename );
 		}
 
 		return false;
@@ -1175,7 +1175,7 @@ NSPA_STAND, "idle", true, false, false )
 
 	if ( !CG_ParseAnimationFile( filename, ci ) )
 	{
-		Log::Notice( "Failed to load animation file %s\n", filename );
+		Log::Warn( "Failed to load animation file %s", filename );
 		return false;
 	}
 
@@ -1677,7 +1677,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 {
 	bool animChanged = false;
 
-    // see if the animation sequence is switching
+	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
 		CG_SetLerpFrameAnimation( ci, lf, newAnimation, skel );
@@ -2172,7 +2172,7 @@ static void CG_PlayerWWSmoothing( centity_t *cent, vec3_t in[ 3 ], vec3_t out[ 3
 			           DotProduct( inAxis[ 1 ], lastAxis[ 1 ] ) +
 			           DotProduct( inAxis[ 2 ], lastAxis[ 2 ] );
 
-			rotAngle = RAD2DEG( acos( ( rotAngle - 1.0f ) / 2.0f ) );
+			rotAngle = RAD2DEG( acosf( ( rotAngle - 1.0f ) / 2.0f ) );
 
 			CrossProduct( lastAxis[ 0 ], inAxis[ 0 ], temp );
 			VectorCopy( temp, rotAxis );
@@ -2206,7 +2206,7 @@ static void CG_PlayerWWSmoothing( centity_t *cent, vec3_t in[ 3 ], vec3_t out[ 3
 		if ( cg.time < cent->pe.sList[ i ].time + MODEL_WWSMOOTHTIME )
 		{
 			stLocal = 1.0f - ( ( ( cent->pe.sList[ i ].time + MODEL_WWSMOOTHTIME ) - cg.time ) / MODEL_WWSMOOTHTIME );
-			sFraction = - ( cos( stLocal * M_PI ) + 1.0f ) / 2.0f;
+			sFraction = - ( cosf( stLocal * M_PI ) + 1.0f ) / 2.0f;
 
 			RotatePointAroundVector( outAxis[ 0 ], cent->pe.sList[ i ].rotAxis,
 			                         inAxis[ 0 ], sFraction * cent->pe.sList[ i ].rotAngle );
@@ -2417,12 +2417,6 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 
 static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 {
-	static refEntity_t jetpack; // static for proper alignment in QVMs
-
-	// TODO: Remove this QVM relic.
-	// jetpack and battpack are never both in use together
-#	define radar jetpack
-
 	int           held, publicFlags;
 	entityState_t *es = &cent->currentState;
 
@@ -2432,7 +2426,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	// jetpack model and effects
 	if ( held & ( 1 << UP_JETPACK ) )
 	{
-		memset( &jetpack, 0, sizeof( jetpack ) );
+		refEntity_t jetpack{};
 		VectorCopy( torso->lightingOrigin, jetpack.lightingOrigin );
 		jetpack.renderfx = torso->renderfx;
 
@@ -2529,7 +2523,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 	// battery pack
 	if ( held & ( 1 << UP_RADAR ) )
 	{
-		memset( &radar, 0, sizeof( radar ) );
+		refEntity_t radar{};
 		VectorCopy( torso->lightingOrigin, radar.lightingOrigin );
 		radar.renderfx = torso->renderfx;
 
@@ -2579,7 +2573,6 @@ Float a sprite over the player's head
 static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 {
 	int         rf;
-	static refEntity_t ent; // static for proper alignment in QVMs
 
 	if ( cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson )
 	{
@@ -2590,7 +2583,7 @@ static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 		rf = 0;
 	}
 
-	memset( &ent, 0, sizeof( ent ) );
+	refEntity_t ent{};
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	ent.origin[ 2 ] += 48;
 	ent.reType = refEntityType_t::RT_SPRITE;
@@ -2912,11 +2905,6 @@ CG_Player
 void CG_Player( centity_t *cent )
 {
 	clientInfo_t *ci;
-
-	// NOTE: legs is used for nonsegmented and skeletal models
-	//       this helps reduce code to be changed
-	refEntity_t legs, torso, head;
-
 	int           clientNum;
 	int           renderfx;
 	entityState_t *es = &cent->currentState;
@@ -2986,9 +2974,9 @@ void CG_Player( centity_t *cent )
 		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 	}
 
-	memset( &legs,    0, sizeof( legs ) );
-	memset( &torso,   0, sizeof( torso ) );
-	memset( &head,    0, sizeof( head ) );
+	// NOTE: legs is used for nonsegmented and skeletal models
+	//       this helps reduce code to be changed
+	refEntity_t legs{}, torso{}, head{};
 
 	VectorCopy( cent->lerpAngles, angles );
 	AnglesToAxis( cent->lerpAngles, tempAxis );
@@ -3422,7 +3410,6 @@ CG_Corpse
 */
 void CG_Corpse( centity_t *cent )
 {
-	refEntity_t   legs, torso, head;
 	clientInfo_t  *ci;
 	entityState_t *es = &cent->currentState;
 	int           corpseNum;
@@ -3446,9 +3433,7 @@ void CG_Corpse( centity_t *cent )
 		return;
 	}
 
-	memset( &legs, 0, sizeof( legs ) );
-	memset( &torso, 0, sizeof( torso ) );
-	memset( &head, 0, sizeof( head ) );
+	refEntity_t legs{}, torso{}, head{};
 
 	VectorCopy( cent->lerpOrigin, origin );
 	BG_ClassBoundingBox( es->clientNum, liveZ, nullptr, nullptr, deadZ, deadMax );
@@ -3482,7 +3467,7 @@ void CG_Corpse( centity_t *cent )
 		if ( ci->gender == GENDER_NEUTER )
 		{
 			memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
-			CG_RunCorpseLerpFrame( ci, &cent->pe.nonseg, NSPA_DEATH1 );
+			CG_RunCorpseLerpFrame( ci, &cent->pe.nonseg, es->legsAnim );
 			legs.oldframe = cent->pe.nonseg.oldFrame;
 			legs.frame = cent->pe.nonseg.frame;
 			legs.backlerp = cent->pe.nonseg.backlerp;
@@ -3490,7 +3475,7 @@ void CG_Corpse( centity_t *cent )
 		else
 		{
 			memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
-			CG_RunCorpseLerpFrame( ci, &cent->pe.legs, BOTH_DEATH1 );
+			CG_RunCorpseLerpFrame( ci, &cent->pe.legs, es->legsAnim );
 			legs.oldframe = cent->pe.legs.oldFrame;
 			legs.frame = cent->pe.legs.frame;
 			legs.backlerp = cent->pe.legs.backlerp;
@@ -3752,7 +3737,7 @@ void CG_InitClasses()
 
 		if ( icon )
 		{
-			cg_classes[ i ].classIcon = trap_R_RegisterShader( icon, RSF_DEFAULT );
+			cg_classes[ i ].classIcon = trap_R_RegisterShader( icon, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 			if ( !cg_classes[ i ].classIcon )
 			{

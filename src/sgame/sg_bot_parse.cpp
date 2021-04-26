@@ -234,6 +234,11 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( false );
 }
 
+static AIValue_t matchTime( gentity_t*, const AIValue_t* )
+{
+	return AIBoxInt( level.matchTime );
+}
+
 static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
@@ -268,6 +273,11 @@ static AIValue_t humanMomentum( gentity_t*, const AIValue_t* )
 static AIValue_t alienMomentum( gentity_t*, const AIValue_t* )
 {
 	return AIBoxInt( level.team[ TEAM_ALIENS ].momentum );
+}
+
+static AIValue_t aliveTime( gentity_t*self, const AIValue_t* )
+{
+	return AIBoxInt( level.time - self->botMind->spawnTime );
 }
 
 static AIValue_t randomChance( gentity_t*, const AIValue_t* )
@@ -329,7 +339,8 @@ static const struct AIConditionMap_s
 } conditionFuncs[] =
 {
 	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
-	{ "alienMomentum",   VALUE_INT,   alienMomentum,   0 },
+	{ "alienMomentum",     VALUE_INT,   alienMomentum,     0 },
+	{ "aliveTime",         VALUE_INT,   aliveTime,         0 },
 	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
 	{ "canEvolveTo",       VALUE_INT,   botCanEvolveTo,    1 },
@@ -345,9 +356,10 @@ static const struct AIConditionMap_s
 	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
 	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
 	{ "healScore",         VALUE_FLOAT, healScore,         0 },
-	{ "humanMomentum",   VALUE_INT,   humanMomentum,   0 },
+	{ "humanMomentum",     VALUE_INT,   humanMomentum,     0 },
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
+	{ "matchTime",         VALUE_INT,   matchTime,         0 },
 	{ "percentAmmo",       VALUE_FLOAT, percentAmmo,       0 },
 	{ "percentHealth",     VALUE_FLOAT, percentHealth,     1 },
 	{ "random",            VALUE_FLOAT, randomChance,      0 },
@@ -519,7 +531,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 		{
 			numParams++;
 		}
-		else if ( parse->token.string[ 0 ] != ',' )
+		else if ( parse->token.string[ 0 ] != ',' && parse->token.string[ 0 ] != '-' )
 		{
 			Log::Warn( "Invalid token %s in parameter list on line %d", parse->token.string, parse->token.line );
 			*list = parenEnd->next; // skip invalid function expression
@@ -918,7 +930,7 @@ static const struct AIActionMap_s
 	{ "aimAtGoal",         BotActionAimAtGoal,         0, 0 },
 	{ "alternateStrafe",   BotActionAlternateStrafe,   0, 0 },
 	{ "buy",               BotActionBuy,               1, 4 },
-	{ "changeGoal",        BotActionChangeGoal,        1, 1 },
+	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
 	{ "classDodge",        BotActionClassDodge,        0, 0 },
 	{ "deactivateUpgrade", BotActionDeactivateUpgrade, 1, 1 },
 	{ "equip",             BotActionBuy,               0, 0 },
@@ -927,6 +939,7 @@ static const struct AIActionMap_s
 	{ "fight",             BotActionFight,             0, 0 },
 	{ "fireWeapon",        BotActionFireWeapon,        0, 0 },
 	{ "flee",              BotActionFlee,              0, 0 },
+	{ "gesture",           BotActionGesture,           0, 0 },
 	{ "heal",              BotActionHeal,              0, 0 },
 	{ "jump",              BotActionJump,              0, 0 },
 	{ "moveInDir",         BotActionMoveInDir,         1, 2 },
@@ -940,6 +953,7 @@ static const struct AIActionMap_s
 	{ "say",               BotActionSay,               2, 2 },
 	{ "strafeDodge",       BotActionStrafeDodge,       0, 0 },
 	{ "suicide",           BotActionSuicide,           0, 0 },
+	{ "teleport",          BotActionTeleport,          3, 3 },
 };
 
 /*

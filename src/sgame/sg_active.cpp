@@ -30,6 +30,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 bool ClientInactivityTimer( gentity_t *ent, bool active );
 
+static Cvar::Cvar<float> g_devolveReturnRate(
+	"g_devolveReturnRate", "Evolution points per second returned after devolving", Cvar::NONE, 0.4);
+
 /*
 ===============
 P_DamageFeedback
@@ -636,6 +639,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
 		client->ps.stats[ STAT_CLASS ] = PCL_NONE;
 		client->ps.weapon = WP_NONE;
+		client->ps.weaponCharge = 0;
 
 		// Set up for pmove
 		memset( &pm, 0, sizeof( pm ) );
@@ -1064,6 +1068,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
 			}
 		}
+
+		int devolveReturnedCredits = std::min(
+			static_cast<int>(g_devolveReturnRate.Get() * CREDITS_PER_EVO), client->pers.devolveReturningCredits );
+		client->pers.devolveReturningCredits -= devolveReturnedCredits;
+		G_AddCreditToClient( client, devolveReturnedCredits, true );
 	}
 
 	while ( client->time10000 >= 10000 )
@@ -1099,8 +1108,7 @@ void ClientIntermissionThink( gclient_t *client )
 	usercmdCopyButtons( client->oldbuttons, client->buttons );
 	usercmdCopyButtons( client->buttons, client->pers.cmd.buttons );
 
-	if ( ( usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) ||
-	       usercmdButtonPressed( client->buttons, BUTTON_USE_HOLDABLE ) ) &&
+	if ( usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
 	     usercmdButtonsDiffer( client->oldbuttons, client->buttons ) )
 	{
 		client->readyToExit = 1;
@@ -1182,6 +1190,18 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 
 			case EV_FIRE_WEAPON3:
 				G_FireWeapon( ent, ( weapon_t )ent->s.weapon, WPM_TERTIARY );
+				break;
+
+			case EV_FIRE_DECONSTRUCT:
+				G_FireWeapon( ent, ( weapon_t )ent->s.weapon, WPM_DECONSTRUCT );
+				break;
+
+			case EV_FIRE_DECONSTRUCT_LONG:
+				G_FireWeapon( ent, ( weapon_t )ent->s.weapon, WPM_DECONSTRUCT_LONG );
+				break;
+
+			case EV_DECONSTRUCT_SELECT_TARGET:
+				G_FireWeapon( ent, ( weapon_t )ent->s.weapon, WPM_DECONSTRUCT_SELECT_TARGET );
 				break;
 
 			case EV_NOAMMO:
@@ -1817,13 +1837,11 @@ void ClientThink_real( gentity_t *self )
 	if ( ucmd->serverTime > level.time + 200 )
 	{
 		ucmd->serverTime = level.time + 200;
-//    Log::Debug("serverTime <<<<<" );
 	}
 
 	if ( ucmd->serverTime < level.time - 1000 )
 	{
 		ucmd->serverTime = level.time - 1000;
-//    Log::Debug("serverTime >>>>>" );
 	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
@@ -2064,7 +2082,7 @@ void ClientThink_real( gentity_t *self )
 	switch ( client->ps.weapon )
 	{
 		case WP_ALEVEL0:
-			if ( !G_CheckVenomAttack( self ) )
+			if ( !G_CheckDretchAttack( self ) )
 			{
 				client->ps.weaponstate = WEAPON_READY;
 			}

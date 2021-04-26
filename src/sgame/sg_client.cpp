@@ -453,55 +453,13 @@ static void SpawnCorpse( gentity_t *ent )
 	body->think = BodySink;
 	body->nextthink = level.time + 20000;
 
-	body->s.legsAnim = ent->s.legsAnim;
-
-	if ( !body->nonSegModel )
-	{
-		switch ( body->s.legsAnim & ~ANIM_TOGGLEBIT )
-		{
-			case BOTH_DEATH1:
-			case BOTH_DEAD1:
-				body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD1;
-				break;
-
-			case BOTH_DEATH2:
-			case BOTH_DEAD2:
-				body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD2;
-				break;
-
-			case BOTH_DEATH3:
-			case BOTH_DEAD3:
-			default:
-				body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD3;
-				break;
-		}
-	}
-	else
-	{
-		switch ( body->s.legsAnim & ~ANIM_TOGGLEBIT )
-		{
-			case NSPA_DEATH1:
-			case NSPA_DEAD1:
-				body->s.legsAnim = NSPA_DEAD1;
-				break;
-
-			case NSPA_DEATH2:
-			case NSPA_DEAD2:
-				body->s.legsAnim = NSPA_DEAD2;
-				break;
-
-			case NSPA_DEATH3:
-			case NSPA_DEAD3:
-			default:
-				body->s.legsAnim = NSPA_DEAD3;
-				break;
-		}
-	}
+	body->s.torsoAnim = body->s.legsAnim = ent->s.legsAnim;
 
 	//change body dimensions
 	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, nullptr, nullptr, body->r.mins, body->r.maxs );
 
 	//drop down to match the *model* origins of ent and body
+	// FIXME: find some way to handle when DEATH2 and DEATH3 need a different min
 	origin[2] += mins[ 2 ] - body->r.mins[ 2 ];
 
 	G_SetOrigin( body, origin );
@@ -573,52 +531,6 @@ void respawn( gentity_t *ent )
 	}
 }
 
-static bool G_IsEmoticon( const char *s, bool *escaped )
-{
-	int        i, j;
-	const char *p = s;
-	char       emoticon[ MAX_EMOTICON_NAME_LEN ] = { "" };
-	bool   escape = false;
-
-	if ( *p != '[' )
-	{
-		return false;
-	}
-
-	p++;
-
-	if ( *p == '[' )
-	{
-		escape = true;
-		p++;
-	}
-
-	i = 0;
-
-	while ( *p && i < ( MAX_EMOTICON_NAME_LEN - 1 ) )
-	{
-		if ( *p == ']' )
-		{
-			for ( j = 0; j < level.emoticonCount; j++ )
-			{
-				if ( !Q_stricmp( emoticon, level.emoticons[ j ].name ) )
-				{
-					*escaped = escape;
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		emoticon[ i++ ] = *p;
-		emoticon[ i ] = '\0';
-		p++;
-	}
-
-	return false;
-}
-
 /*
 ===========
 G_IsUnnamed
@@ -640,6 +552,14 @@ bool G_IsUnnamed( const char *name )
 
 	if ( g_unnamedNumbering.integer && length &&
 	     !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
+	{
+		return true;
+	}
+
+	length = strlen( g_unnamedBotNamePrefix.string );
+
+	if ( g_unnamedNumbering.integer && length &&
+	     !Q_strnicmp( testName, g_unnamedBotNamePrefix.string, length ) )
 	{
 		return true;
 	}
@@ -710,9 +630,23 @@ static const char *G_UnnamedClientName( gclient_t *client )
 	}
 
 	client->pers.namelog->unnamedNumber = number;
-	Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-	             g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER"#",
-	             number );
+
+	gentity_t *ent;
+	int clientNum = client - level.clients;
+	ent = g_entities + clientNum;
+
+	if ( ent->r.svFlags & SVF_BOT )
+	{
+		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
+			g_unnamedBotNamePrefix.string[ 0 ] ? g_unnamedBotNamePrefix.string : UNNAMED_BOT "#",
+			number );
+	}
+	else
+	{
+		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
+			g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER "#",
+			number );
+	}
 
 	return name;
 }
@@ -731,10 +665,11 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 	std::string out_string;
 	bool        hasletter = false;
 	int         spaces = 0;
+	std::string lastColor = "^*";
 
 	for ( const auto& token : Color::Parser( in ) )
 	{
-		if ( out_string.size() + token.Size() > outSize )
+		if ( out_string.size() + token.Size() >= outSize )
 		{
 			break;
 		}
@@ -757,28 +692,14 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 				continue;
 			}
 
-			bool escaped_emote = false;
 			// single trailing ^ will mess up some things
 			if ( cp == Color::Constants::ESCAPE && !*token.End() )
 			{
-				if ( out_string.size() + 2 > outSize )
+				if ( out_string.size() + 2 >= outSize )
 				{
 					break;
 				}
 				out_string += Color::Constants::ESCAPE;
-			}
-			else if ( !g_emoticonsAllowedInNames.integer && G_IsEmoticon( in, &escaped_emote ) )
-			{
-				if ( out_string.size() + 2 + token.Size() > outSize )
-				{
-					break;
-				}
-
-				out_string += "[[";
-				if ( escaped_emote )
-				{
-					continue;
-				}
 			}
 
 			if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
@@ -806,8 +727,21 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 		{
 			has_visible_characters = true;
 		}
+		else if ( token.Type() == Color::Token::TokenType::COLOR )
+		{
+			lastColor.assign( token.Begin(), token.End() );
+		}
 
 		out_string.append(token.Begin(), token.Size());
+
+		if ( !g_emoticonsAllowedInNames.integer && BG_EmoticonAt( token.Begin() ) )
+		{
+			if ( out_string.size() + lastColor.size() >= outSize )
+			{
+				break;
+			}
+			out_string += lastColor; // Prevent the emoticon parsing by inserting a color code
+		}
 	}
 
 	bool invalid = false;
@@ -1615,7 +1549,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
 
-	ClientSpawnCBSE(ent, ent == spawn);
+	bool evolving = ent == spawn;
+	ClientSpawnCBSE(ent, evolving);
 
 	index = ent - g_entities;
 	client = ent->client;
@@ -1720,6 +1655,14 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->pers = saved;
 	client->sess = savedSess;
 	client->ps.ping = savedPing;
+	if (evolving)
+	{
+		client->ps.weaponTime = 500;
+	}
+	else
+	{
+		client->pers.devolveReturningCredits = 0;
+	}
 	client->noclip = savedNoclip;
 	client->cliprcontents = savedCliprcontents;
 
@@ -1759,8 +1702,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// calculate each client's acceleration
 	ent->evaluateAcceleration = true;
 
-	client->ps.stats[ STAT_MISC ] = 0;
-
 	client->ps.eFlags = flags;
 	client->ps.clientNum = index;
 
@@ -1785,10 +1726,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	maxClips = BG_Weapon( weapon )->maxClips;
 	client->ps.stats[ STAT_WEAPON ] = weapon;
 	client->ps.ammo = maxAmmo;
-	if( ent->client->pers.classSelection == PCL_ALIEN_LEVEL3_UPG )
-	{
-		client->ps.ammo = 1;
-	}
 	client->ps.clips = maxClips;
 
 	// We just spawned, not changing weapons
@@ -1796,13 +1733,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	client->ps.persistant[ PERS_TEAM ] = client->pers.team;
 
-	// TODO: Check whether stats can be cleared at once instead of per field
 	client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 	client->ps.stats[ STAT_FUEL ]    = JETPACK_FUEL_MAX;
 	client->ps.stats[ STAT_CLASS ] = ent->client->pers.classSelection;
-	client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-	client->ps.stats[ STAT_PREDICTION ] = 0;
-	client->ps.stats[ STAT_STATE ] = 0;
 
 	VectorSet( client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 
@@ -1884,7 +1817,14 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// set default animations
 	client->ps.torsoAnim = TORSO_STAND;
-	client->ps.legsAnim = LEGS_IDLE;
+	if ( client->ps.persistant[ PERS_STATE ] & PS_NONSEGMODEL )
+	{
+		client->ps.legsAnim = NSPA_STAND;
+	}
+	else
+	{
+		client->ps.legsAnim = LEGS_IDLE;
+	}
 
 	if ( level.intermissiontime )
 	{
@@ -1914,7 +1854,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
-	client->ps.commandTime = level.time - 100;
+	// use smaller move duration when evolving to prevent cheats such as
+	// evolving several times to run down the attack cooldown
+	client->ps.commandTime = level.time - (evolving ? 1 : 100);
 	ent->client->pers.cmd.serverTime = level.time;
 	ClientThink( ent - g_entities );
 

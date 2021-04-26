@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cg_event.c -- handle entity events at snapshot or playerstate transitions
 
 #include "cg_local.h"
+#include "rocket/rocket.h"
 
 /*
 =============
@@ -621,6 +622,12 @@ void CG_OnPlayerWeaponChange()
 	{
 		CG_Rocket_BuildArmourySellList( "default" );
 		CG_Rocket_BuildArmouryBuyList( "default" );
+
+		Rocket::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
+		if ( document->IsVisible() )
+		{
+			document->DispatchEvent( "refreshdata", {} );
+		}
 	}
 
 	cg.weaponOffsetsFilter.Reset( );
@@ -645,6 +652,12 @@ void CG_OnPlayerUpgradeChange()
 	{
 		CG_Rocket_BuildArmourySellList( "default" );
 		CG_Rocket_BuildArmouryBuyList( "default" );
+
+		Rocket::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
+		if ( document->IsVisible() )
+		{
+			document->DispatchEvent( "refreshdata", {} );
+		}
 	}
 }
 
@@ -897,14 +910,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 					cg.stepChange = oldStep + step;
 				}
 
-				if ( cg.stepChange > MAX_STEP_CHANGE )
-				{
-					cg.stepChange = MAX_STEP_CHANGE;
-				}
-				else if ( cg.stepChange < -MAX_STEP_CHANGE )
-				{
-					cg.stepChange = -MAX_STEP_CHANGE;
-				}
+				cg.stepChange = Math::Clamp( cg.stepChange, -MAX_STEP_CHANGE, +MAX_STEP_CHANGE );
 
 				cg.stepTime = cg.time;
 				break;
@@ -977,11 +983,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_JETPACK_ENABLE:
-      cent->jetpackAnim = JANIM_SLIDEOUT;
+			cent->jetpackAnim = JANIM_SLIDEOUT;
 			break;
 
 		case EV_JETPACK_DISABLE:
-      cent->jetpackAnim = JANIM_SLIDEIN;
+			cent->jetpackAnim = JANIM_SLIDEIN;
 			break;
 
 		case EV_JETPACK_IGNITE:
@@ -1014,6 +1020,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_FIRE_WEAPON3:
 			CG_HandleFireWeapon( cent, WPM_TERTIARY );
+			break;
+
+		case EV_FIRE_DECONSTRUCT:
+		case EV_FIRE_DECONSTRUCT_LONG:
+		case EV_DECONSTRUCT_SELECT_TARGET:
 			break;
 
 		case EV_WEAPON_RELOAD:

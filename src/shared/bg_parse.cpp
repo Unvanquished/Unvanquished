@@ -757,10 +757,6 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			ba->invertNormal = true;
 		}
-		else if ( !Q_stricmp( token, "needsCreep" ) )
-		{
-			ba->creepTest = true;
-		}
 		else if ( !Q_stricmp( token, "creepSize" ) )
 		{
 			PARSE(text, token);
@@ -781,6 +777,10 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			ba->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
+		}
+		else if ( !Q_stricmp( token, "dretchAttackable" ) )
+		{
+			ba->dretchAttackable = true;
 		}
 		else if( (var = BG_FindConfigVar( va( "b_%s_%s", ba->name, token ) ) ) != nullptr )
 		{
@@ -2472,7 +2472,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			if( index < 0 || index >= 4 )
 				Log::Warn( "Invalid beacon icon index %i in %s", index, filename );
 			else
-				ba->icon[ 0 ][ index ] = trap_R_RegisterShader( token, RSF_DEFAULT );
+				ba->icon[ 0 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 #endif
 		}
 		else if ( !Q_stricmp( token, "hlIcon" ) )
@@ -2486,7 +2486,7 @@ void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 			if( index < 0 || index >= 4 )
 				Log::Warn( "Invalid beacon highlighted icon index %i in %s", index, filename );
 			else
-				ba->icon[ 1 ][ index ] = trap_R_RegisterShader( token, RSF_DEFAULT );
+				ba->icon[ 1 ][ index ] = trap_R_RegisterShader( token, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 #endif
 		}
 		else if ( !Q_stricmp( token, "inSound" ) )

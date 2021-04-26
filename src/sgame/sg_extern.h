@@ -148,6 +148,7 @@ extern  vmCvar_t g_layoutAuto;
 extern  vmCvar_t g_emoticonsAllowedInNames;
 extern  vmCvar_t g_unnamedNumbering;
 extern  vmCvar_t g_unnamedNamePrefix;
+extern  vmCvar_t g_unnamedBotNamePrefix;
 
 extern  vmCvar_t g_admin;
 extern  vmCvar_t g_adminWarn;

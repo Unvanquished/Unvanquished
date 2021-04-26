@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bg_misc.c -- both games misc functions, all completely stateless
 
 #include "engine/qcommon/q_shared.h"
+#include "common/FileSystem.h"
 #include "bg_public.h"
 
 #define N_(x) x
@@ -142,8 +143,8 @@ void BG_InitBuildableAttributes()
 		ba->entityName = bh->classname;
 
 		ba->traj = trType_t::TR_GRAVITY;
-		ba->bounce = 0.0;
-		ba->minNormal = 0.0;
+		ba->bounce = 0.0f;
+		ba->minNormal = 0.0f;
 
 		BG_ParseBuildableAttributeFile( va( "configs/buildables/%s.attr.cfg", ba->name ), ba );
 	}
@@ -412,63 +413,68 @@ bool BG_ClassHasAbility( int pClass, int ability )
 
 /*
 ==============
-BG_CostToEvolve
+BG_ClassCanEvolveFromTo
+
+Returns if an evolution is possible (unlocked), and how much
+it would cost. Note that you still need to check if you want
+to allow devolving, or if you can afford the upgrade.
 ==============
 */
-int BG_CostToEvolve( int from, int to )
+evolveInfo_t BG_ClassEvolveInfoFromTo( const int from, const int to )
 {
+	bool classIsUnlocked;
+	bool isDevolving;
 	int fromCost, toCost;
+	int evolveCost;
 
 	if ( from == to ||
-			 from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
-			 to <= PCL_NONE || to >= PCL_NUM_CLASSES )
+	     from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
+	     to <= PCL_NONE || to >= PCL_NUM_CLASSES )
 	{
-		return CANT_EVOLVE;
+		return { false, false, 0 };
 	}
+
+	classIsUnlocked = BG_ClassUnlocked( to )
+		&& !BG_ClassDisabled( to );
 
 	fromCost = BG_Class( from )->cost;
 	toCost = BG_Class( to )->cost;
 
+	evolveCost = toCost - fromCost;
 
-	return toCost - fromCost;
-}
-
-/*
-==============
-BG_ClassCanEvolveFromTo
-==============
-*/
-int BG_ClassCanEvolveFromTo( int from, int to, int credits )
-{
-	int evolveCost;
-
-	if ( !BG_ClassUnlocked( to ) || BG_ClassDisabled( to ) )
+	isDevolving = evolveCost <= 0;
+	// exception for peolpe evolving to dretch
+	if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) && to == PCL_ALIEN_LEVEL0 ) {
+		isDevolving = false;
+	}
+	// and to adv granger
+	if ( from == PCL_ALIEN_BUILDER0 && to == PCL_ALIEN_BUILDER0_UPG )
 	{
-		return CANT_EVOLVE;
+		isDevolving = false;
 	}
 
-	evolveCost = BG_CostToEvolve( from, to );
-
-	if ( credits < evolveCost )
-	{
-		return CANT_EVOLVE;
-	}
-
-	return evolveCost;
+	return { classIsUnlocked, isDevolving, evolveCost };
 }
 
 /*
 ==============
 BG_AlienCanEvolve
+
+answers true if the alien can evolve to any other form.
+
+FIXME: this function will always return true because it will notice you can
+       devolve to dretch or granger, even when far from the overmind
 ==============
 */
 bool BG_AlienCanEvolve( int from, int credits )
 {
 	int to;
+	evolveInfo_t info;
 
 	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( from, to, credits ) != CANT_EVOLVE )
+		info = BG_ClassEvolveInfoFromTo( from, to );
+		if ( info.classIsUnlocked && credits >= info.evolveCost )
 		{
 			return true;
 		}
@@ -835,7 +841,6 @@ struct meansOfDeathData_t
 
 static const meansOfDeathData_t bg_meansOfDeathData[] =
 {
-	{ MOD_ABUILDER_CLAW, "MOD_ABUILDER_CLAW" },
 	{ MOD_UNKNOWN, "MOD_UNKNOWN" },
 	{ MOD_SHOTGUN, "MOD_SHOTGUN" },
 	{ MOD_BLASTER, "MOD_BLASTER" },
@@ -1120,13 +1125,13 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 			break;
 
 		case trType_t::TR_LINEAR:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			break;
 
 		case trType_t::TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
-			phase = sin( deltaTime * M_PI * 2 );
+			phase = sinf( deltaTime * M_PI * 2 );
 			VectorMA( tr->trBase, phase, tr->trDelta, result );
 			break;
 
@@ -1136,26 +1141,26 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 				atTime = tr->trTime + tr->trDuration;
 			}
 
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 
-			if ( deltaTime < 0 )
+			if ( deltaTime < 0.0f )
 			{
-				deltaTime = 0;
+				deltaTime = 0.0f;
 			}
 
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			break;
 
 		case trType_t::TR_GRAVITY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-			result[ 2 ] -= 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
+			result[ 2 ] -= 0.5f * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 			break;
 
 		case trType_t::TR_BUOYANCY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-			result[ 2 ] += 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
+			result[ 2 ] += 0.5f * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 			break;
 
 		default:
@@ -1188,7 +1193,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 
 		case trType_t::TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
-			phase = cos( deltaTime * M_PI * 2 );  // derivative of sin = cos
+			phase = cosf( deltaTime * M_PI * 2 );  // derivative of sin = cos
 			phase *= 2 * M_PI * 1000 / tr->trDuration;
 			VectorScale( tr->trDelta, phase, result );
 			break;
@@ -1204,13 +1209,13 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 			break;
 
 		case trType_t::TR_GRAVITY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorCopy( tr->trDelta, result );
 			result[ 2 ] -= DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			break;
 
 		case trType_t::TR_BUOYANCY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorCopy( tr->trDelta, result );
 			result[ 2 ] += DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			break;
@@ -1532,7 +1537,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap
 		s->generic1 = WPM_PRIMARY;
 	}
 
-	s->otherEntityNum = ps->otherEntityNum;
+	s->otherEntityNum = 0;
 }
 
 /*
@@ -1681,7 +1686,7 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 		s->generic1 = WPM_PRIMARY;
 	}
 
-	s->otherEntityNum = ps->otherEntityNum;
+	s->otherEntityNum = 0;
 }
 
 /*
@@ -1865,7 +1870,7 @@ bool BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
 	//can't rotate with no rotation vector
 	if ( VectorLength( xNormal ) != 0.0f )
 	{
-		rotAngle = RAD2DEG( acos( DotProduct( localNormal, refNormal ) ) );
+		rotAngle = RAD2DEG( acosf( DotProduct( localNormal, refNormal ) ) );
 
 		if ( inverse )
 		{
@@ -2031,7 +2036,7 @@ bool BG_PlayerCanChangeWeapon( playerState_t *ps )
 {
 	// Do not allow Lucifer Cannon "canceling" via weapon switch
 	if ( ps->weapon == WP_LUCIFER_CANNON &&
-	     ps->stats[ STAT_MISC ] > LCANNON_CHARGE_TIME_MIN )
+	     ps->weaponCharge > LCANNON_CHARGE_TIME_MIN )
 	{
 		return false;
 	}
@@ -2067,7 +2072,7 @@ Also returns whether the gun uses energy or not
 */
 bool BG_PlayerLowAmmo( const playerState_t *ps, bool *energy )
 {
-  int weapon;
+	int weapon;
 	const weaponAttributes_t *wattr;
 
 	// look for the primary weapon
@@ -2076,6 +2081,7 @@ bool BG_PlayerLowAmmo( const playerState_t *ps, bool *energy )
 			if( BG_InventoryContainsWeapon( weapon, ps->stats ) )
 				goto found;
 
+	*energy = false;
 	return false; // got only blaster
 
 found:
@@ -2088,9 +2094,9 @@ found:
 	*energy = wattr->usesEnergy;
 
 	if( wattr->maxClips )
-		return ( ps->clips <= wattr->maxClips * 0.25 );
+		return ( ps->clips <= wattr->maxClips * 0.25f );
 
-	return ( ps->ammo <= wattr->maxAmmo * 0.25 );
+	return ( ps->ammo <= wattr->maxAmmo * 0.25f );
 }
 
 /*
@@ -2668,68 +2674,61 @@ weapon_t BG_PrimaryWeapon( int stats[] )
 	return WP_NONE;
 }
 
+static std::unordered_map<std::string, emoticonData_t, Str::IHash, Str::IEqual> emoticons;
 /*
 ============
 BG_LoadEmoticons
 ============
 */
-int BG_LoadEmoticons( emoticon_t *emoticons, int num )
+void BG_LoadEmoticons()
 {
-	int  numFiles;
-	char fileList[ MAX_EMOTICONS * ( MAX_EMOTICON_NAME_LEN + 9 ) ] = { "" };
-	int  i;
-	char *filePtr;
-	int  fileLen;
-	int  count;
-
-	numFiles = trap_FS_GetFileList( "emoticons", "x1.crn", fileList,
-	                                sizeof( fileList ) );
-
-	if ( numFiles < 1 )
-	{
-		return 0;
-	}
-
-	filePtr = fileList;
-	fileLen = 0;
-	count = 0;
-
-	for ( i = 0; i < numFiles && count < num; i++, filePtr += fileLen + 1 )
-	{
-		fileLen = strlen( filePtr );
-
-		if ( fileLen < 9 || filePtr[ fileLen - 8 ] != '_' ||
-		     filePtr[ fileLen - 7 ] < '1' || filePtr[ fileLen - 7 ] > '9' )
+	int count = 0;
+	for ( const std::string& filename : FS::PakPath::ListFiles( "emoticons/" ) ) {
+		// Assume any file with a dot in its name is an image
+		std::string name = FS::Path::StripExtension( filename );
+		if ( name.size() + 1 >= filename.size() )
 		{
-			Log::Notice( "^3skipping invalidly named emoticon \"%s\"\n",
-			            filePtr );
 			continue;
 		}
-
-		if ( fileLen - 8 >= MAX_EMOTICON_NAME_LEN )
+		emoticonData_t& data = emoticons[ name ];
+		if ( !data.imageFile.empty() )
 		{
-			Log::Notice( "^3emoticon file name \"%s\" too long (≥ %d)\n",
-			            filePtr, MAX_EMOTICON_NAME_LEN + 8 );
+			Log::Warn( "Conflicting emoticon images found: %s and emoticons/%s", data.imageFile, filename );
 			continue;
 		}
-
-		if ( !trap_FS_FOpenFile( va( "emoticons/%s", filePtr ), nullptr, fsMode_t::FS_READ ) )
-		{
-			Log::Notice( "^3could not open \"emoticons/%s\"\n", filePtr );
-			continue;
-		}
-
-		Q_strncpyz( emoticons[ count ].name, filePtr, fileLen - 8 + 1 );
-#ifndef BUILD_SGAME
-		emoticons[ count ].width = filePtr[ fileLen - 7 ] - '0';
-#endif
+		data.imageFile = "emoticons/" + filename;
 		count++;
 	}
 
-	// Log::Notice( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n", // FIXME PLURAL
-	//             count, numFiles, MAX_EMOTICONS );
+	Log::Verbose( "Loaded %d emoticons", count );
+}
 
-	return count;
+const emoticonData_t* BG_Emoticon( const std::string& name )
+{
+	auto iter = emoticons.find( name );
+	if ( iter != emoticons.end() )
+	{
+		return &iter->second;
+	}
+	return nullptr;
+}
+
+// Is there a known emoticon starting at s?
+const emoticonData_t* BG_EmoticonAt( const char *s )
+{
+	if ( *s != '[' )
+	{
+		return nullptr;
+	}
+
+	const char* bracket = strpbrk( s + 1, "[]" );
+	if ( bracket == nullptr || *bracket != ']' )
+	{
+		return nullptr;
+	}
+
+	std::string name(s + 1, bracket);
+	return BG_Emoticon( name );
 }
 
 /*
@@ -2877,5 +2876,130 @@ const char *Trans_GenderContext( gender_t gender )
 		default:
 			return "unknown";
 			break;
+	}
+}
+
+// using the stringizing operator to save typing...
+#define PSF( x ) # x,(int((uintptr_t)&( (playerState_t*)0 )->x))
+
+static const NetcodeTable playerStateFields =
+{
+	{ PSF(persistant), STATS_GROUP_FIELD, 0},
+	{ PSF(stats), STATS_GROUP_FIELD, 0},
+	{ PSF(misc), STATS_GROUP_FIELD, 0},
+
+	{ PSF( commandTime ),          32             , 0 }
+	,
+	{ PSF( pm_type ),              8              , 0 }
+	,
+	{ PSF( bobCycle ),             8              , 0 }
+	,
+	{ PSF( pm_flags ),             16             , 0 }
+	,
+	{ PSF( pm_time ),              -16            , 0 }
+	,
+	{ PSF( origin[ 0 ] ),          0              , 0 }
+	,
+	{ PSF( origin[ 1 ] ),          0              , 0 }
+	,
+	{ PSF( origin[ 2 ] ),          0              , 0 }
+	,
+	{ PSF( velocity[ 0 ] ),        0              , 0 }
+	,
+	{ PSF( velocity[ 1 ] ),        0              , 0 }
+	,
+	{ PSF( velocity[ 2 ] ),        0              , 0 }
+	,
+	{ PSF( weaponCharge ),         -15            , 0 }
+	,
+	{ PSF( weaponTime ),           -16            , 0 }
+	,
+	{ PSF( gravity ),              16             , 0 }
+	,
+	{ PSF( speed ),                16             , 0 }
+	,
+	{ PSF( delta_angles[ 0 ] ),    16             , 0 }
+	,
+	{ PSF( delta_angles[ 1 ] ),    16             , 0 }
+	,
+	{ PSF( delta_angles[ 2 ] ),    16             , 0 }
+	,
+	{ PSF( groundEntityNum ),      GENTITYNUM_BITS, 0 }
+	,
+	{ PSF( legsTimer ),            16             , 0 }
+	,
+	{ PSF( torsoTimer ),           16             , 0 }
+	,
+	{ PSF( legsAnim ),             ANIM_BITS      , 0 }
+	,
+	{ PSF( torsoAnim ),            ANIM_BITS      , 0 }
+	,
+	{ PSF( movementDir ),          8              , 0 }
+	,
+	{ PSF( eFlags ),               24             , 0 }
+	,
+	{ PSF( eventSequence ),        8              , 0 }
+	,
+	{ PSF( events[ 0 ] ),          8              , 0 }
+	,
+	{ PSF( events[ 1 ] ),          8              , 0 }
+	,
+	{ PSF( events[ 2 ] ),          8              , 0 }
+	,
+	{ PSF( events[ 3 ] ),          8              , 0 }
+	,
+	{ PSF( eventParms[ 0 ] ),      8              , 0 }
+	,
+	{ PSF( eventParms[ 1 ] ),      8              , 0 }
+	,
+	{ PSF( eventParms[ 2 ] ),      8              , 0 }
+	,
+	{ PSF( eventParms[ 3 ] ),      8              , 0 }
+	,
+	{ PSF( clientNum ),            8              , 0 }
+	,
+	{ PSF( weapon ),               7              , 0 }
+	,
+	{ PSF( weaponstate ),          4              , 0 }
+	,
+	{ PSF( viewangles[ 0 ] ),      0              , 0 }
+	,
+	{ PSF( viewangles[ 1 ] ),      0              , 0 }
+	,
+	{ PSF( viewangles[ 2 ] ),      0              , 0 }
+	,
+	{ PSF( viewheight ),           -8             , 0 }
+	,
+	{ PSF( damageEvent ),          8              , 0 }
+	,
+	{ PSF( damageYaw ),            8              , 0 }
+	,
+	{ PSF( damagePitch ),          8              , 0 }
+	,
+	{ PSF( damageCount ),          8              , 0 }
+	,
+	{ PSF( generic1 ),             10             , 0 }
+	,
+	{ PSF( loopSound ),            16             , 0 }
+	,
+	{ PSF( grapplePoint[ 0 ] ),    0              , 0 }
+	,
+	{ PSF( grapplePoint[ 1 ] ),    0              , 0 }
+	,
+	{ PSF( grapplePoint[ 2 ] ),    0              , 0 }
+	,
+	{ PSF( ammo ),                 12             , 0 }
+	,
+	{ PSF( clips ),                4              , 0 }
+	,
+	{ PSF( tauntTimer ),           12             , 0 }
+	,
+	{ PSF( weaponAnim ),           ANIM_BITS      , 0 }
+};
+
+namespace VM {
+	void GetNetcodeTables(NetcodeTable& playerStateTable, int& playerStateSize) {
+		playerStateTable = playerStateFields;
+		playerStateSize = sizeof(playerState_t);
 	}
 }

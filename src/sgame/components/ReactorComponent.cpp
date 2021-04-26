@@ -1,7 +1,7 @@
 #include "ReactorComponent.h"
 
 const float ReactorComponent::ATTACK_RANGE  = 200.0f;
-const float ReactorComponent::ATTACK_DAMAGE = 30.0f;
+const float ReactorComponent::ATTACK_DAMAGE = 25.0f;
 
 ReactorComponent::ReactorComponent(Entity& entity, HumanBuildableComponent& r_HumanBuildableComponent,
                                    MainBuildableComponent& r_MainBuildableComponent)
@@ -22,12 +22,15 @@ void ReactorComponent::Think(int timeDelta) {
 		// Respect the no-target flag.
 		if (other.oldEnt->flags & FL_NOTARGET) return;
 
+		// Don't zap through walls
+		if ( !G_LineOfSight( entity.oldEnt, other.oldEnt, MASK_SOLID, false ) ) return;
+
 		// TODO: Add LocationComponent and Utility::BBOXDistance.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 
 		if (distance >= ATTACK_RANGE) return;
 
-		float damage = baseDamage * (1.0f - (distance / ATTACK_RANGE));
+		float damage = baseDamage * (1.0f - (0.7f * distance / ATTACK_RANGE));
 
 		CreateTeslaTrail(other);
 

@@ -1,3 +1,25 @@
+set(DETOURLIST
+    ${LIB_DIR}/recastnavigation/DebugUtils/Source/DebugDraw.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourAlloc.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Include/DetourAssert.h
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourAssert.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourCommon.cpp
+    ${LIB_DIR}/recastnavigation/DebugUtils/Source/DetourDebugDraw.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourNavMesh.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourNavMeshBuilder.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourNavMeshQuery.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Include/DetourMath.h
+    ${LIB_DIR}/recastnavigation/Detour/Source/DetourNode.cpp
+    ${LIB_DIR}/recastnavigation/DetourCrowd/Source/DetourPathCorridor.cpp
+    ${LIB_DIR}/recastnavigation/Detour/Include/DetourStatus.h
+    ${LIB_DIR}/recastnavigation/DetourTileCache/Source/DetourTileCache.cpp
+    ${LIB_DIR}/recastnavigation/DetourTileCache/Source/DetourTileCacheBuilder.cpp
+)
+
+set(FASTLZLIST
+    ${LIB_DIR}/fastlz/fastlz.c
+)
+
 set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_alloc.cpp
     ${GAMELOGIC_DIR}/shared/bg_gameplay.h
@@ -87,6 +109,8 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_events.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_hud.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_keys.cpp
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.cpp
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Cmd.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Cmd.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Cvar.cpp
@@ -155,6 +179,19 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_utils.cpp
     ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
     ${GAMELOGIC_DIR}/sgame/CombatFeedback.cpp
+
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_api.h
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_debug.cpp
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_convert.cpp
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_convert.h
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_load.cpp
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_local.cpp
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_local.h
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_nav.cpp
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_nav_edit.cpp
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_navdraw.h
+    ${GAMELOGIC_DIR}/sgame/botlib/bot_types.h
+    ${GAMELOGIC_DIR}/sgame/botlib/nav.h
 
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.cpp

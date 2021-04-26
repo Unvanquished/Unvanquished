@@ -432,7 +432,7 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 	}
 
 	// Normalize the horizontal components of the vector difference to the "radius" of the bounding box
-	mag = sqrt( normal[ 0 ] * normal[ 0 ] + normal[ 1 ] * normal[ 1 ] );
+	mag = sqrtf( normal[ 0 ] * normal[ 0 ] + normal[ 1 ] * normal[ 1 ] );
 	radius = target->r.maxs[ 0 ] * 1.21f;
 
 	if ( mag > radius )
@@ -527,8 +527,8 @@ static void FireBullet( gentity_t *self, float spread, float damage, int mod )
 	gentity_t *target;
 
 	r = random() * M_PI * 2.0f;
-	u = sin( r ) * crandom() * spread * 16;
-	r = cos( r ) * crandom() * spread * 16;
+	u = sinf( r ) * crandom() * spread * 16;
+	r = cosf( r ) * crandom() * spread * 16;
 	VectorMA( muzzle, 8192 * 16, forward, end );
 	VectorMA( end, r, right, end );
 	VectorMA( end, u, up, end );
@@ -592,8 +592,8 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 		r = Q_crandom( &seed ) * M_PI;
 		a = Q_random( &seed ) * SHOTGUN_SPREAD * 16;
 
-		u = sin( r ) * a;
-		r = cos( r ) * a;
+		u = sinf( r ) * a;
+		r = cosf( r ) * a;
 
 		VectorMA( origin, SHOTGUN_RANGE, forward, end );
 		VectorMA( end, r, right, end );
@@ -752,7 +752,7 @@ static void FireHive( gentity_t *self )
 	// fire from the hive tip, not the center
 	VectorMA( muzzle, self->r.maxs[ 2 ], self->s.origin2, origin );
 
-	m = G_SpawnMissile( MIS_HIVE, self, origin, forward, self->target,
+	m = G_SpawnMissile( MIS_HIVE, self, origin, forward, self->target.entity,
 	                    HiveMissileThink, level.time + HIVE_DIR_CHANGE_PERIOD );
 
 	m->timestamp = level.time + HIVE_LIFETIME;
@@ -794,7 +794,7 @@ static void RocketThink( gentity_t *self )
 
 	// Calculate new direction. Use a fixed turning angle.
 	CrossProduct( currentDir, targetDir, rotAxis );
-	rotAngle = RAD2DEG( acos( DotProduct( currentDir, targetDir ) ) );
+	rotAngle = RAD2DEG( acosf( DotProduct( currentDir, targetDir ) ) );
 	RotatePointAroundVector( newDir, rotAxis, currentDir,
 	                         Math::Clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
 
@@ -817,7 +817,7 @@ static void RocketThink( gentity_t *self )
 
 static void FireRocket( gentity_t *self )
 {
-	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, self->target, RocketThink,
+	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, self->target.entity, RocketThink,
 	                level.time + ROCKET_TURN_PERIOD )->timestamp = level.time + ROCKET_LIFETIME;
 }
 
@@ -1053,7 +1053,7 @@ static gentity_t *FireLcannonHelper( gentity_t *self, vec3_t start, vec3_t dir,
 
 static void FireLcannon( gentity_t *self, bool secondary )
 {
-	if ( secondary && self->client->ps.stats[ STAT_MISC ] <= 0 )
+	if ( secondary && self->client->ps.weaponCharge <= 0 )
 	{
 		FireLcannonHelper( self, muzzle, forward, LCANNON_SECONDARY_DAMAGE,
 		                   LCANNON_SECONDARY_RADIUS, LCANNON_SECONDARY_SPEED );
@@ -1061,11 +1061,11 @@ static void FireLcannon( gentity_t *self, bool secondary )
 	else
 	{
 		FireLcannonHelper( self, muzzle, forward,
-		                   self->client->ps.stats[ STAT_MISC ] * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX,
+		                   self->client->ps.weaponCharge * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX,
 		                   LCANNON_RADIUS, LCANNON_SPEED );
 	}
 
-	self->client->ps.stats[ STAT_MISC ] = 0;
+	self->client->ps.weaponCharge = 0;
 }
 
 /*
@@ -1130,6 +1130,66 @@ static void CancelBuild( gentity_t *self )
 		FireMelee( self, ABUILDER_CLAW_RANGE, ABUILDER_CLAW_WIDTH,
 		             ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW );
 	}
+}
+
+// do the same thing as /deconstruct
+static void FireMarkDeconstruct( gentity_t *self )
+{
+	gentity_t* buildable = G_GetDeconstructibleBuildable( self );
+	if ( buildable == nullptr )
+	{
+		return;
+	}
+	if ( G_DeconstructDead( buildable ) )
+	{
+		return;
+	}
+	buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
+}
+
+static void DeconstructSelectTarget( gentity_t *self )
+{
+	gentity_t* target = G_GetDeconstructibleBuildable( self );
+	if ( target == nullptr // No target found
+		|| G_DeconstructDead( target ) // Successfully deconned dead target
+		|| G_CheckDeconProtectionAndWarn( target, self ) ) // Not allowed to decon target
+	{
+		self->target = nullptr;
+		// Stop the force-deconstruction charge bar
+		self->client->pmext.cancelDeconstructCharge = true;
+	}
+	else
+	{
+		// Set the target which will be used upon reaching full charge
+		self->target = target;
+	}
+}
+
+static void FireForceDeconstruct( gentity_t *self )
+{
+	if ( !self->target )
+	{
+		return;
+	}
+	gentity_t* target = self->target.entity;
+	vec3_t viewOrigin;
+	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
+	// The builder must still be in a range such that G_GetDeconstructibleBuildable could return
+	// the buildable (but with 10% extra distance allowed).
+	// However it is not necessary to be aiming at the target.
+	if ( G_DistanceToBBox( viewOrigin, target ) > BUILDER_DECONSTRUCT_RANGE * 1.1f )
+	{
+		// Target is too far away.
+		// TODO: Continuously check that target is valid (in range and still exists), rather
+		// than only at the beginning and end of the charge.
+		return;
+	}
+
+	if ( G_DeconstructDead( self->target.entity ) )
+	{
+		return;
+	}
+	G_DeconstructUnprotected( self->target.entity, self );
 }
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
@@ -1198,7 +1258,7 @@ LEVEL0
 ======================================================================
 */
 
-bool G_CheckVenomAttack( gentity_t *self )
+bool G_CheckDretchAttack( gentity_t *self )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
@@ -1214,22 +1274,11 @@ bool G_CheckVenomAttack( gentity_t *self )
 
 	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
-	if ( !Entities::IsAlive( traceEnt ) || G_OnSameTeam( self, traceEnt ) )
+	if ( !Entities::IsAlive( traceEnt )
+			|| G_OnSameTeam( self, traceEnt )
+			|| !G_DretchCanDamageEntity( self, traceEnt ) )
 	{
 		return false;
-	}
-
-	// only allow bites to work against buildables in construction and turrets and rocket pods.
-	if ( traceEnt->s.eType == entityType_t::ET_BUILDABLE && traceEnt->spawned )
-	{
-		switch ( traceEnt->s.modelindex )
-		{
-			case BA_H_MGTURRET:
-			case BA_H_ROCKETPOD:
-				break;
-			default:
-				return false;
-		}
 	}
 
 	traceEnt->entity->Damage((float)LEVEL0_BITE_DMG, self, Vec3::Load(tr.endpos),
@@ -1546,7 +1595,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 	int    i;
 	vec3_t forward;
 
-	if ( !self->client || self->client->ps.stats[ STAT_MISC ] <= 0 ||
+	if ( !self->client || self->client->ps.weaponCharge <= 0 ||
 	     !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) ||
 	     self->client->ps.weaponTime )
 	{
@@ -1579,7 +1628,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 		    victim - g_entities;
 	}
 
-	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.stats[ STAT_MISC ] / LEVEL4_TRAMPLE_DURATION;
+	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.weaponCharge / LEVEL4_TRAMPLE_DURATION;
 
 	victim->entity->Damage((float)damage, self, Vec3::Load(victim->s.origin), Vec3::Load(forward),
 	                       DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE);
@@ -1874,6 +1923,51 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 
 				case WP_ABUILD2:
 					FireSlowblob( self );
+					break;
+
+				default:
+					break;
+			}
+			break;
+		}
+		case WPM_DECONSTRUCT:
+		{
+			switch ( weapon )
+			{
+				case WP_ABUILD:
+				case WP_ABUILD2:
+				case WP_HBUILD:
+					FireMarkDeconstruct( self );
+					break;
+
+				default:
+					break;
+			}
+			break;
+		}
+		case WPM_DECONSTRUCT_SELECT_TARGET:
+		{
+			switch ( weapon )
+			{
+				case WP_ABUILD:
+				case WP_ABUILD2:
+				case WP_HBUILD:
+					DeconstructSelectTarget( self );
+					break;
+
+				default:
+					break;
+			}
+			break;
+		}
+		case WPM_DECONSTRUCT_LONG:
+		{
+			switch ( weapon )
+			{
+				case WP_ABUILD:
+				case WP_ABUILD2:
+				case WP_HBUILD:
+					FireForceDeconstruct( self );
 					break;
 
 				default:

@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 #include "backend/CBSEBackend.h"
+#include "botlib/bot_api.h"
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -180,6 +181,7 @@ vmCvar_t           g_layoutAuto;
 vmCvar_t           g_emoticonsAllowedInNames;
 vmCvar_t           g_unnamedNumbering;
 vmCvar_t           g_unnamedNamePrefix;
+vmCvar_t           g_unnamedBotNamePrefix;
 
 vmCvar_t           g_admin;
 vmCvar_t           g_adminWarn;
@@ -208,7 +210,9 @@ vmCvar_t           g_emptyTeamsSkipMapTime;
 Cvar::Cvar<bool>   g_neverEnd("g_neverEnd", "cheat to never end a game, helpful to load a map without spawn for testing purpose", Cvar::NONE, false);
 
 Cvar::Cvar<float>  g_evolveAroundHumans("g_evolveAroundHumans", "Ratio of alien buildings to human entities that always allow evolution", Cvar::NONE, 1.5f);
-Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Overmind distance to allow devolving", Cvar::NONE, 1000.0f);
+Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Overmind distance to allow devolving", Cvar::SERVERINFO, 1000.0f);
+
+Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, true);
 
 // <bot stuff>
 
@@ -293,7 +297,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, false    , nullptr       },
 	{ &g_enableVsays,                 "g_voiceChats",                  "1",                                0,                                               0, false    , nullptr       },
 	{ &g_inactivity,                  "g_inactivity",                  "0",                                0,                                               0, true     , nullptr       },
-	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                CVAR_LATCH,                                      0, false    , nullptr       },
+	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                0,                                               0, false    , nullptr       },
 	{ &g_privateMessages,             "g_privateMessages",             "1",                                0,                                               0, false    , nullptr       },
 	{ &g_specChat,                    "g_specChat",                    "1",                                0,                                               0, false    , nullptr       },
 
@@ -319,7 +323,8 @@ static cvarTable_t gameCvarTable[] =
 	// clients: misc
 	{ &g_geoip,                       "g_geoip",                       "1",                                0,                                               0, false    , nullptr       },
 	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "-1",                               0,                                               0, false    , nullptr       },
-	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  0,                                               0, false    , nullptr       },
+	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER "#",                 0,                                               0, false    , nullptr       },
+	{ &g_unnamedBotNamePrefix,        "g_unnamedBotNamePrefix",        UNNAMED_BOT "#",                    0,                                               0, false    , nullptr       },
 
 	// admin system
 	{ &g_admin,                       "g_admin",                       "admin.dat",                        0,                                               0, false    , nullptr       },
@@ -823,9 +828,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// let the server system know where the entites are
 	trap_LocateGameData( level.num_entities, sizeof( gentity_t ),
-	                     &level.clients[ 0 ].ps, sizeof( level.clients[ 0 ] ) );
+	                     sizeof( level.clients[ 0 ] ) );
 
-	level.emoticonCount = BG_LoadEmoticons( level.emoticons, MAX_EMOTICONS );
+	BG_LoadEmoticons();
 
 	trap_SetConfigstring( CS_INTERMISSION, "0" );
 
@@ -2638,6 +2643,20 @@ void G_RunFrame( int levelTime )
 		return;
 	}
 
+	if ( !level.numConnectedPlayers && g_autoPause.Get() && level.matchTime > 1000)
+	{
+		level.time = levelTime;
+		level.matchTime = levelTime - level.startTime;
+
+		// get any cvar changes
+		G_UpdateCvars();
+		CheckCvars();
+
+		CheckExitRules();
+
+		return;
+	}
+
 	if ( level.pausedTime )
 	{
 		msec = levelTime - level.time - level.pausedTime;
@@ -2841,6 +2860,7 @@ void G_RunFrame( int levelTime )
 		G_CheckVote( (team_t) i );
 	}
 
+	BotDebugDrawMesh();
 	trap_BotUpdateObstacles();
 	level.frameMsec = trap_Milliseconds();
 }

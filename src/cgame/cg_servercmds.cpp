@@ -142,8 +142,7 @@ void CG_ParseServerinfo()
 	cgs.timelimit          = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients         = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 
-	// TODO: Remove this one.
-	cgs.powerReactorRange  = atoi( Info_ValueForKey( info, "g_powerReactorRange" ) );
+	cgs.devolveMaxBaseDistance = atof( Info_ValueForKey( info, "g_devolveMaxBaseDistance" ) );
 
 	cgs.momentumHalfLife  = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
 	cgs.unlockableMinTime = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
@@ -697,6 +696,10 @@ void CG_Menu( int menuType, int arg )
 		case MN_A_EVOLVEBUILDTIMER:
 			longMsg = _("You cannot evolve until your build timer has expired.");
 			shortMsg = _("You cannot evolve until your build timer expires");
+			break;
+
+		case MN_A_EVOLVEWEAPONTIMER:
+			shortMsg = _("Wait a second after attacking or evolving");
 			break;
 
 		case MN_A_INFEST:
@@ -1328,14 +1331,8 @@ static void CG_PmoveParams_f() {
 
 	cg.pmoveParams.synchronous = atoi(arg1);
 	cg.pmoveParams.fixed = atoi(arg2);
-	cg.pmoveParams.msec = atoi(arg3);
+	cg.pmoveParams.msec = Math::Clamp( atoi(arg3), 8, 33 );
 	cg.pmoveParams.accurate = atoi(arg4);
-
-	if (cg.pmoveParams.msec < 8) {
-		cg.pmoveParams.msec = 8;
-	} else if (cg.pmoveParams.msec > 33) {
-		cg.pmoveParams.msec = 33;
-	}
 }
 
 static const consoleCommand_t svcommands[] =

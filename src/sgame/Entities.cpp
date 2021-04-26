@@ -116,11 +116,12 @@ float Entities::HealthFraction(gentity_t* ent) {
 bool Entities::AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod) {
 	bool hit = false;
 
-	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent& humanClassComponent) {
+	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent&) {
 		// TODO: Add LocationComponent.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
-		float damage   = amount * (1.0f - distance / range);
+		float damage   = amount * (1.0f - 0.7f * distance / range);
 
+		if (distance > range) return;
 		if (damage <= 0.0f) return;
 		if (!G_IsVisible(entity.oldEnt, other.oldEnt, MASK_SOLID)) return;
 
@@ -137,7 +138,8 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 
 	// FIXME: Only considering entities with HealthComponent.
 	// TODO: Allow ForEntities to iterate over all entities.
-	ForEntities<HealthComponent>([&] (Entity& other, HealthComponent& healthComponent) {
+
+	ForEntities<HealthComponent>([&] (Entity& other, HealthComponent&) {
 		// TODO: Add LocationComponent.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 		float damage   = amount * (1.0f - distance / range);
@@ -145,7 +147,10 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 		if (damage <= 0.0f) return;
 		if (!G_IsVisible(entity.oldEnt, other.oldEnt, MASK_SOLID)) return;
 
-		if (other.Damage(damage, entity.oldEnt, {}, {}, DAMAGE_NO_LOCDAMAGE | DAMAGE_KNOCKBACK, mod)) {
+		vec3_t knockbackDir;
+		VectorSubtract(other.oldEnt->s.origin, entity.oldEnt->s.origin, knockbackDir);
+
+		if (other.Damage(damage, entity.oldEnt, {}, Vec3::Load(knockbackDir), DAMAGE_NO_LOCDAMAGE | DAMAGE_KNOCKBACK, mod)) {
 			hit = true;
 		}
 	});

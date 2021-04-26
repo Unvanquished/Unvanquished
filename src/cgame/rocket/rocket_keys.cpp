@@ -317,7 +317,9 @@ The team argument corresponds to Keyboard::BindTeam, not team_t
 */
 std::string CG_KeyBinding( const char* bind, int team )
 {
-	std::vector<Keyboard::Key> keys = trap_Key_GetKeysForBinds( team, {bind} )[0];
+	std::vector<Keyboard::Key> keys = bind == TOGGLE_CONSOLE_COMMAND
+	                                  ? trap_Key_GetConsoleKeys()
+	                                  : trap_Key_GetKeysForBinds( team, {bind} )[0];
 
 	if ( keys.empty() )
 	{

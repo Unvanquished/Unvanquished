@@ -24,7 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_bot_util.h"
-#include "engine/botlib/bot_types.h"
+#include "botlib/bot_types.h"
+#include "botlib/bot_api.h"
 
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;
@@ -116,7 +117,7 @@ float RadiusFromBounds2D( vec3_t mins, vec3_t maxs )
 {
 	float rad1s = Square( mins[0] ) + Square( mins[1] );
 	float rad2s = Square( maxs[0] ) + Square( maxs[1] );
-	return sqrt( std::max( rad1s, rad2s ) );
+	return sqrtf( std::max( rad1s, rad2s ) );
 }
 
 float BotGetGoalRadius( gentity_t *self )
@@ -512,8 +513,8 @@ bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 	for ( i = 0; i < 5; i++, yaw1 -= 15 , yaw2 += 15 )
 	{
 		//compute forward for right
-		forward[0] = cos( DEG2RAD( yaw1 ) );
-		forward[1] = sin( DEG2RAD( yaw1 ) );
+		forward[0] = cosf( DEG2RAD( yaw1 ) );
+		forward[1] = sinf( DEG2RAD( yaw1 ) );
 		//forward is already normalized
 		//try the right
 		VectorMA( self->s.origin, BOT_OBSTACLE_AVOID_RANGE, forward, testPoint1 );
@@ -530,8 +531,8 @@ bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 		}
 
 		//compute forward for left
-		forward[0] = cos( DEG2RAD( yaw2 ) );
-		forward[1] = sin( DEG2RAD( yaw2 ) );
+		forward[0] = cosf( DEG2RAD( yaw2 ) );
+		forward[1] = sinf( DEG2RAD( yaw2 ) );
 		//forward is already normalized
 		//try the left
 		VectorMA( self->s.origin, BOT_OBSTACLE_AVOID_RANGE, forward, testPoint2 );
@@ -616,7 +617,7 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 		cmd->forwardmove = ClampChar( highestforward );
 		cmd->rightmove = ClampChar( highestright );
 	}
-	else
+	else if ( rightmove != 0 )
 	{
 		float highestright = rightmove < 0 ? -speed : speed;
 
@@ -624,6 +625,11 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 
 		cmd->forwardmove = ClampChar( highestforward );
 		cmd->rightmove = ClampChar( highestright );
+	}
+	else
+	{
+		cmd->forwardmove = 0;
+		cmd->rightmove = 0;
 	}
 }
 
@@ -690,7 +696,6 @@ void BotMoveToGoal( gentity_t *self )
 		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
 		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
 
 		// walk to regain stamina
 		BotWalk( self, true );

@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
+#include "botlib/bot_api.h"
 #include <common/FileSystem.h>
 #include "Entities.h"
 #include "CBSE.h"
@@ -2386,7 +2387,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 		//if we are not currently spectating, we are attempting evolution
 		if ( ent->client->pers.classSelection != PCL_NONE )
 		{
-			int cost;
+			evolveInfo_t evolveInfo;
 
 			//check that we have an overmind
 			if ( !G_ActiveOvermind() )
@@ -2459,14 +2460,22 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 				return false;
 			}
 
-			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit );
+			if ( ent->client->ps.weaponTime > 0 )
+			{
+				if ( report )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEWEAPONTIMER );
+				}
+				return false;
+			}
+
+			evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
 
 			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 			{
-				if ( cost != CANT_EVOLVE )
+				if ( evolveInfo.classIsUnlocked && ent->client->pers.credit >= evolveInfo.evolveCost )
 				{
-
-					if ( ( cost < 0 || ( cost == 0 && currentClass == PCL_ALIEN_LEVEL0 ) )	&& ( G_DistanceToBase( ent ) >= g_devolveMaxBaseDistance.Get() ) ) {
+					if ( evolveInfo.isDevolving && G_DistanceToBase( ent ) >= g_devolveMaxBaseDistance.Get() ) {
 						if ( report )
 						{
 							G_TriggerMenu( clientNum, MN_A_NOTINBASE );
@@ -2474,22 +2483,19 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 						return false;
 					}
 
-					ent->client->pers.evolveHealthFraction = ent->entity->Get<HealthComponent>()->HealthFraction();
+					ent->client->pers.evolveHealthFraction =
+					       Math::Clamp( ent->entity->Get<HealthComponent>()->HealthFraction(), 0.0f, 1.0f );
 
-					if ( ent->client->pers.evolveHealthFraction < 0.0f )
+					if ( evolveInfo.evolveCost < 0 ){
+						ent->client->pers.devolveReturningCredits -=
+							evolveInfo.evolveCost * DEVOLVE_RETURN_FRACTION
+								* ent->client->pers.evolveHealthFraction;
+					}
+					else
 					{
-						ent->client->pers.evolveHealthFraction = 0.0f;
+						//remove credit
+						G_AddCreditToClient( ent->client, -(short)evolveInfo.evolveCost, true );
 					}
-					else if ( ent->client->pers.evolveHealthFraction > 1.0f )
-					{
-						ent->client->pers.evolveHealthFraction = 1.0f;
-					}
-
-					if ( cost < 0 ){
-						 cost = cost * ent->client->pers.evolveHealthFraction * DEVOLVE_RETURN_RATE;
-					}
-					//remove credit
-					G_AddCreditToClient( ent->client, -cost, true );
 					ent->client->pers.classSelection = newClass;
 					ClientUserinfoChanged( clientNum, false );
 					VectorCopy( infestOrigin, ent->s.pos.trBase );
@@ -2558,35 +2564,7 @@ void Cmd_Class_f( gentity_t *ent )
 
 void Cmd_Deconstruct_f( gentity_t *ent )
 {
-	char      arg[ 32 ];
-	vec3_t    viewOrigin, forward, end;
-	trace_t   trace;
-	gentity_t *buildable;
-	bool  instant;
-
-	// check for revoked building rights
-	if ( ent->client->pers.namelog->denyBuild )
-	{
-		G_TriggerMenu( ent->client->ps.clientNum, MN_B_REVOKED );
-		return;
-	}
-
-	// trace for target
-	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
-	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 100, forward, end );
-	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
-	buildable = &g_entities[ trace.entityNum ];
-
-	// check if target is valid
-	if ( trace.fraction >= 1.0f ||
-	     buildable->s.eType != entityType_t::ET_BUILDABLE ||
-	     !G_OnSameTeam( ent, buildable ) )
-	{
-		return;
-	}
-
-	// check for valid build weapon
+	// Check for valid build weapon.
 	switch ( ent->client->ps.weapon )
 	{
 		case WP_HBUILD:
@@ -2598,15 +2576,24 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 			return;
 	}
 
-	// always let the builder prevent the explosion of a buildable
-	if ( Entities::IsDead( buildable ) )
+	gentity_t *buildable;
+	buildable = G_GetDeconstructibleBuildable( ent );
+
+	if ( buildable == nullptr )
 	{
-		G_RewardAttackers( buildable );
-		G_FreeEntity( buildable );
 		return;
 	}
 
-	// check for instant mode
+	// Always let the builder prevent the explosion of a buildable.
+	if ( G_DeconstructDead( buildable ) )
+	{
+		return;
+	}
+
+	char arg[ 32 ];
+	bool instant;
+
+	// Check for instant mode.
 	if ( trap_Argc() == 2 )
 	{
 		trap_Argv( 1, arg, sizeof( arg ) );
@@ -2619,42 +2606,11 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 
 	if ( instant && buildable->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 	{
-		if ( !g_cheats.integer )
-		{
-			// check if the buildable is protected from instant deconstruction
-			switch ( buildable->s.modelindex )
-			{
-				case BA_A_OVERMIND:
-				case BA_H_REACTOR:
-					G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
-					return;
-
-				case BA_A_SPAWN:
-				case BA_H_SPAWN:
-					if ( level.team[ ent->client->ps.persistant[ PERS_TEAM ] ].numSpawns <= 1 )
-					{
-						G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
-						return;
-					}
-					break;
-			}
-
-			// deny if build timer active
-			if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
-				return;
-			}
-
-			// add to build timer
-			ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
-		}
-
-		G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
+		G_DeconstructUnprotected( buildable, ent );
 	}
 	else
 	{
-		// toggle mark
+		// Toggle mark.
 		buildable->entity->Get<BuildableComponent>()->ToggleDeconstructionMark();
 	}
 }
@@ -3164,6 +3120,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 
 		//set build delay/pounce etc to 0
 		ent->client->ps.stats[ STAT_MISC ] = 0;
+		ent->client->ps.weaponCharge = 0;
 
 		//subtract from funds
 		G_AddCreditToClient( ent->client, - ( short ) BG_Weapon( weapon )->price, false );
@@ -4415,6 +4372,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
+	{ "addcon",          CMD_CHEAT,                           Cmd_AddConnection      },
 	{ "asay",            CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
 	{ "beacon",          CMD_TEAM | CMD_ALIVE,                Cmd_Beacon_f           },
 	{ "build",           CMD_TEAM | CMD_ALIVE,                Cmd_Build_f            },
@@ -4443,6 +4401,8 @@ static const commands_t cmds[] =
 	{ "me",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
 	{ "me_team",         CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
 	{ "mt",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
+	{ "navedit",         CMD_CHEAT,                           Cmd_NavEdit            },
+	{ "navtest",         CMD_CHEAT,                           Cmd_NavTest            },
 	{ "noclip",          CMD_CHEAT_TEAM,                      Cmd_Noclip_f           },
 	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Notarget_f         },
 	{ "pubkey_identify", CMD_INTERMISSION,                    Cmd_Pubkey_Identify_f  },

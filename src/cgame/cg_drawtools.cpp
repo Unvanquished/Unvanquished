@@ -247,7 +247,7 @@ DrawStretchPic seems to reset the scissor
 */
 void CG_EnableScissor( bool enable )
 {
-    trap_R_ScissorEnable(enable);
+	trap_R_ScissorEnable(enable);
 }
 
 /*
@@ -257,8 +257,8 @@ CG_SetScissor
 */
 void CG_SetScissor( int x, int y, int w, int h )
 {
-    //Converts the Y axis
-    trap_R_ScissorSet( x, cgs.glconfig.vidHeight - y - h, w, h );
+	//Converts the Y axis
+	trap_R_ScissorSet( x, cgs.glconfig.vidHeight - y - h, w, h );
 }
 
 /*
@@ -378,15 +378,13 @@ CG_FadeAlpha
 */
 float CG_FadeAlpha( int startMsec, int totalMsec )
 {
-	float         fade;
-	int           t;
+	float fade = 1.0f;
+	int   t = cg.time - startMsec;
 
 	if ( startMsec == 0 )
 	{
 		return 0;
 	}
-
-	t = cg.time - startMsec;
 
 	if ( t >= totalMsec )
 	{
@@ -396,16 +394,12 @@ float CG_FadeAlpha( int startMsec, int totalMsec )
 	// fade out
 	if ( totalMsec - t < FADE_TIME )
 	{
-		fade = ( totalMsec - t ) * 1.0 / FADE_TIME;
+		fade = static_cast<float>( totalMsec - t ) / FADE_TIME;
 	}
 	// fade in
 	else if ( t < FADE_TIME )
 	{
-		fade = ( t * 1.0f ) / FADE_TIME;
-	}
-	else
-	{
-		fade = 1.0;
+		fade = static_cast<float>(t) / FADE_TIME;
 	}
 
 	return fade;
@@ -424,8 +418,8 @@ bool CG_WorldToScreen( vec3_t point, float *x, float *y )
 	float  z;
 	bool front = true;
 
-	px = tan( cg.refdef.fov_x * M_PI / 360.0f );
-	py = tan( cg.refdef.fov_y * M_PI / 360.0f );
+	px = tanf( cg.refdef.fov_x * M_PI / 360.0f );
+	py = tanf( cg.refdef.fov_y * M_PI / 360.0f );
 
 	VectorSubtract( point, cg.refdef.vieworg, trans );
 
@@ -495,15 +489,14 @@ CG_DrawSphere
 */
 void CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::Color& shaderRGBA )
 {
-	static refEntity_t re; // static for proper alignment in QVMs
-	memset( &re, 0, sizeof( re ) );
+	refEntity_t re{};
 
 	re.reType = refEntityType_t::RT_MODEL;
 	re.hModel = cgs.media.sphereModel;
 	re.customShader = customShader;
 	re.renderfx = RF_NOSHADOW;
 
-    re.shaderRGBA = shaderRGBA;
+	re.shaderRGBA = shaderRGBA;
 
 	VectorCopy( center, re.origin );
 
@@ -524,8 +517,7 @@ CG_DrawSphericalCone
 void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
                            bool a240, int customShader, const Color::Color& shaderRGBA )
 {
-	static refEntity_t re; // static for proper alignment in QVMs
-	memset( &re, 0, sizeof( re ) );
+	refEntity_t re{};
 
 	re.reType = refEntityType_t::RT_MODEL;
 	re.hModel = a240 ? cgs.media.sphericalCone240Model : cgs.media.sphericalCone64Model;

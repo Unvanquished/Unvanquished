@@ -47,6 +47,99 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
+// any change in playerState_t should be reflected in the table in bg_misc.cpp
+// (Gordon: unless it doesn't need transmission over the network, in which case it should probably go into the new pmext struct anyway)
+struct playerState_t
+{
+	// the first group of fields must be identical to the ones in OpaquePlayerState
+	vec3_t origin;
+	int ping; // server to game info for scoreboard
+	int persistant[16];
+	int    viewheight;
+	int clientNum; // ranges from 0 to MAX_CLIENTS-1
+	int   delta_angles[ 3 ]; // add to command angles to get view direction
+	vec3_t viewangles; // for fixed views
+	int    commandTime; // cmd->serverTime of last executed command
+	// end of fields which must be identical to OpaquePlayerState
+
+	int    pm_type;
+	int    bobCycle; // for view bobbing and footstep generation
+	int    pm_flags; // ducked, jump_held, etc
+	int    pm_time;
+
+
+	vec3_t velocity;
+	int    weaponTime;
+	int    gravity;
+
+	int   speed;
+	// changed by spawns, rotating objects, and teleporters
+
+	int groundEntityNum; // ENTITYNUM_NONE = in air
+
+	int legsTimer; // don't change low priority animations until this runs out
+	int legsAnim; // mask off ANIM_TOGGLEBIT
+
+	int torsoTimer; // don't change low priority animations until this runs out
+	int torsoAnim; // mask off ANIM_TOGGLEBIT
+
+	int movementDir; // a number 0 to 7 that represents the relative angle
+	// of movement to the view angle (axial and diagonals)
+	// when at rest, the value will remain unchanged
+	// used to twist the legs during strafing
+
+	int eFlags; // copied to entityState_t->eFlags
+
+	int eventSequence; // pmove generated events
+	int events[ MAX_EVENTS ];
+	int eventParms[ MAX_EVENTS ];
+	int oldEventSequence; // so we can see which events have been added since we last converted to entityState_t
+
+	int externalEvent; // events set on player from another source
+	int externalEventParm;
+	int externalEventTime;
+
+	// weapon info
+	int weapon; // copied to entityState_t->weapon
+	int weaponstate;
+	int weaponCharge; // luci charge, dragoon pounce charge, mantis pounce cooldown, tyrant trample, +deconstruct hold
+
+	// damage feedback
+	int damageEvent; // when it changes, latch the other parms
+	int damageYaw;
+	int damagePitch;
+	int damageCount;
+
+	int stats[ MAX_STATS ];
+
+	// ----------------------------------------------------------------------
+	// So to use persistent variables here, which don't need to come from the server,
+	// we could use a marker variable, and use that to store everything after it
+	// before we read in the new values for the predictedPlayerState, then restore them
+	// after copying the structure received from the server.
+
+	// Arnout: use the pmoveExt_t structure in bg_public.h to store this kind of data now (presistant on client, not network transmitted)
+
+	int pmove_framecount;
+	int entityEventSequence;
+
+	int           generic1;
+	int           loopSound;
+	vec3_t        grapplePoint; // location of grapple to pull towards if PMF_GRAPPLE_PULL
+	int           weaponAnim; // mask off ANIM_TOGGLEBIT
+	int           ammo;
+	int           clips; // clips held
+	int           tauntTimer; // don't allow another taunt until this runs out
+	int           misc[ MAX_MISC ]; // misc data
+};
+
+// the possibility and the cost of evolving to an alien form
+struct evolveInfo_t {
+	bool classIsUnlocked;
+	bool isDevolving;
+	int  evolveCost;
+};
+
 // player teams
 enum team_t
 {
@@ -156,7 +249,7 @@ enum weaponstate_t
 #define PMF_TIME_KNOCKBACK 0x000040 // pm_time is an air-accelerate only time
 #define PMF_TIME_WATERJUMP 0x000080 // pm_time is waterjump
 #define PMF_RESPAWNED      0x000100 // clear after attack and jump buttons come up
-#define PMF_USE_ITEM_HELD  0x000200
+// available               0x000200
 #define PMF_WEAPON_RELOAD  0x000400 // force a weapon switch
 #define PMF_FOLLOW         0x000800 // spectate following another player
 #define PMF_QUEUED         0x001000 // player is queued
@@ -171,6 +264,7 @@ struct pmoveExt_t
 {
 	int    pouncePayload;
 	vec3_t fallImpactVelocity;
+	bool cancelDeconstructCharge;
 };
 
 #define MAXTOUCH 32
@@ -226,15 +320,15 @@ void Pmove( pmove_t *pmove );
 enum statIndex_t
 {
   STAT_HEALTH,
-  STAT_ITEMS,
+  STAT_ITEMS,      // bitfield of all possible upgrades, probably only for humans.
   STAT_ACTIVEITEMS,
-  STAT_WEAPON,     // current primary weapon
+  STAT_WEAPON,     // current primary weapon. Works for humans and aliens. For aliens, is related to STAT_CLASS.
   STAT_MAX_HEALTH, // health limit
-  STAT_CLASS,      // player class
+  STAT_CLASS,      // player class. Human's armor or alien's form. Do not use to guess team (which is done in some places), instead use PERS_TEAM
   STAT_STATE2,     // more client states
   STAT_STAMINA,    // humans: stamina
   STAT_STATE,      // client states
-  STAT_MISC,       // aliens: pounce, trample; humans: lcannon
+  STAT_MISC,       // build timer
   STAT_BUILDABLE,  // ghost model to display for building
   STAT_FALLDIST,   // distance the player fell
   STAT_VIEWLOCK,   // direction to lock the view in
@@ -384,6 +478,9 @@ enum weaponMode_t
   WPM_PRIMARY,
   WPM_SECONDARY,
   WPM_TERTIARY,
+  WPM_DECONSTRUCT, // short press of +deconstruct
+  WPM_DECONSTRUCT_SELECT_TARGET, // when starting to hold +deconstruct
+  WPM_DECONSTRUCT_LONG, // finished holding +deconstruct
 
   WPM_NOTFIRING,
 
@@ -569,6 +666,9 @@ enum entity_event_t
   EV_FIRE_WEAPON,
   EV_FIRE_WEAPON2,
   EV_FIRE_WEAPON3,
+  EV_FIRE_DECONSTRUCT,
+  EV_FIRE_DECONSTRUCT_LONG,
+  EV_DECONSTRUCT_SELECT_TARGET,
   EV_WEAPON_RELOAD,
 
   EV_PLAYER_RESPAWN, // for fovwarp effects
@@ -670,6 +770,7 @@ enum dynMenu_t
   MN_A_NOTINBASE,
   MN_A_NOOVMND_EVOLVE,
   MN_A_EVOLVEBUILDTIMER,
+  MN_A_EVOLVEWEAPONTIMER,
   MN_A_CANTEVOLVE,
   MN_A_EVOLVEWALLWALK,
   MN_A_UNKNOWNCLASS,
@@ -718,11 +819,8 @@ enum dynMenu_t
 enum playerAnimNumber_t
 {
   BOTH_DEATH1,
-  BOTH_DEAD1,
   BOTH_DEATH2,
-  BOTH_DEAD2,
   BOTH_DEATH3,
-  BOTH_DEAD3,
 
   TORSO_GESTURE_BLASTER,
   TORSO_GESTURE,
@@ -817,11 +915,8 @@ enum nonSegPlayerAnimNumber_t
   NSPA_PAIN2,
 
   NSPA_DEATH1,
-  NSPA_DEAD1,
   NSPA_DEATH2,
-  NSPA_DEAD2,
   NSPA_DEATH3,
-  NSPA_DEAD3,
 
   MAX_NONSEG_PLAYER_ANIMATIONS,
 
@@ -1027,8 +1122,14 @@ enum meansOfDeath_t
   MOD_REPLACE
 };
 
-#define DEVOLVE_RETURN_RATE 0.9f
-#define CANT_EVOLVE -999
+// TODO: move other button definitions into gamelogic
+enum buttonNumber_t
+{
+  BUTTON_ATTACK3 = 9,
+  BUTTON_DECONSTRUCT = 13,
+};
+
+#define DEVOLVE_RETURN_FRACTION 0.9f
 
 //---------------------------------------------------------
 
@@ -1206,11 +1307,11 @@ struct buildableAttributes_t
 	float       minNormal;
 	bool    invertNormal;
 
-	bool    creepTest;
 	int         creepSize;
 
 	bool    transparentTest;
 	bool    uniqueTest;
+	bool    dretchAttackable;
 };
 
 struct buildableModelConfig_t
@@ -1398,8 +1499,7 @@ void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t
 team_t                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
-int                         BG_CostToEvolve(int from, int to);
-int                         BG_ClassCanEvolveFromTo(int from, int to, int credits);
+evolveInfo_t            BG_ClassEvolveInfoFromTo(int from, int to);
 bool                    BG_AlienCanEvolve(int from, int credits);
 
 int                       BG_GetBarbRegenerationInterval(const playerState_t& ps);
@@ -1566,7 +1666,13 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
                                  int pClass, int weapon,
                                  int enthusiasm, int *trackNum );
 
-int  BG_LoadEmoticons( emoticon_t *emoticons, int num );
+struct emoticonData_t
+{
+	std::string imageFile;
+};
+void BG_LoadEmoticons();
+const emoticonData_t* BG_Emoticon( const std::string& name );
+const emoticonData_t* BG_EmoticonAt( const char *s );
 
 const char *BG_TeamName( int team );
 const char *BG_TeamNamePlural( int team );
