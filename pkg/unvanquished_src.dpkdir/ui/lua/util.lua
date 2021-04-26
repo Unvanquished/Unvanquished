@@ -44,12 +44,70 @@ function detectEscape(event, document)
 	end
 end
 
+function AvailabilityIcon(availability)
+	if availability == "active" then
+		-- Check mark icon. UTF-8 encoding of \uf00c
+		return "<icon>\xEF\x80\x8C</icon>"
+	elseif availability == "locked" then
+		-- Padlock icon. UTF-8 encoding of \uf023
+		return "<icon>\xEF\x80\xA3</icon>"
+	elseif availability == "expensive" then
+		-- $1 bill icon. UTF-8 encoding of \uf0d6
+		return "<icon>\xEF\x83\x96</icon>";
+	elseif availability == "overmindfar" then
+		-- Padlock icon. UTF-8 encoding of \uf023
+		-- TODO: find a better icon?
+		return "<icon>\xEF\x80\xA3</icon>"
+	else
+		return ""
+	end
+end
+
+function CirclemenuSkeleton(num_items)
+	local rml = '<button class="cancelButton" onClick="document:Hide()">Cancel</button>'
+	local radius_em = 10
+	for i = 0, num_items-1 do
+		local angle = 2 * math.pi / num_items * i
+		local x = radius_em * math.sin(angle)
+		local y = radius_em * -math.cos(angle)
+		rml = rml .. string.format('<div style="position: absolute; left: %.1fem; top: %.1fem;"></div>', x, y)
+	end
+	return rml
+end
+
+function CirclemenuKeyboardHints(num_items)
+	local rml = ""
+	local radius_em = 6.3
+	for i=1,num_items do
+		local angle = 2 * math.pi / num_items * (i - 1)
+		local x = radius_em * math.sin(angle)
+		local y = radius_em * -math.cos(angle)
+		rml = rml .. string.format('<div style="position: absolute; left: %.1fem; top: %.1fem;"><p class="key">%d</p></div>', x, y, i % 10)
+	end
+	return rml
+end
+
+-- The num_handler callback will be given two arguments: an integer in
+-- [1, 10] indicating which item the user selects, and the key event
+function CirclemenuHandleKey(event, document, num_handler)
+	local key = event.parameters["key_identifier"]
+	local index
+	if key == rocket.key_identifier["0"] then
+		index = 10
+	elseif key >= rocket.key_identifier["1"] and key <= rocket.key_identifier["9"] then
+		index = key - rocket.key_identifier["1"] + 1
+	else
+		detectEscape(event, document)
+		return
+	end
+	num_handler(index, event)
+end
+
 function welcome(event, document)
-  if Cvar.get("cg_welcome") ~= "1" then
-    if Cvar.get("name") == "UnnamedPlayer" then
-      Cvar.set("name", "Player#" .. math.ceil(math.random()*10000000))
-    end
+  if Cvar.get("cg_welcome") ~= "1" and Cvar.get("name") == "UnnamedPlayer" then
+    Cvar.set("name", "Player#" .. math.ceil(math.random()*10000000))
     Events.pushevent("show options_welcome", event)
     Cvar.set("cg_welcome", "1")
+    Cvar.archive("cg_welcome")
   end
 end

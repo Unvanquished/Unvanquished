@@ -4,7 +4,7 @@ selector
 	{
 		sequence
 		{
-			condition haveWeapon( WP_HBUILD ) && distanceTo( E_GOAL ) <= 100
+			condition haveWeapon( WP_HBUILD ) && distanceTo( E_GOAL ) <= 100 && percentHealth( E_GOAL ) < 1.0
 			action resetStuckTime
 		}
 	}
@@ -68,7 +68,10 @@ selector
 
 	condition team == TEAM_ALIENS
 	{
-		action evolve
+		condition ( aliveTime > 1500 )
+		{
+			action evolve
+		}
 	}
 
 	sequence

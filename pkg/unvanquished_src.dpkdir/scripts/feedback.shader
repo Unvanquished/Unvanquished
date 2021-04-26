@@ -4,6 +4,7 @@ gfx/feedback/bubble
 	sort underwater
 	cull none
 	entityMergable
+	nopicmip
 	{
 		map gfx/feedback/bubble
 		blendFunc GL_ONE GL_ONE
@@ -15,6 +16,7 @@ gfx/feedback/bubble
 // displayed above player while he is typing
 gfx/feedback/chatballoon
 {
+	nopicmip
 	{
 		map gfx/feedback/chatballoon
 		blendfunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
@@ -44,6 +46,7 @@ gfx/feedback/damage/font
 // fullscreen vignetting effect when player is suffering
 gfx/feedback/painblend
 {
+	nopicmip
 	{
 		map gfx/feedback/painblend
 		blendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
