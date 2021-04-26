@@ -66,44 +66,6 @@ enum AINodeStatus_t
 	STATUS_RUNNING
 };
 
-// behavior tree node types
-enum AINode_t
-{
-	SELECTOR_NODE,
-	ACTION_NODE,
-	CONDITION_NODE,
-	BEHAVIOR_NODE,
-	DECORATOR_NODE
-};
-
-struct AIGenericNode_s;
-
-typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, struct AIGenericNode_s * );
-
-// all behavior tree nodes must conform to this interface
-typedef struct AIGenericNode_s
-{
-	AINode_t type;
-	AINodeRunner run;
-} AIGenericNode_t;
-
-#define MAX_NODE_LIST 20
-struct AINodeList_t
-{
-	AINode_t type;
-	AINodeRunner run;
-	AIGenericNode_t *list[ MAX_NODE_LIST ];
-	int numNodes;
-};
-
-struct AIBehaviorTree_t
-{
-	AINode_t     type;
-	AINodeRunner run;
-	char name[ MAX_QPATH ];
-	AIGenericNode_t *root;
-};
-
 // operations used in condition nodes
 // ordered according to precedence
 // lower values == higher precedence
@@ -149,6 +111,8 @@ struct AIValue_t
 	} l;
 };
 
+void AIDestroyValue( AIValue_t v );
+
 typedef AIValue_t (*AIFunc)( gentity_t *self, const AIValue_t *params );
 
 struct AIValueFunc_t
@@ -182,34 +146,70 @@ struct AIUnaryOp_t
 	AIExpType_t *exp;
 };
 
-struct AIConditionNode_t
+bool isBinaryOp( AIOpType_t op );
+bool isUnaryOp( AIOpType_t op );
+
+// behavior tree node types
+enum AINode_t
 {
-	AINode_t        type;
-	AINodeRunner    run;
-	AIGenericNode_t *child;
+	SELECTOR_NODE,
+	ACTION_NODE,
+	CONDITION_NODE,
+	BEHAVIOR_NODE,
+	DECORATOR_NODE
+};
+
+struct AIGenericNode_t;
+typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, AIGenericNode_t * );
+
+// all behavior tree nodes must conform to this interface
+struct AIGenericNode_t
+{
+	AINode_t type;
+	AINodeRunner run;
+};
+
+struct pc_token_list;
+struct AINodeList_t : public AIGenericNode_t
+{
+	std::vector<std::shared_ptr<AIGenericNode_t>> list;
+	AINodeList_t(AINodeRunner, pc_token_list **);
+};
+
+struct AIBehaviorTree_t : public AIGenericNode_t
+{
+	AIBehaviorTree_t( std::string filename );
+	std::string name;
+	std::shared_ptr<AIGenericNode_t> root;
+};
+using AITreeList_t = std::vector<std::shared_ptr<AIBehaviorTree_t>>;
+
+void FreeExpression( AIExpType_t *exp );
+struct AIConditionNode_t : public AIGenericNode_t
+{
+	AIConditionNode_t(pc_token_list **);
+	~AIConditionNode_t() { FreeExpression(exp); }
+	std::shared_ptr<AIGenericNode_t> child;
 	AIExpType_t     *exp;
 };
 
-struct AIDecoratorNode_t
+struct AIDecoratorNode_t : public AIGenericNode_t
 {
-	AINode_t        type;
-	AINodeRunner    run;
-	AIGenericNode_t *child;
-	AIValue_t       *params;
-	int             nparams;
-	int             data[ MAX_CLIENTS ]; // bot specific data
+	AIDecoratorNode_t( pc_token_list **list );
+	~AIDecoratorNode_t() { BG_Free( params ); };
+	std::shared_ptr<AIGenericNode_t> child;
+	AIValue_t *params;
+	int        nparams;
+	int        data[ MAX_CLIENTS ]; // bot specific data
 };
 
-struct AIActionNode_t
+struct AIActionNode_t : public AIGenericNode_t
 {
-	AINode_t     type;
-	AINodeRunner run;
-	AIValue_t    *params;
-	int          nparams;
+	AIActionNode_t( pc_token_list **list );
+	~AIActionNode_t() { for(int i=0; i<nparams; i++) AIDestroyValue( params[i] ); BG_Free(params); };
+	AIValue_t *params;
+	int        nparams;
 };
-
-bool isBinaryOp( AIOpType_t op );
-bool isUnaryOp( AIOpType_t op );
 
 AIValue_t AIBoxFloat( float f );
 AIValue_t AIBoxInt( int i );
@@ -219,8 +219,6 @@ float       AIUnBoxFloat( AIValue_t v );
 int         AIUnBoxInt( AIValue_t v );
 double      AIUnBoxDouble( AIValue_t v );
 const char *AIUnBoxString( AIValue_t v );
-
-void AIDestroyValue( AIValue_t v );
 
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e );
 

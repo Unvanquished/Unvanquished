@@ -966,7 +966,7 @@ bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 	float width = 0, height = 0;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
+	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetTargetPos( target, targetPos );
 	switch ( self->client->ps.weapon )
 	{

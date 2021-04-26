@@ -28,6 +28,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "Entities.h"
 
+void WarnAboutParseError( parseError p )
+{
+	if ( p.line != 0 )
+	{
+		Log::Warn( "Parse error %s on line %i", p.message, p.line );
+	}
+	else
+	{
+		Log::Warn( "Parse error %s", p.message );
+	}
+}
+
 static bool expectToken( const char *s, pc_token_list **list, bool next )
 {
 	const pc_token_list *current = *list;
@@ -737,16 +749,9 @@ static AIExpType_t *Primary( pc_token_list **list )
 	return tree;
 }
 
-static void BotInitNode( AINode_t type, AINodeRunner func, void *node )
-{
-	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
-	n->type = type;
-	n->run = func;
-}
-
 /*
 ======================
-ReadConditionNode
+AIConditionNode_t constructor
 
 Parses and creates an AIConditionNode_t from a token list
 The token list pointer is modified to point to the beginning of the next node text block
@@ -763,66 +768,52 @@ condition [expression]
 ======================
 */
 
-AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
+AIConditionNode_t::AIConditionNode_t( pc_token_list **tokenlist )
+	: AIGenericNode_t{ CONDITION_NODE, BotConditionNode },
+	  child(nullptr), exp(nullptr)
 {
 	pc_token_list *current = *tokenlist;
 
-	AIConditionNode_t *condition;
+	expectToken( "condition", &current, true );
 
-	if ( !expectToken( "condition", &current, true ) )
-	{
-		return nullptr;
-	}
-
-	condition = allocNode( AIConditionNode_t );
-	BotInitNode( CONDITION_NODE, BotConditionNode, condition );
-
-	condition->exp = ReadConditionExpression( &current, OP_NONE );
+	exp = ReadConditionExpression( &current, OP_NONE );
 
 	if ( !current )
 	{
 		*tokenlist = current;
-		Log::Warn( "Unexpected end of file" );
-		FreeConditionNode( condition );
-		return nullptr;
+		throw parseError("unexpected end of file");
 	}
 
-	if ( !condition->exp )
+	if ( !exp )
 	{
 		*tokenlist = current;
-		FreeConditionNode( condition );
-		return nullptr;
+		throw parseError("missing expression in condition");
 	}
 
 	if ( Q_stricmp( current->token.string, "{" ) )
 	{
 		// this condition node has no child nodes
 		*tokenlist = current;
-		return ( AIGenericNode_t * ) condition;
+		return;
 	}
 
 	current = current->next;
 
-	condition->child = ReadNode( &current );
+	child = ReadNode( &current );
 
-	if ( !condition->child )
+	if ( !child )
 	{
-		Log::Warn( "Failed to parse child node of condition on line %d", (*tokenlist)->token.line );
 		*tokenlist = current;
-		FreeConditionNode( condition );
-		return nullptr;
+		throw parseError("Parse error: could not parse child node of condition", (*tokenlist)->token.line);
 	}
 
 	if ( !expectToken( "}", &current, true ) )
 	{
 		*tokenlist = current;
-		FreeConditionNode( condition );
-		return nullptr;
+		throw parseError("expected } at end of condition body", current->token.line);
 	}
 
 	*tokenlist = current;
-
-	return ( AIGenericNode_t * ) condition;
 }
 
 static const struct AIDecoratorMap_s
@@ -835,87 +826,84 @@ static const struct AIDecoratorMap_s
 {
 	{ "return", BotDecoratorReturn, 1, 1 },
 	{ "timer", BotDecoratorTimer, 1, 1 }
-};
+}; // This list must be sorted
 
-AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
+/*
+======================
+AIDecoratorNode_t constructor
+
+Parses and creates an DecoratorNode_t from a token list
+The token list pointer is modified to point to the beginning of the next node text block
+
+A condition node has the form:
+decorator [expression] {
+	child node
+}
+
+where expression can either be return(RETURN_VALUE) or timer(TIME)
+and will trigger when that value is returned, or each TIME milliseconds.
+======================
+*/
+
+AIDecoratorNode_t::AIDecoratorNode_t( pc_token_list **list )
+	: AIGenericNode_t{ DECORATOR_NODE, nullptr },
+	  child(nullptr), params(nullptr), nparams(0), data{}
 {
 	pc_token_list *current = *list;
-	struct AIDecoratorMap_s *dec;
-	AIDecoratorNode_t       node;
-	AIDecoratorNode_t       *ret;
 	pc_token_list           *parenBegin;
 
-	if ( !expectToken( "decorator", &current, true ) )
-	{
-		return nullptr;
-	}
+	expectToken( "decorator", &current, true );
 
 	if ( !current )
 	{
-		Log::Warn( "Unexpected end of file after line %d", (*list)->token.line );
 		*list = current;
-		return nullptr;
+		throw parseError("unexpected end of file");
 	}
 
-	dec = (struct AIDecoratorMap_s*) bsearch( current->token.string, AIDecorators, ARRAY_LEN( AIDecorators ), sizeof( *AIDecorators ), cmdcmp );
+	auto dec = (struct AIDecoratorMap_s*) bsearch( current->token.string,
+			AIDecorators, ARRAY_LEN( AIDecorators ),
+			sizeof( *AIDecorators ), cmdcmp );
 
 	if ( !dec )
 	{
-		Log::Warn( "%s on line %d is not a valid decorator", current->token.string, current->token.line );
 		*list = current;
-		return nullptr;
+		throw parseError("invalid decorator", current->token.line);
 	}
 
 	parenBegin = current->next;
 
-	memset( &node, 0, sizeof( node ) );
-
-	BotInitNode( DECORATOR_NODE, dec->run, &node );
+	run = dec->run;
 
 	// allow dropping of parenthesis if we don't require any parameters
 	if ( dec->minparams == 0 && parenBegin->token.string[0] != '(' )
 	{
-		ret = allocNode( AIDecoratorNode_t );
-		memcpy( ret, &node, sizeof( node ) );
-		*list = parenBegin;
-		return ( AIGenericNode_t * ) ret;
+		return;
 	}
 
-	node.params = parseFunctionParameters( &current, &node.nparams, dec->minparams, dec->maxparams );
+	params = parseFunctionParameters( &current, &nparams, dec->minparams, dec->maxparams );
 
-	if ( !node.params && dec->minparams > 0 )
+	if ( !params && dec->minparams > 0 )
 	{
 		*list = current;
-		return nullptr;
+		throw parseError("could not parse function parameters", current->prev->token.line);
 	}
 
 	if ( !expectToken( "{", &current, true ) )
 	{
 		*list = current;
-		return nullptr;
+		throw parseError("missing {", current->prev->token.line);
 	}
 
-	node.child = ReadNode( &current );
+	child = ReadNode( &current );
 
-	if ( !node.child )
-	{
-		Log::Warn( "Failed to parse child node of decorator on line %d",  (*list)->token.line );
-		*list = current;
-		return nullptr;
-	}
-
-	if ( !expectToken( "}", &current, true ) )
+	if ( !child )
 	{
 		*list = current;
-		return nullptr;
+		throw parseError("failed to parse child node of decorator", current->token.line );
 	}
 
-	// create the decorator node
-	ret = allocNode( AIDecoratorNode_t );
-	memcpy( ret, &node, sizeof( *ret ) );
-
+	expectToken( "}", &current, true );
 	*list = current;
-	return ( AIGenericNode_t * ) ret;
 }
 
 static const struct AIActionMap_s
@@ -958,7 +946,7 @@ static const struct AIActionMap_s
 
 /*
 ======================
-ReadActionNode
+AIActionNode_t constructor
 
 Parses and creates an AIGenericNode_t with the type ACTION_NODE from a token list
 The token list pointer is modified to point to the beginning of the next node text block after reading
@@ -970,211 +958,140 @@ Where name defines the action to execute, and the parameters are surrounded by p
 ======================
 */
 
-AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
+AIActionNode_t::AIActionNode_t( pc_token_list **tokenlist )
+	: AIGenericNode_t{ ACTION_NODE, nullptr }, params(nullptr), nparams(0)
 {
 	pc_token_list *current = *tokenlist;
 	pc_token_list *parenBegin;
-	AIActionNode_t        *ret = nullptr;
-	AIActionNode_t        node;
-	struct AIActionMap_s  *action = nullptr;
+	struct AIActionMap_s *action = nullptr;
 
-	if ( !expectToken( "action", &current, true ) )
-	{
-		return nullptr;
-	}
+	expectToken( "action", &current, true );
 
 	if ( !current )
 	{
-		Log::Warn( "Unexpected end of file after line %d", (*tokenlist)->token.line );
-		return nullptr;
+		throw parseError( "unexpected end of file after line", (*tokenlist)->token.line );
 	}
 
 	action = (struct AIActionMap_s*) bsearch( current->token.string, AIActions, ARRAY_LEN( AIActions ), sizeof( *AIActions ), cmdcmp );
 
 	if ( !action )
 	{
-		Log::Warn( "%s on line %d is not a valid action", current->token.string, current->token.line );
 		*tokenlist = current;
-		return nullptr;
+		throw parseError( "invalid action" + current->token.line );
 	}
 
 	parenBegin = current->next;
 
-	memset( &node, 0, sizeof( node ) );
-
-	BotInitNode( ACTION_NODE, action->run, &node );
+	run = action->run;
 
 	// allow dropping of parenthesis if we don't require any parameters
 	if ( action->minparams == 0 && parenBegin->token.string[0] != '(' )
 	{
-		ret = allocNode( AIActionNode_t );
-		memcpy( ret, &node, sizeof( node ) );
 		*tokenlist = parenBegin;
-		return ( AIGenericNode_t * ) ret;
+		return;
 	}
 
-	node.params = parseFunctionParameters( &current, &node.nparams, action->minparams, action->maxparams );
+	params = parseFunctionParameters( &current, &nparams, action->minparams, action->maxparams );
 
-	if ( !node.params && action->minparams > 0 )
+	if ( !params && action->minparams > 0 )
 	{
-		return nullptr;
+		throw parseError("could not parse function parameters", current->prev->token.line);
 	}
-
-	// create the action node
-	ret = allocNode( AIActionNode_t );
-	memcpy( ret, &node, sizeof( *ret ) );
 
 	*tokenlist = current;
-	return ( AIGenericNode_t * ) ret;
-}
-
-AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
-{
-	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node = nullptr;
-	current = current->next;
-
-	node = ReadNodeList( &current );
-
-	*tokenlist = current;
-	if ( !node )
-	{
-		return nullptr;
-	}
-	BotInitNode( SELECTOR_NODE, BotSequenceNode, node );
-	return node;
-}
-
-AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
-{
-	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node = nullptr;
-	current = current->next;
-
-	node = ReadNodeList( &current );
-
-	*tokenlist = current;
-	if ( !node )
-	{
-		return nullptr;
-	}
-	BotInitNode( SELECTOR_NODE, BotSelectorNode, node );
-	return node;
-}
-
-AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
-{
-	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node = nullptr;
-	current = current->next;
-
-	node = ReadNodeList( &current );
-
-	*tokenlist = current;
-	if ( !node )
-	{
-		return nullptr;
-	}
-	BotInitNode( SELECTOR_NODE, BotConcurrentNode, node );
-	return node;
 }
 
 /*
 ======================
-ReadNodeList
+AINodeList_t constructor
 
 Parses and creates an AINodeList_t from a token list
 The token list pointer is modified to point to the beginning of the next node text block after reading
 ======================
 */
 
-AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
+AINodeList_t::AINodeList_t( AINodeRunner _run, pc_token_list **tokenlist )
+	: AIGenericNode_t{ SELECTOR_NODE, _run }, list()
 {
-	AINodeList_t *list;
-	pc_token_list *current = *tokenlist;
+	pc_token_list *current = (*tokenlist)->next; // TODO: check throw works
 
 	if ( !expectToken( "{", &current, true ) )
 	{
-		return nullptr;
+		throw parseError( "missing opening {", current->token.line );
 	}
-
-	list = allocNode( AINodeList_t );
 
 	while ( Q_stricmp( current->token.string, "}" ) )
 	{
-		AIGenericNode_t *node = ReadNode( &current );
-
-		if ( node && list->numNodes >= MAX_NODE_LIST )
+		std::shared_ptr<AIGenericNode_t> node = ReadNode( &current );
+		if ( node )
 		{
-			Log::Warn( "Max selector children limit exceeded at line %d", (*tokenlist)->token.line );
-			FreeNode( node );
-			FreeNodeList( list );
-			*tokenlist = current;
-			return nullptr;
+			list.push_back( node );
 		}
-		else if ( node )
-		{
-			list->list[ list->numNodes ] = node;
-			list->numNodes++;
-		}
-
-		if ( !node )
+		else
 		{
 			*tokenlist = current;
-			FreeNodeList( list );
-			return nullptr;
+			throw parseError( "could not read a child of a node list", current->token.line );
 		}
 
-		if ( !current )
+		if ( current == nullptr )
 		{
-			*tokenlist = current;
-			return ( AIGenericNode_t * ) list;
+			*tokenlist = nullptr;
+			return;
 		}
 	}
 
 	*tokenlist = current->next;
-	return ( AIGenericNode_t * ) list;
 }
 
 static AITreeList_t *currentList = nullptr;
 
-AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
+std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTree(const char *name, AITreeList_t *list)
+{
+	std::string behavior_name = name;
+	currentList = list;
+
+	// check if this behavior tree has already been loaded
+	for ( const std::shared_ptr<AIBehaviorTree_t>& behavior : *currentList )
+	{
+		if ( behavior->name == behavior_name )
+		{
+			return behavior;
+		}
+	}
+
+	auto behavior = std::make_shared<AIBehaviorTree_t>( std::move(behavior_name) );
+
+	if ( behavior )
+	{
+		currentList->push_back( behavior );
+	}
+	return behavior;
+}
+
+std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 {
 	pc_token_list *first = *tokenlist;
 	pc_token_list *current = first;
 
-	AIBehaviorTree_t *behavior;
-
-	if ( !expectToken( "behavior", &current, true ) )
-	{
-		return nullptr;
-	}
+	expectToken( "behavior", &current, true );
 
 	if ( !current )
 	{
-		Log::Warn( "Unexpected end of file after line %d", first->token.line );
 		*tokenlist = current;
-		return nullptr;
+		throw parseError("unexpected end of file while parsing external file");
 	}
 
-	behavior = ReadBehaviorTree( current->token.string, currentList );
-
-	if ( !behavior )
-	{
-		Log::Warn( "Could not load behavior %s on line %d", current->token.string, current->token.line );
-		*tokenlist = current->next;
-		return nullptr;
-	}
+	std::shared_ptr<AIBehaviorTree_t> behavior =
+		ReadBehaviorTree( current->token.string, currentList );
 
 	if ( !behavior->root )
 	{
-		Log::Warn( "Recursive behavior %s on line %d", current->token.string, current->token.line );
 		*tokenlist = current->next;
-		return nullptr;
+		throw parseError( "recursive behavior", current->prev->token.line );
 	}
 
 	*tokenlist = current->next;
-	return ( AIGenericNode_t * ) behavior;
+	return behavior;
 }
 
 /*
@@ -1189,43 +1106,42 @@ ReadNodeList, ReadActionNode, and ReadConditionNode depending on the first token
 ======================
 */
 
-AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
+std::shared_ptr<AIGenericNode_t> ReadNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node;
+	std::shared_ptr<AIGenericNode_t> node;
 
 	if ( !Q_stricmp( current->token.string, "selector" ) )
 	{
-		node = ReadSelector( &current );
+		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AINodeList_t>( BotSelectorNode, &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "sequence" ) )
 	{
-		node = ReadSequence( &current );
+		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AINodeList_t>( BotSequenceNode, &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "concurrent" ) )
 	{
-		node = ReadConcurrent( &current );
+		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AINodeList_t>( BotConcurrentNode, &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "action" ) )
 	{
-		node = ReadActionNode( &current );
+		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AIActionNode_t>( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "condition" ) )
 	{
-		node = ReadConditionNode( &current );
+		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AIConditionNode_t>( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "decorator" ) )
 	{
-		node = ReadDecoratorNode( &current );
+		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AIDecoratorNode_t>( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "behavior" ) )
 	{
-		node = ReadBehaviorTreeInclude( &current );
+		node = (std::shared_ptr<AIGenericNode_t>) ReadBehaviorTreeInclude( &current );
 	}
 	else
 	{
-		Log::Warn( "Invalid token on line %d found: %s", current->token.line, current->token.string );
-		node = nullptr;
+		throw parseError( "invalid token found", current->token.line );
 	}
 
 	*tokenlist = current;
@@ -1234,33 +1150,19 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 
 /*
 ======================
-ReadBehaviorTree
+AIBehaviorTree_t constructor
 
 Load a behavior tree of the given name from a file
 ======================
 */
 
-AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
+AIBehaviorTree_t::AIBehaviorTree_t( std::string _name )
+	: AIGenericNode_t{ BEHAVIOR_NODE, BotBehaviorNode },
+	  name(std::move(_name)), root(nullptr)
 {
-	int i;
 	char treefilename[ MAX_QPATH ];
 	int handle;
 	pc_token_list *tokenlist;
-	AIBehaviorTree_t *tree;
-	pc_token_list *current;
-	AIGenericNode_t *node;
-
-	currentList = list;
-
-	// check if this behavior tree has already been loaded
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *tree = list->trees[ i ];
-		if ( !Q_stricmp( tree->name, name ) )
-		{
-			return tree;
-		}
-	}
 
 	// add preprocessor defines for use in the behavior tree
 	// add upgrades
@@ -1344,42 +1246,22 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( SAY_AREA );
 	D( SAY_AREA_TEAM );
 
-	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
+	Q_strncpyz( treefilename, va( "bots/%s.bt", name.c_str() ), sizeof( treefilename ) );
 
 	handle = Parse_LoadSourceHandle( treefilename );
 	if ( !handle )
 	{
-		Log::Warn( "Cannot load behavior tree %s: File not found", treefilename );
-		return nullptr;
+		throw "cannot load behavior tree: File not found";
 	}
 
 	tokenlist = CreateTokenList( handle );
 	Parse_FreeSourceHandle( handle );
 
-	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
-
-	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
-
-	tree->run = BotBehaviorNode;
-	tree->type = BEHAVIOR_NODE;
-
-	AddTreeToList( list, tree );
-
-	current = tokenlist;
-
-	node = ReadNode( &current );
-	if ( node )
-	{
-		tree->root = node;
-	}
-	else
-	{
-		RemoveTreeFromList( list, tree );
-		tree = nullptr;
-	}
-
+	root = ReadNode( &tokenlist );
 	FreeTokenList( tokenlist );
-	return tree;
+	if ( !root ) {
+		throw "could not parse behavior tree root node";
+	}
 }
 
 pc_token_list *CreateTokenList( int handle )
@@ -1431,58 +1313,16 @@ void FreeTokenList( pc_token_list *list )
 	}
 }
 
-// functions for keeping a list of behavior trees loaded
-void InitTreeList( AITreeList_t *list )
+void RemoveTreeFromList( AIBehaviorTree_t *tree, AITreeList_t *list )
 {
-	list->trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * 10 );
-	list->maxTrees = 10;
-	list->numTrees = 0;
-}
-
-void AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree )
-{
-	if ( list->maxTrees == list->numTrees )
+	for ( auto t = list->begin(); t != list->end(); ++t )
 	{
-		AIBehaviorTree_t **trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * list->maxTrees );
-		list->maxTrees *= 2;
-		memcpy( trees, list->trees, sizeof( AIBehaviorTree_t * ) * list->numTrees );
-		BG_Free( list->trees );
-		list->trees = trees;
-	}
-
-	list->trees[ list->numTrees ] = tree;
-	list->numTrees++;
-}
-
-void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
-{
-	int i;
-
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *testTree = list->trees[ i ];
-		if ( !Q_stricmp( testTree->name, tree->name ) )
+		if ( t->get()->name == tree->name )
 		{
-			FreeBehaviorTree( testTree );
-			memmove( &list->trees[ i ], &list->trees[ i + 1 ], sizeof( AIBehaviorTree_t * ) * ( list->numTrees - i - 1 ) );
-			list->numTrees--;
+			list->erase(t);
+			return;
 		}
 	}
-}
-
-void FreeTreeList( AITreeList_t *list )
-{
-	int i;
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *tree = list->trees[ i ];
-		FreeBehaviorTree( tree );
-	}
-
-	BG_Free( list->trees );
-	list->trees = nullptr;
-	list->maxTrees = 0;
-	list->numTrees = 0;
 }
 
 // functions for freeing the memory of condition expressions
@@ -1538,6 +1378,7 @@ void FreeExpression( AIExpType_t *exp )
 		FreeOp( op );
 	}
 }
+
 void FreeOp( AIOp_t *op )
 {
 	if ( !op )
@@ -1558,81 +1399,4 @@ void FreeOp( AIOp_t *op )
 	}
 
 	BG_Free( op );
-}
-
-// freeing behavior tree nodes
-void FreeConditionNode( AIConditionNode_t *node )
-{
-	FreeNode( node->child );
-	FreeExpression( node->exp );
-	BG_Free( node );
-}
-
-void FreeNodeList( AINodeList_t *node )
-{
-	int i;
-	for ( i = 0; i < node->numNodes; i++ )
-	{
-		FreeNode( node->list[ i ] );
-	}
-	BG_Free( node );
-}
-
-void FreeActionNode( AIActionNode_t *action )
-{
-	int i;
-	for ( i = 0; i < action->nparams; i++ )
-	{
-		AIDestroyValue( action->params[ i ] );
-	}
-
-	BG_Free( action->params );
-	BG_Free( action );
-}
-
-void FreeDecoratorNode( AIDecoratorNode_t *decorator )
-{
-	BG_Free( decorator->params );
-	FreeNode( decorator->child );
-	BG_Free( decorator );
-}
-
-void FreeNode( AIGenericNode_t *node )
-{
-	if ( !node )
-	{
-		return;
-	}
-
-	switch( node->type )
-	{
-		case SELECTOR_NODE:
-			FreeNodeList( ( AINodeList_t * ) node );
-			break;
-		case CONDITION_NODE:
-			FreeConditionNode( ( AIConditionNode_t * ) node );
-			break;
-		case ACTION_NODE:
-			FreeActionNode( ( AIActionNode_t * ) node );
-			break;
-		case DECORATOR_NODE:
-			FreeDecoratorNode( ( AIDecoratorNode_t * ) node );
-			break;
-		default:
-			break;
-	}
-}
-
-void FreeBehaviorTree( AIBehaviorTree_t *tree )
-{
-	if ( tree )
-	{
-		FreeNode(tree->root);
-
-		BG_Free( tree );
-	}
-	else
-	{
-		Log::Warn( "Attempted to free NULL behavior tree" );
-	}
 }

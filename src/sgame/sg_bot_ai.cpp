@@ -230,11 +230,10 @@ A concurrent node succeeds if none of its child nodes fail
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeList_t *selector = ( AINodeList_t * ) node;
-	int i = 0;
 
-	for ( ; i < selector->numNodes; i++ )
+	for ( const std::shared_ptr<AIGenericNode_t>& node : selector->list )
 	{
-		AINodeStatus_t status = BotEvaluateNode( self, selector->list[ i ] );
+		AINodeStatus_t status = BotEvaluateNode( self, node.get() );
 		if ( status == STATUS_FAILURE )
 		{
 			continue;
@@ -247,20 +246,20 @@ AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeList_t *sequence = ( AINodeList_t * ) node;
-	int i = 0;
+	size_t i;
 
 	// find a previously running node and start there
-	for ( i = sequence->numNodes - 1; i > 0; i-- )
+	for ( i = sequence->list.size() - 1; i > 0; i-- )
 	{
-		if ( NodeIsRunning( self, sequence->list[ i ] ) )
+		if ( NodeIsRunning( self, sequence->list[ i ].get() ) )
 		{
 			break;
 		}
 	}
 
-	for ( ; i < sequence->numNodes; i++ )
+	for ( ; i < sequence->list.size(); i++ )
 	{
-		AINodeStatus_t status = BotEvaluateNode( self, sequence->list[ i ] );
+		AINodeStatus_t status = BotEvaluateNode( self, sequence->list[ i ].get() );
 		if ( status == STATUS_FAILURE )
 		{
 			return STATUS_FAILURE;
@@ -277,11 +276,11 @@ AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeList_t *con = ( AINodeList_t * ) node;
-	int i = 0;
+	size_t i;
 
-	for ( ; i < con->numNodes; i++ )
+	for ( i=0; i < con->list.size(); i++ )
 	{
-		AINodeStatus_t status = BotEvaluateNode( self, con->list[ i ] );
+		AINodeStatus_t status = BotEvaluateNode( self, con->list[ i ].get() );
 
 		if ( status == STATUS_FAILURE )
 		{
@@ -304,7 +303,7 @@ AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node )
 
 	if ( level.time > dec->data[ self->s.number ] )
 	{
-		AINodeStatus_t status = BotEvaluateNode( self, dec->child );
+		AINodeStatus_t status = BotEvaluateNode( self, dec->child.get() );
 
 		if ( status == STATUS_FAILURE )
 		{
@@ -323,7 +322,7 @@ AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 
 	AINodeStatus_t status = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 0 ] );
 
-	BotEvaluateNode( self, dec->child );
+	BotEvaluateNode( self, dec->child.get() );
 	return status;
 }
 
@@ -436,7 +435,7 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 	{
 		if ( con->child )
 		{
-			return BotEvaluateNode( self, con->child );
+			return BotEvaluateNode( self, con->child.get() );
 		}
 		else
 		{
@@ -458,7 +457,7 @@ A behavior tree may contain multiple other behavior trees which are run in this 
 AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AIBehaviorTree_t *tree = ( AIBehaviorTree_t * ) node;
-	return BotEvaluateNode( self, tree->root );
+	return BotEvaluateNode( self, tree->root.get() );
 }
 
 /*

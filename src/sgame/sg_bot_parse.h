@@ -56,39 +56,27 @@ struct pc_token_stripped_t
 	int   line;
 };
 
-typedef struct pc_token_list_s
+struct pc_token_list
 {
-	pc_token_stripped_t    token;
-	struct pc_token_list_s *prev;
-	struct pc_token_list_s *next;
-} pc_token_list;
-
-struct AITreeList_t
-{
-	AIBehaviorTree_t **trees;
-	int numTrees;
-	int maxTrees;
+	pc_token_stripped_t token;
+	struct pc_token_list *prev;
+	struct pc_token_list *next;
 };
-
-void              InitTreeList( AITreeList_t *list );
-void              AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree );
-void              RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree );
-void              FreeTreeList( AITreeList_t *list );
 
 pc_token_list *CreateTokenList( int handle );
 void           FreeTokenList( pc_token_list *list );
 
-AIGenericNode_t  *ReadNode( pc_token_list **tokenlist );
-AIGenericNode_t  *ReadConditionNode( pc_token_list **tokenlist );
-AIGenericNode_t  *ReadActionNode( pc_token_list **tokenlist );
-AIGenericNode_t  *ReadNodeList( pc_token_list **tokenlist );
-AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list );
+std::shared_ptr<AIGenericNode_t>  ReadNode( pc_token_list **tokenlist );
+std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTree( const char *name, AITreeList_t *tree );
 
-void FreeBehaviorTree( AIBehaviorTree_t *tree );
-void FreeActionNode( AIActionNode_t *action );
-void FreeConditionNode( AIConditionNode_t *node );
-void FreeNodeList( AINodeList_t *node );
-void FreeNode( AIGenericNode_t *node );
+struct parseError {
+	parseError(const char *_message, int _line = 0)
+		: message(_message), line(_line) {};
+	const char *message;
+	int line;
+};
+void WarnAboutParseError( parseError p );
+
 void FreeOp( AIOp_t *op );
 void FreeExpression( AIExpType_t *exp );
 void FreeValueFunc( AIValueFunc_t *v );

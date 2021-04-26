@@ -57,7 +57,7 @@ static void G_WriteClientSessionData( int clientNum )
 	        client->sess.restartTeam,
 	        client->sess.seenWelcome,
 	        mind ? mind->botSkill.level : 0,
-	        ( mind && mind->behaviorTree ) ? mind->behaviorTree->name : "default",
+	        ( mind && mind->behaviorTree ) ? mind->behaviorTree->name.c_str() : "default",
 	        Com_ClientListString( &client->sess.ignoreList )
 	      );
 

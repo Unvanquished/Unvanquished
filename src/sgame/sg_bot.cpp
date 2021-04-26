@@ -198,12 +198,23 @@ bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
 	memset( &botMind->nav, 0, sizeof( botMind->nav ) );
 	BotResetEnemyQueue( &botMind->enemyQueue );
 
-	botMind->behaviorTree = ReadBehaviorTree( behavior, &treeList );
-
+	try {
+		botMind->behaviorTree = ReadBehaviorTree( behavior, &treeList );
+	} catch (parseError p) {
+		WarnAboutParseError( p );
+	} catch (const char *message) {
+		Log::Warn( "%s", message );
+	}
 	if ( !botMind->behaviorTree )
 	{
 		Log::Warn( "Problem when loading behavior tree %s, trying default", behavior );
-		botMind->behaviorTree = ReadBehaviorTree( "default", &treeList );
+		try {
+			botMind->behaviorTree = ReadBehaviorTree( "default", &treeList );
+		} catch (parseError p) {
+			WarnAboutParseError( p );
+		} catch (const char *message) {
+			Log::Warn( "%s", message );
+		}
 
 		if ( !botMind->behaviorTree )
 		{
@@ -444,7 +455,7 @@ void G_BotThink( gentity_t *self )
 		//BotClampPos( self );
 	}
 
-	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
+	self->botMind->behaviorTree->run( self, self->botMind->behaviorTree.get() );
 
 	// if we were nudged...
 	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );
@@ -538,10 +549,6 @@ void G_BotIntermissionThink( gclient_t *client )
 void G_BotInit()
 {
 	G_BotNavInit( );
-	if ( treeList.maxTrees == 0 )
-	{
-		InitTreeList( &treeList );
-	}
 }
 
 void G_BotCleanup()
@@ -556,7 +563,7 @@ void G_BotCleanup()
 
 	G_BotClearNames();
 
-	FreeTreeList( &treeList );
+	treeList.clear();
 	G_BotNavCleanup();
 }
 
