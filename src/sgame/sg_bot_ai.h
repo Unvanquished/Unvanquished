@@ -83,14 +83,6 @@ enum AIOpType_t
 	OP_NONE
 };
 
-// types of expressions in condition nodes
-enum AIExpType_t
-{
-	EX_OP,
-	EX_VALUE,
-	EX_FUNC
-};
-
 enum AIValueType_t
 {
 	VALUE_FLOAT,
@@ -98,11 +90,34 @@ enum AIValueType_t
 	VALUE_STRING
 };
 
-struct AIValue_t
+class AIValue_t;
+class AIExpression_t
 {
-	AIExpType_t             expType;
-	AIValueType_t           valType;
+public:
+	virtual AIValue_t eval( gentity_t *self ) const = 0;
+};
 
+class AIValue_t : public AIExpression_t // FIXME: turn this into AIValue?
+{
+public:
+	AIValue_t(bool);
+	AIValue_t(int);
+	AIValue_t(float);
+	AIValue_t(const char *);
+	AIValue_t(AIValue_t const&);
+	AIValue_t(AIValue_t&&);
+	AIValue_t& operator=(AIValue_t const&) = delete;
+	AIValue_t& operator=(AIValue_t&&) = delete;
+	~AIValue_t();
+	explicit operator bool() const;
+	explicit operator int() const;
+	explicit operator float() const;
+	explicit operator double() const;
+	explicit operator const char *() const;
+	AIValue_t eval( gentity_t *self ) const { return *this; };
+
+private:
+	AIValueType_t valType;
 	union
 	{
 		float floatValue;
@@ -111,39 +126,49 @@ struct AIValue_t
 	} l;
 };
 
-void AIDestroyValue( AIValue_t v );
+using AIFunc = AIValue_t (*)( gentity_t *self, const std::vector<AIValue_t> &params );
 
-typedef AIValue_t (*AIFunc)( gentity_t *self, const AIValue_t *params );
-
-struct AIValueFunc_t
+class AIValueFunc_t : public AIExpression_t
 {
-	AIExpType_t   expType;
+public:
+	AIValueFunc_t(AIValueType_t retType_, AIFunc func_, std::vector<AIValue_t> params_)
+		: retType(retType_), func(func_), params(std::move(params_)) {};
+	AIValue_t eval( gentity_t *self ) const {
+		return func( self, params );
+	}
+private:
 	AIValueType_t retType;
 	AIFunc        func;
-	AIValue_t     *params;
-	int           nparams;
+	std::vector<AIValue_t> params;
 };
 
-// all ops must conform to this interface
-struct AIOp_t
+class AIOp_t : public AIExpression_t
 {
-	AIExpType_t expType;
-	AIOpType_t  opType;
+public:
+	AIOp_t(AIOpType_t t) : opType(t) {}
+protected:
+	AIOpType_t opType;
 };
 
-struct AIBinaryOp_t
+class AIBinaryOp_t : public AIOp_t
 {
-	AIExpType_t expType;
-	AIOpType_t  opType;
-	AIExpType_t *exp1;
-	AIExpType_t *exp2;
+public:
+	AIBinaryOp_t(AIOpType_t type, std::unique_ptr<AIExpression_t> exp1_, std::unique_ptr<AIExpression_t> exp2_)
+		: AIOp_t(type), exp1(std::move(exp1_)), exp2(std::move(exp2_)) {};
+	AIValue_t eval( gentity_t *self ) const;
+private:
+	std::unique_ptr<AIExpression_t> exp1;
+	std::unique_ptr<AIExpression_t> exp2;
 };
 
-struct AIUnaryOp_t
+class AIUnaryOp_t : public AIOp_t
 {
-	AIExpType_t expType;
-	AIOpType_t  opType;
-	AIExpType_t *exp;
+public:
+	AIUnaryOp_t(AIOpType_t type, std::unique_ptr<AIExpression_t> exp_)
+		: AIOp_t(type), exp(std::move(exp_)) {}
+	AIValue_t eval( gentity_t *self ) const;
+private:
+	std::unique_ptr<AIExpression_t> exp;
 };
 
 bool isBinaryOp( AIOpType_t op );
@@ -184,41 +209,26 @@ struct AIBehaviorTree : public AIGenericNode
 };
 using AITreeList = std::vector<std::shared_ptr<AIBehaviorTree>>;
 
-void FreeExpression( AIExpType_t *exp );
 struct AIConditionNode : public AIGenericNode
 {
 	AIConditionNode(pc_token_list **);
-	~AIConditionNode() { FreeExpression(exp); }
 	std::shared_ptr<AIGenericNode> child;
-	AIExpType_t     *exp;
+	std::unique_ptr<AIExpression_t> exp;
 };
 
 struct AIDecoratorNode : public AIGenericNode
 {
 	AIDecoratorNode( pc_token_list **list );
-	~AIDecoratorNode() { for(int i=0; i<nparams; i++) AIDestroyValue( params[i] ); BG_Free( params ); };
 	std::shared_ptr<AIGenericNode> child;
-	AIValue_t *params;
-	int        nparams;
+	std::vector<AIValue_t> params;
 	int        data[ MAX_CLIENTS ]; // bot specific data
 };
 
 struct AIActionNode : public AIGenericNode
 {
 	AIActionNode( pc_token_list **list );
-	~AIActionNode() { for(int i=0; i<nparams; i++) AIDestroyValue( params[i] ); BG_Free(params); };
-	AIValue_t *params;
-	int        nparams;
+	std::vector<AIValue_t> params;
 };
-
-AIValue_t AIBoxFloat( float f );
-AIValue_t AIBoxInt( int i );
-AIValue_t AIBoxString( char *s );
-
-float       AIUnBoxFloat( AIValue_t v );
-int         AIUnBoxInt( AIValue_t v );
-double      AIUnBoxDouble( AIValue_t v );
-const char *AIUnBoxString( AIValue_t v );
 
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e );
 

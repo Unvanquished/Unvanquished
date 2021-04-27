@@ -61,98 +61,123 @@ bool isUnaryOp( AIOpType_t op )
 	return op == OP_NOT;
 }
 
-// functions for using values specified in the bt
-AIValue_t AIBoxFloat( float f )
+AIValue_t::AIValue_t(bool b)
+	: AIValue_t( (int) b )
 {
-	AIValue_t t;
-	t.expType = EX_VALUE;
-	t.valType = VALUE_FLOAT;
-	t.l.floatValue = f;
-	return t;
 }
 
-AIValue_t AIBoxInt( int i )
+AIValue_t::AIValue_t(int i) : valType(VALUE_INT)
 {
-	AIValue_t t;
-	t.expType = EX_VALUE;
-	t.valType = VALUE_INT;
-	t.l.intValue = i;
-	return t;
+	l.intValue = i;
 }
 
-AIValue_t AIBoxString( char *s )
+AIValue_t::AIValue_t(float f) : valType(VALUE_FLOAT)
 {
-	AIValue_t t;
-	t.expType = EX_VALUE;
-	t.valType = VALUE_STRING;
-	t.l.stringValue = BG_strdup( s );
-	return t;
+	l.floatValue = f;
 }
 
-float AIUnBoxFloat( AIValue_t v )
+AIValue_t::AIValue_t(const char *s) : valType(VALUE_STRING)
 {
-	switch ( v.valType )
+	l.stringValue = BG_strdup(s);
+}
+
+AIValue_t::AIValue_t(const AIValue_t& other) : valType(other.valType)
+{
+	switch ( other.valType )
 	{
-		case VALUE_FLOAT:
-			return v.l.floatValue;
 		case VALUE_INT:
-			return ( float ) v.l.intValue;
+			l.intValue = other.l.intValue;
+			break;
+		case VALUE_FLOAT:
+			l.floatValue = other.l.floatValue;
+			break;
+		case VALUE_STRING:
+			l.stringValue = BG_strdup(other.l.stringValue);
+			break;
 		default:
-			return 0.0f;
+			ASSERT_UNREACHABLE();
 	}
 }
 
-int AIUnBoxInt( AIValue_t v )
+AIValue_t::AIValue_t(AIValue_t&& other) : valType(other.valType)
 {
-	switch ( v.valType )
+	switch ( other.valType )
+	{
+		case VALUE_INT:
+			l.intValue = other.l.intValue;
+			break;
+		case VALUE_FLOAT:
+			l.floatValue = other.l.floatValue;
+			break;
+		case VALUE_STRING:
+			l.stringValue = other.l.stringValue;
+			other.l.stringValue = nullptr;
+			break;
+		default:
+			ASSERT_UNREACHABLE();
+	}
+}
+
+AIValue_t::operator bool() const
+{
+	return (float)*this != 0.0f;
+}
+
+AIValue_t::operator int() const
+{
+	switch ( valType )
 	{
 		case VALUE_FLOAT:
-			return ( int ) v.l.floatValue;
+			return ( int ) l.floatValue;
 		case VALUE_INT:
-			return v.l.intValue;
+			return l.intValue;
 		default:
 			return 0;
 	}
 }
 
-const char *AIUnBoxString( AIValue_t v )
+AIValue_t::operator float() const
+{
+	switch ( valType )
+	{
+		case VALUE_FLOAT:
+			return l.floatValue;
+		case VALUE_INT:
+			return ( float ) l.intValue;
+		default:
+			return 0.0f;
+	}
+}
+
+AIValue_t::operator double() const
+{
+	return (double) (float) *this;
+}
+
+AIValue_t::operator const char *() const
 {
 	const static char empty[] = "";
 
-	switch ( v.valType )
+	switch ( valType )
 	{
 		case VALUE_FLOAT:
-			return va( "%f", v.l.floatValue );
+			return va( "%f", l.floatValue );
 		case VALUE_INT:
-			return va( "%d", v.l.intValue );
+			return va( "%d", l.intValue );
 		case VALUE_STRING:
-			return v.l.stringValue;
+			return l.stringValue;
 		default:
 			return empty;
 	}
 }
 
-double AIUnBoxDouble( AIValue_t v )
+AIValue_t::~AIValue_t()
 {
-	switch ( v.valType )
-	{
-		case VALUE_FLOAT:
-			return ( double ) v.l.floatValue;
-		case VALUE_INT:
-			return ( double ) v.l.intValue;
-		default:
-			return 0.0;
-	}
-}
-
-void AIDestroyValue( AIValue_t v )
-{
-	switch ( v.valType )
+	switch ( valType )
 	{
 		case VALUE_STRING:
-			BG_Free( v.l.stringValue );
+			BG_Free( l.stringValue );
 			break;
-
 		default:
 			break;
 	}
@@ -307,7 +332,7 @@ AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode *node )
 
 		if ( status == STATUS_FAILURE )
 		{
-			dec->data[ self->s.number ] = level.time + AIUnBoxInt( dec->params[ 0 ] );
+			dec->data[ self->s.number ] = level.time + (int)dec->params[ 0 ];
 		}
 
 		return status;
@@ -320,99 +345,53 @@ AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode *node )
 {
 	AIDecoratorNode *dec = ( AIDecoratorNode * ) node;
 
-	AINodeStatus_t status = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 0 ] );
+	AINodeStatus_t status = (AINodeStatus_t) (int) dec->params[ 0 ];
 
 	BotEvaluateNode( self, dec->child.get() );
 	return status;
 }
 
-bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
-
-double EvalFunc( gentity_t *self, AIExpType_t *exp )
+AIValue_t AIBinaryOp_t::eval( gentity_t *self ) const
 {
-	AIValueFunc_t *v = ( AIValueFunc_t * ) exp;
-	AIValue_t vt = v->func( self, v->params );
-	double vd = AIUnBoxDouble( vt );
-	AIDestroyValue( vt );
-	return vd;
-}
-
-// using double because it has enough precision to exactly represent both a float and an int
-double EvalValue( gentity_t *self, AIExpType_t *exp )
-{
-	AIValue_t *v = ( AIValue_t * ) exp;
-
-	if ( *exp == EX_FUNC )
-	{
-		return EvalFunc( self, exp );
-	}
-
-	if ( *exp != EX_VALUE )
-	{
-		return ( double ) EvalConditionExpression( self, exp );
-	}
-
-	return AIUnBoxDouble( *v );
-}
-
-bool EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
-{
-	AIBinaryOp_t *o = ( AIBinaryOp_t * ) exp;
-
-	switch ( o->opType )
+	bool success = false;
+	switch ( opType )
 	{
 		case OP_LESSTHAN:
-			return EvalValue( self, o->exp1 ) < EvalValue( self, o->exp2 );
+			success = (double) exp1->eval( self ) <  (double) exp2->eval( self );
+			break;
 		case OP_LESSTHANEQUAL:
-			return EvalValue( self, o->exp1 ) <= EvalValue( self, o->exp2 );
+			success = (double) exp1->eval( self ) <= (double) exp2->eval( self );
+			break;
 		case OP_GREATERTHAN:
-			return EvalValue( self, o->exp1 ) > EvalValue( self, o->exp2 );
+			success = (double) exp1->eval( self ) >  (double) exp2->eval( self );
+			break;
 		case OP_GREATERTHANEQUAL:
-			return EvalValue( self, o->exp1 ) >= EvalValue( self, o->exp2 );
+			success = (double) exp1->eval( self ) >= (double) exp2->eval( self );
+			break;
 		case OP_EQUAL:
-			return EvalValue( self, o->exp1 ) == EvalValue( self, o->exp2 );
+			success = (double) exp1->eval( self ) == (double) exp2->eval( self );
+			break;
 		case OP_NEQUAL:
-			return EvalValue( self, o->exp1 ) != EvalValue( self, o->exp2 );
+			success = (double) exp1->eval( self ) != (double) exp2->eval( self );
+			break;
 		case OP_AND:
-			return EvalConditionExpression( self, o->exp1 ) && EvalConditionExpression( self, o->exp2 );
+			success = (bool) exp1->eval( self ) && (bool) exp2->eval( self );
+			break;
 		case OP_OR:
-			return EvalConditionExpression( self, o->exp1 ) || EvalConditionExpression( self, o->exp2 );
+			success = (bool) exp1->eval( self ) || (bool) exp2->eval( self );
+			break;
 		default:
-			return false;
+			success = false;
+			ASSERT_UNREACHABLE();
+			break;
 	}
+	return AIValue_t( success );
 }
 
-bool EvaluateUnaryOp( gentity_t *self, AIExpType_t *exp )
+AIValue_t AIUnaryOp_t::eval( gentity_t *self ) const
 {
-	AIUnaryOp_t *o = ( AIUnaryOp_t * ) exp;
-	return !EvalConditionExpression( self, o->exp );
-}
-
-bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
-{
-	if ( *exp == EX_OP )
-	{
-		AIOp_t *op = ( AIOp_t * ) exp;
-
-		if ( isBinaryOp( op->opType ) )
-		{
-			return EvaluateBinaryOp( self, exp );
-		}
-		else if ( isUnaryOp( op->opType ) )
-		{
-			return EvaluateUnaryOp( self, exp );
-		}
-	}
-	else if ( *exp  == EX_VALUE )
-	{
-		return EvalValue( self, exp ) != 0.0;
-	}
-	else if ( *exp == EX_FUNC )
-	{
-		return EvalFunc( self, exp ) != 0.0;
-	}
-
-	return false;
+	ASSERT_EQ(opType, OP_NOT);
+	return AIValue_t( !(bool)exp->eval( self ) );
 }
 
 /*
@@ -428,7 +407,7 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode *node )
 {
 	AIConditionNode *con = ( AIConditionNode * ) node;
 
-	bool success = EvalConditionExpression( self, con->exp );
+	bool success = (bool) con->exp->eval( self );
 	if ( success )
 	{
 		if ( con->child )
@@ -539,16 +518,16 @@ AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode* )
 
 AINodeStatus_t BotActionTeleport( gentity_t *self, AIGenericNode *node )
 {
-	AIActionNode *action = ( AIActionNode * ) node;
-	vec3_t pos = {AIUnBoxFloat(action->params[0]),AIUnBoxFloat(action->params[1]),AIUnBoxFloat(action->params[2])};
+	AIActionNode *action = (AIActionNode *) node;
+	vec3_t pos = { (float) action->params[0], (float) action->params[1], (float) action->params[2] };
 	VectorCopy( pos,self->client->ps.origin );
 	return STATUS_SUCCESS;
 }
 
 AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode *node )
 {
-	AIActionNode *action = ( AIActionNode * ) node;
-	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
+	AIActionNode *action = (AIActionNode *) node;
+	upgrade_t u = (upgrade_t) (int) action->params[ 0 ];
 
 	if ( !BG_UpgradeIsActive( u, self->client->ps.stats ) &&
 		BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
@@ -560,8 +539,8 @@ AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode *node )
 
 AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode *node )
 {
-	AIActionNode *action = ( AIActionNode * ) node;
-	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
+	AIActionNode *action = (AIActionNode *) node;
+	upgrade_t u = (upgrade_t) (int) action->params[ 0 ];
 
 	if ( BG_UpgradeIsActive( u, self->client->ps.stats ) &&
 		BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
@@ -595,11 +574,11 @@ AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode* )
 
 AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode *node )
 {
-	AIActionNode *a = ( AIActionNode * ) node;
-	int dir = AIUnBoxInt( a->params[ 0 ] );
-	if ( a->nparams == 2 )
+	AIActionNode *a = (AIActionNode *) node;
+	int dir = (int) a->params[ 0 ];
+	if ( a->params.size() == 2 )
 	{
-		dir |= AIUnBoxInt( a->params[ 1 ] );
+		dir |= (int) a->params[ 1 ];
 	}
 	BotMoveInDir( self, dir );
 	return STATUS_SUCCESS;
@@ -625,20 +604,20 @@ AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode* )
 
 AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode *node )
 {
-	AIActionNode *a = ( AIActionNode * ) node;
+	AIActionNode *a = (AIActionNode *) node;
 
-	if( a->nparams == 1 )
+	if( a->params.size() == 1 )
 	{
-		AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
+		AIEntity_t et = (AIEntity_t) (int) a->params[0];
 		botEntityAndDistance_t e = AIEntityToGentity( self, et );
 		if ( !BotChangeGoalEntity( self, e.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
 	}
-	else if( a->nparams == 3 )
+	else if( a->params.size() == 3 )
 	{
-		vec3_t pos = { AIUnBoxFloat(a->params[0]), AIUnBoxFloat(a->params[1]), AIUnBoxFloat(a->params[2]) };
+		vec3_t pos = { (float) a->params[0], (float) a->params[1], (float) a->params[2] };
 		if ( !BotChangeGoalPos( self, pos ) )
 		{
 			return STATUS_FAILURE;
@@ -655,8 +634,8 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode *node )
 
 AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode *node )
 {
-	AIActionNode *action = ( AIActionNode * ) node;
-	class_t c = ( class_t )  AIUnBoxInt( action->params[ 0 ] );
+	AIActionNode *action = (AIActionNode *) node;
+	class_t c = ( class_t ) (int) action->params[ 0 ];
 
 	if ( self->client->ps.stats[ STAT_CLASS ] == c )
 	{
@@ -674,8 +653,8 @@ AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode *node )
 AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode *node )
 {
 	AIActionNode *action = ( AIActionNode * ) node;
-	const char *str = AIUnBoxString( action->params[ 0 ] );
-	saymode_t   say = ( saymode_t ) AIUnBoxInt( action->params[ 1 ] );
+	const char *str = (const char *) action->params[0];
+	saymode_t say = (saymode_t) (int) action->params[1];
 	G_Say( self, say, str );
 	return STATUS_SUCCESS;
 }
@@ -840,9 +819,9 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode *node )
 
 AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode *node )
 {
-	AIActionNode *a = ( AIActionNode * ) node;
-	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
-	float radius = AIUnBoxFloat( a->params[ 1 ] );
+	AIActionNode *a = (AIActionNode *) node;
+	AIEntity_t e = (AIEntity_t) (int) a->params[0];
+	float radius = (float) a->params[1];
 
 	if ( node != self->botMind->currentNode )
 	{
@@ -913,12 +892,12 @@ botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode *node )
 {
 	float radius = 0;
-	AIActionNode *moveTo = ( AIActionNode * ) node;
-	AIEntity_t ent = ( AIEntity_t ) AIUnBoxInt( moveTo->params[ 0 ] );
+	AIActionNode *moveTo = (AIActionNode *) node;
+	AIEntity_t ent = (AIEntity_t) (int) moveTo->params[0];
 
-	if ( moveTo->nparams > 1 )
+	if ( moveTo->params.size() > 1 )
 	{
-		radius = std::max( AIUnBoxFloat( moveTo->params[ 1 ] ), 0.0f );
+		radius = std::max( (float) moveTo->params[1], 0.0f );
 	}
 
 	if ( node != self->botMind->currentNode )
@@ -1284,9 +1263,8 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode *node )
 	weapon_t  weapon;
 	upgrade_t upgrades[4];
 	int numUpgrades;
-	int i;
 
-	if ( buy->nparams == 0 )
+	if ( buy->params.size() == 0 )
 	{
 		// equip action
 		BotGetDesiredBuy( self, &weapon, upgrades, &numUpgrades );
@@ -1294,7 +1272,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode *node )
 	else
 	{
 		// first parameter should always be a weapon
-		weapon = ( weapon_t ) AIUnBoxInt( buy->params[ 0 ] );
+		weapon = ( weapon_t ) (int) buy->params[ 0 ];
 
 		if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 		{
@@ -1305,13 +1283,13 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode *node )
 		numUpgrades = 0;
 
 		// other parameters are always upgrades
-		for ( i = 1; i < buy->nparams; i++ )
+		for ( size_t i = 1; i < buy->params.size(); i++ )
 		{
-			upgrades[ numUpgrades ] = ( upgrade_t ) AIUnBoxInt( buy->params[ i ] );
+			upgrades[ numUpgrades ] = (upgrade_t) (int) buy->params[ i ];
 
 			if ( upgrades[ numUpgrades ] <= UP_NONE || upgrades[ numUpgrades ] >= UP_NUM_UPGRADES )
 			{
-				Log::Warn("parameter %d to action buy out of range", i + 1 );
+				Log::Warn("parameter %zu to action buy out of range", i + 1 );
 				continue;
 			}
 
@@ -1334,7 +1312,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode *node )
 	{
 		int numContain = 0;
 
-		for ( i = 0; i < numUpgrades; i++ )
+		for ( int i = 0; i < numUpgrades; i++ )
 		{
 			if ( BG_InventoryContainsUpgrade( upgrades[i], self->client->ps.stats ) )
 			{
@@ -1399,7 +1377,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode *node )
 			BotBuyWeapon( self, weapon );
 		}
 
-		for ( i = 0; i < numUpgrades; i++ )
+		for ( int i = 0; i < numUpgrades; i++ )
 		{
 			BotBuyUpgrade( self, upgrades[i] );
 		}

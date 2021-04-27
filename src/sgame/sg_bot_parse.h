@@ -77,9 +77,4 @@ struct parseError {
 };
 void WarnAboutParseError( parseError p );
 
-void FreeOp( AIOp_t *op );
-void FreeExpression( AIExpType_t *exp );
-void FreeValueFunc( AIValueFunc_t *v );
-void FreeValue( AIValue_t *v );
-
 #endif
