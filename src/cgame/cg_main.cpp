@@ -956,7 +956,7 @@ static void CG_RegisterSounds()
 	cgs.media.lCannonWarningSound = trap_S_RegisterSound( "models/weapons/lcannon/warning", false );
 	cgs.media.lCannonWarningSound2 = trap_S_RegisterSound( "models/weapons/lcannon/warning2", false );
 
-	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/rocketpod/lockon", false );
+	cgs.media.rocketpodLockonSound = trap_S_RegisterSound( "sound/buildables/rocketpod/lockon", false );
 
 	cgs.media.timerBeaconExpiredSound = trap_S_RegisterSound( "sound/feedback/beacons/timer-expired", false );
 	cgs.media.killSound = trap_S_RegisterSound( "sound/feedback/damage/bell", false );
