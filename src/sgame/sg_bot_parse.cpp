@@ -751,9 +751,9 @@ static AIExpType_t *Primary( pc_token_list **list )
 
 /*
 ======================
-AIConditionNode_t constructor
+AIConditionNode constructor
 
-Parses and creates an AIConditionNode_t from a token list
+Parses and creates an AIConditionNode from a token list
 The token list pointer is modified to point to the beginning of the next node text block
 
 A condition node has the form:
@@ -768,8 +768,8 @@ condition [expression]
 ======================
 */
 
-AIConditionNode_t::AIConditionNode_t( pc_token_list **tokenlist )
-	: AIGenericNode_t{ CONDITION_NODE, BotConditionNode },
+AIConditionNode::AIConditionNode( pc_token_list **tokenlist )
+	: AIGenericNode{ CONDITION_NODE, BotConditionNode },
 	  child(nullptr), exp(nullptr)
 {
 	pc_token_list *current = *tokenlist;
@@ -830,7 +830,7 @@ static const struct AIDecoratorMap_s
 
 /*
 ======================
-AIDecoratorNode_t constructor
+AIDecoratorNode constructor
 
 Parses and creates an DecoratorNode_t from a token list
 The token list pointer is modified to point to the beginning of the next node text block
@@ -845,8 +845,8 @@ and will trigger when that value is returned, or each TIME milliseconds.
 ======================
 */
 
-AIDecoratorNode_t::AIDecoratorNode_t( pc_token_list **list )
-	: AIGenericNode_t{ DECORATOR_NODE, nullptr },
+AIDecoratorNode::AIDecoratorNode( pc_token_list **list )
+	: AIGenericNode{ DECORATOR_NODE, nullptr },
 	  child(nullptr), params(nullptr), nparams(0), data{}
 {
 	pc_token_list *current = *list;
@@ -946,9 +946,9 @@ static const struct AIActionMap_s
 
 /*
 ======================
-AIActionNode_t constructor
+AIActionNode constructor
 
-Parses and creates an AIGenericNode_t with the type ACTION_NODE from a token list
+Parses and creates an AIGenericNode with the type ACTION_NODE from a token list
 The token list pointer is modified to point to the beginning of the next node text block after reading
 
 An action node has the form:
@@ -958,8 +958,8 @@ Where name defines the action to execute, and the parameters are surrounded by p
 ======================
 */
 
-AIActionNode_t::AIActionNode_t( pc_token_list **tokenlist )
-	: AIGenericNode_t{ ACTION_NODE, nullptr }, params(nullptr), nparams(0)
+AIActionNode::AIActionNode( pc_token_list **tokenlist )
+	: AIGenericNode{ ACTION_NODE, nullptr }, params(nullptr), nparams(0)
 {
 	pc_token_list *current = *tokenlist;
 	pc_token_list *parenBegin;
@@ -1003,15 +1003,15 @@ AIActionNode_t::AIActionNode_t( pc_token_list **tokenlist )
 
 /*
 ======================
-AINodeList_t constructor
+AINodeList constructor
 
-Parses and creates an AINodeList_t from a token list
+Parses and creates an AINodeList from a token list
 The token list pointer is modified to point to the beginning of the next node text block after reading
 ======================
 */
 
-AINodeList_t::AINodeList_t( AINodeRunner _run, pc_token_list **tokenlist )
-	: AIGenericNode_t{ SELECTOR_NODE, _run }, list()
+AINodeList::AINodeList( AINodeRunner _run, pc_token_list **tokenlist )
+	: AIGenericNode{ SELECTOR_NODE, _run }, list()
 {
 	pc_token_list *current = (*tokenlist)->next; // TODO: check throw works
 
@@ -1022,7 +1022,7 @@ AINodeList_t::AINodeList_t( AINodeRunner _run, pc_token_list **tokenlist )
 
 	while ( Q_stricmp( current->token.string, "}" ) )
 	{
-		std::shared_ptr<AIGenericNode_t> node = ReadNode( &current );
+		std::shared_ptr<AIGenericNode> node = ReadNode( &current );
 		if ( node )
 		{
 			list.push_back( node );
@@ -1043,15 +1043,15 @@ AINodeList_t::AINodeList_t( AINodeRunner _run, pc_token_list **tokenlist )
 	*tokenlist = current->next;
 }
 
-static AITreeList_t *currentList = nullptr;
+static AITreeList *currentList = nullptr;
 
-std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTree(const char *name, AITreeList_t *list)
+std::shared_ptr<AIBehaviorTree> ReadBehaviorTree(const char *name, AITreeList *list)
 {
 	std::string behavior_name = name;
 	currentList = list;
 
 	// check if this behavior tree has already been loaded
-	for ( const std::shared_ptr<AIBehaviorTree_t>& behavior : *currentList )
+	for ( const std::shared_ptr<AIBehaviorTree>& behavior : *currentList )
 	{
 		if ( behavior->name == behavior_name )
 		{
@@ -1059,7 +1059,7 @@ std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTree(const char *name, AITreeList_
 		}
 	}
 
-	auto behavior = std::make_shared<AIBehaviorTree_t>( std::move(behavior_name) );
+	auto behavior = std::make_shared<AIBehaviorTree>( std::move(behavior_name) );
 
 	if ( behavior )
 	{
@@ -1068,7 +1068,7 @@ std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTree(const char *name, AITreeList_
 	return behavior;
 }
 
-std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTreeInclude( pc_token_list **tokenlist )
+std::shared_ptr<AIBehaviorTree> ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 {
 	pc_token_list *first = *tokenlist;
 	pc_token_list *current = first;
@@ -1081,7 +1081,7 @@ std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTreeInclude( pc_token_list **token
 		throw parseError("unexpected end of file while parsing external file");
 	}
 
-	std::shared_ptr<AIBehaviorTree_t> behavior =
+	std::shared_ptr<AIBehaviorTree> behavior =
 		ReadBehaviorTree( current->token.string, currentList );
 
 	if ( !behavior->root )
@@ -1098,7 +1098,7 @@ std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTreeInclude( pc_token_list **token
 ======================
 ReadNode
 
-Parses and creates an AIGenericNode_t from a token list
+Parses and creates an AIGenericNode from a token list
 The token list pointer is modified to point to the next node text block after reading
 
 This function delegates the reading to the sub functions
@@ -1106,38 +1106,38 @@ ReadNodeList, ReadActionNode, and ReadConditionNode depending on the first token
 ======================
 */
 
-std::shared_ptr<AIGenericNode_t> ReadNode( pc_token_list **tokenlist )
+std::shared_ptr<AIGenericNode> ReadNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
-	std::shared_ptr<AIGenericNode_t> node;
+	std::shared_ptr<AIGenericNode> node;
 
 	if ( !Q_stricmp( current->token.string, "selector" ) )
 	{
-		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AINodeList_t>( BotSelectorNode, &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AINodeList>( BotSelectorNode, &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "sequence" ) )
 	{
-		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AINodeList_t>( BotSequenceNode, &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AINodeList>( BotSequenceNode, &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "concurrent" ) )
 	{
-		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AINodeList_t>( BotConcurrentNode, &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AINodeList>( BotConcurrentNode, &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "action" ) )
 	{
-		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AIActionNode_t>( &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AIActionNode>( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "condition" ) )
 	{
-		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AIConditionNode_t>( &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AIConditionNode>( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "decorator" ) )
 	{
-		node = (std::shared_ptr<AIGenericNode_t>) std::make_shared<AIDecoratorNode_t>( &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AIDecoratorNode>( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "behavior" ) )
 	{
-		node = (std::shared_ptr<AIGenericNode_t>) ReadBehaviorTreeInclude( &current );
+		node = (std::shared_ptr<AIGenericNode>) ReadBehaviorTreeInclude( &current );
 	}
 	else
 	{
@@ -1150,14 +1150,14 @@ std::shared_ptr<AIGenericNode_t> ReadNode( pc_token_list **tokenlist )
 
 /*
 ======================
-AIBehaviorTree_t constructor
+AIBehaviorTree constructor
 
 Load a behavior tree of the given name from a file
 ======================
 */
 
-AIBehaviorTree_t::AIBehaviorTree_t( std::string _name )
-	: AIGenericNode_t{ BEHAVIOR_NODE, BotBehaviorNode },
+AIBehaviorTree::AIBehaviorTree( std::string _name )
+	: AIGenericNode{ BEHAVIOR_NODE, BotBehaviorNode },
 	  name(std::move(_name)), root(nullptr)
 {
 	char treefilename[ MAX_QPATH ];
@@ -1313,7 +1313,7 @@ void FreeTokenList( pc_token_list *list )
 	}
 }
 
-void RemoveTreeFromList( AIBehaviorTree_t *tree, AITreeList_t *list )
+void RemoveTreeFromList( AIBehaviorTree *tree, AITreeList *list )
 {
 	for ( auto t = list->begin(); t != list->end(); ++t )
 	{

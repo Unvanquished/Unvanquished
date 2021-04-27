@@ -159,54 +159,54 @@ enum AINode_t
 	DECORATOR_NODE
 };
 
-struct AIGenericNode_t;
-typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, AIGenericNode_t * );
+struct AIGenericNode;
+typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, AIGenericNode * );
 
 // all behavior tree nodes must conform to this interface
-struct AIGenericNode_t
+struct AIGenericNode
 {
 	AINode_t type;
 	AINodeRunner run;
 };
 
 struct pc_token_list;
-struct AINodeList_t : public AIGenericNode_t
+struct AINodeList : public AIGenericNode
 {
-	std::vector<std::shared_ptr<AIGenericNode_t>> list;
-	AINodeList_t(AINodeRunner, pc_token_list **);
+	std::vector<std::shared_ptr<AIGenericNode>> list;
+	AINodeList(AINodeRunner, pc_token_list **);
 };
 
-struct AIBehaviorTree_t : public AIGenericNode_t
+struct AIBehaviorTree : public AIGenericNode
 {
-	AIBehaviorTree_t( std::string filename );
+	AIBehaviorTree( std::string filename );
 	std::string name;
-	std::shared_ptr<AIGenericNode_t> root;
+	std::shared_ptr<AIGenericNode> root;
 };
-using AITreeList_t = std::vector<std::shared_ptr<AIBehaviorTree_t>>;
+using AITreeList = std::vector<std::shared_ptr<AIBehaviorTree>>;
 
 void FreeExpression( AIExpType_t *exp );
-struct AIConditionNode_t : public AIGenericNode_t
+struct AIConditionNode : public AIGenericNode
 {
-	AIConditionNode_t(pc_token_list **);
-	~AIConditionNode_t() { FreeExpression(exp); }
-	std::shared_ptr<AIGenericNode_t> child;
+	AIConditionNode(pc_token_list **);
+	~AIConditionNode() { FreeExpression(exp); }
+	std::shared_ptr<AIGenericNode> child;
 	AIExpType_t     *exp;
 };
 
-struct AIDecoratorNode_t : public AIGenericNode_t
+struct AIDecoratorNode : public AIGenericNode
 {
-	AIDecoratorNode_t( pc_token_list **list );
-	~AIDecoratorNode_t() { for(int i=0; i<nparams; i++) AIDestroyValue( params[i] ); BG_Free( params ); };
-	std::shared_ptr<AIGenericNode_t> child;
+	AIDecoratorNode( pc_token_list **list );
+	~AIDecoratorNode() { for(int i=0; i<nparams; i++) AIDestroyValue( params[i] ); BG_Free( params ); };
+	std::shared_ptr<AIGenericNode> child;
 	AIValue_t *params;
 	int        nparams;
 	int        data[ MAX_CLIENTS ]; // bot specific data
 };
 
-struct AIActionNode_t : public AIGenericNode_t
+struct AIActionNode : public AIGenericNode
 {
-	AIActionNode_t( pc_token_list **list );
-	~AIActionNode_t() { for(int i=0; i<nparams; i++) AIDestroyValue( params[i] ); BG_Free(params); };
+	AIActionNode( pc_token_list **list );
+	~AIActionNode() { for(int i=0; i<nparams; i++) AIDestroyValue( params[i] ); BG_Free(params); };
 	AIValue_t *params;
 	int        nparams;
 };
@@ -223,48 +223,48 @@ const char *AIUnBoxString( AIValue_t v );
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e );
 
 // standard behavior tree control-flow nodes
-AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode *node );
 
 // decorator nodes
-AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode *node );
 
 // included behavior trees
-AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode *node );
 
 // action nodes
-AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionAlternateStrafe( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionStrafeDodge( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionTeleport( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionAlternateStrafe( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionStrafeDodge( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionTeleport( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode *node );
 
-AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionSuicide( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionJump( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* );
+AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionSuicide( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionJump( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode *node );
+AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode* );
 #endif

@@ -80,9 +80,9 @@ struct botMemory_t
 	botEntityAndDistance_t closestDamagedBuilding;
 	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
 
-	std::shared_ptr<AIBehaviorTree_t> behaviorTree;
-	AIGenericNode_t  *currentNode;
-	AIGenericNode_t  *runningNodes[ MAX_NODE_DEPTH ];
+	std::shared_ptr<AIBehaviorTree> behaviorTree;
+	AIGenericNode    *currentNode;
+	AIGenericNode    *runningNodes[ MAX_NODE_DEPTH ];
 	int              numRunningNodes;
 
 	int         futureAimTime;

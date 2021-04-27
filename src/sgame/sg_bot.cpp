@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 
 static botMemory_t g_botMind[MAX_CLIENTS];
-static AITreeList_t treeList;
+static AITreeList treeList;
 
 /*
 =======================

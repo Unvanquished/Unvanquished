@@ -66,8 +66,8 @@ struct pc_token_list
 pc_token_list *CreateTokenList( int handle );
 void           FreeTokenList( pc_token_list *list );
 
-std::shared_ptr<AIGenericNode_t>  ReadNode( pc_token_list **tokenlist );
-std::shared_ptr<AIBehaviorTree_t> ReadBehaviorTree( const char *name, AITreeList_t *tree );
+std::shared_ptr<AIGenericNode>  ReadNode( pc_token_list **tokenlist );
+std::shared_ptr<AIBehaviorTree> ReadBehaviorTree( const char *name, AITreeList *tree );
 
 struct parseError {
 	parseError(const char *_message, int _line = 0)
