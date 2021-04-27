@@ -196,7 +196,7 @@ struct AIConditionNode_t : public AIGenericNode_t
 struct AIDecoratorNode_t : public AIGenericNode_t
 {
 	AIDecoratorNode_t( pc_token_list **list );
-	~AIDecoratorNode_t() { BG_Free( params ); };
+	~AIDecoratorNode_t() { for(int i=0; i<nparams; i++) AIDestroyValue( params[i] ); BG_Free( params ); };
 	std::shared_ptr<AIGenericNode_t> child;
 	AIValue_t *params;
 	int        nparams;
