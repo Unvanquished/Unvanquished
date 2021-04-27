@@ -117,7 +117,7 @@ int AIUnBoxInt( AIValue_t v )
 
 const char *AIUnBoxString( AIValue_t v )
 {
-	static char empty[] = "";
+	const static char empty[] = "";
 
 	switch ( v.valType )
 	{
@@ -426,11 +426,9 @@ returns failure otherwise
 */
 AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 {
-	bool success = false;
-
 	AIConditionNode_t *con = ( AIConditionNode_t * ) node;
 
-	success = EvalConditionExpression( self, con->exp );
+	bool success = EvalConditionExpression( self, con->exp );
 	if ( success )
 	{
 		if ( con->child )
