@@ -1763,9 +1763,29 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	wi = &cg_weapons[ weapon ];
 
-	if ( !cg_drawGun.integer || BG_Weapon( weapon )->team == TEAM_ALIENS )
+	/* cg_drawGun is not a boolean but an integer with 3 values:
+	- 0 : draw no gun at all
+	- 1 : draw gun for humans
+	- 2 : draw gun for humans and aliens */
+	switch ( cg_drawGun.integer )
 	{
-		drawGun = false;
+		case 0: // none
+			drawGun = false;
+			break;
+
+		case 1: // humans only
+			if ( BG_Weapon( weapon )->team == TEAM_ALIENS )
+			{
+				drawGun = false;
+			}
+			break;
+
+		/* This is implicit:
+
+		case 2: // humans and aliens
+			drawGun = true;
+			break;
+		*/
 	}
 
 	if ( !wi->registered )
