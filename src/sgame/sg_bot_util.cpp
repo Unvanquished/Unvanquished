@@ -239,7 +239,7 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 }
 
 
-bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
+bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
 {
 	int fromClass = self->client->ps.stats[STAT_CLASS];
 	evolveInfo_t info = BG_ClassEvolveInfoFromTo( fromClass, newClass );
