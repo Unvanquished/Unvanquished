@@ -795,6 +795,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 {
 	vec3_t mins, maxs;
 
+	routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
 	if ( BotTargetIsEntity( target ) )
 	{
 		if ( target.ent->client )
@@ -815,17 +816,12 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 		{
 			routeTarget->type = botRouteTargetType_t::BOT_TARGET_DYNAMIC;
 		}
-		else
-		{
-			routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
-		}
 	}
 	else
 	{
 		// point target
 		VectorSet( maxs, 96, 96, 96 );
 		VectorSet( mins, -96, -96, -96 );
-		routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
 	}
 	
 	for ( int i = 0; i < 3; i++ )
