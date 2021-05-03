@@ -250,14 +250,7 @@ bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
 
 bool WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
 {
-	if ( ps->ammo <= 0 && ps->clips <= 0 && !BG_Weapon( weapon )->infiniteAmmo )
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return ps->ammo <= 0 && ps->clips <= 0 && !BG_Weapon( weapon )->infiniteAmmo;
 }
 
 float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps )
@@ -801,7 +794,6 @@ void BotGetTargetPos( botTarget_t target, vec3_t rVec )
 void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget )
 {
 	vec3_t mins, maxs;
-	int i;
 
 	if ( BotTargetIsEntity( target ) )
 	{
@@ -836,7 +828,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 		routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
 	}
 	
-	for ( i = 0; i < 3; i++ )
+	for ( int i = 0; i < 3; i++ )
 	{
 		routeTarget->polyExtents[ i ] = std::max( Q_fabs( mins[ i ] ), maxs[ i ] );
 	}

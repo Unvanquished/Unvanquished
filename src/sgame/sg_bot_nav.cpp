@@ -465,14 +465,7 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 
 	//if we can jump over it, then jump
 	//note that we also test for a blocking barricade because barricades will collapse to let us through
-	if ( blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f )
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f;
 }
 
 bool BotFindSteerTarget( gentity_t *self, vec3_t dir )

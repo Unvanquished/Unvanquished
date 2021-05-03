@@ -196,16 +196,12 @@ extern vmCvar_t g_bot_level4;
 
 // misc bot cvars
 extern vmCvar_t g_bot_attackStruct;
-extern vmCvar_t g_bot_roam;
-extern vmCvar_t g_bot_rush;
 extern vmCvar_t g_bot_build;
 extern vmCvar_t g_bot_repair;
-extern vmCvar_t g_bot_retreat;
 extern vmCvar_t g_bot_fov;
 extern vmCvar_t g_bot_chasetime;
 extern vmCvar_t g_bot_reactiontime;
 extern vmCvar_t g_bot_infinite_funds;
-extern vmCvar_t g_bot_numInGroup;
 extern vmCvar_t g_bot_persistent;
 extern vmCvar_t g_bot_buildLayout;
 extern vmCvar_t g_bot_debug;

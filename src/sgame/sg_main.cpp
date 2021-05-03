@@ -239,16 +239,12 @@ vmCvar_t g_bot_level4;
 
 // misc bot cvars
 vmCvar_t g_bot_attackStruct;
-vmCvar_t g_bot_roam;
-vmCvar_t g_bot_rush;
 vmCvar_t g_bot_repair;
 vmCvar_t g_bot_build;
-vmCvar_t g_bot_retreat;
 vmCvar_t g_bot_fov;
 vmCvar_t g_bot_chasetime;
 vmCvar_t g_bot_reactiontime;
 vmCvar_t g_bot_infinite_funds;
-vmCvar_t g_bot_numInGroup;
 vmCvar_t g_bot_persistent;
 vmCvar_t g_bot_debug;
 vmCvar_t g_bot_buildLayout;
@@ -436,16 +432,12 @@ static cvarTable_t gameCvarTable[] =
 
 	// bots: misc
 	{ &g_bot_attackStruct, "g_bot_attackStruct", "1",  CVAR_NORESTART, 0, false, nullptr },
-	{ &g_bot_roam, "g_bot_roam", "1",  CVAR_NORESTART, 0, false, nullptr },
-	{ &g_bot_rush, "g_bot_rush", "1",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_repair, "g_bot_repair", "1",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_build, "g_bot_build", "1",  CVAR_NORESTART, 0, false, nullptr },
-	{ &g_bot_retreat, "g_bot_retreat", "1",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_fov, "g_bot_fov", "125",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_chasetime, "g_bot_chasetime", "5000",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_reactiontime, "g_bot_reactiontime", "500",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0",  CVAR_NORESTART, 0, false, nullptr },
-	{ &g_bot_numInGroup, "g_bot_numInGroup", "3",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_debug, "g_bot_debug", "0",  CVAR_NORESTART, 0, false, nullptr },
 	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild",  CVAR_NORESTART, 0, false, nullptr }
 };
