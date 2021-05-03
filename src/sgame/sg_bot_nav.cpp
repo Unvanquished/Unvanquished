@@ -673,16 +673,70 @@ void BotMoveToGoal( gentity_t *self )
 
 	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 
-	//dont sprint or dodge if we dont have enough stamina and are about to slow
-	if ( self->client->pers.team == TEAM_HUMANS
-	     && self->client->ps.stats[ STAT_STAMINA ] < staminaJumpCost )
+	team_t targetTeam = TEAM_NONE;
+	if ( self->botMind->goal.targetsValidEntity() )
 	{
-		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+		targetTeam = G_Team( self->botMind->goal.getTargetedEntity() );
+	}
+	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
+	switch ( self->client->pers.team )
+	{
+		case TEAM_HUMANS:
+			//dont sprint or dodge if we dont have enough stamina and are about to slow
+			if ( self->client->ps.stats[ STAT_STAMINA ] < staminaJumpCost )
+			{
+				usercmdReleaseButton( botCmdBuffer.buttons, BUTTON_SPRINT );
 
-		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+				// walk to regain stamina
+				BotWalk( self, true );
+			}
 
-		// walk to regain stamina
-		BotWalk( self, true );
+			// if target is friendly, reach it quickly
+			if ( G_Team( self ) == targetTeam )
+			{
+				BotSprint( self, true );
+			}
+			break;
+		case TEAM_ALIENS:
+			// if target is friendly, let's go there quickly (heal, poison) by using trick moves
+			// when available (still need to implement wall walking, but that will be more complex)
+			if ( G_Team( self ) == targetTeam )
+			{
+				switch ( self->s.weapon )
+				{
+					case WP_ALEVEL1:
+						if ( self->client->ps.weaponCharge <= 50 )
+						{
+							botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, self->botMind->goal, LEVEL1_POUNCE_MINPITCH ) / 3 );
+							BotFireWeapon( WPM_SECONDARY, &botCmdBuffer );
+						}
+						break;
+					case WP_ALEVEL2:
+					case WP_ALEVEL2_UPG:
+						BotJump( self );
+						break;
+					case WP_ALEVEL3:
+						if ( self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
+						{
+							botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, self->botMind->goal, LEVEL3_POUNCE_JUMP_MAG ) / 3 );
+							BotFireWeapon( WPM_SECONDARY, &botCmdBuffer );
+						}
+						break;
+					case WP_ALEVEL3_UPG:
+						if ( self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+						{
+							botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, self->botMind->goal, LEVEL3_POUNCE_JUMP_MAG_UPG ) / 3 );
+							BotFireWeapon( WPM_SECONDARY, &botCmdBuffer );
+						}
+						break;
+					case WP_ALEVEL4:
+						BotFireWeapon( WPM_SECONDARY, &botCmdBuffer );
+						break;
+				}
+			}
+			break;
+		default:
+			;
 	}
 }
 
