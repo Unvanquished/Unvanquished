@@ -59,7 +59,7 @@ hackyspacer {
 	height: 12em;
 }
 
-.gradient, .black, .black2, .fog, .human, .tyrant, .circles, .logo {
+.gradient, .black, .black2, .fog, .duel, .circles, .logo {
 	position: absolute;
 }
 
@@ -103,16 +103,9 @@ body.ingame .black2 {
 	left: 0em;
 }
 
-.human {
-	width: 30%;
-	height: auto;
-	bottom: 0em;
-	left: 13%;
-}
-
-.tyrant {
-	width: 68%;
-	height: auto;
+.duel {
+	height: 72%;
+	width: auto;
 	bottom: 0em;
 	right: 4%;
 }
