@@ -123,7 +123,7 @@
 
 			#health-icon{
 				position:absolute;
-				right: -1.3em;
+				right: -1.6em;
 				bottom: .09em;
 				width: 1.2em;
 				height: 1.2em;
