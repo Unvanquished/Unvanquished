@@ -1556,6 +1556,7 @@ void BotFireWeaponAI( gentity_t *self )
 
 	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = Distance( muzzle, trace.endpos );
+	bool readyFire = self->client->ps.IsWeaponReady();
 	switch ( self->s.weapon )
 	{
 		case WP_ABUILD:
@@ -1581,7 +1582,7 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL0:
 			break; //auto hit
 		case WP_ALEVEL1:
-			if ( distance < LEVEL1_CLAW_RANGE )
+			if ( distance < LEVEL1_CLAW_RANGE && readyFire )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
@@ -1650,6 +1651,19 @@ void BotFireWeaponAI( gentity_t *self )
 		default:
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
 	}
+}
+
+void BotChangeClass( gentity_t *self, class_t newClass, vec3_t newOrigin )
+{
+	if ( !G_RoomForClassChange( self, newClass, newOrigin ) )
+	{
+		return;
+	}
+	VectorCopy( newOrigin, self->client->ps.origin );
+	self->client->ps.stats[ STAT_CLASS ] = newClass;
+	self->client->pers.classSelection = newClass;
+	BotSetNavmesh( self, newClass );
+	self->client->ps.eFlags ^= EF_TELEPORT_BIT;
 }
 
 bool BotEvolveToClass( gentity_t *ent, class_t newClass )
@@ -1847,39 +1861,15 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 
 		if ( upgrade == UP_LIGHTARMOUR )
 		{
-			if ( !G_RoomForClassChange( self, PCL_HUMAN_LIGHT, newOrigin ) )
-			{
-				return;
-			}
-			VectorCopy( newOrigin, self->client->ps.origin );
-			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
-			self->client->pers.classSelection = PCL_HUMAN_LIGHT;
-			BotSetNavmesh( self, PCL_HUMAN_LIGHT );
-			self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			BotChangeClass( self, PCL_HUMAN_LIGHT, newOrigin );
 		}
 		else if ( upgrade == UP_MEDIUMARMOUR )
 		{
-			if ( !G_RoomForClassChange( self, PCL_HUMAN_MEDIUM, newOrigin ) )
-			{
-				return;
-			}
-			VectorCopy( newOrigin, self->client->ps.origin );
-			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
-			self->client->pers.classSelection = PCL_HUMAN_MEDIUM;
-			BotSetNavmesh( self, PCL_HUMAN_MEDIUM );
-			self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			BotChangeClass( self, PCL_HUMAN_MEDIUM, newOrigin );
 		}
 		else if ( upgrade == UP_BATTLESUIT )
 		{
-			if ( !G_RoomForClassChange( self, PCL_HUMAN_BSUIT, newOrigin ) )
-			{
-				return;
-			}
-			VectorCopy( newOrigin, self->client->ps.origin );
-			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
-			self->client->pers.classSelection = PCL_HUMAN_BSUIT;
-			BotSetNavmesh( self, PCL_HUMAN_BSUIT );
-			self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			BotChangeClass( self, PCL_HUMAN_BSUIT, newOrigin );
 		}
 
 		//add to inventory

@@ -102,7 +102,7 @@ struct playerState_t
 	// weapon info
 	int weapon; // copied to entityState_t->weapon
 	int weaponstate;
-	int weaponCharge; // luci charge, dragoon pounce charge, mantis pounce cooldown, tyrant trample, +deconstruct hold
+	int weaponCharge; // (milliseconds?) luci charge, dragoon pounce charge, mantis pounce cooldown, tyrant trample, +deconstruct hold
 
 	// damage feedback
 	int damageEvent; // when it changes, latch the other parms
@@ -131,6 +131,8 @@ struct playerState_t
 	int           clips; // clips held
 	int           tauntTimer; // don't allow another taunt until this runs out
 	int           misc[ MAX_MISC ]; // misc data
+
+	bool IsWeaponReady( void ) const;
 };
 
 // the possibility and the cost of evolving to an alien form
