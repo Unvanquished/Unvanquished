@@ -998,7 +998,7 @@ std::shared_ptr<AIBehaviorTree> ReadBehaviorTree(const char *name, AITreeList *l
 	return behavior;
 }
 
-std::shared_ptr<AIBehaviorTree> ReadBehaviorTreeInclude( pc_token_list **tokenlist )
+static std::shared_ptr<AIGenericNode> ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 {
 	pc_token_list *first = *tokenlist;
 	pc_token_list *current = first;
@@ -1021,7 +1021,7 @@ std::shared_ptr<AIBehaviorTree> ReadBehaviorTreeInclude( pc_token_list **tokenli
 	}
 
 	*tokenlist = current->next;
-	return behavior;
+	return behavior->root;
 }
 
 /*
@@ -1067,7 +1067,7 @@ std::shared_ptr<AIGenericNode> ReadNode( pc_token_list **tokenlist )
 	}
 	else if ( !Q_stricmp( current->token.string, "behavior" ) )
 	{
-		node = (std::shared_ptr<AIGenericNode>) ReadBehaviorTreeInclude( &current );
+		node = ReadBehaviorTreeInclude( &current );
 	}
 	else
 	{
