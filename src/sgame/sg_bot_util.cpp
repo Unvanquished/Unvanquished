@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
+#include "CBSE.h"
 #include "Entities.h"
 
 /*
@@ -589,45 +590,45 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	float bestInvisibleEnemyScore = 0;
 	gentity_t *bestVisibleEnemy = nullptr;
 	gentity_t *bestInvisibleEnemy = nullptr;
-	gentity_t *target;
 	team_t    team = BotGetEntityTeam( self );
 	bool  hasRadar = ( team == TEAM_ALIENS ) ||
 	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 
-	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
-	{
+	ForEntities<ClientComponent>([&](Entity& target, ClientComponent&) {
 		float newScore;
+		vec3_t targetOrigin;
+		VectorCopy( target.oldEnt->s.origin, targetOrigin );
 
-		if ( !BotEnemyIsValid( self, target ) )
+		if ( !BotEnemyIsValid( self, target.oldEnt ) )
 		{
-			continue;
+			return;
 		}
 
-		if ( DistanceSquared( self->s.origin, target->s.origin ) > Square( ALIENSENSE_RANGE ) )
+		if ( DistanceSquared( self->s.origin, targetOrigin ) > Square( ALIENSENSE_RANGE ) )
 		{
-			continue;
+			return;
 		}
 
-		if ( target->s.eType == entityType_t::ET_PLAYER && self->client->pers.team == TEAM_HUMANS
-		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
+		if ( target.oldEnt->s.eType == entityType_t::ET_PLAYER && self->client->pers.team == TEAM_HUMANS
+		    && BotAimAngle( self, targetOrigin ) > g_bot_fov.value / 2 )
 		{
-			continue;
+			return;
 		}
 
-		newScore = BotGetEnemyPriority( self, target );
+		newScore = BotGetEnemyPriority( self, target.oldEnt );
 
-		if ( newScore > bestVisibleEnemyScore && BotEntityIsVisible( self, target, MASK_SHOT ) )
+		if ( newScore > bestVisibleEnemyScore && BotEntityIsVisible( self, target.oldEnt, MASK_SHOT ) )
 		{
 			//store the new score and the index of the entity
 			bestVisibleEnemyScore = newScore;
-			bestVisibleEnemy = target;
+			bestVisibleEnemy = target.oldEnt;
 		}
 		else if ( newScore > bestInvisibleEnemyScore && hasRadar )
 		{
 			bestInvisibleEnemyScore = newScore;
-			bestInvisibleEnemy = target;
+			bestInvisibleEnemy = target.oldEnt;
 		}
-	}
+	});
 	if ( bestVisibleEnemy || !hasRadar )
 	{
 		return bestVisibleEnemy;
@@ -642,29 +643,17 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 {
 	gentity_t* closestEnemy = nullptr;
 	float minDistance = Square( ALIENSENSE_RANGE );
-	gentity_t *target;
 
-	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
-	{
-		float newDistance;
-		//ignore entities that arnt in use
-		if ( !target->inuse )
-		{
-			continue;
-		}
+	ForEntities<ClientComponent>([&](Entity& target, ClientComponent&) {
+		if ( !BotEnemyIsValid( self, target.oldEnt ) ) return;
 
-		if ( !BotEnemyIsValid( self, target ) )
-		{
-			continue;
-		}
-
-		newDistance = DistanceSquared( self->s.origin, target->s.origin );
+		float newDistance = DistanceSquared( self->s.origin, target.oldEnt->s.origin );
 		if ( newDistance <= minDistance )
 		{
 			minDistance = newDistance;
-			closestEnemy = target;
+			closestEnemy = target.oldEnt;
 		}
-	}
+	});
 	return closestEnemy;
 }
 
@@ -1138,13 +1127,9 @@ bool BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	//target is in range
-	if ( ( trace.entityNum == BotGetTargetEntityNumber( target ) || trace.fraction == 1.0f ) &&
-	     !trace.startsolid )
-	{
-		return true;
-	}
-	return false;
+	bool hit = trace.entityNum == BotGetTargetEntityNumber( target )
+		|| trace.fraction == 1.0f;
+	return hit && !trace.startsolid;
 }
 
 /*
@@ -1335,23 +1320,19 @@ Bot Team Querys
 ========================
 */
 
-int FindBots( int *botEntityNumbers, int maxBots, team_t team )
+int FindBots( gentity_t *(&bots)[MAX_CLIENTS], team_t team )
 {
-	gentity_t *testEntity;
 	int numBots = 0;
-	int i;
-	memset( botEntityNumbers, 0, sizeof( int )*maxBots );
-	for ( i = 0; i < MAX_CLIENTS; i++ )
-	{
-		testEntity = &g_entities[i];
-		if ( testEntity->r.svFlags & SVF_BOT )
+	memset( bots, 0, sizeof(bots) );
+	ForEntities<ClientComponent>([&](Entity& ent, ClientComponent&) {
+		if ( ent.oldEnt->r.svFlags & SVF_BOT )
 		{
-			if ( testEntity->client->pers.team == team && numBots < maxBots )
+			if ( G_Team(ent.oldEnt) == team )
 			{
-				botEntityNumbers[numBots++] = i;
+				bots[numBots++] = ent.oldEnt;
 			}
 		}
-	}
+	});
 	return numBots;
 }
 
@@ -1420,18 +1401,16 @@ bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 
 bool BotTeamateHasWeapon( gentity_t *self, int weapon )
 {
-	int botNumbers[MAX_CLIENTS];
+	gentity_t *bots[MAX_CLIENTS];
 	int i;
-	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( team_t ) self->client->pers.team );
+	int numBots = FindBots( bots, ( team_t ) self->client->pers.team );
 
 	for ( i = 0; i < numBots; i++ )
 	{
-		gentity_t *bot = &g_entities[botNumbers[i]];
-		if ( bot == self )
 		{
 			continue;
 		}
-		if ( BG_InventoryContainsWeapon( weapon, bot->client->ps.stats ) )
+		if ( BG_InventoryContainsWeapon( weapon, bots[i]->client->ps.stats ) )
 		{
 			return true;
 		}
@@ -2131,7 +2110,7 @@ void BotSearchForEnemy( gentity_t *self )
 
 	self->botMind->bestEnemy.ent = enemy;
 
-	if ( self->botMind->bestEnemy.ent ) 
+	if ( self->botMind->bestEnemy.ent )
 	{
 		self->botMind->bestEnemy.distance = Distance( self->s.origin, self->botMind->bestEnemy.ent->s.origin );
 	}
