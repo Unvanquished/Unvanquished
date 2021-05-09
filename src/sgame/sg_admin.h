@@ -84,21 +84,7 @@ struct g_admin_cmd_t;
 struct g_admin_level_t;
 struct g_admin_ban_t;
 struct g_admin_command_t;
-
-struct g_admin_admin_t
-{
-	g_admin_admin_t      *next;
-
-	int                  level;
-	char                 guid[ 33 ];
-	char                 name[ MAX_NAME_LENGTH ];
-	char                 flags[ MAX_ADMIN_FLAGS ];
-	char                 pubkey[ RSA_STRING_LENGTH ];
-	char                 msg[ RSA_STRING_LENGTH ];
-	char                 msg2[ RSA_STRING_LENGTH ];
-	qtime_t              lastSeen;
-	int                  counter;
-};
+struct g_admin_admin_t;
 
 #define ADDRLEN 16
 
@@ -120,12 +106,7 @@ struct addr_t
 	int  mask;
 };
 
-struct g_admin_spec_t
-{
-	g_admin_spec_t     *next;
-	char               guid[ 33 ];
-	int                expires;
-};
+struct g_admin_spec_t;
 
 void            G_admin_register_cmds();
 void            G_admin_unregister_cmds();
@@ -142,6 +123,7 @@ g_admin_admin_t *G_admin_admin( const char *guid );
 void            G_admin_authlog( gentity_t *ent );
 
 g_admin_spec_t  *G_admin_match_spec( gentity_t *ent );
+int G_admin_joindelay( g_admin_spec_t const* ptr );
 
 // admin command functions
 bool        G_admin_time( gentity_t *ent );
@@ -194,5 +176,8 @@ void            G_admin_buffer_end( gentity_t *ent );
 
 void            G_admin_duration( int secs, char *time, int timesize, char *duration, int dursize );
 void            G_admin_cleanup();
+
+void Cmd_Pubkey_Identify_f( gentity_t *ent );
+qtime_t* G_admin_lastSeen( g_admin_admin_t* admin );
 
 #endif /* ifndef SG_ADMIN_H */

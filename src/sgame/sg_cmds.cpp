@@ -952,16 +952,16 @@ void Cmd_Team_f( gentity_t *ent )
 
 	if ( team != TEAM_NONE && ( specOnly = G_admin_match_spec( ent ) ) )
 	{
-		if ( specOnly->expires == -1 )
+		if ( G_admin_joindelay( specOnly ) == -1 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        "print_tr \"" N_("You cannot join a team until the next game.") "\"" );
 			return;
 		}
 
-		if ( specOnly->expires - t > 0 )
+		if ( G_admin_joindelay( specOnly ) - t > 0 )
 		{
-			int remaining = specOnly->expires - t;
+			int remaining = G_admin_joindelay( specOnly );
 
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %d", QQ( N_("You cannot join a team for another $1$s.") ), remaining ) );
@@ -4338,33 +4338,6 @@ int G_FloodLimited( gentity_t *ent )
 	                        "please wait $1$s before trying again") ),
 	                        ( ms + 999 ) / 1000 ) );
 	return ms;
-}
-
-static void Cmd_Pubkey_Identify_f( gentity_t *ent )
-{
-	char            buffer[ MAX_STRING_CHARS ];
-	g_admin_admin_t *admin = ent->client->pers.admin;
-
-	if ( trap_Argc() != 2 )
-	{
-		return;
-	}
-
-	if ( ent->client->pers.pubkey_authenticated != 0 || !admin->pubkey[ 0 ] || admin->counter == -1 )
-	{
-		return;
-	}
-
-	trap_Argv( 1, buffer, sizeof( buffer ) );
-	if ( Q_strncmp( buffer, admin->msg, MAX_STRING_CHARS ) )
-	{
-		return;
-	}
-
-	ent->client->pers.pubkey_authenticated = 1;
-	G_admin_authlog( ent );
-	G_admin_cmdlist( ent );
-	CP( "cp_tr " QQ(N_("^2Pubkey authenticated")) "" );
 }
 
 // commands must be in alphabetical order!
