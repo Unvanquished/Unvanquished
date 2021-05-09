@@ -614,11 +614,6 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			continue;
 		}
 
-		if ( target == self->botMind->goal.ent )
-		{
-			continue;
-		}
-
 		newScore = BotGetEnemyPriority( self, target );
 
 		if ( newScore > bestVisibleEnemyScore && BotEntityIsVisible( self, target, MASK_SHOT ) )
