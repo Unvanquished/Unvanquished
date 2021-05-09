@@ -80,6 +80,35 @@ struct g_admin_command_t
 	char                   flag[ MAX_ADMIN_FLAG_LEN ];
 };
 
+struct g_admin_spec_t
+{
+	g_admin_spec_t     *next;
+	char               guid[ 33 ];
+	// -1: can not join until next game
+	// otherwise: expires - t : can not join until delta
+	int                expires;
+};
+
+struct g_admin_admin_t
+{
+	g_admin_admin_t      *next;
+
+	int                  level;
+	char                 guid[ 33 ];
+	char                 name[ MAX_NAME_LENGTH ];
+	char                 flags[ MAX_ADMIN_FLAGS ];
+	char                 pubkey[ RSA_STRING_LENGTH ];
+	char                 msg[ RSA_STRING_LENGTH ];
+	char                 msg2[ RSA_STRING_LENGTH ];
+	qtime_t              lastSeen;
+	int                  counter;
+};
+
+int G_admin_joindelay( g_admin_spec_t const* ptr )
+{
+	return ptr->expires;
+}
+
 static void G_admin_notIntermission( gentity_t *ent )
 {
 	char command[ MAX_ADMIN_CMD_LEN ];
@@ -5854,4 +5883,56 @@ static bool G_admin_maprestarted( gentity_t *ent )
 	}
 
 	return true;
+}
+
+/*
+============
+ClientAdminChallenge
+============
+*/
+void ClientAdminChallenge( int clientNum )
+{
+	gclient_t       *client = level.clients + clientNum;
+	g_admin_admin_t *admin = client->pers.admin;
+
+	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] && ( level.time - client->pers.pubkey_challengedAt ) >= 6000 )
+	{
+		trap_SendServerCommand( clientNum, va( "pubkey_decrypt %s", admin->msg2 ) );
+		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter
+
+		// copy the decrypted message because generating a new message will overwrite it
+		G_admin_writeconfig();
+	}
+}
+
+void Cmd_Pubkey_Identify_f( gentity_t *ent )
+{
+	char            buffer[ MAX_STRING_CHARS ];
+	g_admin_admin_t *admin = ent->client->pers.admin;
+
+	if ( trap_Argc() != 2 )
+	{
+		return;
+	}
+
+	if ( ent->client->pers.pubkey_authenticated != 0 || !admin->pubkey[ 0 ] || admin->counter == -1 )
+	{
+		return;
+	}
+
+	trap_Argv( 1, buffer, sizeof( buffer ) );
+	if ( Q_strncmp( buffer, admin->msg, MAX_STRING_CHARS ) )
+	{
+		return;
+	}
+
+	ent->client->pers.pubkey_authenticated = 1;
+	G_admin_authlog( ent );
+	G_admin_cmdlist( ent );
+	CP( "cp_tr " QQ(N_("^2Pubkey authenticated")) "" );
+}
+
+qtime_t* G_admin_lastSeen( g_admin_admin_t* admin )
+{
+	return &admin->lastSeen;
 }
