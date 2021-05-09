@@ -1114,7 +1114,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 
 	if ( client->pers.admin )
 	{
-		Com_GMTime( &client->pers.admin->lastSeen );
+		Com_GMTime( G_admin_lastSeen( client->pers.admin ) );
 	}
 
 	// check for admin ban
@@ -1293,26 +1293,6 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	CalculateRanks();
 
 	return nullptr;
-}
-
-/*
-============
-ClientAdminChallenge
-============
-*/
-void ClientAdminChallenge( int clientNum )
-{
-	gclient_t       *client = level.clients + clientNum;
-	g_admin_admin_t *admin = client->pers.admin;
-
-	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] && ( level.time - client->pers.pubkey_challengedAt ) >= 6000 )
-	{
-		trap_SendServerCommand( clientNum, va( "pubkey_decrypt %s", admin->msg2 ) );
-		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter
-
-		// copy the decrypted message because generating a new message will overwrite it
-		G_admin_writeconfig();
-	}
 }
 
 /*
