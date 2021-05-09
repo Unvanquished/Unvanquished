@@ -38,9 +38,8 @@
 			</tab>
 			<panel>
 				<img class="emoticon" src="/emoticons/dretch" />
-				Aliens can earn evolution points by killing humans
-				and destroying human buildables,
-				then they can use those evolution points to evolve into
+				Aliens can earn evolution points by killing humans.
+				They can then use those evolution points to evolve into
 				<img class="emoticon" src="/emoticons/dragoon" />
 				more advanced forms.
 				<br />
@@ -55,7 +54,8 @@
 				<br />
 				Build an overmind with a
 				<img class="emoticon" src="/emoticons/granger" />
-				granger if missing, you need a live overmind to evolve!
+				granger if it gets destroyed, you need a live
+				overmind to evolve!
 				<br />
 				<br />
 				<img class="emoticon" src="/emoticons/human" />
@@ -86,16 +86,17 @@
 				compete for power and shut down if they don't get enough.
 				<br />
 				<br />
-				When the power consumption in a region is too high, the smallest possible
-				number of buildables will power down so that the other structures have
-				enough energy to remain operational.
-				<br />
-				<br />
 				Building a structure requires build points. Your team will start with a
 				small pool of build points but if you want to place a greater number of
 				buildables in an area, you can build a
 				<img class="emoticon" src="/emoticons/leech" />
 				mining structure to increase the available power and provide more build points.
+				Be wary that you will loose the build points if the mining structures are destroyed.
+				<br />
+				<br />
+				When you are using more build point than you have, the smallest possible
+				number of buildables will power down so that the other structures have
+				enough energy to remain operational.
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/leech" />
@@ -104,8 +105,7 @@
 			<panel>
 				Build points are acquired via two mining structures: the human
 				<img class="emoticon" src="/emoticons/drill" />
-				drill and
-				the alien
+				drill and the alien
 				<img class="emoticon" src="/emoticons/leech" />
 				leech. These buildings need to be spread out for efficiency.
 				<br />
@@ -116,11 +116,14 @@
 				<br />
 				Builders will see another bar above the health bar of a resource generator
 				which represents its efficiency. A prediction will be shown when you
-				position the buildable.
+				position the buildable. The build points are available instantly when the
+				mining structure finishes building, and will be subtracted back if the
+				building is destroyed. Don't build unprotected drills!
 				<br />
 				<br />
-				The mine rate decreases over time, so that it gets increasingly harder to
-				acquire resources in a long lasting match. This replaces sudden death.
+				When a building is destroyed, the miners will recover its build points slowly.
+				The mine recovery rate decreases over time, so that it gets increasingly harder to
+				rebuild destroyed buildings in a long lasting match. This replaces sudden death.
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/bsuit" />
@@ -142,8 +145,7 @@
 			<panel>
 				Alien buildables can catch fire when they are hit with the
 				<img class="emoticon" src="/emoticons/flamer" />
-				flame
-				thrower or the
+				flamethrower or the
 				<img class="emoticon" src="/emoticons/grenade" />
 				firebomb.
 				<br />
@@ -250,7 +252,7 @@
 				The new maximum of evos an alien can store is 20 (formerly 9).
 				<br />
 				<br />
-				Stages were replace with momentum, and build points are to be mined.
+				Stages were replace with momentum, and build points depend directly on the number of drills.
 				<br />
 				<br />
 				Humans no longer have the Tesla defense tower nor the defense
