@@ -80,24 +80,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_ADMIN_LISTITEMS  20
 #define MAX_ADMIN_SHOWBANS   10
 
-struct g_admin_cmd_t
-{
-	const char *keyword;
-	bool  ( *handler )( gentity_t *ent );
-	bool   silent;
-	const char *flag;
-	const char *function; // used for /help
-	const char *syntax; // used for /help
-};
-
-struct g_admin_level_t
-{
-	g_admin_level_t      *next;
-
-	int                  level;
-	char                 name[ MAX_NAME_LENGTH ];
-	char                 flags[ MAX_ADMIN_FLAGS ];
-};
+struct g_admin_cmd_t;
+struct g_admin_level_t;
+struct g_admin_ban_t;
+struct g_admin_command_t;
 
 struct g_admin_admin_t
 {
@@ -134,36 +120,11 @@ struct addr_t
 	int  mask;
 };
 
-struct g_admin_ban_t
-{
-	g_admin_ban_t      *next;
-	int                id;
-
-	char               name[ MAX_NAME_LENGTH ];
-	char               guid[ 33 ];
-	addr_t             ip;
-	char               reason[ MAX_ADMIN_BAN_REASON ];
-	char               made[ 20 ]; // "YYYY-MM-DD hh:mm:ss"
-	int                expires;
-	char               banner[ MAX_NAME_LENGTH ];
-	int                warnCount;
-};
-
 struct g_admin_spec_t
 {
 	g_admin_spec_t     *next;
 	char               guid[ 33 ];
 	int                expires;
-};
-
-struct g_admin_command_t
-{
-	g_admin_command_t      *next;
-
-	char                   command[ MAX_ADMIN_CMD_LEN ];
-	char                   exec[ MAX_QPATH ];
-	char                   desc[ 50 ];
-	char                   flag[ MAX_ADMIN_FLAG_LEN ];
 };
 
 void            G_admin_register_cmds();
