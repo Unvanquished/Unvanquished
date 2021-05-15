@@ -61,8 +61,8 @@ listCdn () {
 	http://unvcdn.viech.name
 	# illwieckz
 	http://cdn.illwieckz.net/unvanquished
-	# kangz
-	# http://webseed.unv.kangz.net/unv-launcher
+	# Kangz
+	https://webseed.unv.kangz.net
 	# Amanieu
 	# http://vanquished.zapto.org/~amanieu/unv-launcher
 	EOF
