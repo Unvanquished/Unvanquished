@@ -50,7 +50,7 @@ colorPrintf () {
 	shift
 	shift
 
-	printf '\x1b['"${color_code}"'m'"${format_string}"'\x1b[m\n' ${@} >&2
+	printf '\x1b['"${color_code}"'m'"${format_string}"'\x1b[m\n' "${@}" >&2
 }
 
 listCdn () {
