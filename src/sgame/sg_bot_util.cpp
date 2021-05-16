@@ -242,53 +242,79 @@ const gentity_t *BotGetHealTarget( gentity_t *self )
 // TODO: check number of spawns, if less than 2, apply big score reduction?
 float BotGetBaseRushScore( gentity_t *ent )
 {
+	ASSERT( ent && ent->botMind && ent->client );
+	const float skill_modifier = 1 - 2 * SkillModifier( ent->botMind->botSkill.level );
+	int max_value = 0;
+	// if nothing allowed from current stage have a cost,
+	// return average value on which other parameters can weight
+	float rush_score = 0.5;
 
-	switch ( ent->s.weapon )
+	float self_value = static_cast<float>( ent->client->ps.persistant[PERS_CREDIT]
+		+ BotValueOfWeapons( ent )
+		+ BotValueOfUpgrades( ent )
+		+ BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->price );
+
+	switch( G_Team( ent ) )
 	{
-		case WP_BLASTER:
-			return 0.1f;
-		case WP_LUCIFER_CANNON:
-			return 1.0f;
-		case WP_MACHINEGUN:
-			return 0.5f;
-		case WP_PULSE_RIFLE:
-			return 0.7f;
-		case WP_LAS_GUN:
-			return 0.7f;
-		case WP_SHOTGUN:
-			return 0.2f;
-		case WP_CHAINGUN:
-			if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, ent->client->ps.stats ) )
+		case TEAM_ALIENS:
+			for ( auto const& pcl : classes )
 			{
-				return 0.5f;
+				if( pcl.canBuyNow() )
+				{
+					max_value = std::max( max_value, pcl.price() );
+				}
 			}
-			else
+			break;
+		case TEAM_HUMANS:
+			// all this code, just to know what the higher equipment cost
+			// authorized at current stage.
 			{
-				return 0.2f;
+				bool canUseBackpack = true;
+				int max_item_val;
+
+				max_item_val = 0;
+				for ( auto const &armor : armors )
+				{
+					// this is very hackish and should be improved, like, a lot.
+					// in short: add the value of possible backpacks if armor is
+					// not battlesuit.
+					// This will break when more equipments will use multiple slots,
+					// but the game does not (yet) have easy way to handle those.
+					if ( armor.canBuyNow() && max_item_val < armor.price() )
+					{
+						max_item_val = armor.price();
+						canUseBackpack = armor.item != UP_BATTLESUIT;
+					}
+				}
+
+				if( canUseBackpack && g_bot_radar.Get() && BG_UpgradeUnlocked( UP_RADAR ) )
+				{
+					max_item_val += BG_Upgrade( UP_RADAR )->price;
+				}
+				max_value += max_item_val;
+
+				max_item_val = 0;
+				for ( auto const& wp : weapons )
+				{
+					if( wp.canBuyNow() )
+					{
+						max_item_val = std::max( max_item_val, wp.price() );
+					}
+				}
+				max_value += max_item_val;
+				break;
 			}
-		case WP_HBUILD:
-			return 0.0f;
-		case WP_ABUILD:
-			return 0.0f;
-		case WP_ABUILD2:
-			return 0.0f;
-		case WP_ALEVEL0:
-			return 0.0f;
-		case WP_ALEVEL1:
-			return 0.2f;
-		case WP_ALEVEL2:
-			return 0.5f;
-		case WP_ALEVEL2_UPG:
-			return 0.7f;
-		case WP_ALEVEL3:
-			return 0.8f;
-		case WP_ALEVEL3_UPG:
-			return 0.9f;
-		case WP_ALEVEL4:
-			return 1.0f;
-		default:
-			return 0.5f;
+		case TEAM_ALL:
+		case TEAM_NONE:
+		case NUM_TEAMS:
+			break;
 	}
+	if ( max_value != 0 )
+	{
+		rush_score = ( self_value + skill_modifier * max_value )/ max_value;
+		rush_score = Math::Clamp( rush_score, 0.f, 1.f );
+	}
+	return rush_score;
 }
 
 // Calculates how important a bot should consider finding a heal source
