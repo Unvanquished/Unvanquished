@@ -65,7 +65,6 @@ struct
 	{ g_bot_level0   .integer, PCL_ALIEN_LEVEL0     },
 };
 
-// manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
 struct
 {
 	int &authorized;
@@ -82,11 +81,25 @@ struct
 	{
 		return authorized && unlocked();
 	}
-} armors[] =
+	int slots( void ) const
+	{
+		return BG_Upgrade( item )->slots;
+	}
+}
+// manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
+armors[] =
 {
 	{ g_bot_battlesuit.integer  , UP_BATTLESUIT },
 	{ g_bot_mediumarmour.integer, UP_MEDIUMARMOUR },
 	{ g_bot_lightarmour.integer , UP_LIGHTARMOUR },
+},
+// not merged because meh.
+others[] =
+{
+	{ g_bot_radar.integer   , UP_RADAR },
+	{ g_bot_jetpack.integer , UP_JETPACK },
+	{ g_bot_grenade.integer , UP_GRENADE },
+	{ g_bot_firebomb.integer, UP_FIREBOMB },
 };
 
 // manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
@@ -105,6 +118,10 @@ struct
 	int price( void ) const
 	{
 		return BG_Weapon( item )->price;
+	}
+	int slots( void ) const
+	{
+		return BG_Weapon( item )->slots;
 	}
 } weapons[] =
 {
@@ -414,7 +431,8 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	int equipmentPrice = BotValueOfWeapons( self ) + BotValueOfUpgrades( self );
 	int credits = self->client->ps.persistant[PERS_CREDIT];
 	int usableCapital = credits + equipmentPrice;
-	int numUpgrades = 0;
+	size_t numUpgrades = 0;
+	int usedSlots = 0;
 
 	unsigned int numTeamUpgrades[UP_NUM_UPGRADES] = {};
 	unsigned int numTeamWeapons[WP_NUM_WEAPONS] = {};
@@ -428,11 +446,12 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 
 	for ( auto const &armor : armors )
 	{
-		if ( armor.authorized
-				&& BG_UpgradeUnlocked( armor.item ) && usableCapital >= armor.price() )
+		if ( armor.canBuyNow() && usableCapital >= armor.price()
+				&& ( usedSlots & armor.slots() ) == 0 )
 		{
 			upgrades[numUpgrades] = armor.item;
 			usableCapital -= armor.price();
+			usedSlots |= armor.slots();
 			numUpgrades++;
 			break;
 		}
@@ -445,18 +464,24 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	int nbTeam = ListTeamMembers( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
 	int nbRadars = numTeamUpgrades[UP_RADAR];
 	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / nbTeam < 75;
-	if ( numUpgrades > 0 && teamNeedsRadar && g_bot_radar.integer
-			&& BG_UpgradeUnlocked( UP_RADAR ) && usableCapital >= BG_Upgrade( UP_RADAR )->price
-			&& ( BG_Upgrade( upgrades[0] )->slots & BG_Upgrade( UP_RADAR )->slots ) == 0 )
+
+	// others[0] is radar, buying this utility makes sense even if one can't buy
+	// a better weapon, because it helps the whole team.
+	if ( numUpgrades > 0 && teamNeedsRadar
+			&& others[0].canBuyNow() && usableCapital >= others[0].price()
+			&& ( usedSlots & others[0].slots() ) == 0
+			&& numUpgrades < upgradesSize )
 	{
-		upgrades[numUpgrades] = UP_RADAR;
-		usableCapital -= BG_Upgrade( upgrades[numUpgrades] )->price;
+		upgrades[numUpgrades] = others[0].item;
+		usableCapital -= others[0].price();
+		usedSlots |= others[0].slots();
 		numUpgrades ++;
 	}
 
 	for ( auto const &wp : weapons )
 	{
-		if ( wp.authorized && BG_WeaponUnlocked( wp.item ) && usableCapital >= wp.price() )
+		if ( wp.canBuyNow() && usableCapital >= wp.price()
+				&& ( usedSlots & wp.slots() ) == 0 )
 		{
 			if ( wp.item == WP_FLAMER && numTeamWeapons[WP_FLAMER] > numTeamWeapons[WP_PULSE_RIFLE] )
 			{
@@ -468,12 +493,30 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		}
 	}
 
+	for ( auto const &tool : others )
+	{
+		// skip radar checks, since already done
+		if ( tool.item == others[0].item )
+		{
+			continue;
+		}
+		if ( tool.canBuyNow() && usableCapital >= tool.price()
+				&& ( usedSlots & tool.slots() ) == 0
+				&& numUpgrades < upgradesSize )
+		{
+			upgrades[numUpgrades] = tool.item;
+			usableCapital -= tool.price();
+			usedSlots |= tool.slots();
+			numUpgrades ++;
+		}
+	}
+
 	//now test to see if we already have all of these items
 	//check if we already have everything
 	if ( BG_InventoryContainsWeapon( static_cast<int>( weapon ), self->client->ps.stats ) )
 	{
-		int numContain = 0;
-		int i;
+		size_t numContain = 0;
+		size_t i;
 
 		for ( i = 0; i < numUpgrades; i++ )
 		{

@@ -445,8 +445,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_radar   , "g_bot_radar"   , "1",  0, 0, false, nullptr },
 	{ &g_bot_radarRatio, "g_bot_radarRatio", "75",  0, 0, false, nullptr },
 	{ &g_bot_jetpack , "g_bot_jetpack" , "0",  0, 0, false, nullptr },
-	{ &g_bot_grenade , "g_bot_grenade" , "0",  0, 0, false, nullptr },
-	{ &g_bot_firebomb, "g_bot_firebomb", "0",  0, 0, false, nullptr },
+	{ &g_bot_grenade , "g_bot_grenade" , "1",  0, 0, false, nullptr },
+	{ &g_bot_firebomb, "g_bot_firebomb", "1",  0, 0, false, nullptr },
 
 	// bots: evolution
 	{ &g_bot_evolve, "g_bot_evolve", "1", 0, 0, false, nullptr },
