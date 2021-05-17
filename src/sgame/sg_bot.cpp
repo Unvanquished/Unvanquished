@@ -415,13 +415,6 @@ void G_BotThink( gentity_t *self )
 	BotFindDamagedFriendlyStructure( self );
 	BotCalculateStuckTime( self );
 
-	//use medkit when hp is low
-	if ( Entities::HealthOf(self) < BOT_USEMEDKIT_HP &&
-	     BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats ) )
-	{
-		BG_ActivateUpgrade( UP_MEDKIT, self->client->ps.stats );
-	}
-
 	//infinite funds cvar
 	if ( g_bot_infinite_funds.integer )
 	{
