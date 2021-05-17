@@ -40,7 +40,6 @@ before_build:
     --sub-ref=%APPVEYOR_REPO_BRANCH%:has=/sync$
     --sub-ref=%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%:has=/sync$
     --print
-  - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
   - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   - python --version
   - pip install -r src/utils/cbse/requirements.txt --upgrade

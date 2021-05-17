@@ -69,6 +69,8 @@ function InstallPip ($python_home) {
     } else {
         Write-Host "pip already installed."
     }
+    # Upgrade pip because the bootstrap version is very old
+    & $pip_path install --upgrade "pip<21.0"
 }
 
 function InstallPackage ($python_home, $pkg) {
