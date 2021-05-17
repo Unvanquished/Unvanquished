@@ -676,12 +676,7 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 			return;
 		}
 
-		if ( !CG_AttachmentPoint( &ts->frontAttachment, front ) )
-		{
-			CG_DestroyTrailSystem( &ts );
-		}
-
-		if ( !CG_AttachmentPoint( &ts->backAttachment, back ) )
+		if ( !CG_AttachmentPoint( &ts->frontAttachment, front ) || !CG_AttachmentPoint( &ts->backAttachment, back ) )
 		{
 			CG_DestroyTrailSystem( &ts );
 		}
@@ -1499,6 +1494,7 @@ Destroy a trail system
 void CG_DestroyTrailSystem( trailSystem_t **ts )
 {
 	( *ts )->destroyTime = cg.time;
+	( *ts )->valid = false;
 
 	if ( CG_Attached( & ( *ts )->frontAttachment ) &&
 	     !CG_Attached( & ( *ts )->backAttachment ) )
@@ -1590,9 +1586,8 @@ static void CG_GarbageCollectTrailSystems()
 				CG_DestroyTrailSystem( &tempTS );
 			}
 		}
-
-		if ( ( centNum = CG_AttachmentCentNum( &ts->backAttachment ) ) >= 0 &&
-		     centNum != cg.snap->ps.clientNum )
+		else if ( ( centNum = CG_AttachmentCentNum( &ts->backAttachment ) ) >= 0 &&
+		          centNum != cg.snap->ps.clientNum )
 		{
 			trailSystem_t *tempTS = ts;
 
@@ -1601,11 +1596,10 @@ static void CG_GarbageCollectTrailSystems()
 				CG_DestroyTrailSystem( &tempTS );
 			}
 		}
-
-		// lifetime expired
-		if ( ts->destroyTime <= 0 && ts->class_->lifeTime &&
-		     ts->birthTime + ts->class_->lifeTime < cg.time )
+		else if ( ts->destroyTime <= 0 && ts->class_->lifeTime &&
+		          ts->birthTime + ts->class_->lifeTime < cg.time )
 		{
+			// lifetime expired
 			trailSystem_t *tempTS = ts;
 
 			CG_DestroyTrailSystem( &tempTS );
