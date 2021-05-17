@@ -117,7 +117,6 @@ vmCvar_t        cg_bounceParticles;
 vmCvar_t        cg_consoleLatency;
 vmCvar_t        cg_lightFlare;
 vmCvar_t        cg_debugParticles;
-vmCvar_t        cg_debugTrails;
 vmCvar_t        cg_debugPVS;
 vmCvar_t        cg_disableWarningDialogs;
 vmCvar_t        cg_disableScannerPlane;
@@ -275,7 +274,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         0                            },
 	{ &cg_lightFlare,                  "cg_lightFlare",                  "3",            0                            },
 	{ &cg_debugParticles,              "cg_debugParticles",              "0",            CVAR_CHEAT                   },
-	{ &cg_debugTrails,                 "cg_debugTrails",                 "0",            CVAR_CHEAT                   },
 	{ &cg_debugPVS,                    "cg_debugPVS",                    "0",            CVAR_CHEAT                   },
 	{ &cg_disableWarningDialogs,       "cg_disableWarningDialogs",       "0",            0                            },
 	{ &cg_disableScannerPlane,         "cg_disableScannerPlane",         "0",            0                            },

@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+static Log::Logger logs = Log::Logger("cgame.trails", "[Trail Systems]");
+
 static baseTrailSystem_t baseTrailSystems[ MAX_BASETRAIL_SYSTEMS ];
 static baseTrailBeam_t   baseTrailBeams[ MAX_BASETRAIL_BEAMS ];
 static int               numBaseTrailSystems = 0;
@@ -782,7 +784,7 @@ static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 			if ( btb->numSegments >= MAX_TRAIL_BEAM_NODES )
 			{
 				btb->numSegments = MAX_TRAIL_BEAM_NODES - 1;
-				Log::Warn( "too many segments in trail beam" );
+				logs.Warn( "too many segments in trail beam" );
 			}
 
 			continue;
@@ -883,13 +885,13 @@ static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 				}
 				else
 				{
-					Log::Warn( "missing '{'" );
+					logs.Warn( "missing '{'" );
 					break;
 				}
 			}
 			else
 			{
-				Log::Warn( "missing '{'" );
+				logs.Warn( "missing '{'" );
 				break;
 			}
 
@@ -984,7 +986,7 @@ static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 				}
 				else
 				{
-					Log::Warn( "unknown textureType clamp \"%s\"", token );
+					logs.Warn( "unknown textureType clamp \"%s\"", token );
 					break;
 				}
 
@@ -999,7 +1001,7 @@ static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 			}
 			else
 			{
-				Log::Warn( "unknown textureType \"%s\"", token );
+				logs.Warn( "unknown textureType \"%s\"", token );
 				break;
 			}
 
@@ -1015,7 +1017,7 @@ static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 		{
 			if ( btb->numJitters == MAX_TRAIL_BEAM_JITTERS )
 			{
-				Log::Warn( "too many jitters" );
+				logs.Warn( "too many jitters" );
 				break;
 			}
 
@@ -1081,7 +1083,7 @@ static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 		}
 		else
 		{
-			Log::Warn( "unknown token '%s' in trail beam", token );
+			logs.Warn( "unknown token '%s' in trail beam", token );
 			return false;
 		}
 	}
@@ -1138,18 +1140,18 @@ static bool CG_ParseTrailSystem( baseTrailSystem_t *bts, const char **text_p, co
 
 			if ( !CG_ParseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ], text_p ) )
 			{
-				Log::Warn( "failed to parse trail beam" );
+				logs.Warn( "failed to parse trail beam" );
 				return false;
 			}
 
 			if ( bts->numBeams == MAX_BEAMS_PER_SYSTEM )
 			{
-				Log::Warn( "trail system has > %d beams", MAX_BEAMS_PER_SYSTEM );
+				logs.Warn( "trail system has > %d beams", MAX_BEAMS_PER_SYSTEM );
 				return false;
 			}
 			else if ( numBaseTrailBeams == MAX_BASETRAIL_BEAMS )
 			{
-				Log::Warn( "maximum number of trail beams (%d) reached",
+				logs.Warn( "maximum number of trail beams (%d) reached",
 				           MAX_BASETRAIL_BEAMS );
 				return false;
 			}
@@ -1185,16 +1187,12 @@ static bool CG_ParseTrailSystem( baseTrailSystem_t *bts, const char **text_p, co
 		}
 		else if ( !Q_stricmp( token, "}" ) )
 		{
-			if ( cg_debugTrails.integer >= 1 )
-			{
-				Log::Warn( "Parsed trail system %s", name );
-			}
-
+			logs.WithoutSuppression().Notice( "Parsed trail system %s", name );
 			return true; //reached the end of this trail system
 		}
 		else
 		{
-			Log::Warn( "unknown token '%s' in trail system %s", token, bts->name );
+			logs.Warn( "unknown token '%s' in trail system %s", token, bts->name );
 			return false;
 		}
 	}
@@ -1231,7 +1229,7 @@ static bool CG_ParseTrailFile( const char *fileName )
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
-		Log::Warn( len ? "trail file %s is too long" : "trail file %s is empty", fileName );
+		logs.Warn( len ? "trail file %s is too long" : "trail file %s is empty", fileName );
 		return false;
 	}
 
@@ -1261,7 +1259,7 @@ static bool CG_ParseTrailFile( const char *fileName )
 				{
 					if ( !Q_stricmp( baseTrailSystems[ i ].name, tsName ) )
 					{
-						Log::Warn( "a trail system is already named %s", tsName );
+						logs.Warn( "a trail system is already named %s", tsName );
 						return false;
 					}
 				}
@@ -1270,7 +1268,7 @@ static bool CG_ParseTrailFile( const char *fileName )
 
 				if ( !CG_ParseTrailSystem( &baseTrailSystems[ numBaseTrailSystems ], &text_p, tsName ) )
 				{
-					Log::Warn( "%s: failed to parse trail system %s", fileName, tsName );
+					logs.Warn( "%s: failed to parse trail system %s", fileName, tsName );
 					return false;
 				}
 
@@ -1279,7 +1277,7 @@ static bool CG_ParseTrailFile( const char *fileName )
 
 				if ( numBaseTrailSystems == MAX_BASETRAIL_SYSTEMS )
 				{
-					Log::Warn( "maximum number of trail systems (%d) reached",
+					logs.Warn( "maximum number of trail systems (%d) reached",
 					           MAX_BASETRAIL_SYSTEMS );
 					return false;
 				}
@@ -1292,7 +1290,7 @@ static bool CG_ParseTrailFile( const char *fileName )
 			}
 			else
 			{
-				Log::Warn( "unnamed trail system" );
+				logs.Warn( "unnamed trail system" );
 				return false;
 			}
 		}
@@ -1304,7 +1302,7 @@ static bool CG_ParseTrailFile( const char *fileName )
 		}
 		else
 		{
-			Log::Warn( "trail system already named" );
+			logs.Warn( "trail system already named" );
 			return false;
 		}
 	}
@@ -1390,10 +1388,7 @@ qhandle_t CG_RegisterTrailSystem( const char *name )
 								    RSF_DEFAULT);
 			}
 
-			if ( cg_debugTrails.integer >= 1 )
-			{
-				Log::Debug( "Registered trail system %s", name );
-			}
+			logs.WithoutSuppression().Verbose( "Registered trail system %s", name );
 
 			bts->registered = true;
 
@@ -1402,7 +1397,7 @@ qhandle_t CG_RegisterTrailSystem( const char *name )
 		}
 	}
 
-	Log::Warn( "failed to register trail system %s", name );
+	logs.Warn( "failed to register trail system %s", name );
 	return 0;
 }
 
@@ -1434,19 +1429,13 @@ static trailBeam_t *CG_SpawnNewTrailBeam( baseTrailBeam_t *btb,
 
 			tb->valid = true;
 
-			if ( cg_debugTrails.integer >= 1 )
-			{
-				Log::Debug( "TB %s created", ts->class_->name );
-			}
+			logs.Verbose( "TB %s created", ts->class_->name );
 
 			return tb;
 		}
 	}
 
-	if ( cg_debugTrails.integer >= 1 )
-	{
-		Log::Debug( "MAX_TRAIL_BEAMS" );
-	}
+	logs.Notice( "MAX_TRAIL_BEAMS hit" );
 
 	return nullptr;
 }
@@ -1466,7 +1455,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 
 	if ( !bts->registered )
 	{
-		Log::Warn( "a trail system has not been registered yet" );
+		logs.Warn( "a trail system has not been registered yet" );
 		return nullptr;
 	}
 
@@ -1490,20 +1479,13 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 				CG_SpawnNewTrailBeam( bts->beams[ j ], ts );
 			}
 
-			if ( cg_debugTrails.integer >= 1 )
-			{
-				Log::Debug( "TS %s created", bts->name );
-			}
+			logs.Verbose( "TS %s created", bts->name );
 
 			return ts;
 		}
 	}
 
-	if ( cg_debugTrails.integer >= 1 )
-	{
-		Log::Debug( "MAX_TRAIL_SYSTEMS" );
-	}
-
+	logs.Notice( "MAX_TRAIL_SYSTEMS hit" );
 	return nullptr;
 }
 
@@ -1628,17 +1610,14 @@ static void CG_GarbageCollectTrailSystems()
 
 			CG_DestroyTrailSystem( &tempTS );
 
-			if ( cg_debugTrails.integer >= 1 )
-			{
-				Log::Debug( "TS %s expired (born %d, lives %d, now %d)",
-				           ts->class_->name, ts->birthTime, ts->class_->lifeTime,
-				           cg.time );
-			}
+			logs.Verbose( "TS %s expired (born %d, lives %d, now %d)",
+			              ts->class_->name, ts->birthTime, ts->class_->lifeTime,
+			              cg.time );
 		}
 
-		if ( cg_debugTrails.integer >= 1 && !ts->valid )
+		if ( !ts->valid )
 		{
-			Log::Debug( "TS %s garbage collected", ts->class_->name );
+			logs.Verbose( "TS %s garbage collected", ts->class_->name );
 		}
 	}
 }
@@ -1652,14 +1631,12 @@ Add trails to the scene
 */
 void CG_AddTrails()
 {
-	int         i;
 	trailBeam_t *tb;
-	int         numTS = 0, numTB = 0;
 
 	//remove expired trail systems
 	CG_GarbageCollectTrailSystems();
 
-	for ( i = 0; i < MAX_TRAIL_BEAMS; i++ )
+	for ( int i = 0; i < MAX_TRAIL_BEAMS; i++ )
 	{
 		tb = &trailBeams[ i ];
 
@@ -1670,9 +1647,9 @@ void CG_AddTrails()
 		}
 	}
 
-	if ( cg_debugTrails.integer >= 2 )
-	{
-		for ( i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
+	logs.DoDebugCode([] {
+		int numTS = 0, numTB = 0;
+		for ( int i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
 		{
 			if ( trailSystems[ i ].valid )
 			{
@@ -1680,7 +1657,7 @@ void CG_AddTrails()
 			}
 		}
 
-		for ( i = 0; i < MAX_TRAIL_BEAMS; i++ )
+		for ( int i = 0; i < MAX_TRAIL_BEAMS; i++ )
 		{
 			if ( trailBeams[ i ].valid )
 			{
@@ -1688,8 +1665,8 @@ void CG_AddTrails()
 			}
 		}
 
-		Log::Debug( "TS: %d  TB: %d", numTS, numTB );
-	}
+		logs.Debug( "TS: %d  TB: %d", numTS, numTB );
+	});
 }
 
 static trailSystem_t *testTS;
