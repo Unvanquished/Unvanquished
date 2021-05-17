@@ -1276,6 +1276,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( UP_RADAR );
 	D( UP_JETPACK );
 	D( UP_GRENADE );
+	D( UP_FIREBOMB );
 	D( UP_MEDKIT );
 
 	// add weapons
