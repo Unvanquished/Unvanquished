@@ -130,7 +130,7 @@ colorPrintfLn () {
 listCdn () {
 	(sed -e 's/#.*//g;s/['$'\t'' ]*//g' | grep -Ev '^$') <<-EOF
 	# Official
-	http://cdn.unvanquished.net
+	https://cdn.unvanquished.net
 	# Viech
 	http://unvcdn.viech.name
 	# illwieckz
