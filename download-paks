@@ -157,6 +157,13 @@ else
 	colorPrintfLn '1:31' 'No md5 checksum tool found.'
 fi
 
+# Detect if cp utility has copy on write support
+reflink_copy='false'
+if cp --help 2>/dev/null | grep -q -- '--reflink=auto'
+then
+	reflink_copy='true'
+fi
+
 # Default destination directory
 case "$(uname -s)" in
 	Darwin)
@@ -570,6 +577,15 @@ createSymlinks () {
 	)
 }
 
+copyFile () {
+	if "${reflink_copy}"
+	then
+		cp --reflink=auto -L "${@}"
+	else
+		cp -L "${@}"
+	fi
+}
+
 installFiles () {
 	local asset_path_list
 	asset_path_list="${1}"
@@ -584,10 +600,10 @@ installFiles () {
 
 			if [ "${base_asset_path}" = "${sum_file_name}" ]
 			then
-				cp -L "${temp_sum_path}" "${dest_file_path}"
+				copyFile "${temp_sum_path}" "${dest_file_path}"
 				touch -r "${temp_sum_path}" "${dest_file_path}"
 			else
-				cp -L "${cache_file_path}" "${dest_file_path}"
+				copyFile "${cache_file_path}" "${dest_file_path}"
 				touch -r "${cache_file_path}" "${dest_file_path}"
 			fi
 		done
