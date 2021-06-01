@@ -480,7 +480,7 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	}
 
 	//return a random one from among the choices
-	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+	return choices[ rand() % totalChoiceCount ];
 }
 
 gentity_t *G_PickRandomEntityOfClass( const char *classname )
