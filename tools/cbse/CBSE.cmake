@@ -50,7 +50,8 @@ function(CBSE target definition output)
     endif()
     set(GENERATED_CBSE ${output}/backend/CBSEBackend.cpp
                        ${output}/backend/CBSEBackend.h
-                       ${output}/backend/CBSEComponents.h)
+                       ${output}/backend/CBSEComponents.h
+                       ${output}/backend/CBSEEntities.h)
     add_custom_command(
         OUTPUT ${GENERATED_CBSE}
         COMMENT "Generating CBSE entities for ${definition}"
