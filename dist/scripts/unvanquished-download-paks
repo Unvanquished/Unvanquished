@@ -4,4 +4,4 @@ set -e
 
 . '/etc/unvanquished/paths.conf'
 
-exec "${lib_path}/download-paks" "$@" "${pak_path}" "${system_cache}"
+exec "${lib_path}/download-paks" --cache="${system_cache}" "$@" "${pak_path}"
