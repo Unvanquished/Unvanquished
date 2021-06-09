@@ -277,6 +277,7 @@ void              G_LeaveTeam( gentity_t *self );
 void              G_ChangeTeam( gentity_t *ent, team_t newTeam );
 gentity_t         *GetCloseLocationEntity( gentity_t *ent );
 void              TeamplayInfoMessage( gentity_t *ent );
+int               G_PlayerCountForBalance( team_t team );
 void              CheckTeamStatus();
 void              G_UpdateTeamConfigStrings();
 
