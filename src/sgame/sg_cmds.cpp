@@ -910,7 +910,7 @@ void Cmd_Team_f( gentity_t *ent )
 					force = true;
 				}
 
-				if ( !force && g_teamForceBalance.integer && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ])
+				if ( !force && g_teamForceBalance.integer && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
 				{
 					G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 					return;
@@ -931,7 +931,7 @@ void Cmd_Team_f( gentity_t *ent )
 					force = true;
 				}
 
-				if ( !force && g_teamForceBalance.integer && players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
+				if ( !force && g_teamForceBalance.integer && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
 				{
 					G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
 					return;

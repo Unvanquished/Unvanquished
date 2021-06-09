@@ -744,7 +744,7 @@ struct level_locals_s
 		// gameplay state
 		int              numSpawns;
 		int              numClients;
-		int              numPlayers;
+		int              numPlayers; // non-bot clients
 		int              numBots;
 		float            averageNumClients;
 		float            averageNumPlayers;
