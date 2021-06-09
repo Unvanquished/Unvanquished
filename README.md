@@ -12,7 +12,10 @@
 
 This repository contains the gamelogic of the game Unvanquished.
 
-You need to download the game's assets in addition to that to make it run.
+If you just want to play the game, then technically you only need to build the [Dæmon engine](https://github.com/DaemonEngine/Daemon) and [download the game's assets](#downloading-the-games-assets).
+
+You need to build this repository if you want to contribute to the gamelogic or make a mod.
+
 See below for build and launch instructions.
 
 ## Workspace requirements
@@ -81,7 +84,7 @@ cd Unvanquished/
 git submodule update --init --recursive
 ```
 
-If cmake complains about the `daemon/` folder being empty then you have skipped this step.
+If cmake complains about missing files in `daemon/` folder or similar issue then you have skipped this step.
 
 ## Build Instructions
 
@@ -136,7 +139,9 @@ cd build
 ./daemon -pakpath <PATH>
 ```
 
-#### If you don't have the assets, you can download them first
+#### Downloading the game's assets
+
+If you don't have the assets, you can download them first.
 
 The package downloader script can use `aria2c`, `curl` or `wget`, `aria2c` is recommended.
 You can do `./download-paks --help` for more options.
