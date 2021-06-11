@@ -620,8 +620,6 @@ void CG_OnPlayerWeaponChange()
 	// Rebuild weapon lists if UI is in focus.
 	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
-		CG_Rocket_BuildArmouryBuyList( "default" );
-
 		Rocket::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
 		if ( document->IsVisible() )
 		{
@@ -649,8 +647,6 @@ void CG_OnPlayerUpgradeChange()
 	// Rebuild weapon lists if UI is in focus.
 	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
 	{
-		CG_Rocket_BuildArmouryBuyList( "default" );
-
 		Rocket::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
 		if ( document->IsVisible() )
 		{
