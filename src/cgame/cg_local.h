@@ -1372,10 +1372,6 @@ struct rocketDataSource_t
 	int selectedArmouryBuyItem[3];
 	int armouryBuyListCount[3];
 
-	int armourySellList[ WP_NUM_WEAPONS + UP_NUM_UPGRADES ];
-	int selectedArmourySellItem;
-	int armourySellListCount;
-
 	int alienEvolveList[ PCL_NUM_CLASSES ];
 	int selectedAlienEvolve;
 	int alienEvolveListCount;
@@ -2278,7 +2274,6 @@ int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table );
 void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
 void CG_Rocket_BuildServerInfo();
 void CG_Rocket_BuildServerList( const char *args );
-void CG_Rocket_BuildArmourySellList( const char *table );
 void CG_Rocket_BuildArmouryBuyList( const char *table );
 void CG_Rocket_BuildPlayerList( const char *table );
 

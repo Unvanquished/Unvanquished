@@ -1569,8 +1569,6 @@ void CG_Rocket_SetArmouryBuyList( const char *table, int index )
 
 }
 
-void CG_Rocket_BuildArmourySellList( const char *table );
-
 void CG_Rocket_ExecArmouryBuyList( const char *table )
 {
 	int item;
@@ -1629,103 +1627,6 @@ void CG_Rocket_ExecArmouryBuyList( const char *table )
 	if ( buy )
 	{
 		trap_SendClientCommand( va( "buy %s", buy ) );
-		CG_Rocket_BuildArmouryBuyList( "default" );
-		CG_Rocket_BuildArmourySellList( "default" );
-	}
-}
-
-void CG_Rocket_CleanUpArmourySellList( const char* )
-{
-	rocketInfo.data.armourySellListCount = 0;
-	rocketInfo.data.selectedArmourySellItem = -1;
-}
-
-void CG_Rocket_BuildArmourySellList( const char *table )
-{
-	static char buf[ MAX_STRING_CHARS ];
-
-	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
-	{
-		return;
-	}
-
-	if ( !Q_stricmp( table, "default" ) )
-	{
-		int i;
-
-		Rocket_DSClearTable( "armourySellList", "default" );
-		CG_Rocket_CleanUpArmourySellList( "default" );
-
-		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; ++i )
-		{
-			if ( BG_InventoryContainsWeapon( i, cg.predictedPlayerState.stats ) && BG_Weapon( i )->purchasable )
-			{
-				buf[ 0 ] = '\0';
-
-				rocketInfo.data.armourySellList[ rocketInfo.data.armourySellListCount++ ] = i;
-
-				Info_SetValueForKey( buf, "name", BG_Weapon( i )->humanName, false );
-
-				Rocket_DSAddRow( "armourySellList", "default", buf );
-			}
-		}
-
-		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
-		{
-			if ( BG_InventoryContainsUpgrade( i, cg.predictedPlayerState.stats ) && BG_Upgrade( i )->purchasable )
-			{
-				buf[ 0 ] = '\0';
-
-				rocketInfo.data.armourySellList[ rocketInfo.data.armourySellListCount++ ] = i + WP_NUM_WEAPONS;
-
-				Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, false );
-
-				Rocket_DSAddRow( "armourySellList", "default", buf );
-			}
-		}
-	}
-}
-
-void CG_Rocket_SetArmourySellList( const char*, int index )
-{
-	rocketInfo.data.selectedArmourySellItem = index;
-}
-
-void CG_Rocket_ExecArmourySellList( const char* )
-{
-	int item;
-	const char *sell = nullptr;
-
-	if ( rocketInfo.data.selectedArmourySellItem < 0 || rocketInfo.data.selectedArmourySellItem >= rocketInfo.data.armourySellListCount )
-	{
-		return;
-	}
-
-	item = rocketInfo.data.armourySellList[ rocketInfo.data.selectedArmourySellItem ];
-
-	if ( item > WP_NUM_WEAPONS )
-	{
-		item -= WP_NUM_WEAPONS;
-
-		if ( BG_Upgrade( item ) )
-		{
-			sell = BG_Upgrade( item )->name;
-			BG_RemoveUpgradeFromInventory( item, cg.predictedPlayerState.stats );
-		}
-	}
-
-	else
-	{
-		if ( BG_Weapon( item ) )
-		{
-			sell = BG_Weapon( item )->name;
-		}
-	}
-
-	if ( sell )
-	{
-		trap_SendClientCommand( va( "sell %s", sell ) );
-		CG_Rocket_BuildArmourySellList( "default" );
 		CG_Rocket_BuildArmouryBuyList( "default" );
 	}
 }
@@ -2145,7 +2046,6 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "alienSpawnClass", &CG_Rocket_BuildAlienSpawnList, &nullSortFunc, &CG_Rocket_CleanUpAlienSpawnList, &CG_Rocket_SetAlienSpawnList, &nullFilterFunc, &CG_Rocket_ExecAlienSpawnList, &nullGetFunc },
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &CG_Rocket_SetArmouryBuyList, &nullFilterFunc, &CG_Rocket_ExecArmouryBuyList, &nullGetFunc },
-	{ "armourySellList", &CG_Rocket_BuildArmourySellList, &nullSortFunc, &CG_Rocket_CleanUpArmourySellList, &CG_Rocket_SetArmourySellList, &nullFilterFunc, &CG_Rocket_ExecArmourySellList, &nullGetFunc },
 	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &CG_Rocket_CleanUpBeaconList, &CG_Rocket_SetBeaconList, &nullFilterFunc, &CG_Rocket_ExecBeaconList, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
 	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &CG_Rocket_CleanUpHumanBuildList, &CG_Rocket_SetHumanBuildList, &nullFilterFunc, &CG_Rocket_ExecHumanBuildList, &nullGetFunc },
