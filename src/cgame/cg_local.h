@@ -1373,19 +1373,15 @@ struct rocketDataSource_t
 	int armouryBuyListCount[3];
 
 	int alienEvolveList[ PCL_NUM_CLASSES ];
-	int selectedAlienEvolve;
 	int alienEvolveListCount;
 
 	int humanBuildList[ BA_NUM_BUILDABLES ];
-	int selectedHumanBuild;
 	int humanBuildListCount;
 
 	int alienBuildList[ BA_NUM_BUILDABLES ];
-	int selectedAlienBuild;
 	int alienBuildListCount;
 
 	int beaconList[ NUM_BEACON_TYPES ];
-	int selectedBeacon;
 	int beaconListCount;
 };
 

@@ -1431,17 +1431,35 @@ static void AddWeaponToBuyList( int i, const char *table, int tblIndex )
 	}
 }
 
+static bool CanAffordUpgrade( upgrade_t upgrade, int stats[] )
+{
+	playerState_t *ps = &cg.snap->ps;
+	int credits = ps->persistant[ PERS_CREDIT ];
+
+	const int slots = BG_Upgrade( upgrade )->slots;
+
+	for ( int i = UP_NONE; i < UP_NUM_UPGRADES; i++ )
+	{
+		bool usesTheSameSlot = slots & BG_Upgrade( i )->slots;
+		if ( BG_InventoryContainsUpgrade( i, stats ) && usesTheSameSlot )
+		{
+			// conflicting item that will be replaced, add it to funds
+			credits += BG_Upgrade( i )->price;
+		}
+	}
+
+	return BG_Upgrade( upgrade )->price <= credits;
+}
+
 static Str::StringRef UpgradeAvailability( upgrade_t upgrade )
 {
-	bool CG_CanAffordUpgrade(upgrade_t upgrade, int stats[]);
-
 	if ( BG_InventoryContainsUpgrade( upgrade, cg.snap->ps.stats ) )
 		return "active";
 
 	if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
 		return "locked";
 
-	if ( !CG_CanAffordUpgrade( upgrade, cg.snap->ps.stats ) )
+	if ( !CanAffordUpgrade( upgrade, cg.snap->ps.stats ) )
 		return "expensive";
 
 	return "available";
@@ -1544,96 +1562,8 @@ void CG_Rocket_BuildArmouryBuyList( const char *table )
 
 }
 
-void CG_Rocket_SetArmouryBuyList( const char *table, int index )
-{
-	char c = table ? *table : 'd';
-	int tblIndex;
-
-	switch ( c )
-	{
-		case 'W':
-		case 'w':
-			tblIndex = ROCKETDS_WEAPONS;
-			break;
-
-		case 'U':
-		case 'u':
-			tblIndex = ROCKETDS_UPGRADES;
-			break;
-
-		default:
-			tblIndex = ROCKETDS_BOTH;
-	}
-
-	rocketInfo.data.selectedArmouryBuyItem[ tblIndex ] = index;
-
-}
-
-void CG_Rocket_ExecArmouryBuyList( const char *table )
-{
-	int item;
-	const char *buy = nullptr;
-	char c = table ? *table : 'd';
-	int tblIndex;
-
-	switch ( c )
-	{
-		case 'W':
-		case 'w':
-			tblIndex = ROCKETDS_WEAPONS;
-			break;
-
-		case 'U':
-		case 'u':
-			tblIndex = ROCKETDS_UPGRADES;
-			break;
-
-		default:
-			tblIndex = ROCKETDS_BOTH;
-	}
-
-	if ( ( item = rocketInfo.data.armouryBuyList[ tblIndex ][ rocketInfo.data.selectedArmouryBuyItem[ tblIndex ] ] ) > WP_NUM_WEAPONS )
-	{
-		item -= WP_NUM_WEAPONS;
-
-		if ( BG_Upgrade( item ) )
-		{
-			buy = BG_Upgrade( item )->name;
-
-			if ( BG_Upgrade( item )->slots & BG_SlotsForInventory( cg.predictedPlayerState.stats ) )
-			{
-				int i;
-
-				for ( i = 0; i < UP_NUM_UPGRADES; ++i )
-				{
-					if ( i != item &&  BG_Upgrade( i )->slots == BG_Upgrade( item )->slots )
-					{
-						trap_SendClientCommand( va( "sell %s", BG_Upgrade( i )->name ) );
-					}
-				}
-			}
-		}
-	}
-
-	else
-	{
-		if ( BG_Weapon( item ) )
-		{
-			buy = BG_Weapon( item )->name;
-			trap_SendClientCommand( va( "sell %s", BG_Weapon( BG_GetPlayerWeapon( &cg.predictedPlayerState ) )->name ) );
-		}
-	}
-
-	if ( buy )
-	{
-		trap_SendClientCommand( va( "buy %s", buy ) );
-		CG_Rocket_BuildArmouryBuyList( "default" );
-	}
-}
-
 void CG_Rocket_CleanUpAlienEvolveList( const char* )
 {
-	rocketInfo.data.selectedAlienEvolve = -1;
 	rocketInfo.data.alienEvolveListCount = 0;
 
 }
@@ -1712,26 +1642,8 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 	}
 }
 
-void CG_Rocket_SetAlienEvolveList( const char*, int index )
-{
-	rocketInfo.data.selectedAlienEvolve = index;
-}
-
-void CG_Rocket_ExecAlienEvolveList( const char* )
-{
-	class_t evo = ( class_t ) rocketInfo.data.alienEvolveList[ rocketInfo.data.selectedAlienEvolve ];
-	evolveInfo_t info = BG_ClassEvolveInfoFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], evo );
-
-	if ( BG_Class( evo ) && info.classIsUnlocked && cg.predictedPlayerState.persistant[ PERS_CREDIT ] >= info.evolveCost )
-	{
-		trap_SendClientCommand( va( "class %s", BG_Class( evo )->name ) );
-		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENEVOLVE ].id, "hide" );
-	}
-}
-
 void CG_Rocket_CleanUpHumanBuildList( const char*)
 {
-	rocketInfo.data.selectedHumanBuild = -1;
 	rocketInfo.data.humanBuildListCount = 0;
 }
 
@@ -1793,25 +1705,8 @@ void CG_Rocket_BuildHumanBuildList( const char *table )
 	}
 }
 
-void CG_Rocket_SetHumanBuildList( const char*, int index )
-{
-	rocketInfo.data.selectedHumanBuild = index;
-}
-
-void CG_Rocket_ExecHumanBuildList( const char* )
-{
-	buildable_t build = ( buildable_t ) rocketInfo.data.humanBuildList[ rocketInfo.data.selectedHumanBuild ];
-
-	if ( BG_Buildable( build ) )
-	{
-		trap_SendClientCommand( va( "build %s", BG_Buildable( build )->name ) );
-		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_HUMANBUILD ].id, "hide" );
-	}
-}
-
 void CG_Rocket_CleanUpAlienBuildList( const char* )
 {
-	rocketInfo.data.selectedAlienBuild = -1;
 	rocketInfo.data.alienBuildListCount = 0;
 }
 
@@ -1852,22 +1747,6 @@ void CG_Rocket_BuildAlienBuildList( const char *table )
 
 			rocketInfo.data.alienBuildList[ rocketInfo.data.alienBuildListCount++ ] = i;
 		}
-	}
-}
-
-void CG_Rocket_SetAlienBuildList( const char*, int index )
-{
-	rocketInfo.data.selectedAlienBuild = index;
-}
-
-void CG_Rocket_ExecAlienBuildList( const char* )
-{
-	buildable_t build = ( buildable_t ) rocketInfo.data.alienBuildList[ rocketInfo.data.selectedAlienBuild ];
-
-	if ( BG_Buildable( build ) )
-	{
-		trap_SendClientCommand( va( "build %s", BG_Buildable( build )->name ) );
-		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENBUILD ].id, "hide" );
 	}
 }
 
@@ -1950,7 +1829,6 @@ void CG_Rocket_ExecAlienSpawnList( const char* )
 
 void CG_Rocket_CleanUpBeaconList( const char* )
 {
-	rocketInfo.data.selectedBeacon = -1;
 	rocketInfo.data.beaconListCount = 0;
 }
 
@@ -1992,23 +1870,6 @@ void CG_Rocket_BuildBeaconList( const char *table )
 	}
 }
 
-void CG_Rocket_SetBeaconList( const char*, int index )
-{
-	rocketInfo.data.selectedBeacon = index;
-}
-
-void CG_Rocket_ExecBeaconList( const char* )
-{
-	const beaconAttributes_t *ba;
-
-	ba = BG_Beacon( rocketInfo.data.beaconList[ rocketInfo.data.selectedBeacon ] );
-
-	if( !ba )
-		return;
-
-	trap_SendClientCommand( va( "beacon %s", ba->name ) );
-	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "hide" );
-}
 
 static void nullSortFunc( const char*, const char* )
 {
@@ -2027,6 +1888,10 @@ static int nullGetFunc( const char* )
 	return -1;
 }
 
+static void nullSetFunc( const char*, int )
+{
+}
+
 struct dataSourceCmd_t
 {
 	const char *name;
@@ -2041,14 +1906,14 @@ struct dataSourceCmd_t
 
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
-	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &CG_Rocket_CleanUpAlienBuildList, &CG_Rocket_SetAlienBuildList, &nullFilterFunc, &CG_Rocket_ExecAlienBuildList, &nullGetFunc },
-	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &CG_Rocket_CleanUpAlienEvolveList, &CG_Rocket_SetAlienEvolveList, &nullFilterFunc, &CG_Rocket_ExecAlienEvolveList, &nullGetFunc },
+	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &CG_Rocket_CleanUpAlienBuildList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &CG_Rocket_CleanUpAlienEvolveList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "alienSpawnClass", &CG_Rocket_BuildAlienSpawnList, &nullSortFunc, &CG_Rocket_CleanUpAlienSpawnList, &CG_Rocket_SetAlienSpawnList, &nullFilterFunc, &CG_Rocket_ExecAlienSpawnList, &nullGetFunc },
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &CG_Rocket_SetArmouryBuyList, &nullFilterFunc, &CG_Rocket_ExecArmouryBuyList, &nullGetFunc },
-	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &CG_Rocket_CleanUpBeaconList, &CG_Rocket_SetBeaconList, &nullFilterFunc, &CG_Rocket_ExecBeaconList, &nullGetFunc },
+	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &CG_Rocket_CleanUpBeaconList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
-	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &CG_Rocket_CleanUpHumanBuildList, &CG_Rocket_SetHumanBuildList, &nullFilterFunc, &CG_Rocket_ExecHumanBuildList, &nullGetFunc },
+	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &CG_Rocket_CleanUpHumanBuildList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "humanSpawnItems", &CG_Rocket_BuildHumanSpawnItems, &nullSortFunc, CG_Rocket_CleanUpHumanSpawnItems, &CG_Rocket_SetHumanSpawnItems, &nullFilterFunc, &CG_Rocket_ExecHumanSpawnItems, &nullGetFunc },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetLanguageListIndex },
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
