@@ -297,7 +297,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 				break;
 
 			case UNLT_UPGRADE:
-				currentTeam     = TEAM_HUMANS;
+				currentTeam     = BG_Upgrade( itemNum )->team;
 				unlockThreshold = BG_Upgrade( itemNum )->unlockThreshold;
 				break;
 
@@ -307,7 +307,7 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 				break;
 
 			case UNLT_CLASS:
-				currentTeam     = TEAM_ALIENS;
+				currentTeam     = BG_Class( itemNum )->team;
 				unlockThreshold = BG_Class( itemNum )->unlockThreshold;
 				break;
 
@@ -551,7 +551,7 @@ void G_UpdateUnlockables()
 				break;
 
 			case UNLT_UPGRADE:
-				team            = TEAM_HUMANS;
+				team            = BG_Upgrade( itemNum )->team;
 				unlockThreshold = BG_Upgrade( itemNum )->unlockThreshold;
 				break;
 
@@ -561,7 +561,7 @@ void G_UpdateUnlockables()
 				break;
 
 			case UNLT_CLASS:
-				team            = TEAM_ALIENS;
+				team            = BG_Class( itemNum )->team;
 				unlockThreshold = BG_Class( itemNum )->unlockThreshold;
 				break;
 
