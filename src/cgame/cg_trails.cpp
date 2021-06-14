@@ -1493,12 +1493,17 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 ===============
 CG_DestroyTrailSystem
 
-Destroy a trail system
+"Destroy" a trail system
+The trail system is not truly destroyed after calling this. Rather, it lives until all its trail
+beams are destroyed (determined by fadeOutTime?)
 ===============
 */
 void CG_DestroyTrailSystem( trailSystem_t **ts )
 {
-	( *ts )->destroyTime = cg.time;
+	if ( ( *ts )->destroyTime <= 0 )
+	{
+		( *ts )->destroyTime = cg.time;
+	}
 
 	if ( CG_Attached( & ( *ts )->frontAttachment ) &&
 	     !CG_Attached( & ( *ts )->backAttachment ) )
@@ -1513,7 +1518,7 @@ void CG_DestroyTrailSystem( trailSystem_t **ts )
 		( *ts )->frontAttachment.centValid = false; // a bit naughty
 	}
 
-	ts = nullptr;
+	*ts = nullptr;
 }
 
 /*
