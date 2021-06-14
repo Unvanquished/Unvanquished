@@ -51,7 +51,6 @@ Maryland 20850 USA.
 #include "rocketConsoleTextElement.h"
 #include "rocketDataSourceSingle.h"
 #include "rocketFocusManager.h"
-#include "rocketCircleMenu.h"
 #include "rocketDataSource.h"
 #include "rocketKeyBinder.h"
 #include "rocketElementDocument.h"
@@ -373,7 +372,6 @@ void Rocket_Init()
 	Rocket::Core::Factory::RegisterElementInstancer( "console_text", new Rocket::Core::ElementInstancerGeneric< RocketConsoleTextElement >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "datasource_single", new Rocket::Core::ElementInstancerGeneric< RocketDataSourceSingle >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "datasource", new Rocket::Core::ElementInstancerGeneric< RocketDataSource >() )->RemoveReference();
-	Rocket::Core::Factory::RegisterElementInstancer( "circlemenu", new Rocket::Core::ElementInstancerGeneric< RocketCircleMenu >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "keybind", new Rocket::Core::ElementInstancerGeneric< RocketKeyBinder >() )->RemoveReference();
 // 	Rocket::Core::Factory::RegisterElementInstancer( "body", new Rocket::Core::ElementInstancerGeneric< RocketElementDocument >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "chatfield", new Rocket::Core::ElementInstancerGeneric< RocketChatField >() )->RemoveReference();

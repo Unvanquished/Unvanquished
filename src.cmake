@@ -86,7 +86,6 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/rocket.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketChatField.h
-    ${GAMELOGIC_DIR}/cgame/rocket/rocketCircleMenu.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketColorInput.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketConditionalElement.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketConsoleTextElement.h

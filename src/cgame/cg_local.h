@@ -1372,24 +1372,16 @@ struct rocketDataSource_t
 	int selectedArmouryBuyItem[3];
 	int armouryBuyListCount[3];
 
-	int armourySellList[ WP_NUM_WEAPONS + UP_NUM_UPGRADES ];
-	int selectedArmourySellItem;
-	int armourySellListCount;
-
 	int alienEvolveList[ PCL_NUM_CLASSES ];
-	int selectedAlienEvolve;
 	int alienEvolveListCount;
 
 	int humanBuildList[ BA_NUM_BUILDABLES ];
-	int selectedHumanBuild;
 	int humanBuildListCount;
 
 	int alienBuildList[ BA_NUM_BUILDABLES ];
-	int selectedAlienBuild;
 	int alienBuildListCount;
 
 	int beaconList[ NUM_BEACON_TYPES ];
-	int selectedBeacon;
 	int beaconListCount;
 };
 
@@ -2278,7 +2270,6 @@ int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table );
 void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
 void CG_Rocket_BuildServerInfo();
 void CG_Rocket_BuildServerList( const char *args );
-void CG_Rocket_BuildArmourySellList( const char *table );
 void CG_Rocket_BuildArmouryBuyList( const char *table );
 void CG_Rocket_BuildPlayerList( const char *table );
 
