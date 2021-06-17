@@ -41,6 +41,57 @@ static float SkillModifier( int botSkill )
 	return static_cast<float>( botSkill - MIN_SKILL ) / RANGE_SKILL;
 }
 
+static float GetMaximalSpeed( gentity_t const *self );
+static float GetMaximalSpeed( class_t cl );
+
+// helper function to make code more readable
+static float GetMaximalSpeed( gentity_t const *self )
+{
+	return GetMaximalSpeed( static_cast<class_t>( self->client->ps.stats[ STAT_CLASS ] ) );
+}
+
+// returns maximum "ground speed" of a class
+// this is, for now, an ugly switch with hard-coded values taken from
+// in-game measurement.
+// Anything better would involve working with physics. This would be
+// very nice, but requires a dive into how physics works.
+static float GetMaximalSpeed( class_t cl )
+{
+	switch( cl )
+	{
+		case PCL_ALIEN_BUILDER0:
+			return 287;
+		case PCL_ALIEN_BUILDER0_UPG:
+			return 287;
+		case PCL_ALIEN_LEVEL0:
+			return 448;
+		case PCL_ALIEN_LEVEL1:
+			return 399;
+		case PCL_ALIEN_LEVEL2:
+			return 383;
+		case PCL_ALIEN_LEVEL2_UPG:
+			return 383;
+		case PCL_ALIEN_LEVEL3:
+			return 383;
+		case PCL_ALIEN_LEVEL3_UPG:
+			return 383;
+		case PCL_ALIEN_LEVEL4:
+			return 353;
+		case PCL_HUMAN_NAKED:
+			return 383;
+		case PCL_HUMAN_LIGHT:
+			return 383;
+		case PCL_HUMAN_MEDIUM:
+			return 367;
+		case PCL_HUMAN_BSUIT:
+			return 367;
+		case PCL_NONE:
+		case PCL_NUM_CLASSES:
+		default:
+			ASSERT( false && "invalid class number provided" );
+	}
+}
+
 /*
 =======================
 Scoring functions for logic
@@ -242,10 +293,32 @@ float BotGetBaseRushScore( gentity_t *ent )
 	return rush_score;
 }
 
+// Calculates how important a bot should consider finding a heal source
+// returns a number between 0 and 1, 1 being "I need to heal"
+// The idea is to make bots more likely to do "opportunistic healing",
+// that is, if they have taken only low damages but a heal source is
+// at a distance which can be reached very quickly, replenish health.
+// But if heal source is too far, don't even try, even if almost dead,
+// because it would require more time to go to healer, wait for heal,
+// go back into action.
+// Also, the more damaged you are, the more vulnerable you are when
+// going back to heal, thus just finish what you were up to.
+//
+// Note that, as for anything involving distances to take decisions in
+// game, it's broken because distances are from point A to point B:
+// they are "ghost fly distances" (even faster than birds).
+//
+// The "amplification factor" of 5 have no special meaning, and was
+// only choosen because it "looks good" on the curve.
 float BotGetHealScore( gentity_t *self )
 {
+	float percentHealth = Entities::HealthFraction(self);
+	if ( percentHealth == 1.0f )
+	{
+		return 0.0f;
+	}
+
 	float distToHealer = 0;
-	float percentHealth = 0;
 
 	if ( self->client->pers.team == TEAM_ALIENS )
 	{
@@ -267,15 +340,8 @@ float BotGetHealScore( gentity_t *self )
 		distToHealer = self->botMind->closestBuildings[ BA_H_MEDISTAT ].distance;
 	}
 
-	percentHealth = Entities::HealthFraction(self);
-
-	distToHealer = std::max( std::min( MAX_HEAL_DIST, distToHealer ), MAX_HEAL_DIST * ( 3.0f / 4.0f ) );
-
-	if ( percentHealth == 1.0f )
-	{
-		return 1.0f;
-	}
-	return percentHealth * distToHealer / MAX_HEAL_DIST;
+	float timeDist = distToHealer / GetMaximalSpeed( self );
+	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentHealth ) / sqrt( timeDist );
 }
 
 float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
