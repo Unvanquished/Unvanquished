@@ -676,7 +676,12 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 			return;
 		}
 
-		if ( !CG_AttachmentPoint( &ts->frontAttachment, front ) || !CG_AttachmentPoint( &ts->backAttachment, back ) )
+		if ( !CG_AttachmentPoint( &ts->frontAttachment, front ) )
+		{
+			CG_DestroyTrailSystem( &ts );
+		}
+
+		if ( !CG_AttachmentPoint( &ts->backAttachment, back ) )
 		{
 			CG_DestroyTrailSystem( &ts );
 		}
@@ -1488,13 +1493,17 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 ===============
 CG_DestroyTrailSystem
 
-Destroy a trail system
+"Destroy" a trail system
+The trail system is not truly destroyed after calling this. Rather, it lives until all its trail
+beams are destroyed (determined by fadeOutTime?)
 ===============
 */
 void CG_DestroyTrailSystem( trailSystem_t **ts )
 {
-	( *ts )->destroyTime = cg.time;
-	( *ts )->valid = false;
+	if ( ( *ts )->destroyTime <= 0 )
+	{
+		( *ts )->destroyTime = cg.time;
+	}
 
 	if ( CG_Attached( & ( *ts )->frontAttachment ) &&
 	     !CG_Attached( & ( *ts )->backAttachment ) )
@@ -1509,7 +1518,7 @@ void CG_DestroyTrailSystem( trailSystem_t **ts )
 		( *ts )->frontAttachment.centValid = false; // a bit naughty
 	}
 
-	ts = nullptr;
+	*ts = nullptr;
 }
 
 /*
@@ -1586,8 +1595,9 @@ static void CG_GarbageCollectTrailSystems()
 				CG_DestroyTrailSystem( &tempTS );
 			}
 		}
-		else if ( ( centNum = CG_AttachmentCentNum( &ts->backAttachment ) ) >= 0 &&
-		          centNum != cg.snap->ps.clientNum )
+
+		if ( ( centNum = CG_AttachmentCentNum( &ts->backAttachment ) ) >= 0 &&
+		     centNum != cg.snap->ps.clientNum )
 		{
 			trailSystem_t *tempTS = ts;
 
@@ -1596,10 +1606,11 @@ static void CG_GarbageCollectTrailSystems()
 				CG_DestroyTrailSystem( &tempTS );
 			}
 		}
-		else if ( ts->destroyTime <= 0 && ts->class_->lifeTime &&
-		          ts->birthTime + ts->class_->lifeTime < cg.time )
+
+		// lifetime expired
+		if ( ts->destroyTime <= 0 && ts->class_->lifeTime &&
+		     ts->birthTime + ts->class_->lifeTime < cg.time )
 		{
-			// lifetime expired
 			trailSystem_t *tempTS = ts;
 
 			CG_DestroyTrailSystem( &tempTS );
