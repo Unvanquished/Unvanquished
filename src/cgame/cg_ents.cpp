@@ -299,12 +299,9 @@ static void CG_EntityEffects( centity_t *cent )
 		trap_R_AddAdditiveLightToScene( cent->lerpOrigin, i, r, g, b );
 	}
 
-	if ( CG_IsTrailSystemValid( &cent->muzzleTS ) )
+	if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
 	{
-		if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
-		{
-			CG_DestroyTrailSystem( &cent->muzzleTS );
-		}
+		CG_DestroyTrailSystem( &cent->muzzleTS );
 	}
 }
 
@@ -526,9 +523,7 @@ static void CG_Missile( centity_t *cent )
 	// Add trail system.
 	if ( ma->trailSystem && !CG_IsTrailSystemValid( &cent->missileTS ) )
 	{
-		cent->missileTS = CG_SpawnNewTrailSystem( ma->trailSystem );
-
-		if ( CG_IsTrailSystemValid( &cent->missileTS ) )
+		if ( ( cent->missileTS = CG_SpawnNewTrailSystem( ma->trailSystem ) ) != nullptr )
 		{
 			// TODO: Make attachment to tags on missile models work.
 			/*const char *tag;

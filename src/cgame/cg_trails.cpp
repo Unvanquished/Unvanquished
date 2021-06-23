@@ -1715,9 +1715,7 @@ void CG_TestTS_f()
 	{
 		CG_DestroyTestTS_f();
 
-		testTS = CG_SpawnNewTrailSystem( testTSHandle );
-
-		if ( CG_IsTrailSystemValid( &testTS ) )
+		if ( ( testTS = CG_SpawnNewTrailSystem( testTSHandle ) ) != nullptr )
 		{
 			CG_SetAttachmentCent( &testTS->frontAttachment, &cg_entities[ 0 ] );
 			CG_AttachToCent( &testTS->frontAttachment );

@@ -1105,9 +1105,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 				if ( !CG_IsTrailSystemValid( &source->muzzleTS ) )
 				{
-					source->muzzleTS = CG_SpawnNewTrailSystem( cgs.media.reactorZapTS );
-
-					if ( CG_IsTrailSystemValid( &source->muzzleTS ) )
+					if ( ( source->muzzleTS = CG_SpawnNewTrailSystem( cgs.media.reactorZapTS ) ) != nullptr )
 					{
 						CG_SetAttachmentCent( &source->muzzleTS->frontAttachment, source );
 						CG_SetAttachmentCent( &source->muzzleTS->backAttachment, target );

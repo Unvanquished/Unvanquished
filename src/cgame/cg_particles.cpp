@@ -357,7 +357,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 			{
 				trailSystem_t *ts = CG_SpawnNewTrailSystem( bp->childTrailSystemHandle );
 
-				if ( CG_IsTrailSystemValid( &ts ) )
+				if ( ts != nullptr )
 				{
 					CG_SetAttachmentParticle( &ts->frontAttachment, p );
 					CG_AttachToParticle( &ts->frontAttachment );
