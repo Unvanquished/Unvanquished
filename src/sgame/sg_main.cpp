@@ -2741,12 +2741,6 @@ void G_RunFrame( int levelTime )
 				G_FreeEntity( ent );
 				continue;
 			}
-			else if ( ent->unlinkAfterEvent )
-			{
-				// items that will respawn will hide themselves after their pickup event
-				ent->unlinkAfterEvent = false;
-				trap_UnlinkEntity( ent );
-			}
 		}
 
 		// temporary entities or ones about to be removed don't think

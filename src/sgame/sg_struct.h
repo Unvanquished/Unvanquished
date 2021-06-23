@@ -127,7 +127,6 @@ struct gentity_s
 	int          eventTime; // events will be cleared EVENT_VALID_MSEC after set
 	bool     inuse;
 	bool     freeAfterEvent;
-	bool     unlinkAfterEvent;
 
 	int          flags; // FL_* variables
 
