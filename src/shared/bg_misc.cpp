@@ -825,17 +825,8 @@ void BG_InitMissileAttributes()
 		ma->name   = md->name;
 		ma->number = md->number;
 
-		if ( FS::PakPath::FileExists( va( "configs/missiles/%s.attr.cfg", ma->name ) ) )
-		{
-			BG_ParseMissileAttributeFile( va( "configs/missiles/%s.attr.cfg", ma->name ), ma );
-			BG_ParseMissileDisplayFile(   va( "configs/missiles/%s.model.cfg", ma->name ), ma );
-		}
-		else
-		{
-			// TODO(0.53): Remove this fallback
-			BG_ParseMissileAttributeFile( va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
-			BG_ParseMissileDisplayFile(   va( "configs/missiles/%s.missile.cfg", ma->name ), ma );
-		}
+		BG_ParseMissileAttributeFile( va( "configs/missiles/%s.attr.cfg", ma->name ), ma );
+		BG_ParseMissileDisplayFile(   va( "configs/missiles/%s.model.cfg", ma->name ), ma );
 	}
 }
 
