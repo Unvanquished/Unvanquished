@@ -301,7 +301,8 @@ static void CG_EntityEffects( centity_t *cent )
 
 	if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
 	{
-		CG_DestroyTrailSystem( &cent->muzzleTS );
+		CG_DestroyTrailSystem( cent->muzzleTS );
+		cent->muzzleTS = nullptr;
 	}
 }
 
@@ -1105,7 +1106,8 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 			{
 				if ( CG_IsTrailSystemValid( &cent->level2ZapTS[ i ] ) )
 				{
-					CG_DestroyTrailSystem( &cent->level2ZapTS[ i ] );
+					CG_DestroyTrailSystem( cent->level2ZapTS[ i ] );
+					cent->level2ZapTS[ i ] = nullptr;
 				}
 			}
 			break;
@@ -1152,7 +1154,8 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 	// Destroy missile TS.
 	if ( CG_IsTrailSystemValid( &cent->missileTS ) )
 	{
-		CG_DestroyTrailSystem( &cent->missileTS );
+		CG_DestroyTrailSystem( cent->missileTS );
+		cent->missileTS = nullptr;
 	}
 
 	// Lazy TODO: Destroy more PS/TS here

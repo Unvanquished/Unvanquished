@@ -2181,7 +2181,7 @@ void          CG_LoadTrailSystems();
 qhandle_t     CG_RegisterTrailSystem( const char *name );
 
 trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle );
-void          CG_DestroyTrailSystem( trailSystem_t **ts );
+void          CG_DestroyTrailSystem( trailSystem_t *ts );
 
 bool      CG_IsTrailSystemValid( trailSystem_t **ts );
 
