@@ -4276,3 +4276,84 @@ int Parse_SourceFileAndLine( int handle, char (&filename)[ MAX_QPATH ], int *lin
 
 	return true;
 }
+
+
+/*
+===============
+Parse_WordList method definitions
+see the header file for the documentation
+===============
+*/
+
+static constexpr char csv_delimiters[] = ", ";
+
+Parse_WordList::Parse_WordList(const std::string &s)
+	: _string(BG_strdup(s.c_str())),
+	  _len(strlen(_string)),
+	  _start(find_first_not_matching()),
+	  _stop(find_first_matching(_start))
+{
+	_string[_stop] = '\0';
+}
+
+Parse_WordList::Parse_WordList(const char *s)
+	: _string(BG_strdup(s)),
+	  _len(strlen(_string)),
+	  _start(find_first_not_matching()),
+	  _stop(find_first_matching(_start))
+{
+	_string[_stop] = '\0';
+}
+
+Parse_WordList::~Parse_WordList()
+{
+	BG_Free(_string);
+}
+
+const char * Parse_WordList::operator*() const
+{
+	if (_start == _len) {
+		return nullptr;
+	}
+	return &_string[_start];
+}
+
+Parse_WordList& Parse_WordList::operator++()
+{
+	_start = find_first_not_matching(_stop);
+	_stop  = find_first_matching(_start);
+	_string[_stop] = '\0';
+
+	return *this;
+}
+
+size_t Parse_WordList::find_first_matching(size_t start)
+{
+	for (size_t i = start; i < _len; ++i) {
+		ASSERT(_string[i] != '\0');
+		for (char c : csv_delimiters) {
+			if (_string[i] == c) {
+				return i;
+			}
+		}
+	}
+	// reached end of string without match
+	return _len;
+}
+
+size_t Parse_WordList::find_first_not_matching(size_t start)
+{
+	for (size_t i = start; i < _len; ++i) {
+		ASSERT(_string[i] != '\0');
+		bool is_one_of = false;
+		for (char c : csv_delimiters) {
+			if (_string[i] == c) {
+				is_one_of = true;
+			}
+		}
+		if (!is_one_of)
+			return i;
+	}
+	// reached end of string without match
+	return _len;
+}
