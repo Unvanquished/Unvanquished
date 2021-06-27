@@ -4276,3 +4276,39 @@ int Parse_SourceFileAndLine( int handle, char (&filename)[ MAX_QPATH ], int *lin
 
 	return true;
 }
+
+
+/*
+===============
+Parse_WordListSplitter method definitions
+see the header file for the documentation
+===============
+*/
+
+static constexpr char csv_delimiters[] = ", ";
+
+Parse_WordListSplitter::Parse_WordListSplitter(std::string str)
+	: _string(std::move(str)), _stop(0)
+{
+	++*this;
+}
+
+const char * Parse_WordListSplitter::operator*() const
+{
+	if (_start == _string.npos) {
+		return nullptr;
+	}
+	return &_string[_start];
+}
+
+Parse_WordListSplitter& Parse_WordListSplitter::operator++()
+{
+	_start = _string.find_first_not_of(csv_delimiters, _stop);
+	_stop  = _string.find_first_of(csv_delimiters, _start);
+	if (_stop != _string.npos) {
+		_string[_stop] = '\0';
+		++_stop;
+	}
+
+	return *this;
+}
