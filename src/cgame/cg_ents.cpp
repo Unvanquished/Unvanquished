@@ -299,12 +299,10 @@ static void CG_EntityEffects( centity_t *cent )
 		trap_R_AddAdditiveLightToScene( cent->lerpOrigin, i, r, g, b );
 	}
 
-	if ( CG_IsTrailSystemValid( &cent->muzzleTS ) )
+	if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
 	{
-		if ( cg.time > cent->muzzleTSDeathTime && CG_IsTrailSystemValid( &cent->muzzleTS ) )
-		{
-			CG_DestroyTrailSystem( &cent->muzzleTS );
-		}
+		CG_DestroyTrailSystem( cent->muzzleTS );
+		cent->muzzleTS = nullptr;
 	}
 }
 
@@ -526,9 +524,7 @@ static void CG_Missile( centity_t *cent )
 	// Add trail system.
 	if ( ma->trailSystem && !CG_IsTrailSystemValid( &cent->missileTS ) )
 	{
-		cent->missileTS = CG_SpawnNewTrailSystem( ma->trailSystem );
-
-		if ( CG_IsTrailSystemValid( &cent->missileTS ) )
+		if ( ( cent->missileTS = CG_SpawnNewTrailSystem( ma->trailSystem ) ) != nullptr )
 		{
 			// TODO: Make attachment to tags on missile models work.
 			/*const char *tag;
@@ -1110,7 +1106,8 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 			{
 				if ( CG_IsTrailSystemValid( &cent->level2ZapTS[ i ] ) )
 				{
-					CG_DestroyTrailSystem( &cent->level2ZapTS[ i ] );
+					CG_DestroyTrailSystem( cent->level2ZapTS[ i ] );
+					cent->level2ZapTS[ i ] = nullptr;
 				}
 			}
 			break;
@@ -1157,7 +1154,8 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 	// Destroy missile TS.
 	if ( CG_IsTrailSystemValid( &cent->missileTS ) )
 	{
-		CG_DestroyTrailSystem( &cent->missileTS );
+		CG_DestroyTrailSystem( cent->missileTS );
+		cent->missileTS = nullptr;
 	}
 
 	// Lazy TODO: Destroy more PS/TS here

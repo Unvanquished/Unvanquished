@@ -648,7 +648,7 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 				// this is the first node to be added
 				if ( !CG_AttachmentPoint( &ts->frontAttachment, i->refPosition ) )
 				{
-					CG_DestroyTrailSystem( &ts );
+					CG_DestroyTrailSystem( ts );
 				}
 			}
 			else
@@ -676,14 +676,9 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 			return;
 		}
 
-		if ( !CG_AttachmentPoint( &ts->frontAttachment, front ) )
+		if ( !CG_AttachmentPoint( &ts->frontAttachment, front ) || !CG_AttachmentPoint( &ts->backAttachment, back ) )
 		{
-			CG_DestroyTrailSystem( &ts );
-		}
-
-		if ( !CG_AttachmentPoint( &ts->backAttachment, back ) )
-		{
-			CG_DestroyTrailSystem( &ts );
+			CG_DestroyTrailSystem( ts );
 		}
 
 		VectorSubtract( back, front, dir );
@@ -739,7 +734,7 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 		{
 			if ( !CG_AttachmentPoint( &ts->frontAttachment, tb->nodes->refPosition ) )
 			{
-				CG_DestroyTrailSystem( &ts );
+				CG_DestroyTrailSystem( ts );
 			}
 
 			VectorCopy( tb->nodes->refPosition, tb->nodes->position );
@@ -1498,27 +1493,25 @@ The trail system is not truly destroyed after calling this. Rather, it lives unt
 beams are destroyed (determined by fadeOutTime?)
 ===============
 */
-void CG_DestroyTrailSystem( trailSystem_t **ts )
+void CG_DestroyTrailSystem( trailSystem_t *ts )
 {
-	if ( ( *ts )->destroyTime <= 0 )
+	if ( ts->destroyTime <= 0 )
 	{
-		( *ts )->destroyTime = cg.time;
+		ts->destroyTime = cg.time;
 	}
 
-	if ( CG_Attached( & ( *ts )->frontAttachment ) &&
-	     !CG_Attached( & ( *ts )->backAttachment ) )
+	if ( CG_Attached( &ts->frontAttachment ) &&
+	     !CG_Attached( &ts->backAttachment ) )
 	{
 		vec3_t v;
 
 		// attach the trail head to a static point
-		CG_AttachmentPoint( & ( *ts )->frontAttachment, v );
-		CG_SetAttachmentPoint( & ( *ts )->frontAttachment, v );
-		CG_AttachToPoint( & ( *ts )->frontAttachment );
+		CG_AttachmentPoint( &ts->frontAttachment, v );
+		CG_SetAttachmentPoint( &ts->frontAttachment, v );
+		CG_AttachToPoint( &ts->frontAttachment );
 
-		( *ts )->frontAttachment.centValid = false; // a bit naughty
+		ts->frontAttachment.centValid = false; // a bit naughty
 	}
-
-	*ts = nullptr;
 }
 
 /*
@@ -1555,7 +1548,6 @@ static void CG_GarbageCollectTrailSystems()
 	int           i, j, count;
 	trailSystem_t *ts;
 	trailBeam_t   *tb;
-	int           centNum;
 
 	for ( i = 0; i < MAX_TRAIL_SYSTEMS; i++ )
 	{
@@ -1585,25 +1577,13 @@ static void CG_GarbageCollectTrailSystems()
 
 		//check systems where the parent cent has left the PVS
 		//( local player entity is always valid )
-		if ( ( centNum = CG_AttachmentCentNum( &ts->frontAttachment ) ) >= 0 &&
-		     centNum != cg.snap->ps.clientNum )
+		for (attachment_t* attachment : {&ts->frontAttachment, &ts->backAttachment})
 		{
-			trailSystem_t *tempTS = ts;
-
-			if ( !cg_entities[ centNum ].valid )
+			int centNum = CG_AttachmentCentNum( attachment );
+			if ( centNum >= 0 && centNum != cg.snap->ps.clientNum && !cg_entities[ centNum ].valid )
 			{
-				CG_DestroyTrailSystem( &tempTS );
-			}
-		}
-
-		if ( ( centNum = CG_AttachmentCentNum( &ts->backAttachment ) ) >= 0 &&
-		     centNum != cg.snap->ps.clientNum )
-		{
-			trailSystem_t *tempTS = ts;
-
-			if ( !cg_entities[ centNum ].valid )
-			{
-				CG_DestroyTrailSystem( &tempTS );
+				CG_DestroyTrailSystem( ts );
+				break;
 			}
 		}
 
@@ -1611,9 +1591,7 @@ static void CG_GarbageCollectTrailSystems()
 		if ( ts->destroyTime <= 0 && ts->class_->lifeTime &&
 		     ts->birthTime + ts->class_->lifeTime < cg.time )
 		{
-			trailSystem_t *tempTS = ts;
-
-			CG_DestroyTrailSystem( &tempTS );
+			CG_DestroyTrailSystem( ts );
 
 			logs.Verbose( "TS %s expired (born %d, lives %d, now %d)",
 			              ts->class_->name, ts->birthTime, ts->class_->lifeTime,
@@ -1688,7 +1666,8 @@ void CG_DestroyTestTS_f()
 {
 	if ( CG_IsTrailSystemValid( &testTS ) )
 	{
-		CG_DestroyTrailSystem( &testTS );
+		CG_DestroyTrailSystem( testTS );
+		testTS = nullptr;
 	}
 }
 
@@ -1715,9 +1694,7 @@ void CG_TestTS_f()
 	{
 		CG_DestroyTestTS_f();
 
-		testTS = CG_SpawnNewTrailSystem( testTSHandle );
-
-		if ( CG_IsTrailSystemValid( &testTS ) )
+		if ( ( testTS = CG_SpawnNewTrailSystem( testTSHandle ) ) != nullptr )
 		{
 			CG_SetAttachmentCent( &testTS->frontAttachment, &cg_entities[ 0 ] );
 			CG_AttachToCent( &testTS->frontAttachment );

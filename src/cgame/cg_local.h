@@ -445,7 +445,7 @@ struct particle_t
 #define MAX_BASETRAIL_SYSTEMS  64
 #define MAX_BASETRAIL_BEAMS    (MAX_BASETRAIL_SYSTEMS * MAX_BEAMS_PER_SYSTEM)
 
-#define MAX_TRAIL_SYSTEMS      32
+#define MAX_TRAIL_SYSTEMS      50
 #define MAX_TRAIL_BEAMS        (MAX_TRAIL_SYSTEMS * MAX_BEAMS_PER_SYSTEM)
 #define MAX_TRAIL_BEAM_NODES   128
 
@@ -2181,7 +2181,7 @@ void          CG_LoadTrailSystems();
 qhandle_t     CG_RegisterTrailSystem( const char *name );
 
 trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle );
-void          CG_DestroyTrailSystem( trailSystem_t **ts );
+void          CG_DestroyTrailSystem( trailSystem_t *ts );
 
 bool      CG_IsTrailSystemValid( trailSystem_t **ts );
 
