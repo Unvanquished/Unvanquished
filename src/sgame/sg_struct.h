@@ -40,10 +40,10 @@ struct gentityConditions_s
 	team_t   team;
 	int      stage;
 
-	class_t     classes[ PCL_NUM_CLASSES ];
-	weapon_t    weapons[ WP_NUM_WEAPONS ];
-	upgrade_t   upgrades[ UP_NUM_UPGRADES ];
-	buildable_t buildables[ BA_NUM_BUILDABLES ];
+	std::vector<class_t>     classes;
+	std::vector<weapon_t>    weapons;
+	std::vector<upgrade_t>   upgrades;
+	std::vector<buildable_t> buildables;
 
 	bool negated;
 };
