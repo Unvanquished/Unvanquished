@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 #include "cg_key_name.h"
+#include "shared/parse.h"
 
 cg_t            cg;
 cgs_t           cgs;
@@ -482,105 +483,69 @@ void CG_UpdateBuildableRangeMarkerMask()
 	static int btmc = 0;
 	static int spmc = 0;
 
+	constexpr int buildables_alien =
+		     ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
+		     ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) |
+		     ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) |
+		     ( 1 << BA_A_BOOSTER ); // TODO: add spiker
+
+	constexpr int buildables_human =
+		     ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_MGTURRET ) |
+		     ( 1 << BA_H_ROCKETPOD ) | ( 1 << BA_H_DRILL );
+
+	constexpr int buildables_support =
+		     ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
+		     ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
+		     ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_DRILL );
+
+	constexpr int buildables_offensive =
+		     ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) |
+		     ( 1 << BA_A_HIVE ) | ( 1 << BA_H_MGTURRET ) |
+		     ( 1 << BA_H_ROCKETPOD ); // TODO: add spiker
+
+	static_assert( (buildables_alien | buildables_human) == (buildables_support | buildables_offensive), "you probably forgot to add a buildable in either list" );
+	static_assert( (buildables_alien & buildables_human) == 0, "buildable can't be both human and alien" );
+	static_assert( (buildables_support & buildables_offensive) == 0, "buildables are likely not supposed to be both offensive and defensive" ); // optional
+
+	constexpr struct { const char *key; int buildableMask; } mappings[] = {
+		{ "all",            buildables_alien | buildables_human     },
+		{ "alien",          buildables_alien                        },
+		{ "human",          buildables_human                        },
+		{ "support",        buildables_support                      },
+		{ "aliensupport",   buildables_alien & buildables_support   },
+		{ "humansupport",   buildables_human & buildables_support   },
+		{ "offensive",      buildables_offensive                    },
+		{ "alienoffensive", buildables_alien & buildables_offensive },
+		{ "humanoffensive", buildables_human & buildables_offensive },
+		{ "none",           0                                       },
+	};
+
 	if ( cg_rangeMarkerBuildableTypes.modificationCount != btmc ||
 	     cg_rangeMarkerWhenSpectating.modificationCount != spmc )
 	{
-		int         brmMask;
-		char        buffer[ MAX_CVAR_VALUE_STRING ];
-		char        *p, *q;
-		buildable_t buildable;
-
-		brmMask = cg_rangeMarkerWhenSpectating.integer ? ( 1 << BA_NONE ) : 0;
+		int brmMask = cg_rangeMarkerWhenSpectating.integer ? ( 1 << BA_NONE ) : 0;
 
 		if ( !cg_rangeMarkerBuildableTypes.string[ 0 ] )
 		{
 			goto empty;
 		}
 
-		Q_strncpyz( buffer, cg_rangeMarkerBuildableTypes.string, sizeof( buffer ) );
-		p = &buffer[ 0 ];
-
-		for ( ;; )
+		for (Parse_WordListSplitter marker(cg_rangeMarkerBuildableTypes.string); *marker; ++marker)
 		{
-			q = strchr( p, ',' );
-
-			if ( q )
-			{
-				*q = '\0';
-			}
-
-			while ( *p == ' ' )
-			{
-				++p;
-			}
-
-			buildable = BG_BuildableByName( p )->number;
+			buildable_t buildable = BG_BuildableByName( *marker )->number;
 
 			if ( buildable != BA_NONE )
 			{
+				// add it to list
 				brmMask |= 1 << buildable;
 			}
-			else if ( !Q_stricmp( p, "all" ) )
-			{
-				brmMask |= ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_ACIDTUBE ) |
-				           ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) |
-				           ( 1 << BA_A_BOOSTER ) | ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_MGTURRET ) |
-				           ( 1 << BA_H_ROCKETPOD ) | ( 1 << BA_H_DRILL );
-			}
-			else if ( !Q_stricmp( p, "none" ) )
-			{
-				brmMask = 0;
-			}
 			else
 			{
-				char *pp;
-				int  only;
-
-				if ( !Q_strnicmp( p, "alien", 5 ) )
-				{
-					pp = p + 5;
-					only = ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
-					       ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER );
+				for (auto map : mappings) {
+					if ( Q_stricmp(map.key, *marker) == 0 ) {
+						brmMask |= map.buildableMask;
+					}
 				}
-				else if ( !Q_strnicmp( p, "human", 5 ) )
-				{
-					pp = p + 5;
-					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_ROCKETPOD ) |
-					       ( 1 << BA_H_DRILL );
-				}
-				else
-				{
-					pp = p;
-					only = ~0;
-				}
-
-				if ( pp != p && !*pp )
-				{
-					brmMask |= only;
-				}
-				else if ( !Q_stricmp( pp, "support" ) )
-				{
-					brmMask |= only & ( ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
-					                    ( 1 << BA_H_REACTOR ) |  ( 1 << BA_H_DRILL ) );
-				}
-				else if ( !Q_stricmp( pp, "offensive" ) )
-				{
-					brmMask |= only & ( ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) |
-					                    ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_ROCKETPOD ) );
-				}
-				else
-				{
-					Log::Warn( "unknown buildable or group: %s", p );
-				}
-			}
-
-			if ( q )
-			{
-				p = q + 1;
-			}
-			else
-			{
-				break;
 			}
 		}
 
