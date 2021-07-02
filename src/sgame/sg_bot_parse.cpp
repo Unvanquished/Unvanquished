@@ -28,6 +28,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "Entities.h"
 
+void WarnAboutParseError( parseError p )
+{
+	if ( p.line != 0 )
+	{
+		Log::Warn( "Parse error %s on line %i", p.message, p.line );
+	}
+	else
+	{
+		Log::Warn( "Parse error %s", p.message );
+	}
+}
+
 static bool expectToken( const char *s, pc_token_list **list, bool next )
 {
 	const pc_token_list *current = *list;
@@ -55,52 +67,54 @@ AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 {
 	if ( token->type == tokenType_t::TT_STRING )
 	{
-		return AIBoxString( token->string );
+		return AIValue_t( token->string );
 	}
 
 	if ( ( float ) token->intvalue != token->floatvalue )
 	{
-		return AIBoxFloat( token->floatvalue );
+		return AIValue_t( token->floatvalue );
 	}
 	else
 	{
-		return AIBoxInt( token->intvalue );
+		return AIValue_t( token->intvalue );
 	}
 }
 
 // functions that are used to provide values to the behavior tree in condition nodes
-static AIValue_t buildingIsDamaged( gentity_t *self, const AIValue_t* )
+static AIValue_t buildingIsDamaged( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( self->botMind->closestDamagedBuilding.ent != nullptr );
+	return AIValue_t( self->botMind->closestDamagedBuilding.ent != nullptr );
 }
 
-static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
+static AIValue_t haveWeapon( gentity_t *self, const std::vector<AIValue_t> &params )
 {
-	return AIBoxInt( BG_InventoryContainsWeapon( AIUnBoxInt( params[ 0 ] ), self->client->ps.stats ) );
+	return AIValue_t( BG_InventoryContainsWeapon( (int) params[0], self->client->ps.stats ) );
 }
 
-static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t* )
+static AIValue_t alertedToEnemy( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( self->botMind->bestEnemy.ent != nullptr );
+	return AIValue_t( self->botMind->bestEnemy.ent != nullptr );
 }
 
-static AIValue_t botTeam( gentity_t *self, const AIValue_t* )
+static AIValue_t botTeam( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( self->client->pers.team );
+	return AIValue_t( self->client->pers.team );
 }
 
-static AIValue_t goalTeam( gentity_t *self, const AIValue_t* )
+static AIValue_t goalTeam( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( BotGetTargetTeam( self->botMind->goal ) );
+	return AIValue_t( Util::ordinal<team_t, int>(
+				BotGetTargetTeam( self->botMind->goal ) ) );
 }
 
-static AIValue_t goalType( gentity_t *self, const AIValue_t* )
+static AIValue_t goalType( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( Util::ordinal(BotGetTargetType( self->botMind->goal )) );
+	return AIValue_t( Util::ordinal<entityType_t, int>(
+				BotGetTargetType( self->botMind->goal ) ) );
 }
 
 // TODO: Check if we can just check for HealthComponent.
-static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
+static AIValue_t goalDead( gentity_t *self, const std::vector<AIValue_t> & )
 {
 	bool dead = false;
 	botTarget_t *goal = &self->botMind->goal;
@@ -126,98 +140,99 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 		dead = true;
 	}
 
-	return AIBoxInt( dead );
+	return AIValue_t( dead );
 }
 
-static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t* )
+static AIValue_t goalBuildingType( gentity_t *self, const std::vector<AIValue_t> & )
 {
 	if ( BotGetTargetType( self->botMind->goal ) != entityType_t::ET_BUILDABLE )
 	{
-		return AIBoxInt( BA_NONE );
+		return AIValue_t( Util::ordinal<buildable_t, int>( BA_NONE ) );
 	}
 
-	return AIBoxInt( self->botMind->goal.ent->s.modelindex );
+	return AIValue_t( self->botMind->goal.ent->s.modelindex );
 }
 
-static AIValue_t currentWeapon( gentity_t *self, const AIValue_t* )
+static AIValue_t currentWeapon( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( BG_GetPlayerWeapon( &self->client->ps ) );
+	return AIValue_t( Util::ordinal<weapon_t, int>(
+				BG_GetPlayerWeapon( &self->client->ps ) ) );
 }
 
-static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
+static AIValue_t haveUpgrade( gentity_t *self, const std::vector<AIValue_t> &params )
 {
-	int upgrade = AIUnBoxInt( params[ 0 ] );
-	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats ) && BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
+	int upgrade = (int) params[0];
+	return AIValue_t( !BG_UpgradeIsActive( upgrade, self->client->ps.stats ) && BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
 }
 
-static AIValue_t percentAmmo( gentity_t *self, const AIValue_t* )
+static AIValue_t percentAmmo( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxFloat( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) );
+	return AIValue_t( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) );
 }
 
-static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
+static AIValue_t teamateHasWeapon( gentity_t *self, const std::vector<AIValue_t> &params )
 {
-	return AIBoxInt( BotTeamateHasWeapon( self, AIUnBoxInt( params[ 0 ] ) ) );
+	return AIValue_t( BotTeamateHasWeapon( self, (int) params[0] ) );
 }
 
-static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
+static AIValue_t distanceTo( gentity_t *self, const std::vector<AIValue_t> &params )
 {
-	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	AIEntity_t e = (AIEntity_t) (int) params[0];
 	botEntityAndDistance_t ent = AIEntityToGentity( self, e );
 
-	return AIBoxFloat( ent.distance );
+	return AIValue_t( ent.distance );
 }
 
-static AIValue_t baseRushScore( gentity_t *self, const AIValue_t* )
+static AIValue_t baseRushScore( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxFloat( BotGetBaseRushScore( self ) );
+	return AIValue_t( BotGetBaseRushScore( self ) );
 }
 
-static AIValue_t healScore( gentity_t *self, const AIValue_t* )
+static AIValue_t healScore( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxFloat( BotGetHealScore( self ) );
+	return AIValue_t( BotGetHealScore( self ) );
 }
 
-static AIValue_t botClass( gentity_t *self, const AIValue_t* )
+static AIValue_t botClass( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( self->client->ps.stats[ STAT_CLASS ] );
+	return AIValue_t( self->client->ps.stats[ STAT_CLASS ] );
 }
 
-static AIValue_t botSkill( gentity_t *self, const AIValue_t* )
+static AIValue_t botSkill( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( self->botMind->botSkill.level );
+	return AIValue_t( self->botMind->botSkill.level );
 }
 
-static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
+static AIValue_t inAttackRange( gentity_t *self, const std::vector<AIValue_t> &params )
 {
 	botTarget_t target;
-	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	AIEntity_t et = (AIEntity_t) (int) params[0];
 	botEntityAndDistance_t e = AIEntityToGentity( self ,et );
 
 	if ( !e.ent )
 	{
-		return AIBoxInt( false );
+		return AIValue_t( false );
 	}
 
 	BotSetTarget( &target, e.ent, nullptr );
 
 	if ( BotTargetInAttackRange( self, target ) )
 	{
-		return AIBoxInt( true );
+		return AIValue_t( true );
 	}
 
-	return AIBoxInt( false );
+	return AIValue_t( false );
 }
 
-static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
+static AIValue_t isVisible( gentity_t *self, const std::vector<AIValue_t> &params )
 {
 	botTarget_t target;
-	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	AIEntity_t et = (AIEntity_t) (int) params[0];
 	botEntityAndDistance_t e = AIEntityToGentity( self, et );
 
 	if ( !e.ent )
 	{
-		return AIBoxInt( false );
+		return AIValue_t( false );
 	}
 
 	BotSetTarget( &target, e.ent, nullptr );
@@ -228,90 +243,90 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 		{
 			self->botMind->enemyLastSeen = level.time;
 		}
-		return AIBoxInt( true );
+		return AIValue_t( true );
 	}
 
-	return AIBoxInt( false );
+	return AIValue_t( false );
 }
 
-static AIValue_t matchTime( gentity_t*, const AIValue_t* )
+static AIValue_t matchTime( gentity_t*, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( level.matchTime );
+	return AIValue_t( level.matchTime );
 }
 
-static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
+static AIValue_t directPathTo( gentity_t *self, const std::vector<AIValue_t> &params )
 {
-	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	AIEntity_t e = (AIEntity_t) (int) params[0];
 	botEntityAndDistance_t ed = AIEntityToGentity( self, e );
 
 	if ( e == E_GOAL )
 	{
-		return AIBoxInt( self->botMind->nav.directPathToGoal );
+		return AIValue_t( self->botMind->nav.directPathToGoal );
 	}
 	else if ( ed.ent )
 	{
 		botTarget_t target;
 		BotSetTarget( &target, ed.ent, nullptr );
-		return AIBoxInt( BotPathIsWalkable( self, target ) );
+		return AIValue_t( BotPathIsWalkable( self, target ) );
 	}
 
-	return AIBoxInt( false );
+	return AIValue_t( false );
 }
 
-static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
+static AIValue_t botCanEvolveTo( gentity_t *self, const std::vector<AIValue_t> &params )
 {
-	class_t c = ( class_t ) AIUnBoxInt( params[ 0 ] );
+	class_t c = (class_t) (int) params[ 0 ];
 
-	return AIBoxInt( BotCanEvolveToClass( self, c ) );
+	return AIValue_t( BotCanEvolveToClass( self, c ) );
 }
 
-static AIValue_t humanMomentum( gentity_t*, const AIValue_t* )
+static AIValue_t humanMomentum( gentity_t*, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( level.team[ TEAM_HUMANS ].momentum );
+	return AIValue_t( level.team[ TEAM_HUMANS ].momentum );
 }
 
-static AIValue_t alienMomentum( gentity_t*, const AIValue_t* )
+static AIValue_t alienMomentum( gentity_t*, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( level.team[ TEAM_ALIENS ].momentum );
+	return AIValue_t( level.team[ TEAM_ALIENS ].momentum );
 }
 
-static AIValue_t aliveTime( gentity_t*self, const AIValue_t* )
+static AIValue_t aliveTime( gentity_t*self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( level.time - self->botMind->spawnTime );
+	return AIValue_t( level.time - self->botMind->spawnTime );
 }
 
-static AIValue_t randomChance( gentity_t*, const AIValue_t* )
+static AIValue_t randomChance( gentity_t*, const std::vector<AIValue_t> & )
 {
-	return AIBoxFloat( random() );
+	return AIValue_t( random() );
 }
 
-static AIValue_t cvarInt( gentity_t*, const AIValue_t *params )
+static AIValue_t cvarInt( gentity_t*, const std::vector<AIValue_t> &params )
 {
-	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
+	vmCvar_t *c = G_FindCvar( (const char *) params[0] );
 
 	if ( !c )
 	{
-		return AIBoxInt( 0 );
+		return AIValue_t( 0 );
 	}
 
-	return AIBoxInt( c->integer );
+	return AIValue_t( c->integer );
 }
 
-static AIValue_t cvarFloat( gentity_t*, const AIValue_t *params )
+static AIValue_t cvarFloat( gentity_t*, const std::vector<AIValue_t> &params )
 {
-	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
+	vmCvar_t *c = G_FindCvar( (const char *) params[0] );
 
 	if ( !c )
 	{
-		return AIBoxFloat( 0 );
+		return AIValue_t( 0.0f );
 	}
 
-	return AIBoxFloat( c->value );
+	return AIValue_t( c->value );
 }
 
-static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
+static AIValue_t percentHealth( gentity_t *self, const std::vector<AIValue_t> &params )
 {
-	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	AIEntity_t e = (AIEntity_t) (int) params[0];
 	botEntityAndDistance_t et = AIEntityToGentity( self, e );
 	float healthFraction;
 
@@ -321,12 +336,12 @@ static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
 		healthFraction = 0.0f;
 	}
 
-	return AIBoxFloat( healthFraction );
+	return AIValue_t( healthFraction );
 }
 
-static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
+static AIValue_t stuckTime( gentity_t *self, const std::vector<AIValue_t> & )
 {
-	return AIBoxInt( level.time - self->botMind->stuckTime );
+	return AIValue_t( level.time - self->botMind->stuckTime );
 }
 
 // functions accessible to the behavior tree for use in condition nodes
@@ -459,57 +474,30 @@ static pc_token_list *findCloseParen( pc_token_list *start, pc_token_list *end )
 	return nullptr;
 }
 
-static AIOp_t *newOp( pc_token_list *list )
+static std::unique_ptr<AIValue_t> newValueLiteral( pc_token_list **list )
 {
-	pc_token_list *current = list;
-	AIOp_t *ret = nullptr;
-
-	AIOpType_t op = opTypeFromToken( &current->token );
-
-	if ( isBinaryOp( op ) )
-	{
-		AIBinaryOp_t *b = ( AIBinaryOp_t * ) BG_Alloc( sizeof( *b ) );
-		b->opType = op;
-		ret = ( AIOp_t * ) b;
-	}
-	else if ( isUnaryOp( op ) )
-	{
-		AIUnaryOp_t *u = ( AIUnaryOp_t * ) BG_Alloc( sizeof( *u ) );
-		u->opType = op;
-		ret = ( AIOp_t * ) u;
-	}
-
-	return ret;
-}
-
-static AIValue_t *newValueLiteral( pc_token_list **list )
-{
-	AIValue_t *ret;
 	pc_token_list *current = *list;
 	pc_token_stripped_t *token = &current->token;
 
-	ret = ( AIValue_t * ) BG_Alloc( sizeof( *ret ) );
-
-	*ret = AIBoxToken( token );
-
 	*list = current->next;
-	return ret;
+	return Util::make_unique<AIValue_t>( std::move( AIBoxToken(token) ) );
 }
 
-static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, int minparams, int maxparams )
+static std::vector<AIValue_t>
+parseFunctionParameters( pc_token_list **list, int minparams, int maxparams )
 {
 	pc_token_list *current = *list;
 	pc_token_list *parenBegin = current->next;
 	pc_token_list *parenEnd;
 	pc_token_list *parse;
-	AIValue_t     *params = nullptr;
+	std::vector<AIValue_t> params;
 	int           numParams = 0;
 
 	// functions should always be proceeded by a '(' if they have parameters
 	if ( !expectToken( "(", &parenBegin, false ) )
 	{
 		*list = current;
-		return nullptr;
+		return {};
 	}
 
 	// find the end parenthesis around the function's args
@@ -519,7 +507,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 	{
 		Log::Warn( "could not find matching ')' for '(' on line %d", parenBegin->token.line );
 		*list = parenBegin->next;
-		return nullptr;
+		return {};
 	}
 
 	// count the number of parameters
@@ -535,7 +523,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 		{
 			Log::Warn( "Invalid token %s in parameter list on line %d", parse->token.string, parse->token.line );
 			*list = parenEnd->next; // skip invalid function expression
-			return nullptr;
+			return {};
 		}
 		parse = parse->next;
 	}
@@ -545,31 +533,25 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 	{
 		Log::Warn( "too few parameters for %s on line %d", current->token.string, current->token.line );
 		*list = parenEnd->next;
-		return nullptr;
+		return {};
 	}
 
 	if ( numParams > maxparams )
 	{
 		Log::Warn( "too many parameters for %s on line %d", current->token.string, current->token.line );
 		*list = parenEnd->next;
-		return nullptr;
+		return {};
 	}
-
-	*nparams = numParams;
 
 	if ( numParams )
 	{
 		// add the parameters
-		params = ( AIValue_t * ) BG_Alloc( sizeof( *params ) * numParams );
-
-		numParams = 0;
 		parse = parenBegin->next;
 		while ( parse != parenEnd )
 		{
 			if ( parse->token.type == tokenType_t::TT_NUMBER || parse->token.type == tokenType_t::TT_STRING )
 			{
-				params[ numParams ] = AIBoxToken( &parse->token );
-				numParams++;
+				params.push_back( AIBoxToken( &parse->token ) );
 			}
 			parse = parse->next;
 		}
@@ -578,15 +560,11 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 	return params;
 }
 
-static AIValueFunc_t *newValueFunc( pc_token_list **list )
+static std::unique_ptr<AIValueFunc_t> newValueFunc( pc_token_list **list )
 {
-	AIValueFunc_t *ret = nullptr;
-	AIValueFunc_t v;
 	pc_token_list *current = *list;
 	pc_token_list *parenBegin = nullptr;
 	struct AIConditionMap_s *f;
-
-	memset( &v, 0, sizeof( v ) );
 
 	f = (struct AIConditionMap_s*) bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
 
@@ -597,61 +575,30 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 		return nullptr;
 	}
 
-	v.expType = EX_FUNC;
-	v.retType = f->retType;
-	v.func =    f->func;
-	v.nparams = f->nparams;
-
 	parenBegin = current->next;
 
 	// if the function has no parameters, allow it to be used without parenthesis
-	if ( v.nparams == 0 && parenBegin->token.string[ 0 ] != '(' )
+	if ( f->nparams == 0 && parenBegin->token.string[ 0 ] != '(' )
 	{
-		ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
-		memcpy( ret, &v, sizeof( *ret ) );
-
 		*list = current->next;
-		return ret;
+		return Util::make_unique<AIValueFunc_t>( f->retType, f->func, std::vector<AIValue_t>{} );
 	}
 
-	v.params = parseFunctionParameters( list, &v.nparams, f->nparams, f->nparams );
+	auto params = parseFunctionParameters( list, f->nparams, f->nparams );
 
-	if ( !v.params && f->nparams > 0 )
+	if ( params.size() == 0 && f->nparams > 0 )
 	{
 		return nullptr;
 	}
 
-	// create the value op
-	ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
-
-	// copy the members
-	memcpy( ret, &v, sizeof( *ret ) );
-
-	return ret;
+	return Util::make_unique<AIValueFunc_t>( f->retType, f->func, std::move(params) );
 }
 
-static AIExpType_t *makeExpression( AIOp_t *op, AIExpType_t *exp1, AIExpType_t *exp2 )
+static std::unique_ptr<AIExpression_t> Primary( pc_token_list **list );
+static std::unique_ptr<AIExpression_t> ReadConditionExpression( pc_token_list **list, AIOpType_t op2 )
 {
-	if ( isUnaryOp( op->opType ) )
-	{
-		AIUnaryOp_t *u = ( AIUnaryOp_t * ) op;
-		u->exp = exp1;
-	}
-	else if ( isBinaryOp( op->opType ) )
-	{
-		AIBinaryOp_t *b = ( AIBinaryOp_t * ) op;
-		b->exp1 = exp1;
-		b->exp2 = exp2;
-	}
-
-	return ( AIExpType_t * ) op;
-}
-
-static AIExpType_t *Primary( pc_token_list **list );
-static AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op2 )
-{
-	AIExpType_t *t;
-	AIOpType_t  op;
+	std::unique_ptr<AIExpression_t> left;
+	AIOpType_t op;
 
 	if ( !*list )
 	{
@@ -659,59 +606,55 @@ static AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op
 		return nullptr;
 	}
 
-	t = Primary( list );
+	left = Primary( list );
 
-	if ( !t )
+	if ( !left )
 	{
 		return nullptr;
 	}
 
-	op = opTypeFromToken( &(*list)->token );
-
-	while ( isBinaryOp( op ) && opCompare( op, op2 ) >= 0 )
+	while ( op = opTypeFromToken( &(*list)->token ),
+			isBinaryOp( op ) && opCompare( op, op2 ) >= 0 )
 	{
-		AIExpType_t *t1;
+		std::unique_ptr<AIExpression_t> right;
 		pc_token_list *prev = *list;
-		AIOp_t *exp = newOp( *list );
 		*list = (*list)->next;
-		t1 = ReadConditionExpression( list, op );
+		right = ReadConditionExpression( list, op );
 
-		if ( !t1 )
+		if ( !right )
 		{
 			Log::Warn( "Missing right operand for %s on line %d", opTypeToString( op ), prev->token.line );
-			FreeExpression( t );
-			FreeOp( exp );
 			return nullptr;
 		}
 
-		t = makeExpression( exp, t, t1 );
-
-		op = opTypeFromToken( &(*list)->token );
+		left = Util::make_unique<AIBinaryOp_t>(
+				op, std::move(left), std::move(right) );
 	}
 
-	return t;
+	return left;
 }
 
-static AIExpType_t *Primary( pc_token_list **list )
+static std::unique_ptr<AIExpression_t> Primary( pc_token_list **list )
 {
+	// CHECKME: probably one can simplify the control flow
+	std::unique_ptr<AIExpression_t> tree = nullptr;
 	pc_token_list *current = *list;
-	AIExpType_t *tree = nullptr;
 
 	if ( isUnaryOp( opTypeFromToken( &current->token ) ) )
 	{
-		AIExpType_t *t;
-		AIOp_t *op = newOp( current );
+		AIOpType_t opType = opTypeFromToken( &current->token );
 		*list = current->next;
-		t = ReadConditionExpression( list, op->opType );
+		std::unique_ptr<AIExpression_t> t =
+			ReadConditionExpression( list, opType );
 
 		if ( !t )
 		{
-			Log::Warn( "Missing right operand for %s on line %d", opTypeToString( op->opType ), current->token.line );
-			FreeOp( op );
+			Log::Warn( "Missing right operand for %s on line %d", opTypeToString( opType ), current->token.line );
 			return nullptr;
 		}
 
-		tree = makeExpression( op, t, nullptr );
+		return Util::make_unique<AIUnaryOp_t>(
+				opType, std::move(t) );
 	}
 	else if ( current->token.string[0] == '(' )
 	{
@@ -724,11 +667,11 @@ static AIExpType_t *Primary( pc_token_list **list )
 	}
 	else if ( current->token.type == tokenType_t::TT_NUMBER )
 	{
-		tree = ( AIExpType_t * ) newValueLiteral( list );
+		tree = newValueLiteral( list );
 	}
 	else if ( current->token.type == tokenType_t::TT_NAME )
 	{
-		tree = ( AIExpType_t * ) newValueFunc( list );
+		tree = newValueFunc( list );
 	}
 	else
 	{
@@ -737,18 +680,11 @@ static AIExpType_t *Primary( pc_token_list **list )
 	return tree;
 }
 
-static void BotInitNode( AINode_t type, AINodeRunner func, void *node )
-{
-	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
-	n->type = type;
-	n->run = func;
-}
-
 /*
 ======================
-ReadConditionNode
+AIConditionNode constructor
 
-Parses and creates an AIConditionNode_t from a token list
+Parses and creates an AIConditionNode from a token list
 The token list pointer is modified to point to the beginning of the next node text block
 
 A condition node has the form:
@@ -763,66 +699,52 @@ condition [expression]
 ======================
 */
 
-AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
+AIConditionNode::AIConditionNode( pc_token_list **tokenlist )
+	: AIGenericNode{ CONDITION_NODE, BotConditionNode },
+	  child(nullptr), exp(nullptr)
 {
 	pc_token_list *current = *tokenlist;
 
-	AIConditionNode_t *condition;
+	expectToken( "condition", &current, true );
 
-	if ( !expectToken( "condition", &current, true ) )
-	{
-		return nullptr;
-	}
-
-	condition = allocNode( AIConditionNode_t );
-	BotInitNode( CONDITION_NODE, BotConditionNode, condition );
-
-	condition->exp = ReadConditionExpression( &current, OP_NONE );
+	exp = ReadConditionExpression( &current, OP_NONE );
 
 	if ( !current )
 	{
 		*tokenlist = current;
-		Log::Warn( "Unexpected end of file" );
-		FreeConditionNode( condition );
-		return nullptr;
+		throw parseError("unexpected end of file");
 	}
 
-	if ( !condition->exp )
+	if ( !exp )
 	{
 		*tokenlist = current;
-		FreeConditionNode( condition );
-		return nullptr;
+		throw parseError("missing expression in condition");
 	}
 
 	if ( Q_stricmp( current->token.string, "{" ) )
 	{
 		// this condition node has no child nodes
 		*tokenlist = current;
-		return ( AIGenericNode_t * ) condition;
+		return;
 	}
 
 	current = current->next;
 
-	condition->child = ReadNode( &current );
+	child = ReadNode( &current );
 
-	if ( !condition->child )
+	if ( !child )
 	{
-		Log::Warn( "Failed to parse child node of condition on line %d", (*tokenlist)->token.line );
 		*tokenlist = current;
-		FreeConditionNode( condition );
-		return nullptr;
+		throw parseError("Parse error: could not parse child node of condition", (*tokenlist)->token.line);
 	}
 
 	if ( !expectToken( "}", &current, true ) )
 	{
 		*tokenlist = current;
-		FreeConditionNode( condition );
-		return nullptr;
+		throw parseError("expected } at end of condition body", current->token.line);
 	}
 
 	*tokenlist = current;
-
-	return ( AIGenericNode_t * ) condition;
 }
 
 static const struct AIDecoratorMap_s
@@ -835,87 +757,83 @@ static const struct AIDecoratorMap_s
 {
 	{ "return", BotDecoratorReturn, 1, 1 },
 	{ "timer", BotDecoratorTimer, 1, 1 }
-};
+}; // This list must be sorted
 
-AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
+/*
+======================
+AIDecoratorNode constructor
+
+Parses and creates an DecoratorNode_t from a token list
+The token list pointer is modified to point to the beginning of the next node text block
+
+A condition node has the form:
+decorator [expression] {
+	child node
+}
+
+where expression can either be return(RETURN_VALUE) or timer(TIME)
+and will trigger when that value is returned, or each TIME milliseconds.
+======================
+*/
+
+AIDecoratorNode::AIDecoratorNode( pc_token_list **list )
+	: AIGenericNode{ DECORATOR_NODE, nullptr }, child(nullptr), data{}
 {
 	pc_token_list *current = *list;
-	struct AIDecoratorMap_s *dec;
-	AIDecoratorNode_t       node;
-	AIDecoratorNode_t       *ret;
 	pc_token_list           *parenBegin;
 
-	if ( !expectToken( "decorator", &current, true ) )
-	{
-		return nullptr;
-	}
+	expectToken( "decorator", &current, true );
 
 	if ( !current )
 	{
-		Log::Warn( "Unexpected end of file after line %d", (*list)->token.line );
 		*list = current;
-		return nullptr;
+		throw parseError("unexpected end of file");
 	}
 
-	dec = (struct AIDecoratorMap_s*) bsearch( current->token.string, AIDecorators, ARRAY_LEN( AIDecorators ), sizeof( *AIDecorators ), cmdcmp );
+	auto dec = (struct AIDecoratorMap_s*) bsearch( current->token.string,
+			AIDecorators, ARRAY_LEN( AIDecorators ),
+			sizeof( *AIDecorators ), cmdcmp );
 
 	if ( !dec )
 	{
-		Log::Warn( "%s on line %d is not a valid decorator", current->token.string, current->token.line );
 		*list = current;
-		return nullptr;
+		throw parseError("invalid decorator", current->token.line);
 	}
 
 	parenBegin = current->next;
 
-	memset( &node, 0, sizeof( node ) );
-
-	BotInitNode( DECORATOR_NODE, dec->run, &node );
+	run = dec->run;
 
 	// allow dropping of parenthesis if we don't require any parameters
 	if ( dec->minparams == 0 && parenBegin->token.string[0] != '(' )
 	{
-		ret = allocNode( AIDecoratorNode_t );
-		memcpy( ret, &node, sizeof( node ) );
-		*list = parenBegin;
-		return ( AIGenericNode_t * ) ret;
+		return;
 	}
 
-	node.params = parseFunctionParameters( &current, &node.nparams, dec->minparams, dec->maxparams );
+	params = parseFunctionParameters( &current, dec->minparams, dec->maxparams );
 
-	if ( !node.params && dec->minparams > 0 )
+	if ( params.size() == 0 && dec->minparams > 0 )
 	{
 		*list = current;
-		return nullptr;
+		throw parseError("could not parse function parameters", current->prev->token.line);
 	}
 
 	if ( !expectToken( "{", &current, true ) )
 	{
 		*list = current;
-		return nullptr;
+		throw parseError("missing {", current->prev->token.line);
 	}
 
-	node.child = ReadNode( &current );
+	child = ReadNode( &current );
 
-	if ( !node.child )
-	{
-		Log::Warn( "Failed to parse child node of decorator on line %d",  (*list)->token.line );
-		*list = current;
-		return nullptr;
-	}
-
-	if ( !expectToken( "}", &current, true ) )
+	if ( !child )
 	{
 		*list = current;
-		return nullptr;
+		throw parseError("failed to parse child node of decorator", current->token.line );
 	}
 
-	// create the decorator node
-	ret = allocNode( AIDecoratorNode_t );
-	memcpy( ret, &node, sizeof( *ret ) );
-
+	expectToken( "}", &current, true );
 	*list = current;
-	return ( AIGenericNode_t * ) ret;
 }
 
 static const struct AIActionMap_s
@@ -958,9 +876,9 @@ static const struct AIActionMap_s
 
 /*
 ======================
-ReadActionNode
+AIActionNode constructor
 
-Parses and creates an AIGenericNode_t with the type ACTION_NODE from a token list
+Parses and creates an AIGenericNode with the type ACTION_NODE from a token list
 The token list pointer is modified to point to the beginning of the next node text block after reading
 
 An action node has the form:
@@ -970,218 +888,147 @@ Where name defines the action to execute, and the parameters are surrounded by p
 ======================
 */
 
-AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
+AIActionNode::AIActionNode( pc_token_list **tokenlist )
+	: AIGenericNode{ ACTION_NODE, nullptr }, params()
 {
 	pc_token_list *current = *tokenlist;
 	pc_token_list *parenBegin;
-	AIActionNode_t        *ret = nullptr;
-	AIActionNode_t        node;
-	struct AIActionMap_s  *action = nullptr;
+	struct AIActionMap_s *action = nullptr;
 
-	if ( !expectToken( "action", &current, true ) )
-	{
-		return nullptr;
-	}
+	expectToken( "action", &current, true );
 
 	if ( !current )
 	{
-		Log::Warn( "Unexpected end of file after line %d", (*tokenlist)->token.line );
-		return nullptr;
+		throw parseError( "unexpected end of file after line", (*tokenlist)->token.line );
 	}
 
 	action = (struct AIActionMap_s*) bsearch( current->token.string, AIActions, ARRAY_LEN( AIActions ), sizeof( *AIActions ), cmdcmp );
 
 	if ( !action )
 	{
-		Log::Warn( "%s on line %d is not a valid action", current->token.string, current->token.line );
 		*tokenlist = current;
-		return nullptr;
+		throw parseError( "invalid action" + current->token.line );
 	}
 
 	parenBegin = current->next;
 
-	memset( &node, 0, sizeof( node ) );
-
-	BotInitNode( ACTION_NODE, action->run, &node );
+	run = action->run;
 
 	// allow dropping of parenthesis if we don't require any parameters
 	if ( action->minparams == 0 && parenBegin->token.string[0] != '(' )
 	{
-		ret = allocNode( AIActionNode_t );
-		memcpy( ret, &node, sizeof( node ) );
 		*tokenlist = parenBegin;
-		return ( AIGenericNode_t * ) ret;
+		return;
 	}
 
-	node.params = parseFunctionParameters( &current, &node.nparams, action->minparams, action->maxparams );
+	params = parseFunctionParameters( &current, action->minparams, action->maxparams );
 
-	if ( !node.params && action->minparams > 0 )
+	if ( params.size() == 0 && action->minparams > 0 )
 	{
-		return nullptr;
+		throw parseError("could not parse function parameters", current->prev->token.line);
 	}
-
-	// create the action node
-	ret = allocNode( AIActionNode_t );
-	memcpy( ret, &node, sizeof( *ret ) );
 
 	*tokenlist = current;
-	return ( AIGenericNode_t * ) ret;
-}
-
-AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
-{
-	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node = nullptr;
-	current = current->next;
-
-	node = ReadNodeList( &current );
-
-	*tokenlist = current;
-	if ( !node )
-	{
-		return nullptr;
-	}
-	BotInitNode( SELECTOR_NODE, BotSequenceNode, node );
-	return node;
-}
-
-AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
-{
-	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node = nullptr;
-	current = current->next;
-
-	node = ReadNodeList( &current );
-
-	*tokenlist = current;
-	if ( !node )
-	{
-		return nullptr;
-	}
-	BotInitNode( SELECTOR_NODE, BotSelectorNode, node );
-	return node;
-}
-
-AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
-{
-	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node = nullptr;
-	current = current->next;
-
-	node = ReadNodeList( &current );
-
-	*tokenlist = current;
-	if ( !node )
-	{
-		return nullptr;
-	}
-	BotInitNode( SELECTOR_NODE, BotConcurrentNode, node );
-	return node;
 }
 
 /*
 ======================
-ReadNodeList
+AINodeList constructor
 
-Parses and creates an AINodeList_t from a token list
+Parses and creates an AINodeList from a token list
 The token list pointer is modified to point to the beginning of the next node text block after reading
 ======================
 */
 
-AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
+AINodeList::AINodeList( AINodeRunner _run, pc_token_list **tokenlist )
+	: AIGenericNode{ SELECTOR_NODE, _run }, list()
 {
-	AINodeList_t *list;
-	pc_token_list *current = *tokenlist;
+	pc_token_list *current = (*tokenlist)->next; // TODO: check throw works
 
 	if ( !expectToken( "{", &current, true ) )
 	{
-		return nullptr;
+		throw parseError( "missing opening {", current->token.line );
 	}
-
-	list = allocNode( AINodeList_t );
 
 	while ( Q_stricmp( current->token.string, "}" ) )
 	{
-		AIGenericNode_t *node = ReadNode( &current );
-
-		if ( node && list->numNodes >= MAX_NODE_LIST )
+		std::shared_ptr<AIGenericNode> node = ReadNode( &current );
+		if ( node )
 		{
-			Log::Warn( "Max selector children limit exceeded at line %d", (*tokenlist)->token.line );
-			FreeNode( node );
-			FreeNodeList( list );
-			*tokenlist = current;
-			return nullptr;
+			list.push_back( node );
 		}
-		else if ( node )
-		{
-			list->list[ list->numNodes ] = node;
-			list->numNodes++;
-		}
-
-		if ( !node )
+		else
 		{
 			*tokenlist = current;
-			FreeNodeList( list );
-			return nullptr;
+			throw parseError( "could not read a child of a node list", current->token.line );
 		}
 
-		if ( !current )
+		if ( current == nullptr )
 		{
-			*tokenlist = current;
-			return ( AIGenericNode_t * ) list;
+			*tokenlist = nullptr;
+			return;
 		}
 	}
 
 	*tokenlist = current->next;
-	return ( AIGenericNode_t * ) list;
 }
 
-static AITreeList_t *currentList = nullptr;
+static AITreeList *currentList = nullptr;
 
-AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
+std::shared_ptr<AIBehaviorTree> ReadBehaviorTree(const char *name, AITreeList *list)
+{
+	std::string behavior_name = name;
+	currentList = list;
+
+	// check if this behavior tree has already been loaded
+	for ( const std::shared_ptr<AIBehaviorTree>& behavior : *currentList )
+	{
+		if ( behavior->name == behavior_name )
+		{
+			return behavior;
+		}
+	}
+
+	auto behavior = std::make_shared<AIBehaviorTree>( std::move(behavior_name) );
+
+	if ( behavior )
+	{
+		currentList->push_back( behavior );
+	}
+	return behavior;
+}
+
+static std::shared_ptr<AIGenericNode> ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 {
 	pc_token_list *first = *tokenlist;
 	pc_token_list *current = first;
 
-	AIBehaviorTree_t *behavior;
-
-	if ( !expectToken( "behavior", &current, true ) )
-	{
-		return nullptr;
-	}
+	expectToken( "behavior", &current, true );
 
 	if ( !current )
 	{
-		Log::Warn( "Unexpected end of file after line %d", first->token.line );
 		*tokenlist = current;
-		return nullptr;
+		throw parseError("unexpected end of file while parsing external file");
 	}
 
-	behavior = ReadBehaviorTree( current->token.string, currentList );
-
-	if ( !behavior )
-	{
-		Log::Warn( "Could not load behavior %s on line %d", current->token.string, current->token.line );
-		*tokenlist = current->next;
-		return nullptr;
-	}
+	std::shared_ptr<AIBehaviorTree> behavior =
+		ReadBehaviorTree( current->token.string, currentList );
 
 	if ( !behavior->root )
 	{
-		Log::Warn( "Recursive behavior %s on line %d", current->token.string, current->token.line );
 		*tokenlist = current->next;
-		return nullptr;
+		throw parseError( "recursive behavior", current->prev->token.line );
 	}
 
 	*tokenlist = current->next;
-	return ( AIGenericNode_t * ) behavior;
+	return behavior->root;
 }
 
 /*
 ======================
 ReadNode
 
-Parses and creates an AIGenericNode_t from a token list
+Parses and creates an AIGenericNode from a token list
 The token list pointer is modified to point to the next node text block after reading
 
 This function delegates the reading to the sub functions
@@ -1189,34 +1036,34 @@ ReadNodeList, ReadActionNode, and ReadConditionNode depending on the first token
 ======================
 */
 
-AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
+std::shared_ptr<AIGenericNode> ReadNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node;
+	std::shared_ptr<AIGenericNode> node;
 
 	if ( !Q_stricmp( current->token.string, "selector" ) )
 	{
-		node = ReadSelector( &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AINodeList>( BotSelectorNode, &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "sequence" ) )
 	{
-		node = ReadSequence( &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AINodeList>( BotSequenceNode, &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "concurrent" ) )
 	{
-		node = ReadConcurrent( &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AINodeList>( BotConcurrentNode, &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "action" ) )
 	{
-		node = ReadActionNode( &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AIActionNode>( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "condition" ) )
 	{
-		node = ReadConditionNode( &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AIConditionNode>( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "decorator" ) )
 	{
-		node = ReadDecoratorNode( &current );
+		node = (std::shared_ptr<AIGenericNode>) std::make_shared<AIDecoratorNode>( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "behavior" ) )
 	{
@@ -1224,8 +1071,7 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	}
 	else
 	{
-		Log::Warn( "Invalid token on line %d found: %s", current->token.line, current->token.string );
-		node = nullptr;
+		throw parseError( "invalid token found", current->token.line );
 	}
 
 	*tokenlist = current;
@@ -1234,33 +1080,19 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 
 /*
 ======================
-ReadBehaviorTree
+AIBehaviorTree constructor
 
 Load a behavior tree of the given name from a file
 ======================
 */
 
-AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
+AIBehaviorTree::AIBehaviorTree( std::string _name )
+	: AIGenericNode{ BEHAVIOR_NODE, BotBehaviorNode },
+	  name(std::move(_name)), root(nullptr)
 {
-	int i;
 	char treefilename[ MAX_QPATH ];
 	int handle;
 	pc_token_list *tokenlist;
-	AIBehaviorTree_t *tree;
-	pc_token_list *current;
-	AIGenericNode_t *node;
-
-	currentList = list;
-
-	// check if this behavior tree has already been loaded
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *tree = list->trees[ i ];
-		if ( !Q_stricmp( tree->name, name ) )
-		{
-			return tree;
-		}
-	}
 
 	// add preprocessor defines for use in the behavior tree
 	// add upgrades
@@ -1344,42 +1176,22 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( SAY_AREA );
 	D( SAY_AREA_TEAM );
 
-	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
+	Q_strncpyz( treefilename, va( "bots/%s.bt", name.c_str() ), sizeof( treefilename ) );
 
 	handle = Parse_LoadSourceHandle( treefilename );
 	if ( !handle )
 	{
-		Log::Warn( "Cannot load behavior tree %s: File not found", treefilename );
-		return nullptr;
+		throw "cannot load behavior tree: File not found";
 	}
 
 	tokenlist = CreateTokenList( handle );
 	Parse_FreeSourceHandle( handle );
 
-	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
-
-	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
-
-	tree->run = BotBehaviorNode;
-	tree->type = BEHAVIOR_NODE;
-
-	AddTreeToList( list, tree );
-
-	current = tokenlist;
-
-	node = ReadNode( &current );
-	if ( node )
-	{
-		tree->root = node;
-	}
-	else
-	{
-		RemoveTreeFromList( list, tree );
-		tree = nullptr;
-	}
-
+	root = ReadNode( &tokenlist );
 	FreeTokenList( tokenlist );
-	return tree;
+	if ( !root ) {
+		throw "could not parse behavior tree root node";
+	}
 }
 
 pc_token_list *CreateTokenList( int handle )
@@ -1431,208 +1243,14 @@ void FreeTokenList( pc_token_list *list )
 	}
 }
 
-// functions for keeping a list of behavior trees loaded
-void InitTreeList( AITreeList_t *list )
+void RemoveTreeFromList( AIBehaviorTree *tree, AITreeList *list )
 {
-	list->trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * 10 );
-	list->maxTrees = 10;
-	list->numTrees = 0;
-}
-
-void AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree )
-{
-	if ( list->maxTrees == list->numTrees )
+	for ( auto t = list->begin(); t != list->end(); ++t )
 	{
-		AIBehaviorTree_t **trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * list->maxTrees );
-		list->maxTrees *= 2;
-		memcpy( trees, list->trees, sizeof( AIBehaviorTree_t * ) * list->numTrees );
-		BG_Free( list->trees );
-		list->trees = trees;
-	}
-
-	list->trees[ list->numTrees ] = tree;
-	list->numTrees++;
-}
-
-void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
-{
-	int i;
-
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *testTree = list->trees[ i ];
-		if ( !Q_stricmp( testTree->name, tree->name ) )
+		if ( t->get()->name == tree->name )
 		{
-			FreeBehaviorTree( testTree );
-			memmove( &list->trees[ i ], &list->trees[ i + 1 ], sizeof( AIBehaviorTree_t * ) * ( list->numTrees - i - 1 ) );
-			list->numTrees--;
+			list->erase(t);
+			return;
 		}
-	}
-}
-
-void FreeTreeList( AITreeList_t *list )
-{
-	int i;
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *tree = list->trees[ i ];
-		FreeBehaviorTree( tree );
-	}
-
-	BG_Free( list->trees );
-	list->trees = nullptr;
-	list->maxTrees = 0;
-	list->numTrees = 0;
-}
-
-// functions for freeing the memory of condition expressions
-void FreeValue( AIValue_t *v )
-{
-	if ( !v )
-	{
-		return;
-	}
-	AIDestroyValue( *v );
-	BG_Free( v );
-}
-
-void FreeValueFunc( AIValueFunc_t *v )
-{
-	int i;
-	if ( !v )
-	{
-		return;
-	}
-
-	for ( i = 0; i < v->nparams; i++ )
-	{
-		AIDestroyValue( v->params[ i ] );
-	}
-
-	BG_Free( v->params );
-	BG_Free( v );
-}
-
-void FreeExpression( AIExpType_t *exp )
-{
-	if ( !exp )
-	{
-		return;
-	}
-
-	if ( *exp == EX_FUNC )
-	{
-		AIValueFunc_t *v = ( AIValueFunc_t * ) exp;
-		FreeValueFunc( v );
-	}
-	else if ( *exp == EX_VALUE )
-	{
-		AIValue_t *v = ( AIValue_t * ) exp;
-
-		FreeValue( v );
-	}
-	else if ( *exp == EX_OP )
-	{
-		AIOp_t *op = ( AIOp_t * ) exp;
-
-		FreeOp( op );
-	}
-}
-void FreeOp( AIOp_t *op )
-{
-	if ( !op )
-	{
-		return;
-	}
-
-	if ( isBinaryOp( op->opType ) )
-	{
-		AIBinaryOp_t *b = ( AIBinaryOp_t * ) op;
-		FreeExpression( b->exp1 );
-		FreeExpression( b->exp2 );
-	}
-	else if ( isUnaryOp( op->opType ) )
-	{
-		AIUnaryOp_t *u = ( AIUnaryOp_t * ) op;
-		FreeExpression( u->exp );
-	}
-
-	BG_Free( op );
-}
-
-// freeing behavior tree nodes
-void FreeConditionNode( AIConditionNode_t *node )
-{
-	FreeNode( node->child );
-	FreeExpression( node->exp );
-	BG_Free( node );
-}
-
-void FreeNodeList( AINodeList_t *node )
-{
-	int i;
-	for ( i = 0; i < node->numNodes; i++ )
-	{
-		FreeNode( node->list[ i ] );
-	}
-	BG_Free( node );
-}
-
-void FreeActionNode( AIActionNode_t *action )
-{
-	int i;
-	for ( i = 0; i < action->nparams; i++ )
-	{
-		AIDestroyValue( action->params[ i ] );
-	}
-
-	BG_Free( action->params );
-	BG_Free( action );
-}
-
-void FreeDecoratorNode( AIDecoratorNode_t *decorator )
-{
-	BG_Free( decorator->params );
-	FreeNode( decorator->child );
-	BG_Free( decorator );
-}
-
-void FreeNode( AIGenericNode_t *node )
-{
-	if ( !node )
-	{
-		return;
-	}
-
-	switch( node->type )
-	{
-		case SELECTOR_NODE:
-			FreeNodeList( ( AINodeList_t * ) node );
-			break;
-		case CONDITION_NODE:
-			FreeConditionNode( ( AIConditionNode_t * ) node );
-			break;
-		case ACTION_NODE:
-			FreeActionNode( ( AIActionNode_t * ) node );
-			break;
-		case DECORATOR_NODE:
-			FreeDecoratorNode( ( AIDecoratorNode_t * ) node );
-			break;
-		default:
-			break;
-	}
-}
-
-void FreeBehaviorTree( AIBehaviorTree_t *tree )
-{
-	if ( tree )
-	{
-		FreeNode(tree->root);
-
-		BG_Free( tree );
-	}
-	else
-	{
-		Log::Warn( "Attempted to free NULL behavior tree" );
 	}
 }
