@@ -124,6 +124,8 @@ void CG_TestModel_f()
 		angles[ ROLL ] = 0;
 		AnglesToAxis( angles, cg.testModelBarrelEntity.axis );
 	}
+
+	cg.testModelEntity.skeleton.scale = 1.0f;
 }
 
 /*
