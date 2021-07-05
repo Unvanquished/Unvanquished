@@ -314,11 +314,9 @@ void BotStandStill( gentity_t *self )
 
 bool BotJump( gentity_t *self )
 {
-	int staminaJumpCost;
-
 	if ( self->client->pers.team == TEAM_HUMANS )
 	{
-		staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
+		int staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 
 		if ( self->client->ps.stats[STAT_STAMINA] < staminaJumpCost )
 		{
@@ -333,29 +331,37 @@ bool BotJump( gentity_t *self )
 bool BotSprint( gentity_t *self, bool enable )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
-	int       staminaJumpCost;
+	int jumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
+	int stamina = self->client->ps.stats[ STAT_STAMINA ];
+	bool sprinting = usercmdButtonPressed( botCmdBuffer->buttons, BUTTON_SPRINT );
 
 	if ( !enable )
 	{
-		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+		if ( sprinting )
+		{
+			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+			BotWalk( self, true );
+		}
 		return false;
 	}
-
-	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 
 	if ( self->client->pers.team == TEAM_HUMANS
-	     && self->client->ps.stats[ STAT_STAMINA ] > staminaJumpCost
 	     && self->botMind->botSkill.level >= 5 )
 	{
-		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-		BotWalk( self, false );
-		return true;
+		if ( sprinting && stamina <= jumpCost )
+		{
+			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+			BotWalk( self, true );
+			return false;
+		}
+		if ( !sprinting && stamina <= 2 * jumpCost )
+		{
+			return false;
+		}
 	}
-	else
-	{
-		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-		return false;
-	}
+	usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+	BotWalk( self, false );
+	return true;
 }
 
 void BotWalk( gentity_t *self, bool enable )
@@ -658,7 +664,6 @@ void BotClampPos( gentity_t *self )
 
 void BotMoveToGoal( gentity_t *self )
 {
-	int    staminaJumpCost;
 	vec3_t dir;
 	VectorCopy( self->botMind->nav.dir, dir );
 
@@ -677,7 +682,6 @@ void BotMoveToGoal( gentity_t *self )
 		return;
 	}
 
-	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 	team_t targetTeam = TEAM_NONE;
 	if ( self->botMind->goal.targetsValidEntity() )
 	{
@@ -688,15 +692,6 @@ void BotMoveToGoal( gentity_t *self )
 	switch ( self->client->pers.team )
 	{
 		case TEAM_HUMANS:
-			//dont sprint or dodge if we dont have enough stamina and are about to slow
-			if ( self->client->ps.stats[ STAT_STAMINA ] < staminaJumpCost )
-			{
-				usercmdReleaseButton( botCmdBuffer.buttons, BUTTON_SPRINT );
-
-				// walk to regain stamina
-				BotWalk( self, true );
-			}
-
 			// if target is friendly, reach it quickly
 			if ( G_Team( self ) == targetTeam )
 			{
