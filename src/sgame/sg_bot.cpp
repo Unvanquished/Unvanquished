@@ -417,8 +417,13 @@ void G_BotThink( gentity_t *self )
 	self->botMind->cmdBuffer = self->client->pers.cmd;
 	botCmdBuffer = &self->botMind->cmdBuffer;
 
+	bool wasSprinting = usercmdButtonPressed( botCmdBuffer->buttons, BUTTON_SPRINT );
 	//reset command buffer
 	usercmdClearButtons( botCmdBuffer->buttons );
+	if ( wasSprinting )
+	{
+		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+	}
 
 	// for nudges, e.g. spawn blocking
 	bool hasNudge = botCmdBuffer->doubleTap != dtType_t::DT_NONE;
