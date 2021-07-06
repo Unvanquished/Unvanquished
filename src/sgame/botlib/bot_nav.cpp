@@ -141,8 +141,7 @@ bool BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, bool all
 	Bot_t *bot = &agents[ botClientNum ];
 
 	GetEntPosition( botClientNum, start );
-	bool result = FindRoute( bot, start, *target, allowPartial );
-	return static_cast<bool>( result );
+	return FindRoute( bot, start, *target, allowPartial );
 }
 
 static bool withinRadiusOfOffMeshConnection( const Bot_t *bot, rVec pos, rVec off, dtPolyRef conPoly )
