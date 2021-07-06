@@ -91,7 +91,7 @@ static AIValue_t botTeam( gentity_t *self, const AIValue_t* )
 
 static AIValue_t goalTeam( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( BotGetTargetTeam( self->botMind->goal ) );
+	return AIBoxInt( G_Team( self->botMind->goal.ent ) );
 }
 
 static AIValue_t goalType( gentity_t *self, const AIValue_t* )
@@ -109,7 +109,7 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 	{
 		dead = true;
 	}
-	else if ( BotGetTargetTeam( *goal ) == TEAM_NONE )
+	else if ( G_Team( goal->ent ) == TEAM_NONE )
 	{
 		dead = true;
 	}

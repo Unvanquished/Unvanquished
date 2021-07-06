@@ -429,7 +429,7 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	vec3_t end;
 
 	//blocker is not on our team, so ignore
-	if ( BotGetEntityTeam( self ) != BotGetEntityTeam( blocker ) )
+	if ( G_Team( self ) != G_Team( blocker ) )
 	{
 		return false;
 	}

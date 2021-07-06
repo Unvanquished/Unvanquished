@@ -590,7 +590,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	gentity_t *bestVisibleEnemy = nullptr;
 	gentity_t *bestInvisibleEnemy = nullptr;
 	gentity_t *target;
-	team_t    team = BotGetEntityTeam( self );
+	team_t    team = G_Team( self );
 	bool  hasRadar = ( team == TEAM_ALIENS ) ||
 	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 
@@ -677,7 +677,7 @@ botTarget_t BotGetRushTarget( gentity_t *self )
 {
 	botTarget_t target;
 	gentity_t const* rushTarget = nullptr;
-	if ( BotGetEntityTeam( self ) == TEAM_HUMANS )
+	if ( G_Team( self ) == TEAM_HUMANS )
 	{
 		if ( self->botMind->closestBuildings[BA_A_SPAWN].ent )
 		{
@@ -880,38 +880,6 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	routeTarget->polyExtents[ 1 ] += self->r.maxs[ 1 ] + 10;
 }
 
-team_t BotGetEntityTeam( gentity_t const *ent )
-{
-	if ( !ent )
-	{
-		return TEAM_NONE;
-	}
-	if ( ent->client )
-	{
-		return ( team_t )ent->client->pers.team;
-	}
-	else if ( ent->s.eType == entityType_t::ET_BUILDABLE )
-	{
-		return ent->buildableTeam;
-	}
-	else
-	{
-		return TEAM_NONE;
-	}
-}
-
-team_t BotGetTargetTeam( botTarget_t target )
-{
-	if ( BotTargetIsEntity( target ) )
-	{
-		return BotGetEntityTeam( target.ent );
-	}
-	else
-	{
-		return TEAM_NONE;
-	}
-}
-
 entityType_t BotGetTargetType( botTarget_t target )
 {
 	if ( BotTargetIsEntity( target ) )
@@ -1108,8 +1076,8 @@ bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
 
-	if ( self->client->pers.team != BotGetEntityTeam( &g_entities[trace.entityNum] )
-		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
+	if ( self->client->pers.team != G_Team( &g_entities[trace.entityNum] )
+		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
 		&& Distance( muzzle, trace.endpos ) <= std::max( range, secondaryRange ) )
 	{
 		return true;
@@ -1166,7 +1134,7 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 	//this retrieves the target's species, to aim at weak point:
 	// * for humans, it's the head (but code only applies an offset here, with the hope it's the head)
 	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (for luci)
-	team_t targetTeam = BotGetTargetTeam( target );
+	team_t targetTeam = G_Team( target.ent );
 
 	if ( !isTargetBuildable && BotTargetIsEntity( target ) && targetTeam == TEAM_HUMANS )
 	{
@@ -2092,13 +2060,13 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t const *enemy )
 	}
 
 	// ignore neutrals
-	if ( BotGetEntityTeam( enemy ) == TEAM_NONE )
+	if ( G_Team( enemy ) == TEAM_NONE )
 	{
 		return false;
 	}
 
 	// ignore teamates
-	if ( BotGetEntityTeam( enemy ) == BotGetEntityTeam( self ) )
+	if ( G_Team( enemy ) == G_Team( self ) )
 	{
 		return false;
 	}
@@ -2114,7 +2082,7 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t const *enemy )
 
 void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
-	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->pers.team )
+	if ( G_Team( attacker ) != TEAM_NONE && G_Team( attacker ) != self->client->pers.team )
 	{
 		if ( attacker->s.eType == entityType_t::ET_PLAYER )
 		{
