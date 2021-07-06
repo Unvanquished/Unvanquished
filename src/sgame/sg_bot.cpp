@@ -340,7 +340,7 @@ void G_BotDel( int clientNum )
 	autoname = Info_ValueForKey( userinfo, "autoname" );
 	if ( autoname && *autoname )
 	{
-		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, false );
+		G_BotNameUsed( G_Team( bot ), autoname, false );
 	}
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^* disconnected" ) ),

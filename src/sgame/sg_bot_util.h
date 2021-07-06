@@ -63,8 +63,6 @@ bool    BotTargetInAttackRange( gentity_t *self, botTarget_t target );
 void        BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
 int         BotGetTargetEntityNumber( botTarget_t target );
 void        BotGetTargetPos( botTarget_t target, vec3_t rVec );
-team_t      BotGetEntityTeam( gentity_t const *ent );
-team_t      BotGetTargetTeam( botTarget_t target );
 entityType_t         BotGetTargetType( botTarget_t target );
 botTarget_t BotGetRoamTarget( gentity_t *self );
 botTarget_t BotGetRetreatTarget( gentity_t *self );

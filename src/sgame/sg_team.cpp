@@ -120,18 +120,19 @@ void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
 // TODO: Add a TeamComponent.
 team_t G_Team( const gentity_t *ent )
 {
+	if ( !ent )
+	{
+		return TEAM_NONE;
+	}
 	if ( ent->client )
 	{
 		return (team_t)ent->client->pers.team;
 	}
-	else if ( ent->s.eType == entityType_t::ET_BUILDABLE )
+	if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return ent->buildableTeam;
 	}
-	else
-	{
-		return TEAM_NONE;
-	}
+	return TEAM_NONE;
 }
 
 bool G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
