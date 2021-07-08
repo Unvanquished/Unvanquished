@@ -12,8 +12,6 @@ fi
 
 . '/etc/unvanquished/paths.conf'
 
-"${bin_path}/unvanquished-migrate-profile"
-
 # Assumptions:
 # - if there's a uri, it's the first parameter (after any debug options)
 # - pipe file presence means Unvanquished is running
