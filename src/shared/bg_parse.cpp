@@ -2134,10 +2134,10 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		{
 			BG_ParseConfigVar( var, &text, filename );
 		}*/
-		/*else
+		else
 		{
 			Log::Warn( "%s: unknown token '%s'", filename, token );
-		}*/
+		}
 	}
 
 	if      ( !( defined & DAMAGE ) )         { token = "damage"; }
@@ -2413,10 +2413,10 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 #endif
 			defined |= IMPACT_FLESH_SND;
 		}
-		/*else
+		else
 		{
 			Log::Warn( "%s: unknown token '%s'", filename, token );
-		}*/
+		}
 	}
 
 	// check sprite data set for completeness
