@@ -104,8 +104,8 @@ extern  vmCvar_t g_momentumBuildMod;
 extern  vmCvar_t g_momentumDeconMod;
 extern  vmCvar_t g_momentumDestroyMod;
 
-extern  vmCvar_t g_humanAllowBuilding;
-extern  vmCvar_t g_alienAllowBuilding;
+extern Cvar::Cvar<bool> g_humanAllowBuilding;
+extern Cvar::Cvar<bool> g_alienAllowBuilding;
 
 extern  vmCvar_t g_alienOffCreepRegenHalfLife;
 
@@ -114,10 +114,10 @@ extern  vmCvar_t g_freeFundPeriod;
 
 extern  vmCvar_t g_unlagged;
 
-extern  vmCvar_t g_disabledEquipment;
-extern  vmCvar_t g_disabledClasses;
-extern  vmCvar_t g_disabledBuildables;
-extern  vmCvar_t g_disabledVoteCalls;
+extern Cvar::Callback<Cvar::Cvar<std::string>> g_disabledEquipment;
+extern Cvar::Callback<Cvar::Cvar<std::string>> g_disabledClasses;
+extern Cvar::Callback<Cvar::Cvar<std::string>> g_disabledBuildables;
+extern Cvar::Cvar<std::string> g_disabledVoteCalls;
 
 extern  vmCvar_t g_debugMapRotation;
 extern  vmCvar_t g_currentMapRotation;
