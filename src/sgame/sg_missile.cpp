@@ -621,12 +621,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 	m->splashRadius        = ma->splashRadius;
 	m->splashMethodOfDeath = ma->splashMeansOfDeath;
 	m->clipmask            = ma->clipmask;
-	m->r.mins[ 0 ]         =
-	m->r.mins[ 1 ]         =
-	m->r.mins[ 2 ]         = -ma->size;
-	m->r.maxs[ 0 ]         =
-	m->r.maxs[ 1 ]         =
-	m->r.maxs[ 2 ]         = ma->size;
+	BG_MissileBounds( ma, m->r.mins, m->r.maxs );
 	m->s.eFlags            = ma->flags;
 
 	// not yet implemented / deprecated

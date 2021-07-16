@@ -1513,6 +1513,7 @@ const upgradeAttributes_t *BG_Upgrade( int upgrade );
 
 const missileAttributes_t *BG_MissileByName( const char *name );
 const missileAttributes_t *BG_Missile( int missile );
+void BG_MissileBounds( const missileAttributes_t *ma, vec3_t mins, vec3_t maxs );
 
 const beaconAttributes_t  *BG_BeaconByName( const char *name );
 const beaconAttributes_t  *BG_Beacon( int index );
