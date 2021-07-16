@@ -1350,7 +1350,6 @@ void CG_AddPacketEntities()
 	{
 		for ( unsigned num = 0; num < cg.snap->entities.size(); num++ )
 		{
-			float         x, zd, zu;
 			vec3_t        mins, maxs;
 			entityState_t *es;
 
@@ -1360,15 +1359,7 @@ void CG_AddPacketEntities()
 			switch ( es->eType )
 			{
 				case entityType_t::ET_MISSILE:
-					x = ( es->solid & 255 );
-					zd = ( ( es->solid >> 8 ) & 255 );
-					zu = ( ( es->solid >> 16 ) & 255 ) - 32;
-
-					mins[ 0 ] = mins[ 1 ] = -x;
-					maxs[ 0 ] = maxs[ 1 ] = x;
-					mins[ 2 ] = -zd;
-					maxs[ 2 ] = zu;
-
+					BG_MissileBounds( BG_Missile( es->weapon ), mins, maxs );
 					CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
 					break;
 
