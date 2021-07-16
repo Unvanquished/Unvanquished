@@ -1360,7 +1360,6 @@ void CG_AddPacketEntities()
 			switch ( es->eType )
 			{
 				case entityType_t::ET_MISSILE:
-				case entityType_t::ET_CORPSE:
 					x = ( es->solid & 255 );
 					zd = ( ( es->solid >> 8 ) & 255 );
 					zu = ( ( es->solid >> 16 ) & 255 ) - 32;
