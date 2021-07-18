@@ -458,6 +458,10 @@ void TeamplayInfoMessage( gentity_t *ent )
 			{
 				upgrade = UP_LIGHTARMOUR;
 			}
+			else if ( BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, cl->ps.stats ) )
+			{
+				upgrade = UP_MEDIUMARMOUR;
+			}
 			else
 			{
 				upgrade = UP_NONE;
