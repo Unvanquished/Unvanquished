@@ -598,9 +598,6 @@ void G_RegisterCvars()
 	unsigned i;
 	cvarTable_t *cvarTable;
 
-	// sort the table for fast lookup
-	qsort( gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
-
 	for ( i = 0, cvarTable = gameCvarTable; i < gameCvarTableSize; i++, cvarTable++ )
 	{
 		trap_Cvar_Register( cvarTable->vmCvar, cvarTable->cvarName,
@@ -641,21 +638,6 @@ void G_UpdateCvars()
 			}
 		}
 	}
-}
-
-vmCvar_t *G_FindCvar( const char *name )
-{
-	cvarTable_t *c = nullptr;
-	cvarTable_t comp;
-	comp.cvarName = name;
-	c = ( cvarTable_t * ) bsearch( &comp, gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
-
-	if ( !c )
-	{
-		return nullptr;
-	}
-
-	return c->vmCvar;
 }
 
 /*
