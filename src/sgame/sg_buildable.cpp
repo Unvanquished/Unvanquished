@@ -294,7 +294,7 @@ void ABooster_Think( gentity_t *self )
 	// check if there is a closeby alien that used this booster for healing recently
 	for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOSTER_RANGE ) ); )
 	{
-		if ( ent->boosterUsed == self && ent->boosterTime == level.previousTime )
+		if ( ent->boosterUsed == self && ent->boosterTime == level.previousTime() )
 		{
 			playHealingEffect = true;
 			break;

@@ -2645,10 +2645,10 @@ void G_RunFrame( int levelTime )
 		return;
 	}
 
-	level.previousTime = level.time();
+	level.m_previousTime = level.time();
 	level.updateTime( levelTime );
 
-	msec = level.time() - level.previousTime;
+	msec = level.time() - level.m_previousTime;
 
 	// generate public-key messages
 	G_admin_pubkey();

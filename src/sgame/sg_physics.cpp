@@ -41,7 +41,7 @@ static void G_Bounce( gentity_t *ent, trace_t *trace )
 	bool invert = false;
 
 	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + level.lastFrameDelay() * trace->fraction;
+	hitTime = level.previousTime() + level.lastFrameDelay() * trace->fraction;
 	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
 	dot = DotProduct( velocity, trace->plane.normal );
 	VectorMA( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
