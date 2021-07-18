@@ -289,10 +289,10 @@ static AIValue_t randomChance( gentity_t*, const AIValue_t* )
 
 static AIValue_t cvarInt( gentity_t*, const AIValue_t *params )
 {
-	// TODO: improve about performance when the need arises
+	// TODO: improve performance when the need arises
 	std::string cvar = AIUnBoxString( params[ 0 ] );
 	int num;
-	if ( !Str::ParseInt( num, Cvar::GetValue( cvar ) ) )
+	if ( !Cvar::ParseCvarValue( Cvar::GetValue( cvar ), num )  )
 	{
 		Log::Warn("could not read cvar '%s' as integer", cvar);
 		num = 0;
@@ -303,7 +303,7 @@ static AIValue_t cvarInt( gentity_t*, const AIValue_t *params )
 
 static AIValue_t cvarFloat( gentity_t*, const AIValue_t *params )
 {
-	// TODO: improve about performance when the need arises
+	// TODO: improve performance when the need arises
 	std::string cvar = AIUnBoxString( params[ 0 ] );
 	float num;
 	if ( !Cvar::ParseCvarValue( Cvar::GetValue( cvar ), num ) )
