@@ -287,26 +287,30 @@ static AIValue_t randomChance( gentity_t*, const AIValue_t* )
 
 static AIValue_t cvarInt( gentity_t*, const AIValue_t *params )
 {
-	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
+	// TODO: handle error reporting,
+	// TODO: improve about performance when the need arises
+	std::string str = Cvar::GetValue( AIUnBoxString( params[ 0 ] ) );
 
-	if ( !c )
+	if ( str == "" )
 	{
 		return AIBoxInt( 0 );
 	}
 
-	return AIBoxInt( c->integer );
+	return AIBoxInt( atoi(str.c_str()) );
 }
 
 static AIValue_t cvarFloat( gentity_t*, const AIValue_t *params )
 {
-	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
+	// TODO: handle error reporting,
+	// TODO: improve about performance when the need arises
+	std::string str = Cvar::GetValue( AIUnBoxString( params[ 0 ] ) );
 
-	if ( !c )
+	if ( str == "" )
 	{
-		return AIBoxFloat( 0 );
+		return AIBoxFloat( 0.0f );
 	}
 
-	return AIBoxFloat( c->value );
+	return AIBoxFloat( atof(str.c_str()) );
 }
 
 static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
