@@ -2830,3 +2830,12 @@ bool level_locals_s::warmingUp( void ) const
   return g_doWarmup.integer && warmupTime > m_time;
 }
 
+void level_locals_s::initWarmUp( void )
+{
+	if ( g_doWarmup.integer )
+	{
+		warmupTime = matchTime() + ( g_warmup.integer * 1000 );
+		trap_SetConfigstring( CS_WARMUP, va( "%i", warmupTime ) );
+		G_LogPrintf( "Warmup: %i\n", g_warmup.integer );
+	}
+}

@@ -634,7 +634,9 @@ struct level_locals_s
 
 	int              num_entities; // MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
 
+private:
 	int              warmupTime; // restart match at this time
+public:
 	int              timelimit; //time in minutes
 
 	fileHandle_t     logFile;
@@ -659,6 +661,7 @@ struct level_locals_s
 	int ageMinutes( void ) const { return ( m_time - m_startTime ) / 60000; }
 	int ageSeconds( void ) const { return ( m_time - m_startTime ) / 1000; }
 	bool warmingUp( void ) const;
+	void initWarmUp( void );
 
 private:
 	int      m_time; // time the map was first started in milliseconds (map restart will update startTime)

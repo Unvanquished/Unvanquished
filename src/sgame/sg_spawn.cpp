@@ -1081,12 +1081,7 @@ void SP_worldspawn()
 	// see if we want a warmup time
 	trap_SetConfigstring( CS_WARMUP, "-1" );
 
-	if ( g_doWarmup.integer )
-	{
-		level.warmupTime = level.matchTime() + ( g_warmup.integer * 1000 );
-		trap_SetConfigstring( CS_WARMUP, va( "%i", level.warmupTime ) );
-		G_LogPrintf( "Warmup: %i\n", g_warmup.integer );
-	}
+	level.initWarmUp();
 
 	level.timelimit = g_timelimit.integer;
 }
