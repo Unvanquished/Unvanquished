@@ -64,7 +64,6 @@ void think_aimAtTarget( gentity_t *self )
 {
 	gentity_t *pickedTarget;
 	vec3_t    origin;
-	float     height, gravity, time, forward;
 	float     distance;
 
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
@@ -78,9 +77,9 @@ void think_aimAtTarget( gentity_t *self )
 		return;
 	}
 
-	height = pickedTarget->s.origin[ 2 ] - origin[ 2 ];
-	gravity = g_gravity.value;
-	time = sqrtf( height / ( 0.5f * gravity ) );
+	float height = pickedTarget->s.origin[ 2 ] - origin[ 2 ];
+	float gravity = static_cast<float>(g_gravity.Get());
+	float time = sqrtf( height / ( 0.5f * gravity ) );
 
 	if ( !time )
 	{
@@ -93,7 +92,7 @@ void think_aimAtTarget( gentity_t *self )
 	self->s.origin2[ 2 ] = 0;
 	distance = VectorNormalize( self->s.origin2 );
 
-	forward = distance / time;
+	float forward = distance / time;
 	VectorScale( self->s.origin2, forward, self->s.origin2 );
 
 	self->s.origin2[ 2 ] = time * gravity;

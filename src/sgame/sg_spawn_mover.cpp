@@ -2543,10 +2543,7 @@ PENDULUM
 
 void SP_func_pendulum( gentity_t *self )
 {
-	float frequency;
-	float length;
 	float phase;
-
 	G_SpawnFloat( "phase", "0", &phase );
 
 	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
@@ -2554,11 +2551,11 @@ void SP_func_pendulum( gentity_t *self )
 	trap_SetBrushModel( self, self->model );
 
 	// find pendulum length
-	length = fabs( self->r.mins[ 2 ] );
+	float length = fabs( self->r.mins[ 2 ] );
 
-	if ( length < 8 )
+	if ( length < 8.0f )
 	{
-		length = 8;
+		length = 8.0f;
 	}
 
 	InitMover( self );
@@ -2569,7 +2566,7 @@ void SP_func_pendulum( gentity_t *self )
 
 	VectorCopy( self->s.angles, self->s.apos.trBase );
 
-	frequency = 1 / ( M_PI * 2 ) * sqrtf( g_gravity.value / ( 3 * length ) );
+	float frequency = 1.0f / ( M_PI * 2.0f ) * sqrtf( g_gravity.Get() / ( 3.0f * length ) );
 	self->s.apos.trDuration = 1000 / frequency;
 	self->s.apos.trTime = self->s.apos.trDuration * phase;
 	self->s.apos.trType = trType_t::TR_SINE;
