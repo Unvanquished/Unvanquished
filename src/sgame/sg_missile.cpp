@@ -586,7 +586,7 @@ void G_RunMissile( gentity_t *ent )
 	G_RunThink( ent );
 }
 
-gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, vec3_t start, vec3_t dir,
+gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t start, const vec3_t dir,
                            gentity_t *target, void ( *think )( gentity_t *self ), int nextthink )
 {
 	gentity_t                 *m;
