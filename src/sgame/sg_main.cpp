@@ -57,6 +57,12 @@ gclient_t          *g_clients;
 
 vmCvar_t           g_showHelpOnConnection;
 
+Cvar::Range<Cvar::Cvar<int>> g_gravity(
+		"g_gravity",
+		"how strongly things will be attracted towards the ground",
+		Cvar::NONE,
+		800, 100, 2000);
+
 vmCvar_t           g_timelimit;
 vmCvar_t           g_dretchPunt;
 vmCvar_t           g_password;
@@ -64,7 +70,6 @@ vmCvar_t           g_needpass;
 vmCvar_t           g_maxclients;
 vmCvar_t           g_maxGameClients;
 vmCvar_t           g_speed;
-vmCvar_t           g_gravity;
 vmCvar_t           g_cheats;
 vmCvar_t           g_inactivity;
 vmCvar_t           g_debugMove;
@@ -272,9 +277,6 @@ vmCvar_t g_bot_buildLayout;
 
 //</bot stuff>
 
-// copy cvars that can be set in worldspawn so they can be restored later
-static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
-
 static cvarTable_t gameCvarTable[] =
 {
 	// special purpose (external source, read only, etc.)
@@ -410,7 +412,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            0,                                               0, true     , nullptr       },
 	{ &g_sayAreaRange,                "g_sayAreaRange",                "1000",                             0,                                               0, true     , nullptr       },
 	{ &g_speed,                       "g_speed",                       "320",                              0,                                               0, true     , nullptr       },
-	{ &g_gravity,                     "g_gravity",                     "800",                              0,                                               0, true, cv_gravity},
 	{ &g_antiSpawnBlock,              "g_antiSpawnBlock",              "0",                                0,                                               0, false    , nullptr       },
 	{ &g_shove,                       "g_shove",                       "0.0",                              0,                                               0, false    , nullptr       },
 	{ &g_dretchPunt,                  "g_dretchPunt",                  "1",                                0,                                               0, true     , nullptr       },

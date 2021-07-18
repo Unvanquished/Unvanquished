@@ -57,7 +57,7 @@ extern  vmCvar_t g_timelimit;
 extern  vmCvar_t g_dretchPunt;
 extern  vmCvar_t g_password;
 extern  vmCvar_t g_needpass;
-extern  vmCvar_t g_gravity;
+extern  Cvar::Range<Cvar::Cvar<int>> g_gravity;
 extern  vmCvar_t g_speed;
 extern  vmCvar_t g_inactivity;
 extern  vmCvar_t g_debugMove;
