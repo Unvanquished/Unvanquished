@@ -755,6 +755,7 @@ bool  ConsoleCommand()
 	return true;
 }
 
+// This function is mandatory to link (no idea why, the cgame one have code so likely an interface)
 void CompleteCommand(int)
 {
 }
