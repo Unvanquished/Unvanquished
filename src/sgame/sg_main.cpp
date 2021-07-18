@@ -562,6 +562,7 @@ void G_FindEntityGroups()
 
 	Log::Notice( "%i groups with %i entities", groupCount, entityCount );
 }
+
 /*
 ================
 G_InitSetEntities
@@ -595,17 +596,14 @@ G_RegisterCvars
 */
 void G_RegisterCvars()
 {
-	unsigned i;
-	cvarTable_t *cvarTable;
-
-	for ( i = 0, cvarTable = gameCvarTable; i < gameCvarTableSize; i++, cvarTable++ )
+	for ( cvarTable_t &cvar : gameCvarTable )
 	{
-		trap_Cvar_Register( cvarTable->vmCvar, cvarTable->cvarName,
-		                    cvarTable->defaultString, cvarTable->cvarFlags );
+		trap_Cvar_Register( cvar.vmCvar, cvar.cvarName,
+		                    cvar.defaultString, cvar.cvarFlags );
 
-		if ( cvarTable->vmCvar )
+		if ( cvar.vmCvar )
 		{
-			cvarTable->modificationCount = cvarTable->vmCvar->modificationCount;
+			cvar.modificationCount = cvar.vmCvar->modificationCount;
 		}
 	}
 }
@@ -617,23 +615,20 @@ G_UpdateCvars
 */
 void G_UpdateCvars()
 {
-	unsigned i;
-	cvarTable_t *cv;
-
-	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
+	for ( cvarTable_t &cv : gameCvarTable )
 	{
-		if ( cv->vmCvar )
+		if ( cv.vmCvar )
 		{
-			trap_Cvar_Update( cv->vmCvar );
+			trap_Cvar_Update( cv.vmCvar );
 
-			if ( cv->modificationCount != cv->vmCvar->modificationCount )
+			if ( cv.modificationCount != cv.vmCvar->modificationCount )
 			{
-				cv->modificationCount = cv->vmCvar->modificationCount;
+				cv.modificationCount = cv.vmCvar->modificationCount;
 
-				if ( cv->trackChange )
+				if ( cv.trackChange )
 				{
 					trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("Server: $1$ changed to $2$") ),
-					                                Quote( cv->cvarName ), Quote( cv->vmCvar->string ) ) );
+					                                Quote( cv.cvarName ), Quote( cv.vmCvar->string ) ) );
 				}
 			}
 		}
