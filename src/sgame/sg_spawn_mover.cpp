@@ -428,8 +428,8 @@ void G_MoverGroup( gentity_t *ent )
 		}
 
 		// get current position
-		BG_EvaluateTrajectory( &part->s.pos, level.time, origin );
-		BG_EvaluateTrajectory( &part->s.apos, level.time, angles );
+		BG_EvaluateTrajectory( &part->s.pos, level.time(), origin );
+		BG_EvaluateTrajectory( &part->s.apos, level.time(), angles );
 		VectorSubtract( origin, part->r.currentOrigin, move );
 		VectorSubtract( angles, part->r.currentAngles, amove );
 
@@ -450,10 +450,10 @@ void G_MoverGroup( gentity_t *ent )
 				continue;
 			}
 
-			part->s.pos.trTime += level.time - level.previousTime;
-			part->s.apos.trTime += level.time - level.previousTime;
-			BG_EvaluateTrajectory( &part->s.pos, level.time, part->r.currentOrigin );
-			BG_EvaluateTrajectory( &part->s.apos, level.time, part->r.currentAngles );
+			part->s.pos.trTime += level.lastFrameDelay();
+			part->s.apos.trTime += level.lastFrameDelay();
+			BG_EvaluateTrajectory( &part->s.pos, level.time(), part->r.currentOrigin );
+			BG_EvaluateTrajectory( &part->s.apos, level.time(), part->r.currentAngles );
 			trap_LinkEntity( part );
 		}
 
@@ -472,7 +472,7 @@ void G_MoverGroup( gentity_t *ent )
 		// call the reached function if time is at or past end point
 		if ( part->s.pos.trType == trType_t::TR_LINEAR_STOP )
 		{
-			if ( level.time >= part->s.pos.trTime + part->s.pos.trDuration )
+			if ( level.time() >= part->s.pos.trTime + part->s.pos.trDuration )
 			{
 				if ( part->reached )
 				{
@@ -483,7 +483,7 @@ void G_MoverGroup( gentity_t *ent )
 
 		if ( part->s.apos.trType == trType_t::TR_LINEAR_STOP )
 		{
-			if ( level.time >= part->s.apos.trTime + part->s.apos.trDuration )
+			if ( level.time() >= part->s.apos.trTime + part->s.apos.trDuration )
 			{
 				if ( part->reached )
 				{
@@ -623,12 +623,12 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 
 	if ( moverState >= MOVER_POS1 && moverState <= MOVER_2TO1 )
 	{
-		BG_EvaluateTrajectory( &ent->s.pos, level.time, ent->r.currentOrigin );
+		BG_EvaluateTrajectory( &ent->s.pos, level.time(), ent->r.currentOrigin );
 	}
 
 	if ( moverState >= ROTATOR_POS1 && moverState <= ROTATOR_2TO1 )
 	{
-		BG_EvaluateTrajectory( &ent->s.apos, level.time, ent->r.currentAngles );
+		BG_EvaluateTrajectory( &ent->s.apos, level.time(), ent->r.currentAngles );
 	}
 
 	trap_LinkEntity( ent );
@@ -792,7 +792,7 @@ void Think_CloseModelDoor( gentity_t *ent )
 		//set brush non-solid
 		trap_UnlinkEntity( ent->clipBrush );
 
-		ent->nextthink = level.time + ent->config.wait.time;
+		ent->nextthink = level.time() + ent->config.wait.time;
 		return;
 	}
 
@@ -808,7 +808,7 @@ void Think_CloseModelDoor( gentity_t *ent )
 	ent->moverState = MODEL_2TO1;
 
 	ent->think = Think_ClosedModelDoor;
-	ent->nextthink = level.time + ent->config.speed;
+	ent->nextthink = level.time() + ent->config.speed;
 }
 
 /*
@@ -834,7 +834,7 @@ void Think_OpenModelDoor( gentity_t *ent )
 
 	// return to pos1 after a delay
 	ent->think = Think_CloseModelDoor;
-	ent->nextthink = level.time + ent->config.wait.time;
+	ent->nextthink = level.time() + ent->config.wait.time;
 
 	// fire targets
 	if ( !ent->activator )
@@ -860,7 +860,7 @@ void BinaryMover_reached( gentity_t *ent )
 	if ( ent->moverState == MOVER_1TO2 )
 	{
 		// reached pos2
-		SetMoverState( ent, MOVER_POS2, level.time );
+		SetMoverState( ent, MOVER_POS2, level.time() );
 
 		// play sound
 		if ( ent->soundPos2 )
@@ -870,7 +870,7 @@ void BinaryMover_reached( gentity_t *ent )
 
 		// return to pos1 after a delay
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = std::max( master->nextthink, level.time + (int) ent->config.wait.time );
+		master->nextthink = std::max( master->nextthink, level.time() + (int) ent->config.wait.time );
 
 		// fire targets
 		if ( !ent->activator )
@@ -883,7 +883,7 @@ void BinaryMover_reached( gentity_t *ent )
 	else if ( ent->moverState == MOVER_2TO1 )
 	{
 		// reached pos1
-		SetMoverState( ent, MOVER_POS1, level.time );
+		SetMoverState( ent, MOVER_POS1, level.time() );
 
 		// play sound
 		if ( ent->soundPos1 )
@@ -900,7 +900,7 @@ void BinaryMover_reached( gentity_t *ent )
 	else if ( ent->moverState == ROTATOR_1TO2 )
 	{
 		// reached pos2
-		SetMoverState( ent, ROTATOR_POS2, level.time );
+		SetMoverState( ent, ROTATOR_POS2, level.time() );
 
 		// play sound
 		if ( ent->soundPos2 )
@@ -910,7 +910,7 @@ void BinaryMover_reached( gentity_t *ent )
 
 		// return to apos1 after a delay
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = std::max( master->nextthink, level.time + (int) ent->config.wait.time );
+		master->nextthink = std::max( master->nextthink, level.time() + (int) ent->config.wait.time );
 
 		// fire targets
 		if ( !ent->activator )
@@ -923,7 +923,7 @@ void BinaryMover_reached( gentity_t *ent )
 	else if ( ent->moverState == ROTATOR_2TO1 )
 	{
 		// reached pos1
-		SetMoverState( ent, ROTATOR_POS1, level.time );
+		SetMoverState( ent, ROTATOR_POS1, level.time() );
 
 		// play sound
 		if ( ent->soundPos1 )
@@ -979,8 +979,8 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	if ( ent->moverState == MOVER_POS1 )
 	{
 		// start moving 50 msec later, because if this was player-
-		// triggered, level.time hasn't been advanced yet
-		SetMoverState( ent, MOVER_1TO2, level.time + 50 );
+		// triggered, level.time() hasn't been advanced yet
+		SetMoverState( ent, MOVER_1TO2, level.time() + 50 );
 
 		// starting sound
 		if ( ent->sound1to2 )
@@ -1002,14 +1002,14 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = std::max( master->nextthink, level.time + (int) ent->config.wait.time );
+		master->nextthink = std::max( master->nextthink, level.time() + (int) ent->config.wait.time );
 	}
 	else if ( ent->moverState == MOVER_POS2 &&
 	          ( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// start moving 50 msec later, because if this was player-
-		// triggered, level.time hasn't been advanced yet
-		SetMoverState( ent, MOVER_2TO1, level.time + 50 );
+		// triggered, level.time() hasn't been advanced yet
+		SetMoverState( ent, MOVER_2TO1, level.time() + 50 );
 
 		// starting sound
 		if ( ent->sound2to1 )
@@ -1026,14 +1026,14 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// only partway down before reversing
 		total = ent->s.pos.trDuration;
-		partial = level.time - ent->s.pos.trTime;
+		partial = level.time() - ent->s.pos.trTime;
 
 		if ( partial > total )
 		{
 			partial = total;
 		}
 
-		SetMoverState( ent, MOVER_1TO2, level.time - ( total - partial ) );
+		SetMoverState( ent, MOVER_1TO2, level.time() - ( total - partial ) );
 
 		if ( ent->sound1to2 )
 		{
@@ -1044,14 +1044,14 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// only partway up before reversing
 		total = ent->s.pos.trDuration;
-		partial = level.time - ent->s.pos.trTime;
+		partial = level.time() - ent->s.pos.trTime;
 
 		if ( partial > total )
 		{
 			partial = total;
 		}
 
-		SetMoverState( ent, MOVER_2TO1, level.time - ( total - partial ) );
+		SetMoverState( ent, MOVER_2TO1, level.time() - ( total - partial ) );
 
 		if ( ent->sound2to1 )
 		{
@@ -1061,8 +1061,8 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	else if ( ent->moverState == ROTATOR_POS1 )
 	{
 		// start moving 50 msec later, because if this was player-
-		// triggered, level.time hasn't been advanced yet
-		SetMoverState( ent, ROTATOR_1TO2, level.time + 50 );
+		// triggered, level.time() hasn't been advanced yet
+		SetMoverState( ent, ROTATOR_1TO2, level.time() + 50 );
 
 		// starting sound
 		if ( ent->sound1to2 )
@@ -1084,14 +1084,14 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = std::max( master->nextthink, level.time + (int) ent->config.wait.time );
+		master->nextthink = std::max( master->nextthink, level.time() + (int) ent->config.wait.time );
 	}
 	else if ( ent->moverState == ROTATOR_POS2 &&
 	          ( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// start moving 50 msec later, because if this was player-
-		// triggered, level.time hasn't been advanced yet
-		SetMoverState( ent, ROTATOR_2TO1, level.time + 50 );
+		// triggered, level.time() hasn't been advanced yet
+		SetMoverState( ent, ROTATOR_2TO1, level.time() + 50 );
 
 		// starting sound
 		if ( ent->sound2to1 )
@@ -1108,14 +1108,14 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// only partway down before reversing
 		total = ent->s.apos.trDuration;
-		partial = level.time - ent->s.apos.trTime;
+		partial = level.time() - ent->s.apos.trTime;
 
 		if ( partial > total )
 		{
 			partial = total;
 		}
 
-		SetMoverState( ent, ROTATOR_1TO2, level.time - ( total - partial ) );
+		SetMoverState( ent, ROTATOR_1TO2, level.time() - ( total - partial ) );
 
 		if ( ent->sound1to2 )
 		{
@@ -1126,14 +1126,14 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// only partway up before reversing
 		total = ent->s.apos.trDuration;
-		partial = level.time - ent->s.apos.trTime;
+		partial = level.time() - ent->s.apos.trTime;
 
 		if ( partial > total )
 		{
 			partial = total;
 		}
 
-		SetMoverState( ent, ROTATOR_2TO1, level.time - ( total - partial ) );
+		SetMoverState( ent, ROTATOR_2TO1, level.time() - ( total - partial ) );
 
 		if ( ent->sound2to1 )
 		{
@@ -1146,7 +1146,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		ent->s.legsAnim = true;
 
 		ent->think = Think_OpenModelDoor;
-		ent->nextthink = level.time + ent->config.speed;
+		ent->nextthink = level.time() + ent->config.speed;
 
 		// starting sound
 		if ( ent->sound1to2 )
@@ -1168,7 +1168,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	else if ( ent->moverState == MODEL_POS2 )
 	{
 		// if all the way up, just delay before coming down
-		ent->nextthink = level.time + ent->config.wait.time;
+		ent->nextthink = level.time() + ent->config.wait.time;
 	}
 	//outd
 	}
@@ -1426,7 +1426,7 @@ void Think_MatchGroup( gentity_t *self )
 	{
 		return;
 	}
-	MatchGroup( self, self->moverState, level.time );
+	MatchGroup( self, self->moverState, level.time() );
 }
 
 /*
@@ -1573,7 +1573,7 @@ void SP_func_door( gentity_t *self )
 
 	InitMover( self );
 
-	self->nextthink = level.time + FRAMETIME;
+	self->nextthink = level.time() + FRAMETIME;
 
 	if ( self->names[ 0 ] || self->config.health ) //FIXME wont work yet with class fallbacks
 	{
@@ -1697,7 +1697,7 @@ void SP_func_door_rotating( gentity_t *self )
 
 	InitRotator( self );
 
-	self->nextthink = level.time + FRAMETIME;
+	self->nextthink = level.time() + FRAMETIME;
 
 	if ( self->names[ 0 ] || self->config.health ) //FIXME wont work yet with class fallbacks
 	{
@@ -1832,7 +1832,7 @@ void SP_func_door_model( gentity_t *self )
 
 	if ( !( self->names[ 0 ] || self->config.health ) ) //FIXME wont work yet with class fallbacks
 	{
-		self->nextthink = level.time + FRAMETIME;
+		self->nextthink = level.time() + FRAMETIME;
 		self->think = Think_SpawnNewDoorTrigger;
 	}
 }
@@ -1868,7 +1868,7 @@ void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t* )
 	// delay return-to-pos1 by one second
 	if ( ent->moverState == MOVER_POS2 )
 	{
-		ent->nextthink = level.time + 1000;
+		ent->nextthink = level.time() + 1000;
 	}
 }
 
@@ -2110,7 +2110,7 @@ The wait time at a corner has completed, so start moving again
 */
 void Think_BeginMoving( gentity_t *self )
 {
-	self->s.pos.trTime = level.time;
+	self->s.pos.trTime = level.time();
 	self->s.pos.trType = trType_t::TR_LINEAR_STOP;
 }
 
@@ -2171,7 +2171,7 @@ void func_train_reached( gentity_t *self )
 	self->s.loopSound = next->soundIndex;
 
 	// start it going
-	SetMoverState( self, MOVER_1TO2, level.time );
+	SetMoverState( self, MOVER_1TO2, level.time() );
 
 	if ( self->spawnflags & TRAIN_START_OFF )
 	{
@@ -2186,7 +2186,7 @@ void func_train_reached( gentity_t *self )
 	// if there is a "wait" value on the target, don't start moving yet
 	else if ( next->config.wait.time )
 	{
-		self->nextthink = level.time + next->config.wait.time * 1000;
+		self->nextthink = level.time() + next->config.wait.time * 1000;
 		self->think = Think_BeginMoving;
 		self->s.pos.trType = trType_t::TR_STATIONARY;
 	}
@@ -2205,7 +2205,7 @@ void Start_Train( gentity_t *self )
 	//unlikely to be right on a path_corner
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
 	self->s.pos.trDuration = VectorLength( move ) * 1000 / self->speed;
-	SetMoverState( self, MOVER_1TO2, level.time );
+	SetMoverState( self, MOVER_1TO2, level.time() );
 
 	self->spawnflags &= ~TRAIN_START_OFF;
 }
@@ -2220,9 +2220,9 @@ void Stop_Train( gentity_t *self )
 	vec3_t origin;
 
 	//get current origin
-	BG_EvaluateTrajectory( &self->s.pos, level.time, origin );
+	BG_EvaluateTrajectory( &self->s.pos, level.time(), origin );
 	VectorCopy( origin, self->restingPosition );
-	SetMoverState( self, MOVER_POS1, level.time );
+	SetMoverState( self, MOVER_POS1, level.time() );
 
 	self->spawnflags |= TRAIN_START_OFF;
 }
@@ -2381,7 +2381,7 @@ void SP_func_train( gentity_t *self )
 
 	// start trains on the second frame, to make sure their targets have had
 	// a chance to spawn
-	self->nextthink = level.time + FRAMETIME;
+	self->nextthink = level.time() + FRAMETIME;
 	self->think = Think_SetupTrainTargets;
 }
 

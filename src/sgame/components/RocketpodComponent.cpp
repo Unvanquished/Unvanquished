@@ -39,7 +39,7 @@ void RocketpodComponent::HandlePowerUp() {
 		ToggleFlag(entity.oldEnt->s.legsAnim, ANIM_TOGGLEBIT);
 		G_SetIdleBuildableAnim(entity.oldEnt, BANIM_IDLE_UNPOWERED);
 	} else {
-		openingShuttersSince = level.time;
+		openingShuttersSince = level.time();
 	}
 }
 
@@ -96,20 +96,20 @@ void RocketpodComponent::Think(int timeDelta) {
 	}
 
 	// Do not move while opening shutters.
-	if (openingShuttersSince + SHUTTER_OPEN_TIME > level.time) {
+	if (openingShuttersSince + SHUTTER_OPEN_TIME > level.time()) {
 		lockingOn = false;
 		return;
 	}
 
 	// Look for a new entity target if there isn't a valid one already.
-	if (lastTargetSearch + TARGET_SEARCH_PERIOD <= level.time &&
+	if (lastTargetSearch + TARGET_SEARCH_PERIOD <= level.time() &&
 	    !GetTurretComponent().TargetValid()) {
 
 		GetTurretComponent().FindEntityTarget(
 			[this](Entity& a, Entity& b)->bool{ return this->CompareTargets(a, b); }
 		);
 
-		lastTargetSearch = level.time;
+		lastTargetSearch = level.time();
 	}
 
 	if (GetTurretComponent().TargetValid()) {
@@ -125,20 +125,20 @@ void RocketpodComponent::Think(int timeDelta) {
 			bool safeShot = SafeShot();
 
 			// Lock onto the target and shoot if lock was held long enough and it's safe to do so.
-			if (lockingOn && safeShot && lockingOnSince + LOCKON_TIME <= level.time) {
+			if (lockingOn && safeShot && lockingOnSince + LOCKON_TIME <= level.time()) {
 				// The lockon timer has expired and it's safe to shoot, so do so.
 				firing = true;
 
-				if (lastShot + ATTACK_PERIOD <= level.time) {
+				if (lastShot + ATTACK_PERIOD <= level.time()) {
 					Shoot();
 				}
 			} else if (!lockingOn) {
 				// Start lockon when the target can be hit, even if it's not safe to shoot yet.
 				lockingOn      = true;
-				lockingOnSince = level.time;
+				lockingOnSince = level.time();
 			} else if (!safeShot) {
 				// Reset the lockon timer while it's not safe to shoot.
-				lockingOnSince = level.time;
+				lockingOnSince = level.time();
 			} else {
 				// The target can be hit safely but the lockon timer is running, so do nothing.
 			}
@@ -282,7 +282,7 @@ void RocketpodComponent::Shoot() {
 	G_AddEvent(entity.oldEnt, EV_FIRE_WEAPON, 0);
 	G_FireWeapon(entity.oldEnt, WP_ROCKETPOD, WPM_PRIMARY);
 
-	lastShot = level.time;
+	lastShot = level.time();
 }
 
 void RocketpodComponent::SetSafeMode(bool on) {

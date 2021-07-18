@@ -55,7 +55,7 @@ void SpikerComponent::SetGravityCompensation() {
 
 void SpikerComponent::Think(int /*timeDelta*/) {
 	// Don't act if recovering from shot or disabled.
-	if (!GetAlienBuildableComponent().GetBuildableComponent().Active() || level.time < restUntil) {
+	if (!GetAlienBuildableComponent().GetBuildableComponent().Active() || level.time() < restUntil) {
 		lastExpectedDamage = 0.0f;
 		lastSensing = false;
 
@@ -176,7 +176,7 @@ bool SpikerComponent::SafeToShoot(Vec3 direction) {
 bool SpikerComponent::Fire() {
 	gentity_t *self = entity.oldEnt;
 	// Check if still resting.
-	if (restUntil > level.time) {
+	if (restUntil > level.time()) {
 		logger.Verbose("Spiker #%i wanted to fire but wasn't ready.", entity.oldEnt->s.number);
 
 		return false;
@@ -244,11 +244,11 @@ bool SpikerComponent::Fire() {
 
 			G_SpawnMissile(
 				MIS_SPIKER, self, self->s.origin, dir, nullptr, G_FreeEntity,
-				level.time + (int)(1000.0f * SPIKE_RANGE / (float)BG_Missile(MIS_SPIKER)->speed));
+				level.time() + (int)(1000.0f * SPIKE_RANGE / (float)BG_Missile(MIS_SPIKER)->speed));
 		}
 	}
 
-	restUntil = level.time + COOLDOWN;
+	restUntil = level.time() + COOLDOWN;
 	RegisterSlowThinker();
 
 	return true;

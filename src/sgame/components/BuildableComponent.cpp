@@ -73,12 +73,12 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 		if (!location) location = level.fakeLocation;
 
 		// Warn if there was no warning for this location recently.
-		if (level.time > location->warnTimer) {
+		if (level.time() > location->warnTimer) {
 			bool inBase = G_InsideBase(entity.oldEnt);
 
 			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? 0 : location->s.number, team);
 			Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, team);
-			location->warnTimer = level.time + ATTACKWARN_NEARBY_PERIOD;
+			location->warnTimer = level.time() + ATTACKWARN_NEARBY_PERIOD;
 		}
 	}
 
@@ -95,7 +95,7 @@ void BuildableComponent::Think(int timeDelta) {
 			case CONSTRUCTING: {
 				int constructionTime = BG_Buildable(entity.oldEnt->s.modelindex)->buildTime;
 
-				if (entity.oldEnt->creationTime + constructionTime < level.time) {
+				if (entity.oldEnt->creationTime + constructionTime < level.time()) {
 					// Finish construction.
 					state = CONSTRUCTED;
 
@@ -124,7 +124,7 @@ void BuildableComponent::Think(int timeDelta) {
 						default:          regenWait = 0;                          break;
 					}
 
-					if (regenRate && (entity.oldEnt->lastDamageTime + regenWait) < level.time) {
+					if (regenRate && (entity.oldEnt->lastDamageTime + regenWait) < level.time()) {
 						entity.Heal(timeDelta * 0.001f * regenRate, nullptr);
 					}
 				}

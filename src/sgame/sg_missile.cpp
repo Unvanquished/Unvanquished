@@ -51,7 +51,7 @@ static void BounceMissile( gentity_t *ent, trace_t *trace )
 	int    hitTime;
 
 	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
+	hitTime = level.previousTime + level.lastFrameDelay() * trace->fraction;
 	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
 	dot = DotProduct( velocity, trace->plane.normal );
 	VectorMA( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
@@ -70,7 +70,7 @@ static void BounceMissile( gentity_t *ent, trace_t *trace )
 
 	VectorAdd( ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin );
 	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
-	ent->s.pos.trTime = level.time;
+	ent->s.pos.trTime = level.time();
 }
 
 static float MissileTimePowerMod( gentity_t *self, missileTimePowerMod_t type,
@@ -79,7 +79,7 @@ static float MissileTimePowerMod( gentity_t *self, missileTimePowerMod_t type,
 	int   lifeTime, affectedTime;
 	float fract;
 
-	lifeTime = level.time - self->creationTime;
+	lifeTime = level.time() - self->creationTime;
 
 	if ( lifeTime <= startTime )
 	{
@@ -227,7 +227,7 @@ static int ImpactLockblock( gentity_t*, trace_t*, gentity_t *hitEnt )
 	if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
 	{
 		hitEnt->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
-		hitEnt->client->lastLockTime = level.time;
+		hitEnt->client->lastLockTime = level.time();
 		AngleVectors( hitEnt->client->ps.viewangles, dir, nullptr, nullptr );
 		hitEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
 	}
@@ -262,12 +262,12 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 		if( !ABUILDER_BLOB_LOCK_TIME || hitEnt->client->pers.classSelection == PCL_HUMAN_BSUIT )
 		{
 			hitEnt->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
-			hitEnt->client->lastSlowTime = level.time;
+			hitEnt->client->lastSlowTime = level.time();
 		}
 		else if ( attacker->client->pers.classSelection == PCL_ALIEN_BUILDER0_UPG )
 		{
 			hitEnt->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
-			hitEnt->client->lastLockTime = level.time - LOCKBLOB_LOCKTIME + ABUILDER_BLOB_LOCK_TIME;
+			hitEnt->client->lastLockTime = level.time() - LOCKBLOB_LOCKTIME + ABUILDER_BLOB_LOCK_TIME;
 			AngleVectors( hitEnt->client->ps.viewangles, dir, nullptr, nullptr );
 			hitEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
 		}
@@ -302,7 +302,7 @@ static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 		ent->r.ownerNum = hitEnt->s.number;
 
 		ent->think = G_ExplodeMissile;
-		ent->nextthink = level.time + FRAMETIME;
+		ent->nextthink = level.time() + FRAMETIME;
 
 		// Damage only humans and do so quietly.
 		if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
@@ -367,7 +367,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		{
 			vec3_t dir;
 
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, dir );
+			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time(), dir );
 
 			if ( VectorNormalize( dir ) == 0 )
 			{
@@ -400,7 +400,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		if ( ma->impactFlightDirection )
 		{
 			vec3_t trajDir;
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, trajDir );
+			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time(), trajDir );
 			VectorNormalize( trajDir );
 			dirAsByte = DirToByte( trajDir );
 		}
@@ -457,7 +457,7 @@ void G_ExplodeMissile( gentity_t *ent )
 	vec3_t origin;
 	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
 
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
+	BG_EvaluateTrajectory( &ent->s.pos, level.time(), origin );
 	SnapVector( origin );
 	G_SetOrigin( ent, origin );
 
@@ -490,7 +490,7 @@ void G_RunMissile( gentity_t *ent )
 	bool impact = false;
 
 	// get current position
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
+	BG_EvaluateTrajectory( &ent->s.pos, level.time(), origin );
 
 	// ignore interactions with the missile owner
 	passent = ent->r.ownerNum;
@@ -634,7 +634,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 		m->s.pos.trType = ma->trajectoryType;
 
 		// move a bit on the first frame
-		m->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME;
+		m->s.pos.trTime = level.time() - MISSILE_PRESTEP_TIME;
 
 		// set starting point
 		VectorCopy( start, m->s.pos.trBase );

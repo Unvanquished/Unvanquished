@@ -60,9 +60,9 @@ class BuildableComponent: public BuildableComponentBase {
 		 */
 		int  GetMarkTime() const { return marked ? markTime : 0; }
 
-		void SetDeconstructionMark() { marked = true; markTime = level.time; }
+		void SetDeconstructionMark() { marked = true; markTime = level.time(); }
 		void ClearDeconstructionMark() { marked = false; }
-		void ToggleDeconstructionMark() { marked = !marked; if (marked) markTime = level.time; }
+		void ToggleDeconstructionMark() { marked = !marked; if (marked) markTime = level.time(); }
 
 		/**
 		 * @brief Change the buildable's power state.
@@ -87,13 +87,13 @@ class BuildableComponent: public BuildableComponentBase {
 		 * Protect current animation from being disrupted by selected, less important animations.
 		 * A value of 0 protects for the rest of the frame only.
 		 */
-		void ProtectAnimation(int duration) { protectAnimationUntil = level.time + duration; }
+		void ProtectAnimation(int duration) { protectAnimationUntil = level.time() + duration; }
 		void UnprotectAnimation() { protectAnimationUntil = -1; }
 
 		/**
 		 * While the current animation is protected, less important animations should not be played.
 		 */
-		bool AnimationProtected() const { return (protectAnimationUntil > level.time); }
+		bool AnimationProtected() const { return (protectAnimationUntil > level.time()); }
 
 	private:
 		lifecycle_t state;

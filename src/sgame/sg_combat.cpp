@@ -233,7 +233,7 @@ void G_RewardAttackers( gentity_t *self )
 		// Give partial credits for buildables in construction
 		if ( !self->spawned )
 		{
-			value *= ( level.time - self->creationTime ) /
+			value *= ( level.time() - self->creationTime ) /
 			         ( float )BG_Buildable( self->s.modelindex )->buildTime;
 		}
 	}
@@ -507,7 +507,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	// don't allow respawn until the death anim is done
 	// g_forcerespawn may force spawning at some later time
-	self->client->respawnTime = level.time + 1700;
+	self->client->respawnTime = level.time() + 1700;
 
 	// clear misc
 	memset( self->client->ps.misc, 0, sizeof( self->client->ps.misc ) );
@@ -575,7 +575,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	trap_LinkEntity( self );
 
-	self->client->pers.infoChangeTime = level.time;
+	self->client->pers.infoChangeTime = level.time();
 }
 
 static int ParseDmgScript( damageRegion_t *regions, const char *buf )

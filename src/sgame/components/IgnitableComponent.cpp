@@ -41,7 +41,7 @@ static_assert(IgnitableComponent::BASE_AVERAGE_BURN_TIME > IgnitableComponent::M
 IgnitableComponent::IgnitableComponent(Entity& entity, bool alwaysOnFire, ThinkingComponent& r_ThinkingComponent)
 	: IgnitableComponentBase(entity, alwaysOnFire, r_ThinkingComponent)
 	, onFire(alwaysOnFire)
-	, igniteTime(alwaysOnFire ? level.time : 0)
+	, igniteTime(alwaysOnFire ? level.time() : 0)
 	, immuneUntil(0)
 	, spreadAt(INT_MAX)
 	, fireStarter(nullptr)
@@ -67,7 +67,7 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 		fireLogger.Notice("Received ignite message with no fire starter.");
 	}
 
-	if (level.time < immuneUntil) {
+	if (level.time() < immuneUntil) {
 		fireLogger.Debug("Not ignited: Immune against fire.");
 
 		return;
@@ -91,19 +91,19 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 	}
 
 	// Refresh ignite time even if already burning.
-	igniteTime = level.time;
+	igniteTime = level.time();
 
 	// The spread delay follows a normal distribution: More likely to spread early than late.
-	int spreadTarget = level.time + (int)std::abs(normalDistribution(randomGenerator));
+	int spreadTarget = level.time() + (int)std::abs(normalDistribution(randomGenerator));
 
 	// Allow re-ignition to update the spread delay to a lower value.
 	if (spreadTarget < spreadAt) {
 		fireLogger.DoNoticeCode([&]{
-			int newDelay = spreadTarget - level.time;
+			int newDelay = spreadTarget - level.time();
 			if (spreadAt == INT_MAX) {
 				fireLogger.Notice("Spread delay set to %.1fs.", newDelay * 0.001f);
 			} else {
-				int oldDelay = spreadAt - level.time;
+				int oldDelay = spreadAt - level.time();
 				fireLogger.Notice("Spread delay updated from %.1fs to %.1fs.",
 				                  oldDelay * 0.001f, newDelay * 0.001f);
 			}
@@ -116,7 +116,7 @@ void IgnitableComponent::HandleExtinguish(int immunityTime) {
 	if (!onFire) return;
 
 	onFire = false;
-	immuneUntil = level.time + immunityTime;
+	immuneUntil = level.time() + immunityTime;
 
 	if (alwaysOnFire) {
 		entity.FreeAt(DeferredFreeingComponent::FREE_BEFORE_THINKING);
@@ -150,9 +150,9 @@ void IgnitableComponent::ConsiderStop(int timeDelta) {
 	if (!onFire) return;
 
 	// Don't stop freshly (re-)ignited fires.
-	if (igniteTime + MIN_BURN_TIME > level.time) {
+	if (igniteTime + MIN_BURN_TIME > level.time()) {
 		fireLogger.DoDebugCode([&]{
-			int elapsed   = level.time - igniteTime;
+			int elapsed   = level.time() - igniteTime;
 			int remaining = MIN_BURN_TIME - elapsed;
 			fireLogger.Debug("Burning for %.1fs, skipping stop check for another %.1fs.",
 			                 (float)elapsed/1000.0f, (float)remaining/1000.0f);
@@ -188,19 +188,19 @@ void IgnitableComponent::ConsiderStop(int timeDelta) {
 	// Attempt to stop burning.
 	if (random() < burnStopChance) {
 		fireLogger.Notice("Stopped burning after %.1fs, target average lifetime was %.1fs.",
-		                  (float)(level.time - igniteTime) / 1000.0f, averageTotalBurnTime / 1000.0f);
+		                  (float)(level.time() - igniteTime) / 1000.0f, averageTotalBurnTime / 1000.0f);
 
 		entity.Extinguish(0);
 		return;
 	} else {
 		fireLogger.Debug("Burning for %.1fs, target average lifetime is %.1fs.",
-		                 (float)(level.time - igniteTime) / 1000.0f, averageTotalBurnTime / 1000.0f);
+		                 (float)(level.time() - igniteTime) / 1000.0f, averageTotalBurnTime / 1000.0f);
 	}
 }
 
 void IgnitableComponent::ConsiderSpread(int /*timeDelta*/) {
 	if (!onFire) return;
-	if (level.time < spreadAt) return;
+	if (level.time() < spreadAt) return;
 
 	fireLogger.Notice("Trying to spread.");
 

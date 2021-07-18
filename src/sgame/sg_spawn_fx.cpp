@@ -130,9 +130,9 @@ void fx_rumble_think( gentity_t *self )
 	int       i;
 	gentity_t *ent;
 
-	if ( self->last_move_time < level.time )
+	if ( self->last_move_time < level.time() )
 	{
-		self->last_move_time = level.time + 0.5;
+		self->last_move_time = level.time() + 0.5;
 	}
 
 	for ( i = 0, ent = g_entities + i; i < level.num_entities; i++, ent++ )
@@ -158,16 +158,16 @@ void fx_rumble_think( gentity_t *self )
 		ent->client->ps.velocity[ 2 ] = self->config.speed;
 	}
 
-	if ( level.time < self->timestamp )
+	if ( level.time() < self->timestamp )
 	{
-		self->nextthink = level.time + FRAMETIME;
+		self->nextthink = level.time() + FRAMETIME;
 	}
 }
 
 void fx_rumble_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
-	self->timestamp = level.time + ( self->config.amount * FRAMETIME );
-	self->nextthink = level.time + FRAMETIME;
+	self->timestamp = level.time() + ( self->config.amount * FRAMETIME );
+	self->nextthink = level.time() + FRAMETIME;
 	self->activator = activator;
 	self->last_move_time = 0;
 }

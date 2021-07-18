@@ -30,7 +30,7 @@ void HiveComponent::HandleDamage(
 }
 
 void HiveComponent::Think(int /*timeDelta*/) {
-	if (insectsActiveSince + ATTACK_PERIOD < level.time) {
+	if (insectsActiveSince + ATTACK_PERIOD < level.time()) {
 		insectsReady = true;
 	}
 
@@ -101,7 +101,7 @@ bool HiveComponent::CompareTargets(Entity& a, Entity& b) const {
 
 void HiveComponent::Fire(Entity& target) {
 	insectsReady       = false;
-	insectsActiveSince = level.time;
+	insectsActiveSince = level.time();
 
 	Vec3 muzzle      = Vec3::Load(entity.oldEnt->s.pos.trBase);
 	Vec3 targetPoint = Vec3::Load(target.oldEnt->s.origin);

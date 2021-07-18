@@ -58,7 +58,7 @@ void gfx_particle_system_act( gentity_t *self, gentity_t*, gentity_t* )
 	if ( self->config.wait.time > 0.0f )
 	{
 		self->think = gfx_particle_system_toggle;
-		self->nextthink = level.time + ( int )( self->config.wait.time * 1000 );
+		self->nextthink = level.time() + ( int )( self->config.wait.time * 1000 );
 	}
 }
 
@@ -249,7 +249,7 @@ void SP_gfx_portal_surface( gentity_t *self )
 	else
 	{
 		self->think = gfx_portal_locateCamera;
-		self->nextthink = level.time + 100;
+		self->nextthink = level.time() + 100;
 	}
 }
 
@@ -343,7 +343,7 @@ void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 		return;
 	}
 
-	G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
+	G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time() * 0.001 );
 	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 
 	self->shaderActive = true;
@@ -361,7 +361,7 @@ void gfx_shader_mod_reset( gentity_t *self )
 		return;
 	}
 
-	G_SetShaderRemap( self->shaderKey, self->shaderKey, level.time * 0.001 );
+	G_SetShaderRemap( self->shaderKey, self->shaderKey, level.time() * 0.001 );
 	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 
 	self->shaderActive = false;

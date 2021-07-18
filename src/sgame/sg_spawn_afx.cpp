@@ -86,7 +86,7 @@ void env_afx_push_touch( gentity_t *self, gentity_t *activator, trace_t* )
 		return;
 	}
 
-	if ( self->nextthink > level.time )
+	if ( self->nextthink > level.time() )
 	{
 		return;
 	}
@@ -102,7 +102,7 @@ void SP_env_afx_push( gentity_t *self )
 	self->s.eType = entityType_t::ET_PUSHER;
 	self->touch = env_afx_push_touch;
 	self->think = think_aimAtTarget;
-	self->nextthink = level.time + FRAMETIME;
+	self->nextthink = level.time() + FRAMETIME;
 	self->act = env_afx_toggle;
 
 	InitEnvAFXEntity( self, !(self->spawnflags & SPF_SPAWN_DISABLED ) );
@@ -199,18 +199,18 @@ void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t* )
 {
 	int dflags;
 
-	if ( self->timestamp > level.time )
+	if ( self->timestamp > level.time() )
 	{
 		return;
 	}
 
 	if ( self->spawnflags & 16 )
 	{
-		self->timestamp = level.time + 1000;
+		self->timestamp = level.time() + 1000;
 	}
 	else
 	{
-		self->timestamp = level.time + FRAMETIME;
+		self->timestamp = level.time() + FRAMETIME;
 	}
 
 	// play sound
@@ -304,18 +304,18 @@ void env_afx_heal_touch( gentity_t *self, gentity_t *other, trace_t* )
 		return;
 	}
 
-	if ( self->timestamp > level.time )
+	if ( self->timestamp > level.time() )
 	{
 		return;
 	}
 
 	if ( self->spawnflags & 2 )
 	{
-		self->timestamp = level.time + 1000;
+		self->timestamp = level.time() + 1000;
 	}
 	else
 	{
-		self->timestamp = level.time + FRAMETIME;
+		self->timestamp = level.time() + FRAMETIME;
 	}
 
 	other->entity->Heal((float)self->damage, nullptr);
@@ -364,7 +364,7 @@ void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t* )
 		return;
 	}
 
-	if ( self->timestamp > level.time )
+	if ( self->timestamp > level.time() )
 	{
 		return;
 	}
@@ -388,11 +388,11 @@ void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t* )
 
 	if ( self->spawnflags & 1 )
 	{
-		self->timestamp = level.time + 1000;
+		self->timestamp = level.time() + 1000;
 	}
 	else
 	{
-		self->timestamp = level.time + FRAMETIME;
+		self->timestamp = level.time() + FRAMETIME;
 	}
 
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;

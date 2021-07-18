@@ -159,8 +159,8 @@ void G_SetBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation, bool fo
 	if (force) newAnimation |= ANIM_FORCEBIT;
 
 	// Don't flip the toggle bit more than once per frame.
-	if (ent->animTime != level.time) {
-		ent->animTime = level.time;
+	if (ent->animTime != level.time()) {
+		ent->animTime = level.time();
 		newAnimation ^= ANIM_TOGGLEBIT;
 	}
 
@@ -187,7 +187,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 
 		// We need to make sure that the animation has been set to shrunk mode
 		// because we start out shrunk but with the construct animation when built
-		self->shrunkTime = level.time;
+		self->shrunkTime = level.time();
 		anim = self->s.torsoAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
 		if ( self->spawned && Entities::IsAlive( self ) && anim != BANIM_IDLE_UNPOWERED )
@@ -200,7 +200,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 	}
 
 	if ( !shrink && ( !self->shrunkTime ||
-	                  level.time < self->shrunkTime + BARRICADE_SHRINKTIMEOUT ) )
+	                  level.time() < self->shrunkTime + BARRICADE_SHRINKTIMEOUT ) )
 	{
 		return;
 	}
@@ -210,7 +210,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 	if ( shrink )
 	{
 		self->r.maxs[ 2 ] = ( int )( self->r.maxs[ 2 ] * BARRICADE_SHRINKPROP );
-		self->shrunkTime = level.time;
+		self->shrunkTime = level.time();
 
 		// shrink animation
 		if ( self->spawned && Entities::IsAlive( self ) )
@@ -254,7 +254,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 
 void ABarricade_Think( gentity_t *self )
 {
-	self->nextthink = level.time + 1000;
+	self->nextthink = level.time() + 1000;
 
 	// Shrink if unpowered
 	ABarricade_Shrink( self, !self->powered );
@@ -289,7 +289,7 @@ void ABooster_Think( gentity_t *self )
 	gentity_t *ent;
 	bool  playHealingEffect = false;
 
-	self->nextthink = level.time + BOOST_REPEAT_ANIM / 4;
+	self->nextthink = level.time() + BOOST_REPEAT_ANIM / 4;
 
 	// check if there is a closeby alien that used this booster for healing recently
 	for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOSTER_RANGE ) ); )
@@ -303,9 +303,9 @@ void ABooster_Think( gentity_t *self )
 
 	if ( playHealingEffect )
 	{
-		if ( level.time > self->timestamp + BOOST_REPEAT_ANIM )
+		if ( level.time() > self->timestamp + BOOST_REPEAT_ANIM )
 		{
-			self->timestamp = level.time;
+			self->timestamp = level.time();
 			G_SetBuildableAnim( self, BANIM_ATTACK1, false );
 			G_AddEvent( self, EV_ALIEN_BOOSTER, DirToByte( self->s.origin2 ) );
 		}
@@ -338,7 +338,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 
 	client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
 	client->ps.stats[ STAT_STATE ] |= SS_BOOSTEDNEW;
-	client->boostedTime = level.time;
+	client->boostedTime = level.time();
 }
 
 #define MISSILE_PRESTEP_TIME 50 // from g_missile.h
@@ -393,7 +393,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	//fire at target
 	G_FireWeapon( self, WP_LOCKBLOB_LAUNCHER, WPM_PRIMARY );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, false );
-	self->customNumber = level.time + firespeed;
+	self->customNumber = level.time() + firespeed;
 }
 
 bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range )
@@ -502,7 +502,7 @@ void ATrapper_FindEnemy( gentity_t *ent, int range )
 
 void ATrapper_Think( gentity_t *self )
 {
-	self->nextthink = level.time + 100;
+	self->nextthink = level.time() + 100;
 
 	if ( !self->spawned || !self->powered || Entities::IsDead( self ) )
 	{
@@ -522,7 +522,7 @@ void ATrapper_Think( gentity_t *self )
 	}
 
 	//if we are pointing at our target and we can fire shoot it
-	if ( self->customNumber < level.time )
+	if ( self->customNumber < level.time() )
 	{
 		ATrapper_FireOnEnemy( self, LOCKBLOB_REPEAT );
 	}
@@ -558,7 +558,7 @@ void HMedistat_Think( gentity_t *self )
 	gclient_t *client;
 	bool  occupied;
 
-	self->nextthink = level.time + 100;
+	self->nextthink = level.time() + 100;
 
 	if ( !self->spawned )
 	{
@@ -581,7 +581,7 @@ void HMedistat_Think( gentity_t *self )
 		self->medistationIsHealing = false;
 		self->target = nullptr;
 
-		self->nextthink = level.time + POWER_REFRESH_TIME;
+		self->nextthink = level.time() + POWER_REFRESH_TIME;
 
 		return;
 	}
@@ -1844,7 +1844,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	built->splashRadius = attr->splashRadius;
 	built->splashMethodOfDeath = attr->meansOfDeath;
 
-	built->nextthink = level.time;
+	built->nextthink = level.time();
 	built->enabled = false;
 	built->spawned = false;
 
@@ -1885,7 +1885,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	if ( groundEntNum == ENTITYNUM_NONE )
 	{
 		built->s.pos.trType = attr->traj;
-		built->s.pos.trTime = level.time;
+		built->s.pos.trTime = level.time();
 		// gently nudge the buildable onto the surface :)
 		VectorScale( normal, -50.0f, built->s.pos.trDelta );
 	}
@@ -2181,7 +2181,7 @@ void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 
 	// some movers spawn on the second frame, so delay item
 	// spawns until the third frame so they can ride trains
-	ent->nextthink = level.time + FRAMETIME * 2;
+	ent->nextthink = level.time() + FRAMETIME * 2;
 	ent->think = SpawnBuildableThink;
 }
 
@@ -2517,7 +2517,7 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 		level.numBuildLogs++;
 	}
 
-	log->time = level.time;
+	log->time = level.time();
 	log->fate = fate;
 	log->actor = actor && actor->client ? actor->client->pers.namelog : nullptr;
 	return log;
@@ -2579,7 +2579,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 		if ( victims )
 		{
 			// still a blocker
-			ent->nextthink = level.time + FRAMETIME;
+			ent->nextthink = level.time() + FRAMETIME;
 			return;
 		}
 	}
@@ -2676,7 +2676,7 @@ void G_BuildLogRevert( int id )
 			buildable->builtBy = log->builtBy;
 			buildable->momentumEarned = log->momentumEarned;
 			buildable->think = G_BuildLogRevertThink;
-			buildable->nextthink = level.time + FRAMETIME;
+			buildable->nextthink = level.time() + FRAMETIME;
 			buildable->suicideTime = 30; // number of thinks before killing players in the way
 		}
 	}

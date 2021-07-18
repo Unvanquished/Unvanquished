@@ -88,9 +88,9 @@ void P_DamageFeedback( gentity_t *player )
 	}
 
 	// play an appropriate pain sound
-	if ( ( level.time > player->pain_debounce_time ) && !( player->flags & FL_GODMODE ) )
+	if ( ( level.time() > player->pain_debounce_time ) && !( player->flags & FL_GODMODE ) )
 	{
-		player->pain_debounce_time = level.time + 700;
+		player->pain_debounce_time = level.time() + 700;
 		int transmittedHalth = (int)std::ceil(player->entity->Get<HealthComponent>()->Health());
 		transmittedHalth = Math::Clamp(transmittedHalth, 0, 255);
 		G_AddEvent( player, EV_PAIN, transmittedHalth );
@@ -118,7 +118,7 @@ void P_WorldEffects( gentity_t *ent )
 
 	if ( ent->client->noclip )
 	{
-		ent->client->airOutTime = level.time + 12000; // don't need air
+		ent->client->airOutTime = level.time() + 12000; // don't need air
 		return;
 	}
 
@@ -130,7 +130,7 @@ void P_WorldEffects( gentity_t *ent )
 	if ( waterlevel == 3 )
 	{
 		// if out of air, start drowning
-		if ( ent->client->airOutTime < level.time )
+		if ( ent->client->airOutTime < level.time() )
 		{
 			// drown!
 			ent->client->airOutTime += 1000;
@@ -160,7 +160,7 @@ void P_WorldEffects( gentity_t *ent )
 				}
 
 				// don't play a general pain sound
-				ent->pain_debounce_time = level.time + 200;
+				ent->pain_debounce_time = level.time() + 200;
 
 				ent->entity->Damage((float)ent->damage, nullptr, Util::nullopt, Util::nullopt,
 				                    DAMAGE_PURE, MOD_WATER);
@@ -169,7 +169,7 @@ void P_WorldEffects( gentity_t *ent )
 	}
 	else
 	{
-		ent->client->airOutTime = level.time + 12000;
+		ent->client->airOutTime = level.time() + 12000;
 		ent->damage = 2;
 	}
 
@@ -179,7 +179,7 @@ void P_WorldEffects( gentity_t *ent )
 	if ( waterlevel &&
 	     ( ent->watertype & ( CONTENTS_LAVA | CONTENTS_SLIME ) ) )
 	{
-		if ( Entities::IsAlive( ent ) && ent->pain_debounce_time <= level.time )
+		if ( Entities::IsAlive( ent ) && ent->pain_debounce_time <= level.time() )
 		{
 			if ( ent->watertype & CONTENTS_LAVA )
 			{
@@ -336,7 +336,7 @@ void PushBot(gentity_t * ent, gentity_t * other)
 	r[2] = 0;
 
 	VectorMA(other->client->ps.velocity, 200, f, other->client->ps.velocity);
-	VectorMA(other->client->ps.velocity, 100 * ((level.time + (ent->s.number * 1000)) % 4000 < 2000 ? 1.0 : -1.0), r,
+	VectorMA(other->client->ps.velocity, 100 * ((level.time() + (ent->s.number * 1000)) % 4000 < 2000 ? 1.0 : -1.0), r,
 	other->client->ps.velocity);
 
 	if(VectorLengthSquared(other->client->ps.velocity) > oldspeed * oldspeed)
@@ -686,7 +686,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 	{
 		// give everyone some time, so if the operator sets g_inactivity during
 		// gameplay, everyone isn't kicked
-		client->inactivityTime = level.time + 60 * 1000;
+		client->inactivityTime = level.time() + 60 * 1000;
 		client->inactivityWarning = false;
 	}
 	else if ( active ||
@@ -695,12 +695,12 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 	          client->pers.cmd.upmove ||
 	          usercmdButtonPressed( client->pers.cmd.buttons, BUTTON_ATTACK ) )
 	{
-		client->inactivityTime = level.time + g_inactivity.integer * 1000;
+		client->inactivityTime = level.time() + g_inactivity.integer * 1000;
 		client->inactivityWarning = false;
 	}
 	else if ( !client->pers.localClient )
 	{
-		if ( level.time > client->inactivityTime &&
+		if ( level.time() > client->inactivityTime &&
 		     !G_admin_permission( ent, ADMF_ACTIVITY ) )
 		{
 			if( strchr( g_inactivity.string, 's' ) )
@@ -718,7 +718,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 			}
 		}
 
-		if ( level.time > client->inactivityTime - 10000 &&
+		if ( level.time() > client->inactivityTime - 10000 &&
 		     !client->inactivityWarning &&
 		     !G_admin_permission( ent, ADMF_ACTIVITY ) )
 		{
@@ -769,13 +769,13 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 
 			// remove alien poison
 			client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
-			client->poisonImmunityTime = level.time + MEDKIT_POISON_IMMUNITY_TIME;
+			client->poisonImmunityTime = level.time() + MEDKIT_POISON_IMMUNITY_TIME;
 
 			// initiate healing
 			client->ps.stats[ STAT_STATE ] |= SS_HEALING_4X;
-			client->lastMedKitTime = level.time;
+			client->lastMedKitTime = level.time();
 			client->medKitHealthToRestore = healthComponent->MaxHealth() - healthComponent->Health();
-			client->medKitIncrementTime = level.time + ( MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED );
+			client->medKitIncrementTime = level.time() + ( MEDKIT_STARTUP_TIME / MEDKIT_STARTUP_SPEED );
 
 			G_AddEvent( self, EV_MEDKIT_USED, 0 );
 		}
@@ -796,14 +796,14 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 			return;
 		}
 
-		if ( level.time >= client->medKitIncrementTime )
+		if ( level.time() >= client->medKitIncrementTime )
 		{
 			// heal
 			self->entity->Heal(1.0f, nullptr);
 			client->medKitHealthToRestore --;
 
 			// set timer for next healing action
-			remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
+			remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time() - client->lastMedKitTime );
 			if ( remainingStartupTime > 0 )
 			{
 				// heal slowly during startup
@@ -853,7 +853,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 		        G_LineOfSight( self, target, MASK_SOLID, false ) ) ) )
 		{
 			target->tagScore     += timePassed;
-			target->tagScoreTime  = level.time;
+			target->tagScoreTime  = level.time();
 
 			if( target->tagScore > 1000 )
 				Beacon::Tag( target, team, ( target->s.eType == entityType_t::ET_BUILDABLE ) );
@@ -989,7 +989,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		BeaconAutoTag( ent, 100 );
 
 		// refill weapon ammo
-		if ( ent->client->lastAmmoRefillTime + HUMAN_AMMO_REFILL_PERIOD < level.time &&
+		if ( ent->client->lastAmmoRefillTime + HUMAN_AMMO_REFILL_PERIOD < level.time() &&
 		     ps->weaponTime == 0 )
 		{
 			G_FindAmmo( ent );
@@ -1175,7 +1175,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				mins[ 0 ] = mins[ 1 ] = 0.0f;
 				VectorAdd( client->ps.origin, mins, point );
 
-				ent->pain_debounce_time = level.time + 200; // no general pain sound
+				ent->pain_debounce_time = level.time() + 200; // no general pain sound
 				ent->entity->Damage((float)damage, nullptr, Vec3::Load(point), Vec3::Load(dir),
 				                    DAMAGE_NO_LOCDAMAGE, MOD_FALLING);
 				break;
@@ -1277,7 +1277,7 @@ void G_UnlaggedStore()
 		level.unlaggedIndex = 0;
 	}
 
-	level.unlaggedTimes[ level.unlaggedIndex ] = level.time;
+	level.unlaggedTimes[ level.unlaggedIndex ] = level.time();
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
@@ -1692,11 +1692,11 @@ static int FindAlienHealthSource( gentity_t *self )
 
 	if ( ret )
 	{
-		self->healthSourceTime = level.time;
+		self->healthSourceTime = level.time();
 
 		if ( self->boosterUsed )
 		{
-			self->boosterTime = level.time;
+			self->boosterTime = level.time();
 		}
 	}
 
@@ -1734,7 +1734,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_2X | SS_HEALING_4X | SS_HEALING_8X );
 	client->ps.stats[ STAT_STATE ] |= FindAlienHealthSource( self );
 
-	if ( self->nextRegenTime < level.time )
+	if ( self->nextRegenTime < level.time() )
 	{
 		if      ( client->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
 		{
@@ -1758,7 +1758,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 			{
 				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
 				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) *
-				                ( self->healthSourceTime - level.time ) );
+				                ( self->healthSourceTime - level.time() ) );
 				modifier = std::max( modifier, ALIEN_REGEN_NOCREEP_MIN );
 			}
 		}
@@ -1766,17 +1766,17 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		interval = ( int )( 1000.0f / ( regenBaseRate * modifier ) );
 
 		// If recovery interval is less than frametime, compensate by healing more
-		count = 1 + ( level.time - self->nextRegenTime ) / interval;
+		count = 1 + ( level.time() - self->nextRegenTime ) / interval;
 
 		self->entity->Heal((float)count, nullptr);
 
-		self->nextRegenTime = level.time + count * interval;
+		self->nextRegenTime = level.time() + count * interval;
 	}
 	else if ( !wasHealing && client->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 	{
 		// Don't immediately start regeneration to prevent players from quickly
 		// hopping in and out of a creep area to increase their heal rate
-		self->nextRegenTime = level.time + ( 1000 / regenBaseRate );
+		self->nextRegenTime = level.time() + ( 1000 / regenBaseRate );
 	}
 }
 
@@ -1834,14 +1834,14 @@ void ClientThink_real( gentity_t *self )
 	ucmd = &client->pers.cmd;
 
 	// sanity check the command time to prevent speedup cheating
-	if ( ucmd->serverTime > level.time + 200 )
+	if ( ucmd->serverTime > level.time() + 200 )
 	{
-		ucmd->serverTime = level.time + 200;
+		ucmd->serverTime = level.time() + 200;
 	}
 
-	if ( ucmd->serverTime < level.time - 1000 )
+	if ( ucmd->serverTime < level.time() - 1000 )
 	{
-		ucmd->serverTime = level.time - 1000;
+		ucmd->serverTime = level.time() - 1000;
 	}
 
 	msec = ucmd->serverTime - client->ps.commandTime;
@@ -1923,13 +1923,13 @@ void ClientThink_real( gentity_t *self )
 	}
 
 	if ( ( client->ps.stats[ STAT_STATE ] & SS_BLOBLOCKED ) &&
-	     client->lastLockTime + LOCKBLOB_LOCKTIME < level.time )
+	     client->lastLockTime + LOCKBLOB_LOCKTIME < level.time() )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_BLOBLOCKED;
 	}
 
 	if ( ( client->ps.stats[ STAT_STATE ] & SS_SLOWLOCKED ) &&
-	     client->lastSlowTime + ABUILDER_BLOB_TIME < level.time )
+	     client->lastSlowTime + ABUILDER_BLOB_TIME < level.time() )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_SLOWLOCKED;
 	}
@@ -1939,22 +1939,22 @@ void ClientThink_real( gentity_t *self )
 
 	if ( client->ps.stats[ STAT_STATE ] & SS_BOOSTED )
 	{
-		if ( level.time - client->boostedTime != BOOST_TIME )
+		if ( level.time() - client->boostedTime != BOOST_TIME )
 		{
 			client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTEDNEW;
 		}
-		if ( level.time - client->boostedTime >= BOOST_TIME )
+		if ( level.time() - client->boostedTime >= BOOST_TIME )
 		{
 			client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTED;
 		}
-		else if ( level.time - client->boostedTime >= BOOST_WARN_TIME )
+		else if ( level.time() - client->boostedTime >= BOOST_WARN_TIME )
 		{
 			client->ps.stats[ STAT_STATE ] |= SS_BOOSTEDWARNING;
 		}
 	}
 
 	if ( (client->ps.stats[ STAT_STATE ] & SS_POISONED) &&
-	     client->lastPoisonTime + ALIEN_POISON_TIME < level.time )
+	     client->lastPoisonTime + ALIEN_POISON_TIME < level.time() )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 	}
@@ -2003,13 +2003,13 @@ void ClientThink_real( gentity_t *self )
 	}
 
 	// unset creepslowed flag if it's time
-	if ( client->lastCreepSlowTime + CREEP_TIMEOUT < level.time )
+	if ( client->lastCreepSlowTime + CREEP_TIMEOUT < level.time() )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_CREEPSLOWED;
 	}
 
 	// unset level1slow flag if it's time
-	if ( client->lastLevel1SlowTime + LEVEL1_SLOW_TIME < level.time )
+	if ( client->lastLevel1SlowTime + LEVEL1_SLOW_TIME < level.time() )
 	{
 		client->ps.stats[ STAT_STATE2 ] &= ~SS2_LEVEL1SLOW;
 	}
@@ -2064,7 +2064,7 @@ void ClientThink_real( gentity_t *self )
 	// save results of pmove
 	if ( client->ps.eventSequence != oldEventSequence )
 	{
-		self->eventTime = level.time;
+		self->eventTime = level.time();
 	}
 
 	if ( g_smoothClients.integer )
@@ -2154,7 +2154,7 @@ void ClientThink_real( gentity_t *self )
 	// save results of triggers and client events
 	if ( client->ps.eventSequence != oldEventSequence )
 	{
-		self->eventTime = level.time;
+		self->eventTime = level.time();
 	}
 
 	// inform client about the state of unlockable items
@@ -2230,7 +2230,7 @@ void ClientThink_real( gentity_t *self )
 	// perform once-a-second actions
 	ClientTimerActions( self, msec );
 
-	if ( self->suicideTime > 0 && self->suicideTime < level.time )
+	if ( self->suicideTime > 0 && self->suicideTime < level.time() )
 	{
 		Entities::Kill(self, nullptr, MOD_SUICIDE);
 		self->suicideTime = 0;
@@ -2252,7 +2252,7 @@ void ClientThink( int clientNum )
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
 
 	// mark the time we got info, so we can display the phone jack if we don't get any for a while
-	ent->client->lastCmdTime = level.time;
+	ent->client->lastCmdTime = level.time();
 
 	if(!( ent->r.svFlags & SVF_BOT ) && !level.pmoveParams.synchronous )
 	{
@@ -2267,7 +2267,7 @@ void G_RunClient( gentity_t *ent )
 		return;
 	}
 
-	ent->client->pers.cmd.serverTime = level.time;
+	ent->client->pers.cmd.serverTime = level.time();
 	ClientThink_real( ent );
 }
 
@@ -2303,7 +2303,7 @@ void ClientEndFrame( gentity_t *ent )
 	P_DamageFeedback( ent );
 
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
-	if ( level.time - ent->client->lastCmdTime > 1000 && !( ent->r.svFlags & SVF_BOT ) )
+	if ( level.time() - ent->client->lastCmdTime > 1000 && !( ent->r.svFlags & SVF_BOT ) )
 	{
 		ent->client->ps.eFlags |= EF_CONNECTION;
 	}
@@ -2313,7 +2313,7 @@ void ClientEndFrame( gentity_t *ent )
 	}
 
 	// respawn if dead
-	if ( Entities::IsDead( ent ) && level.time >= ent->client->respawnTime )
+	if ( Entities::IsDead( ent ) && level.time() >= ent->client->respawnTime )
 	{
 		respawn( ent );
 	}

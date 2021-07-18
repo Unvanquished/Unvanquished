@@ -408,7 +408,7 @@ void ScoreboardMessage( gentity_t *ent )
 
 		Com_sprintf( entry, sizeof( entry ),
 		             " %d %d %d %d %d %d", level.sortedClients[ i ], cl->ps.persistant[ PERS_SCORE ],
-		             ping, ( level.time - cl->pers.enterTime ) / 60000, weapon, upgrade );
+		             ping, ( level.time() - cl->pers.enterTime ) / 60000, weapon, upgrade );
 
 		j = strlen( entry );
 
@@ -563,8 +563,8 @@ void Cmd_Devteam_f( gentity_t *ent )
 			return;
 	}
 
-	ent->client->pers.teamChangeTime = level.time;
-	ent->client->pers.teamInfo = level.startTime - 1;
+	ent->client->pers.teamChangeTime = level.time();
+	ent->client->pers.teamInfo = level.startTime() - 1;
 	ent->client->sess.spectatorState = SPECTATOR_NOT;
 
 	G_UpdateTeamConfigStrings();
@@ -679,13 +679,13 @@ void Cmd_Give_f( gentity_t *ent )
 		if ( ent->client->pers.team == TEAM_HUMANS )
 		{
 			ent->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
-			ent->client->lastPoisonTime = level.time;
+			ent->client->lastPoisonTime = level.time();
 			ent->client->lastPoisonClient = ent;
 		}
 		else
 		{
 			ent->client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
-			ent->client->boostedTime = level.time;
+			ent->client->boostedTime = level.time();
 		}
 	}
 
@@ -798,9 +798,9 @@ void Cmd_Kill_f( gentity_t *ent )
 		if ( ent->suicideTime == 0 )
 		{
 			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You will suicide in 20 seconds") "\"" );
-			ent->suicideTime = level.time + 20000;
+			ent->suicideTime = level.time() + 20000;
 		}
-		else if ( ent->suicideTime > level.time )
+		else if ( ent->suicideTime > level.time() )
 		{
 			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("Suicide cancelled") "\"" );
 			ent->suicideTime = 0;
@@ -833,7 +833,7 @@ void Cmd_Team_f( gentity_t *ent )
 
 	// stop team join spam
 	if ( ent->client->pers.teamChangeTime &&
-	     level.time - ent->client->pers.teamChangeTime < 1000 )
+	     level.time() - ent->client->pers.teamChangeTime < 1000 )
 	{
 		return;
 	}
@@ -844,9 +844,9 @@ void Cmd_Team_f( gentity_t *ent )
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
 	     Entities::IsAlive( ent ) &&
-	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
+	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time() )
 	{
-		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
+		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time() ) / 1000;
 
 		trap_SendServerCommand( ent - g_entities,
 		    va( "print_tr %s %i %.0f", QQ( N_("You cannot leave your team until $1$ after combat. Try again in $2$s.") ),
@@ -856,7 +856,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// disallow joining teams during warmup
-	if ( g_doWarmup.integer && ( ( level.warmupTime - level.time ) / 1000 ) > 0 )
+	if ( level.warmingUp() )
 	{
 		G_TriggerMenu( ent - g_entities, MN_WARMUP );
 		return;
@@ -1638,7 +1638,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	switch ( voteInfo[voteId].special )
 	{
 	case VOTE_BEFORE:
-		if ( level.matchTime >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.matchTime() >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed once $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
@@ -1648,7 +1648,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_AFTER:
-		if ( level.matchTime < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.matchTime() < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed until $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
@@ -1658,7 +1658,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_REMAIN:
-		if ( !level.timelimit || level.matchTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
+		if ( !level.timelimit || level.matchTime() < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining") ),
@@ -2033,7 +2033,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	Color::StripColors( ent->client->pers.netname, caller, sizeof( caller ) );
 
-	level.team[ team ].voteTime = level.time;
+	level.team[ team ].voteTime = level.time();
 	trap_SetConfigstring( CS_VOTE_TIME + team,
 	                      va( "%d", level.team[ team ].voteTime ) );
 	trap_SetConfigstring( CS_VOTE_STRING + team,
@@ -2976,7 +2976,7 @@ void Cmd_Sell_f( gentity_t *ent )
 	if ( updated )
 	{
 		ClientUserinfoChanged( ent->client->ps.clientNum, false );
-		ent->client->pers.infoChangeTime = level.time;
+		ent->client->pers.infoChangeTime = level.time();
 	}
 }
 
@@ -3262,7 +3262,7 @@ void Cmd_Buy_f( gentity_t *ent )
 	if ( updated )
 	{
 		ClientUserinfoChanged( ent->client->ps.clientNum, false );
-		ent->client->pers.infoChangeTime = level.time;
+		ent->client->pers.infoChangeTime = level.time();
 	}
 }
 
@@ -4066,12 +4066,12 @@ void G_MapLog_Result( char result )
 	int    t;
 
 	// there is a chance is called more than once per frame
-	if ( level.time == lastTime )
+	if ( level.time() == lastTime )
 	{
 		return;
 	}
 
-	lastTime = level.time;
+	lastTime = level.time();
 
 	// check for earlier result
 	if ( g_mapLog.string[ 0 ] && g_mapLog.string[ 1 ] == ';' )
@@ -4091,7 +4091,7 @@ void G_MapLog_Result( char result )
 		}
 	}
 
-	t = level.matchTime / 1000;
+	t = level.matchTime() / 1000;
 	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
 	trap_Cvar_Set( "g_mapLog",
 	               va( "%c;%d:%02d;%s", result, t / 60, t % 60, maplog ) );
@@ -4293,7 +4293,7 @@ int G_FloodLimited( gentity_t *ent )
 		return 0;
 	}
 
-	deltatime = level.time - ent->client->pers.floodTime;
+	deltatime = level.time() - ent->client->pers.floodTime;
 
 	ent->client->pers.floodDemerits += g_floodMinTime.integer - deltatime;
 
@@ -4302,7 +4302,7 @@ int G_FloodLimited( gentity_t *ent )
 		ent->client->pers.floodDemerits = 0;
 	}
 
-	ent->client->pers.floodTime = level.time;
+	ent->client->pers.floodTime = level.time();
 
 	ms = ent->client->pers.floodDemerits - g_floodMaxDemerits.integer;
 

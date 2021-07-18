@@ -61,7 +61,7 @@ void G_InitGentity( gentity_t *entity )
 	entity->classname = "noclass";
 	entity->s.number = entity - g_entities;
 	entity->r.ownerNum = ENTITYNUM_NONE;
-	entity->creationTime = level.time;
+	entity->creationTime = level.time();
 	
 	if ( g_debugEntities.integer > 2 )
 	{
@@ -101,7 +101,7 @@ gentity_t *G_NewEntity()
 
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if ( newEntity->freetime > level.startTime + 2000 && level.time - newEntity->freetime < 1000 )
+		if ( newEntity->freetime > level.startTime() + 2000 && level.time() - newEntity->freetime < 1000 )
 		{
 			if( ! forcedEnt || newEntity->freetime < forcedEnt->freetime ) {
 				forcedEnt = newEntity;
@@ -121,7 +121,7 @@ gentity_t *G_NewEntity()
 		{
 			if ( g_debugEntities.integer ) {
 				Log::Verbose( "Reusing Entity %i, freed at %i (%ims ago)",
-				              forcedEnt-g_entities, forcedEnt->freetime, level.time - forcedEnt->freetime );
+				              forcedEnt-g_entities, forcedEnt->freetime, level.time() - forcedEnt->freetime );
 			}
 			// reuse this slot
 			G_InitGentity( forcedEnt );
@@ -189,7 +189,7 @@ void G_FreeEntity( gentity_t *entity )
 	entity->generation = generation + 1;
 	entity->entity = level.emptyEntity;
 	entity->classname = "freent";
-	entity->freetime = level.time;
+	entity->freetime = level.time();
 	entity->inuse = false;
 }
 
@@ -212,7 +212,7 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 	newEntity->s.eType = Util::enum_cast<entityType_t>( Util::ordinal(entityType_t::ET_EVENTS) + event );
 
 	newEntity->classname = "tempEntity";
-	newEntity->eventTime = level.time;
+	newEntity->eventTime = level.time();
 	newEntity->freeAfterEvent = true;
 
 	VectorCopy( origin, snapped );

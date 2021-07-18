@@ -141,7 +141,7 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 
 	sess->restartTeam = TEAM_NONE;
 	sess->spectatorState = SPECTATOR_FREE;
-	sess->spectatorTime = level.time;
+	sess->spectatorTime = level.time();
 	sess->spectatorClient = -1;
 	sess->botSkill = 0;
 	sess->botTree[ 0 ] = '\0';

@@ -152,7 +152,7 @@ bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
 		return false;
 	}
 
-	self->client->lastAmmoRefillTime = level.time;
+	self->client->lastAmmoRefillTime = level.time();
 
 	if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->maxClips > 0 )
 	{
@@ -200,7 +200,7 @@ bool G_RefillFuel( gentity_t *self, bool triggerEvent )
 	{
 		self->client->ps.stats[ STAT_FUEL ] = JETPACK_FUEL_MAX;
 
-		self->client->lastFuelRefillTime = level.time;
+		self->client->lastFuelRefillTime = level.time();
 
 		if ( triggerEvent )
 		{
@@ -505,7 +505,7 @@ static void FireLevel1Melee( gentity_t *self )
 	if ( target && target->client )
 	{
 		target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
-		target->client->lastLevel1SlowTime = level.time;
+		target->client->lastLevel1SlowTime = level.time();
 	}
 }
 
@@ -672,7 +672,7 @@ LOCKBLOB
 
 static void FireLockblob( gentity_t *self )
 {
-	G_SpawnMissile( MIS_LOCKBLOB, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time + 15000 );
+	G_SpawnMissile( MIS_LOCKBLOB, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time() + 15000 );
 }
 
 /*
@@ -696,14 +696,14 @@ static void HiveMissileThink( gentity_t *self )
 	int       i;
 	float     d, nearest;
 
-	if ( level.time > self->timestamp ) // swarm lifetime exceeded
+	if ( level.time() > self->timestamp ) // swarm lifetime exceeded
 	{
 		VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
 		self->s.pos.trType = trType_t::TR_STATIONARY;
-		self->s.pos.trTime = level.time;
+		self->s.pos.trTime = level.time();
 
 		self->think = G_ExplodeMissile;
-		self->nextthink = level.time + 50;
+		self->nextthink = level.time() + 50;
 		self->parent->hiveInsectsActive = false; //allow the parent to start again
 		return;
 	}
@@ -739,9 +739,9 @@ static void HiveMissileThink( gentity_t *self )
 	VectorScale( dir, HIVE_SPEED, self->s.pos.trDelta );
 	SnapVector( self->s.pos.trDelta );  // save net bandwidth
 	VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
-	self->s.pos.trTime = level.time;
+	self->s.pos.trTime = level.time();
 
-	self->nextthink = level.time + HIVE_DIR_CHANGE_PERIOD;
+	self->nextthink = level.time() + HIVE_DIR_CHANGE_PERIOD;
 }
 
 static void FireHive( gentity_t *self )
@@ -753,9 +753,9 @@ static void FireHive( gentity_t *self )
 	VectorMA( muzzle, self->r.maxs[ 2 ], self->s.origin2, origin );
 
 	m = G_SpawnMissile( MIS_HIVE, self, origin, forward, self->target.entity,
-	                    HiveMissileThink, level.time + HIVE_DIR_CHANGE_PERIOD );
+	                    HiveMissileThink, level.time() + HIVE_DIR_CHANGE_PERIOD );
 
-	m->timestamp = level.time + HIVE_LIFETIME;
+	m->timestamp = level.time() + HIVE_LIFETIME;
 }
 
 /*
@@ -771,15 +771,15 @@ static void RocketThink( gentity_t *self )
 	vec3_t currentDir, targetDir, newDir, rotAxis;
 	float  rotAngle;
 
-	if ( level.time > self->timestamp )
+	if ( level.time() > self->timestamp )
 	{
 		self->think     = G_ExplodeMissile;
-		self->nextthink = level.time;
+		self->nextthink = level.time();
 
 		return;
 	}
 
-	self->nextthink = level.time + ROCKET_TURN_PERIOD;
+	self->nextthink = level.time() + ROCKET_TURN_PERIOD;
 
 	// Calculate current and target direction.
 	VectorNormalize2( self->s.pos.trDelta, currentDir );
@@ -812,13 +812,13 @@ static void RocketThink( gentity_t *self )
 	VectorScale( newDir, BG_Missile( self->s.modelindex )->speed, self->s.pos.trDelta );
 	SnapVector( self->s.pos.trDelta );
 	VectorCopy( self->r.currentOrigin, self->s.pos.trBase ); // TODO: Snap this, too?
-	self->s.pos.trTime = level.time;
+	self->s.pos.trTime = level.time();
 }
 
 static void FireRocket( gentity_t *self )
 {
 	G_SpawnMissile( MIS_ROCKET, self, muzzle, forward, self->target.entity, RocketThink,
-	                level.time + ROCKET_TURN_PERIOD )->timestamp = level.time + ROCKET_LIFETIME;
+	                level.time() + ROCKET_TURN_PERIOD )->timestamp = level.time() + ROCKET_LIFETIME;
 }
 
 /*
@@ -831,7 +831,7 @@ BLASTER PISTOL
 
 static void FireBlaster( gentity_t *self )
 {
-	G_SpawnMissile( MIS_BLASTER, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time + 10000 );
+	G_SpawnMissile( MIS_BLASTER, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time() + 10000 );
 }
 
 /*
@@ -844,7 +844,7 @@ PULSE RIFLE
 
 static void FirePrifle( gentity_t *self )
 {
-	G_SpawnMissile( MIS_PRIFLE, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time + 10000 );
+	G_SpawnMissile( MIS_PRIFLE, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time() + 10000 );
 }
 
 /*
@@ -857,7 +857,7 @@ FLAME THROWER
 
 static void FireFlamer( gentity_t *self )
 {
-	G_SpawnMissile( MIS_FLAMER, self, muzzle, forward, nullptr, G_FreeEntity, level.time + FLAMER_LIFETIME );
+	G_SpawnMissile( MIS_FLAMER, self, muzzle, forward, nullptr, G_FreeEntity, level.time() + FLAMER_LIFETIME );
 }
 
 /*
@@ -870,7 +870,7 @@ GRENADE
 
 static void FireGrenade( gentity_t *self )
 {
-	G_SpawnMissile( MIS_GRENADE, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time + 5000 );
+	G_SpawnMissile( MIS_GRENADE, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time() + 5000 );
 }
 
 /*
@@ -915,7 +915,7 @@ static void FirebombMissileThink( gentity_t *self )
 		VectorNormalize( dir );
 
 		// the submissile's parent is the attacker
-		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self->parent, self->s.origin, dir, nullptr, G_FreeEntity, level.time + 10000 );
+		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self->parent, self->s.origin, dir, nullptr, G_FreeEntity, level.time() + 10000 );
 
 		// randomize missile speed
 		VectorScale( m->s.pos.trDelta, ( rand() / ( float )RAND_MAX ) + 0.5f, m->s.pos.trDelta );
@@ -927,7 +927,7 @@ static void FirebombMissileThink( gentity_t *self )
 
 void FireFirebomb( gentity_t *self )
 {
-	G_SpawnMissile( MIS_FIREBOMB, self, muzzle, forward, nullptr, FirebombMissileThink, level.time + FIREBOMB_TIMER );
+	G_SpawnMissile( MIS_FIREBOMB, self, muzzle, forward, nullptr, FirebombMissileThink, level.time() + FIREBOMB_TIMER );
 }
 
 /*
@@ -1015,11 +1015,11 @@ static gentity_t *FireLcannonHelper( gentity_t *self, vec3_t start, vec3_t dir,
 	// explode in front of player when overcharged
 	if ( damage == LCANNON_DAMAGE )
 	{
-		nextthink = level.time;
+		nextthink = level.time();
 	}
 	else
 	{
-		nextthink = level.time + 10000;
+		nextthink = level.time() + 10000;
 	}
 
 	if ( self->s.generic1 == WPM_PRIMARY )
@@ -1247,7 +1247,7 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 
 static void FireSlowblob( gentity_t *self )
 {
-	G_SpawnMissile( MIS_SLOWBLOB, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time + 15000 );
+	G_SpawnMissile( MIS_SLOWBLOB, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time() + 15000 );
 }
 
 /*
@@ -1578,7 +1578,7 @@ bool G_CheckPounceAttack( gentity_t *self )
 
 static void FireBounceball( gentity_t *self )
 {
-	G_SpawnMissile( MIS_BOUNCEBALL, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time + 3000 );
+	G_SpawnMissile( MIS_BOUNCEBALL, self, muzzle, forward, nullptr, G_ExplodeMissile, level.time() + 3000 );
 }
 
 /*
@@ -1732,7 +1732,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 	}
 
 	// check timer
-	if ( victim->client->nextCrushTime > level.time )
+	if ( victim->client->nextCrushTime > level.time() )
 	{
 		return;
 	}
@@ -1749,7 +1749,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 		                       DAMAGE_NO_LOCDAMAGE, ModWeight(self));
 	}
 
-	victim->client->nextCrushTime = level.time + WEIGHTDMG_REPEAT;
+	victim->client->nextCrushTime = level.time() + WEIGHTDMG_REPEAT;
 }
 
 //======================================================================

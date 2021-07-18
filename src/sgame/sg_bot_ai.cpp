@@ -302,13 +302,13 @@ AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node )
 {
 	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
 
-	if ( level.time > dec->data[ self->s.number ] )
+	if ( level.time() > dec->data[ self->s.number ] )
 	{
 		AINodeStatus_t status = BotEvaluateNode( self, dec->child );
 
 		if ( status == STATUS_FAILURE )
 		{
-			dec->data[ self->s.number ] = level.time + AIUnBoxInt( dec->params[ 0 ] );
+			dec->data[ self->s.number ] = level.time() + AIUnBoxInt( dec->params[ 0 ] );
 		}
 
 		return status;
@@ -696,7 +696,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		}
 
 		self->botMind->currentNode = node;
-		self->botMind->enemyLastSeen = level.time;
+		self->botMind->enemyLastSeen = level.time();
 		return STATUS_RUNNING;
 	}
 
@@ -728,7 +728,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	//aliens have radar so they will always 'see' the enemy if they are in radar range
 	if ( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( ALIENSENSE_RANGE ) )
 	{
-		self->botMind->enemyLastSeen = level.time;
+		self->botMind->enemyLastSeen = level.time();
 	}
 
 	if ( !BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
@@ -741,7 +741,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_SUCCESS;
 		}
-		else if ( level.time - self->botMind->enemyLastSeen >= g_bot_chasetime.integer )
+		else if ( level.time() - self->botMind->enemyLastSeen >= g_bot_chasetime.integer )
 		{
 			return STATUS_SUCCESS;
 		}
@@ -754,7 +754,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	else
 	{
 		bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
-		self->botMind->enemyLastSeen = level.time;
+		self->botMind->enemyLastSeen = level.time();
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->nav.directPathToGoal )
 		{

@@ -76,7 +76,7 @@ void G_AddCreditToClient( gclient_t *client, short credit, bool cap )
 	// Copy to ps so the client can access it
 	client->ps.persistant[ PERS_CREDIT ] = client->pers.credit;
 
-	client->pers.infoChangeTime = level.time;
+	client->pers.infoChangeTime = level.time();
 }
 
 /*
@@ -388,16 +388,16 @@ static void BodySink( gentity_t *ent )
 
 		//sinking bodies can't be infested
 		ent->killedBy = ent->s.misc = MAX_CLIENTS;
-		ent->timestamp = level.time;
+		ent->timestamp = level.time();
 	}
 
-	if ( level.time - ent->timestamp > 6500 )
+	if ( level.time() - ent->timestamp > 6500 )
 	{
 		G_FreeEntity( ent );
 		return;
 	}
 
-	ent->nextthink = level.time + 100;
+	ent->nextthink = level.time() + 100;
 	ent->s.pos.trBase[ 2 ] -= 1;
 }
 
@@ -432,7 +432,7 @@ static void SpawnCorpse( gentity_t *ent )
 	VectorCopy( ent->s.apos.trBase, body->s.angles );
 	body->s.eFlags = EF_DEAD;
 	body->s.eType = entityType_t::ET_CORPSE;
-	body->timestamp = level.time;
+	body->timestamp = level.time();
 	body->s.event = 0;
 	body->r.contents = CONTENTS_CORPSE;
 	body->clipmask = MASK_DEADSOLID;
@@ -451,7 +451,7 @@ static void SpawnCorpse( gentity_t *ent )
 	body->s.misc = MAX_CLIENTS;
 
 	body->think = BodySink;
-	body->nextthink = level.time + 20000;
+	body->nextthink = level.time() + 20000;
 
 	body->s.torsoAnim = body->s.legsAnim = ent->s.legsAnim;
 
@@ -464,7 +464,7 @@ static void SpawnCorpse( gentity_t *ent )
 
 	G_SetOrigin( body, origin );
 	body->s.pos.trType = trType_t::TR_GRAVITY;
-	body->s.pos.trTime = level.time;
+	body->s.pos.trTime = level.time();
 	VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
 
 	trap_LinkEntity( body );
@@ -840,7 +840,7 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	if ( strcmp( oldname, newname ) )
 	{
 		if ( !forceName && client->pers.namelog->nameChangeTime &&
-		     level.time - client->pers.namelog->nameChangeTime <=
+		     level.time() - client->pers.namelog->nameChangeTime <=
 		     g_minNameChangePeriod.value * 1000 )
 		{
 			trap_SendServerCommand( ent - g_entities, va(
@@ -893,7 +893,7 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 
 			if ( !forceName && client->pers.connected == CON_CONNECTED )
 			{
-				client->pers.namelog->nameChangeTime = level.time;
+				client->pers.namelog->nameChangeTime = level.time();
 				client->pers.namelog->nameChanges++;
 			}
 
@@ -1305,10 +1305,10 @@ void ClientAdminChallenge( int clientNum )
 	gclient_t       *client = level.clients + clientNum;
 	g_admin_admin_t *admin = client->pers.admin;
 
-	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] && ( level.time - client->pers.pubkey_challengedAt ) >= 6000 )
+	if ( !client->pers.pubkey_authenticated && admin && admin->pubkey[ 0 ] && ( level.time() - client->pers.pubkey_challengedAt ) >= 6000 )
 	{
 		trap_SendServerCommand( clientNum, va( "pubkey_decrypt %s", admin->msg2 ) );
-		client->pers.pubkey_challengedAt = level.time ^ ( 5 * clientNum ); // a small amount of jitter
+		client->pers.pubkey_challengedAt = level.time() ^ ( 5 * clientNum ); // a small amount of jitter
 
 		// copy the decrypted message because generating a new message will overwrite it
 		G_admin_writeconfig();
@@ -1355,7 +1355,7 @@ void ClientBegin( int clientNum )
 	ent->client = client;
 
 	client->pers.connected = CON_CONNECTED;
-	client->pers.enterTime = level.time;
+	client->pers.enterTime = level.time();
 
 	ClientAdminChallenge( clientNum );
 
@@ -1677,7 +1677,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.persistant[ PERS_SPAWN_COUNT ]++;
 	client->ps.persistant[ PERS_SPECSTATE ] = client->sess.spectatorState;
 
-	client->airOutTime = level.time + 12000;
+	client->airOutTime = level.time() + 12000;
 
 	trap_GetUserinfo( index, userinfo, sizeof( userinfo ) );
 	client->ps.eFlags = flags;
@@ -1809,10 +1809,10 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 	client->ps.pm_time = 100;
 
-	client->respawnTime = level.time;
-	ent->nextRegenTime = level.time;
+	client->respawnTime = level.time();
+	ent->nextRegenTime = level.time();
 
-	client->inactivityTime = level.time + g_inactivity.integer * 1000;
+	client->inactivityTime = level.time() + g_inactivity.integer * 1000;
 	usercmdClearButtons( client->latched_buttons );
 
 	// set default animations
@@ -1856,8 +1856,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// initialize animations and other things
 	// use smaller move duration when evolving to prevent cheats such as
 	// evolving several times to run down the attack cooldown
-	client->ps.commandTime = level.time - (evolving ? 1 : 100);
-	ent->client->pers.cmd.serverTime = level.time;
+	client->ps.commandTime = level.time() - (evolving ? 1 : 100);
+	ent->client->pers.cmd.serverTime = level.time();
 	ClientThink( ent - g_entities );
 
 	// positively link the client, even if the command times are weird
@@ -1877,7 +1877,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// clear entity state values
 	BG_PlayerStateToEntityState( &client->ps, &ent->s, true );
 
-	client->pers.infoChangeTime = level.time;
+	client->pers.infoChangeTime = level.time();
 
 	// (re)tag the client for its team
 	Beacon::DeleteTags( ent );

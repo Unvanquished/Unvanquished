@@ -55,14 +55,14 @@ void MGTurretComponent::Think(int timeDelta) {
 	}
 
 	// Look for a new entity target if there isn't a valid one already.
-	if (lastTargetSearch + TARGET_SEARCH_PERIOD <= level.time &&
+	if (lastTargetSearch + TARGET_SEARCH_PERIOD <= level.time() &&
 	    !GetTurretComponent().TargetValid()) {
 
 		GetTurretComponent().FindEntityTarget(
 			[this](Entity& a, Entity& b)->bool{ return this->CompareTargets(a, b); }
 		);
 
-		lastTargetSearch = level.time;
+		lastTargetSearch = level.time();
 	}
 
 	if (GetTurretComponent().TargetValid()) {
@@ -76,7 +76,7 @@ void MGTurretComponent::Think(int timeDelta) {
 				GetTurretComponent().MoveHeadToTarget(timeDelta);
 			}
 
-			if (lastShot + ATTACK_PERIOD <= level.time) {
+			if (lastShot + ATTACK_PERIOD <= level.time()) {
 				Shoot();
 			}
 
@@ -138,5 +138,5 @@ void MGTurretComponent::Shoot() {
 	G_AddEvent(entity.oldEnt, EV_FIRE_WEAPON, 0);
 	G_FireWeapon(entity.oldEnt, WP_MGTURRET, WPM_PRIMARY);
 
-	lastShot = level.time;
+	lastShot = level.time();
 }

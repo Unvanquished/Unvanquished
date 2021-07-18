@@ -154,7 +154,7 @@ static void InvalidateRouteResults( Bot_t *bot )
 			continue;
 		}
 
-		if ( level.time - res.time > ROUTE_CACHE_TIME )
+		if ( level.time() - res.time > ROUTE_CACHE_TIME )
 		{
 			res.invalid = true;
 			continue;
@@ -230,7 +230,7 @@ static void AddRouteResult( Bot_t *bot, dtPolyRef start, dtPolyRef end, dtStatus
 	bestPos->endRef = end;
 	bestPos->startRef = start;
 	bestPos->invalid = false;
-	bestPos->time = level.time;
+	bestPos->time = level.time();
 	bestPos->status = status;
 }
 

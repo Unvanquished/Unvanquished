@@ -1011,10 +1011,10 @@ bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 				SnapVector( t.trDelta );
 				VectorCopy( muzzle, t.trBase );
 				t.trType = trType_t::TR_LINEAR;
-				t.trTime = level.time - 50;
+				t.trTime = level.time() - 50;
 			
 				// find projectile's final position
-				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, npos );
+				BG_EvaluateTrajectory( &t, level.time() + FLAMER_LIFETIME, npos );
 
 				// find distance traveled by projectile along fire line
 				ProjectPointOntoVector( npos, muzzle, targetPos, proj );
@@ -1191,11 +1191,11 @@ void BotAimAtEnemy( gentity_t *self )
 	float frac;
 	gentity_t const*enemy = self->botMind->goal.ent;
 
-	if ( self->botMind->futureAimTime < level.time )
+	if ( self->botMind->futureAimTime < level.time() )
 	{
 		int predictTime = self->botMind->futureAimTimeInterval = BotGetAimPredictionTime( self );
 		BotPredictPosition( self, enemy, self->botMind->futureAim, predictTime );
-		self->botMind->futureAimTime = level.time + predictTime;
+		self->botMind->futureAimTime = level.time() + predictTime;
 	}
 
 	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
@@ -1203,7 +1203,7 @@ void BotAimAtEnemy( gentity_t *self )
 	VectorNormalize( desired );
 	AngleVectors( self->client->ps.viewangles, current, nullptr, nullptr );
 
-	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
+	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time() ) ) / self->botMind->futureAimTimeInterval );
 	VectorLerp( current, desired, frac, newAim );
 
 	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
@@ -2000,7 +2000,7 @@ void BotPushEnemy( enemyQueue_t *queue, gentity_t *enemy )
 		if ( ( queue->back + 1 ) % MAX_ENEMY_QUEUE != queue->front )
 		{
 			queue->enemys[ queue->back ].ent = enemy;
-			queue->enemys[ queue->back ].timeFound = level.time;
+			queue->enemys[ queue->back ].timeFound = level.time();
 			queue->back = ( queue->back + 1 ) % MAX_ENEMY_QUEUE;
 		}
 	}
@@ -2014,7 +2014,7 @@ gentity_t *BotPopEnemy( enemyQueue_t *queue )
 		return nullptr;
 	}
 
-	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.integer )
+	if ( level.time() - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.integer )
 	{
 		gentity_t *ret = queue->enemys[ queue->front ].ent;
 		queue->front = ( queue->front + 1 ) % MAX_ENEMY_QUEUE;
@@ -2106,18 +2106,18 @@ void BotSearchForEnemy( gentity_t *self )
 
 void BotResetStuckTime( gentity_t *self )
 {
-	self->botMind->stuckTime = level.time;
+	self->botMind->stuckTime = level.time();
 	VectorCopy( self->client->ps.origin, self->botMind->stuckPosition );
 }
 
 void BotCalculateStuckTime( gentity_t *self )
 {
 	// last think time condition to avoid stuck condition after respawn or /pause
-	bool dataValid = level.time - self->botMind->lastThink < 1000;
+	bool dataValid = level.time() - self->botMind->lastThink < 1000;
 	if ( !dataValid
 			|| DistanceSquared( self->botMind->stuckPosition, self->client->ps.origin ) >= Square( BOT_STUCK_RADIUS ) )
 	{
 		BotResetStuckTime( self );
 	}
-	self->botMind->lastThink = level.time;
+	self->botMind->lastThink = level.time();
 }

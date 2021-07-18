@@ -210,15 +210,15 @@ bool TurretComponent::TargetValid(Entity& target, bool newTarget) {
 
 	// New targets require a line of sight.
 	if (G_LineOfFire(entity.oldEnt, target.oldEnt)) {
-		lastLineOfSightToTarget = level.time;
+		lastLineOfSightToTarget = level.time();
 	} else if (newTarget) {
 		return false;
 	}
 
 	// Give up on an existing target if there was no line of sight for a while.
-	if (lastLineOfSightToTarget + GIVEUP_TARGET_TIME <= level.time) {
+	if (lastLineOfSightToTarget + GIVEUP_TARGET_TIME <= level.time()) {
 		turretLogger.Verbose("Giving up on target: No line of sight for %d ms.",
-			level.time - lastLineOfSightToTarget
+			level.time() - lastLineOfSightToTarget
 		);
 
 		return false;

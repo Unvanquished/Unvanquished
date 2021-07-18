@@ -152,7 +152,7 @@ namespace BaseClustering {
 		// Delete all orphaned base beacons.
 		for (gentity_t *beacon : oldBeacons) {
 			if (newBeacons.find(beacon) == newBeacons.end()) {
-				Beacon::Delete(beacon, (level.matchTime > 1000));
+				Beacon::Delete(beacon, (level.matchTime() > 1000));
 			}
 		}
 

@@ -41,7 +41,7 @@ static void G_Bounce( gentity_t *ent, trace_t *trace )
 	bool invert = false;
 
 	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
+	hitTime = level.previousTime + level.lastFrameDelay() * trace->fraction;
 	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
 	dot = DotProduct( velocity, trace->plane.normal );
 	VectorMA( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
@@ -80,7 +80,7 @@ static void G_Bounce( gentity_t *ent, trace_t *trace )
 
 	VectorCopy( ent->r.currentOrigin, ent->s.pos.trBase );
 	VectorAdd( ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin );
-	ent->s.pos.trTime = level.time;
+	ent->s.pos.trTime = level.time();
 }
 
 #define PHYSICS_TIME 200
@@ -105,13 +105,13 @@ void G_Physics( gentity_t *ent, int )
 			if ( ent->s.pos.trType != BG_Buildable( ent->s.modelindex )->traj )
 			{
 				ent->s.pos.trType = BG_Buildable( ent->s.modelindex )->traj;
-				ent->s.pos.trTime = level.time;
+				ent->s.pos.trTime = level.time();
 			}
 		}
 		else if ( ent->s.pos.trType != trType_t::TR_GRAVITY )
 		{
 			ent->s.pos.trType = trType_t::TR_GRAVITY;
-			ent->s.pos.trTime = level.time;
+			ent->s.pos.trTime = level.time();
 		}
 	}
 
@@ -121,7 +121,7 @@ void G_Physics( gentity_t *ent, int )
 		G_RunThink( ent );
 
 		//check floor infrequently
-		if ( ent->nextPhysicsTime < level.time )
+		if ( ent->nextPhysicsTime < level.time() )
 		{
 			VectorCopy( ent->r.currentOrigin, origin );
 
@@ -135,7 +135,7 @@ void G_Physics( gentity_t *ent, int )
 				ent->s.groundEntityNum = ENTITYNUM_NONE;
 			}
 
-			ent->nextPhysicsTime = level.time + PHYSICS_TIME;
+			ent->nextPhysicsTime = level.time() + PHYSICS_TIME;
 		}
 
 		return;
@@ -144,7 +144,7 @@ void G_Physics( gentity_t *ent, int )
 	// trace a line from the previous position to the current position
 
 	// get current position
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
+	BG_EvaluateTrajectory( &ent->s.pos, level.time(), origin );
 
 	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number,
 	            ent->clipmask, 0 );

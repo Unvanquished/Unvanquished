@@ -2141,15 +2141,15 @@ bool G_admin_time( gentity_t *ent )
 	case 1:
 		Com_GMTime( &qt );
 
-		gameMinutes = level.matchTime/1000 / 60;
-		gameSeconds = level.matchTime/1000 % 60;
+		gameMinutes = level.matchTime()/1000 / 60;
+		gameSeconds = level.matchTime()/1000 % 60;
 
 		timelimit = level.timelimit * 60000; // timelimit is in minutes
 
-		if(level.matchTime < timelimit)
+		if(level.matchTime() < timelimit)
 		{
-			remainingMinutes = (timelimit - level.matchTime)/1000 / 60;
-			remainingSeconds = (timelimit - level.matchTime)/1000 % 60 + 1;
+			remainingMinutes = (timelimit - level.matchTime())/1000 / 60;
+			remainingSeconds = (timelimit - level.matchTime())/1000 % 60 + 1;
 
 			ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^*time is ^d$1$:$2$:$3$^* UTC; game time is ^d$4$:$5$^*, reaching time limit in ^d$6$:$7$^*") ),
 			  qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
@@ -2184,9 +2184,9 @@ bool G_admin_time( gentity_t *ent )
 				        timelimit, level.timelimit, G_quoted_admin_name( ent ) ) );
 				level.timelimit = timelimit;
 				// reset 'time remaining' warnings
-				level.timelimitWarning = ( level.matchTime < ( level.timelimit - 5 ) * 60000 )
+				level.timelimitWarning = ( level.matchTime() < ( level.timelimit - 5 ) * 60000 )
 				                       ? TW_NOT
-				                       : ( level.matchTime < ( level.timelimit - 1 ) * 60000 )
+				                       : ( level.matchTime() < ( level.timelimit - 1 ) * 60000 )
 				                       ? TW_IMMINENT
 				                       : TW_PASSED;
 			}
@@ -5291,7 +5291,7 @@ bool G_admin_buildlog( gentity_t *ent )
 		}
 
 		printed++;
-		time = ( log->time - level.startTime ) / 1000;
+		time = ( log->time - level.startTime() ) / 1000;
 		Com_sprintf( stamp, sizeof( stamp ), "%3d:%02d", time / 60, time % 60 );
 		ADMBP( va( "^2%c^7%-3d %s ^7%s^7%s%s%s %s%s%s",
 		           log->actor && log->fate != BF_REPLACE && log->fate != BF_UNPOWER ?
@@ -5356,7 +5356,7 @@ bool G_admin_revert( gentity_t *ent )
 		return false;
 	}
 
-	G_admin_duration( ( level.time - log->time ) / 1000, time,
+	G_admin_duration( ( level.time() - log->time ) / 1000, time,
 	                  sizeof( time ), duration, sizeof( duration ) );
 	admin_log( arg );
 	AP( va( "print_tr %s %s %d %s %s", ( level.buildId - id ) > 1 ?

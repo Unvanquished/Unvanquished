@@ -11,7 +11,7 @@ ThinkingComponent::ThinkingComponent(Entity& entity, DeferredFreeingComponent& r
 {}
 
 void ThinkingComponent::Think() {
-	int time = level.time;
+	int time = level.time();
 
 	if (lastThinkRound == time) {
 		thinkLogger.Warn("Think component called multiple times per frame");
@@ -20,7 +20,7 @@ void ThinkingComponent::Think() {
 
 	lastThinkRound = time;
 
-	int frameTime = level.time - level.previousTime;
+	int frameTime = level.lastFrameDelay();
 
 	if (!averageFrameTime) {
 		averageFrameTime = frameTime;
@@ -86,7 +86,7 @@ void ThinkingComponent::RegisterThinker(thinker_t thinker, thinkScheduler_t sche
 	// invalidated.
 	std::vector<thinkRecord_t> *addTo = iteratingThinkers ? &newThinkers : &thinkers;
 
-	addTo->emplace_back(thinkRecord_t{thinker, scheduler, period, level.time, 0, false});
+	addTo->emplace_back(thinkRecord_t{thinker, scheduler, period, level.time(), 0, false});
 
 	thinkLogger.Notice("Registered thinker of period %i.", period);
 }

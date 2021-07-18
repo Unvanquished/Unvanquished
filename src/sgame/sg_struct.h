@@ -645,11 +645,29 @@ struct level_locals_s
 
 	bool     inClient;
 
-	int      time; // time the map was first started in milliseconds (map restart will update startTime)
+	// friend relations are to respectively setup m_startTime, m_time and to update m_previousTime
+	friend void G_InitGame( int, int, bool );
+	friend void G_RunFrame( int );
+
+	int time( void ) const { return m_time; }
+	void updateTime( int levelTime ){ m_time = levelTime; m_matchTime = levelTime - m_startTime; }
+	int startTime( void ) const { return m_startTime; }
+	int matchTime( void ) const { return m_matchTime; }
+
+	int lastFrameDelay( void ) const { return m_time - previousTime; }
+	int ageMinutes( void ) const { return ( m_time - m_startTime ) / 60000; }
+	int ageSeconds( void ) const { return ( m_time - m_startTime ) / 1000; }
+	bool warmingUp( void ) const;
+
+private:
+	int      m_time; // time the map was first started in milliseconds (map restart will update startTime)
+public:
 	int      previousTime; // so movers can back up when blocked
 
-	int      startTime; // level.time the map was last (re)started in milliseconds
-	int      matchTime; // ms since the current match begun
+private:
+	int      m_startTime; // level.time the map was last (re)started in milliseconds
+	int      m_matchTime; // ms since the current match begun
+public:
 
 	int      lastTeamLocationTime; // last time of client team location update
 

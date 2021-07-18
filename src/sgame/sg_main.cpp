@@ -661,9 +661,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
-	level.time = levelTime;
+	level.m_time = levelTime;
 	level.inClient = inClient;
-	level.startTime = levelTime;
+	level.m_startTime = levelTime;
 	level.snd_fry = G_SoundIndex( "sound/misc/fry" );  // FIXME standing in lava / slime
 
 	// TODO: Move this in a seperate function
@@ -1332,7 +1332,7 @@ void G_CalculateAvgPlayers()
 
 	static int nextCalculation = 0;
 
-	if ( level.time < nextCalculation )
+	if ( level.time() < nextCalculation )
 	{
 		return;
 	}
@@ -1362,7 +1362,7 @@ void G_CalculateAvgPlayers()
 		(*samples)++;
 	}
 
-	nextCalculation = level.time + 1000;
+	nextCalculation = level.time() + 1000;
 }
 
 /*
@@ -1601,7 +1601,7 @@ void BeginIntermission()
 		return; // already active
 	}
 
-	level.intermissiontime = level.time;
+	level.intermissiontime = level.time();
 
 	G_ClearVotes( false );
 
@@ -1748,7 +1748,7 @@ void PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	int     min, tens, sec;
 	size_t  tslen;
 
-	sec = level.matchTime / 1000;
+	sec = level.matchTime() / 1000;
 
 	min = sec / 60;
 	sec -= min * 60;
@@ -1894,12 +1894,12 @@ static void G_LogGameplayStats( int state )
 			int    Cre[ NUM_TEAMS ];
 			int    Val[ NUM_TEAMS ];
 
-			if ( level.time < nextCalculation )
+			if ( level.time() < nextCalculation )
 			{
 				return;
 			}
 
-			time = level.matchTime / 1000;
+			time = level.matchTime() / 1000;
 			XXX  = 0;
 
 			for( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
@@ -1940,8 +1940,8 @@ static void G_LogGameplayStats( int state )
 					winner = "-";
 			}
 
-			min = level.matchTime / 60000;
-			sec = ( level.matchTime / 1000 ) % 60;
+			min = level.matchTime() / 60000;
+			sec = ( level.matchTime() / 1000 ) % 60;
 
 			Com_sprintf( logline, sizeof( logline ),
 			             "# -------------------------------------------------------------------------\n"
@@ -1968,7 +1968,7 @@ static void G_LogGameplayStats( int state )
 
 	if ( state == LOG_GAMEPLAY_STATS_BODY )
 	{
-		nextCalculation = level.time + std::max( 1, g_logGameplayStatsFrequency.integer ) * 1000;
+		nextCalculation = level.time() + std::max( 1, g_logGameplayStatsFrequency.integer ) * 1000;
 	}
 	else
 	{
@@ -1990,7 +1990,7 @@ void LogExit( const char *string )
 
 	G_LogPrintf( "Exit: %s", string );
 
-	level.intermissionQueued = level.time;
+	level.intermissionQueued = level.time();
 
 	// this will keep the clients from playing any voice sounds
 	// that will get cut off when the queued intermission starts
@@ -2087,13 +2087,13 @@ void CheckIntermissionExit()
 	trap_SetConfigstring( CS_CLIENTS_READY, Com_ClientListString( &readyMasks ) );
 
 	// never exit in less than five seconds or if there's an ongoing vote
-	if ( voting || level.time < level.intermissiontime + 5000 )
+	if ( voting || level.time() < level.intermissiontime + 5000 )
 	{
 		return;
 	}
 
 	// never let intermission go on for over 1 minute
-	if ( level.time > level.intermissiontime + 60000 )
+	if ( level.time() > level.intermissiontime + 60000 )
 	{
 		ExitLevel();
 		return;
@@ -2117,12 +2117,12 @@ void CheckIntermissionExit()
 	if ( !level.readyToExit )
 	{
 		level.readyToExit = true;
-		level.exitTime = level.time;
+		level.exitTime = level.time();
 	}
 
 	// if we have waited thirty seconds since at least one player
 	// wanted to exit, go ahead
-	if ( level.time < level.exitTime + 30000 )
+	if ( level.time() < level.exitTime + 30000 )
 	{
 		return;
 	}
@@ -2175,7 +2175,7 @@ void CheckExitRules()
 
 	if ( level.intermissionQueued )
 	{
-		if ( level.time - level.intermissionQueued >= INTERMISSION_DELAY_TIME )
+		if ( level.time() - level.intermissionQueued >= INTERMISSION_DELAY_TIME )
 		{
 			level.intermissionQueued = 0;
 			BeginIntermission();
@@ -2186,7 +2186,7 @@ void CheckExitRules()
 
 	if ( level.timelimit )
 	{
-		if ( level.matchTime >= level.timelimit * 60000 )
+		if ( level.ageMinutes() >= level.timelimit )
 		{
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit") "\"" );
@@ -2196,13 +2196,13 @@ void CheckExitRules()
 			G_MapLog_Result( 't' );
 			return;
 		}
-		else if ( level.matchTime >= ( level.timelimit - 5 ) * 60000 &&
+		else if ( level.ageMinutes() >= level.timelimit - 5 &&
 		          level.timelimitWarning < TW_IMMINENT )
 		{
 			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
 			level.timelimitWarning = TW_IMMINENT;
 		}
-		else if ( level.matchTime >= ( level.timelimit - 1 ) * 60000 &&
+		else if ( level.ageMinutes() >= level.timelimit - 1 &&
 		          level.timelimitWarning < TW_PASSED )
 		{
 			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
@@ -2212,7 +2212,7 @@ void CheckExitRules()
 
 	if ( level.unconditionalWin == TEAM_HUMANS ||
 	     ( level.unconditionalWin != TEAM_ALIENS &&
-	       ( level.time > level.startTime + 1000 ) &&
+	       ( level.ageSeconds() > 1 ) &&
 	       ( level.team[ TEAM_ALIENS ].numSpawns == 0 ) &&
 	       ( level.team[ TEAM_ALIENS ].numAliveClients == 0 ) ) )
 	{
@@ -2226,7 +2226,7 @@ void CheckExitRules()
 	}
 	else if ( level.unconditionalWin == TEAM_ALIENS ||
 	          ( level.unconditionalWin != TEAM_HUMANS &&
-	            ( level.time > level.startTime + 1000 ) &&
+	            ( level.ageSeconds() > 1 ) &&
 	            ( level.team[ TEAM_HUMANS ].numSpawns == 0 ) &&
 	            ( level.team[ TEAM_HUMANS ].numAliveClients == 0 ) ) )
 	{
@@ -2239,9 +2239,8 @@ void CheckExitRules()
 		G_MapLog_Result( 'a' );
 	}
 	else if ( g_emptyTeamsSkipMapTime.integer &&
-		( level.time - level.startTime ) / 60000 >=
-		g_emptyTeamsSkipMapTime.integer &&
-		level.team[ TEAM_ALIENS ].numPlayers == 0 && level.team[ TEAM_HUMANS ].numPlayers == 0 )
+		level.ageMinutes() >= g_emptyTeamsSkipMapTime.integer &&
+		level.numPlayingClients == 0 )
 	{
 		// nobody wins because the teams are empty after x amount of game time
 		level.lastWin = TEAM_NONE;
@@ -2379,7 +2378,7 @@ void G_CheckVote( team_t team )
 	char     *cmd;
 
 	if ( level.team[ team ].voteExecuteTime /* > 0 ?? more readable imho */ &&
-	     level.team[ team ].voteExecuteTime < level.time )
+	     level.team[ team ].voteExecuteTime < level.time() )
 	{
 		G_ExecuteVote( team );
 	}
@@ -2389,7 +2388,7 @@ void G_CheckVote( team_t team )
 		return;
 	}
 
-	if ( ( level.time - level.team[ team ].voteTime >= VOTE_TIME ) ||
+	if ( ( level.time() - level.team[ team ].voteTime >= VOTE_TIME ) ||
 	     ( level.team[ team ].voteYes + level.team[ team ].voteNo == level.team[ team ].numPlayers ) )
 	{
 		pass = ( level.team[ team ].voteYes &&
@@ -2417,7 +2416,7 @@ void G_CheckVote( team_t team )
 
 	if ( pass && quorum )
 	{
-		level.team[ team ].voteExecuteTime = level.time + level.team[ team ].voteDelay;
+		level.team[ team ].voteExecuteTime = level.time() + level.team[ team ].voteDelay;
 	}
 
 	G_LogPrintf( "EndVote: %s %s %d %d %d %d",
@@ -2506,7 +2505,7 @@ void G_RunThink( gentity_t *ent )
 	// TODO: Replace this kind of thinking entirely with CBSE.
 	if (ent->think) {
 		float thinktime = ent->nextthink;
-		if (thinktime <= 0 || thinktime > level.time) return;
+		if (thinktime <= 0 || thinktime > level.time()) return;
 		ent->nextthink = 0;
 		ent->think(ent);
 	}
@@ -2535,7 +2534,7 @@ void G_RunAct( gentity_t *entity )
 		return;
 	}
 
-	if ( entity->nextAct > level.time )
+	if ( entity->nextAct > level.time() )
 	{
 		return;
 	}
@@ -2595,10 +2594,9 @@ void G_RunFrame( int levelTime )
 		return;
 	}
 
-	if ( !level.numConnectedPlayers && g_autoPause.Get() && level.matchTime > 1000)
+	if ( !level.numConnectedPlayers && g_autoPause.Get() && level.ageSeconds() > 1 )
 	{
-		level.time = levelTime;
-		level.matchTime = levelTime - level.startTime;
+		level.updateTime( levelTime );
 
 		// get any cvar changes
 		G_UpdateCvars();
@@ -2611,8 +2609,8 @@ void G_RunFrame( int levelTime )
 
 	if ( level.pausedTime )
 	{
-		msec = levelTime - level.time - level.pausedTime;
-		level.pausedTime = levelTime - level.time;
+		msec = levelTime - level.time() - level.pausedTime;
+		level.pausedTime = levelTime - level.time();
 
 		ptime3000 += msec;
 
@@ -2647,11 +2645,10 @@ void G_RunFrame( int levelTime )
 		return;
 	}
 
-	level.previousTime = level.time;
-	level.time = levelTime;
-	level.matchTime = levelTime - level.startTime;
+	level.previousTime = level.time();
+	level.updateTime( levelTime );
 
-	msec = level.time - level.previousTime;
+	msec = level.time() - level.previousTime;
 
 	// generate public-key messages
 	G_admin_pubkey();
@@ -2672,7 +2669,7 @@ void G_RunFrame( int levelTime )
 		if ( !ent->inuse ) continue;
 
 		// clear events that are too old
-		if ( level.time - ent->eventTime > EVENT_VALID_MSEC )
+		if ( level.time() - ent->eventTime > EVENT_VALID_MSEC )
 		{
 			if ( ent->s.event )
 			{
@@ -2752,7 +2749,7 @@ void G_RunFrame( int levelTime )
 		// A newly created entity can randomly run things, or not, in the above loop over
 		// entities depending on whether it was added in a hole in g_entities or at the end, so
 		// ignore the entity if it was created this frame.
-		if (entity.oldEnt->creationTime != level.time && thinkingComponent.GetLastThinkTime() != level.time
+		if (entity.oldEnt->creationTime != level.time() && thinkingComponent.GetLastThinkTime() != level.time()
 			&& !entity.oldEnt->freeAfterEvent) {
 			Log::Warn("ThinkingComponent was not called");
 			thinkingComponent.Think();
@@ -2827,3 +2824,9 @@ void G_PrepareEntityNetCode() {
 		entity.PrepareNetCode();
 	});
 }
+
+bool level_locals_s::warmingUp( void ) const
+{
+  return g_doWarmup.integer && warmupTime > m_time;
+}
+

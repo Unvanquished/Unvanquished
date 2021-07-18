@@ -56,7 +56,7 @@ namespace Beacon //this should eventually become a class
 	 */
 	static void Think( gentity_t *ent )
 	{
-		ent->nextthink = level.time + 1000000;
+		ent->nextthink = level.time() + 1000000;
 	}
 
 	/**
@@ -67,7 +67,7 @@ namespace Beacon //this should eventually become a class
 		gentity_t *ent = nullptr;
 		static int nextframe = 0;
 
-		if( nextframe > level.time )
+		if( nextframe > level.time() )
 			return;
 
 		while ( ( ent = G_IterateEntities( ent ) ) )
@@ -76,14 +76,14 @@ namespace Beacon //this should eventually become a class
 			{
 				case entityType_t::ET_BUILDABLE:
 				case entityType_t::ET_PLAYER:
-					if( ent->tagScoreTime + 2000 < level.time )
+					if( ent->tagScoreTime + 2000 < level.time() )
 						ent->tagScore -= 50;
 					if( ent->tagScore < 0 )
 						ent->tagScore = 0;
 					break;
 
 				case entityType_t::ET_BEACON:
-					if ( ent->s.bc_etime && level.time > ent->s.bc_etime )
+					if ( ent->s.bc_etime && level.time() > ent->s.bc_etime )
 						Delete( ent );
 					continue;
 
@@ -92,7 +92,7 @@ namespace Beacon //this should eventually become a class
 			}
 		}
 
-		nextframe = level.time + 100;
+		nextframe = level.time() + 100;
 	}
 
 	/**
@@ -138,12 +138,12 @@ namespace Beacon //this should eventually become a class
 		ent->s.bc_team = team;
 		ent->s.bc_owner = owner;
 		ent->think = Think;
-		ent->nextthink = level.time;
+		ent->nextthink = level.time();
 
-		ent->s.bc_ctime = level.time;
-		ent->s.bc_mtime = level.time;
+		ent->s.bc_ctime = level.time();
+		ent->s.bc_mtime = level.time();
 		decayTime = BG_Beacon( type )->decayTime;
-		ent->s.bc_etime = ( decayTime ? level.time + decayTime : 0 );
+		ent->s.bc_etime = ( decayTime ? level.time() + decayTime : 0 );
 
 		ent->s.pos.trType = trType_t::TR_INTERPOLATE;
 		Move( ent, origin );
@@ -182,7 +182,7 @@ namespace Beacon //this should eventually become a class
 			if ( !( ent->s.eFlags & EF_BC_DYING ) )
 			{
 				ent->s.eFlags |= EF_BC_DYING;
-				ent->s.bc_etime = level.time + 1500;
+				ent->s.bc_etime = level.time() + 1500;
 				BaseClustering::Remove( ent );
 			}
 		}
@@ -525,13 +525,13 @@ namespace Beacon //this should eventually become a class
 		if ( ent->s.eFlags & EF_BC_DYING ) return;
 
 		// Touch update time.
-		ent->s.bc_mtime = level.time;
+		ent->s.bc_mtime = level.time();
 
 		// Don't "refresh" permanent/uninitialized tags unless forced to.
 		if( !force && !ent->s.bc_etime ) return;
 
 		if( ent->s.eFlags & EF_BC_TAG_PLAYER )
-			ent->s.bc_etime = level.time + 2000;
+			ent->s.bc_etime = level.time() + 2000;
 	}
 
 	static inline bool CheckRefreshTag( gentity_t *ent, team_t team )

@@ -95,7 +95,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 		// we can't just remove (self) here, because this is a touch function
 		// called while looping through area links...
 		self->touch = 0;
-		self->nextthink = level.time + FRAMETIME;
+		self->nextthink = level.time() + FRAMETIME;
 		self->think = G_FreeEntity;
 	}
 }
@@ -214,7 +214,7 @@ void SP_sensor_timer( gentity_t *self )
 
 	if ( self->spawnflags & 1 )
 	{
-		self->nextthink = level.time + FRAMETIME;
+		self->nextthink = level.time() + FRAMETIME;
 		self->activator = self;
 	}
 
@@ -530,7 +530,7 @@ void sensor_support_think( gentity_t *self )
 {
 	if(!self->enabled)
 	{
-		self->nextthink = level.time + SENSOR_POLL_PERIOD * 5;
+		self->nextthink = level.time() + SENSOR_POLL_PERIOD * 5;
 		return;
 	}
 
@@ -556,14 +556,14 @@ void sensor_support_think( gentity_t *self )
 	if(self->powered)
 		G_FireEntity( self, nullptr );
 
-	self->nextthink = level.time + SENSOR_POLL_PERIOD;
+	self->nextthink = level.time() + SENSOR_POLL_PERIOD;
 }
 
 void sensor_support_reset( gentity_t *self )
 {
 	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
 	//if(self->enabled)
-	self->nextthink = level.time + SENSOR_POLL_PERIOD;
+	self->nextthink = level.time() + SENSOR_POLL_PERIOD;
 }
 
 void SP_sensor_support( gentity_t *self )
@@ -585,7 +585,7 @@ void sensor_power_think( gentity_t *self )
 {
 	if(!self->enabled)
 	{
-		self->nextthink = level.time + SENSOR_POLL_PERIOD * 5;
+		self->nextthink = level.time() + SENSOR_POLL_PERIOD * 5;
 		return;
 	}
 
@@ -594,7 +594,7 @@ void sensor_power_think( gentity_t *self )
 	if(self->powered)
 		G_FireEntity( self, nullptr );
 
-	self->nextthink = level.time + SENSOR_POLL_PERIOD;
+	self->nextthink = level.time() + SENSOR_POLL_PERIOD;
 }
 
 void SP_sensor_power( gentity_t *self )
@@ -616,7 +616,7 @@ void sensor_creep_think( gentity_t *self )
 {
 	if(!self->enabled)
 	{
-		self->nextthink = level.time + SENSOR_POLL_PERIOD * 5;
+		self->nextthink = level.time() + SENSOR_POLL_PERIOD * 5;
 		return;
 	}
 
@@ -625,7 +625,7 @@ void sensor_creep_think( gentity_t *self )
 	if(self->powered)
 		G_FireEntity( self, nullptr );
 
-	self->nextthink = level.time + SENSOR_POLL_PERIOD;
+	self->nextthink = level.time() + SENSOR_POLL_PERIOD;
 }
 
 void SP_sensor_creep( gentity_t *self )

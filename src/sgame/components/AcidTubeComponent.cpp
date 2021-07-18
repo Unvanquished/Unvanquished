@@ -18,9 +18,9 @@ void AcidTubeComponent::ConsiderAttack(int timeDelta) {
 	bool attacking = Entities::AntiHumanRadiusDamage(entity, ATTACK_DAMAGE * timeDelta * 0.001f,
 	                                                 ATTACK_RANGE, MOD_ATUBE);
 
-	if (attacking && (lastAttackAnimation < 0 || level.time - lastAttackAnimation > 2000)) {
+	if (attacking && (lastAttackAnimation < 0 || level.time() - lastAttackAnimation > 2000)) {
 		G_SetBuildableAnim(entity.oldEnt, BANIM_ATTACK1, false);
 		G_AddEvent(entity.oldEnt, EV_ALIEN_ACIDTUBE, DirToByte(entity.oldEnt->s.origin2));
-		lastAttackAnimation = level.time;
+		lastAttackAnimation = level.time();
 	}
 }

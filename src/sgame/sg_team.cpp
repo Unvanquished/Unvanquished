@@ -282,9 +282,9 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	}
 
 	G_LeaveTeam( ent );
-	ent->client->pers.teamChangeTime = level.time;
+	ent->client->pers.teamChangeTime = level.time();
 	ent->client->pers.team = newTeam;
-	ent->client->pers.teamInfo = level.startTime - 1;
+	ent->client->pers.teamInfo = level.startTime() - 1;
 	ent->client->pers.classSelection = PCL_NONE;
 	ClientSpawn( ent, nullptr, nullptr, nullptr );
 
@@ -505,7 +505,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 	if( string[ 0 ] )
 	{
 		trap_SendServerCommand( ent - g_entities, va( "tinfo%s", string ) );
-		ent->client->pers.teamInfo = level.time;
+		ent->client->pers.teamInfo = level.time();
 	}
 }
 
@@ -520,9 +520,9 @@ void CheckTeamStatus()
 	int       i;
 	gentity_t *loc, *ent;
 
-	if ( level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME )
+	if ( level.time() - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME )
 	{
-		level.lastTeamLocationTime = level.time;
+		level.lastTeamLocationTime = level.time();
 
 		for ( i = 0; i < level.maxclients; i++ )
 		{
@@ -541,13 +541,13 @@ void CheckTeamStatus()
 				{
 					if( ent->client->pers.location != loc->s.generic1 )
 					{
-						ent->client->pers.infoChangeTime = level.time;
+						ent->client->pers.infoChangeTime = level.time();
 						ent->client->pers.location = loc->s.generic1;
 					}
 				}
 				else if ( ent->client->pers.location != 0 )
 				{
-					ent->client->pers.infoChangeTime = level.time;
+					ent->client->pers.infoChangeTime = level.time();
 					ent->client->pers.location = 0;
 				}
 			}
@@ -571,11 +571,11 @@ void CheckTeamStatus()
 
 	// Warn on imbalanced teams
 	if ( g_teamImbalanceWarnings.integer && !level.intermissiontime &&
-	     ( level.time - level.lastTeamImbalancedTime >
+	     ( level.time() - level.lastTeamImbalancedTime >
 	       ( g_teamImbalanceWarnings.integer * 1000 ) ) &&
 	     level.numTeamImbalanceWarnings < 3 && !level.restarted )
 	{
-		level.lastTeamImbalancedTime = level.time;
+		level.lastTeamImbalancedTime = level.time();
 
 		if ( level.team[ TEAM_ALIENS ].numSpawns > 0 &&
 		     G_PlayerCountForBalance( TEAM_HUMANS ) - G_PlayerCountForBalance( TEAM_ALIENS ) > 2 )

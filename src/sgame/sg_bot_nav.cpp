@@ -300,7 +300,7 @@ void BotAlternateStrafe( gentity_t *self )
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	signed char speed = BotGetMaxMoveSpeed( self );
 
-	if ( level.time % 8000 < 4000 )
+	if ( level.time() % 8000 < 4000 )
 	{
 		botCmdBuffer->rightmove = speed;
 	}

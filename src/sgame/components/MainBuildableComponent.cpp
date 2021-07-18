@@ -15,8 +15,8 @@ void MainBuildableComponent::HandleDamage(float /*amount*/, gentity_t* /*source*
 		if (healthFraction < 0.50f) warnLevel++;
 		if (healthFraction < 0.25f) warnLevel++;
 
-		if (warnLevel && (warnLevel > lastAttackWarnLevel || level.time > nextAttackWarning)) {
-			nextAttackWarning   = level.time + ATTACKWARN_PRIMARY_PERIOD;
+		if (warnLevel && (warnLevel > lastAttackWarnLevel || level.time() > nextAttackWarning)) {
+			nextAttackWarning   = level.time() + ATTACKWARN_PRIMARY_PERIOD;
 			lastAttackWarnLevel = warnLevel;
 
 			// TODO: Use TeamComponent/LocationComponent.

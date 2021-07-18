@@ -74,7 +74,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 	event->s.eType = Util::enum_cast<entityType_t>(Util::ordinal(
 	                 entityType_t::ET_EVENTS) + EV_HIT);
 
-	event->nextthink = level.time + INDICATOR_LIFETIME;
+	event->nextthink = level.time() + INDICATOR_LIFETIME;
 	event->think = G_FreeEntity;
 
 	event->r.svFlags = SVF_SINGLECLIENT | SVF_BROADCAST;

@@ -1033,7 +1033,7 @@ void SP_worldspawn()
 	// make some data visible to connecting client
 	trap_SetConfigstring( CS_GAME_VERSION, GAME_VERSION );
 
-	trap_SetConfigstring( CS_LEVEL_START_TIME, va( "%i", level.startTime ) );
+	trap_SetConfigstring( CS_LEVEL_START_TIME, va( "%i", level.startTime() ) );
 
 	G_SpawnString( "music", "", &s );
 	trap_SetConfigstring( CS_MUSIC, s );
@@ -1083,7 +1083,7 @@ void SP_worldspawn()
 
 	if ( g_doWarmup.integer )
 	{
-		level.warmupTime = level.matchTime + ( g_warmup.integer * 1000 );
+		level.warmupTime = level.matchTime() + ( g_warmup.integer * 1000 );
 		trap_SetConfigstring( CS_WARMUP, va( "%i", level.warmupTime ) );
 		G_LogPrintf( "Warmup: %i\n", g_warmup.integer );
 	}

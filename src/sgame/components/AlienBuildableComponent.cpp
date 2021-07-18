@@ -36,7 +36,7 @@ void AlienBuildableComponent::Think(int /*timeDelta*/) {
 		if (other.oldEnt->flags & FL_NOTARGET) return;
 		if (other.oldEnt->client->ps.groundEntityNum == ENTITYNUM_NONE) return;
 		other.oldEnt->client->ps.stats[STAT_STATE] |= SS_CREEPSLOWED;
-		other.oldEnt->client->lastCreepSlowTime = level.time;
+		other.oldEnt->client->lastCreepSlowTime = level.time();
 	});
 }
 
@@ -83,11 +83,11 @@ void AlienBuildableComponent::CreepRecede(int /*timeDelta*/) {
 	G_AddEvent(entity.oldEnt, EV_BUILD_DESTROY, 0);
 
 	if (entity.oldEnt->spawned) {
-		entity.oldEnt->s.time = -level.time;
+		entity.oldEnt->s.time = -level.time();
 	} else {
-		entity.oldEnt->s.time = -(level.time - (int)(
+		entity.oldEnt->s.time = -(level.time() - (int)(
 			(float)CREEP_SCALEDOWN_TIME *
-			(1.0f - ((float)(level.time - entity.oldEnt->creationTime) /
+			(1.0f - ((float)(level.time() - entity.oldEnt->creationTime) /
 					 (float)BG_Buildable(entity.oldEnt->s.modelindex)->buildTime)))
 		);
 	}
@@ -105,7 +105,7 @@ void AlienBuildableComponent::Remove(int /*timeDelta*/) {
 
 int AlienBuildableComponent::GetBlastDelay() {
 	// TODO: Have one PRNG for all of sgame.
-	std::default_random_engine generator(level.time);
+	std::default_random_engine generator(level.time());
 	std::uniform_int_distribution<int> distribution(MIN_BLAST_DELAY, MAX_BLAST_DELAY);
 
 	return distribution(generator);

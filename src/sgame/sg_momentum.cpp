@@ -135,7 +135,7 @@ static float MomentumTimeMod()
 	else
 	{
 		// ln(2) ~= 0.6931472
-		return exp( 0.6931472f * ( ( level.matchTime / 60000.0f ) / g_momentumRewardDoubleTime.value ) );
+		return exp( 0.6931472f * ( ( level.matchTime() / 60000.0f ) / g_momentumRewardDoubleTime.value ) );
 	}
 }
 
@@ -312,7 +312,7 @@ void G_DecreaseMomentum()
 	static float decreaseFactor = 1.0f, lastMomentumHalfLife = 0.0f;
 	static int   nextCalculation = 0;
 
-	if ( level.time < nextCalculation )
+	if ( level.time() < nextCalculation )
 	{
 		return;
 	}
@@ -345,7 +345,7 @@ void G_DecreaseMomentum()
 
 	MomentumChanged();
 
-	nextCalculation = level.time + DECREASE_MOMENTUM_PERIOD;
+	nextCalculation = level.time() + DECREASE_MOMENTUM_PERIOD;
 }
 
 /**
