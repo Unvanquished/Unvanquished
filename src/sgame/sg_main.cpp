@@ -2475,8 +2475,6 @@ void CheckCvars()
 			trap_Cvar_Set( "g_needpass", "0" );
 		}
 	}
-
-	level.frameMsec = trap_Milliseconds();
 }
 
 /*
@@ -2649,7 +2647,6 @@ void G_RunFrame( int levelTime )
 		return;
 	}
 
-	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
 	level.matchTime = levelTime - level.startTime;
@@ -2810,7 +2807,6 @@ void G_RunFrame( int levelTime )
 
 	BotDebugDrawMesh();
 	trap_BotUpdateObstacles();
-	level.frameMsec = trap_Milliseconds();
 }
 
 void G_PrepareEntityNetCode() {
