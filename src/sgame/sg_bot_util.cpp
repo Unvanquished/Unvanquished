@@ -239,7 +239,7 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 }
 
 
-bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
+bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
 {
 	int fromClass = self->client->ps.stats[STAT_CLASS];
 	evolveInfo_t info = BG_ClassEvolveInfoFromTo( fromClass, newClass );
@@ -676,7 +676,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 botTarget_t BotGetRushTarget( gentity_t *self )
 {
 	botTarget_t target;
-	gentity_t* rushTarget = nullptr;
+	gentity_t const* rushTarget = nullptr;
 	if ( BotGetEntityTeam( self ) == TEAM_HUMANS )
 	{
 		if ( self->botMind->closestBuildings[BA_A_SPAWN].ent )
@@ -706,7 +706,7 @@ botTarget_t BotGetRushTarget( gentity_t *self )
 botTarget_t BotGetRetreatTarget( gentity_t *self )
 {
 	botTarget_t target;
-	gentity_t* retreatTarget = nullptr;
+	gentity_t const* retreatTarget = nullptr;
 	//FIXME, this seems like it could be done better...
 	if ( self->client->pers.team == TEAM_HUMANS )
 	{
@@ -742,7 +742,7 @@ BotTarget Helpers
 ========================
 */
 
-void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos )
+void BotSetTarget( botTarget_t *target, gentity_t const*ent, vec3_t pos )
 {
 	if ( ent )
 	{
@@ -880,7 +880,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	routeTarget->polyExtents[ 1 ] += self->r.maxs[ 1 ] + 10;
 }
 
-team_t BotGetEntityTeam( gentity_t *ent )
+team_t BotGetEntityTeam( gentity_t const *ent )
 {
 	if ( !ent )
 	{
@@ -941,7 +941,7 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 	return true;
 }
 
-bool BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
+bool BotChangeGoalEntity( gentity_t *self, gentity_t const *goal )
 {
 	botTarget_t target;
 	BotSetTarget( &target, goal, nullptr );
@@ -1211,7 +1211,7 @@ int BotGetAimPredictionTime( gentity_t *self )
 	return std::max( 1, int(time) );
 }
 
-void BotPredictPosition( gentity_t *self, gentity_t *predict, vec3_t pos, int time )
+void BotPredictPosition( gentity_t *self, gentity_t const *predict, vec3_t pos, int time )
 {
 	botTarget_t target;
 	vec3_t aimLoc;
@@ -1229,7 +1229,7 @@ void BotAimAtEnemy( gentity_t *self )
 	vec3_t angles;
 	int i;
 	float frac;
-	gentity_t *enemy = self->botMind->goal.ent;
+	gentity_t const*enemy = self->botMind->goal.ent;
 
 	if ( self->botMind->futureAimTime < level.time )
 	{
@@ -2066,7 +2066,7 @@ gentity_t *BotPopEnemy( enemyQueue_t *queue )
 	return nullptr;
 }
 
-bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
+bool BotEnemyIsValid( gentity_t *self, gentity_t const *enemy )
 {
 	if ( !enemy->inuse )
 	{
