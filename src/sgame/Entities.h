@@ -49,50 +49,50 @@ namespace Entities {
 	/**
 	 * @brief Whether two entities both are assigned to a team and it is the same one.
 	 */
-	bool OnSameTeam(Entity& firstEntity, Entity& secondEntity);
+	bool OnSameTeam(Entity const& firstEntity, Entity const& secondEntity);
 
 	/**
 	 * @brief Whether two entities both are assigned to a team and the teams differ.
 	 */
-	bool OnOpposingTeams(Entity& firstEntity, Entity& secondEntity);
+	bool OnOpposingTeams(Entity const& firstEntity, Entity const& secondEntity);
 
 	/**
 	 * @brief Whether the entity can die (has health) but is alive.
 	 */
-	bool IsAlive(Entity& entity);
-	bool IsAlive(gentity_t *ent);
+	bool IsAlive(Entity const& entity);
+	bool IsAlive(gentity_t const*ent);
 
 	/**
 	 * @brief Whether the entity can be alive (has health) but is dead now.
 	 */
-	bool IsDead(Entity& entity);
-	bool IsDead(gentity_t *ent);
+	bool IsDead(Entity const& entity);
+	bool IsDead(gentity_t const*ent);
 
-	bool HasHealthComponent(gentity_t *ent);
+	bool HasHealthComponent(gentity_t const*ent);
 
 	/**
 	 * @brief Returns the health of an entity.
 	 * @warning passing an entity without HealthComponent likely crashes,
 	 * 			use Entities::HasHealthComponent beforehand where necessary
 	 */
-	float HealthOf(Entity& entity);
-	float HealthOf(gentity_t *ent);
+	float HealthOf(Entity const& entity);
+	float HealthOf(gentity_t const*ent);
 
 	/**
 	 * @brief Returns whether the entity is at full health.
 	 * @warning passing an entity without HealthComponent likely crashes,
 	 * 			use Entities::HasHealthComponent beforehand where necessary
 	 */
-	bool HasFullHealth(Entity& entity);
-	bool HasFullHealth(gentity_t *ent);
+	bool HasFullHealth(Entity const& entity);
+	bool HasFullHealth(gentity_t const*ent);
 
 	/**
 	 * @brief Returns the fraction of health of the entity.
 	 * @warning passing an entity without HealthComponent likely crashes,
 	 * 			use Entities::HasHealthComponent beforehand where necessary
 	 */
-	float HealthFraction(Entity& entity);
-	float HealthFraction(gentity_t *ent);
+	float HealthFraction(Entity const& entity);
+	float HealthFraction(gentity_t const*ent);
 
 	/**
 	 * @brief Deals the exact amount of damage necessary to kill the entity.
