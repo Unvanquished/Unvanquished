@@ -636,8 +636,8 @@ struct level_locals_s
 
 private:
 	int              warmupTime; // restart match at this time
+	int              m_timelimit; //time in minutes
 public:
-	int              timelimit; //time in minutes
 
 	fileHandle_t     logFile;
 	fileHandle_t     logGameplayFile;
@@ -655,7 +655,26 @@ public:
 	void updateTime( int levelTime ){ m_time = levelTime; m_matchTime = levelTime - m_startTime; }
 	int startTime( void ) const { return m_startTime; }
 	int matchTime( void ) const { return m_matchTime; }
-	int previousTime( void ) const { return m_previousTime; };
+	int previousTime( void ) const { return m_previousTime; }
+	int timeLimitMin( void ) const { return m_timelimit; }
+	bool updateTimeLimit( void );
+	void setTimeLimit( int minutes )
+	{
+		m_timelimit = minutes;
+		// reset 'time remaining' warnings
+		if ( ageMinutes() < timeLimitMin() - 5 )
+		{
+			timelimitWarning = TW_NOT;
+		}
+		else if ( ageMinutes() < timeLimitMin() - 1 )
+		{
+			timelimitWarning = TW_IMMINENT;
+		}
+		else
+		{
+			timelimitWarning = TW_PASSED;
+		}
+	}
 
 	int lastFrameDelay( void ) const { return m_time - m_previousTime; }
 	int ageMinutes( void ) const { return ( m_time - m_startTime ) / 60000; }
@@ -719,7 +738,9 @@ public:
 
 	team_t           lastWin;
 
+private:
 	timeWarning_t    timelimitWarning;
+public:
 
 	team_t           unconditionalWin;
 

@@ -2141,15 +2141,15 @@ bool G_admin_time( gentity_t *ent )
 	case 1:
 		Com_GMTime( &qt );
 
-		gameMinutes = level.matchTime()/1000 / 60;
-		gameSeconds = level.matchTime()/1000 % 60;
+		gameMinutes = level.ageMinutes();
+		gameSeconds = level.ageSeconds() % 60;
 
-		timelimit = level.timelimit * 60000; // timelimit is in minutes
+		timelimit = level.timeLimitMin() * 60;
 
-		if(level.matchTime() < timelimit)
+		if(level.ageSeconds() < timelimit)
 		{
-			remainingMinutes = (timelimit - level.matchTime())/1000 / 60;
-			remainingSeconds = (timelimit - level.matchTime())/1000 % 60 + 1;
+			remainingMinutes = (timelimit - level.ageSeconds()) / 60;
+			remainingSeconds = (timelimit - level.ageSeconds()) % 60;
 
 			ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^*time is ^d$1$:$2$:$3$^* UTC; game time is ^d$4$:$5$^*, reaching time limit in ^d$6$:$7$^*") ),
 			  qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
@@ -2178,17 +2178,11 @@ bool G_admin_time( gentity_t *ent )
 
 			// clip to 0 .. 6 hours
 			timelimit = std::min( 6 * 60, std::max( 0, timelimit ) );
-			if ( timelimit != level.timelimit )
+			if ( timelimit != level.timeLimitMin() )
 			{
 				AP( va( "print_tr %s %d %d %s", QQ( N_("^3time:^* time limit set to $1$m from $2$m by $3$") ),
-				        timelimit, level.timelimit, G_quoted_admin_name( ent ) ) );
-				level.timelimit = timelimit;
-				// reset 'time remaining' warnings
-				level.timelimitWarning = ( level.matchTime() < ( level.timelimit - 5 ) * 60000 )
-				                       ? TW_NOT
-				                       : ( level.matchTime() < ( level.timelimit - 1 ) * 60000 )
-				                       ? TW_IMMINENT
-				                       : TW_PASSED;
+				        timelimit, level.timeLimitMin(), G_quoted_admin_name( ent ) ) );
+				level.setTimeLimit( timelimit );
 			}
 			else
 			{

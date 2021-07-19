@@ -1083,7 +1083,7 @@ void SP_worldspawn()
 
 	level.initWarmUp();
 
-	level.timelimit = g_timelimit.integer;
+	level.setTimeLimit( g_timelimit.integer );
 }
 
 /*

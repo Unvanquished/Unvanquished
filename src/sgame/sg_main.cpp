@@ -2184,30 +2184,9 @@ void CheckExitRules()
 		return;
 	}
 
-	if ( level.timelimit )
+	if ( level.updateTimeLimit() )
 	{
-		if ( level.ageMinutes() >= level.timelimit )
-		{
-			level.lastWin = TEAM_NONE;
-			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit") "\"" );
-			trap_SetConfigstring( CS_WINNER, "Stalemate" );
-			G_notify_sensor_end( TEAM_NONE );
-			LogExit( "Timelimit hit." );
-			G_MapLog_Result( 't' );
 			return;
-		}
-		else if ( level.ageMinutes() >= level.timelimit - 5 &&
-		          level.timelimitWarning < TW_IMMINENT )
-		{
-			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
-			level.timelimitWarning = TW_IMMINENT;
-		}
-		else if ( level.ageMinutes() >= level.timelimit - 1 &&
-		          level.timelimitWarning < TW_PASSED )
-		{
-			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
-			level.timelimitWarning = TW_PASSED;
-		}
 	}
 
 	if ( level.unconditionalWin == TEAM_HUMANS ||
@@ -2839,3 +2818,34 @@ void level_locals_s::initWarmUp( void )
 		G_LogPrintf( "Warmup: %i\n", g_warmup.integer );
 	}
 }
+
+bool level_locals_s::updateTimeLimit( void )
+{
+	if ( timeLimitMin() )
+	{
+		if ( ageMinutes() >= timeLimitMin() )
+		{
+			lastWin = TEAM_NONE;
+			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit") "\"" );
+			trap_SetConfigstring( CS_WINNER, "Stalemate" );
+			G_notify_sensor_end( TEAM_NONE );
+			LogExit( "Timelimit hit." );
+			G_MapLog_Result( 't' );
+			return true;
+		}
+		else if ( ageMinutes() >= timeLimitMin() - 5 &&
+				timelimitWarning < TW_IMMINENT )
+		{
+			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
+			timelimitWarning = TW_IMMINENT;
+		}
+		else if ( ageMinutes() >= timeLimitMin() - 1 &&
+				timelimitWarning < TW_PASSED )
+		{
+			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
+			timelimitWarning = TW_PASSED;
+		}
+	}
+	return false;
+}
+

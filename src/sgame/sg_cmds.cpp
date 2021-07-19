@@ -1658,7 +1658,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_REMAIN:
-		if ( !level.timelimit || level.matchTime() < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
+		if ( level.timeLimitMin() == 0 || level.ageMinutes() < level.timeLimitMin() - ( voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining") ),
@@ -1866,7 +1866,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	case VOTE_EXTEND:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "time %i", level.timelimit + g_extendVotesTime.integer );
+		             "time %i", level.timeLimitMin() + g_extendVotesTime.integer );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
 		             "Extend the timelimit by %d minutes", g_extendVotesTime.integer );
 		break;
