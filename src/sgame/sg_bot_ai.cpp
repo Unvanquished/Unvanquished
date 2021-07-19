@@ -1098,7 +1098,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 
 AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 {
-	gentity_t *healTarget = nullptr;
+	gentity_t const *healTarget = nullptr;
 
 	if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
 	{

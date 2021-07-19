@@ -30,13 +30,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 struct botEntityAndDistance_t
 {
-	gentity_t *ent;
+	gentity_t const *ent;
 	float distance;
 };
 
 struct botTarget_t
 {
-	gentity_t *ent;
+	gentity_t const *ent;
 	vec3_t coord;
 	bool inuse;
 };

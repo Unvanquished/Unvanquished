@@ -55,7 +55,7 @@ void  BotAimAtLocation( gentity_t *self, vec3_t target );
 float BotAimAngle( gentity_t *self, vec3_t pos );
 
 // targets
-void        BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos );
+void        BotSetTarget( botTarget_t *target, gentity_t const*ent, vec3_t pos );
 bool    BotTargetIsEntity( botTarget_t target );
 bool    BotTargetIsPlayer( botTarget_t target );
 bool    BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
@@ -63,7 +63,7 @@ bool    BotTargetInAttackRange( gentity_t *self, botTarget_t target );
 void        BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
 int         BotGetTargetEntityNumber( botTarget_t target );
 void        BotGetTargetPos( botTarget_t target, vec3_t rVec );
-team_t      BotGetEntityTeam( gentity_t *ent );
+team_t      BotGetEntityTeam( gentity_t const *ent );
 team_t      BotGetTargetTeam( botTarget_t target );
 entityType_t         BotGetTargetType( botTarget_t target );
 botTarget_t BotGetRoamTarget( gentity_t *self );
@@ -77,12 +77,12 @@ float    BotGetEnemyPriority( gentity_t *self, gentity_t *ent );
 
 // goal changing
 bool BotChangeGoal( gentity_t *self, botTarget_t target );
-bool BotChangeGoalEntity( gentity_t *self, gentity_t *goal );
+bool BotChangeGoalEntity( gentity_t *self, gentity_t const *goal );
 bool BotChangeGoalPos( gentity_t *self, vec3_t goal );
 
 // fighting
 void     BotResetEnemyQueue( enemyQueue_t *queue );
-bool BotEnemyIsValid( gentity_t *self, gentity_t *enemy );
+bool BotEnemyIsValid( gentity_t *self, gentity_t const *enemy );
 void     BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer );
 void     BotFireWeaponAI( gentity_t *self );
 void     BotClassMovement( gentity_t *self, bool inAttackRange );
@@ -103,7 +103,7 @@ void       BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgra
 #define AS_OVER_RT3         ((ALIENSENSE_RANGE*0.5f)/M_ROOT3)
 float    CalcPounceAimPitch( gentity_t *self, botTarget_t target );
 float    CalcBarbAimPitch( gentity_t *self, botTarget_t target );
-bool BotCanEvolveToClass( gentity_t *self, class_t newClass );
+bool BotCanEvolveToClass( const gentity_t *self, class_t newClass );
 bool BotEvolveToClass( gentity_t *ent, class_t newClass );
 float    CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed );
 

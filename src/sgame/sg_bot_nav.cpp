@@ -113,7 +113,7 @@ Bot Navigation Querys
 ========================
 */
 
-float RadiusFromBounds2D( vec3_t mins, vec3_t maxs )
+float RadiusFromBounds2D( const vec3_t mins, const vec3_t maxs )
 {
 	float rad1s = Square( mins[0] ) + Square( mins[1] );
 	float rad2s = Square( maxs[0] ) + Square( maxs[1] );
