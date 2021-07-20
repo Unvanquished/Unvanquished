@@ -2380,7 +2380,14 @@ void CG_Rocket_DrawPlayerHealthCross()
 
 	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
 	{
-		shader = cgs.media.healthCross3X;
+		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+		{
+			shader = cgs.media.healthCross3X;
+		}
+		else
+		{
+			shader = cgs.media.healthCrossMedkit;
+		}
 	}
 
 	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
@@ -2391,7 +2398,7 @@ void CG_Rocket_DrawPlayerHealthCross()
 		}
 		else
 		{
-			shader = cgs.media.healthCrossMedkit;
+			shader = cgs.media.healthCross3X;
 		}
 	}
 
