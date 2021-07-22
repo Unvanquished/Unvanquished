@@ -113,14 +113,8 @@ clipHandle_t G_CM_ClipHandleForEntity( const gentity_t *ent )
 		return CM_InlineModel( ent->s.modelindex );
 	}
 
-	if ( ent->r.svFlags & SVF_CAPSULE )
-	{
-		// create a temp capsule from bounding box sizes
-		return CM_TempBoxModel( ent->r.mins, ent->r.maxs, true );
-	}
-
-	// create a temp tree from bounding box sizes
-	return CM_TempBoxModel( ent->r.mins, ent->r.maxs, false );
+	// create a temp tree/capsule from bounding box sizes
+	return CM_TempBoxModel( ent->r.mins, ent->r.maxs, /*capsule = */ ent->r.svFlags & SVF_CAPSULE );
 }
 
 /*
@@ -737,7 +731,6 @@ void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, c
 /*
 ====================
 G_CM_ClipMoveToEntities
-
 ====================
 */
 void G_CM_ClipMoveToEntities( moveclip_t *clip )
@@ -880,7 +873,7 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const
 	// -------------
 
 	CM_BoxTrace( &clip.trace, start, end, mins, maxs, 0, contentmask, skipmask, type );
-	clip.trace.entityNum = clip.trace.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
+	clip.trace.entityNum = clip.trace.fraction == 1.0 ? ENTITYNUM_NONE : ENTITYNUM_WORLD;
 
 	if ( clip.trace.fraction == 0 )
 	{

@@ -1755,7 +1755,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	if ( client->sess.spectatorState == SPECTATOR_NOT &&
 	     client->pers.team == TEAM_ALIENS )
 	{
-		if ( ent == spawn )
+		if ( evolving )
 		{
 			//evolution particle system
 			G_AddPredictableEvent( ent, EV_ALIEN_EVOLVE, DirToByte( up ) );
@@ -1842,7 +1842,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		// spawn given items have fired
 		client->ps.weapon = 1;
 
-		for ( i = WP_NUM_WEAPONS - 1; i > 0; i-- )
+		for ( i = WP_NUM_WEAPONS - 1; i > WP_NONE; i-- )
 		{
 			if ( BG_InventoryContainsWeapon( i, client->ps.stats ) )
 			{
