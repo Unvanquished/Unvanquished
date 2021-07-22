@@ -671,13 +671,19 @@ void BotMoveToGoal( gentity_t *self )
 	BotAvoidObstacles( self, dir );
 	BotSeek( self, dir );
 
-	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
+	// dumb bots don't know how to be efficient
+	if( self->botMind->botSkill.level < 5 )
+	{
+		return;
+	}
 
+	staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 	team_t targetTeam = TEAM_NONE;
 	if ( self->botMind->goal.targetsValidEntity() )
 	{
 		targetTeam = G_Team( self->botMind->goal.getTargetedEntity() );
 	}
+
 	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
 	switch ( self->client->pers.team )
 	{
