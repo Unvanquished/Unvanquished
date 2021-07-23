@@ -885,7 +885,8 @@ public:
 		if ( credits != value )
 		{
 			credits = value;
-			SetText( va( "%d", credits ) );
+			// print it, rounded down to the dozen
+			SetText( va( "%d", (credits/10)*10 ) );
 		}
 	}
 
