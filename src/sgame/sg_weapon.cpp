@@ -1335,7 +1335,7 @@ static void FindZapChainTargets( zap_t *zap )
 		if ( ( ( enemy->client &&
 		         enemy->client->pers.team == TEAM_HUMANS ) ||
 		       ( enemy->s.eType == entityType_t::ET_BUILDABLE &&
-		         BG_Buildable( enemy->s.modelindex )->team == TEAM_HUMANS ) ) &&
+		         G_Team( enemy ) == TEAM_HUMANS ) ) &&
 		     Entities::IsAlive( enemy ) &&
 		     distance <= LEVEL2_AREAZAP_CHAIN_RANGE )
 		{
@@ -1515,7 +1515,7 @@ static void FireAreaZap( gentity_t *ent )
 
 	if ( ( traceEnt->client && traceEnt->client->pers.team == TEAM_HUMANS ) ||
 	     ( traceEnt->s.eType == entityType_t::ET_BUILDABLE &&
-	       BG_Buildable( traceEnt->s.modelindex )->team == TEAM_HUMANS ) )
+	       G_Team( traceEnt ) == TEAM_HUMANS ) )
 	{
 		CreateNewZap( ent, traceEnt );
 	}

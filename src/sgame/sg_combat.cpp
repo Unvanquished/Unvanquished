@@ -1012,15 +1012,8 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 		default:
 			if ( actor->client )
 			{
-				if ( actor->client->pers.team ==
-				     BG_Buildable( self->s.modelindex )->team )
-				{
-					fate = BF_TEAMKILL;
-				}
-				else
-				{
-					fate = BF_DESTROY;
-				}
+				fate = G_OnSameTeam(self, actor) ?
+					BF_TEAMKILL : BF_DESTROY;
 			}
 			else
 			{
@@ -1047,10 +1040,9 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	             mod == MOD_DECONSTRUCT ? "deconstructed" : "destroyed",
 	             actor->client ? actor->client->pers.netname : "<world>" );
 
-	if ( actor->client && actor->client->pers.team ==
-	     BG_Buildable( self->s.modelindex )->team )
+	if ( G_OnSameTeam( self, actor ) )
 	{
-		G_TeamCommand( (team_t) actor->client->pers.team,
+		G_TeamCommand( G_Team( actor ),
 		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$\n") ) :
 						   QQ( N_("$1$ ^3DESTROYED^* by $2$\n") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),
