@@ -123,7 +123,7 @@ void              G_GetTotalBuildableValues(int *buildableValuesByTeam);
 void              G_AddCreditToClient( gclient_t *client, short credit, bool cap );
 void              G_SetClientViewAngle( gentity_t *ent, const vec3_t angle );
 gentity_t         *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles );
-gentity_t         *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
+gentity_t         *G_SelectRandomFurthestSpawnPoint( const vec3_t avoidPoint, vec3_t origin, vec3_t angles );
 gentity_t         *G_SelectLockSpawnPoint( vec3_t origin, vec3_t angles , char const* intermission );
 gentity_t         *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles );
 gentity_t         *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles );
