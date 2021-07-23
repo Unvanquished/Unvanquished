@@ -891,9 +891,9 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const
 		maxs2 = vec3_origin;
 	}
 
-    vec3_t mins, maxs;
-    VectorCopy(mins2, mins);
-    VectorCopy(maxs2, maxs);
+	vec3_t mins, maxs;
+	VectorCopy(mins2, mins);
+	VectorCopy(maxs2, maxs);
 
 	memset( &clip, 0, sizeof( moveclip_t ) );
 
