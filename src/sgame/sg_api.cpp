@@ -172,13 +172,6 @@ bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *e
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                  const vec3_t end, int passEntityNum, int contentmask, int skipmask )
 {
-	vec3_t origin = {0.0f, 0.0f, 0.0f};
-	if (!mins) {
-		mins = origin;
-	}
-	if (!maxs) {
-		mins = origin;
-	}
 	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, skipmask, traceType_t::TT_AABB);
 }
 
