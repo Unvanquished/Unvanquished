@@ -690,8 +690,7 @@ void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, c
                         const vec3_t end, int entityNum, int contentmask, traceType_t type )
 {
 	gentity_t *touch;
-	clipHandle_t   clipHandle;
-	float          *origin, *angles;
+	clipHandle_t clipHandle;
 
 	touch = &g_entities[ entityNum ];
 
@@ -708,16 +707,17 @@ void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, c
 	// might intersect, so do an exact clip
 	clipHandle = G_CM_ClipHandleForEntity( touch );
 
-	origin = touch->r.currentOrigin;
-	angles = touch->r.currentAngles;
+	const float *origin = touch->r.currentOrigin;
+	const float *angles = touch->r.currentAngles;
 
 	if ( !touch->r.bmodel )
 	{
 		angles = vec3_origin; // boxes don't rotate
 	}
 
-	CM_TransformedBoxTrace( trace, ( float * ) start, ( float * ) end, ( float * ) mins,
-	                        ( float * ) maxs, clipHandle, contentmask, 0, origin, angles, type );
+	CM_TransformedBoxTrace( trace, start, end, mins,
+	                        maxs, clipHandle, contentmask,
+				0, origin, angles, type );
 
 	if ( trace->fraction < 1 )
 	{
@@ -741,7 +741,6 @@ void G_CM_ClipMoveToEntities( moveclip_t *clip )
 	int            passOwnerNum;
 	trace_t        trace;
 	clipHandle_t   clipHandle;
-	float          *origin, *angles;
 
 	num = G_CM_AreaEntities( clip->boxmins, clip->boxmaxs, touchlist, MAX_GENTITIES );
 
@@ -802,8 +801,8 @@ void G_CM_ClipMoveToEntities( moveclip_t *clip )
 		// might intersect, so do an exact clip
 		clipHandle = G_CM_ClipHandleForEntity( touch );
 
-		origin = touch->r.currentOrigin;
-		angles = touch->r.currentAngles;
+		const float *origin = touch->r.currentOrigin;
+		const float *angles = touch->r.currentAngles;
 
 		if ( !touch->r.bmodel )
 		{
