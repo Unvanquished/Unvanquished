@@ -5163,12 +5163,10 @@ bool G_admin_buildlog( gentity_t *ent )
 	int        time;
 	int        start = MAX_CLIENTS + level.buildId - level.numBuildLogs;
 	int        i = 0, j;
-	int        team;
-	bool   admin;
+	bool       admin = !ent || G_admin_permission( ent, "buildlog_admin" );
+	int        team = admin ? TEAM_NONE : G_Team( ent );
 	buildLog_t *log;
 
-	admin = !ent || G_admin_permission( ent, "buildlog_admin" );
-	team = admin ? TEAM_NONE : ent->client->pers.team;
 
 	if ( !admin && team == TEAM_NONE )
 	{
