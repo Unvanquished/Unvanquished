@@ -1387,3 +1387,15 @@ team_t CG_Team(const entityState_t &es)
 			return TEAM_NONE;
 	}
 }
+
+int CG_Health(const entityState_t &es)
+{
+	switch (es.eType)
+	{
+		case entityType_t::ET_PLAYER:
+		case entityType_t::ET_BUILDABLE:
+			return es.generic1;
+		default:
+			return 0;
+	}
+}

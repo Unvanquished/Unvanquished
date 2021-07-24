@@ -2036,6 +2036,17 @@ inline team_t CG_Team(const centity_t *ent) {
 	return CG_Team(ent->currentState);
 }
 
+int CG_Health(const entityState_t &es);
+inline int CG_Health(const centity_t *ent) {
+	return CG_Health(ent->currentState);
+}
+inline bool CG_IsAlive(const entityState_t &es) {
+	return CG_Health(es) > 0;
+}
+inline bool CG_IsAlive(const centity_t *ent) {
+	return CG_Health(ent->currentState) > 0;
+}
+
 //
 // cg_weapons.c
 //
