@@ -1369,3 +1369,21 @@ void CG_AddPacketEntities()
 		}
 	}
 }
+
+// see also G_Team in src/sgame/sg_ents.cpp
+team_t CG_Team(const entityState_t &es)
+{
+	switch (es.eType)
+	{
+		case entityType_t::ET_PLAYER:
+		case entityType_t::ET_CORPSE:
+		{
+			clientInfo_t &ci = cgs.clientinfo[es.clientNum];
+			return (team_t) ci.team;
+		}
+		case entityType_t::ET_BUILDABLE:
+			return (team_t) es.modelindex2;
+		default:
+			return TEAM_NONE;
+	}
+}
