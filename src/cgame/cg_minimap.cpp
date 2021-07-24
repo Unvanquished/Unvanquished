@@ -516,7 +516,7 @@ CG_MinimapDrawTeammates
 /*
 static void CG_MinimapDrawTeammates( const minimap_t* m )
 {
-    int ownTeam = cg.predictedPlayerState.persistant[ PERS_TEAM ];
+    int ownTeam = CG_MyTeam();
     int i;
 
     for ( i = 0; i < MAX_GENTITIES; i++ )
@@ -527,6 +527,7 @@ static void CG_MinimapDrawTeammates( const minimap_t* m )
         int clientNum = mate->currentState.clientNum;
 
         bool isTeammate = mate->currentState.eType == ET_PLAYER && clientNum >= 0 && clientNum < MAX_CLIENTS && (mate->currentState.misc & 0x00FF) == ownTeam;
+	// use CG_Team(mate)?
 
         if ( !isTeammate )
         {

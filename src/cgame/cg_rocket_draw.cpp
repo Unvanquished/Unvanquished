@@ -1059,7 +1059,7 @@ public:
 		es = &cg_entities[ trace.entityNum ].currentState;
 
 		if ( es->eType == entityType_t::ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-			cg.predictedPlayerState.persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
+			CG_IsOnMyTeam(*es) )
 		{
 			//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
 			if ( es->modelindex == BA_H_REACTOR &&
@@ -1516,8 +1516,6 @@ static void CG_ScanForCrosshairEntity()
 {
 	trace_t       trace;
 	vec3_t        start, end;
-	team_t        ownTeam, targetTeam;
-	entityState_t *targetState;
 
 	if ( cg.snap == nullptr )
 	{
@@ -1545,18 +1543,19 @@ static void CG_ScanForCrosshairEntity()
 		return;
 	}
 
-	ownTeam = ( team_t ) cg.snap->ps.persistant[ PERS_TEAM ];
-	targetState = &cg_entities[ trace.entityNum ].currentState;
+	entityState_t &targetState = cg_entities[ trace.entityNum ].currentState;
+
+	team_t ownTeam    = CG_MyTeam();
+	team_t targetTeam = CG_Team(targetState);
 
 	if ( trace.entityNum >= MAX_CLIENTS )
 	{
 		// we have a non-client entity
 
 		// set friend/foe if it's a living buildable
-		if ( targetState->eType == entityType_t::ET_BUILDABLE && targetState->generic1 > 0 )
+		if ( targetState.eType == entityType_t::ET_BUILDABLE
+				&& CG_IsAlive(targetState) )
 		{
-			targetTeam = BG_Buildable( targetState->modelindex )->team;
-
 			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
 			{
 				cg.crosshairFriend = true;
@@ -1569,41 +1568,37 @@ static void CG_ScanForCrosshairEntity()
 		}
 
 		// set more stuff if requested
-		if ( cg_drawEntityInfo.integer && targetState->eType != entityType_t::ET_GENERAL )
+		if ( cg_drawEntityInfo.integer && targetState.eType != entityType_t::ET_GENERAL )
 		{
 			cg.crosshairClientNum = trace.entityNum;
 			cg.crosshairClientTime = cg.time;
 		}
 	}
-
 	else
 	{
-		// we have a client entity
-		targetTeam = cgs.clientinfo[ trace.entityNum ].team;
-
 		// only react to living clients
-		if ( targetState->generic1 > 0 )
-		{
-			// set friend/foe
-			if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
-			{
-				cg.crosshairFriend = true;
+		if ( !CG_IsAlive(targetState) )
+			return;
 
-				// only set this for friendly clients as it triggers name display
+		// set friend/foe
+		if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
+		{
+			cg.crosshairFriend = true;
+
+			// only set this for friendly clients as it triggers name display
+			cg.crosshairClientNum = trace.entityNum;
+			cg.crosshairClientTime = cg.time;
+		}
+
+		else if ( targetTeam != TEAM_NONE )
+		{
+			cg.crosshairFoe = true;
+
+			if ( ownTeam == TEAM_NONE )
+			{
+				// spectating, so show the name
 				cg.crosshairClientNum = trace.entityNum;
 				cg.crosshairClientTime = cg.time;
-			}
-
-			else if ( targetTeam != TEAM_NONE )
-			{
-				cg.crosshairFoe = true;
-
-				if ( ownTeam == TEAM_NONE )
-				{
-					// spectating, so show the name
-					cg.crosshairClientNum = trace.entityNum;
-					cg.crosshairClientTime = cg.time;
-				}
 			}
 		}
 	}
@@ -1667,7 +1662,7 @@ public:
 
 		// add health from overlay info to the crosshair client name
 		if ( cg_teamOverlayUserinfo.integer &&
-			cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_NONE &&
+			CG_MyTeam() != TEAM_NONE &&
 			cgs.teamInfoReceived &&
 			cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
 		{
@@ -1707,15 +1702,13 @@ public:
 	void DoOnUpdate()
 	{
 		float momentum;
-		team_t team;
+		team_t team = CG_MyTeam();
 
 		if ( cg.intermissionStarted )
 		{
 			Clear();
 			return;
 		}
-
-		team = ( team_t ) cg.snap->ps.persistant[ PERS_TEAM ];
 
 		if ( team <= TEAM_NONE || team >= NUM_TEAMS )
 		{
@@ -2392,7 +2385,7 @@ void CG_Rocket_DrawPlayerHealthCross()
 
 	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
 	{
-		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+		if ( CG_MyTeam() == TEAM_ALIENS )
 		{
 			shader = cgs.media.healthCross2X;
 		}
@@ -2410,7 +2403,7 @@ void CG_Rocket_DrawPlayerHealthCross()
 	// Pick the alpha value
 	color = ref_color;
 
-	if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
+	if ( CG_MyTeam() == TEAM_HUMANS &&
 			cg.snap->ps.stats[ STAT_HEALTH ] < 10 )
 	{
 		color = Color::Red;
@@ -2990,10 +2983,8 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	// data
 	rectDef_t     rect;
 	Color::Color  foreColor, backColor, lockedColor, unlockedColor;
-	playerState_t *ps;
-	float         momentum, rawFraction, fraction, glowFraction, glowOffset, borderSize;
+	float         rawFraction, fraction, glowFraction, glowOffset, borderSize;
 	int           threshold;
-	team_t        team;
 	bool      unlocked;
 
 	momentumThresholdIterator_t unlockableIter = { -1, 0 };
@@ -3011,10 +3002,8 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 
 
-	ps = &cg.predictedPlayerState;
-
-	team = ( team_t ) ps->persistant[ PERS_TEAM ];
-	momentum = ps->persistant[ PERS_MOMENTUM ] / 10.0f;
+	team_t team = CG_MyTeam();
+	float momentum = cg.predictedPlayerState.persistant[ PERS_MOMENTUM ] / 10.0f;
 
 	x = rect.x;
 	y = rect.y;
@@ -3156,8 +3145,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	Color::Color  foreColour, backColour;
 	momentumThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
 
-	// data
-	team_t    team;
+	team_t team = CG_MyTeam();
 
 	// display
 	float x, y, w, h, iw, ih, borderSize;
@@ -3175,8 +3163,6 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	Rocket_GetProperty( "cell-color", &backColour, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 	CG_GetRocketElementColor( foreColour );
 	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
-
-	team = ( team_t ) cg.predictedPlayerState.persistant[ PERS_TEAM ];
 
 	w = rect.w - 2 * borderSize;
 	h = rect.h - 2 * borderSize;
@@ -3345,7 +3331,7 @@ static void CG_Rocket_DrawVote()
 
 static void CG_Rocket_DrawTeamVote()
 {
-	CG_Rocket_DrawVote_internal( ( team_t ) cg.predictedPlayerState.persistant[ PERS_TEAM ] );
+	CG_Rocket_DrawVote_internal( CG_MyTeam() );
 }
 
 static void CG_Rocket_DrawSpawnQueuePosition()

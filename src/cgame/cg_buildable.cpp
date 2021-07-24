@@ -316,7 +316,6 @@ Sets buildable particle system to a fire effect if buildable is burning
 static void CG_OnFire( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
-	team_t        team = BG_Buildable( es->modelindex )->team;
 
 	if ( es->eType != entityType_t::ET_BUILDABLE )
 	{
@@ -333,7 +332,7 @@ static void CG_OnFire( centity_t *cent )
 		return;
 	}
 
-	switch ( team )
+	switch ( CG_Team(*es) )
 	{
 		case TEAM_ALIENS:
 			if ( !CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
@@ -2518,7 +2517,7 @@ void CG_Buildable( centity_t *cent )
 	CG_BuildableParticleEffects( cent );
 
 	// draw range marker if enabled
-	if( team == cg.predictedPlayerState.persistant[ PERS_TEAM ] ) {
+	if( team == CG_MyTeam() ) {
 		bool drawRange;
 		float dist, maxDist = std::max( RADAR_RANGE, ALIENSENSE_RANGE );
 
