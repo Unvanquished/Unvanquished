@@ -1040,17 +1040,17 @@ CG_CEntityPVSEnter
 */
 static void CG_CEntityPVSEnter( centity_t *cent )
 {
-	entityState_t *es = &cent->currentState;
+	entityState_t &es = cent->currentState;
 
 	if ( cg_debugPVS.integer )
 	{
 		Log::Debug( "Entity %d entered PVS", cent->currentState.number );
 	}
 
-	switch ( es->eType )
+	switch ( es.eType )
 	{
 		case entityType_t::ET_BUILDABLE:
-			cent->lastBuildableHealth = es->generic1;
+			cent->lastBuildableHealth = CG_Health(es);
 			break;
 
 		case entityType_t::ET_LIGHTFLARE:
@@ -1078,7 +1078,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	//when a buildable enters the PVS
 	cent->buildableAnim = BANIM_NONE;
 	cent->lerpFrame.animationNumber = BANIM_NONE;
-	cent->oldBuildableAnim = (buildableAnimNumber_t) es->legsAnim;
+	cent->oldBuildableAnim = (buildableAnimNumber_t) es.legsAnim;
 	cent->radarVisibility = 0.0f;
 
 	cent->pvsEnterTime = cg.time;
