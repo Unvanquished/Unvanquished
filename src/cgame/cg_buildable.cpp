@@ -1339,7 +1339,7 @@ static void CG_BuildableParticleEffects( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	team_t        team = BG_Buildable( es->modelindex )->team;
-	int           health = es->generic1;
+	int           health = CG_Health(*es);
 	float         healthFrac = ( float ) health / BG_Buildable( es->modelindex )->health;
 
 	if ( !( es->eFlags & EF_B_SPAWNED ) )
@@ -1594,8 +1594,6 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 
 static Color::Color HealthColorFade( float healthFrac, buildStat_t *bs )
 {
-	float frac;
-
 	healthFrac = Math::Clamp( healthFrac, 0.0f, 1.0f );
 
 	if ( healthFrac == 1.0f )
@@ -1606,17 +1604,17 @@ static Color::Color HealthColorFade( float healthFrac, buildStat_t *bs )
 	Color::Color out;
 	if ( healthFrac > 0.666f )
 	{
-		frac = 1.0f - ( healthFrac - 0.666f ) * 3.0f;
+		float frac = 1.0f - ( healthFrac - 0.666f ) * 3.0f;
 		out = Color::Blend( bs->healthGuardedColor, bs->healthElevatedColor, frac );
 	}
 	else if ( healthFrac > 0.333f )
 	{
-		frac = 1.0f - ( healthFrac - 0.333f ) * 3.0f;
+		float frac = 1.0f - ( healthFrac - 0.333f ) * 3.0f;
 		out = Color::Blend( bs->healthElevatedColor, bs->healthHighColor, frac );
 	}
 	else
 	{
-		frac = 1.0f - healthFrac * 3.0f;
+		float frac = 1.0f - healthFrac * 3.0f;
 		out = Color::Blend( bs->healthHighColor, bs->healthSevereColor, frac );
 	}
 
@@ -1644,7 +1642,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
 	float         healthFrac, mineEfficiencyFrac = 0.0f;
-	int           health;
+	int           health = CG_Health(*es);
 	float         x, y;
 	bool          powered, marked, showMineEfficiency;
 	trace_t       tr;
@@ -1812,15 +1810,13 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	}
 
 	// calculate health bar size
-	{
-		health     = es->generic1;
-		healthFrac = static_cast<float>(health) / static_cast<float>(attr->health);
-		healthFrac = Math::Clamp( healthFrac, 0.0f, 1.0f );
+	healthFrac = static_cast<float>(health)
+		/ static_cast<float>(attr->health);
+	healthFrac = Math::Clamp( healthFrac, 0.0f, 1.0f );
 
-		if ( health > 0.0f && healthFrac < 0.01f )
-		{
-			healthFrac = 0.01f;
-		}
+	if ( health > 0.0f && healthFrac < 0.01f )
+	{
+		healthFrac = 0.01f;
 	}
 
 	// draw elements
@@ -2128,7 +2124,7 @@ void CG_Buildable( centity_t *cent )
 	vec3_t        surfNormal, xNormal, mins, maxs;
 	vec3_t        refNormal = { 0.0f, 0.0f, 1.0f };
 	float         scale;
-	int           health;
+	int           health = CG_Health(cent);
 	buildable_t   buildable = (buildable_t)es->modelindex;
 	const buildableAttributes_t  *ba  = BG_Buildable( buildable );
 	const buildableModelConfig_t *bmc = BG_BuildableModelConfig( buildable );
@@ -2394,7 +2390,7 @@ void CG_Buildable( centity_t *cent )
 		CG_TransformSkeleton( &ent.skeleton, adjustScale );
 	}
 
-	if ( es->generic1 <= 0 )
+	if ( health <= 0 )
 	{
 		ent.altShaderIndex = CG_ALTSHADER_DEAD;
 	}
@@ -2492,14 +2488,12 @@ void CG_Buildable( centity_t *cent )
 		}
 
 		// Play lockon sound if applicable.
-		if ( es->generic1 > 0 && ( es->eFlags & EF_B_LOCKON ) )
+		if ( health > 0 && ( es->eFlags & EF_B_LOCKON ) )
 		{
 			trap_S_AddLoopingSound( es->number, cent->lerpOrigin, vec3_origin,
 			                        cgs.media.rocketpodLockonSound );
 		}
 	}
-
-	health = es->generic1;
 
 	if ( health < cent->lastBuildableHealth && ( es->eFlags & EF_B_SPAWNED ) )
 	{

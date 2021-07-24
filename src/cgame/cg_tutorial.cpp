@@ -153,7 +153,7 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 
 	if ( healthFraction )
 	{
-		float health = static_cast<float>(es.generic1);
+		float health = static_cast<float>(CG_Health(es));
 		*healthFraction = health / BG_Buildable( es.modelindex )->health;
 	}
 
