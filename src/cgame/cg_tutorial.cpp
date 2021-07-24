@@ -145,8 +145,7 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 
 	entityState_t &es = cg_entities[ trace.entityNum ].currentState;
 
-	if ( es.eType != entityType_t::ET_BUILDABLE ||
-		ps->persistant[ PERS_TEAM ] != BG_Buildable( es.modelindex )->team )
+	if ( es.eType != entityType_t::ET_BUILDABLE || !CG_IsOnMyTeam(es) )
 	{
 		return nullptr;
 	}

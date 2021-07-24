@@ -612,10 +612,8 @@ Called on weapon change
 */
 void CG_OnPlayerWeaponChange()
 {
-	playerState_t *ps = &cg.snap->ps;
-
 	// Change the HUD to match the weapon. Close the old hud first
-	Rocket_ShowHud( ps->weapon );
+	Rocket_ShowHud( cg.snap->ps.weapon );
 
 	CG_Rocket_UpdateArmouryMenu();
 	cg.weaponOffsetsFilter.Reset( );
@@ -633,10 +631,8 @@ Called on upgrade change
 
 void CG_Rocket_UpdateArmouryMenu()
 {
-	playerState_t *ps = &cg.snap->ps;
-
 	// Rebuild weapon lists if UI is in focus.
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( trap_Key_GetCatcher() == KEYCATCH_UI && CG_MyTeam() == TEAM_HUMANS )
 	{
 		Rocket::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
 		if ( document->IsVisible() )
@@ -1189,7 +1185,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				break;
 			}
 
-			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
+			switch ( CG_MyTeam() )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindAttack, soundChannel_t::CHAN_ANNOUNCER );
@@ -1211,7 +1207,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_MAIN_DYING:
-			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
+			switch ( CG_MyTeam() )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindDying, soundChannel_t::CHAN_ANNOUNCER );
@@ -1269,7 +1265,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_NO_SPAWNS:
-			switch ( cg.predictedPlayerState.persistant[ PERS_TEAM ] )
+			switch ( CG_MyTeam() )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, soundChannel_t::CHAN_ANNOUNCER );

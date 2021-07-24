@@ -2480,7 +2480,6 @@ static void DrawGenericHitEffect( vec3_t origin, vec3_t normal, qhandle_t psHand
 
 static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 {
-	team_t           team;
 	qhandle_t        psHandle;
 	particleSystem_t *ps;
 	centity_t        *target;
@@ -2490,14 +2489,12 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 	switch ( target->currentState.eType )
 	{
 	case entityType_t::ET_PLAYER:
-		team = cgs.clientinfo[ targetNum ].team;
-
 		if (!cg_blood.integer)
 		{
 			return;
 		}
 
-		switch ( team )
+		switch ( CG_Team(target) )
 		{
 		case TEAM_ALIENS:
 			psHandle = cgs.media.alienBleedPS;
@@ -2511,9 +2508,7 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 		break;
 
 	case entityType_t::ET_BUILDABLE:
-		team = BG_Buildable( target->currentState.modelindex )->team;
-
-		switch ( team )
+		switch ( CG_Team(target) )
 		{
 		case TEAM_ALIENS:
 			psHandle = cgs.media.alienBuildableBleedPS;
@@ -2795,7 +2790,7 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 		PlayHitSound( origin, wim->impactFleshSound );
 	}
 	else if ( victim->currentState.eType == entityType_t::ET_BUILDABLE &&
-			  BG_Buildable( victim->currentState.modelindex )->team == TEAM_ALIENS )
+			  CG_Team(victim) == TEAM_ALIENS )
 	{
 		PlayHitSound( origin, wim->impactFleshSound );
 	}
@@ -2886,7 +2881,7 @@ void CG_HandleMissileHitEntity( entityState_t *es, vec3_t origin )
 		PlayHitSound( origin, ma->impactFleshSound );
 	}
 	else if ( victim->currentState.eType == entityType_t::ET_BUILDABLE &&
-			  BG_Buildable( victim->currentState.modelindex )->team == TEAM_ALIENS )
+			  CG_Team(victim) == TEAM_ALIENS )
 	{
 		PlayHitSound( origin, ma->impactFleshSound );
 	}

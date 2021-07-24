@@ -812,7 +812,7 @@ void CG_OffsetFirstPersonView()
 	}
 
 	// this *feels* more realistic for humans <- this comment feels very descriptive
-	if ( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_HUMANS &&
+	if ( CG_MyTeam() == TEAM_HUMANS &&
 	     cg.predictedPlayerState.pm_type == PM_NORMAL )
 	{
 		angles[ PITCH ] += cg.bobfracsin * bob2 * 0.5;
