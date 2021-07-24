@@ -2036,6 +2036,21 @@ inline team_t CG_Team(const centity_t *ent) {
 	return CG_Team(ent->currentState);
 }
 
+// The team of yourself or the followed player.
+// To get the team you joined at the title screen, use
+//         cgs.clientinfo[ cg.clientNum ].team
+// But beware that this function is probably the one you want.
+inline team_t CG_MyTeam() {
+	return static_cast<team_t>(cg.predictedPlayerState.persistant[PERS_TEAM]);
+}
+
+inline bool CG_IsOnMyTeam(const centity_t *ent) {
+	return CG_Team(ent) == CG_MyTeam();
+}
+inline bool CG_IsOnMyTeam(const entityState_t &es) {
+	return CG_Team(es) == CG_MyTeam();
+}
+
 int CG_Health(const entityState_t &es);
 inline int CG_Health(const centity_t *ent) {
 	return CG_Health(ent->currentState);
