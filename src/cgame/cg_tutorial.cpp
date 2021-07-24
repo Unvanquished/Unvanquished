@@ -138,30 +138,26 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 {
 	vec3_t        view, point;
 	trace_t       trace;
-	entityState_t *es;
-	int           health;
 
 	AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
 	VectorMA( cg.refdef.vieworg, 64, view, point );
 	CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr, point, ps->clientNum, MASK_SHOT, 0 );
 
-	es = &cg_entities[ trace.entityNum ].currentState;
+	entityState_t &es = cg_entities[ trace.entityNum ].currentState;
 
-	if ( healthFraction )
-	{
-		health = es->generic1;
-		*healthFraction = ( float ) health / BG_Buildable( es->modelindex )->health;
-	}
-
-	if ( es->eType == entityType_t::ET_BUILDABLE &&
-	     ps->persistant[ PERS_TEAM ] == BG_Buildable( es->modelindex )->team )
-	{
-		return es;
-	}
-	else
+	if ( es.eType != entityType_t::ET_BUILDABLE ||
+		ps->persistant[ PERS_TEAM ] != BG_Buildable( es.modelindex )->team )
 	{
 		return nullptr;
 	}
+
+	if ( healthFraction )
+	{
+		float health = static_cast<float>(es.generic1);
+		*healthFraction = health / BG_Buildable( es.modelindex )->health;
+	}
+
+	return &es;
 }
 
 /*
