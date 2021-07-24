@@ -2031,6 +2031,11 @@ void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *pare
                                     qhandle_t parentModel, const char *tagName );
 void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 
+team_t CG_Team(const entityState_t &es);
+inline team_t CG_Team(const centity_t *ent) {
+	return CG_Team(ent->currentState);
+}
+
 //
 // cg_weapons.c
 //
