@@ -551,16 +551,11 @@ int CG_StringToNetSource( const char *src )
 	{
 		return AS_LOCAL;
 	}
-
 	else if ( !Q_stricmp( src, "favorites" ) )
 	{
 		return AS_FAVORITES;
 	}
-
-	else
-	{
-		return AS_GLOBAL;
-	}
+	return AS_GLOBAL;
 }
 
 const char *CG_NetSourceToString( int netSrc )
@@ -688,20 +683,14 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return true;
 
 		case ELEMENT_LOADING:
-			if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE && rocketInfo.cstate.connState > connstate_t::CA_CONNECTED )
-			{
-				return true;
-			}
-
-			return false;
+			return (rocketInfo.cstate.connState
+					< connstate_t::CA_ACTIVE)
+				&& (rocketInfo.cstate.connState
+					> connstate_t::CA_CONNECTED);
 
 		case ELEMENT_GAME:
-			if ( rocketInfo.cstate.connState == connstate_t::CA_ACTIVE )
-			{
-				return true;
-			}
-
-			return false;
+			return rocketInfo.cstate.connState
+				== connstate_t::CA_ACTIVE;
 
 		default:
 			break;
@@ -716,37 +705,24 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 	switch( type )
 	{
 		case ELEMENT_ALIENS:
-			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
-			{
-				return true;
-			}
-
-			return false;
+			return (ps->persistant[ PERS_TEAM ] == TEAM_ALIENS)
+				&& (ps->stats[ STAT_HEALTH ] > 0)
+				&& (ps->weapon != WP_NONE);
 
 		case ELEMENT_HUMANS:
-			if ( ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
-			{
-				return true;
-			}
-
-			return false;
+			return (ps->persistant[ PERS_TEAM ] == TEAM_HUMANS)
+				&& (ps->stats[ STAT_HEALTH ] > 0)
+				&& (ps->weapon != WP_NONE);
 
 		case ELEMENT_BOTH:
-			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
-			{
-				return true;
-			}
-
-			return false;
+			return (ps->persistant[ PERS_TEAM ] != TEAM_NONE)
+				&& (ps->stats[ STAT_HEALTH ] > 0)
+				&& (ps->weapon != WP_NONE);
 
 		case ELEMENT_DEAD:
 			// If you're on a team and spectating, you're probably dead
-			if ( ps->persistant[ PERS_TEAM ] != TEAM_NONE && ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
-			{
-				return true;
-			}
-
-			return false;
+			return (ps->persistant[ PERS_TEAM ] != TEAM_NONE)
+				&& (ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT);
 
 		default:
 			return false;
