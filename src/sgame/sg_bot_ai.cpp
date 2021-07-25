@@ -1042,10 +1042,10 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 	struct
 	{
 		int &authorized;
-		class_t class_;
+		class_t item;
 		int price( void ) const
 		{
-			return BG_Class( class_ )->price;
+			return BG_Class( item )->price;
 		}
 	} classes[] =
 	{
@@ -1058,9 +1058,22 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 		{ g_bot_level0   .integer, PCL_ALIEN_LEVEL0     },
 	};
 
+	unsigned int numTeamUpgrades[UP_NUM_UPGRADES] = {};
+	unsigned int numTeamWeapons[WP_NUM_WEAPONS] = {};
+	unsigned int numTeamClasses[PCL_NUM_CLASSES] = {};
+	ListTeamEquipment( self, numTeamUpgrades, UP_NUM_UPGRADES, numTeamWeapons, WP_NUM_WEAPONS, numTeamClasses, PCL_NUM_CLASSES );
+	unsigned int alliesNumbers[MAX_CLIENTS] = {};
+	unsigned int nbTeam = ListTeamMembers( alliesNumbers, MAX_CLIENTS, self );
+
 	for ( auto const& cl : classes )
 	{
-		if ( cl.authorized && BotCanEvolveToClass( self, cl.class_ ) && BotEvolveToClass( self, cl.class_ ) )
+		// avoid everyone using the same weapon
+		if ( 100 * numTeamClasses[cl.item] / nbTeam > g_bot_maxSameWeapon.integer && cl.price() > 0 )
+		{
+			continue;
+		}
+
+		if ( cl.authorized && BotCanEvolveToClass( self, cl.item ) && BotEvolveToClass( self, cl.item ) )
 		{
 			return STATUS_SUCCESS;
 		}

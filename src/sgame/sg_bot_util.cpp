@@ -419,10 +419,10 @@ int BotValueOfUpgrades( gentity_t *self )
 // will favor better armor above everything else. If it is possible
 // to buy an armor, then evaluate other team-utilies and finally choose
 // the most expensive gun possible.
-// TODO: allow bots to buy jetpack and grenades, despite the fact
-//   they can't use them (yet. For grenades it should not be that
-//   hard?): since default cVar prevent bots to buy those, that
-//   will be one less thing to change later and would have no impact.
+// They will avoid ending all with the same weapon too.
+// TODO: allow bots to buy jetpack, despite the fact they can't use them
+//   (yet.): since default cVar prevent bots to buy those, that will be
+//   one less thing to change later and would have no impact.
 int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], size_t upgradesSize )
 {
 	ASSERT( self && upgrades );
@@ -436,8 +436,9 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 
 	unsigned int numTeamUpgrades[UP_NUM_UPGRADES] = {};
 	unsigned int numTeamWeapons[WP_NUM_WEAPONS] = {};
+	unsigned int numTeamClasses[PCL_NUM_CLASSES] = {};
 
-	ListTeamEquipment( self, numTeamUpgrades, UP_NUM_UPGRADES, numTeamWeapons, WP_NUM_WEAPONS );
+	ListTeamEquipment( self, numTeamUpgrades, UP_NUM_UPGRADES, numTeamWeapons, WP_NUM_WEAPONS, numTeamClasses, PCL_NUM_CLASSES );
 	weapon = WP_NONE;
 	for ( size_t i = 0; i < upgradesSize; ++i )
 	{
@@ -475,9 +476,10 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	//deeper refactoring (probably move equipments and classes into structs)
 	//and code to make bots _actually_ use other equipments.
 	unsigned int alliesNumbers[MAX_CLIENTS] = {};
-	int nbTeam = ListTeamMembers( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
+	int nbTeam = ListTeamMembers( alliesNumbers, MAX_CLIENTS, self );
 	int nbRadars = numTeamUpgrades[UP_RADAR];
-	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / nbTeam < 75;
+	//TODO: make the percent a cvar
+	bool teamNeedsRadar = 100 *  nbRadars / nbTeam < 75;
 
 	// others[0] is radar, buying this utility makes sense even if one can't buy
 	// a better weapon, because it helps the whole team.
@@ -497,6 +499,12 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		if ( wp.canBuyNow() && usableCapital >= wp.price()
 				&& ( usedSlots & wp.slots() ) == 0 )
 		{
+			// avoid everyone using the same weapon, except for smg
+			//TODO: make the percent a cvar
+			if ( 100 * numTeamWeapons[wp.item] / nbTeam > g_bot_maxSameWeapon.integer && wp.price() > 0 )
+			{
+				continue;
+			}
 			if ( wp.item == WP_FLAMER && numTeamWeapons[WP_FLAMER] > numTeamWeapons[WP_PULSE_RIFLE] )
 			{
 				continue;
@@ -1398,21 +1406,16 @@ float BotAimAngle( gentity_t *self, vec3_t pos )
 
 // fills allies with players of a team, and return the number of entities found.
 // pre-condition:
-// * team is playable
 // * allies is an array of at least alliesSize unsigned integers
 // * allies memory is initialized
 // * there are less than MAX_CLIENTS players in team
 // * there is enough space to store all team's player's references into allies
-unsigned int ListTeamMembers( unsigned int allies[], size_t alliesSize, team_t team )
+unsigned int ListTeamMembers( unsigned int allies[], size_t alliesSize, gentity_t const* self )
 {
-	ASSERT( G_IsPlayableTeam( team ) );
-	gentity_t *testEntity;
 	unsigned int numAllies = 0;
 	for ( size_t i = 0; i < MAX_CLIENTS && numAllies < alliesSize; i++ )
 	{
-		testEntity = &g_entities[i];
-		// this is pure guessing and luck...
-		if ( testEntity->client && testEntity->client->pers.team == team )
+		if ( G_OnSameTeam( &g_entities[i], const_cast<gentity_t*>( self ) ) )
 		{
 			allies[numAllies] = i;
 			numAllies++;
@@ -1518,15 +1521,20 @@ bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 // * numWeapons is an array of at least numWeaponsSize unsigned integers
 // * numWeapons memory is initialized
 // * self's team have less than MAX_CLIENTS players
-void ListTeamEquipment( gentity_t *self, unsigned int numUpgrades[], size_t numUpgradesSize, unsigned int numWeapons[], size_t numWeaponsSize )
+
+void ListTeamEquipment( gentity_t *self,
+		unsigned int numUpgrades[], size_t numUpgradesSize,
+		unsigned int numWeapons[], size_t numWeaponsSize,
+		unsigned int numClasses[], size_t numClassesSize )
 {
 	ASSERT( self );
 	ASSERT( numUpgrades );
 	ASSERT( numWeapons );
+	ASSERT( numClasses );
 	const team_t team = static_cast<team_t>( self->client->pers.team );
 	unsigned int alliesNumbers[MAX_CLIENTS];
 	memset( alliesNumbers, 0, sizeof( alliesNumbers ) );
-	unsigned int numTeamPlayers = ListTeamMembers( alliesNumbers, MAX_CLIENTS, team );
+	unsigned int numTeamPlayers = ListTeamMembers( alliesNumbers, MAX_CLIENTS, self );
 
 	for ( unsigned int i = 0; i < numTeamPlayers; ++i )
 	{
@@ -1536,6 +1544,7 @@ void ListTeamEquipment( gentity_t *self, unsigned int numUpgrades[], size_t numU
 			continue;
 		}
 		++numWeapons[ally->client->ps.stats[STAT_WEAPON]];
+		++numClasses[ally->client->ps.stats[STAT_CLASS]];
 		if ( team == TEAM_HUMANS )
 		{
 			// for all possible upgrades, check if current player already have it.

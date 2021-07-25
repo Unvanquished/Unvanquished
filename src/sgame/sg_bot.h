@@ -119,4 +119,11 @@ void     G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void     G_BotInit();
 void     G_BotCleanup();
 void G_BotFill( bool immediately );
+
+void ListTeamEquipment( gentity_t *self,
+		unsigned int numUpgrades[], size_t numUpgradesSize,
+		unsigned int numWeapons[], size_t numWeaponsSize,
+		unsigned int numClasses[], size_t numClassesSize );
+unsigned int ListTeamMembers( unsigned int allies[], size_t alliesSize, gentity_t const* team );
+
 #endif

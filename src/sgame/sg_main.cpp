@@ -216,6 +216,10 @@ Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, 
 
 // bot buy cvars
 vmCvar_t g_bot_buy;
+// bots won't buy a weapon if the team already have enough of it.
+// This is especially useful to prevent whole team equiping luci or
+// evolving to tyrants.
+vmCvar_t g_bot_maxSameWeapon;
 // human weapons
 vmCvar_t g_bot_ckit;
 vmCvar_t g_bot_rifle;
@@ -427,6 +431,7 @@ static cvarTable_t gameCvarTable[] =
 
 	// bots: buying weapons
 	{ &g_bot_buy, "g_bot_buy", "1",  0, 0, false, nullptr },
+	{ &g_bot_maxSameWeapon, "g_bot_maxSameWeapon", "60",  0, 0, false, nullptr },
 	{ &g_bot_ckit    , "g_bot_ckit"   , "1", 0, 0, false, nullptr },
 	{ &g_bot_rifle   , "g_bot_rifle"  , "1", 0, 0, false, nullptr },
 	{ &g_bot_painsaw , "g_bot_painsaw", "1", 0, 0, false, nullptr },
