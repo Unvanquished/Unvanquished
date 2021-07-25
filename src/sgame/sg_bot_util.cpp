@@ -33,7 +33,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
+static void ListTeamEquipment( gentity_t *self,
+		int numUpgrades[], size_t numUpgradesSize,
+		int numWeapons[], size_t numWeaponsSize,
+		int numClasses[], size_t numClassesSize );
 
 static float GetMaximalSpeed( gentity_t const *self );
 static float GetMaximalSpeed( class_t cl );
@@ -525,8 +528,20 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 		return STATUS_FAILURE;
 	}
 
+	int numTeamUpgrades[UP_NUM_UPGRADES] = {};
+	int numTeamWeapons[WP_NUM_WEAPONS] = {};
+	int numTeamClasses[PCL_NUM_CLASSES] = {};
+	ListTeamEquipment( self, numTeamUpgrades, UP_NUM_UPGRADES, numTeamWeapons, WP_NUM_WEAPONS, numTeamClasses, PCL_NUM_CLASSES );
+	int nbTeam = level.team[ G_Team( self ) ].numClients;
+
 	for ( auto const& cl : classes )
 	{
+		// avoid everyone using the same weapon
+		if ( 100 * numTeamClasses[cl.item] / nbTeam > g_bot_maxSameWeapon.Get() && cl.price() > 0 )
+		{
+			continue;
+		}
+
 		if ( BotEvolveToClass( self, cl.item ) )
 		{
 			return STATUS_SUCCESS;
@@ -548,9 +563,10 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 // will favor better armor above everything else. If it is possible
 // to buy an armor, then evaluate other team-utilies and finally choose
 // the most expensive gun possible.
+// They will avoid ending all with the same weapon too.
 // TODO: allow bots to buy jetpack, despite the fact they can't use them
-//  (yet): since default cVar prevent bots to buy those, that will be one
-//  less thing to change later and would have no impact.
+//   (yet.): since default cVar prevent bots to buy those, that will be
+//   one less thing to change later and would have no impact.
 int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], size_t upgradesSize )
 {
 	ASSERT( self && upgrades );
@@ -562,10 +578,11 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	size_t numUpgrades = 0;
 	int usedSlots = 0;
 
-	unsigned int numTeamUpgrades[UP_NUM_UPGRADES] = {};
-	unsigned int numTeamWeapons[WP_NUM_WEAPONS] = {};
+	int numTeamUpgrades[UP_NUM_UPGRADES] = {};
+	int numTeamWeapons[WP_NUM_WEAPONS] = {};
+	int numTeamClasses[PCL_NUM_CLASSES] = {};
 
-	ListTeamEquipment( self, numTeamUpgrades, numTeamWeapons );
+	ListTeamEquipment( self, numTeamUpgrades, UP_NUM_UPGRADES, numTeamWeapons, WP_NUM_WEAPONS, numTeamClasses, PCL_NUM_CLASSES );
 	weapon = WP_NONE;
 	for ( size_t i = 0; i < upgradesSize; ++i )
 	{
@@ -614,6 +631,12 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		if ( wp.canBuyNow() && usableCapital >= wp.price()
 				&& ( usedSlots & wp.slots() ) == 0 )
 		{
+			// avoid everyone using the same weapon, except for smg
+			//TODO: make the percent a cvar
+			if ( 100 * numTeamWeapons[wp.item] / nbTeam > g_bot_maxSameWeapon.Get() && wp.price() > 0 )
+			{
+				continue;
+			}
 			if ( wp.item == WP_FLAMER && numTeamWeapons[WP_FLAMER] > numTeamWeapons[WP_PULSE_RIFLE] )
 			{
 				continue;
@@ -1575,21 +1598,45 @@ bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 // Initializes numUpgrades and numWeapons arrays with team's current equipment
 // pre-condition:
 // * self points to a player which is inside a playable team
+// * numUpgrades is an array of at least numUpgradesSize unsigned integers
 // * numUpgrades memory is initialized
+// * numWeapons is an array of at least numWeaponsSize unsigned integers
 // * numWeapons memory is initialized
-static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] )
+// * self's team have less than MAX_CLIENTS players
+void ListTeamEquipment( gentity_t *self,
+                int numUpgrades[], size_t numUpgradesSize,
+                int numWeapons[], size_t numWeaponsSize,
+                int numClasses[], size_t numClassesSize )
 {
 	ASSERT( self );
+	ASSERT( numUpgrades );
+	ASSERT( numWeapons );
+	ASSERT( numClasses );
 	const team_t team = static_cast<team_t>( self->client->pers.team );
-
-	ForEntities<HumanClassComponent>([&](Entity& ent, HumanClassComponent&) {
-		gentity_t* ally = ent.oldEnt;
-		if ( ally == self || ally->client->pers.team != team )
+	unsigned int alliesNumbers[MAX_CLIENTS] = {};
+	unsigned int numTeamPlayers = 0;
+	for ( size_t i = 0; i < MAX_CLIENTS && numTeamPlayers < MAX_CLIENTS; i++ )
+	{
+		if ( G_OnSameTeam( &g_entities[i], const_cast<gentity_t*>( self ) ) )
 		{
-			return;
+			alliesNumbers[numTeamPlayers] = i;
+			numTeamPlayers++;
+		}
+	}
+
+	for ( unsigned int i = 0; i < numTeamPlayers; ++i )
+	{
+		gentity_t *ally = &g_entities[alliesNumbers[i]];
+		if ( ally == self )
+		{
+			continue;
 		}
 		++numWeapons[ally->client->ps.stats[STAT_WEAPON]];
-
+		++numClasses[ally->client->ps.stats[STAT_CLASS]];
+		if ( team != TEAM_HUMANS )
+		{
+			continue;
+		}
 		// for all possible upgrades, check if current player already have it.
 		// this is very fragile, at best, since it will break if TEAM_ALIENS becomes
 		// able to have upgrades. Class is not considered, neither.
@@ -1602,7 +1649,7 @@ static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_N
 				++numUpgrades[up];
 			}
 		}
-	});
+	}
 }
 
 bool BotTeamateHasWeapon( gentity_t *self, int weapon )

@@ -166,6 +166,7 @@ extern  Cvar::Cvar<float> g_devolveMaxBaseDistance;
 
 // bots: buying weapons cvars
 extern Cvar::Cvar<bool> g_bot_buy;
+extern Cvar::Cvar<int> g_bot_maxSameWeapon;
 extern Cvar::Cvar<int> g_bot_radarRatio;
 extern Cvar::Cvar<bool> g_bot_ckit;
 extern Cvar::Cvar<bool> g_bot_rifle;

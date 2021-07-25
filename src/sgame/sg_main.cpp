@@ -219,6 +219,7 @@ Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, 
 
 // bot buy cvars
 Cvar::Cvar<bool> g_bot_buy("g_bot_buy", "whether bots use the Armoury", Cvar::NONE, true);
+Cvar::Cvar<int> g_bot_maxSameWeapon("g_bot_maxSameWeapon", "bots target x% of team owning same weapon", Cvar::NONE, 75);
 // human weapons
 Cvar::Cvar<bool> g_bot_ckit("g_bot_ckit", "whether bots buy the Construction Kit (only current use is for repairs)", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_rifle("g_bot_rifle", "whether bots use SMG", Cvar::NONE, true);
