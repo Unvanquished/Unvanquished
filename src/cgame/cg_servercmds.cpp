@@ -95,6 +95,7 @@ static void CG_ParseTeamInfo()
 
 	count = trap_Argc();
 
+	team_t myteam = static_cast<team_t>( cg.snap->ps.persistant[ PERS_TEAM ] );
 	for ( i = 1; i < count; ++i ) // i is also incremented when writing into cgs.clientinfo
 	{
 		client = atoi( CG_Argv( i ) );
@@ -106,7 +107,7 @@ static void CG_ParseTeamInfo()
 		}
 
 		// wrong team? skip to the next one
-		if ( cgs.clientinfo[ client ].team != cg.snap->ps.persistant[ PERS_TEAM ] )
+		if ( cgs.clientinfo[ client ].team != myteam )
 		{
 			return;
 		}
@@ -116,7 +117,7 @@ static void CG_ParseTeamInfo()
 		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
 		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
 
-		if( cg.snap->ps.persistant[ PERS_TEAM ] != TEAM_ALIENS )
+		if( myteam != TEAM_ALIENS )
 		{
 			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( ++i ) );
 		}

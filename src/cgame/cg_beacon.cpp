@@ -508,7 +508,7 @@ static void DrawBeacon( cbeacon_t *b )
 	}
 */
 	// color
-	if( cg.predictedPlayerState.persistant[ PERS_TEAM ] == TEAM_NONE ||
+	if( CG_MyTeam() == TEAM_NONE ||
 	    b->type == BCT_TAG || b->type == BCT_BASE )
 	{
 		switch( b->ownerTeam )
@@ -732,7 +732,7 @@ std::string CG_BeaconName( const cbeacon_t *b )
 		return "b->type out of range";
 	}
 
-	team_t ownTeam    = (team_t)cg.predictedPlayerState.persistant[ PERS_TEAM ];
+	team_t ownTeam    = CG_MyTeam();
 	team_t beaconTeam = TargetTeam( b );
 
 	switch( b->type )
