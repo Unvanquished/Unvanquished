@@ -257,8 +257,6 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node );

@@ -49,6 +49,27 @@ botEntityAndDistance_t BotGetClosestBuildingAmongTypes(
 	return best_choice;
 }
 
+const gentity_t *BotGetHealTarget( gentity_t *self )
+{
+	if ( G_Team(self) == TEAM_HUMANS )
+	{
+		return self->botMind->closestBuildings[BA_H_MEDISTAT].ent;
+	}
+
+	// Aliens
+	if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
+	{
+		// powered booster
+		return self->botMind->closestBuildings[BA_A_BOOSTER].ent;
+	}
+	else
+	{
+		// no working booster, rely on creep instead
+		return BotGetClosestBuildingAmongTypes( self,
+			{ (class_t)BA_A_OVERMIND, (class_t)BA_A_LEECH, (class_t)BA_A_SPAWN } ).ent;
+	}
+}
+
 float BotGetBaseRushScore( gentity_t *ent )
 {
 

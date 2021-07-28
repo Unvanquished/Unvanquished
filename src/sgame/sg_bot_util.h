@@ -48,6 +48,7 @@ void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
 botEntityAndDistance_t BotGetClosestBuildingAmongTypes(
 		gentity_t *self, const std::initializer_list<class_t> classes );
+const gentity_t *BotGetHealTarget( gentity_t *self );
 
 // aiming
 void  BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
