@@ -445,8 +445,9 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 		{
 			continue;
 		}
-		if ( target->s.eType == entityType_t::ET_BUILDABLE && target->s.modelindex == buildingType &&
-		     ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) &&
+		if ( target->s.eType == entityType_t::ET_BUILDABLE &&
+		     target->s.modelindex == buildingType &&
+		     target->powered && target->spawned &&
 		     Entities::IsAlive( target ) )
 		{
 			newDistance = DistanceSquared( self->s.origin, target->s.origin );
@@ -479,26 +480,26 @@ void BotFindClosestBuildings( gentity_t *self )
 	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
 	{
 		float newDist;
-		//ignore entities that arnt in use
+		// ignore entities that aren't in use
 		if ( !testEnt->inuse )
 		{
 			continue;
 		}
 
-		//skip non buildings
+		// skip non buildings
 		if ( testEnt->s.eType != entityType_t::ET_BUILDABLE )
 		{
 			continue;
 		}
 
-		//ignore dead targets
+		// ignore dead targets
 		if ( Entities::IsDead( testEnt ) )
 		{
 			continue;
 		}
 
-		//skip human buildings that are currently building or arn't powered
-		if ( testEnt->buildableTeam == TEAM_HUMANS && ( !testEnt->powered || !testEnt->spawned ) )
+		// skip buildings that are currently building or aren't powered
+		if ( !testEnt->powered || !testEnt->spawned )
 		{
 			continue;
 		}
