@@ -457,6 +457,7 @@ static const struct
 	{ "destroy",          0,                       0                },
 	{ "destroyTestPS",    CG_DestroyTestPS_f,      0                },
 	{ "destroyTestTS",    CG_DestroyTestTS_f,      0                },
+	{ "devteam",          0,                       0                },
 	{ "follow",           0,                       CG_CompleteName  },
 	{ "follownext",       0,                       0                },
 	{ "followprev",       0,                       0                },
