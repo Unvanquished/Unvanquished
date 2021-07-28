@@ -33,6 +33,22 @@ Scoring functions for logic
 =======================
 */
 
+botEntityAndDistance_t BotGetClosestBuildingAmongTypes(
+		gentity_t *self, const std::initializer_list<class_t> classes )
+{
+	botEntityAndDistance_t best_choice = { nullptr, 1.0e30f };
+	for ( class_t class_ : classes )
+	{
+		botEntityAndDistance_t candidate =
+			self->botMind->closestBuildings[ class_ ];
+		if ( candidate.ent && candidate.distance < best_choice.distance )
+		{
+			best_choice = candidate;
+		}
+	}
+	return best_choice;
+}
+
 float BotGetBaseRushScore( gentity_t *ent )
 {
 
@@ -95,13 +111,12 @@ float BotGetHealScore( gentity_t *self )
 		{
 			distToHealer = self->botMind->closestBuildings[ BA_A_BOOSTER ].distance;
 		}
-		else if ( self->botMind->closestBuildings[ BA_A_OVERMIND ].ent )
+		else
 		{
-			distToHealer = self->botMind->closestBuildings[ BA_A_OVERMIND ].distance;
-		}
-		else if ( self->botMind->closestBuildings[ BA_A_SPAWN ].ent )
-		{
-			distToHealer = self->botMind->closestBuildings[BA_A_SPAWN].distance;
+			// no booster, let's use creep instead
+			distToHealer =
+				BotGetClosestBuildingAmongTypes( self,
+					{ (class_t)BA_A_OVERMIND, (class_t)BA_A_LEECH, (class_t)BA_A_SPAWN } ).distance;
 		}
 	}
 	else
