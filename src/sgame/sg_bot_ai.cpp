@@ -1102,13 +1102,10 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 	{
 		healTarget = self->botMind->closestBuildings[BA_A_BOOSTER].ent;
 	}
-	else if ( self->botMind->closestBuildings[BA_A_OVERMIND].ent )
+	else
 	{
-		healTarget = self->botMind->closestBuildings[BA_A_OVERMIND].ent;
-	}
-	else if ( self->botMind->closestBuildings[BA_A_SPAWN].ent )
-	{
-		healTarget = self->botMind->closestBuildings[BA_A_SPAWN].ent;
+		healTarget = BotGetClosestBuildingAmongTypes( self,
+			{ (class_t)BA_A_OVERMIND, (class_t)BA_A_LEECH, (class_t)BA_A_SPAWN } ).ent;
 	}
 
 	if ( !healTarget )

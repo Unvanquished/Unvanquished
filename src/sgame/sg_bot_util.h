@@ -46,6 +46,8 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
 bool   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
+botEntityAndDistance_t BotGetClosestBuildingAmongTypes(
+		gentity_t *self, const std::initializer_list<class_t> classes );
 
 // aiming
 void  BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
