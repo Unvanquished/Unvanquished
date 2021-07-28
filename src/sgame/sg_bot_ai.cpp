@@ -992,15 +992,58 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_RUNNING;
 }
 
+static AINodeStatus_t BotActionReachHealA( gentity_t *self );
+static AINodeStatus_t BotActionReachHealH( gentity_t *self );
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 {
+	bool needsMedikit = G_Team(self) == TEAM_HUMANS
+			     && !BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
+	bool fullyHealed = Entities::HasFullHealth(self) && !needsMedikit;
+
+	if ( self->botMind->currentNode != node )
+	{
+		if ( fullyHealed )
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !BotChangeGoalEntity( self, BotGetHealTarget( self ) ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	if ( fullyHealed )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	// Sanity check. Is this needed?
+	if ( !BotTargetIsEntity( self->botMind->goal ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	// Can't heal at dead targets.
+	if ( Entities::IsDead( self->botMind->goal.ent ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	// Can't heal at powered off buildables
+	if ( !self->botMind->goal.ent->powered )
+	{
+		return STATUS_FAILURE;
+	}
+
 	if ( G_Team( self ) == TEAM_HUMANS )
 	{
-		return BotActionHealH( self, node );
+		return BotActionReachHealH( self );
 	}
 	else
 	{
-		return BotActionHealA( self, node );
+		return BotActionReachHealA( self );
 	}
 }
 
@@ -1094,59 +1137,9 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 	return status;
 }
 
-AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
+static AINodeStatus_t BotActionReachHealA( gentity_t *self )
 {
-	gentity_t const *healTarget = nullptr;
-
-	if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
-	{
-		healTarget = self->botMind->closestBuildings[BA_A_BOOSTER].ent;
-	}
-	else
-	{
-		healTarget = BotGetClosestBuildingAmongTypes( self,
-			{ (class_t)BA_A_OVERMIND, (class_t)BA_A_LEECH, (class_t)BA_A_SPAWN } ).ent;
-	}
-
-	if ( !healTarget )
-	{
-		return STATUS_FAILURE;
-	}
-
-	if ( self->client->pers.team != TEAM_ALIENS )
-	{
-		return STATUS_FAILURE;
-	}
-
-	if ( self->botMind->currentNode != node )
-	{
-		// already fully healed
-		if ( Entities::HasFullHealth(self) )
-		{
-			return STATUS_FAILURE;
-		}
-
-		if ( !BotChangeGoalEntity( self, healTarget ) )
-		{
-			return STATUS_FAILURE;
-		}
-
-		self->botMind->currentNode = node;
-	}
-
-	//we are fully healed now
-	if ( Entities::HasFullHealth(self) )
-	{
-		return STATUS_SUCCESS;
-	}
-
-	if ( !BotTargetIsEntity( self->botMind->goal ) )
-	{
-		return STATUS_FAILURE;
-	}
-
-	// Can't heal at dead targets.
-	if ( Entities::IsDead( self->botMind->goal.ent ) )
+	if ( G_Team( self ) != TEAM_ALIENS )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1161,51 +1154,12 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 /*
 	human specific actions
 */
-AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
+static AINodeStatus_t BotActionReachHealH( gentity_t *self )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
-	bool fullyHealed = Entities::HasFullHealth(self) &&
-	                   BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
 	if ( G_Team( self ) != TEAM_HUMANS )
-	{
-		return STATUS_FAILURE;
-	}
-
-	if ( self->botMind->currentNode != node )
-	{
-		if ( fullyHealed )
-		{
-			return STATUS_FAILURE;
-		}
-
-		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent ) )
-		{
-			return STATUS_FAILURE;
-		}
-		self->botMind->currentNode = node;
-	}
-
-	if ( fullyHealed )
-	{
-		return STATUS_SUCCESS;
-	}
-
-	//safety check
-	if ( !BotTargetIsEntity( self->botMind->goal ) )
-	{
-		return STATUS_FAILURE;
-	}
-
-	// Can't heal at dead targets.
-	if ( Entities::IsDead( self->botMind->goal.ent ) )
-	{
-		return STATUS_FAILURE;
-	}
-
-	//this medi is no longer powered so signal that the goal is unusable
-	if ( !self->botMind->goal.ent->powered )
 	{
 		return STATUS_FAILURE;
 	}
