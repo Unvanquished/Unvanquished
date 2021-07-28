@@ -235,6 +235,9 @@ struct gentity_s
 	gentity_t    *groupMaster; // master of the group
 
 	char     *model;
+	// This seems to be used by rotators, movers and doors. Quoting:
+	// > if the "model2" key is set, use a separate model
+	// > for drawing, but clip against the brushes [of the first model]
 	char     *model2;
 
 	bool physicsObject; // if true, it can be pushed by movers and fall off edges
