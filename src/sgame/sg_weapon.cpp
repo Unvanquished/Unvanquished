@@ -1274,6 +1274,19 @@ bool G_CheckDretchAttack( gentity_t *self )
 
 	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
+	if ( !traceEnt )
+	{
+		return false;
+	}
+
+	// Bot dretch should ignore buildables if they are can't attack them
+	if ( traceEnt->s.eType == entityType_t::ET_BUILDABLE
+			&& self->r.svFlags & SVF_BOT
+			&& !g_bot_attackStruct.integer )
+	{
+		return false;
+	}
+
 	if ( !Entities::IsAlive( traceEnt )
 			|| G_OnSameTeam( self, traceEnt )
 			|| !G_DretchCanDamageEntity( self, traceEnt ) )
