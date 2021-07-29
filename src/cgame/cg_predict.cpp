@@ -119,7 +119,6 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	vec3_t        tmins, tmaxs;
 	vec3_t        bmins, bmaxs;
 	vec3_t        origin, angles;
-	centity_t     *cent;
 
 	// calculate bounding box of the trace
 	ClearBounds( tmins, tmaxs );
@@ -132,15 +131,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 
 	for ( i = 0; i < cg_numSolidEntities; i++ )
 	{
-		if ( i < cg_numSolidEntities )
-		{
-			cent = cg_solidEntities[ i ];
-		}
-		else
-		{
-			cent = &cg.predictedPlayerEntity;
-		}
-
+		centity_t *cent = cg_solidEntities[ i ];
 		ent = &cent->currentState;
 
 		if ( ent->number == skipNumber )
@@ -176,11 +167,6 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			bmaxs[ 0 ] = bmaxs[ 1 ] = x;
 			bmins[ 2 ] = -zd;
 			bmaxs[ 2 ] = zu;
-
-			if ( i == cg_numSolidEntities )
-			{
-				BG_ClassBoundingBox( ( ent->misc >> 8 ) & 0xFF, bmins, bmaxs, nullptr, nullptr, nullptr );
-			}
 
 			VectorAdd( cent->lerpOrigin, bmins, bmins );
 			VectorAdd( cent->lerpOrigin, bmaxs, bmaxs );
