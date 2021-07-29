@@ -270,7 +270,10 @@ static void PM_Friction()
 	speed = VectorLength( vec );
 
 	if ( speed < 0.1f )
+	{
+		VectorSet(vel, 0.0f, 0.0f, 0.0f);
 		return;
+	}
 
 	drop = 0;
 
