@@ -1121,7 +1121,7 @@ static void SP_worldspawn()
 	// see if we want a warmup time
 	trap_SetConfigstring( CS_WARMUP, "-1" );
 
-	if ( g_doWarmup.Get() )
+	if ( g_doWarmup.Get() || g_gameMode.Get() == "juggernaut" )
 	{
 		level.warmupTime = level.matchTime + ( g_warmup.Get() * 1000 );
 		trap_SetConfigstring( CS_WARMUP, va( "%i", level.warmupTime ) );
