@@ -1244,7 +1244,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( GoalInRange( self, ENTITY_BUY_RANGE ) )
+	if ( GoalInRange( self, ENTITY_USE_RANGE ) )
 	{
 		if ( !desiredUpgrades.empty() )
 		{
