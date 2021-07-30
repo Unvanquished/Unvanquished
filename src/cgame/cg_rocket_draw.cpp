@@ -1075,7 +1075,7 @@ public:
 		entityState_t *es;
 
 		AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
-		VectorMA( cg.refdef.vieworg, 64, view, point );
+		VectorMA( cg.refdef.vieworg, ENTITY_USE_RANGE, view, point );
 		CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr,
 				  point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
 
