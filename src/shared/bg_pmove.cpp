@@ -2362,7 +2362,7 @@ static void PM_Land()
 	}
 
 	// potential jump ended
-	pm->ps->pm_flags &= ~PMF_JUMPED;
+	pm->ps->pm_flags &= ~(PMF_JUMPED | PMF_BACKWARDS_JUMP);
 }
 
 /*
