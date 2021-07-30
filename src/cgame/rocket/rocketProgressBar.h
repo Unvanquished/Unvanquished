@@ -196,7 +196,7 @@ public:
 
 		if ( changed_attributes.find( "value" ) != changed_attributes.end() )
 		{
-			value = Com_Clamp( 0.0f, 1.0f, GetAttribute<float>( "value", 0.0f ) );
+			value = Math::Clamp( 0.0f, 1.0f, GetAttribute<float>( "value", 0.0f ) );
 		}
 
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )

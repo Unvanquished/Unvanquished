@@ -1250,31 +1250,28 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	vec3_t viewBase;
 	vec3_t aimVec, forward;
 	vec3_t skilledVec;
-	float length;
-	float slow;
-	float cosAngle;
 
 	if ( !( self && self->client ) )
 	{
 		return;
 	}
 	//clamp to 0-1
-	slow = Com_Clamp( 0.1f, 1.0, slowAmount );
+	float slow = Math::Clamp( 0.1f, 1.0f, slowAmount );
 
 	//get the point that the bot is aiming from
 	BG_GetClientViewOrigin( &self->client->ps, viewBase );
 
 	//get the Vector from the bot to the enemy (ideal aim Vector)
 	VectorSubtract( target, viewBase, aimVec );
-	length = VectorNormalize( aimVec );
+	float length = VectorNormalize( aimVec );
 
 	//take the current aim Vector
 	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
 
-	cosAngle = DotProduct( forward, aimVec );
-	cosAngle = ( cosAngle + 1 ) / 2;
-	cosAngle = 1 - cosAngle;
-	cosAngle = Com_Clamp( 0.1, 0.5, cosAngle );
+	float cosAngle = DotProduct( forward, aimVec );
+	cosAngle = ( cosAngle + 1.0f ) / 2.0f;
+	cosAngle = 1.0f - cosAngle;
+	cosAngle = Math::Clamp( 0.1f, 0.5f, cosAngle );
 	VectorLerp( forward, aimVec, slow * ( cosAngle ), skilledVec );
 
 	//now find a point to return, this point will be aimed at
@@ -1515,7 +1512,7 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	angle2 = atanf( ( Square( v ) - sqrtf( check ) ) / ( g * x ) );
 
 	//take the smaller angle
-	angle = ( angle1 < angle2 ) ? angle1 : angle2;
+	angle = std::min( angle1, angle2 );
 
 	//convert to degrees (ps.viewangles units)
 	angle = RAD2DEG( angle );
@@ -1639,7 +1636,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_LUCIFER_CANNON:
-			if ( self->client->ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Com_Clamp( 0.5, 1, random() ) )
+			if ( self->client->ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Math::Clamp( 0.5f, 1.0f, random() ) )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
 			}

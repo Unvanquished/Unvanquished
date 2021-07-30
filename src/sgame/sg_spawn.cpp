@@ -1060,7 +1060,7 @@ void SP_worldspawn()
 	if(G_SpawnString( "reverbIntensity", "", &s ))
 		sscanf( s, "%f", &reverbIntensity );
 	if(G_SpawnString( "reverbEffect", "", &s ))
-		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s %f", 0, 0.0f, s, Com_Clamp( 0.0f, 2.0f, reverbIntensity ) ) );
+		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s %f", 0, 0.0f, s, Math::Clamp( 0.0f, 2.0f, reverbIntensity ) ) );
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
