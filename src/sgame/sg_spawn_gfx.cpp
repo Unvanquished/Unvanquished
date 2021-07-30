@@ -279,27 +279,13 @@ void gfx_animated_model_act( gentity_t *self, gentity_t*, gentity_t* )
 	{
 		//if spawnflag 1 is set
 		//toggle EF_NODRAW
-		if ( self->s.eFlags & EF_NODRAW )
-		{
-			self->s.eFlags &= ~EF_NODRAW;
-		}
-		else
-		{
-			self->s.eFlags |= EF_NODRAW;
-		}
+		self->s.eFlags ^= EF_NODRAW;
 	}
 	else
 	{
 		//if the animation loops then toggle the animation
 		//toggle EF_MOVER_STOP
-		if ( self->s.eFlags & EF_MOVER_STOP )
-		{
-			self->s.eFlags &= ~EF_MOVER_STOP;
-		}
-		else
-		{
-			self->s.eFlags |= EF_MOVER_STOP;
-		}
+		self->s.eFlags ^= EF_MOVER_STOP;
 	}
 }
 
