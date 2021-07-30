@@ -2425,7 +2425,7 @@ void SP_func_static( gentity_t *self )
 		G_SpawnFloat( "reverbDistance", "250", &reverbDistance );
 		G_SpawnFloat( "reverbIntensity", "1", &reverbIntensity );
 
-		reverbIntensity = Com_Clamp( 0.0f, 2.0f, reverbIntensity );
+		reverbIntensity = Math::Clamp( 0.0f, 2.0f, reverbIntensity );
 		G_ReverbEffectIndex( va( "%s %f %s %f", self->model + 1,
 					   reverbDistance, reverbEffect, reverbIntensity ) );
 	}
