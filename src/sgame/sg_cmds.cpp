@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "sg_juggernaut.h"
 #include "engine/qcommon/q_unicode.h"
 #include "botlib/bot_api.h"
 #include <common/FileSystem.h>
@@ -2573,6 +2574,15 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 	int       clientNum = ent->num();
 	vec3_t    infestOrigin;
 	class_t   currentClass = ent->client->pers.classSelection;
+
+	if ( g_gameMode.Get() == "juggernaut" && G_JuggernautTeam() == G_Team(ent) )
+	{
+		if ( report )
+		{
+			//G_TriggerMenuArgs( clientNum, MN_JUGGERNAUT_NO_EVOLVE, newClass );
+		}
+		return false;
+	}
 
 	if ( newClass <= PCL_NONE || newClass >= PCL_NUM_CLASSES )
 	{

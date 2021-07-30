@@ -1808,7 +1808,19 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, true );
-		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
+		if ( G_Team(ent) == TEAM_ALIENS && g_gameMode.Get() == "juggernaut" && spawn != nullptr )
+		{
+			// HACK: don't spawn in a wall.
+			// spawn->s.origin2 is the egg's normal vector
+			constexpr float dragoon_nudge_length = 100.0f;
+			VectorMA( spawn->s.origin, dragoon_nudge_length, spawn->s.origin2, ent->r.currentOrigin );
+			G_SetOrigin( ent, VEC2GLM( ent->r.currentOrigin ) );
+			VectorCopy( ent->r.currentOrigin, client->ps.origin );
+		}
+		else
+		{
+			VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
+		}
 		trap_LinkEntity( ent );
 	}
 

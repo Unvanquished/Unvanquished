@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "sg_juggernaut.h"
 #include "Entities.h"
 #include "CBSE.h"
 
@@ -319,6 +320,10 @@ void G_RewardAttackers( gentity_t *self )
 	G_AddMomentumEnd();
 }
 
+static Cvar::Cvar<int> g_juggernautKillLimit("g_juggernautKillLimit",
+		"how much kills are needed for the juggernaut to win",
+		Cvar::NONE, 12);
+
 void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
 {
 	gentity_t *ent;
@@ -583,6 +588,23 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	Beacon::DetachTags( self );
 
 	trap_LinkEntity( self );
+
+	// TODO: if juggernaut
+	if ( G_Team( self ) == G_JuggernautTeam() && self != attacker )
+	{
+		// the attacker becomes the new juggernaut
+		G_SwitchJuggernaut( attacker );
+	}
+	else if ( G_Team( attacker ) == G_JuggernautTeam() && attacker->client )
+	{
+		if (++attacker->client->ps.persistant[ PERS_JUGGERNAUTKILLS ]
+				>= g_juggernautKillLimit.Get())
+		{
+			Log::Warn("%i kills, ending game", g_juggernautKillLimit.Get()); //FIXME
+			level.unconditionalWin = G_JuggernautTeam();
+		}
+		CalculateRanks();
+	}
 
 	self->client->pers.infoChangeTime = level.time;
 }

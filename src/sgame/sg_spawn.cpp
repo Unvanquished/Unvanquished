@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "sg_local.h"
+#include "sg_juggernaut.h"
 #include "sg_spawn.h"
 
 bool G_SpawnString( const char *key, const char *defaultString, char **out )
@@ -1125,6 +1126,11 @@ static void SP_worldspawn()
 		level.warmupTime = level.matchTime + ( g_warmup.Get() * 1000 );
 		trap_SetConfigstring( CS_WARMUP, va( "%i", level.warmupTime ) );
 		G_LogPrintf( "Warmup: %i", g_warmup.Get() );
+	}
+
+	if ( g_gameMode.Get() == "juggernaut" )
+	{
+		level.team[ G_JuggernautTeam() ].locked = true;
 	}
 
 	level.timelimit = g_timelimit.Get();

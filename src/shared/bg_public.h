@@ -439,8 +439,9 @@ enum persEnum_t
   PERS_SPENTBUDGET,
   PERS_MARKEDBUDGET,
   PERS_TOTALBUDGET,
-  PERS_QUEUEDBUDGET
-  // netcode has space for 2 more. TODO: extend
+  PERS_QUEUEDBUDGET,
+  PERS_JUGGERNAUTKILLS,
+  // netcode has space for 1 more. TODO: extend
 };
 
 #define PS_WALLCLIMBINGFOLLOW BIT(0)

@@ -209,6 +209,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_entities.cpp
     ${GAMELOGIC_DIR}/sgame/sg_entities.h
     ${GAMELOGIC_DIR}/sgame/sg_extern.h
+    ${GAMELOGIC_DIR}/sgame/sg_juggernaut.cpp
+    ${GAMELOGIC_DIR}/sgame/sg_juggernaut.h
     ${GAMELOGIC_DIR}/sgame/sg_local.h
     ${GAMELOGIC_DIR}/sgame/sg_main.cpp
     ${GAMELOGIC_DIR}/sgame/sg_maprotation.cpp

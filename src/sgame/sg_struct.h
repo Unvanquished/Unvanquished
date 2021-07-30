@@ -490,6 +490,8 @@ struct clientSession_t
 	spectatorState_t spectatorState;
 	int              spectatorClient; // for chasecam and follow mode
 	team_t           restartTeam; //for !restart keepteams and !restart switchteams
+	team_t           juggRestartTeam; // used to know which team the client should be assigned to
+	bool             juggMayTeleport; // used to remember if the jugg could want to be teleported in place
 	int              botSkill;
 	char             botTree[ MAX_QPATH ];
 	clientList_t     ignoreList;
