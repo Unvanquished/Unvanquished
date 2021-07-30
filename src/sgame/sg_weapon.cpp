@@ -231,7 +231,7 @@ bool G_FindAmmo( gentity_t *self )
 	}
 
 	// search for ammo source
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_USE_RANGE ) ) )
 	{
 		// only friendly, living and powered buildables provide ammo
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
@@ -278,7 +278,7 @@ bool G_FindFuel( gentity_t *self )
 	}
 
 	// search for fuel source
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_BUY_RANGE ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_USE_RANGE ) ) )
 	{
 		// only friendly, living and powered buildables provide fuel
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
