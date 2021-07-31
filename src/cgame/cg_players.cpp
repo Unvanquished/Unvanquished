@@ -1456,11 +1456,11 @@ static void CG_StatusMessages( clientInfo_t *new_, clientInfo_t *old )
 			Log::Notice(_( "%s^* joined the %s"), new_->name,
 			           BG_TeamNamePlural( new_->team ) );
 		}
-		else
-		{
-			Log::Notice(_( "%s^* left the %s and joined the %s"),
-			           new_->name, BG_TeamNamePlural( old->team ), BG_TeamNamePlural( new_->team ) );
-		}
+		//else
+		//{
+		//	Log::Notice(_( "%s^* left the %s and joined the %s"),
+		//	           new_->name, BG_TeamNamePlural( old->team ), BG_TeamNamePlural( new_->team ) );
+		//}
 	}
 }
 
