@@ -2500,7 +2500,10 @@ void G_RunFrame( int levelTime )
 	G_DecreaseMomentum();
 	G_CalculateAvgPlayers();
 
-	if ( g_gameMode.Get() == "juggernaut" )
+	bool warmup_finished =
+		  !( g_doWarmup.Get() || g_gameMode.Get() == "juggernaut" )
+		|| ( (level.warmupTime - level.time) / 1000 ) <= 0;
+	if ( g_gameMode.Get() == "juggernaut" && warmup_finished )
 	{
 		G_CheckAndSpawnJuggernaut();
 	}
