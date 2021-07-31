@@ -582,6 +582,7 @@ static void CG_RegisterSounds()
 
 	cgs.media.selectSound = trap_S_RegisterSound( "sound/weapons/change", false );
 	cgs.media.turretSpinupSound = trap_S_RegisterSound( "sound/buildables/mgturret/spinup", false );
+	cgs.media.newJuggernautSound = trap_S_RegisterSound( "sound/juggernaut/snd_challenge", true );
 	cgs.media.weaponEmptyClick = trap_S_RegisterSound( "sound/weapons/click", false );
 
 	cgs.media.talkSound = trap_S_RegisterSound( "sound/feedback/talk", false );

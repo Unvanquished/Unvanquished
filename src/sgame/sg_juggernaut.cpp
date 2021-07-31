@@ -81,6 +81,9 @@ static void G_PromoteJuggernaut( gentity_t *new_juggernaut )
 // Cleanly create a juggernaut, this will send messages events and all
 static void G_SpawnJuggernaut( gentity_t *new_juggernaut, vec3_t *old_origin, vec3_t *old_angles )
 {
+	// Shout "Le roi est mort, vive le roi!"
+	G_BroadcastEvent(EV_NEW_JUGGERNAUT, 0, G_PreyTeam());
+
 	// Get the spawn position
 	gentity_t *spawn = G_PickRandomEntityOfClass("team_alien_spawn");
 

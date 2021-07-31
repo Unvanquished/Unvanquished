@@ -1268,6 +1268,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 			break;
 
+		case EV_NEW_JUGGERNAUT:
+			trap_S_StartLocalSound( cgs.media.newJuggernautSound, soundChannel_t::CHAN_ANNOUNCER );
+			CG_CenterPrint( "Juggernaut!", 1.5f );
+			break;
+
 		case EV_MGTURRET_SPINUP:
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.turretSpinupSound );
 			break;

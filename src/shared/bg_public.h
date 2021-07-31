@@ -754,6 +754,8 @@ enum entity_event_t
 
   EV_WARN_ATTACK, // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
 
+  EV_NEW_JUGGERNAUT,  // new juggernaut in the ennemy team
+
   EV_MGTURRET_SPINUP, // turret spinup sound should play
 
   EV_AMMO_REFILL,     // ammo for clipless weapon has been refilled
