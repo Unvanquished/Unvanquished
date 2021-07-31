@@ -794,20 +794,16 @@ static int SortRanks( const void *a, const void *b )
 	ca = &level.clients[ * ( int * ) a ];
 	cb = &level.clients[ * ( int * ) b ];
 
-	// then sort by score
-	if ( ca->ps.persistant[ PERS_SCORE ] > cb->ps.persistant[ PERS_SCORE ] )
-	{
-		return -1;
-	}
+	int sortmethod = g_gameMode.Get() == "juggernaut" ?
+		PERS_JUGGERNAUTKILLS : PERS_SCORE;
 
-	if ( ca->ps.persistant[ PERS_SCORE ] < cb->ps.persistant[ PERS_SCORE ] )
-	{
+	if ( ca->ps.persistant[ sortmethod ] > cb->ps.persistant[ sortmethod ] )
+		return -1;
+
+	if ( ca->ps.persistant[ sortmethod ] < cb->ps.persistant[ sortmethod ] )
 		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+
+	return 0;
 }
 
 /*

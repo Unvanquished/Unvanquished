@@ -416,8 +416,10 @@ void ScoreboardMessage( gentity_t *ent )
 			upgrade = UP_NONE;
 		}
 
+		int stat = g_gameMode.Get() == "juggernaut"
+			? PERS_JUGGERNAUTKILLS : PERS_SCORE;
 		Com_sprintf( entry, sizeof( entry ),
-		             " %d %d %d %d %d %d", level.sortedClients[ i ], cl->ps.persistant[ PERS_SCORE ],
+		             " %d %d %d %d %d %d", level.sortedClients[ i ], cl->ps.persistant[ stat ],
 		             ping, ( level.time - cl->pers.enterTime ) / 60000, weapon, upgrade );
 
 		j = strlen( entry );
