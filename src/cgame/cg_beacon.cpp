@@ -399,6 +399,16 @@ static team_t TargetTeam( const cbeacon_t *beacon )
 		return TEAM_ALIENS;
 }
 
+static inline bool CG_BeaconIsJuggernaut(const cbeacon_t *b)
+{
+	// TODO: if gamemode juggernaut
+	// TODO: don't hardcode aliens
+	return b->type == BCT_TAG
+		&& b->flags & EF_BC_TAG_PLAYER
+		&& TargetTeam( b ) == TEAM_ALIENS;
+}
+
+
 /**
  * @brief Handles beacon animations and sounds. Called every frame for every beacon.
  */
@@ -692,6 +702,15 @@ qhandle_t CG_BeaconIcon( const cbeacon_t *b )
 	if ( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES ) return 0;
 
 	int hlFlag = IsHighlighted( b ) ? 1 : 0;
+
+	// Extra handling for the large juggernaut icon
+	if ( CG_BeaconIsJuggernaut(b) ) {
+		static qhandle_t icon =
+			trap_R_RegisterShader("gfx/juggernaut/skull",
+					RSF_DEFAULT);
+		return icon;
+	}
+
 
 	if ( b->type == BCT_TAG ) {
 		return BG_Beacon( b->type )->icon[ hlFlag ][ b->flags & EF_BC_TAG_PLAYER ? 1 : 0 ];
