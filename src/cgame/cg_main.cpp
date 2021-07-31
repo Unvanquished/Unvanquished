@@ -1400,7 +1400,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	CG_ShaderStateChanged();
 
-	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
+	trap_Cvar_Set( "ui_winner", "First to do X kills in a row wins" );
 }
 
 /*
