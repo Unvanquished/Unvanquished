@@ -147,6 +147,7 @@ void CG_AnimMapObj( centity_t *cent )
 	}
 
 	refEntity_t ent{};
+	ent.skeleton.scale = 1.0f; // make (non-animated?) skeletal models work
 
 	VectorCopy( es->angles, cent->lerpAngles );
 	AnglesToAxis( cent->lerpAngles, ent.axis );
