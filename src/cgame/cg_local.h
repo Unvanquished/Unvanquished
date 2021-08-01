@@ -66,7 +66,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CGAME_CHAR_WIDTH               32
 #define CGAME_CHAR_HEIGHT              48
 
-#define MAX_LOADING_LABEL_LENGTH       32
+#define MAX_LOADING_TEXT_LENGTH        64
 
 #define MAX_MINIMAP_ZONES              32
 
@@ -1220,10 +1220,11 @@ struct cg_t
 	int                     upMoveTime;
 
 	/* loading */
-	char                    currentLoadingLabel[ MAX_LOADING_LABEL_LENGTH ];
-	float                   charModelFraction; // loading percentages
-	float                   mediaFraction;
-	float                   buildablesFraction;
+	char                    loadingText[ MAX_LOADING_TEXT_LENGTH ];
+	float                   loadingFraction; // loading percentages
+	float                   mediaLoadingFraction;
+	float                   buildableLoadingFraction;
+	float                   characterLoadingFraction;
 
 	int                     lastBuildAttempt;
 	int                     lastEvolveAttempt;

@@ -34,24 +34,14 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-static float CG_Rocket_GetBuildableLoadProgress()
+static float CG_Rocket_GetLoadProgress()
 {
-	return cg.buildablesFraction;
-}
-
-static float CG_Rocket_GetCharLoadProgress()
-{
-	return cg.charModelFraction;
-}
-
-static float CG_Rocket_GetMediaLoadProgress()
-{
-	return cg.mediaFraction;
-}
-
-static float CG_Rocket_GetOverallLoadProgress()
-{
-	return ( cg.mediaFraction + cg.charModelFraction + cg.buildablesFraction ) / 3.0f;
+	return (
+		cg.loadingFraction
+		+ cg.mediaLoadingFraction
+		+ cg.buildableLoadingFraction
+		+ cg.characterLoadingFraction
+		) / 4.0;
 }
 
 static float CG_Rocket_GetBuildTimerProgress()
@@ -187,14 +177,11 @@ static const progressBarCmd_t progressBarCmdList[] =
 {
 	{ "ammo", &CG_Rocket_GetPlayerAmmoProgress, ELEMENT_HUMANS },
 	{ "btimer", &CG_Rocket_GetBuildTimerProgress, ELEMENT_BOTH },
-	{ "buildables", &CG_Rocket_GetBuildableLoadProgress, ELEMENT_LOADING },
-	{ "characters", &CG_Rocket_GetCharLoadProgress, ELEMENT_LOADING },
 	{ "charge", &CG_ChargeProgress, ELEMENT_BOTH },
 	{ "download", &CG_Rocket_DownloadProgress, ELEMENT_ALL },
 	{ "fuel", &CG_Rocket_FuelProgress, ELEMENT_HUMANS },
 	{ "health", &CG_Rocket_GetPlayerHealthProgress, ELEMENT_BOTH },
-	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },
-	{ "overall", &CG_Rocket_GetOverallLoadProgress, ELEMENT_LOADING },
+	{ "overall", &CG_Rocket_GetLoadProgress, ELEMENT_LOADING },
 	{ "poison", &CG_Rocket_GetPoisonProgress, ELEMENT_ALIENS },
 	{ "stamina", &CG_Rocket_GetStaminaProgress, ELEMENT_HUMANS },
 };
@@ -210,7 +197,7 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name )
 {
 	progressBarCmd_t *cmd;
 
-	// Get the progressbar command
+	// Get the progressBar command
 	cmd = ( progressBarCmd_t * ) bsearch( name.c_str(), progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
 
 	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )

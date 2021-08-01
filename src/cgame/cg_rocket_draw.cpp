@@ -3423,8 +3423,13 @@ static void CG_Rocket_DrawProgressValue()
 	if ( *src )
 	{
 		float value = CG_Rocket_ProgressBarValue( src );
-		Rocket_SetInnerRML( va( "%d", (int) ( value * 100 ) ), 0 );
+		Rocket_SetInnerRML( va( "%d%%", (int) ( value * 100 ) ), 0 );
 	}
+}
+
+static void CG_Rocket_DrawLoadingText()
+{
+	Rocket_SetInnerRML( cg.loadingText, 0 );
 }
 
 static void CG_Rocket_DrawLevelName()
@@ -3597,6 +3602,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
 	{ "jetpack", &CG_Rocket_HaveJetpck, ELEMENT_HUMANS },
 	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
+	{ "loadingText", &CG_Rocket_DrawLoadingText, ELEMENT_ALL },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
 	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },
 	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
