@@ -22,13 +22,13 @@
 			barbox {
 				display: block;
 				width: 100%;
-				height: 1em;
+				height: 2em;
 
 				position: absolute;
 				left: 0em;
 				bottom: 0em;
 
-				background-color: #00000000;
+				background-color: #00000080;
 			}
 
 			progressbar {
@@ -37,16 +37,28 @@
 				image: /gfx/colors/white;
 			}
 
+			statusbox {
+				display: block;
+
+				position: absolute;
+				left: 1em;
+				bottom: 0em;
+
+				text-align: left;
+			}
+
 			percentage {
 				display: block;
 				width: 5em;
 
 				position: absolute;
-				right: 2em;
-				bottom: 1em;
+				right: 1em;
+				bottom: 0em;
 
 				text-align: right;
+			}
 
+			statusbox, percentage {
 				color: white;
 				font-size: 1.5em;
 				font-weight: bold;
@@ -54,6 +66,7 @@
 				   This stops the the percentage number "jiggling" left and right */
 				font-family: Dejavu Sans;
 			}
+
 			infobox {
 				display:block;
 				position: absolute;
@@ -90,15 +103,17 @@
 			<servermotd><motd/></servermotd>
 		</infobox>
 
-		<percentage>
-			<progress_value src="overall" />
-		</percentage>
-
-
 		<barbox>
 			<progressbar src="overall" class="barValue"/>
 		</barbox>
 
+		<statusbox>
+			<loadingText/>
+		</statusbox>
+
+		<percentage>
+			<progress_value src="overall"/>
+		</percentage>
 
 	</body>
 </rml>
