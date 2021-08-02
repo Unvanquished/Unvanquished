@@ -3149,6 +3149,15 @@ static void PM_GroundTrace()
 			return;
 		}
 	}
+	else if ( trace.fraction > 0.01f )
+	{
+		// close the gap with the "ground" so that the player is not slightly hovering
+		VectorCopy( trace.endpos, pm->ps->origin );
+		if ( pm->debugLevel > 1 )
+		{
+			Log::Notice( "%i:close gap with ground", c_pmove );
+		}
+	}
 
 	// check if getting thrown off the ground
 	if ( pm->ps->velocity[ 2 ] > 0.0f && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10.0f )
