@@ -158,15 +158,22 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		}
 		else
 		{
-			// encoded bbox
-			x = ( ent->solid & 255 );
-			zd = ( ( ent->solid >> 8 ) & 255 );
-			zu = ( ( ent->solid >> 16 ) & 255 ) - 32;
+			if ( ent->eType == entityType_t::ET_BUILDABLE )
+			{
+				BG_BuildableBoundingBox( ent->modelindex, bmins, bmaxs );
+			}
+			else
+			{
+				// encoded bbox
+				x = ( ent->solid & 255 );
+				zd = ( ( ent->solid >> 8 ) & 255 );
+				zu = ( ( ent->solid >> 16 ) & 255 ) - 32;
 
-			bmins[ 0 ] = bmins[ 1 ] = -x;
-			bmaxs[ 0 ] = bmaxs[ 1 ] = x;
-			bmins[ 2 ] = -zd;
-			bmaxs[ 2 ] = zu;
+				bmins[ 0 ] = bmins[ 1 ] = -x;
+				bmaxs[ 0 ] = bmaxs[ 1 ] = x;
+				bmins[ 2 ] = -zd;
+				bmaxs[ 2 ] = zu;
+			}
 
 			VectorAdd( cent->lerpOrigin, bmins, bmins );
 			VectorAdd( cent->lerpOrigin, bmaxs, bmaxs );
