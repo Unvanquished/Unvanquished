@@ -1156,6 +1156,7 @@ struct cg_t
 
 	// centerprinting
 	int  centerPrintTime;
+	int centerPrintSize;
 	char centerPrint[ MAX_STRING_CHARS ];
 
 	// crosshair client ID
