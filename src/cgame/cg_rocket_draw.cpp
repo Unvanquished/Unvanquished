@@ -1802,6 +1802,8 @@ public:
 		if ( cg.time == cg.centerPrintTime )
 		{
 			SetInnerRML( Rocket_QuakeToRML( cg.centerPrint, RP_EMOTICONS ) );
+			SetProperty( Rml::Core::PropertyId::FontSize,
+			             Rml::Core::Property( 0.2f * cg.centerPrintSize, Rml::Core::Property::EM ) );
 		}
 
 		SetProperty( "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );

@@ -526,6 +526,7 @@ std::string CG_EscapeHTMLText( Str::StringRef text )
 }
 
 // TODO: Make this take Rml::Core::String as an input.
+// FIXME: This always parses colors even when RP_QUAKE is not specified. Many callers rely on this behavior.
 Rml::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
 	Rml::Core::String out;

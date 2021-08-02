@@ -162,10 +162,11 @@ Called for important messages that should stay in the center of the screen
 for a few moments
 ==============
 */
-void CG_CenterPrint( const char *str, int, int )
+void CG_CenterPrint( const char *str, int, int charWidth )
 {
 	Q_strncpyz( cg.centerPrint, str, sizeof( cg.centerPrint ) );
 	cg.centerPrintTime = cg.time;
+	cg.centerPrintSize = charWidth;
 }
 
 //==============================================================================
