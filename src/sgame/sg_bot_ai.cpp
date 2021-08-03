@@ -247,18 +247,19 @@ AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeList_t *sequence = ( AINodeList_t * ) node;
-	int i = 0;
+	int start = 0;
 
 	// find a previously running node and start there
-	for ( i = sequence->numNodes - 1; i > 0; i-- )
+	for ( int i = sequence->numNodes - 1; i > 0; i-- )
 	{
 		if ( NodeIsRunning( self, sequence->list[ i ] ) )
 		{
+			start = i;
 			break;
 		}
 	}
 
-	for ( ; i < sequence->numNodes; i++ )
+	for ( int i = start; i < sequence->numNodes; i++ )
 	{
 		AINodeStatus_t status = BotEvaluateNode( self, sequence->list[ i ] );
 		if ( status == STATUS_FAILURE )
