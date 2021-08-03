@@ -3120,7 +3120,7 @@ void CG_Rocket_DrawMineRate()
 	}
 }
 
-static INLINE qhandle_t CG_GetUnlockableIcon( int num )
+static qhandle_t CG_GetUnlockableIcon( int num )
 {
 	int index = BG_UnlockableTypeIndex( num );
 

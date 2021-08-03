@@ -126,7 +126,7 @@ void NotifyLegacyStageSensors( team_t team, float amount )
 	}
 }
 
-static INLINE float MomentumTimeMod()
+static float MomentumTimeMod()
 {
 	if ( g_momentumRewardDoubleTime.value <= 0.0f )
 	{
@@ -142,7 +142,7 @@ static INLINE float MomentumTimeMod()
 /**
  * @todo Currently this function is just a guess, find out the correct mod via statistics.
  */
-static INLINE float MomentumPlayerCountMod()
+static float MomentumPlayerCountMod()
 {
 	int playerCount = std::max( 2, level.team[ TEAM_ALIENS ].numClients +
 	                               level.team[ TEAM_HUMANS ].numClients );
