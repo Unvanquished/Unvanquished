@@ -276,8 +276,7 @@ Kill box
 =================
 G_KillBox
 
-Kills all entities that would touch the proposed new positioning
-of ent.  Ent should be unlinked before calling this!
+Kills all entities overlapping with `ent`.
 =================
 */
 void G_KillBox( gentity_t *ent )
@@ -294,11 +293,6 @@ void G_KillBox( gentity_t *ent )
 	for ( i = 0; i < num; i++ )
 	{
 		hit = &g_entities[ touch[ i ] ];
-
-		if ( !hit->client )
-		{
-			continue;
-		}
 
 		// impossible to telefrag self
 		if ( ent == hit )
