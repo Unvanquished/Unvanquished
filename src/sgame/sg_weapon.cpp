@@ -1646,7 +1646,7 @@ GENERIC
 ======================================================================
 */
 
-static INLINE meansOfDeath_t ModWeight( const gentity_t *self )
+static meansOfDeath_t ModWeight( const gentity_t *self )
 {
 	return self->client->pers.team == TEAM_HUMANS ? MOD_WEIGHT_H : MOD_WEIGHT_A;
 }

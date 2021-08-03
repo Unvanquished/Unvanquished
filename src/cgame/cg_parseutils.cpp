@@ -147,7 +147,7 @@ OpPrec
 Return a value reflecting operator precedence
 =================
 */
-static INLINE int OpPrec( char op )
+static int OpPrec( char op )
 {
 	switch ( op )
 	{

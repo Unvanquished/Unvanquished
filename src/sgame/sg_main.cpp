@@ -1055,7 +1055,7 @@ SortRanks
 
 =============
 */
-int QDECL SortRanks( const void *a, const void *b )
+int SortRanks( const void *a, const void *b )
 {
 	gclient_t *ca, *cb;
 
@@ -1787,7 +1787,7 @@ Print to the logfile with a time stamp if it is open, and to the server console.
 Will append a newline for you.
 =================
 */
-void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
+void PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 {
 	va_list argptr;
 	char    string[ 1024 ], decolored[ 1024 ];

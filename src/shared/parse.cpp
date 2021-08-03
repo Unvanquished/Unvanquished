@@ -378,7 +378,7 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 Parse_ScriptError
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_ScriptError( const script_t *script, const char *str, ... )
+static void PRINTF_LIKE(2) Parse_ScriptError( const script_t *script, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -396,7 +396,7 @@ static void QDECL PRINTF_LIKE(2) Parse_ScriptError( const script_t *script, cons
 Parse_ScriptWarning
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_ScriptWarning( const script_t *script, const char *str, ... )
+static void PRINTF_LIKE(2) Parse_ScriptWarning( const script_t *script, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1241,7 +1241,7 @@ static void Parse_FreeScript( script_t *script )
 Parse_SourceError
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_SourceError( const source_t *source, const char *str, ... )
+static void PRINTF_LIKE(2) Parse_SourceError( const source_t *source, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;
@@ -1257,7 +1257,7 @@ static void QDECL PRINTF_LIKE(2) Parse_SourceError( const source_t *source, cons
 Parse_SourceWarning
 ===============
 */
-static void QDECL PRINTF_LIKE(2) Parse_SourceWarning( const source_t *source, const char *str, ... )
+static void PRINTF_LIKE(2) Parse_SourceWarning( const source_t *source, const char *str, ... )
 {
 	char    text[ 1024 ];
 	va_list ap;

@@ -162,12 +162,12 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 }
 #endif // BUILD_CGAME
 
-static INLINE bool Unlocked( unlockableType_t type, int itemNum )
+static bool Unlocked( unlockableType_t type, int itemNum )
 {
 	return unlockables[ unlockablesTypeOffset[ type ] + itemNum ].unlocked;
 }
 
-static INLINE void CheckStatusKnowledge( unlockableType_t type, int itemNum )
+static void CheckStatusKnowledge( unlockableType_t type, int itemNum )
 {
 	unlockable_t dummy;
 
