@@ -891,14 +891,6 @@ void CG_PredictPlayerState()
 				CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
 				                           cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted, cg.predictedPlayerState.viewangles, new_angles );
 
-				if ( cg_showmiss.Get() )
-				{
-					if ( !VectorCompare( oldPlayerState.origin, adjusted ) )
-					{
-						Log::Debug( "prediction error" );
-					}
-				}
-
 				VectorSubtract( oldPlayerState.origin, adjusted, delta );
 				len = VectorLength( delta );
 
