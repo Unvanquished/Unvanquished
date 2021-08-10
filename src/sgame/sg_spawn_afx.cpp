@@ -283,6 +283,9 @@ void SP_env_afx_gravity( gentity_t *self )
 	self->act = env_afx_toggle;
 	self->reset = env_afx_gravity_reset;
 
+	// Remove CONTENTS_SOLID flag.
+	self->r.contents &= ~CONTENTS_SOLID;
+
 	InitEnvAFXEntity( self, true );
 }
 
