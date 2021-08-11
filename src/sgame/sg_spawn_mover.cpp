@@ -2510,11 +2510,12 @@ void SP_func_bobbing( gentity_t *self )
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
+	reset_moverspeed( self, 4 );
 
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.origin, self->r.currentOrigin );
 
-	self->s.pos.trDuration = self->config.speed * 1000;
+	self->s.pos.trDuration = self->speed * 1000;
 	self->s.pos.trTime = self->s.pos.trDuration * phase;
 	self->s.pos.trType = trType_t::TR_SINE;
 
