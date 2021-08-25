@@ -210,7 +210,7 @@ static void CG_TransitionSnapshot()
 	}
 
 	if (ops->stats[STAT_ITEMS] != ps->stats[STAT_ITEMS]) {
-		CG_OnPlayerUpgradeChange();
+		CG_Rocket_UpdateArmouryMenu();
 	}
 }
 
