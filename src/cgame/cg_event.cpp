@@ -617,16 +617,7 @@ void CG_OnPlayerWeaponChange()
 	// Change the HUD to match the weapon. Close the old hud first
 	Rocket_ShowHud( ps->weapon );
 
-	// Rebuild weapon lists if UI is in focus.
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI && ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
-	{
-		Rocket::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
-		if ( document->IsVisible() )
-		{
-			document->DispatchEvent( "refreshdata", {} );
-		}
-	}
-
+	CG_Rocket_UpdateArmouryMenu();
 	cg.weaponOffsetsFilter.Reset( );
 
 	cg.predictedPlayerEntity.pe.weapon.animationNumber = -1; //force weapon lerpframe recalculation
@@ -634,13 +625,13 @@ void CG_OnPlayerWeaponChange()
 
 /*
 =========================
-CG_OnPlayerUpgradeChange
+CG_Rocket_UpdateArmouryMenu
 
 Called on upgrade change
 =========================
 */
 
-void CG_OnPlayerUpgradeChange()
+void CG_Rocket_UpdateArmouryMenu()
 {
 	playerState_t *ps = &cg.snap->ps;
 
