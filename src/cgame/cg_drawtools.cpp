@@ -551,7 +551,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 		pcsh = cgs.media.plainColorShader;
 
-		rgba.SetAlpha( rgba.Alpha() * Math::Clamp( 0.0f, 1.0f, cg_rangeMarkerSurfaceOpacity.value ) );
+		rgba.SetAlpha( rgba.Alpha() * Math::Clamp( cg_rangeMarkerSurfaceOpacity.value, 0.0f, 1.0f ) );
 
 		switch( rmType )
 		{
@@ -578,7 +578,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 			return;
 		}
 
-		lineOpacity = Math::Clamp( 0.0f, 1.0f, cg_rangeMarkerLineOpacity.value );
+		lineOpacity = Math::Clamp( cg_rangeMarkerLineOpacity.value, 0.0f, 1.0f );
 		lineThickness = cg_rangeMarkerLineThickness.value;
 		if ( lineThickness < 0.0f )
 			lineThickness = 0.0f;

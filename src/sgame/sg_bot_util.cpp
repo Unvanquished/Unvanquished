@@ -1255,8 +1255,9 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	{
 		return;
 	}
-	//clamp to 0-1
-	float slow = Math::Clamp( 0.1f, 1.0f, slowAmount );
+
+	//clamp from 0.1 to 1
+	float slow = Math::Clamp( slowAmount, 0.1f, 1.0f );
 
 	//get the point that the bot is aiming from
 	BG_GetClientViewOrigin( &self->client->ps, viewBase );
@@ -1271,7 +1272,7 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	float cosAngle = DotProduct( forward, aimVec );
 	cosAngle = ( cosAngle + 1.0f ) / 2.0f;
 	cosAngle = 1.0f - cosAngle;
-	cosAngle = Math::Clamp( 0.1f, 0.5f, cosAngle );
+	cosAngle = Math::Clamp( cosAngle, 0.1f, 0.5f );
 	VectorLerp( forward, aimVec, slow * ( cosAngle ), skilledVec );
 
 	//now find a point to return, this point will be aimed at
@@ -1636,7 +1637,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_LUCIFER_CANNON:
-			if ( self->client->ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Math::Clamp( 0.5f, 1.0f, random() ) )
+			if ( self->client->ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Math::Clamp( random(), 0.5f, 1.0f ) )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
 			}
