@@ -2262,6 +2262,64 @@ static bool FindRoomForClassChangeVertically(
 	return !tr.startsolid && tr.fraction == 1.0f;
 }
 
+static bool FindRoomForClassChangeLaterally(
+		const gentity_t *ent,
+		const vec3_t fromMins, const vec3_t fromMaxs,
+		const vec3_t toMins, const vec3_t toMaxs,
+		vec3_t newOrigin)
+{
+	float max_x = fabs( (toMaxs[0]-toMins[0])
+	                  - (fromMaxs[0]-fromMins[0]) ) / 2.0f;
+	float max_y = fabs( (toMaxs[1]-toMins[1])
+	                  - (fromMaxs[1]-fromMins[1]) ) / 2.0f;
+	// this is an upper bound, hopefully as small as possible
+	// to avoid bugs like evolving on the other side of walls.
+	// ideally, it would be the correct minimal length for
+	// each 4 directions, but this is close enough.
+	// This is correct assuming the bbox is centered on the
+	// origin on x and y.
+	float distance = std::min(max_x, max_y);
+
+	vec3_t origin;
+	origin[0] = ent->client->ps.origin[0];
+	origin[1] = ent->client->ps.origin[1];
+	origin[2] = ent->client->ps.origin[2] + fromMins[2] - toMins[2] + 1.0f;
+
+	float best_distance = 1e37f;
+	bool found = false;
+	vec3_t deltas[] = { { 1, 0, 0 }, { 0, 1, 0 }, { -1, 0, 0 }, { 0, -1, 0 },
+	                    { 1, 1, 0 }, { -1, 1, 0 }, { -1, -1, 0 }, { 1, -1, 0 } };
+	for ( const vec3_t &delta : deltas )
+	{
+		trace_t trace;
+		vec3_t start_point;
+		VectorMA( origin, distance, delta, start_point );
+		trap_Trace( &trace, start_point, toMins, toMaxs,
+				origin, ent->s.number,
+				MASK_PLAYERSOLID, 0 );
+
+		vec3_t first_trace_end;
+		VectorCopy(trace.endpos, first_trace_end);
+		// make REALLY sure
+		trap_Trace( &trace, first_trace_end, toMins, toMaxs,
+				first_trace_end, ent->s.number,
+				MASK_PLAYERSOLID, 0 );
+
+		if ( trace.startsolid || trace.fraction < 1.0f )
+			continue; // collision
+
+		float new_distance = Distance(trace.endpos, origin);
+		if ( new_distance > best_distance )
+			continue; // not interesting
+
+		// new best!
+		found = true;
+		best_distance = new_distance;
+		VectorCopy( trace.endpos, newOrigin );
+	}
+	return found;
+}
+
 bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 {
 	vec3_t  fromMins, fromMaxs;
@@ -2273,7 +2331,11 @@ bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 
 	VectorCopy( ent->client->ps.origin, newOrigin ); // default
 
-	return FindRoomForClassChangeVertically( ent, fromMins, fromMaxs,
+	if (FindRoomForClassChangeVertically( ent, fromMins, fromMaxs,
+			toMins, toMaxs, newOrigin ))
+		return true;
+
+	return FindRoomForClassChangeLaterally( ent, fromMins, fromMaxs,
 			toMins, toMaxs, newOrigin );
 }
 
