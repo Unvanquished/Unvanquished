@@ -2198,20 +2198,16 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
 
-bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
+static bool FindRoomForClassChangeVertically(
+		const gentity_t *ent,
+		const vec3_t fromMins, const vec3_t fromMaxs,
+		const vec3_t toMins, const vec3_t toMaxs,
+		vec3_t newOrigin)
 {
-	vec3_t  fromMins, fromMaxs;
-	vec3_t  toMins, toMaxs;
 	vec3_t  temp;
 	trace_t tr;
 	float   nudgeHeight;
 	float   maxHorizGrowth;
-	class_t oldClass = (class_t) ent->client->ps.stats[ STAT_CLASS ];
-
-	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, nullptr, nullptr, nullptr );
-	BG_ClassBoundingBox( pcl, toMins, toMaxs, nullptr, nullptr, nullptr );
-
-	VectorCopy( ent->client->ps.origin, newOrigin );
 
 	// find max x/y diff
 	maxHorizGrowth = toMaxs[ 0 ] - fromMaxs[ 0 ];
@@ -2250,22 +2246,35 @@ bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 		return true;
 	}
 
-	//compute a place up in the air to start the real trace
+	// compute a place up in the air, but still under the roof
+	// before starting the real trace
 	VectorCopy( newOrigin, temp );
 	temp[ 2 ] += nudgeHeight;
 	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->s.number, MASK_PLAYERSOLID, 0 );
+	temp[ 2 ] = newOrigin[2] + nudgeHeight * tr.fraction;
 
-	//trace down to the ground so that we can evolve on slopes
-	VectorCopy( newOrigin, temp );
-	temp[ 2 ] += ( nudgeHeight * tr.fraction );
+	// trace down to the ground so that we can evolve on slopes
 	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
 	VectorCopy( tr.endpos, newOrigin );
 
-	//make REALLY sure
+	// make REALLY sure
 	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	return !tr.startsolid && tr.fraction == 1.0f;
+}
 
-	//check there is room to evolve
-	return ( !tr.startsolid && tr.fraction == 1.0f );
+bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
+{
+	vec3_t  fromMins, fromMaxs;
+	vec3_t  toMins, toMaxs;
+	class_t oldClass = (class_t) ent->client->ps.stats[ STAT_CLASS ];
+
+	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, nullptr, nullptr, nullptr );
+	BG_ClassBoundingBox( pcl, toMins, toMaxs, nullptr, nullptr, nullptr );
+
+	VectorCopy( ent->client->ps.origin, newOrigin ); // default
+
+	return FindRoomForClassChangeVertically( ent, fromMins, fromMaxs,
+			toMins, toMaxs, newOrigin );
 }
 
 /*
