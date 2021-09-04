@@ -340,8 +340,8 @@ static const struct AIConditionMap_s
 	int           nparams;
 } conditionFuncs[] =
 {
+	// It looks like behavior tree function names must be ordered alphabetically.
 	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
-	{ "momentum",          VALUE_INT,   momentum,          1 },
 	{ "aliveTime",         VALUE_INT,   aliveTime,         0 },
 	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
@@ -361,6 +361,7 @@ static const struct AIConditionMap_s
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
 	{ "matchTime",         VALUE_INT,   matchTime,         0 },
+	{ "momentum",          VALUE_INT,   momentum,          1 },
 	{ "percentAmmo",       VALUE_FLOAT, percentAmmo,       0 },
 	{ "percentHealth",     VALUE_FLOAT, percentHealth,     1 },
 	{ "random",            VALUE_FLOAT, randomChance,      0 },
