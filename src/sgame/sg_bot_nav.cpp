@@ -553,6 +553,8 @@ bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 
 	if ( blocker )
 	{
+
+		self->botMind->cmdBuffer.upmove = -127;
 		if ( BotShouldJump( self, blocker, dir ) )
 		{
 			BotJump( self );
