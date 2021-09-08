@@ -37,4 +37,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // custom content flags
 #define CUSTOM_CONTENTS_NOALIENBUILD    BIT( 12 ) // disallow alien building
 #define CUSTOM_CONTENTS_NOHUMANBUILD    BIT( 13 ) // disallow human building
-#define CUSTOM_CONTENTS_NOBUILD         BIT( 14 ) // disallow building,       override CONTENTS_MOVER
+#define CUSTOM_CONTENTS_NOBUILD         BIT( 14 ) // disallow building,       override CONTENTS_MOVER from RTCW and Wolf:ET we inherit through ET:XreaL, Q3 and Tremulous did not defined any flag there
