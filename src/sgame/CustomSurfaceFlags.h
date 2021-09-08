@@ -38,6 +38,3 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CUSTOM_CONTENTS_NOALIENBUILD    BIT( 12 ) // disallow alien building
 #define CUSTOM_CONTENTS_NOHUMANBUILD    BIT( 13 ) // disallow human building
 #define CUSTOM_CONTENTS_NOBUILD         BIT( 14 ) // disallow building,       override CONTENTS_MOVER
-
-// custom surface flags
-#define CUSTOM_SURF_NOBUILD             BIT( 21 ) // disallow building,       override SURF_GLASS
