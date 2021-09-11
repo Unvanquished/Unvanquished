@@ -1363,21 +1363,17 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	{
 		if ( numUpgrades )
 		{
-			BotSellAll( self );
-		}
-		else if ( weapon != WP_NONE )
-		{
-			BotSellWeapons( self );
+			BotSellUpgrades( self );
+			for ( i = 0; i < numUpgrades; i++ )
+			{
+				BotBuyUpgrade( self, upgrades[i] );
+			}
 		}
 
 		if ( weapon != WP_NONE )
 		{
+			BotSellWeapons( self );
 			BotBuyWeapon( self, weapon );
-		}
-
-		for ( i = 0; i < numUpgrades; i++ )
-		{
-			BotBuyUpgrade( self, upgrades[i] );
 		}
 
 		// make sure that we're not using the blaster
