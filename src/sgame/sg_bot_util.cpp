@@ -2125,7 +2125,7 @@ void BotSellWeapons( gentity_t *self )
 		}
 	}
 }
-void BotSellAll( gentity_t *self )
+void BotSellUpgrades( gentity_t *self )
 {
 	int i;
 
@@ -2134,7 +2134,6 @@ void BotSellAll( gentity_t *self )
 	{
 		return;
 	}
-	BotSellWeapons( self );
 
 	//sell upgrades
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
