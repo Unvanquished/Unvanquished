@@ -1072,35 +1072,24 @@ public:
 	{
 		vec3_t        view, point;
 		trace_t       trace;
-		entityState_t *es;
 
 		AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
 		VectorMA( cg.refdef.vieworg, ENTITY_USE_RANGE, view, point );
 		CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr,
 				  point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
 
-		es = &cg_entities[ trace.entityNum ].currentState;
+		const entityState_t &es = cg_entities[ trace.entityNum ].currentState;
 
-		if ( es->eType == entityType_t::ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-			CG_IsOnMyTeam(*es) )
+		if ( es.eType == entityType_t::ET_BUILDABLE
+				&& es.modelindex == BA_H_ARMOURY
+				&& Distance(cg.predictedPlayerState.origin, es.origin) < ENTITY_USE_RANGE - 0.2f // use an epsilon to account for rounding errors
+				&& CG_IsOnMyTeam(es) )
 		{
-			//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
-			if ( es->modelindex == BA_H_REACTOR &&
-				( !BG_Weapon( cg.snap->ps.weapon )->usesEnergy ||
-				BG_Weapon( cg.snap->ps.weapon )->infiniteAmmo ) )
+			if ( !IsVisible() )
 			{
-				cg.nearUsableBuildable = BA_NONE;
-				SetProperty( "display", "none" );
-				return;
+				SetProperty( "display", display );
+				cg.nearUsableBuildable = es.modelindex;
 			}
-
-			if ( IsVisible() )
-			{
-				return;
-			}
-
-			SetProperty( "display", display );
-			cg.nearUsableBuildable = es->modelindex;
 		}
 		else
 		{
