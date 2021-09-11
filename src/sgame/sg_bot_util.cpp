@@ -510,32 +510,6 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 			numUpgrades ++;
 		}
 	}
-
-	//now test to see if we already have all of these items
-	//check if we already have everything
-	if ( BG_InventoryContainsWeapon( static_cast<int>( weapon ), self->client->ps.stats ) )
-	{
-		size_t numContain = 0;
-		size_t i;
-
-		for ( i = 0; i < numUpgrades; i++ )
-		{
-			if ( BG_InventoryContainsUpgrade( static_cast<int>( upgrades[i] ), self->client->ps.stats ) )
-			{
-				numContain++;
-			}
-		}
-
-		if ( numContain == numUpgrades )
-		{
-			numUpgrades = 0;
-			for ( i = 0; i < 3; i++ )
-			{
-				upgrades[i] = UP_NONE;
-			}
-			weapon = WP_NONE;
-		}
-	}
 	return numUpgrades;
 }
 
