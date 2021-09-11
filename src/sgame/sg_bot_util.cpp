@@ -65,7 +65,7 @@ struct
 	{ g_bot_level0   .integer, PCL_ALIEN_LEVEL0     },
 };
 
-struct
+struct armor_list_t
 {
 	int &authorized;
 	upgrade_t item;
@@ -444,14 +444,28 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		upgrades[i] = UP_NONE;
 	}
 
+	armor_list_t const* currentArmor = nullptr;
+	for ( auto const &armor : armors )
+	{
+		if ( BG_InventoryContainsUpgrade( armor.item, self->client->ps.stats ) )
+		{
+			currentArmor = &armor;
+			break;
+		}
+	}
+
 	for ( auto const &armor : armors )
 	{
 		if ( armor.canBuyNow() && usableCapital >= armor.price()
 				&& ( usedSlots & armor.slots() ) == 0 )
 		{
-			upgrades[numUpgrades] = armor.item;
-			usableCapital -= armor.price();
-			usedSlots |= armor.slots();
+			if( !currentArmor || ( armor.price() > currentArmor->price() ) )
+			{
+				currentArmor = &armor;
+			}
+			upgrades[numUpgrades] = currentArmor->item;
+			usableCapital -= currentArmor->price();
+			usedSlots |= currentArmor->slots();
 			numUpgrades++;
 			break;
 		}
