@@ -40,6 +40,10 @@ void         BotShutdownNav();
 void BotDebugDrawMesh();
 void Cmd_NavEdit( gentity_t *ent );
 void Cmd_AddConnection( gentity_t *ent );
+// the difference with Cmd_AddConnection is that, instead of getting coords
+// aimed at, the connection point is placed at feets, which can be more precise
+// and easier depending on situation.
+void Cmd_PutCon_f( gentity_t *ent );
 void Cmd_NavTest( gentity_t *ent );
 
 void         BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
