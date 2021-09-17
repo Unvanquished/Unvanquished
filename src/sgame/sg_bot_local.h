@@ -99,6 +99,9 @@ struct botMemory_t
 	team_t botTeam;
 
 	botTarget_t goal;
+	void willSprint( bool enable );
+	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );
+	usercmd_t   cmdBuffer;
 
 	botSkill_t botSkill;
 	botEntityAndDistance_t bestEnemy;
@@ -113,7 +116,6 @@ struct botMemory_t
 	int         futureAimTime;
 	int         futureAimTimeInterval;
 	vec3_t      futureAim;
-	usercmd_t   cmdBuffer;
 	botNavCmd_t nav;
 
 	int lastThink;
@@ -121,6 +123,9 @@ struct botMemory_t
 	vec3_t stuckPosition;
 
 	int spawnTime;
+	//avoid relying on buttons to remember what AI was doing
+	bool wantSprinting = false;
+	bool exhausted = false;
 };
 
 bool G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );

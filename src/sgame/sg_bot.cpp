@@ -417,13 +417,8 @@ void G_BotThink( gentity_t *self )
 	self->botMind->cmdBuffer = self->client->pers.cmd;
 	botCmdBuffer = &self->botMind->cmdBuffer;
 
-	bool wasSprinting = usercmdButtonPressed( botCmdBuffer->buttons, BUTTON_SPRINT );
 	//reset command buffer
 	usercmdClearButtons( botCmdBuffer->buttons );
-	if ( wasSprinting )
-	{
-		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-	}
 
 	// for nudges, e.g. spawn blocking
 	bool hasNudge = botCmdBuffer->doubleTap != dtType_t::DT_NONE;
@@ -475,12 +470,18 @@ void G_BotThink( gentity_t *self )
 		//BotClampPos( self );
 	}
 
+	self->botMind->willSprint( false ); //let the BT decide that
 	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
 
 	// if we were nudged...
 	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );
 
+	// ensure we really want to sprint or not
 	self->client->pers.cmd = self->botMind->cmdBuffer;
+	self->botMind->doSprint(
+			BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost,
+			self->client->ps.stats[ STAT_STAMINA ],
+			self->client->pers.cmd );
 }
 
 void G_BotSpectatorThink( gentity_t *self )
@@ -623,4 +624,34 @@ void G_BotFill(bool immediately)
 			}
 		}
 	}
+}
+
+// declares an intent to sprint or not, should be used by BT functions
+void botMemory_t::willSprint( bool enable )
+{
+	wantSprinting = enable;
+}
+
+// applies the sprint intent, should only be called after all directional
+// or speed intents have been decided, that is, in G_BotThink(), *after*
+// the BT was examined.
+// This currently implements an hysteresis to prevent smart bot to be so
+// exhausted that they can't jump over an obstacle.
+// The hysteresis is meant to allow to recharge enough stamina so that a
+// sprint can be useful, instead of constantly enabling sprint, which in
+// practice result is the "moonwalk bug": AIs moving slower than if just
+// walking, and stamina not recharging at all.
+void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
+{
+	exhausted = exhausted || ( botSkill.level >= 5 && stamina <= jumpCost + jumpCost / 10 );
+	if ( !exhausted && wantSprinting )
+	{
+		usercmdPressButton( cmd.buttons, BUTTON_SPRINT );
+	}
+	else
+	{
+		usercmdReleaseButton( cmd.buttons, BUTTON_SPRINT );
+	}
+
+	exhausted = exhausted && stamina <= jumpCost * 2;
 }
