@@ -1100,7 +1100,22 @@ static AINodeStatus_t BotActionReachHealA( gentity_t *self )
 		return STATUS_FAILURE;
 	}
 
-	if ( !GoalInRange( self, 100 ) )
+	// retrieve creep size to have proper distance
+	//TODO: remove the booster exception, which is made so that
+	//bots can have poison. Instead, a real resupply API should be
+	//done, so that bots would not go grab poison by sheer luck.
+	//Would also allow humans to get ammos, jetpack "fuel" and advgoons
+	//regen all their barbs
+	int targetType = self->botMind->goal.getTargetedEntity()->s.modelindex;
+	vec3_t mins, maxs;
+	BG_BuildableBoundingBox( targetType, mins, maxs );
+	float dist = fabs( mins[0] );
+	if ( targetType != BA_A_BOOSTER )
+	{
+		dist += BG_Buildable( targetType )->creepSize;
+	}
+
+	if ( !GoalInRange( self, dist ) )
 	{
 		BotMoveToGoal( self );
 	}
