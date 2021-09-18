@@ -84,7 +84,11 @@ struct Bot_t
 	float             cornerVerts[ MAX_CORNERS * 3 ];
 	unsigned char     cornerFlags[ MAX_CORNERS ];
 	dtPolyRef         cornerPolys[ MAX_CORNERS ];
-	int               numCorners;
+private:
+	int               m_numCorners;
+	friend void UpdatePathCorridor( Bot_t *, rVec , botRouteTargetInternal );
+public:
+	int const& numCorners( void ) const { return m_numCorners; }
 	bool              offMesh;
 	rVec              offMeshStart;
 	rVec              offMeshEnd;
@@ -101,7 +105,7 @@ void NavEditShutdown();
 void BotSaveOffMeshConnections( NavData_t *nav );
 
 void         BotCalcSteerDir( Bot_t *bot, rVec &dir );
-void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners );
+void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int &numCorners, int maxCorners );
 bool         PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents );
 bool         PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point );
 bool         BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint );

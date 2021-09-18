@@ -120,13 +120,15 @@ void DrawPath( Bot_t *bot, DebugDrawQuake &dd )
 	const unsigned int spathCol = duRGBA(128,128,128,255);
 	dd.begin(DU_DRAW_LINES, 3.0f);
 	dd.vertex( bot->corridor.getPos(), spathCol );
-	for (int i = 0; i < bot->numCorners; ++i)
-		dd.vertex(bot->cornerVerts[i*3], bot->cornerVerts[i*3+1]+5.0f, bot->cornerVerts[i*3+2], spathCol);
-	if ( bot->numCorners < MAX_CORNERS - 1 )
+	for (int i = 0; i < bot->numCorners(); ++i)
 	{
-		if ( bot->numCorners % 2 != 0 )
+		dd.vertex(bot->cornerVerts[i*3], bot->cornerVerts[i*3+1]+5.0f, bot->cornerVerts[i*3+2], spathCol);
+	}
+	if ( bot->numCorners() < MAX_CORNERS - 1 )
+	{
+		if ( bot->numCorners() % 2 != 0 )
 		{
-			dd.vertex( &bot->cornerVerts[ ( bot->numCorners - 1 ) * 3 ], spathCol );
+			dd.vertex( &bot->cornerVerts[ ( bot->numCorners() - 1 ) * 3 ], spathCol );
 		}
 
 		dd.vertex( bot->corridor.getTarget(), spathCol );

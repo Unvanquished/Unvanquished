@@ -49,7 +49,10 @@ make sure the vectors use the same coordinate system
 void BotCalcSteerDir( Bot_t *bot, rVec &dir )
 {
 	const int ip0 = 0;
-	const int ip1 = std::min( 1, bot->numCorners - 1 );
+	//FIXME: p1 will result in either -1, 0 or 1. It's very unlikely that -1 is a good idea.
+	//old code follow, for reference, because I'm not sure at all that the fix is valid.
+	//const int ip1 = std::min( 1, bot->numCorners() - 1 );
+	const int ip1 = std::min( 1, bot->numCorners() );
 	const float* p0 = &bot->cornerVerts[ ip0 * 3 ];
 	const float* p1 = &bot->cornerVerts[ ip1 * 3 ];
 	rVec dir0, dir1;
@@ -77,16 +80,16 @@ void BotCalcSteerDir( Bot_t *bot, rVec &dir )
 	VectorNormalize( dir );
 }
 
-void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners )
+void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int &numCorners, int maxCorners )
 {
 	if ( !bot->corridor.getPathCount() )
 	{
 		Log::Warn("FindWaypoints Called without a path!" );
-		*numCorners = 0;
+		numCorners = 0;
 		return;
 	}
 
-	*numCorners = bot->corridor.findCorners( corners, cornerFlags, cornerPolys, maxCorners, bot->nav->query, &bot->nav->filter );
+	numCorners = bot->corridor.findCorners( corners, cornerFlags, cornerPolys, maxCorners, bot->nav->query, &bot->nav->filter );
 }
 
 bool PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents )
