@@ -903,6 +903,11 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 
 bool BotChangeGoalEntity( gentity_t *self, gentity_t const *goal )
 {
+	if ( !goal )
+	{
+		Log::Debug( "Trying to affect inexisting entity as goal" );
+		return false;
+	}
 	botTarget_t target;
 	BotSetTarget( &target, goal, nullptr );
 	return BotChangeGoal( self, target );
