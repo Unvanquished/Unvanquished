@@ -100,7 +100,7 @@ struct GentityRef
 
 	GentityRef& operator=(struct gentity_s *ent);
 
-	operator bool();
+	operator bool() const;
 
 	struct gentity_s * operator->()
 	{
@@ -385,7 +385,7 @@ inline GentityRef& GentityRef::operator=(struct gentity_s *ent)
 	return *this;
 }
 
-inline GentityRef::operator bool()
+inline GentityRef::operator bool() const
 {
 	return entity != nullptr && entity->generation == generation;
 }
