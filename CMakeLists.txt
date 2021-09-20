@@ -136,6 +136,8 @@ try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
 try_flag(WARNINGS           "-Wno-error=deprecated-copy")  # TODO: Remove when move to RmlUi is complete.
 try_flag(WARNINGS           "-Wno-maybe-uninitialized")
 
+try_flag(WARNINGS "/wd26812") # "The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'"
+
 if (BUILD_SGAME)
     include(DaemonCBSE)
     CBSE("sgame"
