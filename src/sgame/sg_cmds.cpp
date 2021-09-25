@@ -914,10 +914,22 @@ void Cmd_Team_f( gentity_t *ent )
 					force = true;
 				}
 
-				if ( !force && g_teamForceBalance.integer && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
+				if ( !force )
 				{
-					G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
-					return;
+					// 1: If this team has more player than the other team,
+					// tell the player to join the other team.
+					if ( g_teamForceBalance.integer == 1 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
+					{
+						G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
+						return;
+					}
+					// 2: Check for this team having more player than the other
+					// theam only if the other team is not empty.
+					else if ( g_teamForceBalance.integer >= 2 && G_PlayerCountForBalance( TEAM_HUMANS ) > 0 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
+					{
+						G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
+						return;
+					}
 				}
 
 				team = TEAM_ALIENS;
@@ -935,10 +947,22 @@ void Cmd_Team_f( gentity_t *ent )
 					force = true;
 				}
 
-				if ( !force && g_teamForceBalance.integer && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
+				if ( !force )
 				{
-					G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
-					return;
+					// 1: If this team has more player than the other team,
+					// tell the player to join the other team.
+					if ( g_teamForceBalance.integer == 1 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
+					{
+						G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
+						return;
+					}
+					// 2: Check for this team having more player than the other
+					// theam only if the other team is not empty.
+					else if ( g_teamForceBalance.integer >= 2 && G_PlayerCountForBalance( TEAM_ALIENS ) > 0 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
+					{
+						G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
+						return;
+					}
 				}
 
 				team = TEAM_HUMANS;
