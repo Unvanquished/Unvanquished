@@ -1123,14 +1123,22 @@ Parse_StripDoubleQuotes
 */
 static void Parse_StripDoubleQuotes( char *string )
 {
-	if ( *string == '\"' )
+	if ( string == nullptr || *string == '\0' )
 	{
-		memmove( string, string + 1, strlen( string ) + 1 );
+		Log::Warn( "Parse_StripDoubleQuotes called with invalid or empty string" );
+		return;
 	}
 
-	if ( string[ strlen( string ) - 1 ] == '\"' )
+	size_t len = strlen( string );
+	if ( *string == '\"' )
 	{
-		string[ strlen( string ) - 1 ] = '\0';
+		memmove( string, string + 1, len );
+		--len;
+	}
+
+	if ( len > 0 && string[ len - 1 ] == '\"' )
+	{
+		string[ len - 1 ] = '\0';
 	}
 }
 
