@@ -438,9 +438,14 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		}
 	}
 
+	//TODO this really needs more generic code, but that would require
+	//deeper refactoring (probably move equipments and classes into structs)
+	//and code to make bots _actually_ use other equipments.
 	unsigned int alliesNumbers[MAX_CLIENTS] = {};
 	int nbTeam = ListTeamMembers( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
-	if ( numUpgrades > 0 && g_bot_radar.integer
+	int nbRadars = numTeamUpgrades[UP_RADAR];
+	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / nbTeam < 75;
+	if ( numUpgrades > 0 && teamNeedsRadar && g_bot_radar.integer
 			&& BG_UpgradeUnlocked( UP_RADAR ) && usableCapital >= BG_Upgrade( UP_RADAR )->price
 			&& ( BG_Upgrade( upgrades[0] )->slots & BG_Upgrade( UP_RADAR )->slots ) == 0 )
 	{

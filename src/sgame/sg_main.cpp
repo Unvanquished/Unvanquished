@@ -233,6 +233,8 @@ vmCvar_t g_bot_mediumarmour;
 vmCvar_t g_bot_lightarmour;
 // human upgrades
 vmCvar_t g_bot_radar;
+// bots won't buy radars if more than this percent allies already have it
+vmCvar_t g_bot_radarRatio;
 vmCvar_t g_bot_jetpack;
 vmCvar_t g_bot_grenade;
 vmCvar_t g_bot_firebomb;
@@ -441,6 +443,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_lightarmour , "g_bot_lightarmour" , "1",  0, 0, false, nullptr },
 	// bots: buying upgrades
 	{ &g_bot_radar   , "g_bot_radar"   , "1",  0, 0, false, nullptr },
+	{ &g_bot_radarRatio, "g_bot_radarRatio", "75",  0, 0, false, nullptr },
 	{ &g_bot_jetpack , "g_bot_jetpack" , "0",  0, 0, false, nullptr },
 	{ &g_bot_grenade , "g_bot_grenade" , "0",  0, 0, false, nullptr },
 	{ &g_bot_firebomb, "g_bot_firebomb", "0",  0, 0, false, nullptr },
