@@ -27,11 +27,98 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "Entities.h"
 
+static void ListTeamEquipment( gentity_t *self, unsigned int numUpgrades[], size_t numUpgradesSize, unsigned int numWeapons[], size_t numWeaponsSize );
+static unsigned int ListTeamMembers( unsigned int allies[], size_t alliesSize, team_t team );
+
 /*
 =======================
 Scoring functions for logic
 =======================
 */
+
+// TODO this is an ugly duplicate!
+// manually sorted by preference, hopefully a future patch will have a much smarter way
+struct
+{
+	int &authorized;
+	class_t item;
+	int price( void ) const
+	{
+		return BG_Class( item )->price;
+	}
+	bool unlocked( void ) const
+	{
+		return BG_ClassUnlocked( item );
+	}
+	bool canBuyNow( void ) const
+	{
+		return authorized && unlocked();
+	}
+} classes[] =
+{
+	{ g_bot_level4   .integer, PCL_ALIEN_LEVEL4     },
+	{ g_bot_level3upg.integer, PCL_ALIEN_LEVEL3_UPG },
+	{ g_bot_level3   .integer, PCL_ALIEN_LEVEL3     },
+	{ g_bot_level2upg.integer, PCL_ALIEN_LEVEL2_UPG },
+	{ g_bot_level2   .integer, PCL_ALIEN_LEVEL2     },
+	{ g_bot_level1   .integer, PCL_ALIEN_LEVEL1     },
+	{ g_bot_level0   .integer, PCL_ALIEN_LEVEL0     },
+};
+
+// manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
+struct
+{
+	int &authorized;
+	upgrade_t item;
+	int price( void ) const
+	{
+		return BG_Upgrade( item )->price;
+	}
+	bool unlocked( void ) const
+	{
+		return BG_UpgradeUnlocked( item );
+	}
+	bool canBuyNow( void ) const
+	{
+		return authorized && unlocked();
+	}
+} armors[] =
+{
+	{ g_bot_battlesuit.integer  , UP_BATTLESUIT },
+	{ g_bot_mediumarmour.integer, UP_MEDIUMARMOUR },
+	{ g_bot_lightarmour.integer , UP_LIGHTARMOUR },
+};
+
+// manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
+struct
+{
+	int &authorized;
+	weapon_t item;
+	bool unlocked( void ) const
+	{
+		return BG_WeaponUnlocked( item );
+	}
+	bool canBuyNow( void ) const
+	{
+		return authorized && unlocked();
+	}
+	int price( void ) const
+	{
+		return BG_Weapon( item )->price;
+	}
+} weapons[] =
+{
+	{ g_bot_lcannon.integer , WP_LUCIFER_CANNON },
+	{ g_bot_flamer.integer  , WP_FLAMER },
+	// pulse rifle has lower priority to keep previous "correct" behavior
+	{ g_bot_prifle.integer  , WP_PULSE_RIFLE },
+	{ g_bot_chaingun.integer, WP_CHAINGUN },
+	{ g_bot_mdriver.integer , WP_MASS_DRIVER },
+	{ g_bot_lasgun.integer  , WP_LAS_GUN },
+	{ g_bot_shotgun.integer , WP_SHOTGUN },
+	{ g_bot_painsaw.integer , WP_PAIN_SAW },
+	{ g_bot_rifle.integer   , WP_MACHINEGUN },
+};
 
 float BotGetBaseRushScore( gentity_t *ent )
 {
@@ -303,125 +390,105 @@ int BotValueOfUpgrades( gentity_t *self )
 	return worth;
 }
 
-void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, int *numUpgrades )
+// Allow human bots to decide what to buy
+// pre-condition:
+// * weapon is a valid pointer
+// * "upgrades" is an array of at least upgradesSize elements
+// post-conditions:
+// * "upgrades" contains a list of upgrades to use
+// * "weapon" contains weapon to use
+// * Returns number of upgrades to buy (does not includes weapons)
+//
+// will favor better armor above everything else. If it is possible
+// to buy an armor, then evaluate other team-utilies and finally choose
+// the most expensive gun possible.
+// TODO: allow bots to buy jetpack and grenades, despite the fact
+//   they can't use them (yet. For grenades it should not be that
+//   hard?): since default cVar prevent bots to buy those, that
+//   will be one less thing to change later and would have no impact.
+int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], size_t upgradesSize )
 {
-	int i;
+	ASSERT( self && upgrades );
+	ASSERT( self->client->pers.team == TEAM_HUMANS ); // only humans can buy
+	ASSERT( upgradesSize >= 2 ); // we access to 2 elements maximum, and don't really check boundaries (would result in a nerf)
 	int equipmentPrice = BotValueOfWeapons( self ) + BotValueOfUpgrades( self );
 	int credits = self->client->ps.persistant[PERS_CREDIT];
 	int usableCapital = credits + equipmentPrice;
+	int numUpgrades = 0;
 
-	//decide what upgrade(s) to buy
-	if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_BATTLESUIT ) &&
-	     usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) )
+	unsigned int numTeamUpgrades[UP_NUM_UPGRADES] = {};
+	unsigned int numTeamWeapons[WP_NUM_WEAPONS] = {};
+
+	ListTeamEquipment( self, numTeamUpgrades, UP_NUM_UPGRADES, numTeamWeapons, WP_NUM_WEAPONS );
+	weapon = WP_NONE;
+	for ( size_t i = 0; i < upgradesSize; ++i )
 	{
-		upgrades[0] = UP_BATTLESUIT;
-		*numUpgrades = 1;
-	}
-	else if ( BG_WeaponUnlocked( WP_SHOTGUN ) && BG_UpgradeUnlocked( UP_MEDIUMARMOUR ) && BG_UpgradeUnlocked( UP_RADAR ) &&
-	          usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_MEDIUMARMOUR )->price + BG_Upgrade( UP_RADAR )->price ) )
-	{
-		upgrades[0] = UP_MEDIUMARMOUR;
-		upgrades[1] = UP_RADAR;
-		*numUpgrades = 2;
-	}
-	else if ( BG_WeaponUnlocked( WP_SHOTGUN ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR ) && BG_UpgradeUnlocked( UP_RADAR ) &&
-	          usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_RADAR )->price ) )
-	{
-		upgrades[0] = UP_LIGHTARMOUR;
-		upgrades[1] = UP_RADAR;
-		*numUpgrades = 2;
-	}
-	else if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_MEDIUMARMOUR ) &&
-	          usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_MEDIUMARMOUR )->price ) )
-	{
-		upgrades[0] = UP_MEDIUMARMOUR;
-		*numUpgrades = 1;
-	}
-	else if ( BG_WeaponUnlocked( WP_PAIN_SAW ) && BG_UpgradeUnlocked( UP_LIGHTARMOUR ) &&
-	          usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_LIGHTARMOUR )->price ) )
-	{
-		upgrades[0] = UP_LIGHTARMOUR;
-		*numUpgrades = 1;
-	}
-	else
-	{
-		*numUpgrades = 0;
+		upgrades[i] = UP_NONE;
 	}
 
-	for (i = 0; i < *numUpgrades; i++)
+	for ( auto const &armor : armors )
 	{
-		usableCapital -= BG_Upgrade( upgrades[i] )->price;
+		if ( armor.authorized
+				&& BG_UpgradeUnlocked( armor.item ) && usableCapital >= armor.price() )
+		{
+			upgrades[numUpgrades] = armor.item;
+			usableCapital -= armor.price();
+			numUpgrades++;
+			break;
+		}
 	}
 
-	//now decide what weapon to buy
-	if ( g_bot_lcannon.integer && BG_WeaponUnlocked( WP_LUCIFER_CANNON ) && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price )
+	unsigned int alliesNumbers[MAX_CLIENTS] = {};
+	int nbTeam = ListTeamMembers( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
+	if ( numUpgrades > 0 && g_bot_radar.integer
+			&& BG_UpgradeUnlocked( UP_RADAR ) && usableCapital >= BG_Upgrade( UP_RADAR )->price
+			&& ( BG_Upgrade( upgrades[0] )->slots & BG_Upgrade( UP_RADAR )->slots ) == 0 )
 	{
-		*weapon = WP_LUCIFER_CANNON;;
-	}
-	else if ( g_bot_chaingun.integer && BG_WeaponUnlocked( WP_CHAINGUN ) && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT )
-	{
-		*weapon = WP_CHAINGUN;
-	}
-	else if ( g_bot_flamer.integer && BG_WeaponUnlocked( WP_FLAMER ) && usableCapital >= BG_Weapon( WP_FLAMER )->price )
-	{
-		*weapon = WP_FLAMER;
-	}
-	else if ( g_bot_prifle.integer && BG_WeaponUnlocked( WP_PULSE_RIFLE ) && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price )
-	{
-		*weapon = WP_PULSE_RIFLE;
-	}
-	else if ( g_bot_chaingun.integer && BG_WeaponUnlocked( WP_CHAINGUN ) && usableCapital >= BG_Weapon( WP_CHAINGUN )->price )
-	{
-		*weapon = WP_CHAINGUN;;
-	}
-	else if ( g_bot_mdriver.integer && BG_WeaponUnlocked( WP_MASS_DRIVER ) && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price )
-	{
-		*weapon = WP_MASS_DRIVER;
-	}
-	else if ( g_bot_lasgun.integer && BG_WeaponUnlocked( WP_LAS_GUN ) && usableCapital >= BG_Weapon( WP_LAS_GUN )->price )
-	{
-		*weapon = WP_LAS_GUN;
-	}
-	else if ( g_bot_shotgun.integer && BG_WeaponUnlocked( WP_SHOTGUN ) && usableCapital >= BG_Weapon( WP_SHOTGUN )->price )
-	{
-		*weapon = WP_SHOTGUN;
-	}
-	else if ( g_bot_painsaw.integer && BG_WeaponUnlocked( WP_PAIN_SAW ) && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price )
-	{
-		*weapon = WP_PAIN_SAW;
-	}
-	else
-	{
-		*weapon = WP_MACHINEGUN;
+		upgrades[numUpgrades] = UP_RADAR;
+		usableCapital -= BG_Upgrade( upgrades[numUpgrades] )->price;
+		numUpgrades ++;
 	}
 
-	usableCapital -= BG_Weapon( *weapon )->price;
+	for ( auto const &wp : weapons )
+	{
+		if ( wp.authorized && BG_WeaponUnlocked( wp.item ) && usableCapital >= wp.price() )
+		{
+			if ( wp.item == WP_FLAMER && numTeamWeapons[WP_FLAMER] > numTeamWeapons[WP_PULSE_RIFLE] )
+			{
+				continue;
+			}
+			weapon = wp.item;
+			usableCapital -= wp.price();
+			break;
+		}
+	}
 
 	//now test to see if we already have all of these items
 	//check if we already have everything
-	if ( BG_InventoryContainsWeapon( ( int )*weapon, self->client->ps.stats ) )
+	if ( BG_InventoryContainsWeapon( static_cast<int>( weapon ), self->client->ps.stats ) )
 	{
 		int numContain = 0;
 		int i;
 
-		for ( i = 0; i < *numUpgrades; i++ )
+		for ( i = 0; i < numUpgrades; i++ )
 		{
-			if ( BG_InventoryContainsUpgrade( ( int )upgrades[i], self->client->ps.stats ) )
+			if ( BG_InventoryContainsUpgrade( static_cast<int>( upgrades[i] ), self->client->ps.stats ) )
 			{
 				numContain++;
 			}
 		}
 
-		if ( numContain == *numUpgrades )
+		if ( numContain == numUpgrades )
 		{
-			*numUpgrades = 0;
+			numUpgrades = 0;
 			for ( i = 0; i < 3; i++ )
 			{
 				upgrades[i] = UP_NONE;
 			}
-			*weapon = WP_NONE;
+			weapon = WP_NONE;
 		}
 	}
+	return numUpgrades;
 }
 
 /*
@@ -1293,6 +1360,31 @@ float BotAimAngle( gentity_t *self, vec3_t pos )
 	return AngleBetweenVectors( forward, ideal );
 }
 
+// fills allies with players of a team, and return the number of entities found.
+// pre-condition:
+// * team is playable
+// * allies is an array of at least alliesSize unsigned integers
+// * allies memory is initialized
+// * there are less than MAX_CLIENTS players in team
+// * there is enough space to store all team's player's references into allies
+unsigned int ListTeamMembers( unsigned int allies[], size_t alliesSize, team_t team )
+{
+	ASSERT( G_IsPlayableTeam( team ) );
+	gentity_t *testEntity;
+	unsigned int numAllies = 0;
+	for ( size_t i = 0; i < MAX_CLIENTS && numAllies < alliesSize; i++ )
+	{
+		testEntity = &g_entities[i];
+		// this is pure guessing and luck...
+		if ( testEntity->client && testEntity->client->pers.team == team )
+		{
+			allies[numAllies] = i;
+			numAllies++;
+		}
+	}
+	return numAllies;
+}
+
 /*
 ========================
 Bot Team Querys
@@ -1379,6 +1471,50 @@ bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 	else
 	{
 		return false;
+	}
+}
+
+// Initializes numUpgrades and numWeapons arrays with team's current equipment
+// pre-condition:
+// * self points to a player which is inside a playable team
+// * numUpgrades is an array of at least numUpgradesSize unsigned integers
+// * numUpgrades memory is initialized
+// * numWeapons is an array of at least numWeaponsSize unsigned integers
+// * numWeapons memory is initialized
+// * self's team have less than MAX_CLIENTS players
+void ListTeamEquipment( gentity_t *self, unsigned int numUpgrades[], size_t numUpgradesSize, unsigned int numWeapons[], size_t numWeaponsSize )
+{
+	ASSERT( self );
+	ASSERT( numUpgrades );
+	ASSERT( numWeapons );
+	const team_t team = static_cast<team_t>( self->client->pers.team );
+	unsigned int alliesNumbers[MAX_CLIENTS];
+	memset( alliesNumbers, 0, sizeof( alliesNumbers ) );
+	unsigned int numTeamPlayers = ListTeamMembers( alliesNumbers, MAX_CLIENTS, team );
+
+	for ( unsigned int i = 0; i < numTeamPlayers; ++i )
+	{
+		gentity_t *ally = &g_entities[alliesNumbers[i]];
+		if ( ally == self )
+		{
+			continue;
+		}
+		++numWeapons[ally->client->ps.stats[STAT_WEAPON]];
+		if ( team == TEAM_HUMANS )
+		{
+			// for all possible upgrades, check if current player already have it.
+			// this is very fragile, at best, since it will break if TEAM_ALIENS becomes
+			// able to have upgrades. Class is not considered, neither.
+			// last but not least, it's playing with bits.
+			int * stat = &ally->client->ps.stats[STAT_ITEMS];
+			for ( int up = UP_NONE + 1; up < UP_NUM_UPGRADES; ++up )
+			{
+				if ( *stat & ( 1 << up ) )
+				{
+					++numUpgrades[up];
+				}
+			}
+		}
 	}
 }
 
