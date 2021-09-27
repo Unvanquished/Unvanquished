@@ -722,6 +722,11 @@ bool CG_FileExists( const char *filename )
 	return trap_FS_FOpenFile( filename, nullptr, fsMode_t::FS_READ );
 }
 
+bool CG_ImageExists( const char *filename )
+{
+	return trap_ImageExists( filename );
+}
+
 /*
 ======================
 CG_UpdateLoadingProgress

@@ -1899,6 +1899,7 @@ bool   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString();
 
 bool   CG_FileExists( const char *filename );
+bool       CG_ImageExists( const char *filename );
 void       CG_UpdateBuildableRangeMarkerMask();
 void       CG_RegisterGrading( int slot, const char *str );
 
