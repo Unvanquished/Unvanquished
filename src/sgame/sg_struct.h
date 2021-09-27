@@ -366,6 +366,8 @@ struct gentity_t
 	int       watertype;
 	int       waterlevel;
 
+	float buildQueueTime; //additional buildtime for placed buildings
+
 	/*
 	 * variables that got randomly semantically abused by everyone
 	 * so now we rather name them to indicate the fact, that we cannot imply any meaning by the name

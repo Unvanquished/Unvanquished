@@ -93,7 +93,7 @@ void BuildableComponent::Think(int timeDelta) {
 	do {
 		switch ((oldState = state)) {
 			case CONSTRUCTING: {
-				int constructionTime = BG_Buildable(entity.oldEnt->s.modelindex)->buildTime;
+				int constructionTime = BG_Buildable(entity.oldEnt->s.modelindex)->buildTime + entity.oldEnt->buildQueueTime;
 
 				if (entity.oldEnt->creationTime + constructionTime < level.time) {
 					// Finish construction.

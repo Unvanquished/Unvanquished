@@ -2902,6 +2902,18 @@ void CG_Rocket_DrawStaminaBolt()
 	Rocket_SetClass( "walk", !activate );
 }
 
+void CG_Rocket_DrawBuildQueueTime()
+{
+	if(cg.snap->ps.stats[ STAT_MISC ] > 0){
+		Rocket_SetInnerRML( va("Additional Build Time: %.1fs", (float)cg.snap->ps.stats[ STAT_MISC ]/10 ) , RP_EMOTICONS );
+	}
+	else
+	{
+		Rocket_SetInnerRML( "", RP_EMOTICONS );
+	}
+
+}
+
 void CG_Rocket_DrawChatType()
 {
 	static const struct {
@@ -3540,6 +3552,7 @@ struct elementRenderCmd_t
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
+	{ "buildQueueTime", &CG_Rocket_DrawBuildQueueTime, ELEMENT_BOTH },
 	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },

@@ -1167,16 +1167,10 @@ void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 		// Check if the buildable is protected from instant deconstruction.
 		G_CheckDeconProtectionAndWarn( buildable, ent );
 
-		// Deny if build timer active.
-		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
-		{
-			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
-			return;
-		}
 
 		// Add to build timer.
 		ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
-	}	
+	}
 
 	G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
 }
@@ -1973,8 +1967,9 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		if (g_instantBuilding.Get()) {
 			// Build instantly in cheat mode.
 			// HACK: This causes animation issues and can result in built->creationTime < 0.
-			built->creationTime -= attr->buildTime;
+			built->creationTime -= attr->buildTime+builder->buildQueueTime;
 		} else {
+			built->buildQueueTime = builder->buildQueueTime;
 			HealthComponent *healthComponent = built->entity->Get<HealthComponent>();
 			healthComponent->SetHealth(healthComponent->MaxHealth() * BUILDABLE_START_HEALTH_FRAC);
 		}

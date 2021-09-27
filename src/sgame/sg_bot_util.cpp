@@ -1052,7 +1052,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		            CONTENTS_SOLID, MASK_ENTITY );
 		VectorCopy( trace.endpos, routeTarget->pos );
 	}
-	
+
 
 	// increase extents a little to account for obstacles cutting into the navmesh
 	// also accounts for navmesh erosion at mesh boundrys
@@ -1174,7 +1174,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				vec3_t npos;
 				vec3_t proj;
 				trajectory_t t;
-			
+
 				// Correct muzzle so that the missile does not start in the ceiling
 				VectorMA( muzzle, -7.0f, up, muzzle );
 
@@ -1190,7 +1190,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				VectorCopy( muzzle, t.trBase );
 				t.trType = trType_t::TR_LINEAR;
 				t.trTime = level.time - 50;
-			
+
 				// find projectile's final position
 				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, npos );
 
@@ -2147,12 +2147,6 @@ void BotSellWeapons( gentity_t *self )
 	//sell weapons
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 	{
-		//guard against selling the HBUILD weapons exploit
-		if ( i == WP_HBUILD && self->client->ps.stats[ STAT_MISC ] > 0 )
-		{
-			continue;
-		}
-
 		if ( BG_InventoryContainsWeapon( i, self->client->ps.stats ) &&
 			BG_Weapon( ( weapon_t )i )->purchasable )
 		{

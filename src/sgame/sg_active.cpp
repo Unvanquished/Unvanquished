@@ -901,19 +901,25 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		client->time100 -= 100;
 
 		// Update build timer
+		if( ent->buildQueueTime != 0)
+		{
+			if( ent->buildQueueTime > 0)
+			{
+				ent->buildQueueTime -= 100;
+			}
+			if( ent->buildQueueTime < 0)
+			{
+				ent->buildQueueTime = 0;
+			}
+		}
 		if ( weapon == WP_ABUILD || weapon == WP_ABUILD2 ||
 		     BG_InventoryContainsWeapon( WP_HBUILD, client->ps.stats ) )
 		{
-			if ( client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				client->ps.stats[ STAT_MISC ] -= 100;
-			}
-
-			if ( client->ps.stats[ STAT_MISC ] < 0 )
-			{
-				client->ps.stats[ STAT_MISC ] = 0;
-			}
+			client->ps.stats[ STAT_MISC ] = ent->buildQueueTime/100;
 		}
+
+
+
 
 		// Building related
 		switch ( weapon )
