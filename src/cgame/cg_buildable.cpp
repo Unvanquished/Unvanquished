@@ -2264,9 +2264,9 @@ void CG_Buildable( centity_t *cent )
 	{
 		// If buildable has spawned or is a human buildable, don't alter the size
 		bool  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
-
+		health = es->generic1;
 		float adjustScale = spawned ? 1.0f :
-			sinf( static_cast<float>(cg.time - es->time) / ba->buildTime * M_PI/2.0f );
+			sinf( static_cast<float>(health) / ba->health * M_PI/2.0f );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )
