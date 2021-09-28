@@ -1960,7 +1960,7 @@ void ClientThink_real( gentity_t *self )
 	}
 
 	// copy global gravity to playerstate
-	client->ps.gravity = g_gravity.value;
+	client->ps.gravity = g_gravity.Get();
 
 	G_ReplenishHumanHealth( self );
 

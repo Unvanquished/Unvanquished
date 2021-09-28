@@ -100,9 +100,9 @@ void G_UpdateBuildPointBudgets() {
 void G_RecoverBuildPoints() {
 	static int nextBuildPoint[NUM_TEAMS] = {0};
 
-	float rate = g_buildPointRecoveryInititalRate.value /
+	float rate = g_buildPointRecoveryInitialRate.Get() /
 	             std::pow(2.0f, (float)level.matchTime /
-	                            (60000.0f * g_buildPointRecoveryRateHalfLife.value));
+	                            (60000.0f * g_buildPointRecoveryRateHalfLife.Get()));
 	float interval = 60000.0f / rate;
 
 	// The interval grows exponentially, so check for an excessively large value which could cause overflow.

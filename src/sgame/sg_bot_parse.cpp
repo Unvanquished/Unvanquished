@@ -289,26 +289,30 @@ static AIValue_t randomChance( gentity_t*, const AIValue_t* )
 
 static AIValue_t cvarInt( gentity_t*, const AIValue_t *params )
 {
-	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
-
-	if ( !c )
+	// TODO: improve about performance when the need arises
+	std::string cvar = AIUnBoxString( params[ 0 ] );
+	int num;
+	if ( !Str::ParseInt( num, Cvar::GetValue( cvar ) ) )
 	{
-		return AIBoxInt( 0 );
+		Log::Warn("could not read cvar '%s' as integer", cvar);
+		num = 0;
 	}
 
-	return AIBoxInt( c->integer );
+	return AIBoxInt( num );
 }
 
 static AIValue_t cvarFloat( gentity_t*, const AIValue_t *params )
 {
-	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
-
-	if ( !c )
+	// TODO: improve about performance when the need arises
+	std::string cvar = AIUnBoxString( params[ 0 ] );
+	float num;
+	if ( !Cvar::ParseCvarValue( Cvar::GetValue( cvar ), num ) )
 	{
-		return AIBoxFloat( 0 );
+		Log::Warn("could not read cvar '%s' as float", cvar);
+		num = 0.0f;
 	}
 
-	return AIBoxFloat( c->value );
+	return AIBoxFloat( num );
 }
 
 static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )

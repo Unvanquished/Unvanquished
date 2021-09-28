@@ -43,12 +43,6 @@ struct cvarTable_t
 	int        cvarFlags;
 	int        modificationCount; // for tracking changes
 	bool   trackChange; // track this variable, and announce if changed
-
-	/* certain cvars can be set in worldspawn, but we don't want those values to
-	   persist, so keep track of non-worldspawn changes and restore that on map
-	   end. unfortunately, if the server crashes, the value set in worldspawn may
-	   persist */
-	char      *explicit_;
 };
 } //namespace
 
@@ -57,6 +51,12 @@ gclient_t          *g_clients;
 
 vmCvar_t           g_showHelpOnConnection;
 
+Cvar::Range<Cvar::Cvar<int>> g_gravity(
+		"g_gravity",
+		"how strongly things will be attracted towards the ground",
+		Cvar::NONE,
+		800, 100, 2000);
+
 vmCvar_t           g_timelimit;
 vmCvar_t           g_dretchPunt;
 vmCvar_t           g_password;
@@ -64,7 +64,6 @@ vmCvar_t           g_needpass;
 vmCvar_t           g_maxclients;
 vmCvar_t           g_maxGameClients;
 vmCvar_t           g_speed;
-vmCvar_t           g_gravity;
 vmCvar_t           g_cheats;
 vmCvar_t           g_inactivity;
 vmCvar_t           g_debugMove;
@@ -106,9 +105,10 @@ vmCvar_t           pmove_accurate;
 vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
+// gameplay: mining
 Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget(
 		"g_BPInitialBudget",
-		"Initial Budget",
+		"Initial build points count",
 		Cvar::SERVERINFO,
 		DEFAULT_BP_INITIAL_BUDGET,
 		[](int) {
@@ -122,8 +122,16 @@ Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
 		[](int) {
 			G_UpdateBuildPointBudgets();
 		});
-vmCvar_t           g_buildPointRecoveryInititalRate;
-vmCvar_t           g_buildPointRecoveryRateHalfLife;
+Cvar::Cvar<int> g_buildPointRecoveryInitialRate(
+		"g_BPRecoveryInitialRate",
+		"The initial speed at which BP will be recovered (in BP per minute)",
+		Cvar::SERVERINFO,
+		DEFAULT_BP_RECOVERY_INITIAL_RATE);
+Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife(
+		"g_BPRecoveryRateHalfLife",
+		"The duration one will wait before BP recovery gets twice as slow (in minutes)",
+		Cvar::SERVERINFO,
+		DEFAULT_BP_RECOVERY_RATE_HALF_LIFE);
 
 vmCvar_t           g_debugMomentum;
 vmCvar_t           g_momentumHalfLife;
@@ -135,8 +143,18 @@ vmCvar_t           g_momentumBuildMod;
 vmCvar_t           g_momentumDeconMod;
 vmCvar_t           g_momentumDestroyMod;
 
-vmCvar_t           g_humanAllowBuilding;
-vmCvar_t           g_alienAllowBuilding;
+
+Cvar::Cvar<bool> g_humanAllowBuilding(
+		"g_humanAllowBuilding",
+		"can human build",
+		Cvar::NONE,
+		true);
+
+Cvar::Cvar<bool> g_alienAllowBuilding(
+		"g_alienAllowBuilding",
+		"can aliens build",
+		Cvar::NONE,
+		true);
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
@@ -145,10 +163,33 @@ vmCvar_t           g_freeFundPeriod;
 
 vmCvar_t           g_unlagged;
 
-vmCvar_t           g_disabledEquipment;
-vmCvar_t           g_disabledClasses;
-vmCvar_t           g_disabledBuildables;
-vmCvar_t           g_disabledVoteCalls;
+Cvar::Callback<Cvar::Cvar<std::string>> g_disabledEquipment(
+		"g_disabledEquipment",
+		"Forbidden weapons and gear humans can buy, example: " QQ("lcannon, flamer, gren, firebomb, bsuit, larmour"),
+		Cvar::SERVERINFO,
+		"", // everything is allowed by default
+		BG_SetForbiddenEquipment
+		);
+Cvar::Callback<Cvar::Cvar<std::string>> g_disabledClasses(
+		"g_disabledClasses",
+		"Forbidden alien classes, like " QQ("level3,level3upg,builder"),
+		Cvar::SERVERINFO,
+		"", // everything is allowed by default
+		BG_SetForbiddenClasses
+		);
+Cvar::Callback<Cvar::Cvar<std::string>> g_disabledBuildables(
+		"g_disabledBuildables",
+		"Forbidden (human and alien) buildings, like " QQ("acid_tube, barricade, medistat, drill, mgturret, rocketpod"),
+		Cvar::SERVERINFO,
+		"", // everything is allowed by default
+		BG_SetForbiddenBuildables
+		);
+Cvar::Cvar<std::string> g_disabledVoteCalls(
+		"g_disabledVoteCalls",
+		"Forbidden votes, like " QQ("kickbots, nextmap, spectate"),
+		Cvar::SERVERINFO,
+		"" // everything is allowed by default
+		);
 
 vmCvar_t           g_debugMapRotation;
 vmCvar_t           g_currentMapRotation;
@@ -253,200 +294,182 @@ vmCvar_t g_bot_buildLayout;
 
 //</bot stuff>
 
-// copy cvars that can be set in worldspawn so they can be restored later
-static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
-
 static cvarTable_t gameCvarTable[] =
 {
 	// special purpose (external source, read only, etc.)
 	// TODO: Split and comment this section
-	{ nullptr,                           "gamename",                      GAME_VERSION,                       CVAR_SERVERINFO | CVAR_ROM,                      0, false , nullptr          },
-	{ nullptr,                           "gamedate",                      __DATE__,                           CVAR_ROM,                                        0, false , nullptr          },
-	{ nullptr,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO,                                 0, false , nullptr          },
-	{ nullptr,                           "P",                             "",                                 CVAR_SERVERINFO,                                 0, false , nullptr          },
-	{ nullptr,                           "B",                             "",                                 CVAR_SERVERINFO,                                 0, false , nullptr          },
-	{ nullptr,                           "g_mapStartupMessage",           "",                                 0,                                               0, false , nullptr          },
-	{ nullptr,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, false , nullptr          },
-	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, false    , nullptr       },
-	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, false    , nullptr       },
-	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, false    , nullptr       },
-	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, false    , nullptr       },
+	{ nullptr,                           "gamename",                      GAME_VERSION,                       CVAR_SERVERINFO | CVAR_ROM,                      0, false },
+	{ nullptr,                           "gamedate",                      __DATE__,                           CVAR_ROM,                                        0, false },
+	{ nullptr,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO,                                 0, false },
+	{ nullptr,                           "P",                             "",                                 CVAR_SERVERINFO,                                 0, false },
+	{ nullptr,                           "B",                             "",                                 CVAR_SERVERINFO,                                 0, false },
+	{ nullptr,                           "g_mapStartupMessage",           "",                                 0,                                               0, false },
+	{ nullptr,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, false },
+	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, false    },
+	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, false    },
+	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, false    },
+	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, false    },
 
 
 	// server: basic
-	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO,                                 0, false    , nullptr       },
-	{ &g_needpass,                    "g_needpass",                    "0",                                CVAR_SERVERINFO,                                 0, false    , nullptr       },
-	{ &g_password,                    "g_password",                    "",                                 CVAR_USERINFO,                                   0, false    , nullptr       },
-	{ &g_motd,                        "g_motd",                        "",                                 0,                                               0, false    , nullptr       },
-	{ &g_showHelpOnConnection,        "g_showHelpOnConnection",        "1",                                0,                                               0, false    , nullptr       },
+	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO,                                 0, false },
+	{ &g_needpass,                    "g_needpass",                    "0",                                CVAR_SERVERINFO,                                 0, false },
+	{ &g_password,                    "g_password",                    "",                                 CVAR_USERINFO,                                   0, false },
+	{ &g_motd,                        "g_motd",                        "",                                 0,                                               0, false },
+	{ &g_showHelpOnConnection,        "g_showHelpOnConnection",        "1",                                0,                                               0, false },
 
 	// server: network related
-	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO,                                 0, true     , nullptr       },
-	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, false    , nullptr       },
-	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                0,                                               0, false    , nullptr       },
-	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                0,                                               0, false    , nullptr       },
-	{ &pmove_msec,                    "pmove_msec",                    "8",                                0,                                               0, false    , nullptr       },
-	{ &pmove_accurate,                "pmove_accurate",                "1",                                0,                                               0, false    , nullptr       },
-	{ &g_floodMaxDemerits,            "g_floodMaxDemerits",            "5000",                             0,                                               0, false    , nullptr       },
-	{ &g_floodMinTime,                "g_floodMinTime",                "2000",                             0,                                               0, false    , nullptr       },
+	{ &g_unlagged,                    "g_unlagged",                    "1",                                CVAR_SERVERINFO,                                 0, true  },
+	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, false },
+	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                0,                                               0, false },
+	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                0,                                               0, false },
+	{ &pmove_msec,                    "pmove_msec",                    "8",                                0,                                               0, false },
+	{ &pmove_accurate,                "pmove_accurate",                "1",                                0,                                               0, false },
+	{ &g_floodMaxDemerits,            "g_floodMaxDemerits",            "5000",                             0,                                               0, false },
+	{ &g_floodMinTime,                "g_floodMinTime",                "2000",                             0,                                               0, false },
 
 	// clients: limits
-	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, false    , nullptr       },
-	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, false    , nullptr       },
-	{ &g_enableVsays,                 "g_voiceChats",                  "1",                                0,                                               0, false    , nullptr       },
-	{ &g_inactivity,                  "g_inactivity",                  "0",                                0,                                               0, true     , nullptr       },
-	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                0,                                               0, false    , nullptr       },
-	{ &g_privateMessages,             "g_privateMessages",             "1",                                0,                                               0, false    , nullptr       },
-	{ &g_specChat,                    "g_specChat",                    "1",                                0,                                               0, false    , nullptr       },
+	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, false },
+	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, false },
+	{ &g_enableVsays,                 "g_voiceChats",                  "1",                                0,                                               0, false },
+	{ &g_inactivity,                  "g_inactivity",                  "0",                                0,                                               0, true  },
+	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                0,                                               0, false },
+	{ &g_privateMessages,             "g_privateMessages",             "1",                                0,                                               0, false },
+	{ &g_specChat,                    "g_specChat",                    "1",                                0,                                               0, false },
 
 	// clients: voting
-	{ &g_allowVote,                   "g_allowVote",                   "1",                                0,                                               0, false    , nullptr       },
-	{ &g_voteLimit,                   "g_voteLimit",                   "5",                                0,                                               0, false    , nullptr       },
-	{ &g_disabledVoteCalls,           "g_disabledVoteCalls",           "",                                 0,                                               0, false    , nullptr       },
-	{ &g_extendVotesPercent,          "g_extendVotesPercent",          "74",                               0,                                               0, false    , nullptr       },
-	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               0,                                               0, false    , nullptr       },
-	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "51",                               0,                                               0, true     , nullptr       },
-	{ &g_denyVotesPercent,            "g_denyVotesPercent",            "51",                               0,                                               0, true     , nullptr       },
-	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "51",                               0,                                               0, true     , nullptr       },
-	{ &g_mapVotesBefore,              "g_mapVotesBefore",              "5",                                0,                                               0, true     , nullptr       },
-	{ &g_nextMapVotesPercent,         "g_nextMapVotesPercent",         "51",                               0,                                               0, true     , nullptr       },
-	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "51",                               0,                                               0, true     , nullptr       },
-	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                0,                                               0, true     , nullptr       },
-	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                0,                                               0, true     , nullptr       },
-	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               0,                                               0, true     , nullptr       },
-	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                0,                                               0, true     , nullptr       },
-	{ &g_botKickVotesAllowed,         "g_botKickVotesAllowed",         "1",                                0,                                               0, true     , nullptr       },
-	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                0,                                               0, true     , nullptr       },
+	{ &g_allowVote,                   "g_allowVote",                   "1",                                0,                                               0, false },
+	{ &g_voteLimit,                   "g_voteLimit",                   "5",                                0,                                               0, false },
+	{ &g_extendVotesPercent,          "g_extendVotesPercent",          "74",                               0,                                               0, false },
+	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               0,                                               0, false },
+	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "51",                               0,                                               0, true  },
+	{ &g_denyVotesPercent,            "g_denyVotesPercent",            "51",                               0,                                               0, true  },
+	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "51",                               0,                                               0, true  },
+	{ &g_mapVotesBefore,              "g_mapVotesBefore",              "5",                                0,                                               0, true  },
+	{ &g_nextMapVotesPercent,         "g_nextMapVotesPercent",         "51",                               0,                                               0, true  },
+	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "51",                               0,                                               0, true  },
+	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                0,                                               0, true  },
+	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                0,                                               0, true  },
+	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               0,                                               0, true  },
+	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                0,                                               0, true  },
+	{ &g_botKickVotesAllowed,         "g_botKickVotesAllowed",         "1",                                0,                                               0, true  },
+	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                0,                                               0, true  },
 
 	// clients: misc
-	{ &g_geoip,                       "g_geoip",                       "1",                                0,                                               0, false    , nullptr       },
-	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "-1",                               0,                                               0, false    , nullptr       },
-	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER "#",                 0,                                               0, false    , nullptr       },
-	{ &g_unnamedBotNamePrefix,        "g_unnamedBotNamePrefix",        UNNAMED_BOT "#",                    0,                                               0, false    , nullptr       },
+	{ &g_geoip,                       "g_geoip",                       "1",                                0,                                               0, false },
+	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "-1",                               0,                                               0, false },
+	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER "#",                 0,                                               0, false },
+	{ &g_unnamedBotNamePrefix,        "g_unnamedBotNamePrefix",        UNNAMED_BOT "#",                    0,                                               0, false },
 
 	// admin system
-	{ &g_admin,                       "g_admin",                       "admin.dat",                        0,                                               0, false    , nullptr       },
-	{ &g_adminWarn,                   "g_adminWarn",                   "1h",                               0,                                               0, false    , nullptr       },
-	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               0,                                               0, false    , nullptr       },
-	{ &g_adminMaxBan,                 "g_adminMaxBan",                 "2w",                               0,                                               0, false    , nullptr       },
-	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "1",                                0,                                               0, false    , nullptr       },
-	{ &g_publicAdminMessages,         "g_publicAdminMessages",         "1",                                0,                                               0, false    , nullptr       },
+	{ &g_admin,                       "g_admin",                       "admin.dat",                        0,                                               0, false },
+	{ &g_adminWarn,                   "g_adminWarn",                   "1h",                               0,                                               0, false },
+	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               0,                                               0, false },
+	{ &g_adminMaxBan,                 "g_adminMaxBan",                 "2w",                               0,                                               0, false },
+	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "1",                                0,                                               0, false },
+	{ &g_publicAdminMessages,         "g_publicAdminMessages",         "1",                                0,                                               0, false },
 
 	// logging
-	{ &g_logFile,                     "g_logFile",                     "games.log",                        0,                                               0, false    , nullptr       },
-	{ &g_logGameplayStatsFrequency,   "g_logGameplayStatsFrequency",   "10",                               0,                                               0, false    , nullptr       },
-	{ &g_logFileSync,                 "g_logFileSync",                 "0",                                0,                                               0, false    , nullptr       },
+	{ &g_logFile,                     "g_logFile",                     "games.log",                        0,                                               0, false },
+	{ &g_logGameplayStatsFrequency,   "g_logGameplayStatsFrequency",   "10",                               0,                                               0, false },
+	{ &g_logFileSync,                 "g_logFileSync",                 "0",                                0,                                               0, false },
 
 	// maps, layouts & rotation
-	{ &g_currentMapRotation,          "g_currentMapRotation",          "-1",                               0,                                               0, false    , nullptr       },
-	{ &g_mapRotationNodes,            "g_mapRotationNodes",            "",                                 0,                                               0, false    , nullptr       },
-	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 0,                                               0, false    , nullptr       },
-	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, true     , nullptr       },
-	{ &g_nextMapLayouts,              "g_nextMapLayouts",              "",                                 0,                                               0, true     , nullptr       },
-	{ &g_initialMapRotation,          "g_initialMapRotation",          "rotation1",                        0,                                               0, false    , nullptr       },
-	{ &g_mapLog,                      "g_mapLog",                      "",                                 0,                                               0, false    , nullptr       },
-	{ &g_mapStartupMessageDelay,      "g_mapStartupMessageDelay",      "5000",                             CVAR_LATCH,                                      0, false    , nullptr       },
-	{ &g_mapConfigs,                  "g_mapConfigs",                  "",                                 0,                                               0, false    , nullptr       },
-	{ &g_defaultLayouts,              "g_defaultLayouts",              "",                                 CVAR_LATCH,                                      0, false    , nullptr       },
-	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, false    , nullptr       },
-	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                0,                                               0, false    , nullptr       },
+	{ &g_currentMapRotation,          "g_currentMapRotation",          "-1",                               0,                                               0, false },
+	{ &g_mapRotationNodes,            "g_mapRotationNodes",            "",                                 0,                                               0, false },
+	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 0,                                               0, false },
+	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, true  },
+	{ &g_nextMapLayouts,              "g_nextMapLayouts",              "",                                 0,                                               0, true  },
+	{ &g_initialMapRotation,          "g_initialMapRotation",          "rotation1",                        0,                                               0, false },
+	{ &g_mapLog,                      "g_mapLog",                      "",                                 0,                                               0, false },
+	{ &g_mapStartupMessageDelay,      "g_mapStartupMessageDelay",      "5000",                             CVAR_LATCH,                                      0, false },
+	{ &g_mapConfigs,                  "g_mapConfigs",                  "",                                 0,                                               0, false },
+	{ &g_defaultLayouts,              "g_defaultLayouts",              "",                                 CVAR_LATCH,                                      0, false },
+	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, false },
+	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                0,                                               0, false },
 
 	// debug switches
-	{ &g_debugMove,                   "g_debugMove",                   "0",                                0,                                               0, false    , nullptr       },
-	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                0,                                               0, false    , nullptr       },
-	{ &g_debugKnockback,              "g_debugKnockback",              "0",                                0,                                               0, false    , nullptr       },
-	{ &g_debugTurrets,                "g_debugTurrets",                "0",                                0,                                               0, false    , nullptr       },
-	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                0,                                               0, false    , nullptr       },
-	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, false    , nullptr       },
-	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                0,                                               0, false    , nullptr       },
-	{ &g_debugEntities,               "g_debugEntities",               "0",                                0,                                               0, false    , nullptr       },
-	{ &g_debugFire,                   "g_debugFire",                   "0",                                0,                                               0, false    , nullptr       },
+	{ &g_debugMove,                   "g_debugMove",                   "0",                                0,                                               0, false },
+	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                0,                                               0, false },
+	{ &g_debugKnockback,              "g_debugKnockback",              "0",                                0,                                               0, false },
+	{ &g_debugTurrets,                "g_debugTurrets",                "0",                                0,                                               0, false },
+	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                0,                                               0, false },
+	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, false },
+	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                0,                                               0, false },
+	{ &g_debugEntities,               "g_debugEntities",               "0",                                0,                                               0, false },
+	{ &g_debugFire,                   "g_debugFire",                   "0",                                0,                                               0, false },
 
 	// gameplay: basic
-	{ &g_timelimit,                   "timelimit",                     "45",                               CVAR_SERVERINFO,                                 0, true     , nullptr       },
+	{ &g_timelimit,                   "timelimit",                     "45",                               CVAR_SERVERINFO,                                 0, true  },
 
 	// gameplay: team balance
-	{ &g_teamForceBalance,            "g_teamForceBalance",            "0",                                0,                                               0, true     , nullptr       },
-	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               0,                                               0, false    , nullptr       },
-	{ &g_warmup,                      "g_warmup",                      "10",                               0,                                               0, true     , nullptr       },
-	{ &g_doWarmup,                    "g_doWarmup",                    "0",                                0,                                               0, true     , nullptr       },
-
-	// gameplay: mining
-	{ &g_buildPointRecoveryInititalRate, "g_BPRecoveryInitialRate",    DEFAULT_BP_RECOVERY_INITIAL_RATE,   CVAR_SERVERINFO,                                 0, false    , nullptr       },
-	{ &g_buildPointRecoveryRateHalfLife, "g_BPRecoveryRateHalfLife",   DEFAULT_BP_RECOVERY_RATE_HALF_LIFE, CVAR_SERVERINFO,                                 0, false    , nullptr       },
+	{ &g_teamForceBalance,            "g_teamForceBalance",            "0",                                0,                                               0, true  },
+	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               0,                                               0, false },
+	{ &g_warmup,                      "g_warmup",                      "10",                               0,                                               0, true  },
+	{ &g_doWarmup,                    "g_doWarmup",                    "0",                                0,                                               0, true  },
 
 	// gameplay: momentum
-	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, false    , nullptr       },
-	{ &g_momentumHalfLife,            "g_momentumHalfLife",            DEFAULT_MOMENTUM_HALF_LIFE,         CVAR_SERVERINFO,                                 0, false    , nullptr       },
-	{ &g_momentumRewardDoubleTime,    "g_momentumRewardDoubleTime",    DEFAULT_CONF_REWARD_DOUBLE_TIME,    0,                                               0, false    , nullptr       },
-	{ &g_momentumBaseMod,             "g_momentumBaseMod",             DEFAULT_MOMENTUM_BASE_MOD,          0,                                               0, false    , nullptr       },
-	{ &g_momentumKillMod,             "g_momentumKillMod",             DEFAULT_MOMENTUM_KILL_MOD,          0,                                               0, false    , nullptr       },
-	{ &g_momentumBuildMod,            "g_momentumBuildMod",            DEFAULT_MOMENTUM_BUILD_MOD,         0,                                               0, false    , nullptr       },
-	{ &g_momentumDeconMod,            "g_momentumDeconMod",            DEFAULT_MOMENTUM_DECON_MOD,         0,                                               0, false    , nullptr       },
-	{ &g_momentumDestroyMod,          "g_momentumDestroyMod",          DEFAULT_MOMENTUM_DESTROY_MOD,       0,                                               0, false    , nullptr       },
-
-	// gameplay: limits
-	{ &g_humanAllowBuilding,          "g_humanAllowBuilding",          "1",                                0,                                               0, false    , nullptr       },
-	{ &g_alienAllowBuilding,          "g_alienAllowBuilding",          "1",                                0,                                               0, false    , nullptr       },
-	{ &g_disabledEquipment,           "g_disabledEquipment",           "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
-	{ &g_disabledClasses,             "g_disabledClasses",             "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
-	{ &g_disabledBuildables,          "g_disabledBuildables",          "",                                 CVAR_SYSTEMINFO,                                 0, false    , nullptr       },
+	{ &g_unlockableMinTime,           "g_unlockableMinTime",           DEFAULT_UNLOCKABLE_MIN_TIME,        CVAR_SERVERINFO,                                 0, false },
+	{ &g_momentumHalfLife,            "g_momentumHalfLife",            DEFAULT_MOMENTUM_HALF_LIFE,         CVAR_SERVERINFO,                                 0, false },
+	{ &g_momentumRewardDoubleTime,    "g_momentumRewardDoubleTime",    DEFAULT_CONF_REWARD_DOUBLE_TIME,    0,                                               0, false },
+	{ &g_momentumBaseMod,             "g_momentumBaseMod",             DEFAULT_MOMENTUM_BASE_MOD,          0,                                               0, false },
+	{ &g_momentumKillMod,             "g_momentumKillMod",             DEFAULT_MOMENTUM_KILL_MOD,          0,                                               0, false },
+	{ &g_momentumBuildMod,            "g_momentumBuildMod",            DEFAULT_MOMENTUM_BUILD_MOD,         0,                                               0, false },
+	{ &g_momentumDeconMod,            "g_momentumDeconMod",            DEFAULT_MOMENTUM_DECON_MOD,         0,                                               0, false },
+	{ &g_momentumDestroyMod,          "g_momentumDestroyMod",          DEFAULT_MOMENTUM_DESTROY_MOD,       0,                                               0, false },
 
 	// gameplay: misc
-	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                0,                                               0, false    , nullptr       },
-	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            0,                                               0, true     , nullptr       },
-	{ &g_sayAreaRange,                "g_sayAreaRange",                "1000",                             0,                                               0, true     , nullptr       },
-	{ &g_speed,                       "g_speed",                       "320",                              0,                                               0, true     , nullptr       },
-	{ &g_gravity,                     "g_gravity",                     "800",                              0,                                               0, true, cv_gravity},
-	{ &g_antiSpawnBlock,              "g_antiSpawnBlock",              "0",                                0,                                               0, false    , nullptr       },
-	{ &g_shove,                       "g_shove",                       "0.0",                              0,                                               0, false    , nullptr       },
-	{ &g_dretchPunt,                  "g_dretchPunt",                  "1",                                0,                                               0, true     , nullptr       },
-	{ &g_allowTeamOverlay,            "g_allowTeamOverlay",            "1",                                0,                                               0, true     , nullptr       },
-	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                0,                                               0, false    , nullptr       },
-	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               0,                                               0, false    , nullptr       },
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "0",                                0,                                               0, false },
+	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            0,                                               0, true  },
+	{ &g_sayAreaRange,                "g_sayAreaRange",                "1000",                             0,                                               0, true  },
+	{ &g_speed,                       "g_speed",                       "320",                              0,                                               0, true  },
+	{ &g_antiSpawnBlock,              "g_antiSpawnBlock",              "0",                                0,                                               0, false },
+	{ &g_shove,                       "g_shove",                       "0.0",                              0,                                               0, false },
+	{ &g_dretchPunt,                  "g_dretchPunt",                  "1",                                0,                                               0, true  },
+	{ &g_allowTeamOverlay,            "g_allowTeamOverlay",            "1",                                0,                                               0, true  },
+	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                0,                                               0, false },
+	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               0,                                               0, false },
 
-	{ &g_instantBuilding,             "g_instantBuilding",             "0",                                0,                                               0, true     , nullptr       },
+	{ &g_instantBuilding,             "g_instantBuilding",             "0",                                0,                                               0, true  },
 
-	{ &g_emptyTeamsSkipMapTime,       "g_emptyTeamsSkipMapTime",       "0",                                0,                                               0, true     , nullptr       },
+	{ &g_emptyTeamsSkipMapTime,       "g_emptyTeamsSkipMapTime",       "0",                                0,                                               0, true  },
 
 	// bots: buying
-	{ &g_bot_buy, "g_bot_buy", "1",  0, 0, false, nullptr },
-	{ &g_bot_rifle, "g_bot_rifle", "1",  0, 0, false, nullptr },
-	{ &g_bot_painsaw, "g_bot_painsaw", "1",  0, 0, false, nullptr },
-	{ &g_bot_shotgun, "g_bot_shotgun", "1",  0, 0, false, nullptr },
-	{ &g_bot_lasgun, "g_bot_lasgun", "1",  0, 0, false, nullptr },
-	{ &g_bot_mdriver, "g_bot_mdriver", "1",  0, 0, false, nullptr },
-	{ &g_bot_chaingun, "g_bot_chain", "1",  0, 0, false, nullptr },
-	{ &g_bot_prifle, "g_bot_prifle", "1",  0, 0, false, nullptr },
-	{ &g_bot_flamer, "g_bot_flamer", "1",  0, 0, false, nullptr },
-	{ &g_bot_lcannon, "g_bot_lcannon", "1",  0, 0, false, nullptr },
+	{ &g_bot_buy, "g_bot_buy", "1",  0, 0, false },
+	{ &g_bot_rifle, "g_bot_rifle", "1",  0, 0, false },
+	{ &g_bot_painsaw, "g_bot_painsaw", "1",  0, 0, false },
+	{ &g_bot_shotgun, "g_bot_shotgun", "1",  0, 0, false },
+	{ &g_bot_lasgun, "g_bot_lasgun", "1",  0, 0, false },
+	{ &g_bot_mdriver, "g_bot_mdriver", "1",  0, 0, false },
+	{ &g_bot_chaingun, "g_bot_chain", "1",  0, 0, false },
+	{ &g_bot_prifle, "g_bot_prifle", "1",  0, 0, false },
+	{ &g_bot_flamer, "g_bot_flamer", "1",  0, 0, false },
+	{ &g_bot_lcannon, "g_bot_lcannon", "1",  0, 0, false },
 
 	// bots: evolution
-	{ &g_bot_evolve, "g_bot_evolve", "1", 0, 0, false, nullptr },
-	{ &g_bot_level1, "g_bot_level1", "1", 0, 0, false, nullptr },
-	{ &g_bot_level2, "g_bot_level2", "1", 0, 0, false, nullptr },
-	{ &g_bot_level2upg, "g_bot_level2upg", "1", 0, 0, false, nullptr },
-	{ &g_bot_level3, "g_bot_level3", "1", 0, 0, false, nullptr },
-	{ &g_bot_level3upg, "g_bot_level3upg", "1", 0, 0, false, nullptr },
-	{ &g_bot_level4, "g_bot_level4", "1", 0, 0, false, nullptr },
+	{ &g_bot_evolve, "g_bot_evolve", "1", 0, 0, false },
+	{ &g_bot_level1, "g_bot_level1", "1", 0, 0, false },
+	{ &g_bot_level2, "g_bot_level2", "1", 0, 0, false },
+	{ &g_bot_level2upg, "g_bot_level2upg", "1", 0, 0, false },
+	{ &g_bot_level3, "g_bot_level3", "1", 0, 0, false },
+	{ &g_bot_level3upg, "g_bot_level3upg", "1", 0, 0, false },
+	{ &g_bot_level4, "g_bot_level4", "1", 0, 0, false },
 
 	// bots: misc
-	{ &g_bot_attackStruct, "g_bot_attackStruct", "1",  0, 0, false, nullptr },
-	{ &g_bot_roam, "g_bot_roam", "1",  0, 0, false, nullptr },
-	{ &g_bot_rush, "g_bot_rush", "1",  0, 0, false, nullptr },
-	{ &g_bot_repair, "g_bot_repair", "1",  0, 0, false, nullptr },
-	{ &g_bot_build, "g_bot_build", "1",  0, 0, false, nullptr },
-	{ &g_bot_retreat, "g_bot_retreat", "1",  0, 0, false, nullptr },
-	{ &g_bot_fov, "g_bot_fov", "125",  0, 0, false, nullptr },
-	{ &g_bot_chasetime, "g_bot_chasetime", "5000",  0, 0, false, nullptr },
-	{ &g_bot_reactiontime, "g_bot_reactiontime", "500",  0, 0, false, nullptr },
-	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0",  0, 0, false, nullptr },
-	{ &g_bot_numInGroup, "g_bot_numInGroup", "3",  0, 0, false, nullptr },
-	{ &g_bot_debug, "g_bot_debug", "0",  0, 0, false, nullptr },
-	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild",  0, 0, false, nullptr }
+	{ &g_bot_attackStruct, "g_bot_attackStruct", "1",  0, 0, false },
+	{ &g_bot_roam, "g_bot_roam", "1",  0, 0, false },
+	{ &g_bot_rush, "g_bot_rush", "1",  0, 0, false },
+	{ &g_bot_repair, "g_bot_repair", "1",  0, 0, false },
+	{ &g_bot_build, "g_bot_build", "1",  0, 0, false },
+	{ &g_bot_retreat, "g_bot_retreat", "1",  0, 0, false },
+	{ &g_bot_fov, "g_bot_fov", "125",  0, 0, false },
+	{ &g_bot_chasetime, "g_bot_chasetime", "5000",  0, 0, false },
+	{ &g_bot_reactiontime, "g_bot_reactiontime", "500",  0, 0, false },
+	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0",  0, 0, false },
+	{ &g_bot_numInGroup, "g_bot_numInGroup", "3",  0, 0, false },
+	{ &g_bot_debug, "g_bot_debug", "0",  0, 0, false },
+	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild",  0, 0, false }
 };
-
-static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
 void               CheckExitRules();
 static void        G_LogGameplayStats( int state );
@@ -527,6 +550,7 @@ void G_FindEntityGroups()
 
 	Log::Notice( "%i groups with %i entities", groupCount, entityCount );
 }
+
 /*
 ================
 G_InitSetEntities
@@ -546,13 +570,6 @@ void G_InitSetEntities()
 	}
 }
 
-static int cvarCompare( const void *a, const void *b )
-{
-	cvarTable_t *ac = ( cvarTable_t * ) a;
-	cvarTable_t *bc = ( cvarTable_t * ) b;
-	return Q_stricmp( ac->cvarName, bc->cvarName );
-}
-
 /*
 =================
 G_RegisterCvars
@@ -560,25 +577,14 @@ G_RegisterCvars
 */
 void G_RegisterCvars()
 {
-	unsigned i;
-	cvarTable_t *cvarTable;
-
-	// sort the table for fast lookup
-	qsort( gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
-
-	for ( i = 0, cvarTable = gameCvarTable; i < gameCvarTableSize; i++, cvarTable++ )
+	for ( cvarTable_t &cvar : gameCvarTable )
 	{
-		trap_Cvar_Register( cvarTable->vmCvar, cvarTable->cvarName,
-		                    cvarTable->defaultString, cvarTable->cvarFlags );
+		trap_Cvar_Register( cvar.vmCvar, cvar.cvarName,
+		                    cvar.defaultString, cvar.cvarFlags );
 
-		if ( cvarTable->vmCvar )
+		if ( cvar.vmCvar )
 		{
-			cvarTable->modificationCount = cvarTable->vmCvar->modificationCount;
-
-			if ( cvarTable->explicit_ )
-			{
-				strcpy( cvarTable->explicit_, cvarTable->vmCvar->string );
-			}
+			cvar.modificationCount = cvar.vmCvar->modificationCount;
 		}
 	}
 }
@@ -590,66 +596,24 @@ G_UpdateCvars
 */
 void G_UpdateCvars()
 {
-	unsigned i;
-	cvarTable_t *cv;
-
-	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
+	for ( cvarTable_t &cv : gameCvarTable )
 	{
-		if ( cv->vmCvar )
+		if ( cv.vmCvar )
 		{
-			trap_Cvar_Update( cv->vmCvar );
+			trap_Cvar_Update( cv.vmCvar );
 
-			if ( cv->modificationCount != cv->vmCvar->modificationCount )
+			if ( cv.modificationCount != cv.vmCvar->modificationCount )
 			{
-				cv->modificationCount = cv->vmCvar->modificationCount;
+				cv.modificationCount = cv.vmCvar->modificationCount;
 
-				if ( cv->trackChange )
+				if ( cv.trackChange )
 				{
 					trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("Server: $1$ changed to $2$") ),
-					                                Quote( cv->cvarName ), Quote( cv->vmCvar->string ) ) );
-				}
-
-				if ( !level.spawning && cv->explicit_ )
-				{
-					strcpy( cv->explicit_, cv->vmCvar->string );
+					                                Quote( cv.cvarName ), Quote( cv.vmCvar->string ) ) );
 				}
 			}
 		}
 	}
-}
-
-/*
-=================
-G_RestoreCvars
-=================
-*/
-void G_RestoreCvars()
-{
-	unsigned i;
-	cvarTable_t *cv;
-
-	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
-	{
-		if ( cv->vmCvar && cv->explicit_ )
-		{
-			trap_Cvar_Set( cv->cvarName, cv->explicit_ );
-		}
-	}
-}
-
-vmCvar_t *G_FindCvar( const char *name )
-{
-	cvarTable_t *c = nullptr;
-	cvarTable_t comp;
-	comp.cvarName = name;
-	c = ( cvarTable_t * ) bsearch( &comp, gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
-
-	if ( !c )
-	{
-		return nullptr;
-	}
-
-	return c->vmCvar;
 }
 
 /*
@@ -770,9 +734,8 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// initialise whether bot vote kicks are allowed. the map rotation may clear this flag.
 	trap_Cvar_Set( "g_botKickVotesAllowedThisMap", g_botKickVotesAllowed.integer ? "1" : "0" );
 
-	// clear these now; they'll be set, if needed, from rotation
+	// clear this now; it'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
-	trap_Cvar_Set( "g_disabledVoteCalls", "" );
 
 	// retrieve map name and load per-map configuration
 	{
@@ -849,9 +812,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// setup bot code
 	G_BotInit();
-
-	// the map might disable some things
-	BG_InitAllowedGameElements();
 
 	// Initialize item locking state
 	BG_InitUnlockackables();
@@ -953,8 +913,6 @@ void G_ShutdownGame( int /* restart */ )
 {
 	// in case of a map_restart
 	G_ClearVotes( true );
-
-	G_RestoreCvars();
 
 	Log::Notice( "==== ShutdownGame ====" );
 

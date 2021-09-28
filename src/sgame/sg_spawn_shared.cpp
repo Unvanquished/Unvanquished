@@ -64,7 +64,6 @@ void think_aimAtTarget( gentity_t *self )
 {
 	gentity_t *pickedTarget;
 	vec3_t    origin;
-	float     height, gravity, time, forward;
 	float     distance;
 
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
@@ -78,9 +77,9 @@ void think_aimAtTarget( gentity_t *self )
 		return;
 	}
 
-	height = pickedTarget->s.origin[ 2 ] - origin[ 2 ];
-	gravity = g_gravity.value;
-	time = sqrtf( height / ( 0.5f * gravity ) );
+	float height = pickedTarget->s.origin[ 2 ] - origin[ 2 ];
+	float gravity = static_cast<float>(g_gravity.Get());
+	float time = sqrtf( height / ( 0.5f * gravity ) );
 
 	if ( !time )
 	{
@@ -93,7 +92,7 @@ void think_aimAtTarget( gentity_t *self )
 	self->s.origin2[ 2 ] = 0;
 	distance = VectorNormalize( self->s.origin2 );
 
-	forward = distance / time;
+	float forward = distance / time;
 	VectorScale( self->s.origin2, forward, self->s.origin2 );
 
 	self->s.origin2[ 2 ] = time * gravity;
@@ -201,16 +200,33 @@ shared field spawn functions
 void SP_ConditionFields( gentity_t *self ) {
 	char *buffer;
 
-	if ( G_SpawnString( "buildables", "", &buffer ) )
-		BG_ParseCSVBuildableList( buffer, self->conditions.buildables, BA_NUM_BUILDABLES );
+	if ( G_SpawnString( "buildables", "", &buffer ) ) {
+		std::vector<buildable_t> buildables = BG_ParseBuildableList( buffer );
+		size_t n = std::min( buildables.size(), ARRAY_LEN( self->conditions.buildables ) - 1 ) ;
+		std::copy( buildables.begin(), buildables.begin() + n, self->conditions.buildables );
+		self->conditions.buildables[ n ] = BA_NONE;
+	}
 
-	if ( G_SpawnString( "classes", "", &buffer ) )
-		BG_ParseCSVClassList( buffer, self->conditions.classes, PCL_NUM_CLASSES );
+	if ( G_SpawnString( "classes", "", &buffer ) ) {
+		std::vector<class_t> classes = BG_ParseClassList( buffer );
+		size_t n = std::min( classes.size(), ARRAY_LEN( self->conditions.classes ) - 1 ) ;
+		std::copy( classes.begin(), classes.begin() + n, self->conditions.classes );
+		self->conditions.classes[ n ] = PCL_NONE;
+	}
 
-	if ( G_SpawnString( "equipment", "", &buffer ) )
-		BG_ParseCSVEquipmentList( buffer, self->conditions.weapons, WP_NUM_WEAPONS,
-	                          self->conditions.upgrades, UP_NUM_UPGRADES );
+	if ( G_SpawnString( "equipment", "", &buffer ) ) {
+		auto weaponsUpgrades = BG_ParseEquipmentList( buffer );
 
+		const std::vector<weapon_t>& weapons = weaponsUpgrades.first;
+		size_t n = std::min( weapons.size(), ARRAY_LEN( self->conditions.weapons ) - 1 ) ;
+		std::copy( weapons.begin(), weapons.begin() + n, self->conditions.weapons );
+		self->conditions.weapons[ n ] = WP_NONE;
+
+		const std::vector<upgrade_t>& upgrades = weaponsUpgrades.second;
+		n = std::min( upgrades.size(), ARRAY_LEN( self->conditions.upgrades ) - 1 ) ;
+		std::copy( upgrades.begin(), upgrades.begin() + n, self->conditions.upgrades );
+		self->conditions.upgrades[ n ] = UP_NONE;
+	}
 }
 
 void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance ) {
