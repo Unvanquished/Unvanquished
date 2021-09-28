@@ -131,6 +131,8 @@ struct playerState_t
 	int           clips; // clips held
 	int           tauntTimer; // don't allow another taunt until this runs out
 	int           misc[ MAX_MISC ]; // misc data
+
+	bool IsWeaponReady() const;
 };
 
 // the possibility and the cost of evolving to an alien form
