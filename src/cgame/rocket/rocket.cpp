@@ -233,7 +233,7 @@ public:
 	{
 		qhandle_t shaderHandle = trap_R_RegisterShader( source.CString(), RSF_NOMIP );
 
-		if ( shaderHandle == -1 )
+		if ( shaderHandle <= 0 )
 		{
 			return false;
 		}
