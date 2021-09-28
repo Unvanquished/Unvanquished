@@ -1552,6 +1552,7 @@ void BotFireWeaponAI( gentity_t *self )
 
 	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = Distance( muzzle, trace.endpos );
+	bool readyFire = self->client->ps.IsWeaponReady();
 	switch ( self->s.weapon )
 	{
 		case WP_ABUILD:
@@ -1577,7 +1578,7 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL0:
 			break; //auto hit
 		case WP_ALEVEL1:
-			if ( distance < LEVEL1_CLAW_RANGE )
+			if ( distance < LEVEL1_CLAW_RANGE && readyFire )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
