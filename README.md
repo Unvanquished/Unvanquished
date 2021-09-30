@@ -31,7 +31,7 @@ and a C++11 compiler.
 The following are actively supported:
 `gcc` ≥ 4.8,
 `clang` ≥ 3.5,
-Visual Studio/MSVC (at least Visual Studio 2017).
+Visual Studio/MSVC (at least Visual Studio 2019).
 
 ## Dependencies
 
