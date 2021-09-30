@@ -599,7 +599,8 @@ static void HandHLBeaconToUI()
 		}
 
 		// name
-		CG_BeaconName( beacon, br->name, sizeof( br->name ) );
+		std::string name = CG_BeaconName( beacon );
+		Q_strncpyz( br->name, name.c_str(), sizeof( br->name ) );
 		showName = true;
 
 		// info
@@ -725,10 +726,9 @@ qhandle_t CG_BeaconDescriptiveIcon( const cbeacon_t *b )
 	}
 }
 
-const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
+std::string CG_BeaconName( const cbeacon_t *b )
 {
-	if( b->type <= BCT_NONE || b->type > NUM_BEACON_TYPES ) {
-		return strncpy( out, "b->type out of range", len );
+	if( b->type <= BCT_NONE || b->type >= NUM_BEACON_TYPES ) {
 		return "b->type out of range";
 	}
 
@@ -740,18 +740,18 @@ const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 		case BCT_TAG:
 			if( b->flags & EF_BC_TAG_PLAYER ) {
 				if ( ownTeam == TEAM_NONE || ownTeam == beaconTeam ) {
-					return strncpy( out, cgs.clientinfo[ b->target ].name, len ); // Player name
+					return cgs.clientinfo[ b->target ].name; // Player name
 				} else if ( beaconTeam == TEAM_ALIENS ) {
-					return strncpy( out, BG_ClassModelConfig( b->data )->humanName, len ); // Class name
+					return BG_ClassModelConfig( b->data )->humanName; // Class name
 				} else if ( beaconTeam == TEAM_HUMANS ) {
 					// TODO: Display "Light//Chewy/Canned Food" for different armor types.
-					return strncpy( out, "Food", len );
+					return "Food";
 				} else {
-					return strncpy( out, "???", len );
+					return "???";
 				}
 			} else {
 				// Display buildable name for all teams.
-				return strncpy( out, BG_Buildable( b->data )->humanName, len );
+				return BG_Buildable( b->data )->humanName;
 			}
 			break;
 
@@ -779,12 +779,11 @@ const char *CG_BeaconName( const cbeacon_t *b, char *out, size_t len )
 				suffix = "Base";
 			}
 
-			Q_snprintf( out, len, "%s %s", prefix, suffix );
-			return out;
+			return Str::Format( "%s %s", prefix, suffix );
 		}
 
 		default:
 			// All other beacons have a fixed name.
-			return strncpy( out, BG_Beacon( b->type )->text[ 0 ], len );
+			return BG_Beacon( b->type )->text[ 0 ];
 	}
 }
