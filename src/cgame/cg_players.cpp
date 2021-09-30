@@ -89,7 +89,6 @@ sfxHandle_t CG_CustomSound( int clientNum, const char *soundName )
 	}
 
 	Sys::Drop( "Unknown custom sound: %s", soundName );
-	return 0;
 }
 
 /*

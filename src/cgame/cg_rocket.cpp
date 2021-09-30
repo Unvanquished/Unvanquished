@@ -749,6 +749,4 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 		default:
 			return false;
 	}
-
-	return false;
 }

@@ -129,6 +129,7 @@ try_flag(WARNINGS           "-Wno-error=switch")
 try_flag(WARNINGS           "-Wno-error=unused-function")
 try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
 try_flag(WARNINGS           "-Wno-error=deprecated-copy")  # TODO: Remove when move to RmlUi is complete.
+try_flag(WARNINGS           "-Wno-maybe-uninitialized")
 
 if (BUILD_SGAME)
     include(DaemonCBSE)

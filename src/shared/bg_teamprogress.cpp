@@ -75,7 +75,6 @@ static const char *UnlockableHumanName( unlockable_t *unlockable )
 	}
 
 	Sys::Error( "UnlockableHumanName: Unlockable has unknown type" );
-	return nullptr;
 }
 
 #ifdef BUILD_CGAME
@@ -90,7 +89,6 @@ static bool Disabled( unlockable_t *unlockable )
 	}
 
 	Sys::Error( "Disabled: Unlockable has unknown type" );
-	return false;
 }
 #endif // BUILD_CGAME
 
