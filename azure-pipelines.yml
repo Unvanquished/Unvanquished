@@ -1,5 +1,27 @@
+# Documentation: https://wiki.unvanquished.net/wiki/Continuous_integration
+
+# TODO: Daemon shouldn't force us to install curses
+strategy:
+  matrix:
+    Linux GCC Native DLL:
+      VM_IMAGE: 'ubuntu-18.04'
+      INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install zlib1g-dev libfreetype6-dev liblua5.2-dev python-yaml python-jinja2 ninja-build libncursesw5-dev'
+      CMAKE_OPTIONS: '-G Ninja -DDAEMON_CBSE_PYTHON_PATH=/usr/bin/python2 -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
+    Linux Clang Native DLL:
+      VM_IMAGE: 'ubuntu-18.04'
+      INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install zlib1g-dev libfreetype6-dev liblua5.2-dev python-yaml python-jinja2 ninja-build libncursesw5-dev'
+      CMAKE_OPTIONS: '-G Ninja -DDAEMON_CBSE_PYTHON_PATH=/usr/bin/python2 -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
+    Linux NaCl:
+      VM_IMAGE: 'ubuntu-18.04'
+      INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install python-yaml python-jinja2 ninja-build libncursesw5-dev'
+      CMAKE_OPTIONS: '-G Ninja -DDAEMON_CBSE_PYTHON_PATH=/usr/bin/python2 -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1'
+    Mac:
+      VM_IMAGE: 'macOS-10.15'
+      INSTALL_DEPS: 'pip3 install -r src/utils/cbse/requirements.txt'
+      CMAKE_OPTIONS: '-DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
+
 pool:
-  vmImage: 'macOS-10.15'
+  vmImage: $(VM_IMAGE)
 
 steps:
 - bash: |
@@ -28,9 +50,9 @@ steps:
     BUILD_SOURCE_BRANCH: $(Build.SourceBranch)
   displayName: 'Check out submodules'
 
-- script: |
+- bash: |
     set -e
-    pip3 install -r src/utils/cbse/requirements.txt
-    cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG_OPTIMIZE=0 -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0 -H. -Bbuild
-    cmake --build build -- -j`sysctl -n hw.logicalcpu`
+    $(INSTALL_DEPS)
+    cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -DCMAKE_BUILD_TYPE=Debug -DUSE_DEBUG_OPTIMIZE=0 -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0 $(CMAKE_OPTIONS) -H. -Bbuild
+    cmake --build build -- -j$(nproc || sysctl -n hw.logicalcpu)
   displayName: 'Build'
