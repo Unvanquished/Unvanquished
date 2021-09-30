@@ -1351,7 +1351,6 @@ static token_t *Parse_CopyToken( const token_t *token )
 	if ( !t )
 	{
 		Sys::Error( "out of token space" );
-		return nullptr;
 	}
 
 //  freetokens = freetokens->next;

@@ -175,9 +175,6 @@ private:
 			default:
 				Compare( Cvar::GetValue( cvar.CString() ), value.Get< Rocket::Core::String >().CString() );
 		}
-
-		// Should never reach
-		return false;
 	}
 
 	bool IsConditionValidLatched()
