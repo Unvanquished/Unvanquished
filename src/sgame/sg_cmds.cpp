@@ -3998,7 +3998,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	{
 		ADMP( va( "%s %d %d %s %s %d",
 				  QQ( N_("^3listmaps:^* page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
-		          page + 1, pages, Quote( search ), ( search[ 0 ] ) ? " " : "", page + 2 ) );
+		          page + 1, pages, Quote( search ), Quote( ( search[ 0 ] ) ? " " : "" ), page + 2 ) );
 	}
 	else if ( pages > 1 )
 	{

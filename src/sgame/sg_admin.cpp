@@ -5568,6 +5568,7 @@ void G_admin_print_plural( gentity_t *ent, Str::StringRef m, int number )
  These function facilitates the ADMBP* defines, and output is as for ADMP().
 
  The supplied text is raw; it will be quoted but not marked translatable.
+ FIXME: it actually is marked translatable (print_tr is used) but shouldn't be
 ================
 */
 void G_admin_buffer_begin()
