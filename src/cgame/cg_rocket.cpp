@@ -88,6 +88,8 @@ void CG_Rocket_Init( glconfig_t gl )
 	oldConnState = connstate_t::CA_UNINITIALIZED;
 	cgs.glconfig = gl;
 
+	Trans_Init();
+
 	BG_LoadEmoticons();
 
 	// Init Rocket
