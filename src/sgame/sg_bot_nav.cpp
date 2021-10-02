@@ -215,14 +215,7 @@ bool BotPathIsWalkable( gentity_t *self, botTarget_t target )
 		return false;
 	}
 
-	if ( trace.frac >= 1.0f )
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return trace.frac >= 1.0f;
 }
 
 void BotFindRandomPointOnMesh( gentity_t *self, vec3_t point )
