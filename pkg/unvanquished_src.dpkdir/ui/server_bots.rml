@@ -34,18 +34,6 @@
 					<h3> Attack structures </h3>
 				</row>
 				<row>
-					<input cvar="g_bot_rush" type="checkbox" />
-					<h3> Rush </h3>
-				</row>
-				<row>
-					<input cvar="g_bot_roam" type="checkbox" />
-					<h3> Roam </h3>
-				</row>
-				<row>
-					<input cvar="g_bot_retreat" type="checkbox" />
-					<h3> Retreat </h3>
-				</row>
-				<row>
 					<input type="range" min="1" max="20" step="1" cvar="g_bot_numInGroup"/>
 					<h3> Group size</h3>
 					<p class="inline">
