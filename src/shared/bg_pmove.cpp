@@ -2069,10 +2069,7 @@ static void PM_WalkMove()
 		PM_Friction();
 		return;
 	}
-	else
-	{
-		pm->ps->stats[ STAT_STATE ] &= ~SS_SLIDING;
-	}
+	pm->ps->stats[ STAT_STATE ] &= ~SS_SLIDING;
 
 	// if PM_Land didn't stop the jetpack (e.g. to allow for a jump) but we didn't get away
 	// from the ground, stop it now

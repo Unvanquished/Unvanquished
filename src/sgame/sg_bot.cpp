@@ -396,9 +396,10 @@ void G_BotThink( gentity_t *self )
 	usercmdClearButtons( botCmdBuffer->buttons );
 
 	// for nudges, e.g. spawn blocking
-	nudge[0] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->forwardmove : 0;
-	nudge[1] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->rightmove : 0;
-	nudge[2] = botCmdBuffer->doubleTap != dtType_t::DT_NONE ? botCmdBuffer->upmove : 0;
+	bool hasNudge = botCmdBuffer->doubleTap != dtType_t::DT_NONE;
+	nudge[0] = hasNudge ? botCmdBuffer->forwardmove : 0;
+	nudge[1] = hasNudge ? botCmdBuffer->rightmove : 0;
+	nudge[2] = hasNudge ? botCmdBuffer->upmove : 0;
 
 	botCmdBuffer->forwardmove = 0;
 	botCmdBuffer->rightmove = 0;
