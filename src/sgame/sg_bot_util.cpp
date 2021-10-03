@@ -1648,6 +1648,20 @@ void BotFireWeaponAI( gentity_t *self )
 	}
 }
 
+bool BotChangeClass( gentity_t *self, class_t newClass, vec3_t newOrigin )
+{
+	if ( !G_RoomForClassChange( self, newClass, newOrigin ) )
+	{
+		return false;
+	}
+	VectorCopy( newOrigin, self->client->ps.origin );
+	self->client->ps.stats[ STAT_CLASS ] = newClass;
+	self->client->pers.classSelection = newClass;
+	BotSetNavmesh( self, newClass );
+	self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+	return true;
+}
+
 bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 {
 	int clientNum;
@@ -1801,93 +1815,75 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 }
 void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 {
-	vec3_t    newOrigin;
-
-	if ( upgrade != UP_NONE )
-	{
-		//already got this?
-		if ( BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) )
-		{
-			return;
-		}
-
-		//can afford this?
-		if ( BG_Upgrade( upgrade )->price > ( short )self->client->pers.credit )
-		{
-			return;
-		}
-
-		//have space to carry this?
-		if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( self->client->ps.stats ) )
-		{
-			return;
-		}
-
-		// Only humans can buy stuff
-		if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
-		{
-			return;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_Upgrade( upgrade )->purchasable )
-		{
-			return;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
-		{
-			return;
-		}
-
-		if ( upgrade == UP_LIGHTARMOUR )
-		{
-			if ( !G_RoomForClassChange( self, PCL_HUMAN_LIGHT, newOrigin ) )
-			{
-				return;
-			}
-			VectorCopy( newOrigin, self->client->ps.origin );
-			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
-			self->client->pers.classSelection = PCL_HUMAN_LIGHT;
-			BotSetNavmesh( self, PCL_HUMAN_LIGHT );
-			self->client->ps.eFlags ^= EF_TELEPORT_BIT;
-		}
-		else if ( upgrade == UP_MEDIUMARMOUR )
-		{
-			if ( !G_RoomForClassChange( self, PCL_HUMAN_MEDIUM, newOrigin ) )
-			{
-				return;
-			}
-			VectorCopy( newOrigin, self->client->ps.origin );
-			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
-			self->client->pers.classSelection = PCL_HUMAN_MEDIUM;
-			BotSetNavmesh( self, PCL_HUMAN_MEDIUM );
-			self->client->ps.eFlags ^= EF_TELEPORT_BIT;
-		}
-		else if ( upgrade == UP_BATTLESUIT )
-		{
-			if ( !G_RoomForClassChange( self, PCL_HUMAN_BSUIT, newOrigin ) )
-			{
-				return;
-			}
-			VectorCopy( newOrigin, self->client->ps.origin );
-			self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
-			self->client->pers.classSelection = PCL_HUMAN_BSUIT;
-			BotSetNavmesh( self, PCL_HUMAN_BSUIT );
-			self->client->ps.eFlags ^= EF_TELEPORT_BIT;
-		}
-
-		//add to inventory
-		BG_AddUpgradeToInventory( upgrade, self->client->ps.stats );
-
-		//subtract from funds
-		G_AddCreditToClient( self->client, -( short )BG_Upgrade( upgrade )->price, false );
-	}
-	else
+	if ( upgrade == UP_NONE )
 	{
 		return;
 	}
+
+	//already got this?
+	if ( BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) )
+	{
+		return;
+	}
+
+	//can afford this?
+	if ( BG_Upgrade( upgrade )->price > ( short )self->client->pers.credit )
+	{
+		return;
+	}
+
+	//have space to carry this?
+	if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( self->client->ps.stats ) )
+	{
+		return;
+	}
+
+	// Only humans can buy stuff
+	if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	//are we /allowed/ to buy this?
+	if ( !BG_Upgrade( upgrade )->purchasable )
+	{
+		return;
+	}
+
+	//are we /allowed/ to buy this?
+	if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
+	{
+		return;
+	}
+
+	vec3_t newOrigin;
+	switch( upgrade )
+	{
+		case UP_LIGHTARMOUR:
+			if ( !BotChangeClass( self, PCL_HUMAN_LIGHT, newOrigin ) )
+			{
+				return;
+			}
+			break;
+		case UP_MEDIUMARMOUR:
+			if ( !BotChangeClass( self, PCL_HUMAN_MEDIUM, newOrigin ) )
+			{
+				return;
+			}
+			break;
+		case UP_BATTLESUIT:
+			if ( !BotChangeClass( self, PCL_HUMAN_BSUIT, newOrigin ) )
+			{
+				return;
+			}
+			break;
+	}
+
+	//add to inventory
+	BG_AddUpgradeToInventory( upgrade, self->client->ps.stats );
+
+	//subtract from funds
+	G_AddCreditToClient( self->client, -( short )BG_Upgrade( upgrade )->price, false );
 
 	//update ClientInfo
 	ClientUserinfoChanged( self->client->ps.clientNum, false );

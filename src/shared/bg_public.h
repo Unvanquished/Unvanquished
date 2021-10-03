@@ -102,7 +102,7 @@ struct playerState_t
 	// weapon info
 	int weapon; // copied to entityState_t->weapon
 	int weaponstate;
-	int weaponCharge; // luci charge, dragoon pounce charge, mantis pounce cooldown, tyrant trample, +deconstruct hold
+	int weaponCharge; // (in milliseconds) luci charge, dragoon pounce charge, mantis pounce cooldown, tyrant trample, +deconstruct hold
 
 	// damage feedback
 	int damageEvent; // when it changes, latch the other parms

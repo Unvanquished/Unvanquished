@@ -873,10 +873,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 	{
 		return STATUS_SUCCESS;
 	}
-	else
-	{
-		BotMoveToGoal( self );
-	}
+	BotMoveToGoal( self );
 
 	return STATUS_RUNNING;
 }
