@@ -278,11 +278,8 @@ vmCvar_t g_bot_level4;
 
 // misc bot cvars
 vmCvar_t g_bot_attackStruct;
-vmCvar_t g_bot_roam;
-vmCvar_t g_bot_rush;
 vmCvar_t g_bot_repair;
 vmCvar_t g_bot_build;
-vmCvar_t g_bot_retreat;
 vmCvar_t g_bot_fov;
 vmCvar_t g_bot_chasetime;
 vmCvar_t g_bot_reactiontime;
@@ -457,11 +454,8 @@ static cvarTable_t gameCvarTable[] =
 
 	// bots: misc
 	{ &g_bot_attackStruct, "g_bot_attackStruct", "1",  0, 0, false },
-	{ &g_bot_roam, "g_bot_roam", "1",  0, 0, false },
-	{ &g_bot_rush, "g_bot_rush", "1",  0, 0, false },
 	{ &g_bot_repair, "g_bot_repair", "1",  0, 0, false },
 	{ &g_bot_build, "g_bot_build", "1",  0, 0, false },
-	{ &g_bot_retreat, "g_bot_retreat", "1",  0, 0, false },
 	{ &g_bot_fov, "g_bot_fov", "125",  0, 0, false },
 	{ &g_bot_chasetime, "g_bot_chasetime", "5000",  0, 0, false },
 	{ &g_bot_reactiontime, "g_bot_reactiontime", "500",  0, 0, false },
