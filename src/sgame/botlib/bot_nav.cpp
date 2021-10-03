@@ -162,6 +162,10 @@ static bool withinRadiusOfOffMeshConnection( const Bot_t *bot, rVec pos, rVec of
 
 static bool overOffMeshConnectionStart( const Bot_t *bot, rVec pos )
 {
+	if ( bot->numCorners < 1 )
+	{
+		return false;
+	}
 	int corner = bot->numCorners - 1;
 	const bool offMeshConnection = ( bot->cornerFlags[ corner ] & DT_STRAIGHTPATH_OFFMESH_CONNECTION ) ? true : false;
 
@@ -226,8 +230,8 @@ void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNav
 			dtPolyRef refs[ 2 ];
 			rVec start;
 			rVec end;
-			int corner = bot->numCorners - 1;
-			dtPolyRef con = bot->cornerPolys[ corner ];
+			// numCorners is guaranteed to be >= 1 here
+			dtPolyRef con = bot->cornerPolys[ bot->numCorners - 1 ];
 
 			if ( bot->corridor.moveOverOffmeshConnection( con, refs, start, end, bot->nav->query ) )
 			{
