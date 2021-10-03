@@ -1649,7 +1649,7 @@ void BotFireWeaponAI( gentity_t *self )
 	}
 }
 
-bool BotChangeClass( gentity_t *self, class_t newClass, vec3_t newOrigin )
+static bool BotChangeClass( gentity_t *self, class_t newClass, vec3_t newOrigin )
 {
 	if ( !G_RoomForClassChange( self, newClass, newOrigin ) )
 	{
