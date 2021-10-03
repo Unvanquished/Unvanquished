@@ -67,9 +67,6 @@ vmCvar_t           g_speed;
 vmCvar_t           g_cheats;
 vmCvar_t           g_inactivity;
 vmCvar_t           g_debugMove;
-vmCvar_t           g_debugDamage;
-vmCvar_t           g_debugKnockback;
-vmCvar_t           g_debugTurrets;
 vmCvar_t           g_debugFire;
 vmCvar_t           g_motd;
 vmCvar_t           g_synchronousClients;
@@ -233,8 +230,6 @@ vmCvar_t           g_specChat;
 vmCvar_t           g_publicAdminMessages;
 vmCvar_t           g_allowTeamOverlay;
 
-vmCvar_t           g_tag;
-
 vmCvar_t           g_showKillerHP;
 vmCvar_t           g_combatCooldown;
 
@@ -278,16 +273,10 @@ vmCvar_t g_bot_level4;
 
 // misc bot cvars
 vmCvar_t g_bot_attackStruct;
-vmCvar_t g_bot_repair;
-vmCvar_t g_bot_build;
 vmCvar_t g_bot_fov;
 vmCvar_t g_bot_chasetime;
 vmCvar_t g_bot_reactiontime;
 vmCvar_t g_bot_infinite_funds;
-vmCvar_t g_bot_numInGroup;
-vmCvar_t g_bot_persistent;
-vmCvar_t g_bot_debug;
-vmCvar_t g_bot_buildLayout;
 
 //</bot stuff>
 
@@ -305,7 +294,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, false    },
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, false    },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                0,                                               0, false    },
-	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, false    },
 
 
 	// server: basic
@@ -387,9 +375,6 @@ static cvarTable_t gameCvarTable[] =
 
 	// debug switches
 	{ &g_debugMove,                   "g_debugMove",                   "0",                                0,                                               0, false },
-	{ &g_debugDamage,                 "g_debugDamage",                 "0",                                0,                                               0, false },
-	{ &g_debugKnockback,              "g_debugKnockback",              "0",                                0,                                               0, false },
-	{ &g_debugTurrets,                "g_debugTurrets",                "0",                                0,                                               0, false },
 	{ &g_debugMomentum,               "g_debugMomentum",               "0",                                0,                                               0, false },
 	{ &g_debugMapRotation,            "g_debugMapRotation",            "0",                                0,                                               0, false },
 	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                0,                                               0, false },
@@ -454,15 +439,10 @@ static cvarTable_t gameCvarTable[] =
 
 	// bots: misc
 	{ &g_bot_attackStruct, "g_bot_attackStruct", "1",  0, 0, false },
-	{ &g_bot_repair, "g_bot_repair", "1",  0, 0, false },
-	{ &g_bot_build, "g_bot_build", "1",  0, 0, false },
 	{ &g_bot_fov, "g_bot_fov", "125",  0, 0, false },
 	{ &g_bot_chasetime, "g_bot_chasetime", "5000",  0, 0, false },
 	{ &g_bot_reactiontime, "g_bot_reactiontime", "500",  0, 0, false },
 	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0",  0, 0, false },
-	{ &g_bot_numInGroup, "g_bot_numInGroup", "3",  0, 0, false },
-	{ &g_bot_debug, "g_bot_debug", "0",  0, 0, false },
-	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild",  0, 0, false }
 };
 
 void               CheckExitRules();
