@@ -266,6 +266,7 @@ void Cmd_NavEdit( gentity_t *ent )
 	}
 }
 
+//TODO: there is lot of duplicated code between Cmd_AddConnection() and Cmd_PutCon_f
 void Cmd_AddConnection( gentity_t *ent )
 {
 	if ( !CheckHost( ent ) ) return;
@@ -355,6 +356,20 @@ void Cmd_AddConnection( gentity_t *ent )
 	}
 }
 
+//TODO: there is lot of duplicated code between Cmd_AddConnection() and Cmd_PutCon_f
+// The code should be rewrote to have several improvements.
+// Actually, all those commands should be, to have a consistent API.
+// Other changes which would be *super* nice are:
+// * examples of usage
+// * user documentation
+// * storing meta-data in navmesh connections
+// * ability to select an existing connection to:
+//   * remove it
+//   * move start point
+//   * move end point
+//   * change it's meta data
+//   * change the directional info
+//   * affect it to multiple navmeshes
 void Cmd_PutCon_f( gentity_t *ent )
 {
 	if ( !CheckHost( ent ) ) return;
