@@ -44,8 +44,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #endif
 #include "bot_navdraw.h"
 #include "nav.h"
+#include "sgame/sg_bot_util.h"
 
-static const int DEFAULT_CONNECTION_SIZE = 50;
+static Cvar::Cvar<int> navconRadius(
+	"bot_navconRadius", "radius of the navigation connection to place", Cvar::CHEAT, 15);
 
 bool GetPointPointedTo( NavData_t *nav, rVec &p )
 {
@@ -68,12 +70,16 @@ bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP, 0, traceType_t::TT_AABB );
 
 	pos = qVec( trace.endpos );
-	if ( dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) ) )
-	{
-		return false;
-	}
+	return !dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) );
+}
 
-	return true;
+bool GetFeetPoint( NavData_t *nav, rVec &p, gentity_t *self )
+{
+	rVec extents;
+	VectorSet( extents, 640, 96, 640 );
+	rVec pos = qVec( self->s.origin );
+	dtPolyRef nearRef;
+	return !dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) );
 }
 
 static struct
@@ -96,13 +102,13 @@ void BotDrawNavEdit( DebugDrawQuake *dd )
 	{
 		unsigned int col = duRGBA( 255, 255, 255, 220 );
 		dd->begin( DU_DRAW_LINES, 2.0f );
-		duAppendCircle( dd, p[ 0 ], p[ 1 ], p[ 2 ], DEFAULT_CONNECTION_SIZE, col );
+		duAppendCircle( dd, p[ 0 ], p[ 1 ], p[ 2 ], navconRadius.Get(), col );
 
 		if ( cmd.offBegin )
 		{
 			duAppendArc( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], p[ 0 ], p[ 1 ], p[ 2 ], 0.25f,
 						0.6f, 0.6f, col );
-			duAppendCircle( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], DEFAULT_CONNECTION_SIZE, col );
+			duAppendCircle( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], navconRadius.Get(), col );
 		}
 		dd->end();
 	}
@@ -276,6 +282,96 @@ void Cmd_AddConnection( gentity_t *ent )
 
 	arg = Cmd_Argv( 1 );
 
+	if ( cmd.enabled )
+	{
+		if ( !Q_stricmp( arg, "start" ) )
+		{
+			if ( argc < 3 )
+			{
+				Log::Notice( usage );
+				return;
+			}
+
+			arg = Cmd_Argv( 2 );
+
+			if ( !Q_stricmp( arg, "oneway" ) )
+			{
+				cmd.pc.dir = 0;
+			}
+			else if ( !Q_stricmp( arg, "twoway" ) )
+			{
+				cmd.pc.dir = 1;
+			}
+			else
+			{
+				Log::Notice( "Invalid argument for direction, specify oneway or twoway" );
+				return;
+			}
+
+			if ( GetPointPointedTo( cmd.nav, cmd.pc.start ) )
+			{
+				cmd.pc.area = DT_TILECACHE_WALKABLE_AREA;
+				cmd.pc.flag = POLYFLAGS_WALK;
+				cmd.pc.userid = 0;
+				cmd.pc.radius = navconRadius.Get();
+				cmd.offBegin = true;
+			}
+		}
+		else if ( !Q_stricmp( arg, "end" ) )
+		{
+			if ( !cmd.offBegin )
+			{
+				return;
+			}
+
+			if ( GetPointPointedTo( cmd.nav, cmd.pc.end ) )
+			{
+				cmd.nav->process.con.addConnection( cmd.pc );
+
+				rBounds box;
+				box.addPoint( cmd.pc.start );
+				box.addPoint( cmd.pc.end );
+
+				box.mins[ 1 ] -= 10;
+				box.maxs[ 1 ] += 10;
+
+				// rebuild affected tiles
+				dtCompressedTileRef refs[ 32 ];
+				int tc = 0;
+				cmd.nav->cache->queryTiles( box.mins, box.maxs, refs, &tc, 32 );
+
+				for ( int k = 0; k < tc; k++ )
+				{
+					cmd.nav->cache->buildNavMeshTile( refs[ k ], cmd.nav->mesh );
+				}
+
+				cmd.offBegin = false;
+			}
+		}
+	}
+	else
+	{
+		Log::Notice( usage );
+	}
+}
+
+void Cmd_PutCon_f( gentity_t *ent )
+{
+	if ( !CheckHost( ent ) ) return;
+	const char usage[] = "Usage: putcon start <oneway|twoway> \n"
+	                     " putcon end\n"
+	                     " Places a connection point between navmeshes. The point of reference used in player's position in the world.";
+	const char *arg = nullptr;
+	int argc = Cmd_Argc();
+
+	if ( argc < 2 )
+	{
+		Log::Notice( usage );
+		return;
+	}
+
+	arg = Cmd_Argv( 1 );
+
 	if ( !Q_stricmp( arg, "start" ) )
 	{
 		if ( !cmd.enabled )
@@ -305,22 +401,16 @@ void Cmd_AddConnection( gentity_t *ent )
 			return;
 		}
 
-		if ( GetPointPointedTo( cmd.nav, cmd.pc.start ) )
+		if ( !GetFeetPoint( cmd.nav, cmd.pc.start, ent ) )
 		{
-			cmd.pc.area = DT_TILECACHE_WALKABLE_AREA;
-			cmd.pc.flag = POLYFLAGS_WALK;
-			cmd.pc.userid = 0;
-
-			if ( argc == 4 )
-			{
-				cmd.pc.radius = std::max( atoi( Cmd_Argv( 3 ) ), 10 );
-			}
-			else
-			{
-				cmd.pc.radius = DEFAULT_CONNECTION_SIZE;
-			}
-			cmd.offBegin = true;
+			Log::Notice( "Failed to find navmesh poly" );
+			return;
 		}
+		cmd.pc.area = DT_TILECACHE_WALKABLE_AREA;
+		cmd.pc.flag = POLYFLAGS_WALK;
+		cmd.pc.userid = 0;
+		cmd.pc.radius = navconRadius.Get();
+		cmd.offBegin = true;
 	}
 	else if ( !Q_stricmp( arg, "end" ) )
 	{
@@ -331,32 +421,36 @@ void Cmd_AddConnection( gentity_t *ent )
 
 		if ( !cmd.offBegin )
 		{
+			Log::Notice( "No connection start placed" );
 			return;
 		}
 
-		if ( GetPointPointedTo( cmd.nav, cmd.pc.end ) )
+		if ( !GetFeetPoint( cmd.nav, cmd.pc.end, ent ) )
 		{
-			cmd.nav->process.con.addConnection( cmd.pc );
-
-			rBounds box;
-			box.addPoint( cmd.pc.start );
-			box.addPoint( cmd.pc.end );
-
-			box.mins[ 1 ] -= 10;
-			box.maxs[ 1 ] += 10;
-
-			// rebuild affected tiles
-			dtCompressedTileRef refs[ 32 ];
-			int tc = 0;
-			cmd.nav->cache->queryTiles( box.mins, box.maxs, refs, &tc, 32 );
-
-			for ( int k = 0; k < tc; k++ )
-			{
-				cmd.nav->cache->buildNavMeshTile( refs[ k ], cmd.nav->mesh );
-			}
-
-			cmd.offBegin = false;
+			Log::Notice( "Failed to find navmesh poly" );
+			return;
 		}
+		cmd.nav->process.con.addConnection( cmd.pc );
+
+		rBounds box;
+		box.addPoint( cmd.pc.start );
+		box.addPoint( cmd.pc.end );
+
+		box.mins[ 1 ] -= 10;
+		box.maxs[ 1 ] += 10;
+
+		// rebuild affected tiles
+		dtCompressedTileRef refs[ 32 ];
+		int tc = 0;
+		cmd.nav->cache->queryTiles( box.mins, box.maxs, refs, &tc, 32 );
+
+		for ( int k = 0; k < tc; k++ )
+		{
+			cmd.nav->cache->buildNavMeshTile( refs[ k ], cmd.nav->mesh );
+		}
+
+		cmd.offBegin = false;
+		Log::Notice( "navcon placed" );
 	}
 	else
 	{
@@ -403,14 +497,7 @@ void Cmd_NavTest( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( arg, "startpath" ) )
 	{
-		if ( GetPointPointedTo( cmd.nav, cmd.start ) )
-		{
-			cmd.validPathStart = true;
-		}
-		else
-		{
-			cmd.validPathStart = false;
-		}
+		cmd.validPathStart = GetPointPointedTo( cmd.nav, cmd.start );
 	}
 	else if ( !Q_stricmp( arg, "endpath" ) )
 	{
