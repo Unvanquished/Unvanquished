@@ -40,7 +40,6 @@ classInfo_t     cg_classes[ PCL_NUM_CLASSES ];
 buildableInfo_t cg_buildables[ BA_NUM_BUILDABLES ];
 
 vmCvar_t        cg_teslaTrailTime;
-vmCvar_t        cg_centertime;
 vmCvar_t        cg_runpitch;
 vmCvar_t        cg_runroll;
 vmCvar_t        cg_swingSpeed;
@@ -50,9 +49,6 @@ vmCvar_t        cg_buildableShadows;
 vmCvar_t        cg_drawTimer;
 vmCvar_t        cg_drawClock;
 vmCvar_t        cg_drawFPS;
-vmCvar_t        cg_drawDemoState;
-vmCvar_t        cg_drawSnapshot;
-vmCvar_t        cg_drawChargeBar;
 vmCvar_t        cg_drawCrosshair;
 vmCvar_t        cg_drawCrosshairHit;
 vmCvar_t        cg_drawCrosshairFriendFoe;
@@ -95,14 +91,9 @@ vmCvar_t        cg_maxSpeedTimeWindow;
 vmCvar_t        cg_stats;
 vmCvar_t        cg_blood;
 vmCvar_t        cg_teamChatsOnly;
-vmCvar_t        cg_drawTeamOverlay;
-vmCvar_t        cg_teamOverlaySortMode;
-vmCvar_t        cg_teamOverlayMaxPlayers;
 vmCvar_t        cg_teamOverlayUserinfo;
 vmCvar_t        cg_noVoiceChats;
 vmCvar_t        cg_noVoiceText;
-vmCvar_t        cg_hudFiles;
-vmCvar_t        cg_hudFilesEnable;
 vmCvar_t        cg_smoothClients;
 vmCvar_t        cg_timescaleFadeEnd;
 vmCvar_t        cg_timescaleFadeSpeed;
@@ -112,7 +103,6 @@ vmCvar_t        cg_drawSurfNormal;
 vmCvar_t        cg_drawBBOX;
 vmCvar_t        cg_drawEntityInfo;
 vmCvar_t        cg_wwSmoothTime;
-vmCvar_t        cg_disableBlueprintErrors;
 vmCvar_t        cg_depthSortParticles;
 vmCvar_t        cg_bounceParticles;
 vmCvar_t        cg_consoleLatency;
@@ -120,7 +110,6 @@ vmCvar_t        cg_lightFlare;
 vmCvar_t        cg_debugParticles;
 vmCvar_t        cg_debugPVS;
 vmCvar_t        cg_disableWarningDialogs;
-vmCvar_t        cg_disableScannerPlane;
 vmCvar_t        cg_tutorial;
 
 vmCvar_t        cg_rangeMarkerDrawSurface;
@@ -208,9 +197,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawTimer,                   "cg_drawTimer",                   "1",            0                            },
 	{ &cg_drawClock,                   "cg_drawClock",                   "0",            0                            },
 	{ &cg_drawFPS,                     "cg_drawFPS",                     "1",            0                            },
-	{ &cg_drawDemoState,               "cg_drawDemoState",               "1",            0                            },
-	{ &cg_drawSnapshot,                "cg_drawSnapshot",                "0",            0                            },
-	{ &cg_drawChargeBar,               "cg_drawChargeBar",               "1",            0                            },
 	{ &cg_drawCrosshair,               "cg_drawCrosshair",               "2",            0                            },
 	{ &cg_drawCrosshairHit,            "cg_drawCrosshairHit",            "1",            0                            },
 	{ &cg_drawCrosshairFriendFoe,      "cg_drawCrosshairFriendFoe",      "0",            0                            },
@@ -229,7 +215,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_gun_y,                       "cg_gunY",                        "0",            CVAR_CHEAT                   },
 	{ &cg_gun_z,                       "cg_gunZ",                        "0",            CVAR_CHEAT                   },
 	{ &cg_mirrorgun,                   "cg_mirrorgun",                   "0",            0                            },
-	{ &cg_centertime,                  "cg_centertime",                  "3",            CVAR_CHEAT                   },
 	{ &cg_runpitch,                    "cg_runpitch",                    "0.002",        0                            },
 	{ &cg_runroll,                     "cg_runroll",                     "0.005",        0                            },
 	{ &cg_swingSpeed,                  "cg_swingSpeed",                  "0.3",          CVAR_CHEAT                   },
@@ -252,9 +237,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_thirdPersonShoulderViewMode, "cg_thirdPersonShoulderViewMode", "1",            0                            },
 	{ &cg_staticDeathCam,              "cg_staticDeathCam",              "0",            0                            },
 	{ &cg_stats,                       "cg_stats",                       "0",            0                            },
-	{ &cg_drawTeamOverlay,             "cg_drawTeamOverlay",             "1",            0                            },
-	{ &cg_teamOverlaySortMode,         "cg_teamOverlaySortMode",         "1",            0                            },
-	{ &cg_teamOverlayMaxPlayers,       "cg_teamOverlayMaxPlayers",       "8",            0                            },
 	{ &cg_teamOverlayUserinfo,         "teamoverlay",                    "1",            CVAR_USERINFO                },
 	{ &cg_teamChatsOnly,               "cg_teamChatsOnly",               "0",            0                            },
 	{ &cg_noVoiceChats,                "cg_noVoiceChats",                "0",            0                            },
@@ -277,7 +259,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_debugParticles,              "cg_debugParticles",              "0",            CVAR_CHEAT                   },
 	{ &cg_debugPVS,                    "cg_debugPVS",                    "0",            CVAR_CHEAT                   },
 	{ &cg_disableWarningDialogs,       "cg_disableWarningDialogs",       "0",            0                            },
-	{ &cg_disableScannerPlane,         "cg_disableScannerPlane",         "0",            0                            },
 	{ &cg_tutorial,                    "cg_tutorial",                    "1",            0                            },
 
 	{ &cg_rangeMarkerDrawSurface,      "cg_rangeMarkerDrawSurface",      "1",            0                            },
