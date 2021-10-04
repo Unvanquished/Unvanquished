@@ -43,37 +43,11 @@
 			<p></p>
 		</row>
 		<row>
-			<h3>Pounce charge-bar</h3>
-			<input cvar="cg_drawChargeBar" type="checkbox" />
-			<p>Alien pounce-meter</p>
-		</row>
-		<row>
 			<!-- BUG: This should be a lag-o-meter, not a ping control -->
 			<h3>Show ping</h3>
 			<input cvar="cg_lagometer" type="checkbox" />
 			<p>Time that information takes to get to the server and back.</p>
 		</row>
-		<!--
-		<row>
-			<h3>Team Overlay</h3>
-			<select cvar="cg_drawTeamOverlay">
-				<option value="0">Off</option>
-				<option value="1">All Teammates</option>
-				<option value="2">Support Teammates</option>
-				<option value="3">Nearby Teammates</option>
-			</select>
-			<p>Team-member status info during gameplay</p>
-		</row>
-		<row>
-			<h3>Sort Team Overlay</h3>
-			<select cvar="cg_teamOverlaySortMode">
-				<option value="0">No sorting</option>
-				<option value="1">By score</option>
-				<option value="2">By weapon/class</option>
-			</select>
-			<p></p>
-		</row>
-		-->
 		<row>
 			<h3>Show movement speed</h3>
 			<input cvar="cg_drawSpeed" type="checkbox" />
@@ -84,13 +58,6 @@
 			<input cvar="cg_drawFPS" type="checkbox" />
 			<p>Frames-per-second</p>
 		</row>
-
-		<row>
-			<h3>Show demo-recording state</h3>
-			<input cvar="cg_drawDemoState" type="checkbox" />
-			<p></p>
-		</row>
-
 
 	</body>
 </rml>
