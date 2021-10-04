@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "bg_public.h"
 #include "parse.h"
 
+// delayed translation - these strings may be passed to Trans_Gettext() later
 #define N_(x) x
 
 int                                trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );

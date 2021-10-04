@@ -31,6 +31,10 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 #define S_BUILTIN_LAYOUT           "*BUILTIN*"
 
+// These translation markers are used for messages transmitted to clients as arguments of print_tr* commands.
+// P_ immediately chooses the appropriate pluralization for English, in case the message is not translated;
+// the count is also transmitted with the command so that the correct pluralization can be chosen later
+// for another language.
 #define N_( text ) text
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
