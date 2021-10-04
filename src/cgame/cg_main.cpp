@@ -139,14 +139,6 @@ vmCvar_t        cg_cmdNeedHealth;
 
 vmCvar_t        cg_debugVoices;
 
-vmCvar_t        ui_currentClass;
-vmCvar_t        ui_carriage;
-vmCvar_t        ui_dialog;
-vmCvar_t        ui_voteActive;
-vmCvar_t        ui_alienTeamVoteActive;
-vmCvar_t        ui_humanTeamVoteActive;
-vmCvar_t        ui_unlockables;
-
 vmCvar_t        cg_debugRandom;
 
 vmCvar_t        cg_optimizePrediction;
@@ -449,9 +441,6 @@ static void CG_SetUIVars()
 	{
 		return;
 	}
-
-	trap_Cvar_Set( "ui_carriage", va( "%d %d %d", cg.snap->ps.stats[ STAT_WEAPON ],
-	               cg.snap->ps.stats[ STAT_ITEMS ], cg.snap->ps.persistant[ PERS_CREDIT ] ) );
 }
 
 /*
