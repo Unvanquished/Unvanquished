@@ -1489,7 +1489,6 @@ enum {
 	VOTE_AFTER,  // not within the first N minutes
 	VOTE_REMAIN, // within N/2 minutes before SD
 	VOTE_NO_AUTO,// don't automatically vote 'yes'
-	VOTE_ENABLE, // for special-purpose enable flags
 };
 static const struct {
 	const char     *name;
@@ -1519,7 +1518,7 @@ static const struct {
 	{ "layout",       true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
 	{ "nextmap",      false, V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
 	{ "poll",         false, V_ANY,    T_NONE,    false,  false,    qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
-	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap, nullptr },
+	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
 	{ }
 	// note: map votes use the reason, if given, as the layout name
 };
@@ -1696,15 +1695,6 @@ void Cmd_CallVote_f( gentity_t *ent )
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining") ),
 			                            voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer / 2 ) );
-			return;
-		}
-
-		break;
-
-	case VOTE_ENABLE:
-		if ( !voteInfo[voteId].specialCvar->integer )
-		{
-			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled") ), voteInfo[voteId].name ) );
 			return;
 		}
 

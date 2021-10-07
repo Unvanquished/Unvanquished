@@ -91,8 +91,6 @@ vmCvar_t           g_drawVoteReasonRequired;
 vmCvar_t           g_admitDefeatVotesPercent;
 vmCvar_t           g_nextMapVotesPercent;
 vmCvar_t           g_pollVotesPercent;
-vmCvar_t           g_botKickVotesAllowed;
-vmCvar_t           g_botKickVotesAllowedThisMap;
 
 vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
@@ -353,8 +351,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                0,                                               0, true  },
 	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               0,                                               0, true  },
 	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                0,                                               0, true  },
-	{ &g_botKickVotesAllowed,         "g_botKickVotesAllowed",         "1",                                0,                                               0, true  },
-	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                0,                                               0, true  },
 
 	// clients: misc
 	{ &g_geoip,                       "g_geoip",                       "1",                                0,                                               0, false },
@@ -728,9 +724,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 			G_LogGameplayStats( LOG_GAMEPLAY_STATS_HEADER );
 		}
 	}
-
-	// initialise whether bot vote kicks are allowed. the map rotation may clear this flag.
-	trap_Cvar_Set( "g_botKickVotesAllowedThisMap", g_botKickVotesAllowed.integer ? "1" : "0" );
 
 	// clear this now; it'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
