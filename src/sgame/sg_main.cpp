@@ -42,7 +42,7 @@ struct cvarTable_t
 	const char *defaultString;
 	int        cvarFlags;
 	int        modificationCount; // for tracking changes
-	bool   trackChange; // track this variable, and announce if changed
+	bool unused; // TODO: delete the entire table so that I don't have to bother with deleting this field
 };
 } //namespace
 
@@ -609,12 +609,6 @@ void G_UpdateCvars()
 			if ( cv.modificationCount != cv.vmCvar->modificationCount )
 			{
 				cv.modificationCount = cv.vmCvar->modificationCount;
-
-				if ( cv.trackChange )
-				{
-					trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("Server: $1$ changed to $2$") ),
-					                                Quote( cv.cvarName ), Quote( cv.vmCvar->string ) ) );
-				}
 			}
 		}
 	}
