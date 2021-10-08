@@ -1500,8 +1500,8 @@ static const struct {
 	qtrinary        reasonNeeded;
 	Cvar::Cvar<int> *percentage;
 	int             special;
-	const vmCvar_t *specialCvar;
-	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be true)
+	Cvar::Cvar<int> *specialCvar;
+	Cvar::Cvar<bool> *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be true)
 } voteInfo[] = {
 	// Name           Stop?  Type      Target     Immune  Quorum    Reason            Vote percentage var  Extra
 	{ "kick",         false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
@@ -1670,31 +1670,31 @@ void Cmd_CallVote_f( gentity_t *ent )
 	switch ( voteInfo[voteId].special )
 	{
 	case VOTE_BEFORE:
-		if ( level.numConnectedPlayers > 1 && level.matchTime >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.numConnectedPlayers > 1 && level.matchTime >= ( voteInfo[voteId].specialCvar->Get() * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed once $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
+			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed once $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->Get() ) );
 			return;
 		}
 
 		break;
 
 	case VOTE_AFTER:
-		if ( level.numConnectedPlayers > 1 && level.matchTime < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.numConnectedPlayers > 1 && level.matchTime < ( voteInfo[voteId].specialCvar->Get() * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed until $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
+			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed until $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->Get() ) );
 			return;
 		}
 
 		break;
 
 	case VOTE_REMAIN:
-		if ( !level.timelimit || level.matchTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
+		if ( !level.timelimit || level.matchTime < ( level.timelimit - voteInfo[voteId].specialCvar->Get() / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining") ),
-			                            voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer / 2 ) );
+			                            voteInfo[voteId].name, voteInfo[voteId].specialCvar->Get() / 2 ) );
 			return;
 		}
 
@@ -1780,7 +1780,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	if ( voteInfo[voteId].reasonNeeded == qtrinary::qyes && !reason[ 0 ] &&
 	     !( voteInfo[voteId].adminImmune && G_admin_permission( ent, ADMF_UNACCOUNTABLE ) ) &&
-	     !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->integer ) )
+	     !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->Get() ) )
 	{
 		trap_SendServerCommand( ent - g_entities,
 		                        va( "print_tr %s %s", QQ( N_("$1$: You must provide a reason") ), cmd ) );
@@ -1889,9 +1889,9 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	case VOTE_EXTEND:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "time %i", level.timelimit + g_extendVotesTime.integer );
+		             "time %i", level.timelimit + g_extendVotesTime.Get() );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
-		             "Extend the timelimit by %d minutes", g_extendVotesTime.integer );
+		             "Extend the timelimit by %d minutes", g_extendVotesTime.Get() );
 		break;
 
 	case VOTE_ADMIT_DEFEAT:

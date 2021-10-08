@@ -80,14 +80,14 @@ vmCvar_t           g_logFileSync;
 vmCvar_t           g_allowVote;
 vmCvar_t           g_voteLimit;
 Cvar::Cvar<int> g_extendVotesPercent("g_extendVotesPercent", "percentage required for extend timelimit vote", Cvar::NONE, 74);
-vmCvar_t           g_extendVotesTime;
+Cvar::Cvar<int> g_extendVotesTime("g_extendVotesTime", "number of minutes 'extend' vote adds to timelimit", Cvar::NONE, 10);
 Cvar::Cvar<int> g_kickVotesPercent("g_kickVotesPercent", "percentage required for votes to remove players", Cvar::NONE, 51);
 Cvar::Cvar<int> g_denyVotesPercent("g_denyVotesPercent", "percentage required for votes to strip/reinstate a player's chat/build privileges", Cvar::NONE, 51);
 Cvar::Cvar<int> g_mapVotesPercent("g_mapVotesPercent", "percentage required for map changing votes", Cvar::NONE, 51);
-vmCvar_t           g_mapVotesBefore;
+Cvar::Cvar<int> g_mapVotesBefore("g_mapVotesBefore", "map change votes not allowed after this many minutes", Cvar::NONE, 5);
 Cvar::Cvar<int> g_drawVotesPercent("g_drawVotesPercent", "percentage required for draw vote", Cvar::NONE, 51);
-vmCvar_t           g_drawVotesAfter;
-vmCvar_t           g_drawVoteReasonRequired;
+Cvar::Cvar<int> g_drawVotesAfter("g_drawVotesAfter", "draw votes not allowed before this many minutes", Cvar::NONE, 0);
+Cvar::Cvar<bool> g_drawVoteReasonRequired("g_drawVoteReasonRequired", "whether a reason is required for draw vote", Cvar::NONE, false);
 Cvar::Cvar<int> g_admitDefeatVotesPercent("g_admitDefeatVotesPercent", "percentage required for admitdefeat vote", Cvar::NONE, 74);
 Cvar::Cvar<int> g_nextMapVotesPercent("g_nextMapVotesPercent", "percentage required for nextmap vote", Cvar::NONE, 51);
 Cvar::Cvar<int> g_pollVotesPercent("g_pollVotesPercent", "percentage required for a poll to 'pass'", Cvar::NONE, 0);
@@ -339,10 +339,6 @@ static cvarTable_t gameCvarTable[] =
 	// clients: voting
 	{ &g_allowVote,                   "g_allowVote",                   "1",                                0,                                               0, false },
 	{ &g_voteLimit,                   "g_voteLimit",                   "5",                                0,                                               0, false },
-	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               0,                                               0, false },
-	{ &g_mapVotesBefore,              "g_mapVotesBefore",              "5",                                0,                                               0, true  },
-	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                0,                                               0, true  },
-	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                0,                                               0, true  },
 
 	// clients: misc
 	{ &g_geoip,                       "g_geoip",                       "1",                                0,                                               0, false },
