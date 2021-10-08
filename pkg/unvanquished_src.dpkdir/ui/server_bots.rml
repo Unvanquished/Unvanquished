@@ -5,7 +5,7 @@
 
 	</head>
 	<body id="server_bots" template="window" style="width: 32em; margin: 1em;">
-		<h1> Bot Settings </h1>
+		<h1><translate>Bot settings</translate></h1>
 
 		<tabset>
 			<tab>General</tab>
@@ -44,7 +44,6 @@
 				</row>
 
 				<h2> Individually </h2>
-				<h3> Primary weapons </h3>
 				<row>
 					<input cvar="g_bot_ckit" type="checkbox" />
 					<h3> Construction Kit (repairs) </h3>
@@ -84,32 +83,6 @@
 				<row>
 					<input cvar="g_bot_lcannon" type="checkbox" />
 					<h3> Lucifer Cannon </h3>
-				</row>
-				<h3> Armors </h3>
-				<row>
-					<input cvar="g_bot_lightarmour" type="checkbox" />
-					<h3> Light Armour </h3>
-				</row>
-				<row>
-					<input cvar="g_bot_mediumarmour" type="checkbox" />
-					<h3> Medium Armour </h3>
-				</row>
-				<row>
-					<input cvar="g_bot_battlesuit" type="checkbox" />
-					<h3> Battlesuit </h3>
-				</row>
-				<h3> Misc </h3>
-				<row>
-					<input cvar="g_bot_firebomb" type="checkbox" />
-					<h3> Firebomb </h3>
-				</row>
-				<row>
-					<input cvar="g_bot_grenade" type="checkbox" />
-					<h3> Grenade </h3>
-				</row>
-				<row>
-					<input cvar="g_bot_radar" type="checkbox" />
-					<h3> Radar </h3>
 				</row>
 
 			</panel>

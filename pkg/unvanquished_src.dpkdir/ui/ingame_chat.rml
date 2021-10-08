@@ -18,7 +18,7 @@
 			color: #FFFFFFFF;
 		}
 	</style>
-	<script src="lua/util.lua"/>
+	<script src="lua/util.lua"></script>
 	</head>
 	<body id="ingame_chat" onkeydown="detectEscape(event, document)" onshow='document:GetElementById("chatfield"):Focus()' >
 	<div>

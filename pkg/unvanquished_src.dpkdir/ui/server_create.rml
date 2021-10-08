@@ -15,32 +15,28 @@
 				max-height: 25em;
 				overflow-y: auto;
 			}
-
-
 		</style>
 	</head>
 	<body template="window" id="createserver" onshow='Events.pushevent("buildDS mapList", event)' style="width: 40em; margin: 1em;">
-		<h1> Start local/LAN game</h1>
+		<h1><translate>Start local/LAN game</translate></h1>
 		<row>
 			<input type="text" cvar="sv_hostname" class="text" id="hostname"/>
-			<h3> Hostname </h3>
+			<h3><translate>Hostname</translate></h3>
 		</row>
 		<row>
 			<input type="text" cvar="g_password" class="text" id="password"/>
-			<h3> Password </h3>
+			<h3><translate>Password</translate></h3>
 		</row>
 
 		<form onsubmit='Events.pushevent("execForm \"map $map$\"", event)'>
 			<row id="maplist">
 				<dataselect source="mapList.default" fields="mapName" valuefield="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
-				<h3> Map </h3>
+				<h3><translate>Map</translate></h3>
 			</row>
 
-			<input type="submit"> <button> Start </button>  </input>
+			<input type="submit"><button><translate>Start</translate></button></input>
 		</form>
 
-
 		<levelshot />
-
 	</body>
 </rml>

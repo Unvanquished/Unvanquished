@@ -2,33 +2,32 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
-
 	</head>
 	<body id="options_player"  template="window" style="width: 45em; margin: 1em;">
-		<h1>Player Setup</h1>
+		<h1><translate>Player Setup</translate></h1>
 
-		<h2> Personal </h2>
+		<h2><translate>Personal</translate></h2>
 		<row>
 			<colorinput type="text" cvar="name" style="overflow: hidden; white-space: pre;"/>
-			<h3>Nickname</h3>
+			<h3><translate>Nickname</translate></h3>
 			<p>Your name visible to others.</p>
-			<p><ilink onclick='Events.pushevent("show help_textentry", event)'>Colours and symbols</ilink> can be used.</p>
+			<p><ilink onclick='Events.pushevent("show help_textentry", event)'><translate>Colours and symbols can be used.</translate></ilink></p>
 		</row>
 		<row>
-			<h3>Tutorial mode</h3>
+			<h3><translate>Tutorial mode</translate></h3>
 			<input cvar="cg_tutorial" type="checkbox" />
-			<p>Display hints for key bindings on-screen.</p>
+			<p><translate>Display hints for key bindings on-screen.</translate></p>
 		</row>
 		<row>
 			<input cvar="cg_teamChatsOnly" type="checkbox" />
-			<h3>Show only team chat</h3>
+			<h3><translate>Show only team chat</translate></h3>
 		</row>
 
-		<h2> Movement </h2>
+		<h2><translate>Movement</translate></h2>
 		<row>
-			<h3>Wall-walking auto-pitch</h3>
+			<h3><translate>Wall-walking auto-pitch</translate></h3>
 			<input cvar="cg_wwFollow" type="checkbox" />
-			<p> Always 'twist' and 'rotate' the view when you wall-walk from one surface to another. </p>
+			<p><translate>Always “twist” and “rotate” the view when you wall-walk from one surface to another.</translate></p>
 		</row>
 		<row>
 			<select cvar="cg_wwSmoothTime">
@@ -37,34 +36,34 @@
 				<option value="300">Medium</option>
 				<option value="600">Slow</option>
 			</select>
-			<h3> Wall-walking pitch-speed</h3>
-			<p>How fast your view 'rotates' and 'twists' as you wall-walk.</p>
+			<h3><translate>Wall-walking pitch-speed</translate></h3>
+			<p><translate>How fast your view “rotates” and “twists” as you wall-walk.</translate></p>
 		</row>
 		<row>
-			<h3> Wall-walking toggles </h3>
+			<h3><translate>Wall-walking toggles</translate></h3>
 			<input cvar="cg_wwToggle" type="checkbox" />
-			<p>'Tap key' instead of 'hold key' to activate. </p>
+			<p><translate>“Tap key” instead of “hold key” to activate.</translate></p>
 		</row>
 		<row>
-			<h3> Sprint toggles </h3>
+			<h3><translate>Sprint toggles</translate></h3>
 			<input cvar="cg_sprintToggle" type="checkbox" />
-			<p>'Tap key' instead of 'hold key' to activate. </p>
+			<p><translate>“Tap key” instead of “hold key” to activate.</translate></p>
 		</row>
 
-		<h2> Cosmetic </h2>
+		<h2><translate>Cosmetic</translate></h2>
 		<row>
 			<select cvar="cg_drawgun">
-				<option value="0">Disable</option>
-				<option value="1">Humans only</option>
-				<option value="2">Humans and aliens</option>
+				<option value="0"><translate>Disable</translate></option>
+				<option value="1"><translate>Humans only</translate></option>
+				<option value="2"><translate>Humans and aliens</translate></option>
 			</select>
-			<h3>First-person weapons</h3>
-			<p>Show gun, pincer, hand and mandible models in first-person.</p>
+			<h3><translate>First-person weapons</translate></h3>
+			<p><translate>Show gun, pincer, hand and mandible models in first-person.</translate></p>
 		</row>
 		<row>
-			<h3> Left-handed mode </h3>
+			<h3><translate>Left-handed mode</translate></h3>
 			<input cvar="cg_mirrorgun" type="checkbox" />
-			<p>Mirror first-person gun models</p>
+			<p><translate>Mirror first-person gun models.</translate></p>
 		</row>
 	</body>
 </rml>

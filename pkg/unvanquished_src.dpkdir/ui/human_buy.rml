@@ -205,31 +205,31 @@ tab:selected {
 	 onrefreshdata="BuildWeaponMenu(document) BuildUpgradeMenu(document)">
 	<tabset class="circlemenu" id="tabset">
 		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">
-			<p>Weapons</p>
-			<div class="tabkey">TAB</div>
+			<p><translate>Weapons</translate></p>
+			<div class="tabkey"><translate>TAB</translate></div>
 		</tab>
 		<panel>
 		<div class="circlemenu-circle" id="weaponKeyboardHints"/>
 		<div class="circlemenu-circle" id="weapons"/>
 			<div class="infobox">
 			<h2 id="w_name"></h2>
-			<p><div class="attr">Price:</div><div class="bar"><div id="w_price"></div></div></p>
-			<p><div class="attr">Range:</div><div class="bar"><div id="w_range" class="barValue"></div></div></p>
-			<p><div class="attr">Damage:</div><div class="bar"><div id="w_damage" class="barValue"></div></div></p>
-			<p><div class="attr">Fire Rate:</div><div class="bar"><div id="w_rate" class="barValue"></div></div></p>
+			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="w_price"></div></div></p>
+			<p><div class="attr"><translate>Range:</translate></div><div class="bar"><div id="w_range" class="barValue"></div></div></p>
+			<p><div class="attr"><translate>Damage:</translate></div><div class="bar"><div id="w_damage" class="barValue"></div></div></p>
+			<p><div class="attr"><translate>Fire Rate:</translate></div><div class="bar"><div id="w_rate" class="barValue"></div></div></p>
 			<p class="text" id="w_description"></p>
 			</div>
 		</panel>
 		<tab onclick="UpgradeClear(document) BuildUpgradeMenu(document)">
-			<p>Upgrades</p>
-			<div class="tabkey">TAB</div>
+			<p><translate>Upgrades</translate></p>
+			<div class="tabkey"><translate>TAB</translate></div>
 		</tab>
 		<panel>
 		<div class="circlemenu-circle" id="upgradeKeyboardHints"/>
 		<div class="circlemenu-circle" id="upgrades"/>
 			<div class="infobox">
 			<h2 id="u_name"></h2>
-			<p><div class="attr">Price:</div><div class="bar"><div id="u_price"></div></div></p>
+			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="u_price"></div></div></p>
 			<p class="text" id="u_description"></p>
 			</div>
 		</panel>

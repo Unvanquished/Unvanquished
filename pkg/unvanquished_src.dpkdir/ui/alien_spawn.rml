@@ -18,7 +18,6 @@
 		{
 			line-height: 1.45em;
 		}
-
 		button.dretch
 		{
 			width: 40%;
@@ -43,20 +42,18 @@
 		p {
 			clear: both;
 		}
-
 	</style>
 </head>
 
 <body id="alien_spawn" template="window">
-	<p> Choose your starting form: </p>
+	<p><translate>Choose your starting form:</translate></p>
 
-	<button class="dretch"  onclick='Events.pushevent("hide alien_spawn; exec class level0", event)'> Dretch </button>
+	<button class="dretch" onclick='Events.pushevent("hide alien_spawn; exec class level0", event)'><translate>Dretch</translate></button>
 	<!-- FIXME: always spawn as the correct granger version -->
-	<button class="builder" onclick='Events.pushevent("hide alien_spawn; exec class builderupg builder", event)'> Granger </button>
+	<button class="builder" onclick='Events.pushevent("hide alien_spawn; exec class builderupg builder", event)'><translate>Granger</translate></button>
 
-	<p> Dretches are a stealthy attack form, and grangers are the alien construction form.</p>
+	<p><translate>Dretches are a stealthy attack form, and grangers are the alien construction form.</translate></p>
 
-	<button class="teamselect"  onclick='Events.pushevent("hide alien_spawn; show ingame_teamselect", event)'> Back to team selection </button>
-
+	<button class="teamselect" onclick='Events.pushevent("hide alien_spawn; show ingame_teamselect", event)'><translate>Back to team selection</translate></button>
 </body>
 </rml>

@@ -43,19 +43,16 @@
 		p {
 			clear: both;
 		}
-
 	</style>
 </head>
-
 <body id="human_spawn" template="window">
-	<p> Choose your starting equipment: </p>
+	<p><translate>Choose your starting equipment:</translate></p>
 
-	<button class="rifle" onclick='Events.pushevent("hide human_spawn; exec class rifle", event)'> SMG </button>
-	<button class="ckit"  onclick='Events.pushevent("hide human_spawn; exec class ckit", event)'> Construction Kit </button>
+	<button class="rifle" onclick='Events.pushevent("hide human_spawn; exec class rifle", event)'><translate>SMG</translate></button>
+	<button class="ckit" onclick='Events.pushevent("hide human_spawn; exec class ckit", event)'><translate>Construction Kit</translate></button>
 
-	<p> The SMG is a rapid-fire starting weapon, and the construction kit builds and repairs human structures. All equipment can be traded at the armoury. </p>
+	<p><translate>The SMG is a rapid-fire starting weapon, and the construction kit builds and repairs human structures. All equipment can be traded at the armoury.</translate></p>
 
-	<button class="teamselect"  onclick='Events.pushevent("hide human_spawn; show ingame_teamselect", event)'> Back to team selection </button>
-
+	<button class="teamselect" onclick='Events.pushevent("hide human_spawn; show ingame_teamselect", event)'><translate>Back to team selection</translate></button>
 </body>
 </rml>

@@ -4,7 +4,6 @@
 		<link type="text/rcss" href="/ui/shared/datagrid.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
 		<style>
-
 			/* Overall division into two halves */
 			tabs {
 				width: 10%;
@@ -27,43 +26,39 @@
 		</style>
 	</head>
 	<body id="serverbrowser" template="window" style="width: 60em; margin: 10em;" onshow='Events.pushevent("init_servers internet;buildDS server_browser internet", event)' >
-
-		<h1>Server Listings</h1>
+		<h1><translate>Server Listings</translate></h1>
 		<tabset>
-
-			<tab>Internet</tab>
+			<tab><translate>Internet</translate></tab>
 			<panel>
 				<datagrid id="iServers" source="server_browser.internet">
 					<col fields="label" width="3%" class="label" formatter="ServerLabel"></col>
-					<col fields="name" width="50%" class="name" ><ilink style="text-align:left;" onclick='Events.pushevent("sortDS server_browser internet name", event)'>Name:</ilink></col>
-					<col fields="map" width="18%" class="map"><ilink onclick='Events.pushevent("sortDS server_browser internet map", event)'>Map:</ilink></col>
-					<col fields="players,bots,maxClients" width="18%" formatter="ServerPlayers" class="players"><ilink onclick='Events.pushevent("sortDS server_browser internet players", event)'>Players (Bots)</ilink></col>
-					<col fields="ping" width="11%" formatter="ServerPing" class="ping"><ilink onclick='Events.pushevent("sortDS server_browser internet ping", event)'>Ping</ilink></col>
+					<col fields="name" width="50%" class="name"><ilink style="text-align:left;" onclick='Events.pushevent("sortDS server_browser internet name", event)'><translate>Name:</translate></ilink></col>
+					<col fields="map" width="18%" class="map"><ilink onclick='Events.pushevent("sortDS server_browser internet map", event)'><translate>Map:</translate></ilink></col>
+					<col fields="players,bots,maxClients" width="18%" formatter="ServerPlayers" class="players"><ilink onclick='Events.pushevent("sortDS server_browser internet players", event)'><translate>Players (Bots)</translate></ilink></col>
+					<col fields="ping" width="11%" formatter="ServerPing" class="ping"><ilink onclick='Events.pushevent("sortDS server_browser internet ping", event)'><translate>Ping</translate></ilink></col>
 				</datagrid>
 
 				<buttonbar>
-					<button onclick='Events.pushevent("execDS server_browser internet", event)'>Connect</button>
-					<button onclick='Events.pushevent("init_servers internet;buildDS server_browser internet", event)'>Refresh</button>
+					<button onclick='Events.pushevent("execDS server_browser internet", event)'><translate>Connect</translate></button>
+					<button onclick='Events.pushevent("init_servers internet;buildDS server_browser internet", event)'><translate>Refresh</translate></button>
 				</buttonbar>
-
 			</panel>
 
-			<tab onclick='Events.pushevent("init_servers local;buildDS server_browser local", event)'>LAN</tab>
+			<tab onclick='Events.pushevent("init_servers local;buildDS server_browser local", event)'><translate>LAN</translate></tab>
 			<panel>
 				<datagrid source="server_browser.local">
 					<col fields="label" width="3%" class="label" formatter="ServerLabel"></col>
-					<col fields="name" width="50%" class="name" >Name:</col>
-					<col fields="map" width="18%" class="map"><ilink onclick='Events.pushevent("sortDS server_browser local map", event)'>Map:</ilink></col>
-					<col fields="players,bots,maxClients" width="18%" formatter="ServerPlayers" class="players"><ilink onclick='Events.pushevent("sortDS server_browser local players", event)'>Players (Bots)</ilink></col>
-					<col fields="ping" width="11%" formatter="ServerPing" class="ping"><ilink onclick='Events.pushevent("sortDS server_browser local ping", event)'>Ping</ilink></col>
+					<col fields="name" width="50%" class="name"><translate>Name:</translate></col>
+					<col fields="map" width="18%" class="map"><ilink onclick='Events.pushevent("sortDS server_browser local map", event)'><translate>Map:</translate></ilink></col>
+					<col fields="players,bots,maxClients" width="18%" formatter="ServerPlayers" class="players"><ilink onclick='Events.pushevent("sortDS server_browser local players", event)'><translate>Players (Bots)</translate></ilink></col>
+					<col fields="ping" width="11%" formatter="ServerPing" class="ping"><ilink onclick='Events.pushevent("sortDS server_browser local ping", event)'><translate>Ping</translate></ilink></col>
 				</datagrid>
 
 				<buttonbar>
-					<button onclick='Events.pushevent("execDS server_browser local", event)'>Connect</button>
-					<button onclick='Events.pushevent("init_servers local;buildDS server_browser local", event)'>Refresh</button>
+					<button onclick='Events.pushevent("execDS server_browser local", event)'><translate>Connect</translate></button>
+					<button onclick='Events.pushevent("init_servers local;buildDS server_browser local", event)'><translate>Refresh</translate></button>
 				</buttonbar>
 			</panel>
-
 		</tabset>
 	</body>
 </rml>

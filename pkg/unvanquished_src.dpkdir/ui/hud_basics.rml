@@ -169,9 +169,7 @@
 		}
 	</style>
 </head>
-
 <body id="hud_basics">
-
 	<region class="topright">
 		<if cvar="cg_minimapActive" condition="==" value="1">
 			<minimap />
@@ -181,19 +179,20 @@
 			<location />
 
 			<if cvar="cg_drawTimer" condition="==" value="1">
-				<stat>Game <timer /></stat>
+				<stat><translate>Game</translate>&nbsp;<timer /></stat>
 			</if>
 			<if cvar="cg_drawClock" condition="!=" value="0">
-				<stat>Life <clock /></stat>
+				<stat><translate>Life</translate>&nbsp;<clock /></stat>
 			</if>
 			<if cvar="cg_drawFPS" condition="==" value="1">
-				<stat><fps /> fps</stat>
+				<!-- FIXME: We may want to include <fps/> in the translatable string. -->
+				<stat><fps/>&nbsp;<translate>fps</translate></stat>
 			</if>
-			<stat><ping /> ms</stat>
+			<!-- FIXME: We may want to include <ms/> in the translatable string. -->
+			<stat><ping/>&nbsp;<translate>ms</translate></stat>
 			<if cvar="cg_lagometer" condition="==" value="1">
-			<stat> <lagometer /> </stat>
+				<stat><lagometer /></stat>
 			</if>
-
 		</statsbox>
 	</region>
 
@@ -214,7 +213,7 @@
 
 	<if cvar="cg_drawSpeed" condition="!=" value="0">
 		<!-- Do we need this if? -->
-		<region class="speedo"> <speedometer /> </region>
+		<region class="speedo"><speedometer /></region>
 	</if>
 
 	<region class="beacon">
@@ -225,6 +224,5 @@
 		<beacon_age /><br />
 		<beacon_owner />
 	</region>
-
 </body>
 </rml>

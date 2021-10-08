@@ -2,64 +2,62 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
-
 	</head>
 	<body id="server_general" template="window" style="width: 32em; margin: 1em;">
-		<h1> Server Setup </h1>
+		<h1><translate>Server Setup</translate></h1>
 
-		<h2> General </h2>
+		<h2><translate>General</translate></h2>
 		<row>
-			<h3> Friendly fire damage multipliers</h3>
+			<h3><translate>Friendly fire damage multipliers</translate></h3>
 			<input type="range" min="0" max="1" step="0.05" cvar="g_friendlyFireAlienMultiplier" />
-			<p> Alien: <inlinecvar cvar="g_friendlyFireAlienMultiplier" type="number" format="%.2f"/></p>
+			<p><translate>Alien:</translate>&nbsp;<inlinecvar cvar="g_friendlyFireAlienMultiplier" type="number" format="%.2f"/></p>
 			<input type="range" min="0" max="1" step="0.05" cvar="g_friendlyFireHumanMultiplier" />
-			<p> Human: <inlinecvar cvar="g_friendlyFireHumanMultiplier" type="number" format="%.2f"/></p>
+			<p><translate>Human:</translate>&nbsp;<inlinecvar cvar="g_friendlyFireHumanMultiplier" type="number" format="%.2f"/></p>
 		</row>
 		<row>
 			<input cvar="g_friendlyBuildableFire" type="checkbox" />
-			<h3> Friendly buildable fire</h3>
+			<h3><translate>Friendly buildable fire</translate></h3>
 		</row>
 		<row>
 			<input cvar="g_allowVote" type="checkbox" />
-			<h3> Allow voting </h3>
+			<h3><translate>Allow voting</translate></h3>
 		</row>
-		<h2> Warmup </h2>
+
+		<h2><translate>Warmup</translate></h2>
 		<row>
 			<input cvar="g_doWarmup" type="checkbox" />
-			<h3> Do warmups at every game start</h3>
-			<p> Gives players on slower computers time to join. </p>
+			<h3><translate>Do warmups at every game start</translate></h3>
+			<p><translate>Gives players on slower computers time to join.</translate></p>
 		</row>
 
-
-		<h2> Teams </h2>
+		<h2><translate>Teams</translate></h2>
 		<row>
 			<input cvar="g_alienAllowBuilding" type="checkbox" />
-			<h3> Allow alien building</h3>
+			<h3><translate>Allow alien building</translate></h3>
 		</row>
 		<row>
 			<input cvar="g_humanAllowBuilding" type="checkbox" />
-			<h3> Allow human building</h3>
+			<h3><translate>Allow human building</translate></h3>
 		</row>
 
-
-		<h2> Physics </h2>
+		<h2><translate>Physics</translate></h2>
 		<row>
 			<input type="range" min="100" max="2000" step="10" cvar="g_gravity"/>
-			<h3> Gravity</h3>
+			<h3><translate>Gravity</translate></h3>
 			<p class="inline">
-				Current: <inlinecvar cvar="g_gravity" type="number" format="%.0f"/>
-				<ilink onclick='Events.pushevent("exec reset g_gravity", event)'> (reset) </ilink>
+				<translate>Current:</translate>&nbsp;<inlinecvar cvar="g_gravity" type="number" format="%.0f"/>
+				&nbsp;<ilink onclick='Events.pushevent("exec reset g_gravity", event)'>(<translate>reset</translate>)</ilink>
 			</p>
 		</row>
 		<row>
 			<input cvar="g_dretchpunt" type="checkbox" />
-			<h3> Dretch-punt</h3>
-			<p> Dretches can be pounted out-of-the-way by large aliens. </p>
+			<h3><translate>Dretch-punt</translate></h3>
+			<p><translate>Dretches can be pounted out-of-the-way by large aliens.</translate></p>
 		</row>
 		<row>
 			<input cvar="g_antiSpawnBlock" type="checkbox" />
-			<h3> Anti spawn-block</h3>
-			<p> Push slow people away from spawns</p>
+			<h3><translate>Anti spawn-block</translate></h3>
+			<p><translate>Push slow people away from spawns.</translate></p>
 		</row>
 	</body>
 </rml>

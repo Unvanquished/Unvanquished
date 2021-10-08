@@ -14,16 +14,12 @@
 				float:left;
 			}
 		</style>
-
-
 	</head>
 	<body id="help_textentry" template="window" style="width: 32em; margin: 1em;">
-		<h1> Colour Codes and Symbols </h1>
+		<h1><translate>Colour codes and symbols</translate></h1>
 
 		<p>
-			Colours are used by typing their escape code starting with a caret (^) symbol.
-			Colour can be reset again to normal using ^*, or an actual caret can be typed
-			using ^^.
+			<translate>Colours are used by typing their escape code starting with a caret (^) symbol. Colour can be reset again to normal using ^*, or an actual caret can be typed using ^^.</translate>
 		</p>
 
 		<p>
@@ -41,7 +37,7 @@
 			<color style="color: #BFBFBF;">^;</color>
 			<color style="color: #007F00;">^&lt;</color>
 			<color style="color: #7F7F00;">^=</color>
-			<color style="color: #00007F;">^></color>
+			<color style="color: #00007F;">^&gt;</color>
 			<color style="color: #7F0000;">^?</color>
 			<color style="color: #7F3F00;">^@</color>
 			<color style="color: #FF9919;">^A</color>
@@ -62,8 +58,7 @@
 		</p>
 
 		<p style="clear: both;">
-			Example: ^3Fred^1Baggins becomes <in style="color: #FFFF00;">Fred</in><in style="color: #FF0000;">Baggins</in>
+			<translate quake>Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins</translate>
 		</p>
-
 	</body>
 </rml>

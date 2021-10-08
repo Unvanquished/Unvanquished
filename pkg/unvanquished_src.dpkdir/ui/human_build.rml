@@ -131,7 +131,7 @@ tabs {
 <div class="circlemenu-circle" id="humanBuildMenu"/>
 <div class="infobox">
 <h2 id="b_name"></h2>
-<p class="text">Price: <span id="b_price" /><br/>
+<p class="text"><translate>Price:</translate>&nbsp;<span id="b_price" /><br/>
 <span id="b_desc" /></p>
 </div>
 </panel>

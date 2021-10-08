@@ -77,7 +77,7 @@
 	</head>
 	<body id="ingame_beaconmenu" class="circlemenu" onkeydown="CirclemenuHandleKey(event, document, BeaconClick)" onshow="BuildBeaconMenu(document)">
 		<tabset class="circlemenu">
-			<tab>Beacons</tab>
+			<tab><translate>Beacons</translate></tab>
 			<panel>
 				<div class="circlemenu-circle" id="keyboardHints"/>
 				<div class="circlemenu-circle" id="beaconMenu"/>
