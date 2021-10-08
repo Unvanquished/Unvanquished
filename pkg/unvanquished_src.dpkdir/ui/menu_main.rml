@@ -15,7 +15,7 @@
 		<img class="fog" src="/ui/assets/background/fog" />
 		<img class="logo" src="/ui/assets/logos/fuzzy_blue" />
 
-		<div style="position: absolute; bottom: 1em; left: 1em; color: rgba(255, 0, 0, 200);">This is a beta version of Unvanquished. Please report any issue you may find at https://bugs.unvanquished.net</div>
+		<div style="position: absolute; bottom: 1em; left: 1em; color: rgba(255, 0, 0, 200);"><translate>This is a beta version of Unvanquished. Please report any issue you may find at https://bugs.unvanquished.net</translate></div>
 
 		<sidebar>
 				<!-- HACK: Add some extra spacing atop the main menu -->
@@ -25,39 +25,38 @@
 				<window id="innersidebar" class="innersidebar">
 
 					<sidesection style="font-size: 1.1em;">
-						<h2> Play</h2>
+						<h2><translate>Play</translate></h2>
 						<indent>
-							<blocklink onclick='Events.pushevent("show serverbrowser", event)'> Server listings</blocklink>
-							<blocklink onclick='Events.pushevent("show createserver", event)'> Start local/LAN game</blocklink>
-<!-- 						<blocklink onclick='Events.pushevent("show demos", event)'> Recorded demos </blocklink> -->
+							<blocklink onclick='Events.pushevent("show serverbrowser", event)'><translate>Server listings</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show createserver", event)'><translate>Start local/LAN game</translate></blocklink>
+							<!-- <blocklink onclick='Events.pushevent("show demos", event)'><translate>Recorded demos</translate></blocklink> -->
 						</indent>
 
-						<h2> Options </h2>
+						<h2><translate>Options</translate></h2>
 						<indent>
-							<blocklink onclick='Events.pushevent("show options_player", event)'> Player </blocklink>
-							<blocklink onclick='Events.pushevent("show options_graphics", event)'> Graphics </blocklink>
-							<blocklink onclick='Events.pushevent("show options_keys", event)'> Key bindings </blocklink>
-							<blocklink onclick='Events.pushevent("show options_mouse", event)'> Mouse and Aiming </blocklink>
-							<blocklink onclick='Events.pushevent("show options_sound", event)'> Sound </blocklink>
-							<blocklink onclick='Events.pushevent("show options_ui", event)'> User interface and HUD </blocklink>
-							<!-- <blocklink onclick='Events.pushevent("show options_fov", event)'> Fields of view </blocklink> -->
+							<blocklink onclick='Events.pushevent("show options_player", event)'><translate>Player</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_graphics", event)'><translate>Graphics</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_keys", event)'><translate>Key bindings</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_mouse", event)'><translate>Mouse and Aiming</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_sound", event)'><translate>Sound</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_ui", event)'><translate>User interface and HUD</translate></blocklink>
+							<!-- <blocklink onclick='Events.pushevent("show options_fov", event)'><translate>Fields of view</translate></blocklink> -->
 						</indent>
 
-						<h2> Help </h2>
+						<h2><translate>Help</translate></h2>
 						<indent>
-							<blocklink onclick='Events.pushevent("show help_gameplay", event)'> Gameplay guide </blocklink>
-							<blocklink onclick='Events.pushevent("show help_textentry", event)'> Colour codes and symbols </blocklink>
+							<blocklink onclick='Events.pushevent("show help_gameplay", event)'><translate>Gameplay guide</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show help_textentry", event)'><translate>Colour codes and symbols</translate></blocklink>
 						</indent>
 
 						<br />
 
-						<blocklink class="rightfloat" onclick='Events.pushevent("exec quit", event)'> Quit game</blocklink>
-						<blocklink class="leftalign fake" style="color: #666666;"> Beta <version /></blocklink>
+						<blocklink class="rightfloat" onclick='Events.pushevent("exec quit", event)'><translate>Quit game</translate></blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;">
+							<translate>Beta</translate>&nbsp;<version/>
+						</blocklink>
 					</sidesection>
-
 				</window>
-
 		</sidebar>
-
 	</body>
 </rml>

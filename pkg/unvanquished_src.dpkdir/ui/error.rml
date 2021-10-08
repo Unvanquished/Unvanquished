@@ -4,10 +4,10 @@
 <link type="text/template" href="/ui/shared/window.rml" />
 </head>
 <body id="error" onhide='Events.pushevent("exec set com_errorMessage", event)' template="window" style="width: 32em; margin: 1em;">
-<h1>Error!</h1>
+<h1><translate>Error!</translate></h1>
 <p class="inline">
 <inlinecvar cvar="ui_errorMessage"/>
 </p>
-<button onclick='Events.pushevent("hide error", event)'>Ok</button>
+<button onclick='Events.pushevent("hide error", event)'><translate>Ok</translate></button>
 </body>
 </rml>

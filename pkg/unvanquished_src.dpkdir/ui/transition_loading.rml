@@ -2,7 +2,6 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<style>
-
 			body {
 				width: 100%;
 				height: 100%;
@@ -95,12 +94,11 @@
 				font-size: 1.5em;
 			}
 		</style>
-		<title>Loading</title>
+		<title><translate>Loading</translate></title>
 	</head>
 	<body id="loading" nohide>
-
 		<div class="levelshot">
-			<levelshot_loading/>
+		<levelshot_loading/>
 		</div>
 
 		<infobox>
@@ -119,6 +117,5 @@
 		<percentage>
 			<progress_value src="overall"/>
 		</percentage>
-
 	</body>
 </rml>

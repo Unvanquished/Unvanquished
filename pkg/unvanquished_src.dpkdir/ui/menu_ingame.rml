@@ -3,7 +3,7 @@
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
 		<link type="text/rcss" href="menu.rcss" />
-		<script src="lua/util.lua" />
+		<script src="lua/util.lua"></script>
 	</head>
 
 	<body id="menu_ingame" class="ingame" onkeydown="detectEscape(event, document)" >
@@ -12,115 +12,115 @@
 		<img class="circles" src="/ui/assets/background/circles2" />
 		<img class="black2" src="/ui/assets/background/black2" />
 
-		<div style="position: absolute; bottom: 1em; left: 1em; color: rgba(255, 0, 0, 200);">This is a beta version of Unvanquished. Please report any issue you may find at https://bugs.unvanquished.net</div>
+		<div style="position: absolute; bottom: 1em; left: 1em; color: rgba(255, 0, 0, 200);"><translate>This is a beta version of Unvanquished. Please report any issue you may find at https://bugs.unvanquished.net</translate></div>
 
 		<sidebar>
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
 				<window id="innersidebar" class="innersidebar" >
 
 					<sidesection  id="sidebar_ingame">
-						<h1> Match menu </h1>
-						<blocklink class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'> Leave match</blocklink>
-						<blocklink class="leftalign" onclick='Events.pushevent("hide menu_ingame", event)'>Resume action</blocklink>
+						<h1><translate>Match menu</translate></h1>
+						<blocklink class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'><translate>Leave match</translate></blocklink>
+						<blocklink class="leftalign" onclick='Events.pushevent("hide menu_ingame", event)'><translate>Resume action</translate></blocklink>
 
-						<h2> Teams </h2>
+						<h2><translate>Teams</translate></h2>
 						<indent>
-							<blocklink onclick='Events.pushevent("exec team alien; hide ingame_menu", event)'> Join aliens</blocklink>
-							<blocklink onclick='Events.pushevent("exec team human;  hide ingame_menu", event)'> Join humans</blocklink>
-							<blocklink onclick='Events.pushevent("exec team spec;  hide ingame_menu", event)'> Spectate </blocklink>
+							<blocklink onclick='Events.pushevent("exec team alien; hide ingame_menu", event)'><translate>Join Aliens</translate></blocklink>
+							<blocklink onclick='Events.pushevent("exec team human; hide ingame_menu", event)'><translate>Join Humans</translate></blocklink>
+							<blocklink onclick='Events.pushevent("exec team spec; hide ingame_menu", event)'><translate>Spectate</translate></blocklink>
 						</indent>
 
-						<h2> Democracy </h2>
+						<h2><translate>Democracy</translate></h2>
 						<indent>
 							<blocklink class="fake">
-								Global vote: <ilink onclick='Events.pushevent("exec vote yes", event)'>yes</ilink> or
-								<ilink onclick='Events.pushevent("exec vote no", event)'>no</ilink>
+								<translate>Global vote:</translate>
+								<ilink onclick='Events.pushevent("exec vote yes", event)'><translate>yes</translate></ilink>
+								<translate>or</translate>
+								<ilink onclick='Events.pushevent("exec vote no", event)'><translate>no</translate></ilink>
 							</blocklink>
 							<blocklink class="fake">
-								Team vote: <ilink onclick='Events.pushevent("exec teamvote yes", event)'>yes</ilink> or
-								<ilink onclick='Events.pushevent("exec teamvote no", event)'>no</ilink>
+								<translate>Team vote:</translate>
+								<ilink onclick='Events.pushevent("exec teamvote yes", event)'><translate>yes</translate></ilink>
+								<translate>or</translate>
+								<ilink onclick='Events.pushevent("exec teamvote no", event)'><translate>no</translate></ilink>
 							</blocklink>
-							<blocklink onclick='Events.pushevent("exec callvote kickbots", event)'> Kick bots </blocklink>
-							<blocklink onclick='Events.pushevent("show callvote_map", event)'> Change map </blocklink>
-							<blocklink onclick='Events.pushevent("exec callvote extend", event)'> Extend timelimit </blocklink>
-							<blocklink onclick='Events.pushevent("show callvote_draw", event)'> Call a draw </blocklink>
-							<blocklink onclick='Events.pushevent("exec callteamvote admitdefeat", event)'> Admit defeat </blocklink>
+							<blocklink onclick='Events.pushevent("exec callvote kickbots", event)'><translate>Kick bots</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show callvote_map", event)'><translate>Change map</translate></blocklink>
+							<blocklink onclick='Events.pushevent("exec callvote extend", event)'><translate>Extend timelimit</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show callvote_draw", event)'><translate>Call a draw</translate></blocklink>
+							<blocklink onclick='Events.pushevent("exec callteamvote admitdefeat", event)'><translate>Admit defeat</translate></blocklink>
 						</indent>
-
 					</sidesection>
 
 					<if cvar="sv_running" condition="==" value="1">
 						<sidesection id="sidebar_host">
-							<h1> Host menu </h1>
-							<blocklink class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'> Stop server </blocklink>
-							<blocklink class="leftalign" onclick='Events.pushevent("exec pause", event)'>Pause server</blocklink>
+							<h1><translate>Host menu</translate></h1>
+							<blocklink class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'><translate>Stop server</translate></blocklink>
+							<blocklink class="leftalign" onclick='Events.pushevent("exec pause", event)'><translate>Pause server</translate></blocklink>
 
-							<h2>Configuration</h2>
+							<h2><translate>Configuration</translate></h2>
 							<indent>
-								<blocklink onclick='Events.pushevent("show server_general", event)'> Server setup </blocklink>
-								<blocklink onclick='Events.pushevent("show server_bots", event)'> Bot settings </blocklink>
+								<blocklink onclick='Events.pushevent("show server_general", event)'><translate>Server setup</translate></blocklink>
+								<blocklink onclick='Events.pushevent("show server_bots", event)'><translate>Bot settings</translate></blocklink>
 							</indent>
 
-							<h2>Map</h2>
+							<h2><translate>Map</translate></h2>
 							<indent>
-								<!-- <blocklink onclick='Events.pushevent("show callvote_map", event)'>Change map</blocklink> -->
-								<blocklink onclick='Events.pushevent("exec layoutLoad default", event)'>Reset match</blocklink>
+								<!-- <blocklink onclick='Events.pushevent("show callvote_map", event)'><translate>Change map</translate></blocklink> -->
+								<blocklink onclick='Events.pushevent("exec layoutLoad default", event)'><translate>Reset match</translate></blocklink>
 							</indent>
 
-							<h2> Bots </h2>
+							<h2><translate>Bots</translate></h2>
 							<indent>
-								<blocklink onclick='Events.pushevent("exec bot add * aliens", event)'> Add an alien bot </blocklink>
-								<blocklink onclick='Events.pushevent("exec bot add * humans", event)'> Add a human bot </blocklink>
-								<blocklink onclick='Events.pushevent("exec bot del all", event)'> Remove all bots </blocklink>
+								<blocklink onclick='Events.pushevent("exec bot add * aliens", event)'><translate>Add an alien bot</translate></blocklink>
+								<blocklink onclick='Events.pushevent("exec bot add * humans", event)'><translate>Add a human bot</translate></blocklink>
+								<blocklink onclick='Events.pushevent("exec bot del all", event)'><translate>Remove all bots</translate></blocklink>
 							</indent>
 
 							<!--
-							<h2> Players </h2>
+							<h2><translate>Players</translate></h2>
 							<indent>
-								<blocklink onclick='Events.pushevent("show server_discipline", event)'>Disclipline: kick/ban/mute/nobuild</blocklink>
+								<blocklink onclick='Events.pushevent("show server_discipline", event)'><translate>Disclipline: kick/ban/mute/nobuild</translate></blocklink>
 							</indent>
 							-->
 						</sidesection>
 					</if>
 
 					<sidesection  id="sidebar_main">
-						<h1> Main Menu </h1>
+						<h1><translate>Main menu</translate></h1>
 
-
-
-						<h2> Play</h2>
+						<h2><translate>Play</translate></h2>
 						<indent>
-							<blocklink onclick='Events.pushevent("show serverbrowser", event)'> Server listings</blocklink>
-							<blocklink onclick='Events.pushevent("show createserver", event)'> Start local/LAN game</blocklink>
-							<!-- <blocklink onclick='Events.pushevent("show demos", event)'> Recorded demos </blocklink> -->
+							<blocklink onclick='Events.pushevent("show serverbrowser", event)'><translate>Server listings</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show createserver", event)'><translate>Start local/LAN game</translate></blocklink>
+							<!-- <blocklink onclick='Events.pushevent("show demos", event)'><translate>Recorded demos</translate></blocklink> -->
 						</indent>
 
-						<h2> Options </h2>
+						<h2><translate>Options</translate></h2>
 						<indent>
-							<blocklink onclick='Events.pushevent("show options_player", event)'> Player </blocklink>
-							<blocklink onclick='Events.pushevent("show options_graphics", event)'> Graphics </blocklink>
-							<blocklink onclick='Events.pushevent("show options_keys", event)'> Key bindings </blocklink>
-							<blocklink onclick='Events.pushevent("show options_mouse", event)'> Mouse and Aiming </blocklink>
-							<blocklink onclick='Events.pushevent("show options_sound", event)'> Sound </blocklink>
-							<blocklink onclick='Events.pushevent("show options_ui", event)'> User interface and HUD </blocklink>
-							<!-- <blocklink onclick='Events.pushevent("show options_fov", event)'> Fields of view </blocklink> -->
+							<blocklink onclick='Events.pushevent("show options_player", event)'><translate>Player</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_graphics", event)'><translate>Graphics</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_keys", event)'><translate>Key bindings</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_mouse", event)'><translate>Mouse and Aiming</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_sound", event)'><translate>Sound</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show options_ui", event)'><translate>User interface and HUD</translate></blocklink>
+							<!-- <blocklink onclick='Events.pushevent("show options_fov", event)'><translate>Fields of view</translate></blocklink> -->
 						</indent>
 
-						<h2> Help </h2>
+						<h2><translate>Help</translate></h2>
 						<indent>
-							<blocklink onclick='Events.pushevent("show help_gameplay", event)'> Gameplay guide </blocklink>
-							<blocklink onclick='Events.pushevent("show help_textentry", event)'> Colour codes and symbols </blocklink>
+							<blocklink onclick='Events.pushevent("show help_gameplay", event)'><translate>Gameplay guide</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show help_textentry", event)'><translate>Colour codes and symbols</translate></blocklink>
 						</indent>
 
 						<br />
 
-						<blocklink class="rightfloat" onclick='Events.pushevent("exec quit", event)'> Quit game</blocklink>
-						<blocklink class="leftalign fake" style="color: #666666;"> Beta <version /></blocklink>
+						<blocklink class="rightfloat" onclick='Events.pushevent("exec quit", event)'><translate>Quit game</translate></blocklink>
+						<blocklink class="leftalign fake" style="color: #666666;">
+							<translate>Beta</translate>&nbsp;<version/>
+						</blocklink>
 					</sidesection>
-
 				</window>
-
 		</sidebar>
-
 	</body>
 </rml>

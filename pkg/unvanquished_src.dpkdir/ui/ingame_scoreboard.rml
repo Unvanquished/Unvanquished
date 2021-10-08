@@ -154,7 +154,7 @@
 	<inlinecvar cvar="ui_winner" class="winner" />
 
 	<half>
-		<teamname> Aliens </teamname>
+		<teamname><translate>Aliens</translate></teamname>
 		<teambox class="alien">
 			<datagrid source="playerList.aliens" id="aliens">
 				<col fields="num" formatter="GearOrReady"></col>
@@ -167,7 +167,7 @@
 	</half>
 
 	<half>
-		<teamname> Humans </teamname>
+		<teamname><translate>Humans</translate></teamname>
 		<teambox class="human">
 			<datagrid source="playerList.humans" id="humans">
 				<col fields="num" formatter="GearOrReady"></col>
@@ -180,15 +180,15 @@
 	</half>
 
 
-	<teamname> Spectators </teamname>
+	<teamname><translate>Spectators</translate></teamname>
 	<teambox class="spec">
 		<datasource  source="playerList.spectators" fields="num" formatter="PlayerName" />
 	</teambox>
 
 	<infoarea>
-		<infopiece style="text-align: left; width: 25em;">   <hostname/> </infopiece>
-		<infopiece style="text-align: center; width: 15em;"> Map: <levelname/>   </infopiece>
-		<infopiece style="text-align: right; width: 7em;">  Time: <timer/>      </infopiece>
+		<infopiece style="text-align: left; width: 25em;"><hostname/></infopiece>
+		<infopiece style="text-align: center; width: 15em;"><translate>Map:</translate>&nbsp;<levelname/></infopiece>
+		<infopiece style="text-align: right; width: 7em;"><translate>Time:</translate>&nbsp;<timer/></infopiece>
 	</infoarea>
 
 </body>

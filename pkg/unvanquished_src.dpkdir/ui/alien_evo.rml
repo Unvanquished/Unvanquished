@@ -92,7 +92,7 @@ tabs {
 	display: none;
 }
 </style>
-<script src="lua/util.lua" />
+<script src="lua/util.lua"></script>
 <script>
 	function ClearEvolveInfo(document)
 		document:GetElementById("e_name").inner_rml = ""
@@ -145,7 +145,11 @@ tabs {
 <div class="circlemenu-circle" id="evolveMenu"/>
 <div class="infobox">
 <h2 id="e_name"></h2>
-<p class="text"><!--Price: --><span id="e_price"/> morph points<br /><span id="e_desc"/></p>
+<p class="text">
+<!--Price: -->
+<!-- FIXME: We may want to include <span id="e_price"/> in the translatable string, maybe with a specific markup to make it easy. -->
+<span id="e_price"/>&nbsp;<translate>morph points</translate>
+<br /><span id="e_desc"/></p>
 </div>
 </panel>
 </tabset>

@@ -4,7 +4,6 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 
 		<style>
-
 			/* TODO: find out why this is a subclass */
 			.levelshot {
 				width: 100%;
@@ -21,36 +20,30 @@
 			button {
 				width: 10em;
 			}
-
 		</style>
-
 	</head>
 	<body id="callvote_map" template="window" style="width: 40em; margin: 1em;" onshow='Events.pushevent("buildDS mapList", event)' >
-		<h1> Change map </h1>
-
+		<h1><translate>Change map</translate></h1>
 
 		<form onsubmit='Events.pushevent("execForm \"$action$ $map$\"; hide", event)'>
 			<row>
 				<select cvar="ui_dialogCvar2" name="action">
-					<option value="callvote nextmap">Vote: change nextmap</option>
-					<option value="callvote map">Vote: set current map</option>
-					<option value="map">Set current map (host) </option>
+					<option value="callvote nextmap"><translate>Vote: change nextmap</translate></option>
+					<option value="callvote map"><translate>Vote: set current map</translate></option>
+					<option value="map"><translate>Set current map (host)</translate></option>
 				</select>
-				<h3> Method </h3>
+				<h3><translate>Method</translate></h3>
 			</row>
 			<row>
 				<dataselect source="mapList.default" fields="mapName" valuefield="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
-				<h3> Map </h3>
+				<h3><translate>Map</translate></h3>
 			</row>
 
-			<input type="submit"> <button> Perform Action </button>  </input>
-
+			<input type="submit"><button><translate>Perform action</translate></button></input>
 		</form>
 
 		<levelshotbox>
-			<levelshot />
+			<levelshot/>
 		</levelshotbox>
-
 	</body>
-
 </rml>

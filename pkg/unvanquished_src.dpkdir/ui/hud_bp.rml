@@ -24,7 +24,8 @@
 </head>
 <body id="hud_bp">
 	<div>
-		<ammo/> build points
+		<!-- FIXME: We may want to include <ammo/> in the translatable string. -->
+		<ammo/>&nbsp;<translate>build points</translate>
 	</div>
 </body>
 </rml>

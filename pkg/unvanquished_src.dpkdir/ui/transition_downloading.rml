@@ -8,7 +8,6 @@
 				height: 100%;
 				background-color: black;
 				z-index: 20; /* Stay ontop of all windows */
-
 			}
 
 			barbox {
@@ -47,24 +46,22 @@
 				font-size: 1.5em;
 				font-weight: bold;
 			}
+
 			div.infobox {
 				font-size: 1.5em;
 				position: absolute;
 				width: 90%;
 				left: 5%;
 				bottom: 10em;
-
 			}
-
 		</style>
 	</head>
 	<body id="download" nohide>
-
 		<div class="infobox">
-			<p>Additional files are required. Please be patient while they download.</p>
-			<p>Time left: <downloadTime/></p>
-			<p>Download rate: <downloadSpeed/></p>
-			<p>Size: <downloadTotalSize/></p>
+			<p><translate>Additional files are required. Please be patient while they download.</translate></p>
+			<p><translate>Time left:</translate>&nbsp;<downloadTime/></p>
+			<p><translate>Download rate:</translate>&nbsp;<downloadSpeed/></p>
+			<p><translate>Size:</translate>&nbsp;<downloadTotalSize/></p>
 			<h1><downloadName/></h1>
 		</div>
 
@@ -75,6 +72,5 @@
 		<barbox>
 			<progressbar src="download" class="barValue"/>
 		</barbox>
-
 	</body>
 </rml>

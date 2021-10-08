@@ -4,16 +4,16 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
 	<body id="options_welcome" template="window" style="width: 32em; margin: 30%; padding:-32em;">
-		<h1> Hello there!</h1>
+		<h1><translate>Hello there!</translate></h1>
 		<!-- GENERAL KENOBI! -->
-		<h2> How should we call you?</h2>
+		<h2><translate>How should we call you?</translate></h2>
 		<row>
 			<colorinput type="text" cvar="name" style="overflow: hidden; white-space: pre;"/>
-			<h3>Nickname</h3>
-			<p>Your name visible to others.</p>
-			<p><ilink onclick='Events.pushevent("show help_textentry", event)'>Colours and symbols</ilink> can be used.</p>
+			<h3><translate>Nickname</translate></h3>
+			<p><translate>Your name visible to others.</translate></p>
+			<p><ilink onclick='Events.pushevent("show help_textentry", event)'><translate>Colours and symbols can be used.</translate></ilink></p>
 		</row>
-		<p>You can change this at any time in the Options.</p>
-		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='document:Hide() Events.pushevent("show serverbrowser", event)'>Select Battlefield</button>
+		<p><translate>You can change this at any time in the options.</translate></p>
+		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='document:Hide() Events.pushevent("show serverbrowser", event)'><translate>Select Battlefield</translate></button>
 	</body>
 </rml>
