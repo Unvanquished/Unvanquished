@@ -542,7 +542,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 					spanHasContent = true;
 					out.Append( spanstr );
 				}
-				out.Append( va( "<img class='trem-emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				out.Append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
 				while ( *iter->Begin() != ']' )
 				{
 					++iter;
