@@ -1498,7 +1498,7 @@ static const struct {
 	bool        adminImmune; // from needing a reason and from being the target
 	bool        quorum;
 	qtrinary        reasonNeeded;
-	const vmCvar_t *percentage;
+	Cvar::Cvar<int> *percentage;
 	int             special;
 	const vmCvar_t *specialCvar;
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be true)
@@ -1626,7 +1626,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			if ( ( team == TEAM_NONE && voteInfo[voteId].type != V_TEAM   ) ||
 			     ( team != TEAM_NONE && voteInfo[voteId].type != V_PUBLIC ) )
 			{
-				if ( !voteInfo[voteId].percentage || voteInfo[voteId].percentage->integer > 0 )
+				if ( !voteInfo[voteId].percentage || voteInfo[voteId].percentage->Get() > 0 )
 				{
 					Q_strcat( cmd, sizeof( cmd ), va( "%s%s", added ? ", " : "", voteInfo[voteId].name ) );
 					added = true;
@@ -1651,7 +1651,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	}
 
 	int voteThreshold = voteInfo[voteId].percentage ?
-		voteInfo[voteId].percentage->integer : 50;
+		voteInfo[voteId].percentage->Get() : 50;
 	if ( voteThreshold <= 0 || isDisabledVoteType(vote) )
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled") ), voteInfo[voteId].name ) );

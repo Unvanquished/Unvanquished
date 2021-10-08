@@ -79,18 +79,18 @@ vmCvar_t           g_logGameplayStatsFrequency;
 vmCvar_t           g_logFileSync;
 vmCvar_t           g_allowVote;
 vmCvar_t           g_voteLimit;
-vmCvar_t           g_extendVotesPercent;
+Cvar::Cvar<int> g_extendVotesPercent("g_extendVotesPercent", "percentage required for extend timelimit vote", Cvar::NONE, 74);
 vmCvar_t           g_extendVotesTime;
-vmCvar_t           g_kickVotesPercent;
-vmCvar_t           g_denyVotesPercent;
-vmCvar_t           g_mapVotesPercent;
+Cvar::Cvar<int> g_kickVotesPercent("g_kickVotesPercent", "percentage required for votes to remove players", Cvar::NONE, 51);
+Cvar::Cvar<int> g_denyVotesPercent("g_denyVotesPercent", "percentage required for votes to strip/reinstate a player's chat/build privileges", Cvar::NONE, 51);
+Cvar::Cvar<int> g_mapVotesPercent("g_mapVotesPercent", "percentage required for map changing votes", Cvar::NONE, 51);
 vmCvar_t           g_mapVotesBefore;
-vmCvar_t           g_drawVotesPercent;
+Cvar::Cvar<int> g_drawVotesPercent("g_drawVotesPercent", "percentage required for draw vote", Cvar::NONE, 51);
 vmCvar_t           g_drawVotesAfter;
 vmCvar_t           g_drawVoteReasonRequired;
-vmCvar_t           g_admitDefeatVotesPercent;
-vmCvar_t           g_nextMapVotesPercent;
-vmCvar_t           g_pollVotesPercent;
+Cvar::Cvar<int> g_admitDefeatVotesPercent("g_admitDefeatVotesPercent", "percentage required for admitdefeat vote", Cvar::NONE, 74);
+Cvar::Cvar<int> g_nextMapVotesPercent("g_nextMapVotesPercent", "percentage required for nextmap vote", Cvar::NONE, 51);
+Cvar::Cvar<int> g_pollVotesPercent("g_pollVotesPercent", "percentage required for a poll to 'pass'", Cvar::NONE, 0);
 
 vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
@@ -339,18 +339,10 @@ static cvarTable_t gameCvarTable[] =
 	// clients: voting
 	{ &g_allowVote,                   "g_allowVote",                   "1",                                0,                                               0, false },
 	{ &g_voteLimit,                   "g_voteLimit",                   "5",                                0,                                               0, false },
-	{ &g_extendVotesPercent,          "g_extendVotesPercent",          "74",                               0,                                               0, false },
 	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               0,                                               0, false },
-	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "51",                               0,                                               0, true  },
-	{ &g_denyVotesPercent,            "g_denyVotesPercent",            "51",                               0,                                               0, true  },
-	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "51",                               0,                                               0, true  },
 	{ &g_mapVotesBefore,              "g_mapVotesBefore",              "5",                                0,                                               0, true  },
-	{ &g_nextMapVotesPercent,         "g_nextMapVotesPercent",         "51",                               0,                                               0, true  },
-	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "51",                               0,                                               0, true  },
 	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                0,                                               0, true  },
 	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                0,                                               0, true  },
-	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               0,                                               0, true  },
-	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                0,                                               0, true  },
 
 	// clients: misc
 	{ &g_geoip,                       "g_geoip",                       "1",                                0,                                               0, false },
