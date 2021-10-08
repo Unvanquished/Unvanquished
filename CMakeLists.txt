@@ -110,6 +110,11 @@ if (BUILD_SGAME)
                         ${LIB_DIR}/recastnavigation/DetourCrowd/Include)
 endif()
 
+add_library(srclibs-tinygettext EXCLUDE_FROM_ALL ${TINYGETTEXTLIST})
+set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+target_include_directories(srclibs-tinygettext PUBLIC ${LIB_DIR}/tinygettext/include)
+target_compile_definitions(srclibs-tinygettext PUBLIC TINYGETTEXT_UTF8_ONLY)
+
 # Warning options
 # keep
 try_flag(WARNINGS           "/wd4068")
@@ -163,5 +168,6 @@ if (BUILD_CGAME)
         ROCKET_LIB
         ${FREETYPE_LIBRARIES}
         ${LUA_LIBRARY}
+        srclibs-tinygettext
   )
 endif()

@@ -2284,6 +2284,12 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name );
 void CG_LoadArenas();
 
 //
+// translation.cpp
+//
+void Trans_Init();
+void Trans_UpdateLanguage_f();
+
+//
 // Rocket Functions
 //
 void Rocket_Init();

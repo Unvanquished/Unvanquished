@@ -3028,15 +3028,15 @@ bool G_admin_adjustban( gentity_t *ent )
 	               ban->expires ? ban->expires - time : 0, ban->guid, ban->name, ban->reason,
 	               ban->ip.str ) );
 	AP( va( "print_tr %s %d %s %s %s %s %s %s %s %s %s", QQ( N_("^3adjustban:^* ban #$1$ for $2$^* has been updated by $3$^* "
-	        "$4t$$5$$6$$7t$$8$$9t$$10$") ),
+	        "$4$$5t$$6$$7t$$8$$9t$$10$") ),
 	        bnum,
 	        Quote( ban->name ),
 	        G_quoted_admin_name( ent ),
 	        ( mask ) ? Quote( va( "netmask: /%d%s", mask, ( length >= 0 || *reason ) ? ", " : "" ) ) : "",
-		( length >= 0 ) ? QQ( "duration: " ) : "",
+		( length >= 0 ) ? QQ( N_( "duration: " ) ) : "",
 		Quote( seconds ), duration,
 		( length >= 0 && *reason ) ? ", " : "",
-		( *reason ) ? QQ("reason: ") : "",
+		( *reason ) ? QQ( N_( "reason: ") ) : "",
 		Quote( reason ) ) );
 
 	if ( ent )
@@ -3293,7 +3293,7 @@ bool G_admin_changemap( gentity_t *ent )
 	AP( va( "print_tr %s %s %s %s %s %s", QQ( N_("^3changemap:^* map '$1$' started by $2$^* $3t$$4$$5$") ),
 		Quote( map ),
 	        G_quoted_admin_name( ent ),
-	        ( layout[ 0 ] ) ? QQ( "(forcing layout '") : "" ,
+	        ( layout[ 0 ] ) ? QQ( N_( "(forcing layout '") ) : "" ,
 			( layout[ 0 ] ) ? Quote( layout ) : "",
 			( layout[ 0 ] ) ? QQ( "')" ) : "" ) );
 	return true;
@@ -4401,7 +4401,7 @@ bool G_admin_restart( gentity_t *ent )
 	trap_SendConsoleCommand( "map_restart" );
 	G_MapLog_Result( 'R' );
 
-	AP( va( "print_tr %s %s %s %s %s %s %s %s", QQ( N_("^3restart:^* map restarted by $1$ $2$$3t$$4$$5$$6t$$7$") ),
+	AP( va( "print_tr %s %s %s %s %s %s %s %s", QQ( N_("^3restart:^* map restarted by $1$ $2t$$3$$4$$5t$$6$$7$") ),
 	        G_quoted_admin_name( ent ),
 	        ( layout[ 0 ] ) ? QQ( N_( "^7(forcing layout '" ) ) : "",
 			( layout[ 0 ] ) ? Quote( layout ) : "",
@@ -5568,6 +5568,7 @@ void G_admin_print_plural( gentity_t *ent, Str::StringRef m, int number )
  These function facilitates the ADMBP* defines, and output is as for ADMP().
 
  The supplied text is raw; it will be quoted but not marked translatable.
+ FIXME: it actually is marked translatable (print_tr is used) but shouldn't be
 ================
 */
 void G_admin_buffer_begin()

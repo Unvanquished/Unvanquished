@@ -34,15 +34,14 @@ typedef rectDef_t Rectangle;
 // Translation
 //
 
-#define _( text )              Gettext( text )
+#define _( text )              Trans_Gettext( text )
 #define N_( text )             text
-#define C_( ctxt, text )       Pgettext( ctxt, text )
-#define G_( text )             Pgettext( Trans_GenderContext( gender ), text )
-#define P_( one, many, count ) GettextPlural( (one), (many), (count) )
+#define G_( text )             Trans_Pgettext( Trans_GenderContext( gender ), text )
+#define P_( one, many, count ) Trans_GettextPlural( (one), (many), (count) )
 
-const char *Gettext( const char *msgid ) PRINTF_TRANSLATE_ARG(1);
-const char *Pgettext( const char *ctxt, const char *msgid ) PRINTF_TRANSLATE_ARG(2);
-const char *GettextPlural( const char *msgid, const char *msgid2, int number ) PRINTF_TRANSLATE_ARG(1) PRINTF_TRANSLATE_ARG(1);
+const char* Trans_Gettext( const char *msgid ) PRINTF_TRANSLATE_ARG(1);
+const char* Trans_Pgettext( const char *ctxt, const char *msgid ) PRINTF_TRANSLATE_ARG(2);
+const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) PRINTF_TRANSLATE_ARG(1);
 
 //
 // Parsing

@@ -513,6 +513,7 @@ static const struct
 	{ "testTS",           CG_TestTS_f,             0                },
 	{ "toggleMenu",       CG_ToggleMenu_f,         0                },
 	{ "unignore",         0,                       CG_CompleteName  },
+	{ "updatelanguage",   Trans_UpdateLanguage_f,  0                },
 	{ "viewpos",          CG_Viewpos_f,            0                },
 	{ "vote",             0,                       0                },
 	{ "vsay",             0,                       CG_CompleteVsay  },

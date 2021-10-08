@@ -20,6 +20,27 @@ set(FASTLZLIST
     ${LIB_DIR}/fastlz/fastlz.c
 )
 
+set(TINYGETTEXTLIST
+    ${LIB_DIR}/tinygettext/include/tinygettext/dictionary.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/dictionary_manager.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/file_system.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/iconv.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/language.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/log.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/log_stream.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/plural_forms.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/po_parser.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/tinygettext.hpp
+    ${LIB_DIR}/tinygettext/include/tinygettext/unix_file_system.hpp
+    ${LIB_DIR}/tinygettext/src/dictionary.cpp
+    ${LIB_DIR}/tinygettext/src/dictionary_manager.cpp
+    ${LIB_DIR}/tinygettext/src/iconv.cpp
+    ${LIB_DIR}/tinygettext/src/language.cpp
+    ${LIB_DIR}/tinygettext/src/log.cpp
+    ${LIB_DIR}/tinygettext/src/plural_forms.cpp
+    ${LIB_DIR}/tinygettext/src/po_parser.cpp
+)
+
 set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_alloc.cpp
     ${GAMELOGIC_DIR}/shared/bg_gameplay.h
@@ -80,6 +101,7 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/cg_utils.cpp
     ${GAMELOGIC_DIR}/cgame/cg_view.cpp
     ${GAMELOGIC_DIR}/cgame/cg_weapons.cpp
+    ${GAMELOGIC_DIR}/cgame/translation.cpp
     ${GAMELOGIC_DIR}/cgame/Filter.h
     ${GAMELOGIC_DIR}/cgame/CombatFeedback.cpp
 

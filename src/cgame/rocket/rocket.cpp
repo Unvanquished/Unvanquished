@@ -119,13 +119,6 @@ public:
 		return trap_Milliseconds() / 1000.0f;
 	}
 
-	int TranslateString( Rocket::Core::String &translated, const Rocket::Core::String &input )
-	{
-		const char* ret = _( input.CString() );
-		translated = ret;
-		return 0;
-	}
-
 	// TODO: Add explicit support for other log types
 	bool LogMessage( Rocket::Core::Log::Type type, const Rocket::Core::String &message )
 	{
