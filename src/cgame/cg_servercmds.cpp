@@ -288,21 +288,6 @@ static void CG_ConfigStringModified()
 	{
 		cgs.voteTime[ num - CS_VOTE_TIME ] = atoi( str );
 		cgs.voteModified[ num - CS_VOTE_TIME ] = true;
-
-		if ( num - CS_VOTE_TIME == TEAM_NONE )
-		{
-			trap_Cvar_Set( "ui_voteActive", cgs.voteTime[ TEAM_NONE ] ? "1" : "0" );
-		}
-		else if ( num - CS_VOTE_TIME == TEAM_ALIENS )
-		{
-			trap_Cvar_Set( "ui_alienTeamVoteActive",
-			               cgs.voteTime[ TEAM_ALIENS ] ? "1" : "0" );
-		}
-		else if ( num - CS_VOTE_TIME == TEAM_HUMANS )
-		{
-			trap_Cvar_Set( "ui_humanTeamVoteActive",
-			               cgs.voteTime[ TEAM_HUMANS ] ? "1" : "0" );
-		}
 	}
 	else if ( num >= CS_VOTE_YES && num < CS_VOTE_YES + NUM_TEAMS )
 	{
@@ -707,10 +692,6 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		case MN_A_INFEST:
-			trap_Cvar_Set( "ui_currentClass",
-			               va( "%d %d", cg.snap->ps.stats[ STAT_CLASS ],
-			                   cg.snap->ps.persistant[ PERS_CREDIT ] ) );
-
 			menu = ROCKETMENU_ALIENEVOLVE;
 			break;
 

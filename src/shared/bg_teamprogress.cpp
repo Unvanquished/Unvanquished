@@ -361,9 +361,6 @@ void BG_ImportUnlockablesFromMask( int team, int mask )
 	{
 		InformUnlockableStatusChanges( statusChanges, statusChangeCount );
 	}
-
-	// export team and mask into cvar for UI
-	trap_Cvar_Set( "ui_unlockables", va( "%d %d", team, mask ) );
 #endif
 
 	// we only know the state for one team

@@ -61,9 +61,6 @@ extern  Cvar::Range<Cvar::Cvar<int>> g_gravity;
 extern  vmCvar_t g_speed;
 extern  vmCvar_t g_inactivity;
 extern  vmCvar_t g_debugMove;
-extern  vmCvar_t g_debugDamage;
-extern  vmCvar_t g_debugKnockback;
-extern  vmCvar_t g_debugTurrets;
 extern  vmCvar_t g_debugFire;
 extern  vmCvar_t g_motd;
 extern  vmCvar_t g_warmup;
@@ -194,15 +191,9 @@ extern vmCvar_t g_bot_level4;
 
 // misc bot cvars
 extern vmCvar_t g_bot_attackStruct;
-extern vmCvar_t g_bot_build;
-extern vmCvar_t g_bot_repair;
 extern vmCvar_t g_bot_fov;
 extern vmCvar_t g_bot_chasetime;
 extern vmCvar_t g_bot_reactiontime;
 extern vmCvar_t g_bot_infinite_funds;
-extern vmCvar_t g_bot_numInGroup;
-extern vmCvar_t g_bot_persistent;
-extern vmCvar_t g_bot_buildLayout;
-extern vmCvar_t g_bot_debug;
 
 #endif // SG_EXTERN_H_
