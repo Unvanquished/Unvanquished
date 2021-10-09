@@ -1372,7 +1372,7 @@ static void CG_ServerCommand()
 		return;
 	}
 
-	Log::Warn(_( "Unknown client game command: %s"), cmd );
+	Log::Warn("Unknown client game command: %s", cmd );
 }
 
 /*
