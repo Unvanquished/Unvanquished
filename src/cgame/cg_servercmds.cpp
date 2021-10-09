@@ -723,7 +723,7 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		default:
-			Log::Notice(_( "cgame: debug: No such menu %d"), menu );
+			Log::Warn("No such menu %d", menu );
 	}
 
 	if ( menu > 0 )
