@@ -3369,12 +3369,12 @@ static void CG_Rocket_DrawSpawnQueuePosition()
 
 	if ( position == 1 )
 	{
-		s = va( _( "You are at the front of the spawn queue" ) );
+		s = va( _( "You are at the front of the spawn queue." ) );
 	}
 
 	else
 	{
-		s = va( _( "You are at position %d in the spawn queue" ), position );
+		s = va( _( "You are at position %d in the spawn queue." ), position );
 	}
 
 	Rocket_SetInnerRML( s, 0 );

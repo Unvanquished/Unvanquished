@@ -2898,7 +2898,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 		//are we /allowed/ to sell this?
 		if ( !BG_Weapon( weapon )->purchasable )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this weapon") "\"" );
+			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this weapon.") "\"" );
 			return false;
 		}
 
@@ -2931,7 +2931,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 		//are we /allowed/ to sell this?
 		if ( !BG_Upgrade( upgrade )->purchasable )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this item") "\"" );
+			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this item.") "\"" );
 			return false;
 		}
 
@@ -3221,11 +3221,11 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 	return false;
 
 cant_buy:
-	trap_SendServerCommand( ent - g_entities, va( "print_tr \"" N_("You can't buy this item ($1$)") "\" %s", Quote( s ) ) );
+	trap_SendServerCommand( ent - g_entities, va( "print_tr \"" N_("You can't buy this item ($1$).") "\" %s", Quote( s ) ) );
 	return false;
 
 not_alien:
-	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items") "\"" );
+	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items.") "\"" );
 	return false;
 }
 
@@ -4315,7 +4315,7 @@ int G_FloodLimited( gentity_t *ent )
 	}
 
 	trap_SendServerCommand( ent - g_entities, va( "print_tr %s %d", QQ( N_("You are flooding: "
-	                        "please wait $1$s before trying again") ),
+	                        "please wait $1$s before trying again.") ),
 	                        ( ms + 999 ) / 1000 ) );
 	return ms;
 }
