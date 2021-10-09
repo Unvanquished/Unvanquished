@@ -1816,7 +1816,7 @@ void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 }
 void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 {
-	if ( upgrade == UP_NONE )
+	if ( upgrade != UP_LIGHTARMOUR && upgrade != UP_MEDIUMARMOUR && upgrade != UP_BATTLESUIT )
 	{
 		return;
 	}
@@ -1878,6 +1878,8 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 				return;
 			}
 			break;
+		default:
+			ASSERT_UNREACHABLE();
 	}
 
 	//add to inventory
