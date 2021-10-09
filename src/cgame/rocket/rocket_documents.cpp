@@ -39,6 +39,7 @@ Maryland 20850 USA.
 
 void Rocket_LoadDocument( const char *path )
 {
+	Log::Debug( "Loading '%s' as RML document", path );
 	Rml::Core::ElementDocument* document = menuContext->LoadDocument( path );
 	Rml::Core::ElementDocument* other;
 
