@@ -844,7 +844,7 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		     g_minNameChangePeriod.value * 1000 )
 		{
 			trap_SendServerCommand( ent - g_entities, va(
-			                          "print_tr %s %d", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$)") ),
+			                          "print_tr %s %d", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$).") ),
 			                          g_minNameChangePeriod.integer ) );
 			revertName = true;
 		}
@@ -852,19 +852,19 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		          client->pers.namelog->nameChanges >= g_maxNameChanges.integer )
 		{
 			trap_SendServerCommand( ent - g_entities, va(
-			                          "print_tr %s %d", QQ( N_("Maximum name changes reached (g_maxNameChanges = $1$)") ),
+			                          "print_tr %s %d", QQ( N_("Maximum name changes reached (g_maxNameChanges = $1$).") ),
 			                          g_maxNameChanges.integer ) );
 			revertName = true;
 		}
 		else if ( !forceName && client->pers.namelog->muted )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s", QQ( N_("You cannot change your name while you are muted") ) ) );
+			                        va( "print_tr %s", QQ( N_("You cannot change your name while you are muted.") ) ) );
 			revertName = true;
 		}
 		else if ( !G_admin_name_check( ent, newname, err, sizeof( err ) ) )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( "$1t$ $2$" ), Quote( err ), Quote( newname ) ) );
+			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( "$1t$ $2$." ), Quote( err ), Quote( newname ) ) );
 			revertName = true;
 		}
 		else if ( Q_UTF8_Strlen( newname ) > MAX_NAME_CHARACTERS )
@@ -1152,7 +1152,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 			if ( !G_ClientIsLagging( level.clients + i ) )
 			{
 				G_LogPrintf( "Duplicate GUID: %i", i );
-				trap_SendServerCommand( i, "cp \"Your GUID is not secure\"" );
+				trap_SendServerCommand( i, "cp \"Your GUID is not secure.\"" );
 				G_LogPrintf( "FailedConnecting: %i [%s] (%s) \"%s^*\" \"%s^*\"",
 				             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 				             client->pers.netname,
@@ -1198,12 +1198,12 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	{
 		if ( g_geoip.integer && country && *country )
 		{
-			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^* connected from $2$") ),
+			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^* connected from $2$.") ),
 			                                Quote( client->pers.netname ), Quote( country ) ) );
 		}
 		else
 		{
-			trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* connected") ),
+			trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* connected.") ),
 			                                Quote( client->pers.netname ) ) );
 		}
 	}
@@ -1285,7 +1285,7 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* connected") ),
+		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* connected.") ),
 		                                Quote( client->pers.netname ) ) );
 	}
 
@@ -1352,7 +1352,7 @@ void ClientBegin( int clientNum )
 	// locate ent at a spawn point
 	ClientSpawn( ent, nullptr, nullptr, nullptr );
 
-	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* entered the game") ), Quote( client->pers.netname ) ) );
+	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* entered the game.") ), Quote( client->pers.netname ) ) );
 
 	trap_Cvar_VariableStringBuffer( "g_mapStartupMessage", startMsg, sizeof( startMsg ) );
 

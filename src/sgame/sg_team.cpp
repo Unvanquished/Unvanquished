@@ -325,7 +325,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	Beacon::PropagateAll( );
 
-	G_LogPrintf( "ChangeTeam: %d %s: %s^* switched teams",
+	G_LogPrintf( "ChangeTeam: %d %s: %s^* switched teams.",
 	             ( int )( ent - g_entities ), BG_TeamName( newTeam ), ent->client->pers.netname );
 
 	G_namelog_update_score( ent->client );

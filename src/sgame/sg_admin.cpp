@@ -663,7 +663,7 @@ bool G_admin_permission( gentity_t *ent, const char *flag )
 
 	if ( ent->client->pers.admin && ent->client->pers.pubkey_authenticated != 1 )
 	{
-		CP( "cp_tr " QQ(N_("^1You are not pubkey authenticated")) "" );
+		CP( "cp_tr " QQ(N_("^1You are not pubkey authenticated.")) "" );
 		return false;
 	}
 
@@ -2209,7 +2209,7 @@ bool G_admin_time( gentity_t *ent )
 			timelimit = std::min( 6 * 60, std::max( 0, timelimit ) );
 			if ( timelimit != level.timelimit )
 			{
-				AP( va( "print_tr %s %d %d %s", QQ( N_("^3time:^* time limit set to $1$m from $2$m by $3$") ),
+				AP( va( "print_tr %s %d %d %s", QQ( N_("^3time:^* time limit set to $1$m from $2$m by $3$.") ),
 				        timelimit, level.timelimit, G_quoted_admin_name( ent ) ) );
 				level.timelimit = timelimit;
 				// reset 'time remaining' warnings
@@ -2333,7 +2333,7 @@ bool G_admin_setlevel( gentity_t *ent )
 	               a->name ) );
 
 	AP( va(
-	      "print_tr %s %s %d %s", QQ( N_("^3setlevel:^* $1$^* was given level $2$ admin rights by $3$") ),
+	      "print_tr %s %s %d %s", QQ( N_("^3setlevel:^* $1$^* was given level $2$ admin rights by $3$.") ),
 	      Quote( a->name ), a->level, G_quoted_admin_name( ent ) ) );
 
 	G_admin_writeconfig();
@@ -2742,7 +2742,7 @@ bool G_admin_ban( gentity_t *ent )
 	                  duration, sizeof( duration ) );
 
 	AP( va( "print_tr %s %s %s %s %s %s", QQ( N_("^3ban:^* $1$^* has been banned by $2$^*; "
-	        "duration: $3$$4t$, reason: $5t$") ),
+	        "duration: $3$$4t$, reason: $5t$.") ),
 	        Quote( match->name[ match->nameOffset ] ),
 	        G_quoted_admin_name( ent ),
 	        Quote( time ), duration,
@@ -2846,14 +2846,14 @@ bool G_admin_unban( gentity_t *ent )
 
 	if ( expireOnly )
 	{
-		AP( va( "print_tr %s %d %s %s", QQ( N_("^3unban:^* ban #$1$ for $2$^* has been expired by $3$") ),
+		AP( va( "print_tr %s %d %s %s", QQ( N_("^3unban:^* ban #$1$ for $2$^* has been expired by $3$.") ),
 		        bnum, Quote( ban->name ), G_quoted_admin_name( ent ) ) );
 
 		ban->expires = time;
 	}
 	else
 	{
-		AP( va( "print_tr %s %d %s %s", QQ( N_("^3unban:^* ban #$1$ for $2$^* has been removed by $3$") ),
+		AP( va( "print_tr %s %d %s %s", QQ( N_("^3unban:^* ban #$1$ for $2$^* has been removed by $3$.") ),
 		        bnum, Quote( ban->name ), G_quoted_admin_name( ent ) ) );
 
 		if ( p == ban )
@@ -3028,7 +3028,7 @@ bool G_admin_adjustban( gentity_t *ent )
 	               ban->expires ? ban->expires - time : 0, ban->guid, ban->name, ban->reason,
 	               ban->ip.str ) );
 	AP( va( "print_tr %s %d %s %s %s %s %s %s %s %s %s", QQ( N_("^3adjustban:^* ban #$1$ for $2$^* has been updated by $3$^* "
-	        "$4$$5t$$6$$7t$$8$$9t$$10$") ),
+	        "$4$$5t$$6$$7t$$8$$9t$$10$.") ),
 	        bnum,
 	        Quote( ban->name ),
 	        G_quoted_admin_name( ent ),
@@ -3104,7 +3104,7 @@ bool G_admin_putteam( gentity_t *ent )
 	               vic->client->pers.netname ) );
 	G_ChangeTeam( vic, teamnum );
 
-	AP( va( "print_tr %s %s %s %s", QQ( N_("^3putteam:^* $1$^* put $2$^* on to the $3$ team") ),
+	AP( va( "print_tr %s %s %s %s", QQ( N_("^3putteam:^* $1$^* put $2$^* on to the $3$ team.") ),
 	        G_quoted_admin_name( ent ),
 	        Quote( vic->client->pers.netname ), BG_TeamName( teamnum ) ) );
 	return true;
@@ -3186,13 +3186,13 @@ bool G_admin_speclock( gentity_t *ent )
 	if ( vic->client->pers.team != TEAM_NONE )
 	{
 		G_ChangeTeam( vic, TEAM_NONE );
-		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock:^* $1$^* put $2$^* on to the spectators team and blocked team-change for $3$$4t$") ),
+		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock:^* $1$^* put $2$^* on to the spectators team and blocked team-change for $3$$4t$.") ),
 		        G_quoted_admin_name( ent ),
 		        Quote( vic->client->pers.netname ), Quote( time ), duration ) );
 	}
 	else
 	{
-		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock:^* $1$^* blocked team-change for $2$^* for $3$$4t$") ),
+		AP( va( "print_tr %s %s %s %s %s", QQ( N_("^3speclock:^* $1$^* blocked team-change for $2$^* for $3$$4t$.") ),
 		        G_quoted_admin_name( ent ),
 		        Quote( vic->client->pers.netname ), Quote( time ), duration ) );
 	}
@@ -3239,7 +3239,7 @@ bool G_admin_specunlock( gentity_t *ent )
 		spec->expires = 0;
 		admin_log( va( "%d (%s) \"%s^*\" SPECTATE -", pid, vic->client->pers.guid,
 			               vic->client->pers.netname ) );
-			AP( va( "print_tr %s %s %s", QQ( N_("^3specunlock:^* $1$^* unblocked team-change for $2$") ),
+			AP( va( "print_tr %s %s %s", QQ( N_("^3specunlock:^* $1$^* unblocked team-change for $2$.") ),
 			        G_quoted_admin_name( ent ),
 			        Quote( vic->client->pers.netname ) ) );
 	}
@@ -3290,7 +3290,7 @@ bool G_admin_changemap( gentity_t *ent )
 
 	level.restarted = true;
 	G_MapLog_Result( 'M' );
-	AP( va( "print_tr %s %s %s %s %s %s", QQ( N_("^3changemap:^* map '$1$' started by $2$^* $3t$$4$$5$") ),
+	AP( va( "print_tr %s %s %s %s %s %s", QQ( N_("^3changemap:^* map '$1$' started by $2$^* $3t$$4$$5$.") ),
 		Quote( map ),
 	        G_quoted_admin_name( ent ),
 	        ( layout[ 0 ] ) ? QQ( N_( "(forcing layout '") ) : "" ,
@@ -3343,9 +3343,9 @@ bool G_admin_warn( gentity_t *ent )
 		vic->client->pers.hasWarnings = true;
 	}
 
-	CPx( pids[ 0 ], va( "cp_tr " QQ(N_("^1You have been warned by an administrator:\n^3$1$")) " %s",
+	CPx( pids[ 0 ], va( "cp_tr " QQ(N_("^1You have been warned by an administrator:\n^3$1$.")) " %s",
 	                    Quote( reason ) ) );
-	AP( va( "print_tr %s %s %s %s", QQ( N_("^3warn:^* $1$^* has been warned: '$2$' by $3$") ),
+	AP( va( "print_tr %s %s %s %s", QQ( N_("^3warn:^* $1$^* has been warned: '$2$' by $3$.") ),
 	        Quote( vic->client->pers.netname ),
 	        Quote( reason ),
 	        G_quoted_admin_name( ent ) ) );
@@ -3395,10 +3395,10 @@ bool G_admin_mute( gentity_t *ent )
 
 		if ( vic->slot > -1 )
 		{
-			CPx( vic->slot, "cp_tr " QQ(N_("^1You have been unmuted")) );
+			CPx( vic->slot, "cp_tr " QQ(N_("^1You have been unmuted.")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3unmute:^* $1$^* has been unmuted by $2$") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3unmute:^* $1$^* has been unmuted by $2$.") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -3414,10 +3414,10 @@ bool G_admin_mute( gentity_t *ent )
 
 		if ( vic->slot > -1 )
 		{
-			CPx( vic->slot, "cp_tr " QQ(N_("^1You've been muted")) );
+			CPx( vic->slot, "cp_tr " QQ(N_("^1You've been muted.")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3mute:^* $1$^* has been muted by $2$") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3mute:^* $1$^* has been muted by $2$.") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -3471,10 +3471,10 @@ bool G_admin_denybuild( gentity_t *ent )
 
 		if ( vic->slot > -1 )
 		{
-			CPx( vic->slot, "cp_tr " QQ(N_("^1You've regained your building rights")) );
+			CPx( vic->slot, "cp_tr " QQ(N_("^1You've regained your building rights.")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3allowbuild:^* building rights for ^7$1$^* restored by $2$") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3allowbuild:^* building rights for ^7$1$^* restored by $2$.") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -3491,10 +3491,10 @@ bool G_admin_denybuild( gentity_t *ent )
 		if ( vic->slot > -1 )
 		{
 			level.clients[ vic->slot ].ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-			CPx( vic->slot, "cp_tr " QQ(N_("^1You've lost your building rights")) );
+			CPx( vic->slot, "cp_tr " QQ(N_("^1You've lost your building rights.")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3denybuild:^* building rights for ^7$1$^* revoked by $2$") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3denybuild:^* building rights for ^7$1$^* revoked by $2$.") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -4094,7 +4094,7 @@ bool G_admin_admintest( gentity_t *ent )
 
 	l = G_admin_level( ent->client->pers.admin ? ent->client->pers.admin->level : 0 );
 
-	AP( va( "print_tr %s %s %d %s %s %s", QQ( N_("^3admintest:^* $1$^* is a level $2$ admin $3$$4$^7$5$") ),
+	AP( va( "print_tr %s %s %d %s %s %s", QQ( N_("^3admintest:^* $1$^* is a level $2$ admin $3$$4$^7$5$.") ),
 	        Quote( ent->client->pers.netname ),
 	        l ? l->level : 0,
 	        l ? "(" : "",
@@ -4131,7 +4131,7 @@ bool G_admin_allready( gentity_t *ent )
 		cl->readyToExit = true;
 	}
 
-	AP( va( "print_tr %s %s", QQ( N_("^3allready:^* $1$^* says everyone is READY now") ),
+	AP( va( "print_tr %s %s", QQ( N_("^3allready:^* $1$^* says everyone is READY now.") ),
 	        G_quoted_admin_name( ent ) ) );
 	return true;
 }
@@ -4160,8 +4160,8 @@ bool G_admin_endvote( gentity_t *ent )
 		return false;
 	}
 
-	msg = va( "print_tr %s %s %s", cancel ? QQ( N_("^3$1$:^* $2$^* decided that everyone voted No") ) :
-		QQ( N_("^3$1$:^* $2$^* decided that everyone voted Yes") ),
+	msg = va( "print_tr %s %s %s", cancel ? QQ( N_("^3$1$:^* $2$^* decided that everyone voted No.") ) :
+		QQ( N_("^3$1$:^* $2$^* decided that everyone voted Yes.") ),
 			  command, G_quoted_admin_name( ent ) );
 
 	if ( !level.team[ team ].voteTime )
@@ -4217,7 +4217,7 @@ bool G_admin_spec999( gentity_t *ent )
 		if ( vic->client->ps.ping == 999 )
 		{
 			G_ChangeTeam( vic, TEAM_NONE );
-			AP( va( "print_tr %s %s %s", QQ( N_("^3spec999:^* $1$^* moved $2$^* to spectators") ),
+			AP( va( "print_tr %s %s %s", QQ( N_("^3spec999:^* $1$^* moved $2$^* to spectators.") ),
 			        G_quoted_admin_name( ent ),
 			        Quote( vic->client->pers.netname ) ) );
 		}
@@ -4275,7 +4275,7 @@ bool G_admin_rename( gentity_t *ent )
 	               victim->client->pers.guid, victim->client->pers.netname ) );
 	admin_log( newname );
 	trap_GetUserinfo( pid, userinfo, sizeof( userinfo ) );
-	AP( va( "print_tr %s %s %s %s", QQ( N_("^3rename:^* $1$^* has been renamed to $2$^* by $3$") ),
+	AP( va( "print_tr %s %s %s %s", QQ( N_("^3rename:^* $1$^* has been renamed to $2$^* by $3$.") ),
 	        Quote( victim->client->pers.netname ),
 	        Quote( newname ),
 	        G_quoted_admin_name( ent ) ) );
@@ -4401,7 +4401,7 @@ bool G_admin_restart( gentity_t *ent )
 	trap_SendConsoleCommand( "map_restart" );
 	G_MapLog_Result( 'R' );
 
-	AP( va( "print_tr %s %s %s %s %s %s %s %s", QQ( N_("^3restart:^* map restarted by $1$ $2t$$3$$4$$5t$$6$$7$") ),
+	AP( va( "print_tr %s %s %s %s %s %s %s %s", QQ( N_("^3restart:^* map restarted by $1$ $2t$$3$$4$$5t$$6$$7$.") ),
 	        G_quoted_admin_name( ent ),
 	        ( layout[ 0 ] ) ? QQ( N_( "^7(forcing layout '" ) ) : "",
 			( layout[ 0 ] ) ? Quote( layout ) : "",
@@ -4416,7 +4416,7 @@ bool G_admin_nextmap( gentity_t *ent )
 {
 	RETURN_IF_INTERMISSION;
 
-	AP( va( "print_tr %s %s", QQ( N_("^3nextmap:^* $1$^* decided to load the next map") ),
+	AP( va( "print_tr %s %s", QQ( N_("^3nextmap:^* $1$^* decided to load the next map.") ),
 	        G_quoted_admin_name( ent ) ) );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
@@ -4691,13 +4691,13 @@ bool G_admin_lock( gentity_t *ent )
 	admin_log( BG_TeamName( team ) );
 	if ( lock )
 	{
-		AP( va( "print_tr %s %s %s %s", QQ( N_("^3$1$:^* the $2$ team has been locked by $3$") ),
+		AP( va( "print_tr %s %s %s %s", QQ( N_("^3$1$:^* the $2$ team has been locked by $3$.") ),
 		        command, BG_TeamName( team ),
 		        G_quoted_admin_name( ent ) ) );
 	}
 	else
 	{
-		AP( va( "print_tr %s %s %s %s", QQ( N_("^3$1$:^* the $2$ team has been unlocked by $3$") ),
+		AP( va( "print_tr %s %s %s %s", QQ( N_("^3$1$:^* the $2$ team has been unlocked by $3$.") ),
 		        command, BG_TeamName( team ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -5160,7 +5160,7 @@ bool G_admin_pause( gentity_t *ent )
 			return false;
 		}
 
-		AP( va( "print_tr %s %s %d", QQ( N_("^3pause:^* $1$^* unpaused the game (paused for $2$ sec)") ),
+		AP( va( "print_tr %s %s %d", QQ( N_("^3pause:^* $1$^* unpaused the game (paused for $2$ sec).") ),
 		        G_quoted_admin_name( ent ),
 		        ( int )( ( float ) level.pausedTime / 1000.0f ) ) );
 		trap_SendServerCommand( -1, "cp \"The game has been unpaused!\"" );
@@ -5267,14 +5267,14 @@ bool G_admin_buildlog( gentity_t *ent )
 		if ( team == TEAM_NONE )
 		{
 			trap_SendServerCommand( -1,
-			                        va( "print_tr %s %s", QQ( N_("^3buildlog:^* $1$^* requested a log of recent building activity") ),
+			                        va( "print_tr %s %s", QQ( N_("^3buildlog:^* $1$^* requested a log of recent building activity.") ),
 			                            Quote( ent->client->pers.netname ) ) );
 		}
 		else
 		{
 			// FIXME? Send only to team-mates
 			trap_SendServerCommand( -1,
-			                        va( "print_tr %s %s %s", QQ( N_("^3buildlog:^* $1$^* requested a log of recent $2$ building activity") ),
+			                        va( "print_tr %s %s %s", QQ( N_("^3buildlog:^* $1$^* requested a log of recent $2$ building activity.") ),
 			                            Quote( ent->client->pers.netname ), Quote( BG_TeamName( team ) ) ) );
 		}
 	}
@@ -5389,8 +5389,8 @@ bool G_admin_revert( gentity_t *ent )
 	                  sizeof( time ), duration, sizeof( duration ) );
 	admin_log( arg );
 	AP( va( "print_tr %s %s %d %s %s", ( level.buildId - id ) > 1 ?
-		QQ( N_("^3revert:^* $1$^* reverted $2$ changes over the past $3$ $4t$") ) :
-		QQ( N_("^3revert:^* $1$^* reverted $2$ change over the past $3$ $4t$") ),
+		QQ( N_("^3revert:^* $1$^* reverted $2$ changes over the past $3$ $4t$.") ) :
+		QQ( N_("^3revert:^* $1$^* reverted $2$ change over the past $3$ $4t$.") ),
 		G_quoted_admin_name( ent ),
 	    level.buildId - id,
 	    time, duration ) );
@@ -5427,7 +5427,7 @@ bool G_admin_l0( gentity_t *ent )
 
 	trap_SendConsoleCommand( va( "setlevel %d 0;", id ) );
 
-	AP( va( "print_tr %s %s %s", QQ( N_("^3l0:^* name protection for $1$^* removed by $2$") ),
+	AP( va( "print_tr %s %s %s", QQ( N_("^3l0:^* name protection for $1$^* removed by $2$.") ),
 	        G_quoted_user_name( vic, a->name ),
 	        G_quoted_admin_name( ent ) ) );
 	return true;
@@ -5469,7 +5469,7 @@ bool G_admin_l1( gentity_t *ent )
 
 	trap_SendConsoleCommand( va( "setlevel %d 1;", id ) );
 
-	AP( va( "print_tr %s %s %s", QQ( N_("^3l1:^* name protection for $1$^* enabled by $2$") ),
+	AP( va( "print_tr %s %s %s", QQ( N_("^3l1:^* name protection for $1$^* enabled by $2$.") ),
 	        G_quoted_user_name( vic, a->name ),
 	        G_quoted_admin_name( ent ) ) );
 	return true;
@@ -5499,7 +5499,7 @@ bool G_admin_register( gentity_t *ent )
 	                         ( int )( ent - g_entities ),
 	                         level ) );
 
-	AP( va( "print_tr %s %s", QQ( N_("^3register:^* $1$^* is now a protected name") ),
+	AP( va( "print_tr %s %s", QQ( N_("^3register:^* $1$^* is now a protected name.") ),
 	        Quote( ent->client->pers.netname ) ) );
 
 	return true;
@@ -5521,7 +5521,7 @@ bool G_admin_unregister( gentity_t *ent )
 	trap_SendConsoleCommand( va( "setlevel %d 0;",
 	                         ( int )( ent - g_entities ) ) );
 
-	AP( va( "print_tr %s %s", QQ( N_("^3unregister:^* $1$^* is now an unprotected name") ),
+	AP( va( "print_tr %s %s", QQ( N_("^3unregister:^* $1$^* is now an unprotected name.") ),
 	        Quote( ent->client->pers.admin->name ) ) );
 
 	return true;
@@ -5930,7 +5930,7 @@ void Cmd_Pubkey_Identify_f( gentity_t *ent )
 	ent->client->pers.pubkey_authenticated = 1;
 	G_admin_authlog( ent );
 	G_admin_cmdlist( ent );
-	CP( "cp_tr " QQ(N_("^2Pubkey authenticated")) "" );
+	CP( "cp_tr " QQ(N_("^2Pubkey authenticated.")) "" );
 }
 
 qtime_t* G_admin_lastSeen( g_admin_admin_t* admin )

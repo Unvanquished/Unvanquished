@@ -401,13 +401,13 @@ static void Svcmd_AdmitDefeat_f()
 
 	if ( team == TEAM_ALIENS )
 	{
-		G_TeamCommand( TEAM_ALIENS, "cp \"Hivemind Link Broken\" 1" );
-		trap_SendServerCommand( -1, "print_tr \"" N_("Alien team has admitted defeat") "\"" );
+		G_TeamCommand( TEAM_ALIENS, "cp \"Hivemind Link Broken.\" 1" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Alien team has admitted defeat.") "\"" );
 	}
 	else if ( team == TEAM_HUMANS )
 	{
-		G_TeamCommand( TEAM_HUMANS, "cp \"Life Support Terminated\" 1" );
-		trap_SendServerCommand( -1, "print_tr \"" N_("Human team has admitted defeat") "\"" );
+		G_TeamCommand( TEAM_HUMANS, "cp \"Life Support Terminated.\" 1" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Human team has admitted defeat.") "\"" );
 	}
 	else
 	{
@@ -440,7 +440,7 @@ static void Svcmd_TeamWin_f()
 
 static void Svcmd_Evacuation_f()
 {
-	trap_SendServerCommand( -1, "print_tr \"" N_("Evacuation ordered") "\"" );
+	trap_SendServerCommand( -1, "print_tr \"" N_("Evacuation ordered.") "\"" );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
 	G_notify_sensor_end( TEAM_NONE );

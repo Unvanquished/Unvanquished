@@ -582,7 +582,7 @@ void G_UpdateCvars()
 
 				if ( cv.trackChange )
 				{
-					trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("Server: $1$ changed to $2$") ),
+					trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("Server: $1$ changed to $2$.") ),
 					                                Quote( cv.cvarName ), Quote( cv.vmCvar->string ) ) );
 				}
 			}
@@ -2163,7 +2163,7 @@ void CheckExitRules()
 		if ( level.matchTime >= level.timelimit * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
-			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit") "\"" );
+			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit.") "\"" );
 			trap_SetConfigstring( CS_WINNER, "Stalemate" );
 			G_notify_sensor_end( TEAM_NONE );
 			LogExit( "Timelimit hit." );
@@ -2192,7 +2192,7 @@ void CheckExitRules()
 	{
 		//humans win
 		level.lastWin = TEAM_HUMANS;
-		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win") "\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win.") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
 		G_notify_sensor_end( TEAM_HUMANS );
 		LogExit( "Humans win." );
@@ -2206,7 +2206,7 @@ void CheckExitRules()
 	{
 		//aliens win
 		level.lastWin = TEAM_ALIENS;
-		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win") "\"" );
+		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win.") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Aliens Win" );
 		G_notify_sensor_end( TEAM_ALIENS );
 		LogExit( "Aliens win." );
@@ -2401,17 +2401,17 @@ void G_CheckVote( team_t team )
 
 	if ( !quorum )
 	{
-		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ of $2$; quorum not reached)") ) : QQ( N_("Team vote failed ($1$ of $2$; quorum not reached)") ),
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ of $2$; quorum not reached).") ) : QQ( N_("Team vote failed ($1$ of $2$; quorum not reached).") ),
 		            level.team[ team ].voteYes + level.team[ team ].voteNo, level.team[ team ].numPlayers );
 	}
 	else if ( pass )
 	{
-		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ — $2$)") ) : QQ( N_("Team vote passed ($1$ — $2$)") ),
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ — $2$).") ) : QQ( N_("Team vote passed ($1$ — $2$).") ),
 		            level.team[ team ].voteYes, level.team[ team ].voteNo );
 	}
 	else
 	{
-		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ — $2$; $3$% needed)") ) : QQ( N_("Team vote failed ($1$ — $2$; $3$% needed)") ),
+		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ — $2$; $3$% needed).") ) : QQ( N_("Team vote failed ($1$ — $2$; $3$% needed).") ),
 		            level.team[ team ].voteYes, level.team[ team ].voteNo, votePassThreshold * 100 );
 	}
 
@@ -2599,7 +2599,7 @@ void G_RunFrame( int levelTime )
 
 			if ( level.pausedTime >= 110000  && level.pausedTime <= 119000 )
 			{
-				trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Server: Game will auto-unpause in $1$ seconds") ),
+				trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Server: Game will auto-unpause in $1$ seconds.") ),
 				                                ( int )( ( float )( 120000 - level.pausedTime ) / 1000.0f ) ) );
 			}
 		}
@@ -2615,7 +2615,8 @@ void G_RunFrame( int levelTime )
 
 		if ( level.pausedTime > 120000 )
 		{
-			trap_SendServerCommand( -1, "print_tr \"" N_("Server: The game has been unpaused automatically (2 minute max)") "\"" );
+			// FIXME: use QQ?
+			trap_SendServerCommand( -1, "print_tr \"" N_("Server: The game has been unpaused automatically (2 minute max).") "\"" );
 			trap_SendServerCommand( -1, "cp \"The game has been unpaused!\"" );
 			level.pausedTime = 0;
 		}

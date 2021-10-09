@@ -706,14 +706,14 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 			if( strchr( g_inactivity.string, 's' ) )
 			{
 				trap_SendServerCommand( -1,
-				                        va( "print_tr %s %s %s", QQ( N_("$1$^* moved from $2$ to spectators due to inactivity") ),
+				                        va( "print_tr %s %s %s", QQ( N_("$1$^* moved from $2$ to spectators due to inactivity.") ),
 				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->pers.team ) ) ) );
 				G_LogPrintf( "Inactivity: %d", (int)( client - level.clients ) );
 				G_ChangeTeam( ent, TEAM_NONE );
 			}
 			else
 			{
-				trap_DropClient( client - level.clients, "Dropped due to inactivity" );
+				trap_DropClient( client - level.clients, "Dropped due to inactivity." );
 				return false;
 			}
 		}

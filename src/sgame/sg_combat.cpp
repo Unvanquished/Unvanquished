@@ -383,7 +383,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( assistant != ENTITYNUM_NONE )
 	{
-		G_LogPrintf( "Die: %d %d %s %d %d: %s^* killed %s^*; %s^* assisted",
+		G_LogPrintf( "Die: %d %d %s %d %d: %s^* killed %s^*; %s^* assisted.",
 		             killer,
 		             ( int )( self - g_entities ),
 		             obit,
@@ -395,7 +395,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 	else
 	{
-		G_LogPrintf( "Die: %d %d %s: %s^* killed %s",
+		G_LogPrintf( "Die: %d %d %s: %s^* killed %s.",
 		             killer,
 		             ( int )( self - g_entities ),
 		             obit,
@@ -1031,7 +1031,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 		return;
 	}
 
-	G_LogPrintf( "^3Deconstruct: %d %d %s %s: %s %s by %s",
+	G_LogPrintf( "^3Deconstruct: %d %d %s %s: %s %s by %s.",
 	             ( int )( actor - g_entities ),
 	             ( int )( self - g_entities ),
 	             BG_Buildable( self->s.modelindex )->name,
@@ -1043,8 +1043,8 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	if ( G_OnSameTeam( self, actor ) )
 	{
 		G_TeamCommand( G_Team( actor ),
-		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$") ) :
-						   QQ( N_("$1$ ^3DESTROYED^* by $2$") ),
+		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$.") ) :
+						   QQ( N_("$1$ ^3DESTROYED^* by $2$.") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),
 		                   Quote( actor->client->pers.netname ) ) );
 	}
