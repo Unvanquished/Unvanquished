@@ -111,13 +111,13 @@ static const char *CG_KeyNameForCommand( const char *command )
 			{
 				if ( !keyNames.empty() )
 				{
-					keyNames += _(" or ");
+					keyNames += ' ' + _("or") + ' ';
 				}
 				keyNames += CG_KeyDisplayName( key );
 			}
 			if ( keyNames.empty() )
 			{
-				keyNames = Str::Format( _( "\"%s\" (unbound)" ), _( binding.humanName ) );
+				keyNames = Str::Format( "%s (%s)", _( binding.humanName ), _( "unbound" ) );
 			}
 			Q_strncpyz( buffer[ which ], keyNames.c_str(), sizeof( buffer[ which ] ) );
 			return buffer[ which ];
