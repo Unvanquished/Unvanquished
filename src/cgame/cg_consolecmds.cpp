@@ -126,7 +126,7 @@ void CG_ClientList_f()
 		count++;
 	}
 
-	Log::Notice(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
+	Log::Notice(_( "Listed %2d clients.\n"), count ); // FIXME PLURAL
 }
 
 static void CG_ReloadHud_f()

@@ -723,7 +723,7 @@ void CG_Menu( int menuType, int arg )
 			break;
 
 		default:
-			Log::Notice(_( "cgame: debug: no such menu %d"), menu );
+			Log::Notice(_( "cgame: debug: No such menu %d"), menu );
 	}
 
 	if ( menu > 0 )
@@ -881,7 +881,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 			if ( !ignore[ 0 ] )
 			{
-				CG_CenterPrint( va( _("%sPrivate message from: ^7%s"),
+				CG_CenterPrint( va( _("%sPrivate message from: ^7%s."),
 				                    color.c_str(), name ), 200, GIANTCHAR_WIDTH * 4 );
 
 				if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
@@ -889,7 +889,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 					clientNum = cg.clientNum;
 				}
 
-				chatLog.Notice(_( ">> to reply, say: /m %d [your message] <<"), clientNum );
+				chatLog.Notice(_( ">> To reply, say: /m %d [your message]. <<"), clientNum );
 			}
 
 			break;

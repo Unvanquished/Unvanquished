@@ -1473,24 +1473,24 @@ static void CG_StatusMessages( clientInfo_t *new_, clientInfo_t *old )
 
 	if ( strcmp( new_->name, old->name ) )
 	{
-		Log::Notice(_( "%s^* renamed to %s"), old->name, new_->name );
+		Log::Notice(_( "%s^* renamed to %s."), old->name, new_->name );
 	}
 
 	if ( old->team != new_->team )
 	{
 		if ( new_->team == TEAM_NONE )
 		{
-			Log::Notice(_( "%s^* left the %s"), new_->name,
+			Log::Notice(_( "%s^* left the %s."), new_->name,
 			           BG_TeamNamePlural( old->team ) );
 		}
 		else if ( old->team == TEAM_NONE )
 		{
-			Log::Notice(_( "%s^* joined the %s"), new_->name,
+			Log::Notice(_( "%s^* joined the %s."), new_->name,
 			           BG_TeamNamePlural( new_->team ) );
 		}
 		else
 		{
-			Log::Notice(_( "%s^* left the %s and joined the %s"),
+			Log::Notice(_( "%s^* left the %s and joined the %s."),
 			           new_->name, BG_TeamNamePlural( old->team ), BG_TeamNamePlural( new_->team ) );
 		}
 	}

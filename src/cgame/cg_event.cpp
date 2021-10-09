@@ -237,7 +237,7 @@ static void CG_Obituary( entityState_t *ent )
 				// nice big message for teamkills
 				if ( attackerTeam == ci->team && attacker == cg.clientNum )
 				{
-					CG_CenterPrint( va( _("You killed ^1TEAMMATE^* %s"), targetName ),
+					CG_CenterPrint( va( _("You killed ^1TEAMMATE^* %s."), targetName ),
 							SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 				}
 			}
@@ -547,7 +547,7 @@ static void CG_Obituary( entityState_t *ent )
 
 			if ( attackerTeam == ci->team && attacker == cg.clientNum && attacker != target )
 			{
-				CG_CenterPrint( va( _("You killed ^1TEAMMATE^* %s"), targetName ),
+				CG_CenterPrint( va( _("You killed ^1TEAMMATE^* %s."), targetName ),
 						SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 			}
 
@@ -555,7 +555,7 @@ static void CG_Obituary( entityState_t *ent )
 		}
 
 		// we don't know what it was
-		Log::Notice( G_( "%s%s^* died" ), teamTag[ ci->team ], targetName );
+		Log::Notice( G_( "%s%s^* died." ), teamTag[ ci->team ], targetName );
 	}
 }
 
@@ -1250,11 +1250,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 				if ( location && *location )
 				{
-					Log::Notice( _( "[reactor] Under attack – %s" ), location );
+					Log::Notice( _( "[reactor] Under attack – %s." ), location );
 				}
 				else
 				{
-					Log::Notice( _( "[reactor] Under attack" ) );
+					Log::Notice( _( "[reactor] Under attack." ) );
 				}
 			}
 			else // this is for aliens, and the overmind is in range
