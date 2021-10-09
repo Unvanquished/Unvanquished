@@ -161,7 +161,7 @@
 			margin-right: .5em;
 		}
 
-		.trem-emoticon
+		.emoticon
 		{
 			height: 1.1em;
 		}
