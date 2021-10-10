@@ -1849,7 +1849,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		             "denybuild %d", id );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
-		             "Take away building rights from '%s'", name );
+		             N_("Take away building rights from '%s'"), name );
 		break;
 
 	case VOTE_ALLOWBUILD:
@@ -1864,14 +1864,14 @@ void Cmd_CallVote_f( gentity_t *ent )
 		             "allowbuild %d", id );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
-		             "Allow '%s' to build.", name );
+		             N_("Allow '%s' to build."), name );
 		break;
 
 	case VOTE_EXTEND:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "time %i", level.timelimit + g_extendVotesTime.integer );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
-		             "Extend the timelimit by %d minutes.", g_extendVotesTime.integer );
+		             N_("Extend the timelimit by %d minutes."), g_extendVotesTime.integer );
 		break;
 
 	case VOTE_ADMIT_DEFEAT:
@@ -1879,18 +1879,18 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "admitdefeat %d", team );
-		strcpy( level.team[ team ].voteDisplayString, "Admit Defeat." );
+		strcpy( level.team[ team ].voteDisplayString, N_("Admit Defeat.") );
 		break;
 
 	case VOTE_DRAW:
 		level.team[ team ].voteDelay = 3000;
 		strcpy( level.team[ team ].voteString, "evacuation" );
-		strcpy( level.team[ team ].voteDisplayString, "End match in a draw." );
+		strcpy( level.team[ team ].voteDisplayString, N_("End match in a draw.") );
 		break;
 
 	case VOTE_MAP_RESTART:
 		strcpy( level.team[ team ].voteString, vote );
-		strcpy( level.team[ team ].voteDisplayString, "Restart current map." );
+		strcpy( level.team[ team ].voteDisplayString, N_("Restart current map.") );
 		// map_restart comes with a default delay
 		break;
 
@@ -1911,7 +1911,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			             "map %s %s", Quote( arg ), Quote( reason ) );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Change to map '%s' layout '%s'.", arg, reason );
+			             N_("Change to map '%s' layout '%s'."), arg, reason );
 		}
 		else
 		{
@@ -1919,7 +1919,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			             "map %s", Quote( arg ) );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Change to map '%s'.", arg );
+			             N_("Change to map '%s'."), arg );
 		}
 
 		reason[0] = '\0'; // nullify since we've used it here...
@@ -1940,7 +1940,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "restart %s", Quote( arg ) );
 			Com_sprintf( level.team[ team ].voteDisplayString,
-			             sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'.", arg );
+			             sizeof( level.team[ team ].voteDisplayString ), N_("Change to map layout '%s'."), arg );
 		}
 		break;
 
@@ -1967,7 +1967,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			             "set g_nextMap %s; set g_nextMapLayouts %s", Quote( arg ), Quote( reason ) );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Set the next map to '%s' layout '%s'.", arg, reason );
+			             N_("Set the next map to '%s' layout '%s'."), arg, reason );
 		}
 		else
 		{
@@ -1975,17 +1975,18 @@ void Cmd_CallVote_f( gentity_t *ent )
 			             "set g_nextMap %s; set g_nextMapLayouts \"\"", Quote( arg ) );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Set the next map to '%s'.", arg );
+			             N_("Set the next map to '%s'."), arg );
 		}
 
 		reason[0] = '\0'; // nullify since we've used it here...
 		break;
 
 	case VOTE_POLL:
+		// FIXME: maybe extract “poll” word out of parenthesis
 		level.team[ team ].voteString[0] = '\0';
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
-		             "(poll) %s", reason );
+		             N_("(poll) %s"), reason );
 		reason[0] = '\0'; // nullify since we've used it here...
 		break;
 
@@ -1995,8 +1996,11 @@ void Cmd_CallVote_f( gentity_t *ent )
 	// Append the vote reason (if applicable)
 	if ( reason[ 0 ] )
 	{
+		// FIXME: building strings like that is very english centric.
 		Q_strcat( level.team[ team ].voteDisplayString,
-		          sizeof( level.team[ team ].voteDisplayString ), va( " for '%s'", reason ) );
+		          sizeof( level.team[ team ].voteDisplayString ), " " );
+		Q_strcat( level.team[ team ].voteDisplayString,
+		          sizeof( level.team[ team ].voteDisplayString ), va( N_("for '%s'"), reason ) );
 	}
 
 	G_LogPrintf( "%s: %d \"%s^*\": %s",
