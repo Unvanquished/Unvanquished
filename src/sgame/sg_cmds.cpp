@@ -32,6 +32,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 
+// From src/sgame/sg_admin.h
+#define QQ(s) "\"" s "\""
+
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
 #define CMD_MESSAGE      0x0004 // sends message to others (skip when muted)
@@ -536,7 +539,7 @@ void Cmd_Devteam_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( "\"" N_("Usage: devteam [a|h]") "\"" );
+		ADMP( QQ( N_("Usage: devteam [a|h]") ) );
 		return;
 	}
 
@@ -562,7 +565,7 @@ void Cmd_Devteam_f( gentity_t *ent )
 			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
 			break;
 		default:
-			ADMP( "\"" N_("Usage: devteam [a|h]") "\"" );
+			ADMP( QQ( N_("Usage: devteam [a|h]") ) );
 			return;
 	}
 
@@ -869,7 +872,9 @@ void Cmd_Team_f( gentity_t *ent )
 
 	if ( !s[ 0 ] )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("team: $1$.") ),
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s",
+			QQ( N_("$1$: $2$.") ),
+			"team",
 		                        Quote( BG_TeamName( oldteam ) ) ) );
 		return;
 	}
@@ -1058,8 +1063,11 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 	     ( ent ) && ( ent->client->pers.team == TEAM_NONE ) &&
 	     ( !G_admin_permission( ent, ADMF_NOCENSORFLOOD ) ) )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("say: Global chatting for "
-		                        "spectators has been disabled. You may only use team chat.") "\"" );
+		trap_SendServerCommand( ent - g_entities,
+			va( "print_tr %s %s",
+				QQ( N_("$1$: Global chatting for "
+					"spectators has been disabled. You may only use team chat.") ),
+				"say" ) );
 		mode = SAY_TEAM;
 	}
 
@@ -1124,7 +1132,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( "\"" N_("Usage: say_area [message]") "\"" );
+		ADMP( QQ( N_("Usage: say_area [message]") ) );
 		return;
 	}
 
@@ -1169,7 +1177,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( "\"" N_("Usage: say_area_team [message]") "\"" );
+		ADMP( QQ( N_("Usage: say_area_team [message]") ) );
 		return;
 	}
 
@@ -1439,7 +1447,8 @@ void Cmd_Where_f( gentity_t *ent )
 	}
 
 	trap_SendServerCommand( ent - g_entities,
-	                        va( "print_tr %s %f %f %f", QQ( N_("origin: $1$ $2$ $3$.") ),
+		va( "print_tr %s %s %f %f %f", QQ( N_("$1$: $2$ $3$ $4$.") ),
+		"origin",
 	                            ent->s.origin[ 0 ], ent->s.origin[ 1 ],
 	                            ent->s.origin[ 2 ] ) );
 }
@@ -1898,8 +1907,10 @@ void Cmd_CallVote_f( gentity_t *ent )
 		if ( !G_MapExists( arg ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %s", QQ( N_("$1$: 'maps/$2$.bsp' could not be found on the server.") ),
-			                            cmd, Quote( arg ) ) );
+				va( "print_tr %s %s %s",
+					QQ( N_("$1$: '$2$' could not be found on the server.") ),
+					cmd,
+					Quote( va( "maps/%s.bsp", arg ) ) ) );
 			return;
 		}
 
@@ -2119,7 +2130,9 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 	if ( trap_Argc() < 4 && trap_Argc() != 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("Usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)") "\"" );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s",
+			QQ( N_("Usage: $1$ (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)") ),
+			"setviewpos" ) );
 		return;
 	}
 
@@ -3756,8 +3769,9 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-		                        "%s\" %s", N_("Usage: $1$ [clientNum | partial name match]"), cmd ) );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s",
+			QQ( S_SKIPNOTIFY N_("Usage: $1$ [clientNum | partial name match]") ),
+			cmd ) );
 		return;
 	}
 
@@ -3766,8 +3780,10 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( matches < 1 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-		                        "%s\" %s %s", N_("$1$: No clients match the name '$2$'."), cmd, Quote( name ) ) );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s",
+			QQ( S_SKIPNOTIFY N_("$1$: No clients match the name '$2$'.") ),
+			cmd,
+			Quote( name ) ) );
 		return;
 	}
 
@@ -3779,15 +3795,17 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListAdd( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, false );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("ignore: Added $1$^* to your ignore list."),
-				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s",
+					QQ( S_SKIPNOTIFY N_("$1$: Added $2$^* to your ignore list.") ),
+					"ignore",
+					Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("ignore: $1$^* is already on your ignore list."),
-				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s",
+					QQ( S_SKIPNOTIFY N_("$1$: $2$^* is already on your ignore list.") ),
+					"ignore",
+					Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 		}
 		else
@@ -3796,15 +3814,17 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListRemove( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, false );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("unignore: Removed $1$^* from your ignore list."),
-				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s",
+					QQ( S_SKIPNOTIFY N_("$1$: Removed $2$^* from your ignore list.") ),
+					"unignore",
+					Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
-				                        "%s\" %s", N_("unignore: $1$^* is not on your ignore list."),
-				                        Quote( level.clients[ pids[ i ] ].pers.netname ) )  );
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s",
+					QQ( S_SKIPNOTIFY N_("$1$: $2$^* is not on your ignore list.") ),
+					"unignore",
+					Quote( level.clients[ pids[ i ] ].pers.netname ) )  );
 			}
 		}
 	}
@@ -4234,7 +4254,9 @@ void Cmd_Beacon_f( gentity_t *ent )
 	if ( trap_Argc( ) < 2 )
 	{
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print_tr %s", QQ( N_("Usage: beacon [type]") ) ) );
+			va( "print_tr %s %s",
+				QQ( N_("Usage: $1$ [type]") ),
+				"beacon" ) );
 		return;
 	}
 
@@ -4247,8 +4269,9 @@ void Cmd_Beacon_f( gentity_t *ent )
 	if ( !battr || battr->flags & BCF_RESERVED )
 	{
 		trap_SendServerCommand( ent - g_entities,
-		                        va( "print_tr %s %s", QQ( N_("Unknown beacon type $1$.") ),
-		                            Quote( type_str ) ) );
+			va( "print_tr %s %s",
+				QQ( N_("Unknown beacon type $1$.") ),
+				Quote( type_str ) ) );
 		return;
 	}
 
@@ -4584,19 +4607,19 @@ void Cmd_AdminMessage_f( gentity_t *ent )
 	{
 		if ( !g_publicAdminMessages.integer )
 		{
-			ADMP( "\"" N_("Sorry, but use of /a by non-admins has been disabled.") "\"" );
+			ADMP( QQ( N_("Sorry, but use of /a by non-admins has been disabled.") ) );
 			return;
 		}
 		else
 		{
-			ADMP( "\"" N_("Your message has been sent to any available admins "
-			      "and to the server logs.") "\"" );
+			ADMP( QQ( N_("Your message has been sent to any available admins "
+				"and to the server logs.") ) );
 		}
 	}
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( "\"" N_("Usage: a [message]") "\"" );
+		ADMP( QQ( N_("Usage: a [message]") ) );
 		return;
 	}
 

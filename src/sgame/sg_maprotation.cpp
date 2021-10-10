@@ -805,13 +805,13 @@ void G_PrintCurrentRotation( gentity_t *ent )
 
 	if ( mapRotation == nullptr )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"^3listrotation:^* " N_("There is no active map rotation on this server.") "\"" );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("^3$1$^*: There is no active map rotation on this server.") ), "listrotation" ) );
 		return;
 	}
 
 	if ( mapRotation->numNodes == 0 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"^3listrotation:^* " N_("There are no maps in the active map rotation.") "\"" );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("^3$1$^*: There are no maps in the active map rotation.") ), "listrotation" ) );
 		return;
 	}
 
