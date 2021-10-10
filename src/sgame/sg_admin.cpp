@@ -3463,7 +3463,7 @@ bool G_admin_denybuild( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "denybuild" ) )
 		{
-			ADMP( QQ( N_("^3denybuild:^* player already has no building rights" ) ) );
+			ADMP( QQ( N_("^3denybuild:^* Player already has no building rights." ) ) );
 			return false;
 		}
 
@@ -3474,7 +3474,7 @@ bool G_admin_denybuild( gentity_t *ent )
 			CPx( vic->slot, "cp_tr " QQ(N_("^1You've regained your building rights.")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3allowbuild:^* building rights for ^7$1$^* restored by $2$.") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3allowbuild:^* Building rights for ^7$1$^* restored by $2$.") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
@@ -3482,7 +3482,7 @@ bool G_admin_denybuild( gentity_t *ent )
 	{
 		if ( !Q_stricmp( command, "allowbuild" ) )
 		{
-			ADMP( QQ( N_("^3allowbuild:^* player already has building rights" ) ) );
+			ADMP( QQ( N_("^3allowbuild:^* Player already has building rights." ) ) );
 			return false;
 		}
 
@@ -3494,7 +3494,7 @@ bool G_admin_denybuild( gentity_t *ent )
 			CPx( vic->slot, "cp_tr " QQ(N_("^1You've lost your building rights.")) );
 		}
 
-		AP( va( "print_tr %s %s %s", QQ( N_("^3denybuild:^* building rights for ^7$1$^* revoked by $2$.") ),
+		AP( va( "print_tr %s %s %s", QQ( N_("^3denybuild:^* Building rights for ^7$1$^* revoked by $2$.") ),
 		        Quote( vic->name[ vic->nameOffset ] ),
 		        G_quoted_admin_name( ent ) ) );
 	}
