@@ -1723,7 +1723,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		if ( clientNum == -1 )
 		{
-			ADMP( va( "%s %s %s", QQ( "$1$: $2t$" ), cmd, Quote( err ) ) );
+			ADMP( va( "%s %s %s", QQ( N_( "$1$: $2t$." ) ), cmd, Quote( err ) ) );
 			return;
 		}
 
@@ -3695,7 +3695,7 @@ void Cmd_Follow_f( gentity_t *ent )
 		if ( i == -1 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %s", QQ( "$1$: $2t$" ), "follow", Quote( err ) ) );
+			                        va( "print_tr %s %s %s", QQ( N_( "$1$: $2t$." ) ), "follow", Quote( err ) ) );
 			return;
 		}
 
