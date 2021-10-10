@@ -591,7 +591,7 @@ void Cmd_Give_f( gentity_t *ent )
 	if ( trap_Argc() < 2 )
 	{
 		ADMP( QQ( N_( "Usage: give [what]" ) ) );
-		ADMP( QQ( N_( "Usage: valid choices are: all, health [amount], funds [amount], "
+		ADMP( QQ( N_( "Usage: Valid choices are: all, health [amount], funds [amount], "
 		              "bp [amount], momentum [amount], stamina, poison, fuel, ammo" ) ) );
 		return;
 	}
@@ -1235,7 +1235,7 @@ static void Cmd_Say_f( gentity_t *ent )
 	{
 		if ( !G_admin_permission( ent, ADMF_ADMINCHAT ) )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: ^*permission denied") ), "asay" ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$: ^*Permission denied.") ), "asay" ) );
 			return;
 		}
 
@@ -3975,8 +3975,8 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	if ( search[ 0 ] )
 	{
 		ADMP_P( va( "%s %d %s",
-					Quote( P_("^3listmaps:^* found $1$ map matching '$2$^*'",
-							  "^3listmaps:^* found $1$ maps matching '$2$^*'",
+					Quote( P_("^3listmaps:^* Found $1$ map matching '$2$^*'.",
+							  "^3listmaps:^* Found $1$ maps matching '$2$^*'.",
 							  mapNamesCount)
 					),
 					mapNamesCount,
@@ -3987,8 +3987,8 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	else
 	{
 		ADMP_P( va( "%s %d %d",
-					Quote( P_("^3listmaps:^* listing $1$ of $2$ map",
-							  "^3listmaps:^* listing $1$ of $2$ maps",
+					Quote( P_("^3listmaps:^* Listing $1$ of $2$ map.",
+							  "^3listmaps:^* Listing $1$ of $2$ maps.",
 							  mapNamesCount)
 					),
 					shownMapNamesCount,
@@ -4000,12 +4000,12 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	if ( pages > 1 && page + 1 < pages )
 	{
 		ADMP( va( "%s %d %d %s %s %d",
-				  QQ( N_("^3listmaps:^* page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more") ),
+				  QQ( N_("^3listmaps:^* Page $1$ of $2$; use 'listmaps $3$$4$$5$' to see more.") ),
 		          page + 1, pages, Quote( search ), Quote( ( search[ 0 ] ) ? " " : "" ), page + 2 ) );
 	}
 	else if ( pages > 1 )
 	{
-		ADMP( va( "%s %d %d", QQ( N_("^3listmaps:^* page $1$ of $2$") ),  page + 1, pages ) );
+		ADMP( va( "%s %d %d", QQ( N_("^3listmaps:^* Page $1$ of $2$.") ),  page + 1, pages ) );
 	}
 }
 
@@ -4119,7 +4119,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
 	ptr = maplog;
 
-	ADMP( "\"" N_("^3maplog:^* recent map results, newest first") "\"" );
+	ADMP( "\"" N_("^3maplog:^* Recent map results, newest first.") "\"" );
 	ADMBP_begin();
 
 	while( *ptr )

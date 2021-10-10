@@ -1348,7 +1348,7 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 
 			if ( !vic || !vic->client || vic->client->pers.connected == CON_DISCONNECTED )
 			{
-				ADMP( va( "%s %s %d", QQ( N_("^3$1$:^* no player connected in slot $2$") ), command, id ) );
+				ADMP( va( "%s %s %d", QQ( N_("^3$1$:^* No player connected in slot $2$.") ), command, id ) );
 				return -1;
 			}
 
@@ -1383,7 +1383,7 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 		{
 			for ( i = 0, a = g_admin_admins; a; i++, a = a->next ) {; }
 
-			ADMP( va( "%s %s %s %d %d %d", QQ( N_("^3$1$:^* $2$ not in range 0–$3$ or $4$–$5$") ),
+			ADMP( va( "%s %s %s %d %d %d", QQ( N_("^3$1$:^* $2$ not in range 0–$3$ or $4$–$5$.") ),
 			          Quote(command), Quote(name),
 			          level.maxclients - 1,
 			          MAX_CLIENTS, MAX_CLIENTS + i - 1 ) );
@@ -1435,7 +1435,7 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 
 		if ( matches == 0 )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: no match, use listplayers or listadmins to "
+			ADMP( va( "%s %s", QQ( N_("^3$1$: No match, use listplayers or listadmins to "
 			          "find an appropriate number to use instead of name.") ),
 			          command ) );
 			return -1;
@@ -1443,7 +1443,7 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 
 		if ( matches > 1 )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$: more than one match, use the admin number instead:") ),
+			ADMP( va( "%s %s", QQ( N_("^3$1$: More than one match, use the admin number instead:") ),
 			          command ) );
 			admin_listadmins( ent, 0, cleanName );
 			return -1;
@@ -1680,7 +1680,7 @@ bool G_admin_cmd_check( gentity_t *ent )
 		}
 		else
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$:^* permission denied") ), c->command ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$:^* Permission denied.") ), c->command ) );
 		}
 
 		admin_log_end( success );
@@ -1713,7 +1713,7 @@ bool G_admin_cmd_check( gentity_t *ent )
 		}
 		else
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$:^* permission denied") ),admincmd->keyword ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$:^* Permission denied.") ),admincmd->keyword ) );
 			admin_log( ConcatArgsPrintable( 1 ) );
 		}
 
@@ -1878,7 +1878,7 @@ bool G_admin_readconfig( gentity_t *ent )
 	if ( !g_admin.string[ 0 ] )
 	{
 		ADMP( QQ( N_("^3readconfig: g_admin is not set, not loading configuration "
-		      "from a file" ) ) );
+		      "from a file." ) ) );
 		return false;
 	}
 
@@ -1886,7 +1886,7 @@ bool G_admin_readconfig( gentity_t *ent )
 
 	if ( len < 0 )
 	{
-		Log::Warn( "^3readconfig:^* could not open admin config file %s",
+		Log::Warn( "^3readconfig:^* Could not open admin config file %s.",
 		          g_admin.string );
 		admin_default_levels();
 		return false;
@@ -2120,7 +2120,7 @@ bool G_admin_readconfig( gentity_t *ent )
 	}
 
 	BG_Free( cnf2 );
-	ADMP( va( "%s %d %d %d %d", QQ( N_("^3readconfig:^* loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands") ),
+	ADMP( va( "%s %d %d %d %d", QQ( N_("^3readconfig:^* Loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands.") ),
 	          lc, ac, bc, cc ) );
 
 	if ( lc == 0 )
@@ -2180,12 +2180,12 @@ bool G_admin_time( gentity_t *ent )
 			remainingMinutes = (timelimit - level.matchTime)/1000 / 60;
 			remainingSeconds = (timelimit - level.matchTime)/1000 % 60 + 1;
 
-			ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^*time is ^d$1$:$2$:$3$^* UTC; game time is ^d$4$:$5$^*, reaching time limit in ^d$6$:$7$^*") ),
+			ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time:^* Time is ^d$1$:$2$:$3$^* UTC; game time is ^d$4$:$5$^*, reaching time limit in ^d$6$:$7$^*.") ),
 			  qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
 		}
 		else // requesting time in intermission after the timelimit hit, or timelimit wasn't set
 		{
-			ADMP( va( "%s %02i %02i %02i %02i %02i", QQ( N_("^3time: ^*time is ^d$1$:$2$:$3$^* UTC; game time is ^d$4$:$5$^*") ),
+			ADMP( va( "%s %02i %02i %02i %02i %02i", QQ( N_("^3time:^* Time is ^d$1$:$2$:$3$^* UTC; game time is ^d$4$:$5$^*.") ),
 					  qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds) );
 		}
 		return true;
@@ -2195,7 +2195,7 @@ bool G_admin_time( gentity_t *ent )
 
 		if ( !G_admin_permission( ent, "gametimelimit" ) )
 		{
-			ADMP( va( "%s %s", QQ( N_("^3$1$:^* permission denied") ), "time" ) );
+			ADMP( va( "%s %s", QQ( N_("^3$1$:^* Permission denied.") ), "time" ) );
 			return false;
 		}
 
@@ -2221,14 +2221,14 @@ bool G_admin_time( gentity_t *ent )
 			}
 			else
 			{
-				ADMP( QQ( N_("^3time:^* time limit is unchanged") ) );
+				ADMP( QQ( N_("^3time:^* Time limit is unchanged.") ) );
 			}
 			return true;
 		}
 		// fallthrough
 
 	default:
-		ADMP( QQ( N_("^3time:^* usage: time [minutes]") ) );
+		ADMP( QQ( N_("^3time:^* Usage: time [minutes]") ) );
 		return false;
 	}
 }
@@ -2253,7 +2253,7 @@ bool G_admin_setlevel( gentity_t *ent )
 
 	if ( trap_Argc() < 3 )
 	{
-		ADMP( QQ( N_("^3setlevel:^* usage: setlevel [name|slot#] [level]") ) );
+		ADMP( QQ( N_("^3setlevel:^* Usage: setlevel [name|slot#] [level]") ) );
 		return false;
 	}
 
@@ -2262,15 +2262,15 @@ bool G_admin_setlevel( gentity_t *ent )
 
 	if ( !( l = G_admin_level( atoi( lstr ) ) ) )
 	{
-		ADMP( QQ( N_("^3setlevel:^* level is not defined") ) );
+		ADMP( QQ( N_("^3setlevel:^* Level is not defined.") ) );
 		return false;
 	}
 
 	if ( ent && l->level >
 	     ( ent->client->pers.admin ? ent->client->pers.admin->level : 0 ) )
 	{
-		ADMP( QQ( N_("^3setlevel:^* you may not use setlevel to set a level higher "
-		      "than your current level") ) );
+		ADMP( QQ( N_("^3setlevel:^* You may not use setlevel to set a level higher "
+		      "than your current level.") ) );
 		return false;
 	}
 
@@ -2281,14 +2281,14 @@ bool G_admin_setlevel( gentity_t *ent )
 
 	if ( l->level && vic && G_IsUnnamed( vic->client->pers.netname ) )
 	{
-		ADMP( QQ( N_("^3setlevel:^* your intended victim has the default name") ) );
+		ADMP( QQ( N_("^3setlevel:^* Your intended victim has the default name.") ) );
 		return false;
 	}
 
 	if ( ent && !admin_higher_admin( ent->client->pers.admin, a ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$:^* sorry, but your intended victim has a higher admin"
-		          " level than you") ), "setlevel" ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* Sorry, but your intended victim has a higher admin"
+		          " level than you.") ), "setlevel" ) );
 		return false;
 	}
 
@@ -2581,7 +2581,7 @@ bool G_admin_kick( gentity_t *ent )
 
 	if ( trap_Argc() < minargc )
 	{
-		ADMP( QQ( N_("^3kick:^* usage: kick [name] [reason]") ) );
+		ADMP( QQ( N_("^3kick:^* Usage: kick [name] [reason]") ) );
 		return false;
 	}
 
@@ -2598,14 +2598,14 @@ bool G_admin_kick( gentity_t *ent )
 
 	if ( !admin_higher( ent, vic ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$:^* sorry, but your intended victim has a higher admin"
-		          " level than you") ), "kick" ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* Sorry, but your intended victim has a higher admin"
+		          " level than you.") ), "kick" ) );
 		return false;
 	}
 
 	if ( vic->client->pers.localClient )
 	{
-		ADMP( QQ( N_("^3kick:^* disconnecting the host would end the game" ) ) );
+		ADMP( QQ( N_("^3kick:^* Disconnecting the host would end the game." ) ) );
 		return false;
 	}
 
@@ -2641,7 +2641,7 @@ bool G_admin_ban( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_("^3ban:^* usage: ban [name|slot|address(/mask)] [duration] [reason]") ) );
+		ADMP( QQ( N_("^3ban:^* Usage: ban [name|slot|address(/mask)] [duration] [reason]") ) );
 		return false;
 	}
 
@@ -2662,7 +2662,7 @@ bool G_admin_ban( gentity_t *ent )
 
 	if ( !*reason && !G_admin_permission( ent, ADMF_UNACCOUNTABLE ) )
 	{
-		ADMP( QQ( N_("^3ban:^* you must specify a reason" ) ) );
+		ADMP( QQ( N_("^3ban:^* You must specify a reason." ) ) );
 		return false;
 	}
 
@@ -2672,7 +2672,7 @@ bool G_admin_ban( gentity_t *ent )
 
 		if ( seconds == 0 || seconds > std::max( 1, maximum ) )
 		{
-			ADMP( QQ( N_("^3ban:^* you may not issue permanent bans") ) );
+			ADMP( QQ( N_("^3ban:^* You may not issue permanent bans.") ) );
 			seconds = maximum;
 		}
 	}
@@ -2684,7 +2684,7 @@ bool G_admin_ban( gentity_t *ent )
 
 		if ( ip.mask < min || ip.mask > max )
 		{
-			ADMP( va( "%s %d %d %d", QQ( N_("^3ban:^* invalid netmask ($1$ is not one of $2$–$3$)") ),
+			ADMP( va( "%s %d %d %d", QQ( N_("^3ban:^* Invalid netmask ($1$ is not one of $2$–$3$).") ),
 			          ip.mask, min, max ) );
 			return false;
 		}
@@ -2715,26 +2715,26 @@ bool G_admin_ban( gentity_t *ent )
 
 		if ( !match )
 		{
-			ADMP( QQ( N_("^3ban:^* no player found by that IP address" ) ) );
+			ADMP( QQ( N_("^3ban:^* No player found by that IP address." ) ) );
 			return false;
 		}
 	}
 	else if ( !( match = G_NamelogFromString( ent, search ) ) || match->banned )
 	{
-		ADMP( QQ( N_("^3ban:^* no match") ) );
+		ADMP( QQ( N_("^3ban:^* No match.") ) );
 		return false;
 	}
 
 	if ( ent && !admin_higher_guid( ent->client->pers.guid, match->guid ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$:^* sorry, but your intended victim has a higher admin"
-		          " level than you") ), "ban" ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* Sorry, but your intended victim has a higher admin"
+		          " level than you.") ), "ban" ) );
 		return false;
 	}
 
 	if ( match->slot > -1 && level.clients[ match->slot ].pers.localClient )
 	{
-		ADMP( QQ( N_("^3ban:^* disconnecting the host would end the game") ) );
+		ADMP( QQ( N_("^3ban:^* Disconnecting the host would end the game.") ) );
 		return false;
 	}
 
@@ -2782,7 +2782,7 @@ bool G_admin_ban( gentity_t *ent )
 
 	if ( !g_admin.string[ 0 ] )
 	{
-		ADMP( QQ( N_("^3ban:^* WARNING g_admin not set, not saving ban to a file" ) ) );
+		ADMP( QQ( N_("^3ban:^* WARNING g_admin not set, not saving ban to a file." ) ) );
 	}
 	else
 	{
