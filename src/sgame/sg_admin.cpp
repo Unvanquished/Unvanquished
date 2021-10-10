@@ -3314,6 +3314,7 @@ bool G_admin_changemap( gentity_t *ent )
 
 	level.restarted = true;
 	G_MapLog_Result( 'M' );
+	// FIXME: substrings aren't translated.
 	AP( va( "print_tr %s %s %s %s %s %s %s",
 		QQ( N_("^3$1$:^* map '$2$' started by $3$^* $4t$$5$$6$.") ),
 		"changemap",
