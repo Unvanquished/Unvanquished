@@ -561,7 +561,7 @@ void CG_Menu( int menuType, int arg )
 
 		case MN_B_SURRENDER:
 			shortMsg = _("Cannot build after admitting defeat.");
-			longMsg = _("Your team has decided to admit defeat and concede the game: "
+			longMsg = _("Your team has decided to admit defeat and concede the game. "
 				"There's no point in building anything anymore.");
 			break;
 
