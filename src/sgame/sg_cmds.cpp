@@ -1858,7 +1858,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		             "denybuild %d", id );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
-		             N_("Take away building rights from '%s'"), name );
+		             N_("Take away building rights from '%s'."), name );
 		break;
 
 	case VOTE_ALLOWBUILD:
