@@ -5315,16 +5315,18 @@ bool G_admin_buildlog( gentity_t *ent )
 	{
 		if ( team == TEAM_NONE )
 		{
-			trap_SendServerCommand( -1,
-			                        va( "print_tr %s %s %s", QQ( N_("^3$1$:^* $2$^* requested a log of recent building activity.") ), "buildlog",
-			                            Quote( ent->client->pers.netname ) ) );
+			trap_SendServerCommand( -1, va( "print_tr %s %s %s",
+				QQ( N_("^3$1$:^* $2$^* requested a log of recent building activity.") ),
+				"buildlog",
+				Quote( ent->client->pers.netname ) ) );
 		}
 		else
 		{
 			// FIXME? Send only to team-mates
-			trap_SendServerCommand( -1,
-			                        va( "print_tr %s %s %s %s", QQ( N_("^3$1$:^* $2$^* requested a log of recent $3$ building activity.") ), "buildlog",
-			                            Quote( ent->client->pers.netname ), Quote( BG_TeamName( team ) ) ) );
+			trap_SendServerCommand( -1, va( "print_tr %s %s %s %s",
+				QQ( N_("^3$1$:^* $2$^* requested a log of recent $3$ building activity.") ),
+				"buildlog",
+				Quote( ent->client->pers.netname ), Quote( BG_TeamName( team ) ) ) );
 		}
 	}
 
