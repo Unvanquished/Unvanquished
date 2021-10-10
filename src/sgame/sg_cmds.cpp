@@ -2007,11 +2007,10 @@ void Cmd_CallVote_f( gentity_t *ent )
 	// Append the vote reason (if applicable)
 	if ( reason[ 0 ] )
 	{
-		// FIXME: building strings like that is very english centric.
 		Q_strcat( level.team[ team ].voteDisplayString,
 		          sizeof( level.team[ team ].voteDisplayString ), " " );
 		Q_strcat( level.team[ team ].voteDisplayString,
-		          sizeof( level.team[ team ].voteDisplayString ), va( N_("for '%s'"), reason ) );
+		          sizeof( level.team[ team ].voteDisplayString ), va( N_(", reason: '%s'"), reason ) );
 	}
 
 	G_LogPrintf( "%s: %d \"%s^*\": %s",
