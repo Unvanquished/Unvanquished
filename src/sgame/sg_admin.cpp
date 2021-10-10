@@ -3034,6 +3034,7 @@ bool G_admin_adjustban( gentity_t *ent )
 		Q_strncpyz( ban->reason, reason, sizeof( ban->reason ) );
 	}
 
+	// FIXME: are substring translated?
 	admin_log( va( "%d (%s) \"%s^*\": \"%s^*\": [%s]",
 	               ban->expires ? ban->expires - time : 0, ban->guid, ban->name, ban->reason,
 	               ban->ip.str ) );
@@ -3045,10 +3046,10 @@ bool G_admin_adjustban( gentity_t *ent )
 		Quote( ban->name ),
 		G_quoted_admin_name( ent ),
 		( mask ) ? Quote( va( "netmask: /%d%s", mask, ( length >= 0 || *reason ) ? ", " : "" ) ) : "",
-		( length >= 0 ) ? QQ( N_( "duration: " ) ) : "",
+		( length >= 0 ) ? QQ( N_( "duration:" ) " " ) : "",
 		Quote( seconds ), duration,
 		( length >= 0 && *reason ) ? ", " : "",
-		( *reason ) ? QQ( N_( "reason: ") ) : "",
+		( *reason ) ? QQ( N_( "reason:") " " ) : "",
 		Quote( reason ) ) );
 
 	if ( ent )
