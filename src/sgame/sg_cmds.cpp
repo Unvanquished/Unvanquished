@@ -718,11 +718,11 @@ void Cmd_God_f( gentity_t *ent )
 
 	if ( !( ent->flags & FL_GODMODE ) )
 	{
-		msg = QQ( N_("godmode OFF.") );
+		msg = QQ( N_("godmode OFF") );
 	}
 	else
 	{
-		msg = QQ( N_("godmode ON.") );
+		msg = QQ( N_("godmode ON") );
 	}
 
 	trap_SendServerCommand( ent - g_entities, va( "print_tr %s", msg ) );
@@ -745,11 +745,11 @@ void Cmd_Notarget_f( gentity_t *ent )
 
 	if ( !( ent->flags & FL_NOTARGET ) )
 	{
-		msg = QQ( N_("notarget OFF.") );
+		msg = QQ( N_("notarget OFF") );
 	}
 	else
 	{
-		msg = QQ( N_("notarget ON.") );
+		msg = QQ( N_("notarget ON") );
 	}
 
 	trap_SendServerCommand( ent - g_entities, va( "print_tr %s", msg ) );
