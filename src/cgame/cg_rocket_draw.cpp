@@ -63,6 +63,66 @@ static void CG_GetRocketElementRect( rectDef_t *rect )
 	rect->h = ( rect->h / cgs.glconfig.vidHeight ) * 480;
 }
 
+static bool updateLanguage;
+void Rocket_UpdateLanguage()
+{
+	updateLanguage = true;
+	if ( menuContext )
+		menuContext->Update();
+	if ( hudContext )
+		hudContext->Update();
+	updateLanguage = false;
+}
+class TranslateElement : public Rml::Core::Element
+{
+public:
+	TranslateElement(const Rml::Core::String& tag) : Rml::Core::Element(tag) {}
+
+private:
+	void FillTranslatedContent()
+	{
+		const char* translated = Trans_Gettext( originalRML_.c_str() );
+		if ( flags_ != 0 )
+		{
+			SetInnerRML( Rocket_QuakeToRML( translated, flags_ ) );
+		}
+		else
+		{
+			SetInnerRML( translated );
+		}
+	}
+
+	void OnUpdate() override
+	{
+		if ( updateLanguage && !originalRML_.empty() )
+			FillTranslatedContent();
+	}
+
+	// Initialization is done in OnRender instead of OnUpdate because doing it in OnUpdate somehow
+	// results in a new <translate> element being created with the already-translated content?
+	// But updateLanguage can't be handled in OnRender due to non-visible content.
+	void OnRender() override
+	{
+		if ( originalRML_.empty() )
+		{
+			GetInnerRML(originalRML_);
+			if ( HasAttribute( "quake" ) )
+			{
+				flags_ |= RP_QUAKE;
+			}
+
+			if ( HasAttribute( "emoticons" ) )
+			{
+				flags_ |= RP_EMOTICONS;
+			}
+			FillTranslatedContent();
+		}
+	}
+
+	Rml::Core::String originalRML_;
+	int flags_ = 0;
+};
+
 class HudElement : public Rml::Core::Element
 {
 public:
@@ -3593,4 +3653,5 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<BeaconOwnerElement>( "beacon_owner" );
 	RegisterElement<PredictedMineEfficiencyElement>( "predictedMineEfficiency" );
 	RegisterElement<BarbsHudElement>( "barbs" );
+	RegisterElement<TranslateElement>( "translate" );
 }

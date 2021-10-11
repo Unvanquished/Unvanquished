@@ -2330,6 +2330,7 @@ void Rocket_LoadFont( const char *font );
 void Rocket_Rocket_f( void );
 void Rocket_Lua_f( void );
 void Rocket_RocketDebug_f();
+void Rocket_UpdateLanguage();
 
 //
 // CombatFeedback.cpp

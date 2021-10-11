@@ -40,11 +40,10 @@ Maryland 20850 USA.
 #include "tinygettext/tinygettext.hpp"
 #include "tinygettext/file_system.hpp"
 
-#include "cg_ui.h"
-
-using ::tinygettext::Language;
+#include "cg_local.h"
 
 static Log::Logger LOG(VM_STRING_PREFIX "translation");
+using namespace tinygettext;
 
 // Ugly char buffer
 static std::string gettextbuffer[ 4 ];
@@ -217,8 +216,6 @@ Trans_SetLanguage
 
 Sets a loaded language. If desired language is not found, set closest match.
 If no languages are close, force English.
-
-TODO reload the UI (after RML translation is implemented)
 ====================
 */
 
@@ -256,9 +253,11 @@ static void Trans_SetLanguage( const char* lang )
 	LOG.Notice( "Set language to %s" , bestLang.get_name().c_str() );
 }
 
+// TODO: update automatically on modification instead of having this stupid command
 void Trans_UpdateLanguage_f()
 {
 	Trans_SetLanguage( Cvar::GetValue( "language" ).c_str() );
+	Rocket_UpdateLanguage();
 }
 
 /*
@@ -295,7 +294,7 @@ void Trans_Init()
 
 	LOG.Notice( "Loaded %u language%s", langs.size(), ( langs.size() == 1 ? "" : "s" ) );
 
-	Trans_UpdateLanguage_f();
+	Trans_SetLanguage( Cvar::GetValue( "language" ).c_str() );
 }
 
 const char* Trans_Gettext( const char *msgid )
