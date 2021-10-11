@@ -111,7 +111,9 @@ static const char *CG_KeyNameForCommand( const char *command )
 			{
 				if ( !keyNames.empty() )
 				{
-					keyNames += ' ' + _("or") + ' ';
+					keyNames += " ";
+					keyNames += _("or");
+					keyNames += " ";
 				}
 				keyNames += CG_KeyDisplayName( key );
 			}
