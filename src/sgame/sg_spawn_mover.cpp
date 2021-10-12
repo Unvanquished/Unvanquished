@@ -2449,34 +2449,44 @@ void SP_func_dynamic( gentity_t *self )
 
 ROTATING
 
+QUAKED func_rotating (0 .5 .8) ? START_ON - X_AXIS Y_AXIS
+You need to have an origin brush as part of this entity.  The center of that brush will be
+the point around which it is rotated. It will rotate around the Z axis by default.  You can
+check either the X_AXIS or Y_AXIS box to change that.
+"model2"  .md3 model to also draw
+"speed"   determines how fast it moves; default value is 100.
+"dmg"   damage to inflict when blocked (2 default)
+"color"   constantLight color
+"light"   constantLight radius
+
 ===============================================================================
 */
 
 void SP_func_rotating( gentity_t *self )
 {
-	G_ResetFloatField(&self->speed, false, self->config.speed, self->eclass->config.speed, 400);
+	G_ResetFloatField(&self->speed, false, self->config.speed, self->eclass->config.speed, 100);
 
 	// set the axis of rotation
 	self->s.apos.trType = trType_t::TR_LINEAR;
 
 	if ( self->spawnflags & 4 )
 	{
-		self->s.apos.trDelta[ 2 ] = self->config.speed;
+		self->s.apos.trDelta[ 2 ] = self->speed;
 	}
 	else if ( self->spawnflags & 8 )
 	{
-		self->s.apos.trDelta[ 0 ] = self->config.speed;
+		self->s.apos.trDelta[ 0 ] = self->speed;
 	}
 	else
 	{
-		self->s.apos.trDelta[ 1 ] = self->config.speed;
+		self->s.apos.trDelta[ 1 ] = self->speed;
 	}
 
 	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
-	reset_moverspeed( self, 400 );
+	reset_moverspeed( self, 100 );
 
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
