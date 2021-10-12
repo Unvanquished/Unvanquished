@@ -80,6 +80,35 @@ class TranslateElement : public Rml::Element
 public:
 	TranslateElement(const Rml::String& tag) : Rml::Element(tag) {}
 
+	void InitContent(const Rml::String& content)
+	{
+		originalRML_ = content;
+		if ( HasAttribute( "quake" ) )
+		{
+			flags_ |= RP_QUAKE;
+		}
+
+		if ( HasAttribute( "emoticons" ) )
+		{
+			flags_ |= RP_EMOTICONS;
+		}
+		FillTranslatedContent();
+	}
+
+	// The translate elements needs to be serializable in some cases. For example,
+	// for some reason dropdown menus construct copies of their choices from the RML text.
+	void GetRML(Rml::String& out) override
+	{
+		out.append("<translate");
+		if (flags_ & RP_QUAKE)
+			out.append(" quake");
+		if (flags_ & RP_EMOTICONS)
+			out.append(" emoticons");
+		out.push_back('>');
+		out.append(originalRML_);
+		out.append("</translate>");
+	}
+
 private:
 	void FillTranslatedContent()
 	{
@@ -96,33 +125,52 @@ private:
 
 	void OnUpdate() override
 	{
-		if ( updateLanguage && !originalRML_.empty() )
+		if ( updateLanguage )
 			FillTranslatedContent();
-	}
-
-	// Initialization is done in OnRender instead of OnUpdate because doing it in OnUpdate somehow
-	// results in a new <translate> element being created with the already-translated content?
-	// But updateLanguage can't be handled in OnRender due to non-visible content.
-	void OnRender() override
-	{
-		if ( originalRML_.empty() )
-		{
-			GetInnerRML(originalRML_);
-			if ( HasAttribute( "quake" ) )
-			{
-				flags_ |= RP_QUAKE;
-			}
-
-			if ( HasAttribute( "emoticons" ) )
-			{
-				flags_ |= RP_EMOTICONS;
-			}
-			FillTranslatedContent();
-		}
 	}
 
 	Rml::String originalRML_;
 	int flags_ = 0;
+};
+
+class TranslateNodeHandler : public Rml::XMLNodeHandler
+{
+	// Copied from XMLNodeHandlerDefault::ElementStart, which is declared in a private header
+	// so I shouldn't inherit from it
+	Rml::Element* DefaultElementStart(
+		Rml::XMLParser* parser, const Rml::String& name, const Rml::XMLAttributes& attributes)
+	{
+		Rml::Element* parent = parser->GetParseFrame()->element;
+		Rml::ElementPtr element = Rml::Factory::InstanceElement(parent, name, name, attributes);
+		if (!element)
+		{
+			Log::Warn("Failed to create element for <translate>");
+			return nullptr;
+		}
+		Rml::Element* result = parent->AppendChild(std::move(element));
+		return result;
+	}
+
+	Rml::Element* ElementStart(
+		Rml::XMLParser* parser, const Rml::String& name, const Rml::XMLAttributes& attributes) override
+	{
+		// BaseXMLParser checks for CDATAness *after* calling ElementStart, so we can do this.
+		parser->RegisterCDATATag("translate");
+
+		return DefaultElementStart(parser, name, attributes);
+	}
+
+	bool ElementData(Rml::XMLParser* parser, const Rml::String& data, Rml::XMLDataType type) override
+	{
+		ASSERT(dynamic_cast<TranslateElement*>(parser->GetParseFrame()->element));
+		if (type != Rml::XMLDataType::CData)
+			Log::Warn("unexpected argument to TranslateElement ElementData");
+		TranslateElement* element = static_cast<TranslateElement*>(parser->GetParseFrame()->element);
+		element->InitContent(data);
+		return true;
+	}
+
+	bool ElementEnd(Rml::XMLParser*, const Rml::String& data) override { return true; }
 };
 
 class HudElement : public Rml::Element
@@ -3673,6 +3721,8 @@ void CG_Rocket_RenderElement( const char *tag )
 
 void CG_Rocket_RegisterElements()
 {
+	Rml::XMLParser::RegisterNodeHandler("translate", Rml::MakeShared<TranslateNodeHandler>());
+
 	for ( unsigned i = 0; i < elementRenderCmdListCount; i++ )
 	{
 		//Check that the commands are in increasing order so that it can be used by bsearch

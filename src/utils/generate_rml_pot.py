@@ -38,10 +38,6 @@ def process_file(rml_file):
                     error("leading or trailing whitespace in translated string")
                 if "\n" in content:
                     error("translated string should not contain newlines")
-                for empty_element in re.finditer(r"<(\w+)(\s*/\s*)>", content):
-                    if empty_element.group(2) != " /":
-                        correct = f"<{empty_element.group(1)} />"
-                        error(f"empty element should be formatted like {correct} to match RmlUi's GetInnerRML()")
                 translation_dict[content].append(f"{rml_file.name}:{line}")
                 text_start = None
         else:
