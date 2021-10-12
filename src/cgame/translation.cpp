@@ -40,8 +40,9 @@ Maryland 20850 USA.
 #include "tinygettext/tinygettext.hpp"
 #include "tinygettext/file_system.hpp"
 
+using ::tinygettext::Language;
+
 static Log::Logger LOG(VM_STRING_PREFIX "translation");
-using namespace tinygettext;
 
 // Ugly char buffer
 static std::string gettextbuffer[ 4 ];
@@ -148,7 +149,7 @@ Uses the engine's File I/O functions for this purpose
 ====================
 */
 
-class DaemonFileSystem : public FileSystem
+class DaemonFileSystem : public tinygettext::FileSystem
 {
 public:
 	DaemonFileSystem() = default;
@@ -175,7 +176,7 @@ public:
 	}
 };
 
-static DictionaryManager trans_manager{ "UTF-8", Util::make_unique<DaemonFileSystem>() };
+static tinygettext::DictionaryManager trans_manager{ "UTF-8", Util::make_unique<DaemonFileSystem>() };
 
 /*
 ====================
@@ -266,7 +267,7 @@ void Trans_Init()
 	tinygettext::Log::set_log_warning_callback( &Trans_Warning );
 	tinygettext::Log::set_log_info_callback( &Trans_Info );
 
-	trans_manager.set_filesystem( std::unique_ptr<FileSystem>( new DaemonFileSystem ) );
+	trans_manager.set_filesystem( Util::make_unique<DaemonFileSystem>() );
 
 	trans_manager.add_directory( "translation/game" );
 
@@ -286,7 +287,7 @@ void Trans_Init()
 	Trans_UpdateLanguage_f();
 }
 
-const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manager )
+const char* Trans_Gettext( const char *msgid )
 {
 	if ( !msgid )
 	{
@@ -294,11 +295,11 @@ const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manage
 	}
 
 	num = ( num + 1 ) & 3;
-	gettextbuffer[ num ] = manager.get_dictionary().translate( msgid );
+	gettextbuffer[ num ] = trans_manager.get_dictionary().translate( msgid );
 	return gettextbuffer[ num ].c_str();
 }
 
-const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, DictionaryManager& manager )
+const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
 	if ( !ctxt || !msgid )
 	{
@@ -306,11 +307,11 @@ const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, Dictio
 	}
 
 	num = ( num + 1 ) & 3;
-	gettextbuffer[ num ] = manager.get_dictionary().translate_ctxt( ctxt, msgid );
+	gettextbuffer[ num ] = trans_manager.get_dictionary().translate_ctxt( ctxt, msgid );
 	return gettextbuffer[ num ].c_str();
 }
 
-const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_plural, int number, DictionaryManager& manager )
+const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int number )
 {
 	if ( !msgid || !msgid_plural )
 	{
@@ -328,20 +329,6 @@ const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_p
 	}
 
 	num = ( num + 1 ) & 3;
-	gettextbuffer[ num ] = manager.get_dictionary().translate_plural( msgid, msgid_plural, number );
+	gettextbuffer[ num ] = trans_manager.get_dictionary().translate_plural( msgid, msgid_plural, number );
 	return gettextbuffer[ num ].c_str();
-}
-
-const char* Trans_Gettext( const char *msgid )
-{
-	return Trans_Gettext_Internal( msgid, trans_manager );
-}
-
-const char* Trans_Pgettext( const char *ctxt, const char *msgid )
-{
-	return Trans_Pgettext_Internal( ctxt, msgid, trans_manager );
-}
-const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
-{
-	return Trans_GettextPlural_Internal( msgid, msgid_plural, num, trans_manager );
 }
