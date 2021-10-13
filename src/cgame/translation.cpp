@@ -181,23 +181,32 @@ static tinygettext::DictionaryManager trans_manager{ "UTF-8", Util::make_unique<
 /*
 ====================
 Logging functions used by tinygettext
-TODO: trim off the trailing newlines
 ====================
 */
 
-void Trans_Error( const std::string& str )
+static std::string Trimmed( const std::string& str )
 {
-	LOG.Warn( str );
+	std::string trimmed = str;
+	while ( !trimmed.empty() && ( trimmed.back() == '\r' || trimmed.back() == '\n' ) )
+	{
+		trimmed.pop_back();
+	}
+	return trimmed;
 }
 
-void Trans_Warning( const std::string& str )
+static void Trans_Error( const std::string& str )
 {
-	LOG.Notice( str );
+	LOG.DoWarnCode([&] { LOG.Warn(Trimmed(str)); });
 }
 
-void Trans_Info( const std::string& str )
+static void Trans_Warning( const std::string& str )
 {
-	LOG.Verbose( str );
+	LOG.DoNoticeCode([&] { LOG.Notice(Trimmed(str)); });
+}
+
+static void Trans_Info( const std::string& str )
+{
+	LOG.DoVerboseCode([&] { LOG.Verbose(Trimmed(str)); });
 }
 
 /*
@@ -289,6 +298,7 @@ void Trans_Init()
 
 const char* Trans_Gettext( const char *msgid )
 {
+	LOG.Debug( "translate[_]: %s", msgid );
 	if ( !msgid )
 	{
 		return msgid;
@@ -301,6 +311,7 @@ const char* Trans_Gettext( const char *msgid )
 
 const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
+	LOG.Debug( "translate[_G]: %s", msgid );
 	if ( !ctxt || !msgid )
 	{
 		return msgid;
@@ -313,6 +324,7 @@ const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 
 const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int number )
 {
+	LOG.Debug( "translate[_P]: %s", msgid );
 	if ( !msgid || !msgid_plural )
 	{
 		if ( msgid )
