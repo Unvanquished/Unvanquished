@@ -1852,6 +1852,8 @@ extern vmCvar_t             ui_chatPromptColors;
 extern vmCvar_t             cg_spawnEffects;
 extern vmCvar_t             cg_sayCommand;
 
+extern Cvar::Cvar<bool> cg_lazyLoadModels;
+
 //
 // Rocket cvars
 //

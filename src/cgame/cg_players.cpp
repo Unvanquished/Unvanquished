@@ -1378,6 +1378,17 @@ static int CG_GetCorpseNum( class_t class_ )
 		return class_;
 	}
 
+	// happens when cg_lazyLoadModels is on
+	Log::Verbose( "lazily loading class %d corpseinfo", class_ );
+	CG_PrecacheClientInfo( class_, modelName, skinName );
+
+	if ( match->infoValid &&
+	     !Q_stricmp( modelName, match->modelName ) &&
+	     !Q_stricmp( skinName, match->skinName ) )
+	{
+		return class_;
+	}
+
 	//something has gone horribly wrong
 	return -1;
 }

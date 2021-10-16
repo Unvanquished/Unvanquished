@@ -168,6 +168,12 @@ vmCvar_t        cg_fov_human;
 vmCvar_t        ui_chatPromptColors;
 vmCvar_t        cg_sayCommand;
 
+// CHEAT because it could be abused to join the game faster and e.g. get on your preferred team
+// It's intended to aid developers who are frequently restarting the game.
+// In normal play, it would be undesirable as it causes lag when someone first uses a class.
+// TODO: only works for player models. Buildings and weapons are also relevant
+Cvar::Cvar<bool> cg_lazyLoadModels("cg_lazyLoadModels", "load models only when needed", Cvar::CHEAT, false);
+
 namespace {
 struct cvarTable_t
 {
@@ -1221,13 +1227,16 @@ static void CG_RegisterClients()
 	cg.charModelFraction = 0.0f;
 
 	//precache all the models/sounds/etc
-	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
+	if ( !cg_lazyLoadModels.Get() )
 	{
-		CG_PrecacheClientInfo( (class_t) i, BG_ClassModelConfig( i )->modelName,
-		                       BG_ClassModelConfig( i )->skinName );
+		for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
+		{
+			CG_PrecacheClientInfo( (class_t) i, BG_ClassModelConfig( i )->modelName,
+			                       BG_ClassModelConfig( i )->skinName );
 
-		cg.charModelFraction = ( float ) i / ( float ) PCL_NUM_CLASSES;
-		trap_UpdateScreen();
+			cg.charModelFraction = ( float ) i / ( float ) PCL_NUM_CLASSES;
+			trap_UpdateScreen();
+		}
 	}
 
 	// Borrow these variables for MD5 models so we don't have to create new ones.
