@@ -1651,7 +1651,7 @@ struct cgs_t
 	bool     teamInfoReceived;
 
 	// corpse info
-	clientInfo_t corpseinfo[ MAX_CLIENTS ];
+	clientInfo_t corpseinfo[ PCL_NUM_CLASSES ];
 
 	buildStat_t  alienBuildStat;
 	buildStat_t  humanBuildStat;

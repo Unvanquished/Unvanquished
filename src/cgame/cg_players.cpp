@@ -1361,7 +1361,6 @@ CG_GetCorpseNum
 */
 static int CG_GetCorpseNum( class_t class_ )
 {
-	int          i;
 	clientInfo_t *match;
 	char         *modelName;
 	char         *skinName;
@@ -1369,21 +1368,14 @@ static int CG_GetCorpseNum( class_t class_ )
 	modelName = BG_ClassModelConfig( class_ )->modelName;
 	skinName = BG_ClassModelConfig( class_ )->skinName;
 
-	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
+	match = &cgs.corpseinfo[ class_ ];
+
+	if ( match->infoValid &&
+	     !Q_stricmp( modelName, match->modelName ) &&
+	     !Q_stricmp( skinName, match->skinName ) )
 	{
-		match = &cgs.corpseinfo[ i ];
-
-		if ( !match->infoValid )
-		{
-			continue;
-		}
-
-		if ( !Q_stricmp( modelName, match->modelName ) &&
-		     !Q_stricmp( skinName, match->skinName ) )
-		{
-			// this clientinfo is identical, so use its handles
-			return i;
-		}
+		// this clientinfo is identical, so use its handles
+		return class_;
 	}
 
 	//something has gone horribly wrong
@@ -1404,12 +1396,8 @@ static bool CG_ScanForExistingClientInfo( clientInfo_t *ci )
 	{
 		match = &cgs.corpseinfo[ i ];
 
-		if ( !match->infoValid )
-		{
-			continue;
-		}
-
-		if ( !Q_stricmp( ci->modelName, match->modelName ) &&
+		if ( match->infoValid &&
+		     !Q_stricmp( ci->modelName, match->modelName ) &&
 		     !Q_stricmp( ci->skinName, match->skinName ) )
 		{
 			// this clientinfo is identical, so use its handles
@@ -3415,19 +3403,12 @@ void CG_Corpse( centity_t *cent )
 
 	corpseNum = CG_GetCorpseNum( (class_t) es->clientNum );
 
-	if ( corpseNum < 0 || corpseNum >= MAX_CLIENTS )
+	if ( corpseNum < 0 )
 	{
 		Sys::Drop( "Bad corpseNum on corpse entity: %d", corpseNum );
 	}
 
 	ci = &cgs.corpseinfo[ corpseNum ];
-
-	// it is possible to see corpses from disconnected players that may
-	// not have valid clientinfo
-	if ( !ci->infoValid )
-	{
-		return;
-	}
 
 	refEntity_t legs{}, torso{}, head{};
 
