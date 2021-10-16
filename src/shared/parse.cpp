@@ -4226,7 +4226,6 @@ Parse_ReadTokenHandle
 bool Parse_ReadTokenHandle( int handle, pc_token_t *pc_token )
 {
 	token_t token;
-	bool     ret;
 
 	if ( handle < 1 || handle >= MAX_SOURCEFILES )
 	{
@@ -4238,7 +4237,11 @@ bool Parse_ReadTokenHandle( int handle, pc_token_t *pc_token )
 		return false;
 	}
 
-	ret = Parse_ReadToken( sourceFiles[ handle ], &token );
+	if ( !Parse_ReadToken( sourceFiles[ handle ], &token ) )
+	{
+		return false;
+	}
+
 	Q_strncpyz( pc_token->string, token.string, sizeof pc_token->string );
 	pc_token->type = token.type;
 	pc_token->subtype = token.subtype;
@@ -4250,7 +4253,7 @@ bool Parse_ReadTokenHandle( int handle, pc_token_t *pc_token )
 		Parse_StripDoubleQuotes( pc_token->string );
 	}
 
-	return ret;
+	return true;
 }
 
 /*
