@@ -1356,10 +1356,10 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 
 /*
 ======================
-CG_GetCorpseNum
+GetCorpseInfo
 ======================
 */
-static int CG_GetCorpseNum( class_t class_ )
+static clientInfo_t *GetCorpseInfo( class_t class_ )
 {
 	clientInfo_t *match;
 	char         *modelName;
@@ -1375,7 +1375,7 @@ static int CG_GetCorpseNum( class_t class_ )
 	     !Q_stricmp( skinName, match->skinName ) )
 	{
 		// this clientinfo is identical, so use its handles
-		return class_;
+		return match;
 	}
 
 	// happens when cg_lazyLoadModels is on
@@ -1386,11 +1386,11 @@ static int CG_GetCorpseNum( class_t class_ )
 	     !Q_stricmp( modelName, match->modelName ) &&
 	     !Q_stricmp( skinName, match->skinName ) )
 	{
-		return class_;
+		return match;
 	}
 
 	//something has gone horribly wrong
-	return -1;
+	return nullptr;
 }
 
 /*
@@ -3407,19 +3407,17 @@ void CG_Corpse( centity_t *cent )
 {
 	clientInfo_t  *ci;
 	entityState_t *es = &cent->currentState;
-	int           corpseNum;
 	int           renderfx;
 	vec3_t        origin, liveZ, deadZ, deadMax;
 	float         scale;
 
-	corpseNum = CG_GetCorpseNum( (class_t) es->clientNum );
+	ci = GetCorpseInfo( (class_t) es->clientNum );
 
-	if ( corpseNum < 0 )
+	if ( ci == nullptr )
 	{
-		Sys::Drop( "Bad corpseNum on corpse entity: %d", corpseNum );
+		Log::Warn( "Missing corpseinfo on corpse entity: %d", es->clientNum );
+		return;
 	}
-
-	ci = &cgs.corpseinfo[ corpseNum ];
 
 	refEntity_t legs{}, torso{}, head{};
 
