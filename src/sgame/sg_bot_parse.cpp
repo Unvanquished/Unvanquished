@@ -91,52 +91,44 @@ static AIValue_t botTeam( gentity_t *self, const AIValue_t* )
 
 static AIValue_t goalTeam( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( G_Team( self->botMind->goal.ent ) );
+	if ( !self->botMind->goal.targetsValidEntity() )
+		return AIBoxInt( TEAM_NONE );
+	return AIBoxInt( G_Team( self->botMind->goal.getTargetedEntity() ) );
 }
 
 static AIValue_t goalType( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( Util::ordinal(BotGetTargetType( self->botMind->goal )) );
+	return AIBoxInt( Util::ordinal( self->botMind->goal.getTargetType() ) );
 }
 
-// TODO: Check if we can just check for HealthComponent.
 static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 {
-	bool dead = false;
-	botTarget_t *goal = &self->botMind->goal;
+	const gentity_t *target =
+		self->botMind->goal.getTargetedEntity();
 
-	if ( !BotTargetIsEntity( *goal ) )
+	if ( !self->botMind->goal.targetsValidEntity() )
 	{
-		dead = true;
+		return AIBoxInt( true );
 	}
-	else if ( G_Team( goal->ent ) == TEAM_NONE )
+	// is this needed?
+	else if ( target->s.eType == entityType_t::ET_BUILDABLE && target->buildableTeam == self->client->pers.team && !target->powered )
 	{
-		dead = true;
-	}
-	else if ( !Entities::IsAlive( self->botMind->goal.ent ) )
-	{
-		dead = true;
-	}
-	else if ( goal->ent->client && goal->ent->client->sess.spectatorState != SPECTATOR_NOT )
-	{
-		dead = true;
-	}
-	else if ( goal->ent->s.eType == entityType_t::ET_BUILDABLE && goal->ent->buildableTeam == self->client->pers.team && !goal->ent->powered )
-	{
-		dead = true;
+		return AIBoxInt( true );
 	}
 
-	return AIBoxInt( dead );
+	return AIBoxInt( false );
 }
 
 static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t* )
 {
-	if ( BotGetTargetType( self->botMind->goal ) != entityType_t::ET_BUILDABLE )
+	if ( self->botMind->goal.getTargetType() != entityType_t::ET_BUILDABLE )
 	{
 		return AIBoxInt( BA_NONE );
 	}
 
-	return AIBoxInt( self->botMind->goal.ent->s.modelindex );
+	// entity has to be valid now or we would have returned BA_NONE
+	const gentity_t *ent = self->botMind->goal.getTargetedEntity();
+	return AIBoxInt( ent->s.modelindex );
 }
 
 static AIValue_t currentWeapon( gentity_t *self, const AIValue_t* )
@@ -199,7 +191,7 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 		return AIBoxInt( false );
 	}
 
-	BotSetTarget( &target, e.ent, nullptr );
+	target = e.ent;
 
 	if ( BotTargetInAttackRange( self, target ) )
 	{
@@ -220,11 +212,11 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 		return AIBoxInt( false );
 	}
 
-	BotSetTarget( &target, e.ent, nullptr );
+	target = e.ent;
 
 	if ( BotTargetIsVisible( self, target, CONTENTS_SOLID ) )
 	{
-		if ( BotEnemyIsValid( self, e.ent ) )
+		if ( BotEntityIsValidTarget( e.ent ) )
 		{
 			self->botMind->enemyLastSeen = level.time;
 		}
@@ -251,7 +243,7 @@ static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 	else if ( ed.ent )
 	{
 		botTarget_t target;
-		BotSetTarget( &target, ed.ent, nullptr );
+		target = ed.ent;
 		return AIBoxInt( BotPathIsWalkable( self, target ) );
 	}
 

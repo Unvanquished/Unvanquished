@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
 
+#include "sg_struct.h"
+
 #define UNNAMED_BOT "[bot] Bot"
 
 struct botEntityAndDistance_t
@@ -34,11 +36,28 @@ struct botEntityAndDistance_t
 	float distance;
 };
 
-struct botTarget_t
+class botTarget_t
 {
-	gentity_t const *ent;
+public:
+	botTarget_t& operator=(const gentity_t *ent);
+	botTarget_t& operator=(const vec3_t pos);
+	void clear();
+	entityType_t getTargetType() const;
+	bool isValid() const;
+	// checks if the target is a position
+	bool targetsCoordinates() const;
+	// checks if target is an entity, isn't recycled yet
+	// and is still alive
+	bool targetsValidEntity() const;
+	// note you should use "targetsValidEntity" along with this
+	const gentity_t *getTargetedEntity() const;
+	// note if you don't check with "isValid" first, you may
+	// have garbage as a result
+	void getPos(vec3_t out) const;
+private:
+	GentityConstRef ent;
 	vec3_t coord;
-	bool inuse;
+	enum class targetType { EMPTY, COORDS, ENTITY } type;
 };
 
 #define MAX_ENEMY_QUEUE 32

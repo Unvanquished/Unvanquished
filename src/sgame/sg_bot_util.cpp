@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
 #include "CBSE.h"
+#include "shared/bg_local.h" // MIN_WALK_NORMAL
 #include "Entities.h"
 
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
@@ -762,14 +763,14 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 bool BotEntityIsVisible( const gentity_t *self, gentity_t *target, int mask )
 {
 	botTarget_t bt;
-	BotSetTarget( &bt, target, nullptr );
+	bt = target;
 	return BotTargetIsVisible( self, bt, mask );
 }
 
 gentity_t* BotFindBestEnemy( gentity_t *self )
 {
-	float bestVisibleEnemyScore = 0;
-	float bestInvisibleEnemyScore = 0;
+	float bestVisibleEnemyScore = 0.0f;
+	float bestInvisibleEnemyScore = 0.0f;
 	gentity_t *bestVisibleEnemy = nullptr;
 	gentity_t *bestInvisibleEnemy = nullptr;
 	gentity_t *target;
@@ -781,7 +782,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	{
 		float newScore;
 
-		if ( !BotEnemyIsValid( self, target ) )
+		if ( !BotEntityIsValidEnemyTarget( self, target ) )
 		{
 			continue;
 		}
@@ -797,7 +798,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			continue;
 		}
 
-		if ( target == self->botMind->goal.ent )
+		if ( target == self->botMind->goal.getTargetedEntity() )
 		{
 			continue;
 		}
@@ -841,7 +842,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 			continue;
 		}
 
-		if ( !BotEnemyIsValid( self, target ) )
+		if ( !BotEntityIsValidEnemyTarget( self, target ) )
 		{
 			continue;
 		}
@@ -882,7 +883,7 @@ botTarget_t BotGetRushTarget( const gentity_t *self )
 			rushTarget = self->botMind->closestBuildings[BA_H_REACTOR].ent;
 		}
 	}
-	BotSetTarget( &target, rushTarget, nullptr );
+	target = rushTarget;
 	return target;
 }
 
@@ -905,7 +906,7 @@ botTarget_t BotGetRetreatTarget( const gentity_t *self )
 			retreatTarget = self->botMind->closestBuildings[BA_A_OVERMIND].ent;
 		}
 	}
-	BotSetTarget( &target, retreatTarget, nullptr );
+	target = retreatTarget;
 	return target;
 }
 
@@ -915,7 +916,7 @@ botTarget_t BotGetRoamTarget( const gentity_t *self )
 	vec3_t targetPos;
 
 	BotFindRandomPointOnMesh( self, targetPos );
-	BotSetTarget( &target, nullptr, targetPos );
+	target = targetPos;
 	return target;
 }
 
@@ -925,136 +926,89 @@ BotTarget Helpers
 ========================
 */
 
-void BotSetTarget( botTarget_t *target, gentity_t const*ent, vec3_t pos )
+static void BotTargetGetBoundingBox( botTarget_t target, vec3_t mins, vec3_t maxs, botRouteTarget_t *routeTarget )
 {
-	if ( ent )
-	{
-		target->ent = ent;
-		VectorClear( target->coord );
-		target->inuse = true;
-	}
-	else if ( pos )
-	{
-		target->ent = nullptr;
-		VectorCopy( pos, target->coord );
-		target->inuse = true;
-	}
-	else
-	{
-		target->ent = nullptr;
-		VectorClear( target->coord );
-		target->inuse = false;
-	}
-}
+	ASSERT( target.isValid() );
 
-bool BotTargetIsEntity( botTarget_t target )
-{
-	return ( target.ent && target.ent->inuse );
-}
-
-bool BotTargetIsPlayer( botTarget_t target )
-{
-	return ( target.ent && target.ent->inuse && target.ent->client );
-}
-
-int BotGetTargetEntityNumber( botTarget_t target )
-{
-	if ( BotTargetIsEntity( target ) )
-	{
-		return target.ent->s.number;
-	}
-	else
-	{
-		return ENTITYNUM_NONE;
-	}
-}
-
-void BotGetTargetPos( botTarget_t target, vec3_t rVec )
-{
-	if ( BotTargetIsEntity( target ) )
-	{
-		VectorCopy( target.ent->s.origin, rVec );
-	}
-	else
-	{
-		VectorCopy( target.coord, rVec );
-	}
-}
-
-void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget )
-{
-	vec3_t mins, maxs;
-
-	if ( BotTargetIsEntity( target ) )
-	{
-		if ( target.ent->client )
-		{
-			BG_ClassBoundingBox( ( class_t ) target.ent->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
-		}
-		else if ( target.ent->s.eType == entityType_t::ET_BUILDABLE )
-		{
-			BG_BuildableBoundingBox( ( buildable_t ) target.ent->s.modelindex, mins, maxs );
-		}
-		else
-		{
-			VectorCopy( target.ent->r.mins, mins );
-			VectorCopy( target.ent->r.maxs, maxs );
-		}
-
-		if ( BotTargetIsPlayer( target ) )
-		{
-			routeTarget->type = botRouteTargetType_t::BOT_TARGET_DYNAMIC;
-		}
-		else
-		{
-			routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
-		}
-	}
-	else
+	if ( target.targetsCoordinates() )
 	{
 		// point target
 		VectorSet( maxs, 96, 96, 96 );
 		VectorSet( mins, -96, -96, -96 );
 		routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
+		return;
 	}
-	
+
+	// entity
+	const gentity_t *ent = target.getTargetedEntity();
+	bool isPlayer = ent->client != nullptr;
+	if ( isPlayer )
+	{
+		class_t class_ = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
+		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
+	}
+	else if ( target.getTargetType() == entityType_t::ET_BUILDABLE )
+	{
+		BG_BuildableBoundingBox( ( buildable_t ) ent->s.modelindex, mins, maxs );
+	}
+	else
+	{
+		VectorCopy( ent->r.mins, mins );
+		VectorCopy( ent->r.maxs, maxs );
+	}
+
+	if ( isPlayer )
+	{
+		routeTarget->type = botRouteTargetType_t::BOT_TARGET_DYNAMIC;
+	}
+	else
+	{
+		routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
+	}
+}
+
+void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget )
+{
+	ASSERT( target.isValid() );
+
+	vec3_t mins, maxs;
+
+	target.getPos( routeTarget->pos );
+	BotTargetGetBoundingBox( target, mins, maxs, routeTarget );
+
 	for ( int i = 0; i < 3; i++ )
 	{
 		routeTarget->polyExtents[ i ] = std::max( Q_fabs( mins[ i ] ), maxs[ i ] );
 	}
 
-	BotGetTargetPos( target, routeTarget->pos );
-
 	// move center a bit lower so we don't get polys above the object
 	// and get polys below the object on a slope
 	routeTarget->pos[ 2 ] -= routeTarget->polyExtents[ 2 ] / 2;
 
-	// account for buildings on walls or cielings
-	if ( BotTargetIsEntity( target ) )
+	entityType_t entType = target.getTargetType();
+
+	// account for building on wall or ceiling
+	if ( entType == entityType_t::ET_PLAYER ||
+			( entType == entityType_t::ET_BUILDABLE
+			  && target.getTargetedEntity()->s.origin2[ 2 ] < MIN_WALK_NORMAL ) )
 	{
-		if ( target.ent->s.eType == entityType_t::ET_BUILDABLE || target.ent->s.eType == entityType_t::ET_PLAYER )
-		{
-			// building on wall or cieling ( 0.7 == MIN_WALK_NORMAL )
-			if ( target.ent->s.origin2[ 2 ] < 0.7 || target.ent->s.eType == entityType_t::ET_PLAYER )
-			{
-				vec3_t targetPos;
-				vec3_t end;
-				vec3_t invNormal = { 0, 0, -1 };
-				trace_t trace;
+		vec3_t targetPos;
+		vec3_t end;
+		vec3_t invNormal = { 0, 0, -1 };
+		trace_t trace;
 
-				routeTarget->polyExtents[ 0 ] += 25;
-				routeTarget->polyExtents[ 1 ] += 25;
-				routeTarget->polyExtents[ 2 ] += 300;
+		routeTarget->polyExtents[ 0 ] += 25;
+		routeTarget->polyExtents[ 1 ] += 25;
+		routeTarget->polyExtents[ 2 ] += 300;
 
-				// try to find a position closer to the ground
-				BotGetTargetPos( target, targetPos );
-				VectorMA( targetPos, 600, invNormal, end );
-				trap_Trace( &trace, targetPos, mins, maxs, end, target.ent->s.number,
-				            CONTENTS_SOLID, MASK_ENTITY );
-				VectorCopy( trace.endpos, routeTarget->pos );
-			}
-		}
+		// try to find a position closer to the ground
+		target.getPos( targetPos );
+		VectorMA( targetPos, 600, invNormal, end );
+		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->s.number,
+		            CONTENTS_SOLID, MASK_ENTITY );
+		VectorCopy( trace.endpos, routeTarget->pos );
 	}
+	
 
 	// increase extents a little to account for obstacles cutting into the navmesh
 	// also accounts for navmesh erosion at mesh boundrys
@@ -1062,21 +1016,9 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 	routeTarget->polyExtents[ 1 ] += self->r.maxs[ 1 ] + 10;
 }
 
-entityType_t BotGetTargetType( botTarget_t target )
-{
-	if ( BotTargetIsEntity( target ) )
-	{
-		return target.ent->s.eType;
-	}
-	else
-	{
-		return Util::enum_cast<entityType_t>(-1);
-	}
-}
-
 bool BotChangeGoal( gentity_t *self, botTarget_t target )
 {
-	if ( !target.inuse )
+	if ( !target.isValid() )
 	{
 		return false;
 	}
@@ -1094,19 +1036,21 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 bool BotChangeGoalEntity( gentity_t *self, gentity_t const *goal )
 {
 	botTarget_t target;
-	BotSetTarget( &target, goal, nullptr );
+	target = goal;
 	return BotChangeGoal( self, target );
 }
 
 bool BotChangeGoalPos( gentity_t *self, vec3_t goal )
 {
 	botTarget_t target;
-	BotSetTarget( &target, nullptr, goal );
+	target = goal;
 	return BotChangeGoal( self, target );
 }
 
 bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 {
+	ASSERT( target.targetsValidEntity() );
+
 	float range, secondaryRange;
 	vec3_t forward, right, up;
 	vec3_t muzzle;
@@ -1117,7 +1061,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
-	BotGetTargetPos( target, targetPos );
+	target.getPos( targetPos );
 	switch ( self->client->ps.weapon )
 	{
 		case WP_ABUILD:
@@ -1223,8 +1167,8 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				// FIXME: depend on the value of the flamer damage falloff cvar
 				// FIXME: have to stand further away from acid or will be
 				//        pushed back and will stop attacking (too far away)
-				if ( BotGetTargetType( target ) == entityType_t::ET_BUILDABLE &&
-				     target.ent->s.modelindex != BA_A_ACIDTUBE )
+				if ( target.getTargetType() == entityType_t::ET_BUILDABLE &&
+				     target.getTargetedEntity()->s.modelindex != BA_A_ACIDTUBE )
 				{
 					range -= 300;
 				}
@@ -1270,15 +1214,57 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	}
 }
 
+bool BotEntityIsValidTarget( const gentity_t *ent )
+{
+	// spectators are not considered alive
+	return ent != nullptr && ent->inuse && Entities::IsAlive(ent);
+}
+
+bool BotEntityIsValidEnemyTarget( const gentity_t *self, const gentity_t *enemy )
+{
+	if ( !BotEntityIsValidTarget( enemy ) )
+	{
+		return false;
+	}
+
+	// ignore neutrals
+	if ( G_Team( enemy ) == TEAM_NONE )
+	{
+		return false;
+	}
+
+	// ignore teamates
+	if ( G_OnSameTeam( self, enemy ) )
+	{
+		return false;
+	}
+
+	// ignore buildings if we can't attack them
+	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.integer )
+	{
+		return false;
+	}
+
+	// dretch limitations
+	if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && !G_DretchCanDamageEntity( self, enemy ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 {
+	ASSERT( target.targetsValidEntity() );
+
 	trace_t trace;
 	vec3_t  muzzle, targetPos;
 	vec3_t  forward, right, up;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
-	BotGetTargetPos( target, targetPos );
+	target.getPos( targetPos );
 
 	if ( !trap_InPVS( muzzle, targetPos ) )
 	{
@@ -1294,8 +1280,9 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	}
 
 	//target is in range
-	if ( ( trace.entityNum == BotGetTargetEntityNumber( target ) || trace.fraction == 1.0f ) &&
-	     !trace.startsolid )
+	if ( ( trace.entityNum == target.getTargetedEntity()->s.number
+				|| trace.fraction == 1.0f )
+			&& !trace.startsolid )
 	{
 		return true;
 	}
@@ -1310,20 +1297,21 @@ Bot Aiming
 
 void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation )
 {
-	//get the position of the target
-	BotGetTargetPos( target, aimLocation );
-	bool isTargetBuildable = BotGetTargetType( target ) == entityType_t::ET_BUILDABLE;
+	ASSERT( target.targetsValidEntity() );
+
+	target.getPos( aimLocation );
+	const gentity_t *targetEnt = target.getTargetedEntity();
+	team_t targetTeam = G_Team( targetEnt );
+	bool isTargetBuildable = target.getTargetType() == entityType_t::ET_BUILDABLE;
+
 	//this retrieves the target's species, to aim at weak point:
 	// * for humans, it's the head (but code only applies an offset here, with the hope it's the head)
 	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (for luci)
-	team_t targetTeam = G_Team( target.ent );
-
-	if ( !isTargetBuildable && BotTargetIsEntity( target ) && targetTeam == TEAM_HUMANS )
+	if ( !isTargetBuildable && targetTeam == TEAM_HUMANS )
 	{
-
 		//aim at head
 		//FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
-		aimLocation[2] += target.ent->r.maxs[2] * 0.85;
+		aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
 
 	}
 	else if ( isTargetBuildable || targetTeam == TEAM_ALIENS )
@@ -1349,7 +1337,7 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 			}
 			if( weapon_speed )
 			{
-				VectorMA( aimLocation, Distance( self->s.origin, aimLocation ) / weapon_speed, target.ent->s.pos.trDelta, aimLocation );
+				VectorMA( aimLocation, Distance( self->s.origin, aimLocation ) / weapon_speed, targetEnt->s.pos.trDelta, aimLocation );
 			}
 		}
 	}
@@ -1365,13 +1353,15 @@ void BotPredictPosition( gentity_t *self, gentity_t const *predict, vec3_t pos, 
 {
 	botTarget_t target;
 	vec3_t aimLoc;
-	BotSetTarget( &target, predict, nullptr );
+	target = predict;
 	BotGetIdealAimLocation( self, target, aimLoc );
 	VectorMA( aimLoc, time / 1000.0f, predict->s.apos.trDelta, pos );
 }
 
 void BotAimAtEnemy( gentity_t *self )
 {
+	ASSERT( self->botMind->goal.targetsValidEntity() );
+
 	vec3_t desired;
 	vec3_t current;
 	vec3_t viewOrigin;
@@ -1379,7 +1369,7 @@ void BotAimAtEnemy( gentity_t *self )
 	vec3_t angles;
 	int i;
 	float frac;
-	gentity_t const*enemy = self->botMind->goal.ent;
+	const gentity_t *enemy = self->botMind->goal.getTargetedEntity();
 
 	if ( self->botMind->futureAimTime < level.time )
 	{
@@ -1671,7 +1661,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 		case PCL_ALIEN_LEVEL3:
 			break;
 		case PCL_ALIEN_LEVEL3_UPG:
-			if ( BotGetTargetType( self->botMind->goal ) == entityType_t::ET_BUILDABLE && self->client->ps.ammo > 0
+			if ( self->botMind->goal.getTargetType() == entityType_t::ET_BUILDABLE && self->client->ps.ammo > 0
 				&& inAttackRange )
 			{
 				//dont move when sniping buildings
@@ -1702,7 +1692,7 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	float check;
 	float angle1, angle2, angle;
 
-	BotGetTargetPos( target, targetPos );
+	target.getPos( targetPos );
 	AngleVectors( self->s.origin, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	VectorCopy( muzzle, startPos );
@@ -2227,52 +2217,6 @@ gentity_t *BotPopEnemy( enemyQueue_t *queue )
 	return nullptr;
 }
 
-bool BotEnemyIsValid( gentity_t *self, gentity_t const *enemy )
-{
-	if ( !enemy->inuse )
-	{
-		return false;
-	}
-
-	// Only living targets are valid.
-	if ( !Entities::IsAlive( enemy ) )
-	{
-		return false;
-	}
-
-	// ignore buildings if we can't attack them
-	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.integer )
-	{
-		return false;
-	}
-
-	// dretch limitations
-	if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && !G_DretchCanDamageEntity( self, enemy ) )
-	{
-		return false;
-	}
-
-	// ignore neutrals
-	if ( G_Team( enemy ) == TEAM_NONE )
-	{
-		return false;
-	}
-
-	// ignore teamates
-	if ( G_Team( enemy ) == G_Team( self ) )
-	{
-		return false;
-	}
-
-	// ignore spectators
-	if ( enemy->client && enemy->client->sess.spectatorState != SPECTATOR_NOT )
-	{
-		return false;
-	}
-
-	return true;
-}
-
 void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
 	if ( G_Team( attacker ) != TEAM_NONE && G_Team( attacker ) != self->client->pers.team )
@@ -2293,11 +2237,11 @@ void BotSearchForEnemy( gentity_t *self )
 	do
 	{
 		enemy = BotPopEnemy( queue );
-	} while ( enemy && !BotEnemyIsValid( self, enemy ) );
+	} while ( enemy && !BotEntityIsValidEnemyTarget( self, enemy ) );
 
 	self->botMind->bestEnemy.ent = enemy;
 
-	if ( self->botMind->bestEnemy.ent ) 
+	if ( self->botMind->bestEnemy.ent )
 	{
 		self->botMind->bestEnemy.distance = Distance( self->s.origin, self->botMind->bestEnemy.ent->s.origin );
 	}
@@ -2323,4 +2267,97 @@ void BotCalculateStuckTime( gentity_t *self )
 		BotResetStuckTime( self );
 	}
 	self->botMind->lastThink = level.time;
+}
+
+/*
+========================
+botTarget_t methods implementations
+========================
+ */
+
+botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
+	if (newTarget == nullptr) {
+		this->clear();
+		return *this;
+	}
+
+	ent = newTarget;
+	VectorClear( coord );
+	type = targetType::ENTITY;
+
+	if (!targetsValidEntity())
+	{
+		Log::Warn("bot: selecting invalid entity as target");
+	}
+
+	return *this;
+}
+
+botTarget_t& botTarget_t::operator=(const vec3_t newTarget) {
+	VectorCopy(newTarget, coord);
+	ent = nullptr;
+	type = targetType::COORDS;
+	return *this;
+}
+
+void botTarget_t::clear() {
+	ent = nullptr;
+	VectorClear(coord);
+	type = targetType::EMPTY;
+}
+
+entityType_t botTarget_t::getTargetType() const
+{
+	if ( targetsValidEntity() )
+	{
+		return ent->s.eType;
+	}
+	else
+	{
+		return Util::enum_cast<entityType_t>(-1);
+	}
+}
+
+
+bool botTarget_t::isValid() const
+{
+	if (targetsCoordinates())
+		return true;
+	if (targetsValidEntity())
+		return true;
+	return false;
+}
+
+bool botTarget_t::targetsCoordinates() const
+{
+	return type == targetType::COORDS;
+}
+
+bool botTarget_t::targetsValidEntity() const
+{
+	if (ent) {
+		return BotEntityIsValidTarget(ent.get());
+	}
+	return false;
+}
+
+const gentity_t *botTarget_t::getTargetedEntity() const
+{
+	return ent.get();
+}
+
+void botTarget_t::getPos(vec3_t pos) const
+{
+	if ( type == targetType::ENTITY && ent )
+	{
+		VectorCopy( ent->s.origin, pos );
+	}
+	else if ( type == targetType::COORDS )
+	{
+		VectorCopy( coord, pos );
+	}
+	else
+	{
+		Log::Warn("Bot: couldn't get position of target");
+	}
 }
