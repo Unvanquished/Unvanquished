@@ -25,6 +25,9 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #ifndef SG_STRUCT_H_
 #define SG_STRUCT_H_
 
+#include "sg_entities.h"
+struct botMemory_t;
+
 struct variatingTime_s
 {
 	float time;
