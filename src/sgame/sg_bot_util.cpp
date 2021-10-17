@@ -34,13 +34,13 @@ Scoring functions for logic
 */
 
 botEntityAndDistance_t BotGetClosestBuildingAmongTypes(
-		gentity_t *self, const std::initializer_list<class_t> classes )
+		gentity_t *self, const std::initializer_list<buildable_t> buildables )
 {
 	botEntityAndDistance_t best_choice = { nullptr, 1.0e30f };
-	for ( class_t class_ : classes )
+	for ( buildable_t buildable : buildables )
 	{
 		botEntityAndDistance_t candidate =
-			self->botMind->closestBuildings[ class_ ];
+			self->botMind->closestBuildings[ buildable ];
 		if ( candidate.ent && candidate.distance < best_choice.distance )
 		{
 			best_choice = candidate;
@@ -66,7 +66,10 @@ const gentity_t *BotGetHealTarget( gentity_t *self )
 	{
 		// no working booster, rely on creep instead
 		return BotGetClosestBuildingAmongTypes( self,
-			{ (class_t)BA_A_OVERMIND, (class_t)BA_A_LEECH, (class_t)BA_A_SPAWN } ).ent;
+				{ BA_A_SPAWN, BA_A_OVERMIND, BA_A_BARRICADE,
+				  BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_HIVE,
+				  BA_A_LEECH, BA_A_SPIKER }
+				).ent;
 	}
 }
 
@@ -137,7 +140,11 @@ float BotGetHealScore( gentity_t *self )
 			// no booster, let's use creep instead
 			distToHealer =
 				BotGetClosestBuildingAmongTypes( self,
-					{ (class_t)BA_A_OVERMIND, (class_t)BA_A_LEECH, (class_t)BA_A_SPAWN } ).distance;
+					{ BA_A_SPAWN, BA_A_OVERMIND,
+					  BA_A_BARRICADE, BA_A_ACIDTUBE,
+					  BA_A_TRAPPER, BA_A_HIVE, BA_A_LEECH,
+					  BA_A_SPIKER }
+					).distance;
 		}
 	}
 	else
