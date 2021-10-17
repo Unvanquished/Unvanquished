@@ -1759,7 +1759,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 Set muzzle location relative to pivoting eye.
 ===============
 */
-void G_CalcMuzzlePoint( gentity_t *self, vec3_t forward, vec3_t, vec3_t, vec3_t muzzlePoint )
+void G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, const vec3_t, const vec3_t, vec3_t muzzlePoint )
 {
 	vec3_t normal;
 

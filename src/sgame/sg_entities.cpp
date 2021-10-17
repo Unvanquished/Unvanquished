@@ -382,7 +382,7 @@ gentity_t *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const
 // from quakestyle.telefragged.com
 // (NOBODY): Code helper function
 //
-gentity_t *G_IterateEntitiesWithinRadius( gentity_t *entity, vec3_t origin, float radius )
+gentity_t *G_IterateEntitiesWithinRadius( gentity_t *entity, const vec3_t origin, float radius )
 {
 	vec3_t eorg;
 	int    j;

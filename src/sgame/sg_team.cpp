@@ -87,7 +87,7 @@ G_AreaTeamCommand
 Broadcasts a command to only a specific team within a specific range
 ================
 */
-void G_AreaTeamCommand( gentity_t *ent, const char *cmd )
+void G_AreaTeamCommand( const gentity_t *ent, const char *cmd )
 {
 	int    entityList[ MAX_GENTITIES ];
 	int    num, i;
@@ -135,7 +135,7 @@ team_t G_Team( const gentity_t *ent )
 	return TEAM_NONE;
 }
 
-bool G_OnSameTeam( gentity_t *ent1, gentity_t *ent2 )
+bool G_OnSameTeam( const gentity_t *ent1, const gentity_t *ent2 )
 {
 	team_t team1 = G_Team( ent1 );
 	return ( team1 != TEAM_NONE && team1 == G_Team( ent2 ) );

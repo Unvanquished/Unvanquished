@@ -759,7 +759,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 	}
 }
 
-bool BotEntityIsVisible( gentity_t *self, gentity_t *target, int mask )
+bool BotEntityIsVisible( const gentity_t *self, gentity_t *target, int mask )
 {
 	botTarget_t bt;
 	BotSetTarget( &bt, target, nullptr );
@@ -856,7 +856,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 	return closestEnemy;
 }
 
-botTarget_t BotGetRushTarget( gentity_t *self )
+botTarget_t BotGetRushTarget( const gentity_t *self )
 {
 	botTarget_t target;
 	gentity_t const* rushTarget = nullptr;
@@ -886,7 +886,7 @@ botTarget_t BotGetRushTarget( gentity_t *self )
 	return target;
 }
 
-botTarget_t BotGetRetreatTarget( gentity_t *self )
+botTarget_t BotGetRetreatTarget( const gentity_t *self )
 {
 	botTarget_t target;
 	gentity_t const* retreatTarget = nullptr;
@@ -909,7 +909,7 @@ botTarget_t BotGetRetreatTarget( gentity_t *self )
 	return target;
 }
 
-botTarget_t BotGetRoamTarget( gentity_t *self )
+botTarget_t BotGetRoamTarget( const gentity_t *self )
 {
 	botTarget_t target;
 	vec3_t targetPos;
@@ -981,7 +981,7 @@ void BotGetTargetPos( botTarget_t target, vec3_t rVec )
 	}
 }
 
-void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget )
+void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget )
 {
 	vec3_t mins, maxs;
 
@@ -1105,7 +1105,7 @@ bool BotChangeGoalPos( gentity_t *self, vec3_t goal )
 	return BotChangeGoal( self, target );
 }
 
-bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
+bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 {
 	float range, secondaryRange;
 	vec3_t forward, right, up;
@@ -1270,7 +1270,7 @@ bool BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 	}
 }
 
-bool BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
+bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 {
 	trace_t trace;
 	vec3_t  muzzle, targetPos;
