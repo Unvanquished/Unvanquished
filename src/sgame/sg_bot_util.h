@@ -58,15 +58,11 @@ void  BotAimAtLocation( gentity_t *self, vec3_t target );
 float BotAimAngle( gentity_t *self, vec3_t pos );
 
 // targets
-void        BotSetTarget( botTarget_t *target, gentity_t const*ent, vec3_t pos );
-bool BotTargetIsEntity( botTarget_t target );
-bool BotTargetIsPlayer( botTarget_t target );
+bool BotEntityIsValidTarget( const gentity_t *ent );
+bool BotEntityIsValidEnemyTarget( const gentity_t *self, const gentity_t *enemy );
 bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask );
 bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target );
 void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
-int  BotGetTargetEntityNumber( botTarget_t target );
-void BotGetTargetPos( botTarget_t target, vec3_t rVec );
-entityType_t BotGetTargetType( botTarget_t target );
 botTarget_t BotGetRoamTarget( const gentity_t *self );
 botTarget_t BotGetRetreatTarget( const gentity_t *self );
 botTarget_t BotGetRushTarget( const gentity_t *self );
@@ -83,7 +79,6 @@ bool BotChangeGoalPos( gentity_t *self, vec3_t goal );
 
 // fighting
 void     BotResetEnemyQueue( enemyQueue_t *queue );
-bool BotEnemyIsValid( gentity_t *self, gentity_t const *enemy );
 void     BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer );
 void     BotFireWeaponAI( gentity_t *self );
 void     BotClassMovement( gentity_t *self, bool inAttackRange );

@@ -438,7 +438,7 @@ void G_BotThink( gentity_t *self )
 	}
 
 	// always update the path corridor
-	if ( self->botMind->goal.inuse )
+	if ( self->botMind->goal.isValid() )
 	{
 		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
 		trap_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
@@ -489,8 +489,8 @@ void G_BotSpectatorThink( gentity_t *self )
 		return;
 	}
 
-	//reset stuff
-	BotSetTarget( &self->botMind->goal, nullptr, nullptr );
+	// reset stuff
+	self->botMind->goal.clear();
 	self->botMind->bestEnemy.ent = nullptr;
 	BotResetEnemyQueue( &self->botMind->enemyQueue );
 	self->botMind->currentNode = nullptr;

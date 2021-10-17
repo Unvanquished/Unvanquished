@@ -113,7 +113,7 @@ Bot Navigation Querys
 ========================
 */
 
-float RadiusFromBounds2D( const vec3_t mins, const vec3_t maxs )
+static float RadiusFromBounds2D( const vec3_t mins, const vec3_t maxs )
 {
 	float rad1s = Square( mins[0] ) + Square( mins[1] );
 	float rad2s = Square( maxs[0] ) + Square( maxs[1] );
@@ -122,36 +122,43 @@ float RadiusFromBounds2D( const vec3_t mins, const vec3_t maxs )
 
 float BotGetGoalRadius( const gentity_t *self )
 {
-	if ( BotTargetIsEntity( self->botMind->goal ) )
+	botTarget_t &t = self->botMind->goal;
+	if ( t.targetsCoordinates() )
 	{
-		botTarget_t *t = &self->botMind->goal;
-		if ( t->ent->s.modelindex == BA_H_MEDISTAT || t->ent->s.modelindex == BA_A_BOOSTER )
-		{
-			return self->r.maxs[0] + t->ent->r.maxs[0];
-		}
-		else
-		{
-			return RadiusFromBounds2D( t->ent->r.mins, t->ent->r.maxs ) + RadiusFromBounds2D( self->r.mins, self->r.maxs );
-		}
+		// we check the coord to be (almost) in our bounding box
+		return RadiusFromBounds2D( self->r.mins, self->r.maxs );
 	}
 	else
 	{
-		return RadiusFromBounds2D( self->r.mins, self->r.maxs );
+		// we don't check if the entity is valid: an outdated result is
+		// better than failing here
+		const gentity_t *target = t.getTargetedEntity();
+		if ( target->s.modelindex == BA_H_MEDISTAT || target->s.modelindex == BA_A_BOOSTER )
+		{
+			// we want to be quite close to medistat.
+			// TODO(freem): is this really what we want for booster?
+			return self->r.maxs[0] + target->r.maxs[0];
+		}
+		else
+		{
+			return RadiusFromBounds2D( target->r.mins, target->r.maxs ) + RadiusFromBounds2D( self->r.mins, self->r.maxs );
+		}
 	}
 }
 
 bool GoalInRange( const gentity_t *self, float r )
 {
 	gentity_t *ent = nullptr;
+	// we don't need to check the goal is valid here
 
-	if ( !BotTargetIsEntity( self->botMind->goal ) )
+	if ( self->botMind->goal.targetsCoordinates() )
 	{
 		return ( Distance( self->s.origin, self->botMind->nav.tpos ) < r );
 	}
 
 	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) ) )
 	{
-		if ( ent == self->botMind->goal.ent )
+		if ( ent == self->botMind->goal.getTargetedEntity() )
 		{
 			return true;
 		}
@@ -165,7 +172,7 @@ int DistanceToGoal2DSquared( const gentity_t *self )
 	vec3_t vec;
 	vec3_t goalPos;
 
-	BotGetTargetPos( self->botMind->goal, goalPos );
+	self->botMind->goal.getPos( goalPos );
 
 	VectorSubtract( goalPos, self->s.origin, vec );
 
@@ -181,7 +188,7 @@ int DistanceToGoal( const gentity_t *self )
 	{
 		return -1;
 	}
-	BotGetTargetPos( self->botMind->goal, targetPos );
+	self->botMind->goal.getPos( targetPos );
 	VectorCopy( self->s.origin, selfPos );
 	return Distance( selfPos, targetPos );
 }
@@ -195,7 +202,7 @@ int DistanceToGoalSquared( const gentity_t *self )
 	{
 		return -1;
 	}
-	BotGetTargetPos( self->botMind->goal, targetPos );
+	self->botMind->goal.getPos( targetPos );
 	VectorCopy( self->s.origin, selfPos );
 	return DistanceSquared( selfPos, targetPos );
 }
@@ -208,7 +215,7 @@ bool BotPathIsWalkable( const gentity_t *self, botTarget_t target )
 
 	BG_GetClientNormal( &self->client->ps, viewNormal );
 	VectorMA( self->s.origin, self->r.mins[2], viewNormal, selfPos );
-	BotGetTargetPos( target, targetPos );
+	target.getPos( targetPos );
 
 	if ( !trap_BotNavTrace( self->s.number, &trace, selfPos, targetPos ) )
 	{
