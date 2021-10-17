@@ -59,17 +59,17 @@ float BotAimAngle( gentity_t *self, vec3_t pos );
 
 // targets
 void        BotSetTarget( botTarget_t *target, gentity_t const*ent, vec3_t pos );
-bool    BotTargetIsEntity( botTarget_t target );
-bool    BotTargetIsPlayer( botTarget_t target );
-bool    BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
-bool    BotTargetInAttackRange( gentity_t *self, botTarget_t target );
-void        BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
-int         BotGetTargetEntityNumber( botTarget_t target );
-void        BotGetTargetPos( botTarget_t target, vec3_t rVec );
-entityType_t         BotGetTargetType( botTarget_t target );
-botTarget_t BotGetRoamTarget( gentity_t *self );
-botTarget_t BotGetRetreatTarget( gentity_t *self );
-botTarget_t BotGetRushTarget( gentity_t *self );
+bool BotTargetIsEntity( botTarget_t target );
+bool BotTargetIsPlayer( botTarget_t target );
+bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask );
+bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target );
+void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
+int  BotGetTargetEntityNumber( botTarget_t target );
+void BotGetTargetPos( botTarget_t target, vec3_t rVec );
+entityType_t BotGetTargetType( botTarget_t target );
+botTarget_t BotGetRoamTarget( const gentity_t *self );
+botTarget_t BotGetRetreatTarget( const gentity_t *self );
+botTarget_t BotGetRushTarget( const gentity_t *self );
 
 // logic functions
 float    BotGetHealScore( gentity_t *self );
@@ -137,13 +137,13 @@ void     BotMoveInDir( gentity_t *self, uint32_t moveDir );
 void     BotStandStill( gentity_t *self );
 
 // navigation queries
-bool GoalInRange( gentity_t *self, float r );
-int      DistanceToGoal( gentity_t *self );
-int      DistanceToGoalSquared( gentity_t *self );
-int      DistanceToGoal2DSquared( gentity_t *self );
-float    BotGetGoalRadius( gentity_t *self );
-void     BotFindRandomPointOnMesh( gentity_t *self, vec3_t point );
-bool BotPathIsWalkable( gentity_t *self, botTarget_t target );
+bool  GoalInRange( const gentity_t *self, float r );
+int   DistanceToGoal( const gentity_t *self );
+int   DistanceToGoalSquared( const gentity_t *self );
+int   DistanceToGoal2DSquared( const gentity_t *self );
+float BotGetGoalRadius( const gentity_t *self );
+void  BotFindRandomPointOnMesh( const gentity_t *self, vec3_t point );
+bool  BotPathIsWalkable( const gentity_t *self, botTarget_t target );
 
 //configurable constants
 //For a reference of how far a number represents, take a look at tremulous.h

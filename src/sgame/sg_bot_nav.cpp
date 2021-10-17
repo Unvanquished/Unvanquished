@@ -120,7 +120,7 @@ float RadiusFromBounds2D( const vec3_t mins, const vec3_t maxs )
 	return sqrtf( std::max( rad1s, rad2s ) );
 }
 
-float BotGetGoalRadius( gentity_t *self )
+float BotGetGoalRadius( const gentity_t *self )
 {
 	if ( BotTargetIsEntity( self->botMind->goal ) )
 	{
@@ -140,7 +140,7 @@ float BotGetGoalRadius( gentity_t *self )
 	}
 }
 
-bool GoalInRange( gentity_t *self, float r )
+bool GoalInRange( const gentity_t *self, float r )
 {
 	gentity_t *ent = nullptr;
 
@@ -160,7 +160,7 @@ bool GoalInRange( gentity_t *self, float r )
 	return false;
 }
 
-int DistanceToGoal2DSquared( gentity_t *self )
+int DistanceToGoal2DSquared( const gentity_t *self )
 {
 	vec3_t vec;
 	vec3_t goalPos;
@@ -172,7 +172,7 @@ int DistanceToGoal2DSquared( gentity_t *self )
 	return Square( vec[ 0 ] ) + Square( vec[ 1 ] );
 }
 
-int DistanceToGoal( gentity_t *self )
+int DistanceToGoal( const gentity_t *self )
 {
 	vec3_t targetPos;
 	vec3_t selfPos;
@@ -186,7 +186,7 @@ int DistanceToGoal( gentity_t *self )
 	return Distance( selfPos, targetPos );
 }
 
-int DistanceToGoalSquared( gentity_t *self )
+int DistanceToGoalSquared( const gentity_t *self )
 {
 	vec3_t targetPos;
 	vec3_t selfPos;
@@ -200,7 +200,7 @@ int DistanceToGoalSquared( gentity_t *self )
 	return DistanceSquared( selfPos, targetPos );
 }
 
-bool BotPathIsWalkable( gentity_t *self, botTarget_t target )
+bool BotPathIsWalkable( const gentity_t *self, botTarget_t target )
 {
 	vec3_t selfPos, targetPos;
 	vec3_t viewNormal;
@@ -218,7 +218,7 @@ bool BotPathIsWalkable( gentity_t *self, botTarget_t target )
 	return trace.frac >= 1.0f;
 }
 
-void BotFindRandomPointOnMesh( gentity_t *self, vec3_t point )
+void BotFindRandomPointOnMesh( const gentity_t *self, vec3_t point )
 {
 	trap_BotFindRandomPoint( self->s.number, point );
 }

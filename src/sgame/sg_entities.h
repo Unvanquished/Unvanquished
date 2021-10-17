@@ -234,7 +234,7 @@ gentity_t  *G_IterateEntities( gentity_t *entity, const char *classname, bool sk
 gentity_t  *G_IterateEntities( gentity_t *entity );
 gentity_t  *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname );
 gentity_t  *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const char *match );
-gentity_t  *G_IterateEntitiesWithinRadius( gentity_t *entity, vec3_t origin, float radius );
+gentity_t  *G_IterateEntitiesWithinRadius( gentity_t *entity, const vec3_t origin, float radius );
 gentity_t  *G_FindClosestEntity( vec3_t origin, gentity_t **entities, int numEntities );
 gentity_t  *G_PickRandomEntity( const char *classname, size_t fieldofs, const char *match );
 gentity_t  *G_PickRandomEntityOfClass( const char *classname );
