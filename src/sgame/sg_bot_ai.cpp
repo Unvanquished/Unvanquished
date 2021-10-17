@@ -763,65 +763,69 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_RUNNING;
 		}
 	}
-	else
+
+	// We have a valid visible target
+
+	bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
+	self->botMind->enemyLastSeen = level.time;
+
+	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !self->botMind->nav.directPathToGoal )
 	{
-		bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
-		self->botMind->enemyLastSeen = level.time;
+		BotMoveToGoal( self );
+		return STATUS_RUNNING;
+	}
 
-		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->nav.directPathToGoal )
+	// We have a visible target for which we haven't got a
+	// direct navmesh path and we are not at at weapon range (if human)
+
+	BotAimAtEnemy( self );
+	BotMoveInDir( self, MOVE_FORWARD );
+
+	if ( inAttackRange || self->client->ps.weapon == WP_PAIN_SAW )
+	{
+		BotFireWeaponAI( self );
+	}
+
+	if ( myTeam == TEAM_ALIENS )
+	{
+		BotClassMovement( self, inAttackRange );
+		return STATUS_RUNNING;
+	}
+
+	// We are human and we either are at fire range, or have
+	// a direct path to goal
+
+	if ( self->botMind->botSkill.level >= 3 && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
+	        && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->botSkill.level < 5 )
+	        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
+	{
+		BotMoveInDir( self, MOVE_BACKWARD );
+	}
+	else if ( DistanceToGoalSquared( self ) <= Square( MIN_HUMAN_DANCE_DIST ) ) //we wont hit this if skill < 5
+	{
+		// We will be moving toward enemy, strafing to
+		// the result: we go around the enemy
+		BotAlternateStrafe( self );
+	}
+	else if ( DistanceToGoalSquared( self ) >= Square( MAX_HUMAN_DANCE_DIST ) && self->client->ps.weapon != WP_PAIN_SAW )
+	{
+		if ( DistanceToGoalSquared( self ) - Square( MAX_HUMAN_DANCE_DIST ) < 100 )
 		{
-			BotAimAtEnemy( self );
-
-			BotMoveInDir( self, MOVE_FORWARD );
-
-			if ( inAttackRange || self->client->ps.weapon == WP_PAIN_SAW )
-			{
-				BotFireWeaponAI( self );
-			}
-
-			if ( myTeam == TEAM_HUMANS )
-			{
-				if ( self->botMind->botSkill.level >= 3 && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
-				        && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->botSkill.level < 5 )
-				        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
-				{
-					BotMoveInDir( self, MOVE_BACKWARD );
-				}
-				else if ( DistanceToGoalSquared( self ) <= Square( MIN_HUMAN_DANCE_DIST ) ) //we wont hit this if skill < 5
-				{
-					//we will be moving toward enemy, strafe too
-					//the result: we go around the enemy
-					BotAlternateStrafe( self );
-				}
-				else if ( DistanceToGoalSquared( self ) >= Square( MAX_HUMAN_DANCE_DIST ) && self->client->ps.weapon != WP_PAIN_SAW )
-				{
-					if ( DistanceToGoalSquared( self ) - Square( MAX_HUMAN_DANCE_DIST ) < 100 )
-					{
-						BotStandStill( self );
-					}
-					else
-					{
-						BotStrafeDodge( self );
-					}
-				}
-
-				if ( inAttackRange && self->botMind->goal.getTargetType() == entityType_t::ET_BUILDABLE )
-				{
-					BotStandStill( self );
-				}
-
-				BotSprint( self, true );
-			}
-			else if ( myTeam == TEAM_ALIENS )
-			{
-				BotClassMovement( self, inAttackRange );
-			}
+			BotStandStill( self );
 		}
 		else
 		{
-			BotMoveToGoal( self );
+			BotStrafeDodge( self );
 		}
 	}
+
+	if ( inAttackRange && self->botMind->goal.getTargetType() == entityType_t::ET_BUILDABLE )
+	{
+		BotStandStill( self );
+	}
+
+	BotSprint( self, true );
+
 	return STATUS_RUNNING;
 }
 
