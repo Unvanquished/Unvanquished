@@ -96,20 +96,39 @@ class Entity;
 // Replacement for gentity_t* that can detect the case where an entity has been recycled.
 // operator bool checks that the entity is non-null and has not been freed since the reference
 // was formed.
-struct GentityRef
+template<typename T>
+struct GentityRef_impl
 {
-	struct gentity_s *entity;
+	T entity;
 	unsigned generation;
 
-	GentityRef& operator=(struct gentity_s *ent);
+	GentityRef_impl<T>& operator=(T ent) {
+		entity = ent;
+		if (ent) {
+			generation = ent->generation;
+		}
+		return *this;
+	}
 
-	operator bool() const;
+	operator bool() const {
+		return entity != nullptr && entity->generation == generation;
+	}
 
-	struct gentity_s * operator->()
-	{
+	T get() const {
+		if (!*this) {
+			return nullptr;
+		}
+		return entity;
+	}
+
+	T operator->() const {
+		ASSERT(*this);
 		return entity;
 	}
 };
+
+using GentityRef = GentityRef_impl<gentity_t *>;
+using GentityConstRef = GentityRef_impl<const gentity_t *>;
 
 struct gentity_s
 {
@@ -378,20 +397,6 @@ struct gentity_s
 	int         tagScore;
 	int         tagScoreTime;
 };
-
-inline GentityRef& GentityRef::operator=(struct gentity_s *ent)
-{
-	entity = ent;
-	if (ent) {
-		generation = ent->generation;
-	}
-	return *this;
-}
-
-inline GentityRef::operator bool() const
-{
-	return entity != nullptr && entity->generation == generation;
-}
 
 /**
  * client data that stays across multiple levels or map restarts
