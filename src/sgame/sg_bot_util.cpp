@@ -1901,26 +1901,23 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 	}
 
 	vec3_t newOrigin;
-	switch( upgrade )
+	struct
 	{
-		case UP_LIGHTARMOUR:
-			if ( !BotChangeClass( self, PCL_HUMAN_LIGHT, newOrigin ) )
-			{
-				return;
-			}
-			break;
-		case UP_MEDIUMARMOUR:
-			if ( !BotChangeClass( self, PCL_HUMAN_MEDIUM, newOrigin ) )
-			{
-				return;
-			}
-			break;
-		case UP_BATTLESUIT:
-			if ( !BotChangeClass( self, PCL_HUMAN_BSUIT, newOrigin ) )
-			{
-				return;
-			}
-			break;
+		upgrade_t upg;
+		class_t cls;
+	} armorToClass[] =
+	{
+		{ UP_LIGHTARMOUR, PCL_HUMAN_LIGHT },
+		{ UP_MEDIUMARMOUR, PCL_HUMAN_MEDIUM },
+		{ UP_BATTLESUIT, PCL_HUMAN_BSUIT },
+	};
+
+	for ( auto const& armor : armorToClass )
+	{
+		if ( upgrade == armor.upg && !BotChangeClass( self, armor.cls, newOrigin ) )
+		{
+			return;
+		}
 	}
 
 	//add to inventory
