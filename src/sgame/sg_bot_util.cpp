@@ -517,7 +517,7 @@ void BotFindClosestBuildings( gentity_t *self )
 	for ( unsigned i = 0; i < ARRAY_LEN( self->botMind->closestBuildings ); i++ )
 	{
 		self->botMind->closestBuildings[ i ].ent = nullptr;
-		self->botMind->closestBuildings[ i ].distance = INT_MAX;
+		self->botMind->closestBuildings[ i ].distance = static_cast<float>( INT_MAX );
 	}
 
 	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
@@ -565,7 +565,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 
 	gentity_t *target;
 	self->botMind->closestDamagedBuilding.ent = nullptr;
-	self->botMind->closestDamagedBuilding.distance = INT_MAX;
+	self->botMind->closestDamagedBuilding.distance = static_cast<float>( INT_MAX );
 
 	minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
 
@@ -1211,7 +1211,7 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 
 int BotGetAimPredictionTime( gentity_t *self )
 {
-	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( ( ( float ) rand() ) / RAND_MAX, 0.5f );
+	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( ( static_cast<float>( rand() ) ) / static_cast<float>( RAND_MAX ), 0.5f );
 	return std::max( 1, int(time) );
 }
 
@@ -2141,7 +2141,7 @@ void BotSearchForEnemy( gentity_t *self )
 	}
 	else
 	{
-		self->botMind->bestEnemy.distance = INT_MAX;
+		self->botMind->bestEnemy.distance = static_cast<float>( INT_MAX );
 	}
 }
 
