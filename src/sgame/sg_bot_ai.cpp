@@ -485,7 +485,10 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 	// reset running information on node success so sequences and selectors reset their state
 	if ( NodeIsRunning( self, node ) && status == STATUS_SUCCESS )
 	{
-		memset( self->botMind->runningNodes, 0, sizeof( self->botMind->runningNodes ) );
+		for (auto &node : self->botMind->runningNodes)
+		{
+			node = nullptr;
+		}
 		self->botMind->numRunningNodes = 0;
 	}
 
