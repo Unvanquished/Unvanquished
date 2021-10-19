@@ -49,7 +49,7 @@
 
 		<h2> Physics </h2>
 		<row>
-			<input type="range" min="-100" max="2000" step="10" cvar="g_gravity"/>
+			<input type="range" min="100" max="2000" step="10" cvar="g_gravity"/>
 			<h3> Gravity</h3>
 			<p class="inline">
 				Current: <inlinecvar cvar="g_gravity" type="number" format="%.0f"/>
