@@ -42,6 +42,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CMD_ALIVE        0x0080
 #define CMD_INTERMISSION 0x0100 // valid during intermission
 
+Cvar::Range<Cvar::Cvar<int>> g_killDelay(
+		"g_killDelay",
+		"how many seconds a player needs to wait before the suicide (/kill) command take effect",
+		Cvar::NONE,
+		20, 0, 120 );
+
 /*
 ==================
 G_SanitiseString
@@ -800,8 +806,8 @@ void Cmd_Kill_f( gentity_t *ent )
 	{
 		if ( ent->suicideTime == 0 )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You will suicide in 20 seconds") "\"" );
-			ent->suicideTime = level.time + 20000;
+			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %d", QQ( N_("You will commit suicide in $1$ seconds") ), g_killDelay.Get() ) );
+			ent->suicideTime = level.time + g_killDelay.Get() * 1000;
 		}
 		else if ( ent->suicideTime > level.time )
 		{
