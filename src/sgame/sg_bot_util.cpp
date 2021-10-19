@@ -517,7 +517,7 @@ void BotFindClosestBuildings( gentity_t *self )
 	for ( unsigned i = 0; i < ARRAY_LEN( self->botMind->closestBuildings ); i++ )
 	{
 		self->botMind->closestBuildings[ i ].ent = nullptr;
-		self->botMind->closestBuildings[ i ].distance = INT_MAX;
+		self->botMind->closestBuildings[ i ].distance = std::numeric_limits<float>::max();
 	}
 
 	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
@@ -565,7 +565,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 
 	gentity_t *target;
 	self->botMind->closestDamagedBuilding.ent = nullptr;
-	self->botMind->closestDamagedBuilding.distance = INT_MAX;
+	self->botMind->closestDamagedBuilding.distance = std::numeric_limits<float>::max();
 
 	minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
 
@@ -1211,7 +1211,7 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 
 int BotGetAimPredictionTime( gentity_t *self )
 {
-	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( ( ( float ) rand() ) / RAND_MAX, 0.5f );
+	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( random(), 0.5f );
 	return std::max( 1, int(time) );
 }
 
@@ -1901,26 +1901,23 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 	}
 
 	vec3_t newOrigin;
-	switch( upgrade )
+	struct
 	{
-		case UP_LIGHTARMOUR:
-			if ( !BotChangeClass( self, PCL_HUMAN_LIGHT, newOrigin ) )
-			{
-				return;
-			}
-			break;
-		case UP_MEDIUMARMOUR:
-			if ( !BotChangeClass( self, PCL_HUMAN_MEDIUM, newOrigin ) )
-			{
-				return;
-			}
-			break;
-		case UP_BATTLESUIT:
-			if ( !BotChangeClass( self, PCL_HUMAN_BSUIT, newOrigin ) )
-			{
-				return;
-			}
-			break;
+		upgrade_t upg;
+		class_t cls;
+	} armorToClass[] =
+	{
+		{ UP_LIGHTARMOUR, PCL_HUMAN_LIGHT },
+		{ UP_MEDIUMARMOUR, PCL_HUMAN_MEDIUM },
+		{ UP_BATTLESUIT, PCL_HUMAN_BSUIT },
+	};
+
+	for ( auto const& armor : armorToClass )
+	{
+		if ( upgrade == armor.upg && !BotChangeClass( self, armor.cls, newOrigin ) )
+		{
+			return;
+		}
 	}
 
 	//add to inventory
@@ -2141,7 +2138,7 @@ void BotSearchForEnemy( gentity_t *self )
 	}
 	else
 	{
-		self->botMind->bestEnemy.distance = INT_MAX;
+		self->botMind->bestEnemy.distance = std::numeric_limits<float>::max();
 	}
 }
 
