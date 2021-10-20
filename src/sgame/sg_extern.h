@@ -204,10 +204,10 @@ extern vmCvar_t g_bot_level3upg;
 extern vmCvar_t g_bot_level4;
 
 // misc bot cvars
-extern vmCvar_t g_bot_attackStruct;
-extern vmCvar_t g_bot_fov;
-extern vmCvar_t g_bot_chasetime;
-extern vmCvar_t g_bot_reactiontime;
-extern vmCvar_t g_bot_infinite_funds;
+extern Cvar::Cvar<bool> g_bot_attackStruct;
+extern Cvar::Cvar<int>  g_bot_fov;
+extern Cvar::Cvar<int>  g_bot_chasetime;
+extern Cvar::Cvar<int>  g_bot_reactiontime;
+extern Cvar::Cvar<bool> g_bot_infinite_funds;
 
 #endif // SG_EXTERN_H_

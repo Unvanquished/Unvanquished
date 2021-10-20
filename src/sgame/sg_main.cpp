@@ -288,11 +288,11 @@ vmCvar_t g_bot_level3upg;
 vmCvar_t g_bot_level4;
 
 // misc bot cvars
-vmCvar_t g_bot_attackStruct;
-vmCvar_t g_bot_fov;
-vmCvar_t g_bot_chasetime;
-vmCvar_t g_bot_reactiontime;
-vmCvar_t g_bot_infinite_funds;
+Cvar::Cvar<bool> g_bot_attackStruct("g_bot_attackStruct", "will bot attempt attacking buildables", Cvar::NONE, true);
+Cvar::Cvar<int>  g_bot_fov("g_bot_fov", "how large the bot view cone will be (in degrees)", Cvar::NONE, 125);
+Cvar::Cvar<int>  g_bot_chasetime("g_bot_chasetime", "how long a bot will chase you (in ms)", Cvar::NONE, 5000);
+Cvar::Cvar<int>  g_bot_reactiontime("g_bot_reactiontime", "how much time a bot will need to react after the see you (in ms)", Cvar::NONE, 500);
+Cvar::Cvar<bool> g_bot_infinite_funds("g_bot_infinite_funds", "wether bots can buy stuff without any monetary restriction", Cvar::NONE, false);
 
 //</bot stuff>
 
@@ -460,19 +460,12 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_builder   , "g_bot_builder"   , "0", 0, 0, false },
 	{ &g_bot_builderupg, "g_bot_builderupg", "0", 0, 0, false },
 	{ &g_bot_level0    , "g_bot_level0"    , "1", 0, 0, false },
-	{ &g_bot_level1    , "g_bot_level1"    , "1", 0, 0, false },
-	{ &g_bot_level2    , "g_bot_level2"    , "1", 0, 0, false },
-	{ &g_bot_level2upg , "g_bot_level2upg" , "1", 0, 0, false },
-	{ &g_bot_level3    , "g_bot_level3"    , "1", 0, 0, false },
-	{ &g_bot_level3upg , "g_bot_level3upg" , "1", 0, 0, false },
-	{ &g_bot_level4    , "g_bot_level4"    , "1", 0, 0, false },
-
-	// bots: misc
-	{ &g_bot_attackStruct, "g_bot_attackStruct", "1",  0, 0, false },
-	{ &g_bot_fov, "g_bot_fov", "125",  0, 0, false },
-	{ &g_bot_chasetime, "g_bot_chasetime", "5000",  0, 0, false },
-	{ &g_bot_reactiontime, "g_bot_reactiontime", "500",  0, 0, false },
-	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0",  0, 0, false },
+	{ &g_bot_level1, "g_bot_level1", "1", 0, 0, false },
+	{ &g_bot_level2, "g_bot_level2", "1", 0, 0, false },
+	{ &g_bot_level2upg, "g_bot_level2upg", "1", 0, 0, false },
+	{ &g_bot_level3, "g_bot_level3", "1", 0, 0, false },
+	{ &g_bot_level3upg, "g_bot_level3upg", "1", 0, 0, false },
+	{ &g_bot_level4, "g_bot_level4", "1", 0, 0, false },
 };
 
 void               CheckExitRules();
