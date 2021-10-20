@@ -742,7 +742,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_SUCCESS;
 		}
-		else if ( level.time - self->botMind->enemyLastSeen >= g_bot_chasetime.integer )
+		else if ( level.time - self->botMind->enemyLastSeen >= g_bot_chasetime.Get() )
 		{
 			return STATUS_SUCCESS;
 		}

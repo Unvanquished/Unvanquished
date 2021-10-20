@@ -646,7 +646,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 		}
 
 		if ( target->s.eType == entityType_t::ET_PLAYER && self->client->pers.team == TEAM_HUMANS
-		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
+		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.Get() / 2 )
 		{
 			continue;
 		}
@@ -2052,7 +2052,7 @@ gentity_t *BotPopEnemy( enemyQueue_t *queue )
 		return nullptr;
 	}
 
-	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.integer )
+	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.Get() )
 	{
 		gentity_t *ret = queue->enemys[ queue->front ].ent;
 		queue->front = ( queue->front + 1 ) % MAX_ENEMY_QUEUE;
@@ -2076,7 +2076,7 @@ bool BotEnemyIsValid( gentity_t *self, gentity_t const *enemy )
 	}
 
 	// ignore buildings if we can't attack them
-	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.integer )
+	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.Get() )
 	{
 		return false;
 	}

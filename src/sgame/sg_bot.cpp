@@ -423,7 +423,7 @@ void G_BotThink( gentity_t *self )
 	}
 
 	//infinite funds cvar
-	if ( g_bot_infinite_funds.integer )
+	if ( g_bot_infinite_funds.Get() )
 	{
 		G_AddCreditToClient( self->client, HUMAN_MAX_CREDITS, true );
 	}
