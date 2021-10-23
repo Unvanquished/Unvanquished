@@ -56,6 +56,7 @@
 				</row>
 
 				<h2> Individually </h2>
+				<h3> Primary weapons </h3>
 				<row>
 					<input cvar="g_bot_rifle" type="checkbox" />
 					<h3> SMG </h3>
@@ -91,6 +92,32 @@
 				<row>
 					<input cvar="g_bot_lcannon" type="checkbox" />
 					<h3> Lucifer Cannon </h3>
+				</row>
+				<h3> Armors </h3>
+				<row>
+					<input cvar="g_bot_lightarmour" type="checkbox" />
+					<h3> Light Armour </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_mediumarmour" type="checkbox" />
+					<h3> Medium Armour </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_battlesuit" type="checkbox" />
+					<h3> Battlesuit </h3>
+				</row>
+				<h3> Misc </h3>
+				<row>
+					<input cvar="g_bot_firebomb" type="checkbox" />
+					<h3> Firebomb </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_grenade" type="checkbox" />
+					<h3> Grenade </h3>
+				</row>
+				<row>
+					<input cvar="g_bot_radar" type="checkbox" />
+					<h3> Radar </h3>
 				</row>
 
 			</panel>
