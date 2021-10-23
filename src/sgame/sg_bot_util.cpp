@@ -25,10 +25,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
+#include "CBSE.h"
 #include "Entities.h"
 
-static void ListTeamEquipment( gentity_t *self, unsigned int numUpgrades[], size_t numUpgradesSize, unsigned int numWeapons[], size_t numWeaponsSize );
-static unsigned int ListTeamMembers( unsigned int allies[], size_t alliesSize, team_t team );
+static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 
 template <typename T>
 struct equipment_t
@@ -534,7 +534,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	unsigned int numTeamUpgrades[UP_NUM_UPGRADES] = {};
 	unsigned int numTeamWeapons[WP_NUM_WEAPONS] = {};
 
-	ListTeamEquipment( self, numTeamUpgrades, UP_NUM_UPGRADES, numTeamWeapons, WP_NUM_WEAPONS );
+	ListTeamEquipment( self, numTeamUpgrades, numTeamWeapons );
 	weapon = WP_NONE;
 	for ( size_t i = 0; i < upgradesSize; ++i )
 	{
@@ -561,8 +561,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	//TODO this really needs more generic code, but that would require
 	//deeper refactoring (probably move equipments and classes into structs)
 	//and code to make bots _actually_ use other equipments.
-	unsigned int alliesNumbers[MAX_CLIENTS] = {};
-	int nbTeam = ListTeamMembers( alliesNumbers, MAX_CLIENTS, G_Team( self ) );
+	int nbTeam = level.team[ G_Team( self ) ].numClients;
 	int nbRadars = numTeamUpgrades[UP_RADAR];
 	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / nbTeam < 75;
 
@@ -1483,31 +1482,6 @@ float BotAimAngle( gentity_t *self, vec3_t pos )
 	return AngleBetweenVectors( forward, ideal );
 }
 
-// fills allies with players of a team, and return the number of entities found.
-// pre-condition:
-// * team is playable
-// * allies is an array of at least alliesSize unsigned integers
-// * allies memory is initialized
-// * there are less than MAX_CLIENTS players in team
-// * there is enough space to store all team's player's references into allies
-unsigned int ListTeamMembers( unsigned int allies[], size_t alliesSize, team_t team )
-{
-	ASSERT( G_IsPlayableTeam( team ) );
-	gentity_t *testEntity;
-	unsigned int numAllies = 0;
-	for ( size_t i = 0; i < MAX_CLIENTS && numAllies < alliesSize; i++ )
-	{
-		testEntity = &g_entities[i];
-		// this is pure guessing and luck...
-		if ( testEntity->client && testEntity->client->pers.team == team )
-		{
-			allies[numAllies] = i;
-			numAllies++;
-		}
-	}
-	return numAllies;
-}
-
 /*
 ========================
 Bot Team Querys
@@ -1600,45 +1574,34 @@ bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 // Initializes numUpgrades and numWeapons arrays with team's current equipment
 // pre-condition:
 // * self points to a player which is inside a playable team
-// * numUpgrades is an array of at least numUpgradesSize unsigned integers
 // * numUpgrades memory is initialized
-// * numWeapons is an array of at least numWeaponsSize unsigned integers
 // * numWeapons memory is initialized
-// * self's team have less than MAX_CLIENTS players
-void ListTeamEquipment( gentity_t *self, unsigned int numUpgrades[], size_t numUpgradesSize, unsigned int numWeapons[], size_t numWeaponsSize )
+static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] )
 {
 	ASSERT( self );
-	ASSERT( numUpgrades );
-	ASSERT( numWeapons );
 	const team_t team = static_cast<team_t>( self->client->pers.team );
-	unsigned int alliesNumbers[MAX_CLIENTS];
-	memset( alliesNumbers, 0, sizeof( alliesNumbers ) );
-	unsigned int numTeamPlayers = ListTeamMembers( alliesNumbers, MAX_CLIENTS, team );
 
-	for ( unsigned int i = 0; i < numTeamPlayers; ++i )
-	{
-		gentity_t *ally = &g_entities[alliesNumbers[i]];
-		if ( ally == self )
+	ForEntities<HumanClassComponent>([&](Entity& ent, HumanClassComponent&) {
+		gentity_t* ally = ent.oldEnt;
+		if ( ally == self || ally->client->pers.team != team )
 		{
-			continue;
+			return;
 		}
 		++numWeapons[ally->client->ps.stats[STAT_WEAPON]];
-		if ( team == TEAM_HUMANS )
+
+		// for all possible upgrades, check if current player already have it.
+		// this is very fragile, at best, since it will break if TEAM_ALIENS becomes
+		// able to have upgrades. Class is not considered, neither.
+		// last but not least, it's playing with bits.
+		int stat = ally->client->ps.stats[STAT_ITEMS];
+		for ( int up = UP_NONE + 1; up < UP_NUM_UPGRADES; ++up )
 		{
-			// for all possible upgrades, check if current player already have it.
-			// this is very fragile, at best, since it will break if TEAM_ALIENS becomes
-			// able to have upgrades. Class is not considered, neither.
-			// last but not least, it's playing with bits.
-			int stat = ally->client->ps.stats[STAT_ITEMS];
-			for ( int up = UP_NONE + 1; up < UP_NUM_UPGRADES; ++up )
+			if ( stat & ( 1 << up ) )
 			{
-				if ( stat & ( 1 << up ) )
-				{
-					++numUpgrades[up];
-				}
+				++numUpgrades[up];
 			}
 		}
-	}
+	});
 }
 
 bool BotTeamateHasWeapon( gentity_t *self, int weapon )
