@@ -28,6 +28,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "Entities.h"
 
+// FIXME: finish merging in botlib and remove this
+extern void BotInvalidateWaypoint( int botnum );
+
+
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 
 template <typename T>
@@ -1808,6 +1812,7 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotMoveInDir( self, MOVE_FORWARD );
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
+				BotInvalidateWaypoint( self->s.number );
 			}
 			break;
 		case WP_ALEVEL2:
@@ -1828,6 +1833,7 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
+				BotInvalidateWaypoint( self->s.number );
 			}
 			else
 			{
@@ -1844,6 +1850,7 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
+				BotInvalidateWaypoint( self->s.number );
 			}
 			else
 			{

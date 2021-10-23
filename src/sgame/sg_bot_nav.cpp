@@ -328,6 +328,8 @@ bool BotJump( gentity_t *self )
 		}
 	}
 
+	BotInvalidateWaypoint( self->s.number );
+
 	self->botMind->cmdBuffer.upmove = 127;
 	return true;
 }

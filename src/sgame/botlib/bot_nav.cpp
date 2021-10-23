@@ -125,12 +125,17 @@ void BotSetNavMesh( int botClientNum, qhandle_t nav )
 	bot->needReplan = true;
 }
 
-void GetEntPosition( int num, rVec &pos )
+void BotInvalidateWaypoint( int botClientNum )
+{
+	agents[botClientNum].needReplan = true;
+}
+
+static void GetEntPosition( int num, rVec &pos )
 {
 	pos = qVec( g_entities[ num ].s.origin );
 }
 
-void GetEntPosition( int num, qVec &pos )
+static void GetEntPosition( int num, qVec &pos )
 {
 	pos = g_entities[ num ].s.origin;
 }
