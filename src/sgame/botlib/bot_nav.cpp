@@ -44,16 +44,11 @@ All vectors used as inputs and outputs to functions here use the engine's coordi
 ====================
 */
 
-void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
+static void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags, int navDataIndex )
 {
 	qVec qExtents;
 	qVec realMin, realMax;
 	qVec qCenter;
-
-	if ( !numNavData )
-	{
-		return;
-	}
 
 	// support abs min/max by recalculating the origin and min/max
 	VectorAdd( mins, origin, realMin );
@@ -83,32 +78,73 @@ void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
 	filter.setIncludeFlags( POLYFLAGS_WALK | POLYFLAGS_DISABLED );
 	filter.setExcludeFlags( 0 );
 
-	for ( int i = 0; i < numNavData; i++ )
+	constexpr int maxPolys = 20;
+	int polyCount = 0;
+	dtPolyRef polys[ maxPolys ];
+
+	dtNavMeshQuery *query = BotNavData[ navDataIndex ].query;
+	dtNavMesh *mesh = BotNavData[ navDataIndex ].mesh;
+
+	query->queryPolygons( center, extents, &filter, polys, &polyCount, maxPolys );
+
+	for ( int i = 0; i < polyCount; i++ )
 	{
-		const int maxPolys = 20;
-		int polyCount = 0;
-		dtPolyRef polys[ maxPolys ];
-
-		dtNavMeshQuery *query = BotNavData[ i ].query;
-		dtNavMesh *mesh = BotNavData[ i ].mesh;
-
-		query->queryPolygons( center, extents, &filter, polys, &polyCount, maxPolys );
-
-		for ( int i = 0; i < polyCount; i++ )
-		{
-			mesh->setPolyFlags( polys[ i ], flags );
-		}
+		mesh->setPolyFlags( polys[ i ], flags );
 	}
 }
 
-void BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+static void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
 {
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_DISABLED );
+	if ( !numNavData )
+	{
+		return;
+	}
+
+	for ( int i = 0; i < numNavData; i++ )
+	{
+		BotSetPolyFlags( origin, mins, maxs, flags, i );
+	}
 }
 
-void BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+void BotEnableAreaForAliens( const vec3_t origin, const vec3_t mins, const vec3_t maxs, bool enable )
 {
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
+	// TODO: implement a better API so that this function can be implemented correctly
+	// Note that different classes may share the same navmesh: for example
+	// the naked and light armor humans have the same navmesh. So this only
+	// works fine because BotSetPolyFlags is idempotent.
+
+	navPolyFlags flags = enable ? POLYFLAGS_WALK : POLYFLAGS_DISABLED;
+
+	for (int i = PCL_ALIEN_BUILDER0; i < PCL_HUMAN_NAKED; i++ )
+	{
+		classModelConfig_t *model = BG_ClassModelConfig( i );
+		int navHandle = model->navMeshClass
+			? BG_ClassModelConfig( model->navMeshClass )->navHandle
+			: model->navHandle;
+		BotSetPolyFlags( origin, mins, maxs, flags, navHandle );
+	}
+}
+
+void BotEnableAreaForHumans( const vec3_t origin, const vec3_t mins, const vec3_t maxs, bool enable )
+{
+	// see the comment in BotDisableAreaForAliens.
+
+	navPolyFlags flags = enable ? POLYFLAGS_WALK : POLYFLAGS_DISABLED;
+
+	for (int i = PCL_HUMAN_NAKED; i < PCL_NUM_CLASSES; i++ )
+	{
+		classModelConfig_t *model = BG_ClassModelConfig( i );
+		int navHandle = model->navMeshClass
+			? BG_ClassModelConfig( model->navMeshClass )->navHandle
+			: model->navHandle;
+		BotSetPolyFlags( origin, mins, maxs, flags, navHandle );
+	}
+}
+
+void BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs, bool enable )
+{
+	navPolyFlags flags = enable ? POLYFLAGS_WALK : POLYFLAGS_DISABLED;
+	BotSetPolyFlags( origin, mins, maxs, flags );
 }
 
 void BotSetNavMesh( int botClientNum, qhandle_t nav )

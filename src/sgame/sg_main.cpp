@@ -288,7 +288,9 @@ vmCvar_t g_bot_level3upg;
 vmCvar_t g_bot_level4;
 
 // misc bot cvars
-Cvar::Cvar<bool> g_bot_attackStruct("g_bot_attackStruct", "will bot attempt attacking buildables", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_attackStruct("g_bot_attackStruct", "will bot attempt attacking buildables (see also g_bot_aliensAvoidStruct and g_bot_humansAvoidStruct if you want them to keep a safety distance)", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_aliensAvoidStruct("g_bot_aliensAvoidStruct", "should alien bots stay far from buildables (you may want to set g_bot_attackStruct too)", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_humansAvoidStruct("g_bot_humansAvoidStruct", "should human bots stay far from buildables (note that you'll need g_bot_attackStruct to false if you don't want them to attack them from afar)", Cvar::NONE, true);
 Cvar::Cvar<int>  g_bot_fov("g_bot_fov", "how large the bot view cone will be (in degrees)", Cvar::NONE, 125);
 Cvar::Cvar<int>  g_bot_chasetime("g_bot_chasetime", "how long a bot will chase you (in ms)", Cvar::NONE, 5000);
 Cvar::Cvar<int>  g_bot_reactiontime("g_bot_reactiontime", "how much time a bot will need to react after the see you (in ms)", Cvar::NONE, 500);

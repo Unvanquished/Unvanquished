@@ -205,6 +205,8 @@ extern vmCvar_t g_bot_level4;
 
 // misc bot cvars
 extern Cvar::Cvar<bool> g_bot_attackStruct;
+extern Cvar::Cvar<bool> g_bot_aliensAvoidStruct;
+extern Cvar::Cvar<bool> g_bot_humansAvoidStruct;
 extern Cvar::Cvar<int>  g_bot_fov;
 extern Cvar::Cvar<int>  g_bot_chasetime;
 extern Cvar::Cvar<int>  g_bot_reactiontime;

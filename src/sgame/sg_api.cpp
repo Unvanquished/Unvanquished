@@ -244,12 +244,12 @@ bool trap_BotFindRandomPointInRadius(int botClientNum, const vec3_t origin, vec3
 
 void trap_BotEnableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
 {
-	BotEnableArea(origin, mins, maxs);
+	BotEnableArea(origin, mins, maxs, true);
 }
 
 void trap_BotDisableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs)
 {
-	BotDisableArea(origin, mins, maxs);
+	BotEnableArea(origin, mins, maxs, false);
 }
 
 void trap_BotAddObstacle(const vec3_t mins, const vec3_t maxs, qhandle_t* handle)
