@@ -1737,6 +1737,32 @@ private:
 	float momentum_;
 };
 
+std::string GetLevelShotPath( const char* mapName )
+{
+	std::string levelShotPath = Str::Format( "meta/%s/%s", mapName, mapName );
+
+	if( CG_ImageExists( levelShotPath.c_str() ) )
+	{
+		Log::Warn( "Loading level shot %s", levelShotPath.c_str() );
+		return levelShotPath;
+	}
+	else
+	{
+		std::string legacyLevelShotPath = Str::Format( "levelshots/%s", mapName );
+
+		if( CG_ImageExists( legacyLevelShotPath.c_str() ) )
+		{
+			Log::Warn( "Loading legacy Quake 3 level shot %s", legacyLevelShotPath.c_str() );
+			return legacyLevelShotPath;
+		}
+		else
+		{
+			Log::Warn( "Level shot not found for map %s", mapName );
+			return "";
+		}
+	}
+}
+
 class LevelshotElement : public HudElement
 {
 public:
@@ -1754,9 +1780,17 @@ public:
 		if ( mapIndex != rocketInfo.data.mapIndex )
 		{
 			mapIndex = rocketInfo.data.mapIndex;
-			SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />",
-							 rocketInfo.data.mapList[ mapIndex ].mapLoadName,
-					rocketInfo.data.mapList[ mapIndex ].mapLoadName ) );
+
+			std::string levelShotPath = GetLevelShotPath( rocketInfo.data.mapList[ mapIndex ].mapLoadName );
+
+			if ( levelShotPath.length() != 0 )
+			{
+				SetInnerRML( va( "<img class='levelshot' src='/%s' />", levelShotPath.c_str() ) );
+			}
+			else
+			{
+				SetInnerRML( va("<div class='levelshot' style='background-color: black;'>%s</div>", "Missing Levelshot") );
+			}
 		}
 	}
 
@@ -1792,7 +1826,16 @@ public:
 		if ( map != newMap )
 		{
 			map = newMap;
-			SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", newMap, newMap ) );
+			std::string levelShotPath = GetLevelShotPath( map.CString() );
+
+			if ( levelShotPath.length() != 0 )
+			{
+				SetInnerRML( va( "<img class='levelshot' src='/%s' />", levelShotPath.c_str() ) );
+			}
+			else
+			{
+				SetInnerRML( va("<div class='levelshot' style='background-color: black;'>%s</div>", "Missing Levelshot") );
+			}
 		}
 	}
 
