@@ -82,6 +82,17 @@ float MiningComponent::PredictedInterferenceMod(float distance) {
 	return ((1.0f - q) + 0.5f * q);
 }
 
+float MiningComponent::EffectiveInterferenceMod(const Entity& other) const {
+	float expected = PredictedInterferenceMod(
+			G_Distance(entity.oldEnt, other.oldEnt));
+
+	// compensate for the AliveTimeMod, so that the interference doesn't
+	// temporarily give lower bp for a somewhat close drill
+
+	const MiningComponent *othersComp = other.Get<MiningComponent>();
+	return 1.0f - (othersComp->AliveTimePercentage() * (1.0f - expected));
+}
+
 void MiningComponent::CalculateEfficiency() {
 	currentEfficiency   = active ? 1.0f : 0.0f;
 	predictedEfficiency = 1.0f;
@@ -96,11 +107,10 @@ void MiningComponent::CalculateEfficiency() {
 		HealthComponent *healthComponent = other.Get<HealthComponent>();
 		if (healthComponent && !healthComponent->Alive()) return;
 
-		float interferenceMod = PredictedInterferenceMod(G_Distance(entity.oldEnt, other.oldEnt));
-
 		// TODO: Exclude enemy miners in construction from the prediction.
 
-		predictedEfficiency *= interferenceMod;
+		predictedEfficiency *= MiningComponent::PredictedInterferenceMod(
+				G_Distance(entity.oldEnt, other.oldEnt));
 
 		// Current efficiency is zero when not active.
 		if (!active) return;
@@ -108,7 +118,7 @@ void MiningComponent::CalculateEfficiency() {
 		// Only consider active neighbours for the current efficiency.
 		if (!miningComponent.Active()) return;
 
-		currentEfficiency *= interferenceMod;
+		currentEfficiency *= EffectiveInterferenceMod(other);
 		currentEfficiency *= AliveTimeMod();
 	});
 }
