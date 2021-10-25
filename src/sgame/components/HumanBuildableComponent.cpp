@@ -1,12 +1,23 @@
 #include "HumanBuildableComponent.h"
 #include "../Entities.h"
+#include "../botlib/bot_api.h"
 
 static Log::Logger humanBuildableLogger("sgame.humanbuildings");
 
 HumanBuildableComponent::HumanBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent,
 	TeamComponent& r_TeamComponent)
 	: HumanBuildableComponentBase(entity, r_BuildableComponent, r_TeamComponent)
-{}
+{
+	if (g_bot_aliensAvoidStruct.Get()) {
+		vec3_t mins, maxs;
+		const float *origin = entity.oldEnt->s.origin;
+		constexpr vec3_t ones = {1, 1, 1};
+		constexpr float avoidRange = MGTURRET_RANGE;
+		VectorMA(origin,  avoidRange, ones, maxs);
+		VectorMA(origin, -avoidRange, ones, mins);
+		BotEnableAreaForAliens(origin, mins, maxs, false);
+	}
+}
 
 void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	switch (GetBuildableComponent().GetState()) {
@@ -42,6 +53,16 @@ void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*
 
 		default:
 			humanBuildableLogger.Warn("Handling human buildable death event when not alive.");
+	}
+
+	if (g_bot_aliensAvoidStruct.Get()) {
+		vec3_t mins, maxs;
+		const float *origin = entity.oldEnt->s.origin;
+		constexpr vec3_t ones = {1, 1, 1};
+		constexpr float avoidRange = MGTURRET_RANGE;
+		VectorMA(origin,  avoidRange, ones, maxs);
+		VectorMA(origin, -avoidRange, ones, mins);
+		BotEnableAreaForAliens(origin, mins, maxs, true);
 	}
 }
 

@@ -42,8 +42,9 @@ void Cmd_NavEdit( gentity_t *ent );
 void Cmd_AddConnection( gentity_t *ent );
 void Cmd_NavTest( gentity_t *ent );
 
-void         BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void         BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
+void         BotEnableAreaForAliens( const vec3_t origin, const vec3_t mins, const vec3_t maxs, bool enable );
+void         BotEnableAreaForHumans( const vec3_t origin, const vec3_t mins, const vec3_t maxs, bool enable );
+void         BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs, bool enable );
 void         BotSetNavMesh( int botClientNum, qhandle_t nav );
 bool     BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
 void         BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );

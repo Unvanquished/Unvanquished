@@ -1,5 +1,6 @@
 #include "AlienBuildableComponent.h"
 #include "../Entities.h"
+#include "../botlib/bot_api.h"
 #include <random>
 
 static Log::Logger alienBuildableLogger("sgame.alienbuildings");
@@ -11,6 +12,16 @@ AlienBuildableComponent::AlienBuildableComponent(Entity& entity, BuildableCompon
 	TeamComponent& r_TeamComponent, IgnitableComponent& r_IgnitableComponent)
 	: AlienBuildableComponentBase(entity, r_BuildableComponent, r_TeamComponent, r_IgnitableComponent) {
 	GetBuildableComponent().REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 500);
+
+	if (g_bot_humansAvoidStruct.Get()) {
+		vec3_t mins, maxs;
+		const float *origin = entity.oldEnt->s.origin;
+		constexpr vec3_t ones = {1, 1, 1};
+		constexpr float avoidRange = ACIDTUBE_RANGE;
+		VectorMA(origin,  avoidRange, ones, maxs);
+		VectorMA(origin, -avoidRange, ones, mins);
+		BotEnableAreaForHumans(origin, mins, maxs, false);
+	}
 }
 
 void AlienBuildableComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util::optional<Vec3> /*location*/,
@@ -53,6 +64,16 @@ void AlienBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*
 	GetBuildableComponent().SetState(BuildableComponent::PRE_BLAST);
 
 	GetBuildableComponent().REGISTER_THINKER(Blast, ThinkingComponent::SCHEDULER_BEFORE, blastDelay);
+
+	if (g_bot_humansAvoidStruct.Get()) {
+		vec3_t mins, maxs;
+		const float *origin = entity.oldEnt->s.origin;
+		constexpr vec3_t ones = {1, 1, 1};
+		constexpr float avoidRange = ACIDTUBE_RANGE;
+		VectorMA(origin,  avoidRange, ones, maxs);
+		VectorMA(origin, -avoidRange, ones, mins);
+		BotEnableAreaForHumans(origin, mins, maxs, true);
+	}
 }
 
 void AlienBuildableComponent::Blast(int /*timeDelta*/) {
