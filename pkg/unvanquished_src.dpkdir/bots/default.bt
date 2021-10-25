@@ -31,7 +31,7 @@ selector
 					}
 					sequence
 					{
-						condition ( healScore <= 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
+						condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
 						action heal
 					}
 				}
@@ -46,7 +46,7 @@ selector
 		sequence
 		{
 			condition team == TEAM_ALIENS
-			condition healScore <= 0.25
+			condition healScore > 0.25
 			action heal
 		}
 
@@ -54,7 +54,7 @@ selector
 		{
 			condition team == TEAM_HUMANS
 			condition !haveUpgrade( UP_MEDKIT )
-			condition healScore <= 0.25
+			condition healScore > 0.25
 			action heal
 		}
 	}
