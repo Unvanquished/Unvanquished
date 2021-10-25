@@ -51,30 +51,25 @@ class MiningComponent: public MiningComponentBase {
 		/**
 		 * @return Whether the miner is currently mining (and interfering with other miners).
 		 */
-		bool Active() { return active; }
+		bool Active() const { return active; }
 
 		/**
 		 * @return Whether the miner is a temporary "blueprint" entity used for predictions.
 		 */
-		bool Blueprint() { return blueprint; }
+		bool Blueprint() const { return blueprint; }
 
 		/**
 		 * @param predict Whether to assume that the miner and its non-dead neighbors are active.
 		 * @return The current or potential (if predicting) efficiency of this miner.
 		 */
-		float Efficiency(bool predict = false);
-
-		/**
-		 * @param predict Whether to assume that the miner and its non-dead neighbors are active.
-		 * @return The current or potential (if predicting) budget gain of this miner.
-		 */
-		int Budget(bool predict = false);
+		float Efficiency(bool predict = false) const;
 
 	private:
 		void Think(int timeDelta);
 
 		/**
-		 * @brief Whether the miner is currently mining (and interfering with other miners).
+		 * @brief Whether the miner is currently mining (and
+		 *        interfering with other miners).
 		 */
 		bool active;
 
@@ -84,31 +79,39 @@ class MiningComponent: public MiningComponentBase {
 		float currentEfficiency;
 
 		/**
-		 * @brief Efficiency under the assumption that the miner and its non-dead neighbors are active.
+		 * @brief Efficiency under the assumption that the miner
+		 *        and its non-dead neighbors are active.
 		 */
 		float predictedEfficiency;
 
 		/**
-		 * @brief Adjust the current and calculates the predicted mining efficiency.
+		 * @brief Adjust the current and calculates the predicted
+		 *        mining efficiency.
 		 */
 		void CalculateEfficiency();
 
 		/**
-		 * @brief Adjust the rate of all other mining structures in range.
+		 * @brief Adjust the rate of all other mining structures
+		 *        in range.
 		 */
-		void InformNeighbors();
+		void InformNeighbors() const;
 
 		/**
-		 * @brief The percentage of time elasped before the drill
-		 *        works at full capacity
+		 * @brief The percentage of completion of the aliveTime value
 		 */
 		float AliveTimePercentage() const;
 
 		/**
 		 * @brief Calculates modifier for the efficiency of a miner
-		 * given how long it lived.
+		 *        given how long it lived.
 		 */
 		float AliveTimeMod() const;
+
+		/**
+		 * @brief Calculates modifier for the efficiency of a miner
+		 *        when another one interferes
+		 */
+		float EffectiveInterferenceMod(const Entity &other) const;
 };
 
 #endif // MINING_COMPONENT_H_

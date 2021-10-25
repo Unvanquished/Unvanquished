@@ -113,7 +113,7 @@ void MiningComponent::CalculateEfficiency() {
 	});
 }
 
-void MiningComponent::InformNeighbors() {
+void MiningComponent::InformNeighbors() const {
 	// Blueprint miners cause neither real nor predicted interference, so no need to tell neighbours
 	// about them.
 	if (blueprint) return;
@@ -126,7 +126,7 @@ void MiningComponent::InformNeighbors() {
 	});
 }
 
-float MiningComponent::Efficiency(bool predict) {
+float MiningComponent::Efficiency(bool predict) const {
 	return predict ? predictedEfficiency : currentEfficiency;
 }
 
