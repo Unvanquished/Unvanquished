@@ -64,6 +64,12 @@ class MiningComponent: public MiningComponentBase {
 		 */
 		float Efficiency(bool predict = false) const;
 
+		/**
+		 * @brief Adjust the current and calculates the predicted
+		 *        mining efficiency.
+		 */
+		void CalculateEfficiency();
+
 	private:
 		void Think(int timeDelta);
 
@@ -83,12 +89,6 @@ class MiningComponent: public MiningComponentBase {
 		 *        and its non-dead neighbors are active.
 		 */
 		float predictedEfficiency;
-
-		/**
-		 * @brief Adjust the current and calculates the predicted
-		 *        mining efficiency.
-		 */
-		void CalculateEfficiency();
 
 		/**
 		 * @brief Adjust the rate of all other mining structures

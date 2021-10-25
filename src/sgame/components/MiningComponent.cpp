@@ -1,5 +1,19 @@
 #include "MiningComponent.h"
 
+
+static Cvar::Callback<Cvar::Cvar<float>> g_buildPointMinerActivationTime(
+		"g_buildPointMinerActivationTime",
+		"Time before a drill or leech is fully active, in seconds",
+		Cvar::SERVERINFO,
+		3.0f*60,
+		[](int) {
+			ForEntities<MiningComponent>([&] (Entity& other, MiningComponent& miningComponent) {
+				miningComponent.CalculateEfficiency();
+			});
+			G_UpdateBuildPointBudgets();
+		});
+
+
 MiningComponent::MiningComponent(Entity& entity, bool blueprint,
                                  ThinkingComponent& r_ThinkingComponent)
 	: MiningComponentBase(entity, blueprint, r_ThinkingComponent)
@@ -50,7 +64,7 @@ void MiningComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfD
 }
 
 float MiningComponent::AliveTimePercentage() const {
-	constexpr float fullyActiveTime =  3.0f * 60.0f * 1000.0f; // 3 minutes
+	float fullyActiveTime = g_buildPointMinerActivationTime.Get() * 1000.0f;
 
 	Log::Warn("creation time: %i", entity.oldEnt->creationTime);
 	if (entity.oldEnt->creationTime < 1000)
