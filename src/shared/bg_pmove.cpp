@@ -392,9 +392,6 @@ without getting a sqrt(2) distortion in speed.
 */
 static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 {
-	int   max;
-	float total;
-	float scale;
 	float modifier = 1.0f;
 	int   staminaJumpCost;
 
@@ -532,35 +529,25 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		modifier = 0.0f;
 	}
 
-	max = abs( cmd->forwardmove );
+	float max = std::max( std::abs( cmd->forwardmove ), std::abs( cmd->rightmove ) );
 
-	if ( abs( cmd->rightmove ) > max )
-	{
-		max = abs( cmd->rightmove );
-	}
-
-	total = cmd->forwardmove * cmd->forwardmove + cmd->rightmove * cmd->rightmove;
+	float total = cmd->forwardmove * cmd->forwardmove + cmd->rightmove * cmd->rightmove;
 
 	if ( zFlight )
 	{
-		if ( abs( cmd->upmove ) > max )
-		{
-			max = abs( cmd->upmove );
-		}
+		max = std::max( static_cast<float>( std::abs( cmd->upmove ) ), max );
 
 		total += cmd->upmove * cmd->upmove;
 	}
 
-	if ( !max )
+	if ( max <= 0.0f )
 	{
-		return 0;
+		return 0.0f;
 	}
 
 	total = sqrtf( total );
 
-	scale = pm->ps->speed * max / ( 127.0f * total ) * modifier;
-
-	return scale;
+	return pm->ps->speed * max / ( 127.0f * total ) * modifier;
 }
 
 /*
