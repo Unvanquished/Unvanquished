@@ -931,7 +931,7 @@ static bool PM_CheckPounce()
 			{
 				// get jump direction
 				VectorCopy( pml.forward, jumpDirection );
-				jumpDirection[ 2 ] = fabs( jumpDirection[ 2 ] );
+				jumpDirection[ 2 ] = fabsf( jumpDirection[ 2 ] );
 
 				// get pitch towards ground surface
 				pitchToGround = M_PI_2 - acosf( DotProduct( pml.groundTrace.plane.normal, jumpDirection ) );
@@ -1696,13 +1696,6 @@ PM_WaterMove
 */
 static void PM_WaterMove()
 {
-	int    i;
-	vec3_t wishvel;
-	float  wishspeed;
-	vec3_t wishdir;
-	float  scale;
-	float  vel;
-
 	// if pouncing, stop
 	PM_CheckWaterPounce();
 
@@ -1737,21 +1730,23 @@ static void PM_WaterMove()
 #endif
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd, true );
+	float scale = PM_CmdScale( &pm->cmd, true );
 
 	//
 	// user intentions
 	//
 
-	for ( i = 0; i < 3; i++ )
+	vec3_t wishvel;
+	for ( int i = 0; i < 3; i++ )
 	{
-		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
+		wishvel[ i ] = pml.forward[ i ] * pm->cmd.forwardmove
+		             + pml.right[ i ]   * pm->cmd.rightmove;
 	}
+	wishvel[ 2 ] += pm->cmd.upmove;
 
-	wishvel[ 2 ] += scale * pm->cmd.upmove;
-
+	vec3_t wishdir;
 	VectorCopy( wishvel, wishdir );
-	wishspeed = VectorNormalize( wishdir );
+	float wishspeed = VectorNormalize( wishdir ) * scale;
 
 	if ( wishspeed > pm->ps->speed * pm_swimScale )
 	{
@@ -1763,7 +1758,7 @@ static void PM_WaterMove()
 	// make sure we can go up slopes easily under water
 	if ( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0 )
 	{
-		vel = VectorLength( pm->ps->velocity );
+		float vel = VectorLength( pm->ps->velocity );
 		// slide along the ground plane
 		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
 
@@ -1779,24 +1774,21 @@ static void PM_WaterMove()
  */
 static void PM_GhostMove( bool noclip )
 {
-	int    i;
-	float  scale, wishspeed;
-	vec3_t wishvel, wishdir;
-
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd, true );
+	float scale = PM_CmdScale( &pm->cmd, true );
 
-	for ( i = 0; i < 3; i++ )
+	vec3_t wishvel;
+	for ( int i = 0; i < 3; i++ )
 	{
-		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove +
-					   scale * pml.right[ i ]   * pm->cmd.rightmove;
+		wishvel[ i ] = pml.forward[ i ] * pm->cmd.forwardmove +
+		               pml.right[ i ]   * pm->cmd.rightmove;
 	}
+	wishvel[ 2 ] += pm->cmd.upmove;
 
-	wishvel[ 2 ] += scale * pm->cmd.upmove;
-
+	vec3_t wishdir;
 	VectorCopy( wishvel, wishdir );
-	wishspeed = VectorNormalize( wishdir );
+	float wishspeed = VectorNormalize( wishdir ) * scale;
 
 	PM_Accelerate( wishdir, wishspeed, pm_flyaccelerate );
 
@@ -1818,25 +1810,17 @@ PM_AirMove
 */
 static void PM_AirMove()
 {
-	int       i;
-	vec3_t    wishvel;
-	float     fmove, smove;
-	vec3_t    wishdir;
-	float     wishspeed;
-	float     scale;
-	usercmd_t cmd;
-
 	PM_CheckWallJump();
 	PM_CheckWallRun();
 	PM_CheckJetpack();
 
 	PM_Friction();
 
-	fmove = pm->cmd.forwardmove;
-	smove = pm->cmd.rightmove;
+	float fmove = pm->cmd.forwardmove;
+	float smove = pm->cmd.rightmove;
 
-	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd, false );
+	usercmd_t cmd = pm->cmd;
+	float scale = PM_CmdScale( &cmd, false );
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
@@ -1847,16 +1831,14 @@ static void PM_AirMove()
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
 
-	for ( i = 0; i < 2; i++ )
-	{
-		wishvel[ i ] = pml.forward[ i ] * fmove + pml.right[ i ] * smove;
-	}
-
+	vec3_t wishvel;
+	wishvel[ 0 ] = pml.forward[ 0 ] * fmove + pml.right[ 0 ] * smove;
+	wishvel[ 1 ] = pml.forward[ 1 ] * fmove + pml.right[ 1 ] * smove;
 	wishvel[ 2 ] = 0;
 
+	vec3_t wishdir;
 	VectorCopy( wishvel, wishdir );
-	wishspeed = VectorNormalize( wishdir );
-	wishspeed *= scale;
+	float wishspeed = VectorNormalize( wishdir ) * scale;
 
 	// not on ground, so little effect on velocity
 	PM_Accelerate( wishdir, wishspeed,
@@ -1881,16 +1863,6 @@ PM_ClimbMove
 */
 static void PM_ClimbMove()
 {
-	int       i;
-	vec3_t    wishvel;
-	float     fmove, smove;
-	vec3_t    wishdir;
-	float     wishspeed;
-	float     scale;
-	usercmd_t cmd;
-	float     accelerate;
-	float     vel;
-
 	if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
 	{
 		// begin swimming
@@ -1915,11 +1887,11 @@ static void PM_ClimbMove()
 
 	PM_Friction();
 
-	fmove = pm->cmd.forwardmove;
-	smove = pm->cmd.rightmove;
+	float fmove = pm->cmd.forwardmove;
+	float smove = pm->cmd.rightmove;
 
-	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd, false );
+	usercmd_t cmd = pm->cmd;
+	float scale = PM_CmdScale( &cmd, false );
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
@@ -1931,17 +1903,19 @@ static void PM_ClimbMove()
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
 
-	for ( i = 0; i < 3; i++ )
+	vec3_t wishvel;
+	for ( int i = 0; i < 3; i++ )
 	{
-		wishvel[ i ] = pml.forward[ i ] * fmove + pml.right[ i ] * smove;
+		wishvel[ i ] = pml.forward[ i ] * fmove
+		             + pml.right[ i ] * smove;
 	}
 
 	// when going up or down slopes the wish velocity should Not be zero
 //  wishvel[2] = 0;
 
+	vec3_t wishdir;
 	VectorCopy( wishvel, wishdir );
-	wishspeed = VectorNormalize( wishdir );
-	wishspeed *= scale;
+	float wishspeed = VectorNormalize( wishdir ) * scale;
 
 	// clamp the speed lower if ducking
 	if ( pm->ps->pm_flags & PMF_DUCKED )
@@ -1966,6 +1940,7 @@ static void PM_ClimbMove()
 		}
 	}
 
+	float accelerate;
 	// when a player gets hit, they temporarily lose
 	// full control, which allows them to be moved a bit
 	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
@@ -1984,7 +1959,7 @@ static void PM_ClimbMove()
 		pm->ps->velocity[ 2 ] -= pm->ps->gravity * pml.frametime;
 	}
 
-	vel = VectorLength( pm->ps->velocity );
+	float vel = VectorLength( pm->ps->velocity );
 
 	// slide along the ground plane
 	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
@@ -2010,15 +1985,6 @@ PM_WalkMove
 */
 static void PM_WalkMove()
 {
-	int       i;
-	vec3_t    wishvel;
-	float     fmove, smove;
-	vec3_t    wishdir;
-	float     wishspeed;
-	float     scale;
-	usercmd_t cmd;
-	float     accelerate;
-
 	if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
 	{
 		// begin swimming
@@ -2060,11 +2026,11 @@ static void PM_WalkMove()
 
 	PM_Friction();
 
-	fmove = pm->cmd.forwardmove;
-	smove = pm->cmd.rightmove;
+	float fmove = pm->cmd.forwardmove;
+	float smove = pm->cmd.rightmove;
 
-	cmd = pm->cmd;
-	scale = PM_CmdScale( &cmd, false );
+	usercmd_t cmd = pm->cmd;
+	float scale = PM_CmdScale( &cmd, false );
 
 	// set the movementDir so clients can rotate the legs for strafing
 	PM_SetMovementDir();
@@ -2080,17 +2046,19 @@ static void PM_WalkMove()
 	VectorNormalize( pml.forward );
 	VectorNormalize( pml.right );
 
-	for ( i = 0; i < 3; i++ )
+	vec3_t wishvel;
+	for ( int i = 0; i < 3; i++ )
 	{
-		wishvel[ i ] = pml.forward[ i ] * fmove + pml.right[ i ] * smove;
+		wishvel[ i ] = pml.forward[ i ] * fmove
+		             + pml.right[ i ] * smove;
 	}
 
 	// when going up or down slopes the wish velocity should Not be zero
 //  wishvel[2] = 0;
 
+	vec3_t wishdir;
 	VectorCopy( wishvel, wishdir );
-	wishspeed = VectorNormalize( wishdir );
-	wishspeed *= scale;
+	float wishspeed = VectorNormalize( wishdir ) * scale;
 
 	// clamp the speed lower if ducking
 	if ( pm->ps->pm_flags & PMF_DUCKED )
@@ -2115,6 +2083,7 @@ static void PM_WalkMove()
 		}
 	}
 
+	float accelerate;
 	// when a player gets hit, they temporarily lose
 	// full control, which allows them to be moved a bit
 	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
@@ -2164,33 +2133,28 @@ Basically a rip of PM_WaterMove with a few changes
 */
 static void PM_LadderMove()
 {
-	int    i;
-	vec3_t wishvel;
-	float  wishspeed;
-	vec3_t wishdir;
-	float  scale;
-	float  vel;
-
 	PM_Friction();
 
-	scale = PM_CmdScale( &pm->cmd, true );
+	float scale = PM_CmdScale( &pm->cmd, true );
 
-	for ( i = 0; i < 3; i++ )
+	vec3_t wishvel;
+	for ( int i = 0; i < 3; i++ )
 	{
-		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
+		wishvel[ i ] = pml.forward[ i ] * pm->cmd.forwardmove
+		             + pml.right[ i ]   * pm->cmd.rightmove;
 	}
+	wishvel[ 2 ] += pm->cmd.upmove;
 
-	wishvel[ 2 ] += scale * pm->cmd.upmove;
-
+	vec3_t wishdir;
 	VectorCopy( wishvel, wishdir );
-	wishspeed = VectorNormalize( wishdir );
+	float wishspeed = VectorNormalize( wishdir ) * scale;
 
 	PM_Accelerate( wishdir, wishspeed, pm_accelerate );
 
 	//slanty ladders
 	if ( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0.0f )
 	{
-		vel = VectorLength( pm->ps->velocity );
+		float vel = VectorLength( pm->ps->velocity );
 
 		// slide along the ground plane
 		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
@@ -2246,16 +2210,13 @@ PM_DeadMove
 */
 static void PM_DeadMove()
 {
-	float forward;
-
 	if ( !pml.walking )
 	{
 		return;
 	}
 
 	// extra friction
-
-	forward = VectorLength( pm->ps->velocity );
+	float forward = VectorLength( pm->ps->velocity );
 	forward -= 20;
 
 	if ( forward <= 0 )
@@ -2843,7 +2804,7 @@ static void PM_GroundClimbTrace()
 				// calculate axis for subsequent viewangle rotations
 				if ( VectorCompareEpsilon( trace.plane.normal, ceilingNormal, eps ) )
 				{
-					if ( fabs( DotProduct( surfNormal, trace.plane.normal ) ) < ( 1.0f - eps ) )
+					if ( fabsf( DotProduct( surfNormal, trace.plane.normal ) ) < ( 1.0f - eps ) )
 					{
 						// we had a smooth transition, rotate along old surface x new surface
 						CrossProduct( surfNormal, trace.plane.normal, pm->ps->grapplePoint );
@@ -4716,20 +4677,20 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 
 			if ( diff < -90.0f )
 			{
-				ps->delta_angles[ i ] += ANGLE2SHORT( fabs( diff ) - 90.0f );
+				ps->delta_angles[ i ] += ANGLE2SHORT( fabsf( diff ) - 90.0f );
 			}
 			else if ( diff > 90.0f )
 			{
-				ps->delta_angles[ i ] -= ANGLE2SHORT( fabs( diff ) - 90.0f );
+				ps->delta_angles[ i ] -= ANGLE2SHORT( fabsf( diff ) - 90.0f );
 			}
 
 			if ( diff < 0.0f )
 			{
-				ps->delta_angles[ i ] += ANGLE2SHORT( fabs( diff ) * 0.05f );
+				ps->delta_angles[ i ] += ANGLE2SHORT( fabsf( diff ) * 0.05f );
 			}
 			else if ( diff > 0.0f )
 			{
-				ps->delta_angles[ i ] -= ANGLE2SHORT( fabs( diff ) * 0.05f );
+				ps->delta_angles[ i ] -= ANGLE2SHORT( fabsf( diff ) * 0.05f );
 			}
 		}
 	}
