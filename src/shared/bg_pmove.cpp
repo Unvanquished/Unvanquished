@@ -252,30 +252,24 @@ Handles both ground friction and water friction
 */
 static void PM_Friction()
 {
-	vec3_t vec;
-	float  *vel;
-	float  speed, newspeed, control;
-	float  drop;
-
-	vel = pm->ps->velocity;
+	vec3_t &vel = pm->ps->velocity;
 
 	// make sure vertical velocity is NOT set to zero when wall climbing
+	vec3_t vec;
 	VectorCopy( vel, vec );
 
 	if ( pml.walking && !( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
 	{
 		vec[ 2 ] = 0; // ignore slope movement
 	}
-
-	speed = VectorLength( vec );
+	float speed = VectorLength( vec );
 
 	if ( speed < 0.1f )
 	{
-		VectorSet(vel, 0.0f, 0.0f, 0.0f);
 		return;
 	}
 
-	drop = 0;
+	float drop = 0.0f;
 
 	// apply ground friction
 	if ( pm->waterlevel <= 1 )
@@ -293,8 +287,8 @@ static void PM_Friction()
 					friction *= HUMAN_SLIDE_FRICTION_MODIFIER;
 				}
 
-				control = speed < stopSpeed ? stopSpeed : speed;
-				drop += control * friction * pml.frametime;
+				float control = speed < stopSpeed ? stopSpeed : speed;
+				drop = control * friction * pml.frametime;
 			}
 		}
 	}
@@ -311,11 +305,11 @@ static void PM_Friction()
 	}
 
 	// scale the velocity
-	newspeed = speed - drop;
+	float newspeed = speed - drop;
 
-	if ( newspeed < 0 )
+	if ( newspeed < 0.0f )
 	{
-		newspeed = 0;
+		newspeed = 0.0f;
 	}
 
 	newspeed /= speed;
