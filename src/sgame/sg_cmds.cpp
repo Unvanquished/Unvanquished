@@ -1671,7 +1671,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	switch ( voteInfo[voteId].special )
 	{
 	case VOTE_BEFORE:
-		if ( level.numConnectedPlayers <= 1 || level.matchTime >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.numConnectedPlayers > 1 && level.matchTime >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed once $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
@@ -1681,7 +1681,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_AFTER:
-		if ( level.numConnectedPlayers <= 1 || level.matchTime < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.numConnectedPlayers > 1 && level.matchTime < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed until $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
