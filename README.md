@@ -23,9 +23,9 @@ See below for build and launch instructions.
 To fetch and build Unvanquished, you'll need:
 `git`,
 `cmake`,
-`python` = 2,
-`python-yaml`,
-`python-jinja`,
+`python` >= 2,
+`python-yaml` (version should match the python version),
+`python-jinja` (version should match the python version),
 and a C++11 compiler.
 
 The following are actively supported:
