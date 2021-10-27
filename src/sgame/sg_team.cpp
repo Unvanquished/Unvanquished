@@ -208,7 +208,6 @@ G_LeaveTeam
 void G_LeaveTeam( gentity_t *self )
 {
 	team_t    team = (team_t) self->client->pers.team;
-	gentity_t *ent;
 	int       i;
 
 	if ( G_IsPlayableTeam( team ) )
@@ -233,7 +232,7 @@ void G_LeaveTeam( gentity_t *self )
 
 	for ( i = 0; i < level.num_entities; i++ )
 	{
-		ent = &g_entities[ i ];
+		gentity_t *ent = &g_entities[ i ];
 
 		if ( !ent->inuse )
 		{
@@ -253,6 +252,11 @@ void G_LeaveTeam( gentity_t *self )
 		{
 			G_FreeEntity( ent );
 		}
+	}
+
+	for ( auto &creditee : self->credits )
+	{
+		creditee = { 0.0f, 0, TEAM_NONE };
 	}
 
 	trap_UnlinkEntity( self );
