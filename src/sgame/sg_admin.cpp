@@ -5675,9 +5675,9 @@ static void BotUsage( gentity_t *ent )
 static int BotSkillFromString( gentity_t* ent, const char* s )
 {
 	int skill0 = atoi( s );
-	int skill = Math::Clamp( atoi( s ), 1, 10 );
+	int skill = Math::Clamp( atoi( s ), 1, 9 );
 	if (skill0 != skill) {
-		ADMP( QQ( N_( "Bot skill level should be from 1 to 10" ) ) );
+		ADMP( QQ( N_( "Bot skill level should be from 1 to 9" ) ) );
 	}
 	return skill;
 }
