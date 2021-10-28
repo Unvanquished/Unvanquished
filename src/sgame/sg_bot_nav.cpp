@@ -553,7 +553,11 @@ bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 
 	if ( blocker )
 	{
-
+		// this makes bots try to crouch if a jump or a way
+		// around the obstacle would not lead to a valid
+		// path.
+		// There is no risk to do both jumping and ducking
+		// because there can be only 1 Z direction.
 		self->botMind->cmdBuffer.upmove = -127;
 		if ( BotShouldJump( self, blocker, dir ) )
 		{
