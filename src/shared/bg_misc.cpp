@@ -531,6 +531,7 @@ void BG_InitClassAttributes()
 		ca->bob = 0.0f;
 		ca->bobCycle = 0.0f;
 		ca->abilities = 0;
+		ca->sprintMod = 1.0f;
 
 		BG_ParseClassAttributeFile( va( "configs/classes/%s.attr.cfg", ca->name ), ca );
 	}

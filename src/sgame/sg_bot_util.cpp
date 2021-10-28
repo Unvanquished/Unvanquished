@@ -51,45 +51,11 @@ static float GetMaximalSpeed( gentity_t const *self )
 }
 
 // returns maximum "ground speed" of a class
-// this is, for now, an ugly switch with hard-coded values taken from
-// in-game measurement.
-// Anything better would involve working with physics. This would be
-// very nice, but requires a dive into how physics works.
+// It should likely be replaced by the real formula, but I don't know
+// it, and the results are good enough (tm).
 static float GetMaximalSpeed( class_t cl )
 {
-	switch( cl )
-	{
-		case PCL_ALIEN_BUILDER0:
-			return 287;
-		case PCL_ALIEN_BUILDER0_UPG:
-			return 287;
-		case PCL_ALIEN_LEVEL0:
-			return 448;
-		case PCL_ALIEN_LEVEL1:
-			return 399;
-		case PCL_ALIEN_LEVEL2:
-			return 383;
-		case PCL_ALIEN_LEVEL2_UPG:
-			return 383;
-		case PCL_ALIEN_LEVEL3:
-			return 383;
-		case PCL_ALIEN_LEVEL3_UPG:
-			return 383;
-		case PCL_ALIEN_LEVEL4:
-			return 353;
-		case PCL_HUMAN_NAKED:
-			return 383;
-		case PCL_HUMAN_LIGHT:
-			return 383;
-		case PCL_HUMAN_MEDIUM:
-			return 367;
-		case PCL_HUMAN_BSUIT:
-			return 367;
-		case PCL_NONE:
-		case PCL_NUM_CLASSES:
-		default:
-			ASSERT( false && "invalid class number provided" );
-	}
+	return BG_Class( cl )->speed * BG_Class( cl )->sprintMod * g_speed.value;
 }
 
 template <typename T>
