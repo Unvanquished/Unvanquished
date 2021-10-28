@@ -224,37 +224,12 @@ const gentity_t *BotGetHealTarget( gentity_t *self )
 	}
 }
 
-// Gives a value between 0 and 1 representing how much a bot should want to rush.
-// A rush is basically: target enemy's base.
-// The idea is to have bots rushing depending on the value of their equipment,
-// their skill level and what they are currently authorized to buy.
-// Basically, higher skilled bots should save money before rushing, so that they
-// would not be naked at their death.
-// In current state of code, human bots no longer wait for battlesuit to attack,
-// but alien bots are still rushing too much, probably because of their tracking
-// ability and "speed".
-// Those problems can probably *not* be fixed in this place, though.
-// TODO: have a way to increase rush score depedning on much of mates are rushing
-//       I suppose I'll have to need a team_t struct, which would contain some
-//       modifier, itself reconstructed each "frame", increased depending on
-//       team's average credits / player?
-// TODO: compare both team's momentums to know if rushing is wise?
-// TODO: check number of spawns, if less than 2, apply big score reduction?
-float BotGetBaseRushScore( gentity_t *ent )
+// computes the maximum credits this bot could spend in
+// equipment (or classes) with infinite credits.
+static int GetMaxEquipmentCost( gentity_t const* self )
 {
-	ASSERT( ent && ent->botMind && ent->client );
-	const float skill_modifier = 1 - 2 * SkillModifier( ent->botMind->botSkill.level );
 	int max_value = 0;
-	// if nothing allowed from current stage have a cost,
-	// return average value on which other parameters can weight
-	float rush_score = 0.5;
-
-	float self_value = static_cast<float>( ent->client->ps.persistant[PERS_CREDIT]
-		+ BotValueOfWeapons( ent )
-		+ BotValueOfUpgrades( ent )
-		+ BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->price );
-
-	switch( G_Team( ent ) )
+	switch( G_Team( self ) )
 	{
 		case TEAM_ALIENS:
 			for ( auto const& pcl : classes )
@@ -304,11 +279,42 @@ float BotGetBaseRushScore( gentity_t *ent )
 				max_value += max_item_val;
 				break;
 			}
-		case TEAM_ALL:
-		case TEAM_NONE:
-		case NUM_TEAMS:
-			break;
+		default:
+			ASSERT_UNREACHABLE();
 	}
+	return max_value;
+}
+
+// Gives a value between 0 and 1 representing how much a bot should want to rush.
+// A rush is basically: target enemy's base.
+// The idea is to have bots rushing depending on the value of their equipment,
+// their skill level and what they are currently authorized to buy.
+// Basically, higher skilled bots should save money before rushing, so that they
+// would not be naked at their death.
+// In current state of code, human bots no longer wait for battlesuit to attack,
+// but alien bots are still rushing too much, probably because of their tracking
+// ability and "speed".
+// Those problems can probably *not* be fixed in this place, though.
+// TODO: have a way to increase rush score depedning on much of mates are rushing
+//       I suppose I'll have to need a team_t struct, which would contain some
+//       modifier, itself reconstructed each "frame", increased depending on
+//       team's average credits / player?
+// TODO: compare both team's momentums to know if rushing is wise?
+// TODO: check number of spawns, if less than 2, apply big score reduction?
+float BotGetBaseRushScore( gentity_t *ent )
+{
+	ASSERT( ent && ent->botMind && ent->client );
+	const float skill_modifier = 1 - 2 * SkillModifier( ent->botMind->botSkill.level );
+	// if nothing allowed from current stage have a cost,
+	// return average value on which other parameters can weight
+	float rush_score = 0.5;
+
+	float self_value = static_cast<float>( ent->client->ps.persistant[PERS_CREDIT]
+		+ BotValueOfWeapons( ent )
+		+ BotValueOfUpgrades( ent )
+		+ BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->price );
+
+	int max_value = GetMaxEquipmentCost( ent );
 	if ( max_value != 0 )
 	{
 		rush_score = ( self_value + skill_modifier * max_value )/ max_value;
