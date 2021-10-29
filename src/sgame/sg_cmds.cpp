@@ -849,23 +849,23 @@ void Cmd_Team_f( gentity_t *ent )
 
 	// Cannot leave a team while in combat.
 	if ( !g_cheats.integer &&
-	     g_combatCooldown.integer &&
+	     g_combatCooldown.Get() &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
 	     Entities::IsAlive( ent ) &&
-	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
+	     ent->client->lastCombatTime + g_combatCooldown.Get() * 1000 > level.time )
 	{
-		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
+		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.Get() * 1000 ) - level.time ) / 1000;
 
 		trap_SendServerCommand( ent - g_entities,
 		    va( "print_tr %s %i %.0f", QQ( N_("You cannot leave your team until $1$ after combat. Try again in $2$s.") ),
-		        g_combatCooldown.integer, remaining ) );
+		        g_combatCooldown.Get(), remaining ) );
 
 		return;
 	}
 
 	// disallow joining teams during warmup
-	if ( g_doWarmup.integer && ( ( level.warmupTime - level.time ) / 1000 ) > 0 )
+	if ( g_doWarmup.Get() && ( ( level.warmupTime - level.time ) / 1000 ) > 0 )
 	{
 		G_TriggerMenu( ent - g_entities, MN_WARMUP );
 		return;
@@ -924,14 +924,14 @@ void Cmd_Team_f( gentity_t *ent )
 				{
 					// 1: If this team has more player than the other team,
 					// tell the player to join the other team.
-					if ( g_teamForceBalance.integer == 1 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
+					if ( g_teamForceBalance.Get() == 1 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
 					{
 						G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 						return;
 					}
 					// 2: Check for this team having more player than the other
 					// theam only if the other team is not empty.
-					else if ( g_teamForceBalance.integer >= 2 && G_PlayerCountForBalance( TEAM_HUMANS ) > 0 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
+					else if ( g_teamForceBalance.Get() == 2 && G_PlayerCountForBalance( TEAM_HUMANS ) > 0 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
 					{
 						G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 						return;
@@ -957,14 +957,14 @@ void Cmd_Team_f( gentity_t *ent )
 				{
 					// 1: If this team has more player than the other team,
 					// tell the player to join the other team.
-					if ( g_teamForceBalance.integer == 1 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
+					if ( g_teamForceBalance.Get() == 1 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
 					{
 						G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
 						return;
 					}
 					// 2: Check for this team having more player than the other
 					// theam only if the other team is not empty.
-					else if ( g_teamForceBalance.integer >= 2 && G_PlayerCountForBalance( TEAM_ALIENS ) > 0 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
+					else if ( g_teamForceBalance.Get() == 2 && G_PlayerCountForBalance( TEAM_ALIENS ) > 0 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
 					{
 						G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
 						return;
@@ -1009,8 +1009,8 @@ void Cmd_Team_f( gentity_t *ent )
 		return;
 	}
 
-	if ( team != TEAM_NONE && g_maxGameClients.integer &&
-	     level.numPlayingClients >= g_maxGameClients.integer )
+	if ( team != TEAM_NONE && g_maxGameClients.Get() &&
+	     level.numPlayingClients >= g_maxGameClients.Get() )
 	{
 		G_TriggerMenu( ent - g_entities, MN_PLAYERLIMIT );
 		return;
@@ -1084,7 +1084,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 	gentity_t *other;
 
 	// check if blocked by g_specChat 0
-	if ( ( !g_specChat.integer ) && ( mode != SAY_TEAM ) &&
+	if ( ( !g_specChat.Get() ) && ( mode != SAY_TEAM ) &&
 	     ( ent ) && ( ent->client->pers.team == TEAM_NONE ) &&
 	     ( !G_admin_permission( ent, ADMF_NOCENSORFLOOD ) ) )
 	{
@@ -1162,7 +1162,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 
 	for ( i = 0; i < 3; i++ )
 	{
-		range[ i ] = g_sayAreaRange.value;
+		range[ i ] = g_sayAreaRange.Get();
 	}
 
 	G_LogPrintf( "SayArea: %d \"%s^*\": ^4%s",
@@ -1207,7 +1207,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 
 	for ( i = 0; i < 3; i++ )
 	{
-		range[ i ] = g_sayAreaRange.value;
+		range[ i ] = g_sayAreaRange.Get();
 	}
 
 	G_LogPrintf( "SayAreaTeam: %d \"%s^*\": ^4%s",
@@ -1345,7 +1345,7 @@ void Cmd_VSay_f( gentity_t *ent )
 		return;
 	}
 
-	if ( !g_enableVsays.integer )
+	if ( !g_enableVsays.Get() )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
 		                          "print_tr %s %s", QQ( N_("$1$: voice system administratively disabled on this server") ),
@@ -1572,7 +1572,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 	team = (team_t) ( ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TEAM_NONE );
 
-	if ( !g_allowVote.integer )
+	if ( !g_allowVote.Get() )
 	{
 		trap_SendServerCommand( ent - g_entities,
 		                        va( "print_tr %s %s", QQ( N_("$1$: voting not allowed here") ), cmd ) );
@@ -1640,13 +1640,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 		return;
 	}
 
-	if ( g_voteLimit.integer > 0 &&
-	     ent->client->pers.namelog->voteCount >= g_voteLimit.integer &&
+	if ( g_voteLimit.Get() > 0 &&
+	     ent->client->pers.namelog->voteCount >= g_voteLimit.Get() &&
 	     !G_admin_permission( ent, ADMF_NO_VOTE_LIMIT ) )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
 		                          "print_tr %s %s %d", QQ( N_("$1$: you have already called the maximum number of votes ($2$)") ),
-		                          cmd, g_voteLimit.integer ) );
+		                          cmd, g_voteLimit.Get() ) );
 		return;
 	}
 
@@ -4377,7 +4377,7 @@ int G_FloodLimited( gentity_t *ent )
 {
 	int deltatime, ms;
 
-	if ( g_floodMinTime.integer <= 0 )
+	if ( g_floodMinTime.Get() <= 0 )
 	{
 		return 0;
 	}
@@ -4389,7 +4389,7 @@ int G_FloodLimited( gentity_t *ent )
 
 	deltatime = level.time - ent->client->pers.floodTime;
 
-	ent->client->pers.floodDemerits += g_floodMinTime.integer - deltatime;
+	ent->client->pers.floodDemerits += g_floodMinTime.Get() - deltatime;
 
 	if ( ent->client->pers.floodDemerits < 0 )
 	{
@@ -4398,7 +4398,7 @@ int G_FloodLimited( gentity_t *ent )
 
 	ent->client->pers.floodTime = level.time;
 
-	ms = ent->client->pers.floodDemerits - g_floodMaxDemerits.integer;
+	ms = ent->client->pers.floodDemerits - g_floodMaxDemerits.Get();
 
 	if ( ms <= 0 )
 	{
@@ -4596,7 +4596,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	bool teamonly = false;
 	char     recipients[ MAX_STRING_CHARS ] = "";
 
-	if ( !g_privateMessages.integer && ent )
+	if ( !g_privateMessages.Get() && ent )
 	{
 		ADMP( "\"" N_("Sorry, but private messages have been disabled") "\"" );
 		return;
@@ -4670,7 +4670,7 @@ void Cmd_AdminMessage_f( gentity_t *ent )
 	// Check permissions and add the appropriate user [prefix]
 	if ( !G_admin_permission( ent, ADMF_ADMINCHAT ) )
 	{
-		if ( !g_publicAdminMessages.integer )
+		if ( !g_publicAdminMessages.Get() )
 		{
 			ADMP( "\"" N_("Sorry, but use of /a by non-admins has been disabled.") "\"" );
 			return;

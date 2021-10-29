@@ -82,7 +82,7 @@ void SpawnerComponent::Think(int timeDelta) {
 
 			// Do periodic damage to a friendly client.
 			// TODO: Externalize constants.
-			else  if (blocker->Get<ClientComponent>() && g_antiSpawnBlock.integer) {
+			else  if (blocker->Get<ClientComponent>() && g_antiSpawnBlock.Get()) {
 				blockTime += timeDelta;
 
 				if (blockTime > BLOCKER_GRACE_PERIOD
@@ -102,7 +102,7 @@ void SpawnerComponent::Think(int timeDelta) {
 				}
 			}
 		}
-	} else if (g_antiSpawnBlock.integer) {
+	} else if (g_antiSpawnBlock.Get()) {
 		blockTime = Math::Clamp(blockTime - timeDelta, 0, BLOCKER_GRACE_PERIOD);
 	}
 }

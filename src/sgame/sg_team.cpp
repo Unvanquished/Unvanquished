@@ -97,7 +97,7 @@ void G_AreaTeamCommand( const gentity_t *ent, const char *cmd )
 
 	for ( i = 0; i < 3; i++ )
 	{
-		range[ i ] = g_sayAreaRange.value;
+		range[ i ] = g_sayAreaRange.Get();
 	}
 
 	VectorAdd( ent->s.origin, range, maxs );
@@ -387,7 +387,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 	int       curWeaponClass = WP_NONE; // sends weapon for humans, class for aliens
 	int       health = 0;
 
-	if ( !g_allowTeamOverlay.integer )
+	if ( !g_allowTeamOverlay.Get() )
 	{
 		return;
 	}
@@ -570,9 +570,9 @@ void CheckTeamStatus()
 	}
 
 	// Warn on imbalanced teams
-	if ( g_teamImbalanceWarnings.integer && !level.intermissiontime &&
+	if ( g_teamImbalanceWarnings.Get() && !level.intermissiontime &&
 	     ( level.time - level.lastTeamImbalancedTime >
-	       ( g_teamImbalanceWarnings.integer * 1000 ) ) &&
+	       ( g_teamImbalanceWarnings.Get() * 1000 ) ) &&
 	     level.numTeamImbalanceWarnings < 3 && !level.restarted )
 	{
 		level.lastTeamImbalancedTime = level.time;

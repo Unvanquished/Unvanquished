@@ -796,7 +796,7 @@ Print the current rotation to an entity
 */
 void G_PrintCurrentRotation( gentity_t *ent )
 {
-	int           mapRotationIndex = g_currentMapRotation.integer;
+	int           mapRotationIndex = g_currentMapRotation.Get();
 	mapRotation_t *mapRotation = G_MapRotationActive() ? &mapRotations.rotations[ mapRotationIndex ] : nullptr;
 	int           i = 0;
 	char          currentMapName[ MAX_QPATH ];
@@ -1364,7 +1364,7 @@ void G_AdvanceMapRotation( int depth )
 	int    rotation;
 	int    nodeIndex;
 
-	rotation = g_currentMapRotation.integer;
+	rotation = g_currentMapRotation.Get();
 
 	if ( rotation < 0 || rotation >= MAX_MAP_ROTATIONS )
 	{
@@ -1407,7 +1407,7 @@ bool G_StartMapRotation( const char *name, bool advance,
                              bool putOnStack, bool reset_index, int depth )
 {
 	int i;
-	int currentRotation = g_currentMapRotation.integer;
+	int currentRotation = g_currentMapRotation.Get();
 
 	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
@@ -1418,8 +1418,7 @@ bool G_StartMapRotation( const char *name, bool advance,
 				G_PushRotationStack( currentRotation );
 			}
 
-			trap_Cvar_Set( "g_currentMapRotation", va( "%d", i ) );
-			trap_Cvar_Update( &g_currentMapRotation );
+			g_currentMapRotation.Set( i );
 
 			if ( advance )
 			{
@@ -1454,8 +1453,7 @@ Stop the current map rotation
 */
 void G_StopMapRotation()
 {
-	trap_Cvar_Set( "g_currentMapRotation", va( "%d", NOT_ROTATING ) );
-	trap_Cvar_Update( &g_currentMapRotation );
+	g_currentMapRotation.Set( NOT_ROTATING );
 }
 
 /*
@@ -1467,7 +1465,7 @@ Test if any map rotation is currently active
 */
 bool G_MapRotationActive()
 {
-	return ( g_currentMapRotation.integer > NOT_ROTATING && g_currentMapRotation.integer <= MAX_MAP_ROTATIONS );
+	return ( g_currentMapRotation.Get() > NOT_ROTATING && g_currentMapRotation.Get() <= MAX_MAP_ROTATIONS );
 }
 
 /*
@@ -1505,7 +1503,7 @@ void G_InitMapRotations()
 	G_LoadMaprotation( "default/maprotation.cfg" );
 	G_LoadMaprotation( "maprotation.cfg" );
 
-	if ( g_currentMapRotation.integer == NOT_ROTATING )
+	if ( g_currentMapRotation.Get() == NOT_ROTATING )
 	{
 		if ( g_initialMapRotation.string[ 0 ] != 0 )
 		{

@@ -714,7 +714,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	// send to client
 	trap_LinkEntity( fire );
 
-	if ( g_debugFire.integer )
+	if ( g_debugFire.Get() )
 	{
 		char descr[ 64 ];
 		BG_BuildEntityDescription( descr, sizeof( descr ), &fire->s );

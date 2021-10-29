@@ -128,14 +128,14 @@ void NotifyLegacyStageSensors( team_t team, float amount )
 
 static float MomentumTimeMod()
 {
-	if ( g_momentumRewardDoubleTime.value <= 0.0f )
+	if ( g_momentumRewardDoubleTime.Get() <= 0.0f )
 	{
 		return 1.0f;
 	}
 	else
 	{
 		// ln(2) ~= 0.6931472
-		return exp( 0.6931472f * ( ( level.matchTime / 60000.0f ) / g_momentumRewardDoubleTime.value ) );
+		return exp( 0.6931472f * ( ( level.matchTime / 60000.0f ) / g_momentumRewardDoubleTime.Get() ) );
 	}
 }
 
@@ -163,15 +163,15 @@ static float MomentumMod( momentum_t type )
 	switch ( type )
 	{
 		case CONF_KILLING:
-			baseMod        = g_momentumBaseMod.value;
-			typeMod        = g_momentumKillMod.value;
+			baseMod        = g_momentumBaseMod.Get();
+			typeMod        = g_momentumKillMod.Get();
 			timeMod        = MomentumTimeMod();
 			playerCountMod = MomentumPlayerCountMod();
 			break;
 
 		case CONF_BUILDING:
-			baseMod        = g_momentumBaseMod.value;
-			typeMod        = g_momentumBuildMod.value;
+			baseMod        = g_momentumBaseMod.Get();
+			typeMod        = g_momentumBuildMod.Get();
 			timeMod        = MomentumTimeMod();
 			playerCountMod = 1.0f;
 			break;
@@ -179,14 +179,14 @@ static float MomentumMod( momentum_t type )
 		case CONF_DECONSTRUCTING:
 			// always used on top of build mod, so neutral baseMod/timeMod/playerCountMod
 			baseMod        = 1.0f;
-			typeMod        = g_momentumDeconMod.value;
+			typeMod        = g_momentumDeconMod.Get();
 			timeMod        = 1.0f;
 			playerCountMod = 1.0f;
 			break;
 
 		case CONF_DESTROYING:
-			baseMod        = g_momentumBaseMod.value;
-			typeMod        = g_momentumDestroyMod.value;
+			baseMod        = g_momentumBaseMod.Get();
+			typeMod        = g_momentumDestroyMod.Get();
 			timeMod        = MomentumTimeMod();
 			playerCountMod = 1.0f;
 			break;
@@ -201,7 +201,7 @@ static float MomentumMod( momentum_t type )
 
 	mod = baseMod * typeMod * timeMod * playerCountMod;
 
-	if ( g_debugMomentum.integer > 1 )
+	if ( g_debugMomentum.Get() > 1 )
 	{
 		Log::Notice( "Momentum mod for %s: Base %.2f, Type %.2f, Time %.2f, Playercount %.2f → %.2f\n",
 		            MomentumTypeToReason( type ), baseMod, typeMod, timeMod, playerCountMod, mod );
@@ -278,7 +278,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 		NotifyLegacyStageSensors( team, amount );
 	}
 
-	if ( g_debugMomentum.integer > 0 )
+	if ( g_debugMomentum.Get() > 0 )
 	{
 		if ( source && source->client )
 		{
@@ -317,19 +317,19 @@ void G_DecreaseMomentum()
 		return;
 	}
 
-	if ( g_momentumHalfLife.value <= 0.0f )
+	if ( g_momentumHalfLife.Get() <= 0.0f )
 	{
 		return;
 	}
 
 	// only calculate decreaseFactor if the server configuration changed
-	if ( lastMomentumHalfLife != g_momentumHalfLife.value )
+	if ( lastMomentumHalfLife != g_momentumHalfLife.Get() )
 	{
 		// ln(2) ~= 0.6931472
 		decreaseFactor = exp( ( -0.6931472f / ( ( 60000.0f / DECREASE_MOMENTUM_PERIOD ) *
-		                                        g_momentumHalfLife.value ) ) );
+		                                        g_momentumHalfLife.Get() ) ) );
 
-		lastMomentumHalfLife = g_momentumHalfLife.value;
+		lastMomentumHalfLife = g_momentumHalfLife.Get();
 	}
 
 	// decrease momentum

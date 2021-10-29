@@ -346,7 +346,7 @@ extern int   MEDKIT_STARTUP_SPEED;
 #define CREDITS_PER_EVO                    100   // Used when alien credits are displayed as evos
 #define PLAYER_BASE_VALUE                  200   // base credit value of a player
 #define PLAYER_PRICE_TO_VALUE              0.5f  // fraction of upgrade price added to player value
-#define DEFAULT_FREEKILL_PERIOD            "120" // in s
+#define DEFAULT_FREEKILL_PERIOD            120 // in s
 
 // resources
 #define RGS_RANGE                          1000.0f // must be > 0
@@ -358,14 +358,14 @@ extern int   MEDKIT_STARTUP_SPEED;
 // momentum
 #define MOMENTUM_MAX                     300.0f
 #define MOMENTUM_PER_CREDIT              0.01f // used to award momentum based on credit rewards
-#define DEFAULT_MOMENTUM_HALF_LIFE       "5"   // in min
-#define DEFAULT_CONF_REWARD_DOUBLE_TIME  "30"  // in min
-#define DEFAULT_UNLOCKABLE_MIN_TIME      "30"  // in s
-#define DEFAULT_MOMENTUM_BASE_MOD        "0.7"
-#define DEFAULT_MOMENTUM_KILL_MOD        "1.3"
-#define DEFAULT_MOMENTUM_BUILD_MOD       "0.6"
-#define DEFAULT_MOMENTUM_DECON_MOD       "1.0" // used on top of build mod
-#define DEFAULT_MOMENTUM_DESTROY_MOD     "0.8"
+#define DEFAULT_MOMENTUM_HALF_LIFE       5     // in min
+#define DEFAULT_CONF_REWARD_DOUBLE_TIME  30  // in min
+#define DEFAULT_UNLOCKABLE_MIN_TIME      30  // in s
+#define DEFAULT_MOMENTUM_BASE_MOD        0.7
+#define DEFAULT_MOMENTUM_KILL_MOD        1.3
+#define DEFAULT_MOMENTUM_BUILD_MOD       0.6
+#define DEFAULT_MOMENTUM_DECON_MOD       1.0 // used on top of build mod
+#define DEFAULT_MOMENTUM_DESTROY_MOD     0.8
 #define MAIN_STRUCTURE_MOMENTUM_VALUE    20    // momentum reward for destroying OM/RC
 #define MINER_MOMENTUM_VALUE             10    // momentum reward for destroying Drill/Leech
 

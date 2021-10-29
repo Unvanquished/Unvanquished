@@ -434,7 +434,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 				G_AddCreditsToScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
 			}
 		}
-		else if ( g_showKillerHP.integer )
+		else if ( g_showKillerHP.Get() )
 		{
 			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^*, had $2$ HP.\n") ),
 			                        Quote( killerName ),

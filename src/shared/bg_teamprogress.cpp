@@ -191,8 +191,8 @@ static float UnlockToLockThreshold( float unlockThreshold )
 
 	// retrieve relevant settings
 #ifdef BUILD_SGAME
-	momentumHalfLife = g_momentumHalfLife.value;
-	unlockableMinTime  = g_unlockableMinTime.value;
+	momentumHalfLife = g_momentumHalfLife.Get();
+	unlockableMinTime  = g_unlockableMinTime.Get();
 #endif
 #ifdef BUILD_CGAME
 	momentumHalfLife = cgs.momentumHalfLife;

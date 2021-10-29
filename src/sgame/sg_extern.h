@@ -47,26 +47,26 @@ extern int            g_numDamageRegions[ PCL_NUM_CLASSES ];
 
 extern  vmCvar_t g_cheats;
 extern  vmCvar_t g_maxclients;
-extern  vmCvar_t g_maxGameClients;
-extern  vmCvar_t g_lockTeamsAtStart;
-extern  vmCvar_t g_minNameChangePeriod;
-extern  vmCvar_t g_maxNameChanges;
+extern Cvar::Cvar<int> g_maxGameClients;
+extern Cvar::Cvar<bool> g_lockTeamsAtStart;
+extern Cvar::Cvar<float> g_minNameChangePeriod;
+extern Cvar::Cvar<int> g_maxNameChanges;
 
-extern  vmCvar_t g_showHelpOnConnection;
-extern  vmCvar_t g_timelimit;
-extern  vmCvar_t g_dretchPunt;
+extern Cvar::Range<Cvar::Cvar<int>> g_showHelpOnConnection;
+extern Cvar::Cvar<int> g_timelimit;
+extern Cvar::Cvar<bool> g_dretchPunt;
 extern  vmCvar_t g_password;
-extern  vmCvar_t g_needpass;
+extern Cvar::Range<Cvar::Cvar<int>> g_needpass;
 extern  Cvar::Range<Cvar::Cvar<int>> g_gravity;
-extern  vmCvar_t g_speed;
+extern Cvar::Cvar<float> g_speed;
 extern  vmCvar_t g_inactivity;
-extern  vmCvar_t g_debugMove;
-extern  vmCvar_t g_debugFire;
+extern Cvar::Cvar<int> g_debugMove;
+extern Cvar::Cvar<bool> g_debugFire;
 extern  vmCvar_t g_motd;
-extern  vmCvar_t g_warmup;
-extern  vmCvar_t g_doWarmup;
-extern  vmCvar_t g_allowVote;
-extern  vmCvar_t g_voteLimit;
+extern Cvar::Cvar<int> g_warmup;
+extern Cvar::Cvar<bool> g_doWarmup;
+extern Cvar::Cvar<bool> g_allowVote;
+extern Cvar::Cvar<int> g_voteLimit;
 extern Cvar::Cvar<int> g_extendVotesPercent;
 extern Cvar::Cvar<int> g_extendVotesTime;
 extern Cvar::Cvar<int> g_kickVotesPercent;
@@ -79,67 +79,67 @@ extern Cvar::Cvar<int> g_drawVotesAfter;
 extern Cvar::Cvar<bool> g_drawVoteReasonRequired;
 extern Cvar::Cvar<int> g_admitDefeatVotesPercent;
 extern Cvar::Cvar<int> g_pollVotesPercent;
-extern  vmCvar_t g_teamForceBalance;
-extern  vmCvar_t g_smoothClients;
+extern Cvar::Range<Cvar::Cvar<int>> g_teamForceBalance;
+extern Cvar::Cvar<bool> g_smoothClients;
 
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner;
 extern  Cvar::Cvar<int> g_buildPointRecoveryInitialRate;
 extern  Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife;
 
-extern  vmCvar_t g_debugMomentum;
-extern  vmCvar_t g_momentumHalfLife;
-extern  vmCvar_t g_momentumRewardDoubleTime;
-extern  vmCvar_t g_unlockableMinTime;
-extern  vmCvar_t g_momentumBaseMod;
-extern  vmCvar_t g_momentumKillMod;
-extern  vmCvar_t g_momentumBuildMod;
-extern  vmCvar_t g_momentumDeconMod;
-extern  vmCvar_t g_momentumDestroyMod;
+extern Cvar::Range<Cvar::Cvar<int>> g_debugMomentum;
+extern Cvar::Cvar<float> g_momentumHalfLife;
+extern Cvar::Cvar<float> g_momentumRewardDoubleTime;
+extern Cvar::Cvar<float> g_unlockableMinTime;
+extern Cvar::Cvar<float> g_momentumBaseMod;
+extern Cvar::Cvar<float> g_momentumKillMod;
+extern Cvar::Cvar<float> g_momentumBuildMod;
+extern Cvar::Cvar<float> g_momentumDeconMod;
+extern Cvar::Cvar<float> g_momentumDestroyMod;
 
 extern Cvar::Cvar<bool> g_humanAllowBuilding;
 extern Cvar::Cvar<bool> g_alienAllowBuilding;
 
-extern  vmCvar_t g_alienOffCreepRegenHalfLife;
+extern Cvar::Cvar<float> g_alienOffCreepRegenHalfLife;
 
-extern  vmCvar_t g_teamImbalanceWarnings;
-extern  vmCvar_t g_freeFundPeriod;
+extern Cvar::Cvar<bool> g_teamImbalanceWarnings;
+extern Cvar::Cvar<int> g_freeFundPeriod;
 
-extern  vmCvar_t g_unlagged;
+extern Cvar::Range<Cvar::Cvar<int>> g_unlagged;
 
 extern Cvar::Callback<Cvar::Cvar<std::string>> g_disabledEquipment;
 extern Cvar::Callback<Cvar::Cvar<std::string>> g_disabledClasses;
 extern Cvar::Callback<Cvar::Cvar<std::string>> g_disabledBuildables;
 extern Cvar::Cvar<std::string> g_disabledVoteCalls;
 
-extern  vmCvar_t g_debugMapRotation;
-extern  vmCvar_t g_currentMapRotation;
+extern Cvar::Cvar<bool> g_debugMapRotation;
+extern Cvar::Cvar<int> g_currentMapRotation;
 extern  vmCvar_t g_mapRotationNodes;
 extern  vmCvar_t g_mapRotationStack;
 extern  vmCvar_t g_nextMap;
 extern  vmCvar_t g_nextMapLayouts;
 extern  vmCvar_t g_initialMapRotation;
 extern  vmCvar_t g_mapLog;
-extern  vmCvar_t g_mapStartupMessageDelay;
-extern  vmCvar_t g_sayAreaRange;
+extern Cvar::Cvar<int> g_mapStartupMessageDelay;
+extern Cvar::Cvar<float> g_sayAreaRange;
 
-extern  vmCvar_t g_debugVoices;
-extern  vmCvar_t g_enableVsays;
+extern Cvar::Cvar<bool> g_debugVoices;
+extern Cvar::Cvar<bool> g_enableVsays;
 
-extern  vmCvar_t g_floodMaxDemerits;
-extern  vmCvar_t g_floodMinTime;
+extern Cvar::Cvar<int> g_floodMaxDemerits;
+extern Cvar::Cvar<int> g_floodMinTime;
 
-extern  vmCvar_t g_shove;
-extern  vmCvar_t g_antiSpawnBlock;
+extern Cvar::Cvar<float> g_shove;
+extern Cvar::Cvar<bool> g_antiSpawnBlock;
 
 extern  vmCvar_t g_mapConfigs;
 
 extern  vmCvar_t g_defaultLayouts;
 extern  vmCvar_t g_layouts;
-extern  vmCvar_t g_layoutAuto;
+extern Cvar::Cvar<bool> g_layoutAuto;
 
-extern  vmCvar_t g_emoticonsAllowedInNames;
-extern  vmCvar_t g_unnamedNumbering;
+extern Cvar::Cvar<bool> g_emoticonsAllowedInNames;
+extern Cvar::Cvar<int> g_unnamedNumbering;
 extern  vmCvar_t g_unnamedNamePrefix;
 extern  vmCvar_t g_unnamedBotNamePrefix;
 
@@ -147,29 +147,29 @@ extern  vmCvar_t g_admin;
 extern  vmCvar_t g_adminWarn;
 extern  vmCvar_t g_adminTempBan;
 extern  vmCvar_t g_adminMaxBan;
-extern  vmCvar_t g_adminRetainExpiredBans;
+extern Cvar::Cvar<bool> g_adminRetainExpiredBans;
 
-extern  vmCvar_t g_privateMessages;
-extern  vmCvar_t g_specChat;
-extern  vmCvar_t g_publicAdminMessages;
-extern  vmCvar_t g_allowTeamOverlay;
+extern Cvar::Cvar<bool> g_privateMessages;
+extern Cvar::Cvar<bool> g_specChat;
+extern Cvar::Cvar<bool> g_publicAdminMessages;
+extern Cvar::Cvar<bool> g_allowTeamOverlay;
 
-extern  vmCvar_t g_showKillerHP;
-extern  vmCvar_t g_combatCooldown;
+extern Cvar::Cvar<bool> g_showKillerHP;
+extern Cvar::Cvar<int> g_combatCooldown;
 
-extern  vmCvar_t g_geoip;
+extern Cvar::Cvar<bool> g_geoip;
 
-extern  vmCvar_t g_debugEntities;
+extern Cvar::Range<Cvar::Cvar<int>> g_debugEntities;
 
-extern  vmCvar_t g_instantBuilding;
+extern Cvar::Cvar<bool> g_instantBuilding;
 
 extern  Cvar::Cvar<float> g_evolveAroundHumans;
 extern  Cvar::Cvar<float> g_devolveMaxBaseDistance;
 
 // bots: buying weapons cvars
-extern vmCvar_t g_bot_buy; //not really a weapon, but... oh well.
-extern vmCvar_t g_bot_radarRatio;
-extern vmCvar_t g_bot_ckit;
+extern Cvar::Cvar<bool> g_bot_buy;
+extern Cvar::Cvar<int> g_bot_radarRatio;
+extern Cvar::Cvar<bool> g_bot_ckit;
 extern vmCvar_t g_bot_rifle;
 extern vmCvar_t g_bot_painsaw;
 extern vmCvar_t g_bot_shotgun;
@@ -190,7 +190,7 @@ extern vmCvar_t g_bot_grenade;
 extern vmCvar_t g_bot_firebomb;
 
 // bot evolution cvars
-extern vmCvar_t g_bot_evolve;
+extern Cvar::Cvar<bool> g_bot_evolve;
 extern vmCvar_t g_bot_builder;
 extern vmCvar_t g_bot_builderupg;
 extern vmCvar_t g_bot_level0;
@@ -202,10 +202,10 @@ extern vmCvar_t g_bot_level3upg;
 extern vmCvar_t g_bot_level4;
 
 // misc bot cvars
-extern vmCvar_t g_bot_attackStruct;
-extern vmCvar_t g_bot_fov;
-extern vmCvar_t g_bot_chasetime;
-extern vmCvar_t g_bot_reactiontime;
-extern vmCvar_t g_bot_infinite_funds;
+extern Cvar::Cvar<bool> g_bot_attackStruct;
+extern Cvar::Cvar<float> g_bot_fov;
+extern Cvar::Cvar<int> g_bot_chasetime;
+extern Cvar::Cvar<int> g_bot_reactiontime;
+extern Cvar::Cvar<bool> g_bot_infinite_funds;
 
 #endif // SG_EXTERN_H_

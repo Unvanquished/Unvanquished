@@ -55,7 +55,7 @@ static float GetMaximalSpeed( gentity_t const *self )
 // it, and the results are good enough (tm).
 static float GetMaximalSpeed( class_t cl )
 {
-	return BG_Class( cl )->speed * BG_Class( cl )->sprintMod * g_speed.value;
+	return BG_Class( cl )->speed * BG_Class( cl )->sprintMod * g_speed.Get();
 }
 
 template <typename T>
@@ -532,7 +532,7 @@ int BotValueOfUpgrades( gentity_t *self )
 
 AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 {
-	if ( !g_bot_evolve.integer )
+	if ( !g_bot_evolve.Get() )
 	{
 		return STATUS_FAILURE;
 	}
@@ -835,7 +835,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 		}
 
 		if ( target->s.eType == entityType_t::ET_PLAYER && self->client->pers.team == TEAM_HUMANS
-		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
+		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.Get() / 2 )
 		{
 			continue;
 		}
@@ -1282,7 +1282,7 @@ bool BotEntityIsValidEnemyTarget( const gentity_t *self, const gentity_t *enemy 
 	}
 
 	// ignore buildings if we can't attack them
-	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.integer )
+	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.Get() )
 	{
 		return false;
 	}
@@ -2248,7 +2248,7 @@ gentity_t *BotPopEnemy( enemyQueue_t *queue )
 		return nullptr;
 	}
 
-	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.integer )
+	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.Get() )
 	{
 		gentity_t *ret = queue->enemys[ queue->front ].ent;
 		queue->front = ( queue->front + 1 ) % MAX_ENEMY_QUEUE;

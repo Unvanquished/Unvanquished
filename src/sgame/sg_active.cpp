@@ -277,7 +277,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 		return;
 	}
 
-	force = g_shove.value * entMass / vicMass;
+	force = g_shove.Get() * entMass / vicMass;
 
 	if ( force < 0 )
 	{
@@ -1055,8 +1055,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 		client->pers.aliveSeconds++;
 
-		if ( g_freeFundPeriod.integer > 0 &&
-		     client->pers.aliveSeconds % g_freeFundPeriod.integer == 0 )
+		if ( g_freeFundPeriod.Get() > 0 &&
+		     client->pers.aliveSeconds % g_freeFundPeriod.Get() == 0 )
 		{
 			// Give clients some credit periodically
 			if ( client->pers.team == TEAM_ALIENS )
@@ -1265,7 +1265,7 @@ void G_UnlaggedStore()
 	gentity_t  *ent;
 	unlagged_t *save;
 
-	if ( !g_unlagged.integer )
+	if ( !g_unlagged.Get() )
 	{
 		return;
 	}
@@ -1337,7 +1337,7 @@ void G_UnlaggedCalc( int time, gentity_t *rewindEnt )
 	int       frameMsec = 0;
 	float     lerp = 0.5f;
 
-	if ( !g_unlagged.integer )
+	if ( !g_unlagged.Get() )
 	{
 		return;
 	}
@@ -1454,7 +1454,7 @@ void G_UnlaggedOff()
 	int       i = 0;
 	gentity_t *ent;
 
-	if ( !g_unlagged.integer )
+	if ( !g_unlagged.Get() )
 	{
 		return;
 	}
@@ -1496,7 +1496,7 @@ void G_UnlaggedOn( gentity_t *attacker, vec3_t muzzle, float range )
 	gentity_t  *ent;
 	unlagged_t *calc;
 
-	if ( !g_unlagged.integer )
+	if ( !g_unlagged.Get() )
 	{
 		return;
 	}
@@ -1586,7 +1586,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	float      r1, r2;
 	float      range;
 
-	if ( !g_unlagged.integer )
+	if ( !g_unlagged.Get() )
 	{
 		return;
 	}
@@ -1750,14 +1750,14 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		}
 		else
 		{
-			if ( g_alienOffCreepRegenHalfLife.value < 1 )
+			if ( g_alienOffCreepRegenHalfLife.Get() < 1 )
 			{
 				modifier = 1.0f;
 			}
 			else
 			{
 				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
-				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) *
+				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.Get() ) ) *
 				                ( self->healthSourceTime - level.time ) );
 				modifier = std::max( modifier, ALIEN_REGEN_NOCREEP_MIN );
 			}
@@ -1998,7 +1998,7 @@ void ClientThink_real( gentity_t *self )
 	}
 	else
 	{
-		client->ps.speed = g_speed.value *
+		client->ps.speed = g_speed.Get() *
 		                   BG_Class( client->ps.stats[ STAT_CLASS ] )->speed;
 	}
 
@@ -2043,7 +2043,7 @@ void ClientThink_real( gentity_t *self )
 
 	pm.trace          = trap_Trace;
 	pm.pointcontents  = trap_PointContents;
-	pm.debugLevel     = g_debugMove.integer;
+	pm.debugLevel     = g_debugMove.Get();
 	pm.noFootsteps    = 0;
 	pm.pmove_fixed    = level.pmoveParams.fixed || client->pers.pmoveFixed;
 	pm.pmove_msec     = level.pmoveParams.msec;
@@ -2067,7 +2067,7 @@ void ClientThink_real( gentity_t *self )
 		self->eventTime = level.time;
 	}
 
-	if ( g_smoothClients.integer )
+	if ( g_smoothClients.Get() )
 	{
 		BG_PlayerStateToEntityStateExtraPolate( &client->ps, &self->s, client->ps.commandTime, true );
 	}
@@ -2190,7 +2190,7 @@ void ClientThink_real( gentity_t *self )
 		     ( !ent->buildableTeam   || ent->buildableTeam   == client->pers.team ) &&
 		     ( !ent->conditions.team || ent->conditions.team == client->pers.team ) )
 		{
-			if ( g_debugEntities.integer > 1 )
+			if ( g_debugEntities.Get() > 1 )
 			{
 				Log::Debug("Calling entity->use for player facing %s", etos(ent));
 			}
@@ -2204,7 +2204,7 @@ void ClientThink_real( gentity_t *self )
 			{
 				if ( ent && ent->use && ent->buildableTeam == client->pers.team)
 				{
-					if ( g_debugEntities.integer > 1 )
+					if ( g_debugEntities.Get() > 1 )
 					{
 						Log::Debug("Calling entity->use after an area-search for %s", etos(ent));
 					}
@@ -2321,7 +2321,7 @@ void ClientEndFrame( gentity_t *ent )
 	G_SetClientSound( ent );
 
 	// set the latest infor
-	if ( g_smoothClients.integer )
+	if ( g_smoothClients.Get() )
 	{
 		BG_PlayerStateToEntityStateExtraPolate( &ent->client->ps, &ent->s, ent->client->ps.commandTime, true );
 	}

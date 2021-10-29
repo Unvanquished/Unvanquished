@@ -290,7 +290,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	}
 
 	//so we can connect if server is password protected
-	if ( g_needpass.integer == 1 )
+	if ( g_needpass.Get() )
 	{
 		Info_SetValueForKey( userinfo, "password", g_password.string, false );
 	}
@@ -423,7 +423,7 @@ void G_BotThink( gentity_t *self )
 	}
 
 	//infinite funds cvar
-	if ( g_bot_infinite_funds.integer )
+	if ( g_bot_infinite_funds.Get() )
 	{
 		G_AddCreditToClient( self->client, HUMAN_MAX_CREDITS, true );
 	}

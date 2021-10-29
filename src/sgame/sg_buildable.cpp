@@ -1137,7 +1137,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconTy
 // Returns true and warns the player if they are not allowed to decon it
 bool G_CheckDeconProtectionAndWarn( gentity_t *buildable, gentity_t *player )
 {
-	if ( g_instantBuilding.integer )
+	if ( g_instantBuilding.Get() )
 	{
 		return false;
 	}
@@ -1162,7 +1162,7 @@ bool G_CheckDeconProtectionAndWarn( gentity_t *buildable, gentity_t *player )
 
 void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 {
-	if ( !g_instantBuilding.integer )
+	if ( !g_instantBuilding.Get() )
 	{
 		// Check if the buildable is protected from instant deconstruction.
 		G_CheckDeconProtectionAndWarn( buildable, ent );
@@ -1968,7 +1968,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 
 	// Start construction.
 	if (builder->client) {
-		if (g_instantBuilding.integer) {
+		if (g_instantBuilding.Get()) {
 			// Build instantly in cheat mode.
 			// HACK: This causes animation issues and can result in built->creationTime < 0.
 			built->creationTime -= attr->buildTime;
@@ -2320,7 +2320,7 @@ void G_LayoutSelect()
 	}
 
 	// pick an included layout at random if no list has been provided
-	if ( !layouts[ 0 ] && g_layoutAuto.integer )
+	if ( !layouts[ 0 ] && g_layoutAuto.Get() )
 	{
 		G_LayoutList( map, layouts, sizeof( layouts ) );
 	}

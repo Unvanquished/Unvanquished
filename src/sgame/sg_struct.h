@@ -772,9 +772,9 @@ struct level_locals_s
 
 	struct {
 		int synchronous;
-		int fixed;
+		bool fixed;
 		int msec;
-		int accurate;
+		bool accurate;
 		bool initialized;
 	} pmoveParams;
 };

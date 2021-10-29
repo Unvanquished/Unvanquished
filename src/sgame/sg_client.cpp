@@ -550,7 +550,7 @@ bool G_IsUnnamed( const char *name )
 
 	length = strlen( g_unnamedNamePrefix.string );
 
-	if ( g_unnamedNumbering.integer && length &&
+	if ( g_unnamedNumbering.Get() && length &&
 	     !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
 	{
 		return true;
@@ -558,7 +558,7 @@ bool G_IsUnnamed( const char *name )
 
 	length = strlen( g_unnamedBotNamePrefix.string );
 
-	if ( g_unnamedNumbering.integer && length &&
+	if ( g_unnamedNumbering.Get() && length &&
 	     !Q_strnicmp( testName, g_unnamedBotNamePrefix.string, length ) )
 	{
 		return true;
@@ -603,7 +603,7 @@ static const char *G_UnnamedClientName( gclient_t *client )
 	static char      name[ MAX_NAME_LENGTH ];
 	unnamed_t        number;
 
-	if ( !g_unnamedNumbering.integer || !client )
+	if ( !g_unnamedNumbering.Get() || !client )
 	{
 		return UNNAMED_PLAYER;
 	}
@@ -614,11 +614,11 @@ static const char *G_UnnamedClientName( gclient_t *client )
 	}
 	else
 	{
-		if( g_unnamedNumbering.integer > 0 )
+		if( g_unnamedNumbering.Get() > 0 )
 		{
 			// server op may have reset this, so check for numbers in use
-			number = G_FindFreeUnnamed( g_unnamedNumbering.integer );
-			trap_Cvar_Set( "g_unnamedNumbering", va( "%d", ( number + 1 < 0 ? 1 : number + 1 ) ) );
+			number = G_FindFreeUnnamed( g_unnamedNumbering.Get() );
+			g_unnamedNumbering.Set( number + 1 < 0 ? 1 : number + 1 );
 		}
 		else
 		{
@@ -734,7 +734,7 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 
 		out_string.append(token.Begin(), token.Size());
 
-		if ( !g_emoticonsAllowedInNames.integer && BG_EmoticonAt( token.Begin() ) )
+		if ( !g_emoticonsAllowedInNames.Get() && BG_EmoticonAt( token.Begin() ) )
 		{
 			if ( out_string.size() + lastColor.size() >= outSize )
 			{
@@ -841,19 +841,19 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	{
 		if ( !forceName && client->pers.namelog->nameChangeTime &&
 		     level.time - client->pers.namelog->nameChangeTime <=
-		     g_minNameChangePeriod.value * 1000 )
+		     g_minNameChangePeriod.Get() * 1000 )
 		{
 			trap_SendServerCommand( ent - g_entities, va(
-			                          "print_tr %s %d", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$)") ),
-			                          g_minNameChangePeriod.integer ) );
+			                          "print_tr %s %g", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$)") ),
+			                          g_minNameChangePeriod.Get() ) );
 			revertName = true;
 		}
-		else if ( !forceName && g_maxNameChanges.integer > 0 &&
-		          client->pers.namelog->nameChanges >= g_maxNameChanges.integer )
+		else if ( !forceName && g_maxNameChanges.Get() > 0 &&
+		          client->pers.namelog->nameChanges >= g_maxNameChanges.Get() )
 		{
 			trap_SendServerCommand( ent - g_entities, va(
 			                          "print_tr %s %d", QQ( N_("Maximum name changes reached (g_maxNameChanges = $1$)") ),
-			                          g_maxNameChanges.integer ) );
+			                          g_maxNameChanges.Get() ) );
 			revertName = true;
 		}
 		else if ( !forceName && client->pers.namelog->muted )
@@ -1196,7 +1196,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		if ( g_geoip.integer && country && *country )
+		if ( g_geoip.Get() && country && *country )
 		{
 			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^* connected from $2$") ),
 			                                Quote( client->pers.netname ), Quote( country ) ) );
@@ -1358,7 +1358,7 @@ void ClientBegin( int clientNum )
 
 	if ( *startMsg )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "cpd %d %s", g_mapStartupMessageDelay.integer, Quote( startMsg ) ) );
+		trap_SendServerCommand( ent - g_entities, va( "cpd %d %s", g_mapStartupMessageDelay.Get(), Quote( startMsg ) ) );
 	}
 
 	G_namelog_restore( client );
@@ -1376,7 +1376,7 @@ void ClientBegin( int clientNum )
 		// 0 - don't show
 		// 1 - always show to all
 		// 2 - show only to unregistered
-		switch ( g_showHelpOnConnection.integer )
+		switch ( g_showHelpOnConnection.Get() )
 		{
 		case 0:
 			if (0)
