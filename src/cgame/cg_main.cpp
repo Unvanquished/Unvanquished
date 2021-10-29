@@ -1350,6 +1350,10 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	// old servers
 	cgs.gameState = gameState;
 
+	// Must be done before trap_UpdateScreen()
+	// or the game will crash.
+	cgs.processedSnapshotNum = serverMessageNum;
+
 	// It was too early to update screen at LOAD_START time,
 	// let's do it now.
 	trap_UpdateScreen();
@@ -1363,8 +1367,6 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	cg.pmoveParams.msec = 8;
 
 	cg.clientNum = clientNum;
-
-	cgs.processedSnapshotNum = serverMessageNum;
 
 	// Initialize item locking state
 	BG_InitUnlockackables();
