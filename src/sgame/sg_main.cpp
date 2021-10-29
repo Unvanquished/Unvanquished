@@ -255,38 +255,38 @@ Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, 
 Cvar::Cvar<bool> g_bot_buy("g_bot_buy", "whether bots use the Armoury", Cvar::NONE, true);
 // human weapons
 Cvar::Cvar<bool> g_bot_ckit("g_bot_ckit", "whether bots buy the Construction Kit", Cvar::NONE, true);
-vmCvar_t g_bot_rifle;
-vmCvar_t g_bot_painsaw;
-vmCvar_t g_bot_shotgun;
-vmCvar_t g_bot_lasgun;
-vmCvar_t g_bot_mdriver;
-vmCvar_t g_bot_chaingun;
-vmCvar_t g_bot_prifle;
-vmCvar_t g_bot_flamer;
-vmCvar_t g_bot_lcannon;
+Cvar::Cvar<bool> g_bot_rifle("g_bot_rifle", "whether bots use SMG", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_painsaw("g_bot_painsaw", "whether bots buy the Painsaw", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_shotgun("g_bot_shotgun", "whether bots buy the Shotgun", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_lasgun("g_bot_lasgun", "whether bots buy the Lasgun", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_mdriver("g_bot_mdriver", "whether bots buy the Mass Driver", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_chaingun("g_bot_chain", "whether bots buy the Chaingun", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_prifle("g_bot_prifle", "whether bots buy the Pulse Rifle", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_flamer("g_bot_flamer", "whether bots buy the Flamethrower", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_lcannon("g_bot_lcannon", "whether bots buy the Lucifer Cannon", Cvar::NONE, true);
 // human armors
-vmCvar_t g_bot_battlesuit;
-vmCvar_t g_bot_mediumarmour;
-vmCvar_t g_bot_lightarmour;
+Cvar::Cvar<bool> g_bot_battlesuit("g_bot_battlesuit", "whether bots buy the Battlesuit", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_mediumarmour("g_bot_mediumarmour", "whether bots buy Medium Armour", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_lightarmour("g_bot_lightarmour", "whether bots buy Light Armour", Cvar::NONE, true);
 // human upgrades
-vmCvar_t g_bot_radar;
+Cvar::Cvar<bool> g_bot_radar("g_bot_radar", "whether bots buy the Radar", Cvar::NONE, true);
 // bots won't buy radars if more than this percent allies already have it
 Cvar::Cvar<int> g_bot_radarRatio("g_bot_radarRatio", "bots target x% of team owning radar", Cvar::NONE, 75);
-vmCvar_t g_bot_jetpack;
-vmCvar_t g_bot_grenade;
-vmCvar_t g_bot_firebomb;
+Cvar::Cvar<bool> g_bot_jetpack("g_bot_jetpack", "whether bots buy the Jetpack", Cvar::NONE, false);
+Cvar::Cvar<bool> g_bot_grenade("g_bot_grenade", "whether bots buy the Grenade", Cvar::NONE, false);
+Cvar::Cvar<bool> g_bot_firebomb("g_bot_firebomb", "whether bots buy the Firebomb", Cvar::NONE, false);
 
 // bot evolution cvars
 Cvar::Cvar<bool> g_bot_evolve("g_bot_evolve", "whether bots can evolve", Cvar::NONE, true);
-vmCvar_t g_bot_builder;
-vmCvar_t g_bot_builderupg;
-vmCvar_t g_bot_level0;
-vmCvar_t g_bot_level1;
-vmCvar_t g_bot_level2;
-vmCvar_t g_bot_level2upg;
-vmCvar_t g_bot_level3;
-vmCvar_t g_bot_level3upg;
-vmCvar_t g_bot_level4;
+Cvar::Cvar<bool> g_bot_builder("g_bot_builder", "whether bots use non-advanced Granger", Cvar::NONE, false);
+Cvar::Cvar<bool> g_bot_builderupg("g_bot_builderupg", "whether bots use Advanced Granger", Cvar::NONE, false);
+Cvar::Cvar<bool> g_bot_level0("g_bot_level0", "whether bots use Dretch", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_level1("g_bot_level1", "whether bots use Mantis", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_level2("g_bot_level2", "whether bots use non-advanced Marauder", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_level2upg("g_bot_level2upg", "whether bots use Advanced Marauder", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_level3("g_bot_level3", "whether bots use non-advanced Dragoon", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_level3upg("g_bot_level3upg", "whether bots use Advanced Dragoon", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_level4("g_bot_level4", "whether bots use Tyrant", Cvar::NONE, true);
 
 // misc bot cvars
 Cvar::Cvar<bool> g_bot_attackStruct("g_bot_attackStruct", "whether bots target buildables", Cvar::NONE, true);
@@ -341,37 +341,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapConfigs,                  "g_mapConfigs",                  "",                                 0,                                               0, false },
 	{ &g_defaultLayouts,              "g_defaultLayouts",              "",                                 CVAR_LATCH,                                      0, false },
 	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, false },
-
-	// bots: buying weapons
-	{ &g_bot_rifle   , "g_bot_rifle"  , "1", 0, 0, false },
-	{ &g_bot_painsaw , "g_bot_painsaw", "1", 0, 0, false },
-	{ &g_bot_shotgun , "g_bot_shotgun", "1", 0, 0, false },
-	{ &g_bot_lasgun  , "g_bot_lasgun" , "1", 0, 0, false },
-	{ &g_bot_mdriver , "g_bot_mdriver", "1", 0, 0, false },
-	{ &g_bot_chaingun, "g_bot_chain"  , "1", 0, 0, false },
-	{ &g_bot_prifle  , "g_bot_prifle" , "1", 0, 0, false },
-	{ &g_bot_flamer  , "g_bot_flamer" , "1", 0, 0, false },
-	{ &g_bot_lcannon , "g_bot_lcannon", "1", 0, 0, false },
-	// bots: buying armors
-	{ &g_bot_battlesuit  , "g_bot_battlesuit"  , "1",  0, 0, false },
-	{ &g_bot_mediumarmour, "g_bot_mediumarmour", "1",  0, 0, false },
-	{ &g_bot_lightarmour , "g_bot_lightarmour" , "1",  0, 0, false },
-	// bots: buying upgrades
-	{ &g_bot_radar   , "g_bot_radar"   , "1",  0, 0, false },
-	{ &g_bot_jetpack , "g_bot_jetpack" , "0",  0, 0, false },
-	{ &g_bot_grenade , "g_bot_grenade" , "0",  0, 0, false },
-	{ &g_bot_firebomb, "g_bot_firebomb", "0",  0, 0, false },
-
-	// bots: evolution
-	{ &g_bot_builder   , "g_bot_builder"   , "0", 0, 0, false },
-	{ &g_bot_builderupg, "g_bot_builderupg", "0", 0, 0, false },
-	{ &g_bot_level0    , "g_bot_level0"    , "1", 0, 0, false },
-	{ &g_bot_level1    , "g_bot_level1"    , "1", 0, 0, false },
-	{ &g_bot_level2    , "g_bot_level2"    , "1", 0, 0, false },
-	{ &g_bot_level2upg , "g_bot_level2upg" , "1", 0, 0, false },
-	{ &g_bot_level3    , "g_bot_level3"    , "1", 0, 0, false },
-	{ &g_bot_level3upg , "g_bot_level3upg" , "1", 0, 0, false },
-	{ &g_bot_level4    , "g_bot_level4"    , "1", 0, 0, false },
 };
 
 void               CheckExitRules();

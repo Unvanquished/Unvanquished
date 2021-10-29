@@ -170,36 +170,36 @@ extern  Cvar::Cvar<float> g_devolveMaxBaseDistance;
 extern Cvar::Cvar<bool> g_bot_buy;
 extern Cvar::Cvar<int> g_bot_radarRatio;
 extern Cvar::Cvar<bool> g_bot_ckit;
-extern vmCvar_t g_bot_rifle;
-extern vmCvar_t g_bot_painsaw;
-extern vmCvar_t g_bot_shotgun;
-extern vmCvar_t g_bot_lasgun;
-extern vmCvar_t g_bot_mdriver;
-extern vmCvar_t g_bot_chaingun;
-extern vmCvar_t g_bot_prifle;
-extern vmCvar_t g_bot_flamer;
-extern vmCvar_t g_bot_lcannon;
+extern Cvar::Cvar<bool> g_bot_rifle;
+extern Cvar::Cvar<bool> g_bot_painsaw;
+extern Cvar::Cvar<bool> g_bot_shotgun;
+extern Cvar::Cvar<bool> g_bot_lasgun;
+extern Cvar::Cvar<bool> g_bot_mdriver;
+extern Cvar::Cvar<bool> g_bot_chaingun;
+extern Cvar::Cvar<bool> g_bot_prifle;
+extern Cvar::Cvar<bool> g_bot_flamer;
+extern Cvar::Cvar<bool> g_bot_lcannon;
 // bots: buying armors cvars
-extern vmCvar_t g_bot_battlesuit;
-extern vmCvar_t g_bot_mediumarmour;
-extern vmCvar_t g_bot_lightarmour;
+extern Cvar::Cvar<bool> g_bot_battlesuit;
+extern Cvar::Cvar<bool> g_bot_mediumarmour;
+extern Cvar::Cvar<bool> g_bot_lightarmour;
 // bots: buying other equipments cvars
-extern vmCvar_t g_bot_radar;
-extern vmCvar_t g_bot_jetpack; //can't be really used, yet
-extern vmCvar_t g_bot_grenade;
-extern vmCvar_t g_bot_firebomb;
+extern Cvar::Cvar<bool> g_bot_radar;
+extern Cvar::Cvar<bool> g_bot_jetpack; //can't be really used, yet
+extern Cvar::Cvar<bool> g_bot_grenade;
+extern Cvar::Cvar<bool> g_bot_firebomb;
 
 // bot evolution cvars
 extern Cvar::Cvar<bool> g_bot_evolve;
-extern vmCvar_t g_bot_builder;
-extern vmCvar_t g_bot_builderupg;
-extern vmCvar_t g_bot_level0;
-extern vmCvar_t g_bot_level1;
-extern vmCvar_t g_bot_level2;
-extern vmCvar_t g_bot_level2upg;
-extern vmCvar_t g_bot_level3;
-extern vmCvar_t g_bot_level3upg;
-extern vmCvar_t g_bot_level4;
+extern Cvar::Cvar<bool> g_bot_builder;
+extern Cvar::Cvar<bool> g_bot_builderupg;
+extern Cvar::Cvar<bool> g_bot_level0;
+extern Cvar::Cvar<bool> g_bot_level1;
+extern Cvar::Cvar<bool> g_bot_level2;
+extern Cvar::Cvar<bool> g_bot_level2upg;
+extern Cvar::Cvar<bool> g_bot_level3;
+extern Cvar::Cvar<bool> g_bot_level3upg;
+extern Cvar::Cvar<bool> g_bot_level4;
 
 // misc bot cvars
 extern Cvar::Cvar<bool> g_bot_attackStruct;

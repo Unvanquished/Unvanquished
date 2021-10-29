@@ -511,7 +511,7 @@ void G_BotSpectatorThink( gentity_t *self )
 			self->client->ps.stats[STAT_CLASS] = PCL_HUMAN_NAKED;
 			BotSetNavmesh( self, PCL_HUMAN_NAKED );
 			//we want to spawn with rifle unless it is disabled or we need to build
-			if ( g_bot_rifle.integer )
+			if ( g_bot_rifle.Get() )
 			{
 				self->client->pers.humanItemSelection = WP_MACHINEGUN;
 			}
