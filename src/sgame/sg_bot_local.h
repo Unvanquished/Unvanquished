@@ -23,12 +23,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifndef __BOT_HEADER
-#define __BOT_HEADER
+/*
+======================
+src/sgame/sg_bot_local.h
 
-#include "sg_struct.h"
+This file contains the headers of the internal functions used by bot only.
+======================
+*/
 
-#define UNNAMED_BOT "[bot] Bot"
+#ifndef __BOT_LOCAL_HEADER
+#define __BOT_LOCAL_HEADER
+
+#include "sg_local.h"
 
 struct botEntityAndDistance_t
 {
@@ -81,9 +87,9 @@ struct botSkill_t
 	float aimShake;
 };
 
-#include "sg_bot_ai.h"
 #define MAX_NODE_DEPTH 20
-
+struct AIBehaviorTree_t;
+struct AIGenericNode_t;
 struct botMemory_t
 {
 	enemyQueue_t enemyQueue;
@@ -117,25 +123,4 @@ struct botMemory_t
 	int spawnTime;
 };
 
-constexpr int BOT_DEFAULT_SKILL = 5;
-const char BOT_DEFAULT_BEHAVIOR[] = "default";
-const char BOT_NAME_FROM_LIST[] = "*";
-
-bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler = false );
-void G_BotChangeBehavior( int clientNum, const char* behavior );
-bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior );
-bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
-void     G_BotDel( int clientNum );
-void     G_BotDelAllBots();
-void     G_BotThink( gentity_t *self );
-void     G_BotSpectatorThink( gentity_t *self );
-void     G_BotIntermissionThink( gclient_t *client );
-void     G_BotListNames( gentity_t *ent );
-bool G_BotClearNames();
-int      G_BotAddNames(team_t team, int arg, int last);
-void     G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
-void     G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
-void     G_BotInit();
-void     G_BotCleanup();
-void G_BotFill( bool immediately );
 #endif

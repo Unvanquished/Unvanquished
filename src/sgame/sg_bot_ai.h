@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 #include "sg_local.h"
+#include "sg_bot_local.h"
 
 #ifndef __BOT_AI_HEADER
 #define __BOT_AI_HEADER
@@ -76,16 +77,15 @@ enum AINode_t
 	DECORATOR_NODE
 };
 
-struct AIGenericNode_s;
-
-typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, struct AIGenericNode_s * );
+struct AIGenericNode_t;
+typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, AIGenericNode_t * );
 
 // all behavior tree nodes must conform to this interface
-typedef struct AIGenericNode_s
+struct AIGenericNode_t
 {
 	AINode_t type;
 	AINodeRunner run;
-} AIGenericNode_t;
+};
 
 #define MAX_NODE_LIST 20
 struct AINodeList_t

@@ -41,7 +41,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 // topic function headers and definitions
 #include "sg_admin.h"
-#include "sg_bot.h"
+#include "sg_bot_public.h"
 #include "sg_entities.h"
 
 // struct definitions
