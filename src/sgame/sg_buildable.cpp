@@ -1992,7 +1992,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		VectorCopy( built->r.maxs, maxs );
 		VectorAdd( mins, origin, mins );
 		VectorAdd( maxs, origin, maxs );
-		trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+		G_BotAddObstacle( mins, maxs, &built->obstacleHandle );
 	}
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );

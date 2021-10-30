@@ -34,6 +34,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "bot_local.h"
 #include "sgame/sg_local.h"
 
+// TODO: move these functions here
+bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
+
 Bot_t agents[ MAX_CLIENTS ];
 
 /*
@@ -101,17 +104,17 @@ void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
 	}
 }
 
-void BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+void G_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
 {
 	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_DISABLED );
 }
 
-void BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+void G_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
 {
 	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
 }
 
-void BotSetNavMesh( int botClientNum, qhandle_t nav )
+void G_BotSetNavMesh( int botClientNum, qhandle_t nav )
 {
 	if ( nav < 0 || nav >= numNavData )
 	{
@@ -135,7 +138,7 @@ void GetEntPosition( int num, qVec &pos )
 	pos = g_entities[ num ].s.origin;
 }
 
-bool BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, bool allowPartial )
+bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial )
 {
 	rVec start;
 	Bot_t *bot = &agents[ botClientNum ];
@@ -176,7 +179,7 @@ static bool overOffMeshConnectionStart( const Bot_t *bot, rVec pos )
 	return false;
 }
 
-void UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
+void G_UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
 {
 	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
 
@@ -194,7 +197,7 @@ void UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
 	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
 }
 
-void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd )
+void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd )
 {
 	rVec spos;
 	rVec epos;
@@ -211,7 +214,7 @@ void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNav
 	rtarget = *target;
 	epos = rtarget.pos;
 
-	UpdatePathCorridor( bot, spos, rtarget );
+	G_UpdatePathCorridor( bot, spos, rtarget );
 
 	if ( !bot->offMesh )
 	{
@@ -366,7 +369,7 @@ bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t p
 	return true;
 }
 
-bool BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
+bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
 {
 	dtPolyRef startRef;
 	dtStatus status;
@@ -400,7 +403,7 @@ bool BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const
 	return true;
 }
 
-void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
+void G_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
 {
 	qVec min = mins;
 	qVec max = maxs;
@@ -431,7 +434,7 @@ void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHa
 	}
 }
 
-void BotRemoveObstacle( qhandle_t obstacleHandle )
+void G_BotRemoveObstacle( qhandle_t obstacleHandle )
 {
 	for ( int i = 0; i < numNavData; i++ )
 	{
@@ -444,7 +447,7 @@ void BotRemoveObstacle( qhandle_t obstacleHandle )
 	}
 }
 
-void BotUpdateObstacles()
+void G_BotUpdateObstacles()
 {
 	for ( int i = 0; i < numNavData; i++ )
 	{

@@ -31,10 +31,13 @@ This file contains the public interface used by sgame to interact with bots.
 ======================
 */
 
-#include "sg_struct.h"
-
 #ifndef __BOT_PUBLIC_HEADER
 #define __BOT_PUBLIC_HEADER
+
+#include "sg_local.h"
+#include "shared/bg_public.h"
+
+struct botMemory_t;
 
 #define UNNAMED_BOT "[bot] Bot"
 
@@ -54,6 +57,9 @@ bool G_BotClearNames();
 int  G_BotAddNames(team_t team, int arg, int last);
 void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
+void G_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
+void G_BotRemoveObstacle( qhandle_t handle );
+void G_BotUpdateObstacles();
 void G_BotInit();
 void G_BotCleanup();
 void G_BotFill( bool immediately );

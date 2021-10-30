@@ -79,18 +79,4 @@ void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
 bool         trap_FindPak( const char *name );
 
-bool         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
-void             trap_BotShutdownNav();
-void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
-bool         trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
-bool         trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
-bool         trap_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
-void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
-bool         trap_BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
-void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void             trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
-void             trap_BotRemoveObstacle( qhandle_t handle );
-void             trap_BotUpdateObstacles();
-
 #endif // SG_TRAPCALLS_H_

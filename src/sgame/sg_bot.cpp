@@ -466,7 +466,7 @@ void G_BotThink( gentity_t *self )
 	if ( self->botMind->goal.isValid() )
 	{
 		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
-		trap_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
+		G_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
 		//BotClampPos( self );
 	}
 

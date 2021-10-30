@@ -165,7 +165,7 @@ void G_FreeEntity( gentity_t *entity )
 
 	if ( entity->obstacleHandle )
 	{
-		trap_BotRemoveObstacle( entity->obstacleHandle );
+		G_BotRemoveObstacle( entity->obstacleHandle );
 	}
 
 	if( entity->eclass && entity->eclass->instanceCounter > 0 )

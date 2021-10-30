@@ -137,6 +137,8 @@ int   DistanceToGoal( const gentity_t *self );
 int   DistanceToGoalSquared( const gentity_t *self );
 int   DistanceToGoal2DSquared( const gentity_t *self );
 float BotGetGoalRadius( const gentity_t *self );
+void  BotFindRandomPoint( int botClientNum, vec3_t point );
+bool  BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
 void  BotFindRandomPointOnMesh( const gentity_t *self, vec3_t point );
 bool  BotPathIsWalkable( const gentity_t *self, botTarget_t target );
 
