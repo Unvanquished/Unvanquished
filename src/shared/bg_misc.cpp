@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // bg_misc.c -- both games misc functions, all completely stateless
 
+#include <stddef.h>
 #include "engine/qcommon/q_shared.h"
 #include "common/FileSystem.h"
 #include "bg_public.h"
@@ -2741,7 +2742,7 @@ const char *Trans_GenderContext( gender_t gender )
 }
 
 // using the stringizing operator to save typing...
-#define PSF( x ) # x,(int((uintptr_t)&( (playerState_t*)0 )->x))
+#define PSF( x ) # x, offsetof( playerState_t, x )
 
 static const NetcodeTable playerStateFields =
 {
