@@ -2810,7 +2810,7 @@ bool G_admin_unban( gentity_t *ent )
 	trap_Argv( 1, bs, sizeof( bs ) );
 	bnum = atoi( bs );
 
-	expireOnly = ( bnum > 0 ) && g_adminRetainExpiredBans.integer;
+	expireOnly = ( bnum > 0 ) && g_adminRetainExpiredBans.Get();
 	bnum = abs( bnum );
 
 	for ( ban = p = g_admin_bans; ban && ban->id != bnum; p = ban, ban = ban->next ) {}
@@ -4395,7 +4395,7 @@ bool G_admin_restart( gentity_t *ent )
 	     !Q_stricmp( teampref, "keepteamslock" ) ||
 		 !Q_stricmp( teampref,"ktl" ) || !Q_stricmp( teampref,"stl" ) )
 	{
-		trap_Cvar_Set( "g_lockTeamsAtStart", "1" );
+		g_lockTeamsAtStart.Set(true);
 	}
 
 	trap_SendConsoleCommand( "map_restart" );

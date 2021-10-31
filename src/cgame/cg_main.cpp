@@ -434,22 +434,6 @@ static void CG_SetPVars()
 }
 
 /*
-===============
-CG_SetUIVars
-
-Set some cvars used by the UI
-these will change when following another player
-===============
-*/
-static void CG_SetUIVars()
-{
-	if ( !cg.snap )
-	{
-		return;
-	}
-}
-
-/*
 ================
 CG_UpdateBuildableRangeMarkerMask
 ================
@@ -585,7 +569,6 @@ void CG_UpdateCvars()
 
 	// check for modifications here
 	CG_SetPVars();
-	CG_SetUIVars();
 	CG_UpdateBuildableRangeMarkerMask();
 }
 

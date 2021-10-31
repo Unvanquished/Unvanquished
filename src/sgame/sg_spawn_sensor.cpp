@@ -71,7 +71,7 @@ void trigger_compat_propagation_act( gentity_t *self, gentity_t*, gentity_t *act
 {
 	G_FireEntity( self, self );
 
-	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
+	if ( g_debugEntities.Get() >= -1 ) //dont't warn about anything with -1 or lower
 	{
 		Log::Warn( "It appears as if %s is targeted by %s to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.", etos( self ), etos( activator ) );
 	}
@@ -136,7 +136,7 @@ void trigger_multiple_compat_reset( gentity_t *self )
 			self->conditions.team = TEAM_ALIENS;
 	}
 
-	if ( self->spawnflags && g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
+	if ( self->spawnflags && g_debugEntities.Get() >= -1 ) //dont't warn about anything with -1 or lower
 	{
 		Log::Warn( "It appears as if %s has set spawnflags that were not defined behavior of the entities.def; this is likely to break in the future", etos( self ));
 	}
@@ -166,7 +166,7 @@ void G_notify_sensor_start()
 {
 	gentity_t *sensor = nullptr;
 
-	if( g_debugEntities.integer >= 2 )
+	if( g_debugEntities.Get() >= 2 )
 		Log::Debug( "Notification of match start.");
 
 	while ((sensor = G_IterateEntitiesOfClass(sensor, S_SENSOR_START)) != nullptr )
@@ -240,7 +240,7 @@ void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
 {
 	gentity_t *entities = nullptr;
 
-	if( g_debugEntities.integer >= 2 )
+	if( g_debugEntities.Get() >= 2 )
 		Log::Debug( "Notification of team %i changing stage from %i to %i (0-2).", team, previousStage, newStage );
 
 	if(newStage <= previousStage) //not supporting stage down yet, also no need to fire if stage didn't change at all
@@ -281,7 +281,7 @@ void G_notify_sensor_end( team_t winningTeam )
 {
 	gentity_t *entity = nullptr;
 
-	if( g_debugEntities.integer >= 2 )
+	if( g_debugEntities.Get() >= 2 )
 		Log::Debug( "Notification of game end. Winning team %i.", winningTeam );
 
 	while ((entity = G_IterateEntitiesOfClass(entity, S_SENSOR_END)) != nullptr )

@@ -94,7 +94,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 
 			// If dretchpunt is enabled and this is a dretch, do dretchpunt instead of damage.
 			// TODO: Add a message for pushing.
-			if (g_dretchPunt.integer && client && client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0)
+			if (g_dretchPunt.Get() && client && client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0)
 			{
 				vec3_t dir, push;
 

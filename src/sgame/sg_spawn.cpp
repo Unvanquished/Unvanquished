@@ -450,16 +450,16 @@ bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_
 
 	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
 	{
-		if ( g_debugEntities.integer > -2 )
+		if ( g_debugEntities.Get() > -2 )
 			Log::Warn("Class %s has been marked deprecated but no replacement has been supplied", etos( entity ) );
 
 		return false;
 	}
 
-	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
+	if ( g_debugEntities.Get() >= 0 ) //dont't warn about anything with -1 or lower
 	{
 		if( spawnDescription->versionState < ENT_V_TMPORARY
-		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
+		|| ( g_debugEntities.Get() >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
 		{
 			Log::Warn("Entity %s uses a deprecated classtype — use the class ^5%s^* instead", etos( entity ), spawnDescription->replacement );
 		}
@@ -474,7 +474,7 @@ bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 		case CHAIN_ACTIVE:
 			if(!entity->callTargetCount) //check target usage for backward compatibility
 			{
-				if( g_debugEntities.integer > -2 )
+				if( g_debugEntities.Get() > -2 )
 					Log::Warn("Entity %s needs to call or target to something — Removing it.", etos( entity ) );
 				return false;
 			}
@@ -483,7 +483,7 @@ bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 		case CHAIN_PASSIV:
 			if(!entity->names[0])
 			{
-				if( g_debugEntities.integer > -2 )
+				if( g_debugEntities.Get() > -2 )
 					Log::Warn("Entity %s needs a name, so other entities can target it — Removing it.", etos( entity ) );
 				return false;
 			}
@@ -492,7 +492,7 @@ bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 			if((!entity->callTargetCount) //check target usage for backward compatibility
 					|| !entity->names[0])
 			{
-				if( g_debugEntities.integer > -2 )
+				if( g_debugEntities.Get() > -2 )
 					Log::Warn("Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.", etos( entity ) );
 				return false;
 			}
@@ -522,7 +522,7 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	if ( !spawnedEntity->classname )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
-		if ( g_debugEntities.integer > -2 )
+		if ( g_debugEntities.Get() > -2 )
 			Log::Warn("Entity ^5#%i^* is missing classname – we are unable to spawn it.", spawnedEntity->s.number );
 		return false;
 	}
@@ -568,7 +568,7 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 		spawnedClass->spawn( spawnedEntity );
 		spawnedEntity->spawned = true;
 
-		if ( g_debugEntities.integer > 2 )
+		if ( g_debugEntities.Get() > 2 )
 		{
 			std::string count = spawnedEntity->eclass ? std::to_string(spawnedEntity->eclass->instanceCounter) : "??";
 			Log::Notice("Successfully spawned entity ^5#%i^* as ^3#%s^*th instance of ^5%s",
@@ -587,7 +587,7 @@ bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	}
 
 	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
-	if ( g_debugEntities.integer > -2 )
+	if ( g_debugEntities.Get() > -2 )
 	{
 		if (!Q_stricmp(S_WORLDSPAWN, spawnedEntity->classname))
 		{
@@ -895,9 +895,9 @@ bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFi
 	if ( !Q_stricmp(expectedFieldname, actualFieldname) || typeOfDeprecation == ENT_V_CURRENT )
 		return false;
 
-	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
+	if ( g_debugEntities.Get() >= 0 ) //dont't warn about anything with -1 or lower
 	{
-		if ( typeOfDeprecation < ENT_V_TMPORARY || g_debugEntities.integer >= 1 )
+		if ( typeOfDeprecation < ENT_V_TMPORARY || g_debugEntities.Get() >= 1 )
 		{
 			Log::Warn("Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead", entity->s.number, actualFieldname, expectedFieldname );
 		}
@@ -1081,14 +1081,14 @@ void SP_worldspawn()
 	// see if we want a warmup time
 	trap_SetConfigstring( CS_WARMUP, "-1" );
 
-	if ( g_doWarmup.integer )
+	if ( g_doWarmup.Get() )
 	{
-		level.warmupTime = level.matchTime + ( g_warmup.integer * 1000 );
+		level.warmupTime = level.matchTime + ( g_warmup.Get() * 1000 );
 		trap_SetConfigstring( CS_WARMUP, va( "%i", level.warmupTime ) );
-		G_LogPrintf( "Warmup: %i\n", g_warmup.integer );
+		G_LogPrintf( "Warmup: %i\n", g_warmup.Get() );
 	}
 
-	level.timelimit = g_timelimit.integer;
+	level.timelimit = g_timelimit.Get();
 }
 
 /*

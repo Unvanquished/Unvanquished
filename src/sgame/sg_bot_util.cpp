@@ -55,19 +55,19 @@ static float GetMaximalSpeed( gentity_t const *self )
 // it, and the results are good enough (tm).
 static float GetMaximalSpeed( class_t cl )
 {
-	return BG_Class( cl )->speed * BG_Class( cl )->sprintMod * g_speed.value;
+	return BG_Class( cl )->speed * BG_Class( cl )->sprintMod * g_speed.Get();
 }
 
 template <typename T>
 struct equipment_t
 {
-	int &authorized;
+	Cvar::Cvar<bool>& authorized;
 	T item;
 	int price( void ) const;
 	bool unlocked( void ) const;
 	bool canBuyNow( void ) const
 	{
-		return authorized && unlocked();
+		return authorized.Get() && unlocked();
 	}
 	int slots( void ) const;
 };
@@ -137,45 +137,45 @@ int equipment_t<weapon_t>::slots( void ) const
 // manually sorted by preference, hopefully a future patch will have a much smarter way
 equipment_t<class_t> classes[] =
 {
-	{ g_bot_level4    .integer, PCL_ALIEN_LEVEL4       },
-	{ g_bot_level3upg .integer, PCL_ALIEN_LEVEL3_UPG   },
-	{ g_bot_level3    .integer, PCL_ALIEN_LEVEL3       },
-	{ g_bot_level2upg .integer, PCL_ALIEN_LEVEL2_UPG   },
-	{ g_bot_level2    .integer, PCL_ALIEN_LEVEL2       },
-	{ g_bot_level1    .integer, PCL_ALIEN_LEVEL1       },
-	{ g_bot_level0    .integer, PCL_ALIEN_LEVEL0       },
-	{ g_bot_builderupg.integer, PCL_ALIEN_BUILDER0_UPG },
-	{ g_bot_builder   .integer, PCL_ALIEN_BUILDER0     },
+	{ g_bot_level4    , PCL_ALIEN_LEVEL4       },
+	{ g_bot_level3upg , PCL_ALIEN_LEVEL3_UPG   },
+	{ g_bot_level3    , PCL_ALIEN_LEVEL3       },
+	{ g_bot_level2upg , PCL_ALIEN_LEVEL2_UPG   },
+	{ g_bot_level2    , PCL_ALIEN_LEVEL2       },
+	{ g_bot_level1    , PCL_ALIEN_LEVEL1       },
+	{ g_bot_level0    , PCL_ALIEN_LEVEL0       },
+	{ g_bot_builderupg, PCL_ALIEN_BUILDER0_UPG },
+	{ g_bot_builder   , PCL_ALIEN_BUILDER0     },
 };
 
 // manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
 equipment_t<upgrade_t> armors[] =
 {
-	{ g_bot_battlesuit.integer  , UP_BATTLESUIT },
-	{ g_bot_mediumarmour.integer, UP_MEDIUMARMOUR },
-	{ g_bot_lightarmour.integer , UP_LIGHTARMOUR },
+	{ g_bot_battlesuit  , UP_BATTLESUIT },
+	{ g_bot_mediumarmour, UP_MEDIUMARMOUR },
+	{ g_bot_lightarmour , UP_LIGHTARMOUR },
 };
 // not merged because they are not armors
 equipment_t<upgrade_t> others[] =
 {
-	{ g_bot_radar.integer   , UP_RADAR },
-	{ g_bot_grenade.integer , UP_GRENADE },
-	{ g_bot_firebomb.integer, UP_FIREBOMB },
+	{ g_bot_radar   , UP_RADAR },
+	{ g_bot_grenade , UP_GRENADE },
+	{ g_bot_firebomb, UP_FIREBOMB },
 };
 
 // manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
 equipment_t<weapon_t> weapons[] =
 {
-	{ g_bot_lcannon.integer , WP_LUCIFER_CANNON },
-	{ g_bot_flamer.integer  , WP_FLAMER },
+	{ g_bot_lcannon , WP_LUCIFER_CANNON },
+	{ g_bot_flamer  , WP_FLAMER },
 	// pulse rifle has lower priority to keep previous "correct" behavior
-	{ g_bot_prifle.integer  , WP_PULSE_RIFLE },
-	{ g_bot_chaingun.integer, WP_CHAINGUN },
-	{ g_bot_mdriver.integer , WP_MASS_DRIVER },
-	{ g_bot_lasgun.integer  , WP_LAS_GUN },
-	{ g_bot_shotgun.integer , WP_SHOTGUN },
-	{ g_bot_painsaw.integer , WP_PAIN_SAW },
-	{ g_bot_rifle.integer   , WP_MACHINEGUN },
+	{ g_bot_prifle  , WP_PULSE_RIFLE },
+	{ g_bot_chaingun, WP_CHAINGUN },
+	{ g_bot_mdriver , WP_MASS_DRIVER },
+	{ g_bot_lasgun  , WP_LAS_GUN },
+	{ g_bot_shotgun , WP_SHOTGUN },
+	{ g_bot_painsaw , WP_PAIN_SAW },
+	{ g_bot_rifle   , WP_MACHINEGUN },
 };
 
 /*
@@ -532,14 +532,14 @@ int BotValueOfUpgrades( gentity_t *self )
 
 AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 {
-	if ( !g_bot_evolve.integer )
+	if ( !g_bot_evolve.Get() )
 	{
 		return STATUS_FAILURE;
 	}
 
 	for ( auto const& cl : classes )
 	{
-		if ( cl.authorized && BotCanEvolveToClass( self, cl.item ) && BotEvolveToClass( self, cl.item ) )
+		if ( cl.authorized.Get() && BotCanEvolveToClass( self, cl.item ) && BotEvolveToClass( self, cl.item ) )
 		{
 			return STATUS_SUCCESS;
 		}
@@ -835,7 +835,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 		}
 
 		if ( target->s.eType == entityType_t::ET_PLAYER && self->client->pers.team == TEAM_HUMANS
-		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
+		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.Get() / 2 )
 		{
 			continue;
 		}
@@ -1282,7 +1282,7 @@ bool BotEntityIsValidEnemyTarget( const gentity_t *self, const gentity_t *enemy 
 	}
 
 	// ignore buildings if we can't attack them
-	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.integer )
+	if ( enemy->s.eType == entityType_t::ET_BUILDABLE && !g_bot_attackStruct.Get() )
 	{
 		return false;
 	}
@@ -2248,7 +2248,7 @@ gentity_t *BotPopEnemy( enemyQueue_t *queue )
 		return nullptr;
 	}
 
-	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.integer )
+	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.Get() )
 	{
 		gentity_t *ret = queue->enemys[ queue->front ].ent;
 		queue->front = ( queue->front + 1 ) % MAX_ENEMY_QUEUE;

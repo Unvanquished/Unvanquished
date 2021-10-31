@@ -76,7 +76,7 @@ Util::optional<Vec3> /*direction*/, int flags, meansOfDeath_t /*meansOfDeath*/) 
 	}
 
 	// Get hit location relative to the floor beneath.
-	if (g_unlagged.integer && entity.oldEnt->client->unlaggedCalc.used) {
+	if (g_unlagged.Get() && entity.oldEnt->client->unlaggedCalc.used) {
 		VectorCopy(entity.oldEnt->client->unlaggedCalc.origin, origin);
 	} else {
 		VectorCopy(entity.oldEnt->r.currentOrigin, origin);

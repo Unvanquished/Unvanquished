@@ -157,10 +157,6 @@ void CG_ParseServerinfo()
 	BG_SetForbiddenBuildables( std::string( Info_ValueForKey( info, "g_disabledBuildables" ) ) );
 
 	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
-
-	// pass some of these to UI
-	trap_Cvar_Set( "ui_momentumHalfLife", va( "%f", cgs.momentumHalfLife ) );
-	trap_Cvar_Set( "ui_unlockableMinTime",  va( "%f", cgs.unlockableMinTime ) );
 }
 
 /*

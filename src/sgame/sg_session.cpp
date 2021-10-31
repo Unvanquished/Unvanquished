@@ -128,8 +128,8 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 	}
 	else
 	{
-		if ( g_maxGameClients.integer > 0 &&
-		     level.numAliveClients >= g_maxGameClients.integer )
+		if ( g_maxGameClients.Get() > 0 &&
+		     level.numAliveClients >= g_maxGameClients.Get() )
 		{
 			sess->spectatorState = SPECTATOR_FREE;
 		}

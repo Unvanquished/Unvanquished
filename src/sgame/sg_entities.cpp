@@ -63,7 +63,7 @@ void G_InitGentity( gentity_t *entity )
 	entity->r.ownerNum = ENTITYNUM_NONE;
 	entity->creationTime = level.time;
 	
-	if ( g_debugEntities.integer > 2 )
+	if ( g_debugEntities.Get() > 2 )
 	{
 		Log::Debug("Initing Entity %i", entity - g_entities );
 	}
@@ -119,7 +119,7 @@ gentity_t *G_NewEntity()
 		// no more entities available! let's force-reuse one if possible, or die
 		if ( forcedEnt )
 		{
-			if ( g_debugEntities.integer ) {
+			if ( g_debugEntities.Get() ) {
 				Log::Verbose( "Reusing Entity %i, freed at %i (%ims ago)",
 				              forcedEnt-g_entities, forcedEnt->freetime, level.time - forcedEnt->freetime );
 			}
@@ -158,7 +158,7 @@ void G_FreeEntity( gentity_t *entity )
 {
 	trap_UnlinkEntity( entity );  // unlink from world
 
-	if ( g_debugEntities.integer > 2 )
+	if ( g_debugEntities.Get() > 2 )
 	{
 		Log::Debug("Freeing Entity %s", etos(entity));
 	}
@@ -469,7 +469,7 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	if ( !totalChoiceCount )
 	{
 
-		if ( g_debugEntities.integer > -1 )
+		if ( g_debugEntities.Get() > -1 )
 			Log::Warn( "Could not find any entity matching \"^5%s%s%s^*\"",
 					classname ? classname : "",
 					classname && match ? "^7 and ^5" :  "",
@@ -670,7 +670,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 
 	if ( !totalChoiceCount )
 	{
-		if ( g_debugEntities.integer > -1 )
+		if ( g_debugEntities.Get() > -1 )
 		{
 			Log::Warn( "none of the following targets could be resolved for Entity %s:", etos(self));
 			G_PrintEntityNameList( self );
@@ -805,7 +805,7 @@ void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
 
 void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 {
-	if ( g_debugEntities.integer > 1 )
+	if ( g_debugEntities.Get() > 1 )
 	{
 		Log::Debug("[%s] %s calling %s %s:%s",
 				etos( call->activator ),
@@ -825,7 +825,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 
 		case ECA_CUSTOM:
-			if ( g_debugEntities.integer > -1 )
+			if ( g_debugEntities.Get() > -1 )
 			{
 				Log::Warn("Unknown action \"%s\" for %s",
 						call->definition->action, etos(targetedEntity));
@@ -862,13 +862,13 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 		case ECA_USE:
 			if (!targetedEntity->use)
 			{
-				if(g_debugEntities.integer >= 0)
+				if(g_debugEntities.Get() >= 0)
 					Log::Warn("calling :use on %s, which has no use function!", etos(targetedEntity));
 				break;
 			}
 			if(!call->activator || !call->activator->client)
 			{
-				if(g_debugEntities.integer >= 0)
+				if(g_debugEntities.Get() >= 0)
 					Log::Warn("calling %s:use, without a client as activator.", etos(targetedEntity));
 				break;
 			}
