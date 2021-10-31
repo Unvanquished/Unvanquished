@@ -203,6 +203,9 @@ extern Cvar::Cvar<bool> g_bot_level4;
 
 // misc bot cvars
 extern Cvar::Cvar<bool> g_bot_attackStruct;
+extern Cvar::Cvar<bool> g_bot_heal;
+extern Cvar::Cvar<bool> g_bot_repair;
+extern Cvar::Cvar<bool> g_bot_rush;
 extern Cvar::Cvar<float> g_bot_fov;
 extern Cvar::Cvar<int> g_bot_chasetime;
 extern Cvar::Cvar<int> g_bot_reactiontime;

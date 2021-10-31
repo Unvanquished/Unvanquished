@@ -290,6 +290,9 @@ Cvar::Cvar<bool> g_bot_level4("g_bot_level4", "whether bots use Tyrant", Cvar::N
 
 // misc bot cvars
 Cvar::Cvar<bool> g_bot_attackStruct("g_bot_attackStruct", "whether bots target buildables", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_heal("g_bot_heal", "whether bots will go back to heal", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_repair("g_bot_repair", "whether bots will repair buildables", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_rush("g_bot_rush", "whether bots will rush (run into the enemy base as fast as possible in the intent of destroying it)", Cvar::NONE, true);
 Cvar::Cvar<float> g_bot_fov("g_bot_fov", "bots' \"field of view\"", Cvar::NONE, 125);
 Cvar::Cvar<int> g_bot_chasetime("g_bot_chasetime", "bots stop chasing after x ms out of sight", Cvar::NONE, 5000);
 Cvar::Cvar<int> g_bot_reactiontime("g_bot_reactiontime", "bots' reaction time to enemies (milliseconds)", Cvar::NONE, 500);
