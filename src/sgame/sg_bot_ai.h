@@ -154,7 +154,6 @@ typedef AIValue_t (*AIFunc)( gentity_t *self, const AIValue_t *params );
 struct AIValueFunc_t
 {
 	AIExpType_t   expType;
-	AIValueType_t retType;
 	AIFunc        func;
 	AIValue_t     *params;
 	int           nparams;
