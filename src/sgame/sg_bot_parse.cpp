@@ -331,41 +331,40 @@ static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
 static const struct AIConditionMap_s
 {
 	const char    *name;
-	AIValueType_t retType;
 	AIFunc        func;
 	int           nparams;
 } conditionFuncs[] =
 {
 	// It looks like behavior tree function names must be ordered alphabetically.
-	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
-	{ "aliveTime",         VALUE_INT,   aliveTime,         0 },
-	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
-	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
-	{ "canEvolveTo",       VALUE_INT,   botCanEvolveTo,    1 },
-	{ "class",             VALUE_INT,   botClass,          0 },
-	{ "cvarFloat",         VALUE_FLOAT, cvarFloat,         1 },
-	{ "cvarInt",           VALUE_INT,   cvarInt,           1 },
-	{ "directPathTo",      VALUE_INT,   directPathTo,      1 },
-	{ "distanceTo",        VALUE_FLOAT, distanceTo,        1 },
-	{ "goalBuildingType",  VALUE_INT,   goalBuildingType,  0 },
-	{ "goalIsDead",        VALUE_INT,   goalDead,          0 },
-	{ "goalTeam",          VALUE_INT,   goalTeam,          0 },
-	{ "goalType",          VALUE_INT,   goalType,          0 },
-	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
-	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
-	{ "healScore",         VALUE_FLOAT, healScore,         0 },
-	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
-	{ "isVisible",         VALUE_INT,   isVisible,         1 },
-	{ "matchTime",         VALUE_INT,   matchTime,         0 },
-	{ "momentum",          VALUE_INT,   momentum,          1 },
-	{ "percentAmmo",       VALUE_FLOAT, percentAmmo,       0 },
-	{ "percentHealth",     VALUE_FLOAT, percentHealth,     1 },
-	{ "random",            VALUE_FLOAT, randomChance,      0 },
-	{ "skill",             VALUE_INT,   botSkill,          0 },
-	{ "stuckTime",         VALUE_INT,   stuckTime,         0 },
-	{ "team",              VALUE_INT,   botTeam,           0 },
-	{ "teamateHasWeapon",  VALUE_INT,   teamateHasWeapon,  1 },
-	{ "weapon",            VALUE_INT,   currentWeapon,     0 }
+	{ "alertedToEnemy",    alertedToEnemy,    0 },
+	{ "aliveTime",         aliveTime,         0 },
+	{ "baseRushScore",     baseRushScore,     0 },
+	{ "buildingIsDamaged", buildingIsDamaged, 0 },
+	{ "canEvolveTo",       botCanEvolveTo,    1 },
+	{ "class",             botClass,          0 },
+	{ "cvarFloat",         cvarFloat,         1 },
+	{ "cvarInt",           cvarInt,           1 },
+	{ "directPathTo",      directPathTo,      1 },
+	{ "distanceTo",        distanceTo,        1 },
+	{ "goalBuildingType",  goalBuildingType,  0 },
+	{ "goalIsDead",        goalDead,          0 },
+	{ "goalTeam",          goalTeam,          0 },
+	{ "goalType",          goalType,          0 },
+	{ "haveUpgrade",       haveUpgrade,       1 },
+	{ "haveWeapon",        haveWeapon,        1 },
+	{ "healScore",         healScore,         0 },
+	{ "inAttackRange",     inAttackRange,     1 },
+	{ "isVisible",         isVisible,         1 },
+	{ "matchTime",         matchTime,         0 },
+	{ "momentum",          momentum,          1 },
+	{ "percentAmmo",       percentAmmo,       0 },
+	{ "percentHealth",     percentHealth,     1 },
+	{ "random",            randomChance,      0 },
+	{ "skill",             botSkill,          0 },
+	{ "stuckTime",         stuckTime,         0 },
+	{ "team",              botTeam,           0 },
+	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
+	{ "weapon",            currentWeapon,     0 }
 };
 
 static const struct AIOpMap_s
@@ -596,7 +595,6 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	}
 
 	v.expType = EX_FUNC;
-	v.retType = f->retType;
 	v.func =    f->func;
 	v.nparams = f->nparams;
 
