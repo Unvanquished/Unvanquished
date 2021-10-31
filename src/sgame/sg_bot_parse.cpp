@@ -279,32 +279,33 @@ static AIValue_t randomChance( gentity_t*, const AIValue_t* )
 	return AIBoxFloat( random() );
 }
 
-static AIValue_t cvarInt( gentity_t*, const AIValue_t *params )
+// Read a cvar, no matter its type
+static AIValue_t cvar( gentity_t*, const AIValue_t *params )
 {
 	// TODO: improve performance when the need arises
+	// This guess the type of the cvar from what successfully parses.
+	// You may want to change that someday.
 	std::string cvar = AIUnBoxString( params[ 0 ] );
-	int num;
-	if ( !Cvar::ParseCvarValue( Cvar::GetValue( cvar ), num )  )
+	bool boolean;
+	int integer;
+	float floating;
+
+	if ( Cvar::ParseCvarValue( Cvar::GetValue( cvar ), boolean )  )
 	{
-		Log::Warn("could not read cvar '%s' as integer", cvar);
-		num = 0;
+		return AIBoxInt( boolean ? 1 : 0 );
+	}
+	if ( Cvar::ParseCvarValue( Cvar::GetValue( cvar ), integer )  )
+	{
+		return AIBoxInt( integer );
+	}
+	if ( Cvar::ParseCvarValue( Cvar::GetValue( cvar ), floating )  )
+	{
+		return AIBoxFloat( floating );
 	}
 
-	return AIBoxInt( num );
-}
-
-static AIValue_t cvarFloat( gentity_t*, const AIValue_t *params )
-{
-	// TODO: improve performance when the need arises
-	std::string cvar = AIUnBoxString( params[ 0 ] );
-	float num;
-	if ( !Cvar::ParseCvarValue( Cvar::GetValue( cvar ), num ) )
-	{
-		Log::Warn("could not read cvar '%s' as float", cvar);
-		num = 0.0f;
-	}
-
-	return AIBoxFloat( num );
+	Log::Warn("Bot: could not read cvar '%s' as"
+			" a number or a boolean", cvar);
+	return AIBoxInt( 0 );
 }
 
 static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
@@ -342,8 +343,7 @@ static const struct AIConditionMap_s
 	{ "buildingIsDamaged", buildingIsDamaged, 0 },
 	{ "canEvolveTo",       botCanEvolveTo,    1 },
 	{ "class",             botClass,          0 },
-	{ "cvarFloat",         cvarFloat,         1 },
-	{ "cvarInt",           cvarInt,           1 },
+	{ "cvar",              cvar,              1 },
 	{ "directPathTo",      directPathTo,      1 },
 	{ "distanceTo",        distanceTo,        1 },
 	{ "goalBuildingType",  goalBuildingType,  0 },
