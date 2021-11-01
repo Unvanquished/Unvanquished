@@ -31,6 +31,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
+#ifndef BOTLIB_API_H_
+#define BOTLIB_API_H_
+
 #include "bot_types.h"
 #include "sgame/sg_typedef.h"
 
@@ -53,3 +56,5 @@ bool     BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, c
 void         BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle );
 void         BotRemoveObstacle( qhandle_t obstacleHandle );
 void         BotUpdateObstacles();
+
+#endif
