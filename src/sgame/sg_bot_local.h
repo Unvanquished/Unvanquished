@@ -31,8 +31,8 @@ This file contains the headers of the internal functions used by bot only.
 ======================
 */
 
-#ifndef __BOT_LOCAL_HEADER
-#define __BOT_LOCAL_HEADER
+#ifndef BOT_LOCAL_H_
+#define BOT_LOCAL_H_
 
 #include "sg_local.h"
 

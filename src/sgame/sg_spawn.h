@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef SPAWN_H_
-#define SPAWN_H_
+#ifndef SG_SPAWN_H_
+#define SG_SPAWN_H_
 
 /*
  * sg_spawn.c
@@ -146,4 +146,4 @@ void     SP_Nothing( gentity_t *self );
 void     SP_ConditionFields( gentity_t *self );
 void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance );
 
-#endif /* SPAWN_H_ */
+#endif /* SG_SPAWN_H_ */

@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifndef __BOT_UTIL_HEADER
-#define __BOT_UTIL_HEADER
+#ifndef BOT_UTIL_H_
+#define BOT_UTIL_H_
 #include "sg_local.h"
 #include "botlib/bot_types.h"
 #include "sg_bot_local.h"

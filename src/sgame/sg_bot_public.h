@@ -31,8 +31,8 @@ This file contains the public interface used by sgame to interact with bots.
 ======================
 */
 
-#ifndef __BOT_PUBLIC_HEADER
-#define __BOT_PUBLIC_HEADER
+#ifndef BOT_PUBLIC_H_
+#define BOT_PUBLIC_H_
 
 #include "sg_local.h"
 #include "shared/bg_public.h"

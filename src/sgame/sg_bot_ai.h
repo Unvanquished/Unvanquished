@@ -25,8 +25,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "sg_bot_local.h"
 
-#ifndef __BOT_AI_HEADER
-#define __BOT_AI_HEADER
+#ifndef BOT_AI_HEADER_
+#define BOT_AI_HEADER_
 
 // integer constants given to the behavior tree to use as parameters
 // values E_A_SPAWN to E_H_REACTOR are meant to have the same
@@ -267,4 +267,5 @@ AINodeStatus_t BotActionSuicide( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionJump( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* );
+
 #endif
