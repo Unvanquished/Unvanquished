@@ -2663,7 +2663,7 @@ void G_RunFrame( int levelTime )
 	}
 
 	BotDebugDrawMesh();
-	trap_BotUpdateObstacles();
+	G_BotUpdateObstacles();
 	level.frameMsec = trap_Milliseconds();
 }
 

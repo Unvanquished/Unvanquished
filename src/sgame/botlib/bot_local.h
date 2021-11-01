@@ -31,8 +31,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
-#ifndef __BOT_LOCAL_H
-#define __BOT_LOCAL_H
+#ifndef BOTLIB_LOCAL_H_
+#define BOTLIB_LOCAL_H_
 
 #include "engine/qcommon/q_shared.h"
 

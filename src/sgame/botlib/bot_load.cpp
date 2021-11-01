@@ -182,7 +182,7 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 	FS_FCloseFile( f );
 }
 
-bool BotLoadNavMesh( const char *filename, NavData_t &nav )
+static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 {
 	char filePath[ MAX_QPATH ];
 	fileHandle_t f = 0;
@@ -337,7 +337,7 @@ bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	return true;
 }
 
-void BotShutdownNav()
+void G_BotShutdownNav()
 {
 	for ( int i = 0; i < numNavData; i++ )
 	{
@@ -369,7 +369,7 @@ void BotShutdownNav()
 	numNavData = 0;
 }
 
-bool BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
+bool G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 {
 	if ( !numNavData )
 	{
@@ -407,7 +407,7 @@ bool BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 
 	if ( !BotLoadNavMesh( filename, *nav ) )
 	{
-		BotShutdownNav();
+		G_BotShutdownNav();
 		return false;
 	}
 
@@ -417,14 +417,14 @@ bool BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 	if ( !nav->query )
 	{
 		Log::Notice( "Could not allocate Detour Navigation Mesh Query for navmesh %s", filename );
-		BotShutdownNav();
+		G_BotShutdownNav();
 		return false;
 	}
 
 	if ( dtStatusFailed( nav->query->init( nav->mesh, maxNavNodes.Get() ) ) )
 	{
 		Log::Notice( "Could not init Detour Navigation Mesh Query for navmesh %s", filename );
-		BotShutdownNav();
+		G_BotShutdownNav();
 		return false;
 	}
 

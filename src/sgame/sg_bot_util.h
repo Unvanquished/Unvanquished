@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifndef __BOT_UTIL_HEADER
-#define __BOT_UTIL_HEADER
+#ifndef BOT_UTIL_H_
+#define BOT_UTIL_H_
 #include "sg_local.h"
 #include "botlib/bot_types.h"
-#include "sg_bot.h"
+#include "sg_bot_local.h"
 
 
 bool PlayersBehindBotInSpawnQueue( gentity_t *self );
@@ -137,6 +137,8 @@ int   DistanceToGoal( const gentity_t *self );
 int   DistanceToGoalSquared( const gentity_t *self );
 int   DistanceToGoal2DSquared( const gentity_t *self );
 float BotGetGoalRadius( const gentity_t *self );
+void  BotFindRandomPoint( int botClientNum, vec3_t point );
+bool  BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
 void  BotFindRandomPointOnMesh( const gentity_t *self, vec3_t point );
 bool  BotPathIsWalkable( const gentity_t *self, botTarget_t target );
 

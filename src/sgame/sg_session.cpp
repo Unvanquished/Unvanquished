@@ -48,20 +48,24 @@ static void G_WriteClientSessionData( int clientNum )
 	const char *s;
 	const char *var;
 	gclient_t  *client = &level.clients[ clientNum ];
-	botMemory_t  *mind = g_entities[ clientNum ].botMind;
+	const char *behavior = G_BotGetBehavior( clientNum );
+	if ( behavior == nullptr )
+	{
+		behavior = "default";
+	}
 
 	s = va( "%i %i %i %i %i %i %s %s",
-	        client->sess.spectatorTime,
-	        client->sess.spectatorState,
-	        client->sess.spectatorClient,
-	        client->sess.restartTeam,
-	        client->sess.seenWelcome,
-	        mind ? mind->botSkill.level : 0,
-	        ( mind && mind->behaviorTree ) ? mind->behaviorTree->name : "default",
-	        Com_ClientListString( &client->sess.ignoreList )
-	      );
+		client->sess.spectatorTime,
+		client->sess.spectatorState,
+		client->sess.spectatorClient,
+		client->sess.restartTeam,
+		client->sess.seenWelcome,
+		G_BotGetSkill( clientNum ),
+		behavior,
+		Com_ClientListString( &client->sess.ignoreList )
+	);
 
-	var = va( "session%li", ( long )( client - level.clients ) );
+	var = va( "session%i", clientNum );
 
 	trap_Cvar_Set( var, s );
 }

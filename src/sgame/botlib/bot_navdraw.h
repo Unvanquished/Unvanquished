@@ -31,6 +31,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
+#ifndef BOTLIB_NAVDRAW_H_
+#define BOTLIB_NAVDRAW_H_
+
 #include "DetourDebugDraw.h"
 #include "DebugDraw.h"
 #include "bot_local.h"
@@ -51,3 +54,5 @@ public:
 	void vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v);
 	void end();
 };
+
+#endif

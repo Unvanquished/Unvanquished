@@ -551,7 +551,7 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 				vec3_t mins, maxs;
 				VectorAdd( ent->restingPosition, ent->r.mins, mins );
 				VectorAdd( ent->restingPosition, ent->r.maxs, maxs );
-				trap_BotAddObstacle( mins, maxs, &ent->obstacleHandle );
+				G_BotAddObstacle( mins, maxs, &ent->obstacleHandle );
 			}
 			break;
 
@@ -563,7 +563,7 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 			{
 				if ( ent->obstacleHandle )
 				{
-					trap_BotRemoveObstacle( ent->obstacleHandle );
+					G_BotRemoveObstacle( ent->obstacleHandle );
 					ent->obstacleHandle = 0;
 				}
 			}
@@ -2597,7 +2597,7 @@ void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 	{
 		if ( self->obstacleHandle )
 		{
-			trap_BotRemoveObstacle( self->obstacleHandle );
+			G_BotRemoveObstacle( self->obstacleHandle );
 			self->obstacleHandle = 0;
 		}
 		trap_UnlinkEntity( self );
@@ -2606,7 +2606,7 @@ void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 	{
 		VectorAdd( self->restingPosition, self->r.mins, mins );
 		VectorAdd( self->restingPosition, self->r.maxs, maxs );
-		trap_BotAddObstacle( mins, maxs, &self->obstacleHandle );
+		G_BotAddObstacle( mins, maxs, &self->obstacleHandle );
 		trap_LinkEntity( self );
 		if( !( self->spawnflags & 2 ) )
 			G_KillBrushModel( self, activator );
@@ -2621,14 +2621,14 @@ void func_spawn_reset( gentity_t *self )
 	{
 		VectorAdd( self->restingPosition, self->r.mins, mins );
 		VectorAdd( self->restingPosition, self->r.maxs, maxs );
-		trap_BotAddObstacle( mins, maxs, &self->obstacleHandle );
+		G_BotAddObstacle( mins, maxs, &self->obstacleHandle );
 		trap_LinkEntity( self );
 	}
 	else
 	{
 		if ( self->obstacleHandle )
 		{
-			trap_BotRemoveObstacle( self->obstacleHandle );
+			G_BotRemoveObstacle( self->obstacleHandle );
 			self->obstacleHandle = 0;
 		}
 		trap_UnlinkEntity( self );

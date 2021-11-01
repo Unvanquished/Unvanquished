@@ -177,6 +177,31 @@ static void G_BotNameUsed( team_t team, const char *name, bool inUse )
 	}
 }
 
+int G_BotGetSkill( int clientNum )
+{
+	gentity_t *bot = &g_entities[clientNum];
+
+	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
+	{
+		return 0;
+	}
+
+	return bot->botMind->botSkill.level;
+}
+
+const char * G_BotGetBehavior( int clientNum )
+{
+	gentity_t *bot = &g_entities[clientNum];
+
+	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind
+			|| !bot->botMind->behaviorTree )
+	{
+		return nullptr;
+	}
+
+	return bot->botMind->behaviorTree->name;
+}
+
 void G_BotChangeBehavior( int clientNum, const char* behavior )
 {
 	gentity_t *bot = &g_entities[clientNum];
@@ -441,7 +466,7 @@ void G_BotThink( gentity_t *self )
 	if ( self->botMind->goal.isValid() )
 	{
 		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
-		trap_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
+		G_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
 		//BotClampPos( self );
 	}
 

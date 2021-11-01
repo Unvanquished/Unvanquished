@@ -31,8 +31,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
-#ifndef __BOT_VEC_H
-#define __BOT_VEC_H
+#ifndef BOTLIB_CONVERT_H_
+#define BOTLIB_CONVERT_H_
 
 #include "bot_types.h"
 

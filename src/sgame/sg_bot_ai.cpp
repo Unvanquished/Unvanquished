@@ -873,7 +873,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 
-		if ( !trap_BotFindRandomPointInRadius( self->s.number, ent.ent->s.origin, point, radius ) )
+		if ( !BotFindRandomPointInRadius( self->s.number, ent.ent->s.origin, point, radius ) )
 		{
 			return STATUS_FAILURE;
 		}

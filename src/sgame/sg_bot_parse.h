@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifndef __BOT_PARSE_HEADER
-#define __BOT_PARSE_HEADER
+#ifndef BOT_PARSE_H_
+#define BOT_PARSE_H_
 
 #include "shared/parse.h"
 #include "sg_bot_ai.h"

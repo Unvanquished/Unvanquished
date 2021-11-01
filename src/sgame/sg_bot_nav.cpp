@@ -65,7 +65,7 @@ void G_BotNavInit()
 
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
-		if ( !trap_BotSetupNav( &bot, &model->navHandle ) )
+		if ( !G_BotSetupNav( &bot, &model->navHandle ) )
 		{
 			return;
 		}
@@ -75,18 +75,8 @@ void G_BotNavInit()
 
 void G_BotNavCleanup()
 {
-	trap_BotShutdownNav();
+	G_BotShutdownNav();
 	navMeshLoaded = false;
-}
-
-void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs )
-{
-	trap_BotDisableArea( origin, mins, maxs );
-}
-
-void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs )
-{
-	trap_BotEnableArea( origin, mins, maxs );
 }
 
 void BotSetNavmesh( gentity_t  *self, class_t newClass )
@@ -104,7 +94,7 @@ void BotSetNavmesh( gentity_t  *self, class_t newClass )
 	          ? BG_ClassModelConfig( model->navMeshClass )->navHandle
 	          : model->navHandle;
 
-	trap_BotSetNavMesh( self->s.number, navHandle );
+	G_BotSetNavMesh( self->s.number, navHandle );
 }
 
 /*
@@ -217,7 +207,7 @@ bool BotPathIsWalkable( const gentity_t *self, botTarget_t target )
 	VectorMA( self->s.origin, self->r.mins[2], viewNormal, selfPos );
 	target.getPos( targetPos );
 
-	if ( !trap_BotNavTrace( self->s.number, &trace, selfPos, targetPos ) )
+	if ( !G_BotNavTrace( self->s.number, &trace, selfPos, targetPos ) )
 	{
 		return false;
 	}
@@ -225,9 +215,10 @@ bool BotPathIsWalkable( const gentity_t *self, botTarget_t target )
 	return trace.frac >= 1.0f;
 }
 
+// TODO: remove
 void BotFindRandomPointOnMesh( const gentity_t *self, vec3_t point )
 {
-	trap_BotFindRandomPoint( self->s.number, point );
+	BotFindRandomPoint( self->s.number, point );
 }
 
 /*
@@ -699,5 +690,5 @@ bool FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial )
 {
 	botRouteTarget_t routeTarget;
 	BotTargetToRouteTarget( self, target, &routeTarget );
-	return trap_BotFindRoute( self->s.number, &routeTarget, allowPartial );
+	return G_BotFindRoute( self->s.number, &routeTarget, allowPartial );
 }

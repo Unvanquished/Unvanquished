@@ -32,8 +32,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 */
 
 // nav.h -- navigation mesh definitions
-#ifndef __NAV_H
-#define __NAV_H
+#ifndef BOTLIB_NAV_H_
+#define BOTLIB_NAV_H_
 
 #include "bot_types.h"
 #include "fastlz/fastlz.h"
@@ -284,5 +284,5 @@ struct LinearAllocator : public dtTileCacheAlloc
 	void free( void* /*ptr*/ ) override { }
 	size_t getHighSize() { return high; }
 };
-#endif
 
+#endif

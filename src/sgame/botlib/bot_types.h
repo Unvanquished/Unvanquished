@@ -31,8 +31,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
-#ifndef __BOT_TYPE_H
-#define __BOT_TYPE_H
+#ifndef BOTLIB_TYPE_H_
+#define BOTLIB_TYPE_H_
 
 struct botClass_t
 {
@@ -104,4 +104,5 @@ enum navPolyAreas
 #define ROUTE_FAILED  ( 1u << 31 )
 #define	ROUTE_SUCCEED ( 1u << 30 )
 #define	ROUTE_PARTIAL ( 1 << 6 )
+
 #endif

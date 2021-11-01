@@ -160,13 +160,14 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_admin.cpp
     ${GAMELOGIC_DIR}/sgame/sg_admin.h
     ${GAMELOGIC_DIR}/sgame/sg_api.cpp
-    ${GAMELOGIC_DIR}/sgame/sg_bot.cpp
-    ${GAMELOGIC_DIR}/sgame/sg_bot.h
     ${GAMELOGIC_DIR}/sgame/sg_bot_ai.cpp
     ${GAMELOGIC_DIR}/sgame/sg_bot_ai.h
+    ${GAMELOGIC_DIR}/sgame/sg_bot.cpp
+    ${GAMELOGIC_DIR}/sgame/sg_bot_local.h
     ${GAMELOGIC_DIR}/sgame/sg_bot_nav.cpp
     ${GAMELOGIC_DIR}/sgame/sg_bot_parse.cpp
     ${GAMELOGIC_DIR}/sgame/sg_bot_parse.h
+    ${GAMELOGIC_DIR}/sgame/sg_bot_public.h
     ${GAMELOGIC_DIR}/sgame/sg_bot_util.cpp
     ${GAMELOGIC_DIR}/sgame/sg_bot_util.h
     ${GAMELOGIC_DIR}/sgame/sg_buildable.cpp

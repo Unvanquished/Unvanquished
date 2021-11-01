@@ -31,12 +31,14 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
+#ifndef BOTLIB_API_H_
+#define BOTLIB_API_H_
+
 #include "bot_types.h"
 #include "sgame/sg_typedef.h"
+#include "sgame/sg_bot_local.h"
 
 void BotInit();
-bool     BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
-void         BotShutdownNav();
 void BotDebugDrawMesh();
 void Cmd_NavEdit( gentity_t *ent );
 void Cmd_AddConnection( gentity_t *ent );
@@ -44,12 +46,6 @@ void Cmd_NavTest( gentity_t *ent );
 
 void         BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void         BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void         BotSetNavMesh( int botClientNum, qhandle_t nav );
-bool     BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
-void         BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
-void         BotFindRandomPoint( int botClientNum, vec3_t point );
-bool     BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
 bool     BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end );
-void         BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle );
-void         BotRemoveObstacle( qhandle_t obstacleHandle );
-void         BotUpdateObstacles();
+
+#endif
