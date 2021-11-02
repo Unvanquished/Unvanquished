@@ -159,6 +159,8 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 	return &es;
 }
 
+#define COLOR_ALARM "^8" // Orange
+
 /*
 ===============
 CG_BuilderText
@@ -362,6 +364,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 			case WP_CHAINGUN:
 			case WP_SHOTGUN:
 			case WP_FLAMER:
+				Q_strcat( text, MAX_TUTORIAL_TEXT, COLOR_ALARM );
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
 				          _( "Find an Armoury for more ammo\n" ) );
 				break;
@@ -370,6 +373,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 			case WP_PULSE_RIFLE:
 			case WP_MASS_DRIVER:
 			case WP_LUCIFER_CANNON:
+				Q_strcat( text, MAX_TUTORIAL_TEXT, COLOR_ALARM );
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
 				          _( "Find an Armoury or Reactor for more ammo\n" ) );
 				break;
@@ -470,6 +474,7 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	if ( ps->stats[ STAT_HEALTH ] <= 35 &&
 	     BG_InventoryContainsUpgrade( UP_MEDKIT, ps->stats ) )
 	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT, COLOR_ALARM );
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
 		          va( _( "Press %s to use your %s\n" ),
 		              CG_KeyNameForCommand( "itemact medkit" ),
