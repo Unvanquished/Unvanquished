@@ -1975,9 +1975,4 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 
 	// actually issue the rendering calls
 	CG_DrawActive();
-
-	if ( cg_stats.integer )
-	{
-		Log::Notice( "cg.clientFrame:%i", cg.clientFrame );
-	}
 }

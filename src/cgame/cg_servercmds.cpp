@@ -53,11 +53,6 @@ static void CG_ParseScores()
 
 	memset( cg.scores, 0, sizeof( cg.scores ) );
 
-	if ( cg_debugRandom.integer )
-	{
-		Log::Debug( "cg.numScores: %d", cg.numScores );
-	}
-
 	for ( i = 0; i < cg.numScores; i++ )
 	{
 		//

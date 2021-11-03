@@ -3637,11 +3637,6 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	cent->pe.nonseg.yawing = false;
 	cent->pe.nonseg.pitchAngle = cent->rawAngles[ PITCH ];
 	cent->pe.nonseg.pitching = false;
-
-	if ( cg_debugPosition.integer )
-	{
-		Log::Debug( "%i ResetPlayerEntity yaw=%.2f", cent->currentState.number, cent->pe.torso.yawAngle );
-	}
 }
 
 /*

@@ -60,7 +60,6 @@ Cvar::Cvar<float> cg_crosshairSize("cg_crosshairSize", "crosshair scale factor",
 vmCvar_t        cg_crosshairFile;
 Cvar::Cvar<bool> cg_draw2D("cg_draw2D", "show HUD / menus", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_debugAnim("cg_debuganim", "show animation debug logs", Cvar::CHEAT, false);
-vmCvar_t        cg_debugPosition;
 Cvar::Cvar<bool> cg_debugEvents("cg_debugevents", "log received events", Cvar::CHEAT, false);
 Cvar::Cvar<float> cg_errorDecay("cg_errordecay", "recovery time after prediction error", Cvar::NONE, 100);
 Cvar::Cvar<bool> cg_nopredict("cg_nopredict", "disable client-side prediction", Cvar::NONE, false);
@@ -88,7 +87,6 @@ Cvar::Cvar<float> cg_thirdPersonRange("cg_thirdPersonRange", "camera distance fr
 Cvar::Cvar<bool> cg_lagometer("cg_lagometer", "show network latency meter", Cvar::NONE, false);
 Cvar::Range<Cvar::Cvar<int>> cg_drawSpeed("cg_drawSpeed", "show speed. bitflags: 0x1 number, 0x2 graph, 0x4 ignore z-component ", Cvar::NONE, 0, 0, 7);
 Cvar::Cvar<int> cg_maxSpeedTimeWindow("cg_maxSpeedTimeWindow", "cg_showSpeed's max speed is over last x milliseconds", Cvar::NONE, 2000);
-vmCvar_t        cg_stats;
 Cvar::Cvar<bool> cg_blood("com_blood", "draw blood effects", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_teamChatsOnly("cg_teamChatsOnly", "don't show chats to all players on screen", Cvar::NONE, false);
 Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo("teamoverlay", "request team overlay data from server", Cvar::USERINFO, 1, 0, 1);
@@ -139,8 +137,6 @@ vmCvar_t        cg_cmdNeedHealth;
 
 Cvar::Cvar<bool> cg_debugVoices("cg_debugVoices", "print cgame's list of vsays on startup", Cvar::NONE, false);
 
-vmCvar_t        cg_debugRandom;
-
 Cvar::Cvar<bool> cg_optimizePrediction("cg_optimizePrediction", "client-side prediction is done incrementally", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_projectileNudge("cg_projectileNudge", "enable client-side prediction for missiles", Cvar::NONE, true);
 
@@ -187,9 +183,7 @@ struct cvarTable_t
 static const cvarTable_t cvarTable[] =
 {
 	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             0                            },
-	{ &cg_debugPosition,               "cg_debugposition",               "0",            CVAR_CHEAT                   },
 	{ &cg_thirdPersonShoulderViewMode, "cg_thirdPersonShoulderViewMode", "1",            0                            },
-	{ &cg_stats,                       "cg_stats",                       "0",            0                            },
 	{ nullptr,                            "cg_wwFollow",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
@@ -201,8 +195,6 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_cmdGrenadeThrown,            "cg_cmdGrenadeThrown",            "vsay_local grenade", 0                      },
 	{ &cg_cmdNeedHealth,               "cg_cmdNeedHealth",               "vsay_local needhealth", 0                   },
-
-	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
 
 	// the following variables are created in other parts of the system,
 	// but we also reference them here

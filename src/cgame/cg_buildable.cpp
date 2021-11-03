@@ -919,23 +919,11 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
-		if ( cg_debugRandom.integer )
-		{
-			Log::Debug( "newAnimation: %d lf->animationNumber: %d lf->animation: %p",
-			           newAnimation, lf->animationNumber, (void *) lf->animation );
-		}
-
 		CG_SetBuildableLerpFrameAnimation( buildable, lf, newAnimation );
 
 		if ( !cg_buildables[ buildable ].sounds[ newAnimation ].looped &&
 		     cg_buildables[ buildable ].sounds[ newAnimation ].enabled )
 		{
-			if ( cg_debugRandom.integer )
-			{
-				Log::Debug( "Sound for animation %d for a %s",
-				           newAnimation, BG_Buildable( buildable )->humanName );
-			}
-
 			trap_S_StartSound( cent->lerpOrigin, cent->currentState.number, soundChannel_t::CHAN_AUTO,
 			                   cg_buildables[ buildable ].sounds[ newAnimation ].sound );
 		}

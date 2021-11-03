@@ -1754,7 +1754,6 @@ extern Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo;
 extern Cvar::Cvar<bool> cg_draw2D;
 extern Cvar::Cvar<bool> cg_animSpeed;
 extern Cvar::Cvar<bool> cg_debugAnim;
-extern  vmCvar_t            cg_debugPosition;
 extern Cvar::Cvar<bool> cg_debugEvents;
 extern Cvar::Cvar<float> cg_errorDecay;
 extern Cvar::Cvar<bool> cg_nopredict;
@@ -1782,7 +1781,6 @@ extern Cvar::Cvar<float> cg_thirdPersonRange;
 extern Cvar::Cvar<bool> cg_lagometer;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawSpeed;
 extern Cvar::Cvar<int> cg_maxSpeedTimeWindow;
-extern  vmCvar_t            cg_stats;
 extern Cvar::Cvar<bool> cg_blood;
 extern Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo;
 extern Cvar::Cvar<bool> cg_teamChatsOnly;
@@ -1802,7 +1800,6 @@ extern Cvar::Cvar<bool> cg_bounceParticles;
 extern Cvar::Cvar<int> cg_consoleLatency;
 extern Cvar::Range<Cvar::Cvar<int>> cg_lightFlare;
 extern Cvar::Range<Cvar::Cvar<int>> cg_debugParticles;
-extern  vmCvar_t            cg_debugTrails;
 extern Cvar::Cvar<bool> cg_debugPVS;
 extern Cvar::Range<Cvar::Cvar<int>> cg_disableWarningDialogs;
 extern Cvar::Cvar<bool> cg_tutorial;
@@ -1833,8 +1830,6 @@ extern  vmCvar_t            cg_cmdGrenadeThrown;
 extern  vmCvar_t            cg_cmdNeedHealth;
 
 extern Cvar::Cvar<bool> cg_debugVoices;
-
-extern vmCvar_t             cg_debugRandom;
 
 extern Cvar::Cvar<bool> cg_optimizePrediction;
 extern Cvar::Cvar<bool> cg_projectileNudge;
