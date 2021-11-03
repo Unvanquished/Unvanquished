@@ -1946,33 +1946,6 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	cg.oldTime = cg.time;
 	CG_AddLagometerFrameInfo();
 
-	if ( cg_timescale.value != cg_timescaleFadeEnd.value )
-	{
-		if ( cg_timescale.value < cg_timescaleFadeEnd.value )
-		{
-			cg_timescale.value += cg_timescaleFadeSpeed.value * ( ( float ) cg.frametime ) / 1000;
-
-			if ( cg_timescale.value > cg_timescaleFadeEnd.value )
-			{
-				cg_timescale.value = cg_timescaleFadeEnd.value;
-			}
-		}
-		else
-		{
-			cg_timescale.value -= cg_timescaleFadeSpeed.value * ( ( float ) cg.frametime ) / 1000;
-
-			if ( cg_timescale.value < cg_timescaleFadeEnd.value )
-			{
-				cg_timescale.value = cg_timescaleFadeEnd.value;
-			}
-		}
-
-		if ( cg_timescaleFadeSpeed.value )
-		{
-			trap_Cvar_Set( "timescale", va( "%f", cg_timescale.value ) );
-		}
-	}
-
 	// actually issue the rendering calls
 	CG_DrawActive();
 }

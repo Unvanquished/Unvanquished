@@ -1787,8 +1787,6 @@ extern Cvar::Cvar<bool> cg_teamChatsOnly;
 extern Cvar::Cvar<bool> cg_noVoiceChats;
 extern Cvar::Cvar<bool> cg_noVoiceText;
 extern Cvar::Cvar<bool> cg_smoothClients;
-extern  vmCvar_t            cg_timescaleFadeEnd;
-extern  vmCvar_t            cg_timescaleFadeSpeed;
 extern  vmCvar_t            cg_timescale;
 extern Cvar::Cvar<bool> cg_noTaunt;
 extern Cvar::Cvar<bool> cg_drawSurfNormal;
