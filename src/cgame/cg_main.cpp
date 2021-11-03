@@ -80,7 +80,7 @@ Cvar::Cvar<float> cg_tracerWidth("cg_tracerwidth", "width of line on bullet traj
 Cvar::Cvar<float> cg_tracerLength("cg_tracerlength", "length of line drawn on bullet trajectory", Cvar::CHEAT, 200);
 Cvar::Cvar<bool> cg_thirdPerson("cg_thirdPerson", "show own player from 3rd-person perspective", Cvar::CHEAT, false);
 Cvar::Cvar<float> cg_thirdPersonAngle("cg_thirdPersonAngle", "yaw angle for 3rd-person view", Cvar::CHEAT, 0);
-vmCvar_t        cg_thirdPersonShoulderViewMode;
+Cvar::Range<Cvar::Cvar<int>> cg_thirdPersonShoulderViewMode("cg_thirdPersonShoulderViewMode", "alternative chase cam position", Cvar::NONE, 1, 1, 2);
 Cvar::Cvar<bool> cg_staticDeathCam("cg_staticDeathCam", "don't follow attacker movements after death", Cvar::NONE, false);
 Cvar::Cvar<bool> cg_thirdPersonPitchFollow("cg_thirdPersonPitchFollow", "I don't know", Cvar::NONE, false);
 Cvar::Cvar<float> cg_thirdPersonRange("cg_thirdPersonRange", "camera distance from 3rd-person player", Cvar::NONE, 75);
@@ -151,13 +151,15 @@ Cvar::Cvar<float> cg_motionblur("cg_motionblur", "strength of motion blur", Cvar
 Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "speed triggering motion blur", Cvar::NONE, 600);
 Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "world is gray when dead or spawning", Cvar::NONE, true);
 
-vmCvar_t        cg_fov_builder;
-vmCvar_t        cg_fov_level0;
-vmCvar_t        cg_fov_level1;
-vmCvar_t        cg_fov_level2;
-vmCvar_t        cg_fov_level3;
-vmCvar_t        cg_fov_level4;
-vmCvar_t        cg_fov_human;
+// search 'fovCvar' to find usage of these (names come from config files)
+// 0 means use global FOV setting
+static Cvar::Cvar<float> cg_fov_builder("cg_fov_builder", "field of view (degrees) for Granger", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level0("cg_fov_level0", "field of view (degrees) for Dretch", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level1("cg_fov_level1", "field of view (degrees) for Mantis", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level2("cg_fov_level2", "field of view (degrees) for Marauder", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level3("cg_fov_level3", "field of view (degrees) for Dragoon", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level4("cg_fov_level4", "field of view (degrees) for Tyrant", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_human("cg_fov_human", "field of view (degrees) for humans", Cvar::NONE, 0);
 
 Cvar::Cvar<bool> ui_chatPromptColors("ui_chatPromptColors", "chat prompts (e.g. 'Say:') are color-coded", Cvar::NONE, true);
 vmCvar_t        cg_sayCommand;
@@ -181,7 +183,6 @@ struct cvarTable_t
 static const cvarTable_t cvarTable[] =
 {
 	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             0                            },
-	{ &cg_thirdPersonShoulderViewMode, "cg_thirdPersonShoulderViewMode", "1",            0                            },
 	{ nullptr,                            "cg_wwFollow",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
@@ -200,14 +201,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_timescale,                   "timescale",                      "1",            0                            },
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO                },
-
-	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            0                            },
-	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            0                            },
-	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            0                            },
-	{ &cg_fov_level2,                  "cg_fov_level2",                  "0",            0                            },
-	{ &cg_fov_level3,                  "cg_fov_level3",                  "0",            0                            },
-	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
-	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
 
 	{ &cg_sayCommand,                  "cg_sayCommand",                   "",            0                            }
 };

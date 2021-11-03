@@ -284,7 +284,7 @@ void CG_OffsetThirdPersonView()
 	// If cg_thirdpersonShoulderViewMode == 2, do shoulder view instead
 	// If cg_thirdpersonShoulderViewMode == 1, do shoulder view when chasing
 	//   a wallwalker because it's really erratic to watch
-	if ( cg_thirdPersonShoulderViewMode.integer == 2 )
+	if ( cg_thirdPersonShoulderViewMode.Get() == 2 )
 	{
 		CG_OffsetShoulderView();
 		return;

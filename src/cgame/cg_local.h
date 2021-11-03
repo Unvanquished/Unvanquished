@@ -1774,7 +1774,7 @@ extern Cvar::Cvar<float> cg_tracerWidth;
 extern Cvar::Cvar<float> cg_tracerLength;
 extern Cvar::Cvar<bool> cg_thirdPerson;
 extern Cvar::Cvar<float> cg_thirdPersonAngle;
-extern  vmCvar_t            cg_thirdPersonShoulderViewMode;
+extern Cvar::Range<Cvar::Cvar<int>> cg_thirdPersonShoulderViewMode;
 extern Cvar::Cvar<bool> cg_staticDeathCam;
 extern Cvar::Cvar<bool> cg_thirdPersonPitchFollow;
 extern Cvar::Cvar<float> cg_thirdPersonRange;
