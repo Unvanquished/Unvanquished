@@ -631,12 +631,6 @@ AINodeStatus_t BotActionAlternateStrafe( gentity_t *self, AIGenericNode_t* )
 	return STATUS_SUCCESS;
 }
 
-AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t* )
-{
-	BotClassMovement( self, BotTargetInAttackRange( self, self->botMind->goal ) );
-	return STATUS_SUCCESS;
-}
-
 AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *a = ( AIActionNode_t * ) node;

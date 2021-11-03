@@ -927,7 +927,6 @@ static const struct AIActionMap_s
 	{ "alternateStrafe",   BotActionAlternateStrafe,   0, 0 },
 	{ "buy",               BotActionBuy,               1, 4 },
 	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
-	{ "classDodge",        BotActionClassDodge,        0, 0 },
 	{ "deactivateUpgrade", BotActionDeactivateUpgrade, 1, 1 },
 	{ "equip",             BotActionBuy,               0, 0 },
 	{ "evolve",            BotActionEvolve,            0, 0 },
