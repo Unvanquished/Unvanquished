@@ -62,7 +62,7 @@ public:
 	void OnUpdate()
 	{
 		// Clean up old elements
-		int latency = trap_Cvar_VariableIntegerValue( "cg_consoleLatency" );
+		int latency = cg_consoleLatency.Get();
 		int time = trap_Milliseconds();
 
 		while ( !lines.empty() && lines.back().time + latency < time )

@@ -199,7 +199,7 @@ vmCvar_t           g_initialMapRotation;
 vmCvar_t           g_mapLog;
 Cvar::Cvar<int> g_mapStartupMessageDelay("g_mapStartupMessageDelay", "show g_mapStartupMessage x milliseconds after connection", Cvar::LATCH, 5000);
 
-Cvar::Cvar<bool> g_debugVoices("g_debugVoices", "print listing of \"voices\"", Cvar::NONE, false);
+Cvar::Cvar<bool> g_debugVoices("g_debugVoices", "print sgame's list of vsays on startup", Cvar::NONE, false);
 Cvar::Cvar<bool> g_enableVsays("g_voiceChats", "allow vsays (prerecorded audio messages)", Cvar::NONE, true);
 
 Cvar::Cvar<float> g_shove("g_shove", "force multiplier when pushing players", Cvar::NONE, 0.0);

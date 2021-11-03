@@ -1208,7 +1208,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 	lf->animation = anim;
 	lf->animationTime = lf->frameTime + anim->initialLerp;
 	lf->frame = lf->oldFrame = 0;
-	if ( cg_debugAnim.integer )
+	if ( cg_debugAnim.Get() )
 	{
 		Log::Debug( "Anim: %i", newAnimation );
 	}
@@ -1763,11 +1763,11 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	wi = &cg_weapons[ weapon ];
 
-	/* cg_drawGun is not a boolean but an integer with 3 values:
+	/* cg_drawGun has 3 values:
 	- 0 : draw no gun at all
 	- 1 : draw gun for humans
 	- 2 : draw gun for humans and aliens */
-	switch ( cg_drawGun.integer )
+	switch ( cg_drawGun.Get() )
 	{
 		case 0: // none
 			drawGun = false;
@@ -1863,10 +1863,10 @@ void CG_AddViewWeapon( playerState_t *ps )
 	// set up gun position
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
-	VectorMA( hand.origin, ( cg_gun_x.value + fovOffset + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
-	VectorMA( hand.origin, (cg_mirrorgun.integer ? -1 : 1) * ( cg_gun_y.value + wi->posOffs[ 1 ] ),
+	VectorMA( hand.origin, ( cg_gun_x.Get() + fovOffset + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
+	VectorMA( hand.origin, (cg_mirrorgun.Get() ? -1 : 1) * ( cg_gun_y.Get() + wi->posOffs[ 1 ] ),
 			cg.refdef.viewaxis[ 1 ], hand.origin );
-	VectorMA( hand.origin, ( cg_gun_z.value + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
+	VectorMA( hand.origin, ( cg_gun_z.Get() + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
 	if ( weapon == WP_LUCIFER_CANNON && ps->stats[ STAT_MISC ] > 0 )
@@ -1881,7 +1881,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	AnglesToAxis( angles, hand.axis );
-	if( cg_mirrorgun.integer ) {
+	if( cg_mirrorgun.Get() ) {
 		hand.axis[1][0] = - hand.axis[1][0];
 		hand.axis[1][1] = - hand.axis[1][1];
 		hand.axis[1][2] = - hand.axis[1][2];
@@ -1903,7 +1903,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	hand.hModel = wi->handsModel;
 	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
-	if( cg_mirrorgun.integer )
+	if( cg_mirrorgun.Get() )
 		hand.renderfx |= RF_SWAPCULL;
 
 	// add everything onto the hand
@@ -2489,7 +2489,7 @@ static void DrawEntityHitEffect( vec3_t origin, vec3_t normal, int targetNum )
 	switch ( target->currentState.eType )
 	{
 	case entityType_t::ET_PLAYER:
-		if (!cg_blood.integer)
+		if (!cg_blood.Get())
 		{
 			return;
 		}
@@ -2802,8 +2802,8 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 	// tracer
 	if ( CalcMuzzlePoint( attackerNum, muzzle ) )
 	{
-		DrawTracer( muzzle, origin, cg_tracerChance.value, cg_tracerLength.value,
-		            cg_tracerWidth.value );
+		DrawTracer( muzzle, origin, cg_tracerChance.Get(), cg_tracerLength.Get(),
+		            cg_tracerWidth.Get() );
 	}
 }
 
@@ -2845,8 +2845,8 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	// tracer
 	if ( CalcMuzzlePoint( attackerNum, muzzle ) )
 	{
-		DrawTracer( muzzle, origin, cg_tracerChance.value, cg_tracerLength.value,
-		            cg_tracerWidth.value );
+		DrawTracer( muzzle, origin, cg_tracerChance.Get(), cg_tracerLength.Get(),
+		            cg_tracerWidth.Get() );
 	}
 }
 

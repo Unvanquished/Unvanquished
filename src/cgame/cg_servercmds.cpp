@@ -367,7 +367,7 @@ require a reload of all the media
 */
 static void CG_MapRestart()
 {
-	if ( cg_showmiss.integer )
+	if ( cg_showmiss.Get() )
 	{
 		Log::Debug( "CG_MapRestart" );
 	}
@@ -386,7 +386,7 @@ static void CG_MapRestart()
 
 	// we really should clear more parts of cg here and stop sounds
 
-	trap_Cvar_Set( "cg_thirdPerson", "0" );
+	cg_thirdPerson.Set(false);
 
 	CG_OnMapRestart();
 }
@@ -728,16 +728,16 @@ void CG_Menu( int menuType, int arg )
 	{
 		Rocket_DocumentAction( rocketInfo.menu[ menu ].id, "show" );
 	}
-	else if ( longMsg && cg_disableWarningDialogs.integer == 0 )
+	else if ( longMsg && cg_disableWarningDialogs.Get() == 0 )
 	{
 		CG_CenterPrint( longMsg, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 
-		if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
+		if ( shortMsg && cg_disableWarningDialogs.Get() < 2 )
 		{
 			Log::Notice( shortMsg );
 		}
 	}
-	else if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
+	else if ( shortMsg && cg_disableWarningDialogs.Get() < 2 )
 	{
 		Log::Notice( shortMsg );
 	}
@@ -774,7 +774,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			tcolor = Color::Cyan;
 		}
 
-		if ( cg_chatTeamPrefix.integer )
+		if ( cg_chatTeamPrefix.Get() )
 		{
 			Com_sprintf( prefix, sizeof( prefix ), "[%s%c^*] ",
 			             Color::ToString( tcolor ).c_str(),
@@ -844,7 +844,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	{
 		case SAY_ALL:
 			// might already be ignored but in that case no harm is done
-			if ( cg_teamChatsOnly.integer )
+			if ( cg_teamChatsOnly.Get() )
 			{
 				ignore = S_SKIPNOTIFY;
 			}
@@ -1014,7 +1014,7 @@ static void CG_ParseVoice()
 		return;
 	}
 
-	if ( cg_teamChatsOnly.integer && vChan != VOICE_CHAN_TEAM )
+	if ( cg_teamChatsOnly.Get() && vChan != VOICE_CHAN_TEAM )
 	{
 		return;
 	}
@@ -1052,7 +1052,7 @@ static void CG_ParseVoice()
 		}
 	}
 
-	if ( !cg_noVoiceText.integer )
+	if ( !cg_noVoiceText.Get() )
 	{
 		switch ( vChan )
 		{
@@ -1074,7 +1074,7 @@ static void CG_ParseVoice()
 	}
 
 	// playing voice audio tracks disabled
-	if ( cg_noVoiceChats.integer )
+	if ( cg_noVoiceChats.Get() )
 	{
 		return;
 	}

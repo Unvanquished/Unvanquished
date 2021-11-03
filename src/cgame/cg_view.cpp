@@ -203,9 +203,9 @@ static void CG_AddTestModel()
 		// allow the position to be adjusted
 		for ( i = 0; i < 3; i++ )
 		{
-			cg.testModelEntity.origin[ i ] += cg.refdef.viewaxis[ 0 ][ i ] * cg_gun_x.value;
-			cg.testModelEntity.origin[ i ] += cg.refdef.viewaxis[ 1 ][ i ] * cg_gun_y.value;
-			cg.testModelEntity.origin[ i ] += cg.refdef.viewaxis[ 2 ][ i ] * cg_gun_z.value;
+			cg.testModelEntity.origin[ i ] += cg.refdef.viewaxis[ 0 ][ i ] * cg_gun_x.Get();
+			cg.testModelEntity.origin[ i ] += cg.refdef.viewaxis[ 1 ][ i ] * cg_gun_y.Get();
+			cg.testModelEntity.origin[ i ] += cg.refdef.viewaxis[ 2 ][ i ] * cg_gun_z.Get();
 		}
 	}
 
@@ -240,7 +240,7 @@ static void CG_CalcVrect()
 	}
 	else
 	{
-		size = cg_viewsize.integer;
+		size = cg_viewsize.Get();
 	}
 
 	cg.refdef.width = cgs.glconfig.vidWidth * size / 100;
@@ -314,7 +314,7 @@ void CG_OffsetThirdPersonView()
 		{
 			vec3_t lookDirection;
 
-			if ( !cg.wasDeadLastFrame || !cg_staticDeathCam.integer )
+			if ( !cg.wasDeadLastFrame || !cg_staticDeathCam.Get() )
 			{
 				VectorCopy( cg_entities[ killerEntNum ].lerpOrigin, killerPos );
 				cg.wasDeadLastFrame = true;
@@ -326,7 +326,7 @@ void CG_OffsetThirdPersonView()
 	}
 
 	// get cg_thirdPersonRange
-	range = cg_thirdPersonRange.value;
+	range = cg_thirdPersonRange.Get();
 
 	// Calculate the angle of the camera's position around the player.
 	// Unless in demo, PLAYING in third person, or in dead-third-person cam, allow the player
@@ -359,7 +359,7 @@ void CG_OffsetThirdPersonView()
 
 		// Set the rotation angles to be the view angles offset by the mouse input
 		// Ignore the original pitch though; it's too jerky otherwise
-		if ( !cg_thirdPersonPitchFollow.integer )
+		if ( !cg_thirdPersonPitchFollow.Get() )
 		{
 			cg.refdefViewAngles[ PITCH ] = 0.0f;
 		}
@@ -410,7 +410,7 @@ void CG_OffsetThirdPersonView()
 		}
 	}
 
-	rotationAngles[ YAW ] -= cg_thirdPersonAngle.value;
+	rotationAngles[ YAW ] -= cg_thirdPersonAngle.Get();
 
 	// Move the camera range distance back.
 	AngleVectors( rotationAngles, forward, right, up );
@@ -469,7 +469,7 @@ void CG_OffsetShoulderView()
 	classModelConfig_t *classModelConfig;
 
 	// Ignore following pitch; it's too jerky otherwise.
-	if ( !cg_thirdPersonPitchFollow.integer )
+	if ( !cg_thirdPersonPitchFollow.Get() )
 	{
 		cg.refdefViewAngles[ PITCH ] = 0.0f;
 	}
@@ -646,10 +646,10 @@ void CG_OffsetFirstPersonView()
 	VectorCopy( cg.predictedPlayerState.velocity, predictedVelocity );
 
 	delta = DotProduct( predictedVelocity, cg.refdef.viewaxis[ 0 ] );
-	angles[ PITCH ] += delta * cg_runpitch.value;
+	angles[ PITCH ] += delta * cg_runpitch.Get();
 
 	delta = DotProduct( predictedVelocity, cg.refdef.viewaxis[ 1 ] );
-	angles[ ROLL ] -= delta * cg_runroll.value;
+	angles[ ROLL ] -= delta * cg_runroll.Get();
 
 	// add angles based on bob
 	// bob amount is class-dependent
@@ -1102,7 +1102,7 @@ void CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod )
 	for ( i = 0; i < MAXSMOOTHS; i++ )
 	{
 		//found an unused index in the smooth array
-		if ( cg.sList[ i ].time + cg_wwSmoothTime.integer < cg.time )
+		if ( cg.sList[ i ].time + cg_wwSmoothTime.Get() < cg.time )
 		{
 			//copy to array and stop
 			VectorCopy( rotAxis, cg.sList[ i ].rotAxis );
@@ -1178,7 +1178,7 @@ static void CG_smoothWWTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	//iterate through ops
 	for ( i = MAXSMOOTHS - 1; i >= 0; i-- )
 	{
-		smoothTime = ( int )( cg_wwSmoothTime.integer * cg.sList[ i ].timeMod );
+		smoothTime = ( int )( cg_wwSmoothTime.Get() * cg.sList[ i ].timeMod );
 
 		//if this op has time remaining, perform it
 		if ( cg.time < cg.sList[ i ].time + smoothTime )
@@ -1240,9 +1240,9 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 	for ( i = MAXSMOOTHS - 1; i >= 0; i-- )
 	{
 		//if this op has time remaining, perform it
-		if ( cg.time < cg.sList[ i ].time + cg_wwSmoothTime.integer )
+		if ( cg.time < cg.sList[ i ].time + cg_wwSmoothTime.Get() )
 		{
-			stLocal = ( ( cg.sList[ i ].time + cg_wwSmoothTime.integer ) - cg.time ) / cg_wwSmoothTime.integer;
+			stLocal = ( ( cg.sList[ i ].time + cg_wwSmoothTime.Get() ) - cg.time ) / cg_wwSmoothTime.Get();
 			sFraction = 1.0f - ( ( cosf( stLocal * M_PI * 2.0f ) + 1.0f ) / 2.0f );
 
 			RotatePointAroundVector( outAxis[ 0 ], cg.sList[ i ].rotAxis,
@@ -1375,7 +1375,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	bool playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
 
 	//the player has spawned once and is dead or in the intermission
-	if ( cg_spawnEffects.integer && playing && ( health <= 0 || cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )
+	if ( cg_spawnEffects.Get() && playing && ( health <= 0 || cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
@@ -1681,13 +1681,13 @@ static int CG_CalcViewValues()
 	}
 
 	// add error decay
-	if ( cg_errorDecay.value > 0 )
+	if ( cg_errorDecay.Get() > 0 )
 	{
 		int   t;
 		float f;
 
 		t = cg.time - cg.predictedErrorTime;
-		f = ( cg_errorDecay.value - t ) / cg_errorDecay.value;
+		f = ( cg_errorDecay.Get() - t ) / cg_errorDecay.Get();
 
 		if ( f > 0 && f < 1 )
 		{
@@ -1720,10 +1720,10 @@ static int CG_CalcViewValues()
 		// Compute motion blur vector
 		speed = VectorNormalize2( cg.snap->ps.velocity, cg.refdef.blurVec );
 
-		speed = (speed - cg_motionblurMinSpeed.value);
+		speed = (speed - cg_motionblurMinSpeed.Get());
 		if( speed < 0.0f ) speed = 0.0f;
 
-		VectorScale( cg.refdef.blurVec, speed * cg_motionblur.value,
+		VectorScale( cg.refdef.blurVec, speed * cg_motionblur.Get(),
 			     cg.refdef.blurVec );
 
 	}
@@ -1737,7 +1737,7 @@ static int CG_CalcViewValues()
 	}
 
 	//draw the surface normal looking at
-	if ( cg_drawSurfNormal.integer )
+	if ( cg_drawSurfNormal.Get() )
 	{
 		CG_DrawSurfNormal();
 	}
@@ -1892,7 +1892,7 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	alive |= spectate;
 
 	// decide on third person view
-	cg.renderingThirdPerson = ( cg_thirdPerson.integer || !alive
+	cg.renderingThirdPerson = ( cg_thirdPerson.Get() || !alive
 		|| ( cg.chaseFollow && cg.snap->ps.pm_flags & PMF_FOLLOW ) );
 
 	// update speedometer
@@ -1930,7 +1930,7 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	memcpy( cg.refdef.areamask, cg.snap->areamask, sizeof( cg.refdef.areamask ) );
 
 	// update audio positions
-	if (cg_thirdPerson.value) {
+	if (cg_thirdPerson.Get()) {
 		trap_S_Respatialize( -1, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );
 	} else {
 		trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );

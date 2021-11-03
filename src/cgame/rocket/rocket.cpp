@@ -312,9 +312,6 @@ static RocketFocusManager fm;
 Rocket::Core::Context *menuContext = nullptr;
 Rocket::Core::Context *hudContext = nullptr;
 
-// TODO
-// cvar_t *cg_draw2D;
-
 void Rocket_Init()
 {
 	Rocket::Core::SetFileInterface( &fileInterface );
@@ -439,7 +436,7 @@ static bool drawMenu;
 
 void Rocket_Render()
 {
-	if ( cg_draw2D.integer && hudContext )
+	if ( cg_draw2D.Get() && hudContext )
 	{
 		hudContext->Render();
 	}
@@ -459,7 +456,7 @@ void Rocket_Update()
 		menuContext->Update();
 	}
 
-	if ( cg_draw2D.integer && hudContext )
+	if ( cg_draw2D.Get() && hudContext )
 	{
 		hudContext->Update();
 	}

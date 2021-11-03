@@ -48,7 +48,7 @@ cg.time should be between oldFrameTime and frameTime after exit
 void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 {
 	// debugging tool to get no animations
-	if ( cg_animSpeed.integer == 0 )
+	if ( !cg_animSpeed.Get() )
 	{
 		lf->oldFrame = lf->frame = lf->backlerp = 0;
 		return;
@@ -138,7 +138,7 @@ Sets lf->blendlerp and lf->blendtime
 */
 void CG_BlendLerpFrame( lerpFrame_t *lf )
 {
-	if ( cg_animBlend.value <= 0.0f )
+	if ( cg_animBlend.Get() <= 0.0f )
 	{
 		lf->blendlerp = 0.0f;
 		return;
@@ -147,7 +147,7 @@ void CG_BlendLerpFrame( lerpFrame_t *lf )
 	if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
 	{
 		//exp blending
-		lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
+		lf->blendlerp -= lf->blendlerp / cg_animBlend.Get();
 
 		if ( lf->blendlerp <= 0.0f )
 		{
