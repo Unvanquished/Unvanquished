@@ -92,7 +92,7 @@ Cvar::Cvar<bool> cg_teamChatsOnly("cg_teamChatsOnly", "don't show chats to all p
 Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo("teamoverlay", "request team overlay data from server", Cvar::USERINFO, 1, 0, 1);
 Cvar::Cvar<bool> cg_noVoiceChats("cg_noVoiceChats", "don't play vsays", Cvar::NONE, false);
 Cvar::Cvar<bool> cg_noVoiceText("cg_noVoiceText", "don't show text for vsays", Cvar::NONE, false);
-Cvar::Cvar<bool> cg_smoothClients("cg_smoothClients", "extrapolate entity positions", Cvar::USERINFO, false);
+Cvar::Cvar<bool> cg_smoothClients("cg_smoothClients", "extrapolate entity positions", Cvar::NONE, false);
 vmCvar_t        cg_timescale;
 Cvar::Cvar<bool> cg_noTaunt("cg_noTaunt", "disable taunt sounds", Cvar::NONE, false);
 Cvar::Cvar<bool> cg_drawSurfNormal("cg_drawSurfNormal", "visualize normal vector of facing surface", Cvar::CHEAT, false);
