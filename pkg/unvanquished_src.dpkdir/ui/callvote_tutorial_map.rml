@@ -1,0 +1,100 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window.rml" />
+	<style>
+		body
+		{
+			width: 25em;
+			height: 22em;
+			margin: auto;
+		}
+
+		h1
+		{
+			margin-bottom: 0.5em;
+		}
+
+		button
+		{
+			font-size: 1.1em;
+			text-align: left;
+			display: inline-block;
+			width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+			background-color: #0b0c0d;
+			background: rgba(15%,15%,25%, 100%);
+		}
+		button:hover
+		{
+			background-color: #303050;
+		}
+	</style>
+<script>
+function Botcmd(cmd)
+	Cmd.exec("callvote map tutorial1")
+end
+function SwitchMap(cmd)
+	Cmd.exec("callvote map " .. cmd)
+end
+
+AllPlayers = {}
+
+function BuildPlayers()
+	CDataSource.Build("playerList", "humans")
+end
+
+playersIDs = {}
+thecodument = {}
+
+function BotDelay()
+	local rows = thecodument:GetElementsByTagName("datagridrow")
+	local output = ""
+	for i=0,#rows do
+
+		if rows[i] == nil or rows[i].first_child == nil then
+			return
+		end
+		local onerow = tonumber(rows[i].first_child.inner_rml)
+
+		local playerid = tonumber(rows[i].first_child.inner_rml)
+		if playerid == nil then
+			playerid = playersIDs[i]
+		end
+		playersIDs[i] = playerid
+		output = "<ilink onclick=\"Botcmd('default ".. playerid .."')\"> Normal </ilink> "
+		output = output .. "<ilink onclick=\"Botcmd('follow ".. playerid .."')\"> Follow </ilink>"
+		output = output .. "<ilink onclick=\"Botcmd('camper ".. playerid .."')\"> Defend </ilink>"
+
+		rows[i].first_child.inner_rml = output
+
+	end
+end
+
+function BuildBotMenu(document)
+	-- playersIDs = {}
+	-- thecodument = document
+
+	-- Timer.add(70,BotDelay)
+	-- Timer.add(300,BotDelay)
+end
+</script>
+</head>
+
+<body id="callvote_tutorial_map" template="window" onshow="BuildBotMenu(document)">
+	<!--
+	<datagrid source="playerList.aliens" id="aliens">
+		<col fields="num"></col>
+		<col fields="num" formatter="GearOrReady"></col>
+		<col fields="num" formatter="PlayerName">Name</col>
+		<col fields="location">Position</col>
+		<col fields="health">health</col>
+	</datagrid>
+	-->
+	<h1> Tutorial Level Selection </h1>
+	<button onclick='SwitchMap("tutorial0")'>Level 1: "Onboarding"</button>
+	<button onclick='SwitchMap("tutorial1")'>Level 2: "Destroying your first base"</button>
+	<!--<button onclick='SwitchMap("tutorial2")'>Level 2: "Hit the head"</button>-->
+</body>
+</rml>

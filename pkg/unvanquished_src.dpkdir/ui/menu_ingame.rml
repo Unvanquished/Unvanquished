@@ -6,7 +6,7 @@
 		<script src="lua/util.lua" />
 	</head>
 
-	<body id="menu_ingame" class="ingame" onkeydown="detectEscape(event, document)" >
+	<body id="menu_ingame" class="ingame" onkeydown="detectEscape(event, document)" onShow='Events.pushevent("show callvote_tutorial_map", event)'>
 		<img class="gradient black" src="/ui/assets/background/black" />
 		<img class="circles" src="/ui/assets/background/circles1" />
 		<img class="circles" src="/ui/assets/background/circles2" />
@@ -16,7 +16,8 @@
 
 		<sidebar>
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
-				<window id="innersidebar" class="innersidebar" >
+				<!-- Cmd.exec("rocket reload map_chooser;rocket map_chooser show") -->
+				<window id="innersidebar" class="innersidebar">
 
 					<sidesection  id="sidebar_ingame">
 						<h1> Match menu </h1>
