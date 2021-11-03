@@ -1692,51 +1692,6 @@ private:
 	float alpha_;
 };
 
-class MomentumElement : public TextHudElement
-{
-public:
-	MomentumElement( const Rocket::Core::String& tag ) :
-			TextHudElement( tag, ELEMENT_BOTH ),
-			momentum_(-1.0f) {}
-
-	void DoOnUpdate()
-	{
-		float momentum;
-		team_t team = CG_MyTeam();
-
-		if ( cg.intermissionStarted )
-		{
-			Clear();
-			return;
-		}
-
-		if ( team <= TEAM_NONE || team >= NUM_TEAMS )
-		{
-			Clear();
-			return;
-		}
-
-		momentum = cg.predictedPlayerState.persistant[ PERS_MOMENTUM ] / 10.0f;
-		if ( momentum != momentum_ )
-		{
-			momentum_ = momentum;
-			SetText( va( "%.1f", momentum_) );
-		}
-	}
-
-private:
-	void Clear()
-	{
-		if (momentum_ != -1.0f)
-		{
-			momentum_ = -1.0f;
-			SetText( "" );
-		}
-	}
-
-	float momentum_;
-};
-
 class LevelshotElement : public HudElement
 {
 public:
@@ -3669,7 +3624,6 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "lagometer", LagometerElement )
 	REGISTER_ELEMENT( "ping", PingElement )
 	REGISTER_ELEMENT( "crosshair_name", CrosshairNamesElement )
-	REGISTER_ELEMENT( "momentum", MomentumElement )
 	REGISTER_ELEMENT( "levelshot", LevelshotElement )
 	REGISTER_ELEMENT( "levelshot_loading", LevelshotLoadingElement )
 	REGISTER_ELEMENT( "center_print", CenterPrintElement )
