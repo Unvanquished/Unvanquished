@@ -2513,10 +2513,10 @@ void CG_Buildable( centity_t *cent )
 			drawRange = cg.predictedPlayerState.weapon == WP_ABUILD ||
 			            cg.predictedPlayerState.weapon == WP_ABUILD2;
 		} else {
-			drawRange = (cg_buildableRangeMarkerMask.integer & (1 << BA_NONE)) != 0;
+			drawRange = cg_rangeMarkerWhenSpectating.Get();
 		}
 
-		drawRange &= (cg_buildableRangeMarkerMask.integer & (1 << ba->number)) != 0;
+		drawRange &= (cg_buildableRangeMarkerMask & (1 << ba->number)) != 0;
 
 		dist = Distance( cent->lerpOrigin, cg.refdef.vieworg );
 

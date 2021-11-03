@@ -115,9 +115,9 @@ Cvar::Range<Cvar::Cvar<float>> cg_rangeMarkerSurfaceOpacity("cg_rangeMarkerSurfa
 Cvar::Range<Cvar::Cvar<float>> cg_rangeMarkerLineOpacity("cg_rangeMarkerLineOpacity", "opacity of buildable range outlines", Cvar::NONE, 0.4, 0, 1);
 Cvar::Cvar<float> cg_rangeMarkerLineThickness("cg_rangeMarkerLineThickness", "thickness of buildable range surface outlines", Cvar::NONE, 4.0);
 Cvar::Cvar<bool> cg_rangeMarkerForBlueprint("cg_rangeMarkerForBlueprint", "show range marker when placing buildable", Cvar::NONE, true);
-vmCvar_t        cg_rangeMarkerBuildableTypes;
-vmCvar_t        cg_rangeMarkerWhenSpectating;
-vmCvar_t        cg_buildableRangeMarkerMask;
+Cvar::Modified<Cvar::Cvar<std::string>> cg_rangeMarkerBuildableTypes("cg_rangeMarkerBuildableTypes", "list of buildables or buildable types to show range marker for", Cvar::NONE, "support");
+Cvar::Cvar<bool> cg_rangeMarkerWhenSpectating("cg_rangeMarkerWhenSpectating", "show buildable rangers while spectating", Cvar::NONE, false);
+int cg_buildableRangeMarkerMask;
 Cvar::Range<Cvar::Cvar<float>> cg_binaryShaderScreenScale("cg_binaryShaderScreenScale", "I don't know", Cvar::NONE, 1.0, 0, 1);
 
 Cvar::Cvar<float> cg_painBlendUpRate("cg_painBlendUpRate", "I don't know", Cvar::NONE, 10.0);
@@ -187,10 +187,6 @@ static const cvarTable_t cvarTable[] =
 	{ nullptr,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
-
-	{ &cg_rangeMarkerBuildableTypes,   "cg_rangeMarkerBuildableTypes",   "support",      0                            },
-	{ &cg_rangeMarkerWhenSpectating,   "cg_rangeMarkerWhenSpectating",   "0",            0                            },
-	{ &cg_buildableRangeMarkerMask,    "cg_buildableRangeMarkerMask",    "",             0                            },
 
 	{ &cg_cmdGrenadeThrown,            "cg_cmdGrenadeThrown",            "vsay_local grenade", 0                      },
 	{ &cg_cmdNeedHealth,               "cg_cmdNeedHealth",               "vsay_local needhealth", 0                   },
@@ -323,9 +319,6 @@ CG_UpdateBuildableRangeMarkerMask
 */
 void CG_UpdateBuildableRangeMarkerMask()
 {
-	static int btmc = 0;
-	static int spmc = 0;
-
 	constexpr int buildables_alien =
 		     ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
 		     ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) |
@@ -363,17 +356,11 @@ void CG_UpdateBuildableRangeMarkerMask()
 		{ "none",           0                                       },
 	};
 
-	if ( cg_rangeMarkerBuildableTypes.modificationCount != btmc ||
-	     cg_rangeMarkerWhenSpectating.modificationCount != spmc )
+	if ( Util::optional<std::string> structureList = cg_rangeMarkerBuildableTypes.GetModifiedValue() )
 	{
-		int brmMask = cg_rangeMarkerWhenSpectating.integer ? ( 1 << BA_NONE ) : 0;
+		int brmMask = 0;
 
-		if ( !cg_rangeMarkerBuildableTypes.string[ 0 ] )
-		{
-			goto empty;
-		}
-
-		for (Parse_WordListSplitter marker(cg_rangeMarkerBuildableTypes.string); *marker; ++marker)
+		for (Parse_WordListSplitter marker(*std::move(structureList)); *marker; ++marker)
 		{
 			buildable_t buildable = BG_BuildableByName( *marker )->number;
 
@@ -391,12 +378,7 @@ void CG_UpdateBuildableRangeMarkerMask()
 				}
 			}
 		}
-
-empty:
-		trap_Cvar_Set( "cg_buildableRangeMarkerMask", va( "%i", brmMask ) );
-
-		btmc = cg_rangeMarkerBuildableTypes.modificationCount;
-		spmc = cg_rangeMarkerWhenSpectating.modificationCount;
+		cg_buildableRangeMarkerMask = brmMask;
 	}
 }
 

@@ -1809,9 +1809,9 @@ extern Cvar::Range<Cvar::Cvar<float>> cg_rangeMarkerSurfaceOpacity;
 extern Cvar::Range<Cvar::Cvar<float>> cg_rangeMarkerLineOpacity;
 extern Cvar::Cvar<float> cg_rangeMarkerLineThickness;
 extern Cvar::Cvar<bool> cg_rangeMarkerForBlueprint;
-extern  vmCvar_t            cg_rangeMarkerBuildableTypes;
-extern  vmCvar_t            cg_rangeMarkerWhenSpectating;
-extern  vmCvar_t            cg_buildableRangeMarkerMask;
+extern Cvar::Modified<Cvar::Cvar<std::string>> cg_rangeMarkerBuildableTypes;
+extern Cvar::Cvar<bool> cg_rangeMarkerWhenSpectating;
+extern int cg_buildableRangeMarkerMask;
 extern Cvar::Range<Cvar::Cvar<float>> cg_binaryShaderScreenScale;
 
 extern Cvar::Cvar<float> cg_painBlendUpRate;
