@@ -1,0 +1,10 @@
+// the decorator forces this branch to be considered failed so that this
+// doesn't stop the bot from doing what is currently doing (for example
+// fighting)
+decorator return( STATUS_FAILURE )
+{
+	condition ( percentHealth( E_SELF ) <= 0.5 && haveUpgrade( UP_MEDKIT ) )
+	{
+		action activateUpgrade( UP_MEDKIT )
+	}
+}
