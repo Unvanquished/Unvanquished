@@ -186,7 +186,7 @@ int G_BotGetSkill( int clientNum )
 		return 0;
 	}
 
-	return bot->botMind->botSkill.level;
+	return bot->botMind->botSkill.global();
 }
 
 const char * G_BotGetBehavior( int clientNum )
@@ -636,7 +636,7 @@ void botMemory_t::willSprint( bool enable )
 // walking, and stamina not recharging at all.
 void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 {
-	exhausted = exhausted || ( botSkill.level >= 5 && stamina <= jumpCost + jumpCost / 10 );
+	exhausted = exhausted || ( botSkill.move() >= 5 && stamina <= jumpCost + jumpCost / 10 );
 	if ( !exhausted && wantSprinting )
 	{
 		usercmdPressButton( cmd.buttons, BUTTON_SPRINT );
@@ -647,4 +647,64 @@ void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 	}
 
 	exhausted = exhausted && stamina <= jumpCost * 2;
+}
+
+uint8_t botSkill_t::global( void ) const
+{
+	uint8_t ret = 0;
+	for ( auto val : m_skills )
+	{
+		ret += val;
+	}
+	return ret / skills::NUM_SKILLS;
+}
+
+uint8_t botSkill_t::move( void ) const
+{
+	return m_skills[skills::MOVE];
+}
+
+float botSkill_t::aggro( void ) const
+{
+	return m_aggro;
+}
+
+unsigned botSkill_t::aim( void ) const
+{
+	return m_aim;
+}
+
+unsigned botSkill_t::rndAim( void ) const
+{
+	float mod = std::max( static_cast<float>( rand() ) / RAND_MAX, 0.5f );
+	return std::max( 1, static_cast<int>( m_aim * mod ) );
+}
+
+bool botSkill_t::set( char const* name, int ent_ID, int level )
+{
+	const int MIN_SKILL = 1;
+	const int MAX_SKILL = 9;
+	const int RANGE_SKILL = MAX_SKILL - MIN_SKILL;
+
+	bool error = MIN_SKILL <= level && level <= MAX_SKILL;
+	if ( error )
+	{
+		level = 5;
+	}
+
+	int num_points;
+	//no randomness: all skills are the "level"'s value
+	if ( g_bot_randomSkill.Get() == false )
+	{
+		num_points = 0;
+		for( size_t i = 0; num_points && i < skills::NUM_SKILLS; ++i )
+		{
+			m_skills[i] = level;
+		}
+	}
+
+	m_aggro = static_cast<float>( m_skills[skills::AGGRO] - MIN_SKILL ) / RANGE_SKILL;
+	// conforms to old code
+	m_aim = ( MAX_SKILL + 1 - m_skills[skills::AIM] ) * 100;
+	return error;
 }

@@ -1274,7 +1274,8 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	// can happen during reconnection
 	if ( !ent->botMind )
 	{
-		G_BotSetDefaults( clientNum, team, client->sess.botSkill, client->sess.botTree );
+		int skill = client->sess.botSkill[0] - '0'; //TODO this is very ugly, but I need to learn more about that mechanics
+		G_BotSetDefaults( clientNum, team, skill, client->sess.botTree );
 	}
 
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^*\" \"%s^*\" [BOT]",

@@ -753,7 +753,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_SUCCESS;
 		}
-		else if ( level.time - self->botMind->enemyLastSeen >= g_bot_chasetime.Get() )
+		else if ( level.time - self->botMind->enemyLastSeen >= g_bot_chasetime.Get() * self->botMind->botSkill.aggro() )
 		{
 			return STATUS_SUCCESS;
 		}
@@ -795,9 +795,10 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	// We are human and we either are at fire range, or have
 	// a direct path to goal
 
-	if ( self->botMind->botSkill.level >= 3 && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
-	        && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->botSkill.level < 5 )
-	        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
+	if ( self->botMind->botSkill.move() >= 3
+	     && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
+	     && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->botSkill.move() < 5 )
+	     && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
 	{
 		BotMoveInDir( self, MOVE_BACKWARD );
 	}

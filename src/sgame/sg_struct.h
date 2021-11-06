@@ -398,6 +398,7 @@ struct gentity_s
 	int         tagScoreTime;
 };
 
+const size_t botSkillMaxLength = 2;
 /**
  * client data that stays across multiple levels or map restarts
  * this is achieved by writing all the data to cvar strings at game shutdown
@@ -410,7 +411,7 @@ struct clientSession_s
 	spectatorState_t spectatorState;
 	int              spectatorClient; // for chasecam and follow mode
 	team_t           restartTeam; //for !restart keepteams and !restart switchteams
-	int              botSkill;
+	char             botSkill[botSkillMaxLength];
 	char             botTree[ MAX_QPATH ];
 	clientList_t     ignoreList;
 	int              seenWelcome; // determines if the client has seen server's welcome message

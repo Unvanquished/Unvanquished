@@ -177,7 +177,7 @@ static AIValue_t botClass( gentity_t *self, const AIValue_t* )
 
 static AIValue_t botSkill( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( self->botMind->botSkill.level );
+	return AIBoxInt( self->botMind->botSkill.global() );
 }
 
 static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
