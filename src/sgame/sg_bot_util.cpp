@@ -309,10 +309,9 @@ float BotGetBaseRushScore( gentity_t *ent )
 	// return average value on which other parameters can weight
 	float rush_score = 0.5;
 
-	float self_value = static_cast<float>( ent->client->ps.persistant[PERS_CREDIT]
-		+ BotValueOfWeapons( ent )
-		+ BotValueOfUpgrades( ent )
-		+ BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->price );
+	float self_value = static_cast<float>(
+		ent->client->ps.persistant[PERS_CREDIT]
+			+ BG_GetPlayerPrice( ent->client->ps ) );
 
 	int max_value = GetMaxEquipmentCost( ent );
 	if ( max_value != 0 )
@@ -533,35 +532,6 @@ float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps )
 	}
 }
 
-int BotValueOfWeapons( gentity_t *self )
-{
-	int worth = 0;
-	int i;
-
-	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
-	{
-		if ( BG_InventoryContainsWeapon( i, self->client->ps.stats ) )
-		{
-			worth += BG_Weapon( ( weapon_t )i )->price;
-		}
-	}
-	return worth;
-}
-int BotValueOfUpgrades( gentity_t *self )
-{
-	int worth = 0;
-	int i;
-
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
-	{
-		if ( BG_InventoryContainsUpgrade( i, self->client->ps.stats ) )
-		{
-			worth += BG_Upgrade( ( upgrade_t ) i )->price;
-		}
-	}
-	return worth;
-}
-
 AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 {
 	if ( !g_bot_evolve.Get() )
@@ -600,7 +570,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	ASSERT( self && upgrades );
 	ASSERT( self->client->pers.team == TEAM_HUMANS ); // only humans can buy
 	ASSERT( upgradesSize >= 2 ); // we access to 2 elements maximum, and don't really check boundaries (would result in a nerf)
-	int equipmentPrice = BotValueOfWeapons( self ) + BotValueOfUpgrades( self );
+	int equipmentPrice = BG_GetPlayerPrice( self->client->ps );
 	int credits = self->client->ps.persistant[PERS_CREDIT];
 	int usableCapital = credits + equipmentPrice;
 	size_t numUpgrades = 0;
