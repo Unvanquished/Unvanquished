@@ -213,15 +213,10 @@ const gentity_t *BotGetHealTarget( gentity_t *self )
 		// powered booster
 		return self->botMind->closestBuildings[BA_A_BOOSTER].ent;
 	}
-	else
-	{
-		// no working booster, rely on creep instead
-		return BotGetClosestBuildingAmongTypes( self,
-				{ BA_A_SPAWN, BA_A_OVERMIND, BA_A_BARRICADE,
-				  BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_HIVE,
-				  BA_A_LEECH, BA_A_SPIKER }
-				).ent;
-	}
+	// no working booster, rely on creep instead
+	return BotGetClosestBuildingAmongTypes( self,
+			{ BA_A_OVERMIND, BA_A_BARRICADE }
+			).ent;
 }
 
 // computes the maximum credits this bot could spend in
