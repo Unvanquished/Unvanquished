@@ -210,7 +210,7 @@ void G_RewardAttackers( gentity_t *self )
 	{
 		ownTeam   = (team_t) self->client->pers.team;
 		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
-		value     = BG_GetValueOfPlayer( &self->client->ps );
+		value     = BG_GetPlayerValue( self->client->ps );
 	}
 	else if ( self->s.eType == entityType_t::ET_BUILDABLE )
 	{
