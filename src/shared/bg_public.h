@@ -1471,7 +1471,9 @@ void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t m
                                                void ( *trace )( trace_t *, const vec3_t, const vec3_t,
                                                const vec3_t, const vec3_t, int, int, int ),
                                                vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
-int                         BG_GetValueOfPlayer( playerState_t *ps );
+int BG_GetPlayerPrice( playerState_t &ps );
+int BG_GetPlayerValue( playerState_t &ps );
+
 bool                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
 bool                    BG_PlayerLowAmmo( const playerState_t *ps, bool *energy );

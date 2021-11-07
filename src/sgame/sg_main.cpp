@@ -1668,7 +1668,7 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 		team = client->pers.team;
 
 		teamCredits[ team ] += client->pers.credit;
-		teamValue[ team ] += BG_GetValueOfPlayer( &client->ps );
+		teamValue[ team ] += BG_GetPlayerValue( client->ps );
 		teamCnt[ team ]++;
 	}
 

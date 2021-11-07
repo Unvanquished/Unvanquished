@@ -1985,52 +1985,55 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 }
 
 /**
- * @brief Calculates the "value" of a player as a base value plus a fraction of the price the
- *        player paid for upgrades.
+ * @brief Calculates how much a player paid for upgrades
  * @param ps
  * @return Player value
  */
-int BG_GetValueOfPlayer( playerState_t *ps )
+int BG_GetPlayerPrice( playerState_t &ps )
 {
-	int price, upgradeNum;
-
-	if ( !ps )
-	{
-		return 0;
-	}
-
-	price = 0;
-
-	switch ( ps->persistant[ PERS_TEAM ] )
+	switch ( ps.persistant[ PERS_TEAM ] )
 	{
 		case TEAM_HUMANS:
+		{
+			int price = 0;
+
 			// Add upgrade price
-			for ( upgradeNum = UP_NONE + 1; upgradeNum < UP_NUM_UPGRADES; upgradeNum++ )
+			for ( int upgradeNum = UP_NONE + 1; upgradeNum < UP_NUM_UPGRADES; upgradeNum++ )
 			{
-				if ( BG_InventoryContainsUpgrade( upgradeNum, ps->stats ) )
+				if ( BG_InventoryContainsUpgrade( upgradeNum, ps.stats ) )
 				{
 					price += BG_Upgrade( upgradeNum )->price;
 				}
 			}
 
 			// Add weapon price
-			for ( upgradeNum = WP_NONE + 1; upgradeNum < WP_NUM_WEAPONS; upgradeNum++ )
+			for ( int upgradeNum = WP_NONE + 1; upgradeNum < WP_NUM_WEAPONS; upgradeNum++ )
 			{
-				if ( BG_InventoryContainsWeapon( upgradeNum, ps->stats ) )
+				if ( BG_InventoryContainsWeapon( upgradeNum, ps.stats ) )
 				{
 					price += BG_Weapon( upgradeNum )->price;
 				}
 			}
-
-			break;
+			return price;
+		}
 
 		case TEAM_ALIENS:
-			price += BG_Class( ps->stats[ STAT_CLASS ] )->price;
-			break;
+			return BG_Class( ps.stats[ STAT_CLASS ] )->price;
 
 		default:
 			return 0;
 	}
+}
+
+/**
+ * @brief Calculates the "value" of a player as a base value plus a fraction of the price the
+ *        player paid for upgrades.
+ * @param ps
+ * @return Player value
+ */
+int BG_GetPlayerValue( playerState_t &ps )
+{
+	int price = BG_GetPlayerPrice( ps );
 
 	return PLAYER_BASE_VALUE + ( int )( ( float )price * PLAYER_PRICE_TO_VALUE );
 }

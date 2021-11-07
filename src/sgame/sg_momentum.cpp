@@ -501,7 +501,7 @@ float G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float
 		return 0.0f;
 	}
 
-	value = BG_GetValueOfPlayer( &victim->client->ps ) * MOMENTUM_PER_CREDIT * share;
+	value = BG_GetPlayerValue( victim->client->ps ) * MOMENTUM_PER_CREDIT * share;
 	team  = (team_t) attacker->client->pers.team;
 
 	return AddMomentum( CONF_KILLING, team, value, attacker, true );
