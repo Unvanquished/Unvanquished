@@ -91,8 +91,6 @@ void       BotBuyWeapon( gentity_t *self, weapon_t weapon );
 void       BotBuyUpgrade( gentity_t *self, upgrade_t upgrade );
 void       BotSellWeapons( gentity_t *self );
 void       BotSellUpgrades( gentity_t *self );
-int        BotValueOfWeapons( gentity_t *self );
-int        BotValueOfUpgrades( gentity_t *self );
 int        BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], size_t upgradesSize );
 
 // alien bots
