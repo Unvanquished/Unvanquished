@@ -504,6 +504,7 @@ void  G_TouchTriggers( gentity_t *ent )
 	}
 }
 
+gentity_t *G_SelectSpecialSpawnPoint( team_t team );
 /*
 =================
 SpectatorThink
@@ -665,7 +666,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		{
 			/* team must exist, or there will be a sigsegv */
 			ASSERT( G_IsPlayableTeam( team ) );
-			client->ps.persistant[ PERS_SPAWNQUEUE ] = level.team[ team ].numSpawns;
+			client->ps.persistant[ PERS_SPAWNQUEUE ] = level.team[ team ].numSpawns + static_cast<int>(G_SelectSpecialSpawnPoint( team ) != nullptr);
 			client->ps.persistant[ PERS_SPAWNQUEUE ] |= G_GetPosInSpawnQueue( &level.team[ team ].spawnQueue,
 			                                                                  client->ps.clientNum ) << 8;
 		}

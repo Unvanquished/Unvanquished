@@ -377,7 +377,9 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 */
 	{ S_PATH_CORNER,              SP_Nothing,                CHAIN_TARGET,     ENT_V_UNCLEAR, nullptr },
 	{ S_POS_ALIEN_INTERMISSION,   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
+	{ "pos_alien_spawnpoint",     SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ S_POS_HUMAN_INTERMISSION,   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
+	{ "pos_human_spawnpoint",     SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ S_POS_LOCATION,             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ S_POS_PLAYER_INTERMISSION,  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },
 	{ S_POS_PLAYER_SPAWN,         SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, nullptr },

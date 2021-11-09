@@ -1012,6 +1012,7 @@ G_SpawnClients
 Spawn queued clients
 ============
 */
+gentity_t *G_SelectSpecialSpawnPoint( team_t team );
 void G_SpawnClients( team_t team )
 {
 	int          clientNum;
@@ -1025,7 +1026,7 @@ void G_SpawnClients( team_t team )
 
 	numSpawns = level.team[ team ].numSpawns;
 
-	if ( G_GetSpawnQueueLength( sq ) > 0 && numSpawns > 0 )
+	if ( G_GetSpawnQueueLength( sq ) > 0 && (numSpawns > 0 || G_SelectSpecialSpawnPoint( team ) != nullptr))
 	{
 		clientNum = G_PeekSpawnQueue( sq );
 		ent = &g_entities[ clientNum ];
@@ -1046,6 +1047,12 @@ void G_SpawnClients( team_t team )
 			ent->client->sess.spectatorState = SPECTATOR_NOT;
 			ClientUserinfoChanged( clientNum, false );
 			ClientSpawn( ent, spawn, spawn_origin, spawn_angles );
+
+			// cleanup single-use spawns
+			if ( Q_stricmp( spawn->classname, "pos_alien_spawnpoint") == 0 || Q_stricmp( spawn->classname, "pos_human_spawnpoint") == 0 )
+			{
+				G_FreeEntity( spawn );
+			}
 		}
 	}
 }
@@ -1950,7 +1957,8 @@ void CheckExitRules()
 	     ( level.unconditionalWin != TEAM_ALIENS &&
 	       ( level.time > level.startTime + 1000 ) &&
 	       ( level.team[ TEAM_ALIENS ].numSpawns == 0 ) &&
-	       ( level.team[ TEAM_ALIENS ].numAliveClients == 0 ) ) )
+	       ( level.team[ TEAM_ALIENS ].numAliveClients == 0 ) &&
+	       G_SelectSpecialSpawnPoint( TEAM_ALIENS ) == nullptr ) )
 	{
 		//humans win
 		level.lastWin = TEAM_HUMANS;
@@ -1964,7 +1972,8 @@ void CheckExitRules()
 	          ( level.unconditionalWin != TEAM_HUMANS &&
 	            ( level.time > level.startTime + 1000 ) &&
 	            ( level.team[ TEAM_HUMANS ].numSpawns == 0 ) &&
-	            ( level.team[ TEAM_HUMANS ].numAliveClients == 0 ) ) )
+	            ( level.team[ TEAM_HUMANS ].numAliveClients == 0 ) &&
+	            G_SelectSpecialSpawnPoint( TEAM_ALIENS ) == nullptr ) )
 	{
 		//aliens win
 		level.lastWin = TEAM_ALIENS;

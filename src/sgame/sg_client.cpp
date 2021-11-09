@@ -255,6 +255,26 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 	return spot;
 }
 
+gentity_t *G_SelectSpecialSpawnPoint( team_t team )
+{
+	gentity_t *ent = nullptr;
+	const char *entityClass = nullptr;
+	if ( team == TEAM_ALIENS )
+	{
+		entityClass = "pos_alien_spawnpoint";
+	}
+	else if ( team == TEAM_HUMANS )
+	{
+		entityClass = "pos_human_spawnpoint";
+	}
+
+	while ( ( ent = G_IterateEntitiesOfClass( ent, entityClass ) ) )
+	{
+		return ent; // the first that matches
+	}
+	return nullptr;
+}
+
 /*
 ===========
 G_SelectUnvanquishedSpawnPoint
@@ -270,16 +290,18 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 	ASSERT( G_IsPlayableTeam( team ) );
 	if( level.team[ team ].numSpawns <= 0 )
 	{
-		return nullptr;
+		spot = G_SelectSpecialSpawnPoint( team );
 	}
-
-	if ( team == TEAM_ALIENS )
+	else
 	{
-		spot = G_SelectSpawnBuildable( preference, BA_A_SPAWN );
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN );
+		if ( team == TEAM_ALIENS )
+		{
+			spot = G_SelectSpawnBuildable( preference, BA_A_SPAWN );
+		}
+		else if ( team == TEAM_HUMANS )
+		{
+			spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN );
+		}
 	}
 
 	if ( !spot )
@@ -287,13 +309,19 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 		return nullptr;
 	}
 
-	// Get spawn point for selected spawner.
-	Entity* blocker;
-	Vec3    spawnPoint;
+	if ( Q_stricmp( spot->classname, "pos_alien_spawnpoint") == 0 || Q_stricmp( spot->classname, "pos_human_spawnpoint") == 0 )
+	{
+		VectorCopy( spot->s.origin, origin );
+	}
+	else
+	{
+		Entity* blocker;
+		Vec3    spawnPoint;
 
-	spot->entity->CheckSpawnPoint(blocker, spawnPoint);
-	ASSERT_EQ(blocker, nullptr); // TODO: CheckSpawnPoint is already called in G_SelectSpawnBuildable
-	spawnPoint.Store(origin);
+		spot->entity->CheckSpawnPoint(blocker, spawnPoint);
+		ASSERT_EQ(blocker, nullptr); // TODO: CheckSpawnPoint is already called in G_SelectSpawnBuildable
+		spawnPoint.Store(origin);
+	}
 
 	VectorCopy( spot->s.angles, angles );
 	angles[ ROLL ] = 0;
