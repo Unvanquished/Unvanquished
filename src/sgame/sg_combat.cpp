@@ -1040,7 +1040,7 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	             mod == MOD_DECONSTRUCT ? "deconstructed" : "destroyed",
 	             actor->client ? actor->client->pers.netname : "<world>" );
 
-	if ( G_OnSameTeam( self, actor ) )
+	if ( actor->client && G_OnSameTeam( self, actor ) )
 	{
 		G_TeamCommand( G_Team( actor ),
 		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$\n") ) :
