@@ -380,7 +380,7 @@ static void Svcmd_LayoutLoad_f()
 
 	s = ConcatArgs( 1 );
 	Q_strncpyz( layouts, s, sizeof( layouts ) );
-	trap_Cvar_Set( "g_layouts", layouts );
+	g_layouts.Set(layouts);
 	trap_SendConsoleCommand( "map_restart\n" );
 	level.restarted = true;
 }

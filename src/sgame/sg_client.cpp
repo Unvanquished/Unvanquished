@@ -548,18 +548,18 @@ bool G_IsUnnamed( const char *name )
 		return true;
 	}
 
-	length = strlen( g_unnamedNamePrefix.string );
+	length = g_unnamedNamePrefix.Get().size();
 
 	if ( g_unnamedNumbering.Get() && length &&
-	     !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
+	     !Q_strnicmp( testName, g_unnamedNamePrefix.Get().c_str(), length ) )
 	{
 		return true;
 	}
 
-	length = strlen( g_unnamedBotNamePrefix.string );
+	length = g_unnamedBotNamePrefix.Get().size();
 
 	if ( g_unnamedNumbering.Get() && length &&
-	     !Q_strnicmp( testName, g_unnamedBotNamePrefix.string, length ) )
+	     !Q_strnicmp( testName, g_unnamedBotNamePrefix.Get().c_str(), length ) )
 	{
 		return true;
 	}
@@ -638,13 +638,13 @@ static const char *G_UnnamedClientName( gclient_t *client )
 	if ( ent->r.svFlags & SVF_BOT )
 	{
 		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-			g_unnamedBotNamePrefix.string[ 0 ] ? g_unnamedBotNamePrefix.string : UNNAMED_BOT "#",
+			!g_unnamedBotNamePrefix.Get().empty() ? g_unnamedBotNamePrefix.Get().c_str() : UNNAMED_BOT "#",
 			number );
 	}
 	else
 	{
 		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-			g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER "#",
+			!g_unnamedNamePrefix.Get().empty() ? g_unnamedNamePrefix.Get().c_str() : UNNAMED_PLAYER "#",
 			number );
 	}
 

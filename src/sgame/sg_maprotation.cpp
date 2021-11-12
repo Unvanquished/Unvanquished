@@ -859,9 +859,9 @@ void G_PrintCurrentRotation( gentity_t *ent )
 		{
 			ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
 		}
-		if ( currentMap && currentShown && G_MapExists( g_nextMap.string ) )
+		if ( currentMap && currentShown && G_MapExists( g_nextMap.Get().c_str() ) )
 		{
-			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.string ) );
+			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.Get().c_str() ) );
 			currentMap = false;
 		}
 	}
@@ -872,9 +872,9 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	{
 		ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
 
-		if ( G_MapExists( g_nextMap.string ) )
+		if ( G_MapExists( g_nextMap.Get().c_str() ) )
 		{
-			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.string ) );
+			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.Get().c_str() ) );
 		}
 	}
 
@@ -891,8 +891,7 @@ Clear the rotation stack
 */
 void G_ClearRotationStack()
 {
-	trap_Cvar_Set( "g_mapRotationStack", "" );
-	trap_Cvar_Update( &g_mapRotationStack );
+	g_mapRotationStack.Set("");
 }
 
 /*
@@ -907,9 +906,8 @@ static void G_PushRotationStack( int rotation )
 	char text[ MAX_CVAR_VALUE_STRING ];
 
 	Com_sprintf( text, sizeof( text ), "%d %s",
-	             rotation, g_mapRotationStack.string );
-	trap_Cvar_Set( "g_mapRotationStack", text );
-	trap_Cvar_Update( &g_mapRotationStack );
+	             rotation, g_mapRotationStack.Get().c_str() );
+	g_mapRotationStack.Set(text);
 }
 
 /*
@@ -925,7 +923,7 @@ static int G_PopRotationStack()
 	char text[ MAX_CVAR_VALUE_STRING ];
 	const char *text_p, *token;
 
-	Q_strncpyz( text, g_mapRotationStack.string, sizeof( text ) );
+	Q_strncpyz( text, g_mapRotationStack.Get().c_str(), sizeof( text ) );
 
 	text_p = text;
 	token = COM_Parse( &text_p );
@@ -942,8 +940,7 @@ static int G_PopRotationStack()
 			text_p++;
 		}
 
-		trap_Cvar_Set( "g_mapRotationStack", text_p );
-		trap_Cvar_Update( &g_mapRotationStack );
+		g_mapRotationStack.Set(text_p);
 	}
 	else
 	{
@@ -984,7 +981,7 @@ static int *G_CurrentNodeIndexArray()
 	char       text[ MAX_MAP_ROTATIONS * 2 ];
 	const char       *text_p, *token;
 
-	Q_strncpyz( text, g_mapRotationNodes.string, sizeof( text ) );
+	Q_strncpyz( text, g_mapRotationNodes.Get().c_str(), sizeof( text ) );
 
 	text_p = text;
 
@@ -1023,8 +1020,7 @@ static void G_SetCurrentNodeByIndex( int currentNode, int rotation )
 		Q_strcat( text, sizeof( text ), va( "%d ", p[ i ] ) );
 	}
 
-	trap_Cvar_Set( "g_mapRotationNodes", text );
-	trap_Cvar_Update( &g_mapRotationNodes );
+	g_mapRotationNodes.Set(text);
 }
 
 /*
@@ -1086,9 +1082,9 @@ static void G_IssueMapChange( int index, int rotation )
 	if ( !Q_stricmp( currentMapName, map->name ) )
 	{
 		// Set layout if it exists
-		if ( !g_layouts.string[ 0 ] && map->layouts[ 0 ] )
+		if ( g_layouts.Get().empty() && map->layouts[ 0 ] )
 		{
-			trap_Cvar_Set( "g_layouts", map->layouts );
+			g_layouts.Set(map->layouts);
 		}
 
 		trap_SendConsoleCommand( "map_restart" );
@@ -1099,7 +1095,7 @@ static void G_IssueMapChange( int index, int rotation )
 	else
 	{
 		// allow a manually defined g_layouts setting to override the maprotation
-		if ( !g_layouts.string[ 0 ] && map->layouts[ 0 ] )
+		if ( g_layouts.Get().empty() && map->layouts[ 0 ] )
 		{
 			trap_SendConsoleCommand( va( "map %s %s\n", Quote( map->name ), Quote( map->layouts ) ) );
 		}
@@ -1317,7 +1313,7 @@ bool G_StepMapRotation( int rotation, int nodeIndex, int depth )
 					G_SetCurrentNodeByIndex(
 					  G_NodeIndexAfter( nodeIndex, rotation ), rotation );
 
-					if ( !G_MapExists( g_nextMap.string ) )
+					if ( !G_MapExists( g_nextMap.Get().c_str() ) )
 					{
 						G_IssueMapChange( nodeIndex, rotation );
 					}
@@ -1506,16 +1502,15 @@ void G_InitMapRotations()
 
 	if ( g_currentMapRotation.Get() == NOT_ROTATING )
 	{
-		if ( g_initialMapRotation.string[ 0 ] != 0 )
+		if ( !g_initialMapRotation.Get().empty() )
 		{
-			if( !G_StartMapRotation( g_initialMapRotation.string, false, true, false, 0 ) )
+			if( !G_StartMapRotation( g_initialMapRotation.Get().c_str(), false, true, false, 0 ) )
 			{
-				Log::Warn( "failed to load g_initialMapRotation: %s", g_initialMapRotation.string );
+				Log::Warn( "failed to load g_initialMapRotation: %s", g_initialMapRotation.Get() );
 				G_StartMapRotation( "defaultRotation", false, true, false, 0 );
 			}
 
-			trap_Cvar_Set( "g_initialMapRotation", "" );
-			trap_Cvar_Update( &g_initialMapRotation );
+			g_initialMapRotation.Set("");
 		}
 	}
 }

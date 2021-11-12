@@ -69,15 +69,14 @@ vmCvar_t           g_cheats;
 vmCvar_t           g_inactivity;
 Cvar::Cvar<int> g_debugMove("g_debugMove", "sgame pmove debug level", Cvar::NONE, 0);
 Cvar::Cvar<bool> g_debugFire("g_debugFire", "debug ground fire spawning", Cvar::NONE, false);
-vmCvar_t           g_motd;
+Cvar::Cvar<std::string> g_motd("g_motd", "message of the day", Cvar::NONE, "");
 // g_synchronousClients stays as an int for now instead of a bool
 // because there is a place in cl_main.cpp that tries to parse it
 Cvar::Range<Cvar::Cvar<int>> g_synchronousClients("g_synchronousClients", "calculate player movement once per server frame", Cvar::NONE, 0, 0, 1);
 Cvar::Cvar<int> g_warmup("g_warmup", "seconds after game start before players can join", Cvar::NONE, 10);
 Cvar::Cvar<bool> g_doWarmup("g_doWarmup", "whether to enable warmup period (g_warmup)", Cvar::NONE, false);
 Cvar::Cvar<bool> g_lockTeamsAtStart("g_lockTeamsAtStart", "(internal use) lock teams at start of match", Cvar::NONE, false);
-vmCvar_t           g_mapRestarted;
-vmCvar_t           g_logFile;
+Cvar::Cvar<std::string> g_logFile("g_logFile", "sgame log file, relative to <homepath>/game/", Cvar::NONE, "games.log");
 Cvar::Cvar<int> g_logGameplayStatsFrequency("g_logGameplayStatsFrequency", "log gameplay stats every x seconds", Cvar::NONE, 10);
 Cvar::Cvar<bool> g_logFileSync("g_logFileSync", "flush g_logFile on every write", Cvar::NONE, false);
 Cvar::Cvar<bool> g_allowVote("g_allowVote", "whether votes of any kind are allowed", Cvar::NONE, true);
@@ -191,12 +190,12 @@ Cvar::Cvar<std::string> g_disabledVoteCalls(
 
 Cvar::Cvar<bool> g_debugMapRotation("g_debugMapRotation", "print map rotation debug info", Cvar::NONE, false);
 Cvar::Cvar<int> g_currentMapRotation("g_currentMapRotation", "FOR INTERNAL USE", Cvar::NONE, -1);
-vmCvar_t           g_mapRotationNodes;
-vmCvar_t           g_mapRotationStack;
-vmCvar_t           g_nextMap;
-vmCvar_t           g_nextMapLayouts;
-vmCvar_t           g_initialMapRotation;
-vmCvar_t           g_mapLog;
+Cvar::Cvar<std::string> g_mapRotationNodes("g_mapRotationNodes", "FOR INTERNAL USE", Cvar::NONE, "");
+Cvar::Cvar<std::string> g_mapRotationStack("g_mapRotationStack", "FOR INTERNAL USE", Cvar::NONE, "");
+Cvar::Cvar<std::string> g_nextMap("g_nextMap", "map to load next (cleared after use)", Cvar::NONE, "");
+Cvar::Cvar<std::string> g_nextMapLayouts("g_nextMapLayouts", "list of layouts (one's chosen randomly) to go with g_nextMap", Cvar::NONE, "");
+Cvar::Cvar<std::string> g_initialMapRotation("g_initialMapRotation", "map rotation to use on server startup", Cvar::NONE, "rotation1");
+Cvar::Cvar<std::string> g_mapLog("g_mapLog", "contains results of recent games", Cvar::NONE, "");
 Cvar::Cvar<int> g_mapStartupMessageDelay("g_mapStartupMessageDelay", "show g_mapStartupMessage x milliseconds after connection", Cvar::LATCH, 5000);
 
 Cvar::Cvar<bool> g_debugVoices("g_debugVoices", "print sgame's list of vsays on startup", Cvar::NONE, false);
@@ -205,25 +204,25 @@ Cvar::Cvar<bool> g_enableVsays("g_voiceChats", "allow vsays (prerecorded audio m
 Cvar::Cvar<float> g_shove("g_shove", "force multiplier when pushing players", Cvar::NONE, 0.0);
 Cvar::Cvar<bool> g_antiSpawnBlock("g_antiSpawnBlock", "push away players who block their spawns", Cvar::NONE, false);
 
-vmCvar_t           g_mapConfigs;
+Cvar::Cvar<std::string> g_mapConfigs("g_mapConfigs", "map config directory, relative to <homepath>/config/", Cvar::NONE, "");
 Cvar::Cvar<float> g_sayAreaRange("g_sayAreaRange", "distance for area chat messages", Cvar::NONE, 1000);
 
 Cvar::Cvar<int> g_floodMaxDemerits("g_floodMaxDemerits", "client message rate control (lower = stricter)", Cvar::NONE, 5000);
 Cvar::Cvar<int> g_floodMinTime("g_floodMinTime", "mute period after flooding, in milliseconds", Cvar::NONE, 2000);
 
-vmCvar_t           g_defaultLayouts;
-vmCvar_t           g_layouts;
+Cvar::Cvar<std::string> g_defaultLayouts("g_defaultLayouts", "layouts to pick randomly from each map", Cvar::LATCH, "");
+Cvar::Cvar<std::string> g_layouts("g_layouts", "layouts for next map (cleared after use)", Cvar::LATCH, "");
 Cvar::Cvar<bool> g_layoutAuto("g_layoutAuto", "pick arbitrary layout instead of builtin", Cvar::NONE, false);
 
 Cvar::Cvar<bool> g_emoticonsAllowedInNames("g_emoticonsAllowedInNames", "allow [emoticon]s in player names", Cvar::NONE, true);
 Cvar::Cvar<int> g_unnamedNumbering("g_unnamedNumbering", "FOR INTERNAL USE", Cvar::NONE, -1);
-vmCvar_t           g_unnamedNamePrefix;
-vmCvar_t           g_unnamedBotNamePrefix;
+Cvar::Cvar<std::string> g_unnamedNamePrefix("g_unnamedNamePrefix", "prefix for auto-assigned player names", Cvar::NONE, UNNAMED_PLAYER "#");
+Cvar::Cvar<std::string> g_unnamedBotNamePrefix("g_unnamedBotNamePrefix", "default name prefix for bots", Cvar::NONE, UNNAMED_BOT "#");
 
-vmCvar_t           g_admin;
-vmCvar_t           g_adminWarn;
-vmCvar_t           g_adminTempBan;
-vmCvar_t           g_adminMaxBan;
+Cvar::Cvar<std::string> g_admin("g_admin", "admin levels file, relative to <homepath>/game/", Cvar::NONE, "admin.dat");
+Cvar::Cvar<std::string> g_adminWarn("g_adminWarn", "duration of warning \"bans\"", Cvar::NONE, "1h");
+Cvar::Cvar<std::string> g_adminTempBan("g_adminTempBan", "ban duration for kick and speclock", Cvar::NONE, "2m");
+Cvar::Cvar<std::string> g_adminMaxBan("g_adminMaxBan", "maximum ban duration", Cvar::NONE, "2w");
 Cvar::Cvar<bool> g_adminRetainExpiredBans("g_adminRetainExpiredBans", "keep records of expired bans", Cvar::NONE, true);
 
 Cvar::Cvar<bool> g_privateMessages("g_privateMessages", "allow private messages", Cvar::NONE, true);
@@ -309,38 +308,12 @@ static cvarTable_t gameCvarTable[] =
 	{ nullptr,                           "g_mapStartupMessage",           "",                                 0,                                               0, false },
 	{ nullptr,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, false },
 	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, false    },
-	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                0,                                               0, false    },
 
 	// server: basic
 	{ &g_password,                    "g_password",                    "",                                 CVAR_USERINFO,                                   0, false },
-	{ &g_motd,                        "g_motd",                        "",                                 0,                                               0, false },
 
 	// clients: limits
 	{ &g_inactivity,                  "g_inactivity",                  "0",                                0,                                               0, true  },
-
-	// clients: misc
-	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER "#",                 0,                                               0, false },
-	{ &g_unnamedBotNamePrefix,        "g_unnamedBotNamePrefix",        UNNAMED_BOT "#",                    0,                                               0, false },
-
-	// admin system
-	{ &g_admin,                       "g_admin",                       "admin.dat",                        0,                                               0, false },
-	{ &g_adminWarn,                   "g_adminWarn",                   "1h",                               0,                                               0, false },
-	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               0,                                               0, false },
-	{ &g_adminMaxBan,                 "g_adminMaxBan",                 "2w",                               0,                                               0, false },
-
-	// logging
-	{ &g_logFile,                     "g_logFile",                     "games.log",                        0,                                               0, false },
-
-	// maps, layouts & rotation
-	{ &g_mapRotationNodes,            "g_mapRotationNodes",            "",                                 0,                                               0, false },
-	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 0,                                               0, false },
-	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, true  },
-	{ &g_nextMapLayouts,              "g_nextMapLayouts",              "",                                 0,                                               0, true  },
-	{ &g_initialMapRotation,          "g_initialMapRotation",          "rotation1",                        0,                                               0, false },
-	{ &g_mapLog,                      "g_mapLog",                      "",                                 0,                                               0, false },
-	{ &g_mapConfigs,                  "g_mapConfigs",                  "",                                 0,                                               0, false },
-	{ &g_defaultLayouts,              "g_defaultLayouts",              "",                                 CVAR_LATCH,                                      0, false },
-	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, false },
 };
 
 void               CheckExitRules();
@@ -489,7 +462,7 @@ G_MapConfigs
 */
 void G_MapConfigs( const char *mapname )
 {
-	if ( !g_mapConfigs.string[ 0 ] )
+	if ( g_mapConfigs.Get().empty() )
 	{
 		return;
 	}
@@ -499,9 +472,9 @@ void G_MapConfigs( const char *mapname )
 		return;
 	}
 
-	trap_SendConsoleCommand( va( "exec %s/default.cfg", Quote( g_mapConfigs.string ) ) );
+	trap_SendConsoleCommand( va( "exec %s/default.cfg", Quote( g_mapConfigs.Get().c_str() ) ) );
 
-	trap_SendConsoleCommand( va( "exec %s/%s.cfg", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
+	trap_SendConsoleCommand( va( "exec %s/%s.cfg", Quote( g_mapConfigs.Get().c_str() ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
 	trap_SendConsoleCommand( "maprestarted" );
@@ -533,20 +506,20 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	level.snd_fry = G_SoundIndex( "sound/misc/fry" );  // FIXME standing in lava / slime
 
 	// TODO: Move this in a seperate function
-	if ( g_logFile.string[ 0 ] )
+	if ( !g_logFile.Get().empty() )
 	{
 		if ( g_logFileSync.Get() )
 		{
-			trap_FS_FOpenFile( g_logFile.string, &level.logFile, fsMode_t::FS_APPEND_SYNC );
+			trap_FS_FOpenFile( g_logFile.Get().c_str(), &level.logFile, fsMode_t::FS_APPEND_SYNC );
 		}
 		else
 		{
-			trap_FS_FOpenFile( g_logFile.string, &level.logFile, fsMode_t::FS_APPEND );
+			trap_FS_FOpenFile( g_logFile.Get().c_str(), &level.logFile, fsMode_t::FS_APPEND );
 		}
 
 		if ( !level.logFile )
 		{
-			Log::Warn("Couldn't open logfile: %s", g_logFile.string );
+			Log::Warn("Couldn't open logfile: %s", g_logFile.Get() );
 		}
 		else
 		{
@@ -1503,14 +1476,14 @@ void ExitLevel()
 	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
 
 	// Restart if map is the same
-	if ( !Q_stricmp( currentMapName, g_nextMap.string ) )
+	if ( !Q_stricmp( currentMapName, g_nextMap.Get().c_str() ) )
 	{
-		trap_Cvar_Set( "g_layouts", g_nextMapLayouts.string );
+		g_layouts.Set( g_nextMapLayouts.Get() );
 		trap_SendConsoleCommand( "map_restart" );
 	}
-	else if ( G_MapExists( g_nextMap.string ) )
+	else if ( G_MapExists( g_nextMap.Get().c_str() ) )
 	{
-		trap_SendConsoleCommand( va( "map %s %s", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
+		trap_SendConsoleCommand( va( "map %s %s", Quote( g_nextMap.Get().c_str() ), Quote( g_nextMapLayouts.Get().c_str() ) ) );
 	}
 	else if ( G_MapRotationActive() )
 	{
@@ -1521,7 +1494,7 @@ void ExitLevel()
 		trap_SendConsoleCommand( "map_restart" );
 	}
 
-	trap_Cvar_Set( "g_nextMap", "" );
+	g_nextMap.Set("");
 
 	level.restarted = true;
 	level.changemap = nullptr;
