@@ -59,9 +59,10 @@ Cvar::Range<Cvar::Cvar<int>> g_gravity(
 
 Cvar::Cvar<int> g_timelimit("timelimit", "max game length in minutes", Cvar::SERVERINFO, 45);
 Cvar::Cvar<bool> g_dretchPunt("g_dretchPunt", "aliens can propel dretches by attacking them", Cvar::NONE, true);
-vmCvar_t           g_password;
-// int instead of bool for now to avoid changing the serverinfo format
-Cvar::Range<Cvar::Cvar<int>> g_needpass("g_needpass", "password required to join the server?", Cvar::SERVERINFO, 0, 0, 1);
+// This isn't a configuration variable to set whether a password is needed.
+// Rather, it's value is automatically set based on whether g_password is empty;
+// it's a hack to stick a value into the serverinfo string.
+Cvar::Range<Cvar::Cvar<int>> g_needpass("g_needpass", "FOR INTERNAL USE", Cvar::SERVERINFO, 0, 0, 1);
 vmCvar_t           g_maxclients;
 Cvar::Cvar<int> g_maxGameClients("g_maxGameClients", "max number of players (see also sv_maxclients)", Cvar::SERVERINFO, 0);
 Cvar::Cvar<float> g_speed("g_speed", "player movement speed multiplier", Cvar::NONE, 320);
@@ -308,9 +309,6 @@ static cvarTable_t gameCvarTable[] =
 	{ nullptr,                           "g_mapStartupMessage",           "",                                 0,                                               0, false },
 	{ nullptr,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, false },
 	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, false    },
-
-	// server: basic
-	{ &g_password,                    "g_password",                    "",                                 CVAR_USERINFO,                                   0, false },
 
 	// clients: limits
 	{ &g_inactivity,                  "g_inactivity",                  "0",                                0,                                               0, true  },
@@ -2280,31 +2278,12 @@ void G_CheckVote( team_t team )
 	G_ResetVote( team );
 }
 
-/*
-==================
-CheckCvars
-==================
-*/
-void CheckCvars()
+static void SetNeedpass(const std::string& password)
 {
-	static int lastPasswordModCount = -1;
-
-	if ( g_password.modificationCount != lastPasswordModCount )
-	{
-		lastPasswordModCount = g_password.modificationCount;
-
-		if ( *g_password.string && Q_stricmp( g_password.string, "none" ) )
-		{
-			g_needpass.Set(true);
-		}
-		else
-		{
-			g_needpass.Set(false);
-		}
-	}
-
-	level.frameMsec = trap_Milliseconds();
+	g_needpass.Set( !password.empty() && !Str::IsIEqual( password, "none" ) );
 }
+Cvar::Callback<Cvar::Cvar<std::string>> g_password("password", "password to join the server", Cvar::NONE, "", SetNeedpass);
+
 
 /*
 =============
@@ -2431,7 +2410,8 @@ void G_RunFrame( int levelTime )
 
 		// get any cvar changes
 		G_UpdateCvars();
-		CheckCvars();
+
+		level.frameMsec = trap_Milliseconds();
 
 		CheckExitRules();
 
@@ -2488,7 +2468,8 @@ void G_RunFrame( int levelTime )
 
 	// get any cvar changes
 	G_UpdateCvars();
-	CheckCvars();
+
+	level.frameMsec = trap_Milliseconds();
 
 	// now we are done spawning
 	level.spawning = false;

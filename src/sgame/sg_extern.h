@@ -55,7 +55,7 @@ extern Cvar::Cvar<int> g_maxNameChanges;
 extern Cvar::Range<Cvar::Cvar<int>> g_showHelpOnConnection;
 extern Cvar::Cvar<int> g_timelimit;
 extern Cvar::Cvar<bool> g_dretchPunt;
-extern  vmCvar_t g_password;
+extern Cvar::Callback<Cvar::Cvar<std::string>> g_password;
 extern Cvar::Range<Cvar::Cvar<int>> g_needpass;
 extern  Cvar::Range<Cvar::Cvar<int>> g_gravity;
 extern Cvar::Cvar<float> g_speed;

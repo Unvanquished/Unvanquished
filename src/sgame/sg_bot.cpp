@@ -317,7 +317,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	//so we can connect if server is password protected
 	if ( g_needpass.Get() )
 	{
-		Info_SetValueForKey( userinfo, "password", g_password.string, false );
+		Info_SetValueForKey( userinfo, "password", g_password.Get().c_str(), false );
 	}
 
 	trap_SetUserinfo( clientNum, userinfo );

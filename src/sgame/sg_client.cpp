@@ -1126,8 +1126,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	// check for a password
 	value = Info_ValueForKey( userinfo, "password" );
 
-	if ( g_password.string[ 0 ] && Q_stricmp( g_password.string, "none" ) &&
-	     strcmp( g_password.string, value ) != 0 )
+	if ( g_needpass.Get() && g_password.Get() != value )
 	{
 		return "Invalid password";
 	}
