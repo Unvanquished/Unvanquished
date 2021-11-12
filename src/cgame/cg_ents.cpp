@@ -1376,7 +1376,6 @@ team_t CG_Team(const entityState_t &es)
 	switch (es.eType)
 	{
 		case entityType_t::ET_PLAYER:
-		case entityType_t::ET_CORPSE:
 		{
 			clientInfo_t &ci = cgs.clientinfo[es.clientNum];
 			return (team_t) ci.team;
