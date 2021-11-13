@@ -1267,7 +1267,7 @@ static void CG_VCommand()
 
 	if ( !Q_stricmp( cmd, "grenade" ) )
 	{
-		trap_SendClientCommand( cg_cmdGrenadeThrown.string );
+		trap_SendClientCommand( cg_cmdGrenadeThrown.Get().c_str() );
 	}
 	else if ( !Q_stricmp( cmd, "needhealth" ) )
 	{

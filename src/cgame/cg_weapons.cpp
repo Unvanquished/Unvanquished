@@ -89,7 +89,7 @@ static void CG_LoadCustomCrosshairs()
 	fileHandle_t f;
 	weapon_t     weapon;
 
-	len = trap_FS_FOpenFile( cg_crosshairFile.string, &f, fsMode_t::FS_READ );
+	len = trap_FS_FOpenFile( cg_crosshairFile.Get().c_str(), &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -98,7 +98,7 @@ static void CG_LoadCustomCrosshairs()
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
-		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", cg_crosshairFile.string );
+		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", cg_crosshairFile.Get() );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -213,7 +213,7 @@ void CG_InitUpgrades()
 		CG_RegisterUpgrade( i );
 	}
 
-	if ( cg_crosshairFile.string[0] )
+	if ( !cg_crosshairFile.Get().empty() )
 	{
 		CG_LoadCustomCrosshairs();
 	}

@@ -57,7 +57,7 @@ Cvar::Cvar<bool> cg_drawBuildableHealth("cg_drawBuildableHealth", "show buildabl
 Cvar::Cvar<bool> cg_drawMinimap("cg_drawMinimap", "show minimap", Cvar::NONE, true);
 Cvar::Cvar<int> cg_minimapActive("cg_minimapActive", "FOR INTERNAL USE", Cvar::NONE, 0);
 Cvar::Cvar<float> cg_crosshairSize("cg_crosshairSize", "crosshair scale factor", Cvar::NONE, 1);
-vmCvar_t        cg_crosshairFile;
+Cvar::Cvar<std::string> cg_crosshairFile("cg_crosshairFile", "VFS path of custom crosshairs file", Cvar::NONE, "");
 Cvar::Cvar<bool> cg_draw2D("cg_draw2D", "show HUD / menus", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_debugAnim("cg_debuganim", "show animation debug logs", Cvar::CHEAT, false);
 Cvar::Cvar<bool> cg_debugEvents("cg_debugevents", "log received events", Cvar::CHEAT, false);
@@ -130,7 +130,7 @@ Cvar::Range<Cvar::Cvar<int>> cg_stickySpec("cg_stickySpec", "if 0, cycle followe
 Cvar::Range<Cvar::Cvar<int>> cg_sprintToggle("cg_sprintToggle", "toggle instead of hold to sprint", Cvar::USERINFO, 0, 0, 1);
 Cvar::Range<Cvar::Cvar<int>> cg_unlagged("cg_unlagged", "lag-compensate your player (if server allows)", Cvar::USERINFO, 1, 0, 1);
 
-vmCvar_t        cg_cmdGrenadeThrown;
+Cvar::Cvar<std::string> cg_cmdGrenadeThrown("cg_cmdGrenadeThrown", "command executed upon throwing grenade", Cvar::NONE, "vsay_local grenade");
 vmCvar_t        cg_cmdNeedHealth;
 
 Cvar::Cvar<bool> cg_debugVoices("cg_debugVoices", "print cgame's list of vsays on startup", Cvar::NONE, false);
@@ -162,7 +162,7 @@ static Cvar::Cvar<float> cg_fov_level4("cg_fov_level4", "field of view (degrees)
 static Cvar::Cvar<float> cg_fov_human("cg_fov_human", "field of view (degrees) for humans", Cvar::NONE, 0);
 
 Cvar::Cvar<bool> ui_chatPromptColors("ui_chatPromptColors", "chat prompts (e.g. 'Say:') are color-coded", Cvar::NONE, true);
-vmCvar_t        cg_sayCommand;
+Cvar::Cvar<std::string> cg_sayCommand("cg_sayCommand", "instead of talking, chat field does this command?", Cvar::NONE, "");
 
 // CHEAT because it could be abused to join the game faster and e.g. get on your preferred team
 // It's intended to aid developers who are frequently restarting the game.
@@ -182,13 +182,11 @@ struct cvarTable_t
 
 static const cvarTable_t cvarTable[] =
 {
-	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             0                            },
 	{ nullptr,                            "cg_wwFollow",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
 
-	{ &cg_cmdGrenadeThrown,            "cg_cmdGrenadeThrown",            "vsay_local grenade", 0                      },
 	{ &cg_cmdNeedHealth,               "cg_cmdNeedHealth",               "vsay_local needhealth", 0                   },
 
 	// the following variables are created in other parts of the system,
@@ -198,7 +196,6 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO                },
 
-	{ &cg_sayCommand,                  "cg_sayCommand",                   "",            0                            }
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );

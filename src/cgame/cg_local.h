@@ -1749,7 +1749,7 @@ extern Cvar::Cvar<bool> cg_drawBuildableHealth;
 extern Cvar::Cvar<bool> cg_drawMinimap;
 extern Cvar::Cvar<int> cg_minimapActive;
 extern Cvar::Cvar<float> cg_crosshairSize;
-extern  vmCvar_t            cg_crosshairFile;
+extern Cvar::Cvar<std::string> cg_crosshairFile;
 extern Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo;
 extern Cvar::Cvar<bool> cg_draw2D;
 extern Cvar::Cvar<bool> cg_animSpeed;
@@ -1824,7 +1824,7 @@ extern Cvar::Range<Cvar::Cvar<int>> cg_stickySpec;
 extern Cvar::Range<Cvar::Cvar<int>> cg_sprintToggle;
 extern Cvar::Range<Cvar::Cvar<int>> cg_unlagged;
 
-extern  vmCvar_t            cg_cmdGrenadeThrown;
+extern Cvar::Cvar<std::string> cg_cmdGrenadeThrown;
 extern  vmCvar_t            cg_cmdNeedHealth;
 
 extern Cvar::Cvar<bool> cg_debugVoices;
@@ -1844,7 +1844,7 @@ extern Cvar::Cvar<float> cg_motionblur;
 extern Cvar::Cvar<float> cg_motionblurMinSpeed;
 extern Cvar::Cvar<bool> ui_chatPromptColors;
 extern Cvar::Cvar<bool> cg_spawnEffects;
-extern vmCvar_t             cg_sayCommand;
+extern Cvar::Cvar<std::string> cg_sayCommand;
 
 extern Cvar::Cvar<bool> cg_lazyLoadModels;
 
