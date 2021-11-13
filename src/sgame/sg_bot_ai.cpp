@@ -1018,51 +1018,18 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_RUNNING;
 }
 
-static AINodeStatus_t BotActionReachHealA( gentity_t *self );
-static AINodeStatus_t BotActionReachHealH( gentity_t *self );
+AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 {
-	bool needsMedikit = G_Team(self) == TEAM_HUMANS
-			     && !BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
-	bool fullyHealed = Entities::HasFullHealth(self) && !needsMedikit;
-
-	if ( self->botMind->currentNode != node )
+	switch( G_Team( self ) )
 	{
-		if ( fullyHealed )
-		{
-			return STATUS_FAILURE;
-		}
-
-		if ( !BotChangeGoalEntity( self, BotGetHealTarget( self ) ) )
-		{
-			return STATUS_FAILURE;
-		}
-		self->botMind->currentNode = node;
-	}
-
-	if ( fullyHealed )
-	{
-		return STATUS_SUCCESS;
-	}
-
-	if ( !self->botMind->goal.targetsValidEntity() )
-	{
-		return STATUS_FAILURE;
-	}
-
-	// Can't heal at powered off buildables
-	if ( !self->botMind->goal.getTargetedEntity()->powered )
-	{
-		return STATUS_FAILURE;
-	}
-
-	if ( G_Team( self ) == TEAM_HUMANS )
-	{
-		return BotActionReachHealH( self );
-	}
-	else
-	{
-		return BotActionReachHealA( self );
+		case TEAM_HUMANS:
+			return BotActionHealH( self, node );
+		case TEAM_ALIENS:
+			return BotActionHealA( self, node );
+		default:
+			ASSERT_UNREACHABLE();
 	}
 }
 
@@ -1093,9 +1060,52 @@ AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* )
 /*
 	alien specific actions
 */
-static AINodeStatus_t BotActionReachHealA( gentity_t *self )
+AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( G_Team( self ) != TEAM_ALIENS )
+	if ( self->botMind->currentNode != node )
+	{
+		// already fully healed
+		if ( Entities::HasFullHealth(self) )
+		{
+			return STATUS_FAILURE;
+		}
+
+		gentity_t const *healTarget = nullptr;
+
+		if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
+		{
+			healTarget = self->botMind->closestBuildings[BA_A_BOOSTER].ent;
+		}
+		else if ( self->botMind->closestBuildings[BA_A_OVERMIND].ent )
+		{
+			healTarget = self->botMind->closestBuildings[BA_A_OVERMIND].ent;
+		}
+		else if ( self->botMind->closestBuildings[BA_A_SPAWN].ent )
+		{
+			healTarget = self->botMind->closestBuildings[BA_A_SPAWN].ent;
+		}
+
+		if ( !healTarget )
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !BotChangeGoalEntity( self, healTarget ) )
+		{
+			return STATUS_FAILURE;
+		}
+
+		self->botMind->currentNode = node;
+	}
+
+	//we are fully healed now
+	if ( Entities::HasFullHealth(self) )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	// Can't heal at dead targets.
+	if ( !self->botMind->goal.targetsValidEntity() )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1110,12 +1120,41 @@ static AINodeStatus_t BotActionReachHealA( gentity_t *self )
 /*
 	human specific actions
 */
-static AINodeStatus_t BotActionReachHealH( gentity_t *self )
+AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
 
-	if ( G_Team( self ) != TEAM_HUMANS )
+	bool fullyHealed = Entities::HasFullHealth(self) &&
+		BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
+
+	if ( self->botMind->currentNode != node )
+	{
+		if ( fullyHealed )
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	if ( fullyHealed )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	// Can't heal at dead targets.
+	if ( !self->botMind->goal.targetsValidEntity() )
+	{
+		return STATUS_FAILURE;
+	}
+
+	//this medi is no longer powered so signal that the goal is unusable
+	if ( !self->botMind->goal.getTargetedEntity()->powered )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1132,6 +1171,7 @@ static AINodeStatus_t BotActionReachHealH( gentity_t *self )
 	}
 	return STATUS_RUNNING;
 }
+
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t forward;
