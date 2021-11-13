@@ -34,18 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 level_locals_t level;
 
-namespace {
-struct cvarTable_t
-{
-	vmCvar_t   *vmCvar;
-	const char *cvarName;
-	const char *defaultString;
-	int        cvarFlags;
-	int        modificationCount; // for tracking changes
-	bool unused; // TODO: delete the entire table so that I don't have to bother with deleting this field
-};
-} //namespace
-
 gentity_t          *g_entities;
 gclient_t          *g_clients;
 
@@ -63,11 +51,10 @@ Cvar::Cvar<bool> g_dretchPunt("g_dretchPunt", "aliens can propel dretches by att
 // Rather, it's value is automatically set based on whether g_password is empty;
 // it's a hack to stick a value into the serverinfo string.
 Cvar::Range<Cvar::Cvar<int>> g_needpass("g_needpass", "FOR INTERNAL USE", Cvar::SERVERINFO, 0, 0, 1);
-vmCvar_t           g_maxclients;
 Cvar::Cvar<int> g_maxGameClients("g_maxGameClients", "max number of players (see also sv_maxclients)", Cvar::SERVERINFO, 0);
 Cvar::Cvar<float> g_speed("g_speed", "player movement speed multiplier", Cvar::NONE, 320);
 vmCvar_t           g_cheats;
-vmCvar_t           g_inactivity;
+Cvar::Cvar<std::string> g_inactivity("g_inactivity", "seconds of inactivity before a player is removed. append 's' to spec instead of kick", Cvar::NONE, "0");
 Cvar::Cvar<int> g_debugMove("g_debugMove", "sgame pmove debug level", Cvar::NONE, 0);
 Cvar::Cvar<bool> g_debugFire("g_debugFire", "debug ground fire spawning", Cvar::NONE, false);
 Cvar::Cvar<std::string> g_motd("g_motd", "message of the day", Cvar::NONE, "");
@@ -197,6 +184,7 @@ Cvar::Cvar<std::string> g_nextMap("g_nextMap", "map to load next (cleared after 
 Cvar::Cvar<std::string> g_nextMapLayouts("g_nextMapLayouts", "list of layouts (one's chosen randomly) to go with g_nextMap", Cvar::NONE, "");
 Cvar::Cvar<std::string> g_initialMapRotation("g_initialMapRotation", "map rotation to use on server startup", Cvar::NONE, "rotation1");
 Cvar::Cvar<std::string> g_mapLog("g_mapLog", "contains results of recent games", Cvar::NONE, "");
+Cvar::Cvar<std::string> g_mapStartupMessage("g_mapStartupMessage", "message sent to players on connection (reset after game)", Cvar::NONE, "");
 Cvar::Cvar<int> g_mapStartupMessageDelay("g_mapStartupMessageDelay", "show g_mapStartupMessage x milliseconds after connection", Cvar::LATCH, 5000);
 
 Cvar::Cvar<bool> g_debugVoices("g_debugVoices", "print sgame's list of vsays on startup", Cvar::NONE, false);
@@ -297,22 +285,11 @@ Cvar::Cvar<bool> g_bot_infinite_funds("g_bot_infinite_funds", "give bots unlimit
 
 //</bot stuff>
 
-static cvarTable_t gameCvarTable[] =
-{
-	// special purpose (external source, read only, etc.)
-	// TODO: Split and comment this section
-	{ nullptr,                           "gamename",                      GAME_VERSION,                       CVAR_SERVERINFO | CVAR_ROM,                      0, false },
-	{ nullptr,                           "gamedate",                      __DATE__,                           CVAR_ROM,                                        0, false },
-	{ nullptr,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO,                                 0, false },
-	{ nullptr,                           "P",                             "",                                 CVAR_SERVERINFO,                                 0, false },
-	{ nullptr,                           "B",                             "",                                 CVAR_SERVERINFO,                                 0, false },
-	{ nullptr,                           "g_mapStartupMessage",           "",                                 0,                                               0, false },
-	{ nullptr,                           "g_mapConfigsLoaded",            "0",                                0,                                               0, false },
-	{ &g_maxclients,                  "sv_maxclients",                 "24",                               CVAR_SERVERINFO | CVAR_LATCH,                    0, false    },
+static Cvar::Cvar<std::string> gamename("gamename", "game/mod identifier", Cvar::SERVERINFO | Cvar::ROM, GAME_VERSION);
+static Cvar::Cvar<std::string> gamedate("gamedate", "date the sgame was compiled", Cvar::ROM, __DATE__);
 
-	// clients: limits
-	{ &g_inactivity,                  "g_inactivity",                  "0",                                0,                                               0, true  },
-};
+// TODO why is this needed?
+static Cvar::Cvar<bool> g_mapConfigsLoaded("g_mapConfigsLoaded", "FOR INTERNAL USE", Cvar::NONE, false);
 
 void               CheckExitRules();
 static void        G_LogGameplayStats( int state );
@@ -415,46 +392,6 @@ void G_InitSetEntities()
 
 /*
 =================
-G_RegisterCvars
-=================
-*/
-void G_RegisterCvars()
-{
-	for ( cvarTable_t &cvar : gameCvarTable )
-	{
-		trap_Cvar_Register( cvar.vmCvar, cvar.cvarName,
-		                    cvar.defaultString, cvar.cvarFlags );
-
-		if ( cvar.vmCvar )
-		{
-			cvar.modificationCount = cvar.vmCvar->modificationCount;
-		}
-	}
-}
-
-/*
-=================
-G_UpdateCvars
-=================
-*/
-void G_UpdateCvars()
-{
-	for ( cvarTable_t &cv : gameCvarTable )
-	{
-		if ( cv.vmCvar )
-		{
-			trap_Cvar_Update( cv.vmCvar );
-
-			if ( cv.modificationCount != cv.vmCvar->modificationCount )
-			{
-				cv.modificationCount = cv.vmCvar->modificationCount;
-			}
-		}
-	}
-}
-
-/*
-=================
 G_MapConfigs
 =================
 */
@@ -465,7 +402,7 @@ void G_MapConfigs( const char *mapname )
 		return;
 	}
 
-	if ( trap_Cvar_VariableIntegerValue( "g_mapConfigsLoaded" ) )
+	if ( g_mapConfigsLoaded.Get() )
 	{
 		return;
 	}
@@ -474,7 +411,7 @@ void G_MapConfigs( const char *mapname )
 
 	trap_SendConsoleCommand( va( "exec %s/%s.cfg", Quote( g_mapConfigs.Get().c_str() ), Quote( mapname ) ) );
 
-	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
+	g_mapConfigsLoaded.Set(true);
 	trap_SendConsoleCommand( "maprestarted" );
 }
 
@@ -489,8 +426,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	int i;
 
 	srand( randomSeed );
-
-	G_RegisterCvars();
 
 	Log::Notice( "------- Game Initialization -------" );
 	Log::Notice( "gamename: %s", GAME_VERSION );
@@ -569,7 +504,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	}
 
 	// clear this now; it'll be set, if needed, from rotation
-	trap_Cvar_Set( "g_mapStartupMessage", "" );
+	g_mapStartupMessage.Set("");
 
 	// retrieve map name and load per-map configuration
 	{
@@ -583,7 +518,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	BG_InitAllConfigs();
 
 	// we're done with g_mapConfigs, so reset this for the next map
-	trap_Cvar_Set( "g_mapConfigsLoaded", "0" );
+	g_mapConfigsLoaded.Set(false);
 
 	G_RegisterCommands();
 	G_admin_readconfig( nullptr );
@@ -600,7 +535,10 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	G_InitGentityMinimal( g_entities + ENTITYNUM_WORLD );
 
 	// initialize all clients for this game
-	level.maxclients = g_maxclients.integer;
+	if (!Cvar::ParseCvarValue(Cvar::GetValue("sv_maxclients"), level.maxclients))
+	{
+		ASSERT_UNREACHABLE();
+	}
 	memset( g_clients, 0, MAX_CLIENTS * sizeof( g_clients[ 0 ] ) );
 	level.clients = g_clients;
 
@@ -630,7 +568,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
 
-	// this has to be flipped after the first UpdateCvars
 	level.spawning = true;
 
 	// parse the key/value pairs and spawn gentities
@@ -1199,6 +1136,8 @@ This will be called on every client connect, begin, disconnect, death,
 and team change.
 ============
 */
+static Cvar::Cvar<std::string> slotTeams("P", "[serverinfo] client slot -> team", Cvar::SERVERINFO, "");
+static Cvar::Cvar<std::string> slotBots("P", "[serverinfo] client slot -> is bot", Cvar::SERVERINFO, "");
 void CalculateRanks()
 {
 	int  clientNum;
@@ -1292,10 +1231,10 @@ void CalculateRanks()
 	level.team[ TEAM_NONE ].numPlayers += level.numPlayingPlayers;
 
 	P[ clientNum ] = '\0';
-	trap_Cvar_Set( "P", P );
+	slotTeams.Set(P);
 
 	B[ clientNum ] = '\0';
-	trap_Cvar_Set( "B", B );
+	slotBots.Set(B);
 
 	qsort( level.sortedClients, level.numConnectedClients,
 	       sizeof( level.sortedClients[ 0 ] ), SortRanks );
@@ -2408,9 +2347,6 @@ void G_RunFrame( int levelTime )
 		level.time = levelTime;
 		level.matchTime = levelTime - level.startTime;
 
-		// get any cvar changes
-		G_UpdateCvars();
-
 		level.frameMsec = trap_Milliseconds();
 
 		CheckExitRules();
@@ -2465,9 +2401,6 @@ void G_RunFrame( int levelTime )
 
 	// generate public-key messages
 	G_admin_pubkey();
-
-	// get any cvar changes
-	G_UpdateCvars();
 
 	level.frameMsec = trap_Milliseconds();
 

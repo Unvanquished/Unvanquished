@@ -46,7 +46,6 @@ extern int            g_numDamageRegions[ PCL_NUM_CLASSES ];
 // -----
 
 extern  vmCvar_t g_cheats;
-extern  vmCvar_t g_maxclients;
 extern Cvar::Cvar<int> g_maxGameClients;
 extern Cvar::Cvar<bool> g_lockTeamsAtStart;
 extern Cvar::Cvar<float> g_minNameChangePeriod;
@@ -59,7 +58,7 @@ extern Cvar::Callback<Cvar::Cvar<std::string>> g_password;
 extern Cvar::Range<Cvar::Cvar<int>> g_needpass;
 extern  Cvar::Range<Cvar::Cvar<int>> g_gravity;
 extern Cvar::Cvar<float> g_speed;
-extern  vmCvar_t g_inactivity;
+extern Cvar::Cvar<std::string> g_inactivity;
 extern Cvar::Cvar<int> g_debugMove;
 extern Cvar::Cvar<bool> g_debugFire;
 extern Cvar::Cvar<std::string> g_motd;
@@ -120,6 +119,7 @@ extern Cvar::Cvar<std::string> g_nextMap;
 extern Cvar::Cvar<std::string> g_nextMapLayouts;
 extern Cvar::Cvar<std::string> g_initialMapRotation;
 extern Cvar::Cvar<std::string> g_mapLog;
+extern Cvar::Cvar<std::string> g_mapStartupMessage;
 extern Cvar::Cvar<int> g_mapStartupMessageDelay;
 extern Cvar::Cvar<float> g_sayAreaRange;
 

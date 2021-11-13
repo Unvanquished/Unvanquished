@@ -1308,7 +1308,6 @@ void ClientBegin( int clientNum )
 	gentity_t       *ent;
 	gclient_t       *client;
 	int             flags;
-	char            startMsg[ MAX_STRING_CHARS ];
 
 	ent    = g_entities + clientNum;
 	client = level.clients + clientNum;
@@ -1353,11 +1352,11 @@ void ClientBegin( int clientNum )
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* entered the game") ), Quote( client->pers.netname ) ) );
 
-	trap_Cvar_VariableStringBuffer( "g_mapStartupMessage", startMsg, sizeof( startMsg ) );
+	std::string startMsg = g_mapStartupMessage.Get();
 
-	if ( *startMsg )
+	if ( !startMsg.empty() )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "cpd %d %s", g_mapStartupMessageDelay.Get(), Quote( startMsg ) ) );
+		trap_SendServerCommand( ent - g_entities, va( "cpd %d %s", g_mapStartupMessageDelay.Get(), Quote( startMsg.c_str() ) ) );
 	}
 
 	G_namelog_restore( client );
@@ -1791,7 +1790,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->respawnTime = level.time;
 	ent->nextRegenTime = level.time;
 
-	client->inactivityTime = level.time + g_inactivity.integer * 1000;
+	client->inactivityTime = level.time + atoi(g_inactivity.Get().c_str()) * 1000;
 	usercmdClearButtons( client->latched_buttons );
 
 	// set default animations
