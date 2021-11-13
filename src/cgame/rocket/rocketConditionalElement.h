@@ -177,25 +177,6 @@ private:
 		}
 	}
 
-	bool IsConditionValidLatched()
-	{
-		std::string str = Cvar::GetValue( cvar.CString() );
-		if ( !str.empty() )
-		{
-			switch ( value.GetType() )
-			{
-				case Rocket::Core::Variant::INT:
-					Compare( atoi( str.c_str() ), value.Get<int>() );
-				case Rocket::Core::Variant::FLOAT:
-					Compare( atof( str.c_str() ), value.Get<float>() );
-				default:
-					Compare( str, value.Get< Rocket::Core::String >().CString() );
-			}
-		}
-
-		return false;
-	}
-
 	Rocket::Core::String cvar;
 	Rocket::Core::String cvar_value;
 	Condition condition;
