@@ -38,7 +38,6 @@ rocketInfo_t rocketInfo;
 
 vmCvar_t rocket_menuFile;
 vmCvar_t rocket_hudFile;
-vmCvar_t rocket_pak;
 
 namespace {
 struct cvarTable_t
@@ -54,7 +53,6 @@ static const cvarTable_t rocketCvarTable[] =
 {
 	{ &rocket_hudFile, "rocket_hudFile", "ui/rockethud.txt", 0 },
 	{ &rocket_menuFile, "rocket_menuFile", "ui/rocket.txt", 0 },
-	{ &rocket_pak, "rocket_pak", "", 0 },
 };
 
 static const size_t rocketCvarTableSize = ARRAY_LEN( rocketCvarTable );
@@ -117,16 +115,6 @@ void CG_Rocket_Init( glconfig_t gl )
 	Rocket_RegisterProperty( "border-width", "0.5", false, false, "number" );
 	Rocket_RegisterProperty( "unlocked-marker-color", "green", false, false, "color" );
 	Rocket_RegisterProperty( "locked-marker-color", "red", false, false, "color" );
-
-	// Load custom rocket pak if necessary
-	if ( *rocket_pak.string )
-	{
-		// Only load stuff from ui/
-		if ( !trap_FS_LoadPak( rocket_pak.string, "ui/" ) )
-		{
-			Sys::Drop( "Unable to load custom UI pak: %s.", rocket_pak.string );
-		}
-	}
 
 	// Preload all the menu files...
 	len = trap_FS_FOpenFile( rocket_menuFile.string, &f, fsMode_t::FS_READ );
