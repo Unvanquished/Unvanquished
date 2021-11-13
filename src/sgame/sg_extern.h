@@ -207,6 +207,7 @@ extern Cvar::Cvar<bool> g_bot_attackStruct;
 extern Cvar::Cvar<float> g_bot_fov;
 extern Cvar::Cvar<int> g_bot_chasetime;
 extern Cvar::Cvar<int> g_bot_reactiontime;
+extern Cvar::Cvar<bool> g_bot_randomskills;
 extern Cvar::Cvar<bool> g_bot_infinite_funds;
 
 #endif // SG_EXTERN_H_

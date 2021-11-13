@@ -635,7 +635,7 @@ void BotMoveToGoal( gentity_t *self )
 	BotSeek( self, dir );
 
 	// dumb bots don't know how to be efficient
-	if( self->botMind->botSkill.level < 5 )
+	if( self->botMind->botSkill.move() < 5 )
 	{
 		return;
 	}

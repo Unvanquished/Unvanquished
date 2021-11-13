@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "sg_bot_ai.h"
 
 /*
 =======================================================================
@@ -48,19 +49,15 @@ static void G_WriteClientSessionData( int clientNum )
 	const char *s;
 	const char *var;
 	gclient_t  *client = &level.clients[ clientNum ];
-	const char *behavior = G_BotGetBehavior( clientNum );
-	if ( behavior == nullptr )
-	{
-		behavior = "default";
-	}
+	botMemory_t *mind = g_entities[ clientNum ].botMind;
 
-	s = va( "%i %i %i %i %i %s %s",
+	s = va( "%i %i %i %i %s %s %s",
 		client->sess.spectatorState,
 		client->sess.spectatorClient,
 		client->sess.restartTeam,
 		client->sess.seenWelcome,
-		G_BotGetSkill( clientNum ),
-		behavior,
+		mind ? mind->botSkill.serialize() : "none",
+		( mind && mind->behaviorTree ) ? mind->behaviorTree->name : "default",
 		Com_ClientListString( &client->sess.ignoreList )
 	);
 
@@ -82,26 +79,24 @@ void G_ReadSessionData( gclient_t *client )
 	const char *var;
 	int        spectatorState;
 	int        restartTeam;
-	int        botSkill;
 	char       botTree[ MAX_QPATH ];
 	char       ignorelist[ 17 ];
 
 	var = va( "session%li", ( long )( client - level.clients ) );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof( s ) );
 
-	sscanf( s, "%i %i %i %i %i %63s %16s",
+	sscanf( s, "%i %i %i %i %s %63s %16s",
 	        &spectatorState,
 	        &client->sess.spectatorClient,
 	        &restartTeam,
 	        &client->sess.seenWelcome,
-	        &botSkill,
+	        client->sess.botSkill,
 	        botTree,
 	        ignorelist
 	      );
 
 	client->sess.spectatorState = ( spectatorState_t ) spectatorState;
 	client->sess.restartTeam = ( team_t ) restartTeam;
-	client->sess.botSkill = botSkill;
 	Q_strncpyz( client->sess.botTree, botTree, sizeof( client->sess.botTree ) );
 	Com_ClientListParse( &client->sess.ignoreList, ignorelist );
 }
@@ -120,7 +115,7 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 	sess->restartTeam = TEAM_NONE;
 	sess->spectatorState = SPECTATOR_FREE;
 	sess->spectatorClient = -1;
-	sess->botSkill = 0;
+	memset( sess->botSkill, 0, botSkill_max_length() );
 	sess->botTree[ 0 ] = '\0';
 
 	memset( &sess->ignoreList, 0, sizeof( sess->ignoreList ) );

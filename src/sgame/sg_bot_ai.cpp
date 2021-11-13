@@ -185,10 +185,11 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
 	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_QFLT };
 	botEntityAndDistance_t              ret = nullEntity;
+	botMemory_t* mind = self->botMind;
 
 	if ( e > E_NONE && e < E_NUM_BUILDABLES )
 	{
-		return self->botMind->closestBuildings[ e ];
+		return mind->closestBuildings[ e ];
 	}
 
 	switch ( e )
@@ -197,10 +198,10 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 		return ret;
 
 	case E_ENEMY:
-		return self->botMind->bestEnemy;
+		return mind->bestEnemy;
 
 	case E_DAMAGEDBUILDING:
-		return self->botMind->closestDamagedBuilding;
+		return mind->closestDamagedBuilding;
 
 	case E_FRIENDLYBUILDING:
 		return ClosestBuilding( self, true );
@@ -209,8 +210,8 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 		return ClosestBuilding( self, false );
 
 	case E_GOAL:
-		if (self->botMind->goal.targetsValidEntity()) {
-			ret.ent = self->botMind->goal.getTargetedEntity();
+		if (mind->goal.targetsValidEntity()) {
+			ret.ent = mind->goal.getTargetedEntity();
 			ret.distance = DistanceToGoal( self );
 		}
 		return ret;
@@ -502,12 +503,13 @@ This should always be used instead of the node->run function pointer
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeStatus_t status = node->run( self, node );
+	botMemory_t* mind = self->botMind;
 
 	// reset the current node if it finishes
 	// we do this so we can re-pathfind on the next entrance
-	if ( ( status == STATUS_SUCCESS || status == STATUS_FAILURE ) && self->botMind->currentNode == node )
+	if ( ( status == STATUS_SUCCESS || status == STATUS_FAILURE ) && mind->currentNode == node )
 	{
-		self->botMind->currentNode = nullptr;
+		mind->currentNode = nullptr;
 	}
 
 	// reset running information on node success so sequences and selectors reset their state
@@ -616,13 +618,13 @@ AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *nod
 AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 {
 	botMemory_t const* mind = self->botMind;
-	if ( !self->botMind->goal.isValid() )
+	if ( !mind->goal.isValid() )
 	{
 		return STATUS_FAILURE;
 	}
 
-	if ( self->botMind->goal.targetsValidEntity()
-	  && ( G_Team( self->botMind->goal.getTargetedEntity() )
+	if ( mind->goal.targetsValidEntity()
+	  && ( G_Team( mind->goal.getTargetedEntity() )
 	    != G_Team( self ) ) )
 	{
 		BotAimAtEnemy( self );
@@ -669,12 +671,14 @@ AINodeStatus_t BotActionAlternateStrafe( gentity_t *self, AIGenericNode_t* )
 
 AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t* )
 {
-	BotClassMovement( self, BotTargetInAttackRange( self, self->botMind->goal ) );
+	botMemory_t* mind = self->botMind;
+	BotClassMovement( self, BotTargetInAttackRange( self, mind->goal ) );
 	return STATUS_SUCCESS;
 }
 
 AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 {
+	botMemory_t* mind = self->botMind;
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
 
 	if( a->nparams == 1 )
@@ -699,7 +703,7 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	self->botMind->currentNode = node;
+	mind->currentNode = node;
 	return STATUS_SUCCESS;
 }
 
@@ -734,23 +738,23 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
 	team_t myTeam = ( team_t ) self->client->pers.team;
-	botMemory_t const* mind = self->botMind;
+	botMemory_t * mind = self->botMind;
 
-	if ( self->botMind->currentNode != node )
+	if ( mind->currentNode != node )
 	{
-		if ( !BotEntityIsValidEnemyTarget( self, self->botMind->bestEnemy.ent ) || !BotChangeGoalEntity( self, self->botMind->bestEnemy.ent ) )
+		if ( !BotEntityIsValidEnemyTarget( self, mind->bestEnemy.ent ) || !BotChangeGoalEntity( self, mind->bestEnemy.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
 
-		self->botMind->currentNode = node;
-		self->botMind->enemyLastSeen = level.time;
+		mind->currentNode = node;
+		mind->enemyLastSeen = level.time;
 		return STATUS_RUNNING;
 	}
 
 	// we killed it, yay!
 	if ( !BotEntityIsValidEnemyTarget( self,
-			self->botMind->goal.getTargetedEntity() ) )
+			mind->goal.getTargetedEntity() ) )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -773,38 +777,36 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	//aliens have radar so they will always 'see' the enemy if they are in radar range
 	if ( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( ALIENSENSE_RANGE ) )
 	{
-		self->botMind->enemyLastSeen = level.time;
+		mind->enemyLastSeen = level.time;
 	}
 
-	if ( !BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
+	if ( !BotTargetIsVisible( self, mind->goal, CONTENTS_SOLID ) )
 	{
 		botTarget_t proposedTarget;
-		proposedTarget = self->botMind->bestEnemy.ent;
+		proposedTarget = mind->bestEnemy.ent;
 
 		//we can see another enemy (not our target) so switch to it
 		// FIXME: this if or what's in it is wrong.
-		if ( self->botMind->bestEnemy.ent
-		  && ( self->botMind->goal.getTargetedEntity()
-		    != self->botMind->bestEnemy.ent )
-		  && BotPathIsWalkable( self, proposedTarget ) )
+		if ( mind->bestEnemy.ent
+		     && ( mind->goal.getTargetedEntity() != mind->bestEnemy.ent )
+		     && BotPathIsWalkable( self, proposedTarget ) )
 		{
 			return STATUS_SUCCESS;
 		}
-		else if ( level.time - self->botMind->enemyLastSeen >= g_bot_chasetime.Get() )
+
+		if ( level.time - mind->enemyLastSeen >= g_bot_chasetime.Get() * mind->botSkill.aggro() )
 		{
 			return STATUS_SUCCESS;
 		}
-		else
-		{
-			BotMoveToGoal( self );
-			return STATUS_RUNNING;
-		}
+
+		BotMoveToGoal( self );
+		return STATUS_RUNNING;
 	}
 
 	// We have a valid visible target
 
-	bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
-	self->botMind->enemyLastSeen = level.time;
+	bool inAttackRange = BotTargetInAttackRange( self, mind->goal );
+	mind->enemyLastSeen = level.time;
 
 	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !mind->nav().directPathToGoal )
 	{
@@ -832,9 +834,10 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	// We are human and we either are at fire range, or have
 	// a direct path to goal
 
-	if ( self->botMind->botSkill.level >= 3 && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
-	        && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->botSkill.level < 5 )
-	        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
+	if ( mind->botSkill.move() >= 3
+	     && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
+	     && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || mind->botSkill.move() < 5 )
+	     && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
 	{
 		BotMoveInDir( self, MOVE_BACKWARD );
 	}
@@ -856,7 +859,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		}
 	}
 
-	if ( inAttackRange && self->botMind->goal.getTargetType() == entityType_t::ET_BUILDABLE )
+	if ( inAttackRange && mind->goal.getTargetType() == entityType_t::ET_BUILDABLE )
 	{
 		BotStandStill( self );
 	}
@@ -868,16 +871,17 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( node != self->botMind->currentNode )
+	botMemory_t* mind = self->botMind;
+	if ( node != mind->currentNode )
 	{
 		if ( !BotChangeGoal( self, BotGetRetreatTarget( self ) ) )
 		{
 			return STATUS_FAILURE;
 		}
-		self->botMind->currentNode = node;
+		mind->currentNode = node;
 	}
 
-	if ( !self->botMind->goal.isValid() )
+	if ( !mind->goal.isValid() )
 	{
 		return STATUS_FAILURE;
 	}
@@ -899,9 +903,9 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
 	float radius = AIUnBoxFloat( a->params[ 1 ] );
-	botMemory_t const* mind = self->botMind;
+	botMemory_t * mind = self->botMind;
 
-	if ( node != self->botMind->currentNode )
+	if ( node != mind->currentNode )
 	{
 		glm::vec3 point;
 		botEntityAndDistance_t ent = AIEntityToGentity( self, e );
@@ -920,7 +924,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
-		self->botMind->currentNode = node;
+		mind->currentNode = node;
 	}
 
 	if ( mind->nav().directPathToGoal && GoalInRange( self, 70 ) )
@@ -934,16 +938,16 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 {
-	botMemory_t const* mind = self->botMind;
+	botMemory_t * mind = self->botMind;
 	// we are just starting to roam, get a target location
-	if ( node != self->botMind->currentNode )
+	if ( node != mind->currentNode )
 	{
 		botTarget_t target = BotGetRoamTarget( self );
 		if ( !BotChangeGoal( self, target ) )
 		{
 			return STATUS_FAILURE;
 		}
-		self->botMind->currentNode = node;
+		mind->currentNode = node;
 	}
 
 	if ( mind->nav().directPathToGoal && GoalInRange( self, 70 ) )
@@ -970,14 +974,14 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	float radius = 0;
 	AIActionNode_t *moveTo = ( AIActionNode_t * ) node;
 	AIEntity_t ent = ( AIEntity_t ) AIUnBoxInt( moveTo->params[ 0 ] );
-	botMemory_t const* mind = self->botMind;
+	botMemory_t * mind = self->botMind;
 
 	if ( moveTo->nparams > 1 )
 	{
 		radius = std::max( AIUnBoxFloat( moveTo->params[ 1 ] ), 0.0f );
 	}
 
-	if ( node != self->botMind->currentNode )
+	if ( node != mind->currentNode )
 	{
 		if ( !BotChangeGoal( self, BotGetMoveToTarget( self, ent ) ) )
 		{
@@ -985,12 +989,12 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 		}
 		else
 		{
-			self->botMind->currentNode = node;
+			mind->currentNode = node;
 			return STATUS_RUNNING;
 		}
 	}
 
-	if ( !self->botMind->goal.isValid() )
+	if ( !mind->goal.isValid() )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1012,7 +1016,8 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( self->botMind->currentNode != node )
+	botMemory_t* mind = self->botMind;
+	if ( mind->currentNode != node )
 	{
 		if ( !BotChangeGoal( self, BotGetRushTarget( self ) ) )
 		{
@@ -1020,12 +1025,12 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 		}
 		else
 		{
-			self->botMind->currentNode = node;
+			mind->currentNode = node;
 			return STATUS_RUNNING;
 		}
 	}
 
-	if ( !self->botMind->goal.isValid() )
+	if ( !mind->goal.isValid() )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1071,7 +1076,8 @@ AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t* )
 
 AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* )
 {
-	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	botMemory_t* mind = self->botMind;
+	usercmd_t *botCmdBuffer = &mind->cmdBuffer;
 	usercmdPressButton( botCmdBuffer->buttons, BTN_GESTURE );
 	return AINodeStatus_t::STATUS_SUCCESS;
 }
@@ -1081,7 +1087,8 @@ AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* )
 */
 AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( self->botMind->currentNode != node )
+	botMemory_t* mind = self->botMind;
+	if ( mind->currentNode != node )
 	{
 		// already fully healed
 		if ( Entities::HasFullHealth(self) )
@@ -1091,17 +1098,17 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 
 		gentity_t const *healTarget = nullptr;
 
-		if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
+		if ( mind->closestBuildings[BA_A_BOOSTER].ent )
 		{
-			healTarget = self->botMind->closestBuildings[BA_A_BOOSTER].ent;
+			healTarget = mind->closestBuildings[BA_A_BOOSTER].ent;
 		}
-		else if ( self->botMind->closestBuildings[BA_A_OVERMIND].ent )
+		else if ( mind->closestBuildings[BA_A_OVERMIND].ent )
 		{
-			healTarget = self->botMind->closestBuildings[BA_A_OVERMIND].ent;
+			healTarget = mind->closestBuildings[BA_A_OVERMIND].ent;
 		}
-		else if ( self->botMind->closestBuildings[BA_A_SPAWN].ent )
+		else if ( mind->closestBuildings[BA_A_SPAWN].ent )
 		{
-			healTarget = self->botMind->closestBuildings[BA_A_SPAWN].ent;
+			healTarget = mind->closestBuildings[BA_A_SPAWN].ent;
 		}
 
 		if ( !healTarget )
@@ -1114,7 +1121,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 
-		self->botMind->currentNode = node;
+		mind->currentNode = node;
 	}
 
 	//we are fully healed now
@@ -1124,7 +1131,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// Can't heal at dead targets.
-	if ( !self->botMind->goal.targetsValidEntity() )
+	if ( !mind->goal.targetsValidEntity() )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1155,19 +1162,20 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	bool fullyHealed = Entities::HasFullHealth(self) &&
 		BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
+	botMemory_t* mind = self->botMind;
 
-	if ( self->botMind->currentNode != node )
+	if ( mind->currentNode != node )
 	{
 		if ( fullyHealed )
 		{
 			return STATUS_FAILURE;
 		}
 
-		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent ) )
+		if ( !BotChangeGoalEntity( self, mind->closestBuildings[ BA_H_MEDISTAT ].ent ) )
 		{
 			return STATUS_FAILURE;
 		}
-		self->botMind->currentNode = node;
+		mind->currentNode = node;
 	}
 
 	if ( fullyHealed )
@@ -1175,6 +1183,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
+	auto const& goal = mind->goal;
 	// Can't heal at dead targets.
 	if ( !self->botMind->goal.targetsValidEntity() )
 	{
@@ -1187,7 +1196,6 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	auto const& goal = self->botMind->goal;
 	const gentity_t * medistation = goal.getTargetedEntity();
 
 	glm::vec3 targetPos = goal.getPos();
@@ -1216,23 +1224,23 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 {
-	botMemory_t const* mind = self->botMind;
+	botMemory_t * mind = self->botMind;
 
-	if ( node != self->botMind->currentNode )
+	if ( node != mind->currentNode )
 	{
-		if ( !BotChangeGoalEntity( self, self->botMind->closestDamagedBuilding.ent ) )
+		if ( !BotChangeGoalEntity( self, mind->closestDamagedBuilding.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
-		self->botMind->currentNode = node;
+		mind->currentNode = node;
 	}
 
-	if ( !self->botMind->goal.targetsValidEntity() )
+	if ( !mind->goal.targetsValidEntity() )
 	{
 		return STATUS_FAILURE;
 	}
 
-	if ( Entities::HasFullHealth( self->botMind->goal.getTargetedEntity() ) )
+	if ( Entities::HasFullHealth( mind->goal.getTargetedEntity() ) )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -1246,7 +1254,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 
 	//move to the damaged building until we are in range
-	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_SHOT ) || DistanceToGoalSquared( self ) > Square( 100 ) )
+	if ( !BotTargetIsVisible( self, mind->goal, MASK_SHOT ) || DistanceToGoalSquared( self ) > Square( 100 ) )
 	{
 		BotMoveToGoal( self );
 		return STATUS_RUNNING;
@@ -1331,11 +1339,12 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		}
 	}
 
-	if ( self->botMind->currentNode != node )
+	botMemory_t* mind = self->botMind;
+	if ( mind->currentNode != node )
 	{
 		botEntityAndDistance_t *ngoal;
 
-		ngoal = &self->botMind->closestBuildings[ BA_H_ARMOURY ];
+		ngoal = &mind->closestBuildings[ BA_H_ARMOURY ];
 
 		if ( !ngoal->ent )
 		{
@@ -1346,15 +1355,15 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
-		self->botMind->currentNode = node;
+		mind->currentNode = node;
 	}
 
-	if ( !self->botMind->goal.targetsValidEntity() )
+	if ( !mind->goal.targetsValidEntity() )
 	{
 		return STATUS_FAILURE;
 	}
 
-	if ( !self->botMind->goal.getTargetedEntity()->powered )
+	if ( !mind->goal.getTargetedEntity()->powered )
 	{
 		return STATUS_FAILURE;
 	}

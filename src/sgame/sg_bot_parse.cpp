@@ -174,11 +174,6 @@ static AIValue_t botClass( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( self->client->ps.stats[ STAT_CLASS ] );
 }
 
-static AIValue_t botSkill( gentity_t *self, const AIValue_t* )
-{
-	return AIBoxInt( self->botMind->botSkill.level );
-}
-
 static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 {
 	botTarget_t target;
@@ -353,7 +348,6 @@ static const struct AIConditionMap_s
 	{ "percentAmmo",       percentAmmo,       0 },
 	{ "percentHealth",     percentHealth,     1 },
 	{ "random",            randomChance,      0 },
-	{ "skill",             botSkill,          0 },
 	{ "stuckTime",         stuckTime,         0 },
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },

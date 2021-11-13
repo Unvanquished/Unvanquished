@@ -81,12 +81,53 @@ struct enemyQueue_t
 	int back;
 };
 
-struct botSkill_t
+class botSkill_t
 {
 	int level;
 	float aimSlowness;
 	float aimShake;
+	friend constexpr size_t botSkill_max_length( void );
+	static const size_t max_length = 2;
+	unsigned m_level; //initial skill value
+
+	enum skills { MOVE, AIM, AGGRO, NUM_SKILLS };
+	int m_skills[NUM_SKILLS]; //individual skills (kept for future (de)serialisation)
+
+	unsigned m_aim; //resulting average aiming
+	float m_aggro;  //resulting average aggessiveness
+public:
+
+	// allows to serialize the skill repartitions
+	// TODO: implement and use properly
+	char const* serialize( void ) const;
+
+	// resets a bot's skills according to an old skill repartition
+	// TODO: implement and use properly
+	bool deserialize( char const* ) const;
+
+	// how much move skills the bots knows
+	// between 1 and 9, included.
+	uint8_t move( void ) const;
+
+	// bot aggressiveness between 0 and 1 included
+	float aggro( void ) const;
+
+	// bot's aiming, between 1 and 1000 included
+	int aim( void ) const;
+	// bot's aiming, modified with a random factor
+	// between 1 and 1000 included
+	int rndAim( void ) const;
+
+	// generates a random skill repartition from a base level.
+	// on error, use an base level and return true.
+	// number of points dispatched are base * number of trees.
+	bool set( char const* name, int ent_ID /*hackish*/, int level );
 };
+
+constexpr size_t botSkill_max_length( void )
+{
+	return botSkill_t::max_length;
+}
 
 #define MAX_NODE_DEPTH 20
 struct AIBehaviorTree_t;

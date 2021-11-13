@@ -1275,7 +1275,14 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	// can happen during reconnection
 	if ( !ent->botMind )
 	{
-		G_BotSetDefaults( clientNum, team, client->sess.botSkill, client->sess.botTree );
+		char *end = nullptr;
+		int skill = strtoul( client->sess.botSkill, &end, 10 );
+		if ( !( *client->sess.botSkill != 0 && *end == 0 ) )
+		{
+			//TODO there's a problem, let's emit a warning that default value (5) is used instead
+			skill = 5;
+		}
+		G_BotSetDefaults( clientNum, team, skill, client->sess.botTree );
 	}
 
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^*\" \"%s^*\" [BOT]",

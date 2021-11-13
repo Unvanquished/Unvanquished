@@ -162,18 +162,6 @@ static void G_BotNameUsed( team_t team, const char *name, bool inUse )
 	}
 }
 
-int G_BotGetSkill( int clientNum )
-{
-	gentity_t *bot = &g_entities[clientNum];
-
-	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
-	{
-		return 0;
-	}
-
-	return bot->botMind->botSkill.level;
-}
-
 const char * G_BotGetBehavior( int clientNum )
 {
 	gentity_t *bot = &g_entities[clientNum];
@@ -627,7 +615,7 @@ void botMemory_t::willSprint( bool enable )
 // walking, and stamina not recharging at all.
 void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 {
-	exhausted = exhausted || ( botSkill.level >= 5 && stamina <= jumpCost + jumpCost / 10 );
+	exhausted = exhausted || ( botSkill.move() >= 5 && stamina <= jumpCost + jumpCost / 10 );
 	if ( !exhausted && wantSprinting )
 	{
 		usercmdPressButton( cmd.buttons, BTN_SPRINT );
@@ -639,3 +627,148 @@ void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 
 	exhausted = exhausted && stamina <= jumpCost * 2;
 }
+
+char const* botSkill_t::serialize( void ) const
+{
+	static char str[max_length] = "0";
+	ASSERT( m_level < 10 );
+	str[0] = '0' + m_level;
+	return str;
+}
+
+uint8_t botSkill_t::move( void ) const
+{
+	return m_skills[skills::MOVE];
+}
+
+float botSkill_t::aggro( void ) const
+{
+	return m_aggro;
+}
+
+int botSkill_t::aim( void ) const
+{
+	return m_aim;
+}
+
+int botSkill_t::rndAim( void ) const
+{
+	float mod = std::max( static_cast<float>( rand() ) / RAND_MAX, 0.5f );
+	return std::max( 1, static_cast<int>( m_aim * mod ) );
+}
+
+bool botSkill_t::set( char const* name, int ent_ID, int level )
+{
+	const int MIN_SKILL = 1;
+	const int MAX_SKILL = 9;
+	const int RANGE_SKILL = MAX_SKILL - MIN_SKILL;
+
+	bool error = MIN_SKILL <= m_level && m_level <= MAX_SKILL;
+	if ( error )
+	{
+		level = 5;
+	}
+
+	int num_points = level * skills::NUM_SKILLS;
+	float dices[skills::NUM_SKILLS];
+	int points_accu = 0;
+	bool notbuggy = true;
+	//no randomness: all skills are the "level"'s value
+	if ( g_bot_randomskills.Get() == 0 )
+	{
+		num_points = 0;
+		for( int &skill : m_skills )
+		{
+			skill = level;
+			num_points -= level; //this is used later as a security
+		}
+	}
+	else
+	{
+		const int SKMAX = ( skills::NUM_SKILLS - 1 );
+
+		// fill a dice array with random values
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<> dis( 0.f, 1.f / SKMAX );
+		float dice_accu = 0.f;
+		int maxed = 0;
+		for( size_t i = 0; i < SKMAX; ++i )
+		{
+			dices[i] = dis ( gen );
+			dice_accu += dices[i];
+		}
+		dices[skills::NUM_SKILLS-1] = ( 1 - dice_accu );
+
+		// assign associated skill values
+		for( size_t i = 0; i < skills::NUM_SKILLS; ++i )
+		{
+			m_skills[i] = std::floor( MIN_SKILL + dices[i] * ( level - MIN_SKILL ) * skills::NUM_SKILLS );
+			if( m_skills[i] >= MAX_SKILL )
+			{
+				m_skills[i] = MAX_SKILL;
+				++maxed;
+			}
+			num_points -= m_skills[i];
+		}
+
+		// now, we need to make sure there are no wasted points
+		// from there, everythings works for all elements of array
+
+		// distribute points as evenly as possible, might overflow new skills
+		while( num_points > skills::NUM_SKILLS - maxed )
+		{
+			int div = num_points / ( skills::NUM_SKILLS - maxed );
+			for( size_t i = 0; i < skills::NUM_SKILLS; ++i )
+			{
+				if( m_skills[i] < MAX_SKILL )
+				{
+					int temp = m_skills[i] + div;
+					if( temp >= MAX_SKILL )
+					{
+						temp = MAX_SKILL;
+						++maxed;
+					}
+					num_points -= temp - m_skills[i];
+					m_skills[i] = temp;
+				}
+			}
+		}
+
+		// stop trying to be fair, spend from start to end because it's
+		// annoying enough already
+		for( size_t i = 0; num_points && i < skills::NUM_SKILLS; ++i )
+		{
+			if( m_skills[i] < MAX_SKILL )
+			{
+				++m_skills[i];
+				--num_points;
+			}
+		}
+
+		// let's check all is fine...
+		points_accu = 0;
+		for( size_t i = 0; i < skills::NUM_SKILLS; ++i )
+		{
+			points_accu += m_skills[i];
+		}
+		notbuggy = num_points == 0 && points_accu == level * skills::NUM_SKILLS;
+	}
+
+	// puts some "logs" to allow debugging, "just in case"
+	//TODO: this really needs to be improved, so that any teammate can know the scores at any moment
+	//The more detailed info are also only useful for debugging, so should be moved to proper logger
+	Log::Notice( "%s [%d]: %s move: %d aim: %d aggro: %d\td1: %f d2: %f d3: %f\tnp: %d pt_acc: %d level: %d mult: %d"
+			, ( ( name && *name ) ? name : "unamed" ), ent_ID
+			, ( notbuggy ? "GOOD: " : "FAIL: " )
+			, m_skills[MOVE], m_skills[AIM], m_skills[AGGRO]
+			, dices[0], dices[1], dices[2]
+			, num_points, points_accu, level, skills::NUM_SKILLS );
+	ASSERT( notbuggy );
+
+	m_aggro = static_cast<float>( m_skills[skills::AGGRO] ) / RANGE_SKILL;
+	// conforms to old code
+	m_aim = ( MAX_SKILL + 1 - m_skills[skills::AIM] ) * 100;
+	return error;
+}
+

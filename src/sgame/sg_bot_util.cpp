@@ -34,16 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/gtx/vector_angle.hpp>
 
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
-static const int MIN_SKILL = 1;
-static const int MAX_SKILL = 9;
-static const int RANGE_SKILL = MAX_SKILL - MIN_SKILL;
-
-// computes a percent modifier out of skill level which is easier to work with
-// between 0 and 1
-static float SkillModifier( int botSkill )
-{
-       return static_cast<float>( botSkill - MIN_SKILL ) / RANGE_SKILL;
-}
 
 static float GetMaximalSpeed( gentity_t const *self );
 static float GetMaximalSpeed( class_t cl );
@@ -297,7 +287,7 @@ static int GetMaxEquipmentCost( gentity_t const* self )
 float BotGetBaseRushScore( gentity_t *ent )
 {
 	ASSERT( ent && ent->botMind && ent->client );
-	const float skill_modifier = 1 - 2 * SkillModifier( ent->botMind->botSkill.level );
+	const float skill_modifier = 1 - 2 * ent->botMind->botSkill.aggro();
 	// if nothing allowed from current stage have a cost,
 	// return average value on which other parameters can weight
 	float rush_score = 0.5;
@@ -369,7 +359,7 @@ float BotGetHealScore( gentity_t *self )
 	}
 
 	float timeDist = distToHealer / GetMaximalSpeed( self );
-	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentHealth ) / sqrt( timeDist );
+	return ( 1 + 5 * self->botMind->botSkill.aggro() ) * ( 1 - percentHealth ) / sqrt( timeDist );
 }
 
 float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
@@ -1361,7 +1351,7 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 	else if ( isTargetBuildable || targetTeam == TEAM_ALIENS )
 	{
 		//make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
-		if ( self->botMind->botSkill.level >= 5 )
+		if ( self->botMind->botSkill.aim() >= 500 )
 		{
 			//would be better if it was possible to do self.weapon->speed directly
 			int weapon_speed = 0;
@@ -1388,12 +1378,6 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 	return aimLocation;
 }
 
-int BotGetAimPredictionTime( gentity_t *self )
-{
-	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( random(), 0.5f );
-	return std::max( 1, int(time) );
-}
-
 glm::vec3 BotPredictPosition( gentity_t *self, gentity_t const *predict, int time )
 {
 	botTarget_t target;
@@ -1412,7 +1396,7 @@ void BotAimAtEnemy( gentity_t *self )
 
 	if ( self->botMind->futureAimTime < level.time )
 	{
-		int predictTime = self->botMind->futureAimTimeInterval = BotGetAimPredictionTime( self );
+		int predictTime = self->botMind->futureAimTimeInterval = self->botMind->botSkill.rndAim();
 		self->botMind->futureAim = BotPredictPosition( self, enemy, predictTime );
 		self->botMind->futureAimTime = level.time + predictTime;
 	}
@@ -2229,10 +2213,7 @@ void BotSellUpgrades( gentity_t *self )
 
 void BotSetSkillLevel( gentity_t *self, int skill )
 {
-	self->botMind->botSkill.level = skill;
-	// TODO: different aim for different teams
-	self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-	self->botMind->botSkill.aimShake = 10 - skill;
+	self->botMind->botSkill.set( self->client->pers.netname, self - g_entities, skill ); //TODO warn that a wrong value was assigned
 }
 
 void BotResetEnemyQueue( enemyQueue_t *queue )
@@ -2255,15 +2236,16 @@ void BotPushEnemy( enemyQueue_t *queue, gentity_t *enemy )
 	}
 }
 
-gentity_t *BotPopEnemy( enemyQueue_t *queue )
+gentity_t *BotPopEnemy( botMemory_t *mind )
 {
+	enemyQueue_t *queue = &mind->enemyQueue;
 	// queue empty
 	if ( queue->front == queue->back )
 	{
 		return nullptr;
 	}
 
-	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.Get() )
+	if ( level.time - queue->enemys[ queue->front ].timeFound >= ( g_bot_reactiontime.Get() + mind->botSkill.aim() ) / 2 )
 	{
 		gentity_t *ret = queue->enemys[ queue->front ].ent;
 		queue->front = ( queue->front + 1 ) % MAX_ENEMY_QUEUE;
@@ -2287,12 +2269,13 @@ void BotPain( gentity_t *self, gentity_t *attacker, int )
 void BotSearchForEnemy( gentity_t *self )
 {
 	gentity_t *enemy = BotFindBestEnemy( self );
-	enemyQueue_t *queue = &self->botMind->enemyQueue;
+	botMemory_t *mind = self->botMind;
+	enemyQueue_t *queue = &mind->enemyQueue;
 	BotPushEnemy( queue, enemy );
 
 	do
 	{
-		enemy = BotPopEnemy( queue );
+		enemy = BotPopEnemy( mind );
 	} while ( enemy && !BotEntityIsValidEnemyTarget( self, enemy ) );
 
 	self->botMind->bestEnemy.ent = enemy;
