@@ -53,7 +53,7 @@ public:
 
 	void FormatData( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data )
 	{
-		Com_Memset( &data, 0, sizeof( data ) );
+		memset( &data, 0, sizeof( data ) );
 
 		for ( size_t i = 0; i < raw_data.size(); ++i )
 		{

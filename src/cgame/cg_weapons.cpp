@@ -206,7 +206,7 @@ void CG_InitUpgrades()
 {
 	int i;
 
-	Com_Memset( cg_upgrades, 0, sizeof( cg_upgrades ) );
+	memset( cg_upgrades, 0, sizeof( cg_upgrades ) );
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
@@ -1164,7 +1164,7 @@ void CG_InitWeapons()
 {
 	int i;
 
-	Com_Memset( cg_weapons, 0, sizeof( cg_weapons ) );
+	memset( cg_weapons, 0, sizeof( cg_weapons ) );
 
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 	{

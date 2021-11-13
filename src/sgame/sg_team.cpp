@@ -151,7 +151,7 @@ static clientList_t G_ClientListForTeam( team_t team )
 	int          i;
 	clientList_t clientList;
 
-	Com_Memset( &clientList, 0, sizeof( clientList_t ) );
+	memset( &clientList, 0, sizeof( clientList_t ) );
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
@@ -184,8 +184,8 @@ void G_UpdateTeamConfigStrings()
 	if ( level.intermissiontime )
 	{
 		// No restrictions once the game has ended
-		Com_Memset( &alienTeam, 0, sizeof( clientList_t ) );
-		Com_Memset( &humanTeam, 0, sizeof( clientList_t ) );
+		memset( &alienTeam, 0, sizeof( clientList_t ) );
+		memset( &humanTeam, 0, sizeof( clientList_t ) );
 	}
 
 	trap_SetConfigstringRestrictions( CS_VOTE_TIME + TEAM_ALIENS,   &humanTeam );
