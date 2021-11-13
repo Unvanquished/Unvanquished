@@ -184,46 +184,6 @@ Scoring functions for logic
 =======================
 */
 
-botEntityAndDistance_t BotGetClosestBuildingAmongTypes(
-		gentity_t *self, const std::initializer_list<buildable_t> buildables )
-{
-	botEntityAndDistance_t best_choice = { nullptr, 1.0e30f };
-	for ( buildable_t buildable : buildables )
-	{
-		botEntityAndDistance_t candidate =
-			self->botMind->closestBuildings[ buildable ];
-		if ( candidate.ent && candidate.distance < best_choice.distance )
-		{
-			best_choice = candidate;
-		}
-	}
-	return best_choice;
-}
-
-const gentity_t *BotGetHealTarget( gentity_t *self )
-{
-	if ( G_Team(self) == TEAM_HUMANS )
-	{
-		return self->botMind->closestBuildings[BA_H_MEDISTAT].ent;
-	}
-
-	// Aliens
-	if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
-	{
-		// powered booster
-		return self->botMind->closestBuildings[BA_A_BOOSTER].ent;
-	}
-	else
-	{
-		// no working booster, rely on creep instead
-		return BotGetClosestBuildingAmongTypes( self,
-				{ BA_A_SPAWN, BA_A_OVERMIND, BA_A_BARRICADE,
-				  BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_HIVE,
-				  BA_A_LEECH, BA_A_SPIKER }
-				).ent;
-	}
-}
-
 // computes the maximum credits this bot could spend in
 // equipment (or classes) with infinite credits.
 static int GetMaxEquipmentCost( gentity_t const* self )
@@ -351,20 +311,23 @@ float BotGetHealScore( gentity_t *self )
 
 	if ( self->client->pers.team == TEAM_ALIENS )
 	{
+		//Alien code is notoriously bugged if the heal source can not be reached,
+		//which includes sources on walls and ceilings.
+		//This way of doing code more or less works, because boosters have rather
+		//big area (but aliens won't take poison) and players usually put them in
+		//places they can reach without too much hassle.
+		//The bug can be noted if overmind is removed and closest egg is high enough.
 		if ( self->botMind->closestBuildings[ BA_A_BOOSTER ].ent )
 		{
 			distToHealer = self->botMind->closestBuildings[ BA_A_BOOSTER ].distance;
 		}
-		else
+		else if ( self->botMind->closestBuildings[ BA_A_OVERMIND ].ent )
 		{
-			// no booster, let's use creep instead
-			distToHealer =
-				BotGetClosestBuildingAmongTypes( self,
-					{ BA_A_SPAWN, BA_A_OVERMIND,
-					  BA_A_BARRICADE, BA_A_ACIDTUBE,
-					  BA_A_TRAPPER, BA_A_HIVE, BA_A_LEECH,
-					  BA_A_SPIKER }
-					).distance;
+			distToHealer = self->botMind->closestBuildings[ BA_A_OVERMIND ].distance;
+		}
+		else if ( self->botMind->closestBuildings[ BA_A_SPAWN ].ent )
+		{
+			distToHealer = self->botMind->closestBuildings[ BA_A_SPAWN ].distance;
 		}
 	}
 	else
