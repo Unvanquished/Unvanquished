@@ -1136,6 +1136,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
+	VectorCopy( self->s.origin, myPos );
 
 	bool fullyHealed = Entities::HasFullHealth(self) &&
 		BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
@@ -1171,13 +1172,25 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	self->botMind->goal.getPos( targetPos );
-	VectorCopy( self->s.origin, myPos );
+	auto const& goal = self->botMind->goal;
+	const gentity_t * medistation = goal.getTargetedEntity();
+
+	goal.getPos( targetPos );
 	targetPos[2] += BG_BuildableModelConfig( BA_H_MEDISTAT )->maxs[2];
 	myPos[2] += self->r.mins[2]; //mins is negative
+	float distanceSquared = DistanceSquared( myPos, targetPos );
+
+	// If medistation is busy, do something else until can go on it anew.
+	// See https://github.com/Unvanquished/Unvanquished/pull/1598
+	// (It would be nice to allow the BT to check for the failure cause.
+	//  How? That's a good question)
+	if ( medistation->target && medistation->target.get() != self )
+	{
+		return STATUS_FAILURE;
+	}
 
 	//keep moving to the medi until we are on top of it
-	if ( DistanceSquared( myPos, targetPos ) > Square( BG_BuildableModelConfig( BA_H_MEDISTAT )->mins[1] ) )
+	if ( distanceSquared > Square( BG_BuildableModelConfig( BA_H_MEDISTAT )->mins[1] ) )
 	{
 		BotMoveToGoal( self );
 	}
