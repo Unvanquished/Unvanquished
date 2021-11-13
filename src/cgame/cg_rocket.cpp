@@ -58,9 +58,6 @@ void CG_Rocket_Init( glconfig_t gl )
 	// Init Rocket
 	Rocket_Init();
 
-	// Regular cvars. Init them now they appear correctly in the menu.
-	CG_RegisterCvars();
-
 	CG_InitConsoleCommands();
 
 	// Initialize data sources...

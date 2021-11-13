@@ -1786,7 +1786,6 @@ extern Cvar::Cvar<bool> cg_teamChatsOnly;
 extern Cvar::Cvar<bool> cg_noVoiceChats;
 extern Cvar::Cvar<bool> cg_noVoiceText;
 extern Cvar::Cvar<bool> cg_smoothClients;
-extern  vmCvar_t            cg_timescale;
 extern Cvar::Cvar<bool> cg_noTaunt;
 extern Cvar::Cvar<bool> cg_drawSurfNormal;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawBBOX;
@@ -1824,14 +1823,11 @@ extern Cvar::Range<Cvar::Cvar<int>> cg_sprintToggle;
 extern Cvar::Range<Cvar::Cvar<int>> cg_unlagged;
 
 extern Cvar::Cvar<std::string> cg_cmdGrenadeThrown;
-extern  vmCvar_t            cg_cmdNeedHealth;
 
 extern Cvar::Cvar<bool> cg_debugVoices;
 
 extern Cvar::Cvar<bool> cg_optimizePrediction;
 extern Cvar::Cvar<bool> cg_projectileNudge;
-
-extern vmCvar_t             cg_voice;
 
 extern Cvar::Cvar<bool> cg_emoticonsInMessages;
 
@@ -1850,7 +1846,6 @@ extern Cvar::Cvar<bool> cg_lazyLoadModels;
 //
 // cg_main.c
 //
-void       CG_RegisterCvars();
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 const char *CG_Args();

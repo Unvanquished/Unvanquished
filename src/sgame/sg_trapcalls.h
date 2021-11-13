@@ -26,9 +26,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #define SG_TRAPCALLS_H_
 
 int              trap_Milliseconds();
-void             trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );
 void             trap_Cvar_Set( const char *var_name, const char *value );
-void             trap_Cvar_Update( vmCvar_t *cvar );
 int              trap_Cvar_VariableIntegerValue( const char *var_name );
 void             trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 int              trap_Argc();
