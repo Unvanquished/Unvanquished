@@ -798,7 +798,7 @@ Cmd_Kill_f
 */
 void Cmd_Kill_f( gentity_t *ent )
 {
-	if ( g_cheats.integer )
+	if ( g_cheats )
 	{
 		Entities::Kill(ent, MOD_SUICIDE);
 	}
@@ -848,7 +848,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// Cannot leave a team while in combat.
-	if ( !g_cheats.integer &&
+	if ( !g_cheats &&
 	     g_combatCooldown.Get() &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
@@ -4507,7 +4507,7 @@ void ClientCommand( int clientNum )
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_CHEAT) && !g_cheats.integer )
+	if ( (command->cmdFlags & CMD_CHEAT) && !g_cheats )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT );
 		return;
@@ -4526,7 +4526,7 @@ void ClientCommand( int clientNum )
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_CHEAT_TEAM) && !g_cheats.integer &&
+	if ( (command->cmdFlags & CMD_CHEAT_TEAM) && !g_cheats &&
 	     ent->client->pers.team != TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT_TEAM );

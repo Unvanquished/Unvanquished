@@ -1888,18 +1888,9 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	// map torso animations to weapon animations
-	if ( cg_gun_frame.integer )
-	{
-		// development tool
-		hand.frame = hand.oldframe = cg_gun_frame.integer;
-		hand.backlerp = 0;
-	}
-	else
-	{
-		hand.frame = CG_MapTorsoToWeaponFrame( cent->pe.torso.frame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
-		hand.oldframe = CG_MapTorsoToWeaponFrame( cent->pe.torso.oldFrame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
-		hand.backlerp = cent->pe.torso.backlerp;
-	}
+	hand.frame = CG_MapTorsoToWeaponFrame( cent->pe.torso.frame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
+	hand.oldframe = CG_MapTorsoToWeaponFrame( cent->pe.torso.oldFrame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
+	hand.backlerp = cent->pe.torso.backlerp;
 
 	hand.hModel = wi->handsModel;
 	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;

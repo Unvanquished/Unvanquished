@@ -34,6 +34,8 @@ extern  level_locals_t level;
 extern gentity_t *g_entities;
 extern gclient_t *g_clients;
 
+extern bool g_cheats;
+
 // ---------
 // temporary, compatibility layer between legacy code and CBSE logic
 // ---------
@@ -45,7 +47,6 @@ extern int            g_numDamageRegions[ PCL_NUM_CLASSES ];
 // cvars
 // -----
 
-extern  vmCvar_t g_cheats;
 extern Cvar::Cvar<int> g_maxGameClients;
 extern Cvar::Cvar<bool> g_lockTeamsAtStart;
 extern Cvar::Cvar<float> g_minNameChangePeriod;

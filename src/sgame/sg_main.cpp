@@ -53,7 +53,7 @@ Cvar::Cvar<bool> g_dretchPunt("g_dretchPunt", "aliens can propel dretches by att
 Cvar::Range<Cvar::Cvar<int>> g_needpass("g_needpass", "FOR INTERNAL USE", Cvar::SERVERINFO, 0, 0, 1);
 Cvar::Cvar<int> g_maxGameClients("g_maxGameClients", "max number of players (see also sv_maxclients)", Cvar::SERVERINFO, 0);
 Cvar::Cvar<float> g_speed("g_speed", "player movement speed multiplier", Cvar::NONE, 320);
-vmCvar_t           g_cheats;
+bool g_cheats;
 Cvar::Cvar<std::string> g_inactivity("g_inactivity", "seconds of inactivity before a player is removed. append 's' to spec instead of kick", Cvar::NONE, "0");
 Cvar::Cvar<int> g_debugMove("g_debugMove", "sgame pmove debug level", Cvar::NONE, 0);
 Cvar::Cvar<bool> g_debugFire("g_debugFire", "debug ground fire spawning", Cvar::NONE, false);
@@ -1925,7 +1925,7 @@ can see the last frag.
 */
 void CheckExitRules()
 {
-	if ( g_cheats.integer && g_neverEnd.Get() ) {
+	if ( g_cheats && g_neverEnd.Get() ) {
 		return;
 	}
 

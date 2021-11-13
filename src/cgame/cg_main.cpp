@@ -70,7 +70,6 @@ Cvar::Cvar<bool> cg_footsteps("cg_footsteps", "make footstep sounds", Cvar::CHEA
 Cvar::Cvar<bool> cg_addMarks("cg_marks", "enable marks (e.g. bullet holes)", Cvar::NONE, true);
 Cvar::Cvar<int> cg_viewsize("cg_viewsize", "size of rectangle the world is drawn in", Cvar::NONE, 100);
 Cvar::Range<Cvar::Cvar<int>> cg_drawGun("cg_drawGun", "draw 1st-person weapon (1 = guns, 2 = guns & claws)", Cvar::NONE, 1, 0, 2);
-vmCvar_t        cg_gun_frame;
 Cvar::Cvar<float> cg_gun_x("cg_gunX", "model debugging: gun x offset", Cvar::CHEAT, 0);
 Cvar::Cvar<float> cg_gun_y("cg_gunY", "model debugging: gun y offset", Cvar::CHEAT, 0);
 Cvar::Cvar<float> cg_gun_z("cg_gunZ", "model debugging: gun z offset", Cvar::CHEAT, 0);

@@ -1764,7 +1764,6 @@ extern Cvar::Cvar<bool> cg_footsteps;
 extern Cvar::Cvar<bool> cg_addMarks;
 extern Cvar::Cvar<int> cg_viewsize;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawGun;
-extern  vmCvar_t            cg_gun_frame;
 extern Cvar::Cvar<float> cg_gun_x;
 extern Cvar::Cvar<float> cg_gun_y;
 extern Cvar::Cvar<float> cg_gun_z;
