@@ -1849,12 +1849,6 @@ extern vmCvar_t             cg_sayCommand;
 extern Cvar::Cvar<bool> cg_lazyLoadModels;
 
 //
-// Rocket cvars
-//
-
-extern vmCvar_t            rocket_hudFile;
-extern vmCvar_t            rocket_menuFile;
-//
 // cg_main.c
 //
 void       CG_RegisterCvars();
