@@ -3266,12 +3266,12 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
 
 	std::string s = Str::Format( "%sVOTE(%i): %s\n"
-			"    Called by: \"%s\"\n"
+			"    Called by: \"%s^*\"\n"
 			"    [%s][<span class='material-icon'>&#xe8dc;</span>]:%i [%s][<span class='material-icon'>&#xe8db;</span>]:%i\n",
 			team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ],
 			cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
-	Rocket_SetInnerRML( s.c_str(), 0 );
+	Rocket_SetInnerRML( s.c_str(), RP_EMOTICONS|RP_QUAKE );
 }
 
 static void CG_Rocket_DrawVersion()
