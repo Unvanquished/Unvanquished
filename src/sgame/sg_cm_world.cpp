@@ -37,11 +37,12 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_cm_world.h"
 
-typedef struct worldEntity_s
+struct worldSector_t;
+struct worldEntity_t
 {
-	struct worldSector_s *worldSector;
-	struct worldEntity_s *nextEntityInWorldSector;
-} worldEntity_t;
+	worldSector_t *worldSector;
+	worldEntity_t *nextEntityInWorldSector;
+};
 
 worldEntity_t wentities[ MAX_GENTITIES ];
 
@@ -233,14 +234,14 @@ them, which prevents having to deal with multiple fragments of a single entity.
 ===============================================================================
 */
 
-typedef struct worldSector_s
+struct worldSector_t
 {
 	int                  axis; // -1 = leaf node
 	float                dist;
-	struct worldSector_s *children[ 2 ];
+	worldSector_t        *children[ 2 ];
 
 	worldEntity_t        *entities;
-} worldSector_t;
+};
 
 #define AREA_DEPTH 4
 #define AREA_NODES 64

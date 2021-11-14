@@ -652,7 +652,7 @@ static void CG_UpdateMediaFraction( float fraction )
 	trap_UpdateScreen();
 }
 
-enum {
+enum cgLoadingStep_t {
 	LOAD_START = 0,
 	LOAD_TRAILS,
 	LOAD_PARTICLES,
@@ -668,7 +668,7 @@ enum {
 	LOAD_HUDS,
 	LOAD_GLSL,
 	LOAD_DONE
-} typedef cgLoadingStep_t;
+};
 
 /*
 ======================

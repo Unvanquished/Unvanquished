@@ -78,7 +78,7 @@ enum AINode_t
 };
 
 struct AIGenericNode_t;
-typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, AIGenericNode_t * );
+using AINodeRunner = AINodeStatus_t (*)( gentity_t *self, AIGenericNode_t *node );
 
 // all behavior tree nodes must conform to this interface
 struct AIGenericNode_t
@@ -149,7 +149,7 @@ struct AIValue_t
 	} l;
 };
 
-typedef AIValue_t (*AIFunc)( gentity_t *self, const AIValue_t *params );
+using AIFunc = AIValue_t (*)( gentity_t *self, const AIValue_t *params );
 
 struct AIValueFunc_t
 {

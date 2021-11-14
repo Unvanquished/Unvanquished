@@ -56,12 +56,12 @@ struct pc_token_stripped_t
 	int   line;
 };
 
-typedef struct pc_token_list_s
+struct pc_token_list
 {
-	pc_token_stripped_t    token;
-	struct pc_token_list_s *prev;
-	struct pc_token_list_s *next;
-} pc_token_list;
+	pc_token_stripped_t token;
+	pc_token_list *prev;
+	pc_token_list *next;
+};
 
 struct AITreeList_t
 {

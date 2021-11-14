@@ -41,7 +41,7 @@ Maryland 20850 USA.
 // Code to interface with libRocket's datagrids for displaying
 // tabulated information nicely
 
-typedef std::map<std::string, RocketDataGrid*> StringGridMap_t;
+using StringGridMap_t = std::map<std::string, RocketDataGrid*>;
 StringGridMap_t dataSourceMap;
 
 void Rocket_RegisterDataSource( const char *name )
