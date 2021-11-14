@@ -82,7 +82,7 @@ Cvar::Cvar<bool> cg_thirdPerson("cg_thirdPerson", "show own player from 3rd-pers
 Cvar::Cvar<float> cg_thirdPersonAngle("cg_thirdPersonAngle", "yaw angle for 3rd-person view", Cvar::CHEAT, 0);
 Cvar::Range<Cvar::Cvar<int>> cg_thirdPersonShoulderViewMode("cg_thirdPersonShoulderViewMode", "alternative chase cam position", Cvar::NONE, 1, 1, 2);
 Cvar::Cvar<bool> cg_staticDeathCam("cg_staticDeathCam", "don't follow attacker movements after death", Cvar::NONE, false);
-Cvar::Cvar<bool> cg_thirdPersonPitchFollow("cg_thirdPersonPitchFollow", "I don't know", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_thirdPersonPitchFollow("cg_thirdPersonPitchFollow", "do follow the view pitch of the player you follow (disabled by default for comfort)", Cvar::NONE, false);
 Cvar::Cvar<float> cg_thirdPersonRange("cg_thirdPersonRange", "camera distance from 3rd-person player", Cvar::NONE, 75);
 Cvar::Cvar<bool> cg_lagometer("cg_lagometer", "show network latency meter", Cvar::NONE, false);
 Cvar::Range<Cvar::Cvar<int>> cg_drawSpeed("cg_drawSpeed", "show speed. bitflags: 0x1 number, 0x2 graph, 0x4 ignore z-component ", Cvar::NONE, 0, 0, 7);
@@ -120,11 +120,11 @@ Cvar::Cvar<bool> cg_rangeMarkerWhenSpectating("cg_rangeMarkerWhenSpectating", "s
 int cg_buildableRangeMarkerMask;
 Cvar::Range<Cvar::Cvar<float>> cg_binaryShaderScreenScale("cg_binaryShaderScreenScale", "I don't know", Cvar::NONE, 1.0, 0, 1);
 
-Cvar::Cvar<float> cg_painBlendUpRate("cg_painBlendUpRate", "I don't know", Cvar::NONE, 10.0);
-Cvar::Cvar<float> cg_painBlendDownRate("cg_painBlendDownRate", "I don't know", Cvar::NONE, 0.5);
-Cvar::Cvar<float> cg_painBlendMax("cg_painBlendMax", "I don't know", Cvar::NONE, 0.7);
-Cvar::Cvar<float> cg_painBlendScale("cg_painBlendScale", "I don't know", Cvar::NONE, 7.0);
-Cvar::Cvar<float> cg_painBlendZoom("cg_painBlendZoom", "I don't know", Cvar::NONE, 0.65);
+Cvar::Cvar<float> cg_painBlendUpRate("cg_painBlendUpRate", "how fast the pain indicator will appear", Cvar::NONE, 10.0);
+Cvar::Cvar<float> cg_painBlendDownRate("cg_painBlendDownRate", "how fast the pain indicator will disappear", Cvar::NONE, 0.5);
+Cvar::Cvar<float> cg_painBlendMax("cg_painBlendMax", "upper bound on how opaque the pain indicator will be", Cvar::NONE, 0.7);
+Cvar::Cvar<float> cg_painBlendScale("cg_painBlendScale", "how amplified the damage will be for the blood indicator (1->damage is barely visible, 20->damage reaches cg_painBlendMax almost instantly", Cvar::NONE, 7.0);
+Cvar::Cvar<float> cg_painBlendZoom("cg_painBlendZoom", "size scale factor for the the pain indicator", Cvar::NONE, 0.65);
 
 Cvar::Range<Cvar::Cvar<int>> cg_stickySpec("cg_stickySpec", "if 0, cycle followed player upon death", Cvar::USERINFO, 1, 0, 1);
 Cvar::Range<Cvar::Cvar<int>> cg_sprintToggle("cg_sprintToggle", "toggle instead of hold to sprint", Cvar::USERINFO, 0, 0, 1);
@@ -148,8 +148,8 @@ Cvar::Cvar<bool> cg_animSpeed("cg_animspeed", "run animations? (for debugging)",
 Cvar::Cvar<float> cg_animBlend("cg_animblend", "I don't know", Cvar::NONE, 5.0);
 
 Cvar::Cvar<float> cg_motionblur("cg_motionblur", "strength of motion blur", Cvar::NONE, 0.05);
-Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "speed triggering motion blur", Cvar::NONE, 600);
-Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "world is gray when dead or spawning", Cvar::NONE, true);
+Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed to trigger motion blur", Cvar::NONE, 600);
+Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "desaturate world view when dead or spawning", Cvar::NONE, true);
 
 // search 'fovCvar' to find usage of these (names come from config files)
 // 0 means use global FOV setting
