@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef SG_ADMIN_H
 #define SG_ADMIN_H
 
+struct gentity_t;
+
 #define AP(x)         trap_SendServerCommand(-1, x)
 #define CP(x)         trap_SendServerCommand(ent - g_entities, x)
 #define CPx(x, y)     trap_SendServerCommand(x, y)

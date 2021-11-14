@@ -35,7 +35,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #define BOTLIB_API_H_
 
 #include "bot_types.h"
-#include "sgame/sg_typedef.h"
 #include "sgame/sg_bot_local.h"
 
 void BotInit();

@@ -1,7 +1,7 @@
 general:
     common_entity_attributes:
         - name: oldEnt
-          type: struct gentity_s*
+          type: gentity_t*
 
 messages:
     PrepareNetCode:
