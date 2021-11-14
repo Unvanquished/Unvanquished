@@ -295,7 +295,7 @@ static void CG_Draw2D()
 {
 	int i;
 
-	if ( cg_draw2D.integer == 0 )
+	if ( !cg_draw2D.Get() )
 	{
 		return;
 	}
@@ -344,10 +344,10 @@ static void CG_ScalePainBlendTCs( float *s1, float *t1, float *s2, float *t2 )
 	*s2 -= 0.5f;
 	*t2 -= 0.5f;
 
-	*s1 *= cg_painBlendZoom.value;
-	*t1 *= cg_painBlendZoom.value;
-	*s2 *= cg_painBlendZoom.value;
-	*t2 *= cg_painBlendZoom.value;
+	*s1 *= cg_painBlendZoom.Get();
+	*t1 *= cg_painBlendZoom.Get();
+	*s2 *= cg_painBlendZoom.Get();
+	*t2 *= cg_painBlendZoom.Get();
 
 	*s1 += 0.5f;
 	*t1 += 0.5f;
@@ -385,12 +385,12 @@ static void CG_PainBlend()
 	damageAsFracOfMax = ( float ) damage / cg.snap->ps.stats[ STAT_MAX_HEALTH ];
 	cg.lastHealth = cg.snap->ps.stats[ STAT_HEALTH ];
 
-	cg.painBlendValue += damageAsFracOfMax * cg_painBlendScale.value;
+	cg.painBlendValue += damageAsFracOfMax * cg_painBlendScale.Get();
 
 	if ( cg.painBlendValue > 0.0f )
 	{
 		cg.painBlendValue -= ( cg.frametime / 1000.0f ) *
-		                     cg_painBlendDownRate.value;
+		                     cg_painBlendDownRate.Get();
 	}
 
 	cg.painBlendValue = Math::Clamp( cg.painBlendValue, 0.0f, 1.0f );
@@ -414,16 +414,16 @@ static void CG_PainBlend()
 	if ( cg.painBlendValue > cg.painBlendTarget )
 	{
 		cg.painBlendTarget += ( cg.frametime / 1000.0f ) *
-		                      cg_painBlendUpRate.value;
+		                      cg_painBlendUpRate.Get();
 	}
 	else if ( cg.painBlendValue < cg.painBlendTarget )
 	{
 		cg.painBlendTarget = cg.painBlendValue;
 	}
 
-	if ( cg.painBlendTarget > cg_painBlendMax.value )
+	if ( cg.painBlendTarget > cg_painBlendMax.Get() )
 	{
-		cg.painBlendTarget = cg_painBlendMax.value;
+		cg.painBlendTarget = cg_painBlendMax.Get();
 	}
 
 	color.SetAlpha( cg.painBlendTarget );
@@ -520,7 +520,7 @@ static void CG_DrawBinaryShadersFinalPhases()
 		return;
 	}
 
-	ss = Math::Clamp( cg_binaryShaderScreenScale.value, 0.0f, 1.0f );
+	ss = cg_binaryShaderScreenScale.Get();
 
 	// no work to do
 	if ( ss == 0.0f )

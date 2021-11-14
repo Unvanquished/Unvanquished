@@ -187,7 +187,7 @@ static void CG_Obituary( entityState_t *ent )
 
 	// check for single client messages
 
-	if ( cg_emoticonsInMessages.integer )
+	if ( cg_emoticonsInMessages.Get() )
 	{
 		if ( mod < MOD_UNKNOWN || mod >= (int) ARRAY_LEN( meansOfDeath ) )
 		{
@@ -708,7 +708,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 	es = &cent->currentState;
 	event = es->event & ~EV_EVENT_BITS;
 
-	if ( cg_debugEvents.integer )
+	if ( cg_debugEvents.Get() )
 	{
 		Log::Debug( "ent:%3i  event:%3i %s", es->number, event,
 		           BG_EventName( event ) );
@@ -731,7 +731,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 	switch ( event )
 	{
 		case EV_FOOTSTEP:
-			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
+			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				if ( ci->footsteps == FOOTSTEP_CUSTOM )
 				{
@@ -748,7 +748,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_FOOTSTEP_METAL:
-			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
+			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				if ( ci->footsteps == FOOTSTEP_CUSTOM )
 				{
@@ -765,7 +765,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_FOOTSTEP_SQUELCH:
-			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
+			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
 				                   cgs.media.footsteps[ FOOTSTEP_FLESH ][ rand() & 3 ] );
@@ -774,7 +774,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_FOOTSPLASH:
-			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
+			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
 				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ rand() & 3 ] );
@@ -783,7 +783,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_FOOTWADE:
-			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
+			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
 				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ rand() & 3 ] );
@@ -792,7 +792,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_SWIM:
-			if ( cg_footsteps.integer && ci->footsteps != FOOTSTEP_NONE )
+			if ( cg_footsteps.Get() && ci->footsteps != FOOTSTEP_NONE )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_BODY,
 				                   cgs.media.footsteps[ FOOTSTEP_SPLASH ][ rand() & 3 ] );
@@ -862,7 +862,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 				// if we are interpolating, we don't need to smooth steps
 				if ( cg.demoPlayback || ( cg.snap->ps.pm_flags & PMF_FOLLOW ) ||
-				     cg_nopredict.integer || cg.pmoveParams.synchronous )
+				     cg_nopredict.Get() || cg.pmoveParams.synchronous )
 				{
 					break;
 				}
@@ -940,7 +940,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_TAUNT:
-			if ( !cg_noTaunt.integer )
+			if ( !cg_noTaunt.Get() )
 			{
 				trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_VOICE, CG_CustomSound( es->number, "*taunt" ) );
 			}
@@ -1099,7 +1099,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 						CG_AttachToCent( &source->muzzleTS->frontAttachment );
 						CG_AttachToCent( &source->muzzleTS->backAttachment );
 
-						source->muzzleTSDeathTime = cg.time + cg_teslaTrailTime.integer;
+						source->muzzleTSDeathTime = cg.time + cg_teslaTrailTime.Get();
 					}
 				}
 			}

@@ -39,133 +39,129 @@ upgradeInfo_t   cg_upgrades[ 32 ];
 classInfo_t     cg_classes[ PCL_NUM_CLASSES ];
 buildableInfo_t cg_buildables[ BA_NUM_BUILDABLES ];
 
-vmCvar_t        cg_teslaTrailTime;
-vmCvar_t        cg_runpitch;
-vmCvar_t        cg_runroll;
-vmCvar_t        cg_swingSpeed;
-vmCvar_t        cg_shadows;
-vmCvar_t        cg_playerShadows;
-vmCvar_t        cg_buildableShadows;
-vmCvar_t        cg_drawTimer;
-vmCvar_t        cg_drawClock;
-vmCvar_t        cg_drawFPS;
-vmCvar_t        cg_drawCrosshair;
-vmCvar_t        cg_drawCrosshairHit;
-vmCvar_t        cg_drawCrosshairFriendFoe;
-vmCvar_t        cg_drawCrosshairNames;
-vmCvar_t        cg_drawBuildableHealth;
-vmCvar_t        cg_drawMinimap;
-vmCvar_t        cg_minimapActive;
-vmCvar_t        cg_crosshairSize;
+Cvar::Cvar<int> cg_teslaTrailTime("cg_teslaTrailTime", "time (ms) to show reactor zap", Cvar::NONE, 250);
+Cvar::Cvar<float> cg_runpitch("cg_runpitch", "pitch angle change magnitude when running", Cvar::NONE, 0.002);
+Cvar::Cvar<float> cg_runroll("cg_runroll", "roll angle magnitude change when running", Cvar::NONE, 0.005);
+Cvar::Cvar<float> cg_swingSpeed("cg_swingSpeed", "something about view angles", Cvar::CHEAT, 0.3);
+Cvar::Range<Cvar::Cvar<int>> cg_shadows("cg_shadows", "type of shadows to draw", Cvar::LATCH, 1, 0, 6);
+Cvar::Cvar<bool> cg_playerShadows("cg_playerShadows", "draw shadows of players", Cvar::NONE, true);
+Cvar::Cvar<bool> cg_buildableShadows("cg_buildableShadows", "draw shadows of buildables", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_drawTimer("cg_drawTimer", "show game time", Cvar::NONE, true);
+Cvar::Range<Cvar::Cvar<int>> cg_drawClock("cg_drawClock", "draw clock (1 = 12-hour 2 = 24-hour)", Cvar::NONE, 0, 0, 2);
+Cvar::Cvar<bool> cg_drawFPS("cg_drawFPS", "show client's frames per second", Cvar::NONE, true);
+Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshair("cg_drawCrosshair", "draw crosshair (1 = ranged weapons, 2 = always)", Cvar::NONE, 2, 0, 2);
+Cvar::Cvar<bool> cg_drawCrosshairHit("cg_drawCrosshairHit", "show damage indicator", Cvar::NONE, true);
+Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshairFriendFoe("cg_drawCrosshairFriendFoe", "change crosshair color over players (1 = ranged weapons 2 = all)", Cvar::NONE, 0, 0, 2);
+Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshairNames("cg_drawCrosshairNames", "draw name of player under crosshair (2 = also client num)", Cvar::NONE, 1, 0, 2);
+Cvar::Cvar<bool> cg_drawBuildableHealth("cg_drawBuildableHealth", "show buildable health bar when builder", Cvar::NONE, true);
+Cvar::Cvar<bool> cg_drawMinimap("cg_drawMinimap", "show minimap", Cvar::NONE, true);
+Cvar::Cvar<int> cg_minimapActive("cg_minimapActive", "FOR INTERNAL USE", Cvar::NONE, 0);
+Cvar::Cvar<float> cg_crosshairSize("cg_crosshairSize", "crosshair scale factor", Cvar::NONE, 1);
 vmCvar_t        cg_crosshairFile;
-vmCvar_t        cg_draw2D;
-vmCvar_t        cg_debugAnim;
-vmCvar_t        cg_debugPosition;
-vmCvar_t        cg_debugEvents;
-vmCvar_t        cg_errorDecay;
-vmCvar_t        cg_nopredict;
-vmCvar_t        cg_debugMove;
-vmCvar_t        cg_noPlayerAnims;
-vmCvar_t        cg_showmiss;
-vmCvar_t        cg_footsteps;
-vmCvar_t        cg_addMarks;
-vmCvar_t        cg_viewsize;
-vmCvar_t        cg_drawGun;
+Cvar::Cvar<bool> cg_draw2D("cg_draw2D", "show HUD / menus", Cvar::NONE, true);
+Cvar::Cvar<bool> cg_debugAnim("cg_debuganim", "show animation debug logs", Cvar::CHEAT, false);
+Cvar::Cvar<bool> cg_debugEvents("cg_debugevents", "log received events", Cvar::CHEAT, false);
+Cvar::Cvar<float> cg_errorDecay("cg_errordecay", "recovery time after prediction error", Cvar::NONE, 100);
+Cvar::Cvar<bool> cg_nopredict("cg_nopredict", "disable client-side prediction", Cvar::NONE, false);
+Cvar::Cvar<int> cg_debugMove("cg_debugMove", "cgame pmove debug level", Cvar::NONE, 0);
+Cvar::Cvar<bool> cg_noPlayerAnims("cg_noplayeranims", "disable player animations", Cvar::CHEAT, false);
+Cvar::Cvar<bool> cg_showmiss("cg_showmiss", "log prediction errors", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_footsteps("cg_footsteps", "make footstep sounds", Cvar::CHEAT, true);
+Cvar::Cvar<bool> cg_addMarks("cg_marks", "enable marks (e.g. bullet holes)", Cvar::NONE, true);
+Cvar::Cvar<int> cg_viewsize("cg_viewsize", "size of rectangle the world is drawn in", Cvar::NONE, 100);
+Cvar::Range<Cvar::Cvar<int>> cg_drawGun("cg_drawGun", "draw 1st-person weapon (1 = guns, 2 = guns & claws)", Cvar::NONE, 1, 0, 2);
 vmCvar_t        cg_gun_frame;
-vmCvar_t        cg_gun_x;
-vmCvar_t        cg_gun_y;
-vmCvar_t        cg_gun_z;
-vmCvar_t        cg_mirrorgun;
-vmCvar_t        cg_tracerChance;
-vmCvar_t        cg_tracerWidth;
-vmCvar_t        cg_tracerLength;
-vmCvar_t        cg_thirdPerson;
-vmCvar_t        cg_thirdPersonAngle;
-vmCvar_t        cg_thirdPersonShoulderViewMode;
-vmCvar_t        cg_staticDeathCam;
-vmCvar_t        cg_thirdPersonPitchFollow;
-vmCvar_t        cg_thirdPersonRange;
-vmCvar_t        cg_lagometer;
-vmCvar_t        cg_drawSpeed;
-vmCvar_t        cg_maxSpeedTimeWindow;
-vmCvar_t        cg_stats;
-vmCvar_t        cg_blood;
-vmCvar_t        cg_teamChatsOnly;
-vmCvar_t        cg_teamOverlayUserinfo;
-vmCvar_t        cg_noVoiceChats;
-vmCvar_t        cg_noVoiceText;
-vmCvar_t        cg_smoothClients;
-vmCvar_t        cg_timescaleFadeEnd;
-vmCvar_t        cg_timescaleFadeSpeed;
+Cvar::Cvar<float> cg_gun_x("cg_gunX", "model debugging: gun x offset", Cvar::CHEAT, 0);
+Cvar::Cvar<float> cg_gun_y("cg_gunY", "model debugging: gun y offset", Cvar::CHEAT, 0);
+Cvar::Cvar<float> cg_gun_z("cg_gunZ", "model debugging: gun z offset", Cvar::CHEAT, 0);
+Cvar::Cvar<bool> cg_mirrorgun("cg_mirrorgun", "use left-handed gun", Cvar::NONE, false);
+Cvar::Range<Cvar::Cvar<float>> cg_tracerChance("cg_tracerchance", "probability to draw line on bullet trajectory", Cvar::CHEAT, 1.0f, 0.0f, 1.0f);
+Cvar::Cvar<float> cg_tracerWidth("cg_tracerwidth", "width of line on bullet trajectory", Cvar::CHEAT, 3);
+Cvar::Cvar<float> cg_tracerLength("cg_tracerlength", "length of line drawn on bullet trajectory", Cvar::CHEAT, 200);
+Cvar::Cvar<bool> cg_thirdPerson("cg_thirdPerson", "show own player from 3rd-person perspective", Cvar::CHEAT, false);
+Cvar::Cvar<float> cg_thirdPersonAngle("cg_thirdPersonAngle", "yaw angle for 3rd-person view", Cvar::CHEAT, 0);
+Cvar::Range<Cvar::Cvar<int>> cg_thirdPersonShoulderViewMode("cg_thirdPersonShoulderViewMode", "alternative chase cam position", Cvar::NONE, 1, 1, 2);
+Cvar::Cvar<bool> cg_staticDeathCam("cg_staticDeathCam", "don't follow attacker movements after death", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_thirdPersonPitchFollow("cg_thirdPersonPitchFollow", "do follow the view pitch of the player you follow (disabled by default for comfort)", Cvar::NONE, false);
+Cvar::Cvar<float> cg_thirdPersonRange("cg_thirdPersonRange", "camera distance from 3rd-person player", Cvar::NONE, 75);
+Cvar::Cvar<bool> cg_lagometer("cg_lagometer", "show network latency meter", Cvar::NONE, false);
+Cvar::Range<Cvar::Cvar<int>> cg_drawSpeed("cg_drawSpeed", "show speed. bitflags: 0x1 number, 0x2 graph, 0x4 ignore z-component ", Cvar::NONE, 0, 0, 7);
+Cvar::Cvar<int> cg_maxSpeedTimeWindow("cg_maxSpeedTimeWindow", "cg_showSpeed's max speed is over last x milliseconds", Cvar::NONE, 2000);
+Cvar::Cvar<bool> cg_blood("com_blood", "draw blood effects", Cvar::NONE, true);
+Cvar::Cvar<bool> cg_teamChatsOnly("cg_teamChatsOnly", "don't show chats to all players on screen", Cvar::NONE, false);
+Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo("teamoverlay", "request team overlay data from server", Cvar::USERINFO, 1, 0, 1);
+Cvar::Cvar<bool> cg_noVoiceChats("cg_noVoiceChats", "don't play vsays", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_noVoiceText("cg_noVoiceText", "don't show text for vsays", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_smoothClients("cg_smoothClients", "extrapolate entity positions", Cvar::NONE, false);
 vmCvar_t        cg_timescale;
-vmCvar_t        cg_noTaunt;
-vmCvar_t        cg_drawSurfNormal;
-vmCvar_t        cg_drawBBOX;
-vmCvar_t        cg_drawEntityInfo;
-vmCvar_t        cg_wwSmoothTime;
-vmCvar_t        cg_depthSortParticles;
-vmCvar_t        cg_bounceParticles;
-vmCvar_t        cg_consoleLatency;
-vmCvar_t        cg_lightFlare;
-vmCvar_t        cg_debugParticles;
-vmCvar_t        cg_debugPVS;
-vmCvar_t        cg_disableWarningDialogs;
-vmCvar_t        cg_tutorial;
+Cvar::Cvar<bool> cg_noTaunt("cg_noTaunt", "disable taunt sounds", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_drawSurfNormal("cg_drawSurfNormal", "visualize normal vector of facing surface", Cvar::CHEAT, false);
+Cvar::Range<Cvar::Cvar<int>> cg_drawBBOX("cg_drawBBOX", "show entity bounding boxes (2 = solid)", Cvar::CHEAT, 0, 0, 2);
+Cvar::Cvar<bool> cg_drawEntityInfo("cg_drawEntityInfo", "show number and type of facing entity", Cvar::CHEAT, false);
+Cvar::Cvar<int> cg_wwSmoothTime("cg_wwSmoothTime", "time (ms) to rotate view while wallwalking", Cvar::NONE, 150);
+Cvar::Cvar<bool> cg_depthSortParticles("cg_depthSortParticles", "render particles in depth order", Cvar::NONE, true);
+Cvar::Cvar<bool> cg_bounceParticles("cg_bounceParticles", "particles may bounce off surfaces, rather than destruct", Cvar::NONE, true);
+Cvar::Cvar<int> cg_consoleLatency("cg_consoleLatency", "how long chat messages appear (milliseconds)", Cvar::NONE, 3000);
+Cvar::Range<Cvar::Cvar<int>> cg_lightFlare("cg_lightFlare", "style of 'light flares'", Cvar::NONE, 3, 0, 3);
+Cvar::Range<Cvar::Cvar<int>> cg_debugParticles("cg_debugParticles", "log level for particles", Cvar::CHEAT, 0, 0, 2);
+Cvar::Cvar<bool> cg_debugPVS("cg_debugPVS", "log entities in Potentially Visible Set", Cvar::CHEAT, false);
+Cvar::Range<Cvar::Cvar<int>> cg_disableWarningDialogs("cg_disableWarningDialogs", "gameplay warning style: 0 = center print, 1 = log, 2 = none", Cvar::NONE, 0, 0, 2);
+Cvar::Cvar<bool> cg_tutorial("cg_tutorial", "show tutorial text", Cvar::NONE, true);
 
-vmCvar_t        cg_rangeMarkerDrawSurface;
-vmCvar_t        cg_rangeMarkerDrawIntersection;
-vmCvar_t        cg_rangeMarkerDrawFrontline;
-vmCvar_t        cg_rangeMarkerSurfaceOpacity;
-vmCvar_t        cg_rangeMarkerLineOpacity;
-vmCvar_t        cg_rangeMarkerLineThickness;
-vmCvar_t        cg_rangeMarkerForBlueprint;
-vmCvar_t        cg_rangeMarkerBuildableTypes;
-vmCvar_t        cg_rangeMarkerWhenSpectating;
-vmCvar_t        cg_buildableRangeMarkerMask;
-vmCvar_t        cg_binaryShaderScreenScale;
+Cvar::Cvar<bool> cg_rangeMarkerDrawSurface("cg_rangeMarkerDrawSurface", "shade buildable range surfaces", Cvar::NONE, true);
+Cvar::Cvar<bool> cg_rangeMarkerDrawIntersection("cg_rangeMarkerDrawIntersection", "outline insersections between buildable range surfaces", Cvar::NONE, false);
+Cvar::Cvar<bool> cg_rangeMarkerDrawFrontline("cg_rangeMarkerDrawFrontline", "outline edges of buildable range surfaces", Cvar::NONE, false);
+Cvar::Range<Cvar::Cvar<float>> cg_rangeMarkerSurfaceOpacity("cg_rangeMarkerSurfaceOpacity", "opacity of buildable range surfaces", Cvar::NONE, 0.08, 0, 1);
+Cvar::Range<Cvar::Cvar<float>> cg_rangeMarkerLineOpacity("cg_rangeMarkerLineOpacity", "opacity of buildable range outlines", Cvar::NONE, 0.4, 0, 1);
+Cvar::Cvar<float> cg_rangeMarkerLineThickness("cg_rangeMarkerLineThickness", "thickness of buildable range surface outlines", Cvar::NONE, 4.0);
+Cvar::Cvar<bool> cg_rangeMarkerForBlueprint("cg_rangeMarkerForBlueprint", "show range marker when placing buildable", Cvar::NONE, true);
+Cvar::Modified<Cvar::Cvar<std::string>> cg_rangeMarkerBuildableTypes("cg_rangeMarkerBuildableTypes", "list of buildables or buildable types to show range marker for", Cvar::NONE, "support");
+Cvar::Cvar<bool> cg_rangeMarkerWhenSpectating("cg_rangeMarkerWhenSpectating", "show buildable rangers while spectating", Cvar::NONE, false);
+int cg_buildableRangeMarkerMask;
+Cvar::Range<Cvar::Cvar<float>> cg_binaryShaderScreenScale("cg_binaryShaderScreenScale", "I don't know", Cvar::NONE, 1.0, 0, 1);
 
-vmCvar_t        cg_painBlendUpRate;
-vmCvar_t        cg_painBlendDownRate;
-vmCvar_t        cg_painBlendMax;
-vmCvar_t        cg_painBlendScale;
-vmCvar_t        cg_painBlendZoom;
+Cvar::Cvar<float> cg_painBlendUpRate("cg_painBlendUpRate", "how fast the pain indicator will appear", Cvar::NONE, 10.0);
+Cvar::Cvar<float> cg_painBlendDownRate("cg_painBlendDownRate", "how fast the pain indicator will disappear", Cvar::NONE, 0.5);
+Cvar::Cvar<float> cg_painBlendMax("cg_painBlendMax", "upper bound on how opaque the pain indicator will be", Cvar::NONE, 0.7);
+Cvar::Cvar<float> cg_painBlendScale("cg_painBlendScale", "how amplified the damage will be for the blood indicator (1->damage is barely visible, 20->damage reaches cg_painBlendMax almost instantly", Cvar::NONE, 7.0);
+Cvar::Cvar<float> cg_painBlendZoom("cg_painBlendZoom", "size scale factor for the the pain indicator", Cvar::NONE, 0.65);
 
-vmCvar_t        cg_stickySpec;
-vmCvar_t        cg_sprintToggle;
-vmCvar_t        cg_unlagged;
+Cvar::Range<Cvar::Cvar<int>> cg_stickySpec("cg_stickySpec", "if 0, cycle followed player upon death", Cvar::USERINFO, 1, 0, 1);
+Cvar::Range<Cvar::Cvar<int>> cg_sprintToggle("cg_sprintToggle", "toggle instead of hold to sprint", Cvar::USERINFO, 0, 0, 1);
+Cvar::Range<Cvar::Cvar<int>> cg_unlagged("cg_unlagged", "lag-compensate your player (if server allows)", Cvar::USERINFO, 1, 0, 1);
 
 vmCvar_t        cg_cmdGrenadeThrown;
 vmCvar_t        cg_cmdNeedHealth;
 
-vmCvar_t        cg_debugVoices;
+Cvar::Cvar<bool> cg_debugVoices("cg_debugVoices", "print cgame's list of vsays on startup", Cvar::NONE, false);
 
-vmCvar_t        cg_debugRandom;
-
-vmCvar_t        cg_optimizePrediction;
-vmCvar_t        cg_projectileNudge;
+Cvar::Cvar<bool> cg_optimizePrediction("cg_optimizePrediction", "client-side prediction is done incrementally", Cvar::NONE, true);
+Cvar::Cvar<bool> cg_projectileNudge("cg_projectileNudge", "enable client-side prediction for missiles", Cvar::NONE, true);
 
 vmCvar_t        cg_voice;
 
-vmCvar_t        cg_emoticonsInMessages;
+Cvar::Cvar<bool> cg_emoticonsInMessages("cg_emoticonsInMessages", "render emoticons in chat", Cvar::NONE, false);
 
-vmCvar_t        cg_chatTeamPrefix;
+Cvar::Cvar<bool> cg_chatTeamPrefix("cg_chatTeamPrefix", "show [H] or [A] before names in chat", Cvar::NONE, true);
 
-vmCvar_t        cg_animSpeed;
-vmCvar_t        cg_animBlend;
+Cvar::Cvar<bool> cg_animSpeed("cg_animspeed", "run animations? (for debugging)", Cvar::CHEAT, true);
+Cvar::Cvar<float> cg_animBlend("cg_animblend", "I don't know", Cvar::NONE, 5.0);
 
-vmCvar_t        cg_motionblur;
-vmCvar_t        cg_motionblurMinSpeed;
-vmCvar_t        cg_spawnEffects;
+Cvar::Cvar<float> cg_motionblur("cg_motionblur", "strength of motion blur", Cvar::NONE, 0.05);
+Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed to trigger motion blur", Cvar::NONE, 600);
+Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "desaturate world view when dead or spawning", Cvar::NONE, true);
 
-vmCvar_t        cg_fov_builder;
-vmCvar_t        cg_fov_level0;
-vmCvar_t        cg_fov_level1;
-vmCvar_t        cg_fov_level2;
-vmCvar_t        cg_fov_level3;
-vmCvar_t        cg_fov_level4;
-vmCvar_t        cg_fov_human;
+// search 'fovCvar' to find usage of these (names come from config files)
+// 0 means use global FOV setting
+static Cvar::Cvar<float> cg_fov_builder("cg_fov_builder", "field of view (degrees) for Granger", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level0("cg_fov_level0", "field of view (degrees) for Dretch", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level1("cg_fov_level1", "field of view (degrees) for Mantis", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level2("cg_fov_level2", "field of view (degrees) for Marauder", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level3("cg_fov_level3", "field of view (degrees) for Dragoon", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_level4("cg_fov_level4", "field of view (degrees) for Tyrant", Cvar::NONE, 0);
+static Cvar::Cvar<float> cg_fov_human("cg_fov_human", "field of view (degrees) for humans", Cvar::NONE, 0);
 
-vmCvar_t        ui_chatPromptColors;
+Cvar::Cvar<bool> ui_chatPromptColors("ui_chatPromptColors", "chat prompts (e.g. 'Say:') are color-coded", Cvar::NONE, true);
 vmCvar_t        cg_sayCommand;
 
 // CHEAT because it could be abused to join the game faster and e.g. get on your preferred team
@@ -186,138 +182,21 @@ struct cvarTable_t
 
 static const cvarTable_t cvarTable[] =
 {
-	{ &cg_drawGun,                     "cg_drawGun",                     "1",            0                            },
-	{ &cg_viewsize,                    "cg_viewsize",                    "100",          0                            },
-	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_LATCH                   },
-	{ &cg_playerShadows,               "cg_playerShadows",               "1",            0                            },
-	{ &cg_buildableShadows,            "cg_buildableShadows",            "0",            0                            },
-	{ &cg_draw2D,                      "cg_draw2D",                      "1",            0                            },
-	{ &cg_drawTimer,                   "cg_drawTimer",                   "1",            0                            },
-	{ &cg_drawClock,                   "cg_drawClock",                   "0",            0                            },
-	{ &cg_drawFPS,                     "cg_drawFPS",                     "1",            0                            },
-	{ &cg_drawCrosshair,               "cg_drawCrosshair",               "2",            0                            },
-	{ &cg_drawCrosshairHit,            "cg_drawCrosshairHit",            "1",            0                            },
-	{ &cg_drawCrosshairFriendFoe,      "cg_drawCrosshairFriendFoe",      "0",            0                            },
-	{ &cg_drawCrosshairNames,          "cg_drawCrosshairNames",          "1",            0                            },
-	{ &cg_drawBuildableHealth,         "cg_drawBuildableHealth",         "1",            0                            },
-	{ &cg_drawMinimap,                 "cg_drawMinimap",                 "1",            0                            },
-	{ &cg_minimapActive,               "cg_minimapActive",               "0",            0                            },
-	{ &cg_crosshairSize,               "cg_crosshairSize",               "1",            0                            },
 	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             0                            },
-	{ &cg_addMarks,                    "cg_marks",                       "1",            0                            },
-	{ &cg_lagometer,                   "cg_lagometer",                   "0",            0                            },
-	{ &cg_drawSpeed,                   "cg_drawSpeed",                   "0",            0                            },
-	{ &cg_maxSpeedTimeWindow,          "cg_maxSpeedTimeWindow",          "2000",         0                            },
-	{ &cg_teslaTrailTime,              "cg_teslaTrailTime",              "250",          0                            },
-	{ &cg_gun_x,                       "cg_gunX",                        "0",            CVAR_CHEAT                   },
-	{ &cg_gun_y,                       "cg_gunY",                        "0",            CVAR_CHEAT                   },
-	{ &cg_gun_z,                       "cg_gunZ",                        "0",            CVAR_CHEAT                   },
-	{ &cg_mirrorgun,                   "cg_mirrorgun",                   "0",            0                            },
-	{ &cg_runpitch,                    "cg_runpitch",                    "0.002",        0                            },
-	{ &cg_runroll,                     "cg_runroll",                     "0.005",        0                            },
-	{ &cg_swingSpeed,                  "cg_swingSpeed",                  "0.3",          CVAR_CHEAT                   },
-	{ &cg_debugAnim,                   "cg_debuganim",                   "0",            CVAR_CHEAT                   },
-	{ &cg_debugPosition,               "cg_debugposition",               "0",            CVAR_CHEAT                   },
-	{ &cg_debugEvents,                 "cg_debugevents",                 "0",            CVAR_CHEAT                   },
-	{ &cg_errorDecay,                  "cg_errordecay",                  "100",          0                            },
-	{ &cg_nopredict,                   "cg_nopredict",                   "0",            0                            },
-	{ &cg_debugMove,                   "cg_debugMove",                   "0",            0                            },
-	{ &cg_noPlayerAnims,               "cg_noplayeranims",               "0",            CVAR_CHEAT                   },
-	{ &cg_showmiss,                    "cg_showmiss",                    "0",            0                            },
-	{ &cg_footsteps,                   "cg_footsteps",                   "1",            CVAR_CHEAT                   },
-	{ &cg_tracerChance,                "cg_tracerchance",                "1",            CVAR_CHEAT                   },
-	{ &cg_tracerWidth,                 "cg_tracerwidth",                 "3",            CVAR_CHEAT                   },
-	{ &cg_tracerLength,                "cg_tracerlength",                "200",          CVAR_CHEAT                   },
-	{ &cg_thirdPersonRange,            "cg_thirdPersonRange",            "75",           0                            },
-	{ &cg_thirdPerson,                 "cg_thirdPerson",                 "0",            CVAR_CHEAT                   },
-	{ &cg_thirdPersonAngle,            "cg_thirdPersonAngle",            "0",            CVAR_CHEAT                   },
-	{ &cg_thirdPersonPitchFollow,      "cg_thirdPersonPitchFollow",      "0",            0                            },
-	{ &cg_thirdPersonShoulderViewMode, "cg_thirdPersonShoulderViewMode", "1",            0                            },
-	{ &cg_staticDeathCam,              "cg_staticDeathCam",              "0",            0                            },
-	{ &cg_stats,                       "cg_stats",                       "0",            0                            },
-	{ &cg_teamOverlayUserinfo,         "teamoverlay",                    "1",            CVAR_USERINFO                },
-	{ &cg_teamChatsOnly,               "cg_teamChatsOnly",               "0",            0                            },
-	{ &cg_noVoiceChats,                "cg_noVoiceChats",                "0",            0                            },
-	{ &cg_noVoiceText,                 "cg_noVoiceText",                 "0",            0                            },
-	{ &cg_drawSurfNormal,              "cg_drawSurfNormal",              "0",            CVAR_CHEAT                   },
-	{ &cg_drawBBOX,                    "cg_drawBBOX",                    "0",            CVAR_CHEAT                   },
-	{ &cg_drawEntityInfo,              "cg_drawEntityInfo",              "0",            CVAR_CHEAT                   },
-	{ &cg_wwSmoothTime,                "cg_wwSmoothTime",                "150",          0                            },
 	{ nullptr,                            "cg_wwFollow",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
-	{ &cg_stickySpec,                  "cg_stickySpec",                  "1",            CVAR_USERINFO                },
-	{ &cg_sprintToggle,                "cg_sprintToggle",                "0",            CVAR_USERINFO                },
-	{ &cg_unlagged,                    "cg_unlagged",                    "1",            CVAR_USERINFO                },
 	{ nullptr,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
-	{ &cg_depthSortParticles,          "cg_depthSortParticles",          "1",            0                            },
-	{ &cg_bounceParticles,             "cg_bounceParticles",             "1",            0                            },
-	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         0                            },
-	{ &cg_lightFlare,                  "cg_lightFlare",                  "3",            0                            },
-	{ &cg_debugParticles,              "cg_debugParticles",              "0",            CVAR_CHEAT                   },
-	{ &cg_debugPVS,                    "cg_debugPVS",                    "0",            CVAR_CHEAT                   },
-	{ &cg_disableWarningDialogs,       "cg_disableWarningDialogs",       "0",            0                            },
-	{ &cg_tutorial,                    "cg_tutorial",                    "1",            0                            },
-
-	{ &cg_rangeMarkerDrawSurface,      "cg_rangeMarkerDrawSurface",      "1",            0                            },
-	{ &cg_rangeMarkerDrawIntersection, "cg_rangeMarkerDrawIntersection", "0",            0                            },
-	{ &cg_rangeMarkerDrawFrontline,    "cg_rangeMarkerDrawFrontline",    "0",            0                            },
-	{ &cg_rangeMarkerSurfaceOpacity,   "cg_rangeMarkerSurfaceOpacity",   "0.08",         0                            },
-	{ &cg_rangeMarkerLineOpacity,      "cg_rangeMarkerLineOpacity",      "0.4",          0                            },
-	{ &cg_rangeMarkerLineThickness,    "cg_rangeMarkerLineThickness",    "4.0",          0                            },
-	{ &cg_rangeMarkerForBlueprint,     "cg_rangeMarkerForBlueprint",     "1",            0                            },
-	{ &cg_rangeMarkerBuildableTypes,   "cg_rangeMarkerBuildableTypes",   "support",      0                            },
-	{ &cg_rangeMarkerWhenSpectating,   "cg_rangeMarkerWhenSpectating",   "0",            0                            },
-	{ &cg_buildableRangeMarkerMask,    "cg_buildableRangeMarkerMask",    "",             0                            },
-	{ &cg_binaryShaderScreenScale,     "cg_binaryShaderScreenScale",     "1.0",          0                            },
-
-	{ &cg_painBlendUpRate,             "cg_painBlendUpRate",             "10.0",         0                            },
-	{ &cg_painBlendDownRate,           "cg_painBlendDownRate",           "0.5",          0                            },
-	{ &cg_painBlendMax,                "cg_painBlendMax",                "0.7",          0                            },
-	{ &cg_painBlendScale,              "cg_painBlendScale",              "7.0",          0                            },
-	{ &cg_painBlendZoom,               "cg_painBlendZoom",               "0.65",         0                            },
 
 	{ &cg_cmdGrenadeThrown,            "cg_cmdGrenadeThrown",            "vsay_local grenade", 0                      },
 	{ &cg_cmdNeedHealth,               "cg_cmdNeedHealth",               "vsay_local needhealth", 0                   },
 
-	{ &cg_debugVoices,                 "cg_debugVoices",                 "0",            0                            },
-
-	{ &cg_debugRandom,                 "cg_debugRandom",                 "0",            0                            },
-
-	{ &cg_optimizePrediction,          "cg_optimizePrediction",          "1",            0                            },
-	{ &cg_projectileNudge,             "cg_projectileNudge",             "1",            0                            },
-
 	// the following variables are created in other parts of the system,
 	// but we also reference them here
 
-	{ &cg_blood,                       "com_blood",                      "1",            0                            },
-	{ &cg_timescaleFadeEnd,            "cg_timescaleFadeEnd",            "1",            CVAR_CHEAT                   },
-	{ &cg_timescaleFadeSpeed,          "cg_timescaleFadeSpeed",          "0",            CVAR_CHEAT                   },
 	{ &cg_timescale,                   "timescale",                      "1",            0                            },
-	{ &cg_smoothClients,               "cg_smoothClients",               "0",            CVAR_USERINFO                },
-
-	{ &cg_noTaunt,                     "cg_noTaunt",                     "0",            0                            },
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO                },
-
-	{ &cg_emoticonsInMessages,         "cg_emoticonsInMessages",         "0",            0                            },
-
-	{ &cg_animSpeed,                   "cg_animspeed",                   "1",            CVAR_CHEAT                   },
-	{ &cg_animBlend,                   "cg_animblend",                   "5.0",          0                            },
-
-	{ &cg_chatTeamPrefix,              "cg_chatTeamPrefix",              "1",            0                            },
-	{ &cg_motionblur,                  "cg_motionblur",                  "0.05",         0                            },
-	{ &cg_motionblurMinSpeed,          "cg_motionblurMinSpeed",          "600",          0                            },
-	{ &cg_spawnEffects,                "cg_spawnEffects",                "1",            0                            },
-	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            0                            },
-	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            0                            },
-	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            0                            },
-	{ &cg_fov_level2,                  "cg_fov_level2",                  "0",            0                            },
-	{ &cg_fov_level3,                  "cg_fov_level3",                  "0",            0                            },
-	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            0                            },
-	{ &cg_fov_human,                   "cg_fov_human",                   "0",            0                            },
-
-	{ &ui_chatPromptColors,            "ui_chatPromptColors",            "1",            0                            },
 
 	{ &cg_sayCommand,                  "cg_sayCommand",                   "",            0                            }
 };
@@ -440,9 +319,6 @@ CG_UpdateBuildableRangeMarkerMask
 */
 void CG_UpdateBuildableRangeMarkerMask()
 {
-	static int btmc = 0;
-	static int spmc = 0;
-
 	constexpr int buildables_alien =
 		     ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
 		     ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) |
@@ -480,17 +356,11 @@ void CG_UpdateBuildableRangeMarkerMask()
 		{ "none",           0                                       },
 	};
 
-	if ( cg_rangeMarkerBuildableTypes.modificationCount != btmc ||
-	     cg_rangeMarkerWhenSpectating.modificationCount != spmc )
+	if ( Util::optional<std::string> structureList = cg_rangeMarkerBuildableTypes.GetModifiedValue() )
 	{
-		int brmMask = cg_rangeMarkerWhenSpectating.integer ? ( 1 << BA_NONE ) : 0;
+		int brmMask = 0;
 
-		if ( !cg_rangeMarkerBuildableTypes.string[ 0 ] )
-		{
-			goto empty;
-		}
-
-		for (Parse_WordListSplitter marker(cg_rangeMarkerBuildableTypes.string); *marker; ++marker)
+		for (Parse_WordListSplitter marker(*std::move(structureList)); *marker; ++marker)
 		{
 			buildable_t buildable = BG_BuildableByName( *marker )->number;
 
@@ -508,12 +378,7 @@ void CG_UpdateBuildableRangeMarkerMask()
 				}
 			}
 		}
-
-empty:
-		trap_Cvar_Set( "cg_buildableRangeMarkerMask", va( "%i", brmMask ) );
-
-		btmc = cg_rangeMarkerBuildableTypes.modificationCount;
-		spmc = cg_rangeMarkerWhenSpectating.modificationCount;
+		cg_buildableRangeMarkerMask = brmMask;
 	}
 }
 
@@ -1400,7 +1265,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	CG_RegisterSounds();
 
 	cgs.voices = BG_VoiceInit();
-	BG_PrintVoices( cgs.voices, cg_debugVoices.integer );
+	BG_PrintVoices( cgs.voices, cg_debugVoices.Get() );
 
 	// It updates loading steps by itself.
 	// LOAD_GEOMETRY

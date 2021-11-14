@@ -379,7 +379,7 @@ public:
 		int        fps;
 		int        t, frameTime;
 
-		if ( !cg_drawFPS.integer && shouldShowFps )
+		if ( !cg_drawFPS.Get() && shouldShowFps )
 		{
 			shouldShowFps = false;
 			SetText( "" );
@@ -456,7 +456,7 @@ public:
 		weaponInfo_t *wi;
 		bool     onRelevantEntity;
 
-		if ( ( !cg_drawCrosshairHit.integer && !cg_drawCrosshairFriendFoe.integer ) ||
+		if ( ( !cg_drawCrosshairHit.Get() && !cg_drawCrosshairFriendFoe.Get() ) ||
 			cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT ||
 			cg.snap->ps.pm_type == PM_INTERMISSION ||
 			cg.renderingThirdPerson )
@@ -476,8 +476,8 @@ public:
 		GetElementRect( rect );
 
 		// set base color (friend/foe detection)
-		if ( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_ALWAYSON ||
-			( cg_drawCrosshairFriendFoe.integer >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
+		if ( cg_drawCrosshairFriendFoe.Get() >= CROSSHAIR_ALWAYSON ||
+			( cg_drawCrosshairFriendFoe.Get() >= CROSSHAIR_RANGEDONLY && BG_Weapon( weapon )->longRanged ) )
 		{
 			if ( cg.crosshairFoe )
 			{
@@ -507,7 +507,7 @@ public:
 		}
 
 		// add hit color
-		if ( cg_drawCrosshairHit.integer && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
+		if ( cg_drawCrosshairHit.Get() && cg.hitTime + CROSSHAIR_INDICATOR_HITFADE > cg.time )
 		{
 			dim = ( ( cg.hitTime + CROSSHAIR_INDICATOR_HITFADE ) - cg.time ) / ( float )CROSSHAIR_INDICATOR_HITFADE;
 			drawColor = Color::Blend( baseColor, Color::White, dim );
@@ -524,7 +524,7 @@ public:
 		}
 
 		// set size
-		w = h = wi->crossHairSize * cg_crosshairSize.value;
+		w = h = wi->crossHairSize * cg_crosshairSize.Get();
 		w *= cgs.aspectScale;
 
 		x = rect.x + ( rect.w / 2 ) - ( w / 2 );
@@ -568,12 +568,12 @@ public:
 
 		weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
-		if ( cg_drawCrosshair.integer == CROSSHAIR_ALWAYSOFF )
+		if ( cg_drawCrosshair.Get() == CROSSHAIR_ALWAYSOFF )
 		{
 			return;
 		}
 
-		if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY &&
+		if ( cg_drawCrosshair.Get() == CROSSHAIR_RANGEDONLY &&
 			!BG_Weapon( weapon )->longRanged )
 		{
 			return;
@@ -598,7 +598,7 @@ public:
 
 		wi = &cg_weapons[ weapon ];
 
-		w = h = wi->crossHairSize * cg_crosshairSize.value;
+		w = h = wi->crossHairSize * cg_crosshairSize.Get();
 		w *= cgs.aspectScale;
 
 		// HACK: This ignores the width/height of the rect (does it?)
@@ -648,14 +648,14 @@ void CG_AddSpeed()
 
 	VectorCopy( cg.snap->ps.velocity, vel );
 
-	if ( cg_drawSpeed.integer & SPEEDOMETER_IGNORE_Z )
+	if ( cg_drawSpeed.Get() & SPEEDOMETER_IGNORE_Z )
 	{
 		vel[ 2 ] = 0;
 	}
 
 	speed = VectorLength( vel );
 
-	windowTime = cg_maxSpeedTimeWindow.integer;
+	windowTime = cg_maxSpeedTimeWindow.Get();
 
 	if ( windowTime < 0 )
 	{
@@ -774,7 +774,7 @@ public:
 		const Color::Color fast = { 1.0, 0.0, 0.0 };
 		rectDef_t    rect;
 
-		if ( !cg_drawSpeed.integer )
+		if ( !cg_drawSpeed.Get() )
 		{
 			if ( shouldDrawSpeed )
 			{
@@ -790,7 +790,7 @@ public:
 		}
 
 
-		if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_GRAPH )
+		if ( cg_drawSpeed.Get() & SPEEDOMETER_DRAW_GRAPH )
 		{
 			// grab info from libRocket
 			GetElementRect( rect );
@@ -835,7 +835,7 @@ public:
 			trap_R_ClearColor();
 		}
 
-		if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_TEXT )
+		if ( cg_drawSpeed.Get() & SPEEDOMETER_DRAW_TEXT )
 		{
 			// Add text to be configured via CSS
 			if ( cg.predictedPlayerState.clientNum == cg.clientNum )
@@ -843,7 +843,7 @@ public:
 				vec3_t vel;
 				VectorCopy( cg.predictedPlayerState.velocity, vel );
 
-				if ( cg_drawSpeed.integer & SPEEDOMETER_IGNORE_Z )
+				if ( cg_drawSpeed.Get() & SPEEDOMETER_IGNORE_Z )
 				{
 					vel[ 2 ] = 0;
 				}
@@ -1150,12 +1150,12 @@ public:
 		int   mins, seconds, tens;
 		int   msec;
 
-		if ( !cg_drawTimer.integer && IsVisible() )
+		if ( !cg_drawTimer.Get() && IsVisible() )
 		{
 			SetProperty( "display", "none" );
 			return;
 		}
-		else if ( cg_drawTimer.integer && !IsVisible() )
+		else if ( cg_drawTimer.Get() && !IsVisible() )
 		{
 			SetProperty( "display", "block" );
 		}
@@ -1486,7 +1486,7 @@ public:
 			shouldDrawPing = true;
 		}
 
-		if ( cg_nopredict.integer || cg.pmoveParams.synchronous )
+		if ( cg_nopredict.Get() || cg.pmoveParams.synchronous )
 		{
 			ping = "snc";
 		}
@@ -1568,7 +1568,7 @@ static void CG_ScanForCrosshairEntity()
 		}
 
 		// set more stuff if requested
-		if ( cg_drawEntityInfo.integer && targetState.eType != entityType_t::ET_GENERAL )
+		if ( cg_drawEntityInfo.Get() && targetState.eType != entityType_t::ET_GENERAL )
 		{
 			cg.crosshairClientNum = trace.entityNum;
 			cg.crosshairClientTime = cg.time;
@@ -1615,7 +1615,7 @@ public:
 		Rocket::Core::String name;
 		float alpha;
 
-		if ( !cg_drawCrosshairNames.integer || cg.renderingThirdPerson )
+		if ( !cg_drawCrosshairNames.Get() || cg.renderingThirdPerson )
 		{
 			Clear();
 			return;
@@ -1644,13 +1644,13 @@ public:
 			SetProperty( "opacity", va( "%f", alpha ) );
 		}
 
-		if ( cg_drawEntityInfo.integer )
+		if ( cg_drawEntityInfo.Get() )
 		{
 			name = va( "(^5%s^7|^5#%d^7)",
 					   Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
 		}
 
-		else if ( cg_drawCrosshairNames.integer >= 2 )
+		else if ( cg_drawCrosshairNames.Get() >= 2 )
 		{
 			name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
 		}
@@ -1661,7 +1661,7 @@ public:
 		}
 
 		// add health from overlay info to the crosshair client name
-		if ( cg_teamOverlayUserinfo.integer &&
+		if ( cg_teamOverlayUserinfo.Get() &&
 			CG_MyTeam() != TEAM_NONE &&
 			cgs.teamInfoReceived &&
 			cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
@@ -2843,7 +2843,7 @@ void CG_Rocket_DrawClock()
 	char    *s;
 	qtime_t qt;
 
-	if ( !cg_drawClock.integer )
+	if ( !cg_drawClock.Get() )
 	{
 		Rocket_SetInnerRML( "", 0 );
 		return;
@@ -2851,7 +2851,7 @@ void CG_Rocket_DrawClock()
 
 	Com_RealTime( &qt );
 
-	if ( cg_drawClock.integer == 2 )
+	if ( cg_drawClock.Get() == 2 )
 	{
 		s = va( "%02d%s%02d", qt.tm_hour, ( qt.tm_sec % 2 ) ? ":" : " ",
 				qt.tm_min );
@@ -2886,7 +2886,7 @@ void CG_Rocket_DrawClock()
 
 void CG_Rocket_DrawTutorial()
 {
-	if ( !cg_tutorial.integer )
+	if ( !cg_tutorial.Get() )
 	{
 		Rocket_SetInnerRML( "", 0 );
 		return;
@@ -2919,7 +2919,7 @@ void CG_Rocket_DrawChatType()
 	{
 		const char *prompt = _( sayText[ cg.sayType ].prompt );
 
-		if ( ui_chatPromptColors.integer )
+		if ( ui_chatPromptColors.Get() )
 		{
 			Rocket_SetInnerRML( va( "%s%s", sayText[ cg.sayType ].colour, prompt ), RP_QUAKE );
 		}

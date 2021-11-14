@@ -380,14 +380,11 @@ CG_UpdateMinimapActive
 */
 static void CG_UpdateMinimapActive(minimap_t* m)
 {
-    bool active = m->defined && cg_drawMinimap.integer;
+    bool active = m->defined && cg_drawMinimap.Get();
 
     m->active = active;
 
-    if ((cg_minimapActive.integer != 0) != active)
-    {
-        trap_Cvar_Set( "cg_minimapActive", va( "%d", active ) );
-    }
+    cg_minimapActive.Set(+active);
 }
 
 //Other logical minimap functions

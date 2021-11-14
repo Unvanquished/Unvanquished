@@ -166,34 +166,36 @@ private:
 
 	bool IsConditionValid()
 	{
+		std::string str = Cvar::GetValue( cvar.CString() );
 		switch ( value.GetType() )
 		{
 			case Rocket::Core::Variant::INT:
-				Compare( atoi( Cvar::GetValue( cvar.CString() ).c_str() ), value.Get<int>() );
+				Compare( ParseInt( str ), value.Get<int>() );
 			case Rocket::Core::Variant::FLOAT:
-				Compare( atof( Cvar::GetValue( cvar.CString() ).c_str() ), value.Get<float>() );
+			{
+				float flt = 0;
+				Cvar::ParseCvarValue( str, flt );
+				Compare( flt, value.Get<float>() );
+			}
 			default:
-				Compare( Cvar::GetValue( cvar.CString() ), value.Get< Rocket::Core::String >().CString() );
+				Compare( str, value.Get< Rocket::Core::String >().CString() );
 		}
 	}
 
-	bool IsConditionValidLatched()
+	// Also takes bools
+	int ParseInt(const std::string& str)
 	{
-		std::string str = Cvar::GetValue( cvar.CString() );
-		if ( !str.empty() )
+		int integer;
+		if ( Cvar::ParseCvarValue( str, integer ) )
 		{
-			switch ( value.GetType() )
-			{
-				case Rocket::Core::Variant::INT:
-					Compare( atoi( str.c_str() ), value.Get<int>() );
-				case Rocket::Core::Variant::FLOAT:
-					Compare( atof( str.c_str() ), value.Get<float>() );
-				default:
-					Compare( str, value.Get< Rocket::Core::String >().CString() );
-			}
+			return integer;
 		}
-
-		return false;
+		bool boolean;
+		if ( Cvar::ParseCvarValue( str, boolean ) )
+		{
+			return +boolean;
+		}
+		return 0;
 	}
 
 	Rocket::Core::String cvar;

@@ -491,7 +491,7 @@ static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe
 
 			pe->valid = true;
 
-			if ( cg_debugParticles.integer >= 1 )
+			if ( cg_debugParticles.Get() >= 1 )
 			{
 				Log::Debug( "PE %s created", ps->class_->name );
 			}
@@ -545,7 +545,7 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 				CG_SpawnNewParticleEjector( bps->ejectors[ j ], ps );
 			}
 
-			if ( cg_debugParticles.integer >= 1 )
+			if ( cg_debugParticles.Get() >= 1 )
 			{
 				Log::Debug( "PS %s created", bps->name );
 			}
@@ -635,7 +635,7 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 				}
 			}
 
-			if ( cg_debugParticles.integer >= 1 )
+			if ( cg_debugParticles.Get() >= 1 )
 			{
 				Log::Debug( "Registered particle system %s", name );
 			}
@@ -1710,7 +1710,7 @@ static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text
 		}
 		else if ( !Q_stricmp( token, "}" ) )
 		{
-			if ( cg_debugParticles.integer >= 1 )
+			if ( cg_debugParticles.Get() >= 1 )
 			{
 				Log::Debug( "Parsed particle system %s", name );
 			}
@@ -2014,7 +2014,7 @@ void CG_DestroyParticleSystem( particleSystem_t **ps )
 		return;
 	}
 
-	if ( cg_debugParticles.integer >= 1 )
+	if ( cg_debugParticles.Get() >= 1 )
 	{
 		Log::Debug( "PS destroyed" );
 	}
@@ -2151,7 +2151,7 @@ static void CG_GarbageCollectParticleSystems()
 			}
 		}
 
-		if ( cg_debugParticles.integer >= 1 && !ps->valid )
+		if ( cg_debugParticles.Get() >= 1 && !ps->valid )
 		{
 			Log::Debug( "PS %s garbage collected", ps->class_->name );
 		}
@@ -2327,7 +2327,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	p->lastEvalTime = cg.time;
 
 	// we're not doing particle physics, but at least cull them in solids
-	if ( !cg_bounceParticles.integer )
+	if ( !cg_bounceParticles.Get() )
 	{
 		int contents = trap_CM_PointContents( newOrigin, 0 );
 
@@ -2469,7 +2469,7 @@ static void CG_CompactAndSortParticles()
 		sortedParticles[ i ] = &particles[ i ];
 	}
 
-	if ( !cg_depthSortParticles.integer )
+	if ( !cg_depthSortParticles.Get() )
 	{
 		return;
 	}
@@ -2730,7 +2730,7 @@ void CG_AddParticles()
 		}
 	}
 
-	if ( cg_debugParticles.integer >= 2 )
+	if ( cg_debugParticles.Get() >= 2 )
 	{
 		for ( i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
 		{

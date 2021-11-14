@@ -881,7 +881,7 @@ static void CG_SetBuildableLerpFrameAnimation( buildable_t buildable, lerpFrame_
 		lf->animationTime = lf->frameTime + anim->initialLerp;
 	}
 
-	if ( cg_debugAnim.integer )
+	if ( cg_debugAnim.Get() )
 	{
 		Log::Debug( "Anim: %i", newAnimation );
 	}
@@ -919,23 +919,11 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
-		if ( cg_debugRandom.integer )
-		{
-			Log::Debug( "newAnimation: %d lf->animationNumber: %d lf->animation: %p",
-			           newAnimation, lf->animationNumber, (void *) lf->animation );
-		}
-
 		CG_SetBuildableLerpFrameAnimation( buildable, lf, newAnimation );
 
 		if ( !cg_buildables[ buildable ].sounds[ newAnimation ].looped &&
 		     cg_buildables[ buildable ].sounds[ newAnimation ].enabled )
 		{
-			if ( cg_debugRandom.integer )
-			{
-				Log::Debug( "Sound for animation %d for a %s",
-				           newAnimation, BG_Buildable( buildable )->humanName );
-			}
-
 			trap_S_StartSound( cent->lerpOrigin, cent->currentState.number, soundChannel_t::CHAN_AUTO,
 			                   cg_buildables[ buildable ].sounds[ newAnimation ].sound );
 		}
@@ -999,7 +987,7 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 	{
 		if ( ( cent->oldBuildableAnim ^ es->legsAnim ) & ANIM_TOGGLEBIT )
 		{
-			if ( cg_debugAnim.integer )
+			if ( cg_debugAnim.Get() )
 			{
 				Log::Debug( "%d->%d l:%d t:%d %s(%d)",
 				           cent->oldBuildableAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT ), cent->buildableAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT ),
@@ -1152,7 +1140,7 @@ void CG_GhostBuildable( int buildableInfo )
 
 	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, CG_Trace, entity_origin, angles, &tr );
 
-	if ( cg_rangeMarkerForBlueprint.integer && tr.entityNum != ENTITYNUM_NONE )
+	if ( cg_rangeMarkerForBlueprint.Get() && tr.entityNum != ENTITYNUM_NONE )
 	{
 		CG_DrawBuildableRangeMarker( buildable, entity_origin, tr.plane.normal, 1.0f );
 	}
@@ -1844,8 +1832,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		subH = picH - ( picH * bs->verticalMargin );
 		subY = picY + ( picH * 0.5f ) - ( subH * 0.5f );
 
-		clipW = ( 640.0f * cg_viewsize.integer ) / 100.0f;
-		clipH = ( 480.0f * cg_viewsize.integer ) / 100.0f;
+		clipW = ( 640.0f * cg_viewsize.Get() ) / 100.0f;
+		clipH = ( 480.0f * cg_viewsize.Get() ) / 100.0f;
 		clipX = 320.0f - ( clipW * 0.5f );
 		clipY = 240.0f - ( clipH * 0.5f );
 		CG_SetClipRegion( clipX, clipY, clipW, clipH );
@@ -2078,7 +2066,7 @@ void CG_DrawBuildableStatus()
 	int           buildableList[ MAX_ENTITIES_IN_SNAPSHOT ];
 	unsigned      buildables = 0;
 
-	if ( !cg_drawBuildableHealth.integer )
+	if ( !cg_drawBuildableHealth.Get() )
 	{
 		return;
 	}
@@ -2191,9 +2179,9 @@ void CG_Buildable( centity_t *cent )
 		AnglesToAxis( cent->lerpAngles, ent.axis );
 	}
 
-	if( cg_drawBBOX.integer )
+	if( cg_drawBBOX.Get() > 0 )
 	{
-		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
+		CG_DrawBoundingBox( cg_drawBBOX.Get(), cent->lerpOrigin, mins, maxs );
 	}
 
 	//offset on the Z axis if required
@@ -2261,7 +2249,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	// add inverse shadow map
-	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.integer )
+	if ( cg_shadows.Get() > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.Get() )
 	{
 		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
@@ -2525,10 +2513,10 @@ void CG_Buildable( centity_t *cent )
 			drawRange = cg.predictedPlayerState.weapon == WP_ABUILD ||
 			            cg.predictedPlayerState.weapon == WP_ABUILD2;
 		} else {
-			drawRange = (cg_buildableRangeMarkerMask.integer & (1 << BA_NONE)) != 0;
+			drawRange = cg_rangeMarkerWhenSpectating.Get();
 		}
 
-		drawRange &= (cg_buildableRangeMarkerMask.integer & (1 << ba->number)) != 0;
+		drawRange &= (cg_buildableRangeMarkerMask & (1 << ba->number)) != 0;
 
 		dist = Distance( cent->lerpOrigin, cg.refdef.vieworg );
 
@@ -2543,7 +2531,7 @@ void CG_Buildable( centity_t *cent )
 		}
 	}
 
-	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.integer )
+	if ( cg_shadows.Get() > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.Get() )
 	{
 		CG_EndShadowCaster( );
 	}

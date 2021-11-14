@@ -692,7 +692,7 @@ static void CG_LightFlare( centity_t *cent )
 	es = &cent->currentState;
 
 	//don't draw light flares
-	if ( cg_lightFlare.integer == FLARE_OFF )
+	if ( cg_lightFlare.Get() == FLARE_OFF )
 	{
 		return;
 	}
@@ -761,11 +761,11 @@ static void CG_LightFlare( centity_t *cent )
 	VectorMA( flare.origin, -flare.radius, delta, end );
 	VectorMA( cg.refdef.vieworg, flare.radius, delta, start );
 
-	if ( cg_lightFlare.integer == FLARE_REALFADE )
+	if ( cg_lightFlare.Get() == FLARE_REALFADE )
 	{
 		ratio = newStatus;
 	}
-	else if ( cg_lightFlare.integer == FLARE_TIMEFADE )
+	else if ( cg_lightFlare.Get() == FLARE_TIMEFADE )
 	{
 		//draw timed flares
 		if ( newStatus <= 0.5f && cent->lfs.status )
@@ -802,7 +802,7 @@ static void CG_LightFlare( centity_t *cent )
 			}
 		}
 	}
-	else if ( cg_lightFlare.integer == FLARE_NOFADE )
+	else if ( cg_lightFlare.Get() == FLARE_NOFADE )
 	{
 		//flare source occluded
 		if ( newStatus <= 0.5f )
@@ -967,7 +967,7 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 	int timeshift = 0;
 
 	// if this player does not want to see extrapolated players
-	if ( !cg_smoothClients.integer )
+	if ( !cg_smoothClients.Get() )
 	{
 		// make sure the clients use TR_INTERPOLATE
 		if ( cent->currentState.number < MAX_CLIENTS )
@@ -992,7 +992,7 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 		return;
 	}
 
-	if ( cg_projectileNudge.integer &&
+	if ( cg_projectileNudge.Get() &&
 	     !cg.demoPlayback &&
 	     cent->currentState.eType == entityType_t::ET_MISSILE &&
 	     !( cg.snap->ps.pm_flags & PMF_FOLLOW ) )
@@ -1042,7 +1042,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 {
 	entityState_t &es = cent->currentState;
 
-	if ( cg_debugPVS.integer )
+	if ( cg_debugPVS.Get() )
 	{
 		Log::Debug( "Entity %d entered PVS", cent->currentState.number );
 	}
@@ -1094,7 +1094,7 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 	int           i;
 	entityState_t *es = &cent->currentState;
 
-	if ( cg_debugPVS.integer )
+	if ( cg_debugPVS.Get() )
 	{
 		Log::Debug( "Entity %d left PVS", cent->currentState.number );
 	}
@@ -1346,7 +1346,7 @@ void CG_AddPacketEntities()
 	}
 
 	//make an attempt at drawing bounding boxes of selected entity types
-	if ( cg_drawBBOX.integer )
+	if ( cg_drawBBOX.Get() > 0 )
 	{
 		for ( unsigned num = 0; num < cg.snap->entities.size(); num++ )
 		{
@@ -1360,7 +1360,7 @@ void CG_AddPacketEntities()
 			{
 				case entityType_t::ET_MISSILE:
 					BG_MissileBounds( BG_Missile( es->weapon ), mins, maxs );
-					CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
+					CG_DrawBoundingBox( cg_drawBBOX.Get(), cent->lerpOrigin, mins, maxs );
 					break;
 
 				default:

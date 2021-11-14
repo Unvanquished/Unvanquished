@@ -423,8 +423,8 @@ bool CG_WorldToScreen( vec3_t point, float *x, float *y )
 
 	VectorSubtract( point, cg.refdef.vieworg, trans );
 
-	xc = ( 640.0f * cg_viewsize.integer ) / 200.0f;
-	yc = ( 480.0f * cg_viewsize.integer ) / 200.0f;
+	xc = ( 640.0f * cg_viewsize.Get() ) / 200.0f;
+	yc = ( 480.0f * cg_viewsize.Get() ) / 200.0f;
 
 	z = DotProduct( trans, cg.refdef.viewaxis[ 0 ] );
 
@@ -545,13 +545,13 @@ CG_DrawRangeMarker
 */
 void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, Color::Color rgba )
 {
-	if ( cg_rangeMarkerDrawSurface.integer )
+	if ( cg_rangeMarkerDrawSurface.Get() )
 	{
 		qhandle_t pcsh;
 
 		pcsh = cgs.media.plainColorShader;
 
-		rgba.SetAlpha( rgba.Alpha() * Math::Clamp( cg_rangeMarkerSurfaceOpacity.value, 0.0f, 1.0f ) );
+		rgba.SetAlpha( rgba.Alpha() * cg_rangeMarkerSurfaceOpacity.Get() );
 
 		switch( rmType )
 		{
@@ -567,7 +567,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 		}
 	}
 
-	if ( cg_rangeMarkerDrawIntersection.integer || cg_rangeMarkerDrawFrontline.integer )
+	if ( cg_rangeMarkerDrawIntersection.Get() || cg_rangeMarkerDrawFrontline.Get() )
 	{
 		float                       lineOpacity, lineThickness;
 		const cgMediaBinaryShader_t *mbsh;
@@ -578,8 +578,8 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 			return;
 		}
 
-		lineOpacity = Math::Clamp( cg_rangeMarkerLineOpacity.value, 0.0f, 1.0f );
-		lineThickness = cg_rangeMarkerLineThickness.value;
+		lineOpacity = cg_rangeMarkerLineOpacity.Get();
+		lineThickness = cg_rangeMarkerLineThickness.Get();
 		if ( lineThickness < 0.0f )
 			lineThickness = 0.0f;
 		mbsh = &cgs.media.binaryShaders[ cg.numBinaryShadersUsed ];
@@ -588,7 +588,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 		{
 			if ( range > lineThickness / 2 )
 			{
-				if ( cg_rangeMarkerDrawIntersection.integer )
+				if ( cg_rangeMarkerDrawIntersection.Get() )
 				{
 					CG_DrawSphere( origin, range - lineThickness / 2, mbsh->b1, Color::White );
 				}
@@ -596,7 +596,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 				CG_DrawSphere( origin, range - lineThickness / 2, mbsh->f2, Color::White );
 			}
 
-			if ( cg_rangeMarkerDrawIntersection.integer )
+			if ( cg_rangeMarkerDrawIntersection.Get() )
 			{
 				CG_DrawSphere( origin, range + lineThickness / 2, mbsh->b2, Color::White );
 			}
@@ -618,7 +618,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 			{
 				VectorMA( origin, f, forward, tip );
 
-				if ( cg_rangeMarkerDrawIntersection.integer )
+				if ( cg_rangeMarkerDrawIntersection.Get() )
 				{
 					CG_DrawSphericalCone( tip, angles, range - r, t2, mbsh->b1, Color::White );
 				}
@@ -628,7 +628,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 			VectorMA( origin, -f, forward, tip );
 
-			if ( cg_rangeMarkerDrawIntersection.integer )
+			if ( cg_rangeMarkerDrawIntersection.Get() )
 			{
 				CG_DrawSphericalCone( tip, angles, range + r, t2, mbsh->b2, Color::White );
 			}
@@ -640,8 +640,8 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 		bshs->color = rgba * lineOpacity;
 
-		bshs->drawIntersection = !!cg_rangeMarkerDrawIntersection.integer;
-		bshs->drawFrontline = !!cg_rangeMarkerDrawFrontline.integer;
+		bshs->drawIntersection = cg_rangeMarkerDrawIntersection.Get();
+		bshs->drawFrontline = cg_rangeMarkerDrawFrontline.Get();
 
 		++cg.numBinaryShadersUsed;
 	}

@@ -335,7 +335,7 @@ static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName,
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		if ( cg_debugAnim.integer )
+		if ( cg_debugAnim.Get() )
 		{
 			Log::Warn( "Failed to load animation file %s", filename );
 		}
@@ -1656,7 +1656,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 		lf->animationTime = lf->frameTime + anim->initialLerp;
 	}
 
-	if ( cg_debugAnim.integer )
+	if ( cg_debugAnim.Get() )
 	{
 		Log::Warn( "Anim: %i", newAnimation );
 	}
@@ -1703,7 +1703,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	animation_t *anim;
 
 	// debugging tool to get no animations
-	if ( cg_animSpeed.integer == 0 )
+	if ( !cg_animSpeed.Get() )
 	{
 		lf->oldFrame = lf->frame = lf->backlerp = 0;
 		return;
@@ -1766,7 +1766,7 @@ static void CG_SegmentAnimation( centity_t *cent, lerpFrame_t *lf, refSkeleton_t
 
 	clientNum = cent->currentState.clientNum;
 
-	if ( cg_noPlayerAnims.integer )
+	if ( cg_noPlayerAnims.Get() )
 	{
 		*oldFrame = *frame = 0;
 		return;
@@ -1794,7 +1794,7 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 
 	clientNum = cent->currentState.clientNum;
 
-	if ( cg_noPlayerAnims.integer )
+	if ( cg_noPlayerAnims.Get() )
 	{
 		return;
 	}
@@ -2024,16 +2024,16 @@ static void CG_PlayerAngles( centity_t *cent, const vec3_t srcAngles,
 	// torso
 	if ( cent->currentState.eFlags & EF_DEAD )
 	{
-		CG_SwingAngles( torsoAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+		CG_SwingAngles( torsoAngles[ YAW ], 0, 0, cg_swingSpeed.Get(),
 		                &cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
-		CG_SwingAngles( legsAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+		CG_SwingAngles( legsAngles[ YAW ], 0, 0, cg_swingSpeed.Get(),
 		                &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
 	}
 	else
 	{
-		CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.value,
+		CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.Get(),
 		                &cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
-		CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.value,
+		CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.Get(),
 		                &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
 	}
 
@@ -2290,12 +2290,12 @@ static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSe
 	// torso
 	if ( cent->currentState.eFlags & EF_DEAD )
 	{
-		CG_SwingAngles( localAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+		CG_SwingAngles( localAngles[ YAW ], 0, 0, cg_swingSpeed.Get(),
 		                &cent->pe.nonseg.yawAngle, &cent->pe.nonseg.yawing );
 	}
 	else
 	{
-		CG_SwingAngles( localAngles[ YAW ], 40, 90, cg_swingSpeed.value,
+		CG_SwingAngles( localAngles[ YAW ], 40, 90, cg_swingSpeed.Get(),
 		                &cent->pe.nonseg.yawAngle, &cent->pe.nonseg.yawing );
 	}
 
@@ -2639,7 +2639,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		}
 	}
 
-	if ( cg_shadows.integer == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
+	if ( cg_shadows.Get() == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
 	{
 		return false;
 	}
@@ -2656,15 +2656,15 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		return false;
 	}
 
-	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
-	     cg_playerShadows.integer ) {
+	if ( cg_shadows.Get() > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
+	     cg_playerShadows.Get() ) {
 		// add inverse shadow map
 		{
 		  CG_StartShadowCaster( cent->lerpOrigin, mins, maxs );
 		}
 	}
 
-	if ( cg_shadows.integer != Util::ordinal(shadowingMode_t::SHADOWING_BLOB)) // no mark for stencil or projection shadows
+	if ( cg_shadows.Get() != Util::ordinal(shadowingMode_t::SHADOWING_BLOB)) // no mark for stencil or projection shadows
 	{
 		return true;
 	}
@@ -2683,13 +2683,13 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 
 static void CG_PlayerShadowEnd()
 {
-	if ( cg_shadows.integer == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
+	if ( cg_shadows.Get() == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
 	{
 		return;
 	}
 
-	if ( cg_shadows.integer > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
-	     cg_playerShadows.integer ) {
+	if ( cg_shadows.Get() > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
+	     cg_playerShadows.Get() ) {
 		CG_EndShadowCaster( );
 	}
 }
@@ -2708,7 +2708,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 	trace_t trace;
 	int     contents;
 
-	if ( cg_shadows.integer == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
+	if ( cg_shadows.Get() == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
 	{
 		return;
 	}
@@ -2961,12 +2961,12 @@ void CG_Player( centity_t *cent )
 		}
 	}
 
-	if ( cg_drawBBOX.integer && cg.renderingThirdPerson )
+	if ( cg_drawBBOX.Get() && cg.renderingThirdPerson )
 	{
 		vec3_t mins, maxs;
 
 		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
-		CG_DrawBoundingBox( cg_drawBBOX.integer, cent->lerpOrigin, mins, maxs );
+		CG_DrawBoundingBox( cg_drawBBOX.Get(), cent->lerpOrigin, mins, maxs );
 	}
 
 	// NOTE: legs is used for nonsegmented and skeletal models
@@ -3444,7 +3444,7 @@ void CG_Corpse( centity_t *cent )
 	}
 
 	//set the correct frame (should always be dead)
-	if ( cg_noPlayerAnims.integer )
+	if ( cg_noPlayerAnims.Get() )
 	{
 		legs.oldframe = legs.frame = torso.oldframe = torso.frame = 0;
 	}
@@ -3637,11 +3637,6 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	cent->pe.nonseg.yawing = false;
 	cent->pe.nonseg.pitchAngle = cent->rawAngles[ PITCH ];
 	cent->pe.nonseg.pitching = false;
-
-	if ( cg_debugPosition.integer )
-	{
-		Log::Debug( "%i ResetPlayerEntity yaw=%.2f", cent->currentState.number, cent->pe.torso.yawAngle );
-	}
 }
 
 /*

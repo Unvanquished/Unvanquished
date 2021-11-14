@@ -150,7 +150,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 	vec3_t         markPoints[ MAX_MARK_POINTS ];
 	vec3_t         projection;
 
-	if ( !cg_addMarks.integer )
+	if ( !cg_addMarks.Get() )
 	{
 		return;
 	}
@@ -262,7 +262,7 @@ void CG_AddMarks()
 	int        t;
 	int        fade;
 
-	if ( !cg_addMarks.integer )
+	if ( !cg_addMarks.Get() )
 	{
 		return;
 	}
