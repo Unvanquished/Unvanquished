@@ -34,6 +34,36 @@ struct variatingTime_s
 	float variance;
 };
 
+#define MAX_NAMELOG_NAMES 5
+#define MAX_NAMELOG_ADDRS 5
+
+struct namelog_s
+{
+	struct namelog_s *next;
+
+	char   name[ MAX_NAMELOG_NAMES ][ MAX_NAME_LENGTH ];
+	addr_t ip[ MAX_NAMELOG_ADDRS ];
+	char   guid[ 33 ];
+	int    slot;
+	bool   banned;
+
+	int nameOffset;
+	int nameChangeTime;
+	int nameChanges;
+	int voteCount;
+
+	unnamed_t unnamedNumber;
+
+	bool muted;
+	bool denyBuild;
+
+	int    score;
+	int    credits;
+	team_t team;
+
+	int id;
+};
+
 /**
  * in the context of a target, this describes the conditions to create or to act within
  * while as part of trigger or most other types, it will be used as filtering condition that needs to be fulfilled to trigger, or to act directly
@@ -414,36 +444,6 @@ struct clientSession_s
 	char             botTree[ MAX_QPATH ];
 	clientList_t     ignoreList;
 	int              seenWelcome; // determines if the client has seen server's welcome message
-};
-
-#define MAX_NAMELOG_NAMES 5
-#define MAX_NAMELOG_ADDRS 5
-
-struct namelog_s
-{
-	struct namelog_s *next;
-
-	char             name[ MAX_NAMELOG_NAMES ][ MAX_NAME_LENGTH ];
-	addr_t           ip[ MAX_NAMELOG_ADDRS ];
-	char             guid[ 33 ];
-	int              slot;
-	bool         banned;
-
-	int              nameOffset;
-	int              nameChangeTime;
-	int              nameChanges;
-	int              voteCount;
-
-	unnamed_t        unnamedNumber;
-
-	bool         muted;
-	bool         denyBuild;
-
-	int              score;
-	int              credits;
-	team_t           team;
-
-	int              id;
 };
 
 /**
