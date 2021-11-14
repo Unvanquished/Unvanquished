@@ -821,7 +821,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 static void BeaconAutoTag( gentity_t *self, int timePassed )
 {
 	gentity_t *traceEnt, *target;
-	gclient_s *client;
+	gclient_t *client;
 	team_t    team;
 	vec3_t viewOrigin, forward, end;
 

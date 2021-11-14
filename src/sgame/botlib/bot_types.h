@@ -34,6 +34,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #ifndef BOTLIB_TYPE_H_
 #define BOTLIB_TYPE_H_
 
+struct gentity_t;
+struct gclient_t;
+struct variatingTime_t;
+
 struct botClass_t
 {
 	char name[ 64 ];

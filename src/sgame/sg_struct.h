@@ -28,7 +28,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #include "sg_entities.h"
 struct botMemory_t;
 
-struct variatingTime_s
+struct variatingTime_t
 {
 	float time;
 	float variance;
@@ -37,9 +37,10 @@ struct variatingTime_s
 #define MAX_NAMELOG_NAMES 5
 #define MAX_NAMELOG_ADDRS 5
 
-struct namelog_s
+using unnamed_t = signed int;
+struct namelog_t
 {
-	struct namelog_s *next;
+	namelog_t *next;
 
 	char   name[ MAX_NAMELOG_NAMES ][ MAX_NAME_LENGTH ];
 	addr_t ip[ MAX_NAMELOG_ADDRS ];
@@ -68,7 +69,7 @@ struct namelog_s
  * in the context of a target, this describes the conditions to create or to act within
  * while as part of trigger or most other types, it will be used as filtering condition that needs to be fulfilled to trigger, or to act directly
  */
-struct gentityConditions_s
+struct gentityConditions_t
 {
 	team_t   team;
 	int      stage;
@@ -84,7 +85,7 @@ struct gentityConditions_s
 /**
  * struct containing the configuration data of a gentity opposed to its state data
  */
-struct gentityConfig_s
+struct gentityConfig_t
 {
 	/* amount of a context depended size for this entity */
 	int amount;
@@ -111,7 +112,7 @@ struct gentityConfig_s
 	int triggerRange;
 };
 
-struct entityClass_s
+struct entityClass_t
 {
 	int instanceCounter;
 	/**
@@ -160,7 +161,7 @@ struct GentityRef_impl
 using GentityRef = GentityRef_impl<gentity_t *>;
 using GentityConstRef = GentityRef_impl<const gentity_t *>;
 
-struct gentity_s
+struct gentity_t
 {
 	entityState_t  s; // communicated by server to clients
 	entityShared_t r; // shared by both the server system and game
@@ -172,7 +173,7 @@ struct gentity_s
 	// New style entity
 	Entity* entity;
 
-	struct gclient_s *client; // nullptr if not a client
+	gclient_t *client; // nullptr if not a client
 
 	unsigned generation; // used with GentityRef
 	int          freetime; // level.time when the object was freed
@@ -377,7 +378,7 @@ struct gentity_s
 
 
 	team_t      buildableTeam; // buildable item team
-	struct namelog_s *builtBy; // clientNum of person that built this
+	namelog_t   *builtBy; // clientNum of person that built this
 
 	int         pain_debounce_time;
 	int         last_move_time;
@@ -434,7 +435,7 @@ struct gentity_s
  * time and reading them back at connection time.  Anything added here
  * MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
  */
-struct clientSession_s
+struct clientSession_t
 {
 	int              spectatorTime; // for determining next-in-line to play
 	spectatorState_t spectatorState;
@@ -450,7 +451,7 @@ struct clientSession_s
  * client data that stays across multiple respawns, but is cleared
  * on each level change or team change at ClientBegin()
  */
-struct clientPersistant_s
+struct clientPersistant_t
 {
 	clientConnected_t connected;
 	usercmd_t         cmd; // we would lose angles if not persistent
@@ -505,7 +506,7 @@ struct clientPersistant_s
 	bool isFillerBot;
 };
 
-struct unlagged_s
+struct unlagged_t
 {
 	vec3_t   origin;
 	vec3_t   mins;
@@ -520,7 +521,7 @@ struct unlagged_s
  * this structure is cleared on each ClientSpawn(),
  * except for 'client->pers' and 'client->sess'
  */
-struct gclient_s
+struct gclient_t
 {
 	// ps MUST be the first element, because the server expects it
 	playerState_t ps; // communicated by server to clients
@@ -595,7 +596,7 @@ struct gclient_s
 /**
  * store locational damage regions
  */
-struct damageRegion_s
+struct damageRegion_t
 {
 	char     name[ 32 ];
 	float    area, modifier, minHeight, maxHeight;
@@ -604,7 +605,7 @@ struct damageRegion_s
 	bool nonlocational;
 };
 
-struct spawnQueue_s
+struct spawnQueue_t
 {
 	int clients[ MAX_CLIENTS ];
 
@@ -614,7 +615,7 @@ struct spawnQueue_s
 /**
  * data needed to revert a change in layout
  */
-struct buildLog_s
+struct buildLog_t
 {
 	int         time;
 	buildFate_t fate;
@@ -634,11 +635,11 @@ struct buildLog_s
 #define MAX_SPAWN_VARS_CHARS 4096
 #define MAX_BUILDLOG         1024
 
-struct level_locals_s
+struct level_locals_t
 {
-	struct gclient_s *clients; // [maxclients]
+	gclient_t *clients; // [maxclients]
 
-	struct gentity_s *gentities;
+	gentity_t *gentities;
 
 	int              num_entities; // MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
 
@@ -779,14 +780,14 @@ struct level_locals_s
 	} pmoveParams;
 };
 
-struct commands_s
+struct commands_t
 {
 	const char *cmdName;
 	int        cmdFlags;
 	void      ( *cmdHandler )( gentity_t *ent );
 };
 
-struct zap_s
+struct zap_t
 {
 	bool  used;
 

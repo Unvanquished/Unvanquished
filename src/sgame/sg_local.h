@@ -36,7 +36,6 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #include "sg_definitions.h"
 
 // type definitions
-#include "sg_typedef.h"
 #include "botlib/bot_types.h"
 
 // topic function headers and definitions
