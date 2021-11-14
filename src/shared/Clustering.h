@@ -29,9 +29,9 @@ namespace Clustering {
 	template <typename Data, int Dim>
 	class EuclideanCluster {
 		public:
-			typedef Math::Vector<Dim, float>                                      point_type;
-			typedef std::pair<const Data, point_type>                             record_type;
-			typedef typename std::unordered_map<Data, point_type>::const_iterator iter_type;
+			using point_type  = Math::Vector<Dim, float>;
+			using record_type = std::pair<const Data, point_type>;
+			using iter_type   = typename std::unordered_map<Data, point_type>::const_iterator;
 
 			EuclideanCluster() = default;
 
@@ -171,13 +171,13 @@ namespace Clustering {
 	template <typename Data, int Dim>
 	class EuclideanClustering {
 		public:
-			typedef EuclideanCluster<Data, Dim>                      cluster_type;
-			typedef typename EuclideanCluster<Data, Dim>::point_type point_type;
-			typedef Data                                             vertex_type;
-			typedef std::pair<const Data, point_type>                vertex_record_type;
-			typedef std::pair<Data, Data>                            edge_type;
-			typedef std::pair<const float, edge_type>                edge_record_type;
-			typedef typename std::vector<cluster_type>::iterator     iter_type;
+			using cluster_type       = EuclideanCluster<Data, Dim>;
+			using point_type         = typename EuclideanCluster<Data, Dim>::point_type;
+			using vertex_type        = Data;
+			using vertex_record_type = std::pair<const Data, point_type>;
+			using edge_type          = std::pair<Data, Data>;
+			using edge_record_type   = std::pair<const float, edge_type>;
+			using iter_type          = typename std::vector<cluster_type>::iterator;
 
 			/**
 			 * @param laxity Factor that scales the allowed deviation from the average edge length.

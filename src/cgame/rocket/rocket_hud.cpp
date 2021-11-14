@@ -46,7 +46,7 @@ struct HudUnit
 	bool load; // Whether to load or not
 };
 
-typedef std::list<HudUnit> RocketHud;
+using RocketHud = std::list<HudUnit>;
 RocketHud *activeHud = nullptr;
 std::vector<RocketHud> huds;
 

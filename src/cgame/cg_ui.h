@@ -28,8 +28,6 @@ struct rectDef_t
 	float h; // height;
 };
 
-typedef rectDef_t Rectangle;
-
 //
 // Translation
 //

@@ -50,29 +50,30 @@ enum conditionOperator_t
 };
 #define CONDITION_OPERATOR(op) ( ( op ) + '<' )
 
-typedef struct condition_s
+struct mrNode_t;
+struct mrCondition_t
 {
-	struct rotationNode_s       *target;
+	mrNode_t            *target;
 
 	conditionVariable_t lhs;
 	conditionOperator_t operator_;
 
 	int                 intValue;
 	team_t              lastWin;
-} mrCondition_t;
+};
 
-typedef struct map_s
+struct mrMapDescription_t
 {
 	char name[ MAX_QPATH ];
 
 	char postCommand[ MAX_STRING_CHARS ];
 	char layouts[ MAX_CVAR_VALUE_STRING ];
-} mrMapDescription_t;
+};
 
-typedef struct label_s
+struct mrLabel_t
 {
 	char name[ MAX_QPATH ];
-} mrLabel_t;
+};
 
 enum nodeType_t
 {
@@ -84,7 +85,7 @@ enum nodeType_t
   NT_RETURN
 };
 
-typedef struct rotationNode_s
+struct mrNode_t
 {
 	nodeType_t type;
 
@@ -94,7 +95,7 @@ typedef struct rotationNode_s
 		mrCondition_t       condition;
 		mrLabel_t           label;
 	} u;
-} mrNode_t;
+};
 
 struct mapRotation_t
 {
