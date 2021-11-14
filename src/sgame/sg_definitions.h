@@ -58,4 +58,55 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 #define FOFS(x) ((size_t)&(((gentity_t *)0 )->x ))
 
+
+// ----------
+// enum types
+// ----------
+
+enum clientConnected_t
+{
+	CON_DISCONNECTED,
+	CON_CONNECTING,
+	CON_CONNECTED
+};
+
+//status of the warning of certain events
+enum timeWarning_t
+{
+	TW_NOT = 0,
+	TW_IMMINENT,
+	TW_PASSED
+};
+
+// fate of a buildable
+enum buildFate_t
+{
+	BF_CONSTRUCT,
+	BF_DECONSTRUCT,
+	BF_REPLACE,
+	BF_DESTROY,
+	BF_TEAMKILL,
+	BF_UNPOWER,
+	BF_AUTO
+};
+
+enum voteType_t {
+	VOTE_KICK,
+	VOTE_SPECTATE,
+	VOTE_MUTE,
+	VOTE_UNMUTE,
+	VOTE_DENYBUILD,
+	VOTE_ALLOWBUILD,
+	VOTE_EXTEND,
+	VOTE_ADMIT_DEFEAT,
+	VOTE_DRAW,
+	VOTE_MAP_RESTART,
+	VOTE_MAP,
+	VOTE_LAYOUT,
+	VOTE_NEXT_MAP,
+	VOTE_POLL,
+	VOTE_BOT_KICK,
+};
+
+
 #endif // SG_DEFINITIONS_H_
