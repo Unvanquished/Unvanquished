@@ -131,9 +131,9 @@ void     BotStandStill( gentity_t *self );
 
 // navigation queries
 bool  GoalInRange( const gentity_t *self, float r );
-int   DistanceToGoal( const gentity_t *self );
-int   DistanceToGoalSquared( const gentity_t *self );
-int   DistanceToGoal2DSquared( const gentity_t *self );
+float DistanceToGoal( const gentity_t *self );
+float DistanceToGoalSquared( const gentity_t *self );
+float DistanceToGoal2DSquared( const gentity_t *self );
 float BotGetGoalRadius( const gentity_t *self );
 void  BotFindRandomPoint( int botClientNum, vec3_t point );
 bool  BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
