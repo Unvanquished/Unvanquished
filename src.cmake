@@ -205,6 +205,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_definitions.h
     ${GAMELOGIC_DIR}/sgame/sg_entities.cpp
     ${GAMELOGIC_DIR}/sgame/sg_entities.h
+    ${GAMELOGIC_DIR}/sgame/sg_entities_iterator.cpp
+    ${GAMELOGIC_DIR}/sgame/sg_entities_iterator.h
     ${GAMELOGIC_DIR}/sgame/sg_extern.h
     ${GAMELOGIC_DIR}/sgame/sg_local.h
     ${GAMELOGIC_DIR}/sgame/sg_main.cpp
