@@ -158,7 +158,7 @@ bool GoalInRange( const gentity_t *self, float r )
 	return false;
 }
 
-int DistanceToGoal2DSquared( const gentity_t *self )
+float DistanceToGoal2DSquared( const gentity_t *self )
 {
 	vec3_t vec;
 	vec3_t goalPos;
@@ -170,29 +170,19 @@ int DistanceToGoal2DSquared( const gentity_t *self )
 	return Square( vec[ 0 ] ) + Square( vec[ 1 ] );
 }
 
-int DistanceToGoal( const gentity_t *self )
+float DistanceToGoal( const gentity_t *self )
 {
 	vec3_t targetPos;
 	vec3_t selfPos;
-	//safety check for morons who use this incorrectly
-	if ( !( self->botMind ) )
-	{
-		return -1;
-	}
 	self->botMind->goal.getPos( targetPos );
 	VectorCopy( self->s.origin, selfPos );
 	return Distance( selfPos, targetPos );
 }
 
-int DistanceToGoalSquared( const gentity_t *self )
+float DistanceToGoalSquared( const gentity_t *self )
 {
 	vec3_t targetPos;
 	vec3_t selfPos;
-	//safety check for morons who use this incorrectly
-	if ( !( self->botMind ) )
-	{
-		return -1;
-	}
 	self->botMind->goal.getPos( targetPos );
 	VectorCopy( self->s.origin, selfPos );
 	return DistanceSquared( selfPos, targetPos );
