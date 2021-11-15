@@ -160,4 +160,26 @@ public:
 extern const entity_iterator iterate_entities;
 
 
+struct client_entity_iterator {
+private:
+	EntityIterator::predicate_t predicate;
+
+public:
+	client_entity_iterator(EntityIterator::predicate_t predicate_)
+		: predicate(predicate_) {}
+
+	EntityIterator begin() const {
+		return ++EntityIterator(-1, predicate, 0, level.maxclients);
+	}
+	EntityIterator end() const {
+		return EntityIterator(level.maxclients, predicate, 0, level.maxclients);
+	}
+};
+
+// iterate over the entity of each connected client
+extern const client_entity_iterator iterate_client_entities;
+
+// iterate over the entity of each bot
+extern const client_entity_iterator iterate_bot_entities;
+
 #endif /* SG_ENTITIES_ITERATOR_H_ */
