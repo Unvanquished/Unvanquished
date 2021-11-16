@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "sg_entities_iterator.h"
 #include "engine/qcommon/q_unicode.h"
 #include "botlib/bot_api.h"
 #include <common/FileSystem.h>
@@ -1589,7 +1590,6 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	int    id = -1;
 	int    voteId;
 	team_t team;
-	int    i;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 	team = (team_t) ( ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.team : TEAM_NONE );
@@ -1828,16 +1828,17 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_BOT_KICK:
-		for ( i = 0; i < MAX_CLIENTS; ++i )
+	{
+		bool bot_playing = false;
+		for ( const gentity_t *bot : iterate_bot_entities )
 		{
-			if ( g_entities[i].r.svFlags & SVF_BOT &&
-			     g_entities[i].client->pers.team != TEAM_NONE )
+			if ( G_Team(bot) != TEAM_NONE )
 			{
-				break;
+				bot_playing = true;
 			}
 		}
 
-		if ( i == MAX_CLIENTS )
+		if ( !bot_playing )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s", QQ( N_("$1$: there are no active bots") ), cmd ) );
@@ -1848,6 +1849,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Remove all bots") );
 
 		break;
+	}
 
 	case VOTE_MUTE:
 		if ( level.clients[ clientNum ].pers.namelog->muted )
