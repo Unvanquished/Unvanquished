@@ -39,7 +39,6 @@ void BotCalculateStuckTime( gentity_t *self );
 void BotResetStuckTime( gentity_t *self );
 
 // entity queries
-int        FindBots( int *botEntityNumbers, int maxBots, team_t team );
 gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
 void       BotFindClosestBuildings( gentity_t *self );
