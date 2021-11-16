@@ -839,12 +839,11 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	float bestInvisibleEnemyScore = 0.0f;
 	gentity_t *bestVisibleEnemy = nullptr;
 	gentity_t *bestInvisibleEnemy = nullptr;
-	gentity_t *target;
 	team_t    team = G_Team( self );
 	bool  hasRadar = ( team == TEAM_ALIENS ) ||
 	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 
-	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
+	for ( gentity_t *target : iterate_entities )
 	{
 		float newScore;
 
@@ -898,16 +897,10 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 {
 	gentity_t* closestEnemy = nullptr;
 	float minDistance = Square( ALIENSENSE_RANGE );
-	gentity_t *target;
 
-	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
+	for ( gentity_t *target : iterate_entities )
 	{
 		float newDistance;
-		//ignore entities that arnt in use
-		if ( !target->inuse )
-		{
-			continue;
-		}
 
 		if ( !BotEntityIsValidEnemyTarget( self, target ) )
 		{
