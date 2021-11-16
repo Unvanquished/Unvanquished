@@ -182,4 +182,29 @@ extern const client_entity_iterator iterate_client_entities;
 // iterate over the entity of each bot
 extern const client_entity_iterator iterate_bot_entities;
 
+
+struct non_client_entity_iterator {
+private:
+	EntityIterator::predicate_t predicate;
+
+public:
+	non_client_entity_iterator(EntityIterator::predicate_t predicate_)
+		: predicate(predicate_) {}
+
+	EntityIterator begin() const {
+		return ++EntityIterator(MAX_CLIENTS-1, predicate, MAX_CLIENTS, level.num_entities);
+	}
+	EntityIterator end() const {
+		return EntityIterator(level.num_entities, predicate, MAX_CLIENTS, level.num_entities);
+	}
+};
+
+
+// iterate over the entity of each non-client entity
+extern const non_client_entity_iterator iterate_non_client_entities;
+
+// iterate over the entity of each buildable
+extern const non_client_entity_iterator iterate_buildable_entities;
+
+
 #endif /* SG_ENTITIES_ITERATOR_H_ */

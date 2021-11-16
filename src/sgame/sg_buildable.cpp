@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "common/FileSystem.h"
 #include "sg_local.h"
+#include "sg_entities_iterator.h"
 #include "CustomSurfaceFlags.h"
 #include "Entities.h"
 #include "CBSE.h"
@@ -1314,8 +1315,8 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
  */
 static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3_t origin )
 {
-	int              entNum, listLen;
-	gentity_t        *ent, *list[ MAX_GENTITIES ];
+	int listLen;
+	gentity_t *list[ MAX_GENTITIES ];
 	const buildableAttributes_t *attr;
 
 	// resource related
@@ -1331,7 +1332,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 	if ( buildable == BA_H_REACTOR )
 	{
-		ent = G_Reactor();
+		gentity_t *ent = G_Reactor();
 
 		if ( ent )
 		{
@@ -1347,7 +1348,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 	else if ( buildable == BA_A_OVERMIND )
 	{
-		ent = G_Overmind();
+		gentity_t *ent = G_Overmind();
 
 		if ( ent )
 		{
@@ -1412,9 +1413,9 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 
 	// if we already have set buildables for removal, decrease cost
-	for ( entNum = 0; entNum < level.numBuildablesForRemoval; entNum++ )
+	for ( int i = 0; i < level.numBuildablesForRemoval; i++ )
 	{
-		cost -= G_BuildableDeconValue( level.markedBuildables[ entNum ] );
+		cost -= G_BuildableDeconValue( level.markedBuildables[ i ] );
 	}
 
 	// check if we can already afford the new buildable
@@ -1426,12 +1427,10 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	// build a list of additional buildables that can be deconstructed
 	listLen = 0;
 
-	for ( entNum = MAX_CLIENTS; entNum < level.num_entities; entNum++ )
+	for ( gentity_t *ent : iterate_buildable_entities )
 	{
-		ent = &g_entities[ entNum ];
-
 		// check if buildable of own team
-		if ( ent->s.eType != entityType_t::ET_BUILDABLE || ent->buildableTeam != attr->team )
+		if ( ent->buildableTeam != attr->team )
 		{
 			continue;
 		}
@@ -1462,9 +1461,9 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	qsort( list, listLen, sizeof( gentity_t* ), CompareBuildablesForRemoval );
 
 	// set buildables for deconstruction until we can pay for the new buildable
-	for ( entNum = 0; entNum < listLen; entNum++ )
+	for ( int i = 0; i < listLen; i++ )
 	{
-		ent = list[ entNum ];
+		gentity_t *ent = list[ i ];
 
 		level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
 
@@ -1496,16 +1495,8 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 static void SetBuildableLinkState( bool link )
 {
-	int       i;
-	gentity_t *ent;
-
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( gentity_t *ent : iterate_buildable_entities )
 	{
-		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
-		{
-			continue;
-		}
-
 		if ( link )
 		{
 			trap_LinkEntity( ent );
@@ -1519,12 +1510,9 @@ static void SetBuildableLinkState( bool link )
 
 static void SetBuildableMarkedLinkState( bool link )
 {
-	int       i;
-	gentity_t *ent;
-
-	for ( i = 0; i < level.numBuildablesForRemoval; i++ )
+	for ( int i = 0; i < level.numBuildablesForRemoval; i++ )
 	{
-		ent = level.markedBuildables[ i ];
+		gentity_t *ent = level.markedBuildables[ i ];
 
 		if ( link )
 		{
@@ -2236,9 +2224,6 @@ void G_LayoutSave( const char *name )
 	char         map[ MAX_QPATH ];
 	char         fileName[ MAX_OSPATH ];
 	fileHandle_t f;
-	int          len;
-	int          i;
-	gentity_t    *ent;
 	char         *s;
 
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
@@ -2251,7 +2236,7 @@ void G_LayoutSave( const char *name )
 
 	Com_sprintf( fileName, sizeof( fileName ), "layouts/%s/%s.dat", map, name );
 
-	len = trap_FS_FOpenFile( fileName, &f, fsMode_t::FS_WRITE );
+	int len = trap_FS_FOpenFile( fileName, &f, fsMode_t::FS_WRITE );
 
 	if ( len < 0 )
 	{
@@ -2261,15 +2246,8 @@ void G_LayoutSave( const char *name )
 
 	Log::Notice( "layoutsave: saving layout to %s", fileName );
 
-	for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
+	for ( const gentity_t *ent : iterate_buildable_entities )
 	{
-		ent = &level.gentities[ i ];
-
-		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
-		{
-			continue;
-		}
-
 		s = va( "%s %f %f %f %f %f %f %f %f %f %f %f %f\n",
 		        BG_Buildable( ent->s.modelindex )->name,
 		        ent->s.pos.trBase[ 0 ],
@@ -2532,18 +2510,8 @@ void G_LayoutLoad()
 
 void G_BaseSelfDestruct( team_t team )
 {
-	int       i;
-	gentity_t *ent;
-
-	for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
+	for ( gentity_t *ent : iterate_buildable_entities )
 	{
-		ent = &level.gentities[ i ];
-
-		if ( ent->s.eType != entityType_t::ET_BUILDABLE )
-		{
-			continue;
-		}
-
 		if ( ent->buildableTeam != team )
 		{
 			continue;
@@ -2650,10 +2618,7 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 
 void G_BuildLogRevert( int id )
 {
-	buildLog_t *log;
-	gentity_t  *ent;
 	vec3_t     dist;
-	gentity_t  *buildable;
 	float      momentumChange[ NUM_TEAMS ] = { 0 };
 
 	level.numBuildablesForRemoval = 0;
@@ -2662,15 +2627,13 @@ void G_BuildLogRevert( int id )
 
 	while ( level.buildId > id )
 	{
-		log = &level.buildLog[ --level.buildId % MAX_BUILDLOG ];
+		buildLog_t *log = &level.buildLog[ --level.buildId % MAX_BUILDLOG ];
 
 		switch ( log->fate )
 		{
 		case BF_CONSTRUCT:
-			for ( int entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
+			for ( gentity_t *ent : iterate_non_client_entities )
 			{
-				ent = &g_entities[ entityNum ];
-
 				if ( ( ( ent->s.eType == entityType_t::ET_BUILDABLE && Entities::IsAlive( ent ) ) ||
 					   ( ent->s.eType == entityType_t::ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
 					 ent->s.modelindex == log->modelindex )
@@ -2706,11 +2669,11 @@ void G_BuildLogRevert( int id )
 
 				// Fall through to default
 				DAEMON_FALLTHROUGH;
-
 		default:
+		{
 			// Spawn buildable
 			// HACK: Uses legacy pseudo entity. TODO: CBSE-ify.
-			buildable = G_NewEntity();
+			gentity_t *buildable = G_NewEntity();
 			VectorCopy( log->origin, buildable->s.pos.trBase );
 			VectorCopy( log->angles, buildable->s.angles );
 			VectorCopy( log->origin2, buildable->s.origin2 );
@@ -2722,6 +2685,7 @@ void G_BuildLogRevert( int id )
 			buildable->think = G_BuildLogRevertThink;
 			buildable->nextthink = level.time + FRAMETIME;
 			buildable->suicideTime = 30; // number of thinks before killing players in the way
+		}
 		}
 	}
 
