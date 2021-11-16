@@ -2627,7 +2627,6 @@ void G_BuildLogRevert( int id )
 {
 	buildLog_t *log;
 	gentity_t  *ent;
-	int        team;
 	vec3_t     dist;
 	gentity_t  *buildable;
 	float      momentumChange[ NUM_TEAMS ] = { 0 };
@@ -2643,9 +2642,9 @@ void G_BuildLogRevert( int id )
 		switch ( log->fate )
 		{
 		case BF_CONSTRUCT:
-			for ( team = MAX_CLIENTS; team < level.num_entities; team++ )
+			for ( int entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
 			{
-				ent = &g_entities[ team ];
+				ent = &g_entities[ entityNum ];
 
 				if ( ( ( ent->s.eType == entityType_t::ET_BUILDABLE && Entities::IsAlive( ent ) ) ||
 					   ( ent->s.eType == entityType_t::ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
@@ -2701,7 +2700,7 @@ void G_BuildLogRevert( int id )
 		}
 	}
 
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
+	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
 	{
 		G_AddMomentumGenericStep( (team_t) team, momentumChange[ team ] );
 	}
