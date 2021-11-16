@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "sg_entities_iterator.h"
 
 /*
 =================================================================================
@@ -127,26 +128,13 @@ env_rumble
 */
 static void fx_rumble_think( gentity_t *self )
 {
-	int       i;
-	gentity_t *ent;
-
 	if ( self->last_move_time < level.time )
 	{
 		self->last_move_time = level.time + 0.5;
 	}
 
-	for ( i = 0, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( gentity_t *ent : iterate_client_entities )
 	{
-		if ( !ent->inuse )
-		{
-			continue;
-		}
-
-		if ( !ent->client )
-		{
-			continue;
-		}
-
 		if ( ent->client->ps.groundEntityNum == ENTITYNUM_NONE )
 		{
 			continue;
