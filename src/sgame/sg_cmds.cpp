@@ -798,7 +798,7 @@ Cmd_Kill_f
 */
 void Cmd_Kill_f( gentity_t *ent )
 {
-	if ( g_cheats.integer )
+	if ( g_cheats )
 	{
 		Entities::Kill(ent, MOD_SUICIDE);
 	}
@@ -848,7 +848,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// Cannot leave a team while in combat.
-	if ( !g_cheats.integer &&
+	if ( !g_cheats &&
 	     g_combatCooldown.Get() &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
@@ -1792,14 +1792,14 @@ void Cmd_CallVote_f( gentity_t *ent )
 	case VOTE_KICK:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "ban %s 1s%s %s^* called vote kick (%s^*)", level.clients[ clientNum ].pers.ip.str,
-		             Quote( g_adminTempBan.string ), Quote( ent->client->pers.netname ), Quote( reason ) );
+		             Quote( g_adminTempBan.Get().c_str() ), Quote( ent->client->pers.netname ), Quote( reason ) );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ), N_("Kick player '%s'"), name );
 		break;
 
 	case VOTE_SPECTATE:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "speclock %d 1s%s", clientNum, Quote( g_adminTempBan.string ) );
+		             "speclock %d 1s%s", clientNum, Quote( g_adminTempBan.Get().c_str() ) );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Move player '%s' to spectators"), name );
@@ -1966,11 +1966,11 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_NEXT_MAP:
-		if ( G_MapExists( g_nextMap.string ) )
+		if ( G_MapExists( g_nextMap.Get().c_str() ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %s", QQ( N_("$1$: the next map is already set to '$2$'") ),
-			                            cmd, Quote( g_nextMap.string ) ) );
+			                            cmd, Quote( g_nextMap.Get().c_str() ) ) );
 			return;
 		}
 
@@ -4127,7 +4127,7 @@ void G_MapLog_NewMap()
 	int  count = 0;
 
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
+	Q_strncpyz( maplog, g_mapLog.Get().c_str(), sizeof( maplog ) );
 	ptr = maplog;
 
 	while ( *ptr && count < MAX_MAPLOGS )
@@ -4149,14 +4149,12 @@ void G_MapLog_NewMap()
 		}
 	}
 
-	trap_Cvar_Set( "g_mapLog",
-	               va( "%s%s%s", map, maplog[ 0 ] ? " " : "", maplog ) );
+	g_mapLog.Set( va( "%s%s%s", map, maplog[ 0 ] ? " " : "", maplog ) );
 }
 
 void G_MapLog_Result( char result )
 {
 	static int lastTime = 0;
-	char   maplog[ MAX_CVAR_VALUE_STRING ];
 	int    t;
 
 	// there is a chance is called more than once per frame
@@ -4168,7 +4166,8 @@ void G_MapLog_Result( char result )
 	lastTime = level.time;
 
 	// check for earlier result
-	if ( g_mapLog.string[ 0 ] && g_mapLog.string[ 1 ] == ';' )
+	std::string maplog = g_mapLog.Get();
+	if ( maplog.size() >= 2 && maplog[ 1 ] == ';' )
 	{
 		return;
 	}
@@ -4186,9 +4185,7 @@ void G_MapLog_Result( char result )
 	}
 
 	t = level.matchTime / 1000;
-	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
-	trap_Cvar_Set( "g_mapLog",
-	               va( "%c;%d:%02d;%s", result, t / 60, t % 60, maplog ) );
+	g_mapLog.Set( va( "%c;%d:%02d;%s", result, t / 60, t % 60, maplog.c_str() ) );
 }
 
 /*
@@ -4204,7 +4201,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 	char *ptr;
 	int  i;
 
-	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
+	Q_strncpyz( maplog, g_mapLog.Get().c_str(), sizeof( maplog ) );
 	ptr = maplog;
 
 	ADMP( "\"" N_("^3maplog:^* recent map results, newest first") "\"" );
@@ -4510,7 +4507,7 @@ void ClientCommand( int clientNum )
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_CHEAT) && !g_cheats.integer )
+	if ( (command->cmdFlags & CMD_CHEAT) && !g_cheats )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT );
 		return;
@@ -4529,7 +4526,7 @@ void ClientCommand( int clientNum )
 		return;
 	}
 
-	if ( (command->cmdFlags & CMD_CHEAT_TEAM) && !g_cheats.integer &&
+	if ( (command->cmdFlags & CMD_CHEAT_TEAM) && !g_cheats &&
 	     ent->client->pers.team != TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT_TEAM );

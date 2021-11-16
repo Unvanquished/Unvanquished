@@ -1749,7 +1749,7 @@ extern Cvar::Cvar<bool> cg_drawBuildableHealth;
 extern Cvar::Cvar<bool> cg_drawMinimap;
 extern Cvar::Cvar<int> cg_minimapActive;
 extern Cvar::Cvar<float> cg_crosshairSize;
-extern  vmCvar_t            cg_crosshairFile;
+extern Cvar::Cvar<std::string> cg_crosshairFile;
 extern Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo;
 extern Cvar::Cvar<bool> cg_draw2D;
 extern Cvar::Cvar<bool> cg_animSpeed;
@@ -1764,7 +1764,6 @@ extern Cvar::Cvar<bool> cg_footsteps;
 extern Cvar::Cvar<bool> cg_addMarks;
 extern Cvar::Cvar<int> cg_viewsize;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawGun;
-extern  vmCvar_t            cg_gun_frame;
 extern Cvar::Cvar<float> cg_gun_x;
 extern Cvar::Cvar<float> cg_gun_y;
 extern Cvar::Cvar<float> cg_gun_z;
@@ -1787,7 +1786,6 @@ extern Cvar::Cvar<bool> cg_teamChatsOnly;
 extern Cvar::Cvar<bool> cg_noVoiceChats;
 extern Cvar::Cvar<bool> cg_noVoiceText;
 extern Cvar::Cvar<bool> cg_smoothClients;
-extern  vmCvar_t            cg_timescale;
 extern Cvar::Cvar<bool> cg_noTaunt;
 extern Cvar::Cvar<bool> cg_drawSurfNormal;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawBBOX;
@@ -1824,15 +1822,12 @@ extern Cvar::Range<Cvar::Cvar<int>> cg_stickySpec;
 extern Cvar::Range<Cvar::Cvar<int>> cg_sprintToggle;
 extern Cvar::Range<Cvar::Cvar<int>> cg_unlagged;
 
-extern  vmCvar_t            cg_cmdGrenadeThrown;
-extern  vmCvar_t            cg_cmdNeedHealth;
+extern Cvar::Cvar<std::string> cg_cmdGrenadeThrown;
 
 extern Cvar::Cvar<bool> cg_debugVoices;
 
 extern Cvar::Cvar<bool> cg_optimizePrediction;
 extern Cvar::Cvar<bool> cg_projectileNudge;
-
-extern vmCvar_t             cg_voice;
 
 extern Cvar::Cvar<bool> cg_emoticonsInMessages;
 
@@ -1844,20 +1839,13 @@ extern Cvar::Cvar<float> cg_motionblur;
 extern Cvar::Cvar<float> cg_motionblurMinSpeed;
 extern Cvar::Cvar<bool> ui_chatPromptColors;
 extern Cvar::Cvar<bool> cg_spawnEffects;
-extern vmCvar_t             cg_sayCommand;
+extern Cvar::Cvar<std::string> cg_sayCommand;
 
 extern Cvar::Cvar<bool> cg_lazyLoadModels;
 
 //
-// Rocket cvars
-//
-
-extern vmCvar_t            rocket_hudFile;
-extern vmCvar_t            rocket_menuFile;
-//
 // cg_main.c
 //
-void       CG_RegisterCvars();
 const char *CG_ConfigString( int index );
 const char *CG_Argv( int arg );
 const char *CG_Args();

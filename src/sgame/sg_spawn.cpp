@@ -1055,7 +1055,7 @@ void SP_worldspawn()
 	if(G_SpawnString( "reverbEffect", "", &s ))
 		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s %f", 0, 0.0f, s, Math::Clamp( reverbIntensity, 0.0f, 2.0f ) ) );
 
-	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
+	trap_SetConfigstring( CS_MOTD, g_motd.Get().c_str() );  // message of the day
 
 	G_SpawnStringIntoCVar( "gravity", g_gravity );
 

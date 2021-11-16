@@ -132,6 +132,8 @@ static std::string       g_bfb;
 
 static bool G_admin_maprestarted( gentity_t * );
 
+static Cvar::Cvar<std::string> g_mapRestarted("g_mapRestarted", "informs whether the map was restarted (y), whether teams are kept together (k) and whether sides are swapped (s)", Cvar::NONE, "0");
+
 // note: list ordered alphabetically
 static const g_admin_cmd_t     g_admin_cmds[] =
 {
@@ -863,7 +865,7 @@ void G_admin_writeconfig()
 	g_admin_ban_t     *b;
 	g_admin_command_t *c;
 
-	if ( !g_admin.string[ 0 ] )
+	if ( g_admin.Get().empty() )
 	{
 		Log::Warn("g_admin is not set. "
 		          " configuration will not be saved to a file." );
@@ -872,10 +874,10 @@ void G_admin_writeconfig()
 
 	t = Com_GMTime( nullptr );
 
-	if ( trap_FS_FOpenFile( g_admin.string, &f, fsMode_t::FS_WRITE_VIA_TEMPORARY ) < 0 )
+	if ( trap_FS_FOpenFile( g_admin.Get().c_str(), &f, fsMode_t::FS_WRITE_VIA_TEMPORARY ) < 0 )
 	{
 		Log::Warn( "admin_writeconfig: could not open g_admin file \"%s\"",
-		          g_admin.string );
+		          g_admin.Get() );
 		return;
 	}
 
@@ -1875,19 +1877,19 @@ bool G_admin_readconfig( gentity_t *ent )
 
 	G_admin_cleanup();
 
-	if ( !g_admin.string[ 0 ] )
+	if ( g_admin.Get().empty() )
 	{
 		ADMP( QQ( N_("^3readconfig: g_admin is not set, not loading configuration "
 		      "from a file" ) ) );
 		return false;
 	}
 
-	len = trap_FS_FOpenFile( g_admin.string, &f, fsMode_t::FS_READ );
+	len = trap_FS_FOpenFile( g_admin.Get().c_str(), &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
 		Log::Warn( "^3readconfig:^* could not open admin config file %s",
-		          g_admin.string );
+		          g_admin.Get() );
 		admin_default_levels();
 		return false;
 	}
@@ -1902,7 +1904,7 @@ bool G_admin_readconfig( gentity_t *ent )
 	admin_level_maxname = 0;
 
 	level_open = admin_open = ban_open = command_open = false;
-	COM_BeginParseSession( g_admin.string );
+	COM_BeginParseSession( g_admin.Get().c_str() );
 
 	while ( 1 )
 	{
@@ -2614,7 +2616,7 @@ bool G_admin_kick( gentity_t *ent )
 	               vic->client->pers.guid,
 	               vic->client->pers.netname,
 	               reason ) );
-	time = G_admin_parse_time( g_adminTempBan.string );
+	time = G_admin_parse_time( g_adminTempBan.Get().c_str() );
 	admin_create_ban( ent,
 	                  vic->client->pers.netname,
 	                  vic->client->pers.guid,
@@ -2668,7 +2670,7 @@ bool G_admin_ban( gentity_t *ent )
 
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) )
 	{
-		int maximum = G_admin_parse_time( g_adminMaxBan.string );
+		int maximum = G_admin_parse_time( g_adminMaxBan.Get().c_str() );
 
 		if ( seconds == 0 || seconds > std::max( 1, maximum ) )
 		{
@@ -2780,7 +2782,7 @@ bool G_admin_ban( gentity_t *ent )
 
 	match->banned = true;
 
-	if ( !g_admin.string[ 0 ] )
+	if ( g_admin.Get().empty() )
 	{
 		ADMP( QQ( N_("^3ban:^* WARNING g_admin not set, not saving ban to a file" ) ) );
 	}
@@ -2825,7 +2827,7 @@ bool G_admin_unban( gentity_t *ent )
 	{
 		int maximum;
 		if ( ban->expires == 0 ||
-		     ( maximum = G_admin_parse_time( g_adminMaxBan.string ), ban->expires - time > std::max( 1, maximum ) ) )
+		     ( maximum = G_admin_parse_time( g_adminMaxBan.Get().c_str() ), ban->expires - time > std::max( 1, maximum ) ) )
 		{
 			ADMP( QQ( N_("^3unban:^* you cannot remove permanent bans") ) );
 			return false;
@@ -2911,7 +2913,7 @@ bool G_admin_adjustban( gentity_t *ent )
 		return false;
 	}
 
-	maximum = G_admin_parse_time( g_adminMaxBan.string );
+	maximum = G_admin_parse_time( g_adminMaxBan.Get().c_str() );
 	maximum = std::max( 1, maximum );
 
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
@@ -3151,7 +3153,7 @@ bool G_admin_speclock( gentity_t *ent )
 
 	if ( lockTime == -1 )
 	{
-		lockTime = G_admin_parse_time( g_adminTempBan.string );
+		lockTime = G_admin_parse_time( g_adminTempBan.Get().c_str() );
 
 		if ( lockTime == -1 )
 		{
@@ -3338,7 +3340,7 @@ bool G_admin_warn( gentity_t *ent )
 	// create a ban list entry, set warnCount to -1 to indicate that this should NOT result in denying connection
 	if ( ent && !ent->client->pers.localClient )
 	{
-		int time = G_admin_parse_time( g_adminWarn.string );
+		int time = G_admin_parse_time( g_adminWarn.Get().c_str() );
 		admin_create_ban_entry( ent, vic->client->pers.netname, vic->client->pers.guid, &vic->client->pers.ip, std::max(1, time), ( *reason ) ? reason : "warned by admin" )->warnCount = -1;
 		vic->client->pers.hasWarnings = true;
 	}
@@ -4337,8 +4339,8 @@ bool G_admin_restart( gentity_t *ent )
 	admin_log( teampref );
 
 	// cvars
-	trap_Cvar_Set( "g_layouts", layout );
-	trap_Cvar_Set( "g_mapRestarted", "y" );
+	g_layouts.Set(layout);
+	g_mapRestarted.Set("y");
 
 	// handle the flag
 	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) || !Q_stricmp( teampref,"kt" ) || !Q_stricmp( teampref,"ktl" ) )
@@ -4360,7 +4362,7 @@ bool G_admin_restart( gentity_t *ent )
 			cl->sess.restartTeam = (team_t) cl->pers.team;
 		}
 
-		trap_Cvar_Set( "g_mapRestarted", "yk" );
+		g_mapRestarted.Set("yk");
 	}
 	else if ( !Q_stricmp( teampref, "switchteams" ) || !Q_stricmp( teampref, "switchteamslock" ) || !Q_stricmp( teampref,"st" ) || !Q_stricmp( teampref,"stl" ))
 	{
@@ -4383,7 +4385,7 @@ bool G_admin_restart( gentity_t *ent )
 			}
 		}
 
-		trap_Cvar_Set( "g_mapRestarted", "yks" );
+		g_mapRestarted.Set("yks");
 	}
 	else if ( *teampref )
 	{
@@ -5880,7 +5882,7 @@ static bool G_admin_maprestarted( gentity_t *ent )
 {
 	if ( !ent )
 	{
-		trap_Cvar_Set( "g_mapRestarted", "" );
+		g_mapRestarted.Set("");
 	}
 
 	return true;

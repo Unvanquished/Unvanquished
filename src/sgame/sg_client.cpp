@@ -548,18 +548,18 @@ bool G_IsUnnamed( const char *name )
 		return true;
 	}
 
-	length = strlen( g_unnamedNamePrefix.string );
+	length = g_unnamedNamePrefix.Get().size();
 
 	if ( g_unnamedNumbering.Get() && length &&
-	     !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
+	     !Q_strnicmp( testName, g_unnamedNamePrefix.Get().c_str(), length ) )
 	{
 		return true;
 	}
 
-	length = strlen( g_unnamedBotNamePrefix.string );
+	length = g_unnamedBotNamePrefix.Get().size();
 
 	if ( g_unnamedNumbering.Get() && length &&
-	     !Q_strnicmp( testName, g_unnamedBotNamePrefix.string, length ) )
+	     !Q_strnicmp( testName, g_unnamedBotNamePrefix.Get().c_str(), length ) )
 	{
 		return true;
 	}
@@ -638,13 +638,13 @@ static const char *G_UnnamedClientName( gclient_t *client )
 	if ( ent->r.svFlags & SVF_BOT )
 	{
 		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-			g_unnamedBotNamePrefix.string[ 0 ] ? g_unnamedBotNamePrefix.string : UNNAMED_BOT "#",
+			!g_unnamedBotNamePrefix.Get().empty() ? g_unnamedBotNamePrefix.Get().c_str() : UNNAMED_BOT "#",
 			number );
 	}
 	else
 	{
 		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
-			g_unnamedNamePrefix.string[ 0 ] ? g_unnamedNamePrefix.string : UNNAMED_PLAYER "#",
+			!g_unnamedNamePrefix.Get().empty() ? g_unnamedNamePrefix.Get().c_str() : UNNAMED_PLAYER "#",
 			number );
 	}
 
@@ -1126,8 +1126,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	// check for a password
 	value = Info_ValueForKey( userinfo, "password" );
 
-	if ( g_password.string[ 0 ] && Q_stricmp( g_password.string, "none" ) &&
-	     strcmp( g_password.string, value ) != 0 )
+	if ( g_needpass.Get() && g_password.Get() != value )
 	{
 		return "Invalid password";
 	}
@@ -1309,7 +1308,6 @@ void ClientBegin( int clientNum )
 	gentity_t       *ent;
 	gclient_t       *client;
 	int             flags;
-	char            startMsg[ MAX_STRING_CHARS ];
 
 	ent    = g_entities + clientNum;
 	client = level.clients + clientNum;
@@ -1354,11 +1352,11 @@ void ClientBegin( int clientNum )
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* entered the game") ), Quote( client->pers.netname ) ) );
 
-	trap_Cvar_VariableStringBuffer( "g_mapStartupMessage", startMsg, sizeof( startMsg ) );
+	std::string startMsg = g_mapStartupMessage.Get();
 
-	if ( *startMsg )
+	if ( !startMsg.empty() )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "cpd %d %s", g_mapStartupMessageDelay.Get(), Quote( startMsg ) ) );
+		trap_SendServerCommand( ent - g_entities, va( "cpd %d %s", g_mapStartupMessageDelay.Get(), Quote( startMsg.c_str() ) ) );
 	}
 
 	G_namelog_restore( client );
@@ -1792,7 +1790,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->respawnTime = level.time;
 	ent->nextRegenTime = level.time;
 
-	client->inactivityTime = level.time + g_inactivity.integer * 1000;
+	client->inactivityTime = level.time + atoi(g_inactivity.Get().c_str()) * 1000;
 	usercmdClearButtons( client->latched_buttons );
 
 	// set default animations

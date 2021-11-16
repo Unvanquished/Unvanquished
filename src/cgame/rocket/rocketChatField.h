@@ -202,7 +202,7 @@ public:
 
 						if ( cmd.Empty() )
 						{
-							cmd = cg_sayCommand.string;
+							cmd = cg_sayCommand.Get().c_str();
 						}
 
 						if ( !cmd.Empty() && !text.Empty() )

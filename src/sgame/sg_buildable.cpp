@@ -2309,16 +2309,16 @@ void G_LayoutSelect()
 	int  cnt = 0;
 	int  layoutNum;
 
-	Q_strncpyz( layouts, g_layouts.string, sizeof( layouts ) );
+	Q_strncpyz( layouts, g_layouts.Get().c_str(), sizeof( layouts ) );
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
 	// one time use cvar
-	trap_Cvar_Set( "g_layouts", "" );
+	g_layouts.Set("");
 
 	// pick from list of default layouts if provided
 	if ( !layouts[ 0 ] )
 	{
-		Q_strncpyz( layouts, g_defaultLayouts.string, sizeof( layouts ) );
+		Q_strncpyz( layouts, g_defaultLayouts.Get().c_str(), sizeof( layouts ) );
 	}
 
 	// pick an included layout at random if no list has been provided

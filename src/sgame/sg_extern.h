@@ -34,6 +34,8 @@ extern  level_locals_t level;
 extern gentity_t *g_entities;
 extern gclient_t *g_clients;
 
+extern bool g_cheats;
+
 // ---------
 // temporary, compatibility layer between legacy code and CBSE logic
 // ---------
@@ -45,8 +47,6 @@ extern int            g_numDamageRegions[ PCL_NUM_CLASSES ];
 // cvars
 // -----
 
-extern  vmCvar_t g_cheats;
-extern  vmCvar_t g_maxclients;
 extern Cvar::Cvar<int> g_maxGameClients;
 extern Cvar::Cvar<bool> g_lockTeamsAtStart;
 extern Cvar::Cvar<float> g_minNameChangePeriod;
@@ -55,14 +55,14 @@ extern Cvar::Cvar<int> g_maxNameChanges;
 extern Cvar::Range<Cvar::Cvar<int>> g_showHelpOnConnection;
 extern Cvar::Cvar<int> g_timelimit;
 extern Cvar::Cvar<bool> g_dretchPunt;
-extern  vmCvar_t g_password;
+extern Cvar::Callback<Cvar::Cvar<std::string>> g_password;
 extern Cvar::Range<Cvar::Cvar<int>> g_needpass;
 extern  Cvar::Range<Cvar::Cvar<int>> g_gravity;
 extern Cvar::Cvar<float> g_speed;
-extern  vmCvar_t g_inactivity;
+extern Cvar::Cvar<std::string> g_inactivity;
 extern Cvar::Cvar<int> g_debugMove;
 extern Cvar::Cvar<bool> g_debugFire;
-extern  vmCvar_t g_motd;
+extern Cvar::Cvar<std::string> g_motd;
 extern Cvar::Cvar<int> g_warmup;
 extern Cvar::Cvar<bool> g_doWarmup;
 extern Cvar::Cvar<bool> g_allowVote;
@@ -114,12 +114,13 @@ extern Cvar::Cvar<std::string> g_disabledVoteCalls;
 
 extern Cvar::Cvar<bool> g_debugMapRotation;
 extern Cvar::Cvar<int> g_currentMapRotation;
-extern  vmCvar_t g_mapRotationNodes;
-extern  vmCvar_t g_mapRotationStack;
-extern  vmCvar_t g_nextMap;
-extern  vmCvar_t g_nextMapLayouts;
-extern  vmCvar_t g_initialMapRotation;
-extern  vmCvar_t g_mapLog;
+extern Cvar::Cvar<std::string> g_mapRotationNodes;
+extern Cvar::Cvar<std::string> g_mapRotationStack;
+extern Cvar::Cvar<std::string> g_nextMap;
+extern Cvar::Cvar<std::string> g_nextMapLayouts;
+extern Cvar::Cvar<std::string> g_initialMapRotation;
+extern Cvar::Cvar<std::string> g_mapLog;
+extern Cvar::Cvar<std::string> g_mapStartupMessage;
 extern Cvar::Cvar<int> g_mapStartupMessageDelay;
 extern Cvar::Cvar<float> g_sayAreaRange;
 
@@ -132,21 +133,21 @@ extern Cvar::Cvar<int> g_floodMinTime;
 extern Cvar::Cvar<float> g_shove;
 extern Cvar::Cvar<bool> g_antiSpawnBlock;
 
-extern  vmCvar_t g_mapConfigs;
+extern Cvar::Cvar<std::string> g_mapConfigs;
 
-extern  vmCvar_t g_defaultLayouts;
-extern  vmCvar_t g_layouts;
+extern Cvar::Cvar<std::string> g_defaultLayouts;
+extern Cvar::Cvar<std::string> g_layouts;
 extern Cvar::Cvar<bool> g_layoutAuto;
 
 extern Cvar::Cvar<bool> g_emoticonsAllowedInNames;
 extern Cvar::Cvar<int> g_unnamedNumbering;
-extern  vmCvar_t g_unnamedNamePrefix;
-extern  vmCvar_t g_unnamedBotNamePrefix;
+extern Cvar::Cvar<std::string> g_unnamedNamePrefix;
+extern Cvar::Cvar<std::string> g_unnamedBotNamePrefix;
 
-extern  vmCvar_t g_admin;
-extern  vmCvar_t g_adminWarn;
-extern  vmCvar_t g_adminTempBan;
-extern  vmCvar_t g_adminMaxBan;
+extern Cvar::Cvar<std::string> g_admin;
+extern Cvar::Cvar<std::string> g_adminWarn;
+extern Cvar::Cvar<std::string> g_adminTempBan;
+extern Cvar::Cvar<std::string> g_adminMaxBan;
 extern Cvar::Cvar<bool> g_adminRetainExpiredBans;
 
 extern Cvar::Cvar<bool> g_privateMessages;

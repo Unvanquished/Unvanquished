@@ -89,7 +89,7 @@ static void CG_LoadCustomCrosshairs()
 	fileHandle_t f;
 	weapon_t     weapon;
 
-	len = trap_FS_FOpenFile( cg_crosshairFile.string, &f, fsMode_t::FS_READ );
+	len = trap_FS_FOpenFile( cg_crosshairFile.Get().c_str(), &f, fsMode_t::FS_READ );
 
 	if ( len < 0 )
 	{
@@ -98,7 +98,7 @@ static void CG_LoadCustomCrosshairs()
 
 	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
-		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", cg_crosshairFile.string );
+		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", cg_crosshairFile.Get() );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -213,7 +213,7 @@ void CG_InitUpgrades()
 		CG_RegisterUpgrade( i );
 	}
 
-	if ( cg_crosshairFile.string[0] )
+	if ( !cg_crosshairFile.Get().empty() )
 	{
 		CG_LoadCustomCrosshairs();
 	}
@@ -1888,18 +1888,9 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	// map torso animations to weapon animations
-	if ( cg_gun_frame.integer )
-	{
-		// development tool
-		hand.frame = hand.oldframe = cg_gun_frame.integer;
-		hand.backlerp = 0;
-	}
-	else
-	{
-		hand.frame = CG_MapTorsoToWeaponFrame( cent->pe.torso.frame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
-		hand.oldframe = CG_MapTorsoToWeaponFrame( cent->pe.torso.oldFrame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
-		hand.backlerp = cent->pe.torso.backlerp;
-	}
+	hand.frame = CG_MapTorsoToWeaponFrame( cent->pe.torso.frame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
+	hand.oldframe = CG_MapTorsoToWeaponFrame( cent->pe.torso.oldFrame, !wi->md5 ? CG_AnimNumber( cent->pe.torso.animationNumber ) : -1 );
+	hand.backlerp = cent->pe.torso.backlerp;
 
 	hand.hModel = wi->handsModel;
 	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;

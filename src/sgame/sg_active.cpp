@@ -681,8 +681,10 @@ Returns false if the client is dropped
 bool ClientInactivityTimer( gentity_t *ent, bool active )
 {
 	gclient_t *client = ent->client;
+	int inactivityTime = atoi(g_inactivity.Get().c_str());
+	bool putSpec = strchr(g_inactivity.Get().c_str(), 's');
 
-	if ( !g_inactivity.integer )
+	if ( inactivityTime <= 0 )
 	{
 		// give everyone some time, so if the operator sets g_inactivity during
 		// gameplay, everyone isn't kicked
@@ -695,7 +697,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 	          client->pers.cmd.upmove ||
 	          usercmdButtonPressed( client->pers.cmd.buttons, BUTTON_ATTACK ) )
 	{
-		client->inactivityTime = level.time + g_inactivity.integer * 1000;
+		client->inactivityTime = level.time + inactivityTime * 1000;
 		client->inactivityWarning = false;
 	}
 	else if ( !client->pers.localClient )
@@ -703,7 +705,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 		if ( level.time > client->inactivityTime &&
 		     !G_admin_permission( ent, ADMF_ACTIVITY ) )
 		{
-			if( strchr( g_inactivity.string, 's' ) )
+			if( putSpec )
 			{
 				trap_SendServerCommand( -1,
 				                        va( "print_tr %s %s %s", QQ( N_("$1$^* moved from $2$ to spectators due to inactivity\n") ),
@@ -724,7 +726,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 		{
 			client->inactivityWarning = true;
 			trap_SendServerCommand( client - level.clients,
-			                        va( "cp_tr %s", strchr( g_inactivity.string, 's' ) ? N_("\"Ten seconds until inactivity spectate!\n\"") : N_("\"Ten seconds until inactivity drop!\n\"") ) );
+			                        va( "cp_tr %s", putSpec ? N_("\"Ten seconds until inactivity spectate!\n\"") : N_("\"Ten seconds until inactivity drop!\n\"") ) );
 		}
 	}
 

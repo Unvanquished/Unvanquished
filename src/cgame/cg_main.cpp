@@ -57,7 +57,7 @@ Cvar::Cvar<bool> cg_drawBuildableHealth("cg_drawBuildableHealth", "show buildabl
 Cvar::Cvar<bool> cg_drawMinimap("cg_drawMinimap", "show minimap", Cvar::NONE, true);
 Cvar::Cvar<int> cg_minimapActive("cg_minimapActive", "FOR INTERNAL USE", Cvar::NONE, 0);
 Cvar::Cvar<float> cg_crosshairSize("cg_crosshairSize", "crosshair scale factor", Cvar::NONE, 1);
-vmCvar_t        cg_crosshairFile;
+Cvar::Cvar<std::string> cg_crosshairFile("cg_crosshairFile", "VFS path of custom crosshairs file", Cvar::NONE, "");
 Cvar::Cvar<bool> cg_draw2D("cg_draw2D", "show HUD / menus", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_debugAnim("cg_debuganim", "show animation debug logs", Cvar::CHEAT, false);
 Cvar::Cvar<bool> cg_debugEvents("cg_debugevents", "log received events", Cvar::CHEAT, false);
@@ -70,7 +70,6 @@ Cvar::Cvar<bool> cg_footsteps("cg_footsteps", "make footstep sounds", Cvar::CHEA
 Cvar::Cvar<bool> cg_addMarks("cg_marks", "enable marks (e.g. bullet holes)", Cvar::NONE, true);
 Cvar::Cvar<int> cg_viewsize("cg_viewsize", "size of rectangle the world is drawn in", Cvar::NONE, 100);
 Cvar::Range<Cvar::Cvar<int>> cg_drawGun("cg_drawGun", "draw 1st-person weapon (1 = guns, 2 = guns & claws)", Cvar::NONE, 1, 0, 2);
-vmCvar_t        cg_gun_frame;
 Cvar::Cvar<float> cg_gun_x("cg_gunX", "model debugging: gun x offset", Cvar::CHEAT, 0);
 Cvar::Cvar<float> cg_gun_y("cg_gunY", "model debugging: gun y offset", Cvar::CHEAT, 0);
 Cvar::Cvar<float> cg_gun_z("cg_gunZ", "model debugging: gun z offset", Cvar::CHEAT, 0);
@@ -93,7 +92,6 @@ Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo("teamoverlay", "request team
 Cvar::Cvar<bool> cg_noVoiceChats("cg_noVoiceChats", "don't play vsays", Cvar::NONE, false);
 Cvar::Cvar<bool> cg_noVoiceText("cg_noVoiceText", "don't show text for vsays", Cvar::NONE, false);
 Cvar::Cvar<bool> cg_smoothClients("cg_smoothClients", "extrapolate entity positions", Cvar::NONE, false);
-vmCvar_t        cg_timescale;
 Cvar::Cvar<bool> cg_noTaunt("cg_noTaunt", "disable taunt sounds", Cvar::NONE, false);
 Cvar::Cvar<bool> cg_drawSurfNormal("cg_drawSurfNormal", "visualize normal vector of facing surface", Cvar::CHEAT, false);
 Cvar::Range<Cvar::Cvar<int>> cg_drawBBOX("cg_drawBBOX", "show entity bounding boxes (2 = solid)", Cvar::CHEAT, 0, 0, 2);
@@ -130,15 +128,12 @@ Cvar::Range<Cvar::Cvar<int>> cg_stickySpec("cg_stickySpec", "if 0, cycle followe
 Cvar::Range<Cvar::Cvar<int>> cg_sprintToggle("cg_sprintToggle", "toggle instead of hold to sprint", Cvar::USERINFO, 0, 0, 1);
 Cvar::Range<Cvar::Cvar<int>> cg_unlagged("cg_unlagged", "lag-compensate your player (if server allows)", Cvar::USERINFO, 1, 0, 1);
 
-vmCvar_t        cg_cmdGrenadeThrown;
-vmCvar_t        cg_cmdNeedHealth;
+Cvar::Cvar<std::string> cg_cmdGrenadeThrown("cg_cmdGrenadeThrown", "command executed upon throwing grenade", Cvar::NONE, "vsay_local grenade");
 
 Cvar::Cvar<bool> cg_debugVoices("cg_debugVoices", "print cgame's list of vsays on startup", Cvar::NONE, false);
 
 Cvar::Cvar<bool> cg_optimizePrediction("cg_optimizePrediction", "client-side prediction is done incrementally", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_projectileNudge("cg_projectileNudge", "enable client-side prediction for missiles", Cvar::NONE, true);
-
-vmCvar_t        cg_voice;
 
 Cvar::Cvar<bool> cg_emoticonsInMessages("cg_emoticonsInMessages", "render emoticons in chat", Cvar::NONE, false);
 
@@ -162,7 +157,7 @@ static Cvar::Cvar<float> cg_fov_level4("cg_fov_level4", "field of view (degrees)
 static Cvar::Cvar<float> cg_fov_human("cg_fov_human", "field of view (degrees) for humans", Cvar::NONE, 0);
 
 Cvar::Cvar<bool> ui_chatPromptColors("ui_chatPromptColors", "chat prompts (e.g. 'Say:') are color-coded", Cvar::NONE, true);
-vmCvar_t        cg_sayCommand;
+Cvar::Cvar<std::string> cg_sayCommand("cg_sayCommand", "instead of talking, chat field does this command?", Cvar::NONE, "");
 
 // CHEAT because it could be abused to join the game faster and e.g. get on your preferred team
 // It's intended to aid developers who are frequently restarting the game.
@@ -170,56 +165,12 @@ vmCvar_t        cg_sayCommand;
 // TODO: only works for player models. Buildings and weapons are also relevant
 Cvar::Cvar<bool> cg_lazyLoadModels("cg_lazyLoadModels", "load models only when needed", Cvar::CHEAT, false);
 
-namespace {
-struct cvarTable_t
-{
-	vmCvar_t   *vmCvar;
-	const char *cvarName;
-	const char *defaultString;
-	int        cvarFlags;
-};
-} //namespace
-
-static const cvarTable_t cvarTable[] =
-{
-	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             0                            },
-	{ nullptr,                            "cg_wwFollow",                    "1",            CVAR_USERINFO                },
-	{ nullptr,                            "cg_wwToggle",                    "1",            CVAR_USERINFO                },
-	{ nullptr,                            "cg_disableBlueprintErrors",      "0",            CVAR_USERINFO                },
-	{ nullptr,                            "cg_flySpeed",                    "800",          CVAR_USERINFO                },
-
-	{ &cg_cmdGrenadeThrown,            "cg_cmdGrenadeThrown",            "vsay_local grenade", 0                      },
-	{ &cg_cmdNeedHealth,               "cg_cmdNeedHealth",               "vsay_local needhealth", 0                   },
-
-	// the following variables are created in other parts of the system,
-	// but we also reference them here
-
-	{ &cg_timescale,                   "timescale",                      "1",            0                            },
-
-	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO                },
-
-	{ &cg_sayCommand,                  "cg_sayCommand",                   "",            0                            }
-};
-
-static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
-
-/*
-=================
-CG_RegisterCvars
-=================
-*/
-void CG_RegisterCvars()
-{
-	size_t i;
-	const cvarTable_t *cv;
-
-	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
-	{
-		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
-		                    cv->defaultString, cv->cvarFlags );
-	}
-}
-
+// USERINFO cvars - transmitted to the server
+static Cvar::Range<Cvar::Cvar<int>> cg_disableBlueprintErrors("cg_disableBlueprintErrors", "allow placement of some currently non-buildable structures", Cvar::USERINFO, 0, 0, 1);
+static Cvar::Cvar<int> cg_flySpeed("cg_flySpeed", "spectator movement speed", Cvar::USERINFO, 800);
+static Cvar::Cvar<std::string> cg_voice("voice", "track selection for user's own vsays", Cvar::USERINFO, "default");
+static Cvar::Range<Cvar::Cvar<int>> cg_wwFollow("cg_wwFollow", "rotate pitch angle when wallwalk normal changes", Cvar::USERINFO, 1, 0, 1);
+static Cvar::Range<Cvar::Cvar<int>> cg_wwToggle("cg_wwToggle", "wallwalk key is press-and-hold (0) or toggles (1)", Cvar::USERINFO, 1, 0, 1);
 
 /*
 ===============
@@ -421,18 +372,6 @@ CG_UpdateCvars
 */
 void CG_UpdateCvars()
 {
-	size_t i;
-	const cvarTable_t *cv;
-
-	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
-	{
-		if ( cv->vmCvar )
-		{
-			trap_Cvar_Update( cv->vmCvar );
-		}
-	}
-
-	// check for modifications here
 	CG_SetPVars();
 	CG_UpdateBuildableRangeMarkerMask();
 }
