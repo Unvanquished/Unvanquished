@@ -107,12 +107,12 @@ struct OffMeshConnection
 struct OffMeshConnections
 {
 	static CONSTEXPR int MAX_CON = 128;
-	float  verts[ MAX_CON * 6 ];
-	float  rad[ MAX_CON ];
-	unsigned short flags[ MAX_CON ];
-	unsigned char areas[ MAX_CON ];
-	unsigned char dirs[ MAX_CON ];
-	unsigned int userids[ MAX_CON ];
+	float  verts[ MAX_CON * 6 ]; // dtOffMeshConnection::pos
+	float  rad[ MAX_CON ]; // dtOffMeshConnection::rad
+	unsigned short flags[ MAX_CON ]; // dtOffMeshConnection::poly
+	unsigned char areas[ MAX_CON ]; // dtOffMeshConnection::flags
+	unsigned char dirs[ MAX_CON ]; // likely dtOffMeshConnection::side
+	unsigned int userids[ MAX_CON ]; // dtOffMeshConnection::userId
 	int      offMeshConCount;
 
 	OffMeshConnections() : offMeshConCount( 0 ) { }
