@@ -312,6 +312,7 @@ extern int   MEDKIT_STARTUP_SPEED;
 
 // fire
 #define FIRE_MIN_DISTANCE                  20.0f
+#define FIRE_DAMAGE_RADIUS                 60.0f
 
 // fall distance
 #define MIN_FALL_DISTANCE                  30.0f  // the fall distance at which fall damage kicks in
