@@ -3902,7 +3902,7 @@ static void PM_Weapon()
 			}
 
 			// Charge button released
-			else if ( !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
+			else
 			{
 				if ( pm->ps->weaponCharge > LEVEL4_TRAMPLE_CHARGE_MIN )
 				{
