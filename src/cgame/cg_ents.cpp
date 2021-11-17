@@ -1363,6 +1363,11 @@ void CG_AddPacketEntities()
 					CG_DrawBoundingBox( cg_drawBBOX.Get(), cent->lerpOrigin, mins, maxs );
 					break;
 
+				case entityType_t::ET_FIRE:
+					CG_DrawSphere( es->origin, FIRE_DAMAGE_RADIUS,
+					               cgs.media.plainColorShader, Color::Color(1, 0, 0, 0.2) );
+					break;
+
 				default:
 					break;
 			}

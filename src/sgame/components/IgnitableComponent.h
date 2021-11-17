@@ -34,7 +34,6 @@ class IgnitableComponent: public IgnitableComponentBase {
 	public:
 		const static float SELF_DAMAGE;
 		const static float SPLASH_DAMAGE;
-		const static float SPLASH_DAMAGE_RADIUS;
 
 		/** The minimum time any fire will burn. */
 		const static int   MIN_BURN_TIME;

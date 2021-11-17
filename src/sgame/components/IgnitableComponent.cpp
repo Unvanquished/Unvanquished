@@ -28,7 +28,6 @@ static Log::Logger fireLogger("sgame.fire");
 
 const float IgnitableComponent::SELF_DAMAGE             = 12.5f;
 const float IgnitableComponent::SPLASH_DAMAGE           = 20.0f;
-const float IgnitableComponent::SPLASH_DAMAGE_RADIUS    = 60.0f;
 const int   IgnitableComponent::MIN_BURN_TIME           = 4000;
 const int   IgnitableComponent::BASE_AVERAGE_BURN_TIME  = 8000;
 const int   IgnitableComponent::EXTRA_AVERAGE_BURN_TIME = 5000;
@@ -140,7 +139,7 @@ void IgnitableComponent::DamageArea(int timeDelta) {
 
 	float damage = SPLASH_DAMAGE * timeDelta * 0.001f;
 
-	if (G_SelectiveRadiusDamage(entity.oldEnt->s.origin, fireStarter, damage, SPLASH_DAMAGE_RADIUS,
+	if (G_SelectiveRadiusDamage(entity.oldEnt->s.origin, fireStarter, damage, FIRE_DAMAGE_RADIUS,
 			entity.oldEnt, MOD_BURN, TEAM_NONE)) {
 		fireLogger.Debug("Area burn damage of %.1f (%.1f/s) was dealt.", damage, SPLASH_DAMAGE);
 	}
