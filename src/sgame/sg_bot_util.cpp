@@ -608,7 +608,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	//and code to make bots _actually_ use other equipments.
 	int nbTeam = level.team[ G_Team( self ) ].numClients;
 	int nbRadars = numTeamUpgrades[UP_RADAR];
-	bool teamNeedsRadar = 100 * ( 1 + nbRadars ) / nbTeam < 75;
+	bool teamNeedsRadar = 100 *  nbRadars / nbTeam < g_bot_radarRatio.Get();
 
 	// others[0] is radar, buying this utility makes sense even if one can't buy
 	// a better weapon, because it helps the whole team.
