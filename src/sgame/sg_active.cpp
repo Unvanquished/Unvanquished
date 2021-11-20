@@ -2066,7 +2066,7 @@ void ClientThink_real( gentity_t *self )
 
 	if ( g_smoothClients.Get() )
 	{
-		BG_PlayerStateToEntityStateExtraPolate( &client->ps, &self->s, client->ps.commandTime, true );
+		BG_PlayerStateToEntityStateExtraPolate( &client->ps, &self->s, client->ps.commandTime );
 	}
 	else
 	{
@@ -2321,7 +2321,7 @@ void ClientEndFrame( gentity_t *ent )
 	// set the latest infor
 	if ( g_smoothClients.Get() )
 	{
-		BG_PlayerStateToEntityStateExtraPolate( &ent->client->ps, &ent->s, ent->client->ps.commandTime, true );
+		BG_PlayerStateToEntityStateExtraPolate( &ent->client->ps, &ent->s, ent->client->ps.commandTime );
 	}
 	else
 	{

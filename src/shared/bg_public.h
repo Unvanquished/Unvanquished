@@ -1664,7 +1664,7 @@ void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t 
 void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
 
 void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap );
-void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, bool snap );
+void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time );
 
 #define MAX_ARENAS      1024
 #define MAX_ARENAS_TEXT 8192

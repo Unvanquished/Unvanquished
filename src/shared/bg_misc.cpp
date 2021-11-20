@@ -1406,15 +1406,12 @@ This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
-void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap )
+static void PlayerStateToEntityState( playerState_t *ps, entityState_t *s )
 {
-	int i;
-
-	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR || ps->pm_type == PM_FREEZE )
-	{
-		s->eType = entityType_t::ET_INVISIBLE;
-	}
-	else if ( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+	if ( ps->pm_type == PM_INTERMISSION
+			|| ps->pm_type == PM_SPECTATOR
+			|| ps->pm_type == PM_FREEZE
+			|| ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
 	{
 		s->eType = entityType_t::ET_INVISIBLE;
 	}
@@ -1425,24 +1422,13 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap
 
 	s->number = ps->clientNum;
 
-	s->pos.trType = trType_t::TR_INTERPOLATE;
 	VectorCopy( ps->origin, s->pos.trBase );
-
-	if ( snap )
-	{
-		SnapVector( s->pos.trBase );
-	}
 
 	//set the trDelta for flag direction
 	VectorCopy( ps->velocity, s->pos.trDelta );
 
 	s->apos.trType = trType_t::TR_INTERPOLATE;
 	VectorCopy( ps->viewangles, s->apos.trBase );
-
-	if ( snap )
-	{
-		SnapVector( s->apos.trBase );
-	}
 
 	s->time2 = ps->movementDir;
 	s->legsAnim = ps->legsAnim;
@@ -1496,7 +1482,7 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap
 	// HACK: store held items in modelindex
 	s->modelindex = 0;
 
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	for ( int i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		if ( BG_InventoryContainsUpgrade( i, ps->stats ) )
 		{
@@ -1543,6 +1529,19 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap
 	s->otherEntityNum = 0;
 }
 
+// snap is true when called by sgame, false when called by cgame
+void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap )
+{
+	PlayerStateToEntityState( ps, s );
+
+	s->pos.trType = trType_t::TR_INTERPOLATE;
+	if ( snap )
+	{
+		SnapVector( s->pos.trBase );
+		SnapVector( s->apos.trBase );
+	}
+}
+
 /*
 ========================
 BG_PlayerStateToEntityStateExtraPolate
@@ -1551,145 +1550,17 @@ This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
-void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, bool snap )
+void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time )
 {
-	int i;
-
-	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR || ps->pm_type == PM_FREEZE )
-	{
-		s->eType = entityType_t::ET_INVISIBLE;
-	}
-	else if ( ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
-	{
-		s->eType = entityType_t::ET_INVISIBLE;
-	}
-	else
-	{
-		s->eType = entityType_t::ET_PLAYER;
-	}
-
-	s->number = ps->clientNum;
-
+	PlayerStateToEntityState( ps, s );
 	s->pos.trType = trType_t::TR_LINEAR_STOP;
-	VectorCopy( ps->origin, s->pos.trBase );
-
-	if ( snap )
-	{
-		SnapVector( s->pos.trBase );
-	}
-
-	// set the trDelta for flag direction and linear prediction
-	VectorCopy( ps->velocity, s->pos.trDelta );
+	SnapVector( s->pos.trBase );
+	SnapVector( s->apos.trBase );
 	// set the time for linear prediction
 	s->pos.trTime = time;
-	// set maximum extra polation time
+	// set maximum extrapolation time
+	// TODO: remove in 0.53 (use daemon's sv_fps cvar, which is currently not accessible)
 	s->pos.trDuration = 50; // 1000 / sv_fps (default = 20)
-
-	s->apos.trType = trType_t::TR_INTERPOLATE;
-	VectorCopy( ps->viewangles, s->apos.trBase );
-
-	if ( snap )
-	{
-		SnapVector( s->apos.trBase );
-	}
-
-	s->time2 = ps->movementDir;
-	s->legsAnim = ps->legsAnim;
-	s->torsoAnim = ps->torsoAnim;
-	s->weaponAnim = ps->weaponAnim;
-	s->clientNum = ps->clientNum; // ET_PLAYER looks here instead of at number
-	// so corpses can also reference the proper config
-	s->eFlags = ps->eFlags;
-
-	if ( ps->stats[ STAT_HEALTH ] <= 0 )
-	{
-		s->eFlags |= EF_DEAD;
-	}
-	else
-	{
-		s->eFlags &= ~EF_DEAD;
-	}
-
-	if ( ps->stats[ STAT_STATE ] & SS_BLOBLOCKED )
-	{
-		s->eFlags |= EF_BLOBLOCKED;
-	}
-	else
-	{
-		s->eFlags &= ~EF_BLOBLOCKED;
-	}
-
-	if ( ps->externalEvent )
-	{
-		s->event = ps->externalEvent;
-		s->eventParm = ps->externalEventParm;
-	}
-	else if ( ps->entityEventSequence < ps->eventSequence )
-	{
-		int seq;
-
-		if ( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
-		{
-			ps->entityEventSequence = ps->eventSequence - MAX_EVENTS;
-		}
-
-		seq = ps->entityEventSequence & ( MAX_EVENTS - 1 );
-		s->event = ps->events[ seq ] | ( ( ps->entityEventSequence & 3 ) << 8 );
-		s->eventParm = ps->eventParms[ seq ];
-		ps->entityEventSequence++;
-	}
-
-	s->weapon = ps->weapon;
-	s->groundEntityNum = ps->groundEntityNum;
-
-	// HACK: store held items in modelindex
-	s->modelindex = 0;
-
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
-	{
-		if ( BG_InventoryContainsUpgrade( i, ps->stats ) )
-		{
-			s->modelindex |= 1 << i;
-		}
-	}
-
-	// set "public state" flags
-	s->modelindex2 = 0;
-
-	// copy jetpack state
-	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ENABLED )
-	{
-		s->modelindex2 |= PF_JETPACK_ENABLED;
-	}
-	else
-	{
-		s->modelindex2 &= ~PF_JETPACK_ENABLED;
-	}
-
-	if ( ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
-	{
-		s->modelindex2 |= PF_JETPACK_ACTIVE;
-	}
-	else
-	{
-		s->modelindex2 &= ~PF_JETPACK_ACTIVE;
-	}
-
-	// use misc field to store team/class info:
-	s->misc = ps->persistant[ PERS_TEAM ] | ( ps->stats[ STAT_CLASS ] << 8 );
-
-	// have to get the surfNormal through somehow...
-	VectorCopy( ps->grapplePoint, s->angles2 );
-
-	s->loopSound = ps->loopSound;
-	s->generic1 = ps->generic1;
-
-	if ( s->generic1 <= WPM_NONE || s->generic1 >= WPM_NUM_WEAPONMODES )
-	{
-		s->generic1 = WPM_PRIMARY;
-	}
-
-	s->otherEntityNum = 0;
 }
 
 /*
