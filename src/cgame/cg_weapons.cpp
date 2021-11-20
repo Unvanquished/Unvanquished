@@ -1869,7 +1869,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	VectorMA( hand.origin, ( cg_gun_z.Get() + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
-	if ( weapon == WP_LUCIFER_CANNON && ps->stats[ STAT_MISC ] > 0 )
+	if ( weapon == WP_LUCIFER_CANNON && ps->weaponCharge > 0 )
 	{
 		float fraction;
 
