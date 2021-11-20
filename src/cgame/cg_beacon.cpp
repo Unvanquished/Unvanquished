@@ -341,8 +341,10 @@ static void MarkRelevantBeacons()
 			if( ( team == TEAM_ALIENS && beacon->data == BA_A_BOOSTER ) ||
 			    ( team == TEAM_HUMANS && beacon->data == BA_H_MEDISTAT ) )
 			{
-				if( ps->stats[ STAT_HEALTH ] < ps->stats[ STAT_MAX_HEALTH ] / 2 )
+				if( ps->stats[ STAT_HEALTH ] < BG_Class( ps->stats[ STAT_CLASS ] )->health / 2 )
+				{
 					beacon->type = BCT_HEALTH;
+				}
 				tofind &= ~1;
 			}
 		}
