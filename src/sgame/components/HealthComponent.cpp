@@ -26,7 +26,7 @@ void HealthComponent::HandlePrepareNetCode() {
 			client->pers.infoChangeTime = level.time;
 		}
 		client->ps.stats[STAT_HEALTH] = transmittedHealth;
-		client->ps.stats[STAT_MAX_HEALTH] = (int)std::ceil(maxHealth);
+		client->ps.stats[STAT_MAX_HEALTH] = static_cast<int>( std::ceil( maxHealth ) );// TODO: remove in 0.53
 	} else if (entity.oldEnt->s.eType == entityType_t::ET_BUILDABLE) {
 		entity.oldEnt->s.generic1 = std::max(transmittedHealth, 0);
 	}

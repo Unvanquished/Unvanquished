@@ -325,7 +325,7 @@ enum statIndex_t
   STAT_ITEMS,      // bitfield of all possible upgrades, probably only for humans.
   STAT_ACTIVEITEMS,
   STAT_WEAPON,     // current primary weapon. Works for humans and aliens. For aliens, is related to STAT_CLASS.
-  STAT_MAX_HEALTH, // health limit
+  STAT_MAX_HEALTH, // TODO: remove in 0.53
   STAT_CLASS,      // player class. Human's armor or alien's form. Do not use to guess team (which is done in some places), instead use PERS_TEAM
   STAT_STATE2,     // more client states
   STAT_STAMINA,    // humans: stamina
