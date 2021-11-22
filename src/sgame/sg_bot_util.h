@@ -70,6 +70,7 @@ botTarget_t BotGetRushTarget( const gentity_t *self );
 
 // logic functions
 float    BotGetHealScore( gentity_t *self );
+float    BotGetResupplyScore( gentity_t *ent );
 float    BotGetBaseRushScore( gentity_t *ent );
 float    BotGetEnemyPriority( gentity_t *self, gentity_t *ent );
 

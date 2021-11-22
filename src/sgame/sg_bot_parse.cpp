@@ -282,6 +282,11 @@ static AIValue_t randomChance( gentity_t*, const AIValue_t* )
 	return AIBoxFloat( random() );
 }
 
+static AIValue_t resupplyScore( gentity_t* self, const AIValue_t* )
+{
+	return AIBoxFloat( BotGetResupplyScore( self ) );
+}
+
 // Read a cvar, no matter its type
 static AIValue_t cvar( gentity_t*, const AIValue_t *params )
 {
@@ -361,6 +366,7 @@ static const struct AIConditionMap_s
 	{ "percentAmmo",       percentAmmo,       0 },
 	{ "percentHealth",     percentHealth,     1 },
 	{ "random",            randomChance,      0 },
+	{ "resupplyScore",     resupplyScore,     0 },
 	{ "skill",             botSkill,          0 },
 	{ "stuckTime",         stuckTime,         0 },
 	{ "team",              botTeam,           0 },
