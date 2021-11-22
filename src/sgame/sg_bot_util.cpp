@@ -274,6 +274,64 @@ static int GetMaxEquipmentCost( gentity_t const* self )
 	return max_value;
 }
 
+// This function returns a percent value indicating how much
+// resupply action would be desirable.
+// The returned value depends on:
+// * distance between the caller and the closest supply building
+// * caller's skill
+//
+// NOTE: the distance modifier is the same as for BotGetHealScore
+//
+// TODO: use a navigation distance
+// TODO: add poison support
+// TODO: in some cases (goon's barbs) the weapon have infiniteAmmo
+//   but still a finished limited of ammo. This special case needs
+//   special care, *or* (and that's likely a better solution) to
+//   stop considering having infinite ammo.
+float BotGetResupplyScore( gentity_t *self )
+{
+	float dist = 0;
+	auto const& closestBuildings = self->botMind->closestBuildings;
+	playerState_t const& ps = self->client->ps;
+	team_t team = G_Team( self );
+	weapon_t wp = BG_PrimaryWeapon( ps.stats );
+	weaponAttributes_t const* weapon = BG_Weapon( wp );
+
+	// why check team? Because of goons.
+	if ( weapon->infiniteAmmo && team == TEAM_HUMANS )
+	{
+		return 0;
+	}
+
+	float percentAmmo = PercentAmmoRemaining( wp, &ps );
+
+	switch( team )
+	{
+		case TEAM_ALIENS:
+			dist = closestBuildings[ BA_A_BOOSTER ].distance;
+			break;
+		case TEAM_HUMANS:
+			dist = closestBuildings[ BA_H_ARMOURY ].distance;
+			if ( weapon->usesEnergy )
+			{
+				float rcDist = closestBuildings[ BA_H_REACTOR ].distance;
+				if ( rcDist < dist )
+				{
+					dist = rcDist;
+				}
+			}
+			break;
+		case TEAM_NONE:
+		case TEAM_ALL:
+			return 0.f;
+		case NUM_TEAMS:
+			ASSERT_UNREACHABLE();
+			return 0;
+	}
+	float timeDist = dist / GetMaximalSpeed( self );
+	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentAmmo ) / sqrt( timeDist );
+}
+
 // Gives a value between 0 and 1 representing how much a bot should want to rush.
 // A rush is basically: target enemy's base.
 // The idea is to have bots rushing depending on the value of their equipment,
