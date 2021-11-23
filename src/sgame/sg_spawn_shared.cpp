@@ -201,31 +201,17 @@ void SP_ConditionFields( gentity_t *self ) {
 	char *buffer;
 
 	if ( G_SpawnString( "buildables", "", &buffer ) ) {
-		std::vector<buildable_t> buildables = BG_ParseBuildableList( buffer );
-		size_t n = std::min( buildables.size(), ARRAY_LEN( self->conditions.buildables ) - 1 ) ;
-		std::copy( buildables.begin(), buildables.begin() + n, self->conditions.buildables );
-		self->conditions.buildables[ n ] = BA_NONE;
+		self->conditions.buildables = BG_ParseBuildableList( buffer );
 	}
 
 	if ( G_SpawnString( "classes", "", &buffer ) ) {
-		std::vector<class_t> classes = BG_ParseClassList( buffer );
-		size_t n = std::min( classes.size(), ARRAY_LEN( self->conditions.classes ) - 1 ) ;
-		std::copy( classes.begin(), classes.begin() + n, self->conditions.classes );
-		self->conditions.classes[ n ] = PCL_NONE;
+		self->conditions.classes = BG_ParseClassList( buffer );
 	}
 
 	if ( G_SpawnString( "equipment", "", &buffer ) ) {
-		auto weaponsUpgrades = BG_ParseEquipmentList( buffer );
-
-		const std::vector<weapon_t>& weapons = weaponsUpgrades.first;
-		size_t n = std::min( weapons.size(), ARRAY_LEN( self->conditions.weapons ) - 1 ) ;
-		std::copy( weapons.begin(), weapons.begin() + n, self->conditions.weapons );
-		self->conditions.weapons[ n ] = WP_NONE;
-
-		const std::vector<upgrade_t>& upgrades = weaponsUpgrades.second;
-		n = std::min( upgrades.size(), ARRAY_LEN( self->conditions.upgrades ) - 1 ) ;
-		std::copy( upgrades.begin(), upgrades.begin() + n, self->conditions.upgrades );
-		self->conditions.upgrades[ n ] = UP_NONE;
+		auto equipments = BG_ParseEquipmentList( buffer );
+		self->conditions.weapons = std::move(equipments.first);
+		self->conditions.upgrades = std::move(equipments.second);
 	}
 }
 

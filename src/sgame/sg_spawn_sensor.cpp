@@ -314,24 +314,22 @@ sensor_buildable
 
 bool sensor_buildable_match( gentity_t *self, gentity_t *activator )
 {
-	int i = 0;
-
 	if ( !activator )
 	{
 		return false;
 	}
 
 	//if there is no buildable list every buildable triggers
-	if ( self->conditions.buildables[ i ] == BA_NONE )
+	if ( self->conditions.buildables.empty() )
 	{
 		return true;
 	}
 	else
 	{
 		//otherwise check against the list
-		for ( i = 0; self->conditions.buildables[ i ] != BA_NONE; i++ )
+		for ( buildable_t b : self->conditions.buildables )
 		{
-			if ( activator->s.modelindex == self->conditions.buildables[ i ] )
+			if ( activator->s.modelindex == b )
 			{
 				return true;
 			}
@@ -390,24 +388,22 @@ sensor_class_match
 */
 bool sensor_class_match( gentity_t *self, gentity_t *activator )
 {
-	int i = 0;
-
 	if ( !activator )
 	{
 		return false;
 	}
 
 	//if there is no class list every class triggers (stupid case)
-	if ( self->conditions.classes[ i ] == PCL_NONE )
+	if ( self->conditions.classes.empty() )
 	{
 		return true;
 	}
 	else
 	{
 		//otherwise check against the list
-		for ( i = 0; self->conditions.classes[ i ] != PCL_NONE; i++ )
+		for ( class_t c : self->conditions.classes )
 		{
-			if ( activator->client->ps.stats[ STAT_CLASS ] == self->conditions.classes[ i ] )
+			if ( activator->client->ps.stats[ STAT_CLASS ] == c )
 			{
 				return true;
 			}
@@ -424,14 +420,12 @@ sensor_equipment_match
 */
 bool sensor_equipment_match( gentity_t *self, gentity_t *activator )
 {
-	int i = 0;
-
 	if ( !activator )
 	{
 		return false;
 	}
 
-	if ( self->conditions.weapons[ i ] == WP_NONE && self->conditions.upgrades[ i ] == UP_NONE )
+	if ( self->conditions.weapons.empty() && self->conditions.upgrades.empty() )
 	{
 		//if there is no equipment list all equipment triggers for the old behavior of target_equipment, but not the new or different one
 		return true;
@@ -439,17 +433,17 @@ bool sensor_equipment_match( gentity_t *self, gentity_t *activator )
 	else
 	{
 		//otherwise check against the lists
-		for ( i = 0; self->conditions.weapons[ i ] != WP_NONE; i++ )
+		for ( weapon_t w : self->conditions.weapons )
 		{
-			if ( BG_InventoryContainsWeapon( self->conditions.weapons[ i ], activator->client->ps.stats ) )
+			if ( BG_InventoryContainsWeapon( w, activator->client->ps.stats ) )
 			{
 				return true;
 			}
 		}
 
-		for ( i = 0; self->conditions.upgrades[ i ] != UP_NONE; i++ )
+		for ( upgrade_t u : self->conditions.upgrades )
 		{
-			if ( BG_InventoryContainsUpgrade( self->conditions.upgrades[ i ], activator->client->ps.stats ) )
+			if ( BG_InventoryContainsUpgrade( u, activator->client->ps.stats ) )
 			{
 				return true;
 			}
@@ -479,11 +473,11 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t* )
 	if ( self->conditions.team && ( activator->client->pers.team != self->conditions.team ) )
 		return;
 
-	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->pers.team == TEAM_HUMANS )
+	if ( ( !self->conditions.upgrades.empty() || !self->conditions.weapons.empty() ) && activator->client->pers.team == TEAM_HUMANS )
 	{
 		shouldFire = sensor_equipment_match( self, activator );
 	}
-	else if ( self->conditions.classes[0] && activator->client->pers.team == TEAM_ALIENS )
+	else if ( !self->conditions.classes.empty() && activator->client->pers.team == TEAM_ALIENS )
 	{
 		shouldFire = sensor_class_match( self, activator );
 	}

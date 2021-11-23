@@ -1672,9 +1672,13 @@ void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_
 float    atof_neg( char *token, bool allowNegative );
 int      atoi_neg( char *token, bool allowNegative );
 
-std::vector<buildable_t> BG_ParseBuildableList( const std::string& );
-std::vector<class_t> BG_ParseClassList( const std::string& );
-std::pair<std::vector<weapon_t>, std::vector<upgrade_t>> BG_ParseEquipmentList( const std::string& );
+BoundedVector<buildable_t, BA_NUM_BUILDABLES>
+		BG_ParseBuildableList( const std::string& );
+BoundedVector<class_t, PCL_NUM_CLASSES>
+		BG_ParseClassList( const std::string& );
+std::pair<BoundedVector<weapon_t,  WP_NUM_WEAPONS>,
+          BoundedVector<upgrade_t, UP_NUM_UPGRADES>>
+		BG_ParseEquipmentList( const std::string& );
 
 // You are not supposed to call these, these are meant to be used by
 // g_disabled* cvar callbacks
