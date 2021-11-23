@@ -565,15 +565,13 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 // TODO: allow bots to buy jetpack, despite the fact they can't use them
 //  (yet): since default cVar prevent bots to buy those, that will be one
 //  less thing to change later and would have no impact.
-int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], size_t upgradesSize )
+void BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, BoundedVector<upgrade_t, 4> upgrades )
 {
-	ASSERT( self && upgrades );
+	ASSERT( self );
 	ASSERT( self->client->pers.team == TEAM_HUMANS ); // only humans can buy
-	ASSERT( upgradesSize >= 2 ); // we access to 2 elements maximum, and don't really check boundaries (would result in a nerf)
 	int equipmentPrice = BG_GetPlayerPrice( self->client->ps );
 	int credits = self->client->ps.persistant[PERS_CREDIT];
 	int usableCapital = credits + equipmentPrice;
-	size_t numUpgrades = 0;
 	int usedSlots = 0;
 
 	unsigned int numTeamUpgrades[UP_NUM_UPGRADES] = {};
@@ -581,10 +579,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 
 	ListTeamEquipment( self, numTeamUpgrades, numTeamWeapons );
 	weapon = WP_NONE;
-	for ( size_t i = 0; i < upgradesSize; ++i )
-	{
-		upgrades[i] = UP_NONE;
-	}
+	upgrades.clear();
 
 	for ( auto const &armor : armors )
 	{
@@ -595,10 +590,9 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 				( armor.canBuyNow() && usableCapital >= armor.price()
 				&& ( usedSlots & armor.slots() ) == 0 ) )
 		{
-			upgrades[numUpgrades] = armor.item;
+			upgrades.append(armor.item);
 			usableCapital -= armor.price();
 			usedSlots |= armor.slots();
-			numUpgrades++;
 			break;
 		}
 	}
@@ -612,15 +606,13 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 
 	// others[0] is radar, buying this utility makes sense even if one can't buy
 	// a better weapon, because it helps the whole team.
-	if ( numUpgrades > 0 && teamNeedsRadar
+	if ( !upgrades.empty() && teamNeedsRadar
 			&& others[0].canBuyNow() && usableCapital >= others[0].price()
-			&& ( usedSlots & others[0].slots() ) == 0
-			&& numUpgrades < upgradesSize )
+			&& ( usedSlots & others[0].slots() ) == 0 )
 	{
-		upgrades[numUpgrades] = others[0].item;
+		upgrades.append(others[0].item);
 		usableCapital -= others[0].price();
 		usedSlots |= others[0].slots();
-		numUpgrades ++;
 	}
 
 	for ( auto const &wp : weapons )
@@ -646,16 +638,13 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 			continue;
 		}
 		if ( tool.canBuyNow() && usableCapital >= tool.price()
-				&& ( usedSlots & tool.slots() ) == 0
-				&& numUpgrades < upgradesSize )
+				&& ( usedSlots & tool.slots() ) == 0 )
 		{
-			upgrades[numUpgrades] = tool.item;
+			upgrades.append(tool.item);
 			usableCapital -= tool.price();
 			usedSlots |= tool.slots();
-			numUpgrades ++;
 		}
 	}
-	return numUpgrades;
 }
 
 /*
