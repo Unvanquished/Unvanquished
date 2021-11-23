@@ -217,8 +217,7 @@ void G_BotChangeBehavior( int clientNum, const char* behavior )
 
 bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
 {
-	memset( botMind->runningNodes, 0, sizeof( botMind->runningNodes ) );
-	botMind->numRunningNodes = 0;
+	botMind->runningNodes.clear();
 	botMind->currentNode = nullptr;
 	memset( &botMind->nav, 0, sizeof( botMind->nav ) );
 	BotResetEnemyQueue( &botMind->enemyQueue );
@@ -517,8 +516,7 @@ void G_BotSpectatorThink( gentity_t *self )
 	memset( &self->botMind->nav, 0, sizeof( self->botMind->nav ) );
 	self->botMind->futureAimTime = 0;
 	self->botMind->futureAimTimeInterval = 0;
-	self->botMind->numRunningNodes = 0;
-	memset( self->botMind->runningNodes, 0, sizeof( self->botMind->runningNodes ) );
+	self->botMind->runningNodes.clear();
 
 	if ( self->client->sess.restartTeam == TEAM_NONE )
 	{

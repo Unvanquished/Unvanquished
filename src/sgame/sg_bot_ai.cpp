@@ -195,15 +195,8 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 
 static bool NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
 {
-	int i;
-	for ( i = 0; i < self->botMind->numRunningNodes; i++ )
-	{
-		if ( self->botMind->runningNodes[ i ] == node )
-		{
-			return true;
-		}
-	}
-	return false;
+	auto &nodes = self->botMind->runningNodes;
+	return std::find(nodes.begin(), nodes.end(), node) != nodes.end();
 }
 
 /*
@@ -487,30 +480,27 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 	// reset running information on node success so sequences and selectors reset their state
 	if ( NodeIsRunning( self, node ) && status == STATUS_SUCCESS )
 	{
-		memset( self->botMind->runningNodes, 0, sizeof( self->botMind->runningNodes ) );
-		self->botMind->numRunningNodes = 0;
+		self->botMind->runningNodes.clear();
 	}
 
 	// store running information for sequence nodes and selector nodes
 	if ( status == STATUS_RUNNING )
 	{
-		if ( self->botMind->numRunningNodes == MAX_NODE_DEPTH )
-		{
-			Log::Warn( "MAX_NODE_DEPTH exceeded" );
-			return status;
-		}
-
 		// clear out previous running list when we hit a running leaf node
 		// this insures that only 1 node in a sequence or selector has the running state
 		if ( node->type == ACTION_NODE )
 		{
-			memset( self->botMind->runningNodes, 0, sizeof( self->botMind->runningNodes ) );
-			self->botMind->numRunningNodes = 0;
+			self->botMind->runningNodes.clear();
 		}
 
 		if ( !NodeIsRunning( self, node ) )
 		{
-			self->botMind->runningNodes[ self->botMind->numRunningNodes++ ] = node;
+			if ( !self->botMind->runningNodes.append(node) )
+			{
+				Log::Warn( "Bot failed to execute action: "
+						"MAX_NODE_DEPTH exceeded" );
+				return status;
+			}
 		}
 	}
 
