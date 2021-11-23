@@ -74,10 +74,10 @@ struct gentityConditions_t
 	team_t   team;
 	int      stage;
 
-	class_t     classes[ PCL_NUM_CLASSES ];
-	weapon_t    weapons[ WP_NUM_WEAPONS ];
-	upgrade_t   upgrades[ UP_NUM_UPGRADES ];
-	buildable_t buildables[ BA_NUM_BUILDABLES ];
+	BoundedVector<class_t,     PCL_NUM_CLASSES>   classes;
+	BoundedVector<weapon_t,    WP_NUM_WEAPONS>    weapons;
+	BoundedVector<upgrade_t,   UP_NUM_UPGRADES>   upgrades;
+	BoundedVector<buildable_t, BA_NUM_BUILDABLES> buildables;
 
 	bool negated;
 };
