@@ -110,7 +110,7 @@ struct botMemory_t
 
 	AIBehaviorTree_t *behaviorTree;
 	AIGenericNode_t  *currentNode;
-	AIGenericNode_t  *runningNodes[ MAX_NODE_DEPTH ];
+	BoundedVector<AIGenericNode_t*, MAX_NODE_DEPTH> runningNodes;
 	int              numRunningNodes;
 
 	int         futureAimTime;
