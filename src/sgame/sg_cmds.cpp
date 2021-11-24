@@ -1981,7 +1981,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_NEXT_MAP:
-		if ( G_MapExists( g_nextMap.Get().c_str() ) )
+		if ( G_MapExists( g_nextMap.Get() ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %s", QQ( N_("$1$: the next map is already set to '$2$'") ),
