@@ -2083,7 +2083,7 @@ void CG_DrawHumanInventory()
 	}
 	Q_strcat( RML, sizeof( RML ), "</div>" );
 
-	Rocket_SetInnerRML( RML, false );
+	Rocket_SetInnerRMLRaw( RML );
 }
 
 /*
@@ -2100,7 +2100,7 @@ void CG_DrawItemSelectText()
 
 	if ( alpha == 0.0f )
 	{
-		Rocket_SetInnerRML( "&nbsp;", false );
+		Rocket_SetInnerRMLRaw( "&nbsp;" );
 		return;
 	}
 
@@ -2114,7 +2114,7 @@ void CG_DrawItemSelectText()
 		{
 			if ( ( name = cg_weapons[ cg.weaponSelect ].humanName ) )
 			{
-				Rocket_SetInnerRML( name, false );
+				Rocket_SetInnerRML( name, 0 );
 			}
 		}
 	}
@@ -2125,7 +2125,7 @@ void CG_DrawItemSelectText()
 		{
 			if ( ( name = cg_upgrades[ cg.weaponSelect - 32 ].humanName ) )
 			{
-				Rocket_SetInnerRML( name, false );
+				Rocket_SetInnerRML( name, 0 );
 			}
 		}
 	}

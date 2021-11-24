@@ -2302,7 +2302,7 @@ void CG_Rocket_DrawPlayerHealth()
 
 	if ( lastHealth != cg.snap->ps.stats[ STAT_HEALTH ] )
 	{
-		Rocket_SetInnerRML( va( "%d", cg.snap->ps.stats[ STAT_HEALTH ] ), 0 );
+		Rocket_SetInnerRMLRaw( va( "%d", cg.snap->ps.stats[ STAT_HEALTH ] ) );
 	}
 }
 
@@ -2784,7 +2784,7 @@ void CG_Rocket_DrawFollow()
 	}
 	else
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 	}
 }
 
@@ -2835,7 +2835,7 @@ void CG_Rocket_DrawConnectText()
 
 	Q_strcat( rml, sizeof( rml ), s );
 
-	Rocket_SetInnerRML( rml, 0 );
+	Rocket_SetInnerRMLRaw( rml );
 }
 
 void CG_Rocket_DrawClock()
@@ -2845,7 +2845,7 @@ void CG_Rocket_DrawClock()
 
 	if ( !cg_drawClock.Get() )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -2881,14 +2881,14 @@ void CG_Rocket_DrawClock()
 		s = va( "%d%s%02d%s", h, ( qt.tm_sec % 2 ) ? ":" : " ", qt.tm_min, pm );
 	}
 
-	Rocket_SetInnerRML( s, 0 );
+	Rocket_SetInnerRMLRaw( s );
 }
 
 void CG_Rocket_DrawTutorial()
 {
 	if ( !cg_tutorial.Get() )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3063,11 +3063,11 @@ void CG_Rocket_DrawMineRate()
 		float matchTime = (float)(cg.time - cgs.levelStartTime);
 		float rate = cgs.buildPointRecoveryInitialRate /
 		             std::pow(2.0f, matchTime / (60000.0f * cgs.buildPointRecoveryRateHalfLife));
-		Rocket_SetInnerRML( va( "Recovering %d / %d BP @ %.1f BP/min.",
-		                        queuedBudget, totalBudget, rate), 0 );
+		Rocket_SetInnerRMLRaw( va( "Recovering %d / %d BP @ %.1f BP/min.",
+		                       queuedBudget, totalBudget, rate) );
 	} else {
-		Rocket_SetInnerRML( va( "The full budget of %d BP is available.",
-		                        totalBudget), 0 );
+		Rocket_SetInnerRMLRaw( va( "The full budget of %d BP is available.",
+		                       totalBudget) );
 	}
 }
 
@@ -3243,7 +3243,7 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 
 	if ( !cgs.voteTime[ team ] )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3272,7 +3272,7 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 			team == TEAM_NONE ? "" : "TEAM", sec, voteString,
 			caller.CString(), yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
-	Rocket_SetInnerRML( s.c_str(), 0 );
+	Rocket_SetInnerRMLRaw( s.c_str() );
 }
 
 static void CG_Rocket_DrawVersion()
@@ -3297,7 +3297,7 @@ static void CG_Rocket_DrawSpawnQueuePosition()
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3305,7 +3305,7 @@ static void CG_Rocket_DrawSpawnQueuePosition()
 
 	if ( position < 1 )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3329,7 +3329,7 @@ static void CG_Rocket_DrawNumSpawns()
 
 	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3358,7 +3358,7 @@ static void CG_Rocket_DrawWarmup()
 
 	if ( !cg.warmupTime )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3366,7 +3366,7 @@ static void CG_Rocket_DrawWarmup()
 
 	if ( sec < 0 )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3379,7 +3379,7 @@ static void CG_Rocket_DrawProgressValue()
 	if ( *src )
 	{
 		float value = CG_Rocket_ProgressBarValue( src );
-		Rocket_SetInnerRML( va( "%d%%", (int) ( value * 100 ) ), 0 );
+		Rocket_SetInnerRMLRaw( va( "%d%%", (int) ( value * 100 ) ) );
 	}
 }
 
@@ -3432,7 +3432,7 @@ static void CG_Rocket_DrawDownloadTime()
 
 	if ( !*rocketInfo.downloadName )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3470,7 +3470,7 @@ static void CG_Rocket_DrawDownloadTotalSize()
 
 	if ( !*rocketInfo.downloadName )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3486,7 +3486,7 @@ static void CG_Rocket_DrawDownloadCompletedSize()
 
 	if ( !*rocketInfo.downloadName )
 	{
-		Rocket_SetInnerRML( "", 0 );
+		Rocket_SetInnerRMLRaw( "" );
 		return;
 	}
 
@@ -3504,7 +3504,7 @@ static void CG_Rocket_DrawDownloadSpeed()
 
 	if ( !*rocketInfo.downloadName )
 	{
-		Rocket_SetInnerRML ( "", 0 );
+		Rocket_SetInnerRMLRaw ( "" );
 		return;
 	}
 

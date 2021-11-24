@@ -107,16 +107,29 @@ static inline void Rocket_SetInnerRMLGuarded( Rocket::Core::Element *e, const Ro
 	}
 }
 
-// FIXME: there is a third hidden parse behavior (besides colors and emoticons) - HTML escaping
-// HTML escaping is activated only if at least one other flag is set
-// Some code relies on the string NOT being escaped and inserts markup
-void Rocket_SetInnerRML( const char *RML, int parseFlags )
+// This always escapes HTML special characters.
+// With additional flags parses colors or emoticons (see Rocket_QuakeToRML).
+void Rocket_SetInnerRML( const char *text, int parseFlags )
 {
-	Rocket::Core::String newRML = parseFlags  ? Rocket_QuakeToRML( RML, parseFlags ) : RML;
+	Rocket::Core::String newRML = Rocket_QuakeToRML( text, parseFlags );
 
 	if ( activeElement )
 	{
 		Rocket_SetInnerRMLGuarded( activeElement, newRML );
+	}
+
+	else
+	{
+		// TODO warning?
+	}
+}
+
+// Use this if your string contains RML markup.
+void Rocket_SetInnerRMLRaw( const char* RML )
+{
+	if ( activeElement )
+	{
+		Rocket_SetInnerRMLGuarded( activeElement, RML );
 	}
 
 	else
