@@ -1247,16 +1247,9 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
 
-	if ( self->client->pers.team != G_Team( &g_entities[trace.entityNum] )
+	return !G_OnSameTeam( self, &g_entities[trace.entityNum] )
 		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
-		&& Distance( muzzle, trace.endpos ) <= std::max( range, secondaryRange ) )
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+		&& Distance( muzzle, trace.endpos ) <= std::max( range, secondaryRange );
 }
 
 bool BotEntityIsValidTarget( const gentity_t *ent )
