@@ -1159,8 +1159,8 @@ struct cg_t
 	char centerPrint[ MAX_STRING_CHARS ];
 
 	// crosshair client ID
-	int      crosshairClientNum;
-	int      crosshairClientTime;
+	int crosshairEntityNum;
+	int crosshairEntityTime;
 	bool crosshairFriend;
 	bool crosshairFoe;
 
@@ -1781,7 +1781,6 @@ extern Cvar::Cvar<bool> cg_lagometer;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawSpeed;
 extern Cvar::Cvar<int> cg_maxSpeedTimeWindow;
 extern Cvar::Cvar<bool> cg_blood;
-extern Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo;
 extern Cvar::Cvar<bool> cg_teamChatsOnly;
 extern Cvar::Cvar<bool> cg_noVoiceChats;
 extern Cvar::Cvar<bool> cg_noVoiceText;

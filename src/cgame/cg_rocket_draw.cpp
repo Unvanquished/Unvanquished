@@ -1570,8 +1570,8 @@ static void CG_ScanForCrosshairEntity()
 		// set more stuff if requested
 		if ( cg_drawEntityInfo.Get() && targetState.eType != entityType_t::ET_GENERAL )
 		{
-			cg.crosshairClientNum = trace.entityNum;
-			cg.crosshairClientTime = cg.time;
+			cg.crosshairEntityNum = trace.entityNum;
+			cg.crosshairEntityTime = cg.time;
 		}
 	}
 	else
@@ -1586,8 +1586,8 @@ static void CG_ScanForCrosshairEntity()
 			cg.crosshairFriend = true;
 
 			// only set this for friendly clients as it triggers name display
-			cg.crosshairClientNum = trace.entityNum;
-			cg.crosshairClientTime = cg.time;
+			cg.crosshairEntityNum = trace.entityNum;
+			cg.crosshairEntityTime = cg.time;
 		}
 
 		else if ( targetTeam != TEAM_NONE )
@@ -1597,8 +1597,8 @@ static void CG_ScanForCrosshairEntity()
 			if ( ownTeam == TEAM_NONE )
 			{
 				// spectating, so show the name
-				cg.crosshairClientNum = trace.entityNum;
-				cg.crosshairClientTime = cg.time;
+				cg.crosshairEntityNum = trace.entityNum;
+				cg.crosshairEntityTime = cg.time;
 			}
 		}
 	}
@@ -1615,7 +1615,7 @@ public:
 		Rocket::Core::String name;
 		float alpha;
 
-		if ( !cg_drawCrosshairNames.Get() || cg.renderingThirdPerson )
+		if ( ( !cg_drawCrosshairNames.Get() && !cg_drawEntityInfo.Get() ) || cg.renderingThirdPerson )
 		{
 			Clear();
 			return;
@@ -1625,9 +1625,9 @@ public:
 		CG_ScanForCrosshairEntity();
 
 		// draw the name of the player being looked at
-		alpha = CG_FadeAlpha( cg.crosshairClientTime, CROSSHAIR_CLIENT_TIMEOUT );
+		alpha = CG_FadeAlpha( cg.crosshairEntityTime, CROSSHAIR_CLIENT_TIMEOUT );
 
-		if ( cg.crosshairClientTime == cg.time )
+		if ( cg.crosshairEntityTime == cg.time )
 		{
 			alpha = 1.0f;
 		}
@@ -1647,28 +1647,32 @@ public:
 		if ( cg_drawEntityInfo.Get() )
 		{
 			name = va( "(^5%s^7|^5#%d^7)",
-					   Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
+					   Com_EntityTypeName( cg_entities[cg.crosshairEntityNum].currentState.eType ), cg.crosshairEntityNum );
 		}
 
-		else if ( cg_drawCrosshairNames.Get() >= 2 )
+		else if ( cg.crosshairEntityNum < MAX_CLIENTS )
 		{
-			name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
-		}
+			if ( cg_drawCrosshairNames.Get() >= 2 )
+			{
+				name = va( "%2i: %s", cg.crosshairEntityNum, cgs.clientinfo[ cg.crosshairEntityNum ].name );
+			}
 
-		else
-		{
-			name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+			else
+			{
+				name = cgs.clientinfo[ cg.crosshairEntityNum ].name;
+			}
 		}
 
 		// add health from overlay info to the crosshair client name
 		if ( cg_teamOverlayUserinfo.Get() &&
 			CG_MyTeam() != TEAM_NONE &&
 			cgs.teamInfoReceived &&
-			cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
+			cg.crosshairEntityNum < MAX_CLIENTS &&
+			cgs.clientinfo[ cg.crosshairEntityNum ].health > 0)
 		{
 			name = va( "%s ^7[^%c%d^7]", name.CString(),
-					   CG_GetColorCharForHealth( cg.crosshairClientNum ),
-					   cgs.clientinfo[ cg.crosshairClientNum ].health );
+					   CG_GetColorCharForHealth( cg.crosshairEntityNum ),
+					   cgs.clientinfo[ cg.crosshairEntityNum ].health);
 		}
 
 		if ( name != name_ )
