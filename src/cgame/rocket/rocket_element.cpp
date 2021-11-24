@@ -107,37 +107,22 @@ static inline void Rocket_SetInnerRMLGuarded( Rocket::Core::Element *e, const Ro
 	}
 }
 
-void Rocket_SetInnerRMLById( const char *name, const char *id, const char *RML, int parseFlags )
+// FIXME: there is a third hidden parse behavior (besides colors and emoticons) - HTML escaping
+// HTML escaping is activated only if at least one other flag is set
+// Some code relies on the string NOT being escaped and inserts markup
+void Rocket_SetInnerRML( const char *RML, int parseFlags )
 {
 	Rocket::Core::String newRML = parseFlags  ? Rocket_QuakeToRML( RML, parseFlags ) : RML;
 
-	if ( ( !*name || !*id ) && activeElement )
+	if ( activeElement )
 	{
 		Rocket_SetInnerRMLGuarded( activeElement, newRML );
 	}
 
 	else
 	{
-		Rocket::Core::ElementDocument *document = menuContext->GetDocument( name );
-
-		if ( document )
-		{
-			Rocket::Core::Element *e = document->GetElementById( id );
-
-			if ( e )
-			{
-				Rocket_SetInnerRMLGuarded( e, newRML );
-			}
-		}
+		// TODO warning?
 	}
-}
-
-// FIXME: there is a third hidden parse behavior (besides colors and emoticons) - HTML escaping
-// HTML escaping is activated only if at least one other flag is set
-// Some code relies on the string NOT being escaped and inserts markup
-void Rocket_SetInnerRML( const char *RML, int parseFlags )
-{
-	Rocket_SetInnerRMLById( "", "", RML, parseFlags );
 }
 
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
