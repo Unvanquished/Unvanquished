@@ -132,6 +132,9 @@ void Rocket_SetInnerRMLById( const char *name, const char *id, const char *RML, 
 	}
 }
 
+// FIXME: there is a third hidden parse behavior (besides colors and emoticons) - HTML escaping
+// HTML escaping is activated only if at least one other flag is set
+// Some code relies on the string NOT being escaped and inserts markup
 void Rocket_SetInnerRML( const char *RML, int parseFlags )
 {
 	Rocket_SetInnerRMLById( "", "", RML, parseFlags );

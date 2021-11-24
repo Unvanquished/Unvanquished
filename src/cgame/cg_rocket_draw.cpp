@@ -3264,14 +3264,15 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	int bindTeam = CG_CurrentBindTeam();
 	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
 	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
-
+	std::string voteString = CG_EscapeHTMLText( cgs.voteString[ team ] );
+	Rocket::Core::String caller = Rocket_QuakeToRML( cgs.voteCaller[ team ], RP_EMOTICONS ); // colors are stripped by the server
 	std::string s = Str::Format( "%sVOTE(%i): %s\n"
-			"    Called by: \"%s^*\"\n"
+			"    Called by: \"%s\"\n"
 			"    [%s][<span class='material-icon'>&#xe8dc;</span>]:%i [%s][<span class='material-icon'>&#xe8db;</span>]:%i\n",
-			team == TEAM_NONE ? "" : "TEAM", sec, cgs.voteString[ team ],
-			cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
+			team == TEAM_NONE ? "" : "TEAM", sec, voteString,
+			caller.CString(), yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
-	Rocket_SetInnerRML( s.c_str(), RP_EMOTICONS|RP_QUAKE );
+	Rocket_SetInnerRML( s.c_str(), 0 );
 }
 
 static void CG_Rocket_DrawVersion()
