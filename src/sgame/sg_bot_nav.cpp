@@ -143,7 +143,7 @@ bool GoalInRange( const gentity_t *self, float r )
 
 	if ( self->botMind->goal.targetsCoordinates() )
 	{
-		return ( Distance( self->s.origin, self->botMind->nav().tpos ) < r );
+		return ( glm::distance( VEC2GLM( self->s.origin ), VEC2GLM( self->botMind->nav().tpos ) ) < r );
 	}
 
 	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) ) )
@@ -415,7 +415,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 // try to find a path around the obstacle by projecting 5
 // traces in 15° steps in both directions.
 // return true if a path could be found
-static bool BotFindSteerTarget( gentity_t *self, glm::vec3& dir )
+static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 {
 	glm::vec3 forward;
 	glm::vec3 testPoint1, testPoint2;
@@ -468,7 +468,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3& dir )
 		//check if unobstructed
 		if ( trace1.fraction >= 1.0f )
 		{
-			VectorCopy( forward, dir );
+			dir = forward;
 			return true;
 		}
 
@@ -486,7 +486,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3& dir )
 		//check if unobstructed
 		if ( trace2.fraction >= 1.0f )
 		{
-			VectorCopy( forward, dir );
+			dir = forward;
 			return true;
 		}
 	}

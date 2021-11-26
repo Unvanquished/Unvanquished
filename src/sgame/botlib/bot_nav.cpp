@@ -323,23 +323,13 @@ static float frand()
 	return ( float ) rand() / ( float ) RAND_MAX;
 }
 
-void BotFindRandomPoint( int botClientNum, vec3_t point )
-{
-	qVec origin = g_entities[ botClientNum ].s.origin;
-
-	if ( !BotFindRandomPointInRadius( botClientNum, origin, point, 2000 ) )
-	{
-		VectorCopy( origin, point );
-	}
-}
-
-bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
+bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, glm::vec3 &point, float radius )
 {
 	rVec rorigin = qVec( origin );
 	rVec nearPoint;
 	dtPolyRef nearPoly;
 
-	VectorSet( point, 0, 0, 0 );
+	point = { 0, 0, 0 };
 
 	Bot_t *bot = &agents[ botClientNum ];
 
@@ -356,8 +346,7 @@ bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t p
 		return false;
 	}
 
-	VectorCopy( nearPoint, point );
-	recast2quake( point );
+	point = recast2quake( const_cast<rVec const&>( nearPoint ) );
 	return true;
 }
 

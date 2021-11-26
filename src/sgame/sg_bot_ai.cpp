@@ -736,7 +736,7 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 	}
 	else if( a->nparams == 3 )
 	{
-		vec3_t pos = { AIUnBoxFloat(a->params[0]), AIUnBoxFloat(a->params[1]), AIUnBoxFloat(a->params[2]) };
+		glm::vec3 pos = { AIUnBoxFloat(a->params[0]), AIUnBoxFloat(a->params[1]), AIUnBoxFloat(a->params[2]) };
 		if ( !BotChangeGoalPos( self, pos ) )
 		{
 			return STATUS_FAILURE;
@@ -950,7 +950,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 
 	if ( node != self->botMind->currentNode )
 	{
-		vec3_t point;
+		glm::vec3 point;
 		botEntityAndDistance_t ent = AIEntityToGentity( self, e );
 
 		if ( !ent.ent )
