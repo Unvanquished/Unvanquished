@@ -498,9 +498,7 @@ bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 //return true on error
 bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir )
 {
-	gentity_t *blocker;
-
-	blocker = BotGetPathBlocker( self, dir );
+	gentity_t *blocker = BotGetPathBlocker( self, dir );
 
 	if ( !blocker )
 	{
@@ -596,7 +594,7 @@ void BotSeek( gentity_t *self, glm::vec3 &direction )
 
 	// slowly change our aim to point to the target
 	BotSlowAim( self, seekPos, 0.6 );
-	BotAimAtLocation( self, &seekPos[0] );
+	BotAimAtLocation( self, seekPos );
 }
 
 /*
@@ -707,7 +705,7 @@ void BotMoveToGoal( gentity_t *self )
 		if ( magnitude )
 		{
 			glm::vec3 target = self->botMind->nav().glm_tpos();
-			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, &target[0], magnitude ) / 3 );
+			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, target, magnitude ) / 3 );
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
 	}

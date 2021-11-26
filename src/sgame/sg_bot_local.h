@@ -60,7 +60,6 @@ public:
 	const gentity_t *getTargetedEntity() const;
 	// note if you don't check with "isValid" first, you may
 	// have garbage as a result
-	void getPos(vec3_t out) const;
 	glm::vec3 getPos( void ) const;
 private:
 	GentityConstRef ent;
@@ -117,7 +116,7 @@ struct botMemory_t
 
 	int         futureAimTime;
 	int         futureAimTimeInterval;
-	vec3_t      futureAim;
+	glm::vec3   futureAim;
 private:
 	botNavCmd_t m_nav;
 public:
@@ -129,7 +128,7 @@ public:
 
 	int lastThink;
 	int stuckTime;
-	vec3_t stuckPosition;
+	glm::vec3 stuckPosition;
 
 	int spawnTime;
 	//avoid relying on buttons to remember what AI was doing
