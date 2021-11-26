@@ -102,14 +102,14 @@ static void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short f
 	}
 }
 
-void G_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+void G_BotDisableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
 {
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_DISABLED );
+	BotSetPolyFlags( &origin[0], &mins[0], &maxs[0], POLYFLAGS_DISABLED );
 }
 
-void G_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
 {
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
+	BotSetPolyFlags( &origin[0], &mins[0], &maxs[0], POLYFLAGS_WALK );
 }
 
 void G_BotSetNavMesh( int botClientNum, qhandle_t nav )
@@ -323,9 +323,9 @@ static float frand()
 	return ( float ) rand() / ( float ) RAND_MAX;
 }
 
-bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, glm::vec3 &point, float radius )
+bool BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm::vec3 &point, float radius )
 {
-	rVec rorigin = qVec( origin );
+	rVec rorigin = qVec( &origin[0] );
 	rVec nearPoint;
 	dtPolyRef nearPoly;
 
