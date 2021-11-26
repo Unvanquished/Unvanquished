@@ -51,6 +51,11 @@ static inline void recast2quake( float vec[ 3 ] )
 	vec[2] = temp;
 }
 
+static inline glm::vec3 recast2quake( float const vec[ 3 ] )
+{
+	return glm::vec3( vec[0], vec[2], vec[1] );
+}
+
 class rVec;
 class qVec
 {
