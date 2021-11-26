@@ -49,13 +49,10 @@ void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
 
 // aiming
-void  BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
+glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target );
 void  BotAimAtEnemy( gentity_t *self );
 void  BotSlowAim( gentity_t *self, glm::vec3& target, float slow );
-void  BotAimAtLocation( gentity_t *self, vec3_t target );
-void  BotAimAtLocation( gentity_t *self, glm::vec3 target );
-float BotAimAngle( gentity_t *self, glm::vec3 pos );
-float BotAimAngle( gentity_t *self, vec3_t pos );
+void  BotAimAtLocation( gentity_t *self, const glm::vec3 &target );
 
 // targets
 bool BotEntityIsValidTarget( const gentity_t *ent );
@@ -95,10 +92,9 @@ int        BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrad
 
 // alien bots
 #define AS_OVER_RT3         ((ALIENSENSE_RANGE*0.5f)/M_ROOT3)
-float CalcAimPitch( gentity_t *self, vec3_t pos, vec_t launchSpeed );
-float CalcAimPitch( gentity_t *self, const glm::vec3& pos, float launchSpeed );
-float CalcPounceAimPitch( gentity_t *self, vec3_t pos );
-float CalcBarbAimPitch( gentity_t *self, vec3_t pos );
+float CalcAimPitch( gentity_t *self, glm::vec3& pos, float launchSpeed );
+float CalcPounceAimPitch( gentity_t *self, glm::vec3 &pos );
+float CalcBarbAimPitch( gentity_t *self, glm::vec3 & pos );
 bool BotCanEvolveToClass( const gentity_t *self, class_t newClass );
 bool BotEvolveToClass( gentity_t *ent, class_t newClass );
 
@@ -136,7 +132,7 @@ float DistanceToGoal( const gentity_t *self );
 float DistanceToGoalSquared( const gentity_t *self );
 float DistanceToGoal2DSquared( const gentity_t *self );
 float BotGetGoalRadius( const gentity_t *self );
-bool  BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, glm::vec3 &point, float radius );
+bool  BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm::vec3 &point, float radius );
 
 bool  BotPathIsWalkable( const gentity_t *self, botTarget_t target );
 
