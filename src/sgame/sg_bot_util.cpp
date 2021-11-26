@@ -955,11 +955,18 @@ botTarget_t BotGetRetreatTarget( const gentity_t *self )
 botTarget_t BotGetRoamTarget( const gentity_t *self )
 {
 	botTarget_t target;
-	vec3_t targetPos;
+	glm::vec3 point;
 
-	BotFindRandomPoint( self->s.number, targetPos );
+	int botClientNum = self->s.number;
+	if ( !BotFindRandomPointInRadius( botClientNum, g_entities[ botClientNum ].s.origin, point, 2000 ) )
+	{
+		target = VEC2GLM( g_entities[ botClientNum ].s.origin );
+	}
+	else
+	{
+		target = point;
+	}
 
-	target = targetPos;
 	return target;
 }
 
@@ -1082,7 +1089,7 @@ bool BotChangeGoalEntity( gentity_t *self, gentity_t const *goal )
 	return BotChangeGoal( self, target );
 }
 
-bool BotChangeGoalPos( gentity_t *self, vec3_t goal )
+bool BotChangeGoalPos( gentity_t *self, const glm::vec3 &goal )
 {
 	botTarget_t target;
 	target = goal;
