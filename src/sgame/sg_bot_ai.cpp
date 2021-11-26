@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 
+#include <glm/gtx/norm.hpp>
+
 /*
 ======================
 g_bot_ai.c
@@ -1192,10 +1194,6 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 */
 AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
-	vec3_t targetPos;
-	vec3_t myPos;
-	VectorCopy( self->s.origin, myPos );
-
 	bool fullyHealed = Entities::HasFullHealth(self) &&
 		BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
@@ -1233,23 +1231,24 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 	auto const& goal = self->botMind->goal;
 	const gentity_t * medistation = goal.getTargetedEntity();
 
-	goal.getPos( targetPos );
+	glm::vec3 targetPos = goal.getPos();
+	glm::vec3 myPos = VEC2GLM( self->s.origin );
 	targetPos[2] += BG_BuildableModelConfig( BA_H_MEDISTAT )->maxs[2];
 	myPos[2] += self->r.mins[2]; //mins is negative
-	float distanceSquared = DistanceSquared( myPos, targetPos );
 
+	float dist2 = glm::distance2( myPos, targetPos );
 	// If medistation is busy, do something else until can go on it anew.
 	// See https://github.com/Unvanquished/Unvanquished/pull/1598
 	// (It would be nice to allow the BT to check for the failure cause.
 	//  How? That's a good question)
 	if ( medistation->target && medistation->target.get() != self
-	     && distanceSquared > Square( 200 ) )
+	     && dist2 > Square( 200 ) )
 	{
 		return STATUS_FAILURE;
 	}
 
 	//keep moving to the medi until we are on top of it
-	if ( distanceSquared > Square( BG_BuildableModelConfig( BA_H_MEDISTAT )->mins[1] ) )
+	if ( dist2 > Square( BG_BuildableModelConfig( BA_H_MEDISTAT )->mins[1] ) )
 	{
 		BotMoveToGoal( self );
 	}
