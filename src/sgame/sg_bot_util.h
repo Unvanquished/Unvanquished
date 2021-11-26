@@ -75,7 +75,7 @@ float    BotGetEnemyPriority( gentity_t *self, gentity_t *ent );
 // goal changing
 bool BotChangeGoal( gentity_t *self, botTarget_t target );
 bool BotChangeGoalEntity( gentity_t *self, gentity_t const *goal );
-bool BotChangeGoalPos( gentity_t *self, vec3_t goal );
+bool BotChangeGoalPos( gentity_t *self, const glm::vec3 &goal );
 
 // fighting
 void     BotResetEnemyQueue( enemyQueue_t *queue );
@@ -136,8 +136,7 @@ float DistanceToGoal( const gentity_t *self );
 float DistanceToGoalSquared( const gentity_t *self );
 float DistanceToGoal2DSquared( const gentity_t *self );
 float BotGetGoalRadius( const gentity_t *self );
-void  BotFindRandomPoint( int botClientNum, vec3_t point );
-bool  BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
+bool  BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, glm::vec3 &point, float radius );
 
 bool  BotPathIsWalkable( const gentity_t *self, botTarget_t target );
 

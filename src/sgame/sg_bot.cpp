@@ -387,7 +387,6 @@ void G_BotThink( gentity_t *self )
 {
 	char buf[MAX_STRING_CHARS];
 	usercmd_t *botCmdBuffer;
-	vec3_t     nudge;
 
 	self->botMind->cmdBuffer = self->client->pers.cmd;
 	botCmdBuffer = &self->botMind->cmdBuffer;
@@ -396,10 +395,11 @@ void G_BotThink( gentity_t *self )
 	usercmdClearButtons( botCmdBuffer->buttons );
 
 	// for nudges, e.g. spawn blocking
-	bool hasNudge = botCmdBuffer->doubleTap != dtType_t::DT_NONE;
-	nudge[0] = hasNudge ? botCmdBuffer->forwardmove : 0;
-	nudge[1] = hasNudge ? botCmdBuffer->rightmove : 0;
-	nudge[2] = hasNudge ? botCmdBuffer->upmove : 0;
+	glm::vec3 nudge = { 0, 0, 0 };
+	if ( botCmdBuffer->doubleTap != dtType_t::DT_NONE )
+	{
+		nudge = { botCmdBuffer->forwardmove, botCmdBuffer->rightmove, botCmdBuffer->upmove };
+	}
 
 	botCmdBuffer->forwardmove = 0;
 	botCmdBuffer->rightmove = 0;
