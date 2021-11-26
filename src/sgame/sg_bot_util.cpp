@@ -976,7 +976,7 @@ BotTarget Helpers
 ========================
 */
 
-static void BotTargetGetBoundingBox( botTarget_t target, vec3_t mins, vec3_t maxs, botRouteTarget_t *routeTarget )
+static void BotTargetGetBoundingBox( botTarget_t target, glm::vec3 &mins, glm::vec3 &maxs, botRouteTarget_t *routeTarget )
 {
 	ASSERT( target.isValid() );
 
@@ -995,16 +995,16 @@ static void BotTargetGetBoundingBox( botTarget_t target, vec3_t mins, vec3_t max
 	if ( isPlayer )
 	{
 		class_t class_ = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
-		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
+		BG_BoundingBox( class_, &mins, &maxs, nullptr, nullptr, nullptr );
 	}
 	else if ( target.getTargetType() == entityType_t::ET_BUILDABLE )
 	{
-		BG_BuildableBoundingBox( ( buildable_t ) ent->s.modelindex, mins, maxs );
+		BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), &mins, &maxs );
 	}
 	else
 	{
-		VectorCopy( ent->r.mins, mins );
-		VectorCopy( ent->r.maxs, maxs );
+		mins = VEC2GLM( ent->r.mins );
+		maxs = VEC2GLM( ent->r.maxs );
 	}
 
 	if ( isPlayer )
@@ -1021,7 +1021,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 {
 	ASSERT( target.isValid() );
 
-	vec3_t mins, maxs;
+	glm::vec3 mins, maxs;
 
 	target.getPos( routeTarget->pos );
 	BotTargetGetBoundingBox( target, mins, maxs, routeTarget );
@@ -1041,9 +1041,6 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 			( entType == entityType_t::ET_BUILDABLE
 			  && target.getTargetedEntity()->s.origin2[ 2 ] < MIN_WALK_NORMAL ) )
 	{
-		vec3_t targetPos;
-		vec3_t end;
-		vec3_t invNormal = { 0, 0, -1 };
 		trace_t trace;
 
 		routeTarget->polyExtents[ 0 ] += 25;
@@ -1051,8 +1048,9 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		routeTarget->polyExtents[ 2 ] += 300;
 
 		// try to find a position closer to the ground
-		target.getPos( targetPos );
-		VectorMA( targetPos, 600, invNormal, end );
+		glm::vec3 invNormal = { 0, 0, -1 };
+		glm::vec3 targetPos = target.getPos();
+		glm::vec3 end = targetPos + 600.f * invNormal;
 		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->s.number,
 		            CONTENTS_SOLID, MASK_ENTITY );
 		VectorCopy( trace.endpos, routeTarget->pos );
