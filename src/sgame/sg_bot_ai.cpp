@@ -1126,9 +1126,9 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	// retrieve creep size or booster's range to have proper distance
-	int targetType = self->botMind->goal.getTargetedEntity()->s.modelindex;
-	float dist = -1; // minus one to make sure to step on creep
+	// retrieve creep size to have proper distance
+	buildable_t targetType = static_cast<buildable_t>( self->botMind->goal.getTargetedEntity()->s.modelindex );
+	float dist = -1.f;
 	if ( targetType != BA_A_BOOSTER )
 	{
 		dist += BG_Buildable( targetType )->creepSize;
