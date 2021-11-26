@@ -1215,8 +1215,6 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 {
-	vec3_t forward;
-	vec3_t selfPos;
 	botMemory_t const* mind = self->botMind;
 
 	if ( node != self->botMind->currentNode )
@@ -1243,8 +1241,8 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		G_ForceWeaponChange( self, WP_HBUILD );
 	}
 
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( self->s.origin, self->r.maxs[1], forward, selfPos );
+	glm::vec3 forward;
+	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
 
 	//move to the damaged building until we are in range
 	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_SHOT ) || DistanceToGoalSquared( self ) > Square( 100 ) )
