@@ -959,7 +959,8 @@ botTarget_t BotGetRoamTarget( const gentity_t *self )
 	botTarget_t target;
 	vec3_t targetPos;
 
-	BotFindRandomPointOnMesh( self, targetPos );
+	BotFindRandomPoint( self->s.number, targetPos );
+
 	target = targetPos;
 	return target;
 }

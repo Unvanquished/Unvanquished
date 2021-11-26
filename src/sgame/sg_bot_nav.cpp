@@ -215,12 +215,6 @@ bool BotPathIsWalkable( const gentity_t *self, botTarget_t target )
 	return trace.frac >= 1.0f;
 }
 
-// TODO: remove
-void BotFindRandomPointOnMesh( const gentity_t *self, vec3_t point )
-{
-	BotFindRandomPoint( self->s.number, point );
-}
-
 /*
 ========================
 Local Bot Navigation
