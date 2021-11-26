@@ -1095,16 +1095,16 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	ASSERT( target.targetsValidEntity() );
 
 	float range, secondaryRange;
-	vec3_t forward, right, up;
-	vec3_t muzzle;
-	vec3_t maxs, mins;
-	vec3_t targetPos;
+	glm::vec3 forward, right, up;
+	glm::vec3 muzzle;
+	glm::vec3 maxs, mins;
+	glm::vec3 targetPos;
 	trace_t trace;
 	float width = 0, height = 0;
 
 	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], &up[0] );
-	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
-	target.getPos( targetPos );
+	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
+	targetPos = target.getPos();
 	switch ( self->client->ps.weapon )
 	{
 		case WP_ABUILD:
@@ -1167,22 +1167,21 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			break;
 		case WP_FLAMER:
 			{
-				vec3_t dir;
-				vec3_t rdir;
-				vec3_t nvel;
-				vec3_t npos;
-				vec3_t proj;
+				glm::vec3 nvel;
+				glm::vec3 npos;
+				glm::vec3 proj;
 				trajectory_t t;
 			
 				// Correct muzzle so that the missile does not start in the ceiling
-				VectorMA( muzzle, -7.0f, up, muzzle );
+				muzzle += -7.0f * up;
 
 				// Correct muzzle so that the missile fires from the player's hand
-				VectorMA( muzzle, 4.5f, right, muzzle );
+				muzzle += 4.5f * right;
 
 				// flamer projectiles add the player's velocity scaled by FLAMER_LAG to the fire direction with length FLAMER_SPEED
+				glm::vec3 dir = targetPos - muzzle;
 				VectorSubtract( targetPos, muzzle, dir );
-				VectorNormalize( dir );
+				dir = glm::normalize( dir );
 				VectorScale( self->client->ps.velocity, FLAMER_LAG, nvel );
 				VectorMA( nvel, FLAMER_SPEED, dir, t.trDelta );
 				SnapVector( t.trDelta );
@@ -1191,16 +1190,15 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				t.trTime = level.time - 50;
 			
 				// find projectile's final position
-				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, npos );
+				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, &npos[0] );
 
 				// find distance traveled by projectile along fire line
-				ProjectPointOntoVector( npos, muzzle, targetPos, proj );
-				range = Distance( muzzle, proj );
+				ProjectPointOntoVector( &npos[0], &muzzle[0], &targetPos[0], &proj[0] );
+				range = glm::distance( muzzle, proj );
 
 				// make sure the sign of the range is correct
-				VectorSubtract( npos, muzzle, rdir );
-				VectorNormalize( rdir );
-				if ( DotProduct( rdir, dir ) < 0 )
+				glm::vec3 rdir = glm::normalize( npos - muzzle );
+				if ( glm::dot( rdir, dir ) < 0 )
 				{
 					range = -range;
 				}
@@ -1247,7 +1245,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 
 	return !G_OnSameTeam( self, &g_entities[trace.entityNum] )
 		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
-		&& Distance( muzzle, trace.endpos ) <= std::max( range, secondaryRange );
+		&& glm::distance( muzzle, VEC2GLM( trace.endpos ) ) <= std::max( range, secondaryRange );
 }
 
 bool BotEntityIsValidTarget( const gentity_t *ent )
