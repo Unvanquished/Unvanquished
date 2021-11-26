@@ -617,8 +617,9 @@ AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t* )
 AINodeStatus_t BotActionTeleport( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *action = ( AIActionNode_t * ) node;
-	vec3_t pos = {AIUnBoxFloat(action->params[0]),AIUnBoxFloat(action->params[1]),AIUnBoxFloat(action->params[2])};
-	VectorCopy( pos,self->client->ps.origin );
+	self->client->ps.origin[0] = AIUnBoxFloat( action->params[0] );
+	self->client->ps.origin[1] = AIUnBoxFloat( action->params[1] );
+	self->client->ps.origin[2] = AIUnBoxFloat( action->params[2] );
 	return STATUS_SUCCESS;
 }
 
@@ -678,7 +679,7 @@ AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 	{
 		glm::vec3 pos = mind->goal.getPos();
 		BotSlowAim( self, pos, 0.5 );
-		BotAimAtLocation( self, &pos[0] );
+		BotAimAtLocation( self, pos );
 	}
 
 	return STATUS_SUCCESS;
@@ -961,7 +962,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 
-		if ( !BotFindRandomPointInRadius( self->s.number, ent.ent->s.origin, point, radius ) )
+		if ( !BotFindRandomPointInRadius( self->s.number, VEC2GLM( ent.ent->s.origin ), point, radius ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1296,7 +1297,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 	//aim at the buildable
 	glm::vec3 targetPos = mind->goal.getPos();
 	BotSlowAim( self, targetPos, 0.5 );
-	BotAimAtLocation( self, &targetPos[0] );
+	BotAimAtLocation( self, targetPos );
 	// we automatically heal a building if close enough and aiming at it
 	return STATUS_RUNNING;
 }
