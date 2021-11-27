@@ -142,6 +142,6 @@ void G_BotShutdownNav();
 void G_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
 bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
 void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
-bool G_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
+bool G_BotNavTrace( int botClientNum, botTrace_t *botTrace, const glm::vec3& start, const glm::vec3& end );
 
 #endif

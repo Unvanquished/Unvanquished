@@ -675,7 +675,7 @@ AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 	else
 	{
 		glm::vec3 pos = mind->goal.getPos();
-		BotSlowAim( self, &pos[0], 0.5 );
+		BotSlowAim( self, pos, 0.5 );
 		BotAimAtLocation( self, &pos[0] );
 	}
 
@@ -1298,7 +1298,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 
 	//aim at the buildable
 	glm::vec3 targetPos = mind->goal.getPos();
-	BotSlowAim( self, &targetPos[0], 0.5 );
+	BotSlowAim( self, targetPos, 0.5 );
 	BotAimAtLocation( self, &targetPos[0] );
 	// we automatically heal a building if close enough and aiming at it
 	return STATUS_RUNNING;

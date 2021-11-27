@@ -1101,7 +1101,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	trace_t trace;
 	float width = 0, height = 0;
 
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
+	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], &up[0] );
 	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
 	target.getPos( targetPos );
 	switch ( self->client->ps.weapon )
@@ -1297,7 +1297,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	vec3_t  muzzle, targetPos;
 	vec3_t  forward, right, up;
 
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
+	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], &up[0] );
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	target.getPos( targetPos );
 
@@ -1397,11 +1397,6 @@ void BotAimAtEnemy( gentity_t *self )
 {
 	ASSERT( self->botMind->goal.targetsValidEntity() );
 
-	vec3_t desired;
-	vec3_t current;
-	vec3_t viewOrigin;
-	vec3_t newAim;
-	vec3_t angles;
 	int i;
 	float frac;
 	const gentity_t *enemy = self->botMind->goal.getTargetedEntity();
@@ -1413,16 +1408,18 @@ void BotAimAtEnemy( gentity_t *self )
 		self->botMind->futureAimTime = level.time + predictTime;
 	}
 
-	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
-	VectorSubtract( self->botMind->futureAim, viewOrigin, desired );
-	VectorNormalize( desired );
-	AngleVectors( self->client->ps.viewangles, current, nullptr, nullptr );
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
+	glm::vec3 desired = VEC2GLM( self->botMind->futureAim ) - viewOrigin;
+	desired = glm::normalize( desired );
+	glm::vec3 current;
+	AngleVectors( self->client->ps.viewangles, &current[0], nullptr, nullptr );
 
 	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
-	VectorLerp( current, desired, frac, newAim );
+	glm::vec3 newAim = glm::mix( current, desired, frac );
 
 	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
-	vectoangles( newAim, angles );
+	vec3_t angles;
+	vectoangles( &newAim[0], angles );
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -1460,9 +1457,8 @@ void BotAimAtLocation( gentity_t *self, vec3_t target )
 	rAngles->angles[2] = aimAngles[2];
 }
 
-void BotSlowAim( gentity_t *self, vec3_t target_, float slowAmount )
+void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
 {
-	glm::vec3 target = VEC2GLM( target_ );
 	if ( !( self && self->client ) )
 	{
 		return;
@@ -1491,7 +1487,6 @@ void BotSlowAim( gentity_t *self, vec3_t target_, float slowAmount )
 
 	//now find a point to return, this point will be aimed at
 	target = viewBase + length * skilledVec;
-	VectorCopy( target, target_ );
 }
 
 float BotAimAngle( gentity_t *self, vec3_t pos )
