@@ -611,7 +611,9 @@ void BotClampPos( gentity_t *self )
 	trace_t trace;
 	glm::vec3 mins, maxs;
 
-	VectorSet( origin, self->botMind->nav().pos[ 0 ], self->botMind->nav().pos[ 1 ], height );
+	origin[0] = self->botMind->nav().pos[0];
+	origin[1] = self->botMind->nav().pos[1];
+	origin[2] = height;
 	class_t pclass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
 	BG_BoundingBox( pclass, &mins, &maxs, nullptr, nullptr, nullptr );
 	trap_Trace( &trace, self_origin, mins, maxs, origin, self->client->ps.clientNum,
