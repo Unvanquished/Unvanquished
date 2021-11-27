@@ -165,11 +165,9 @@ float DistanceToGoal2DSquared( const gentity_t *self )
 
 float DistanceToGoal( const gentity_t *self )
 {
-	vec3_t targetPos;
-	vec3_t selfPos;
-	self->botMind->goal.getPos( targetPos );
-	VectorCopy( self->s.origin, selfPos );
-	return Distance( selfPos, targetPos );
+	glm::vec3 targetPos = self->botMind->goal.getPos();
+	glm::vec3 selfPos = VEC2GLM( self->s.origin );
+	return glm::distance( selfPos, targetPos );
 }
 
 float DistanceToGoalSquared( const gentity_t *self )
