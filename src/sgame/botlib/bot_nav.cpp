@@ -363,8 +363,10 @@ bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t p
 	return true;
 }
 
-bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
+bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start_, const glm::vec3& end_ )
 {
+	vec3_t start = { start_[0], start_[1], start_[2] };
+	vec3_t end = { end_[0], end_[1], end_[2] };
 	dtPolyRef startRef;
 	dtStatus status;
 	rVec extents( 75, 96, 75 );
