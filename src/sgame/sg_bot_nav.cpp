@@ -530,7 +530,7 @@ static void BotDirectionToUsercmd( gentity_t *self, const glm::vec3 &dir, usercm
 	float rightmove;
 	signed char speed = BotGetMaxMoveSpeed( self );
 
-	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], nullptr );
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, nullptr );
 	forward[2] = 0;
 	forward = glm::normalize( forward );
 	right[2] = 0;
