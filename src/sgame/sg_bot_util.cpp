@@ -2445,3 +2445,38 @@ glm::vec3 botTarget_t::getPos( void ) const
 	Log::Warn("Bot: couldn't get position of target");
 	return glm::vec3();
 }
+
+//Those are not really BG, but hopefully someday they will be.
+
+void BG_BoundingBox( class_t pClass,
+                     glm::vec3* mins,  glm::vec3* maxs,
+                     glm::vec3* cmaxs, glm::vec3* dmins, glm::vec3* dmaxs )
+{
+	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
+	ASSERT( classModelConfig != nullptr );
+
+	if ( mins != nullptr )
+	{
+		*mins = VEC2GLM( classModelConfig->mins );
+	}
+
+	if ( maxs != nullptr )
+	{
+		*maxs = VEC2GLM( classModelConfig->maxs );
+	}
+
+	if ( cmaxs != nullptr )
+	{
+		*cmaxs = VEC2GLM( classModelConfig->crouchMaxs );
+	}
+
+	if ( dmins != nullptr )
+	{
+		*dmins = VEC2GLM( classModelConfig->deadMins );
+	}
+
+	if ( dmaxs != nullptr )
+	{
+		*dmaxs = VEC2GLM( classModelConfig->deadMaxs );
+	}
+}

@@ -40,6 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "shared/CommonProxies.h"
 #include "shared/server/sg_api.h"
 
+#include <glm/vec3.hpp>
+
 // Symbols required by the shared VMMain code
 
 int VM::VM_API_VERSION = GAME_API_VERSION;
@@ -173,6 +175,17 @@ void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
                  const vec3_t end, int passEntityNum, int contentmask, int skipmask )
 {
 	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, skipmask, traceType_t::TT_AABB);
+}
+
+void trap_Trace( trace_t *results, const glm::vec3& start, const glm::vec3& mins, const glm::vec3& maxs,
+                 const glm::vec3& end, int passEntityNum, int contentmask , int skipmask)
+{
+	trap_Trace( results, &start[0], &mins[0], &maxs[0], &end[0], passEntityNum, contentmask, skipmask );
+}
+
+int trap_PointContents(const vec3_t point, int passEntityNum)
+{
+	return G_CM_PointContents( point, passEntityNum );
 }
 
 void trap_SetBrushModel(gentity_t *ent, const char *name)
