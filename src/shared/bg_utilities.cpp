@@ -165,3 +165,51 @@ void RemoveFlag(int &flags, int flag) {
 void ToggleFlag(int &flags, int flag) {
 	flags ^= flag;
 }
+
+// imported from daemon.
+// Given 3 degree angles, computes yaw, pitch and roll, that is,
+// computes normalized vectors describing a 3D space.
+// NOTES:
+// * I am not sure the vectors are actually normalized.
+// * it would likely be more efficient to work with a quaternion here.
+// * working with a quaternion would also allow to return a value
+void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right, glm::vec3 *up )
+{
+	float        angle;
+	static float sr, sp, sy, cr, cp, cy;
+
+	// static to help MS compiler fp bugs
+
+	angle = angles[ YAW ] * ( M_PI * 2 / 360 );
+	sy = sin( angle );
+	cy = cos( angle );
+
+	angle = angles[ PITCH ] * ( M_PI * 2 / 360 );
+	sp = sin( angle );
+	cp = cos( angle );
+
+	angle = angles[ ROLL ] * ( M_PI * 2 / 360 );
+	sr = sin( angle );
+	cr = cos( angle );
+
+	if ( forward )
+	{
+		(*forward)[0] = cp * cy;
+		(*forward)[1] = cp * sy;
+		(*forward)[2] = -sp;
+	}
+
+	if ( right )
+	{
+		(*right)[0] = ( -1 * sr * sp * cy + -1 * cr * -sy );
+		(*right)[1] = ( -1 * sr * sp * sy + -1 * cr * cy );
+		(*right)[2] = -1 * sr * cp;
+	}
+
+	if ( up )
+	{
+		(*up)[0] = ( cr * sp * cy + -sr * -sy );
+		(*up)[1] = ( cr * sp * sy + -sr * cy );
+		(*up)[2] = cr * cp;
+	}
+}

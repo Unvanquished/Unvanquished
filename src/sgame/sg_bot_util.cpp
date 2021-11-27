@@ -1119,7 +1119,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	trace_t trace;
 	float width = 0, height = 0;
 
-	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], &up[0] );
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
 	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
 	targetPos = target.getPos();
 	switch ( self->client->ps.weapon )
@@ -1311,7 +1311,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	glm::vec3  muzzle, targetPos;
 	glm::vec3  forward, right, up;
 
-	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], &up[0] );
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
 	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
 	targetPos = target.getPos();
 
@@ -1424,7 +1424,7 @@ void BotAimAtEnemy( gentity_t *self )
 	glm::vec3 desired = VEC2GLM( self->botMind->futureAim ) - viewOrigin;
 	desired = glm::normalize( desired );
 	glm::vec3 current;
-	AngleVectors( self->client->ps.viewangles, &current[0], nullptr, nullptr );
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &current, nullptr, nullptr );
 
 	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
 	glm::vec3 newAim = glm::mix( current, desired, frac );
@@ -1489,7 +1489,7 @@ void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
 
 	//take the current aim Vector
 	glm::vec3 forward;
-	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 
 	float cosAngle = glm::dot( forward, aimVec );
 	cosAngle = ( cosAngle + 1.0f ) / 2.0f;
@@ -1733,7 +1733,7 @@ float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 	float check;
 	float angle1, angle2, angle;
 
-	AngleVectors( self->s.origin, &forward[0], &right[0], &up[0] );
+	AngleVectors( VEC2GLM( self->s.origin ), &forward, &right, &up );
 	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
 	startPos = muzzle;
 
@@ -1799,7 +1799,7 @@ void BotFireWeaponAI( gentity_t *self )
 	trace_t trace;
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
-	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], &up[0] );
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
 	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal );
 
