@@ -104,7 +104,7 @@ Bot Navigation Querys
 ========================
 */
 
-static float RadiusFromBounds2D( const vec3_t mins, const vec3_t maxs )
+static float RadiusFromBounds2D( const glm::vec3& mins, const glm::vec3& maxs )
 {
 	float rad1s = Square( mins[0] ) + Square( mins[1] );
 	float rad2s = Square( maxs[0] ) + Square( maxs[1] );
@@ -114,27 +114,26 @@ static float RadiusFromBounds2D( const vec3_t mins, const vec3_t maxs )
 float BotGetGoalRadius( const gentity_t *self )
 {
 	botTarget_t &t = self->botMind->goal;
+	glm::vec3 self_mins = VEC2GLM( self->r.mins );
+	glm::vec3 self_maxs = VEC2GLM( self->r.maxs );
 	if ( t.targetsCoordinates() )
 	{
 		// we check the coord to be (almost) in our bounding box
-		return RadiusFromBounds2D( self->r.mins, self->r.maxs ) + BOT_OBSTACLE_AVOID_RANGE;
+		return RadiusFromBounds2D( self_mins, self_maxs ) + BOT_OBSTACLE_AVOID_RANGE;
 	}
-	else
+
+	// we don't check if the entity is valid: an outdated result is
+	// better than failing here
+	const gentity_t *target = t.getTargetedEntity();
+	if ( target->s.modelindex == BA_H_MEDISTAT || target->s.modelindex == BA_A_BOOSTER )
 	{
-		// we don't check if the entity is valid: an outdated result is
-		// better than failing here
-		const gentity_t *target = t.getTargetedEntity();
-		if ( target->s.modelindex == BA_H_MEDISTAT || target->s.modelindex == BA_A_BOOSTER )
-		{
-			// we want to be quite close to medistat.
-			// TODO(freem): is this really what we want for booster?
-			return self->r.maxs[0] + target->r.maxs[0];
-		}
-		else
-		{
-			return RadiusFromBounds2D( target->r.mins, target->r.maxs ) + RadiusFromBounds2D( self->r.mins, self->r.maxs ) + BOT_OBSTACLE_AVOID_RANGE;
-		}
+		// we want to be quite close to medistat.
+		// TODO(freem): is this really what we want for booster?
+		return self->r.maxs[0] + target->r.maxs[0];
 	}
+
+	return RadiusFromBounds2D( VEC2GLM( target->r.mins ), VEC2GLM( target->r.maxs ) )
+	       + RadiusFromBounds2D( self_mins, self_maxs ) + BOT_OBSTACLE_AVOID_RANGE;
 }
 
 bool GoalInRange( const gentity_t *self, float r )
