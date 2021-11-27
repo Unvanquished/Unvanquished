@@ -81,6 +81,7 @@ struct botRouteTarget_t
 	botRouteTargetType_t type;
 	float pos[ 3 ];
 	float polyExtents[ 3 ];
+	void setPos( glm::vec3 const& p ){ pos[0] = p[0]; pos[1] = p[1]; pos[2] = p[2]; }
 };
 
 //route status flags

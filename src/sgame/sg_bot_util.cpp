@@ -1035,7 +1035,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 
 	glm::vec3 mins, maxs;
 
-	VectorCopy( target.getPos(), routeTarget->pos );
+	routeTarget->setPos( target.getPos() );
 	BotTargetGetBoundingBox( target, mins, maxs, routeTarget );
 
 	routeTarget->polyExtents[ 0 ] = std::max( Q_fabs( mins[ 0 ] ), maxs[ 0 ] );
@@ -1065,7 +1065,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		glm::vec3 end = targetPos + 600.f * invNormal;
 		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->s.number,
 		            CONTENTS_SOLID, MASK_ENTITY );
-		VectorCopy( trace.endpos, routeTarget->pos );
+		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
 	
 
