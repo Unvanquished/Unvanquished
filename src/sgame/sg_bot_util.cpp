@@ -1120,7 +1120,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	float width = 0, height = 0;
 
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
-	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
+	muzzle = G_CalcMuzzlePoint( self, forward );
 	targetPos = target.getPos();
 	switch ( self->client->ps.weapon )
 	{
@@ -1311,7 +1311,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	glm::vec3  forward, right, up;
 
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
-	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
+	muzzle = G_CalcMuzzlePoint( self, forward );
 	targetPos = target.getPos();
 
 	if ( !trap_InPVS( &muzzle[0], &targetPos[0] ) )
@@ -1462,7 +1462,7 @@ void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 	}
 
 	//save bandwidth
-	//Meh. I doubt it saves much. Casting to short ints might have, though.
+	//Meh. I doubt it saves much. Casting to short ints might have, though. (copypaste)
 	aimAngles = glm::floor( aimAngles + 0.5f );
 	rAngles->angles[0] = aimAngles[0];
 	rAngles->angles[1] = aimAngles[1];
@@ -1734,7 +1734,7 @@ float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 	float angle1, angle2, angle;
 
 	AngleVectors( VEC2GLM( self->s.origin ), &forward, &right, &up );
-	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
+	muzzle = G_CalcMuzzlePoint( self, forward );
 	startPos = muzzle;
 
 	//project everything onto a 2D plane with initial position at (0,0)
@@ -1800,7 +1800,7 @@ void BotFireWeaponAI( gentity_t *self )
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
-	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
+	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal );
 
 	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], ENTITYNUM_NONE, MASK_SHOT, 0 );
