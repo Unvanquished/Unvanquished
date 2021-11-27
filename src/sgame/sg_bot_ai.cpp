@@ -660,6 +660,7 @@ AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *nod
 
 AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 {
+	botMemory_t const* mind = self->botMind;
 	if ( !self->botMind->goal.isValid() )
 	{
 		return STATUS_FAILURE;
@@ -673,10 +674,9 @@ AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 	}
 	else
 	{
-		vec3_t pos;
-		self->botMind->goal.getPos( pos );
-		BotSlowAim( self, pos, 0.5 );
-		BotAimAtLocation( self, pos );
+		glm::vec3 pos = mind->goal.getPos();
+		BotSlowAim( self, &pos[0], 0.5 );
+		BotAimAtLocation( self, &pos[0] );
 	}
 
 	return STATUS_SUCCESS;
@@ -1259,8 +1259,8 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t forward;
-	vec3_t targetPos;
 	vec3_t selfPos;
+	botMemory_t const* mind = self->botMind;
 
 	if ( node != self->botMind->currentNode )
 	{
@@ -1287,21 +1287,20 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-	self->botMind->goal.getPos( targetPos );
 	VectorMA( self->s.origin, self->r.maxs[1], forward, selfPos );
 
 	//move to the damaged building until we are in range
 	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_SHOT ) || DistanceToGoalSquared( self ) > Square( 100 ) )
 	{
 		BotMoveToGoal( self );
+		return STATUS_RUNNING;
 	}
-	else
-	{
-		//aim at the buildable
-		BotSlowAim( self, targetPos, 0.5 );
-		BotAimAtLocation( self, targetPos );
-		// we automatically heal a building if close enough and aiming at it
-	}
+
+	//aim at the buildable
+	glm::vec3 targetPos = mind->goal.getPos();
+	BotSlowAim( self, &targetPos[0], 0.5 );
+	BotAimAtLocation( self, &targetPos[0] );
+	// we automatically heal a building if close enough and aiming at it
 	return STATUS_RUNNING;
 }
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
