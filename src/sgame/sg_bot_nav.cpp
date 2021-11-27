@@ -161,12 +161,7 @@ bool GoalInRange( const gentity_t *self, float r )
 
 float DistanceToGoal2DSquared( const gentity_t *self )
 {
-	vec3_t vec;
-	vec3_t goalPos;
-
-	self->botMind->goal.getPos( goalPos );
-
-	VectorSubtract( goalPos, self->s.origin, vec );
+	glm::vec3 vec = self->botMind->goal.getPos() - VEC2GLM( self->s.origin );
 
 	return Square( vec[ 0 ] ) + Square( vec[ 1 ] );
 }
