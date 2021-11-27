@@ -1208,8 +1208,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, &npos[0] );
 
 				// find distance traveled by projectile along fire line
-				glm::vec3 proj;
-				ProjectPointOntoVector( &npos[0], &muzzle[0], &targetPos[0], &proj[0] );
+				glm::vec3 proj = ProjectPointOntoVector( npos, muzzle, targetPos );
 				range = glm::distance( muzzle, proj );
 
 				// make sure the sign of the range is correct
@@ -1465,7 +1464,8 @@ void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 	}
 
 	//save bandwidth
-	SnapVector( aimAngles );
+	//Meh. I doubt it saves much. Casting to short ints might have, though.
+	aimAngles = glm::floor( aimAngles + 0.5f );
 	rAngles->angles[0] = aimAngles[0];
 	rAngles->angles[1] = aimAngles[1];
 	rAngles->angles[2] = aimAngles[2];
@@ -2499,6 +2499,17 @@ void BG_BoundingBox( buildable_t buildable, glm::vec3* mins, glm::vec3* maxs )
 	{
 		*maxs = VEC2GLM( buildableModelConfig->maxs );
 	}
+}
+
+// Reimplementation of daemon's function of same name.
+// This lacks doc because I am unsure about what it does exactly, and don't
+// want to think about it for now.
+// TODO: replace with code from GLM: pretty sure there's an equivalent.
+glm::vec3 ProjectPointOntoVector( const glm::vec3 &point, const glm::vec3 &vStart, const glm::vec3 &vEnd )
+{
+	glm::vec3 pVec = point - vStart;
+	glm::vec3 vec = glm::normalize( vEnd - vStart );
+	return vStart + glm::dot( pVec, vec ) * vec;
 }
 
 // imported from daemon.
