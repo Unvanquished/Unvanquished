@@ -51,8 +51,10 @@ void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
 // aiming
 void  BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
 void  BotAimAtEnemy( gentity_t *self );
-void  BotSlowAim( gentity_t *self, vec3_t target, float slow );
+void  BotSlowAim( gentity_t *self, glm::vec3& target, float slow );
 void  BotAimAtLocation( gentity_t *self, vec3_t target );
+void  BotAimAtLocation( gentity_t *self, glm::vec3 target );
+float BotAimAngle( gentity_t *self, glm::vec3 pos );
 float BotAimAngle( gentity_t *self, vec3_t pos );
 
 // targets
@@ -94,6 +96,7 @@ int        BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrad
 // alien bots
 #define AS_OVER_RT3         ((ALIENSENSE_RANGE*0.5f)/M_ROOT3)
 float CalcAimPitch( gentity_t *self, vec3_t pos, vec_t launchSpeed );
+float CalcAimPitch( gentity_t *self, const glm::vec3& pos, float launchSpeed );
 float CalcPounceAimPitch( gentity_t *self, vec3_t pos );
 float CalcBarbAimPitch( gentity_t *self, vec3_t pos );
 bool BotCanEvolveToClass( const gentity_t *self, class_t newClass );
