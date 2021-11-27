@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "shared/bg_local.h" // MIN_WALK_NORMAL
 #include "Entities.h"
 
+#include <glm/geometric.hpp>
+
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 static const int MIN_SKILL = 1;
 static const int MAX_SKILL = 9;
@@ -1458,12 +1460,9 @@ void BotAimAtLocation( gentity_t *self, vec3_t target )
 	rAngles->angles[2] = aimAngles[2];
 }
 
-void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
+void BotSlowAim( gentity_t *self, vec3_t target_, float slowAmount )
 {
-	vec3_t viewBase;
-	vec3_t aimVec, forward;
-	vec3_t skilledVec;
-
+	glm::vec3 target = VEC2GLM( target_ );
 	if ( !( self && self->client ) )
 	{
 		return;
@@ -1473,23 +1472,26 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	float slow = Math::Clamp( slowAmount, 0.1f, 1.0f );
 
 	//get the point that the bot is aiming from
-	BG_GetClientViewOrigin( &self->client->ps, viewBase );
+	glm::vec3 viewBase = BG_GetClientViewOrigin( &self->client->ps );
 
 	//get the Vector from the bot to the enemy (ideal aim Vector)
-	VectorSubtract( target, viewBase, aimVec );
-	float length = VectorNormalize( aimVec );
+	glm::vec3 aimVec = target - viewBase;
+	float length = glm::length( aimVec );
+	aimVec = glm::normalize( aimVec );
 
 	//take the current aim Vector
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
+	glm::vec3 forward;
+	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
 
-	float cosAngle = DotProduct( forward, aimVec );
+	float cosAngle = glm::dot( forward, aimVec );
 	cosAngle = ( cosAngle + 1.0f ) / 2.0f;
 	cosAngle = 1.0f - cosAngle;
 	cosAngle = Math::Clamp( cosAngle, 0.1f, 0.5f );
-	VectorLerp( forward, aimVec, slow * ( cosAngle ), skilledVec );
+	glm::vec3 skilledVec = glm::mix( forward, aimVec, slow * cosAngle );
 
 	//now find a point to return, this point will be aimed at
-	VectorMA( viewBase, length, skilledVec, target );
+	target = viewBase + length * skilledVec;
+	VectorCopy( target, target_ );
 }
 
 float BotAimAngle( gentity_t *self, vec3_t pos )
@@ -2451,6 +2453,23 @@ glm::vec3 botTarget_t::getPos( void ) const
 }
 
 //Those are not really BG, but hopefully someday they will be.
+glm::vec3 BG_GetClientNormal( const playerState_t *ps )
+{
+	if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	{
+		if ( ps->eFlags & EF_WALLCLIMBCEILING )
+		{
+			return glm::vec3( 0, 0, -1 );
+		}
+		return VEC2GLM( ps->grapplePoint );
+	}
+	return glm::vec3( 0, 0, 1 );
+}
+
+glm::vec3 BG_GetClientViewOrigin( const playerState_t *ps )
+{
+	return VEC2GLM( ps->origin ) + static_cast<float>( ps->viewheight ) * BG_GetClientNormal( ps );
+}
 
 void BG_BoundingBox( class_t pClass,
                      glm::vec3* mins,  glm::vec3* maxs,
