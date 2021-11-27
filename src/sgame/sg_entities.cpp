@@ -185,7 +185,10 @@ void G_FreeEntity( gentity_t *entity )
 	}
 
 	unsigned generation = entity->generation;
-	memset( entity, 0, sizeof( *entity ) );
+
+	entity->~gentity_t();
+	new(entity) gentity_t{};
+
 	entity->generation = generation + 1;
 	entity->entity = level.emptyEntity;
 	entity->classname = "freent";

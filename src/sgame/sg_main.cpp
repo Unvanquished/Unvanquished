@@ -493,7 +493,10 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	G_admin_readconfig( nullptr );
 
 	// initialize all entities for this game
-	memset( g_entities, 0, MAX_GENTITIES * sizeof( g_entities[ 0 ] ) );
+	for ( int i=0; i < MAX_GENTITIES; i++ )
+	{
+		g_entities[i] = {};
+	}
 	level.gentities = g_entities;
 
 	// entity used as drop-in for unmigrated entities
