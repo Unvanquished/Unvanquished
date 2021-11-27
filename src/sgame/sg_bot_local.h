@@ -51,6 +51,7 @@ class botTarget_t
 public:
 	botTarget_t& operator=(const gentity_t *ent);
 	botTarget_t& operator=(const vec3_t pos);
+	botTarget_t& operator=( glm::vec3 pos );
 	void clear();
 	entityType_t getTargetType() const;
 	bool isValid() const;
@@ -64,9 +65,10 @@ public:
 	// note if you don't check with "isValid" first, you may
 	// have garbage as a result
 	void getPos(vec3_t out) const;
+	glm::vec3 getPos( void ) const;
 private:
 	GentityConstRef ent;
-	vec3_t coord;
+	glm::vec3 coord;
 	enum class targetType { EMPTY, COORDS, ENTITY } type;
 };
 
