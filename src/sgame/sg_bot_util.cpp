@@ -1909,7 +1909,7 @@ static bool BotChangeClass( gentity_t *self, class_t newClass, glm::vec3 newOrig
 	{
 		return false;
 	}
-	VectorCopy( &newOrigin[0], self->client->ps.origin );
+	VectorCopy( newOrigin, self->client->ps.origin );
 	self->client->ps.stats[ STAT_CLASS ] = newClass;
 	self->client->pers.classSelection = newClass;
 	BotSetNavmesh( self, newClass );
@@ -1962,8 +1962,8 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 		}
 
 		//check there are no humans nearby
-		VectorAdd( ent->client->ps.origin, range, maxs );
-		VectorSubtract( ent->client->ps.origin, range, mins );
+		maxs = VEC2GLM( ent->client->ps.origin ) + range;
+		mins = VEC2GLM( ent->client->ps.origin ) - range;
 
 		num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
 		for ( i = 0; i < num; i++ )
@@ -2330,7 +2330,7 @@ void BotSearchForEnemy( gentity_t *self )
 void BotResetStuckTime( gentity_t *self )
 {
 	self->botMind->stuckTime = level.time;
-	VectorCopy( self->client->ps.origin, self->botMind->stuckPosition );
+	self->botMind->stuckPosition = VEC2GLM( self->client->ps.origin );
 }
 
 void BotCalculateStuckTime( gentity_t *self )
