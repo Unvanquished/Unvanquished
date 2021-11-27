@@ -1181,9 +1181,6 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			break;
 		case WP_FLAMER:
 			{
-				glm::vec3 nvel;
-				glm::vec3 npos;
-				glm::vec3 proj;
 				trajectory_t t;
 			
 				// Correct muzzle so that the missile does not start in the ceiling
@@ -1194,9 +1191,8 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 
 				// flamer projectiles add the player's velocity scaled by FLAMER_LAG to the fire direction with length FLAMER_SPEED
 				glm::vec3 dir = targetPos - muzzle;
-				VectorSubtract( targetPos, muzzle, dir );
 				dir = glm::normalize( dir );
-				VectorScale( self->client->ps.velocity, FLAMER_LAG, nvel );
+				glm::vec3 nvel = VEC2GLM( self->client->ps.velocity ) * FLAMER_LAG;
 				VectorMA( nvel, FLAMER_SPEED, dir, t.trDelta );
 				SnapVector( t.trDelta );
 				VectorCopy( muzzle, t.trBase );
@@ -1204,9 +1200,11 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				t.trTime = level.time - 50;
 			
 				// find projectile's final position
+				glm::vec3 npos;
 				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, &npos[0] );
 
 				// find distance traveled by projectile along fire line
+				glm::vec3 proj;
 				ProjectPointOntoVector( &npos[0], &muzzle[0], &targetPos[0], &proj[0] );
 				range = glm::distance( muzzle, proj );
 
@@ -1252,8 +1250,8 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			range = 4098 * 4; //large range for guns because guns have large ranges :)
 			secondaryRange = 0; //no secondary attack
 	}
-	VectorSet( maxs, width, width, width );
-	VectorSet( mins, -width, -width, -height );
+	maxs = {  width,  width,  width };
+	mins = { -width, -width, -height };
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
 
