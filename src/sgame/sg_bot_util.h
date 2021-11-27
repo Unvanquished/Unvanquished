@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "botlib/bot_types.h"
 #include "sg_bot_local.h"
 
+#include <glm/vec3.hpp>
 
 bool PlayersBehindBotInSpawnQueue( gentity_t *self );
 void     BotSetSkillLevel( gentity_t *self, int skill );
@@ -157,5 +158,8 @@ bool  BotPathIsWalkable( const gentity_t *self, botTarget_t target );
 
 //consider bot to be stuck if it does not move farther than this in some period of time
 constexpr float BOT_STUCK_RADIUS = 150;
+
+//Those are not really BG, but hopefully someday they will be.
+void BG_BoundingBox( class_t cl, glm::vec3* mins, glm::vec3* maxs, glm::vec3* cmaxs, glm::vec3* dmins, glm::vec3* dmaxs );
 
 #endif

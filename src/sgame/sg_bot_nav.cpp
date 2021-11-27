@@ -614,12 +614,15 @@ Global Bot Navigation
 void BotClampPos( gentity_t *self )
 {
 	float height = self->client->ps.origin[ 2 ];
-	vec3_t origin;
+	glm::vec3 origin;
+	glm::vec3 self_origin = VEC2GLM( self->client->ps.origin );
 	trace_t trace;
-	vec3_t mins, maxs;
+	glm::vec3 mins, maxs;
+
 	VectorSet( origin, self->botMind->nav().pos[ 0 ], self->botMind->nav().pos[ 1 ], height );
-	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
-	trap_Trace( &trace, self->client->ps.origin, mins, maxs, origin, self->client->ps.clientNum,
+	class_t pclass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
+	BG_BoundingBox( pclass, &mins, &maxs, nullptr, nullptr, nullptr );
+	trap_Trace( &trace, self_origin, mins, maxs, origin, self->client->ps.clientNum,
 	            MASK_PLAYERSOLID, 0 );
 	G_SetOrigin( self, trace.endpos );
 	VectorCopy( trace.endpos, self->client->ps.origin );
