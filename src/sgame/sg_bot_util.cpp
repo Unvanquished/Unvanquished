@@ -2422,7 +2422,9 @@ void botTarget_t::getPos(vec3_t pos) const
 	}
 	else if ( type == targetType::COORDS )
 	{
-		VectorCopy( coord, pos );
+		pos[0] = coord[0];
+		pos[1] = coord[1];
+		pos[2] = coord[2];
 	}
 	else
 	{
