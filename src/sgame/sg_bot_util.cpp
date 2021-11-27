@@ -993,8 +993,8 @@ static void BotTargetGetBoundingBox( botTarget_t target, glm::vec3 &mins, glm::v
 	if ( target.targetsCoordinates() )
 	{
 		// point target
-		VectorSet( maxs, 96, 96, 96 );
-		VectorSet( mins, -96, -96, -96 );
+		maxs = glm::vec3(  96,  96,  96 );
+		mins = glm::vec3( -96, -96, -96 );
 		routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
 		return;
 	}
