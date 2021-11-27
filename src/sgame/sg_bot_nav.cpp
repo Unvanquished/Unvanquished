@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "shared/bg_local.h"
 
 #include <glm/geometric.hpp>
+#include <glm/gtx/norm.hpp>
 
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;
@@ -172,11 +173,9 @@ float DistanceToGoal( const gentity_t *self )
 
 float DistanceToGoalSquared( const gentity_t *self )
 {
-	vec3_t targetPos;
-	vec3_t selfPos;
-	self->botMind->goal.getPos( targetPos );
-	VectorCopy( self->s.origin, selfPos );
-	return DistanceSquared( selfPos, targetPos );
+	glm::vec3 targetPos = self->botMind->goal.getPos();
+	glm::vec3 selfPos = VEC2GLM( self->s.origin );
+	return glm::distance2( selfPos, targetPos );
 }
 
 bool BotPathIsWalkable( const gentity_t *self, botTarget_t target )
