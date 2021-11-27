@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 static const int MIN_SKILL = 1;
@@ -818,7 +819,7 @@ static float BotAimAngle( gentity_t *self, const glm::vec3 &pos )
 	glm::vec3 viewPos = BG_GetClientViewOrigin( &self->client->ps );
 	glm::vec3 ideal = pos - viewPos;
 
-	return AngleBetweenVectors( &forward[0], &ideal[0] );
+	return glm::degrees( glm::angle( glm::normalize( forward ), glm::normalize( ideal ) ) );
 }
 
 gentity_t* BotFindBestEnemy( gentity_t *self )
