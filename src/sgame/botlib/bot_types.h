@@ -34,6 +34,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #ifndef BOTLIB_TYPE_H_
 #define BOTLIB_TYPE_H_
 
+#include <glm/vec3.hpp>
+
 struct gentity_t;
 struct gclient_t;
 struct variatingTime_t;
@@ -60,6 +62,9 @@ struct botNavCmd_t
 	float    dir[ 3 ];
 	int      directPathToGoal;
 	int      havePath;
+	glm::vec3 glm_dir ( void ) const { return glm::vec3( dir[0] , dir[1] , dir[2] ); };
+	glm::vec3 glm_pos ( void ) const { return glm::vec3( pos[0] , pos[1] , pos[2] ); };
+	glm::vec3 glm_tpos( void ) const { return glm::vec3( tpos[0], tpos[1], tpos[2] ); };
 };
 
 enum class botRouteTargetType_t

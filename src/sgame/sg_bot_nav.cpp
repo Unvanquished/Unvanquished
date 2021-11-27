@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "botlib/bot_api.h"
 #include "shared/bot_nav_shared.h"
 
+#include <glm/geometric.hpp>
+
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;
 
@@ -628,18 +630,17 @@ void BotClampPos( gentity_t *self )
 
 void BotMoveToGoal( gentity_t *self )
 {
-	vec3_t dir;
-	VectorCopy( self->botMind->nav().dir, dir );
-	const auto& ps = self->client->ps;
+	const playerState_t& ps = self->client->ps;
 
+	glm::vec3 dir = self->botMind->nav().glm_dir();
 	if ( dir[ 2 ] < 0 )
 	{
 		dir[ 2 ] = 0;
-		VectorNormalize( dir );
+		dir = glm::normalize( dir );
 	}
 
-	BotAvoidObstacles( self, dir );
-	BotSeek( self, dir );
+	BotAvoidObstacles( self, &dir[0] );
+	BotSeek( self, &dir[0] );
 
 	// dumb bots don't know how to be efficient
 	if( self->botMind->botSkill.level < 5 )
@@ -660,7 +661,6 @@ void BotMoveToGoal( gentity_t *self )
 		return;
 	}
 
-	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
 	weaponMode_t wpm = WPM_NONE;
 	int magnitude = 0;
 	switch ( ps.stats [ STAT_CLASS ] )
@@ -709,11 +709,11 @@ void BotMoveToGoal( gentity_t *self )
 	}
 	if ( wpm != WPM_NONE )
 	{
+		usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
 		if ( magnitude )
 		{
-			vec3_t dest;
-			VectorCopy( self->botMind->nav().tpos, dest );
-			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, dest, magnitude ) / 3 );
+			glm::vec3 target = self->botMind->nav().glm_tpos();
+			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, &target[0], magnitude ) / 3 );
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
 	}
