@@ -2350,7 +2350,7 @@ botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
 	}
 
 	ent = newTarget;
-	VectorClear( coord );
+	coord = glm::vec3();
 	type = targetType::ENTITY;
 
 	if (!targetsValidEntity())
@@ -2362,7 +2362,15 @@ botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
 }
 
 botTarget_t& botTarget_t::operator=(const vec3_t newTarget) {
-	VectorCopy(newTarget, coord);
+	coord = VEC2GLM( newTarget );
+	ent = nullptr;
+	type = targetType::COORDS;
+	return *this;
+}
+
+botTarget_t& botTarget_t::operator=( glm::vec3 newTarget )
+{
+	coord = newTarget;
 	ent = nullptr;
 	type = targetType::COORDS;
 	return *this;
@@ -2370,7 +2378,7 @@ botTarget_t& botTarget_t::operator=(const vec3_t newTarget) {
 
 void botTarget_t::clear() {
 	ent = nullptr;
-	VectorClear(coord);
+	coord = glm::vec3();
 	type = targetType::EMPTY;
 }
 
@@ -2428,4 +2436,18 @@ void botTarget_t::getPos(vec3_t pos) const
 	{
 		Log::Warn("Bot: couldn't get position of target");
 	}
+}
+
+glm::vec3 botTarget_t::getPos() const
+{
+	if ( type == targetType::ENTITY && ent )
+	{
+		return VEC2GLM( ent->s.origin );
+	}
+	if ( type == targetType::COORDS )
+	{
+		return coord;
+	}
+	Log::Warn("Bot: couldn't get position of target");
+	return glm::vec3();
 }
