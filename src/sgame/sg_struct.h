@@ -437,7 +437,6 @@ struct gentity_t
  */
 struct clientSession_t
 {
-	int              spectatorTime; // for determining next-in-line to play
 	spectatorState_t spectatorState;
 	int              spectatorClient; // for chasecam and follow mode
 	team_t           restartTeam; //for !restart keepteams and !restart switchteams

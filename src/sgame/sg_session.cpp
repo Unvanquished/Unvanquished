@@ -54,8 +54,7 @@ static void G_WriteClientSessionData( int clientNum )
 		behavior = "default";
 	}
 
-	s = va( "%i %i %i %i %i %i %s %s",
-		client->sess.spectatorTime,
+	s = va( "%i %i %i %i %i %s %s",
 		client->sess.spectatorState,
 		client->sess.spectatorClient,
 		client->sess.restartTeam,
@@ -90,8 +89,7 @@ void G_ReadSessionData( gclient_t *client )
 	var = va( "session%li", ( long )( client - level.clients ) );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof( s ) );
 
-	sscanf( s, "%i %i %i %i %i %i %63s %16s",
-	        &client->sess.spectatorTime,
+	sscanf( s, "%i %i %i %i %i %63s %16s",
 	        &spectatorState,
 	        &client->sess.spectatorClient,
 	        &restartTeam,
@@ -117,35 +115,10 @@ Called on a first-time connect
 */
 void G_InitSessionData( gclient_t *client, const char *userinfo )
 {
-	clientSession_t *sess;
-	const char      *value;
-
-	sess = &client->sess;
-
-	// initial team determination
-	value = Info_ValueForKey( userinfo, "team" );
-
-	if ( value[ 0 ] == 's' )
-	{
-		// a willing spectator, not a waiting-in-line
-		sess->spectatorState = SPECTATOR_FREE;
-	}
-	else
-	{
-		if ( g_maxGameClients.Get() > 0 &&
-		     level.numAliveClients >= g_maxGameClients.Get() )
-		{
-			sess->spectatorState = SPECTATOR_FREE;
-		}
-		else
-		{
-			sess->spectatorState = SPECTATOR_NOT;
-		}
-	}
+	clientSession_t *sess = &client->sess;
 
 	sess->restartTeam = TEAM_NONE;
 	sess->spectatorState = SPECTATOR_FREE;
-	sess->spectatorTime = level.time;
 	sess->spectatorClient = -1;
 	sess->botSkill = 0;
 	sess->botTree[ 0 ] = '\0';
