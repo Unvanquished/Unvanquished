@@ -2941,10 +2941,6 @@ void CG_Player( centity_t *cent )
 	{
 		altShaderIndex = CG_ALTSHADER_DEAD;
 	}
-	else if ( !(es->eFlags & EF_B_POWERED) )
-	{
-		altShaderIndex = CG_ALTSHADER_UNPOWERED;
-	}
 	else
 	{
 		altShaderIndex = CG_ALTSHADER_DEFAULT;
