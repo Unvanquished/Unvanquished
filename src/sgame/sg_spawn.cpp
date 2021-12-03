@@ -999,6 +999,36 @@ bool G_ParseSpawnVars()
 	return true;
 }
 
+// The callbacks don't work until BG_InitAllConfigs()
+static void InitDisabledItemCvars()
+{
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledEquipment(
+		"g_disabledEquipment",
+		"Forbidden weapons and gear humans can buy, example: " QQ("lcannon, flamer, gren, firebomb, bsuit, larmour"),
+		Cvar::SERVERINFO,
+		"", // everything is allowed by default
+		BG_SetForbiddenEquipment
+		);
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledClasses(
+		"g_disabledClasses",
+		"Forbidden alien classes, like " QQ("level3,level3upg,builder"),
+		Cvar::SERVERINFO,
+		"", // everything is allowed by default
+		BG_SetForbiddenClasses
+		);
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledBuildables(
+		"g_disabledBuildables",
+		"Forbidden (human and alien) buildings, like " QQ("acid_tube, barricade, medistat, drill, mgturret, rocketpod"),
+		Cvar::SERVERINFO,
+		"", // everything is allowed by default
+		BG_SetForbiddenBuildables
+		);
+
+	G_SpawnStringIntoCVar( "disabledEquipment", g_disabledEquipment );
+	G_SpawnStringIntoCVar( "disabledClasses", g_disabledClasses );
+	G_SpawnStringIntoCVar( "disabledBuildables", g_disabledBuildables );
+}
+
 /**
  * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
  */
@@ -1066,9 +1096,7 @@ void SP_worldspawn()
 	G_SpawnStringIntoCVar( "BPBudgetPerMiner", g_buildPointBudgetPerMiner );
 	G_SpawnStringIntoCVar( "BPRecoveryRateHalfLife", g_buildPointRecoveryRateHalfLife );
 
-	G_SpawnStringIntoCVar( "disabledEquipment", g_disabledEquipment );
-	G_SpawnStringIntoCVar( "disabledClasses", g_disabledClasses );
-	G_SpawnStringIntoCVar( "disabledBuildables", g_disabledBuildables );
+	InitDisabledItemCvars();
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
