@@ -113,7 +113,7 @@ void BuildableComponent::Think(int timeDelta) {
 				entity.oldEnt->spawned = true;
 				entity.oldEnt->enabled = true;
 
-				if (Powered()) {
+				if (Powered() && G_ActiveMainBuildable(GetTeamComponent().Team())) {
 					// Regenerate health.
 					int   regenWait;
 					float regenRate = (float)BG_Buildable(entity.oldEnt->s.modelindex)->regenRate;
