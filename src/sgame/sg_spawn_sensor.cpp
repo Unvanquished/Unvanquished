@@ -534,26 +534,28 @@ void sensor_support_think( gentity_t *self )
 		return;
 	}
 
+	bool powered;
+
 	switch (self->conditions.team) {
 		case TEAM_HUMANS:
-			self->powered = (G_ActiveReactor() != nullptr);
+			powered = (G_ActiveReactor() != nullptr);
 			break;
 
 		case TEAM_ALIENS:
-			self->powered = (G_ActiveOvermind() != nullptr);
+			powered = (G_ActiveOvermind() != nullptr);
 			break;
 
 		case TEAM_ALL:
-			self->powered = (G_ActiveReactor() != nullptr && G_ActiveOvermind() != nullptr);
+			powered = (G_ActiveReactor() != nullptr && G_ActiveOvermind() != nullptr);
 			break;
 
 		default:
 			Log::Warn("missing team field for %s", etos( self ));
 			G_FreeEntity( self );
-			break;
+			return;
 	}
 
-	if(self->powered)
+	if(powered)
 		G_FireEntity( self, nullptr );
 
 	self->nextthink = level.time + SENSOR_POLL_PERIOD;
@@ -589,9 +591,9 @@ void sensor_power_think( gentity_t *self )
 		return;
 	}
 
-	self->powered = (G_ActiveReactor() != nullptr);
+	bool powered = (G_ActiveReactor() != nullptr);
 
-	if(self->powered)
+	if (powered)
 		G_FireEntity( self, nullptr );
 
 	self->nextthink = level.time + SENSOR_POLL_PERIOD;
@@ -620,9 +622,9 @@ void sensor_creep_think( gentity_t *self )
 		return;
 	}
 
-	self->powered = (G_ActiveOvermind() != nullptr);
+	bool powered = (G_ActiveOvermind() != nullptr);
 
-	if(self->powered)
+	if(powered)
 		G_FireEntity( self, nullptr );
 
 	self->nextthink = level.time + SENSOR_POLL_PERIOD;
