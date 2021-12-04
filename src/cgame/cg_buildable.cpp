@@ -1129,7 +1129,8 @@ void CG_GhostBuildable( int buildableInfo )
 	vec3_t        mins, maxs;
 	trace_t       tr;
 	float         scale;
-	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK ); // assumed not BA_NONE
+	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK );
+	ASSERT( BA_NONE < buildable && buildable < BA_NUM_BUILDABLES );
 	const buildableModelConfig_t *bmc = BG_BuildableModelConfig( buildable );
 
 	ps = &cg.predictedPlayerState;
@@ -1156,8 +1157,19 @@ void CG_GhostBuildable( int buildableInfo )
 
 	ent.hModel = cg_buildables[ buildable ].models[ 0 ];
 
-	ent.customShader = ( SB_BUILDABLE_TO_IBE( buildableInfo ) == IBE_NONE )
-	                     ? cgs.media.greenBuildShader : cgs.media.redBuildShader;
+	int reason = SB_BUILDABLE_TO_IBE( buildableInfo );
+	if ( reason == IBE_NONE ) // can build
+	{
+		ent.customShader = cgs.media.greenBuildShader;
+	}
+	else if ( reason == IBE_NORMAL || reason == IBE_NOROOM || reason == IBE_SURFACE )
+	{
+		ent.customShader = cgs.media.redBuildShader;
+	}
+	else
+	{
+		ent.customShader = cgs.media.yellowBuildShader;
+	}
 
 	scale = bmc->modelScale;
 	if ( !scale ) scale = 1.0f;

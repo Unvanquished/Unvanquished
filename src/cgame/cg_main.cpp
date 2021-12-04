@@ -789,6 +789,7 @@ static void CG_RegisterGraphics()
 
 	// building shaders
 	cgs.media.greenBuildShader = trap_R_RegisterShader("gfx/buildables/common/greenbuild", RSF_DEFAULT );
+	cgs.media.yellowBuildShader = trap_R_RegisterShader("gfx/buildables/common/yellowbuild", RSF_DEFAULT );
 	cgs.media.redBuildShader = trap_R_RegisterShader("gfx/buildables/common/redbuild", RSF_DEFAULT );
 	cgs.media.humanSpawningShader = trap_R_RegisterShader("gfx/buildables/human_base/spawning", RSF_DEFAULT );
 
