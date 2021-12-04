@@ -229,7 +229,7 @@ Local Bot Navigation
 
 signed char BotGetMaxMoveSpeed( gentity_t *self )
 {
-	if ( usercmdButtonPressed( self->botMind->cmdBuffer.buttons, BUTTON_WALKING ) )
+	if ( usercmdButtonPressed( self->botMind->cmdBuffer.buttons, btn_walking ) )
 	{
 		return 63;
 	}
@@ -333,13 +333,13 @@ bool BotSprint( gentity_t *self, bool enable )
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	int jumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
 	int stamina = self->client->ps.stats[ STAT_STAMINA ];
-	bool sprinting = usercmdButtonPressed( botCmdBuffer->buttons, BUTTON_SPRINT );
+	bool sprinting = usercmdButtonPressed( botCmdBuffer->buttons, btn_sprint );
 
 	if ( !enable )
 	{
 		if ( sprinting )
 		{
-			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+			usercmdReleaseButton( botCmdBuffer->buttons, btn_sprint );
 			BotWalk( self, true );
 		}
 		return false;
@@ -350,7 +350,7 @@ bool BotSprint( gentity_t *self, bool enable )
 	{
 		if ( sprinting && stamina <= jumpCost )
 		{
-			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+			usercmdReleaseButton( botCmdBuffer->buttons, btn_sprint );
 			BotWalk( self, true );
 			return false;
 		}
@@ -359,7 +359,7 @@ bool BotSprint( gentity_t *self, bool enable )
 			return false;
 		}
 	}
-	usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+	usercmdPressButton( botCmdBuffer->buttons, btn_sprint );
 	BotWalk( self, false );
 	return true;
 }
@@ -370,18 +370,18 @@ void BotWalk( gentity_t *self, bool enable )
 
 	if ( !enable )
 	{
-		if ( usercmdButtonPressed( botCmdBuffer->buttons, BUTTON_WALKING ) )
+		if ( usercmdButtonPressed( botCmdBuffer->buttons, btn_walking ) )
 		{
-			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_WALKING );
+			usercmdReleaseButton( botCmdBuffer->buttons, btn_walking );
 			botCmdBuffer->forwardmove *= 2;
 			botCmdBuffer->rightmove *= 2;
 		}
 		return;
 	}
 
-	if ( !usercmdButtonPressed( botCmdBuffer->buttons, BUTTON_WALKING ) )
+	if ( !usercmdButtonPressed( botCmdBuffer->buttons, btn_walking ) )
 	{
-		usercmdPressButton( botCmdBuffer->buttons, BUTTON_WALKING );
+		usercmdPressButton( botCmdBuffer->buttons, btn_walking );
 		botCmdBuffer->forwardmove /= 2;
 		botCmdBuffer->rightmove /= 2;
 	}

@@ -1127,9 +1127,23 @@ enum meansOfDeath_t
 // TODO: move other button definitions into gamelogic
 enum buttonNumber_t
 {
-  BUTTON_ATTACK3 = 9,
-  BUTTON_DECONSTRUCT = 13,
+	btn_attack       = 0,
+	// defined by daemon
+	btn_talk         = BUTTON_TALK, // = 1, // disables actions
+	btn_use_holdable = 2,
+	btn_gesture      = 3,
+	// defined by daemon
+	btn_walking      = BUTTON_WALKING, // = 4, // walking can't just be inferred from MOVE_RUN
+	btn_sprint       = 5,
+	btn_activate     = 6,
+	// defined by daemon
+	btn_any          = BUTTON_ANY, // = 7, // if any key is pressed
+	btn_attack2      = 8,
+	btn_attack3      = 9,
+	btn_deconstruct  = 13,
+	btn_rally        = 14 // also named "taunt" in some places
 };
+
 
 #define DEVOLVE_RETURN_FRACTION 0.9f
 

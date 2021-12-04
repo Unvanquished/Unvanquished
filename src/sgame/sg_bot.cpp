@@ -639,11 +639,11 @@ void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 	exhausted = exhausted || ( botSkill.level >= 5 && stamina <= jumpCost + jumpCost / 10 );
 	if ( !exhausted && wantSprinting )
 	{
-		usercmdPressButton( cmd.buttons, BUTTON_SPRINT );
+		usercmdPressButton( cmd.buttons, btn_sprint );
 	}
 	else
 	{
-		usercmdReleaseButton( cmd.buttons, BUTTON_SPRINT );
+		usercmdReleaseButton( cmd.buttons, btn_sprint );
 	}
 
 	exhausted = exhausted && stamina <= jumpCost * 2;
