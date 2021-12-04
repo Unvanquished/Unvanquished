@@ -521,11 +521,11 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	usercmdCopyButtons( client->oldbuttons, client->buttons );
 	usercmdCopyButtons( client->buttons, ucmd->buttons );
 
-	attack1 = usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
-	          !usercmdButtonPressed( client->oldbuttons, BUTTON_ATTACK );
+	attack1 = usercmdButtonPressed( client->buttons, btn_attack ) &&
+	          !usercmdButtonPressed( client->oldbuttons, btn_attack );
 
-	attackReleased = !usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
-		  usercmdButtonPressed( client->oldbuttons, BUTTON_ATTACK );
+	attackReleased = !usercmdButtonPressed( client->buttons, btn_attack ) &&
+		  usercmdButtonPressed( client->oldbuttons, btn_attack );
 
 	//if bot
 	if( ent->r.svFlags & SVF_BOT ) {
@@ -695,7 +695,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 	          client->pers.cmd.forwardmove ||
 	          client->pers.cmd.rightmove ||
 	          client->pers.cmd.upmove ||
-	          usercmdButtonPressed( client->pers.cmd.buttons, BUTTON_ATTACK ) )
+	          usercmdButtonPressed( client->pers.cmd.buttons, btn_attack ) )
 	{
 		client->inactivityTime = level.time + inactivityTime * 1000;
 		client->inactivityWarning = false;
@@ -1110,7 +1110,7 @@ void ClientIntermissionThink( gclient_t *client )
 	usercmdCopyButtons( client->oldbuttons, client->buttons );
 	usercmdCopyButtons( client->buttons, client->pers.cmd.buttons );
 
-	if ( usercmdButtonPressed( client->buttons, BUTTON_ATTACK ) &&
+	if ( usercmdButtonPressed( client->buttons, btn_attack ) &&
 	     usercmdButtonsDiffer( client->oldbuttons, client->buttons ) )
 	{
 		client->readyToExit = 1;
@@ -2024,7 +2024,7 @@ void ClientThink_real( gentity_t *self )
 	if ( self->flags & FL_FORCE_GESTURE )
 	{
 		self->flags &= ~FL_FORCE_GESTURE;
-		usercmdPressButton( client->pers.cmd.buttons, BUTTON_GESTURE );
+		usercmdPressButton( client->pers.cmd.buttons, btn_gesture );
 	}
 
 	// clear fall impact velocity before every pmove
@@ -2173,8 +2173,8 @@ void ClientThink_real( gentity_t *self )
 	usercmdCopyButtons( client->buttons, ucmd->buttons );
 	usercmdLatchButtons( client->latched_buttons, client->buttons, client->oldbuttons );
 
-	if ( usercmdButtonPressed( client->buttons, BUTTON_ACTIVATE ) &&
-	     !usercmdButtonPressed( client->oldbuttons, BUTTON_ACTIVATE ) &&
+	if ( usercmdButtonPressed( client->buttons, btn_activate ) &&
+	     !usercmdButtonPressed( client->oldbuttons, btn_activate ) &&
 	     Entities::IsAlive( self ) )
 	{
 		trace_t   trace;

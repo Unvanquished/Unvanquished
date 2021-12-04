@@ -1065,7 +1065,7 @@ AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t* )
 AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
-	usercmdPressButton( botCmdBuffer->buttons, BUTTON_GESTURE );
+	usercmdPressButton( botCmdBuffer->buttons, btn_gesture );
 	return AINodeStatus_t::STATUS_SUCCESS;
 }
 
