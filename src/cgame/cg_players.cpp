@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // cg_players.c -- handle the media and animation for player entities
 
+#include "common/FileSystem.h"
 #include "cg_local.h"
 #include "cg_animdelta.h"
 #include "cg_segmented_skeleton.h"
@@ -806,14 +807,14 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 	char filename[ MAX_QPATH ];
 
 	Com_sprintf( filename, sizeof( filename ), "models/players/%s/%s.iqm", modelName, modelName );
-	if ( CG_FileExists( filename ) )
+	if ( FS::PakPath::FileExists( filename ) )
 	{
 		ci->bodyModel = trap_R_RegisterModel( filename );
 	}
 
 	if ( ! ci->bodyModel ) {
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
-		if ( CG_FileExists(filename) )
+		if ( FS::PakPath::FileExists(filename) )
 		{
 			ci->bodyModel = trap_R_RegisterModel( filename );
 		}

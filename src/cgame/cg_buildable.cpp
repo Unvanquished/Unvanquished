@@ -634,7 +634,7 @@ void CG_InitBuildables()
 		//Load models
 		//Prefer md5 models over md3
 
-		if ( CG_FileExists( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) &&
+		if ( FS::PakPath::FileExists( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) &&
 		     ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm",
 		                                                   buildableName, buildableName ) ) ) )
 		{
