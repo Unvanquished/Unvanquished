@@ -107,34 +107,35 @@ static inline void Rocket_SetInnerRMLGuarded( Rocket::Core::Element *e, const Ro
 	}
 }
 
-void Rocket_SetInnerRMLById( const char *name, const char *id, const char *RML, int parseFlags )
+// This always escapes HTML special characters.
+// With additional flags parses colors or emoticons (see Rocket_QuakeToRML).
+void Rocket_SetInnerRML( const char *text, int parseFlags )
 {
-	Rocket::Core::String newRML = parseFlags  ? Rocket_QuakeToRML( RML, parseFlags ) : RML;
+	Rocket::Core::String newRML = Rocket_QuakeToRML( text, parseFlags );
 
-	if ( ( !*name || !*id ) && activeElement )
+	if ( activeElement )
 	{
 		Rocket_SetInnerRMLGuarded( activeElement, newRML );
 	}
 
 	else
 	{
-		Rocket::Core::ElementDocument *document = menuContext->GetDocument( name );
-
-		if ( document )
-		{
-			Rocket::Core::Element *e = document->GetElementById( id );
-
-			if ( e )
-			{
-				Rocket_SetInnerRMLGuarded( e, newRML );
-			}
-		}
+		// TODO warning?
 	}
 }
 
-void Rocket_SetInnerRML( const char *RML, int parseFlags )
+// Use this if your string contains RML markup.
+void Rocket_SetInnerRMLRaw( const char* RML )
 {
-	Rocket_SetInnerRMLById( "", "", RML, parseFlags );
+	if ( activeElement )
+	{
+		Rocket_SetInnerRMLGuarded( activeElement, RML );
+	}
+
+	else
+	{
+		// TODO warning?
+	}
 }
 
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
