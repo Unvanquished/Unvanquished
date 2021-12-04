@@ -1444,6 +1444,7 @@ struct cgMedia_t
 
 	// buildable shaders
 	qhandle_t             greenBuildShader;
+	qhandle_t             yellowBuildShader;
 	qhandle_t             redBuildShader;
 	qhandle_t             humanSpawningShader;
 
