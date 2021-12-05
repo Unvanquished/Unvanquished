@@ -55,7 +55,7 @@ void CG_LoadBeaconsConfig()
 	bc->hudCenter[ 0 ] = vw / 2;
 	bc->hudCenter[ 1 ] = vh / 2;
 
-	fd = Parse_LoadSourceHandle( path );
+	fd = Parse_LoadSourceHandle( path, trap_FS_OpenPakFile );
 	if ( !fd )
 		return;
 

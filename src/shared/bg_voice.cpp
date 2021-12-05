@@ -427,7 +427,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 	bool   parsingCmd = false;
 	int        handle;
 
-	handle = Parse_LoadSourceHandle( va( "voice/%s.voice", name ) );
+	handle = Parse_LoadSourceHandle( va( "voice/%s.voice", name ), trap_FS_OpenPakFile );
 
 	if ( !handle )
 	{

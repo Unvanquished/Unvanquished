@@ -1375,7 +1375,7 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 	float      f;
 	Color::Color c;
 
-	handle = Parse_LoadSourceHandle( filename );
+	handle = Parse_LoadSourceHandle( filename, trap_FS_OpenPakFile );
 
 	if ( !handle )
 	{
