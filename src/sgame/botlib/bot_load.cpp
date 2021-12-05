@@ -130,7 +130,7 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 
 	std::string mapname = Cvar::GetValue("mapname");
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname.c_str(), filename );
-	trap_FS_FOpenFile( filePath, &f, fsMode_t::FS_READ );
+	G_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
 	{
@@ -188,7 +188,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navMesh", mapname.c_str(), filename );
 	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
-	int len = trap_FS_FOpenFile( filePath, &f, fsMode_t::FS_READ );
+	int len = G_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
 	{

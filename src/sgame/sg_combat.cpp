@@ -756,7 +756,7 @@ void G_InitDamageLocations()
 		modelName = BG_ClassModelConfig( i )->modelName;
 		Com_sprintf( filename, sizeof( filename ), "configs/classes/%s.locdamage.cfg", modelName );
 
-		len = trap_FS_FOpenFile( filename, &fileHandle, fsMode_t::FS_READ );
+		len = G_FOpenGameOrPakPath( filename, fileHandle );
 
 		if ( !fileHandle )
 		{
