@@ -1005,11 +1005,11 @@ static void BotTargetGetBoundingBox( botTarget_t target, glm::vec3 &mins, glm::v
 	if ( isPlayer )
 	{
 		class_t class_ = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
-		BG_BoundingBox( class_, &mins, &maxs, nullptr, nullptr, nullptr );
+		BG_BoundingBox( class_, mins, maxs );
 	}
 	else if ( target.getTargetType() == entityType_t::ET_BUILDABLE )
 	{
-		BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), &mins, &maxs );
+		BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), mins, maxs );
 	}
 	else
 	{
@@ -2428,73 +2428,6 @@ glm::vec3 botTarget_t::getPos( void ) const
 	}
 	Log::Warn("Bot: couldn't get position of target");
 	return glm::vec3();
-}
-
-//Those are not really BG, but hopefully someday they will be.
-glm::vec3 BG_GetClientNormal( const playerState_t *ps )
-{
-	if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
-	{
-		if ( ps->eFlags & EF_WALLCLIMBCEILING )
-		{
-			return glm::vec3( 0, 0, -1 );
-		}
-		return VEC2GLM( ps->grapplePoint );
-	}
-	return glm::vec3( 0, 0, 1 );
-}
-
-glm::vec3 BG_GetClientViewOrigin( const playerState_t *ps )
-{
-	return VEC2GLM( ps->origin ) + static_cast<float>( ps->viewheight ) * BG_GetClientNormal( ps );
-}
-
-void BG_BoundingBox( class_t pClass,
-                     glm::vec3* mins,  glm::vec3* maxs,
-                     glm::vec3* cmaxs, glm::vec3* dmins, glm::vec3* dmaxs )
-{
-	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
-	ASSERT( classModelConfig != nullptr );
-
-	if ( mins != nullptr )
-	{
-		*mins = VEC2GLM( classModelConfig->mins );
-	}
-
-	if ( maxs != nullptr )
-	{
-		*maxs = VEC2GLM( classModelConfig->maxs );
-	}
-
-	if ( cmaxs != nullptr )
-	{
-		*cmaxs = VEC2GLM( classModelConfig->crouchMaxs );
-	}
-
-	if ( dmins != nullptr )
-	{
-		*dmins = VEC2GLM( classModelConfig->deadMins );
-	}
-
-	if ( dmaxs != nullptr )
-	{
-		*dmaxs = VEC2GLM( classModelConfig->deadMaxs );
-	}
-}
-
-void BG_BoundingBox( buildable_t buildable, glm::vec3* mins, glm::vec3* maxs )
-{
-	buildableModelConfig_t *buildableModelConfig = BG_BuildableModelConfig( buildable );
-
-	if ( mins != nullptr )
-	{
-		*mins = VEC2GLM( buildableModelConfig->mins );
-	}
-
-	if ( maxs != nullptr )
-	{
-		*maxs = VEC2GLM( buildableModelConfig->maxs );
-	}
 }
 
 // Reimplementation of daemon's function of same name.
