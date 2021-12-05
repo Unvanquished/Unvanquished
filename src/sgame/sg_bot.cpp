@@ -202,8 +202,9 @@ void G_BotChangeBehavior( int clientNum, const char* behavior )
 
 bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
 {
-	botMind->runningNodes.clear();
 	botMind->currentNode = nullptr;
+	BotClearRunningNodesHysteresisState( &g_entities[clientNum] );
+	botMind->runningNodes.clear();
 	memset( &botMind->nav, 0, sizeof( botMind->nav ) );
 	BotResetEnemyQueue( &botMind->enemyQueue );
 

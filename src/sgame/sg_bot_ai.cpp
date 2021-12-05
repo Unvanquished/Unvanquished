@@ -444,6 +444,22 @@ bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 	return false;
 }
 
+void BotClearRunningNodesHysteresisState( gentity_t *self )
+{
+	int clientNum = self - g_entities;
+	botMemory_t *botMind = self->botMind;
+	for ( int i=0; i < botMind->numRunningNodes; i++ )
+	{
+		if ( botMind->runningNodes[i]->type == HYSTERESIS_NODE )
+		{
+			AIHysteresisNode_t *hyst =
+				reinterpret_cast<AIHysteresisNode_t *>(
+					botMind->runningNodes[i] );
+			hyst->currentlyOnForClient[clientNum] = false;
+		}
+	}
+}
+
 // TODO: fuse this with EvalConditionExpression into a function returning
 // AIValue_t and do proper type handling
 float EvalHysteresisExpression( gentity_t *self, AIExpType_t *exp )
@@ -566,6 +582,7 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 	// reset running information on node success so sequences and selectors reset their state
 	if ( NodeIsRunning( self, node ) && status == STATUS_SUCCESS )
 	{
+		BotClearRunningNodesHysteresisState( self );
 		self->botMind->runningNodes.clear();
 	}
 
