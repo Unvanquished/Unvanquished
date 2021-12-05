@@ -366,37 +366,23 @@ models/buildables/hivemind/animation.cfg, etc
 static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t buildable )
 {
 	const char         *text_p;
-	int          len;
 	int          i;
 	char         *token;
 	float        fps;
-	char         text[ 20000 ];
-	fileHandle_t f;
 	animation_t  *animations;
 
 	animations = cg_buildables[ buildable ].animations;
 
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
-
-	if ( len < 0 )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( filename, err );
+	if ( err )
 	{
+		Log::Warn( "couldn't read buildable animation file '%s': %s", filename, err.message() );
 		return false;
 	}
-
-	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
-	{
-		trap_FS_FCloseFile( f );
-		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
-		return false;
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
 
 	// parse the text
-	text_p = text;
+	text_p = text.c_str();
 
 	// read information for each frame
 	for ( i = BANIM_NONE + 1; i < MAX_BUILDABLE_ANIMATIONS; i++ )
@@ -480,36 +466,22 @@ sound/buildables/hivemind/sound.cfg, etc
 static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t buildable )
 {
 	const char         *text_p;
-	int          len;
 	int          i;
 	char         *token;
-	char         text[ 20000 ];
-	fileHandle_t f;
 	sound_t      *sounds;
 
 	sounds = cg_buildables[ buildable ].sounds;
 
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
-
-	if ( len < 0 )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( filename, err );
+	if ( err )
 	{
+		Log::Warn( "couldn't read buildable sound file '%s': %s", filename, err.message() );
 		return false;
 	}
-
-	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
-	{
-		trap_FS_FCloseFile( f );
-		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
-		return false;
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
 
 	// parse the text
-	text_p = text;
+	text_p = text.c_str();
 
 	// read information for each frame
 	for ( i = BANIM_NONE + 1; i < MAX_BUILDABLE_ANIMATIONS; i++ )

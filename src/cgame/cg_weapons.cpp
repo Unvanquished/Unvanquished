@@ -85,31 +85,23 @@ Load custom crosshairs specified by the user
 static void CG_LoadCustomCrosshairs()
 {
 	const char         *text_p, *token;
-	char         text[ 20000 ];
-	int          len;
-	fileHandle_t f;
 	weapon_t     weapon;
 
-	len = trap_FS_FOpenFile( cg_crosshairFile.Get().c_str(), &f, fsMode_t::FS_READ );
-
-	if ( len < 0 )
+	std::string filename = cg_crosshairFile.Get();
+	if ( filename.empty() )
 	{
 		return;
 	}
-
-	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( filename, err );
+	if ( err )
 	{
-		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", cg_crosshairFile.Get() );
-		trap_FS_FCloseFile( f );
+		Log::Warn( "couldn't read custom crosshair file '%s': %s", filename, err.message() );
 		return;
 	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
 
 	// parse the text
-	text_p = text;
+	text_p = text.c_str();
 
 	while ( 1 )
 	{
@@ -230,37 +222,28 @@ Reads the animation.cfg for weapons
 static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
 {
 	const char         *text_p;
-	int          len;
 	int          i;
 	char         *token;
 	float        fps;
-	char         text[ 20000 ];
-	fileHandle_t f;
 	animation_t  *animations;
 
 	animations = wi->animations;
 
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
-
-	if ( len < 0 )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( filename, err );
+	if ( err )
 	{
+		const std::error_code notFound(Util::ordinal(FS::filesystem_error::no_such_file), FS::filesystem_category());
+		// Some weapons e.g. dretch attack actually don't have animations
+		if ( err != notFound )
+		{
+			Log::Warn( "couldn't read weapon animation file '%s': %s", filename, err.message() );
+		}
 		return false;
 	}
-
-	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
-	{
-		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
-		trap_FS_FCloseFile( f );
-		return false;
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
 
 	// parse the text
-	text_p = text;
+	text_p = text.c_str();
 
 	for ( i = WANIM_NONE + 1; i < MAX_WEAPON_ANIMATIONS; i++ )
 	{
@@ -618,37 +601,23 @@ Parses a configuration file describing a weapon
 static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *wi )
 {
 	const char         *text_p;
-	int          len;
 	char         *token;
-	char         text[ 20000 ];
-	fileHandle_t f;
 	weaponMode_t weaponMode = WPM_NONE;
 	char         token2[ MAX_QPATH ];
 	int          i;
 
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
-
-	if ( len < 0 )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( filename, err );
+	if ( err )
 	{
+		Log::Warn( "couldn't read weapon configuration file '%s': %s", filename, err.message() );
 		return false;
 	}
-
-	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
-	{
-		trap_FS_FCloseFile( f );
-		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
-		return false;
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
-
-	wi->scale = 1.0f;
 
 	// parse the text
-	text_p = text;
+	text_p = text.c_str();
+
+	wi->scale = 1.0f;
 
 	// read optional parameters
 	while ( 1 )

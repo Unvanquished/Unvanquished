@@ -112,33 +112,19 @@ models/players/visor/character.cfg, etc
 static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 {
 	const char         *text_p;
-	int          len;
 	int          i;
 	char         *token;
-	char         text[ 20000 ];
-	fileHandle_t f;
 
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
-
-	if ( len <= 0 )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( filename, err );
+	if ( err )
 	{
+		Log::Warn( "couldn't read player model file '%s': %s", filename, err.message() );
 		return false;
 	}
-
-	if ( len + 1 >= (int) sizeof( text ) )
-	{
-		Log::Warn( "File %s is too long", filename );
-		trap_FS_FCloseFile( f );
-		return false;
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
 
 	// parse the text
-	text_p = text;
+	text_p = text.c_str();
 
 	ci->footsteps = FOOTSTEP_GENERAL;
 	VectorClear( ci->headOffset );
@@ -382,38 +368,24 @@ Read a configuration file containing animation counts and rates
 static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 {
 	const char         *text_p, *prev;
-	int          len;
 	int          i;
 	char         *token;
 	float        fps;
 	int          skip;
-	char         text[ 20000 ];
-	fileHandle_t f;
 	animation_t  *animations;
 
 	animations = ci->animations;
 
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
-
-	if ( len < 0 )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( filename, err );
+	if ( err )
 	{
+		Log::Warn( "couldn't read player animation file '%s': %s", filename, err.message() );
 		return false;
 	}
-
-	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
-	{
-		Log::Warn( len == 0 ? "File %s is empty" : "File %s is too long", filename );
-		trap_FS_FCloseFile( f );
-		return false;
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
 
 	// parse the text
-	text_p = text;
+	text_p = text.c_str();
 	skip = 0; // quite the compiler warning
 
 	ci->footsteps = FOOTSTEP_GENERAL;

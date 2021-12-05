@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/FileSystem.h"
 #include "cg_local.h"
 
 rocketInfo_t rocketInfo;
@@ -43,10 +44,8 @@ static connstate_t oldConnState;
 
 void CG_Rocket_Init( glconfig_t gl )
 {
-	int len;
 	const char *token, *text_p;
 	char text[ 20000 ];
-	fileHandle_t f;
 
 	oldConnState = connstate_t::CA_UNINITIALIZED;
 	cgs.glconfig = gl;
@@ -77,23 +76,9 @@ void CG_Rocket_Init( glconfig_t gl )
 	Rocket_RegisterProperty( "locked-marker-color", "red", false, false, "color" );
 
 	// Preload all the menu files...
-	len = trap_FS_FOpenFile( rocket_menuFile.Get().c_str(), &f, fsMode_t::FS_READ );
+	std::string content = FS::PakPath::ReadFile( rocket_menuFile.Get() );
 
-	if ( len <= 0 )
-	{
-		Sys::Drop( "Unable to load %s. No rocket menus loaded.", rocket_menuFile.Get() );
-	}
-
-	if ( len >= (int) sizeof( text ) - 1 )
-	{
-		trap_FS_FCloseFile( f );
-		Sys::Drop( "File %s too long.", rocket_menuFile.Get() );
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	text_p = text;
-	trap_FS_FCloseFile( f );
+	text_p = content.c_str();
 
 	// Parse files to load...
 	while ( 1 )
@@ -265,29 +250,12 @@ void CG_Rocket_Init( glconfig_t gl )
 
 void CG_Rocket_LoadHuds()
 {
-	int i, len;
+	int i;
 	const char *token, *text_p;
-	char text[ 20000 ];
-	fileHandle_t f;
 
 	// Preload all the menu files...
-	len = trap_FS_FOpenFile( rocket_hudFile.Get().c_str(), &f, fsMode_t::FS_READ );
-
-	if ( len <= 0 )
-	{
-		Sys::Drop( "Unable to load %s. No rocket menus loaded.", rocket_menuFile.Get() );
-	}
-
-	if ( len >= (int) sizeof( text ) - 1 )
-	{
-		trap_FS_FCloseFile( f );
-		Sys::Drop( "File %s too long.", rocket_hudFile.Get() );
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	text_p = text;
-	trap_FS_FCloseFile( f );
+	std::string text = FS::PakPath::ReadFile( rocket_hudFile.Get() );
+	text_p = text.c_str();
 
 	Rocket_InitializeHuds( WP_NUM_WEAPONS );
 

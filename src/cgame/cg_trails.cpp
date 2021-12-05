@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // cg_trails.c -- the trail system
 
+#include "common/FileSystem.h"
 #include "cg_local.h"
 
 static Log::Logger logs = Log::Logger("cgame.trails", "[Trail Systems]");
@@ -1206,34 +1207,20 @@ static bool CG_ParseTrailFile( const char *fileName )
 {
 	const char         *text_p;
 	int          i;
-	int          len;
 	char         *token;
-	char         text[ 32000 ];
 	char         tsName[ MAX_QPATH ];
 	bool     tsNameSet = false;
-	fileHandle_t f;
 
-	// load the file
-	len = trap_FS_FOpenFile( fileName, &f, fsMode_t::FS_READ );
-
-	if ( len <= 0 )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( fileName, err );
+	if ( err )
 	{
+		Log::Warn( "couldn't read trail system file '%s': %s", fileName, err.message() );
 		return false;
 	}
-
-	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
-	{
-		trap_FS_FCloseFile( f );
-		logs.Warn( len ? "trail file %s is too long" : "trail file %s is empty", fileName );
-		return false;
-	}
-
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
-	trap_FS_FCloseFile( f );
 
 	// parse the text
-	text_p = text;
+	text_p = text.c_str();
 
 	// read optional parameters
 	while ( 1 )
