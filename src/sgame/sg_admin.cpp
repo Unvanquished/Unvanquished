@@ -5828,7 +5828,7 @@ bool G_admin_bot( gentity_t *ent )
 			return false;
 		}
 		const char *behavior = args[3].data();
-		G_BotChangeBehavior( clientNum, behavior );
+		G_BotSetBehavior( clientNum, behavior );
 
 	}
 	else if ( !Q_stricmp( arg1, "names" ) && args.Argc() >= 3 )

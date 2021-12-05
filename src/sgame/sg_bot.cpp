@@ -187,21 +187,11 @@ const char * G_BotGetBehavior( int clientNum )
 	return bot->botMind->behaviorTree->name;
 }
 
-void G_BotChangeBehavior( int clientNum, const char* behavior )
+bool G_BotSetBehavior( int clientNum, const char* behavior )
 {
-	gentity_t *bot = &g_entities[clientNum];
+	botMemory_t *botMind = g_entities[clientNum].botMind;
+	ASSERT( botMind );
 
-	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
-	{
-		Log::Warn( "'^7%s^*' is not a bot", bot->client->pers.netname );
-		return;
-	}
-
-	G_BotSetBehavior( bot->botMind, behavior );
-}
-
-bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
-{
 	botMind->runningNodes.clear();
 	botMind->currentNode = nullptr;
 	memset( &botMind->nav, 0, sizeof( botMind->nav ) );
@@ -232,7 +222,7 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 	botMind->botTeam = team;
 	BotSetNavmesh( self, (class_t) self->client->ps.stats[ STAT_CLASS ] );
 
-	if ( !G_BotSetBehavior( botMind, behavior ) )
+	if ( !G_BotSetBehavior( clientNum, behavior ) )
 	{
 		return false;
 	}
