@@ -135,4 +135,6 @@ bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allo
 void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
 bool G_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
 
+void BotClearRunningNodesHysteresisState( gentity_t *bot );
+
 #endif
