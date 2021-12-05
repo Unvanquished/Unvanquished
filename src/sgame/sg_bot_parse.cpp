@@ -814,6 +814,106 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) condition;
 }
 
+/*
+======================
+ReadHysteresisNode
+
+Parses and creates an AIHystererisNode_t from a token list
+The token list pointer is modified to point to the beginning of the next node text block
+
+A condition node has the form:
+hysteresis [min] [max] [value expression] {
+	child node
+}
+
+[value expression] can be any integer or float expression that gives a number,
+	like distanceTo( E_H_MEDISTAT )
+[min] and [max] must be number litterals, like 100 or 0.5
+======================
+*/
+
+static float ReadHysteresisLitteral( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	if ( current->token.type == tokenType_t::TT_NUMBER )
+	{
+		*tokenlist = current->next;
+		return current->token.floatvalue;
+	}
+	else
+	{
+		Log::Warn("Bot: hysteresis min or max value is not a number litteral");
+		return 0.0f;
+	}
+}
+
+AIGenericNode_t *ReadHysteresisNode( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+
+	AIHysteresisNode_t *hysteresis;
+
+	if ( !expectToken( "hysteresis", &current, true ) )
+	{
+		return nullptr;
+	}
+
+	hysteresis = allocNode( AIHysteresisNode_t );
+	BotInitNode( HYSTERESIS_NODE, BotHysteresisNode, hysteresis );
+
+	hysteresis->switchOffThresold = ReadHysteresisLitteral( &current );
+	hysteresis->switchOnThresold = ReadHysteresisLitteral( &current );
+	hysteresis->exp = ReadConditionExpression( &current, OP_NONE );
+	for ( int i = 0; i < level.maxclients; i++ )
+	{
+		hysteresis->currentlyOnForClient[i] = false;
+	}
+
+	if ( !current )
+	{
+		*tokenlist = current;
+		Log::Warn( "Unexpected end of file" );
+		FreeHysteresisNode( hysteresis );
+		return nullptr;
+	}
+
+	if ( !hysteresis->exp )
+	{
+		*tokenlist = current;
+		Log::Warn("Bot BT: could not read hysteresis value condition");
+		FreeHysteresisNode( hysteresis );
+		return nullptr;
+	}
+
+	if ( !expectToken( "{", &current, true ) )
+	{
+		*tokenlist = current;
+		FreeHysteresisNode( hysteresis );
+		return nullptr;
+	}
+
+	hysteresis->child = ReadNode( &current );
+
+	if ( !hysteresis->child )
+	{
+		Log::Warn( "Failed to parse child node of hysteresis on line %d", (*tokenlist)->token.line );
+		*tokenlist = current;
+		FreeHysteresisNode( hysteresis );
+		return nullptr;
+	}
+
+	if ( !expectToken( "}", &current, true ) )
+	{
+		*tokenlist = current;
+		FreeHysteresisNode( hysteresis );
+		return nullptr;
+	}
+
+	*tokenlist = current;
+
+	return ( AIGenericNode_t * ) hysteresis;
+}
+
 static const struct AIDecoratorMap_s
 {
 	const char   *name;
@@ -1174,7 +1274,7 @@ Parses and creates an AIGenericNode_t from a token list
 The token list pointer is modified to point to the next node text block after reading
 
 This function delegates the reading to the sub functions
-ReadNodeList, ReadActionNode, and ReadConditionNode depending on the first token in the list
+ReadNodeList, ReadActionNode, and ReadConditionNode (etc) depending on the first token in the list
 ======================
 */
 
@@ -1202,6 +1302,10 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	else if ( !Q_stricmp( current->token.string, "condition" ) )
 	{
 		node = ReadConditionNode( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "hysteresis" ) )
+	{
+		node = ReadHysteresisNode( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "decorator" ) )
 	{
@@ -1560,6 +1664,13 @@ void FreeConditionNode( AIConditionNode_t *node )
 	BG_Free( node );
 }
 
+void FreeHysteresisNode( AIHysteresisNode_t *node )
+{
+	FreeNode( node->child );
+	FreeExpression( node->exp );
+	BG_Free( node );
+}
+
 void FreeNodeList( AINodeList_t *node )
 {
 	int i;
@@ -1603,6 +1714,9 @@ void FreeNode( AIGenericNode_t *node )
 			break;
 		case CONDITION_NODE:
 			FreeConditionNode( ( AIConditionNode_t * ) node );
+			break;
+		case HYSTERESIS_NODE:
+			FreeHysteresisNode( ( AIHysteresisNode_t * ) node );
 			break;
 		case ACTION_NODE:
 			FreeActionNode( ( AIActionNode_t * ) node );

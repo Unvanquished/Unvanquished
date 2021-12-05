@@ -355,6 +355,7 @@ AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 }
 
 bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
+float EvalHysteresisExpression( gentity_t *self, AIExpType_t *exp );
 
 double EvalFunc( gentity_t *self, AIExpType_t *exp )
 {
@@ -443,6 +444,27 @@ bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 	return false;
 }
 
+// TODO: fuse this with EvalConditionExpression into a function returning
+// AIValue_t and do proper type handling
+float EvalHysteresisExpression( gentity_t *self, AIExpType_t *exp )
+{
+	if ( *exp == EX_OP )
+	{
+		// As of today, every operator is a boolean one
+		Log::Warn("Bot: tried to do an hysteresis on a boolean operator");
+	}
+	else if ( *exp == EX_VALUE )
+	{
+		return EvalValue( self, exp );
+	}
+	else if ( *exp == EX_FUNC )
+	{
+		return EvalFunc( self, exp );
+	}
+
+	return 0.0f;
+}
+
 /*
 ======================
 BotConditionNode
@@ -469,6 +491,39 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_SUCCESS;
 		}
+	}
+
+	return STATUS_FAILURE;
+}
+
+/*
+======================
+BotHysteresisNode
+
+Runs the child node if the condition expression is true
+If there is no child node, returns success if the conditon expression is true
+returns failure otherwise
+======================
+*/
+AINodeStatus_t BotHysteresisNode( gentity_t *self, AIGenericNode_t *node )
+{
+	AIHysteresisNode_t *hysteresis = ( AIHysteresisNode_t * ) node;
+	bool *onForMe = &hysteresis->currentlyOnForClient[self - g_entities];
+
+	float value = EvalHysteresisExpression( self, hysteresis->exp );
+
+	if ( value >= hysteresis->switchOnThresold )
+	{
+		*onForMe = true;
+	}
+	else if ( value <= hysteresis->switchOffThresold )
+	{
+		*onForMe = false;
+	}
+
+	if ( *onForMe )
+	{
+		return BotEvaluateNode( self, hysteresis->child );
 	}
 
 	return STATUS_FAILURE;
