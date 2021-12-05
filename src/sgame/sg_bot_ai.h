@@ -75,6 +75,7 @@ enum AINode_t
 	SELECTOR_NODE,
 	ACTION_NODE,
 	CONDITION_NODE,
+	HYSTERESIS_NODE,
 	BEHAVIOR_NODE,
 	DECORATOR_NODE
 };
@@ -191,6 +192,17 @@ struct AIConditionNode_t
 	AIExpType_t     *exp;
 };
 
+struct AIHysteresisNode_t
+{
+	AINode_t        type;
+	AINodeRunner    run;
+	AIGenericNode_t *child;
+	AIExpType_t     *exp;
+	float switchOffThresold;
+	float switchOnThresold;
+	bool currentlyOnForClient[MAX_CLIENTS];
+};
+
 struct AIDecoratorNode_t
 {
 	AINode_t        type;
@@ -228,6 +240,7 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e );
 // standard behavior tree control-flow nodes
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotHysteresisNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
