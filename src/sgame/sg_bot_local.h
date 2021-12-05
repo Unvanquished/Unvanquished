@@ -36,10 +36,6 @@ This file contains the headers of the internal functions used by bot only.
 
 #include "sg_local.h"
 
-#include <glm/vec3.hpp>
-
-#define VEC2GLM( x ) glm::vec3( (x)[0], (x)[1], (x)[2] )
-
 struct botEntityAndDistance_t
 {
 	gentity_t const *ent;

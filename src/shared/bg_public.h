@@ -31,6 +31,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "engine/qcommon/q_shared.h"
 
+#include <glm/vec3.hpp>
+
+//TODO remove this macro when it will no longer be useful
+//This macro is a compatibility layer
+#define VEC2GLM( x ) glm::vec3( (x)[0], (x)[1], (x)[2] )
+
 //Unvanquished balance header
 #include "bg_gameplay.h"
 
@@ -1790,6 +1796,16 @@ namespace CombatFeedback
 }
 
 #include "Clustering.h"
+
+glm::vec3 BG_GetClientNormal( const playerState_t *ps );
+glm::vec3 BG_GetClientViewOrigin( const playerState_t *ps );
+
+void BG_BoundingBox( class_t cl, glm::vec3 &mins, glm::vec3 &maxs );
+void BG_DeadBoundingBox( class_t cl, glm::vec3 &mins, glm::vec3 &maxs );
+glm::vec3 BG_CrouchBoundingBox( class_t cl );
+
+void BG_BoundingBox( buildable_t buildablel, glm::vec3 &mins, glm::vec3 &maxs );
+
 
 //==================================================================
 #endif /* BG_PUBLIC_H_ */
