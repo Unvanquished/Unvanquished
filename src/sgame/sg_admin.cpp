@@ -3273,8 +3273,7 @@ bool G_admin_changemap( gentity_t *ent )
 		trap_Argv( 2, layout, sizeof( layout ) );
 
 		if ( !Q_stricmp( layout, S_BUILTIN_LAYOUT ) ||
-		     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
-		                        nullptr, fsMode_t::FS_READ ) > 0 )
+		     G_LayoutExists( map, layout ) )
 		{
 			// nothing to do
 		}
@@ -4328,7 +4327,7 @@ bool G_admin_restart( gentity_t *ent )
 	// check that the layout's available
 	builtin = !*layout || !Q_stricmp( layout, S_BUILTIN_LAYOUT );
 
-	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), nullptr, fsMode_t::FS_READ ) )
+	if ( !builtin && !G_LayoutExists( map, layout ) )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3restart:^* layout '$1$' does not exist") ), layout ) );
 		return false;

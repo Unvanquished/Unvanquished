@@ -93,6 +93,7 @@ void              G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t a
 void              G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
 void              G_LayoutSave( const char *name );
 int               G_LayoutList( const char *map, char *list, int len );
+bool G_LayoutExists( Str::StringRef map, Str::StringRef layout );
 void              G_LayoutSelect();
 void              G_LayoutLoad();
 void              G_BaseSelfDestruct( team_t team );
