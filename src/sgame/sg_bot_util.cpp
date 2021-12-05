@@ -1669,15 +1669,15 @@ void BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer )
 {
 	if ( mode == WPM_PRIMARY )
 	{
-		usercmdPressButton( botCmdBuffer->buttons, btn_attack );
+		usercmdPressButton( botCmdBuffer->buttons, BTN_ATTACK );
 	}
 	else if ( mode == WPM_SECONDARY )
 	{
-		usercmdPressButton( botCmdBuffer->buttons, btn_attack2 );
+		usercmdPressButton( botCmdBuffer->buttons, BTN_ATTACK2 );
 	}
 	else if ( mode == WPM_TERTIARY )
 	{
-		usercmdPressButton( botCmdBuffer->buttons, btn_attack3 );
+		usercmdPressButton( botCmdBuffer->buttons, BTN_ATTACK3 );
 	}
 }
 void BotClassMovement( gentity_t *self, bool inAttackRange )
@@ -1818,7 +1818,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			else
 			{
-				usercmdPressButton( botCmdBuffer->buttons, btn_gesture );    //make cute granger sounds to ward off the would be attackers
+				usercmdPressButton( botCmdBuffer->buttons, BTN_GESTURE );    //make cute granger sounds to ward off the would be attackers
 			}
 			break;
 		case WP_ABUILD2:
