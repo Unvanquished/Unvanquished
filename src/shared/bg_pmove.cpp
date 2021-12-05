@@ -401,14 +401,14 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		if ( pm->ps->persistant[ PERS_STATE ] & PS_SPRINTTOGGLE )
 		{
 			// toggle mode
-			if ( usercmdButtonPressed( cmd->buttons, btn_sprint ) &&
+			if ( usercmdButtonPressed( cmd->buttons, BTN_SPRINT ) &&
 			     !( pm->ps->pm_flags & PMF_SPRINTHELD ) )
 			{
 				sprint = !sprint;
 				pm->ps->pm_flags |= PMF_SPRINTHELD;
 			}
 			else if ( pm->ps->pm_flags & PMF_SPRINTHELD &&
-			          !usercmdButtonPressed( cmd->buttons, btn_sprint ) )
+			          !usercmdButtonPressed( cmd->buttons, BTN_SPRINT ) )
 			{
 				pm->ps->pm_flags &= ~PMF_SPRINTHELD;
 			}
@@ -416,7 +416,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		else
 		{
 			// non-toggle mode
-			sprint = usercmdButtonPressed( cmd->buttons, btn_sprint );
+			sprint = usercmdButtonPressed( cmd->buttons, BTN_SPRINT );
 		}
 
 		// check if sprinting is allowed
@@ -448,7 +448,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		// above but don't apply the modifier, and in g_active we skip taking
 		// the stamina too.
 		// TODO: Try to move code upwards so sprinting isn't activated in the first place.
-		if ( sprint && !usercmdButtonPressed( cmd->buttons, btn_walking ) )
+		if ( sprint && !usercmdButtonPressed( cmd->buttons, BTN_WALKING ) )
 		{
 			modifier *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->sprintMod;
 		}
@@ -505,7 +505,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 
 	// Slow down when charging up for a pounce
 	if ( ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG ) &&
-	     usercmdButtonPressed( cmd->buttons, btn_attack2 ) )
+	     usercmdButtonPressed( cmd->buttons, BTN_ATTACK2 ) )
 	{
 		modifier *= LEVEL3_POUNCE_SPEED_MOD;
 	}
@@ -616,7 +616,7 @@ static void PM_CheckCharge()
 		return;
 	}
 
-	if ( usercmdButtonPressed( pm->cmd.buttons, btn_attack2 ) &&
+	if ( usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 ) &&
 	     !( pm->ps->stats[ STAT_STATE ] & SS_CHARGING ) )
 	{
 		pm->ps->pm_flags &= ~PMF_CHARGE;
@@ -750,7 +750,7 @@ static bool PM_CheckPounce()
 	{
 		case WP_ALEVEL1:
 			// Check if player wants to pounce
-			if ( !usercmdButtonPressed( pm->cmd.buttons, btn_attack2 ) )
+			if ( !usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 ) )
 			{
 				return false;
 			}
@@ -765,7 +765,7 @@ static bool PM_CheckPounce()
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
 			// Don't pounce while still charging
-			if ( usercmdButtonPressed( pm->cmd.buttons, btn_attack2 ) )
+			if ( usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 ) )
 			{
 				pm->ps->pm_flags &= ~PMF_CHARGE;
 
@@ -3457,7 +3457,7 @@ static void PM_Footsteps()
 	}
 	else
 	{
-		if ( !usercmdButtonPressed( pm->cmd.buttons, btn_walking ) )
+		if ( !usercmdButtonPressed( pm->cmd.buttons, BTN_WALKING ) )
 		{
 			bobmove = 0.4f; // faster speeds bob faster
 
@@ -3729,7 +3729,7 @@ static void PM_FinishWeaponChange()
 
 static void HandleDeconstructButton()
 {
-	if ( usercmdButtonPressed( pm->cmd.buttons, btn_attack ) ||
+	if ( usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK ) ||
 	     ( pm->ps->weaponstate != WEAPON_READY && pm->ps->weaponstate != WEAPON_FIRING ) )
 	{
 		// cancel if player starts to build something, or if the weapon is in a weird state
@@ -3740,14 +3740,14 @@ static void HandleDeconstructButton()
 	if ( pm->ps->weaponCharge < 0 )
 	{
 		// weaponCharge==-1 is analogous to the WEAPON_NEEDS_RESET state when overcharging the luci
-		if ( !usercmdButtonPressed( pm->cmd.buttons, btn_deconstruct ) )
+		if ( !usercmdButtonPressed( pm->cmd.buttons, BTN_DECONSTRUCT ) )
 		{
 			pm->ps->weaponCharge = 0;
 		}
 		return;
 	}
 
-	if ( usercmdButtonPressed( pm->cmd.buttons, btn_deconstruct ) )
+	if ( usercmdButtonPressed( pm->cmd.buttons, BTN_DECONSTRUCT ) )
 	{
 		if ( pm->ps->weaponCharge >= BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE && pm->pmext->cancelDeconstructCharge )
 		{
@@ -3813,9 +3813,9 @@ Generates weapon events and modifies the weapon counter
 static void PM_Weapon()
 {
 	int      addTime = 200; //default addTime - should never be used
-	bool attack1 = usercmdButtonPressed( pm->cmd.buttons, btn_attack );
-	bool attack2 = usercmdButtonPressed( pm->cmd.buttons, btn_attack2 );
-	bool attack3 = usercmdButtonPressed( pm->cmd.buttons, btn_attack3 );
+	bool attack1 = usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK );
+	bool attack2 = usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 );
+	bool attack3 = usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK3 );
 
 	// Ignore weapons in some cases
 	if ( pm->ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
@@ -3848,7 +3848,7 @@ static void PM_Weapon()
 
 		max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
 
-		if ( usercmdButtonPressed( pm->cmd.buttons, btn_attack2 ) )
+		if ( usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 ) )
 		{
 			pm->ps->weaponCharge += pml.msec;
 		}
@@ -3875,7 +3875,7 @@ static void PM_Weapon()
 		{
 			// Charge button held
 			if ( pm->ps->weaponCharge < LEVEL4_TRAMPLE_CHARGE_TRIGGER &&
-			     usercmdButtonPressed( pm->cmd.buttons, btn_attack2 ) )
+			     usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 ) )
 			{
 				pm->ps->stats[ STAT_STATE ] &= ~SS_CHARGING;
 
@@ -3958,7 +3958,7 @@ static void PM_Weapon()
 	{
 		// Charging up
 		if ( !pm->ps->weaponTime && pm->ps->weaponstate != WEAPON_NEEDS_RESET &&
-		     usercmdButtonPressed( pm->cmd.buttons, btn_attack ) )
+		     usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK ) )
 		{
 			pm->ps->weaponCharge += pml.msec;
 
@@ -3995,7 +3995,7 @@ static void PM_Weapon()
 
 	// no bite during pounce
 	if ( ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
-	     && usercmdButtonPressed( pm->cmd.buttons, btn_attack )
+	     && usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK )
 	     && ( pm->ps->pm_flags & PMF_CHARGE ) )
 	{
 		return;
@@ -4453,7 +4453,7 @@ static void PM_Animate()
 		return;
 	}
 
-	if ( usercmdButtonPressed( pm->cmd.buttons, btn_gesture ) )
+	if ( usercmdButtonPressed( pm->cmd.buttons, BTN_GESTURE ) )
 	{
 		if ( pm->ps->tauntTimer > 0 )
 		{
@@ -4486,7 +4486,7 @@ static void PM_Animate()
 		}
 	}
 
-	if ( usercmdButtonPressed( pm->cmd.buttons, btn_rally ) )
+	if ( usercmdButtonPressed( pm->cmd.buttons, BTN_RALLY ) )
 	{
 		if ( pm->ps->tauntTimer > 0 )
 		{
@@ -4711,7 +4711,7 @@ static void PM_HumanStaminaEffects()
 	ca        = BG_Class( stats[ STAT_CLASS ] );
 	stopped   = ( pm->cmd.forwardmove == 0 && pm->cmd.rightmove == 0 );
 	crouching = ( pm->ps->pm_flags & PMF_DUCKED );
-	walking   = usercmdButtonPressed( pm->cmd.buttons, btn_walking );
+	walking   = usercmdButtonPressed( pm->cmd.buttons, BTN_WALKING );
 
 	// Use/Restore stamina
 	if ( stats[ STAT_STATE2 ] & SS2_JETPACK_WARM )
@@ -4780,12 +4780,12 @@ void PmoveSingle( pmove_t *pmove )
 	// proxy no-footsteps cheats
 	if ( abs( pm->cmd.forwardmove ) > 64 || abs( pm->cmd.rightmove ) > 64 )
 	{
-		usercmdReleaseButton( pm->cmd.buttons, btn_walking );
+		usercmdReleaseButton( pm->cmd.buttons, BTN_WALKING );
 	}
 
 	// set the firing flag for continuous beam weapons
 	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	     usercmdButtonPressed( pm->cmd.buttons, btn_attack ) &&
+	     usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK ) &&
 	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
 	{
 		pm->ps->eFlags |= EF_FIRING;
@@ -4797,7 +4797,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	// set the firing flag for continuous beam weapons
 	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	     usercmdButtonPressed( pm->cmd.buttons, btn_attack2 ) &&
+	     usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 ) &&
 	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
 	{
 		pm->ps->eFlags |= EF_FIRING2;
@@ -4809,7 +4809,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	// set the firing flag for continuous beam weapons
 	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	     usercmdButtonPressed( pm->cmd.buttons, btn_attack3 ) &&
+	     usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK3 ) &&
 	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
 	{
 		pm->ps->eFlags |= EF_FIRING3;
@@ -4821,7 +4821,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	// clear the respawned flag if attack and use are cleared
 	if ( pm->ps->stats[ STAT_HEALTH ] > 0 &&
-	     !( usercmdButtonPressed( pm->cmd.buttons, btn_attack ) ) )
+	     !( usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK ) ) )
 	{
 		pm->ps->pm_flags &= ~PMF_RESPAWNED;
 	}
@@ -4829,10 +4829,10 @@ void PmoveSingle( pmove_t *pmove )
 	// if talk button is down, disallow all other input
 	// this is to prevent any possible intercept proxy from
 	// adding fake talk balloons
-	if ( usercmdButtonPressed( pmove->cmd.buttons, btn_talk ) )
+	if ( usercmdButtonPressed( pmove->cmd.buttons, BTN_TALK ) )
 	{
 		usercmdClearButtons( pmove->cmd.buttons );
-		usercmdPressButton( pmove->cmd.buttons, btn_talk );
+		usercmdPressButton( pmove->cmd.buttons, BTN_TALK );
 		pmove->cmd.forwardmove = 0;
 		pmove->cmd.rightmove = 0;
 
