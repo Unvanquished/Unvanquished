@@ -346,7 +346,7 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 	}
 
 	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
-	BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
+	BG_BoundingBox( pClass, playerMins, playerMaxs );
 
 	//account for how large we can step
 	playerMins[2] += STEPSIZE;
@@ -382,7 +382,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	//already normalized
 
 	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
-	BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
+	BG_BoundingBox( pClass, playerMins, playerMaxs );
 
 	playerMins[2] += STEPSIZE;
 	playerMaxs[2] += STEPSIZE;
@@ -435,7 +435,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 
 	//get bbox
 	class_t pclass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
-	BG_BoundingBox( pclass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
+	BG_BoundingBox( pclass, playerMins, playerMaxs );
 
 	//account for stepsize
 	playerMins[2] += STEPSIZE;

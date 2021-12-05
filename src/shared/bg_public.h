@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bg_public.h -- definitions shared by both the server game and client game modules
 //==================================================================
 
+#include "engine/qcommon/q_shared.h"
+
 #include <glm/vec3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -38,8 +40,6 @@ template<typename T>
 inline glm::vec3 VEC2GLM( const T& v ) {
 	return glm::vec3( v[0], v[1], v[2] );
 }
-
-#include "engine/qcommon/q_shared.h"
 
 //Unvanquished balance header
 #include "bg_gameplay.h"
@@ -1807,6 +1807,16 @@ bool ConsoleCommand();
 void CompleteCommand(int argNum);
 
 #include "Clustering.h"
+
+glm::vec3 BG_GetClientNormal( const playerState_t *ps );
+glm::vec3 BG_GetClientViewOrigin( const playerState_t *ps );
+
+void BG_BoundingBox( class_t cl, glm::vec3 &mins, glm::vec3 &maxs );
+void BG_DeadBoundingBox( class_t cl, glm::vec3 &mins, glm::vec3 &maxs );
+glm::vec3 BG_CrouchBoundingBox( class_t cl );
+
+void BG_BoundingBox( buildable_t buildablel, glm::vec3 &mins, glm::vec3 &maxs );
+
 
 //==================================================================
 #endif /* BG_PUBLIC_H_ */

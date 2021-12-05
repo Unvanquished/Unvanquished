@@ -2692,3 +2692,56 @@ bool playerState_t::IsWeaponReady( void ) const
 {
 	return weaponTime <= 0 && ( ammo > 0 || BG_Weapon( weapon )->infiniteAmmo );
 }
+
+glm::vec3 BG_GetClientNormal( const playerState_t *ps )
+{
+	if ( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	{
+		if ( ps->eFlags & EF_WALLCLIMBCEILING )
+		{
+			return glm::vec3( 0, 0, -1 );
+		}
+		return VEC2GLM( ps->grapplePoint );
+	}
+	return glm::vec3( 0, 0, 1 );
+}
+
+glm::vec3 BG_GetClientViewOrigin( const playerState_t *ps )
+{
+	return VEC2GLM( ps->origin ) + static_cast<float>( ps->viewheight ) * BG_GetClientNormal( ps );
+}
+
+void BG_BoundingBox( class_t pClass, glm::vec3 &mins, glm::vec3 &maxs )
+{
+	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
+	ASSERT( classModelConfig != nullptr );
+
+	mins = VEC2GLM( classModelConfig->mins );
+	maxs = VEC2GLM( classModelConfig->maxs );
+}
+
+glm::vec3 BG_CrouchBoundingBox( class_t pClass )
+{
+	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
+	ASSERT( classModelConfig != nullptr );
+
+	return VEC2GLM( classModelConfig->crouchMaxs );
+}
+
+void BG_DeadBoundingBox( class_t pClass, glm::vec3 &mins, glm::vec3 &maxs )
+{
+	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
+	ASSERT( classModelConfig != nullptr );
+
+	mins = VEC2GLM( classModelConfig->deadMins );
+	maxs = VEC2GLM( classModelConfig->deadMaxs );
+}
+
+void BG_BoundingBox( buildable_t buildable, glm::vec3 &mins, glm::vec3 &maxs )
+{
+	buildableModelConfig_t *buildableModelConfig = BG_BuildableModelConfig( buildable );
+	ASSERT( buildableModelConfig != nullptr );
+
+	mins = VEC2GLM( buildableModelConfig->mins );
+	maxs = VEC2GLM( buildableModelConfig->maxs );
+}
