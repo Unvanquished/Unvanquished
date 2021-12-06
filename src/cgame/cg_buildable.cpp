@@ -1122,6 +1122,12 @@ static void CG_DrawBuildableRangeMarker( buildable_t buildable, const vec3_t ori
 CG_GhostBuildable
 ==================
 */
+// draw "ghost" buildings, that is, (probably) the blueprints showed to allow
+// player to visualize where the building will go, and not (human) buildings
+// which already entered the construction phase (and appear ghostly, too).
+//
+// buildableInfo is a 16 bits integer, with a valid buildable_t on the 8 lower
+// bits, and a mask on the 8 higher bits (see SB_BUILDABLE_STATE_MASK).
 void CG_GhostBuildable( int buildableInfo )
 {
 	playerState_t *ps;
