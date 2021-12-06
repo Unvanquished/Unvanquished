@@ -1105,9 +1105,6 @@ static void G_IssueMapChange( int index, int rotation )
 		}
 	}
 
-	// Load up map defaults if g_mapConfigs is set
-	G_MapConfigs( map->name );
-
 	if ( strlen( map->postCommand ) > 0 )
 	{
 		trap_SendConsoleCommand( map->postCommand );

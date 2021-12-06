@@ -266,9 +266,6 @@ Cvar::Cvar<bool> g_bot_infinite_funds("g_bot_infinite_funds", "give bots unlimit
 static Cvar::Cvar<std::string> gamename("gamename", "game/mod identifier", Cvar::SERVERINFO | Cvar::ROM, GAME_VERSION);
 static Cvar::Cvar<std::string> gamedate("gamedate", "date the sgame was compiled", Cvar::ROM, __DATE__);
 
-// TODO why is this needed?
-static Cvar::Cvar<bool> g_mapConfigsLoaded("g_mapConfigsLoaded", "FOR INTERNAL USE", Cvar::NONE, false);
-
 void               CheckExitRules();
 static void        G_LogGameplayStats( int state );
 
@@ -380,16 +377,10 @@ void G_MapConfigs( const char *mapname )
 		return;
 	}
 
-	if ( g_mapConfigsLoaded.Get() )
-	{
-		return;
-	}
-
 	trap_SendConsoleCommand( va( "exec %s/default.cfg", Quote( g_mapConfigs.Get().c_str() ) ) );
 
 	trap_SendConsoleCommand( va( "exec %s/%s.cfg", Quote( g_mapConfigs.Get().c_str() ), Quote( mapname ) ) );
 
-	g_mapConfigsLoaded.Set(true);
 	trap_SendConsoleCommand( "maprestarted" );
 }
 
@@ -494,9 +485,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// load config files
 	BG_InitAllConfigs();
-
-	// we're done with g_mapConfigs, so reset this for the next map
-	g_mapConfigsLoaded.Set(false);
 
 	G_RegisterCommands();
 	G_admin_readconfig( nullptr );
