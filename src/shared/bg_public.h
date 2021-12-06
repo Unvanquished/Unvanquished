@@ -1124,7 +1124,8 @@ enum meansOfDeath_t
   MOD_REPLACE
 };
 
-// TODO: move other button definitions into gamelogic
+// NOTE: BUTTON_TALK, BUTTON_WALKING and BUTTON_ANY are defined in daemon
+// Not sure which one of BTN_GESTURE or BTN_RALLY is "taunt"
 enum buttonNumber_t
 {
 	BTN_ATTACK       = 0,
@@ -1138,7 +1139,7 @@ enum buttonNumber_t
 	BTN_ATTACK2      = 8,
 	BTN_ATTACK3      = 9,
 	BTN_DECONSTRUCT  = 13,
-	BTN_RALLY        = 14, // also named "taunt" in some places
+	BTN_RALLY        = 14,
 };
 
 
