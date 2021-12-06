@@ -1128,20 +1128,17 @@ enum meansOfDeath_t
 enum buttonNumber_t
 {
 	BTN_ATTACK       = 0,
-	// defined by daemon
-	BTN_TALK         = BUTTON_TALK, // = 1, // disables actions
+	BTN_TALK         = BUTTON_TALK, // = 1, // disables actions (defined by daemon)
 	BTN_USE_HOLDABLE = 2,
 	BTN_GESTURE      = 3,
-	// defined by daemon
-	BTN_WALKING      = BUTTON_WALKING, // = 4, // walking can't just be inferred from MOVE_RUN
+	BTN_WALKING      = BUTTON_WALKING, // = 4, (defined by daemon)
 	BTN_SPRINT       = 5,
 	BTN_ACTIVATE     = 6,
-	// defined by daemon
-	BTN_ANY          = BUTTON_ANY, // = 7, // if any key is pressed
+	BTN_ANY          = BUTTON_ANY, // = 7, // if any key is pressed (defined by daemon)
 	BTN_ATTACK2      = 8,
 	BTN_ATTACK3      = 9,
 	BTN_DECONSTRUCT  = 13,
-	BTN_RALLY        = 14 // also named "taunt" in some places
+	BTN_RALLY        = 14, // also named "taunt" in some places
 };
 
 
