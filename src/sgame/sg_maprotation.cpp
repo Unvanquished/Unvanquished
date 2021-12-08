@@ -1074,8 +1074,13 @@ static void G_IssueMapChange( int index, int rotation )
 	}
 
 	mrMapDescription_t  *map = &node->u.map;
-	char currentMapName[ MAX_STRING_CHARS ];
 
+	if ( strlen( map->postCommand ) > 0 )
+	{
+		trap_SendConsoleCommand( map->postCommand );
+	}
+
+	char currentMapName[ MAX_STRING_CHARS ];
 	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
 
 	// Restart if map is the same
@@ -1103,11 +1108,6 @@ static void G_IssueMapChange( int index, int rotation )
 		{
 			trap_SendConsoleCommand( va( "map %s\n", Quote( map->name ) ) );
 		}
-	}
-
-	if ( strlen( map->postCommand ) > 0 )
-	{
-		trap_SendConsoleCommand( map->postCommand );
 	}
 }
 
