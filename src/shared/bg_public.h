@@ -336,7 +336,6 @@ enum statIndex_t
   STAT_VIEWLOCK,   // direction to lock the view in
   STAT_PREDICTION, // predictions for current player action
   STAT_FUEL,       // humans: jetpack fuel
-  STAT_TAGSCORE    // tagging progress
 };
 
 #define SCA_WALLCLIMBER     0x00000001
