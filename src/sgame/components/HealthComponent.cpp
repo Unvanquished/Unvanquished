@@ -243,7 +243,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 }
 
 void HealthComponent::SetHealth(float health) {
-	Math::Clamp(health, FLT_EPSILON, maxHealth);
+	health = Math::Clamp(health, FLT_EPSILON, maxHealth);
 
 	healthLogger.Debug("Changing health: %3.1f → %3.1f.", this->health, health);
 
