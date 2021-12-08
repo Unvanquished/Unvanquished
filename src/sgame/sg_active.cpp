@@ -839,8 +839,6 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 	traceEnt = Beacon::TagTrace( viewOrigin, end, self->s.number, MASK_SHOT, team, true );
 	G_UnlaggedOff( );
 
-	client->ps.stats[ STAT_TAGSCORE ] = 0;
-
 	for ( target = nullptr; ( target = G_IterateEntities( target ) ); )
 	{
 		// Tag entity directly hit and entities in human radar range, make sure the latter are also
@@ -859,9 +857,6 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 
 			if( target->tagScore > 1000 )
 				Beacon::Tag( target, team, ( target->s.eType == entityType_t::ET_BUILDABLE ) );
-
-			client->ps.stats[ STAT_TAGSCORE ] = Math::Clamp(
-				target->tagScore, client->ps.stats[ STAT_TAGSCORE ], 1000 );
 		}
 	}
 }

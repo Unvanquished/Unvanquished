@@ -1258,8 +1258,6 @@ struct cg_t
 	cbeacon_t               *highlightedBeacon;
 	beaconRocket_t          beaconRocket;
 
-	int                     tagScoreTime;
-
 	// pmove params
 	struct {
 		int synchronous;

@@ -332,7 +332,4 @@ void CG_TransitionPlayerState( playerState_t *ps, playerState_t *ops )
 	{
 		cg.lastHealthCross = 0;
 	}
-
-	if ( ps->stats[ STAT_TAGSCORE ] != ops->stats[ STAT_TAGSCORE ] )
-		cg.tagScoreTime = cg.time;
 }
