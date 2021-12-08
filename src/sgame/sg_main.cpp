@@ -371,6 +371,15 @@ void G_InitSetEntities()
 /*
 =================
 G_MapConfigs
+
+If a map is started by a map/devmap command from the user, map configs are executed at the beginning
+of the new game. If a map is selected by the map rotation, a vote, or the changemap command, then
+map configs are executed at the end of the previous game. g_mapConfigsLoaded book-keeps this so they
+aren't executed twice.
+
+Clearly this is a janky situation. Why not always execute the configs at the beginning? Well,
+executing configs at the end of the previous game might be useful for setting fs_extrapaks or other
+things that only work prior to a restart.
 =================
 */
 void G_MapConfigs( const char *mapname )
@@ -1394,10 +1403,12 @@ void ExitLevel()
 	if ( !Q_stricmp( currentMapName, g_nextMap.Get().c_str() ) )
 	{
 		g_layouts.Set( g_nextMapLayouts.Get() );
+		G_MapConfigs( currentMapName );
 		trap_SendConsoleCommand( "map_restart" );
 	}
 	else if ( G_MapExists( g_nextMap.Get().c_str() ) )
 	{
+		G_MapConfigs( g_nextMap.Get().c_str() );
 		trap_SendConsoleCommand( va( "map %s %s", Quote( g_nextMap.Get().c_str() ), Quote( g_nextMapLayouts.Get().c_str() ) ) );
 	}
 	else if ( G_MapRotationActive() )
@@ -1406,6 +1417,7 @@ void ExitLevel()
 	}
 	else
 	{
+		G_MapConfigs( currentMapName );
 		trap_SendConsoleCommand( "map_restart" );
 	}
 

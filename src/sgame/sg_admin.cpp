@@ -3288,6 +3288,7 @@ bool G_admin_changemap( gentity_t *ent )
 	admin_log( map );
 	admin_log( layout );
 
+	G_MapConfigs( map );
 	trap_SendConsoleCommand( va( "map %s %s", Quote( map ), Quote( layout ) ) );
 
 	level.restarted = true;

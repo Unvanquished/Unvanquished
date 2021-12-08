@@ -1078,6 +1078,14 @@ static void G_IssueMapChange( int index, int rotation )
 
 	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
 
+	if ( strlen( map->postCommand ) > 0 )
+	{
+		trap_SendConsoleCommand( map->postCommand );
+	}
+
+	// Load up map defaults if g_mapConfigs is set
+	G_MapConfigs( map->name );
+
 	// Restart if map is the same
 	if ( !Q_stricmp( currentMapName, map->name ) )
 	{
@@ -1088,8 +1096,6 @@ static void G_IssueMapChange( int index, int rotation )
 		}
 
 		trap_SendConsoleCommand( "map_restart" );
-
-
 	}
 	// Load new map if different
 	else
@@ -1103,14 +1109,6 @@ static void G_IssueMapChange( int index, int rotation )
 		{
 			trap_SendConsoleCommand( va( "map %s\n", Quote( map->name ) ) );
 		}
-	}
-
-	// Load up map defaults if g_mapConfigs is set
-	G_MapConfigs( map->name );
-
-	if ( strlen( map->postCommand ) > 0 )
-	{
-		trap_SendConsoleCommand( map->postCommand );
 	}
 }
 
