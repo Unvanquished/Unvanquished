@@ -37,7 +37,7 @@ Navigation Mesh Loading
 ========================
 */
 
-// FIXME: use nav handle instead of classes
+// FIXME: use nav() handle instead of classes
 void G_BotNavInit()
 {
 	int i;
@@ -144,7 +144,7 @@ bool GoalInRange( const gentity_t *self, float r )
 
 	if ( self->botMind->goal.targetsCoordinates() )
 	{
-		return ( Distance( self->s.origin, self->botMind->nav.tpos ) < r );
+		return ( Distance( self->s.origin, self->botMind->nav().tpos ) < r );
 	}
 
 	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) ) )
@@ -607,7 +607,7 @@ Global Bot Navigation
 bool BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
-	VectorCopy( self->botMind->nav.dir, dir );
+	VectorCopy( self->botMind->nav().dir, dir );
 
 	if ( BotAvoidObstacles( self, dir ) )
 	{
@@ -687,7 +687,7 @@ bool BotMoveToGoal( gentity_t *self )
 		if ( magnitude )
 		{
 			vec3_t dest;
-			VectorCopy( self->botMind->nav.tpos, dest );
+			VectorCopy( self->botMind->nav().tpos, dest );
 			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, dest, magnitude ) / 3 );
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
