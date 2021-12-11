@@ -719,6 +719,7 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
 	team_t myTeam = ( team_t ) self->client->pers.team;
+	botMemory_t const* mind = self->botMind;
 
 	if ( self->botMind->currentNode != node )
 	{
@@ -739,7 +740,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
-	if ( !self->botMind->nav.havePath )
+	if ( !mind->nav().havePath )
 	{
 		return STATUS_FAILURE;
 	}
@@ -790,7 +791,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
 	self->botMind->enemyLastSeen = level.time;
 
-	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !self->botMind->nav.directPathToGoal )
+	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !mind->nav().directPathToGoal )
 	{
 		BotMoveToGoal( self );
 		return STATUS_RUNNING;
@@ -883,6 +884,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
 	float radius = AIUnBoxFloat( a->params[ 1 ] );
+	botMemory_t const* mind = self->botMind;
 
 	if ( node != self->botMind->currentNode )
 	{
@@ -906,7 +908,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->currentNode = node;
 	}
 
-	if ( self->botMind->nav.directPathToGoal && GoalInRange( self, 70 ) )
+	if ( mind->nav().directPathToGoal && GoalInRange( self, 70 ) )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -917,6 +919,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 {
+	botMemory_t const* mind = self->botMind;
 	// we are just starting to roam, get a target location
 	if ( node != self->botMind->currentNode )
 	{
@@ -928,7 +931,7 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->currentNode = node;
 	}
 
-	if ( self->botMind->nav.directPathToGoal && GoalInRange( self, 70 ) )
+	if ( mind->nav().directPathToGoal && GoalInRange( self, 70 ) )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -952,6 +955,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	float radius = 0;
 	AIActionNode_t *moveTo = ( AIActionNode_t * ) node;
 	AIEntity_t ent = ( AIEntity_t ) AIUnBoxInt( moveTo->params[ 0 ] );
+	botMemory_t const* mind = self->botMind;
 
 	if ( moveTo->nparams > 1 )
 	{
@@ -983,7 +987,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 		radius = BotGetGoalRadius( self );
 	}
 
-	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && self->botMind->nav.directPathToGoal )
+	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && mind->nav().directPathToGoal )
 	{
 		return STATUS_SUCCESS;
 	}

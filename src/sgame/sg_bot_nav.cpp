@@ -37,7 +37,7 @@ Navigation Mesh Loading
 ========================
 */
 
-// FIXME: use nav handle instead of classes
+// FIXME: use nav() handle instead of classes
 bool G_BotNavInit()
 {
 	if ( navMeshLoaded )
@@ -144,7 +144,7 @@ bool GoalInRange( const gentity_t *self, float r )
 
 	if ( self->botMind->goal.targetsCoordinates() )
 	{
-		return ( Distance( self->s.origin, self->botMind->nav.tpos ) < r );
+		return ( Distance( self->s.origin, self->botMind->nav().tpos ) < r );
 	}
 
 	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) ) )
@@ -624,7 +624,7 @@ void BotClampPos( gentity_t *self )
 	vec3_t origin;
 	trace_t trace;
 	vec3_t mins, maxs;
-	VectorSet( origin, self->botMind->nav.pos[ 0 ], self->botMind->nav.pos[ 1 ], height );
+	VectorSet( origin, self->botMind->nav().pos[ 0 ], self->botMind->nav().pos[ 1 ], height );
 	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
 	trap_Trace( &trace, self->client->ps.origin, mins, maxs, origin, self->client->ps.clientNum,
 	            MASK_PLAYERSOLID, 0 );
@@ -635,8 +635,8 @@ void BotClampPos( gentity_t *self )
 void BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
-	VectorCopy( self->botMind->nav.dir, dir );
-	const playerState_t& ps  = self->client->ps;
+	VectorCopy( self->botMind->nav().dir, dir );
+	const auto& ps = self->client->ps;
 
 	if ( dir[ 2 ] < 0 )
 	{
@@ -718,7 +718,7 @@ void BotMoveToGoal( gentity_t *self )
 		if ( magnitude )
 		{
 			vec3_t dest;
-			VectorCopy( self->botMind->nav.tpos, dest );
+			VectorCopy( self->botMind->nav().tpos, dest );
 			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, dest, magnitude ) / 3 );
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
