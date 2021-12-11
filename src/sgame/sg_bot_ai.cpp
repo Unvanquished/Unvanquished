@@ -1059,6 +1059,11 @@ AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionSuicide( gentity_t *self, AIGenericNode_t* )
 {
+	//hopefully this is enough digits for all maps.
+	char str[] = "I'm stuck at x=0123456789 y=0123456789 z=0123456789 !?!";
+	glm::vec3 pos = VEC2GLM( self->s.origin );
+	snprintf( str, sizeof( str ), "I'm stuck at x=%-.0f y=%-.0f z=%-.0f !?!", pos.x, pos.y, pos.z );
+	G_Say( self, SAY_TEAM, str );
 	Entities::Kill( self, MOD_SUICIDE );
 	return AINodeStatus_t::STATUS_SUCCESS;
 }
