@@ -248,17 +248,11 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 		dtPolyRef firstPoly = bot->corridor.getFirstPoly();
 		dtPolyRef lastPoly = bot->corridor.getLastPoly();
 
-		if ( !PointInPoly( bot, firstPoly, spos ) )
+		if ( !PointInPoly( bot, firstPoly, spos ) ||
+		   ( rtarget.type == botRouteTargetType_t::BOT_TARGET_DYNAMIC
+		     && !PointInPolyExtents( bot, lastPoly, epos, rtarget.polyExtents ) ) )
 		{
 			bot->needReplan = true;
-		}
-
-		if ( rtarget.type == botRouteTargetType_t::BOT_TARGET_DYNAMIC )
-		{
-			if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.polyExtents ) )
-			{
-				bot->needReplan = true;
-			}
 		}
 
 		rVec rdir;
