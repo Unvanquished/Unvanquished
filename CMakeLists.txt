@@ -106,7 +106,9 @@ if (BUILD_SGAME OR BUILD_CGAME)
     include_directories(${LIB_DIR}/recastnavigation/Detour/Include
                         ${LIB_DIR}/recastnavigation/DetourTileCache/Include
                         ${LIB_DIR}/recastnavigation/DebugUtils/Include
-                        ${LIB_DIR}/recastnavigation/DetourCrowd/Include)
+                        ${LIB_DIR}/recastnavigation/DetourCrowd/Include
+                        ${LIB_DIR}/glm
+                       )
 
     # Recast
     add_library(srclibs-recast EXCLUDE_FROM_ALL ${RECASTLIST})
