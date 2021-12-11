@@ -549,7 +549,7 @@ bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 			BotJump( self );
 			return false;
 		}
-		else if ( !BotFindSteerTarget( self, dir ) )
+		if ( !BotFindSteerTarget( self, dir ) )
 		{
 			vec3_t angles;
 			vec3_t right;
