@@ -603,23 +603,6 @@ Global Bot Navigation
 =========================
 */
 
-void BotClampPos( gentity_t *self )
-{
-	float height = self->client->ps.origin[ 2 ];
-	glm::vec3 self_origin = VEC2GLM( self->client->ps.origin );
-	trace_t trace;
-	glm::vec3 mins, maxs;
-
-	glm::vec3 origin = self->botMind->nav().glm_pos();
-	origin[2] = height;
-	class_t pclass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
-	BG_BoundingBox( pclass, mins, maxs );
-	trap_Trace( &trace, self_origin, mins, maxs, origin, self->client->ps.clientNum,
-	            MASK_PLAYERSOLID, 0 );
-	G_SetOrigin( self, VEC2GLM( trace.endpos ) );
-	VectorCopy( trace.endpos, self->client->ps.origin );
-}
-
 void BotMoveToGoal( gentity_t *self )
 {
 	const playerState_t& ps = self->client->ps;
