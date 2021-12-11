@@ -204,7 +204,7 @@ bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
 {
 	botMind->runningNodes.clear();
 	botMind->currentNode = nullptr;
-	memset( &botMind->nav, 0, sizeof( botMind->nav ) );
+	botMind->clearNav();
 	BotResetEnemyQueue( &botMind->enemyQueue );
 
 	botMind->behaviorTree = ReadBehaviorTree( behavior, &treeList );
@@ -393,7 +393,6 @@ void G_BotThink( gentity_t *self )
 	char buf[MAX_STRING_CHARS];
 	usercmd_t *botCmdBuffer;
 	vec3_t     nudge;
-	botRouteTarget_t routeTarget;
 
 	self->botMind->cmdBuffer = self->client->pers.cmd;
 	botCmdBuffer = &self->botMind->cmdBuffer;
@@ -439,8 +438,9 @@ void G_BotThink( gentity_t *self )
 	// always update the path corridor
 	if ( self->botMind->goal.isValid() )
 	{
+		botRouteTarget_t routeTarget;
 		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
-		G_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
+		G_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->m_nav );
 	}
 
 	self->botMind->willSprint( false ); //let the BT decide that
@@ -498,7 +498,7 @@ void G_BotSpectatorThink( gentity_t *self )
 	self->botMind->bestEnemy.ent = nullptr;
 	BotResetEnemyQueue( &self->botMind->enemyQueue );
 	self->botMind->currentNode = nullptr;
-	memset( &self->botMind->nav, 0, sizeof( self->botMind->nav ) );
+	self->botMind->clearNav();
 	self->botMind->futureAimTime = 0;
 	self->botMind->futureAimTimeInterval = 0;
 	self->botMind->runningNodes.clear();

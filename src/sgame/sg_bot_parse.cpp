@@ -232,7 +232,7 @@ static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 
 	if ( e == E_GOAL )
 	{
-		return AIBoxInt( self->botMind->nav.directPathToGoal );
+		return AIBoxInt( self->botMind->nav().directPathToGoal );
 	}
 
 	if ( ed.ent )

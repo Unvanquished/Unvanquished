@@ -1017,10 +1017,9 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 	target.getPos( routeTarget->pos );
 	BotTargetGetBoundingBox( target, mins, maxs, routeTarget );
 
-	for ( int i = 0; i < 3; i++ )
-	{
-		routeTarget->polyExtents[ i ] = std::max( Q_fabs( mins[ i ] ), maxs[ i ] );
-	}
+	routeTarget->polyExtents[ 0 ] = std::max( Q_fabs( mins[ 0 ] ), maxs[ 0 ] );
+	routeTarget->polyExtents[ 1 ] = std::max( Q_fabs( mins[ 1 ] ), maxs[ 1 ] );
+	routeTarget->polyExtents[ 2 ] = std::max( Q_fabs( mins[ 2 ] ), maxs[ 2 ] );
 
 	// move center a bit lower so we don't get polys above the object
 	// and get polys below the object on a slope
@@ -1070,7 +1069,7 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 	}
 
 	self->botMind->goal = target;
-	self->botMind->nav.directPathToGoal = false;
+	self->botMind->m_nav.directPathToGoal = false;
 	return true;
 }
 
@@ -1682,7 +1681,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
-			if ( self->botMind->nav.directPathToGoal )
+			if ( self->botMind->nav().directPathToGoal )
 			{
 				if ( self->client->time1000 % 300 == 0 )
 				{
