@@ -11,9 +11,9 @@
 			<colorinput type="text" cvar="name" style="overflow: hidden; white-space: pre;"/>
 			<h3>Nickname</h3>
 			<p>Your name visible to others.</p>
-			<p><ilink onClick='Events.pushevent("show help_textentry", event)'>Colours and symbols</ilink> can be used.</p>
+			<p><ilink onclick='Events.pushevent("show help_textentry", event)'>Colours and symbols</ilink> can be used.</p>
 		</row>
 		<p>You can change this at any time in the Options.</p>
-		<button style="width:50%; margin:auto; margin-top:1.5em;" onClick='document:Hide() Events.pushevent("show serverbrowser", event)'>Select Battlefield</button>
+		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='document:Hide() Events.pushevent("show serverbrowser", event)'>Select Battlefield</button>
 	</body>
 </rml>

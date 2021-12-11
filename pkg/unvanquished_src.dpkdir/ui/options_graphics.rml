@@ -33,23 +33,23 @@
 			<panel class="presets">
 				<h2>Presets</h2>
 				<row>
-					<button onClick='Events.pushevent("exec preset presets/graphics/lowest.cfg", event)'>Lowest</button>
+					<button onclick='Events.pushevent("exec preset presets/graphics/lowest.cfg", event)'>Lowest</button>
 					<span>Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel textures…</span>
 				</row>
 				<row>
-					<button onClick='Events.pushevent("exec preset presets/graphics/low.cfg", event)'>Low</button>
+					<button onclick='Events.pushevent("exec preset presets/graphics/low.cfg", event)'>Low</button>
 					<span>Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-pixel textures…</span>
 				</row>
 				<row>
-					<button onClick='Events.pushevent("exec preset presets/graphics/medium.cfg", event)'>Medium</button>
+					<button onclick='Events.pushevent("exec preset presets/graphics/medium.cfg", event)'>Medium</button>
 					<span>Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel textures…</span>
 				</row>
 				<row>
-					<button onClick='Events.pushevent("exec preset presets/graphics/high.cfg", event)'>High</button>
+					<button onclick='Events.pushevent("exec preset presets/graphics/high.cfg", event)'>High</button>
 					<span>Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-pixel textures…</span>
 				</row>
 				<row>
-					<button onClick='Events.pushevent("exec preset presets/graphics/ultra.cfg", event)'>Ultra</button>
+					<button onclick='Events.pushevent("exec preset presets/graphics/ultra.cfg", event)'>Ultra</button>
 					<span>Relief mapping and other features and effects enabled, up to 4096-pixel textures…</span>
 				</row>
 			</panel>
@@ -111,7 +111,7 @@
 				</row>
 
 				<buttonbar>
-					<button onClick='Events.pushevent("exec r_mode -1; exec vid_restart", event)'>Apply now</button>
+					<button onclick='Events.pushevent("exec r_mode -1; exec vid_restart", event)'>Apply now</button>
 				</buttonbar>
 
 			</panel>
@@ -154,7 +154,7 @@
 					<h3>Shadows</h3>
 				</row>
 				<buttonbar>
-					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
+					<button onclick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
 				</buttonbar>
 			</panel>
 
@@ -198,7 +198,7 @@
 				</row>
 
 				<buttonbar>
-					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
+					<button onclick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
 				</buttonbar>
 			</panel>
 
@@ -219,6 +219,25 @@
 					<input cvar="r_reliefMapping" type="checkbox" />
 					<p>Adds bumps on supported surfaces. Experimental.</p>
 				</row>
+				<row>
+					<h3>Specular mapping</h3>
+					<input cvar="r_specularMapping" type="checkbox" />
+					<p>Simulate light specularity.</p>
+				</row>
+				<row>
+					<h3>Physical mapping</h3>
+					<input cvar="r_physicalMapping" type="checkbox" />
+					<p>Material appearance based on physical approximations.</p>
+				</row>
+
+				<buttonbar>
+					<button onclick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
+				</buttonbar>
+			</panel>
+
+			<tab>Effects</tab>
+			<panel>
+				<h2>Effects</h2>
 				<row>
 					<h3>Bloom</h3>
 					<input cvar="r_bloom" type="checkbox" />
@@ -248,7 +267,7 @@
 					<p>Allow particles to bounce off surfaces.</p>
 				</row>
 				<buttonbar>
-					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
+					<button onclick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
 				</buttonbar>
 			</panel>
 
