@@ -459,6 +459,7 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	return blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f;
 }
 
+// return true on error or if could not find a path
 bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 {
 	vec3_t forward;
@@ -536,39 +537,45 @@ bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 	//we couldnt find a new position
 	return false;
 }
+
+//return true on error
 bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
 	gentity_t *blocker;
 
 	blocker = BotGetPathBlocker( self, dir );
 
-	if ( blocker )
+	if ( !blocker )
 	{
-		if ( BotShouldJump( self, blocker, dir ) )
-		{
-			BotJump( self );
-			return false;
-		}
-		if ( !BotFindSteerTarget( self, dir ) )
-		{
-			vec3_t angles;
-			vec3_t right;
-			vectoangles( dir, angles );
-			AngleVectors( angles, dir, right, nullptr );
+		return false;
+	}
 
-			if ( ( self->client->time10000 % 2000 ) < 1000 )
-			{
-				VectorCopy( right, dir );
-			}
-			else
-			{
-				VectorNegate( right, dir );
-			}
-			dir[ 2 ] = 0;
-			VectorNormalize( dir );
-		}
+	if ( BotShouldJump( self, blocker, dir ) )
+	{
+		BotJump( self );
+		return false;
+	}
+
+	if ( BotFindSteerTarget( self, dir ) )
+	{
 		return true;
 	}
+
+	vec3_t angles;
+	vec3_t right;
+	vectoangles( dir, angles );
+	AngleVectors( angles, dir, right, nullptr );
+
+	if ( ( self->client->time10000 % 2000 ) < 1000 )
+	{
+		VectorCopy( right, dir );
+	}
+	else
+	{
+		VectorNegate( right, dir );
+	}
+	dir[ 2 ] = 0;
+	VectorNormalize( dir );
 	return false;
 }
 
