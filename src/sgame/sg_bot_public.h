@@ -67,7 +67,6 @@ void G_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle )
 void G_BotRemoveObstacle( qhandle_t handle );
 void G_BotUpdateObstacles();
 
-constexpr int BOT_DEFAULT_SKILL = 5;
 const char BOT_DEFAULT_BEHAVIOR[] = "default";
 const char BOT_NAME_FROM_LIST[] = "*";
 

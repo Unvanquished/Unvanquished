@@ -254,6 +254,9 @@ Cvar::Cvar<bool> g_bot_level3("g_bot_level3", "whether bots use non-advanced Dra
 Cvar::Cvar<bool> g_bot_level3upg("g_bot_level3upg", "whether bots use Advanced Dragoon", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_level4("g_bot_level4", "whether bots use Tyrant", Cvar::NONE, true);
 
+// bot default configurations
+Cvar::Range<Cvar::Cvar<int>> g_bot_default_skill( "g_bot_default_skill", "Default skill value bots will have when added", Cvar::NONE, 5, 1, 9 );
+
 // misc bot cvars
 Cvar::Cvar<bool> g_bot_attackStruct("g_bot_attackStruct", "whether bots target buildables", Cvar::NONE, true);
 Cvar::Cvar<float> g_bot_fov("g_bot_fov", "bots' \"field of view\"", Cvar::NONE, 125);
