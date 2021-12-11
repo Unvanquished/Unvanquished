@@ -13,3 +13,6 @@
 [submodule "pkg/unvanquished_src.dpkdir"]
 	path = pkg/unvanquished_src.dpkdir
 	url = https://github.com/UnvanquishedAssets/unvanquished_src.dpkdir.git
+[submodule "libs/glm"]
+	path = libs/glm
+	url = https://github.com/g-truc/glm
