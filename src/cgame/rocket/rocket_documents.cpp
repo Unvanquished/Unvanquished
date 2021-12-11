@@ -44,6 +44,7 @@ void Rocket_LoadDocument( const char *path )
 
 	if( document )
 	{
+		Rocket_SetDocumentScale( *document );
 		menuContext->PullDocumentToFront( document ); // Ensure any duplicates will be found first.
 
 		// Close any other documents which may have the same ID
@@ -54,6 +55,15 @@ void Rocket_LoadDocument( const char *path )
 		}
 	}
 
+}
+
+// Scale the UI proportional to the screen size
+void Rocket_SetDocumentScale( Rml::Core::ElementDocument& document )
+{
+	// This gets 12pt on 1920×1080 screen, which is libRocket default for 1em
+	int size = std::min( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) / 90;
+	document.SetProperty( Rml::Core::PropertyId::FontSize,
+	                      Rml::Core::Property( size, Rml::Core::Property::PT ));
 }
 
 void Rocket_LoadCursor( const char *path )
@@ -158,6 +168,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 			Rml::Core::String url = document->GetSourceURL();
 			document->Close();
 			document = menuContext->LoadDocument( url );
+			Rocket_SetDocumentScale( *document );
 			document->Show();
 		}
 	}
