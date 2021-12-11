@@ -25,7 +25,7 @@
 		</style>
 
 	</head>
-	<body id="callvote_map" template="window" style="width: 40em; margin: 1em;" onShow='Events.pushevent("buildDS mapList", event)' >
+	<body id="callvote_map" template="window" style="width: 40em; margin: 1em;" onshow='Events.pushevent("buildDS mapList", event)' >
 		<h1> Change map </h1>
 
 

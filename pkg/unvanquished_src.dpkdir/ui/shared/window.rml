@@ -105,7 +105,7 @@
 
 	<window>
 		<handle move_target="#document" />
-		<closebutton onClick="document:Hide()" />  <!-- Defined after the handle, so it's "ontop" -->
+		<closebutton onclick="document:Hide()" />  <!-- Defined after the handle, so it's "ontop" -->
 		<div id="content"></div>
 	</window>
 

@@ -8,6 +8,6 @@
 <p class="inline">
 <inlinecvar cvar="ui_errorMessage"/>
 </p>
-<button onClick='Events.pushevent("hide error", event)'>Ok</button>
+<button onclick='Events.pushevent("hide error", event)'>Ok</button>
 </body>
 </rml>
