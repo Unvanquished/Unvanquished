@@ -72,6 +72,7 @@ void Rocket_LoadUnit( const char *path )
 
 	if ( document )
 	{
+		Rocket_SetDocumentScale( *document );
 		hudContext->PullDocumentToFront( document );
 
 		// Close any other documents which may have the same ID

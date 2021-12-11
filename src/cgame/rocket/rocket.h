@@ -83,6 +83,7 @@ Rml::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
 std::string CG_KeyBinding( const char *bind, int team );
 
 void Rocket_AddEvent( RocketEvent_t *event );
+void Rocket_SetDocumentScale( Rml::Core::ElementDocument& document );
 
 struct UnvPropertyId {
 	static Rml::Core::PropertyId Orientation;
