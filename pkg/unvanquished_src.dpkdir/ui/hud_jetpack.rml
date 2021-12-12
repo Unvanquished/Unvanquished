@@ -40,7 +40,7 @@ img
 }
 jetpack.inactive
 {
-	opacity: 0em;
+	opacity: 0;
 }
 jetpack.active
 {
