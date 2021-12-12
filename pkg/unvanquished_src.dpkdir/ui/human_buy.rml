@@ -89,12 +89,9 @@
 	background-color: #99999999;
 	color: #CCCCCC;
 	font-size: 0.8em;
-	line-height: 0.85em;
+	line-height: 1.1em;
 	padding-left: 0.1em;
 	padding-right: 0.1em;
-	border-top-style: solid;
-	border-right-style: solid;
-	border-left-style: solid;
 	border-top-width: .1em;
 	border-bottom-width: .1em;
 	border-right-width: .1em;
