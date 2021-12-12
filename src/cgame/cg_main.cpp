@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 cg_t            cg;
 cgs_t           cgs;
-centity_t       cg_entities[ MAX_GENTITIES ] = {};
+centity_t       cg_entities[ MAX_GENTITIES ];
 
 weaponInfo_t    cg_weapons[ 32 ];
 upgradeInfo_t   cg_upgrades[ 32 ];
@@ -1119,6 +1119,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	new(&cgs) cgs_t{}; // Using {} instead of () to work around MSVC bug
 	cg.~cg_t();
 	new(&cg) cg_t{};
+	for ( centity_t& ent : cg_entities) { ent = {}; }
 
 	CG_UpdateLoadingStep( LOAD_START );
 
