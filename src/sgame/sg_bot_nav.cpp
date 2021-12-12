@@ -576,7 +576,7 @@ bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 	}
 	dir[ 2 ] = 0;
 	VectorNormalize( dir );
-	return false;
+	return true;
 }
 
 void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
