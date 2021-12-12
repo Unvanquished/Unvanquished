@@ -197,7 +197,7 @@
 				cell-color: #22888860;
 				color: #88FFFF90;
 
-				border-width: 0em;
+				momentum-border-width: 0;
 			}
 
 			usable_buildable

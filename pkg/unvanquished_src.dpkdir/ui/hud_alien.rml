@@ -206,7 +206,7 @@
 				cell-color: #93141466;
 				color: #703030FF;
 
-				border-width: 0em;
+				momentum-border-width: 0;
 			}
 
 			health, health_cross
