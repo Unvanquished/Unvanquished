@@ -161,6 +161,7 @@ struct botMemory_t
 private:
 	botNavCmd_t m_nav;
 public:
+	bool findPath( gentity_t *, glm::vec3 & );
 	botNavCmd_t const& nav( void ) const { return m_nav; };
 	void clearNav( void ) { memset( &m_nav, 0, sizeof( m_nav ) ); }
 	void setGoal( botTarget_t target, bool direct ) { goal = target; m_nav.directPathToGoal = direct; }

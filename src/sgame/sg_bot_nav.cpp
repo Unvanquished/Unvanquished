@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;
@@ -493,6 +495,122 @@ bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 	return false;
 }
 
+static bool walkable( trace_t const& trace )
+{
+	return trace.fraction >= 1.0f || trace.plane.normal[2] >= 0.7f;
+}
+
+// verify if the way in a direction is free
+// return true if yes
+static bool checkWalkable( glm::vec3 const& origin, float yaw, glm::vec3 const& mins, glm::vec3 const& maxs, int entityNum, glm::vec3 &forward )
+{
+	trace_t trace;
+	forward = glm::vec3( cosf( DEG2RAD( yaw ) ), sinf( DEG2RAD( yaw ) ), 0 );
+	glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * forward;
+	trap_Trace( &trace, origin, mins, maxs, end, entityNum, MASK_SHOT, 0 );
+	return walkable( trace );
+}
+
+// return true if a path has been found
+bool botMemory_t::findPath( gentity_t *self, glm::vec3 &dir )
+{
+	ASSERT( self && self->client );
+	glm::vec3 playerMins, playerMaxs;
+	glm::vec3 origin = VEC2GLM( self->s.origin );
+	int entityNum = self->s.number;
+	trace_t trace;
+
+	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
+
+	float jumpMagnitude = BG_Class( pClass )->jumpMagnitude;
+	jumpMagnitude = Square( jumpMagnitude ) / ( self->client->ps.gravity * 2 );
+
+	//step 1: get the planar direction
+	dir[ 2 ] = 0;
+	dir = glm::normalize( dir );
+	glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * dir;
+
+	//step 2: detect obstacles {
+
+	//account for how large we can step
+	BG_BoundingBox( pClass, playerMins, playerMaxs );
+	playerMins[2] += STEPSIZE;
+	playerMaxs[2] += STEPSIZE;
+
+	trap_Trace( &trace, origin, playerMins, playerMaxs, end, entityNum, MASK_SHOT, 0 );
+	if ( walkable( trace ) )
+	{
+		return true;
+	}
+
+	auto blocker = &g_entities[trace.entityNum];
+	// }
+
+	//step 3: try to jump over {
+	BG_BoundingBox( pClass, playerMins, playerMaxs );
+	playerMins[2] += STEPSIZE + jumpMagnitude;
+	playerMaxs[2] += STEPSIZE + jumpMagnitude;
+	trap_Trace( &trace, origin, playerMins, playerMaxs, end, entityNum, MASK_SHOT, 0 );
+	if ( walkable( trace ) || ( G_Team( self ) == G_Team( blocker ) && blocker->s.modelindex == BA_A_BARRICADE ) )
+	{
+		BotJump( self );
+		return true;
+	}
+	// }
+
+	//step 4: try to go around it {
+	//get bbox
+	BG_BoundingBox( pClass, playerMins, playerMaxs );
+	playerMins[2] += STEPSIZE;
+	playerMaxs[2] += STEPSIZE;
+
+	//get the yaw (left/right) we dont care about up/down
+	glm::vec3 angles;
+	vectoangles( &dir[0], &angles[0] );
+
+	//find an unobstructed position
+	//we check the full 180 degrees in front of us
+	bool havePath = false;
+	glm::vec3 forward;
+	for ( float i = 15; i < 90; i += 15 )
+	{
+		if ( checkWalkable( origin, angles[ YAW ] + i, playerMins, playerMaxs, entityNum, forward ) )
+		{
+			havePath = true;
+			break;
+		}
+
+		if ( checkWalkable( origin, angles[ YAW ] - i, playerMins, playerMaxs, entityNum, forward ) )
+		{
+			havePath = true;
+			break;
+		}
+	}
+
+	if ( !havePath )
+	{
+		return false;
+	}
+	dir = forward;
+	// }
+
+	//step 5: actually go around it {
+	glm::vec3 right;
+	vectoangles( &dir[0], &angles[0] );
+	AngleVectors( &angles[0], &dir[0], &right[0], nullptr );
+
+	if ( ( self->client->time10000 % 2000 ) < 1000 )
+	{
+		dir = right;
+	}
+	else
+	{
+		dir = -right;
+	}
+	// }
+	return true;
+}
+
 // This function tries to detect obstacles and to find a way
 // around them, by modifying dir
 //return true on error
@@ -511,7 +629,7 @@ bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir )
 		return false;
 	}
 
-	if ( BotFindSteerTarget( self, dir ) )
+	if ( !BotFindSteerTarget( self, dir ) )
 	{
 		return false;
 	}
@@ -608,13 +726,14 @@ void BotMoveToGoal( gentity_t *self )
 	const playerState_t& ps = self->client->ps;
 
 	glm::vec3 dir = self->botMind->nav().glm_dir();
-	if ( dir[ 2 ] < 0 )
+	if ( !self->botMind->findPath( self, dir ) )
 	{
-		dir[ 2 ] = 0;
-		dir = glm::normalize( dir );
+		//TODO: find new target on next frame
 	}
 
-	BotAvoidObstacles( self, dir );
+	dir[ 2 ] = 0;
+	dir = glm::normalize( dir );
+
 	BotSeek( self, dir );
 
 	// dumb bots don't know how to be efficient
