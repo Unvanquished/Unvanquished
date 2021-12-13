@@ -67,7 +67,7 @@ void CG_Rocket_Init( glconfig_t gl )
 	CG_Rocket_RegisterElements();
 
 	Rocket_RegisterProperty( "cell-color", "white", false, false, "color" );
-	Rocket_RegisterProperty( "border-width", "0.5", false, false, "number" );
+	Rocket_RegisterProperty( "momentum-border-width", "0.5", false, false, "number" );
 	Rocket_RegisterProperty( "unlocked-marker-color", "green", false, false, "color" );
 	Rocket_RegisterProperty( "locked-marker-color", "red", false, false, "color" );
 
