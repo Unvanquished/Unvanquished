@@ -393,6 +393,25 @@ bool botMemory_t::findPath( gentity_t *self, glm::vec3 &dir )
 	}
 	// }
 
+	//new step 4: try to duck through {
+	//TODO: use team-agnostic code to check for crouch possibility
+	//      (esp since before bs would not allow crouching)
+	if ( G_Team( self ) == TEAM_HUMANS )
+	{
+		BG_BoundingBox( pClass, playerMins, playerMaxs );
+		playerMins[2] += STEPSIZE;
+		playerMaxs[2] += STEPSIZE;
+		glm::vec3 crouchMaxs = BG_CrouchBoundingBox( pClass );
+		trap_Trace( &trace, origin, playerMins, crouchMaxs, end, entityNum, MASK_SHOT, 0 );
+		if ( walkable( trace ) )
+		{
+			self->botMind->willCrouch( true );
+			return true;
+		}
+	}
+
+	// }
+
 	//step 4: try to go around it {
 	//get bbox
 	BG_BoundingBox( pClass, playerMins, playerMaxs );

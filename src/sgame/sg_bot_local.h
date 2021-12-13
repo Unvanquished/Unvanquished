@@ -143,6 +143,8 @@ struct botMemory_t
 	botTarget_t goal;
 	void willSprint( bool enable );
 	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );
+	void willCrouch( bool enable );
+	void doCrouch( usercmd_t& cmd );
 	usercmd_t   cmdBuffer;
 
 	botSkill_t botSkill;
@@ -176,6 +178,7 @@ public:
 	//avoid relying on buttons to remember what AI was doing
 	bool wantSprinting = false;
 	bool exhausted = false;
+	bool wantCrouch = false;
 };
 
 bool G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
