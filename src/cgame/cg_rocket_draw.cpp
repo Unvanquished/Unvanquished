@@ -2949,7 +2949,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	CG_GetRocketElementRect( &rect );
 	CG_GetRocketElementBGColor( backColor );
 	CG_GetRocketElementColor( foreColor );
-	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
+	Rocket_GetProperty( "momentum-border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
 	Rocket_GetProperty( "locked-marker-color", &lockedColor, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 	Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 
@@ -3114,7 +3114,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	CG_GetRocketElementRect( &rect );
 	Rocket_GetProperty( "cell-color", &backColour, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 	CG_GetRocketElementColor( foreColour );
-	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
+	Rocket_GetProperty( "momentum-border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
 
 	w = rect.w - 2 * borderSize;
 	h = rect.h - 2 * borderSize;
