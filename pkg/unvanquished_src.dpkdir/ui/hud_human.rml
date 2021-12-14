@@ -5,9 +5,12 @@
 		<style>
 			body
 			{
-				font-size: 2.3em;
 				width: 100%;
 				height: 100%;
+			}
+			#setfont
+			{ /* setting it on the body element mysteriously doesn't work */
+				font-size: 2.3em;
 			}
 			div#hudbg img
 			{
@@ -125,7 +128,7 @@
 				margin-top:-0.5em;
 				left:0;
 				height:100%;
-				line-height:80%;
+				line-height:100%;
 				padding-left:.5em;
 				color:#aaffffff;
 				width:100%;
@@ -255,6 +258,7 @@
 	</style>
 	</head>
 	<body id="hud_human">
+	<div id="setfont">
 
 
 		<div id="hudbg">
@@ -289,5 +293,6 @@
 		<div id="scanner">
 			<scanner />
 		</div>
+	</div>
 	</body>
 </rml>
