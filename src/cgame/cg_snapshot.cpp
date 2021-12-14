@@ -124,7 +124,7 @@ void CG_SetInitialSnapshot( snapshot_t *snap )
 	}
 
 	// Need this check because the initial weapon for spec isn't always WP_NONE
-	if ( CG_MyTeam() == TEAM_NONE )
+	if ( snap->ps.persistant[ PERS_TEAM ] == TEAM_NONE )
 	{
 		Rocket_ShowHud( WP_NONE );
 	}
