@@ -38,7 +38,7 @@
 			}
 
 			progressbar fill {
-				decorator: image( /gfx/colors/white );
+				background: #999999CC;
 			}
 
 			statusbox {
