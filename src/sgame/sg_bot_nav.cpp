@@ -139,14 +139,21 @@ float BotGetGoalRadius( const gentity_t *self )
 bool GoalInRange( const gentity_t *self, float r )
 {
 	gentity_t *ent = nullptr;
+	float selfRadius = RadiusFromBounds2D( self->r.mins, self->r.maxs );
+	if ( self->botMind->goal->targetsValidEntity() )
+	{
+		g_entities const* target = self->botMind->goal->getTargetedEntity();
+		selfRadius += RadiusFromBounds2D( target->r.mins, target->r.maxs );
+	}
+
 	// we don't need to check the goal is valid here
 
 	if ( self->botMind->goal.targetsCoordinates() )
 	{
-		return ( Distance( self->s.origin, self->botMind->nav.tpos ) < r );
+		return ( Distance( self->s.origin, self->botMind->nav.tpos ) < r + selfRadius );
 	}
 
-	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) ) )
+	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r + selfRadius ) ) )
 	{
 		if ( ent == self->botMind->goal.getTargetedEntity() )
 		{
