@@ -260,17 +260,17 @@
 
 
 		<div id="hudbg">
-			<img id="right" src="/ui/assets/human/rightbg.tga"/>
-			<img id="left" src="/ui/assets/human/leftbg.tga"/>
+			<img id="right" src="/ui/assets/human/rightbg"/>
+			<img id="left" src="/ui/assets/human/leftbg"/>
 		</div>
 		<div id="gunstuff">
 			<div class="ammo"><weapon_icon/><ammo/><ammo_stack/></div>
-			<div class="clips"><img class="clip" src="/ui/assets/human/clip.tga"/>
+			<div class="clips"><img class="clip" src="/ui/assets/human/clip"/>
 			<clips/><clip_stack/></div>
 			<div class="credits"><credits/> Credits</div>
 		</div>
 		<div id="bars">
-			<div class="stamina"><img class="stamina" src="/ui/assets/human/stamina.tga"/>
+			<div class="stamina"><img class="stamina" src="/ui/assets/human/stamina"/>
 			<progressbar class="stamina" src="stamina" /></div>
 			<div class="health"><health_cross class="health"/>
 			<health class="health" />
