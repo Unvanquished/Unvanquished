@@ -45,16 +45,16 @@ div.circlemenu-circle {
 	top: -3.35em;
 	text-align: center;
 	icon-decorator: image;
-	icon-image: /ui/assets/circlemenu/circle.png;
+	icon-image: /ui/assets/circlemenu/circle;
 	z-index: 2;
 }
 .circlemenu button:hover, .circlemenu button:active, .circlemenu button:focus{
-	icon-image: /ui/assets/circlemenu/circle-hover.png;
+	icon-image: /ui/assets/circlemenu/circle-hover;
 }
 
 .circlemenu button.disabled, .circlemenu button.disabled:hover,
 .circlemenu button.disabled:active, .circlemenu button.disabled:focus {
-	icon-image: /ui/assets/circlemenu/circle.png;
+	icon-image: /ui/assets/circlemenu/circle;
 	icon-color-multiplier: rgb(12,12,12);
 }
 
@@ -88,7 +88,7 @@ div.circlemenu-circle {
 
 .circlemenu .key {
 	color: #CCCCCC;
-	icon-image: /ui/assets/circlemenu/circle.png;
+	icon-image: /ui/assets/circlemenu/circle;
 	icon-decorator: image;
 	position: absolute;
 	left: -.7em;

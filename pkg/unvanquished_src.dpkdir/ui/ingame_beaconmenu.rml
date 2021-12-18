@@ -25,11 +25,11 @@
 			}
 
 			.circlemenu button.active{
-				icon-image: /ui/assets/circle-hover.png;
+				icon-image: /ui/assets/circle-hover;
 				icon-color-multiplier: rgb(100,100,100);
 			}
 			.circlemenu button.active:hover{
-				icon-image: /ui/assets/circle-hover.png;
+				icon-image: /ui/assets/circle-hover;
 				icon-color-multiplier: rgb(255,255,255);
 			}
 			.circlemenu button.active icon{
