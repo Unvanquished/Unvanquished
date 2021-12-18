@@ -70,7 +70,7 @@
 				color:#aaffffff;
 			}
 
-			div.ammo, div.stamina{
+			div.ammo{
 				margin-top:40%;
 			}
 			div.stamina{
@@ -270,8 +270,10 @@
 			<div class="credits"><credits/> Credits</div>
 		</div>
 		<div id="bars">
-			<div class="stamina"><img class="stamina" src="/ui/assets/human/stamina"/>
-			<progressbar class="stamina" src="stamina" /></div>
+			<div class="stamina">
+				<img class="stamina" src="/ui/assets/human/stamina"/>
+				<progressbar class="stamina" src="stamina" />
+			</div>
 			<div class="health"><health_cross class="health"/>
 			<health class="health" />
 			<progressbar class="health" src="health" /></div>
