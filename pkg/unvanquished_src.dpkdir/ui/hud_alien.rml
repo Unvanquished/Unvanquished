@@ -60,7 +60,7 @@
 			progressbar#health-bar
 			{
 				position: absolute;
-				image: /ui/assets/alien/bar-l.png;
+				image: /ui/assets/alien/bar-l;
 				orientation: left;
 				width: 65%;
 				height: auto;
@@ -70,7 +70,7 @@
 			progressbar#poison-bar
 			{
 				position: absolute;
-				image: /ui/assets/alien/bar-r.png;
+				image: /ui/assets/alien/bar-r;
 				orientation: right;
 				width: 65%;
 				height: auto;
@@ -219,16 +219,16 @@
 			<momentum_bar/>
 		</div>
 		<div id="left">
-			<img class="bg sides" src="/ui/assets/alien/bg-l.png" />
+			<img class="bg sides" src="/ui/assets/alien/bg-l" />
 			<progressbar src="health" id="health-bar" />
 			<wallwalk>
-				<img class="spikes sides" src="/ui/assets/alien/smallspikes-l.png" />
+				<img class="spikes sides" src="/ui/assets/alien/smallspikes-l" />
 			</wallwalk>
 			<wallwalk class="wallwalking">
-				<img class="spikes sides" src="/ui/assets/alien/spikes-l.png" />
+				<img class="spikes sides" src="/ui/assets/alien/spikes-l" />
 			</wallwalk>
 
-			<img class="light sides" src="/ui/assets/alien/ll.png" />
+			<img class="light sides" src="/ui/assets/alien/ll" />
 
 			<div id="health">
 				<health />
@@ -236,15 +236,15 @@
 			</div>
 		</div>
 		<div id="right">
-			<img class="bg sides" src="/ui/assets/alien/bg-r.png" />
+			<img class="bg sides" src="/ui/assets/alien/bg-r" />
 			<progressbar src="poison" id="poison-bar" />
 			<wallwalk>
-				<img class="spikes sides" src="/ui/assets/alien/smallspikes-r.png" />
+				<img class="spikes sides" src="/ui/assets/alien/smallspikes-r" />
 			</wallwalk>
 			<wallwalk class="wallwalking">
-				<img class="spikes sides" src="/ui/assets/alien/spikes-r.png" />
+				<img class="spikes sides" src="/ui/assets/alien/spikes-r" />
 			</wallwalk>
-			<img class="light sides" src="/ui/assets/alien/lr.png" />
+			<img class="light sides" src="/ui/assets/alien/lr" />
 			<weapon_icon />
 			<div id="evos"><evos /> morph points</div>
 		</div>
