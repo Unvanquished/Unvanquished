@@ -1020,6 +1020,34 @@ private:
 	bool isActive;
 };
 
+class SprintElement : public HudElement
+{
+public:
+	SprintElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_HUMANS ),
+			isActive( false ) {}
+
+	void DoOnUpdate()
+	{
+		bool sprinting = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
+		if ( ( sprinting && !isActive ) || ( !sprinting && isActive ) )
+		{
+			SetActive( sprinting );
+		}
+	}
+
+private:
+	void SetActive( bool active )
+	{
+		isActive = active;
+		SetClass( "active", active );
+		SetClass( "inactive", !active );
+
+	}
+
+	bool isActive;
+};
+
 class UsableBuildableElement : public HudElement
 {
 public:
@@ -3614,6 +3642,7 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "stamina", StaminaValueElement )
 	REGISTER_ELEMENT( "weapon_icon", WeaponIconElement )
 	REGISTER_ELEMENT( "wallwalk", WallwalkElement )
+	REGISTER_ELEMENT( "sprinting", SprintElement )
 	REGISTER_ELEMENT( "usable_buildable", UsableBuildableElement )
 	REGISTER_ELEMENT( "location", LocationElement )
 	REGISTER_ELEMENT( "timer", TimerElement )
