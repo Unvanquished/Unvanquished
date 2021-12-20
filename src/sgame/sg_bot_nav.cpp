@@ -347,6 +347,14 @@ static bool checkWalkable( glm::vec3 const& origin, float yaw, glm::vec3 const& 
 }
 
 // return true if a path has been found
+// This works by tracing forward. If the trace finds an
+// obstacle, the bot will test several ways to go around:
+// * jump
+// * crouch
+// * steer around, by right or left side
+//
+// If any of those tests succeed, returns true.
+// Otherwise, return false and try to find a random path.
 bool botMemory_t::findPath( gentity_t *self, glm::vec3 &dir )
 {
 	ASSERT( self && self->client );
