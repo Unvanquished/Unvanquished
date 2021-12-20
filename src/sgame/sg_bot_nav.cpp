@@ -336,7 +336,7 @@ static bool walkable( trace_t const& trace )
 }
 
 // verify if the way in a direction is free
-// return true if yes
+// if yes, return true and updates the forward param
 static bool checkWalkable( glm::vec3 const& origin, float yaw, glm::vec3 const& mins, glm::vec3 const& maxs, int entityNum, glm::vec3 &forward )
 {
 	trace_t trace;
