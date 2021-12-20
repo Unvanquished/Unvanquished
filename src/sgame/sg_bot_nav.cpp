@@ -441,14 +441,14 @@ bool botMemory_t::findPath( gentity_t *self, glm::vec3 &dir )
 		}
 	}
 
-	if ( !havePath )
+	if ( havePath )
 	{
-		return false;
+		dir = forward;
+		return true;
 	}
-	dir = forward;
 	// }
 
-	//step 5: actually go around it {
+	//step 5: try to find a path anyway {
 	glm::vec3 right;
 	vectoangles( &dir[0], &angles[0] );
 	AngleVectors( &angles[0], &dir[0], &right[0], nullptr );
@@ -462,7 +462,7 @@ bool botMemory_t::findPath( gentity_t *self, glm::vec3 &dir )
 		dir = -right;
 	}
 	// }
-	return true;
+	return false;
 }
 
 void BotDirectionToUsercmd( gentity_t *self, const glm::vec3 &dir, usercmd_t *cmd )
