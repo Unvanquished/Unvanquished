@@ -330,30 +330,21 @@ public:
 		int           value;
 		playerState_t *ps = &cg.snap->ps;
 
-		switch ( BG_PrimaryWeapon( ps->stats ) )
+		if ( BG_Weapon( BG_PrimaryWeapon( ps->stats ) )->infiniteAmmo )
 		{
-			case WP_NONE:
-			case WP_BLASTER:
-			case WP_ABUILD:
-			case WP_ABUILD2:
-			case WP_HBUILD:
-				if ( clips != -1 )
-				{
-					SetText( "" );
-				}
-				clips = -1;
-				return;
+			if ( clips != -1 )
+			{
+				SetText( "" );
+			}
+			clips = -1;
+			return;
+		}
+		value = ps->clips;
 
-			default:
-				value = ps->clips;
-
-				if ( value > -1 && value != clips )
-				{
-					SetText( va( "%d", value ) );
-					clips = value;
-				}
-
-				break;
+		if ( value > -1 && value != clips )
+		{
+			SetText( va( "%d", value ) );
+			clips = value;
 		}
 	}
 
