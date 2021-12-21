@@ -1005,13 +1005,15 @@ class WallwalkElement : public HudElement
 {
 public:
 	WallwalkElement( const Rocket::Core::String& tag ) :
-			HudElement( tag, ELEMENT_ALIENS ),
-			isActive( false ) {}
+			HudElement( tag, ELEMENT_ALIENS )
+	{
+		SetActive( false );
+	}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		bool wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
-		if ( ( wallwalking && !isActive ) || ( !wallwalking && isActive ) )
+		if ( wallwalking != isActive )
 		{
 			SetActive( wallwalking );
 		}
@@ -1033,13 +1035,15 @@ class SprintElement : public HudElement
 {
 public:
 	SprintElement( const Rocket::Core::String& tag ) :
-			HudElement( tag, ELEMENT_HUMANS ),
-			isActive( false ) {}
+			HudElement( tag, ELEMENT_HUMANS )
+	{
+		SetActive( false );
+	}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		bool sprinting = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
-		if ( ( sprinting && !isActive ) || ( !sprinting && isActive ) )
+		if ( sprinting != isActive )
 		{
 			SetActive( sprinting );
 		}
