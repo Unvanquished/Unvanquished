@@ -593,6 +593,7 @@ void Cmd_Give_f( gentity_t *ent )
 	char     *name;
 	bool give_all = false;
 	float    amount;
+	team_t team = static_cast<team_t>( ent->client->pers.team );
 
 	if ( trap_Argc() < 2 )
 	{
@@ -639,7 +640,6 @@ void Cmd_Give_f( gentity_t *ent )
 			amount = strtof( name + strlen( "momentum" ), &end );
 		}
 
-		team_t team = team_t::TEAM_NONE;
 		if ( trap_Argc() >= 4 && *end != '\0' )
 		{
 			++end;
@@ -653,7 +653,7 @@ void Cmd_Give_f( gentity_t *ent )
 		G_AddMomentumGeneric( team, amount );
 	}
 
-	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
+	if ( team != TEAM_NONE && Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
 	{
 		float bp = trap_Argc() < 3 ? 300.0f : atof( name + strlen("bp") );
 		level.team[ent->client->pers.team].totalBudget += bp;
@@ -664,7 +664,7 @@ void Cmd_Give_f( gentity_t *ent )
 		return;
 	}
 
-	if ( give_all || Q_strnicmp( name, "health", strlen("health") ) == 0 )
+	if ( team != TEAM_NONE && ( give_all || Q_strnicmp( name, "health", strlen("health") ) == 0 ) )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -685,17 +685,17 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 	}
 
-	if ( give_all || Q_stricmp( name, "stamina" ) == 0 )
+	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "stamina" ) == 0 ) )
 	{
 		ent->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 	}
 
-	if ( give_all || Q_stricmp( name, "fuel" ) == 0 )
+	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "fuel" ) == 0 ) )
 	{
 		G_RefillFuel(ent, false);
 	}
 
-	if ( Q_stricmp( name, "poison" ) == 0 )
+	if ( team != TEAM_NONE && ( Q_stricmp( name, "poison" ) == 0 ) )
 	{
 		if ( ent->client->pers.team == TEAM_HUMANS )
 		{
@@ -710,7 +710,7 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 	}
 
-	if ( give_all || Q_stricmp( name, "ammo" ) == 0 )
+	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "ammo" ) == 0 ) )
 	{
 		G_RefillAmmo( ent, false );
 	}
