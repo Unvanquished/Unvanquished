@@ -629,7 +629,7 @@ void Cmd_Give_f( gentity_t *ent )
 	// give momentum
 	if ( Q_strnicmp( name, "momentum", strlen("momentum") ) == 0 )
 	{
-		char* end;
+		char* end = nullptr;
 		if ( trap_Argc() < 3 )
 		{
 			amount = 300.0f;
