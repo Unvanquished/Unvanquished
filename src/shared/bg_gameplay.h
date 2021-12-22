@@ -35,6 +35,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 #define BUILDER_DECONSTRUCT_RANGE 100
 
+constexpr int MAX_CREDITS = 2000;
 /*
  * ALIEN weapons
  */
@@ -172,7 +173,6 @@ extern int   LEVEL4_TRAMPLE_REPEAT;
 
 #define ALIEN_REGEN_NOCREEP_MIN  0.5f // minimum off creep regen when half life is active. must be > 0.
 
-#define ALIEN_MAX_CREDITS        2000 // CREDITS_PER_EVO converts this to evos for display
 #define ALIEN_TK_SUICIDE_PENALTY 150
 
 /*
@@ -284,7 +284,6 @@ extern int   MEDKIT_STARTUP_SPEED;
 
 #define HUMAN_BUILDABLE_REGEN_WAIT    5000
 
-#define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150
 
 #define HUMAN_AMMO_REFILL_PERIOD      2000 // don't refill ammo more frequently than this

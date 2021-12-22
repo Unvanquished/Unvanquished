@@ -288,21 +288,6 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	ent->client->pers.classSelection = PCL_NONE;
 	ClientSpawn( ent, nullptr, nullptr, nullptr );
 
-	if ( oldTeam == TEAM_HUMANS && newTeam == TEAM_ALIENS )
-	{
-		// Convert from human to alien credits
-		ent->client->pers.credit =
-		  ( int )( ent->client->pers.credit *
-		           ALIEN_MAX_CREDITS / HUMAN_MAX_CREDITS + 0.5f );
-	}
-	else if ( oldTeam == TEAM_ALIENS && newTeam == TEAM_HUMANS )
-	{
-		// Convert from alien to human credits
-		ent->client->pers.credit =
-		  ( int )( ent->client->pers.credit *
-		           HUMAN_MAX_CREDITS / ALIEN_MAX_CREDITS + 0.5f );
-	}
-
 	if ( !g_cheats )
 	{
 		if ( ent->client->noclip )
