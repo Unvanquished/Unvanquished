@@ -598,7 +598,7 @@ void Cmd_Give_f( gentity_t *ent )
 	{
 		ADMP( QQ( N_( "usage: give [what]" ) ) );
 		ADMP( QQ( N_( "usage: valid choices are: all, health [amount], funds [amount], "
-		              "bp [amount], momentum [amount], stamina, poison, fuel, ammo" ) ) );
+		              "bp [amount], momentum [amount] [team], stamina, poison, fuel, ammo" ) ) );
 		return;
 	}
 
@@ -629,16 +629,28 @@ void Cmd_Give_f( gentity_t *ent )
 	// give momentum
 	if ( Q_strnicmp( name, "momentum", strlen("momentum") ) == 0 )
 	{
+		char* end;
 		if ( trap_Argc() < 3 )
 		{
 			amount = 300.0f;
 		}
 		else
 		{
-			amount = atof( name + strlen("momentum") );
+			amount = strtof( name + strlen( "momentum" ), &end );
 		}
 
-		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
+		team_t team = team_t::TEAM_NONE;
+		if ( trap_Argc() >= 4 && *end != '\0' )
+		{
+			++end;
+			team = BG_PlayableTeamFromString( end );
+		}
+		if ( team == team_t::TEAM_NONE )
+		{
+			team = static_cast<team_t>( ent->client->pers.team );
+		}
+
+		G_AddMomentumGeneric( team, amount );
 	}
 
 	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
@@ -4427,7 +4439,7 @@ static const commands_t cmds[] =
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },
-	{ "give",            CMD_CHEAT | CMD_TEAM,                Cmd_Give_f             },
+	{ "give",            CMD_CHEAT,                           Cmd_Give_f             },
 	{ "god",             CMD_CHEAT,                           Cmd_God_f              },
 	{ "ignite",          CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Ignite_f           },
 	{ "ignore",          0,                                   Cmd_Ignore_f           },
