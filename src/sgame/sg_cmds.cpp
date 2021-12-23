@@ -593,7 +593,7 @@ void Cmd_Give_f( gentity_t *ent )
 	char     *name;
 	bool give_all = false;
 	float    amount;
-	team_t team = static_cast<team_t>( ent->client->pers.team );
+	team_t team = G_Team( ent );
 
 	if ( trap_Argc() < 2 )
 	{
@@ -644,13 +644,16 @@ void Cmd_Give_f( gentity_t *ent )
 		{
 			++end;
 			team = BG_PlayableTeamFromString( end );
-		}
-		if ( team == team_t::TEAM_NONE )
-		{
-			team = static_cast<team_t>( ent->client->pers.team );
+			if ( team != TEAM_NONE )
+			{
+				team = G_Team( ent );
+			}
 		}
 
-		G_AddMomentumGeneric( team, amount );
+		if ( team != TEAM_NONE )
+		{
+			G_AddMomentumGeneric( team, amount );
+		}
 	}
 
 	if ( team != TEAM_NONE && Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
