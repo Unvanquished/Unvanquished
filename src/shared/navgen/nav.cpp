@@ -142,7 +142,12 @@ static void WriteNavMeshFile( Str::StringRef filename, const dtTileCache *tileCa
 		Sys::Drop( "Error opening %s", filename );
 	}
 
-	trap_FS_Write( &header, sizeof( header ), file );
+	auto Write = [file](void* data, size_t len) {
+		if (len != static_cast<size_t>(trap_FS_Write(data, len, file)))
+			Sys::Drop("Error writing navmesh file");
+	};
+
+	Write( &header, sizeof( header ));
 
 	for ( int i = 0; i < maxTiles; i++ )
 	{
@@ -157,7 +162,7 @@ static void WriteNavMeshFile( Str::StringRef filename, const dtTileCache *tileCa
 		tileHeader.dataSize = tile->dataSize;
 
 		SwapNavMeshTileHeader( tileHeader );
-		trap_FS_Write( &tileHeader, sizeof( tileHeader ), file );
+		Write( &tileHeader, sizeof( tileHeader ) );
 
 		unsigned char* data = ( unsigned char * ) malloc( tile->dataSize );
 
@@ -166,7 +171,7 @@ static void WriteNavMeshFile( Str::StringRef filename, const dtTileCache *tileCa
 			dtTileCacheHeaderSwapEndian( data, tile->dataSize );
 		}
 
-		trap_FS_Write( data, tile->dataSize, file );
+		Write( data, tile->dataSize );
 
 		free( data );
 	}
@@ -1036,80 +1041,36 @@ static void BuildNavMesh( int characterNum ){
 	params.maxTiles = 1 << tileBits;
 	params.maxPolys = 1 << polyBits;
 
-	WriteNavMeshFile( agent.name, tileCache, &params );
+	std::string mapname = Cvar::GetValue("mapname");
+	std::string filename = Str::Format("maps/%s-%s.navMesh", mapname, agent.name);
+	WriteNavMeshFile( filename, tileCache, &params );
+
 	dtFreeTileCache( tileCache );
 }
 
-#if 0
-/*
-   ===========
-   NavMain
-   ===========
- */
-extern "C" int NavMain( int argc, char **argv ){
-	float temp;
-	int i;
-
-	if ( argc < 2 ) {
-		Sys_Printf( "Usage: daemonmap -nav [-cellheight f] [-stepsize f] [-includecaulk] [-includesky] [-nogapfilter] <filename.bsp>\n" );
-		return 0;
-	}
-
-	/* note it */
-	Sys_Printf( "--- Nav ---\n" );
-
-	/* process arguments */
-	for ( i = 1; i < ( argc - 1 ); i++ )
-	{
-		if ( !Q_stricmp( argv[i],"-cellheight" ) ) {
-			i++;
-			if ( i < ( argc - 1 ) ) {
-				temp = atof( argv[i] );
-				if ( temp > 0 ) {
-					cellHeight = temp;
-				}
-			}
-		}
-		else if ( !Q_stricmp( argv[i], "-stepsize" ) ) {
-			i++;
-			if ( i < ( argc - 1 ) ) {
-				temp = atof( argv[i] );
-				if ( temp > 0 ) {
-					stepSize = temp;
-				}
-			}
-		}
-		else if ( !Q_stricmp( argv[i], "-includecaulk" ) ) {
-			excludeCaulk = qfalse;
-		}
-		else if ( !Q_stricmp( argv[i], "-includesky" ) ) {
-			excludeSky = qfalse;
-		}
-		else if ( !Q_stricmp( argv[i], "-nogapfilter" ) ) {
-			filterGaps = qfalse;
-		}
-		else {
-			Sys_Printf( "WARNING: Unknown option \"%s\"\n", argv[i] );
+void GenerateNavmesh(Str::StringRef species)
+{
+	unsigned characterNum;
+	for (characterNum = 0; characterNum < ARRAY_LEN(characterArray); characterNum++) {
+		if (species == characterArray[characterNum].name) {
+			break;
 		}
 	}
+	if (characterNum == ARRAY_LEN(characterArray)) {
+		LOG.Warn("class '%s' not valid for navmesh generation", species);
+		return;
+	}
 
-	/* load the bsp */
-	sprintf( source, "%s%s", inbase, ExpandArg( argv[i] ) );
-	StripExtension( source );
-	strcat( source, ".bsp" );
-	//LoadShaderInfo();
+	LOG.Notice( "Generating navmesh for %s", species );
 
-	Sys_Printf( "Loading %s\n", source );
+	// TODO: flags? (cellHeight, stepSize, excludeCaulk, excludeSky, filterGaps)
 
-	LoadBSPFile( source );
-
-	ParseEntities();
-
+	LoadBSP(Cvar::GetValue("mapname"));
 	LoadGeometry();
 
 	float height = rcAbs( geo.getMaxs()[1] ) + rcAbs( geo.getMins()[1] );
 	if ( height / cellHeight > RC_SPAN_MAX_HEIGHT ) {
-		Sys_Printf( "WARNING: Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.\n" );
+		LOG.Warn("Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh." );
 		float prevCellHeight = cellHeight;
 		float minCellHeight = height / RC_SPAN_MAX_HEIGHT;
 
@@ -1122,15 +1083,13 @@ extern "C" int NavMain( int argc, char **argv ){
 		}
 
 		if ( !divisor ) {
-			Error( "ERROR: Map is too tall to generate a navigation mesh\n" );
+			Sys::Drop( "Map is too tall to generate a navigation mesh" );
 		}
 
-		Sys_Printf( "Previous cell height: %f\n", prevCellHeight );
-		Sys_Printf( "New cell height: %f\n", cellHeight );
+		LOG.Notice( "Previous cell height: %f", prevCellHeight );
+		LOG.Notice( "New cell height: %f", cellHeight );
 	}
 
-	RunThreadsOnIndividual( sizeof( characterArray ) / sizeof( characterArray[ 0 ] ), qtrue, BuildNavMesh );
-
-	return 0;
+	BuildNavMesh(characterNum);
+	LOG.Notice("Finished generating navmesh for %s", species);
 }
-#endif

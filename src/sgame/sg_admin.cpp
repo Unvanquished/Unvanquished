@@ -311,6 +311,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"navgen",       G_admin_navgen,      false, "navgen",
+		N_("request bot navmesh generation"),
+		"<class>..."
+	},
+
+	{
 		"nextmap",      G_admin_nextmap,     false, "nextmap",
 		N_("go to the next map in the cycle"),
 		""
@@ -5760,6 +5766,22 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	}
 
 	G_BotFill(true);
+	return true;
+}
+
+void GenerateNavmesh( Str::StringRef species );
+bool G_admin_navgen( gentity_t* ent )
+{
+	const Cmd::Args& args = trap_Args();
+	if ( args.Argc() < 2 )
+	{
+		ADMP( QQ("^3navgen:^* usage: navgen <class>...") );
+		return false;
+	}
+	for ( int i = 1; i < args.Argc(); i++ )
+	{
+		GenerateNavmesh( args.Argv( i ) );
+	}
 	return true;
 }
 
