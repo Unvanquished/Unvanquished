@@ -107,6 +107,13 @@ if (BUILD_SGAME)
                         ${LIB_DIR}/recastnavigation/DetourTileCache/Include
                         ${LIB_DIR}/recastnavigation/DebugUtils/Include
                         ${LIB_DIR}/recastnavigation/DetourCrowd/Include)
+
+    # Recast
+    add_library(srclibs-recast EXCLUDE_FROM_ALL ${RECASTLIST})
+    set_target_properties(srclibs-recast PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    include_directories(
+        ${LIB_DIR}/recastnavigation/Recast/Include
+        ${LIB_DIR}/recastnavigation/RecastDemo/Include)
 endif()
 
 add_library(srclibs-tinygettext EXCLUDE_FROM_ALL ${TINYGETTEXTLIST})
@@ -152,6 +159,7 @@ if (BUILD_SGAME)
             ${sgame_GENERATED_CBSE}
         LIBS
             srclibs-detour
+            srclibs-recast
             srclibs-fastlz
     )
 endif()

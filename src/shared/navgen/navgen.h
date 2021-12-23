@@ -20,7 +20,6 @@
    ===========================================================================
  */
 
-#include "Compiler.h"
 #include "Recast.h"
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
@@ -30,7 +29,7 @@
 #include "DetourNavMeshBuilder.h"
 #include "DetourTileCache.h"
 #include "DetourTileCacheBuilder.h"
-#include "nav.h"
+#include "sgame/botlib/nav.h"
 
 static const int MAX_LAYERS = 32;
 static const int EXPECTED_LAYERS_PER_TILE = 4;

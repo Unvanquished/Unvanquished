@@ -21,12 +21,17 @@
  */
 // nav.cpp -- navigation mesh generator interface
 
-#include "q3map2.h"
 #include <iostream>
 #include <vector>
 #include <queue>
-#include "cm_patch.h"
+#include "engine/qcommon/qcommon.h"
+#include "common/cm/cm_patch.h"
+#include "common/cm/cm_polylib.h"
+#include "common/FileSystem.h"
 #include "navgen.h"
+#include "sgame/sg_trapcalls.h"
+
+static Log::Logger LOG("sgame.navgen", "");
 
 class UnvContext : public rcContext
 {
@@ -41,9 +46,9 @@ class UnvContext : public rcContext
 	///  @param[in]   len     The length of the formatted message.
 	void doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/) override
 	{
-		if( m_logEnabled )
+		if ( m_logEnabled )
 		{
-			fprintf( stderr, "\n%s\n", msg );
+			LOG.Notice(msg);
 		}
 	}
 
@@ -100,19 +105,16 @@ static const Character characterArray[] = {
 };
 
 //flag for excluding caulk surfaces
-static qboolean excludeCaulk = qtrue;
+static bool excludeCaulk = true;
 
 //flag for excluding surfaces with surfaceparm sky from navmesh generation
-static qboolean excludeSky = qtrue;
+static bool excludeSky = true;
 
 //flag for adding new walkable spans so bots can walk over small gaps
-static qboolean filterGaps = qtrue;
+static bool filterGaps = true;
 
-static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCache, const dtNavMeshParams *params ) {
+static void WriteNavMeshFile( Str::StringRef filename, const dtTileCache *tileCache, const dtNavMeshParams *params ) {
 	int numTiles = 0;
-	FILE *file = NULL;
-	char filename[ 1024 ];
-	char filenameWithoutExt[ 1024 ];
 	NavMeshSetHeader header;
 	const int maxTiles = tileCache->getTileCount();
 
@@ -133,22 +135,14 @@ static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCach
 
 	SwapNavMeshSetHeader( header );
 
-	strcpy( filenameWithoutExt, source );
-	StripExtension( filenameWithoutExt );
-
-	if ( snprintf( filename, sizeof( filename ), "%s-%s", filenameWithoutExt, agentname ) < 0 )
-	{
-		Error( "Filename too long for agent: %s\n", agentname );
-	}
-
-	DefaultExtension( filename, ".navMesh" );
-	file = fopen( filename, "wb" );
+	qhandle_t file;
+	trap_FS_FOpenFile( filename.c_str(), &file, fsMode_t::FS_WRITE );
 
 	if ( !file ) {
-		Error( "Error opening %s: %s\n", filename, strerror( errno ) );
+		Sys::Drop( "Error opening %s", filename );
 	}
 
-	fwrite( &header, sizeof( header ), 1, file );
+	trap_FS_Write( &header, sizeof( header ), file );
 
 	for ( int i = 0; i < maxTiles; i++ )
 	{
@@ -163,7 +157,7 @@ static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCach
 		tileHeader.dataSize = tile->dataSize;
 
 		SwapNavMeshTileHeader( tileHeader );
-		fwrite( &tileHeader, sizeof( tileHeader ), 1, file );
+		trap_FS_Write( &tileHeader, sizeof( tileHeader ), file );
 
 		unsigned char* data = ( unsigned char * ) malloc( tile->dataSize );
 
@@ -172,15 +166,45 @@ static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCach
 			dtTileCacheHeaderSwapEndian( data, tile->dataSize );
 		}
 
-		fwrite( data, tile->dataSize, 1, file );
+		trap_FS_Write( data, tile->dataSize, file );
 
 		free( data );
 	}
-	fclose( file );
+	trap_FS_FCloseFile( file );
+}
+
+static std::string mapData;
+static void LoadBSP(Str::StringRef name)
+{
+	if (!mapData.empty()) return;
+
+	// copied from beginning of CM_LoadMap
+	std::string mapFile = "maps/" + name + ".bsp";
+	mapData = FS::PakPath::ReadFile(mapFile);
+	dheader_t* header = reinterpret_cast<dheader_t*>(&mapData[0]);
+
+	// hacky byte swapping for lumps of interest
+	// assume all fields size 4 except the string at the beginning of dshader_t
+	for (unsigned i = 0; i < sizeof(dheader_t) / 4; i++)
+	{
+		((int*)header)[i] = LittleLong(((int*)header)[i]);
+	}
+	for (int lump: {LUMP_MODELS, LUMP_BRUSHES, LUMP_SHADERS, LUMP_BRUSHSIDES, LUMP_PLANES})
+	{
+		unsigned nBytes = header->lumps[lump].fileofs;
+		char *base = &mapData[0] + header->lumps[lump].filelen;
+		for (unsigned i = 0; i < nBytes; i += 4)
+		{
+			if (lump == LUMP_SHADERS && i % sizeof(dshader_t) < offsetof(dshader_t, surfaceFlags))
+				continue;
+			int* p = reinterpret_cast<int*>(base + i);
+			*p = LittleLong(*p);
+		}
+	}
 }
 
 //need this to get the windings for brushes
-extern "C" qboolean FixWinding( winding_t* w );
+bool FixWinding( winding_t* w );
 
 static void AddVert( std::vector<float> &verts, std::vector<int> &tris, vec3_t vert ) {
 	vec3_t recastVert;
@@ -200,40 +224,43 @@ static void AddTri( std::vector<float> &verts, std::vector<int> &tris, vec3_t v1
 	AddVert( verts, tris, v3 );
 }
 
+// TODO: Can this stuff be done using the already-loaded CM data structures
+// (e.g. cbrush_t instead of dbrush_t) instead of reopening the BSP?
 static void LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
 	int j;
 
-	int solidFlags = 0;
-	int temp = 0;
+	int solidFlags = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
 	int surfaceSkip = 0;
 
-	char surfaceparm[16];
-
-	strcpy( surfaceparm, "default" );
-	ApplySurfaceParm( surfaceparm, &solidFlags, NULL, NULL );
-
-	strcpy( surfaceparm, "playerclip" );
-	ApplySurfaceParm( surfaceparm, &temp, NULL, NULL );
-	solidFlags |= temp;
-
 	if ( excludeSky ) {
-		strcpy( surfaceparm, "sky" );
-		ApplySurfaceParm( surfaceparm, NULL, &surfaceSkip, NULL );
+		surfaceSkip = SURF_SKY;
 	}
+
+	const byte* const cmod_base = reinterpret_cast<const byte*>(mapData.data());
+	auto& header = *reinterpret_cast<const dheader_t*>(mapData.data());
+
+	// Each one of these lumps should be byte-swapped in LoadBSP
+	const lump_t& modelsLump = header.lumps[LUMP_MODELS];
+	const lump_t& brushesLump = header.lumps[LUMP_BRUSHES];
+	const lump_t& shadersLump = header.lumps[LUMP_SHADERS];
+	const lump_t& sidesLump = header.lumps[LUMP_BRUSHSIDES];
+	const lump_t& planesLump = header.lumps[LUMP_PLANES];
 
 	/* get model, index 0 is worldspawn entity */
-	bspModel_t *model = &bspModels[0];
-
-	if ( model->numBSPBrushes <= 0 ) {
-		std::cerr << "No brushes found. Aborting." << std::endl;
-		exit( 2 );
+	if ( modelsLump.filelen / sizeof(dmodel_t) <= 0 ) {
+		Sys::Drop("No brushes found. Aborting.");
 	}
+	auto* model = reinterpret_cast<const dmodel_t*>(cmod_base + modelsLump.fileofs);
+	auto* bspBrushes = reinterpret_cast<const dbrush_t*>(cmod_base + brushesLump.fileofs);
+	auto* bspShaders = reinterpret_cast<const dshader_t*>(cmod_base + shadersLump.fileofs);
+	auto* bspBrushSides = reinterpret_cast<const dbrushside_t*>(cmod_base + sidesLump.fileofs);
+	auto* bspPlanes = reinterpret_cast<const dplane_t*>(cmod_base + planesLump.fileofs);
 
 	//go through the brushes
-	for ( int i = model->firstBSPBrush,m = 0; m < model->numBSPBrushes; i++,m++ ) {
+	for ( int i = model->firstBrush, m = 0; m < model->numBrushes; i++, m++ ) {
 		int numSides = bspBrushes[i].numSides;
 		int firstSide = bspBrushes[i].firstSide;
-		bspShader_t *brushShader = &bspShaders[bspBrushes[i].shaderNum];
+		const dshader_t* brushShader = &bspShaders[bspBrushes[i].shaderNum];
 
 		if ( !( brushShader->contentFlags & solidFlags ) ) {
 			continue;
@@ -242,9 +269,9 @@ static void LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
 		for ( int p = 0; p < numSides; p++ )
 		{
 			/* get side and plane */
-			bspBrushSide_t *side = &bspBrushSides[p + firstSide];
-			bspPlane_t *plane = &bspPlanes[side->planeNum];
-			bspShader_t *shader = &bspShaders[side->shaderNum];
+			const dbrushside_t *side = &bspBrushSides[p + firstSide];
+			const dplane_t *plane = &bspPlanes[side->planeNum];
+			const dshader_t* shader = &bspShaders[side->shaderNum];
 
 			if ( shader->surfaceFlags & surfaceSkip ) {
 				continue;
@@ -258,9 +285,9 @@ static void LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
 			winding_t *w = BaseWindingForPlane( plane->normal, plane->dist );
 
 			/* walk the list of brush sides */
-			for ( j = 0; j < numSides && w != NULL; j++ )
+			for ( j = 0; j < numSides && w != nullptr; j++ )
 			{
-				bspBrushSide_t *chopSide = &bspBrushSides[j + firstSide];
+				const dbrushside_t *chopSide = &bspBrushSides[j + firstSide];
 				if ( chopSide == side ) {
 					continue;
 				}
@@ -268,7 +295,7 @@ static void LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
 					continue;       /* back side clipaway */
 
 				}
-				bspPlane_t *chopPlane = &bspPlanes[chopSide->planeNum ^ 1];
+				const dplane_t *chopPlane = &bspPlanes[chopSide->planeNum ^ 1];
 
 				ChopWindingInPlace( &w, chopPlane->normal, chopPlane->dist, 0 );
 
@@ -286,17 +313,13 @@ static void LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
 	}
 }
 
-static qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 ){
-	if ( maxs[ 0 ] < mins2[ 0 ] ||
-		 maxs[ 1 ] < mins2[ 1 ] || maxs[ 2 ] < mins2[ 2 ] || mins[ 0 ] > maxs2[ 0 ] || mins[ 1 ] > maxs2[ 1 ] || mins[ 2 ] > maxs2[ 2 ] ) {
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
 static void LoadPatchTris( std::vector<float> &verts, std::vector<int> &tris ) {
-
+// Disabling this code for now. It should be straightforward to port, but I haven't
+// bothered because I can't see any effect on the navmesh, even on parts with curved
+// areas using patches. So maybe we are better of dropping this and saving some triangles.
+	Q_UNUSED(verts);
+	Q_UNUSED(tris);
+#if 0
 	vec3_t mins, maxs;
 	int solidFlags = 0;
 	int temp = 0;
@@ -415,13 +438,14 @@ static void LoadPatchTris( std::vector<float> &verts, std::vector<int> &tris ) {
 			}
 		}
 	}
+#endif
 }
 
 static void LoadGeometry(){
 	std::vector<float> verts;
 	std::vector<int> tris;
 
-	Sys_Printf( "loading geometry...\n" );
+	LOG.Debug( "loading geometry..." );
 	int numVerts, numTris;
 
 	//count surfaces
@@ -431,17 +455,17 @@ static void LoadGeometry(){
 	numTris = tris.size() / 3;
 	numVerts = verts.size() / 3;
 
-	Sys_Printf( "Using %d triangles\n", numTris );
-	Sys_Printf( "Using %d vertices\n", numVerts );
+	LOG.Debug( "Using %d triangles", numTris );
+	LOG.Debug( "Using %d vertices", numVerts );
 
 	geo.init( &verts[ 0 ], numVerts, &tris[ 0 ], numTris );
 
 	const float *mins = geo.getMins();
 	const float *maxs = geo.getMaxs();
 
-	Sys_Printf( "set recast world bounds to\n" );
-	Sys_Printf( "min: %f %f %f\n", mins[0], mins[1], mins[2] );
-	Sys_Printf( "max: %f %f %f\n", maxs[0], maxs[1], maxs[2] );
+	LOG.Debug( "set recast world bounds to" );
+	LOG.Debug( "min: %f %f %f", mins[0], mins[1], mins[2] );
+	LOG.Debug( "max: %f %f %f", maxs[0], maxs[1], maxs[2] );
 }
 
 // Modified version of Recast's rcErodeWalkableArea that uses an AABB instead of a cylindrical radius
@@ -652,7 +676,6 @@ static void rcFilterGaps( rcContext *ctx, int walkableRadius, int walkableClimb,
 			for ( rcSpan *s = solid.spans[x + y * w]; s; s = s->next ) {
 				//bottom and top of the "base" span
 				const int sbot = s->smax;
-				const int stop = ( s->next ) ? ( s->next->smin ) : MAX_HEIGHT;
 
 				//if the span is walkable
 				if ( s->area != RC_NULL_AREA ) {
@@ -773,7 +796,7 @@ static int rasterizeTileLayers( rcContext &context, int tx, int ty, const rcConf
 	rc.solid = rcAllocHeightfield();
 
 	if ( !rcCreateHeightfield( &context, *rc.solid, cfg.width, cfg.height, cfg.bmin, cfg.bmax, cfg.cs, cfg.ch ) ) {
-		Error( "Failed to create heightfield for navigation mesh.\n" );
+		Sys::Drop( "Failed to create heightfield for navigation mesh" );
 	}
 
 	//I understand that using std::vector prevents NiH's proudness.
@@ -785,7 +808,7 @@ static int rasterizeTileLayers( rcContext &context, int tx, int ty, const rcConf
 	//you know what? This will never be reached, because new throws exceptions, by default.
 	//really, should just use STL or C, not raw C++ with C's bugs.
 	if ( !rc.triareas ) {
-		Error( "Out of memory rc.triareas\n" );
+		Sys::Drop( "Out of memory rc.triareas" );
 	}
 
 	float tbmin[ 2 ], tbmax[ 2 ];
@@ -839,21 +862,21 @@ static int rasterizeTileLayers( rcContext &context, int tx, int ty, const rcConf
 	rc.chf = rcAllocCompactHeightfield();
 
 	if ( !rcBuildCompactHeightfield( &context, cfg.walkableHeight, cfg.walkableClimb, *rc.solid, *rc.chf ) ) {
-		Error( "Failed to create compact heightfield for navigation mesh.\n" );
+		Sys::Drop( "Failed to create compact heightfield for navigation mesh" );
 	}
 
 	if ( !rcErodeWalkableAreaByBox( &context, cfg.walkableRadius, *rc.chf ) ) {
-		Error( "Unable to erode walkable surfaces.\n" );
+		Sys::Drop( "Unable to erode walkable surfaces" );
 	}
 
 	rc.lset = rcAllocHeightfieldLayerSet();
 
 	if ( !rc.lset ) {
-		Error( "Out of memory heightfield layer set\n" );
+		Sys::Drop( "Out of memory heightfield layer set" );
 	}
 
 	if ( !rcBuildHeightfieldLayers( &context, *rc.chf, cfg.borderSize, cfg.walkableHeight, *rc.lset ) ) {
-		Error( "Could not build heightfield layers\n" );
+		Sys::Drop( "Could not build heightfield layers" );
 	}
 
 	rc.ntiles = 0;
@@ -957,7 +980,7 @@ static void BuildNavMesh( int characterNum ){
 	tileCache = dtAllocTileCache();
 
 	if ( !tileCache ) {
-		Error( "Could not allocate tile cache\n" );
+		Sys::Drop( "Could not allocate tile cache" );
 	}
 
 	LinearAllocator alloc( 32000 );
@@ -968,11 +991,11 @@ static void BuildNavMesh( int characterNum ){
 
 	if ( dtStatusFailed( status ) ) {
 		if ( dtStatusDetail( status, DT_INVALID_PARAM ) ) {
-			Error( "Could not init tile cache: Invalid parameter\n" );
+			Sys::Drop( "Could not init tile cache: Invalid parameter" );
 		}
 		else
 		{
-			Error( "Could not init tile cache\n" );
+			Sys::Drop( "Could not init tile cache" );
 		}
 	}
 
@@ -1017,6 +1040,7 @@ static void BuildNavMesh( int characterNum ){
 	dtFreeTileCache( tileCache );
 }
 
+#if 0
 /*
    ===========
    NavMain
@@ -1109,3 +1133,4 @@ extern "C" int NavMain( int argc, char **argv ){
 
 	return 0;
 }
+#endif

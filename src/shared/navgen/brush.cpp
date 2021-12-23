@@ -34,7 +34,9 @@
 
 
 /* dependencies */
-#include "q3map2.h"
+#include <math.h>
+#include "engine/qcommon/qcommon.h"
+#include "common/cm/cm_polylib.h"
 
 
 
@@ -66,8 +68,8 @@ void SnapWeldVector( vec3_t a, vec3_t b, vec3_t out ){
 	for ( i = 0; i < 3; i++ )
 	{
 		/* round to integer */
-		ai = Q_rint( a[ i ] );
-		bi = Q_rint( b[ i ] );
+		ai = roundf( a[ i ] );
+		bi = roundf( b[ i ] );
 
 		/* prefer exact integer */
 		if ( ai == a[ i ] ) {
@@ -86,7 +88,7 @@ void SnapWeldVector( vec3_t a, vec3_t b, vec3_t out ){
 		}
 
 		/* snap */
-		outi = Q_rint( out[ i ] );
+		outi = roundf( out[ i ] );
 		if ( fabs( outi - out[ i ] ) <= SNAP_EPSILON ) {
 			out[ i ] = outi;
 		}
@@ -103,8 +105,8 @@ void SnapWeldVector( vec3_t a, vec3_t b, vec3_t out ){
 
 #define DEGENERATE_EPSILON  0.1
 
-qboolean FixWinding( winding_t *w ){
-	qboolean valid = qtrue;
+bool FixWinding( winding_t *w ){
+	bool valid = true;
 	int i, j, k;
 	vec3_t vec;
 	float dist;
@@ -112,7 +114,7 @@ qboolean FixWinding( winding_t *w ){
 
 	/* dummy check */
 	if ( !w ) {
-		return qfalse;
+		return false;
 	}
 
 	/* check all verts */
@@ -130,7 +132,7 @@ qboolean FixWinding( winding_t *w ){
 		VectorSubtract( w->p[ i ], w->p[ j ], vec );
 		dist = VectorLength( vec );
 		if ( dist < DEGENERATE_EPSILON ) {
-			valid = qfalse;
+			valid = false;
 			//Sys_FPrintf( SYS_VRB, "WARNING: Degenerate winding edge found, fixing...\n" );
 
 			/* create an average point (ydnar 2002-01-26: using nearest-integer weld preference) */
@@ -150,7 +152,7 @@ qboolean FixWinding( winding_t *w ){
 
 	/* one last check and return */
 	if ( w->numpoints < 3 ) {
-		valid = qfalse;
+		valid = false;
 	}
 	return valid;
 }
