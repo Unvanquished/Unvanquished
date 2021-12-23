@@ -35,7 +35,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 #define BUILDER_DECONSTRUCT_RANGE 100
 
-constexpr int MAX_CREDITS = 2000;
+constexpr int MAX_CREDITS = 2000; // for aliens, CREDITS_PER_EVO converts this to evos for display
 /*
  * ALIEN weapons
  */
