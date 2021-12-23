@@ -50,7 +50,8 @@ void G_AddCreditToClient( gclient_t *client, short credit, bool cap )
 
 	if ( cap && credit > 0 )
 	{
-		capAmount = MAX_CREDITS;
+		capAmount = client->pers.team == TEAM_ALIENS ?
+		            ALIEN_MAX_CREDITS : HUMAN_MAX_CREDITS;
 
 		if ( client->pers.credit < capAmount )
 		{
