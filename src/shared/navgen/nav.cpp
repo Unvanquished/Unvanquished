@@ -33,76 +33,17 @@
 
 static Log::Logger LOG("sgame.navgen", "");
 
-class UnvContext : public rcContext
+void UnvContext::doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/)
 {
-	/// Clears all log entries.
-	void doResetLog() override
+	if ( m_logEnabled )
 	{
+		LOG.Notice(msg);
 	}
-
-	/// Logs a message.
-	///  @param[in]   category  The category of the message.
-	///  @param[in]   msg     The formatted message.
-	///  @param[in]   len     The length of the formatted message.
-	void doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/) override
-	{
-		if ( m_logEnabled )
-		{
-			LOG.Notice(msg);
-		}
-	}
-
-	/// Clears all timers. (Resets all to unused.)
-	void doResetTimers() override
-	{
-	}
-
-	/// Starts the specified performance timer.
-	///  @param[in]   label The category of timer.
-	void doStartTimer(const rcTimerLabel /*label*/) override
-	{
-	}
-
-	/// Stops the specified performance timer.
-	///  @param[in]   label The category of the timer.
-	void doStopTimer(const rcTimerLabel /*label*/) override
-	{
-	}
-
-	/// Returns the total accumulated time of the specified performance timer.
-	///  @param[in]   label The category of the timer.
-	///  @return The accumulated time of the timer, or -1 if timers are disabled or the timer has never been started.
-	int doGetAccumulatedTime(const rcTimerLabel /*label*/) const override
-	{
-		return -1;
-	}
-};
-
-Geometry geo;
+}
 
 float cellHeight = 2.0f;
 float stepSize = STEPSIZE;
 int tileSize = 64;
-
-struct Character
-{
-	const char *name;   //appended to filename
-	float radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
-	float height; //height of agents (BBox maxs[2] - BBox mins[2])
-};
-
-static const Character characterArray[] = {
-	{ "builder",     20, 40 },
-	{ "human_naked", 15, 56 },
-	{ "human_bsuit", 15, 76 },
-	{ "level0",      15, 30 },
-	{ "level1",      15, 30 },
-	{ "level2",      23, 36 },
-	{ "level2upg",   25, 40 },
-	{ "level3",      26, 55 },
-	{ "level3upg",   29, 66 },
-	{ "level4",      32, 92 }
-};
 
 //flag for excluding caulk surfaces
 static bool excludeCaulk = true;
@@ -178,15 +119,12 @@ static void WriteNavMeshFile( Str::StringRef filename, const dtTileCache *tileCa
 	trap_FS_FCloseFile( file );
 }
 
-static std::string mapData;
-static void LoadBSP(Str::StringRef name)
+void NavmeshGenerator::LoadBSP()
 {
-	if (!mapData.empty()) return;
-
 	// copied from beginning of CM_LoadMap
-	std::string mapFile = "maps/" + name + ".bsp";
-	mapData = FS::PakPath::ReadFile(mapFile);
-	dheader_t* header = reinterpret_cast<dheader_t*>(&mapData[0]);
+	std::string mapFile = "maps/" + mapName_ + ".bsp";
+	mapData_ = FS::PakPath::ReadFile(mapFile);
+	dheader_t* header = reinterpret_cast<dheader_t*>(&mapData_[0]);
 
 	// hacky byte swapping for lumps of interest
 	// assume all fields size 4 except the string at the beginning of dshader_t
@@ -197,7 +135,7 @@ static void LoadBSP(Str::StringRef name)
 	for (int lump: {LUMP_MODELS, LUMP_BRUSHES, LUMP_SHADERS, LUMP_BRUSHSIDES, LUMP_PLANES})
 	{
 		unsigned nBytes = header->lumps[lump].fileofs;
-		char *base = &mapData[0] + header->lumps[lump].filelen;
+		char *base = &mapData_[0] + header->lumps[lump].filelen;
 		for (unsigned i = 0; i < nBytes; i += 4)
 		{
 			if (lump == LUMP_SHADERS && i % sizeof(dshader_t) < offsetof(dshader_t, surfaceFlags))
@@ -231,7 +169,7 @@ static void AddTri( std::vector<float> &verts, std::vector<int> &tris, vec3_t v1
 
 // TODO: Can this stuff be done using the already-loaded CM data structures
 // (e.g. cbrush_t instead of dbrush_t) instead of reopening the BSP?
-static void LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
+void NavmeshGenerator::LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
 	int j;
 
 	int solidFlags = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
@@ -241,8 +179,8 @@ static void LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
 		surfaceSkip = SURF_SKY;
 	}
 
-	const byte* const cmod_base = reinterpret_cast<const byte*>(mapData.data());
-	auto& header = *reinterpret_cast<const dheader_t*>(mapData.data());
+	const byte* const cmod_base = reinterpret_cast<const byte*>(mapData_.data());
+	auto& header = *reinterpret_cast<const dheader_t*>(mapData_.data());
 
 	// Each one of these lumps should be byte-swapped in LoadBSP
 	const lump_t& modelsLump = header.lumps[LUMP_MODELS];
@@ -446,7 +384,8 @@ static void LoadPatchTris( std::vector<float> &verts, std::vector<int> &tris ) {
 #endif
 }
 
-static void LoadGeometry(){
+void NavmeshGenerator::LoadGeometry()
+{
 	std::vector<float> verts;
 	std::vector<int> tris;
 
@@ -463,10 +402,10 @@ static void LoadGeometry(){
 	LOG.Debug( "Using %d triangles", numTris );
 	LOG.Debug( "Using %d vertices", numVerts );
 
-	geo.init( &verts[ 0 ], numVerts, &tris[ 0 ], numTris );
+	geo_.init( &verts[ 0 ], numVerts, &tris[ 0 ], numTris );
 
-	const float *mins = geo.getMins();
-	const float *maxs = geo.getMaxs();
+	const float *mins = geo_.getMins();
+	const float *maxs = geo_.getMaxs();
 
 	LOG.Debug( "set recast world bounds to" );
 	LOG.Debug( "min: %f %f %f", mins[0], mins[1], mins[2] );
@@ -769,7 +708,7 @@ static void rcFilterGaps( rcContext *ctx, int walkableRadius, int walkableClimb,
 	}
 }
 
-static int rasterizeTileLayers( rcContext &context, int tx, int ty, const rcConfig &mcfg, TileCacheData *data, int maxLayers ){
+static int rasterizeTileLayers( Geometry& geo, rcContext &context, int tx, int ty, const rcConfig &mcfg, TileCacheData *data, int maxLayers ){
 	rcConfig cfg;
 
 	FastLZCompressor comp;
@@ -929,70 +868,65 @@ static int rasterizeTileLayers( rcContext &context, int tx, int ty, const rcConf
 	return n;
 }
 
-static void BuildNavMesh( int characterNum ){
-	const Character &agent = characterArray[ characterNum ];
+void NavmeshGenerator::StartGeneration( class_t species )
+{
+	LOG.Notice( "Generating navmesh for %s", BG_Class( species )->name );
+	d_.reset( new PerClassData );
+	d_->species = species;
 
-	dtTileCache *tileCache;
-	const float *bmin = geo.getMins();
-	const float *bmax = geo.getMaxs();
+	const float *bmin = geo_.getMins();
+	const float *bmax = geo_.getMaxs();
 	int gw = 0, gh = 0;
-	const float cellSize = agent.radius / 4.0f;
+
+	const classModelConfig_t* dimensions = BG_ClassModelConfig(species);
+	//radius of agent (BBox maxs[0] or BBox maxs[1])
+	float radius = dimensions->maxs[0];
+	//height of agent (BBox maxs[2] - BBox mins[2])
+	float height = dimensions->maxs[2] - dimensions->mins[2];
+
+	const float cellSize = radius / 4.0f;
 
 	rcCalcGridSize( bmin, bmax, cellSize, &gw, &gh );
 
 	const int ts = tileSize;
-	const int tw = ( gw + ts - 1 ) / ts;
-	const int th = ( gh + ts - 1 ) / ts;
+	d_->tw = ( gw + ts - 1 ) / ts;
+	d_->th = ( gh + ts - 1 ) / ts;
 
-	rcConfig cfg;
-	memset( &cfg, 0, sizeof( cfg ) );
+	d_->cfg.cs = cellSize;
+	d_->cfg.ch = cellHeight;
+	d_->cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
+	d_->cfg.walkableHeight = ( int ) ceilf( height / d_->cfg.ch );
+	d_->cfg.walkableClimb = ( int ) floorf( stepSize / d_->cfg.ch );
+	d_->cfg.walkableRadius = ( int ) ceilf( radius / d_->cfg.cs );
+	d_->cfg.maxEdgeLen = 0;
+	d_->cfg.maxSimplificationError = 1.3f;
+	d_->cfg.minRegionArea = rcSqr( 25 );
+	d_->cfg.mergeRegionArea = rcSqr( 50 );
+	d_->cfg.maxVertsPerPoly = 6;
+	d_->cfg.tileSize = ts;
+	d_->cfg.borderSize = d_->cfg.walkableRadius * 2;
+	d_->cfg.width = d_->cfg.tileSize + d_->cfg.borderSize * 2;
+	d_->cfg.height = d_->cfg.tileSize + d_->cfg.borderSize * 2;
+	d_->cfg.detailSampleDist = d_->cfg.cs * 6.0f;
+	d_->cfg.detailSampleMaxError = d_->cfg.ch * 1.0f;
 
-	cfg.cs = cellSize;
-	cfg.ch = cellHeight;
-	cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
-	cfg.walkableHeight = ( int ) ceilf( agent.height / cfg.ch );
-	cfg.walkableClimb = ( int ) floorf( stepSize / cfg.ch );
-	cfg.walkableRadius = ( int ) ceilf( agent.radius / cfg.cs );
-	cfg.maxEdgeLen = 0;
-	cfg.maxSimplificationError = 1.3f;
-	cfg.minRegionArea = rcSqr( 25 );
-	cfg.mergeRegionArea = rcSqr( 50 );
-	cfg.maxVertsPerPoly = 6;
-	cfg.tileSize = ts;
-	cfg.borderSize = cfg.walkableRadius * 2;
-	cfg.width = cfg.tileSize + cfg.borderSize * 2;
-	cfg.height = cfg.tileSize + cfg.borderSize * 2;
-	cfg.detailSampleDist = cfg.cs * 6.0f;
-	cfg.detailSampleMaxError = cfg.ch * 1.0f;
+	rcVcopy( d_->cfg.bmin, bmin );
+	rcVcopy( d_->cfg.bmax, bmax );
 
-	rcVcopy( cfg.bmin, bmin );
-	rcVcopy( cfg.bmax, bmax );
+	rcVcopy( d_->tcparams.orig, bmin );
+	d_->tcparams.cs = cellSize;
+	d_->tcparams.ch = cellHeight;
+	d_->tcparams.width = ts;
+	d_->tcparams.height = ts;
+	d_->tcparams.walkableHeight = height;
+	d_->tcparams.walkableRadius = radius;
+	d_->tcparams.walkableClimb = stepSize;
+	d_->tcparams.maxSimplificationError = 1.3;
+	d_->tcparams.maxTiles = d_->tw * d_->th * EXPECTED_LAYERS_PER_TILE;
+	d_->tcparams.maxObstacles = 256;
 
-	dtTileCacheParams tcparams;
-	memset( &tcparams, 0, sizeof( tcparams ) );
-	rcVcopy( tcparams.orig, bmin );
-	tcparams.cs = cellSize;
-	tcparams.ch = cellHeight;
-	tcparams.width = ts;
-	tcparams.height = ts;
-	tcparams.walkableHeight = agent.height;
-	tcparams.walkableRadius = agent.radius;
-	tcparams.walkableClimb = stepSize;
-	tcparams.maxSimplificationError = 1.3;
-	tcparams.maxTiles = tw * th * EXPECTED_LAYERS_PER_TILE;
-	tcparams.maxObstacles = 256;
-
-	tileCache = dtAllocTileCache();
-
-	if ( !tileCache ) {
-		Sys::Drop( "Could not allocate tile cache" );
-	}
-
-	LinearAllocator alloc( 32000 );
-	FastLZCompressor comp;
-	MeshProcess proc;
-
-	dtStatus status = tileCache->init( &tcparams, &alloc, &comp, &proc );
+	d_->tileCache.reset(new dtTileCache);
+	dtStatus status = d_->tileCache->init( &d_->tcparams, &d_->alloc, &d_->comp, &d_->proc );
 
 	if ( dtStatusFailed( status ) ) {
 		if ( dtStatusDetail( status, DT_INVALID_PARAM ) ) {
@@ -1003,72 +937,72 @@ static void BuildNavMesh( int characterNum ){
 			Sys::Drop( "Could not init tile cache" );
 		}
 	}
+}
 
-	UnvContext context;
-	context.enableLog( true );
-
-	//iterate over all tiles (number is determined by rcCalcGridSize)
-	for ( int y = 0; y < th; y++ )
+bool NavmeshGenerator::Step()
+{
+	if ( d_->y >= d_->th || d_->tw == 0 )
 	{
-		for ( int x = 0; x < tw; x++ )
-		{
-			TileCacheData tiles[ MAX_LAYERS ];
-			memset( tiles, 0, sizeof( tiles ) );
+		WriteFile();
+		LOG.Notice( "Finished generating navmesh for %s", BG_Class( d_->species )->name );
+		d_.reset();
+		return true;
+	}
 
-			int ntiles = rasterizeTileLayers( context, x, y, cfg, tiles, MAX_LAYERS );
+	TileCacheData tiles[ MAX_LAYERS ];
+	memset( tiles, 0, sizeof( tiles ) );
 
-			for ( int i = 0; i < ntiles; i++ )
-			{
-				TileCacheData *tile = &tiles[ i ];
-				status = tileCache->addTile( tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0 );
-				if ( dtStatusFailed( status ) ) {
-					dtFree( tile->data );
-					tile->data = 0;
-					continue;
-				}
-			}
+	int ntiles = rasterizeTileLayers( geo_, recastContext_, d_->x, d_->y, d_->cfg, tiles, MAX_LAYERS );
+
+	for ( int i = 0; i < ntiles; i++ )
+	{
+		TileCacheData *tile = &tiles[ i ];
+		dtStatus status = d_->tileCache->addTile( tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0 );
+		if ( dtStatusFailed( status ) ) {
+			dtFree( tile->data );
+			tile->data = 0;
+			continue;
 		}
 	}
 
+	//iterate over all tiles (number is determined by rcCalcGridSize)
+	if ( ++d_->x == d_->tw )
+	{
+		d_->x = 0;
+		++d_->y;
+	}
+	return false;
+}
+
+void NavmeshGenerator::WriteFile()
+{
 	// there are 22 bits to store a tile and its polys
-	int tileBits = rcMin( ( int ) dtIlog2( dtNextPow2( tcparams.maxTiles ) ), 14 );
+	int tileBits = rcMin( ( int ) dtIlog2( dtNextPow2( d_->tcparams.maxTiles ) ), 14 );
 	int polyBits = 22 - tileBits;
 
 	dtNavMeshParams params;
-	dtVcopy( params.orig, tcparams.orig );
-	params.tileHeight = ts * cfg.cs;
-	params.tileWidth = ts * cfg.cs;
+	dtVcopy( params.orig, d_->tcparams.orig );
+	params.tileHeight = d_->tcparams.height * d_->cfg.cs;
+	params.tileWidth = d_->tcparams.width * d_->cfg.cs;
 	params.maxTiles = 1 << tileBits;
 	params.maxPolys = 1 << polyBits;
 
-	std::string mapname = Cvar::GetValue("mapname");
-	std::string filename = Str::Format("maps/%s-%s.navMesh", mapname, agent.name);
-	WriteNavMeshFile( filename, tileCache, &params );
-
-	dtFreeTileCache( tileCache );
+	std::string filename = Str::Format("maps/%s-%s.navMesh", mapName_, BG_Class(d_->species)->name);
+	WriteNavMeshFile( filename, d_->tileCache.get(), &params );
 }
 
-void GenerateNavmesh(Str::StringRef species)
+void NavmeshGenerator::Init(Str::StringRef mapName)
 {
-	unsigned characterNum;
-	for (characterNum = 0; characterNum < ARRAY_LEN(characterArray); characterNum++) {
-		if (species == characterArray[characterNum].name) {
-			break;
-		}
-	}
-	if (characterNum == ARRAY_LEN(characterArray)) {
-		LOG.Warn("class '%s' not valid for navmesh generation", species);
-		return;
-	}
-
-	LOG.Notice( "Generating navmesh for %s", species );
+	if (mapName == mapName_) return;
 
 	// TODO: flags? (cellHeight, stepSize, excludeCaulk, excludeSky, filterGaps)
 
-	LoadBSP(Cvar::GetValue("mapname"));
+	mapName_ = mapName;
+	recastContext_.enableLog(true);
+	LoadBSP();
 	LoadGeometry();
 
-	float height = rcAbs( geo.getMaxs()[1] ) + rcAbs( geo.getMins()[1] );
+	float height = rcAbs( geo_.getMaxs()[1] ) + rcAbs( geo_.getMins()[1] );
 	if ( height / cellHeight > RC_SPAN_MAX_HEIGHT ) {
 		LOG.Warn("Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh." );
 		float prevCellHeight = cellHeight;
@@ -1089,7 +1023,4 @@ void GenerateNavmesh(Str::StringRef species)
 		LOG.Notice( "Previous cell height: %f", prevCellHeight );
 		LOG.Notice( "New cell height: %f", cellHeight );
 	}
-
-	BuildNavMesh(characterNum);
-	LOG.Notice("Finished generating navmesh for %s", species);
 }

@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
+#include "shared/navgen/navgen.h"
 
 struct g_admin_cmd_t
 {
@@ -5769,18 +5770,34 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	return true;
 }
 
-void GenerateNavmesh( Str::StringRef species );
 bool G_admin_navgen( gentity_t* ent )
 {
+	static NavmeshGenerator navgen;
+
 	const Cmd::Args& args = trap_Args();
 	if ( args.Argc() < 2 )
 	{
 		ADMP( QQ("^3navgen:^* usage: navgen <class>...") );
 		return false;
 	}
+
+	navgen.Init( Cvar::GetValue( "mapname" ) );
 	for ( int i = 1; i < args.Argc(); i++ )
 	{
-		GenerateNavmesh( args.Argv( i ) );
+		const classAttributes_t* species = BG_ClassByName( args.Argv( i ).c_str() );
+		if ( species->number == PCL_NONE )
+		{
+			ADMP( va( "%s %s",
+			          QQ( N_ ("^3navgen:^* invalid class name '$1$'" ) ),
+			          Quote( args.Argv( i ).c_str() ) ) );
+			return false;
+		}
+		navgen.StartGeneration( species->number );
+		while ( !navgen.Step() )
+		{
+			// ping the engine with a useless message so that it does not think the sgame VM has hung
+			Cvar::GetValue( "x" );
+		}
 	}
 	return true;
 }

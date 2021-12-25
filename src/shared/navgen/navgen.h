@@ -20,6 +20,7 @@
    ===========================================================================
  */
 
+#include <memory>
 #include "Recast.h"
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
@@ -30,6 +31,7 @@
 #include "DetourTileCache.h"
 #include "DetourTileCacheBuilder.h"
 #include "sgame/botlib/nav.h"
+#include "shared/bg_public.h"
 
 static const int MAX_LAYERS = 32;
 static const int EXPECTED_LAYERS_PER_TILE = 4;
@@ -100,4 +102,47 @@ const float           *getMaxs() { return maxs; }
 const float           *getVerts() { return verts; }
 int                    getNumVerts() { return nverts; }
 const rcChunkyTriMesh *getChunkyMesh() { return &mesh; }
+};
+
+class UnvContext : public rcContext
+{
+	void doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/) override;
+};
+
+class NavmeshGenerator {
+private:
+	struct PerClassData {
+		class_t species;
+		rcConfig cfg = {};
+		dtTileCacheParams tcparams = {};
+		std::unique_ptr<dtTileCache> tileCache;
+		LinearAllocator alloc = LinearAllocator(32000);
+		FastLZCompressor comp;
+		MeshProcess proc;
+		int tw;
+		int th;
+		int x = 0;
+		int y = 0;
+	};
+
+	UnvContext recastContext_;
+	// Map data
+	std::string mapName_;
+	std::string mapData_;
+	Geometry geo_;
+	// Data for generating current class
+	std::unique_ptr<PerClassData> d_;
+
+	void LoadBSP();
+	void LoadGeometry();
+	void LoadBrushTris(std::vector<float>& verts, std::vector<int>& tris);
+	void WriteFile();
+
+public:
+	// load the BSP if it has not been loaded already
+	// in principle mapName could be different from the current map, if the necessary pak is loaded
+	void Init(Str::StringRef mapName);
+
+	void StartGeneration(class_t species);
+	bool Step();
 };
