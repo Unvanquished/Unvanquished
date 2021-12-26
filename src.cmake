@@ -78,6 +78,10 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/parse.cpp
     ${GAMELOGIC_DIR}/shared/parse.h
     ${GAMELOGIC_DIR}/shared/Clustering.h
+
+    ${GAMELOGIC_DIR}/shared/navgen/brush.cpp
+    ${GAMELOGIC_DIR}/shared/navgen/nav.cpp
+    ${GAMELOGIC_DIR}/shared/navgen/navgen.h
 )
 
 set(CGAMELIST
@@ -245,10 +249,6 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/botlib/bot_nav_edit.cpp
     ${GAMELOGIC_DIR}/sgame/botlib/bot_navdraw.h
     ${GAMELOGIC_DIR}/sgame/botlib/bot_types.h
-
-    ${GAMELOGIC_DIR}/shared/navgen/brush.cpp
-    ${GAMELOGIC_DIR}/shared/navgen/nav.cpp
-    ${GAMELOGIC_DIR}/shared/navgen/navgen.h
 
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.h

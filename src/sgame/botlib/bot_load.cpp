@@ -202,21 +202,10 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	}
 
 	NavMeshSetHeader header;
-	
-	trap_FS_Read( &header, sizeof( header ), f );
-
-	SwapNavMeshSetHeader( header );
-
-	if ( header.magic != NAVMESHSET_MAGIC )
+	std::string error = GetNavmeshHeader( f, header );
+	if ( !error.empty() )
 	{
-		Log::Warn("File is wrong magic" );
-		trap_FS_FCloseFile( f );
-		return false;
-	}
-
-	if ( header.version != NAVMESHSET_VERSION )
-	{
-		Log::Warn("File is wrong version found: %d want: %d", header.version, NAVMESHSET_VERSION );
+		Log::Warn( "Loading navmesh %s failed: %s", filePath, error );
 		trap_FS_FCloseFile( f );
 		return false;
 	}

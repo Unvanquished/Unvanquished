@@ -116,6 +116,28 @@ static inline void SwapNavMeshTileHeader( NavMeshTileHeader &header )
 	}
 }
 
+// Returns a non-empty string on error
+inline std::string GetNavmeshHeader( fileHandle_t f, NavMeshSetHeader& header )
+{
+	if ( sizeof(header) != trap_FS_Read( &header, sizeof( header ), f ) )
+	{
+		return "File too small";
+	}
+	SwapNavMeshSetHeader( header );
+
+	if ( header.magic != NAVMESHSET_MAGIC )
+	{
+		return "File is wrong magic";
+	}
+
+	if ( header.version != NAVMESHSET_VERSION )
+	{
+		return Str::Format( "File is wrong version (found %d, want %d)", header.version, NAVMESHSET_VERSION );
+	}
+
+	return "";
+}
+
 struct FastLZCompressor : public dtTileCacheCompressor
 {
 	virtual int maxCompressedSize( const int bufferSize )

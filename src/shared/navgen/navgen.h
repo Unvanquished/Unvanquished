@@ -144,5 +144,9 @@ public:
 	void Init(Str::StringRef mapName);
 
 	void StartGeneration(class_t species);
+
+	float SpeciesFractionCompleted() const;
+
+	// Returns true when finished
 	bool Step();
 };

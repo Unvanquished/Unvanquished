@@ -95,7 +95,7 @@ if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
     include_directories(${ROCKET_INCLUDE_DIRS})
 endif()
 
-if (BUILD_SGAME)
+if (BUILD_SGAME OR BUILD_CGAME)
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
     set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
@@ -178,5 +178,8 @@ if (BUILD_CGAME)
         ${FREETYPE_LIBRARIES}
         ${LUA_LIBRARY}
         srclibs-tinygettext
+        srclibs-detour
+        srclibs-recast
+        srclibs-fastlz
   )
 endif()

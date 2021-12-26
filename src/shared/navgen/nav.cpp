@@ -21,17 +21,26 @@
  */
 // nav.cpp -- navigation mesh generator interface
 
+#include "common/Common.h"
+
 #include <iostream>
 #include <vector>
 #include <queue>
+
+// Filesystem APIs are stupidly declared in different headers
+#ifdef BUILD_CGAME
+#include "engine/client/cg_api.h"
+#else
+#include "sgame/sg_trapcalls.h"
+#endif
+
 #include "engine/qcommon/qcommon.h"
 #include "common/cm/cm_patch.h"
 #include "common/cm/cm_polylib.h"
 #include "common/FileSystem.h"
 #include "navgen.h"
-#include "sgame/sg_trapcalls.h"
 
-static Log::Logger LOG("sgame.navgen", "");
+static Log::Logger LOG( VM_STRING_PREFIX "navgen", "");
 
 void UnvContext::doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/)
 {
@@ -1023,4 +1032,10 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 		LOG.Notice( "Previous cell height: %f", prevCellHeight );
 		LOG.Notice( "New cell height: %f", cellHeight );
 	}
+}
+
+float NavmeshGenerator::SpeciesFractionCompleted() const
+{
+	// Assume that writing the file at the end is 10%
+	return 0.9f * float(d_->y * d_->tw + d_->x) / float(d_->tw * d_->th);
 }
