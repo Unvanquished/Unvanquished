@@ -38,14 +38,23 @@ Navigation Mesh Loading
 */
 
 // FIXME: use nav handle instead of classes
-void G_BotNavInit()
+bool G_BotNavInit()
 {
+	if ( navMeshLoaded )
+	{
+		return true;
+	}
+
 	int i;
 
-	Log::Notice( "==== Bot Navigation Initialization ==== \n" );
+	Log::Notice( "==== Bot Navigation Initialization ====" );
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
+		if ( i == PCL_ALIEN_BUILDER0 )
+		{
+			continue;
+		}
 		classModelConfig_t *model;
 		botClass_t bot;
 		bot.polyFlagsInclude = POLYFLAGS_WALK;
@@ -58,7 +67,7 @@ void G_BotNavInit()
 			{
 				Log::Warn( "class '%s': navmesh reference target class '%s' must have its own navmesh",
 				            BG_Class( i )->name, BG_Class( model->navMeshClass )->name );
-				return;
+				return false;
 			}
 
 			continue;
@@ -68,10 +77,11 @@ void G_BotNavInit()
 
 		if ( !G_BotSetupNav( &bot, &model->navHandle ) )
 		{
-			return;
+			return false;
 		}
 	}
 	navMeshLoaded = true;
+	return true;
 }
 
 void G_BotNavCleanup()

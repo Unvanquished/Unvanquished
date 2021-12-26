@@ -275,11 +275,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	bool autoname = false;
 	bool okay;
 
-	if ( !navMeshLoaded )
-	{
-		Log::Warn( "No Navigation Mesh file is available for this map" );
-		return false;
-	}
+	ASSERT( navMeshLoaded );
 
 	// find what clientNum to use for bot
 	clientNum = trap_BotAllocateClient();
@@ -560,13 +556,23 @@ void G_BotIntermissionThink( gclient_t *client )
 	client->readyToExit = true;
 }
 
-void G_BotInit()
+// Initialization happens whenever someone first tries to add a bot.
+// This incurs some delay (a few tenths of a second), but on servers bots
+// are normally added at the beginning of the round so it shouldn't be noticeable.
+bool G_BotInit()
 {
-	G_BotNavInit( );
 	if ( treeList.maxTrees == 0 )
 	{
 		InitTreeList( &treeList );
 	}
+
+	if ( !G_BotNavInit() )
+	{
+		Log::Notice( "Failed to load navmeshes" );
+		G_BotNavCleanup();
+		return false;
+	}
+	return true;
 }
 
 void G_BotCleanup()

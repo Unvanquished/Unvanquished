@@ -5727,6 +5727,12 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 
 	const char* behavior = args.Argc() >= 6 ? args[5].data() : BOT_DEFAULT_BEHAVIOR;
 
+	if ( !G_BotInit() )
+	{
+		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
+		return false;
+	}
+
 	bool result = G_BotAdd( name, team, skill, behavior );
 	if ( !result )
 	{
@@ -5760,6 +5766,12 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	}
 	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : g_bot_default_skill.Get();
 
+	if ( !G_BotInit() )
+	{
+		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
+		return false;
+	}
+
 	for (team_t team : teams)
 	{
 		level.team[team].botFillTeamSize = count;
@@ -5770,6 +5782,8 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	return true;
 }
 
+// This command does NOT load the navmesh that it creates.
+// However the mesh will be used if you run /navgen before the first bot fill/add command.
 bool G_admin_navgen( gentity_t* ent )
 {
 	static NavmeshGenerator navgen;

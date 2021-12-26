@@ -113,7 +113,7 @@ enum botMoveDir_t
 // global navigation
 extern bool navMeshLoaded;
 
-void         G_BotNavInit();
+bool         G_BotNavInit();
 void         G_BotNavCleanup();
 bool     FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial );
 void         BotMoveToGoal( gentity_t *self );

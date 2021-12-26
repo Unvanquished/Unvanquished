@@ -60,7 +60,7 @@ void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void G_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
 void G_BotRemoveObstacle( qhandle_t handle );
 void G_BotUpdateObstacles();
-void G_BotInit();
+bool G_BotInit();
 void G_BotCleanup();
 void G_BotFill( bool immediately );
 void G_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
