@@ -99,7 +99,6 @@ if (BUILD_SGAME)
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
     set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-    set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-fastlz)
 
     # Detour
     add_library(srclibs-detour EXCLUDE_FROM_ALL ${DETOURLIST})
