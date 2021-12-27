@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 // The basic interfaces for libRocket
 
+#include "common/Common.h"
 #include "rocket.h"
 #include <Rocket/Core/FileInterface.h>
 #include <Rocket/Core/SystemInterface.h>
