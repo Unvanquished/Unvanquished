@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/gtx/norm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;
@@ -330,6 +331,212 @@ void BotWalk( gentity_t *self, bool enable )
 	}
 }
 
+// A function which does a proper vertical scan for path is required.
+// To do that, several points must be kept in mind:
+//
+// * stepsize can be negative
+// * stepsize and jump magnitude cumulate
+// * bots can not always jump (stamina)
+// * bots can not always crouch (CMaxs == maxs)
+// * traced entity *can* have dimensions
+// * a binary search would *not* work, as it is possible to
+//   have holes both above and under the traced entity
+// * evaluate wether steering would be faster than crouching
+//
+// Traces use heavy maths, so better try to avoid them as much
+// as possible.
+// Hint: scan for biggest picture, and area in ranges around
+// detected obstacles, reccursively call self as long as range
+// is tall enough to pass through. Done by manipulating maxs
+// and mins.
+//
+// result is written into, so that the actual height/angle of
+// the possible jump can be calculated.
+//
+//TODO: optimize when traced object is a "physical entity" (building/player)
+//TODO: detect missiles (fire on ground, rockets slowly moving, etc) to dodge them
+//TODO move "forward" calculation to caller to avoid recalc each time
+static bool detectWalk(
+		glm::vec3 const& origin, glm::vec3 const& dir,
+		glm::vec3 const& mins, glm::vec3 const& maxs,
+		float floor, float ceiling,
+		int entityNum,
+		glm::vec3 &result )
+{
+	trace_t trace;
+	ASSERT( mins[2] <= maxs[2] );
+	ASSERT( mins[2] <= 0.f );
+	float height = maxs[2] - mins[2];
+	glm::vec3 tmins = mins + glm::vec3( 0.f, 0.f, floor );
+	glm::vec3 tmaxs = maxs + glm::vec3( 0.f, 0.f, ceiling );
+
+	trap_Trace( &trace, origin, tmins, tmaxs, dir, entityNum, MASK_SHOT, 0 );
+
+	if ( trace.fraction == 0.0f )
+	{
+		return false;
+	}
+
+	if ( trace.fraction >= 1.0f )
+	{
+		result = dir;
+		return true;
+	}
+	float offset_trace = trace.endpos[2] - origin[2];
+	bool check = false;
+
+	// avoid find same obstacle anew. Maybe +1 is a bit extreme, but should work.
+	check = offset_trace + height + 1.f < tmaxs[2];
+	if ( check && detectWalk( origin, dir, mins, maxs, offset_trace + fabs( mins[2] ) + 1.f, ceiling, entityNum, result ) )
+	{
+		result = dir;
+		return true;
+	}
+
+	// avoid find same obstacle anew. Maybe -- is a bit extreme, but should work.
+	check = tmins[2] < offset_trace - height - 1.f;
+	if ( check && detectWalk( origin, dir, mins, maxs, floor, offset_trace - fabs( maxs[2] ) - 1.f, entityNum, result ) )
+	{
+		result = dir;
+		return true;
+	}
+
+	return false;
+}
+
+static bool steer( gentity_t *self, glm::vec3 &dir )
+{
+	class_t pClass = static_cast<class_t>( self->client->ps.stats[ STAT_CLASS ] );
+	glm::vec3 pMins, pMaxs, pCMaxs;
+	BG_BoundingBox( pClass, pMins, pMaxs );
+	pCMaxs = BG_CrouchBoundingBox( pClass );
+
+	glm::vec3 origin = VEC2GLM( self->s.origin );
+	float jumpMagnitude = BG_Class( pClass )->jumpMagnitude;
+	jumpMagnitude = Square( jumpMagnitude ) / ( self->client->ps.gravity * 2 );
+
+	bool canJump = BG_Class( pClass )->staminaJumpCost < self->client->ps.stats[STAT_STAMINA];
+	bool canCrouch = pMaxs != pCMaxs;
+
+	float lower  = 0.f - STEPSIZE;
+	float higher = 0.f + STEPSIZE;
+	float jump   = 0.f + STEPSIZE + jumpMagnitude;
+	int entityNum = self->s.number;
+
+	glm::vec3 forward = glm::normalize( glm::vec3( dir[0], dir[1], 0 ) );
+	glm::vec3 tmp_fwd;
+
+	float yaw = 0;
+	// walk or jump straight {
+	tmp_fwd = origin + BOT_OBSTACLE_AVOID_RANGE * forward;
+	if ( detectWalk( origin, tmp_fwd, pMins, pMaxs, lower, higher, entityNum, dir ) )
+	{
+		return true;
+	}
+	if ( canJump && detectWalk( origin, tmp_fwd, pMins, pMaxs, higher, jump, entityNum, dir ) )
+	{
+		return true;
+	}
+	// }
+
+	// try walking or jumping on lower angles {
+	for ( yaw = 15; yaw < 30; yaw += 15 )
+	{
+		// +yaw
+		glm::vec3 fw_inc = glm::rotateZ( forward, yaw );
+		tmp_fwd = origin + BOT_OBSTACLE_AVOID_RANGE * fw_inc;
+		if ( detectWalk( origin, tmp_fwd, pMins, pMaxs, lower, higher, entityNum, dir ) )
+		{
+			return true;
+		}
+		if ( canJump && detectWalk( origin, tmp_fwd, pMins, pMaxs, higher, jump, entityNum, dir ) )
+		{
+			return true;
+		}
+
+		// -yaw
+		glm::vec3 fw_dec = glm::rotateZ( forward, 0 - yaw );
+		tmp_fwd = origin + BOT_OBSTACLE_AVOID_RANGE * fw_dec;
+		if ( detectWalk( origin, tmp_fwd, pMins, pMaxs, lower, higher, entityNum, dir ) )
+		{
+			return true;
+		}
+		if ( canJump && detectWalk( origin, tmp_fwd, pMins, pMaxs, higher, jump, entityNum, dir ) )
+		{
+			return true;
+		}
+	}
+	// }
+
+	// try crouching on lower angles {
+	if ( canCrouch )
+	{
+		yaw = 0;
+		tmp_fwd = origin + BOT_OBSTACLE_AVOID_RANGE * forward;
+		if ( detectWalk( origin, tmp_fwd, pMins, pCMaxs, lower, higher, entityNum, dir ) )
+		{
+			return true;
+		}
+		for ( yaw = 15; yaw < 30; yaw += 15 )
+		{
+			// +yaw
+			glm::vec3 fw_inc = glm::rotateZ( forward, yaw );
+			tmp_fwd = origin + BOT_OBSTACLE_AVOID_RANGE * fw_inc;
+			if ( detectWalk( origin, tmp_fwd, pMins, pCMaxs, lower, higher, entityNum, dir ) )
+			{
+				return true;
+			}
+
+			// +yaw
+			glm::vec3 fw_dec = glm::rotateZ( forward, 0 - yaw );
+			tmp_fwd = origin + BOT_OBSTACLE_AVOID_RANGE * fw_dec;
+			if ( detectWalk( origin, tmp_fwd, pMins, pCMaxs, lower, higher, entityNum, dir ) )
+			{
+				return true;
+			}
+		}
+	}
+	// }
+
+	//try all on bigger angles {
+	for ( yaw = 30; yaw < 30; yaw += 15 )
+	{
+		// +yaw
+		glm::vec3 fw_inc = glm::rotateZ( forward, yaw );
+		tmp_fwd = origin + BOT_OBSTACLE_AVOID_RANGE * fw_inc;
+		if ( detectWalk( origin, tmp_fwd, pMins, pMaxs, lower, higher, entityNum, dir ) )
+		{
+			return true;
+		}
+		if ( canJump && detectWalk( origin, tmp_fwd, pMins, pMaxs, higher, jump, entityNum, dir ) )
+		{
+			return true;
+		}
+		if ( canCrouch && detectWalk( origin, tmp_fwd, pMins, pCMaxs, lower, higher, entityNum, dir ) )
+		{
+			return true;
+		}
+
+		// -yaw
+		glm::vec3 fw_dec = glm::rotateZ( forward, 0 - yaw );
+		tmp_fwd = origin + BOT_OBSTACLE_AVOID_RANGE * fw_dec;
+		if ( detectWalk( origin, tmp_fwd, pMins, pMaxs, lower, higher, entityNum, dir ) )
+		{
+			return true;
+		}
+		if ( canJump && detectWalk( origin, tmp_fwd, pMins, pMaxs, higher, jump, entityNum, dir ) )
+		{
+			return true;
+		}
+		if ( canCrouch && detectWalk( origin, tmp_fwd, pMins, pMaxs, lower, higher, entityNum, dir ) )
+		{
+			return true;
+		}
+	}
+	// }
+	return false;
+}
+
 static bool walkable( trace_t const& trace )
 {
 	return trace.fraction >= 1.0f || trace.plane.normal[2] >= 0.7f;
@@ -577,7 +784,7 @@ void BotMoveToGoal( gentity_t *self )
 	const playerState_t& ps = self->client->ps;
 
 	glm::vec3 dir = self->botMind->nav().glm_dir();
-	if ( !self->botMind->findPath( self, dir ) )
+	if ( !steer( self, dir ) )
 	{
 		//TODO: find new target on next frame
 	}
