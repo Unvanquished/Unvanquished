@@ -49,7 +49,7 @@ struct pc_token_t {
 };
 
 int Parse_AddGlobalDefine(const char *string);
-int Parse_LoadSourceHandle(const char *filename);
+int Parse_LoadSourceHandle(const char *filename, int (*openFunc)(Str::StringRef, fileHandle_t &));
 int Parse_FreeSourceHandle(int handle);
 bool Parse_ReadTokenHandle(int handle, pc_token_t *pc_token);
 int Parse_SourceFileAndLine(int handle, char (&filename)[MAX_QPATH], int *line);

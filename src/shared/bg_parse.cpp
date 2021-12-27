@@ -26,17 +26,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA	02110-1301	USA
 
 // bg_parser.c -- parsers for configuration files
 
+#include "common/FileSystem.h"
 #include "engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
 #ifdef BUILD_CGAME
 #include "cgame/cg_local.h"
 #endif
-
-int  trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
-int  trap_FS_Read( void *buffer, int len, fileHandle_t f );
-int  trap_FS_Write( const void *buffer, int len, fileHandle_t f );
-void trap_FS_FCloseFile( fileHandle_t f );
 
 #define PARSE(text, token) \
 	(token) = COM_Parse( &(text) ); \
@@ -323,34 +319,27 @@ static const size_t bg_numConfigVars = ARRAY_LEN( bg_configVars );
 ======================
 BG_ReadWholeFile
 
-Helper function that tries to read a whole file in a buffer. Should it be in bg_parse.c?
+TODO: migrate callers to use FS::PakPath::ReadFile directly
 ======================
 */
 
-bool BG_ReadWholeFile( const char *filename, char *buffer, int size)
+bool BG_ReadWholeFile( const char *filename, char *buffer, size_t size)
 {
-	fileHandle_t f;
-	int len;
-
-	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
-
-	if ( len < 0 )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( filename, err );
+	if ( err )
 	{
-		Log::Warn( "file %s doesn't exist", filename );
+		Log::Warn( "couldn't read file '%s': %s", filename, err.message() );
 		return false;
 	}
 
-	if ( len == 0 || len >= size - 1 )
+	if ( text.size() >= size )
 	{
-		trap_FS_FCloseFile( f );
-		Log::Warn( "file %s is %s", filename,
-					len == 0 ? "empty" : "too long" );
+		Log::Warn( "file '%s' is too long", filename );
 		return false;
 	}
 
-	trap_FS_Read( buffer, len, f );
-	buffer[ len ] = 0;
-	trap_FS_FCloseFile( f );
+	memcpy( buffer, text.c_str(), text.size() + 1 );
 
 	return true;
 }

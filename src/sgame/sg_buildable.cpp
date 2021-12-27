@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#include "common/FileSystem.h"
 #include "sg_local.h"
 #include "CustomSurfaceFlags.h"
 #include "Entities.h"
@@ -2297,10 +2298,14 @@ int G_LayoutList( const char *map, char *list, int len )
 	return count + 1;
 }
 
+bool G_LayoutExists( Str::StringRef map, Str::StringRef layout )
+{
+	std::string path = Str::Format( "layouts/%s/%s.dat", map, layout );
+	return FS::PakPath::FileExists( path ) || FS::HomePath::FileExists( path );
+}
+
 void G_LayoutSelect()
 {
-	char fileName[ MAX_OSPATH ];
-	char fileName2[ MAX_OSPATH ];
 	char layouts[ MAX_CVAR_VALUE_STRING ];
 	char layouts2[ MAX_CVAR_VALUE_STRING ];
 	const char *layoutPtr;
@@ -2330,15 +2335,12 @@ void G_LayoutSelect()
 	// no layout specified
 	if ( !layouts[ 0 ] )
 	{
-		Com_sprintf( fileName, sizeof( fileName ), "layouts/%s/default.dat", map );
-		Com_sprintf( fileName2, sizeof( fileName ), "layouts/%s/builtin.dat", map );
-
 		//use default layout if available
-		if ( trap_FS_FOpenFile( fileName, nullptr, fsMode_t::FS_READ ) > 0 )
+		if ( G_LayoutExists( map, "default" ) )
 		{
 			strcpy( layouts, "default" );
 		}
-		else if ( trap_FS_FOpenFile( fileName2, nullptr, fsMode_t::FS_READ ) > 0 )
+		else if ( G_LayoutExists( map, "builtin" ) )
 		{
 			strcpy( layouts, "builtin" );
 		}
@@ -2363,9 +2365,7 @@ void G_LayoutSelect()
 			continue;
 		}
 
-		Com_sprintf( fileName, sizeof( fileName ), "layouts/%s/%s.dat", map, layout );
-
-		if ( trap_FS_FOpenFile( fileName, nullptr, fsMode_t::FS_READ ) > 0 )
+		if ( G_LayoutExists( map, layout ) )
 		{
 			Q_strcat( layouts, sizeof( layouts ), layout );
 			Q_strcat( layouts, sizeof( layouts ), " " );
@@ -2431,7 +2431,7 @@ void G_LayoutLoad()
 	}
 
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-	len = trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, level.layout ), &f, fsMode_t::FS_READ );
+	len = G_FOpenGameOrPakPath( va( "layouts/%s/%s.dat", map, level.layout ), f );
 
 	if ( len < 0 )
 	{

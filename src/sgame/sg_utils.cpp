@@ -901,3 +901,16 @@ float G_DistanceToBBox( const vec3_t origin, gentity_t* ent )
 	}
 	return sqrtf( distanceSquared );
 }
+
+// The intention of this is to look for a file in <homepath>/game/ first, and then
+// in the VFS if it is not found there. This is good if you want to allow server-side
+// overrides of pak files which do not need to be downloaded by clients. For example, bot behaviors.
+//
+// DOES NOT WORK as of 0.52. This looks in the VFS first, and the gamepath second. With the current
+// API, it is impossible to read from a path in the homepath that also exists in the VFS (unless
+// you are willing to copy or rename the file to achieve this).
+// TODO(0.53): Use new APIs to make it work.
+int G_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle )
+{
+	return trap_FS_FOpenFile( filename.c_str(), &handle, fsMode_t::FS_READ );
+}

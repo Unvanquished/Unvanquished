@@ -215,6 +215,7 @@ struct source_t
 {
 	char          filename[ MAX_QPATH ]; //file name of the script
 	char          includepath[ MAX_QPATH ]; //path to include files
+	int (*openFunc)(Str::StringRef, fileHandle_t &); //to open includes
 	punctuation_t *punctuations; //punctuations to use
 	script_t      *scriptstack; //stack with scripts of the source
 	token_t       *tokens; //tokens to read first
@@ -1157,14 +1158,14 @@ static int Parse_EndOfScript( const script_t *script )
 Parse_LoadScriptFile
 ===============
 */
-static script_t *Parse_LoadScriptFile( const char *filename )
+static script_t *Parse_LoadScriptFile( const char *filename, int (*openFunc)(Str::StringRef, fileHandle_t &) )
 {
 	fileHandle_t fp;
 	int          length;
 	void         *buffer;
 	script_t     *script;
 
-	length = trap_FS_FOpenFile( filename, &fp, fsMode_t::FS_READ );
+	length = openFunc( filename, fp );
 
 	if ( !fp ) { return nullptr; }
 
@@ -2897,13 +2898,13 @@ static int Parse_Directive_include( source_t *source )
 	{
 		Parse_StripDoubleQuotes( token.string );
 		Parse_ConvertPath( token.string );
-		script = Parse_LoadScriptFile( token.string );
+		script = Parse_LoadScriptFile( token.string, source->openFunc );
 
 		if ( !script )
 		{
 			Q_strncpyz( path, source->includepath, sizeof(path) );
 			Q_strcat( path, sizeof(path), token.string );
-			script = Parse_LoadScriptFile( path );
+			script = Parse_LoadScriptFile( path, source->openFunc );
 		}
 	}
 	else if ( token.type == tokenType_t::TT_PUNCTUATION && *token.string == '<' )
@@ -2935,7 +2936,7 @@ static int Parse_Directive_include( source_t *source )
 		}
 
 		Parse_ConvertPath( path );
-		script = Parse_LoadScriptFile( path );
+		script = Parse_LoadScriptFile( path, source->openFunc );
 	}
 	else
 	{
@@ -3904,6 +3905,7 @@ static define_t *Parse_DefineFromString( const char *string )
 	//create a new source
 	memset( &src, 0, sizeof( source_t ) );
 	Q_strncpyz( src.filename, "*extern", MAX_QPATH );
+	//src.openFunc is null, as a define can't contain an include
 	src.scriptstack = script;
 	src.definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
 	memset( src.definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
@@ -4076,12 +4078,12 @@ static void Parse_AddGlobalDefinesToSource( const source_t *source )
 Parse_LoadSourceFile
 ===============
 */
-static source_t *Parse_LoadSourceFile( const char *filename )
+static source_t *Parse_LoadSourceFile( const char *filename, int (*openFunc)(Str::StringRef, fileHandle_t &) )
 {
 	source_t *source;
 	script_t *script;
 
-	script = Parse_LoadScriptFile( filename );
+	script = Parse_LoadScriptFile( filename, openFunc );
 
 	if ( !script ) { return nullptr; }
 
@@ -4091,6 +4093,7 @@ static source_t *Parse_LoadSourceFile( const char *filename )
 	memset( source, 0, sizeof( source_t ) );
 
 	Q_strncpyz( source->filename, filename, MAX_QPATH );
+	source->openFunc = openFunc;
 	source->scriptstack = script;
 	source->tokens = nullptr;
 	source->defines = nullptr;
@@ -4167,7 +4170,7 @@ source_t *sourceFiles[ MAX_SOURCEFILES ];
 Parse_LoadSourceHandle
 ===============
 */
-int Parse_LoadSourceHandle( const char *filename )
+int Parse_LoadSourceHandle( const char *filename, int (*openFunc)(Str::StringRef, fileHandle_t &) )
 {
 	source_t *source;
 	int      i;
@@ -4185,7 +4188,7 @@ int Parse_LoadSourceHandle( const char *filename )
 		return 0;
 	}
 
-	source = Parse_LoadSourceFile( filename );
+	source = Parse_LoadSourceFile( filename, openFunc );
 
 	if ( !source )
 	{

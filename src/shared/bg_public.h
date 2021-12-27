@@ -1537,7 +1537,7 @@ void                      BG_InitAllConfigs();
 void                      BG_UnloadAllConfigs();
 
 // Parsers
-bool                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
+bool                  BG_ReadWholeFile( const char *filename, char *buffer, size_t size);
 bool                  BG_CheckConfigVars();
 bool                  BG_NonSegModel( const char *filename );
 void                      BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );

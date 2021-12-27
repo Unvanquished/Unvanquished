@@ -26,13 +26,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // bg_voice.c -- both games voice functions
+#include "common/FileSystem.h"
 #include "engine/qcommon/q_shared.h"
 #include "shared/parse.h"
 #include "bg_public.h"
 #include "bg_local.h"
 
-int         trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 int         trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
+int trap_FS_OpenPakFile( Str::StringRef path, fileHandle_t &f );
 
 #ifdef BUILD_CGAME
 sfxHandle_t trap_S_RegisterSound( const char *sample, bool compressed );
@@ -78,7 +79,7 @@ static voice_t *BG_VoiceList()
 
 	// special case for default.voice.  this file is REQUIRED and will
 	// always be loaded first in the event of overflow of voice definitions
-	if ( !trap_FS_FOpenFile( "voice/default.voice", nullptr, fsMode_t::FS_READ ) )
+	if ( !FS::PakPath::FileExists( "voice/default.voice" ) )
 	{
 		Log::Notice( "voice/default.voice missing, voice system disabled.\n" );
 		return nullptr;
@@ -112,7 +113,7 @@ static voice_t *BG_VoiceList()
 		}
 
 		// trap_FS_GetFileList() buffer has overflowed
-		if ( !trap_FS_FOpenFile( va( "voice/%s", filePtr ), nullptr, fsMode_t::FS_READ ) )
+		if ( !FS::PakPath::FileExists( va( "voice/%s", filePtr ) ) )
 		{
 			Log::Warn( "BG_VoiceList(): detected "
 			            "an invalid .voice file \"%s\" in directory listing.  You have "
@@ -426,7 +427,7 @@ static voiceCmd_t *BG_VoiceParse( const char *name )
 	bool   parsingCmd = false;
 	int        handle;
 
-	handle = Parse_LoadSourceHandle( va( "voice/%s.voice", name ) );
+	handle = Parse_LoadSourceHandle( va( "voice/%s.voice", name ), trap_FS_OpenPakFile );
 
 	if ( !handle )
 	{

@@ -93,6 +93,7 @@ void              G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t a
 void              G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
 void              G_LayoutSave( const char *name );
 int               G_LayoutList( const char *map, char *list, int len );
+bool G_LayoutExists( Str::StringRef map, Str::StringRef layout );
 void              G_LayoutSelect();
 void              G_LayoutLoad();
 void              G_BaseSelfDestruct( team_t team );
@@ -316,6 +317,7 @@ bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
 float G_DistanceToBBox( const vec3_t origin, gentity_t* ent );
+int G_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
 
 // sg_weapon.c
 void              G_ForceWeaponChange( gentity_t *ent, weapon_t weapon );

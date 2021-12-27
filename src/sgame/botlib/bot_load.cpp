@@ -69,11 +69,6 @@ void BotInit()
 #endif
 }
 
-#define FS_Read trap_FS_Read
-#define FS_Write trap_FS_Write
-#define FS_FCloseFile trap_FS_FCloseFile
-#define FS_FOpenFileRead(name, handle) trap_FS_FOpenFile((name), (handle), fsMode_t::FS_READ)
-
 void BotSaveOffMeshConnections( NavData_t *nav )
 {
 	char filePath[ MAX_QPATH ];
@@ -92,40 +87,40 @@ void BotSaveOffMeshConnections( NavData_t *nav )
 	OffMeshConnectionHeader header;
 	header.version = LittleLong( NAVMESHCON_VERSION );
 	header.numConnections = LittleLong( conCount );
-	FS_Write( &header, sizeof( header ), f );
+	trap_FS_Write( &header, sizeof( header ), f );
 
 	size_t size = sizeof( float ) * 6 * conCount;
 	float *verts = ( float * ) dtAlloc( size, DT_ALLOC_TEMP );
 	memcpy( verts, nav->process.con.verts, size );
 	SwapArray( verts, conCount * 6 );
-	FS_Write( verts, size, f );
+	trap_FS_Write( verts, size, f );
 	dtFree( verts );
 
 	size = sizeof( float ) * conCount;
 	float *rad = ( float * ) dtAlloc( size, DT_ALLOC_TEMP );
 	memcpy( rad, nav->process.con.rad, size );
 	SwapArray( rad, conCount );
-	FS_Write( rad, size, f );
+	trap_FS_Write( rad, size, f );
 	dtFree( rad );
 
 	size = sizeof( unsigned short ) * conCount;
 	unsigned short *flags = ( unsigned short * ) dtAlloc( size, DT_ALLOC_TEMP );
 	memcpy( flags, nav->process.con.flags, size );
 	SwapArray( flags, conCount );
-	FS_Write( flags, size, f );
+	trap_FS_Write( flags, size, f );
 	dtFree( flags );
 
-	FS_Write( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
-	FS_Write( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
+	trap_FS_Write( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
+	trap_FS_Write( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
 
 	size = sizeof( unsigned int ) * conCount;
 	unsigned int *userids = ( unsigned int * ) dtAlloc( size, DT_ALLOC_TEMP );
 	memcpy( userids, nav->process.con.userids, size );
 	SwapArray( userids, conCount );
-	FS_Write( userids, size, f );
+	trap_FS_Write( userids, size, f );
 	dtFree( userids );
 
-	FS_FCloseFile( f );
+	trap_FS_FCloseFile( f );
 }
 
 void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
@@ -135,7 +130,7 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 
 	std::string mapname = Cvar::GetValue("mapname");
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname.c_str(), filename );
-	FS_FOpenFileRead( filePath, &f );
+	G_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
 	{
@@ -143,14 +138,14 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 	}
 
 	OffMeshConnectionHeader header;
-	FS_Read( &header, sizeof( header ), f );
+	trap_FS_Read( &header, sizeof( header ), f );
 
 	header.version = LittleLong( header.version );
 	header.numConnections = LittleLong( header.numConnections );
 
 	if ( header.version != NAVMESHCON_VERSION )
 	{
-		FS_FCloseFile( f );
+		trap_FS_FCloseFile( f );
 		return;
 	}
 
@@ -158,28 +153,28 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 
 	if ( conCount > nav->process.con.MAX_CON )
 	{
-		FS_FCloseFile( f );
+		trap_FS_FCloseFile( f );
 		return;
 	}
 
 	nav->process.con.offMeshConCount = conCount;
 
-	FS_Read( nav->process.con.verts, sizeof( float ) * 6 * conCount, f );
+	trap_FS_Read( nav->process.con.verts, sizeof( float ) * 6 * conCount, f );
 	SwapArray( nav->process.con.verts, conCount * 6 );
 
-	FS_Read( nav->process.con.rad, sizeof( float ) * conCount, f );
+	trap_FS_Read( nav->process.con.rad, sizeof( float ) * conCount, f );
 	SwapArray( nav->process.con.rad, conCount );
 
-	FS_Read( nav->process.con.flags, sizeof( unsigned short ) * conCount, f );
+	trap_FS_Read( nav->process.con.flags, sizeof( unsigned short ) * conCount, f );
 	SwapArray( nav->process.con.flags, conCount );
 
-	FS_Read( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
-	FS_Read( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
+	trap_FS_Read( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
+	trap_FS_Read( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
 
-	FS_Read( nav->process.con.userids, sizeof( unsigned int ) * conCount, f );
+	trap_FS_Read( nav->process.con.userids, sizeof( unsigned int ) * conCount, f );
 	SwapArray( nav->process.con.userids, conCount );
 
-	FS_FCloseFile( f );
+	trap_FS_FCloseFile( f );
 }
 
 static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
@@ -193,7 +188,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navMesh", mapname.c_str(), filename );
 	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
-	int len = FS_FOpenFileRead( filePath, &f );
+	int len = G_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
 	{
@@ -209,21 +204,21 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 	NavMeshSetHeader header;
 	
-	FS_Read( &header, sizeof( header ), f );
+	trap_FS_Read( &header, sizeof( header ), f );
 
 	SwapNavMeshSetHeader( header );
 
 	if ( header.magic != NAVMESHSET_MAGIC )
 	{
 		Log::Warn("File is wrong magic" );
-		FS_FCloseFile( f );
+		trap_FS_FCloseFile( f );
 		return false;
 	}
 
 	if ( header.version != NAVMESHSET_VERSION )
 	{
 		Log::Warn("File is wrong version found: %d want: %d", header.version, NAVMESHSET_VERSION );
-		FS_FCloseFile( f );
+		trap_FS_FCloseFile( f );
 		return false;
 	}
 
@@ -232,7 +227,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	if ( !nav.mesh )
 	{
 		Log::Warn("Unable to allocate nav mesh" );
-		FS_FCloseFile( f );
+		trap_FS_FCloseFile( f );
 		return false;
 	}
 
@@ -243,7 +238,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		Log::Warn("Could not init navmesh" );
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = nullptr;
-		FS_FCloseFile( f );
+		trap_FS_FCloseFile( f );
 		return false;
 	}
 
@@ -254,7 +249,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		Log::Warn("Could not allocate tile cache" );
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = nullptr;
-		FS_FCloseFile( f );
+		trap_FS_FCloseFile( f );
 		return false;
 	}
 
@@ -267,7 +262,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		dtFreeTileCache( nav.cache );
 		nav.mesh = nullptr;
 		nav.cache = nullptr;
-		FS_FCloseFile( f );
+		trap_FS_FCloseFile( f );
 		return false;
 	}
 
@@ -275,7 +270,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	{
 		NavMeshTileHeader tileHeader;
 
-		FS_Read( &tileHeader, sizeof( tileHeader ), f );
+		trap_FS_Read( &tileHeader, sizeof( tileHeader ), f );
 
 		SwapNavMeshTileHeader( tileHeader );
 
@@ -286,7 +281,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 			dtFreeTileCache( nav.cache );
 			nav.cache = nullptr;
 			nav.mesh = nullptr;
-			FS_FCloseFile( f );
+			trap_FS_FCloseFile( f );
 			return false;
 		}
 
@@ -299,13 +294,13 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 			dtFreeTileCache( nav.cache );
 			nav.cache = nullptr;
 			nav.mesh = nullptr;
-			FS_FCloseFile( f );
+			trap_FS_FCloseFile( f );
 			return false;
 		}
 
 		memset( data, 0, tileHeader.dataSize );
 
-		FS_Read( data, tileHeader.dataSize, f );
+		trap_FS_Read( data, tileHeader.dataSize, f );
 
 		if ( LittleLong( 1 ) != 1 )
 		{
@@ -323,7 +318,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 			dtFreeNavMesh( nav.mesh );
 			nav.cache = nullptr;
 			nav.mesh = nullptr;
-			FS_FCloseFile( f );
+			trap_FS_FCloseFile( f );
 			return false;
 		}
 
@@ -333,7 +328,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		}
 	}
 
-	FS_FCloseFile( f );
+	trap_FS_FCloseFile( f );
 	return true;
 }
 

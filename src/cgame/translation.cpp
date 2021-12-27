@@ -75,7 +75,7 @@ public:
 		end = buffer + BUFFER_SIZE - putBack;
 		setg( end, end, end );
 
-		trap_FS_FOpenFile( filename.c_str(), &fileHandle, fsMode_t::FS_READ );
+		trap_FS_OpenPakFile( filename.c_str(), fileHandle );
 	}
 
 	~DaemonInputbuf()

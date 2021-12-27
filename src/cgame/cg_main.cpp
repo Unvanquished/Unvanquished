@@ -437,19 +437,6 @@ static const char *choose( const char *first, ... )
 	return ret;
 }
 
-
-/*
-=================
-CG_FileExists
-
-Test if a specific file exists or not
-=================
-*/
-bool CG_FileExists( const char *filename )
-{
-	return trap_FS_FOpenFile( filename, nullptr, fsMode_t::FS_READ );
-}
-
 static void CG_UpdateMediaFraction( float fraction )
 {
 	cg.mediaLoadingFraction = fraction;

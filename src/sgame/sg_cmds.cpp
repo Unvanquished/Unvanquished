@@ -1952,7 +1952,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
 			if ( Q_stricmp( arg, S_BUILTIN_LAYOUT ) &&
-			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), nullptr, fsMode_t::FS_READ ) )
+			     !G_LayoutExists( map, arg ) )
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("callvote: "
 				                        "layout '$1$' could not be found on the server") ), Quote( arg ) ) );

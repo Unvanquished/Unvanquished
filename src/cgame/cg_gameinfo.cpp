@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // gameinfo.c
 //
 
+#include "common/FileSystem.h"
 #include "cg_local.h"
 
 //
@@ -120,31 +121,22 @@ CG_LoadArenasFromFile
 */
 static void CG_LoadArenasFromFile( char *filename )
 {
-	int          len;
-	fileHandle_t f;
-	char         buf[ MAX_ARENAS_TEXT ];
-
-	len = trap_FS_FOpenFile( filename, &f, fsMode_t::FS_READ );
-
-	if ( !f )
+	std::error_code err;
+	std::string text = FS::PakPath::ReadFile( filename, err );
+	if ( err )
 	{
-		Log::Warn( "%sfile not found: %s", Color::ToString( Color::Red ), filename );
+		Log::Warn( "file not found: %s", filename );
 		return;
 	}
 
-	if ( len >= MAX_ARENAS_TEXT )
+	if ( text.size() >= MAX_ARENAS_TEXT )
 	{
-		Log::Warn( "%sfile too large: %s is %i, max allowed is %i",
-			Color::ToString( Color::Red ), filename, len, MAX_ARENAS_TEXT );
-		trap_FS_FCloseFile( f );
+		Log::Warn( "file too large: %s is %i, max allowed is %i",
+			filename, text.size(), MAX_ARENAS_TEXT );
 		return;
 	}
 
-	trap_FS_Read( buf, len, f );
-	buf[ len ] = 0;
-	trap_FS_FCloseFile( f );
-
-	cg_numArenas += CG_ParseInfos( buf, MAX_ARENAS - cg_numArenas, &cg_arenaInfos[ cg_numArenas ] );
+	cg_numArenas += CG_ParseInfos( text.c_str(), MAX_ARENAS - cg_numArenas, &cg_arenaInfos[ cg_numArenas ] );
 }
 
 /*

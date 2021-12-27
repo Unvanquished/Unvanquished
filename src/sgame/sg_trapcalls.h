@@ -36,8 +36,8 @@ void             trap_SendConsoleCommand( const char *text );
 int              trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 int              trap_FS_Read( void *buffer, int len, fileHandle_t f );
 int              trap_FS_Write( const void *buffer, int len, fileHandle_t f );
-void             trap_FS_Rename( const char *from, const char *to );
 void             trap_FS_FCloseFile( fileHandle_t f );
+// TODO: in many cases we want only VFS (pakpath) files, not VFS + gamepath which this gives
 int              trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 void             trap_LocateGameData( int numGEntities, int sizeofGEntity_t, int sizeofGClient );
 void             trap_DropClient( int clientNum, const char *reason );

@@ -191,34 +191,31 @@ static bool CheckHost( gentity_t *ent )
 	return false;
 }
 
-#define Cmd_Argc trap_Argc
-#define Cmd_Argv(i) (trap_Args().Argv(i).c_str())
-
 void Cmd_NavEdit( gentity_t *ent )
 {
 	if ( !CheckHost( ent ) ) return;
-	int argc = Cmd_Argc();
+	const Cmd::Args& args = trap_Args();
 	const char *arg = nullptr;
 	const char usage[] = "Usage: navedit enable/disable/save <navmesh>";
 
-	if ( argc < 2 )
+	if ( args.Argc() < 2 )
 	{
 		Log::Notice( usage );
 		return;
 	}
 
-	arg = Cmd_Argv( 1 );
+	arg = args.Argv( 1 ).c_str();
 
 	if ( !Q_stricmp( arg, "enable" ) )
 	{
 		int i;
-		if ( argc < 3 )
+		if ( args.Argc() < 3 )
 		{
 			Log::Notice( usage );
 			return;
 		}
 
-		arg = Cmd_Argv( 2 );
+		arg = args.Argv( 2 ).c_str();
 		for ( i = 0; i < numNavData; i++ )
 		{
 			if ( !Q_stricmp( BotNavData[ i ].name, arg ) )
@@ -266,15 +263,15 @@ void Cmd_AddConnection( gentity_t *ent )
 	const char usage[] = "Usage: addcon start <dir> (radius)\n"
 	                     " addcon end";
 	const char *arg = nullptr;
-	int argc = Cmd_Argc();
+	const Cmd::Args& args = trap_Args();
 
-	if ( argc < 2 )
+	if ( args.Argc() < 2 )
 	{
 		Log::Notice( usage );
 		return;
 	}
 
-	arg = Cmd_Argv( 1 );
+	arg = args.Argv( 1 ).c_str();
 
 	if ( !Q_stricmp( arg, "start" ) )
 	{
@@ -283,13 +280,13 @@ void Cmd_AddConnection( gentity_t *ent )
 			return;
 		}
 
-		if ( argc < 3 )
+		if ( args.Argc() < 3 )
 		{
 			Log::Notice( usage );
 			return;
 		}
 
-		arg = Cmd_Argv( 2 );
+		arg = args.Argv( 2 ).c_str();
 
 		if ( !Q_stricmp( arg, "oneway" ) )
 		{
@@ -311,9 +308,9 @@ void Cmd_AddConnection( gentity_t *ent )
 			cmd.pc.flag = POLYFLAGS_WALK;
 			cmd.pc.userid = 0;
 
-			if ( argc == 4 )
+			if ( args.Argc() == 4 )
 			{
-				cmd.pc.radius = std::max( atoi( Cmd_Argv( 3 ) ), 10 );
+				cmd.pc.radius = std::max( atoi( args.Argv( 3 ).c_str() ), 10 );
 			}
 			else
 			{
@@ -368,8 +365,7 @@ void Cmd_NavTest( gentity_t *ent )
 {
 	if ( !CheckHost( ent ) ) return;
 	const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath";
-	const char *arg = nullptr;
-	int argc = Cmd_Argc();
+	const Cmd::Args& args = trap_Args();
 
 	if ( !cmd.enabled )
 	{
@@ -377,13 +373,13 @@ void Cmd_NavTest( gentity_t *ent )
 		return;
 	}
 
-	if ( argc < 2 )
+	if ( args.Argc() < 2 )
 	{
 		Log::Notice( usage );
 		return;
 	}
 
-	arg = Cmd_Argv( 1 );
+	const char* arg = args.Argv( 1 ).c_str();
 
 	if ( !Q_stricmp( arg, "shownodes" ) )
 	{

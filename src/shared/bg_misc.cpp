@@ -35,12 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // delayed translation - these strings may be passed to Trans_Gettext() later
 #define N_(x) x
 
-int                                trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
-int                                trap_FS_Read( void *buffer, int len, fileHandle_t f );
-int                                trap_FS_Write( const void *buffer, int len, fileHandle_t f );
-void                               trap_FS_FCloseFile( fileHandle_t f );
-void                               trap_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin );  // fsOrigin_t
-int                                trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 void                               trap_QuoteString( const char *, char *, int );
 
 struct buildableName_t
