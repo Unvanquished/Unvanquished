@@ -196,11 +196,11 @@ struct FastLZCompressor : public dtTileCacheCompressor
 	}
 };
 
-struct MeshProcess : public dtTileCacheMeshProcess
-{
-	OffMeshConnections con;
 
-	virtual void process( struct dtNavMeshCreateParams *params, unsigned char *polyAreas, unsigned short *polyFlags )
+
+struct BasicMeshProcess : public dtTileCacheMeshProcess
+{
+	void process( struct dtNavMeshCreateParams *params, unsigned char *polyAreas, unsigned short *polyFlags ) override
 	{
 		// Update poly flags from areas.
 		for ( int i = 0; i < params->polyCount; ++i )
@@ -219,14 +219,6 @@ struct MeshProcess : public dtTileCacheMeshProcess
 				polyFlags[ i ] = navPolyFlags::POLYFLAGS_WALK | navPolyFlags::POLYFLAGS_DOOR;
 			}
 		}
-
-		params->offMeshConVerts = con.verts;
-		params->offMeshConRad = con.rad;
-		params->offMeshConCount = con.offMeshConCount;
-		params->offMeshConAreas = con.areas;
-		params->offMeshConDir = con.dirs;
-		params->offMeshConFlags = con.flags;
-		params->offMeshConUserID = con.userids;
 	}
 };
 

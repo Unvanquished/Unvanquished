@@ -118,7 +118,7 @@ private:
 		std::unique_ptr<dtTileCache> tileCache;
 		LinearAllocator alloc = LinearAllocator(32000);
 		FastLZCompressor comp;
-		MeshProcess proc;
+		BasicMeshProcess proc;
 		int tw;
 		int th;
 		int x = 0;

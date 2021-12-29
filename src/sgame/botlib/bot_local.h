@@ -65,13 +65,32 @@ struct dtRouteResult
 	bool      invalid;
 };
 
+struct NavconMeshProcess : public BasicMeshProcess
+{
+	OffMeshConnections con;
+
+	void process( struct dtNavMeshCreateParams *params, unsigned char *polyAreas, unsigned short *polyFlags ) override
+	{
+		// Update poly flags from areas.
+		BasicMeshProcess::process( params, polyAreas, polyFlags );
+
+		params->offMeshConVerts = con.verts;
+		params->offMeshConRad = con.rad;
+		params->offMeshConCount = con.offMeshConCount;
+		params->offMeshConAreas = con.areas;
+		params->offMeshConDir = con.dirs;
+		params->offMeshConFlags = con.flags;
+		params->offMeshConUserID = con.userids;
+	}
+};
+
 struct NavData_t
 {
 	dtTileCache      *cache;
 	dtNavMesh        *mesh;
 	dtNavMeshQuery   *query;
 	dtQueryFilter    filter;
-	MeshProcess      process;
+	NavconMeshProcess process;
 	char             name[ 64 ];
 };
 
