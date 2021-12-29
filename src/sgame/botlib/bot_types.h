@@ -78,32 +78,6 @@ struct botRouteTarget_t
 	float polyExtents[ 3 ];
 };
 
-enum navPolyFlags
-{
-	POLYFLAGS_DISABLED = 0,
-	POLYFLAGS_WALK     = 1 << 0,
-	POLYFLAGS_JUMP     = 1 << 1,
-	POLYFLAGS_POUNCE   = 1 << 2,
-	POLYFLAGS_WALLWALK = 1 << 3,
-	POLYFLAGS_LADDER   = 1 << 4,
-	POLYFLAGS_DROPDOWN = 1 << 5,
-	POLYFLAGS_DOOR     = 1 << 6,
-	POLYFLAGS_TELEPORT = 1 << 7,
-	POLYFLAGS_CROUCH   = 1 << 8,
-	POLYFLAGS_SWIM     = 1 << 9,
-	POLYFLAGS_ALL      = 0xffff, // All abilities.
-};
-
-enum navPolyAreas
-{
-	POLYAREA_GROUND     = 1 << 0,
-	POLYAREA_LADDER     = 1 << 1,
-	POLYAREA_WATER      = 1 << 2,
-	POLYAREA_DOOR       = 1 << 3,
-	POLYAREA_JUMPPAD    = 1 << 4,
-	POLYAREA_TELEPORTER = 1 << 5,
-};
-
 //route status flags
 #define ROUTE_FAILED  ( 1u << 31 )
 #define	ROUTE_SUCCEED ( 1u << 30 )

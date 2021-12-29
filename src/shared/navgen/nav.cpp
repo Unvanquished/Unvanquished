@@ -29,6 +29,7 @@
 #include "common/cm/cm_polylib.h"
 #include "common/FileSystem.h"
 #include "navgen.h"
+#include "sgame/botlib/bot_convert.h"
 #include "sgame/sg_trapcalls.h"
 
 static Log::Logger LOG("sgame.navgen", "");

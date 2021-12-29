@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "botlib/bot_types.h"
 #include "botlib/bot_api.h"
+#include "botlib/nav.h"
 
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;
@@ -381,7 +382,6 @@ void BotWalk( gentity_t *self, bool enable )
 	}
 }
 
-#define STEPSIZE 18.0f
 gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 {
 	vec3_t playerMins, playerMaxs;
