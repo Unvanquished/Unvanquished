@@ -950,7 +950,7 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	d_->th = ( gh + ts - 1 ) / ts;
 
 	d_->cfg.cs = cellSize;
-	d_->cfg.ch = config_.cellHeight;
+	d_->cfg.ch = cellHeight_;
 	d_->cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
 	d_->cfg.walkableHeight = ( int ) ceilf( height / d_->cfg.ch );
 	d_->cfg.walkableClimb = ( int ) floorf( config_.stepSize / d_->cfg.ch );
@@ -972,7 +972,7 @@ void NavmeshGenerator::StartGeneration( class_t species )
 
 	rcVcopy( d_->tcparams.orig, bmin );
 	d_->tcparams.cs = cellSize;
-	d_->tcparams.ch = config_.cellHeight;
+	d_->tcparams.ch = cellHeight_;
 	d_->tcparams.width = ts;
 	d_->tcparams.height = ts;
 	d_->tcparams.walkableHeight = height;
@@ -1053,9 +1053,17 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 	LoadGeometry();
 	if ( initStatus_.code != NavgenStatus::OK ) return;
 
+	cellHeight_ = config_.requestedCellHeight;
 	float height = rcAbs( geo_.getMaxs()[1] ) + rcAbs( geo_.getMins()[1] );
-	if ( height / config_.cellHeight > RC_SPAN_MAX_HEIGHT ) {
-		initStatus_ = { NavgenStatus::PERMANENT_FAILURE, "Map is too tall to generate a navigation mesh" };
+	if ( height / cellHeight_ > RC_SPAN_MAX_HEIGHT )
+	{
+		Log::Warn("Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.");
+		cellHeight_ = height / RC_SPAN_MAX_HEIGHT;
+	}
+
+	if ( cellHeight_ > config_.stepSize )
+	{
+		initStatus_ = { NavgenStatus::PERMANENT_FAILURE, "Map is too tall to generate a navigation mesh, cell height can't be greater than the step size" };
 	}
 }
 
