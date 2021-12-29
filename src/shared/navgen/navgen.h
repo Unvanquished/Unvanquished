@@ -140,6 +140,8 @@ private:
 
 	UnvContext recastContext_;
 	NavgenConfig config_;
+	// Custom computed config for the map
+	float cellHeight_;
 	// Map data
 	std::string mapName_;
 	std::string mapData_;
