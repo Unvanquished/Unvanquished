@@ -1463,6 +1463,7 @@ void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 
 	for ( i = 0; i < 3; i++ )
 	{
+		//TODO: protect vs NaN
 		aimAngles[i] = ANGLE2SHORT( aimAngles[i] );
 	}
 

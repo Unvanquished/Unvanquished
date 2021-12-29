@@ -337,13 +337,44 @@ static bool walkable( trace_t const& trace )
 
 // verify if the way in a direction is free
 // if yes, return true and updates the forward param
-static bool checkWalkable( glm::vec3 const& origin, float yaw, glm::vec3 const& mins, glm::vec3 const& maxs, int entityNum, glm::vec3 &forward )
+static bool checkWalkable( glm::vec3 const& origin, float yaw,
+		glm::vec3 const& mins, glm::vec3 const& maxs,
+		int entityNum, glm::vec3 &forward )
 {
 	trace_t trace;
 	forward = glm::vec3( cosf( DEG2RAD( yaw ) ), sinf( DEG2RAD( yaw ) ), 0 );
 	glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * forward;
 	trap_Trace( &trace, origin, mins, maxs, end, entityNum, MASK_SHOT, 0 );
 	return walkable( trace );
+}
+
+// this should allow to check for all heights if passable.
+// Astute readers will notice though that, in case of a jump,
+// only peak heights of jumps will be checked, but currently
+// there's no real way to efficiently know the position of
+// a non-entity blocker, that is: geometry.
+// If that would be possible, it would be possible to implement
+// more efficient and less "buggy" version of this.
+// Note that mins and maxs are passed by value, since they are
+// modified inside but we don't want to pollute caller's values.
+gentity_t const* getBlocker(
+		float stepsize,
+		glm::vec3 mins, glm::vec3 maxs,
+		glm::vec3 const& start, glm::vec3 const& end,
+		int entityNum )
+{
+	trace_t trace;
+	mins[2] -= stepsize;
+	maxs[2] -= stepsize;
+	for ( int i = -1; i <= 1; ++i, mins[2] += stepsize, maxs[2] += stepsize )
+	{
+		trap_Trace( &trace, start, mins, maxs, end, entityNum, MASK_SHOT, 0 );
+		if ( walkable( trace ) )
+		{
+			return nullptr;
+		}
+	}
+	return &g_entities[trace.entityNum];
 }
 
 // return true if a path has been found
@@ -358,15 +389,13 @@ static bool checkWalkable( glm::vec3 const& origin, float yaw, glm::vec3 const& 
 bool botMemory_t::findPath( gentity_t *self, glm::vec3 &dir )
 {
 	ASSERT( self && self->client );
-	glm::vec3 playerMins, playerMaxs;
-	glm::vec3 origin = VEC2GLM( self->s.origin );
+
 	int entityNum = self->s.number;
-	trace_t trace;
-
 	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
-
-	float jumpMagnitude = BG_Class( pClass )->jumpMagnitude;
-	jumpMagnitude = Square( jumpMagnitude ) / ( self->client->ps.gravity * 2 );
+	glm::vec3 origin = VEC2GLM( self->s.origin );
+	glm::vec3 playerMins, playerMaxs;
+	BG_BoundingBox( pClass, playerMins, playerMaxs );
+	gentity_t const* blocker;
 
 	//step 1: get the planar direction
 	dir[ 2 ] = 0;
@@ -374,44 +403,48 @@ bool botMemory_t::findPath( gentity_t *self, glm::vec3 &dir )
 	glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * dir;
 
 	//step 2: detect obstacles {
-
-	//account for how large we can step
-	BG_BoundingBox( pClass, playerMins, playerMaxs );
-	playerMins[2] += STEPSIZE;
-	playerMaxs[2] += STEPSIZE;
-
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, entityNum, MASK_SHOT, 0 );
-	if ( walkable( trace ) )
+	blocker = getBlocker( STEPSIZE, playerMins, playerMaxs, origin, end, entityNum );
+	if ( nullptr == blocker )
 	{
 		return true;
 	}
-
-	auto blocker = &g_entities[trace.entityNum];
 	// }
 
 	//step 3: try to jump over {
-	BG_BoundingBox( pClass, playerMins, playerMaxs );
-	playerMins[2] += STEPSIZE + jumpMagnitude;
-	playerMaxs[2] += STEPSIZE + jumpMagnitude;
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, entityNum, MASK_SHOT, 0 );
-	if ( walkable( trace ) || ( G_Team( self ) == G_Team( blocker ) && blocker->s.modelindex == BA_A_BARRICADE ) )
+	float jumpMagnitude = BG_Class( pClass )->jumpMagnitude;
+	jumpMagnitude = Square( jumpMagnitude ) / ( self->client->ps.gravity * 2 );
+	// FIXME: this does not really checks for the 3 correct jump values.
+	//TODO FIXME urrrrhggg
+	trace_t trace;
+	glm::vec3 tstart = origin; tstart[2] += jumpMagnitude;
+	glm::vec3 tend   = end   ; tend  [2] += jumpMagnitude;
+	glm::vec3 tmins = playerMins; tmins[2] -= STEPSIZE;
+	glm::vec3 tmaxs = playerMaxs; tmaxs[2] -= STEPSIZE;
+	for ( int i = -1; i <= 1; ++i, tmins[2] += STEPSIZE, tmaxs[2] += STEPSIZE )
 	{
-		BotJump( self );
-		return true;
+		trap_Trace( &trace, tstart, tmins, tmaxs, tend, entityNum, MASK_SHOT, 0 );
+		//TODO: this code is fairly broken, since there's no
+		//guarantee that the barricade is low enough to be passable
+		//though a jump, especially for classes like tyrants
+		if ( walkable( trace ) ||
+				( G_Team( blocker ) == G_Team( blocker )
+					&& blocker->s.modelindex == BA_A_BARRICADE ) )
+		{
+			BotJump( self );
+			return true;
+		}
 	}
 	// }
 
 	//new step 4: try to duck through {
 	//TODO: use team-agnostic code to check for crouch possibility
 	//      (esp since before bs would not allow crouching)
-	if ( G_Team( self ) == TEAM_HUMANS )
+	glm::vec3 crouchMaxs = BG_CrouchBoundingBox( pClass );
+	if ( crouchMaxs != playerMaxs )
 	{
-		BG_BoundingBox( pClass, playerMins, playerMaxs );
-		playerMins[2] += STEPSIZE;
-		playerMaxs[2] += STEPSIZE;
-		glm::vec3 crouchMaxs = BG_CrouchBoundingBox( pClass );
-		trap_Trace( &trace, origin, playerMins, crouchMaxs, end, entityNum, MASK_SHOT, 0 );
-		if ( walkable( trace ) )
+		ASSERT( G_Team( self ) != TEAM_ALIENS );
+		blocker = getBlocker( STEPSIZE, playerMins, crouchMaxs, origin, end, entityNum );
+		if ( nullptr == blocker )
 		{
 			self->botMind->willCrouch( true );
 			return true;
@@ -421,12 +454,10 @@ bool botMemory_t::findPath( gentity_t *self, glm::vec3 &dir )
 	// }
 
 	//step 4: try to go around it {
-	//get bbox
-	BG_BoundingBox( pClass, playerMins, playerMaxs );
-	playerMins[2] += STEPSIZE;
-	playerMaxs[2] += STEPSIZE;
-
-	//get the yaw (left/right) we dont care about up/down
+	//get the yaw (left/right)
+	//(we don't care about up/down since working on horizontal plane only)
+	//TODO: This code is even buggier than all previous steps, since
+	//it does not verifies crouching, jumping, nor care about stepsize.
 	glm::vec3 angles;
 	vectoangles( &dir[0], &angles[0] );
 
