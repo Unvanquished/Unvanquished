@@ -45,7 +45,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 #include "bot_types.h"
 #include "bot_api.h"
-#include "nav.h"
+#include "shared/bot_nav_shared.h"
 #include "bot_convert.h"
 
 const int MAX_NAV_DATA = 16;

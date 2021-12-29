@@ -74,6 +74,7 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_teamprogress.cpp
     ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
     ${GAMELOGIC_DIR}/shared/bg_voice.cpp
+    ${GAMELOGIC_DIR}/shared/bot_nav_shared.h
     ${GAMELOGIC_DIR}/shared/parse.cpp
     ${GAMELOGIC_DIR}/shared/parse.h
     ${GAMELOGIC_DIR}/shared/Clustering.h
@@ -244,7 +245,6 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/botlib/bot_nav_edit.cpp
     ${GAMELOGIC_DIR}/sgame/botlib/bot_navdraw.h
     ${GAMELOGIC_DIR}/sgame/botlib/bot_types.h
-    ${GAMELOGIC_DIR}/sgame/botlib/nav.h
 
     ${GAMELOGIC_DIR}/shared/navgen/brush.cpp
     ${GAMELOGIC_DIR}/shared/navgen/nav.cpp

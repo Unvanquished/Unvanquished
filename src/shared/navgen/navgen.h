@@ -30,7 +30,7 @@
 #include "DetourNavMeshBuilder.h"
 #include "DetourTileCache.h"
 #include "DetourTileCacheBuilder.h"
-#include "sgame/botlib/nav.h"
+#include "shared/bot_nav_shared.h"
 #include "shared/bg_public.h"
 
 static const int MAX_LAYERS = 32;

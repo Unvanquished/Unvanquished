@@ -29,7 +29,6 @@
 #include "common/cm/cm_polylib.h"
 #include "common/FileSystem.h"
 #include "navgen.h"
-#include "sgame/botlib/bot_convert.h"
 #include "sgame/sg_trapcalls.h"
 
 static Log::Logger LOG("sgame.navgen", "");
@@ -153,7 +152,7 @@ bool FixWinding( winding_t* w );
 static void AddVert( std::vector<float> &verts, std::vector<int> &tris, vec3_t vert ) {
 	vec3_t recastVert;
 	VectorCopy( vert, recastVert );
-	quake2recast( recastVert );
+	std::swap( recastVert[1], recastVert[2] ); // convert Quake to Recast coordinates
 	int index = 0;
 	for ( int i = 0; i < 3; i++ ) {
 		verts.push_back( recastVert[i] );

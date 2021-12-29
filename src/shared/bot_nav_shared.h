@@ -31,9 +31,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
-// nav.h -- navigation mesh definitions
-#ifndef BOTLIB_NAV_H_
-#define BOTLIB_NAV_H_
+// Definitions used by both the code that *generates* navmeshes and the code that *uses* them
+
+#ifndef SHARED_BOT_NAV_SHARED_H_
+#define SHARED_BOT_NAV_SHARED_H_
 
 #include "DetourCommon.h"
 #include "DetourNavMesh.h"
@@ -219,4 +220,4 @@ struct LinearAllocator : public dtTileCacheAlloc
 	size_t getHighSize() { return high; }
 };
 
-#endif
+#endif // SHARED_BOT_NAV_SHARED_H_

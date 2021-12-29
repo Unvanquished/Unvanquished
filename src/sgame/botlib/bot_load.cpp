@@ -37,7 +37,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 #include "sgame/sg_local.h"
 #include "bot_local.h"
-#include "nav.h"
 
 static Cvar::Range<Cvar::Cvar<int>> maxNavNodes(
 	"bot_maxNavNodes", "maximum number of nodes in navmesh", Cvar::NONE, 4096, 0, 65535);
