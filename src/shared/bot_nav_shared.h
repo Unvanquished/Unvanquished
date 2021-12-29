@@ -41,6 +41,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "DetourNavMeshBuilder.h"
 #include "DetourTileCache.h"
 #include "DetourTileCacheBuilder.h"
+#include "shared/bg_public.h"
 #include "fastlz/fastlz.h"
 
 // should be the same as in rest of engine
@@ -241,5 +242,20 @@ struct LinearAllocator : public dtTileCacheAlloc
 	void free( void* /*ptr*/ ) override { }
 	size_t getHighSize() { return high; }
 };
+
+inline std::vector<class_t> RequiredNavmeshes()
+{
+	return {
+		PCL_ALIEN_LEVEL0,
+		PCL_ALIEN_LEVEL1,
+		PCL_ALIEN_LEVEL2,
+		PCL_ALIEN_LEVEL2_UPG,
+		PCL_ALIEN_LEVEL3,
+		PCL_ALIEN_LEVEL3_UPG,
+		PCL_ALIEN_LEVEL4,
+		PCL_HUMAN_NAKED,
+		PCL_HUMAN_BSUIT,
+	};
+}
 
 #endif // SHARED_BOT_NAV_SHARED_H_

@@ -1105,19 +1105,15 @@ static void GenerateNavmeshes()
 {
 	std::string mapName = Cvar::GetValue( "mapname" );
 	std::vector<class_t> missing;
-	for ( int species = PCL_NONE; ++species < PCL_NUM_CLASSES; )
+	for ( class_t species : RequiredNavmeshes() )
 	{
-		if ( species == PCL_ALIEN_BUILDER0 || BG_ClassModelConfig( species )->navMeshClass )
-		{
-			continue; // uses another class's navmesh, or granger which bots can't use
-		}
 		fileHandle_t f;
 		std::string filename = Str::Format(
 			"maps/%s-%s.navMesh", mapName, BG_Class( species )->name );
 		// TODO(0.53): match new behavior of G_FOpenGameOrPakPath
 		if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0)
 		{
-			missing.push_back( static_cast<class_t>(species) );
+			missing.push_back( species );
 			continue;
 		}
 		NavMeshSetHeader header;
@@ -1125,7 +1121,7 @@ static void GenerateNavmeshes()
 		if ( !error.empty() )
 		{
 			Log::Notice( "Existing navmesh file %s can't be used: %s", filename, error );
-			missing.push_back( static_cast<class_t>(species) );
+			missing.push_back( species );
 		}
 		trap_FS_FCloseFile( f );
 	}

@@ -45,33 +45,17 @@ bool G_BotNavInit()
 		return true;
 	}
 
-	int i;
-
 	Log::Notice( "==== Bot Navigation Initialization ====" );
 
-	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
+	for ( class_t i : RequiredNavmeshes() )
 	{
-		if ( i == PCL_ALIEN_BUILDER0 )
-		{
-			continue;
-		}
 		classModelConfig_t *model;
 		botClass_t bot;
 		bot.polyFlagsInclude = POLYFLAGS_WALK;
 		bot.polyFlagsExclude = POLYFLAGS_DISABLED;
 
 		model = BG_ClassModelConfig( i );
-		if ( model->navMeshClass )
-		{
-			if ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass )
-			{
-				Log::Warn( "class '%s': navmesh reference target class '%s' must have its own navmesh",
-				            BG_Class( i )->name, BG_Class( model->navMeshClass )->name );
-				return false;
-			}
-
-			continue;
-		}
+		ASSERT_EQ( model->navMeshClass, PCL_NONE ); // shouldn't load this if we are going to use another class's mesh
 
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
@@ -101,9 +85,15 @@ void BotSetNavmesh( gentity_t  *self, class_t newClass )
 	}
 
 	model = BG_ClassModelConfig( newClass );
-	navHandle = model->navMeshClass
-	          ? BG_ClassModelConfig( model->navMeshClass )->navHandle
-	          : model->navHandle;
+	if ( model->navMeshClass )
+	{
+		ASSERT_EQ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass, PCL_NONE );
+		navHandle = BG_ClassModelConfig( model->navMeshClass )->navHandle;
+	}
+	else
+	{
+		navHandle = model->navHandle;
+	}
 
 	G_BotSetNavMesh( self->s.number, navHandle );
 }
