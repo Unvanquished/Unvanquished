@@ -49,7 +49,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #define MIN_WALK_NORMAL 0.7f
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
-static const int NAVMESHSET_VERSION = 7; // Increment when navgen algorithm or data format changes
+static const int NAVMESHSET_VERSION = 8; // Increment when navgen algorithm or data format changes
 
 enum navPolyFlags
 {
@@ -79,7 +79,7 @@ enum navPolyAreas
 
 // Part of header which must contain 4-byte members only
 struct NavgenConfig {
-	float cellHeight;
+	float requestedCellHeight;
 	float stepSize;
 	int excludeCaulk; // boolean - exclude caulk surfaces
 	int excludeSky; // boolean - exclude surfaces with surfaceparm sky from navmesh generation
