@@ -7,6 +7,13 @@ selector
 		condition alertedToEnemy
 		selector
 		{
+			decorator timer ( 1000 )
+			{
+				condition haveWeapon( WP_LUCIFER_CANNON ) && distanceTo( E_H_REACTOR ) <= 400
+				{
+					action buy( WP_PULSE_RIFLE )
+				}
+			}
 			condition haveWeapon( WP_HBUILD ) && ( !buildingIsDamaged || teamateHasWeapon( WP_HBUILD ) )
 			{
 				selector
