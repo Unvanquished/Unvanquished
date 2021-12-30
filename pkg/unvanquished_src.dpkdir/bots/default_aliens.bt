@@ -1,5 +1,10 @@
 selector
 {
+	condition ( aliveTime > 1500 )
+	{
+		action evolve
+	}
+
 	sequence
 	{
 		condition alertedToEnemy
@@ -34,11 +39,6 @@ selector
 			condition healScore > 0.25
 			action heal
 		}
-	}
-
-	condition ( aliveTime > 1500 )
-	{
-		action evolve
 	}
 
 	condition baseRushScore > 0.5
