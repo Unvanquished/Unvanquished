@@ -572,7 +572,8 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	ASSERT( upgradesSize >= 2 ); // we access to 2 elements maximum, and don't really check boundaries (would result in a nerf)
 	int equipmentPrice = BG_GetPlayerPrice( self->client->ps );
 	int credits = self->client->ps.persistant[PERS_CREDIT];
-	int usableCapital = credits + equipmentPrice;
+	int usableCapital = g_bot_infinite_funds.Get() ? INT_MAX : credits + equipmentPrice;
+
 	size_t numUpgrades = 0;
 	int usedSlots = 0;
 
@@ -1970,7 +1971,10 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 				Math::Clamp( Entities::HealthFraction(ent), 0.0f, 1.0f );
 
 			//remove credit
-			G_AddCreditToClient( ent->client, -( short )evolveInfo.evolveCost, true );
+			if ( !g_bot_infinite_funds.Get() )
+			{
+				G_AddCreditToClient( ent->client, -( short )evolveInfo.evolveCost, true );
+			}
 			ent->client->pers.classSelection = newClass;
 			BotSetNavmesh( ent, newClass );
 			ClientUserinfoChanged( clientNum, false );
@@ -2044,7 +2048,10 @@ bool BotBuyWeapon( gentity_t *self, weapon_t weapon )
 	self->client->ps.weaponCharge = 0;
 
 	//subtract from funds
-	G_AddCreditToClient( self->client, -( short )BG_Weapon( weapon )->price, false );
+	if ( !g_bot_infinite_funds.Get() )
+	{
+		G_AddCreditToClient( self->client, -( short )BG_Weapon( weapon )->price, false );
+	}
 
 	//update ClientInfo
 	ClientUserinfoChanged( self->client->ps.clientNum, false );
@@ -2119,7 +2126,10 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 	BG_AddUpgradeToInventory( upgrade, self->client->ps.stats );
 
 	//subtract from funds
-	G_AddCreditToClient( self->client, -( short )BG_Upgrade( upgrade )->price, false );
+	if ( !g_bot_infinite_funds.Get() )
+	{
+		G_AddCreditToClient( self->client, -( short )BG_Upgrade( upgrade )->price, false );
+	}
 
 	//update ClientInfo
 	ClientUserinfoChanged( self->client->ps.clientNum, false );
