@@ -39,6 +39,7 @@ selector
 			{
 				//if goal is a close enough enemy building or if we're gonna die
 				condition ( percentHealth( E_SELF ) < 0.3 || ( distanceTo( E_GOAL ) < 400 && goalType == ET_BUILDABLE ) )
+				condition ( distanceTo( E_FRIENDLYBUILDING ) > 400 )
 				selector
 				{
 					condition ( haveUpgrade( UP_FIREBOMB ) )
