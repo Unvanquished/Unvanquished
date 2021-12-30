@@ -1266,14 +1266,20 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 			BotSellUpgrades( self );
 			for ( i = 0; i < numUpgrades; i++ )
 			{
-				BotBuyUpgrade( self, upgrades[i] );
+				if ( !BotBuyUpgrade( self, upgrades[i] ) )
+				{
+					return STATUS_FAILURE;
+				}
 			}
 		}
 
 		if ( weapon != WP_NONE )
 		{
 			BotSellWeapons( self );
-			BotBuyWeapon( self, weapon );
+			if ( !BotBuyWeapon( self, weapon ) )
+			{
+				return STATUS_FAILURE;
+			}
 		}
 
 		// make sure that we're not using the blaster
