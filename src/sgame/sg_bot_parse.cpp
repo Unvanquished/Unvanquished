@@ -58,14 +58,11 @@ AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 		return AIBoxString( token->string );
 	}
 
-	if ( ( float ) token->intvalue != token->floatvalue )
+	if ( static_cast<float>( token->intvalue ) != token->floatvalue )
 	{
 		return AIBoxFloat( token->floatvalue );
 	}
-	else
-	{
-		return AIBoxInt( token->intvalue );
-	}
+	return AIBoxInt( token->intvalue );
 }
 
 // functions that are used to provide values to the behavior tree in condition nodes
@@ -91,9 +88,12 @@ static AIValue_t botTeam( gentity_t *self, const AIValue_t* )
 
 static AIValue_t goalTeam( gentity_t *self, const AIValue_t* )
 {
-	if ( !self->botMind->goal.targetsValidEntity() )
+	botTarget_t const& goal = self->botMind->goal;
+	if ( !goal.targetsValidEntity() )
+	{
 		return AIBoxInt( TEAM_NONE );
-	return AIBoxInt( G_Team( self->botMind->goal.getTargetedEntity() ) );
+	}
+	return AIBoxInt( G_Team( goal.getTargetedEntity() ) );
 }
 
 static AIValue_t goalType( gentity_t *self, const AIValue_t* )
@@ -111,23 +111,21 @@ static AIValue_t goalDead( gentity_t *self, const AIValue_t* )
 		return AIBoxInt( true );
 	}
 	// is this needed?
-	else if ( target->s.eType == entityType_t::ET_BUILDABLE && target->buildableTeam == self->client->pers.team && !target->powered )
-	{
-		return AIBoxInt( true );
-	}
-
-	return AIBoxInt( false );
+	return AIBoxInt( target->s.eType == entityType_t::ET_BUILDABLE
+		&& target->buildableTeam == self->client->pers.team
+		&& !target->powered );
 }
 
 static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t* )
 {
-	if ( self->botMind->goal.getTargetType() != entityType_t::ET_BUILDABLE )
+	botTarget_t const& goal = self->botMind->goal;
+	if ( goal.getTargetType() != entityType_t::ET_BUILDABLE )
 	{
 		return AIBoxInt( BA_NONE );
 	}
 
 	// entity has to be valid now or we would have returned BA_NONE
-	const gentity_t *ent = self->botMind->goal.getTargetedEntity();
+	const gentity_t *ent = goal.getTargetedEntity();
 	return AIBoxInt( ent->s.modelindex );
 }
 
@@ -139,7 +137,8 @@ static AIValue_t currentWeapon( gentity_t *self, const AIValue_t* )
 static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 {
 	int upgrade = AIUnBoxInt( params[ 0 ] );
-	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats ) && BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
+	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats )
+		&& BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
 }
 
 static AIValue_t percentAmmo( gentity_t *self, const AIValue_t* )
@@ -193,12 +192,7 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 
 	target = e.ent;
 
-	if ( BotTargetInAttackRange( self, target ) )
-	{
-		return AIBoxInt( true );
-	}
-
-	return AIBoxInt( false );
+	return AIBoxInt( BotTargetInAttackRange( self, target ) );
 }
 
 static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
@@ -240,7 +234,8 @@ static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 	{
 		return AIBoxInt( self->botMind->nav.directPathToGoal );
 	}
-	else if ( ed.ent )
+
+	if ( ed.ent )
 	{
 		botTarget_t target;
 		target = ed.ent;
@@ -312,15 +307,13 @@ static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
 	botEntityAndDistance_t et = AIEntityToGentity( self, e );
-	float healthFraction;
 
-	if (Entities::HasHealthComponent(et.ent)) {
-		healthFraction = Entities::HealthFraction(et.ent);
-	} else {
-		healthFraction = 0.0f;
+	if ( Entities::HasHealthComponent( et.ent ) )
+	{
+		return AIBoxFloat( Entities::HealthFraction( et.ent ) );
 	}
 
-	return AIBoxFloat( healthFraction );
+	return AIBoxFloat( 0.f );
 }
 
 static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
@@ -421,7 +414,7 @@ static int opCompare( AIOpType_t op1, AIOpType_t op2 )
 	{
 		return 1;
 	}
-	else if ( op1 > op2 )
+	if ( op1 > op2 )
 	{
 		return -1;
 	}
