@@ -52,7 +52,14 @@ selector
 			{
 				condition !haveWeapon( WP_HBUILD )
 				{
-					action buy( WP_HBUILD )
+					sequence
+					{
+						decorator return( STATUS_SUCCESS )
+						{
+							action equip
+						}
+						action buy( WP_HBUILD )
+					}
 				}
 
 				condition haveWeapon( WP_HBUILD )
