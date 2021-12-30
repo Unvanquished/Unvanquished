@@ -1,6 +1,6 @@
 selector
 {
-	condition ( aliveTime > 1500 )
+	condition ( aliveTime > 1500 && healScore < 0.5 )
 	{
 		action evolve
 	}
