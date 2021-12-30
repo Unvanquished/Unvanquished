@@ -1986,111 +1986,112 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 }
 
 //Cmd_Buy_f ripoff, weapon version
-void BotBuyWeapon( gentity_t *self, weapon_t weapon )
+bool BotBuyWeapon( gentity_t *self, weapon_t weapon )
 {
-	if ( weapon != WP_NONE )
+	if ( weapon == WP_NONE )
 	{
-		//already got this?
-		if ( BG_InventoryContainsWeapon( weapon, self->client->ps.stats ) )
-		{
-			return;
-		}
-
-		// Only humans can buy stuff
-		if ( BG_Weapon( weapon )->team != TEAM_HUMANS )
-		{
-			return;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_Weapon( weapon )->purchasable )
-		{
-			return;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
-		{
-			return;
-		}
-
-		//can afford this?
-		if ( BG_Weapon( weapon )->price > ( short )self->client->pers.credit )
-		{
-			return;
-		}
-
-		//have space to carry this?
-		if ( BG_Weapon( weapon )->slots & BG_SlotsForInventory( self->client->ps.stats ) )
-		{
-			return;
-		}
-
-		// In some instances, weapons can't be changed
-		if ( !BG_PlayerCanChangeWeapon( &self->client->ps ) )
-		{
-			return;
-		}
-
-		self->client->ps.stats[ STAT_WEAPON ] = weapon;
-		G_GiveMaxAmmo( self );
-		G_ForceWeaponChange( self, weapon );
-
-		//set build delay/pounce etc to 0
-		self->client->ps.stats[ STAT_MISC ] = 0;
-		self->client->ps.weaponCharge = 0;
-
-		//subtract from funds
-		G_AddCreditToClient( self->client, -( short )BG_Weapon( weapon )->price, false );
+		return false;
 	}
-	else
+
+	//already got this?
+	if ( BG_InventoryContainsWeapon( weapon, self->client->ps.stats ) )
 	{
-		return;
+		return false;
 	}
+
+	// Only humans can buy stuff
+	if ( BG_Weapon( weapon )->team != TEAM_HUMANS )
+	{
+		return false;
+	}
+
+	//are we /allowed/ to buy this?
+	if ( !BG_Weapon( weapon )->purchasable )
+	{
+		return false;
+	}
+
+	//are we /allowed/ to buy this?
+	if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
+	{
+		return false;
+	}
+
+	//can afford this?
+	if ( BG_Weapon( weapon )->price > ( short )self->client->pers.credit )
+	{
+		return false;
+	}
+
+	//have space to carry this?
+	if ( BG_Weapon( weapon )->slots & BG_SlotsForInventory( self->client->ps.stats ) )
+	{
+		return false;
+	}
+
+	// In some instances, weapons can't be changed
+	if ( !BG_PlayerCanChangeWeapon( &self->client->ps ) )
+	{
+		return false;
+	}
+
+	self->client->ps.stats[ STAT_WEAPON ] = weapon;
+	G_GiveMaxAmmo( self );
+	G_ForceWeaponChange( self, weapon );
+
+	//set build delay/pounce etc to 0
+	self->client->ps.stats[ STAT_MISC ] = 0;
+	self->client->ps.weaponCharge = 0;
+
+	//subtract from funds
+	G_AddCreditToClient( self->client, -( short )BG_Weapon( weapon )->price, false );
+
 	//update ClientInfo
 	ClientUserinfoChanged( self->client->ps.clientNum, false );
+	return true;
 }
-void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
+
+bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 {
 	if ( upgrade == UP_NONE )
 	{
-		return;
+		return false;
 	}
 
 	//already got this?
 	if ( BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) )
 	{
-		return;
+		return false;
 	}
 
 	//can afford this?
 	if ( BG_Upgrade( upgrade )->price > ( short )self->client->pers.credit )
 	{
-		return;
+		return false;
 	}
 
 	//have space to carry this?
 	if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( self->client->ps.stats ) )
 	{
-		return;
+		return false;
 	}
 
 	// Only humans can buy stuff
 	if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
 	{
-		return;
+		return false;
 	}
 
 	//are we /allowed/ to buy this?
 	if ( !BG_Upgrade( upgrade )->purchasable )
 	{
-		return;
+		return false;
 	}
 
 	//are we /allowed/ to buy this?
 	if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
 	{
-		return;
+		return false;
 	}
 
 	vec3_t newOrigin;
@@ -2107,9 +2108,10 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 
 	for ( auto const& armor : armorToClass )
 	{
+		//fail if there's not enough space
 		if ( upgrade == armor.upg && !BotChangeClass( self, armor.cls, newOrigin ) )
 		{
-			return;
+			return false;
 		}
 	}
 
@@ -2121,7 +2123,9 @@ void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 
 	//update ClientInfo
 	ClientUserinfoChanged( self->client->ps.clientNum, false );
+	return true;
 }
+
 void BotSellWeapons( gentity_t *self )
 {
 	weapon_t selected = BG_GetPlayerWeapon( &self->client->ps );
