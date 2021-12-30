@@ -35,6 +35,22 @@ selector
 				}
 			}
 
+			sequence
+			{
+				//if goal is a close enough enemy building or if we're gonna die
+				condition ( percentHealth( E_SELF ) < 0.3 || ( distanceTo( E_GOAL ) < 400 && goalType == ET_BUILDABLE ) )
+				selector
+				{
+					condition ( haveUpgrade( UP_FIREBOMB ) )
+					{
+						action activateUpgrade( UP_FIREBOMB )
+					}
+					condition ( haveUpgrade( UP_GRENADE ) )
+					{
+						action activateUpgrade( UP_GRENADE )
+					}
+				}
+			}
 			action fight
 		}
 	}
