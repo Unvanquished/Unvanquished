@@ -109,6 +109,7 @@ class UnvContext : public rcContext
 	void doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/) override;
 };
 
+// Public interface to navgen. Rest of this file is internal details
 class NavmeshGenerator {
 private:
 	struct PerClassData {
@@ -126,6 +127,7 @@ private:
 	};
 
 	UnvContext recastContext_;
+	NavgenConfig config_;
 	// Map data
 	std::string mapName_;
 	std::string mapData_;
