@@ -96,6 +96,7 @@ struct NavMeshSetHeader
 	dtNavMeshParams params;
 	dtTileCacheParams cacheParams;
 };
+constexpr int PERMANENT_NAVGEN_ERROR = -789; // as value of header.params.tileHeight
 
 struct NavMeshTileHeader
 {

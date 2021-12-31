@@ -109,6 +109,17 @@ class UnvContext : public rcContext
 	void doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/) override;
 };
 
+struct NavgenStatus
+{
+	enum Code {
+		OK,
+		TRANSIENT_FAILURE, // e.g. memory allocation failure
+		PERMANENT_FAILURE,
+	};
+	Code code;
+	std::string message;
+};
+
 // Public interface to navgen. Rest of this file is internal details
 class NavmeshGenerator {
 private:
@@ -124,6 +135,7 @@ private:
 		int th;
 		int x = 0;
 		int y = 0;
+		NavgenStatus status;
 	};
 
 	UnvContext recastContext_;
@@ -132,6 +144,7 @@ private:
 	std::string mapName_;
 	std::string mapData_;
 	Geometry geo_;
+	NavgenStatus initStatus_;
 	// Data for generating current class
 	std::unique_ptr<PerClassData> d_;
 

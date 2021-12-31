@@ -209,6 +209,16 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		trap_FS_FCloseFile( f );
 		return false;
 	}
+	else if ( header.params.tileHeight == PERMANENT_NAVGEN_ERROR )
+	{
+		NavMeshTileHeader ignored;
+		trap_FS_Read( &ignored, sizeof(ignored), f );
+		char error[256] = {};
+		trap_FS_Read( error, sizeof(error) - 1, f );
+		Log::Warn( "Can't load %s: Cached navmesh generation failure (%s)", filename, error );
+		trap_FS_FCloseFile( f );
+		return false;
+	}
 
 	nav.mesh = dtAllocNavMesh();
 

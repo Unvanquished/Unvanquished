@@ -50,9 +50,23 @@ void UnvContext::doLog(const rcLogCategory /*category*/, const char* msg, const 
 	}
 }
 
+static NavgenStatus::Code CodeForFailedDtStatus(dtStatus status)
+{
+	if ( dtStatusDetail( status, DT_OUT_OF_MEMORY ) )
+	{
+		return NavgenStatus::TRANSIENT_FAILURE;
+	}
+	return NavgenStatus::PERMANENT_FAILURE;
+}
+
 static int tileSize = 64;
 
 void NavmeshGenerator::WriteFile() {
+	if ( d_->status.code == NavgenStatus::TRANSIENT_FAILURE )
+	{
+		return; // Don't write anything
+	}
+
 	// there are 22 bits to store a tile and its polys
 	int tileBits = rcMin( ( int ) dtIlog2( dtNextPow2( d_->tcparams.maxTiles ) ), 14 );
 	int polyBits = 22 - tileBits;
@@ -66,24 +80,36 @@ void NavmeshGenerator::WriteFile() {
 
 	std::string filename = Str::Format("maps/%s-%s.navMesh", mapName_, BG_Class(d_->species)->name);
 
-	int numTiles = 0;
 	NavMeshSetHeader header;
-	const int maxTiles = d_->tileCache->getTileCount();
+	int maxTiles;
 
-	for ( int i = 0; i < maxTiles; i++ )
+	if ( d_->status.code == NavgenStatus::OK )
 	{
-		const dtCompressedTile *tile = d_->tileCache->getTile( i );
-		if ( !tile || !tile->header || !tile->dataSize ) {
-			continue;
+		maxTiles = d_->tileCache->getTileCount();
+		int numTiles = 0;
+
+		for ( int i = 0; i < maxTiles; i++ )
+		{
+			const dtCompressedTile *tile = d_->tileCache->getTile( i );
+			if ( !tile || !tile->header || !tile->dataSize ) {
+				continue;
+			}
+			numTiles++;
 		}
-		numTiles++;
+		header.numTiles = numTiles;
+		header.cacheParams = *d_->tileCache->getParams();
+		header.params = params;
+	}
+	else
+	{
+		header.params = {};
+		header.cacheParams = {};
+		header.params.tileHeight = PERMANENT_NAVGEN_ERROR;
+		header.numTiles = 1;
 	}
 
 	header.magic = NAVMESHSET_MAGIC;
 	header.version = NAVMESHSET_VERSION;
-	header.numTiles = numTiles;
-	header.cacheParams = *d_->tileCache->getParams();
-	header.params = params;
 
 	SwapNavMeshSetHeader( header );
 
@@ -91,15 +117,36 @@ void NavmeshGenerator::WriteFile() {
 	trap_FS_FOpenFile( filename.c_str(), &file, fsMode_t::FS_WRITE );
 
 	if ( !file ) {
-		Sys::Drop( "Error opening %s", filename );
+		LOG.Warn( "Error opening %s", filename );
+		return;
 	}
 
-	auto Write = [file](void* data, size_t len) {
+	auto Write = [file, &filename](const void* data, size_t len) -> bool {
 		if (len != static_cast<size_t>(trap_FS_Write(data, len, file)))
-			Sys::Drop("Error writing navmesh file");
+		{
+			LOG.Warn( "Error writing navmesh file %s", filename );
+			trap_FS_FCloseFile( file );
+			std::error_code err;
+			FS::HomePath::DeleteFile( filename, err );
+			return false;
+		}
+		return true;
 	};
 
-	Write( &header, sizeof( header ));
+	if ( !Write( &header, sizeof( header ) ) ) return;
+
+	if ( d_->status.code == NavgenStatus::PERMANENT_FAILURE )
+	{
+		// Make old gamelogic fail versions with "Null tile in Navmesh" error
+		// TODO(0.53): break navmesh header compatibility and clean this up
+		NavMeshTileHeader tileHeader = {};
+		if ( !Write( &tileHeader, sizeof(tileHeader) ) ) return;
+		// rest of file is the error message
+		if ( !Write( d_->status.message.data(), d_->status.message.size() ) ) return;
+		trap_FS_FCloseFile( file );
+		return;
+	}
+	ASSERT_EQ(d_->status.code, NavgenStatus::OK);
 
 	for ( int i = 0; i < maxTiles; i++ )
 	{
@@ -114,18 +161,16 @@ void NavmeshGenerator::WriteFile() {
 		tileHeader.dataSize = tile->dataSize;
 
 		SwapNavMeshTileHeader( tileHeader );
-		Write( &tileHeader, sizeof( tileHeader ) );
+		if ( !Write( &tileHeader, sizeof( tileHeader ) ) ) return;
 
-		unsigned char* data = ( unsigned char * ) malloc( tile->dataSize );
+		std::unique_ptr<unsigned char[]> data( new unsigned char[tile->dataSize] );
 
-		memcpy( data, tile->data, tile->dataSize );
+		memcpy( data.get(), tile->data, tile->dataSize );
 		if ( LittleLong( 1 ) != 1 ) {
-			dtTileCacheHeaderSwapEndian( data, tile->dataSize );
+			dtTileCacheHeaderSwapEndian( data.get(), tile->dataSize );
 		}
 
-		Write( data, tile->dataSize );
-
-		free( data );
+		if ( !Write( data.get(), tile->dataSize ) ) return;
 	}
 	trap_FS_FCloseFile( file );
 }
@@ -202,7 +247,8 @@ void NavmeshGenerator::LoadBrushTris( std::vector<float> &verts, std::vector<int
 
 	/* get model, index 0 is worldspawn entity */
 	if ( modelsLump.filelen / sizeof(dmodel_t) <= 0 ) {
-		Sys::Drop("No brushes found. Aborting.");
+		initStatus_ = { NavgenStatus::PERMANENT_FAILURE, "No brushes found" };
+		return;
 	}
 	auto* model = reinterpret_cast<const dmodel_t*>(cmod_base + modelsLump.fileofs);
 	auto* bspBrushes = reinterpret_cast<const dbrush_t*>(cmod_base + brushesLump.fileofs);
@@ -405,6 +451,7 @@ void NavmeshGenerator::LoadGeometry()
 
 	//count surfaces
 	LoadBrushTris( verts, tris );
+	if ( initStatus_.code != NavgenStatus::OK ) return;
 	LoadPatchTris( verts, tris );
 
 	numTris = tris.size() / 3;
@@ -719,7 +766,11 @@ static void rcFilterGaps( rcContext *ctx, int walkableRadius, int walkableClimb,
 	}
 }
 
-static int rasterizeTileLayers( Geometry& geo, rcContext &context, int tx, int ty, const rcConfig &mcfg, TileCacheData *data, int maxLayers, bool filterGaps ){
+// Most Recast error returns here are translated as transient failures because inspection of the source shows
+// that the only failure mode is insufficient memory
+static NavgenStatus rasterizeTileLayers( Geometry& geo, rcContext &context, int tx, int ty, const rcConfig &mcfg,
+                                         TileCacheData *data, int maxLayers, bool filterGaps, int *ntiles )
+{
 	rcConfig cfg;
 
 	FastLZCompressor comp;
@@ -751,7 +802,7 @@ static int rasterizeTileLayers( Geometry& geo, rcContext &context, int tx, int t
 	rc.solid = rcAllocHeightfield();
 
 	if ( !rcCreateHeightfield( &context, *rc.solid, cfg.width, cfg.height, cfg.bmin, cfg.bmax, cfg.cs, cfg.ch ) ) {
-		Sys::Drop( "Failed to create heightfield for navigation mesh" );
+		return { NavgenStatus::TRANSIENT_FAILURE, "Failed to create heightfield for navigation mesh" };
 	}
 
 	//I understand that using std::vector prevents NiH's proudness.
@@ -760,11 +811,6 @@ static int rasterizeTileLayers( Geometry& geo, rcContext &context, int tx, int t
 	const rcChunkyTriMesh *chunkyMesh = geo.getChunkyMesh();
 
 	rc.triareas = new unsigned char[ chunkyMesh->maxTrisPerChunk ];
-	//you know what? This will never be reached, because new throws exceptions, by default.
-	//really, should just use STL or C, not raw C++ with C's bugs.
-	if ( !rc.triareas ) {
-		Sys::Drop( "Out of memory rc.triareas" );
-	}
 
 	float tbmin[ 2 ], tbmax[ 2 ];
 
@@ -779,9 +825,10 @@ static int rasterizeTileLayers( Geometry& geo, rcContext &context, int tx, int t
 	//It " Creates partitioned triangle mesh (AABB tree), where each node contains at max trisPerChunk triangles."
 	//why? No idea.
 	const int ncid = rcGetChunksOverlappingRect( chunkyMesh, tbmin, tbmax, cid, chunkyMesh->nnodes );
-	if ( !ncid ) {
+	if ( !ncid ) { // TODO is this supposed to mean failure?
 		delete[] cid;
-		return 0;
+		*ntiles = 0;
+		return {};
 	}
 
 	for ( int i = 0; i < ncid; i++ )
@@ -817,21 +864,22 @@ static int rasterizeTileLayers( Geometry& geo, rcContext &context, int tx, int t
 	rc.chf = rcAllocCompactHeightfield();
 
 	if ( !rcBuildCompactHeightfield( &context, cfg.walkableHeight, cfg.walkableClimb, *rc.solid, *rc.chf ) ) {
-		Sys::Drop( "Failed to create compact heightfield for navigation mesh" );
+		return { NavgenStatus::TRANSIENT_FAILURE, "Failed to create compact heightfield for navigation mesh" };
 	}
 
 	if ( !rcErodeWalkableAreaByBox( &context, cfg.walkableRadius, *rc.chf ) ) {
-		Sys::Drop( "Unable to erode walkable surfaces" );
+		return { NavgenStatus::TRANSIENT_FAILURE, "Unable to erode walkable surfaces" };
 	}
 
 	rc.lset = rcAllocHeightfieldLayerSet();
 
 	if ( !rc.lset ) {
-		Sys::Drop( "Out of memory heightfield layer set" );
+		return { NavgenStatus::TRANSIENT_FAILURE, "Out of memory heightfield layer set" };
 	}
 
 	if ( !rcBuildHeightfieldLayers( &context, *rc.chf, cfg.borderSize, cfg.walkableHeight, *rc.lset ) ) {
-		Sys::Drop( "Could not build heightfield layers" );
+		// This could be an out-of-memory error or a real algorithm failure
+		return { NavgenStatus::PERMANENT_FAILURE, "Could not build heightfield layers" };
 	}
 
 	rc.ntiles = 0;
@@ -863,7 +911,7 @@ static int rasterizeTileLayers( Geometry& geo, rcContext &context, int tx, int t
 		dtStatus status = dtBuildTileCacheLayer( &comp, &header, layer->heights, layer->areas, layer->cons, &tile->data, &tile->dataSize );
 
 		if ( dtStatusFailed( status ) ) {
-			return 0;
+			return { CodeForFailedDtStatus( status ), "dtBuildTileCacheLayer failed" };
 		}
 	}
 
@@ -876,7 +924,8 @@ static int rasterizeTileLayers( Geometry& geo, rcContext &context, int tx, int t
 		rc.tiles[ i ].dataSize = 0;
 	}
 
-	return n;
+	*ntiles = n;
+	return {};
 }
 
 void NavmeshGenerator::StartGeneration( class_t species )
@@ -884,6 +933,11 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	LOG.Notice( "Generating navmesh for %s", BG_Class( species )->name );
 	d_.reset( new PerClassData );
 	d_->species = species;
+	d_->status = initStatus_;
+	if ( d_->status.code != NavgenStatus::OK )
+	{
+		return;
+	}
 
 	const float *bmin = geo_.getMins();
 	const float *bmax = geo_.getMaxs();
@@ -940,22 +994,24 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	dtStatus status = d_->tileCache->init( &d_->tcparams, &d_->alloc, &d_->comp, &d_->proc );
 
 	if ( dtStatusFailed( status ) ) {
-		if ( dtStatusDetail( status, DT_INVALID_PARAM ) ) {
-			Sys::Drop( "Could not init tile cache: Invalid parameter" );
-		}
-		else
-		{
-			Sys::Drop( "Could not init tile cache" );
-		}
+		std::string message = dtStatusDetail( status, DT_INVALID_PARAM ) ? "Could not init tile cache: Invalid parameter" : "Could not init tile cache";
+		d_->status = { CodeForFailedDtStatus( status ), message };
 	}
 }
 
 bool NavmeshGenerator::Step()
 {
-	if ( d_->y >= d_->th || d_->tw == 0 )
+	if ( d_->status.code != NavgenStatus::OK || d_->y >= d_->th || d_->tw == 0 )
 	{
+		if ( d_->status.code == NavgenStatus::OK )
+		{
+			LOG.Notice( "Finished generating navmesh for %s", BG_ClassModelConfig( d_->species )->humanName );
+		}
+		else
+		{
+			LOG.Warn( "Navmesh generation for %s failed: %s", BG_ClassModelConfig( d_->species )->humanName, d_->status.message );
+		}
 		WriteFile();
-		LOG.Notice( "Finished generating navmesh for %s", BG_Class( d_->species )->name );
 		d_.reset();
 		return true;
 	}
@@ -963,7 +1019,13 @@ bool NavmeshGenerator::Step()
 	TileCacheData tiles[ MAX_LAYERS ];
 	memset( tiles, 0, sizeof( tiles ) );
 
-	int ntiles = rasterizeTileLayers( geo_, recastContext_, d_->x, d_->y, d_->cfg, tiles, MAX_LAYERS, !!config_.filterGaps );
+	int ntiles;
+	NavgenStatus status = rasterizeTileLayers(geo_, recastContext_, d_->x, d_->y, d_->cfg, tiles, MAX_LAYERS, !!config_.filterGaps, &ntiles);
+	if ( status.code != NavgenStatus::OK )
+	{
+		d_->status = status;
+		return false;
+	}
 
 	for ( int i = 0; i < ntiles; i++ )
 	{
@@ -998,8 +1060,10 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 
 	mapName_ = mapName;
 	recastContext_.enableLog(true);
+	initStatus_ = {};
 	LoadBSP();
 	LoadGeometry();
+	if ( initStatus_.code != NavgenStatus::OK ) return;
 
 	float height = rcAbs( geo_.getMaxs()[1] ) + rcAbs( geo_.getMins()[1] );
 	if ( height / config_.cellHeight > RC_SPAN_MAX_HEIGHT ) {
@@ -1016,7 +1080,8 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 		}
 
 		if ( !divisor ) {
-			Sys::Drop( "Map is too tall to generate a navigation mesh" );
+			initStatus_ = { NavgenStatus::PERMANENT_FAILURE, "Map is too tall to generate a navigation mesh" };
+			return;
 		}
 
 		LOG.Notice( "Previous cell height: %f", prevCellHeight );
