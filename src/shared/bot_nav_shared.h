@@ -49,7 +49,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #define MIN_WALK_NORMAL 0.7f
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
-static const int NAVMESHSET_VERSION = 3; // Increment when navgen algorithm or data format changes
+static const int NAVMESHSET_VERSION = 4; // Increment when navgen algorithm or data format changes
 
 enum navPolyFlags
 {
@@ -77,7 +77,7 @@ enum navPolyAreas
 	POLYAREA_TELEPORTER = 1 << 5,
 };
 
-// Will be part of header which must contain 4-byte members only
+// Part of header which must contain 4-byte members only
 struct NavgenConfig {
 	float cellHeight;
 	float stepSize;
@@ -92,11 +92,24 @@ struct NavMeshSetHeader
 {
 	int magic;
 	int version;
+	unsigned productVersionHash;
+	unsigned headerSize;
 	int numTiles;
+	NavgenConfig config;
 	dtNavMeshParams params;
 	dtTileCacheParams cacheParams;
 };
 constexpr int PERMANENT_NAVGEN_ERROR = -789; // as value of header.params.tileHeight
+
+inline unsigned ProductVersionHash()
+{
+	Str::StringRef version = PRODUCT_VERSION;
+	unsigned hash = 0;
+	// Java's string hash algorithm :-)
+	for (char c : version)
+		hash = hash * 31 + (c & 0xFF);
+	return hash;
+}
 
 struct NavMeshTileHeader
 {
@@ -143,9 +156,19 @@ inline std::string GetNavmeshHeader( fileHandle_t f, NavMeshSetHeader& header )
 		return "File is wrong magic";
 	}
 
-	if ( header.version != NAVMESHSET_VERSION )
+	// In principle we only need NAVMESHSET_VERSION, but people probably won't remember to change it
+	// so add some extra checks
+	if ( header.version != NAVMESHSET_VERSION ||
+	     header.productVersionHash != ProductVersionHash() ||
+	     header.headerSize != sizeof(header) )
 	{
-		return Str::Format( "File is wrong version (found %d, want %d)", header.version, NAVMESHSET_VERSION );
+		return "File is wrong version";
+	}
+
+	NavgenConfig defaultConfig = NavgenConfig::Default();
+	if ( 0 != memcmp( &header.config, &defaultConfig, sizeof(NavgenConfig) ) )
+	{
+		return "Navgen config changed";
 	}
 
 	return "";
