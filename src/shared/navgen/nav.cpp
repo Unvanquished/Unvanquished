@@ -110,6 +110,9 @@ void NavmeshGenerator::WriteFile() {
 
 	header.magic = NAVMESHSET_MAGIC;
 	header.version = NAVMESHSET_VERSION;
+	header.productVersionHash = ProductVersionHash();
+	header.headerSize = sizeof(header);
+	header.config = config_;
 
 	SwapNavMeshSetHeader( header );
 
