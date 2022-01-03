@@ -1107,12 +1107,10 @@ static AINodeStatus_t BotActionReachHealA( gentity_t *self )
 	//Would also allow humans to get ammos, jetpack "fuel" and advgoons
 	//regen all their barbs
 	int targetType = self->botMind->goal.getTargetedEntity()->s.modelindex;
-	vec3_t mins, maxs;
-	BG_BuildableBoundingBox( targetType, mins, maxs );
-	float dist = fabs( mins[0] );
+	float dist = 0;
 	if ( targetType != BA_A_BOOSTER )
 	{
-		dist += BG_Buildable( targetType )->creepSize;
+		dist = BG_Buildable( targetType )->creepSize - 1.f; // minus one to make sure to step on creep
 	}
 
 	if ( !GoalInRange( self, dist ) )
