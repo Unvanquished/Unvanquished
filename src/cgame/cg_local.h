@@ -1734,7 +1734,7 @@ extern Cvar::Cvar<int> cg_teslaTrailTime;
 extern Cvar::Cvar<float> cg_runpitch;
 extern Cvar::Cvar<float> cg_runroll;
 extern Cvar::Cvar<float> cg_swingSpeed;
-extern Cvar::Range<Cvar::Cvar<int>> cg_shadows;
+extern shadowingMode_t cg_shadows;
 extern Cvar::Cvar<bool> cg_playerShadows;
 extern Cvar::Cvar<bool> cg_buildableShadows;
 extern Cvar::Cvar<bool> cg_drawTimer;

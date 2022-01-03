@@ -43,7 +43,7 @@ Cvar::Cvar<int> cg_teslaTrailTime("cg_teslaTrailTime", "time (ms) to show reacto
 Cvar::Cvar<float> cg_runpitch("cg_runpitch", "pitch angle change magnitude when running", Cvar::NONE, 0.002);
 Cvar::Cvar<float> cg_runroll("cg_runroll", "roll angle magnitude change when running", Cvar::NONE, 0.005);
 Cvar::Cvar<float> cg_swingSpeed("cg_swingSpeed", "something about view angles", Cvar::CHEAT, 0.3);
-Cvar::Range<Cvar::Cvar<int>> cg_shadows("cg_shadows", "type of shadows to draw", Cvar::LATCH, 1, 0, 6);
+shadowingMode_t cg_shadows;
 Cvar::Cvar<bool> cg_playerShadows("cg_playerShadows", "draw shadows of players", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_buildableShadows("cg_buildableShadows", "draw shadows of buildables", Cvar::NONE, false);
 Cvar::Cvar<bool> cg_drawTimer("cg_drawTimer", "show game time", Cvar::NONE, true);
@@ -1116,6 +1116,8 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0f;
 	cgs.aspectScale = ( ( 640.0f * cgs.glconfig.vidHeight ) /
 	( 480.0f * cgs.glconfig.vidWidth ) );
+	// cg_shadows is latched so we can get it once at the beginning
+	cg_shadows = Util::enum_cast<shadowingMode_t>( trap_Cvar_VariableIntegerValue( "cg_shadows" ) );
 
 	// load a few needed things before we do any screen updates
 	trap_R_SetAltShaderTokens( "unpowered,destroyed,idle,idle2" );
