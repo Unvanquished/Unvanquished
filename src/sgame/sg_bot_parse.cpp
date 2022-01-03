@@ -1306,6 +1306,8 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( E_GOAL );
 	D( E_ENEMY );
 	D( E_DAMAGEDBUILDING );
+	D( E_FRIENDLYBUILDING );
+	D( E_ENEMYBUILDING );
 	D( E_SELF );
 
 	// add player classes

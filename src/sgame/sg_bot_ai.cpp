@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
 #include "Entities.h"
+#include "CBSE.h"
 
 /*
 ======================
@@ -158,6 +159,26 @@ void AIDestroyValue( AIValue_t v )
 	}
 }
 
+// Closest alive, but (unlike the botMind->closestBuildings) not necessarily active building
+static botEntityAndDistance_t ClosestBuilding(gentity_t *self, bool alignment)
+{
+	botEntityAndDistance_t result;
+	result.distance = HUGE_QFLT;
+	result.ent = nullptr;
+	ForEntities<BuildableComponent>([&](Entity& e, BuildableComponent&) {
+		if (!e.Get<HealthComponent>()->Alive() ||
+		    (e.Get<TeamComponent>()->Team() == G_Team(self)) != alignment) {
+			return;
+		}
+		float distance = G_Distance(self, e.oldEnt);
+		if (distance < result.distance) {
+			result.distance = distance;
+			result.ent = e.oldEnt;
+		}
+	});
+	return result;
+}
+
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
 	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_QFLT };
@@ -174,6 +195,14 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 	else if ( e == E_DAMAGEDBUILDING )
 	{
 		return self->botMind->closestDamagedBuilding;
+	}
+	else if ( e == E_FRIENDLYBUILDING )
+	{
+		return ClosestBuilding( self, true );
+	}
+	else if ( e == E_ENEMYBUILDING )
+	{
+		return ClosestBuilding( self, false );
 	}
 	else if ( e == E_GOAL )
 	{
