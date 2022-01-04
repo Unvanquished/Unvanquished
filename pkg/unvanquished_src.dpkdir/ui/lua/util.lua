@@ -104,10 +104,10 @@ function CirclemenuHandleKey(event, document, num_handler)
 end
 
 function welcome(event, document)
-  if Cvar.get("cg_welcome") ~= "1" and Cvar.get("name") == "UnnamedPlayer" then
-    Cvar.set("name", "Player#" .. math.ceil(math.random()*10000000))
-    Events.pushevent("show options_welcome", event)
-    Cvar.set("cg_welcome", "1")
-    Cvar.archive("cg_welcome")
-  end
+	if Cvar.get("cg_welcome") ~= "1" and Cvar.get("name") == "UnnamedPlayer" then
+		Cvar.set("name", "Player#" .. math.ceil(math.random()*10000000))
+		Events.pushevent("show options_welcome", event)
+		Cvar.set("cg_welcome", "1")
+		Cvar.archive("cg_welcome")
+	end
 end
