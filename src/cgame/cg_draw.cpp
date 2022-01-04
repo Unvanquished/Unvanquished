@@ -321,7 +321,7 @@ static void CG_Draw2D()
 
 	CombatFeedback::DrawDamageIndicators();
 
-	if ( cg.zoomed )
+	if ( cg.zoomed && cg.snap->ps.persistant[ PERS_SPECSTATE ] == SPECTATOR_NOT )
 	{
 		Color::Color black = { 0.f, 0.f, 0.f, 0.5f };
 		trap_R_DrawStretchPic( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), 0, cgs.glconfig.vidHeight, cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.scopeShader );

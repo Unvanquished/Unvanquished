@@ -1392,7 +1392,7 @@ static bool CG_InstantCgradingEffectAndFade( const playerState_t* ps, qhandle_t*
 {
 	Q_UNUSED(ps);
 
-	if (cg.zoomed)
+	if ( cg.zoomed && cg.snap->ps.persistant[ PERS_SPECSTATE ] == SPECTATOR_NOT )
 	{
 		*effect = cgs.media.tealCgrade;
 		*fade = 0.4f;
