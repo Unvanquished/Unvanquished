@@ -314,7 +314,7 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	{
 		"navgen",       G_admin_navgen,      false, "navgen",
 		N_("request bot navmesh generation"),
-		"<class>..."
+		"all | missing | <class>..."
 	},
 
 	{
@@ -5791,22 +5791,58 @@ bool G_admin_navgen( gentity_t* ent )
 	const Cmd::Args& args = trap_Args();
 	if ( args.Argc() < 2 )
 	{
-		ADMP( QQ("^3navgen:^* usage: navgen <class>...") );
+		ADMP( QQ("^3navgen:^* usage: navgen (all | missing | <class>...)") );
 		return false;
 	}
 
-	navgen.Init( Cvar::GetValue( "mapname" ) );
+	std::string mapName = Cvar::GetValue( "mapname" );
+
+	std::vector<class_t> targets;
 	for ( int i = 1; i < args.Argc(); i++ )
 	{
-		const classAttributes_t* species = BG_ClassByName( args.Argv( i ).c_str() );
-		if ( species->number == PCL_NONE )
+		if ( Str::IsIEqual( args.Argv( i ), "all" ) )
 		{
-			ADMP( va( "%s %s",
-			          QQ( N_ ("^3navgen:^* invalid class name '$1$'" ) ),
-			          Quote( args.Argv( i ).c_str() ) ) );
-			return false;
+			std::vector<class_t> all = RequiredNavmeshes();
+			targets.insert( targets.end(), all.begin(), all.end() );
 		}
-		navgen.StartGeneration( species->number );
+		else if ( Str::IsIEqual ( args.Argv( i ), "missing" ) )
+		{
+			for (class_t species : RequiredNavmeshes())
+			{
+				fileHandle_t f;
+				std::string filename = Str::Format(
+					"maps/%s-%s.navMesh", mapName, BG_Class( species )->name );
+				if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0)
+				{
+					targets.push_back( species );
+					continue;
+				}
+				NavMeshSetHeader header;
+				std::string error = GetNavmeshHeader( f, header );
+				if ( !error.empty() )
+				{
+					targets.push_back( species );
+				}
+				trap_FS_FCloseFile( f );
+			}
+		}
+		else {
+			const classAttributes_t* species = BG_ClassByName( args.Argv( i ).c_str() );
+			if ( species->number == PCL_NONE )
+			{
+				ADMP( va( "%s %s",
+						  QQ( N_ ("^3navgen:^* invalid class name '$1$'" ) ),
+						  Quote( args.Argv( i ).c_str() ) ) );
+				return false;
+			}
+			targets.push_back( species->number );
+		}
+	}
+
+	navgen.Init( mapName );
+	for ( class_t species : targets )
+	{
+		navgen.StartGeneration( species );
 		while ( !navgen.Step() )
 		{
 			// ping the engine with a useless message so that it does not think the sgame VM has hung
