@@ -87,30 +87,30 @@
 			height: 1.4em;
 			background: rgba( 50%, 50%, 50%, 50%);
 			color: white;  /* Default nickname starting colour */
-                        padding-top: 0.1em;
-                        padding-bottom: 0.1em;
+			padding-top: 0.1em;
+			padding-bottom: 0.1em;
 		}
 
-                datagridrow, datagridheader {
-                        padding-right: 0.2em;
-                }
+		datagridrow, datagridheader {
+			padding-right: 0.2em;
+		}
 
 		datagridrow:nth-child(odd) {
 			background: rgba( 50%, 50%, 50%, 20%);
 		}
 
-                datagridcell, datagridcolumn {
-                        overflow: hidden;
-                        width: 100%;
-                        margin: 0em;
-                        padding: 0em;
-                }
+		datagridcell, datagridcolumn {
+			overflow: hidden;
+			width: 100%;
+			margin: 0em;
+			padding: 0em;
+		}
 
 		datagridcell:nth-child(1), datagridcolumn:nth-child(1) {
-                        max-width: 14%;
-                        position: relative;
-                        bottom: 0.1em;
-                }
+			max-width: 14%;
+			position: relative;
+			bottom: 0.1em;
+		}
 
 		datagridcell:nth-child(2), datagridcolumn:nth-child(2) {
 			/* Name cell */
@@ -119,10 +119,10 @@
 			white-space: pre;
 		}
 
-                datagridcell:nth-child(n+3), datagridcolumn:nth-child(n+3) {
-                        text-align: right;
-                        max-width: 11%;
-                }
+		datagridcell:nth-child(n+3), datagridcolumn:nth-child(n+3) {
+			text-align: right;
+			max-width: 11%;
+		}
 
 		datagridcell {
 			text-align: center;
@@ -130,7 +130,7 @@
 
 		datagridcolumn {
 			text-align: left;
-                        padding-top: 0.25em;
+			padding-top: 0.25em;
 		}
 
 		/* Player weapon/class icons */
