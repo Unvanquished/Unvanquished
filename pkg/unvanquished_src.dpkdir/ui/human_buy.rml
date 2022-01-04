@@ -13,11 +13,11 @@
 			}
 
 .circlemenu icon{
-  display:inline-block;
-  position:absolute;
-  bottom: .8em;
-  right: -.6em;
-  font-size: 1.7em;
+	display:inline-block;
+	position:absolute;
+	bottom: .8em;
+	right: -.6em;
+	font-size: 1.7em;
 }
 .circlemenu button {
 	icon-color-multiplier: #83fff5;

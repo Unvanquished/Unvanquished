@@ -2,18 +2,18 @@
 
 
 notebox {
-   display: block;
+	display: block;
 
-   position: absolute;
-   width: 16em;
-   left: -16em;
-   top: 0em;
+	position: absolute;
+	width: 16em;
+	left: -16em;
+	top: 0em;
 
-   background-color: #aa5555aa;
+	background-color: #aa5555aa;
 
-   border-style: solid;
-   border-width: .1em;
-   border-color: red;
+	border-style: solid;
+	border-width: .1em;
+	border-color: red;
 
-   padding: 1em;
+	padding: 1em;
 }
