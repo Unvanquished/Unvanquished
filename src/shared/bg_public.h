@@ -455,7 +455,7 @@ enum persEnum_t
 #define EF_FIRING2          0x0400 // alt fire
 #define EF_FIRING3          0x0800 // third fire
 #define EF_MOVER_STOP       0x1000 // will push otherwise
-#define EF_UNUSED_2         0x2000 // UNUSED
+#define EF_TALKING          0x2000 // draw a chat balloon above head
 #define EF_CONNECTION       0x4000 // draw a connection trouble sprite
 #define EF_BLOBLOCKED       0x8000 // caught by a trapper
 

@@ -4825,6 +4825,7 @@ void PmoveSingle( pmove_t *pmove )
 	{
 		usercmdClearButtons( pmove->cmd.buttons );
 		usercmdPressButton( pmove->cmd.buttons, BTN_TALK );
+		pm->ps->eFlags |= EF_TALKING;
 		pmove->cmd.forwardmove = 0;
 		pmove->cmd.rightmove = 0;
 
@@ -4832,6 +4833,10 @@ void PmoveSingle( pmove_t *pmove )
 		{
 			pmove->cmd.upmove = 0;
 		}
+	}
+	else
+	{
+		pm->ps->eFlags &= ~EF_TALKING;
 	}
 
 	// clear all pmove local vars

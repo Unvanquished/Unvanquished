@@ -2571,10 +2571,13 @@ Float sprites over the player's head
 */
 static void CG_PlayerSprites( centity_t *cent )
 {
+	if ( cent->currentState.eFlags & EF_TALKING )
+	{
+		CG_PlayerFloatSprite( cent, cgs.media.balloonShader );
+	}
 	if ( cent->currentState.eFlags & EF_CONNECTION )
 	{
 		CG_PlayerFloatSprite( cent, cgs.media.connectionShader );
-		return;
 	}
 }
 
