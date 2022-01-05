@@ -40,7 +40,7 @@
 #include "common/FileSystem.h"
 #include "navgen.h"
 
-static Log::Logger LOG( VM_STRING_PREFIX "navgen", "");
+static Log::Logger LOG( VM_STRING_PREFIX "navgen", "", Log::Level::NOTICE );
 
 void UnvContext::doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/)
 {
@@ -1005,7 +1005,7 @@ bool NavmeshGenerator::Step()
 	{
 		if ( d_->status.code == NavgenStatus::OK )
 		{
-			LOG.Notice( "Finished generating navmesh for %s", BG_ClassModelConfig( d_->species )->humanName );
+			LOG.Verbose( "Finished generating navmesh for %s", BG_ClassModelConfig( d_->species )->humanName );
 		}
 		else
 		{
@@ -1084,8 +1084,8 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 			return;
 		}
 
-		LOG.Notice( "Previous cell height: %f", prevCellHeight );
-		LOG.Notice( "New cell height: %f", config_.cellHeight );
+		LOG.Verbose( "Previous cell height: %f", prevCellHeight );
+		LOG.Verbose( "New cell height: %f", config_.cellHeight );
 	}
 }
 
