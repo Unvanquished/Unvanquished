@@ -1991,6 +1991,16 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		vec3_t maxs;
 		VectorCopy( built->r.mins, mins );
 		VectorCopy( built->r.maxs, maxs );
+		// HACK: work around bots unable to reach armory due to
+		// navmesh margins in *some* situations.
+		// fixVal is choosen to work on all known cases:
+		// * 0.9 was not enough on urbanp2 but was on chasm
+		// * 0.8 was enough on both
+		// Note that said bug is not reported, but notably happens
+		// on chasm with default layout as of 0.52.1
+		const float fixVal = 0.8;
+		mins[0] *= fixVal; mins[1] *= fixVal;
+		maxs[0] *= fixVal; maxs[1] *= fixVal;
 		VectorAdd( mins, origin, mins );
 		VectorAdd( maxs, origin, maxs );
 		G_BotAddObstacle( mins, maxs, &built->obstacleHandle );
