@@ -4084,7 +4084,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 					),
 					mapNamesCount,
 					Quote( search )
-			      ),
+				),
 				mapNamesCount );
 	}
 	else
@@ -4096,7 +4096,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 					),
 					shownMapNamesCount,
 					mapNamesCount
-				  ),
+				),
 				mapNamesCount );
 	}
 
