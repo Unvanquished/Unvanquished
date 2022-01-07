@@ -1718,10 +1718,9 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 	}
 }
 
-float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
+float CalcAimPitch( gentity_t *self, vec3_t targetPos, vec_t launchSpeed )
 {
 	vec3_t startPos;
-	vec3_t targetPos;
 	float initialHeight;
 	vec3_t forward, right, up;
 	vec3_t muzzle;
@@ -1730,7 +1729,6 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	float check;
 	float angle1, angle2, angle;
 
-	target.getPos( targetPos );
 	AngleVectors( self->s.origin, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	VectorCopy( muzzle, startPos );
@@ -1770,18 +1768,20 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	angle = RAD2DEG( angle );
 	return angle;
 }
-float CalcPounceAimPitch( gentity_t *self, botTarget_t target )
+
+float CalcPounceAimPitch( gentity_t *self, vec3_t targetPos )
 {
 	vec_t speed = ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL3 ) ? LEVEL3_POUNCE_JUMP_MAG : LEVEL3_POUNCE_JUMP_MAG_UPG;
-	return CalcAimPitch( self, target, speed );
+	return CalcAimPitch( self, targetPos, speed );
 
 	//in usrcmd angles, a positive angle is down, so multiply angle by -1
 	// botCmdBuffer->angles[PITCH] = ANGLE2SHORT(-angle);
 }
-float CalcBarbAimPitch( gentity_t *self, botTarget_t target )
+
+float CalcBarbAimPitch( gentity_t *self, vec3_t targetPos )
 {
 	vec_t speed = LEVEL3_BOUNCEBALL_SPEED;
-	return CalcAimPitch( self, target, speed );
+	return CalcAimPitch( self, targetPos, speed );
 
 	//in usrcmd angles, a positive angle is down, so multiply angle by -1
 	//botCmdBuffer->angles[PITCH] = ANGLE2SHORT(-angle);
@@ -1803,6 +1803,8 @@ void BotFireWeaponAI( gentity_t *self )
 	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = Distance( muzzle, trace.endpos );
 	bool readyFire = self->client->ps.IsWeaponReady();
+	vec3_t target;
+	self->botMind->goal.getPos( target );
 	switch ( self->s.weapon )
 	{
 		case WP_ABUILD:
@@ -1854,7 +1856,7 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL3:
 			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
-				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
+				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
 			}
 			else
@@ -1865,12 +1867,12 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL3_UPG:
 			if ( self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE )
 			{
-				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
+				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 			}
 			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
-				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, self->botMind->goal ) ); //compute and apply correct aim pitch to hit target
+				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
 			}
 			else
