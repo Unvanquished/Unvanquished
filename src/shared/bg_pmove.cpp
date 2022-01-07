@@ -4493,6 +4493,19 @@ static void PM_Animate()
 PM_DropTimers
 ================
 */
+static void PM_DropAnimTimer( int & timer, int decr )
+{
+	if ( timer > 0 )
+	{
+		timer -= decr;
+
+		if ( timer < 0 )
+		{
+			timer = 0;
+		}
+	}
+}
+
 static void PM_DropTimers()
 {
 	// drop misc timing counter
@@ -4510,35 +4523,9 @@ static void PM_DropTimers()
 	}
 
 	// drop animation counter
-	if ( pm->ps->legsTimer > 0 )
-	{
-		pm->ps->legsTimer -= pml.msec;
-
-		if ( pm->ps->legsTimer < 0 )
-		{
-			pm->ps->legsTimer = 0;
-		}
-	}
-
-	if ( pm->ps->torsoTimer > 0 )
-	{
-		pm->ps->torsoTimer -= pml.msec;
-
-		if ( pm->ps->torsoTimer < 0 )
-		{
-			pm->ps->torsoTimer = 0;
-		}
-	}
-
-	if ( pm->ps->tauntTimer > 0 )
-	{
-		pm->ps->tauntTimer -= pml.msec;
-
-		if ( pm->ps->tauntTimer < 0 )
-		{
-			pm->ps->tauntTimer = 0;
-		}
-	}
+	PM_DropAnimTimer( pm->ps->legsTimer , pml.msec );
+	PM_DropAnimTimer( pm->ps->torsoTimer, pml.msec );
+	PM_DropAnimTimer( pm->ps->tauntTimer, pml.msec );
 }
 
 /*
