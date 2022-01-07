@@ -119,6 +119,15 @@ public:
 		Rml::Core::Element::OnRender();
 	}
 
+	void OnUpdate() override
+	{
+		activeElement = this;
+
+		CG_Rocket_UpdateElement( GetTagName().c_str() );
+
+		Rml::Core::Element::OnUpdate();
+	}
+
 
 	Rml::Core::Vector2f dimensions;
 };

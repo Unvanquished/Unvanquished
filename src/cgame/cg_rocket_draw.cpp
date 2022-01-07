@@ -225,7 +225,7 @@ public:
 		}
 	}
 
-	void DoOnRender()
+	void DoOnUpdate() override
 	{
 		weapon_t weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
 
@@ -321,7 +321,7 @@ public:
 		TextHudElement( tag, ELEMENT_HUMANS ),
 		clips( 0 ) {}
 
-	virtual void DoOnRender()
+	void DoOnUpdate() override
 	{
 		int           value;
 		playerState_t *ps = &cg.snap->ps;
@@ -433,7 +433,7 @@ public:
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		rectDef_t    rect;
 		float        x, y, w, h, dim;
@@ -544,7 +544,7 @@ public:
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		rectDef_t    rect;
 		float        w, h;
@@ -816,9 +816,14 @@ public:
 
 			trap_R_ClearColor();
 		}
+	}
 
+	void DoOnUpdate() override
+	{
 		if ( cg_drawSpeed.Get() & SPEEDOMETER_DRAW_TEXT )
 		{
+			float val;
+
 			// Add text to be configured via CSS
 			if ( cg.predictedPlayerState.clientNum == cg.clientNum )
 			{
@@ -1317,7 +1322,7 @@ public:
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		int    a, i;
 		float  v;
@@ -1986,7 +1991,7 @@ public:
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		rectDef_t rect;
 		Color::Color color;
@@ -3526,46 +3531,50 @@ static void CG_Rocket_HaveJetpck()
 struct elementRenderCmd_t
 {
 	const char *name;
-	void ( *exec )();
+	void ( *update )(); // Modifies the RML or element properties
+	void ( *render )(); // Does rendering outside of the HTML engine
 	rocketElementType_t type;
 };
 
+// This kind of element is a hack left over from when VMs could only use C code
+// and the HTML engine ran outside the VMs. Do not add more of them! Instead,
+// define a class extending Element (example: CrosshairNamesElement).
 // THESE MUST BE ALPHABETIZED
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
-	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
-	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
-	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
-	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
-	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
-	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, ELEMENT_ALL },
-	{ "downloadName", &CG_Rocket_DrawDownloadName, ELEMENT_ALL },
-	{ "downloadSpeed", &CG_Rocket_DrawDownloadSpeed, ELEMENT_ALL },
-	{ "downloadTime", &CG_Rocket_DrawDownloadTime, ELEMENT_ALL },
-	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, ELEMENT_ALL },
-	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
-	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
-	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
-	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
-	{ "inventory", &CG_DrawHumanInventory, ELEMENT_HUMANS },
-	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
-	{ "jetpack", &CG_Rocket_HaveJetpck, ELEMENT_HUMANS },
-	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
-	{ "loadingText", &CG_Rocket_DrawLoadingText, ELEMENT_ALL },
-	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
-	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },
-	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
-	{ "motd", &CG_Rocket_DrawMOTD, ELEMENT_ALL },
-	{ "numSpawns", &CG_Rocket_DrawNumSpawns, ELEMENT_DEAD },
-	{ "progress_value", &CG_Rocket_DrawProgressValue, ELEMENT_ALL },
-	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, ELEMENT_DEAD },
-	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },
-	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
-	{ "unlocked_items", &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
-	{ "version", &CG_Rocket_DrawVersion, ELEMENT_ALL },
-	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
-	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
-	{ "warmup_time", &CG_Rocket_DrawWarmup, ELEMENT_GAME },
+	{ "ammo_stack", nullptr, &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
+	{ "chattype", &CG_Rocket_DrawChatType, nullptr, ELEMENT_ALL },
+	{ "clip_stack", nullptr, &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
+	{ "clock", &CG_Rocket_DrawClock, nullptr, ELEMENT_ALL },
+	{ "connecting", &CG_Rocket_DrawConnectText, nullptr, ELEMENT_ALL },
+	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, nullptr, ELEMENT_ALL },
+	{ "downloadName", &CG_Rocket_DrawDownloadName, nullptr, ELEMENT_ALL },
+	{ "downloadSpeed", &CG_Rocket_DrawDownloadSpeed, nullptr, ELEMENT_ALL },
+	{ "downloadTime", &CG_Rocket_DrawDownloadTime, nullptr, ELEMENT_ALL },
+	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, nullptr, ELEMENT_ALL },
+	{ "follow", &CG_Rocket_DrawFollow, nullptr, ELEMENT_GAME },
+	{ "health", &CG_Rocket_DrawPlayerHealth, nullptr, ELEMENT_BOTH },
+	{ "health_cross", nullptr, &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
+	{ "hostname", &CG_Rocket_DrawHostname, nullptr, ELEMENT_ALL },
+	{ "inventory", &CG_DrawHumanInventory, nullptr, ELEMENT_HUMANS },
+	{ "itemselect_text", &CG_DrawItemSelectText, nullptr, ELEMENT_HUMANS },
+	{ "jetpack", &CG_Rocket_HaveJetpck, nullptr, ELEMENT_HUMANS },
+	{ "levelname", &CG_Rocket_DrawLevelName, nullptr, ELEMENT_ALL },
+	{ "loadingText", &CG_Rocket_DrawLoadingText, nullptr, ELEMENT_ALL },
+	{ "mine_rate", &CG_Rocket_DrawMineRate, nullptr, ELEMENT_BOTH },
+	{ "minimap", nullptr, &CG_Rocket_DrawMinimap, ELEMENT_ALL },
+	{ "momentum_bar", nullptr, &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
+	{ "motd", &CG_Rocket_DrawMOTD, nullptr, ELEMENT_ALL },
+	{ "numSpawns", &CG_Rocket_DrawNumSpawns, nullptr, ELEMENT_DEAD },
+	{ "progress_value", &CG_Rocket_DrawProgressValue, nullptr, ELEMENT_ALL },
+	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, nullptr, ELEMENT_DEAD },
+	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, nullptr, ELEMENT_HUMANS },
+	{ "tutorial", &CG_Rocket_DrawTutorial, nullptr, ELEMENT_GAME },
+	{ "unlocked_items", nullptr, &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
+	{ "version", &CG_Rocket_DrawVersion, nullptr, ELEMENT_ALL },
+	{ "votes", &CG_Rocket_DrawVote, nullptr, ELEMENT_GAME },
+	{ "votes_team", &CG_Rocket_DrawTeamVote, nullptr, ELEMENT_BOTH },
+	{ "warmup_time", &CG_Rocket_DrawWarmup, nullptr, ELEMENT_GAME },
 };
 
 static const size_t elementRenderCmdListCount = ARRAY_LEN( elementRenderCmdList );
@@ -3575,15 +3584,23 @@ static int elementRenderCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( elementRenderCmd_t * ) b )->name );
 }
 
+void CG_Rocket_UpdateElement( const char *tag )
+{
+	auto *cmd = ( elementRenderCmd_t * ) bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
+
+	if ( cmd && cmd->update && CG_Rocket_IsCommandAllowed( cmd->type ) )
+	{
+		cmd->update();
+	}
+}
+
 void CG_Rocket_RenderElement( const char *tag )
 {
-	elementRenderCmd_t *cmd;
+	auto *cmd = ( elementRenderCmd_t * ) bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
 
-	cmd = ( elementRenderCmd_t * ) bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
-
-	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
+	if ( cmd && cmd->render && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{
-		cmd->exec();
+		cmd->render();
 	}
 }
 

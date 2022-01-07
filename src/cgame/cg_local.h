@@ -2251,6 +2251,7 @@ void CG_Rocket_RegisterDataFormatters();
 //
 // cg_rocket_draw.c
 //
+void CG_Rocket_UpdateElement( const char* tag );
 void CG_Rocket_RenderElement( const char* tag );
 void CG_Rocket_RegisterElements( void );
 
