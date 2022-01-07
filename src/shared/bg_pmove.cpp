@@ -51,11 +51,13 @@ struct pml_t
 	vec3_t   previous_origin;
 	vec3_t   previous_velocity;
 	int      previous_waterlevel;
+
 };
 
 pmove_t *pm;
 pml_t   pml;
 
+static void Slide( vec3_t wishdir, float wishspeed, playerState_t &ps );
 static void PM_AddEvent( int newEvent );
 static bool PM_SlideMove( bool gravity );
 static bool PM_StepSlideMove( bool gravity, bool predictive );
@@ -1970,24 +1972,7 @@ static void PM_ClimbMove()
 		}
 	}
 
-	float accelerate;
-	// when a player gets hit, they temporarily lose
-	// full control, which allows them to be moved a bit
-	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
-	{
-		accelerate = BG_Class( pm->ps->stats[ STAT_CLASS ] )->airAcceleration;
-	}
-	else
-	{
-		accelerate = BG_Class( pm->ps->stats[ STAT_CLASS ] )->acceleration;
-	}
-
-	PM_Accelerate( wishdir, wishspeed, accelerate );
-
-	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
-	{
-		pm->ps->velocity[ 2 ] -= pm->ps->gravity * pml.frametime;
-	}
+	Slide( wishdir, wishspeed, *pm->ps );
 
 	float vel = VectorLength( pm->ps->velocity );
 
@@ -2092,32 +2077,7 @@ static void PM_WalkMove()
 		}
 	}
 
-	float accelerate;
-	// when a player gets hit, they temporarily lose
-	// full control, which allows them to be moved a bit
-	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
-	{
-		accelerate = BG_Class( pm->ps->stats[ STAT_CLASS ] )->airAcceleration;
-	}
-	else
-	{
-		accelerate = BG_Class( pm->ps->stats[ STAT_CLASS ] )->acceleration;
-	}
-
-	PM_Accelerate( wishdir, wishspeed, accelerate );
-
-	//Log::Notice("velocity = %1.1f %1.1f %1.1f\n", pm->ps->velocity[0], pm->ps->velocity[1], pm->ps->velocity[2]);
-	//Log::Notice("velocity1 = %1.1f\n", VectorLength(pm->ps->velocity));
-
-	if ( ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || pm->ps->pm_flags & PMF_TIME_KNOCKBACK )
-	{
-		pm->ps->velocity[ 2 ] -= pm->ps->gravity * pml.frametime;
-	}
-	else
-	{
-		// don't reset the z velocity for slopes
-//    pm->ps->velocity[2] = 0;
-	}
+	Slide( wishdir, wishspeed, *pm->ps );
 
 	// slide along the ground plane
 	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
@@ -5281,5 +5241,21 @@ void PM_StepEvent( const vec3_t from, const vec3_t to, const vec3_t normal )
 	if ( pm->debugLevel > 1 )
 	{
 		Log::Notice( "%i:stepped\n", c_pmove );
+	}
+}
+
+void Slide( vec3_t wishdir, float wishspeed, playerState_t &ps )
+{
+	float accelerate;
+	// when a player gets hit, they temporarily lose
+	// full control, which allows them to be moved a bit
+	bool slid = ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || ps.pm_flags & PMF_TIME_KNOCKBACK;
+	classAttributes_t const* pcl = BG_Class( ps.stats[ STAT_CLASS ] );
+	accelerate = slid ? pcl->airAcceleration : pcl->acceleration;
+	PM_Accelerate( wishdir, wishspeed, accelerate );
+
+	if ( slid )
+	{
+		ps.velocity[ 2 ] -= ps.gravity * pml.frametime;
 	}
 }
