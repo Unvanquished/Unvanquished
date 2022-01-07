@@ -271,9 +271,10 @@ public:
 		trap_R_ScissorSet( x, cgs.glconfig.vidHeight - ( y + height ), width, height );
 	}
 
-	void SetTransform( const Rml::Core::Matrix4f* transform ) override
+	void SetTransform( const Rml::Core::Matrix4f* ) override
 	{
 		// TODO: implement.
+		Log::Warn("Transforms for RmlUi not yet implemented");
 	}
 };
 
