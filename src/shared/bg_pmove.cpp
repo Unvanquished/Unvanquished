@@ -748,7 +748,7 @@ static void PM_PlayJumpingAnimation()
 		PM_ForceLegsAnim( forward ? NSPA_JUMP : NSPA_JUMPBACK );
 	}
 
-	if ( pm->cmd.forwardmove >= 0 )
+	if ( forward )
 	{
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 	}
