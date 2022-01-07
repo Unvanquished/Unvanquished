@@ -366,9 +366,9 @@ struct gentity_t
 	int       watertype;
 	// from -inf to 3, apparently.
 	// * 0 and less: air/ground
-	// * 1: touch water I guess
+	// * 1: touch water I guess (toe in water)
 	// * 2: standing water, whater that means
-	// * 3: completely underwater (swimming, not sure if can breath)
+	// * 3: completely (eyes) underwater (not sure if this triggers swimming or if can breath)
 	int       waterlevel;
 
 	/*
