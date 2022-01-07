@@ -3279,22 +3279,18 @@ Sets mins and maxs, and calls PM_SetViewheight
 static void PM_CheckDuck()
 {
 	trace_t trace;
-	vec3_t  PCmins, PCmaxs, PCcmaxs;
+	vec3_t  PCmaxs, PCcmaxs;
+	playerState_t *ps = pm->ps;
 
-	BG_ClassBoundingBox( pm->ps->stats[ STAT_CLASS ], PCmins, PCmaxs, PCcmaxs, nullptr, nullptr );
-
-	pm->mins[ 0 ] = PCmins[ 0 ];
-	pm->mins[ 1 ] = PCmins[ 1 ];
+	BG_ClassBoundingBox( ps->stats[ STAT_CLASS ], pm->mins, PCmaxs, PCcmaxs, nullptr, nullptr );
 
 	pm->maxs[ 0 ] = PCmaxs[ 0 ];
 	pm->maxs[ 1 ] = PCmaxs[ 1 ];
 
-	pm->mins[ 2 ] = PCmins[ 2 ];
-
-	if ( pm->ps->pm_type == PM_DEAD )
+	if ( ps->pm_type == PM_DEAD )
 	{
 		pm->maxs[ 2 ] = -8;
-		pm->ps->viewheight = PCmins[ 2 ] + DEAD_VIEWHEIGHT;
+		ps->viewheight = pm->mins[ 2 ] + DEAD_VIEWHEIGHT;
 		return;
 	}
 
@@ -3302,33 +3298,26 @@ static void PM_CheckDuck()
 	if ( pm->cmd.upmove < 0 && !VectorCompare( PCmaxs, PCcmaxs ) )
 	{
 		// duck
-		pm->ps->pm_flags |= PMF_DUCKED;
+		ps->pm_flags |= PMF_DUCKED;
 	}
 	else
 	{
 		// stand up if possible
-		if ( pm->ps->pm_flags & PMF_DUCKED )
+		if ( ps->pm_flags & PMF_DUCKED )
 		{
 			// try to stand up
 			pm->maxs[ 2 ] = PCmaxs[ 2 ];
-			pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, pm->ps->origin,
-			           pm->ps->clientNum, pm->tracemask, 0 );
+			pm->trace( &trace, ps->origin, pm->mins, pm->maxs, ps->origin,
+			           ps->clientNum, pm->tracemask, 0 );
 
 			if ( !trace.allsolid )
 			{
-				pm->ps->pm_flags &= ~PMF_DUCKED;
+				ps->pm_flags &= ~PMF_DUCKED;
 			}
 		}
 	}
 
-	if ( pm->ps->pm_flags & PMF_DUCKED )
-	{
-		pm->maxs[ 2 ] = PCcmaxs[ 2 ];
-	}
-	else
-	{
-		pm->maxs[ 2 ] = PCmaxs[ 2 ];
-	}
+	pm->maxs[ 2 ] = ps->pm_flags & PMF_DUCKED ? PCcmaxs[ 2 ] : PCmaxs[ 2 ];
 
 	PM_SetViewheight();
 }
