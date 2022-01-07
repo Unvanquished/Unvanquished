@@ -4687,14 +4687,7 @@ static void PM_HumanStaminaEffects()
 	}
 
 	// Check stamina limits
-	if ( stats[ STAT_STAMINA ] > STAMINA_MAX )
-	{
-		stats[ STAT_STAMINA ] = STAMINA_MAX;
-	}
-	else if ( stats[ STAT_STAMINA ] < 0 )
-	{
-		stats[ STAT_STAMINA ] = 0;
-	}
+	stats[ STAT_STAMINA ] = Math::Clamp( stats[ STAT_STAMINA ], 0, STAMINA_MAX );
 }
 
 /*
