@@ -2130,17 +2130,20 @@ public:
 			{
 				if        ( deltaBudget < 0 ) {
 					color = Color::Red;
-					msg = va( "<span class='material-icon error'>&#xE000;</span> You are losing build points!"
+					// Icon U+E000
+					msg = va( "<span class='material-icon error'>\xee\x80\x80</span> You are losing build points!"
 					          " Build the %s%s further apart for greater efficiency.",
 					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
 				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 10 ) {
 					color = Color::Orange;
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Minimal build point gain."
+					// Icon U+E002
+					msg = va( "<span class='material-icon warning'>\xee\x80\x82</span> Minimal build point gain."
 					          " Build the %s%s further apart for greater efficiency.",
 					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
 				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 2 ) {
 					color = Color::Yellow;
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Subpar build point gain."
+					// Icon U+E002
+					msg = va( "<span class='material-icon warning'>\xee\x80\x82</span> Subpar build point gain."
 					          " Build the %s%s further apart for greater efficiency.",
 					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
 				} else {
@@ -3263,9 +3266,10 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
 	std::string voteString = CG_EscapeHTMLText( cgs.voteString[ team ] );
 	Rml::Core::String caller = Rocket_QuakeToRML( cgs.voteCaller[ team ], RP_EMOTICONS ); // colors are stripped by the server
+	// The byte sequences are U+E8DC/U+E8DB - thumbs up/down in our icon font
 	std::string s = Str::Format( "%sVOTE(%i): %s\n"
 			"    Called by: \"%s\"\n"
-			"    [%s][<span class='material-icon'>&#xe8dc;</span>]:%i [%s][<span class='material-icon'>&#xe8db;</span>]:%i\n",
+			"    [%s][<span class='material-icon'>\xee\xa3\x9c</span>]:%i [%s][<span class='material-icon'>\xee\xa3\x9b</span>]:%i\n",
 			team == TEAM_NONE ? "" : "TEAM", sec, voteString,
 			caller.c_str(), yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
