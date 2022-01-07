@@ -62,6 +62,29 @@ static bool PM_StepSlideMove( bool gravity, bool predictive );
 static bool PM_PredictStepMove();
 static void PM_StepEvent( const vec3_t from, const vec3_t to, const vec3_t normal );
 
+static bool PM_Paralyzed( pmtype_t pmt )
+{
+	switch( pmt )
+	{
+		case PM_NORMAL:
+		case PM_NOCLIP:
+		case PM_SPECTATOR:
+		case PM_GRABBED:
+			return false;
+		case PM_DEAD:
+		case PM_FREEZE:
+		case PM_INTERMISSION:
+			return true;
+	}
+	ASSERT_UNREACHABLE();
+}
+
+//TODO: deprecate (to allow typesafety)
+static bool PM_Paralyzed( int pmt )
+{
+	return PM_Paralyzed( static_cast<pmtype_t>( pmt ) );
+}
+
 int     c_pmove = 0;
 
 /*
