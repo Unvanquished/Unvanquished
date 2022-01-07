@@ -90,6 +90,14 @@ static bool IsSegmentedModel( playerState_t const* ps )
 	return !( ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL );
 }
 
+// well... this only checks for sky and slick, so it might
+// need changes. At least now, there's a single place.
+static bool hitGrippingSurface( trace_t const& tr )
+{
+	 return tr.fraction < 1.0f
+		 && !( tr.surfaceFlags & ( SURF_SKY | SURF_SLICK ) );
+}
+
 int     c_pmove = 0;
 
 /*
@@ -1127,9 +1135,8 @@ static bool PM_CheckWallJump()
 	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
 	           pm->tracemask, 0 );
 
-	if ( trace.fraction < 1.0f &&
-	     !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
-	     trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
+	if ( hitGrippingSurface( trace )
+			&& trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
 	{
 		VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
 	}
@@ -1265,10 +1272,7 @@ static bool PM_CheckWallRun()
 	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, trace_end,
 	           pm->ps->clientNum, pm->tracemask, 0);
 
-	if ( trace.fraction == 1.0f )
-		return false;
-
-	if ( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) )
+	if ( !hitGrippingSurface( trace ) )
 		return false;
 
 	if ( trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
@@ -2692,7 +2696,7 @@ static void PM_GroundClimbTrace()
 		}
 
 		// check if we hit something
-		if ( trace.fraction < 1.0f && !( trace.surfaceFlags & ( SURF_SKY | SURF_SLICK ) ) &&
+		if ( hitGrippingSurface( trace ) && // TODO I smell a bug on next line (could certainly be simplified, too!)
 		     !( trace.entityNum != ENTITYNUM_WORLD && i != 4 ) )
 		{
 			// check if we attached to a new surface (?)
