@@ -85,6 +85,11 @@ static bool PM_Paralyzed( int pmt )
 	return PM_Paralyzed( static_cast<pmtype_t>( pmt ) );
 }
 
+static bool IsSegmentedModel( playerState_t const* ps )
+{
+	return !( ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL );
+}
+
 int     c_pmove = 0;
 
 /*
@@ -170,13 +175,14 @@ PM_StartLegsAnim
 */
 static void PM_StartLegsAnim( int anim )
 {
-	if ( PM_Paralyzed( pm->ps->pm_type ) )
+	playerState_t * ps = pm->ps;
+	if ( PM_Paralyzed( ps->pm_type ) )
 	{
 		return;
 	}
 
 	//legsTimer is clamped too tightly for nonsegmented models
-	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( IsSegmentedModel( ps ) )
 	{
 		if ( pm->ps->legsTimer > 0 )
 		{
@@ -191,8 +197,7 @@ static void PM_StartLegsAnim( int anim )
 		}
 	}
 
-	pm->ps->legsAnim = ( ( pm->ps->legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT )
-	                   | anim;
+	pm->ps->legsAnim = ( ( pm->ps->legsAnim & ANIM_TOGGLEBIT ) ^ ANIM_TOGGLEBIT ) | anim;
 }
 
 /*
@@ -208,7 +213,7 @@ static void PM_ContinueLegsAnim( int anim )
 	}
 
 	//legsTimer is clamped too tightly for nonsegmented models
-	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( IsSegmentedModel( pm->ps ) )
 	{
 		if ( pm->ps->legsTimer > 0 )
 		{
@@ -269,7 +274,7 @@ PM_ForceLegsAnim
 static void PM_ForceLegsAnim( int anim )
 {
 	//legsTimer is clamped too tightly for nonsegmented models
-	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( IsSegmentedModel( pm->ps ) )
 	{
 		pm->ps->legsTimer = 0;
 	}
@@ -727,7 +732,7 @@ static void PM_PlayJumpingAnimation()
 {
 	if ( pm->cmd.forwardmove >= 0 )
 	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( IsSegmentedModel( pm->ps ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMP );
 		}
@@ -740,7 +745,7 @@ static void PM_PlayJumpingAnimation()
 	}
 	else
 	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( IsSegmentedModel( pm->ps ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMPB );
 		}
@@ -2317,7 +2322,7 @@ static void PM_Land()
 	// decide which landing animation to use
 	if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP )
 	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( IsSegmentedModel( pm->ps ) )
 		{
 			PM_ForceLegsAnim( LEGS_LANDB );
 		}
@@ -2328,7 +2333,7 @@ static void PM_Land()
 	}
 	else
 	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( IsSegmentedModel( pm->ps ) )
 		{
 			PM_ForceLegsAnim( LEGS_LAND );
 		}
@@ -2338,7 +2343,7 @@ static void PM_Land()
 		}
 	}
 
-	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( IsSegmentedModel( pm->ps ) )
 	{
 		pm->ps->legsTimer = TIMER_LAND;
 	}
@@ -2530,7 +2535,7 @@ static void PM_GroundTraceMissed()
 		{
 			if ( pm->cmd.forwardmove >= 0 )
 			{
-				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( IsSegmentedModel( pm->ps ) )
 				{
 					PM_ForceLegsAnim( LEGS_JUMP );
 				}
@@ -2543,7 +2548,7 @@ static void PM_GroundTraceMissed()
 			}
 			else
 			{
-				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( IsSegmentedModel( pm->ps ) )
 				{
 					PM_ForceLegsAnim( LEGS_JUMPB );
 				}
@@ -3148,7 +3153,7 @@ static void PM_GroundTrace()
 		// go into jump animation
 		if ( pm->cmd.forwardmove >= 0 )
 		{
-			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( IsSegmentedModel( pm->ps ) )
 			{
 				PM_ForceLegsAnim( LEGS_JUMP );
 			}
@@ -3161,7 +3166,7 @@ static void PM_GroundTrace()
 		}
 		else
 		{
-			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( IsSegmentedModel( pm->ps ) )
 			{
 				PM_ForceLegsAnim( LEGS_JUMPB );
 			}
@@ -3392,7 +3397,7 @@ static void PM_Footsteps()
 		// airborne leaves position in cycle intact, but doesn't advance
 		if ( pm->waterlevel > 1 )
 		{
-			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( IsSegmentedModel( pm->ps ) )
 			{
 				PM_ContinueLegsAnim( LEGS_SWIM );
 			}
@@ -3415,7 +3420,7 @@ static void PM_Footsteps()
 
 			if ( pm->ps->pm_flags & PMF_DUCKED )
 			{
-				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( IsSegmentedModel( pm->ps ) )
 				{
 					PM_ContinueLegsAnim( LEGS_IDLECR );
 				}
@@ -3426,7 +3431,7 @@ static void PM_Footsteps()
 			}
 			else
 			{
-				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( IsSegmentedModel( pm->ps ) )
 				{
 					PM_ContinueLegsAnim( LEGS_IDLE );
 				}
@@ -3448,7 +3453,7 @@ static void PM_Footsteps()
 
 		if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
 		{
-			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( IsSegmentedModel( pm->ps ) )
 			{
 				PM_ContinueLegsAnim( LEGS_BACKCR );
 			}
@@ -3470,7 +3475,7 @@ static void PM_Footsteps()
 		}
 		else
 		{
-			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+			if ( IsSegmentedModel( pm->ps ) )
 			{
 				PM_ContinueLegsAnim( LEGS_WALKCR );
 			}
@@ -3505,7 +3510,7 @@ static void PM_Footsteps()
 			}
 			else if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
 			{
-				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( IsSegmentedModel( pm->ps ) )
 				{
 					PM_ContinueLegsAnim( LEGS_BACK );
 				}
@@ -3527,7 +3532,7 @@ static void PM_Footsteps()
 			}
 			else
 			{
-				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( IsSegmentedModel( pm->ps ) )
 				{
 					PM_ContinueLegsAnim( LEGS_RUN );
 				}
@@ -3556,7 +3561,7 @@ static void PM_Footsteps()
 
 			if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
 			{
-				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( IsSegmentedModel( pm->ps ) )
 				{
 					PM_ContinueLegsAnim( LEGS_BACKWALK );
 				}
@@ -3578,7 +3583,7 @@ static void PM_Footsteps()
 			}
 			else
 			{
-				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+				if ( IsSegmentedModel( pm->ps ) )
 				{
 					PM_ContinueLegsAnim( LEGS_WALK );
 				}
@@ -3725,7 +3730,7 @@ static void PM_BeginWeaponChange( int weapon )
 	//reset build weapon
 	pm->ps->stats[ STAT_BUILDABLE ] = BA_NONE;
 
-	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( IsSegmentedModel( pm->ps ) )
 	{
 		PM_StartTorsoAnim( TORSO_DROP );
 		PM_StartWeaponAnim( WANIM_DROP );
@@ -3758,7 +3763,7 @@ static void PM_FinishWeaponChange()
 	pm->ps->weaponstate = WEAPON_RAISING;
 	pm->ps->weaponTime += 250;
 
-	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( IsSegmentedModel( pm->ps ) )
 	{
 		PM_StartTorsoAnim( TORSO_RAISE );
 		PM_StartWeaponAnim( WANIM_RAISE );
@@ -3832,7 +3837,7 @@ static void PM_TorsoAnimation()
 {
 	if ( pm->ps->weaponstate == WEAPON_READY )
 	{
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( IsSegmentedModel( pm->ps ) )
 		{
 			PM_ContinueTorsoAnim( TORSO_STAND );
 		}
@@ -4096,7 +4101,7 @@ static void PM_Weapon()
 	{
 		pm->ps->weaponstate = WEAPON_READY;
 
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( IsSegmentedModel( pm->ps ) )
 		{
 			PM_ContinueTorsoAnim( TORSO_STAND );
 		}
@@ -4327,7 +4332,7 @@ static void PM_Weapon()
 		}
 	}
 
-	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+	if ( IsSegmentedModel( pm->ps ) )
 	{
 		//FIXME: this should be an option in the client weapon.cfg
 		switch ( pm->ps->weapon )
@@ -4498,7 +4503,7 @@ static void PM_Animate()
 			return;
 		}
 
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( IsSegmentedModel( pm->ps ) )
 		{
 			if ( pm->ps->torsoTimer == 0 )
 			{
@@ -4531,7 +4536,7 @@ static void PM_Animate()
 			return;
 		}
 
-		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		if ( IsSegmentedModel( pm->ps ) )
 		{
 			if ( pm->ps->torsoTimer == 0 )
 			{
