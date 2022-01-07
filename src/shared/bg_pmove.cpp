@@ -2551,7 +2551,7 @@ PM_GroundClimbTrace
 */
 // ATP - Attachpoints for wallwalking
 // order is important!
-enum {
+enum attachPoint_t {
 	GCT_ATP_MOVEDIRECTION,
 	GCT_ATP_GROUND,
 	GCT_ATP_STEPMOVE,
@@ -2566,7 +2566,6 @@ static void PM_GroundClimbTrace()
 	vec3_t      surfNormal, moveDir, lookDir, point, velocityDir;
 	vec3_t      toAngles, surfAngles;
 	trace_t     trace;
-	int         i;
 	const float eps = 0.000001f;
 
 	//used for delta correction
@@ -2612,9 +2611,10 @@ static void PM_GroundClimbTrace()
 	VectorNormalize( velocityDir );
 
 	// try to attach to a surface
-	for ( i = 0; i <= NUM_GCT_ATP; i++ )
+	for ( int i = GCT_ATP_MOVEDIRECTION; i <= NUM_GCT_ATP; i++ )
 	{
-		switch ( i )
+		attachPoint_t atp = static_cast<attachPoint_t>( i );
+		switch ( atp )
 		{
 			case GCT_ATP_MOVEDIRECTION:
 				// we are going to step this frame so skip the transition test
@@ -2693,17 +2693,19 @@ static void PM_GroundClimbTrace()
 				           pm->tracemask, 0 );
 
 				break;
+			case NUM_GCT_ATP:
+				ASSERT_UNREACHABLE();
 		}
 
 		// check if we hit something
-		if ( hitGrippingSurface( trace ) && // TODO I smell a bug on next line (could certainly be simplified, too!)
-		     !( trace.entityNum != ENTITYNUM_WORLD && i != 4 ) )
+		if ( hitGrippingSurface( trace ) // TODO I smell a bug on next line (could certainly be simplified, too!)
+				&& !( trace.entityNum != ENTITYNUM_WORLD && atp != GCT_ATP_CEILING ) )
 		{
 			// check if we attached to a new surface (?)
-			if ( i == GCT_ATP_STEPMOVE || i == GCT_ATP_UNDERNEATH || i == GCT_ATP_CEILING )
+			if ( atp == GCT_ATP_STEPMOVE || atp == GCT_ATP_UNDERNEATH || atp == GCT_ATP_CEILING )
 			{
 				// add step event if necessary
-				if ( i == GCT_ATP_STEPMOVE )
+				if ( atp == GCT_ATP_STEPMOVE )
 				{
 					PM_StepEvent( pm->ps->origin, trace.endpos, surfNormal );
 				}
