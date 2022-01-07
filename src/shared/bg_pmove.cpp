@@ -2244,14 +2244,7 @@ static void PM_CheckLadder()
 	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, end, pm->ps->clientNum,
 	           MASK_PLAYERSOLID, 0 );
 
-	if ( ( trace.fraction < 1.0f ) && ( trace.surfaceFlags & SURF_LADDER ) )
-	{
-		pml.ladder = true;
-	}
-	else
-	{
-		pml.ladder = false;
-	}
+	pml.ladder = ( trace.fraction < 1.0f ) && ( trace.surfaceFlags & SURF_LADDER );
 }
 
 /*
