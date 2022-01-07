@@ -2060,22 +2060,12 @@ class PredictedMineEfficiencyElement : public HudElement
 public:
 	PredictedMineEfficiencyElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, false ),
-			shouldBeVisible( true ),
-			display( Rml::Core::Style::Display::Block ),
+			shouldBeVisible( false ),
 			lastDeltaEfficiencyPct( -999 ),
 			lastDeltaBudget( -999 ),
 			pluralSuffix{ { BA_A_LEECH, "es" }, { BA_H_DRILL, "s" } }
 	{
 
-	}
-
-	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties )
-	{
-		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.Contains( Rml::Core::PropertyId::Display ) )
-		{
-			display = GetDisplay();
-		}
 	}
 
 	void DoOnUpdate()
@@ -2085,12 +2075,12 @@ public:
 
 		if ( buildable != BA_H_DRILL && buildable != BA_A_LEECH )
 		{
-			if ( IsVisible() && shouldBeVisible )
+			shouldBeVisible = false;
+			if ( IsVisible() )
 			{
 				SetProperty( Rml::Core::PropertyId::Display,
 						Rml::Core::Property( Rml::Core::Style::Display::None ) );
 				SetInnerRML( "" );
-				shouldBeVisible = false;
 
 				// Pick impossible value
 				lastDeltaEfficiencyPct = -999;
@@ -2099,15 +2089,18 @@ public:
 		}
 		else
 		{
-			if ( !IsVisible() && !shouldBeVisible )
+			shouldBeVisible = true;
+			if ( !IsVisible() )
 			{
-				SetProperty( Rml::Core::PropertyId::Display, Rml::Core::Property( display ) );
-				shouldBeVisible = true;
+				SetProperty( Rml::Core::PropertyId::Display,
+						Rml::Core::Property( Rml::Core::Style::Display::Block ) );
 			}
 		}
+
+		PopulateText();
 	}
 
-	void DoOnRender()
+	void PopulateText()
 	{
 		if ( shouldBeVisible )
 		{
@@ -2173,7 +2166,6 @@ public:
 	}
 private:
 	bool shouldBeVisible;
-	Rml::Core::Style::Display display;
 	int  lastDeltaEfficiencyPct;
 	int  lastDeltaBudget;
 	std::unordered_map<int, std::string> pluralSuffix;
