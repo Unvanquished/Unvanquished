@@ -39,30 +39,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define FALLING_THRESHOLD -900.0f //what vertical speed to start falling sound at
 
-// all of the locals will be zeroed before each
-// pmove, just to make damn sure we don't have
-// any differences when running on client or server
-struct pml_t
-{
-	vec3_t   forward, right, up;
-	float    frametime;
-
-	int      msec;
-
-	bool walking;
-	bool groundPlane;
-	bool ladder;
-	trace_t  groundTrace;
-
-	float    impactSpeed;
-
-	vec3_t   previous_origin;
-	vec3_t   previous_velocity;
-	int      previous_waterlevel;
-};
-
 extern  pmove_t *pm;
-extern  pml_t   pml;
 
 // movement parameters
 #define pm_duckScale         (0.25f)
@@ -79,12 +56,6 @@ extern  int     c_pmove;
 
 void            PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out );
 void            PM_AddTouchEnt( int entityNum );
-void            PM_AddEvent( int newEvent );
-
-bool        PM_SlideMove( bool gravity );
-void            PM_StepEvent( const vec3_t from, const vec3_t to, const vec3_t normal );
-bool        PM_StepSlideMove( bool gravity, bool predictive );
-bool        PM_PredictStepMove();
 
 //==================================================================
 #endif /* BG_LOCAL_H_ */
