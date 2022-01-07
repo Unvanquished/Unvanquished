@@ -3250,25 +3250,28 @@ static void PM_SetWaterLevel()
 	pm->waterlevel = 0;
 	pm->watertype = 0;
 
+	vec3_t mins;
+	BG_ClassBoundingBox( pm->ps->stats[ STAT_CLASS ], mins, nullptr, nullptr, nullptr, nullptr );
+
 	point[ 0 ] = pm->ps->origin[ 0 ];
 	point[ 1 ] = pm->ps->origin[ 1 ];
-	point[ 2 ] = pm->ps->origin[ 2 ] + MINS_Z + 1;
+	point[ 2 ] = pm->ps->origin[ 2 ] + mins[2] + 1;
 	cont = pm->pointcontents( point, pm->ps->clientNum );
 
 	if ( cont & MASK_WATER )
 	{
-		sample2 = pm->ps->viewheight - MINS_Z;
+		sample2 = pm->ps->viewheight - mins[2];
 		sample1 = sample2 / 2;
 
 		pm->watertype = cont;
 		pm->waterlevel = 1;
-		point[ 2 ] = pm->ps->origin[ 2 ] + MINS_Z + sample1;
+		point[ 2 ] = pm->ps->origin[ 2 ] + mins[2] + sample1;
 		cont = pm->pointcontents( point, pm->ps->clientNum );
 
 		if ( cont & MASK_WATER )
 		{
 			pm->waterlevel = 2;
-			point[ 2 ] = pm->ps->origin[ 2 ] + MINS_Z + sample2;
+			point[ 2 ] = pm->ps->origin[ 2 ] + mins[2] + sample2;
 			cont = pm->pointcontents( point, pm->ps->clientNum );
 
 			if ( cont & MASK_WATER )

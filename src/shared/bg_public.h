@@ -42,7 +42,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define VOTE_TIME          30000 // 30 seconds before vote times out
 
-#define MINS_Z             -24
 #define DEAD_VIEWHEIGHT    4 // height from ground
 
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
