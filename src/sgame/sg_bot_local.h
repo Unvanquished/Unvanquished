@@ -131,6 +131,7 @@ public:
 	glm::vec3 stuckPosition;
 
 	int spawnTime;
+private:
 	//avoid relying on buttons to remember what AI was doing
 	bool wantSprinting = false;
 	bool exhausted = false;
