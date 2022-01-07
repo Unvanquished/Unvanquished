@@ -315,38 +315,9 @@ bool BotJump( gentity_t *self )
 
 bool BotSprint( gentity_t *self, bool enable )
 {
-	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
-	int jumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
-	int stamina = self->client->ps.stats[ STAT_STAMINA ];
-	bool sprinting = usercmdButtonPressed( botCmdBuffer->buttons, BTN_SPRINT );
-
-	if ( !enable )
-	{
-		if ( sprinting )
-		{
-			usercmdReleaseButton( botCmdBuffer->buttons, BTN_SPRINT );
-			BotWalk( self, true );
-		}
-		return false;
-	}
-
-	if ( self->client->pers.team == TEAM_HUMANS
-	     && self->botMind->botSkill.level >= 5 )
-	{
-		if ( sprinting && stamina <= jumpCost )
-		{
-			usercmdReleaseButton( botCmdBuffer->buttons, BTN_SPRINT );
-			BotWalk( self, true );
-			return false;
-		}
-		if ( !sprinting && stamina <= 2 * jumpCost )
-		{
-			return false;
-		}
-	}
-	usercmdPressButton( botCmdBuffer->buttons, BTN_SPRINT );
-	BotWalk( self, false );
-	return true;
+	self->botMind->willSprint( enable );
+	BotWalk( self, !enable );
+	return enable;
 }
 
 void BotWalk( gentity_t *self, bool enable )
