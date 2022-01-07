@@ -4451,75 +4451,41 @@ PM_Animate
 */
 static void PM_Animate()
 {
-	if ( PM_Paralyzed( pm->ps->pm_type ) )
+	if ( PM_Paralyzed( pm->ps->pm_type )
+			|| pm->ps->tauntTimer > 0
+			|| pm->ps->torsoTimer != 0 )
 	{
 		return;
 	}
 
-	if ( usercmdButtonPressed( pm->cmd.buttons, BTN_GESTURE ) )
+	bool doit = false;
+	if ( IsSegmentedModel( pm->ps ) )
 	{
-		if ( pm->ps->tauntTimer > 0 )
+		if ( usercmdButtonPressed( pm->cmd.buttons, BTN_GESTURE ) )
 		{
-			return;
+			int wpAnim = TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER );
+			//and now I know why build stuff must be last in the weapon list...
+			PM_StartTorsoAnim( wpAnim > WP_LUCIFER_CANNON ?  TORSO_GESTURE_CKIT : wpAnim );
+			doit = true;
 		}
-
-		if ( IsSegmentedModel( pm->ps ) )
+		else if( usercmdButtonPressed( pm->cmd.buttons, BTN_RALLY ) )
 		{
-			if ( pm->ps->torsoTimer == 0 )
-			{
-				PM_StartTorsoAnim( TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER ) > WP_LUCIFER_CANNON ?
-				    TORSO_GESTURE_CKIT :
-				    TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER ) );
-				pm->ps->torsoTimer = TIMER_GESTURE;
-				pm->ps->tauntTimer = TIMER_GESTURE;
-
-				PM_AddEvent( EV_TAUNT );
-			}
-		}
-		else
-		{
-			if ( pm->ps->torsoTimer == 0 )
-			{
-				PM_ForceLegsAnim( NSPA_GESTURE );
-				pm->ps->torsoTimer = TIMER_GESTURE;
-				pm->ps->tauntTimer = TIMER_GESTURE;
-
-				PM_AddEvent( EV_TAUNT );
-			}
+			PM_StartTorsoAnim( TORSO_RALLY );
+			doit = true;
 		}
 	}
-
-	if ( usercmdButtonPressed( pm->cmd.buttons, BTN_RALLY ) )
+	else
 	{
-		if ( pm->ps->tauntTimer > 0 )
-		{
-			return;
-		}
-
-		if ( IsSegmentedModel( pm->ps ) )
-		{
-			if ( pm->ps->torsoTimer == 0 )
-			{
-				PM_StartTorsoAnim( TORSO_RALLY );
-				pm->ps->torsoTimer = TIMER_GESTURE;
-				pm->ps->tauntTimer = TIMER_GESTURE;
-
-				PM_AddEvent( EV_TAUNT );
-			}
-		}
-		else
-		{
-			if ( pm->ps->torsoTimer == 0 )
-			{
-				PM_ForceLegsAnim( NSPA_GESTURE );
-				pm->ps->torsoTimer = TIMER_GESTURE;
-				pm->ps->tauntTimer = TIMER_GESTURE;
-
-				PM_AddEvent( EV_TAUNT );
-			}
-		}
+		PM_ForceLegsAnim( NSPA_GESTURE );
+		doit = true;
 	}
 
+	if ( doit )
+	{
+		pm->ps->torsoTimer = TIMER_GESTURE;
+		pm->ps->tauntTimer = TIMER_GESTURE;
+		PM_AddEvent( EV_TAUNT );
+	}
 }
 
 /*
