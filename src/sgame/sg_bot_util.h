@@ -95,11 +95,11 @@ int        BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrad
 
 // alien bots
 #define AS_OVER_RT3         ((ALIENSENSE_RANGE*0.5f)/M_ROOT3)
-float    CalcPounceAimPitch( gentity_t *self, botTarget_t target );
-float    CalcBarbAimPitch( gentity_t *self, botTarget_t target );
+float CalcAimPitch( gentity_t *self, vec3_t pos, vec_t launchSpeed );
+float CalcPounceAimPitch( gentity_t *self, vec3_t pos );
+float CalcBarbAimPitch( gentity_t *self, vec3_t pos );
 bool BotCanEvolveToClass( const gentity_t *self, class_t newClass );
 bool BotEvolveToClass( gentity_t *ent, class_t newClass );
-float    CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed );
 
 //g_bot_nav.c
 enum botMoveDir_t

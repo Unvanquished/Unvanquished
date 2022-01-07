@@ -628,6 +628,7 @@ void BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
 	VectorCopy( self->botMind->nav.dir, dir );
+	const playerState_t& ps  = self->client->ps;
 
 	if ( dir[ 2 ] < 0 )
 	{
@@ -650,56 +651,69 @@ void BotMoveToGoal( gentity_t *self )
 		targetTeam = G_Team( self->botMind->goal.getTargetedEntity() );
 	}
 
-	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
-	switch ( self->client->pers.team )
+	// if target is friendly, let's go there quickly (heal, poison) by using trick moves
+	// when available (still need to implement wall walking, but that will be more complex)
+	if ( G_Team( self ) != targetTeam )
 	{
-		case TEAM_HUMANS:
-			// if target is friendly, reach it quickly
-			if ( G_Team( self ) == targetTeam )
+		return;
+	}
+
+	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
+	weaponMode_t wpm = WPM_NONE;
+	int magnitude = 0;
+	switch ( ps.stats [ STAT_CLASS ] )
+	{
+		case PCL_HUMAN_NAKED:
+		case PCL_HUMAN_LIGHT:
+		case PCL_HUMAN_MEDIUM:
+		case PCL_HUMAN_BSUIT:
+			BotSprint( self, true );
+			break;
+		//those classes do not really have capabilities allowing them to be
+		//significantly faster while fleeing (except jumps, but that also
+		//makes them easier to hit I'd say)
+		case PCL_ALIEN_BUILDER0:
+		case PCL_ALIEN_BUILDER0_UPG:
+		case PCL_ALIEN_LEVEL0:
+			break;
+		case PCL_ALIEN_LEVEL1:
+			if ( ps.weaponCharge <= 50 )//I don't remember why 50
 			{
-				BotSprint( self, true );
+				wpm = WPM_SECONDARY;
+				magnitude = LEVEL1_POUNCE_MINPITCH;
 			}
 			break;
-		case TEAM_ALIENS:
-			// if target is friendly, let's go there quickly (heal, poison) by using trick moves
-			// when available (still need to implement wall walking, but that will be more complex)
-			if ( G_Team( self ) == targetTeam )
+		case PCL_ALIEN_LEVEL2:
+		case PCL_ALIEN_LEVEL2_UPG:
+			BotJump( self );
+			break;
+		case PCL_ALIEN_LEVEL3:
+			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
-				switch ( self->s.weapon )
-				{
-					case WP_ALEVEL1:
-						if ( self->client->ps.weaponCharge <= 50 )
-						{
-							botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, self->botMind->goal, LEVEL1_POUNCE_MINPITCH ) / 3 );
-							BotFireWeapon( WPM_SECONDARY, &botCmdBuffer );
-						}
-						break;
-					case WP_ALEVEL2:
-					case WP_ALEVEL2_UPG:
-						BotJump( self );
-						break;
-					case WP_ALEVEL3:
-						if ( self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
-						{
-							botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, self->botMind->goal, LEVEL3_POUNCE_JUMP_MAG ) / 3 );
-							BotFireWeapon( WPM_SECONDARY, &botCmdBuffer );
-						}
-						break;
-					case WP_ALEVEL3_UPG:
-						if ( self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
-						{
-							botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, self->botMind->goal, LEVEL3_POUNCE_JUMP_MAG_UPG ) / 3 );
-							BotFireWeapon( WPM_SECONDARY, &botCmdBuffer );
-						}
-						break;
-					case WP_ALEVEL4:
-						BotFireWeapon( WPM_SECONDARY, &botCmdBuffer );
-						break;
-				}
+				wpm = WPM_SECONDARY;
+				magnitude = LEVEL3_POUNCE_JUMP_MAG;
+			}
+		break;
+		case PCL_ALIEN_LEVEL3_UPG:
+			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			{
+				wpm = WPM_SECONDARY;
+				magnitude = LEVEL3_POUNCE_JUMP_MAG_UPG;
 			}
 			break;
-		default:
-			;
+		case PCL_ALIEN_LEVEL4:
+			wpm = WPM_SECONDARY;
+		break;
+	}
+	if ( wpm != WPM_NONE )
+	{
+		if ( magnitude )
+		{
+			vec3_t dest;
+			VectorCopy( self->botMind->nav.tpos, dest );
+			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, dest, magnitude ) / 3 );
+		}
+		BotFireWeapon( wpm, &botCmdBuffer );
 	}
 }
 
