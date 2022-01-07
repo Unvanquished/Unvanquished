@@ -2320,36 +2320,16 @@ static void PM_Land()
 	PM_LandJetpack( false ); // don't force a stop, sometimes we can push off with a jump
 
 	// decide which landing animation to use
-	if ( pm->ps->pm_flags & PMF_BACKWARDS_JUMP )
-	{
-		if ( IsSegmentedModel( pm->ps ) )
-		{
-			PM_ForceLegsAnim( LEGS_LANDB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_LANDBACK );
-		}
-	}
-	else
-	{
-		if ( IsSegmentedModel( pm->ps ) )
-		{
-			PM_ForceLegsAnim( LEGS_LAND );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_LAND );
-		}
-	}
-
+	bool backward = pm->ps->pm_flags & PMF_BACKWARDS_JUMP;
 	if ( IsSegmentedModel( pm->ps ) )
 	{
+		PM_ForceLegsAnim( backward ? LEGS_LANDB : LEGS_LAND );
 		pm->ps->legsTimer = TIMER_LAND;
 	}
 	else
 	{
-		pm->ps->torsoTimer = TIMER_LAND;
+		PM_ForceLegsAnim( backward ? NSPA_LANDBACK : NSPA_LAND );
+		pm->ps->torsoTimer = TIMER_LAND; //this is weird, but I'm just refactoring here.
 	}
 
 	// potential jump ended
