@@ -3286,9 +3286,13 @@ static void PM_Footsteps()
 	// calculate speed and cycle to be used for
 	// all cyclic walking effects
 	//
-	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLCLIMBER ) && ( pml.groundPlane ) )
+	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLCLIMBER ) && pml.groundPlane )
 	{
 		// FIXME: yes yes i know this is wrong
+		// I'm not sure, but I guess what's wrong here is that velocity
+		// should be calculated depending on the correct normal.
+		// TBH, if that was the only problem around, I'd say fix it now,
+		// but that's not, from far.
 		pm->xyspeed = sqrtf( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ]
 		                   + pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ]
 		                   + pm->ps->velocity[ 2 ] * pm->ps->velocity[ 2 ] );
@@ -3317,6 +3321,7 @@ static void PM_Footsteps()
 		return;
 	}
 
+	bool ducked = pm->ps->pm_flags & PMF_DUCKED;
 	// if not trying to move or sliding
 	if ( pm->ps->stats[ STAT_STATE ] & SS_SLIDING ||
 	   ( !pm->cmd.forwardmove && !pm->cmd.rightmove ) )
@@ -3325,27 +3330,13 @@ static void PM_Footsteps()
 		{
 			pm->ps->bobCycle = 0; // start at beginning of cycle again
 
-			if ( pm->ps->pm_flags & PMF_DUCKED )
+			if ( IsSegmentedModel( pm->ps ) )
 			{
-				if ( IsSegmentedModel( pm->ps ) )
-				{
-					PM_ContinueLegsAnim( LEGS_IDLECR );
-				}
-				else
-				{
-					PM_ContinueLegsAnim( NSPA_STAND );
-				}
+				PM_ContinueLegsAnim( ducked ? LEGS_IDLECR : LEGS_IDLE );
 			}
 			else
 			{
-				if ( IsSegmentedModel( pm->ps ) )
-				{
-					PM_ContinueLegsAnim( LEGS_IDLE );
-				}
-				else
-				{
-					PM_ContinueLegsAnim( NSPA_STAND );
-				}
+				PM_ContinueLegsAnim( NSPA_STAND );
 			}
 		}
 
@@ -3354,60 +3345,40 @@ static void PM_Footsteps()
 
 	footstep = false;
 
-	if ( pm->ps->pm_flags & PMF_DUCKED )
+	bool backrun = pm->ps->pm_flags & PMF_BACKWARDS_RUN;
+	if ( ducked ) //ofc, nonsegmented models don't really crouch...
 	{
 		bobmove = 0.5; // ducked characters bob much faster
 
-		if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
+		if ( IsSegmentedModel( pm->ps ) )
 		{
-			if ( IsSegmentedModel( pm->ps ) )
-			{
-				PM_ContinueLegsAnim( LEGS_BACKCR );
-			}
-			else
-			{
-				if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
-				{
-					PM_ContinueLegsAnim( NSPA_WALKRIGHT );
-				}
-				else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
-				{
-					PM_ContinueLegsAnim( NSPA_WALKLEFT );
-				}
-				else
-				{
-					PM_ContinueLegsAnim( NSPA_WALKBACK );
-				}
-			}
+			PM_ContinueLegsAnim( backrun ? LEGS_BACKCR : LEGS_WALKCR );
 		}
 		else
 		{
-			if ( IsSegmentedModel( pm->ps ) )
+			if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
 			{
-				PM_ContinueLegsAnim( LEGS_WALKCR );
+				PM_ContinueLegsAnim( NSPA_WALKRIGHT );
+			}
+			else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
+			{
+				PM_ContinueLegsAnim( NSPA_WALKLEFT );
+			}
+			else if ( backrun )
+			{
+				PM_ContinueLegsAnim( NSPA_WALKBACK );
 			}
 			else
 			{
-				if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
-				{
-					PM_ContinueLegsAnim( NSPA_WALKRIGHT );
-				}
-				else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
-				{
-					PM_ContinueLegsAnim( NSPA_WALKLEFT );
-				}
-				else
-				{
-					PM_ContinueLegsAnim( NSPA_WALK );
-				}
+				PM_ContinueLegsAnim( NSPA_WALK );
 			}
 		}
-
 		// ducked characters never play footsteps
 	}
 	else
 	{
-		if ( !usercmdButtonPressed( pm->cmd.buttons, BTN_WALKING ) )
+		bool running = !usercmdButtonPressed( pm->cmd.buttons, BTN_WALKING );
+		if ( running )
 		{
 			bobmove = 0.4f; // faster speeds bob faster
 
@@ -3415,33 +3386,11 @@ static void PM_Footsteps()
 			{
 				PM_ContinueLegsAnim( NSPA_CHARGE );
 			}
-			else if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
-			{
-				if ( IsSegmentedModel( pm->ps ) )
-				{
-					PM_ContinueLegsAnim( LEGS_BACK );
-				}
-				else
-				{
-					if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
-					{
-						PM_ContinueLegsAnim( NSPA_RUNRIGHT );
-					}
-					else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
-					{
-						PM_ContinueLegsAnim( NSPA_RUNLEFT );
-					}
-					else
-					{
-						PM_ContinueLegsAnim( NSPA_RUNBACK );
-					}
-				}
-			}
 			else
 			{
 				if ( IsSegmentedModel( pm->ps ) )
 				{
-					PM_ContinueLegsAnim( LEGS_RUN );
+					PM_ContinueLegsAnim( backrun ? LEGS_BACK : LEGS_RUN );
 				}
 				else
 				{
@@ -3452,6 +3401,10 @@ static void PM_Footsteps()
 					else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
 					{
 						PM_ContinueLegsAnim( NSPA_RUNLEFT );
+					}
+					else if ( backrun )
+					{
+						PM_ContinueLegsAnim( NSPA_RUNBACK );
 					}
 					else
 					{
@@ -3466,58 +3419,38 @@ static void PM_Footsteps()
 		{
 			bobmove = 0.3f; // walking bobs slow
 
-			if ( pm->ps->pm_flags & PMF_BACKWARDS_RUN )
+			if ( IsSegmentedModel( pm->ps ) )
 			{
-				if ( IsSegmentedModel( pm->ps ) )
-				{
-					PM_ContinueLegsAnim( LEGS_BACKWALK );
-				}
-				else
-				{
-					if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
-					{
-						PM_ContinueLegsAnim( NSPA_WALKRIGHT );
-					}
-					else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
-					{
-						PM_ContinueLegsAnim( NSPA_WALKLEFT );
-					}
-					else
-					{
-						PM_ContinueLegsAnim( NSPA_WALKBACK );
-					}
-				}
+				PM_ContinueLegsAnim( backrun ? LEGS_BACKWALK : LEGS_WALK );
 			}
 			else
 			{
-				if ( IsSegmentedModel( pm->ps ) )
+				if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
 				{
-					PM_ContinueLegsAnim( LEGS_WALK );
+					PM_ContinueLegsAnim( NSPA_WALKRIGHT );
+				}
+				else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
+				{
+					PM_ContinueLegsAnim( NSPA_WALKLEFT );
+				}
+				else if ( backrun )
+				{
+					PM_ContinueLegsAnim( NSPA_WALKBACK );
 				}
 				else
 				{
-					if ( pm->cmd.rightmove > 0 && !pm->cmd.forwardmove )
-					{
-						PM_ContinueLegsAnim( NSPA_WALKRIGHT );
-					}
-					else if ( pm->cmd.rightmove < 0 && !pm->cmd.forwardmove )
-					{
-						PM_ContinueLegsAnim( NSPA_WALKLEFT );
-					}
-					else
-					{
-						PM_ContinueLegsAnim( NSPA_WALK );
-					}
+					PM_ContinueLegsAnim( NSPA_WALK );
 				}
 			}
 		}
 	}
 
-	bobmove *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->bobCycle;
+	classAttributes_t const* pcl = BG_Class( pm->ps->stats[ STAT_CLASS ] );
+	bobmove *= pcl->bobCycle;
 
 	if ( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST && pm->ps->groundEntityNum != ENTITYNUM_NONE )
 	{
-		bobmove *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->sprintMod;
+		bobmove *= pcl->sprintMod;
 	}
 
 	// check for footstep / splash sounds
@@ -3527,27 +3460,22 @@ static void PM_Footsteps()
 	// if we just crossed a cycle boundary, play an appropriate footstep event
 	if ( ( ( old + 64 ) ^ ( pm->ps->bobCycle + 64 ) ) & 128 )
 	{
-		if ( pm->waterlevel == 0 )
+		switch( pm->waterlevel )
 		{
-			// on ground will only play sounds if running
-			if ( footstep && !pm->noFootsteps )
-			{
-				PM_AddEvent( PM_FootstepForSurface() );
-			}
-		}
-		else if ( pm->waterlevel == 1 )
-		{
-			// splashing
-			PM_AddEvent( EV_FOOTSPLASH );
-		}
-		else if ( pm->waterlevel == 2 )
-		{
-			// wading / swimming at surface
-			PM_AddEvent( EV_SWIM );
-		}
-		else if ( pm->waterlevel == 3 )
-		{
-			// no sound when completely underwater
+			case 0: // on ground will only play sounds if running
+				if ( footstep && !pm->noFootsteps )
+				{
+					PM_AddEvent( PM_FootstepForSurface() );
+				}
+				break;
+			case 1: // splashing
+				PM_AddEvent( EV_FOOTSPLASH );
+				break;
+			case 2: // wading / swimming at surface
+				PM_AddEvent( EV_SWIM );
+				break;
+			case 3: // no sound when completely underwater
+				break;
 		}
 	}
 }
