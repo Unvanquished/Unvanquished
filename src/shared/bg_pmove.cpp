@@ -2502,24 +2502,7 @@ static void PM_GroundTraceMissed()
 
 		if ( trace.fraction == 1.0f )
 		{
-			bool forward = pm->cmd.forwardmove >= 0;
-			if ( IsSegmentedModel( pm->ps ) )
-			{
-				PM_ForceLegsAnim( forward ? LEGS_JUMP : LEGS_JUMPB );
-			}
-			else
-			{
-				PM_ForceLegsAnim( forward ? NSPA_JUMP : NSPA_JUMPBACK );
-			}
-
-			if ( forward )
-			{
-				pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-			}
-			else
-			{
-				pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-			}
+			PM_PlayJumpingAnimation();
 		}
 	}
 
@@ -3111,24 +3094,7 @@ static void PM_GroundTrace()
 		}
 
 		// go into jump animation
-		bool forward = pm->cmd.forwardmove >= 0;
-		if ( IsSegmentedModel( pm->ps ) )
-		{
-			PM_ForceLegsAnim( forward ? LEGS_JUMP : LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( forward ? NSPA_JUMP : NSPA_JUMPBACK );
-		}
-
-		if ( forward )
-		{
-			pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
-		}
-		else
-		{
-			pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
-		}
+		PM_PlayJumpingAnimation();
 
 		pm->ps->groundEntityNum = ENTITYNUM_NONE;
 		pml.groundPlane = false;
