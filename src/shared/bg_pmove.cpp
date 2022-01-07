@@ -4603,10 +4603,7 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	}
 
 	//actually set the viewangles
-	for ( i = 0; i < 3; i++ )
-	{
-		ps->viewangles[ i ] = tempang[ i ];
-	}
+	VectorCopy( tempang, ps->viewangles );
 
 	//pull the view into the lock point
 	if ( ps->pm_type == PM_GRABBED && !BG_InventoryContainsUpgrade( UP_BATTLESUIT, ps->stats ) )
