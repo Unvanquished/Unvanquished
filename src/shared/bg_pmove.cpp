@@ -730,30 +730,22 @@ PM_PlayJumpingAnimation
 */
 static void PM_PlayJumpingAnimation()
 {
+	bool forward = pm->cmd.forwardmove >= 0;
+	if ( IsSegmentedModel( pm->ps ) )
+	{
+		PM_ForceLegsAnim( forward ? LEGS_JUMP : LEGS_JUMPB );
+	}
+	else
+	{
+		PM_ForceLegsAnim( forward ? NSPA_JUMP : NSPA_JUMPBACK );
+	}
+
 	if ( pm->cmd.forwardmove >= 0 )
 	{
-		if ( IsSegmentedModel( pm->ps ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMP );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMP );
-		}
-
 		pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 	}
 	else
 	{
-		if ( IsSegmentedModel( pm->ps ) )
-		{
-			PM_ForceLegsAnim( LEGS_JUMPB );
-		}
-		else
-		{
-			PM_ForceLegsAnim( NSPA_JUMPBACK );
-		}
-
 		pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
 	}
 }
