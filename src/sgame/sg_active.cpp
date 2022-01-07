@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 bool ClientInactivityTimer( gentity_t *ent, bool active );
 
@@ -648,7 +649,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		pm.cmd = *ucmd;
 		pm.tracemask = MASK_DEADSOLID; // spectators can fly through bodies
 		pm.trace = trap_Trace;
-		pm.pointcontents = trap_PointContents;
+		pm.pointcontents = G_CM_PointContents;
 
 		// Perform a pmove
 		Pmove( &pm );
@@ -2039,7 +2040,7 @@ void ClientThink_real( gentity_t *self )
 	}
 
 	pm.trace          = trap_Trace;
-	pm.pointcontents  = trap_PointContents;
+	pm.pointcontents  = G_CM_PointContents;
 	pm.debugLevel     = g_debugMove.Get();
 	pm.noFootsteps    = 0;
 	pm.pmove_fixed    = level.pmoveParams.fixed || client->pers.pmoveFixed;

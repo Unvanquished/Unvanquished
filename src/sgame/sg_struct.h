@@ -364,6 +364,11 @@ struct gentity_t
 	int       splashMethodOfDeath;
 
 	int       watertype;
+	// from -inf to 3, apparently.
+	// * 0 and less: air/ground
+	// * 1: touch water I guess
+	// * 2: standing water, whater that means
+	// * 3: completely underwater (swimming, not sure if can breath)
 	int       waterlevel;
 
 	/*

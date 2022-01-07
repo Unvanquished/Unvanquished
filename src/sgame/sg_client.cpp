@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "engine/qcommon/q_unicode.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 // sg_client.c -- client functions that don't happen every frame
 
@@ -420,7 +421,7 @@ static void SpawnCorpse( gentity_t *ent )
 	trap_UnlinkEntity( ent );
 
 	// if client is in a nodrop area, don't leave the body
-	contents = trap_PointContents( origin, -1 );
+	contents = G_CM_PointContents( origin, -1 );
 
 	if ( contents & CONTENTS_NODROP )
 	{
