@@ -3051,12 +3051,9 @@ static void PM_GroundTrace()
 	pml.groundTrace = trace;
 
 	// do something corrective if the trace starts in a solid...
-	if ( trace.allsolid )
+	if ( trace.allsolid && !PM_CorrectAllSolid( &trace ) )
 	{
-		if ( !PM_CorrectAllSolid( &trace ) )
-		{
-			return;
-		}
+		return;
 	}
 
 	//make sure that the surfNormal is reset to the ground
@@ -3114,30 +3111,22 @@ static void PM_GroundTrace()
 		}
 
 		// go into jump animation
-		if ( pm->cmd.forwardmove >= 0 )
+		bool forward = pm->cmd.forwardmove >= 0;
+		if ( IsSegmentedModel( pm->ps ) )
 		{
-			if ( IsSegmentedModel( pm->ps ) )
-			{
-				PM_ForceLegsAnim( LEGS_JUMP );
-			}
-			else
-			{
-				PM_ForceLegsAnim( NSPA_JUMP );
-			}
+			PM_ForceLegsAnim( forward ? LEGS_JUMP : LEGS_JUMPB );
+		}
+		else
+		{
+			PM_ForceLegsAnim( forward ? NSPA_JUMP : NSPA_JUMPBACK );
+		}
 
+		if ( forward )
+		{
 			pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 		}
 		else
 		{
-			if ( IsSegmentedModel( pm->ps ) )
-			{
-				PM_ForceLegsAnim( LEGS_JUMPB );
-			}
-			else
-			{
-				PM_ForceLegsAnim( NSPA_JUMPBACK );
-			}
-
 			pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
 		}
 
