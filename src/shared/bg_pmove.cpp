@@ -2502,30 +2502,22 @@ static void PM_GroundTraceMissed()
 
 		if ( trace.fraction == 1.0f )
 		{
-			if ( pm->cmd.forwardmove >= 0 )
+			bool forward = pm->cmd.forwardmove >= 0;
+			if ( IsSegmentedModel( pm->ps ) )
 			{
-				if ( IsSegmentedModel( pm->ps ) )
-				{
-					PM_ForceLegsAnim( LEGS_JUMP );
-				}
-				else
-				{
-					PM_ForceLegsAnim( NSPA_JUMP );
-				}
+				PM_ForceLegsAnim( forward ? LEGS_JUMP : LEGS_JUMPB );
+			}
+			else
+			{
+				PM_ForceLegsAnim( forward ? NSPA_JUMP : NSPA_JUMPBACK );
+			}
 
+			if ( forward )
+			{
 				pm->ps->pm_flags &= ~PMF_BACKWARDS_JUMP;
 			}
 			else
 			{
-				if ( IsSegmentedModel( pm->ps ) )
-				{
-					PM_ForceLegsAnim( LEGS_JUMPB );
-				}
-				else
-				{
-					PM_ForceLegsAnim( NSPA_JUMPBACK );
-				}
-
 				pm->ps->pm_flags |= PMF_BACKWARDS_JUMP;
 			}
 		}
