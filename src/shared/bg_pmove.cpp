@@ -2372,21 +2372,18 @@ static void PM_CrashLand()
 	delta = vel + t * acc;
 	delta = delta * delta * 0.0001f;
 
-	// never take falling damage if completely underwater
-	if ( pm->waterlevel == 3 )
+	// if underwater, no damages, if standing on water,
+	// reduce them.
+	switch ( pm->waterlevel )
 	{
-		return;
-	}
-
-	// reduce falling damage if there is standing water
-	if ( pm->waterlevel == 2 )
-	{
-		delta *= 0.25;
-	}
-
-	if ( pm->waterlevel == 1 )
-	{
-		delta *= 0.5;
+		case 3: // never take falling damage if completely underwater
+			return;
+		case 2:
+			delta *= 0.25;
+			break;
+		case 1:
+			delta *= 0.5;
+			break;
 	}
 
 	if ( delta < 1 )
@@ -2396,41 +2393,37 @@ static void PM_CrashLand()
 
 	// create a local entity event to play the sound
 
+	// start footstep cycle over
+	pm->ps->bobCycle = 0;
+
 	// SURF_NODAMAGE is used for bounce pads where you don't ever
 	// want to take damage or play a crunch sound
-	if ( !( pml.groundTrace.surfaceFlags & SURF_NODAMAGE ) )
+	if (  pml.groundTrace.surfaceFlags & SURF_NODAMAGE )
 	{
-		pm->ps->stats[ STAT_FALLDIST ] = delta;
+		return;
+	}
 
+	pm->ps->stats[ STAT_FALLDIST ] = delta;
+
+	if ( PM_Live( pm->ps->pm_type ) )
+	{
 		if ( delta > AVG_FALL_DISTANCE )
 		{
-			if ( PM_Live( pm->ps->pm_type ) )
-			{
-				PM_AddEvent( EV_FALL_FAR );
-			}
+			PM_AddEvent( EV_FALL_FAR );
 		}
 		else if ( delta > MIN_FALL_DISTANCE )
 		{
-			if ( PM_Live( pm->ps->pm_type ) )
-			{
-				PM_AddEvent( EV_FALL_MEDIUM );
-			}
+			PM_AddEvent( EV_FALL_MEDIUM );
+		}
+		else if ( delta > 7 )
+		{
+			PM_AddEvent( EV_FALL_SHORT );
 		}
 		else
 		{
-			if ( delta > 7 )
-			{
-				PM_AddEvent( EV_FALL_SHORT );
-			}
-			else
-			{
-				PM_AddEvent( PM_FootstepForSurface() );
-			}
+			PM_AddEvent( PM_FootstepForSurface() );
 		}
 	}
-
-	// start footstep cycle over
-	pm->ps->bobCycle = 0;
 }
 
 /*
