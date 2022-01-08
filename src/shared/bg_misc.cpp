@@ -2191,7 +2191,7 @@ std::pair<BoundedVector<weapon_t,  WP_NUM_WEAPONS>,
 	for (Parse_WordListSplitter i(equipment); *i; ++i)
 	{
 		weapon_t result_w = BG_WeaponNumberByName(*i);
-		upgrade_t result_u = BG_UpgradeByName(*i)->number;
+		upgrade_t result_u = static_cast<upgrade_t>( BG_UpgradeByName(*i)->number );
 
 		if (result_w != WP_NONE)
 		{
@@ -2222,7 +2222,7 @@ BoundedVector<class_t, PCL_NUM_CLASSES>
 
 	for (Parse_WordListSplitter i(classes); *i; ++i)
 	{
-		class_t result = BG_ClassByName(*i)->number;
+		class_t result = static_cast<class_t>( BG_ClassByName(*i)->number );
 
 		if (result != PCL_NONE)
 		{
@@ -2249,7 +2249,7 @@ BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 
 	for (Parse_WordListSplitter i(allowed); *i; ++i)
 	{
-		buildable_t result = BG_BuildableByName(*i)->number;
+		buildable_t result = static_cast<buildable_t>( BG_BuildableByName(*i)->number );
 
 		if (result != BA_NONE)
 		{

@@ -2048,7 +2048,7 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 {
 	int clientNum = ent->num();
 	team_t team = G_Team( ent );
-	class_t newClass = BG_ClassByName( s )->number;
+	class_t newClass = static_cast<class_t>( BG_ClassByName( s )->number );
 
 	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
 	{
@@ -2142,7 +2142,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 
 	if ( ent->client->pers.team == TEAM_ALIENS )
 	{
-		class_t newClass = BG_ClassByName( s )->number;
+		class_t newClass = static_cast<class_t>( BG_ClassByName( s )->number );
 
 		// CHECKME: this if and its comment is weird, do we really need it?
 		// if we are not currently spectating, we are attempting evolution
@@ -2333,10 +2333,9 @@ Deactivate an item
 static void Cmd_DeActivateItem_f( gentity_t *ent )
 {
 	char      s[ MAX_TOKEN_CHARS ];
-	upgrade_t upgrade;
 
 	trap_Argv( 1, s, sizeof( s ) );
-	upgrade = BG_UpgradeByName( s )->number;
+	upgrade_t upgrade = static_cast<upgrade_t>( BG_UpgradeByName( s )->number );
 
 	if ( BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
 	{
@@ -2357,11 +2356,10 @@ static void Cmd_ToggleItem_f( gentity_t *ent )
 {
 	char      s[ MAX_TOKEN_CHARS ];
 	weapon_t  weapon;
-	upgrade_t upgrade;
 
 	trap_Argv( 1, s, sizeof( s ) );
 
-	upgrade = BG_UpgradeByName( s )->number;
+	upgrade_t upgrade = static_cast<upgrade_t>( BG_UpgradeByName( s )->number );
 	weapon  = BG_WeaponNumberByName( s );
 
 	if ( weapon != WP_NONE )
@@ -2507,7 +2505,6 @@ static bool Cmd_Sell_armour( gentity_t *ent )
 static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 {
 	weapon_t  weapon;
-	upgrade_t upgrade;
 
 	//no armoury nearby
 	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
@@ -2525,7 +2522,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 		weapon = BG_WeaponNumberByName( s );
 	}
 
-	upgrade = BG_UpgradeByName( s )->number;
+	upgrade_t upgrade = static_cast<upgrade_t>( BG_UpgradeByName( s )->number );
 
 	if ( weapon != WP_NONE )
 	{
@@ -2659,11 +2656,10 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 {
 #define Maybe_TriggerMenu(num, reason) do { if ( !quiet ) G_TriggerMenu( (num), (reason) ); } while ( 0 )
 	weapon_t  weapon;
-	upgrade_t upgrade;
 	vec3_t    newOrigin;
 
 	weapon = BG_WeaponNumberByName( s );
-	upgrade = BG_UpgradeByName( s )->number;
+	upgrade_t upgrade = static_cast<upgrade_t>( BG_UpgradeByName( s )->number );
 
 	// check if armoury is in reach
 	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
@@ -2920,7 +2916,6 @@ Cmd_Build_f
 static void Cmd_Build_f( gentity_t *ent )
 {
 	char        s[ MAX_TOKEN_CHARS ];
-	buildable_t buildable;
 	float       dist;
 	vec3_t      origin, normal;
 	int         groundEntNum;
@@ -2939,7 +2934,7 @@ static void Cmd_Build_f( gentity_t *ent )
 
 	trap_Argv( 1, s, sizeof( s ) );
 
-	buildable = BG_BuildableByName( s )->number;
+	buildable_t buildable = static_cast<buildable_t>( BG_BuildableByName( s )->number );
 
 	if ( buildable != BA_NONE &&
 	     ( ( 1 << ent->client->ps.weapon ) & BG_Buildable( buildable )->buildWeapon ) &&

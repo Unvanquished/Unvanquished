@@ -214,13 +214,6 @@ enum
 
 static_assert(CS_MAX <= MAX_CONFIGSTRINGS, "exceeded configstrings");
 
-enum gender_t
-{
-  GENDER_MALE,
-  GENDER_FEMALE,
-  GENDER_NEUTER
-};
-
 /*
 ===================================================================================
 
@@ -1247,206 +1240,93 @@ struct beaconAttributes_t
 
 //---------------------------------------------------------
 
-// player class record
-struct classAttributes_t
+struct entityModelConfig_t
 {
-	class_t  number;
-
-	const char *name;
-	const char *info;
-	const char *icon;
-	const char *fovCvar;
-
-	team_t   team;
-
-	int      unlockThreshold;
-
-	int      health;
-	float    fallDamage;
-	float    regenRate;
-
-	int      abilities;
-
-	weapon_t startWeapon;
-
-	float    buildDist;
-
-	int      fov;
-	float    bob;
-	float    bobCycle;
-	int      steptime;
-
-	float    speed;
-	float    sprintMod;
-	float    acceleration;
-	float    airAcceleration;
-	float    friction;
-	float    stopSpeed;
-	float    jumpMagnitude;
-	int      mass;
-
-	// stamina (human only)
-	int      staminaJumpCost;
-	int      staminaSprintCost;
-	int      staminaJogRestore;
-	int      staminaWalkRestore;
-	int      staminaStopRestore;
-
-	int      price;
-};
-
-struct classModelConfig_t
-{
-	char   modelName[ MAX_QPATH ];
-	float  modelScale;
-	char   skinName[ MAX_QPATH ];
-	float  shadowScale;
-	char   hudName[ MAX_QPATH ];
-	char   *humanName;
-
 	vec3_t mins;
 	vec3_t maxs;
+	float  modelScale;
+	float  zOffset;
+};
+
+// player class record
+struct classModelConfig_t : public entityModelConfig_t
+{
+	char   modelName[ MAX_QPATH ];
+	char   skinName[ MAX_QPATH ];
+	char   hudName[ MAX_QPATH ];
+	char   *humanName;
+	float  shadowScale;
+
 	vec3_t crouchMaxs;
 	vec3_t deadMins;
 	vec3_t deadMaxs;
+	vec3_t shoulderOffsets;
 	int    viewheight;
 	int    crouchViewheight;
-	float  zOffset;
-	vec3_t shoulderOffsets;
-	bool segmented;
 
 	class_t navMeshClass; // if not PCL_NONE, which model's navmesh to use
 	int     navHandle;
+	bool    segmented;
 };
 
-#define MAX_BUILDABLE_MODELS 3
-
-// buildable item record
-struct buildableAttributes_t
-{
-	buildable_t number;
-
-	const char *name;
-	const char *humanName;
-	const char *info;
-	const char *entityName;
-	const char *icon;
-
-	trType_t    traj;
-	float       bounce;
-
-	int         buildPoints;
-	int         unlockThreshold;
-
-	int         health;
-	int         regenRate;
-
-	int         splashDamage;
-	int         splashRadius;
-
-	weapon_t    weapon; // used to look up weaponInfo_t for clientside effects
-	int         meansOfDeath;
-
-	team_t      team;
-	weapon_t    buildWeapon;
-
-	int         buildTime;
-	bool    usable;
-
-	float       minNormal;
-	bool    invertNormal;
-
-	int         creepSize;
-
-	bool    transparentTest;
-	bool    uniqueTest;
-	bool    dretchAttackable;
-};
-
-struct buildableModelConfig_t
+static constexpr int MAX_BUILDABLE_MODELS = 3;
+struct buildableModelConfig_t : public entityModelConfig_t
 {
 	char   models[ MAX_BUILDABLE_MODELS ][ MAX_QPATH ];
-
-	float  modelScale;
 	vec3_t modelRotation;
-	vec3_t mins;
-	vec3_t maxs;
-	float  zOffset;
 	float  oldScale;
 	float  oldOffset;
 };
 
-// weapon record
-struct weaponAttributes_t
+enum gender_t
 {
-	weapon_t number;
-
-	int      price;
-	int      unlockThreshold;
-
-	int      slots;
-
-	const char *name;
-	const char *humanName;
-	const char *info;
-
-	int      maxAmmo;
-	int      maxClips;
-	bool infiniteAmmo;
-	bool usesEnergy;
-
-	int      repeatRate1;
-	int      repeatRate2;
-	int      repeatRate3;
-	int      reloadTime;
-	float    knockbackScale;
-
-	bool hasAltMode;
-	bool hasThirdMode;
-
-	bool canZoom;
-	float    zoomFov;
-
-	bool purchasable;
-	bool longRanged;
-
-	team_t   team;
+  GENDER_MALE,
+  GENDER_FEMALE,
+  GENDER_NEUTER
 };
 
-// upgrade record
-struct upgradeAttributes_t
+struct elementAttributes_t
 {
-	upgrade_t number;
-
-	int       price;
-	int       unlockThreshold;
-	int       slots; // uses a combination of SLOT_... defines
-
+	int number;
 	const char *name;
 	const char *humanName;
 	const char *info;
-
-	int      repeatRate = 0;
-
 	const char *icon;
 
-	bool  purchasable;
-	bool  usable;
-
+	int       unlockThreshold;
 	team_t    team;
+	bool      usable;
+	int       mass;
+
+	union
+	{
+		int price;
+		int buildPoints;
+	};
 };
 
-// missile record
-struct missileAttributes_t
+struct itemAttributes_t : public elementAttributes_t
 {
-	// attributes
-	missile_t      number;
-	const char     *name;
-	bool       pointAgainstWorld;
+	int  slots; // uses a combination of SLOT_... defines
+
+	bool purchasable;
+};
+
+struct entityAttributes_t : public elementAttributes_t
+{
+	int      health;
+	float    regenRate;
+};
+
+struct missileAttributes_t : public elementAttributes_t
+{
+	bool           pointAgainstWorld;
 	int            damage;
-	meansOfDeath_t meansOfDeath;
+
 	int            splashDamage;
 	int            splashRadius;
+	meansOfDeath_t meansOfDeath;
+
 	meansOfDeath_t splashMeansOfDeath;
 	int            clipmask;
 	int            size;
@@ -1454,42 +1334,111 @@ struct missileAttributes_t
 	int            speed;
 	float          lag;
 	int            flags;
-	bool       doKnockback;
-	bool       doLocationalDamage;
-
-	// display
+	bool           doKnockback;
+	bool           doLocationalDamage;
 	qhandle_t      model;
 	float          modelScale;
 	vec3_t         modelRotation;
-
 	sfxHandle_t    sound;
-	bool       usesDlight;
+	bool           usesDlight;
 	float          dlight;
 	float          dlightIntensity;
 	vec3_t         dlightColor;
 	int            renderfx;
-	bool       usesSprite;
+	bool           usesSprite;
 	qhandle_t      sprite;
 	int            spriteSize;
 	float          spriteCharge;
 	qhandle_t      particleSystem;
 	qhandle_t      trailSystem;
-	bool       rotates;
-	bool       usesAnim;
+	bool           rotates;
+	bool           usesAnim;
 	int            animStartFrame;
 	int            animNumFrames;
 	int            animFrameRate;
-	bool       animLooping;
-
-	// impact
-	bool       alwaysImpact;
+	bool           animLooping;
+	bool           alwaysImpact;
 	qhandle_t      impactParticleSystem;
-	bool       impactFlightDirection;
-	bool       usesImpactMark;
+	bool           impactFlightDirection;
+	bool           usesImpactMark;
 	qhandle_t      impactMark;
 	qhandle_t      impactMarkSize;
 	sfxHandle_t    impactSound[ 4 ];
 	sfxHandle_t    impactFleshSound[ 4 ];
+};
+
+struct weaponAttributes_t : public itemAttributes_t
+{
+	int      maxAmmo;
+	int      maxClips;
+	bool     infiniteAmmo;
+	bool     usesEnergy;
+
+	int      repeatRate1;
+	int      repeatRate2;
+	int      repeatRate3;
+
+	int      reloadTime;
+	float    knockbackScale;
+
+	bool     hasAltMode;
+	bool     hasThirdMode;
+
+	bool     canZoom;
+	float    zoomFov;
+	bool     longRanged;
+};
+
+struct upgradeAttributes_t : public itemAttributes_t
+{
+	int      repeatRate = 0;
+};
+
+struct classAttributes_t : public entityAttributes_t
+{
+	const char *fovCvar;
+	float       fallDamage;
+	int         abilities;
+	weapon_t    startWeapon;
+	float       buildDist;
+	int         fov;
+	float       bob;
+	float       bobCycle;
+	int         steptime;
+	float       speed;
+	float       sprintMod;
+	float       acceleration;
+	float       airAcceleration;
+	float       friction;
+	float       stopSpeed;
+	float       jumpMagnitude;
+	int         staminaJumpCost;
+	int         staminaSprintCost;
+	int         staminaJogRestore;
+	int         staminaWalkRestore;
+	int         staminaStopRestore;
+};
+
+struct buildableAttributes_t : entityAttributes_t
+{
+	weapon_t       weapon; // used to look up weaponInfo_t for clientside effects
+	weapon_t       buildWeapon;
+	const char *   entityName;
+	trType_t       traj;
+	float          bounce;
+
+	int            splashDamage;
+	int            splashRadius;
+
+	meansOfDeath_t meansOfDeath;
+
+	int            buildTime;
+	float          minNormal;
+	bool           invertNormal;
+	int            creepSize;
+	bool           transparentTest;
+	bool           uniqueTest;
+	bool           dretchAttackable;
 };
 
 // bg_utilities.c

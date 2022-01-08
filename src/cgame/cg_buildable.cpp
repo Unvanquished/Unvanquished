@@ -2386,7 +2386,7 @@ void CG_Buildable( centity_t *cent )
 				opacity = 10.0f - 10.0f * dist / maxDist;
 			}
 
-			CG_DrawBuildableRangeMarker( ba->number, cent->lerpOrigin, cent->currentState.origin2, opacity );
+			CG_DrawBuildableRangeMarker( static_cast<buildable_t>( ba->number ), cent->lerpOrigin, cent->currentState.origin2, opacity );
 		}
 	}
 

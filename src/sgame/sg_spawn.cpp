@@ -522,7 +522,6 @@ returning false if not found
 static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 {
 	entityClassDescriptor_t     *spawnedClass;
-	buildable_t buildable;
 
 	if ( spawnedEntity->classname.empty() )
 	{
@@ -535,7 +534,7 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	}
 
 	//check buildable spawn functions
-	buildable = BG_BuildableByEntityName( spawnedEntity->classname.c_str() )->number;
+	buildable_t buildable = static_cast<buildable_t>( BG_BuildableByEntityName( spawnedEntity->classname.c_str() )->number );
 
 	if ( buildable != BA_NONE )
 	{

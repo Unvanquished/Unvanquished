@@ -272,7 +272,7 @@ void CG_UpdateBuildableRangeMarkerMask()
 
 		for (Parse_WordListSplitter marker(*std::move(structureList)); *marker; ++marker)
 		{
-			buildable_t buildable = BG_BuildableByName( *marker )->number;
+			buildable_t buildable = static_cast<buildable_t>( BG_BuildableByName( *marker )->number );
 
 			if ( buildable != BA_NONE )
 			{
