@@ -31,20 +31,62 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
-// nav.h -- navigation mesh definitions
-#ifndef BOTLIB_NAV_H_
-#define BOTLIB_NAV_H_
+// Definitions used by both the code that *generates* navmeshes and the code that *uses* them
 
-#include "bot_types.h"
+#ifndef SHARED_BOT_NAV_SHARED_H_
+#define SHARED_BOT_NAV_SHARED_H_
+
+#include "DetourCommon.h"
+#include "DetourNavMesh.h"
+#include "DetourNavMeshBuilder.h"
+#include "DetourTileCache.h"
+#include "DetourTileCacheBuilder.h"
+#include "shared/bg_public.h"
 #include "fastlz/fastlz.h"
-#include "bot_convert.h"
 
 // should be the same as in rest of engine
 #define STEPSIZE 18
 #define MIN_WALK_NORMAL 0.7f
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
-static const int NAVMESHSET_VERSION = 3;
+static const int NAVMESHSET_VERSION = 3; // Increment when navgen algorithm or data format changes
+
+enum navPolyFlags
+{
+	POLYFLAGS_DISABLED = 0,
+	POLYFLAGS_WALK     = 1 << 0,
+	POLYFLAGS_JUMP     = 1 << 1,
+	POLYFLAGS_POUNCE   = 1 << 2,
+	POLYFLAGS_WALLWALK = 1 << 3,
+	POLYFLAGS_LADDER   = 1 << 4,
+	POLYFLAGS_DROPDOWN = 1 << 5,
+	POLYFLAGS_DOOR     = 1 << 6,
+	POLYFLAGS_TELEPORT = 1 << 7,
+	POLYFLAGS_CROUCH   = 1 << 8,
+	POLYFLAGS_SWIM     = 1 << 9,
+	POLYFLAGS_ALL      = 0xffff, // All abilities.
+};
+
+enum navPolyAreas
+{
+	POLYAREA_GROUND     = 1 << 0,
+	POLYAREA_LADDER     = 1 << 1,
+	POLYAREA_WATER      = 1 << 2,
+	POLYAREA_DOOR       = 1 << 3,
+	POLYAREA_JUMPPAD    = 1 << 4,
+	POLYAREA_TELEPORTER = 1 << 5,
+};
+
+// Will be part of header which must contain 4-byte members only
+struct NavgenConfig {
+	float cellHeight;
+	float stepSize;
+	int excludeCaulk; // boolean - exclude caulk surfaces
+	int excludeSky; // boolean - exclude surfaces with surfaceparm sky from navmesh generation
+	int filterGaps; // boolean - add new walkable spans so bots can walk over small gaps
+
+	static NavgenConfig Default() { return { 2.0f, STEPSIZE, 1, 1, 1 }; }
+};
 
 struct NavMeshSetHeader
 {
@@ -54,6 +96,7 @@ struct NavMeshSetHeader
 	dtNavMeshParams params;
 	dtTileCacheParams cacheParams;
 };
+constexpr int PERMANENT_NAVGEN_ERROR = -789; // as value of header.params.tileHeight
 
 struct NavMeshTileHeader
 {
@@ -86,92 +129,27 @@ static inline void SwapNavMeshTileHeader( NavMeshTileHeader &header )
 	}
 }
 
-static const int NAVMESHCON_VERSION = 2;
-struct OffMeshConnectionHeader
+// Returns a non-empty string on error
+inline std::string GetNavmeshHeader( fileHandle_t f, NavMeshSetHeader& header )
 {
-	int version;
-	int numConnections;
-};
-
-struct OffMeshConnection
-{
-	rVec  start;
-	rVec  end;
-	float radius;
-	unsigned short flag;
-	unsigned char area;
-	unsigned char dir;
-	unsigned int userid;
-};
-
-struct OffMeshConnections
-{
-	static CONSTEXPR int MAX_CON = 128;
-	float  verts[ MAX_CON * 6 ]; // dtOffMeshConnection::pos
-	float  rad[ MAX_CON ]; // dtOffMeshConnection::rad
-	unsigned short flags[ MAX_CON ]; // dtOffMeshConnection::poly
-	unsigned char areas[ MAX_CON ]; // dtOffMeshConnection::flags
-	unsigned char dirs[ MAX_CON ]; // likely dtOffMeshConnection::side
-	unsigned int userids[ MAX_CON ]; // dtOffMeshConnection::userId
-	int      offMeshConCount;
-
-	OffMeshConnections() : offMeshConCount( 0 ) { }
-
-	void reset()
+	if ( sizeof(header) != trap_FS_Read( &header, sizeof( header ), f ) )
 	{
-		offMeshConCount = 0;
+		return "File too small";
+	}
+	SwapNavMeshSetHeader( header );
+
+	if ( header.magic != NAVMESHSET_MAGIC )
+	{
+		return "File is wrong magic";
 	}
 
-	void delConnection( int index )
+	if ( header.version != NAVMESHSET_VERSION )
 	{
-		if ( index < 0 || index >= offMeshConCount )
-		{
-			return;
-		}
-
-		for ( int i = index * 6; i < offMeshConCount * 6 - 1; i++ )
-		{
-			verts[ i ] = verts[ i + 1 ];
-		}
-
-		for ( int i = index; i < offMeshConCount - 1; i++ )
-		{
-			rad[ i ] = rad[ i + 1 ];
-			flags[ i ] = flags[ i + 1 ];
-			areas[ i ] = areas[ i + 1 ];
-			dirs[ i ] = dirs[ i + 1 ];
-			userids[ i ] = userids[ i + 1 ];
-		}
-		offMeshConCount--;
+		return Str::Format( "File is wrong version (found %d, want %d)", header.version, NAVMESHSET_VERSION );
 	}
 
-	bool addConnection( const OffMeshConnection &c )
-	{
-		if ( offMeshConCount == MAX_CON )
-		{
-			return false;
-		}
-
-		float *start = &verts[ offMeshConCount * 6 ];
-		float *end = start + 3;
-
-		start[ 0 ] = c.start[ 0 ];
-		start[ 1 ] = c.start[ 1 ];
-		start[ 2 ] = c.start[ 2 ];
-		end[ 0 ] = c.end[ 0 ];
-		end[ 1 ] = c.end[ 1 ];
-		end[ 2 ] = c.end[ 2 ];
-
-		rad[ offMeshConCount ] = c.radius;
-		flags[ offMeshConCount ] = c.flag;
-		areas[ offMeshConCount ] = c.area;
-		dirs[ offMeshConCount ] = c.dir;
-		userids[ offMeshConCount ] = c.userid;
-
-		offMeshConCount++;
-		return true;
-	}
-};
+	return "";
+}
 
 struct FastLZCompressor : public dtTileCacheCompressor
 {
@@ -196,11 +174,11 @@ struct FastLZCompressor : public dtTileCacheCompressor
 	}
 };
 
-struct MeshProcess : public dtTileCacheMeshProcess
-{
-	OffMeshConnections con;
 
-	virtual void process( struct dtNavMeshCreateParams *params, unsigned char *polyAreas, unsigned short *polyFlags )
+
+struct BasicMeshProcess : public dtTileCacheMeshProcess
+{
+	void process( struct dtNavMeshCreateParams *params, unsigned char *polyAreas, unsigned short *polyFlags ) override
 	{
 		// Update poly flags from areas.
 		for ( int i = 0; i < params->polyCount; ++i )
@@ -219,14 +197,6 @@ struct MeshProcess : public dtTileCacheMeshProcess
 				polyFlags[ i ] = navPolyFlags::POLYFLAGS_WALK | navPolyFlags::POLYFLAGS_DOOR;
 			}
 		}
-
-		params->offMeshConVerts = con.verts;
-		params->offMeshConRad = con.rad;
-		params->offMeshConCount = con.offMeshConCount;
-		params->offMeshConAreas = con.areas;
-		params->offMeshConDir = con.dirs;
-		params->offMeshConFlags = con.flags;
-		params->offMeshConUserID = con.userids;
 	}
 };
 
@@ -285,4 +255,19 @@ struct LinearAllocator : public dtTileCacheAlloc
 	size_t getHighSize() { return high; }
 };
 
-#endif
+inline std::vector<class_t> RequiredNavmeshes()
+{
+	return {
+		PCL_ALIEN_LEVEL0,
+		PCL_ALIEN_LEVEL1,
+		PCL_ALIEN_LEVEL2,
+		PCL_ALIEN_LEVEL2_UPG,
+		PCL_ALIEN_LEVEL3,
+		PCL_ALIEN_LEVEL3_UPG,
+		PCL_ALIEN_LEVEL4,
+		PCL_HUMAN_NAKED,
+		PCL_HUMAN_BSUIT,
+	};
+}
+
+#endif // SHARED_BOT_NAV_SHARED_H_

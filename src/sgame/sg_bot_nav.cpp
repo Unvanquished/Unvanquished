@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "botlib/bot_types.h"
 #include "botlib/bot_api.h"
+#include "shared/bot_nav_shared.h"
 
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;
@@ -37,13 +38,16 @@ Navigation Mesh Loading
 */
 
 // FIXME: use nav handle instead of classes
-void G_BotNavInit()
+bool G_BotNavInit()
 {
-	int i;
+	if ( navMeshLoaded )
+	{
+		return true;
+	}
 
-	Log::Notice( "==== Bot Navigation Initialization ==== \n" );
+	Log::Notice( "==== Bot Navigation Initialization ====" );
 
-	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
+	for ( class_t i : RequiredNavmeshes() )
 	{
 		classModelConfig_t *model;
 		botClass_t bot;
@@ -51,26 +55,17 @@ void G_BotNavInit()
 		bot.polyFlagsExclude = POLYFLAGS_DISABLED;
 
 		model = BG_ClassModelConfig( i );
-		if ( model->navMeshClass )
-		{
-			if ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass )
-			{
-				Log::Warn( "class '%s': navmesh reference target class '%s' must have its own navmesh",
-				            BG_Class( i )->name, BG_Class( model->navMeshClass )->name );
-				return;
-			}
-
-			continue;
-		}
+		ASSERT_EQ( model->navMeshClass, PCL_NONE ); // shouldn't load this if we are going to use another class's mesh
 
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
 		if ( !G_BotSetupNav( &bot, &model->navHandle ) )
 		{
-			return;
+			return false;
 		}
 	}
 	navMeshLoaded = true;
+	return true;
 }
 
 void G_BotNavCleanup()
@@ -90,9 +85,15 @@ void BotSetNavmesh( gentity_t  *self, class_t newClass )
 	}
 
 	model = BG_ClassModelConfig( newClass );
-	navHandle = model->navMeshClass
-	          ? BG_ClassModelConfig( model->navMeshClass )->navHandle
-	          : model->navHandle;
+	if ( model->navMeshClass )
+	{
+		ASSERT_EQ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass, PCL_NONE );
+		navHandle = BG_ClassModelConfig( model->navMeshClass )->navHandle;
+	}
+	else
+	{
+		navHandle = model->navHandle;
+	}
 
 	G_BotSetNavMesh( self->s.number, navHandle );
 }
@@ -381,7 +382,6 @@ void BotWalk( gentity_t *self, bool enable )
 	}
 }
 
-#define STEPSIZE 18.0f
 gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 {
 	vec3_t playerMins, playerMaxs;
