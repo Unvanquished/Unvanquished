@@ -972,7 +972,7 @@ static int CG_CalcFov()
 				}
 
 				// WBTN_ATTACK2 isn't held so unzoom next time
-				if ( !usercmdButtonPressed( cmd.buttons, BTN_ATTACK2 ) || cg.snap->ps.weaponstate == WEAPON_RELOADING )
+				if ( !usercmdButtonPressed( cmd.buttons, BTN_ATTACK2 ) || cg.snap->ps.weaponstate == WEAPON_RELOADING || cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
 				{
 					cg.zoomed = false;
 					cg.zoomTime = std::min( cg.time,
@@ -988,8 +988,15 @@ static int CG_CalcFov()
 					fov_y = zoomFov + f * ( fov_y - zoomFov );
 				}
 
-				// WBTN_ATTACK2 is held so zoom next time
-				if ( usercmdButtonPressed( cmd.buttons, BTN_ATTACK2 ) && cg.snap->ps.weaponstate != WEAPON_RELOADING )
+				// WBTN_ATTACK2 is held so zoom next time.
+				//
+				// We check if the player is really part of a team,
+				// because a specator may be following a player that
+				// has the scoped gun. This avoids https://github.com/Unvanquished/Unvanquished/issues/1399
+				// If a spectator is following someone, then
+				// cg.predictedPlayerState.weapon is the weapon of
+				// the followed player.
+				if ( usercmdButtonPressed( cmd.buttons, BTN_ATTACK2 ) && cg.snap->ps.weaponstate != WEAPON_RELOADING && cgs.clientinfo[ cg.clientNum ].team != TEAM_NONE )
 				{
 					cg.zoomed = true;
 					cg.zoomTime = std::min( cg.time,
