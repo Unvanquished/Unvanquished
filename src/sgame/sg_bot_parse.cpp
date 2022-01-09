@@ -183,7 +183,7 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 {
 	botTarget_t target;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	botEntityAndDistance_t e = AIEntityToGentity( self ,et );
+	botEntityAndDistance_t e = AIEntityToGentity( self, et );
 
 	if ( !e.ent )
 	{

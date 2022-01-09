@@ -806,7 +806,9 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotEntityIsValidEnemyTarget( self, self->botMind->bestEnemy.ent ) || !BotChangeGoalEntity( self, self->botMind->bestEnemy.ent ) )
+		botTarget_t target;
+		target = self->botMind->bestEnemy.ent;
+		if ( !target.targetsValidEntity() || !BotTargetIsVisible( self, target, CONTENTS_SOLID ) || !BotChangeGoalEntity( self, target.getTargetedEntity() ) )
 		{
 			return STATUS_FAILURE;
 		}
