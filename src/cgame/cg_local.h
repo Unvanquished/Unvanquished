@@ -2111,6 +2111,7 @@ void     CG_ShowScores_f();
 // cg_servercmds.c
 //
 void CG_ExecuteServerCommands( snapshot_t* snap );
+void CG_SetMapNameFromServerinfo();
 void CG_ParseServerinfo();
 void CG_SetConfigValues();
 void CG_ShaderStateChanged();
