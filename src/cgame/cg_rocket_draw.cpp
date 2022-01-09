@@ -2944,8 +2944,11 @@ void CG_Rocket_DrawChatType()
 #define MOMENTUM_BAR_MARKWIDTH 0.5f
 #define MOMENTUM_BAR_GLOWTIME  2000
 
+extern bool momentumDisabled;
 static void CG_Rocket_DrawPlayerMomentumBar()
 {
+	if ( momentumDisabled ) return; //cgs.momentumDisabled
+
 	// data
 	rectDef_t     rect;
 	Color::Color  foreColor, backColor, lockedColor, unlockedColor;
@@ -3110,6 +3113,8 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	rectDef_t     rect;
 	Color::Color  foreColour, backColour;
 	momentumThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
+
+	if ( momentumDisabled ) return;
 
 	team_t team = CG_MyTeam();
 

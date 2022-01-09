@@ -119,6 +119,15 @@ Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife(
 		DEFAULT_BP_RECOVERY_RATE_HALF_LIFE);
 
 Cvar::Range<Cvar::Cvar<int>> g_debugMomentum("g_debugMomentum", "momentum debug level", Cvar::NONE, 0, 0, 2);
+Cvar::Callback<Cvar::Cvar<bool>> g_disableMomentum("g_disableMomentum", "disable the momentum system, so that everything is available right from the start", Cvar::SERVERINFO, false, [](bool disabled){
+	if ( disabled )
+	{
+		for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); )
+		{
+			G_AddMomentumGeneric( team, 300.0f );
+		}
+	}
+});
 Cvar::Cvar<float> g_momentumHalfLife("g_momentumHalfLife", "minutes for momentum to decrease 50%", Cvar::SERVERINFO, DEFAULT_MOMENTUM_HALF_LIFE);
 Cvar::Cvar<float> g_momentumRewardDoubleTime("g_momentumRewardDoubleTime", "some momentum rewards double after x minutes", Cvar::NONE, DEFAULT_CONF_REWARD_DOUBLE_TIME);
 Cvar::Cvar<float> g_unlockableMinTime("g_unlockableMinTime", "an unlock is lost after x seconds without further momentum rewards", Cvar::SERVERINFO, DEFAULT_UNLOCKABLE_MIN_TIME);

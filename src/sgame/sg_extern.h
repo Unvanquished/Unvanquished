@@ -88,6 +88,7 @@ extern  Cvar::Cvar<int> g_buildPointRecoveryInitialRate;
 extern  Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife;
 
 extern Cvar::Range<Cvar::Cvar<int>> g_debugMomentum;
+extern Cvar::Callback<Cvar::Cvar<bool>> g_disableMomentum;
 extern Cvar::Cvar<float> g_momentumHalfLife;
 extern Cvar::Cvar<float> g_momentumRewardDoubleTime;
 extern Cvar::Cvar<float> g_unlockableMinTime;

@@ -145,6 +145,7 @@ This is called explicitly when the gamestate is first received,
 and whenever the server updates any serverinfo flagged cvars
 ================
 */
+bool momentumDisabled = false;
 void CG_ParseServerinfo()
 {
 	const char *info;
@@ -156,6 +157,7 @@ void CG_ParseServerinfo()
 
 	cgs.devolveMaxBaseDistance = atof( Info_ValueForKey( info, "g_devolveMaxBaseDistance" ) );
 
+	Cvar::ParseCvarValue( Info_ValueForKey( info, "g_disableMomentum" ), momentumDisabled );
 	cgs.momentumHalfLife  = atof( Info_ValueForKey( info, "g_momentumHalfLife" ) );
 	cgs.unlockableMinTime = atof( Info_ValueForKey( info, "g_unlockableMinTime" ) );
 

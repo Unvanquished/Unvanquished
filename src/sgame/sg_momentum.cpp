@@ -233,6 +233,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 	// limit a team's total
 	if ( level.team[ team ].momentum + amount > MOMENTUM_MAX )
 	{
+		// set momentum to the max
 		amount = MOMENTUM_MAX - level.team[ team ].momentum;
 	}
 
@@ -317,7 +318,7 @@ void G_DecreaseMomentum()
 		return;
 	}
 
-	if ( g_momentumHalfLife.Get() <= 0.0f )
+	if ( g_momentumHalfLife.Get() <= 0.0f || g_disableMomentum.Get() )
 	{
 		return;
 	}

@@ -1099,6 +1099,7 @@ void SP_worldspawn()
 	G_SpawnStringIntoCVar( "BPRecoveryRateHalfLife", g_buildPointRecoveryRateHalfLife );
 
 	InitDisabledItemCvars();
+	G_SpawnStringIntoCVar( "disableMomentum", g_disableMomentum );
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
