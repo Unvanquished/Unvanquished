@@ -1251,7 +1251,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );
 
-	CG_ParseServerinfo();
+	CG_SetMapNameFromServerinfo();
 
 	// load the new map
 	trap_CM_LoadMap(cgs.mapname);
@@ -1267,6 +1267,10 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	// load configs after initializing particles and trails since it registers some
 	CG_UpdateLoadingStep( LOAD_CONFIGS );
 	BG_InitAllConfigs();
+	// parse the serverinfo only now because infos such as
+	// disabledEquipment wouldn't be parsed correctly before
+	// loading the configs
+	CG_ParseServerinfo();
 
 	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();

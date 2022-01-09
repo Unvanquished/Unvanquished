@@ -123,6 +123,22 @@ static void CG_ParseTeamInfo()
 
 /*
 ================
+CG_SetMapNameFromServerinfo
+
+Sets cgs.mapname
+
+This is called explicitly early on when the gamestate is first received,
+and whenever the server updates any serverinfo flagged cvars
+================
+*/
+void CG_SetMapNameFromServerinfo()
+{
+	const char *info = CG_ConfigString( CS_SERVERINFO );
+	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
+}
+
+/*
+================
 CG_ParseServerinfo
 
 This is called explicitly when the gamestate is first received,
@@ -150,8 +166,6 @@ void CG_ParseServerinfo()
 	BG_SetForbiddenEquipment(  std::string( Info_ValueForKey( info, "g_disabledEquipment"  ) ) );
 	BG_SetForbiddenClasses(    std::string( Info_ValueForKey( info, "g_disabledClasses"    ) ) );
 	BG_SetForbiddenBuildables( std::string( Info_ValueForKey( info, "g_disabledBuildables" ) ) );
-
-	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 }
 
 /*
@@ -266,6 +280,7 @@ static void CG_ConfigStringModified()
 	}
 	else if ( num == CS_SERVERINFO )
 	{
+		CG_SetMapNameFromServerinfo();
 		CG_ParseServerinfo();
 	}
 	else if ( num == CS_WARMUP )
