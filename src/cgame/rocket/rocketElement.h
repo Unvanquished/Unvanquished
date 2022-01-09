@@ -109,12 +109,6 @@ public:
 		}
 	}
 
-	void SetDimensions( float x, float y )
-	{
-		dimensions.x = x;
-		dimensions.y = y;
-	}
-
 	void OnRender()
 	{
 		activeElement = this;

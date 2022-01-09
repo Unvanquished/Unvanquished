@@ -55,14 +55,6 @@ void Rocket_GetElementTag( char *tag, int length )
 	}
 }
 
-void Rocket_SetElementDimensions( float x, float y )
-{
-	if ( activeElement )
-	{
-		static_cast<RocketElement *>( activeElement )->SetDimensions( x, y );
-	}
-}
-
 void Rocket_RegisterElement( const char *tag )
 {
 	Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< RocketElement >() )->RemoveReference();
