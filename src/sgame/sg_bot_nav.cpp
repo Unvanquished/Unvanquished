@@ -409,12 +409,6 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	const int TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 	vec3_t end;
 
-	//blocker is not on our team, so ignore
-	if ( G_Team( self ) != G_Team( blocker ) )
-	{
-		return false;
-	}
-
 	//already normalized
 
 	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, nullptr, nullptr, nullptr );
@@ -446,7 +440,7 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 
 	//if we can jump over it, then jump
 	//note that we also test for a blocking barricade because barricades will collapse to let us through
-	return blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f;
+	return ( G_Team( self ) == G_Team( blocker ) && blocker->s.modelindex == BA_A_BARRICADE ) || trace.fraction == 1.0f;
 }
 
 // try to find a path around the obstacle by projecting 5
