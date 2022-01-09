@@ -353,9 +353,7 @@ void G_DecreaseMomentum()
  */
 float G_AddMomentumGeneric( team_t team, float amount )
 {
-	AddMomentum( CONF_GENERIC, team, amount, nullptr, false );
-
-	return amount;
+	return AddMomentum( CONF_GENERIC, team, amount, nullptr, false );
 }
 
 /**
@@ -365,9 +363,7 @@ float G_AddMomentumGeneric( team_t team, float amount )
  */
 float G_AddMomentumGenericStep( team_t team, float amount )
 {
-	AddMomentum( CONF_GENERIC, team, amount, nullptr, true );
-
-	return amount;
+	return AddMomentum( CONF_GENERIC, team, amount, nullptr, true );
 }
 
 /**
