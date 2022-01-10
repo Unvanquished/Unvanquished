@@ -140,6 +140,14 @@ public:
 
 	void SetMouseCursor(const Rml::Core::String& cursor_name) override
 	{
+		if ( cursor_name.empty() )
+		{
+			// HACK: ignore this and keep using the previous cursor
+			// RmlUi wants to get rid of the cursor when it is not above a document, but
+			// we want to keep it whenever there is any menu open. For example the team
+			// selection menu which only covers a small part of the screen.
+			return;
+		}
 		Log::Verbose("Loading new cursor: %s", cursor_name);
 		if ( !CG_Rocket_LoadCursor( cursor_name ) )
 		{

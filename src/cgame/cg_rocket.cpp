@@ -642,11 +642,6 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 bool CG_Rocket_LoadCursor( Str::StringRef cursorPath )
 {
-	if ( cursorPath.empty() )
-	{
-		rocketInfo.cursor = 0;
-		return true;
-	}
 	rocketInfo.cursor = trap_R_RegisterShader( cursorPath.c_str(), (RegisterShaderFlags_t) RSF_DEFAULT );
 	if ( rocketInfo.cursor == 0 )
 	{
