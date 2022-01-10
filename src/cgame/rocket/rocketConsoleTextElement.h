@@ -53,7 +53,7 @@ struct ConsoleLine
 class RocketConsoleTextElement : public Rml::Core::Element
 {
 public:
-	RocketConsoleTextElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), numLines( 0 ), maxLines( 0 ), lastTime( -1 ),
+	RocketConsoleTextElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), numLines( 0 ), maxLines( 4 ), lastTime( -1 ),
 	dirty_height( true ), font_engine_interface( Rml::Core::GetFontEngineInterface() )
 	{
 	}
@@ -103,11 +103,16 @@ public:
 			const Rml::Core::FontFaceHandle font = GetFirstChild()->GetFontFaceHandle();
 			if ( font )
 			{
-				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font_engine_interface->GetBaseline( font ) + font_engine_interface->GetLineHeight( font ) ) );
+				float consoleHeight = ResolveNumericProperty( "height" );
+				int fontHeight = font_engine_interface->GetLineHeight( font );
 
-				if ( maxLines <= 0 )
+				if ( consoleHeight > 0 && fontHeight > 0 )
 				{
-					maxLines = 4; // conservatively low number
+					maxLines = consoleHeight / fontHeight;
+				}
+				else
+				{
+					Log::Warn("unknown RML console capacity");
 				}
 
 				dirty_height = false;
@@ -125,13 +130,12 @@ public:
 
 	void OnPropertyChange( const Rml::Core::PropertyIdSet &changed_properties )
 	{
+		Element::OnPropertyChange( changed_properties );
 		if ( changed_properties.Contains( Rml::Core::PropertyId::Height ) )
 		{
-			int fontPt = GetProperty<int>( "font-size" );
-			maxLines = GetProperty<int>("height") / ( fontPt > 0 ? fontPt : 1 );
+			dirty_height = true;
 		}
 	}
-
 
 	static std::deque<ConsoleLine> lines;
 private:
