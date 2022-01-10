@@ -66,11 +66,6 @@ void Rocket_SetDocumentScale( Rml::Core::ElementDocument& document )
 	                      Rml::Core::Property( size, Rml::Core::Property::PT ));
 }
 
-void Rocket_LoadCursor( const char *path )
-{
-	// TODO: Remove.
-}
-
 void Rocket_DocumentAction( const char *name, const char *action )
 {
 	if ( !Q_stricmp( action, "show" ) || !Q_stricmp( action, "open" ) )

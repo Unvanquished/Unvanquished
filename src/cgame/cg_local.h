@@ -2296,7 +2296,6 @@ void Rocket_Shutdown();
 void Rocket_Render();
 void Rocket_Update();
 void Rocket_LoadDocument( const char *path );
-void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );
 bool Rocket_GetEvent(std::string& cmdText);
 void Rocket_DeleteEvent();
