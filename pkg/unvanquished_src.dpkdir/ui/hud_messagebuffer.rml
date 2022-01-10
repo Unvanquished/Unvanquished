@@ -5,12 +5,13 @@
 	<style>
 		body {
 			width: 75%;
-			height: 30%;
+			height: 15%;
 			padding: 1em;
 		}
 
 		console_text {
 			color: white;
+			height: 100%;
 		}
 
 		img {
