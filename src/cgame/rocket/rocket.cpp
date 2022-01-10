@@ -372,8 +372,7 @@ void Rocket_Init()
 		.GetId();
 
 	// Set backup font
-	// TODO
-	// Rml::Core::FontDatabase::SetBackupFace( "fonts/unifont.ttf" );
+	Rml::Core::GetFontEngineInterface()->LoadFontFace( "fonts/unifont.ttf", /*fallback_face=*/true );
 
 	// Initialize keymap
 	Rocket_InitKeys();
