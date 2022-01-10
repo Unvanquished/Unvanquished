@@ -380,7 +380,8 @@ CG_UpdateMinimapActive
 */
 static void CG_UpdateMinimapActive(minimap_t* m)
 {
-    bool active = m->defined && cg_drawMinimap.Get();
+    //bool active = m->defined && cg_drawMinimap.Get();
+    bool active = false; // HACK: force-disable minimap
 
     m->active = active;
 
