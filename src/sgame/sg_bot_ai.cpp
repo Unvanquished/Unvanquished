@@ -188,38 +188,40 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 	{
 		return self->botMind->closestBuildings[ e ];
 	}
-	else if ( e == E_ENEMY )
+
+	switch ( e )
 	{
+	case E_NONE:
+		return ret;
+
+	case E_ENEMY:
 		return self->botMind->bestEnemy;
-	}
-	else if ( e == E_DAMAGEDBUILDING )
-	{
+
+	case E_DAMAGEDBUILDING:
 		return self->botMind->closestDamagedBuilding;
-	}
-	else if ( e == E_FRIENDLYBUILDING )
-	{
+
+	case E_FRIENDLYBUILDING:
 		return ClosestBuilding( self, true );
-	}
-	else if ( e == E_ENEMYBUILDING )
-	{
+
+	case E_ENEMYBUILDING:
 		return ClosestBuilding( self, false );
-	}
-	else if ( e == E_GOAL )
-	{
+
+	case E_GOAL:
 		if (self->botMind->goal.targetsValidEntity()) {
 			ret.ent = self->botMind->goal.getTargetedEntity();
 			ret.distance = DistanceToGoal( self );
-			return ret;
 		}
-	}
-	else if ( e == E_SELF )
-	{
+		return ret;
+
+	case E_SELF:
 		ret.ent = self;
 		ret.distance = 0;
 		return ret;
-	}
 
-	return ret;
+	default:
+		Log::Warn("Unknown AIEntity_t %d", e);
+		return ret;
+	}
 }
 
 static bool NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
