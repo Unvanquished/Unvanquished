@@ -1365,8 +1365,16 @@ void ClientBegin( int clientNum )
 	memset( &client->pmext, 0, sizeof( client->pmext ) );
 	client->ps.eFlags = flags;
 
-	// locate ent at a spawn point
-	ClientSpawn( ent, nullptr, nullptr, nullptr );
+	static Cvar::Range<Cvar::Cvar<int>> g_forceTeam("g_forceTeam", "force players to join a team; 0: disabled, 1: aliens; 2: humans", Cvar::NONE, 0, 0, 2);
+	if ( g_forceTeam.Get() != 0 && !( ent->r.svFlags & SVF_BOT ) )
+	{
+		G_ChangeTeam( ent, static_cast<team_t>( g_forceTeam.Get() ) );
+	}
+	else
+	{
+		// locate ent at a spawn point
+		ClientSpawn( ent, nullptr, nullptr, nullptr );
+	}
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* entered the game") ), Quote( client->pers.netname ) ) );
 
