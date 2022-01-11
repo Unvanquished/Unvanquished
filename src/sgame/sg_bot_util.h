@@ -91,7 +91,7 @@ void       BotBuyWeapon( gentity_t *self, weapon_t weapon );
 void       BotBuyUpgrade( gentity_t *self, upgrade_t upgrade );
 void       BotSellWeapons( gentity_t *self );
 void       BotSellUpgrades( gentity_t *self );
-void       BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, BoundedVector<upgrade_t, 4> upgrades );
+int        BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], size_t upgradesSize );
 
 // alien bots
 #define AS_OVER_RT3         ((ALIENSENSE_RANGE*0.5f)/M_ROOT3)

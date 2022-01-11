@@ -1152,37 +1152,42 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *buy = ( AIActionNode_t * ) node;
-	weapon_t desiredWeapon;
-	BoundedVector<upgrade_t, 4> desiredUpgrades; // 4 is enough to contain every possible upgrade as of now
+	weapon_t  weapon;
+	const size_t ARRAY_LENGTH = 4;
+	upgrade_t upgrades[ARRAY_LENGTH];
+	int numUpgrades;
+	int i;
 
 	if ( buy->nparams == 0 )
 	{
 		// equip action
-		BotGetDesiredBuy( self, desiredWeapon, desiredUpgrades );
+		numUpgrades = BotGetDesiredBuy( self, weapon, upgrades, ARRAY_LENGTH);
 	}
 	else
 	{
 		// first parameter should always be a weapon
-		desiredWeapon = ( weapon_t ) AIUnBoxInt( buy->params[ 0 ] );
+		weapon = ( weapon_t ) AIUnBoxInt( buy->params[ 0 ] );
 
-		if ( desiredWeapon < WP_NONE || desiredWeapon >= WP_NUM_WEAPONS )
+		if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
 		{
 			Log::Warn("parameter 1 to action buy out of range" );
-			desiredWeapon = WP_NONE;
+			weapon = WP_NONE;
 		}
 
-		// other parameters are always upgrades
-		for ( int i = 1; i < buy->nparams; i++ )
-		{
-			upgrade_t u = ( upgrade_t ) AIUnBoxInt( buy->params[ i ] );
+		numUpgrades = 0;
 
-			if ( u <= UP_NONE || u >= UP_NUM_UPGRADES )
+		// other parameters are always upgrades
+		for ( i = 1; i < buy->nparams; i++ )
+		{
+			upgrades[ numUpgrades ] = ( upgrade_t ) AIUnBoxInt( buy->params[ i ] );
+
+			if ( upgrades[ numUpgrades ] <= UP_NONE || upgrades[ numUpgrades ] >= UP_NUM_UPGRADES )
 			{
 				Log::Warn("parameter %d to action buy out of range", i + 1 );
 				continue;
 			}
 
-			desiredUpgrades.append( u );
+			numUpgrades++;
 		}
 	}
 
@@ -1197,20 +1202,20 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	//check if we already have everything
-	if ( BG_InventoryContainsWeapon( desiredWeapon, self->client->ps.stats ) || desiredWeapon == WP_NONE )
+	if ( BG_InventoryContainsWeapon( weapon, self->client->ps.stats ) || weapon == WP_NONE )
 	{
-		size_t numContain = 0;
+		int numContain = 0;
 
-		for ( upgrade_t u : desiredUpgrades )
+		for ( i = 0; i < numUpgrades; i++ )
 		{
-			if ( BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
+			if ( BG_InventoryContainsUpgrade( upgrades[i], self->client->ps.stats ) )
 			{
 				numContain++;
 			}
 		}
 
 		//we have every upgrade we want to buy
-		if ( numContain == desiredUpgrades.size() )
+		if ( numContain == numUpgrades )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1246,22 +1251,25 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 	if ( GoalInRange( self, ENTITY_BUY_RANGE ) )
 	{
-		if ( !desiredUpgrades.empty() )
+		if ( numUpgrades )
 		{
 			BotSellUpgrades( self );
-			for ( upgrade_t u : desiredUpgrades )
+			for ( i = 0; i < numUpgrades; i++ )
 			{
-				BotBuyUpgrade( self, u );
+				BotBuyUpgrade( self, upgrades[i] );
 			}
 		}
 
-		if ( desiredWeapon != WP_NONE )
+		if ( weapon != WP_NONE )
 		{
 			BotSellWeapons( self );
-			BotBuyWeapon( self, desiredWeapon );
+			BotBuyWeapon( self, weapon );
+		}
 
-			// make sure that we're not using the blaster
-			G_ForceWeaponChange( self, desiredWeapon );
+		// make sure that we're not using the blaster
+		if ( weapon != WP_NONE )
+		{
+			G_ForceWeaponChange( self, weapon );
 		}
 
 		return STATUS_SUCCESS;
