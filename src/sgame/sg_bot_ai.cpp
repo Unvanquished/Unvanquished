@@ -1079,6 +1079,104 @@ AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t* )
 	return AINodeStatus_t::STATUS_SUCCESS;
 }
 
+// resupply action does 2 things:
+// * it makes the bot move at range of a resupply building
+// * it makes the bot to actively reload when at range to
+//   prevent them to go back to fight with one less clip...
+//   or to be stuck in the action.
+// TODO: handle aliens hugs to regen ammo (that's true for
+//   the BotActionHeal, mind you). This likely requires support
+//   for crowds.
+AINodeStatus_t BotActionResupply( gentity_t *self, AIGenericNode_t *node )
+{
+	team_t team = G_Team(self);
+	playerState_t const& ps = self->client->ps;
+	weapon_t const wp = BG_PrimaryWeapon( ps.stats );
+	weaponAttributes_t const* wpa = BG_Weapon( wp );
+	ASSERT( self && self->botMind );
+	botMemory_t & mind = *self->botMind;
+	bool needsPoison = team == TEAM_ALIENS
+		&& !( ps.stats[ STAT_STATE ] & SS_POISONED )
+		&& mind.closestBuildings[ BA_A_BOOSTER ].ent;
+	bool needsAmmo = ps.ammo != wpa->maxAmmo || ps.clips != wpa->maxClips;
+
+	bool needsSupply = needsAmmo || needsPoison;
+
+	float range = 0.f; // poison requires touching the booster, hence 0.f val
+	if ( mind.currentNode != node )
+	{
+		// not sure if it's really logical to fail when the action
+		// is not needed, but imitating other actions (heal) here.
+		if ( !needsSupply )
+		{
+			return STATUS_FAILURE;
+		}
+
+		buildable_t dest;
+		switch( team )
+		{
+			case TEAM_ALIENS:
+				dest = BA_A_BOOSTER;
+				break;
+			case TEAM_HUMANS:
+				range = ENTITY_USE_RANGE;
+				if ( wpa->usesEnergy &&
+						mind.closestBuildings[ BA_H_REACTOR ].distance <= mind.closestBuildings[ BA_H_ARMOURY ].distance )
+				{
+					dest = BA_H_REACTOR;
+				}
+				else
+				{
+					dest = BA_H_ARMOURY;
+				}
+				break;
+			case TEAM_NONE:
+			case TEAM_ALL:
+			case NUM_TEAMS:
+				dest = BA_NONE;
+		}
+
+		if ( !BotChangeGoalEntity( self, mind.closestBuildings[ dest ].ent )
+				|| dest == BA_NONE )
+		{
+			return STATUS_FAILURE;
+		}
+		mind.currentNode = node;
+	}
+
+	if ( !needsSupply )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	if ( !mind.goal.targetsValidEntity() )
+	{
+		return STATUS_FAILURE;
+	}
+
+	// Can't resupply at powered off buildables
+	if ( !mind.goal.getTargetedEntity()->powered )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( !GoalInRange( self, range ) )
+	{
+		BotMoveToGoal( self );
+		return STATUS_RUNNING;
+	}
+	// we are in range, but maybe current clip is not fully loaded
+	// resupply of last clip will be done automatically since we're
+	// already in range
+	else if( ps.ammo != wpa->maxAmmo )
+	{
+		Cmd_Reload_f( self );
+		return STATUS_RUNNING;
+	}
+
+	return STATUS_SUCCESS;
+}
+
 AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* )
 {
 	botMemory_t* mind = self->botMind;
