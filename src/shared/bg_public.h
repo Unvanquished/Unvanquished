@@ -1692,7 +1692,7 @@ bool BG_UpgradeDisabled( int upgrade );
 bool BG_ClassDisabled( int class_ );
 bool BG_BuildableDisabled( int buildable );
 
-weapon_t BG_PrimaryWeapon( int stats[] );
+weapon_t BG_PrimaryWeapon( int const stats[] );
 
 // bg_voice.c
 #define MAX_VOICES             8

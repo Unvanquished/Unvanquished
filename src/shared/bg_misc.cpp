@@ -2509,7 +2509,7 @@ bool BG_BuildableDisabled( int buildable )
 BG_PrimaryWeapon
 ============
 */
-weapon_t BG_PrimaryWeapon( int stats[] )
+weapon_t BG_PrimaryWeapon( int const stats[] )
 {
 	int i;
 

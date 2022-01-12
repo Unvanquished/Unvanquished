@@ -85,7 +85,7 @@ void     BotClassMovement( gentity_t *self, bool inAttackRange );
 
 // human bots
 bool   WeaponIsEmpty( weapon_t weapon, playerState_t *ps );
-float      PercentAmmoRemaining( weapon_t weapon, playerState_t *ps );
+float      PercentAmmoRemaining( weapon_t weapon, playerState_t const* ps );
 void       BotFindDamagedFriendlyStructure( gentity_t *self );
 bool       BotBuyWeapon( gentity_t *self, weapon_t weapon );
 bool       BotBuyUpgrade( gentity_t *self, upgrade_t upgrade );

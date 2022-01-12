@@ -511,7 +511,7 @@ bool WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
 	return ps->ammo <= 0 && ps->clips <= 0 && !BG_Weapon( weapon )->infiniteAmmo;
 }
 
-float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps )
+float PercentAmmoRemaining( weapon_t weapon, playerState_t const* ps )
 {
 	int maxAmmo, maxClips;
 	float totalMaxAmmo, totalAmmo;
