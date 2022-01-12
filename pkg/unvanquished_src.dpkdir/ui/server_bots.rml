@@ -50,10 +50,6 @@
 					<input cvar="g_bot_buy" type="checkbox" />
 					<h3> Human bots purchase equipment </h3>
 				</row>
-				<row>
-					<input cvar="g_bot_repair" type="checkbox" />
-					<h3> Human bots repair buildings </h3>
-				</row>
 
 				<h2> Individually </h2>
 				<h3> Primary weapons </h3>
