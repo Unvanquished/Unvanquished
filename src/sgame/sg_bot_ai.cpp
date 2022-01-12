@@ -1210,6 +1210,27 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_RUNNING;
 }
 
+// triggers a reload.
+// Fails if there is no remaining clips.
+// TODO: return STATUS_RUNNING as long as reload is not
+//   finished (this would allow entering a more "dancing"
+//   stance for the bot, to be more careful, etc)
+// TODO: make Cmd_Reload_f able to report status (that's
+//   true for all player commands actually, to allow bots
+//   to use them more easily)
+AINodeStatus_t BotActionReload( gentity_t *self, AIGenericNode_t *node )
+{
+	ASSERT( self && self->client );
+
+	if ( self->client->ps.clips == 0 )
+	{
+		return STATUS_FAILURE;
+	}
+
+	Cmd_Reload_f( self );
+	return STATUS_SUCCESS;
+}
+
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t forward;
@@ -1258,6 +1279,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 	}
 	return STATUS_RUNNING;
 }
+
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *buy = ( AIActionNode_t * ) node;

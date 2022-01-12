@@ -141,9 +141,48 @@ static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 		&& BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
 }
 
-static AIValue_t percentAmmo( gentity_t *self, const AIValue_t* )
+// This function returns the ratio of 2 ammo values (ammo/clips)
+// for a specific weapon.
+// Only used to reduce duplicated code.
+// TODO: make this a weapon_t or weaponAttributes_t method?
+static AIValue_t Ratio( int current, int max, bool infiniteAmmo )
 {
-	return AIBoxFloat( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) );
+	if ( max == 0 || infiniteAmmo )
+	{
+		return AIBoxFloat( 1.f );
+	}
+	return AIBoxFloat( current / static_cast<float>( max ) );
+}
+
+// Return emptyness ammo ratio of currently loaded clip
+// TODO: implement for non-primary weapon (such as barbs or future secondary weapons)
+static AIValue_t percentAmmoClip( gentity_t *self, const AIValue_t* )
+{
+	ASSERT( self && self->client );
+	playerState_t const& ps = self->client->ps;
+	weaponAttributes_t const* wpa = BG_Weapon( BG_PrimaryWeapon( ps.stats ) );
+
+	if ( wpa->maxAmmo == 0 && !wpa->infiniteAmmo )
+	{
+		//TODO this warning does not belongs to AI code
+		//TODO maybe an assert would make more sense, since such
+		//  situation implies that the game is broken anyway
+		Log::Warn( "Weapon %s can not fire: it can not have any ammo!", wpa->name );
+		return AIBoxFloat( 1.f );
+	}
+
+	return Ratio( ps.ammo, wpa->maxAmmo, wpa->infiniteAmmo );
+}
+
+// Return remaining ratio of remaining clips
+// TODO: implement for non-primary weapon (such as barbs or future secondary weapons)
+static AIValue_t percentClips( gentity_t *self, const AIValue_t* )
+{
+	ASSERT( self && self->client );
+	playerState_t const& ps = self->client->ps;
+	weaponAttributes_t const* wpa = BG_Weapon( BG_PrimaryWeapon( ps.stats ) );
+
+	return Ratio( ps.clips, wpa->maxClips, wpa->infiniteAmmo );
 }
 
 static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
@@ -355,7 +394,8 @@ static const struct AIConditionMap_s
 	{ "isVisible",         isVisible,         1 },
 	{ "matchTime",         matchTime,         0 },
 	{ "momentum",          momentum,          1 },
-	{ "percentAmmo",       percentAmmo,       0 },
+	{ "percentAmmoClip",   percentAmmoClip,   0 },
+	{ "percentClips",      percentClips,      0 },
 	{ "percentHealth",     percentHealth,     1 },
 	{ "random",            randomChance,      0 },
 	{ "resupplyScore",     resupplyScore,     0 },
@@ -940,6 +980,7 @@ static const struct AIActionMap_s
 	{ "moveInDir",         BotActionMoveInDir,         1, 2 },
 	{ "moveTo",            BotActionMoveTo,            1, 2 },
 	{ "moveToGoal",        BotActionMoveToGoal,        0, 0 },
+	{ "reload",            BotActionReload,            0, 0 },
 	{ "repair",            BotActionRepair,            0, 0 },
 	{ "resetStuckTime",    BotActionResetStuckTime,    0, 0 },
 	{ "roam",              BotActionRoam,              0, 0 },
