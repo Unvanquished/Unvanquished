@@ -27,7 +27,9 @@ selector
 			{
 				selector
 				{
-					condition ( ( distanceTo( E_H_REACTOR ) <= 300 || distanceTo( E_H_MEDISTAT ) <= 300 ) && isVisible( E_ENEMY ) )
+					// defending reactor, or try to avoid being killed while healing (hence the different values)
+					// the isVisible check is here to prevent "defending" when enemies are detected by radars
+					condition ( ( distanceTo( E_H_REACTOR ) <= 300 || distanceTo( E_H_MEDISTAT ) <= 250 ) && isVisible( E_ENEMY ) )
 					{
 						action fight
 					}
