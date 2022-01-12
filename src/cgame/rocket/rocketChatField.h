@@ -48,7 +48,6 @@ public:
 	RocketChatField( const Rml::Core::String &tag ) :
 			Rml::Core::Element( tag ),
 			font_engine_interface( Rml::Core::GetFontEngineInterface() ),
-			focus( false ),
 			cursor_character_index( 0 ),
 			text_element( nullptr )
 	{
@@ -56,23 +55,13 @@ public:
 		text_element = AppendChild( Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() ) );
 	}
 
-	virtual void OnChildRemove( Element *child )
-	{
-		Element::OnChildRemove(child);
-		if ( child == this && context )
-		{
-			context->GetRootElement()->RemoveEventListener( "show", this );
-			context->GetRootElement()->RemoveEventListener( "hide", this );
-			context->GetRootElement()->RemoveEventListener( "blur", this );
-			context->GetRootElement()->RemoveEventListener( "mousemove", this );
-
-			context = nullptr;
-		}
-	}
-
 	void OnRender()
 	{
 		UpdateCursorPosition();
+		if ( cursor_geometry.GetVertices().empty() )
+		{
+			GenerateCursor();
+		}
 		cursor_geometry.Render( cursor_position );
 	}
 
@@ -81,72 +70,42 @@ public:
 		Element::OnChildAdd( child );
 		if ( child == this )
 		{
-			// Cache context so we can remove the event listeners later
-			context = GetContext();
-
-			context->GetRootElement()->AddEventListener( "show", this );
-			context->GetRootElement()->AddEventListener( "hide", this );
-			context->GetRootElement()->AddEventListener( "blur", this );
-			context->GetRootElement()->AddEventListener( "mousemove", this );
+			this->AddEventListener( "focus", this );
+			this->AddEventListener( "mousemove", this );
+			this->AddEventListener( "textinput", this );
+			this->AddEventListener( "keydown", this );
+			this->AddEventListener( "resize", this );
 		}
 	}
 
 	virtual void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes )
 	{
+		Element::OnAttributeChange( changed_attributes );
 		if (changed_attributes.find( "exec" ) != changed_attributes.end() )
 		{
 			cmd = GetAttribute<Rml::Core::String>( "exec", "" );
 		}
 	}
 
-	void OnUpdate()
-	{
-		// Ensure mouse follow cursor
-		if ( focus )
-		{
-			GetContext()->ProcessMouseMove( cursor_position.x, cursor_position.y, 0 );
-
-			// Make sure this element is in focus if visible
-			if ( GetContext()->GetFocusElement() != this )
-			{
-				this->Click();
-				this->Focus();
-			}
-		}
-	}
-
 	void ProcessEvent( Rml::Core::Event &event )
 	{
 		// Cannot move mouse while this element is in view
-		if ( focus && event == "mousemove" )
+		// FIXME: Does not work? You can move the mouse out of the window.
+		if ( event == "mousemove" )
 		{
 			event.StopPropagation();
 			return;
 		}
 
-		// We are in focus, let the element know
-		if ( event.GetTargetElement() == GetOwnerDocument() )
+		if ( event == "focus" )
 		{
-			if ( event == "show" )
-			{
-				focus = true;
-				CG_Rocket_EnableCursor( false );
-			}
-
-			else if ( event == "blur" || event == "hide" )
-			{
-				focus =  false;
-				text.clear();
-				UpdateText();
-			}
+			CG_Rocket_EnableCursor( false );
 		}
 
-		if ( focus )
 		{
 			if ( event == "resize" )
 			{
 				CG_Rocket_EnableCursor( false );
-				focus = true;
 				GenerateCursor();
 			}
 
@@ -158,9 +117,12 @@ public:
 				switch ( key_identifier )
 				{
 					case Rml::Core::Input::KI_BACK:
-						text.erase( cursor_character_index - 1, 1 );
-						UpdateText();
-						MoveCursor( -1 );
+						if ( cursor_character_index > 0 )
+						{
+							text.erase( cursor_character_index - 1, 1 );
+							UpdateText();
+							MoveCursor( -1 );
+						}
 						break;
 
 					case Rml::Core::Input::KI_DELETE:
@@ -182,7 +144,6 @@ public:
 
 					case Rml::Core::Input::KI_RETURN:
 					case Rml::Core::Input::KI_NUMPADENTER:
-					{
 						if ( text.empty() )
 						{
 							GetOwnerDocument()->Hide();
@@ -192,6 +153,7 @@ public:
 						{
 							trap_SendConsoleCommand( va( "%s\n", text.c_str() ) );
 							text.clear();
+							cursor_character_index = 0;
 							UpdateText();
 							GetOwnerDocument()->Hide();
 							return;
@@ -206,10 +168,10 @@ public:
 						{
 							trap_SendConsoleCommand( va( "%s %s", cmd.c_str(), Cmd::Escape( text.c_str() ).c_str() ) );
 							text.clear();
+							cursor_character_index = 0;
 							UpdateText();
 							GetOwnerDocument()->Hide();
 						}
-					}
 						break;
 
 					default:
@@ -453,10 +415,8 @@ protected:
 private:
 	Rml::Core::FontEngineInterface* const font_engine_interface;
 	Rml::Core::Vector2f cursor_position;
-	bool focus;
 	int cursor_character_index;
 	Rml::Core::Element *text_element;
-	Rml::Core::Context *context;
 
 	Rml::Core::Geometry cursor_geometry;
 	Rml::Core::Vector2f cursor_size;
