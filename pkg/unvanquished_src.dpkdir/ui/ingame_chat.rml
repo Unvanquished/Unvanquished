@@ -18,7 +18,7 @@
 	</style>
 	<script src="lua/util.lua"/>
 	</head>
-	<body id="ingame_chat" onkeydown="detectEscape(event, document)" >
-	<chatType/> <chatfield onfocus='Events.pushevent("setChatCommand", event)' />
+	<body id="ingame_chat" onkeydown="detectEscape(event, document)" onshow='document:GetElementById("chatfield"):Focus()' >
+	<chatType/> <chatfield id="chatfield" onfocus='Events.pushevent("setChatCommand", event)' />
 	</body>
 </rml>
