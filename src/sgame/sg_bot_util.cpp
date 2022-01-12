@@ -323,7 +323,6 @@ float BotGetResupplyScore( gentity_t *self )
 			return 0.f;
 		case NUM_TEAMS:
 			ASSERT_UNREACHABLE();
-			return 0;
 	}
 	float timeDist = dist / GetMaximalSpeed( self );
 	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentAmmo ) / sqrt( timeDist );
