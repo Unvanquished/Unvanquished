@@ -741,13 +741,9 @@ public:
 		AppendChild( currentSpeedElement );
 	}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
+	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
-		{
-			GetColor( "color", color );
-		}
 
 		if ( changed_properties.find( "background-color" ) != changed_properties.end() )
 		{
@@ -755,7 +751,7 @@ public:
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		int          i;
 		float        val, max, top;
@@ -800,6 +796,7 @@ public:
 			{
 				val = speedSamples[( oldestSpeedSample + i + SPEEDOMETER_NUM_SAMPLES -
 				SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
+				Color::Color color;
 
 				if ( val < SPEED_MED )
 				{
@@ -857,9 +854,7 @@ private:
 	Rocket::Core::ElementText* maxSpeedElement;
 	Rocket::Core::ElementText* currentSpeedElement;
 	bool shouldDrawSpeed;
-	Color::Color color;
 	Color::Color backColor;
-
 };
 
 class CreditsValueElement : public TextHudElement
