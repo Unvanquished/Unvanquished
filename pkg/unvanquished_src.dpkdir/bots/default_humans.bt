@@ -42,14 +42,9 @@ selector
 				condition ( distanceTo( E_FRIENDLYBUILDING ) > 400 )
 				selector
 				{
-					condition ( haveUpgrade( UP_FIREBOMB ) )
-					{
-						action activateUpgrade( UP_FIREBOMB )
-					}
-					condition ( haveUpgrade( UP_GRENADE ) )
-					{
-						action activateUpgrade( UP_GRENADE )
-					}
+					// no need to check the upgrade is in inventory, since action would fail
+					action activateUpgrade( UP_FIREBOMB )
+					action activateUpgrade( UP_GRENADE )
 				}
 			}
 			action fight
