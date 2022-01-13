@@ -555,6 +555,7 @@ void CG_Rocket_Frame( cgClientState_t state )
 	Rocket_Render();
 	if ( rocketInfo.renderCursor && rocketInfo.cursor )
 	{
+		trap_R_ClearColor();
 		trap_R_DrawStretchPic( rocketInfo.cursor_pos.x, rocketInfo.cursor_pos.y, rocketInfo.cursor_pos.w,rocketInfo.cursor_pos.h, 0, 0, 1, 1, rocketInfo.cursor );
 	}
 }
