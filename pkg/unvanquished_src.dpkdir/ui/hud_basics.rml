@@ -91,6 +91,7 @@
 		lagometer {
 			width: 4.5em;
 			height: 7em;
+			background-color: #77777755;
 		}
 
 		crosshair,
