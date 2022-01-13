@@ -357,19 +357,45 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 	}
 
 	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, nullptr, nullptr, nullptr );
+	playerMins[2] -= STEPSIZE;
+	playerMaxs[2] -= STEPSIZE;
 
+	gentity_t *blockers[3] = {};
 	//account for how large we can step
-	playerMins[2] += STEPSIZE;
-	playerMaxs[2] += STEPSIZE;
-
-	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
-
-	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
-	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
+	for ( int i = -1; i != 1; ++i )
 	{
-		return &g_entities[trace.entityNum];
+		playerMins[2] += STEPSIZE;
+		playerMaxs[2] += STEPSIZE;
+
+		VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
+
+		trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+		// This is obviously buggy, but is an exact inversion of
+		// previous situation. It would require a full rewrite of
+		// the obstacle avoidance code to fix things for real.
+		//
+		// So, (one of) the bug(s) is that if the trace stops on
+		// geometry which is currently walkable, but followed by
+		// a non-walkable geometry or other kind of obstacle,
+		// said obstacle will be considered non-blocking.
+		// Similarly, a wallwalking dretch... oh, well, you get
+		// the idea, I bet.
+		if ( !( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE ) )
+		{
+			return nullptr;
+		}
+		blockers[i] = &g_entities[trace.entityNum];
 	}
-	return nullptr;
+
+	for ( int i = -1; i != 1; ++i )
+	{
+		if ( blockers[i] )
+		{
+			return blockers[i];
+		}
+	}
+
+	ASSERT_UNREACHABLE();
 }
 
 // checks if jumping would get rid of blocker
