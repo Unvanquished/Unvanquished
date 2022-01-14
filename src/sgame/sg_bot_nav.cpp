@@ -544,6 +544,28 @@ bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 		return false;
 	}
 
+	//TODO: use team-agnostic code to check for crouch possibility
+	//      (esp since before bs would not allow crouching)
+	if ( G_Team( self ) == TEAM_HUMANS )
+	{
+		trace_t trace;
+		vec3_t end;
+		vec3_t playerMins, playerMaxs, crouchMaxs;
+		class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
+		BG_ClassBoundingBox( pClass, playerMins, playerMaxs, crouchMaxs, nullptr, nullptr );
+
+		// This is obviously buggy, as STEPSIZE is not considered. Now, remember that:
+		// 1. this is backported from a cleaner codebase
+		// 2. there's no vents in current maps in which this would be a problem AFAIK
+		VectorMA( self->s.origin, BOT_OBSTACLE_AVOID_RANGE, dir, end );
+		trap_Trace( &trace, self->s.origin, playerMins, crouchMaxs, end, self->s.number, MASK_SHOT, 0 );
+		if ( trace.fraction >= 1.f || trace.plane.normal[2] >= 0.7f )
+		{
+			self->botMind->willCrouch( true );
+			return true;
+		}
+	}
+
 	if ( BotFindSteerTarget( self, dir ) )
 	{
 		return true;

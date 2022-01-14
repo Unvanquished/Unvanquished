@@ -439,7 +439,10 @@ void G_BotThink( gentity_t *self )
 		//BotClampPos( self );
 	}
 
-	self->botMind->willSprint( false ); //let the BT decide that
+	// let the BT decide what kind of moves to do
+	self->botMind->willSprint( false );
+	self->botMind->willCrouch( false );
+
 	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
 
 	// if we were nudged...
@@ -632,4 +635,17 @@ void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 	}
 
 	exhausted = exhausted && stamina <= jumpCost * 2;
+}
+
+void botMemory_t::willCrouch( bool enable )
+{
+	wantCrouch = enable;
+}
+
+void botMemory_t::doCrouch( usercmd_t& cmd )
+{
+	if ( wantCrouch )
+	{
+		cmd.upmove = -127;
+	}
 }
