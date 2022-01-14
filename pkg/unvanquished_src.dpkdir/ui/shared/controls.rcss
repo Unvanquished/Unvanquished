@@ -45,6 +45,12 @@ select selectbox option:nth-child(odd),
 dataselect selectbox option:nth-child(odd) {
 	background-color: #222222;
 }
+/* Work around RmlUi bug where sometimes there is a pixel gap between
+   rows in the dropdown menu by matching one of the rows' color */
+select selectbox,
+dataselect selectbox {
+	background-color: #222222;
+}
 
 /* hover */
 select selectbox option:hover,
