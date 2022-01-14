@@ -70,6 +70,8 @@ public:
 			// when this element is being removed
 			owner = GetOwnerDocument();
 			owner->AddEventListener( Rml::Core::EventId::Show, this );
+
+			AddEventListener( Rml::Core::EventId::Change, this );
 		}
 	}
 
