@@ -343,6 +343,7 @@ void BotWalk( gentity_t *self, bool enable )
 	}
 }
 
+// search for obstacle forward, and return pointer on it if any
 gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 {
 	vec3_t playerMins, playerMaxs;
@@ -371,6 +372,8 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 	return nullptr;
 }
 
+// checks if jumping would get rid of blocker
+// return true if yes
 bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 {
 	vec3_t playerMins;
@@ -420,7 +423,9 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	return blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f;
 }
 
-// return true on error or if could not find a path
+// try to find a path around the obstacle by projecting 5
+// traces in 15° steps in both directions.
+// return true if a path could be found
 bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 {
 	vec3_t forward;
@@ -499,6 +504,8 @@ bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 	return false;
 }
 
+// This function tries to detect obstacles and to find a way
+// around them, by modifying dir
 //return true on error
 bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
@@ -585,6 +592,7 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 	}
 }
 
+// Makes bot aim more or less slowly in a direction
 void BotSeek( gentity_t *self, vec3_t direction )
 {
 	vec3_t viewOrigin;
