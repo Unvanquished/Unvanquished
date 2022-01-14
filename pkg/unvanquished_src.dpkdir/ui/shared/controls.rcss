@@ -23,10 +23,6 @@ colorinput, dataselect, select, input.text {
 	vertical-align: middle;
 
 	background-color: rgba( 0%, 0%, 0%, 50%);
-
-	/* FIXME: Borders don't work here */
-	border-width: .1em;
-	border-color:  #FFFFFF;
 }
 
 colorinput:hover, dataselect:hover, select:hover, input.text:hover {
@@ -37,10 +33,6 @@ colorinput:hover, dataselect:hover, select:hover, input.text:hover {
 /* #### Drop-down menu boxes #### */
 select selectbox option,
 dataselect selectbox option {
-	/* FIXME: Borders don't work here */
-	border-width: .1em;
-	border-color:  #FFFFFF;
-
 	padding: .16em;
 }
 
@@ -193,16 +185,12 @@ input.range {
 
 input.range slidertrack {
 	background:#83fff522;
-	border-width: .1em;
-	border-color:#83fff555;
 	height: .4em;
 	margin-top: .4em;
 	width: 4.1em;
 }
 
 input.range sliderbar {
-	border-width: .1em;
-	border-color: #83fff588;
 	background: #136D67;
 	height: 1.2em;
 	width: .6em;
