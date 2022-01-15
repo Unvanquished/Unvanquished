@@ -2570,7 +2570,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 					}
 
 					ent->client->pers.evolveHealthFraction =
-					       Math::Clamp( ent->entity->Get<HealthComponent>()->HealthFraction(), 0.0f, 1.0f );
+					       ent->entity->Get<HealthComponent>()->HealthFraction();
 
 					if ( evolveInfo.evolveCost < 0 ){
 						ent->client->pers.devolveReturningCredits -=
