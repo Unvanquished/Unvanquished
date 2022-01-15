@@ -9,8 +9,11 @@
 
 		<h2> General </h2>
 		<row>
-			<input cvar="g_friendlyFire" type="checkbox" />
-			<h3> Friendly fire</h3>
+			<h3> Friendly fire damage multipliers</h3>
+			<input type="range" min="0" max="1" step="0.05" cvar="g_friendlyFireAlienMultiplier" />
+			<p> Alien: <inlinecvar cvar="g_friendlyFireAlienMultiplier" type="number" format="%.2f"/></p>
+			<input type="range" min="0" max="1" step="0.05" cvar="g_friendlyFireHumanMultiplier" />
+			<p> Human: <inlinecvar cvar="g_friendlyFireHumanMultiplier" type="number" format="%.2f"/></p>
 		</row>
 		<row>
 			<input cvar="g_friendlyBuildableFire" type="checkbox" />
