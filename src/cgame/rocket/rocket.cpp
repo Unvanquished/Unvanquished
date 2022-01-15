@@ -291,11 +291,11 @@ void Rocket_RocketDebug_f()
 		{
 			Rocket::Debugger::SetContext( menuContext );
 		}
-		CG_SetKeyCatcher( trap_Key_GetCatcher() | KEYCATCH_UI );
+		CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
 	}
 	else
 	{
-		CG_SetKeyCatcher( trap_Key_GetCatcher() & ~KEYCATCH_UI );
+		CG_SetKeyCatcher( rocketInfo.keyCatcher & ~KEYCATCH_UI );
 	}
 }
 
