@@ -33,14 +33,6 @@
 					<input cvar="g_bot_attackStruct" type="checkbox" />
 					<h3> Attack structures </h3>
 				</row>
-				<row>
-					<input type="range" min="1" max="20" step="1" cvar="g_bot_numInGroup"/>
-					<h3> Group size</h3>
-					<p class="inline">
-						Current: <inlinecvar cvar="g_bot_numInGroup" type="number" format="%.0f"/>
-						<ilink onclick='Events.pushevent("exec reset g_bot_numInGroup", event)'> (reset) </ilink>
-					</p>
-				</row>
 			</panel>
 
 			<tab> Humans </tab>
