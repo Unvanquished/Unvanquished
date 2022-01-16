@@ -27,7 +27,6 @@
 		</row>
 		<row>
 			<input type="text" cvar="g_password" class="text" id="password"/>
-			<input cvar="g_needpass" type="checkbox" style="margin-right:1em;"/>
 			<h3> Password </h3>
 		</row>
 
