@@ -49,6 +49,7 @@ void CG_Rocket_Init( glconfig_t gl )
 
 	oldConnState = connstate_t::CA_UNINITIALIZED;
 	cgs.glconfig = gl;
+	rocketInfo.keyCatcher = trap_Key_GetCatcher();
 
 	Trans_Init();
 
@@ -236,7 +237,7 @@ void CG_Rocket_Init( glconfig_t gl )
 		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ERROR ].id, "open" );
 	}
 
-	CG_SetKeyCatcher( KEYCATCH_UI );
+	CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
 }
 
 void CG_Rocket_LoadHuds()
