@@ -17,14 +17,6 @@
 			<h3> Friendly buildable fire</h3>
 		</row>
 		<row>
-			<input type="range" min="0" max="30" step="1" cvar="g_initialMineRate"/>
-			<h3> Initial mining rate</h3>
-			<p class="inline">
-				Current: <inlinecvar cvar="g_initialMineRate" type="number" format="%.0f"/>
-				<ilink onclick='Events.pushevent("exec reset g_initialMineRate", event)'> (reset) </ilink>
-			</p>
-		</row>
-		<row>
 			<input cvar="g_allowVote" type="checkbox" />
 			<h3> Allow voting </h3>
 		</row>
