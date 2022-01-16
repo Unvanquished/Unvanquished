@@ -410,6 +410,8 @@ void Rocket_Init()
 	REGISTER_ELEMENT("inlinecvar", RocketCvarInlineElement )
 
 	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_DEFAULT );
+
+	CG_FocusEvent( rocketInfo.keyCatcher & KEYCATCH_CONSOLE ? false : true );
 }
 
 void Rocket_Shutdown()
@@ -644,6 +646,7 @@ void Rocket_QuakeToRMLBuffer( const char *in, char *out, int length )
 	Q_strncpyz( out, Rocket_QuakeToRML( in, RP_EMOTICONS ).c_str(), length );
 }
 
+// FIXME: Poor naming, this deals with the custom cursors as well
 class EngineCursor
 {
 public:
@@ -701,22 +704,8 @@ static EngineCursor engineCursor;
 
 void Rocket_SetActiveContext( int catcher )
 {
-	switch ( catcher )
-	{
-		case KEYCATCH_UI:
-			engineCursor.Show( true );
-			drawMenu = true;
-			break;
-
-		default:
-			if ( !( catcher & KEYCATCH_CONSOLE ) )
-			{
-				engineCursor.Show( false );
-			}
-
-			drawMenu = false;
-			break;
-	}
+	drawMenu = catcher & KEYCATCH_UI;
+	engineCursor.Show( catcher & ( KEYCATCH_UI | KEYCATCH_CONSOLE ) );
 }
 
 void CG_FocusEvent( bool has_focus )
