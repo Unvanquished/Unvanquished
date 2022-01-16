@@ -387,11 +387,11 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 		blockers[i] = &g_entities[trace.entityNum];
 	}
 
-	for ( int i = -1; i != 1; ++i )
+	for ( gentity_t* ent : blockers )
 	{
-		if ( blockers[i] )
+		if ( ent )
 		{
-			return blockers[i];
+			return ent;
 		}
 	}
 
