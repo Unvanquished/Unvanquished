@@ -35,8 +35,8 @@ img
 	position: absolute;
 	color: white;
 	height: 25%;
-	margin-left: 5%;
-	margin-top: 0%;
+	margin-left: 4%;
+	margin-top: 5%;
 }
 jetpack.inactive
 {

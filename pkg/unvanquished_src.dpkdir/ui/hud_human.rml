@@ -136,6 +136,10 @@
 				display:block;
 			}
 
+			weapon_icon img {
+				top: -60%;
+				left: -1%;
+			}
 
 			weapon_icon img, img.clip, health_cross, img.stamina{
 				z-index:3;
@@ -143,8 +147,6 @@
 				height:180%;
 				display:block;
 				position:absolute;
-				top:-60%;
-				left:-1%;
 				image-color:#aaffffff;
 
 
@@ -153,14 +155,16 @@
 				color:#ff6562ff;
 			}
 			health_cross{
-				top:-40%;
+				top:-42%;
 				left:1%;
-				width: 2.4em;
-				height:2.4em;
+				width: 1.85em;
+				height:1.85em;
 
 			}
 			img.stamina{
 				height:150%;
+				top: -50%;
+				left: -1%;
 			}
 			img.clip{
 				height:120%;
@@ -231,9 +235,10 @@
 
 			inventory img
 			{
-				width: 1.8em;
+				width: 1.35em;
 				float: left;
 				clear: right;
+				image-color: #c0c0c0;
 			}
 
 			div#scanner
