@@ -75,7 +75,7 @@ public:
 			type(type_),
 			isReplacedElement(false) {}
 
-	void OnUpdate()
+	void OnUpdate() override
 	{
 		Rml::Core::Element::OnUpdate();
 		if (CG_Rocket_IsCommandAllowed(type))
@@ -84,7 +84,7 @@ public:
 		}
 	}
 
-	void OnRender()
+	void OnRender() override
 	{
 		if (CG_Rocket_IsCommandAllowed(type))
 		{
@@ -96,7 +96,7 @@ public:
 	virtual void DoOnRender() {}
 	virtual void DoOnUpdate() {}
 
-	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension )
+	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension ) override
 	{
 		if ( !isReplacedElement )
 		{
@@ -215,7 +215,7 @@ public:
 			totalBudget( 0 ),
 			queuedBudget( 0 ) {}
 
-	void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes )
+	void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes ) override
 	{
 		TextHudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
@@ -360,7 +360,7 @@ public:
 			  index(0),
 			  previous(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		int        i, total;
 		int        fps;
@@ -424,7 +424,7 @@ public:
 	CrosshairIndicatorHudElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, true ) {}
 
-	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.Contains( Rml::Core::PropertyId::Color ) )
@@ -535,7 +535,7 @@ public:
 			color( Color::White ) {
 	}
 
-	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.Contains( Rml::Core::PropertyId::Color ) )
@@ -863,7 +863,7 @@ public:
 			TextHudElement( tag, ELEMENT_HUMANS ),
 			credits( -1 ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		playerState_t *ps = &cg.snap->ps;
 		int value = ps->persistant[ PERS_CREDIT ];;
@@ -885,7 +885,7 @@ public:
 			TextHudElement( tag, ELEMENT_ALIENS ),
 			evos( -1 ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		playerState_t *ps = &cg.snap->ps;
 		float value = ps->persistant[ PERS_CREDIT ];;
@@ -911,7 +911,7 @@ public:
 	TextHudElement( tag, ELEMENT_HUMANS ),
 	stamina( -1 ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		playerState_t *ps = &cg.snap->ps;
 		float         value = ps->stats[ STAT_STAMINA ];
@@ -936,7 +936,7 @@ public:
 			weapon( WP_NONE ),
 			isNoAmmo( false ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		playerState_t *ps;
 		weapon_t      newWeapon;
@@ -1053,7 +1053,7 @@ public:
 			HudElement( tag, ELEMENT_HUMANS ),
 			display( Rml::Core::Style::Display::Block ) {}
 
-	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.Contains( Rml::Core::PropertyId::Display ) )
@@ -1062,7 +1062,7 @@ public:
 		}
 	}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		vec3_t        view, point;
 		trace_t       trace;
@@ -1106,7 +1106,7 @@ public:
 	LocationElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_GAME ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		Rml::Core::String newLocation;
 		centity_t  *locent;
@@ -1151,7 +1151,7 @@ public:
 			seconds_( 0 ),
 			tens_( 0 ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		int   mins, seconds, tens;
 		int   msec;
@@ -1313,7 +1313,7 @@ public:
 	{
 	}
 
-	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.Contains( Rml::Core::PropertyId::BackgroundColor ) )
@@ -1472,7 +1472,7 @@ public:
 	{
 	}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		const char* ping;
 
@@ -1616,7 +1616,7 @@ public:
 	CrosshairNamesElement( const Rml::Core::String& tag  ) :
 			HudElement( tag, ELEMENT_GAME ), alpha_( 0.0F ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		Rml::Core::String name;
 		float alpha;
@@ -1708,7 +1708,7 @@ public:
 	LevelshotElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_ALL ), mapIndex( -1 ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) )
 		{
@@ -1745,7 +1745,7 @@ public:
 	LevelshotLoadingElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_ALL ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( rocketInfo.cstate.connState < connstate_t::CA_LOADING )
 		{
@@ -1781,7 +1781,7 @@ public:
 	CenterPrintElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_GAME ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( !*cg.centerPrint )
 		{
@@ -1811,7 +1811,7 @@ public:
 			TextHudElement( tag, ELEMENT_GAME ),
 			alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.ageAlpha > 0 )
 		{
@@ -1854,7 +1854,7 @@ public:
 	TextHudElement( tag, ELEMENT_GAME ),
 	alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.distanceAlpha > 0 )
 		{
@@ -1897,7 +1897,7 @@ public:
 	TextHudElement( tag, ELEMENT_GAME ),
 	alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.infoAlpha > 0 )
 		{
@@ -1940,7 +1940,7 @@ public:
 	HudElement( tag, ELEMENT_GAME ),
 	alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.nameAlpha > 0 )
 		{
@@ -1982,7 +1982,7 @@ public:
 	BeaconIconElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_GAME, true ) {}
 
-	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.Contains( Rml::Core::PropertyId::Color ) )
@@ -2024,7 +2024,7 @@ public:
 	HudElement( tag, ELEMENT_GAME ),
 	alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.ownerAlpha > 0 )
 		{
@@ -2073,7 +2073,7 @@ public:
 
 	}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		playerState_t  *ps = &cg.snap->ps;
 		buildable_t   buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
@@ -2187,7 +2187,7 @@ public:
 	t0 ( 0 ),
 	offset ( 0 ) {}
 
-	void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes )
+	void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes ) override
 	{
 		HudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
@@ -2211,7 +2211,7 @@ public:
 		}
 	}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		int newNumBarbs = cg.snap->ps.ammo;
 		int interval = BG_GetBarbRegenerationInterval( cg.snap->ps );
