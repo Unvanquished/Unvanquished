@@ -99,14 +99,20 @@ struct mrNode_t
 
 struct mapRotation_t
 {
-	std::string name;
+	char   name[ MAX_QPATH ];
 
 	mrNode_t *nodes[ MAX_MAP_ROTATION_MAPS ];
 	int      numNodes;
 	int      currentNode;
 };
 
-static BoundedVector<mapRotation_t, MAX_MAP_ROTATIONS> mapRotations;
+struct mapRotations_t
+{
+	mapRotation_t rotations[ MAX_MAP_ROTATIONS ];
+	int           numRotations;
+};
+
+static mapRotations_t mapRotations;
 
 static int            G_CurrentNodeIndex( int rotation );
 static int            G_NodeIndexAfter( int currentNode, int rotation );
@@ -118,11 +124,11 @@ G_MapExists
 Check if a map exists
 ===============
 */
-bool G_MapExists( Str::StringRef name )
+bool G_MapExists( const char *name )
 {
 	// Due to filesystem changes, checking whether "maps/$name.bsp" exists in the
 	// VFS is no longer the correct way to check whether a map exists
-	return trap_FindPak( va( "map-%s", name.c_str() ) );
+	return trap_FindPak( va( "map-%s", name ) );
 }
 
 /*
@@ -134,9 +140,11 @@ Check if a rotation exists
 */
 static bool G_RotationExists( const char *name )
 {
-	for ( mapRotation_t &rotation : mapRotations )
+	int i;
+
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
-		if ( Q_stricmp( rotation.name.c_str(), name ) == 0 )
+		if ( Q_strncmp( mapRotations.rotations[ i ].name, name, MAX_QPATH ) == 0 )
 		{
 			return true;
 		}
@@ -154,7 +162,7 @@ Check if a label exists in a rotation
 */
 static bool G_LabelExists( int rotation, const char *name )
 {
-	mapRotation_t *mr = &mapRotations[ rotation ];
+	mapRotation_t *mr = &mapRotations.rotations[ rotation ];
 	int           i;
 
 	for ( i = 0; i < mr->numNodes; i++ )
@@ -510,6 +518,7 @@ Load the map rotations from a map rotation file
 static bool G_ParseMapRotationFile( const char *fileName )
 {
 	const char *text_p;
+	int          i, j;
 	int          len;
 	char         *token;
 	char         text[ 20000 ];
@@ -562,21 +571,22 @@ static bool G_ParseMapRotationFile( const char *fileName )
 					return false;
 				}
 
-				if ( mapRotations.size() == MAX_MAP_ROTATIONS )
+				if ( mapRotations.numRotations == MAX_MAP_ROTATIONS )
 				{
 					Log::Warn("maximum number of map rotations (%d) reached",
 					          MAX_MAP_ROTATIONS );
 					return false;
 				}
 
-				mapRotation_t rotation;
-				if ( !G_ParseMapRotation( &rotation, &text_p ) )
+				Q_strncpyz( mapRotations.rotations[ mapRotations.numRotations ].name, mrName, MAX_QPATH );
+
+				if ( !G_ParseMapRotation( &mapRotations.rotations[ mapRotations.numRotations ], &text_p ) )
 				{
 					Log::Warn("%s: failed to parse map rotation %s", fileName, mrName );
 					return false;
 				}
-				rotation.name = mrName;
-				mapRotations.append(std::move(rotation));
+
+				mapRotations.numRotations++;
 
 				//start parsing map rotations again
 				mrNameSet = false;
@@ -602,12 +612,12 @@ static bool G_ParseMapRotationFile( const char *fileName )
 		}
 	}
 
-	for ( size_t i = 0; i < mapRotations.size(); i++ )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
-		mapRotation_t *mr = &mapRotations[ i ];
+		mapRotation_t *mr = &mapRotations.rotations[ i ];
 		bool empty = true;
 
-		for ( int j = 0; j < mr->numNodes; j++ )
+		for ( j = 0; j < mr->numNodes; j++ )
 		{
 			mrNode_t *node = mr->nodes[ j ];
 
@@ -736,20 +746,22 @@ Print the parsed map rotations
 */
 void G_PrintRotations()
 {
+	int i, j;
 	int size = sizeof( mapRotations );
 
 	Log::Notice( "Map rotations as parsed:\n" );
 
-	for ( mapRotation_t &mr : mapRotations )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
-		Log::Notice( "rotation: %s\n{", mr.name.c_str() );
+		mapRotation_t *mr = &mapRotations.rotations[ i ];
 
-		size += mr.name.size();
-		size += mr.numNodes * sizeof( mrNode_t );
+		Log::Notice( "rotation: %s\n{", mr->name );
 
-		for ( int j = 0; j < mr.numNodes; j++ )
+		size += mr->numNodes * sizeof( mrNode_t );
+
+		for ( j = 0; j < mr->numNodes; j++ )
 		{
-			mrNode_t *node = mr.nodes[ j ];
+			mrNode_t *node = mr->nodes[ j ];
 			int    indentation = 2;
 
 			while ( node->type == NT_CONDITION )
@@ -787,7 +799,7 @@ Print the current rotation to an entity
 void G_PrintCurrentRotation( gentity_t *ent )
 {
 	int           mapRotationIndex = g_currentMapRotation.Get();
-	mapRotation_t *mapRotation = G_MapRotationActive() ? &mapRotations[ mapRotationIndex ] : nullptr;
+	mapRotation_t *mapRotation = G_MapRotationActive() ? &mapRotations.rotations[ mapRotationIndex ] : nullptr;
 	int           i = 0;
 	char          currentMapName[ MAX_QPATH ];
 	bool      currentShown = false;
@@ -808,7 +820,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
 
 	ADMBP_begin();
-	ADMBP( va( "%s:\n", mapRotation->name.c_str() ) );
+	ADMBP( va( "%s:\n", mapRotation->name ) );
 
 	while ( ( node = mapRotation->nodes[ i++ ] ) )
 	{
@@ -848,7 +860,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 		{
 			ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
 		}
-		if ( currentMap && currentShown && G_MapExists( g_nextMap.Get() ) )
+		if ( currentMap && currentShown && G_MapExists( g_nextMap.Get().c_str() ) )
 		{
 			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.Get().c_str() ) );
 			currentMap = false;
@@ -861,7 +873,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	{
 		ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
 
-		if ( G_MapExists( g_nextMap.Get() ) )
+		if ( G_MapExists( g_nextMap.Get().c_str() ) )
 		{
 			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.Get().c_str() ) );
 		}
@@ -946,11 +958,11 @@ G_RotationNameByIndex
 Returns the name of a rotation by its index
 ===============
 */
-static const char *G_RotationNameByIndex( size_t index )
+static char *G_RotationNameByIndex( int index )
 {
-	if ( index < mapRotations.size() )
+	if ( index >= 0 && index < mapRotations.numRotations )
 	{
-		return mapRotations[ index ].name.c_str();
+		return mapRotations.rotations[ index ].name;
 	}
 
 	return nullptr;
@@ -998,17 +1010,18 @@ Set the current map in some rotation
 */
 static void G_SetCurrentNodeByIndex( int currentNode, int rotation )
 {
-	std::string text;
+	char text[ MAX_MAP_ROTATIONS * 4 ] = { 0 };
 	int  *p = G_CurrentNodeIndexArray();
+	int  i;
 
 	p[ rotation ] = currentNode;
 
-	for ( size_t i = 0; i < mapRotations.size(); i++ )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
-		text.append(va( "%d ", p[ i ] ));
+		Q_strcat( text, sizeof( text ), va( "%d ", p[ i ] ) );
 	}
 
-	g_mapRotationNodes.Set(std::move(text));
+	g_mapRotationNodes.Set(text);
 }
 
 /*
@@ -1032,12 +1045,12 @@ G_NodeByIndex
 Return a node in a rotation by its index
 ===============
 */
-static mrNode_t *G_NodeByIndex( int index, size_t rotation )
+static mrNode_t *G_NodeByIndex( int index, int rotation )
 {
-	if ( rotation < mapRotations.size() &&
-	     index < mapRotations[ rotation ].numNodes )
+	if ( rotation >= 0 && rotation < mapRotations.numRotations &&
+	     index >= 0 && index < mapRotations.rotations[ rotation ].numNodes )
 	{
-		return mapRotations[ rotation ].nodes[ index ];
+		return mapRotations.rotations[ rotation ].nodes[ index ];
 	}
 
 	return nullptr;
@@ -1052,7 +1065,7 @@ Send commands to the server to actually change the map
 */
 static void G_IssueMapChange( int index, int rotation )
 {
-	mrNode_t *node = mapRotations[ rotation ].nodes[ index ];
+	mrNode_t *node = mapRotations.rotations[ rotation ].nodes[ index ];
 
 	if( node->type == NT_CONDITION )
 	{
@@ -1119,9 +1132,9 @@ static bool G_GotoLabel( int rotation, int nodeIndex, char *name,
 	}
 
 	// ...then try labels in the rotation
-	for ( i = 0; i < mapRotations[ rotation ].numNodes; i++ )
+	for ( i = 0; i < mapRotations.rotations[ rotation ].numNodes; i++ )
 	{
-		node = mapRotations[ rotation ].nodes[ i ];
+		node = mapRotations.rotations[ rotation ].nodes[ i ];
 
 		if ( node->type == NT_LABEL && !Q_stricmp( node->u.label.name, name ) )
 		{
@@ -1132,10 +1145,10 @@ static bool G_GotoLabel( int rotation, int nodeIndex, char *name,
 	}
 
 	// finally check for a map by name
-	for ( i = 0; i < mapRotations[ rotation ].numNodes; i++ )
+	for ( i = 0; i < mapRotations.rotations[ rotation ].numNodes; i++ )
 	{
 		nodeIndex = G_NodeIndexAfter( nodeIndex, rotation );
-		node = mapRotations[ rotation ].nodes[ nodeIndex ];
+		node = mapRotations.rotations[ rotation ].nodes[ nodeIndex ];
 
 		if ( node->type == NT_MAP && !Q_stricmp( node->u.map.name, name ) )
 		{
@@ -1220,7 +1233,7 @@ G_NodeIndexAfter
 */
 static int G_NodeIndexAfter( int currentNode, int rotation )
 {
-	mapRotation_t *mr = &mapRotations[ rotation ];
+	mapRotation_t *mr = &mapRotations.rotations[ rotation ];
 
 	return ( currentNode + 1 ) % mr->numNodes;
 }
@@ -1298,7 +1311,7 @@ bool G_StepMapRotation( int rotation, int nodeIndex, int depth )
 					G_SetCurrentNodeByIndex(
 					  G_NodeIndexAfter( nodeIndex, rotation ), rotation );
 
-					if ( !G_MapExists( g_nextMap.Get() ) )
+					if ( !G_MapExists( g_nextMap.Get().c_str() ) )
 					{
 						G_IssueMapChange( nodeIndex, rotation );
 					}
@@ -1388,12 +1401,12 @@ Switch to a new map rotation
 bool G_StartMapRotation( const char *name, bool advance,
                              bool putOnStack, bool reset_index, int depth )
 {
-	size_t i;
+	int i;
 	int currentRotation = g_currentMapRotation.Get();
 
-	for ( i = 0; i < mapRotations.size(); i++ )
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
-		if ( !Q_stricmp( mapRotations[ i ].name.c_str(), name ) )
+		if ( !Q_stricmp( mapRotations.rotations[ i ].name, name ) )
 		{
 			if ( putOnStack && currentRotation >= 0 )
 			{
@@ -1416,7 +1429,14 @@ bool G_StartMapRotation( const char *name, bool advance,
 		}
 	}
 
-	return i != mapRotations.size();
+	if ( i == mapRotations.numRotations )
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 /*
@@ -1511,15 +1531,19 @@ Free up memory used by map rotations
 */
 void G_ShutdownMapRotations()
 {
-	for ( mapRotation_t &mr : mapRotations )
+	int i, j;
+
+	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
-		for ( int j = 0; j < mr.numNodes; j++ )
+		mapRotation_t *mr = &mapRotations.rotations[ i ];
+
+		for ( j = 0; j < mr->numNodes; j++ )
 		{
-			mrNode_t *node = mr.nodes[ j ];
+			mrNode_t *node = mr->nodes[ j ];
 
 			G_FreeNode( node );
 		}
 	}
 
-	mapRotations.clear();
+	memset( &mapRotations, 0, sizeof( mapRotations ) );
 }

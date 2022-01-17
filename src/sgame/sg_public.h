@@ -238,7 +238,7 @@ void              G_StopMapRotation();
 bool          G_MapRotationActive();
 void              G_InitMapRotations();
 void              G_ShutdownMapRotations();
-bool              G_MapExists( Str::StringRef name );
+bool          G_MapExists( const char *name );
 
 // sg_missile.c
 void              G_ExplodeMissile( gentity_t *ent );
