@@ -18,6 +18,7 @@
 			right: 0em;
 
 			text-align: right;
+			font-size: 1.2em;
 			width: 50em;
 			height: 25em;
 		}
