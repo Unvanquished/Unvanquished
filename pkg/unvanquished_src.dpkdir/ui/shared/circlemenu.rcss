@@ -73,10 +73,6 @@ div.circlemenu-circle {
 	line-height: 7.8em;
 }
 
-.circlemenu button:hover {
-	image-color: rgb(12,12,12);
-}
-
 .circlemenu button img {
 	display: block;
 	width: 4.2em;
