@@ -1387,7 +1387,7 @@ void ExitLevel()
 		g_layouts.Set( g_nextMapLayouts.Get() );
 		trap_SendConsoleCommand( "map_restart" );
 	}
-	else if ( G_MapExists( g_nextMap.Get() ) )
+	else if ( G_MapExists( g_nextMap.Get().c_str() ) )
 	{
 		trap_SendConsoleCommand( va( "map %s %s", Quote( g_nextMap.Get().c_str() ), Quote( g_nextMapLayouts.Get().c_str() ) ) );
 	}
