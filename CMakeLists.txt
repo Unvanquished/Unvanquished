@@ -170,13 +170,6 @@ if (BUILD_CGAME)
     DEFINITIONS
         BUILD_CGAME
         RMLUI_STATIC_LIB
-        # slipher: temporary hack to make a smaller diff for 1st RmlUi commit
-        Rocket=Rml
-        CString=c_str
-        Append=append
-        Empty=empty
-        Length=size
-        PropertyNameList=PropertyIdSet
     FLAGS
         ${WARNINGS}
     FILES

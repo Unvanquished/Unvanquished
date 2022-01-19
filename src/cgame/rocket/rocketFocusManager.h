@@ -39,14 +39,14 @@ Maryland 20850 USA.
 #include "rocket.h"
 #include <RmlUi/Core/Core.h>
 
-class RocketFocusManager : public Rocket::Core::EventListener
+class RocketFocusManager : public Rml::Core::EventListener
 {
 public:
 	RocketFocusManager() { }
-	void ProcessEvent( Rocket::Core::Event &evt )
+	void ProcessEvent( Rml::Core::Event &evt )
 	{
 		bool anyVisible = false;
-		Rocket::Core::Context* context = evt.GetTargetElement() ? evt.GetTargetElement()->GetContext() : nullptr;
+		Rml::Core::Context* context = evt.GetTargetElement() ? evt.GetTargetElement()->GetContext() : nullptr;
 
 		if ( context )
 		{
@@ -74,11 +74,11 @@ public:
 
 private:
 	// Checks if parents are visible as well
-	bool IsTreeVisible( Rocket::Core::Element *element )
+	bool IsTreeVisible( Rml::Core::Element *element )
 	{
 		if ( element && element->IsVisible() )
 		{
-			Rocket::Core::Element *parent = element;
+			Rml::Core::Element *parent = element;
 
 			while ( ( parent = parent->GetParentNode() ) )
 			{

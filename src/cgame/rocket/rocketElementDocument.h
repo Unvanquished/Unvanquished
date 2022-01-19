@@ -40,20 +40,20 @@ Maryland 20850 USA.
 #include <RmlUi/Core/ElementDocument.h>
 
 
-class RocketElementDocument : public Rocket::Core::ElementDocument
+class RocketElementDocument : public Rml::Core::ElementDocument
 {
 public:
-	RocketElementDocument( const Rocket::Core::String &tag ) : Rocket::Core::ElementDocument( tag ) { }
+	RocketElementDocument( const Rml::Core::String &tag ) : Rml::Core::ElementDocument( tag ) { }
 
-	void ProcessDefaultAction( Rocket::Core::Event &event ) override
+	void ProcessDefaultAction( Rml::Core::Event &event ) override
 	{
-		Rocket::Core::ElementDocument::ProcessDefaultAction( event );
+		Rml::Core::ElementDocument::ProcessDefaultAction( event );
 
 		if ( event == "keydown" )
 		{
-			Rocket::Core::Input::KeyIdentifier key = (Rocket::Core::Input::KeyIdentifier) event.GetParameter<int>( "key_identifier", 0 );
+			Rml::Core::Input::KeyIdentifier key = (Rml::Core::Input::KeyIdentifier) event.GetParameter<int>( "key_identifier", 0 );
 
-			if ( key == Rocket::Core::Input::KI_ESCAPE && !HasAttribute( "nohide" ) )
+			if ( key == Rml::Core::Input::KI_ESCAPE && !HasAttribute( "nohide" ) )
 			{
 				this->Hide();
 			}

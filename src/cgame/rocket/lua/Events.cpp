@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "Events.h"
 
-namespace Rocket {
+namespace Rml {
 namespace Core {
 namespace Lua {
 
@@ -58,10 +58,10 @@ template<> void ExtraInit<Lua::Events>(lua_State* L, int metatable_index)
 
 int Eventspushcmd(lua_State* L)
 {
-	Rocket::Core::StringList list;
+	Rml::Core::StringList list;
 	const char *cmds = luaL_checkstring(L, 1);
 
-	Rocket::Core::StringUtilities::ExpandString( list, cmds, ';' );
+	Rml::Core::StringUtilities::ExpandString( list, cmds, ';' );
 	for ( size_t i = 0; i < list.size(); ++i )
 	{
 		Rocket_AddEvent( new RocketEvent_t( list[ i ] ) );
@@ -72,16 +72,16 @@ int Eventspushcmd(lua_State* L)
 
 int Eventspushevent(lua_State* L)
 {
-	Rocket::Core::StringList list;
+	Rml::Core::StringList list;
 	const char *cmds = luaL_checkstring(L, 1);
-	Rocket::Core::Event *event = LuaType<Rocket::Core::Event>::check(L, 2);
+	Rml::Core::Event *event = LuaType<Rml::Core::Event>::check(L, 2);
 
 	if (event == NULL)
 	{
 		return 0;
 	}
 
-	Rocket::Core::StringUtilities::ExpandString( list, cmds, ';' );
+	Rml::Core::StringUtilities::ExpandString( list, cmds, ';' );
 	for ( size_t i = 0; i < list.size(); ++i )
 	{
 		Rocket_AddEvent( new RocketEvent_t( *event, list[ i ] ) );
@@ -92,16 +92,16 @@ int Eventspushevent(lua_State* L)
 
 int Eventspushelement(lua_State* L)
 {
-	Rocket::Core::StringList list;
+	Rml::Core::StringList list;
 	const char *cmds = luaL_checkstring(L, 1);
-	Rocket::Core::Element *element = LuaType<Rocket::Core::Element>::check(L, 2);
+	Rml::Core::Element *element = LuaType<Rml::Core::Element>::check(L, 2);
 
 	if (element == NULL)
 	{
 		return 0;
 	}
 
-	Rocket::Core::StringUtilities::ExpandString( list, cmds, ';' );
+	Rml::Core::StringUtilities::ExpandString( list, cmds, ';' );
 	for ( size_t i = 0; i < list.size(); ++i )
 	{
 		Rocket_AddEvent( new RocketEvent_t( element, list[ i ] ) );

@@ -40,24 +40,24 @@ Maryland 20850 USA.
 
 #include <RmlUi/Controls/DataFormatter.h>
 
-class RocketDataFormatter : public Rocket::Controls::DataFormatter
+class RocketDataFormatter : public Rml::Controls::DataFormatter
 {
 public:
-	Rocket::Core::String name;
+	Rml::Core::String name;
 	int handle;
 	char data[ BIG_INFO_STRING ];
-	Rocket::Core::String out;
+	Rml::Core::String out;
 
-	RocketDataFormatter( const char *name, int handle ) : Rocket::Controls::DataFormatter( name ), name( name ), handle( handle ) { }
+	RocketDataFormatter( const char *name, int handle ) : Rml::Controls::DataFormatter( name ), name( name ), handle( handle ) { }
 	~RocketDataFormatter() { }
 
-	void FormatData( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data )
+	void FormatData( Rml::Core::String &formatted_data, const Rml::Core::StringList &raw_data )
 	{
 		memset( &data, 0, sizeof( data ) );
 
 		for ( size_t i = 0; i < raw_data.size(); ++i )
 		{
-			Info_SetValueForKeyRocket( data, va( "%u", ( uint32_t ) i+1 ), raw_data[ i ].CString(), true );
+			Info_SetValueForKeyRocket( data, va( "%u", ( uint32_t ) i+1 ), raw_data[ i ].c_str(), true );
 		}
 		CG_Rocket_FormatData(handle);
 		formatted_data = out;

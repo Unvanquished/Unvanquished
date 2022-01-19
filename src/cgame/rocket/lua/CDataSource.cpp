@@ -57,22 +57,22 @@ static int CDataSource_Read(lua_State* L)
 	const char* sourceName = luaL_checkstring(L, 1);
 	const char* table = luaL_checkstring(L, 2);
 	const char* fields = luaL_checkstring(L, 3);
-	Rocket::Controls::DataSource* source = Rocket::Controls::DataSource::GetDataSource(sourceName);
+	Rml::Controls::DataSource* source = Rml::Controls::DataSource::GetDataSource(sourceName);
 	if (!source) {
 		Log::Warn("No data source '%s'", sourceName);
 		lua_pushnil(L);
 		return 1;
 	}
-	Rocket::Controls::DataQuery query(source, Rocket::Core::String(table), Rocket::Core::String(fields), 0, -1);
+	Rml::Controls::DataQuery query(source, Rml::Core::String(table), Rml::Core::String(fields), 0, -1);
 	lua_newtable(L);
 	int row = 0;
 	while ( query.NextRow() ) {
 		lua_pushinteger(L, ++row);
 		lua_createtable(L, query.GetNumFields(), 0);
 		for (size_t i = 0; i < query.GetNumFields(); i++ ) {
-			auto value = query.Get<Rocket::Core::String>(i, "");
+			auto value = query.Get<Rml::Core::String>(i, "");
 			lua_pushinteger(L, static_cast<int>(i + 1));
-			lua_pushstring(L, value.CString());
+			lua_pushstring(L, value.c_str());
 			lua_settable(L, -3);
 		}
 		lua_settable(L, -3);

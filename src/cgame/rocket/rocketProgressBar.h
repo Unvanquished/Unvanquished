@@ -49,11 +49,11 @@ enum progressBarOrientation_t
 	DOWN
 };
 
-class RocketProgressBar : public Rocket::Core::Element
+class RocketProgressBar : public Rml::Core::Element
 {
 public:
-	RocketProgressBar( const Rocket::Core::String &tag ) :
-		Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 ), color( Color::White )
+	RocketProgressBar( const Rml::Core::String &tag ) :
+		Rml::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 ), color( Color::White )
 	{
 	}
 
@@ -75,9 +75,9 @@ public:
 	{
 		float newValue;
 
-		if ( !source.Empty() )
+		if ( !source.empty() )
 		{
-			newValue = CG_Rocket_ProgressBarValue(source.CString());
+			newValue = CG_Rocket_ProgressBarValue(source.c_str());
 
 			if ( newValue != value )
 			{
@@ -95,7 +95,7 @@ public:
 		}
 
 		Update();
-		Rocket::Core::Vector2f position = GetAbsoluteOffset();
+		Rml::Core::Vector2f position = GetAbsoluteOffset();
 
 		// Vertical meter
 		if( orientation >= UP )
@@ -145,18 +145,18 @@ public:
 		}
 	}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList &changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet &changed_properties )
 	{
 		Element::OnPropertyChange( changed_properties );
 
-		if ( changed_properties.Contains( Rocket::Core::PropertyId::Color ) )
+		if ( changed_properties.Contains( Rml::Core::PropertyId::Color ) )
 		{
-			color = Color::Adapt( GetProperty( Rocket::Core::PropertyId::Color )->Get<Rocket::Core::Colourb>() );
+			color = Color::Adapt( GetProperty( Rml::Core::PropertyId::Color )->Get<Rml::Core::Colourb>() );
 		}
 
 		if ( changed_properties.Contains( UnvPropertyId::Orientation ) )
 		{
-			Rocket::Core::String  orientation_string = GetProperty( UnvPropertyId::Orientation )->Get<Rocket::Core::String>();
+			Rml::Core::String  orientation_string = GetProperty( UnvPropertyId::Orientation )->Get<Rml::Core::String>();
 
 			if ( orientation_string == "left" )
 			{
@@ -177,9 +177,9 @@ public:
 		}
 	}
 
-	void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Core::Element::OnAttributeChange( changed_attributes );
 
 		auto it = changed_attributes.find( "value" );
 		if ( it != changed_attributes.end() )
@@ -190,48 +190,48 @@ public:
 		it = changed_attributes.find( "src" );
 		if ( it != changed_attributes.end() )
 		{
-			source = it->second.Get<Rocket::Core::String>();
+			source = it->second.Get<Rml::Core::String>();
 		}
 
 		it = changed_attributes.find( "image" );
 		if ( it != changed_attributes.end() )
 		{
-			Rocket::Core::String image = it->second.Get<Rocket::Core::String>();
+			Rml::Core::String image = it->second.Get<Rml::Core::String>();
 
 			// skip the leading slash
-			if ( !image.Empty() && image[0] == '/' )
+			if ( !image.empty() && image[0] == '/' )
 			{
 				image = image.substr( 1 );
 			}
 
-			shader = trap_R_RegisterShader( image.CString(), RSF_NOMIP );
+			shader = trap_R_RegisterShader( image.c_str(), RSF_NOMIP );
 		}
 
 	}
 
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
+	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension )
 	{
-		const Rocket::Core::Property *property;
+		const Rml::Core::Property *property;
 		property = GetProperty( "width" );
 		bool auto_width, auto_height;
 
 		auto_width = auto_height = false;
 
 		// Keyword means its auto
-		if ( property->unit == Rocket::Core::Property::KEYWORD )
+		if ( property->unit == Rml::Core::Property::KEYWORD )
 		{
 			auto_width = true;
 		}
 		// Absolute unit. We can use it as is
-		else if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		else if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.x = property->value.Get<float>();
 		}
 		else
 		{
 			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
+			Rml::Core::Element *parent = this;
+			std::stack<Rml::Core::Element*> stack;
 			stack.push( this );
 
 			while ( ( parent = parent->GetParentNode() ) )
@@ -253,19 +253,19 @@ public:
 		}
 
 		property = GetProperty( "height" );
-		if ( property->unit == Rocket::Core::Property::KEYWORD )
+		if ( property->unit == Rml::Core::Property::KEYWORD )
 		{
 			auto_height = true;
 		}
-		else if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		else if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.y = property->value.Get<float>();
 		}
 		else
 		{
 			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
+			Rml::Core::Element *parent = this;
+			std::stack<Rml::Core::Element*> stack;
 			stack.push( this );
 
 			while ( ( parent = parent->GetParentNode() ) )
@@ -318,7 +318,7 @@ private:
 	float value; // current value
 	qhandle_t shader;
 	Color::Color color;
-	Rocket::Core::Vector2f dimensions;
-	Rocket::Core::String source;
+	Rml::Core::Vector2f dimensions;
+	Rml::Core::String source;
 };
 #endif
