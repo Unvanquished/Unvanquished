@@ -1915,28 +1915,6 @@ PM_ClimbMove
 */
 static void PM_ClimbMove()
 {
-	if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
-	{
-		// begin swimming
-		PM_WaterMove();
-		return;
-	}
-
-	if ( PM_CheckJump() || PM_CheckPounce() )
-	{
-		// jumped away
-		if ( pm->waterlevel > 1 )
-		{
-			PM_WaterMove();
-		}
-		else
-		{
-			PM_AirMove();
-		}
-
-		return;
-	}
-
 	PM_Friction();
 
 	float fmove = pm->cmd.forwardmove;
@@ -2037,27 +2015,6 @@ PM_WalkMove
 */
 static void PM_WalkMove()
 {
-	if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
-	{
-		// begin swimming
-		PM_WaterMove();
-		return;
-	}
-
-	if ( PM_CheckJump() || PM_CheckPounce() )
-	{
-		if ( pm->waterlevel > 1 )
-		{
-			PM_WaterMove();
-		}
-		else
-		{
-			PM_AirMove();
-		}
-
-		return;
-	}
-
 	// Slide
 	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_SLIDER )
 		&& pm->cmd.upmove < 0
@@ -2172,8 +2129,6 @@ static void PM_WalkMove()
 	}
 
 	PM_StepSlideMove( false, false );
-
-	//Log::Notice("velocity2 = %1.1f\n", VectorLength(pm->ps->velocity));
 }
 
 /*
@@ -4579,6 +4534,14 @@ PmoveSingle
 
 ================
 */
+// This helper is purely for readability. Returns true when
+// player is walking on a wall.
+static bool IsWallwalking( playerState_t const& ps )
+{
+		return BG_ClassHasAbility( ps.stats[ STAT_CLASS ], SCA_WALLCLIMBER )
+			&& ( ps.stats[ STAT_STATE ] & SS_WALLCLIMBING );
+}
+
 void PmoveSingle( pmove_t *pmove )
 {
 	pm = pmove;
@@ -4774,8 +4737,22 @@ void PmoveSingle( pmove_t *pmove )
 	}
 	else if ( pml.walking )
 	{
-		if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLCLIMBER ) &&
-		     ( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
+		if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
+		{
+			PM_WaterMove();
+		}
+		else if ( PM_CheckJump() || PM_CheckPounce() )
+		{
+			if ( pm->waterlevel > 1 )
+			{
+				PM_WaterMove();
+			}
+			else
+			{
+				PM_AirMove();
+			}
+		}
+		else if ( IsWallwalking( *pm->ps ) )
 		{
 			PM_ClimbMove(); // walking on any surface
 		}
