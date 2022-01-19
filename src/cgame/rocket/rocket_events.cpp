@@ -40,13 +40,13 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 
 std::queue< RocketEvent_t* > eventQueue;
-extern Rocket::Core::Element *activeElement;
+extern Rml::Core::Element *activeElement;
 
-void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
+void Rocket_ProcessEvent( Rml::Core::Event& event, Rml::Core::String& value )
 {
-	Rocket::Core::StringList list;
+	Rml::Core::StringList list;
 
-	Rocket::Core::StringUtilities::ExpandString( list, value, ';' );
+	Rml::Core::StringUtilities::ExpandString( list, value, ';' );
 	for ( size_t i = 0; i < list.size(); ++i )
 	{
 		eventQueue.push( new RocketEvent_t( event, list[ i ] ) );
@@ -57,7 +57,7 @@ bool Rocket_GetEvent(std::string& cmdText)
 {
 	if ( !eventQueue.empty() )
 	{
-		cmdText = eventQueue.front()->cmd.CString();
+		cmdText = eventQueue.front()->cmd.c_str();
 		activeElement = eventQueue.front()->targetElement;
 		return true;
 	}
@@ -81,7 +81,7 @@ void Rocket_GetEventParameters( char *params, int /*length*/ )
 	{
 		for ( const auto& it : event->Parameters )
 		{
-			Info_SetValueForKeyRocket( params, it.first.CString(), it.second.Get<Rocket::Core::String>().CString(), true );
+			Info_SetValueForKeyRocket( params, it.first.c_str(), it.second.Get<Rml::Core::String>().c_str(), true );
 		}
 	}
 }

@@ -38,26 +38,26 @@ Maryland 20850 USA.
 #include <RmlUi/Core/Core.h>
 #include "../cg_local.h"
 
-class RocketConditionalElement : public Rocket::Core::Element
+class RocketConditionalElement : public Rml::Core::Element
 {
 public:
-	RocketConditionalElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), condition( NOT_EQUAL ), dirty_value( false ) {}
+	RocketConditionalElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), condition( NOT_EQUAL ), dirty_value( false ) {}
 
-	virtual void OnAttributeChange( const Rocket::Core::ElementAttributes &changed_attributes )
+	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
-		Rocket::Core::ElementAttributes::const_iterator it;
+		Rml::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Core::ElementAttributes::const_iterator it;
 		it = changed_attributes.find( "cvar" );
 		if ( it != changed_attributes.end() )
 		{
-			cvar = it->second.Get<Rocket::Core::String>();
-			cvar_value = Cvar::GetValue( cvar.CString() ).c_str();
+			cvar = it->second.Get<Rml::Core::String>();
+			cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
 		}
 
 		it = changed_attributes.find( "condition" );
 		if ( it != changed_attributes.end() )
 		{
-			ParseCondition( it->second.Get<Rocket::Core::String>() );
+			ParseCondition( it->second.Get<Rml::Core::String>() );
 		}
 
 		it = changed_attributes.find( "value" );
@@ -65,7 +65,7 @@ public:
 		{
 			char *end = nullptr;
 			// Check if float
-			float floatVal = strtof( it->second.Get<Rocket::Core::String>().CString(), &end );
+			float floatVal = strtof( it->second.Get<Rml::Core::String>().c_str(), &end );
 
 			// Is either an integer or float
 			if ( end )
@@ -93,7 +93,7 @@ public:
 
 	virtual void OnUpdate()
 	{
-		if ( dirty_value || ( !cvar.Empty() && cvar_value != Cvar::GetValue( cvar.CString() ).c_str() ) )
+		if ( dirty_value || ( !cvar.empty() && cvar_value != Cvar::GetValue( cvar.c_str() ).c_str() ) )
 		{
 			if ( IsConditionValid() )
 			{
@@ -110,7 +110,7 @@ public:
 				}
 			}
 
-			cvar_value = Cvar::GetValue( cvar.CString() ).c_str();
+			cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
 
 			if ( dirty_value )
 			{
@@ -130,7 +130,7 @@ private:
 		NOT_EQUAL
 	};
 
-	void ParseCondition( const Rocket::Core::String& str )
+	void ParseCondition( const Rml::Core::String& str )
 	{
 		if ( str == "==" )
 		{
@@ -169,19 +169,19 @@ private:
 
 	bool IsConditionValid()
 	{
-		std::string str = Cvar::GetValue( cvar.CString() );
+		std::string str = Cvar::GetValue( cvar.c_str() );
 		switch ( value.GetType() )
 		{
-			case Rocket::Core::Variant::INT:
+			case Rml::Core::Variant::INT:
 				Compare( ParseInt( str ), value.Get<int>() );
-			case Rocket::Core::Variant::FLOAT:
+			case Rml::Core::Variant::FLOAT:
 			{
 				float flt = 0;
 				Cvar::ParseCvarValue( str, flt );
 				Compare( flt, value.Get<float>() );
 			}
 			default:
-				Compare( str, value.Get< Rocket::Core::String >().CString() );
+				Compare( str, value.Get< Rml::Core::String >().c_str() );
 		}
 	}
 
@@ -201,10 +201,10 @@ private:
 		return 0;
 	}
 
-	Rocket::Core::String cvar;
-	Rocket::Core::String cvar_value;
+	Rml::Core::String cvar;
+	Rml::Core::String cvar_value;
 	Condition condition;
-	Rocket::Core::Variant value;
+	Rml::Core::Variant value;
 	bool dirty_value;
 };
 #endif

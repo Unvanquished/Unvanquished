@@ -42,7 +42,7 @@ Maryland 20850 USA.
 #include <RmlUi/Core/Lua/lua.hpp>
 #include <RmlUi/Core/Lua/LuaType.h>
 
-namespace Rocket {
+namespace Rml {
 namespace Core {
 namespace Lua {
 class Timer

@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "Timer.h"
 #include "../../cg_local.h"
 
-namespace Rocket {
+namespace Rml {
 namespace Core {
 namespace Lua {
 
