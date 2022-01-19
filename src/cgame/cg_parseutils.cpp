@@ -46,27 +46,6 @@ static void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
 	Log::Warn( "%s, line %d: %s", filename, line, string );
 }
 
-/*
-=================
-Float_Parse
-=================
-*/
-bool Float_Parse( const char **p, float *f )
-{
-	char *token;
-	token = COM_ParseExt( p, false );
-
-	if ( token && token[ 0 ] != 0 )
-	{
-		*f = atof( token );
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 #define MAX_EXPR_ELEMENTS 32
 
 enum exprType_t
