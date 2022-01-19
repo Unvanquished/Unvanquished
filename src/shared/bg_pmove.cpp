@@ -4534,6 +4534,37 @@ PmoveSingle
 
 ================
 */
+// set the firing flag for continuous beam weapons
+static void SetFireBeam( buttonNumber_t btn )
+{
+	int firingEvent;
+	switch( btn )
+	{
+		case BTN_ATTACK:
+			firingEvent = EF_FIRING;
+			break;
+		case BTN_ATTACK2:
+			firingEvent = EF_FIRING2;
+			break;
+		case BTN_ATTACK3:
+			firingEvent = EF_FIRING3;
+			break;
+		default:
+			ASSERT_UNREACHABLE();
+	}
+
+	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
+			usercmdButtonPressed( pm->cmd.buttons, btn ) &&
+			( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
+	{
+		pm->ps->eFlags |= firingEvent;
+	}
+	else
+	{
+		pm->ps->eFlags &= ~firingEvent;
+	}
+}
+
 // This helper is purely for readability. Returns true when
 // player is walking on a wall.
 static bool IsWallwalking( playerState_t const& ps )
@@ -4567,41 +4598,9 @@ void PmoveSingle( pmove_t *pmove )
 		usercmdReleaseButton( pm->cmd.buttons, BTN_WALKING );
 	}
 
-	// set the firing flag for continuous beam weapons
-	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	     usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK ) &&
-	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
-	{
-		pm->ps->eFlags |= EF_FIRING;
-	}
-	else
-	{
-		pm->ps->eFlags &= ~EF_FIRING;
-	}
-
-	// set the firing flag for continuous beam weapons
-	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	     usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 ) &&
-	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
-	{
-		pm->ps->eFlags |= EF_FIRING2;
-	}
-	else
-	{
-		pm->ps->eFlags &= ~EF_FIRING2;
-	}
-
-	// set the firing flag for continuous beam weapons
-	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
-	     usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK3 ) &&
-	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
-	{
-		pm->ps->eFlags |= EF_FIRING3;
-	}
-	else
-	{
-		pm->ps->eFlags &= ~EF_FIRING3;
-	}
+	SetFireBeam( BTN_ATTACK );
+	SetFireBeam( BTN_ATTACK2 );
+	SetFireBeam( BTN_ATTACK3 );
 
 	// clear the respawned flag if attack and use are cleared
 	if ( pm->ps->stats[ STAT_HEALTH ] > 0 &&
@@ -4631,15 +4630,7 @@ void PmoveSingle( pmove_t *pmove )
 
 	// determine the time
 	pml.msec = pmove->cmd.serverTime - pm->ps->commandTime;
-
-	if ( pml.msec < 1 )
-	{
-		pml.msec = 1;
-	}
-	else if ( pml.msec > 200 )
-	{
-		pml.msec = 200;
-	}
+	pml.msec = Math::Clamp( pml.msec, 1, 200 );
 
 	pm->ps->commandTime = pmove->cmd.serverTime;
 
@@ -4680,7 +4671,7 @@ void PmoveSingle( pmove_t *pmove )
 	{
 		case PM_SPECTATOR:
 			PM_UpdateViewAngles( pm->ps, &pm->cmd );
-			PM_CheckDuck();
+			PM_CheckDuck(); //never seen any spectator crounching!
 			PM_GhostMove( false );
 			PM_DropTimers();
 			return;
