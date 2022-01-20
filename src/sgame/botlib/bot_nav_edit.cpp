@@ -191,6 +191,7 @@ static bool CheckHost( gentity_t *ent )
 	return false;
 }
 
+bool G_BotNavInit();
 void Cmd_NavEdit( gentity_t *ent )
 {
 	if ( !CheckHost( ent ) ) return;
@@ -212,6 +213,11 @@ void Cmd_NavEdit( gentity_t *ent )
 		if ( args.Argc() < 3 )
 		{
 			Log::Notice( usage );
+			return;
+		}
+
+		if ( !G_BotNavInit() )
+		{
 			return;
 		}
 
