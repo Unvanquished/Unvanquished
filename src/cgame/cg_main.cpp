@@ -1108,8 +1108,7 @@ static void GenerateNavmeshes()
 	for ( class_t species : RequiredNavmeshes() )
 	{
 		fileHandle_t f;
-		std::string filename = Str::Format(
-			"maps/%s-%s.navMesh", mapName, BG_Class( species )->name );
+		std::string filename = NavmeshFilename( mapName, BG_Class( species )->name );
 		// TODO(0.53): match new behavior of G_FOpenGameOrPakPath
 		if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0)
 		{

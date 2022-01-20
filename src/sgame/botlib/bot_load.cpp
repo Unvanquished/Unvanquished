@@ -178,13 +178,12 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 
 static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 {
-	char filePath[ MAX_QPATH ];
 	fileHandle_t f = 0;
 
 	BotLoadOffMeshConnections( filename, &nav );
 
 	std::string mapname = Cvar::GetValue("mapname");
-	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navMesh", mapname.c_str(), filename );
+	std::string filePath = NavmeshFilename( mapname, filename );
 	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
 	int len = G_FOpenGameOrPakPath( filePath, f );
