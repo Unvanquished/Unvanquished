@@ -78,7 +78,7 @@ void NavmeshGenerator::WriteFile() {
 	params.maxTiles = 1 << tileBits;
 	params.maxPolys = 1 << polyBits;
 
-	std::string filename = Str::Format("maps/%s-%s.navMesh", mapName_, BG_Class(d_->species)->name);
+	std::string filename = NavmeshFilename( mapName_, BG_Class( d_->species )->name );
 
 	NavMeshSetHeader header;
 	int maxTiles;
