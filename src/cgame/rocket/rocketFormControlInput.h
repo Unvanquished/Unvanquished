@@ -170,8 +170,17 @@ private:
 
 	}
 
-	void SetCvarValueAndFlags( const Rocket::Core::String& cvar, const Rocket::Core::String& value )
+	void SetCvarValueAndFlags( const Rocket::Core::String& cvar, Rocket::Core::String value )
 	{
+		if ( type == "range" )
+		{
+			size_t point = value.Find( "." );
+			if ( point != value.npos &&
+			     point + 1 + strspn( value.CString() + point + 1, "0" ) == value.Length() )
+			{
+				value.Erase( point ); // for compatibility with integer cvars
+			}
+		}
 		Cvar::SetValue( cvar.CString(), value.CString() );
 		Cvar::AddFlags( cvar.CString(), Cvar::USER_ARCHIVE );
 	}
