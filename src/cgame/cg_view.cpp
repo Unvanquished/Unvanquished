@@ -1881,6 +1881,12 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	// let the client system know what our weapon and zoom settings are
 	trap_SetUserCmdValue( cg.weaponSelect, 0, cg.zoomSensitivity );
 
+	if ( cg.clientFrame == 0 )
+	{
+		trap_S_ClearLoopingSounds( true );
+		CG_StartMusic();
+	}
+
 	// this counter will be bumped for every valid scene we generate
 	cg.clientFrame++;
 

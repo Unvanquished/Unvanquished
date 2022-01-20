@@ -462,8 +462,8 @@ enum cgLoadingStep_t {
 	LOAD_BUILDINGS,
 	LOAD_CLIENTS,
 	LOAD_HUDS,
-	LOAD_GLSL,
 	LOAD_CHECK_NAVMESH, // only checking for existence, not generation
+	LOAD_GLSL,
 	LOAD_DONE
 };
 
@@ -1311,16 +1311,21 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 		GenerateNavmeshes();
 	}
 
-	CG_UpdateLoadingStep( LOAD_DONE );
+	if ( trap_Cvar_VariableIntegerValue( "r_lazyShaders" ) == 1 )
+	{
+		// EndRegistration is called after cgame initialization returns
+		CG_UpdateLoadingStep( LOAD_GLSL );
+	}
+	else
+	{
+		CG_UpdateLoadingStep( LOAD_DONE );
+	}
 
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
 
-	CG_StartMusic();
-
 	CG_ShaderStateChanged();
 
-	trap_S_ClearLoopingSounds( true );
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 }
 
