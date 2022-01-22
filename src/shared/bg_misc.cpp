@@ -2316,10 +2316,10 @@ int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int cou
 
 static struct gameElements_t
 {
-	std::vector<buildable_t> buildables;
-	std::vector<class_t>     classes;
-	std::vector<weapon_t>    weapons;
-	std::vector<upgrade_t>   upgrades;
+	BoundedVector<buildable_t, BA_NUM_BUILDABLES> buildables;
+	BoundedVector<class_t,     PCL_NUM_CLASSES>   classes;
+	BoundedVector<weapon_t,    WP_NUM_WEAPONS>    weapons;
+	BoundedVector<upgrade_t,   UP_NUM_UPGRADES>   upgrades;
 } bg_disabledGameElements;
 
 /*
@@ -2327,10 +2327,12 @@ static struct gameElements_t
 BG_ParseEquipmentList
 ============
 */
-std::pair<std::vector<weapon_t>, std::vector<upgrade_t>> BG_ParseEquipmentList(const std::string &equipment)
+std::pair<BoundedVector<weapon_t,  WP_NUM_WEAPONS>,
+          BoundedVector<upgrade_t, UP_NUM_UPGRADES>>
+		BG_ParseEquipmentList( const std::string &equipment )
 {
-	std::vector<weapon_t> weapons;
-	std::vector<upgrade_t> upgrades;
+	BoundedVector<weapon_t,  WP_NUM_WEAPONS>  weapons;
+	BoundedVector<upgrade_t, UP_NUM_UPGRADES> upgrades;
 
 	for (Parse_WordListSplitter i(equipment); *i; ++i)
 	{
@@ -2339,11 +2341,11 @@ std::pair<std::vector<weapon_t>, std::vector<upgrade_t>> BG_ParseEquipmentList(c
 
 		if (result_w != WP_NONE)
 		{
-			weapons.push_back(result_w);
+			weapons.append(result_w);
 		}
 		else if (result_u != UP_NONE)
 		{
-			upgrades.push_back(result_u);
+			upgrades.append(result_u);
 		}
 		else
 		{
@@ -2359,9 +2361,10 @@ std::pair<std::vector<weapon_t>, std::vector<upgrade_t>> BG_ParseEquipmentList(c
 BG_ParseClassList
 ============
 */
-std::vector<class_t> BG_ParseClassList(const std::string &classes)
+BoundedVector<class_t, PCL_NUM_CLASSES>
+		BG_ParseClassList( const std::string &classes )
 {
-	std::vector<class_t> results;
+	BoundedVector<class_t, PCL_NUM_CLASSES> results;
 
 	for (Parse_WordListSplitter i(classes); *i; ++i)
 	{
@@ -2369,7 +2372,7 @@ std::vector<class_t> BG_ParseClassList(const std::string &classes)
 
 		if (result != PCL_NONE)
 		{
-			results.push_back(result);
+			results.append(result);
 		}
 		else
 		{
@@ -2385,9 +2388,10 @@ std::vector<class_t> BG_ParseClassList(const std::string &classes)
 BG_ParseBuildableList
 ============
 */
-std::vector<buildable_t> BG_ParseBuildableList(const std::string &allowed)
+BoundedVector<buildable_t, BA_NUM_BUILDABLES>
+		BG_ParseBuildableList( const std::string &allowed )
 {
-	std::vector<buildable_t> results;
+	BoundedVector<buildable_t, BA_NUM_BUILDABLES> results;
 
 	for (Parse_WordListSplitter i(allowed); *i; ++i)
 	{
@@ -2395,7 +2399,7 @@ std::vector<buildable_t> BG_ParseBuildableList(const std::string &allowed)
 
 		if (result != BA_NONE)
 		{
-			results.push_back(result);
+			results.append(result);
 		}
 		else
 		{
@@ -2505,7 +2509,7 @@ bool BG_BuildableDisabled( int buildable )
 BG_PrimaryWeapon
 ============
 */
-weapon_t BG_PrimaryWeapon( int stats[] )
+weapon_t BG_PrimaryWeapon( int const stats[] )
 {
 	int i;
 

@@ -95,11 +95,10 @@ if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
     include_directories(${ROCKET_INCLUDE_DIRS})
 endif()
 
-if (BUILD_SGAME)
+if (BUILD_SGAME OR BUILD_CGAME)
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
     set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-    set(LIBS_ENGINE ${LIBS_ENGINE} srclibs-fastlz)
 
     # Detour
     add_library(srclibs-detour EXCLUDE_FROM_ALL ${DETOURLIST})
@@ -108,6 +107,13 @@ if (BUILD_SGAME)
                         ${LIB_DIR}/recastnavigation/DetourTileCache/Include
                         ${LIB_DIR}/recastnavigation/DebugUtils/Include
                         ${LIB_DIR}/recastnavigation/DetourCrowd/Include)
+
+    # Recast
+    add_library(srclibs-recast EXCLUDE_FROM_ALL ${RECASTLIST})
+    set_target_properties(srclibs-recast PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    include_directories(
+        ${LIB_DIR}/recastnavigation/Recast/Include
+        ${LIB_DIR}/recastnavigation/RecastDemo/Include)
 endif()
 
 add_library(srclibs-tinygettext EXCLUDE_FROM_ALL ${TINYGETTEXTLIST})
@@ -153,6 +159,7 @@ if (BUILD_SGAME)
             ${sgame_GENERATED_CBSE}
         LIBS
             srclibs-detour
+            srclibs-recast
             srclibs-fastlz
     )
 endif()
@@ -171,5 +178,8 @@ if (BUILD_CGAME)
         ${FREETYPE_LIBRARIES}
         ${LUA_LIBRARY}
         srclibs-tinygettext
+        srclibs-detour
+        srclibs-recast
+        srclibs-fastlz
   )
 endif()

@@ -163,7 +163,7 @@ Cvar::Cvar<std::string> g_nextMapLayouts("g_nextMapLayouts", "list of layouts (o
 Cvar::Cvar<std::string> g_initialMapRotation("g_initialMapRotation", "map rotation to use on server startup", Cvar::NONE, "rotation1");
 Cvar::Cvar<std::string> g_mapLog("g_mapLog", "contains results of recent games", Cvar::NONE, "");
 Cvar::Cvar<std::string> g_mapStartupMessage("g_mapStartupMessage", "message sent to players on connection (reset after game)", Cvar::NONE, "");
-Cvar::Cvar<int> g_mapStartupMessageDelay("g_mapStartupMessageDelay", "show g_mapStartupMessage x milliseconds after connection", Cvar::LATCH, 5000);
+Cvar::Cvar<int> g_mapStartupMessageDelay("g_mapStartupMessageDelay", "show g_mapStartupMessage x milliseconds after connection", Cvar::NONE, 5000);
 
 Cvar::Cvar<bool> g_debugVoices("g_debugVoices", "print sgame's list of vsays on startup", Cvar::NONE, false);
 Cvar::Cvar<bool> g_enableVsays("g_voiceChats", "allow vsays (prerecorded audio messages)", Cvar::NONE, true);
@@ -177,8 +177,8 @@ Cvar::Cvar<float> g_sayAreaRange("g_sayAreaRange", "distance for area chat messa
 Cvar::Cvar<int> g_floodMaxDemerits("g_floodMaxDemerits", "client message rate control (lower = stricter)", Cvar::NONE, 5000);
 Cvar::Cvar<int> g_floodMinTime("g_floodMinTime", "mute period after flooding, in milliseconds", Cvar::NONE, 2000);
 
-Cvar::Cvar<std::string> g_defaultLayouts("g_defaultLayouts", "layouts to pick randomly from each map", Cvar::LATCH, "");
-Cvar::Cvar<std::string> g_layouts("g_layouts", "layouts for next map (cleared after use)", Cvar::LATCH, "");
+Cvar::Cvar<std::string> g_defaultLayouts("g_defaultLayouts", "layouts to pick randomly from each map", Cvar::NONE, "");
+Cvar::Cvar<std::string> g_layouts("g_layouts", "layouts for next map (cleared after use)", Cvar::NONE, "");
 Cvar::Cvar<bool> g_layoutAuto("g_layoutAuto", "pick arbitrary layout instead of builtin", Cvar::NONE, false);
 
 Cvar::Cvar<bool> g_emoticonsAllowedInNames("g_emoticonsAllowedInNames", "allow [emoticon]s in player names", Cvar::NONE, true);
@@ -493,7 +493,10 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	G_admin_readconfig( nullptr );
 
 	// initialize all entities for this game
-	memset( g_entities, 0, MAX_GENTITIES * sizeof( g_entities[ 0 ] ) );
+	for ( int i=0; i < MAX_GENTITIES; i++ )
+	{
+		g_entities[i] = {};
+	}
 	level.gentities = g_entities;
 
 	// entity used as drop-in for unmigrated entities
@@ -549,9 +552,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
-
-	// setup bot code
-	G_BotInit();
 
 	// Initialize item locking state
 	BG_InitUnlockackables();

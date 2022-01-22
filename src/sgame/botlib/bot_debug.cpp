@@ -43,7 +43,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #pragma GCC diagnostic pop
 #endif
 #include "bot_local.h"
-#include "nav.h"
 #include "engine/botlib/bot_debug.h"
 #include "bot_navdraw.h"
 

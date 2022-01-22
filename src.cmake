@@ -16,6 +16,27 @@ set(DETOURLIST
     ${LIB_DIR}/recastnavigation/DetourTileCache/Source/DetourTileCacheBuilder.cpp
 )
 
+# Note that this includes some "demo" code not part of the library proper
+set(RECASTLIST
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastAlloc.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Include/RecastAlloc.h
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastArea.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastAssert.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Include/RecastAssert.h
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastContour.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Source/Recast.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Include/Recast.h
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastFilter.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastLayers.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastMesh.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastMeshDetail.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastRasterization.cpp
+    ${LIB_DIR}/recastnavigation/Recast/Source/RecastRegion.cpp
+
+    ${LIB_DIR}/recastnavigation/RecastDemo/Source/ChunkyTriMesh.cpp
+    ${LIB_DIR}/recastnavigation/RecastDemo/Include/ChunkyTriMesh.h
+)
+
 set(FASTLZLIST
     ${LIB_DIR}/fastlz/fastlz.c
 )
@@ -53,9 +74,14 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_teamprogress.cpp
     ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
     ${GAMELOGIC_DIR}/shared/bg_voice.cpp
+    ${GAMELOGIC_DIR}/shared/bot_nav_shared.h
     ${GAMELOGIC_DIR}/shared/parse.cpp
     ${GAMELOGIC_DIR}/shared/parse.h
     ${GAMELOGIC_DIR}/shared/Clustering.h
+
+    ${GAMELOGIC_DIR}/shared/navgen/brush.cpp
+    ${GAMELOGIC_DIR}/shared/navgen/nav.cpp
+    ${GAMELOGIC_DIR}/shared/navgen/navgen.h
 )
 
 set(CGAMELIST
@@ -223,7 +249,6 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/botlib/bot_nav_edit.cpp
     ${GAMELOGIC_DIR}/sgame/botlib/bot_navdraw.h
     ${GAMELOGIC_DIR}/sgame/botlib/bot_types.h
-    ${GAMELOGIC_DIR}/sgame/botlib/nav.h
 
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.h

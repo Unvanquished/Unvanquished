@@ -2612,7 +2612,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		}
 	}
 
-	if ( cg_shadows.Get() == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
+	if ( cg_shadows == shadowingMode_t::SHADOWING_NONE)
 	{
 		return false;
 	}
@@ -2629,7 +2629,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		return false;
 	}
 
-	if ( cg_shadows.Get() > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
+	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB &&
 	     cg_playerShadows.Get() ) {
 		// add inverse shadow map
 		{
@@ -2637,7 +2637,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		}
 	}
 
-	if ( cg_shadows.Get() != Util::ordinal(shadowingMode_t::SHADOWING_BLOB)) // no mark for stencil or projection shadows
+	if ( cg_shadows != shadowingMode_t::SHADOWING_BLOB) // no mark for stencil or projection shadows
 	{
 		return true;
 	}
@@ -2656,12 +2656,12 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 
 static void CG_PlayerShadowEnd()
 {
-	if ( cg_shadows.Get() == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
+	if ( cg_shadows == shadowingMode_t::SHADOWING_NONE)
 	{
 		return;
 	}
 
-	if ( cg_shadows.Get() > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) &&
+	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB &&
 	     cg_playerShadows.Get() ) {
 		CG_EndShadowCaster( );
 	}
@@ -2681,7 +2681,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 	trace_t trace;
 	int     contents;
 
-	if ( cg_shadows.Get() == Util::ordinal(shadowingMode_t::SHADOWING_NONE))
+	if ( cg_shadows == shadowingMode_t::SHADOWING_NONE)
 	{
 		return;
 	}

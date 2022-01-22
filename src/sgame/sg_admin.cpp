@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
+#include "shared/navgen/navgen.h"
 
 struct g_admin_cmd_t
 {
@@ -308,6 +309,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"namelog",      G_admin_namelog,     true,  "namelog",
 		N_("display a list of names used by recently connected players"),
 		N_("(^5name|IP(/mask)^7) (start namelog#)")
+	},
+
+	{
+		"navgen",       G_admin_navgen,      false, "navgen",
+		N_("request bot navmesh generation"),
+		"all | missing | <class>..."
 	},
 
 	{
@@ -5720,6 +5727,12 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 
 	const char* behavior = args.Argc() >= 6 ? args[5].data() : BOT_DEFAULT_BEHAVIOR;
 
+	if ( !G_BotInit() )
+	{
+		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
+		return false;
+	}
+
 	bool result = G_BotAdd( name, team, skill, behavior );
 	if ( !result )
 	{
@@ -5753,6 +5766,12 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	}
 	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : g_bot_default_skill.Get();
 
+	if ( !G_BotInit() )
+	{
+		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
+		return false;
+	}
+
 	for (team_t team : teams)
 	{
 		level.team[team].botFillTeamSize = count;
@@ -5760,6 +5779,76 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	}
 
 	G_BotFill(true);
+	return true;
+}
+
+// This command does NOT load the navmesh that it creates.
+// However the mesh will be used if you run /navgen before the first bot fill/add command.
+bool G_admin_navgen( gentity_t* ent )
+{
+	static NavmeshGenerator navgen;
+
+	const Cmd::Args& args = trap_Args();
+	if ( args.Argc() < 2 )
+	{
+		ADMP( QQ("^3navgen:^* usage: navgen (all | missing | <class>...)") );
+		return false;
+	}
+
+	std::string mapName = Cvar::GetValue( "mapname" );
+
+	std::vector<class_t> targets;
+	for ( int i = 1; i < args.Argc(); i++ )
+	{
+		if ( Str::IsIEqual( args.Argv( i ), "all" ) )
+		{
+			std::vector<class_t> all = RequiredNavmeshes();
+			targets.insert( targets.end(), all.begin(), all.end() );
+		}
+		else if ( Str::IsIEqual ( args.Argv( i ), "missing" ) )
+		{
+			for (class_t species : RequiredNavmeshes())
+			{
+				fileHandle_t f;
+				std::string filename = Str::Format(
+					"maps/%s-%s.navMesh", mapName, BG_Class( species )->name );
+				if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0)
+				{
+					targets.push_back( species );
+					continue;
+				}
+				NavMeshSetHeader header;
+				std::string error = GetNavmeshHeader( f, header );
+				if ( !error.empty() )
+				{
+					targets.push_back( species );
+				}
+				trap_FS_FCloseFile( f );
+			}
+		}
+		else {
+			const classAttributes_t* species = BG_ClassByName( args.Argv( i ).c_str() );
+			if ( species->number == PCL_NONE )
+			{
+				ADMP( va( "%s %s",
+						  QQ( N_ ("^3navgen:^* invalid class name '$1$'" ) ),
+						  Quote( args.Argv( i ).c_str() ) ) );
+				return false;
+			}
+			targets.push_back( species->number );
+		}
+	}
+
+	navgen.Init( mapName );
+	for ( class_t species : targets )
+	{
+		navgen.StartGeneration( species );
+		while ( !navgen.Step() )
+		{
+			// ping the engine with a useless message so that it does not think the sgame VM has hung
+			Cvar::GetValue( "x" );
+		}
+	}
 	return true;
 }
 

@@ -46,9 +46,6 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
 bool   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
-botEntityAndDistance_t BotGetClosestBuildingAmongTypes(
-		gentity_t *self, const std::initializer_list<buildable_t> buildables );
-const gentity_t *BotGetHealTarget( gentity_t *self );
 
 // aiming
 void  BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
@@ -85,21 +82,21 @@ void     BotClassMovement( gentity_t *self, bool inAttackRange );
 
 // human bots
 bool   WeaponIsEmpty( weapon_t weapon, playerState_t *ps );
-float      PercentAmmoRemaining( weapon_t weapon, playerState_t *ps );
+float      PercentAmmoRemaining( weapon_t weapon, playerState_t const* ps );
 void       BotFindDamagedFriendlyStructure( gentity_t *self );
-void       BotBuyWeapon( gentity_t *self, weapon_t weapon );
-void       BotBuyUpgrade( gentity_t *self, upgrade_t upgrade );
+bool       BotBuyWeapon( gentity_t *self, weapon_t weapon );
+bool       BotBuyUpgrade( gentity_t *self, upgrade_t upgrade );
 void       BotSellWeapons( gentity_t *self );
 void       BotSellUpgrades( gentity_t *self );
 int        BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], size_t upgradesSize );
 
 // alien bots
 #define AS_OVER_RT3         ((ALIENSENSE_RANGE*0.5f)/M_ROOT3)
-float    CalcPounceAimPitch( gentity_t *self, botTarget_t target );
-float    CalcBarbAimPitch( gentity_t *self, botTarget_t target );
+float CalcAimPitch( gentity_t *self, vec3_t pos, vec_t launchSpeed );
+float CalcPounceAimPitch( gentity_t *self, vec3_t pos );
+float CalcBarbAimPitch( gentity_t *self, vec3_t pos );
 bool BotCanEvolveToClass( const gentity_t *self, class_t newClass );
 bool BotEvolveToClass( gentity_t *ent, class_t newClass );
-float    CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed );
 
 //g_bot_nav.c
 enum botMoveDir_t
@@ -113,7 +110,7 @@ enum botMoveDir_t
 // global navigation
 extern bool navMeshLoaded;
 
-void         G_BotNavInit();
+bool         G_BotNavInit();
 void         G_BotNavCleanup();
 bool     FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial );
 void         BotMoveToGoal( gentity_t *self );
@@ -131,9 +128,9 @@ void     BotStandStill( gentity_t *self );
 
 // navigation queries
 bool  GoalInRange( const gentity_t *self, float r );
-int   DistanceToGoal( const gentity_t *self );
-int   DistanceToGoalSquared( const gentity_t *self );
-int   DistanceToGoal2DSquared( const gentity_t *self );
+float DistanceToGoal( const gentity_t *self );
+float DistanceToGoalSquared( const gentity_t *self );
+float DistanceToGoal2DSquared( const gentity_t *self );
 float BotGetGoalRadius( const gentity_t *self );
 void  BotFindRandomPoint( int botClientNum, vec3_t point );
 bool  BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );

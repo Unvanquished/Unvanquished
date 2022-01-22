@@ -25,6 +25,8 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #ifndef SG_TRAPCALLS_H_
 #define SG_TRAPCALLS_H_
 
+struct gentity_t;
+
 int              trap_Milliseconds();
 void             trap_Cvar_Set( const char *var_name, const char *value );
 int              trap_Cvar_VariableIntegerValue( const char *var_name );

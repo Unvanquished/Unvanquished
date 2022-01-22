@@ -593,12 +593,13 @@ void Cmd_Give_f( gentity_t *ent )
 	char     *name;
 	bool give_all = false;
 	float    amount;
+	team_t team = G_Team( ent );
 
 	if ( trap_Argc() < 2 )
 	{
 		ADMP( QQ( N_( "usage: give [what]" ) ) );
 		ADMP( QQ( N_( "usage: valid choices are: all, health [amount], funds [amount], "
-		              "bp [amount], momentum [amount], stamina, poison, fuel, ammo" ) ) );
+		              "bp [amount], momentum [amount] [team], stamina, poison, fuel, ammo" ) ) );
 		return;
 	}
 
@@ -629,19 +630,33 @@ void Cmd_Give_f( gentity_t *ent )
 	// give momentum
 	if ( Q_strnicmp( name, "momentum", strlen("momentum") ) == 0 )
 	{
+		char* end = nullptr;
 		if ( trap_Argc() < 3 )
 		{
 			amount = 300.0f;
 		}
 		else
 		{
-			amount = atof( name + strlen("momentum") );
+			amount = strtof( name + strlen( "momentum" ), &end );
 		}
 
-		G_AddMomentumGeneric( (team_t) ent->client->pers.team, amount );
+		if ( trap_Argc() >= 4 && *end != '\0' )
+		{
+			++end;
+			team = BG_PlayableTeamFromString( end );
+			if ( team != TEAM_NONE )
+			{
+				team = G_Team( ent );
+			}
+		}
+
+		if ( team != TEAM_NONE )
+		{
+			G_AddMomentumGeneric( team, amount );
+		}
 	}
 
-	if ( Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
+	if ( team != TEAM_NONE && Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
 	{
 		float bp = trap_Argc() < 3 ? 300.0f : atof( name + strlen("bp") );
 		level.team[ent->client->pers.team].totalBudget += bp;
@@ -652,7 +667,7 @@ void Cmd_Give_f( gentity_t *ent )
 		return;
 	}
 
-	if ( give_all || Q_strnicmp( name, "health", strlen("health") ) == 0 )
+	if ( team != TEAM_NONE && ( give_all || Q_strnicmp( name, "health", strlen("health") ) == 0 ) )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
@@ -673,17 +688,17 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 	}
 
-	if ( give_all || Q_stricmp( name, "stamina" ) == 0 )
+	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "stamina" ) == 0 ) )
 	{
 		ent->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 	}
 
-	if ( give_all || Q_stricmp( name, "fuel" ) == 0 )
+	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "fuel" ) == 0 ) )
 	{
 		G_RefillFuel(ent, false);
 	}
 
-	if ( Q_stricmp( name, "poison" ) == 0 )
+	if ( team != TEAM_NONE && ( Q_stricmp( name, "poison" ) == 0 ) )
 	{
 		if ( ent->client->pers.team == TEAM_HUMANS )
 		{
@@ -698,7 +713,7 @@ void Cmd_Give_f( gentity_t *ent )
 		}
 	}
 
-	if ( give_all || Q_stricmp( name, "ammo" ) == 0 )
+	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "ammo" ) == 0 ) )
 	{
 		G_RefillAmmo( ent, false );
 	}
@@ -2960,7 +2975,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 	upgrade_t upgrade;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		return false;
@@ -3114,7 +3129,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 	upgrade = BG_UpgradeByName( s )->number;
 
 	// check if armoury is in reach
-	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_BUY_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 
@@ -4427,7 +4442,7 @@ static const commands_t cmds[] =
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },
-	{ "give",            CMD_CHEAT | CMD_TEAM,                Cmd_Give_f             },
+	{ "give",            CMD_CHEAT,                           Cmd_Give_f             },
 	{ "god",             CMD_CHEAT,                           Cmd_God_f              },
 	{ "ignite",          CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Ignite_f           },
 	{ "ignore",          0,                                   Cmd_Ignore_f           },

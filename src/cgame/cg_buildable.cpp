@@ -2241,7 +2241,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	// add inverse shadow map
-	if ( cg_shadows.Get() > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.Get() )
+	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB && cg_buildableShadows.Get() )
 	{
 		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
 	}
@@ -2523,7 +2523,7 @@ void CG_Buildable( centity_t *cent )
 		}
 	}
 
-	if ( cg_shadows.Get() > Util::ordinal(shadowingMode_t::SHADOWING_BLOB) && cg_buildableShadows.Get() )
+	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB && cg_buildableShadows.Get() )
 	{
 		CG_EndShadowCaster( );
 	}

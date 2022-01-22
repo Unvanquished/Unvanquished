@@ -37,7 +37,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 #include "sgame/sg_local.h"
 #include "bot_local.h"
-#include "nav.h"
 
 static Cvar::Range<Cvar::Cvar<int>> maxNavNodes(
 	"bot_maxNavNodes", "maximum number of nodes in navmesh", Cvar::NONE, 4096, 0, 65535);
@@ -179,20 +178,19 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 
 static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 {
-	char filePath[ MAX_QPATH ];
 	fileHandle_t f = 0;
 
 	BotLoadOffMeshConnections( filename, &nav );
 
 	std::string mapname = Cvar::GetValue("mapname");
-	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navMesh", mapname.c_str(), filename );
+	std::string filePath = NavmeshFilename( mapname, filename );
 	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
 	int len = G_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
 	{
-		Log::Warn("Cannot open Navigation Mesh file" );
+		Log::Warn("Cannot open Navigation Mesh file '%s'", filePath);
 		return false;
 	}
 
@@ -203,21 +201,20 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	}
 
 	NavMeshSetHeader header;
-	
-	trap_FS_Read( &header, sizeof( header ), f );
-
-	SwapNavMeshSetHeader( header );
-
-	if ( header.magic != NAVMESHSET_MAGIC )
+	std::string error = GetNavmeshHeader( f, header );
+	if ( !error.empty() )
 	{
-		Log::Warn("File is wrong magic" );
+		Log::Warn( "Loading navmesh %s failed: %s", filePath, error );
 		trap_FS_FCloseFile( f );
 		return false;
 	}
-
-	if ( header.version != NAVMESHSET_VERSION )
+	else if ( header.params.tileHeight == PERMANENT_NAVGEN_ERROR )
 	{
-		Log::Warn("File is wrong version found: %d want: %d", header.version, NAVMESHSET_VERSION );
+		NavMeshTileHeader ignored;
+		trap_FS_Read( &ignored, sizeof(ignored), f );
+		char error[256] = {};
+		trap_FS_Read( error, sizeof(error) - 1, f );
+		Log::Warn( "Can't load %s: Cached navmesh generation failure (%s)", filename, error );
 		trap_FS_FCloseFile( f );
 		return false;
 	}

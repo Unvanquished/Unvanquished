@@ -25,33 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
 =================
-PC_SourceWarning
-=================
-*/
-void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
-{
-	int         line;
-	char        filename[ MAX_QPATH ];
-	va_list     argptr;
-	static char string[ 4096 ];
-
-	va_start( argptr, format );
-	Q_vsnprintf( string, sizeof( string ), format, argptr );
-	va_end( argptr );
-
-	filename[ 0 ] = '\0';
-	line = 0;
-	Parse_SourceFileAndLine( handle, filename, &line );
-
-	Log::Warn( "%s, line %d: %s", filename, line, string );
-}
-
-/*
-=================
 PC_SourceError
 =================
 */
-void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
+static void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
 {
 	int         line;
 	char        filename[ MAX_QPATH ];
@@ -67,53 +44,6 @@ void PRINTF_LIKE(2) PC_SourceError( int handle, const char *format, ... )
 	Parse_SourceFileAndLine( handle, filename, &line );
 
 	Log::Warn( "%s, line %d: %s", filename, line, string );
-}
-
-/*
-=================
-LerpColor
-=================
-*/
-void LerpColor( vec4_t a, vec4_t b, vec4_t c, float t )
-{
-	int i;
-
-	// lerp and clamp each component
-
-	for ( i = 0; i < 4; i++ )
-	{
-		c[ i ] = a[ i ] + t * ( b[ i ] - a[ i ] );
-
-		if ( c[ i ] < 0 )
-		{
-			c[ i ] = 0;
-		}
-		else if ( c[ i ] > 1.0 )
-		{
-			c[ i ] = 1.0;
-		}
-	}
-}
-
-/*
-=================
-Float_Parse
-=================
-*/
-bool Float_Parse( const char **p, float *f )
-{
-	char *token;
-	token = COM_ParseExt( p, false );
-
-	if ( token && token[ 0 ] != 0 )
-	{
-		*f = atof( token );
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 }
 
 #define MAX_EXPR_ELEMENTS 32
@@ -435,29 +365,6 @@ bool PC_Float_Parse( int handle, float *f )
 
 /*
 =================
-Color_Parse
-=================
-*/
-bool Color_Parse( const char **p, Color::Color* c )
-{
-	int   i;
-	float f;
-
-	for ( i = 0; i < 4; i++ )
-	{
-		if ( !Float_Parse( p, &f ) )
-		{
-			return false;
-		}
-
-		c->ToArray()[ i ] = f;
-	}
-
-	return true;
-}
-
-/*
-=================
 PC_Color_Parse
 =================
 */
@@ -477,27 +384,6 @@ bool PC_Color_Parse( int handle, Color::Color *c )
 	}
 
 	return true;
-}
-
-/*
-=================
-Int_Parse
-=================
-*/
-bool Int_Parse( const char **p, int *i )
-{
-	char *token;
-	token = COM_ParseExt( p, false );
-
-	if ( token && token[ 0 ] != 0 )
-	{
-		*i = atoi( token );
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 }
 
 /*
@@ -554,30 +440,6 @@ bool PC_Int_Parse( int handle, int *i )
 	}
 
 	return true;
-}
-
-/*
-=================
-Rect_Parse
-=================
-*/
-bool Rect_Parse( const char **p, rectDef_t *r )
-{
-	if ( Float_Parse( p, &r->x ) )
-	{
-		if ( Float_Parse( p, &r->y ) )
-		{
-			if ( Float_Parse( p, &r->w ) )
-			{
-				if ( Float_Parse( p, &r->h ) )
-				{
-					return true;
-				}
-			}
-		}
-	}
-
-	return false;
 }
 
 /*

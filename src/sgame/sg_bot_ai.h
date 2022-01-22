@@ -55,6 +55,8 @@ enum AIEntity_t
 	E_GOAL = E_NUM_BUILDABLES,
 	E_ENEMY,
 	E_DAMAGEDBUILDING,
+	E_FRIENDLYBUILDING, // closest alive friendly building
+	E_ENEMYBUILDING,    // closest alive enemy building
 	E_SELF
 };
 

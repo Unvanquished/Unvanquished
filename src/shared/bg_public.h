@@ -1536,6 +1536,66 @@ meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
 void                      BG_InitAllConfigs();
 void                      BG_UnloadAllConfigs();
 
+/*
+ * This class is a simpler std::vector alternative that doesn't allocate
+ * and survives a memset(0) without damage, provided that you don't need to
+ * call destructors in such case.
+ *
+ * The purpose of this is to provide something in-between std::vector, which
+ * has fully dynamic and has unbounded size, and std::array that quite
+ * impractical as soon as you don't use it at its full capacity (it doesn't
+ * support an .append() or a clear() method, you can't use a C++11 style-loop
+ * to iterate over only the defined elements, etc.)
+ */
+template<typename T, size_t maximum_size_>
+class BoundedVector
+{
+private:
+	T array[maximum_size_];
+	size_t size_; // current size, should be <= capacity
+public:
+	BoundedVector() : size_(0) {}
+	BoundedVector(const BoundedVector<T, maximum_size_>& other)
+		: size_(other.size_)
+	{
+		for (size_t i = 0; i < other.size_; i++) {
+			array[i] = other.array[i];
+		}
+	}
+	BoundedVector<T, maximum_size_>& operator=(const BoundedVector<T, maximum_size_>& other) {
+		for (size_t i = 0; i < other.size_; i++) {
+			array[i] = other.array[i];
+		}
+		size_ = other.size_;
+		return *this;
+	}
+
+	T& operator[](size_t n) {
+		ASSERT_LT(n, size_);
+		return array[n];
+	}
+	Util::optional<T> pop_back() {
+		if (size_ == 0)
+			return {};
+		return std::move(array[--size_]);
+	}
+	void clear() {
+		while (pop_back()) {}
+	}
+	bool append(T elem) {
+		if (size_ == maximum_size_)
+			return false;
+		array[size_++] = std::move(elem);
+		return true;
+	}
+	size_t size() const { return size_; }
+	bool empty() const { return size_ == 0; }
+	T* begin() { return array; }
+	T* end()   { return array+size_; }
+	const T* begin() const { return array; }
+	const T* end()   const { return array+size_; }
+};
+
 // Parsers
 bool                  BG_ReadWholeFile( const char *filename, char *buffer, size_t size);
 bool                  BG_CheckConfigVars();
@@ -1612,9 +1672,13 @@ void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_
 float    atof_neg( char *token, bool allowNegative );
 int      atoi_neg( char *token, bool allowNegative );
 
-std::vector<buildable_t> BG_ParseBuildableList( const std::string& );
-std::vector<class_t> BG_ParseClassList( const std::string& );
-std::pair<std::vector<weapon_t>, std::vector<upgrade_t>> BG_ParseEquipmentList( const std::string& );
+BoundedVector<buildable_t, BA_NUM_BUILDABLES>
+		BG_ParseBuildableList( const std::string& );
+BoundedVector<class_t, PCL_NUM_CLASSES>
+		BG_ParseClassList( const std::string& );
+std::pair<BoundedVector<weapon_t,  WP_NUM_WEAPONS>,
+          BoundedVector<upgrade_t, UP_NUM_UPGRADES>>
+		BG_ParseEquipmentList( const std::string& );
 
 // You are not supposed to call these, these are meant to be used by
 // g_disabled* cvar callbacks
@@ -1628,7 +1692,7 @@ bool BG_UpgradeDisabled( int upgrade );
 bool BG_ClassDisabled( int class_ );
 bool BG_BuildableDisabled( int buildable );
 
-weapon_t BG_PrimaryWeapon( int stats[] );
+weapon_t BG_PrimaryWeapon( int const stats[] );
 
 // bg_voice.c
 #define MAX_VOICES             8

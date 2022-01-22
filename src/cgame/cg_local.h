@@ -1225,6 +1225,8 @@ struct cg_t
 	float                   mediaLoadingFraction;
 	float                   buildableLoadingFraction;
 	float                   characterLoadingFraction;
+	float navmeshLoadingFraction;
+	bool loadingNavmesh;
 
 	int                     lastBuildAttempt;
 	int                     lastEvolveAttempt;
@@ -1734,7 +1736,7 @@ extern Cvar::Cvar<int> cg_teslaTrailTime;
 extern Cvar::Cvar<float> cg_runpitch;
 extern Cvar::Cvar<float> cg_runroll;
 extern Cvar::Cvar<float> cg_swingSpeed;
-extern Cvar::Range<Cvar::Cvar<int>> cg_shadows;
+extern shadowingMode_t cg_shadows;
 extern Cvar::Cvar<bool> cg_playerShadows;
 extern Cvar::Cvar<bool> cg_buildableShadows;
 extern Cvar::Cvar<bool> cg_drawTimer;
@@ -2109,6 +2111,7 @@ void     CG_ShowScores_f();
 // cg_servercmds.c
 //
 void CG_ExecuteServerCommands( snapshot_t* snap );
+void CG_SetMapNameFromServerinfo();
 void CG_ParseServerinfo();
 void CG_SetConfigValues();
 void CG_ShaderStateChanged();
@@ -2307,7 +2310,6 @@ void Rocket_RegisterDataFormatter( const char *name );
 void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
 void Rocket_DataFormatterFormattedData( int handle, const char *data, bool parseQuake );
 void Rocket_GetElementTag( char *tag, int length );
-void Rocket_SetElementDimensions( float x, float y );
 void Rocket_RegisterElement( const char *tag );
 void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );

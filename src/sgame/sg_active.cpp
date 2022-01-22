@@ -2185,7 +2185,8 @@ void ClientThink_real( gentity_t *self )
 
 		if ( ent && ent->use &&
 		     ( !ent->buildableTeam   || ent->buildableTeam   == client->pers.team ) &&
-		     ( !ent->conditions.team || ent->conditions.team == client->pers.team ) )
+		     ( !ent->conditions.team || ent->conditions.team == client->pers.team ) &&
+		     Distance( self->s.origin, ent->s.origin ) < ENTITY_USE_RANGE )
 		{
 			if ( g_debugEntities.Get() > 1 )
 			{

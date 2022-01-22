@@ -330,30 +330,21 @@ public:
 		int           value;
 		playerState_t *ps = &cg.snap->ps;
 
-		switch ( BG_PrimaryWeapon( ps->stats ) )
+		if ( BG_Weapon( BG_PrimaryWeapon( ps->stats ) )->infiniteAmmo )
 		{
-			case WP_NONE:
-			case WP_BLASTER:
-			case WP_ABUILD:
-			case WP_ABUILD2:
-			case WP_HBUILD:
-				if ( clips != -1 )
-				{
-					SetText( "" );
-				}
-				clips = -1;
-				return;
+			if ( clips != -1 )
+			{
+				SetText( "" );
+			}
+			clips = -1;
+			return;
+		}
+		value = ps->clips;
 
-			default:
-				value = ps->clips;
-
-				if ( value > -1 && value != clips )
-				{
-					SetText( va( "%d", value ) );
-					clips = value;
-				}
-
-				break;
+		if ( value > -1 && value != clips )
+		{
+			SetText( va( "%d", value ) );
+			clips = value;
 		}
 	}
 
@@ -750,13 +741,9 @@ public:
 		AppendChild( currentSpeedElement );
 	}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
+	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
-		{
-			GetColor( "color", color );
-		}
 
 		if ( changed_properties.find( "background-color" ) != changed_properties.end() )
 		{
@@ -764,7 +751,7 @@ public:
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		int          i;
 		float        val, max, top;
@@ -809,6 +796,7 @@ public:
 			{
 				val = speedSamples[( oldestSpeedSample + i + SPEEDOMETER_NUM_SAMPLES -
 				SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
+				Color::Color color;
 
 				if ( val < SPEED_MED )
 				{
@@ -866,9 +854,7 @@ private:
 	Rocket::Core::ElementText* maxSpeedElement;
 	Rocket::Core::ElementText* currentSpeedElement;
 	bool shouldDrawSpeed;
-	Color::Color color;
 	Color::Color backColor;
-
 };
 
 class CreditsValueElement : public TextHudElement
@@ -1005,15 +991,47 @@ class WallwalkElement : public HudElement
 {
 public:
 	WallwalkElement( const Rocket::Core::String& tag ) :
-			HudElement( tag, ELEMENT_ALIENS ),
-			isActive( false ) {}
+			HudElement( tag, ELEMENT_ALIENS )
+	{
+		SetActive( false );
+	}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		bool wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
-		if ( ( wallwalking && !isActive ) || ( !wallwalking && isActive ) )
+		if ( wallwalking != isActive )
 		{
 			SetActive( wallwalking );
+		}
+	}
+
+private:
+	void SetActive( bool active )
+	{
+		isActive = active;
+		SetClass( "active", active );
+		SetClass( "inactive", !active );
+
+	}
+
+	bool isActive;
+};
+
+class SprintElement : public HudElement
+{
+public:
+	SprintElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_HUMANS )
+	{
+		SetActive( false );
+	}
+
+	void DoOnUpdate() override
+	{
+		bool sprinting = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
+		if ( sprinting != isActive )
+		{
+			SetActive( sprinting );
 		}
 	}
 
@@ -1049,35 +1067,24 @@ public:
 	{
 		vec3_t        view, point;
 		trace_t       trace;
-		entityState_t *es;
 
 		AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
-		VectorMA( cg.refdef.vieworg, 64, view, point );
+		VectorMA( cg.refdef.vieworg, ENTITY_USE_RANGE, view, point );
 		CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr,
 				  point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
 
-		es = &cg_entities[ trace.entityNum ].currentState;
+		const entityState_t &es = cg_entities[ trace.entityNum ].currentState;
 
-		if ( es->eType == entityType_t::ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
-			CG_IsOnMyTeam(*es) )
+		if ( es.eType == entityType_t::ET_BUILDABLE
+				&& es.modelindex == BA_H_ARMOURY
+				&& Distance(cg.predictedPlayerState.origin, es.origin) < ENTITY_USE_RANGE - 0.2f // use an epsilon to account for rounding errors
+				&& CG_IsOnMyTeam(es) )
 		{
-			//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
-			if ( es->modelindex == BA_H_REACTOR &&
-				( !BG_Weapon( cg.snap->ps.weapon )->usesEnergy ||
-				BG_Weapon( cg.snap->ps.weapon )->infiniteAmmo ) )
+			if ( !IsVisible() )
 			{
-				cg.nearUsableBuildable = BA_NONE;
-				SetProperty( "display", "none" );
-				return;
+				SetProperty( "display", display );
+				cg.nearUsableBuildable = es.modelindex;
 			}
-
-			if ( IsVisible() )
-			{
-				return;
-			}
-
-			SetProperty( "display", display );
-			cg.nearUsableBuildable = es->modelindex;
 		}
 		else
 		{
@@ -3623,6 +3630,7 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "stamina", StaminaValueElement )
 	REGISTER_ELEMENT( "weapon_icon", WeaponIconElement )
 	REGISTER_ELEMENT( "wallwalk", WallwalkElement )
+	REGISTER_ELEMENT( "sprinting", SprintElement )
 	REGISTER_ELEMENT( "usable_buildable", UsableBuildableElement )
 	REGISTER_ELEMENT( "location", LocationElement )
 	REGISTER_ELEMENT( "timer", TimerElement )
