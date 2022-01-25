@@ -134,7 +134,7 @@ static const char *CG_KeyNameForCommand( const char *command )
 CG_BuildableInRange
 ===============
 */
-static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFraction )
+static entityState_t *CG_BuildableInRange( playerState_t *ps )
 {
 	vec3_t        view, point;
 	trace_t       trace;
@@ -148,12 +148,6 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps, float *healthFract
 	if ( es.eType != entityType_t::ET_BUILDABLE || !CG_IsOnMyTeam(es) )
 	{
 		return nullptr;
-	}
-
-	if ( healthFraction )
-	{
-		float health = static_cast<float>(CG_Health(es));
-		*healthFraction = health / BG_Buildable( es.modelindex )->health;
 	}
 
 	return &es;
@@ -188,7 +182,7 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 		              CG_KeyNameForCommand( "+attack" ) ) );
 	}
 
-	if ( ( es = CG_BuildableInRange( ps, nullptr ) ) )
+	if ( ( es = CG_BuildableInRange( ps ) ) )
 	{
 		const char *key = CG_KeyNameForCommand( "+deconstruct" );
 
