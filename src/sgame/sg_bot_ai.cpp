@@ -1184,7 +1184,8 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 	// See https://github.com/Unvanquished/Unvanquished/pull/1598
 	// (It would be nice to allow the BT to check for the failure cause.
 	//  How? That's a good question)
-	if ( medistation->target && medistation->target.get() != self )
+	if ( medistation->target && medistation->target.get() != self
+	     && distanceSquared > Square( 200 ) )
 	{
 		return STATUS_FAILURE;
 	}
