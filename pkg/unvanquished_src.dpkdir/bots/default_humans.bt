@@ -39,7 +39,10 @@ selector
 						condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
 						selector
 						{
-							action heal
+							decorator timer( 3000 )
+							{
+								action heal
+							}
 							action roamInRadius( E_H_MEDISTAT, 250 )
 						}
 					}
@@ -70,7 +73,10 @@ selector
 			condition healScore > 0.25
 			selector
 			{
-				action heal
+				decorator timer( 3000 )
+				{
+					action heal
+				}
 				action roamInRadius( E_H_MEDISTAT, 250 )
 			}
 		}
