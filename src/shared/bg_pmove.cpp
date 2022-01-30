@@ -4839,17 +4839,20 @@ void PmoveSingle( pmove_t *pmove )
 
 	// determine the time
 	pml.msec = pmove->cmd.serverTime - pm->ps->commandTime;
-
-	if ( pml.msec < 1 )
-	{
-		pml.msec = 1;
-	}
-	else if ( pml.msec > 200 )
-	{
-		pml.msec = 200;
-	}
-
 	pm->ps->commandTime = pmove->cmd.serverTime;
+
+	if ( pm->ps->pm_type == PM_SPECTATOR || pm->ps->pm_type == PM_NOCLIP )
+	{
+		// HACK: ignore the effects of timescale for spectators
+		// see https://github.com/Unvanquished/Unvanquished/issues/1401
+		// we don't touch pm->ps->commandTime, because other parts of the code rely on it
+		static int last_ms;
+		auto ms = Sys::Milliseconds();
+		pml.msec = ms - last_ms;
+		last_ms = ms;
+	}
+	pml.msec = Math::Clamp( pml.msec, 1, 200 );
+
 
 	// save old org in case we get stuck
 	VectorCopy( pm->ps->origin, pml.previous_origin );
