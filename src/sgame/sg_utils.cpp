@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "Entities.h"
 
+#include <glm/geometric.hpp>
+
 struct shaderRemap_t
 {
 	char  oldShader[ MAX_QPATH ];
@@ -915,4 +917,27 @@ int G_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle )
 		length = trap_FS_OpenPakFile( filename, handle );
 	}
 	return length;
+}
+
+// imported from daemon.
+// Given 3 degree angles, computes yaw, pitch and roll, that is,
+// computes normalized vectors describing a 3D space.
+// NOTES:
+// * I am not sure the vectors are actually normalized.
+// * it would likely be more efficient to work with a quaternion here.
+// * working with a quaternion would also allow to return a value
+/*
+===============
+Set muzzle location relative to pivoting eye.
+===============
+*/
+glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward )
+{
+	glm::vec3 muzzlePoint = VEC2GLM( self->client->ps.origin );
+	glm::vec3 normal = BG_GetClientNormal( &self->client->ps );
+	muzzlePoint += static_cast<float>( self->client->ps.viewheight ) * normal;
+	muzzlePoint += 1.f * forward;
+	// snap to integer coordinates for more efficient network bandwidth usage
+	//Meh. I doubt it saves much. Casting to short ints might have, though. (copypaste)
+	return glm::floor( muzzlePoint + 0.5f );
 }

@@ -338,6 +338,8 @@ void              G_UpdateZaps( int msec );
 void              G_ClearPlayerZapEffects( gentity_t *player );
 void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode );
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
+glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward );
+
 
 // CombatFeedback.cpp
 namespace CombatFeedback

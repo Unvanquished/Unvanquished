@@ -37,6 +37,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "engine/qcommon/q_unicode.h"
 #include "shared/navgen/navgen.h"
 
+#include <glm/gtx/norm.hpp>
+
 struct g_admin_cmd_t
 {
 	const char *keyword;
@@ -5052,8 +5054,8 @@ bool G_admin_flag( gentity_t *ent )
 
 bool G_admin_builder( gentity_t *ent )
 {
-	vec3_t     forward, right, up;
-	vec3_t     start, end, dist;
+	glm::vec3 forward;
+	glm::vec3 start;
 	trace_t    tr;
 	gentity_t  *traceEnt;
 	buildLog_t *log;
@@ -5070,21 +5072,22 @@ bool G_admin_builder( gentity_t *ent )
 
 	buildlog = G_admin_permission( ent, "buildlog" );
 
-	AngleVectors( ent->client->ps.viewangles, forward, right, up );
+	AngleVectors( VEC2GLM( ent->client->ps.viewangles ), &forward, nullptr, nullptr );
 
 	if ( ent->client->pers.team != TEAM_NONE &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		G_CalcMuzzlePoint( ent, forward, right, up, start );
+		start = G_CalcMuzzlePoint( ent, forward );
 	}
 	else
 	{
-		VectorCopy( ent->client->ps.origin, start );
+		start = VEC2GLM( ent->client->ps.origin );
 	}
 
-	VectorMA( start, 1000, forward, end );
+	glm::vec3 end = start + 1000.f * forward;
 
-	trap_Trace( &tr, start, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	//TODO there are many occurrences of trap_Trace without mins/maxs, a specialized API is likely needed
+	trap_Trace( &tr, &start[0], nullptr, nullptr, &end[0], ent->s.number, MASK_PLAYERSOLID, 0 );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == entityType_t::ET_BUILDABLE ) )
@@ -5108,10 +5111,10 @@ bool G_admin_builder( gentity_t *ent )
 
 				if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex )
 				{
-				        VectorSubtract( traceEnt->s.pos.trBase, log->origin, dist );
+					glm::vec3 dist = VEC2GLM( traceEnt->s.pos.trBase ) - VEC2GLM( log->origin );
 
-				        if ( VectorLengthSquared( dist ) < 2.0f )
-				        {
+					if ( glm::length2( dist ) < 2.0f )
+					{
 						break;
 					}
 				}
