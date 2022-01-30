@@ -1892,8 +1892,9 @@ void BotFireWeaponAI( gentity_t *self )
 	}
 }
 
-static bool BotChangeClass( gentity_t *self, class_t newClass, glm::vec3 newOrigin )
+static bool BotChangeClass( gentity_t *self, class_t newClass )
 {
+	glm::vec3 newOrigin;
 	if ( !G_RoomForClassChange( self, newClass, &newOrigin[0] ) )
 	{
 		return false;
@@ -2113,7 +2114,6 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		return false;
 	}
 
-	glm::vec3 newOrigin;
 	struct
 	{
 		upgrade_t upg;
@@ -2128,7 +2128,7 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 	for ( auto const& armor : armorToClass )
 	{
 		//fail if there's not enough space
-		if ( upgrade == armor.upg && !BotChangeClass( self, armor.cls, newOrigin ) )
+		if ( upgrade == armor.upg && !BotChangeClass( self, armor.cls ) )
 		{
 			return false;
 		}
