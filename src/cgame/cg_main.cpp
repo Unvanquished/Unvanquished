@@ -98,7 +98,6 @@ Cvar::Cvar<bool> cg_drawSurfNormal("cg_drawSurfNormal", "visualize normal vector
 Cvar::Range<Cvar::Cvar<int>> cg_drawBBOX("cg_drawBBOX", "show entity bounding boxes (2 = solid)", Cvar::CHEAT, 0, 0, 2);
 Cvar::Cvar<bool> cg_drawEntityInfo("cg_drawEntityInfo", "show number and type of facing entity", Cvar::CHEAT, false);
 Cvar::Cvar<int> cg_wwSmoothTime("cg_wwSmoothTime", "time (ms) to rotate view while wallwalking", Cvar::NONE, 150);
-Cvar::Cvar<bool> cg_depthSortParticles("cg_depthSortParticles", "render particles in depth order", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_bounceParticles("cg_bounceParticles", "particles may bounce off surfaces, rather than destruct", Cvar::NONE, true);
 Cvar::Cvar<int> cg_consoleLatency("cg_consoleLatency", "how long chat messages appear (milliseconds)", Cvar::NONE, 3000);
 Cvar::Range<Cvar::Cvar<int>> cg_lightFlare("cg_lightFlare", "style of 'light flares'", Cvar::NONE, 3, 0, 3);
