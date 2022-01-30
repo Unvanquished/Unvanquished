@@ -157,6 +157,4 @@ bool  BotPathIsWalkable( const gentity_t *self, botTarget_t target );
 //consider bot to be stuck if it does not move farther than this in some period of time
 constexpr float BOT_STUCK_RADIUS = 150;
 
-glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward );
-
 #endif
