@@ -1499,19 +1499,6 @@ void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
 	target = viewBase + length * skilledVec;
 }
 
-float BotAimAngle( gentity_t *self, vec3_t pos )
-{
-	vec3_t viewPos;
-	vec3_t forward;
-	vec3_t ideal;
-
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-	BG_GetClientViewOrigin( &self->client->ps, viewPos );
-	VectorSubtract( pos, viewPos, ideal );
-
-	return AngleBetweenVectors( forward, ideal );
-}
-
 /*
 ========================
 Bot Team Querys
