@@ -91,8 +91,7 @@ void G_AreaTeamCommand( const gentity_t *ent, const char *cmd )
 {
 	int    entityList[ MAX_GENTITIES ];
 	int    num, i;
-	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
-	vec3_t mins, maxs;
+	glm::vec3 range = { 1000.0f, 1000.0f, 1000.0f };
 	team_t team = (team_t) ent->client->pers.team;
 
 	for ( i = 0; i < 3; i++ )
@@ -100,10 +99,10 @@ void G_AreaTeamCommand( const gentity_t *ent, const char *cmd )
 		range[ i ] = g_sayAreaRange.Get();
 	}
 
-	VectorAdd( ent->s.origin, range, maxs );
-	VectorSubtract( ent->s.origin, range, mins );
+	glm::vec3 maxs = VEC2GLM( ent->s.origin ) + range;
+	glm::vec3 mins = VEC2GLM( ent->s.origin ) - range;
 
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
 
 	for ( i = 0; i < num; i++ )
 	{
