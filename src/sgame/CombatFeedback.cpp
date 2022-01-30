@@ -89,7 +89,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 		point = point_opt.value();
 	}
 
-	G_SetOrigin(event, point.Data());
+	G_SetOrigin(event, VEC2GLM( point.Data() ) );
 
 	// FIXME: is this necessary with SVF_BROADCAST?
 	trap_LinkEntity(event);

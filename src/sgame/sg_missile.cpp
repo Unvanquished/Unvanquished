@@ -63,7 +63,7 @@ static void BounceMissile( gentity_t *ent, trace_t *trace )
 		// check for stop
 		if ( trace->plane.normal[ 2 ] > 0.2 && VectorLength( ent->s.pos.trDelta ) < 40 )
 		{
-			G_SetOrigin( ent, trace->endpos );
+			G_SetOrigin( ent, VEC2GLM( trace->endpos ) );
 			return;
 		}
 	}
@@ -180,7 +180,7 @@ static int ImpactFlamer( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	}
 
 	// ignite in radius
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos, FLAMER_IGNITE_RADIUS ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, VEC2GLM( trace->endpos ), FLAMER_IGNITE_RADIUS ) ) )
 	{
 		// we already handled other, since it might not always be in FLAMER_IGNITE_RADIUS due to BBOX sizes
 		if ( neighbor == hitEnt )
@@ -248,7 +248,7 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	// put out fires in range
 	// TODO: Iterate over all ignitable entities only
 	neighbor = nullptr;
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, VEC2GLM( trace->endpos ),
 							    ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
 	{
 		if ( neighbor != hitEnt )
@@ -436,7 +436,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		// Save net bandwidth.
 		G_SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
 
-		G_SetOrigin( ent, trace->endpos );
+		G_SetOrigin( ent, VEC2GLM( trace->endpos ) );
 
 		trap_LinkEntity( ent );
 	}
@@ -459,7 +459,7 @@ void G_ExplodeMissile( gentity_t *ent )
 
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 	SnapVector( origin );
-	G_SetOrigin( ent, origin );
+	G_SetOrigin( ent, VEC2GLM( origin ) );
 
 	// we don't have a valid direction, so just point straight up
 	dir[ 0 ] = dir[ 1 ] = 0;
@@ -680,7 +680,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 
 	// don't spawn a fire inside another fire
 	fire = nullptr;
-	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
+	while ( ( fire = G_IterateEntitiesWithinRadius( fire, VEC2GLM( origin ), FIRE_MIN_DISTANCE ) ) )
 	{
 		if ( fire->s.eType == entityType_t::ET_FIRE )
 		{

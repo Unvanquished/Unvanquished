@@ -463,7 +463,7 @@ static void SpawnCorpse( gentity_t *ent )
 	// FIXME: find some way to handle when DEATH2 and DEATH3 need a different min
 	origin[2] += mins[ 2 ] - body->r.mins[ 2 ];
 
-	G_SetOrigin( body, origin );
+	G_SetOrigin( body, VEC2GLM( origin ) );
 	body->s.pos.trType = trType_t::TR_GRAVITY;
 	body->s.pos.trTime = level.time;
 	VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
@@ -1727,7 +1727,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		ent->credits[ i ].team = TEAM_NONE;
 	}
 
-	G_SetOrigin( ent, spawn_origin );
+	G_SetOrigin( ent, VEC2GLM( spawn_origin ) );
 	VectorCopy( spawn_origin, client->ps.origin );
 
 	//give aliens some spawn velocity
@@ -1903,7 +1903,7 @@ void ClientDisconnect( int clientNum )
 	if ( ent->client->pers.connected == CON_CONNECTED &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		tent = G_NewTempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
+		tent = G_NewTempEntity( VEC2GLM( ent->client->ps.origin ), EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = ent->s.clientNum;
 	}
 

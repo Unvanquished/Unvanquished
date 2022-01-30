@@ -222,7 +222,7 @@ struct gentityCall_t
 void       G_InitGentityMinimal( gentity_t *e );
 void       G_InitGentity( gentity_t *e );
 gentity_t  *G_NewEntity();
-gentity_t  *G_NewTempEntity( const vec3_t origin, int event );
+gentity_t  *G_NewTempEntity( glm::vec3 origin, int event );
 void       G_FreeEntity( gentity_t *e );
 
 //debug
@@ -234,7 +234,7 @@ gentity_t  *G_IterateEntities( gentity_t *entity, const char *classname, bool sk
 gentity_t  *G_IterateEntities( gentity_t *entity );
 gentity_t  *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname );
 gentity_t  *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const char *match );
-gentity_t  *G_IterateEntitiesWithinRadius( gentity_t *entity, const vec3_t origin, float radius );
+gentity_t  *G_IterateEntitiesWithinRadius( gentity_t *entity, const glm::vec3& origin, float radius );
 gentity_t  *G_FindClosestEntity( vec3_t origin, gentity_t **entities, int numEntities );
 gentity_t  *G_PickRandomEntity( const char *classname, size_t fieldofs, const char *match );
 gentity_t  *G_PickRandomEntityOfClass( const char *classname );
@@ -260,8 +260,8 @@ void       G_HandleActCall( gentity_t *entity, gentityCall_t *call );
 void       G_ExecuteAct( gentity_t *entity, gentityCall_t *call );
 
 //configure
-void       G_SetMovedir( vec3_t angles, vec3_t movedir );
-void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
+void       G_SetMovedir( glm::vec3& angles, glm::vec3& movedir );
+void       G_SetOrigin( gentity_t *ent, const glm::vec3& origin );
 
 //
 // g_spawn.c

@@ -149,7 +149,7 @@ bool GoalInRange( const gentity_t *self, float r )
 		return ( glm::distance( VEC2GLM( self->s.origin ), VEC2GLM( self->botMind->nav().tpos ) ) < r );
 	}
 
-	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) ) )
+	while ( ( ent = G_IterateEntitiesWithinRadius( ent, VEC2GLM( self->s.origin ), r ) ) )
 	{
 		if ( ent == self->botMind->goal.getTargetedEntity() )
 		{
@@ -623,7 +623,7 @@ void BotClampPos( gentity_t *self )
 	BG_BoundingBox( pclass, mins, maxs );
 	trap_Trace( &trace, self_origin, mins, maxs, origin, self->client->ps.clientNum,
 	            MASK_PLAYERSOLID, 0 );
-	G_SetOrigin( self, trace.endpos );
+	G_SetOrigin( self, VEC2GLM( trace.endpos ) );
 	VectorCopy( trace.endpos, self->client->ps.origin );
 }
 

@@ -3559,7 +3559,7 @@ void G_StopFollowing( gentity_t *ent )
 			G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
 		}
 
-		G_SetOrigin( ent, spawn_origin );
+		G_SetOrigin( ent, VEC2GLM( spawn_origin ) );
 		VectorCopy( spawn_origin, ent->client->ps.origin );
 		G_SetClientViewAngle( ent, spawn_angles );
 	}
@@ -3625,7 +3625,7 @@ void G_FollowLockView( gentity_t *ent )
 		G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
 	}
 
-	G_SetOrigin( ent, spawn_origin );
+	G_SetOrigin( ent, VEC2GLM( spawn_origin ) );
 	VectorCopy( spawn_origin, ent->client->ps.origin );
 	G_SetClientViewAngle( ent, spawn_angles );
 }

@@ -294,7 +294,7 @@ void ABooster_Think( gentity_t *self )
 	self->nextthink = level.time + BOOST_REPEAT_ANIM / 4;
 
 	// check if there is a closeby alien that used this booster for healing recently
-	for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, REGEN_BOOSTER_RANGE ) ); )
+	for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, VEC2GLM( self->s.origin ), REGEN_BOOSTER_RANGE ) ); )
 	{
 		if ( ent->boosterUsed == self && ent->boosterTime == level.previousTime )
 		{
@@ -904,7 +904,7 @@ bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 {
 	gentity_t *neighbor = nullptr;
 
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, VEC2GLM( origin ), radius ) ) )
 	{
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !neighbor->spawned || Entities::IsDead( neighbor ) ||
 		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
@@ -1872,7 +1872,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		built->builtBy = nullptr;
 	}
 
-	G_SetOrigin( built, origin );
+	G_SetOrigin( built, VEC2GLM( origin ) );
 
 	// HACK: These are preliminary angles. The real angles of the model are calculated client side.
 	// TODO: Use proper angles with respect to the world?
@@ -2174,7 +2174,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	// allow to ride movers
 	built->s.groundEntityNum = tr.entityNum;
 
-	G_SetOrigin( built, tr.endpos );
+	G_SetOrigin( built, VEC2GLM( tr.endpos ) );
 
 	trap_LinkEntity( built );
 
