@@ -254,6 +254,11 @@ static void CG_Rocket_SetDataSelectValue()
 
 static void CG_Rocket_EventPlay()
 {
+	if ( !cg_enableBackgroundMusic.Get() )
+	{
+		return;
+	}
+
 	const char *track = nullptr;
 
 	// Specifying multiple files to randomly select between

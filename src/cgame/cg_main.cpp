@@ -177,6 +177,7 @@ static Cvar::Cvar<std::string> cg_voice("voice", "track selection for user's own
 static Cvar::Range<Cvar::Cvar<int>> cg_wwFollow("cg_wwFollow", "rotate pitch angle when wallwalk normal changes", Cvar::USERINFO, 1, 0, 1);
 static Cvar::Range<Cvar::Cvar<int>> cg_wwToggle("cg_wwToggle", "wallwalk key is press-and-hold (0) or toggles (1)", Cvar::USERINFO, 1, 0, 1);
 
+Cvar::Cvar<bool> cg_enableBackgroundMusic( "cg_enableBackgroundMusic", "enable background music", Cvar::NONE, true );
 /*
 ===============
 CG_SetPVars
@@ -1076,15 +1077,20 @@ CG_StartMusic
 */
 void CG_StartMusic()
 {
+	if ( !cg_enableBackgroundMusic.Get() )
+	{
+		return;
+	}
+
 	const char *s;
-	char parm1[ MAX_QPATH ], parm2[ MAX_QPATH ];
+	std::string parm1, parm2;
 
 	// start the background music
 	s = ( char * ) CG_ConfigString( CS_MUSIC );
-	Q_strncpyz( parm1, COM_Parse( &s ), sizeof( parm1 ) );
-	Q_strncpyz( parm2, COM_Parse( &s ), sizeof( parm2 ) );
+	parm1 = COM_Parse( &s );
+	parm2 = COM_Parse( &s );
 
-	trap_S_StartBackgroundTrack( parm1, parm2 );
+	trap_S_StartBackgroundTrack( parm1.c_str(), parm2.c_str() );
 }
 
 bool CG_ClientIsReady( int clientNum )

@@ -1842,6 +1842,7 @@ extern Cvar::Cvar<bool> cg_spawnEffects;
 extern Cvar::Cvar<std::string> cg_sayCommand;
 
 extern Cvar::Cvar<bool> cg_lazyLoadModels;
+extern Cvar::Cvar<bool> cg_enableBackgroundMusic;
 
 //
 // cg_main.c
