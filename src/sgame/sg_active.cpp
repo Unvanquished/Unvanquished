@@ -826,17 +826,18 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 	gentity_t *traceEnt, *target;
 	gclient_t *client;
 	team_t    team;
-	vec3_t viewOrigin, forward, end;
 
 	if ( !( client = self->client ) ) return;
 
 	team = (team_t)client->pers.team;
 
-	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 65536, forward, end );
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
+	glm::vec3 viewAngles = VEC2GLM( self->client->ps.viewangles );
+	glm::vec3 forward;
+	AngleVectors( viewAngles, &forward, nullptr, nullptr );
+	glm::vec3 end = viewOrigin + 65536.f * forward;
 
-	G_UnlaggedOn( self, viewOrigin, 65536 );
+	G_UnlaggedOn( self, &viewOrigin[0], 65536 );
 	traceEnt = Beacon::TagTrace( viewOrigin, end, self->s.number, MASK_SHOT, team, true );
 	G_UnlaggedOff( );
 

@@ -44,25 +44,25 @@ const char        *G_quoted_admin_name( gentity_t *ent );
 namespace Beacon
 {
 	void Frame();
-	void Move( gentity_t *ent, const vec3_t origin );
-	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team,
+	void Move( gentity_t *ent, const glm::vec3& origin );
+	gentity_t *New( const glm::vec3& origin, beaconType_t type, int data, team_t team,
 	                int owner = ENTITYNUM_NONE,
 	                beaconConflictHandler_t conflictHandler = BCH_NONE );
-	gentity_t *NewArea( beaconType_t type, const vec3_t point, team_t team );
+	gentity_t *NewArea( beaconType_t type, const glm::vec3& point, team_t team );
 	void Delete( gentity_t *ent, bool verbose = false );
-	void MoveTowardsRoom( vec3_t origin );
-	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	void MoveTowardsRoom( glm::vec3& origin );
+	gentity_t *FindSimilar( const glm::vec3& origin, beaconType_t type, int data, int team, int owner,
 	                        float radius = 128.0f, int eFlags = 0, int eFlagsRelevant = 0 );
-	int RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
+	int RemoveSimilar( const glm::vec3& origin, beaconType_t type, int data, int team, int owner,
 	                   float radius = 128.0f, int eFlags = 0, int eFlagsRelevant = 0 );
-	gentity_t *MoveSimilar( const vec3_t from, const vec3_t to, beaconType_t type, int data,
+	gentity_t *MoveSimilar( const glm::vec3& from, const glm::vec3& to, beaconType_t type, int data,
 	                        int team, int owner, float radius = 128.0f, int eFlags = 0,
 	                        int eFlagsRelevant = 0 );
 	void Propagate( gentity_t *ent );
 	void PropagateAll();
 	void RemoveOrphaned( int clientNum );
 	bool EntityTaggable( int num, team_t team, bool trace );
-	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, bool refreshTagged );
+	gentity_t *TagTrace( const glm::vec3& begin, const glm::vec3& end, int skip, int mask, team_t team, bool refreshTagged );
 	void Tag( gentity_t *ent, team_t team, bool permanent );
 	void UpdateTags( gentity_t *ent );
 	void DetachTags( gentity_t *ent );
