@@ -129,7 +129,8 @@ namespace BaseClustering {
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
 			trace_t tr;
 			trap_Trace(&tr, mean->s.origin, nullptr, nullptr, &center[0], 0, MASK_SOLID, 0);
-			Beacon::MoveTowardsRoom(tr.endpos);
+			glm::vec3 trEndpos = VEC2GLM( tr.endpos );
+			Beacon::MoveTowardsRoom( trEndpos );
 
 			// Prepare beacon flags.
 			int eFlags = 0;
@@ -139,9 +140,9 @@ namespace BaseClustering {
 			// If a fitting beacon close to the target location already exists, move it silently,
 			// otherwise add a new one.
 			gentity_t *beacon;
-			if (!(beacon = Beacon::MoveSimilar(&center[0], tr.endpos, BCT_BASE, 0, team, 0,
+			if (!(beacon = Beacon::MoveSimilar(center, trEndpos, BCT_BASE, 0, team, 0,
 			                                   baseRadius, eFlags, EF_BC_BASE_RELEVANT))) {
-				beacon = Beacon::New(tr.endpos, BCT_BASE, (int)baseRadius, team );
+				beacon = Beacon::New( VEC2GLM( tr.endpos ), BCT_BASE, static_cast<int>( baseRadius ), team );
 				beacon->s.eFlags |= eFlags;
 				Beacon::Propagate(beacon);
 			}

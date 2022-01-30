@@ -1471,6 +1471,7 @@ void     BG_BuildEntityDescription( char *str, size_t size, entityState_t *es );
 bool     BG_IsMainStructure( buildable_t buildable );
 bool     BG_IsMainStructure( entityState_t *es );
 void     BG_MoveOriginToBBOXCenter( vec3_t point, const vec3_t mins, const vec3_t maxs );
+void     BG_MoveOriginToBBOXCenter( glm::vec3& point, glm::vec3 const& mins, glm::vec3 const& maxs );
 void     ModifyFlag(int &flags, int flag, bool value);
 void     AddFlag(int &flags, int flag);
 void     RemoveFlag(int &flags, int flag);
@@ -1804,7 +1805,7 @@ void BG_DeadBoundingBox( class_t cl, glm::vec3 &mins, glm::vec3 &maxs );
 glm::vec3 BG_CrouchBoundingBox( class_t cl );
 
 void BG_BoundingBox( buildable_t buildablel, glm::vec3 &mins, glm::vec3 &maxs );
-
+void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right, glm::vec3 *up );
 
 //==================================================================
 #endif /* BG_PUBLIC_H_ */
