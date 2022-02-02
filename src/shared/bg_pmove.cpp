@@ -4249,22 +4249,26 @@ static void PM_Animate()
 	}
 
 	bool doit = false;
+	bool gesture = usercmdButtonPressed( pm->cmd.buttons, BTN_GESTURE );
+	bool rally  = usercmdButtonPressed( pm->cmd.buttons, BTN_RALLY );
 	if ( IsSegmentedModel( pm->ps ) )
 	{
-		if ( usercmdButtonPressed( pm->cmd.buttons, BTN_GESTURE ) )
+		if ( gesture )
 		{
 			int wpAnim = TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER );
 			//and now I know why build stuff must be last in the weapon list...
 			PM_StartTorsoAnim( wpAnim > WP_LUCIFER_CANNON ?  TORSO_GESTURE_CKIT : wpAnim );
 			doit = true;
 		}
-		else if( usercmdButtonPressed( pm->cmd.buttons, BTN_RALLY ) )
+		// This code could likely be purged, really (but double
+		// check that!).
+		else if ( rally )
 		{
 			PM_StartTorsoAnim( TORSO_RALLY );
 			doit = true;
 		}
 	}
-	else
+	else if ( gesture || rally )
 	{
 		PM_ForceLegsAnim( NSPA_GESTURE );
 		doit = true;
