@@ -331,6 +331,8 @@ void BotWalk( gentity_t *self, bool enable )
 	}
 }
 
+#undef DAEMON_HAVE_PRECISE_TRACES
+#ifdef DAEMON_HAVE_PRECISE_TRACES
 // A function which does a proper vertical scan for path is required.
 // To do that, several points must be kept in mind:
 //
@@ -536,6 +538,7 @@ static bool steer( gentity_t *self, glm::vec3 &dir )
 	// }
 	return false;
 }
+#else
 
 static bool walkable( trace_t const& trace )
 {
@@ -710,6 +713,7 @@ bool botMemory_t::findPath( gentity_t *self, glm::vec3 &dir )
 	// }
 	return false;
 }
+#endif
 
 void BotDirectionToUsercmd( gentity_t *self, const glm::vec3 &dir, usercmd_t *cmd )
 {
@@ -784,7 +788,11 @@ void BotMoveToGoal( gentity_t *self )
 	const playerState_t& ps = self->client->ps;
 
 	glm::vec3 dir = self->botMind->nav().glm_dir();
+#ifdef DAEMON_HAVE_PRECISE_TRACES
 	if ( !steer( self, dir ) )
+#else
+	if ( !self->botMind->findPath( self, dir ) )
+#endif
 	{
 		//TODO: find new target on next frame
 	}
