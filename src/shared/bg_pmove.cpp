@@ -2342,9 +2342,13 @@ static void PM_CrashLand()
 PM_CorrectAllSolid
 =============
 */
-static int PM_CorrectAllSolid( trace_t *trace )
+static int PM_CorrectAllSolid( trace_t &trace )
 {
-	int    i, j, k;
+	if ( !trace.allsolid )
+	{
+		return true;
+	}
+
 	vec3_t point;
 
 	if ( pm->debugLevel > 1 )
@@ -2353,28 +2357,26 @@ static int PM_CorrectAllSolid( trace_t *trace )
 	}
 
 	// jitter around
-	for ( i = -1; i <= 1; i++ )
+	for ( int i = -1; i <= 1; i++ )
 	{
-		for ( j = -1; j <= 1; j++ )
+		for ( int j = -1; j <= 1; j++ )
 		{
-			for ( k = -1; k <= 1; k++ )
+			for ( int k = -1; k <= 1; k++ )
 			{
 				VectorCopy( pm->ps->origin, point );
 				point[ 0 ] += ( float ) i;
 				point[ 1 ] += ( float ) j;
 				point[ 2 ] += ( float ) k;
-				pm->trace( trace, point, pm->mins, pm->maxs, point, pm->ps->clientNum,
-				           pm->tracemask, 0 );
+				pm->trace( &trace, point, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask, 0 );
 
-				if ( !trace->allsolid )
+				if ( !trace.allsolid )
 				{
 					point[ 0 ] = pm->ps->origin[ 0 ];
 					point[ 1 ] = pm->ps->origin[ 1 ];
 					point[ 2 ] = pm->ps->origin[ 2 ] - 0.25;
 
-					pm->trace( trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
-					           pm->tracemask, 0 );
-					pml.groundTrace = *trace;
+					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask, 0 );
+					pml.groundTrace = trace;
 					return true;
 				}
 			}
@@ -2768,13 +2770,10 @@ static void PM_GroundClimbTrace()
 			// we hit something, so stop searching for a surface to attach to
 			break;
 		}
-		else if ( trace.allsolid )
+		// do something corrective if the trace starts in a solid
+		else if ( !PM_CorrectAllSolid( trace ) )
 		{
-			// do something corrective if the trace starts in a solid
-			if ( !PM_CorrectAllSolid( &trace ) )
-			{
-				return;
-			}
+			return;
 		}
 	}
 
@@ -2949,7 +2948,7 @@ static void PM_GroundTrace()
 	pml.groundTrace = trace;
 
 	// do something corrective if the trace starts in a solid...
-	if ( trace.allsolid && !PM_CorrectAllSolid( &trace ) )
+	if ( !PM_CorrectAllSolid( trace ) )
 	{
 		return;
 	}
