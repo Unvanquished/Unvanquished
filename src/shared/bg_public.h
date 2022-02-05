@@ -46,6 +46,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
+enum pmtype_t
+{
+  PM_NORMAL, // can accelerate and turn
+  PM_NOCLIP, // noclip movement
+  PM_SPECTATOR, // still run into walls
+  PM_GRABBED, // like dead, but for when the player is still alive
+  PM_DEAD, // no acceleration or turning, but free falling
+  PM_FREEZE, // stuck in place with no control
+  PM_INTERMISSION // no movement or status bar
+};
+
 // any change in playerState_t should be reflected in the table in bg_misc.cpp
 // (Gordon: unless it doesn't need transmission over the network, in which case it should probably go into the new pmext struct anyway)
 struct playerState_t
@@ -61,7 +72,7 @@ struct playerState_t
 	int    commandTime; // cmd->serverTime of last executed command
 	// end of fields which must be identical to OpaquePlayerState
 
-	int    pm_type;
+	pmtype_t pm_type;
 	int    bobCycle; // for view bobbing and footstep generation
 	int    pm_flags; // ducked, jump_held, etc
 	int    pm_time;
@@ -214,17 +225,6 @@ and some other output data.  Used for local prediction on the client game and tr
 movement on the server game.
 ===================================================================================
 */
-
-enum pmtype_t
-{
-  PM_NORMAL, // can accelerate and turn
-  PM_NOCLIP, // noclip movement
-  PM_SPECTATOR, // still run into walls
-  PM_GRABBED, // like dead, but for when the player is still alive
-  PM_DEAD, // no acceleration or turning, but free falling
-  PM_FREEZE, // stuck in place with no control
-  PM_INTERMISSION // no movement or status bar
-};
 
 // pmtype_t categories
 inline bool PM_Live( pmtype_t pmt )

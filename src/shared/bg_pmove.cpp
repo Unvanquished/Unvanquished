@@ -81,12 +81,6 @@ static bool PM_Paralyzed( pmtype_t pmt )
 	ASSERT_UNREACHABLE();
 }
 
-//TODO: deprecate (to allow typesafety)
-static bool PM_Paralyzed( int pmt )
-{
-	return PM_Paralyzed( static_cast<pmtype_t>( pmt ) );
-}
-
 static bool IsSegmentedModel( playerState_t const* ps )
 {
 	return !( ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL );
