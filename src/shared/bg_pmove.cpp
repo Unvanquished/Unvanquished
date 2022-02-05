@@ -562,14 +562,13 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 	}
 
 	float max = std::max( std::abs( cmd->forwardmove ), std::abs( cmd->rightmove ) );
-
-	float total = cmd->forwardmove * cmd->forwardmove + cmd->rightmove * cmd->rightmove;
+	float total = Square( cmd->forwardmove ) + Square( cmd->rightmove );
 
 	if ( zFlight )
 	{
 		max = std::max( static_cast<float>( std::abs( cmd->upmove ) ), max );
 
-		total += cmd->upmove * cmd->upmove;
+		total += Square( cmd->upmove );
 	}
 
 	if ( max <= 0.0f )
