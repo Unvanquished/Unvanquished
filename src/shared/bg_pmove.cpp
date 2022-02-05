@@ -2441,7 +2441,7 @@ enum attachPoint_t {
 
 static void PM_GroundClimbTrace()
 {
-	vec3_t      surfNormal, moveDir, lookDir, point, velocityDir;
+	vec3_t      surfNormal, moveDir, lookDir, velocityDir;
 	vec3_t      toAngles, surfAngles;
 	trace_t     trace;
 	const float eps = 0.000001f;
@@ -2494,6 +2494,7 @@ static void PM_GroundClimbTrace()
 		attachPoint_t atp = static_cast<attachPoint_t>( i );
 		switch ( atp )
 		{
+			vec3_t point;
 			case GCT_ATP_MOVEDIRECTION:
 				// we are going to step this frame so skip the transition test
 				if ( PM_PredictStepMove() )
@@ -2534,6 +2535,7 @@ static void PM_GroundClimbTrace()
 				// trace "underneath" BBOX so we can traverse angles > 180deg
 				if ( pml.groundPlane )
 				{
+					// point = orig + -16 * ( surfNormal + moveDir )
 					VectorMA( pm->ps->origin, -16.0f, surfNormal, point );
 					VectorMA( point, -16.0f, moveDir, point );
 					pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum, pm->tracemask, 0 );
@@ -2668,9 +2670,11 @@ static void PM_GroundClimbTrace()
 				d = DotProduct( abc, pm->ps->origin );
 
 				// construct a point representing where the player is looking
+				vec3_t point;
 				VectorAdd( pm->ps->origin, lookDir, point );
 
 				// check whether point is on one side of the plane, if so invert the correction angle
+				// abc.xyz * point.xyz - d
 				if ( ( abc[ 0 ] * point[ 0 ] + abc[ 1 ] * point[ 1 ] + abc[ 2 ] * point[ 2 ] - d ) > 0 )
 				{
 					traceANGsurf = -traceANGsurf;
