@@ -57,6 +57,8 @@ struct pml_t
 pmove_t *pm;
 pml_t   pml;
 
+static int c_pmove = 0;
+
 static void Slide( vec3_t wishdir, float wishspeed, playerState_t &ps );
 static void PM_AddEvent( int newEvent );
 static bool PM_SlideMove( bool gravity );
@@ -93,8 +95,6 @@ static bool hitGrippingSurface( trace_t const& tr )
 	 return tr.fraction < 1.0f
 		 && !( tr.surfaceFlags & ( SURF_SKY | SURF_SLICK ) );
 }
-
-int     c_pmove = 0;
 
 /*
 ===============
