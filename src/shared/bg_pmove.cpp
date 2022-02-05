@@ -543,16 +543,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		// TODO: Move modifer into upgrade/class config files of armour items/classes
 		if ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED )
 		{
-			if ( BG_InventoryContainsUpgrade( UP_LIGHTARMOUR, pm->ps->stats ) ||
-			     BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, pm->ps->stats ) ||
-			     BG_InventoryContainsUpgrade( UP_BATTLESUIT,  pm->ps->stats ) )
-			{
-				modifier *= CREEP_ARMOUR_MODIFIER;
-			}
-			else
-			{
-				modifier *= CREEP_MODIFIER;
-			}
+			modifier *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->creepModifier;
 		}
 
 		// Apply level1 slow modifier

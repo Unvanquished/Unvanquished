@@ -997,7 +997,8 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		STAMINASPRINTCOST  = 1 << 21,
 		STAMINAJOGRESTORE  = 1 << 22,
 		STAMINAWALKRESTORE = 1 << 23,
-		STAMINASTOPRESTORE = 1 << 24
+		STAMINASTOPRESTORE = 1 << 24,
+		CREEPMODIFIER      = 1 << 25,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1230,6 +1231,12 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			ca->staminaStopRestore = atoi( token );
 			defined |= STAMINASTOPRESTORE;
 		}
+		else if ( !Q_stricmp( token, "creepModifier" ) )
+		{
+			PARSE( text, token );
+			ca->creepModifier = atof( token );
+			defined |= CREEPMODIFIER;
+		}
 		else
 		{
 			Log::Warn( "%s: unknown token '%s'", filename, token );
@@ -1277,6 +1284,37 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		{
 			Log::Warn( "%s (mandatory for human team) not defined in %s",
 			            token, filename );
+		}
+	}
+
+	// TODO(0.53) move the values into config files
+	if ( !( defined & CREEPMODIFIER ) )
+	{
+		Log::Warn( "creepModifier not defined in %s (using previously hard-coded values)", filename );
+		switch( ca->number )
+		{
+			case PCL_ALIEN_BUILDER0:
+			case PCL_ALIEN_BUILDER0_UPG:
+			case PCL_ALIEN_LEVEL0:
+			case PCL_ALIEN_LEVEL1:
+			case PCL_ALIEN_LEVEL2:
+			case PCL_ALIEN_LEVEL2_UPG:
+			case PCL_ALIEN_LEVEL3:
+			case PCL_ALIEN_LEVEL3_UPG:
+			case PCL_ALIEN_LEVEL4:
+				ca->creepModifier = 1.f;
+				break;
+			case PCL_HUMAN_NAKED:
+				ca->creepModifier = 0.5f;
+				break;
+			case PCL_HUMAN_LIGHT:
+			case PCL_HUMAN_MEDIUM:
+			case PCL_HUMAN_BSUIT:
+				ca->creepModifier = 0.75f;
+				break;
+			case PCL_NONE:
+			case PCL_NUM_CLASSES:
+				ASSERT_UNREACHABLE();
 		}
 	}
 }

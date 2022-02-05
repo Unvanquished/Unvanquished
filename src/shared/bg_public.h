@@ -1252,6 +1252,7 @@ struct classAttributes_t
 	float    friction;
 	float    stopSpeed;
 	float    jumpMagnitude;
+	float    creepModifier;
 	int      mass;
 
 	// stamina (human only)

@@ -124,8 +124,6 @@ extern int   LEVEL4_TRAMPLE_REPEAT;
 
 #define CREEP_BASESIZE          700
 #define CREEP_TIMEOUT           1000
-#define CREEP_MODIFIER          0.5f
-#define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
 
 #define BARRICADE_SHRINKPROP    0.25f
