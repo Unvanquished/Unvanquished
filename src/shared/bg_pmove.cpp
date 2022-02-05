@@ -432,9 +432,8 @@ without getting a sqrt(2) distortion in speed.
 static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 {
 	float modifier = 1.0f;
-	int   staminaJumpCost;
-
-	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+	int   staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+	int   stamina = pm->ps->stats[ STAT_STAMINA ];
 
 	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
@@ -467,12 +466,12 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		// check if sprinting is allowed
 		if ( sprint )
 		{
-			if ( wasSprinting && pm->ps->stats[ STAT_STAMINA ] <= 0 )
+			if ( wasSprinting && stamina <= 0 )
 			{
 				// we were sprinting but ran out of stamina
 				sprint = false;
 			}
-			else if ( !wasSprinting && pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost )
+			else if ( !wasSprinting && stamina < staminaJumpCost )
 			{
 				// stamina is too low to start sprinting
 				sprint = false;
@@ -513,7 +512,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		}
 
 		// Cancel jump if low on stamina
-		if ( !zFlight && pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost )
+		if ( !zFlight && stamina < staminaJumpCost )
 		{
 			cmd->upmove = 0;
 		}
@@ -569,14 +568,13 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 	}
 
 	float max = std::max( std::abs( cmd->forwardmove ), std::abs( cmd->rightmove ) );
-
-	float total = cmd->forwardmove * cmd->forwardmove + cmd->rightmove * cmd->rightmove;
+	float total = Square( cmd->forwardmove ) + Square( cmd->rightmove );
 
 	if ( zFlight )
 	{
 		max = std::max( static_cast<float>( std::abs( cmd->upmove ) ), max );
 
-		total += cmd->upmove * cmd->upmove;
+		total += Square( cmd->upmove );
 	}
 
 	if ( max <= 0.0f )
