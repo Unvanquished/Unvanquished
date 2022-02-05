@@ -5033,26 +5033,19 @@ PM_StepSlideMove
 */
 static bool PM_StepSlideMove( bool gravity, bool predictive )
 {
-	vec3_t   start_o, start_v;
-	vec3_t   down_o, down_v;
 	trace_t  trace;
 	vec3_t   normal;
 	vec3_t   step_v, step_vNormal;
 	vec3_t   up, down;
-	float    stepSize;
 	bool stepped = false;
 
 	BG_GetClientNormal( pm->ps, normal );
 
-	VectorCopy( pm->ps->origin, start_o );
-	VectorCopy( pm->ps->velocity, start_v );
+	VectorMA( pm->ps->origin, -STEPSIZE, normal, down );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
 
 	if ( !PM_SlideMove( gravity ) )
 	{
-		VectorCopy( start_o, down );
-		VectorMA( down, -STEPSIZE, normal, down );
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
-
 		//we can step down
 		if ( trace.fraction > 0.01f && trace.fraction < 1.0f &&
 		     !trace.allsolid && pml.groundPlane )
@@ -5067,10 +5060,6 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 	}
 	else
 	{
-		VectorCopy( start_o, down );
-		VectorMA( down, -STEPSIZE, normal, down );
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
-
 		// never step up when you still have up velocity
 		if ( DotProduct( trace.plane.normal, pm->ps->velocity ) > 0.0f &&
 		     ( trace.fraction == 1.0f || DotProduct( trace.plane.normal, normal ) < 0.7f ) )
@@ -5084,14 +5073,10 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 			return stepped;
 		}
 
-		VectorCopy( pm->ps->origin, down_o );
-		VectorCopy( pm->ps->velocity, down_v );
-
-		VectorCopy( start_o, up );
-		VectorMA( up, STEPSIZE, normal, up );
+		VectorMA( pm->ps->origin, STEPSIZE, normal, up );
 
 		// test the player position if they were a stepheight higher
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, up, pm->ps->clientNum, pm->tracemask, 0 );
+		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, up, pm->ps->clientNum, pm->tracemask, 0 );
 
 		if ( trace.allsolid )
 		{
@@ -5103,14 +5088,13 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 			return stepped; // can't step up
 		}
 
-		VectorSubtract( trace.endpos, start_o, step_v );
+		VectorSubtract( trace.endpos, pm->ps->origin, step_v );
 		VectorCopy( step_v, step_vNormal );
 		VectorNormalize( step_vNormal );
 
-		stepSize = DotProduct( normal, step_vNormal ) * VectorLength( step_v );
+		float stepSize = DotProduct( normal, step_vNormal ) * VectorLength( step_v );
 		// try slidemove from this position
 		VectorCopy( trace.endpos, pm->ps->origin );
-		VectorCopy( start_v, pm->ps->velocity );
 
 		if ( PM_SlideMove( gravity ) == 0 )
 		{
@@ -5123,10 +5107,8 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 		}
 
 		// push down the final amount
-		VectorCopy( pm->ps->origin, down );
-		VectorMA( down, -stepSize, normal, down );
-		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, down, pm->ps->clientNum,
-		           pm->tracemask, 0 );
+		VectorMA( pm->ps->origin, -stepSize, normal, down );
+		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
 
 		if ( !trace.allsolid )
 		{
@@ -5141,7 +5123,7 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 
 	if ( !predictive && stepped )
 	{
-		PM_StepEvent( start_o, pm->ps->origin, normal );
+		PM_StepEvent( pm->ps->origin, pm->ps->origin, normal );
 	}
 
 	return stepped;
