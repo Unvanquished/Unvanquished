@@ -1135,15 +1135,12 @@ static bool PM_CheckWallJump()
 	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
 	           pm->tracemask, 0 );
 
-	if ( hitGrippingSurface( trace )
-			&& trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
-	{
-		VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
-	}
-	else
+	if ( !hitGrippingSurface( trace ) || trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
 	{
 		return false;
 	}
+
+	VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
 
 	if ( pm->ps->pm_flags & PMF_RESPAWNED )
 	{
@@ -1268,11 +1265,10 @@ static bool PM_CheckWallRun()
 	VectorMA( pm->ps->origin, 0.25f, dir, trace_end );
 	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, trace_end, pm->ps->clientNum, pm->tracemask, 0);
 
-	if ( !hitGrippingSurface( trace ) )
+	if ( !hitGrippingSurface( trace ) || trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
+	{
 		return false;
-
-	if ( trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
-		return false;
+	}
 
 	pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 	pm->ps->pm_time = 200;
