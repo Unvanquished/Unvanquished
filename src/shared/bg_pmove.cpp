@@ -885,8 +885,6 @@ static bool PM_CheckPounce()
 					//       this is done by moving the target point inside a ceiling's surface
 					if ( foundTrajectory )
 					{
-						VectorCopy( trace.endpos, endpos );
-
 						if ( trace.plane.normal[ 2 ] < 0.0f )
 						{
 							zCorrection = 64.0f * trace.plane.normal[ 2 ];
@@ -897,7 +895,7 @@ static bool PM_CheckPounce()
 								            zCorrection );
 							}
 
-							VectorMA( endpos, zCorrection, trace.plane.normal, endpos );
+							VectorMA( trace.endpos, zCorrection, trace.plane.normal, endpos );
 						}
 
 						if ( pm->debugLevel > 0 )
