@@ -648,7 +648,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		pm.pmext = &client->pmext;
 		pm.cmd = *ucmd;
 		pm.tracemask = MASK_DEADSOLID; // spectators can fly through bodies
-		pm.trace = trap_Trace;
+		pm.trace = G_CM_Trace;
 		pm.pointcontents = G_CM_PointContents;
 
 		// Perform a pmove
@@ -1612,8 +1612,8 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 
 	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
 
-	trap_Trace( &tr, ent->client->oldOrigin, ent->r.mins, ent->r.maxs,
-	            ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, ent->client->oldOrigin, ent->r.mins, ent->r.maxs,
+	            ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
 	{
@@ -2039,7 +2039,7 @@ void ClientThink_real( gentity_t *self )
 		pm.tracemask = MASK_PLAYERSOLID;
 	}
 
-	pm.trace          = trap_Trace;
+	pm.trace          = G_CM_Trace;
 	pm.pointcontents  = G_CM_PointContents;
 	pm.debugLevel     = g_debugMove.Get();
 	pm.noFootsteps    = 0;
@@ -2180,7 +2180,7 @@ void ClientThink_real( gentity_t *self )
 		// look for object infront of player
 		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
 		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
-		trap_Trace( &trace, client->ps.origin, nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
+		G_CM_Trace( &trace, client->ps.origin, nullptr, nullptr, point, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 		ent = &g_entities[ trace.entityNum ];
 

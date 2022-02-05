@@ -226,8 +226,8 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		trace_t tr;
 		int     anim;
 
-		trap_Trace( &tr, self->s.origin, self->r.mins, self->r.maxs,
-		            self->s.origin, self->s.number, MASK_PLAYERSOLID, 0 );
+		G_CM_Trace( &tr, self->s.origin, self->r.mins, self->r.maxs,
+		            self->s.origin, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		if ( tr.startsolid || tr.fraction < 1.0f )
 		{
@@ -463,8 +463,8 @@ bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range )
 		return false;
 	}
 
-	trap_Trace( &trace, self->s.pos.trBase, nullptr, nullptr, target->s.pos.trBase, self->s.number,
-	            MASK_SHOT, 0 );
+	G_CM_Trace( &trace, self->s.pos.trBase, nullptr, nullptr, target->s.pos.trBase, self->s.number,
+	            MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	if ( trace.contents & CONTENTS_SOLID ) // can we see the target?
 	{
@@ -1081,7 +1081,7 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, BUILDER_DECONSTRUCT_RANGE, forward, end );
-	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	buildable = &g_entities[ trace.entityNum ];
 
 	// Check if target is valid.
@@ -1552,9 +1552,9 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 	BG_BuildableBoundingBox( buildable, mins, maxs );
 
-	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, trap_Trace, entity_origin, angles, &tr1 );
-	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
-	trap_Trace( &tr3, ps->origin, nullptr, nullptr, entity_origin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, G_CM_Trace, entity_origin, angles, &tr1 );
+	G_CM_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr3, ps->origin, nullptr, nullptr, entity_origin, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	VectorCopy( entity_origin, origin );
 	*groundEntNum = tr1.entityNum;
@@ -2157,8 +2157,8 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	VectorScale( built->s.origin2, -4096.0f, dest );
 	VectorAdd( dest, built->s.origin, dest );
 
-	trap_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->s.number,
-	            built->clipmask, 0 );
+	G_CM_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->s.number,
+	            built->clipmask, 0, traceType_t::TT_AABB );
 
 	if ( tr.startsolid && !force )
 	{

@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "shared/bg_local.h" // MIN_WALK_NORMAL
 #include "Entities.h"
+#include "sg_cm_world.h"
 
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 static const int MIN_SKILL = 1;
@@ -1041,8 +1042,8 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		// try to find a position closer to the ground
 		target.getPos( targetPos );
 		VectorMA( targetPos, 600, invNormal, end );
-		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->s.number,
-		            CONTENTS_SOLID, MASK_ENTITY );
+		G_CM_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->s.number,
+		            CONTENTS_SOLID, MASK_ENTITY, traceType_t::TT_AABB );
 		VectorCopy( trace.endpos, routeTarget->pos );
 	}
 	
@@ -1237,7 +1238,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	VectorSet( maxs, width, width, width );
 	VectorSet( mins, -width, -width, -height );
 
-	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
+	G_CM_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	return !G_OnSameTeam( self, &g_entities[trace.entityNum] )
 		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
@@ -1301,8 +1302,8 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, self->s.number, mask,
-	            ( mask == CONTENTS_SOLID ) ? MASK_ENTITY : 0 );
+	G_CM_Trace( &trace, muzzle, nullptr, nullptr, targetPos, self->s.number, mask,
+	            ( mask == CONTENTS_SOLID ) ? MASK_ENTITY : 0, traceType_t::TT_AABB );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -1792,7 +1793,7 @@ void BotFireWeaponAI( gentity_t *self )
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetIdealAimLocation( self, self->botMind->goal, targetPos );
 
-	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
+	G_CM_Trace( &trace, muzzle, nullptr, nullptr, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0, traceType_t::TT_AABB );
 	distance = Distance( muzzle, trace.endpos );
 	bool readyFire = self->client->ps.IsWeaponReady();
 	vec3_t target;

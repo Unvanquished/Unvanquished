@@ -1,6 +1,7 @@
 #include "SpawnerComponent.h"
 #include "../Entities.h"
 #include "common/Util.h"
+#include "../sg_cm_world.h"
 
 static Log::Logger logger("sgame.spawn");
 
@@ -146,17 +147,17 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 	trace_t tr;
 
 	// Check for a clear line towards the spawn location.
-	trap_Trace(
-		&tr, spawnerOrigin.Data(), nullptr, nullptr, spawnPoint.Data(), spawnerNumber, MASK_SHOT, 0
+	G_CM_Trace(
+		&tr, spawnerOrigin.Data(), nullptr, nullptr, spawnPoint.Data(), spawnerNumber, MASK_SHOT, 0, traceType_t::TT_AABB
 	);
 
 	if (tr.entityNum != ENTITYNUM_NONE) {
 		return g_entities[tr.entityNum].entity;
 	} else {
 		// Check whether a spawned client has space.
-		trap_Trace(
+		G_CM_Trace(
 			&tr, spawnPoint.Data(), clientMins.Data(), clientMaxs.Data(), spawnPoint.Data(), 0,
-			MASK_PLAYERSOLID, 0
+			MASK_PLAYERSOLID, 0, traceType_t::TT_AABB
 		);
 
 		if (tr.entityNum != ENTITYNUM_NONE) {

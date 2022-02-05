@@ -2518,7 +2518,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		VectorCopy( es->pos.trBase, temp );
 		temp[ 2 ] -= 4096.0f;
 
-		CG_Trace( &tr, es->pos.trBase, nullptr, nullptr, temp, es->number, MASK_SOLID, 0 );
+		CG_Trace( &tr, es->pos.trBase, nullptr, nullptr, temp, es->number, MASK_SOLID, 0, traceType_t::TT_AABB );
 		VectorCopy( tr.endpos, origin );
 
 		size = 32.0f;

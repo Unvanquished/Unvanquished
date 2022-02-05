@@ -36,6 +36,7 @@ Maryland 20850 USA.
 #include "sg_spawn.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 #define DEFAULT_FUNC_TRAIN_SPEED 100
 
@@ -69,13 +70,13 @@ gentity_t *G_TestEntityPosition( gentity_t *ent )
 
 	if ( ent->client )
 	{
-		trap_Trace( &tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin,
-		            ent->s.number, ent->clipmask, 0 );
+		G_CM_Trace( &tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin,
+		            ent->s.number, ent->clipmask, 0, traceType_t::TT_AABB );
 	}
 	else
 	{
-		trap_Trace( &tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase,
-		            ent->s.number, ent->clipmask, 0 );
+		G_CM_Trace( &tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase,
+		            ent->s.number, ent->clipmask, 0, traceType_t::TT_AABB );
 	}
 
 	if ( tr.startsolid )

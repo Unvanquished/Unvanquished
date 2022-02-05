@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "Entities.h"
+#include "sg_cm_world.h"
 
 struct shaderRemap_t
 {
@@ -326,8 +327,8 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
     if( !trap_EntityContact( mins, maxs, ent ) )
       continue;
 
-    trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
-                e->r.currentOrigin, e->s.number, e->clipmask, 0 );
+    G_CM_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
+                e->r.currentOrigin, e->s.number, e->clipmask, 0, traceType_t::TT_AABB );
 
 	if( tr.entityNum != ENTITYNUM_NONE ) {
 	  Entities::Kill(e, activator, MOD_CRUSH);
@@ -819,8 +820,8 @@ bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool u
 		return false;
 	}
 
-	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, nullptr, nullptr, to->s.origin,
-	            from->s.number, mask, 0 );
+	G_CM_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, nullptr, nullptr, to->s.origin,
+	            from->s.number, mask, 0, traceType_t::TT_AABB );
 
 	// Also check for fraction in case the mask is chosen so that the trace skips the target entity
 	return ( trace.entityNum == to->s.number || trace.fraction == 1.0f );
@@ -851,7 +852,7 @@ bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 {
 	trace_t trace;
 
-	trap_Trace( &trace, point1, nullptr, nullptr, point2, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	G_CM_Trace( &trace, point1, nullptr, nullptr, point2, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }

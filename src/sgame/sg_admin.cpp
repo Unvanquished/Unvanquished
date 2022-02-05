@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
 #include "shared/navgen/navgen.h"
+#include "sg_cm_world.h"
 
 struct g_admin_cmd_t
 {
@@ -5084,7 +5085,7 @@ bool G_admin_builder( gentity_t *ent )
 
 	VectorMA( start, 1000, forward, end );
 
-	trap_Trace( &tr, start, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, start, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == entityType_t::ET_BUILDABLE ) )

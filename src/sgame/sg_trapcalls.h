@@ -49,7 +49,6 @@ void             trap_LinkEntity( gentity_t *ent );
 void             trap_UnlinkEntity( gentity_t *ent );
 int              trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int *list, int maxcount );
 bool         trap_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *ent );
-void             trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask , int skipmask);
 void             trap_SetBrushModel( gentity_t *ent, const char *name );
 bool         trap_InPVS( const vec3_t p1, const vec3_t p2 );
 bool         trap_InPVSIgnorePortals( const vec3_t p1, const vec3_t p2 );

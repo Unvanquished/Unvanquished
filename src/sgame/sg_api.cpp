@@ -169,12 +169,6 @@ bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *e
 	return G_CM_EntityContact( mins, maxs, ent, traceType_t::TT_AABB );
 }
 
-void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-                 const vec3_t end, int passEntityNum, int contentmask, int skipmask )
-{
-	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, skipmask, traceType_t::TT_AABB);
-}
-
 void trap_SetBrushModel(gentity_t *ent, const char *name)
 {
 	G_CM_SetBrushModel( ent, name );

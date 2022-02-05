@@ -22,6 +22,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sg_local.h"
+#include "sg_cm_world.h"
 
 #define MININUM_BASE_RADIUS 128.0f
 
@@ -128,7 +129,7 @@ namespace BaseClustering {
 			// Trace from mean buildable's origin towards cluster center, so that the beacon does
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
 			trace_t tr;
-			trap_Trace(&tr, mean->s.origin, nullptr, nullptr, center.Data(), 0, MASK_SOLID, 0);
+			G_CM_Trace(&tr, mean->s.origin, nullptr, nullptr, center.Data(), 0, MASK_SOLID, 0, traceType_t::TT_AABB );
 			Beacon::MoveTowardsRoom(tr.endpos);
 
 			// Prepare beacon flags.

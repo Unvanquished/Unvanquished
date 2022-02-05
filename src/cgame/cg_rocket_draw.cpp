@@ -1071,7 +1071,7 @@ public:
 		AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
 		VectorMA( cg.refdef.vieworg, ENTITY_USE_RANGE, view, point );
 		CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr,
-				  point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0 );
+				  point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 		const entityState_t &es = cg_entities[ trace.entityNum ].currentState;
 
@@ -1536,7 +1536,7 @@ static void CG_ScanForCrosshairEntity()
 	VectorMA( start, 131072, cg.refdef.viewaxis[ 0 ], end );
 
 	CG_Trace( &trace, start, vec3_origin, vec3_origin, end,
-			  cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY, 0 );
+			  cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY, 0, traceType_t::TT_AABB );
 
 	// ignore special entities
 	if ( trace.entityNum > ENTITYNUM_MAX_NORMAL )

@@ -299,7 +299,7 @@ static void CG_Creep( centity_t *cent )
 	VectorAdd( temp, cent->lerpOrigin, temp );
 
 	CG_Trace( &tr, cent->lerpOrigin, nullptr, nullptr, temp, cent->currentState.number,
-	          MASK_PLAYERSOLID, 0 );
+	          MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	if ( size > 0.0f && tr.fraction < 1.0f )
 	{
@@ -1712,7 +1712,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		// look through up to 3 players and/or transparent buildables
 		for ( i = 0; i < 3; i++ )
 		{
-			CG_Trace( &tr, trOrigin, nullptr, nullptr, origin, entNum, MASK_SHOT, 0 );
+			CG_Trace( &tr, trOrigin, nullptr, nullptr, origin, entNum, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 			if ( tr.entityNum == cent->currentState.number )
 			{

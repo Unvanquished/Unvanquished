@@ -2575,7 +2575,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 
-		CG_Trace( &tr, origin, nullptr, nullptr, end, attackerNum, MASK_SHOT, 0 );
+		CG_Trace( &tr, origin, nullptr, nullptr, end, attackerNum, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 		if ( !( tr.surfaceFlags & SURF_NOIMPACT ) )
 		{

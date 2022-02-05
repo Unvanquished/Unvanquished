@@ -490,7 +490,7 @@ static void DrawBeacon( cbeacon_t *b )
 	{
 		trace_t tr;
 
-		CG_Trace( &tr, cg.refdef.vieworg, nullptr, nullptr, b->origin, ENTITYNUM_NONE, CONTENTS_SOLID, 0 );
+		CG_Trace( &tr, cg.refdef.vieworg, nullptr, nullptr, b->origin, ENTITYNUM_NONE, CONTENTS_SOLID, 0, traceType_t::TT_AABB );
 
 		target = ( ( tr.fraction > 1.0f - FLT_EPSILON ) ? 1.0 : 0.0 );
 		CG_ExponentialFade( &b->t_occlusion, target, 10 );
