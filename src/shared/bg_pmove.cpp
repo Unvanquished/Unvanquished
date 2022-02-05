@@ -1225,12 +1225,9 @@ Used by humans.
 */
 static bool PM_CheckWallRun()
 {
-	float jumpMag;
-	Vec3 dir, origin, velocity, normal;
-	vec3_t trace_end;
 	trace_t trace;
 
-	jumpMag = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+	float jumpMag = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
 
 	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLRUNNER ) )
 		return false;
@@ -1253,21 +1250,20 @@ static bool PM_CheckWallRun()
 	if ( !pm->cmd.forwardmove && !pm->cmd.rightmove )
 		return false;
 
-	origin = Vec3::Load( pm->ps->origin );
-
+	vec3_t dir;
 	if ( pm->cmd.rightmove )
 	{
-		dir = Vec3::Load( pml.right );
-		dir *= pm->cmd.rightmove < 0 ? -1 : 1;
+		VectorCopy( pml.right, dir );
+		VectorScale( dir, ( pm->cmd.rightmove < 0 ? -1 : 1 ), dir );
 	}
 	else
 	{
-		dir = Vec3::Load( pml.forward );
-		dir *= pm->cmd.forwardmove < 0 ? -1 : 1;
+		VectorCopy( pml.forward, dir );
+		VectorScale( dir, ( pm->cmd.forwardmove < 0 ? -1 : 1 ), dir );
 	}
-	( origin + dir * 0.25f ).Store( trace_end );
-	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, trace_end,
-	           pm->ps->clientNum, pm->tracemask, 0);
+	vec3_t trace_end;
+	VectorMA( pm->ps->origin, 0.25f, dir, trace_end );
+	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, trace_end, pm->ps->clientNum, pm->tracemask, 0);
 
 	if ( !hitGrippingSurface( trace ) || trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
 	{
@@ -1283,12 +1279,12 @@ static bool PM_CheckWallRun()
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
-	normal = Vec3::Load( trace.plane.normal );
-	velocity = Vec3::Load( pm->ps->velocity );
+	vec3_t tmp;
+	VectorSet( tmp, 0.f, 0.f, 0.9f );
+	VectorAdd( tmp, trace.plane.normal, tmp );
+	VectorNormalize( tmp );
+	VectorMA( pm->ps->velocity, jumpMag, tmp, pm->ps->velocity );
 
-	velocity += Math::Normalize( normal + Vec3( 0, 0, 0.9 ) ) * jumpMag;
-
-	velocity.Store( pm->ps->velocity );
 	PM_AddEvent( EV_JUMP );
 	PM_PlayJumpingAnimation();
 
