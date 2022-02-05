@@ -52,8 +52,6 @@ extern  pmove_t *pm;
 #define pm_waterfriction     (1.125f)
 #define pm_spectatorfriction (5.0f)
 
-extern  int     c_pmove;
-
 void            PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out );
 void            PM_AddTouchEnt( int entityNum );
 
