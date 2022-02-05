@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 static vec3_t forward, right, up;
 static vec3_t muzzle;
@@ -331,7 +332,7 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
 
 	// Trace box against entities
 	VectorMA( muzzle, range, forward, end );
-	trap_Trace( tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY, 0 );
+	G_CM_Trace( tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY, 0, traceType_t::TT_AABB );
 
 	if ( tr->entityNum != ENTITYNUM_NONE )
 	{
@@ -342,7 +343,7 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
 	// The range is reduced according to the former trace so we don't hit something behind the
 	// current target.
 	VectorMA( muzzle, Distance( muzzle, tr->endpos ) + halfDiagonal, forward, end );
-	trap_Trace( tr, muzzle, nullptr, nullptr, end, ent->s.number, CONTENTS_SOLID, 0 );
+	G_CM_Trace( tr, muzzle, nullptr, nullptr, end, ent->s.number, CONTENTS_SOLID, 0, traceType_t::TT_AABB );
 
 	// In case we hit a different target, which can happen if two potential targets are close,
 	// switch to it, so we will end up with the target we were looking at.
@@ -496,12 +497,12 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 	if ( self->client )
 	{
 		G_UnlaggedOn( self, muzzle, 8192 * 16 );
-		trap_Trace( &tr, muzzle, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
+		G_CM_Trace( &tr, muzzle, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 		G_UnlaggedOff();
 	}
 	else
 	{
-		trap_Trace( &tr, muzzle, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
+		G_CM_Trace( &tr, muzzle, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 	}
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -588,7 +589,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 
-		trap_Trace( &tr, origin, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
+		G_CM_Trace( &tr, origin, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 		traceEnt = &g_entities[ tr.entityNum ];
 
 		traceEnt->entity->Damage((float)SHOTGUN_DMG, self, Vec3::Load(tr.endpos),
@@ -659,8 +660,8 @@ static void HiveMissileThink( gentity_t *self )
 		if ( ent->client && Entities::IsAlive( ent ) && G_Team( ent ) == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
-			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
-			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask, 0 );
+			G_CM_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
+			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask, 0, traceType_t::TT_AABB );
 
 			if ( tr.entityNum != ENTITYNUM_WORLD )
 			{
@@ -888,7 +889,7 @@ void G_CheckCkitRepair( gentity_t *self )
 	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 100, forward, end );
 
-	trap_Trace( &tr, viewOrigin, nullptr, nullptr, end, self->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, viewOrigin, nullptr, nullptr, end, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->s.eType == entityType_t::ET_BUILDABLE &&
@@ -1129,8 +1130,8 @@ static void FindZapChainTargets( zap_t *zap )
 				&& distance <= LEVEL2_AREAZAP_CHAIN_RANGE )
 		{
 			// world-LOS check: trace against the world, ignoring other BODY entities
-			trap_Trace( &tr, ent->s.origin, nullptr, nullptr,
-			            enemy->s.origin, ent->s.number, CONTENTS_SOLID, 0 );
+			G_CM_Trace( &tr, ent->s.origin, nullptr, nullptr,
+			            enemy->s.origin, ent->s.number, CONTENTS_SOLID, 0, traceType_t::TT_AABB );
 
 			if ( tr.entityNum == ENTITYNUM_NONE )
 			{

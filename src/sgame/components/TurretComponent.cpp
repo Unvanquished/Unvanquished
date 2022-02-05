@@ -1,5 +1,6 @@
 #include "TurretComponent.h"
 #include "../Entities.h"
+#include "../sg_cm_world.h"
 
 static Log::Logger turretLogger("sgame.turrets");
 
@@ -186,8 +187,8 @@ bool TurretComponent::TargetCanBeHit() {
 	Vec3 traceEnd     = traceStart + range * aimDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, traceStart.Data(), nullptr, nullptr, traceEnd.Data(), entity.oldEnt->s.number,
-	           MASK_SHOT, 0);
+	G_CM_Trace(&tr, traceStart.Data(), nullptr, nullptr, traceEnd.Data(), entity.oldEnt->s.number,
+	           MASK_SHOT, 0, traceType_t::TT_AABB);
 
 	return (tr.entityNum == target->s.number);
 }
@@ -236,8 +237,8 @@ void TurretComponent::SetBaseDirection() {
 	Vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, traceStart.Data(), nullptr, nullptr, traceEnd.Data(), entity.oldEnt->s.number,
-	           MASK_SHOT, 0);
+	G_CM_Trace(&tr, traceStart.Data(), nullptr, nullptr, traceEnd.Data(), entity.oldEnt->s.number,
+	           MASK_SHOT, 0, traceType_t::TT_AABB);
 
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.
 	if (tr.entityNum == ENTITYNUM_WORLD ||

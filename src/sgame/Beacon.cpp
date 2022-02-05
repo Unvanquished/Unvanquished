@@ -27,6 +27,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sg_local.h"
 #include "Entities.h"
+#include "sg_cm_world.h"
 
 // entityState_t   | cbeacon_t    | description
 // ----------------+--------------+-------------
@@ -270,7 +271,7 @@ namespace Beacon //this should eventually become a class
 		for ( i = 0; i < numvecs; i++ )
 		{
 			VectorMA( origin, 500, vecs[ i ], end );
-			trap_Trace( &tr, origin, nullptr, nullptr, end, 0, MASK_SOLID, 0 );
+			G_CM_Trace( &tr, origin, nullptr, nullptr, end, 0, MASK_SOLID, 0, traceType_t::TT_AABB );
 			VectorAdd( accumulator, tr.endpos, accumulator );
 		}
 
@@ -613,7 +614,7 @@ namespace Beacon //this should eventually become a class
 		// Do a trace for bounding boxes under the reticle first, they are prefered
 		{
 			trace_t tr;
-			trap_Trace( &tr, begin, nullptr, nullptr, end, skip, mask, 0 );
+			G_CM_Trace( &tr, begin, nullptr, nullptr, end, skip, mask, 0, traceType_t::TT_AABB );
 			if ( EntityTaggable( tr.entityNum, team, true ) )
 			{
 				reticleEnt = g_entities + tr.entityNum;
@@ -647,7 +648,7 @@ namespace Beacon //this should eventually become a class
 			// LOS
 			{
 				trace_t tr;
-				trap_Trace( &tr, begin, nullptr, nullptr, ent->r.currentOrigin, skip, mask, 0 );
+				G_CM_Trace( &tr, begin, nullptr, nullptr, ent->r.currentOrigin, skip, mask, 0, traceType_t::TT_AABB );
 				if( tr.entityNum != i )
 					continue;
 			}

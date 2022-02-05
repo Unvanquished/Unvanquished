@@ -243,7 +243,7 @@ CG_Trace
 ================
 */
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-               const vec3_t end, int skipNumber, int mask, int skipmask )
+               const vec3_t end, int skipNumber, int mask, int skipmask, traceType_t tt )
 {
 	trace_t t;
 
@@ -260,7 +260,7 @@ void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 	trap_CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_AABB );
+	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, tt );
 
 	*result = t;
 }

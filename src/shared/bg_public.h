@@ -312,7 +312,7 @@ struct pmove_t
 	// these will be different functions during game and cgame
 	/*void    (*trace)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );*/
 	void ( *trace )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-	                 const vec3_t end, int passEntityNum, int contentMask, int skipmask );
+	                 const vec3_t end, int passEntityNum, int contentMask, int skipmask, traceType_t tt );
 
 	int ( *pointcontents )( const vec3_t point, int passEntityNum );
 };
@@ -1486,7 +1486,7 @@ void     BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 void     BG_GetClientViewOrigin( const playerState_t *ps, vec3_t viewOrigin );
 void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t mins, const vec3_t maxs,
                                                void ( *trace )( trace_t *, const vec3_t, const vec3_t,
-                                               const vec3_t, const vec3_t, int, int, int ),
+                                               const vec3_t, const vec3_t, int, int, int, traceType_t ),
                                                vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
 int BG_GetPlayerPrice( playerState_t &ps );
 int BG_GetPlayerValue( playerState_t &ps );

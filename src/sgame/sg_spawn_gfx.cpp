@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "sg_cm_world.h"
 
 /*
 ======================================================================
@@ -124,11 +125,11 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 
 				VectorAdd( origin, delta, test );
 
-				trap_Trace( &trace, test, nullptr, nullptr, test, ENTITYNUM_NONE, MASK_SOLID, 0 );
+				G_CM_Trace( &trace, test, nullptr, nullptr, test, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 				if ( !trace.allsolid )
 				{
-					trap_Trace( &trace, test, nullptr, nullptr, origin, ENTITYNUM_NONE, MASK_SOLID, 0 );
+					G_CM_Trace( &trace, test, nullptr, nullptr, origin, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 					VectorScale( delta, trace.fraction, delta );
 					VectorAdd( total, delta, total );
 				}

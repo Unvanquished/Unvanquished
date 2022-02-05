@@ -1982,7 +1982,7 @@ void CG_ModelDoor( centity_t *cent );
 void CG_BuildSolidList();
 int  CG_PointContents( const vec3_t point, int passEntityNum );
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-               const vec3_t end, int skipNumber, int mask, int skipmask );
+               const vec3_t end, int skipNumber, int mask, int skipmask, traceType_t tt );
 void CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                   const vec3_t end, int skipNumber, int mask, int skipmask );
 void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,

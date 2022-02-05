@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_entities.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 /*
 =================================================================================
@@ -929,8 +930,8 @@ bool G_IsVisible( gentity_t *start, gentity_t *end, int contents )
 {
 	trace_t trace;
 
-	trap_Trace( &trace, start->s.pos.trBase, nullptr, nullptr, end->s.pos.trBase,
-	            start->s.number, contents, 0 );
+	G_CM_Trace( &trace, start->s.pos.trBase, nullptr, nullptr, end->s.pos.trBase,
+	            start->s.number, contents, 0, traceType_t::TT_AABB );
 
 	return trace.fraction >= 1.0f || trace.entityNum == end - g_entities;
 }

@@ -1,4 +1,5 @@
 #include "SpikerComponent.h"
+#include "../sg_cm_world.h"
 
 static Log::Logger logger("sgame.spiker");
 
@@ -161,8 +162,8 @@ bool SpikerComponent::SafeToShoot(Vec3 direction) {
 	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_INFLATION}) {
 		mins[0] = mins[1] = mins[2] = -traceSize;
 		maxs[0] = maxs[1] = maxs[2] =  traceSize;
-		trap_Trace(&trace, entity.oldEnt->s.origin, mins, maxs, end.Data(), entity.oldEnt->s.number,
-			ma->clipmask, 0);
+		G_CM_Trace(&trace, entity.oldEnt->s.origin, mins, maxs, end.Data(), entity.oldEnt->s.number,
+			ma->clipmask, 0, traceType_t::TT_AABB);
 		gentity_t* hit = &g_entities[trace.entityNum];
 
 		if (hit && G_OnSameTeam(entity.oldEnt, hit)) {

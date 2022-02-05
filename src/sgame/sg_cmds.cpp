@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "shared/parse.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
@@ -2255,15 +2256,15 @@ static bool FindRoomForClassChangeVertically(
 	// before starting the real trace
 	VectorCopy( newOrigin, temp );
 	temp[ 2 ] += nudgeHeight;
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	temp[ 2 ] = newOrigin[2] + nudgeHeight * tr.fraction;
 
 	// trace down to the ground so that we can evolve on slopes
-	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	VectorCopy( tr.endpos, newOrigin );
 
 	// make REALLY sure
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	return !tr.startsolid && tr.fraction == 1.0f;
 }
 
@@ -2299,16 +2300,16 @@ static bool FindRoomForClassChangeLaterally(
 		trace_t trace;
 		vec3_t start_point;
 		VectorMA( origin, distance, delta, start_point );
-		trap_Trace( &trace, start_point, toMins, toMaxs,
+		G_CM_Trace( &trace, start_point, toMins, toMaxs,
 				origin, ent->s.number,
-				MASK_PLAYERSOLID, 0 );
+				MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		vec3_t first_trace_end;
 		VectorCopy(trace.endpos, first_trace_end);
 		// make REALLY sure
-		trap_Trace( &trace, first_trace_end, toMins, toMaxs,
+		G_CM_Trace( &trace, first_trace_end, toMins, toMaxs,
 				first_trace_end, ent->s.number,
-				MASK_PLAYERSOLID, 0 );
+				MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		if ( trace.startsolid || trace.fraction < 1.0f )
 			continue; // collision
@@ -2714,7 +2715,7 @@ void Cmd_Ignite_f( gentity_t *player )
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
 	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 1000, forward, end );
-	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, player->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &trace, viewOrigin, nullptr, nullptr, end, player->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	if ( trace.entityNum == ENTITYNUM_WORLD ) {
 		G_SpawnFire( trace.endpos, trace.plane.normal, player );
@@ -4362,7 +4363,7 @@ void Cmd_Beacon_f( gentity_t *ent )
 	VectorMA( origin, 65536, forward, end );
 
 	G_UnlaggedOn( ent, origin, 65536 );
-	trap_Trace( &tr, origin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, origin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	G_UnlaggedOff( );
 
 	// Evaluate flood limit.

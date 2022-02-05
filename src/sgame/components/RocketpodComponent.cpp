@@ -1,5 +1,6 @@
 #include "RocketpodComponent.h"
 #include "../Entities.h"
+#include "../sg_cm_world.h"
 
 constexpr float ATTACK_RANGE         = (float)ROCKETPOD_RANGE; // cgame needs to know this.
 constexpr int   ATTACK_PERIOD        = ROCKETPOD_ATTACK_PERIOD; // cgame needs to know this.
@@ -221,8 +222,8 @@ bool RocketpodComponent::SafeShot(int passEntityNumber, const Vec3& origin, cons
 	Vec3 end  = origin + ATTACK_RANGE * direction;
 
 	trace_t trace;
-	trap_Trace(
-		&trace, origin.Data(), mins.Data(), maxs.Data(), end.Data(), passEntityNumber, MASK_SHOT, 0
+	G_CM_Trace(
+		&trace, origin.Data(), mins.Data(), maxs.Data(), end.Data(), passEntityNumber, MASK_SHOT, 0, traceType_t::TT_AABB
 	);
 
 	// TODO: Refactor area damage (testing) helpers.
