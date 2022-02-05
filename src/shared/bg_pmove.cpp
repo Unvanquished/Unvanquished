@@ -396,47 +396,26 @@ static void PM_Accelerate( const vec3_t wishdir, float wishspeed, float accel )
 {
 #if 1
 	// q2 style
-	int   i;
-	float addspeed, accelspeed, currentspeed;
-
-	currentspeed = DotProduct( pm->ps->velocity, wishdir );
-	addspeed = wishspeed - currentspeed;
+	float currentspeed = DotProduct( pm->ps->velocity, wishdir );
+	float addspeed = wishspeed - currentspeed;
 
 	if ( addspeed <= 0 )
 	{
 		return;
 	}
 
-	accelspeed = accel * pml.frametime * wishspeed;
-
-	if ( accelspeed > addspeed )
-	{
-		accelspeed = addspeed;
-	}
-
-	for ( i = 0; i < 3; i++ )
-	{
-		pm->ps->velocity[ i ] += accelspeed * wishdir[ i ];
-	}
-
+	float accelspeed = std::min( accel * pml.frametime * wishspeed, addspeed );
+	VectorMA( pm->ps->velocity, accelspeed, wishdir, pm->ps->velocity );
 #else
 	// proper way (avoids strafe jump maxspeed bug), but feels bad
 	vec3_t wishVelocity;
 	vec3_t pushDir;
-	float  pushLen;
-	float  canPush;
 
 	VectorScale( wishdir, wishspeed, wishVelocity );
 	VectorSubtract( wishVelocity, pm->ps->velocity, pushDir );
-	pushLen = VectorNormalize( pushDir );
+	float pushLen = VectorNormalize( pushDir );
 
-	canPush = accel * pml.frametime * wishspeed;
-
-	if ( canPush > pushLen )
-	{
-		canPush = pushLen;
-	}
-
+	float canPush = std::min( accel * pml.frametime * wishspeed, pushLen );
 	VectorMA( pm->ps->velocity, canPush, pushDir, pm->ps->velocity );
 #endif
 }
