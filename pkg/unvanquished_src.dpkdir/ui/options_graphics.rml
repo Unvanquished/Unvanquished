@@ -247,11 +247,6 @@
 					<input cvar="cg_bounceParticles" type="checkbox" />
 					<p>Allow particles to bounce off surfaces.</p>
 				</row>
-				<row>
-					<h3>Depth-sort particles</h3>
-					<input cvar="cg_depthSortParticles" type="checkbox" />
-					<p>Ensure over-lapping particles are rendered correctly.</p>
-				</row>
 				<buttonbar>
 					<button onClick='Events.pushevent("exec vid_restart", event)'>Apply now</button>
 				</buttonbar>
