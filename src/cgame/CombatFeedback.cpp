@@ -55,7 +55,7 @@ enum damageIndicatorLayer_t {
 	DAMAGE_INDICATOR_LAYERS
 };
 
-float damageIndicatorColors[DAMAGE_INDICATOR_LAYERS][3] = {
+Color::Color damageIndicatorColors[DAMAGE_INDICATOR_LAYERS] = {
 	{1, 1, 1},  // enemy
 	{1, 0.5, 0}, // friendly
 	{0.54, 1, 0.68}, // alien building
@@ -73,7 +73,7 @@ struct DamageIndicator {
 	// in all init/clustering code
 	Vec2 pos2d;
 	float dist, scale;
-	Vec3 color;
+	Color::Color color;
 	float alpha;
 };
 
@@ -153,7 +153,7 @@ static void AddDamageIndicator(DamageIndicator di)
 			i++;
 	}
 
-	di.color = Vec3::Load(damageIndicatorColors[di.layer]);
+	di.color = damageIndicatorColors[di.layer];
 	di.velocity = Vec3(crandom() * 20, crandom() * 20, 100);
 
 	damageIndicators.push_back(di);
@@ -309,8 +309,7 @@ static void DrawDamageIndicator(DamageIndicator *di)
 		st0 = Vec2((glyph % 4) * 0.25f, (glyph / 4) * 0.25f);
 		st1 = st0 + Vec2(0.25f, 0.25f);
 
-		trap_R_SetColor(Color::Color(di->color.x(), di->color.y(),
-		                             di->color.z(), di->alpha));
+		trap_R_SetColor( di->color );
 		trap_R_DrawStretchPic(x, y, width, height,
 		                      st0.x(), st0.y(), st1.x(), st1.y(),
 		                      cgs.media.damageIndicatorFont);
