@@ -1057,7 +1057,7 @@ enum sayType_t
 
 struct WeaponOffsets
 {
-	Vec3 bob;
+	vec3_t bob;
 
 	Vec3 angles;
 	Vec3 angvel;
