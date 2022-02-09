@@ -1315,9 +1315,6 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	}
 
 	// accumulate and get the smoothed out values
-	Vec3 origin = Vec3::Load( cg.refdef.vieworg );
-	Vec3 right  = Vec3::Load( cg.refdef.viewaxis[ 1 ] );
-	Vec3 up     = Vec3::Load( cg.refdef.viewaxis[ 2 ] );
 	filter.Accumulate( cg.time, offsets );
 	offsets = filter.GaussianMA( cg.time );
 
@@ -1328,10 +1325,9 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	const float scaleY = 2e-3;
 
 	VectorAdd( angles, offsets.bob, angles );
-	origin += up * atanf( offsets.angvel[ 0 ] * scaleY ) * limitY;
-	origin += right * atanf( offsets.angvel[ 1 ] * scaleX ) * limitX;
+	VectorMA( cg.refdef.vieworg, atanf( offsets.angvel[ 0 ] * scaleY ) * limitY, cg.refdef.viewaxis[ 2 ], out_origin );
+	VectorMA( out_origin, atanf( offsets.angvel[ 1 ] * scaleX ) * limitX, cg.refdef.viewaxis[ 1 ], out_origin );
 
-	origin.Store( out_origin );
 	VectorCopy( angles, out_angles );
 }
 
