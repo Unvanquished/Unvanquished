@@ -1258,7 +1258,7 @@ WeaponOffsets
 WeaponOffsets WeaponOffsets::operator+=( WeaponOffsets B )
 {
 	VectorAdd( bob, B.bob, bob );
-	angvel += B.angvel;
+	VectorAdd( angvel, B.angvel, angvel );
 
 	return *this;
 }
@@ -1268,7 +1268,7 @@ WeaponOffsets WeaponOffsets::operator*( float B )
 	WeaponOffsets R;
 
 	VectorScale( bob, B, R.bob );
-	R.angvel = angvel * B;
+	VectorScale( angvel, B, R.angvel );
 
 	return R;
 }
@@ -1302,7 +1302,7 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	vec3_t angles;
 	VectorCopy( cg.refdefViewAngles, angles );
 	VectorCopy( cg.refdefViewAngles, offsets.angles );
-	offsets.angvel = {};
+	VectorClear( offsets.angvel );
 
 	if( !filter.IsEmpty( ) )
 	{
