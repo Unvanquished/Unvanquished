@@ -1257,7 +1257,7 @@ WeaponOffsets
 */
 WeaponOffsets WeaponOffsets::operator+=( WeaponOffsets B )
 {
-	bob += B.bob;
+	VectorAdd( bob, B.bob, bob );
 	angvel += B.angvel;
 
 	return *this;
@@ -1267,7 +1267,7 @@ WeaponOffsets WeaponOffsets::operator*( float B )
 {
 	WeaponOffsets R;
 
-	R.bob = bob * B;
+	VectorScale( bob, B, R.bob );
 	R.angvel = angvel * B;
 
 	return R;
@@ -1292,15 +1292,16 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	{
 		// on odd legs, invert some angles
 		float scale = ( cg.bobcycle & 1 ? -1 : 1 ) * cg.xyspeed;
-		offsets.bob = Vec3(
+		VectorSet( offsets.bob,
 			cg.xyspeed * cg.bobfracsin * 0.005f,
 			scale * cg.bobfracsin * 0.005f,
 			scale * cg.bobfracsin * 0.01f );
 	}
 
 	// weapon inertia
-	Vec3 angles = Vec3::Load( cg.refdefViewAngles );
-	offsets.angles = angles;
+	vec3_t angles;
+	VectorCopy( cg.refdefViewAngles, angles );
+	VectorCopy( cg.refdefViewAngles, offsets.angles );
 	offsets.angvel = {};
 
 	if( !filter.IsEmpty( ) )
@@ -1308,7 +1309,9 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 		auto last = filter.Last( );
 		float dt = ( cg.time - last.first ) * 0.001f;
 
-		offsets.angvel = angles.Apply2( AngleDelta, last.second.angles ) / dt;
+		offsets.angvel[ 0 ] = AngleNormalize180( angles[ 0 ] - last.second.angles[ 0 ] ) / dt;
+		offsets.angvel[ 1 ] = AngleNormalize180( angles[ 1 ] - last.second.angles[ 1 ] ) / dt;
+		offsets.angvel[ 2 ] = AngleNormalize180( angles[ 2 ] - last.second.angles[ 2 ] ) / dt;
 	}
 
 	// accumulate and get the smoothed out values
@@ -1324,12 +1327,12 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	const float limitY = 1.5f;
 	const float scaleY = 2e-3;
 
-	angles += offsets.bob;
+	VectorAdd( angles, offsets.bob, angles );
 	origin += up * atanf( offsets.angvel[ 0 ] * scaleY ) * limitY;
 	origin += right * atanf( offsets.angvel[ 1 ] * scaleX ) * limitX;
 
 	origin.Store( out_origin );
-	angles.Store( out_angles );
+	VectorCopy( angles, out_angles );
 }
 
 /*
