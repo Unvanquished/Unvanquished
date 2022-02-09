@@ -99,8 +99,7 @@ static std::list<DamageIndicator> damageIndicatorQueue;
 /**
  * @brief Create a new damage indicator and add it to the queue.
  */
-static void EnqueueDamageIndicator(Vec3 point, int flags, float value,
-                                   int victim)
+static void EnqueueDamageIndicator(Vec3 point, int flags, float value, int victim)
 {
 	DamageIndicator di;
 
@@ -221,22 +220,23 @@ static void DequeueDamageIndicators(void)
  */
 void Event(entityState_t *es)
 {
-	Vec3 origin;
 	int flags, victim;
 	float value;
 
-	origin = Vec3::Load(es->origin);
 	flags = es->otherEntityNum2;
 	value = es->angles2[0];
 	victim = es->otherEntityNum;
 
 	if (damageIndicators_enable.Get())
+	{
+		Vec3 origin = Vec3::Load(es->origin);
 		EnqueueDamageIndicator(origin, flags, value, victim);
+	}
 
-	if ((flags & HIT_LETHAL) && !(flags & HIT_BUILDING)
-	    && killSounds_enable.Get())
-		trap_S_StartLocalSound(cgs.media.killSound,
-		                       soundChannel_t::CHAN_LOCAL_SOUND);
+	if ( (flags & HIT_LETHAL) && !(flags & HIT_BUILDING) && killSounds_enable.Get() )
+	{
+		trap_S_StartLocalSound(cgs.media.killSound, soundChannel_t::CHAN_LOCAL_SOUND);
+	}
 
 	cg.hitTime = cg.time;
 }
