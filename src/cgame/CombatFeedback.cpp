@@ -71,7 +71,7 @@ struct DamageIndicator {
 
 	// the following fields are computed every frame and can be ignored
 	// in all init/clustering code
-	Vec2 pos2d;
+	vec2_t pos2d;
 	float dist, scale;
 	Color::Color color;
 	float alpha;
@@ -264,7 +264,8 @@ static bool EvaluateDamageIndicator(DamageIndicator *di, bool *draw)
 	}
 
 	// CG_WorldToScreen returns a point on the virtual 640x480 screen
-	di->pos2d = Vec2::Load(tmp) * Vec2(cgs.screenXScale, cgs.screenYScale);
+	di->pos2d[ 0 ] = tmp[ 0 ] * cgs.screenXScale;
+	di->pos2d[ 1 ] = tmp[ 1 ] * cgs.screenYScale;
 	*draw = true;
 
 	t_fade = (float)(cg.time - di->ctime) / 1000;
@@ -294,24 +295,26 @@ static void DrawDamageIndicator(DamageIndicator *di)
 		text = "!" + text;
 	total_width = width * text.length();
 
-	x = di->pos2d.x() - total_width / 2;
-	y = di->pos2d.y() - height / 2;
+	x = di->pos2d[ 0 ] - total_width / 2;
+	y = di->pos2d[ 1 ] - height / 2;
 
 	for (size_t i = 0; i < text.length(); i++) {
 		int glyph;
-		Vec2 st0, st1;
+		vec2_t st0, st1;
 
 		if (text[i] >= '0' && text[i] <= '9')
 			glyph = text[i] - '0';
 		else
 			glyph = 10;
 
-		st0 = Vec2((glyph % 4) * 0.25f, (glyph / 4) * 0.25f);
-		st1 = st0 + Vec2(0.25f, 0.25f);
+		st0[ 0 ] = ( glyph % 4 ) / 4.f;
+		st0[ 1 ] = ( glyph / 4 ) / 4.f;
+		st1[ 0 ] = st0[ 0 ] + 0.25f;
+		st1[ 1 ] = st0[ 1 ] + 0.25f;
 
 		trap_R_SetColor( di->color );
 		trap_R_DrawStretchPic(x, y, width, height,
-		                      st0.x(), st0.y(), st1.x(), st1.y(),
+		                      st0[ 0 ], st0[ 1 ], st1[ 0 ], st1[ 1 ],
 		                      cgs.media.damageIndicatorFont);
 
 		x += width;
