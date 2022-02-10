@@ -77,11 +77,13 @@ void DebugDrawQuake::vertex(const float* pos, unsigned int c)
 
 void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color)
 {
-	Vec3 vert{ x, y, z };
-	recast2quake( vert.Data() );
-	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX);
-	commands.Write<Vec3>(vert);
-	commands.Write<unsigned int>(color);
+	vec3_t vert = { x, y, z };
+	recast2quake( vert );
+	commands.Write<debugDrawCommand_t>( debugDrawCommand_t::VERTEX );
+	commands.Write<float>( vert[ 0 ] );
+	commands.Write<float>( vert[ 1 ] );
+	commands.Write<float>( vert[ 2 ] );
+	commands.Write<unsigned int>( color );
 }
 
 void DebugDrawQuake::vertex(const float *pos, unsigned int color, const float* uv)
@@ -91,13 +93,15 @@ void DebugDrawQuake::vertex(const float *pos, unsigned int color, const float* u
 
 void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v)
 {
-	Vec3 vert{ x, y, z };
-	Vec2 uv{ u, v };
-	recast2quake( vert.Data() );
-	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX_UV);
-	commands.Write<Vec3>(vert);
-	commands.Write<unsigned int>(color);
-	commands.Write<Vec2>(uv);
+	vec3_t vert = { x, y, z };
+	recast2quake( vert );
+	commands.Write<debugDrawCommand_t>( debugDrawCommand_t::VERTEX_UV );
+	commands.Write<float>( vert[ 0 ] );
+	commands.Write<float>( vert[ 1 ] );
+	commands.Write<float>( vert[ 2 ] );
+	commands.Write<unsigned int>( color );
+	commands.Write<float>( u );
+	commands.Write<float>( v );
 }
 
 void DebugDrawQuake::end()
