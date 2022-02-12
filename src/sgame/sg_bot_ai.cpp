@@ -729,6 +729,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 		self->botMind->currentNode = node;
 		self->botMind->enemyLastSeen = level.time;
+		BotResetStuckTime( self );
 		return STATUS_RUNNING;
 	}
 
@@ -781,6 +782,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		else
 		{
 			BotMoveToGoal( self );
+			BotResetStuckTime( self );
 			return STATUS_RUNNING;
 		}
 	}
@@ -793,6 +795,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !self->botMind->nav.directPathToGoal )
 	{
 		BotMoveToGoal( self );
+		BotResetStuckTime( self );
 		return STATUS_RUNNING;
 	}
 
@@ -810,6 +813,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	if ( myTeam == TEAM_ALIENS )
 	{
 		BotClassMovement( self, inAttackRange );
+		BotResetStuckTime( self );
 		return STATUS_RUNNING;
 	}
 
@@ -847,6 +851,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	BotSprint( self, true );
 
+	BotResetStuckTime( self );
 	return STATUS_RUNNING;
 }
 
@@ -1022,15 +1027,24 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 {
+	AINodeStatus_t ret;
 	switch( G_Team( self ) )
 	{
 		case TEAM_HUMANS:
-			return BotActionHealH( self, node );
+			ret = BotActionHealH( self, node );
+			break;
 		case TEAM_ALIENS:
-			return BotActionHealA( self, node );
+			ret = BotActionHealA( self, node );
+			break;
 		default:
 			ASSERT_UNREACHABLE();
 	}
+
+	if ( ret == STATUS_RUNNING )
+	{
+		BotResetStuckTime( self );
+	}
+	return ret;
 }
 
 AINodeStatus_t BotActionSuicide( gentity_t *self, AIGenericNode_t* )
@@ -1244,6 +1258,8 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		BotAimAtLocation( self, targetPos );
 		// we automatically heal a building if close enough and aiming at it
 	}
+
+	BotResetStuckTime( self );
 	return STATUS_RUNNING;
 }
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
