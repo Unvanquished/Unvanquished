@@ -1106,7 +1106,7 @@ and team change.
 ============
 */
 static Cvar::Cvar<std::string> slotTeams("P", "[serverinfo] client slot -> team", Cvar::SERVERINFO, "");
-static Cvar::Cvar<std::string> slotBots("P", "[serverinfo] client slot -> is bot", Cvar::SERVERINFO, "");
+static Cvar::Cvar<std::string> slotBots("B", "[serverinfo] client slot -> is bot", Cvar::SERVERINFO, "");
 void CalculateRanks()
 {
 	int  clientNum;
