@@ -85,8 +85,10 @@
 				font-size: 1.5em;
 			}
 
-			.emoticon {
+			.trem-emoticon {
+				color: white;
 				height: 1em;
+				width: auto;
 			}
 
 		</style>
