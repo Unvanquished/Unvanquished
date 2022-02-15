@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CustomSurfaceFlags.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 /**
  * @return Whether the means of death allow for an under-attack warning.
@@ -1572,7 +1573,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		reason = IBE_NORMAL;
 	}
 
-	contents = trap_PointContents( entity_origin, -1 );
+	contents = G_CM_PointContents( entity_origin, -1 );
 
 	// Prepare replacement of other buildables.
 	itemBuildError_t replacementError;

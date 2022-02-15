@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "sg_cm_world.h"
 
 /*
 ================
@@ -167,7 +168,7 @@ void G_Physics( gentity_t *ent, int )
 	}
 
 	// if it is in a nodrop volume, remove it
-	contents = trap_PointContents( ent->r.currentOrigin, -1 );
+	contents = G_CM_PointContents( ent->r.currentOrigin, -1 );
 
 	if ( contents & CONTENTS_NODROP )
 	{

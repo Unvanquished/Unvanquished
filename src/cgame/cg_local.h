@@ -1791,7 +1791,6 @@ extern Cvar::Cvar<bool> cg_drawSurfNormal;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawBBOX;
 extern Cvar::Cvar<bool> cg_drawEntityInfo;
 extern Cvar::Cvar<int> cg_wwSmoothTime;
-extern Cvar::Cvar<bool> cg_depthSortParticles;
 extern Cvar::Cvar<bool> cg_bounceParticles;
 extern Cvar::Cvar<int> cg_consoleLatency;
 extern Cvar::Range<Cvar::Cvar<int>> cg_lightFlare;

@@ -2903,7 +2903,7 @@ void CG_Rocket_DrawTutorial()
 		return;
 	}
 
-	Rocket_SetInnerRML( CG_TutorialText(), RP_EMOTICONS );
+	Rocket_SetInnerRML( CG_TutorialText(), RP_EMOTICONS | RP_QUAKE );
 }
 
 void CG_Rocket_DrawStaminaBolt()

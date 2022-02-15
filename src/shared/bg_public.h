@@ -42,7 +42,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define VOTE_TIME          30000 // 30 seconds before vote times out
 
-#define MINS_Z             -24
 #define DEAD_VIEWHEIGHT    4 // height from ground
 
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
@@ -228,8 +227,15 @@ enum pmtype_t
 };
 
 // pmtype_t categories
-#define PM_Paralyzed( x ) ( ( x ) == PM_DEAD || ( x ) == PM_FREEZE || ( x ) == PM_INTERMISSION )
-#define PM_Live( x )      ( ( x ) == PM_NORMAL || ( x ) == PM_GRABBED )
+inline bool PM_Live( pmtype_t pmt )
+{
+	return pmt == PM_NORMAL || pmt == PM_GRABBED;
+}
+//TODO: deprecate
+inline bool PM_Live( int pmt )
+{
+	return PM_Live( static_cast<pmtype_t>( pmt ) );
+}
 
 enum weaponstate_t
 {
@@ -325,7 +331,7 @@ enum statIndex_t
   STAT_ITEMS,      // bitfield of all possible upgrades, probably only for humans.
   STAT_ACTIVEITEMS,
   STAT_WEAPON,     // current primary weapon. Works for humans and aliens. For aliens, is related to STAT_CLASS.
-  STAT_MAX_HEALTH, // health limit
+  STAT_MAX_HEALTH, // TODO: remove in 0.53
   STAT_CLASS,      // player class. Human's armor or alien's form. Do not use to guess team (which is done in some places), instead use PERS_TEAM
   STAT_STATE2,     // more client states
   STAT_STAMINA,    // humans: stamina
@@ -1664,7 +1670,7 @@ void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t 
 void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
 
 void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap );
-void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, bool snap );
+void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time );
 
 #define MAX_ARENAS      1024
 #define MAX_ARENAS_TEXT 8192

@@ -59,7 +59,7 @@ Cvar::Cvar<bool> cg_drawMinimap("cg_drawMinimap", "show minimap", Cvar::NONE, tr
 Cvar::Cvar<int> cg_minimapActive("cg_minimapActive", "FOR INTERNAL USE", Cvar::NONE, 0);
 Cvar::Cvar<float> cg_crosshairSize("cg_crosshairSize", "crosshair scale factor", Cvar::NONE, 1);
 Cvar::Cvar<std::string> cg_crosshairFile("cg_crosshairFile", "VFS path of custom crosshairs file", Cvar::NONE, "");
-Cvar::Cvar<bool> cg_draw2D("cg_draw2D", "show HUD / menus", Cvar::NONE, true);
+Cvar::Cvar<bool> cg_draw2D("cg_draw2D", "show HUD", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_debugAnim("cg_debuganim", "show animation debug logs", Cvar::CHEAT, false);
 Cvar::Cvar<bool> cg_debugEvents("cg_debugevents", "log received events", Cvar::CHEAT, false);
 Cvar::Cvar<float> cg_errorDecay("cg_errordecay", "recovery time after prediction error", Cvar::NONE, 100);
@@ -98,7 +98,6 @@ Cvar::Cvar<bool> cg_drawSurfNormal("cg_drawSurfNormal", "visualize normal vector
 Cvar::Range<Cvar::Cvar<int>> cg_drawBBOX("cg_drawBBOX", "show entity bounding boxes (2 = solid)", Cvar::CHEAT, 0, 0, 2);
 Cvar::Cvar<bool> cg_drawEntityInfo("cg_drawEntityInfo", "show number and type of facing entity", Cvar::CHEAT, false);
 Cvar::Cvar<int> cg_wwSmoothTime("cg_wwSmoothTime", "time (ms) to rotate view while wallwalking", Cvar::NONE, 150);
-Cvar::Cvar<bool> cg_depthSortParticles("cg_depthSortParticles", "render particles in depth order", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_bounceParticles("cg_bounceParticles", "particles may bounce off surfaces, rather than destruct", Cvar::NONE, true);
 Cvar::Cvar<int> cg_consoleLatency("cg_consoleLatency", "how long chat messages appear (milliseconds)", Cvar::NONE, 3000);
 Cvar::Range<Cvar::Cvar<int>> cg_lightFlare("cg_lightFlare", "style of 'light flares'", Cvar::NONE, 3, 0, 3);
@@ -243,7 +242,7 @@ static void CG_SetPVars()
 	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
 
 	trap_Cvar_Set( "p_hp", va( "%d", ps->stats[ STAT_HEALTH ] ) );
-	trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
+	trap_Cvar_Set( "p_maxhp", va( "%d", BG_Class( ps->stats[ STAT_CLASS ] )->health ) );
 	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 
@@ -462,8 +461,8 @@ enum cgLoadingStep_t {
 	LOAD_BUILDINGS,
 	LOAD_CLIENTS,
 	LOAD_HUDS,
-	LOAD_GLSL,
 	LOAD_CHECK_NAVMESH, // only checking for existence, not generation
+	LOAD_GLSL,
 	LOAD_DONE
 };
 
@@ -1310,16 +1309,21 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 		GenerateNavmeshes();
 	}
 
-	CG_UpdateLoadingStep( LOAD_DONE );
+	if ( trap_Cvar_VariableIntegerValue( "r_lazyShaders" ) == 1 )
+	{
+		// EndRegistration is called after cgame initialization returns
+		CG_UpdateLoadingStep( LOAD_GLSL );
+	}
+	else
+	{
+		CG_UpdateLoadingStep( LOAD_DONE );
+	}
 
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
 
-	CG_StartMusic();
-
 	CG_ShaderStateChanged();
 
-	trap_S_ClearLoopingSounds( true );
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 }
 

@@ -220,7 +220,7 @@ Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, 
 // bot buy cvars
 Cvar::Cvar<bool> g_bot_buy("g_bot_buy", "whether bots use the Armoury", Cvar::NONE, true);
 // human weapons
-Cvar::Cvar<bool> g_bot_ckit("g_bot_ckit", "whether bots buy the Construction Kit", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_ckit("g_bot_ckit", "whether bots buy the Construction Kit (only current use is for repairs)", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_rifle("g_bot_rifle", "whether bots use SMG", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_painsaw("g_bot_painsaw", "whether bots buy the Painsaw", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_shotgun("g_bot_shotgun", "whether bots buy the Shotgun", Cvar::NONE, true);
@@ -1106,7 +1106,7 @@ and team change.
 ============
 */
 static Cvar::Cvar<std::string> slotTeams("P", "[serverinfo] client slot -> team", Cvar::SERVERINFO, "");
-static Cvar::Cvar<std::string> slotBots("P", "[serverinfo] client slot -> is bot", Cvar::SERVERINFO, "");
+static Cvar::Cvar<std::string> slotBots("B", "[serverinfo] client slot -> is bot", Cvar::SERVERINFO, "");
 void CalculateRanks()
 {
 	int  clientNum;

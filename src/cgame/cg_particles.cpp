@@ -2456,11 +2456,6 @@ static void CG_CompactAndSortParticles()
 		sortedParticles[ i ] = &particles[ i ];
 	}
 
-	if ( !cg_depthSortParticles.Get() )
-	{
-		return;
-	}
-
 	for ( i = MAX_PARTICLES - 1; i >= 0; i-- )
 	{
 		if ( sortedParticles[ i ]->valid )
