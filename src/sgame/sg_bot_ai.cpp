@@ -577,11 +577,17 @@ AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode_t *node 
 	AIActionNode_t *action = ( AIActionNode_t * ) node;
 	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
 
-	if ( !BG_UpgradeIsActive( u, self->client->ps.stats ) &&
-		BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
+	if ( !BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
 	{
-		BG_ActivateUpgrade( u, self->client->ps.stats );
+		return STATUS_FAILURE;
 	}
+
+	if ( BG_UpgradeIsActive( u, self->client->ps.stats ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	BG_ActivateUpgrade( u, self->client->ps.stats );
 	return STATUS_SUCCESS;
 }
 
@@ -590,11 +596,17 @@ AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *nod
 	AIActionNode_t *action = ( AIActionNode_t * ) node;
 	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
 
-	if ( BG_UpgradeIsActive( u, self->client->ps.stats ) &&
-		BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
+	if ( !BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
 	{
-		BG_DeactivateUpgrade( u, self->client->ps.stats );
+		return STATUS_FAILURE;
 	}
+
+	if ( !BG_UpgradeIsActive( u, self->client->ps.stats ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	BG_DeactivateUpgrade( u, self->client->ps.stats );
 	return STATUS_SUCCESS;
 }
 
