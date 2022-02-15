@@ -22,7 +22,7 @@
 	</head>
 	<body template="window" id="createserver" onshow='Events.pushevent("buildDS mapList", event)' style="width: 40em; margin: 1em;">
 		<h1><translate>Start local/LAN game</translate></h1>
-		<form onsubmit='Events.pushevent("execForm \"map $map$\"", event)'>
+		<form onsubmit='Events.pushevent("execForm \"map $map$ $layout$\"", event)'>
 			<row>
 				<input type="text" cvar="sv_hostname" class="text" id="hostname"/>
 				<h3><translate>Hostname</translate></h3>
@@ -36,6 +36,11 @@
 			<row>
 				<input type="text" cvar="fs_extrapaks" class="text" id="extrapaks"/>
 				<h3><translate>Extra packages to load</translate></h3>
+			</row>
+
+			<row>
+				<input type="text" class="text" id="layout" name="layout"/>
+				<h3><translate>Map building layout to use</translate></h3>
 			</row>
 
 			<row id="maplist">
