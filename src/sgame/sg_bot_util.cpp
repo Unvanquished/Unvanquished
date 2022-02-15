@@ -65,11 +65,20 @@ struct equipment_t
 	T item;
 	int price( void ) const;
 	bool unlocked( void ) const;
+	bool allowed( void ) const;
 	bool canBuyNow( void ) const
 	{
-		return authorized.Get() && unlocked();
+		return allowed() && unlocked();
 	}
 	int slots( void ) const;
+	bool operator==( T other ) const
+	{
+		return item == other;
+	}
+	bool operator!=( T other ) const
+	{
+		return item != other;
+	}
 };
 
 /// let's write some duplicated code because of nice API
@@ -111,6 +120,25 @@ template <>
 bool equipment_t<weapon_t>::unlocked( void ) const
 {
 	return BG_WeaponUnlocked( item );
+}
+
+// allowed
+template <>
+bool equipment_t<class_t>::allowed( void ) const
+{
+	return authorized.Get() && !BG_ClassDisabled( item );
+}
+
+template <>
+bool equipment_t<upgrade_t>::allowed( void ) const
+{
+	return authorized.Get() && !BG_UpgradeDisabled( item );
+}
+
+template <>
+bool equipment_t<weapon_t>::allowed( void ) const
+{
+	return authorized.Get() && !BG_WeaponDisabled( item );
 }
 
 // slots
@@ -176,6 +204,7 @@ equipment_t<weapon_t> weapons[] =
 	{ g_bot_shotgun , WP_SHOTGUN },
 	{ g_bot_painsaw , WP_PAIN_SAW },
 	{ g_bot_rifle   , WP_MACHINEGUN },
+	{ g_bot_ckit    , WP_HBUILD },
 };
 
 /*
@@ -504,7 +533,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 
 	for ( auto const& cl : classes )
 	{
-		if ( cl.authorized.Get() && BotCanEvolveToClass( self, cl.item ) && BotEvolveToClass( self, cl.item ) )
+		if ( BotEvolveToClass( self, cl.item ) )
 		{
 			return STATUS_SUCCESS;
 		}
@@ -1898,6 +1927,17 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 
 	clientNum = ent->client - level.clients;
 
+	equipment_t<class_t>* cl = std::find( std::begin( classes ), std::end( classes ), newClass );
+	if ( cl == std::end( classes ) )
+	{
+		Log::Warn( "invalid class requested" );
+		return false;
+	}
+	if ( !cl->canBuyNow() )
+	{
+		return false;
+	}
+
 	//if we are not currently spectating, we are attempting evolution
 	if ( ent->client->pers.classSelection != PCL_NONE )
 	{
@@ -1964,8 +2004,7 @@ bool BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		return true;
 	}
 
-	// Only humans can buy stuff
-	if ( BG_Weapon( weapon )->team != TEAM_HUMANS )
+	if ( BG_Weapon( weapon )->team != G_Team( self ) )
 	{
 		return false;
 	}
@@ -1976,8 +2015,14 @@ bool BotBuyWeapon( gentity_t *self, weapon_t weapon )
 		return false;
 	}
 
-	//are we /allowed/ to buy this?
-	if ( !BG_WeaponUnlocked( weapon ) || BG_WeaponDisabled( weapon ) )
+	equipment_t<weapon_t>* wp = std::find( std::begin( weapons ), std::end( weapons ), weapon );
+	if ( wp == std::end( weapons ) )
+	{
+		Log::Warn( "invalid weapon requested" );
+		return false;
+	}
+
+	if ( !wp->canBuyNow() )
 	{
 		return false;
 	}
@@ -2041,8 +2086,7 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		return false;
 	}
 
-	// Only humans can buy stuff
-	if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
+	if ( BG_Upgrade( upgrade )->team != G_Team( self ) )
 	{
 		return false;
 	}
@@ -2053,8 +2097,19 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		return false;
 	}
 
-	//are we /allowed/ to buy this?
-	if ( !BG_UpgradeUnlocked( upgrade ) || BG_UpgradeDisabled( upgrade ) )
+	equipment_t<upgrade_t>* up;
+	up = std::find( std::begin( armors ), std::end( armors ), upgrade );
+	if ( up == std::end( armors ) )
+	{
+		up = std::find( std::begin( others ), std::end( others ), upgrade );
+		if ( up == std::end( others ) )
+		{
+			Log::Warn( "invalid upgrade requested" );
+			return false;
+		}
+	}
+
+	if ( !up->canBuyNow() )
 	{
 		return false;
 	}
