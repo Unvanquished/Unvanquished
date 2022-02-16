@@ -413,42 +413,24 @@ static void SendHitEvent( gentity_t *attacker, gentity_t *target, vec3_t const o
 static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *tr )
 {
 	vec3_t    normal, origin;
-	float     mag, radius;
 
 	if ( !attacker->client )
 	{
 		return;
 	}
 
-	if ( tr )
-	{
-		VectorSubtract( tr->endpos, target->s.origin, normal );
-	}
-	else
-	{
-		VectorSubtract( attacker->client->ps.origin, target->s.origin, normal );
-	}
+	//tyrant charge attack do not have traces... there must be a better way for that...
+	VectorSubtract( tr ? tr->endpos : attacker->client->ps.origin, target->s.origin, normal );
 
 	// Normalize the horizontal components of the vector difference to the "radius" of the bounding box
-	mag = sqrtf( normal[ 0 ] * normal[ 0 ] + normal[ 1 ] * normal[ 1 ] );
-	radius = target->r.maxs[ 0 ] * 1.21f;
-
+	float mag = sqrtf( normal[ 0 ] * normal[ 0 ] + normal[ 1 ] * normal[ 1 ] );
+	float radius = target->r.maxs[ 0 ] * 1.21f;
 	if ( mag > radius )
 	{
 		normal[ 0 ] = normal[ 0 ] / mag * radius;
 		normal[ 1 ] = normal[ 1 ] / mag * radius;
 	}
-
-	// Clamp origin to be within bounding box vertically
-	if ( normal[ 2 ] > target->r.maxs[ 2 ] )
-	{
-		normal[ 2 ] = target->r.maxs[ 2 ];
-	}
-
-	if ( normal[ 2 ] < target->r.mins[ 2 ] )
-	{
-		normal[ 2 ] = target->r.mins[ 2 ];
-	}
+	normal[ 2 ] = Math::Clamp( normal[ 2 ], target->r.mins[ 2 ], target->r.maxs[ 2 ] );
 
 	VectorAdd( target->s.origin, normal, origin );
 	VectorNegate( normal, normal );
