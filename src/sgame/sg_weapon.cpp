@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static vec3_t forward, right, up;
 static vec3_t muzzle;
 
+static void SendHitEvent( gentity_t *attacker, gentity_t *target, vec3_t const origin, vec3_t normal, entity_event_t evType );
+
 void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 {
 	playerState_t *ps = &ent->client->ps;
@@ -381,22 +383,19 @@ void G_SnapVectorTowards( vec3_t v, vec3_t to )
 
 static void SendRangedHitEvent( gentity_t *attacker, gentity_t *target, trace_t *tr )
 {
-	gentity_t *event;
-
 	// snap the endpos to integers, but nudged towards the line
 	G_SnapVectorTowards( tr->endpos, muzzle );
 
-	if ( HasComponents<HealthComponent>(*target->entity) )
-	{
-		event = G_NewTempEntity( tr->endpos, EV_WEAPON_HIT_ENTITY );
-	}
-	else
-	{
-		event = G_NewTempEntity( tr->endpos, EV_WEAPON_HIT_ENVIRONMENT );
-	}
+	entity_event_t evType = HasComponents<HealthComponent>(*target->entity) ? EV_WEAPON_HIT_ENTITY : EV_WEAPON_HIT_ENVIRONMENT;
+	SendHitEvent( attacker, target, tr->endpos, tr->plane.normal, evType );
+}
+
+static void SendHitEvent( gentity_t *attacker, gentity_t *target, vec3_t const origin, vec3_t normal, entity_event_t evType )
+{
+	gentity_t *event = G_NewTempEntity( origin, evType );
 
 	// normal
-	event->s.eventParm = DirToByte( tr->plane.normal );
+	event->s.eventParm = DirToByte( normal );
 
 	// victim
 	event->s.otherEntityNum = target->s.number;
@@ -413,7 +412,6 @@ static void SendRangedHitEvent( gentity_t *attacker, gentity_t *target, trace_t 
 
 static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *tr )
 {
-	gentity_t *event;
 	vec3_t    normal, origin;
 	float     mag, radius;
 
@@ -456,22 +454,7 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 	VectorNegate( normal, normal );
 	VectorNormalize( normal );
 
-	event = G_NewTempEntity( origin, EV_WEAPON_HIT_ENTITY );
-
-	// normal
-	event->s.eventParm = DirToByte( normal );
-
-	// victim
-	event->s.otherEntityNum = target->s.number;
-
-	// attacker
-	event->s.otherEntityNum2 = attacker->s.number;
-
-	// weapon
-	event->s.weapon = attacker->s.weapon;
-
-	// weapon mode
-	event->s.generic1 = attacker->s.generic1;
+	SendHitEvent( attacker, target, origin, normal, EV_WEAPON_HIT_ENTITY );
 }
 
 static gentity_t *FireMelee( gentity_t *self, float range, float width, float height,
