@@ -1293,6 +1293,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 		Log::Warn( "creepModifier not defined in %s (using previously hard-coded values)", filename );
 		switch( ca->number )
 		{
+			case PCL_NONE:
 			case PCL_ALIEN_BUILDER0:
 			case PCL_ALIEN_BUILDER0_UPG:
 			case PCL_ALIEN_LEVEL0:
