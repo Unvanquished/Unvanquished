@@ -134,6 +134,18 @@ static AIValue_t currentWeapon( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( BG_GetPlayerWeapon( &self->client->ps ) );
 }
 
+// Return true if currently selected weapon is ready
+// This won't work for all cases since some alien "modes"
+// do not necessarily block all other modes.
+// It might also be a problem for mass driver's scope, but
+// bots don't need it anyway.
+// TODO: implement support to choose *which* weapon is to be
+// checked for readiness
+static AIValue_t BotWeaponIsReady( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( self->client->ps.IsWeaponReady() );
+}
+
 static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 {
 	int upgrade = AIUnBoxInt( params[ 0 ] );
@@ -403,7 +415,8 @@ static const struct AIConditionMap_s
 	{ "stuckTime",         stuckTime,         0 },
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
-	{ "weapon",            currentWeapon,     0 }
+	{ "weapon",            currentWeapon,     0 },
+	{ "weaponIsReady",     BotWeaponIsReady,  0 },
 };
 
 static const struct AIOpMap_s
