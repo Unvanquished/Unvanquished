@@ -1312,7 +1312,6 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 			case PCL_HUMAN_BSUIT:
 				ca->creepModifier = 0.75f;
 				break;
-			case PCL_NONE:
 			case PCL_NUM_CLASSES:
 				ASSERT_UNREACHABLE();
 		}
