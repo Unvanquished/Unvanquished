@@ -54,7 +54,7 @@ class SpawnerComponent: public SpawnerComponentBase {
 		 * @return An entity that blocks the spawn or nullptr.
 		 */
 		static Entity* CheckSpawnPointHelper(
-			int spawnerNumber, const Vec3 spawnerOrigin, const Vec3 spawnPoint,
+			int spawnerNumber, const Vec3 spawnerOrigin, const vec3_t spawnPoint,
 			const Vec3 clientMins, const Vec3 clientMaxs
 		);
 

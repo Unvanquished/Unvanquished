@@ -4,7 +4,7 @@ EggComponent::EggComponent(Entity& entity, AlienBuildableComponent& r_AlienBuild
 	: EggComponentBase(entity, r_AlienBuildableComponent, r_SpawnerComponent)
 {}
 
-void EggComponent::HandleCheckSpawnPoint(Entity *&blocker, Vec3& spawnPoint) {
+void EggComponent::HandleCheckSpawnPoint(Entity *&blocker, vec3_t spawnPoint) {
 	CheckSpawnPoint(
 		entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.origin),
 		Vec3::Load(entity.oldEnt->s.origin2), blocker, spawnPoint
@@ -13,7 +13,7 @@ void EggComponent::HandleCheckSpawnPoint(Entity *&blocker, Vec3& spawnPoint) {
 
 bool EggComponent::CheckSpawnPoint(
 	int spawnerNumber, const Vec3 spawnerOrigin, const Vec3 spawnerNormal, Entity*& blocker,
-	Vec3& spawnPoint
+	vec3_t spawnPoint
 ){
 	vec3_t spawnerMins, spawnerMaxs, clientMins, clientMaxs;
 
@@ -64,7 +64,7 @@ bool EggComponent::CheckSpawnPoint(
 		displacement = (1.0f - frac) * minDistance + frac * maxDistance + 1.0f;
 	}
 
-	spawnPoint = spawnerOrigin + displacement * spawnerNormal;
+	VectorMA( spawnerOrigin, displacement, spawnerNormal, spawnPoint );
 
 	blocker = SpawnerComponent::CheckSpawnPointHelper(
 		spawnerNumber, spawnerOrigin, spawnPoint, Vec3::Load(clientMins), Vec3::Load(clientMaxs)

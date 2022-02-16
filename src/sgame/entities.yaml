@@ -30,9 +30,9 @@ messages:
         - name: source
           type: gentity_t* # TODO: Use Entity
         - name: location
-          type: Util::optional<Vec3>
+          type: vec3_t
         - name: direction
-          type: Util::optional<Vec3>
+          type: vec3_t
         - name: flags
           type: int
         - name: meansOfDeath
@@ -54,9 +54,9 @@ messages:
         - name: damage
           type: float&
         - name: location
-          type: Util::optional<Vec3>
+          type: vec3_t
         - name: direction
-          type: Util::optional<Vec3>
+          type: vec3_t
         - name: flags
           type: int
         - name: meansOfDeath
@@ -66,7 +66,7 @@ messages:
         - name: blocker
           type: Entity*&
         - name: spawnPoint
-          type: Vec3&
+          type: vec3_t
 
 components:
     #####################

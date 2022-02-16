@@ -164,8 +164,7 @@ void target_hurt_act( gentity_t *self, gentity_t*, gentity_t *activator )
 		return;
 	}
 
-	activator->entity->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, 0,
-	                          MOD_TRIGGER_HURT);
+	activator->entity->Damage((float)self->damage, self, nullptr, nullptr, 0, MOD_TRIGGER_HURT);
 }
 
 void SP_target_hurt( gentity_t *self )

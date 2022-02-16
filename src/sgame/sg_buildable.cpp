@@ -1663,7 +1663,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		Vec3    originV = Vec3::Load(origin);
 		Vec3    normalV = Vec3::Load(normal);
 		Entity* blocker;
-		Vec3    spawnPoint;
+		vec3_t  spawnPoint;
 
 		switch (buildable) {
 			case BA_A_SPAWN:

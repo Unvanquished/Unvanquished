@@ -236,7 +236,7 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 		}
 
 		Entity* blocker = nullptr;
-		Vec3    spawnPoint;
+		vec3_t spawnPoint; //TODO remove this, since it is not used in practice
 
 		search->entity->CheckSpawnPoint(blocker, spawnPoint);
 
@@ -289,10 +289,8 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 
 	// Get spawn point for selected spawner.
 	Entity* blocker = nullptr;
-	Vec3    spawnPoint;
 
-	spot->entity->CheckSpawnPoint(blocker, spawnPoint);
-	spawnPoint.Store(origin);
+	spot->entity->CheckSpawnPoint(blocker, origin);
 
 	VectorCopy( spot->s.angles, angles );
 	angles[ ROLL ] = 0;

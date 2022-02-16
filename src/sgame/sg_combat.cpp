@@ -788,8 +788,7 @@ void G_SelectiveDamage( gentity_t *targ, gentity_t * /*inflictor*/, gentity_t *a
 {
 	if ( targ->client && ( team != targ->client->pers.team ) )
 	{
-		targ->entity->Damage((float)damage, attacker, Vec3::Load(point), Vec3::Load(dir), dflags,
-		                     (meansOfDeath_t)mod);
+		targ->entity->Damage((float)damage, attacker, point, dir, dflags, (meansOfDeath_t)mod);
 	}
 }
 
@@ -914,8 +913,7 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		if ( G_CanDamage( ent, origin ) && ent->client &&
 		     ent->client->pers.team != ignoreTeam )
 		{
-			hitClient = ent->entity->Damage(points, attacker, Vec3::Load(origin), Util::nullopt,
-			                                DAMAGE_NO_LOCDAMAGE, (meansOfDeath_t)mod);
+			hitClient = ent->entity->Damage(points, attacker, origin, nullptr, DAMAGE_NO_LOCDAMAGE, (meansOfDeath_t)mod);
 		}
 	}
 
@@ -976,8 +974,7 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 				dir[ 2 ] += 24;
 				VectorNormalize( dir );
 
-				hitSomething = ent->entity->Damage(points, attacker, Vec3::Load(origin), Vec3::Load(dir),
-				                                   (DAMAGE_NO_LOCDAMAGE | dflags), (meansOfDeath_t)mod);
+				hitSomething = ent->entity->Damage(points, attacker, origin, dir, (DAMAGE_NO_LOCDAMAGE | dflags), (meansOfDeath_t)mod);
 			}
 			else if ( G_Team( ent ) == testHit && Entities::IsAlive( ent ) )
 			{

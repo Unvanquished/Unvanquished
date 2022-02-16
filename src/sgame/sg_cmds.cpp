@@ -679,7 +679,7 @@ void Cmd_Give_f( gentity_t *ent )
 			float amount = atof( name + strlen("health") );
 			if (amount < 0)
 			{
-				ent->entity->Damage(-amount, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
+				ent->entity->Damage(-amount, nullptr, nullptr, nullptr, 0, MOD_LAVA);
 			}
 			else
 			{
@@ -4311,8 +4311,7 @@ void Cmd_Damage_f( gentity_t *ent )
 	point[ 1 ] += dy;
 	point[ 2 ] += dz;
 
-	ent->entity->Damage((float)damage, nullptr, Vec3::Load(point), Util::nullopt,
-	                    nonloc ? DAMAGE_NO_LOCDAMAGE : 0, MOD_TARGET_LASER);
+	ent->entity->Damage((float)damage, nullptr, point, nullptr, nonloc ? DAMAGE_NO_LOCDAMAGE : 0, MOD_TARGET_LASER);
 }
 
 /*

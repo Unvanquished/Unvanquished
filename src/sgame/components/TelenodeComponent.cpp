@@ -4,7 +4,7 @@ TelenodeComponent::TelenodeComponent(Entity& entity, HumanBuildableComponent& r_
 	: TelenodeComponentBase(entity, r_HumanBuildableComponent, r_SpawnerComponent)
 {}
 
-void TelenodeComponent::HandleCheckSpawnPoint(Entity *&blocker, Vec3& spawnPoint) {
+void TelenodeComponent::HandleCheckSpawnPoint(Entity *&blocker, vec3_t spawnPoint) {
 	CheckSpawnPoint(
 		entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.origin),
 		Vec3::Load(entity.oldEnt->s.origin2), blocker, spawnPoint
@@ -13,7 +13,7 @@ void TelenodeComponent::HandleCheckSpawnPoint(Entity *&blocker, Vec3& spawnPoint
 
 bool TelenodeComponent::CheckSpawnPoint(
 	int spawnerNumber, const Vec3 spawnerOrigin, const Vec3 spawnerNormal, Entity*& blocker,
-	Vec3& spawnPoint
+	vec3_t spawnPoint
 ){
 	vec3_t spawnerMins, spawnerMaxs, clientMins, clientMaxs;
 
@@ -25,7 +25,7 @@ bool TelenodeComponent::CheckSpawnPoint(
 	// TODO: Does this work if the Telenode is at an angle?
 	float displacement = spawnerMaxs[2] - clientMins[2] + 1.0f;
 
-	spawnPoint = spawnerOrigin + displacement * spawnerNormal;
+	VectorMA( spawnerOrigin, displacement, spawnerNormal, spawnPoint );
 
 	blocker = SpawnerComponent::CheckSpawnPointHelper(
 		spawnerNumber, spawnerOrigin, spawnPoint, Vec3::Load(clientMins), Vec3::Load(clientMaxs)

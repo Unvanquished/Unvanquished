@@ -150,7 +150,7 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 		vec3_t knockbackDir;
 		VectorSubtract(other.oldEnt->s.origin, entity.oldEnt->s.origin, knockbackDir);
 
-		if (other.Damage(damage, entity.oldEnt, {}, Vec3::Load(knockbackDir), DAMAGE_NO_LOCDAMAGE | DAMAGE_KNOCKBACK, mod)) {
+		if (other.Damage(damage, entity.oldEnt, {}, knockbackDir, DAMAGE_NO_LOCDAMAGE | DAMAGE_KNOCKBACK, mod)) {
 			hit = true;
 		}
 	});

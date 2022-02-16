@@ -7,8 +7,8 @@ KnockbackComponent::KnockbackComponent(Entity& entity)
 {}
 
 // TODO: Consider location as well as direction when both given.
-void KnockbackComponent::HandleDamage(float amount, gentity_t* /*source*/, Util::optional<Vec3> /*location*/,
-                                      Util::optional<Vec3> direction, int flags, meansOfDeath_t /*meansOfDeath*/) {
+void KnockbackComponent::HandleDamage(float amount, gentity_t* /*source*/, vec3_t /*location*/,
+                                      vec3_t direction, int flags, meansOfDeath_t /*meansOfDeath*/) {
 	if (!(flags & DAMAGE_KNOCKBACK)) return;
 	if (amount <= 0.0f) return;
 
@@ -17,7 +17,7 @@ void KnockbackComponent::HandleDamage(float amount, gentity_t* /*source*/, Util:
 		return;
 	}
 
-	if (Math::Length(direction.value()) == 0.0f) {
+	if (VectorLength(direction) == 0.0f) {
 		knockbackLogger.Warn("Attempt to do knockback with null vector direction.");
 		return;
 	}
@@ -41,9 +41,8 @@ void KnockbackComponent::HandleDamage(float amount, gentity_t* /*source*/, Util:
 	float strength = amount * DAMAGE_TO_KNOCKBACK * massMod;
 
 	// Change client velocity.
-	Vec3 clientVelocity = Vec3::Load(client->ps.velocity);
-	clientVelocity += Math::Normalize(direction.value()) * strength;
-	clientVelocity.Store(client->ps.velocity);
+	VectorNormalize(direction);
+	VectorMA( client->ps.velocity, strength, direction, client->ps.velocity );
 
 	// Set pmove timer so that the client can't cancel out the movement immediately.
 	if (!client->ps.pm_time) {

@@ -109,7 +109,7 @@ void SpawnerComponent::Think(int timeDelta) {
 
 Entity* SpawnerComponent::GetBlocker() {
 	Entity* blocker = nullptr;
-	Vec3    spawnPoint;
+	vec3_t  spawnPoint;
 
 	entity.CheckSpawnPoint(blocker, spawnPoint);
 
@@ -140,14 +140,14 @@ void SpawnerComponent::WarnBlocker(Entity& blocker, bool lastWarning) {
 }
 
 Entity* SpawnerComponent::CheckSpawnPointHelper(
-	int spawnerNumber, const Vec3 spawnerOrigin, const Vec3 spawnPoint, const Vec3 clientMins,
+	int spawnerNumber, const Vec3 spawnerOrigin, const vec3_t spawnPoint, const Vec3 clientMins,
 	const Vec3 clientMaxs
 ){
 	trace_t tr;
 
 	// Check for a clear line towards the spawn location.
 	trap_Trace(
-		&tr, spawnerOrigin.Data(), nullptr, nullptr, spawnPoint.Data(), spawnerNumber, MASK_SHOT, 0
+		&tr, spawnerOrigin.Data(), nullptr, nullptr, spawnPoint, spawnerNumber, MASK_SHOT, 0
 	);
 
 	if (tr.entityNum != ENTITYNUM_NONE) {
@@ -155,7 +155,7 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 	} else {
 		// Check whether a spawned client has space.
 		trap_Trace(
-			&tr, spawnPoint.Data(), clientMins.Data(), clientMaxs.Data(), spawnPoint.Data(), 0,
+			&tr, spawnPoint, clientMins.Data(), clientMaxs.Data(), spawnPoint, 0,
 			MASK_PLAYERSOLID, 0
 		);
 
