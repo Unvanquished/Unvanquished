@@ -231,7 +231,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	}
 
 	// Cannot push enemy players unless they are walking on the player
-	if ( !G_OnSameTeam( ent, victim ) && ent->s.groundEntityNum != victim->s.number )
+	if ( !( G_OnSameTeam( ent, victim ) || g_shoveEnemies.Get() ) && ent->s.groundEntityNum != victim->s.number )
 	{
 		return;
 	}
