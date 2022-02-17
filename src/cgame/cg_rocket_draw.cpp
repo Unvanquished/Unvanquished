@@ -3617,33 +3617,33 @@ void CG_Rocket_RegisterElements()
 		Rocket_RegisterElement( elementRenderCmdList[ i ].name );
 	}
 
-	REGISTER_ELEMENT( "ammo", AmmoHudElement )
-	REGISTER_ELEMENT( "clips", ClipsHudElement )
-	REGISTER_ELEMENT( "fps", FpsHudElement )
-	REGISTER_ELEMENT( "crosshair_indicator", CrosshairIndicatorHudElement )
-	REGISTER_ELEMENT( "crosshair", CrosshairHudElement )
-	REGISTER_ELEMENT( "speedometer", SpeedGraphElement )
-	REGISTER_ELEMENT( "credits", CreditsValueElement )
-	REGISTER_ELEMENT( "evos", EvosValueElement )
-	REGISTER_ELEMENT( "stamina", StaminaValueElement )
-	REGISTER_ELEMENT( "weapon_icon", WeaponIconElement )
-	REGISTER_ELEMENT( "wallwalk", WallwalkElement )
-	REGISTER_ELEMENT( "sprinting", SprintElement )
-	REGISTER_ELEMENT( "usable_buildable", UsableBuildableElement )
-	REGISTER_ELEMENT( "location", LocationElement )
-	REGISTER_ELEMENT( "timer", TimerElement )
-	REGISTER_ELEMENT( "lagometer", LagometerElement )
-	REGISTER_ELEMENT( "ping", PingElement )
-	REGISTER_ELEMENT( "crosshair_name", CrosshairNamesElement )
-	REGISTER_ELEMENT( "levelshot", LevelshotElement )
-	REGISTER_ELEMENT( "levelshot_loading", LevelshotLoadingElement )
-	REGISTER_ELEMENT( "center_print", CenterPrintElement )
-	REGISTER_ELEMENT( "beacon_age", BeaconAgeElement )
-	REGISTER_ELEMENT( "beacon_distance", BeaconDistanceElement )
-	REGISTER_ELEMENT( "beacon_icon", BeaconIconElement )
-	REGISTER_ELEMENT( "beacon_info", BeaconInfoElement )
-	REGISTER_ELEMENT( "beacon_name", BeaconNameElement )
-	REGISTER_ELEMENT( "beacon_owner", BeaconOwnerElement )
-	REGISTER_ELEMENT( "predictedMineEfficiency", PredictedMineEfficiencyElement )
-	REGISTER_ELEMENT( "barbs", BarbsHudElement )
+	RegisterElement<AmmoHudElement>( "ammo" );
+	RegisterElement<ClipsHudElement>( "clips" );
+	RegisterElement<FpsHudElement>( "fps" );
+	RegisterElement<CrosshairIndicatorHudElement>( "crosshair_indicator" );
+	RegisterElement<CrosshairHudElement>( "crosshair" );
+	RegisterElement<SpeedGraphElement>( "speedometer" );
+	RegisterElement<CreditsValueElement>( "credits" );
+	RegisterElement<EvosValueElement>( "evos" );
+	RegisterElement<StaminaValueElement>( "stamina" );
+	RegisterElement<WeaponIconElement>( "weapon_icon" );
+	RegisterElement<WallwalkElement>( "wallwalk" );
+	RegisterElement<SprintElement>( "sprinting" );
+	RegisterElement<UsableBuildableElement>( "usable_buildable" );
+	RegisterElement<LocationElement>( "location" );
+	RegisterElement<TimerElement>( "timer" );
+	RegisterElement<LagometerElement>( "lagometer" );
+	RegisterElement<PingElement>( "ping" );
+	RegisterElement<CrosshairNamesElement>( "crosshair_name" );
+	RegisterElement<LevelshotElement>( "levelshot" );
+	RegisterElement<LevelshotLoadingElement>( "levelshot_loading" );
+	RegisterElement<CenterPrintElement>( "center_print" );
+	RegisterElement<BeaconAgeElement>( "beacon_age" );
+	RegisterElement<BeaconDistanceElement>( "beacon_distance" );
+	RegisterElement<BeaconIconElement>( "beacon_icon" );
+	RegisterElement<BeaconInfoElement>( "beacon_info" );
+	RegisterElement<BeaconNameElement>( "beacon_name" );
+	RegisterElement<BeaconOwnerElement>( "beacon_owner" );
+	RegisterElement<PredictedMineEfficiencyElement>( "predictedMineEfficiency" );
+	RegisterElement<BarbsHudElement>( "barbs" );
 }

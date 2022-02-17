@@ -394,20 +394,20 @@ void Rocket_Init()
 	hudContext->EnableMouseCursor( false );
 
 	// Add custom client elements
-	REGISTER_ELEMENT("datagrid", SelectableDataGrid )
-	REGISTER_ELEMENT("progressbar", RocketProgressBar )
-	REGISTER_ELEMENT("dataselect", RocketDataSelect )
-	REGISTER_ELEMENT("console_text", RocketConsoleTextElement )
-	REGISTER_ELEMENT("datasource_single", RocketDataSourceSingle )
-	REGISTER_ELEMENT("datasource", RocketDataSource )
-	REGISTER_ELEMENT("keybind", RocketKeyBinder )
-	REGISTER_ELEMENT("chatfield", RocketChatField )
-	REGISTER_ELEMENT("input", CvarElementFormControlInput )
-	REGISTER_ELEMENT("select", CvarElementFormControlSelect )
-	REGISTER_ELEMENT("if", RocketConditionalElement )
-	REGISTER_ELEMENT("colorinput", RocketColorInput )
-	REGISTER_ELEMENT("include", RocketIncludeElement )
-	REGISTER_ELEMENT("inlinecvar", RocketCvarInlineElement )
+	RegisterElement<SelectableDataGrid>( "datagrid" );
+	RegisterElement<RocketProgressBar>( "progressbar" );
+	RegisterElement<RocketDataSelect>( "dataselect" );
+	RegisterElement<RocketConsoleTextElement>( "console_text" );
+	RegisterElement<RocketDataSourceSingle>( "datasource_single" );
+	RegisterElement<RocketDataSource>( "datasource" );
+	RegisterElement<RocketKeyBinder>( "keybind" );
+	RegisterElement<RocketChatField>( "chatfield" );
+	RegisterElement<CvarElementFormControlInput>( "input" );
+	RegisterElement<CvarElementFormControlSelect>( "select" );
+	RegisterElement<RocketConditionalElement>( "if" );
+	RegisterElement<RocketColorInput>( "colorinput" );
+	RegisterElement<RocketIncludeElement>( "include" );
+	RegisterElement<RocketCvarInlineElement>( "inlinecvar" );
 
 	whiteShader = trap_R_RegisterShader( "gfx/colors/white", RSF_DEFAULT );
 
