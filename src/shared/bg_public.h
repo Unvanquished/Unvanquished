@@ -1515,7 +1515,6 @@ classModelConfig_t          *BG_ClassModelConfig( int pClass );
 
 void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
                                                  vec3_t dmins, vec3_t dmaxs );
-team_t                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
 evolveInfo_t            BG_ClassEvolveInfoFromTo(int from, int to);

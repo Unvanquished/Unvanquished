@@ -391,11 +391,6 @@ void BG_ClassBoundingBox( int pClass,
 	}
 }
 
-team_t BG_ClassTeam( int pClass )
-{
-	return BG_Class( pClass )->team;
-}
-
 /*
 ==============
 BG_ClassHasAbility
@@ -1592,7 +1587,7 @@ bool BG_InventoryContainsWeapon( int weapon, const int stats[] )
 	// humans always have a blaster
 	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
 	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
-	if ( BG_ClassTeam( stats[ STAT_CLASS ] ) == TEAM_HUMANS && weapon == WP_BLASTER )
+	if ( BG_Class( stats[ STAT_CLASS ] )->team == TEAM_HUMANS && weapon == WP_BLASTER )
 	{
 		return true;
 	}
@@ -1615,7 +1610,7 @@ int BG_SlotsForInventory( int stats[] )
 
 	// HACK: Determine team by checking for STAT_CLASS since we merged STAT_TEAM into PERS_TEAM
 	//       This hack will vanish as soon as the blast isn't the only possible sidearm weapon anymore
-	if ( BG_ClassTeam( stats[ STAT_CLASS ] ) == TEAM_HUMANS )
+	if ( BG_Class( stats[ STAT_CLASS ] )->team == TEAM_HUMANS )
 	{
 		slots |= BG_Weapon( WP_BLASTER )->slots;
 	}
