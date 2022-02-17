@@ -246,7 +246,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	}
 
 	force = g_shove.Get() * entMass / vicMass;
-	force = Math::Clamp( force, 0.f, 150.f );
+	force = Math::Clamp( force, 0.f, g_shoveMaxForce.Get() );
 
 	// Give the victim some shove velocity
 	VectorSubtract( victim->r.currentOrigin, ent->r.currentOrigin, dir );
@@ -259,7 +259,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	if ( !victim->client->ps.pm_time )
 	{
 		int time = force * 2 + 0.5f;
-		time = Math::Clamp( time, 50, 200 );
+		time = Math::Clamp( time, 50, 50 + static_cast<int>( g_shoveMaxForce.Get() ) );
 
 		victim->client->ps.pm_time = time;
 		victim->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;

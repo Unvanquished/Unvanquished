@@ -170,6 +170,7 @@ Cvar::Cvar<bool> g_enableVsays("g_voiceChats", "allow vsays (prerecorded audio m
 
 Cvar::Cvar<float> g_shove("g_shove", "force multiplier when pushing players", Cvar::NONE, 0.0);
 Cvar::Cvar<bool> g_shoveEnemies("g_shoveEnemies", "Allow shoving enemies", Cvar::NONE, false);
+Cvar::Cvar<float> g_shoveMaxForce("g_shoveMaxForce", "changes the maximum shove limit", Cvar::NONE, 150.f);
 Cvar::Cvar<bool> g_antiSpawnBlock("g_antiSpawnBlock", "push away players who block their spawns", Cvar::NONE, false);
 
 Cvar::Cvar<std::string> g_mapConfigs("g_mapConfigs", "map config directory, relative to <homepath>/config/", Cvar::NONE, "");
