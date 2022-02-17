@@ -212,38 +212,6 @@ void G_SetClientSound( gentity_t *ent )
 	}
 }
 
-//==============================================================
-
-/*
-==============
-GetClientMass
-
-TODO: Define player class masses in config files
-==============
-*/
-static int GetClientMass( gentity_t *ent )
-{
-	int entMass = 100;
-
-	if ( ent->client->pers.team == TEAM_ALIENS )
-	{
-		entMass = BG_Class( ent->client->pers.classSelection )->health;
-	}
-	else if ( ent->client->pers.team == TEAM_HUMANS )
-	{
-		if ( BG_InventoryContainsUpgrade( UP_BATTLESUIT, ent->client->ps.stats ) )
-		{
-			entMass *= 2;
-		}
-	}
-	else
-	{
-		return 0;
-	}
-
-	return entMass;
-}
-
 /*
 ==============
 ClientShove
@@ -270,8 +238,8 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	}
 
 	// Shove force is scaled by relative mass
-	entMass = GetClientMass( ent );
-	vicMass = GetClientMass( victim );
+	entMass = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->mass;
+	vicMass = BG_Class( victim->client->ps.stats[ STAT_CLASS ] )->mass;
 
 	if ( vicMass <= 0 || entMass <= 0 )
 	{
