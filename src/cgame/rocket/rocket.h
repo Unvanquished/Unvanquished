@@ -89,9 +89,12 @@ struct UnvPropertyId {
 	static Rml::Core::PropertyId Orientation;
 };
 
-#define REGISTER_ELEMENT( tag, clazz ) static std::unique_ptr<Rml::Core::ElementInstancerGeneric< clazz >> instancer_##clazz; \
-	instancer_##clazz.reset( new Rml::Core::ElementInstancerGeneric< clazz >() ); \
-	Rml::Core::Factory::RegisterElementInstancer( tag, instancer_##clazz.get() );
+template <typename T>
+void RegisterElement( char const* tag )
+{
+	static auto instancer = std::make_unique<Rml::Core::ElementInstancerGeneric<T>>();
+	Rml::Core::Factory::RegisterElementInstancer( tag, instancer.get() );
+}
 
 namespace Color {
 
