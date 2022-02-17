@@ -448,7 +448,7 @@ void G_BotThink( gentity_t *self )
 	// ensure we really want to sprint or not
 	self->client->pers.cmd = self->botMind->cmdBuffer;
 	self->botMind->doSprint(
-			BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost,
+			BG_Class( self->client->ps )->staminaJumpCost,
 			self->client->ps.stats[ STAT_STAMINA ],
 			self->client->pers.cmd );
 }

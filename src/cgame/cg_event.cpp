@@ -702,7 +702,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 	}
 	else
 	{
-		steptime = BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->steptime;
+		steptime = BG_Class( cg.snap->ps )->steptime;
 	}
 
 	es = &cent->currentState;

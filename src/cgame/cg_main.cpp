@@ -233,7 +233,7 @@ static void CG_SetPVars()
 
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
-	trap_Cvar_Set( "p_classname", BG_Class( ps->stats[ STAT_CLASS ] )->name );
+	trap_Cvar_Set( "p_classname", BG_Class( *ps )->name );
 
 
 	trap_Cvar_Set( "p_weapon", va( "%d", ps->stats[ STAT_WEAPON ] ) );
@@ -242,7 +242,7 @@ static void CG_SetPVars()
 	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
 
 	trap_Cvar_Set( "p_hp", va( "%d", ps->stats[ STAT_HEALTH ] ) );
-	trap_Cvar_Set( "p_maxhp", va( "%d", BG_Class( ps->stats[ STAT_CLASS ] )->health ) );
+	trap_Cvar_Set( "p_maxhp", va( "%d", BG_Class( *ps )->health ) );
 	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 

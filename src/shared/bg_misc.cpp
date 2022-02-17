@@ -315,8 +315,16 @@ const classAttributes_t *BG_ClassByName( const char *name )
 BG_Class
 ==============
 */
+
 const classAttributes_t *BG_Class( int pClass )
 {
+	return ( pClass >= PCL_NONE && pClass < PCL_NUM_CLASSES ) ?
+	       &bg_classList[ pClass ] : &nullClass;
+}
+
+const classAttributes_t *BG_Class( playerState_t const& ps )
+{
+	int pClass = ps.stats[ STAT_CLASS ];
 	return ( pClass >= PCL_NONE && pClass < PCL_NUM_CLASSES ) ?
 	       &bg_classList[ pClass ] : &nullClass;
 }
@@ -1827,7 +1835,7 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 	ProjectPointOnPlane( forward, aimDir, playerNormal );
 	VectorNormalize( forward );
 
-	buildDist = BG_Class( ps->stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+	buildDist = BG_Class( *ps )->buildDist * DotProduct( forward, aimDir );
 
 	VectorMA( playerOrigin, buildDist, forward, entityOrigin );
 
@@ -1879,7 +1887,7 @@ int BG_GetPlayerPrice( playerState_t &ps )
 		}
 
 		case TEAM_ALIENS:
-			return BG_Class( ps.stats[ STAT_CLASS ] )->price;
+			return BG_Class( ps )->price;
 
 		default:
 			return 0;

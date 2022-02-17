@@ -345,8 +345,8 @@ static void PM_Friction()
 			// if getting knocked back, no friction
 			if ( !( pm->ps->pm_flags & PMF_TIME_KNOCKBACK ) )
 			{
-				float stopSpeed = BG_Class( pm->ps->stats[ STAT_CLASS ] )->stopSpeed;
-				float friction = BG_Class( pm->ps->stats[ STAT_CLASS ] )->friction;
+				float stopSpeed = BG_Class( *pm->ps )->stopSpeed;
+				float friction = BG_Class( *pm->ps )->friction;
 
 				if ( pm->ps->stats[ STAT_STATE ] & SS_SLIDING )
 				{
@@ -455,7 +455,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 	float modifier = 1.0f;
 	int   staminaJumpCost;
 
-	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+	staminaJumpCost = BG_Class( *pm->ps )->staminaJumpCost;
 
 	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
@@ -516,7 +516,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		// TODO: Try to move code upwards so sprinting isn't activated in the first place.
 		if ( sprint && !usercmdButtonPressed( cmd->buttons, BTN_WALKING ) )
 		{
-			modifier *= BG_Class( pm->ps->stats[ STAT_CLASS ] )->sprintMod;
+			modifier *= BG_Class( *pm->ps )->sprintMod;
 		}
 		else
 		{
@@ -1108,7 +1108,7 @@ static bool PM_CheckWallJump()
 
 	static const vec3_t  refNormal = { 0.0f, 0.0f, 1.0f };
 
-	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLJUMPER ) )
+	if ( !( BG_Class( *pm->ps )->abilities & SCA_WALLJUMPER ) )
 	{
 		return false;
 	}
@@ -1205,7 +1205,7 @@ static bool PM_CheckWallJump()
 	VectorMA( dir, upFraction, refNormal, dir );
 	VectorNormalize( dir );
 
-	VectorMA( pm->ps->velocity, BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude,
+	VectorMA( pm->ps->velocity, BG_Class( *pm->ps )->jumpMagnitude,
 	          dir, pm->ps->velocity );
 
 	//for a long run of wall jumps the velocity can get pretty large, this caps it
@@ -1232,9 +1232,9 @@ static bool PM_CheckWallRun()
 {
 	trace_t trace;
 
-	float jumpMag = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+	float jumpMag = BG_Class( *pm->ps )->jumpMagnitude;
 
-	if ( !( BG_Class( pm->ps->stats[ STAT_CLASS ] )->abilities & SCA_WALLRUNNER ) )
+	if ( !( BG_Class( *pm->ps )->abilities & SCA_WALLRUNNER ) )
 		return false;
 
 	// can't wallrun when firing jetpack
@@ -1369,7 +1369,7 @@ static bool PM_CheckJetpack()
 		// (1) fall speed bigger than sideways speed (not strafe jumping)
 		// (2) fall speed bigger than jump magnitude (not jumping up and down on solid ground)
 		if ( ( pm->ps->pm_flags & PMF_JUMPED ) && !( -pm->ps->velocity[ 2 ] > sideVelocity &&
-		     -pm->ps->velocity[ 2 ] > BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude ) )
+		     -pm->ps->velocity[ 2 ] > BG_Class( *pm->ps )->jumpMagnitude ) )
 		{
 			// require the jump key to be held since the jump
 			if ( !( pm->ps->pm_flags & PMF_JUMP_HELD ) )
@@ -1557,7 +1557,7 @@ static bool PM_CheckJump()
 	}
 
 	// needs jump ability
-	if ( BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude <= 0.0f )
+	if ( BG_Class( *pm->ps )->jumpMagnitude <= 0.0f )
 	{
 		return false;
 	}
@@ -1590,7 +1590,7 @@ static bool PM_CheckJump()
 		return false;
 	}
 
-	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+	staminaJumpCost = BG_Class( *pm->ps )->staminaJumpCost;
 	jetpackJump     = false;
 
 	// humans need stamina or jetpack to jump
@@ -1635,7 +1635,7 @@ static bool PM_CheckJump()
 	BG_GetClientNormal( pm->ps, normal );
 
 	// retrieve jump magnitude
-	magnitude = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+	magnitude = BG_Class( *pm->ps )->jumpMagnitude;
 
 	// if jetpack is active or being used for the jump, scale down jump magnitude
 	if ( jetpackJump || pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
@@ -1891,7 +1891,7 @@ static void PM_AirMove()
 
 	// not on ground, so little effect on velocity
 	PM_Accelerate( wishdir, wishspeed,
-	               BG_Class( pm->ps->stats[ STAT_CLASS ] )->airAcceleration );
+	               BG_Class( *pm->ps )->airAcceleration );
 
 	// we may have a ground plane that is very steep, even
 	// though we don't have a groundentity
@@ -3355,7 +3355,7 @@ static void PM_Footsteps()
 		}
 	}
 
-	classAttributes_t const* pcl = BG_Class( pm->ps->stats[ STAT_CLASS ] );
+	classAttributes_t const* pcl = BG_Class( *pm->ps );
 	bobmove *= pcl->bobCycle;
 
 	if ( pm->ps->stats[ STAT_STATE ] & SS_SPEEDBOOST && pm->ps->groundEntityNum != ENTITYNUM_NONE )
@@ -5249,7 +5249,7 @@ void Slide( vec3_t wishdir, float wishspeed, playerState_t &ps )
 	// when a player gets hit, they temporarily lose
 	// full control, which allows them to be moved a bit
 	bool slid = ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || ps.pm_flags & PMF_TIME_KNOCKBACK;
-	classAttributes_t const* pcl = BG_Class( ps.stats[ STAT_CLASS ] );
+	classAttributes_t const* pcl = BG_Class( ps );
 	accelerate = slid ? pcl->airAcceleration : pcl->acceleration;
 	PM_Accelerate( wishdir, wishspeed, accelerate );
 

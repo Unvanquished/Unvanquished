@@ -30,7 +30,7 @@ void KnockbackComponent::HandleDamage(float amount, gentity_t* /*source*/, Util:
 	if (client->noclip) return;
 	if (client->sess.spectatorState != SPECTATOR_NOT) return;
 
-	float mass = (float)BG_Class(client->ps.stats[ STAT_CLASS ])->mass;
+	float mass = (float)BG_Class(client->ps)->mass;
 
 	if (mass <= 0.0f) {
 		knockbackLogger.Warn("Attempt to do knockback against target with no mass, assuming normal mass.");

@@ -355,7 +355,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	int       lowMsec = 0;
 	int       highMsec = ( int )( (
 	                                ( ( distanceToTarget * LOCKBLOB_SPEED ) +
-	                                  ( distanceToTarget * BG_Class( target->client->ps.stats[ STAT_CLASS ] )->speed ) ) /
+	                                  ( distanceToTarget * BG_Class( target->client->ps )->speed ) ) /
 	                                ( LOCKBLOB_SPEED * LOCKBLOB_SPEED ) ) * 1000.0f );
 
 	VectorScale( target->acceleration, 1.0f / 2.0f, halfAcceleration );
@@ -2060,7 +2060,7 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	AngleVectors( ent->client->ps.viewangles, aimDir, nullptr, nullptr );
 	ProjectPointOnPlane( forward, aimDir, normal );
 	VectorNormalize( forward );
-	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+	dist = BG_Class( ent->client->ps )->buildDist * DotProduct( forward, aimDir );
 
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{

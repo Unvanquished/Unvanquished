@@ -1616,7 +1616,7 @@ void CG_Rocket_BuildAlienEvolveList( const char *table )
 			price = static_cast<float>( BG_ClassEvolveInfoFromTo(
 						cg.predictedPlayerState.stats[ STAT_CLASS ], i ).evolveCost );
 			if( price < 0.0f ){
-				price *= (( float ) cg.predictedPlayerState.stats[ STAT_HEALTH ] / ( float ) BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->health ) * DEVOLVE_RETURN_FRACTION;
+				price *= (( float ) cg.predictedPlayerState.stats[ STAT_HEALTH ] / ( float ) BG_Class( cg.predictedPlayerState )->health ) * DEVOLVE_RETURN_FRACTION;
 			}
 			Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 			Info_SetValueForKey( buf, "name", BG_ClassModelConfig( i )->humanName, false );

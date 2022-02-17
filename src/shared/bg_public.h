@@ -1508,6 +1508,7 @@ void                        BG_BuildableBoundingBox( int buildable, vec3_t mins,
 const classAttributes_t     *BG_ClassByName( const char *name );
 
 const classAttributes_t     *BG_Class( int pClass );
+const classAttributes_t     *BG_Class( playerState_t const& );
 
 classModelConfig_t          *BG_ClassModelConfigByName( const char * );
 

@@ -301,7 +301,7 @@ bool BotJump( gentity_t *self )
 {
 	if ( self->client->pers.team == TEAM_HUMANS )
 	{
-		int staminaJumpCost = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost;
+		int staminaJumpCost = BG_Class( self->client->ps )->staminaJumpCost;
 
 		if ( self->client->ps.stats[STAT_STAMINA] < staminaJumpCost )
 		{
@@ -406,7 +406,7 @@ bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 		return false;
 	}
 
-	jumpMagnitude = BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->jumpMagnitude;
+	jumpMagnitude = BG_Class( self->client->ps )->jumpMagnitude;
 
 	//find the actual height of our jump
 	jumpMagnitude = Square( jumpMagnitude ) / ( self->client->ps.gravity * 2 );

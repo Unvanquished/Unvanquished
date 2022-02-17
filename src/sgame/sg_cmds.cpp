@@ -3417,7 +3417,7 @@ void Cmd_Build_f( gentity_t *ent )
 		ProjectPointOnPlane( forward, aimDir, normal);
 		VectorNormalize( forward );
 
-		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+		dist = BG_Class( ent->client->ps )->buildDist * DotProduct( forward, aimDir );
 
 		reason = G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum );
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE | SB_BUILDABLE_FROM_IBE( reason );

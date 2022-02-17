@@ -238,8 +238,8 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	}
 
 	// Shove force is scaled by relative mass
-	entMass = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->mass;
-	vicMass = BG_Class( victim->client->ps.stats[ STAT_CLASS ] )->mass;
+	entMass = BG_Class( ent->client->ps )->mass;
+	vicMass = BG_Class( victim->client->ps )->mass;
 
 	if ( vicMass <= 0 || entMass <= 0 )
 	{
@@ -900,7 +900,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 					ProjectPointOnPlane( forward, aimDir, normal );
 					VectorNormalize( forward );
 
-					dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+					dist = BG_Class( ent->client->ps )->buildDist * DotProduct( forward, aimDir );
 
 					client->ps.stats[ STAT_BUILDABLE ] &= ~SB_BUILDABLE_STATE_MASK;
 					client->ps.stats[ STAT_BUILDABLE ] |= SB_BUILDABLE_FROM_IBE( G_CanBuild( ent, buildable, dist, dummy, dummy2, &dummy3 ) );
@@ -1000,7 +1000,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		if ( client->pers.team == TEAM_ALIENS &&
 		     level.surrenderTeam == TEAM_ALIENS )
 		{
-			ent->entity->Damage((float)BG_Class(client->ps.stats[STAT_CLASS])->regenRate,
+			ent->entity->Damage((float)BG_Class(client->ps)->regenRate,
 			                    nullptr, Util::nullopt, Util::nullopt, DAMAGE_PURE, MOD_SUICIDE);
 		}
 		else if ( client->pers.team == TEAM_HUMANS &&
@@ -1687,7 +1687,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		return;
 	}
 
-	regenBaseRate = BG_Class( client->ps.stats[ STAT_CLASS ] )->regenRate;
+	regenBaseRate = BG_Class( client->ps )->regenRate;
 
 	if ( regenBaseRate <= 0 )
 	{
@@ -1965,7 +1965,7 @@ void ClientThink_real( gentity_t *self )
 	else
 	{
 		client->ps.speed = g_speed.Get() *
-		                   BG_Class( client->ps.stats[ STAT_CLASS ] )->speed;
+		                   BG_Class( client->ps )->speed;
 	}
 
 	// unset creepslowed flag if it's time

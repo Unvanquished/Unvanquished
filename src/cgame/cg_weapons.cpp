@@ -1288,7 +1288,7 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 	filter.SetWidth( 350 );
 
 	// bobbing
-	if( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob )
+	if( BG_Class( cg.predictedPlayerState )->bob )
 	{
 		// on odd legs, invert some angles
 		float scale = ( cg.bobcycle & 1 ? -1 : 1 ) * cg.xyspeed;

@@ -545,7 +545,7 @@ static void CG_StepOffset()
 
 	BG_GetClientNormal( ps, normal );
 
-	steptime = BG_Class( ps->stats[ STAT_CLASS ] )->steptime;
+	steptime = BG_Class( *ps )->steptime;
 
 	// smooth out stair climbing
 	timeDelta = cg.time - cg.stepTime;
@@ -660,7 +660,7 @@ void CG_OffsetFirstPersonView()
 	}
 	else
 	{
-		bob2 = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob;
+		bob2 = BG_Class( cg.predictedPlayerState )->bob;
 	}
 
 #define LEVEL4_FEEDBACK 10.0f
@@ -931,13 +931,13 @@ static int CG_CalcFov()
 	else
 	{
 		// don't lock the fov globally - we need to be able to change it
-		if ( ( attribFov = trap_Cvar_VariableValue( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fovCvar ) ) != 0.0f )
+		if ( ( attribFov = trap_Cvar_VariableValue( BG_Class( cg.predictedPlayerState )->fovCvar ) ) != 0.0f )
 		{
 			attribFov = Math::Clamp( attribFov, 80.0f, 140.0f );
 		}
 		else
 		{
-			attribFov = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fov;
+			attribFov = BG_Class( cg.predictedPlayerState )->fov;
 		}
 		attribFov *= 0.75;
 		fov_y = Math::Clamp( attribFov, 1.0f, MAX_FOV_Y );
