@@ -342,14 +342,13 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 			ClientShove( ent, other );
 
 			//bot should get pushed out the way
-			if( (other->r.svFlags & SVF_BOT) && ent->client->pers.team == other->client->pers.team)
+			if( ( other->r.svFlags & SVF_BOT ) && G_OnSameTeam( ent, other ) )
 			{
 				PushBot(ent, other);
 			}
 
 			// if we are standing on their head, then we should be pushed also
-			if( (ent->r.svFlags & SVF_BOT) && ent->s.groundEntityNum == other->s.number &&
-			    other->client && ent->client->pers.team == other->client->pers.team)
+			if( ( ent->r.svFlags & SVF_BOT ) && G_OnSameTeam( ent, other ) && ent->s.groundEntityNum == other->s.number && other->client )
 			{
 				PushBot(other, ent);
 			}
