@@ -231,8 +231,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	}
 
 	// Cannot push enemy players unless they are walking on the player
-	if ( !G_OnSameTeam( ent, victim ) &&
-	     victim->client->ps.groundEntityNum != ent - g_entities )
+	if ( !G_OnSameTeam( ent, victim ) && ent->s.groundEntityNum != victim->s.number )
 	{
 		return;
 	}
