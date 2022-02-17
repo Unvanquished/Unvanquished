@@ -483,14 +483,14 @@ MACHINEGUN
 ======================================================================
 */
 
-static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeath_t mod, int other )
+static void FireBullet( gentity_t *self, int spread, int damage, meansOfDeath_t mod, int other )
 {
 	trace_t   tr;
 	vec3_t    end;
 	gentity_t *target;
 
 	VectorMA( muzzle, 8192 * 16, forward, end );
-	if ( spread > 0.f )
+	if ( spread )
 	{
 		float r = random() * M_PI * 2.0f;
 		float u = sinf( r ) * crandom() * spread * 16;
@@ -1611,7 +1611,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MACHINEGUN:
-					FireBullet( self, RIFLE_SPREAD, (float)RIFLE_DMG, MOD_MACHINEGUN, false );
+					FireBullet( self, RIFLE_SPREAD, RIFLE_DMG, MOD_MACHINEGUN, false );
 					break;
 
 				case WP_SHOTGUN:
@@ -1619,7 +1619,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_CHAINGUN:
-					FireBullet( self, CHAINGUN_SPREAD, (float)CHAINGUN_DMG, MOD_CHAINGUN, false );
+					FireBullet( self, CHAINGUN_SPREAD, CHAINGUN_DMG, MOD_CHAINGUN, false );
 					break;
 
 				case WP_FLAMER:
@@ -1631,7 +1631,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MASS_DRIVER:
-					FireBullet( self, 0.f, (float)MDRIVER_DMG, MOD_MDRIVER, DAMAGE_KNOCKBACK );
+					FireBullet( self, 0, MDRIVER_DMG, MOD_MDRIVER, DAMAGE_KNOCKBACK );
 					break;
 
 				case WP_LUCIFER_CANNON:
@@ -1639,7 +1639,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_LAS_GUN:
-					FireBullet( self, 0.f, LASGUN_DAMAGE, MOD_LASGUN, 0 );
+					FireBullet( self, 0, LASGUN_DAMAGE, MOD_LASGUN, 0 );
 					break;
 
 				case WP_PAIN_SAW:
