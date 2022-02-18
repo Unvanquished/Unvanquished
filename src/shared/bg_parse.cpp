@@ -61,24 +61,19 @@ struct configVar_t
 // Alien weapons
 
 int   ABUILDER_CLAW_DMG;
-float ABUILDER_CLAW_RANGE;
 float ABUILDER_CLAW_WIDTH;
 float ABUILDER_BLOB_SPEED;
 float ABUILDER_BLOB_SPEED_MOD;
 int   ABUILDER_BLOB_TIME;
 
 int   LEVEL0_BITE_DMG;
-float LEVEL0_BITE_RANGE;
 float LEVEL0_BITE_WIDTH;
 int   LEVEL0_BITE_REPEAT;
 
 int   LEVEL1_CLAW_DMG;
-float LEVEL1_CLAW_RANGE;
 float LEVEL1_CLAW_WIDTH;
 
 int   LEVEL2_CLAW_DMG;
-float LEVEL2_CLAW_RANGE;
-float LEVEL2_CLAW_U_RANGE;
 float LEVEL2_CLAW_WIDTH;
 int   LEVEL2_AREAZAP_DMG;
 float LEVEL2_AREAZAP_RANGE;
@@ -89,8 +84,6 @@ int   LEVEL2_AREAZAP_TIME;
 float LEVEL2_WALLJUMP_MAXSPEED;
 
 int   LEVEL3_CLAW_DMG;
-float LEVEL3_CLAW_RANGE;
-float LEVEL3_CLAW_UPG_RANGE;
 float LEVEL3_CLAW_WIDTH;
 int   LEVEL3_POUNCE_DMG;
 float LEVEL3_POUNCE_RANGE;
@@ -109,7 +102,6 @@ int   LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
 int   LEVEL3_BOUNCEBALL_REGEN_CREEP;
 
 int   LEVEL4_CLAW_DMG;
-float LEVEL4_CLAW_RANGE;
 float LEVEL4_CLAW_WIDTH;
 float LEVEL4_CLAW_HEIGHT;
 int   LEVEL4_TRAMPLE_DMG;
@@ -133,7 +125,6 @@ int   RIFLE_SPREAD;
 int   RIFLE_DMG;
 
 int   PAINSAW_DAMAGE;
-float PAINSAW_RANGE;
 float PAINSAW_WIDTH;
 float PAINSAW_HEIGHT;
 
@@ -181,7 +172,6 @@ static configVar_t bg_configVars[] =
 	{"w_abuild_blobSpeed", FLOAT, false, &ABUILDER_BLOB_SPEED},
 	{"w_abuild_blobSpeedMod", FLOAT, false, &ABUILDER_BLOB_SPEED_MOD},
 	{"w_abuild_clawDmg", INTEGER, false, &ABUILDER_CLAW_DMG},
-	{"w_abuild_clawRange", FLOAT, false, &ABUILDER_CLAW_RANGE},
 	{"w_abuild_clawWidth", FLOAT, false, &ABUILDER_CLAW_WIDTH},
 
 	{"w_blaster_speed", INTEGER, false, &BLASTER_SPEED },
@@ -209,15 +199,12 @@ static configVar_t bg_configVars[] =
 	{"w_lcannon_speed", INTEGER, false, &LCANNON_SPEED },
 
 	{"w_level0_biteDmg", INTEGER, false, &LEVEL0_BITE_DMG},
-	{"w_level0_biteRange", FLOAT, false, &LEVEL0_BITE_RANGE},
 	{"w_level0_biteRepeat", INTEGER, false, &LEVEL0_BITE_REPEAT},
 	{"w_level0_biteWidth", FLOAT, false, &LEVEL0_BITE_WIDTH},
 
 	{"w_level1_clawDmg", INTEGER, false, &LEVEL1_CLAW_DMG},
-	{"w_level1_clawRange", FLOAT, false, &LEVEL1_CLAW_RANGE},
 	{"w_level1_clawWidth", FLOAT, false, &LEVEL1_CLAW_WIDTH},
 
-	{"w_level2upg_clawRange", FLOAT, false, &LEVEL2_CLAW_U_RANGE},
 	{"w_level2upg_zapChainFalloff", FLOAT, false, &LEVEL2_AREAZAP_CHAIN_FALLOFF},
 	{"w_level2upg_zapChainRange", FLOAT, false, &LEVEL2_AREAZAP_CHAIN_RANGE},
 	{"w_level2upg_zapDmg", INTEGER, false, &LEVEL2_AREAZAP_DMG},
@@ -226,7 +213,6 @@ static configVar_t bg_configVars[] =
 	{"w_level2upg_zapWidth", FLOAT, false, &LEVEL2_AREAZAP_WIDTH},
 
 	{"w_level2_clawDmg", INTEGER, false, &LEVEL2_CLAW_DMG},
-	{"w_level2_clawRange", FLOAT, false, &LEVEL2_CLAW_RANGE},
 	{"w_level2_clawWidth", FLOAT, false, &LEVEL2_CLAW_WIDTH},
 	{"w_level2_maxWalljumpSpeed", FLOAT, false, &LEVEL2_WALLJUMP_MAXSPEED},
 
@@ -234,13 +220,11 @@ static configVar_t bg_configVars[] =
 	{"w_level3upg_ballRegenBooster", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN_BOOSTER},
 	{"w_level3upg_ballRegenCreep", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN_CREEP},
 	{"w_level3upg_ballSpeed", FLOAT, false, &LEVEL3_BOUNCEBALL_SPEED},
-	{"w_level3upg_clawRange", FLOAT, false, &LEVEL3_CLAW_UPG_RANGE},
 	{"w_level3upg_pounceDuration", INTEGER, false, &LEVEL3_POUNCE_TIME_UPG},
 	{"w_level3upg_pounceJumpMagnitude", INTEGER, false, &LEVEL3_POUNCE_JUMP_MAG_UPG},
 	{"w_level3upg_pounceRange", FLOAT, false, &LEVEL3_POUNCE_UPG_RANGE},
 
 	{"w_level3_clawDmg", INTEGER, false, &LEVEL3_CLAW_DMG},
-	{"w_level3_clawRange", FLOAT, false, &LEVEL3_CLAW_RANGE},
 	{"w_level3_clawWidth", FLOAT, false, &LEVEL3_CLAW_WIDTH},
 	{"w_level3_pounceDmg", INTEGER, false, &LEVEL3_POUNCE_DMG},
 	{"w_level3_pounceDuration", INTEGER, false, &LEVEL3_POUNCE_TIME},
@@ -253,7 +237,6 @@ static configVar_t bg_configVars[] =
 
 	{"w_level4_clawDmg", INTEGER, false, &LEVEL4_CLAW_DMG},
 	{"w_level4_clawHeight", FLOAT, false, &LEVEL4_CLAW_HEIGHT},
-	{"w_level4_clawRange", FLOAT, false, &LEVEL4_CLAW_RANGE},
 	{"w_level4_clawWidth", FLOAT, false, &LEVEL4_CLAW_WIDTH},
 	{"w_level4_trampleChargeMax", INTEGER, false, &LEVEL4_TRAMPLE_CHARGE_MAX},
 	{"w_level4_trampleChargeMin", INTEGER, false, &LEVEL4_TRAMPLE_CHARGE_MIN},
@@ -272,7 +255,6 @@ static configVar_t bg_configVars[] =
 
 	{"w_psaw_damage", INTEGER, false, &PAINSAW_DAMAGE },
 	{"w_psaw_height", FLOAT, false, &PAINSAW_HEIGHT },
-	{"w_psaw_range", FLOAT, false, &PAINSAW_RANGE },
 	{"w_psaw_width", FLOAT, false, &PAINSAW_WIDTH },
 
 	{"w_rifle_damage", INTEGER, false, &RIFLE_DMG },
@@ -1603,7 +1585,8 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		RATE = 1 << 4,
 		AMMO = 1 << 5,
 		TEAM = 1 << 6,
-		UNLOCKTHRESHOLD = 1 << 7
+		UNLOCKTHRESHOLD = 1 << 7,
+		RANGE = 1 << 8,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1753,6 +1736,16 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
+		}
+		else if ( false
+				|| !Q_stricmp( token, "range" )
+				|| !Q_stricmp( token, "biteRange" )
+				|| !Q_stricmp( token, "clawRange" )
+				)
+		{
+			PARSE( text, token );
+			wa->range = atoi( token );
+			defined |= RANGE;
 		}
 		else
 		{
@@ -1948,7 +1941,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		BOUNCE_HALF           = 1 << 12,
 		BOUNCE_NO_SOUND       = 1 << 13,
 		KNOCKBACK             = 1 << 14,
-		LOCATIONAL_DAMAGE     = 1 << 15
+		LOCATIONAL_DAMAGE     = 1 << 15,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -2052,6 +2045,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 			ma->doLocationalDamage = true;
 			defined |= LOCATIONAL_DAMAGE;
 		}
+
 		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );

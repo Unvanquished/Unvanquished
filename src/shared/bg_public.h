@@ -1386,6 +1386,7 @@ struct weaponAttributes_t : public itemAttributes_t
 
 	bool     canZoom;
 	float    zoomFov;
+	float    range;
 	bool     longRanged;
 };
 

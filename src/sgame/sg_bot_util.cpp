@@ -1072,11 +1072,13 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 {
 	ASSERT( target.targetsValidEntity() );
 
-	float range, secondaryRange;
+	float range = BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range;
+	float secondaryRange;
 	glm::vec3 forward, right, up;
 	glm::vec3 muzzle;
 	glm::vec3 maxs, mins;
 	glm::vec3 targetPos;
+
 	trace_t trace;
 	float width = 0, height = 0;
 
@@ -1086,45 +1088,36 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	switch ( self->client->ps.weapon )
 	{
 		case WP_ABUILD:
-			range = ABUILDER_CLAW_RANGE;
 			secondaryRange = 0;
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ABUILD2:
-			range = ABUILDER_CLAW_RANGE;
 			secondaryRange = 300; //An arbitrary value for the blob launcher, has nothing to do with actual range
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL0:
-			range = LEVEL0_BITE_RANGE;
 			secondaryRange = 0;
 			break;
 		case WP_ALEVEL1:
-			range = LEVEL1_CLAW_RANGE;
 			secondaryRange = LEVEL1_POUNCE_DISTANCE;
 			width = height = LEVEL1_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2:
-			range = LEVEL2_CLAW_RANGE;
 			secondaryRange = 0;
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2_UPG:
-			range = LEVEL2_CLAW_U_RANGE;
 			secondaryRange = LEVEL2_AREAZAP_RANGE;
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3:
-			range = LEVEL3_CLAW_RANGE;
-			// We could check if the pounce to the target would succeed
+			// need to check if we can pounce to the target
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG; // An arbitrary value for pounce, has nothing to do with actual range
 			width = height = LEVEL3_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3_UPG:
-			range = LEVEL3_CLAW_RANGE;
-			// If we can pounce
+			// we can pounce, or we have barbs
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; // An arbitrary value for pounce and barbs, has nothing to do with actual range
-			// If we have barbs, even better
 			if ( self->client->ps.ammo > 0 )
 			{
 				secondaryRange = 900;
@@ -1132,7 +1125,6 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			width = height = LEVEL3_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL4:
-			range = LEVEL4_CLAW_RANGE;
 			secondaryRange = 0; //Using 0 since tyrant rush is basically just movement, not a ranged attack
 			width = height = LEVEL4_CLAW_WIDTH;
 			break;
@@ -1141,8 +1133,6 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_PAIN_SAW:
-			// Start running the saw when an alien is closeby, not literally in range
-			range = PAINSAW_RANGE + 60;
 			secondaryRange = 0;
 			break;
 		case WP_FLAMER:
@@ -1814,25 +1804,30 @@ float CalcBarbAimPitch( gentity_t *self, glm::vec3 &targetPos )
 
 void BotFireWeaponAI( gentity_t *self )
 {
+	ASSERT( self && self->client && self->client );
+
 	float distance;
 	glm::vec3 forward, right, up;
 	glm::vec3 muzzle;
 	trace_t trace;
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	playerState_t const& ps = self->client->ps;
 
 	BotResetStuckTime( self );
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+	AngleVectors( VEC2GLM( ps.viewangles ), &forward, &right, &up );
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 
 	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
-	bool readyFire = self->client->ps.IsWeaponReady();
+	bool readyFire = ps.IsWeaponReady();
 	glm::vec3 target = self->botMind->goal.getPos();
+
+	float range = BG_Weapon( BG_PrimaryWeapon( ps.stats ) )->range;
 	switch ( self->s.weapon )
 	{
 		case WP_ABUILD:
-			if ( distance <= ABUILDER_CLAW_RANGE )
+			if ( distance <= range )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 			}
@@ -1842,7 +1837,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ABUILD2:
-			if ( distance <= ABUILDER_CLAW_RANGE )
+			if ( distance <= range )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );    //swipe
 			}
@@ -1854,11 +1849,11 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL0:
 			break; //auto hit
 		case WP_ALEVEL1:
-			if ( distance < LEVEL1_CLAW_RANGE && readyFire )
+			if ( distance < range && readyFire )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
-			else if ( self->client->ps.weaponCharge == 0 )
+			else if ( ps.weaponCharge == 0 )
 			{
 				BotMoveInDir( self, MOVE_FORWARD );
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
@@ -1868,7 +1863,7 @@ void BotFireWeaponAI( gentity_t *self )
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mara swipe
 			break;
 		case WP_ALEVEL2_UPG:
-			if ( distance <= LEVEL2_CLAW_U_RANGE )
+			if ( distance <= range )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //mara swipe
 			}
@@ -1878,7 +1873,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3:
-			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			if ( distance > range && ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1891,7 +1886,7 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL3_UPG:
 		{
 			bool hasBarbs = self->client->ps.ammo > 0;
-			bool outOfClawsRange = distance > LEVEL3_CLAW_UPG_RANGE;
+			bool outOfClawsRange = distance > range;
 
 			// We add some protection for barbs so that bots don't
 			// barb themselves too easily. The safety factor
@@ -1920,7 +1915,7 @@ void BotFireWeaponAI( gentity_t *self )
 					BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 				}
 			}
-			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			else if ( distance > range && ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1932,7 +1927,7 @@ void BotFireWeaponAI( gentity_t *self )
 			break;
 		}
 		case WP_ALEVEL4:
-			if ( distance > LEVEL4_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL4_TRAMPLE_CHARGE_MAX )
+			if ( distance > range && ps.weaponCharge < LEVEL4_TRAMPLE_CHARGE_MAX )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );    //rant charge
 			}
@@ -1942,6 +1937,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_LUCIFER_CANNON:
+			if ( ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Math::Clamp( random(), 0.5f, 1.0f ) )
 			{
 				const int CRITICAL_HEALTH = 30; //TODO do not use a constant
 				int selfHP = self->client->ps.stats[ STAT_HEALTH ];
