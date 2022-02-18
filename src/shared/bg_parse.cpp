@@ -69,7 +69,6 @@ int   ABUILDER_BLOB_TIME;
 int		ABUILDER_BLOB_LOCK_TIME;
 
 int   LEVEL0_BITE_DMG;
-float LEVEL0_BITE_RANGE;
 float LEVEL0_BITE_WIDTH;
 int   LEVEL0_BITE_REPEAT;
 
@@ -232,7 +231,6 @@ static configVar_t bg_configVars[] =
 	{"w_lcannon_speed", INTEGER, false, &LCANNON_SPEED },
 
 	{"w_level0_biteDmg", INTEGER, false, &LEVEL0_BITE_DMG},
-	{"w_level0_biteRange", FLOAT, false, &LEVEL0_BITE_RANGE},
 	{"w_level0_biteRepeat", INTEGER, false, &LEVEL0_BITE_REPEAT},
 	{"w_level0_biteWidth", FLOAT, false, &LEVEL0_BITE_WIDTH},
 

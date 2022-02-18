@@ -1111,7 +1111,6 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL0:
-			range = LEVEL0_BITE_RANGE;
 			secondaryRange = 0;
 			break;
 		case WP_ALEVEL1:

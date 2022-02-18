@@ -1070,7 +1070,7 @@ bool G_CheckDretchAttack( gentity_t *self )
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 
-	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
+	G_WideTrace( &tr, self, BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
 	if ( !Entities::IsAlive( traceEnt )
 			|| G_OnSameTeam( self, traceEnt )

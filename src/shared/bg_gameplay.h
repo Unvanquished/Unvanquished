@@ -48,7 +48,6 @@ extern int   ABUILDER_BLOB_LOCK_TIME;
 extern int   ABUILDER_BLOB_TIME;
 
 extern int   LEVEL0_BITE_DMG;
-extern float LEVEL0_BITE_RANGE;
 extern float LEVEL0_BITE_WIDTH;
 extern int   LEVEL0_BITE_REPEAT;
 
