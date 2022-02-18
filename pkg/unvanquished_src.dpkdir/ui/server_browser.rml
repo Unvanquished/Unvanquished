@@ -7,10 +7,11 @@
 
 			/* Overall division into two halves */
 			tabs {
-				width: 8em;
+				width: 10%;
 			}
+
 			panel {
-				width: 55em;
+				width: 90%;
 			}
 
 			/* Datagrid for server list */
