@@ -61,7 +61,6 @@ struct configVar_t
 // Alien weapons
 
 int   ABUILDER_CLAW_DMG;
-float ABUILDER_CLAW_RANGE;
 float ABUILDER_CLAW_WIDTH;
 int   ABUILDER_BLOB_DMG;
 float ABUILDER_BLOB_SPEED;
@@ -198,7 +197,6 @@ static configVar_t bg_configVars[] =
 	{"w_abuild_blobSpeed", FLOAT, false, &ABUILDER_BLOB_SPEED},
 	{"w_abuild_blobSpeedMod", FLOAT, false, &ABUILDER_BLOB_SPEED_MOD},
 	{"w_abuild_clawDmg", INTEGER, false, &ABUILDER_CLAW_DMG},
-	{"w_abuild_clawRange", FLOAT, false, &ABUILDER_CLAW_RANGE},
 	{"w_abuild_clawWidth", FLOAT, false, &ABUILDER_CLAW_WIDTH},
 
 	{"w_blaster_damage", INTEGER, false, &BLASTER_DMG },

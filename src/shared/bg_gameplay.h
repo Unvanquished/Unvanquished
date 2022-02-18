@@ -40,7 +40,6 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
  */
 
 extern int   ABUILDER_CLAW_DMG;
-extern float ABUILDER_CLAW_RANGE;
 extern float ABUILDER_CLAW_WIDTH;
 extern int   ABUILDER_BLOB_DMG;
 extern float ABUILDER_BLOB_SPEED;

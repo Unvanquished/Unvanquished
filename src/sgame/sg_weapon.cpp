@@ -930,7 +930,7 @@ static void CancelBuild( gentity_t *self )
 	if ( self->client->ps.weapon == WP_ABUILD ||
 	     self->client->ps.weapon == WP_ABUILD2 )
 	{
-		FireMelee( self, ABUILDER_CLAW_RANGE, ABUILDER_CLAW_WIDTH,
+		FireMelee( self, BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range, ABUILDER_CLAW_WIDTH,
 		             ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW, false, 0 );
 	}
 }

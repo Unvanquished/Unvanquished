@@ -1103,12 +1103,10 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	switch ( self->client->ps.weapon )
 	{
 		case WP_ABUILD:
-			range = ABUILDER_CLAW_RANGE;
 			secondaryRange = 0;
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ABUILD2:
-			range = ABUILDER_CLAW_RANGE;
 			secondaryRange = 300; //An arbitrary value for the blob launcher, has nothing to do with actual range
 			width = height = ABUILDER_CLAW_WIDTH;
 			break;
@@ -1801,7 +1799,7 @@ void BotFireWeaponAI( gentity_t *self )
 	switch ( self->s.weapon )
 	{
 		case WP_ABUILD:
-			if ( distance <= ABUILDER_CLAW_RANGE )
+			if ( distance <= BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 			}
@@ -1811,7 +1809,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ABUILD2:
-			if ( distance <= ABUILDER_CLAW_RANGE )
+			if ( distance <= BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );    //swipe
 			}
