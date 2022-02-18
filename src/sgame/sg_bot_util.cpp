@@ -1126,13 +1126,11 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3:
-			range = LEVEL3_CLAW_RANGE;
 			//need to check if we can pounce to the target
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG; //An arbitrary value for pounce, has nothing to do with actual range
 			width = height = LEVEL3_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3_UPG:
-			range = LEVEL3_CLAW_RANGE;
 			//we can pounce, or we have barbs
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; //An arbitrary value for pounce and barbs, has nothing to do with actual range
 			if ( self->client->ps.ammo > 0 )
@@ -1840,7 +1838,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3:
-			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			if ( distance > BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1851,12 +1849,12 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3_UPG:
-			if ( self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE )
+			if ( self->client->ps.ammo > 0 && distance > BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 			}
-			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			else if ( distance > BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce

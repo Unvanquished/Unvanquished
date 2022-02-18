@@ -86,8 +86,6 @@ int   LEVEL2_AREAZAP_TIME;
 float LEVEL2_WALLJUMP_MAXSPEED;
 
 int   LEVEL3_CLAW_DMG;
-float LEVEL3_CLAW_RANGE;
-float LEVEL3_CLAW_UPG_RANGE;
 float LEVEL3_CLAW_WIDTH;
 int   LEVEL3_POUNCE_DMG;
 float LEVEL3_POUNCE_RANGE;
@@ -249,13 +247,11 @@ static configVar_t bg_configVars[] =
 	{"w_level3upg_ballRegenBooster", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN_BOOSTER},
 	{"w_level3upg_ballRegenCreep", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN_CREEP},
 	{"w_level3upg_ballSpeed", FLOAT, false, &LEVEL3_BOUNCEBALL_SPEED},
-	{"w_level3upg_clawRange", FLOAT, false, &LEVEL3_CLAW_UPG_RANGE},
 	{"w_level3upg_pounceDuration", INTEGER, false, &LEVEL3_POUNCE_TIME_UPG},
 	{"w_level3upg_pounceJumpMagnitude", INTEGER, false, &LEVEL3_POUNCE_JUMP_MAG_UPG},
 	{"w_level3upg_pounceRange", FLOAT, false, &LEVEL3_POUNCE_UPG_RANGE},
 
 	{"w_level3_clawDmg", INTEGER, false, &LEVEL3_CLAW_DMG},
-	{"w_level3_clawRange", FLOAT, false, &LEVEL3_CLAW_RANGE},
 	{"w_level3_clawWidth", FLOAT, false, &LEVEL3_CLAW_WIDTH},
 	{"w_level3_pounceDmg", INTEGER, false, &LEVEL3_POUNCE_DMG},
 	{"w_level3_pounceDuration", INTEGER, false, &LEVEL3_POUNCE_TIME},

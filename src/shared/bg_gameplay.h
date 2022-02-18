@@ -76,8 +76,6 @@ extern float LEVEL2_WALLJUMP_MAXSPEED;
 #define LEVEL2_AREAZAP_MAX_TARGETS 5
 
 extern int   LEVEL3_CLAW_DMG;
-extern float LEVEL3_CLAW_RANGE;
-extern float LEVEL3_CLAW_UPG_RANGE;
 extern float LEVEL3_CLAW_WIDTH;
 extern int   LEVEL3_POUNCE_DMG;
 extern float LEVEL3_POUNCE_RANGE;
