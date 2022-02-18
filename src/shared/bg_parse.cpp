@@ -106,7 +106,6 @@ int   LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
 int   LEVEL3_BOUNCEBALL_REGEN_CREEP;
 
 int   LEVEL4_CLAW_DMG;
-float LEVEL4_CLAW_RANGE;
 float LEVEL4_CLAW_WIDTH;
 float LEVEL4_CLAW_HEIGHT;
 int   LEVEL4_TRAMPLE_DMG;
@@ -264,7 +263,6 @@ static configVar_t bg_configVars[] =
 
 	{"w_level4_clawDmg", INTEGER, false, &LEVEL4_CLAW_DMG},
 	{"w_level4_clawHeight", FLOAT, false, &LEVEL4_CLAW_HEIGHT},
-	{"w_level4_clawRange", FLOAT, false, &LEVEL4_CLAW_RANGE},
 	{"w_level4_clawWidth", FLOAT, false, &LEVEL4_CLAW_WIDTH},
 	{"w_level4_trampleChargeMax", INTEGER, false, &LEVEL4_TRAMPLE_CHARGE_MAX},
 	{"w_level4_trampleChargeMin", INTEGER, false, &LEVEL4_TRAMPLE_CHARGE_MIN},

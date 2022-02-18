@@ -1602,7 +1602,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_ALEVEL4:
-					FireMelee( self, LEVEL4_CLAW_RANGE, LEVEL4_CLAW_WIDTH, LEVEL4_CLAW_HEIGHT,
+					FireMelee( self, BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range, LEVEL4_CLAW_WIDTH, LEVEL4_CLAW_HEIGHT,
 					           LEVEL4_CLAW_DMG, MOD_LEVEL4_CLAW, false, 0 );
 					break;
 

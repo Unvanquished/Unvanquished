@@ -96,7 +96,6 @@ extern int   LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
 extern int   LEVEL3_BOUNCEBALL_REGEN_CREEP;
 
 extern int   LEVEL4_CLAW_DMG;
-extern float LEVEL4_CLAW_RANGE;
 extern float LEVEL4_CLAW_WIDTH;
 extern float LEVEL4_CLAW_HEIGHT;
 extern int   LEVEL4_TRAMPLE_DMG;

@@ -1140,7 +1140,6 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			width = height = LEVEL3_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL4:
-			range = LEVEL4_CLAW_RANGE;
 			secondaryRange = 0; //Using 0 since tyrant rush is basically just movement, not a ranged attack
 			width = height = LEVEL4_CLAW_WIDTH;
 			break;
@@ -1865,7 +1864,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL4:
-			if ( distance > LEVEL4_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL4_TRAMPLE_CHARGE_MAX )
+			if ( distance > BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range && self->client->ps.weaponCharge < LEVEL4_TRAMPLE_CHARGE_MAX )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );    //rant charge
 			}
