@@ -65,8 +65,6 @@ extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_SLOW_MOD               0.75f
 
 extern int   LEVEL2_CLAW_DMG;
-extern float LEVEL2_CLAW_RANGE;
-extern float LEVEL2_CLAW_U_RANGE;
 extern float LEVEL2_CLAW_WIDTH;
 extern int   LEVEL2_AREAZAP_DMG;
 extern float LEVEL2_AREAZAP_RANGE;

@@ -1118,12 +1118,10 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			width = height = LEVEL1_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2:
-			range = LEVEL2_CLAW_RANGE;
 			secondaryRange = 0;
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2_UPG:
-			range = LEVEL2_CLAW_U_RANGE;
 			secondaryRange = LEVEL2_AREAZAP_RANGE;
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
@@ -1833,7 +1831,7 @@ void BotFireWeaponAI( gentity_t *self )
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mara swipe
 			break;
 		case WP_ALEVEL2_UPG:
-			if ( distance <= LEVEL2_CLAW_U_RANGE )
+			if ( distance <= BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //mara swipe
 			}

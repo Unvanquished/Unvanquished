@@ -76,8 +76,6 @@ int   LEVEL1_CLAW_DMG;
 float LEVEL1_CLAW_WIDTH;
 
 int   LEVEL2_CLAW_DMG;
-float LEVEL2_CLAW_RANGE;
-float LEVEL2_CLAW_U_RANGE;
 float LEVEL2_CLAW_WIDTH;
 int   LEVEL2_AREAZAP_DMG;
 float LEVEL2_AREAZAP_RANGE;
@@ -235,7 +233,6 @@ static configVar_t bg_configVars[] =
 	{"w_level1_clawDmg", INTEGER, false, &LEVEL1_CLAW_DMG},
 	{"w_level1_clawWidth", FLOAT, false, &LEVEL1_CLAW_WIDTH},
 
-	{"w_level2upg_clawRange", FLOAT, false, &LEVEL2_CLAW_U_RANGE},
 	{"w_level2upg_zapChainFalloff", FLOAT, false, &LEVEL2_AREAZAP_CHAIN_FALLOFF},
 	{"w_level2upg_zapChainRange", FLOAT, false, &LEVEL2_AREAZAP_CHAIN_RANGE},
 	{"w_level2upg_zapDmg", INTEGER, false, &LEVEL2_AREAZAP_DMG},
@@ -244,7 +241,6 @@ static configVar_t bg_configVars[] =
 	{"w_level2upg_zapWidth", FLOAT, false, &LEVEL2_AREAZAP_WIDTH},
 
 	{"w_level2_clawDmg", INTEGER, false, &LEVEL2_CLAW_DMG},
-	{"w_level2_clawRange", FLOAT, false, &LEVEL2_CLAW_RANGE},
 	{"w_level2_clawWidth", FLOAT, false, &LEVEL2_CLAW_WIDTH},
 	{"w_level2_maxWalljumpSpeed", FLOAT, false, &LEVEL2_WALLJUMP_MAXSPEED},
 
