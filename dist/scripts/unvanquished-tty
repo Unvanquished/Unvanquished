@@ -1,7 +1,0 @@
-#! /usr/bin/env bash
-
-set -e
-
-. '/etc/unvanquished/paths.conf'
-
-exec "${lib_path}/unvanquished-helper" --tty "${@}"

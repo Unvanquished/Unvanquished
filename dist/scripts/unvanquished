@@ -1,7 +1,119 @@
 #! /usr/bin/env bash
 
 set -e
+set -u
 
-. '/etc/unvanquished/paths.conf'
+print_help=false
+enable_gdb=false
+enable_system=false
+program_name="$(basename "${0}")"
 
-exec "${lib_path}/unvanquished-helper" --client "${@}"
+while ! [ -z "${1:-}" ]
+do
+	case "${1}" in
+		'--help'|'-h'|'-?'|'/?')
+			print_help=true
+			break;
+			;;
+		'--gdb')
+			enable_gdb=true
+			shift
+			;;
+		'--system')
+			enable_system=true
+			shift
+			;;
+		'--client')
+			program_name='unvanquished'
+			shift
+			;;
+		'--server')
+			program_name='unvanquished-server'
+			shift
+			;;
+		'--tty')
+			program_name='unvanquished-tty'
+			shift
+			;;
+		*)
+			break
+			;;
+		esac
+done
+
+case "${program_name}" in
+	'unvanquished')
+		daemon_program='daemon'
+		program_desc='Unvanquished game'
+		;;
+	'unvanquished-server')
+		daemon_program='daemonded'
+		program_desc='Unvanquished game server'
+		;;
+	'unvanquished-tty')
+		daemon_program='daemon-tty'
+		program_desc='Unvanquished game console'
+		;;
+esac
+
+if "${print_help}"
+then
+	tab=$'\t'
+
+	cat <<-EOF
+	${program_name}: run ${program_desc}
+
+	Usage: ${program_name} [option]
+
+	Options:
+	${tab}--help          print this help
+	${tab}--client        run Unvanquished game$([ "${program_name}" = 'unvanquished' ] && echo " (default)")
+	${tab}--server        run Unvanquished game server$([ "${program_name}" = 'unvanquished-server' ] && echo " (default)")
+	${tab}--tty           run Unvanquished game console$([ "${program_name}" = 'unvanquished-tty' ] && echo " (default)")
+	${tab}--system        use system Unvanquished home directory
+	${tab}--gdb           run with GDB debugger
+	
+	And other Dæmon engine options like:
+	${tab}-connect <URL>  connect to the given server URL
+	${tab}+exec <FILE>    run the given FILE config script (related to config/ directory)
+	EOF
+
+	exit
+fi
+
+run_gdb=''
+if "${enable_gdb}"
+then
+	shift
+	if command -v gdb >/dev/null
+	then
+		run_gdb='gdb --args'
+	fi
+fi
+
+conf_file='/etc/unvanquished/paths.conf'
+
+if [ -f "${conf_file}" ]
+then
+	. "${conf_file}"
+else
+	lib_path="$(pwd)"
+	pak_path="${lib_path}/pkg"
+	system_home="${lib_path}/home"
+fi
+
+if "${enable_system}"
+then
+	home_path="${system_home}"
+else
+	home_path="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
+
+	migration_script="${lib_path}/unvanquished-migrate-profile"
+
+	if [ -f "${migration_script}" ]
+	then
+		"${migration_script}"
+	fi
+fi
+
+exec ${run_gdb} "${lib_path}/${daemon_program}" -homepath "${home_path}" -libpath "${lib_path}" -pakpath "${pak_path}" "${@}"

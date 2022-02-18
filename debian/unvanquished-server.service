@@ -9,9 +9,9 @@ User=unvanquished-server
 Group=games
 Environment=DAEMON_OPTS= GAME_OPTS=
 EnvironmentFile=-/etc/default/unvanquished-server
-ExecStart=/usr/games/unvanquished-server $DAEMON_OPTS $GAME_OPTS
-ExecReload=/usr/games/unvanquished-server $DAEMON_OPTS $GAME_OPTS
-ExecStop=/usr/games/unvanquished-server +quit
+ExecStart=/usr/games/unvanquished-server --system $DAEMON_OPTS $GAME_OPTS
+ExecReload=/usr/games/unvanquished-server --system $DAEMON_OPTS $GAME_OPTS
+ExecStop=/usr/games/unvanquished-server --system +quit
 
 [Install]
 WantedBy=multi-user.target

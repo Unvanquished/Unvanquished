@@ -3,11 +3,12 @@ Upstream-Name: unvanquished
 Source: http://github.com/Unvanquished/Unvanquished
 
 Files: *
-Copyright: 2011-2013 Unvanquished Development (and others)
+Copyright: 2011-2022 Unvanquished Development (and others)
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2012-2013 Darren Salt <linux@youmustbejoking.demon.co.uk>
+Copyright: 2019-2022 Thomas Debesse <dev@illwieckz.net>
+Copyright: 2012-2013 Darren Salt <devspam@moreofthesa.me.uk>
 License: GPL-3.0+
 
 License: GPL-3.0+

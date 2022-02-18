@@ -18,7 +18,7 @@ git tag | grep '^v' | grep -v last-compat | sort -n -t. -k 2 | grep "${last_tag}
 | while read tag_name
 do
 	version_number="$(echo "${tag_name}" | sed -e 's/^v//')"
-	version_name="$(echo "${version_number}" | sed -e 's/0./alpha /')"
+	version_name="$(echo "${version_number}" | sed -e 's/0./beta /')"
 	commit_author="$(git show "${tag_name}" | grep '^Author:' | sed -e 's/^Author:[\t ]*//')"
 	tagger_author="$(git show "${tag_name}" | grep '^Tagger:' | sed -e 's/^Tagger:[\t ]*//')"
 	tag_date="$(git show "${tag_name}" | grep '^Date:' | head -n 1 | sed -e 's/^Date:[\t ]*//')"

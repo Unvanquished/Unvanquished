@@ -1,7 +1,0 @@
-#! /bin/sh
-
-set -e
-
-. '/etc/unvanquished/paths.conf'
-
-exec "${lib_path}/download-paks" --cache="${system_cache}" "$@" "${pak_path}"
