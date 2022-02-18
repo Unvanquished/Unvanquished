@@ -1380,6 +1380,7 @@ struct weaponAttributes_t
 	bool longRanged;
 
 	team_t   team;
+	float range;
 };
 
 // upgrade record

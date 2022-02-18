@@ -511,7 +511,7 @@ int configVarComparator(const void* a, const void* b)
 	return Q_stricmp(ca->name, cb->name);
 }
 
-configVar_t* BG_FindConfigVar(const char *varName)
+static configVar_t* BG_FindConfigVar(const char *varName)
 {
 	return (configVar_t*) bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
 }
@@ -1625,7 +1625,8 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		RATE = 1 << 4,
 		AMMO = 1 << 5,
 		TEAM = 1 << 6,
-		UNLOCKTHRESHOLD = 1 << 7
+		UNLOCKTHRESHOLD = 1 << 7,
+		RANGE = 1 << 8,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1775,6 +1776,16 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );
+		}
+		else if ( false
+				|| !Q_stricmp( token, "range" )
+				|| !Q_stricmp( token, "biteRange" )
+				|| !Q_stricmp( token, "clawRange" )
+				)
+		{
+			PARSE( text, token );
+			wa->range = atoi( token );
+			defined |= RANGE;
 		}
 		else
 		{
@@ -1963,7 +1974,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		BOUNCE_HALF           = 1 << 12,
 		BOUNCE_NO_SOUND       = 1 << 13,
 		KNOCKBACK             = 1 << 14,
-		LOCATIONAL_DAMAGE     = 1 << 15
+		LOCATIONAL_DAMAGE     = 1 << 15,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -2067,6 +2078,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 			ma->doLocationalDamage = true;
 			defined |= LOCATIONAL_DAMAGE;
 		}
+
 		/*else if( (var = BG_FindConfigVar( va( "m_%s_%s", ma->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );

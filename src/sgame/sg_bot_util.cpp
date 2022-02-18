@@ -1088,7 +1088,8 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 {
 	ASSERT( target.targetsValidEntity() );
 
-	float range, secondaryRange;
+	float range = BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range;
+	float secondaryRange;
 	vec3_t forward, right, up;
 	vec3_t muzzle;
 	vec3_t maxs, mins;
