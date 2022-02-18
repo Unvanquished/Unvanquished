@@ -1,3 +1,21 @@
+unvanquished (0.52.1-1) unstable; urgency=low
+
+  * Release of beta 52.1.
+
+ -- Thomas Debesse <dev@illwieckz.net>  Fri, 18 Jun 2021 20:35:53 +0200
+
+unvanquished (0.52.0-1) unstable; urgency=low
+
+  * Release of beta 52.0.
+
+ -- Thomas Debesse <dev@illwieckz.net>  Fri, 14 May 2021 03:20:28 +0200
+
+unvanquished (0.51.2-1) unstable; urgency=low
+
+  * Release of alpha 51.2.
+
+ -- Thomas Debesse <dev@illwieckz.net>  Sat, 23 Jan 2021 03:27:08 +0100
+
 unvanquished (0.51.1-1) unstable; urgency=low
 
   * Release of alpha 51.1.

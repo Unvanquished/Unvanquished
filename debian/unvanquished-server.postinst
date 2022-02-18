@@ -15,8 +15,7 @@ set -e
 # the debian-policy package
 
 UNV_SERVER_HOME=/var/games/unvanquished-server
-
-UNV_SERVER_DATA=$UNV_SERVER_HOME/.local/share/unvanquished
+UNV_SERVER_CONF=/etc/unvanquished-server
 
 case "$1" in
   configure)
@@ -28,19 +27,11 @@ case "$1" in
 
     install -d -o unvanquished-server -g games \
        $UNV_SERVER_HOME \
-       $UNV_SERVER_HOME/.local \
-       $UNV_SERVER_HOME/.local/share
+       $UNV_SERVER_HOME/game \
+       $UNV_SERVER_HOME/pkg
 
-    install -d -o unvanquished-server -g games \
-       $UNV_SERVER_DATA \
-       $UNV_SERVER_DATA/config \
-       $UNV_SERVER_DATA/config/map \
-       $UNV_SERVER_DATA/game \
-       $UNV_SERVER_DATA/pkg
-
-    ln -fs /etc/unvanquished-server/config/server.cfg $UNV_SERVER_DATA/config/server.cfg
-    ln -fs /etc/unvanquished-server/config/map/default.cfg $UNV_SERVER_DATA/config/map/default.cfg
-    ln -fs /etc/unvanquished-server/game/maprotation.cfg $UNV_SERVER_DATA/game/maprotation.cfg
+    ln -fs $UNV_SERVER_CONF/config $UNV_SERVER_HOME/config
+    chown unvanquished-server.games $UNV_SERVER_HOME/config
   ;;
 
   abort-upgrade|abort-remove|abort-deconfigure)

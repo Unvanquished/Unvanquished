@@ -1,7 +1,7 @@
 Source: unvanquished
 Section: contrib/games
 Priority: extra
-Maintainer: Darren Salt <devspam@moreofthesa.me.uk>
+Maintainer: Thomas Debesse <dev@illwieckz.net>
 Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
 	libcurl4-gnutls-dev,
 	libfreetype6-dev,
@@ -20,19 +20,22 @@ Build-Depends: debhelper (>= 8.0.0), g++ (>= 4.7) | g++-4.7, po-debconf, cmake,
 	libwebp-dev (>> 0.2),
 	libgeoip-dev,
 	nettle-dev,
-	zlib1g-dev
+	zlib1g-dev,
+	python2.7,
+	python3,
+	aria2 | curl | wget
 Standards-Version: 3.9.5
 Homepage: https://unvanquished.net
-Vcs-Git: git://github.com/Unvanquished/Unvanquished.git
+Vcs-Git: https://github.com/Unvanquished/Unvanquished.git
 Vcs-Browser: https://github.com/Unvanquished/Unvanquished
 
 Package: unvanquished
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	unvanquished-common (= ${binary:Version}),
-	unvanquished-data-downloader (= ${binary:Version})
+	unvanquished-data (= ${binary:Version})
 Suggests: unvanquished-server | unvanquished-tty
-Description: Team-based FPS game, aliens v. humans
+Description: Team-based FPS/RTS Game, Aliens vs. Humans
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
 
@@ -40,9 +43,9 @@ Package: unvanquished-tty
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	unvanquished-common (= ${binary:Version}),
-	unvanquished-data-downloader (= ${binary:Version})
+	unvanquished-data (= ${binary:Version})
 Suggests: unvanquished-server
-Description: Team-based FPS game, aliens v. humans
+Description: Team-based FPS/RTS Game, Aliens vs. Humans -- TTY console
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
  .
@@ -52,11 +55,11 @@ Package: unvanquished-server
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, adduser,
 	unvanquished-common (= ${binary:Version}),
-	unvanquished-data-downloader (= ${binary:Version})
+	unvanquished-data (= ${binary:Version})
 Suggests: unvanquished, geoip-database | geoip-database-contrib
 Conflicts: unvanquished (<< 0.3.5-2~)
 Replaces: unvanquished (<< 0.3.5-2~)
-Description: Team-based FPS game, aliens v. humans - dedicated server
+Description: Team-based FPS/RTS Game, Aliens vs. Humans - dedicated server
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
  .
@@ -67,29 +70,27 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: unvanquished (<= 0.20.0-3)
 Replaces: unvanquished (<< 0.4.0)
-Description: Team-based FPS game, aliens v. humans - shared resources
+Description: Team-based FPS/RTS Game, Aliens vs. Humans - shared resources
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
  .
  This package contains binaries used by both client and server.
 
-Package: unvanquished-data-downloader
+Package: unvanquished-data
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, aria2 | curl | wget,
-	unvanquished-common (= ${binary:Version})
-Recommends: aria2
-Description: Team-based FPS game, aliens v. humans - shared resources
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Team-based FPS/RTS Game, Aliens vs. Humans - data
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
  .
- This package contains downloader for data used by both client and server.
+ This package contains data used by both client and server.
 
 Package: unvanquished-dbg
 Section: contrib/debug
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	unvanquished (= ${binary:Version}) | unvanquished-tty (= ${binary:Version}) | unvanquished-server (= ${binary:Version}) | unvanquished-common (= ${binary:Version})
-Description: Team-based FPS game, aliens v. humans - debug info
+Description: Team-based FPS/RTS Game, Aliens vs. Humans - debug info
  Build a base, defend it against the other team, gain credits for better
  weapons or more advanced aliens, try to wipe them out.
  .

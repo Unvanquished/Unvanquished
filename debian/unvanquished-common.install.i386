@@ -1,16 +1,14 @@
-debian/paths.conf				etc/unvanquished
+debian/paths.conf                          etc/unvanquished/
+dist/scripts/unvanquished                  usr/lib/games/unvanquished/
+dist/scripts/unvanquished-migrate-profile  usr/lib/games/unvanquished/
 
-dist/scripts/unvanquished-migrate-profile	usr/games/
+obj-*-*-*/cgame-native-dll.so    usr/lib/games/unvanquished/
+obj-*-*-*/sgame-native-dll.so    usr/lib/games/unvanquished/
 
-dist/scripts/unvanquished-helper		usr/lib/games/unvanquished/
+obj-*-*-*/nacl/cgame-x86.nexe    usr/lib/games/unvanquished/
+obj-*-*-*/nacl/sgame-x86.nexe    usr/lib/games/unvanquished/
 
-obj-*-*-*/cgame-native-dll.so			usr/lib/games/unvanquished/
-obj-*-*-*/sgame-native-dll.so			usr/lib/games/unvanquished/
+obj-*-*-*/irt_core-x86.nexe      usr/lib/games/unvanquished/
 
-obj-*-*-*/nacl/cgame-x86.nexe			usr/lib/games/unvanquished/
-obj-*-*-*/nacl/sgame-x86.nexe			usr/lib/games/unvanquished/
-
-obj-*-*-*/irt_core-x86.nexe			usr/lib/games/unvanquished/
-
-obj-*-*-*/nacl_loader				usr/lib/games/unvanquished/
-obj-*-*-*/nacl_helper_bootstrap			usr/lib/games/unvanquished/
+obj-*-*-*/nacl_loader            usr/lib/games/unvanquished/
+obj-*-*-*/nacl_helper_bootstrap  usr/lib/games/unvanquished/

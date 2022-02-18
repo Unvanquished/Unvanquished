@@ -1,16 +1,19 @@
 unvanquished for Debian
 -----------------------
 
-To be able to start your server, you'll need to edit at least two files:
+To be able to start your server, you'll need to edit this file:
   * /etc/default/unvanquished-server
-  * /etc/unvanquished-server/server.cfg
+
+You'll probably want to edit this file as well:
+  * /etc/unvanquished-server/config/server.cfg
 
 In particular, make sure that you have an rcon password set in server.cfg,
 since this is the only way in which you'll be able to control the server.
 
-Upstream .pk3 files are in /var/games/unvanquished/main.
+Upstream .dpk files are in /usr/share/games/unvanquished/pkg.
 
-/var/games/unvanquished-server/.Unvanquished/main is used by the server to
-maintain state; you can add custom .pk3 files here.
+/var/games/unvanquished-server is used by  the server to maintain state.
+You can add custom .dpk files in /var/games/unvanquished-server/pkg.
 
+ -- Thomas Debesse <dev@illwieckz.net>  Thu, 17 Feb 2022 12:37:25 +0100
  -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 21 Sep 2013 23:40:33 +0100

@@ -1,3 +1,1 @@
-dist/scripts/unvanquished-tty			usr/games/
-
-obj-*-*-*/daemon-tty				usr/lib/games/unvanquished/
+obj-*-*-*/daemon-tty  usr/lib/games/unvanquished/

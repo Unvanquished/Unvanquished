@@ -3,11 +3,13 @@
 *.debhelper
 *.substvars
 
+debhelper-build-stamp
+
 unvanquished/
 unvanquished-server/
 unvanquished-tty/
 unvanquished-common/
-unvanquished-data-downloader/
+unvanquished-data/
 unvanquished-dbg/
 
 files
