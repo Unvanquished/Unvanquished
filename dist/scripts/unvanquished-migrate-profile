@@ -1,6 +1,7 @@
 #! /bin/sh
 
 set -e
+set -u
 
 atticHomeDir="${HOME}/.Unvanquished"
 legacyHomeDir="${HOME}/.unvanquished"
@@ -11,7 +12,7 @@ migratedAttic=false
 migratedLegacy=false
 
 secureKey () {
-	while ! [ -z "${1}" ]
+	while ! [ -z "${1:-}" ]
 	do
 		if [ -f "${1}" ]
 		then
@@ -25,7 +26,7 @@ copyFileTo () {
 	dest_dir="${1}"
 	shift
 
-	while ! [ -z "${1}" ]
+	while ! [ -z "${1:-}" ]
 	do
 		if [ -f "${1}" ]
 		then
@@ -39,7 +40,7 @@ copyDirTo () {
 	dest_dir="${1}"
 	shift
 
-	while ! [ -z "${1}" ]
+	while ! [ -z "${1:-}" ]
 	do
 		if [ -d "${1}" ]
 		then
