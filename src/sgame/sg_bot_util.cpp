@@ -1772,26 +1772,31 @@ float CalcBarbAimPitch( gentity_t *self, vec3_t targetPos )
 
 void BotFireWeaponAI( gentity_t *self )
 {
+	ASSERT( self && self->client && self->client );
+
 	float distance;
 	vec3_t targetPos;
 	vec3_t forward, right, up;
 	vec3_t muzzle;
 	trace_t trace;
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	playerState_t const& ps = self->client->ps;
 
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
+	AngleVectors( ps.viewangles, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetIdealAimLocation( self, self->botMind->goal, targetPos );
 
 	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = Distance( muzzle, trace.endpos );
-	bool readyFire = self->client->ps.IsWeaponReady();
+	bool readyFire = ps.IsWeaponReady();
 	vec3_t target;
 	self->botMind->goal.getPos( target );
+
+	float range = BG_Weapon( BG_PrimaryWeapon( ps.stats ) )->range;
 	switch ( self->s.weapon )
 	{
 		case WP_ABUILD:
-			if ( distance <= BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range )
+			if ( distance <= range )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 			}
@@ -1801,7 +1806,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ABUILD2:
-			if ( distance <= BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range )
+			if ( distance <= range )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );    //swipe
 			}
@@ -1813,11 +1818,11 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL0:
 			break; //auto hit
 		case WP_ALEVEL1:
-			if ( distance < BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range && readyFire )
+			if ( distance < range && readyFire )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
-			else if ( self->client->ps.weaponCharge == 0 )
+			else if ( ps.weaponCharge == 0 )
 			{
 				BotMoveInDir( self, MOVE_FORWARD );
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
@@ -1827,7 +1832,7 @@ void BotFireWeaponAI( gentity_t *self )
 			BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mara swipe
 			break;
 		case WP_ALEVEL2_UPG:
-			if ( distance <= BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range )
+			if ( distance <= range )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //mara swipe
 			}
@@ -1837,7 +1842,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3:
-			if ( distance > BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			if ( distance > range && ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1848,12 +1853,12 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3_UPG:
-			if ( self->client->ps.ammo > 0 && distance > BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range )
+			if ( ps.ammo > 0 && distance > range )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 			}
-			else if ( distance > BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			else if ( distance > range && ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1864,7 +1869,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL4:
-			if ( distance > BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range && self->client->ps.weaponCharge < LEVEL4_TRAMPLE_CHARGE_MAX )
+			if ( distance > range && ps.weaponCharge < LEVEL4_TRAMPLE_CHARGE_MAX )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );    //rant charge
 			}
@@ -1874,7 +1879,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_LUCIFER_CANNON:
-			if ( self->client->ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Math::Clamp( random(), 0.5f, 1.0f ) )
+			if ( ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Math::Clamp( random(), 0.5f, 1.0f ) )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
 			}
