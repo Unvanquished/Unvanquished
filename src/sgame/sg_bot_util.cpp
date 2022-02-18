@@ -1151,7 +1151,6 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_PAIN_SAW:
-			range = PAINSAW_RANGE;
 			secondaryRange = 0;
 			break;
 		case WP_FLAMER:

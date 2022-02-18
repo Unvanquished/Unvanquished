@@ -135,7 +135,6 @@ int   RIFLE_SPREAD;
 int   RIFLE_DMG;
 
 int   PAINSAW_DAMAGE;
-float PAINSAW_RANGE;
 float PAINSAW_WIDTH;
 float PAINSAW_HEIGHT;
 
@@ -290,7 +289,6 @@ static configVar_t bg_configVars[] =
 
 	{"w_psaw_damage", INTEGER, false, &PAINSAW_DAMAGE },
 	{"w_psaw_height", FLOAT, false, &PAINSAW_HEIGHT },
-	{"w_psaw_range", FLOAT, false, &PAINSAW_RANGE },
 	{"w_psaw_width", FLOAT, false, &PAINSAW_WIDTH },
 
 	{"w_rifle_damage", INTEGER, false, &RIFLE_DMG },

@@ -180,7 +180,6 @@ extern int   RIFLE_SPREAD;
 extern int   RIFLE_DMG;
 
 extern int   PAINSAW_DAMAGE;
-extern float PAINSAW_RANGE;
 extern float PAINSAW_WIDTH;
 extern float PAINSAW_HEIGHT;
 

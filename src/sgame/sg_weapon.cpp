@@ -1643,7 +1643,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_PAIN_SAW:
-					FireMelee( self, PAINSAW_RANGE, PAINSAW_WIDTH, PAINSAW_HEIGHT, PAINSAW_DAMAGE, MOD_PAINSAW, true, 0 );
+					FireMelee( self, BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range, PAINSAW_WIDTH, PAINSAW_HEIGHT, PAINSAW_DAMAGE, MOD_PAINSAW, true, 0 );
 					break;
 
 				case WP_LOCKBLOB_LAUNCHER:
