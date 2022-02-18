@@ -1114,7 +1114,6 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_ALEVEL1:
-			range = LEVEL1_CLAW_RANGE;
 			secondaryRange = LEVEL1_POUNCE_DISTANCE;
 			width = height = LEVEL1_CLAW_WIDTH;
 			break;
@@ -1820,7 +1819,7 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL0:
 			break; //auto hit
 		case WP_ALEVEL1:
-			if ( distance < LEVEL1_CLAW_RANGE && readyFire )
+			if ( distance < BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range && readyFire )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}

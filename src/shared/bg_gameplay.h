@@ -52,8 +52,6 @@ extern float LEVEL0_BITE_WIDTH;
 extern int   LEVEL0_BITE_REPEAT;
 
 extern int   LEVEL1_CLAW_DMG;
-extern float LEVEL1_CLAW_RANGE;
-extern float LEVEL1_CLAW_U_RANGE;
 extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_POUNCE_DISTANCE        300 // pitch between LEVEL1_POUNCE_MINPITCH and pi/4 results in this distance
 #define LEVEL1_POUNCE_MINPITCH        (M_PI / 12.0f) // 15°, minimum pitch that will result in full pounce distance

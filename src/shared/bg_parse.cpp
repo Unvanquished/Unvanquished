@@ -73,8 +73,6 @@ float LEVEL0_BITE_WIDTH;
 int   LEVEL0_BITE_REPEAT;
 
 int   LEVEL1_CLAW_DMG;
-float LEVEL1_CLAW_RANGE;
-float LEVEL1_CLAW_U_RANGE;
 float LEVEL1_CLAW_WIDTH;
 
 int   LEVEL2_CLAW_DMG;
@@ -235,7 +233,6 @@ static configVar_t bg_configVars[] =
 	{"w_level0_biteWidth", FLOAT, false, &LEVEL0_BITE_WIDTH},
 
 	{"w_level1_clawDmg", INTEGER, false, &LEVEL1_CLAW_DMG},
-	{"w_level1_clawRange", FLOAT, false, &LEVEL1_CLAW_RANGE},
 	{"w_level1_clawWidth", FLOAT, false, &LEVEL1_CLAW_WIDTH},
 
 	{"w_level2upg_clawRange", FLOAT, false, &LEVEL2_CLAW_U_RANGE},
