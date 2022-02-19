@@ -46,11 +46,11 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 
 // TODO: Move to HealthComponent.
+// Flags for the CBSE Damage message
 #define DAMAGE_PURE          0x00000001 /**< Amount won't be modified. */
 #define DAMAGE_KNOCKBACK     0x00000002 /**< Push the target in damage direction. */
 #define DAMAGE_NO_PROTECTION 0x00000004 /**< Game settings don't prevent damage. */
 #define DAMAGE_NO_LOCDAMAGE  0x00000008 /**< Don't apply locational modifier. */
-#define DAMAGE_SLOW          0x00000010 /**< Slow down the target */
 
 #define MAX_DAMAGE_REGIONS     16
 #define MAX_DAMAGE_REGION_TEXT 8192
