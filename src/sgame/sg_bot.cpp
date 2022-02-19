@@ -259,7 +259,11 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	bool autoname = false;
 	bool okay;
 
-	ASSERT( navMeshLoaded );
+	if ( !navMeshLoaded )
+	{
+		Log::Warn( "No Navigation Mesh file is available for this map" );
+		return false;
+	}
 
 	// find what clientNum to use for bot
 	clientNum = trap_BotAllocateClient();
@@ -540,17 +544,18 @@ void G_BotIntermissionThink( gclient_t *client )
 // are normally added at the beginning of the round so it shouldn't be noticeable.
 bool G_BotInit()
 {
-	if ( treeList.maxTrees == 0 )
-	{
-		InitTreeList( &treeList );
-	}
-
 	if ( !G_BotNavInit() )
 	{
 		Log::Notice( "Failed to load navmeshes" );
 		G_BotNavCleanup();
 		return false;
 	}
+
+	if ( treeList.maxTrees == 0 )
+	{
+		InitTreeList( &treeList );
+	}
+
 	return true;
 }
 

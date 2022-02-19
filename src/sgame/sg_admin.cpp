@@ -5727,12 +5727,6 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 
 	const char* behavior = args.Argc() >= 6 ? args[5].data() : BOT_DEFAULT_BEHAVIOR;
 
-	if ( !G_BotInit() )
-	{
-		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
-		return false;
-	}
-
 	bool result = G_BotAdd( name, team, skill, behavior );
 	if ( !result )
 	{
@@ -5765,12 +5759,6 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		teams = { team_t::TEAM_ALIENS, team_t::TEAM_HUMANS };
 	}
 	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : g_bot_default_skill.Get();
-
-	if ( !G_BotInit() )
-	{
-		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
-		return false;
-	}
 
 	for (team_t team : teams)
 	{
