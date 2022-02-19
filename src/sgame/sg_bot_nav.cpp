@@ -40,11 +40,6 @@ Navigation Mesh Loading
 // FIXME: use nav handle instead of classes
 bool G_BotNavInit()
 {
-	if ( navMeshLoaded )
-	{
-		return true;
-	}
-
 	Log::Notice( "==== Bot Navigation Initialization ====" );
 
 	for ( class_t i : RequiredNavmeshes() )
