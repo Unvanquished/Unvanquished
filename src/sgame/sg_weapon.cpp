@@ -453,7 +453,7 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 		return nullptr;
 	}
 
-	traceEnt->entity->Damage( damage, self, Vec3::Load( tr.endpos ), Vec3::Load( forward ), 0, mod );
+	traceEnt->entity->Damage( damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, mod );
 
 	// for painsaw. This makes really little sense to me, but this is refactoring, not bugsquashing.
 	if ( falseRanged )
@@ -513,7 +513,7 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 
 	SendRangedHitEvent( self, target, &tr );
 
-	target->entity->Damage(damage, self, Vec3::Load(tr.endpos), Vec3::Load(forward), other, mod);
+	target->entity->Damage(damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), other, mod);
 }
 
 // spawns a missile at parent's muzzle going in forward dir
@@ -591,8 +591,8 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 		trap_Trace( &tr, origin, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		traceEnt->entity->Damage((float)SHOTGUN_DMG, self, Vec3::Load(tr.endpos),
-		                         Vec3::Load(forward), 0, (meansOfDeath_t)MOD_SHOTGUN);
+		traceEnt->entity->Damage((float)SHOTGUN_DMG, self, VEC2GLM( tr.endpos ),
+		                         VEC2GLM( forward ), 0, (meansOfDeath_t)MOD_SHOTGUN);
 	}
 }
 
@@ -1072,8 +1072,8 @@ bool G_CheckDretchAttack( gentity_t *self )
 		return false;
 	}
 
-	traceEnt->entity->Damage((float)LEVEL0_BITE_DMG, self, Vec3::Load(tr.endpos),
-	                         Vec3::Load(forward), 0, (meansOfDeath_t)MOD_LEVEL0_BITE);
+	traceEnt->entity->Damage((float)LEVEL0_BITE_DMG, self, VEC2GLM( tr.endpos ),
+	                         VEC2GLM( forward ), 0, (meansOfDeath_t)MOD_LEVEL0_BITE);
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
 
@@ -1190,8 +1190,8 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 		zap->numTargets = 1;
 
 		// Zap chains only originate from alive entities.
-		if (target->entity->Damage((float)LEVEL2_AREAZAP_DMG, creator, Vec3::Load(target->s.origin),
-		                           Vec3::Load(forward), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP)) {
+		if (target->entity->Damage((float)LEVEL2_AREAZAP_DMG, creator, VEC2GLM( target->s.origin ),
+		                           VEC2GLM( forward ), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP)) {
 			FindZapChainTargets( zap );
 
 			for ( i = 1; i < zap->numTargets; i++ )
@@ -1199,8 +1199,8 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 				float damage = LEVEL2_AREAZAP_DMG * ( 1 - powf( ( zap->distances[ i ] /
 				               LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1;
 
-				target->entity->Damage(damage, zap->creator, Vec3::Load(target->s.origin),
-				                       Vec3::Load(forward), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP);
+				target->entity->Damage(damage, zap->creator, VEC2GLM( target->s.origin ),
+				                       VEC2GLM( forward ), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP);
 			}
 		}
 
@@ -1351,7 +1351,7 @@ bool G_CheckPounceAttack( gentity_t *self )
 
 	self->client->pmext.pouncePayload = 0;
 
-	traceEnt->entity->Damage((float)damage, self, Vec3::Load(tr.endpos), Vec3::Load(forward),
+	traceEnt->entity->Damage((float)damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ),
 	                         DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE);
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
@@ -1408,7 +1408,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 
 	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.weaponCharge / LEVEL4_TRAMPLE_DURATION;
 
-	victim->entity->Damage((float)damage, self, Vec3::Load(victim->s.origin), Vec3::Load(forward),
+	victim->entity->Damage((float)damage, self, VEC2GLM( victim->s.origin ), VEC2GLM( forward ),
 	                       DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE);
 
 	SendMeleeHitEvent( self, victim, nullptr );
@@ -1475,8 +1475,8 @@ void G_ImpactAttack( gentity_t *self, gentity_t *victim )
 	VectorSubtract( victim->s.origin, self->client->ps.origin, knockbackDir );
 	VectorNormalize( knockbackDir );
 
-	victim->entity->Damage((float)impactDamage, self, Vec3::Load(victim->s.origin),
-						   Vec3::Load(knockbackDir), DAMAGE_NO_LOCDAMAGE, ModWeight(self));
+	victim->entity->Damage((float)impactDamage, self, VEC2GLM( victim->s.origin ),
+						   VEC2GLM( knockbackDir ), DAMAGE_NO_LOCDAMAGE, ModWeight(self));
 }
 
 void G_WeightAttack( gentity_t *self, gentity_t *victim )
@@ -1523,7 +1523,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 	{
 		weightDamage = weightDPS * ( WEIGHTDMG_REPEAT / 1000.0f );
 
-		victim->entity->Damage(weightDamage, self, Vec3::Load(victim->s.origin), Util::nullopt,
+		victim->entity->Damage(weightDamage, self, VEC2GLM( victim->s.origin ), Util::nullopt,
 		                       DAMAGE_NO_LOCDAMAGE, ModWeight(self));
 	}
 

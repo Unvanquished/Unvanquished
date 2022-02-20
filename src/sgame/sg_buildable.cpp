@@ -1664,10 +1664,10 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	// Check there is enough room to spawn from, if trying to build a spawner.
 	if ( reason == IBE_NONE )
 	{
-		Vec3    originV = Vec3::Load(origin);
-		Vec3    normalV = Vec3::Load(normal);
+		glm::vec3 originV = VEC2GLM( origin );
+		glm::vec3 normalV = VEC2GLM( normal );
 		Entity* blocker;
-		Vec3    spawnPoint;
+		glm::vec3 spawnPoint;
 
 		switch (buildable) {
 			case BA_A_SPAWN:
