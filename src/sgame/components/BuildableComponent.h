@@ -80,8 +80,8 @@ class BuildableComponent: public BuildableComponentBase {
 		 */
 		bool Active() const { return state == CONSTRUCTED && Powered(); }
 
-		void SetAimAngles(const Vec3 aimAngles) { this->aimAngles = aimAngles; }
-		Vec3 AimAngles() const { return this->aimAngles; }
+		void SetAimAngles(const glm::vec3 aimAngles) { this->aimAngles = aimAngles; }
+		glm::vec3 AimAngles() const { return this->aimAngles; }
 
 		/**
 		 * Protect current animation from being disrupted by selected, less important animations.
@@ -103,7 +103,7 @@ class BuildableComponent: public BuildableComponentBase {
 		bool marked;
 		int  markTime;
 
-		Vec3 aimAngles; /**< Aim angles relative to world. */
+		glm::vec3 aimAngles; /**< Aim angles relative to world. */
 
 		int protectAnimationUntil;
 
