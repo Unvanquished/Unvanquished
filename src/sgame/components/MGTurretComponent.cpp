@@ -1,5 +1,7 @@
 #include "MGTurretComponent.h"
 
+#include <glm/geometric.hpp>
+
 constexpr float ATTACK_RANGE         = (float)MGTURRET_RANGE; // cgame needs to know this.
 constexpr int   ATTACK_PERIOD        = MGTURRET_ATTACK_PERIOD; // cgame needs to know this.
 constexpr float MAX_DAMAGE           = 4.0f;
@@ -110,17 +112,12 @@ bool MGTurretComponent::CompareTargets(Entity& a, Entity& b) {
 	// This makes the turret spend less time tracking enemies.
 	vec3_t aimDirectionOldVec;
 	AngleVectors(entity.oldEnt->buildableAim, aimDirectionOldVec, nullptr, nullptr);
-	Vec3 aimDirection = Vec3::Load(aimDirectionOldVec);
+	glm::vec3 aimDirection = VEC2GLM( aimDirectionOldVec );
 
-	Vec3 directionToA = Math::Normalize(
-		Vec3::Load(a.oldEnt->s.origin) - Vec3::Load(entity.oldEnt->s.pos.trBase)
-	);
+	glm::vec3 directionToA = glm::normalize( VEC2GLM( a.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
+	glm::vec3 directionToB = glm::normalize( VEC2GLM( b.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
 
-	Vec3 directionToB = Math::Normalize(
-		Vec3::Load(b.oldEnt->s.origin) - Vec3::Load(entity.oldEnt->s.pos.trBase)
-	);
-
-	return (Math::Dot(directionToA, aimDirection) > Math::Dot(directionToB, aimDirection));
+	return glm::dot( directionToA, aimDirection ) > glm::dot( directionToB, aimDirection );
 }
 
 void MGTurretComponent::Shoot() {
