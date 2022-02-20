@@ -2,6 +2,7 @@
 #include "../Entities.h"
 
 #include <glm/geometric.hpp>
+#include <glm/gtx/norm.hpp>
 
 static Log::Logger turretLogger( "sgame.turrets" );
 
@@ -172,14 +173,17 @@ void TurretComponent::TrackEntityTarget()
 		return;
 	}
 
-	Vec3 oldDirectionToTarget = m_directionToTarget;
+	glm::vec3 oldDirectionToTarget;
+	VectorCopy( m_directionToTarget, oldDirectionToTarget );
 
-	Vec3 targetOrigin = Vec3::Load( m_target->s.origin );
-	Vec3 muzzle       = Vec3::Load( entity.oldEnt->s.pos.trBase );
+	glm::vec3 targetOrigin = VEC2GLM( m_target->s.origin );
+	glm::vec3 muzzle       = VEC2GLM( entity.oldEnt->s.pos.trBase );
 
-	m_directionToTarget = Math::Normalize( targetOrigin - muzzle );
+	VectorCopy( glm::normalize( targetOrigin - muzzle ), m_directionToTarget );
 
-	if ( Math::DistanceSq( m_directionToTarget, oldDirectionToTarget ) > 0.0f )
+	glm::vec3 newDir;
+	VectorCopy( m_directionToTarget, newDir );
+	if ( glm::distance2( newDir, oldDirectionToTarget ) > 0.0f )
 	{
 		turretLogger.Debug( "Following an entity target. New direction: %s.", m_directionToTarget );
 	}
