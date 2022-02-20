@@ -46,6 +46,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "engine/botlib/bot_debug.h"
 #include "bot_navdraw.h"
 
+#include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
+
 void DebugDrawQuake::init()
 {
 	commands = {};
@@ -77,10 +80,10 @@ void DebugDrawQuake::vertex(const float* pos, unsigned int c)
 
 void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color)
 {
-	Vec3 vert{ x, y, z };
-	recast2quake( vert.Data() );
+	glm::vec3 vert{ x, y, z };
+	recast2quake( &vert[0] );
 	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX);
-	commands.Write<Vec3>(vert);
+	commands.Write<glm::vec3>(vert);
 	commands.Write<unsigned int>(color);
 }
 
@@ -91,13 +94,13 @@ void DebugDrawQuake::vertex(const float *pos, unsigned int color, const float* u
 
 void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v)
 {
-	Vec3 vert{ x, y, z };
-	Vec2 uv{ u, v };
-	recast2quake( vert.Data() );
+	glm::vec3 vert{ x, y, z };
+	glm::vec2 uv{ u, v };
+	recast2quake( &vert[0] );
 	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX_UV);
-	commands.Write<Vec3>(vert);
+	commands.Write<glm::vec3>(vert);
 	commands.Write<unsigned int>(color);
-	commands.Write<Vec2>(uv);
+	commands.Write<glm::vec2>(uv);
 }
 
 void DebugDrawQuake::end()
