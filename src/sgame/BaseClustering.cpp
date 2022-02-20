@@ -39,7 +39,7 @@ namespace Clustering {
 			{}
 
 			void Update(gentity_t *ent) {
-				super::Update(ent, point_type::Load(ent->s.origin));
+				super::Update(ent, VEC2GLM(ent->s.origin));
 			}
 
 			/**
@@ -128,7 +128,7 @@ namespace BaseClustering {
 			// Trace from mean buildable's origin towards cluster center, so that the beacon does
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
 			trace_t tr;
-			trap_Trace(&tr, mean->s.origin, nullptr, nullptr, center.Data(), 0, MASK_SOLID, 0);
+			trap_Trace(&tr, mean->s.origin, nullptr, nullptr, &center[0], 0, MASK_SOLID, 0);
 			Beacon::MoveTowardsRoom(tr.endpos);
 
 			// Prepare beacon flags.
@@ -139,7 +139,7 @@ namespace BaseClustering {
 			// If a fitting beacon close to the target location already exists, move it silently,
 			// otherwise add a new one.
 			gentity_t *beacon;
-			if (!(beacon = Beacon::MoveSimilar(center.Data(), tr.endpos, BCT_BASE, 0, team, 0,
+			if (!(beacon = Beacon::MoveSimilar(&center[0], tr.endpos, BCT_BASE, 0, team, 0,
 			                                   baseRadius, eFlags, EF_BC_BASE_RELEVANT))) {
 				beacon = Beacon::New(tr.endpos, BCT_BASE, (int)baseRadius, team );
 				beacon->s.eFlags |= eFlags;
