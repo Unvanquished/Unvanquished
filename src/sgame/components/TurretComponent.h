@@ -106,16 +106,6 @@ class TurretComponent: public TurretComponentBase {
 		bool TargetValid(Entity& target, bool newTarget);
 
 		Vec3 TorsoAngles() const;
-		Vec3 RelativeAnglesToAbsoluteAngles(const Vec3 relativeAngles) const;
-		Vec3 AbsoluteAnglesToRelativeAngles(const Vec3 absoluteAngles) const;
-		Vec3 DirectionToAbsoluteAngles(const Vec3 direction) const;
-		Vec3 DirectionToRelativeAngles(const Vec3 direction) const;
-		Vec3 AbsoluteAnglesToDirection(const Vec3 absoluteAngles) const;
-		Vec3 RelativeAnglesToDirection(const Vec3 relativeAngles) const;
-
-		//////
-		// start of properties
-		//////
 
 		/** An entity target that the turret can track. */
 		gentity_t* m_target;
