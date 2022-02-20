@@ -11,6 +11,17 @@ selector
 		}
 	}
 
+	decorator return( STATUS_FAILURE )
+	{
+		// protect alien bots that are healing from being considered stuck
+		sequence
+		{
+			condition team == TEAM_ALIENS && percentHealth( E_SELF ) < 1.0
+			condition goalBuildingType == E_A_OVERMIND && distanceTo( E_GOAL ) <= 128 || goalBuildingType == E_A_BOOSTER && distanceTo( E_GOAL ) <= 200
+			action resetStuckTime
+		}
+	}
+
 
 	condition(stuckTime > 10000)
 	{
