@@ -3,6 +3,7 @@
 
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 static Log::Logger turretLogger( "sgame.turrets" );
 
@@ -103,10 +104,10 @@ bool TurretComponent::MoveHeadToTarget( int timeDelta )
 	float timeMod = ( float ) timeDelta / 1000.0f;
 
 	// Compute maximum angle changes for this execution.
-	Vec3 maxAngleChange;
-	maxAngleChange[PITCH] = timeMod * PITCH_SPEED;
-	maxAngleChange[YAW]   = timeMod * YAW_SPEED;
-	maxAngleChange[ROLL]  = 0.0f;
+	glm::vec3 maxAngleChange;
+	maxAngleChange[0] = timeMod * PITCH_SPEED;
+	maxAngleChange[1] = timeMod * YAW_SPEED;
+	maxAngleChange[2] = 0.0f;
 
 	// Compute angles to target, relative to the turret's base.
 	glm::vec3 dirToTarget;
@@ -114,17 +115,18 @@ bool TurretComponent::MoveHeadToTarget( int timeDelta )
 	glm::vec3 relativeAnglesToTarget = DirectionToRelativeAngles( dirToTarget, TorsoAngles() );
 
 	// Compute difference between angles to target and current angles.
-	Vec3 deltaAngles;
-	AnglesSubtract( &relativeAnglesToTarget[0], m_relativeAimAngles.Data(), deltaAngles.Data() );
+	glm::vec3 deltaAngles;
+	AnglesSubtract( &relativeAnglesToTarget[0], m_relativeAimAngles.Data(), &deltaAngles[0] );
 
 	// Stop if there is nothing to do.
-	if ( Math::Length( deltaAngles ) < 0.1f )
+	if ( glm::length( deltaAngles ) < 0.1f )
 	{
 		return true;
 	}
 
 	bool targetReached = true;
-	Vec3 oldRelativeAimAngles = m_relativeAimAngles;
+	glm::vec3 oldRelativeAimAngles;
+	VectorCopy( m_relativeAimAngles, oldRelativeAimAngles );
 
 	// Adjust aim angles towards target angles.
 	for ( int angle = 0; angle < 3; angle++ )
@@ -152,10 +154,12 @@ bool TurretComponent::MoveHeadToTarget( int timeDelta )
 		targetReached = false;
 	}
 
-	if ( Math::DistanceSq( oldRelativeAimAngles, m_relativeAimAngles ) > 0.0f )
+	glm::vec3 relAim;
+	VectorCopy( m_relativeAimAngles, relAim );
+	if ( glm::distance2( oldRelativeAimAngles, relAim ) > 0.0f )
 	{
 		turretLogger.Debug( "Aiming. Elapsed: %d ms. Delta: %.2f. Max: %.2f. Old: %s. New: %s. Reached: %s.",
-			timeDelta, deltaAngles, maxAngleChange, oldRelativeAimAngles, m_relativeAimAngles, targetReached );
+			timeDelta, glm::to_string( deltaAngles ), glm::to_string( maxAngleChange ), glm::to_string( oldRelativeAimAngles ), glm::to_string( relAim ), targetReached );
 	}
 
 	// TODO: Move gentity_t.buildableAim to BuildableComponent.
