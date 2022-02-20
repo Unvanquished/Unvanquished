@@ -54,7 +54,7 @@ class SpikerComponent: public SpikerComponentBase {
 		 *       targets can still be hit. Reduces that risk by also tracing with a slightly larger
 		 *       bounding box than that of the missile.
 		 */
-		bool SafeToShoot(Vec3 direction);
+		bool SafeToShoot(glm::vec3 direction);
 
 		bool Fire();
 		void RegisterFastThinker();

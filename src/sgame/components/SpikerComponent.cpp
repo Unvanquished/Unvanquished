@@ -1,5 +1,7 @@
 #include "SpikerComponent.h"
 
+#include <glm/geometric.hpp>
+
 static Log::Logger logger("sgame.spiker");
 
 /** Delay between shots. */
@@ -46,9 +48,9 @@ void SpikerComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util
 }
 
 void SpikerComponent::SetGravityCompensation() {
-	Vec3 dorsal = Math::Normalize(Vec3::Load(entity.oldEnt->s.origin2));
-	Vec3 upwards = Vec3({0.0f, 0.0f, 1.0f});
-	float uprightness = Math::Dot(dorsal, upwards);
+	glm::vec3 dorsal = glm::normalize( VEC2GLM( entity.oldEnt->s.origin2  ));
+	glm::vec3 upwards = { 0.0f, 0.0f, 1.0f };
+	float uprightness = glm::dot( dorsal, upwards );
 	// A negative value means the Spiker's radius of damage increases.
 	gravityCompensation = -uprightness * sinf(DEG2RAD(0.5f * GRAVITY_COMPENSATION_ANGLE));
 }
@@ -75,21 +77,21 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 		if (other.Get<BuildableComponent>())                              return;
 		if (!G_LineOfSight(entity.oldEnt, other.oldEnt))                  return;
 
-		Vec3 dorsal    = Vec3::Load(entity.oldEnt->s.origin2);
-		Vec3 toTarget  = Vec3::Load(other.oldEnt->s.origin) - Vec3::Load(entity.oldEnt->s.origin);
-		Vec3 otherMins = Vec3::Load(other.oldEnt->r.mins);
-		Vec3 otherMaxs = Vec3::Load(other.oldEnt->r.maxs);
+		glm::vec3 dorsal    = VEC2GLM( entity.oldEnt->s.origin2 );
+		glm::vec3 toTarget  = VEC2GLM( other.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.origin );
+		glm::vec3 otherMins = VEC2GLM( other.oldEnt->r.mins );
+		glm::vec3 otherMaxs = VEC2GLM( other.oldEnt->r.maxs );
 
 		// With a straight shot, only entities in the spiker's upper hemisphere can be hit.
 		// Since the spikes obey gravity, increase or decrease this radius of damage by up to
 		// GRAVITY_COMPENSATION_ANGLE degrees depending on the spiker's orientation.
-		if (Math::Dot(Math::Normalize(toTarget), dorsal) < gravityCompensation) return;
+		if (glm::dot( glm::normalize( toTarget  ), dorsal) < gravityCompensation) return;
 
 		// Approximate average damage the entity would receive from spikes.
 		const missileAttributes_t* ma = BG_Missile(MIS_SPIKER);
 		float spikeDamage  = ma->damage;
-		float distance     = Math::Length(toTarget);
-		float bboxDiameter = Math::Length(otherMins) + Math::Length(otherMaxs);
+		float distance     = glm::length( toTarget );
+		float bboxDiameter = glm::length( otherMins ) + glm::length( otherMaxs );
 		float bboxEdge     = (1.0f / M_ROOT3) * bboxDiameter; // Assumes a cube.
 		float hitEdge      = bboxEdge + ((1.0f / M_ROOT3) * ma->size); // Add half missile edge.
 		float hitArea      = hitEdge * hitEdge; // Approximate area resulting in a hit.
@@ -150,19 +152,18 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 }
 
 // TODO: Use a proper trajectory trace, once available, to ensure friendly buildables are never hit.
-bool SpikerComponent::SafeToShoot(Vec3 direction) {
+bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 	const missileAttributes_t* ma = BG_Missile(MIS_SPIKER);
 	float missileSize = (float)ma->size;
 	trace_t trace;
 	vec3_t mins, maxs;
-	Vec3 end = Vec3::Load(entity.oldEnt->s.origin) + (SPIKE_RANGE * direction);
+	glm::vec3 end = VEC2GLM( entity.oldEnt->s.origin ) + (SPIKE_RANGE * direction);
 
 	// Test once with normal and once with inflated missile bounding box.
 	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_INFLATION}) {
 		mins[0] = mins[1] = mins[2] = -traceSize;
 		maxs[0] = maxs[1] = maxs[2] =  traceSize;
-		trap_Trace(&trace, entity.oldEnt->s.origin, mins, maxs, end.Data(), entity.oldEnt->s.number,
-			ma->clipmask, 0);
+		trap_Trace( &trace, entity.oldEnt->s.origin, mins, maxs, &end[0], entity.oldEnt->s.number, ma->clipmask, 0 );
 		gentity_t* hit = &g_entities[trace.entityNum];
 
 		if (hit && G_OnSameTeam(entity.oldEnt, hit)) {
@@ -231,7 +232,7 @@ bool SpikerComponent::Fire() {
 
 			// Trace in the shooting direction and do not shoot spikes that are likely to harm
 			// friendly entities.
-			bool fire = SafeToShoot(Vec3::Load(dir));
+			bool fire = SafeToShoot(VEC2GLM( dir ));
 
 			logger.Debug("Spiker #%d %s: Row %d/%d: Spike %2d/%2d: "
 				"( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )", self->s.number,
