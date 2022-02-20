@@ -39,20 +39,14 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
  * ALIEN weapons
  */
 
-extern int   ABUILDER_CLAW_DMG;
-extern float ABUILDER_CLAW_WIDTH;
 extern int   ABUILDER_BLOB_DMG;
 extern float ABUILDER_BLOB_SPEED;
 extern float ABUILDER_BLOB_SPEED_MOD;
 extern int   ABUILDER_BLOB_LOCK_TIME;
 extern int   ABUILDER_BLOB_TIME;
 
-extern int   LEVEL0_BITE_DMG;
-extern float LEVEL0_BITE_WIDTH;
 extern int   LEVEL0_BITE_REPEAT;
 
-extern int   LEVEL1_CLAW_DMG;
-extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_POUNCE_DISTANCE        300 // pitch between LEVEL1_POUNCE_MINPITCH and pi/4 results in this distance
 #define LEVEL1_POUNCE_MINPITCH        (M_PI / 12.0f) // 15°, minimum pitch that will result in full pounce distance
 #define LEVEL1_POUNCE_COOLDOWN        2000
@@ -64,8 +58,6 @@ extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_SLOW_TIME              1000
 #define LEVEL1_SLOW_MOD               0.75f
 
-extern int   LEVEL2_CLAW_DMG;
-extern float LEVEL2_CLAW_WIDTH;
 extern int   LEVEL2_AREAZAP_DMG;
 extern float LEVEL2_AREAZAP_RANGE;
 extern float LEVEL2_AREAZAP_CHAIN_RANGE;
@@ -75,8 +67,6 @@ extern int   LEVEL2_AREAZAP_TIME;
 extern float LEVEL2_WALLJUMP_MAXSPEED;
 #define LEVEL2_AREAZAP_MAX_TARGETS 5
 
-extern int   LEVEL3_CLAW_DMG;
-extern float LEVEL3_CLAW_WIDTH;
 extern int   LEVEL3_POUNCE_DMG;
 extern float LEVEL3_POUNCE_RANGE;
 extern float LEVEL3_POUNCE_UPG_RANGE;
@@ -95,9 +85,6 @@ extern int   LEVEL3_BOUNCEBALL_REGEN;
 extern int   LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
 extern int   LEVEL3_BOUNCEBALL_REGEN_CREEP;
 
-extern int   LEVEL4_CLAW_DMG;
-extern float LEVEL4_CLAW_WIDTH;
-extern float LEVEL4_CLAW_HEIGHT;
 extern int   LEVEL4_TRAMPLE_DMG;
 extern float LEVEL4_TRAMPLE_SPEED;
 extern int   LEVEL4_TRAMPLE_CHARGE_MIN;
@@ -175,10 +162,6 @@ extern int   BLASTER_SIZE;
 
 extern int   RIFLE_SPREAD;
 extern int   RIFLE_DMG;
-
-extern int   PAINSAW_DAMAGE;
-extern float PAINSAW_WIDTH;
-extern float PAINSAW_HEIGHT;
 
 extern int   SHOTGUN_DMG;
 extern int   SHOTGUN_RANGE;

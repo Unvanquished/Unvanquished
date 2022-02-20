@@ -1088,14 +1088,16 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 {
 	ASSERT( target.targetsValidEntity() );
 
-	float range = BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range;
+	weaponAttributes_t const* wpa = BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) );
+	float range = wpa->range;
+	float width = wpa->width;
+	float height = wpa->height;
 	float secondaryRange;
 	vec3_t forward, right, up;
 	vec3_t muzzle;
 	vec3_t maxs, mins;
 	vec3_t targetPos;
 	trace_t trace;
-	float width = 0, height = 0;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
@@ -1104,31 +1106,25 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	{
 		case WP_ABUILD:
 			secondaryRange = 0;
-			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ABUILD2:
 			secondaryRange = 300; //An arbitrary value for the blob launcher, has nothing to do with actual range
-			width = height = ABUILDER_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL0:
 			secondaryRange = 0;
 			break;
 		case WP_ALEVEL1:
 			secondaryRange = LEVEL1_POUNCE_DISTANCE;
-			width = height = LEVEL1_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2:
 			secondaryRange = 0;
-			width = height = LEVEL2_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2_UPG:
 			secondaryRange = LEVEL2_AREAZAP_RANGE;
-			width = height = LEVEL2_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3:
 			//need to check if we can pounce to the target
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG; //An arbitrary value for pounce, has nothing to do with actual range
-			width = height = LEVEL3_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3_UPG:
 			//we can pounce, or we have barbs
@@ -1137,11 +1133,9 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			{
 				secondaryRange = 900;
 			}
-			width = height = LEVEL3_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL4:
 			secondaryRange = 0; //Using 0 since tyrant rush is basically just movement, not a ranged attack
-			width = height = LEVEL4_CLAW_WIDTH;
 			break;
 		case WP_HBUILD:
 			range = 100;
