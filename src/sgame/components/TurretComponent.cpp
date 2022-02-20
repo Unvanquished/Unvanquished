@@ -19,9 +19,9 @@ constexpr int   GIVEUP_TARGET_TIME = 1000;
 
 TurretComponent::TurretComponent( Entity& entity )
 	: TurretComponentBase( entity )
-	, m_target( nullptr )
-	, m_range( FLT_MAX )
-	, m_relativeAimAngles( 0.0f, 0.0f, 0.0f )
+	, target( nullptr )
+	, range( FLT_MAX )
+	, relativeAimAngles( 0.0f, 0.0f, 0.0f )
 {
 	SetBaseDirection();
 	ResetDirection();
@@ -36,39 +36,39 @@ TurretComponent::~TurretComponent()
 void TurretComponent::HandlePrepareNetCode()
 {
 	// TODO: Make these angles completely relative to the turret's base, not just to its yaw.
-	VectorCopy( m_relativeAimAngles.Data(), entity.oldEnt->s.angles2 );
+	VectorCopy( relativeAimAngles, entity.oldEnt->s.angles2 );
 }
 
-void TurretComponent::SetRange( float range )
+void TurretComponent::SetRange( float range_ )
 {
-	m_range = range;
+	range = range_;
 }
 
 Entity* TurretComponent::GetTarget()
 {
-	return m_target ? m_target->entity : nullptr;
+	return target ? target->entity : nullptr;
 }
 
 void TurretComponent::RemoveTarget()
 {
-	if ( m_target )
+	if ( target )
 	{
 		// TODO: Decrease tracked-by counter for the target.
 		turretLogger.Verbose( "Target removed." );
 	}
 
-	m_target = nullptr;
-	m_lastLineOfSightToTarget = 0;
+	target = nullptr;
+	lastLineOfSightToTarget = 0;
 }
 
 bool TurretComponent::TargetValid()
 {
-	if ( !m_target )
+	if ( !target )
 	{
 		return false;
 	}
 
-	return TargetValid( *m_target->entity, false );
+	return TargetValid( *target->entity, false );
 }
 
 Entity* TurretComponent::FindEntityTarget( std::function<bool( Entity&, Entity& )> CompareTargets )
@@ -80,19 +80,19 @@ Entity* TurretComponent::FindEntityTarget( std::function<bool( Entity&, Entity& 
 	// TODO: Iterate over all valid targets, do not assume they have to be clients.
 	ForEntities<ClientComponent>( [&]( Entity& candidate, ClientComponent& ) {
 		if ( TargetValid( candidate, true ) ) {
-			if ( !m_target || CompareTargets( candidate, *m_target->entity ) ) {
-				m_target = candidate.oldEnt;
+			if ( !target || CompareTargets( candidate, *target->entity ) ) {
+				target = candidate.oldEnt;
 			}
 		}
 	} );
 
-	if ( m_target )
+	if ( target )
 	{
 		// TODO: Increase tracked-by counter for a new target.
 		turretLogger.Verbose( "Target acquired." );
 	}
 
-	return m_target ? m_target->entity : nullptr;
+	return target ? target->entity : nullptr;
 }
 
 bool TurretComponent::MoveHeadToTarget( int timeDelta )
@@ -110,13 +110,10 @@ bool TurretComponent::MoveHeadToTarget( int timeDelta )
 	maxAngleChange[2] = 0.0f;
 
 	// Compute angles to target, relative to the turret's base.
-	glm::vec3 dirToTarget;
-	VectorCopy( m_directionToTarget.Data(), dirToTarget );
-	glm::vec3 relativeAnglesToTarget = DirectionToRelativeAngles( dirToTarget, TorsoAngles() );
+	glm::vec3 relativeAnglesToTarget = DirectionToRelativeAngles( directionToTarget, TorsoAngles() );
 
 	// Compute difference between angles to target and current angles.
-	glm::vec3 deltaAngles;
-	AnglesSubtract( &relativeAnglesToTarget[0], m_relativeAimAngles.Data(), &deltaAngles[0] );
+	glm::vec3 deltaAngles = relativeAnglesToTarget - relativeAimAngles;
 
 	// Stop if there is nothing to do.
 	if ( glm::length( deltaAngles ) < 0.1f )
@@ -125,8 +122,7 @@ bool TurretComponent::MoveHeadToTarget( int timeDelta )
 	}
 
 	bool targetReached = true;
-	glm::vec3 oldRelativeAimAngles;
-	VectorCopy( m_relativeAimAngles, oldRelativeAimAngles );
+	glm::vec3 oldRelativeAimAngles =relativeAimAngles;
 
 	// Adjust aim angles towards target angles.
 	for ( int angle = 0; angle < 3; angle++ )
@@ -138,115 +134,110 @@ bool TurretComponent::MoveHeadToTarget( int timeDelta )
 
 		if ( fabs( deltaAngles[angle] ) > maxAngleChange[angle] )
 		{
-			m_relativeAimAngles[angle] += ( deltaAngles[angle] < 0.0f ) ? -maxAngleChange[angle] :  maxAngleChange[angle];
+			relativeAimAngles[angle] += ( deltaAngles[angle] < 0.0f ) ? -maxAngleChange[angle] :  maxAngleChange[angle];
 			targetReached = false;
 		}
 		else
 		{
-			m_relativeAimAngles[angle] = relativeAnglesToTarget[angle];
+			relativeAimAngles[angle] = relativeAnglesToTarget[angle];
 		}
 	}
 
 	// Respect pitch limits.
-	if ( m_relativeAimAngles[PITCH] > PITCH_CAP )
+	if ( relativeAimAngles[PITCH] > PITCH_CAP )
 	{
-		m_relativeAimAngles[PITCH] = PITCH_CAP;
+		relativeAimAngles[PITCH] = PITCH_CAP;
 		targetReached = false;
 	}
 
-	glm::vec3 relAim;
-	VectorCopy( m_relativeAimAngles, relAim );
-	if ( glm::distance2( oldRelativeAimAngles, relAim ) > 0.0f )
+	if ( glm::distance2( oldRelativeAimAngles, relativeAimAngles ) > 0.0f )
 	{
 		turretLogger.Debug( "Aiming. Elapsed: %d ms. Delta: %.2f. Max: %.2f. Old: %s. New: %s. Reached: %s.",
-			timeDelta, glm::to_string( deltaAngles ), glm::to_string( maxAngleChange ), glm::to_string( oldRelativeAimAngles ), glm::to_string( relAim ), targetReached );
+			timeDelta,
+			glm::to_string( deltaAngles ),
+			glm::to_string( maxAngleChange ),
+			glm::to_string( oldRelativeAimAngles ),
+			glm::to_string( relativeAimAngles ),
+			targetReached );
 	}
 
 	// TODO: Move gentity_t.buildableAim to BuildableComponent.
-	glm::vec3 absAim;
-	VectorCopy( m_relativeAimAngles.Data(), absAim );
-	VectorCopy( RelativeAnglesToAbsoluteAngles( absAim, TorsoAngles() ), entity.oldEnt->buildableAim );
+	glm::vec3 absAim = RelativeAnglesToAbsoluteAngles( relativeAimAngles, TorsoAngles() );
+	VectorCopy( absAim, entity.oldEnt->buildableAim );
 
 	return targetReached;
 }
 
 void TurretComponent::TrackEntityTarget()
 {
-	if ( !m_target )
+	if ( !target )
 	{
 		return;
 	}
 
-	glm::vec3 oldDirectionToTarget;
-	VectorCopy( m_directionToTarget, oldDirectionToTarget );
+	glm::vec3 oldDirectionToTarget = directionToTarget;
 
-	glm::vec3 targetOrigin = VEC2GLM( m_target->s.origin );
+	glm::vec3 targetOrigin = VEC2GLM( target->s.origin );
 	glm::vec3 muzzle       = VEC2GLM( entity.oldEnt->s.pos.trBase );
 
-	VectorCopy( glm::normalize( targetOrigin - muzzle ), m_directionToTarget );
+	directionToTarget = glm::normalize( targetOrigin - muzzle );
 
-	glm::vec3 newDir;
-	VectorCopy( m_directionToTarget, newDir );
-	if ( glm::distance2( newDir, oldDirectionToTarget ) > 0.0f )
+	if ( glm::distance2( directionToTarget, oldDirectionToTarget ) > 0.0f )
 	{
-		turretLogger.Debug( "Following an entity target. New direction: %s.", m_directionToTarget );
+		turretLogger.Debug( "Following an entity target. New direction: %s.", glm::to_string( directionToTarget ) );
 	}
 }
 
 void TurretComponent::ResetDirection()
 {
-	m_directionToTarget = m_baseDirection;
-	turretLogger.Verbose( "Target direction reset. New direction: %s.", m_directionToTarget );
+	directionToTarget = baseDirection;
+	turretLogger.Verbose( "Target direction reset. New direction: %s.", glm::to_string( directionToTarget ) );
 }
 
 void TurretComponent::ResetPitch()
 {
-	glm::vec3 targetRelativeAngles;
-	VectorCopy( m_relativeAimAngles, targetRelativeAngles );
+	glm::vec3 targetRelativeAngles = relativeAimAngles;
 	targetRelativeAngles[PITCH] = 0.0f;
-	VectorCopy( RelativeAnglesToDirection( targetRelativeAngles, TorsoAngles() ), m_directionToTarget );
+	directionToTarget = RelativeAnglesToDirection( targetRelativeAngles, TorsoAngles() );
 
-	turretLogger.Debug( "Target pitch reset. New direction: %s.", m_directionToTarget );
+	turretLogger.Debug( "Target pitch reset. New direction: %s.", glm::to_string( directionToTarget ) );
 }
 
 void TurretComponent::LowerPitch()
 {
-	glm::vec3 targetRelativeAngles;
-	VectorCopy( m_relativeAimAngles, targetRelativeAngles );
+	glm::vec3 targetRelativeAngles = relativeAimAngles;
 	targetRelativeAngles[PITCH] = PITCH_CAP;
-	VectorCopy( RelativeAnglesToDirection( targetRelativeAngles, TorsoAngles() ), m_directionToTarget );
+	directionToTarget = RelativeAnglesToDirection( targetRelativeAngles, TorsoAngles() );
 
-	turretLogger.Debug( "Target pitch lowered. New direction: %s.", m_directionToTarget );
+	turretLogger.Debug( "Target pitch lowered. New direction: %s.", glm::to_string( directionToTarget ) );
 }
 
 bool TurretComponent::TargetCanBeHit()
 {
-	if ( !m_target )
+	if ( !target )
 	{
 		return false;
 	}
 
-	glm::vec3 relAim;
-	VectorCopy( m_relativeAimAngles, relAim );
-	glm::vec3 aimDirection = RelativeAnglesToDirection( relAim, TorsoAngles() );
+	glm::vec3 aimDirection = RelativeAnglesToDirection( relativeAimAngles, TorsoAngles() );
 	glm::vec3 traceStart   = VEC2GLM( entity.oldEnt->s.pos.trBase );
-	glm::vec3 traceEnd     = traceStart + m_range * aimDirection;
+	glm::vec3 traceEnd     = traceStart + range * aimDirection;
 
 	trace_t tr;
 	trap_Trace( &tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->s.number, MASK_SHOT, 0 );
 
-	return tr.entityNum == m_target->s.number;
+	return tr.entityNum == target->s.number;
 }
 
-bool TurretComponent::TargetValid( Entity& m_target, bool newTarget )
+bool TurretComponent::TargetValid( Entity& target, bool newTarget )
 {
-	if ( !m_target.Get<ClientComponent>()
-			|| m_target.Get<SpectatorComponent>()
-			|| Entities::IsDead( m_target )
-			|| ( m_target.oldEnt->flags & FL_NOTARGET )
-			|| !Entities::OnOpposingTeams( entity, m_target )
-			|| G_Distance( entity.oldEnt, m_target.oldEnt ) > m_range
-			|| !trap_InPVS( entity.oldEnt->s.origin, m_target.oldEnt->s.origin ) )
+	if ( !target.Get<ClientComponent>()
+			|| target.Get<SpectatorComponent>()
+			|| Entities::IsDead( target )
+			|| ( target.oldEnt->flags & FL_NOTARGET )
+			|| !Entities::OnOpposingTeams( entity, target )
+			|| G_Distance( entity.oldEnt, target.oldEnt ) > range
+			|| !trap_InPVS( entity.oldEnt->s.origin, target.oldEnt->s.origin ) )
 	{
 
 		if ( !newTarget )
@@ -258,9 +249,9 @@ bool TurretComponent::TargetValid( Entity& m_target, bool newTarget )
 	}
 
 	// New targets require a line of sight.
-	if ( G_LineOfFire( entity.oldEnt, m_target.oldEnt ) )
+	if ( G_LineOfFire( entity.oldEnt, target.oldEnt ) )
 	{
-		m_lastLineOfSightToTarget = level.time;
+		lastLineOfSightToTarget = level.time;
 	}
 	else if ( newTarget )
 	{
@@ -268,9 +259,9 @@ bool TurretComponent::TargetValid( Entity& m_target, bool newTarget )
 	}
 
 	// Give up on an existing target if there was no line of sight for a while.
-	if ( m_lastLineOfSightToTarget + GIVEUP_TARGET_TIME <= level.time )
+	if ( lastLineOfSightToTarget + GIVEUP_TARGET_TIME <= level.time )
 	{
-		turretLogger.Verbose( "Giving up on target: No line of sight for %d ms.", level.time - m_lastLineOfSightToTarget );
+		turretLogger.Verbose( "Giving up on target: No line of sight for %d ms.", level.time - lastLineOfSightToTarget );
 		return false;
 	}
 
@@ -292,14 +283,14 @@ void TurretComponent::SetBaseDirection()
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.
 	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[tr.entityNum].entity->Get<BuildableComponent>() )
 	{
-		VectorCopy( -torsoDirection, m_baseDirection );
+		baseDirection = -torsoDirection;
 	}
 	else
 	{
-		VectorCopy( torsoDirection, m_baseDirection );
+		baseDirection = torsoDirection;
 	}
 
-	turretLogger.Verbose( "Base direction set to %s.", m_baseDirection );
+	turretLogger.Verbose( "Base direction set to %s.", glm::to_string( baseDirection ) );
 }
 
 glm::vec3 TurretComponent::TorsoAngles() const
