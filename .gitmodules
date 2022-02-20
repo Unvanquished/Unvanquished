@@ -13,3 +13,6 @@
 [submodule "libs/RmlUi"]
 	path = libs/RmlUi
 	url = https://github.com/Unvanquished/RmlUi.git
+[submodule "libs/glm"]
+	path = libs/glm
+	url = https://github.com/g-truc/glm.git
