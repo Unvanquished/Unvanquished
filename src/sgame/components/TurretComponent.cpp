@@ -272,8 +272,7 @@ void TurretComponent::SetBaseDirection()
 	Vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
 	trace_t tr;
-	trap_Trace( &tr, traceStart.Data(), nullptr, nullptr, traceEnd.Data(), entity.oldEnt->s.number,
-	           MASK_SHOT, 0 );
+	trap_Trace( &tr, traceStart.Data(), nullptr, nullptr, traceEnd.Data(), entity.oldEnt->s.number, MASK_SHOT, 0 );
 
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.
 	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[tr.entityNum].entity->Get<BuildableComponent>() )
@@ -317,8 +316,13 @@ Vec3 RelativeAnglesToAbsoluteAngles( const Vec3 relativeAngles, const Vec3 torso
 	return Vec3::Load( absoluteAngles );
 }
 
-Vec3 AbsoluteAnglesToRelativeAngles( const Vec3 absoluteAngles, const Vec3 torso )
+Vec3 DirectionToRelativeAngles( const Vec3 direction, const Vec3 torso )
 {
+	vec3_t absAngles;
+	vectoangles( direction.Data(), absAngles );
+
+	Vec3 absoluteAngles = Vec3::Load( absAngles );
+
 	quat_t torsoRotation;
 	quat_t absoluteRotation;
 	quat_t relativeRotation;
@@ -338,26 +342,10 @@ Vec3 AbsoluteAnglesToRelativeAngles( const Vec3 absoluteAngles, const Vec3 torso
 	return Vec3::Load( relativeAngles );
 }
 
-Vec3 DirectionToAbsoluteAngles( const Vec3 direction )
-{
-	vec3_t absoluteAngles;
-	vectoangles( direction.Data(), absoluteAngles );
-	return Vec3::Load( absoluteAngles );
-}
-
-Vec3 DirectionToRelativeAngles( const Vec3 direction, const Vec3 torso )
-{
-	return AbsoluteAnglesToRelativeAngles( DirectionToAbsoluteAngles( direction ), torso );
-}
-
-Vec3 AbsoluteAnglesToDirection( const Vec3 absoluteAngles )
-{
-	vec3_t direction;
-	AngleVectors( absoluteAngles.Data(), direction, nullptr, nullptr );
-	return Vec3::Load( direction );
-}
-
 Vec3 RelativeAnglesToDirection( const Vec3 relativeAngles, const Vec3 torso )
 {
-	return AbsoluteAnglesToDirection( RelativeAnglesToAbsoluteAngles( relativeAngles, torso ) );
+	vec3_t direction;
+	Vec3 angles = RelativeAnglesToAbsoluteAngles( relativeAngles, torso );
+	AngleVectors( angles.Data(), direction, nullptr, nullptr );
+	return Vec3::Load( direction );
 }
