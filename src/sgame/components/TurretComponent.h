@@ -113,23 +113,27 @@ class TurretComponent: public TurretComponentBase {
 		Vec3 AbsoluteAnglesToDirection(const Vec3 absoluteAngles) const;
 		Vec3 RelativeAnglesToDirection(const Vec3 relativeAngles) const;
 
+		//////
+		// start of properties
+		//////
+
 		/** An entity target that the turret can track. */
-		gentity_t* target;
+		gentity_t* m_target;
 
 		/** The attack range of the turret, used for checking whether a target can be hit. */
-		float range;
+		float m_range;
 
 		/** The turret's target direction after construction and a direction reset. */
-		Vec3 baseDirection;
+		Vec3 m_baseDirection;
 
 		/** The direction that the head will move to when asked to make a move. */
-		Vec3 directionToTarget;
+		Vec3 m_directionToTarget;
 
 		/** The angle of the turret's head orientation relative to the turret's torso. */
-		Vec3 relativeAimAngles;
+		Vec3 m_relativeAimAngles;
 
 		/** A timer used to forget about targets that were behind cover for a while. */
-		int lastLineOfSightToTarget;
+		int m_lastLineOfSightToTarget;
 };
 
 #endif // TURRET_COMPONENT_H_
