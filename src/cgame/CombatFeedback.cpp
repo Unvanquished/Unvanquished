@@ -23,6 +23,8 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "cg_local.h"
 
+#include <glm/geometric.hpp>
+
 namespace CombatFeedback {
 
 static Log::Logger logger("cgame.cf");
@@ -65,7 +67,7 @@ Color::Color damageIndicatorColors[DAMAGE_INDICATOR_LAYERS] = {
 struct DamageIndicator {
 	int ctime, victim;
 	float value;
-	Vec3 origin, velocity;
+	glm::vec3 origin, velocity;
 	damageIndicatorLayer_t layer;
 	bool lethal;
 
@@ -99,7 +101,7 @@ static std::list<DamageIndicator> damageIndicatorQueue;
 /**
  * @brief Create a new damage indicator and add it to the queue.
  */
-static void EnqueueDamageIndicator(Vec3 point, int flags, float value, int victim)
+static void EnqueueDamageIndicator(glm::vec3 point, int flags, float value, int victim)
 {
 	DamageIndicator di;
 
@@ -141,19 +143,21 @@ static bool DamageIndicatorsSameKind(DamageIndicator *A, DamageIndicator *B)
 static void AddDamageIndicator(DamageIndicator di)
 {
 	// combine older indicators of the same type if they're close enough
-	for (auto i = damageIndicators.begin(); i != damageIndicators.end(); ) {
-		if (DamageIndicatorsSameKind(&*i, &di) &&
-		    di.ctime - i->ctime < 300 &&
-		    Distance(di.origin, i->origin) < 200) {
+	for ( auto i = damageIndicators.begin(); i != damageIndicators.end(); )
+	{
+		if ( DamageIndicatorsSameKind(&*i, &di) && di.ctime - i->ctime < 300 && glm::distance( di.origin, i->origin ) < 200 )
+		{
 			di.value += i->value;
 			i = damageIndicators.erase(i);
 		}
 		else
+		{
 			i++;
+		}
 	}
 
 	di.color = damageIndicatorColors[di.layer];
-	di.velocity = Vec3(crandom() * 20, crandom() * 20, 100);
+	di.velocity = glm::vec3(crandom() * 20, crandom() * 20, 100);
 
 	damageIndicators.push_back(di);
 }
@@ -229,7 +233,7 @@ void Event(entityState_t *es)
 
 	if (damageIndicators_enable.Get())
 	{
-		Vec3 origin = Vec3::Load(es->origin);
+		glm::vec3 origin = VEC2GLM(es->origin);
 		EnqueueDamageIndicator(origin, flags, value, victim);
 	}
 
@@ -255,10 +259,11 @@ static bool EvaluateDamageIndicator(DamageIndicator *di, bool *draw)
 	if (di->ctime + 1000 <= cg.time)
 		return false;
 
-	di->velocity += Vec3(0, 0, -400) * dt;
+	di->velocity += glm::vec3(0, 0, -400) * dt;
 	di->origin += di->velocity * dt;
 
-	if (!CG_WorldToScreen(di->origin.Data(), tmp, tmp + 1)) {
+	if ( !CG_WorldToScreen( &di->origin[0], tmp, tmp + 1 ) )
+	{
 		*draw = false;
 		return true;
 	}
@@ -271,7 +276,7 @@ static bool EvaluateDamageIndicator(DamageIndicator *di, bool *draw)
 	t_fade = (float)(cg.time - di->ctime) / 1000;
 	di->alpha = pow(1 - t_fade, 2);
 
-	di->dist = Distance(Vec3::Load(cg.refdef.vieworg), di->origin);
+	di->dist = glm::distance(VEC2GLM(cg.refdef.vieworg), di->origin);
 	di->scale = damageIndicators_scale.Get();
 	di->scale *= pow(di->dist, DAMAGE_INDICATOR_DISTANCE_EXPONENT);
 
