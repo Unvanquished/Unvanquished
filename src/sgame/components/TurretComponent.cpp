@@ -1,6 +1,8 @@
 #include "TurretComponent.h"
 #include "../Entities.h"
 
+#include <glm/geometric.hpp>
+
 static Log::Logger turretLogger( "sgame.turrets" );
 
 static glm::vec3 DirectionToRelativeAngles( const glm::vec3 direction, const glm::vec3 torso );
@@ -272,21 +274,21 @@ void TurretComponent::SetBaseDirection()
 	vec3_t torsoDirectionOldVec;
 	AngleVectors( entity.oldEnt->s.angles, torsoDirectionOldVec, nullptr, nullptr );
 
-	Vec3 torsoDirection = Math::Normalize( Vec3::Load( torsoDirectionOldVec ) );
-	Vec3 traceStart     = Vec3::Load( entity.oldEnt->s.pos.trBase );
-	Vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
+	glm::vec3 torsoDirection = glm::normalize( VEC2GLM( torsoDirectionOldVec ) );
+	glm::vec3 traceStart     = VEC2GLM( entity.oldEnt->s.pos.trBase );
+	glm::vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
 	trace_t tr;
-	trap_Trace( &tr, traceStart.Data(), nullptr, nullptr, traceEnd.Data(), entity.oldEnt->s.number, MASK_SHOT, 0 );
+	trap_Trace( &tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->s.number, MASK_SHOT, 0 );
 
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.
 	if ( tr.entityNum == ENTITYNUM_WORLD || g_entities[tr.entityNum].entity->Get<BuildableComponent>() )
 	{
-		m_baseDirection = -torsoDirection;
+		VectorCopy( -torsoDirection, m_baseDirection );
 	}
 	else
 	{
-		m_baseDirection =  torsoDirection;
+		VectorCopy( torsoDirection, m_baseDirection );
 	}
 
 	turretLogger.Verbose( "Base direction set to %s.", m_baseDirection );
