@@ -147,10 +147,9 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 		if (damage <= 0.0f) return;
 		if (!G_IsVisible(entity.oldEnt, other.oldEnt, MASK_SOLID)) return;
 
-		vec3_t knockbackDir;
-		VectorSubtract(other.oldEnt->s.origin, entity.oldEnt->s.origin, knockbackDir);
+		glm::vec3 knockbackDir = VEC2GLM( other.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.origin );
 
-		if (other.Damage(damage, entity.oldEnt, {}, Vec3::Load(knockbackDir), DAMAGE_NO_LOCDAMAGE | DAMAGE_KNOCKBACK, mod)) {
+		if (other.Damage(damage, entity.oldEnt, {}, knockbackDir, DAMAGE_NO_LOCDAMAGE | DAMAGE_KNOCKBACK, mod)) {
 			hit = true;
 		}
 	});
