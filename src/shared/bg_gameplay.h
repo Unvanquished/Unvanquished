@@ -273,21 +273,12 @@ extern const float BUILDABLE_START_HEALTH_FRAC;
  * ALIEN weapons
  */
 
-extern int   ABUILDER_CLAW_DMG;
-extern float ABUILDER_CLAW_WIDTH;
 extern float ABUILDER_BLOB_SPEED;
 extern float ABUILDER_BLOB_SPEED_MOD;
 extern int   ABUILDER_BLOB_TIME;
 
-extern int   LEVEL0_BITE_DMG;
-extern float LEVEL0_BITE_WIDTH;
 extern int   LEVEL0_BITE_REPEAT;
 
-extern int   LEVEL1_CLAW_DMG;
-extern float LEVEL1_CLAW_WIDTH;
-
-extern int   LEVEL2_CLAW_DMG;
-extern float LEVEL2_CLAW_WIDTH;
 extern int   LEVEL2_AREAZAP_DMG;
 extern float LEVEL2_AREAZAP_RANGE;
 extern float LEVEL2_AREAZAP_CHAIN_RANGE;
@@ -297,8 +288,6 @@ extern int   LEVEL2_AREAZAP_TIME;
 extern float LEVEL2_WALLJUMP_MAXSPEED;
 #define LEVEL2_AREAZAP_MAX_TARGETS 5
 
-extern int   LEVEL3_CLAW_DMG;
-extern float LEVEL3_CLAW_WIDTH;
 extern int   LEVEL3_POUNCE_DMG;
 extern float LEVEL3_POUNCE_RANGE;
 extern float LEVEL3_POUNCE_UPG_RANGE;
@@ -315,9 +304,6 @@ extern int   LEVEL3_BOUNCEBALL_REGEN;
 extern int   LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
 extern int   LEVEL3_BOUNCEBALL_REGEN_CREEP;
 
-extern int   LEVEL4_CLAW_DMG;
-extern float LEVEL4_CLAW_WIDTH;
-extern float LEVEL4_CLAW_HEIGHT;
 extern int   LEVEL4_TRAMPLE_DMG;
 extern float LEVEL4_TRAMPLE_SPEED;
 extern int   LEVEL4_TRAMPLE_CHARGE_MIN;
@@ -335,10 +321,6 @@ extern int   BLASTER_SPEED;
 
 extern int   RIFLE_SPREAD;
 extern int   RIFLE_DMG;
-
-extern int   PAINSAW_DAMAGE;
-extern float PAINSAW_WIDTH;
-extern float PAINSAW_HEIGHT;
 
 extern int   SHOTGUN_DMG;
 extern int   SHOTGUN_RANGE;

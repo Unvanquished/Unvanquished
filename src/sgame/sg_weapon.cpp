@@ -450,11 +450,15 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 	SendHitEvent( attacker, target, VEC2GLM( origin ), VEC2GLM( normal ), EV_WEAPON_HIT_ENTITY );
 }
 
-static gentity_t *FireMelee( gentity_t *self, float width, float height,
-                             float damage, meansOfDeath_t mod, bool falseRanged )
+static gentity_t *FireMelee( gentity_t *self, meansOfDeath_t mod, bool falseRanged )
 {
 	weapon_t wp = BG_PrimaryWeapon( self->client->ps.stats );
-	float range = BG_Weapon( wp )->range;
+	weaponAttributes_t const* wpa = BG_Weapon( wp );
+	ASSERT( wpa );
+	float range = wpa->range;
+	float width = wpa->width;
+	float height = wpa->height;
+	int damage = wpa->damage;
 	trace_t   tr;
 	gentity_t *traceEnt;
 
@@ -941,8 +945,7 @@ static void CancelBuild( gentity_t *self )
 	if ( self->client->ps.weapon == WP_ABUILD ||
 	     self->client->ps.weapon == WP_ABUILD2 )
 	{
-		FireMelee( self, ABUILDER_CLAW_WIDTH,
-		             ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW, false );
+		FireMelee( self, MOD_ABUILDER_CLAW, false );
 	}
 }
 
@@ -1081,7 +1084,8 @@ bool G_CheckDretchAttack( gentity_t *self )
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 
-	G_WideTrace( &tr, self, BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) )->range, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
+	weaponAttributes_t const* wpa = BG_Weapon( BG_PrimaryWeapon( self->client->ps.stats ) );
+	G_WideTrace( &tr, self, wpa->range, wpa->width, wpa->height, &traceEnt );
 
 	//this is ugly, but so is all that mess in any case. I'm just trying to fix shit here, so go complain to whoever broke the game, not to me.
 
@@ -1092,8 +1096,7 @@ bool G_CheckDretchAttack( gentity_t *self )
 		return false;
 	}
 
-	traceEnt->Damage((float)LEVEL0_BITE_DMG, self, VEC2GLM( tr.endpos ),
-	                         VEC2GLM( forward ), 0, (meansOfDeath_t)MOD_LEVEL0_BITE);
+	traceEnt->entity->Damage( wpa->damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, static_cast<meansOfDeath_t>( MOD_LEVEL0_BITE ) );
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
 
@@ -1592,8 +1595,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			{
 				case WP_ALEVEL1:
 				{
-					gentity_t *target = FireMelee( self, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
-									 LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW, false );
+					gentity_t *target = FireMelee( self, MOD_LEVEL1_CLAW, false );
 					if ( target && target->client )
 					{
 						target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
@@ -1603,28 +1605,23 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_ALEVEL3:
-					FireMelee( self, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
-					           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW, false );
+					FireMelee( self, MOD_LEVEL3_CLAW, false );
 					break;
 
 				case WP_ALEVEL3_UPG:
-					FireMelee( self, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
-					           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW, false );
+					FireMelee( self, MOD_LEVEL3_CLAW, false );
 					break;
 
 				case WP_ALEVEL2:
-					FireMelee( self, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
-					           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW, false );
+					FireMelee( self, MOD_LEVEL2_CLAW, false );
 					break;
 
 				case WP_ALEVEL2_UPG:
-					FireMelee( self, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
-					           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW, false );
+					FireMelee( self, MOD_LEVEL2_CLAW, false );
 					break;
 
 				case WP_ALEVEL4:
-					FireMelee( self, LEVEL4_CLAW_WIDTH, LEVEL4_CLAW_HEIGHT,
-					           LEVEL4_CLAW_DMG, MOD_LEVEL4_CLAW, false );
+					FireMelee( self, MOD_LEVEL4_CLAW, false );
 					break;
 
 				case WP_BLASTER:
@@ -1664,7 +1661,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_PAIN_SAW:
-					FireMelee( self, PAINSAW_WIDTH, PAINSAW_HEIGHT, PAINSAW_DAMAGE, MOD_PAINSAW, true );
+					FireMelee( self, MOD_PAINSAW, true );
 					break;
 
 				case WP_LOCKBLOB_LAUNCHER:
