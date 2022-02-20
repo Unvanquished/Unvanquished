@@ -31,7 +31,7 @@ Log::Logger logger("sgame.cf");
  * @brief Notify a client of a hit
  */
 void HitNotify(gentity_t *attacker, gentity_t *victim,
-               Util::optional<Vec3> point_opt, float damage,
+               Util::optional<glm::vec3> point_opt, float damage,
                meansOfDeath_t mod, bool lethal)
 {
 	bool indirect = false;
@@ -77,19 +77,17 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 	event->s.angles2[0] = damage;
 	event->s.otherEntityNum = victim - g_entities;
 
-	Vec3 point;
+	glm::vec3 point;
 	if (!point_opt || indirect)
 	{
-		point = Vec3::Load(victim->r.currentOrigin) +
-		        (Vec3::Load(victim->r.mins) +
-		         Vec3::Load(victim->r.maxs)) * 0.5f;
+		point = VEC2GLM( victim->r.currentOrigin ) + 0.5f * ( VEC2GLM( victim->r.mins ) + VEC2GLM( victim->r.maxs ) );
 	}
 	else
 	{
 		point = point_opt.value();
 	}
 
-	G_SetOrigin(event, point.Data());
+	G_SetOrigin( event, &point[0] );
 
 	// FIXME: is this necessary with SVF_BROADCAST?
 	trap_LinkEntity(event);

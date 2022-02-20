@@ -61,8 +61,8 @@ float ArmorComponent::GetLocationalDamageMod(float angle, float height) {
 
 
 // TODO: Use new vector math library for all calculations.
-void ArmorComponent::HandleApplyDamageModifier(float& damage, Util::optional<Vec3> location,
-Util::optional<Vec3> /*direction*/, int flags, meansOfDeath_t /*meansOfDeath*/) {
+void ArmorComponent::HandleApplyDamageModifier(float& damage, Util::optional<glm::vec3> location,
+Util::optional<glm::vec3> /*direction*/, int flags, meansOfDeath_t /*meansOfDeath*/) {
 	vec3_t origin, bulletPath, bulletAngle, locationRelativeToFloor, floor, normal;
 
 	// TODO: Remove dependency on client.
@@ -83,7 +83,7 @@ Util::optional<Vec3> /*direction*/, int flags, meansOfDeath_t /*meansOfDeath*/) 
 	}
 	BG_GetClientNormal(&entity.oldEnt->client->ps, normal);
 	VectorMA(origin, entity.oldEnt->r.mins[2], normal, floor);
-	VectorSubtract(location.value().Data(), floor, locationRelativeToFloor);
+	VectorSubtract(location.value(), floor, locationRelativeToFloor);
 
 	// Get fraction of height where the hit landed.
 	float height = entity.oldEnt->r.maxs[2] - entity.oldEnt->r.mins[2];
@@ -92,7 +92,7 @@ Util::optional<Vec3> /*direction*/, int flags, meansOfDeath_t /*meansOfDeath*/) 
 	                             0.0f, height) / height;
 
 	// Get the yaw of the attack relative to the target's view yaw
-	VectorSubtract(location.value().Data(), origin, bulletPath);
+	VectorSubtract(location.value(), origin, bulletPath);
 	vectoangles(bulletPath, bulletAngle);
 	int hitRotation = AngleNormalize360(entity.oldEnt->client->ps.viewangles[YAW] - bulletAngle[YAW]);
 

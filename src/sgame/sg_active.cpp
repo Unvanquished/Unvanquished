@@ -1174,7 +1174,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 				VectorAdd( client->ps.origin, mins, point );
 
 				ent->pain_debounce_time = level.time + 200; // no general pain sound
-				ent->entity->Damage((float)damage, nullptr, Vec3::Load(point), Vec3::Load(dir),
+				ent->entity->Damage((float)damage, nullptr, VEC2GLM( point ), VEC2GLM( dir ),
 				                    DAMAGE_NO_LOCDAMAGE, MOD_FALLING);
 				break;
 

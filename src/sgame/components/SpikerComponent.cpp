@@ -30,8 +30,8 @@ SpikerComponent::SpikerComponent(
 	RegisterSlowThinker();
 }
 
-void SpikerComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util::optional<Vec3> /*location*/,
-                                   Util::optional<Vec3> /*direction*/, int /*flags*/, meansOfDeath_t /*meansOfDeath*/) {
+void SpikerComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util::optional<glm::vec3> /*location*/,
+                                   Util::optional<glm::vec3> /*direction*/, int /*flags*/, meansOfDeath_t /*meansOfDeath*/) {
 	if (!GetAlienBuildableComponent().GetBuildableComponent().Active()) {
 		return;
 	}
