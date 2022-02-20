@@ -450,7 +450,7 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 	SendHitEvent( attacker, target, VEC2GLM( origin ), VEC2GLM( normal ), EV_WEAPON_HIT_ENTITY );
 }
 
-static gentity_t *FireMelee( gentity_t *self, meansOfDeath_t mod, bool falseRanged )
+static gentity_t *FireMelee( gentity_t *self, meansOfDeath_t mod )
 {
 	weapon_t wp = BG_PrimaryWeapon( self->client->ps.stats );
 	weaponAttributes_t const* wpa = BG_Weapon( wp );
@@ -472,7 +472,7 @@ static gentity_t *FireMelee( gentity_t *self, meansOfDeath_t mod, bool falseRang
 	traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, mod );
 
 	// for painsaw. This makes really little sense to me, but this is refactoring, not bugsquashing.
-	if ( falseRanged )
+	if ( wp == WP_PAIN_SAW )
 	{
 		SendRangedHitEvent( self, traceEnt, &tr );
 	}
@@ -481,6 +481,14 @@ static gentity_t *FireMelee( gentity_t *self, meansOfDeath_t mod, bool falseRang
 		SendMeleeHitEvent( self, traceEnt, &tr );
 	}
 
+	if ( wp == WP_ALEVEL1 )
+	{
+		if ( traceEnt && traceEnt->client )
+		{
+			traceEnt->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
+			traceEnt->client->lastLevel1SlowTime = level.time;
+		}
+	}
 	return traceEnt;
 }
 
@@ -945,7 +953,7 @@ static void CancelBuild( gentity_t *self )
 	if ( self->client->ps.weapon == WP_ABUILD ||
 	     self->client->ps.weapon == WP_ABUILD2 )
 	{
-		FireMelee( self, MOD_ABUILDER_CLAW, false );
+		FireMelee( self, MOD_ABUILDER_CLAW );
 	}
 }
 
@@ -1594,34 +1602,27 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			switch ( weapon )
 			{
 				case WP_ALEVEL1:
-				{
-					gentity_t *target = FireMelee( self, MOD_LEVEL1_CLAW, false );
-					if ( target && target->client )
-					{
-						target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
-						target->client->lastLevel1SlowTime = level.time;
-					}
-				}
+					FireMelee( self, MOD_LEVEL1_CLAW );
 					break;
 
 				case WP_ALEVEL3:
-					FireMelee( self, MOD_LEVEL3_CLAW, false );
+					FireMelee( self, MOD_LEVEL3_CLAW );
 					break;
 
 				case WP_ALEVEL3_UPG:
-					FireMelee( self, MOD_LEVEL3_CLAW, false );
+					FireMelee( self, MOD_LEVEL3_CLAW );
 					break;
 
 				case WP_ALEVEL2:
-					FireMelee( self, MOD_LEVEL2_CLAW, false );
+					FireMelee( self, MOD_LEVEL2_CLAW );
 					break;
 
 				case WP_ALEVEL2_UPG:
-					FireMelee( self, MOD_LEVEL2_CLAW, false );
+					FireMelee( self, MOD_LEVEL2_CLAW );
 					break;
 
 				case WP_ALEVEL4:
-					FireMelee( self, MOD_LEVEL4_CLAW, false );
+					FireMelee( self, MOD_LEVEL4_CLAW );
 					break;
 
 				case WP_BLASTER:
@@ -1661,7 +1662,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_PAIN_SAW:
-					FireMelee( self, MOD_PAINSAW, true );
+					FireMelee( self, MOD_PAINSAW );
 					break;
 
 				case WP_LOCKBLOB_LAUNCHER:
