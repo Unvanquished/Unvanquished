@@ -1100,7 +1100,7 @@ bool G_CheckDretchAttack( gentity_t *self )
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
 
-	self->client->ps.weaponTime += LEVEL0_BITE_REPEAT;
+	self->client->ps.weaponTime += wpa->repeatRate1;
 
 	return true;
 }

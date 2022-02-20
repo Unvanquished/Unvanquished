@@ -277,8 +277,6 @@ extern float ABUILDER_BLOB_SPEED;
 extern float ABUILDER_BLOB_SPEED_MOD;
 extern int   ABUILDER_BLOB_TIME;
 
-extern int   LEVEL0_BITE_REPEAT;
-
 extern int   LEVEL2_AREAZAP_DMG;
 extern float LEVEL2_AREAZAP_RANGE;
 extern float LEVEL2_AREAZAP_CHAIN_RANGE;

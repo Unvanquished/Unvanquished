@@ -64,8 +64,6 @@ float ABUILDER_BLOB_SPEED;
 float ABUILDER_BLOB_SPEED_MOD;
 int   ABUILDER_BLOB_TIME;
 
-int   LEVEL0_BITE_REPEAT;
-
 int   LEVEL2_AREAZAP_DMG;
 float LEVEL2_AREAZAP_RANGE;
 float LEVEL2_AREAZAP_CHAIN_RANGE;
@@ -177,8 +175,6 @@ static configVar_t bg_configVars[] =
 	{"w_lcannon_secondaryRadius", INTEGER, false, &LCANNON_SECONDARY_RADIUS },
 	{"w_lcannon_secondarySpeed", INTEGER, false, &LCANNON_SECONDARY_SPEED },
 	{"w_lcannon_speed", INTEGER, false, &LCANNON_SPEED },
-
-	{"w_level0_biteRepeat", INTEGER, false, &LEVEL0_BITE_REPEAT},
 
 	{"w_level2upg_zapChainFalloff", FLOAT, false, &LEVEL2_AREAZAP_CHAIN_FALLOFF},
 	{"w_level2upg_zapChainRange", FLOAT, false, &LEVEL2_AREAZAP_CHAIN_RANGE},
@@ -1627,7 +1623,8 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		{
 			wa->usesEnergy = true;
 		}
-		else if ( !Q_stricmp( token, "primaryAttackRate" ) )
+		// biteRepeat is only used by dretch
+		else if ( !Q_stricmp( token, "primaryAttackRate" ) || !Q_stricmp( token, "biteRepeat" ) )
 		{
 			PARSE(text, token);
 
