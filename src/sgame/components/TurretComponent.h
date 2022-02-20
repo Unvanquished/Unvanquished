@@ -108,22 +108,22 @@ class TurretComponent: public TurretComponentBase {
 		glm::vec3 TorsoAngles() const;
 
 		/** An entity target that the turret can track. */
-		gentity_t* m_target;
+		gentity_t* target;
 
 		/** The attack range of the turret, used for checking whether a target can be hit. */
-		float m_range;
+		float range;
 
 		/** The turret's target direction after construction and a direction reset. */
-		Vec3 m_baseDirection;
+		glm::vec3 baseDirection;
 
 		/** The direction that the head will move to when asked to make a move. */
-		Vec3 m_directionToTarget;
+		glm::vec3 directionToTarget;
 
 		/** The angle of the turret's head orientation relative to the turret's torso. */
-		Vec3 m_relativeAimAngles;
+		glm::vec3 relativeAimAngles;
 
 		/** A timer used to forget about targets that were behind cover for a while. */
-		int m_lastLineOfSightToTarget;
+		int lastLineOfSightToTarget;
 };
 
 #endif // TURRET_COMPONENT_H_
