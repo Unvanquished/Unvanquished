@@ -114,7 +114,12 @@ if (BUILD_SGAME OR BUILD_CGAME)
     include_directories(
         ${LIB_DIR}/recastnavigation/Recast/Include
         ${LIB_DIR}/recastnavigation/RecastDemo/Include)
+
+    # GLM
+    include_directories(${LIB_DIR}/glm)
 endif()
+
+add_definitions( -DGLM_FORCE_EXPLICIT_CTOR )
 
 add_library(srclibs-tinygettext EXCLUDE_FROM_ALL ${TINYGETTEXTLIST})
 set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")

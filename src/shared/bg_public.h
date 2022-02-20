@@ -29,6 +29,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bg_public.h -- definitions shared by both the server game and client game modules
 //==================================================================
 
+#include <glm/vec3.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+// TODO remove this function when it will no longer be useful
+// This function is a compatibility layer
+template<typename T>
+inline glm::vec3 VEC2GLM( const T& v ) {
+	return glm::vec3( v[0], v[1], v[2] );
+}
+
 #include "engine/qcommon/q_shared.h"
 
 //Unvanquished balance header
