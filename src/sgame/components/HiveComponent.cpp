@@ -1,6 +1,7 @@
 #include "HiveComponent.h"
 #include "../Entities.h"
 
+#include <glm/geometric.hpp>
 constexpr float SENSE_RANGE   = HIVE_SENSE_RANGE; // Also needed by cgame.
 constexpr int   ATTACK_PERIOD = 3000;
 
@@ -103,11 +104,11 @@ void HiveComponent::Fire(Entity& target) {
 	insectsReady       = false;
 	insectsActiveSince = level.time;
 
-	Vec3 muzzle      = Vec3::Load(entity.oldEnt->s.pos.trBase);
-	Vec3 targetPoint = Vec3::Load(target.oldEnt->s.origin);
-	Vec3 dirToTarget = Math::Normalize(targetPoint - muzzle);
+	glm::vec3 muzzle      = VEC2GLM( entity.oldEnt->s.pos.trBase );
+	glm::vec3 targetPoint = VEC2GLM( target.oldEnt->s.origin );
+	glm::vec3 dirToTarget = glm::normalize( targetPoint - muzzle );
 
-	vectoangles(dirToTarget.Data(), entity.oldEnt->buildableAim);
+	vectoangles( &dirToTarget[0], entity.oldEnt->buildableAim );
 	entity.oldEnt->target = target.oldEnt;
 
 	G_FireWeapon(entity.oldEnt, WP_HIVE, WPM_PRIMARY);
