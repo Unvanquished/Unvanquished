@@ -4363,7 +4363,6 @@ The dx/dy arguments describe the damage point's offset from the entity origin
 */
 static void Cmd_Damage_f( gentity_t *ent )
 {
-	vec3_t   point;
 	char     arg[ 16 ];
 	float    dx = 0.0f, dy = 0.0f, dz = 100.0f;
 	int      damage = 100;
@@ -4386,12 +4385,13 @@ static void Cmd_Damage_f( gentity_t *ent )
 		nonloc = false;
 	}
 
+	glm::vec3 point;
 	VectorCopy( ent->s.origin, point );
 	point[ 0 ] += dx;
 	point[ 1 ] += dy;
 	point[ 2 ] += dz;
 
-	ent->entity->Damage((float)damage, nullptr, Vec3::Load(point), Util::nullopt,
+	ent->entity->Damage((float)damage, nullptr, point, Util::nullopt,
 	                    nonloc ? DAMAGE_NO_LOCDAMAGE : 0, MOD_TARGET_LASER);
 }
 

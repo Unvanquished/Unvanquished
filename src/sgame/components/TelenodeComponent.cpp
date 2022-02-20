@@ -4,23 +4,23 @@ TelenodeComponent::TelenodeComponent(Entity& entity, HumanBuildableComponent& r_
 	: TelenodeComponentBase(entity, r_HumanBuildableComponent, r_SpawnerComponent)
 {}
 
-void TelenodeComponent::HandleCheckSpawnPoint(Entity *&blocker, Vec3& spawnPoint) {
+void TelenodeComponent::HandleCheckSpawnPoint(Entity *&blocker, glm::vec3& spawnPoint) {
 	CheckSpawnPoint(
-		entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.origin),
-		Vec3::Load(entity.oldEnt->s.origin2), blocker, spawnPoint
+		entity.oldEnt->s.number, VEC2GLM( entity.oldEnt->s.origin ),
+		VEC2GLM( entity.oldEnt->s.origin2 ), blocker, spawnPoint
 	);
 }
 
 bool TelenodeComponent::CheckSpawnPoint(
-	int spawnerNumber, const Vec3 spawnerOrigin, const Vec3 spawnerNormal, Entity*& blocker,
-	Vec3& spawnPoint
+	int spawnerNumber, const glm::vec3 spawnerOrigin, const glm::vec3 spawnerNormal, Entity*& blocker,
+	glm::vec3& spawnPoint
 ){
-	vec3_t spawnerMins, spawnerMaxs, clientMins, clientMaxs;
+	glm::vec3 spawnerMins, spawnerMaxs, clientMins, clientMaxs;
 
-	BG_BuildableBoundingBox(BA_H_SPAWN, spawnerMins, spawnerMaxs);
+	BG_BuildableBoundingBox(BA_H_SPAWN, &spawnerMins[0], &spawnerMaxs[0]);
 
 	// HACK: Assumes this class is the greatest that can spawn.
-	BG_ClassBoundingBox(PCL_HUMAN_NAKED, clientMins, clientMaxs, nullptr, nullptr, nullptr);
+	BG_ClassBoundingBox(PCL_HUMAN_NAKED, &clientMins[0], &clientMaxs[0], nullptr, nullptr, nullptr);
 
 	// TODO: Does this work if the Telenode is at an angle?
 	float displacement = spawnerMaxs[2] - clientMins[2] + 1.0f;
@@ -28,7 +28,7 @@ bool TelenodeComponent::CheckSpawnPoint(
 	spawnPoint = spawnerOrigin + displacement * spawnerNormal;
 
 	blocker = SpawnerComponent::CheckSpawnPointHelper(
-		spawnerNumber, spawnerOrigin, spawnPoint, Vec3::Load(clientMins), Vec3::Load(clientMaxs)
+		spawnerNumber, spawnerOrigin, spawnPoint, VEC2GLM( clientMins ), VEC2GLM( clientMaxs )
 	);
 
 	return !blocker;

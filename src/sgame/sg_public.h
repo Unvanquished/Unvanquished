@@ -344,7 +344,7 @@ void G_SetBotFill( int fill );
 // CombatFeedback.cpp
 namespace CombatFeedback
 {
-  void HitNotify(gentity_t *attacker, gentity_t *victim, Util::optional<Vec3> point, float damage, meansOfDeath_t mod, bool lethal);
+  void HitNotify(gentity_t *attacker, gentity_t *victim, Util::optional<glm::vec3> point, float damage, meansOfDeath_t mod, bool lethal);
 }
 
 #endif // SG_PUBLIC_H_
