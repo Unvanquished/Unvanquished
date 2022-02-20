@@ -2578,8 +2578,8 @@ static void PM_GroundClimbTrace()
 				           pm->tracemask, 0 );
 
 				break;
-			case NUM_GCT_ATP:
-				ASSERT_UNREACHABLE();
+			case NUM_GCT_ATP: // WARNING: this is actually reached, for example when jumping while wallwalking
+				break;
 		}
 
 		// check if we hit something
