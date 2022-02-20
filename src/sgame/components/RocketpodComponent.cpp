@@ -1,6 +1,8 @@
 #include "RocketpodComponent.h"
 #include "../Entities.h"
 
+#include <glm/geometric.hpp>
+
 constexpr float ATTACK_RANGE         = (float)ROCKETPOD_RANGE; // cgame needs to know this.
 constexpr int   ATTACK_PERIOD        = ROCKETPOD_ATTACK_PERIOD; // cgame needs to know this.
 constexpr int   SHUTTER_OPEN_TIME    = 1000;
@@ -170,60 +172,46 @@ bool RocketpodComponent::CompareTargets(Entity &a, Entity &b) {
 	}
 
 	// Prefer the target that is currently safe to shoot at.
-	Vec3 directionToA = Math::Normalize(
-		Vec3::Load(a.oldEnt->s.origin) - Vec3::Load(entity.oldEnt->s.pos.trBase)
-	);
+	glm::vec3 directionToA = glm::normalize( VEC2GLM( a.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
+	glm::vec3 directionToB = glm::normalize( VEC2GLM( b.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
 
-	Vec3 directionToB = Math::Normalize(
-		Vec3::Load(b.oldEnt->s.origin) - Vec3::Load(entity.oldEnt->s.pos.trBase)
-	);
+	bool safeToShootAtA = SafeShot( entity.oldEnt->s.number, VEC2GLM( entity.oldEnt->s.pos.trBase ), directionToA );
+	bool safeToShootAtB = SafeShot( entity.oldEnt->s.number, VEC2GLM( entity.oldEnt->s.pos.trBase ), directionToB );
 
-	bool safeToShootAtA = SafeShot(
-		entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.pos.trBase), directionToA
-	);
-
-	bool safeToShootAtB = SafeShot(
-		entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.pos.trBase), directionToB
-	);
-
-	if        ( safeToShootAtA && !safeToShootAtB) {
+	if ( safeToShootAtA && !safeToShootAtB)
+	{
 		return true;
-	} else if (!safeToShootAtA &&  safeToShootAtB) {
+	}
+	else if ( !safeToShootAtA && safeToShootAtB )
+	{
 		return false;
 	}
 
 	// Prefer the target that is further away.
-	float distanceToA = Math::Length(
-		Vec3::Load(a.oldEnt->s.origin) - Vec3::Load(entity.oldEnt->s.pos.trBase)
-	);
-
-	float distanceToB = Math::Length(
-		Vec3::Load(b.oldEnt->s.origin) - Vec3::Load(entity.oldEnt->s.pos.trBase)
-	);
+	float distanceToA = glm::length( VEC2GLM( a.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
+	float distanceToB = glm::length( VEC2GLM( b.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
 
 	return (distanceToA > distanceToB);
 }
 
 bool RocketpodComponent::SafeShot() {
-	Vec3 aimDirection;
-	AngleVectors(entity.oldEnt->buildableAim, aimDirection.Data(), nullptr, nullptr);
+	glm::vec3 aimDirection;
+	AngleVectors( entity.oldEnt->buildableAim, &aimDirection[0], nullptr, nullptr );
 
-	return SafeShot(entity.oldEnt->s.number, Vec3::Load(entity.oldEnt->s.pos.trBase), aimDirection);
+	return SafeShot( entity.oldEnt->s.number, VEC2GLM( entity.oldEnt->s.pos.trBase ), aimDirection );
 }
 
-bool RocketpodComponent::SafeShot(int passEntityNumber, const Vec3& origin, const Vec3& direction) {
+bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin, const glm::vec3& direction) {
 	const missileAttributes_t* missileAttributes = BG_Missile(MIS_ROCKET);
 
 	float missileSize = missileAttributes->size;
 
-	Vec3 mins = {-missileSize, -missileSize, -missileSize};
-	Vec3 maxs = { missileSize,  missileSize,  missileSize};
-	Vec3 end  = origin + ATTACK_RANGE * direction;
+	glm::vec3 mins = {-missileSize, -missileSize, -missileSize};
+	glm::vec3 maxs = { missileSize,  missileSize,  missileSize};
+	glm::vec3 end  = origin + ATTACK_RANGE * direction;
 
 	trace_t trace;
-	trap_Trace(
-		&trace, origin.Data(), mins.Data(), maxs.Data(), end.Data(), passEntityNumber, MASK_SHOT, 0
-	);
+	trap_Trace( &trace, &origin[0], &mins[0], &maxs[0], &end[0], passEntityNumber, MASK_SHOT, 0 );
 
 	// TODO: Refactor area damage (testing) helpers.
 	return !G_RadiusDamage(
@@ -248,13 +236,11 @@ bool RocketpodComponent::EnemyClose() {
 
 		classModelConfig_t* cmc = BG_ClassModelConfig(other.oldEnt->client->pers.classSelection);
 
-		Vec3 turretMins, turretMaxs;
-		BG_BuildableBoundingBox(BA_H_ROCKETPOD, turretMins.Data(), turretMaxs.Data());
+		glm::vec3 turretMins, turretMaxs;
+		BG_BuildableBoundingBox( BA_H_ROCKETPOD, &turretMins[0], &turretMaxs[0] );
 
-		float enemyRadius   = std::max(
-			Math::Length(Vec3::Load(cmc->mins)), Math::Length(Vec3::Load(cmc->maxs))
-		);
-		float turretRadius  = std::max(Math::Length(turretMins), Math::Length(turretMaxs));
+		float enemyRadius   = std::max( glm::length( VEC2GLM( cmc->mins ) ), glm::length( VEC2GLM( cmc->maxs ) ) );
+		float turretRadius  = std::max( glm::length( turretMins ), glm::length( turretMaxs ) );
 		float missileRadius = missileAttributes->size;
 		float splashRadius  = missileAttributes->splashRadius;
 
