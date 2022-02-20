@@ -105,7 +105,7 @@ class TurretComponent: public TurretComponentBase {
 		 */
 		bool TargetValid(Entity& target, bool newTarget);
 
-		Vec3 TorsoAngles() const;
+		glm::vec3 TorsoAngles() const;
 
 		/** An entity target that the turret can track. */
 		gentity_t* m_target;
