@@ -730,10 +730,10 @@ static void RocketThink( gentity_t *self )
 	                         Math::Clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
 
 	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
-	if (    !RocketpodComponent::SafeShot(
-			ENTITYNUM_NONE, Vec3::Load( self->r.currentOrigin ), Vec3::Load( newDir )
+	if ( !RocketpodComponent::SafeShot(
+			ENTITYNUM_NONE, VEC2GLM( self->r.currentOrigin ), VEC2GLM( newDir )
 		) && RocketpodComponent::SafeShot(
-			ENTITYNUM_NONE, Vec3::Load( self->r.currentOrigin ), Vec3::Load( currentDir )
+			ENTITYNUM_NONE, VEC2GLM( self->r.currentOrigin ), VEC2GLM( currentDir )
 		)
 	) {
 		return;
