@@ -45,8 +45,6 @@ extern float ABUILDER_BLOB_SPEED_MOD;
 extern int   ABUILDER_BLOB_LOCK_TIME;
 extern int   ABUILDER_BLOB_TIME;
 
-extern int   LEVEL0_BITE_REPEAT;
-
 #define LEVEL1_POUNCE_DISTANCE        300 // pitch between LEVEL1_POUNCE_MINPITCH and pi/4 results in this distance
 #define LEVEL1_POUNCE_MINPITCH        (M_PI / 12.0f) // 15°, minimum pitch that will result in full pounce distance
 #define LEVEL1_POUNCE_COOLDOWN        2000
