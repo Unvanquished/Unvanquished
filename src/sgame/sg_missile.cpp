@@ -251,18 +251,18 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	vec3_t dir;
 
 	// put out fires on direct hit
-	hitEnt->entity->Extinguish( w_abuild_blobFireImmunityDuration.Get() );
+	hitEnt->entity->Extinguish( g_abuild_blobFireImmunityDuration.Get() );
 
 	// put out fires in range
 	gentity_t *neighbor = nullptr;
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
-							    w_abuild_blobFireExtinguishRange.Get() ) ) )
+							    g_abuild_blobFireExtinguishRange.Get() ) ) )
 	{
 		// extinguish other entity on fire nearby,
 		// and fires on ground
 		if ( neighbor != hitEnt )
 		{
-			neighbor->entity->Extinguish( w_abuild_blobFireImmunityDuration.Get() );
+			neighbor->entity->Extinguish( g_abuild_blobFireImmunityDuration.Get() );
 		}
 	}
 
