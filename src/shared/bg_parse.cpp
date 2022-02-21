@@ -105,9 +105,6 @@ int   MEDKIT_STARTUP_SPEED;
 
 int   BLASTER_SPEED;
 
-int   RIFLE_SPREAD;
-int   RIFLE_DMG;
-
 int   SHOTGUN_PELLETS;
 
 int   LASGUN_DAMAGE;
@@ -213,9 +210,6 @@ static configVar_t bg_configVars[] =
 	{"w_mdriver_damage", INTEGER, false, &MDRIVER_DMG },
 
 	{"w_prifle_speed", INTEGER, false, &PRIFLE_SPEED },
-
-	{"w_rifle_damage", INTEGER, false, &RIFLE_DMG },
-	{"w_rifle_spread", INTEGER, false, &RIFLE_SPREAD },
 
 	{"w_shotgun_pellets", INTEGER, false, &SHOTGUN_PELLETS },
 };

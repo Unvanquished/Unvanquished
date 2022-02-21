@@ -317,9 +317,6 @@ extern int   LEVEL4_TRAMPLE_REPEAT;
 
 extern int   BLASTER_SPEED;
 
-extern int   RIFLE_SPREAD;
-extern int   RIFLE_DMG;
-
 extern int   SHOTGUN_PELLETS;
 
 extern int   LASGUN_DAMAGE;
