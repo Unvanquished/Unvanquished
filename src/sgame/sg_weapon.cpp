@@ -1636,7 +1636,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_CHAINGUN:
-					FireBullet( self, CHAINGUN_SPREAD, (float)CHAINGUN_DMG, MOD_CHAINGUN, false );
+					FireBullet( self, -1.f, -1.f, MOD_CHAINGUN, false );
 					break;
 
 				case WP_FLAMER:

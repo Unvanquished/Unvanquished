@@ -118,9 +118,6 @@ int   LASGUN_DAMAGE;
 
 int   MDRIVER_DMG;
 
-int   CHAINGUN_SPREAD;
-int   CHAINGUN_DMG;
-
 int   FLAMER_DMG;
 int   FLAMER_FLIGHTDAMAGE;
 int   FLAMER_SPLASHDAMAGE;
@@ -166,9 +163,6 @@ static configVar_t bg_configVars[] =
 	{"w_blaster_size", INTEGER, false, &BLASTER_SIZE },
 	{"w_blaster_speed", INTEGER, false, &BLASTER_SPEED },
 	{"w_blaster_spread", INTEGER, false, &BLASTER_SPREAD },
-
-	{"w_chaingun_damage", INTEGER, false, &CHAINGUN_DMG },
-	{"w_chaingun_spread", INTEGER, false, &CHAINGUN_SPREAD },
 
 	{"w_flamer_damage", INTEGER, false, &FLAMER_DMG },
 	{"w_flamer_flightDamage", INTEGER, false, &FLAMER_FLIGHTDAMAGE },

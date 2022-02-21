@@ -164,9 +164,6 @@ extern int   LASGUN_DAMAGE;
 
 extern int   MDRIVER_DMG;
 
-extern int   CHAINGUN_SPREAD;
-extern int   CHAINGUN_DMG;
-
 extern int   FLAMER_DMG;
 extern int   FLAMER_FLIGHTDAMAGE;
 extern int   FLAMER_SPLASHDAMAGE;
