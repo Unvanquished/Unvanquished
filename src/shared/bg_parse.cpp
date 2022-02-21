@@ -112,9 +112,6 @@ int   BLASTER_SPEED;
 int   BLASTER_DMG;
 int   BLASTER_SIZE;
 
-int   RIFLE_SPREAD;
-int   RIFLE_DMG;
-
 int   SHOTGUN_PELLETS;
 
 int   LASGUN_DAMAGE;
@@ -241,9 +238,6 @@ static configVar_t bg_configVars[] =
 	{"w_prifle_damage", INTEGER, false, &PRIFLE_DMG },
 	{"w_prifle_size", INTEGER, false, &PRIFLE_SIZE },
 	{"w_prifle_speed", INTEGER, false, &PRIFLE_SPEED },
-
-	{"w_rifle_damage", INTEGER, false, &RIFLE_DMG },
-	{"w_rifle_spread", INTEGER, false, &RIFLE_SPREAD },
 
 	{"w_shotgun_pellets", INTEGER, false, &SHOTGUN_PELLETS },
 };

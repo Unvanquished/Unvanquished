@@ -491,6 +491,18 @@ MACHINEGUN
 
 static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeath_t mod, int other )
 {
+	weapon_t wp = BG_PrimaryWeapon( self->client->ps.stats );
+	weaponAttributes_t const* wpa = BG_Weapon( wp );
+
+	if ( spread < 0 )
+	{
+		spread = wpa->spread;
+	}
+	if ( damage < 0 )
+	{
+		damage = wpa->damage;
+	}
+
 	trace_t   tr;
 	vec3_t    end;
 	gentity_t *target;
@@ -1616,7 +1628,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MACHINEGUN:
-					FireBullet( self, RIFLE_SPREAD, (float)RIFLE_DMG, MOD_MACHINEGUN, false );
+					FireBullet( self, -1.f, -1.f, MOD_MACHINEGUN, false );
 					break;
 
 				case WP_SHOTGUN:
