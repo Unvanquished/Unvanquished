@@ -32,12 +32,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // definitions
 // -----------
 
-static Cvar::Cvar<int> w_abuild_blobFireImmunityDuration(
-		"w_abuild_blobFireImmunityDuration",
+static Cvar::Cvar<int> g_abuild_blobFireImmunityDuration(
+		"g_abuild_blobFireImmunityDuration",
 		"duration of the immunity to fire from a granger spit (in milliseconds)",
 		Cvar::NONE, 3000);
-static Cvar::Cvar<int> w_abuild_blobFireExtinguishRange(
-		"w_abuild_blobFireExtinguishRange",
+static Cvar::Cvar<int> g_abuild_blobFireExtinguishRange(
+		"g_abuild_blobFireExtinguishRange",
 		"range around which a granger spit extinguish fires on the ground",
 		Cvar::NONE, 64);
 
