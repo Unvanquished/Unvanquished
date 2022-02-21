@@ -1384,6 +1384,7 @@ struct weaponAttributes_t
 	float width; //overwrites height for compat reasons, so must be defined before in config files
 	float height;
 	int damage;
+	int spread;
 };
 
 // upgrade record

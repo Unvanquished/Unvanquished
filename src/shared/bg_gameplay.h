@@ -161,10 +161,7 @@ extern int   BLASTER_SIZE;
 extern int   RIFLE_SPREAD;
 extern int   RIFLE_DMG;
 
-extern int   SHOTGUN_DMG;
-extern int   SHOTGUN_RANGE;
 extern int   SHOTGUN_PELLETS;
-extern int   SHOTGUN_SPREAD;
 
 extern int   LASGUN_DAMAGE;
 

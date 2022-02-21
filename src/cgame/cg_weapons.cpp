@@ -2566,7 +2566,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 	for ( i = 0; i < SHOTGUN_PELLETS; i++ )
 	{
 		r = Q_crandom( &seed ) * M_PI;
-		a = Q_random( &seed ) * SHOTGUN_SPREAD * 16;
+		a = Q_random( &seed ) * BG_Weapon( WP_SHOTGUN )->spread * 16;
 
 		u = sinf( r ) * a;
 		r = cosf( r ) * a;
