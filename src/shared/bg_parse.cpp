@@ -111,9 +111,6 @@ int   LASGUN_DAMAGE;
 
 int   MDRIVER_DMG;
 
-int   CHAINGUN_SPREAD;
-int   CHAINGUN_DMG;
-
 int   FLAMER_SIZE;
 float FLAMER_LIFETIME;
 float FLAMER_SPEED;
@@ -147,9 +144,6 @@ static configVar_t bg_configVars[] =
 	{"w_abuildupg_blobSpeedMod", FLOAT, false, &ABUILDER_BLOB_SPEED_MOD},
 
 	{"w_blaster_speed", INTEGER, false, &BLASTER_SPEED },
-
-	{"w_chaingun_damage", INTEGER, false, &CHAINGUN_DMG },
-	{"w_chaingun_spread", INTEGER, false, &CHAINGUN_SPREAD },
 
 	{"w_flamer_igniteChance", FLOAT, false, &FLAMER_IGNITE_CHANCE },
 	{"w_flamer_igniteRadius", FLOAT, false, &FLAMER_IGNITE_RADIUS },

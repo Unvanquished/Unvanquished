@@ -1192,7 +1192,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_CHAINGUN:
-			range = ( 60 * 8192 ) / CHAINGUN_SPREAD; //60 is the maximum radius we want the spread to be
+			range = ( 60 * 8192 ) / wpa->spread; //60 is the maximum radius we want the spread to be
 			secondaryRange = 0;
 			break;
 		default:
