@@ -162,8 +162,6 @@ extern int   SHOTGUN_PELLETS;
 
 extern int   LASGUN_DAMAGE;
 
-extern int   MDRIVER_DMG;
-
 extern int   FLAMER_DMG;
 extern int   FLAMER_FLIGHTDAMAGE;
 extern int   FLAMER_SPLASHDAMAGE;

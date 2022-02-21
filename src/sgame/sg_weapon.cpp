@@ -1648,7 +1648,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MASS_DRIVER:
-					FireBullet( self, 0.f, (float)MDRIVER_DMG, MOD_MDRIVER, DAMAGE_KNOCKBACK );
+					FireBullet( self, 0.f, -1, MOD_MDRIVER, DAMAGE_KNOCKBACK );
 					break;
 
 				case WP_LUCIFER_CANNON:
