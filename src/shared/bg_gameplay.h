@@ -321,8 +321,6 @@ extern int   SHOTGUN_PELLETS;
 
 extern int   LASGUN_DAMAGE;
 
-extern int   MDRIVER_DMG;
-
 extern int   FLAMER_SIZE;
 extern float FLAMER_LIFETIME;
 extern float FLAMER_SPEED;
