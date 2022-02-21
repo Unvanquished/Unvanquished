@@ -1678,7 +1678,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_LAS_GUN:
-					FireBullet( self, 0.f, LASGUN_DAMAGE, MOD_LASGUN, 0 );
+					FireBullet( self, 0.f, -1, MOD_LASGUN, 0 );
 					break;
 
 				case WP_PAIN_SAW:

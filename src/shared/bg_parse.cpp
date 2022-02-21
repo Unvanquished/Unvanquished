@@ -107,8 +107,6 @@ int   BLASTER_SPEED;
 
 int   SHOTGUN_PELLETS;
 
-int   LASGUN_DAMAGE;
-
 int   FLAMER_SIZE;
 float FLAMER_LIFETIME;
 float FLAMER_SPEED;
@@ -196,8 +194,6 @@ static configVar_t bg_configVars[] =
 	{"w_level4_trampleRepeat", INTEGER, false, &LEVEL4_TRAMPLE_REPEAT},
 	{"w_level4_trampleSpeed", FLOAT, false, &LEVEL4_TRAMPLE_SPEED},
 	{"w_level4_trampleStopPenalty", INTEGER, false, &LEVEL4_TRAMPLE_STOP_PENALTY},
-
-	{"w_lgun_damage", INTEGER, false, &LASGUN_DAMAGE },
 
 	{"w_prifle_speed", INTEGER, false, &PRIFLE_SPEED },
 
