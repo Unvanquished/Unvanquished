@@ -114,8 +114,6 @@ int   BLASTER_SIZE;
 
 int   SHOTGUN_PELLETS;
 
-int   LASGUN_DAMAGE;
-
 int   FLAMER_DMG;
 int   FLAMER_FLIGHTDAMAGE;
 int   FLAMER_SPLASHDAMAGE;
@@ -222,8 +220,6 @@ static configVar_t bg_configVars[] =
 	{"w_level4_trampleRepeat", INTEGER, false, &LEVEL4_TRAMPLE_REPEAT},
 	{"w_level4_trampleSpeed", FLOAT, false, &LEVEL4_TRAMPLE_SPEED},
 	{"w_level4_trampleStopPenalty", INTEGER, false, &LEVEL4_TRAMPLE_STOP_PENALTY},
-
-	{"w_lgun_damage", INTEGER, false, &LASGUN_DAMAGE },
 
 	{"w_prifle_damage", INTEGER, false, &PRIFLE_DMG },
 	{"w_prifle_size", INTEGER, false, &PRIFLE_SIZE },
