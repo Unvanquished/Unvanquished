@@ -1391,6 +1391,7 @@ struct weaponAttributes_t : public itemAttributes_t
 	float     width; //overwrites height for compat reasons, so must be defined before in config files
 	float     height;
 	int       damage;
+	int       spread;
 
 	bool     longRanged;
 };

@@ -586,6 +586,9 @@ Keep this in sync with ShotgunPattern in CGAME!
 */
 static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *self )
 {
+	weapon_t wp = BG_PrimaryWeapon( self->client->ps.stats );
+	weaponAttributes_t const* wpa = BG_Weapon( wp );
+
 	int       i;
 	float     r, u, a;
 	vec3_t    end;
@@ -603,25 +606,26 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 	for ( i = 0; i < SHOTGUN_PELLETS; i++ )
 	{
 		r = Q_crandom( &seed ) * M_PI;
-		a = Q_random( &seed ) * SHOTGUN_SPREAD * 16;
+		a = Q_random( &seed ) * wpa->spread * 16;
 
 		u = sinf( r ) * a;
 		r = cosf( r ) * a;
 
-		VectorMA( origin, SHOTGUN_RANGE, forward, end );
+		VectorMA( origin, wpa->range, forward, end );
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 
 		trap_Trace( &tr, origin, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		traceEnt->Damage((float)SHOTGUN_DMG, self, VEC2GLM( tr.endpos ),
-		                         VEC2GLM( forward ), 0, (meansOfDeath_t)MOD_SHOTGUN);
+		traceEnt->entity->Damage( wpa->damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, static_cast<meansOfDeath_t>( MOD_SHOTGUN ) );
 	}
 }
 
 static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 {
+	weapon_t wp = BG_PrimaryWeapon( self->client->ps.stats );
+	weaponAttributes_t const* wpa = BG_Weapon( wp );
 	gentity_t *tent;
 
 	// instead of an EV_WEAPON_HIT_* event, send this so client can generate the same spread pattern
@@ -632,7 +636,7 @@ static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 	tent->s.otherEntityNum = self->s.number;
 
 	// calculate the pattern and do the damage
-	G_UnlaggedOn( self, muzzle, SHOTGUN_RANGE );
+	G_UnlaggedOn( self, muzzle, wpa->range );
 	ShotgunPattern( tent->s.pos.trBase, tent->s.origin2, tent->s.eventParm, self );
 	G_UnlaggedOff();
 }

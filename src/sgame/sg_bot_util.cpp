@@ -1184,7 +1184,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			}
 			break;
 		case WP_SHOTGUN:
-			range = ( 50 * 8192 ) / SHOTGUN_SPREAD; //50 is the maximum radius we want the spread to be
+			range = ( 50 * 8192 ) / wpa->spread; //50 is the maximum radius we want the spread to be
 			secondaryRange = 0;
 			break;
 		case WP_MACHINEGUN:

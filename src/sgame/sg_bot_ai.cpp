@@ -805,7 +805,7 @@ static bool TargetInOffmeshAttackRange( gentity_t *self )
 	case WP_PAIN_SAW:
 		return false;
 	case WP_SHOTGUN:
-		return distSquare < Square( ( 50 * 8192 ) / SHOTGUN_SPREAD );
+		return distSquare < Square( ( 50 * 8192 ) / BG_Weapon( WP_SHOTGUN )->spread );
 	case WP_CHAINGUN:
 		return distSquare < Square( ( 100 * 8192 ) / CHAINGUN_SPREAD );
 	case WP_MACHINEGUN:

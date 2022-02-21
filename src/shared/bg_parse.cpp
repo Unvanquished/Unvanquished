@@ -109,9 +109,6 @@ int   RIFLE_SPREAD;
 int   RIFLE_DMG;
 
 int   SHOTGUN_PELLETS;
-int   SHOTGUN_SPREAD;
-int   SHOTGUN_DMG;
-int   SHOTGUN_RANGE;
 
 int   LASGUN_DAMAGE;
 
@@ -220,10 +217,7 @@ static configVar_t bg_configVars[] =
 	{"w_rifle_damage", INTEGER, false, &RIFLE_DMG },
 	{"w_rifle_spread", INTEGER, false, &RIFLE_SPREAD },
 
-	{"w_shotgun_damage", INTEGER, false, &SHOTGUN_DMG },
 	{"w_shotgun_pellets", INTEGER, false, &SHOTGUN_PELLETS },
-	{"w_shotgun_range", INTEGER, false, &SHOTGUN_RANGE },
-	{"w_shotgun_spread", INTEGER, false, &SHOTGUN_SPREAD },
 };
 
 static const size_t bg_numConfigVars = ARRAY_LEN( bg_configVars );
@@ -1550,6 +1544,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		WIDTH = 1 << 9,
 		HEIGHT = 1 << 10,
 		DAMAGE = 1 << 11,
+		SPREAD = 1 << 12,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1748,6 +1743,12 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 			PARSE( text, token );
 			wa->damage = atoi( token );
 			defined |= DAMAGE;
+		}
+		else if ( !Q_stricmp( token, "spread" ) )
+		{
+			PARSE( text, token );
+			wa->spread = atoi( token );
+			defined |= SPREAD;
 		}
 		else
 		{
