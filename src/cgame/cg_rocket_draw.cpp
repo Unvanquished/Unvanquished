@@ -857,6 +857,48 @@ private:
 	Color::Color backColor;
 };
 
+class PositionElement : public HudElement
+{
+public:
+	PositionElement( const Rocket::Core::String& tag ) :
+			HudElement( tag, ELEMENT_GAME, true )
+	{
+		Rocket::Core::XMLAttributes xml;
+		//TODO (0.53) and adapt to rml
+		currentPositionElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+			this,
+			"#text",
+			"span",
+			xml) );
+		currentPositionElement->SetClass( "position_current", true );
+		AppendChild( currentPositionElement );
+	}
+
+	void DoOnRender() override
+	{
+		if ( !cg_drawPosition.Get() )
+		{
+			currentPositionElement->SetText( "" );
+		}
+		else
+		{
+			if ( cg.predictedPlayerState.clientNum == cg.clientNum )
+			{
+				// Add text to be configured via CSS
+				vec3_t origin;
+				VectorCopy( cg.predictedPlayerState.origin, origin );
+
+				// HACK: Put extra spaces to separate the children because setting them to block makes them disappear.
+				// TODO: Figure out why setting these two elements to block makes them disappear.
+				currentPositionElement->SetText( va( "%0.0f   %0.0f   %0.0f", origin[0], origin[1], origin[2] ) );
+			}
+		}
+	}
+
+private:
+	Rocket::Core::ElementText* currentPositionElement;
+};
+
 class CreditsValueElement : public TextHudElement
 {
 public:
@@ -3625,6 +3667,7 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "crosshair_indicator", CrosshairIndicatorHudElement )
 	REGISTER_ELEMENT( "crosshair", CrosshairHudElement )
 	REGISTER_ELEMENT( "speedometer", SpeedGraphElement )
+	REGISTER_ELEMENT( "position_indicator", PositionElement )
 	REGISTER_ELEMENT( "credits", CreditsValueElement )
 	REGISTER_ELEMENT( "evos", EvosValueElement )
 	REGISTER_ELEMENT( "stamina", StaminaValueElement )
