@@ -148,13 +148,13 @@
 			font-size: 1.5em;
 		}
 
-		speedometer
+		speedometer,position_indicator
 		{
 			width: 100%;
 			height: 100%;
 		}
 
-		speedometer span
+		speedometer span,position_indicator span
 		{
 			margin: auto auto;
 			padding: 5%;
@@ -229,7 +229,7 @@
 
 	<if cvar="cg_drawSpeed" condition="!=" value="0">
 		<!-- Do we need this if? -->
-		<region class="speedo"><speedometer /></region>
+		<region class="speedo"><speedometer /><position_indicator/> </region>
 	</if>
 
 	<region class="beacon">
