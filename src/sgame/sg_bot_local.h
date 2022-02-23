@@ -93,7 +93,7 @@ class botSkill_t
 	enum skills { MOVE, AIM, AGGRO, NUM_SKILLS };
 	int m_skills[NUM_SKILLS]; //individual skills (kept for future (de)serialisation)
 
-	unsigned m_aim; //resulting average aiming
+	unsigned m_aimSpeed; //resulting average aiming
 	float m_aggro;  //resulting average aggessiveness
 public:
 
@@ -112,8 +112,10 @@ public:
 	// bot aggressiveness between 0 and 1 included
 	float aggro( void ) const;
 
-	// bot's aiming, between 1 and 1000 included
+	// bot's aiming, between 1 and 9 included
 	int aim( void ) const;
+	// bot's aiming, between 1 and 1000 included
+	int aimSpeed( void ) const;
 	// bot's aiming, modified with a random factor
 	// between 1 and 1000 included
 	int rndAim( void ) const;

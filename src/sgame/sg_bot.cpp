@@ -664,13 +664,18 @@ float botSkill_t::aggro( void ) const
 
 int botSkill_t::aim( void ) const
 {
-	return m_aim;
+	return m_skills[skills::AIM];
+}
+
+int botSkill_t::aimSpeed( void ) const
+{
+	return m_aimSpeed;
 }
 
 int botSkill_t::rndAim( void ) const
 {
 	float mod = std::max( static_cast<float>( rand() ) / RAND_MAX, 0.5f );
-	return std::max( 1, static_cast<int>( m_aim * mod ) );
+	return std::max( 1, static_cast<int>( m_aimSpeed * mod ) );
 }
 
 bool botSkill_t::set( char const* name, int ent_ID, int level )
@@ -784,7 +789,7 @@ bool botSkill_t::set( char const* name, int ent_ID, int level )
 
 	m_aggro = static_cast<float>( m_skills[skills::AGGRO] ) / RANGE_SKILL;
 	// conforms to old code
-	m_aim = ( MAX_SKILL + 1 - m_skills[skills::AIM] ) * 100;
+	m_aimSpeed = ( MAX_SKILL + 1 - m_skills[skills::AIM] ) * 100;
 	return error;
 }
 

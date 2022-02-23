@@ -1364,17 +1364,19 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 	//this retrieves the target's species, to aim at weak point:
 	// * for humans, it's the head (but code only applies an offset here, with the hope it's the head)
 	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (for luci)
-	if ( !isTargetBuildable && targetTeam == TEAM_HUMANS )
+	if ( !isTargetBuildable
+			&& targetTeam == TEAM_HUMANS
+			&& self->botMind->botSkill.aim() > 6 )
 	{
-		//aim at head
 		//FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
 		aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
-
 	}
 	else if ( isTargetBuildable || targetTeam == TEAM_ALIENS )
 	{
+		glm::vec3 origin = VEC2GLM( self->s.origin );
+		glm::vec3 trDelta = VEC2GLM( targetEnt->s.pos.trDelta );
 		//make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
-		if ( self->botMind->botSkill.aim() >= 500 )
+		if ( self->botMind->botSkill.aim() >= 5 )
 		{
 			//would be better if it was possible to do self.weapon->speed directly
 			int weapon_speed = 0;
@@ -1394,7 +1396,7 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 			}
 			if( weapon_speed )
 			{
-				aimLocation += glm::distance( VEC2GLM( self->s.origin ), aimLocation ) / weapon_speed * VEC2GLM( targetEnt->s.pos.trDelta );
+				aimLocation += glm::distance( origin, aimLocation ) / weapon_speed * trDelta;
 			}
 		}
 	}
@@ -2293,7 +2295,7 @@ gentity_t *BotPopEnemy( botMemory_t *mind )
 		return nullptr;
 	}
 
-	if ( level.time - queue->enemys[ queue->front ].timeFound >= ( g_bot_reactiontime.Get() + mind->botSkill.aim() ) / 2 )
+	if ( level.time - queue->enemys[ queue->front ].timeFound >= ( g_bot_reactiontime.Get() + mind->botSkill.aimSpeed() ) / 2 )
 	{
 		gentity_t *ret = queue->enemys[ queue->front ].ent;
 		queue->front = ( queue->front + 1 ) % MAX_ENEMY_QUEUE;
