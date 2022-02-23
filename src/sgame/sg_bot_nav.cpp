@@ -40,11 +40,6 @@ Navigation Mesh Loading
 // FIXME: use nav handle instead of classes
 bool G_BotNavInit()
 {
-	if ( navMeshLoaded )
-	{
-		return true;
-	}
-
 	Log::Notice( "==== Bot Navigation Initialization ====" );
 
 	for ( class_t i : RequiredNavmeshes() )
@@ -365,7 +360,7 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
 	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
-	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
+	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < MIN_WALK_NORMAL ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return &g_entities[trace.entityNum];
 	}

@@ -32,6 +32,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // definitions
 // -----------
 
+static Cvar::Cvar<int> g_abuild_blobFireImmunityDuration(
+		"g_abuild_blobFireImmunityDuration",
+		"duration of the immunity to fire from a granger spit (in milliseconds)",
+		Cvar::NONE, 3000);
+static Cvar::Cvar<int> g_abuild_blobFireExtinguishRange(
+		"g_abuild_blobFireExtinguishRange",
+		"range around which a granger spit extinguish fires on the ground",
+		Cvar::NONE, 64);
+
 #define MISSILE_PRESTEP_TIME 50
 
 enum missileTimePowerMod_t {
@@ -237,23 +246,23 @@ static int ImpactLockblock( gentity_t*, trace_t*, gentity_t *hitEnt )
 
 static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 {
-	gentity_t *neighbor;
 	int       impactFlags = MIB_IMPACT;
 	gentity_t *attacker = &g_entities[ ent->r.ownerNum ];
 	vec3_t dir;
 
 	// put out fires on direct hit
-	hitEnt->entity->Extinguish( ABUILDER_BLOB_FIRE_IMMUNITY );
+	hitEnt->entity->Extinguish( g_abuild_blobFireImmunityDuration.Get() );
 
 	// put out fires in range
-	// TODO: Iterate over all ignitable entities only
-	neighbor = nullptr;
+	gentity_t *neighbor = nullptr;
 	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, trace->endpos,
-							    ABUILDER_BLOB_FIRE_STOP_RANGE ) ) )
+							    g_abuild_blobFireExtinguishRange.Get() ) ) )
 	{
+		// extinguish other entity on fire nearby,
+		// and fires on ground
 		if ( neighbor != hitEnt )
 		{
-			neighbor->entity->Extinguish( ABUILDER_BLOB_FIRE_IMMUNITY );
+			neighbor->entity->Extinguish( g_abuild_blobFireImmunityDuration.Get() );
 		}
 	}
 

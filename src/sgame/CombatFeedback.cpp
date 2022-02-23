@@ -36,7 +36,6 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 {
 	bool indirect = false;
 	int flags = 0;
-	Vec3 point;
 	gentity_t *event;
 
 	switch (mod) {
@@ -53,13 +52,6 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 	default:
 		break;
 	}
-
-	if (!point_opt || indirect)
-		point = Vec3::Load(victim->r.currentOrigin) +
-		        (Vec3::Load(victim->r.mins) +
-		         Vec3::Load(victim->r.maxs)) * 0.5f;
-	else
-		point = point_opt.value();
 
 	if (victim->s.eType == entityType_t::ET_BUILDABLE)
 		flags |= HIT_BUILDING;
@@ -84,6 +76,18 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 	event->s.otherEntityNum2 = flags;
 	event->s.angles2[0] = damage;
 	event->s.otherEntityNum = victim - g_entities;
+
+	Vec3 point;
+	if (!point_opt || indirect)
+	{
+		point = Vec3::Load(victim->r.currentOrigin) +
+		        (Vec3::Load(victim->r.mins) +
+		         Vec3::Load(victim->r.maxs)) * 0.5f;
+	}
+	else
+	{
+		point = point_opt.value();
+	}
 
 	G_SetOrigin(event, point.Data());
 
