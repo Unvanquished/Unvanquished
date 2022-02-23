@@ -290,6 +290,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 
 	// register user information
 	userinfo[0] = '\0';
+	Info_SetValueForKey( userinfo, "cg_unlagged", "0", false ); // bots do not lag
 	Info_SetValueForKey( userinfo, "name", name ? name : "", false ); // allow defaulting
 	Info_SetValueForKey( userinfo, "rate", "25000", false );
 	Info_SetValueForKey( userinfo, "snaps", "20", false );
