@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
 [![Github release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/latest/total.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
 
-[![IRC](https://img.shields.io/badge/irc-%23unvanquished%2C%23unvanquished--dev-4cc51c.svg)](https://webchat.freenode.net/?channels=%23unvanquished%2C%23unvanquished-dev)
+[![IRC](https://img.shields.io/badge/irc-%23unvanquished%2C%23unvanquished--dev-4cc51c.svg)](https://web.libera.chat/#unvanquished,#unvanquished-dev)
 
 | Windows | OSX | Linux |
 |---------|-----|-------|

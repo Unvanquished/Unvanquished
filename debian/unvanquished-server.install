@@ -1,7 +1,5 @@
-dist/scripts/unvanquished-server		usr/games/
+obj-*-*-*/daemonded  usr/lib/games/unvanquished/
 
-obj-*-*-*/daemonded				usr/lib/games/unvanquished/
-
-dist/configs/config/server.cfg			etc/unvanquished-server/config/
-dist/configs/config/map/default.cfg		etc/unvanquished-server/config/map/
-dist/configs/game/maprotation.cfg		etc/unvanquished-server/game/
+dist/configs/config/server.cfg       etc/unvanquished-server/config/
+dist/configs/config/map/default.cfg  etc/unvanquished-server/config/map/
+dist/configs/game/maprotation.cfg    etc/unvanquished-server/game/

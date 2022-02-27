@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.5
+Name=Unvanquished
+Comment=Team-based FPS/RTS Game, Aliens vs. Humans
+Icon=unvanquished
+Terminal=false
+Type=Application
+Exec=unvanquished %u
+Categories=Game;ActionGame;StrategyGame;
+# Unclear if this will work when Breakpad is enabled
+PrefersNonDefaultGPU=true

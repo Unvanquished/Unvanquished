@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.5
+Name=Unvanquished (protocol handler)
+NoDisplay=true
+Terminal=false
+Type=Application
+Exec=unvanquished -connect %u
+MimeType=x-scheme-handler/unv
+# Unclear if this will work when Breakpad is enabled
+PrefersNonDefaultGPU=true
