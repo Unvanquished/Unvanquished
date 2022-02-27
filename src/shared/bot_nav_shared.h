@@ -113,11 +113,22 @@ std::string GetNavmeshHeader(
 
 inline unsigned ProductVersionHash()
 {
-	Str::StringRef version = PRODUCT_VERSION;
+	Str::StringRef gameNameVersion = GAME_NAME_VERSION;
+	Str::StringRef modNameVersion = MOD_NAME_VERSION;
+
 	unsigned hash = 0;
+
 	// Java's string hash algorithm :-)
-	for (char c : version)
+	for (char c : gameNameVersion)
+	{
 		hash = hash * 31 + (c & 0xFF);
+	}
+
+	for (char c : modNameVersion)
+	{
+		hash = hash * 31 + (c & 0xFF);
+	}
+
 	return hash;
 }
 

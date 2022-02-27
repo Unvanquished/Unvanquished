@@ -8,8 +8,18 @@ Compatible with Python 2 or 3.
 # (Filename relative to Unvanquished/, regex pattern to match, replacement)
 REPLACEMENTS = [
     (
+        "daemon.ini",
+        r'(VERSION\s+)".+"',
+        r'\1"{version}"'
+    ),
+    (
+        "src/shared/GameDefs.h",
+        r'(#define\s+GAME_VERSION\s+)".+"',
+        r'\1"{version}"'
+    ),
+    (
         "daemon/src/common/Defs.h",
-        r'(#define\s+PRODUCT_VERSION\s+)".+"',
+        r'(#define\s+ENGINE_VERSION\s+)".+"',
         r'\1"{version}"'
     ),
     (

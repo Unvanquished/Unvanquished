@@ -1329,9 +1329,9 @@ void CG_Init( int serverMessageNum, int clientNum, const WindowConfig& windowCon
 	            sizeof( cgs.voteString[ TEAM_HUMANS ] ) );
 
 	// check version
-	s = CG_ConfigString( CS_GAME_VERSION );
-	//   if( strcmp( s, GAME_VERSION ) )
-	//     Sys::Drop( "Client/Server game mismatch: %s/%s", GAME_VERSION, s );
+	s = CG_ConfigString( CS_MOD_NAME );
+	//   if( strcmp( s, MOD_NAME ) )
+	//     Sys::Drop( "Client/Server game mismatch: %s/%s", MOD_NAME, s );
 
 	s = CG_ConfigString( CS_LEVEL_START_TIME );
 	cgs.levelStartTime = atoi( s );
