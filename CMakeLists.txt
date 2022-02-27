@@ -74,9 +74,16 @@ set(GAMELOGIC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${GAMELOGIC_DIR})
 include(src.cmake)
 
-
+option(BUILD_DAEMON_CONF "Build daemon.conf file" ON)
 option(BUILD_CGAME "Build client-side gamelogic" 1)
 option(BUILD_SGAME "Build server-side gamelogic" 1)
+
+if (BUILD_DAEMON_CONF)
+    if (NOT DAEMON_CONF_FILE)
+      set(DAEMON_CONF_FILE
+        "${CMAKE_CURRENT_SOURCE_DIR}/daemon.conf")
+    endif()
+endif()
 
 if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
     if (NACL)
@@ -182,4 +189,15 @@ if (BUILD_CGAME)
         srclibs-recast
         srclibs-fastlz
   )
+endif()
+
+if(BUILD_DAEMON_CONF)
+    add_custom_target(daemon-conf ALL)
+    if (DAEMON_CONF_FILE)
+        add_custom_command(TARGET daemon-conf PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${DAEMON_CONF_FILE}
+                ${CMAKE_BINARY_DIR}/daemon.conf
+        )
+    endif()
 endif()

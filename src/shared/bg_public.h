@@ -31,6 +31,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "engine/qcommon/q_shared.h"
 
+// Custom definitions.
+#include "CustomDefs.h"
+
 //Unvanquished balance header
 #include "bg_gameplay.h"
 
