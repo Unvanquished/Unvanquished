@@ -26,7 +26,8 @@ VERSION_SHORT="$(echo "${VERSION}" | cut -d'.' -f'1,2')"
 sedInPlace () {
 	TMP_FILE="$(mktemp ${TMPDIR}/config.XXXXXXXXXX)"
 	sed "${1}" "${2}" > "${TMP_FILE}"
-	mv "${TMP_FILE}" "${2}"
+	cat "${TMP_FILE}" > "${2}"
+	rm "${TMP_FILE}"
 }
 
 # Update Defs.h
