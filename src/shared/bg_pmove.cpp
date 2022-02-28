@@ -5020,12 +5020,11 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 	VectorCopy( pm->ps->origin, start_o );
 	VectorCopy( pm->ps->velocity, start_v );
 
+	VectorMA( start_o, -STEPSIZE, normal, down );
+	pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
+
 	if ( !PM_SlideMove( gravity ) )
 	{
-		VectorCopy( start_o, down );
-		VectorMA( down, -STEPSIZE, normal, down );
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
-
 		//we can step down
 		if ( trace.fraction > 0.01f && trace.fraction < 1.0f &&
 		     !trace.allsolid && pml.groundPlane )
@@ -5040,10 +5039,6 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 	}
 	else
 	{
-		VectorCopy( start_o, down );
-		VectorMA( down, -STEPSIZE, normal, down );
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
-
 		// never step up when you still have up velocity
 		if ( DotProduct( trace.plane.normal, pm->ps->velocity ) > 0.0f &&
 		     ( trace.fraction == 1.0f || DotProduct( trace.plane.normal, normal ) < 0.7f ) )
@@ -5060,8 +5055,7 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 		VectorCopy( pm->ps->origin, down_o );
 		VectorCopy( pm->ps->velocity, down_v );
 
-		VectorCopy( start_o, up );
-		VectorMA( up, STEPSIZE, normal, up );
+		VectorMA( start_o, STEPSIZE, normal, up );
 
 		// test the player position if they were a stepheight higher
 		pm->trace( &trace, start_o, pm->mins, pm->maxs, up, pm->ps->clientNum, pm->tracemask, 0 );
@@ -5096,8 +5090,7 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 		}
 
 		// push down the final amount
-		VectorCopy( pm->ps->origin, down );
-		VectorMA( down, -stepSize, normal, down );
+		VectorMA( pm->ps->origin, -stepSize, normal, down );
 		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, down, pm->ps->clientNum,
 		           pm->tracemask, 0 );
 
