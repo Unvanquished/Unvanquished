@@ -42,7 +42,6 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 extern int   ABUILDER_CLAW_DMG;
 extern float ABUILDER_CLAW_RANGE;
 extern float ABUILDER_CLAW_WIDTH;
-extern int   ABUILDER_BLOB_DMG;
 extern float ABUILDER_BLOB_SPEED;
 extern float ABUILDER_BLOB_SPEED_MOD;
 extern int   ABUILDER_BLOB_LOCK_TIME;
@@ -57,7 +56,6 @@ extern int   LEVEL0_BITE_REPEAT;
 
 extern int   LEVEL1_CLAW_DMG;
 extern float LEVEL1_CLAW_RANGE;
-extern float LEVEL1_CLAW_U_RANGE;
 extern float LEVEL1_CLAW_WIDTH;
 #define LEVEL1_POUNCE_DISTANCE        300 // pitch between LEVEL1_POUNCE_MINPITCH and pi/4 results in this distance
 #define LEVEL1_POUNCE_MINPITCH        (M_PI / 12.0f) // 15°, minimum pitch that will result in full pounce distance
@@ -98,9 +96,7 @@ extern int   LEVEL3_POUNCE_REPEAT;
 extern float LEVEL3_POUNCE_SPEED_MOD;
 extern int   LEVEL3_POUNCE_JUMP_MAG;
 extern int   LEVEL3_POUNCE_JUMP_MAG_UPG;
-extern int   LEVEL3_BOUNCEBALL_DMG;
 extern float LEVEL3_BOUNCEBALL_SPEED;
-extern int   LEVEL3_BOUNCEBALL_RADIUS;
 extern int   LEVEL3_BOUNCEBALL_REGEN;
 extern int   LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
 extern int   LEVEL3_BOUNCEBALL_REGEN_CREEP;
@@ -179,10 +175,7 @@ extern int   LEVEL4_TRAMPLE_REPEAT;
  * HUMAN weapons
  */
 
-extern int   BLASTER_SPREAD;
 extern int   BLASTER_SPEED;
-extern int   BLASTER_DMG;
-extern int   BLASTER_SIZE;
 
 extern int   RIFLE_SPREAD;
 extern int   RIFLE_DMG;
@@ -204,10 +197,6 @@ extern int   MDRIVER_DMG;
 extern int   CHAINGUN_SPREAD;
 extern int   CHAINGUN_DMG;
 
-extern int   FLAMER_DMG;
-extern int   FLAMER_FLIGHTDAMAGE;
-extern int   FLAMER_SPLASHDAMAGE;
-extern int   FLAMER_RADIUS;
 extern int   FLAMER_SIZE;
 extern float FLAMER_LIFETIME;
 extern float FLAMER_SPEED;
@@ -219,17 +208,14 @@ extern float FLAMER_IGNITE_SPLCHANCE;
 #define FLAMER_SPLASH_MINDST_MOD 0.5f    // splash damage increases linearly from this to full damage during lifetime
 #define FLAMER_LEAVE_FIRE_CHANCE 0.3f
 
-extern int   PRIFLE_DMG;
 extern int   PRIFLE_SPEED;
 #define PRIFLE_DAMAGE_FULL_TIME  0 // in ms, full damage for this time
 #define PRIFLE_DAMAGE_HALF_LIFE  0 // in ms, damage half life time after full damage period, 0 = off
-extern int   PRIFLE_SIZE;
 
 extern int   LCANNON_DAMAGE;
 extern int   LCANNON_RADIUS;
 #define LCANNON_DAMAGE_FULL_TIME 0 // in ms, full damage for this time
 #define LCANNON_DAMAGE_HALF_LIFE 0 // in ms, damage half life time after full damage period, 0 = off
-extern int   LCANNON_SIZE;
 extern int   LCANNON_SECONDARY_DAMAGE;
 extern int   LCANNON_SECONDARY_RADIUS;
 extern int   LCANNON_SECONDARY_SPEED;
