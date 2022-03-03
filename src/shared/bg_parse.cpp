@@ -63,7 +63,6 @@ struct configVar_t
 int   ABUILDER_CLAW_DMG;
 float ABUILDER_CLAW_RANGE;
 float ABUILDER_CLAW_WIDTH;
-int   ABUILDER_BLOB_DMG;
 float ABUILDER_BLOB_SPEED;
 float ABUILDER_BLOB_SPEED_MOD;
 int   ABUILDER_BLOB_TIME;
@@ -76,7 +75,6 @@ int   LEVEL0_BITE_REPEAT;
 
 int   LEVEL1_CLAW_DMG;
 float LEVEL1_CLAW_RANGE;
-float LEVEL1_CLAW_U_RANGE;
 float LEVEL1_CLAW_WIDTH;
 
 int   LEVEL2_CLAW_DMG;
@@ -106,9 +104,7 @@ int   LEVEL3_POUNCE_REPEAT;
 float LEVEL3_POUNCE_SPEED_MOD;
 int   LEVEL3_POUNCE_JUMP_MAG;
 int   LEVEL3_POUNCE_JUMP_MAG_UPG;
-int   LEVEL3_BOUNCEBALL_DMG;
 float LEVEL3_BOUNCEBALL_SPEED;
-int   LEVEL3_BOUNCEBALL_RADIUS;
 int   LEVEL3_BOUNCEBALL_REGEN;
 int   LEVEL3_BOUNCEBALL_REGEN_BOOSTER;
 int   LEVEL3_BOUNCEBALL_REGEN_CREEP;
@@ -132,10 +128,7 @@ int   MEDKIT_STARTUP_SPEED;
 
 // Human Weapons
 
-int   BLASTER_SPREAD;
 int   BLASTER_SPEED;
-int   BLASTER_DMG;
-int   BLASTER_SIZE;
 
 int   RIFLE_SPREAD;
 int   RIFLE_DMG;
@@ -157,10 +150,6 @@ int   MDRIVER_DMG;
 int   CHAINGUN_SPREAD;
 int   CHAINGUN_DMG;
 
-int   FLAMER_DMG;
-int   FLAMER_FLIGHTDAMAGE;
-int   FLAMER_SPLASHDAMAGE;
-int   FLAMER_RADIUS;
 int   FLAMER_SIZE;
 float FLAMER_LIFETIME;
 float FLAMER_SPEED;
@@ -169,13 +158,10 @@ float FLAMER_IGNITE_RADIUS;
 float FLAMER_IGNITE_CHANCE;
 float FLAMER_IGNITE_SPLCHANCE;
 
-int   PRIFLE_DMG;
 int   PRIFLE_SPEED;
-int   PRIFLE_SIZE;
 
 int   LCANNON_DAMAGE;
 int   LCANNON_RADIUS;
-int   LCANNON_SIZE;
 int   LCANNON_SECONDARY_DAMAGE;
 int   LCANNON_SECONDARY_RADIUS;
 int   LCANNON_SECONDARY_SPEED;
@@ -192,7 +178,6 @@ static configVar_t bg_configVars[] =
 	{"u_medkit_startupSpeed", INTEGER, false, &MEDKIT_STARTUP_SPEED},
 	{"u_medkit_startupTime", INTEGER, false, &MEDKIT_STARTUP_TIME},
 
-	{"w_abuild_blobDmg", INTEGER, false, &ABUILDER_BLOB_DMG},
 	{"w_abuild_blobLockTime", INTEGER, false, &ABUILDER_BLOB_LOCK_TIME},
 	{"w_abuild_blobSlowTime", INTEGER, false, &ABUILDER_BLOB_TIME},
 	{"w_abuild_blobSpeed", FLOAT, false, &ABUILDER_BLOB_SPEED},
@@ -201,25 +186,18 @@ static configVar_t bg_configVars[] =
 	{"w_abuild_clawRange", FLOAT, false, &ABUILDER_CLAW_RANGE},
 	{"w_abuild_clawWidth", FLOAT, false, &ABUILDER_CLAW_WIDTH},
 
-	{"w_blaster_damage", INTEGER, false, &BLASTER_DMG },
-	{"w_blaster_size", INTEGER, false, &BLASTER_SIZE },
 	{"w_blaster_speed", INTEGER, false, &BLASTER_SPEED },
-	{"w_blaster_spread", INTEGER, false, &BLASTER_SPREAD },
 
 	{"w_chaingun_damage", INTEGER, false, &CHAINGUN_DMG },
 	{"w_chaingun_spread", INTEGER, false, &CHAINGUN_SPREAD },
 
-	{"w_flamer_damage", INTEGER, false, &FLAMER_DMG },
-	{"w_flamer_flightDamage", INTEGER, false, &FLAMER_FLIGHTDAMAGE },
 	{"w_flamer_igniteChance", FLOAT, false, &FLAMER_IGNITE_CHANCE },
 	{"w_flamer_igniteRadius", FLOAT, false, &FLAMER_IGNITE_RADIUS },
 	{"w_flamer_igniteSplChance", FLOAT, false, &FLAMER_IGNITE_SPLCHANCE },
 	{"w_flamer_lag", FLOAT, false, &FLAMER_LAG },
 	{"w_flamer_lifeTime", FLOAT, false, &FLAMER_LIFETIME },
-	{"w_flamer_radius", INTEGER, false, &FLAMER_RADIUS },
 	{"w_flamer_size", INTEGER, false, &FLAMER_SIZE },
 	{"w_flamer_speed", FLOAT, false, &FLAMER_SPEED },
-	{"w_flamer_splashDamage", INTEGER, false, &FLAMER_SPLASHDAMAGE },
 
 	{"w_lcannon_chargeAmmo", INTEGER, false, &LCANNON_CHARGE_AMMO },
 	{"w_lcannon_chargeTimeMax", INTEGER, false, &LCANNON_CHARGE_TIME_MAX },
@@ -230,7 +208,6 @@ static configVar_t bg_configVars[] =
 	{"w_lcannon_secondaryDamage", INTEGER, false, &LCANNON_SECONDARY_DAMAGE },
 	{"w_lcannon_secondaryRadius", INTEGER, false, &LCANNON_SECONDARY_RADIUS },
 	{"w_lcannon_secondarySpeed", INTEGER, false, &LCANNON_SECONDARY_SPEED },
-	{"w_lcannon_size", INTEGER, false, &LCANNON_SIZE },
 	{"w_lcannon_speed", INTEGER, false, &LCANNON_SPEED },
 
 	{"w_level0_biteDmg", INTEGER, false, &LEVEL0_BITE_DMG},
@@ -255,8 +232,6 @@ static configVar_t bg_configVars[] =
 	{"w_level2_clawWidth", FLOAT, false, &LEVEL2_CLAW_WIDTH},
 	{"w_level2_maxWalljumpSpeed", FLOAT, false, &LEVEL2_WALLJUMP_MAXSPEED},
 
-	{"w_level3upg_ballDmg", INTEGER, false, &LEVEL3_BOUNCEBALL_DMG},
-	{"w_level3upg_ballRadius", INTEGER, false, &LEVEL3_BOUNCEBALL_RADIUS},
 	{"w_level3upg_ballRegen", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN},
 	{"w_level3upg_ballRegenBooster", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN_BOOSTER},
 	{"w_level3upg_ballRegenCreep", INTEGER, false, &LEVEL3_BOUNCEBALL_REGEN_CREEP},
@@ -295,8 +270,6 @@ static configVar_t bg_configVars[] =
 
 	{"w_mdriver_damage", INTEGER, false, &MDRIVER_DMG },
 
-	{"w_prifle_damage", INTEGER, false, &PRIFLE_DMG },
-	{"w_prifle_size", INTEGER, false, &PRIFLE_SIZE },
 	{"w_prifle_speed", INTEGER, false, &PRIFLE_SPEED },
 
 	{"w_psaw_damage", INTEGER, false, &PAINSAW_DAMAGE },
