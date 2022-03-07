@@ -547,6 +547,9 @@ void CG_Rocket_BuildResolutionList( const char* )
 
 	buf[ 0 ] = '\0';
 
+	// Sort resolutions by size by default (larger first).
+	std::sort(rocketInfo.data.resolutions,rocketInfo.data.resolutions+rocketInfo.data.resolutionCount,[](const resolution_t&a, const resolution_t& b){return a.width*a.height > b.width*b.height;});
+
 	Rocket_DSClearTable( "resolutions", "default" );
 
 	for ( i = 0; i < rocketInfo.data.resolutionCount; ++i )
@@ -568,42 +571,6 @@ void CG_Rocket_BuildResolutionList( const char* )
 		Info_SetValueForKey( buf, "height", va( "%d", -1 ), false );
 		Rocket_DSAddRow( "resolutions", "default", buf );
 		rocketInfo.data.resolutionIndex = rocketInfo.data.resolutionCount;
-	}
-
-}
-
-static int ResolutionListCmpByWidth( const void *one, const void *two )
-{
-	resolution_t *a = ( resolution_t * ) one;
-	resolution_t *b = ( resolution_t * ) two;
-
-	if ( a->width > b->width ) return -1;
-
-	if ( b->width > a->width ) return 1;
-
-	if ( a->width == b->width )  return 0;
-
-	return 0; // silence compiler
-}
-
-void CG_Rocket_SortResolutionList( const char*, const char *sortBy )
-{
-	static char buf[ MAX_STRING_CHARS ];
-	int i;
-
-	if ( !Q_stricmp( sortBy, "width" ) )
-	{
-		qsort( rocketInfo.data.resolutions, rocketInfo.data.resolutionCount, sizeof( resolution_t ), &ResolutionListCmpByWidth );
-	}
-
-	Rocket_DSClearTable( "resolutions", "default" );
-
-	for ( i = 0; i < rocketInfo.data.resolutionCount; ++i )
-	{
-		Info_SetValueForKey( buf, "width", va( "%d", rocketInfo.data.resolutions[ i ].width ), false );
-		Info_SetValueForKey( buf, "height", va( "%d", rocketInfo.data.resolutions[ i ].height ), false );
-
-		Rocket_DSAddRow( "resolutions", "default", buf );
 	}
 }
 
@@ -1919,7 +1886,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "playerList", &CG_Rocket_BuildPlayerList, &CG_Rocket_SortPlayerList, &CG_Rocket_CleanUpPlayerList, &CG_Rocket_SetPlayerListPlayer, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetResolutionListIndex},
+	{ "resolutions", &CG_Rocket_BuildResolutionList, &nullSortFunc, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetResolutionListIndex},
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_FilterServerList, &CG_Rocket_ExecServerList, &nullGetFunc },
 	{ "teamList", &CG_Rocket_BuildTeamList, &nullSortFunc, &CG_Rocket_CleanUpTeamList, &CG_Rocket_SetTeamList, &nullFilterFunc, &CG_Rocket_ExecTeamList, &nullGetFunc },
 };
