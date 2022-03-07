@@ -20,7 +20,7 @@ def process_file(rml_file):
     rml_file.close()
     errors = 0
     def error(msg):
-        print(f"Error on line {line}: {msg}", file=sys.stderr)
+        print(f"Error in file {rml_file.name} on line {line}: {msg}", file=sys.stderr)
         global errors
         errors += 1
     text_start = None
@@ -41,7 +41,7 @@ def process_file(rml_file):
                 for empty_element in re.finditer(r"<(\w+)(\s*/\s*)>", content):
                     if empty_element.group(2) != " /":
                         correct = f"<{empty_element.group(1)} />"
-                        error(f"empty element should be formatted like {correct} to match libRocket's GetInnerRML()")
+                        error(f"empty element should be formatted like {correct} to match RmlUi's GetInnerRML()")
                 translation_dict[content].append(f"{rml_file.name}:{line}")
                 text_start = None
         else:
