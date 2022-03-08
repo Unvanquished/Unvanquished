@@ -1117,18 +1117,15 @@ void CG_Rocket_SortPlayerList( const char*, const char *sortBy )
 
 void CG_Rocket_BuildMapList( const char* )
 {
-	int i;
-
 	Rocket_DSClearTable( "mapList", "default" );
-	trap_FS_LoadAllMapMetadata();
 	CG_LoadArenas();
 
-	for ( i = 0; i < rocketInfo.data.mapCount; ++i )
+	for ( size_t i = 0; i < rocketInfo.data.mapList.size(); ++i )
 	{
 		char buf[ MAX_INFO_STRING ] = { 0 };
 		Info_SetValueForKey( buf, "num", va( "%d", i ), false );
-		Info_SetValueForKey( buf, "mapName", rocketInfo.data.mapList[ i ].mapName, false );
-		Info_SetValueForKey( buf, "mapLoadName", rocketInfo.data.mapList[ i ].mapLoadName, false );
+		Info_SetValueForKey( buf, "mapName", rocketInfo.data.mapList[ i ].mapLoadName.c_str(), false );
+		Info_SetValueForKey( buf, "mapLoadName", rocketInfo.data.mapList[ i ].mapLoadName.c_str(), false );
 
 		Rocket_DSAddRow( "mapList", "default", buf );
 	}
@@ -1137,15 +1134,6 @@ void CG_Rocket_BuildMapList( const char* )
 
 void CG_Rocket_CleanUpMapList( const char* )
 {
-	int i;
-
-	for ( i = 0; i < rocketInfo.data.mapCount; ++i )
-	{
-		BG_Free( rocketInfo.data.mapList[ i ].mapLoadName );
-		BG_Free( rocketInfo.data.mapList[ i ].mapName );
-	}
-
-	rocketInfo.data.mapCount = 0;
 }
 
 void CG_Rocket_SetMapListIndex( const char*, int index )
