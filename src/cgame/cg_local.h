@@ -1283,7 +1283,6 @@ struct rocketMenu_t
 #define MAX_OUTPUTS 16
 #define MAX_MODS 64
 #define MAX_DEMOS 256
-#define MAX_MAPS 128
 
 struct server_t
 {
@@ -1323,8 +1322,7 @@ struct modInfo_t
 
 struct mapInfo_t
 {
-	char *mapName;
-	char *mapLoadName;
+	std::string mapLoadName;
 };
 
 struct rocketDataSource_t
@@ -1359,8 +1357,7 @@ struct rocketDataSource_t
 	int demoCount;
 	int demoIndex;
 
-	mapInfo_t mapList[ MAX_MAPS ];
-	int mapCount;
+	std::vector<mapInfo_t> mapList;
 	int mapIndex;
 
 	int selectedTeamIndex;

@@ -117,9 +117,11 @@ int CG_ParseInfos( const char *buf, int max, char *infos[] )
 /*
 ===============
 CG_LoadArenasFromFile
+
+TODO: consider deleting, unless we want to display 'longname' somewhere
 ===============
 */
-static void CG_LoadArenasFromFile( char *filename )
+void CG_LoadArenasFromFile( char *filename )
 {
 	std::error_code err;
 	std::string text = FS::PakPath::ReadFile( filename, err );
@@ -141,59 +143,19 @@ static void CG_LoadArenasFromFile( char *filename )
 
 /*
 ===============
-CG_MapLoadNameCompare
-===============
-*/
-static int CG_MapLoadNameCompare( const void *a, const void *b )
-{
-	mapInfo_t *A = ( mapInfo_t * ) a;
-	mapInfo_t *B = ( mapInfo_t * ) b;
-
-	return Q_stricmp( A->mapLoadName, B->mapLoadName );
-}
-
-/*
-===============
 CG_LoadArenas
 ===============
 */
 void CG_LoadArenas()
 {
-	int  numdirs;
-	char filename[ 128 ];
-	char dirlist[ 4096 ];
-	char *dirptr;
-	int  i, n;
-	int  dirlen;
-
-	cg_numArenas = 0;
-	rocketInfo.data.mapCount = 0;
-
-	// get all directories from meta
-	numdirs = trap_FS_GetFileListRecursive( "meta", ".arena", dirlist, sizeof( dirlist ) );
-	dirptr = dirlist;
-
-	for ( i = 0; i < numdirs; i++, dirptr += dirlen + 1 )
+	rocketInfo.data.mapList.clear();
+	for (const std::string& mapName : FS::GetAvailableMaps(false))
 	{
-		dirlen = strlen( dirptr );
-		Q_strncpyz( filename, "meta/", sizeof filename );
-		Q_strcat( filename, sizeof filename, dirptr );
-		CG_LoadArenasFromFile( filename );
+		rocketInfo.data.mapList.push_back( {mapName} );
 	}
 
-	Log::Warn( S_SKIPNOTIFY "%i arenas parsed\n", cg_numArenas );
-
-	for ( n = 0; n < cg_numArenas; n++ )
-	{
-		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapLoadName = BG_strdup( Info_ValueForKey( cg_arenaInfos[ n ], "map" ) );
-		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapName = BG_strdup( Info_ValueForKey( cg_arenaInfos[ n ], "longname" ) );
-		rocketInfo.data.mapCount++;
-
-		if ( rocketInfo.data.mapCount >= MAX_MAPS )
-		{
-			break;
-		}
-	}
-
-	qsort( rocketInfo.data.mapList, rocketInfo.data.mapCount, sizeof( mapInfo_t ), CG_MapLoadNameCompare );
+	std::sort(
+		rocketInfo.data.mapList.begin(), rocketInfo.data.mapList.end(),
+		[]( const mapInfo_t& a, const mapInfo_t& b ) { return Q_stricmp( a.mapLoadName.c_str(), b.mapLoadName.c_str() ) < 0; }
+	);
 }

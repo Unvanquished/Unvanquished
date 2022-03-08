@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/FileSystem.h"
 #include "cg_local.h"
 #include "cg_key_name.h"
 #include "rocket/rocket.h"
@@ -1710,7 +1711,8 @@ public:
 
 	void DoOnUpdate() override
 	{
-		if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) )
+		if ( rocketInfo.data.mapIndex < 0 ||
+		     static_cast<size_t>( rocketInfo.data.mapIndex ) >= rocketInfo.data.mapList.size() )
 		{
 			Clear();
 			return;
@@ -1719,9 +1721,11 @@ public:
 		if ( mapIndex != rocketInfo.data.mapIndex )
 		{
 			mapIndex = rocketInfo.data.mapIndex;
-			SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />",
-							 rocketInfo.data.mapList[ mapIndex ].mapLoadName,
-					rocketInfo.data.mapList[ mapIndex ].mapLoadName ) );
+			std::error_code ignored;
+			const std::string& mapName = rocketInfo.data.mapList[ mapIndex ].mapLoadName;
+			FS::PakPath::LoadPakPrefix(
+				*FS::FindPak( "map-" + mapName ), Str::Format( "meta/%s/", mapName ), ignored );
+			SetInnerRML( Str::Format( "<img class='levelshot' src='/meta/%s/%s' />", mapName, mapName ) );
 		}
 	}
 
