@@ -3959,36 +3959,17 @@ void Cmd_ListMaps_f( gentity_t *ent )
 		}
 	}
 
-	const char *mapNames[ MAX_MAPLIST_MAPS ] = { 0 };
-	int         mapNamesCount = 0;
-	const auto paks = FS::GetAvailablePaks();
+	// Legacy paks not included because they aren't allowed by G_MapExists (for votes etc.)
+	static const std::set<std::string> mapNames = FS::GetAvailableMaps(false);
+	std::vector<const std::string*> filteredMapNames;
 
-	for ( size_t i = 0; i < paks.size(); ++i )
+	for ( const std::string& name : mapNames )
 	{
-		const char *pakName = paks[ i ].name.c_str();
-
-		// Filter out duplicates
-		if ( i && !strcmp( pakName, paks[ i - 1 ].name.c_str() ) )
+		if ( strstr( name.c_str(), search ) )
 		{
-			continue;
+			filteredMapNames.push_back( &name );
 		}
-
-		if ( Q_strncmp( "map-", pakName, 4 ) ||
-			 ( search[ 0 ] && !strstr( pakName + 4, search ) ) )
-		{
-			continue;
-		}
-
-		mapNames[ mapNamesCount++ ] = pakName + 4;
 	}
-
-	std::sort( mapNames,
-			   mapNames + mapNamesCount,
-			   [] ( const char *mapNameFirst, const char *mapNameSecond )
-			   {
-			   		return strcmp( mapNameFirst, mapNameSecond ) < 0;
-			   }
-	);
 
 	/* About the MAX_MAPLIST_COLS - 1 trick:
 	 *
@@ -4025,6 +4006,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	 * to add an extra page everytime a column is not enough to contains the
 	 * remaining map names */
 
+	int mapNamesCount = static_cast<int>( filteredMapNames.size() );
 	int rows = ( mapNamesCount + MAX_MAPLIST_COLS - 1 ) / MAX_MAPLIST_COLS;
 	int pages = std::max( 1, ( rows + MAX_MAPLIST_ROWS - 1 ) / MAX_MAPLIST_ROWS );
 
@@ -4056,7 +4038,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	{
 		for ( int i = start + row, j = 0; i < mapNamesCount && j < MAX_MAPLIST_COLS; i += rows, j++ )
 		{
-			const char *printedMapName = mapNames[ i ];
+			const char *printedMapName = filteredMapNames[ i ]->c_str();
 
 			if ( !strcmp( printedMapName, mapName ) )
 			{
