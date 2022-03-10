@@ -155,8 +155,8 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 	} else {
 		// Check whether a spawned client has space.
 		trap_Trace(
-			&tr, spawnPoint.Data(), clientMins.Data(), clientMaxs.Data(), spawnPoint.Data(), 0,
-			MASK_PLAYERSOLID, 0
+			&tr, spawnPoint.Data(), clientMins.Data(), clientMaxs.Data(), spawnPoint.Data(),
+			ENTITYNUM_NONE, MASK_PLAYERSOLID, 0
 		);
 
 		if (tr.entityNum != ENTITYNUM_NONE) {
