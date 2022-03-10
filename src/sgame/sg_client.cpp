@@ -288,10 +288,11 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 	}
 
 	// Get spawn point for selected spawner.
-	Entity* blocker = nullptr;
+	Entity* blocker;
 	Vec3    spawnPoint;
 
 	spot->entity->CheckSpawnPoint(blocker, spawnPoint);
+	ASSERT_EQ(blocker, nullptr); // TODO: CheckSpawnPoint is already called in G_SelectSpawnBuildable
 	spawnPoint.Store(origin);
 
 	VectorCopy( spot->s.angles, angles );
