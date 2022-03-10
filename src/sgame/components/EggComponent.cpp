@@ -25,13 +25,15 @@ bool EggComponent::CheckSpawnPoint(
 	// TODO: Merge both methods below.
 	float displacement;
 
+#if 1
 	// Method 1.
 	// This describes the worst case for any angle.
-	/*{
+	{
 		displacement = std::max(VectorLength(spawnerMins), VectorLength(spawnerMaxs)) +
 		               std::max(VectorLength(clientMins),  VectorLength(clientMaxs))  + 1.0f;
-	}*/
+	}
 
+#else
 	// Method 2
 	// For normals with equal X and Y component these results are optimal. Otherwise they are still
 	// better than naive worst-case calculations.
@@ -63,6 +65,7 @@ bool EggComponent::CheckSpawnPoint(
 		// optimal (closest possible) distance.
 		displacement = (1.0f - frac) * minDistance + frac * maxDistance + 1.0f;
 	}
+#endif
 
 	spawnPoint = spawnerOrigin + displacement * spawnerNormal;
 
