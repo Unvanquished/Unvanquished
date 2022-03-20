@@ -327,10 +327,11 @@ static void MarkRelevantBeacons()
 	{
 		cbeacon_t *beacon = cg.beacons[ beaconNum ];
 
-		// Only tagged buildables are relevant so far.
+		// Only tagged, working buildables are relevant so far.
 		if( beacon->type != BCT_TAG ||
 		    ( beacon->flags & EF_BC_TAG_PLAYER ) ||
-		    ( beacon->flags & EF_BC_DYING ) )
+		    ( beacon->flags & EF_BC_DYING ) ||
+		    !( cg_entities[ beacon->target ].currentState.eFlags & EF_B_POWERED ) )
 		{
 			continue;
 		}
