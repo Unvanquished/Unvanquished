@@ -476,7 +476,8 @@ static bool drawMenu;
 
 void Rocket_Render()
 {
-	if ( cg_draw2D.Get() && hudContext )
+	// cg.snap is not available on the first frame but some HUD code accesses it
+	if ( cg_draw2D.Get() && hudContext && cg.snap )
 	{
 		hudContext->Render();
 	}
@@ -496,7 +497,7 @@ void Rocket_Update()
 		menuContext->Update();
 	}
 
-	if ( cg_draw2D.Get() && hudContext )
+	if ( cg_draw2D.Get() && hudContext && cg.snap )
 	{
 		hudContext->Update();
 	}
