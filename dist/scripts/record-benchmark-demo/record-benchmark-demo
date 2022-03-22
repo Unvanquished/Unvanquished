@@ -1,0 +1,52 @@
+#! /usr/bin/env bash
+
+# CC0 1.0 Unvanquished Developers
+# https://creativecommons.org/publicdomain/zero/1.0/
+
+# Record a demo purposed for benchmark.
+#
+# It can be run this way:
+#   ./record-benchmark-demo
+# Or this way:
+#   ./record-benchmark-demo /path/to/custom/daemon -customOptions +customCommands
+#
+# This will output a file named benchmark.dm_86
+
+set -e
+set -u
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+if [ "$(uname -s)" != 'Linux' ]
+then
+	echo 'ERROR: This script expects to run on Linux for now.' >&2
+	exit 1
+fi
+
+TMPDIR="${TMPDIR-/tmp}"
+
+temp_home_path="$(mktemp -d "${TMPDIR}/unvanquished-benchmark-home-XXXXXXXX")"
+config_dir="${temp_home_path}/config"
+demo_dir="${temp_home_path}/demos"
+
+home_path="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
+lib_path="${home_path}/base"
+
+daemon_path="${1:-${lib_path}/daemon-tty}"
+shift || true
+
+mkdir -p "${config_dir}"
+cp -a "${script_dir}/record-benchmark-demo.cfg" "${config_dir}"
+
+if "${daemon_path}" \
+	-homepath "${temp_home_path}" \
+	-set name 'benchmark' \
+	-set common.shutdownOnDrop on \
+	-set g_synchronousClients 1 \
+	"${@}" \
+	+exec 'record-benchmark-demo.cfg'
+then
+	cp -a "${demo_dir}/"*'.dm_86' "${script_dir}/benchmark.dm_86"
+fi
+
+rm -rf "${temp_home_path}"
