@@ -1782,6 +1782,8 @@ private:
 class CenterPrintElement : public HudElement
 {
 public:
+	int showTime_ = -1;
+
 	CenterPrintElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_GAME ) {}
 
@@ -1794,13 +1796,17 @@ public:
 
 		if ( cg.centerPrintTime + CENTER_PRINT_DURATION < cg.time )
 		{
-			*cg.centerPrint = '\0';
-			SetInnerRML( "" );
+			if ( showTime_ >= 0 )
+			{
+				showTime_ = -1;
+				SetInnerRML( "" );
+			}
 			return;
 		}
 
-		if ( cg.time == cg.centerPrintTime )
+		if ( showTime_ != cg.centerPrintTime )
 		{
+			showTime_ = cg.centerPrintTime;
 			SetInnerRML( Rocket_QuakeToRML( cg.centerPrint, RP_EMOTICONS ) );
 			SetProperty( Rml::Core::PropertyId::FontSize,
 			             Rml::Core::Property( 0.2f * cg.centerPrintSize, Rml::Core::Property::EM ) );
