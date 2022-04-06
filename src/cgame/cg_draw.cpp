@@ -164,6 +164,11 @@ for a few moments
 */
 void CG_CenterPrint( const char *str, int, int charWidth )
 {
+	if ( !*str )
+	{
+		return;
+	}
+
 	Q_strncpyz( cg.centerPrint, str, sizeof( cg.centerPrint ) );
 	cg.centerPrintTime = cg.time;
 	cg.centerPrintSize = charWidth;
