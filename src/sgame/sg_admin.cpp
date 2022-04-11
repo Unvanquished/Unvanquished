@@ -1078,7 +1078,7 @@ static void admin_default_levels()
 	Q_strncpyz( l->name, "^3Senior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute showbans ban "
-	            "namelog buildlog ADMINCHAT register unregister l0 l1",
+	            "namelog buildlog ADMINCHAT register unregister l0 l1 pause revert",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
