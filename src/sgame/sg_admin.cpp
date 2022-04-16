@@ -264,12 +264,6 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"listgeoip",  G_admin_listgeoip, true,  "listgeoip",
-		N_("display a list of players and which countries they're from (using GeoIP data)"),
-		N_("(^5name^7)")
-	},
-
-	{
 		"listinactive", G_admin_listinactive, true, "listadmins",
 		N_("display a list of inactive server admins and their levels"),
 		N_("[^5months^7] (^5start admin#^7)")
@@ -3656,65 +3650,6 @@ bool G_admin_listlayouts( gentity_t *ent )
 	if ( layout[ 0 ] )
 	{
 		ADMBP( va( " %s", layout ) );
-	}
-
-	ADMBP_end();
-	return true;
-}
-
-bool G_admin_listgeoip( gentity_t *ent )
-{
-	int i;
-	int clients[ MAX_CLIENTS ];
-	int clientCount;
-	int countryLength = 1;
-
-	if ( trap_Argc() > 1 )
-	{
-		char name[ MAX_NAME_LENGTH ];
-
-		trap_Argv( 1, name, sizeof( name ) );
-		clientCount = G_ClientNumbersFromString( name, clients, MAX_CLIENTS );
-
-		if ( !clientCount )
-		{
-			return true;
-		}
-	}
-	else
-	{
-		for ( clientCount = 0; clientCount < MAX_CLIENTS; ++clientCount )
-		{
-			clients[ clientCount ] = clientCount;
-		}
-	}
-
-	for ( i = 0; i < clientCount; i++ )
-	{
-		int length;
-		const gclient_t *p = &level.clients[ clients[ i ] ];
-
-		if ( p->pers.connected == CON_DISCONNECTED )
-		{
-			continue;
-		}
-
-		length = strlen( p->pers.country );
-		countryLength = std::max( length, countryLength );
-	}
-
-	ADMBP_begin();
-
-	for ( i = 0; i < clientCount; i++ )
-	{
-		const gclient_t *p = &level.clients[ clients[ i ] ];
-
-		if ( p->pers.connected == CON_DISCONNECTED )
-		{
-			continue;
-		}
-
-		ADMBP( va( "%2i %*s %s^*", clients[ i ], countryLength, p->pers.country[0] ? p->pers.country : "?", p->pers.netname ) );
 	}
 
 	ADMBP_end();
