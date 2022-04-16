@@ -155,8 +155,6 @@ extern Cvar::Cvar<bool> g_allowTeamOverlay;
 extern Cvar::Cvar<bool> g_showKillerHP;
 extern Cvar::Cvar<int> g_combatCooldown;
 
-extern Cvar::Cvar<bool> g_geoip;
-
 extern Cvar::Range<Cvar::Cvar<int>> g_debugEntities;
 
 extern Cvar::Cvar<bool> g_instantBuilding;

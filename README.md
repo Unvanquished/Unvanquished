@@ -58,7 +58,6 @@ Visual Studio/MSVC (at least Visual Studio 2019).
 ### Optional
 
 `ncurses`,
-`libGeoIP`
 
 ### MSYS2
 
