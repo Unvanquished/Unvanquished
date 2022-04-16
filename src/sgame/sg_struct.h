@@ -490,7 +490,6 @@ struct clientPersistant_t
 	bool          stickySpec; // don't stop spectating a player after they get killed
 	bool          pmoveFixed; //
 	char              netname[ MAX_NAME_LENGTH ];
-	char              country[ MAX_NAME_LENGTH ];
 	int               enterTime; // level.time the client entered the game
 	int               location; // player locations
 	int               teamInfo; // level.time of team overlay update (disabled = 0)
