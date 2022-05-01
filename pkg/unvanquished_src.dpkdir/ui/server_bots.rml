@@ -46,6 +46,10 @@
 				<h2> Individually </h2>
 				<h3> Primary weapons </h3>
 				<row>
+					<input cvar="g_bot_ckit" type="checkbox" />
+					<h3> Construction Kit (repairs) </h3>
+				</row>
+				<row>
 					<input cvar="g_bot_rifle" type="checkbox" />
 					<h3> SMG </h3>
 				</row>
