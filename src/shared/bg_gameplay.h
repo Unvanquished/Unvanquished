@@ -204,7 +204,7 @@ extern float FLAMER_IGNITE_CHANCE;
 extern float FLAMER_IGNITE_SPLCHANCE;
 #define FLAMER_DAMAGE_MAXDST_MOD 0.5f    // damage decreases linearly from full damage to this during missile lifetime
 #define FLAMER_SPLASH_MINDST_MOD 0.5f    // splash damage increases linearly from this to full damage during lifetime
-#define FLAMER_LEAVE_FIRE_CHANCE 0.3f
+#define FLAMER_LEAVE_FIRE_CHANCE 0.1f
 
 extern int   PRIFLE_SPEED;
 #define PRIFLE_DAMAGE_FULL_TIME  0 // in ms, full damage for this time
