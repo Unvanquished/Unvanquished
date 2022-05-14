@@ -40,7 +40,11 @@ static void InitBrushSensor( gentity_t *self )
 {
 	if ( !VectorCompare( self->s.angles, vec3_origin ) )
 	{
-		G_SetMovedir( self->s.angles, self->movedir );
+		glm::vec3 angles = VEC2GLM( self->s.angles );
+		glm::vec3 movedir = VEC2GLM( self->movedir );
+		G_SetMovedir( angles, movedir );
+		VectorCopy( &angles[0], self->s.angles );
+		VectorCopy( &movedir[0], self->movedir );
 	}
 
 	trap_SetBrushModel( self, self->model );

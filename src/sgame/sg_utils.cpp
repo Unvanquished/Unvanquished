@@ -398,7 +398,7 @@ void G_BroadcastEvent( int event, int eventParm, team_t team )
 {
 	gentity_t *ent;
 
-	ent = G_NewTempEntity( vec3_origin, event );
+	ent = G_NewTempEntity( VEC2GLM( vec3_origin ), event );
 	ent->s.eventParm = eventParm;
 
 	if ( team )
@@ -421,7 +421,7 @@ void G_Sound( gentity_t *ent, soundChannel_t, int soundIndex )
 {
 	gentity_t *te;
 
-	te = G_NewTempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND );
+	te = G_NewTempEntity( VEC2GLM( ent->r.currentOrigin ), EV_GENERAL_SOUND );
 	te->s.eventParm = soundIndex;
 }
 

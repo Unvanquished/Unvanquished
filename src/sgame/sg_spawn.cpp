@@ -1159,5 +1159,5 @@ void G_SpawnFakeEntities()
 	level.fakeLocation->s.generic1 = G_LocationIndex( "" );
 	level.locationHead = level.fakeLocation;
 
-	G_SetOrigin( level.fakeLocation, level.fakeLocation->s.origin );
+	G_SetOrigin( level.fakeLocation, VEC2GLM( level.fakeLocation->s.origin ) );
 }

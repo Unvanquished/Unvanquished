@@ -1233,7 +1233,7 @@ static void SendPendingPredictableEvents( playerState_t *ps )
 		extEvent = ps->externalEvent;
 		ps->externalEvent = 0;
 		// create temporary entity for event
-		t = G_NewTempEntity( ps->origin, event );
+		t = G_NewTempEntity( VEC2GLM( ps->origin ), event );
 		number = t->s.number;
 		BG_PlayerStateToEntityState( ps, &t->s, true );
 		t->s.number = number;
@@ -2199,7 +2199,7 @@ static void ClientThink_real( gentity_t *self )
 		else
 		{
 			// no entity in front of player - do a small area search
-			for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, client->ps.origin, ENTITY_USE_RANGE ) ); )
+			for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, VEC2GLM( client->ps.origin ), ENTITY_USE_RANGE ) ); )
 			{
 				if ( ent && ent->use && ent->buildableTeam == client->pers.team)
 				{

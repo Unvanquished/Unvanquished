@@ -36,6 +36,9 @@ Maryland 20850 USA.
 #include "sg_entities.h"
 #include "CBSE.h"
 
+#include <glm/geometric.hpp>
+#include <glm/gtx/norm.hpp>
+
 /*
 =================================================================================
 
@@ -206,10 +209,9 @@ The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
-gentity_t *G_NewTempEntity( const vec3_t origin, int event )
+gentity_t *G_NewTempEntity( glm::vec3 origin, int event )
 {
 	gentity_t *newEntity;
-	vec3_t    snapped;
 
 	newEntity = G_NewEntity();
 	newEntity->s.eType = Util::enum_cast<entityType_t>( Util::ordinal(entityType_t::ET_EVENTS) + event );
@@ -218,9 +220,8 @@ gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 	newEntity->eventTime = level.time;
 	newEntity->freeAfterEvent = true;
 
-	VectorCopy( origin, snapped );
-	SnapVector( snapped );  // save network bandwidth
-	G_SetOrigin( newEntity, snapped );
+	SnapVector( &origin[0] );  // save network bandwidth
+	G_SetOrigin( newEntity, VEC2GLM( &origin[0] ) );
 
 	// find cluster for PVS
 	trap_LinkEntity( newEntity );
@@ -385,11 +386,8 @@ gentity_t *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const
 // from quakestyle.telefragged.com
 // (NOBODY): Code helper function
 //
-gentity_t *G_IterateEntitiesWithinRadius( gentity_t *entity, const vec3_t origin, float radius )
+gentity_t *G_IterateEntitiesWithinRadius( gentity_t *entity, const glm::vec3& origin, float radius )
 {
-	vec3_t eorg;
-	int    j;
-
 	if ( !entity )
 	{
 		entity = g_entities;
@@ -406,12 +404,14 @@ gentity_t *G_IterateEntitiesWithinRadius( gentity_t *entity, const vec3_t origin
 			continue;
 		}
 
-		for ( j = 0; j < 3; j++ )
-		{
-			eorg[ j ] = origin[ j ] - ( entity->r.currentOrigin[ j ] + ( entity->r.mins[ j ] + entity->r.maxs[ j ] ) * 0.5 );
-		}
+		//TODO: (glm) remove temp copies when things will be vec3_t
+		//  will only remains in bad memories
+		glm::vec3 currentOrigin = VEC2GLM( entity->r.currentOrigin );
+		glm::vec3 mins = VEC2GLM( entity->r.mins );
+		glm::vec3 maxs = VEC2GLM( entity->r.maxs );
+		glm::vec3 eorg = origin - ( currentOrigin + ( mins + maxs ) * 0.5f );
 
-		if ( VectorLength( eorg ) > radius )
+		if ( glm::length( eorg ) > radius )
 		{
 			continue;
 		}
@@ -429,7 +429,7 @@ G_FindClosestEntity
 Test a list of entities for the closest to a particular point
 ===============
 */
-gentity_t *G_FindClosestEntity( vec3_t origin, gentity_t **entities, int numEntities )
+gentity_t *G_FindClosestEntity( glm::vec3 origin, gentity_t **entities, int numEntities )
 {
 	int       i;
 	float     nd, d;
@@ -441,13 +441,13 @@ gentity_t *G_FindClosestEntity( vec3_t origin, gentity_t **entities, int numEnti
 	}
 
 	closestEnt = entities[ 0 ];
-	d = DistanceSquared( origin, closestEnt->s.origin );
+	d = glm::distance2( origin, VEC2GLM( closestEnt->s.origin ) );
 
 	for ( i = 1; i < numEntities; i++ )
 	{
 		gentity_t *ent = entities[ i ];
 
-		nd = DistanceSquared( origin, ent->s.origin );
+		nd = glm::distance2( origin, VEC2GLM( ent->s.origin ) );
 
 		if ( nd < d )
 		{
@@ -953,27 +953,27 @@ Angles will be cleared, because it is being used to represent a direction
 instead of an orientation.
 ===============
 */
-void G_SetMovedir( vec3_t angles, vec3_t movedir )
+void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir )
 {
-	static vec3_t VEC_UP = { 0, -1, 0 };
-	static vec3_t MOVEDIR_UP = { 0, 0, 1 };
-	static vec3_t VEC_DOWN = { 0, -2, 0 };
-	static vec3_t MOVEDIR_DOWN = { 0, 0, -1 };
+	static glm::vec3 VEC_UP = { 0, -1, 0 };
+	static glm::vec3 MOVEDIR_UP = { 0, 0, 1 };
+	static glm::vec3 VEC_DOWN = { 0, -2, 0 };
+	static glm::vec3 MOVEDIR_DOWN = { 0, 0, -1 };
 
-	if ( VectorCompare( angles, VEC_UP ) )
+	if ( angles == VEC_UP )
 	{
-		VectorCopy( MOVEDIR_UP, movedir );
+		movedir = MOVEDIR_UP;
 	}
-	else if ( VectorCompare( angles, VEC_DOWN ) )
+	else if ( angles == VEC_DOWN )
 	{
-		VectorCopy( MOVEDIR_DOWN, movedir );
+		movedir = MOVEDIR_DOWN;
 	}
 	else
 	{
-		AngleVectors( angles, movedir, nullptr, nullptr );
+		AngleVectors( &angles[0], &movedir[0], nullptr, nullptr );
 	}
 
-	VectorClear( angles );
+	angles = glm::vec3();
 }
 
 /*
@@ -983,7 +983,7 @@ G_SetOrigin
 Sets the pos trajectory for a fixed position
 ================
 */
-void G_SetOrigin( gentity_t *self, const vec3_t origin )
+void G_SetOrigin( gentity_t *self, const glm::vec3& origin )
 {
 	VectorCopy( origin, self->s.pos.trBase );
 	self->s.pos.trType = trType_t::TR_STATIONARY;
