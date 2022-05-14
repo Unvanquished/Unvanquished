@@ -254,14 +254,14 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 
 			if ( client && client->pers.team == team )
 			{
-				event = G_NewTempEntity( client->ps.origin, EV_MOMENTUM );
+				event = G_NewTempEntity( VEC2GLM( client->ps.origin ), EV_MOMENTUM );
 				event->r.svFlags = SVF_SINGLECLIENT;
 				event->r.singleClient = client->ps.clientNum;
 			}
 		}
 		else
 		{
-			event = G_NewTempEntity( vec3_origin, EV_MOMENTUM );
+			event = G_NewTempEntity( VEC2GLM( vec3_origin ), EV_MOMENTUM );
 			event->r.svFlags = ( SVF_BROADCAST | SVF_CLIENTMASK );
 			G_TeamToClientmask( team, &( event->r.loMask ), &( event->r.hiMask ) );
 		}

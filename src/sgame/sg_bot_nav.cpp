@@ -149,7 +149,7 @@ bool GoalInRange( const gentity_t *self, float r )
 		return ( glm::distance( VEC2GLM( self->s.origin ), VEC2GLM( self->botMind->nav().tpos ) ) < r );
 	}
 
-	while ( ( ent = G_IterateEntitiesWithinRadius( ent, self->s.origin, r ) ) )
+	while ( ( ent = G_IterateEntitiesWithinRadius( ent, VEC2GLM( self->s.origin ), r ) ) )
 	{
 		if ( ent == self->botMind->goal.getTargetedEntity() )
 		{

@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static vec3_t forward, right, up;
 static vec3_t muzzle;
 
-static void SendHitEvent( gentity_t *attacker, gentity_t *target, vec3_t const origin, vec3_t normal, entity_event_t evType );
+static void SendHitEvent( gentity_t *attacker, gentity_t *target, glm::vec3 const& origin, glm::vec3 const&  normal, entity_event_t evType );
 
 void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 {
@@ -233,7 +233,7 @@ bool G_FindAmmo( gentity_t *self )
 	}
 
 	// search for ammo source
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_USE_RANGE ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, VEC2GLM( self->s.origin ), ENTITY_USE_RANGE ) ) )
 	{
 		// only friendly, living and powered buildables provide ammo
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
@@ -281,7 +281,7 @@ bool G_FindFuel( gentity_t *self )
 	}
 
 	// search for fuel source
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_USE_RANGE ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, VEC2GLM( self->s.origin ), ENTITY_USE_RANGE ) ) )
 	{
 		// only friendly, living and powered buildables provide fuel
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
@@ -388,15 +388,15 @@ static void SendRangedHitEvent( gentity_t *attacker, gentity_t *target, trace_t 
 	G_SnapVectorTowards( tr->endpos, muzzle );
 
 	entity_event_t evType = HasComponents<HealthComponent>(*target->entity) ? EV_WEAPON_HIT_ENTITY : EV_WEAPON_HIT_ENVIRONMENT;
-	SendHitEvent( attacker, target, tr->endpos, tr->plane.normal, evType );
+	SendHitEvent( attacker, target, VEC2GLM( tr->endpos ), VEC2GLM( tr->plane.normal ), evType );
 }
 
-static void SendHitEvent( gentity_t *attacker, gentity_t *target, vec3_t const origin, vec3_t normal, entity_event_t evType )
+static void SendHitEvent( gentity_t *attacker, gentity_t *target, glm::vec3 const& origin, glm::vec3 const&  normal, entity_event_t evType )
 {
 	gentity_t *event = G_NewTempEntity( origin, evType );
 
 	// normal
-	event->s.eventParm = DirToByte( normal );
+	event->s.eventParm = DirToByte( &normal[0] );
 
 	// victim
 	event->s.otherEntityNum = target->s.number;
@@ -437,7 +437,7 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 	VectorNegate( normal, normal );
 	VectorNormalize( normal );
 
-	SendHitEvent( attacker, target, origin, normal, EV_WEAPON_HIT_ENTITY );
+	SendHitEvent( attacker, target, VEC2GLM( origin ), VEC2GLM( normal ), EV_WEAPON_HIT_ENTITY );
 }
 
 static gentity_t *FireMelee( gentity_t *self, float range, float width, float height,
@@ -601,7 +601,7 @@ static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 	gentity_t *tent;
 
 	// instead of an EV_WEAPON_HIT_* event, send this so client can generate the same spread pattern
-	tent = G_NewTempEntity( muzzle, EV_SHOTGUN );
+	tent = G_NewTempEntity( VEC2GLM( muzzle ), EV_SHOTGUN );
 	VectorScale( forward, 4096, tent->s.origin2 );
 	SnapVector( tent->s.origin2 );
 	tent->s.eventParm = rand() / ( RAND_MAX / 0x100 + 1 ); // seed for spread pattern
@@ -759,7 +759,7 @@ static void FirebombMissileThink( gentity_t *self )
 
 	// ignite alien buildables in range
 	neighbor = nullptr;
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, FIREBOMB_IGNITE_RANGE ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, VEC2GLM( self->s.origin ), FIREBOMB_IGNITE_RANGE ) ) )
 	{
 		if ( neighbor->s.eType == entityType_t::ET_BUILDABLE && G_Team( neighbor ) == TEAM_ALIENS &&
 		     G_LineOfSight( self, neighbor ) )
@@ -1164,7 +1164,7 @@ static void UpdateZapEffect( zap_t *zap )
 	                      entityNums, zap->numTargets + 1 );
 
 
-	G_SetOrigin( zap->effectChannel, muzzle );
+	G_SetOrigin( zap->effectChannel, VEC2GLM( muzzle ) );
 	trap_LinkEntity( zap->effectChannel );
 }
 

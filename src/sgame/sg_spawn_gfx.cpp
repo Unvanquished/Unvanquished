@@ -67,7 +67,7 @@ void SP_gfx_particle_system( gentity_t *self )
 {
 	char *s;
 
-	G_SetOrigin( self, self->s.origin );
+	G_SetOrigin( self, VEC2GLM( self->s.origin ) );
 	VectorCopy( self->s.angles, self->s.apos.trBase );
 
 	G_SpawnString( "psName", "", &s );
@@ -223,7 +223,11 @@ static void gfx_portal_locateCamera( gentity_t *self )
 	}
 	else
 	{
-		G_SetMovedir( owner->s.angles, dir );
+		glm::vec3 angles = VEC2GLM( owner->s.angles );
+		glm::vec3 dir_ = VEC2GLM( dir );
+		G_SetMovedir( angles, dir_ );
+		VectorCopy( &angles[0], owner->s.angles );
+		VectorCopy( &dir_[0], dir );
 	}
 
 	self->s.eventParm = DirToByte( dir );

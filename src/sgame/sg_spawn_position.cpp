@@ -63,7 +63,7 @@ pos_target
 */
 void SP_pos_target( gentity_t *self )
 {
-	G_SetOrigin( self, self->s.origin );
+	G_SetOrigin( self, VEC2GLM( self->s.origin ) );
 }
 
 /*
@@ -105,5 +105,5 @@ void SP_pos_location( gentity_t *self )
 	self->s.generic1 = G_LocationIndex(message);
 	level.locationHead = self;
 
-	G_SetOrigin( self, self->s.origin );
+	G_SetOrigin( self, VEC2GLM( self->s.origin ) );
 }
