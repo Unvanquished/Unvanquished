@@ -39,7 +39,7 @@ void ReactorComponent::Think(int timeDelta) {
 }
 
 void ReactorComponent::CreateTeslaTrail(Entity& target) {
-	gentity_t* trail = G_NewTempEntity(entity.oldEnt->s.origin, EV_TESLATRAIL);
+	gentity_t* trail = G_NewTempEntity( VEC2GLM( entity.oldEnt->s.origin ), EV_TESLATRAIL);
 	trail->s.generic1  = entity.oldEnt->s.number; // Source.
 	trail->s.clientNum = target.oldEnt->s.number; // Destination.
 }

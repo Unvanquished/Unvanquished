@@ -1566,7 +1566,13 @@ void SP_func_door( gentity_t *self )
 
 	// calculate second position
 	trap_SetBrushModel( self, self->model );
-	G_SetMovedir( self->s.angles, self->movedir );
+
+	glm::vec3 angles = VEC2GLM( self->s.angles );
+	glm::vec3 movedir = VEC2GLM( self->movedir );
+	G_SetMovedir( angles, movedir );
+	VectorCopy( &angles[0], self->s.angles );
+	VectorCopy( &movedir[0], self->movedir );
+
 	abs_movedir[ 0 ] = fabs( self->movedir[ 0 ] );
 	abs_movedir[ 1 ] = fabs( self->movedir[ 1 ] );
 	abs_movedir[ 2 ] = fabs( self->movedir[ 2 ] );
@@ -2081,7 +2087,12 @@ void SP_func_button( gentity_t *self )
 
 	G_SpawnFloat( "lip", "4", &lip );
 
-	G_SetMovedir( self->s.angles, self->movedir );
+	glm::vec3 angles = VEC2GLM( self->s.angles );
+	glm::vec3 movedir = VEC2GLM( self->movedir );
+	G_SetMovedir( angles, movedir );
+	VectorCopy( &angles[0], self->s.angles );
+	VectorCopy( &movedir[0], self->movedir );
+
 	abs_movedir[ 0 ] = fabs( self->movedir[ 0 ] );
 	abs_movedir[ 1 ] = fabs( self->movedir[ 1 ] );
 	abs_movedir[ 2 ] = fabs( self->movedir[ 2 ] );
@@ -2351,13 +2362,13 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 				if ( other->buildableTeam == TEAM_ALIENS )
 				{
 					VectorCopy( other->s.origin2, dir );
-					tent = G_NewTempEntity( other->s.origin, EV_ALIEN_BUILDABLE_EXPLOSION );
+					tent = G_NewTempEntity( VEC2GLM( other->s.origin ), EV_ALIEN_BUILDABLE_EXPLOSION );
 					tent->s.eventParm = DirToByte( dir );
 				}
 				else if ( other->buildableTeam == TEAM_HUMANS )
 				{
 					VectorSet( dir, 0.0f, 0.0f, 1.0f );
-					tent = G_NewTempEntity( other->s.origin, EV_HUMAN_BUILDABLE_EXPLOSION );
+					tent = G_NewTempEntity( VEC2GLM( other->s.origin ), EV_HUMAN_BUILDABLE_EXPLOSION );
 					tent->s.eventParm = DirToByte( dir );
 				}
 			}
