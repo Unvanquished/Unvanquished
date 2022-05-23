@@ -35,8 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // delayed translation - these strings may be passed to Trans_Gettext() later
 #define N_(x) x
 
-void                               trap_QuoteString( const char *, char *, int );
-
 struct buildableName_t
 {
 	buildable_t number;
@@ -2539,7 +2537,7 @@ char *Quote( const char *str )
 	static int index = -1;
 
 	index = ( index + 1 ) & 3;
-	trap_QuoteString( str, buffer[ index ], sizeof( buffer[ index ] ) );
+	Q_strncpyz( buffer[ index ], Cmd::Escape( str ).c_str(), sizeof( buffer[ index ] ) );
 
 	return buffer[ index ];
 }

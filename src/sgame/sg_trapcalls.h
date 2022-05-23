@@ -70,8 +70,6 @@ int              trap_BotGetServerCommand( int clientNum, char *message, int siz
 
 int              trap_RSA_GenerateMessage( const char *public_key, char *cleartext, char *encrypted );
 
-void             trap_QuoteString( const char *str, char *buf, int size );
-
 void             trap_GenFingerprint( const char *pubkey, int size, char *buffer, int bufsize );
 void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
