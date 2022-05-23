@@ -361,7 +361,7 @@ void CG_NotifyHooks()
 			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->persistant[ PERS_TEAM ] ) ), config, sizeof( config ) );
 			if ( config[ 0 ] )
 			{
-				trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
+				trap_SendConsoleCommand( ( "exec " + Cmd::Escape( config ) ).c_str() );
 			}
 
 			lastTeam = ps->persistant[ PERS_TEAM ];
