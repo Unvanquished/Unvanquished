@@ -880,13 +880,36 @@ team_t G_IterateTeams( team_t team )
 	}
 }
 
-char *Quote( const char *str )
+std::string G_EscapeServerCommandArg( Str::StringRef str )
+{
+	if ( str.find( '\n' ) == str.npos )
+	{
+		return Cmd::Escape( str );
+	}
+
+	std::string out = "\"";
+	for (char c : str)
+	{
+		if ( c == '\\' || c == '$' || c == '"' )
+		{
+			out.push_back( '\\' );
+		}
+		out.push_back( c );
+	}
+	out.push_back( '"' );
+	return out;
+}
+
+// Escape a command for used in server commands (sent from client to server)
+// Difference from Cmd::Escape and normal command parsing is that newlines are allowed
+// (for commands that have multi-line output)
+char *Quote( Str::StringRef str )
 {
 	static char buffer[ 4 ][ MAX_STRING_CHARS ];
 	static int index = -1;
 
 	index = ( index + 1 ) & 3;
-	Q_strncpyz( buffer[ index ], Cmd::Escape( str ).c_str(), sizeof( buffer[ index ] ) );
+	Q_strncpyz( buffer[ index ], G_EscapeServerCommandArg( str ).c_str(), sizeof( buffer[ index ] ) );
 
 	return buffer[ index ];
 }
