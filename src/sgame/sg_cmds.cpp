@@ -1807,14 +1807,14 @@ void Cmd_CallVote_f( gentity_t *ent )
 	case VOTE_KICK:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "ban %s 1s%s %s^* called vote kick (%s^*)", level.clients[ clientNum ].pers.ip.str,
-		             Quote( g_adminTempBan.Get().c_str() ), Quote( ent->client->pers.netname ), Quote( reason ) );
+		             Cmd::Escape( g_adminTempBan.Get() ).c_str(), Cmd::Escape( ent->client->pers.netname ).c_str(), Cmd::Escape( reason ).c_str() );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ), N_("Kick player '%s'"), name );
 		break;
 
 	case VOTE_SPECTATE:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "speclock %d 1s%s", clientNum, Quote( g_adminTempBan.Get().c_str() ) );
+		             "speclock %d 1s%s", clientNum, Cmd::Escape( g_adminTempBan.Get() ).c_str() );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Move player '%s' to spectators"), name );
@@ -1943,7 +1943,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		if ( *reason ) // layout?
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "map %s %s", Quote( arg ), Quote( reason ) );
+			             "map %s %s", Cmd::Escape( arg ).c_str(), Cmd::Escape( reason ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Change to map '%s' layout '%s'", arg, reason );
@@ -1951,7 +1951,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		else
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "map %s", Quote( arg ) );
+			             "map %s", Cmd::Escape( arg ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Change to map '%s'", arg );
@@ -1974,7 +1974,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 				return;
 			}
 
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "restart %s", Quote( arg ) );
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "restart %s", Cmd::Escape( arg ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'", arg );
 		}
@@ -2000,7 +2000,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		if ( *reason ) // layout?
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "set g_nextMap %s; set g_nextMapLayouts %s", Quote( arg ), Quote( reason ) );
+			             "set g_nextMap %s; set g_nextMapLayouts %s", Cmd::Escape( arg ).c_str(), Cmd::Escape( reason ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Set the next map to '%s' layout '%s'", arg, reason );
@@ -2008,7 +2008,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		else
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "set g_nextMap %s; set g_nextMapLayouts \"\"", Quote( arg ) );
+			             "set g_nextMap %s; set g_nextMapLayouts \"\"", Cmd::Escape( arg ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Set the next map to '%s'", arg );

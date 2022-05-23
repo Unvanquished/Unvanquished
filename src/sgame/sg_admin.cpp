@@ -3288,7 +3288,7 @@ bool G_admin_changemap( gentity_t *ent )
 	admin_log( map );
 	admin_log( layout );
 
-	trap_SendConsoleCommand( va( "map %s %s", Quote( map ), Quote( layout ) ) );
+	trap_SendConsoleCommand( Str::Format( "map %s %s", Cmd::Escape( map ), Cmd::Escape( layout ) ).c_str() );
 
 	level.restarted = true;
 	G_MapLog_Result( 'M' );
@@ -3960,7 +3960,7 @@ bool G_admin_adminhelp( gentity_t *ent )
 
 		out += "\n";
 
-		ADMP( Cmd::Escape( out ) );
+		ADMP( Quote( out ) );
 		ADMP( va( "%s %d", QQ( N_("^3adminhelp:^* $1$ available commands"
 		"run adminhelp [^3command^7] for adminhelp with a specific command.") ),count ) );
 
@@ -5522,7 +5522,7 @@ void G_admin_buffer_begin()
 
 void G_admin_buffer_end( gentity_t *ent )
 {
-	G_admin_print( ent, Cmd::Escape( g_bfb ) );
+	G_admin_print( ent, G_EscapeServerCommandArg( g_bfb ) );
 }
 
 static inline void G_admin_buffer_print_raw( gentity_t *ent, Str::StringRef m, bool appendNewLine )

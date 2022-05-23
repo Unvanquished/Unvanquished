@@ -378,9 +378,11 @@ void G_MapConfigs( const char *mapname )
 		return;
 	}
 
-	trap_SendConsoleCommand( va( "exec %s/default.cfg", Quote( g_mapConfigs.Get().c_str() ) ) );
+	std::string script = g_mapConfigs.Get() + "/default.cfg";
+	trap_SendConsoleCommand( ( "exec " + Cmd::Escape( script ) ).c_str() );
 
-	trap_SendConsoleCommand( va( "exec %s/%s.cfg", Quote( g_mapConfigs.Get().c_str() ), Quote( mapname ) ) );
+	script = Str::Format( "%s/%s.cfg", g_mapConfigs.Get(), mapname );
+	trap_SendConsoleCommand( ( "exec " + Cmd::Escape( script ) ).c_str() );
 
 	trap_SendConsoleCommand( "maprestarted" );
 }
@@ -1390,7 +1392,7 @@ void ExitLevel()
 	}
 	else if ( G_MapExists( g_nextMap.Get().c_str() ) )
 	{
-		trap_SendConsoleCommand( va( "map %s %s", Quote( g_nextMap.Get().c_str() ), Quote( g_nextMapLayouts.Get().c_str() ) ) );
+		trap_SendConsoleCommand( va( "map %s %s", Cmd::Escape( g_nextMap.Get() ).c_str(), Cmd::Escape( g_nextMapLayouts.Get() ).c_str() ) );
 	}
 	else if ( G_MapRotationActive() )
 	{
