@@ -1143,10 +1143,9 @@ CG_CenterPrint_Delay_f
 */
 static void CG_CenterPrint_Delay_f()
 {
-	char cmd[ MAX_STRING_CHARS ];
-
-	Com_sprintf( cmd, sizeof( cmd ), "delay %s lcp %s", Quote( CG_Argv( 1 ) ), Quote( CG_Argv( 2 ) ) );
-	trap_SendConsoleCommand( cmd );
+	trap_SendConsoleCommand(
+		Str::Format( "delay %s lcp %s", Cmd::Escape( CG_Argv( 1 ) ), Cmd::Escape( CG_Argv( 2 ) ) )
+		.c_str() );
 }
 
 /*
@@ -1166,10 +1165,9 @@ CG_CenterPrintTR_Delay_f
 */
 static void CG_CenterPrintTR_Delay_f()
 {
-	char cmd[ MAX_STRING_CHARS ];
-
-	Com_sprintf( cmd, sizeof( cmd ), "delay %s lcp %s", Quote( CG_Argv( 1 ) ), Quote( TranslateText_Internal( false, 2 ) ) );
-	trap_SendConsoleCommand( cmd );
+	trap_SendConsoleCommand(
+		Str::Format( "delay %s lcp %s", Cmd::Escape( CG_Argv( 1 ) ), Cmd::Escape( TranslateText_Internal( false, 2 ) ) )
+		.c_str() );
 }
 
 /*
