@@ -847,8 +847,8 @@ static void Cmd_Team_f( gentity_t *ent )
 	int      t;
 	const g_admin_spec_t *specOnly;
 
-	players[ TEAM_ALIENS ] = level.team[ TEAM_ALIENS ].numClients;
-	players[ TEAM_HUMANS ] = level.team[ TEAM_HUMANS ].numClients;
+	players[ TEAM_ALIENS ] = G_PlayerCountForBalance( TEAM_ALIENS );
+	players[ TEAM_HUMANS ] = G_PlayerCountForBalance( TEAM_HUMANS );
 
 	if ( TEAM_ALIENS == oldteam || TEAM_HUMANS == oldteam )
 	{
@@ -939,14 +939,14 @@ static void Cmd_Team_f( gentity_t *ent )
 				{
 					// 1: If this team has more player than the other team,
 					// tell the player to join the other team.
-					if ( g_teamForceBalance.Get() == 1 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
+					if ( g_teamForceBalance.Get() == 1 && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ] )
 					{
 						G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 						return;
 					}
 					// 2: Check for this team having more player than the other
 					// theam only if the other team is not empty.
-					else if ( g_teamForceBalance.Get() == 2 && G_PlayerCountForBalance( TEAM_HUMANS ) > 0 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
+					else if ( g_teamForceBalance.Get() == 2 && players[ TEAM_HUMANS ] > 0 && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ] )
 					{
 						G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 						return;
@@ -972,14 +972,14 @@ static void Cmd_Team_f( gentity_t *ent )
 				{
 					// 1: If this team has more player than the other team,
 					// tell the player to join the other team.
-					if ( g_teamForceBalance.Get() == 1 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
+					if ( g_teamForceBalance.Get() == 1 && players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
 					{
 						G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
 						return;
 					}
 					// 2: Check for this team having more player than the other
 					// theam only if the other team is not empty.
-					else if ( g_teamForceBalance.Get() == 2 && G_PlayerCountForBalance( TEAM_ALIENS ) > 0 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
+					else if ( g_teamForceBalance.Get() == 2 && players[ TEAM_ALIENS ] > 0 && players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
 					{
 						G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
 						return;
