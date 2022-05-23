@@ -2526,23 +2526,6 @@ int cmdcmp( const void *a, const void *b )
 }
 
 /*
-==================
-Quote
-==================
-*/
-
-char *Quote( const char *str )
-{
-	static char buffer[ 4 ][ MAX_STRING_CHARS ];
-	static int index = -1;
-
-	index = ( index + 1 ) & 3;
-	Q_strncpyz( buffer[ index ], Cmd::Escape( str ).c_str(), sizeof( buffer[ index ] ) );
-
-	return buffer[ index ];
-}
-
-/*
 =================
 Substring
 =================

@@ -534,7 +534,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 	{
 		if ( debugLevel > 0 )
 		{
-			Log::Notice( "voice %s\n", Quote( voice->name ) );
+			Log::Notice( "voice '%s'", voice->name );
 		}
 
 		voiceCmd = voice->cmds;
