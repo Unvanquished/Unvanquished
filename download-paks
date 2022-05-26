@@ -50,6 +50,8 @@ set -u
 # Work around a reported locale problem
 export LANG='C.UTF-8'
 
+DEFAULT_IFS="${IFS}"
+
 xdgHomeDir="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
 xdgCacheDir="${XDG_DATA_HOME:-${HOME}/.cache}/unvanquished/download-paks"
 
@@ -431,7 +433,7 @@ checkFile () {
 	# don't use grep -E, base_name may contain unescaped +
 	local record="$(grep -e ' [ *]'"${base_name}"'$' "${sum_path}")"
 	local known_sum="$(echo "${record}" | cut -f1 -d' ')"
-	local file_sum="$("${md5_tool}" "${file_name}" | cut -f1 -d' ')"
+	local file_sum="$(${md5_tool} "${file_name}" | cut -f1 -d' ')"
 
 	if [ "${file_sum}" != "${known_sum}" ]
 	then
@@ -561,6 +563,7 @@ createSymlinks () {
 		IFS=$'\n'
 		for asset_path in ${asset_path_list}
 		do
+			IFS="${DEFAULT_IFS}"
 			base_asset_path="$(basename "${asset_path}")"
 			temp_file_path="${temp_dir}/${asset_path}"
 			temp_dir_path="$(dirname "${temp_file_path}")"
@@ -594,6 +597,7 @@ installFiles () {
 		IFS=$'\n'
 		for asset_path in ${asset_path_list}
 		do
+			IFS="${DEFAULT_IFS}"
 			base_asset_path="$(basename "${asset_path}")"
 			cache_file_path="${cache_dir}/${base_asset_path}"
 			dest_file_path="${dest_dir}/${base_asset_path}"
@@ -642,6 +646,7 @@ downloadHttp () {
 		IFS=$'\n'
 		for asset_path in ${asset_path_list}
 		do
+			IFS="${DEFAULT_IFS}"
 			local is_complete='true'
 
 			if ! [ -f "${temp_dir}/${asset_path}" ]
