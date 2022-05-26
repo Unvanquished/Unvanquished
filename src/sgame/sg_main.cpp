@@ -1867,26 +1867,6 @@ void CheckIntermissionExit()
 }
 
 /*
-=============
-ScoreIsTied
-=============
-*/
-bool ScoreIsTied()
-{
-	int a, b;
-
-	if ( level.numPlayingClients < 2 )
-	{
-		return false;
-	}
-
-	a = level.clients[ level.sortedClients[ 0 ] ].ps.persistant[ PERS_SCORE ];
-	b = level.clients[ level.sortedClients[ 1 ] ].ps.persistant[ PERS_SCORE ];
-
-	return a == b;
-}
-
-/*
 =================
 CheckExitRules
 
