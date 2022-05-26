@@ -235,11 +235,11 @@ class AllComponents {
 				, {{name}}({{name}})
 			{%- endfor -%}
 			{
-				allSet.insert(({{component.get_type_name()}}*)((char*) this - (char*) ({{component.get_base_type_name()}}*) ({{component.get_type_name()}}*) nullptr));
+				allSet.insert(reinterpret_cast<{{component.get_type_name()}}*>(this));
 			}
 
 			~{{component.get_base_type_name()}}() {
-				allSet.erase(({{component.get_type_name()}}*)((char*) this - (char*) ({{component.get_base_type_name()}}*) ({{component.get_type_name()}}*) nullptr));
+				allSet.erase(reinterpret_cast<{{component.get_type_name()}}*>(this));
 			}
 
 			{% for required in component.get_own_required_components() %}
