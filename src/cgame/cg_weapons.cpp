@@ -2237,55 +2237,6 @@ void CG_PrevWeapon_f()
 
 /*
 ===============
-CG_SelectPrevInventoryItem_f
-===============
-*/
-void CG_SelectPrevInventoryItem_f()
-{
-	int i;
-	int original;
-
-	if ( !cg.snap )
-	{
-		return;
-	}
-
-	cg.weaponSelectTime = cg.time;
-	original = cg.weaponSelect;
-
-	for ( i = 0; i < 64; i++ )
-	{
-		cg.weaponSelect--;
-
-		if ( cg.weaponSelect == -1 )
-		{
-			cg.weaponSelect = 63;
-		}
-
-		if ( cg.weaponSelect < 32 )
-		{
-			if ( CG_WeaponSelectable( (weapon_t) cg.weaponSelect ) )
-			{
-				break;
-			}
-		}
-		else
-		{
-			if ( CG_UpgradeSelectable( (upgrade_t) ( cg.weaponSelect - 32 ) ) )
-			{
-				break;
-			}
-		}
-	}
-
-	if ( i == 64 )
-	{
-		cg.weaponSelect = original;
-	}
-}
-
-/*
-===============
 CG_Weapon_f
 ===============
 */
