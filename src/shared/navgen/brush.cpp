@@ -54,7 +54,7 @@
 
 #define SNAP_EPSILON    0.01
 
-void SnapWeldVector( vec3_t a, vec3_t b, vec3_t out ){
+static void SnapWeldVector( vec3_t a, vec3_t b, vec3_t out ){
 	int i;
 	vec_t ai, bi, outi;
 
@@ -103,9 +103,10 @@ void SnapWeldVector( vec3_t a, vec3_t b, vec3_t out ){
    returns qtrue if the winding is valid
  */
 
-#define DEGENERATE_EPSILON  0.1
-
+bool FixWinding( winding_t *w );
 bool FixWinding( winding_t *w ){
+	static constexpr float degenerate_epsilon = 0.1;
+
 	bool valid = true;
 	int i, j, k;
 	vec3_t vec;
@@ -131,7 +132,7 @@ bool FixWinding( winding_t *w ){
 		/* degenerate edge? */
 		VectorSubtract( w->p[ i ], w->p[ j ], vec );
 		dist = VectorLength( vec );
-		if ( dist < DEGENERATE_EPSILON ) {
+		if ( dist < degenerate_epsilon ) {
 			valid = false;
 			//Sys_FPrintf( SYS_VRB, "WARNING: Degenerate winding edge found, fixing...\n" );
 

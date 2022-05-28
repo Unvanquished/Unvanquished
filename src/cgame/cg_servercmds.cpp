@@ -406,7 +406,7 @@ static void CG_MapRestart()
 CG_Menu
 ==============
 */
-void CG_Menu( int menuType, int arg )
+static void CG_Menu( int menuType, int arg )
 {
 	int          menu = -1; // Menu to open
 	const char   *longMsg = nullptr; // command parameter
@@ -1141,7 +1141,7 @@ void CG_CenterPrint_f()
 CG_CenterPrint_Delay_f
 =================
 */
-void CG_CenterPrint_Delay_f()
+static void CG_CenterPrint_Delay_f()
 {
 	char cmd[ MAX_STRING_CHARS ];
 
@@ -1154,7 +1154,7 @@ void CG_CenterPrint_Delay_f()
 CG_CenterPrintTR_f
 =================
 */
-void CG_CenterPrintTR_f()
+static void CG_CenterPrintTR_f()
 {
 	CG_CenterPrint( TranslateText_Internal( false, 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 }
@@ -1164,7 +1164,7 @@ void CG_CenterPrintTR_f()
 CG_CenterPrintTR_Delay_f
 =================
 */
-void CG_CenterPrintTR_Delay_f()
+static void CG_CenterPrintTR_Delay_f()
 {
 	char cmd[ MAX_STRING_CHARS ];
 

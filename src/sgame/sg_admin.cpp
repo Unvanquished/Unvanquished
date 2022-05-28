@@ -588,7 +588,7 @@ static bool admin_permission( char *flags, const char *flag, bool *perm )
 	return allflags;
 }
 
-g_admin_cmd_t *G_admin_cmd( const char *cmd )
+static g_admin_cmd_t *G_admin_cmd( const char *cmd )
 {
 	const g_admin_cmd_t *cmds = g_admin_cmds;
 	int count = adminNumCmds;
@@ -607,7 +607,7 @@ g_admin_cmd_t *G_admin_cmd( const char *cmd )
 	return (g_admin_cmd_t*) bsearch( cmd, cmds, count, sizeof( g_admin_cmd_t ), cmdcmp );
 }
 
-g_admin_level_t *G_admin_level( const int l )
+static g_admin_level_t *G_admin_level( const int l )
 {
 	g_admin_level_t *level;
 
@@ -637,7 +637,7 @@ g_admin_admin_t *G_admin_admin( const char *guid )
 	return nullptr;
 }
 
-g_admin_command_t *G_admin_command( const char *cmd )
+static g_admin_command_t *G_admin_command( const char *cmd )
 {
 	g_admin_command_t *c;
 
@@ -2481,7 +2481,7 @@ static void admin_create_ban( gentity_t *ent,
 	}
 }
 
-int G_admin_parse_time( const char *time )
+static int G_admin_parse_time( const char *time )
 {
 	int seconds = 0, num = 0;
 
@@ -4732,8 +4732,8 @@ static int G_admin_flag_sort( const void *pa, const void *pb )
 	return strcmp( a, b );
 }
 
-const char *G_admin_flag_update( char *newflags, char *oldflags, int size,
-                                 const char *flag, bool add, bool permission )
+static const char *G_admin_flag_update( char *newflags, char *oldflags,
+		int size, const char *flag, bool add, bool permission )
 {
 	const char     *token, *token_p;
 	const char     *key;

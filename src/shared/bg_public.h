@@ -1788,6 +1788,10 @@ namespace CombatFeedback
   static const int INDICATOR_LIFETIME = 1000;
 }
 
+// each of sgame and cgame must provide these
+bool ConsoleCommand();
+void CompleteCommand(int argNum);
+
 #include "Clustering.h"
 
 //==================================================================

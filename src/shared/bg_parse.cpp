@@ -477,19 +477,19 @@ static trType_t ParseTrajectoryType( const char *token )
 	}
 }
 
-int configVarComparator(const void* a, const void* b)
+static int configVarComparator(const void* a, const void* b)
 {
 	const configVar_t *ca = (const configVar_t*) a;
 	const configVar_t *cb = (const configVar_t*) b;
 	return Q_stricmp(ca->name, cb->name);
 }
 
-configVar_t* BG_FindConfigVar(const char *varName)
+static configVar_t* BG_FindConfigVar(const char *varName)
 {
 	return (configVar_t*) bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
 }
 
-bool BG_ParseConfigVar(configVar_t *var, const char **text, const char *filename)
+static bool BG_ParseConfigVar(configVar_t *var, const char **text, const char *filename)
 {
 	char *token;
 

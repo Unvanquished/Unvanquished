@@ -1245,7 +1245,7 @@ G_StepMapRotation
 Run one node of a map rotation
 ===============
 */
-bool G_StepMapRotation( int rotation, int nodeIndex, int depth )
+static bool G_StepMapRotation( int rotation, int nodeIndex, int depth )
 {
 	mrNode_t      *node;
 	mrCondition_t *condition;
@@ -1470,7 +1470,7 @@ G_LoadMaprotation
 Load a maprotation file if it exists
 ===============
 */
-void G_LoadMaprotation( const char *fileName )
+static void G_LoadMaprotation( const char *fileName )
 {
 	if ( !G_ParseMapRotationFile( fileName ) )
 	{
@@ -1512,7 +1512,7 @@ G_FreeNode
 Free up memory used by a node
 ===============
 */
-void G_FreeNode( mrNode_t *node )
+static void G_FreeNode( mrNode_t *node )
 {
 	if ( node->type == NT_CONDITION )
 	{

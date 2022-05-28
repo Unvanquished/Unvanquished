@@ -666,7 +666,7 @@ CG_Momentum
 Notify player of generated momentum
 ==============
 */
-void CG_Momentum( entityState_t *es )
+static void CG_Momentum( entityState_t *es )
 {
 	float                  momentum;
 	bool               negative;
