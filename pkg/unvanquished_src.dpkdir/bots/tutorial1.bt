@@ -1,0 +1,69 @@
+selector
+{
+	behavior unstick
+
+/* FIXME
+	// Fight if, and only if the enemy is in direct sight
+	selector
+	{
+		sequence
+		{
+			condition alertedToEnemy
+			condition team == TEAM_ALIENS
+			condition goalTeam == TEAM_HUMANS
+			condition isVisible( E_GOAL )
+			action fight
+		}
+
+		sequence
+		{
+			condition alertedToEnemy
+			condition team == TEAM_HUMANS
+			condition goalTeam == TEAM_ALIENS
+			condition isVisible( E_GOAL )
+			action fight
+		}
+	}
+*/
+
+	selector
+	{
+		sequence
+		{
+			condition team == TEAM_ALIENS
+			condition healScore > 0.25
+			//condition !haveUpgrade( UP_MEDKIT ) // harmless, but unneeded
+			condition cvar("g_bot_heal")
+			action heal
+		}
+	}
+
+	// Force going back to base if going in a no-go zone (and the previous
+	// conditions didn't trigger)
+	decorator timer(500)
+	{
+		sequence
+		{
+			condition team == TEAM_ALIENS
+			hysteresis 400 700 distanceTo(E_A_OVERMIND)
+			{
+				//action flee // broken
+				action moveTo( E_A_OVERMIND )
+			}
+		}
+	}
+
+	condition team == TEAM_ALIENS
+	{
+		action evolve
+	}
+
+	action fight
+
+	condition team == TEAM_HUMANS
+	{
+		action equip
+	}
+
+	action roam
+}

@@ -1,0 +1,21 @@
+selector
+{
+	// Don't use medkit
+	//behavior use_medkit
+
+	// Fight if, and only if the enemy is in direct sight
+	sequence
+	{
+		condition alertedToEnemy
+		//condition isVisible( E_GOAL )
+		action fight
+	}
+
+	condition team == TEAM_HUMANS
+	{
+		action equip
+	}
+
+	// Don't roam
+	//action roam
+}
