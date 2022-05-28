@@ -141,7 +141,7 @@ bool GoalInRange( const gentity_t *self, float r )
 
 	if ( self->botMind->goal.targetsCoordinates() )
 	{
-		return ( glm::distance( VEC2GLM( self->s.origin ), VEC2GLM( self->botMind->nav().tpos ) ) < r );
+		return ( glm::distance( VEC2GLM( self->s.origin ), self->botMind->nav().glm_tpos() ) < r );
 	}
 
 	while ( ( ent = G_IterateEntitiesWithinRadius( ent, VEC2GLM( self->s.origin ), r ) ) )
@@ -606,13 +606,11 @@ Global Bot Navigation
 void BotClampPos( gentity_t *self )
 {
 	float height = self->client->ps.origin[ 2 ];
-	glm::vec3 origin;
 	glm::vec3 self_origin = VEC2GLM( self->client->ps.origin );
 	trace_t trace;
 	glm::vec3 mins, maxs;
 
-	origin[0] = self->botMind->nav().pos[0];
-	origin[1] = self->botMind->nav().pos[1];
+	glm::vec3 origin = self->botMind->nav().glm_pos();
 	origin[2] = height;
 	class_t pclass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
 	BG_BoundingBox( pclass, mins, maxs );
