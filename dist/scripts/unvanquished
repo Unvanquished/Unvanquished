@@ -1,26 +1,48 @@
 #! /usr/bin/env bash
 
+# This script behaves differently given it is named
+# `unvanquished`, `unvanquished-server`, or `unvanquished-tty`.
+# It reads a file named `/etc/unvanquished/paths.conf` that
+# configures distribution-specific paths.
+# If this file is absent, it assumes paths are relative the
+# folder storing this script.
+
+# This script does not require `unvanquished-migrate-profile`
+# but can make use of it if it exists.
+
 set -e
 set -u
 
-print_help=false
-enable_gdb=false
-enable_system=false
-program_name="$(basename "${0}")"
+print_help='false'
+enable_gdb='false'
+enable_system='false'
+program_name="$(basename "${BASH_SOURCE[0]}")"
+program_dir="$(dirname "${BASH_SOURCE[0]}")"
+
+conf_file='/etc/unvanquished/paths.conf'
+
+if [ -f "${conf_file}" ]
+then
+	. "${conf_file}"
+else
+	system_libpath="${program_dir}"
+	system_pakpath="${system_libpath}/pkg"
+	system_homepath="${system_libpath}/home"
+fi
 
 while ! [ -z "${1:-}" ]
 do
 	case "${1}" in
 		'--help'|'-h'|'-?'|'/?')
-			print_help=true
+			print_help='true'
 			break;
 			;;
 		'--gdb')
-			enable_gdb=true
+			enable_gdb='true'
 			shift
 			;;
 		'--system')
-			enable_system=true
+			enable_system='true'
 			shift
 			;;
 		'--client')
@@ -63,7 +85,7 @@ then
 	cat <<-EOF
 	${program_name}: run ${program_desc}
 
-	Usage: ${program_name} [option]
+	Usage: ${program_name} [options] [engine and game options]
 
 	Options:
 	${tab}--help          print this help
@@ -72,43 +94,29 @@ then
 	${tab}--tty           run Unvanquished game console$([ "${program_name}" = 'unvanquished-tty' ] && echo " (default)")
 	${tab}--system        use system Unvanquished home directory
 	${tab}--gdb           run with GDB debugger
-	
-	And other Dæmon engine options like:
-	${tab}-connect <URL>  connect to the given server URL
-	${tab}+exec <FILE>    run the given FILE config script (related to config/ directory)
 	EOF
+
+	if [ -f "${system_libpath}/daemon" ]
+	then
+		cat <<-EOF
+
+		Engine help:
+
+		EOF
+
+		"${system_libpath}/daemon" --help
+	fi
 
 	exit
 fi
 
-run_gdb=''
-if "${enable_gdb}"
-then
-	shift
-	if command -v gdb >/dev/null
-	then
-		run_gdb='gdb --args'
-	fi
-fi
-
-conf_file='/etc/unvanquished/paths.conf'
-
-if [ -f "${conf_file}" ]
-then
-	. "${conf_file}"
-else
-	lib_path="$(pwd)"
-	pak_path="${lib_path}/pkg"
-	system_home="${lib_path}/home"
-fi
-
 if "${enable_system}"
 then
-	home_path="${system_home}"
+	user_homepath="${system_homepath}"
 else
-	home_path="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
+	user_homepath="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
 
-	migration_script="${lib_path}/unvanquished-migrate-profile"
+	migration_script="${system_libpath}/unvanquished-migrate-profile"
 
 	if [ -f "${migration_script}" ]
 	then
@@ -116,4 +124,11 @@ else
 	fi
 fi
 
-exec ${run_gdb} "${lib_path}/${daemon_program}" -homepath "${home_path}" -libpath "${lib_path}" -pakpath "${pak_path}" "${@}"
+if "${enable_gdb}"
+then
+	exec_cmd='exec gdb --args'
+else
+	exec_cmd='exec'
+fi
+
+${exec_cmd} "${system_libpath}/${daemon_program}" -homepath "${user_homepath}" -libpath "${system_libpath}" -pakpath "${system_pakpath}" "${@}"
