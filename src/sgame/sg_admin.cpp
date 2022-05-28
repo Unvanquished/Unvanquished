@@ -5735,6 +5735,33 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 	return result;
 }
 
+static int BotFillCalculateMax(const std::vector<team_t> &teams)
+{
+	int max_clients;
+	Str::ParseInt(max_clients, Cvar::GetValue("sv_maxclients"));
+
+	int num_clients_in_untouched_teams = 0;
+	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); )
+	{
+		bool is_a_modified_team = false;
+		for (team_t t : teams)
+		{
+			if (t == team)
+			{
+				is_a_modified_team = true;
+			}
+		}
+		if (!is_a_modified_team)
+		{
+			num_clients_in_untouched_teams += level.team[team].botFillTeamSize;
+		}
+	}
+
+	// this rounds to the lower
+	return (max_clients - num_clients_in_untouched_teams - 1) /
+		static_cast<int>(teams.size());
+}
+
 static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 {
 	if (args.Argc() < 3 || args.Argc() > 5)
@@ -5742,7 +5769,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		BotUsage( ent );
 		return false;
 	}
-	int count = atoi( args[2].data() );
+	int botFillTeamSize = atoi( args[2].data() );
 	std::vector<team_t> teams;
 	if ( args.Argc() >= 4 )
 	{
@@ -5760,9 +5787,16 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	}
 	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : g_bot_default_skill.Get();
 
+	int botFillTeamSizeMax = BotFillCalculateMax(teams);
+
+	if (botFillTeamSize > botFillTeamSizeMax)
+	{
+		Log::Warn("Amount of bots requested would go over (sv_maxclients - 1), the amount will be caped to %i", botFillTeamSizeMax);
+	}
+
 	for (team_t team : teams)
 	{
-		level.team[team].botFillTeamSize = count;
+		level.team[team].botFillTeamSize = Math::Clamp(botFillTeamSize, 0, botFillTeamSizeMax);
 		level.team[team].botFillSkillLevel = skill;
 	}
 
