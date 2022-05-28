@@ -150,7 +150,7 @@ void Rocket_InitKeys()
 	init = true;
 }
 
-KeyIdentifier Rocket_FromQuake( int key )
+static KeyIdentifier Rocket_FromQuake( int key )
 {
 	if ( !init )
 	{
@@ -167,7 +167,7 @@ KeyIdentifier Rocket_FromQuake( int key )
 	return KI_UNKNOWN;
 }
 
-KeyModifier Rocket_GetKeyModifiers()
+static KeyModifier Rocket_GetKeyModifiers()
 {
 	using Keyboard::Key;
 	int mod = 0;
@@ -185,9 +185,9 @@ KeyModifier Rocket_GetKeyModifiers()
 	return static_cast< KeyModifier >( mod );
 }
 
-static bool wasDownBefore = false;
-void Rocket_ProcessMouseClick( int button, bool down )
+static void Rocket_ProcessMouseClick( int button, bool down )
 {
+	static bool wasDownBefore = false;
 	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
 		return;

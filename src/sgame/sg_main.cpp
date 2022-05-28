@@ -291,7 +291,7 @@ All but the first will have the FL_GROUPSLAVE flag set and groupMaster field set
 All but the last will have the groupChain field set to the next one
 ================
 */
-void G_FindEntityGroups()
+static void G_FindEntityGroups()
 {
 	gentity_t *masterEntity, *comparedEntity;
 	int       i, j, k;
@@ -356,7 +356,7 @@ goes through all entities and concludes the spawn
 by calling their reset function as initiation if available
 ================
 */
-void G_InitSetEntities()
+static void G_InitSetEntities()
 {
 	int i;
 	gentity_t *entity;
@@ -743,7 +743,7 @@ SortRanks
 
 =============
 */
-int SortRanks( const void *a, const void *b )
+static int SortRanks( const void *a, const void *b )
 {
 	gclient_t *ca, *cb;
 
@@ -1012,7 +1012,7 @@ G_SpawnClients
 Spawn queued clients
 ============
 */
-void G_SpawnClients( team_t team )
+static void G_SpawnClients( team_t team )
 {
 	int          clientNum;
 	gentity_t    *ent, *spawn;
@@ -1058,7 +1058,7 @@ Calculates the average number of players on each team.
 Resets completely if all players leave a team.
 ============
 */
-void G_CalculateAvgPlayers()
+static void G_CalculateAvgPlayers()
 {
 	int        team;
 	int        *samples, currentPlayers, currentBots;
@@ -1376,7 +1376,7 @@ When the intermission has been exited, the server is either moved
 to a new map based on the map rotation or the current map restarted
 =============
 */
-void ExitLevel()
+static void ExitLevel()
 {
 	int       i;
 	gclient_t *cl;
@@ -1774,7 +1774,7 @@ If one or more players have not acknowledged the continue, the game will
 wait 10 seconds before going on.
 =================
 */
-void CheckIntermissionExit()
+static void CheckIntermissionExit()
 {
 	int          ready, notReady;
 	int          i;
@@ -2226,7 +2226,7 @@ G_RunAct
 Runs act code for this frame if it should
 =============
 */
-void G_RunAct( gentity_t *entity )
+static void G_RunAct( gentity_t *entity )
 {
 
 	if ( entity->nextAct <= 0 )
@@ -2259,7 +2259,7 @@ G_EvaluateAcceleration
 Calculates the acceleration for an entity
 =============
 */
-void G_EvaluateAcceleration( gentity_t *ent, int msec )
+static void G_EvaluateAcceleration( gentity_t *ent, int msec )
 {
 	vec3_t deltaVelocity;
 	vec3_t deltaAccel;

@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 CG_DamageFeedback
 ==============
 */
-void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
+static void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 {
 	float  left, front, up;
 	float  kick;
@@ -163,7 +163,7 @@ CG_CheckPlayerstateEvents
 
 ==============
 */
-void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops )
+static void CG_CheckPlayerstateEvents( playerState_t *ps, playerState_t *ops )
 {
 	int       i;
 	int       event;
@@ -249,7 +249,7 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps )
 CG_CheckLocalSounds
 ==================
 */
-void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
+static void CG_CheckLocalSounds( playerState_t *ps, playerState_t *ops )
 {
 	// don't play the sounds if the player just spawned
 	if ( ps->persistant[ PERS_SPECSTATE ] != ops->persistant[ PERS_SPECSTATE ] )

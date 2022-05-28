@@ -2183,7 +2183,7 @@ CG_FindPrevWeapon
 Find previous weapon in inventory.
 ===============
 */
-weapon_t CG_FindPrevWeapon( playerState_t *ps )
+static weapon_t CG_FindPrevWeapon( playerState_t *ps )
 {
 	int currentWeapon = ps->weapon;
 

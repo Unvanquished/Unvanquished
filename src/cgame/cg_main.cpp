@@ -697,7 +697,7 @@ void CG_RegisterGrading( int slot, const char *str )
 CG_RegisterReverb
 =================
 */
-void CG_RegisterReverb( int slot, const char *str )
+static void CG_RegisterReverb( int slot, const char *str )
 {
 	int   model;
 	float dist, intensity;

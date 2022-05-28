@@ -50,7 +50,7 @@ enum momentum_t
 // local methods
 // -------------
 
-const char *MomentumTypeToReason( momentum_t type )
+static const char *MomentumTypeToReason( momentum_t type )
 {
 	switch ( type )
 	{
@@ -66,7 +66,7 @@ const char *MomentumTypeToReason( momentum_t type )
 /**
  * Has to be called whenever the momentum of a team has been modified.
  */
-void MomentumChanged()
+static void MomentumChanged()
 {
 	int       playerNum;
 	gentity_t *player;
@@ -102,7 +102,7 @@ void MomentumChanged()
  *
  * To be called after the team's momentum has been modified.
  */
-void NotifyLegacyStageSensors( team_t team, float amount )
+static void NotifyLegacyStageSensors( team_t team, float amount )
 {
 	int   stage;
 	float momentum;

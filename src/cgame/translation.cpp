@@ -40,6 +40,8 @@ Maryland 20850 USA.
 #include "tinygettext/tinygettext.hpp"
 #include "tinygettext/file_system.hpp"
 
+#include "cg_ui.h"
+
 using ::tinygettext::Language;
 
 static Log::Logger LOG(VM_STRING_PREFIX "translation");
@@ -220,7 +222,7 @@ TODO reload the UI (after RML translation is implemented)
 ====================
 */
 
-void Trans_SetLanguage( const char* lang )
+static void Trans_SetLanguage( const char* lang )
 {
 	Language requestLang = Language::from_env( std::string( lang ) );
 

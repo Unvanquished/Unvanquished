@@ -89,7 +89,7 @@ At all other times, CG_TransitionSnapshot is used instead.
 FIXME: Also called by map_restart?
 ==================
 */
-void CG_SetInitialSnapshot( snapshot_t *snap )
+static void CG_SetInitialSnapshot( snapshot_t *snap )
 {
 	centity_t     *cent;
 	entityState_t *state;

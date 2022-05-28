@@ -129,7 +129,7 @@ void G_AddMomentumToScore( gentity_t *self, float momentum )
 	AddScoreHelper( self, momentum * SCORE_PER_MOMENTUM );
 }
 
-void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
+static void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *attacker )
 {
 	if ( attacker && attacker != self )
 	{

@@ -443,7 +443,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "trigger_win",              SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_END }
 };
 
-bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_t *entity )
+static bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_t *entity )
 {
 	if ( spawnDescription->versionState == ENT_V_CURRENT ) // we don't need to handle anything
 		return true;
@@ -468,7 +468,7 @@ bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_
 	return true;
 }
 
-bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
+static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 {
 	switch (entityClass->chainType) {
 		case CHAIN_ACTIVE:
@@ -514,7 +514,7 @@ Finds the spawn function for the entity and calls it,
 returning false if not found
 ===============
 */
-bool G_CallSpawnFunction( gentity_t *spawnedEntity )
+static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 {
 	entityClassDescriptor_t     *spawnedClass;
 	buildable_t buildable;
@@ -649,7 +649,7 @@ char *G_NewString( const char *string )
 G_NewTarget
 =============
 */
-gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const char *string )
+static gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const char *string )
 {
 	char *stringPointer;
 	gentityCallDefinition_t newCallDefinition = { nullptr, ON_DEFAULT, nullptr, nullptr, ECA_NOP };
@@ -686,7 +686,7 @@ Takes a key/value pair and sets the binary values
 in a gentity
 ===============
 */
-void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
+static void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 {
 	fieldDescriptor_t *fieldDescriptor;
 	byte    *entityDataField;
@@ -784,7 +784,7 @@ Spawn an entity and fill in all of the level fields from
 level.spawnVars[], then call the class specfic spawn function
 ===================
 */
-void G_SpawnGEntityFromSpawnVars()
+static void G_SpawnGEntityFromSpawnVars()
 {
 	int       i, j;
 	gentity_t *spawningEntity;
@@ -911,7 +911,7 @@ bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFi
 G_AddSpawnVarToken
 ====================
 */
-char *G_AddSpawnVarToken( const char *string )
+static char *G_AddSpawnVarToken( const char *string )
 {
 	int  l;
 	char *dest;
@@ -941,7 +941,7 @@ level's entity strings into level.spawnVars[]
 This does not actually spawn an entity.
 ====================
 */
-bool G_ParseSpawnVars()
+static bool G_ParseSpawnVars()
 {
 	char keyname[ MAX_TOKEN_CHARS ];
 	char com_token[ MAX_TOKEN_CHARS ];
@@ -1048,7 +1048,7 @@ Every map should have exactly one.
 ; disabledClasses: A comma delimited list of alien classes to disable for this map. [g_disabledClasses ()]
 ; disabledBuildables: A comma delimited list of buildables to disable for this map. [g_disabledBuildables ()]
 */
-void SP_worldspawn()
+static void SP_worldspawn()
 {
 	char *s;
 	float reverbIntensity = 1.0f;

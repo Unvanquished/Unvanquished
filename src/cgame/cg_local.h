@@ -1864,6 +1864,9 @@ void       CG_BuildSpectatorString();
 void       CG_UpdateBuildableRangeMarkerMask();
 void       CG_RegisterGrading( int slot, const char *str );
 
+void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gameState );
+void CG_Shutdown();
+
 //
 // cg_view.c
 //
@@ -2099,7 +2102,6 @@ void CG_ProcessSnapshots();
 //
 // cg_consolecmds.c
 //
-bool ConsoleCommand();
 void     CG_InitConsoleCommands();
 void     CG_RequestScores();
 void     CG_HideScores_f();
@@ -2267,7 +2269,6 @@ int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table );
 void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
 void CG_Rocket_BuildServerInfo();
 void CG_Rocket_BuildServerList( const char *args );
-void CG_Rocket_BuildArmouryBuyList( const char *table );
 void CG_Rocket_BuildPlayerList( const char *table );
 
 //
@@ -2279,12 +2280,6 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name );
 // cg_gameinfo.c
 //
 void CG_LoadArenas();
-
-//
-// translation.cpp
-//
-void Trans_Init();
-void Trans_UpdateLanguage_f();
 
 //
 // Rocket Functions
