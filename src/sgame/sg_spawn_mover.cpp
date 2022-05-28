@@ -63,7 +63,7 @@ G_TestEntityPosition
 
 ============
 */
-gentity_t *G_TestEntityPosition( gentity_t *ent )
+static gentity_t *G_TestEntityPosition( gentity_t *ent )
 {
 	trace_t tr;
 
@@ -91,7 +91,7 @@ gentity_t *G_TestEntityPosition( gentity_t *ent )
 G_CreateRotationMatrix
 ================
 */
-void G_CreateRotationMatrix( vec3_t angles, vec3_t matrix[ 3 ] )
+static void G_CreateRotationMatrix( vec3_t angles, vec3_t matrix[ 3 ] )
 {
 	AngleVectors( angles, matrix[ 0 ], matrix[ 1 ], matrix[ 2 ] );
 	VectorInverse( matrix[ 1 ] );
@@ -102,7 +102,7 @@ void G_CreateRotationMatrix( vec3_t angles, vec3_t matrix[ 3 ] )
 G_TransposeMatrix
 ================
 */
-void G_TransposeMatrix( vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
+static void G_TransposeMatrix( vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
 {
 	int i, j;
 
@@ -120,7 +120,7 @@ void G_TransposeMatrix( vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
 G_RotatePoint
 ================
 */
-void G_RotatePoint( vec3_t point, vec3_t matrix[ 3 ] )
+static void G_RotatePoint( vec3_t point, vec3_t matrix[ 3 ] )
 {
 	vec3_t tvec;
 
@@ -137,7 +137,7 @@ G_TryPushingEntity
 Returns false if the move is blocked
 ==================
 */
-bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove )
+static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove )
 {
 	vec3_t    matrix[ 3 ], transpose[ 3 ];
 	vec3_t    org, org2, move2;
@@ -262,7 +262,7 @@ otherwise riders would continue to slide.
 If false is returned, *obstacle will be the blocking entity
 ============
 */
-bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle )
+static bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle )
 {
 	int       i, e;
 	gentity_t *check;
@@ -406,7 +406,7 @@ bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obst
 G_MoverGroup
 =================
 */
-void G_MoverGroup( gentity_t *ent )
+static void G_MoverGroup( gentity_t *ent )
 {
 	vec3_t    move, amove;
 	gentity_t *part, *obstacle;
@@ -530,7 +530,7 @@ Pos1 is "at rest", pos2 is "activated"
 SetMoverState
 ===============
 */
-void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
+static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 {
 	vec3_t delta;
 	float  f;
@@ -654,7 +654,7 @@ MatchGroup
 All entities in a mover group will move from pos1 to pos2
 ================
 */
-void MatchGroup( gentity_t *groupLeader, int moverState, int time )
+static void MatchGroup( gentity_t *groupLeader, int moverState, int time )
 {
 	gentity_t *slave;
 
@@ -669,7 +669,7 @@ void MatchGroup( gentity_t *groupLeader, int moverState, int time )
 MasterOf
 ================
 */
-gentity_t *MasterOf( gentity_t *ent )
+static gentity_t *MasterOf( gentity_t *ent )
 {
 	if ( ent->groupMaster )
 	{
@@ -689,7 +689,7 @@ Returns a MOVER_* value representing the phase (either one
  of pos1, 1to2, pos2, or 2to1) of a mover group as a whole.
 ================
 */
-moverState_t GetMoverGroupState( gentity_t *ent )
+static moverState_t GetMoverGroupState( gentity_t *ent )
 {
 	bool restingPosition = false;
 
@@ -729,7 +729,7 @@ Used only by a master movers.
 
 void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator );
 
-void ReturnToPos1orApos1( gentity_t *ent )
+static void ReturnToPos1orApos1( gentity_t *ent )
 {
 	if ( GetMoverGroupState( ent ) != MOVER_POS2 )
 	{
@@ -744,7 +744,7 @@ void ReturnToPos1orApos1( gentity_t *ent )
 Think_ClosedModelDoor
 ================
 */
-void Think_ClosedModelDoor( gentity_t *ent )
+static void Think_ClosedModelDoor( gentity_t *ent )
 {
 	// play sound
 	if ( ent->soundPos1 )
@@ -766,7 +766,7 @@ void Think_ClosedModelDoor( gentity_t *ent )
 Think_CloseModelDoor
 ================
 */
-void Think_CloseModelDoor( gentity_t *ent )
+static void Think_CloseModelDoor( gentity_t *ent )
 {
 	int       entityList[ MAX_GENTITIES ];
 	int       numEntities, i;
@@ -829,7 +829,7 @@ void Think_CloseModelDoor( gentity_t *ent )
 Think_OpenModelDoor
 ================
 */
-void Think_OpenModelDoor( gentity_t *ent )
+static void Think_OpenModelDoor( gentity_t *ent )
 {
 	//set brush non-solid
 	trap_UnlinkEntity( ent->clipBrush );
@@ -863,7 +863,7 @@ void Think_OpenModelDoor( gentity_t *ent )
 Reached_BinaryMover
 ================
 */
-void BinaryMover_reached( gentity_t *ent )
+static void BinaryMover_reached( gentity_t *ent )
 {
 	gentity_t *master = MasterOf( ent );
 
@@ -1187,7 +1187,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	}
 }
 
-void reset_moverspeed( gentity_t *self, float fallbackSpeed )
+static void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 {
 	vec3_t   move;
 	float    distance;
@@ -1268,7 +1268,7 @@ InitMover
 so the movement delta can be calculated
 ================
 */
-void InitMover( gentity_t *ent )
+static void InitMover( gentity_t *ent )
 {
 	char     *groupName;
 
@@ -1304,7 +1304,7 @@ void InitMover( gentity_t *ent )
 	VectorCopy( ent->restingPosition, ent->s.pos.trBase );
 }
 
-void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
+static void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 {
 	vec3_t   move;
 	float    angle;
@@ -1335,7 +1335,7 @@ InitRotator
 so the movement delta can be calculated
 ================
 */
-void InitRotator( gentity_t *ent )
+static void InitRotator( gentity_t *ent )
 {
 	char     *groupName;
 
@@ -1387,7 +1387,7 @@ targeted by another entity.
 Blocked_Door
 ================
 */
-void func_door_block( gentity_t *self, gentity_t *other )
+static void func_door_block( gentity_t *self, gentity_t *other )
 {
 	// remove anything other than a client or buildable
 	if ( !other->client && other->s.eType != entityType_t::ET_BUILDABLE )
@@ -1433,7 +1433,7 @@ void door_trigger_touch( gentity_t *self, gentity_t *other, trace_t* )
 	}
 }
 
-void Think_MatchGroup( gentity_t *self )
+static void Think_MatchGroup( gentity_t *self )
 {
 	if ( self->flags & FL_GROUPSLAVE )
 	{
@@ -1450,7 +1450,7 @@ All of the parts of a door have been spawned, so create
 a trigger that encloses all of them
 ======================
 */
-void Think_SpawnNewDoorTrigger( gentity_t *self )
+static void Think_SpawnNewDoorTrigger( gentity_t *self )
 {
 	gentity_t *other;
 	vec3_t    mins, maxs;
@@ -1498,7 +1498,7 @@ void Think_SpawnNewDoorTrigger( gentity_t *self )
 	}
 }
 
-void func_door_reset( gentity_t *self )
+static void func_door_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
 	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
@@ -1508,7 +1508,7 @@ void func_door_reset( gentity_t *self )
 	reset_moverspeed( self, 400 );
 }
 
-void func_door_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
+static void func_door_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	if (GetMoverGroupState( self ) != MOVER_1TO2 )
 		BinaryMover_act( self, caller, activator );
@@ -1599,7 +1599,7 @@ void SP_func_door( gentity_t *self )
 	}
 }
 
-void func_door_rotating_reset( gentity_t *self )
+static void func_door_rotating_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
 
@@ -1723,7 +1723,7 @@ void SP_func_door_rotating( gentity_t *self )
 	}
 }
 
-void func_door_model_reset( gentity_t *self )
+static void func_door_model_reset( gentity_t *self )
 {
 	G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, 200);
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
@@ -1865,7 +1865,7 @@ Touch_Plat
 Don't allow to descend if a live player is on it
 ===============
 */
-void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t* )
+static void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t* )
 {
 	// DONT_WAIT
 	if ( ent->spawnflags & 1 )
@@ -1892,7 +1892,7 @@ Touch_PlatCenterTrigger
 If the plat is at the bottom position, start it going up
 ===============
 */
-void Touch_PlatCenterTrigger( gentity_t *ent, gentity_t *other, trace_t* )
+static void Touch_PlatCenterTrigger( gentity_t *ent, gentity_t *other, trace_t* )
 {
 	if ( !other->client )
 	{
@@ -1914,7 +1914,7 @@ Elevator cars require that the trigger extend through the entire low position,
 not just sit on top of it.
 ================
 */
-void SpawnPlatSensor( gentity_t *self )
+static void SpawnPlatSensor( gentity_t *self )
 {
 	gentity_t *sensor;
 	vec3_t    tmin, tmax;
@@ -2024,7 +2024,7 @@ BUTTON
 ===============================================================================
 */
 
-void Touch_Button( gentity_t *ent, gentity_t *other, trace_t* )
+static void Touch_Button( gentity_t *ent, gentity_t *other, trace_t* )
 {
 	if ( !other->client )
 	{
@@ -2037,13 +2037,13 @@ void Touch_Button( gentity_t *ent, gentity_t *other, trace_t* )
 	}
 }
 
-void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
+static void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	if ( self->moverState == MOVER_POS1 )
 		BinaryMover_act( self, caller, activator );
 }
 
-void func_button_reset( gentity_t *self )
+static void func_button_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
 
@@ -2112,7 +2112,7 @@ TRAIN
 #define TRAIN_BLOCK_STOPS 2
 #define CORNER_PAUSE      1
 
-void Stop_Train( gentity_t *self );
+static void Stop_Train( gentity_t *self );
 
 /*
 ===============
@@ -2121,7 +2121,7 @@ Think_BeginMoving
 The wait time at a corner has completed, so start moving again
 ===============
 */
-void Think_BeginMoving( gentity_t *self )
+static void Think_BeginMoving( gentity_t *self )
 {
 	self->s.pos.trTime = level.time;
 	self->s.pos.trType = trType_t::TR_LINEAR_STOP;
@@ -2133,7 +2133,7 @@ Reached_Train
 ===============
 */
 
-void func_train_reached( gentity_t *self )
+static void func_train_reached( gentity_t *self )
 {
 	gentity_t *next;
 	vec3_t    move;
@@ -2210,7 +2210,7 @@ void func_train_reached( gentity_t *self )
 Start_Train
 ================
 */
-void Start_Train( gentity_t *self )
+static void Start_Train( gentity_t *self )
 {
 	vec3_t move;
 
@@ -2228,7 +2228,7 @@ void Start_Train( gentity_t *self )
 Stop_Train
 ================
 */
-void Stop_Train( gentity_t *self )
+static void Stop_Train( gentity_t *self )
 {
 	vec3_t origin;
 
@@ -2245,7 +2245,7 @@ void Stop_Train( gentity_t *self )
 Use_Train
 ================
 */
-void func_train_act( gentity_t *ent, gentity_t*, gentity_t* )
+static void func_train_act( gentity_t *ent, gentity_t*, gentity_t* )
 {
 	if ( ent->spawnflags & TRAIN_START_OFF )
 	{
@@ -2266,7 +2266,7 @@ Think_SetupTrainTargets
 Link all the corners together
 ===============
 */
-void Think_SetupTrainTargets( gentity_t *self )
+static void Think_SetupTrainTargets( gentity_t *self )
 {
 	gentity_t *path, *next, *start;
 	int targetIndex;
@@ -2326,7 +2326,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 Blocked_Train
 ================
 */
-void func_train_blocked( gentity_t *self, gentity_t *other )
+static void func_train_blocked( gentity_t *self, gentity_t *other )
 {
 	if ( self->spawnflags & TRAIN_BLOCK_STOPS )
 	{
@@ -2514,7 +2514,7 @@ BOBBING
 ===============================================================================
 */
 
-void func_bobbing_reset( gentity_t *self )
+static void func_bobbing_reset( gentity_t *self )
 {
 	reset_moverspeed( self, 4 );
 }
@@ -2602,7 +2602,7 @@ void SP_func_pendulum( gentity_t *self )
 Use_func_spawn
 ====================
 */
-void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	vec3_t    mins, maxs;
 
@@ -2626,7 +2626,7 @@ void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 	}
 }
 
-void func_spawn_reset( gentity_t *self )
+static void func_spawn_reset( gentity_t *self )
 {
 	vec3_t    mins, maxs;
 
@@ -2672,7 +2672,7 @@ void SP_func_spawn( gentity_t *self )
   self->reset = func_spawn_reset;
 }
 
-void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, int )
+static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, int )
 {
 	self->takedamage = false;
 	trap_UnlinkEntity( self );
@@ -2682,7 +2682,7 @@ void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, in
 }
 
 
-void func_destructable_reset( gentity_t *self )
+static void func_destructable_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 100);
 	self->takedamage = true;
@@ -2693,7 +2693,7 @@ void func_destructable_reset( gentity_t *self )
 Use_func_destructable
 ====================
 */
-void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
+static void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
   if( self->r.linked )
   {

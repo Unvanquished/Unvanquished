@@ -646,7 +646,7 @@ static void CG_Portal( centity_t *cent )
 CG_Fire
 ===============
 */
-void CG_Fire( centity_t *cent )
+static void CG_Fire( centity_t *cent )
 {
 	// TODO: Add burning sound
 	// trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media. );

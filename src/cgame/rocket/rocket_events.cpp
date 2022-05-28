@@ -42,6 +42,8 @@ Maryland 20850 USA.
 std::queue< RocketEvent_t* > eventQueue;
 extern Rml::Core::Element *activeElement;
 
+void Rocket_ProcessEvent( Rml::Core::Event& event, Rml::Core::String& value );
+
 void Rocket_ProcessEvent( Rml::Core::Event& event, Rml::Core::String& value )
 {
 	Rml::Core::StringList list;

@@ -2305,7 +2305,7 @@ private:
 	float offset;
 };
 
-void CG_Rocket_DrawPlayerHealth()
+static void CG_Rocket_DrawPlayerHealth()
 {
 	static int lastHealth = 0;
 
@@ -2315,7 +2315,7 @@ void CG_Rocket_DrawPlayerHealth()
 	}
 }
 
-void CG_Rocket_DrawPlayerHealthCross()
+static void CG_Rocket_DrawPlayerHealthCross()
 {
 	qhandle_t shader;
 	Color::Color ref_color;
@@ -2754,7 +2754,7 @@ static void CG_DrawPlayerClipsStack()
 	CG_DrawStack( &rect, foreColor, 0.8, LALIGN_TOPLEFT, val, maxVal );
 }
 
-void CG_Rocket_DrawMinimap()
+static void CG_Rocket_DrawMinimap()
 {
 	if ( cg.minimap.defined )
 	{
@@ -2771,7 +2771,7 @@ void CG_Rocket_DrawMinimap()
 
 #define FOLLOWING_STRING "following "
 #define CHASING_STRING   "chasing "
-void CG_Rocket_DrawFollow()
+static void CG_Rocket_DrawFollow()
 {
 	if ( cg.snap && cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
@@ -2797,7 +2797,7 @@ void CG_Rocket_DrawFollow()
 	}
 }
 
-void CG_Rocket_DrawConnectText()
+static void CG_Rocket_DrawConnectText()
 {
 	char       rml[ MAX_STRING_CHARS ];
 	const char *s;
@@ -2847,7 +2847,7 @@ void CG_Rocket_DrawConnectText()
 	Rocket_SetInnerRMLRaw( rml );
 }
 
-void CG_Rocket_DrawClock()
+static void CG_Rocket_DrawClock()
 {
 	char    *s;
 	qtime_t qt;
@@ -2893,7 +2893,7 @@ void CG_Rocket_DrawClock()
 	Rocket_SetInnerRMLRaw( s );
 }
 
-void CG_Rocket_DrawTutorial()
+static void CG_Rocket_DrawTutorial()
 {
 	if ( !cg_tutorial.Get() )
 	{
@@ -2904,14 +2904,14 @@ void CG_Rocket_DrawTutorial()
 	Rocket_SetInnerRML( CG_TutorialText(), RP_EMOTICONS | RP_QUAKE );
 }
 
-void CG_Rocket_DrawStaminaBolt()
+static void CG_Rocket_DrawStaminaBolt()
 {
 	bool  activate = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
 	Rocket_SetClass( "sprint", activate );
 	Rocket_SetClass( "walk", !activate );
 }
 
-void CG_Rocket_DrawChatType()
+static void CG_Rocket_DrawChatType()
 {
 	static const struct {
 		char colour[4]; // ^n
@@ -3063,7 +3063,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	trap_R_ClearColor();
 }
 
-void CG_Rocket_DrawMineRate()
+static void CG_Rocket_DrawMineRate()
 {
 	int totalBudget  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
 	int queuedBudget = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];

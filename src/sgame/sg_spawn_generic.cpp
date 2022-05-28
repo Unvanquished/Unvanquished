@@ -43,7 +43,7 @@ target_print
 
 =================================================================================
 */
-void target_print_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void target_print_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	if ( self->spawnflags & 4 )
 	{
@@ -86,7 +86,7 @@ target_push
 =================================================================================
 */
 
-void target_push_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void target_push_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	if ( !activator || !activator->client )
 	{
@@ -124,7 +124,7 @@ target_teleporter
 
 =================================================================================
 */
-void target_teleporter_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void target_teleporter_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	gentity_t *dest;
 
@@ -156,7 +156,7 @@ target_hurt
 
 =================================================================================
 */
-void target_hurt_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void target_hurt_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	// hurt the activator
 	if ( !activator )

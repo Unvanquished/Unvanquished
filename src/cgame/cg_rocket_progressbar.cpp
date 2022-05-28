@@ -146,7 +146,7 @@ static float CG_Rocket_GetPlayerAmmoProgress()
 	}
 }
 
-float CG_Rocket_FuelProgress()
+static float CG_Rocket_FuelProgress()
 {
 	int   fuel;
 
@@ -159,7 +159,7 @@ float CG_Rocket_FuelProgress()
 	return ( float )fuel / ( float )JETPACK_FUEL_MAX;
 }
 
-float CG_Rocket_DownloadProgress()
+static float CG_Rocket_DownloadProgress()
 {
 	float count = trap_Cvar_VariableValue("cl_downloadCount");
 	float total = trap_Cvar_VariableValue("cl_downloadSize");

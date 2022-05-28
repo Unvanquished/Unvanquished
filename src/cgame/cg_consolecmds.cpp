@@ -87,7 +87,7 @@ void CG_RequestScores()
 		trap_SendClientCommand( "score\n" );
 }
 
-void CG_ClientList_f()
+static void CG_ClientList_f()
 {
 	clientInfo_t *ci;
 	int          i;
@@ -427,7 +427,7 @@ void CG_HideScores_f()
 	cg.showScores = false;
 }
 
-void CG_BeaconMenu_f()
+static void CG_BeaconMenu_f()
 {
 	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
 }

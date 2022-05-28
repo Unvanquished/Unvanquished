@@ -122,7 +122,7 @@ const buildableAttributes_t *BG_Buildable( int buildable )
 BG_InitBuildableAttributes
 ===============
 */
-void BG_InitBuildableAttributes()
+static void BG_InitBuildableAttributes()
 {
 	const buildableName_t *bh;
 	buildableAttributes_t *ba;
@@ -185,7 +185,7 @@ void BG_BuildableBoundingBox( int buildable,
 BG_InitBuildableModelConfigs
 ===============
 */
-void BG_InitBuildableModelConfigs()
+static void BG_InitBuildableModelConfigs()
 {
 	int               i;
 	buildableModelConfig_t *bc;
@@ -508,7 +508,7 @@ int BG_GetBarbRegenerationInterval(const playerState_t& ps)
 BG_InitClassAttributes
 ===============
 */
-void BG_InitClassAttributes()
+static void BG_InitClassAttributes()
 {
 	const classData_t *cd;
 	classAttributes_t *ca;
@@ -537,7 +537,7 @@ void BG_InitClassAttributes()
 BG_InitClassModelConfigs
 ===============
 */
-void BG_InitClassModelConfigs()
+static void BG_InitClassModelConfigs()
 {
 	for ( int i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
 	{
@@ -636,7 +636,7 @@ const weaponAttributes_t *BG_Weapon( int weapon )
 BG_InitWeaponAttributes
 ===============
 */
-void BG_InitWeaponAttributes()
+static void BG_InitWeaponAttributes()
 {
 	const weaponData_t *wd;
 	weaponAttributes_t *wa;
@@ -724,7 +724,7 @@ const upgradeAttributes_t *BG_Upgrade( int upgrade )
 BG_InitUpgradeAttributes
 ===============
 */
-void BG_InitUpgradeAttributes()
+static void BG_InitUpgradeAttributes()
 {
 	const upgradeData_t *ud;
 	upgradeAttributes_t *ua;
@@ -814,7 +814,7 @@ void BG_MissileBounds( const missileAttributes_t *ma, vec3_t mins, vec3_t maxs )
 BG_InitMissileAttributes
 ===============
 */
-void BG_InitMissileAttributes()
+static void BG_InitMissileAttributes()
 {
 	const missileData_t *md;
 	missileAttributes_t *ma;
@@ -975,7 +975,7 @@ const beaconAttributes_t *BG_Beacon( int index )
 BG_InitBeaconAttributes
 ===============
 */
-void BG_InitBeaconAttributes()
+static void BG_InitBeaconAttributes()
 {
 	const beaconData_t *bd;
 	beaconAttributes_t *ba;
@@ -2675,6 +2675,7 @@ static const NetcodeTable playerStateFields =
 };
 
 namespace VM {
+	void GetNetcodeTables(NetcodeTable& playerStateTable, int& playerStateSize);
 	void GetNetcodeTables(NetcodeTable& playerStateTable, int& playerStateSize) {
 		playerStateTable = playerStateFields;
 		playerStateSize = sizeof(playerState_t);

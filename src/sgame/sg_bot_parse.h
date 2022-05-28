@@ -78,10 +78,6 @@ void              FreeTreeList( AITreeList_t *list );
 pc_token_list *CreateTokenList( int handle );
 void           FreeTokenList( pc_token_list *list );
 
-AIGenericNode_t  *ReadNode( pc_token_list **tokenlist );
-AIGenericNode_t  *ReadConditionNode( pc_token_list **tokenlist );
-AIGenericNode_t  *ReadActionNode( pc_token_list **tokenlist );
-AIGenericNode_t  *ReadNodeList( pc_token_list **tokenlist );
 AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list );
 
 void FreeBehaviorTree( AIBehaviorTree_t *tree );

@@ -51,7 +51,7 @@ static bool expectToken( const char *s, pc_token_list **list, bool next )
 	return true;
 }
 
-AIValue_t AIBoxToken( const pc_token_stripped_t *token )
+static AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 {
 	if ( token->type == tokenType_t::TT_STRING )
 	{
@@ -733,6 +733,9 @@ static void BotInitNode( AINode_t type, AINodeRunner func, void *node )
 	n->run = func;
 }
 
+static AIGenericNode_t *ReadNode( pc_token_list **tokenlist );
+static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist );
+
 /*
 ======================
 ReadConditionNode
@@ -752,7 +755,7 @@ condition [expression]
 ======================
 */
 
-AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
+static AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
 
@@ -826,7 +829,7 @@ static const struct AIDecoratorMap_s
 	{ "timer", BotDecoratorTimer, 1, 1 }
 };
 
-AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
+static AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 {
 	pc_token_list *current = *list;
 	struct AIDecoratorMap_s *dec;
@@ -959,7 +962,7 @@ Where name defines the action to execute, and the parameters are surrounded by p
 ======================
 */
 
-AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
+static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
 	pc_token_list *parenBegin;
@@ -1017,7 +1020,7 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) ret;
 }
 
-AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
+static AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
 	AIGenericNode_t *node = nullptr;
@@ -1034,7 +1037,7 @@ AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
 	return node;
 }
 
-AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
+static AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
 	AIGenericNode_t *node = nullptr;
@@ -1051,7 +1054,7 @@ AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
 	return node;
 }
 
-AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
+static AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
 	AIGenericNode_t *node = nullptr;
@@ -1077,7 +1080,7 @@ The token list pointer is modified to point to the beginning of the next node te
 ======================
 */
 
-AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
+static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 {
 	AINodeList_t *list;
 	pc_token_list *current = *tokenlist;
@@ -1127,7 +1130,7 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 
 static AITreeList_t *currentList = nullptr;
 
-AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
+static AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
 {
 	pc_token_list *first = *tokenlist;
 	pc_token_list *current = first;
@@ -1178,7 +1181,7 @@ ReadNodeList, ReadActionNode, and ReadConditionNode depending on the first token
 ======================
 */
 
-AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
+static AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
 	AIGenericNode_t *node;
@@ -1582,7 +1585,7 @@ void FreeActionNode( AIActionNode_t *action )
 	BG_Free( action );
 }
 
-void FreeDecoratorNode( AIDecoratorNode_t *decorator )
+static void FreeDecoratorNode( AIDecoratorNode_t *decorator )
 {
 	BG_Free( decorator->params );
 	FreeNode( decorator->child );

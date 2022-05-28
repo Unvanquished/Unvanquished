@@ -536,7 +536,7 @@ Cmd_Devteam_f
 Change team and spawn as builder at the current position
 ==================
 */
-void Cmd_Devteam_f( gentity_t *ent )
+static void Cmd_Devteam_f( gentity_t *ent )
 {
 	gentity_t *spawn;
 
@@ -588,7 +588,7 @@ Cmd_Give_f
 Give items to a client
 ==================
 */
-void Cmd_Give_f( gentity_t *ent )
+static void Cmd_Give_f( gentity_t *ent )
 {
 	char     *name;
 	bool give_all = false;
@@ -728,7 +728,7 @@ Sets client to godmode
 argv(0) god
 ==================
 */
-void Cmd_God_f( gentity_t *ent )
+static void Cmd_God_f( gentity_t *ent )
 {
 	const char *msg;
 
@@ -755,7 +755,7 @@ Sets client to notarget
 argv(0) notarget
 ==================
 */
-void Cmd_Notarget_f( gentity_t *ent )
+static void Cmd_Notarget_f( gentity_t *ent )
 {
 	const char *msg;
 
@@ -780,7 +780,7 @@ Cmd_Noclip_f
 argv(0) noclip
 ==================
 */
-void Cmd_Noclip_f( gentity_t *ent )
+static void Cmd_Noclip_f( gentity_t *ent )
 {
 	const char *msg;
 
@@ -811,7 +811,7 @@ void Cmd_Noclip_f( gentity_t *ent )
 Cmd_Kill_f
 =================
 */
-void Cmd_Kill_f( gentity_t *ent )
+static void Cmd_Kill_f( gentity_t *ent )
 {
 	if ( g_cheats )
 	{
@@ -837,7 +837,7 @@ void Cmd_Kill_f( gentity_t *ent )
 Cmd_Team_f
 =================
 */
-void Cmd_Team_f( gentity_t *ent )
+static void Cmd_Team_f( gentity_t *ent )
 {
 	team_t   team;
 	team_t   oldteam = (team_t) ent->client->pers.team;
@@ -1325,7 +1325,7 @@ static void Cmd_Me_f( gentity_t *ent )
 Cmd_VSay_f
 ==================
 */
-void Cmd_VSay_f( gentity_t *ent )
+static void Cmd_VSay_f( gentity_t *ent )
 {
 	char           arg[ MAX_TOKEN_CHARS ];
 	voiceChannel_t vchan;
@@ -1476,7 +1476,7 @@ void Cmd_VSay_f( gentity_t *ent )
 Cmd_Where_f
 ==================
 */
-void Cmd_Where_f( gentity_t *ent )
+static void Cmd_Where_f( gentity_t *ent )
 {
 	if ( !ent->client )
 	{
@@ -1570,7 +1570,7 @@ static bool isDisabledVoteType(const char *vote)
 Cmd_CallVote_f
 ==================
 */
-void Cmd_CallVote_f( gentity_t *ent )
+static void Cmd_CallVote_f( gentity_t *ent )
 {
 	char   cmd[ MAX_TOKEN_CHARS ],
 	       vote[ MAX_TOKEN_CHARS ],
@@ -2092,7 +2092,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 Cmd_Vote_f
 ==================
 */
-void Cmd_Vote_f( gentity_t *ent )
+static void Cmd_Vote_f( gentity_t *ent )
 {
 	char   cmd[ MAX_TOKEN_CHARS ], vote[ MAX_TOKEN_CHARS ];
 	team_t team = (team_t) ent->client->pers.team;
@@ -2142,7 +2142,7 @@ void Cmd_Vote_f( gentity_t *ent )
 Cmd_SetViewpos_f
 =================
 */
-void Cmd_SetViewpos_f( gentity_t *ent )
+static void Cmd_SetViewpos_f( gentity_t *ent )
 {
 	vec3_t origin, angles;
 	char   buffer[ MAX_TOKEN_CHARS ];
@@ -2634,7 +2634,7 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 	return true;
 }
 
-void Cmd_Class_f( gentity_t *ent )
+static void Cmd_Class_f( gentity_t *ent )
 {
 	char s[ MAX_TOKEN_CHARS ];
 	int  i;
@@ -2648,7 +2648,7 @@ void Cmd_Class_f( gentity_t *ent )
 	}
 }
 
-void Cmd_Deconstruct_f( gentity_t *ent )
+static void Cmd_Deconstruct_f( gentity_t *ent )
 {
 	// Check for valid build weapon.
 	switch ( ent->client->ps.weapon )
@@ -2706,7 +2706,7 @@ void Cmd_Deconstruct_f( gentity_t *ent )
 Cmd_Ignite_f
 =================
 */
-void Cmd_Ignite_f( gentity_t *player )
+static void Cmd_Ignite_f( gentity_t *player )
 {
 	vec3_t    viewOrigin, forward, end;
 	trace_t   trace;
@@ -2731,7 +2731,7 @@ Cmd_ActivateItem_f
 Activate an item
 =================
 */
-void Cmd_ActivateItem_f( gentity_t *ent )
+static void Cmd_ActivateItem_f( gentity_t *ent )
 {
 	char s[ MAX_TOKEN_CHARS ];
 	int  upgrade, weapon;
@@ -2796,7 +2796,7 @@ Cmd_DeActivateItem_f
 Deactivate an item
 =================
 */
-void Cmd_DeActivateItem_f( gentity_t *ent )
+static void Cmd_DeActivateItem_f( gentity_t *ent )
 {
 	char      s[ MAX_TOKEN_CHARS ];
 	upgrade_t upgrade;
@@ -2819,7 +2819,7 @@ void Cmd_DeActivateItem_f( gentity_t *ent )
 Cmd_ToggleItem_f
 =================
 */
-void Cmd_ToggleItem_f( gentity_t *ent )
+static void Cmd_ToggleItem_f( gentity_t *ent )
 {
 	char      s[ MAX_TOKEN_CHARS ];
 	weapon_t  weapon;
@@ -3067,7 +3067,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 	return false;
 }
 
-void Cmd_Sell_f( gentity_t *ent )
+static void Cmd_Sell_f( gentity_t *ent )
 {
 	char     s[ MAX_TOKEN_CHARS ];
 	int      c, args;
@@ -3335,7 +3335,7 @@ not_alien:
 	return false;
 }
 
-void Cmd_Buy_f( gentity_t *ent )
+static void Cmd_Buy_f( gentity_t *ent )
 {
 	char     s[ MAX_TOKEN_CHARS ];
 	int      c, args;
@@ -3380,7 +3380,7 @@ void Cmd_Buy_f( gentity_t *ent )
 Cmd_Build_f
 =================
 */
-void Cmd_Build_f( gentity_t *ent )
+static void Cmd_Build_f( gentity_t *ent )
 {
 	char        s[ MAX_TOKEN_CHARS ];
 	buildable_t buildable;
@@ -3459,7 +3459,7 @@ void Cmd_Build_f( gentity_t *ent )
 	}
 }
 
-void Cmd_Reload_f( gentity_t *ent )
+static void Cmd_Reload_f( gentity_t *ent )
 {
 	playerState_t *ps;
 	const weaponAttributes_t *wa;
@@ -3760,7 +3760,7 @@ void G_ToggleFollow( gentity_t *ent )
 Cmd_Follow_f
 =================
 */
-void Cmd_Follow_f( gentity_t *ent )
+static void Cmd_Follow_f( gentity_t *ent )
 {
 	int  i;
 	char arg[ MAX_NAME_LENGTH ];
@@ -3820,7 +3820,7 @@ void Cmd_Follow_f( gentity_t *ent )
 Cmd_FollowCycle_f
 =================
 */
-void Cmd_FollowCycle_f( gentity_t *ent )
+static void Cmd_FollowCycle_f( gentity_t *ent )
 {
 	char args[ 11 ];
 	int  dir = 1;
@@ -3925,7 +3925,7 @@ List all maps on the server
 #define MAX_MAPLIST_ROWS 9
 #define MAX_MAPLIST_COLS 3
 
-void Cmd_ListMaps_f( gentity_t *ent )
+static void Cmd_ListMaps_f( gentity_t *ent )
 {
 	char search[ 16 ] = { "" };
 	int  page = 0;
@@ -4263,7 +4263,7 @@ Deals damage to you (for testing), arguments: [damage] [dx] [dy] [dz]
 The dx/dy arguments describe the damage point's offset from the entity origin
 =================
 */
-void Cmd_Damage_f( gentity_t *ent )
+static void Cmd_Damage_f( gentity_t *ent )
 {
 	vec3_t   point;
 	char     arg[ 16 ];
@@ -4302,7 +4302,7 @@ void Cmd_Damage_f( gentity_t *ent )
 Cmd_Beacon_f
 =================
 */
-void Cmd_Beacon_f( gentity_t *ent )
+static void Cmd_Beacon_f( gentity_t *ent )
 {
 	char         type_str[ 64 ];
 	beaconType_t type;

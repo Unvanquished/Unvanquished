@@ -46,7 +46,7 @@ struct worldEntity_t
 
 worldEntity_t wentities[ MAX_GENTITIES ];
 
-worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
+static worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
 {
 	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
 	{
@@ -56,7 +56,7 @@ worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
 	return &wentities[ gEnt->s.number ];
 }
 
-gentity_t *G_CM_GEntityForWorldEntity( worldEntity_t *ent )
+static gentity_t *G_CM_GEntityForWorldEntity( worldEntity_t *ent )
 {
 	int num;
 
@@ -106,7 +106,7 @@ given entity.  If the entity is a bsp model, the headnode will
 be returned, otherwise a custom box tree will be constructed.
 ================
 */
-clipHandle_t G_CM_ClipHandleForEntity( const gentity_t *ent )
+static clipHandle_t G_CM_ClipHandleForEntity( const gentity_t *ent )
 {
 	if ( ent->r.bmodel )
 	{
@@ -282,7 +282,8 @@ G_CM_CreateworldSector
 Builds a uniformly subdivided tree for the given world size
 ===============
 */
-worldSector_t  *G_CM_CreateworldSector( int depth, vec3_t mins, vec3_t maxs )
+static worldSector_t *G_CM_CreateworldSector( int depth, vec3_t mins,
+		vec3_t maxs )
 {
 	worldSector_t *anode;
 	vec3_t        size;
@@ -589,7 +590,7 @@ G_CM_AreaEntities_r
 
 ====================
 */
-void G_CM_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
+static void G_CM_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 {
 	worldEntity_t     *check, *next;
 	gentity_t *gcheck;
@@ -734,7 +735,7 @@ void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, c
 G_CM_ClipMoveToEntities
 ====================
 */
-void G_CM_ClipMoveToEntities( moveclip_t *clip )
+static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 {
 	int            i, num;
 	int            touchlist[ MAX_GENTITIES ];

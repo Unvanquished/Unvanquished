@@ -1762,7 +1762,7 @@ static cplane_t  frustum[4];
 CG_SetupFrustum
 =================
 */
-void CG_SetupFrustum()
+static void CG_SetupFrustum()
 {
 	int             i;
 	float           xs, xc;

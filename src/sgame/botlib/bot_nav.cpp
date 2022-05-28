@@ -32,10 +32,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 */
 
 #include "bot_local.h"
+#include "bot_api.h"
 #include "sgame/sg_local.h"
-
-// TODO: move these functions here
-bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
 
 Bot_t agents[ MAX_CLIENTS ];
 
@@ -47,7 +45,7 @@ All vectors used as inputs and outputs to functions here use the engine's coordi
 ====================
 */
 
-void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
+static void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
 {
 	qVec qExtents;
 	qVec realMin, realMax;
@@ -128,12 +126,12 @@ void G_BotSetNavMesh( int botClientNum, qhandle_t nav )
 	bot->needReplan = true;
 }
 
-void GetEntPosition( int num, rVec &pos )
+static void GetEntPosition( int num, rVec &pos )
 {
 	pos = qVec( g_entities[ num ].s.origin );
 }
 
-void GetEntPosition( int num, qVec &pos )
+static void GetEntPosition( int num, qVec &pos )
 {
 	pos = g_entities[ num ].s.origin;
 }
@@ -179,7 +177,7 @@ static bool overOffMeshConnectionStart( const Bot_t *bot, rVec pos )
 	return false;
 }
 
-void G_UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
+static void G_UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
 {
 	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
 
@@ -320,7 +318,7 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 	}
 }
 
-float frand()
+static float frand()
 {
 	return ( float ) rand() / ( float ) RAND_MAX;
 }

@@ -122,7 +122,7 @@ void BotSaveOffMeshConnections( NavData_t *nav )
 	trap_FS_FCloseFile( f );
 }
 
-void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
+static void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 {
 	char filePath[ MAX_QPATH ];
 	fileHandle_t f = 0;
