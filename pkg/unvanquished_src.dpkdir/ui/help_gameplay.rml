@@ -170,17 +170,11 @@
 				Under attack
 			</tab>
 			<panel>
-				Destroying buildings will trigger “under attack” warnings for the owning
-				team if the buildings are in range of (for humans) the
-				<img class="emoticon" src="/emoticons/reactor" />
-				reactor
-				or (for aliens) the
-				<img class="emoticon" src="/emoticons/overmind" />
-				overmind.
-				<br />
-				<br />
-				The reactor and the overmind will issue warnings to the team when at
-				75% health, at 50% health, at 25% health and when destroyed.
+				The reactor and the overmind will issue
+				warnings to the team when at 75% health, at 50%
+				health, at 25% health and when destroyed.
+				Destroying other buildings will trigger “under
+				attack” warnings for the owning team.
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/medstat" />
