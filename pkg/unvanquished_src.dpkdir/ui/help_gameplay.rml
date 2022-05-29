@@ -77,15 +77,6 @@
 				Powering buildables
 			</tab>
 			<panel>
-				Like the
-				<img class="emoticon" src="/emoticons/overmind" />
-				overmind the
-				<img class="emoticon" src="/emoticons/reactor" />
-				reactor now supplies power to every place on the map, but
-				there is a limited amount of energy per region. Human buildables will
-				compete for power and shut down if they don't get enough.
-				<br />
-				<br />
 				Building a structure requires build points. Your team will start with a
 				small pool of build points but if you want to place a greater number of
 				buildables in an area, you can build a
