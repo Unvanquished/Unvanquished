@@ -264,6 +264,11 @@ static AIValue_t momentum( gentity_t* self, const AIValue_t *params )
 	return AIBoxInt( level.team[ requestedTeam ].momentum );
 }
 
+static AIValue_t levelTime( gentity_t*self, const AIValue_t* )
+{
+	return AIBoxInt( level.time );
+}
+
 static AIValue_t aliveTime( gentity_t*self, const AIValue_t* )
 {
 	return AIBoxInt( level.time - self->botMind->spawnTime );
@@ -348,6 +353,7 @@ static const struct AIConditionMap_s
 	{ "healScore",         healScore,         0 },
 	{ "inAttackRange",     inAttackRange,     1 },
 	{ "isVisible",         isVisible,         1 },
+	{ "levelTime",         levelTime,         0 },
 	{ "matchTime",         matchTime,         0 },
 	{ "momentum",          momentum,          1 },
 	{ "percentAmmo",       percentAmmo,       0 },
