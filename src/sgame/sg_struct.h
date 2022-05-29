@@ -477,7 +477,6 @@ struct clientSession_t
 	int              botSkill;
 	char             botTree[ MAX_QPATH ];
 	clientList_t     ignoreList;
-	int              seenWelcome; // determines if the client has seen server's welcome message
 };
 
 /**

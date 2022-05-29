@@ -414,9 +414,6 @@ static void CG_Menu( int menuType, int arg )
 
 	switch ( menuType )
 	{
-		case MN_WELCOME:
-			break;
-
 		case MN_TEAM:
 			menu = ROCKETMENU_TEAMSELECT;
 			break;

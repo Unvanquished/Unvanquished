@@ -749,7 +749,6 @@ enum dynMenu_t
 {
   MN_NONE,
 
-  MN_WELCOME,
   MN_TEAM,
   MN_A_TEAMFULL,
   MN_H_TEAMFULL,
