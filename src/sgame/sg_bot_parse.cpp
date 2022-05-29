@@ -355,8 +355,8 @@ static const struct AIConditionMap_s
 	{ "random",            randomChance,      0 },
 	{ "skill",             botSkill,          0 },
 	{ "stuckTime",         stuckTime,         0 },
-	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
+	{ "team",              botTeam,           0 },
 	{ "weapon",            currentWeapon,     0 }
 };
 
