@@ -180,7 +180,7 @@
 				<br />
 				<br />
 				The reactor and the overmind will issue warnings to the team when at
-				75% health, at 25% health and when destroyed.
+				75% health, at 50% health, at 25% health and when destroyed.
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/medstat" />
