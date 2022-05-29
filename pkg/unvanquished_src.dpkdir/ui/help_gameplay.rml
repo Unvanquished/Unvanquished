@@ -27,10 +27,11 @@
 				elements to know to become a successful player.
 				<br />
 				<br />
-				Feel free to take part in our weekly development games, each
-				<span clas="red">Sunday</span>
-				at
-				<span class="red">20:00 UTC</span>!
+				<!-- FIXME: use a proper list (ul+li isn't supported as of now) -->
+				Feel free to join us in the community and developer chats!<br />
+				&nbsp;&nbsp;&nbsp;• We are chatting on IRC and Matrix in <b>#unvanquished</b> and <b>#unvanquished-dev</b> on Libera.Chat<br />
+				&nbsp;&nbsp;&nbsp;• Discuss news in the forum, <b>forums.unvanquished.net</b><br />
+				&nbsp;&nbsp;&nbsp;• Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/tyrant" />
