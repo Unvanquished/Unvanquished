@@ -28,11 +28,12 @@
 			top: .5em;
 			left: .5em;
 
+			opacity: 0.5;
 			decorator: image( /ui/assets/widgets/close_cross );
 		}
 
 		closebutton:hover {
-			decorator: image( /ui/assets/widgets/close_cross_hover );
+			opacity: 0.8;
 		}
 
 		row {
