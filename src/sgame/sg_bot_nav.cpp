@@ -613,20 +613,6 @@ Global Bot Navigation
 =========================
 */
 
-void BotClampPos( gentity_t *self )
-{
-	float height = self->client->ps.origin[ 2 ];
-	vec3_t origin;
-	trace_t trace;
-	vec3_t mins, maxs;
-	VectorSet( origin, self->botMind->nav.pos[ 0 ], self->botMind->nav.pos[ 1 ], height );
-	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
-	trap_Trace( &trace, self->client->ps.origin, mins, maxs, origin, self->client->ps.clientNum,
-	            MASK_PLAYERSOLID, 0 );
-	G_SetOrigin( self, trace.endpos );
-	VectorCopy( trace.endpos, self->client->ps.origin );
-}
-
 void BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;

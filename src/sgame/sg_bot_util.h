@@ -115,7 +115,6 @@ void         G_BotNavCleanup();
 bool     FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial );
 void         BotMoveToGoal( gentity_t *self );
 void         BotSetNavmesh( gentity_t  *ent, class_t newClass );
-void         BotClampPos( gentity_t *self );
 
 // local navigation
 void     BotWalk( gentity_t *self, bool enable );
