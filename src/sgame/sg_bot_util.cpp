@@ -325,7 +325,7 @@ float BotGetResupplyScore( gentity_t *self )
 			ASSERT_UNREACHABLE();
 	}
 	float timeDist = dist / GetMaximalSpeed( self );
-	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentAmmo ) / sqrt( timeDist );
+	return ( 1 + 5 * self->botMind->botSkill.aggro() ) * ( 1 - percentAmmo ) / sqrt( timeDist );
 }
 
 // Gives a value between 0 and 1 representing how much a bot should want to rush.
