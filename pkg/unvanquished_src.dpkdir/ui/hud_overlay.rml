@@ -1,6 +1,7 @@
 <rml>
 <head>
 	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window.rml" />
 	<style>
 		body
 		{
@@ -8,7 +9,7 @@
 			height: 100%;
 			font-size: 1.5em;
 		}
-		div
+		div.center
 		{
 			position: absolute;
 			top: 20%;
@@ -20,13 +21,78 @@
 		{
 			font-size: 10em;
 		}
+
+		div { /* TODO: set it globally */
+			display: block;
+		}
+
+		div.tutorial {
+			font-size: 1.2em;
+			position: absolute;
+			right: 1em;
+			top: 1em;
+			width: 25%;
+			padding: 1em;
+			background-color: #331010c4;
+;
+		}
+		div.tutorial.human { /* TODO: add the "human" class depending on the tutorial team */
+			background-color: rgba(0, 0, 0, 150);
+		}
+		div.tutorial > * { /* TODO(rmlui): use ":last-child" instead */
+			margin-bottom: 0.3em;
+		}
+		div.tutorial > p { /* TODO(rmlui): delete once the above works */
+			margin-bottom: 0;
+		}
+
+
+		.explaination {
+			font-style: italic;
+			font-size: 1.2em;
+			text-align: justify;
+		}
+
+		.progress {
+			text-align: justify;
+			/* Dejavu has monospaced numbers, but Roboto does not */
+			font-family: Dejavu Sans;
+		}
+		.progress > * {
+			display: inline-block;
+		}
+
+		progressbar {
+			background: #2225;
+			height: 1em;
+			width: 92%;
+			opacity: 0.7;
+		}
+		progressbar fill {
+			decorator: image( /gfx/colors/white );
+		}
+		tutorialTextProgress {
+		}
 	</style>
 </head>
 <body id="hud_overlay">
-<div>
+<div class="center">
 	<warmup_time/>
 	<br/>
 	<center_print/>
+</div>
+<div class="tutorial" template="window">
+	<h1><tutorialShortMsg/></h1>
+
+	<div class="progress">
+		<progressbar class="progressbar" src="tutorialProgress" />
+		&nbsp;
+		<tutorialTextProgress/>
+	</div>
+
+	<p>
+		<tutorialExplainationMsg class="explaination"/>
+	</p>
 </div>
 </body>
 </rml>

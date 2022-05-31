@@ -12,6 +12,7 @@ units
 	ui/hud_builder.rml
 	ui/hud_spawnwait.rml
 	ui/ingame_scoreboard.rml
+	ui/tutorial_progress.rml
 }
 
 // Default huds

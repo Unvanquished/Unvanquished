@@ -6,7 +6,7 @@
 		<script src="lua/util.lua" />
 	</head>
 
-	<body id="menu_ingame" class="ingame" onkeydown="detectEscape(event, document)" onShow='Events.pushevent("show callvote_tutorial_map", event)'>
+	<body id="menu_ingame" class="ingame" onkeydown="detectEscape(event, document)" onshow='Events.pushevent("show callvote_tutorial_map", event)'>
 		<img class="gradient black" src="/ui/assets/background/black" />
 		<img class="circles" src="/ui/assets/background/circles1" />
 		<img class="circles" src="/ui/assets/background/circles2" />
