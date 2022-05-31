@@ -1782,6 +1782,7 @@ extern Cvar::Cvar<bool> cg_thirdPersonPitchFollow;
 extern Cvar::Cvar<float> cg_thirdPersonRange;
 extern Cvar::Cvar<bool> cg_lagometer;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawSpeed;
+extern Cvar::Cvar<bool> cg_drawPosition;
 extern Cvar::Cvar<int> cg_maxSpeedTimeWindow;
 extern Cvar::Cvar<bool> cg_blood;
 extern Cvar::Cvar<bool> cg_teamChatsOnly;

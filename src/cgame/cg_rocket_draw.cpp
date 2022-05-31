@@ -917,6 +917,46 @@ private:
 	Color::Color backColor;
 };
 
+class PositionElement : public HudElement
+{
+public:
+	PositionElement( const Rml::String& tag ) :
+			HudElement( tag, ELEMENT_GAME, true )
+	{
+		Rml::XMLAttributes xml;
+		currentPositionElement = dynamic_cast< Rml::ElementText* >( AppendChild( Rml::Factory::InstanceElement(
+			this,
+			"#text",
+			"span",
+			xml) ) );
+		currentPositionElement->SetClass( "position_current", true );
+	}
+
+	void DoOnRender() override
+	{
+		if ( !cg_drawPosition.Get() )
+		{
+			currentPositionElement->SetText( "" );
+		}
+		else
+		{
+			if ( cg.predictedPlayerState.clientNum == cg.clientNum )
+			{
+				// Add text to be configured via CSS
+				vec3_t origin;
+				VectorCopy( cg.predictedPlayerState.origin, origin );
+
+				// HACK: Put extra spaces to separate the children because setting them to block makes them disappear.
+				// TODO: Figure out why setting these two elements to block makes them disappear.
+				currentPositionElement->SetText( va( "%0.0f   %0.0f   %0.0f", origin[0], origin[1], origin[2] ) );
+			}
+		}
+	}
+
+private:
+	Rml::ElementText* currentPositionElement;
+};
+
 class CreditsValueElement : public TextHudElement
 {
 public:
@@ -3637,6 +3677,7 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<CrosshairIndicatorHudElement>( "crosshair_indicator" );
 	RegisterElement<CrosshairHudElement>( "crosshair" );
 	RegisterElement<SpeedGraphElement>( "speedometer" );
+	RegisterElement<PositionElement>( "position_indicator" );
 	RegisterElement<CreditsValueElement>( "credits" );
 	RegisterElement<EvosValueElement>( "evos" );
 	RegisterElement<WeaponIconElement>( "weapon_icon" );
