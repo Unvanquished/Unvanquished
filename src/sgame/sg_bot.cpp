@@ -441,7 +441,6 @@ void G_BotThink( gentity_t *self )
 	{
 		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
 		G_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
-		//BotClampPos( self );
 	}
 
 	self->botMind->willSprint( false ); //let the BT decide that
