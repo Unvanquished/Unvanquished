@@ -86,6 +86,7 @@ Cvar::Cvar<bool> cg_thirdPersonPitchFollow("cg_thirdPersonPitchFollow", "do foll
 Cvar::Cvar<float> cg_thirdPersonRange("cg_thirdPersonRange", "camera distance from 3rd-person player", Cvar::NONE, 75);
 Cvar::Cvar<bool> cg_lagometer("cg_lagometer", "show network latency meter", Cvar::NONE, false);
 Cvar::Range<Cvar::Cvar<int>> cg_drawSpeed("cg_drawSpeed", "show speed. bitflags: 0x1 number, 0x2 graph, 0x4 ignore z-component ", Cvar::NONE, 0, 0, 7);
+Cvar::Cvar<bool> cg_drawPosition("cg_drawPosition", "show position.", Cvar::NONE, false);
 Cvar::Cvar<int> cg_maxSpeedTimeWindow("cg_maxSpeedTimeWindow", "cg_showSpeed's max speed is over last x milliseconds", Cvar::NONE, 2000);
 Cvar::Cvar<bool> cg_blood("com_blood", "draw blood effects", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_teamChatsOnly("cg_teamChatsOnly", "don't show chats to all players on screen", Cvar::NONE, false);
