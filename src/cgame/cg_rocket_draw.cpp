@@ -42,6 +42,8 @@ Maryland 20850 USA.
 #include <Rocket/Core/ElementText.h>
 #include <Rocket/Core/StyleSheetKeywords.h>
 
+#include "shared/bg_tutorial.h"
+
 static void CG_GetRocketElementColor( Color::Color& color )
 {
 	Rocket_GetProperty( "color", &color, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
@@ -2307,6 +2309,82 @@ private:
 	float offset;
 };
 
+class TutorialTextProgressElement : public TextHudElement
+{
+public:
+	TutorialTextProgressElement( const Rocket::Core::String& tag ) :
+		TextHudElement( tag, ELEMENT_ALL ),
+		step_num_( -1 ),
+		step_count_( -1 ) {}
+
+	void DoOnUpdate() override
+	{
+		if (!cg.snap) return;
+		playerState_t &ps = cg.snap->ps;
+		int num = ps.tutorialStepNum;
+		int count = ps.tutorialStepMax;
+
+		if ( num != step_num_ || count != step_count_ )
+		{
+			SetText( va( "%d/%d", num, count ) );
+			step_num_ = num;
+			step_count_ = count;
+		}
+	}
+
+private:
+	int step_num_;
+	int step_count_;
+};
+
+class TutorialShortMsgElement : public TextHudElement
+{
+public:
+	TutorialShortMsgElement( const Rocket::Core::String& tag ) :
+		TextHudElement( tag, ELEMENT_ALL ),
+		msg_( static_cast<tutorialMsg>(-1) ) {}
+
+	void DoOnUpdate() override
+	{
+		if (!cg.snap) return;
+		playerState_t &ps = cg.snap->ps;
+		tutorialMsg msg = ps.tutorialStepMsg;
+
+		if ( msg != msg_ )
+		{
+			SetText( tutorialShortMsg[static_cast<int>(msg)] );
+			msg_ = msg;
+		}
+	}
+
+private:
+	tutorialMsg msg_;
+};
+
+class TutorialExplainationMsgElement : public TextHudElement
+{
+public:
+	TutorialExplainationMsgElement( const Rocket::Core::String& tag ) :
+		TextHudElement( tag, ELEMENT_ALL ),
+		msg_( static_cast<tutorialMsg>(-1) ) {}
+
+	void DoOnUpdate() override
+	{
+		if (!cg.snap) return;
+		playerState_t &ps = cg.snap->ps;
+		tutorialMsg msg = ps.tutorialStepMsg;
+
+		if ( msg != msg_ )
+		{
+			SetText( tutorialExplainationMsg[static_cast<int>(msg)] );
+			msg_ = msg;
+		}
+	}
+
+private:
+	tutorialMsg msg_;
+};
+
 void CG_Rocket_DrawPlayerHealth()
 {
 	static int lastHealth = 0;
@@ -3653,4 +3731,7 @@ void CG_Rocket_RegisterElements()
 	REGISTER_ELEMENT( "beacon_owner", BeaconOwnerElement )
 	REGISTER_ELEMENT( "predictedMineEfficiency", PredictedMineEfficiencyElement )
 	REGISTER_ELEMENT( "barbs", BarbsHudElement )
+	REGISTER_ELEMENT( "tutorialTextProgress", TutorialTextProgressElement );
+	REGISTER_ELEMENT( "tutorialShortMsg", TutorialShortMsgElement );
+	REGISTER_ELEMENT( "tutorialExplainationMsg", TutorialExplainationMsgElement );
 }

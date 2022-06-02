@@ -46,6 +46,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
+enum class tutorialMsg;
+
 // any change in playerState_t should be reflected in the table in bg_misc.cpp
 // (Gordon: unless it doesn't need transmission over the network, in which case it should probably go into the new pmext struct anyway)
 struct playerState_t
@@ -130,6 +132,10 @@ struct playerState_t
 	int           clips; // clips held
 	int           tauntTimer; // don't allow another taunt until this runs out
 	int           misc[ MAX_MISC ]; // misc data
+
+	tutorialMsg tutorialStepMsg;
+	int tutorialStepNum;
+	int tutorialStepMax;
 
 	bool IsWeaponReady() const;
 };

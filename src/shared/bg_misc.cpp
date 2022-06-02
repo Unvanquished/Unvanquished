@@ -2652,7 +2652,10 @@ static const NetcodeTable playerStateFields =
 	{ PSF( ammo              ), 12               , 0 },
 	{ PSF( clips             ), 4                , 0 },
 	{ PSF( tauntTimer        ), 12               , 0 },
-	{ PSF( weaponAnim        ), ANIM_BITS        , 0 }
+	{ PSF( weaponAnim        ), ANIM_BITS        , 0 },
+	{ PSF( tutorialStepMsg   ), 8                , 0 },
+	{ PSF( tutorialStepNum   ), 8                , 0 },
+	{ PSF( tutorialStepMax   ), 8                , 0 },
 };
 
 namespace VM {

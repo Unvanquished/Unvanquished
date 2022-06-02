@@ -87,6 +87,17 @@ static float CG_Rocket_GetStaminaProgress()
 	return ( stamina / ( float ) STAMINA_MAX );
 }
 
+static float CG_Rocket_GetTutorialProgress()
+{
+	if (!cg.snap) return 0.0f;
+	playerState_t &ps = cg.snap->ps;
+
+	float num = ps.tutorialStepNum;
+	float max = ps.tutorialStepMax;
+
+	return num/max;
+}
+
 static float CG_Rocket_GetPoisonProgress()
 {
 	static int time = -1;
@@ -189,6 +200,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "overall", &CG_Rocket_GetLoadProgress, ELEMENT_LOADING },
 	{ "poison", &CG_Rocket_GetPoisonProgress, ELEMENT_ALIENS },
 	{ "stamina", &CG_Rocket_GetStaminaProgress, ELEMENT_HUMANS },
+	{ "tutorialProgress", &CG_Rocket_GetTutorialProgress, ELEMENT_ALL },
 };
 
 static const size_t progressBarCmdListCount = ARRAY_LEN( progressBarCmdList );

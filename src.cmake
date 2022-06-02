@@ -230,6 +230,7 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_struct.h
     ${GAMELOGIC_DIR}/sgame/sg_svcmds.cpp
     ${GAMELOGIC_DIR}/sgame/sg_team.cpp
+    ${GAMELOGIC_DIR}/sgame/sg_tutorial.cpp
     ${GAMELOGIC_DIR}/sgame/sg_trapcalls.h
     ${GAMELOGIC_DIR}/sgame/sg_utils.cpp
     ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp

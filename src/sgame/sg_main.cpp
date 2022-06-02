@@ -2312,6 +2312,7 @@ void G_EvaluateAcceleration( gentity_t *ent, int msec )
 	VectorCopy( ent->acceleration, ent->oldAccel );
 }
 
+void G_Tutorial_CheckProgress();
 /*
 ================
 G_RunFrame
@@ -2542,6 +2543,8 @@ void G_RunFrame( int levelTime )
 	BotDebugDrawMesh();
 	G_BotUpdateObstacles();
 	level.frameMsec = trap_Milliseconds();
+
+	G_Tutorial_CheckProgress();
 }
 
 void G_PrepareEntityNetCode() {
