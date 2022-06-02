@@ -205,6 +205,11 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name )
 	// Get the progressBar command
 	cmd = ( progressBarCmd_t * ) bsearch( name.c_str(), progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
 
+	if ( !cmd )
+	{
+		Log::Warn("progress bar command %s not found", name);
+	}
+
 	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{
 		return cmd->get();
