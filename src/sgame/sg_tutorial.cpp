@@ -20,6 +20,7 @@ static void BroadcastChange(setter f)
 
 // this is basically LookUpMainBuildable but with bool instead of gentity_t*,
 // and it checks the buildable is powered
+// TODO: replace by BuildableCount below
 template<typename Component>
 static bool LookUpBuildable(bool requireActive = true)
 {
@@ -32,6 +33,19 @@ static bool LookUpBuildable(bool requireActive = true)
                 }
         });
         return answer;
+}
+
+template<typename Component, typename Comparator, unsigned compareAmount>
+static bool BuildableCount()
+{
+        unsigned count = 0;
+        ForEntities<Component>([&count](Entity& entity, Component&) {
+                if (entity.Get<BuildableComponent>()->GetState() == BuildableComponent::CONSTRUCTED && entity.Get<BuildableComponent>()->Powered())
+                {
+                        count++;
+                }
+        });
+        return Comparator{}(count, compareAmount);
 }
 
 // note this includes bots as well
@@ -86,13 +100,18 @@ struct step {
 };
 using steps = std::vector<struct step>;
 
-
 static const std::map<std::string, steps> tutorial_maps_steps = {
 	{ "tutorial0", {
 		{ tutorialMsg::A_BUILD_OVERMIND, OvermindBuilt },
 		{ tutorialMsg::A_BUILD_EGG, EggBuilt },
 		{ tutorialMsg::A_EVOLVE_DRETCH, EvolvedToDretch },
 		{ tutorialMsg::A_KILL_HUMANS, KilledAllHumans },
+		       },
+	},
+	{ "tutorial1", {
+		{ tutorialMsg::A_DESTROY_1_TURRET, BuildableCount<TurretComponent, std::less_equal<unsigned>, 1> },
+		{ tutorialMsg::A_DESTROY_TELENODE, BuildableCount<TelenodeComponent, std::less_equal<unsigned>, 0> },
+		{ tutorialMsg::A_KILL_REMAINING_HUMANS, KilledAllHumans },
 		       },
 	},
 };
