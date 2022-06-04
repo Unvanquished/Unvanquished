@@ -1482,7 +1482,7 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 		}
 
 		default:
-			ASSERT(false);
+			ASSERT_UNREACHABLE();
 	}
 
 	delete oldEntity;
