@@ -1345,7 +1345,7 @@ static token_t *Parse_CopyToken( const token_t *token )
 	token_t *t;
 
 //  t = (token_t *) malloc(sizeof(token_t));
-	t = ( token_t * ) Z_Malloc( sizeof( token_t ) );
+	t = ( token_t * ) BG_Alloc( sizeof( token_t ) );
 
 //  t = freetokens;
 	if ( !t )
