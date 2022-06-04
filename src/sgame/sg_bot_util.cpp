@@ -316,15 +316,21 @@ static int GetMaxEquipmentCost( gentity_t const* self )
 // The returned value depends on:
 // * distance between the caller and the closest supply building
 // * caller's skill
+// The only supply building sources considered are human's armoury
+// and alien booster.
 //
 // NOTE: the distance modifier is the same as for BotGetHealScore
+// NOTE: in some cases (adv dragoon), it is possible for a bot to
+//   both being able to resupply ammo and benefit from poison.
+//   This particular case is NOT explicitly handled yet.
+//   The current implementation will first consider the need for
+//   poison. If there is no need (because the bot already have
+//   poison) then the score will depend on the ammo.
+//   This situation could use a more explicit support.
+// NOTE: barbs regenerate faster around any alien structure, but
+//   this function only considers booster for simplicity's sake.
 //
 // TODO: use a navigation distance
-// TODO: add poison support
-// TODO: in some cases (goon's barbs) the weapon have infiniteAmmo
-//   but still a finished limited of ammo. This special case needs
-//   special care, *or* (and that's likely a better solution) to
-//   stop considering having infinite ammo.
 float BotGetResupplyScore( gentity_t *self )
 {
 	float dist = 0;
@@ -334,14 +340,15 @@ float BotGetResupplyScore( gentity_t *self )
 	weapon_t wp = BG_PrimaryWeapon( ps.stats );
 	weaponAttributes_t const* weapon = BG_Weapon( wp );
 
-	// why check team? Because of goons.
-	if ( weapon->infiniteAmmo && team == TEAM_HUMANS )
+	bool needAmmo = !( weapon->infiniteAmmo && weapon->maxAmmo == 0 );
+	bool needPoison = team == TEAM_ALIENS && !( ps.stats[STAT_STATE] & SS_BOOSTED );
+
+	if ( !( needAmmo || needPoison ) )
 	{
 		return 0;
 	}
 
 	float percentAmmo = PercentAmmoRemaining( wp, &ps );
-
 	switch( team )
 	{
 		case TEAM_ALIENS:
@@ -362,7 +369,7 @@ float BotGetResupplyScore( gentity_t *self )
 			ASSERT_UNREACHABLE();
 	}
 	float timeDist = dist / GetMaximalSpeed( self );
-	return ( 1 + 5 * self->botMind->botSkill.level ) * ( 1 - percentAmmo ) / sqrt( timeDist );
+	return ( 1 + 5 * self->botMind->botSkill.level ) * ( needPoison ? 1 : ( 1 - percentAmmo ) ) / sqrt( timeDist );
 }
 
 // Gives a value between 0 and 1 representing how much a bot should want to rush.
