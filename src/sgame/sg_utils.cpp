@@ -252,19 +252,6 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 }
 
 /*
-==============
-G_CopyString
-==============
-*/
-char *G_CopyString( const char *str )
-{
-	size_t size = strlen( str ) + 1;
-	char *cp = (char*) malloc( size );
-	memcpy( cp, str, size );
-	return cp;
-}
-
-/*
 ==============================================================================
 
 Kill box
