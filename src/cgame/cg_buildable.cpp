@@ -1366,11 +1366,23 @@ static void CG_BuildableParticleEffects( centity_t *cent )
 CG_BuildableStatusParse
 ==================
 */
+static bool CG_RegisterShaderFromConf( int handle, qhandle_t& qhandle )
+{
+	pc_token_t token;
+
+	if ( !Parse_ReadTokenHandle( handle, &token ) )
+	{
+		return false;
+	}
+
+	qhandle = trap_R_RegisterShader( token.string, static_cast<RegisterShaderFlags_t>( RSF_NOMIP ) );
+	return true;
+}
+
 void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 {
 	pc_token_t token;
 	int        handle;
-	const char *s;
 	int        i;
 	float      f;
 	Color::Color c;
@@ -1391,38 +1403,22 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 
 		if ( !Q_stricmp( token.string, "frameShader" ) )
 		{
-			if ( PC_String_Parse( handle, &s ) )
-			{
-				bs->frameShader = trap_R_RegisterShader( s, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
-			}
-
+			CG_RegisterShaderFromConf( handle, bs->frameShader );
 			continue;
 		}
 		else if ( !Q_stricmp( token.string, "overlayShader" ) )
 		{
-			if ( PC_String_Parse( handle, &s ) )
-			{
-				bs->overlayShader = trap_R_RegisterShader( s, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
-			}
-
+			CG_RegisterShaderFromConf( handle, bs->overlayShader );
 			continue;
 		}
 		else if ( !Q_stricmp( token.string, "noPowerShader" ) )
 		{
-			if ( PC_String_Parse( handle, &s ) )
-			{
-				bs->noPowerShader = trap_R_RegisterShader( s, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
-			}
-
+			CG_RegisterShaderFromConf( handle, bs->noPowerShader );
 			continue;
 		}
 		else if ( !Q_stricmp( token.string, "markedShader" ) )
 		{
-			if ( PC_String_Parse( handle, &s ) )
-			{
-				bs->markedShader = trap_R_RegisterShader( s, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
-			}
-
+			CG_RegisterShaderFromConf( handle, bs->markedShader );
 			continue;
 		}
 		else if ( !Q_stricmp( token.string, "healthSevereColor" ) )
