@@ -48,7 +48,6 @@ const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, in
 bool            PC_Float_Parse( int handle, float *f );
 bool            PC_Color_Parse( int handle, Color::Color *c );
 bool            PC_Int_Parse( int handle, int *i );
-bool            PC_String_Parse( int handle, const char **out );
 
 //
 // Chat

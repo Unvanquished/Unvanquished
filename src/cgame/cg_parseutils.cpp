@@ -441,22 +441,3 @@ bool PC_Int_Parse( int handle, int *i )
 
 	return true;
 }
-
-/*
-=================
-PC_String_Parse
-=================
-*/
-bool PC_String_Parse( int handle, const char **out )
-{
-	pc_token_t token;
-
-	if ( !Parse_ReadTokenHandle( handle, &token ) )
-	{
-		return false;
-	}
-
-	* ( out ) = BG_strdup( token.string );
-
-	return true;
-}
