@@ -280,7 +280,6 @@ static int GetMaxEquipmentCost( gentity_t const* self )
 // NOTE: the distance modifier is the same as for BotGetHealScore
 //
 // TODO: use a navigation distance
-// TODO: add poison support
 // TODO: in some cases (goon's barbs) the weapon have infiniteAmmo
 //   but still a finished limited of ammo. This special case needs
 //   special care, *or* (and that's likely a better solution) to
@@ -294,14 +293,15 @@ float BotGetResupplyScore( gentity_t *self )
 	weapon_t wp = BG_PrimaryWeapon( ps.stats );
 	weaponAttributes_t const* weapon = BG_Weapon( wp );
 
-	// why check team? Because of goons.
-	if ( weapon->infiniteAmmo && team == TEAM_HUMANS )
+	bool needAmmo = !( weapon->infiniteAmmo && weapon->maxAmmo == 0 );
+	bool needPoison = team == TEAM_ALIENS && !( ps.stats[STAT_STATE] & SS_BOOSTED );
+
+	if ( !( needAmmo || needPoison ) )
 	{
 		return 0;
 	}
 
 	float percentAmmo = PercentAmmoRemaining( wp, &ps );
-
 	switch( team )
 	{
 		case TEAM_ALIENS:
@@ -325,7 +325,7 @@ float BotGetResupplyScore( gentity_t *self )
 			ASSERT_UNREACHABLE();
 	}
 	float timeDist = dist / GetMaximalSpeed( self );
-	return ( 1 + 5 * self->botMind->botSkill.aggro() ) * ( 1 - percentAmmo ) / sqrt( timeDist );
+	return ( 1 + 5 * self->botMind->botSkill.aggro() ) * ( needPoison ? 1 : ( 1 - percentAmmo ) ) / sqrt( timeDist );
 }
 
 // Gives a value between 0 and 1 representing how much a bot should want to rush.
