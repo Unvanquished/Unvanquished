@@ -179,7 +179,10 @@
 				<img class="emoticon" src="/emoticons/dretch" />
 				Aliens heal slowly wherever they are, but they heal faster
 				in groups and near alien buildables. Building forward ones
-				can be decisive!
+				can be decisive! Healing in any manner will also contribute
+				to restoring the
+				<img class="emoticon" src="/emoticons/advdragoon" />
+				advanced dragoon projectiles.
 				<br/>
 				<br/>
 				The
@@ -193,7 +196,16 @@
 				<img class="emoticon" src="/emoticons/overmind" /> overmind or
 				<img class="emoticon" src="/emoticons/egg" /> eggs
 				will give you some slightly improved healing
-				too, this can help defending bases.
+				too, although lower than creep. This can help defending bases.
+				<br />
+				<br />
+				Aliens have a third healing boost: proximity with other aliens.
+				If you are near a friendly fellow alien, you
+				will heal slightly faster, and with two
+				teammate, you will heal as fast as you would by
+				touching an alien buildable. With some
+				teamwork, this is a great way to besiege
+				enemies!
 				<br />
 				<br />
 				<img class="emoticon" src="/emoticons/human" />
