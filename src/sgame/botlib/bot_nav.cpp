@@ -216,12 +216,9 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 
 	if ( !bot->offMesh )
 	{
-		if ( bot->needReplan )
+		if ( bot->needReplan && FindRoute( bot, spos, rtarget, false ) )
 		{
-			if ( FindRoute( bot, spos, rtarget, false ) )
-			{
-				bot->needReplan = false;
-			}
+			bot->needReplan = false;
 		}
 
 		cmd->havePath = !bot->needReplan;
