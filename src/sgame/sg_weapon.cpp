@@ -232,8 +232,15 @@ bool G_FindAmmo( gentity_t *self )
 		return false;
 	}
 
+	//TODO duplicated from sg_cmds.cpp Cmd_Sell_internal/Cmd_Buy_internal
+	vec3_t startMins, startMaxs;
+	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], startMins, startMaxs
+			, nullptr, nullptr, nullptr );
+	// NOT doing the same with buildable's size, since G_BuildableInRange() does it
+	float radius = ENTITY_USE_RANGE + RadiusFromBounds( startMins, startMaxs );
+
 	// search for ammo source
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_USE_RANGE ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, radius ) ) )
 	{
 		// only friendly, living and powered buildables provide ammo
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
