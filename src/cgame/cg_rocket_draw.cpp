@@ -1075,9 +1075,23 @@ public:
 
 		const entityState_t &es = cg_entities[ trace.entityNum ].currentState;
 
+		vec3_t originMins, originMaxs;
+		BG_ClassBoundingBox( cg.predictedPlayerState.stats[STAT_CLASS]
+				, originMins, originMaxs, nullptr, nullptr, nullptr );
+
+		//TODO: do not hard-code ARMORY here.
+		//While we're listing stuff to do: check that target is
+		//a usable *before* doing any maths.
+		vec3_t targetMins, targetMaxs;
+		BG_BuildableBoundingBox( BA_H_ARMOURY, originMins, originMaxs );
+
+		float distance = Distance( cg.predictedPlayerState.origin, es.origin )
+			- RadiusFromBounds( originMins, originMaxs )
+			- RadiusFromBounds( targetMins, targetMaxs );
+
 		if ( es.eType == entityType_t::ET_BUILDABLE
 				&& es.modelindex == BA_H_ARMOURY
-				&& Distance(cg.predictedPlayerState.origin, es.origin) < ENTITY_USE_RANGE - 0.2f // use an epsilon to account for rounding errors
+				&& distance < ENTITY_USE_RANGE - 0.2f // use an epsilon to account for rounding errors
 				&& CG_IsOnMyTeam(es) )
 		{
 			if ( !IsVisible() )
