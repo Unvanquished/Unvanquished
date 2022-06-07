@@ -870,7 +870,7 @@ static void Cmd_Team_f( gentity_t *ent )
 	     Entities::IsAlive( ent ) &&
 	     ent->client->lastCombatTime + g_combatCooldown.Get() * 1000 > level.time )
 	{
-		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.Get() * 1000 ) - level.time ) / 1000;
+		float remaining = ceil( ( ( ent->client->lastCombatTime + g_combatCooldown.Get() * 1000 ) - level.time ) / 1000 );
 
 		trap_SendServerCommand( ent - g_entities,
 		    va( "print_tr %s %i %.0f", QQ( N_("You cannot leave your team until $1$ after combat. Try again in $2$s.") ),
