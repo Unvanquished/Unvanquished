@@ -14,6 +14,10 @@
 			font-size: 1.1em;
 		}
 
+		button
+		{
+			line-height: 1.45em;
+		}
 
 		button.rifle
 		{
