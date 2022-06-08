@@ -91,7 +91,7 @@
 					</if>
 
 
-					<sidesection  id="sidebar_main">
+					<sidesection style="font-size: 1.1em;">
 						<h1 class="hidden"> Main Menu </h1>
 
 

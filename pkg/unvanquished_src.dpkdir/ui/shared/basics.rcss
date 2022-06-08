@@ -5,12 +5,10 @@
 
 /* #### Basic text elements #### */
 body {
-
 	/* Global font default size */
 	font-family: Roboto;
-	font-size: 1.5em;
 	color: #999999;
-    cursor: ui/assets/cursor;
+	cursor: ui/assets/cursor;
 }
 
 p {
