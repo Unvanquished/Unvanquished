@@ -64,7 +64,7 @@ function AvailabilityIcon(availability)
 end
 
 function CirclemenuSkeleton(num_items)
-	local rml = '<button class="cancelButton" onclick="document:Hide()">Cancel</button>'
+	local rml = '<button class="cancelButton" onclick="document:Hide()"><span>Cancel</span></button>'
 	local radius_em = 10
 	for i = 0, num_items-1 do
 		local angle = 2 * math.pi / num_items * i
