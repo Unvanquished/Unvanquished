@@ -70,7 +70,7 @@ div.circlemenu-circle {
 	height: 9em;
 	left: -4.5em;
 	top: -4.5em;
-	line-height: 7.8em;
+	line-height: 9em;
 }
 
 .circlemenu button img {
