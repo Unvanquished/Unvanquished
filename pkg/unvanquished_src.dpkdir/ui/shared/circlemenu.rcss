@@ -72,6 +72,10 @@ div.circlemenu-circle {
 	top: -4.5em;
 	line-height: 9em;
 }
+.circlemenu button.cancelButton > * {
+	color: #eeec;
+	font-size: 1.5em;
+}
 
 .circlemenu button img {
 	display: block;
@@ -81,7 +85,7 @@ div.circlemenu-circle {
 }
 
 .circlemenu .key {
-	color: #CCCCCC;
+	color: #fffa;
 	decorator: image( /ui/assets/circlemenu/circle );
 	position: absolute;
 	left: -.7em;
