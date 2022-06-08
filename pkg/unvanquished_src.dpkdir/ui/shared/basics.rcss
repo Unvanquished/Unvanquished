@@ -16,12 +16,6 @@ p {
 	margin-bottom: 0.3em;
 }
 
-p.example {
-	font-size: 1.5em;
-	text-align: center;
-	color: #666666;
-}
-
 h1 {
 	display: block;
 	font-size: 1.65em;

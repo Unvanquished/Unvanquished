@@ -24,77 +24,7 @@
 				<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
 				<window id="innersidebar" class="innersidebar">
 
-					<sidesection  id="sidebar_ingame" class="hidden">
-						<h1> Match menu </h1>
-						<blocklink class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'> Leave match</blocklink>
-						<blocklink class="leftalign" onclick='Events.pushevent("hide menu_ingame", event)'>Resume action</blocklink>
-
-						<h2> Teams </h2>
-						<indent>
-							<blocklink onclick='Events.pushevent("exec team alien; hide ingame", event)'> Join aliens</blocklink>
-							<blocklink onclick='Events.pushevent("exec team human;  hide ingame", event)'> Join humans</blocklink>
-							<blocklink onclick='Events.pushevent("exec team spec;  hide ingame", event)'> Spectate </blocklink>
-						</indent>
-
-						<h2> Democracy </h2>
-						<indent>
-							<blocklink class="fake">
-								Global vote: <ilink onclick='Events.pushevent("exec vote yes", event)'>yes</ilink> or
-								<ilink onclick='Events.pushevent("exec vote no", event)'>no</ilink>
-							</blocklink>
-							<blocklink class="fake">
-								Team vote: <ilink onclick='Events.pushevent("exec teamvote yes", event)'>yes</ilink> or
-								<ilink onclick='Events.pushevent("exec teamvote no", event)'>no</ilink>
-							</blocklink>
-							<blocklink onclick='Events.pushevent("exec callvote kickbots", event)'> Kick bots </blocklink>
-							<blocklink onclick='Events.pushevent("show callvote_map", event)'> Change map </blocklink>
-							<blocklink onclick='Events.pushevent("exec callvote extend", event)'> Extend timelimit </blocklink>
-							<blocklink onclick='Events.pushevent("show callvote_draw", event)'> Call a draw </blocklink>
-							<blocklink onclick='Events.pushevent("exec callteamvote admitdefeat", event)'> Admit defeat </blocklink>
-						</indent>
-
-					</sidesection>
-
-
-					<if cvar="sv_running" condition="==" value="1">
-						<sidesection id="sidebar_host">
-							<h1> Host menu </h1>
-							<blocklink class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'> Stop server </blocklink>
-							<blocklink class="leftalign" onclick='Events.pushevent("exec pause", event)'>Pause server</blocklink>
-
-							<h2>Configuration</h2>
-							<indent>
-								<blocklink onclick='Events.pushevent("show server_general", event)'> Server setup </blocklink>
-								<blocklink onclick='Events.pushevent("show server_bots", event)'> Bots </blocklink>
-							</indent>
-
-							<h2>Map</h2>
-							<indent>
-								<!-- <blocklink onclick='Events.pushevent("show callvote_map", event)'>Change map</blocklink> -->
-								<blocklink onclick='Events.pushevent("exec layoutLoad default", event)'>Reset match</blocklink>
-							</indent>
-
-							<h2> Bots </h2>
-							<indent>
-								<blocklink onclick='Events.pushevent("exec bot add Lavishment aliens", event)'> Add an alien bot </blocklink>
-								<blocklink onclick='Events.pushevent("exec bot add Pulsifer humans", event)'> Add a human bot </blocklink>
-								<blocklink onclick='Events.pushevent("exec bot del all", event)'> Remove all bots </blocklink>
-							</indent>
-
-							<!--
-							<h2> Players </h2>
-							<indent>
-								<blocklink onclick='Events.pushevent("show server_discipline", event)'>Disclipline: kick/ban/mute/nobuild</blocklink>
-							</indent>
-							-->
-						</sidesection>
-					</if>
-
-
 					<sidesection style="font-size: 1.1em;">
-						<h1 class="hidden"> Main Menu </h1>
-
-
 						<h2> Play</h2>
 						<indent>
 							<blocklink onclick='Events.pushevent("show serverbrowser", event)'> Server listings</blocklink>
