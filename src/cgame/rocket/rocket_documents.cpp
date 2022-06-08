@@ -54,16 +54,15 @@ void Rocket_LoadDocument( const char *path )
 			other->Close();
 		}
 	}
-
 }
 
 // Scale the UI proportional to the screen size
 void Rocket_SetDocumentScale( Rml::Core::ElementDocument& document )
 {
-	// This gets 12pt on 1920×1080 screen, which is libRocket default for 1em
-	int size = std::min( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) / 90;
-	document.SetProperty( Rml::Core::PropertyId::FontSize,
-	                      Rml::Core::Property( size, Rml::Core::Property::PT ));
+	// This makes 1dp one pixel on a 1920×1080 screen
+	float size = std::min( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight );
+	float ratio = size / 768.0f;
+	document.GetContext()->SetDensityIndependentPixelRatio(ratio);
 }
 
 void Rocket_DocumentAction( const char *name, const char *action )
