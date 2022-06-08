@@ -18,7 +18,7 @@
 			position: absolute;
 			top: .7em;
 			text-align: center;
-			font-size: 130%;
+			font-size: 1.3em;
 		}
 
 		half

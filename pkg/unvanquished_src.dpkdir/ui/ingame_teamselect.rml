@@ -9,6 +9,10 @@
 			height: 20em;
 			margin: auto;
 		}
+		body > *
+		{
+			font-size: 1.1em;
+		}
 
 
 		button.alien
