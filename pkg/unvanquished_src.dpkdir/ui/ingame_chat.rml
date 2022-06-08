@@ -7,9 +7,11 @@
 			position: absolute;
 			top: 50%;
 			width: 100%;
-			left: 2em;
-			font-size: 1.5em;
+			left: 4em;
 			background-color: rgba(40,40,40,40);
+		}
+		body > * {
+			font-size: 1.1em;
 		}
 		chatfield
 		{
@@ -19,6 +21,9 @@
 	<script src="lua/util.lua"/>
 	</head>
 	<body id="ingame_chat" onkeydown="detectEscape(event, document)" onshow='document:GetElementById("chatfield"):Focus()' >
-	<chatType/> <chatfield id="chatfield" onfocus='Events.pushevent("setChatCommand", event)' />
+	<div>
+		<chatType/>
+		<chatfield id="chatfield" onfocus='Events.pushevent("setChatCommand", event)' />
+	</div>
 	</body>
 </rml>
