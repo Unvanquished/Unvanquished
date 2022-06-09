@@ -2024,53 +2024,6 @@ void CG_DrawHumanInventory()
 }
 
 /*
-===================
-CG_DrawItemSelectText
-===================
-*/
-void CG_DrawItemSelectText()
-{
-	const char *name;
-	float      alpha;
-
-	alpha = CG_FadeAlpha( cg.weaponSelectTime, WEAPON_SELECT_TIME );
-
-	if ( alpha == 0.0f )
-	{
-		Rocket_SetInnerRMLRaw( "&nbsp;" );
-		return;
-	}
-
-
-
-	// draw the selected name
-	if ( cg.weaponSelect < 32 )
-	{
-		if ( cg_weapons[ cg.weaponSelect ].registered &&
-		     BG_InventoryContainsWeapon( cg.weaponSelect, cg.snap->ps.stats ) )
-		{
-			if ( ( name = cg_weapons[ cg.weaponSelect ].humanName ) )
-			{
-				Rocket_SetInnerRML( name, 0 );
-			}
-		}
-	}
-	else
-	{
-		if ( cg_upgrades[ cg.weaponSelect - 32 ].registered &&
-		     BG_InventoryContainsUpgrade( cg.weaponSelect - 32, cg.snap->ps.stats ) )
-		{
-			if ( ( name = cg_upgrades[ cg.weaponSelect - 32 ].humanName ) )
-			{
-				Rocket_SetInnerRML( name, 0 );
-			}
-		}
-	}
-
-	Rocket_SetPropertyById( "", "opacity", va( "%f", alpha ) );
-}
-
-/*
 ===============
 CG_FindNextWeapon
 Find next weapon in inventory.

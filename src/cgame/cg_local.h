@@ -2073,7 +2073,6 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
 void CG_DrawHumanInventory();
-void CG_DrawItemSelectText();
 float CG_ChargeProgress();
 
 //
