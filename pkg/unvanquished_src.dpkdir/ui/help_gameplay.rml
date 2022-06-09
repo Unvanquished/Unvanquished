@@ -6,13 +6,6 @@
 			width: 65%;
 			padding: 0.5em;
 		}
-
-		.emoticon
-		{
-			color: white;
-			height: 1em;
-			width: auto;
-		}
 		</style>
 	</head>
 	<body template="window" id="help_gameplay" style="width:45em; margin: 1em;">
