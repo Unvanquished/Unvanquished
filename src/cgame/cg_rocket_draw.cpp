@@ -1717,7 +1717,7 @@ public:
 		if ( map != newMap )
 		{
 			map = newMap;
-			SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", newMap, newMap ) );
+			SetInnerRML( Str::Format( "<img src='/meta/%s/%s' />", newMap, newMap ) );
 		}
 	}
 
