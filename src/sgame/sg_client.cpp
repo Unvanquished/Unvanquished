@@ -1376,24 +1376,19 @@ void ClientBegin( int clientNum )
 	}
 }
 
-/** Sets shared client entity parameters. */
-#define CLIENT_ENTITY_SET_PARAMS(params)\
-	params.oldEnt = ent;\
-	params.Client_clientData = client;\
-	params.Health_maxHealth = BG_Class(pcl)->health;
-
-/** Copies component state for components that all client entities share. */
-#define CLIENT_ENTITY_COPY_STATE()\
-	if (evolving) {\
-		*ent->entity->Get<HealthComponent>() = *oldEntity->Get<HealthComponent>();\
-	}
-
 /** Creates basic client entity of specific type, copying state from an old instance. */
-#define CLIENT_ENTITY_CREATE(entityType)\
-	entityType::Params params;\
-	CLIENT_ENTITY_SET_PARAMS(params);\
-	ent->entity = new entityType(params);\
-	CLIENT_ENTITY_COPY_STATE();
+template <typename entityType>
+void ClientEntityCreate( gentity_t* ent, Entity *oldEntity, gclient_t *client, class_t pcl, bool evolving )
+{
+	typename entityType::Params params;
+	params.oldEnt = ent;
+	params.Client_clientData = client;
+	params.Health_maxHealth = BG_Class(pcl)->health;
+	ent->entity = new entityType(params);
+	if (evolving) {
+		*ent->entity->Get<HealthComponent>() = *oldEntity->Get<HealthComponent>();
+	}
+}
 
 /**
  * @brief Handles re-spawning of clients and creation of appropriate entities.
@@ -1416,70 +1411,57 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 			ent->entity = new SpectatorEntity(params);
 			break;
 
-		case PCL_ALIEN_BUILDER0: {
-			CLIENT_ENTITY_CREATE(GrangerEntity);
+		case PCL_ALIEN_BUILDER0:
+			ClientEntityCreate<GrangerEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_ALIEN_BUILDER0_UPG: {
-			CLIENT_ENTITY_CREATE(AdvGrangerEntity);
+		case PCL_ALIEN_BUILDER0_UPG:
+			ClientEntityCreate<AdvGrangerEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_ALIEN_LEVEL0: {
-			CLIENT_ENTITY_CREATE(DretchEntity);
+		case PCL_ALIEN_LEVEL0:
+			ClientEntityCreate<DretchEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_ALIEN_LEVEL1: {
-			CLIENT_ENTITY_CREATE(MantisEntity);
+		case PCL_ALIEN_LEVEL1:
+			ClientEntityCreate<MantisEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_ALIEN_LEVEL2: {
-			CLIENT_ENTITY_CREATE(MarauderEntity);
+		case PCL_ALIEN_LEVEL2:
+			ClientEntityCreate<MarauderEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_ALIEN_LEVEL2_UPG: {
-			CLIENT_ENTITY_CREATE(AdvMarauderEntity);
+		case PCL_ALIEN_LEVEL2_UPG:
+			ClientEntityCreate<AdvMarauderEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_ALIEN_LEVEL3: {
-			CLIENT_ENTITY_CREATE(DragoonEntity);
+		case PCL_ALIEN_LEVEL3:
+			ClientEntityCreate<DragoonEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_ALIEN_LEVEL3_UPG: {
-			CLIENT_ENTITY_CREATE(AdvDragoonEntity);
+		case PCL_ALIEN_LEVEL3_UPG:
+			ClientEntityCreate<AdvDragoonEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_ALIEN_LEVEL4: {
-			CLIENT_ENTITY_CREATE(TyrantEntity);
+		case PCL_ALIEN_LEVEL4:
+			ClientEntityCreate<TyrantEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_HUMAN_NAKED: {
-			CLIENT_ENTITY_CREATE(NakedHumanEntity);
+		case PCL_HUMAN_NAKED:
+			ClientEntityCreate<NakedHumanEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_HUMAN_LIGHT: {
-			CLIENT_ENTITY_CREATE(LightHumanEntity);
+		case PCL_HUMAN_LIGHT:
+			ClientEntityCreate<LightHumanEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_HUMAN_MEDIUM: {
-			CLIENT_ENTITY_CREATE(MediumHumanEntity);
+		case PCL_HUMAN_MEDIUM:
+			ClientEntityCreate<MediumHumanEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
-		case PCL_HUMAN_BSUIT: {
-			CLIENT_ENTITY_CREATE(HeavyHumanEntity);
+		case PCL_HUMAN_BSUIT:
+			ClientEntityCreate<HeavyHumanEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
-		}
 
 		default:
 			ASSERT_UNREACHABLE();
