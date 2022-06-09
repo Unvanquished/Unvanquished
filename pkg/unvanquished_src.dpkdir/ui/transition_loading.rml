@@ -9,14 +9,20 @@
 				z-index: 20; /* Stay ontop of all windows */
 			}
 
-			.levelshot {
+			div.levelshot, div.levelshot img {
 				/* HACK: Pretend to be the background */
 				position: absolute;
 				top:0;
 				left:0;
 				width: 100%;
 				height: 100%;
+			}
+			div.levelshot {
 				z-index: -1;
+				background: black;
+			}
+			div.levelshot img {
+				opacity: 0.65;
 			}
 
 			barbox {
@@ -93,7 +99,9 @@
 	</head>
 	<body id="loading" nohide>
 
-		<levelshot_loading/>
+		<div class="levelshot">
+			<levelshot_loading/>
+		</div>
 
 		<infobox>
 			<servername><hostname/></servername>
