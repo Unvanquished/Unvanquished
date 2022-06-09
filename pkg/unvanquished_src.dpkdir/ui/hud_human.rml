@@ -78,14 +78,14 @@
 			div.ammo{
 				margin-top:40%;
 			}
-			div.stamina{
+			stamina {
 				margin-top:50%;
 			}
 			div.clips, div.health{
 				margin-top:5%;
 			}
 
-			div.ammo, div.clips, div.stamina, div.health{
+			div.ammo, div.clips, stamina, div.health{
 
 				height:15%;
 				display:block;
@@ -95,11 +95,11 @@
 			div.ammo, div.clips{
 				margin-left:15%;
 			}
-			div.stamina, div.health{
+			stamina, div.health{
 				margin-left:5%;
 			}
 
-			ammo_stack, clip_stack, progressbar.health, progressbar.stamina
+			ammo_stack, clip_stack, progressbar.health, stamina progressbar
 			{
 				position:absolute;
 				bottom:0em;
@@ -118,8 +118,12 @@
 				image-color: #ff001c7a;
 			}
 
-			progressbar.stamina fill {
+			stamina progressbar fill {
 				image-color: #82ffee52;
+				transition: image-color 0.15s cubic-in;
+			}
+			stamina.sprinting progressbar fill {
+				image-color: #aaaa00a2;
 			}
 
 			ammo, clips, health.health{
@@ -141,7 +145,7 @@
 				left: -1%;
 			}
 
-			weapon_icon img, img.clip, health_cross, img.stamina{
+			weapon_icon img, img.clip, health_cross, stamina img{
 				z-index:3;
 				width:auto;
 				height:180%;
@@ -161,7 +165,7 @@
 				height:1.85em;
 
 			}
-			img.stamina{
+			stamina img{
 				height:150%;
 				top: -50%;
 				left: -1%;
@@ -277,10 +281,10 @@
 			<div class="credits"><credits/> Credits</div>
 		</div>
 		<div id="bars">
-			<div class="stamina">
+			<stamina>
 				<img class="stamina" src="/ui/assets/human/stamina"/>
 				<progressbar class="stamina" src="stamina" />
-			</div>
+			</stamina>
 			<div class="health"><health_cross class="health"/>
 			<health class="health" />
 			<progressbar class="health" src="health" /></div>
