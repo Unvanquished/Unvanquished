@@ -2904,13 +2904,6 @@ static void CG_Rocket_DrawTutorial()
 	Rocket_SetInnerRML( CG_TutorialText(), RP_EMOTICONS | RP_QUAKE );
 }
 
-static void CG_Rocket_DrawStaminaBolt()
-{
-	bool  activate = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
-	Rocket_SetClass( "sprint", activate );
-	Rocket_SetClass( "walk", !activate );
-}
-
 static void CG_Rocket_DrawChatType()
 {
 	static const struct {
@@ -3489,22 +3482,6 @@ static void CG_Rocket_DrawDownloadTotalSize()
 	Rocket_SetInnerRML( totalSizeBuf, RP_QUAKE );
 }
 
-static void CG_Rocket_DrawDownloadCompletedSize()
-{
-	char dlSizeBuf[ MAX_STRING_CHARS ];
-	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
-
-	if ( !*rocketInfo.downloadName )
-	{
-		Rocket_SetInnerRMLRaw( "" );
-		return;
-	}
-
-	CG_ReadableSize( dlSizeBuf,  sizeof dlSizeBuf,  downloadCount );
-
-	Rocket_SetInnerRML( dlSizeBuf, RP_QUAKE );
-}
-
 static void CG_Rocket_DrawDownloadSpeed()
 {
 	char xferRateBuf[ MAX_STRING_CHARS ];
@@ -3559,7 +3536,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "clip_stack", nullptr, &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "clock", &CG_Rocket_DrawClock, nullptr, ELEMENT_ALL },
 	{ "connecting", &CG_Rocket_DrawConnectText, nullptr, ELEMENT_ALL },
-	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, nullptr, ELEMENT_ALL },
 	{ "downloadName", &CG_Rocket_DrawDownloadName, nullptr, ELEMENT_ALL },
 	{ "downloadSpeed", &CG_Rocket_DrawDownloadSpeed, nullptr, ELEMENT_ALL },
 	{ "downloadTime", &CG_Rocket_DrawDownloadTime, nullptr, ELEMENT_ALL },
@@ -3569,7 +3545,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "health_cross", nullptr, &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
 	{ "hostname", &CG_Rocket_DrawHostname, nullptr, ELEMENT_ALL },
 	{ "inventory", &CG_DrawHumanInventory, nullptr, ELEMENT_HUMANS },
-	{ "itemselect_text", &CG_DrawItemSelectText, nullptr, ELEMENT_HUMANS },
 	{ "jetpack", &CG_Rocket_HaveJetpck, nullptr, ELEMENT_HUMANS },
 	{ "levelname", &CG_Rocket_DrawLevelName, nullptr, ELEMENT_ALL },
 	{ "loadingText", &CG_Rocket_DrawLoadingText, nullptr, ELEMENT_ALL },
@@ -3580,7 +3555,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "numSpawns", &CG_Rocket_DrawNumSpawns, nullptr, ELEMENT_DEAD },
 	{ "progress_value", &CG_Rocket_DrawProgressValue, nullptr, ELEMENT_ALL },
 	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, nullptr, ELEMENT_DEAD },
-	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, nullptr, ELEMENT_HUMANS },
 	{ "tutorial", &CG_Rocket_DrawTutorial, nullptr, ELEMENT_GAME },
 	{ "unlocked_items", nullptr, &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
 	{ "version", &CG_Rocket_DrawVersion, nullptr, ELEMENT_ALL },
