@@ -905,30 +905,6 @@ private:
 	float evos;
 };
 
-class StaminaValueElement : public TextHudElement
-{
-public:
-	StaminaValueElement( const Rml::Core::String& tag ) :
-	TextHudElement( tag, ELEMENT_HUMANS ),
-	stamina( -1 ) {}
-
-	void DoOnUpdate() override
-	{
-		playerState_t *ps = &cg.snap->ps;
-		float         value = ps->stats[ STAT_STAMINA ];
-
-		if ( stamina != value )
-		{
-			stamina = value;
-			int percent = 100 * ( stamina / ( float ) STAMINA_MAX );
-			SetText( va( "%d", percent ) );
-		}
-	}
-
-private:
-	float stamina;
-};
-
 class WeaponIconElement : public HudElement
 {
 public:
@@ -3629,7 +3605,6 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<SpeedGraphElement>( "speedometer" );
 	RegisterElement<CreditsValueElement>( "credits" );
 	RegisterElement<EvosValueElement>( "evos" );
-	RegisterElement<StaminaValueElement>( "stamina" );
 	RegisterElement<WeaponIconElement>( "weapon_icon" );
 	RegisterElement<WallwalkElement>( "wallwalk" );
 	RegisterElement<SprintElement>( "sprinting" );
