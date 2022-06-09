@@ -993,13 +993,13 @@ private:
 	bool isActive;
 };
 
-class SprintElement : public HudElement
+class StaminaElement : public HudElement
 {
 public:
-	SprintElement( const Rml::Core::String& tag ) :
-			HudElement( tag, ELEMENT_HUMANS )
+	StaminaElement( const Rml::Core::String& tag ) :
+			HudElement( tag, ELEMENT_HUMANS ),
+			isActive( false )
 	{
-		SetActive( false );
 	}
 
 	void DoOnUpdate() override
@@ -1007,19 +1007,12 @@ public:
 		bool sprinting = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
 		if ( sprinting != isActive )
 		{
-			SetActive( sprinting );
+			isActive = sprinting;
+			SetClass( "sprinting", sprinting );
 		}
 	}
 
 private:
-	void SetActive( bool active )
-	{
-		isActive = active;
-		SetClass( "active", active );
-		SetClass( "inactive", !active );
-
-	}
-
 	bool isActive;
 };
 
@@ -3607,7 +3600,7 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<EvosValueElement>( "evos" );
 	RegisterElement<WeaponIconElement>( "weapon_icon" );
 	RegisterElement<WallwalkElement>( "wallwalk" );
-	RegisterElement<SprintElement>( "sprinting" );
+	RegisterElement<StaminaElement>( "stamina" );
 	RegisterElement<UsableBuildableElement>( "usable_buildable" );
 	RegisterElement<LocationElement>( "location" );
 	RegisterElement<TimerElement>( "timer" );
