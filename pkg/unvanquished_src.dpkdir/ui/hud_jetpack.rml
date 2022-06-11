@@ -22,13 +22,11 @@ progressbar
 	margin-left: 5%;
 	width: 80%;
 	height: 15%;
-	z-index: -1;
 }
 
 progressbar fill
 {
 	image-color: #FF00FF84;
-	decorator: image( /gfx/colors/white );
 }
 img
 {

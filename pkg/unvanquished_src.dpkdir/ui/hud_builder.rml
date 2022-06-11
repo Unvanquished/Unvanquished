@@ -20,7 +20,6 @@ div#mine
 }
 div#timer progressbar
 {
-	display: block;
 	position: absolute;
 	width: 40%;
 	height: 0.8em;
@@ -36,10 +35,6 @@ div#rate
 	bottom: 0em;
 	left: 0em;
 	margin-left: 1em;
-}
-
-progressbar fill {
-	fill-image: /gfx/colors/white;
 }
 
 .warning {

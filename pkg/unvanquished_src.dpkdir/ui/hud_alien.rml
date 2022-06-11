@@ -59,7 +59,6 @@
 			}
 			progressbar#health-bar
 			{
-				display: block;
 				position: absolute;
 				width: 65%;
 				height: 37%;
@@ -68,11 +67,11 @@
 			}
 			progressbar#health-bar fill
 			{
+				decorator: none;
 				fill-image: /ui/assets/alien/bar-l;
 			}
 			progressbar#poison-bar
 			{
-				display: block;
 				position: absolute;
 				width: 65%;
 				height: 37%;
@@ -81,6 +80,7 @@
 			}
 			progressbar#poison-bar fill
 			{
+				decorator: none;
 				fill-image: /ui/assets/alien/bar-r;
 			}
 			wallwalk.wallwalking img.sides
@@ -212,9 +212,6 @@
 			health, health_cross
 			{
 				z-index: 1;
-			}
-			progressbar {
-
 			}
 		</style>
 	</head>
