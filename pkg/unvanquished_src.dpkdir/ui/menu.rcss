@@ -8,6 +8,18 @@ body.ingame {
 	background-color: rgba(0%,0%,0%,0%);
 }
 
+/* Block-style links */
+blocklink {
+	display: block;
+	color: #999999;
+	tab-index: auto;
+}
+blocklink:hover {
+	color: white;
+}
+blocklink.fake:hover {
+	color: #999999;
+}
 /* Ugly table-like hacks to have two options side-by-side */
 blocklink.rightfloat {
 	width: 10em;

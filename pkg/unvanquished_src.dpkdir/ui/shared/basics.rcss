@@ -57,20 +57,6 @@ ilink:hover {
 	color: #00F8FF;   /* Bright cyan */
 }
 
-/* Block-style link, used in main menu */
-blocklink {
-	display: block;
-	color: #999999;
-	tab-index: auto;
-
-}
-blocklink:hover {
-	color: white;
-}
-blocklink.fake:hover {
-	color: #999999;
-}
-
 
 /* ##### Scroll-bars #### */
 scrollbarvertical {
