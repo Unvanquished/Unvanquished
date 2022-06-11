@@ -54,15 +54,6 @@
 				width: 25%;
 				height: 20%;
 			}
-			progressbar
-			{
-				display: block;
-				z-index: -1;
-			}
-			progressbar fill
-			{
-				decorator: image( /gfx/colors/white );
-			}
 
 			.credits{
 				margin-top:2%;
@@ -84,7 +75,6 @@
 			}
 
 			div.ammo, div.clips, stamina, div.health{
-
 				height:15%;
 				display:block;
 				position:relative;

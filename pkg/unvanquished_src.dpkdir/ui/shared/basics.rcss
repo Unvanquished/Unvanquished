@@ -110,6 +110,16 @@ img.emoticon {
 	width: auto;
 }
 
+progressbar
+{
+	display: block;
+	z-index: -1;
+}
+progressbar fill
+{
+	decorator: image( /gfx/colors/white );
+}
+
 .material-icon {
 	font-family: Material Icons;
 	height: 1em;
