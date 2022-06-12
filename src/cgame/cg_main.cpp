@@ -1162,6 +1162,7 @@ static void GenerateNavmeshes()
 	cg.loadingNavmesh = false;
 }
 
+extern void CG_RmlUIDebuggerDisable();
 /*
 =================
 CG_Init
@@ -1183,6 +1184,8 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	cg.~cg_t();
 	new(&cg) cg_t{};
 	for ( centity_t& ent : cg_entities) { ent = {}; }
+
+	CG_RmlUIDebuggerDisable(); // CHECKME
 
 	CG_UpdateLoadingStep( LOAD_START );
 

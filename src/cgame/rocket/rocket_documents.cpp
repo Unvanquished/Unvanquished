@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "rocket.h"
 #include "../cg_local.h"
+#include <RmlUi/Debugger.h>
 
 void Rocket_LoadDocument( const char *path )
 {
@@ -166,5 +167,32 @@ void Rocket_DocumentAction( const char *name, const char *action )
 			Rocket_SetDocumentScale( *document );
 			document->Show();
 		}
+	}
+}
+
+static bool debugger_initialised = false;
+void CG_RmlUIDebuggerToogle()
+{
+	if (!debugger_initialised)
+	{
+		Rml::Debugger::Initialise(*cgs.mapname // CHECKME
+				? hudContext : menuContext);
+		Log::Warn("Loading for %s", *cgs.mapname ? "hud" : "menu");
+		debugger_initialised = true;
+		Rml::Debugger::SetVisible(true);
+	}
+	else
+	{
+		Rml::Debugger::SetVisible(!Rml::Debugger::IsVisible());
+	}
+}
+
+void CG_RmlUIDebuggerDisable()
+{
+	if (debugger_initialised)
+	{
+		Rml::Debugger::SetVisible(false);
+		//Rml::Debugger::Shutdown(); // TODO(recent rmlui)
+		debugger_initialised = false;
 	}
 }
