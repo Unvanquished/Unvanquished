@@ -292,36 +292,6 @@ void Rocket_Rocket_f()
 	Rocket_DocumentAction( action.c_str(), CG_Argv(2) );
 }
 
-void Rocket_RocketDebug_f()
-{
-	static bool init = false;
-
-	if ( !init )
-	{
-		Rml::Debugger::Initialise(menuContext);
-		init = true;
-	}
-
-	Rml::Debugger::SetVisible( !Rml::Debugger::IsVisible() );
-
-	if ( Rml::Debugger::IsVisible() )
-	{
-		if ( !Q_stricmp( CG_Argv( 1 ), "hud" ) )
-		{
-			Rml::Debugger::SetContext( hudContext );
-		}
-		else
-		{
-			Rml::Debugger::SetContext( menuContext );
-		}
-		CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
-	}
-	else
-	{
-		CG_SetKeyCatcher( rocketInfo.keyCatcher & ~KEYCATCH_UI );
-	}
-}
-
 void Rocket_Lua_f( void )
 {
 	Rml::Core::Lua::Interpreter::DoString( CG_Argv( 1 ), "commandline" );

@@ -2329,7 +2329,6 @@ void Rocket_SetDataSelectIndex( int index );
 void Rocket_LoadFont( const char *font );
 void Rocket_Rocket_f( void );
 void Rocket_Lua_f( void );
-void Rocket_RocketDebug_f();
 
 //
 // CombatFeedback.cpp
