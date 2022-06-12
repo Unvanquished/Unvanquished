@@ -86,9 +86,11 @@
 				Be wary that you will loose the build points if the mining structures are destroyed.
 				<br />
 				<br />
-				When you are using more build point than you have, the smallest possible
-				number of buildables will power down so that the other structures have
-				enough energy to remain operational.
+				When you are using more BP (Build Point) than the mining structures (Leech, Drill)
+				are capable of providing (current BPs + BPs you will recover over time), buildables
+				will power down until the other buildables have enough energy to remain operational.
+				Spawn structures (eggs and telenodes), mining structures (leech and drill) and unique
+				structures (overmind and reactor) are NOT affected by the lack of BPs.
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/leech" />
