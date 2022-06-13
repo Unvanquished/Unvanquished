@@ -1051,17 +1051,7 @@ class UsableBuildableElement : public HudElement
 {
 public:
 	UsableBuildableElement( const Rml::Core::String& tag ) :
-			HudElement( tag, ELEMENT_HUMANS ),
-			display( Rml::Core::Style::Display::Block ) {}
-
-	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
-	{
-		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.Contains( Rml::Core::PropertyId::Display ) )
-		{
-			display = GetDisplay();
-		}
-	}
+			HudElement( tag, ELEMENT_HUMANS ) {}
 
 	void DoOnUpdate() override
 	{
@@ -1082,7 +1072,7 @@ public:
 		{
 			if ( !IsVisible() )
 			{
-				SetProperty( Rml::Core::PropertyId::Display, Rml::Core::Property( display ) );
+				SetProperty( Rml::Core::PropertyId::Display, Rml::Core::Property( Rml::Core::Style::Display::Block ) );
 				cg.nearUsableBuildable = es.modelindex;
 			}
 		}
@@ -1096,9 +1086,6 @@ public:
 			}
 		}
 	}
-
-private:
-	Rml::Core::Style::Display display;
 };
 
 class LocationElement : public HudElement
