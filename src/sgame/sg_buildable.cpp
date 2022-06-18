@@ -900,7 +900,7 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 /**
  * @return Whether origin is within a distance of radius of a buildable of the given type.
  */
-bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
+bool G_BuildableInRange( const vec3_t origin, float radius, buildable_t buildable )
 {
 	gentity_t *neighbor = nullptr;
 
