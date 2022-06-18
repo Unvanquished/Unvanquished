@@ -2969,17 +2969,24 @@ static bool Cmd_Sell_armour( gentity_t *ent )
 	       Cmd_Sell_upgradeItem( ent, UP_RADAR );
 }
 
-static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
+// verifies if armory is in range.
+// ENTITY_USE_RANGE is the distance between player and armory's
+// BBoxes.
+static bool InUseRange( const playerState_t &ps, buildable_t target )
 {
 	//no armoury nearby
-	//TODO duplicated code Cmd_Sell_internal/Cmd_Buy_internal
 	vec3_t startMins, startMaxs;
-	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], startMins, startMaxs
+	BG_ClassBoundingBox( ps.stats[ STAT_CLASS ], startMins, startMaxs
 			, nullptr, nullptr, nullptr );
 	// NOT doing the same with buildable's size, since G_BuildableInRange() does it
 	float radius = ENTITY_USE_RANGE + RadiusFromBounds( startMins, startMaxs );
+	return G_BuildableInRange( ps.origin, radius, target );
+}
 
-	if ( !G_BuildableInRange( ent->client->ps.origin, radius, BA_H_ARMOURY ) )
+static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
+{
+	//no armoury nearby
+	if ( !InUseRange( ent->client->ps, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		return false;
@@ -3128,20 +3135,13 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 #define Maybe_TriggerMenu(num, reason) do { if ( !quiet ) G_TriggerMenu( (num), (reason) ); } while ( 0 )
 	vec3_t    newOrigin;
 
-	// check if armoury is in reach
-	//TODO duplicated code Cmd_Sell_internal/Cmd_Buy_internal
-	vec3_t startMins, startMaxs;
-	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], startMins, startMaxs
-			, nullptr, nullptr, nullptr );
-	// NOT doing the same with buildable's size, since G_BuildableInRange() does it
-	float radius = ENTITY_USE_RANGE + RadiusFromBounds( startMins, startMaxs );
 	weapon_t  weapon = BG_WeaponNumberByName( s );
 	upgrade_t upgrade = BG_UpgradeByName( s )->number;
 
-	if ( !G_BuildableInRange( ent->client->ps.origin, radius, BA_H_ARMOURY ) )
+	//no armoury nearby
+	if ( !InUseRange( ent->client->ps, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
-
 		return false;
 	}
 
