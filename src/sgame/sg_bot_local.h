@@ -46,7 +46,6 @@ class botTarget_t
 {
 public:
 	botTarget_t& operator=(const gentity_t *ent);
-	botTarget_t& operator=(const vec3_t pos);
 	botTarget_t& operator=( glm::vec3 pos );
 	void clear();
 	entityType_t getTargetType() const;
