@@ -2186,8 +2186,7 @@ void ClientThink_real( gentity_t *self )
 
 		if ( ent && ent->use &&
 		     ( !ent->buildableTeam   || ent->buildableTeam   == client->pers.team ) &&
-		     ( !ent->conditions.team || ent->conditions.team == client->pers.team ) &&
-		     Distance( self->s.origin, ent->s.origin ) < ENTITY_USE_RANGE )
+		     ( !ent->conditions.team || ent->conditions.team == client->pers.team ) )
 		{
 			if ( g_debugEntities.Get() > 1 )
 			{
@@ -2196,28 +2195,9 @@ void ClientThink_real( gentity_t *self )
 
 			ent->use( ent, self, self ); // other and activator are the same in this context
 		}
-		else
+		else if ( client->pers.team == TEAM_ALIENS )
 		{
-			// no entity in front of player - do a small area search
-			for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, client->ps.origin, ENTITY_USE_RANGE ) ); )
-			{
-				if ( ent && ent->use && ent->buildableTeam == client->pers.team)
-				{
-					if ( g_debugEntities.Get() > 1 )
-					{
-						Log::Debug("Calling entity->use after an area-search for %s", etos(ent));
-					}
-
-					ent->use( ent, self, self ); // other and activator are the same in this context
-
-					break;
-				}
-			}
-
-			if ( !ent && client->pers.team == TEAM_ALIENS )
-			{
-				G_TriggerMenu( client->ps.clientNum, MN_A_INFEST );
-			}
+			G_TriggerMenu( client->ps.clientNum, MN_A_INFEST );
 		}
 	}
 
