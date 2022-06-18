@@ -2701,3 +2701,17 @@ void G_BuildLogRevert( int id )
 
 	G_AddMomentumEnd();
 }
+
+// verifies if armory is in range.
+// ENTITY_USE_RANGE is the distance between player and armory's
+// BBoxes.
+bool G_InUseRange( const playerState_t &ps, buildable_t target )
+{
+	//no armoury nearby
+	vec3_t startMins, startMaxs;
+	BG_ClassBoundingBox( ps.stats[ STAT_CLASS ], startMins, startMaxs
+			, nullptr, nullptr, nullptr );
+	// NOT doing the same with buildable's size, since G_BuildableInRange() does it
+	float radius = ENTITY_USE_RANGE + RadiusFromBounds( startMins, startMaxs );
+	return G_BuildableInRange( ps.origin, radius, target );
+}

@@ -2969,24 +2969,10 @@ static bool Cmd_Sell_armour( gentity_t *ent )
 	       Cmd_Sell_upgradeItem( ent, UP_RADAR );
 }
 
-// verifies if armory is in range.
-// ENTITY_USE_RANGE is the distance between player and armory's
-// BBoxes.
-static bool InUseRange( const playerState_t &ps, buildable_t target )
-{
-	//no armoury nearby
-	vec3_t startMins, startMaxs;
-	BG_ClassBoundingBox( ps.stats[ STAT_CLASS ], startMins, startMaxs
-			, nullptr, nullptr, nullptr );
-	// NOT doing the same with buildable's size, since G_BuildableInRange() does it
-	float radius = ENTITY_USE_RANGE + RadiusFromBounds( startMins, startMaxs );
-	return G_BuildableInRange( ps.origin, radius, target );
-}
-
 static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 {
 	//no armoury nearby
-	if ( !InUseRange( ent->client->ps, BA_H_ARMOURY ) )
+	if ( !G_InUseRange( ent->client->ps, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		return false;
@@ -3139,7 +3125,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 	upgrade_t upgrade = BG_UpgradeByName( s )->number;
 
 	//no armoury nearby
-	if ( !InUseRange( ent->client->ps, BA_H_ARMOURY ) )
+	if ( !G_InUseRange( ent->client->ps, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		return false;

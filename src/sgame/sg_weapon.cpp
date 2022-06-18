@@ -223,52 +223,18 @@ bool G_RefillFuel( gentity_t *self, bool triggerEvent )
  */
 bool G_FindAmmo( gentity_t *self )
 {
-	gentity_t *neighbor = nullptr;
-	bool  foundSource = false;
-
 	// don't search for a source if refilling isn't possible
 	if ( !CanUseAmmoRefill( self ) )
 	{
 		return false;
 	}
 
-	//TODO duplicated from sg_cmds.cpp Cmd_Sell_internal/Cmd_Buy_internal
-	vec3_t startMins, startMaxs;
-	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], startMins, startMaxs
-			, nullptr, nullptr, nullptr );
-	// NOT doing the same with buildable's size, since G_BuildableInRange() does it
-	float radius = ENTITY_USE_RANGE + RadiusFromBounds( startMins, startMaxs );
-
-	// search for ammo source
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, radius ) ) )
-	{
-		// only friendly, living and powered buildables provide ammo
-		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
-		     !neighbor->spawned || !neighbor->powered || Entities::IsDead( neighbor ) )
-		{
-			continue;
-		}
-
-		switch ( neighbor->s.modelindex )
-		{
-			case BA_H_ARMOURY:
-				foundSource = true;
-				break;
-
-			case BA_H_REACTOR:
-				if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy )
-				{
-					foundSource = true;
-				}
-				break;
-		}
-	}
-
-	if ( foundSource )
+	playerState_t& ps = self->client->ps;
+	if ( G_InUseRange( ps, BA_H_ARMOURY )
+			|| ( BG_Weapon( ps.stats[ STAT_WEAPON ] )->usesEnergy && G_InUseRange( ps, BA_H_REACTOR ) ) )
 	{
 		return G_RefillAmmo( self, true );
 	}
-
 	return false;
 }
 
@@ -278,37 +244,16 @@ bool G_FindAmmo( gentity_t *self )
  */
 bool G_FindFuel( gentity_t *self )
 {
-	gentity_t *neighbor = nullptr;
-	bool  foundSource = false;
-
-	if ( !self || !self->client )
+	// don't search for a source if refilling isn't possible
+	if ( !CanUseAmmoRefill( self ) )
 	{
 		return false;
 	}
 
-	// search for fuel source
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, ENTITY_USE_RANGE ) ) )
-	{
-		// only friendly, living and powered buildables provide fuel
-		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !G_OnSameTeam( self, neighbor ) ||
-		     !neighbor->spawned || !neighbor->powered || Entities::IsDead( neighbor ) )
-		{
-			continue;
-		}
-
-		switch ( neighbor->s.modelindex )
-		{
-			case BA_H_ARMOURY:
-				foundSource = true;
-				break;
-		}
-	}
-
-	if ( foundSource )
+	if ( G_InUseRange( self->client->ps, BA_H_ARMOURY ) )
 	{
 		return G_RefillFuel( self, true );
 	}
-
 	return false;
 }
 
