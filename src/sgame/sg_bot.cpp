@@ -117,11 +117,6 @@ int G_BotAddNames( team_t team, int arg, int last )
 
 static const char *G_BotSelectName( team_t team )
 {
-	if ( botNames[team].empty() )
-	{
-		return nullptr;
-	}
-
 	unsigned int count = 0;
 	for ( nameInfo_t &nameInfo : botNames[team] )
 	{
@@ -129,6 +124,11 @@ static const char *G_BotSelectName( team_t team )
 		{
 			count++;
 		}
+	}
+
+	if (count == 0)
+	{
+		return nullptr;
 	}
 
 	unsigned int choice = rand() % count;
@@ -147,7 +147,7 @@ static const char *G_BotSelectName( team_t team )
 		}
 	}
 
-	return nullptr;
+	ASSERT_UNREACHABLE();
 }
 
 static void G_BotNameUsed( team_t team, const char *name, bool inUse )
@@ -441,7 +441,6 @@ void G_BotThink( gentity_t *self )
 	{
 		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
 		G_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
-		//BotClampPos( self );
 	}
 
 	self->botMind->willSprint( false ); //let the BT decide that

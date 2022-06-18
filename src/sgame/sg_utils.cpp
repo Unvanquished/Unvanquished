@@ -252,19 +252,6 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 }
 
 /*
-==============
-G_CopyString
-==============
-*/
-char *G_CopyString( const char *str )
-{
-	size_t size = strlen( str ) + 1;
-	char *cp = (char*) malloc( size );
-	memcpy( cp, str, size );
-	return cp;
-}
-
-/*
 ==============================================================================
 
 Kill box
@@ -878,6 +865,40 @@ team_t G_IterateTeams( team_t team )
 	{
 		return nextTeam;
 	}
+}
+
+std::string G_EscapeServerCommandArg( Str::StringRef str )
+{
+	if ( str.find( '\n' ) == str.npos )
+	{
+		return Cmd::Escape( str );
+	}
+
+	std::string out = "\"";
+	for (char c : str)
+	{
+		if ( c == '\\' || c == '$' || c == '"' )
+		{
+			out.push_back( '\\' );
+		}
+		out.push_back( c );
+	}
+	out.push_back( '"' );
+	return out;
+}
+
+// Escape a command for used in server commands (sent from client to server)
+// Difference from Cmd::Escape and normal command parsing is that newlines are allowed
+// (for commands that have multi-line output)
+char *Quote( Str::StringRef str )
+{
+	static char buffer[ 4 ][ MAX_STRING_CHARS ];
+	static int index = -1;
+
+	index = ( index + 1 ) & 3;
+	Q_strncpyz( buffer[ index ], G_EscapeServerCommandArg( str ).c_str(), sizeof( buffer[ index ] ) );
+
+	return buffer[ index ];
 }
 
 // TODO: Add LocationComponent

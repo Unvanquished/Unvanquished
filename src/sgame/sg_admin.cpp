@@ -264,12 +264,6 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"listgeoip",  G_admin_listgeoip, true,  "listgeoip",
-		N_("display a list of players and which countries they're from (using GeoIP data)"),
-		N_("(^5name^7)")
-	},
-
-	{
 		"listinactive", G_admin_listinactive, true, "listadmins",
 		N_("display a list of inactive server admins and their levels"),
 		N_("[^5months^7] (^5start admin#^7)")
@@ -1062,7 +1056,7 @@ static void admin_default_levels()
 	l->level = level++;
 	Q_strncpyz( l->name, "^6Team Manager", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
-	            "listplayers admintest adminhelp time putteam spec999 register unregister",
+	            "listplayers admintest adminhelp time putteam spec999 register unregister bot",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
@@ -1070,7 +1064,7 @@ static void admin_default_levels()
 	Q_strncpyz( l->name, "^2Junior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute ADMINCHAT "
-	            "buildlog register unregister l0 l1",
+	            "buildlog register unregister l0 l1 bot",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
@@ -1078,7 +1072,7 @@ static void admin_default_levels()
 	Q_strncpyz( l->name, "^3Senior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute showbans ban "
-	            "namelog buildlog ADMINCHAT register unregister l0 l1 pause revert",
+	            "namelog buildlog ADMINCHAT register unregister l0 l1 pause revert bot",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
@@ -3294,7 +3288,7 @@ bool G_admin_changemap( gentity_t *ent )
 	admin_log( map );
 	admin_log( layout );
 
-	trap_SendConsoleCommand( va( "map %s %s", Quote( map ), Quote( layout ) ) );
+	trap_SendConsoleCommand( Str::Format( "map %s %s", Cmd::Escape( map ), Cmd::Escape( layout ) ).c_str() );
 
 	level.restarted = true;
 	G_MapLog_Result( 'M' );
@@ -3662,65 +3656,6 @@ bool G_admin_listlayouts( gentity_t *ent )
 	return true;
 }
 
-bool G_admin_listgeoip( gentity_t *ent )
-{
-	int i;
-	int clients[ MAX_CLIENTS ];
-	int clientCount;
-	int countryLength = 1;
-
-	if ( trap_Argc() > 1 )
-	{
-		char name[ MAX_NAME_LENGTH ];
-
-		trap_Argv( 1, name, sizeof( name ) );
-		clientCount = G_ClientNumbersFromString( name, clients, MAX_CLIENTS );
-
-		if ( !clientCount )
-		{
-			return true;
-		}
-	}
-	else
-	{
-		for ( clientCount = 0; clientCount < MAX_CLIENTS; ++clientCount )
-		{
-			clients[ clientCount ] = clientCount;
-		}
-	}
-
-	for ( i = 0; i < clientCount; i++ )
-	{
-		int length;
-		const gclient_t *p = &level.clients[ clients[ i ] ];
-
-		if ( p->pers.connected == CON_DISCONNECTED )
-		{
-			continue;
-		}
-
-		length = strlen( p->pers.country );
-		countryLength = std::max( length, countryLength );
-	}
-
-	ADMBP_begin();
-
-	for ( i = 0; i < clientCount; i++ )
-	{
-		const gclient_t *p = &level.clients[ clients[ i ] ];
-
-		if ( p->pers.connected == CON_DISCONNECTED )
-		{
-			continue;
-		}
-
-		ADMBP( va( "%2i %*s %s^*", clients[ i ], countryLength, p->pers.country[0] ? p->pers.country : "?", p->pers.netname ) );
-	}
-
-	ADMBP_end();
-	return true;
-}
-
 bool G_admin_listplayers( gentity_t *ent )
 {
 	int             i;
@@ -4025,7 +3960,7 @@ bool G_admin_adminhelp( gentity_t *ent )
 
 		out += "\n";
 
-		ADMP( Cmd::Escape( out ) );
+		ADMP( Quote( out ) );
 		ADMP( va( "%s %d", QQ( N_("^3adminhelp:^* $1$ available commands"
 		"run adminhelp [^3command^7] for adminhelp with a specific command.") ),count ) );
 
@@ -5587,7 +5522,7 @@ void G_admin_buffer_begin()
 
 void G_admin_buffer_end( gentity_t *ent )
 {
-	G_admin_print( ent, Cmd::Escape( g_bfb ) );
+	G_admin_print( ent, G_EscapeServerCommandArg( g_bfb ) );
 }
 
 static inline void G_admin_buffer_print_raw( gentity_t *ent, Str::StringRef m, bool appendNewLine )

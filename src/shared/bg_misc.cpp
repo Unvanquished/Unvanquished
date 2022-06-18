@@ -35,8 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // delayed translation - these strings may be passed to Trans_Gettext() later
 #define N_(x) x
 
-void                               trap_QuoteString( const char *, char *, int );
-
 struct buildableName_t
 {
 	buildable_t number;
@@ -2525,23 +2523,6 @@ team_t BG_PlayableTeamFromString( const char* s )
 int cmdcmp( const void *a, const void *b )
 {
 	return b ? Q_stricmp( ( const char * ) a, ( ( dummyCmd_t * ) b )->name ) : 1;
-}
-
-/*
-==================
-Quote
-==================
-*/
-
-char *Quote( const char *str )
-{
-	static char buffer[ 4 ][ MAX_STRING_CHARS ];
-	static int index = -1;
-
-	index = ( index + 1 ) & 3;
-	trap_QuoteString( str, buffer[ index ], sizeof( buffer[ index ] ) );
-
-	return buffer[ index ];
 }
 
 /*

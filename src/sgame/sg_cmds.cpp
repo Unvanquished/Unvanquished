@@ -847,8 +847,8 @@ static void Cmd_Team_f( gentity_t *ent )
 	int      t;
 	const g_admin_spec_t *specOnly;
 
-	players[ TEAM_ALIENS ] = level.team[ TEAM_ALIENS ].numClients;
-	players[ TEAM_HUMANS ] = level.team[ TEAM_HUMANS ].numClients;
+	players[ TEAM_ALIENS ] = G_PlayerCountForBalance( TEAM_ALIENS );
+	players[ TEAM_HUMANS ] = G_PlayerCountForBalance( TEAM_HUMANS );
 
 	if ( TEAM_ALIENS == oldteam || TEAM_HUMANS == oldteam )
 	{
@@ -870,7 +870,7 @@ static void Cmd_Team_f( gentity_t *ent )
 	     Entities::IsAlive( ent ) &&
 	     ent->client->lastCombatTime + g_combatCooldown.Get() * 1000 > level.time )
 	{
-		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.Get() * 1000 ) - level.time ) / 1000;
+		float remaining = ceil( ( ( ent->client->lastCombatTime + g_combatCooldown.Get() * 1000 ) - level.time ) / 1000 );
 
 		trap_SendServerCommand( ent - g_entities,
 		    va( "print_tr %s %i %.0f", QQ( N_("You cannot leave your team until $1$ after combat. Try again in $2$s.") ),
@@ -939,14 +939,14 @@ static void Cmd_Team_f( gentity_t *ent )
 				{
 					// 1: If this team has more player than the other team,
 					// tell the player to join the other team.
-					if ( g_teamForceBalance.Get() == 1 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
+					if ( g_teamForceBalance.Get() == 1 && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ] )
 					{
 						G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 						return;
 					}
 					// 2: Check for this team having more player than the other
 					// theam only if the other team is not empty.
-					else if ( g_teamForceBalance.Get() == 2 && G_PlayerCountForBalance( TEAM_HUMANS ) > 0 && G_PlayerCountForBalance( TEAM_ALIENS ) > G_PlayerCountForBalance( TEAM_HUMANS ) )
+					else if ( g_teamForceBalance.Get() == 2 && players[ TEAM_HUMANS ] > 0 && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ] )
 					{
 						G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 						return;
@@ -972,14 +972,14 @@ static void Cmd_Team_f( gentity_t *ent )
 				{
 					// 1: If this team has more player than the other team,
 					// tell the player to join the other team.
-					if ( g_teamForceBalance.Get() == 1 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
+					if ( g_teamForceBalance.Get() == 1 && players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
 					{
 						G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
 						return;
 					}
 					// 2: Check for this team having more player than the other
 					// theam only if the other team is not empty.
-					else if ( g_teamForceBalance.Get() == 2 && G_PlayerCountForBalance( TEAM_ALIENS ) > 0 && G_PlayerCountForBalance( TEAM_HUMANS ) > G_PlayerCountForBalance( TEAM_ALIENS ) )
+					else if ( g_teamForceBalance.Get() == 2 && players[ TEAM_ALIENS ] > 0 && players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
 					{
 						G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
 						return;
@@ -1807,14 +1807,14 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	case VOTE_KICK:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "ban %s 1s%s %s^* called vote kick (%s^*)", level.clients[ clientNum ].pers.ip.str,
-		             Quote( g_adminTempBan.Get().c_str() ), Quote( ent->client->pers.netname ), Quote( reason ) );
+		             Cmd::Escape( g_adminTempBan.Get() ).c_str(), Cmd::Escape( ent->client->pers.netname ).c_str(), Cmd::Escape( reason ).c_str() );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ), N_("Kick player '%s'"), name );
 		break;
 
 	case VOTE_SPECTATE:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "speclock %d 1s%s", clientNum, Quote( g_adminTempBan.Get().c_str() ) );
+		             "speclock %d 1s%s", clientNum, Cmd::Escape( g_adminTempBan.Get() ).c_str() );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Move player '%s' to spectators"), name );
@@ -1943,7 +1943,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		if ( *reason ) // layout?
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "map %s %s", Quote( arg ), Quote( reason ) );
+			             "map %s %s", Cmd::Escape( arg ).c_str(), Cmd::Escape( reason ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Change to map '%s' layout '%s'", arg, reason );
@@ -1951,7 +1951,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		else
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "map %s", Quote( arg ) );
+			             "map %s", Cmd::Escape( arg ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Change to map '%s'", arg );
@@ -1974,7 +1974,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 				return;
 			}
 
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "restart %s", Quote( arg ) );
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "restart %s", Cmd::Escape( arg ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'", arg );
 		}
@@ -2000,7 +2000,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		if ( *reason ) // layout?
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "set g_nextMap %s; set g_nextMapLayouts %s", Quote( arg ), Quote( reason ) );
+			             "set g_nextMap %s; set g_nextMapLayouts %s", Cmd::Escape( arg ).c_str(), Cmd::Escape( reason ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Set the next map to '%s' layout '%s'", arg, reason );
@@ -2008,7 +2008,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		else
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "set g_nextMap %s; set g_nextMapLayouts \"\"", Quote( arg ) );
+			             "set g_nextMap %s; set g_nextMapLayouts \"\"", Cmd::Escape( arg ).c_str() );
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Set the next map to '%s'", arg );

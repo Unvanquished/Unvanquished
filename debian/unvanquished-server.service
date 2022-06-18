@@ -7,10 +7,11 @@ RequiresMountsFor=/var/games/unvanquished-server
 Restart=on-failure
 User=unvanquished-server
 Group=games
-Environment=DAEMON_OPTS= GAME_OPTS=
+Environment=DAEMON_OPTS=
+Environment=GAME_OPTS=
 EnvironmentFile=-/etc/default/unvanquished-server
-ExecStart=/usr/games/unvanquished-server --system $DAEMON_OPTS $GAME_OPTS
-ExecReload=/usr/games/unvanquished-server --system $DAEMON_OPTS $GAME_OPTS
+ExecStart=/usr/games/unvanquished-server --system ${DAEMON_OPTS} ${GAME_OPTS}
+ExecReload=/usr/games/unvanquished-server --system ${DAEMON_OPTS} ${GAME_OPTS}
 ExecStop=/usr/games/unvanquished-server --system +quit
 
 [Install]

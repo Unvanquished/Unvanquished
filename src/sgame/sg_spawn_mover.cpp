@@ -1286,12 +1286,12 @@ static void InitMover( gentity_t *ent )
 
 	if ( G_SpawnString( "group", "", &groupName ) )
 	{
-		ent->groupName = G_CopyString( groupName );
+		ent->groupName = BG_strdup( groupName );
 	}
 	else if ( G_SpawnString( "team", "", &groupName ) )
 	{
 		G_WarnAboutDeprecatedEntityField( ent, "group", "team", ENT_V_RENAMED );
-		ent->groupName = G_CopyString( groupName );
+		ent->groupName = BG_strdup( groupName );
 	}
 
 	ent->moverState = MOVER_POS1;
@@ -1353,12 +1353,12 @@ static void InitRotator( gentity_t *ent )
 
 	if ( G_SpawnString( "group", "", &groupName ) )
 	{
-		ent->groupName = G_CopyString( groupName );
+		ent->groupName = BG_strdup( groupName );
 	}
 	else if ( G_SpawnString( "team", "", &groupName ) )
 	{
 		G_WarnAboutDeprecatedEntityField( ent, "group", "team", ENT_V_RENAMED );
-		ent->groupName = G_CopyString( groupName );
+		ent->groupName = BG_strdup( groupName );
 	}
 
 	ent->moverState = ROTATOR_POS1;

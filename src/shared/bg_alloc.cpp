@@ -29,14 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 void *BG_Alloc( size_t size )
 {
-	void *ptr = malloc( size );
-
-	if ( ptr )
-	{
-		memset( ptr, 0, size );
-	}
-
-	return ptr;
+	return calloc( size, 1 );
 }
 
 void BG_Free( void *ptr )

@@ -1076,7 +1076,6 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
 	int             i;
-	const char      *country;
 
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];
@@ -1189,24 +1188,13 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	             client->pers.netname,
 	             client->pers.netname );
 
-	country = Info_ValueForKey( userinfo, "geoip" );
-	Q_strncpyz( client->pers.country, country, sizeof( client->pers.country ) );
-
 	G_SendClientPmoveParams(clientNum);
 
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		if ( g_geoip.Get() && country && *country )
-		{
-			trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^* connected from $2$") ),
-			                                Quote( client->pers.netname ), Quote( country ) ) );
-		}
-		else
-		{
-			trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* connected") ),
-			                                Quote( client->pers.netname ) ) );
-		}
+		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* connected") ),
+		                                Quote( client->pers.netname ) ) );
 	}
 
 	// count current clients and rank for scoreboard
@@ -1494,7 +1482,7 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 		}
 
 		default:
-			ASSERT(false);
+			ASSERT_UNREACHABLE();
 	}
 
 	delete oldEntity;

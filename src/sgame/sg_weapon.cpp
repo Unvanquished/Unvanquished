@@ -440,7 +440,7 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 }
 
 static gentity_t *FireMelee( gentity_t *self, float range, float width, float height,
-                             float damage, meansOfDeath_t mod, bool falseRanged, int other )
+                             float damage, meansOfDeath_t mod, bool falseRanged )
 {
 	trace_t   tr;
 	gentity_t *traceEnt;
@@ -464,14 +464,6 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 		SendMeleeHitEvent( self, traceEnt, &tr );
 	}
 
-	if ( other & DAMAGE_SLOW )
-	{
-		if ( traceEnt && traceEnt->client )
-		{
-			traceEnt->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
-			traceEnt->client->lastLevel1SlowTime = level.time;
-		}
-	}
 	return traceEnt;
 }
 
@@ -931,7 +923,7 @@ static void CancelBuild( gentity_t *self )
 	     self->client->ps.weapon == WP_ABUILD2 )
 	{
 		FireMelee( self, ABUILDER_CLAW_RANGE, ABUILDER_CLAW_WIDTH,
-		             ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW, false, 0 );
+		           ABUILDER_CLAW_WIDTH, ABUILDER_CLAW_DMG, MOD_ABUILDER_CLAW, false );
 	}
 }
 
@@ -1577,33 +1569,40 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			switch ( weapon )
 			{
 				case WP_ALEVEL1:
-					FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
-					           LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW, false, DAMAGE_SLOW );
+				{
+					gentity_t *target = FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
+					                               LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW, false );
+					if ( target && target->client )
+					{
+						target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
+						target->client->lastLevel1SlowTime = level.time;
+					}
+				}
 					break;
 
 				case WP_ALEVEL3:
 					FireMelee( self, LEVEL3_CLAW_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
-					           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW, false, 0 );
+					           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW, false );
 					break;
 
 				case WP_ALEVEL3_UPG:
 					FireMelee( self, LEVEL3_CLAW_UPG_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
-					           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW, false, 0 );
+					           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW, false );
 					break;
 
 				case WP_ALEVEL2:
 					FireMelee( self, LEVEL2_CLAW_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
-					           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW, false, 0 );
+					           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW, false );
 					break;
 
 				case WP_ALEVEL2_UPG:
 					FireMelee( self, LEVEL2_CLAW_U_RANGE, LEVEL2_CLAW_WIDTH, LEVEL2_CLAW_WIDTH,
-					           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW, false, 0 );
+					           LEVEL2_CLAW_DMG, MOD_LEVEL2_CLAW, false );
 					break;
 
 				case WP_ALEVEL4:
 					FireMelee( self, LEVEL4_CLAW_RANGE, LEVEL4_CLAW_WIDTH, LEVEL4_CLAW_HEIGHT,
-					           LEVEL4_CLAW_DMG, MOD_LEVEL4_CLAW, false, 0 );
+					           LEVEL4_CLAW_DMG, MOD_LEVEL4_CLAW, false );
 					break;
 
 				case WP_BLASTER:
@@ -1643,7 +1642,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_PAIN_SAW:
-					FireMelee( self, PAINSAW_RANGE, PAINSAW_WIDTH, PAINSAW_HEIGHT, PAINSAW_DAMAGE, MOD_PAINSAW, true, 0 );
+					FireMelee( self, PAINSAW_RANGE, PAINSAW_WIDTH, PAINSAW_HEIGHT, PAINSAW_DAMAGE, MOD_PAINSAW, true );
 					break;
 
 				case WP_LOCKBLOB_LAUNCHER:
