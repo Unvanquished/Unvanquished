@@ -2115,6 +2115,7 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 	}
 
 	vec3_t newOrigin;
+	//FIXME: duplicated code in sg_cmds.cpp
 	struct
 	{
 		upgrade_t upg;

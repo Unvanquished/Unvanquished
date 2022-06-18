@@ -2971,9 +2971,6 @@ static bool Cmd_Sell_armour( gentity_t *ent )
 
 static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 {
-	weapon_t  weapon;
-	upgrade_t upgrade;
-
 	//no armoury nearby
 	//TODO duplicated code Cmd_Sell_internal/Cmd_Buy_internal
 	vec3_t startMins, startMaxs;
@@ -2988,6 +2985,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 		return false;
 	}
 
+	weapon_t  weapon;
 	if ( !Q_strnicmp( s, "weapon", 6 ) )
 	{
 		weapon = (weapon_t) ent->client->ps.stats[ STAT_WEAPON ];
@@ -2996,8 +2994,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 	{
 		weapon = BG_WeaponNumberByName( s );
 	}
-
-	upgrade = BG_UpgradeByName( s )->number;
+	upgrade_t upgrade = BG_UpgradeByName( s )->number;
 
 	if ( weapon != WP_NONE )
 	{
@@ -3125,15 +3122,11 @@ static bool Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade )
 }
 
 
+//FIXME this function could be more generic. See example in AI's code.
 static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflicting, bool quiet )
 {
 #define Maybe_TriggerMenu(num, reason) do { if ( !quiet ) G_TriggerMenu( (num), (reason) ); } while ( 0 )
-	weapon_t  weapon;
-	upgrade_t upgrade;
 	vec3_t    newOrigin;
-
-	weapon = BG_WeaponNumberByName( s );
-	upgrade = BG_UpgradeByName( s )->number;
 
 	// check if armoury is in reach
 	//TODO duplicated code Cmd_Sell_internal/Cmd_Buy_internal
@@ -3142,6 +3135,8 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 			, nullptr, nullptr, nullptr );
 	// NOT doing the same with buildable's size, since G_BuildableInRange() does it
 	float radius = ENTITY_USE_RANGE + RadiusFromBounds( startMins, startMaxs );
+	weapon_t  weapon = BG_WeaponNumberByName( s );
+	upgrade_t upgrade = BG_UpgradeByName( s )->number;
 
 	if ( !G_BuildableInRange( ent->client->ps.origin, radius, BA_H_ARMOURY ) )
 	{
@@ -3285,44 +3280,34 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 			break; // okay, can buy this
 		}
 
-		if ( upgrade == UP_LIGHTARMOUR )
+		//FIXME: duplicated code in sg_bot_util.cpp
+		struct
 		{
-			if ( !G_RoomForClassChange( ent, PCL_HUMAN_LIGHT, newOrigin ) )
-			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-				return false;
-			}
-
-			VectorCopy( newOrigin, ent->client->ps.origin );
-			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
-			ent->client->pers.classSelection = PCL_HUMAN_LIGHT;
-			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-		}
-		else if ( upgrade == UP_MEDIUMARMOUR )
+			upgrade_t upg;
+			class_t cls;
+		} armorToClass[] =
 		{
-			if ( !G_RoomForClassChange( ent, PCL_HUMAN_MEDIUM, newOrigin ) )
-			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-				return false;
-			}
+			{ UP_LIGHTARMOUR, PCL_HUMAN_LIGHT },
+			{ UP_MEDIUMARMOUR, PCL_HUMAN_MEDIUM },
+			{ UP_BATTLESUIT, PCL_HUMAN_BSUIT },
+		};
 
-			VectorCopy( newOrigin, ent->client->ps.origin );
-			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
-			ent->client->pers.classSelection = PCL_HUMAN_MEDIUM;
-			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-		}
-		else if ( upgrade == UP_BATTLESUIT )
+		for ( auto armor : armorToClass )
 		{
-			if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
+			if ( armor.upg == upgrade )
 			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-				return false;
-			}
+				if ( !G_RoomForClassChange( ent, armor.cls, newOrigin ) )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+					return false;
+				}
 
-			VectorCopy( newOrigin, ent->client->ps.origin );
-			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
-			ent->client->pers.classSelection = PCL_HUMAN_BSUIT;
-			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+				VectorCopy( newOrigin, ent->client->ps.origin );
+				ent->client->ps.stats[ STAT_CLASS ] = armor.cls;
+				ent->client->pers.classSelection = armor.cls;
+				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+				break;
+			}
 		}
 
 		//add to inventory
