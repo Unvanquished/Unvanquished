@@ -2153,7 +2153,7 @@ void BotSellWeapons( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
+	if ( !G_InUseRange( self->client->ps, BA_H_ARMOURY ) )
 	{
 		return;
 	}
@@ -2193,7 +2193,7 @@ void BotSellUpgrades( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
+	if ( !G_InUseRange( self->client->ps, BA_H_ARMOURY ) )
 	{
 		return;
 	}
