@@ -305,7 +305,7 @@ extern int   MEDKIT_STARTUP_SPEED;
 
 #define QU_TO_METER                        0.03125 // in m/qu
 
-#define ENTITY_USE_RANGE                   128.0f
+#define ENTITY_USE_RANGE                   64.0f
 
 // fire
 #define FIRE_MIN_DISTANCE                  20.0f
