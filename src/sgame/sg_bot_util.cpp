@@ -1097,7 +1097,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	float width = 0, height = 0;
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
+	G_CalcMuzzlePoint( self, forward, muzzle );
 	target.getPos( targetPos );
 	switch ( self->client->ps.weapon )
 	{
@@ -1290,10 +1290,10 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 
 	trace_t trace;
 	vec3_t  muzzle, targetPos;
-	vec3_t  forward, right, up;
+	vec3_t  forward;
 
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
+	G_CalcMuzzlePoint( self, forward, muzzle );
 	target.getPos( targetPos );
 
 	if ( !trap_InPVS( muzzle, targetPos ) )
@@ -1714,15 +1714,15 @@ float CalcAimPitch( gentity_t *self, vec3_t targetPos, vec_t launchSpeed )
 {
 	vec3_t startPos;
 	float initialHeight;
-	vec3_t forward, right, up;
+	vec3_t forward;
 	vec3_t muzzle;
 	float distance2D;
 	float x, y, v, g;
 	float check;
 	float angle1, angle2, angle;
 
-	AngleVectors( self->s.origin, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+	AngleVectors( self->s.origin, forward, nullptr, nullptr );
+	G_CalcMuzzlePoint( self, forward, muzzle );
 	VectorCopy( muzzle, startPos );
 
 	//project everything onto a 2D plane with initial position at (0,0)
@@ -1783,13 +1783,13 @@ void BotFireWeaponAI( gentity_t *self )
 {
 	float distance;
 	vec3_t targetPos;
-	vec3_t forward, right, up;
+	vec3_t forward;
 	vec3_t muzzle;
 	trace_t trace;
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
+	G_CalcMuzzlePoint( self, forward, muzzle );
 	BotGetIdealAimLocation( self, self->botMind->goal, targetPos );
 
 	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );

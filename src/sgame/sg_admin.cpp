@@ -4987,7 +4987,7 @@ bool G_admin_flag( gentity_t *ent )
 
 bool G_admin_builder( gentity_t *ent )
 {
-	vec3_t     forward, right, up;
+	vec3_t     forward;
 	vec3_t     start, end, dist;
 	trace_t    tr;
 	gentity_t  *traceEnt;
@@ -5005,12 +5005,12 @@ bool G_admin_builder( gentity_t *ent )
 
 	buildlog = G_admin_permission( ent, "buildlog" );
 
-	AngleVectors( ent->client->ps.viewangles, forward, right, up );
+	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 
 	if ( ent->client->pers.team != TEAM_NONE &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		G_CalcMuzzlePoint( ent, forward, right, up, start );
+		G_CalcMuzzlePoint( ent, forward, start );
 	}
 	else
 	{

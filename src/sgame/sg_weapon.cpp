@@ -1060,7 +1060,7 @@ bool G_CheckDretchAttack( gentity_t *self )
 
 	// Calculate muzzle point
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, muzzle );
 
 	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
@@ -1332,7 +1332,7 @@ bool G_CheckPounceAttack( gentity_t *self )
 
 	// Calculate muzzle point
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, muzzle );
 
 	// Trace from muzzle to see what we hit
 	pounceRange = self->client->ps.weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_RANGE :
@@ -1536,7 +1536,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 Set muzzle location relative to pivoting eye.
 ===============
 */
-void G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, const vec3_t, const vec3_t, vec3_t muzzlePoint )
+void G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, vec3_t muzzlePoint )
 {
 	vec3_t normal;
 
@@ -1554,7 +1554,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 	if ( self->client )
 	{
 		AngleVectors( self->client->ps.viewangles, forward, right, up );
-		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+		G_CalcMuzzlePoint( self, forward, muzzle );
 	}
 	else
 	{
@@ -1783,7 +1783,7 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 	}
 
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+	G_CalcMuzzlePoint( self, forward, muzzle );
 
 	switch ( upgrade )
 	{

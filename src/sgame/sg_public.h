@@ -327,7 +327,7 @@ bool          G_RefillAmmo( gentity_t *self, bool triggerEvent );
 bool          G_RefillFuel( gentity_t *self, bool triggerEvent );
 bool          G_FindAmmo( gentity_t *self );
 bool          G_FindFuel( gentity_t *self );
-void              G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, const vec3_t right, const vec3_t up, vec3_t muzzlePoint );
+void              G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, vec3_t muzzlePoint );
 void              G_SnapVectorTowards( vec3_t v, vec3_t to );
 bool              G_CheckDretchAttack( gentity_t *self );
 bool              G_CheckPounceAttack( gentity_t *self );
