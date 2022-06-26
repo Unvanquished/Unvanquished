@@ -1296,6 +1296,11 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	G_CalcMuzzlePoint( self, forward, muzzle );
 	target.getPos( targetPos );
 
+	if ( BotAimAngle( self, targetPos ) > g_bot_fov.Get() / 2 )
+	{
+		return false;
+	}
+
 	if ( !trap_InPVS( muzzle, targetPos ) )
 	{
 		return false;
@@ -1489,7 +1494,7 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	VectorMA( viewBase, length, skilledVec, target );
 }
 
-float BotAimAngle( gentity_t *self, vec3_t pos )
+float BotAimAngle( const gentity_t *self, vec3_t pos )
 {
 	vec3_t viewPos;
 	vec3_t forward;

@@ -52,7 +52,7 @@ void  BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoc
 void  BotAimAtEnemy( gentity_t *self );
 void  BotSlowAim( gentity_t *self, vec3_t target, float slow );
 void  BotAimAtLocation( gentity_t *self, vec3_t target );
-float BotAimAngle( gentity_t *self, vec3_t pos );
+float BotAimAngle( const gentity_t *self, vec3_t pos );
 
 // targets
 bool BotEntityIsValidTarget( const gentity_t *ent );
