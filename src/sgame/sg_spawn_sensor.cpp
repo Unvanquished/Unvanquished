@@ -473,7 +473,8 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t* )
 	if ( self->conditions.team && ( activator->client->pers.team != self->conditions.team ) )
 		return;
 
-	// handle legacy maps with trigger_class and trigger_equip
+	// handle legacy `trigger_class` and `trigger_equip` entities
+	// by only checking for class on aliens, and equipment on humans
 	if ( self->conditions.isClassSensor && G_Team( activator ) != TEAM_ALIENS )
 	{
 		return;
