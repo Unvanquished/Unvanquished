@@ -80,6 +80,8 @@ struct gentityConditions_t
 	BoundedVector<buildable_t, BA_NUM_BUILDABLES> buildables;
 
 	bool negated;
+	bool isClassSensor = false;
+	bool isEquipSensor = false;
 };
 
 /**

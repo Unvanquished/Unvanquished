@@ -473,6 +473,17 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t* )
 	if ( self->conditions.team && ( activator->client->pers.team != self->conditions.team ) )
 		return;
 
+	// handle legacy `trigger_class` and `trigger_equip` entities
+	// by only checking for class on aliens, and equipment on humans
+	if ( self->conditions.isClassSensor && G_Team( activator ) != TEAM_ALIENS )
+	{
+		return;
+	}
+	if ( self->conditions.isEquipSensor && G_Team( activator ) != TEAM_HUMANS )
+	{
+		return;
+	}
+
 	if ( ( !self->conditions.upgrades.empty() || !self->conditions.weapons.empty() ) && activator->client->pers.team == TEAM_HUMANS )
 	{
 		shouldFire = sensor_equipment_match( self, activator );
@@ -509,6 +520,14 @@ void SP_sensor_player( gentity_t *self )
 		self->reset = sensor_reset;
 	}
 
+	if(!Q_stricmp(self->classname, "trigger_class"))
+	{
+		self->conditions.isClassSensor = true;
+	}
+	if(!Q_stricmp(self->classname, "trigger_equipment"))
+	{
+		self->conditions.isEquipSensor = true;
+	}
 	InitBrushSensor( self );
 }
 
