@@ -43,7 +43,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #pragma GCC diagnostic pop
 #endif
 #include "bot_navdraw.h"
-#include "shared/bot_nav_shared.h"
+#include "nav.h"
 
 static const int DEFAULT_CONNECTION_SIZE = 50;
 
@@ -191,7 +191,6 @@ static bool CheckHost( gentity_t *ent )
 	return false;
 }
 
-bool G_BotNavInit();
 void Cmd_NavEdit( gentity_t *ent )
 {
 	if ( !CheckHost( ent ) ) return;
@@ -213,11 +212,6 @@ void Cmd_NavEdit( gentity_t *ent )
 		if ( args.Argc() < 3 )
 		{
 			Log::Notice( usage );
-			return;
-		}
-
-		if ( !G_BotNavInit() )
-		{
 			return;
 		}
 

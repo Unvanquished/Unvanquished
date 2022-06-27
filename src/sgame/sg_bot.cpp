@@ -539,24 +539,13 @@ void G_BotIntermissionThink( gclient_t *client )
 	client->readyToExit = true;
 }
 
-// Initialization happens whenever someone first tries to add a bot.
-// This incurs some delay (a few tenths of a second), but on servers bots
-// are normally added at the beginning of the round so it shouldn't be noticeable.
-bool G_BotInit()
+void G_BotInit()
 {
-	if ( !G_BotNavInit() )
-	{
-		Log::Notice( "Failed to load navmeshes" );
-		G_BotNavCleanup();
-		return false;
-	}
-
+	G_BotNavInit( );
 	if ( treeList.maxTrees == 0 )
 	{
 		InitTreeList( &treeList );
 	}
-
-	return true;
 }
 
 void G_BotCleanup()

@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 #include "cg_key_name.h"
 #include "shared/parse.h"
-#include "shared/navgen/navgen.h"
 
 cg_t            cg;
 cgs_t           cgs;
@@ -145,10 +144,6 @@ Cvar::Cvar<float> cg_animBlend("cg_animblend", "I don't know", Cvar::NONE, 5.0);
 Cvar::Cvar<float> cg_motionblur("cg_motionblur", "strength of motion blur", Cvar::NONE, 0.05);
 Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed to trigger motion blur", Cvar::NONE, 600);
 Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "desaturate world view when dead or spawning", Cvar::NONE, true);
-
-// TODO(0.53): turn this on by default. Not turning on right away because the filesystem stuff is still
-// a bit broken in 0.52 (a homepath file can't override a VFS file).
-static Cvar::Cvar<bool> cg_navgenOnLoad("cg_navgenOnLoad", "generate navmeshes when starting a local game", Cvar::NONE, false);
 
 // search 'fovCvar' to find usage of these (names come from config files)
 // 0 means use global FOV setting
@@ -461,7 +456,6 @@ enum cgLoadingStep_t {
 	LOAD_BUILDINGS,
 	LOAD_CLIENTS,
 	LOAD_HUDS,
-	LOAD_CHECK_NAVMESH, // only checking for existence, not generation
 	LOAD_GLSL,
 	LOAD_DONE
 };
@@ -543,10 +537,6 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 
 		case LOAD_GLSL:
 			CG_UpdateLoadingProgress( step, "GLSL shaders", choose(_("Compiling GLSL shaders (please be patient)…"), nullptr) );
-			break;
-
-		case LOAD_CHECK_NAVMESH:
-			CG_UpdateLoadingProgress( step, "Navmesh existence", choose(_("Surveying the map…"), nullptr) );
 			break;
 
 		case LOAD_DONE:
@@ -1095,73 +1085,6 @@ bool CG_ClientIsReady( int clientNum )
 	return Com_ClientListContains( &ready, clientNum );
 }
 
-// Generate a navmesh file for each class that doesn't already have
-// an existing and (according to the header) up-to-date navmesh.
-// Navmesh generation uses a separate progress bar counter from the main loading bar.
-// Generating navmeshes in the cgame is kind of stupid, but the engine
-// is not set up to handle long loading times in the sgame.
-static void GenerateNavmeshes()
-{
-	std::string mapName = Cvar::GetValue( "mapname" );
-	std::vector<class_t> missing;
-	for ( class_t species : RequiredNavmeshes() )
-	{
-		fileHandle_t f;
-		std::string filename = NavmeshFilename( mapName, BG_Class( species )->name );
-		// TODO(0.53): match new behavior of G_FOpenGameOrPakPath
-		if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0)
-		{
-			missing.push_back( species );
-			continue;
-		}
-		NavMeshSetHeader header;
-		std::string error = GetNavmeshHeader( f, header );
-		if ( !error.empty() )
-		{
-			Log::Notice( "Existing navmesh file %s can't be used: %s", filename, error );
-			missing.push_back( species );
-		}
-		trap_FS_FCloseFile( f );
-	}
-	if ( missing.empty() )
-	{
-		return;
-	}
-
-	const char* message = _("Generating bot navigation meshes");
-	cg.navmeshLoadingFraction = 0;
-	cg.loadingNavmesh = true;
-	Q_strncpyz( cg.loadingText, message, sizeof(cg.loadingText) );
-	trap_UpdateScreen();
-
-	NavmeshGenerator navgen;
-	navgen.Init( mapName );
-	float classesCompleted = 0.3; // Assume that Init() is 0.3 times as much work as generating 1 species
-	// and assume that each species takes the same amount of time, which is actually completely wrong:
-	// smaller ones take much longer
-	float classesTotal = classesCompleted + missing.size();
-	for ( class_t species : missing )
-	{
-		std::string message2 = Str::Format( "%s — %s", message, BG_ClassModelConfig( species )->humanName );
-		Q_strncpyz( cg.loadingText, message2.c_str(), sizeof(cg.loadingText) );
-		cg.loadingFraction = classesCompleted / classesTotal;
-		trap_UpdateScreen();
-
-		navgen.StartGeneration( species );
-		do
-		{
-			float fraction = ( classesCompleted + navgen.SpeciesFractionCompleted() ) / classesTotal;
-			if ( fraction - cg.navmeshLoadingFraction > 0.01 )
-			{
-				cg.navmeshLoadingFraction = fraction;
-				trap_UpdateScreen();
-			}
-		} while ( !navgen.Step() );
-		++classesCompleted;
-	}
-	cg.loadingNavmesh = false;
-}
-
 /*
 =================
 CG_Init
@@ -1302,12 +1225,6 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	CG_UpdateLoadingStep( LOAD_GLSL );
 	trap_S_EndRegistration();
-
-	if ( cg_navgenOnLoad.Get() && Cvar::GetValue( "sv_running" ) == "1" )
-	{
-		CG_UpdateLoadingStep( LOAD_CHECK_NAVMESH );
-		GenerateNavmeshes();
-	}
 
 	if ( trap_Cvar_VariableIntegerValue( "r_lazyShaders" ) == 1 )
 	{
