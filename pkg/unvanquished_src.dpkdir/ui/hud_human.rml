@@ -125,6 +125,18 @@
 			stamina.sprinting progressbar fill {
 				image-color: #aaaa00a2;
 			}
+			stamina img {
+				transition: opacity 0.15s cubic-in;
+			}
+			stamina img.run,
+			stamina.sprinting img.sprint {
+				opacity: 1;
+			}
+			stamina img.sprint,
+			stamina.sprinting img.run {
+				/* Hide the unused sprint icon */
+				opacity: 0;
+			}
 
 			ammo, clips, health.health{
 				position:absolute;
@@ -282,8 +294,9 @@
 		</div>
 		<div id="bars">
 			<stamina>
-				<img class="stamina" src="/ui/assets/human/stamina"/>
-				<progressbar class="stamina" src="stamina" />
+				<img class="run" src="/ui/assets/human/run"/>
+				<img class="sprint" src="/ui/assets/human/sprint"/>
+				<progressbar src="stamina" />
 			</stamina>
 			<div class="health"><health_cross class="health"/>
 			<health class="health" />
