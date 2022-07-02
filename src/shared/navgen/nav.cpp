@@ -1024,7 +1024,7 @@ bool NavmeshGenerator::Step()
 	if ( status.code != NavgenStatus::OK )
 	{
 		d_->status = status;
-		return false;
+		return true;
 	}
 
 	for ( int i = 0; i < ntiles; i++ )
