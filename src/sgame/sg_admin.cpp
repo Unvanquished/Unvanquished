@@ -5706,7 +5706,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 }
 
 // This command does NOT load the navmesh that it creates.
-// However the mesh will be used if you run /navgen before the first bot fill/add command.
+// For the time being you need to restart the map for that.
 bool G_admin_navgen( gentity_t* ent )
 {
 	static NavmeshGenerator navgen;
