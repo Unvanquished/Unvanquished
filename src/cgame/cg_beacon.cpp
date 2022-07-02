@@ -354,7 +354,7 @@ static void MarkRelevantBeacons()
 		if( tofind & 2 )
 		{
 			if( team == TEAM_HUMANS && ( beacon->data == BA_H_ARMOURY ||
-			    ( energy && beacon->data == BA_H_REACTOR ) ) )
+			    ( energy && ( beacon->data == BA_H_REACTOR || beacon->data == BA_H_DRILL ) ) ) )
 			{
 				if( lowammo )
 					beacon->type = BCT_AMMO;
