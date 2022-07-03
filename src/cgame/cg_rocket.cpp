@@ -634,7 +634,8 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 		case ELEMENT_DEAD:
 			// If you're on a team and spectating, you're probably dead
-			return (ps->persistant[ PERS_TEAM ] != TEAM_NONE)
+			return (cgs.clientinfo[ cg.clientNum ].team != TEAM_NONE)
+				&& (ps->persistant[ PERS_TEAM ] != TEAM_NONE)
 				&& (ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT);
 
 		default:
