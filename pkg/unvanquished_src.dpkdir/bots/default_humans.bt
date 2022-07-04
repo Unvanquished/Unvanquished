@@ -9,7 +9,7 @@ selector
 		{
 			decorator timer ( 1000 )
 			{
-				condition haveWeapon( WP_LUCIFER_CANNON ) && distanceTo( E_H_REACTOR ) <= 400
+				condition haveWeapon( WP_LUCIFER_CANNON ) && ( distanceTo( E_H_REACTOR ) <= 400 || distanceTo( E_H_ARMOURY ) <= 400 )
 				{
 					action buy( WP_PULSE_RIFLE )
 				}
