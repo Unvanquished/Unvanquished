@@ -773,7 +773,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->enemyLastSeen = level.time;
 	}
 
-	if ( !BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
+	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_OPAQUE ) )
 	{
 		botTarget_t proposedTarget;
 		proposedTarget = self->botMind->bestEnemy.ent;

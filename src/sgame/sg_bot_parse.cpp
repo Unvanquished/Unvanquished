@@ -208,7 +208,7 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 
 	target = e.ent;
 
-	if ( BotTargetIsVisible( self, target, CONTENTS_SOLID ) )
+	if ( BotTargetIsVisible( self, target, MASK_OPAQUE ) )
 	{
 		if ( BotEntityIsValidTarget( e.ent ) )
 		{

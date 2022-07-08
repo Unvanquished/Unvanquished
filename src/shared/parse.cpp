@@ -31,15 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sgame/sg_local.h"
 #endif
 
-static void* Z_Malloc(size_t size)
-{
-  return calloc(size, 1);
-}
-static void Z_Free(void* ptr)
-{
-  free(ptr);
-}
-
 //script flags
 static const int SCFL_NOERRORS            = 0x0001;
 static const int SCFL_NOWARNINGS          = 0x0002;
@@ -337,7 +328,7 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 	if ( !script->punctuationtable )
 	{
 		script->punctuationtable = ( punctuation_t ** )
-		                           Z_Malloc( 256 * sizeof( punctuation_t * ) );
+		                           BG_Alloc( 256 * sizeof( punctuation_t * ) );
 	}
 
 	memset( script->punctuationtable, 0, 256 * sizeof( punctuation_t * ) );
@@ -1169,7 +1160,7 @@ static script_t *Parse_LoadScriptFile( const char *filename, int (*openFunc)(Str
 
 	if ( !fp ) { return nullptr; }
 
-	buffer = Z_Malloc( sizeof( script_t ) + length + 1 );
+	buffer = BG_Alloc( sizeof( script_t ) + length + 1 );
 	memset( buffer, 0, sizeof( script_t ) + length + 1 );
 
 	script = ( script_t * ) buffer;
@@ -1207,7 +1198,7 @@ static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char
 	void     *buffer;
 	script_t *script;
 
-	buffer = Z_Malloc( sizeof( script_t ) + length + 1 );
+	buffer = BG_Alloc( sizeof( script_t ) + length + 1 );
 	memset( buffer, 0, sizeof( script_t ) + length + 1 );
 
 	script = ( script_t * ) buffer;
@@ -1240,9 +1231,9 @@ Parse_FreeScript
 */
 static void Parse_FreeScript( script_t *script )
 {
-	if ( script->punctuationtable ) { Z_Free( script->punctuationtable ); }
+	if ( script->punctuationtable ) { BG_Free( script->punctuationtable ); }
 
-	Z_Free( script );
+	BG_Free( script );
 }
 
 /*
@@ -1286,7 +1277,7 @@ static void Parse_PushIndent( source_t *source, int type, int skip )
 {
 	indent_t *indent;
 
-	indent = ( indent_t * ) Z_Malloc( sizeof( indent_t ) );
+	indent = ( indent_t * ) BG_Alloc( sizeof( indent_t ) );
 	indent->type = type;
 	indent->script = source->scriptstack;
 	indent->skip = ( skip != 0 );
@@ -1318,7 +1309,7 @@ static void Parse_PopIndent( source_t *source, int *type, int *skip )
 	*skip = indent->skip;
 	source->indentstack = source->indentstack->next;
 	source->skip -= indent->skip;
-	Z_Free( indent );
+	BG_Free( indent );
 }
 
 /*
@@ -1354,7 +1345,7 @@ static token_t *Parse_CopyToken( const token_t *token )
 	token_t *t;
 
 //  t = (token_t *) malloc(sizeof(token_t));
-	t = ( token_t * ) Z_Malloc( sizeof( token_t ) );
+	t = ( token_t * ) BG_Alloc( sizeof( token_t ) );
 
 //  t = freetokens;
 	if ( !t )
@@ -1376,8 +1367,7 @@ Parse_FreeToken
 */
 static void Parse_FreeToken( token_t *token )
 {
-	//free(token);
-	Z_Free( token );
+	BG_Free( token );
 //  token->next = freetokens;
 //  freetokens = token;
 	numtokens--;
@@ -1735,8 +1725,8 @@ static void Parse_FreeDefine( define_t *define )
 	}
 
 	//free the define
-	free( define->name );
-	Z_Free( define );
+	BG_Free( define->name );
+	BG_Free( define );
 }
 
 /*
@@ -2144,7 +2134,6 @@ static int Parse_EvaluateTokens( const source_t *source, token_t *tokens, signed
 						break;
 					}
 
-					//v = (value_t *) Z_Malloc(sizeof(value_t));
 					AllocValue( v );
 
 					if ( Parse_FindHashedDefine( source->definehash, t->string ) )
@@ -2194,7 +2183,6 @@ static int Parse_EvaluateTokens( const source_t *source, token_t *tokens, signed
 						break;
 					}
 
-					//v = (value_t *) Z_Malloc(sizeof(value_t));
 					AllocValue( v );
 
 					if ( negativevalue )
@@ -2345,7 +2333,6 @@ static int Parse_EvaluateTokens( const source_t *source, token_t *tokens, signed
 
 					if ( !error && !negativevalue )
 					{
-						//o = (operator_t *) Z_Malloc(sizeof(operator_t));
 						AllocOperator( o );
 						o->op = t->subtype;
 						o->priority = Parse_OperatorPriority(sub);
@@ -2597,7 +2584,6 @@ static int Parse_EvaluateTokens( const source_t *source, token_t *tokens, signed
 			if ( v->next ) { v->next->prev = v->prev; }
 			else { lastvalue = v->prev; }
 
-			//Z_Free(v);
 			FreeValue( v );
 		}
 
@@ -2608,7 +2594,6 @@ static int Parse_EvaluateTokens( const source_t *source, token_t *tokens, signed
 		if ( o->next ) { o->next->prev = o->prev; }
 		else { lastoperator = o->prev; }
 
-		//Z_Free(o);
 		FreeOperator( o );
 	}
 
@@ -2622,14 +2607,12 @@ static int Parse_EvaluateTokens( const source_t *source, token_t *tokens, signed
 	for ( o = firstoperator; o; o = lastoperator )
 	{
 		lastoperator = o->next;
-		//Z_Free(o);
 		FreeOperator( o );
 	}
 
 	for ( v = firstvalue; v; v = lastvalue )
 	{
 		lastvalue = v->next;
-		//Z_Free(v);
 		FreeValue( v );
 	}
 
@@ -3457,7 +3440,7 @@ static int Parse_Directive_define( source_t *source )
 	}
 
 	//allocate define
-	define = (define_t *) Z_Malloc( sizeof( define_t ) );
+	define = (define_t *) BG_Alloc( sizeof( define_t ) );
 	define->name = strdup( token.string );
 	//add the define to the source
 	Parse_AddDefineToHash( define, source->definehash );
@@ -3907,7 +3890,7 @@ static define_t *Parse_DefineFromString( const char *string )
 	Q_strncpyz( src.filename, "*extern", MAX_QPATH );
 	//src.openFunc is null, as a define can't contain an include
 	src.scriptstack = script;
-	src.definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
+	src.definehash = (define_t**) BG_Alloc( DEFINEHASHSIZE * sizeof( define_t * ) );
 	memset( src.definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
 	//create a define from the source
 	res = Parse_Directive_define( &src );
@@ -3931,7 +3914,7 @@ static define_t *Parse_DefineFromString( const char *string )
 	}
 
 	//
-	Z_Free( src.definehash );
+	BG_Free( src.definehash );
 	//
 	Parse_FreeScript( script );
 
@@ -4018,7 +4001,7 @@ static define_t *Parse_CopyDefine( const define_t *define )
 	define_t *newdefine;
 	token_t  *token, *newtoken, *lasttoken;
 
-	newdefine = ( define_t * ) Z_Malloc( sizeof( define_t ) );
+	newdefine = ( define_t * ) BG_Alloc( sizeof( define_t ) );
 	//copy the define name
 	newdefine->name = strdup( define->name );
 	newdefine->flags = define->flags;
@@ -4089,7 +4072,7 @@ static source_t *Parse_LoadSourceFile( const char *filename, int (*openFunc)(Str
 
 	script->next = nullptr;
 
-	source = ( source_t * ) Z_Malloc( sizeof( source_t ) );
+	source = ( source_t * ) BG_Alloc( sizeof( source_t ) );
 	memset( source, 0, sizeof( source_t ) );
 
 	Q_strncpyz( source->filename, filename, MAX_QPATH );
@@ -4100,7 +4083,7 @@ static source_t *Parse_LoadSourceFile( const char *filename, int (*openFunc)(Str
 	source->indentstack = nullptr;
 	source->skip = 0;
 
-	source->definehash = (define_t**) Z_Malloc( DEFINEHASHSIZE * sizeof( define_t * ) );
+	source->definehash = (define_t**) BG_Alloc( DEFINEHASHSIZE * sizeof( define_t * ) );
 	memset( source->definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
 	Parse_AddGlobalDefinesToSource( source );
 	return source;
@@ -4151,14 +4134,14 @@ static void Parse_FreeSource( source_t *source )
 	{
 		indent = source->indentstack;
 		source->indentstack = source->indentstack->next;
-		Z_Free( indent );
+		BG_Free( indent );
 	}
 
 	//
-	if ( source->definehash ) { Z_Free( source->definehash ); }
+	if ( source->definehash ) { BG_Free( source->definehash ); }
 
 	//free the source itself
-	Z_Free( source );
+	BG_Free( source );
 }
 
 static const int MAX_SOURCEFILES = 64;

@@ -202,12 +202,12 @@ struct BasicMeshProcess : public dtTileCacheMeshProcess
 
 struct LinearAllocator : public dtTileCacheAlloc
 {
-	unsigned char* buffer;
-	size_t capacity;
-	size_t top;
-	size_t high;
+	unsigned char* buffer = nullptr;
+	size_t capacity = 0;
+	size_t top = 0;
+	size_t high = 0;
 
-	LinearAllocator( const size_t cap ) : buffer(nullptr), capacity(0), top(0), high(0)
+	LinearAllocator( const size_t cap )
 	{
 		resize(cap);
 	}
@@ -219,12 +219,12 @@ struct LinearAllocator : public dtTileCacheAlloc
 
 	void resize( const size_t cap )
 	{
-		if ( buffer )
+		auto * tmp_buffer = static_cast<unsigned char*>( realloc( buffer, cap ) );
+		if ( !tmp_buffer )
 		{
-			free( buffer );
+			Sys::Drop( "Failed to reallocate LinearAllocator" );
 		}
-
-		buffer = ( unsigned char* ) malloc( cap );
+		buffer = tmp_buffer;
 		capacity = cap;
 	}
 
