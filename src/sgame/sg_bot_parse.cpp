@@ -1274,6 +1274,25 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( WP_LUCIFER_CANNON );
 	D( WP_HBUILD );
 
+	// add buildables for goalBuildingType
+	D( BA_NONE );
+	D( BA_A_SPAWN );
+	D( BA_A_OVERMIND );
+	D( BA_A_BARRICADE );
+	D( BA_A_ACIDTUBE );
+	D( BA_A_TRAPPER );
+	D( BA_A_BOOSTER );
+	D( BA_A_HIVE );
+	D( BA_A_LEECH );
+	D( BA_A_SPIKER );
+	D( BA_H_SPAWN );
+	D( BA_H_MGTURRET );
+	D( BA_H_ROCKETPOD );
+	D( BA_H_ARMOURY );
+	D( BA_H_MEDISTAT );
+	D( BA_H_DRILL );
+	D( BA_H_REACTOR );
+
 	// add teams
 	D( TEAM_ALIENS );
 	D( TEAM_HUMANS );
