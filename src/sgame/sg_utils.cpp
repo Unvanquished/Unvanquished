@@ -935,3 +935,8 @@ int G_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle )
 {
 	return trap_FS_FOpenFile( filename.c_str(), &handle, fsMode_t::FS_READ );
 }
+
+bool G_IsOnFire( const gentity_t *ent )
+{
+	return ent->s.eFlags & EF_B_ONFIRE;
+}
