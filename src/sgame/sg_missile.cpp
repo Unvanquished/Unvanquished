@@ -40,6 +40,10 @@ static Cvar::Cvar<int> g_abuild_blobFireExtinguishRange(
 		"g_abuild_blobFireExtinguishRange",
 		"range around which a granger spit extinguish fires on the ground",
 		Cvar::NONE, 64);
+static Cvar::Cvar<float> g_firefightReward(
+		"g_firefightReward",
+		"how much alien evos removing fire gives a granger",
+		Cvar::NONE, 0.2f);
 
 #define MISSILE_PRESTEP_TIME 50
 
@@ -249,9 +253,14 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	int       impactFlags = MIB_IMPACT;
 	gentity_t *attacker = &g_entities[ ent->r.ownerNum ];
 	vec3_t dir;
+	int reward = 0;
 
 	// put out fires on direct hit
-	hitEnt->entity->Extinguish( g_abuild_blobFireImmunityDuration.Get() );
+	if ( G_IsOnFire( hitEnt ) )
+	{
+		++reward;
+		hitEnt->entity->Extinguish( g_abuild_blobFireImmunityDuration.Get() );
+	}
 
 	// put out fires in range
 	gentity_t *neighbor = nullptr;
@@ -260,10 +269,17 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	{
 		// extinguish other entity on fire nearby,
 		// and fires on ground
-		if ( neighbor != hitEnt )
+		if ( neighbor != hitEnt && G_IsOnFire( neighbor ) )
 		{
+			++reward;
 			neighbor->entity->Extinguish( g_abuild_blobFireImmunityDuration.Get() );
 		}
+	}
+	
+	if ( reward )
+	{
+		float credits = g_firefightReward.Get() * CREDITS_PER_EVO * reward;
+		G_AddCreditToClient( attacker->client, credits, true );
 	}
 
 	if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
