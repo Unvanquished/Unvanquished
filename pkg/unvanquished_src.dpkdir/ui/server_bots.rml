@@ -155,6 +155,10 @@
 					<input cvar="g_bot_infinite_funds" type="checkbox" />
 					<h3> Infinite funds </h3>
 				</row>
+				<row>
+					<input cvar="g_bot_infiniteMomentum" type="checkbox" />
+					<h3> Ignore momentum </h3>
+				</row>
 			</panel>
 
 		</tabset>
