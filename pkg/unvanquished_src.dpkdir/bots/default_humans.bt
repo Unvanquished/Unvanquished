@@ -69,7 +69,6 @@ selector
 	{
 		sequence
 		{
-			condition !haveUpgrade( UP_MEDKIT )
 			condition healScore > 0.25
 			selector
 			{
