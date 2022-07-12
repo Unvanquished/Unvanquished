@@ -55,9 +55,9 @@ struct botTrace_t
 // if they are followed exactly, the bot will not go off the nav mesh
 struct botNavCmd_t
 {
-	float    pos[ 3 ];
-	float    tpos[ 3 ];
-	float    dir[ 3 ];
+	float    pos[ 3 ]; // self position (with a height diff though)
+	float    tpos[ 3 ]; // position of the target (as for pos, with a height diff I guess)
+	float    dir[ 3 ]; // normalized direction of the target
 	int      directPathToGoal;
 	int      havePath;
 };
