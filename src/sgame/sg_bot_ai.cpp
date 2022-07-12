@@ -636,8 +636,11 @@ AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 
 AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode_t* )
 {
-	BotMoveToGoal( self );
-	return STATUS_RUNNING;
+	if ( GoalInRange( self, BotGetGoalRadius( self ) ) )
+	{
+		return STATUS_SUCCESS;
+	}
+	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
 AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode_t *node )
@@ -918,13 +921,11 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->currentNode = node;
 	}
 
-	if ( self->botMind->nav.directPathToGoal && GoalInRange( self, 70 ) )
+	if ( GoalInRange( self, BotGetGoalRadius( self ) ) )
 	{
 		return STATUS_SUCCESS;
 	}
-	BotMoveToGoal( self );
-
-	return STATUS_RUNNING;
+	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
@@ -940,15 +941,11 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->currentNode = node;
 	}
 
-	if ( self->botMind->nav.directPathToGoal && GoalInRange( self, 70 ) )
+	if ( GoalInRange( self, BotGetGoalRadius( self ) ) )
 	{
 		return STATUS_SUCCESS;
 	}
-	else
-	{
-		BotMoveToGoal( self );
-	}
-	return STATUS_RUNNING;
+	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
 botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
@@ -988,19 +985,16 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	BotMoveToGoal( self );
-
 	if ( radius == 0 )
 	{
 		radius = BotGetGoalRadius( self );
 	}
 
-	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && self->botMind->nav.directPathToGoal )
+	if ( GoalInRange( self, radius ) )
 	{
 		return STATUS_SUCCESS;
 	}
-
-	return STATUS_RUNNING;
+	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
@@ -1023,11 +1017,11 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( !GoalInRange( self, 100 ) )
+	if ( GoalInRange( self, BotGetGoalRadius( self ) ) )
 	{
-		BotMoveToGoal( self );
+		return STATUS_SUCCESS;
 	}
-	return STATUS_RUNNING;
+	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
 AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );
