@@ -504,9 +504,7 @@ static bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 //return true on error
 static bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
-	gentity_t *blocker;
-
-	blocker = BotGetPathBlocker( self, dir );
+	gentity_t const *blocker = BotGetPathBlocker( self, dir );
 
 	if ( !blocker )
 	{
@@ -617,13 +615,6 @@ void BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
 	VectorCopy( self->botMind->nav.dir, dir );
-	const playerState_t& ps  = self->client->ps;
-
-	if ( dir[ 2 ] < 0 )
-	{
-		dir[ 2 ] = 0;
-		VectorNormalize( dir );
-	}
 
 	BotAvoidObstacles( self, dir );
 	BotSeek( self, dir );
@@ -650,6 +641,7 @@ void BotMoveToGoal( gentity_t *self )
 	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
 	weaponMode_t wpm = WPM_NONE;
 	int magnitude = 0;
+	const playerState_t& ps  = self->client->ps;
 	switch ( ps.stats [ STAT_CLASS ] )
 	{
 		case PCL_HUMAN_NAKED:
