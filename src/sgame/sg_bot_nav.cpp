@@ -611,18 +611,21 @@ Global Bot Navigation
 =========================
 */
 
-void BotMoveToGoal( gentity_t *self )
+bool BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
 	VectorCopy( self->botMind->nav.dir, dir );
 
-	BotAvoidObstacles( self, dir );
+	if ( BotAvoidObstacles( self, dir ) )
+	{
+		return false;
+	}
 	BotSeek( self, dir );
 
 	// dumb bots don't know how to be efficient
 	if( self->botMind->botSkill.level < 5 )
 	{
-		return;
+		return true;
 	}
 
 	team_t targetTeam = TEAM_NONE;
@@ -635,7 +638,7 @@ void BotMoveToGoal( gentity_t *self )
 	// when available (still need to implement wall walking, but that will be more complex)
 	if ( G_Team( self ) != targetTeam )
 	{
-		return;
+		return true;
 	}
 
 	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
@@ -696,6 +699,7 @@ void BotMoveToGoal( gentity_t *self )
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
 	}
+	return true;
 }
 
 bool FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial )
