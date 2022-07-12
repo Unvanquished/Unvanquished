@@ -845,7 +845,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 
 		newScore = BotGetEnemyPriority( self, target );
 
-		if ( newScore > bestVisibleEnemyScore && BotEntityIsVisible( self, target, MASK_OPAQUE ) )
+		if ( newScore > bestVisibleEnemyScore && BotEntityIsVisible( self, target, MASK_SHOT ) )
 		{
 			//store the new score and the index of the entity
 			bestVisibleEnemyScore = newScore;
@@ -1305,7 +1305,8 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, self->s.number, mask, 0 );
+	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, self->s.number, mask,
+	            ( mask == CONTENTS_SOLID ) ? MASK_ENTITY : 0 );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
