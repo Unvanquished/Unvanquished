@@ -35,7 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
-#include "shared/navgen/navgen.h"
 #include "Entities.h"
 #include "CBSE.h"
 
@@ -305,12 +304,6 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"namelog",      G_admin_namelog,     true,  "namelog",
 		N_("display a list of names used by recently connected players"),
 		N_("(^5name|IP(/mask)^7) (start namelog#)")
-	},
-
-	{
-		"navgen",       G_admin_navgen,      false, "navgen",
-		N_("request bot navmesh generation"),
-		"all | missing | <class>..."
 	},
 
 	{
@@ -5806,76 +5799,6 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	}
 
 	G_BotFill(true);
-	return true;
-}
-
-// This command does NOT load the navmesh that it creates.
-// For the time being you need to restart the map for that.
-bool G_admin_navgen( gentity_t* ent )
-{
-	static NavmeshGenerator navgen;
-
-	const Cmd::Args& args = trap_Args();
-	if ( args.Argc() < 2 )
-	{
-		ADMP( QQ("^3navgen:^* usage: navgen (all | missing | <class>...)") );
-		return false;
-	}
-
-	std::string mapName = Cvar::GetValue( "mapname" );
-
-	std::vector<class_t> targets;
-	for ( int i = 1; i < args.Argc(); i++ )
-	{
-		if ( Str::IsIEqual( args.Argv( i ), "all" ) )
-		{
-			std::vector<class_t> all = RequiredNavmeshes();
-			targets.insert( targets.end(), all.begin(), all.end() );
-		}
-		else if ( Str::IsIEqual ( args.Argv( i ), "missing" ) )
-		{
-			for (class_t species : RequiredNavmeshes())
-			{
-				fileHandle_t f;
-				std::string filename = Str::Format(
-					"maps/%s-%s.navMesh", mapName, BG_Class( species )->name );
-				if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0)
-				{
-					targets.push_back( species );
-					continue;
-				}
-				NavMeshSetHeader header;
-				std::string error = GetNavmeshHeader( f, header );
-				if ( !error.empty() )
-				{
-					targets.push_back( species );
-				}
-				trap_FS_FCloseFile( f );
-			}
-		}
-		else {
-			const classAttributes_t* species = BG_ClassByName( args.Argv( i ).c_str() );
-			if ( species->number == PCL_NONE )
-			{
-				ADMP( va( "%s %s",
-						  QQ( N_ ("^3navgen:^* invalid class name '$1$'" ) ),
-						  Quote( args.Argv( i ).c_str() ) ) );
-				return false;
-			}
-			targets.push_back( species->number );
-		}
-	}
-
-	navgen.Init( mapName );
-	for ( class_t species : targets )
-	{
-		navgen.StartGeneration( species );
-		while ( !navgen.Step() )
-		{
-			// ping the engine with a useless message so that it does not think the sgame VM has hung
-			Cvar::GetValue( "x" );
-		}
-	}
 	return true;
 }
 

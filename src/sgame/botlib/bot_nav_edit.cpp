@@ -43,7 +43,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #pragma GCC diagnostic pop
 #endif
 #include "bot_navdraw.h"
-#include "shared/bot_nav_shared.h"
+#include "nav.h"
 
 static const int DEFAULT_CONNECTION_SIZE = 50;
 

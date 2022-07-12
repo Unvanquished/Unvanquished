@@ -1226,8 +1226,6 @@ struct cg_t
 	float                   mediaLoadingFraction;
 	float                   buildableLoadingFraction;
 	float                   characterLoadingFraction;
-	float navmeshLoadingFraction;
-	bool loadingNavmesh;
 
 	bool underwater;
 	int  underwaterTime;

@@ -26,8 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "botlib/bot_types.h"
 #include "botlib/bot_api.h"
-#include "shared/bot_nav_shared.h"
 
+#include "shared/bg_local.h"
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;
 
@@ -38,11 +38,13 @@ Navigation Mesh Loading
 */
 
 // FIXME: use nav handle instead of classes
-bool G_BotNavInit()
+void G_BotNavInit()
 {
-	Log::Notice( "==== Bot Navigation Initialization ====" );
+	int i;
 
-	for ( class_t i : RequiredNavmeshes() )
+	Log::Notice( "==== Bot Navigation Initialization ==== \n" );
+
+	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
 		classModelConfig_t *model;
 		botClass_t bot;
@@ -50,17 +52,26 @@ bool G_BotNavInit()
 		bot.polyFlagsExclude = POLYFLAGS_DISABLED;
 
 		model = BG_ClassModelConfig( i );
-		ASSERT_EQ( model->navMeshClass, PCL_NONE ); // shouldn't load this if we are going to use another class's mesh
+		if ( model->navMeshClass )
+		{
+			if ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass )
+			{
+				Log::Warn( "class '%s': navmesh reference target class '%s' must have its own navmesh",
+				            BG_Class( i )->name, BG_Class( model->navMeshClass )->name );
+				return;
+			}
+
+			continue;
+		}
 
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
 		if ( !G_BotSetupNav( &bot, &model->navHandle ) )
 		{
-			return false;
+			return;
 		}
 	}
 	navMeshLoaded = true;
-	return true;
 }
 
 void G_BotNavCleanup()
@@ -80,15 +91,9 @@ void BotSetNavmesh( gentity_t  *self, class_t newClass )
 	}
 
 	model = BG_ClassModelConfig( newClass );
-	if ( model->navMeshClass )
-	{
-		ASSERT_EQ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass, PCL_NONE );
-		navHandle = BG_ClassModelConfig( model->navMeshClass )->navHandle;
-	}
-	else
-	{
-		navHandle = model->navHandle;
-	}
+	navHandle = model->navMeshClass
+	          ? BG_ClassModelConfig( model->navMeshClass )->navHandle
+	          : model->navHandle;
 
 	G_BotSetNavMesh( self->s.number, navHandle );
 }
