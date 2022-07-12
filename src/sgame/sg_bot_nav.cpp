@@ -339,7 +339,7 @@ void BotWalk( gentity_t *self, bool enable )
 }
 
 // search for obstacle forward, and return pointer on it if any
-gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
+const gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 {
 	vec3_t playerMins, playerMaxs;
 	vec3_t end;
@@ -369,7 +369,7 @@ gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 
 // checks if jumping would get rid of blocker
 // return true if yes
-bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
+bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const vec3_t dir )
 {
 	vec3_t playerMins;
 	vec3_t playerMaxs;
@@ -504,9 +504,7 @@ bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 //return true on error
 bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
-	gentity_t *blocker;
-
-	blocker = BotGetPathBlocker( self, dir );
+	gentity_t const *blocker = BotGetPathBlocker( self, dir );
 
 	if ( !blocker )
 	{
@@ -617,13 +615,6 @@ void BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
 	VectorCopy( self->botMind->nav.dir, dir );
-	const playerState_t& ps  = self->client->ps;
-
-	if ( dir[ 2 ] < 0 )
-	{
-		dir[ 2 ] = 0;
-		VectorNormalize( dir );
-	}
 
 	BotAvoidObstacles( self, dir );
 	BotSeek( self, dir );
@@ -650,6 +641,7 @@ void BotMoveToGoal( gentity_t *self )
 	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
 	weaponMode_t wpm = WPM_NONE;
 	int magnitude = 0;
+	const playerState_t& ps  = self->client->ps;
 	switch ( ps.stats [ STAT_CLASS ] )
 	{
 		case PCL_HUMAN_NAKED:
