@@ -595,6 +595,10 @@ Global Bot Navigation
 =========================
 */
 
+// This function makes the bot move and aim at it's goal, trying
+// to move faster if the skill is high enough, depending on it's
+// class.
+// Returns false on failure.
 bool BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
