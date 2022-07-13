@@ -519,24 +519,8 @@ bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 
 	if ( BotFindSteerTarget( self, dir ) )
 	{
-		return true;
+		return false;
 	}
-
-	vec3_t angles;
-	vec3_t right;
-	vectoangles( dir, angles );
-	AngleVectors( angles, dir, right, nullptr );
-
-	if ( ( self->client->time10000 % 2000 ) < 1000 )
-	{
-		VectorCopy( right, dir );
-	}
-	else
-	{
-		VectorNegate( right, dir );
-	}
-	dir[ 2 ] = 0;
-	VectorNormalize( dir );
 	return true;
 }
 
