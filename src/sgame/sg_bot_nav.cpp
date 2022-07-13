@@ -112,7 +112,7 @@ float BotGetGoalRadius( const gentity_t *self )
 	if ( t.targetsCoordinates() )
 	{
 		// we check the coord to be (almost) in our bounding box
-		return RadiusFromBounds2D( self->r.mins, self->r.maxs );
+		return RadiusFromBounds2D( self->r.mins, self->r.maxs ) + BOT_OBSTACLE_AVOID_RANGE;
 	}
 	else
 	{
@@ -127,7 +127,7 @@ float BotGetGoalRadius( const gentity_t *self )
 		}
 		else
 		{
-			return RadiusFromBounds2D( target->r.mins, target->r.maxs ) + RadiusFromBounds2D( self->r.mins, self->r.maxs );
+			return RadiusFromBounds2D( target->r.mins, target->r.maxs ) + RadiusFromBounds2D( self->r.mins, self->r.maxs ) + BOT_OBSTACLE_AVOID_RANGE;
 		}
 	}
 }
