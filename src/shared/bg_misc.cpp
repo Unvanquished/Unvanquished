@@ -610,7 +610,7 @@ const weaponAttributes_t *BG_WeaponByName( const char *name )
 
 	if ( weapon )
 	{
-		return &bg_weapons[ weapon ];
+		return &bg_weapons[ weapon - 1 ];
 	}
 	else
 	{
