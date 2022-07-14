@@ -168,7 +168,10 @@ static void OverrideGlobalLuaFunctions()
 	lua_setfield(L,-2,"ipairs");
 
 	lua_pushcfunction(L,LuaPrint);
-	lua_setfield(L,-2,"print");}
+	lua_setfield(L,-2,"print");
+}
+
+static Entity entity;
 
 void Initialize()
 {
@@ -180,6 +183,8 @@ void Initialize()
 		BG_InitializeLuaConstants(L);
 		LuaLib<Entity>::Register(L);
 		LuaLib<EntityProxy>::Register(L);
+		LuaLib<Entity>::push( L, &entity, false );
+		lua_setglobal( L, "entity" );
 	}
 }
 

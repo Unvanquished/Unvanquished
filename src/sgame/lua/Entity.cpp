@@ -64,6 +64,25 @@ int Entity::Find( lua_State* L )
 	return 0;
 }
 
+int Entity::IterateByClassName( lua_State* L )
+{
+	const char* name = luaL_checkstring(L, 1);
+	gentity_t* ent = nullptr;
+	int ret = 0;
+	while ((ent = G_IterateEntities(ent))) {
+		if ( !Q_stricmp( ent->classname, name ) )
+		{
+			int entNum = ent - g_entities;
+			if (!proxies[entNum]) {
+				proxies[entNum] = new EntityProxy(ent);
+			}
+			LuaLib<EntityProxy>::push(L, proxies[entNum], false);
+			ret++;
+		}
+	}
+	return ret;
+}
+
 
 RegType<Entity> EntityMethods[] =
 {
@@ -83,13 +102,18 @@ luaL_Reg EntitySetters[] =
 } // namespace SGame
 } // namespace Unv
 
-namespace Unv { namespace Shared { namespace Lua {
+namespace Unv {
+namespace Shared {
+namespace Lua {
 LUASGAMETYPEDEFINE(Entity, false)
 template<>
 void ExtraInit<Unv::SGame::Lua::Entity>(lua_State* L, int metatable_index)
 {
 	lua_pushcfunction( L, Unv::SGame::Lua::Entity::Find);
 	lua_setfield( L, metatable_index - 1, "find" );
+	lua_pushcfunction( L, Unv::SGame::Lua::Entity::IterateByClassName);
+	lua_setfield( L, metatable_index - 1, "iterate_classname" );
 }
-} } }
-
+}  // namespace Lua
+}  // namespace Shared
+}  // namespace Unv

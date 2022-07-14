@@ -44,7 +44,7 @@ namespace Lua {
 
 struct Entity
 {
-// 	static int IterateByClassName(lua_State* L);
+	static int IterateByClassName(lua_State* L);
 	static int Find(lua_State* L);
 
 };
