@@ -1156,7 +1156,7 @@ struct cg_t
 
 	// centerprinting
 	int  centerPrintTime;
-	int centerPrintSize;
+	float centerPrintSizeFactor;
 	char centerPrint[ MAX_STRING_CHARS ];
 
 	// crosshair client ID
@@ -1925,7 +1925,7 @@ void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float ra
 void CG_AddLagometerFrameInfo();
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed();
-void CG_CenterPrint( const char *str, int y, int charWidth );
+void CG_CenterPrint( const char *str, float sizeFactor );
 void CG_DrawActive();
 void       CG_RunMenuScript( char **args );
 void       CG_ResetPainBlend();

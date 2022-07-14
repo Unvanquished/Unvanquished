@@ -740,7 +740,7 @@ static void CG_Menu( int menuType, int arg )
 	}
 	else if ( longMsg && cg_disableWarningDialogs.Get() == 0 )
 	{
-		CG_CenterPrint( longMsg, SCREEN_HEIGHT * 0.30, 10 );
+		CG_CenterPrint( longMsg, 1.0f );
 
 		if ( shortMsg && cg_disableWarningDialogs.Get() < 2 )
 		{
@@ -890,7 +890,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			if ( !ignore[ 0 ] )
 			{
 				CG_CenterPrint( va( _("%sPrivate message from: ^7%s"),
-				                    color.c_str(), name ), 200, 11 );
+				                    color.c_str(), name ), 1.0f );
 
 				if ( clientNum < 0 || clientNum >= MAX_CLIENTS )
 				{
@@ -1133,7 +1133,7 @@ CG_CenterPrint_f
 */
 void CG_CenterPrint_f()
 {
-	CG_CenterPrint( CG_Argv( 1 ), SCREEN_HEIGHT * 0.30, 10 );
+	CG_CenterPrint( CG_Argv( 1 ), 1.0f );
 }
 
 /*
@@ -1155,7 +1155,7 @@ CG_CenterPrintTR_f
 */
 static void CG_CenterPrintTR_f()
 {
-	CG_CenterPrint( TranslateText_Internal( false, 1 ), SCREEN_HEIGHT * 0.30, 10 );
+	CG_CenterPrint( TranslateText_Internal( false, 1 ), 1.0f );
 }
 
 /*
