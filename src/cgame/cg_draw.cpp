@@ -389,7 +389,7 @@ static void CG_PainBlend()
 	{
 		damage = 0;
 	}
-	damageAsFracOfMax = static_cast<float>( damage / BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health );
+	damageAsFracOfMax = static_cast<float>( damage ) / BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health;
 	cg.lastHealth = cg.snap->ps.stats[ STAT_HEALTH ];
 
 	cg.painBlendValue += damageAsFracOfMax * cg_painBlendScale.Get();
