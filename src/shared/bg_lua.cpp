@@ -92,6 +92,7 @@ luaL_Reg UnvGlobalGetters[] =
 	{ "upgrades", UnvGlobal::GetUpgrades },
 	{ "buildables", UnvGlobal::GetBuildables },
 	{ "classes", UnvGlobal::GetClasses },
+	{ nullptr, nullptr },
 };
 luaL_Reg UnvGlobalSetters[] =
 {
