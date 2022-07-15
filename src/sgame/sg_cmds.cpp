@@ -927,11 +927,14 @@ static void Cmd_Team_f( gentity_t *ent )
 		return;
 	}
 
-	// disallow joining teams during warmup
-	if ( g_doWarmup.Get() && ( ( level.warmupTime - level.time ) / 1000 ) > 0 )
+	if ( g_gameMode.Get() != "juggernaut" )
 	{
-		G_TriggerMenu( ent->num(), MN_WARMUP );
-		return;
+		// disallow joining teams during warmup
+		if ( g_doWarmup.Get() && ( ( level.warmupTime - level.time ) / 1000 ) > 0 )
+		{
+			G_TriggerMenu( ent->num(), MN_WARMUP );
+			return;
+		}
 	}
 
 	trap_Argv( 1, s, sizeof( s ) );
