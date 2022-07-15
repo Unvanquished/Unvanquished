@@ -1,0 +1,49 @@
+selector
+{
+	behavior unstick
+
+	sequence
+	{
+		condition alertedToEnemy
+		selector
+		{
+			decorator timer( 1000 )
+			{
+				selector
+				{
+					sequence
+					{
+						condition ( distanceTo( E_GOAL ) < 50 && goalType == ET_PLAYER )
+						action fight
+					}
+					sequence
+					{
+						condition ( healthFraction <= 0.6 && random > 0.3 )
+						action getInSafety
+					}
+				}
+			}
+
+			action fight
+		}
+	}
+
+	sequence
+	{
+		condition team == TEAM_ALIENS
+		condition healthFraction <= 0.7
+		action getInSafety
+	}
+
+	/*
+	condition team == TEAM_ALIENS
+	{
+		condition ( aliveTime > 1500 )
+		{
+			action evolve
+		}
+	}
+	*/
+
+	action roam
+}

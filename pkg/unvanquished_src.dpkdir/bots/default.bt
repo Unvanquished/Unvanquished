@@ -4,11 +4,11 @@ selector
 
 	condition ( team == TEAM_ALIENS )
 	{
-		behavior default_aliens
+		behavior alienJuggernaut
 	}
 
 	condition ( team == TEAM_HUMANS )
 	{
-		behavior default_humans
+		behavior humanJuggernautHunter
 	}
 }
