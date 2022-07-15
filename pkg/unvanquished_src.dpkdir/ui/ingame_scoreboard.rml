@@ -160,7 +160,7 @@
 			<datagrid source="playerList.aliens" id="aliens">
 				<col fields="num" formatter="GearOrReady"></col>
 				<col fields="num" formatter="PlayerName">Name</col>
-				<col fields="score">Score</col>
+				<col fields="score">Kills</col>
 				<col fields="time">Time</col>
 				<col fields="ping">Ping</col>
 			</datagrid>
@@ -173,7 +173,7 @@
 			<datagrid source="playerList.humans" id="humans">
 				<col fields="num" formatter="GearOrReady"></col>
 				<col fields="num" formatter="PlayerName">Name</col>
-				<col fields="score">Score</col>
+				<col fields=""></col>
 				<col fields="time">Time</col>
 				<col fields="ping">Ping</col>
 			</datagrid>
