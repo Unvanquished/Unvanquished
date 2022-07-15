@@ -1328,6 +1328,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( MOVE_LEFT );
 
 	D2( ET_BUILDABLE, Util::ordinal(entityType_t::ET_BUILDABLE) );
+	D2( ET_PLAYER, Util::ordinal(entityType_t::ET_PLAYER) );
 
 	// node return status
 	D( STATUS_RUNNING );
