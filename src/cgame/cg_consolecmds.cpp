@@ -432,6 +432,7 @@ static void CG_BeaconMenu_f()
 	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
 }
 
+void CG_RmlUIDebuggerToogle();
 static const struct
 {
 	const char *cmd;
@@ -453,6 +454,7 @@ static const struct
 	{ "class",            0,                       CG_CompleteClass },
 	{ "clientlist",       CG_ClientList_f,         0                },
 	{ "damage",           0,                       0                },
+	{ "debuggerToogle",   CG_RmlUIDebuggerToogle,  0                },
 	{ "deconstruct",      0,                       0                },
 	{ "destroy",          0,                       0                },
 	{ "destroyTestPS",    CG_DestroyTestPS_f,      0                },
@@ -493,7 +495,6 @@ static const struct
 	{ "reload",           0,                       0                },
 	{ "reloadHud",        CG_ReloadHud_f,          0                },
 	{ "rocket",           Rocket_Rocket_f,         0,               },
-	{ "rocketDebug",      Rocket_RocketDebug_f,    0,               },
 	{ "saveviewpos",      CG_SaveViewpos_f,        0                },
 	{ "say",              0,                       0                },
 	{ "say_area",         0,                       0                },
