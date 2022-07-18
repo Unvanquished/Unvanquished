@@ -1021,6 +1021,23 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) ret;
 }
 
+static AIGenericNode_t *ReadFallback( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	AIGenericNode_t *node = nullptr;
+	current = current->next;
+
+	node = ReadNodeList( &current );
+
+	*tokenlist = current;
+	if ( !node )
+	{
+		return nullptr;
+	}
+	BotInitNode( SELECTOR_NODE, BotFallbackNode, node );
+	return node;
+}
+
 static AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
@@ -1190,6 +1207,10 @@ static AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	if ( !Q_stricmp( current->token.string, "selector" ) )
 	{
 		node = ReadSelector( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "fallback" ) )
+	{
+		node = ReadFallback( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "sequence" ) )
 	{

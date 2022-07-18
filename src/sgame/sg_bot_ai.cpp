@@ -271,6 +271,37 @@ AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_FAILURE;
 }
 
+AINodeStatus_t BotFallbackNode( gentity_t *self, AIGenericNode_t *node )
+{
+	AINodeList_t *sequence = ( AINodeList_t * ) node;
+	int start = 0;
+
+	// find a previously running node and start there
+	for ( int i = sequence->numNodes - 1; i > 0; i-- )
+	{
+		if ( NodeIsRunning( self, sequence->list[ i ] ) )
+		{
+			start = i;
+			break;
+		}
+	}
+
+	for ( int i = start; i < sequence->numNodes; i++ )
+	{
+		AINodeStatus_t status = BotEvaluateNode( self, sequence->list[ i ] );
+		if ( status == STATUS_SUCCESS )
+		{
+			return STATUS_SUCCESS;
+		}
+
+		if ( status == STATUS_RUNNING )
+		{
+			return STATUS_RUNNING;
+		}
+	}
+	return STATUS_FAILURE;
+}
+
 AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeList_t *sequence = ( AINodeList_t * ) node;
