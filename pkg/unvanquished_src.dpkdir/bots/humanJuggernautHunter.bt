@@ -9,13 +9,10 @@ selector
 		{
 			decorator timer( 1000 )
 			{
-				selector
+				sequence
 				{
-					sequence
-					{
-						condition ( healScore <= 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
-						action heal
-					}
+					condition ( healScore <= 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
+					action heal
 				}
 			}
 

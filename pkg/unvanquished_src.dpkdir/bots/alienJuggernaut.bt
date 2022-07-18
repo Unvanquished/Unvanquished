@@ -5,34 +5,33 @@ selector
 	sequence
 	{
 		condition alertedToEnemy
-		selector
+
+		fallback
 		{
 			decorator timer( 1000 )
 			{
-				selector
+				condition ( ( percentHealth( E_SELF ) > 0.8 || random > 0.3 )
+						|| distanceTo( E_GOAL ) < 120 )
 				{
-					sequence
-					{
-						condition ( distanceTo( E_GOAL ) < 50 && goalType == ET_PLAYER )
-						action fight
-					}
-					sequence
-					{
-						condition ( healthFraction <= 0.6 && random > 0.3 )
-						action getInSafety
-					}
+					action fight
 				}
 			}
 
+			// if condition fails once, keep trying to hide
+			action getInSafety
+
+			// if getInSafety fails, FIGHT
 			action fight
 		}
 	}
 
 	sequence
 	{
-		condition team == TEAM_ALIENS
-		condition healthFraction <= 0.7
-		action getInSafety
+		condition percentHealth( E_SELF ) <= 0.7
+		selector {
+			action getInSafety
+			action fight
+		}
 	}
 
 	/*
