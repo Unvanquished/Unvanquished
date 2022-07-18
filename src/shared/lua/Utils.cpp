@@ -25,7 +25,9 @@
  *
  */
 
-#include "Utils.h"
+#include "shared/lua/Utils.h"
+
+#include "shared/bg_public.h"
 
 namespace Unv {
 namespace Shared {
