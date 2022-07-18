@@ -28,6 +28,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+static Cvar::Range<Cvar::Cvar<float>>
+	cg_drawDebugDistance("cg_drawDebugDistance", "draw a circle around "
+			"yourself to give an idea of distances. Set this "
+			"to 0 to disable", Cvar::CHEAT, 0.0f, 0.0f,
+			5000.0f);
+
 /*
 ======================
 CG_DrawBoxFace
@@ -1372,6 +1378,12 @@ void CG_AddPacketEntities()
 					break;
 			}
 		}
+	}
+
+	if ( cg_drawDebugDistance.Get() > 0.0f )
+	{
+		CG_DrawSphere( cg.snap->ps.origin, cg_drawDebugDistance.Get(),
+		               cgs.media.plainColorShader, Color::Color(0, 0.5, 1, 0.2) );
 	}
 }
 
