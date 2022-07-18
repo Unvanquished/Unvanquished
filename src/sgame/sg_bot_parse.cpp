@@ -822,6 +822,7 @@ static const struct AIDecoratorMap_s
 	int          maxparams;
 } AIDecorators[] =
 {
+	{ "invert", BotDecoratorInvert, 0, 0 },
 	{ "return", BotDecoratorReturn, 1, 1 },
 	{ "timer", BotDecoratorTimer, 1, 1 }
 };
