@@ -318,6 +318,8 @@ void CG_OffsetThirdPersonView()
 			{
 				if ( CG_Team( &cg_entities[ killerEntNum ] ) == TEAM_ALIENS ) // TODO: don't hardcode juggernaut team, and don't hardcode juggernaut game mode
 					trap_S_StartLocalSound( cgs.media.deathSound, soundChannel_t::CHAN_ANNOUNCER );
+				else
+					trap_S_StartLocalSound( cgs.media.juggDeathSound, soundChannel_t::CHAN_ANNOUNCER );
 			}
 
 			if ( !cg.wasDeadLastFrame || !cg_staticDeathCam.Get() )

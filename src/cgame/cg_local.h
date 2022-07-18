@@ -1525,6 +1525,7 @@ struct cgMedia_t
 
 	sfxHandle_t newJuggernautSound;
 	sfxHandle_t deathSound;
+	sfxHandle_t juggDeathSound;
 
 	sfxHandle_t grenadeBounceSound0;
 	sfxHandle_t grenadeBounceSound1;
