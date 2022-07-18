@@ -30,6 +30,7 @@
 #include "shared/lua/Utils.h"
 #include "shared/lua/LuaLib.h"
 #include "common/Command.h"
+#include "common/FileSystem.h"
 #include "Interpreter.h"
 
 #include "Entity.h"
@@ -197,6 +198,29 @@ void Shutdown()
 lua_State* State()
 {
 	return L;
+}
+
+bool LoadScript(Str::StringRef scriptPath)
+{
+	std::error_code err;
+	std::string code = FS::PakPath::ReadFile(scriptPath, err);
+	if (err)
+	{
+		Log::Warn("erorr loading %s: %s", scriptPath, err);
+		return false;
+	}
+	if (luaL_loadbuffer(L, code.c_str(), code.size(), "code") != 0)
+	{
+		Shared::Lua::Report(L, "Loading buffer");
+		return false;
+	}
+
+	if(lua_pcall(L,0,0,0) != 0)
+	{
+		Shared::Lua::Report(L, "Executing code");
+		return false;
+	}
+	return true;
 }
 
 class LuaCommand : Cmd::CmdBase
