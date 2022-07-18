@@ -31,6 +31,7 @@ namespace Lua {
 void Initialize();
 void Shutdown();
 lua_State* State();
+bool LoadScript(Str::StringRef scriptPath);
 } // namespace Lua
 } // namespace SGame
 } // namespace Unv
