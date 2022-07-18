@@ -325,6 +325,22 @@ Decorators
 Decorators are used to add functionality to the child node
 ======================
 */
+
+AINodeStatus_t BotDecoratorInvert( gentity_t *self, AIGenericNode_t *node )
+{
+	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
+
+	AINodeStatus_t status = BotEvaluateNode( self, dec->child );
+
+	if ( status == STATUS_SUCCESS )
+		return STATUS_FAILURE;
+
+	if ( status == STATUS_FAILURE )
+		return STATUS_SUCCESS;
+
+	return status;
+}
+
 AINodeStatus_t BotDecoratorTimer( gentity_t *self, AIGenericNode_t *node )
 {
 	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
