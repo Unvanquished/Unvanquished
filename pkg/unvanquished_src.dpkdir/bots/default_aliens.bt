@@ -23,6 +23,7 @@ selector
 					sequence
 					{
 						condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
+						condition baseRushScore < 0.75
 						action heal
 					}
 				}

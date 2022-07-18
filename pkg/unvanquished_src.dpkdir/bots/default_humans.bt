@@ -37,6 +37,7 @@ selector
 					sequence
 					{
 						condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
+						condition baseRushScore < 0.75
 						selector
 						{
 							decorator timer( 3000 )
@@ -69,7 +70,6 @@ selector
 	{
 		sequence
 		{
-			condition !haveUpgrade( UP_MEDKIT )
 			condition healScore > 0.25
 			selector
 			{
