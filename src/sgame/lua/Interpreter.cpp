@@ -33,8 +33,7 @@
 #include "common/FileSystem.h"
 #include "Interpreter.h"
 
-#include "Entity.h"
-#include "EntityProxy.h"
+#include "SGameGlobal.h"
 
 using Unv::Shared::Lua::LuaLib;
 
@@ -172,22 +171,17 @@ static void OverrideGlobalLuaFunctions()
 	lua_setfield(L,-2,"print");
 }
 
-static Entity entity;
-
 void Initialize()
 {
-	if (!L)
-	{
-		L = luaL_newstate();
-		luaL_openlibs(L);
-		OverrideGlobalLuaFunctions();
-		BG_InitializeLuaConstants(L);
-		LuaLib<Entity>::Register(L);
-		LuaLib<EntityProxy>::Register(L);
-		LuaLib<Entity>::push( L, &entity, false );
-		lua_setglobal( L, "entity" );
-	}
+	if (L) return;
+
+	L = luaL_newstate();
+	luaL_openlibs(L);
+	OverrideGlobalLuaFunctions();
+	BG_InitializeLuaConstants(L);
+	InitializeSGameGlobal(L);
 }
+
 
 void Shutdown()
 {
