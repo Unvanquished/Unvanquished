@@ -937,3 +937,8 @@ int G_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle )
 	}
 	return length;
 }
+
+bool G_IsOnFire( const gentity_t *ent )
+{
+	return ent->s.eFlags & EF_B_ONFIRE;
+}

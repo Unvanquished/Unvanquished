@@ -54,7 +54,7 @@ Util::optional<Vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	gclient_t *client = entity.oldEnt->client;
 
 	// Check for immunity.
-	if (entity.oldEnt->flags & FL_GODMODE) return;
+	if (entity.oldEnt->flags & FL_GODMODE && meansOfDeath != MOD_SUICIDE) return;
 	if (client) {
 		if (client->noclip) return;
 		if (client->sess.spectatorState != SPECTATOR_NOT) return;

@@ -57,6 +57,8 @@ struct pml_t
 pmove_t *pm;
 pml_t   pml;
 
+static int c_pmove = 0;
+
 static void Slide( vec3_t wishdir, float wishspeed, playerState_t &ps );
 static void PM_AddEvent( int newEvent );
 static bool PM_SlideMove( bool gravity );
@@ -99,8 +101,6 @@ static bool hitGrippingSurface( trace_t const& tr )
 	 return tr.fraction < 1.0f
 		 && !( tr.surfaceFlags & ( SURF_SKY | SURF_SLICK ) );
 }
-
-int     c_pmove = 0;
 
 /*
 ===============
@@ -396,47 +396,26 @@ static void PM_Accelerate( const vec3_t wishdir, float wishspeed, float accel )
 {
 #if 1
 	// q2 style
-	int   i;
-	float addspeed, accelspeed, currentspeed;
-
-	currentspeed = DotProduct( pm->ps->velocity, wishdir );
-	addspeed = wishspeed - currentspeed;
+	float currentspeed = DotProduct( pm->ps->velocity, wishdir );
+	float addspeed = wishspeed - currentspeed;
 
 	if ( addspeed <= 0 )
 	{
 		return;
 	}
 
-	accelspeed = accel * pml.frametime * wishspeed;
-
-	if ( accelspeed > addspeed )
-	{
-		accelspeed = addspeed;
-	}
-
-	for ( i = 0; i < 3; i++ )
-	{
-		pm->ps->velocity[ i ] += accelspeed * wishdir[ i ];
-	}
-
+	float accelspeed = std::min( accel * pml.frametime * wishspeed, addspeed );
+	VectorMA( pm->ps->velocity, accelspeed, wishdir, pm->ps->velocity );
 #else
 	// proper way (avoids strafe jump maxspeed bug), but feels bad
 	vec3_t wishVelocity;
 	vec3_t pushDir;
-	float  pushLen;
-	float  canPush;
 
 	VectorScale( wishdir, wishspeed, wishVelocity );
 	VectorSubtract( wishVelocity, pm->ps->velocity, pushDir );
-	pushLen = VectorNormalize( pushDir );
+	float pushLen = VectorNormalize( pushDir );
 
-	canPush = accel * pml.frametime * wishspeed;
-
-	if ( canPush > pushLen )
-	{
-		canPush = pushLen;
-	}
-
+	float canPush = std::min( accel * pml.frametime * wishspeed, pushLen );
 	VectorMA( pm->ps->velocity, canPush, pushDir, pm->ps->velocity );
 #endif
 }
@@ -453,9 +432,8 @@ without getting a sqrt(2) distortion in speed.
 static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 {
 	float modifier = 1.0f;
-	int   staminaJumpCost;
-
-	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+	int   staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
+	int   stamina = pm->ps->stats[ STAT_STAMINA ];
 
 	if ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS && pm->ps->pm_type == PM_NORMAL )
 	{
@@ -488,12 +466,12 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		// check if sprinting is allowed
 		if ( sprint )
 		{
-			if ( wasSprinting && pm->ps->stats[ STAT_STAMINA ] <= 0 )
+			if ( wasSprinting && stamina <= 0 )
 			{
 				// we were sprinting but ran out of stamina
 				sprint = false;
 			}
-			else if ( !wasSprinting && pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost )
+			else if ( !wasSprinting && stamina < staminaJumpCost )
 			{
 				// stamina is too low to start sprinting
 				sprint = false;
@@ -534,7 +512,7 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 		}
 
 		// Cancel jump if low on stamina
-		if ( !zFlight && pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost )
+		if ( !zFlight && stamina < staminaJumpCost )
 		{
 			cmd->upmove = 0;
 		}
@@ -590,14 +568,13 @@ static float PM_CmdScale( usercmd_t *cmd, bool zFlight )
 	}
 
 	float max = std::max( std::abs( cmd->forwardmove ), std::abs( cmd->rightmove ) );
-
-	float total = cmd->forwardmove * cmd->forwardmove + cmd->rightmove * cmd->rightmove;
+	float total = Square( cmd->forwardmove ) + Square( cmd->rightmove );
 
 	if ( zFlight )
 	{
 		max = std::max( static_cast<float>( std::abs( cmd->upmove ) ), max );
 
-		total += cmd->upmove * cmd->upmove;
+		total += Square( cmd->upmove );
 	}
 
 	if ( max <= 0.0f )
@@ -1137,15 +1114,12 @@ static bool PM_CheckWallJump()
 	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, point, pm->ps->clientNum,
 	           pm->tracemask, 0 );
 
-	if ( hitGrippingSurface( trace )
-			&& trace.plane.normal[ 2 ] < MIN_WALK_NORMAL )
-	{
-		VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
-	}
-	else
+	if ( !hitGrippingSurface( trace ) || trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
 	{
 		return false;
 	}
+
+	VectorCopy( trace.plane.normal, pm->ps->grapplePoint );
 
 	if ( pm->ps->pm_flags & PMF_RESPAWNED )
 	{
@@ -1270,11 +1244,10 @@ static bool PM_CheckWallRun()
 	VectorMA( pm->ps->origin, 0.25f, dir, trace_end );
 	pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, trace_end, pm->ps->clientNum, pm->tracemask, 0);
 
-	if ( !hitGrippingSurface( trace ) )
+	if ( !hitGrippingSurface( trace ) || trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
+	{
 		return false;
-
-	if ( trace.plane.normal[ 2 ] >= MIN_WALK_NORMAL )
-		return false;
+	}
 
 	pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 	pm->ps->pm_time = 200;
@@ -5047,12 +5020,11 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 	VectorCopy( pm->ps->origin, start_o );
 	VectorCopy( pm->ps->velocity, start_v );
 
+	VectorMA( start_o, -STEPSIZE, normal, down );
+	pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
+
 	if ( !PM_SlideMove( gravity ) )
 	{
-		VectorCopy( start_o, down );
-		VectorMA( down, -STEPSIZE, normal, down );
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
-
 		//we can step down
 		if ( trace.fraction > 0.01f && trace.fraction < 1.0f &&
 		     !trace.allsolid && pml.groundPlane )
@@ -5067,10 +5039,6 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 	}
 	else
 	{
-		VectorCopy( start_o, down );
-		VectorMA( down, -STEPSIZE, normal, down );
-		pm->trace( &trace, start_o, pm->mins, pm->maxs, down, pm->ps->clientNum, pm->tracemask, 0 );
-
 		// never step up when you still have up velocity
 		if ( DotProduct( trace.plane.normal, pm->ps->velocity ) > 0.0f &&
 		     ( trace.fraction == 1.0f || DotProduct( trace.plane.normal, normal ) < 0.7f ) )
@@ -5087,8 +5055,7 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 		VectorCopy( pm->ps->origin, down_o );
 		VectorCopy( pm->ps->velocity, down_v );
 
-		VectorCopy( start_o, up );
-		VectorMA( up, STEPSIZE, normal, up );
+		VectorMA( start_o, STEPSIZE, normal, up );
 
 		// test the player position if they were a stepheight higher
 		pm->trace( &trace, start_o, pm->mins, pm->maxs, up, pm->ps->clientNum, pm->tracemask, 0 );
@@ -5123,8 +5090,7 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 		}
 
 		// push down the final amount
-		VectorCopy( pm->ps->origin, down );
-		VectorMA( down, -stepSize, normal, down );
+		VectorMA( pm->ps->origin, -stepSize, normal, down );
 		pm->trace( &trace, pm->ps->origin, pm->mins, pm->maxs, down, pm->ps->clientNum,
 		           pm->tracemask, 0 );
 

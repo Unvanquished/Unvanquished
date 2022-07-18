@@ -889,20 +889,26 @@ public:
 	void DoOnUpdate() override
 	{
 		playerState_t *ps = &cg.snap->ps;
-		float value = ps->persistant[ PERS_CREDIT ];;
 
-		value /= ( float ) CREDITS_PER_EVO;
+		// display the value rounded down
+		//
+		// we use integer division to avoid rounding errors, those are
+		// multiplications and divisions by 10 because humans count in
+		// base 10.
+
+		int value = ps->persistant[ PERS_CREDIT ];;
+		// value is in tenth of evo points
+		value = value * 10 / CREDITS_PER_EVO;
 
 		if ( evos != value )
 		{
 			evos = value;
-			// display it rounded down
-			SetText( va( "%1.1f", floorf(evos*10)/10 ) );
+			SetText( va( "%i.%i", value/10, value%10 ) );
 		}
 	}
 
 private:
-	float evos;
+	int evos;
 };
 
 class WeaponIconElement : public HudElement

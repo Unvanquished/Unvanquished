@@ -112,7 +112,7 @@ float BotGetGoalRadius( const gentity_t *self )
 	if ( t.targetsCoordinates() )
 	{
 		// we check the coord to be (almost) in our bounding box
-		return RadiusFromBounds2D( self->r.mins, self->r.maxs );
+		return RadiusFromBounds2D( self->r.mins, self->r.maxs ) + BOT_OBSTACLE_AVOID_RANGE;
 	}
 	else
 	{
@@ -127,7 +127,7 @@ float BotGetGoalRadius( const gentity_t *self )
 		}
 		else
 		{
-			return RadiusFromBounds2D( target->r.mins, target->r.maxs ) + RadiusFromBounds2D( self->r.mins, self->r.maxs );
+			return RadiusFromBounds2D( target->r.mins, target->r.maxs ) + RadiusFromBounds2D( self->r.mins, self->r.maxs ) + BOT_OBSTACLE_AVOID_RANGE;
 		}
 	}
 }
@@ -339,7 +339,7 @@ void BotWalk( gentity_t *self, bool enable )
 }
 
 // search for obstacle forward, and return pointer on it if any
-static gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
+static const gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 {
 	vec3_t playerMins, playerMaxs;
 	vec3_t end;
@@ -369,7 +369,7 @@ static gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 
 // checks if jumping would get rid of blocker
 // return true if yes
-static bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
+static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const vec3_t dir )
 {
 	vec3_t playerMins;
 	vec3_t playerMaxs;
@@ -504,9 +504,7 @@ static bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 //return true on error
 static bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
-	gentity_t *blocker;
-
-	blocker = BotGetPathBlocker( self, dir );
+	gentity_t const *blocker = BotGetPathBlocker( self, dir );
 
 	if ( !blocker )
 	{
@@ -521,24 +519,8 @@ static bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 
 	if ( BotFindSteerTarget( self, dir ) )
 	{
-		return true;
+		return false;
 	}
-
-	vec3_t angles;
-	vec3_t right;
-	vectoangles( dir, angles );
-	AngleVectors( angles, dir, right, nullptr );
-
-	if ( ( self->client->time10000 % 2000 ) < 1000 )
-	{
-		VectorCopy( right, dir );
-	}
-	else
-	{
-		VectorNegate( right, dir );
-	}
-	dir[ 2 ] = 0;
-	VectorNormalize( dir );
 	return true;
 }
 
@@ -613,25 +595,25 @@ Global Bot Navigation
 =========================
 */
 
-void BotMoveToGoal( gentity_t *self )
+// This function makes the bot move and aim at it's goal, trying
+// to move faster if the skill is high enough, depending on it's
+// class.
+// Returns false on failure.
+bool BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
 	VectorCopy( self->botMind->nav.dir, dir );
-	const playerState_t& ps  = self->client->ps;
 
-	if ( dir[ 2 ] < 0 )
+	if ( BotAvoidObstacles( self, dir ) )
 	{
-		dir[ 2 ] = 0;
-		VectorNormalize( dir );
+		return false;
 	}
-
-	BotAvoidObstacles( self, dir );
 	BotSeek( self, dir );
 
 	// dumb bots don't know how to be efficient
 	if( self->botMind->botSkill.level < 5 )
 	{
-		return;
+		return true;
 	}
 
 	team_t targetTeam = TEAM_NONE;
@@ -644,12 +626,13 @@ void BotMoveToGoal( gentity_t *self )
 	// when available (still need to implement wall walking, but that will be more complex)
 	if ( G_Team( self ) != targetTeam )
 	{
-		return;
+		return true;
 	}
 
 	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
 	weaponMode_t wpm = WPM_NONE;
 	int magnitude = 0;
+	const playerState_t& ps  = self->client->ps;
 	switch ( ps.stats [ STAT_CLASS ] )
 	{
 		case PCL_HUMAN_NAKED:
@@ -704,6 +687,7 @@ void BotMoveToGoal( gentity_t *self )
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
 	}
+	return true;
 }
 
 bool FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial )
