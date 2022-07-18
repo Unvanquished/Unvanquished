@@ -314,6 +314,12 @@ void CG_OffsetThirdPersonView()
 		{
 			vec3_t lookDirection;
 
+			if ( !cg.wasDeadLastFrame )
+			{
+				if ( CG_Team( &cg_entities[ killerEntNum ] ) == TEAM_ALIENS ) // TODO: don't hardcode juggernaut team, and don't hardcode juggernaut game mode
+					trap_S_StartLocalSound( cgs.media.deathSound, soundChannel_t::CHAN_ANNOUNCER );
+			}
+
 			if ( !cg.wasDeadLastFrame || !cg_staticDeathCam.Get() )
 			{
 				VectorCopy( cg_entities[ killerEntNum ].lerpOrigin, killerPos );
