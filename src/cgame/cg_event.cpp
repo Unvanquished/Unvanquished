@@ -691,6 +691,7 @@ An entity has an event value
 also called by CG_CheckPlayerstateEvents
 ==============
 */
+int newJuggernaut = 0;
 void CG_EntityEvent( centity_t *cent, vec3_t position )
 {
 	entityState_t *es;
@@ -1270,7 +1271,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_NEW_JUGGERNAUT:
 			trap_S_StartLocalSound( cgs.media.newJuggernautSound, soundChannel_t::CHAN_ANNOUNCER );
-			CG_CenterPrint( "Juggernaut!", 1.5f );
+			newJuggernaut = 10;
 			break;
 
 		case EV_MGTURRET_SPINUP:

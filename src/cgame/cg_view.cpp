@@ -1383,6 +1383,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 	cg.refdef.gradingWeights[3] = totalWeight == 0.0f ? 0.0f : selectedWeight[2] / totalWeight;
 }
 
+extern int newJuggernaut;
 static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade, float* fadeRate )
 {
 	int health = ps->stats[ STAT_HEALTH ];
@@ -1390,11 +1391,19 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	bool playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
 	bool spectating = cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT;
 
+	if ( newJuggernaut ) newJuggernaut--;
+
 	//the player has spawned once and is dead or in the intermission
 	if ( cg_spawnEffects.Get() && playing && ( health <= 0 || spectating ) )
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
+	}
+	else if ( newJuggernaut )
+	{
+		*effect = cgs.media.whiteOnlyCgrade;
+		*fade = 1.0;
+		*fadeRate = 1.0; // huge
 	}
 	//no other effects for now
 	else
