@@ -1409,7 +1409,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	else
 	{
 		*fade = 0.0;
-		*fadeRate = 0.001;
+		*fadeRate = 0.002;
 	}
 }
 
