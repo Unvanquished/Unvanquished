@@ -1387,12 +1387,12 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
-		*fadeRate = 0.004;
 	}
 	//no other effects for now
 	else
 	{
 		*fade = 0.0;
+		*fadeRate = 0.001;
 	}
 }
 
