@@ -1380,9 +1380,10 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	int health = ps->stats[ STAT_HEALTH ];
 	int team = ps->persistant[ PERS_TEAM ];
 	bool playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
+	bool spectating = cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT;
 
 	//the player has spawned once and is dead or in the intermission
-	if ( cg_spawnEffects.Get() && playing && ( health <= 0 || cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )
+	if ( cg_spawnEffects.Get() && playing && ( health <= 0 || spectating ) )
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
