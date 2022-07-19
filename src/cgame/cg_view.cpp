@@ -1424,11 +1424,11 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 
 	float fadeRate = 0.0005;
 
-	float fadeChange = fadeRate * cg.frametime;
 	float factor;
 
 	//Choose which effect we want
 	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade, &fadeRate );
+	float fadeChange = fadeRate * cg.frametime;
 
 	//As we have only one cgrade slot for the effect we transition
 	//smoothly from the current (effect, fading) to the target effect.
