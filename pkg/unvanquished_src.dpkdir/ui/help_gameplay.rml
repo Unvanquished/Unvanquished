@@ -79,7 +79,7 @@
 				<translate>Stages &amp; Momentum</translate>
 			</tab>
 			<panel>
-				<translate>Building and destroying structures as well as killing enemies earns your team a new resource called momentum. If you gain enough momentum new weapons, strucures or classes will be unlocked.</translate>
+				<translate>Building and destroying structures as well as killing enemies earns your team a new resource called momentum. If you gain enough momentum new weapons, structures or classes will be unlocked.</translate>
 				<br />
 				<br />
 				<translate>Momentum decreases exponentially over time so if you idle your team will lose access to new items. Existing upgrades will remain functional.</translate>
