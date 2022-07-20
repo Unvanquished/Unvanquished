@@ -1,0 +1,80 @@
+<template name="button" content="content">
+<head>
+<style>
+	@spritesheet theme
+	{
+		src: /ui/assets/hexagons/button;
+
+		/* ... */
+
+		button-l: 0px  0px 93px 171px;
+		button-c: 93px 0px  1px 171px;
+		button-r: 94px 0px 93px 171px;
+	}
+
+	.large_button_wrapper {
+		font-size: 20dp;
+		display: inline-block;
+		position: relative;
+	}
+
+	/* Cancel the regular button theme */
+	.large_button_wrapper button, .large_button_wrapper button:hover {
+		background-color: transparent;
+	}
+
+	.large_button_wrapper button
+	{
+		display: inline-block;
+		float: none;
+		text-align: center;
+
+		margin: 0;
+		padding: 0.35em 1em;
+
+		width: auto;
+		color: white;
+
+		z-index: 1;
+		transition: opacity 0.15s cubic-in;
+		opacity: 0.8;
+	}
+	.large_button_wrapper:hover button {
+		opacity: 0.9;
+	}
+
+	/* smaller text size */
+	.large_button_wrapper button span {
+		line-height: 1.25em;
+		font-size: 0.8em;
+		font-effect: shadow(1px 1px rgba(0, 0, 0, 0.5));
+	}
+
+	/* second layer to add the button background.
+	   Allows changing opacity separately */
+	.large_button_wrapper .button_bg {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		decorator: tiled-horizontal( button-l, button-c, button-r );
+
+		transition: opacity 0.15s cubic-in;
+		opacity: 0.55;
+	}
+
+	.large_button_wrapper:hover .button_bg {
+		opacity: 0.75;
+	}
+</style>
+</head>
+<body>
+	<div class="large_button_wrapper">
+		<div class="button_bg"></div>
+		<button><span id="content"></span></button>
+	</div>
+</body>
+</template>
+
+

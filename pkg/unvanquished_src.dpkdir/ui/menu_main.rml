@@ -2,6 +2,7 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/template" href="/ui/shared/button.rml" />
 		<link type="text/rcss" href="menu.rcss" />
 	</head>
 

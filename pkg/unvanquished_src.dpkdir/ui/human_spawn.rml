@@ -2,10 +2,11 @@
 <head>
 	<link type="text/rcss" href="/ui/shared/basics.rcss" />
 	<link type="text/template" href="/ui/shared/window.rml" />
+	<link type="text/template" href="/ui/shared/button.rml" />
 	<style>
 		body
 		{
-			width: 30em;
+			width: 35em;
 			height: 10em;
 			margin: auto;
 		}
@@ -14,45 +15,61 @@
 			font-size: 1.1em;
 		}
 
-		button
-		{
-			line-height: 1.45em;
+		.startchoices > * {
+			display: inline-block;
+			width: 48%;
+			text-align: center;
+		}
+		.startchoices > .rifle {
+			margin-right: 1.9%;
 		}
 
-		button.rifle
-		{
-			width: 40%;
-			float: left;
-			margin-left: 0em;
+		/* force the buttons to take all the width they can */
+		.startchoices > * > *, .startchoices button {
+			display: block;
 		}
 
-		button.ckit
+		.startchoices button img
 		{
-			width: 40%;
-			float: right;
-			margin-right: 0em;
+			/*
+			position: absolute;
+			top: 3%;
+			left: 0.25em;
+			bottom: 3%;
+			*/
+			height: 0.99em;
+			width: auto;
+			transform: translateY(2dp) scale(2);
+			margin-right: 7dp;
 		}
 
-		button.teamselect
+		.teamselect, .teamselect > *
 		{
-			width: 100%;
-			margin-left: auto;
-			margin-right: auto;
-		}
-
-		p {
-			clear: both;
+			display: block;
+			text-align: center;
 		}
 	</style>
 </head>
 <body id="human_spawn" template="window">
 	<p><translate>Choose your starting equipment:</translate></p>
 
-	<button class="rifle" onclick='Events.pushevent("hide human_spawn; exec class rifle", event)'><translate>SMG</translate></button>
-	<button class="ckit" onclick='Events.pushevent("hide human_spawn; exec class ckit", event)'><translate>Construction Kit</translate></button>
+	<div class="startchoices">
+	<div class="rifle" onclick='Events.pushevent("hide human_spawn; exec class rifle", event)'>
+		<template src="button">
+			<img src="/icons/iconw_rifle.png" />
+			<translate>SMG</translate>
+		</template>
+	</div>
+	<div class="ckit"  onclick='Events.pushevent("hide human_spawn; exec class ckit",  event)'>
+		<template src="button">
+			<img src="/icons/iconw_construct.png" />
+			<translate>Construction Kit</translate>
+		</template>
+	</div>
+	</div>
 
 	<p><translate>The SMG is a rapid-fire starting weapon, and the construction kit builds and repairs human structures. All equipment can be traded at the armoury.</translate></p>
 
-	<button class="teamselect" onclick='Events.pushevent("hide human_spawn; show ingame_teamselect", event)'><translate>Back to team selection</translate></button>
+	<div class="teamselect" onclick='Events.pushevent("hide human_spawn; show ingame_teamselect", event)'><template src="button"><translate>Back to team selection</translate></template></div>
 </body>
 </rml>
