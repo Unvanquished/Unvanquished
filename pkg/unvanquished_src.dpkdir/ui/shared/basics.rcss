@@ -9,6 +9,7 @@ body {
 	font-family: Roboto;
 	color: #999999;
 	cursor: ui/assets/cursor;
+	font-size: 12dp;
 }
 
 p {
