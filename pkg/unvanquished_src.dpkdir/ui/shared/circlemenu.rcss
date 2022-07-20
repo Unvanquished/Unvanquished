@@ -39,20 +39,21 @@ div.circlemenu-circle {
 	display: block;
 	position: relative;
 	width: 6.7em;
-	height: 6.7em;
-	left: -3.35em;
+	height: 6.1267em;
+	left: -3.063em;
 	top: -3.35em;
 	text-align: center;
-	decorator: image( /ui/assets/circlemenu/circle );
+	decorator: image( /ui/assets/hexagons/circlemenu );
 	z-index: 2;
 }
 .circlemenu button:hover, .circlemenu button:active, .circlemenu button:focus{
-	decorator: image( /ui/assets/circlemenu/circle-hover );
+	decorator: image( /ui/assets/hexagons/circlemenu );
 }
 
 .circlemenu button.disabled, .circlemenu button.disabled:hover,
 .circlemenu button.disabled:active, .circlemenu button.disabled:focus {
-	decorator: image( /ui/assets/circlemenu/circle );
+	decorator: image( /ui/assets/hexagons/circlemenu );
+
 	image-color: rgb(12,12,12);
 }
 
@@ -67,10 +68,10 @@ div.circlemenu-circle {
 .circlemenu button.cancelButton {
 	position:absolute;
 	width: 9em;
-	height: 9em;
+	height: 8.23em;
 	left: -4.5em;
-	top: -4.5em;
-	line-height: 9em;
+	top: -4.115em;
+	line-height: 8.23em;
 }
 .circlemenu button.cancelButton > * {
 	color: #eeec;
@@ -86,7 +87,7 @@ div.circlemenu-circle {
 
 .circlemenu .key {
 	color: #fffa;
-	decorator: image( /ui/assets/circlemenu/circle );
+	decorator: image( /ui/assets/hexagons/circlemenu );
 	position: absolute;
 	left: -.7em;
 	top: -.7em;
