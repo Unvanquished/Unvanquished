@@ -44,7 +44,7 @@ namespace Unv {
 namespace SGame {
 namespace Lua {
 
-std::vector<EntityProxy*> proxies( MAX_GENTITIES );
+std::vector<std::unique_ptr<EntityProxy>> proxies( MAX_GENTITIES );
 
 int Entity::Find( lua_State* L )
 {
@@ -54,9 +54,9 @@ int Entity::Find( lua_State* L )
 		if (G_MatchesName(ent, name)) {
 			int entNum = ent - g_entities;
 			if (!proxies[entNum]) {
-				proxies[entNum] = new EntityProxy(ent);
+				proxies[entNum].reset(new EntityProxy(ent));
 			}
-			LuaLib<EntityProxy>::push(L, proxies[entNum], false);
+			LuaLib<EntityProxy>::push(L, proxies[entNum].get(), false);
 			return 1;
 		}
 	}
@@ -74,9 +74,9 @@ int Entity::IterateByClassName( lua_State* L )
 		{
 			int entNum = ent - g_entities;
 			if (!proxies[entNum]) {
-				proxies[entNum] = new EntityProxy(ent);
+				proxies[entNum].reset(new EntityProxy(ent));
 			}
-			LuaLib<EntityProxy>::push(L, proxies[entNum], false);
+			LuaLib<EntityProxy>::push(L, proxies[entNum].get(), false);
 			ret++;
 		}
 	}
