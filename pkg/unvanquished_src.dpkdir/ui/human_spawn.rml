@@ -21,7 +21,7 @@
 			text-align: center;
 		}
 		.startchoices > .rifle {
-			margin-right: 1.9%;
+			margin-right: 3.9%;
 		}
 
 		/* force the buttons to take all the width they can */
