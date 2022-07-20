@@ -1203,6 +1203,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 		G_ChangeTeam( ent, client->sess.restartTeam );
 		client->sess.restartTeam = TEAM_NONE;
 	}
+	G_AddCreditToClient( client, HUMAN_MAX_CREDITS, true ); // TODO: jugg only
 
 	return nullptr;
 }
