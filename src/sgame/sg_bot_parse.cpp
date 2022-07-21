@@ -825,6 +825,7 @@ static const struct AIDecoratorMap_s
 	int          maxparams;
 } AIDecorators[] =
 {
+	{ "invert", BotDecoratorInvert, 0, 0 },
 	{ "return", BotDecoratorReturn, 1, 1 },
 	{ "timer", BotDecoratorTimer, 1, 1 }
 };
@@ -1328,6 +1329,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( MOVE_LEFT );
 
 	D2( ET_BUILDABLE, Util::ordinal(entityType_t::ET_BUILDABLE) );
+	D2( ET_PLAYER, Util::ordinal(entityType_t::ET_PLAYER) );
 
 	// node return status
 	D( STATUS_RUNNING );

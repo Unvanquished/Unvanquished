@@ -1380,18 +1380,19 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	int health = ps->stats[ STAT_HEALTH ];
 	int team = ps->persistant[ PERS_TEAM ];
 	bool playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
+	bool spectating = cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT;
 
 	//the player has spawned once and is dead or in the intermission
-	if ( cg_spawnEffects.Get() && playing && ( health <= 0 || cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )
+	if ( cg_spawnEffects.Get() && playing && ( health <= 0 || spectating ) )
 	{
 		*effect = cgs.media.desaturatedCgrade;
 		*fade = 1.0;
-		*fadeRate = 0.004;
 	}
 	//no other effects for now
 	else
 	{
 		*fade = 0.0;
+		*fadeRate = 0.001;
 	}
 }
 
@@ -1423,11 +1424,11 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 
 	float fadeRate = 0.0005;
 
-	float fadeChange = fadeRate * cg.frametime;
 	float factor;
 
 	//Choose which effect we want
 	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade, &fadeRate );
+	float fadeChange = fadeRate * cg.frametime;
 
 	//As we have only one cgrade slot for the effect we transition
 	//smoothly from the current (effect, fading) to the target effect.

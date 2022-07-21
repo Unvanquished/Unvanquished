@@ -503,11 +503,18 @@ void G_BotSpectatorThink( gentity_t *self )
 	self->botMind->futureAimTimeInterval = 0;
 	self->botMind->runningNodes.clear();
 
+	//FIXME: duplicate of sg_cmds.cpp:883 function "void Cmd_Team_f( gentity_t * )"
+	if ( g_doWarmup.Get() && ( ( level.warmupTime - level.time ) / 1000 ) > 0 )
+	{
+		return;
+	}
+
 	if ( self->client->sess.restartTeam == TEAM_NONE )
 	{
 		int teamnum = self->client->pers.team;
 		int clientNum = self->client->ps.clientNum;
 
+		// I think all that decision taking about birth... should go in BT.
 		if ( teamnum == TEAM_HUMANS )
 		{
 			self->client->pers.classSelection = PCL_HUMAN_NAKED;
