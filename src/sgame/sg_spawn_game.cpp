@@ -96,6 +96,11 @@ void SP_game_end( gentity_t *self )
 	{
 		self->mapEntity.conditions.team = TEAM_ALIENS;
 	}
+	else if(!Q_stricmp(self->classname.c_str(), "target_force_win"))
+	{
+		int team = static_cast<int>( self->mapEntity.conditions.team ) + 1;
+		self->mapEntity.conditions.team = static_cast<team_t>( team );
+	}
 
 	self->act = game_end_act;
 }
