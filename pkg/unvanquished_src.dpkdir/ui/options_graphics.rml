@@ -11,14 +11,6 @@
 				float:left;
 				width:45%;
 			}
-
-			half.left; {
-				margin-right:5%;
-			}
-
-			half.right; {
-				margin-left:5%;
-			}
 		</style>
 	</head>
 	<body id="options_graphics" template="window" style="width: 46em; margin: 1em;" onload='Events.pushevent("buildDS resolutions", event)'>
