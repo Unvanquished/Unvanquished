@@ -2,10 +2,10 @@
 	<head>
 		<link type="text/template" href="/ui/shared/window.rml" />
 		<style>
-		panel {
-			width: 65%;
-			padding: 0.5em;
-		}
+			panel {
+				width: 65%;
+				padding: 0.5em;
+			}
 		</style>
 	</head>
 	<body template="window" id="help_gameplay" style="width:45em; margin: 1em;">

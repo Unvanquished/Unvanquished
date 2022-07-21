@@ -18,10 +18,10 @@
 			}
 
 			/* Datagrid for server list */
-			datagrid{
-				height:30em;
-				width:100%;
-				display:block;
+			datagrid {
+				height: 30em;
+				width: 100%;
+				display: block;
 			}
 
 			button {

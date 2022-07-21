@@ -3,49 +3,41 @@
 	<link type="text/rcss" href="/ui/shared/basics.rcss" />
 	<link type="text/template" href="/ui/shared/window.rml" />
 	<style>
-		body
-		{
+		body {
 			width: 35em;
 			height: 20em;
 			margin: auto;
 		}
-		body > *
-		{
+		body > * {
 			font-size: 1.1em;
 		}
 
-		button
-		{
+		button {
 			line-height: 1.45em;
 		}
-		button.alien
-		{
+		button.alien {
 			width: 40%;
 			float: left;
 			margin-left: 0em;
-			background-color: #6D131D;
+			background-color: #6d131d;
 		}
 
-		button.alien:hover
-		{
-			background-color: #91676C;
+		button.alien:hover {
+			background-color: #91676c;
 		}
 
-		button.human
-		{
+		button.human {
 			width: 40%;
 			float: right;
 			margin-right: 0em;
-			background-color: #131F6D;
+			background-color: #131f6d;
 		}
 
-		button.human:hover
-		{
-			background-color: #6771AD;
+		button.human:hover {
+			background-color: #6771ad;
 		}
 
-		button.wide
-		{
+		button.wide {
 			width: 100%;
 			margin-left: auto;
 			margin-right: auto;

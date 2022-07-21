@@ -10,7 +10,7 @@
 			}
 
 			levelshotbox {
-				display:block;
+				display: block;
 
 				/* Approx measurements.  Are all mapshots in 4:3? */
 				width: 38em;

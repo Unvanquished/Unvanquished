@@ -4,41 +4,39 @@
 		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
 		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
 		<style>
-			body
-			{
-				width:100%;
-				height:100%;
-				background:#00000066;
-				text-align:center;
+			body {
+				width: 100%;
+				height: 100%;
+				background: #00000066;
+				text-align: center;
 			}
 
-			.circlemenu icon{
-				display:inline-block;
-				position:absolute;
+			.circlemenu icon {
+				display: inline-block;
+				position: absolute;
 				bottom: 0.3em;
 				right: 0.75em;
 				font-size: 1.7em;
 			}
 
-			.circlemenu button{
-				position:relative;
+			.circlemenu button {
+				position: relative;
 			}
 
-			.circlemenu button.active{
-				decorator: image( /ui/assets/circle-hover );
-				image-color: rgb(100,100,100);
+			.circlemenu button.active {
+				decorator: image(/ui/assets/circle-hover);
+				image-color: rgb(100, 100, 100);
 			}
-			.circlemenu button.active:hover{
-				decorator: image( /ui/assets/circle-hover );
-				image-color: rgb(255,255,255);
+			.circlemenu button.active:hover {
+				decorator: image(/ui/assets/circle-hover);
+				image-color: rgb(255, 255, 255);
 			}
-			.circlemenu button.active icon{
-				color:#9AFFBD;
+			.circlemenu button.active icon {
+				color: #9affbd;
 			}
 
-			.circlemenu button img
-			{
-				color: rgb(230,230,230);
+			.circlemenu button img {
+				color: rgb(230, 230, 230);
 			}
 		</style>
 		<script src="lua/util.lua" />

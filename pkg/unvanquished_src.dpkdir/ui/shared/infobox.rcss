@@ -19,35 +19,33 @@ div.infobox {
 	text-align: center;
 }
 
-.infobox p.text{
+.infobox p.text {
 	background: #25252599;
-	padding: .4em;
-	font-size: .9em;
+	padding: 0.4em;
+	font-size: 0.9em;
 }
-
 
 .infobox .attr {
 	width: 50%;
 	display: inline-block;
 	text-align: right;
-
 }
 .infobox .bar {
 	padding-bottom: 0em;
 	text-align: center;
-	line-height: .3em;
+	line-height: 0.3em;
 	background: #252424;
 	width: 40%;
 	margin-left: 10%;
-	height: .8em;
+	height: 0.8em;
 	display: inline-block;
 }
 .infobox .barValue {
 	float: left;
-	height: .8em;
-	width: .8em;
-	background: #BBBBBBAA;
-	border-width: .1em;
+	height: 0.8em;
+	width: 0.8em;
+	background: #bbbbbbaa;
+	border-width: 0.1em;
 	border-color: #86868633;
 	display: inline-block;
 }
