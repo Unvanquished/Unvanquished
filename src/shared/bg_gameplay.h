@@ -320,6 +320,9 @@ extern int   MEDKIT_STARTUP_SPEED;
 #define ATTACKWARN_PRIMARY_PERIOD         7500
 #define ATTACKWARN_NEARBY_PERIOD          15000
 
+// how long you can sustain underwater before taking damage
+#define OXYGEN_MAX_TIME                   12000
+
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
 #define SCORE_PER_MOMENTUM                 1.0f  // used to convert momentum rewards to score points

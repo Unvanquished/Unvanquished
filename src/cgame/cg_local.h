@@ -1229,6 +1229,9 @@ struct cg_t
 	float navmeshLoadingFraction;
 	bool loadingNavmesh;
 
+	bool underwater;
+	int  underwaterTime;
+
 	int                     lastBuildAttempt;
 	int                     lastEvolveAttempt;
 
