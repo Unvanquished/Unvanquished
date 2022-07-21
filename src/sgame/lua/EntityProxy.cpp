@@ -32,9 +32,10 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "EntityProxy.h"
+#include "sgame/lua/EntityProxy.h"
 #include "shared/lua/LuaLib.h"
 #include "sgame/sg_local.h"
+#include "sgame/lua/Entity.h"
 
 using Unv::Shared::Lua::RegType;
 using Unv::Shared::Lua::LuaLib;
@@ -46,8 +47,8 @@ namespace Lua {
 #define GETTER(name) { #name, Get##name }
 #define SETTER(name) { #name, Set##name }
 
-EntityProxy::EntityProxy(gentity_t* ent) :
-		ent(ent) {}
+EntityProxy::EntityProxy(gentity_t* ent, lua_State* L) :
+		ent(ent), L(L) {}
 
 
 #define GET_FUNC( var, type ) \
@@ -120,6 +121,120 @@ static int Setangles(lua_State* L)
 	return 0;
 }
 
+template<typename T>
+void Push(lua_State* L, T arg)
+{
+
+}
+
+template<>
+void Push<gentity_t*>(lua_State* L, gentity_t* ent)
+{
+	EntityProxy* proxy = Entity::CreateProxy(ent, L);
+	LuaLib<EntityProxy>::push(L, proxy, false);
+}
+
+template<>
+void Push<int>(lua_State* L, int num)
+{
+	lua_pushnumber(L, num);
+}
+
+template <typename T>
+void PushArgs(lua_State* L, T arg)
+{
+	Push(L, arg);
+}
+
+template <typename T, typename... Args>
+void PushArgs(lua_State* L, T arg, Args... args)
+{
+	PushArgs(L, arg);
+	PushArgs(L, args...);
+}
+
+#define ExecFunc(method, upper, def, numArgs, ...) \
+	static void Exec##method def \
+	{ \
+		int entityNum = self - g_entities; \
+		EntityProxy* proxy = Entity::proxies[entityNum].get(); \
+		if (!proxy) \
+		{ \
+			Log::Warn("Error " #method "-ing: No proxy for entity num %d", entityNum); \
+			return; \
+		} \
+		auto it = proxy->funcs.find(EntityProxy::upper); \
+		if (it->second.method) it->second.method(__VA_ARGS__); \
+		lua_rawgeti(proxy->L, LUA_REGISTRYINDEX, it->second.luaRef); \
+		PushArgs(proxy->L, __VA_ARGS__); \
+		if (lua_pcall(proxy->L, numArgs, 0, 0) != 0) \
+		{ \
+			Log::Warn( "Could not run lua " #method " callback: %s", \
+				lua_tostring(proxy->L, -1)); \
+		} \
+	} \
+	static int Set##method(lua_State* L) \
+	{ \
+		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 ); \
+		if (!proxy) return 0; \
+		int ref; \
+		/* if set to nil, clear old lua function */ \
+		if (lua_isnil(L, 2)) \
+		{ \
+			ref = -1; \
+		} \
+		if (lua_isfunction(L, 2)) \
+		{ \
+			ref = luaL_ref(L, LUA_REGISTRYINDEX); \
+		} \
+		else \
+		{ \
+			Log::Warn("expected function argument for " #method); \
+			return 0; \
+		} \
+		auto it = proxy->funcs.find(EntityProxy::upper); \
+		if (it == proxy->funcs.end() && ref != -1) \
+		{ \
+			it = proxy->funcs.insert({EntityProxy::upper, EntityProxy::EntityFunction { \
+				.type = EntityProxy::upper, \
+				.luaRef = ref, \
+				.method = proxy->ent->method, \
+			}}).first; \
+			proxy->ent->method = Exec##method; \
+		} \
+		else \
+		{ \
+			/* Clean up old ref... */ \
+			lua_rawgeti(L, LUA_REGISTRYINDEX, it->second.luaRef); \
+			luaL_unref(L, LUA_REGISTRYINDEX, it->second.luaRef); \
+			/* If set to nil, remove lua func all together */ \
+			if (ref == -1 && it->second.method) \
+			{ \
+				proxy->ent->method = it->second.method; \
+				it->second.method = nullptr; \
+			} \
+			else \
+			{ \
+				it->second.luaRef = ref; \
+				if (!it->second.method) \
+				{ \
+					it->second.method = proxy->ent->method; \
+					proxy->ent->method = Exec##method; \
+				} \
+			} \
+		} \
+		return 0; \
+	}
+
+ExecFunc(think, THINK, (gentity_t* self), 1, self)
+ExecFunc(reset, RESET, (gentity_t* self), 1, self)
+ExecFunc(reached, REACHED, (gentity_t* self), 1, self)
+ExecFunc(blocked, BLOCKED, (gentity_t* self, gentity_t* other), 2, self, other)
+ExecFunc(touch, TOUCH, (gentity_t* self, gentity_t* other, trace_t* trace), 2, self, other, trace)
+ExecFunc(use, USE, (gentity_t* self, gentity_t* other, gentity_t* act), 3, self, other, act)
+ExecFunc(pain, PAIN, (gentity_t* self, gentity_t* attacker, int damage), 3, self, attacker, damage)
+ExecFunc(die, DIE, (gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int mod), 4, self, inflictor, attacker, mod)
+
 RegType<EntityProxy> EntityProxyMethods[] =
 {
 	{ nullptr, nullptr },
@@ -142,6 +257,14 @@ luaL_Reg EntityProxySetters[] =
 {
 	SETTER(origin),
 	SETTER(angles),
+	SETTER(think),
+	SETTER(reset),
+	SETTER(reached),
+	SETTER(blocked),
+	SETTER(touch),
+	SETTER(use),
+	SETTER(pain),
+	SETTER(die),
 
 	{ nullptr, nullptr }
 };
