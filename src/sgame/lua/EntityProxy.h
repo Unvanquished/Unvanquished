@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #ifndef LUAENTITYPROXY_H_
 #define LUAENTITYPROXY_H_
 
+#include <unordered_map>
+
 #include "shared/bg_lua.h"
 #include "sgame/sg_local.h"
 
@@ -44,8 +46,39 @@ namespace Lua {
 
 struct EntityProxy
 {
-	EntityProxy(gentity_t* ent);
+	EntityProxy(gentity_t* ent, lua_State* L);
 	gentity_t* ent;
+
+	enum FunctionType
+	{
+		THINK,
+		RESET,
+		REACHED,
+		BLOCKED,
+		TOUCH,
+		USE,
+		PAIN,
+		DIE,
+	};
+
+	struct EntityFunction
+	{
+		FunctionType type;
+		int luaRef;
+		union {
+			// Storage for the original gentity's functions.
+			void ( *think )( gentity_t *self );
+			void ( *reset )( gentity_t *self );
+			void ( *reached )( gentity_t *self );
+			void ( *blocked )( gentity_t *self, gentity_t *other );
+			void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
+			void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
+			void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
+			void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
+		};
+	};
+	std::unordered_map<FunctionType, EntityFunction> funcs;
+	lua_State* L;
 };
 
 } // namespace Lua
