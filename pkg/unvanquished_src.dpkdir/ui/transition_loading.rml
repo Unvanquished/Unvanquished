@@ -6,6 +6,7 @@
 				width: 100%;
 				height: 100%;
 				z-index: 20; /* Stay ontop of all windows */
+				color: #eee;
 			}
 
 			div.levelshot, div.levelshot img {
@@ -67,7 +68,6 @@
 			}
 
 			statusbox, percentage {
-				color: white;
 				font-size: 1.5em;
 				font-weight: bold;
 				/* Dejavu has monospaced numbers, but Roboto does not
@@ -86,6 +86,8 @@
 			servername {
 				display: block;
 				font-size: 3em;
+				/*font-effect: glow(3px 2px 0 0 black);*/
+				font-effect: outline(2px black);
 			}
 
 			servermotd {
