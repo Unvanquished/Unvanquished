@@ -170,7 +170,7 @@ static void P_WorldEffects( gentity_t *ent )
 	}
 	else
 	{
-		ent->client->airOutTime = level.time + 12000;
+		ent->client->airOutTime = level.time + OXYGEN_MAX_TIME;
 		ent->damage = 2;
 	}
 
