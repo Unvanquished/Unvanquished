@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 
 static Cvar::Range<Cvar::Cvar<float>>
-	cg_drawDebugDistance("cg_drawDebugDistance", "draw a circle around "
+	cg_drawDebugDistance("cg_drawDebugDistance", "draw a sphere around "
 			"yourself to give an idea of distances. Set this "
 			"to 0 to disable", Cvar::CHEAT, 0.0f, 0.0f,
 			5000.0f);
