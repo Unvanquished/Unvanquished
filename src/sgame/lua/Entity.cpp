@@ -33,7 +33,6 @@ Maryland 20850 USA.
 */
 
 #include "Entity.h"
-#include "EntityProxy.h"
 #include "shared/lua/LuaLib.h"
 #include "sgame/sg_local.h"
 
@@ -44,7 +43,16 @@ namespace Unv {
 namespace SGame {
 namespace Lua {
 
-std::vector<std::unique_ptr<EntityProxy>> proxies( MAX_GENTITIES );
+std::vector<std::unique_ptr<EntityProxy>> Entity::proxies( MAX_GENTITIES );
+
+EntityProxy* Entity::CreateProxy( gentity_t* ent, lua_State* L )
+{
+	int entNum = ent - g_entities;
+	if (!proxies[entNum]) {
+		proxies[entNum].reset(new EntityProxy(ent, L));
+	}
+	return proxies[entNum].get();
+}
 
 int Entity::Find( lua_State* L )
 {
@@ -52,11 +60,8 @@ int Entity::Find( lua_State* L )
 	gentity_t* ent = nullptr;
 	while ((ent = G_IterateEntities(ent))) {
 		if (G_MatchesName(ent, name)) {
-			int entNum = ent - g_entities;
-			if (!proxies[entNum]) {
-				proxies[entNum].reset(new EntityProxy(ent));
-			}
-			LuaLib<EntityProxy>::push(L, proxies[entNum].get(), false);
+			EntityProxy* proxy = CreateProxy(ent, L);
+			LuaLib<EntityProxy>::push(L, proxy, false);
 			return 1;
 		}
 	}
@@ -72,11 +77,8 @@ int Entity::IterateByClassName( lua_State* L )
 	while ((ent = G_IterateEntities(ent))) {
 		if ( !Q_stricmp( ent->classname, name ) )
 		{
-			int entNum = ent - g_entities;
-			if (!proxies[entNum]) {
-				proxies[entNum].reset(new EntityProxy(ent));
-			}
-			LuaLib<EntityProxy>::push(L, proxies[entNum].get(), false);
+			EntityProxy* proxy = CreateProxy(ent, L);
+			LuaLib<EntityProxy>::push(L, proxy, false);
 			ret++;
 		}
 	}

@@ -37,6 +37,7 @@ Maryland 20850 USA.
 
 #include "shared/bg_lua.h"
 #include "sgame/sg_local.h"
+#include "sgame/lua/EntityProxy.h"
 
 namespace Unv {
 namespace SGame {
@@ -47,7 +48,11 @@ struct Entity
 	static int IterateByClassName(lua_State* L);
 	static int Find(lua_State* L);
 
+	static EntityProxy* CreateProxy(gentity_t* ent, lua_State* L);
+
+	static std::vector<std::unique_ptr<EntityProxy>> proxies;
 };
+
 
 } // namespace Lua
 } // namespace SGame
