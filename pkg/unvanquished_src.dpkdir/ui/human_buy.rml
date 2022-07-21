@@ -4,115 +4,113 @@
 		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
 		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
 		<style>
-			body
-			{
-				width:100%;
-				height:100%;
-				background:#00000066;
-				text-align:center;
+			body {
+				width: 100%;
+				height: 100%;
+				background: #00000066;
+				text-align: center;
 			}
 
-.circlemenu icon{
-  display:inline-block;
-  position:absolute;
-  bottom: 0.3em;
-  right: 0.75em;
-  font-size: 1.7em;
-}
-.circlemenu button {
-	image-color: #83fff5;
-}
-.circlemenu button.locked{
-	decorator: image( /ui/assets/circlemenu/circle );
-	image-color: rgb(0,100,100);
-}
-.circlemenu button.locked:hover{
-	decorator: image( /ui/assets/circlemenu/circle );
-	image-color: rgb(0,120,120);
-}
-.circlemenu button.locked:hover img,
-.circlemenu button.locked:hover icon,
-.circlemenu button.expensive:hover img,
-.circlemenu button.expensive:hover icon{
-	opacity:1;
-}
-.circlemenu button.locked img{
-	opacity:.6;
-}
-.circlemenu button.locked icon{
-	color:#ffffff;
-	opacity:.6;
-}
+			.circlemenu icon {
+				display: inline-block;
+				position: absolute;
+				bottom: 0.3em;
+				right: 0.75em;
+				font-size: 1.7em;
+			}
+			.circlemenu button {
+				image-color: #83fff5;
+			}
+			.circlemenu button.locked {
+				decorator: image(/ui/assets/circlemenu/circle);
+				image-color: rgb(0, 100, 100);
+			}
+			.circlemenu button.locked:hover {
+				decorator: image(/ui/assets/circlemenu/circle);
+				image-color: rgb(0, 120, 120);
+			}
+			.circlemenu button.locked:hover img,
+			.circlemenu button.locked:hover icon,
+			.circlemenu button.expensive:hover img,
+			.circlemenu button.expensive:hover icon {
+				opacity: 1;
+			}
+			.circlemenu button.locked img {
+				opacity: 0.6;
+			}
+			.circlemenu button.locked icon {
+				color: #ffffff;
+				opacity: 0.6;
+			}
 
-.circlemenu button.expensive{
-	decorator: image( /ui/assets/circlemenu/circle );
-	image-color: rgb(0,150,150);
-}
-.circlemenu button.expensive:hover{
-	decorator: image( /ui/assets/circlemenu/circle );
-	image-color: rgb(0,170,170);
+			.circlemenu button.expensive {
+				decorator: image(/ui/assets/circlemenu/circle);
+				image-color: rgb(0, 150, 150);
+			}
+			.circlemenu button.expensive:hover {
+				decorator: image(/ui/assets/circlemenu/circle);
+				image-color: rgb(0, 170, 170);
+			}
 
-}
+			.circlemenu button.expensive img {
+				opacity: 0.6;
+			}
+			.circlemenu button.expensive:hover img {
+				opacity: 1;
+			}
+			.circlemenu button.expensive icon {
+				color: #0a00c5;
 
-.circlemenu button.expensive img{
-	opacity:.6;
-}
-.circlemenu button.expensive:hover img{
-	opacity:1;
-}
-.circlemenu button.expensive icon{
-	color:#0A00C5;
+				opacity: 0.7;
+			}
 
-	opacity:.7;
-}
+			.circlemenu button {
+				position: relative;
+			}
 
-.circlemenu button{
-	position:relative;
-}
+			.circlemenu button.active {
+				decorator: image(/ui/assets/circlemenu/circle-hover);
+				image-color: rgb(0, 200, 200);
+			}
+			.circlemenu button.active:hover {
+				decorator: image(/ui/assets/circlemenu/circle-hover);
+				image-color: rgb(0, 220, 220);
+			}
+			.circlemenu button.active icon {
+				color: #9affbd;
+			}
+			.circlemenu button.active .sell {
+				display: none;
+			}
 
-.circlemenu button.active{
-	decorator: image( /ui/assets/circlemenu/circle-hover );
-	image-color: rgb(0,200,200);
-}
-.circlemenu button.active:hover{
-	decorator: image( /ui/assets/circlemenu/circle-hover );
-	image-color: rgb(0,220,220);
-}
-.circlemenu button.active icon{
-	color:#9AFFBD;
-}
-.circlemenu button.active .sell{
-	display:none;
-}
-
-.tabkey {
-	background-color: #99999999;
-	color: #CCCCCC;
-	font-size: 0.8em;
-	line-height: 1.1em;
-	padding-left: 0.1em;
-	padding-right: 0.1em;
-	border-top-width: .1em;
-	border-bottom-width: .1em;
-	border-right-width: .1em;
-	border-left-width: .1em;
-	border-top-color: #CCCCCC;
-	border-bottom-color: #CCCCCC;
-	border-right-color: #CCCCCC;
-	border-left-color: #CCCCCC;
-	display: block;
-}
-tab:selected .tabkey {
-	display: none;
-}
-tab {
-	position: relative;
-	display: inline-block;
-	top: 0.4em;
-}
-tab:selected {
-	top: 0;
-}
+			.tabkey {
+				background-color: #99999999;
+				color: #cccccc;
+				font-size: 0.8em;
+				line-height: 1.1em;
+				padding-left: 0.1em;
+				padding-right: 0.1em;
+				border-top-width: 0.1em;
+				border-bottom-width: 0.1em;
+				border-right-width: 0.1em;
+				border-left-width: 0.1em;
+				border-top-color: #cccccc;
+				border-bottom-color: #cccccc;
+				border-right-color: #cccccc;
+				border-left-color: #cccccc;
+				display: block;
+			}
+			tab:selected .tabkey {
+				display: none;
+			}
+			tab {
+				position: relative;
+				display: inline-block;
+				top: 0.4em;
+			}
+			tab:selected {
+				top: 0;
+			}
 		</style>
 		<script>
 			function WeaponClick(idx)

@@ -2,17 +2,14 @@
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<style>
-
-			body
-			{
-				text-align:center;
+			body {
+				text-align: center;
 				background-color: black;
 				width: 100%;
 				height: 100%;
 				z-index: 20; /* Stay ontop of all windows */
 			}
-			connecting
-			{
+			connecting {
 				position: absolute;
 				display: block;
 				color: white;

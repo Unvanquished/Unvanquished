@@ -1,4 +1,3 @@
-
 /* ##### Stripey data-grids ##### */
 
 datagridbody {
@@ -23,9 +22,9 @@ datagridrow:nth-child(odd) {
 }
 
 datagridrow:hover {
-	background-color:#666666;
+	background-color: #666666;
 }
 
 datagridrow:selected {
-	background-color:#136D67;   /* Dark cyan */
+	background-color: #136d67; /* Dark cyan */
 }

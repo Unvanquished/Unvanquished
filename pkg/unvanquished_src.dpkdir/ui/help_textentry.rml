@@ -5,13 +5,13 @@
 
 		<style>
 			in {
-				display:inline;
+				display: inline;
 			}
 
 			color {
-				display:block;
-				width:3em;
-				float:left;
+				display: block;
+				width: 3em;
+				float: left;
 			}
 		</style>
 	</head>

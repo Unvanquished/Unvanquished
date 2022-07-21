@@ -8,11 +8,12 @@
 				z-index: 20; /* Stay ontop of all windows */
 			}
 
-			div.levelshot, div.levelshot img {
+			div.levelshot,
+			div.levelshot img {
 				/* HACK: Pretend to be the background */
 				position: absolute;
-				top:0;
-				left:0;
+				top: 0;
+				left: 0;
 				width: 100%;
 				height: 100%;
 			}
@@ -42,7 +43,7 @@
 			}
 
 			progress {
-				image-color: #999999CC;
+				image-color: #999999cc;
 			}
 
 			statusbox {
@@ -66,7 +67,8 @@
 				text-align: right;
 			}
 
-			statusbox, percentage {
+			statusbox,
+			percentage {
 				color: white;
 				font-size: 1.5em;
 				font-weight: bold;
@@ -76,7 +78,7 @@
 			}
 
 			infobox {
-				display:block;
+				display: block;
 				position: absolute;
 				left: 0em;
 				bottom: 10em;

@@ -3,62 +3,58 @@
 	<link type="text/rcss" href="/ui/shared/basics.rcss" />
 	<link type="text/template" href="/ui/shared/window.rml" />
 	<style>
-		body
-		{
+		body {
 			/* TODO: Use a relative system, once tables are implemented */
 			width: 50em;
 			height: 40em;
 			margin: auto;
 			font-size: 13.2dp;
 
-			background-color: rgba( 10%, 10%, 10%, 70%);
+			background-color: rgba(10%, 10%, 10%, 70%);
 		}
 
 		.winner {
 			display: block;
 			width: 100%;
 			position: absolute;
-			top: .7em;
+			top: 0.7em;
 			text-align: center;
 			font-size: 1.3em;
 		}
 
-		half
-		{
+		half {
 			margin-top: 1.5em;
-			display:block;
+			display: block;
 			width: 50%;
 			float: left;
 		}
 
 		teambox {
-			display:block;
+			display: block;
 			margin-left: 1em;
 			margin-right: 1em;
 			overflow: auto;
 		}
 
 		teambox.alien {
-			background-color: #FF2B2630;
+			background-color: #ff2b2630;
 			width: 23em;
 			height: 25em;
 		}
 
 		teambox.human {
-			background-color: #26ABFF30;
+			background-color: #26abff30;
 			width: 23em;
 			height: 25em;
 		}
 
 		teambox.spec {
-			background-color: rgba( 30%, 30%, 30%, 40%);
+			background-color: rgba(30%, 30%, 30%, 40%);
 			height: 3em;
 			padding: 0.5em;
-
 		}
 
-		teamname
-		{
+		teamname {
 			display: block;
 			width: 100%;
 			font-size: 1.5em;
@@ -70,60 +66,62 @@
 			clear: both;
 		}
 
-		infoarea
-		{
+		infoarea {
 			display: block;
 			margin: 1em;
 			width: 100%;
 			padding: 0.5em;
 		}
 
-		infopiece
-		{
+		infopiece {
 			display: block;
 			float: left;
 		}
 
-		datagridrow
-		{
+		datagridrow {
 			height: 1.4em;
-			background: rgba( 50%, 50%, 50%, 50%);
-			color: white;  /* Default nickname starting colour */
-                        padding-top: 0.1em;
-                        padding-bottom: 0.1em;
+			background: rgba(50%, 50%, 50%, 50%);
+			color: white; /* Default nickname starting colour */
+			padding-top: 0.1em;
+			padding-bottom: 0.1em;
 		}
 
-		datagridrow, datagridheader {
-				padding-right: 0.2em;
+		datagridrow,
+		datagridheader {
+			padding-right: 0.2em;
 		}
 
 		datagridrow:nth-child(odd) {
-			background: rgba( 50%, 50%, 50%, 20%);
+			background: rgba(50%, 50%, 50%, 20%);
 		}
 
-		datagridcell, datagridcolumn {
-				overflow: hidden;
-				width: 100%;
-				margin: 0em;
-				padding: 0em;
+		datagridcell,
+		datagridcolumn {
+			overflow: hidden;
+			width: 100%;
+			margin: 0em;
+			padding: 0em;
 		}
 
-		datagridcell:nth-child(1), datagridcolumn:nth-child(1) {
-                        max-width: 3em;
-                        position: relative;
-                        bottom: 0.1em;
-                }
+		datagridcell:nth-child(1),
+		datagridcolumn:nth-child(1) {
+			max-width: 3em;
+			position: relative;
+			bottom: 0.1em;
+		}
 
-		datagridcell:nth-child(2), datagridcolumn:nth-child(2) {
+		datagridcell:nth-child(2),
+		datagridcolumn:nth-child(2) {
 			/* Name cell */
 			text-align: left;
 			max-width: 51%;
 			white-space: pre;
 		}
 
-		datagridcell:nth-child(n+3), datagridcolumn:nth-child(n+3) {
-				text-align: right;
-				max-width: 11%;
+		datagridcell:nth-child(n + 3),
+		datagridcolumn:nth-child(n + 3) {
+			text-align: right;
+			max-width: 11%;
 		}
 
 		datagridcell {
@@ -136,8 +134,8 @@
 		}
 
 		/* Player weapon/class icons */
-		datagridcell:nth-child(1) img, datagridcolumn:nth-child(1) img
-		{
+		datagridcell:nth-child(1) img,
+		datagridcolumn:nth-child(1) img {
 			width: 0.9em;
 			height: 0.9em;
 			/* transform: scale is used to make the icons bigger
@@ -150,7 +148,6 @@
 			color: white;
 			padding-right: 10dp;
 		}
-
 	</style>
 </head>
 

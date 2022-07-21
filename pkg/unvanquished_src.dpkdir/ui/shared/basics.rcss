@@ -24,13 +24,13 @@ h1 {
 	font-weight: bold;
 	text-align: right;
 	color: #666666;
-	border-bottom: .08em #666666;
+	border-bottom: 0.08em #666666;
 }
 
 h2 {
 	display: block;
 	font-size: 1.6em;
-	margin-top: .5em;
+	margin-top: 0.5em;
 	color: #666666;
 }
 
@@ -45,35 +45,32 @@ indent {
 	margin-left: 1.5em;
 }
 
-
 /* #### Links #### */
 /* Inline */
 ilink {
-	color: #136D67;   /* Dark cyan */
+	color: #136d67; /* Dark cyan */
 	tab-index: auto;
-
 }
 ilink:hover {
-	color: #00F8FF;   /* Bright cyan */
+	color: #00f8ff; /* Bright cyan */
 }
-
 
 /* ##### Scroll-bars #### */
 scrollbarvertical {
-	width: .8em;
-	margin-right: -.8em;
+	width: 0.8em;
+	margin-right: -0.8em;
 	/* window's border-right is .17em but makes it a bit larger to
 	   fill the empty pixel that can appear at some resolution */
-	margin-left: -.18em;
-	background-color: rgba(0,0,0,0);
+	margin-left: -0.18em;
+	background-color: rgba(0, 0, 0, 0);
 }
 
 scrollbarvertical sliderbar {
-	background-color: #136D6788;   /* Dark cyan */
+	background-color: #136d6788; /* Dark cyan */
 }
 
 scrollbarvertical sliderbar:hover {
-	background-color: #00F8FF44;   /* Bright cyan */
+	background-color: #00f8ff44; /* Bright cyan */
 }
 
 /* #### Useful classes #### */
@@ -90,14 +87,12 @@ scrollbarvertical sliderbar:hover {
 	display: inline;
 }
 
-
 img.emoticon {
 	height: 1em;
 	width: auto;
 }
 
-progress
-{
+progress {
 	display: block;
 	z-index: -1;
 	fill-image: /gfx/colors/white;

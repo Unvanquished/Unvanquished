@@ -2,8 +2,8 @@
 <head>
 	<link type="text/rcss" href="/ui/shared/basics.rcss" />
 	<style>
-		body{
-			width:100%;
+		body {
+			width: 100%;
 			height: 100%;
 		}
 
@@ -27,7 +27,7 @@
 			bottom: 60%;
 			text-align: left;
 			width: 40%;
-			left: .5em;
+			left: 0.5em;
 		}
 
 		region.tutorial {
@@ -44,8 +44,7 @@
 			text-align: center;
 		}
 
-		region.speedo
-		{
+		region.speedo {
 			position: absolute;
 			bottom: 38%;
 			margin-left: auto;
@@ -54,11 +53,10 @@
 			height: 4%;
 			text-align: center;
 			font-size: 1.4em;
-			background-color: #1E1E1E1E;
+			background-color: #1e1e1e1e;
 		}
 
-		region.beacon
-		{
+		region.beacon {
 			right: 1em;
 			bottom: 45%;
 			text-align: right;
@@ -87,7 +85,7 @@
 			width: 12em;
 			height: 12em;
 
-			float:right;
+			float: right;
 
 			background-color: black;
 		}
@@ -96,9 +94,9 @@
 			display: block;
 			width: 25em;
 			height: 12em;
-			padding: .5em;
+			padding: 0.5em;
 
-			float:right;
+			float: right;
 		}
 
 		stat {
@@ -112,20 +110,17 @@
 		}
 
 		crosshair,
-		crosshair_indicator
-		{
+		crosshair_indicator {
 			position: absolute;
 			color: white;
 			margin: auto auto;
 			width: 100%;
 			height: auto;
 
-			color: #FFFFFF77;  /* Transparency */
-
+			color: #ffffff77; /* Transparency */
 		}
 
-		crosshair_name
-		{
+		crosshair_name {
 			display: block;
 			margin-left: auto;
 			margin-right: auto;
@@ -134,11 +129,9 @@
 			height: 2em;
 
 			font-size: 1.5em;
-
 		}
 
-		follow
-		{
+		follow {
 			display: block;
 			position: absolute;
 			bottom: 6em;
@@ -148,14 +141,14 @@
 			font-size: 1.5em;
 		}
 
-		speedometer,position_indicator
-		{
+		speedometer,
+		position_indicator {
 			width: 100%;
 			height: 100%;
 		}
 
-		speedometer span,position_indicator span
-		{
+		speedometer span,
+		position_indicator span {
 			margin: auto auto;
 			padding: 5%;
 		}
@@ -167,20 +160,18 @@
 			height: 1.5em;
 		}
 
-		beacon_name
-		{
+		beacon_name {
 			font-size: 1.5em;
 		}
 
 		beacon_icon {
-			display:  inline;
-			width:    3em;
-			height:   3em;
-			margin-right: .5em;
+			display: inline;
+			width: 3em;
+			height: 3em;
+			margin-right: 0.5em;
 		}
 
-		.emoticon
-		{
+		.emoticon {
 			height: 1.1em;
 		}
 	</style>

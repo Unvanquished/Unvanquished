@@ -6,10 +6,10 @@
 		<style>
 			/* Halving hack, as we don't have tables */
 			half {
-				display:block;
-				padding:0;
-				float:left;
-				width:45%;
+				display: block;
+				padding: 0;
+				float: left;
+				width: 45%;
 			}
 		</style>
 	</head>

@@ -10,7 +10,7 @@
 
 .circlemenu tab:selected {
 	font-size: 1.5em;
-	border-bottom-width: .1em;
+	border-bottom-width: 0.1em;
 	border-bottom-color: #83fff5;
 }
 
@@ -46,17 +46,21 @@ div.circlemenu-circle {
 	left: -3.35em;
 	top: -3.35em;
 	text-align: center;
-	decorator: image( /ui/assets/circlemenu/circle );
+	decorator: image(/ui/assets/circlemenu/circle);
 	z-index: 2;
 }
-.circlemenu button:hover, .circlemenu button:active, .circlemenu button:focus{
-	decorator: image( /ui/assets/circlemenu/circle-hover );
+.circlemenu button:hover,
+.circlemenu button:active,
+.circlemenu button:focus {
+	decorator: image(/ui/assets/circlemenu/circle-hover);
 }
 
-.circlemenu button.disabled, .circlemenu button.disabled:hover,
-.circlemenu button.disabled:active, .circlemenu button.disabled:focus {
-	decorator: image( /ui/assets/circlemenu/circle );
-	image-color: rgb(12,12,12);
+.circlemenu button.disabled,
+.circlemenu button.disabled:hover,
+.circlemenu button.disabled:active,
+.circlemenu button.disabled:focus {
+	decorator: image(/ui/assets/circlemenu/circle);
+	image-color: rgb(12, 12, 12);
 }
 
 .circlemenu icon {
@@ -68,7 +72,7 @@ div.circlemenu-circle {
 }
 
 .circlemenu button.cancelButton {
-	position:absolute;
+	position: absolute;
 	width: 9em;
 	height: 9em;
 	left: -4.5em;
@@ -89,10 +93,10 @@ div.circlemenu-circle {
 
 .circlemenu .key {
 	color: #eeec;
-	decorator: image( /ui/assets/circlemenu/circle );
+	decorator: image(/ui/assets/circlemenu/circle);
 	position: absolute;
-	left: -.7em;
-	top: -.7em;
+	left: -0.7em;
+	top: -0.7em;
 	width: 1.4em;
 	height: 1.4em;
 	text-align: center;

@@ -3,11 +3,22 @@
  */
 
 /* By default, float ALL CONTROLS to the right and hide any overflow */
-colorinput, dataselect, select, input.text, input.checkbox, input.radio, input.range, keybind {
+colorinput,
+dataselect,
+select,
+input.text,
+input.checkbox,
+input.radio,
+input.range,
+keybind {
 	float: right;
 }
 
-colorinput, dataselect, select, input.text, input.range {
+colorinput,
+dataselect,
+select,
+input.text,
+input.range {
 	width: 12em;
 }
 
@@ -16,24 +27,29 @@ selectvalue {
 }
 
 /* #### Large input boxes. #### */
-colorinput, dataselect, select, input.text {
-	display:block;
+colorinput,
+dataselect,
+select,
+input.text {
+	display: block;
 	height: 1.5em;
 	padding-left: 0.5em;
 	vertical-align: middle;
 
-	background-color: rgba( 0%, 0%, 0%, 50%);
+	background-color: rgba(0%, 0%, 0%, 50%);
 }
 
-colorinput:hover, dataselect:hover, select:hover, input.text:hover {
+colorinput:hover,
+dataselect:hover,
+select:hover,
+input.text:hover {
 	color: white;
 }
-
 
 /* #### Drop-down menu boxes #### */
 select selectbox option,
 dataselect selectbox option {
-	padding: .16em;
+	padding: 0.16em;
 }
 
 /* Alternate shades of grey. */
@@ -55,27 +71,24 @@ dataselect selectbox {
 /* hover */
 select selectbox option:hover,
 dataselect selectbox option:hover {
-	background-color: #136D67;
+	background-color: #136d67;
 }
-
 
 /* #### Images for controls inside boxes #### */
 select selectarrow,
 dataselect selectarrow {
-	margin-right: .03em;
-	margin-top: .06em;
+	margin-right: 0.03em;
+	margin-top: 0.06em;
 	width: 1.3em;
 	height: 1.5em;
-	decorator: image( /ui/assets/widgets/select_dull );
+	decorator: image(/ui/assets/widgets/select_dull);
 }
 select selectarrow:hover,
-dataselect selectarrow:hover
-{
-	decorator: image( /ui/assets/widgets/select_hover );
+dataselect selectarrow:hover {
+	decorator: image(/ui/assets/widgets/select_hover);
 }
 
-@spritesheet checks
-{
+@spritesheet checks {
 	src: /ui/assets/widgets/radio-check;
 
 	checkbox: 0px 222px 222px 222px;
@@ -93,96 +106,77 @@ dataselect selectarrow:hover
 	radio-checked: 0px 444px 222px 222px;
 	radio-checked-hover: 222px 444px 222px 222px;
 	radio-checked-active: 444px 444px 222px 222px;
-
-
 }
 
 /* #### Simple small-box controls #### */
-input.checkbox
-{
+input.checkbox {
 	width: 2.1em;
 	height: 2.1em;
-	margin-top: -.3em;
-	decorator: image( checkbox );
+	margin-top: -0.3em;
+	decorator: image(checkbox);
 }
-input.radio
-{
+input.radio {
 	width: 2.1em;
 	height: 2.1em;
-	margin-top: -.3em;
-	decorator: image( radio );
+	margin-top: -0.3em;
+	decorator: image(radio);
 }
 
-input.checkbox:hover
-{
-	decorator: image( checkbox-hover );
+input.checkbox:hover {
+	decorator: image(checkbox-hover);
 }
 
-input.checkbox:checked:hover
-{
-	decorator: image( checkbox-checked-hover );
+input.checkbox:checked:hover {
+	decorator: image(checkbox-checked-hover);
 }
 
-input.radio:hover
-{
-	decorator: image( radio-hover );
+input.radio:hover {
+	decorator: image(radio-hover);
 }
 
-input.radio:checked:hover
-{
-	decorator: image( radio-checked-hover );
+input.radio:checked:hover {
+	decorator: image(radio-checked-hover);
 }
 
-input.checkbox:active
-{
-	decorator: image( checkbox-active );
+input.checkbox:active {
+	decorator: image(checkbox-active);
 }
 
-input.checkbox:checked:active
-{
-	decorator: image( checkbox-checked-active );
+input.checkbox:checked:active {
+	decorator: image(checkbox-checked-active);
 }
 
-input.radio:active
-{
-	decorator: image( radio-active );
+input.radio:active {
+	decorator: image(radio-active);
 }
 
-input.radio:checked:active
-{
-	decorator: image( radio-checked-active );
+input.radio:checked:active {
+	decorator: image(radio-checked-active);
 }
 
-input.checkbox:checked
-{
-	decorator: image( checkbox-checked );
+input.checkbox:checked {
+	decorator: image(checkbox-checked);
 }
 
-input.checkbox:checked:active
-{
-	decorator: image( checkbox-checked-active );
+input.checkbox:checked:active {
+	decorator: image(checkbox-checked-active);
 }
 
-input.checkbox:checked:hover
-{
-	decorator: image( checkbox-checked-hover );
+input.checkbox:checked:hover {
+	decorator: image(checkbox-checked-hover);
 }
 
-input.radio:checked
-{
-	decorator: image( radio-checked );
+input.radio:checked {
+	decorator: image(radio-checked);
 }
 
-input.radio:checked:hover
-{
-	decorator: image( radio-checked-hover );
+input.radio:checked:hover {
+	decorator: image(radio-checked-hover);
 }
 
-input.radio.checked:active
-{
-	decorator: image( radio-checked-active );
+input.radio.checked:active {
+	decorator: image(radio-checked-active);
 }
-
 
 /* #### Sliders #### */
 
@@ -190,36 +184,34 @@ input.range {
 }
 
 input.range slidertrack {
-	background:#83fff522;
-	height: .4em;
-	margin-top: .4em;
+	background: #83fff522;
+	height: 0.4em;
+	margin-top: 0.4em;
 	width: 4.1em;
 }
 
 input.range sliderbar {
-	background: #136D67;
+	background: #136d67;
 	height: 1.2em;
-	width: .6em;
+	width: 0.6em;
 }
 
-input.range sliderbar:hover{
-	background:#00F8FF;   /* Bright cyan */
+input.range sliderbar:hover {
+	background: #00f8ff; /* Bright cyan */
 }
-
 
 /* #### Key-binding inputs #### */
 keybind {
 	width: 10em;
-	color:white;;
+	color: white;
 
 	tab-index: auto;
 }
 
-
 /* #### Buttons #### */
 buttonbar {
 	clear: both;
-	display:block;
+	display: block;
 	width: 100%;
 }
 
@@ -227,7 +219,7 @@ button {
 	display: block;
 	float: right;
 	width: 5em;
-	background-color: #0D4D48;   /* Darker cyan */
+	background-color: #0d4d48; /* Darker cyan */
 	text-align: center;
 	padding: 0.3em;
 	margin: 0.5em;
@@ -239,13 +231,13 @@ button {
 
 .presets button {
 	float: left;
-	margin: .2em .4em .4em 0em;
+	margin: 0.2em 0.4em 0.4em 0em;
 }
 
 .presets span {
 	display: block;
 }
 
-button:hover{
-	background-color: #178079;   /* MED cyan */
+button:hover {
+	background-color: #178079; /* MED cyan */
 }

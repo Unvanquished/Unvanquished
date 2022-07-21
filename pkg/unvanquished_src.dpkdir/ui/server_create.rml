@@ -8,7 +8,10 @@
 				width: 100%;
 			}
 			/* select and selectbox elements are implicit, but their styles must be explicitely written */
-			row#maplist dataselect, row#maplist select, input#hostname, input#password {
+			row#maplist dataselect,
+			row#maplist select,
+			input#hostname,
+			input#password {
 				width: 25em;
 			}
 			row#maplist selectbox {
