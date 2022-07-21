@@ -275,7 +275,7 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 			neighbor->entity->Extinguish( g_abuild_blobFireImmunityDuration.Get() );
 		}
 	}
-	
+
 	if ( reward )
 	{
 		float credits = g_firefightReward.Get() * CREDITS_PER_EVO * reward;
@@ -300,7 +300,7 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	}
 	else if ( hitEnt->s.eType == entityType_t::ET_BUILDABLE && hitEnt->buildableTeam == TEAM_ALIENS )
 	{
-		impactFlags &= ~MIF_NO_DAMAGE;
+		impactFlags |= MIF_NO_DAMAGE;
 	}
 
 	return impactFlags;
