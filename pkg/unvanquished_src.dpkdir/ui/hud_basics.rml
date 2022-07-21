@@ -66,6 +66,18 @@
 			width: 50%;
 		}
 
+		region.oxygen {
+			left: 30%;
+			bottom: 10%;
+			width: 40%;
+		}
+		region.oxygen progressbar {
+			height: 1.2em;
+		}
+		region.oxygen progressbar fill {
+			image-color: rgba(108, 200, 255, 200);
+		}
+
 		minimap {
 			display: block;
 			width: 12em;
@@ -223,6 +235,10 @@
 		<beacon_distance /><br />
 		<beacon_age /><br />
 		<beacon_owner />
+	</region>
+
+	<region class="oxygen">
+		<progressbar src="oxygen"/>
 	</region>
 </body>
 </rml>
