@@ -74,7 +74,7 @@ GET_FUNC2( build_time, proxy->attributes->buildTime, integer )
 GET_FUNC( usable, boolean )
 GET_FUNC2( team, BG_TeamName( proxy->attributes->team ), string )
 
-template<> void ExtraInit<BuildableProxy>( lua_State* L, int metatable_index ) {}
+template<> void ExtraInit<BuildableProxy>( lua_State* /*L*/, int /*metatable_index*/ ) {}
 RegType<BuildableProxy> BuildableProxyMethods[] =
 {
 	{ nullptr, nullptr },
@@ -134,7 +134,7 @@ int Buildables::pairs( lua_State* L )
 
 std::vector<BuildableProxy> Buildables::buildables;
 
-template<> void ExtraInit<Buildables>( lua_State* /*L*/, int /*metatable_index*/ )
+template<> void ExtraInit<Buildables>( lua_State* L, int metatable_index )
 {
 	// overwrite index function
 	lua_pushcfunction( L, Buildables::index );
