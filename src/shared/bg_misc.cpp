@@ -1365,14 +1365,19 @@ static constexpr const char *const eventnames[] =
 BG_EventName
 ===============
 */
+static constexpr const char *constexpr_BG_EventName( int num )
+{
+	return num < 0 || num >= (int) ARRAY_LEN( eventnames )
+		? "UNKNOWN"
+		: eventnames[ num ];
+}
+// check first and last elements are correct
+static_assert(constexpr_strcmp(constexpr_BG_EventName(EV_NONE), "EV_NONE") == 0, "please keep eventnames and entity_event_t in sync");
+static_assert(constexpr_strcmp(constexpr_BG_EventName(EV_MOMENTUM), "EV_MOMENTUM") == 0, "please keep eventnames and entity_event_t in sync");
+
 const char *BG_EventName( int num )
 {
-	if ( num < 0 || num >= (int) ARRAY_LEN( eventnames ) )
-	{
-		return "UNKNOWN";
-	}
-
-	return eventnames[ num ];
+	return constexpr_BG_EventName(num);
 }
 
 /*
