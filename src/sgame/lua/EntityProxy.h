@@ -77,7 +77,7 @@ struct EntityProxy
 			void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 		};
 	};
-	std::unordered_map<FunctionType, EntityFunction> funcs;
+	std::unordered_map<FunctionType, EntityFunction, std::hash<int>> funcs;
 	lua_State* L;
 };
 
