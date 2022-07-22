@@ -69,7 +69,7 @@ GET_FUNC( clips, ps->clips, integer )
 GET_FUNC( credits, ps->persistant[ PERS_CREDIT], integer )
 GET_FUNC( score, ps->persistant[ PERS_SCORE], integer )
 
-template<> void ExtraInit<Player>(lua_State* L, int metatable_index) {}
+template<> void ExtraInit<Player>(lua_State* /*L*/, int /*metatable_index*/) {}
 RegType<Player> PlayerMethods[] =
 {
 	{ nullptr, nullptr },

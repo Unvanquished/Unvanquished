@@ -71,7 +71,7 @@ GET_FUNC2( jump_magnitude, proxy->attributes->jumpMagnitude, integer )
 GET_FUNC( price, integer )
 GET_FUNC2( team, BG_TeamName( proxy->attributes->team ), string )
 
-template<> void ExtraInit<ClassProxy>( lua_State* L, int metatable_index ) {}
+template<> void ExtraInit<ClassProxy>( lua_State* /*L*/, int /*metatable_index*/ ) {}
 RegType<ClassProxy> ClassProxyMethods[] =
 {
 	{ nullptr, nullptr },

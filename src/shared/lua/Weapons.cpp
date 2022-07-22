@@ -76,7 +76,7 @@ GET_FUNC( purchasable, boolean )
 GET_FUNC2( long_ranged, proxy->attributes->longRanged, boolean )
 GET_FUNC2( team, BG_TeamName( proxy->attributes->team ), string )
 
-template<> void ExtraInit<WeaponProxy>( lua_State* L, int metatable_index ) {}
+template<> void ExtraInit<WeaponProxy>( lua_State* /*L*/, int /*metatable_index*/ ) {}
 RegType<WeaponProxy> WeaponProxyMethods[] =
 {
 	{ nullptr, nullptr },

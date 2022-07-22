@@ -69,7 +69,7 @@ GET_FUNC( purchasable, boolean )
 GET_FUNC( usable, boolean )
 GET_FUNC2( team, BG_TeamName( proxy->attributes->team ), string )
 
-template<> void ExtraInit<UpgradeProxy>( lua_State* L, int metatable_index ) {}
+template<> void ExtraInit<UpgradeProxy>( lua_State* /*L*/, int /*metatable_index*/ ) {}
 RegType<UpgradeProxy> UpgradeProxyMethods[] =
 {
 	{ nullptr, nullptr },

@@ -81,7 +81,7 @@ public:
 	}
 };
 UnvGlobal global;
-template<> void ExtraInit<UnvGlobal>( lua_State* L, int metatable_index ) {}
+template<> void ExtraInit<UnvGlobal>( lua_State* /*L*/, int /*metatable_index*/ ) {}
 RegType<UnvGlobal> UnvGlobalMethods[] =
 {
 	{ nullptr, nullptr },
