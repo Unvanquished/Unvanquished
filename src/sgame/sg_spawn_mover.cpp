@@ -530,6 +530,83 @@ Pos1 is "at rest", pos2 is "activated"
 SetMoverState
 ===============
 */
+
+			// most elevators are *not* func_door, so that broken.
+			// Some (one on forlorn) is a func_door, with a "targetname",
+			// and I suspect this is what makes it different from doors.
+			// That distinction means that, doors with a targetname will
+			// break for bots.
+			// Also, for now, doors without targetname work because bots
+			// just walk to kiss (or worse!) them, until they open wide
+			// for them to enter.
+			// The correct solution here would be to generate navcons
+			// for all movers, with labels indicating the bot how to
+			// handle the situation correctly (including waiting patiently
+			// that elevator reached desired navmesh).
+			// Also, this code is currently seemlingly inverted.
+bool IsDoor( const gentity_t *ent )
+			{
+	const char * funcs[] =
+	{
+		"func_door",
+		"func_door_model",
+		"func_door_rotating",
+	};
+
+	for ( const char* fn : funcs )
+	{
+		if ( !Q_stricmp( fn, ent->classname ) )
+		{
+			return true;
+			}
+	}
+	return false;
+}
+
+// a mover is automatic if:
+//
+// * it does not react to damages
+// * it has no targetName nor aliases
+// * it has no master or it's master is automatic
+//
+// TODO: sometimes targetName or aliases are abused by
+// mappers, especially the "name" alias. This break bots
+// for now, but not sure how this should be handled.
+bool IsAutomaticMover( const gentity_t *ent )
+{
+	if ( ent->takedamage )
+	{
+		return false;
+	}
+
+	for ( int i = 0; i < MAX_ENTITY_ALIASES; ++i )
+	{
+		if ( ent->names[i] )
+		{
+			return false;
+		}
+	}
+
+	if ( ent->flags & FL_GROUPSLAVE )
+	{
+		return IsAutomaticMover( ent->groupMaster );
+	}
+	return true;
+}
+
+void BotHandleDoor( gentity_t *ent )
+{
+	if ( IsDoor( ent ) && !IsAutomaticMover( ent ) )
+			{
+				if ( ent->obstacleHandle )
+				{
+					G_BotRemoveObstacle( ent->obstacleHandle );
+					ent->obstacleHandle = 0;
+				}
+		G_BotAddObstacle( ent->r.absmin, ent->r.absmax, &ent->obstacleHandle );
+			}
+}
+
 static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 {
 	vec3_t delta;
@@ -546,40 +623,14 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 			VectorCopy( ent->restingPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = trType_t::TR_STATIONARY;
 
-			// most elevators are *not* func_door, so that broken.
-			// Some (one on forlorn) is a func_door, with a "targetname",
-			// and I suspect this is what makes it different from doors.
-			// That distinction means that, doors with a targetname will
-			// break for bots.
-			// Also, for now, doors without targetname work because bots
-			// just walk to kiss (or worse!) them, until they open wide
-			// for them to enter.
-			// The correct solution here would be to generate navcons
-			// for all movers, with labels indicating the bot how to
-			// handle the situation correctly (including waiting patiently
-			// that elevator reached desired navmesh).
-			// Also, this code is currently seemlingly inverted.
-			if ( !Q_stricmp( ent->classname, "func_door" ) && ( ent->names[0] || ent->takedamage  ) )
-			{
-				vec3_t mins, maxs;
-				VectorAdd( ent->restingPosition, ent->r.mins, mins );
-				VectorAdd( ent->restingPosition, ent->r.maxs, maxs );
-				G_BotAddObstacle( mins, maxs, &ent->obstacleHandle );
-			}
+			BotHandleDoor( ent );
 			break;
 
 		case MOVER_POS2:
 			VectorCopy( ent->activatedPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = trType_t::TR_STATIONARY;
 
-			if ( !Q_stricmp( ent->classname, "func_door" ) && ( ent->names[0] || ent->takedamage ) )
-			{
-				if ( ent->obstacleHandle )
-				{
-					G_BotRemoveObstacle( ent->obstacleHandle );
-					ent->obstacleHandle = 0;
-				}
-			}
+			BotHandleDoor( ent );
 			break;
 
 		case MOVER_1TO2:
@@ -601,11 +652,15 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 		case ROTATOR_POS1:
 			VectorCopy( ent->restingPosition, ent->s.apos.trBase );
 			ent->s.apos.trType = trType_t::TR_STATIONARY;
+
+			BotHandleDoor( ent );
 			break;
 
 		case ROTATOR_POS2:
 			VectorCopy( ent->activatedPosition, ent->s.apos.trBase );
 			ent->s.apos.trType = trType_t::TR_STATIONARY;
+
+			BotHandleDoor( ent );
 			break;
 
 		case ROTATOR_1TO2:
