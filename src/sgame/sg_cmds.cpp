@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "shared/parse.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "sgame/lua/Hooks.h"
 
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
@@ -1111,6 +1112,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 	switch ( mode )
 	{
 		case SAY_ALL:
+			Unv::SGame::Lua::ExecChatHooks(ent, TEAM_ALL, chatText);
 			G_LogPrintf( "Say: %d \"%s^*\": ^2%s",
 			             ( ent ) ? ( int )( ent - g_entities ) : -1,
 			             ( ent ) ? ent->client->pers.netname : "console", chatText );
@@ -1129,7 +1131,7 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 			{
 				Sys::Error( "SAY_TEAM by non-client entity" );
 			}
-
+			Unv::SGame::Lua::ExecChatHooks(ent, static_cast<team_t>(ent->client->pers.team), chatText);
 			G_LogPrintf( "SayTeam: %d \"%s^*\": ^5%s",
 			             ( int )( ent - g_entities ), ent->client->pers.netname, chatText );
 			break;
