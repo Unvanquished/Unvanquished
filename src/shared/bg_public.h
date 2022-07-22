@@ -1481,6 +1481,18 @@ void     AddFlag(int &flags, int flag);
 void     RemoveFlag(int &flags, int flag);
 void     ToggleFlag(int &flags, int flag);
 
+// true if first is lower than second argument
+// this function is like ` strcmp(first, second)` except constexpr.
+// outside of compile-time evaluations, prefer strcmp.
+constexpr int constexpr_strcmp(const char *first, const char *second)
+{
+       return *first == *second
+               ? (*first == '\0'
+                       ? 0 // strings are equal
+                       : constexpr_strcmp(first+1, second+1) ) // we aren't done y
+               : ((*first & 0xff) < (*second & 0xff) ? -1 : 1); // these two chars are different, so
+}
+
 bool BG_WeaponIsFull(int weapon, int ammo, int clips );
 bool BG_InventoryContainsWeapon( int weapon, const int stats[] );
 int      BG_SlotsForInventory( int stats[] );
