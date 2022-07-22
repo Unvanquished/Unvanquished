@@ -2,7 +2,7 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 2022 Unv Developers
+Copyright (C) 2012 Unv Developers
 
 This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
@@ -32,81 +32,23 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "sgame/lua/SGameGlobal.h"
+#ifndef LUALEVEL_H_
+#define LUALEVEL_H_
 
-#include "sgame/lua/Entity.h"
-#include "sgame/lua/EntityProxy.h"
-#include "sgame/lua/Level.h"
+#include "shared/bg_lua.h"
 #include "sgame/sg_local.h"
-#include "shared/lua/LuaLib.h"
 
 namespace Unv {
 namespace SGame {
 namespace Lua {
 
-using Unv::Shared::Lua::LuaLib;
-using Unv::Shared::Lua::RegType;
-
-static Entity entity;
-static Level level;
-
-class SGameGlobal
+struct Level
 {
-	public:
-	static int GetEntity( lua_State* L )
-	{
-		LuaLib<Entity>::push( L, &entity, false );
-		return 1;
-	}
-
-	static int GetLevel( lua_State* L )
-	{
-		LuaLib<Level>::push( L, &level, false );
-		return 1;
-	}
 };
 
-SGameGlobal global;
 
-RegType<SGameGlobal> SGameGlobalMethods[] =
-{
-	{ nullptr, nullptr },
-};
-luaL_Reg SGameGlobalGetters[] =
-{
-	{ "entity", SGameGlobal::GetEntity },
-	{ "level", SGameGlobal::GetLevel },
-	{ nullptr, nullptr },
-};
-luaL_Reg SGameGlobalSetters[] =
-{
-	{ nullptr, nullptr },
-};
+} // namespace Lua
+} // namespace SGame
+} // namespace Unv
 
-static SGameGlobal sgame;
-
-void InitializeSGameGlobal(lua_State* L)
-{
-	LuaLib<SGameGlobal>::Register(L);
-	LuaLib<Entity>::Register(L);
-	LuaLib<EntityProxy>::Register(L);
-	LuaLib<Level>::Register(L);
-	LuaLib<SGameGlobal>::push( L, &sgame, false );
-	lua_setglobal( L, "sgame" );
-
-}
-
-
-}  // namespace Lua
-}  // namespace SGame
-}  // namespace Unv
-
-namespace Unv {
-namespace Shared {
-namespace Lua {
-LUASGAMETYPEDEFINE(SGameGlobal, false)
-template<>
-void ExtraInit<Unv::SGame::Lua::SGameGlobal>(lua_State* L, int metatable_index) {}
-}  // namespace Lua
-}  // namespace Shared
-}  // namespace Unv
+#endif // LUALEVEL_H_

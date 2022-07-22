@@ -47,6 +47,7 @@ struct Entity
 {
 	static int IterateByClassName(lua_State* L);
 	static int Find(lua_State* L);
+	static int New(lua_State* L);
 
 	static EntityProxy* CreateProxy(gentity_t* ent, lua_State* L);
 

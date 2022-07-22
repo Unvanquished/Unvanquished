@@ -338,6 +338,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/lua/Entity.h
     ${GAMELOGIC_DIR}/sgame/lua/EntityProxy.cpp
     ${GAMELOGIC_DIR}/sgame/lua/EntityProxy.h
+    ${GAMELOGIC_DIR}/sgame/lua/Level.h
+    ${GAMELOGIC_DIR}/sgame/lua/Level.cpp
     ${GAMELOGIC_DIR}/sgame/lua/SGameGlobal.cpp
     ${GAMELOGIC_DIR}/sgame/lua/SGameGlobal.h
 

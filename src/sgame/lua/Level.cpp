@@ -2,7 +2,7 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 2022 Unv Developers
+Copyright (C) 2012 Unv Developers
 
 This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
@@ -32,81 +32,71 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "sgame/lua/SGameGlobal.h"
-
-#include "sgame/lua/Entity.h"
-#include "sgame/lua/EntityProxy.h"
 #include "sgame/lua/Level.h"
-#include "sgame/sg_local.h"
 #include "shared/lua/LuaLib.h"
+#include "sgame/sg_local.h"
+
+using Unv::Shared::Lua::LuaLib;
+using Unv::Shared::Lua::RegType;
 
 namespace Unv {
 namespace SGame {
 namespace Lua {
 
-using Unv::Shared::Lua::LuaLib;
-using Unv::Shared::Lua::RegType;
-
-static Entity entity;
-static Level level;
-
-class SGameGlobal
-{
-	public:
-	static int GetEntity( lua_State* L )
-	{
-		LuaLib<Entity>::push( L, &entity, false );
-		return 1;
-	}
-
-	static int GetLevel( lua_State* L )
-	{
-		LuaLib<Level>::push( L, &level, false );
-		return 1;
-	}
-};
-
-SGameGlobal global;
-
-RegType<SGameGlobal> SGameGlobalMethods[] =
-{
-	{ nullptr, nullptr },
-};
-luaL_Reg SGameGlobalGetters[] =
-{
-	{ "entity", SGameGlobal::GetEntity },
-	{ "level", SGameGlobal::GetLevel },
-	{ nullptr, nullptr },
-};
-luaL_Reg SGameGlobalSetters[] =
-{
-	{ nullptr, nullptr },
-};
-
-static SGameGlobal sgame;
-
-void InitializeSGameGlobal(lua_State* L)
-{
-	LuaLib<SGameGlobal>::Register(L);
-	LuaLib<Entity>::Register(L);
-	LuaLib<EntityProxy>::Register(L);
-	LuaLib<Level>::Register(L);
-	LuaLib<SGameGlobal>::push( L, &sgame, false );
-	lua_setglobal( L, "sgame" );
-
+#define GET_FUNC( var, func) \
+static int Get##var( lua_State* L ) \
+{ \
+	func; \
+	return 1; \
 }
 
+GET_FUNC( num_entities, lua_pushnumber(L, level.num_entities) )
+GET_FUNC( timeLimit, lua_pushnumber(L, level.timelimit) )
+GET_FUNC( max_clients, lua_pushnumber(L, level.maxclients) )
+GET_FUNC( time, lua_pushnumber(L, level.time) )
+GET_FUNC( previous_time, lua_pushnumber(L, level.previousTime) )
+GET_FUNC( start_time, lua_pushnumber(L, level.startTime) )
+GET_FUNC( match_time, lua_pushnumber(L, level.matchTime) )
+GET_FUNC( num_connected_clients, lua_pushnumber(L, level.numConnectedClients) )
+GET_FUNC( num_connected_players, lua_pushnumber(L, level.numConnectedPlayers) )
 
-}  // namespace Lua
-}  // namespace SGame
-}  // namespace Unv
+
+RegType<Level> LevelMethods[] =
+{
+	{ nullptr, nullptr },
+};
+#define GETTER(name) { #name, Get##name }
+luaL_Reg LevelGetters[] =
+{
+    GETTER( num_entities ),
+    GETTER( timeLimit ),
+    GETTER( max_clients ),
+    GETTER( time ),
+    GETTER( previous_time ),
+    GETTER( start_time ),
+    GETTER( match_time ),
+    GETTER( num_connected_clients ),
+    GETTER( num_connected_players ),
+	{ nullptr, nullptr },
+};
+
+luaL_Reg LevelSetters[] =
+{
+	{ nullptr, nullptr },
+};
+
+} // namespace Lua
+} // namespace SGame
+} // namespace Unv
 
 namespace Unv {
 namespace Shared {
 namespace Lua {
-LUASGAMETYPEDEFINE(SGameGlobal, false)
+LUASGAMETYPEDEFINE(Level, false)
 template<>
-void ExtraInit<Unv::SGame::Lua::SGameGlobal>(lua_State* L, int metatable_index) {}
+void ExtraInit<Unv::SGame::Lua::Level>(lua_State* L, int metatable_index)
+{
+}
 }  // namespace Lua
 }  // namespace Shared
 }  // namespace Unv
