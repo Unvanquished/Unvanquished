@@ -69,6 +69,10 @@ void think_aimAtTarget( gentity_t *self )
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
 	VectorScale( origin, 0.5f, origin );
 
+	if ( self->s.origin2[0] != 0.f || self->s.origin2[1] != 0.f || self->s.origin2[2] != 0.f )
+	{
+		return;
+	}
 	pickedTarget = G_PickRandomTargetFor( self );
 
 	if ( !pickedTarget )
