@@ -31,7 +31,6 @@
 #include "shared/bg_public.h"
 #include "shared/bg_lua.h"
 
-
 namespace Unv {
 namespace Shared {
 namespace Lua {
