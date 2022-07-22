@@ -232,7 +232,7 @@ int LuaLib<T>::tostring_T( lua_State* L )
 	char buff[32];
 	T** ptrHold = ( T** )lua_touserdata( L, 1 );
 	T* obj = *ptrHold;
-	sprintf( buff, "%p", obj );
+	sprintf( buff, "%p", static_cast<void*>(obj) );
 	lua_pushfstring( L, "%s (%s)", GetTClassName<T>(), buff );
 	return 1;
 }
@@ -309,8 +309,6 @@ int LuaLib<T>::index( lua_State* L )
 	return 1;
 }
 
-
-
 template<typename T>
 int LuaLib<T>::newindex( lua_State* L )
 {
@@ -339,7 +337,7 @@ int LuaLib<T>::newindex( lua_State* L )
 
 
 template<typename T>
-void LuaLib<T>::_regfunctions( lua_State* L, int meta, int methods )
+void LuaLib<T>::_regfunctions( lua_State* L, int /*meta*/, int methods )
 {
 	//fill method table with methods.
 	for ( RegType* m = ( RegType* )GetMethodTable<T>(); m->name; m++ )

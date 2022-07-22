@@ -94,9 +94,7 @@ namespace Shared {
 namespace Lua {
 LUASGAMETYPEDEFINE(Level, false)
 template<>
-void ExtraInit<Unv::SGame::Lua::Level>(lua_State* L, int metatable_index)
-{
-}
+void ExtraInit<Unv::SGame::Lua::Level>(lua_State* /*L*/, int /*metatable_index*/) {}
 }  // namespace Lua
 }  // namespace Shared
 }  // namespace Unv
