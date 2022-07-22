@@ -75,6 +75,8 @@ GET_FUNC2(target_name, lua_pushstring(L, proxy->ent->names[1]))
 // Intentionally the same index as alias. Check sg_spawn.cpp for why.
 GET_FUNC2(target_name2, lua_pushstring(L, proxy->ent->names[2]))
 GET_FUNC2(angles, Shared::Lua::PushVec3(L, proxy->ent->s.angles))
+GET_FUNC2(nextthink, lua_pushnumber(L, proxy->ent->nextthink))
+
 static int Getteam(lua_State* L)
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
@@ -119,6 +121,22 @@ static int Setangles(lua_State* L)
 		VectorCopy(angles, proxy->ent->s.angles);
 	}
 	return 0;
+}
+
+static int Setnextthink(lua_State* L)
+{
+	if (lua_isnumber(L, 2))
+	{
+		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+		if (!proxy) return 0;
+		int nextthink = luaL_checknumber(L, 1);
+		if (nextthink > level.time)
+		{
+			proxy->ent->nextthink = nextthink;
+		}
+		return 0;
+	}
+
 }
 
 template<typename T>
@@ -224,6 +242,13 @@ void PushArgs(lua_State* L, T arg, Args... args)
 			} \
 		} \
 		return 0; \
+	} \
+	static int Get##method(lua_State* L) \
+	{ \
+		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 ); \
+		if (!proxy) return 0; \
+		lua_pushboolean(L, proxy->ent->method == nullptr); \
+		return 1; \
 	}
 
 ExecFunc(think, THINK, (gentity_t* self), 1, self)
@@ -249,6 +274,16 @@ luaL_Reg EntityProxyGetters[] =
 	GETTER(target_name2),
 	GETTER(angles),
 	GETTER(team),
+	GETTER(nextthink),
+	// Getters for functions just return bool if the function is set.
+	GETTER(think),
+	GETTER(reset),
+	GETTER(reached),
+	GETTER(blocked),
+	GETTER(touch),
+	GETTER(use),
+	GETTER(pain),
+	GETTER(die),
 
 	{ nullptr, nullptr }
 };
@@ -257,6 +292,9 @@ luaL_Reg EntityProxySetters[] =
 {
 	SETTER(origin),
 	SETTER(angles),
+	SETTER(nextthink),
+	// Setters for functions allow running a lua callback in addition to the
+	// existing callback.
 	SETTER(think),
 	SETTER(reset),
 	SETTER(reached),
