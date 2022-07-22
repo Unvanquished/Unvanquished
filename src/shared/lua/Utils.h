@@ -28,6 +28,8 @@
 #ifndef LUAUTILS_H_
 #define LUAUTILS_H_
 #include "shared/bg_lua.h"
+#include "shared/bg_local.h"
+
 namespace Unv {
 namespace Shared {
 namespace Lua {
