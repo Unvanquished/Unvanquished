@@ -134,7 +134,7 @@ int Buildables::pairs( lua_State* L )
 
 std::vector<BuildableProxy> Buildables::buildables;
 
-template<> void ExtraInit<Buildables>( lua_State* L, int metatable_index )
+template<> void ExtraInit<Buildables>( lua_State* /*L*/, int /*metatable_index*/ )
 {
 	// overwrite index function
 	lua_pushcfunction( L, Buildables::index );
