@@ -33,7 +33,7 @@
 #include "common/FileSystem.h"
 #include "Interpreter.h"
 
-#include "SGameGlobal.h"
+#include "sgame/lua/SGameGlobal.h"
 
 using Unv::Shared::Lua::LuaLib;
 
@@ -196,14 +196,23 @@ lua_State* State()
 
 bool LoadScript(Str::StringRef scriptPath)
 {
-	std::error_code err;
-	std::string code = FS::PakPath::ReadFile(scriptPath, err);
-	if (err)
+	fileHandle_t f;
+	int len = trap_FS_FOpenFile(scriptPath.c_str(), &f, fsMode_t::FS_READ);
+	if (len <= 0)
 	{
-		Log::Warn("erorr loading %s: %s", scriptPath, err);
+		Log::Warn("error opening %s: %d", scriptPath, len);
 		return false;
 	}
-	if (luaL_loadbuffer(L, code.c_str(), code.size(), "code") != 0)
+	std::vector<char> code = {};
+	code.reserve(len);
+	int ret = trap_FS_Read(code.data(), len, f);
+	if (ret != len)
+	{
+		Log::Warn("error reading %s: %d", scriptPath, ret);
+		return false;
+	}
+	Log::Warn("LUA %d\n%s", ret, code.data());
+	if (luaL_loadbuffer(L, code.data(), code.size(), "code") != 0)
 	{
 		Shared::Lua::Report(L, "Loading buffer");
 		return false;

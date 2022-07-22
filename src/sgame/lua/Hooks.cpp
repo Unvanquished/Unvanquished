@@ -2,7 +2,7 @@
 ===========================================================================
 
 Daemon GPL Source Code
-Copyright (C) 2022 Unv Developers
+Copyright (C) 2012 Unv Developers
 
 This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
@@ -32,91 +32,88 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "sgame/lua/SGameGlobal.h"
+#include "sgame/lua/Hooks.h"
 
 #include "sgame/lua/Entity.h"
-#include "sgame/lua/EntityProxy.h"
-#include "sgame/lua/Hooks.h"
-#include "sgame/lua/Level.h"
-#include "sgame/sg_local.h"
 #include "shared/lua/LuaLib.h"
+#include "sgame/sg_local.h"
+
+using Unv::Shared::Lua::LuaLib;
+using Unv::Shared::Lua::RegType;
 
 namespace Unv {
 namespace SGame {
 namespace Lua {
 
-using Unv::Shared::Lua::LuaLib;
-using Unv::Shared::Lua::RegType;
 
-static Entity entity;
-static Level level;
-static Hooks hooks;
+using LuaHook = std::pair<lua_State*, int>;
 
-class SGameGlobal
+static std::vector<LuaHook> chatHooks;
+
+// Will be called as function(EntityProxy, team, message)
+// where team = <team> is all chat.
+int RegisterChatHook(lua_State* L)
 {
-	public:
-	static int GetEntity( lua_State* L )
-	{
-		LuaLib<Entity>::push( L, &entity, false );
-		return 1;
-	}
-
-	static int GetLevel( lua_State* L )
-	{
-		LuaLib<Level>::push( L, &level, false );
-		return 1;
-	}
-
-	static int GetHooks( lua_State* L )
-	{
-		LuaLib<Hooks>::push( L, &hooks, false );
-		return 1;
-	}
-};
-
-SGameGlobal global;
-
-RegType<SGameGlobal> SGameGlobalMethods[] =
-{
-	{ nullptr, nullptr },
-};
-luaL_Reg SGameGlobalGetters[] =
-{
-	{ "entity", SGameGlobal::GetEntity },
-	{ "level", SGameGlobal::GetLevel },
-	{ "hooks", SGameGlobal::GetHooks },
-	{ nullptr, nullptr },
-};
-luaL_Reg SGameGlobalSetters[] =
-{
-	{ nullptr, nullptr },
-};
-
-static SGameGlobal sgame;
-
-void InitializeSGameGlobal(lua_State* L)
-{
-	LuaLib<SGameGlobal>::Register(L);
-	LuaLib<Entity>::Register(L);
-	LuaLib<EntityProxy>::Register(L);
-	LuaLib<Level>::Register(L);
-	InitializeHooks(L);
-	LuaLib<SGameGlobal>::push( L, &sgame, false );
-	lua_setglobal( L, "sgame" );
-
+    if (lua_isfunction(L, 1))
+    {
+        int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+        chatHooks.emplace_back(L, ref);
+    }
+    return 0;
 }
 
+void ExecChatHooks(gentity_t* ent, team_t team, Str::StringRef message)
+{
+    for (const auto& hook: chatHooks)
+    {
+        lua_rawgeti(hook.first, LUA_REGISTRYINDEX, hook.second); \
+        EntityProxy* proxy = Entity::CreateProxy(ent, hook.first);
+        LuaLib<EntityProxy>::push(hook.first, proxy, false);
+        lua_pushstring(hook.first, BG_TeamName(team));
+        lua_pushstring(hook.first, message.c_str());
+        if (lua_pcall(hook.first, 3, 0, 0) != 0)
+		{
+			Log::Warn( "Could not run lua chat hook callback: %s",
+				lua_tostring(hook.first, -1));
+		}
+    }
+}
 
-}  // namespace Lua
-}  // namespace SGame
-}  // namespace Unv
+RegType<Hooks> HooksMethods[] =
+{
+	{ nullptr, nullptr },
+};
+
+luaL_Reg HooksGetters[] =
+{
+	{ nullptr, nullptr },
+};
+
+luaL_Reg HooksSetters[] =
+{
+	{ nullptr, nullptr },
+};
+
+void InitializeHooks(lua_State* L)
+{
+    chatHooks.clear();
+    LuaLib<Hooks>::Register(L);
+}
+
+} // namespace Lua
+} // namespace SGame
+} // namespace Unv
 
 namespace Unv {
 namespace Shared {
 namespace Lua {
-LUASGAMETYPEDEFINE(SGameGlobal, false)
+LUASGAMETYPEDEFINE(Hooks, false)
 template<>
-void ExtraInit<Unv::SGame::Lua::SGameGlobal>(lua_State* L, int metatable_index) {}
+void ExtraInit<Unv::SGame::Lua::Hooks>(lua_State* L, int metatable_index)
+{
+	lua_pushcfunction( L, Unv::SGame::Lua::RegisterChatHook);
+	lua_setfield( L, metatable_index - 1, "RegisterChatHook" );
+}
 }  // namespace Lua
 }  // namespace Shared
 }  // namespace Unv
