@@ -240,11 +240,11 @@ void PushArgs(lua_State* L, T arg, Args... args)
 		auto it = proxy->funcs.find(EntityProxy::upper); \
 		if (it == proxy->funcs.end() && ref != -1) \
 		{ \
-			it = proxy->funcs.insert({EntityProxy::upper, EntityProxy::EntityFunction { \
-				.type = EntityProxy::upper, \
-				.luaRef = ref, \
-				.method = proxy->ent->method, \
-			}}).first; \
+			EntityProxy::EntityFunction func = {}; \
+			func.type = EntityProxy::upper; \
+			func.luaRef = ref; \
+			func.method = proxy->ent->method; \
+			it = proxy->funcs.insert({EntityProxy::upper, std::move(func)}).first; \
 			proxy->ent->method = Exec##method; \
 		} \
 		else \
