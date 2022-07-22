@@ -1234,7 +1234,7 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 	}
 }
 
-static const char *const eventnames[] =
+static constexpr const char *const eventnames[] =
 {
   "EV_NONE",
 
@@ -1278,6 +1278,9 @@ static const char *const eventnames[] =
   "EV_FIRE_WEAPON",
   "EV_FIRE_WEAPON2",
   "EV_FIRE_WEAPON3",
+  "EV_FIRE_DECONSTRUCT",
+  "EV_FIRE_DECONSTRUCT_LONG",
+  "EV_DECONSTRUCT_SELECT_TARGET",
   "EV_WEAPON_RELOAD",
 
   "EV_PLAYER_RESPAWN", // for fovwarp effects
@@ -1331,14 +1334,9 @@ static const char *const eventnames[] =
   "EV_STOPLOOPINGSOUND",
   "EV_TAUNT",
 
-  "EV_OVERMIND_ATTACK_1", // overmind under attack
-  "EV_OVERMIND_ATTACK_2", // overmind under attack
-  "EV_OVERMIND_DYING", // overmind close to death
-  "EV_OVERMIND_SPAWNS", // overmind needs spawns
-
-  "EV_REACTOR_ATTACK_1", // reactor under attack
-  "EV_REACTOR_ATTACK_2", // reactor under attack
-  "EV_REACTOR_DYING", // reactor destroyed
+  "EV_NO_SPAWNS",
+  "EV_MAIN_UNDER_ATTACK",
+  "EV_MAIN_DYING",
 
   "EV_WARN_ATTACK", // a building has been destroyed and the destruction noticed by a nearby om/rc/rrep
 
