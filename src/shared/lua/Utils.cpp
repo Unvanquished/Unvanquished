@@ -34,14 +34,19 @@ namespace Shared {
 namespace Lua {
 void Report( lua_State* L, Str::StringRef place )
 {
-	const char* msg = lua_tostring( L, -1 );
-	std::string strmsg( place );
+	Log::Warn( place );
 
-	while ( msg )
+	while ( true )
 	{
-		lua_pop( L, 1 );
-		Log::Warn( strmsg );
-		msg = lua_tostring( L, -1 );
+		lua_gettop( L );
+		const char* msg = lua_tostring( L, -1 );
+		if (msg)
+		{
+			Log::Warn( msg );
+			lua_pop( L, 1 );
+			continue;
+		}
+		break;
 	}
 }
 
