@@ -76,6 +76,8 @@ GET_FUNC2(target_name, lua_pushstring(L, proxy->ent->names[1]))
 GET_FUNC2(target_name2, lua_pushstring(L, proxy->ent->names[2]))
 GET_FUNC2(angles, Shared::Lua::PushVec3(L, proxy->ent->s.angles))
 GET_FUNC2(nextthink, lua_pushnumber(L, proxy->ent->nextthink))
+GET_FUNC2(mins, Shared::Lua::PushVec3(L, proxy->ent->r.mins))
+GET_FUNC2(maxs, Shared::Lua::PushVec3(L, proxy->ent->r.maxs))
 
 static int Getteam(lua_State* L)
 {
@@ -134,9 +136,34 @@ static int Setnextthink(lua_State* L)
 		{
 			proxy->ent->nextthink = nextthink;
 		}
-		return 0;
 	}
+	return 0;
+}
 
+static int Setmins(lua_State* L)
+{
+	if (lua_istable(L, 2))
+	{
+		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+		if (!proxy) return 0;
+		vec3_t mins;
+		Shared::Lua::CheckVec3(L, mins);
+		VectorCopy(mins, proxy->ent->r.mins);
+	}
+	return 0;
+}
+
+static int Setmaxs(lua_State* L)
+{
+	if (lua_istable(L, 2))
+	{
+		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+		if (!proxy) return 0;
+		vec3_t maxs;
+		Shared::Lua::CheckVec3(L, maxs);
+		VectorCopy(maxs, proxy->ent->r.maxs);
+	}
+	return 0;
 }
 
 template<typename T>
@@ -275,6 +302,8 @@ luaL_Reg EntityProxyGetters[] =
 	GETTER(angles),
 	GETTER(team),
 	GETTER(nextthink),
+	GETTER(mins),
+	GETTER(maxs),
 	// Getters for functions just return bool if the function is set.
 	GETTER(think),
 	GETTER(reset),
@@ -293,6 +322,8 @@ luaL_Reg EntityProxySetters[] =
 	SETTER(origin),
 	SETTER(angles),
 	SETTER(nextthink),
+	SETTER(mins),
+	SETTER(maxs),
 	// Setters for functions allow running a lua callback in addition to the
 	// existing callback.
 	SETTER(think),
