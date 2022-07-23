@@ -72,6 +72,19 @@ class SGameGlobal
 		LuaLib<Hooks>::push( L, &hooks, false );
 		return 1;
 	}
+
+	static int SendServerCommand( lua_State* L )
+	{
+		if (!lua_isnumber(L, 1) || lua_isstring(L, 2))
+		{
+			Log::Warn("invalid arguments to SendServerCommand.");
+			return 0;
+		}
+		int entNum = luaL_checknumber(L, 1);
+		const char* cmd = luaL_checkstring(L, 2);
+		trap_SendServerCommand(entNum, cmd);
+		return 0;
+	}
 };
 
 SGameGlobal global;
@@ -103,7 +116,6 @@ void InitializeSGameGlobal(lua_State* L)
 	InitializeHooks(L);
 	LuaLib<SGameGlobal>::push( L, &sgame, false );
 	lua_setglobal( L, "sgame" );
-
 }
 
 
@@ -116,7 +128,11 @@ namespace Shared {
 namespace Lua {
 LUASGAMETYPEDEFINE(SGameGlobal, false)
 template<>
-void ExtraInit<Unv::SGame::Lua::SGameGlobal>(lua_State* L, int metatable_index) {}
+void ExtraInit<Unv::SGame::Lua::SGameGlobal>(lua_State* L, int metatable_index)
+{
+	lua_pushcfunction( L, Unv::SGame::Lua::SGameGlobal::SendServerCommand );
+	lua_setfield( L, metatable_index - 1, "SendServerCommand" );
+}
 }  // namespace Lua
 }  // namespace Shared
 }  // namespace Unv
