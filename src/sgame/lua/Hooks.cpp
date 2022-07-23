@@ -64,6 +64,8 @@ int RegisterChatHook(lua_State* L)
 
 void ExecChatHooks(gentity_t* ent, team_t team, Str::StringRef message)
 {
+    // nullptr ent can be for console chats.
+    if (!ent) return;
     for (const auto& hook: chatHooks)
     {
         lua_rawgeti(hook.first, LUA_REGISTRYINDEX, hook.second); \
