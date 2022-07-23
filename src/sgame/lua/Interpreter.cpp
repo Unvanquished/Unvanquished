@@ -211,8 +211,7 @@ bool LoadScript(Str::StringRef scriptPath)
 		Log::Warn("error reading %s: %d", scriptPath, ret);
 		return false;
 	}
-	Log::Warn("LUA %d\n%s", ret, code.data());
-	if (luaL_loadbuffer(L, code.data(), code.size(), "code") != 0)
+	if (luaL_loadbuffer(L, code.data(), len, "code") != 0)
 	{
 		Shared::Lua::Report(L, "Loading buffer");
 		return false;
