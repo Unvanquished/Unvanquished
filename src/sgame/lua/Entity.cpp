@@ -85,6 +85,58 @@ int Entity::IterateByClassName( lua_State* L )
 	return ret;
 }
 
+int Entity::index( lua_State* L )
+{
+	int entNum = luaL_checknumber(L, -1);
+	if (entNum < 0 || entNum >= MAX_GENTITIES)
+	{
+		Log::Warn("index out of range: %d", entNum);
+		return 0;
+	}
+	gentity_t* ent = &g_entities[entNum];
+	if (!ent->inuse) return 0;
+	LuaLib<EntityProxy>::push( L, Entity::CreateProxy(ent, L), false );
+	return 1;
+}
+
+int Entity::pairs( lua_State* L )
+{
+	int* pindex = static_cast<int*>( lua_touserdata( L, 3 ) );
+	if ( *pindex < 0 ) *pindex = 0;
+	while (*pindex  < MAX_GENTITIES)
+	{
+		gentity_t *ent = &g_entities[*pindex];
+		if (!ent->inuse) continue;
+		lua_pushnumber(L, *pindex);
+		LuaLib<EntityProxy>::push( L, Entity::CreateProxy(ent, L), false );
+		return 2;
+	}
+	lua_pushnil( L );
+	lua_pushnil( L );
+	return 2;
+}
+
+int Entity::New( lua_State* L )
+{
+	gentity_t* ent = G_NewEntity();
+	ent->classname = "lua";
+	trap_LinkEntity(ent);
+	LuaLib<EntityProxy>::push(L, Entity::CreateProxy(ent, L), false);
+	return 1;
+}
+
+int Entity::Delete( lua_State* L )
+{
+	EntityProxy* proxy = LuaLib<EntityProxy>::check(L, 1);
+	if (!proxy) return 0;
+	if (Q_strncmp(proxy->ent->classname, "lua", strlen(proxy->ent->classname)) != 0)
+	{
+		Log::Warn("Lua code only allowed to delete entities created by lua.");
+		return 0;
+	}
+	G_FreeEntity(proxy->ent);
+	return 0;
+}
 
 RegType<Entity> EntityMethods[] =
 {
@@ -115,6 +167,20 @@ void ExtraInit<Unv::SGame::Lua::Entity>(lua_State* L, int metatable_index)
 	lua_setfield( L, metatable_index - 1, "find" );
 	lua_pushcfunction( L, Unv::SGame::Lua::Entity::IterateByClassName);
 	lua_setfield( L, metatable_index - 1, "iterate_classname" );
+	lua_pushcfunction( L, Unv::SGame::Lua::Entity::New );
+	lua_setfield( L, metatable_index - 1, "new" );
+	lua_pushcfunction( L, Unv::SGame::Lua::Entity::New );
+	lua_setfield( L, metatable_index - 1, "new" );
+	lua_pushcfunction( L, Unv::SGame::Lua::Entity::Delete );
+	lua_setfield( L, metatable_index - 1, "delete" );
+
+
+	// overwrite index functions
+	lua_pushcfunction( L, Unv::SGame::Lua::Entity::index );
+	lua_setfield( L, metatable_index, "__index" );
+	lua_pushcfunction( L, Unv::SGame::Lua::Entity::pairs );
+	lua_setfield( L, metatable_index, "__pairs" );
+
 }
 }  // namespace Lua
 }  // namespace Shared

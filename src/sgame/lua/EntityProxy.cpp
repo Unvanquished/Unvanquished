@@ -78,6 +78,7 @@ GET_FUNC2(angles, Shared::Lua::PushVec3(L, proxy->ent->s.angles))
 GET_FUNC2(nextthink, lua_pushnumber(L, proxy->ent->nextthink))
 GET_FUNC2(mins, Shared::Lua::PushVec3(L, proxy->ent->r.mins))
 GET_FUNC2(maxs, Shared::Lua::PushVec3(L, proxy->ent->r.maxs))
+GET_FUNC2(number, lua_pushnumber(L, proxy->ent - g_entities))
 
 static int Getteam(lua_State* L)
 {
@@ -304,6 +305,7 @@ luaL_Reg EntityProxyGetters[] =
 	GETTER(nextthink),
 	GETTER(mins),
 	GETTER(maxs),
+	GETTER(number),
 	// Getters for functions just return bool if the function is set.
 	GETTER(think),
 	GETTER(reset),
