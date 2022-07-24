@@ -32,29 +32,20 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef LUAENTITY_H_
-#define LUAENTITY_H_
+#ifndef LUACLIENT_H_
+#define LUACLIENT_H_
 
 #include "shared/bg_lua.h"
 #include "sgame/sg_local.h"
-#include "sgame/lua/EntityProxy.h"
 
 namespace Unv {
 namespace SGame {
 namespace Lua {
 
-struct Entity
+struct Client
 {
-	static int IterateByClassName(lua_State* L);
-	static int Find(lua_State* L);
-	static int New(lua_State* L);
-	static int Delete(lua_State* L);
-	static int index(lua_State* L);
-	static int pairs(lua_State* L);
-
-	static EntityProxy* CreateProxy(gentity_t* ent, lua_State* L);
-
-	static std::vector<EntityProxy*> proxies;
+    Client(gentity_t* ent) : ent(ent) {}
+    gentity_t* ent;
 };
 
 
@@ -62,4 +53,4 @@ struct Entity
 } // namespace SGame
 } // namespace Unv
 
-#endif // LUAENTITY_H_
+#endif // LUACLIENT_H_
