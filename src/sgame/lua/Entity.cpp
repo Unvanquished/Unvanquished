@@ -43,15 +43,16 @@ namespace Unv {
 namespace SGame {
 namespace Lua {
 
-std::vector<std::unique_ptr<EntityProxy>> Entity::proxies( MAX_GENTITIES );
+// These are freed by the lua GC.
+std::vector<EntityProxy*> Entity::proxies( MAX_GENTITIES );
 
 EntityProxy* Entity::CreateProxy( gentity_t* ent, lua_State* L )
 {
 	int entNum = ent - g_entities;
 	if (!proxies[entNum]) {
-		proxies[entNum].reset(new EntityProxy(ent, L));
+		proxies[entNum] = new EntityProxy(ent, L);
 	}
-	return proxies[entNum].get();
+	return proxies[entNum];
 }
 
 int Entity::Find( lua_State* L )
