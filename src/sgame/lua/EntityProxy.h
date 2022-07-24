@@ -38,6 +38,7 @@ Maryland 20850 USA.
 #include <unordered_map>
 
 #include "shared/bg_lua.h"
+#include "sgame/lua/Client.h"
 #include "sgame/sg_local.h"
 
 namespace Unv {
@@ -78,6 +79,7 @@ struct EntityProxy
 		};
 	};
 	std::unordered_map<FunctionType, EntityFunction, std::hash<int>> funcs;
+	std::unique_ptr<Client> client;
 	lua_State* L;
 };
 

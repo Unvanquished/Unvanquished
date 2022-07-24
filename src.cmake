@@ -342,6 +342,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/lua/Hooks.cpp
     ${GAMELOGIC_DIR}/sgame/lua/Level.h
     ${GAMELOGIC_DIR}/sgame/lua/Level.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Client.h
+    ${GAMELOGIC_DIR}/sgame/lua/Client.cpp
     ${GAMELOGIC_DIR}/sgame/lua/SGameGlobal.cpp
     ${GAMELOGIC_DIR}/sgame/lua/SGameGlobal.h
 

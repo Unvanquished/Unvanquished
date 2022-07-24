@@ -102,6 +102,18 @@ static int Getteam(lua_State* L)
 	return 1;
 }
 
+static int Getclient(lua_State* L)
+{
+	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+	if (!proxy || !proxy->ent || !proxy->ent->client) return 0;
+	if (!proxy->client || proxy->client->ent != proxy->ent)
+	{
+		proxy->client.reset(new Client(proxy->ent));
+	}
+	LuaLib<Client>::push(L, proxy->client.get(), false);
+	return 1;
+}
+
 static int Setorigin(lua_State* L)
 {
 	if (lua_istable(L, 2))
@@ -203,7 +215,7 @@ void PushArgs(lua_State* L, T arg, Args... args)
 	static void Exec##method def \
 	{ \
 		int entityNum = self - g_entities; \
-		EntityProxy* proxy = Entity::proxies[entityNum].get(); \
+		EntityProxy* proxy = Entity::proxies[entityNum]; \
 		if (!proxy) \
 		{ \
 			Log::Warn("Error " #method "-ing: No proxy for entity num %d", entityNum); \
@@ -315,6 +327,7 @@ luaL_Reg EntityProxyGetters[] =
 	GETTER(use),
 	GETTER(pain),
 	GETTER(die),
+	GETTER(client),
 
 	{ nullptr, nullptr }
 };
