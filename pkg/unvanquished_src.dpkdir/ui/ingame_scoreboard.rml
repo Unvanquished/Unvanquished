@@ -9,6 +9,7 @@
 			width: 50em;
 			height: 40em;
 			margin: auto;
+			font-size: 13.2dp;
 
 			background-color: rgba( 10%, 10%, 10%, 70%);
 		}
@@ -138,6 +139,9 @@
 		{
 			width: 1.2em;
 			height: 1.2em;
+			/* transform: scale is used to make the icons bigger
+			   without harming the layout */
+			transform: scale(1.15);
 			vertical-align: middle;
 		}
 
