@@ -85,7 +85,7 @@ div.circlemenu-circle {
 }
 
 .circlemenu .key {
-	color: #fffa;
+	color: #eeec;
 	decorator: image( /ui/assets/circlemenu/circle );
 	position: absolute;
 	left: -.7em;
