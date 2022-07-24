@@ -33,15 +33,17 @@
 						<h2><translate>Democracy</translate></h2>
 						<indent>
 							<blocklink class="fake">
-								<translate>Global vote:</translate>
+								<!-- note &nbsp; + line break means there are two spaces, but IMO it looks prettier, so well -->
+								<translate>Global vote:</translate>&nbsp;
 								<ilink onclick='Events.pushevent("exec vote yes", event)'><translate>yes</translate></ilink>
-								<translate>or</translate>
+								&nbsp;<translate>or</translate>&nbsp;
 								<ilink onclick='Events.pushevent("exec vote no", event)'><translate>no</translate></ilink>
 							</blocklink>
 							<blocklink class="fake">
-								<translate>Team vote:</translate>
+								<!-- note &nbsp; + line break means there are two spaces, but IMO it looks prettier, so well -->
+								<translate>Team vote:</translate>&nbsp;
 								<ilink onclick='Events.pushevent("exec teamvote yes", event)'><translate>yes</translate></ilink>
-								<translate>or</translate>
+								&nbsp;<translate>or</translate>&nbsp;
 								<ilink onclick='Events.pushevent("exec teamvote no", event)'><translate>no</translate></ilink>
 							</blocklink>
 							<blocklink onclick='Events.pushevent("exec callvote kickbots", event)'><translate>Kick bots</translate></blocklink>
