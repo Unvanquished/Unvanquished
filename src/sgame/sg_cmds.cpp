@@ -773,6 +773,13 @@ static void Cmd_Notarget_f( gentity_t *ent )
 	trap_SendServerCommand( ent - g_entities, va( "print_tr %s", msg ) );
 }
 
+void Cmd_PrintMomentum_f( gentity_t * )
+{
+	Log::Notice( "Alien momentum: %.2f, Human momentum: %.2f"
+			, level.team[ TEAM_ALIENS ].momentum
+			, level.team[ TEAM_HUMANS ].momentum );
+}
+
 /*
 ==================
 Cmd_Noclip_f
@@ -4534,6 +4541,7 @@ static const commands_t cmds[] =
 	{ "navtest",         CMD_CHEAT,                           Cmd_NavTest            },
 	{ "noclip",          CMD_CHEAT_TEAM,                      Cmd_Noclip_f           },
 	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Notarget_f         },
+	{ "print_momentum",  CMD_CHEAT,                           Cmd_PrintMomentum_f    },
 	{ "pubkey_identify", CMD_INTERMISSION,                    Cmd_Pubkey_Identify_f  },
 	{ "reload",          CMD_HUMAN | CMD_ALIVE,               Cmd_Reload_f           },
 	{ "say",             CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
