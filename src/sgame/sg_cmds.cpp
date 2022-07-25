@@ -1035,6 +1035,50 @@ void Cmd_Team_f( gentity_t *ent )
 	G_ChangeTeam( ent, team );
 }
 
+void Cmd_TeamStatus_f( gentity_t *self )
+{
+	int numbers[ BA_NUM_BUILDABLES ] = {};
+	float unique_status = 0.f;
+	for ( int i = MAX_CLIENTS; i < level.num_entities; ++i )
+	{
+		const gentity_t* ent = &g_entities[i];
+		if ( !( ent->s.eType == entityType_t::ET_BUILDABLE && G_OnSameTeam( self, ent ) ) )
+		{
+			continue;
+		}
+		int type = ent->s.modelindex;
+		ASSERT( type < BA_NUM_BUILDABLES );
+		numbers[ type ]++;
+		const buildableAttributes_t* ba = BG_Buildable( type );
+		if ( ba->uniqueTest )
+		{
+			float health = ent->entity->Get<HealthComponent>()->Health();
+			unique_status = 100 * ( health / static_cast<float>( ba->health ) );
+		}
+	}
+
+	switch( G_Team( self ) )
+	{
+		case TEAM_ALIENS:
+			Log::Notice( "Alien team have %zu eggs, %zu boosters. Overmind health is %f\n"
+					, numbers[BA_A_SPAWN]
+					, numbers[BA_A_BOOSTER]
+					, numbers[BA_A_OVERMIND] > 0 ? unique_status : 0.f
+					);
+			return;
+		case TEAM_HUMANS:
+			Log::Notice( "Human team have %zu telenodes, %zu armouries, and %zu medistations. Reactor health is %f\n"
+					, numbers[BA_H_SPAWN]
+					, numbers[BA_H_ARMOURY]
+					, numbers[BA_H_MEDISTAT]
+					, numbers[BA_H_REACTOR] > 0 ? unique_status : 0.f
+					);
+			return;
+		default:
+			Log::Notice( "Spectators do not have buildings.\n" );
+	}
+}
+
 /*
 ==================
 G_Say
@@ -4471,6 +4515,7 @@ static const commands_t cmds[] =
 	{ "sell",            CMD_HUMAN | CMD_ALIVE,               Cmd_Sell_f             },
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
 	{ "team",            0,                                   Cmd_Team_f             },
+	{ "teamstatus",      CMD_TEAM,                            Cmd_TeamStatus_f       },
 	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
 	{ "unignore",        0,                                   Cmd_Ignore_f           },
 	{ "vote",            CMD_INTERMISSION,                    Cmd_Vote_f             },
