@@ -3504,7 +3504,6 @@ Cmd_TeamStatus_f
 */
 void Cmd_TeamStatus_f( gentity_t * ent )
 {
-	char multiomrc[ 12 ];
 	int builders = 0;
 	int arm = 0, mediboost = 0, miner = 0;
 	int omrccount = 0, omrchealth = 0;
@@ -3584,26 +3583,21 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 			}
 		}
 	}
-
-	if ( omrccount > 1 )
-		Com_sprintf( multiomrc, sizeof( multiomrc ), "^7[x%d]", omrccount );
-	else
-		multiomrc[0] = '\0';
 	
 	if ( ent->client->pers.team == TEAM_ALIENS ) 
 	{
 		G_Say( ent, SAY_TEAM,
-		      va( "^3[overmind]: %s(%d)%s ^3Spawns: ^5%d ^3Builders: ^5%d ^3Boosters: ^5%d ^3Leeches: ^5%d",
+		      va( "^3[overmind]: %s(%d) ^3Spawns: ^5%d ^3Builders: ^5%d ^3Boosters: ^5%d ^3Leeches: ^5%d",
 		    	(! omrccount ) ? "^1Down" : ( omrcbuild ) ? "^2Up" : // OM health logic
-		    	"^5Building", omrchealth * 100 / BG_Buildable( BA_A_OVERMIND )->health, multiomrc, // OM health logic part 2
+		    	"^5Building", omrchealth * 100 / BG_Buildable( BA_A_OVERMIND )->health, // OM health logic part 2
 				level.team[ TEAM_ALIENS ].numSpawns, builders, mediboost, miner ) ); // spawns, builders, booster, leech
 	} 
 	else 
 	{
 		G_Say( ent, SAY_TEAM,
-		      va( "^3[reactor]: %s(%d)%s ^3Spawns: ^5%d ^3Builders: ^5%d ^3Armouries: ^5%d ^3Medistations: ^5%d ^3Drills: ^5%d",
+		      va( "^3[reactor]: %s(%d) ^3Spawns: ^5%d ^3Builders: ^5%d ^3Armouries: ^5%d ^3Medistations: ^5%d ^3Drills: ^5%d",
 		    	(! omrccount ) ? "^1Down" : ( omrcbuild ) ? "^2Up" : // RC health logic
-		    	"^5Building", omrchealth * 100 / BG_Buildable( BA_H_REACTOR )->health, multiomrc, // RC health logic part 2
+		    	"^5Building", omrchealth * 100 / BG_Buildable( BA_H_REACTOR )->health, // RC health logic part 2
 				level.team[ TEAM_HUMANS ].numSpawns, builders, arm, mediboost, miner ) ); // spawns, builders, arm, medi, drill
 	}
 }
