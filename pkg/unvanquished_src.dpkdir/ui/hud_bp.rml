@@ -8,7 +8,7 @@
 		}
 
 		div {
-			font-size: 1.5em;
+			font-size: 3em;
 			position: absolute;
 			right: 1%;
 			bottom: 5%;
