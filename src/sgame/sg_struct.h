@@ -520,6 +520,7 @@ struct clientPersistant_t
 	// flood protection
 	int      floodDemerits;
 	int      floodTime;
+	int		 lastTeamStatus;
 
 	vec3_t   lastDeathLocation;
 	char     guid[ 33 ];

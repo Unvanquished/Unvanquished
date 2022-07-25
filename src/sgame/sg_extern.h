@@ -126,6 +126,7 @@ extern Cvar::Cvar<bool> g_enableVsays;
 
 extern Cvar::Cvar<int> g_floodMaxDemerits;
 extern Cvar::Cvar<int> g_floodMinTime;
+extern Cvar::Cvar<int> g_teamStatus;
 
 extern Cvar::Cvar<float> g_shove;
 extern Cvar::Cvar<bool> g_antiSpawnBlock;

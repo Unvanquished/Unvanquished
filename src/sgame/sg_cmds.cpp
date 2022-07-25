@@ -3499,6 +3499,116 @@ void Cmd_Reload_f( gentity_t *ent )
 
 /*
 =================
+Cmd_TeamStatus_f
+=================
+*/
+void Cmd_TeamStatus_f(gentity_t * ent)
+{
+	char multiomrc[12];
+	int builders = 0;
+	int arm = 0, mediboost = 0, miner = 0;
+	int omrccount = 0, omrchealth = 0;
+	bool omrcbuild = false;
+	gentity_t *tmp;
+	int i;
+
+	if (!g_teamStatus.Get()) 
+	{
+		trap_SendServerCommand(ent - g_entities, "print \"teamstatus is disabled.\n\"");
+		return;
+	}
+
+	if (ent->client->pers.namelog->muted) 
+	{
+		trap_SendServerCommand(ent - g_entities, "print \"You are muted and cannot use message commands.\n\"");
+		return;
+	}
+
+	if (ent->client->pers.lastTeamStatus &&
+		(level.time - ent->client->pers.lastTeamStatus) <
+	    g_teamStatus.Get() * 1000) 
+	{
+		trap_SendServerCommand(ent - g_entities, va("print \"You may only check your team's status once every %i seconds.\"", g_teamStatus.Get()));
+		return;
+	}
+
+	ent->client->pers.lastTeamStatus = level.time;
+
+	tmp = &g_entities[0];
+	for (i = 0; i < level.num_entities; i++, tmp++) 
+	{
+		if (i < MAX_CLIENTS) {
+			if (tmp->client &&
+			    tmp->client->pers.connected == CON_CONNECTED &&
+			    tmp->client->pers.team ==
+			    ent->client->pers.team && 
+				tmp->entity->Get<HealthComponent>()->Alive()
+			    && (tmp->client->ps.stats[STAT_CLASS] ==
+				PCL_ALIEN_BUILDER0
+				|| tmp->client->ps.stats[STAT_CLASS] ==
+				PCL_ALIEN_BUILDER0_UPG
+				|| BG_InventoryContainsWeapon(WP_HBUILD, tmp->client->ps.stats)))
+				builders++;
+			continue;
+		}
+
+		if (tmp->s.eType == entityType_t::ET_BUILDABLE) 
+		{
+			HealthComponent* health = tmp->entity->Get<HealthComponent>();
+			if (tmp->buildableTeam != ent->client->pers.team || !health->Alive())
+				continue;
+
+			switch (tmp->s.modelindex) {
+			case BA_H_REACTOR:
+			case BA_A_OVERMIND:
+				omrccount++;
+				if (health && health->Health() > omrchealth)
+					omrchealth = health->Health();
+				if (!omrcbuild)
+					omrcbuild = tmp->spawned;
+				break;
+			case BA_H_ARMOURY:
+				arm++;
+				break;
+			case BA_H_MEDISTAT:
+			case BA_A_BOOSTER:
+				mediboost++;
+				break;
+			case BA_H_DRILL:
+			case BA_A_LEECH:
+				miner++;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	if (omrccount > 1)
+		Com_sprintf(multiomrc, sizeof(multiomrc), "^7[x%d]", omrccount);
+	else
+		multiomrc[0] = '\0';
+	
+	if (ent->client->pers.team == TEAM_ALIENS) 
+	{
+		G_Say(ent, SAY_TEAM,
+		      va("^3[overmind]: %s(%d)%s ^3Spawns: ^5%d ^3Builders: ^5%d ^3Boosters: ^5%d ^3Leeches: ^5%d",
+		    	(!omrccount) ? "^1Down" : (omrcbuild) ? "^2Up" : // OM health logic
+		    	"^5Building", omrchealth * 100 / BG_Buildable( BA_A_OVERMIND )->health, multiomrc, // OM health logic part 2
+				level.team[ TEAM_ALIENS ].numSpawns, builders, mediboost, miner)); // spawns, builders, booster, leech
+	} 
+	else 
+	{
+		G_Say(ent, SAY_TEAM,
+		      va("^3[reactor]: %s(%d)%s ^3Spawns: ^5%d ^3Builders: ^5%d ^3Armouries: ^5%d ^3Medistations: ^5%d ^3Drills: ^5%d",
+		    	(!omrccount) ? "^1Down" : (omrcbuild) ? "^2Up" : // RC health logic
+		    	"^5Building", omrchealth * 100 / BG_Buildable( BA_H_REACTOR )->health, multiomrc, // RC health logic part 2
+				level.team[ TEAM_HUMANS ].numSpawns, builders, arm, mediboost, miner)); // spawns, builders, arm, medi, drill
+	}
+}
+
+/*
+=================
 G_StopFromFollowing
 
 stops any other clients from following this one
@@ -4471,6 +4581,7 @@ static const commands_t cmds[] =
 	{ "sell",            CMD_HUMAN | CMD_ALIVE,               Cmd_Sell_f             },
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
 	{ "team",            0,                                   Cmd_Team_f             },
+	{ "teamstatus",      CMD_TEAM,                            Cmd_TeamStatus_f       },
 	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
 	{ "unignore",        0,                                   Cmd_Ignore_f           },
 	{ "vote",            CMD_INTERMISSION,                    Cmd_Vote_f             },
