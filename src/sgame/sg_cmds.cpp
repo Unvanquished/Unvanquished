@@ -1037,8 +1037,13 @@ void Cmd_Team_f( gentity_t *ent )
 
 void Cmd_TeamStatus_f( gentity_t *self )
 {
-	int numbers[ BA_NUM_BUILDABLES ] = {};
-	float unique_status = 0.f;
+	struct buildable_status_t
+	{
+		int number;
+		int health;
+		int ratio;
+	} numbers[ BA_NUM_BUILDABLES ];
+
 	for ( int i = MAX_CLIENTS; i < level.num_entities; ++i )
 	{
 		const gentity_t* ent = &g_entities[i];
@@ -1049,29 +1054,30 @@ void Cmd_TeamStatus_f( gentity_t *self )
 		int type = ent->s.modelindex;
 		ASSERT( type < BA_NUM_BUILDABLES );
 		numbers[ type ]++;
-		const buildableAttributes_t* ba = BG_Buildable( type );
-		if ( ba->uniqueTest )
-		{
-			float health = ent->entity->Get<HealthComponent>()->Health();
-			unique_status = 100 * ( health / static_cast<float>( ba->health ) );
-		}
+		int currHealth = ent->entity->Get<HealthComponent>()->Health();
+		numbers[ type ].health = std::min( numbers[ type ].health, currHealth );
+	}
+
+	for ( int i = 0; i < BA_NUM_BUILDABLES; ++i )
+	{
+		numbers[ i ].ratio = 100 * ( numbers[ i ].health / static_cast<float>( ba->health ) );
 	}
 
 	switch( G_Team( self ) )
 	{
 		case TEAM_ALIENS:
-			Log::Notice( "Alien team have %zu eggs, %zu boosters. Overmind health is %f\n"
-					, numbers[BA_A_SPAWN]
-					, numbers[BA_A_BOOSTER]
-					, numbers[BA_A_OVERMIND] > 0 ? unique_status : 0.f
+			Log::Notice( "Alien team have %zu (%2.f) eggs, %zu (%2.f) boosters, and , %zu (%2.f) Overmind.\n"
+					, numbers[BA_A_SPAWN].number, numbers[BA_A_SPAWN].ratio
+					, numbers[BA_A_BOOSTER].number, numbers[BA_A_BOOSTER].ratio
+					, numbers[BA_A_OVERMIND].number, numbers[BA_A_OVERMIND].ratio
 					);
 			return;
 		case TEAM_HUMANS:
-			Log::Notice( "Human team have %zu telenodes, %zu armouries, and %zu medistations. Reactor health is %f\n"
-					, numbers[BA_H_SPAWN]
-					, numbers[BA_H_ARMOURY]
-					, numbers[BA_H_MEDISTAT]
-					, numbers[BA_H_REACTOR] > 0 ? unique_status : 0.f
+			Log::Notice( "Human team have %zu (%2.f) telenodes, %zu (%2.f) armouries, %zu (%2.f) medistations, %zu (%2.f) reactors\n"
+					, numbers[BA_H_SPAWN].number, numbers[BA_H_SPAWN].ratio
+					, numbers[BA_H_ARMOURY].number, numbers[BA_H_ARMOURY].ratio
+					, numbers[BA_H_MEDISTAT].number, numbers[BA_H_MEDISTAT].ratio
+					, numbers[BA_H_REACTOR].number, numbers[BA_H_REACTOR].ratio
 					);
 			return;
 		default:
