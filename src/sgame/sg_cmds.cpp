@@ -1039,50 +1039,52 @@ void Cmd_TeamStatus_f( gentity_t *self )
 {
 	struct buildable_status_t
 	{
+		char const* name;
 		int number;
 		int health;
 		int ratio;
-	} numbers[ BA_NUM_BUILDABLES ];
+		bool support;
+	} numbers[ BA_NUM_BUILDABLES ] = {};
+
+	numbers[BA_A_SPAWN].support = true;
+	numbers[BA_A_BOOSTER].support = true;
+	numbers[BA_A_OVERMIND].support = true;
+	numbers[BA_H_SPAWN].support = true;
+	numbers[BA_H_MEDISTAT].support = true;
+	numbers[BA_H_ARMOURY].support = true;
+	numbers[BA_H_REACTOR].support = true;
 
 	for ( int i = MAX_CLIENTS; i < level.num_entities; ++i )
 	{
 		const gentity_t* ent = &g_entities[i];
-		if ( !( ent->s.eType == entityType_t::ET_BUILDABLE && G_OnSameTeam( self, ent ) ) )
+		if ( !( ent->s.eType == entityType_t::ET_BUILDABLE && G_OnSameTeam( self, ent ) && Entities::IsAlive( ent ) ) )
 		{
 			continue;
 		}
+
 		int type = ent->s.modelindex;
 		ASSERT( type < BA_NUM_BUILDABLES );
-		numbers[ type ]++;
+		numbers[ type ].number++;
 		int currHealth = ent->entity->Get<HealthComponent>()->Health();
-		numbers[ type ].health = std::min( numbers[ type ].health, currHealth );
+		if ( numbers[ type ].health == 0 || currHealth < numbers[ type ].health )
+		{
+			numbers[ type ].health = currHealth;
+		}
 	}
 
+	char buff[1024];
+	int index = 0;
 	for ( int i = 0; i < BA_NUM_BUILDABLES; ++i )
 	{
-		numbers[ i ].ratio = 100 * ( numbers[ i ].health / static_cast<float>( ba->health ) );
+		const buildableAttributes_t *ba = BG_Buildable( i );
+		if ( G_Team( self ) == ba->team && numbers[ i ].support )
+		{
+			numbers[ i ].ratio = 100 * numbers[ i ].health / ba->health;
+			numbers[ i ].name = ba->humanName;
+			index += snprintf( buff + index, sizeof( buff ) - index, "^3%s: ^5%d (%d%% hp) ", numbers[ i ].name, numbers[ i ].number, numbers[ i ].ratio );
+		}
 	}
-
-	switch( G_Team( self ) )
-	{
-		case TEAM_ALIENS:
-			Log::Notice( "Alien team have %zu (%2.f) eggs, %zu (%2.f) boosters, and , %zu (%2.f) Overmind.\n"
-					, numbers[BA_A_SPAWN].number, numbers[BA_A_SPAWN].ratio
-					, numbers[BA_A_BOOSTER].number, numbers[BA_A_BOOSTER].ratio
-					, numbers[BA_A_OVERMIND].number, numbers[BA_A_OVERMIND].ratio
-					);
-			return;
-		case TEAM_HUMANS:
-			Log::Notice( "Human team have %zu (%2.f) telenodes, %zu (%2.f) armouries, %zu (%2.f) medistations, %zu (%2.f) reactors\n"
-					, numbers[BA_H_SPAWN].number, numbers[BA_H_SPAWN].ratio
-					, numbers[BA_H_ARMOURY].number, numbers[BA_H_ARMOURY].ratio
-					, numbers[BA_H_MEDISTAT].number, numbers[BA_H_MEDISTAT].ratio
-					, numbers[BA_H_REACTOR].number, numbers[BA_H_REACTOR].ratio
-					);
-			return;
-		default:
-			Log::Notice( "Spectators do not have buildings.\n" );
-	}
+	G_Say( self, SAY_TEAM, buff );
 }
 
 /*
