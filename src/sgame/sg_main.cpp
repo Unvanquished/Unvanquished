@@ -268,7 +268,7 @@ Cvar::Cvar<bool> g_bot_infiniteMomentum("g_bot_infiniteMomentum", "allow bots to
 static Cvar::Cvar<std::string> gamename("gamename", "game/mod identifier", Cvar::SERVERINFO | Cvar::ROM, GAME_VERSION);
 static Cvar::Cvar<std::string> gamedate("gamedate", "date the sgame was compiled", Cvar::ROM, __DATE__);
 
-bool               CheckExitRules();
+void               CheckExitRules();
 static void        G_LogGameplayStats( int state );
 
 // state field of G_LogGameplayStats
@@ -1775,7 +1775,7 @@ If one or more players have not acknowledged the continue, the game will
 wait 10 seconds before going on.
 =================
 */
-static bool CheckIntermissionExit()
+static void CheckIntermissionExit()
 {
 	int          ready, notReady;
 	int          i;
@@ -1787,7 +1787,7 @@ static bool CheckIntermissionExit()
 	if ( level.numConnectedClients == 0 && !voting)
 	{
 		ExitLevel();
-		return true;
+		return;
 	}
 
 	// see which players are ready
@@ -1826,28 +1826,28 @@ static bool CheckIntermissionExit()
 	// never exit in less than five seconds or if there's an ongoing vote
 	if ( voting || level.time < level.intermissiontime + 5000 )
 	{
-		return false;
+		return;
 	}
 
 	// never let intermission go on for over 1 minute
 	if ( level.time > level.intermissiontime + 60000 )
 	{
 		ExitLevel();
-		return true;
+		return;
 	}
 
 	// if nobody wants to go, clear timer
 	if ( ready == 0 && notReady > 0 )
 	{
 		level.readyToExit = false;
-		return false;
+		return;
 	}
 
 	// if everyone wants to go, go now
 	if ( notReady == 0 )
 	{
 		ExitLevel();
-		return true;
+		return;
 	}
 
 	// the first person to ready starts the thirty second timeout
@@ -1861,11 +1861,10 @@ static bool CheckIntermissionExit()
 	// wanted to exit, go ahead
 	if ( level.time < level.exitTime + 30000 )
 	{
-		return false;
+		return;
 	}
 
 	ExitLevel();
-	return true;
 }
 
 /*
@@ -1877,17 +1876,18 @@ and the time everyone is moved to the intermission spot, so you
 can see the last frag.
 =================
 */
-bool CheckExitRules()
+void CheckExitRules()
 {
 	if ( g_cheats && g_neverEnd.Get() ) {
-		return false;
+		return;
 	}
 
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
 	if ( level.intermissiontime )
 	{
-		return CheckIntermissionExit();
+		CheckIntermissionExit();
+		return;
 	}
 
 	if ( level.intermissionQueued )
@@ -1898,7 +1898,7 @@ bool CheckExitRules()
 			BeginIntermission();
 		}
 
-		return true;
+		return;
 	}
 
 	if ( level.timelimit )
@@ -1911,7 +1911,7 @@ bool CheckExitRules()
 			G_notify_sensor_end( TEAM_NONE );
 			LogExit( "Timelimit hit." );
 			G_MapLog_Result( 't' );
-			return true;
+			return;
 		}
 		else if ( level.matchTime >= ( level.timelimit - 5 ) * 60000 &&
 		          level.timelimitWarning < TW_IMMINENT )
@@ -1940,7 +1940,6 @@ bool CheckExitRules()
 		G_notify_sensor_end( TEAM_HUMANS );
 		LogExit( "Humans win." );
 		G_MapLog_Result( 'h' );
-		return true;
 	}
 	else if ( level.unconditionalWin == TEAM_ALIENS ||
 	          ( level.unconditionalWin != TEAM_HUMANS &&
@@ -1955,7 +1954,6 @@ bool CheckExitRules()
 		G_notify_sensor_end( TEAM_ALIENS );
 		LogExit( "Aliens win." );
 		G_MapLog_Result( 'a' );
-		return true;
 	}
 	else if ( g_emptyTeamsSkipMapTime.Get() &&
 		( level.time - level.startTime ) / 60000 >=
@@ -1968,9 +1966,7 @@ bool CheckExitRules()
 		trap_SetConfigstring( CS_WINNER, "Stalemate" );
 		LogExit( "Timelimit hit." );
 		G_MapLog_Result( 't' );
-		return true;
 	}
-	return false;
 }
 
 /*
@@ -2364,18 +2360,6 @@ void G_RunFrame( int levelTime )
 	// now we are done spawning
 	level.spawning = false;
 
-	// cancel vote if timed out
-	for ( i = 0; i < NUM_TEAMS; i++ )
-	{
-		G_CheckVote( (team_t) i );
-	}
-
-	// see if it is time to end the level
-	if (CheckExitRules())
-	{
-		return;
-	}
-
 	G_CheckPmoveParamChanges();
 
 	// go through all allocated objects
@@ -2504,10 +2488,20 @@ void G_RunFrame( int levelTime )
 	// log gameplay statistics
 	G_LogGameplayStats( LOG_GAMEPLAY_STATS_BODY );
 
+	// see if it is time to end the level
+	CheckExitRules();
+
 	G_BotFill( false );
 
 	// update to team status?
 	CheckTeamStatus();
+
+	// cancel vote if timed out
+	for ( i = 0; i < NUM_TEAMS; i++ )
+	{
+		G_CheckVote( (team_t) i );
+	}
+
 	BotDebugDrawMesh();
 	G_BotUpdateObstacles();
 	level.frameMsec = trap_Milliseconds();
