@@ -185,6 +185,7 @@ static const fieldDescriptor_t fields[] =
 	{ "classname",           FOFS( classname ),           F_STRING    ,ENT_V_UNCLEAR, nullptr },
 	{ "delay",               FOFS( config.delay ),        F_TIME      ,ENT_V_UNCLEAR, nullptr },
 	{ "dmg",                 FOFS( config.damage ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "gravity",             FOFS( config.amount ),       F_INT       ,ENT_V_UNCLEAR, "amount" },
 	{ "health",              FOFS( config.health ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
 	{ "message",             FOFS( message ),             F_STRING    ,ENT_V_UNCLEAR, nullptr },
 	{ "model",               FOFS( model ),               F_STRING    ,ENT_V_UNCLEAR, nullptr },
