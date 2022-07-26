@@ -31,6 +31,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "sg_cm_world.h"
 
+static Cvar::Cvar<bool> g_indestructibleBuildables(
+		"g_indestructibleBuildables",
+		"make buildables impossible to destroy", Cvar::NONE, false);
+
 /**
  * @return Whether the means of death allow for an under-attack warning.
  */
@@ -1851,6 +1855,9 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	built->nextthink = level.time;
 	built->enabled = false;
 	built->spawned = false;
+
+	built->flags = g_indestructibleBuildables.Get() ?
+		FL_GODMODE | FL_NOTARGET : 0;
 
 	built->s.time = built->creationTime;
 

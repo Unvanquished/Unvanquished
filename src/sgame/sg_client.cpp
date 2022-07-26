@@ -1274,7 +1274,7 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
-		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* connected") ),
+		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^* is connecting…") ),
 		                                Quote( client->pers.netname ) ) );
 	}
 

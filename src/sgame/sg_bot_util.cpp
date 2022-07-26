@@ -69,7 +69,7 @@ struct equipment_t
 	bool allowed( void ) const;
 	bool canBuyNow( void ) const
 	{
-		return allowed() && unlocked();
+		return allowed() && ( g_bot_infiniteMomentum.Get() || unlocked() );
 	}
 	int slots( void ) const;
 	bool operator==( T other ) const
@@ -490,12 +490,15 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
 {
+	equipment_t<class_t>* cl = std::find( std::begin( classes ), std::end( classes ), newClass );
+
 	int fromClass = self->client->ps.stats[STAT_CLASS];
 	evolveInfo_t info = BG_ClassEvolveInfoFromTo( fromClass, newClass );
 
 	// TODO: one might be willing to allow switching to same cost classes,
 	// notably, from dretch to advanced granger when base in on fire.
-	return info.classIsUnlocked && info.evolveCost > 0 // no devolving
+
+	return cl->canBuyNow() && info.evolveCost > 0 // no devolving
 		&& self->client->ps.persistant[PERS_CREDIT] >= info.evolveCost;
 }
 
