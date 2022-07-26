@@ -255,7 +255,7 @@ trigger_gravity
 
 static void env_afx_gravity_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->amount, false, self->config.amount, self->eclass->config.amount, 800);
+	G_ResetIntField(&self->amount, false, self->config.amount, self->eclass->config.amount, g_gravity.Get());
 }
 
 static void env_afx_gravity_touch( gentity_t *ent, gentity_t *other, trace_t* )
