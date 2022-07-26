@@ -3525,14 +3525,14 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 		return;
 	}
 
-	if ( ent->client->pers.lastTeamStatus
-		&& ( level.time - ent->client->pers.lastTeamStatus ) < g_teamStatus.Get() * 1000 ) 
+	if ( level.team[ ent->client->pers.team ].lastTeamStatus
+		&& ( level.time - level.team[ ent->client->pers.team ].lastTeamStatus ) < g_teamStatus.Get() * 1000 ) 
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print \"You may only check your team's status once every %i seconds.\"", g_teamStatus.Get() ) );
+		trap_SendServerCommand( ent - g_entities, va( "print \"Your team's status may only be checked every %i seconds.\"", g_teamStatus.Get() ) );
 		return;
 	}
 
-	ent->client->pers.lastTeamStatus = level.time;
+	level.team[ ent->client->pers.team ].lastTeamStatus = level.time;
 
 	tmp = &g_entities[ 0 ];
 	for ( int i = 0; i < level.num_entities; i++, tmp++ ) 

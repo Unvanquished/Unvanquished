@@ -520,7 +520,6 @@ struct clientPersistant_t
 	// flood protection
 	int      floodDemerits;
 	int      floodTime;
-	int      lastTeamStatus;
 
 	vec3_t   lastDeathLocation;
 	char     guid[ 33 ];
@@ -802,6 +801,7 @@ struct level_locals_t
 		int              layoutBuildPoints;
 		int              botFillTeamSize;
 		int              botFillSkillLevel;
+		int              lastTeamStatus;
 	} team[ NUM_TEAMS ];
 
 	struct {
