@@ -3505,10 +3505,13 @@ Cmd_TeamStatus_f
 void Cmd_TeamStatus_f( gentity_t * ent )
 {
 	int builders = 0;
-	int arm = 0, mediboost = 0, miner = 0;
-	int omrccount = 0, omrchealth = 0;
-	bool omrcbuild = false;
 	gentity_t *tmp;
+	struct buildable_status_t
+	{
+		int count;
+		int health;
+		bool spawned;
+	} structures[ BA_NUM_BUILDABLES ] = {};
 
 	if ( !g_teamStatus.Get() ) 
 	{
@@ -3522,9 +3525,8 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 		return;
 	}
 
-	if ( ent->client->pers.lastTeamStatus &&
-		( level.time - ent->client->pers.lastTeamStatus ) <
-	    g_teamStatus.Get() * 1000 ) 
+	if ( ent->client->pers.lastTeamStatus
+		&& ( level.time - ent->client->pers.lastTeamStatus ) < g_teamStatus.Get() * 1000 ) 
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print \"You may only check your team's status once every %i seconds.\"", g_teamStatus.Get() ) );
 		return;
@@ -3535,51 +3537,34 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 	tmp = &g_entities[ 0 ];
 	for ( int i = 0; i < level.num_entities; i++, tmp++ ) 
 	{
-		if ( i < MAX_CLIENTS ) 
+		if ( i < MAX_CLIENTS && tmp->client && tmp->entity ) 
 		{
-			if ( tmp->client &&
-			    tmp->client->pers.connected == CON_CONNECTED &&
-			    tmp->client->pers.team ==
-			    ent->client->pers.team && 
-				tmp->entity->Get<HealthComponent>()->Alive()
-			    && (tmp->client->ps.stats[ STAT_CLASS ] ==
-				PCL_ALIEN_BUILDER0
-				|| tmp->client->ps.stats[ STAT_CLASS ]  ==
-				PCL_ALIEN_BUILDER0_UPG
-				|| BG_InventoryContainsWeapon( WP_HBUILD, tmp->client->ps.stats ) ) )
+			auto health = tmp->entity->Get<HealthComponent>();
+			if ( tmp->client->pers.connected == CON_CONNECTED
+				&& G_OnSameTeam( tmp, ent )
+				&& ( health && health->Alive() )
+			    && ( tmp->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0
+					|| tmp->client->ps.stats[ STAT_CLASS ]  == PCL_ALIEN_BUILDER0_UPG
+					|| BG_InventoryContainsWeapon( WP_HBUILD, tmp->client->ps.stats ) ) )
+			{
 				builders++;
+			}
 			continue;
 		}
 
 		if ( tmp->s.eType == entityType_t::ET_BUILDABLE ) 
 		{
+			int type = tmp->s.modelindex;
+			ASSERT( type < BA_NUM_BUILDABLES );
 			HealthComponent* health = tmp->entity->Get<HealthComponent>();
-			if ( tmp->buildableTeam != ent->client->pers.team || !health->Alive() )
-				continue;
-
-			switch ( tmp->s.modelindex ) 
+			if ( G_OnSameTeam( tmp, ent ) && health->Health() > 0 )
 			{
-				case BA_H_REACTOR:
-				case BA_A_OVERMIND:
-					omrccount++;
-					if ( health && health->Health() > omrchealth )
-						omrchealth = health->Health();
-					if ( !omrcbuild )
-						omrcbuild = tmp->spawned;
-					break;
-				case BA_H_ARMOURY:
-					arm++;
-					break;
-				case BA_H_MEDISTAT:
-				case BA_A_BOOSTER:
-					mediboost++;
-					break;
-				case BA_H_DRILL:
-				case BA_A_LEECH:
-					miner++;
-					break;
-				default:
-					break;
+				structures[ type ].count++;
+				structures[ type ].health = health->Health();
+			}
+			if ( !structures[ type ].spawned )
+			{
+				structures[ type ].spawned = tmp->spawned;
 			}
 		}
 	}
@@ -3588,17 +3573,19 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 	{
 		G_Say( ent, SAY_TEAM,
 		      va( "^3[overmind]: %s(%d) ^3Spawns: ^5%d ^3Builders: ^5%d ^3Boosters: ^5%d ^3Leeches: ^5%d",
-		    	(! omrccount ) ? "^1Down" : ( omrcbuild ) ? "^2Up" : // OM health logic
-		    	"^5Building", omrchealth * 100 / BG_Buildable( BA_A_OVERMIND )->health, // OM health logic part 2
-				level.team[ TEAM_ALIENS ].numSpawns, builders, mediboost, miner ) ); // spawns, builders, booster, leech
+		    	(! structures[ BA_A_OVERMIND ].count ) ? "^1Down" : ( structures[ BA_A_OVERMIND ].spawned ) ? "^2Up" : // OM health logic
+		    	"^5Building", structures[ BA_A_OVERMIND ].health * 100 / BG_Buildable( BA_A_OVERMIND )->health, // OM health logic part 2
+				level.team[ TEAM_ALIENS ].numSpawns, builders, // spawns, builders
+				structures[ BA_A_BOOSTER ].count, structures[ BA_A_LEECH ].count ) ); // booster, leech
 	} 
 	else 
 	{
 		G_Say( ent, SAY_TEAM,
 		      va( "^3[reactor]: %s(%d) ^3Spawns: ^5%d ^3Builders: ^5%d ^3Armouries: ^5%d ^3Medistations: ^5%d ^3Drills: ^5%d",
-		    	(! omrccount ) ? "^1Down" : ( omrcbuild ) ? "^2Up" : // RC health logic
-		    	"^5Building", omrchealth * 100 / BG_Buildable( BA_H_REACTOR )->health, // RC health logic part 2
-				level.team[ TEAM_HUMANS ].numSpawns, builders, arm, mediboost, miner ) ); // spawns, builders, arm, medi, drill
+		    	(! structures[ BA_H_REACTOR ].count ) ? "^1Down" : ( structures[ BA_H_REACTOR ].spawned ) ? "^2Up" : // RC health logic
+		    	"^5Building", structures[ BA_H_REACTOR ].health * 100 / BG_Buildable( BA_H_REACTOR )->health, // RC health logic part 2
+				level.team[ TEAM_HUMANS ].numSpawns, builders, // spawns, builders
+				structures[ BA_H_ARMOURY ].count, structures[ BA_H_MEDISTAT ].count, structures[ BA_H_DRILL ].count ) ); // arm, medi, drill
 	}
 }
 
