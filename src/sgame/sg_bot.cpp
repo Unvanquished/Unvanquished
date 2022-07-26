@@ -595,26 +595,60 @@ void G_BotFill(bool immediately)
 		return;
 	}
 
-	for (team_t team : {TEAM_ALIENS, TEAM_HUMANS}) {
-		auto& t = level.team[team];
-		int teamSize = t.numClients;
-		if (teamSize > t.botFillTeamSize && t.numBots > 0) {
-			for (int client = 0; client < MAX_CLIENTS; client++) {
-				if (level.clients[client].pers.connected == CON_CONNECTED
-						&& level.clients[client].pers.team == team
-						&& level.clients[client].pers.isFillerBot) {
-					G_BotDel(client);
-					if (--teamSize <= t.botFillTeamSize) {
-						break;
-					}
+	struct fill_t
+	{
+		std::vector<int> current; // list of filler bots
+		int target; // if <0, too many bots, if >0, not enough
+	} fillers[ NUM_TEAMS ] = {};
+	int totalFillers = 0;
+	int missingFillers = 0;
+
+	for (int client = 0; client < MAX_CLIENTS; client++)
+	{
+		auto& pers = level.clients[client].pers;
+		if ( pers.connected == CON_CONNECTED && pers.isFillerBot )
+		{
+			fillers[ pers.team ].current.push_back( client );
+			totalFillers++;
+		}
+	}
+
+	for ( team_t team : {TEAM_ALIENS, TEAM_HUMANS} )
+	{
+		auto& fill = fillers[team];
+		fill.target = level.team[team].botFillTeamSize - level.team[team].numClients;
+		// remove excedent
+		while ( fill.target < 0 && fill.current.size() > 0 )
+		{
+			G_BotDel( fill.current.back() );
+			fill.current.pop_back();
+			fill.target++;
+			totalFillers--;
+		}
+		// remember how much bots are missing
+		if ( fill.target > 0 )
+		{
+			missingFillers += fill.target;
+		}
+	}
+
+	while ( missingFillers )
+	{
+		for ( team_t team : {TEAM_ALIENS, TEAM_HUMANS} )
+		{
+			if ( fillers[ team ].target > 0 )
+			{
+				fillers[ team ].target--;
+				if ( !G_BotAdd( BOT_NAME_FROM_LIST, team, level.team[team].botFillSkillLevel, BOT_DEFAULT_BEHAVIOR, true ) )
+				{
+					//TODO modify the "/bot fill" number so that further warnings will be ignored.
+					//     Note that this means players disconnecting would possibly not be replaced by bot
+					//     so this might be more a problem than an improvement.
+					//TODO if number of clients in both teams is unevent, this is unfair, so kick one of other team.
+					//     to do this, it would be needed to add the new client to fillers[team].current
+					return;
 				}
-			}
-		} else if (teamSize < t.botFillTeamSize) {
-			int additionalBots = t.botFillTeamSize - teamSize;
-			while (additionalBots--) {
-				if (!G_BotAdd(BOT_NAME_FROM_LIST, team, t.botFillSkillLevel, BOT_DEFAULT_BEHAVIOR, true)) {
-					break;
-				}
+				--missingFillers;
 			}
 		}
 	}
