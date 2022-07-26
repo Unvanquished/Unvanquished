@@ -1039,10 +1039,8 @@ void Cmd_TeamStatus_f( gentity_t *self )
 {
 	struct buildable_status_t
 	{
-		char const* name;
 		int number;
 		int health;
-		int ratio;
 		bool support;
 	} numbers[ BA_NUM_BUILDABLES ] = {};
 
@@ -1079,9 +1077,8 @@ void Cmd_TeamStatus_f( gentity_t *self )
 		const buildableAttributes_t *ba = BG_Buildable( i );
 		if ( G_Team( self ) == ba->team && numbers[ i ].support )
 		{
-			numbers[ i ].ratio = 100 * numbers[ i ].health / ba->health;
-			numbers[ i ].name = ba->humanName;
-			index += snprintf( buff + index, sizeof( buff ) - index, "^3%s: ^5%d (%d%% hp) ", numbers[ i ].name, numbers[ i ].number, numbers[ i ].ratio );
+			int ratio = 100 * numbers[ i ].health / ba->health;
+			index += snprintf( buff + index, sizeof( buff ) - index, "^3%s: ^5%d (%d%% hp) ", ba->humanName, numbers[ i ].number, ratio );
 		}
 	}
 	G_Say( self, SAY_TEAM, buff );
