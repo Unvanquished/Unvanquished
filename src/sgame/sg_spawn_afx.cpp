@@ -276,12 +276,22 @@ SP_trigger_gravity
 */
 void SP_env_afx_gravity( gentity_t *self )
 {
-	if(!self->config.amount)
-		G_SpawnInt( "gravity", "0", &self->config.amount );
+	int* amount = &self->config.amount;
+	if ( *amount == 0 && !( G_SpawnInt( "amount", "0", amount ) || G_SpawnInt( "gravity", "0", amount ) ) )
+	{
+		//TODO: it is highly possible that other situations are broken.
+		// So, this entity needs maps which implements several cases, for
+		// both unv and trem formats:
+		//
+		// * negative gravity/amount
+		// * positive gravity/amount
+		// * null/0 gravity/amount
+		// * missing gravity/amuont
+		self->reset = env_afx_gravity_reset;
+	}
 
 	self->touch = env_afx_gravity_touch;
 	self->act = env_afx_toggle;
-	self->reset = env_afx_gravity_reset;
 
 	// Remove CONTENTS_SOLID flag.
 	self->r.contents &= ~CONTENTS_SOLID;
