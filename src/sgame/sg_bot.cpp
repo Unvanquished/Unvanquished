@@ -586,7 +586,14 @@ void G_BotFill(bool immediately)
 	if (!immediately && level.time < nextCheck) {
 		return;  // don't check every frame to prevent warning spam
 	}
+
 	nextCheck = level.time + 2000;
+	//FIXME this function can actually be called before bots had time to connect
+	//  resulting in filling too many bots.
+	if ( level.matchTime < 2000 )
+	{
+		return;
+	}
 
 	for (team_t team : {TEAM_ALIENS, TEAM_HUMANS}) {
 		auto& t = level.team[team];
