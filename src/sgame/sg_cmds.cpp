@@ -1042,31 +1042,29 @@ void Cmd_TeamStatus_f( gentity_t *self )
 		int number;
 		int health;
 		bool support;
-	} numbers[ BA_NUM_BUILDABLES ] = {};
+	} structures[ BA_NUM_BUILDABLES ] = {};
 
-	numbers[BA_A_SPAWN].support = true;
-	numbers[BA_A_BOOSTER].support = true;
-	numbers[BA_A_OVERMIND].support = true;
-	numbers[BA_H_SPAWN].support = true;
-	numbers[BA_H_MEDISTAT].support = true;
-	numbers[BA_H_ARMOURY].support = true;
-	numbers[BA_H_REACTOR].support = true;
+	structures[BA_A_SPAWN].support = true;
+	structures[BA_A_BOOSTER].support = true;
+	structures[BA_A_OVERMIND].support = true;
+	structures[BA_H_SPAWN].support = true;
+	structures[BA_H_MEDISTAT].support = true;
+	structures[BA_H_ARMOURY].support = true;
+	structures[BA_H_REACTOR].support = true;
 
 	for ( int i = MAX_CLIENTS; i < level.num_entities; ++i )
 	{
 		const gentity_t* ent = &g_entities[i];
-		if ( !( ent->s.eType == entityType_t::ET_BUILDABLE && G_OnSameTeam( self, ent ) && Entities::IsAlive( ent ) ) )
+		if ( ent->s.eType == entityType_t::ET_BUILDABLE && G_OnSameTeam( self, ent ) && Entities::IsAlive( ent ) )
 		{
-			continue;
-		}
-
-		int type = ent->s.modelindex;
-		ASSERT( type < BA_NUM_BUILDABLES );
-		numbers[ type ].number++;
-		int currHealth = ent->entity->Get<HealthComponent>()->Health();
-		if ( numbers[ type ].health == 0 || currHealth < numbers[ type ].health )
-		{
-			numbers[ type ].health = currHealth;
+			int type = ent->s.modelindex;
+			ASSERT( type < BA_NUM_BUILDABLES );
+			structures[ type ].number++;
+			int currHealth = ent->entity->Get<HealthComponent>()->Health();
+			if ( structures[ type ].health == 0 || currHealth < structures[ type ].health )
+			{
+				structures[ type ].health = currHealth;
+			}
 		}
 	}
 
@@ -1075,10 +1073,10 @@ void Cmd_TeamStatus_f( gentity_t *self )
 	for ( int i = 0; i < BA_NUM_BUILDABLES; ++i )
 	{
 		const buildableAttributes_t *ba = BG_Buildable( i );
-		if ( G_Team( self ) == ba->team && numbers[ i ].support )
+		if ( G_Team( self ) == ba->team && structures[ i ].support )
 		{
-			int ratio = 100 * numbers[ i ].health / ba->health;
-			index += snprintf( buff + index, sizeof( buff ) - index, "^3%s: ^5%d (%d%% hp) ", ba->humanName, numbers[ i ].number, ratio );
+			int ratio = 100 * structures[ i ].health / ba->health;
+			index += snprintf( buff + index, sizeof( buff ) - index, "^3%s: ^5%d (%d%% hp) ", ba->humanName, structures[ i ].number, ratio );
 		}
 	}
 	G_Say( self, SAY_TEAM, buff );
