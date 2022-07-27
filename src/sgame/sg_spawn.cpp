@@ -579,11 +579,7 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 		 *  to allow each spawn function to test and handle for itself,
 		 *  we handle it automatically *after* the spawn (but before it's use/reset)
 		 */
-		if(!G_HandleEntityVersions( spawnedClass, spawnedEntity ))
-			return false;
-
-
-		return true;
+		return G_HandleEntityVersions( spawnedClass, spawnedEntity );
 	}
 
 	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
