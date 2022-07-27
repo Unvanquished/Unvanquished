@@ -68,9 +68,38 @@ GET_FUNC( ping, lua_pushnumber(L, c->ent->client->ps.ping ) )
 GET_FUNC( class, lua_pushstring(L, BG_Class(c->ent->client->ps.stats[STAT_CLASS] )->name ) )
 GET_FUNC( stamina, lua_pushnumber(L, c->ent->client->ps.stats[STAT_STAMINA] ) )
 
+int Methodkill(lua_State* L, Client* c)
+{
+    if (!c || !c->ent || !c->ent->client)
+    {
+        Log::Warn("trying to access stale client info!");
+        return 0;
+    }
+    HealthComponent* health = c->ent->entity->Get<HealthComponent>();
+    if (!health || !health->Alive()) return 0;
+    Entities::Kill(c->ent, MOD_SUICIDE);
+    return 0;
+}
+
+int Methodteleport(lua_State* L, Client* c)
+{
+    if (!c || !c->ent || !c->ent->client)
+    {
+        Log::Warn("trying to access stale client info!");
+        return 0;
+    }
+    vec3_t origin = {};
+    vec3_t angles = {0, 0, 0};
+    Shared::Lua::CheckVec3(L, origin);
+    G_TeleportPlayer(c->ent, origin, angles, 0);
+    return 0;
+}
+
 RegType<Client> ClientMethods[] =
 {
-	{ nullptr, nullptr },
+	{ "kill", Methodkill },
+	{ "teleport", Methodteleport },
+    { nullptr, nullptr },
 };
 #define GETTER(name) { #name, Get##name }
 luaL_Reg ClientGetters[] =

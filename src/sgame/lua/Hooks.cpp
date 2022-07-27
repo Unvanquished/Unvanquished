@@ -49,6 +49,10 @@ namespace Lua {
 using LuaHook = std::pair<lua_State*, int>;
 
 static std::vector<LuaHook> chatHooks;
+static std::vector<LuaHook> clientConnectHooks;
+static std::vector<LuaHook> teamChangeHooks;
+static std::vector<LuaHook> playerSpawnHooks;
+static std::vector<LuaHook> gameEndHooks;
 
 // Will be called as function(EntityProxy, team, message)
 // where team = <team> is all chat.
@@ -80,6 +84,131 @@ void ExecChatHooks(gentity_t* ent, team_t team, Str::StringRef message)
 		}
     }
 }
+
+
+
+// Will be called as function(EntityProxy, connect)
+// connect = true for connecting and false for disconnecting.
+int RegisterClientConnectHook(lua_State* L)
+{
+    if (lua_isfunction(L, 1))
+    {
+        int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+        clientConnectHooks.emplace_back(L, ref);
+    }
+    return 0;
+}
+
+void ExecClientConnectHooks(gentity_t* ent, bool connect)
+{
+    // nullptr ent can be for console chats.
+    if (!ent) return;
+    for (const auto& hook: clientConnectHooks)
+    {
+        lua_rawgeti(hook.first, LUA_REGISTRYINDEX, hook.second); \
+        EntityProxy* proxy = Entity::CreateProxy(ent, hook.first);
+        LuaLib<EntityProxy>::push(hook.first, proxy, false);
+        lua_pushboolean(hook.first, connect);
+        if (lua_pcall(hook.first, 2, 0, 0) != 0)
+		{
+			Log::Warn( "Could not run lua client connect hook callback: %s",
+				lua_tostring(hook.first, -1));
+		}
+    }
+}
+
+// Will be called as function(EntityProxy, team)
+int RegisterTeamChangeHook(lua_State* L)
+{
+    if (lua_isfunction(L, 1))
+    {
+        int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+        teamChangeHooks.emplace_back(L, ref);
+    }
+    return 0;
+}
+
+void ExecTeamChangeHooks(gentity_t* ent, team_t team)
+{
+    // nullptr ent can be for console chats.
+    if (!ent) return;
+    for (const auto& hook: teamChangeHooks)
+    {
+        lua_rawgeti(hook.first, LUA_REGISTRYINDEX, hook.second); \
+        EntityProxy* proxy = Entity::CreateProxy(ent, hook.first);
+        LuaLib<EntityProxy>::push(hook.first, proxy, false);
+        lua_pushstring(hook.first, BG_TeamName(team));
+        if (lua_pcall(hook.first, 2, 0, 0) != 0)
+		{
+			Log::Warn( "Could not run lua team change hook callback: %s",
+				lua_tostring(hook.first, -1));
+		}
+    }
+}
+
+// Will be called as function(EntityProxy)
+int RegisterPlayerSpawnHook(lua_State* L)
+{
+    if (lua_isfunction(L, 1))
+    {
+        int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+        playerSpawnHooks.emplace_back(L, ref);
+    }
+    return 0;
+}
+
+void ExecPlayerSpawnHooks(gentity_t* ent)
+{
+    // nullptr ent can be for console chats.
+    if (!ent) return;
+    for (const auto& hook: playerSpawnHooks)
+    {
+        lua_rawgeti(hook.first, LUA_REGISTRYINDEX, hook.second); \
+        EntityProxy* proxy = Entity::CreateProxy(ent, hook.first);
+        LuaLib<EntityProxy>::push(hook.first, proxy, false);
+        if (lua_pcall(hook.first, 1, 0, 0) != 0)
+		{
+			Log::Warn( "Could not run lua player spawn hook callback: %s",
+				lua_tostring(hook.first, -1));
+		}
+    }
+}
+
+int RegisterGameEndHook(lua_State* L)
+{
+    if (lua_isfunction(L, 1))
+    {
+        int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+        gameEndHooks.emplace_back(L, ref);
+    }
+    return 0;
+}
+
+team_t ExecGameEndHooks()
+{
+    for (const auto& hook: gameEndHooks)
+    {
+        lua_rawgeti(hook.first, LUA_REGISTRYINDEX, hook.second); \
+        if (lua_pcall(hook.first, 0, 1, 0) != 0)
+		{
+			Log::Warn( "Could not run lua game end hook callback: %s",
+				lua_tostring(hook.first, -1));
+		}
+        if (lua_toboolean(hook.first, -1))
+        {
+            const char* teamName = luaL_checkstring(hook.first, -1);
+            team_t team = BG_PlayableTeamFromString(teamName);
+            if (team != TEAM_NONE)
+            {
+                lua_pop( hook.first, -1 );
+                return team;
+            }
+            lua_pop( hook.first, -1 );
+        }
+    }
+    return TEAM_NONE;
+}
+
 
 RegType<Hooks> HooksMethods[] =
 {
@@ -115,6 +244,14 @@ void ExtraInit<Unv::SGame::Lua::Hooks>(lua_State* L, int metatable_index)
 {
 	lua_pushcfunction( L, Unv::SGame::Lua::RegisterChatHook);
 	lua_setfield( L, metatable_index - 1, "RegisterChatHook" );
+    lua_pushcfunction( L, Unv::SGame::Lua::RegisterClientConnectHook);
+	lua_setfield( L, metatable_index - 1, "RegisterClientConnectHook" );
+    lua_pushcfunction( L, Unv::SGame::Lua::RegisterTeamChangeHook);
+	lua_setfield( L, metatable_index - 1, "RegisterTeamChangeHook" );
+    lua_pushcfunction( L, Unv::SGame::Lua::RegisterPlayerSpawnHook);
+	lua_setfield( L, metatable_index - 1, "RegisterPlayerSpawnHook" );
+    lua_pushcfunction( L, Unv::SGame::Lua::RegisterGameEndHook);
+	lua_setfield( L, metatable_index - 1, "RegisterGameEndHook" );
 }
 }  // namespace Lua
 }  // namespace Shared

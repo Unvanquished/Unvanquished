@@ -140,15 +140,12 @@ static int Setangles(lua_State* L)
 
 static int Setnextthink(lua_State* L)
 {
-	if (lua_isnumber(L, 2))
+	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+	if (!proxy) return 0;
+	int nextthink = luaL_checknumber(L, 2);
+	if (nextthink > level.time)
 	{
-		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
-		if (!proxy) return 0;
-		int nextthink = luaL_checknumber(L, 1);
-		if (nextthink > level.time)
-		{
-			proxy->ent->nextthink = nextthink;
-		}
+		proxy->ent->nextthink = nextthink;
 	}
 	return 0;
 }
@@ -266,15 +263,16 @@ void PushArgs(lua_State* L, T arg, Args... args)
 			lua_rawgeti(L, LUA_REGISTRYINDEX, it->second.luaRef); \
 			luaL_unref(L, LUA_REGISTRYINDEX, it->second.luaRef); \
 			/* If set to nil, remove lua func all together */ \
-			if (ref == -1 && it->second.method) \
+			if (ref == -1) \
 			{ \
+				if (!it->second.method) return 0; \
 				proxy->ent->method = it->second.method; \
 				it->second.method = nullptr; \
 			} \
 			else \
 			{ \
 				it->second.luaRef = ref; \
-				if (!it->second.method) \
+				if (proxy->ent->method != Exec##method) \
 				{ \
 					it->second.method = proxy->ent->method; \
 					proxy->ent->method = Exec##method; \
@@ -287,7 +285,7 @@ void PushArgs(lua_State* L, T arg, Args... args)
 	{ \
 		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 ); \
 		if (!proxy) return 0; \
-		lua_pushboolean(L, proxy->ent->method == nullptr); \
+		lua_pushboolean(L, proxy->ent->method != nullptr); \
 		return 1; \
 	}
 
@@ -358,7 +356,7 @@ luaL_Reg EntityProxySetters[] =
 } // namespace Unv
 
 namespace Unv { namespace Shared { namespace Lua {
-LUASGAMETYPEDEFINE(EntityProxy, true)
+LUASGAMETYPEDEFINE(EntityProxy, false)
 template<>
 void ExtraInit<Unv::SGame::Lua::EntityProxy>(lua_State* L, int metatable_index) {}
 } } }
