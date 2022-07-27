@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "Entities.h"
+#include "sgame/lua/Hooks.h"
 
 /*
 ================
@@ -333,6 +334,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 
 	G_namelog_update_score( ent->client );
 	TeamplayInfoMessage( ent );
+	Unv::SGame::Lua::ExecTeamChangeHooks(ent, newTeam);
 }
 
 /**

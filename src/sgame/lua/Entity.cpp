@@ -88,6 +88,8 @@ int Entity::IterateByClassName( lua_State* L )
 
 int Entity::index( lua_State* L )
 {
+	int type = lua_type(L, -1);
+	if (type != LUA_TNUMBER) return LuaLib<Entity>::index(L);
 	int entNum = luaL_checknumber(L, -1);
 	if (entNum < 0 || entNum >= MAX_GENTITIES)
 	{
@@ -121,6 +123,7 @@ int Entity::New( lua_State* L )
 {
 	gentity_t* ent = G_NewEntity();
 	ent->classname = "lua";
+	ent->s.eType = entityType_t::ET_GENERAL;
 	trap_LinkEntity(ent);
 	LuaLib<EntityProxy>::push(L, Entity::CreateProxy(ent, L), false);
 	return 1;
@@ -168,8 +171,6 @@ void ExtraInit<Unv::SGame::Lua::Entity>(lua_State* L, int metatable_index)
 	lua_setfield( L, metatable_index - 1, "find" );
 	lua_pushcfunction( L, Unv::SGame::Lua::Entity::IterateByClassName);
 	lua_setfield( L, metatable_index - 1, "iterate_classname" );
-	lua_pushcfunction( L, Unv::SGame::Lua::Entity::New );
-	lua_setfield( L, metatable_index - 1, "new" );
 	lua_pushcfunction( L, Unv::SGame::Lua::Entity::New );
 	lua_setfield( L, metatable_index - 1, "new" );
 	lua_pushcfunction( L, Unv::SGame::Lua::Entity::Delete );
