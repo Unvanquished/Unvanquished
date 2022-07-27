@@ -45,7 +45,6 @@ namespace {
 int Cmd_exec(lua_State* L)
 {
 	const char *cmd = luaL_checkstring(L, 1);
-	Log::Notice("EXEC: '%s'", cmd);
 	trap_SendConsoleCommand(cmd);
 	return 0;
 }
