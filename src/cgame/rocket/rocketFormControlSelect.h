@@ -64,6 +64,7 @@ public:
 			// when this element is being removed
 			owner = GetOwnerDocument();
 			owner->AddEventListener( "show", this );
+			owner->AddEventListener( "change", this );
 		}
 	}
 
@@ -73,6 +74,7 @@ public:
 		if ( child == this )
 		{
 			owner->RemoveEventListener( "show", this );
+			owner->RemoveEventListener( "change", this );
 		}
 	}
 
