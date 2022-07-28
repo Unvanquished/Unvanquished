@@ -110,9 +110,6 @@
 				image-color: #82ffee52;
 				transition: image-color 0.15s cubic-in;
 			}
-			stamina.sprinting progressbar fill {
-				image-color: #aaaa00a2;
-			}
 			stamina img {
 				transition: opacity 0.15s cubic-in;
 			}
