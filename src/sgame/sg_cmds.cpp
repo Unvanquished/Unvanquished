@@ -3513,7 +3513,7 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 		bool spawned;
 	} structures[ BA_NUM_BUILDABLES ] = {};
 
-	if ( !g_teamStatus.Get() ) 
+	if ( g_teamStatus.Get() <= 0 ) 
 	{
 		trap_SendServerCommand( ent - g_entities, "print \"teamstatus is disabled.\n\"" );
 		return;
