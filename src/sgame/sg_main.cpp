@@ -1139,17 +1139,7 @@ void CalculateRanks()
 
 		if ( level.clients[ clientNum ].pers.connected != CON_DISCONNECTED )
 		{
-			bool bot = false;
-			int      entNum;
-
-			for ( entNum = 0; entNum < level.num_entities; ++entNum)
-			{
-				if ( level.gentities[ clientNum ].client == &level.clients[ clientNum ] )
-				{
-					bot = ( level.gentities[ clientNum ].r.svFlags & SVF_BOT );
-					break;
-				}
-			}
+			bool bot = level.gentities[ clientNum ].r.svFlags & SVF_BOT;
 
 			level.sortedClients[ level.numConnectedClients ] = clientNum;
 
