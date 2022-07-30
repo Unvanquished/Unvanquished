@@ -114,6 +114,7 @@ void InitializeSGameGlobal(lua_State* L)
 	LuaLib<Entity>::Register(L);
 	LuaLib<EntityProxy>::Register(L);
 	LuaLib<Level>::Register(L);
+	LuaLib<TeamProxy>::Register(L);
 	LuaLib<Client>::Register(L);
 	InitializeHooks(L);
 	LuaLib<SGameGlobal>::push( L, &sgame, false );
