@@ -60,6 +60,7 @@ static const buildableName_t bg_buildableNameList[] =
 	{ BA_H_MEDISTAT,  "medistat",  "team_human_medistat"  },
  	{ BA_H_DRILL,     "drill",     "team_human_drill"     },
 	{ BA_H_REACTOR,   "reactor",   "team_human_reactor"   },
+	// Add repeater here for Tremulous compatibility. You cannot actually build it.
 	{ BA_H_DRILL,     "repeater",  "team_human_repeater"  },
 };
 
@@ -142,6 +143,12 @@ static void BG_InitBuildableAttributes()
 		ba->bounce = 0.0f;
 		ba->minNormal = 0.0f;
 
+		// HACK: Do not parse the repeater. It's there just for Tremulous compatibility.
+		// Since it's not a real building in Unv, skip loading its files.
+		if ( !Q_strnicmp(bh->name, "repeater", sizeof(bh->name) ) )
+		{
+			continue;
+		}
 		BG_ParseBuildableAttributeFile( va( "configs/buildables/%s.attr.cfg", ba->name ), ba );
 	}
 }
