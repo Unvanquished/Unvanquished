@@ -42,6 +42,11 @@ namespace Unv {
 namespace SGame {
 namespace Lua {
 
+struct TeamProxy
+{
+    team_t team;
+};
+
 struct Level
 {
 };
