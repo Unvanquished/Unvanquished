@@ -75,10 +75,10 @@ GET_FUNC2(target_name, lua_pushstring(L, proxy->ent->names[1]))
 // Intentionally the same index as alias. Check sg_spawn.cpp for why.
 GET_FUNC2(target_name2, lua_pushstring(L, proxy->ent->names[2]))
 GET_FUNC2(angles, Shared::Lua::PushVec3(L, proxy->ent->s.angles))
-GET_FUNC2(nextthink, lua_pushnumber(L, proxy->ent->nextthink))
+GET_FUNC2(nextthink, lua_pushinteger(L, proxy->ent->nextthink))
 GET_FUNC2(mins, Shared::Lua::PushVec3(L, proxy->ent->r.mins))
 GET_FUNC2(maxs, Shared::Lua::PushVec3(L, proxy->ent->r.maxs))
-GET_FUNC2(number, lua_pushnumber(L, proxy->ent - g_entities))
+GET_FUNC2(number, lua_pushinteger(L, proxy->ent - g_entities))
 
 static int Getteam(lua_State* L)
 {
@@ -192,7 +192,7 @@ void Push<gentity_t*>(lua_State* L, gentity_t* ent)
 template<>
 void Push<int>(lua_State* L, int num)
 {
-	lua_pushnumber(L, num);
+	lua_pushinteger(L, num);
 }
 
 template <typename T>

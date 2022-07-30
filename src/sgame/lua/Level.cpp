@@ -50,15 +50,15 @@ static int Get##var( lua_State* L ) \
 	return 1; \
 }
 
-GET_FUNC( num_entities, lua_pushnumber(L, level.num_entities) )
-GET_FUNC( timeLimit, lua_pushnumber(L, level.timelimit) )
-GET_FUNC( max_clients, lua_pushnumber(L, level.maxclients) )
-GET_FUNC( time, lua_pushnumber(L, level.time) )
-GET_FUNC( previous_time, lua_pushnumber(L, level.previousTime) )
-GET_FUNC( start_time, lua_pushnumber(L, level.startTime) )
-GET_FUNC( match_time, lua_pushnumber(L, level.matchTime) )
-GET_FUNC( num_connected_clients, lua_pushnumber(L, level.numConnectedClients) )
-GET_FUNC( num_connected_players, lua_pushnumber(L, level.numConnectedPlayers) )
+GET_FUNC( num_entities, lua_pushinteger(L, level.num_entities) )
+GET_FUNC( timeLimit, lua_pushinteger(L, level.timelimit) )
+GET_FUNC( max_clients, lua_pushinteger(L, level.maxclients) )
+GET_FUNC( time, lua_pushinteger(L, level.time) )
+GET_FUNC( previous_time, lua_pushinteger(L, level.previousTime) )
+GET_FUNC( start_time, lua_pushinteger(L, level.startTime) )
+GET_FUNC( match_time, lua_pushinteger(L, level.matchTime) )
+GET_FUNC( num_connected_clients, lua_pushinteger(L, level.numConnectedClients) )
+GET_FUNC( num_connected_players, lua_pushinteger(L, level.numConnectedPlayers) )
 
 
 RegType<Level> LevelMethods[] =
