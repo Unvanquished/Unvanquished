@@ -41,7 +41,7 @@ const char        *G_admin_name( gentity_t *ent );
 const char        *G_quoted_admin_name( gentity_t *ent );
 
 // Beacon.cpp
-namespace Beacon 
+namespace Beacon
 {
 	void Frame();
 	void Move( gentity_t *ent, const vec3_t origin );
@@ -209,7 +209,7 @@ int               G_GetPosInSpawnQueue( spawnQueue_t *sq, int clientNum );
 void              G_PrintSpawnQueue( spawnQueue_t *sq );
 void              BeginIntermission();
 void              MoveClientToIntermission( gentity_t *client );
-void              G_MapConfigs( const char *mapname );
+void              G_MapConfigs( Str::StringRef mapname, Str::StringRef layout );
 void              CalculateRanks();
 void              FindIntermissionPoint();
 void              G_RunThink( gentity_t *ent );
