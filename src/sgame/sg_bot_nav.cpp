@@ -339,7 +339,7 @@ void BotWalk( gentity_t *self, bool enable )
 }
 
 // search for obstacle forward, and return pointer on it if any
-static gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
+static const gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 {
 	vec3_t playerMins, playerMaxs;
 	vec3_t end;
@@ -369,7 +369,7 @@ static gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 
 // checks if jumping would get rid of blocker
 // return true if yes
-static bool BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
+static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const vec3_t dir )
 {
 	vec3_t playerMins;
 	vec3_t playerMaxs;
