@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "backend/CBSEBackend.h"
 #include "botlib/bot_api.h"
+#include "common/FileSystem.h"
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -373,18 +374,33 @@ static void G_InitSetEntities()
 G_MapConfigs
 =================
 */
-void G_MapConfigs( const char *mapname )
+void G_MapConfigs( Str::StringRef mapname, Str::StringRef layout )
 {
 	if ( g_mapConfigs.Get().empty() )
 	{
 		return;
 	}
+	std::string resolvedLayout = layout.empty() ? "builtin" : layout;
+	Log::Notice( "Loading map configs for map: %s layout: %s", mapname, resolvedLayout );
 
-	std::string script = g_mapConfigs.Get() + "/default.cfg";
-	trap_SendConsoleCommand( ( "exec " + Cmd::Escape( script ) ).c_str() );
+	std::array<std::string, 3> scriptSuffixes = {
+		// Run for every map.
+		"default.cfg",
+		// Run for every layout of a particular map.
+		Str::Format( "%s.cfg", mapname ),
+		//  Run for only for a specific map and layout.
+		FS::Path::Build( mapname, Str::Format( "%s.cfg", resolvedLayout ) ),
+	};
 
-	script = Str::Format( "%s/%s.cfg", g_mapConfigs.Get(), mapname );
-	trap_SendConsoleCommand( ( "exec " + Cmd::Escape( script ) ).c_str() );
+	for ( const auto& suffix : scriptSuffixes )
+	{
+		// NOTE: We cannot check for the existence of this file since the
+		// sgame can only access fs_homepath/game, but exec only works relative
+		// to fs_homepath/config.
+		std::string script = FS::Path::Build( g_mapConfigs.Get(), suffix );
+		// -f so that the users are not spammed for non-existing configs.
+		trap_SendConsoleCommand( ("exec -f " + Cmd::Escape( script )).c_str() );
+	}
 
 	trap_SendConsoleCommand( "maprestarted" );
 }
@@ -480,14 +496,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// clear this now; it'll be set, if needed, from rotation
 	g_mapStartupMessage.Set("");
 
-	// retrieve map name and load per-map configuration
-	{
-		char map[ MAX_CVAR_VALUE_STRING ] = { "" };
-
-		trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-		G_MapConfigs( map );
-	}
-
 	// load config files
 	BG_InitAllConfigs();
 
@@ -541,6 +549,13 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
+
+	// retrieve map name and layout to load configs.
+	{
+		std::string map = Cvar::GetValue( "mapname");
+		std::string layout = Cvar::GetValue( "layout" );
+		G_MapConfigs( map, layout );
+	}
 
 	level.spawning = true;
 
