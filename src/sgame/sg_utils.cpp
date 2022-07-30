@@ -942,3 +942,8 @@ bool G_IsOnFire( const gentity_t *ent )
 {
 	return ent->s.eFlags & EF_B_ONFIRE;
 }
+
+bool G_IsOnFire( const gentity_t *ent )
+{
+	return ent->s.eFlags & EF_B_ONFIRE;
+}

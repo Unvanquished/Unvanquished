@@ -275,6 +275,12 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 			neighbor->entity->Extinguish( g_abuild_blobFireImmunityDuration.Get() );
 		}
 	}
+	
+	if ( reward )
+	{
+		float credits = g_firefightReward.Get() * CREDITS_PER_EVO * reward;
+		G_AddCreditToClient( attacker->client, credits, true );
+	}
 
 	if ( reward )
 	{

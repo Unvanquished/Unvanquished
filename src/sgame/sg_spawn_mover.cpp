@@ -531,21 +531,21 @@ SetMoverState
 ===============
 */
 
-			// most elevators are *not* func_door, so that broken.
-			// Some (one on forlorn) is a func_door, with a "targetname",
-			// and I suspect this is what makes it different from doors.
-			// That distinction means that, doors with a targetname will
-			// break for bots.
-			// Also, for now, doors without targetname work because bots
-			// just walk to kiss (or worse!) them, until they open wide
-			// for them to enter.
-			// The correct solution here would be to generate navcons
-			// for all movers, with labels indicating the bot how to
-			// handle the situation correctly (including waiting patiently
-			// that elevator reached desired navmesh).
-			// Also, this code is currently seemlingly inverted.
+// most elevators are *not* func_door, so that broken.
+// Some (one on forlorn) is a func_door, with a "targetname",
+// and I suspect this is what makes it different from doors.
+// That distinction means that, doors with a targetname will
+// break for bots.
+// Also, for now, doors without targetname work because bots
+// just walk to kiss (or worse!) them, until they open wide
+// for them to enter.
+// The correct solution here would be to generate navcons
+// for all movers, with labels indicating the bot how to
+// handle the situation correctly (including waiting patiently
+// that elevator reached desired navmesh).
+// Also, this code is currently seemlingly inverted.
 bool IsDoor( const gentity_t *ent )
-			{
+{
 	const char * funcs[] =
 	{
 		"func_door",
@@ -558,7 +558,7 @@ bool IsDoor( const gentity_t *ent )
 		if ( !Q_stricmp( fn, ent->classname ) )
 		{
 			return true;
-			}
+		}
 	}
 	return false;
 }
@@ -597,17 +597,17 @@ bool IsAutomaticMover( const gentity_t *ent )
 void BotHandleDoor( gentity_t *ent )
 {
 	if ( IsDoor( ent ) && !IsAutomaticMover( ent ) )
-			{
-				if ( ent->obstacleHandle )
-				{
-					G_BotRemoveObstacle( ent->obstacleHandle );
-					ent->obstacleHandle = 0;
-				}
+	{
+		if ( ent->obstacleHandle )
+		{
+			G_BotRemoveObstacle( ent->obstacleHandle );
+			ent->obstacleHandle = 0;
+		}
 		G_BotAddObstacle( ent->r.absmin, ent->r.absmax, &ent->obstacleHandle );
-			}
+	}
 }
 
-static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
+void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 {
 	vec3_t delta;
 	float  f;
