@@ -110,7 +110,7 @@ int Entity::pairs( lua_State* L )
 	{
 		gentity_t *ent = &g_entities[*pindex];
 		if (!ent->inuse) continue;
-		lua_pushnumber(L, *pindex);
+		lua_pushinteger(L, *pindex);
 		LuaLib<EntityProxy>::push( L, Entity::CreateProxy(ent, L), false );
 		return 2;
 	}
