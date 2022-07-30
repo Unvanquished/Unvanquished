@@ -971,30 +971,6 @@ private:
 	int evos;
 };
 
-class StaminaValueElement : public TextHudElement
-{
-public:
-	StaminaValueElement( const Rocket::Core::String& tag ) :
-	TextHudElement( tag, ELEMENT_HUMANS ),
-	stamina( -1 ) {}
-
-	void DoOnUpdate()
-	{
-		playerState_t *ps = &cg.snap->ps;
-		float         value = ps->stats[ STAT_STAMINA ];
-
-		if ( stamina != value )
-		{
-			stamina = value;
-			int percent = 100 * ( stamina / ( float ) STAMINA_MAX );
-			SetText( va( "%d", percent ) );
-		}
-	}
-
-private:
-	float stamina;
-};
-
 class WeaponIconElement : public HudElement
 {
 public:
