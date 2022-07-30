@@ -69,7 +69,17 @@ void think_aimAtTarget( gentity_t *self )
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
 	VectorScale( origin, 0.5f, origin );
 
-	if ( self->s.origin2[0] != 0.f || self->s.origin2[1] != 0.f || self->s.origin2[2] != 0.f )
+	bool hasTarget = false;
+	for ( char* target : self->targets )
+	{
+		if ( target && target[0] )
+		{
+			hasTarget = true;
+			break;
+		}
+	}
+
+	if ( !hasTarget )
 	{
 		return;
 	}
