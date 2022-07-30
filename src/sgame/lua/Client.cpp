@@ -60,13 +60,13 @@ static int Get##var( lua_State* L ) \
 
 GET_FUNC( connected, lua_pushboolean(L, c->ent->client->pers.connected == clientConnected_t::CON_CONNECTED) )
 GET_FUNC( name, lua_pushstring(L, c->ent->client->pers.netname ) )
-GET_FUNC( credits, lua_pushnumber(L, c->ent->client->pers.credit ) )
+GET_FUNC( credits, lua_pushinteger(L, c->ent->client->pers.credit ) )
 GET_FUNC( evos, lua_pushnumber(L, c->ent->client->pers.credit / static_cast<double>(CREDITS_PER_EVO) ) )
 GET_FUNC( weapon, lua_pushstring(L, BG_Weapon(c->ent->client->ps.stats[STAT_WEAPON] )->name ) )
-GET_FUNC( health, lua_pushnumber(L, c->ent->client->ps.stats[STAT_HEALTH] ) )
-GET_FUNC( ping, lua_pushnumber(L, c->ent->client->ps.ping ) )
+GET_FUNC( health, lua_pushinteger(L, c->ent->client->ps.stats[STAT_HEALTH] ) )
+GET_FUNC( ping, lua_pushinteger(L, c->ent->client->ps.ping ) )
 GET_FUNC( class, lua_pushstring(L, BG_Class(c->ent->client->ps.stats[STAT_CLASS] )->name ) )
-GET_FUNC( stamina, lua_pushnumber(L, c->ent->client->ps.stats[STAT_STAMINA] ) )
+GET_FUNC( stamina, lua_pushinteger(L, c->ent->client->ps.stats[STAT_STAMINA] ) )
 
 int Methodkill(lua_State* L, Client* c)
 {
