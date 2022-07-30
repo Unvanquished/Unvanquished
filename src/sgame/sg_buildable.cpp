@@ -258,7 +258,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 	}
 }
 
-void ABarricade_Think( gentity_t *self )
+static void ABarricade_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 1000;
 
@@ -266,7 +266,7 @@ void ABarricade_Think( gentity_t *self )
 	ABarricade_Shrink( self, !self->powered );
 }
 
-void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t* )
+static void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t* )
 {
 	gclient_t *client = other->client;
 	int       client_z, min_z;
@@ -290,7 +290,7 @@ void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t* )
 	ABarricade_Shrink( self, true );
 }
 
-void ABooster_Think( gentity_t *self )
+static void ABooster_Think( gentity_t *self )
 {
 	gentity_t *ent;
 	bool  playHealingEffect = false;
@@ -318,7 +318,7 @@ void ABooster_Think( gentity_t *self )
 	}
 }
 
-void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
+static void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 {
 	gclient_t *client = other->client;
 
@@ -350,7 +350,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 #define MISSILE_PRESTEP_TIME 50 // from g_missile.h
 #define TRAPPER_ACCURACY 10 // lower is better
 
-void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
+static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 {
 	gentity_t *target = self->target.entity;
 	vec3_t    dirToTarget;
@@ -402,7 +402,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	self->customNumber = level.time + firespeed;
 }
 
-bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range )
+static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range )
 {
 	vec3_t  distance;
 	trace_t trace;
@@ -478,7 +478,7 @@ bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range )
 	return true;
 }
 
-void ATrapper_FindEnemy( gentity_t *ent, int range )
+static void ATrapper_FindEnemy( gentity_t *ent, int range )
 {
 	GentityRef target;
 	int       i;
@@ -506,7 +506,7 @@ void ATrapper_FindEnemy( gentity_t *ent, int range )
 	ent->target = nullptr;
 }
 
-void ATrapper_Think( gentity_t *self )
+static void ATrapper_Think( gentity_t *self )
 {
 	self->nextthink = level.time + 100;
 
@@ -534,7 +534,7 @@ void ATrapper_Think( gentity_t *self )
 	}
 }
 
-void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
+static void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	if ( !self->spawned )
 	{
@@ -555,7 +555,7 @@ void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 	G_TriggerMenu( activator->client->ps.clientNum, MN_H_ARMOURY );
 }
 
-void HMedistat_Think( gentity_t *self )
+static void HMedistat_Think( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
 	vec3_t    mins, maxs;
@@ -1112,7 +1112,7 @@ bool G_DeconstructDead( gentity_t *buildable )
 	return false;
 }
 
-void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
+static void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
 	if ( !self || self->s.eType != entityType_t::ET_BUILDABLE )
 	{
@@ -1190,8 +1190,8 @@ void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 /**
  * @return The number of buildables removed.
  */
-int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
-                             char *nums, int nsize )
+static int G_FreeMarkedBuildables( gentity_t *deconner, char *readable,
+		int rsize, char *nums, int nsize )
 {
 	int       i;
 	int       bNum;
@@ -2561,7 +2561,7 @@ void G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate )
 	G_BuildLogSet( G_BuildLogNew( actor, fate ), buildable );
 }
 
-void G_BuildLogRevertThink( gentity_t *ent )
+static void G_BuildLogRevertThink( gentity_t *ent )
 {
 	gentity_t *built;
 	vec3_t    mins, maxs;

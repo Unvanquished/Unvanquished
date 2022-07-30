@@ -146,8 +146,7 @@ Cvar::Cvar<float> cg_motionblur("cg_motionblur", "strength of motion blur", Cvar
 Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed to trigger motion blur", Cvar::NONE, 600);
 Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "desaturate world view when dead or spawning", Cvar::NONE, true);
 
-// TODO(0.53): turn this on by default. Not turning on right away because the filesystem stuff is still
-// a bit broken in 0.52 (a homepath file can't override a VFS file).
+// TODO(0.54): turn this on by default.
 static Cvar::Cvar<bool> cg_navgenOnLoad("cg_navgenOnLoad", "generate navmeshes when starting a local game", Cvar::NONE, false);
 
 // search 'fovCvar' to find usage of these (names come from config files)
@@ -698,7 +697,7 @@ void CG_RegisterGrading( int slot, const char *str )
 CG_RegisterReverb
 =================
 */
-void CG_RegisterReverb( int slot, const char *str )
+static void CG_RegisterReverb( int slot, const char *str )
 {
 	int   model;
 	float dist, intensity;
@@ -1108,8 +1107,9 @@ static void GenerateNavmeshes()
 	{
 		fileHandle_t f;
 		std::string filename = NavmeshFilename( mapName, BG_Class( species )->name );
-		// TODO(0.53): match new behavior of G_FOpenGameOrPakPath
-		if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0)
+		// Search homepath then pakpath, matching G_FOpenGameOrPakPath
+		if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0 &&
+		     trap_FS_OpenPakFile( filename, f ) < 0 )
 		{
 			missing.push_back( species );
 			continue;

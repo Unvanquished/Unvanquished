@@ -43,7 +43,7 @@ env_speaker
 =================================================================================
 */
 
-void target_speaker_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void target_speaker_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	if ( self->spawnflags & 3 )
 	{
@@ -125,7 +125,7 @@ env_rumble
 
 =================================================================================
 */
-void fx_rumble_think( gentity_t *self )
+static void fx_rumble_think( gentity_t *self )
 {
 	int       i;
 	gentity_t *ent;
@@ -164,7 +164,7 @@ void fx_rumble_think( gentity_t *self )
 	}
 }
 
-void fx_rumble_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void fx_rumble_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	self->timestamp = level.time + ( self->config.amount * FRAMETIME );
 	self->nextthink = level.time + FRAMETIME;

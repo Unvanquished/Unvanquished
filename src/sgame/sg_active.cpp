@@ -44,7 +44,7 @@ damage values to that client for pain blends and kicks, and
 global pain sound events for all clients.
 ===============
 */
-void P_DamageFeedback( gentity_t *player )
+static void P_DamageFeedback( gentity_t *player )
 {
 	gclient_t *client;
 	float     count;
@@ -113,7 +113,7 @@ P_WorldEffects
 Check for lava / slime contents and drowning
 =============
 */
-void P_WorldEffects( gentity_t *ent )
+static void P_WorldEffects( gentity_t *ent )
 {
 	int waterlevel;
 
@@ -170,7 +170,7 @@ void P_WorldEffects( gentity_t *ent )
 	}
 	else
 	{
-		ent->client->airOutTime = level.time + 12000;
+		ent->client->airOutTime = level.time + OXYGEN_MAX_TIME;
 		ent->damage = 2;
 	}
 
@@ -200,7 +200,7 @@ void P_WorldEffects( gentity_t *ent )
 G_SetClientSound
 ===============
 */
-void G_SetClientSound( gentity_t *ent )
+static void G_SetClientSound( gentity_t *ent )
 {
 	if ( ent->waterlevel && ( ent->watertype & ( CONTENTS_LAVA | CONTENTS_SLIME ) ) )
 	{
@@ -318,7 +318,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 		victim->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 	}
 }
-void PushBot(gentity_t * ent, gentity_t * other)
+static void PushBot(gentity_t * ent, gentity_t * other)
 {
 	vec3_t dir, ang, f, r;
 	float oldspeed;
@@ -351,7 +351,7 @@ void PushBot(gentity_t * ent, gentity_t * other)
 ClientImpacts
 ==============
 */
-void ClientImpacts( gentity_t *ent, pmove_t *pm )
+static void ClientImpacts( gentity_t *ent, pmove_t *pm )
 {
 	int       i;
 	trace_t   trace;
@@ -509,7 +509,7 @@ void  G_TouchTriggers( gentity_t *ent )
 SpectatorThink
 =================
 */
-void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
+static void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 {
 	pmove_t   pm;
 	gclient_t *client;
@@ -867,7 +867,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 ClientTimerActions
 ==================
 */
-void ClientTimerActions( gentity_t *ent, int msec )
+static void ClientTimerActions( gentity_t *ent, int msec )
 {
 	int           i;
 	buildable_t   buildable;
@@ -1094,7 +1094,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 ClientIntermissionThink
 ====================
 */
-void ClientIntermissionThink( gclient_t *client )
+static void ClientIntermissionThink( gclient_t *client )
 {
 	client->ps.eFlags &= ~EF_FIRING;
 	client->ps.eFlags &= ~EF_FIRING2;
@@ -1121,7 +1121,7 @@ Events will be passed on to the clients for presentation,
 but any server game effects are handled here
 ================
 */
-void ClientEvents( gentity_t *ent, int oldEventSequence )
+static void ClientEvents( gentity_t *ent, int oldEventSequence )
 {
 	int       i;
 	int       event;
@@ -1216,7 +1216,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence )
 SendPendingPredictableEvents
 ==============
 */
-void SendPendingPredictableEvents( playerState_t *ps )
+static void SendPendingPredictableEvents( playerState_t *ps )
 {
 	gentity_t *t;
 	int       event, seq;
@@ -1812,7 +1812,7 @@ If "g_synchronousClients 1" is set, this will be called exactly
 once for each server frame, which makes for smooth demo recording.
 ==============
 */
-void ClientThink_real( gentity_t *self )
+static void ClientThink_real( gentity_t *self )
 {
 	gclient_t *client;
 	pmove_t   pm;

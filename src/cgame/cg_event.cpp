@@ -238,7 +238,7 @@ static void CG_Obituary( entityState_t *ent )
 				if ( attackerTeam == ci->team && attacker == cg.clientNum )
 				{
 					CG_CenterPrint( va( _("You killed ^1TEAMMATE^* %s"), targetName ),
-							SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+							1.5f );
 				}
 			}
 		}
@@ -548,7 +548,7 @@ static void CG_Obituary( entityState_t *ent )
 			if ( attackerTeam == ci->team && attacker == cg.clientNum && attacker != target )
 			{
 				CG_CenterPrint( va( _("You killed ^1TEAMMATE^* %s"), targetName ),
-						SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+						1.5f );
 			}
 
 			return;
@@ -634,7 +634,7 @@ void CG_Rocket_UpdateArmouryMenu()
 	// Rebuild weapon lists if UI is in focus.
 	if ( rocketInfo.keyCatcher & KEYCATCH_UI && CG_MyTeam() == TEAM_HUMANS )
 	{
-		Rocket::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
+		Rml::Core::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
 		if ( document->IsVisible() )
 		{
 			document->DispatchEvent( "refreshdata", {} );
@@ -666,7 +666,7 @@ CG_Momentum
 Notify player of generated momentum
 ==============
 */
-void CG_Momentum( entityState_t *es )
+static void CG_Momentum( entityState_t *es )
 {
 	float                  momentum;
 	bool               negative;
@@ -956,10 +956,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_WATER_UNDER:
+			cg.underwater = true;
+			cg.underwaterTime = cg.time;
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.watrUnSound );
 			break;
 
 		case EV_WATER_CLEAR:
+			cg.underwater = false;
+			cg.underwaterTime = cg.time;
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, CG_CustomSound( es->number, "*gasp" ) );
 			break;
 
@@ -1190,14 +1194,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindAttack, soundChannel_t::CHAN_ANNOUNCER );
 					CG_CenterPrint( va( "^%c%s", "381"[ es->eventParm - 1 ], _( "The Overmind is under attack!" ) ),
-									200, GIANTCHAR_WIDTH * 4 );
+					                1.5f );
 					break;
 
 				case TEAM_HUMANS:
 					// TODO: Add a "reactor is under attack" sound.
 					//trap_S_StartLocalSound( cgs.media.humanReactorAttack, soundChannel_t::CHAN_ANNOUNCER );
 					CG_CenterPrint( va( "^%c%s", "381"[ es->eventParm - 1 ], _( "The reactor is under attack!" ) ),
-									200, GIANTCHAR_WIDTH * 4 );
+					                1.5f );
 					break;
 
 				default:
@@ -1211,13 +1215,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindDying, soundChannel_t::CHAN_ANNOUNCER );
-					CG_CenterPrint( _( "^1The Overmind is dying!" ), 200, GIANTCHAR_WIDTH * 4 );
+					CG_CenterPrint( _( "^1The Overmind is dying!" ), 1.5f );
 					break;
 
 				case TEAM_HUMANS:
 					// TODO: Add a "reactor is going down" sound.
 					//trap_S_StartLocalSound( cgs.media.humanReactorDying, soundChannel_t::CHAN_ANNOUNCER );
-					CG_CenterPrint( _( "^1The reactor is going down!" ), 200, GIANTCHAR_WIDTH * 4 );
+					CG_CenterPrint( _( "^1The reactor is going down!" ), 1.5f );
 					break;
 
 				default:
@@ -1233,7 +1237,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 				const char *location;
 				centity_t  *locent = CG_GetLocation( cg_entities[ es->eventParm ].currentState.origin );
 
-				CG_CenterPrint( _( "Our base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( _( "Our base is under attack!" ), 1.25f );
 
 				if ( locent )
 				{
@@ -1255,7 +1259,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			}
 			else // this is for aliens, and the overmind is in range
 			{
-				CG_CenterPrint( _( "Our base is under attack!" ), 200, GIANTCHAR_WIDTH * 4 );
+				CG_CenterPrint( _( "Our base is under attack!" ), 1.25f );
 			}
 
 			break;
@@ -1269,12 +1273,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, soundChannel_t::CHAN_ANNOUNCER );
-					CG_CenterPrint( "The Overmind needs spawns!", 200, GIANTCHAR_WIDTH * 4 );
+					CG_CenterPrint( "The Overmind needs spawns!", 1.5f );
 					break;
 
 				case TEAM_HUMANS:
 					// TODO: Add a sound.
-					CG_CenterPrint( "There are no telenodes left!", 200, GIANTCHAR_WIDTH * 4 );
+					CG_CenterPrint( "There are no telenodes left!", 1.5f );
 					break;
 
 				default:

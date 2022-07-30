@@ -36,7 +36,7 @@ Maryland 20850 USA.
 #include "sg_spawn.h"
 
 //the same as InitTrigger
-void InitBrushSensor( gentity_t *self )
+static void InitBrushSensor( gentity_t *self )
 {
 	if ( !VectorCompare( self->s.angles, vec3_origin ) )
 	{
@@ -49,7 +49,7 @@ void InitBrushSensor( gentity_t *self )
 	trap_LinkEntity( self );
 }
 
-void sensor_act(gentity_t *self, gentity_t*, gentity_t*)
+static void sensor_act(gentity_t *self, gentity_t*, gentity_t*)
 {
 	// if we wanted to tell the cgame about our deactivation, this would be the way to do it
 	// self->s.eFlags ^= EF_NODRAW;
@@ -57,7 +57,7 @@ void sensor_act(gentity_t *self, gentity_t*, gentity_t*)
 	self->enabled = !self->enabled;
 }
 
-void sensor_reset( gentity_t *self )
+static void sensor_reset( gentity_t *self )
 {
 	// SPAWN_DISABLED?
 	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
@@ -67,7 +67,7 @@ void sensor_reset( gentity_t *self )
 }
 
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
-void trigger_compat_propagation_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void trigger_compat_propagation_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	G_FireEntity( self, self );
 
@@ -78,12 +78,12 @@ void trigger_compat_propagation_act( gentity_t *self, gentity_t*, gentity_t *act
 }
 
 // the wait time has passed, so set back up for another activation
-void sensor_checkWaitForReactivation_think( gentity_t *self )
+static void sensor_checkWaitForReactivation_think( gentity_t *self )
 {
 	self->nextthink = 0;
 }
 
-void trigger_checkWaitForReactivation( gentity_t *self )
+static void trigger_checkWaitForReactivation( gentity_t *self )
 {
 	if ( self->config.wait.time > 0 )
 	{
@@ -106,7 +106,8 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
-void trigger_multiple_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void trigger_multiple_act( gentity_t *self, gentity_t*,
+		gentity_t *activator )
 {
 	self->activator = activator;
 
@@ -121,12 +122,12 @@ void trigger_multiple_act( gentity_t *self, gentity_t*, gentity_t *activator )
 	trigger_checkWaitForReactivation( self );
 }
 
-void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t* )
+static void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t* )
 {
 	trigger_multiple_act( self, other, other );
 }
 
-void trigger_multiple_compat_reset( gentity_t *self )
+static void trigger_multiple_compat_reset( gentity_t *self )
 {
 	if (!!( self->spawnflags & 1 ) != !!( self->spawnflags & 2 )) //if both are set or none are set we assume TEAM_ALL
 	{
@@ -151,7 +152,7 @@ sensor_start
 ==============================================================================
 */
 
-void sensor_start_fireAndForget( gentity_t *self )
+static void sensor_start_fireAndForget( gentity_t *self )
 {
 	G_FireEntity(self, self);
 	G_FreeEntity( self );
@@ -183,14 +184,14 @@ timer
 ==============================================================================
 */
 
-void sensor_timer_think( gentity_t *self )
+static void sensor_timer_think( gentity_t *self )
 {
 	G_FireEntity( self, self->activator );
 	// set time before next firing
 	self->nextthink = VariatedLevelTime( self->config.wait );
 }
 
-void sensor_timer_act( gentity_t *self, gentity_t*, gentity_t *activator )
+static void sensor_timer_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	self->activator = activator;
 
@@ -312,7 +313,7 @@ sensor_buildable
 =================================================================================
 */
 
-bool sensor_buildable_match( gentity_t *self, gentity_t *activator )
+static bool sensor_buildable_match( gentity_t *self, gentity_t *activator )
 {
 	if ( !activator )
 	{
@@ -339,7 +340,7 @@ bool sensor_buildable_match( gentity_t *self, gentity_t *activator )
 	return false;
 }
 
-void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t* )
+static void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t* )
 {
 	//sanity check
 	if ( !activator || activator->s.eType != entityType_t::ET_BUILDABLE )
@@ -386,7 +387,7 @@ sensor_player
 sensor_class_match
 ===============
 */
-bool sensor_class_match( gentity_t *self, gentity_t *activator )
+static bool sensor_class_match( gentity_t *self, gentity_t *activator )
 {
 	if ( !activator )
 	{
@@ -418,7 +419,7 @@ bool sensor_class_match( gentity_t *self, gentity_t *activator )
 sensor_equipment_match
 ===============
 */
-bool sensor_equipment_match( gentity_t *self, gentity_t *activator )
+static bool sensor_equipment_match( gentity_t *self, gentity_t *activator )
 {
 	if ( !activator )
 	{
@@ -453,7 +454,7 @@ bool sensor_equipment_match( gentity_t *self, gentity_t *activator )
 	return false;
 }
 
-void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t* )
+static void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t* )
 {
 	bool shouldFire;
 
@@ -539,7 +540,7 @@ sensor_support
 =================================================================================
 */
 
-void sensor_support_think( gentity_t *self )
+static void sensor_support_think( gentity_t *self )
 {
 	if(!self->enabled)
 	{
@@ -574,7 +575,7 @@ void sensor_support_think( gentity_t *self )
 	self->nextthink = level.time + SENSOR_POLL_PERIOD;
 }
 
-void sensor_support_reset( gentity_t *self )
+static void sensor_support_reset( gentity_t *self )
 {
 	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
 	//if(self->enabled)
@@ -596,7 +597,7 @@ sensor_power
 */
 
 
-void sensor_power_think( gentity_t *self )
+static void sensor_power_think( gentity_t *self )
 {
 	if(!self->enabled)
 	{
@@ -627,7 +628,7 @@ sensor_creep
 */
 
 
-void sensor_creep_think( gentity_t *self )
+static void sensor_creep_think( gentity_t *self )
 {
 	if(!self->enabled)
 	{

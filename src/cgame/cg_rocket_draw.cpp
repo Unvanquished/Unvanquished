@@ -32,15 +32,14 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/FileSystem.h"
 #include "cg_local.h"
 #include "cg_key_name.h"
 #include "rocket/rocket.h"
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/ElementInstancer.h>
-#include <Rocket/Core/ElementInstancerGeneric.h>
-#include <Rocket/Core/Factory.h>
-#include <Rocket/Core/ElementText.h>
-#include <Rocket/Core/StyleSheetKeywords.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/ElementInstancer.h>
+#include <RmlUi/Core/Factory.h>
+#include <RmlUi/Core/ElementText.h>
 
 static void CG_GetRocketElementColor( Color::Color& color )
 {
@@ -64,75 +63,134 @@ static void CG_GetRocketElementRect( rectDef_t *rect )
 	rect->h = ( rect->h / cgs.glconfig.vidHeight ) * 480;
 }
 
-class HudElement : public Rocket::Core::Element
+static bool updateLanguage;
+void Rocket_UpdateLanguage()
+{
+	updateLanguage = true;
+	if ( menuContext )
+		menuContext->Update();
+	if ( hudContext )
+		hudContext->Update();
+	updateLanguage = false;
+}
+class TranslateElement : public Rml::Core::Element
 {
 public:
-	HudElement(const Rocket::Core::String& tag, rocketElementType_t type_, bool replacedElement) :
-			Rocket::Core::Element(tag),
+	TranslateElement(const Rml::Core::String& tag) : Rml::Core::Element(tag) {}
+
+private:
+	void FillTranslatedContent()
+	{
+		const char* translated = Trans_Gettext( originalRML_.c_str() );
+		if ( flags_ != 0 )
+		{
+			SetInnerRML( Rocket_QuakeToRML( translated, flags_ ) );
+		}
+		else
+		{
+			SetInnerRML( translated );
+		}
+	}
+
+	void OnUpdate() override
+	{
+		if ( updateLanguage && !originalRML_.empty() )
+			FillTranslatedContent();
+	}
+
+	// Initialization is done in OnRender instead of OnUpdate because doing it in OnUpdate somehow
+	// results in a new <translate> element being created with the already-translated content?
+	// But updateLanguage can't be handled in OnRender due to non-visible content.
+	void OnRender() override
+	{
+		if ( originalRML_.empty() )
+		{
+			GetInnerRML(originalRML_);
+			if ( HasAttribute( "quake" ) )
+			{
+				flags_ |= RP_QUAKE;
+			}
+
+			if ( HasAttribute( "emoticons" ) )
+			{
+				flags_ |= RP_EMOTICONS;
+			}
+			FillTranslatedContent();
+		}
+	}
+
+	Rml::Core::String originalRML_;
+	int flags_ = 0;
+};
+
+class HudElement : public Rml::Core::Element
+{
+public:
+	HudElement(const Rml::Core::String& tag, rocketElementType_t type_, bool replacedElement) :
+			Rml::Core::Element(tag),
 			type(type_),
 			isReplacedElement(replacedElement) {}
 
-	HudElement(const Rocket::Core::String& tag, rocketElementType_t type_) :
-			Rocket::Core::Element(tag),
+	HudElement(const Rml::Core::String& tag, rocketElementType_t type_) :
+			Rml::Core::Element(tag),
 			type(type_),
 			isReplacedElement(false) {}
 
-	void OnUpdate()
+	void OnUpdate() override
 	{
-		Rocket::Core::Element::OnUpdate();
+		Rml::Core::Element::OnUpdate();
 		if (CG_Rocket_IsCommandAllowed(type))
 		{
 			DoOnUpdate();
 		}
 	}
 
-	void OnRender()
+	void OnRender() override
 	{
 		if (CG_Rocket_IsCommandAllowed(type))
 		{
 			DoOnRender();
-			Rocket::Core::Element::OnRender();
+			Rml::Core::Element::OnRender();
 		}
 	}
 
 	virtual void DoOnRender() {}
 	virtual void DoOnUpdate() {}
 
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
+	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension ) override
 	{
 		if ( !isReplacedElement )
 		{
 			return false;
 		}
 
-		const Rocket::Core::Property *property;
-		property = GetProperty( "width" );
+		const Rml::Core::Property *property = GetProperty( Rml::Core::PropertyId::Width );
 
 		// Absolute unit. We can use it as is
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.x = property->value.Get<float>();
 		}
 		else
 		{
-			Rocket::Core::Element *parent = GetParentNode();
+			Rml::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.x = ResolveProperty( "width", parent->GetBox().GetSize().x );
+				dimensions.x = ResolveNumericProperty( property, parent->GetBox().GetSize().x );
 			}
 		}
 
-		property = GetProperty( "height" );
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		property = GetProperty( Rml::Core::PropertyId::Height );
+		if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.y = property->value.Get<float>();
 		}
 		else
 		{
-			Rocket::Core::Element *parent = GetParentNode();
+			Rml::Core::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
-				dimensions.y = ResolveProperty( "height", parent->GetBox().GetSize().y );
+				dimensions.y = ResolveNumericProperty( property, parent->GetBox().GetSize().y );
 			}
 		}
 
@@ -158,13 +216,13 @@ public:
 		rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
 	}
 
-	void GetColor( const Rocket::Core::String& property, Color::Color& color )
+	void GetColor( const Rml::Core::String& property, Color::Color& color )
 	{
-		color = Color::Adapt( GetProperty<Rocket::Core::Colourb>( property ) );
+		color = Color::Adapt( GetProperty<Rml::Core::Colourb>( property ) );
 	}
 
 protected:
-	Rocket::Core::Vector2f dimensions;
+	Rml::Core::Vector2f dimensions;
 
 private:
 	rocketElementType_t type;
@@ -174,19 +232,19 @@ private:
 class TextHudElement : public HudElement
 {
 public:
-	TextHudElement( const Rocket::Core::String& tag, rocketElementType_t type ) :
+	TextHudElement( const Rml::Core::String& tag, rocketElementType_t type ) :
 		HudElement( tag, type )
 	{
 		InitializeTextElement();
 	}
 
-	TextHudElement( const Rocket::Core::String& tag, rocketElementType_t type, bool replacedElement ) :
+	TextHudElement( const Rml::Core::String& tag, rocketElementType_t type, bool replacedElement ) :
 		HudElement( tag, type, replacedElement )
 	{
 		InitializeTextElement();
 	}
 
-	void SetText(const Rocket::Core::String& text )
+	void SetText(const Rml::Core::String& text )
 	{
 		textElement->SetText( text );
 	}
@@ -194,22 +252,21 @@ public:
 private:
 	void InitializeTextElement()
 	{
-		textElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+		textElement = dynamic_cast< Rml::Core::ElementText* >( AppendChild( Rml::Core::Factory::InstanceElement(
 			this,
 			"#text",
 			"#text",
-			Rocket::Core::XMLAttributes() ) );
-		AppendChild( textElement );
+			Rml::Core::XMLAttributes() ) ) );
 	}
 
-	Rocket::Core::ElementText* textElement;
+	Rml::Core::ElementText* textElement;
 
 };
 
 class AmmoHudElement : public TextHudElement
 {
 public:
-	AmmoHudElement( const Rocket::Core::String& tag ) :
+	AmmoHudElement( const Rml::Core::String& tag ) :
 			TextHudElement( tag, ELEMENT_BOTH ),
 			showTotalAmmo( false ),
 			builder( false ),
@@ -219,17 +276,17 @@ public:
 			totalBudget( 0 ),
 			queuedBudget( 0 ) {}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes ) override
 	{
 		TextHudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
 		{
-			const Rocket::Core::String& type = GetAttribute<Rocket::Core::String>( "type", "" );
+			const Rml::Core::String& type = GetAttribute<Rml::Core::String>( "type", "" );
 			showTotalAmmo = type == "total";
 		}
 	}
 
-	void DoOnRender()
+	void DoOnUpdate() override
 	{
 		weapon_t weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
 
@@ -321,11 +378,11 @@ private:
 class ClipsHudElement : public TextHudElement
 {
 public:
-	ClipsHudElement( const Rocket::Core::String& tag ) :
+	ClipsHudElement( const Rml::Core::String& tag ) :
 		TextHudElement( tag, ELEMENT_HUMANS ),
 		clips( 0 ) {}
 
-	virtual void DoOnRender()
+	void DoOnUpdate() override
 	{
 		int           value;
 		playerState_t *ps = &cg.snap->ps;
@@ -358,13 +415,13 @@ static const int FPS_FRAMES = 20;
 class FpsHudElement : public TextHudElement
 {
 public:
-	FpsHudElement( const Rocket::Core::String& tag )
+	FpsHudElement( const Rml::Core::String& tag )
 			: TextHudElement( tag, ELEMENT_ALL ),
 			  shouldShowFps( true ),
 			  index(0),
 			  previous(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		int        i, total;
 		int        fps;
@@ -425,19 +482,19 @@ private:
 class CrosshairIndicatorHudElement : public HudElement
 {
 public:
-	CrosshairIndicatorHudElement( const Rocket::Core::String& tag ) :
+	CrosshairIndicatorHudElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, true ) {}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rml::Core::PropertyId::Color ) )
 		{
 			GetColor( "color", color );
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		rectDef_t    rect;
 		float        x, y, w, h, dim;
@@ -534,21 +591,21 @@ private:
 
 class CrosshairHudElement : public HudElement {
 public:
-	CrosshairHudElement( const Rocket::Core::String& tag ) :
+	CrosshairHudElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, true ),
 			color( Color::White ) {
 	}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rml::Core::PropertyId::Color ) )
 		{
 			GetColor( "color", color );
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		rectDef_t    rect;
 		float        w, h;
@@ -721,31 +778,29 @@ void CG_AddSpeed()
 class SpeedGraphElement : public HudElement
 {
 public:
-	SpeedGraphElement( const Rocket::Core::String& tag ) :
+	SpeedGraphElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_GAME, true )
 	{
-		Rocket::Core::XMLAttributes xml;
-		maxSpeedElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+		Rml::Core::XMLAttributes xml;
+		maxSpeedElement = dynamic_cast< Rml::Core::ElementText* >( AppendChild( Rml::Core::Factory::InstanceElement(
 			this,
 			"#text",
 			"span",
-			xml ) );
+			xml ) ) );
 		maxSpeedElement->SetClass( "speed_max", true );
-		currentSpeedElement = dynamic_cast< Rocket::Core::ElementText* >( Rocket::Core::Factory::InstanceElement(
+		currentSpeedElement = dynamic_cast< Rml::Core::ElementText* >( AppendChild( Rml::Core::Factory::InstanceElement(
 			this,
 			"#text",
 			"span",
-			xml) );
+			xml) ) );
 		currentSpeedElement->SetClass( "speed_current", true );
-		AppendChild( maxSpeedElement );
-		AppendChild( currentSpeedElement );
 	}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties ) override
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
 
-		if ( changed_properties.find( "background-color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rml::Core::PropertyId::BackgroundColor ) )
 		{
 			GetColor( "background-color", backColor );
 		}
@@ -822,9 +877,14 @@ public:
 
 			trap_R_ClearColor();
 		}
+	}
 
+	void DoOnUpdate() override
+	{
 		if ( cg_drawSpeed.Get() & SPEEDOMETER_DRAW_TEXT )
 		{
+			float val;
+
 			// Add text to be configured via CSS
 			if ( cg.predictedPlayerState.clientNum == cg.clientNum )
 			{
@@ -851,8 +911,8 @@ public:
 	}
 
 private:
-	Rocket::Core::ElementText* maxSpeedElement;
-	Rocket::Core::ElementText* currentSpeedElement;
+	Rml::Core::ElementText* maxSpeedElement;
+	Rml::Core::ElementText* currentSpeedElement;
 	bool shouldDrawSpeed;
 	Color::Color backColor;
 };
@@ -860,11 +920,11 @@ private:
 class CreditsValueElement : public TextHudElement
 {
 public:
-	CreditsValueElement( const Rocket::Core::String& tag ) :
+	CreditsValueElement( const Rml::Core::String& tag ) :
 			TextHudElement( tag, ELEMENT_HUMANS ),
 			credits( -1 ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		playerState_t *ps = &cg.snap->ps;
 		int value = ps->persistant[ PERS_CREDIT ];;
@@ -882,11 +942,11 @@ private:
 class EvosValueElement : public TextHudElement
 {
 public:
-	EvosValueElement( const Rocket::Core::String& tag ) :
+	EvosValueElement( const Rml::Core::String& tag ) :
 			TextHudElement( tag, ELEMENT_ALIENS ),
 			evos( -1 ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		playerState_t *ps = &cg.snap->ps;
 
@@ -911,39 +971,15 @@ private:
 	int evos;
 };
 
-class StaminaValueElement : public TextHudElement
-{
-public:
-	StaminaValueElement( const Rocket::Core::String& tag ) :
-	TextHudElement( tag, ELEMENT_HUMANS ),
-	stamina( -1 ) {}
-
-	void DoOnUpdate()
-	{
-		playerState_t *ps = &cg.snap->ps;
-		float         value = ps->stats[ STAT_STAMINA ];
-
-		if ( stamina != value )
-		{
-			stamina = value;
-			int percent = 100 * ( stamina / ( float ) STAMINA_MAX );
-			SetText( va( "%d", percent ) );
-		}
-	}
-
-private:
-	float stamina;
-};
-
 class WeaponIconElement : public HudElement
 {
 public:
-	WeaponIconElement( const Rocket::Core::String& tag ) :
+	WeaponIconElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH ),
 			weapon( WP_NONE ),
 			isNoAmmo( false ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		playerState_t *ps;
 		weapon_t      newWeapon;
@@ -996,7 +1032,7 @@ private:
 class WallwalkElement : public HudElement
 {
 public:
-	WallwalkElement( const Rocket::Core::String& tag ) :
+	WallwalkElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_ALIENS )
 	{
 		SetActive( false );
@@ -1023,13 +1059,13 @@ private:
 	bool isActive;
 };
 
-class SprintElement : public HudElement
+class StaminaElement : public HudElement
 {
 public:
-	SprintElement( const Rocket::Core::String& tag ) :
-			HudElement( tag, ELEMENT_HUMANS )
+	StaminaElement( const Rml::Core::String& tag ) :
+			HudElement( tag, ELEMENT_HUMANS ),
+			isActive( false )
 	{
-		SetActive( false );
 	}
 
 	void DoOnUpdate() override
@@ -1037,39 +1073,22 @@ public:
 		bool sprinting = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
 		if ( sprinting != isActive )
 		{
-			SetActive( sprinting );
+			isActive = sprinting;
+			SetClass( "sprinting", sprinting );
 		}
 	}
 
 private:
-	void SetActive( bool active )
-	{
-		isActive = active;
-		SetClass( "active", active );
-		SetClass( "inactive", !active );
-
-	}
-
 	bool isActive;
 };
 
 class UsableBuildableElement : public HudElement
 {
 public:
-	UsableBuildableElement( const Rocket::Core::String& tag ) :
-			HudElement( tag, ELEMENT_HUMANS ),
-			display( "block" ) {}
+	UsableBuildableElement( const Rml::Core::String& tag ) :
+			HudElement( tag, ELEMENT_HUMANS ) {}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
-	{
-		HudElement::OnPropertyChange( changed_properties );
-		if ( display.Empty() && changed_properties.find( "display" ) != changed_properties.end() )
-		{
-			display = GetProperty<Rocket::Core::String>( "display" );
-		}
-	}
-
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		vec3_t        view, point;
 		trace_t       trace;
@@ -1088,7 +1107,7 @@ public:
 		{
 			if ( !IsVisible() )
 			{
-				SetProperty( "display", display );
+				SetProperty( Rml::Core::PropertyId::Display, Rml::Core::Property( Rml::Core::Style::Display::Block ) );
 				cg.nearUsableBuildable = es.modelindex;
 			}
 		}
@@ -1097,30 +1116,27 @@ public:
 			if ( IsVisible() )
 			{
 				// Clear the old image if there was one.
-				SetProperty( "display", "none" );
+				SetProperty( Rml::Core::PropertyId::Display, Rml::Core::Property( Rml::Core::Style::Display::None ) );
 				cg.nearUsableBuildable = BA_NONE;
 			}
 		}
 	}
-
-private:
-	Rocket::Core::String display;
 };
 
 class LocationElement : public HudElement
 {
 public:
-	LocationElement( const Rocket::Core::String& tag ) :
+	LocationElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_GAME ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
-		Rocket::Core::String newLocation;
+		Rml::Core::String newLocation;
 		centity_t  *locent;
 
 		if ( cg.intermissionStarted )
 		{
-			if ( !location.Empty() )
+			if ( !location.empty() )
 			{
 				location = "";
 				SetInnerRML( location );
@@ -1141,24 +1157,24 @@ public:
 
 		if ( location != newLocation )
 		{
-			SetInnerRML( Rocket_QuakeToRML( location.CString(), RP_EMOTICONS ) );
+			SetInnerRML( Rocket_QuakeToRML( location.c_str(), RP_EMOTICONS ) );
 		}
 	}
 
 private:
-	Rocket::Core::String location;
+	Rml::Core::String location;
 };
 
 class TimerElement : public TextHudElement
 {
 public:
-	TimerElement( const Rocket::Core::String& tag ) :
+	TimerElement( const Rml::Core::String& tag ) :
 			TextHudElement( tag, ELEMENT_GAME ),
 			mins_( 0 ),
 			seconds_( 0 ),
 			tens_( 0 ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		int   mins, seconds, tens;
 		int   msec;
@@ -1313,23 +1329,23 @@ static void CG_Rocket_DrawDisconnect()
 class LagometerElement : public HudElement
 {
 public:
-	LagometerElement( const Rocket::Core::String& tag ) :
+	LagometerElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_GAME, true ),
 			shouldDrawLagometer( true ),
 			adjustedColor( Color::White )
 	{
 	}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "background-color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rml::Core::PropertyId::BackgroundColor ) )
 		{
 			GetColor( "background-color", adjustedColor );
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		int    a, i;
 		float  v;
@@ -1473,13 +1489,13 @@ private:
 class PingElement : public TextHudElement
 {
 public:
-	PingElement( const Rocket::Core::String& tag ) :
+	PingElement( const Rml::Core::String& tag ) :
 				 TextHudElement( tag, ELEMENT_GAME, true ),
 				 shouldDrawPing( true )
 	{
 	}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		const char* ping;
 
@@ -1517,7 +1533,7 @@ public:
 	}
 private:
 	bool shouldDrawPing;
-	Rocket::Core::String ping_;
+	Rml::Core::String ping_;
 };
 
 /*
@@ -1620,12 +1636,12 @@ static void CG_ScanForCrosshairEntity()
 class CrosshairNamesElement : public HudElement
 {
 public:
-	CrosshairNamesElement( const Rocket::Core::String& tag  ) :
+	CrosshairNamesElement( const Rml::Core::String& tag  ) :
 			HudElement( tag, ELEMENT_GAME ), alpha_( 0.0F ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
-		Rocket::Core::String name;
+		Rml::Core::String name;
 		float alpha;
 
 		if ( ( !cg_drawCrosshairNames.Get() && !cg_drawEntityInfo.Get() ) || cg.renderingThirdPerson )
@@ -1683,7 +1699,7 @@ public:
 			cg.crosshairEntityNum < MAX_CLIENTS &&
 			cgs.clientinfo[ cg.crosshairEntityNum ].health > 0)
 		{
-			name = va( "%s ^7[^%c%d^7]", name.CString(),
+			name = va( "%s ^7[^%c%d^7]", name.c_str(),
 					   CG_GetColorCharForHealth( cg.crosshairEntityNum ),
 					   cgs.clientinfo[ cg.crosshairEntityNum ].health);
 		}
@@ -1691,33 +1707,34 @@ public:
 		if ( name != name_ )
 		{
 			name_ = name;
-			SetInnerRML( Rocket_QuakeToRML( name.CString(), RP_EMOTICONS ) );
+			SetInnerRML( Rocket_QuakeToRML( name.c_str(), RP_EMOTICONS ) );
 		}
 	}
 
 private:
 	void Clear()
 	{
-		if ( !name_.Empty() )
+		if ( !name_.empty() )
 		{
 			name_ = "";
 			SetInnerRML( "" );
 		}
 	}
 
-	Rocket::Core::String name_;
+	Rml::Core::String name_;
 	float alpha_;
 };
 
 class LevelshotElement : public HudElement
 {
 public:
-	LevelshotElement( const Rocket::Core::String& tag ) :
+	LevelshotElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_ALL ), mapIndex( -1 ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
-		if ( ( rocketInfo.data.mapIndex < 0 || rocketInfo.data.mapIndex >= rocketInfo.data.mapCount ) )
+		if ( rocketInfo.data.mapIndex < 0 ||
+		     static_cast<size_t>( rocketInfo.data.mapIndex ) >= rocketInfo.data.mapList.size() )
 		{
 			Clear();
 			return;
@@ -1726,9 +1743,11 @@ public:
 		if ( mapIndex != rocketInfo.data.mapIndex )
 		{
 			mapIndex = rocketInfo.data.mapIndex;
-			SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />",
-							 rocketInfo.data.mapList[ mapIndex ].mapLoadName,
-					rocketInfo.data.mapList[ mapIndex ].mapLoadName ) );
+			std::error_code ignored;
+			const std::string& mapName = rocketInfo.data.mapList[ mapIndex ].mapLoadName;
+			FS::PakPath::LoadPakPrefix(
+				*FS::FindPak( "map-" + mapName ), Str::Format( "meta/%s/", mapName ), ignored );
+			SetInnerRML( Str::Format( "<img class='levelshot' src='/meta/%s/%s' />", mapName, mapName ) );
 		}
 	}
 
@@ -1749,10 +1768,10 @@ private:
 class LevelshotLoadingElement : public HudElement
 {
 public:
-	LevelshotLoadingElement( const Rocket::Core::String& tag ) :
+	LevelshotLoadingElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_ALL ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( rocketInfo.cstate.connState < connstate_t::CA_LOADING )
 		{
@@ -1764,31 +1783,33 @@ public:
 		if ( map != newMap )
 		{
 			map = newMap;
-			SetInnerRML( va( "<img class='levelshot' src='/meta/%s/%s' />", newMap, newMap ) );
+			SetInnerRML( Str::Format( "<img src='/meta/%s/%s' />", newMap, newMap ) );
 		}
 	}
 
 private:
 	void Clear()
 	{
-		if ( !map.Empty() )
+		if ( !map.empty() )
 		{
 			map = "";
 			SetInnerRML( "" );
 		}
 	}
 
-	Rocket::Core::String map;
+	Rml::Core::String map;
 };
 
 #define CENTER_PRINT_DURATION 3000
 class CenterPrintElement : public HudElement
 {
 public:
-	CenterPrintElement( const Rocket::Core::String& tag ) :
+	int showTime_ = -1;
+
+	CenterPrintElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_GAME ) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( !*cg.centerPrint )
 		{
@@ -1797,14 +1818,20 @@ public:
 
 		if ( cg.centerPrintTime + CENTER_PRINT_DURATION < cg.time )
 		{
-			*cg.centerPrint = '\0';
-			SetInnerRML( "" );
+			if ( showTime_ >= 0 )
+			{
+				showTime_ = -1;
+				SetInnerRML( "" );
+			}
 			return;
 		}
 
-		if ( cg.time == cg.centerPrintTime )
+		if ( showTime_ != cg.centerPrintTime )
 		{
+			showTime_ = cg.centerPrintTime;
 			SetInnerRML( Rocket_QuakeToRML( cg.centerPrint, RP_EMOTICONS ) );
+			SetProperty( Rml::Core::PropertyId::FontSize,
+			             Rml::Core::Property( cg.centerPrintSizeFactor, Rml::Core::Property::EM ) );
 		}
 
 		SetProperty( "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );
@@ -1814,11 +1841,11 @@ public:
 class BeaconAgeElement : public TextHudElement
 {
 public:
-	BeaconAgeElement( const Rocket::Core::String& tag ) :
+	BeaconAgeElement( const Rml::Core::String& tag ) :
 			TextHudElement( tag, ELEMENT_GAME ),
 			alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.ageAlpha > 0 )
 		{
@@ -1851,17 +1878,17 @@ private:
 	}
 
 	float alpha_;
-	Rocket::Core::String age;
+	Rml::Core::String age;
 };
 
 class BeaconDistanceElement : public TextHudElement
 {
 public:
-	BeaconDistanceElement( const Rocket::Core::String& tag ) :
+	BeaconDistanceElement( const Rml::Core::String& tag ) :
 	TextHudElement( tag, ELEMENT_GAME ),
 	alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.distanceAlpha > 0 )
 		{
@@ -1894,17 +1921,17 @@ private:
 	}
 
 	float alpha_;
-	Rocket::Core::String distance;
+	Rml::Core::String distance;
 };
 
 class BeaconInfoElement : public TextHudElement
 {
 public:
-	BeaconInfoElement( const Rocket::Core::String& tag ) :
+	BeaconInfoElement( const Rml::Core::String& tag ) :
 	TextHudElement( tag, ELEMENT_GAME ),
 	alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.infoAlpha > 0 )
 		{
@@ -1937,24 +1964,24 @@ private:
 	}
 
 	float alpha_;
-	Rocket::Core::String info;
+	Rml::Core::String info;
 };
 
 class BeaconNameElement : public HudElement
 {
 public:
-	BeaconNameElement( const Rocket::Core::String& tag ) :
+	BeaconNameElement( const Rml::Core::String& tag ) :
 	HudElement( tag, ELEMENT_GAME ),
 	alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.nameAlpha > 0 )
 		{
 			if ( name != cg.beaconRocket.name )
 			{
 				name = cg.beaconRocket.name;
-				SetInnerRML( Rocket_QuakeToRML( name.CString(), RP_EMOTICONS ) );
+				SetInnerRML( Rocket_QuakeToRML( name.c_str(), RP_EMOTICONS ) );
 			}
 
 			if ( alpha_ != cg.beaconRocket.nameAlpha )
@@ -1980,25 +2007,25 @@ private:
 	}
 
 	float alpha_;
-	Rocket::Core::String name;
+	Rml::Core::String name;
 };
 
 class BeaconIconElement : public HudElement
 {
 public:
-	BeaconIconElement( const Rocket::Core::String& tag ) :
+	BeaconIconElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_GAME, true ) {}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
+		if ( changed_properties.Contains( Rml::Core::PropertyId::Color ) )
 		{
 			GetColor( "color", color_ );
 		}
 	}
 
-	void DoOnRender()
+	void DoOnRender() override
 	{
 		rectDef_t rect;
 		Color::Color color;
@@ -2027,18 +2054,18 @@ private:
 class BeaconOwnerElement : public HudElement
 {
 public:
-	BeaconOwnerElement( const Rocket::Core::String& tag ) :
+	BeaconOwnerElement( const Rml::Core::String& tag ) :
 	HudElement( tag, ELEMENT_GAME ),
 	alpha_(0) {}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.ownerAlpha > 0 )
 		{
 			if ( owner != cg.beaconRocket.owner )
 			{
 				owner = cg.beaconRocket.owner;
-				SetInnerRML( Rocket_QuakeToRML( owner.CString(), RP_EMOTICONS ) );
+				SetInnerRML( Rocket_QuakeToRML( owner.c_str(), RP_EMOTICONS ) );
 			}
 
 			if ( alpha_ != cg.beaconRocket.ownerAlpha )
@@ -2064,16 +2091,15 @@ private:
 	}
 
 	float alpha_;
-	Rocket::Core::String owner;
+	Rml::Core::String owner;
 };
 
 class PredictedMineEfficiencyElement : public HudElement
 {
 public:
-	PredictedMineEfficiencyElement( const Rocket::Core::String& tag ) :
+	PredictedMineEfficiencyElement( const Rml::Core::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, false ),
-			shouldBeVisible( true ),
-			display( -1 ),
+			shouldBeVisible( false ),
 			lastDeltaEfficiencyPct( -999 ),
 			lastDeltaBudget( -999 ),
 			pluralSuffix{ { BA_A_LEECH, "es" }, { BA_H_DRILL, "s" } }
@@ -2081,35 +2107,19 @@ public:
 
 	}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList& changed_properties )
-	{
-		HudElement::OnPropertyChange( changed_properties );
-		if ( display < 0 && changed_properties.find( "display" ) != changed_properties.end() )
-		{
-			display = GetProperty<int>( "display" );
-		}
-	}
-
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		playerState_t  *ps = &cg.snap->ps;
 		buildable_t   buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 
-		// If display hasn't been set yet explicitly, assume display is block
-		if ( display < 0 )
-		{
-			display = Rocket::Core::DISPLAY_BLOCK;
-		}
-
 		if ( buildable != BA_H_DRILL && buildable != BA_A_LEECH )
 		{
-			if ( IsVisible() && shouldBeVisible )
+			shouldBeVisible = false;
+			if ( IsVisible() )
 			{
-				SetProperty("display",
-							Rocket::Core::Property(Rocket::Core::DISPLAY_NONE,
-												   Rocket::Core::Property::KEYWORD));
+				SetProperty( Rml::Core::PropertyId::Display,
+						Rml::Core::Property( Rml::Core::Style::Display::None ) );
 				SetInnerRML( "" );
-				shouldBeVisible = false;
 
 				// Pick impossible value
 				lastDeltaEfficiencyPct = -999;
@@ -2118,16 +2128,18 @@ public:
 		}
 		else
 		{
-			if ( !IsVisible() && !shouldBeVisible )
+			shouldBeVisible = true;
+			if ( !IsVisible() )
 			{
-				SetProperty( "display", Rocket::Core::Property( display,
-															   Rocket::Core::Property::KEYWORD ) );
-				shouldBeVisible = true;
+				SetProperty( Rml::Core::PropertyId::Display,
+						Rml::Core::Property( Rml::Core::Style::Display::Block ) );
 			}
 		}
+
+		PopulateText();
 	}
 
-	void DoOnRender()
+	void PopulateText()
 	{
 		if ( shouldBeVisible )
 		{
@@ -2150,17 +2162,20 @@ public:
 			{
 				if        ( deltaBudget < 0 ) {
 					color = Color::Red;
-					msg = va( "<span class='material-icon error'>&#xE000;</span> You are losing build points!"
+					// Icon U+E000
+					msg = va( "<span class='material-icon error'>\xee\x80\x80</span> You are losing build points!"
 					          " Build the %s%s further apart for greater efficiency.",
 					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
 				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 10 ) {
 					color = Color::Orange;
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Minimal build point gain."
+					// Icon U+E002
+					msg = va( "<span class='material-icon warning'>\xee\x80\x82</span> Minimal build point gain."
 					          " Build the %s%s further apart for greater efficiency.",
 					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
 				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 2 ) {
 					color = Color::Yellow;
-					msg = va( "<span class='material-icon warning'>&#xE002;</span> Subpar build point gain."
+					// Icon U+E002
+					msg = va( "<span class='material-icon warning'>\xee\x80\x82</span> Subpar build point gain."
 					          " Build the %s%s further apart for greater efficiency.",
 					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
 				} else {
@@ -2190,7 +2205,6 @@ public:
 	}
 private:
 	bool shouldBeVisible;
-	int  display;
 	int  lastDeltaEfficiencyPct;
 	int  lastDeltaBudget;
 	std::unordered_map<int, std::string> pluralSuffix;
@@ -2199,7 +2213,7 @@ private:
 class BarbsHudElement : public HudElement
 {
 public:
-	BarbsHudElement ( const Rocket::Core::String& tag ) :
+	BarbsHudElement ( const Rml::Core::String& tag ) :
 	HudElement ( tag, ELEMENT_ALIENS ),
 	numBarbs( 0 ),
 	maxBarbs( BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ),
@@ -2207,16 +2221,16 @@ public:
 	t0 ( 0 ),
 	offset ( 0 ) {}
 
-	void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes ) override
 	{
 		HudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
 		{
 			if ( maxBarbs > 0 )
 			{
-				Rocket::Core::String src = GetAttribute<Rocket::Core::String>( "src", "" );
-				Rocket::Core::String base( va("<img class='barbs' src='%s' />", src.CString() ) );
-				Rocket::Core::String rml;
+				Rml::Core::String src = GetAttribute<Rml::Core::String>( "src", "" );
+				Rml::Core::String base( va("<img class='barbs' src='%s' />", src.c_str() ) );
+				Rml::Core::String rml;
 
 				for ( int i = 0; i < maxBarbs; i++ )
 				{
@@ -2231,7 +2245,7 @@ public:
 		}
 	}
 
-	void DoOnUpdate()
+	void DoOnUpdate() override
 	{
 		int newNumBarbs = cg.snap->ps.ammo;
 		int interval = BG_GetBarbRegenerationInterval( cg.snap->ps );
@@ -2313,7 +2327,7 @@ private:
 	float offset;
 };
 
-void CG_Rocket_DrawPlayerHealth()
+static void CG_Rocket_DrawPlayerHealth()
 {
 	static int lastHealth = 0;
 
@@ -2323,7 +2337,7 @@ void CG_Rocket_DrawPlayerHealth()
 	}
 }
 
-void CG_Rocket_DrawPlayerHealthCross()
+static void CG_Rocket_DrawPlayerHealthCross()
 {
 	qhandle_t shader;
 	Color::Color ref_color;
@@ -2762,7 +2776,7 @@ static void CG_DrawPlayerClipsStack()
 	CG_DrawStack( &rect, foreColor, 0.8, LALIGN_TOPLEFT, val, maxVal );
 }
 
-void CG_Rocket_DrawMinimap()
+static void CG_Rocket_DrawMinimap()
 {
 	if ( cg.minimap.defined )
 	{
@@ -2779,7 +2793,7 @@ void CG_Rocket_DrawMinimap()
 
 #define FOLLOWING_STRING "following "
 #define CHASING_STRING   "chasing "
-void CG_Rocket_DrawFollow()
+static void CG_Rocket_DrawFollow()
 {
 	if ( cg.snap && cg.snap->ps.pm_flags & PMF_FOLLOW )
 	{
@@ -2805,7 +2819,7 @@ void CG_Rocket_DrawFollow()
 	}
 }
 
-void CG_Rocket_DrawConnectText()
+static void CG_Rocket_DrawConnectText()
 {
 	char       rml[ MAX_STRING_CHARS ];
 	const char *s;
@@ -2855,7 +2869,7 @@ void CG_Rocket_DrawConnectText()
 	Rocket_SetInnerRMLRaw( rml );
 }
 
-void CG_Rocket_DrawClock()
+static void CG_Rocket_DrawClock()
 {
 	char    *s;
 	qtime_t qt;
@@ -2901,7 +2915,7 @@ void CG_Rocket_DrawClock()
 	Rocket_SetInnerRMLRaw( s );
 }
 
-void CG_Rocket_DrawTutorial()
+static void CG_Rocket_DrawTutorial()
 {
 	if ( !cg_tutorial.Get() )
 	{
@@ -2912,14 +2926,7 @@ void CG_Rocket_DrawTutorial()
 	Rocket_SetInnerRML( CG_TutorialText(), RP_EMOTICONS | RP_QUAKE );
 }
 
-void CG_Rocket_DrawStaminaBolt()
-{
-	bool  activate = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
-	Rocket_SetClass( "sprint", activate );
-	Rocket_SetClass( "walk", !activate );
-}
-
-void CG_Rocket_DrawChatType()
+static void CG_Rocket_DrawChatType()
 {
 	static const struct {
 		char colour[4]; // ^n
@@ -2969,7 +2976,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	CG_GetRocketElementRect( &rect );
 	CG_GetRocketElementBGColor( backColor );
 	CG_GetRocketElementColor( foreColor );
-	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
+	Rocket_GetProperty( "momentum-border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
 	Rocket_GetProperty( "locked-marker-color", &lockedColor, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 	Rocket_GetProperty( "unlocked-marker-color", &unlockedColor, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 
@@ -3071,7 +3078,7 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	trap_R_ClearColor();
 }
 
-void CG_Rocket_DrawMineRate()
+static void CG_Rocket_DrawMineRate()
 {
 	int totalBudget  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
 	int queuedBudget = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
@@ -3134,7 +3141,7 @@ static void CG_Rocket_DrawPlayerUnlockedItems()
 	CG_GetRocketElementRect( &rect );
 	Rocket_GetProperty( "cell-color", &backColour, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
 	CG_GetRocketElementColor( foreColour );
-	Rocket_GetProperty( "border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
+	Rocket_GetProperty( "momentum-border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
 
 	w = rect.w - 2 * borderSize;
 	h = rect.h - 2 * borderSize;
@@ -3282,12 +3289,13 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
 	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
 	std::string voteString = CG_EscapeHTMLText( cgs.voteString[ team ] );
-	Rocket::Core::String caller = Rocket_QuakeToRML( cgs.voteCaller[ team ], RP_EMOTICONS ); // colors are stripped by the server
+	Rml::Core::String caller = Rocket_QuakeToRML( cgs.voteCaller[ team ], RP_EMOTICONS ); // colors are stripped by the server
+	// The byte sequences are U+E8DC/U+E8DB - thumbs up/down in our icon font
 	std::string s = Str::Format( "%sVOTE(%i): %s\n"
 			"    Called by: \"%s\"\n"
-			"    [%s][<span class='material-icon'>&#xe8dc;</span>]:%i [%s][<span class='material-icon'>&#xe8db;</span>]:%i\n",
+			"    [%s][<span class='material-icon'>\xee\xa3\x9c</span>]:%i [%s][<span class='material-icon'>\xee\xa3\x9b</span>]:%i\n",
 			team == TEAM_NONE ? "" : "TEAM", sec, voteString,
-			caller.CString(), yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
+			caller.c_str(), yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
 
 	Rocket_SetInnerRMLRaw( s.c_str() );
 }
@@ -3496,22 +3504,6 @@ static void CG_Rocket_DrawDownloadTotalSize()
 	Rocket_SetInnerRML( totalSizeBuf, RP_QUAKE );
 }
 
-static void CG_Rocket_DrawDownloadCompletedSize()
-{
-	char dlSizeBuf[ MAX_STRING_CHARS ];
-	float downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
-
-	if ( !*rocketInfo.downloadName )
-	{
-		Rocket_SetInnerRMLRaw( "" );
-		return;
-	}
-
-	CG_ReadableSize( dlSizeBuf,  sizeof dlSizeBuf,  downloadCount );
-
-	Rocket_SetInnerRML( dlSizeBuf, RP_QUAKE );
-}
-
 static void CG_Rocket_DrawDownloadSpeed()
 {
 	char xferRateBuf[ MAX_STRING_CHARS ];
@@ -3550,46 +3542,47 @@ static void CG_Rocket_HaveJetpck()
 struct elementRenderCmd_t
 {
 	const char *name;
-	void ( *exec )();
+	void ( *update )(); // Modifies the RML or element properties
+	void ( *render )(); // Does rendering outside of the HTML engine
 	rocketElementType_t type;
 };
 
+// This kind of element is a hack left over from when VMs could only use C code
+// and the HTML engine ran outside the VMs. Do not add more of them! Instead,
+// define a class extending Element (example: CrosshairNamesElement).
 // THESE MUST BE ALPHABETIZED
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
-	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
-	{ "chattype", &CG_Rocket_DrawChatType, ELEMENT_ALL },
-	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
-	{ "clock", &CG_Rocket_DrawClock, ELEMENT_ALL },
-	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
-	{ "downloadCompletedSize", &CG_Rocket_DrawDownloadCompletedSize, ELEMENT_ALL },
-	{ "downloadName", &CG_Rocket_DrawDownloadName, ELEMENT_ALL },
-	{ "downloadSpeed", &CG_Rocket_DrawDownloadSpeed, ELEMENT_ALL },
-	{ "downloadTime", &CG_Rocket_DrawDownloadTime, ELEMENT_ALL },
-	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, ELEMENT_ALL },
-	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
-	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
-	{ "health_cross", &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
-	{ "hostname", &CG_Rocket_DrawHostname, ELEMENT_ALL },
-	{ "inventory", &CG_DrawHumanInventory, ELEMENT_HUMANS },
-	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
-	{ "jetpack", &CG_Rocket_HaveJetpck, ELEMENT_HUMANS },
-	{ "levelname", &CG_Rocket_DrawLevelName, ELEMENT_ALL },
-	{ "loadingText", &CG_Rocket_DrawLoadingText, ELEMENT_ALL },
-	{ "mine_rate", &CG_Rocket_DrawMineRate, ELEMENT_BOTH },
-	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_ALL },
-	{ "momentum_bar", &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
-	{ "motd", &CG_Rocket_DrawMOTD, ELEMENT_ALL },
-	{ "numSpawns", &CG_Rocket_DrawNumSpawns, ELEMENT_DEAD },
-	{ "progress_value", &CG_Rocket_DrawProgressValue, ELEMENT_ALL },
-	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, ELEMENT_DEAD },
-	{ "stamina_bolt", &CG_Rocket_DrawStaminaBolt, ELEMENT_HUMANS },
-	{ "tutorial", &CG_Rocket_DrawTutorial, ELEMENT_GAME },
-	{ "unlocked_items", &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
-	{ "version", &CG_Rocket_DrawVersion, ELEMENT_ALL },
-	{ "votes", &CG_Rocket_DrawVote, ELEMENT_GAME },
-	{ "votes_team", &CG_Rocket_DrawTeamVote, ELEMENT_BOTH },
-	{ "warmup_time", &CG_Rocket_DrawWarmup, ELEMENT_GAME },
+	{ "ammo_stack", nullptr, &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
+	{ "chattype", &CG_Rocket_DrawChatType, nullptr, ELEMENT_ALL },
+	{ "clip_stack", nullptr, &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
+	{ "clock", &CG_Rocket_DrawClock, nullptr, ELEMENT_ALL },
+	{ "connecting", &CG_Rocket_DrawConnectText, nullptr, ELEMENT_ALL },
+	{ "downloadName", &CG_Rocket_DrawDownloadName, nullptr, ELEMENT_ALL },
+	{ "downloadSpeed", &CG_Rocket_DrawDownloadSpeed, nullptr, ELEMENT_ALL },
+	{ "downloadTime", &CG_Rocket_DrawDownloadTime, nullptr, ELEMENT_ALL },
+	{ "downloadTotalSize", &CG_Rocket_DrawDownloadTotalSize, nullptr, ELEMENT_ALL },
+	{ "follow", &CG_Rocket_DrawFollow, nullptr, ELEMENT_GAME },
+	{ "health", &CG_Rocket_DrawPlayerHealth, nullptr, ELEMENT_BOTH },
+	{ "health_cross", nullptr, &CG_Rocket_DrawPlayerHealthCross, ELEMENT_BOTH },
+	{ "hostname", &CG_Rocket_DrawHostname, nullptr, ELEMENT_ALL },
+	{ "inventory", &CG_DrawHumanInventory, nullptr, ELEMENT_HUMANS },
+	{ "jetpack", &CG_Rocket_HaveJetpck, nullptr, ELEMENT_HUMANS },
+	{ "levelname", &CG_Rocket_DrawLevelName, nullptr, ELEMENT_ALL },
+	{ "loadingText", &CG_Rocket_DrawLoadingText, nullptr, ELEMENT_ALL },
+	{ "mine_rate", &CG_Rocket_DrawMineRate, nullptr, ELEMENT_BOTH },
+	{ "minimap", nullptr, &CG_Rocket_DrawMinimap, ELEMENT_ALL },
+	{ "momentum_bar", nullptr, &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
+	{ "motd", &CG_Rocket_DrawMOTD, nullptr, ELEMENT_ALL },
+	{ "numSpawns", &CG_Rocket_DrawNumSpawns, nullptr, ELEMENT_DEAD },
+	{ "progress_value", &CG_Rocket_DrawProgressValue, nullptr, ELEMENT_ALL },
+	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, nullptr, ELEMENT_DEAD },
+	{ "tutorial", &CG_Rocket_DrawTutorial, nullptr, ELEMENT_GAME },
+	{ "unlocked_items", nullptr, &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
+	{ "version", &CG_Rocket_DrawVersion, nullptr, ELEMENT_ALL },
+	{ "votes", &CG_Rocket_DrawVote, nullptr, ELEMENT_GAME },
+	{ "votes_team", &CG_Rocket_DrawTeamVote, nullptr, ELEMENT_BOTH },
+	{ "warmup_time", &CG_Rocket_DrawWarmup, nullptr, ELEMENT_GAME },
 };
 
 static const size_t elementRenderCmdListCount = ARRAY_LEN( elementRenderCmdList );
@@ -3599,19 +3592,26 @@ static int elementRenderCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( elementRenderCmd_t * ) b )->name );
 }
 
-void CG_Rocket_RenderElement( const char *tag )
+void CG_Rocket_UpdateElement( const char *tag )
 {
-	elementRenderCmd_t *cmd;
+	auto *cmd = ( elementRenderCmd_t * ) bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
 
-	cmd = ( elementRenderCmd_t * ) bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
-
-	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
+	if ( cmd && cmd->update && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{
-		cmd->exec();
+		cmd->update();
 	}
 }
 
-#define REGISTER_ELEMENT( tag, clazz ) Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< clazz >() )->RemoveReference();
+void CG_Rocket_RenderElement( const char *tag )
+{
+	auto *cmd = ( elementRenderCmd_t * ) bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
+
+	if ( cmd && cmd->render && CG_Rocket_IsCommandAllowed( cmd->type ) )
+	{
+		cmd->render();
+	}
+}
+
 void CG_Rocket_RegisterElements()
 {
 	for ( unsigned i = 0; i < elementRenderCmdListCount; i++ )
@@ -3625,33 +3625,33 @@ void CG_Rocket_RegisterElements()
 		Rocket_RegisterElement( elementRenderCmdList[ i ].name );
 	}
 
-	REGISTER_ELEMENT( "ammo", AmmoHudElement )
-	REGISTER_ELEMENT( "clips", ClipsHudElement )
-	REGISTER_ELEMENT( "fps", FpsHudElement )
-	REGISTER_ELEMENT( "crosshair_indicator", CrosshairIndicatorHudElement )
-	REGISTER_ELEMENT( "crosshair", CrosshairHudElement )
-	REGISTER_ELEMENT( "speedometer", SpeedGraphElement )
-	REGISTER_ELEMENT( "credits", CreditsValueElement )
-	REGISTER_ELEMENT( "evos", EvosValueElement )
-	REGISTER_ELEMENT( "stamina", StaminaValueElement )
-	REGISTER_ELEMENT( "weapon_icon", WeaponIconElement )
-	REGISTER_ELEMENT( "wallwalk", WallwalkElement )
-	REGISTER_ELEMENT( "sprinting", SprintElement )
-	REGISTER_ELEMENT( "usable_buildable", UsableBuildableElement )
-	REGISTER_ELEMENT( "location", LocationElement )
-	REGISTER_ELEMENT( "timer", TimerElement )
-	REGISTER_ELEMENT( "lagometer", LagometerElement )
-	REGISTER_ELEMENT( "ping", PingElement )
-	REGISTER_ELEMENT( "crosshair_name", CrosshairNamesElement )
-	REGISTER_ELEMENT( "levelshot", LevelshotElement )
-	REGISTER_ELEMENT( "levelshot_loading", LevelshotLoadingElement )
-	REGISTER_ELEMENT( "center_print", CenterPrintElement )
-	REGISTER_ELEMENT( "beacon_age", BeaconAgeElement )
-	REGISTER_ELEMENT( "beacon_distance", BeaconDistanceElement )
-	REGISTER_ELEMENT( "beacon_icon", BeaconIconElement )
-	REGISTER_ELEMENT( "beacon_info", BeaconInfoElement )
-	REGISTER_ELEMENT( "beacon_name", BeaconNameElement )
-	REGISTER_ELEMENT( "beacon_owner", BeaconOwnerElement )
-	REGISTER_ELEMENT( "predictedMineEfficiency", PredictedMineEfficiencyElement )
-	REGISTER_ELEMENT( "barbs", BarbsHudElement )
+	RegisterElement<AmmoHudElement>( "ammo" );
+	RegisterElement<ClipsHudElement>( "clips" );
+	RegisterElement<FpsHudElement>( "fps" );
+	RegisterElement<CrosshairIndicatorHudElement>( "crosshair_indicator" );
+	RegisterElement<CrosshairHudElement>( "crosshair" );
+	RegisterElement<SpeedGraphElement>( "speedometer" );
+	RegisterElement<CreditsValueElement>( "credits" );
+	RegisterElement<EvosValueElement>( "evos" );
+	RegisterElement<WeaponIconElement>( "weapon_icon" );
+	RegisterElement<WallwalkElement>( "wallwalk" );
+	RegisterElement<StaminaElement>( "stamina" );
+	RegisterElement<UsableBuildableElement>( "usable_buildable" );
+	RegisterElement<LocationElement>( "location" );
+	RegisterElement<TimerElement>( "timer" );
+	RegisterElement<LagometerElement>( "lagometer" );
+	RegisterElement<PingElement>( "ping" );
+	RegisterElement<CrosshairNamesElement>( "crosshair_name" );
+	RegisterElement<LevelshotElement>( "levelshot" );
+	RegisterElement<LevelshotLoadingElement>( "levelshot_loading" );
+	RegisterElement<CenterPrintElement>( "center_print" );
+	RegisterElement<BeaconAgeElement>( "beacon_age" );
+	RegisterElement<BeaconDistanceElement>( "beacon_distance" );
+	RegisterElement<BeaconIconElement>( "beacon_icon" );
+	RegisterElement<BeaconInfoElement>( "beacon_info" );
+	RegisterElement<BeaconNameElement>( "beacon_name" );
+	RegisterElement<BeaconOwnerElement>( "beacon_owner" );
+	RegisterElement<PredictedMineEfficiencyElement>( "predictedMineEfficiency" );
+	RegisterElement<BarbsHudElement>( "barbs" );
+	RegisterElement<TranslateElement>( "translate" );
 }

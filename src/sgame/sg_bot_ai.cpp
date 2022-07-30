@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
+#include "botlib/bot_api.h"
 #include "Entities.h"
 #include "CBSE.h"
 
@@ -370,9 +371,9 @@ AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
 	return status;
 }
 
-bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
+static bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
 
-double EvalFunc( gentity_t *self, AIExpType_t *exp )
+static double EvalFunc( gentity_t *self, AIExpType_t *exp )
 {
 	AIValueFunc_t *v = ( AIValueFunc_t * ) exp;
 	AIValue_t vt = v->func( self, v->params );
@@ -382,7 +383,7 @@ double EvalFunc( gentity_t *self, AIExpType_t *exp )
 }
 
 // using double because it has enough precision to exactly represent both a float and an int
-double EvalValue( gentity_t *self, AIExpType_t *exp )
+static double EvalValue( gentity_t *self, AIExpType_t *exp )
 {
 	AIValue_t *v = ( AIValue_t * ) exp;
 
@@ -399,7 +400,7 @@ double EvalValue( gentity_t *self, AIExpType_t *exp )
 	return AIUnBoxDouble( *v );
 }
 
-bool EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
+static bool EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
 {
 	AIBinaryOp_t *o = ( AIBinaryOp_t * ) exp;
 
@@ -426,13 +427,13 @@ bool EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
 	}
 }
 
-bool EvaluateUnaryOp( gentity_t *self, AIExpType_t *exp )
+static bool EvaluateUnaryOp( gentity_t *self, AIExpType_t *exp )
 {
 	AIUnaryOp_t *o = ( AIUnaryOp_t * ) exp;
 	return !EvalConditionExpression( self, o->exp );
 }
 
-bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
+static bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 {
 	if ( *exp == EX_OP )
 	{
@@ -964,7 +965,7 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
-botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
+static botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
 {
 	botTarget_t target;
 	botEntityAndDistance_t en = AIEntityToGentity( self, e );

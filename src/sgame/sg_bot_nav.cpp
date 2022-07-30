@@ -207,7 +207,7 @@ Local Bot Navigation
 ========================
 */
 
-signed char BotGetMaxMoveSpeed( gentity_t *self )
+static signed char BotGetMaxMoveSpeed( gentity_t *self )
 {
 	if ( usercmdButtonPressed( self->botMind->cmdBuffer.buttons, BTN_WALKING ) )
 	{
@@ -339,7 +339,7 @@ void BotWalk( gentity_t *self, bool enable )
 }
 
 // search for obstacle forward, and return pointer on it if any
-const gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
+static const gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 {
 	vec3_t playerMins, playerMaxs;
 	vec3_t end;
@@ -369,7 +369,7 @@ const gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 
 // checks if jumping would get rid of blocker
 // return true if yes
-bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const vec3_t dir )
+static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const vec3_t dir )
 {
 	vec3_t playerMins;
 	vec3_t playerMaxs;
@@ -421,7 +421,7 @@ bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const vec3_t dir 
 // try to find a path around the obstacle by projecting 5
 // traces in 15° steps in both directions.
 // return true if a path could be found
-bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
+static bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 {
 	vec3_t forward;
 	vec3_t testPoint1, testPoint2;
@@ -502,7 +502,7 @@ bool BotFindSteerTarget( gentity_t *self, vec3_t dir )
 // This function tries to detect obstacles and to find a way
 // around them, by modifying dir
 //return true on error
-bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
+static bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
 	gentity_t const *blocker = BotGetPathBlocker( self, dir );
 
@@ -524,7 +524,7 @@ bool BotAvoidObstacles( gentity_t *self, vec3_t dir )
 	return true;
 }
 
-void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
+static void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 {
 	vec3_t forward;
 	vec3_t right;
@@ -570,7 +570,7 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 }
 
 // Makes bot aim more or less slowly in a direction
-void BotSeek( gentity_t *self, vec3_t direction )
+static void BotSeek( gentity_t *self, vec3_t direction )
 {
 	vec3_t viewOrigin;
 	vec3_t seekPos;

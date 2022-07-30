@@ -35,42 +35,42 @@ Maryland 20850 USA.
 #ifndef ROCKETEVENTINSTANCER_H
 #define ROCKETEVENTINSTANCER_H
 
-#include <Rocket/Core/EventListener.h>
-#include <Rocket/Core/EventListenerInstancer.h>
+#include <RmlUi/Core/EventListener.h>
+#include <RmlUi/Core/EventListenerInstancer.h>
 #include "rocket.h"
 
-void Rocket_ProcessEvent( Rocket::Core::Event&, Rocket::Core::String& );
+void Rocket_ProcessEvent( Rml::Core::Event&, Rml::Core::String& );
 
-class RocketEvent : public Rocket::Core::EventListener
+class RocketEvent : public Rml::Core::EventListener
 {
 public:
-	RocketEvent(const Rocket::Core::String& value) : value( value ) { }
+	RocketEvent(const Rml::Core::String& value) : value( value ) { }
 	~RocketEvent() { }
 
 	/// Sends the event value through to the CGame's event processing system.
-	void ProcessEvent(Rocket::Core::Event& event)
+	void ProcessEvent(Rml::Core::Event& event)
 	{
 		Rocket_ProcessEvent( event, value );
 	}
 
 	/// Destroys the event.
-	void OnDetach(Rocket::Core::Element*)
+	void OnDetach(Rml::Core::Element*)
 	{
 		delete this;
 	}
 
 private:
-	Rocket::Core::String value;
+	Rml::Core::String value;
 };
 
-class EventInstancer : public Rocket::Core::EventListenerInstancer
+class EventInstancer : public Rml::Core::EventListenerInstancer
 {
 public:
 	EventInstancer() { }
 	~EventInstancer() { }
 
 	/// Instances a new event handle for the CGame
-	Rocket::Core::EventListener* InstanceEventListener(const Rocket::Core::String& value, Rocket::Core::Element*)
+	Rml::Core::EventListener* InstanceEventListener(const Rml::Core::String& value, Rml::Core::Element*)
 	{
 		return new RocketEvent( value );
 	}

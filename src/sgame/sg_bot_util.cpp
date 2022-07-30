@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
+#include "botlib/bot_api.h"
 #include "CBSE.h"
 #include "shared/bg_local.h" // MIN_WALK_NORMAL
 #include "Entities.h"
@@ -799,7 +800,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 	}
 }
 
-bool BotEntityIsVisible( const gentity_t *self, gentity_t *target, int mask )
+static bool BotEntityIsVisible( const gentity_t *self, gentity_t *target, int mask )
 {
 	botTarget_t bt;
 	bt = target;
@@ -1375,13 +1376,13 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 	}
 }
 
-int BotGetAimPredictionTime( gentity_t *self )
+static int BotGetAimPredictionTime( gentity_t *self )
 {
 	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( random(), 0.5f );
 	return std::max( 1, int(time) );
 }
 
-void BotPredictPosition( gentity_t *self, gentity_t const *predict, vec3_t pos, int time )
+static void BotPredictPosition( gentity_t *self, gentity_t const *predict, vec3_t pos, int time )
 {
 	botTarget_t target;
 	vec3_t aimLoc;
@@ -2249,7 +2250,7 @@ void BotResetEnemyQueue( enemyQueue_t *queue )
 	memset( queue->enemys, 0, sizeof( queue->enemys ) );
 }
 
-void BotPushEnemy( enemyQueue_t *queue, gentity_t *enemy )
+static void BotPushEnemy( enemyQueue_t *queue, gentity_t *enemy )
 {
 	if ( enemy )
 	{
@@ -2262,7 +2263,7 @@ void BotPushEnemy( enemyQueue_t *queue, gentity_t *enemy )
 	}
 }
 
-gentity_t *BotPopEnemy( enemyQueue_t *queue )
+static gentity_t *BotPopEnemy( enemyQueue_t *queue )
 {
 	// queue empty
 	if ( queue->front == queue->back )

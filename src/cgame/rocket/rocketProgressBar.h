@@ -35,286 +35,51 @@ Maryland 20850 USA.
 #ifndef ROCKETPROGRESSBAR_H
 #define ROCKETPROGRESSBAR_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/GeometryUtilities.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Controls.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/GeometryUtilities.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
-enum progressBarOrientation_t
-{
-	LEFT,
-	RIGHT,
-	UP,
-	DOWN
-};
-
-class RocketProgressBar : public Rocket::Core::Element
+class RocketProgressBar : public Rml::Controls::ElementProgressBar
 {
 public:
-	RocketProgressBar( const Rocket::Core::String &tag ) :
-		Rocket::Core::Element( tag ), orientation( LEFT ), value( 0.0f ), shader( 0 ), color( Color::White )
+	RocketProgressBar( const Rml::Core::String &tag ) :
+		Rml::Controls::ElementProgressBar( tag ), value( 0.0f ), source( "" )
 	{
 	}
 
-	~RocketProgressBar() {}
+	virtual ~RocketProgressBar() {}
 
-	// Get current value
-	float GetValue() const
+	void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes ) override
 	{
-		return value;
-	}
-
-	void SetValue( const float value )
-	{
-		SetAttribute( "value", value );
-	}
-
-
-	void Update()
-	{
-		float newValue;
-
-		if ( !source.Empty() )
+		auto it = changed_attributes.find("src");
+		if ( it != changed_attributes.end() )
 		{
-			newValue = CG_Rocket_ProgressBarValue(source.CString());
+			source = it->second.Get<Rml::Core::String>();
+		}
+		ElementProgressBar::OnAttributeChange( changed_attributes );
+	}
+
+	void OnUpdate() override
+	{
+		if ( !source.empty() )
+		{
+			float newValue = CG_Rocket_ProgressBarValue(source.c_str());
 
 			if ( newValue != value )
 			{
 				SetValue( newValue );
+				value = newValue;
 			}
 		}
+		ElementProgressBar::OnUpdate();
 	}
 
-	void OnRender()
-	{
-
-		if ( !shader )
-		{
-			return;
-		}
-
-		Update();
-		Rocket::Core::Vector2f position = GetAbsoluteOffset();
-
-		// Vertical meter
-		if( orientation >= UP )
-		{
-			float height;
-			height = dimensions.y * value;
-
-			// Meter decreases down
-			if ( orientation == DOWN )
-			{
-				trap_R_SetColor( color );
-				trap_R_DrawStretchPic( position.x, position.y, dimensions.x, height,
-						       0.0f, 0.0f, 1.0f, value, shader );
-				trap_R_ClearColor();
-			}
-			else
-			{
-				trap_R_SetColor( color );
-				trap_R_DrawStretchPic( position.x, position.y - height + dimensions.y, dimensions.x,
-						       height, 0.0f, 1.0f - value, 1.0f, 1.0f, shader );
-				trap_R_ClearColor();
-			}
-		}
-
-		// Horizontal meter
-		else
-		{
-			float width;
-
-			width = dimensions.x * value;
-
-			// Meter decreases to the left
-			if ( orientation == LEFT )
-			{
-				trap_R_SetColor( color );
-				trap_R_DrawStretchPic( position.x, position.y, width,
-						       dimensions.y, 0.0f, 0.0f, value, 1.0f, shader );
-				trap_R_ClearColor();
-			}
-			else
-			{
-				trap_R_SetColor( color );
-				trap_R_DrawStretchPic( position.x - width + dimensions.x, position.y, width,
-						       dimensions.y, 1.0f - value, 0.0f, 1.0f, 1.0f, shader );
-				trap_R_ClearColor();
-			}
-		}
-	}
-
-	void OnPropertyChange( const Rocket::Core::PropertyNameList &changed_properties )
-	{
-		Element::OnPropertyChange( changed_properties );
-
-		if ( changed_properties.find( "color" ) != changed_properties.end() )
-		{
-			color = Color::Adapt( GetProperty( "color" )->Get<Rocket::Core::Colourb>() );
-		}
-
-		if ( changed_properties.find( "image" ) != changed_properties.end() )
-		{
-			Rocket::Core::String image = GetProperty<Rocket::Core::String>( "image" );
-
-			// skip the leading slash
-			if ( !image.Empty() && image[0] == '/' )
-			{
-				image = image.Substring( 1 );
-			}
-
-			shader = trap_R_RegisterShader( image.CString(), RSF_NOMIP );
-		}
-
-		if ( changed_properties.find( "orientation" ) != changed_properties.end() )
-		{
-			Rocket::Core::String  orientation_string = GetProperty<Rocket::Core::String>( "orientation" );
-
-			if ( orientation_string == "left" )
-			{
-				orientation = LEFT;
-			}
-			else if ( orientation_string == "up" )
-			{
-				orientation = UP;
-			}
-			else if ( orientation_string == "down" )
-			{
-				orientation = DOWN;
-			}
-			else
-			{
-				orientation = RIGHT;
-			}
-		}
-	}
-
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
-	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
-
-		if ( changed_attributes.find( "value" ) != changed_attributes.end() )
-		{
-			value = Math::Clamp( GetAttribute<float>( "value", 0.0f ), 0.0f, 1.0f );
-		}
-
-		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
-		{
-			source = GetAttribute<Rocket::Core::String>( "src", "" );
-		}
-	}
-
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
-	{
-		const Rocket::Core::Property *property;
-		property = GetProperty( "width" );
-		bool auto_width, auto_height;
-
-		auto_width = auto_height = false;
-
-		// Keyword means its auto
-		if ( property->unit == Rocket::Core::Property::KEYWORD )
-		{
-			auto_width = true;
-		}
-		// Absolute unit. We can use it as is
-		else if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
-		{
-			dimensions.x = property->value.Get<float>();
-		}
-		else
-		{
-			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
-			stack.push( this );
-
-			while ( ( parent = parent->GetParentNode() ) )
-			{
-				if ( ( base_size = parent->GetOffsetWidth() ) != 0 )
-				{
-					dimensions.x = base_size;
-					while ( !stack.empty() )
-					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
-
-						stack.pop();
-					}
-					break;
-				}
-
-				stack.push( parent );
-			}
-		}
-
-		property = GetProperty( "height" );
-		if ( property->unit == Rocket::Core::Property::KEYWORD )
-		{
-			auto_height = true;
-		}
-		else if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
-		{
-			dimensions.y = property->value.Get<float>();
-		}
-		else
-		{
-			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
-			stack.push( this );
-
-			while ( ( parent = parent->GetParentNode() ) )
-			{
-				if ( ( base_size = parent->GetOffsetHeight() ) != 0 )
-				{
-					dimensions.y = base_size;
-					while ( !stack.empty() )
-					{
-						dimensions.y = stack.top()->ResolveProperty( "height", dimensions.y );
-
-						stack.pop();
-					}
-					break;
-				}
-
-				stack.push( parent );
-			}
-		}
-
-		if ( shader && ( auto_height || auto_width ) )
-		{
-			int x, y;
-			trap_R_GetTextureSize( shader, &x, &y );
-
-			if ( auto_height && !auto_width )
-			{
-				dimensions.y = ( dimensions.x / x ) * y;
-			}
-			else if ( !auto_height && auto_width )
-			{
-				dimensions.x = ( dimensions.y / y ) * x;
-			}
-			else
-			{
-				dimensions.x = x;
-				dimensions.y = y;
-			}
-		}
-		// Return the calculated dimensions. If this changes the size of the element, it will result in
-		// a 'resize' event which is caught below and will regenerate the geometry.
-
-		dimension = dimensions;
-
-		return true;
-	}
 
 private:
-	progressBarOrientation_t orientation; // Direction progressbar grows
 	float value; // current value
-	qhandle_t shader;
-	Color::Color color;
-	Rocket::Core::Vector2f dimensions;
-	Rocket::Core::String source;
+	Rml::Core::String source;
 };
 #endif

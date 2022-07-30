@@ -38,7 +38,7 @@ Maryland 20850 USA.
 
 #define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
 
-void Svcmd_EntityFire_f()
+static void Svcmd_EntityFire_f()
 {
 	char argument[ MAX_STRING_CHARS ];
 	int  entityNum;
@@ -101,7 +101,7 @@ static inline void PrintEntityOverviewLine( gentity_t *entity )
 Svcmd_EntityShow_f
 ===================
 */
-void Svcmd_EntityShow_f()
+static void Svcmd_EntityShow_f()
 {
 	int       entityNum;
 	int       lastTargetIndex, targetIndex;
@@ -208,7 +208,7 @@ Svcmd_EntityList_f
 ===================
 */
 
-void  Svcmd_EntityList_f()
+static void  Svcmd_EntityList_f()
 {
 	int       entityNum;
 	int i;

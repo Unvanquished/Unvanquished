@@ -36,81 +36,88 @@ Maryland 20850 USA.
 #define ROCKETFORMCONTROLINPUT_H
 
 #include "../cg_local.h"
-#include <Rocket/Core/Core.h>
-#include <Rocket/Controls/ElementFormControlInput.h>
+#include <RmlUi/Core/Core.h>
+#include <RmlUi/Controls/ElementFormControlInput.h>
 
-class CvarElementFormControlInput : public Rocket::Controls::ElementFormControlInput, public Rocket::Core::EventListener
+class CvarElementFormControlInput : public Rml::Controls::ElementFormControlInput, public Rml::Core::EventListener
 {
 public:
-	CvarElementFormControlInput( const Rocket::Core::String &tag ) : Rocket::Controls::ElementFormControlInput( tag ), owner( nullptr ) { }
+	CvarElementFormControlInput( const Rml::Core::String &tag ) : Rml::Controls::ElementFormControlInput( tag ), owner( nullptr ) { }
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
-		Rocket::Controls::ElementFormControlInput::OnAttributeChange( changed_attributes );
-
-		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
+		Rml::Controls::ElementFormControlInput::OnAttributeChange( changed_attributes );
+		Rml::Core::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
+		if ( it != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rocket::Core::String >( "cvar", "" );
+			cvar = it->second.Get< Rml::Core::String >( "cvar" );
 			UpdateValue();
 		}
 
-		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
+		it = changed_attributes.find( "type" );
+		if ( it != changed_attributes.end() )
 		{
-			type = GetAttribute< Rocket::Core::String >( "type", "" );
+			type = it->second.Get< Rml::Core::String >( "type" );
 		}
 	}
 
 	virtual void OnChildAdd( Element *child )
 	{
-		Rocket::Controls::ElementFormControlInput::OnChildAdd( child );
+		Rml::Controls::ElementFormControlInput::OnChildAdd( child );
 		if ( child == this )
 		{
 			// Need to cache this because it is not available
 			// when this element is being removed
 			owner = GetOwnerDocument();
-			owner->AddEventListener( "show", this );
+			owner->AddEventListener( Rml::Core::EventId::Show, this );
+
+			AddEventListener( Rml::Core::EventId::Change, this );
 		}
 	}
 
 	virtual void OnChildRemove( Element *child )
 	{
-		Rocket::Controls::ElementFormControlInput::OnChildRemove( child );
+		Rml::Controls::ElementFormControlInput::OnChildRemove( child );
 		if ( child == this )
 		{
-			owner->RemoveEventListener( "show", this );
+			owner->RemoveEventListener( Rml::Core::EventId::Show, this );
 		}
 	}
 
-	virtual void ProcessEvent( Rocket::Core::Event &event )
+	virtual void ProcessDefaultAction( Rml::Core::Event &event )
 	{
-		Rocket::Controls::ElementFormControlInput::ProcessEvent( event );
+		ElementFormControlInput::ProcessDefaultAction( event );
+		ProcessEvent( event );
+	}
 
-		if ( !cvar.Empty() )
+	virtual void ProcessEvent( Rml::Core::Event &event )
+	{
+		if ( !cvar.empty() )
 		{
-			if ( owner == event.GetTargetElement() && event == "show" )
+			if ( owner == event.GetTargetElement() && event == Rml::Core::EventId::Show )
 			{
 				UpdateValue();
 			}
 
 			if ( this == event.GetTargetElement() )
 			{
-				if ( event == "blur" && ( type != "checkbox" && type != "radio" ) )
+				if ( event == Rml::Core::EventId::Blur && ( type != "checkbox" && type != "radio" ) )
 				{
 					SetCvarValueAndFlags( cvar, GetValue() );
 				}
 
-				else if ( event == "change" && type == "range" )
+				else if ( event == Rml::Core::EventId::Change && type == "range" )
 				{
 					SetCvarValueAndFlags( cvar, GetValue() );
 				}
 
-				else if ( event == "click" && !IsDisabled() )
+				else if ( event == Rml::Core::EventId::Click && !IsDisabled() )
 				{
 					if ( type == "checkbox" )
 					{
 						if ( HasAttribute( "checked" ) )
 						{
-							SetCvarValueAndFlags( cvar, GetAttribute<Rocket::Core::String>( "checked-value", "1" ) );
+							SetCvarValueAndFlags( cvar, GetAttribute<Rml::Core::String>( "checked-value", "1" ) );
 						}
 
 						else
@@ -131,12 +138,12 @@ public:
 private:
 	void UpdateValue()
 	{
-		if ( !type.Empty() )
+		if ( !type.empty() )
 		{
 			if ( type == "checkbox" )
 			{
 				bool result;
-				std::string stringValue = Cvar::GetValue( cvar.CString() );
+				std::string stringValue = Cvar::GetValue( cvar.c_str() );
 				if ( !Cvar::ParseCvarValue( stringValue, result ) )
 				{
 					// ParseCvarValue<bool> will only work correctly for a Cvar<bool>
@@ -156,7 +163,7 @@ private:
 
 			else if ( type == "radio" )
 			{
-				if ( GetValue() == Cvar::GetValue( cvar.CString() ).c_str() )
+				if ( GetValue() == Cvar::GetValue( cvar.c_str() ).c_str() )
 				{
 					SetAttribute( "checked", "" );
 				}
@@ -164,30 +171,30 @@ private:
 
 			else
 			{
-				SetValue( Cvar::GetValue( cvar.CString() ).c_str() );
+				SetValue( Cvar::GetValue( cvar.c_str() ).c_str() );
 			}
 		}
 
 	}
 
-	void SetCvarValueAndFlags( const Rocket::Core::String& cvar, Rocket::Core::String value )
+	void SetCvarValueAndFlags( const Rml::Core::String& cvar, Rml::Core::String value )
 	{
 		if ( type == "range" )
 		{
-			size_t point = value.Find( "." );
+			size_t point = value.find( "." );
 			if ( point != value.npos &&
-			     point + 1 + strspn( value.CString() + point + 1, "0" ) == value.Length() )
+			     point + 1 + strspn( value.c_str() + point + 1, "0" ) == value.size() )
 			{
-				value.Erase( point ); // for compatibility with integer cvars
+				value.erase( point ); // for compatibility with integer cvars
 			}
 		}
-		Cvar::SetValue( cvar.CString(), value.CString() );
-		Cvar::AddFlags( cvar.CString(), Cvar::USER_ARCHIVE );
+		Cvar::SetValue( cvar.c_str(), value.c_str() );
+		Cvar::AddFlags( cvar.c_str(), Cvar::USER_ARCHIVE );
 	}
 
-	Rocket::Core::String cvar;
-	Rocket::Core::String type;
-	Rocket::Core::Element *owner;
+	Rml::Core::String cvar;
+	Rml::Core::String type;
+	Rml::Core::Element *owner;
 };
 
 #endif

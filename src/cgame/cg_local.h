@@ -1156,6 +1156,7 @@ struct cg_t
 
 	// centerprinting
 	int  centerPrintTime;
+	float centerPrintSizeFactor;
 	char centerPrint[ MAX_STRING_CHARS ];
 
 	// crosshair client ID
@@ -1228,6 +1229,9 @@ struct cg_t
 	float navmeshLoadingFraction;
 	bool loadingNavmesh;
 
+	bool underwater;
+	int  underwaterTime;
+
 	int                     lastBuildAttempt;
 	int                     lastEvolveAttempt;
 
@@ -1283,7 +1287,6 @@ struct rocketMenu_t
 #define MAX_OUTPUTS 16
 #define MAX_MODS 64
 #define MAX_DEMOS 256
-#define MAX_MAPS 128
 
 struct server_t
 {
@@ -1323,8 +1326,7 @@ struct modInfo_t
 
 struct mapInfo_t
 {
-	char *mapName;
-	char *mapLoadName;
+	std::string mapLoadName;
 };
 
 struct rocketDataSource_t
@@ -1359,8 +1361,7 @@ struct rocketDataSource_t
 	int demoCount;
 	int demoIndex;
 
-	mapInfo_t mapList[ MAX_MAPS ];
-	int mapCount;
+	std::vector<mapInfo_t> mapList;
 	int mapIndex;
 
 	int selectedTeamIndex;
@@ -1398,6 +1399,9 @@ struct rocketInfo_t
 	rocketMenu_t menu[ Util::ordinal(rocketMenuType_t::ROCKETMENU_NUM_TYPES) ];
 	rocketMenu_t hud[ WP_NUM_WEAPONS ];
 	rocketDataSource_t data;
+	bool renderCursor;
+	qhandle_t cursor;
+	rectDef_t cursor_pos;
 };
 
 extern rocketInfo_t rocketInfo;
@@ -1499,8 +1503,6 @@ struct cgMedia_t
 
 	sfxHandle_t alienL4ChargePrepare;
 	sfxHandle_t alienL4ChargeStart;
-
-	qhandle_t   cursor;
 
 	//light armour
 	qhandle_t   larmourHeadSkin;
@@ -1865,6 +1867,9 @@ void       CG_BuildSpectatorString();
 void       CG_UpdateBuildableRangeMarkerMask();
 void       CG_RegisterGrading( int slot, const char *str );
 
+void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gameState );
+void CG_Shutdown();
+
 //
 // cg_view.c
 //
@@ -1923,7 +1928,7 @@ void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float ra
 void CG_AddLagometerFrameInfo();
 void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed();
-void CG_CenterPrint( const char *str, int y, int charWidth );
+void CG_CenterPrint( const char *str, float sizeFactor );
 void CG_DrawActive();
 void       CG_RunMenuScript( char **args );
 void       CG_ResetPainBlend();
@@ -2071,7 +2076,6 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin );
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
 void CG_DrawHumanInventory();
-void CG_DrawItemSelectText();
 float CG_ChargeProgress();
 
 //
@@ -2100,7 +2104,6 @@ void CG_ProcessSnapshots();
 //
 // cg_consolecmds.c
 //
-bool ConsoleCommand();
 void     CG_InitConsoleCommands();
 void     CG_RequestScores();
 void     CG_HideScores_f();
@@ -2233,6 +2236,8 @@ int CG_StringToNetSource( const char *src );
 const char *CG_NetSourceToString( int netSrc );
 const char *CG_Rocket_QuakeToRML( const char *in );
 bool CG_Rocket_IsCommandAllowed( rocketElementType_t type );
+bool CG_Rocket_LoadCursor( Str::StringRef cursorPath );
+void CG_Rocket_EnableCursor( bool enable );
 
 //
 // cg_rocket_events.c
@@ -2248,6 +2253,7 @@ void CG_Rocket_RegisterDataFormatters();
 //
 // cg_rocket_draw.c
 //
+void CG_Rocket_UpdateElement( const char* tag );
 void CG_Rocket_RenderElement( const char* tag );
 void CG_Rocket_RegisterElements( void );
 
@@ -2265,7 +2271,6 @@ int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table );
 void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
 void CG_Rocket_BuildServerInfo();
 void CG_Rocket_BuildServerList( const char *args );
-void CG_Rocket_BuildArmouryBuyList( const char *table );
 void CG_Rocket_BuildPlayerList( const char *table );
 
 //
@@ -2279,12 +2284,6 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name );
 void CG_LoadArenas();
 
 //
-// translation.cpp
-//
-void Trans_Init();
-void Trans_UpdateLanguage_f();
-
-//
 // Rocket Functions
 //
 void Rocket_Init();
@@ -2292,7 +2291,6 @@ void Rocket_Shutdown();
 void Rocket_Render();
 void Rocket_Update();
 void Rocket_LoadDocument( const char *path );
-void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );
 bool Rocket_GetEvent(std::string& cmdText);
 void Rocket_DeleteEvent();
@@ -2335,6 +2333,7 @@ void Rocket_LoadFont( const char *font );
 void Rocket_Rocket_f( void );
 void Rocket_Lua_f( void );
 void Rocket_RocketDebug_f();
+void Rocket_UpdateLanguage();
 
 //
 // CombatFeedback.cpp

@@ -138,7 +138,7 @@ void NavmeshGenerator::WriteFile() {
 	if ( d_->status.code == NavgenStatus::PERMANENT_FAILURE )
 	{
 		// Make old gamelogic fail versions with "Null tile in Navmesh" error
-		// TODO(0.53): break navmesh header compatibility and clean this up
+		// TODO(0.54): break navmesh header compatibility and clean this up
 		NavMeshTileHeader tileHeader = {};
 		if ( !Write( &tileHeader, sizeof(tileHeader) ) ) return;
 		// rest of file is the error message

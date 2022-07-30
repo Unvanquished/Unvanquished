@@ -114,6 +114,8 @@ void CG_MouseEvent( int /*dx*/, int /*dy*/ )
 
 void CG_MousePosEvent( int x, int y )
 {
+	rocketInfo.cursor_pos.x = x;
+	rocketInfo.cursor_pos.y = y;
 	if ( rocketInfo.keyCatcher & KEYCATCH_UI)
 	{
 		Rocket_MouseMove( x, y );
@@ -160,10 +162,16 @@ Called for important messages that should stay in the center of the screen
 for a few moments
 ==============
 */
-void CG_CenterPrint( const char *str, int, int )
+void CG_CenterPrint( const char *str, float sizeFactor )
 {
+	if ( !*str )
+	{
+		return;
+	}
+
 	Q_strncpyz( cg.centerPrint, str, sizeof( cg.centerPrint ) );
 	cg.centerPrintTime = cg.time;
+	cg.centerPrintSizeFactor = sizeFactor;
 }
 
 //==============================================================================

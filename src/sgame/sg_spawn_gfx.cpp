@@ -43,7 +43,7 @@ Maryland 20850 USA.
 ======================================================================
 */
 
-void gfx_particle_system_toggle( gentity_t *self )
+static void gfx_particle_system_toggle( gentity_t *self )
 {
 	//toggle EF_NODRAW
 	self->s.eFlags ^= EF_NODRAW;
@@ -51,7 +51,7 @@ void gfx_particle_system_toggle( gentity_t *self )
 	self->nextthink = 0;
 }
 
-void gfx_particle_system_act( gentity_t *self, gentity_t*, gentity_t* )
+static void gfx_particle_system_act( gentity_t *self, gentity_t*, gentity_t* )
 {
 	gfx_particle_system_toggle( self );
 
@@ -91,7 +91,7 @@ Light Flare
 
 =================================================================================
 */
-void gfx_light_flare_toggle( gentity_t *self, gentity_t*, gentity_t* )
+static void gfx_light_flare_toggle( gentity_t *self, gentity_t*, gentity_t* )
 {
 	self->s.eFlags ^= EF_NODRAW;
 }
@@ -175,7 +175,7 @@ env_portal_*
 
 =================================================================================
 */
-void gfx_portal_locateCamera( gentity_t *self )
+static void gfx_portal_locateCamera( gentity_t *self )
 {
 	vec3_t    dir;
 	gentity_t *target;
@@ -273,7 +273,7 @@ env_animated_model
 
 =================================================================================
 */
-void gfx_animated_model_act( gentity_t *self, gentity_t*, gentity_t* )
+static void gfx_animated_model_act( gentity_t *self, gentity_t*, gentity_t* )
 {
 	if ( self->spawnflags & 1 )
 	{
@@ -322,7 +322,7 @@ gfx_shader_mod
 =================================================================================
 */
 
-void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
+static void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 {
 	if ( !self->shaderKey || !self->shaderReplacement || !self->enabled )
 	{
@@ -335,7 +335,7 @@ void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 	self->shaderActive = true;
 }
 
-void gfx_shader_mod_reset( gentity_t *self )
+static void gfx_shader_mod_reset( gentity_t *self )
 {
 	if ( !self->shaderKey || !self->shaderReplacement )
 	{

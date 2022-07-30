@@ -35,43 +35,33 @@ Maryland 20850 USA.
 #ifndef ROCKETCHATFIELD_H
 #define ROCKETCHATFIELD_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/ElementUtilities.h>
-#include <Rocket/Core/GeometryUtilities.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
+#include <RmlUi/Core/ElementUtilities.h>
+#include <RmlUi/Core/GeometryUtilities.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
-class RocketChatField : public Rocket::Core::Element, Rocket::Core::EventListener
+class RocketChatField : public Rml::Core::Element, Rml::Core::EventListener
 {
 public:
-	RocketChatField( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), focus( false ), cursor_character_index( 0 ), text_element( nullptr )
+	RocketChatField( const Rml::Core::String &tag ) :
+			Rml::Core::Element( tag ),
+			font_engine_interface( Rml::Core::GetFontEngineInterface() ),
+			cursor_character_index( 0 ),
+			text_element( nullptr )
 	{
-		// Spawn text container
-		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
-
-		// Add it to this element
-		AppendChild( text_element );
-		text_element->RemoveReference();
-	}
-
-	virtual void OnChildRemove( Element *child )
-	{
-		Element::OnChildRemove(child);
-		if ( child == this && context )
-		{
-			context->GetRootElement()->RemoveEventListener( "show", this );
-			context->GetRootElement()->RemoveEventListener( "hide", this );
-			context->GetRootElement()->RemoveEventListener( "blur", this );
-			context->GetRootElement()->RemoveEventListener( "mousemove", this );
-
-			context = nullptr;
-		}
+		// Spawn text container and add it to this element
+		text_element = AppendChild( Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() ) );
 	}
 
 	void OnRender()
 	{
 		UpdateCursorPosition();
+		if ( cursor_geometry.GetVertices().empty() )
+		{
+			GenerateCursor();
+		}
 		cursor_geometry.Render( cursor_position );
 	}
 
@@ -80,141 +70,108 @@ public:
 		Element::OnChildAdd( child );
 		if ( child == this )
 		{
-			// Cache context so we can remove the event listeners later
-			context = GetContext();
-
-			context->GetRootElement()->AddEventListener( "show", this );
-			context->GetRootElement()->AddEventListener( "hide", this );
-			context->GetRootElement()->AddEventListener( "blur", this );
-			context->GetRootElement()->AddEventListener( "mousemove", this );
+			this->AddEventListener( "focus", this );
+			this->AddEventListener( "mousemove", this );
+			this->AddEventListener( "textinput", this );
+			this->AddEventListener( "keydown", this );
+			this->AddEventListener( "resize", this );
 		}
 	}
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList& changed_attributes )
+	virtual void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes )
 	{
+		Element::OnAttributeChange( changed_attributes );
 		if (changed_attributes.find( "exec" ) != changed_attributes.end() )
 		{
-			cmd = GetAttribute<Rocket::Core::String>( "exec", "" );
+			cmd = GetAttribute<Rml::Core::String>( "exec", "" );
 		}
 	}
 
-	void OnUpdate()
+	void ProcessEvent( Rml::Core::Event &event )
 	{
-		// Ensure mouse follow cursor
-		if ( focus )
-		{
-			GetContext()->ProcessMouseMove( cursor_position.x, cursor_position.y, 0 );
-
-			// Make sure this element is in focus if visible
-			if ( GetContext()->GetFocusElement() != this )
-			{
-				this->Click();
-				this->Focus();
-			}
-		}
-	}
-
-	void ProcessEvent( Rocket::Core::Event &event )
-	{
-		Element::ProcessEvent( event );
-
 		// Cannot move mouse while this element is in view
-		if ( focus && event == "mousemove" )
+		// FIXME: Does not work? You can move the mouse out of the window.
+		if ( event == "mousemove" )
 		{
 			event.StopPropagation();
 			return;
 		}
 
-		// We are in focus, let the element know
-		if ( event.GetTargetElement() == GetOwnerDocument() )
+		if ( event == "focus" )
 		{
-			if ( event == "show" )
-			{
-				focus = true;
-				GetContext()->ShowMouseCursor( false );
-			}
-
-			else if ( event == "blur" || event == "hide" )
-			{
-				focus =  false;
-				text.Clear();
-				UpdateText();
-			}
+			CG_Rocket_EnableCursor( false );
 		}
 
-		if ( focus )
 		{
 			if ( event == "resize" )
 			{
-				GetContext()->ShowMouseCursor( false );
-				focus = true;
+				CG_Rocket_EnableCursor( false );
 				GenerateCursor();
 			}
 
 			// Handle key presses
 			else if ( event == "keydown" )
 			{
-				Rocket::Core::Input::KeyIdentifier key_identifier = ( Rocket::Core::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
+				Rml::Core::Input::KeyIdentifier key_identifier = ( Rml::Core::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
 
 				switch ( key_identifier )
 				{
-					case Rocket::Core::Input::KI_BACK:
-						text.Erase( cursor_character_index - 1, 1 );
-						UpdateText();
-						MoveCursor( -1 );
+					case Rml::Core::Input::KI_BACK:
+						if ( cursor_character_index > 0 )
+						{
+							text.erase( cursor_character_index - 1, 1 );
+							UpdateText();
+							MoveCursor( -1 );
+						}
 						break;
 
-					case Rocket::Core::Input::KI_DELETE:
-						if ( cursor_character_index < (int) text.Length() )
+					case Rml::Core::Input::KI_DELETE:
+						if ( cursor_character_index < (int) text.size() )
 						{
-							text.Erase( cursor_character_index, 1 );
+							text.erase( cursor_character_index, 1 );
 							UpdateText();
 						}
 
 						break;
 
-					case Rocket::Core::Input::KI_LEFT:
+					case Rml::Core::Input::KI_LEFT:
 						MoveCursor( -1 );
 						break;
 
-					case Rocket::Core::Input::KI_RIGHT:
+					case Rml::Core::Input::KI_RIGHT:
 						MoveCursor( 1 );
 						break;
 
-					case Rocket::Core::Input::KI_RETURN:
-					case Rocket::Core::Input::KI_NUMPADENTER:
-					{
-						if ( text.Empty() )
+					case Rml::Core::Input::KI_RETURN:
+					case Rml::Core::Input::KI_NUMPADENTER:
+						if ( text.empty() )
 						{
 							GetOwnerDocument()->Hide();
 							return;
 						}
 						else if ( cmd == "/" )
 						{
-							Rocket::Core::String utf8String;
-							Rocket::Core::WString( text ).ToUTF8( utf8String );
-							trap_SendConsoleCommand( va( "%s\n", utf8String.CString() ) );
-							text.Clear();
+							trap_SendConsoleCommand( va( "%s\n", text.c_str() ) );
+							text.clear();
+							cursor_character_index = 0;
 							UpdateText();
 							GetOwnerDocument()->Hide();
 							return;
 						}
 
-						if ( cmd.Empty() )
+						if ( cmd.empty() )
 						{
 							cmd = cg_sayCommand.Get().c_str();
 						}
 
-						if ( !cmd.Empty() && !text.Empty() )
+						if ( !cmd.empty() && !text.empty() )
 						{
-							Rocket::Core::String utf8String;
-							Rocket::Core::WString( text ).ToUTF8( utf8String );
-							trap_SendConsoleCommand( va( "%s %s", cmd.CString(), Cmd::Escape( utf8String.CString() ).c_str() ) );
-							text.Clear();
+							trap_SendConsoleCommand( va( "%s %s", cmd.c_str(), Cmd::Escape( text.c_str() ).c_str() ) );
+							text.clear();
+							cursor_character_index = 0;
 							UpdateText();
 							GetOwnerDocument()->Hide();
 						}
-					}
 						break;
 
 					default:
@@ -228,16 +185,16 @@ public:
 				        event.GetParameter< int >( "alt_key", 0 ) == 0 &&
 				        event.GetParameter< int >( "meta_key", 0 ) == 0 )
 				{
-					Rocket::Core::word character = event.GetParameter< Rocket::Core::word >( "data", 0 );
+					const Rml::Core::String& character = event.GetParameter< Rml::Core::String >( "text", "" );
 
-					if ( (int) text.Length() == cursor_character_index )
+					if ( (int) text.size() == cursor_character_index )
 					{
-						text.Append( character );
+						text.append( character );
 					}
 
 					else
 					{
-						text.Insert( cursor_character_index, character );
+						text.insert( cursor_character_index, character );
 					}
 
 					UpdateText();
@@ -247,13 +204,19 @@ public:
 		}
 	}
 
-	bool GetIntrinsicDimensions( Rocket::Core::Vector2f &dimension )
+	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension )
 	{
-		const Rocket::Core::Property *property;
+		Rml::Core::FontFaceHandle font = text_element->GetFontFaceHandle();
+		if ( font == 0 )
+		{
+			return false;
+		}
+
+		const Rml::Core::Property *property;
 		property = GetProperty( "width" );
 
 		// Absolute unit. We can use it as is
-		if ( property->unit & Rocket::Core::Property::ABSOLUTE_UNIT )
+		if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.x = property->value.Get<float>();
 		}
@@ -261,8 +224,8 @@ public:
 		else
 		{
 			float base_size = 0;
-			Rocket::Core::Element *parent = this;
-			std::stack<Rocket::Core::Element*> stack;
+			Rml::Core::Element *parent = this;
+			std::stack<Rml::Core::Element*> stack;
 			stack.push( this );
 
 			while ( ( parent = parent->GetParentNode() ) )
@@ -272,7 +235,7 @@ public:
 					dimensions.x = base_size;
 					while ( !stack.empty() )
 					{
-						dimensions.x = stack.top()->ResolveProperty( "width", dimensions.x );
+						dimensions.x = stack.top()->ResolveNumericProperty( property, dimensions.x );
 
 						stack.pop();
 					}
@@ -283,7 +246,7 @@ public:
 			}
 		}
 
-		dimensions.y = Rocket::Core::ElementUtilities::GetLineHeight( this );
+		dimensions.y = font_engine_interface->GetLineHeight( font );
 
 		dimension = dimensions;
 
@@ -294,102 +257,101 @@ public:
 protected:
 	void GenerateCursor()
 	{
+		Rml::Core::FontFaceHandle font = text_element->GetFontFaceHandle();
+		if ( font == 0 )
+		{
+			return;
+		}
 		// Generates the cursor.
 		cursor_geometry.Release();
 
-		std::vector< Rocket::Core::Vertex > &vertices = cursor_geometry.GetVertices();
+		std::vector< Rml::Core::Vertex > &vertices = cursor_geometry.GetVertices();
 		vertices.resize( 4 );
 
 		std::vector< int > &indices = cursor_geometry.GetIndices();
 		indices.resize( 6 );
 
 		cursor_size.x = 1;
-		cursor_size.y = ( float ) Rocket::Core::ElementUtilities::GetLineHeight( text_element ) + 2;
-		Rocket::Core::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0], Rocket::Core::Vector2f( 0, 0 ), cursor_size, GetProperty< Rocket::Core::Colourb >( "color" ) );
+		cursor_size.y = ( float ) font_engine_interface->GetLineHeight( font ) + 2;
+		Rml::Core::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0], Rml::Core::Vector2f( 0, 0 ), cursor_size, GetProperty< Rml::Core::Colourb >( "color" ) );
 	}
 
 	void MoveCursor( int amt )
 	{
 		cursor_character_index += amt;
 
-		cursor_character_index = Rocket::Core::Math::Clamp<int>( cursor_character_index, 0, text.Length() );
+		cursor_character_index = Rml::Core::Math::Clamp<int>( cursor_character_index, 0, text.size() );
 	}
 
 	void UpdateCursorPosition()
 	{
-		if ( text_element->GetFontFaceHandle() == nullptr )
+		if ( text_element->GetFontFaceHandle() == 0 )
 		{
 			return;
 		}
 
 		cursor_position = GetAbsoluteOffset();
 
-		cursor_position.x += ( float ) Rocket::Core::ElementUtilities::GetStringWidth( text_element, text.Substring( 0, cursor_character_index ) );
+		cursor_position.x += ( float ) Rml::Core::ElementUtilities::GetStringWidth( text_element, text.substr( 0, cursor_character_index ) );
 	}
 
 	void UpdateText()
 	{
 		RemoveChild( text_element );
-		text_element = Rocket::Core::Factory::InstanceElement( this, "div", "*", Rocket::Core::XMLAttributes() );
-		AppendChild( text_element );
-		text_element->RemoveReference();
-		if ( !text.Empty() )
+		text_element = AppendChild( Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() ) );
+		if ( !text.empty() )
 		{
-            Rocket::Core::String utf8;
-            text.ToUTF8(utf8);
-			q2rml( utf8, text_element );
+			q2rml( text, text_element );
 		}
 	}
 
 	// Special q -> rml conversion function that preserves carets and codes
-	void q2rml( Rocket::Core::String in, Rocket::Core::Element *parent )
+	void q2rml( Str::StringRef in, Rml::Core::Element *parent )
 	{
-		Rocket::Core::String out;
-		Rocket::Core::Element *child = nullptr;
+		Rml::Core::String out;
+		Rml::Core::ElementPtr child;
 		bool span = false;
 
-		if ( in.Empty() )
+		if ( in.empty() )
 		{
 			return;
 		}
 
-		for ( const auto& token : Color::Parser( in.CString(), Color::White ) )
+		for ( const auto& token : Color::Parser( in.c_str(), Color::White ) )
 		{
 			if ( token.Type() == Color::Token::TokenType::COLOR )
 			{
-				Rocket::Core::XMLAttributes xml;
+				Rml::Core::XMLAttributes xml;
 
 				// Child element initialized
-				if ( span )
+				if ( span && child )
 				{
 					span = false;
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					out.Clear();
+					static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+					parent->AppendChild( std::move( child ) );
+					out.clear();
 				}
 				// If not intialized, probably the first one, and should be white.
-				else if ( !out.Empty() )
+				else if ( !out.empty() )
 				{
-					Rocket::Core::XMLAttributes xml;
-					child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+					Rml::Core::XMLAttributes xml;
+					child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 					child->SetProperty( "color", "#FFFFFF" );
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					out.Clear();
+					static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+					parent->AppendChild( std::move( child ) );
+					out.clear();
 				}
 
 
-				child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+				child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 				Color::Color32Bit color32 = token.Color();
 				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
-				out.Append( token.Begin(), token.Size() );
+				out.append( token.Begin(), token.Size() );
 				span = true;
 			}
 			else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 			{
-				out.Append( Color::Constants::ESCAPE );
+				out.push_back( Color::Constants::ESCAPE );
 			}
 			else if ( token.Type() == Color::Token::TokenType::CHARACTER )
 			{
@@ -397,15 +359,15 @@ protected:
 
 				if ( c == '<' )
 				{
-					out.Append( "&lt;" );
+					out.append( "&lt;" );
 				}
 				else if ( c == '>' )
 				{
-					out.Append( "&gt;" );
+					out.append( "&gt;" );
 				}
 				else if ( c == '&' )
 				{
-					out.Append( "&amp;" );
+					out.append( "&amp;" );
 				}
 				else if ( c == '\n' )
 				{
@@ -418,54 +380,49 @@ protected:
 					// If not intialized, probably the first one, and should be white.
 					else
 					{
-						Rocket::Core::XMLAttributes xml;
-						child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+						Rml::Core::XMLAttributes xml;
+						child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
 						child->SetProperty( "color", "#FFFFFF" );
 					}
 
-					static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-					parent->AppendChild( child );
-					child->RemoveReference();
-					parent->AppendChild( ( child = Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) ) );
-					child->RemoveReference();
-					out.Clear();
+					static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+					parent->AppendChild( std::move( child ) );
+					parent->AppendChild( Rml::Core::Factory::InstanceElement( parent, "*", "br", Rml::Core::XMLAttributes() ) );
+					out.clear();
 				}
 				else
 				{
-					out.Append( token.Begin(), token.Size() );
+					out.append( token.Begin(), token.Size() );
 				}
 			}
 		}
 
-		if ( span && child && !out.Empty() )
+		if ( span && child && !out.empty() )
 		{
-			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-			parent->AppendChild( child );
-			child->RemoveReference();
+			static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+			parent->AppendChild( std::move( child ) );
 			span = false;
 		}
 
-		else if ( !span && !child && !out.Empty() )
+		else if ( !span && !child && !out.empty() )
 		{
-			child = Rocket::Core::Factory::InstanceElement( parent, "#text", "span", Rocket::Core::XMLAttributes() );
-			static_cast<Rocket::Core::ElementText *>( child )->SetText( out );
-			parent->AppendChild( child );
-			child->RemoveReference();
+			child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", Rml::Core::XMLAttributes() );
+			static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+			parent->AppendChild( std::move( child ) );
 		}
 	}
 
 private:
-	Rocket::Core::Vector2f cursor_position;
-	bool focus;
+	Rml::Core::FontEngineInterface* const font_engine_interface;
+	Rml::Core::Vector2f cursor_position;
 	int cursor_character_index;
-	Rocket::Core::Element *text_element;
-	Rocket::Core::Context *context;
+	Rml::Core::Element *text_element;
 
-	Rocket::Core::Geometry cursor_geometry;
-	Rocket::Core::Vector2f cursor_size;
-	Rocket::Core::Vector2f dimensions;
-	Rocket::Core::WString text;
-	Rocket::Core::String cmd;
+	Rml::Core::Geometry cursor_geometry;
+	Rml::Core::Vector2f cursor_size;
+	Rml::Core::Vector2f dimensions;
+	Rml::Core::String text;
+	Rml::Core::String cmd;
 
 };
 #endif

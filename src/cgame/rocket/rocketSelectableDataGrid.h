@@ -37,40 +37,37 @@ Maryland 20850 USA.
 #define ROCKETSELECTABLEDATAGRID_H
 #include "../cg_local.h"
 #include "rocket.h"
-#include <Rocket/Core.h>
-#include <Rocket/Controls.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Controls.h>
 
-class SelectableDataGrid : public Rocket::Controls::ElementDataGrid
+class SelectableDataGrid : public Rml::Controls::ElementDataGrid
 {
 public:
-	SelectableDataGrid( const Rocket::Core::String& tag ) :
-		Rocket::Controls::ElementDataGrid(tag), lastSelectedRow( nullptr ), lastSelectedRowIndex( -1 )
+	SelectableDataGrid( const Rml::Core::String& tag ) :
+		Rml::Controls::ElementDataGrid(tag), lastSelectedRow( nullptr ), lastSelectedRowIndex( -1 )
 	{
-		SetProperty( "selected-row", "-1" );
+		SetAttribute("selected-row", "-1");
 	}
 
 	~SelectableDataGrid()
 	{
-		if( lastSelectedRow != nullptr ) {
-			lastSelectedRow->RemoveReference();
-		}
 	}
 
 	/// Called for every event sent to this element or one of its descendants.
 	/// @param[in] event The event to process.
-	void ProcessEvent( Rocket::Core::Event& evt )
+	void ProcessDefaultAction( Rml::Core::Event& evt ) override
 	{
 		extern std::queue< RocketEvent_t* > eventQueue;
-		Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
+		Rml::Core::String dataSource = GetAttribute<Rml::Core::String>( "source", "" );
 
-		ElementDataGrid::ProcessEvent( evt );
+		ElementDataGrid::ProcessDefaultAction( evt );
 
-		if( evt == "click" || evt == "dblclick" )
+		if( evt == Rml::Core::EventId::Click || evt == Rml::Core::EventId::Dblclick )
 		{
 			Element* elem;
 			int column = -1;
-			Rocket::Core::String dsName = dataSource.Substring( 0, dataSource.Find( "." ) );
-			Rocket::Core::String tableName =  dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() );
+			Rml::Core::String dsName = dataSource.substr( 0, dataSource.find( "." ) );
+			Rml::Core::String tableName =  dataSource.substr( dataSource.find( "." ) + 1, dataSource.size() );
 
 
 			// get the column index
@@ -83,7 +80,7 @@ public:
 				// FIXME: We could be little smarter with this and get the column definition here too
 				// and use colselect or colactivate events
 				if( elem->GetTagName() == "datagridcolumn" ) {
-					Rocket::Core::Element* child = elem->GetParentNode()->GetFirstChild();
+					Rml::Core::Element* child = elem->GetParentNode()->GetFirstChild();
 					column = 0;
 					while( child && child != elem ) {
 						child = child->GetNextSibling();
@@ -91,7 +88,7 @@ public:
 					}
 				}
 				else {
-					column = static_cast<Rocket::Controls::ElementDataGridCell *>( elem )->GetColumn();
+					column = static_cast<Rml::Controls::ElementDataGridCell *>( elem )->GetColumn();
 				}
 			}
 
@@ -103,9 +100,9 @@ public:
 
 			if( elem )
 			{
-				Rocket::Controls::ElementDataGridRow *row = dynamic_cast<Rocket::Controls::ElementDataGridRow*>( elem );
+				Rml::Controls::ElementDataGridRow *row = dynamic_cast<Rml::Controls::ElementDataGridRow*>( elem );
 				int index = row->GetTableRelativeIndex();
-				Rocket::Core::String indexStr( va( "%d", index ) );
+				Rml::Core::String indexStr( va( "%d", index ) );
 
 				// this should never happen
 				if( index >= this->GetNumRows() )
@@ -117,39 +114,33 @@ public:
 					{
 						if( lastSelectedRow ) {
 							lastSelectedRow->SetPseudoClass( "selected", false );
-							lastSelectedRow->RemoveReference();
 						}
 					}
 
 					// select clicked row
 					lastSelectedRow = row;
 					lastSelectedRowIndex = index;
-
-					this->SetProperty( "selected-row", indexStr );
+					SetAttribute( "selected-row", std::to_string( lastSelectedRowIndex ) );
 
 					row->SetPseudoClass( "selected", true );
-					row->AddReference();
-
-
-
-					eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "setDS %s %s %d", dsName.CString(),tableName.CString(), index ) ) ) );
+					eventQueue.push( new RocketEvent_t( Rml::Core::String( va ( "setDS %s %s %d", dsName.c_str(),tableName.c_str(), index ) ) ) );
 				}
 
-				Rocket::Core::Dictionary parameters;
-				parameters.Set( "index", indexStr );
-				parameters.Set( "column_index", column );
-				parameters.Set( "datasource", dsName );
-				parameters.Set( "table", tableName );
+				Rml::Core::Dictionary parameters;
+				parameters[ "index" ] = indexStr;
+				parameters[ "column_index" ] = column;
+				parameters[ "datasource" ] = dsName;
+				parameters[ "table" ] = tableName;
 
-				if( evt == "click" )
+				if( evt == Rml::Core::EventId::Click )
 					DispatchEvent( "rowselect", parameters );
 				else
 					DispatchEvent( "rowactivate", parameters );
 			}
 
-			if( evt == "dblclick" )
+			if( evt == Rml::Core::EventId::Dblclick )
 			{
-				eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "execDS %s %s", dataSource.Substring( 0, dataSource.Find( "." ) ).CString(), tableName.CString() ) ) ) );
+				eventQueue.push( new RocketEvent_t( Rml::Core::String( va ( "execDS %s %s", dataSource.substr( 0, dataSource.find( "." ) ).c_str(), tableName.c_str() ) ) ) );
 			}
 		}
 		else if( evt == "rowremove" )
@@ -161,18 +152,17 @@ public:
 
 			int firstRowRemoved = evt.GetParameter< int >("first_row_removed", 0);
 			if( lastSelectedRowIndex >= firstRowRemoved && lastSelectedRowIndex < firstRowRemoved + numRowsRemoved ) {
-				lastSelectedRow->RemoveReference();
 				lastSelectedRow = nullptr;
 
 				lastSelectedRowIndex = -1;
-				this->SetProperty( "selected-row", "-1" );
+				SetAttribute( "selected-row", "-1" );
 			}
 		}
 
 	}
 
 private:
-	Rocket::Core::Element *lastSelectedRow;
+	Rml::Core::Element *lastSelectedRow;
 	int lastSelectedRowIndex;
 };
 #endif

@@ -151,7 +151,7 @@ void PM_AddTouchEnt( int entityNum )
 PM_StartTorsoAnim
 ===================
 */
-void PM_StartTorsoAnim( int anim )
+static void PM_StartTorsoAnim( int anim )
 {
 	if ( PM_Paralyzed( pm->ps->pm_type ) )
 	{
@@ -4505,7 +4505,7 @@ static bool IsWallwalking( playerState_t const& ps )
 			&& ( ps.stats[ STAT_STATE ] & SS_WALLCLIMBING );
 }
 
-void PmoveSingle( pmove_t *pmove )
+static void PmoveSingle( pmove_t *pmove )
 {
 	pm = pmove;
 

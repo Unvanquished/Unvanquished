@@ -35,27 +35,26 @@ Maryland 20850 USA.
 #ifndef ROCKETCONSOLETEXTELEMENT_H
 #define ROCKETCONSOLETEXTELEMENT_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Core/Element.h>
-#include <Rocket/Core/FontFaceHandle.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Element.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
 struct ConsoleLine
 {
-	Rocket::Core::String text;
+	Rml::Core::String text;
 	int time;
-	ConsoleLine( Rocket::Core::String _i ) : text( _i )
+	ConsoleLine( Rml::Core::String _i ) : text( _i )
 	{
 		time = trap_Milliseconds();
 	}
 };
 
-class RocketConsoleTextElement : public Rocket::Core::Element
+class RocketConsoleTextElement : public Rml::Core::Element
 {
 public:
-	RocketConsoleTextElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), numLines( 0 ), maxLines( 0 ), lastTime( -1 ),
-	dirty_height( true )
+	RocketConsoleTextElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), numLines( 0 ), maxLines( 4 ), lastTime( -1 ),
+	dirty_height( true ), font_engine_interface( Rml::Core::GetFontEngineInterface() )
 	{
 	}
 
@@ -70,7 +69,7 @@ public:
 			lines.pop_back();
 		}
 
-		while ( HasChildNodes() && atoi( GetFirstChild()->GetId().CString() ) + latency < time )
+		while ( HasChildNodes() && atoi( GetFirstChild()->GetId().c_str() ) + latency < time )
 		{
 			RemoveChild( GetFirstChild() );
 			numLines--;
@@ -91,25 +90,29 @@ public:
 			// Each line gets its own span element
 			for (line = line - 1; line >= 0; --line, numLines++ )
 			{
-				Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
-				Rocket::Core::Factory::InstanceElementText( child, Rocket_QuakeToRML( lines[ line ].text.CString(), RP_EMOTICONS ));
-				child->SetId( va( "%d", lines[ line ].time ) );
-				AppendChild( child );
-				child->RemoveReference();
+				Rml::Core::ElementPtr childPtr = Rml::Core::Factory::InstanceElement( this, "#text", "span", Rml::Core::XMLAttributes() );
+				Rml::Core::Factory::InstanceElementText( childPtr.get(), Rocket_QuakeToRML( lines[ line ].text.c_str(), RP_EMOTICONS ));
+				childPtr->SetId( va( "%d", lines[ line ].time ) );
+				AppendChild( std::move( childPtr ) );
 			}
 		}
 
 		// Calculate max lines when we have a child element with a fontface
 		if ( dirty_height && HasChildNodes() )
 		{
-			const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
+			const Rml::Core::FontFaceHandle font = GetFirstChild()->GetFontFaceHandle();
 			if ( font )
 			{
-				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font->GetBaseline() + font->GetLineHeight() ) );
+				float consoleHeight = ResolveNumericProperty( "height" );
+				int fontHeight = font_engine_interface->GetLineHeight( font );
 
-				if ( maxLines <= 0 )
+				if ( consoleHeight > 0 && fontHeight > 0 )
 				{
-					maxLines = 4; // conservatively low number
+					maxLines = consoleHeight / fontHeight;
+				}
+				else
+				{
+					Log::Warn("unknown RML console capacity");
 				}
 
 				dirty_height = false;
@@ -122,18 +125,17 @@ public:
 			numLines--;
 		}
 
-		Rocket::Core::Element::OnUpdate();
+		Rml::Core::Element::OnUpdate();
 	}
 
-	void OnPropertyChange( const Rocket::Core::PropertyNameList &changed_properties )
+	void OnPropertyChange( const Rml::Core::PropertyIdSet &changed_properties )
 	{
-		if ( changed_properties.find( "height" ) != changed_properties.end() )
+		Element::OnPropertyChange( changed_properties );
+		if ( changed_properties.Contains( Rml::Core::PropertyId::Height ) )
 		{
-			int fontPt = GetProperty<int>( "font-size" );
-			maxLines = GetProperty<int>("height") / ( fontPt > 0 ? fontPt : 1 );
+			dirty_height = true;
 		}
 	}
-
 
 	static std::deque<ConsoleLine> lines;
 private:
@@ -141,6 +143,7 @@ private:
 	int maxLines;
 	int lastTime;
 	bool dirty_height;
+	Rml::Core::FontEngineInterface* const font_engine_interface;
 };
 #endif
 

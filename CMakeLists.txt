@@ -35,7 +35,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 endif()
 
 set(SUBMODULE_LIST
-  "libs/libRocket"
+  "libs/RmlUi"
   "src/utils/cbse"
   "pkg/unvanquished_src.dpkdir")
 
@@ -89,10 +89,10 @@ if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
         find_package(Freetype REQUIRED)
         find_package(Lua REQUIRED)
     endif()
-    include(${CMAKE_CURRENT_SOURCE_DIR}/libRocket.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)
     include_directories(${FREETYPE_INCLUDE_DIRS} ${LUA_INCLUDE_DIR})
-    set_target_properties(ROCKET_LIB PROPERTIES FOLDER "libs")
-    include_directories(${ROCKET_INCLUDE_DIRS})
+    set_target_properties(RMLUI_LIB PROPERTIES FOLDER "libs")
+    include_directories(${RMLUI_INCLUDE_DIRS})
 endif()
 
 if (BUILD_SGAME OR BUILD_CGAME)
@@ -140,6 +140,7 @@ try_flag(WARNINGS           "-Wno-error=switch")
 try_flag(WARNINGS           "-Wno-error=unused-function")
 try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
 try_flag(WARNINGS           "-Wno-error=deprecated-copy")  # TODO: Remove when move to RmlUi is complete.
+try_flag(WARNINGS           "-Wno-error=format")  # TODO: RmlUi...
 try_flag(WARNINGS           "-Wno-maybe-uninitialized")
 
 try_flag(WARNINGS "/wd26812") # "The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'"
@@ -168,13 +169,13 @@ if (BUILD_CGAME)
   GAMEMODULE(NAME cgame
     DEFINITIONS
         BUILD_CGAME
-        ROCKET_STATIC_LIB
+        RMLUI_STATIC_LIB
     FLAGS
         ${WARNINGS}
     FILES
         ${CGAMELIST}
     LIBS
-        ROCKET_LIB
+        RMLUI_LIB
         ${FREETYPE_LIBRARIES}
         ${LUA_LIBRARY}
         srclibs-tinygettext

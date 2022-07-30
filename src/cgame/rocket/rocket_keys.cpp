@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "engine/qcommon/q_unicode.h"
 
-using namespace Rocket::Core::Input;
+using namespace Rml::Core::Input;
 
 static std::map< int, int > keyMap;
 static bool init = false;
@@ -149,7 +149,7 @@ void Rocket_InitKeys()
 	init = true;
 }
 
-KeyIdentifier Rocket_FromQuake( int key )
+static KeyIdentifier Rocket_FromQuake( int key )
 {
 	if ( !init )
 	{
@@ -166,7 +166,7 @@ KeyIdentifier Rocket_FromQuake( int key )
 	return KI_UNKNOWN;
 }
 
-KeyModifier Rocket_GetKeyModifiers()
+static KeyModifier Rocket_GetKeyModifiers()
 {
 	using Keyboard::Key;
 	int mod = 0;
@@ -184,9 +184,9 @@ KeyModifier Rocket_GetKeyModifiers()
 	return static_cast< KeyModifier >( mod );
 }
 
-static bool wasDownBefore = false;
-void Rocket_ProcessMouseClick( int button, bool down )
+static void Rocket_ProcessMouseClick( int button, bool down )
 {
+	static bool wasDownBefore = false;
 	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !rocketInfo.keyCatcher )
 	{
 		return;
@@ -261,10 +261,10 @@ void Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 		if (rocketKey != KI_UNKNOWN) {
 			menuContext->ProcessKeyDown( rocketKey, Rocket_GetKeyModifiers() );
 		}
-		Rocket::Core::Element* focus = menuContext->GetFocusElement();
+		Rml::Core::Element* focus = menuContext->GetFocusElement();
 		if ( focus != nullptr ) {
-			Rocket::Core::Dictionary dict;
-			dict.Set( BINDABLE_KEY_KEY, key.PackIntoInt() );
+			Rml::Core::Dictionary dict;
+			dict[ BINDABLE_KEY_KEY ] = key.PackIntoInt();
 			// Send after the rocket key event so that if Escape is pressed,
 			// it will cancel the binding and not bind Escape.
 			focus->DispatchEvent( BINDABLE_KEY_EVENT, dict );

@@ -35,20 +35,15 @@ Maryland 20850 USA.
 #ifndef ROCKETCOLORINPUT_H
 #define ROCKETCOLORINPUT_H
 
-#include <Rocket/Core.h>
-#include <Rocket/Controls/ElementFormControlInput.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Controls/ElementFormControlInput.h>
 #include "../cg_local.h"
 
-class RocketColorInput : public Rocket::Core::Element, public Rocket::Core::EventListener
+class RocketColorInput : public Rml::Core::Element, public Rml::Core::EventListener
 {
 public:
-	RocketColorInput( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag )
+	RocketColorInput( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), input( nullptr ), color_value( nullptr )
 	{
-		// Initialize the input element
-		Rocket::Core::XMLAttributes attribs;
-		attribs.Set( "type", "text" );
-		input = Rocket::Core::Factory::InstanceElement( this, "input", "input", attribs );
-		color_value = Rocket::Core::Factory::InstanceElement( this, "*", "div", Rocket::Core::XMLAttributes() );
 	}
 
 	virtual void OnChildAdd( Element *child )
@@ -56,32 +51,41 @@ public:
 		Element::OnChildAdd( child );
 		if ( child == this )
 		{
-			AppendChild(input);
-			AppendChild(color_value);
-			color_value->RemoveReference();
-			input->RemoveReference();
+			// Initialize the input element
+			Rml::Core::XMLAttributes attribs;
+			attribs[ "type" ] = "text";
+			input = AppendChild( Rml::Core::Factory::InstanceElement(
+					this, "input", "input", attribs ) );
+			color_value = AppendChild( Rml::Core::Factory::InstanceElement(
+					this, "*", "div", Rml::Core::XMLAttributes() ) );
 			input->SetProperty( "display", "none" );
+			input->SetAttributes( GetAttributes() );
+			input->AddEventListener( Rml::Core::EventId::Blur, this );
 			UpdateValue();
 		}
 	}
 
-	virtual void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
-		Rocket::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Core::Element::OnAttributeChange( changed_attributes );
 
 		// Pass all attributes down to the input element
-		for ( Rocket::Core::AttributeNameList::const_iterator it = changed_attributes.begin(); it != changed_attributes.end(); ++it )
-		{
-			input->SetAttribute( *it, GetAttribute<Rocket::Core::String>( *it, "" ) );
-		}
+		if ( input ) input->SetAttributes( changed_attributes );
 	}
 
-	virtual void ProcessEvent( Rocket::Core::Event &event )
+	virtual void ProcessDefaultAction( Rml::Core::Event &event )
 	{
-		Element::ProcessEvent( event );
+		Element::ProcessDefaultAction( event );
+		ProcessEvent( event );
+	}
+
+	virtual void ProcessEvent( Rml::Core::Event &event )
+	{
+		if ( !input || !color_value ) return;
+
 		if ( event.GetTargetElement() == input )
 		{
-			if ( event == "change" )
+			if ( event == Rml::Core::EventId::Change )
 			{
 				UpdateValue();
 			}
@@ -94,9 +98,9 @@ public:
 			}
 		}
 
-		if ( event == "click" )
+		if ( event == Rml::Core::EventId::Click )
 		{
-			Rocket::Core::Element* elem = event.GetTargetElement();
+			Rml::Core::Element* elem = event.GetTargetElement();
 
 			do
 			{
@@ -114,20 +118,18 @@ public:
 private:
 	void UpdateValue()
 	{
-		Rocket::Core::String string = "^7";
-
-		while( color_value->HasChildNodes() )
+		Rml::Core::String string = "^7";
+		string += dynamic_cast< Rml::Controls::ElementFormControlInput* >( input )->GetValue();
+		while ( color_value && color_value->HasChildNodes() )
 		{
 			color_value->RemoveChild( color_value->GetFirstChild() );
 		}
 
-		string += dynamic_cast< Rocket::Controls::ElementFormControlInput* >( input )->GetValue();
-
-		Rocket::Core::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( string.CString(), RP_QUAKE ) );
+		Rml::Core::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( string.c_str(), RP_QUAKE ) );
 	}
 
-	Rocket::Core::Element *input;
-	Rocket::Core::Element *color_value;
+	Rml::Core::Element *input;
+	Rml::Core::Element *color_value;
 };
 
 #endif

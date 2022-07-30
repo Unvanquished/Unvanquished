@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "Cmd.h"
 #include "../../cg_local.h"
 
-namespace Rocket {
+namespace Rml {
 namespace Core {
 namespace Lua {
 
@@ -75,7 +75,7 @@ luaL_Reg CmdSetters[] =
 	{ NULL, NULL },
 };
 
-LUACORETYPEDEFINE(Cmd,false)
+LUACORETYPEDEFINE(Cmd)
 
 }
 }

@@ -1,9 +1,6 @@
 [submodule "src/utils/cbse"]
 	path = src/utils/cbse
 	url = https://github.com/DaemonEngine/CBSE-Toolchain.git 
-[submodule "libs/libRocket"]
-	path = libs/libRocket
-	url = https://github.com/Unvanquished/libRocket.git
 [submodule "libs/recastnavigation"]
 	path = libs/recastnavigation
 	url = https://github.com/DaemonEngine/recastnavigation.git
@@ -13,3 +10,6 @@
 [submodule "pkg/unvanquished_src.dpkdir"]
 	path = pkg/unvanquished_src.dpkdir
 	url = https://github.com/UnvanquishedAssets/unvanquished_src.dpkdir.git
+[submodule "libs/RmlUi"]
+	path = libs/RmlUi
+	url = https://github.com/Unvanquished/RmlUi.git

@@ -87,6 +87,30 @@ static float CG_Rocket_GetStaminaProgress()
 	return ( stamina / ( float ) STAMINA_MAX );
 }
 
+static float CG_Rocket_GetPlayerOxygenProgress()
+{
+	// Hack to show prettier output by flowing the bar back up for a short
+	// time. It doesn't correspond to anything in the game physics.
+	static constexpr int breathAgainDuration = 350; // ms
+	static float lastValue = 1.0f;
+
+	// regular progress bar status
+	if ( cg.underwater )
+	{
+		float underwaterDuration = cg.time - cg.underwaterTime;
+		lastValue = 1.0f - underwaterDuration / static_cast<float>( OXYGEN_MAX_TIME );
+		return lastValue;
+	}
+
+	float overwaterDuration = cg.time - cg.underwaterTime;
+	if ( overwaterDuration < (1.0f - lastValue) * breathAgainDuration )
+	{
+		return lastValue + overwaterDuration / breathAgainDuration;
+	}
+
+	return 0.0f;
+}
+
 static float CG_Rocket_GetPoisonProgress()
 {
 	static int time = -1;
@@ -146,7 +170,7 @@ static float CG_Rocket_GetPlayerAmmoProgress()
 	}
 }
 
-float CG_Rocket_FuelProgress()
+static float CG_Rocket_FuelProgress()
 {
 	int   fuel;
 
@@ -159,7 +183,7 @@ float CG_Rocket_FuelProgress()
 	return ( float )fuel / ( float )JETPACK_FUEL_MAX;
 }
 
-float CG_Rocket_DownloadProgress()
+static float CG_Rocket_DownloadProgress()
 {
 	float count = trap_Cvar_VariableValue("cl_downloadCount");
 	float total = trap_Cvar_VariableValue("cl_downloadSize");
@@ -187,6 +211,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "fuel", &CG_Rocket_FuelProgress, ELEMENT_HUMANS },
 	{ "health", &CG_Rocket_GetPlayerHealthProgress, ELEMENT_BOTH },
 	{ "overall", &CG_Rocket_GetLoadProgress, ELEMENT_LOADING },
+	{ "oxygen", &CG_Rocket_GetPlayerOxygenProgress, ELEMENT_BOTH },
 	{ "poison", &CG_Rocket_GetPoisonProgress, ELEMENT_ALIENS },
 	{ "stamina", &CG_Rocket_GetStaminaProgress, ELEMENT_HUMANS },
 };

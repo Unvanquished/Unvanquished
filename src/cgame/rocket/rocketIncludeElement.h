@@ -39,22 +39,22 @@ Maryland 20850 USA.
 #include "rocket.h"
 #include <common/FileSystem.h>
 
-class RocketIncludeElement : public Rocket::Core::Element
+class RocketIncludeElement : public Rml::Core::Element
 {
 public:
-	RocketIncludeElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ) { }
-	void OnAttributeChange( const Rocket::Core::AttributeNameList &changed_attributes )
+	RocketIncludeElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ) { }
+	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
 	{
 		Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
 		{
-			Rocket::Core::String filename = GetAttribute<Rocket::Core::String>("src", "");
+			Rml::Core::String filename = GetAttribute<Rml::Core::String>("src", "");
 
-			if ( !filename.Empty() )
+			if ( !filename.empty() )
 			{
 				std::string buffer;
-				buffer = FS::PakPath::ReadFile(filename.CString());
-				SetInnerRML(buffer.c_str());
+				buffer = FS::PakPath::ReadFile(filename);
+				SetInnerRML(buffer);
 			}
 		}
 	}

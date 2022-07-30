@@ -47,7 +47,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 static const int DEFAULT_CONNECTION_SIZE = 50;
 
-bool GetPointPointedTo( NavData_t *nav, rVec &p )
+static bool GetPointPointedTo( NavData_t *nav, rVec &p )
 {
 	qVec forward;
 	qVec end;
@@ -88,7 +88,7 @@ static struct
 	NavData_t *nav;
 } cmd;
 
-void BotDrawNavEdit( DebugDrawQuake *dd )
+static void BotDrawNavEdit( DebugDrawQuake *dd )
 {
 	rVec p;
 
@@ -108,7 +108,7 @@ void BotDrawNavEdit( DebugDrawQuake *dd )
 	}
 }
 
-void DrawPath( Bot_t *bot, DebugDrawQuake &dd )
+static void DrawPath( Bot_t *bot, DebugDrawQuake &dd )
 {
 	dd.depthMask(false);
 	const unsigned int spathCol = duRGBA(128,128,128,255);

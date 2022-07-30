@@ -156,7 +156,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 			break;
 	}
 
-	CG_CenterPrint( text, SCREEN_HEIGHT * 0.3, GIANTCHAR_WIDTH * 2 );
+	CG_CenterPrint( text, 1.0f );
 }
 #endif // BUILD_CGAME
 

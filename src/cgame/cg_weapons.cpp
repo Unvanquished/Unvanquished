@@ -2024,53 +2024,6 @@ void CG_DrawHumanInventory()
 }
 
 /*
-===================
-CG_DrawItemSelectText
-===================
-*/
-void CG_DrawItemSelectText()
-{
-	const char *name;
-	float      alpha;
-
-	alpha = CG_FadeAlpha( cg.weaponSelectTime, WEAPON_SELECT_TIME );
-
-	if ( alpha == 0.0f )
-	{
-		Rocket_SetInnerRMLRaw( "&nbsp;" );
-		return;
-	}
-
-
-
-	// draw the selected name
-	if ( cg.weaponSelect < 32 )
-	{
-		if ( cg_weapons[ cg.weaponSelect ].registered &&
-		     BG_InventoryContainsWeapon( cg.weaponSelect, cg.snap->ps.stats ) )
-		{
-			if ( ( name = cg_weapons[ cg.weaponSelect ].humanName ) )
-			{
-				Rocket_SetInnerRML( name, 0 );
-			}
-		}
-	}
-	else
-	{
-		if ( cg_upgrades[ cg.weaponSelect - 32 ].registered &&
-		     BG_InventoryContainsUpgrade( cg.weaponSelect - 32, cg.snap->ps.stats ) )
-		{
-			if ( ( name = cg_upgrades[ cg.weaponSelect - 32 ].humanName ) )
-			{
-				Rocket_SetInnerRML( name, 0 );
-			}
-		}
-	}
-
-	Rocket_SetPropertyById( "", "opacity", va( "%f", alpha ) );
-}
-
-/*
 ===============
 CG_FindNextWeapon
 Find next weapon in inventory.
@@ -2183,7 +2136,7 @@ CG_FindPrevWeapon
 Find previous weapon in inventory.
 ===============
 */
-weapon_t CG_FindPrevWeapon( playerState_t *ps )
+static weapon_t CG_FindPrevWeapon( playerState_t *ps )
 {
 	int currentWeapon = ps->weapon;
 
@@ -2232,55 +2185,6 @@ void CG_PrevWeapon_f()
 		}
 
 		trap_SendClientCommand( va( "itemact %s\n", BG_Weapon( prevWeapon )->name ) );
-	}
-}
-
-/*
-===============
-CG_SelectPrevInventoryItem_f
-===============
-*/
-void CG_SelectPrevInventoryItem_f()
-{
-	int i;
-	int original;
-
-	if ( !cg.snap )
-	{
-		return;
-	}
-
-	cg.weaponSelectTime = cg.time;
-	original = cg.weaponSelect;
-
-	for ( i = 0; i < 64; i++ )
-	{
-		cg.weaponSelect--;
-
-		if ( cg.weaponSelect == -1 )
-		{
-			cg.weaponSelect = 63;
-		}
-
-		if ( cg.weaponSelect < 32 )
-		{
-			if ( CG_WeaponSelectable( (weapon_t) cg.weaponSelect ) )
-			{
-				break;
-			}
-		}
-		else
-		{
-			if ( CG_UpgradeSelectable( (upgrade_t) ( cg.weaponSelect - 32 ) ) )
-			{
-				break;
-			}
-		}
-	}
-
-	if ( i == 64 )
-	{
-		cg.weaponSelect = original;
 	}
 }
 
