@@ -84,7 +84,11 @@
 		/* Vertical bar that content sits in */
 		panel {
 			float: right;
-			width: 70%;
+			/* This is a workaround for float precision loss.
+			By keeping the sum of the widths a bit under 100%
+			we make sure the computed sum cannot be more than 100%.
+			See https://github.com/Unvanquished/Unvanquished/issues/2012 */
+			width: 69%;
 		}
 
 		/* Drag handle.  Consume the top space of the window (where the H1 will be) */
