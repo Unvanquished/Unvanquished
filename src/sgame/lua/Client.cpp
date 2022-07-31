@@ -90,7 +90,10 @@ int Methodteleport(lua_State* L, Client* c)
     }
     vec3_t origin = {};
     vec3_t angles = {0, 0, 0};
-    Shared::Lua::CheckVec3(L, origin);
+    if (!Shared::Lua::CheckVec3(L, 1, origin))
+    {
+        return 0;
+    }
     G_TeleportPlayer(c->ent, origin, angles, 0);
     return 0;
 }

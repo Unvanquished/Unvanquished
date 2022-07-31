@@ -120,7 +120,7 @@ static int Setorigin(lua_State* L)
 	{
 		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
 		vec3_t origin;
-		Shared::Lua::CheckVec3(L, origin);
+		Shared::Lua::CheckVec3(L, 2, origin);
 		VectorCopy(origin, proxy->ent->s.origin);
 	}
 	return 0;
@@ -132,7 +132,7 @@ static int Setangles(lua_State* L)
 	{
 		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
 		vec3_t angles;
-		Shared::Lua::CheckVec3(L, angles);
+		Shared::Lua::CheckVec3(L, 2, angles);
 		VectorCopy(angles, proxy->ent->s.angles);
 	}
 	return 0;
@@ -157,7 +157,7 @@ static int Setmins(lua_State* L)
 		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
 		if (!proxy) return 0;
 		vec3_t mins;
-		Shared::Lua::CheckVec3(L, mins);
+		Shared::Lua::CheckVec3(L, 2, mins);
 		VectorCopy(mins, proxy->ent->r.mins);
 	}
 	return 0;
@@ -170,7 +170,7 @@ static int Setmaxs(lua_State* L)
 		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
 		if (!proxy) return 0;
 		vec3_t maxs;
-		Shared::Lua::CheckVec3(L, maxs);
+		Shared::Lua::CheckVec3(L, 2, maxs);
 		VectorCopy(maxs, proxy->ent->r.maxs);
 	}
 	return 0;
