@@ -10,7 +10,11 @@
 			}
 
 			panel {
-				width: 90%;
+				/* This is a workaround for float precision loss.
+				By keeping the sum of the widths a bit under 100%
+				we make sure the computed sum cannot be more than 100%.
+				See https://github.com/Unvanquished/Unvanquished/issues/2011 */
+				width: 89%;
 			}
 
 			/* Datagrid for server list */
