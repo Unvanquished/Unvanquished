@@ -60,16 +60,16 @@ void PushVec3(lua_State* L, const vec3_t vec)
 	}
 }
 
-void CheckVec3(lua_State* L, vec3_t vec)
+bool CheckVec3(lua_State* L, int pos, vec3_t vec)
 {
-	if (lua_istable(L, -2))
+	if (!lua_istable(L, pos))
 	{
 		Log::Warn("CheckVec3: Input must be a table.");
-		return;
+		return false;
 	}
 	int index = 0;
 	lua_pushnil(L);
-	while (lua_next(L, -2) != 0) {
+	while (lua_next(L, pos) != 0) {
 		/* uses 'key' (at index -2) and 'value' (at index -1) */
 		vec[index++] = luaL_checknumber(L, -1);
 		/* removes 'value'; keeps 'key' for next iteration */
@@ -79,6 +79,7 @@ void CheckVec3(lua_State* L, vec3_t vec)
 			break;
 		}
 	}
+	return true;
 }
 
 } // namespace Lua

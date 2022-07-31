@@ -39,7 +39,7 @@ void Report(lua_State* L, Str::StringRef place);
 // Push a vec3 onto the stack as a table.
 void PushVec3(lua_State* L, const vec3_t vec);
 // Convert a lua table into a vec3.
-void CheckVec3(lua_State* L, vec3_t vec);
+bool CheckVec3(lua_State* L, int pos, vec3_t vec);
 } // namespace Lua
 } // namespace Shared
 } // namespace Unv
