@@ -658,7 +658,8 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	if (!g_luaScript.Get().empty())
 	{
-		if (!Unv::SGame::Lua::LoadScript(g_luaScript.Get()))
+		namespace Lua = Unv::SGame::Lua;
+		if (!Lua::LoadScript(g_luaScript.Get()) && Lua::RunCode())
 		{
 			Log::Warn("error loading g_luaScript: '%s'", g_luaScript.Get());
 		}
