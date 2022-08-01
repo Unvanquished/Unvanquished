@@ -1702,6 +1702,32 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		level.numBuildablesForRemoval = 0;
 	}
 
+	gentity_t *tmp = g_entities;
+	int miner = 0;
+	for (int i = 0; i < level.num_entities; i++, tmp++) 
+	{
+		if (tmp->s.eType == entityType_t::ET_BUILDABLE) 
+		{
+			HealthComponent* health = tmp->entity->Get<HealthComponent>();
+			if (tmp->buildableTeam != ent->client->pers.team || !health->Alive())
+				continue;
+
+			switch (tmp->s.modelindex) {
+			case BA_H_DRILL:
+			case BA_A_LEECH:
+				miner++;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	int max_miners = g_maxMiners.Get();
+	if (max_miners > 0 && miner >= max_miners)
+	{
+		return IBE_NOROOM;
+	}
+	
 	return reason;
 }
 

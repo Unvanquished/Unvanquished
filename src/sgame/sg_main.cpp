@@ -213,6 +213,8 @@ Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Ove
 
 Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, false);
 
+Cvar::Cvar<int> g_maxMiners("g_maxMiners", "set maximum number of miners per team. 0 = disabled.", Cvar::NONE, 0);
+
 // <bot stuff>
 
 // bot buy cvars
