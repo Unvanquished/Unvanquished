@@ -43,6 +43,46 @@ namespace Lua {
 
 static lua_State* L = nullptr;
 
+bool LoadCode(Str::StringRef code, Str::StringRef location)
+{
+	if (luaL_loadbuffer(L, code.c_str(), code.size(), location.c_str()) != 0)
+	{
+		Shared::Lua::Report(L, "Loading buffer");
+		return false;
+	}
+	return true;
+}
+
+bool RunCode()
+{
+	if(lua_pcall(L,0,0,0) != 0)
+	{
+		Shared::Lua::Report(L, "Executing code");
+		return false;
+	}
+	return true;
+}
+
+bool LoadScript(Str::StringRef scriptPath)
+{
+	fileHandle_t f;
+	int len = trap_FS_FOpenFile(scriptPath.c_str(), &f, fsMode_t::FS_READ);
+	if (len <= 0)
+	{
+		Log::Warn("error opening %s: %d", scriptPath, len);
+		return false;
+	}
+	std::vector<char> code(len + 1);
+	code[len] = '\0';
+	int ret = trap_FS_Read(code.data(), len, f);
+	if (ret != len)
+	{
+		Log::Warn("error reading %s: %d", scriptPath, ret);
+		return false;
+	}
+	return LoadCode(code.data(), scriptPath);
+}
+
 /*
  * Below here are global functions and their helper functions that help overwrite the Lua global functions. The majority of this file was copied from LibRocket.
  */
@@ -155,6 +195,30 @@ static int LuaPrint(lua_State* L)
 	return 0;
 }
 
+static int LoadUnvModule(lua_State* L)
+{
+	const char* file = luaL_checkstring(L, 1);
+	if (!file)
+	{
+		Log::Warn("invalid call to LoadUnvModule: must pass in a string.");
+		return 0;
+	}
+	if (!LoadScript(file))
+	{
+		Log::Warn("error loading script %s", file);
+		return 0;
+	}
+	return 1;
+}
+
+// Remove searchers that search the filesystems so we can install our own searcher.
+// Keep the searcher at index 1 because it just looks for cached modules that have
+// already been loaded.
+const char INITIALIZE_SEARCHERS[] = R"(
+table.remove(package.searchers, 2)
+table.remove(package.searchers, 3)
+)";
+
 static void OverrideGlobalLuaFunctions()
 {
 	lua_getglobal(L,"_G");
@@ -169,6 +233,20 @@ static void OverrideGlobalLuaFunctions()
 
 	lua_pushcfunction(L,LuaPrint);
 	lua_setfield(L,-2,"print");
+
+	LoadCode(INITIALIZE_SEARCHERS, __func__) && RunCode();
+	// Add the package loader to the package.loaders table.
+	lua_getglobal(L, "package");
+	lua_getfield(L, -1, "searchers");
+
+	if (lua_isnil(L, -1))
+	{
+		Sys::Drop("Can't register searcher: package.loaders table does not exist.");
+	}
+
+	lua_pushcfunction(L, LoadUnvModule);
+	lua_rawseti(L, -2, 2);
+	lua_pop(L, 2);
 }
 
 void Initialize()
@@ -192,46 +270,6 @@ void Shutdown()
 lua_State* State()
 {
 	return L;
-}
-
-bool LoadCode(Str::StringRef code, Str::StringRef location)
-{
-	if (luaL_loadbuffer(L, code.c_str(), code.size(), location.c_str()) != 0)
-	{
-		Shared::Lua::Report(L, "Loading buffer");
-		return false;
-	}
-	return true;
-}
-
-bool RunCode()
-{
-	if(lua_pcall(L,0,0,0) != 0)
-	{
-		Shared::Lua::Report(L, "Executing code");
-		return false;
-	}
-	return true;
-}
-
-bool LoadScript(Str::StringRef scriptPath)
-{
-	fileHandle_t f;
-	int len = trap_FS_FOpenFile(scriptPath.c_str(), &f, fsMode_t::FS_READ);
-	if (len <= 0)
-	{
-		Log::Warn("error opening %s: %d", scriptPath, len);
-		return false;
-	}
-	std::vector<char> code(len + 1);
-	code[len] = '\0';
-	int ret = trap_FS_Read(code.data(), len, f);
-	if (ret != len)
-	{
-		Log::Warn("error reading %s: %d", scriptPath, ret);
-		return false;
-	}
-	return LoadCode(code.data(), scriptPath) && RunCode();
 }
 
 class LuaCommand : Cmd::CmdBase
@@ -258,7 +296,7 @@ public:
 				usage();
 				return;
 			}
-			LoadScript(args.Argv(2));
+			LoadScript(args.Argv(2)) && RunCode();
 			return;
 		}
 		LoadCode(first, "/lua") && RunCode();
