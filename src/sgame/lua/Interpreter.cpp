@@ -194,6 +194,26 @@ lua_State* State()
 	return L;
 }
 
+bool LoadCode(Str::StringRef code, Str::StringRef location)
+{
+	if (luaL_loadbuffer(L, code.c_str(), code.size(), location.c_str()) != 0)
+	{
+		Shared::Lua::Report(L, "Loading buffer");
+		return false;
+	}
+	return true;
+}
+
+bool RunCode()
+{
+	if(lua_pcall(L,0,0,0) != 0)
+	{
+		Shared::Lua::Report(L, "Executing code");
+		return false;
+	}
+	return true;
+}
+
 bool LoadScript(Str::StringRef scriptPath)
 {
 	fileHandle_t f;
@@ -203,26 +223,15 @@ bool LoadScript(Str::StringRef scriptPath)
 		Log::Warn("error opening %s: %d", scriptPath, len);
 		return false;
 	}
-	std::vector<char> code = {};
-	code.reserve(len);
+	std::vector<char> code(len + 1);
+	code[len] = '\0';
 	int ret = trap_FS_Read(code.data(), len, f);
 	if (ret != len)
 	{
 		Log::Warn("error reading %s: %d", scriptPath, ret);
 		return false;
 	}
-	if (luaL_loadbuffer(L, code.data(), len, "code") != 0)
-	{
-		Shared::Lua::Report(L, "Loading buffer");
-		return false;
-	}
-
-	if(lua_pcall(L,0,0,0) != 0)
-	{
-		Shared::Lua::Report(L, "Executing code");
-		return false;
-	}
-	return true;
+	return LoadCode(code.data(), scriptPath) && RunCode();
 }
 
 class LuaCommand : Cmd::CmdBase
@@ -234,23 +243,25 @@ public:
 	}
 	void Run(const Cmd::Args& args) const
 	{
+		auto usage = [&]() { PrintUsage(args, "\"[-f] <lua code | filename>\"", "exec server side lua"); };
 		if (args.Argc() < 2)
 		{
-			PrintUsage(args, "\"<lua code>\"", "exec server side lua");
+			usage();
 			return;
 		}
-
-		const std::string& code = args.Argv(1);
-		if (luaL_loadbuffer(L, code.c_str(), code.size(), "code") != 0)
+		const std::string& first = args.Argv(1);
+		if (first == "-f")
 		{
- 			Shared::Lua::Report(L, "Loading buffer");
+			if (args.Argc() < 3)
+			{
+				Log::Warn("Must pass in filename when using the '-f' flag.");
+				usage();
+				return;
+			}
+			LoadScript(args.Argv(2));
 			return;
 		}
-
-		if(lua_pcall(L,0,0,0) != 0)
-		{
- 			Shared::Lua::Report(L, "Executing code");
-		}
+		LoadCode(first, "/lua") && RunCode();
 	}
 };
 
