@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "sgame/sg_local.h"
 #include "sgame/Entities.h"
 #include "sgame/CBSE.h"
+#include "shared/CommonProxies.h"
 
 using Unv::Shared::Lua::LuaLib;
 using Unv::Shared::Lua::RegType;
@@ -98,10 +99,25 @@ int Methodteleport(lua_State* L, Client* c)
     return 0;
 }
 
+int Methodcommand(lua_State* L, Client* c)
+{
+    if (!c || !c->ent || !c->ent->client)
+    {
+        Log::Warn("trying to access stale client info!");
+        return 0;
+    }
+    const char* cmd = luaL_checkstring(L, 1);
+    Cmd::PushArgs(cmd);
+    ClientCommand(c->ent - g_entities);
+    Cmd::PopArgs();
+    return 0;
+}
+
 RegType<Client> ClientMethods[] =
 {
-	{ "kill", Methodkill },
-	{ "teleport", Methodteleport },
+    { "kill", Methodkill },
+    { "teleport", Methodteleport },
+    { "cmd", Methodcommand },
     { nullptr, nullptr },
 };
 #define GETTER(name) { #name, Get##name }
