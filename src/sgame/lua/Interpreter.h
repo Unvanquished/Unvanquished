@@ -32,6 +32,8 @@ void Initialize();
 void Shutdown();
 lua_State* State();
 bool LoadScript(Str::StringRef scriptPath);
+bool LoadCode(Str::StringRef code, Str::StringRef location);
+bool RunCode();
 } // namespace Lua
 } // namespace SGame
 } // namespace Unv
