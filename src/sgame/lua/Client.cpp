@@ -68,6 +68,7 @@ GET_FUNC( health, lua_pushinteger(L, c->ent->client->ps.stats[STAT_HEALTH] ) )
 GET_FUNC( ping, lua_pushinteger(L, c->ent->client->ps.ping ) )
 GET_FUNC( class, lua_pushstring(L, BG_Class(c->ent->client->ps.stats[STAT_CLASS] )->name ) )
 GET_FUNC( stamina, lua_pushinteger(L, c->ent->client->ps.stats[STAT_STAMINA] ) )
+GET_FUNC( score, lua_pushinteger(L, c->ent->client->pers.namelog->score ) )
 
 int Methodkill(lua_State* L, Client* c)
 {
@@ -132,6 +133,7 @@ luaL_Reg ClientGetters[] =
     GETTER( ping ),
     GETTER( class ),
     GETTER( stamina ),
+    GETTER( score ),
 	{ nullptr, nullptr },
 };
 
