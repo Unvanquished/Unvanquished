@@ -3539,7 +3539,7 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 		
 		if ( i < MAX_CLIENTS && tmp->client && tmp->entity ) 
 		{
-			const auto& health = tmp->entity->Get<HealthComponent>();
+			const HealthComponent* health = tmp->entity->Get<HealthComponent>();
 			if ( tmp->client->pers.connected == CON_CONNECTED
 				&& ( health && health->Alive() )
 			    && ( tmp->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0
