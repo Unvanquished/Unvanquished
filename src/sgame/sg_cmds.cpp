@@ -3568,7 +3568,7 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 		}
 	}
 	
-	if ( ent->client->pers.team == TEAM_ALIENS ) 
+	if ( G_Team( ent ) == TEAM_ALIENS ) 
 	{
 		G_Say( ent, SAY_TEAM,
 		      va( "^3[overmind]: %s(%d) ^3Spawns: ^5%d ^3Builders: ^5%d ^3Boosters: ^5%d ^3Leeches: ^5%d",
