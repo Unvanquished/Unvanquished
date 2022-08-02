@@ -801,6 +801,7 @@ struct level_locals_t
 		int              layoutBuildPoints;
 		int              botFillTeamSize;
 		int              botFillSkillLevel;
+		int              lastTeamStatus;
 	} team[ NUM_TEAMS ];
 
 	struct {

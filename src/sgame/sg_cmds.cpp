@@ -3497,6 +3497,97 @@ static void Cmd_Reload_f( gentity_t *ent )
 	}
 }
 
+void Cmd_TeamStatus_f( gentity_t * ent )
+{
+	int builders = 0;
+	gentity_t *tmp;
+	struct buildable_status_t
+	{
+		int count;
+		int health;
+		bool spawned;
+	} structures[ BA_NUM_BUILDABLES ] = {};
+
+	if ( g_teamStatus.Get() <= 0 ) 
+	{
+		trap_SendServerCommand( ent - g_entities, "print \"teamstatus is disabled.\n\"" );
+		return;
+	}
+
+	if ( ent->client->pers.namelog->muted ) 
+	{
+		trap_SendServerCommand( ent - g_entities, "print \"You are muted and cannot use message commands.\n\"" );
+		return;
+	}
+
+	if ( level.team[ G_Team( ent ) ].lastTeamStatus
+		&& ( level.time - level.team[ G_Team( ent ) ].lastTeamStatus ) < g_teamStatus.Get() * 1000 ) 
+	{
+		trap_SendServerCommand( ent - g_entities, va( "print \"Your team's status may only be checked every %i seconds.\"", g_teamStatus.Get() ) );
+		return;
+	}
+
+	level.team[ G_Team( ent ) ].lastTeamStatus = level.time;
+
+	tmp = &g_entities[ 0 ];
+	for ( int i = 0; i < level.num_entities; i++, tmp++ ) 
+	{
+		if ( !G_OnSameTeam( tmp, ent ) )
+		{
+			continue;
+		}
+		
+		if ( i < MAX_CLIENTS && tmp->client && tmp->entity ) 
+		{
+			const HealthComponent* health = tmp->entity->Get<HealthComponent>();
+			if ( tmp->client->pers.connected == CON_CONNECTED
+				&& ( health && health->Alive() )
+			    && ( tmp->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0
+					|| tmp->client->ps.stats[ STAT_CLASS ]  == PCL_ALIEN_BUILDER0_UPG
+					|| BG_InventoryContainsWeapon( WP_HBUILD, tmp->client->ps.stats ) ) )
+			{
+				builders++;
+			}
+			continue;
+		}
+
+		if ( tmp->s.eType == entityType_t::ET_BUILDABLE ) 
+		{
+			int type = tmp->s.modelindex;
+			ASSERT( type < BA_NUM_BUILDABLES );
+			const HealthComponent* health = tmp->entity->Get<HealthComponent>();
+			if ( health && health->Health() > 0 )
+			{
+				structures[ type ].count++;
+				structures[ type ].health = health->Health();
+			}
+			if ( !structures[ type ].spawned )
+			{
+				structures[ type ].spawned = tmp->spawned;
+			}
+		}
+	}
+	
+	if ( G_Team( ent ) == TEAM_ALIENS ) 
+	{
+		G_Say( ent, SAY_TEAM,
+		      va( "^3[overmind]: %s(%d) ^3Spawns: ^5%d ^3Builders: ^5%d ^3Boosters: ^5%d ^3Leeches: ^5%d",
+		    	(! structures[ BA_A_OVERMIND ].count ) ? "^1Down" : ( structures[ BA_A_OVERMIND ].spawned ) ? "^2Up" : // OM health logic
+		    	"^5Building", structures[ BA_A_OVERMIND ].health * 100 / BG_Buildable( BA_A_OVERMIND )->health, // OM health logic part 2
+				level.team[ TEAM_ALIENS ].numSpawns, builders, // spawns, builders
+				structures[ BA_A_BOOSTER ].count, structures[ BA_A_LEECH ].count ) ); // booster, leech
+	} 
+	else 
+	{
+		G_Say( ent, SAY_TEAM,
+		      va( "^3[reactor]: %s(%d) ^3Spawns: ^5%d ^3Builders: ^5%d ^3Armouries: ^5%d ^3Medistations: ^5%d ^3Drills: ^5%d",
+		    	(! structures[ BA_H_REACTOR ].count ) ? "^1Down" : ( structures[ BA_H_REACTOR ].spawned ) ? "^2Up" : // RC health logic
+		    	"^5Building", structures[ BA_H_REACTOR ].health * 100 / BG_Buildable( BA_H_REACTOR )->health, // RC health logic part 2
+				level.team[ TEAM_HUMANS ].numSpawns, builders, // spawns, builders
+				structures[ BA_H_ARMOURY ].count, structures[ BA_H_MEDISTAT ].count, structures[ BA_H_DRILL ].count ) ); // arm, medi, drill
+	}
+}
+
 /*
 =================
 G_StopFromFollowing
@@ -4453,6 +4544,7 @@ static const commands_t cmds[] =
 	{ "sell",            CMD_HUMAN | CMD_ALIVE,               Cmd_Sell_f             },
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
 	{ "team",            0,                                   Cmd_Team_f             },
+	{ "teamstatus",      CMD_TEAM,                            Cmd_TeamStatus_f       },
 	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
 	{ "unignore",        0,                                   Cmd_Ignore_f           },
 	{ "vote",            CMD_INTERMISSION,                    Cmd_Vote_f             },
