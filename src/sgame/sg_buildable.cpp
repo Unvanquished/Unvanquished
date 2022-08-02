@@ -1703,7 +1703,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	}
 
 	int max_miners = g_maxMiners.Get();
-	if (max_miners > 0)
+	if (max_miners >= 0)
 	{
 		// maybe rewrite loop as
 		//   ForEntities([](Entity& entity, MiningComponent& mining) {});
