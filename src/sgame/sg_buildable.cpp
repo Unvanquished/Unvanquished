@@ -1705,14 +1705,16 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	int max_miners = g_maxMiners.Get();
 	if (max_miners > 0)
 	{
-		gentity_t *tmp = g_entities;
+		// maybe rewrite loop as
+		//   ForEntities([](Entity& entity, MiningComponent& mining) {});
+		gentity_t *tmp = g_entities + MAX_CLIENTS;
 		int miners = 0;
-		for (int i = 0; i < level.num_entities; i++, tmp++) 
+		for (int i = MAX_CLIENTS; i < level.num_entities; i++, tmp++) 
 		{
 			if (tmp->s.eType == entityType_t::ET_BUILDABLE) 
 			{
 				HealthComponent* health = tmp->entity->Get<HealthComponent>();
-				if (tmp->buildableTeam != ent->client->pers.team || !health->Alive())
+				if (tmp->buildableTeam != ent->client->pers.team || !health->Alive() || !Entities::IsAlive(tmp))
 					continue;
 
 				switch (tmp->s.modelindex) {
