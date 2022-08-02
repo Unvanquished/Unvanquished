@@ -1715,9 +1715,12 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 			{
 				HealthComponent* health = tmp->entity->Get<HealthComponent>();
 				if (tmp->buildableTeam != ent->client->pers.team || !health->Alive() || !Entities::IsAlive(tmp))
+				{
 					continue;
+				}
 
-				switch (tmp->s.modelindex) {
+				switch (tmp->s.modelindex)
+				{
 				case BA_H_DRILL:
 				case BA_A_LEECH:
 					miners++;
