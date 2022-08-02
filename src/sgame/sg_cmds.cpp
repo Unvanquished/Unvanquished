@@ -3497,11 +3497,6 @@ void Cmd_Reload_f( gentity_t *ent )
 	}
 }
 
-/*
-=================
-Cmd_TeamStatus_f
-=================
-*/
 void Cmd_TeamStatus_f( gentity_t * ent )
 {
 	int builders = 0;
@@ -3525,23 +3520,27 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 		return;
 	}
 
-	if ( level.team[ ent->client->pers.team ].lastTeamStatus
-		&& ( level.time - level.team[ ent->client->pers.team ].lastTeamStatus ) < g_teamStatus.Get() * 1000 ) 
+	if ( level.team[ G_Team( ent ) ].lastTeamStatus
+		&& ( level.time - level.team[ G_Team( ent ) ].lastTeamStatus ) < g_teamStatus.Get() * 1000 ) 
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print \"Your team's status may only be checked every %i seconds.\"", g_teamStatus.Get() ) );
 		return;
 	}
 
-	level.team[ ent->client->pers.team ].lastTeamStatus = level.time;
+	level.team[ G_Team( ent ) ].lastTeamStatus = level.time;
 
 	tmp = &g_entities[ 0 ];
 	for ( int i = 0; i < level.num_entities; i++, tmp++ ) 
 	{
+		if ( !G_OnSameTeam( tmp, ent ) )
+		{
+			continue;
+		}
+		
 		if ( i < MAX_CLIENTS && tmp->client && tmp->entity ) 
 		{
-			auto health = tmp->entity->Get<HealthComponent>();
+			const auto& health = tmp->entity->Get<HealthComponent>();
 			if ( tmp->client->pers.connected == CON_CONNECTED
-				&& G_OnSameTeam( tmp, ent )
 				&& ( health && health->Alive() )
 			    && ( tmp->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0
 					|| tmp->client->ps.stats[ STAT_CLASS ]  == PCL_ALIEN_BUILDER0_UPG
@@ -3556,8 +3555,8 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 		{
 			int type = tmp->s.modelindex;
 			ASSERT( type < BA_NUM_BUILDABLES );
-			HealthComponent* health = tmp->entity->Get<HealthComponent>();
-			if ( G_OnSameTeam( tmp, ent ) && health->Health() > 0 )
+			const HealthComponent* health = tmp->entity->Get<HealthComponent>();
+			if ( health->Health() > 0 )
 			{
 				structures[ type ].count++;
 				structures[ type ].health = health->Health();
