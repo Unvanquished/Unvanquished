@@ -1714,7 +1714,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 			if (tmp->s.eType == entityType_t::ET_BUILDABLE) 
 			{
 				HealthComponent* health = tmp->entity->Get<HealthComponent>();
-				if (tmp->buildableTeam != ent->client->pers.team || !health->Alive() || !Entities::IsAlive(tmp))
+				if (!G_OnSameTeam(tmp, ent) || !health->Alive() || !Entities::IsAlive(tmp))
 				{
 					continue;
 				}
