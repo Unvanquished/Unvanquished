@@ -3556,7 +3556,7 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 			int type = tmp->s.modelindex;
 			ASSERT( type < BA_NUM_BUILDABLES );
 			const HealthComponent* health = tmp->entity->Get<HealthComponent>();
-			if ( health->Health() > 0 )
+			if ( health && health->Health() > 0 )
 			{
 				structures[ type ].count++;
 				structures[ type ].health = health->Health();
