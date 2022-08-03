@@ -16,7 +16,7 @@ jetpack
 	width: 25%;
 	height: 20%;
 }
-progressbar
+progress
 {
 	display: inline-block;
 	margin-top: 27%;
@@ -25,7 +25,7 @@ progressbar
 	height: 15%;
 }
 
-progressbar fill
+progress fill
 {
 	image-color: #FF00FF84;
 }
@@ -49,7 +49,7 @@ jetpack.active
 </head>
 <body id="hud_jetpack">
 <jetpack>
-	<progressbar src="fuel"/>
+	<progress src="fuel"/>
 	<img src="/icons/iconu_jetpack"/>
 </jetpack>
 </body>

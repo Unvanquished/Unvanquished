@@ -17,7 +17,7 @@ div
 	margin-right: auto;
 }
 
-progressbar
+progress
 {
 	width: 100%;
 	height: 100%;
@@ -26,7 +26,7 @@ progressbar
 </head>
 <body id="hud_chargebar">
 <div>
-<progressbar direction="right" src="charge"/>
+<progress direction="right" src="charge"/>
 </div>
 </body>
 </rml>

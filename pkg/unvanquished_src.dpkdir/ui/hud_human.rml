@@ -87,7 +87,7 @@
 				margin-left:5%;
 			}
 
-			ammo_stack, clip_stack, progressbar.health, stamina progressbar
+			ammo_stack, clip_stack, progress.health, stamina progress
 			{
 				position:absolute;
 				bottom:0em;
@@ -102,11 +102,11 @@
 			{
 				color: #4A928F80;
 			}
-			progressbar.health fill {
+			progress.health fill {
 				image-color: #ff001c7a;
 			}
 
-			stamina progressbar fill {
+			stamina progress fill {
 				image-color: #82ffee52;
 				transition: image-color 0.15s cubic-in;
 			}
@@ -276,11 +276,11 @@
 			<stamina>
 				<img class="run" src="/ui/assets/human/run"/>
 				<img class="sprint" src="/ui/assets/human/sprint"/>
-				<progressbar src="stamina" />
+				<progress src="stamina" />
 			</stamina>
 			<div class="health"><health_cross class="health"/>
 			<health class="health" />
-			<progressbar class="health" src="health" /></div>
+			<progress class="health" src="health" /></div>
 		</div>
 		<div id="momentum">
 			<unlocked_items/>

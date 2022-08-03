@@ -57,7 +57,7 @@
 				z-index:1;
 /* 				opacity:0.6; */
 			}
-			progressbar#health-bar
+			progress#health-bar
 			{
 				position: absolute;
 				width: 65%;
@@ -65,12 +65,12 @@
 				left: 0em;
 				bottom: 0em;
 			}
-			progressbar#health-bar fill
+			progress#health-bar fill
 			{
 				decorator: none;
 				fill-image: /ui/assets/alien/bar-l;
 			}
-			progressbar#poison-bar
+			progress#poison-bar
 			{
 				position: absolute;
 				width: 65%;
@@ -78,7 +78,7 @@
 				right: 0em;
 				bottom: 0em;
 			}
-			progressbar#poison-bar fill
+			progress#poison-bar fill
 			{
 				decorator: none;
 				fill-image: /ui/assets/alien/bar-r;
@@ -223,7 +223,7 @@
 		</div>
 		<div id="left">
 			<img class="bg sides" src="/ui/assets/alien/bg-l" />
-			<progressbar src="health" id="health-bar" />
+			<progress src="health" id="health-bar" />
 			<wallwalk>
 				<img class="spikes sides" src="/ui/assets/alien/smallspikes-l" />
 			</wallwalk>
@@ -240,7 +240,7 @@
 		</div>
 		<div id="right">
 			<img class="bg sides" src="/ui/assets/alien/bg-r" />
-			<progressbar direction="left" src="poison" id="poison-bar" />
+			<progress direction="left" src="poison" id="poison-bar" />
 			<wallwalk>
 				<img class="spikes sides" src="/ui/assets/alien/smallspikes-r" />
 			</wallwalk>
