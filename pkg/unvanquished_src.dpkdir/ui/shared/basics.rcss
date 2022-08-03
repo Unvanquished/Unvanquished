@@ -100,9 +100,6 @@ progress
 {
 	display: block;
 	z-index: -1;
-}
-progress fill
-{
 	decorator: image( /gfx/colors/white );
 }
 

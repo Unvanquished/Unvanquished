@@ -102,14 +102,15 @@
 			{
 				color: #4A928F80;
 			}
-			progress.health fill {
+			progress.health {
 				image-color: #ff001c7a;
 			}
 
-			stamina progress fill {
+			stamina progress {
 				image-color: #82ffee52;
 				transition: image-color 0.15s cubic-in;
 			}
+
 			stamina img {
 				transition: opacity 0.15s cubic-in;
 			}

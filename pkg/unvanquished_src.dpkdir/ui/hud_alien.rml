@@ -64,11 +64,8 @@
 				height: 37%;
 				left: 0em;
 				bottom: 0em;
-			}
-			progress#health-bar fill
-			{
-				decorator: none;
 				fill-image: /ui/assets/alien/bar-l;
+				decorator: none;
 			}
 			progress#poison-bar
 			{
@@ -77,11 +74,8 @@
 				height: 37%;
 				right: 0em;
 				bottom: 0em;
-			}
-			progress#poison-bar fill
-			{
-				decorator: none;
 				fill-image: /ui/assets/alien/bar-r;
+				decorator: none;
 			}
 			wallwalk.wallwalking img.sides
 			{
