@@ -71,10 +71,10 @@
 			bottom: 10%;
 			width: 40%;
 		}
-		region.oxygen progressbar {
+		region.oxygen progress {
 			height: 1.2em;
 		}
-		region.oxygen progressbar fill {
+		region.oxygen progress fill {
 			image-color: rgba(108, 200, 255, 200);
 		}
 
@@ -238,7 +238,7 @@
 	</region>
 
 	<region class="oxygen">
-		<progressbar src="oxygen"/>
+		<progress src="oxygen"/>
 	</region>
 </body>
 </rml>

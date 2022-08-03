@@ -18,7 +18,7 @@ div#mine
 	color: white;
 	background-color: #666666CC;
 }
-div#timer progressbar
+div#timer progress
 {
 	position: absolute;
 	width: 40%;
@@ -51,7 +51,7 @@ div#rate
 		<predictedMineEfficiency />
 	</div>
 	<div id="timer">
-		<progressbar direction="right" src="btimer"/>
+		<progress direction="right" src="btimer"/>
 	</div>
 	<div id="rate">
 		<mine_rate/>

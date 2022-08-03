@@ -96,12 +96,12 @@ img.emoticon {
 	width: auto;
 }
 
-progressbar
+progress
 {
 	display: block;
 	z-index: -1;
 }
-progressbar fill
+progress fill
 {
 	decorator: image( /gfx/colors/white );
 }
