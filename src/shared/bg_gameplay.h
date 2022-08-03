@@ -44,7 +44,6 @@ extern float ABUILDER_CLAW_RANGE;
 extern float ABUILDER_CLAW_WIDTH;
 extern float ABUILDER_BLOB_SPEED;
 extern float ABUILDER_BLOB_SPEED_MOD;
-extern int   ABUILDER_BLOB_LOCK_TIME;
 extern int   ABUILDER_BLOB_TIME;
 
 extern int   LEVEL0_BITE_DMG;
