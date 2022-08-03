@@ -34,15 +34,14 @@ Maryland 20850 USA.
 
 // Override for the default dataselect element.
 
-#include <RmlUi/Core/Core.h>
-#include <RmlUi/Controls/ElementFormControlDataSelect.h>
+#include <RmlUi/Core.h>
 
 #include "../cg_local.h"
 
-class RocketDataSelect : public Rml::Controls::ElementFormControlDataSelect, public Rml::Core::EventListener
+class RocketDataSelect : public Rml::ElementFormControlDataSelect, public Rml::EventListener
 {
 public:
-	RocketDataSelect( const Rml::Core::String &tag ) : Rml::Controls::ElementFormControlDataSelect( tag ), selection( -2 ), owner( nullptr) { }
+	RocketDataSelect( const Rml::String &tag ) : Rml::ElementFormControlDataSelect( tag ), selection( -2 ), owner( nullptr) { }
 	~RocketDataSelect() { }
 
 	virtual void OnChildAdd( Element *child )
@@ -69,20 +68,20 @@ public:
 		}
 	}
 
-	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
+	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
 	{
 		ElementFormControlDataSelect::OnAttributeChange( changed_attributes );
 		auto it = changed_attributes.find( "source" );
 		if ( it != changed_attributes.end() )
 		{
-			Rml::Core::String dataSource = it->second.Get<Rml::Core::String>();
+			Rml::String dataSource = it->second.Get<Rml::String>();
 			size_t pos = dataSource.find( "." );
 			dsName = dataSource.substr( 0, pos );
 			tableName =  dataSource.substr( pos + 1, dataSource.size() );
 		}
 	}
 
-	virtual void ProcessEvent( Rml::Core::Event &event )
+	virtual void ProcessEvent( Rml::Event &event )
 	{
 		extern std::queue< RocketEvent_t * > eventQueue;
 
@@ -103,10 +102,10 @@ public:
 			selection = GetSelection();
 
 			// dispatch event so cgame knows about it
-			eventQueue.push( new RocketEvent_t( Rml::Core::String( va( "setDS %s %s %d", dsName.c_str(), tableName.c_str(), selection ) ) ) );
+			eventQueue.push( new RocketEvent_t( Rml::String( va( "setDS %s %s %d", dsName.c_str(), tableName.c_str(), selection ) ) ) );
 
 			// dispatch event so rocket knows about it
-			Rml::Core::Dictionary parameters;
+			Rml::Dictionary parameters;
 			parameters[ "index" ] = va( "%d", selection );
 			parameters[ "datasource" ] = dsName;
 			parameters[ "table" ] = tableName;
@@ -115,8 +114,7 @@ public:
 	}
 private:
 	int selection;
-	Rml::Core::Element *owner;
-	Rml::Core::String dsName;
-	Rml::Core::String tableName;
+	Rml::Element *owner;
+	Rml::String dsName;
+	Rml::String tableName;
 };
-

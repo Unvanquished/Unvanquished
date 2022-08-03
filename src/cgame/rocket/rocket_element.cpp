@@ -35,15 +35,13 @@ Maryland 20850 USA.
 
 #include "rocket.h"
 #include "rocketElement.h"
-#include <RmlUi/Core/Factory.h>
-#include <RmlUi/Core/ElementInstancer.h>
-#include <RmlUi/Controls/ElementFormControlDataSelect.h>
+#include <RmlUi/Core.h>
 #include "rocketConsoleTextElement.h"
 #include "../cg_local.h"
 
-extern Rml::Core::Element *activeElement;
+extern Rml::Element *activeElement;
 
-Rml::Core::String Rocket_QuakeToRML( const char *in );
+Rml::String Rocket_QuakeToRML( const char *in );
 
 // File contains support code for custom rocket elements
 
@@ -55,18 +53,18 @@ void Rocket_GetElementTag( char *tag, int length )
 	}
 }
 
-static std::unique_ptr<Rml::Core::ElementInstancerGeneric<RocketElement>> rocketElementInstancer(new Rml::Core::ElementInstancerGeneric< RocketElement >());
+static std::unique_ptr<Rml::ElementInstancerGeneric<RocketElement>> rocketElementInstancer(new Rml::ElementInstancerGeneric< RocketElement >());
 
 void Rocket_RegisterElement( const char *tag )
 {
-	Rml::Core::Factory::RegisterElementInstancer( tag, rocketElementInstancer.get() );
+	Rml::Factory::RegisterElementInstancer( tag, rocketElementInstancer.get() );
 }
 
 // reduces an rml string to a common format so two rml strings can be compared
-static Rml::Core::String ReduceRML( const Rml::Core::String &rml )
+static Rml::String ReduceRML( const Rml::String &rml )
 {
-	Rml::Core::String ret;
-	Rml::Core::String::size_type length = rml.size();
+	Rml::String ret;
+	Rml::String::size_type length = rml.size();
 	ret.reserve( length );
 
 	for ( unsigned i = 0; i < length; i++ )
@@ -90,10 +88,10 @@ static Rml::Core::String ReduceRML( const Rml::Core::String &rml )
 	return ret;
 }
 
-static inline void Rocket_SetInnerRMLGuarded( Rml::Core::Element *e, const Rml::Core::String &newRML )
+static inline void Rocket_SetInnerRMLGuarded( Rml::Element *e, const Rml::String &newRML )
 {
-	Rml::Core::String newReducedRML = ReduceRML( newRML );
-	Rml::Core::String oldReducedRML = ReduceRML( e->GetInnerRML() );
+	Rml::String newReducedRML = ReduceRML( newRML );
+	Rml::String oldReducedRML = ReduceRML( e->GetInnerRML() );
 
 	if ( newReducedRML != oldReducedRML )
 	{
@@ -105,7 +103,7 @@ static inline void Rocket_SetInnerRMLGuarded( Rml::Core::Element *e, const Rml::
 // With additional flags parses colors or emoticons (see Rocket_QuakeToRML).
 void Rocket_SetInnerRML( const char *text, int parseFlags )
 {
-	Rml::Core::String newRML = Rocket_QuakeToRML( text, parseFlags );
+	Rml::String newRML = Rocket_QuakeToRML( text, parseFlags );
 
 	if ( activeElement )
 	{
@@ -136,16 +134,16 @@ void Rocket_GetAttribute( const char *name, const char *id, const char *attribut
 {
 	if ( ( !*name || !*id ) && activeElement )
 	{
-		Q_strncpyz( out, activeElement->GetAttribute< Rml::Core::String >( attribute, "" ).c_str(), length );
+		Q_strncpyz( out, activeElement->GetAttribute< Rml::String >( attribute, "" ).c_str(), length );
 	}
 
 	else
 	{
-		Rml::Core::ElementDocument *document = menuContext->GetDocument( name );
+		Rml::ElementDocument *document = menuContext->GetDocument( name );
 
 		if ( document )
 		{
-			Q_strncpyz( out, document->GetElementById( id )->GetAttribute< Rml::Core::String >( attribute, "" ).c_str(), length );
+			Q_strncpyz( out, document->GetElementById( id )->GetAttribute< Rml::String >( attribute, "" ).c_str(), length );
 		}
 	}
 }
@@ -159,11 +157,11 @@ void Rocket_SetAttribute( const char *name, const char *id, const char *attribut
 
 	else
 	{
-		Rml::Core::ElementDocument *document = name[0] ? menuContext->GetDocument( name ) : menuContext->GetFocusElement()->GetOwnerDocument();
+		Rml::ElementDocument *document = name[0] ? menuContext->GetDocument( name ) : menuContext->GetFocusElement()->GetOwnerDocument();
 
 		if ( document )
 		{
-			Rml::Core::Element *element = document->GetElementById( id );
+			Rml::Element *element = document->GetElementById( id );
 
 			if ( element )
 			{
@@ -177,7 +175,7 @@ void Rocket_GetElementAbsoluteOffset( float *x, float *y )
 {
 	if ( activeElement )
 	{
-		Rml::Core::Vector2f position = activeElement->GetAbsoluteOffset();
+		Rml::Vector2f position = activeElement->GetAbsoluteOffset();
 		*x = position.x;
 		*y = position.y;
 	}
@@ -193,7 +191,7 @@ void Rocket_GetElementDimensions( float *w, float *h )
 {
 	if ( activeElement )
 	{
-		Rml::Core::Vector2f dimensions = activeElement->GetBox().GetSize();
+		Rml::Vector2f dimensions = activeElement->GetBox().GetSize();
 		*w = dimensions.x;
 		*h = dimensions.y;
 	}
@@ -208,7 +206,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 {
 	if ( activeElement )
 	{
-		const Rml::Core::Property *property = activeElement->GetProperty( name );
+		const Rml::Property *property = activeElement->GetProperty( name );
 
 		if ( !property )
 		{
@@ -221,7 +219,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 			{
 				char *string = ( char * ) out;
 
-				Q_strncpyz( string, property->Get<Rml::Core::String>().c_str(), len );
+				Q_strncpyz( string, property->Get<Rml::String>().c_str(), len );
 
 				return;
 			}
@@ -237,10 +235,10 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 
 				// HACK: special case for width and height specified in non absolute units
 
-				if ( !Q_stricmp( "width", name ) && property->unit & Rml::Core::Property::RELATIVE_UNIT )
+				if ( !Q_stricmp( "width", name ) && property->unit & Rml::Property::RELATIVE_UNIT )
 				{
 					float base_size = 0;
-					Rml::Core::Element *parent = activeElement;
+					Rml::Element *parent = activeElement;
 
 					while ( ( parent = parent->GetParentNode() ) )
 					{
@@ -252,10 +250,10 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					}
 				}
 
-				if ( !Q_stricmp( "height", name ) && property->unit & Rml::Core::Property::RELATIVE_UNIT )
+				if ( !Q_stricmp( "height", name ) && property->unit & Rml::Property::RELATIVE_UNIT )
 				{
 					float base_size = 0;
-					Rml::Core::Element *parent = activeElement;
+					Rml::Element *parent = activeElement;
 
 					while ( ( parent = parent->GetParentNode() ) )
 					{
@@ -289,7 +287,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 				if ( len == sizeof( Color::Color ) )
 				{
 					Color::Color* outColor = ( Color::Color* ) out;
-					*outColor = Color::Adapt( property->Get<Rml::Core::Colourb>() );
+					*outColor = Color::Adapt( property->Get<Rml::Colourb>() );
 				}
 
 				return;
@@ -312,11 +310,11 @@ void Rocket_SetPropertyById( const char *id, const char *property, const char *v
 {
 	if ( *id )
 	{
-		Rml::Core::ElementDocument *document = menuContext->GetFocusElement()->GetOwnerDocument();
+		Rml::ElementDocument *document = menuContext->GetFocusElement()->GetOwnerDocument();
 
 		if ( document )
 		{
-			Rml::Core::Element *element = document->GetElementById( id );
+			Rml::Element *element = document->GetElementById( id );
 
 			if ( element )
 			{
@@ -342,12 +340,12 @@ void Rocket_AddConsoleText(Str::StringRef text)
 		return;
 	}
 
-	RocketConsoleTextElement::lines.emplace_front( Rml::Core::String( va( "%s\n", buffer ) ) );
+	RocketConsoleTextElement::lines.emplace_front( Rml::String( va( "%s\n", buffer ) ) );
 }
 
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs )
 {
-	Rml::Core::StyleSheetSpecification::RegisterProperty( name, defaultValue, ( bool ) inherited, ( bool ) force_layout ).AddParser( parseAs );
+	Rml::StyleSheetSpecification::RegisterProperty( name, defaultValue, ( bool ) inherited, ( bool ) force_layout ).AddParser( parseAs );
 }
 
 
@@ -355,6 +353,6 @@ void Rocket_SetDataSelectIndex( int index )
 {
 	if ( activeElement )
 	{
-		dynamic_cast< Rml::Controls::ElementFormControlDataSelect* >( activeElement )->SetSelection( index );
+		dynamic_cast< Rml::ElementFormControlDataSelect* >( activeElement )->SetSelection( index );
 	}
 }

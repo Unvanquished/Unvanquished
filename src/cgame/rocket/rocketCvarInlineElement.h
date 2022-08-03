@@ -35,13 +35,13 @@ Maryland 20850 USA.
 #ifndef ROCKETCVARINLINEELEMENT_H
 #define ROCKETCVARINLINEELEMENT_H
 
-#include <RmlUi/Core/Core.h>
+#include <RmlUi/Core.h>
 #include "../cg_local.h"
 
-class RocketCvarInlineElement : public Rml::Core::Element
+class RocketCvarInlineElement : public Rml::Element
 {
 public:
-	RocketCvarInlineElement( const Rml::Core::String& tag ) : Rml::Core::Element( tag ), cvar( "" ), cvar_value( "" ), type(STRING), dirty_value( false ) {}
+	RocketCvarInlineElement( const Rml::String& tag ) : Rml::Element( tag ), cvar( "" ), cvar_value( "" ), type(STRING), dirty_value( false ) {}
 
 	enum CvarType
 	{
@@ -49,19 +49,19 @@ public:
 	    STRING
 	};
 
-	virtual void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes )
+	virtual void OnAttributeChange( const Rml::ElementAttributes& changed_attributes )
 	{
-		Rml::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Element::OnAttributeChange( changed_attributes );
 
 		if ( changed_attributes.find( "cvar" ) != changed_attributes.end() )
 		{
-			cvar = GetAttribute< Rml::Core::String >( "cvar",  "" );
+			cvar = GetAttribute< Rml::String >( "cvar",  "" );
 			dirty_value = true;
 		}
 
 		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
 		{
-			Rml::Core::String typeString = GetAttribute< Rml::Core::String >( "type", "" );
+			Rml::String typeString = GetAttribute< Rml::String >( "type", "" );
 
 			if ( typeString == "number" )
 			{
@@ -76,7 +76,7 @@ public:
 
 		if ( changed_attributes.find( "format" ) != changed_attributes.end() )
 		{
-			format = GetAttribute<Rml::Core::String>( "format", "" );
+			format = GetAttribute<Rml::String>( "format", "" );
 			dirty_value = true;
 		}
 	}
@@ -85,7 +85,7 @@ public:
 	{
 		if ( dirty_value || ( !cvar.empty() && cvar_value.c_str() != Cvar::GetValue( cvar.c_str() ) ) )
 		{
-			Rml::Core::String value = cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
+			Rml::String value = cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
 
 			if (!format.empty())
 			{
@@ -104,9 +104,9 @@ public:
 		}
 	}
 private:
-	Rml::Core::String cvar;
-	Rml::Core::String cvar_value;
-	Rml::Core::String format;
+	Rml::String cvar;
+	Rml::String cvar_value;
+	Rml::String format;
 	CvarType type;
 	bool dirty_value;
 };

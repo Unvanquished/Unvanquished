@@ -36,7 +36,6 @@ Maryland 20850 USA.
 #include "../../cg_local.h"
 
 namespace Rml {
-namespace Core {
 namespace Lua {
 
 template<> void ExtraInit<Lua::Cmd>(lua_State* L, int metatable_index)
@@ -75,8 +74,7 @@ luaL_Reg CmdSetters[] =
 	{ NULL, NULL },
 };
 
-LUACORETYPEDEFINE(Cmd)
+RMLUI_LUATYPE_DEFINE(Cmd)
 
-}
-}
-}
+}  // namespace Lua
+}  // namespace Rml

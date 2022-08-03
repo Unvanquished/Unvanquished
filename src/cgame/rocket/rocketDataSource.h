@@ -36,17 +36,14 @@ Maryland 20850 USA.
 #define ROCKETDATASOURCE_H
 
 #include <RmlUi/Core.h>
-#include <RmlUi/Core/Element.h>
-#include <RmlUi/Controls.h>
-#include <RmlUi/Controls/DataSourceListener.h>
-#include <RmlUi/Controls/DataSource.h>
+#include <RmlUi/Core/Elements/DataSource.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
-class RocketDataSource : public Rml::Core::Element, public Rml::Controls::DataSourceListener
+class RocketDataSource : public Rml::Element, public Rml::DataSourceListener
 {
 public:
-	RocketDataSource( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( nullptr ), data_source( nullptr )
+	RocketDataSource( const Rml::String &tag ) : Rml::Element( tag ), dirty_query( false ), dirty_layout( false ), init( false ), radius( 10 ), formatter( nullptr ), data_source( nullptr )
 	{
 	}
 
@@ -58,51 +55,51 @@ public:
 		}
 	}
 
-	void SetDataSource( const Rml::Core::String &dsn )
+	void SetDataSource( const Rml::String &dsn )
 	{
 		ParseDataSource( data_source, data_table, dsn );
 		data_source->AttachListener( this );
 		dirty_query = true;
 	}
 
-	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
 	{
-		Rml::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "source" ) != changed_attributes.end() )
 		{
-			SetDataSource( GetAttribute<Rml::Core::String>( "source", "" ) );
+			SetDataSource( GetAttribute<Rml::String>( "source", "" ) );
 		}
 
 		if ( changed_attributes.find( "fields" ) != changed_attributes.end() )
 		{
-			csvFields = GetAttribute<Rml::Core::String>( "fields", "" );
-			Rml::Core::StringUtilities::ExpandString( fields, csvFields );
+			csvFields = GetAttribute<Rml::String>( "fields", "" );
+			Rml::StringUtilities::ExpandString( fields, csvFields );
 			dirty_query = true;
 		}
 
 		if ( changed_attributes.find( "formatter" ) != changed_attributes.end() )
 		{
-			formatter = Rml::Controls::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rml::Core::String>() );
+			formatter = Rml::DataFormatter::GetDataFormatter( GetAttribute( "formatter" )->Get<Rml::String>() );
 			dirty_query = true;
 		}
 	}
 
-	void OnRowAdd( Rml::Controls::DataSource*, const Rml::Core::String&, int, int )
+	void OnRowAdd( Rml::DataSource*, const Rml::String&, int, int )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rml::Controls::DataSource*, const Rml::Core::String&, int, int )
+	void OnRowChange( Rml::DataSource*, const Rml::String&, int, int )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowChange( Rml::Controls::DataSource*, const Rml::Core::String& )
+	void OnRowChange( Rml::DataSource*, const Rml::String& )
 	{
 		dirty_query = true;
 	}
 
-	void OnRowRemove( Rml::Controls::DataSource*, const Rml::Core::String&, int, int )
+	void OnRowRemove( Rml::DataSource*, const Rml::String&, int, int )
 	{
 		dirty_query = true;
 	}
@@ -120,17 +117,17 @@ public:
 				RemoveChild( GetFirstChild() );
 			}
 
-			Rml::Controls::DataQuery query( data_source, data_table, csvFields, 0, -1 );
+			Rml::DataQuery query( data_source, data_table, csvFields, 0, -1 );
 			int index = 0;
 
 			while ( query.NextRow() )
 			{
-				Rml::Core::StringList raw_data;
-				Rml::Core::String out;
+				Rml::StringList raw_data;
+				Rml::String out;
 
 				for ( auto &&field : fields )
 				{
-					raw_data.emplace_back( query.Get<Rml::Core::String>( field, "" ) );
+					raw_data.emplace_back( query.Get<Rml::String>( field, "" ) );
 				}
 
 				raw_data.push_back( va( "%d", index++ ) );
@@ -156,18 +153,18 @@ public:
 					}
 				}
 
-				Rml::Core::Factory::InstanceElementText( this, out );
+				Rml::Factory::InstanceElementText( this, out );
 			}
 		}
 	}
 
-	virtual void ProcessDefaultAction( Rml::Core::Event &event )
+	virtual void ProcessDefaultAction( Rml::Event &event )
 	{
 		Element::ProcessDefaultAction( event );
 		if ( event == "mouseover" )
 		{
-			Rml::Core::Element *parent = event.GetTargetElement();
-			Rml::Core::Element *button = parent->GetTagName() == "button" ? parent : nullptr;
+			Rml::Element *parent = event.GetTargetElement();
+			Rml::Element *button = parent->GetTagName() == "button" ? parent : nullptr;
 			while ( ( parent = parent->GetParentNode() ) )
 			{
 				if ( !button && parent->GetTagName() == "button" )
@@ -178,7 +175,7 @@ public:
 
 				if ( parent == this )
 				{
-					Rml::Core::Dictionary parameters;
+					Rml::Dictionary parameters;
 					int i = 0;
 
 					for ( i = 1; i < GetNumChildren(); ++i )
@@ -207,8 +204,8 @@ protected:
 
 		int numChildren = 0;
 		float width, height;
-		Rml::Core::Element *child;
-		Rml::Core::Vector2f offset = GetRelativeOffset();
+		Rml::Element *child;
+		Rml::Vector2f offset = GetRelativeOffset();
 
 		// First child is the cancel button. It should go in the center.
 		child = GetFirstChild();
@@ -246,7 +243,7 @@ private:
 	void AddCancelbutton()
 	{
 		init = true;
-		Rml::Core::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().c_str() ) );
+		Rml::Factory::InstanceElementText( this, va( "<button onClick=\"hide %s\">Cancel</button>", GetOwnerDocument()->GetId().c_str() ) );
 		GetFirstChild()->SetClass( "cancelButton", true );
 	}
 
@@ -254,13 +251,13 @@ private:
 	bool dirty_layout;
 	bool init;
 	float radius;
-	Rml::Controls::DataFormatter *formatter;
-	Rml::Controls::DataSource *data_source;
+	Rml::DataFormatter *formatter;
+	Rml::DataSource *data_source;
 
-	Rml::Core::String data_table;
-	Rml::Core::String csvFields;
-	Rml::Core::StringList fields;
-	Rml::Core::Vector2f dimensions;
+	Rml::String data_table;
+	Rml::String csvFields;
+	Rml::StringList fields;
+	Rml::Vector2f dimensions;
 };
 
 #endif

@@ -36,25 +36,24 @@ Maryland 20850 USA.
 #define ROCKETCONSOLETEXTELEMENT_H
 
 #include <RmlUi/Core.h>
-#include <RmlUi/Core/Element.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
 struct ConsoleLine
 {
-	Rml::Core::String text;
+	Rml::String text;
 	int time;
-	ConsoleLine( Rml::Core::String _i ) : text( _i )
+	ConsoleLine( Rml::String _i ) : text( _i )
 	{
 		time = trap_Milliseconds();
 	}
 };
 
-class RocketConsoleTextElement : public Rml::Core::Element
+class RocketConsoleTextElement : public Rml::Element
 {
 public:
-	RocketConsoleTextElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), numLines( 0 ), maxLines( 4 ), lastTime( -1 ),
-	dirty_height( true ), font_engine_interface( Rml::Core::GetFontEngineInterface() )
+	RocketConsoleTextElement( const Rml::String &tag ) : Rml::Element( tag ), numLines( 0 ), maxLines( 4 ), lastTime( -1 ),
+	dirty_height( true ), font_engine_interface( Rml::GetFontEngineInterface() )
 	{
 	}
 
@@ -90,8 +89,8 @@ public:
 			// Each line gets its own span element
 			for (line = line - 1; line >= 0; --line, numLines++ )
 			{
-				Rml::Core::ElementPtr childPtr = Rml::Core::Factory::InstanceElement( this, "#text", "span", Rml::Core::XMLAttributes() );
-				Rml::Core::Factory::InstanceElementText( childPtr.get(), Rocket_QuakeToRML( lines[ line ].text.c_str(), RP_EMOTICONS ));
+				Rml::ElementPtr childPtr = Rml::Factory::InstanceElement( this, "#text", "span", Rml::XMLAttributes() );
+				Rml::Factory::InstanceElementText( childPtr.get(), Rocket_QuakeToRML( lines[ line ].text.c_str(), RP_EMOTICONS ));
 				childPtr->SetId( va( "%d", lines[ line ].time ) );
 				AppendChild( std::move( childPtr ) );
 			}
@@ -100,7 +99,7 @@ public:
 		// Calculate max lines when we have a child element with a fontface
 		if ( dirty_height && HasChildNodes() )
 		{
-			const Rml::Core::FontFaceHandle font = GetFirstChild()->GetFontFaceHandle();
+			const Rml::FontFaceHandle font = GetFirstChild()->GetFontFaceHandle();
 			if ( font )
 			{
 				float consoleHeight = ResolveNumericProperty( "height" );
@@ -125,13 +124,13 @@ public:
 			numLines--;
 		}
 
-		Rml::Core::Element::OnUpdate();
+		Rml::Element::OnUpdate();
 	}
 
-	void OnPropertyChange( const Rml::Core::PropertyIdSet &changed_properties )
+	void OnPropertyChange( const Rml::PropertyIdSet &changed_properties )
 	{
 		Element::OnPropertyChange( changed_properties );
-		if ( changed_properties.Contains( Rml::Core::PropertyId::Height ) )
+		if ( changed_properties.Contains( Rml::PropertyId::Height ) )
 		{
 			dirty_height = true;
 		}
@@ -143,8 +142,6 @@ private:
 	int maxLines;
 	int lastTime;
 	bool dirty_height;
-	Rml::Core::FontEngineInterface* const font_engine_interface;
+	Rml::FontEngineInterface* const font_engine_interface;
 };
 #endif
-
-

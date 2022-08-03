@@ -37,15 +37,15 @@ Maryland 20850 USA.
 
 #include "../cg_local.h"
 #include "rocket.h"
-#include <RmlUi/Controls/DataSource.h>
-#include <RmlUi/Core/Types.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Core/Elements/DataSource.h>
 
-class RocketDataGrid : public Rml::Controls::DataSource
+class RocketDataGrid : public Rml::DataSource
 {
 public:
-	RocketDataGrid( const char *name ) : Rml::Controls::DataSource( name ) { }
+	RocketDataGrid( const char *name ) : Rml::DataSource( name ) { }
 	~RocketDataGrid() { }
-	void GetRow( Rml::Core::StringList& row, const Rml::Core::String& table, int row_index, const Rml::Core::StringList& columns )
+	void GetRow( Rml::StringList& row, const Rml::String& table, int row_index, const Rml::StringList& columns )
 	{
 		if ( data.find( table ) == data.end() || data[table].size() <= (unsigned) row_index )
 		{
@@ -58,7 +58,7 @@ public:
 		}
 	}
 
-	int GetNumRows( const Rml::Core::String& table )
+	int GetNumRows( const Rml::String& table )
 	{
 		return data[ table ].size();
 	}
@@ -89,7 +89,7 @@ public:
 
 
 private:
-	std::map<Rml::Core::String, std::vector<Rml::Core::String> > data;
+	std::map<Rml::String, std::vector<Rml::String> > data;
 };
 
 #endif

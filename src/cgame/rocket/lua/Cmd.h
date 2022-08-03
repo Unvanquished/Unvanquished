@@ -37,11 +37,9 @@ Maryland 20850 USA.
 
 #include "../rocket.h"
 #include <RmlUi/Core/Core.h>
-#include <RmlUi/Core/Lua/lua.hpp>
-#include <RmlUi/Core/Lua/LuaType.h>
+#include <RmlUi/Lua/LuaType.h>
 
 namespace Rml {
-namespace Core {
 namespace Lua {
 // Dummy class for Cmds
 class Cmd
@@ -55,7 +53,6 @@ int Cmdexec(lua_State* L);
 extern RegType<Cmd> CmdMethods[];
 extern luaL_Reg CmdGetters[];
 extern luaL_Reg CmdSetters[];
-}
-}
-}
+}  // namespace Lua
+}  // namespace Rml
 #endif

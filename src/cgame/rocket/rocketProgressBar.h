@@ -36,30 +36,27 @@ Maryland 20850 USA.
 #define ROCKETPROGRESSBAR_H
 
 #include <RmlUi/Core.h>
-#include <RmlUi/Controls.h>
-#include <RmlUi/Core/Element.h>
-#include <RmlUi/Core/GeometryUtilities.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
-class RocketProgressBar : public Rml::Controls::ElementProgressBar
+class RocketProgressBar : public Rml::ElementProgress
 {
 public:
-	RocketProgressBar( const Rml::Core::String &tag ) :
-		Rml::Controls::ElementProgressBar( tag ), value( 0.0f ), source( "" )
+	RocketProgressBar( const Rml::String &tag ) :
+		Rml::ElementProgress( tag ), value( 0.0f ), source( "" )
 	{
 	}
 
 	virtual ~RocketProgressBar() {}
 
-	void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes ) override
+	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
 		auto it = changed_attributes.find("src");
 		if ( it != changed_attributes.end() )
 		{
-			source = it->second.Get<Rml::Core::String>();
+			source = it->second.Get<Rml::String>();
 		}
-		ElementProgressBar::OnAttributeChange( changed_attributes );
+		ElementProgress::OnAttributeChange( changed_attributes );
 	}
 
 	void OnUpdate() override
@@ -74,12 +71,12 @@ public:
 				value = newValue;
 			}
 		}
-		ElementProgressBar::OnUpdate();
+		ElementProgress::OnUpdate();
 	}
 
 
 private:
 	float value; // current value
-	Rml::Core::String source;
+	Rml::String source;
 };
 #endif

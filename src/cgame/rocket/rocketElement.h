@@ -35,37 +35,33 @@ Maryland 20850 USA.
 #ifndef ROCKETELEMENT_H
 #define ROCKETELEMENT_H
 
-#include <RmlUi/Core/Element.h>
-#include <RmlUi/Core/ElementInstancer.h>
-#include <RmlUi/Core/Geometry.h>
-#include <RmlUi/Core/GeometryUtilities.h>
-#include <RmlUi/Core/Texture.h>
+#include <RmlUi/Core.h>
 
 #include <queue>
 #include "../cg_local.h"
 #include "rocket.h"
 
-Rml::Core::Element *activeElement = nullptr;
+Rml::Element *activeElement = nullptr;
 
-class RocketElement : public Rml::Core::Element
+class RocketElement : public Rml::Element
 {
 public:
-	RocketElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ) { }
+	RocketElement( const Rml::String &tag ) : Rml::Element( tag ) { }
 	~RocketElement() { }
 
-	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension ) override
+	bool GetIntrinsicDimensions( Rml::Vector2f &dimension, float& /*ratio*/ ) override
 	{
-		const Rml::Core::Property *property;
+		const Rml::Property *property;
 		property = GetProperty( "width" );
 
 		// Absolute unit. We can use it as is
-		if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
+		if ( property->unit & Rml::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.x = property->value.Get<float>();
 		}
 		else
 		{
-			Rml::Core::Element *parent = GetParentNode();
+			Rml::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
 				dimensions.x = ResolveNumericProperty( "width" );
@@ -73,13 +69,13 @@ public:
 		}
 
 		property = GetProperty( "height" );
-		if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
+		if ( property->unit & Rml::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.y = property->value.Get<float>();
 		}
 		else
 		{
-			Rml::Core::Element *parent = GetParentNode();
+			Rml::Element *parent = GetParentNode();
 			if ( parent != nullptr )
 			{
 				dimensions.y = ResolveNumericProperty( "height" );
@@ -93,12 +89,12 @@ public:
 		return true;
 	}
 
-	void ProcessDefaultAction( Rml::Core::Event &event ) override
+	void ProcessDefaultAction( Rml::Event &event ) override
 	{
 		extern std::queue< RocketEvent_t* > eventQueue;
 
 		// Class base class's Event processor
-		Rml::Core::Element::ProcessDefaultAction( event );
+		Rml::Element::ProcessDefaultAction( event );
 
 
 		// Let this be picked up in the event loop if it is meant for us
@@ -116,7 +112,7 @@ public:
 		CG_Rocket_RenderElement( GetTagName().c_str() );
 
 		// Render text on top
-		Rml::Core::Element::OnRender();
+		Rml::Element::OnRender();
 	}
 
 	void OnUpdate() override
@@ -125,11 +121,11 @@ public:
 
 		CG_Rocket_UpdateElement( GetTagName().c_str() );
 
-		Rml::Core::Element::OnUpdate();
+		Rml::Element::OnUpdate();
 	}
 
 
-	Rml::Core::Vector2f dimensions;
+	Rml::Vector2f dimensions;
 };
 
 #endif

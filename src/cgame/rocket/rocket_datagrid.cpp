@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "rocket.h"
-#include <RmlUi/Controls.h>
+#include <RmlUi/Core.h>
 #include "rocketDataGrid.h"
 #include <string>
 #include <map>

@@ -39,37 +39,36 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 
 #include <RmlUi/Core.h>
-#include <RmlUi/Controls.h>
-#include <RmlUi/Controls/DataSource.h>
+#include <RmlUi/Core/Elements/DataSource.h>
 
-class RocketDataSourceSingle : public Rml::Core::Element, public Rml::Controls::DataSourceListener, public Rml::Core::EventListener
+class RocketDataSourceSingle : public Rml::Element, public Rml::DataSourceListener, public Rml::EventListener
 {
 public:
-	RocketDataSourceSingle( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), formatter( nullptr ), data_source( nullptr ), selection( -1 ),
+	RocketDataSourceSingle( const Rml::String &tag ) : Rml::Element( tag ), formatter( nullptr ), data_source( nullptr ), selection( -1 ),
 	targetElement( nullptr ), dirty_query( false ), dirty_listener( false ) { }
 
-	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes ) override
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes ) override
 	{
-		Rml::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Element::OnAttributeChange( changed_attributes );
 		auto it = changed_attributes.find( "source" );
 		if ( it != changed_attributes.end() )
 		{
-			ParseDataSource( data_source, data_table, it->second.Get<Rml::Core::String>() );
+			ParseDataSource( data_source, data_table, it->second.Get<Rml::String>() );
 			dirty_query = true;
 		}
 
 		it = changed_attributes.find( "fields" );
 		if ( it != changed_attributes.end() )
 		{
-			csvFields = it->second.Get<Rml::Core::String>();
-			Rml::Core::StringUtilities::ExpandString( fields, csvFields );
+			csvFields = it->second.Get<Rml::String>();
+			Rml::StringUtilities::ExpandString( fields, csvFields );
 			dirty_query = true;
 		}
 
 		it = changed_attributes.find( "formatter" );
 		if ( it != changed_attributes.end() )
 		{
-			formatter = Rml::Controls::DataFormatter::GetDataFormatter( it->second.Get<Rml::Core::String>() );
+			formatter = Rml::DataFormatter::GetDataFormatter( it->second.Get<Rml::String>() );
 			dirty_query = true;
 		}
 		if ( changed_attributes.count( "targetid" ) || changed_attributes.count( "targetdoc" ) )
@@ -78,17 +77,17 @@ public:
 		}
 	}
 
-	void ProcessDefaultAction( Rml::Core::Event& event ) override
+	void ProcessDefaultAction( Rml::Event& event ) override
 	{
 		Element::ProcessDefaultAction( event );
 	}
 
-	void ProcessEvent( Rml::Core::Event &evt ) override
+	void ProcessEvent( Rml::Event &evt ) override
 	{
 		// Make sure it is meant for the element we are listening to
 		if ( evt == "rowselect" && targetElement == evt.GetTargetElement() )
 		{
-			const Rml::Core::Dictionary& parameters = evt.GetParameters();
+			const Rml::Dictionary& parameters = evt.GetParameters();
 			selection = parameters.at("index").Get<int>( -1 );
 			dirty_query = true;
 		}
@@ -99,10 +98,10 @@ public:
 	{
 		if ( dirty_listener )
 		{
-			Rml::Core::ElementDocument *document;
-			Rml::Core::String td;
+			Rml::ElementDocument *document;
+			Rml::String td;
 
-			if (  ( td = GetAttribute<Rml::Core::String>( "targetdoc", "" ) ).empty() )
+			if (  ( td = GetAttribute<Rml::String>( "targetdoc", "" ) ).empty() )
 			{
 				document = GetOwnerDocument();
 			}
@@ -113,9 +112,9 @@ public:
 
 			if ( document )
 			{
-				Rml::Core::Element *element;
+				Rml::Element *element;
 
-				if ( ( element = document->GetElementById( GetAttribute<Rml::Core::String>( "targetid", "" ) ) ) )
+				if ( ( element = document->GetElementById( GetAttribute<Rml::String>( "targetid", "" ) ) ) )
 				{
 					if ( element != targetElement )
 					{
@@ -134,15 +133,15 @@ public:
 		}
 		if ( dirty_query && selection >= 0 )
 		{
-			Rml::Controls::DataQuery query( data_source, data_table, csvFields, selection, 1 );
-			Rml::Core::StringList raw_data;
-			Rml::Core::String out_data;
+			Rml::DataQuery query( data_source, data_table, csvFields, selection, 1 );
+			Rml::StringList raw_data;
+			Rml::String out_data;
 
 			query.NextRow();
 
 			for ( auto &&field : fields )
 			{
-				raw_data.emplace_back( query.Get<Rml::Core::String>( field, "" ) );
+				raw_data.emplace_back( query.Get<Rml::String>( field, "" ) );
 			}
 
 			if ( formatter )
@@ -173,13 +172,13 @@ public:
 
 
 private:
-	Rml::Controls::DataFormatter *formatter;
-	Rml::Controls::DataSource *data_source;
+	Rml::DataFormatter *formatter;
+	Rml::DataSource *data_source;
 	int selection;
-	Rml::Core::String data_table;
-	Rml::Core::String csvFields;
-	Rml::Core::StringList fields;
-	Rml::Core::Element *targetElement;
+	Rml::String data_table;
+	Rml::String csvFields;
+	Rml::StringList fields;
+	Rml::Element *targetElement;
 	bool dirty_query;
 	bool dirty_listener;
 };

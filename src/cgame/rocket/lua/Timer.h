@@ -38,12 +38,10 @@ Maryland 20850 USA.
 #include <list>
 
 #include "../rocket.h"
-#include <RmlUi/Core/Core.h>
-#include <RmlUi/Core/Lua/lua.hpp>
-#include <RmlUi/Core/Lua/LuaType.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Lua/LuaType.h>
 
 namespace Rml {
-namespace Core {
 namespace Lua {
 class Timer
 {
@@ -68,7 +66,7 @@ int Timeradd(lua_State* L);
 extern RegType<Timer> TimerMethods[];
 extern luaL_Reg TimerGetters[];
 extern luaL_Reg TimerSetters[];
-}
-}
-}
+
+}  // namespace Lua
+}  // namespace Rml
 #endif

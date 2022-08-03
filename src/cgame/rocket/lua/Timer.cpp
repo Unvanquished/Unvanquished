@@ -36,7 +36,6 @@ Maryland 20850 USA.
 #include "../../cg_local.h"
 
 namespace Rml {
-namespace Core {
 namespace Lua {
 
 Timer timer;
@@ -109,7 +108,7 @@ luaL_Reg TimerSetters[] =
 {
 	{ nullptr, nullptr },
 };
-LUACORETYPEDEFINE(Timer)
-}
-}
-}
+RMLUI_LUATYPE_DEFINE(Timer)
+
+}  // namespace Lua
+}  // namespace Rml

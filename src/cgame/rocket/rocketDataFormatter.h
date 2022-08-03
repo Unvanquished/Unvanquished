@@ -38,20 +38,20 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 
-#include <RmlUi/Controls/DataFormatter.h>
+#include <RmlUi/Core.h>
 
-class RocketDataFormatter : public Rml::Controls::DataFormatter
+class RocketDataFormatter : public Rml::DataFormatter
 {
 public:
-	Rml::Core::String name;
+	Rml::String name;
 	int handle;
 	char data[ BIG_INFO_STRING ];
-	Rml::Core::String out;
+	Rml::String out;
 
-	RocketDataFormatter( const char *name, int handle ) : Rml::Controls::DataFormatter( name ), name( name ), handle( handle ) { }
+	RocketDataFormatter( const char *name, int handle ) : Rml::DataFormatter( name ), name( name ), handle( handle ) { }
 	~RocketDataFormatter() { }
 
-	void FormatData( Rml::Core::String &formatted_data, const Rml::Core::StringList &raw_data )
+	void FormatData( Rml::String &formatted_data, const Rml::StringList &raw_data )
 	{
 		memset( &data, 0, sizeof( data ) );
 

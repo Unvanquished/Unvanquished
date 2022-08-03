@@ -37,11 +37,9 @@ Maryland 20850 USA.
 
 #include "../rocket.h"
 #include <RmlUi/Core/Core.h>
-#include <RmlUi/Core/Lua/lua.hpp>
-#include <RmlUi/Core/Lua/LuaType.h>
+#include <RmlUi/Lua/LuaType.h>
 
 namespace Rml {
-namespace Core {
 namespace Lua {
 // Dummy class for Events
 class Events
@@ -57,7 +55,7 @@ int Eventspushelement(lua_State* L);
 extern RegType<Events> EventsMethods[];
 extern luaL_Reg EventsGetters[];
 extern luaL_Reg EventsSetters[];
-}
-}
-}
+
+}  // namespace Lua
+}  // namespace Rml
 #endif
