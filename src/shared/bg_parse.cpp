@@ -66,7 +66,6 @@ float ABUILDER_CLAW_WIDTH;
 float ABUILDER_BLOB_SPEED;
 float ABUILDER_BLOB_SPEED_MOD;
 int   ABUILDER_BLOB_TIME;
-int		ABUILDER_BLOB_LOCK_TIME;
 
 int   LEVEL0_BITE_DMG;
 float LEVEL0_BITE_RANGE;
@@ -178,7 +177,6 @@ static configVar_t bg_configVars[] =
 	{"u_medkit_startupSpeed", INTEGER, false, &MEDKIT_STARTUP_SPEED},
 	{"u_medkit_startupTime", INTEGER, false, &MEDKIT_STARTUP_TIME},
 
-	{"w_abuild_blobLockTime", INTEGER, false, &ABUILDER_BLOB_LOCK_TIME},
 	{"w_abuild_blobSlowTime", INTEGER, false, &ABUILDER_BLOB_TIME},
 	{"w_abuild_blobSpeed", FLOAT, false, &ABUILDER_BLOB_SPEED},
 	{"w_abuild_blobSpeedMod", FLOAT, false, &ABUILDER_BLOB_SPEED_MOD},
