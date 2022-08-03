@@ -36,28 +36,27 @@ Maryland 20850 USA.
 #define ROCKETFORMCONTROLSELECT_H
 
 #include "../cg_local.h"
-#include <RmlUi/Core/Core.h>
-#include <RmlUi/Controls/ElementFormControlSelect.h>
+#include <RmlUi/Core.h>
 
-class CvarElementFormControlSelect : public Rml::Controls::ElementFormControlSelect, public Rml::Core::EventListener
+class CvarElementFormControlSelect : public Rml::ElementFormControlSelect, public Rml::EventListener
 {
 public:
-	CvarElementFormControlSelect( const Rml::Core::String &tag ) : Rml::Controls::ElementFormControlSelect( tag ), owner( nullptr ) { }
+	CvarElementFormControlSelect( const Rml::String &tag ) : Rml::ElementFormControlSelect( tag ), owner( nullptr ) { }
 
-	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
+	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
 	{
-		Rml::Controls::ElementFormControlSelect::OnAttributeChange( changed_attributes );
-		Rml::Core::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
+		Rml::ElementFormControlSelect::OnAttributeChange( changed_attributes );
+		Rml::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
 		if ( it != changed_attributes.end() )
 		{
-			cvar = it->second.Get<Rml::Core::String>();
+			cvar = it->second.Get<Rml::String>();
 			UpdateValue();
 		}
 	}
 
 	virtual void OnChildAdd( Element *child )
 	{
-		Rml::Controls::ElementFormControlSelect::OnChildAdd( child );
+		Rml::ElementFormControlSelect::OnChildAdd( child );
 		if ( child == this )
 		{
 			// Need to cache this because it is not available
@@ -70,7 +69,7 @@ public:
 
 	virtual void OnChildRemove( Element *child )
 	{
-		Rml::Controls::ElementFormControlSelect::OnChildRemove( child );
+		Rml::ElementFormControlSelect::OnChildRemove( child );
 		if ( child == this )
 		{
 			owner->RemoveEventListener( "show", this );
@@ -78,7 +77,7 @@ public:
 		}
 	}
 
-	virtual void ProcessEvent( Rml::Core::Event &event )
+	virtual void ProcessEvent( Rml::Event &event )
 	{
 		if ( !cvar.empty() )
 		{
@@ -96,12 +95,12 @@ public:
 
 	void UpdateValue()
 	{
-		Rml::Core::String value = Cvar::GetValue( cvar.c_str() ).c_str();
+		Rml::String value = Cvar::GetValue( cvar.c_str() ).c_str();
 
 		for ( int i = 0; i < GetNumOptions(); ++i )
 		{
-			Rml::Controls::SelectOption *o = GetOption( i );
-			if ( o->GetValue() == value )
+			Rml::Element *o = GetOption( i );
+			if ( o->GetAttribute("value", Rml::String()) == value )
 			{
 				SetSelection( i );
 				return;
@@ -112,9 +111,9 @@ public:
 	}
 
 private:
-	Rml::Core::String cvar;
-	Rml::Core::String type;
-	Rml::Core::Element *owner;
+	Rml::String cvar;
+	Rml::String type;
+	Rml::Element *owner;
 };
 
 #endif

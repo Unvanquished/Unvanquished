@@ -52,58 +52,58 @@ Maryland 20850 USA.
 #pragma GCC diagnostic pop
 #endif
 
-extern Rml::Core::Context *menuContext;
-extern Rml::Core::Context *hudContext;
+extern Rml::Context *menuContext;
+extern Rml::Context *hudContext;
 
 class RocketEvent_t
 {
 public:
-	RocketEvent_t( Rml::Core::Event &event, const Rml::Core::String &cmds ) : cmd( cmds )
+	RocketEvent_t( Rml::Event &event, const Rml::String &cmds ) : cmd( cmds )
 	{
 		targetElement = event.GetTargetElement();
 		Parameters = event.GetParameters();
 	}
-	RocketEvent_t( const Rml::Core::String &cmds ) : RocketEvent_t( nullptr, cmds )
+	RocketEvent_t( const Rml::String &cmds ) : RocketEvent_t( nullptr, cmds )
 	{
 	}
-	RocketEvent_t( Rml::Core::Element *e, const Rml::Core::String &cmds ) : targetElement( e ), cmd( cmds )
+	RocketEvent_t( Rml::Element *e, const Rml::String &cmds ) : targetElement( e ), cmd( cmds )
 	{
 	}
 	~RocketEvent_t() { }
-	Rml::Core::Element *targetElement;
-	Rml::Core::Dictionary Parameters;
-	Rml::Core::String cmd;
+	Rml::Element *targetElement;
+	Rml::Dictionary Parameters;
+	Rml::String cmd;
 };
 
 // HTML-escape a string that will be used as text. Text meaning that it will be not be
 // somewhere weird like inside a tag, which may require a different form of escaping.
 std::string CG_EscapeHTMLText( Str::StringRef text );
 
-Rml::Core::String Rocket_QuakeToRML( const char *in, int parseFlags );
+Rml::String Rocket_QuakeToRML( const char *in, int parseFlags );
 std::string CG_KeyBinding( const char *bind, int team );
 
 void Rocket_AddEvent( RocketEvent_t *event );
-void Rocket_SetDocumentScale( Rml::Core::ElementDocument& document );
+void Rocket_SetDocumentScale( Rml::ElementDocument& document );
 
 struct UnvPropertyId {
-	static Rml::Core::PropertyId Orientation;
+	static Rml::PropertyId Orientation;
 };
 
 template <typename T>
 void RegisterElement( char const* tag )
 {
-	static auto instancer = std::make_unique<Rml::Core::ElementInstancerGeneric<T>>();
-	Rml::Core::Factory::RegisterElementInstancer( tag, instancer.get() );
+	static auto instancer = std::make_unique<Rml::ElementInstancerGeneric<T>>();
+	Rml::Factory::RegisterElementInstancer( tag, instancer.get() );
 }
 
 namespace Color {
 
 template<class ColourType, int AlphaDefault>
-class ColorAdaptor<Rml::Core::Colour<ColourType,AlphaDefault>>
+class ColorAdaptor<Rml::Colour<ColourType,AlphaDefault>>
 {
 public:
 	static constexpr bool is_color = true;
-	using color_type = Rml::Core::Colour<ColourType,AlphaDefault>;
+	using color_type = Rml::Colour<ColourType,AlphaDefault>;
 	using component_type = ColourType;
 	static constexpr int component_max = AlphaDefault;
 

@@ -36,23 +36,20 @@ Maryland 20850 USA.
 #define ROCKETCHATFIELD_H
 
 #include <RmlUi/Core.h>
-#include <RmlUi/Core/Element.h>
-#include <RmlUi/Core/ElementUtilities.h>
-#include <RmlUi/Core/GeometryUtilities.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
-class RocketChatField : public Rml::Core::Element, Rml::Core::EventListener
+class RocketChatField : public Rml::Element, Rml::EventListener
 {
 public:
-	RocketChatField( const Rml::Core::String &tag ) :
-			Rml::Core::Element( tag ),
-			font_engine_interface( Rml::Core::GetFontEngineInterface() ),
+	RocketChatField( const Rml::String &tag ) :
+			Rml::Element( tag ),
+			font_engine_interface( Rml::GetFontEngineInterface() ),
 			cursor_character_index( 0 ),
 			text_element( nullptr )
 	{
 		// Spawn text container and add it to this element
-		text_element = AppendChild( Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() ) );
+		text_element = AppendChild( Rml::Factory::InstanceElement( this, "div", "*", Rml::XMLAttributes() ) );
 	}
 
 	void OnRender()
@@ -78,16 +75,16 @@ public:
 		}
 	}
 
-	virtual void OnAttributeChange( const Rml::Core::ElementAttributes& changed_attributes )
+	virtual void OnAttributeChange( const Rml::ElementAttributes& changed_attributes )
 	{
 		Element::OnAttributeChange( changed_attributes );
 		if (changed_attributes.find( "exec" ) != changed_attributes.end() )
 		{
-			cmd = GetAttribute<Rml::Core::String>( "exec", "" );
+			cmd = GetAttribute<Rml::String>( "exec", "" );
 		}
 	}
 
-	void ProcessEvent( Rml::Core::Event &event )
+	void ProcessEvent( Rml::Event &event )
 	{
 		// Cannot move mouse while this element is in view
 		// FIXME: Does not work? You can move the mouse out of the window.
@@ -112,11 +109,11 @@ public:
 			// Handle key presses
 			else if ( event == "keydown" )
 			{
-				Rml::Core::Input::KeyIdentifier key_identifier = ( Rml::Core::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
+				Rml::Input::KeyIdentifier key_identifier = ( Rml::Input::KeyIdentifier ) event.GetParameter<int>( "key_identifier", 0 );
 
 				switch ( key_identifier )
 				{
-					case Rml::Core::Input::KI_BACK:
+					case Rml::Input::KI_BACK:
 						if ( cursor_character_index > 0 )
 						{
 							text.erase( cursor_character_index - 1, 1 );
@@ -125,7 +122,7 @@ public:
 						}
 						break;
 
-					case Rml::Core::Input::KI_DELETE:
+					case Rml::Input::KI_DELETE:
 						if ( cursor_character_index < (int) text.size() )
 						{
 							text.erase( cursor_character_index, 1 );
@@ -134,16 +131,16 @@ public:
 
 						break;
 
-					case Rml::Core::Input::KI_LEFT:
+					case Rml::Input::KI_LEFT:
 						MoveCursor( -1 );
 						break;
 
-					case Rml::Core::Input::KI_RIGHT:
+					case Rml::Input::KI_RIGHT:
 						MoveCursor( 1 );
 						break;
 
-					case Rml::Core::Input::KI_RETURN:
-					case Rml::Core::Input::KI_NUMPADENTER:
+					case Rml::Input::KI_RETURN:
+					case Rml::Input::KI_NUMPADENTER:
 						if ( text.empty() )
 						{
 							GetOwnerDocument()->Hide();
@@ -185,7 +182,7 @@ public:
 				        event.GetParameter< int >( "alt_key", 0 ) == 0 &&
 				        event.GetParameter< int >( "meta_key", 0 ) == 0 )
 				{
-					const Rml::Core::String& character = event.GetParameter< Rml::Core::String >( "text", "" );
+					const Rml::String& character = event.GetParameter< Rml::String >( "text", "" );
 
 					if ( (int) text.size() == cursor_character_index )
 					{
@@ -204,19 +201,19 @@ public:
 		}
 	}
 
-	bool GetIntrinsicDimensions( Rml::Core::Vector2f &dimension )
+	bool GetIntrinsicDimensions( Rml::Vector2f &dimension, float& /*ratio*/ )
 	{
-		Rml::Core::FontFaceHandle font = text_element->GetFontFaceHandle();
+		Rml::FontFaceHandle font = text_element->GetFontFaceHandle();
 		if ( font == 0 )
 		{
 			return false;
 		}
 
-		const Rml::Core::Property *property;
+		const Rml::Property *property;
 		property = GetProperty( "width" );
 
 		// Absolute unit. We can use it as is
-		if ( property->unit & Rml::Core::Property::ABSOLUTE_UNIT )
+		if ( property->unit & Rml::Property::ABSOLUTE_UNIT )
 		{
 			dimensions.x = property->value.Get<float>();
 		}
@@ -224,8 +221,8 @@ public:
 		else
 		{
 			float base_size = 0;
-			Rml::Core::Element *parent = this;
-			std::stack<Rml::Core::Element*> stack;
+			Rml::Element *parent = this;
+			std::stack<Rml::Element*> stack;
 			stack.push( this );
 
 			while ( ( parent = parent->GetParentNode() ) )
@@ -257,7 +254,7 @@ public:
 protected:
 	void GenerateCursor()
 	{
-		Rml::Core::FontFaceHandle font = text_element->GetFontFaceHandle();
+		Rml::FontFaceHandle font = text_element->GetFontFaceHandle();
 		if ( font == 0 )
 		{
 			return;
@@ -265,7 +262,7 @@ protected:
 		// Generates the cursor.
 		cursor_geometry.Release();
 
-		std::vector< Rml::Core::Vertex > &vertices = cursor_geometry.GetVertices();
+		std::vector< Rml::Vertex > &vertices = cursor_geometry.GetVertices();
 		vertices.resize( 4 );
 
 		std::vector< int > &indices = cursor_geometry.GetIndices();
@@ -273,14 +270,14 @@ protected:
 
 		cursor_size.x = 1;
 		cursor_size.y = ( float ) font_engine_interface->GetLineHeight( font ) + 2;
-		Rml::Core::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0], Rml::Core::Vector2f( 0, 0 ), cursor_size, GetProperty< Rml::Core::Colourb >( "color" ) );
+		Rml::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0], Rml::Vector2f( 0, 0 ), cursor_size, GetProperty< Rml::Colourb >( "color" ) );
 	}
 
 	void MoveCursor( int amt )
 	{
 		cursor_character_index += amt;
 
-		cursor_character_index = Rml::Core::Math::Clamp<int>( cursor_character_index, 0, text.size() );
+		cursor_character_index = Rml::Math::Clamp<int>( cursor_character_index, 0, text.size() );
 	}
 
 	void UpdateCursorPosition()
@@ -292,13 +289,13 @@ protected:
 
 		cursor_position = GetAbsoluteOffset();
 
-		cursor_position.x += ( float ) Rml::Core::ElementUtilities::GetStringWidth( text_element, text.substr( 0, cursor_character_index ) );
+		cursor_position.x += ( float ) Rml::ElementUtilities::GetStringWidth( text_element, text.substr( 0, cursor_character_index ) );
 	}
 
 	void UpdateText()
 	{
 		RemoveChild( text_element );
-		text_element = AppendChild( Rml::Core::Factory::InstanceElement( this, "div", "*", Rml::Core::XMLAttributes() ) );
+		text_element = AppendChild( Rml::Factory::InstanceElement( this, "div", "*", Rml::XMLAttributes() ) );
 		if ( !text.empty() )
 		{
 			q2rml( text, text_element );
@@ -306,10 +303,10 @@ protected:
 	}
 
 	// Special q -> rml conversion function that preserves carets and codes
-	void q2rml( Str::StringRef in, Rml::Core::Element *parent )
+	void q2rml( Str::StringRef in, Rml::Element *parent )
 	{
-		Rml::Core::String out;
-		Rml::Core::ElementPtr child;
+		Rml::String out;
+		Rml::ElementPtr child;
 		bool span = false;
 
 		if ( in.empty() )
@@ -321,29 +318,29 @@ protected:
 		{
 			if ( token.Type() == Color::Token::TokenType::COLOR )
 			{
-				Rml::Core::XMLAttributes xml;
+				Rml::XMLAttributes xml;
 
 				// Child element initialized
 				if ( span && child )
 				{
 					span = false;
-					static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+					static_cast<Rml::ElementText *>( child.get() )->SetText( out );
 					parent->AppendChild( std::move( child ) );
 					out.clear();
 				}
 				// If not intialized, probably the first one, and should be white.
 				else if ( !out.empty() )
 				{
-					Rml::Core::XMLAttributes xml;
-					child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+					Rml::XMLAttributes xml;
+					child = Rml::Factory::InstanceElement( parent, "#text", "span", xml );
 					child->SetProperty( "color", "#FFFFFF" );
-					static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+					static_cast<Rml::ElementText *>( child.get() )->SetText( out );
 					parent->AppendChild( std::move( child ) );
 					out.clear();
 				}
 
 
-				child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+				child = Rml::Factory::InstanceElement( parent, "#text", "span", xml );
 				Color::Color32Bit color32 = token.Color();
 				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
 				out.append( token.Begin(), token.Size() );
@@ -380,14 +377,14 @@ protected:
 					// If not intialized, probably the first one, and should be white.
 					else
 					{
-						Rml::Core::XMLAttributes xml;
-						child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", xml );
+						Rml::XMLAttributes xml;
+						child = Rml::Factory::InstanceElement( parent, "#text", "span", xml );
 						child->SetProperty( "color", "#FFFFFF" );
 					}
 
-					static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+					static_cast<Rml::ElementText *>( child.get() )->SetText( out );
 					parent->AppendChild( std::move( child ) );
-					parent->AppendChild( Rml::Core::Factory::InstanceElement( parent, "*", "br", Rml::Core::XMLAttributes() ) );
+					parent->AppendChild( Rml::Factory::InstanceElement( parent, "*", "br", Rml::XMLAttributes() ) );
 					out.clear();
 				}
 				else
@@ -399,32 +396,30 @@ protected:
 
 		if ( span && child && !out.empty() )
 		{
-			static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+			static_cast<Rml::ElementText *>( child.get() )->SetText( out );
 			parent->AppendChild( std::move( child ) );
 			span = false;
 		}
 
 		else if ( !span && !child && !out.empty() )
 		{
-			child = Rml::Core::Factory::InstanceElement( parent, "#text", "span", Rml::Core::XMLAttributes() );
-			static_cast<Rml::Core::ElementText *>( child.get() )->SetText( out );
+			child = Rml::Factory::InstanceElement( parent, "#text", "span", Rml::XMLAttributes() );
+			static_cast<Rml::ElementText *>( child.get() )->SetText( out );
 			parent->AppendChild( std::move( child ) );
 		}
 	}
 
 private:
-	Rml::Core::FontEngineInterface* const font_engine_interface;
-	Rml::Core::Vector2f cursor_position;
+	Rml::FontEngineInterface* const font_engine_interface;
+	Rml::Vector2f cursor_position;
 	int cursor_character_index;
-	Rml::Core::Element *text_element;
+	Rml::Element *text_element;
 
-	Rml::Core::Geometry cursor_geometry;
-	Rml::Core::Vector2f cursor_size;
-	Rml::Core::Vector2f dimensions;
-	Rml::Core::String text;
-	Rml::Core::String cmd;
+	Rml::Geometry cursor_geometry;
+	Rml::Vector2f cursor_size;
+	Rml::Vector2f dimensions;
+	Rml::String text;
+	Rml::String cmd;
 
 };
 #endif
-
-

@@ -36,12 +36,10 @@ Maryland 20850 USA.
 #define LUACVAR_H
 
 #include "../rocket.h"
-#include <RmlUi/Core/Core.h>
-#include <RmlUi/Core/Lua/lua.hpp>
-#include <RmlUi/Core/Lua/LuaType.h>
+#include <RmlUi/Core.h>
+#include <RmlUi/Lua/LuaType.h>
 
 namespace Rml {
-namespace Core {
 namespace Lua {
 // Dummy class for cvars
 class Cvar
@@ -57,7 +55,7 @@ int Cvararchive(lua_State* L);
 extern RegType<Cvar> CvarMethods[];
 extern luaL_Reg CvarGetters[];
 extern luaL_Reg CvarSetters[];
-}
-}
-}
+
+}  // namespace Lua
+}  // namespace Rml
 #endif

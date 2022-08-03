@@ -38,13 +38,12 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 #include <RmlUi/Core.h>
-#include <RmlUi/Controls.h>
 
-class SelectableDataGrid : public Rml::Controls::ElementDataGrid
+class SelectableDataGrid : public Rml::ElementDataGrid
 {
 public:
-	SelectableDataGrid( const Rml::Core::String& tag ) :
-		Rml::Controls::ElementDataGrid(tag), lastSelectedRow( nullptr ), lastSelectedRowIndex( -1 )
+	SelectableDataGrid( const Rml::String& tag ) :
+		Rml::ElementDataGrid(tag), lastSelectedRow( nullptr ), lastSelectedRowIndex( -1 )
 	{
 		SetAttribute("selected-row", "-1");
 	}
@@ -55,19 +54,19 @@ public:
 
 	/// Called for every event sent to this element or one of its descendants.
 	/// @param[in] event The event to process.
-	void ProcessDefaultAction( Rml::Core::Event& evt ) override
+	void ProcessDefaultAction( Rml::Event& evt ) override
 	{
 		extern std::queue< RocketEvent_t* > eventQueue;
-		Rml::Core::String dataSource = GetAttribute<Rml::Core::String>( "source", "" );
+		Rml::String dataSource = GetAttribute<Rml::String>( "source", "" );
 
 		ElementDataGrid::ProcessDefaultAction( evt );
 
-		if( evt == Rml::Core::EventId::Click || evt == Rml::Core::EventId::Dblclick )
+		if( evt == Rml::EventId::Click || evt == Rml::EventId::Dblclick )
 		{
 			Element* elem;
 			int column = -1;
-			Rml::Core::String dsName = dataSource.substr( 0, dataSource.find( "." ) );
-			Rml::Core::String tableName =  dataSource.substr( dataSource.find( "." ) + 1, dataSource.size() );
+			Rml::String dsName = dataSource.substr( 0, dataSource.find( "." ) );
+			Rml::String tableName =  dataSource.substr( dataSource.find( "." ) + 1, dataSource.size() );
 
 
 			// get the column index
@@ -80,7 +79,7 @@ public:
 				// FIXME: We could be little smarter with this and get the column definition here too
 				// and use colselect or colactivate events
 				if( elem->GetTagName() == "datagridcolumn" ) {
-					Rml::Core::Element* child = elem->GetParentNode()->GetFirstChild();
+					Rml::Element* child = elem->GetParentNode()->GetFirstChild();
 					column = 0;
 					while( child && child != elem ) {
 						child = child->GetNextSibling();
@@ -88,7 +87,7 @@ public:
 					}
 				}
 				else {
-					column = static_cast<Rml::Controls::ElementDataGridCell *>( elem )->GetColumn();
+					column = static_cast<Rml::ElementDataGridCell *>( elem )->GetColumn();
 				}
 			}
 
@@ -100,9 +99,9 @@ public:
 
 			if( elem )
 			{
-				Rml::Controls::ElementDataGridRow *row = dynamic_cast<Rml::Controls::ElementDataGridRow*>( elem );
+				Rml::ElementDataGridRow *row = dynamic_cast<Rml::ElementDataGridRow*>( elem );
 				int index = row->GetTableRelativeIndex();
-				Rml::Core::String indexStr( va( "%d", index ) );
+				Rml::String indexStr( va( "%d", index ) );
 
 				// this should never happen
 				if( index >= this->GetNumRows() )
@@ -123,24 +122,24 @@ public:
 					SetAttribute( "selected-row", std::to_string( lastSelectedRowIndex ) );
 
 					row->SetPseudoClass( "selected", true );
-					eventQueue.push( new RocketEvent_t( Rml::Core::String( va ( "setDS %s %s %d", dsName.c_str(),tableName.c_str(), index ) ) ) );
+					eventQueue.push( new RocketEvent_t( Rml::String( va ( "setDS %s %s %d", dsName.c_str(),tableName.c_str(), index ) ) ) );
 				}
 
-				Rml::Core::Dictionary parameters;
+				Rml::Dictionary parameters;
 				parameters[ "index" ] = indexStr;
 				parameters[ "column_index" ] = column;
 				parameters[ "datasource" ] = dsName;
 				parameters[ "table" ] = tableName;
 
-				if( evt == Rml::Core::EventId::Click )
+				if( evt == Rml::EventId::Click )
 					DispatchEvent( "rowselect", parameters );
 				else
 					DispatchEvent( "rowactivate", parameters );
 			}
 
-			if( evt == Rml::Core::EventId::Dblclick )
+			if( evt == Rml::EventId::Dblclick )
 			{
-				eventQueue.push( new RocketEvent_t( Rml::Core::String( va ( "execDS %s %s", dataSource.substr( 0, dataSource.find( "." ) ).c_str(), tableName.c_str() ) ) ) );
+				eventQueue.push( new RocketEvent_t( Rml::String( va ( "execDS %s %s", dataSource.substr( 0, dataSource.find( "." ) ).c_str(), tableName.c_str() ) ) ) );
 			}
 		}
 		else if( evt == "rowremove" )
@@ -162,7 +161,7 @@ public:
 	}
 
 private:
-	Rml::Core::Element *lastSelectedRow;
+	Rml::Element *lastSelectedRow;
 	int lastSelectedRowIndex;
 };
 #endif

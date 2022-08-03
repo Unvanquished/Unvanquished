@@ -33,7 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "rocket.h"
-#include <RmlUi/Controls.h>
+#include <RmlUi/Core.h>
 #include "../cg_local.h"
 #include "rocketDataFormatter.h"
 
@@ -55,5 +55,5 @@ void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *
 void Rocket_DataFormatterFormattedData( int handle, const char *data, bool parseQuake )
 {
 	dataFormatterList[ handle ]->out = parseQuake ? Rocket_QuakeToRML( data, RP_EMOTICONS ) :
-		Rml::Core::String( data );
+		Rml::String( data );
 }

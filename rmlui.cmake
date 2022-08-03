@@ -6,6 +6,12 @@ set(Core_HDR_FILES
     ${RMLUI_DIR}/Source/Core/Clock.h
     ${RMLUI_DIR}/Source/Core/ComputeProperty.h
     ${RMLUI_DIR}/Source/Core/ContextInstancerDefault.h
+    ${RMLUI_DIR}/Source/Core/DataController.h
+    ${RMLUI_DIR}/Source/Core/DataControllerDefault.h
+    ${RMLUI_DIR}/Source/Core/DataExpression.h
+    ${RMLUI_DIR}/Source/Core/DataModel.h
+    ${RMLUI_DIR}/Source/Core/DataView.h
+    ${RMLUI_DIR}/Source/Core/DataViewDefault.h
     ${RMLUI_DIR}/Source/Core/DecoratorGradient.h
     ${RMLUI_DIR}/Source/Core/DecoratorNinePatch.h
     ${RMLUI_DIR}/Source/Core/DecoratorTiled.h
@@ -20,30 +26,52 @@ set(Core_HDR_FILES
     ${RMLUI_DIR}/Source/Core/DecoratorTiledVerticalInstancer.h
     ${RMLUI_DIR}/Source/Core/DocumentHeader.h
     ${RMLUI_DIR}/Source/Core/ElementAnimation.h
-    ${RMLUI_DIR}/Source/Core/ElementBackground.h
-    ${RMLUI_DIR}/Source/Core/ElementBorder.h
+    ${RMLUI_DIR}/Source/Core/ElementBackgroundBorder.h
     ${RMLUI_DIR}/Source/Core/ElementDecoration.h
     ${RMLUI_DIR}/Source/Core/ElementDefinition.h
     ${RMLUI_DIR}/Source/Core/ElementHandle.h
-    ${RMLUI_DIR}/Source/Core/ElementImage.h
+    ${RMLUI_DIR}/Source/Core/Elements/ElementImage.h
+    ${RMLUI_DIR}/Source/Core/Elements/ElementLabel.h
+    ${RMLUI_DIR}/Source/Core/Elements/ElementTextSelection.h
+    ${RMLUI_DIR}/Source/Core/Elements/InputType.h
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeButton.h
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeCheckbox.h
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeRadio.h
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeRange.h
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeSubmit.h
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeText.h
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetDropDown.h
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetSlider.h
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetTextInput.h
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetTextInputMultiLine.h
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetTextInputSingleLine.h
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetTextInputSingleLinePassword.h
+    ${RMLUI_DIR}/Source/Core/Elements/XMLNodeHandlerDataGrid.h
+    ${RMLUI_DIR}/Source/Core/Elements/XMLNodeHandlerSelect.h
+    ${RMLUI_DIR}/Source/Core/Elements/XMLNodeHandlerTabSet.h
+    ${RMLUI_DIR}/Source/Core/Elements/XMLNodeHandlerTextArea.h
     ${RMLUI_DIR}/Source/Core/ElementStyle.h
-    ${RMLUI_DIR}/Source/Core/ElementTextDefault.h
     ${RMLUI_DIR}/Source/Core/EventDispatcher.h
     ${RMLUI_DIR}/Source/Core/EventInstancerDefault.h
-    ${RMLUI_DIR}/Source/Core/EventIterators.h
     ${RMLUI_DIR}/Source/Core/EventSpecification.h
     ${RMLUI_DIR}/Source/Core/FileInterfaceDefault.h
     ${RMLUI_DIR}/Source/Core/FontEffectBlur.h
     ${RMLUI_DIR}/Source/Core/FontEffectGlow.h
     ${RMLUI_DIR}/Source/Core/FontEffectOutline.h
     ${RMLUI_DIR}/Source/Core/FontEffectShadow.h
+    ${RMLUI_DIR}/Source/Core/GeometryBackgroundBorder.h
+    ${RMLUI_DIR}/Source/Core/GeometryDatabase.h
     ${RMLUI_DIR}/Source/Core/IdNameMap.h
     ${RMLUI_DIR}/Source/Core/LayoutBlockBox.h
     ${RMLUI_DIR}/Source/Core/LayoutBlockBoxSpace.h
+    ${RMLUI_DIR}/Source/Core/LayoutDetails.h
     ${RMLUI_DIR}/Source/Core/LayoutEngine.h
+    ${RMLUI_DIR}/Source/Core/LayoutFlex.h
     ${RMLUI_DIR}/Source/Core/LayoutInlineBox.h
     ${RMLUI_DIR}/Source/Core/LayoutInlineBoxText.h
     ${RMLUI_DIR}/Source/Core/LayoutLineBox.h
+    ${RMLUI_DIR}/Source/Core/LayoutTable.h
+    ${RMLUI_DIR}/Source/Core/LayoutTableDetails.h
     ${RMLUI_DIR}/Source/Core/Memory.h
     ${RMLUI_DIR}/Source/Core/PluginRegistry.h
     ${RMLUI_DIR}/Source/Core/Pool.h
@@ -51,28 +79,19 @@ set(Core_HDR_FILES
     ${RMLUI_DIR}/Source/Core/PropertiesIterator.h
     ${RMLUI_DIR}/Source/Core/PropertyParserAnimation.h
     ${RMLUI_DIR}/Source/Core/PropertyParserColour.h
+    ${RMLUI_DIR}/Source/Core/PropertyParserDecorator.h
+    ${RMLUI_DIR}/Source/Core/PropertyParserFontEffect.h
     ${RMLUI_DIR}/Source/Core/PropertyParserKeyword.h
     ${RMLUI_DIR}/Source/Core/PropertyParserNumber.h
+    ${RMLUI_DIR}/Source/Core/PropertyParserRatio.h
     ${RMLUI_DIR}/Source/Core/PropertyParserString.h
     ${RMLUI_DIR}/Source/Core/PropertyParserTransform.h
     ${RMLUI_DIR}/Source/Core/PropertyShorthandDefinition.h
     ${RMLUI_DIR}/Source/Core/StreamFile.h
-    ${RMLUI_DIR}/Source/Core/StringCache.h
     ${RMLUI_DIR}/Source/Core/StyleSheetFactory.h
     ${RMLUI_DIR}/Source/Core/StyleSheetNode.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelector.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorEmpty.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorFirstChild.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorFirstOfType.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorLastChild.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorLastOfType.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorNthChild.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorNthLastChild.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorNthLastOfType.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorNthOfType.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorOnlyChild.h
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorOnlyOfType.h
     ${RMLUI_DIR}/Source/Core/StyleSheetParser.h
+    ${RMLUI_DIR}/Source/Core/StyleSheetSelector.h
     ${RMLUI_DIR}/Source/Core/Template.h
     ${RMLUI_DIR}/Source/Core/TemplateCache.h
     ${RMLUI_DIR}/Source/Core/TextureDatabase.h
@@ -81,9 +100,9 @@ set(Core_HDR_FILES
     ${RMLUI_DIR}/Source/Core/TextureLayoutRow.h
     ${RMLUI_DIR}/Source/Core/TextureLayoutTexture.h
     ${RMLUI_DIR}/Source/Core/TextureResource.h
-    ${RMLUI_DIR}/Source/Core/Utilities.h
-    ${RMLUI_DIR}/Source/Core/WidgetSlider.h
-    ${RMLUI_DIR}/Source/Core/WidgetSliderScroll.h
+    ${RMLUI_DIR}/Source/Core/TransformState.h
+    ${RMLUI_DIR}/Source/Core/TransformUtilities.h
+    ${RMLUI_DIR}/Source/Core/WidgetScroll.h
     ${RMLUI_DIR}/Source/Core/XMLNodeHandlerBody.h
     ${RMLUI_DIR}/Source/Core/XMLNodeHandlerDefault.h
     ${RMLUI_DIR}/Source/Core/XMLNodeHandlerHead.h
@@ -96,6 +115,7 @@ set(MASTER_Core_PUB_HDR_FILES
 )
 
 set(Core_PUB_HDR_FILES
+    ${RMLUI_DIR}/Include/RmlUi/Config/Config.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Animation.h
     ${RMLUI_DIR}/Include/RmlUi/Core/BaseXMLParser.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Box.h
@@ -109,6 +129,11 @@ set(Core_PUB_HDR_FILES
     ${RMLUI_DIR}/Include/RmlUi/Core/ContextInstancer.h
     ${RMLUI_DIR}/Include/RmlUi/Core/ConvolutionFilter.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Core.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/DataModelHandle.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/DataStructHandle.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/DataTypeRegister.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/DataTypes.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/DataVariable.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Debug.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Decorator.h
     ${RMLUI_DIR}/Include/RmlUi/Core/DecoratorInstancer.h
@@ -117,6 +142,22 @@ set(Core_PUB_HDR_FILES
     ${RMLUI_DIR}/Include/RmlUi/Core/Element.inl
     ${RMLUI_DIR}/Include/RmlUi/Core/ElementDocument.h
     ${RMLUI_DIR}/Include/RmlUi/Core/ElementInstancer.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/DataFormatter.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/DataQuery.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/DataSource.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/DataSourceListener.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementDataGrid.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementDataGridCell.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementDataGridExpandButton.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementDataGridRow.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementForm.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementFormControl.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementFormControlDataSelect.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementFormControlInput.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementFormControlSelect.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementFormControlTextArea.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementProgress.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Elements/ElementTabSet.h
     ${RMLUI_DIR}/Include/RmlUi/Core/ElementScroll.h
     ${RMLUI_DIR}/Include/RmlUi/Core/ElementText.h
     ${RMLUI_DIR}/Include/RmlUi/Core/ElementUtilities.h
@@ -137,7 +178,6 @@ set(Core_PUB_HDR_FILES
     ${RMLUI_DIR}/Include/RmlUi/Core/Input.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Log.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Math.h
-    ${RMLUI_DIR}/Include/RmlUi/Core/MathTypes.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Matrix4.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Matrix4.inl
     ${RMLUI_DIR}/Include/RmlUi/Core/ObserverPtr.h
@@ -158,18 +198,21 @@ set(Core_PUB_HDR_FILES
     ${RMLUI_DIR}/Include/RmlUi/Core/StreamMemory.h
     ${RMLUI_DIR}/Include/RmlUi/Core/StringUtilities.h
     ${RMLUI_DIR}/Include/RmlUi/Core/StyleSheet.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/StyleSheetContainer.h
     ${RMLUI_DIR}/Include/RmlUi/Core/StyleSheetSpecification.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/StyleSheetTypes.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/StyleTypes.h
     ${RMLUI_DIR}/Include/RmlUi/Core/SystemInterface.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Texture.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Traits.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Transform.h
     ${RMLUI_DIR}/Include/RmlUi/Core/TransformPrimitive.h
-    ${RMLUI_DIR}/Include/RmlUi/Core/TransformState.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Tween.h
     ${RMLUI_DIR}/Include/RmlUi/Core/TypeConverter.h
     ${RMLUI_DIR}/Include/RmlUi/Core/TypeConverter.inl
     ${RMLUI_DIR}/Include/RmlUi/Core/Types.h
     ${RMLUI_DIR}/Include/RmlUi/Core/URL.h
+    ${RMLUI_DIR}/Include/RmlUi/Core/Utilities.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Variant.h
     ${RMLUI_DIR}/Include/RmlUi/Core/Variant.inl
     ${RMLUI_DIR}/Include/RmlUi/Core/Vector2.h
@@ -187,12 +230,22 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/BaseXMLParser.cpp
     ${RMLUI_DIR}/Source/Core/Box.cpp
     ${RMLUI_DIR}/Source/Core/Clock.cpp
+    ${RMLUI_DIR}/Source/Core/ComputedValues.cpp
     ${RMLUI_DIR}/Source/Core/ComputeProperty.cpp
     ${RMLUI_DIR}/Source/Core/Context.cpp
     ${RMLUI_DIR}/Source/Core/ContextInstancer.cpp
     ${RMLUI_DIR}/Source/Core/ContextInstancerDefault.cpp
     ${RMLUI_DIR}/Source/Core/ConvolutionFilter.cpp
     ${RMLUI_DIR}/Source/Core/Core.cpp
+    ${RMLUI_DIR}/Source/Core/DataController.cpp
+    ${RMLUI_DIR}/Source/Core/DataControllerDefault.cpp
+    ${RMLUI_DIR}/Source/Core/DataExpression.cpp
+    ${RMLUI_DIR}/Source/Core/DataModel.cpp
+    ${RMLUI_DIR}/Source/Core/DataModelHandle.cpp
+    ${RMLUI_DIR}/Source/Core/DataTypeRegister.cpp
+    ${RMLUI_DIR}/Source/Core/DataVariable.cpp
+    ${RMLUI_DIR}/Source/Core/DataView.cpp
+    ${RMLUI_DIR}/Source/Core/DataViewDefault.cpp
     ${RMLUI_DIR}/Source/Core/Decorator.cpp
     ${RMLUI_DIR}/Source/Core/DecoratorGradient.cpp
     ${RMLUI_DIR}/Source/Core/DecoratorInstancer.cpp
@@ -210,18 +263,51 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/DocumentHeader.cpp
     ${RMLUI_DIR}/Source/Core/Element.cpp
     ${RMLUI_DIR}/Source/Core/ElementAnimation.cpp
-    ${RMLUI_DIR}/Source/Core/ElementBackground.cpp
-    ${RMLUI_DIR}/Source/Core/ElementBorder.cpp
+    ${RMLUI_DIR}/Source/Core/ElementBackgroundBorder.cpp
     ${RMLUI_DIR}/Source/Core/ElementDecoration.cpp
     ${RMLUI_DIR}/Source/Core/ElementDefinition.cpp
     ${RMLUI_DIR}/Source/Core/ElementDocument.cpp
     ${RMLUI_DIR}/Source/Core/ElementHandle.cpp
-    ${RMLUI_DIR}/Source/Core/ElementImage.cpp
     ${RMLUI_DIR}/Source/Core/ElementInstancer.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/DataFormatter.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/DataQuery.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/DataSource.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/DataSourceListener.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementDataGrid.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementDataGridCell.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementDataGridExpandButton.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementDataGridRow.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementForm.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementFormControl.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementFormControlDataSelect.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementFormControlInput.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementFormControlSelect.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementFormControlTextArea.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementImage.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementLabel.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementProgress.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementTabSet.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/ElementTextSelection.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/InputType.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeButton.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeCheckbox.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeRadio.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeRange.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeSubmit.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/InputTypeText.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetDropDown.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetSlider.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetTextInput.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetTextInputMultiLine.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetTextInputSingleLine.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/WidgetTextInputSingleLinePassword.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/XMLNodeHandlerDataGrid.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/XMLNodeHandlerSelect.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/XMLNodeHandlerTabSet.cpp
+    ${RMLUI_DIR}/Source/Core/Elements/XMLNodeHandlerTextArea.cpp
     ${RMLUI_DIR}/Source/Core/ElementScroll.cpp
     ${RMLUI_DIR}/Source/Core/ElementStyle.cpp
     ${RMLUI_DIR}/Source/Core/ElementText.cpp
-    ${RMLUI_DIR}/Source/Core/ElementTextDefault.cpp
     ${RMLUI_DIR}/Source/Core/ElementUtilities.cpp
     ${RMLUI_DIR}/Source/Core/Event.cpp
     ${RMLUI_DIR}/Source/Core/EventDispatcher.cpp
@@ -240,15 +326,19 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/FontEffectShadow.cpp
     ${RMLUI_DIR}/Source/Core/FontEngineInterface.cpp
     ${RMLUI_DIR}/Source/Core/Geometry.cpp
-    ${RMLUI_DIR}/Source/Core/GeometryDatabase.h
+    ${RMLUI_DIR}/Source/Core/GeometryBackgroundBorder.cpp
     ${RMLUI_DIR}/Source/Core/GeometryDatabase.cpp
     ${RMLUI_DIR}/Source/Core/GeometryUtilities.cpp
     ${RMLUI_DIR}/Source/Core/LayoutBlockBox.cpp
     ${RMLUI_DIR}/Source/Core/LayoutBlockBoxSpace.cpp
+    ${RMLUI_DIR}/Source/Core/LayoutDetails.cpp
     ${RMLUI_DIR}/Source/Core/LayoutEngine.cpp
+    ${RMLUI_DIR}/Source/Core/LayoutFlex.cpp
     ${RMLUI_DIR}/Source/Core/LayoutInlineBox.cpp
     ${RMLUI_DIR}/Source/Core/LayoutInlineBoxText.cpp
     ${RMLUI_DIR}/Source/Core/LayoutLineBox.cpp
+    ${RMLUI_DIR}/Source/Core/LayoutTable.cpp
+    ${RMLUI_DIR}/Source/Core/LayoutTableDetails.cpp
     ${RMLUI_DIR}/Source/Core/Log.cpp
     ${RMLUI_DIR}/Source/Core/Math.cpp
     ${RMLUI_DIR}/Source/Core/Memory.cpp
@@ -262,8 +352,11 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/PropertyDictionary.cpp
     ${RMLUI_DIR}/Source/Core/PropertyParserAnimation.cpp
     ${RMLUI_DIR}/Source/Core/PropertyParserColour.cpp
+    ${RMLUI_DIR}/Source/Core/PropertyParserDecorator.cpp
+    ${RMLUI_DIR}/Source/Core/PropertyParserFontEffect.cpp
     ${RMLUI_DIR}/Source/Core/PropertyParserKeyword.cpp
     ${RMLUI_DIR}/Source/Core/PropertyParserNumber.cpp
+    ${RMLUI_DIR}/Source/Core/PropertyParserRatio.cpp
     ${RMLUI_DIR}/Source/Core/PropertyParserString.cpp
     ${RMLUI_DIR}/Source/Core/PropertyParserTransform.cpp
     ${RMLUI_DIR}/Source/Core/PropertySpecification.cpp
@@ -272,24 +365,13 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/Stream.cpp
     ${RMLUI_DIR}/Source/Core/StreamFile.cpp
     ${RMLUI_DIR}/Source/Core/StreamMemory.cpp
-    ${RMLUI_DIR}/Source/Core/StringCache.cpp
     ${RMLUI_DIR}/Source/Core/StringUtilities.cpp
     ${RMLUI_DIR}/Source/Core/StyleSheet.cpp
+    ${RMLUI_DIR}/Source/Core/StyleSheetContainer.cpp
     ${RMLUI_DIR}/Source/Core/StyleSheetFactory.cpp
     ${RMLUI_DIR}/Source/Core/StyleSheetNode.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelector.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorEmpty.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorFirstChild.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorFirstOfType.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorLastChild.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorLastOfType.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorNthChild.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorNthLastChild.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorNthLastOfType.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorNthOfType.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorOnlyChild.cpp
-    ${RMLUI_DIR}/Source/Core/StyleSheetNodeSelectorOnlyOfType.cpp
     ${RMLUI_DIR}/Source/Core/StyleSheetParser.cpp
+    ${RMLUI_DIR}/Source/Core/StyleSheetSelector.cpp
     ${RMLUI_DIR}/Source/Core/StyleSheetSpecification.cpp
     ${RMLUI_DIR}/Source/Core/SystemInterface.cpp
     ${RMLUI_DIR}/Source/Core/Template.cpp
@@ -304,14 +386,12 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/Transform.cpp
     ${RMLUI_DIR}/Source/Core/TransformPrimitive.cpp
     ${RMLUI_DIR}/Source/Core/TransformState.cpp
+    ${RMLUI_DIR}/Source/Core/TransformUtilities.cpp
     ${RMLUI_DIR}/Source/Core/Tween.cpp
     ${RMLUI_DIR}/Source/Core/TypeConverter.cpp
     ${RMLUI_DIR}/Source/Core/URL.cpp
     ${RMLUI_DIR}/Source/Core/Variant.cpp
-    ${RMLUI_DIR}/Source/Core/Vector3.cpp
-    ${RMLUI_DIR}/Source/Core/Vector4.cpp
-    ${RMLUI_DIR}/Source/Core/WidgetSlider.cpp
-    ${RMLUI_DIR}/Source/Core/WidgetSliderScroll.cpp
+    ${RMLUI_DIR}/Source/Core/WidgetScroll.cpp
     ${RMLUI_DIR}/Source/Core/XMLNodeHandler.cpp
     ${RMLUI_DIR}/Source/Core/XMLNodeHandlerBody.cpp
     ${RMLUI_DIR}/Source/Core/XMLNodeHandlerDefault.cpp
@@ -321,95 +401,11 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/XMLParseTools.cpp
 )
 
-set(Controls_HDR_FILES
-    ${RMLUI_DIR}/Source/Controls/ElementTextSelection.h
-    ${RMLUI_DIR}/Source/Controls/InputType.h
-    ${RMLUI_DIR}/Source/Controls/InputTypeButton.h
-    ${RMLUI_DIR}/Source/Controls/InputTypeCheckbox.h
-    ${RMLUI_DIR}/Source/Controls/InputTypeRadio.h
-    ${RMLUI_DIR}/Source/Controls/InputTypeRange.h
-    ${RMLUI_DIR}/Source/Controls/InputTypeSubmit.h
-    ${RMLUI_DIR}/Source/Controls/InputTypeText.h
-    ${RMLUI_DIR}/Source/Controls/WidgetDropDown.h
-    ${RMLUI_DIR}/Source/Controls/WidgetSlider.h
-    ${RMLUI_DIR}/Source/Controls/WidgetSliderInput.h
-    ${RMLUI_DIR}/Source/Controls/WidgetTextInput.h
-    ${RMLUI_DIR}/Source/Controls/WidgetTextInputMultiLine.h
-    ${RMLUI_DIR}/Source/Controls/WidgetTextInputSingleLine.h
-    ${RMLUI_DIR}/Source/Controls/WidgetTextInputSingleLinePassword.h
-    ${RMLUI_DIR}/Source/Controls/XMLNodeHandlerDataGrid.h
-    ${RMLUI_DIR}/Source/Controls/XMLNodeHandlerTabSet.h
-    ${RMLUI_DIR}/Source/Controls/XMLNodeHandlerTextArea.h
-)
-
-set(MASTER_Controls_PUB_HDR_FILES
-    ${RMLUI_DIR}/Include/RmlUi/Controls.h
-)
-
-set(Controls_PUB_HDR_FILES
-    ${RMLUI_DIR}/Include/RmlUi/Controls/Controls.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/DataFormatter.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/DataQuery.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/DataSource.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/DataSourceListener.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementDataGrid.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementDataGridCell.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementDataGridExpandButton.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementDataGridRow.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementForm.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementFormControl.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementFormControlDataSelect.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementFormControlInput.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementFormControlSelect.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementFormControlTextArea.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementProgressBar.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/ElementTabSet.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/Header.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/SelectOption.h
-)
-
-set(Controls_SRC_FILES
-    ${RMLUI_DIR}/Source/Controls/Controls.cpp
-    ${RMLUI_DIR}/Source/Controls/DataFormatter.cpp
-    ${RMLUI_DIR}/Source/Controls/DataQuery.cpp
-    ${RMLUI_DIR}/Source/Controls/DataSource.cpp
-    ${RMLUI_DIR}/Source/Controls/DataSourceListener.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementDataGrid.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementDataGridCell.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementDataGridExpandButton.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementDataGridRow.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementForm.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementFormControl.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementFormControlDataSelect.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementFormControlInput.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementFormControlSelect.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementFormControlTextArea.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementProgressBar.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementTabSet.cpp
-    ${RMLUI_DIR}/Source/Controls/ElementTextSelection.cpp
-    ${RMLUI_DIR}/Source/Controls/InputType.cpp
-    ${RMLUI_DIR}/Source/Controls/InputTypeButton.cpp
-    ${RMLUI_DIR}/Source/Controls/InputTypeCheckbox.cpp
-    ${RMLUI_DIR}/Source/Controls/InputTypeRadio.cpp
-    ${RMLUI_DIR}/Source/Controls/InputTypeRange.cpp
-    ${RMLUI_DIR}/Source/Controls/InputTypeSubmit.cpp
-    ${RMLUI_DIR}/Source/Controls/InputTypeText.cpp
-    ${RMLUI_DIR}/Source/Controls/SelectOption.cpp
-    ${RMLUI_DIR}/Source/Controls/WidgetDropDown.cpp
-    ${RMLUI_DIR}/Source/Controls/WidgetSlider.cpp
-    ${RMLUI_DIR}/Source/Controls/WidgetSliderInput.cpp
-    ${RMLUI_DIR}/Source/Controls/WidgetTextInput.cpp
-    ${RMLUI_DIR}/Source/Controls/WidgetTextInputMultiLine.cpp
-    ${RMLUI_DIR}/Source/Controls/WidgetTextInputSingleLine.cpp
-    ${RMLUI_DIR}/Source/Controls/WidgetTextInputSingleLinePassword.cpp
-    ${RMLUI_DIR}/Source/Controls/XMLNodeHandlerDataGrid.cpp
-    ${RMLUI_DIR}/Source/Controls/XMLNodeHandlerTabSet.cpp
-    ${RMLUI_DIR}/Source/Controls/XMLNodeHandlerTextArea.cpp
-)
-
 set(Debugger_HDR_FILES
     ${RMLUI_DIR}/Source/Debugger/BeaconSource.h
     ${RMLUI_DIR}/Source/Debugger/CommonSource.h
+    ${RMLUI_DIR}/Source/Debugger/DebuggerPlugin.h
+    ${RMLUI_DIR}/Source/Debugger/DebuggerSystemInterface.h
     ${RMLUI_DIR}/Source/Debugger/ElementContextHook.h
     ${RMLUI_DIR}/Source/Debugger/ElementInfo.h
     ${RMLUI_DIR}/Source/Debugger/ElementLog.h
@@ -418,8 +414,6 @@ set(Debugger_HDR_FILES
     ${RMLUI_DIR}/Source/Debugger/InfoSource.h
     ${RMLUI_DIR}/Source/Debugger/LogSource.h
     ${RMLUI_DIR}/Source/Debugger/MenuSource.h
-    ${RMLUI_DIR}/Source/Debugger/Plugin.h
-    ${RMLUI_DIR}/Source/Debugger/SystemInterface.h
 )
 
 set(MASTER_Debugger_PUB_HDR_FILES
@@ -433,12 +427,12 @@ set(Debugger_PUB_HDR_FILES
 
 set(Debugger_SRC_FILES
     ${RMLUI_DIR}/Source/Debugger/Debugger.cpp
+    ${RMLUI_DIR}/Source/Debugger/DebuggerPlugin.cpp
+    ${RMLUI_DIR}/Source/Debugger/DebuggerSystemInterface.cpp
     ${RMLUI_DIR}/Source/Debugger/ElementContextHook.cpp
     ${RMLUI_DIR}/Source/Debugger/ElementInfo.cpp
     ${RMLUI_DIR}/Source/Debugger/ElementLog.cpp
     ${RMLUI_DIR}/Source/Debugger/Geometry.cpp
-    ${RMLUI_DIR}/Source/Debugger/Plugin.cpp
-    ${RMLUI_DIR}/Source/Debugger/SystemInterface.cpp
 )
 
 set(Core_HDR_FILES
@@ -464,112 +458,105 @@ set(Core_SRC_FILES
     ${RMLUI_DIR}/Source/Core/FontEngineDefault/FreeTypeInterface.cpp
 )
 
-set(LuaCore_HDR_FILES
-    ${RMLUI_DIR}/Source/Core/Lua/Colourb.h
-    ${RMLUI_DIR}/Source/Core/Lua/Colourf.h
-    ${RMLUI_DIR}/Source/Core/Lua/Context.h
-    ${RMLUI_DIR}/Source/Core/Lua/ContextDocumentsProxy.h
-    ${RMLUI_DIR}/Source/Core/Lua/Document.h
-    ${RMLUI_DIR}/Source/Core/Lua/Element.h
-    ${RMLUI_DIR}/Source/Core/Lua/ElementAttributesProxy.h
-    ${RMLUI_DIR}/Source/Core/Lua/ElementChildNodesProxy.h
-    ${RMLUI_DIR}/Source/Core/Lua/ElementInstancer.h
-    ${RMLUI_DIR}/Source/Core/Lua/ElementStyleProxy.h
-    ${RMLUI_DIR}/Source/Core/Lua/ElementText.h
-    ${RMLUI_DIR}/Source/Core/Lua/Event.h
-    ${RMLUI_DIR}/Source/Core/Lua/EventParametersProxy.h
-    ${RMLUI_DIR}/Source/Core/Lua/GlobalLuaFunctions.h
-    ${RMLUI_DIR}/Source/Core/Lua/Log.h
-    ${RMLUI_DIR}/Source/Core/Lua/LuaDocument.h
-    ${RMLUI_DIR}/Source/Core/Lua/LuaDocumentElementInstancer.h
-    ${RMLUI_DIR}/Source/Core/Lua/LuaElement.h
-    ${RMLUI_DIR}/Source/Core/Lua/LuaElementInstancer.h
-    ${RMLUI_DIR}/Source/Core/Lua/LuaEventListener.h
-    ${RMLUI_DIR}/Source/Core/Lua/LuaEventListenerInstancer.h
-    ${RMLUI_DIR}/Source/Core/Lua/precompiled.h
-    ${RMLUI_DIR}/Source/Core/Lua/RmlUi.h
-    ${RMLUI_DIR}/Source/Core/Lua/RmlUiContextsProxy.h
-    ${RMLUI_DIR}/Source/Core/Lua/Vector2f.h
-    ${RMLUI_DIR}/Source/Core/Lua/Vector2i.h
+set(Lua_HDR_FILES
+    ${RMLUI_DIR}/Source/Lua/Colourb.h
+    ${RMLUI_DIR}/Source/Lua/Colourf.h
+    ${RMLUI_DIR}/Source/Lua/Context.h
+    ${RMLUI_DIR}/Source/Lua/ContextDocumentsProxy.h
+    ${RMLUI_DIR}/Source/Lua/Document.h
+    ${RMLUI_DIR}/Source/Lua/Element.h
+    ${RMLUI_DIR}/Source/Lua/ElementAttributesProxy.h
+    ${RMLUI_DIR}/Source/Lua/ElementChildNodesProxy.h
+    ${RMLUI_DIR}/Source/Lua/ElementInstancer.h
+    ${RMLUI_DIR}/Source/Lua/Elements/As.h
+    ${RMLUI_DIR}/Source/Lua/Elements/DataFormatter.h
+    ${RMLUI_DIR}/Source/Lua/Elements/DataSource.h
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementDataGrid.h
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementDataGridRow.h
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementForm.h
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControl.h
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControlDataSelect.h
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControlInput.h
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControlSelect.h
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControlTextArea.h
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementTabSet.h
+    ${RMLUI_DIR}/Source/Lua/Elements/LuaDataFormatter.h
+    ${RMLUI_DIR}/Source/Lua/Elements/LuaDataSource.h
+    ${RMLUI_DIR}/Source/Lua/Elements/SelectOptionsProxy.h
+    ${RMLUI_DIR}/Source/Lua/ElementStyleProxy.h
+    ${RMLUI_DIR}/Source/Lua/ElementText.h
+    ${RMLUI_DIR}/Source/Lua/Event.h
+    ${RMLUI_DIR}/Source/Lua/EventParametersProxy.h
+    ${RMLUI_DIR}/Source/Lua/GlobalLuaFunctions.h
+    ${RMLUI_DIR}/Source/Lua/Log.h
+    ${RMLUI_DIR}/Source/Lua/LuaDataModel.h
+    ${RMLUI_DIR}/Source/Lua/LuaDocument.h
+    ${RMLUI_DIR}/Source/Lua/LuaDocumentElementInstancer.h
+    ${RMLUI_DIR}/Source/Lua/LuaElementInstancer.h
+    ${RMLUI_DIR}/Source/Lua/LuaEventListener.h
+    ${RMLUI_DIR}/Source/Lua/LuaEventListenerInstancer.h
+    ${RMLUI_DIR}/Source/Lua/LuaPlugin.h
+    ${RMLUI_DIR}/Source/Lua/Pairs.h
+    ${RMLUI_DIR}/Source/Lua/RmlUi.h
+    ${RMLUI_DIR}/Source/Lua/RmlUiContextsProxy.h
+    ${RMLUI_DIR}/Source/Lua/Vector2f.h
+    ${RMLUI_DIR}/Source/Lua/Vector2i.h
 )
 
-set(LuaCore_PUB_HDR_FILES
-    ${RMLUI_DIR}/Include/RmlUi/Core/Lua/Header.h
-    ${RMLUI_DIR}/Include/RmlUi/Core/Lua/Interpreter.h
-    ${RMLUI_DIR}/Include/RmlUi/Core/Lua/LuaType.h
-    ${RMLUI_DIR}/Include/RmlUi/Core/Lua/Utilities.h
+set(Lua_PUB_HDR_FILES
+    ${RMLUI_DIR}/Include/RmlUi/Lua/Header.h
+    ${RMLUI_DIR}/Include/RmlUi/Lua/IncludeLua.h
+    ${RMLUI_DIR}/Include/RmlUi/Lua/Interpreter.h
+    ${RMLUI_DIR}/Include/RmlUi/Lua/Lua.h
+    ${RMLUI_DIR}/Include/RmlUi/Lua/LuaType.h
+    ${RMLUI_DIR}/Include/RmlUi/Lua/Utilities.h
 )
 
-set(LuaCore_SRC_FILES
-    ${RMLUI_DIR}/Source/Core/Lua/Colourb.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Colourf.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Context.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/ContextDocumentsProxy.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Document.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Element.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/ElementAttributesProxy.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/ElementChildNodesProxy.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/ElementInstancer.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/ElementStyleProxy.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/ElementText.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Event.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/EventParametersProxy.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/GlobalLuaFunctions.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Interpreter.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Log.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/LuaDocument.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/LuaDocumentElementInstancer.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/LuaElementInstancer.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/LuaEventListener.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/LuaEventListenerInstancer.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/precompiled.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/RmlUi.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/RmlUiContextsProxy.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Utilities.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Vector2f.cpp
-    ${RMLUI_DIR}/Source/Core/Lua/Vector2i.cpp
-)
-
-set(LuaControls_HDR_FILES
-    ${RMLUI_DIR}/Source/Controls/Lua/As.h
-    ${RMLUI_DIR}/Source/Controls/Lua/DataFormatter.h
-    ${RMLUI_DIR}/Source/Controls/Lua/DataSource.h
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementDataGrid.h
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementDataGridRow.h
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementForm.h
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControl.h
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControlDataSelect.h
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControlInput.h
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControlSelect.h
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControlTextArea.h
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementTabSet.h
-    ${RMLUI_DIR}/Source/Controls/Lua/LuaDataFormatter.h
-    ${RMLUI_DIR}/Source/Controls/Lua/LuaDataSource.h
-    ${RMLUI_DIR}/Source/Controls/Lua/precompiled.h
-    ${RMLUI_DIR}/Source/Controls/Lua/SelectOptionsProxy.h
-)
-
-set(LuaControls_PUB_HDR_FILES
-    ${RMLUI_DIR}/Include/RmlUi/Controls/Lua/Controls.h
-    ${RMLUI_DIR}/Include/RmlUi/Controls/Lua/Header.h
-)
-
-set(LuaControls_SRC_FILES
-    ${RMLUI_DIR}/Source/Controls/Lua/Controls.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/DataFormatter.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/DataSource.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementDataGrid.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementDataGridRow.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementForm.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControl.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControlDataSelect.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControlInput.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControlSelect.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementFormControlTextArea.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/ElementTabSet.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/LuaDataFormatter.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/LuaDataSource.cpp
-    ${RMLUI_DIR}/Source/Controls/Lua/SelectOptionsProxy.cpp
+set(Lua_SRC_FILES
+    ${RMLUI_DIR}/Source/Lua/Colourb.cpp
+    ${RMLUI_DIR}/Source/Lua/Colourf.cpp
+    ${RMLUI_DIR}/Source/Lua/Context.cpp
+    ${RMLUI_DIR}/Source/Lua/ContextDocumentsProxy.cpp
+    ${RMLUI_DIR}/Source/Lua/Document.cpp
+    ${RMLUI_DIR}/Source/Lua/Element.cpp
+    ${RMLUI_DIR}/Source/Lua/ElementAttributesProxy.cpp
+    ${RMLUI_DIR}/Source/Lua/ElementChildNodesProxy.cpp
+    ${RMLUI_DIR}/Source/Lua/ElementInstancer.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/DataFormatter.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/DataSource.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementDataGrid.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementDataGridRow.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementForm.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControl.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControlDataSelect.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControlInput.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControlSelect.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementFormControlTextArea.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/ElementTabSet.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/LuaDataFormatter.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/LuaDataSource.cpp
+    ${RMLUI_DIR}/Source/Lua/Elements/SelectOptionsProxy.cpp
+    ${RMLUI_DIR}/Source/Lua/ElementStyleProxy.cpp
+    ${RMLUI_DIR}/Source/Lua/ElementText.cpp
+    ${RMLUI_DIR}/Source/Lua/Event.cpp
+    ${RMLUI_DIR}/Source/Lua/EventParametersProxy.cpp
+    ${RMLUI_DIR}/Source/Lua/GlobalLuaFunctions.cpp
+    ${RMLUI_DIR}/Source/Lua/Interpreter.cpp
+    ${RMLUI_DIR}/Source/Lua/Log.cpp
+    ${RMLUI_DIR}/Source/Lua/Lua.cpp
+    ${RMLUI_DIR}/Source/Lua/LuaDataModel.cpp
+    ${RMLUI_DIR}/Source/Lua/LuaDocument.cpp
+    ${RMLUI_DIR}/Source/Lua/LuaDocumentElementInstancer.cpp
+    ${RMLUI_DIR}/Source/Lua/LuaElementInstancer.cpp
+    ${RMLUI_DIR}/Source/Lua/LuaEventListener.cpp
+    ${RMLUI_DIR}/Source/Lua/LuaEventListenerInstancer.cpp
+    ${RMLUI_DIR}/Source/Lua/LuaPlugin.cpp
+    ${RMLUI_DIR}/Source/Lua/LuaType.cpp
+    ${RMLUI_DIR}/Source/Lua/RmlUi.cpp
+    ${RMLUI_DIR}/Source/Lua/RmlUiContextsProxy.cpp
+    ${RMLUI_DIR}/Source/Lua/Utilities.cpp
+    ${RMLUI_DIR}/Source/Lua/Vector2f.cpp
+    ${RMLUI_DIR}/Source/Lua/Vector2i.cpp
 )
 
 if (NOT FREETYPE_INCLUDE_DIRS)
@@ -584,22 +571,13 @@ add_library(RMLUI_LIB STATIC
     ${MASTER_Core_PUB_HDR_FILES}
     ${Core_PUB_HDR_FILES}
     ${Core_SRC_FILES}
-    ${Controls_HDR_FILES}
-    ${MASTER_Controls_PUB_HDR_FILES}
-    ${Controls_PUB_HDR_FILES}
-    ${Controls_SRC_FILES}
     ${Debugger_HDR_FILES}
     ${MASTER_Debugger_PUB_HDR_FILES}
     ${Debugger_PUB_HDR_FILES}
     ${Debugger_SRC_FILES}
-    ${Core_HDR_FILES}
-    ${Core_SRC_FILES}
-    ${LuaCore_HDR_FILES}
-    ${LuaCore_PUB_HDR_FILES}
-    ${LuaCore_SRC_FILES}
-    ${LuaControls_HDR_FILES}
-    ${LuaControls_PUB_HDR_FILES}
-    ${LuaControls_SRC_FILES}
+    ${Lua_HDR_FILES}
+    ${Lua_PUB_HDR_FILES}
+    ${Lua_SRC_FILES}
 )
 
 set_property(TARGET RMLUI_LIB PROPERTY

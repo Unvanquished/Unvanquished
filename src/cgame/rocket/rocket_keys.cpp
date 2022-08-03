@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "engine/qcommon/q_unicode.h"
 
-using namespace Rml::Core::Input;
+using namespace Rml::Input;
 
 static std::map< int, int > keyMap;
 static bool init = false;
@@ -261,9 +261,9 @@ void Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 		if (rocketKey != KI_UNKNOWN) {
 			menuContext->ProcessKeyDown( rocketKey, Rocket_GetKeyModifiers() );
 		}
-		Rml::Core::Element* focus = menuContext->GetFocusElement();
+		Rml::Element* focus = menuContext->GetFocusElement();
 		if ( focus != nullptr ) {
-			Rml::Core::Dictionary dict;
+			Rml::Dictionary dict;
 			dict[ BINDABLE_KEY_KEY ] = key.PackIntoInt();
 			// Send after the rocket key event so that if Escape is pressed,
 			// it will cancel the binding and not bind Escape.

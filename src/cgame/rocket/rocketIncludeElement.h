@@ -39,16 +39,16 @@ Maryland 20850 USA.
 #include "rocket.h"
 #include <common/FileSystem.h>
 
-class RocketIncludeElement : public Rml::Core::Element
+class RocketIncludeElement : public Rml::Element
 {
 public:
-	RocketIncludeElement( const Rml::Core::String &tag ) : Rml::Core::Element( tag ) { }
-	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
+	RocketIncludeElement( const Rml::String &tag ) : Rml::Element( tag ) { }
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
 	{
 		Element::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
 		{
-			Rml::Core::String filename = GetAttribute<Rml::Core::String>("src", "");
+			Rml::String filename = GetAttribute<Rml::String>("src", "");
 
 			if ( !filename.empty() )
 			{

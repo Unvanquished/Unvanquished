@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #ifndef LUA_CDATASOURCE_H_
 #define LUA_CDATASOURCE_H_
 
-#include <lua.hpp>
+#include <RmlUi/Lua/LuaType.h>
 
 void CG_Rocket_RegisterLuaCDataSource(lua_State* L);
 

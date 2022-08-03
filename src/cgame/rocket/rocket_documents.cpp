@@ -40,8 +40,8 @@ Maryland 20850 USA.
 void Rocket_LoadDocument( const char *path )
 {
 	Log::Debug( "Loading '%s' as RML document", path );
-	Rml::Core::ElementDocument* document = menuContext->LoadDocument( path );
-	Rml::Core::ElementDocument* other;
+	Rml::ElementDocument* document = menuContext->LoadDocument( path );
+	Rml::ElementDocument* other;
 
 	if( document )
 	{
@@ -58,7 +58,7 @@ void Rocket_LoadDocument( const char *path )
 }
 
 // Scale the UI proportional to the screen size
-void Rocket_SetDocumentScale( Rml::Core::ElementDocument& document )
+void Rocket_SetDocumentScale( Rml::ElementDocument& document )
 {
 	// This makes 1dp one pixel on a 1920×1080 screen
 	float size = std::min( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight );
@@ -70,7 +70,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 {
 	if ( !Q_stricmp( action, "show" ) || !Q_stricmp( action, "open" ) )
 	{
-		Rml::Core::ElementDocument* document = menuContext->GetDocument( name );
+		Rml::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->Show();
@@ -89,7 +89,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 			return;
 		}
 
-		Rml::Core::ElementDocument* document = menuContext->GetDocument( name );
+		Rml::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->Close();
@@ -97,10 +97,10 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "goto", action ) )
 	{
-		Rml::Core::ElementDocument* document = menuContext->GetDocument( name );
+		Rml::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
-			Rml::Core::ElementDocument *owner = menuContext->GetFocusElement()->GetOwnerDocument();
+			Rml::ElementDocument *owner = menuContext->GetFocusElement()->GetOwnerDocument();
 			if ( owner )
 			{
 				owner->Close();
@@ -114,7 +114,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "blur", action ) || !Q_stricmp( "hide", action ) )
 	{
-		Rml::Core::ElementDocument* document = nullptr;
+		Rml::ElementDocument* document = nullptr;
 
 		if ( !*name ) // If name is empty, hide active
 		{
@@ -143,7 +143,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "reload", action ) )
 	{
-		Rml::Core::ElementDocument* document = nullptr;
+		Rml::ElementDocument* document = nullptr;
 
 		if ( !*name ) // If name is empty, hide active
 		{
@@ -160,7 +160,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 
 		if ( document )
 		{
-			Rml::Core::String url = document->GetSourceURL();
+			Rml::String url = document->GetSourceURL();
 			document->Close();
 			document = menuContext->LoadDocument( url );
 			Rocket_SetDocumentScale( *document );

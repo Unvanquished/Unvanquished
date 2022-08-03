@@ -36,39 +36,38 @@ Maryland 20850 USA.
 #define ROCKETKEYBINDER_H
 
 #include <RmlUi/Core.h>
-#include <RmlUi/Core/Element.h>
 #include "../cg_local.h"
 #include "rocket.h"
 
 static const Str::StringRef TOGGLE_CONSOLE_COMMAND = "<console>";
 
-static const Rml::Core::String BINDABLE_KEY_EVENT = "bindableKey";
-static const Rml::Core::String BINDABLE_KEY_KEY = "bkey";
+static const Rml::String BINDABLE_KEY_EVENT = "bindableKey";
+static const Rml::String BINDABLE_KEY_KEY = "bkey";
 
 // The displayed bindings are refreshed periodically since they can also change due to a layout change or /bind command.
 constexpr int KEY_BINDING_REFRESH_INTERVAL_MS = 500;
 
-class RocketKeyBinder : public Rml::Core::Element, public Rml::Core::EventListener
+class RocketKeyBinder : public Rml::Element, public Rml::EventListener
 {
 public:
-	RocketKeyBinder( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 ), context( nullptr )
+	RocketKeyBinder( const Rml::String &tag ) : Rml::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 ), context( nullptr )
 	{
 	}
 
-	void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes ) override
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes ) override
 	{
-		Rml::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Element::OnAttributeChange( changed_attributes );
 		auto it = changed_attributes.find( "cmd" );
 		if ( it != changed_attributes.end() )
 		{
-			cmd = it->second.Get<Rml::Core::String>();
+			cmd = it->second.Get<Rml::String>();
 			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 
 		it = changed_attributes.find( "team" );
 		if ( it != changed_attributes.end() )
 		{
-			team = GetTeam( it->second.Get<Rml::Core::String>().c_str() );
+			team = GetTeam( it->second.Get<Rml::String>().c_str() );
 			nextKeyUpdateTime = rocketInfo.realtime;
 		}
 	}
@@ -107,13 +106,13 @@ public:
 		}
 	}
 
-	void ProcessDefaultAction( Rml::Core::Event &event) override
+	void ProcessDefaultAction( Rml::Event &event) override
 	{
 		Element::ProcessDefaultAction( event );
 		ProcessEvent( event );
 	}
 
-	void ProcessEvent( Rml::Core::Event &event ) override
+	void ProcessEvent( Rml::Event &event ) override
 	{
 		if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
 		{
@@ -127,9 +126,9 @@ public:
 
 		else if ( waitingForKeypress && event == "keydown" )
 		{
-			auto keyIdentifier = ( Rml::Core::Input::KeyIdentifier ) event.GetParameter< int >( "key_identifier", 0 );
+			auto keyIdentifier = ( Rml::Input::KeyIdentifier ) event.GetParameter< int >( "key_identifier", 0 );
 
-			if ( keyIdentifier == Rml::Core::Input::KeyIdentifier::KI_ESCAPE )
+			if ( keyIdentifier == Rml::Input::KeyIdentifier::KI_ESCAPE )
 			{
 				CancelSelection();
 			}
@@ -204,11 +203,11 @@ protected:
 		trap_Key_SetBinding( newKey, team, cmd.c_str() );
 	}
 
-	int GetTeam( Rml::Core::String team )
+	int GetTeam( Rml::String team )
 	{
 		static const struct {
 			int team;
-			Rml::Core::String label;
+			Rml::String label;
 		} labels[] = {
 			{ 3, "spectators" },
 			{ 0, "default" },
@@ -233,10 +232,10 @@ private:
 	bool waitingForKeypress;
 	int team;
 
-	Rml::Core::String cmd;
+	Rml::String cmd;
 	int mouse_x;
 	int mouse_y;
-	Rml::Core::Context* context;
+	Rml::Context* context;
 };
 
 

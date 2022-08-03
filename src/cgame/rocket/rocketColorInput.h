@@ -36,13 +36,12 @@ Maryland 20850 USA.
 #define ROCKETCOLORINPUT_H
 
 #include <RmlUi/Core.h>
-#include <RmlUi/Controls/ElementFormControlInput.h>
 #include "../cg_local.h"
 
-class RocketColorInput : public Rml::Core::Element, public Rml::Core::EventListener
+class RocketColorInput : public Rml::Element, public Rml::EventListener
 {
 public:
-	RocketColorInput( const Rml::Core::String &tag ) : Rml::Core::Element( tag ), input( nullptr ), color_value( nullptr )
+	RocketColorInput( const Rml::String &tag ) : Rml::Element( tag ), input( nullptr ), color_value( nullptr )
 	{
 	}
 
@@ -52,40 +51,40 @@ public:
 		if ( child == this )
 		{
 			// Initialize the input element
-			Rml::Core::XMLAttributes attribs;
+			Rml::XMLAttributes attribs;
 			attribs[ "type" ] = "text";
-			input = AppendChild( Rml::Core::Factory::InstanceElement(
+			input = AppendChild( Rml::Factory::InstanceElement(
 					this, "input", "input", attribs ) );
-			color_value = AppendChild( Rml::Core::Factory::InstanceElement(
-					this, "*", "div", Rml::Core::XMLAttributes() ) );
+			color_value = AppendChild( Rml::Factory::InstanceElement(
+					this, "*", "div", Rml::XMLAttributes() ) );
 			input->SetProperty( "display", "none" );
 			input->SetAttributes( GetAttributes() );
-			input->AddEventListener( Rml::Core::EventId::Blur, this );
+			input->AddEventListener( Rml::EventId::Blur, this );
 			UpdateValue();
 		}
 	}
 
-	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
+	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
 	{
-		Rml::Core::Element::OnAttributeChange( changed_attributes );
+		Rml::Element::OnAttributeChange( changed_attributes );
 
 		// Pass all attributes down to the input element
 		if ( input ) input->SetAttributes( changed_attributes );
 	}
 
-	virtual void ProcessDefaultAction( Rml::Core::Event &event )
+	virtual void ProcessDefaultAction( Rml::Event &event )
 	{
 		Element::ProcessDefaultAction( event );
 		ProcessEvent( event );
 	}
 
-	virtual void ProcessEvent( Rml::Core::Event &event )
+	virtual void ProcessEvent( Rml::Event &event )
 	{
 		if ( !input || !color_value ) return;
 
 		if ( event.GetTargetElement() == input )
 		{
-			if ( event == Rml::Core::EventId::Change )
+			if ( event == Rml::EventId::Change )
 			{
 				UpdateValue();
 			}
@@ -98,9 +97,9 @@ public:
 			}
 		}
 
-		if ( event == Rml::Core::EventId::Click )
+		if ( event == Rml::EventId::Click )
 		{
-			Rml::Core::Element* elem = event.GetTargetElement();
+			Rml::Element* elem = event.GetTargetElement();
 
 			do
 			{
@@ -118,18 +117,18 @@ public:
 private:
 	void UpdateValue()
 	{
-		Rml::Core::String string = "^7";
-		string += dynamic_cast< Rml::Controls::ElementFormControlInput* >( input )->GetValue();
+		Rml::String string = "^7";
+		string += dynamic_cast< Rml::ElementFormControlInput* >( input )->GetValue();
 		while ( color_value && color_value->HasChildNodes() )
 		{
 			color_value->RemoveChild( color_value->GetFirstChild() );
 		}
 
-		Rml::Core::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( string.c_str(), RP_QUAKE ) );
+		Rml::Factory::InstanceElementText( color_value, Rocket_QuakeToRML( string.c_str(), RP_QUAKE ) );
 	}
 
-	Rml::Core::Element *input;
-	Rml::Core::Element *color_value;
+	Rml::Element *input;
+	Rml::Element *color_value;
 };
 
 #endif

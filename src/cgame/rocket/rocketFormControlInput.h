@@ -36,88 +36,87 @@ Maryland 20850 USA.
 #define ROCKETFORMCONTROLINPUT_H
 
 #include "../cg_local.h"
-#include <RmlUi/Core/Core.h>
-#include <RmlUi/Controls/ElementFormControlInput.h>
+#include <RmlUi/Core.h>
 
-class CvarElementFormControlInput : public Rml::Controls::ElementFormControlInput, public Rml::Core::EventListener
+class CvarElementFormControlInput : public Rml::ElementFormControlInput, public Rml::EventListener
 {
 public:
-	CvarElementFormControlInput( const Rml::Core::String &tag ) : Rml::Controls::ElementFormControlInput( tag ), owner( nullptr ) { }
+	CvarElementFormControlInput( const Rml::String &tag ) : Rml::ElementFormControlInput( tag ), owner( nullptr ) { }
 
-	virtual void OnAttributeChange( const Rml::Core::ElementAttributes &changed_attributes )
+	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
 	{
-		Rml::Controls::ElementFormControlInput::OnAttributeChange( changed_attributes );
-		Rml::Core::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
+		Rml::ElementFormControlInput::OnAttributeChange( changed_attributes );
+		Rml::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
 		if ( it != changed_attributes.end() )
 		{
-			cvar = it->second.Get< Rml::Core::String >( "cvar" );
+			cvar = it->second.Get< Rml::String >( "cvar" );
 			UpdateValue();
 		}
 
 		it = changed_attributes.find( "type" );
 		if ( it != changed_attributes.end() )
 		{
-			type = it->second.Get< Rml::Core::String >( "type" );
+			type = it->second.Get< Rml::String >( "type" );
 		}
 	}
 
 	virtual void OnChildAdd( Element *child )
 	{
-		Rml::Controls::ElementFormControlInput::OnChildAdd( child );
+		Rml::ElementFormControlInput::OnChildAdd( child );
 		if ( child == this )
 		{
 			// Need to cache this because it is not available
 			// when this element is being removed
 			owner = GetOwnerDocument();
-			owner->AddEventListener( Rml::Core::EventId::Show, this );
+			owner->AddEventListener( Rml::EventId::Show, this );
 
-			AddEventListener( Rml::Core::EventId::Change, this );
+			AddEventListener( Rml::EventId::Change, this );
 		}
 	}
 
 	virtual void OnChildRemove( Element *child )
 	{
-		Rml::Controls::ElementFormControlInput::OnChildRemove( child );
+		Rml::ElementFormControlInput::OnChildRemove( child );
 		if ( child == this )
 		{
-			owner->RemoveEventListener( Rml::Core::EventId::Show, this );
+			owner->RemoveEventListener( Rml::EventId::Show, this );
 		}
 	}
 
-	virtual void ProcessDefaultAction( Rml::Core::Event &event )
+	virtual void ProcessDefaultAction( Rml::Event &event )
 	{
 		ElementFormControlInput::ProcessDefaultAction( event );
 		ProcessEvent( event );
 	}
 
-	virtual void ProcessEvent( Rml::Core::Event &event )
+	virtual void ProcessEvent( Rml::Event &event )
 	{
 		if ( !cvar.empty() )
 		{
-			if ( owner == event.GetTargetElement() && event == Rml::Core::EventId::Show )
+			if ( owner == event.GetTargetElement() && event == Rml::EventId::Show )
 			{
 				UpdateValue();
 			}
 
 			if ( this == event.GetTargetElement() )
 			{
-				if ( event == Rml::Core::EventId::Blur && ( type != "checkbox" && type != "radio" ) )
+				if ( event == Rml::EventId::Blur && ( type != "checkbox" && type != "radio" ) )
 				{
 					SetCvarValueAndFlags( cvar, GetValue() );
 				}
 
-				else if ( event == Rml::Core::EventId::Change && type == "range" )
+				else if ( event == Rml::EventId::Change && type == "range" )
 				{
 					SetCvarValueAndFlags( cvar, GetValue() );
 				}
 
-				else if ( event == Rml::Core::EventId::Click && !IsDisabled() )
+				else if ( event == Rml::EventId::Click && !IsDisabled() )
 				{
 					if ( type == "checkbox" )
 					{
 						if ( HasAttribute( "checked" ) )
 						{
-							SetCvarValueAndFlags( cvar, GetAttribute<Rml::Core::String>( "checked-value", "1" ) );
+							SetCvarValueAndFlags( cvar, GetAttribute<Rml::String>( "checked-value", "1" ) );
 						}
 
 						else
@@ -177,7 +176,7 @@ private:
 
 	}
 
-	void SetCvarValueAndFlags( const Rml::Core::String& cvar, Rml::Core::String value )
+	void SetCvarValueAndFlags( const Rml::String& cvar, Rml::String value )
 	{
 		if ( type == "range" )
 		{
@@ -192,9 +191,9 @@ private:
 		Cvar::AddFlags( cvar.c_str(), Cvar::USER_ARCHIVE );
 	}
 
-	Rml::Core::String cvar;
-	Rml::Core::String type;
-	Rml::Core::Element *owner;
+	Rml::String cvar;
+	Rml::String type;
+	Rml::Element *owner;
 };
 
 #endif
