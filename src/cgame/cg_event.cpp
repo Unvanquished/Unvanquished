@@ -1154,6 +1154,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_DEATH1:
 		case EV_DEATH2:
 		case EV_DEATH3:
+			if ( clientNum == cg.clientNum )
+			{
+				cg.underwater = false;
+				cg.underwaterTime = cg.time;
+			}
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_VOICE,
 			                   CG_CustomSound( es->number, va( "*death%i", event - EV_DEATH1 + 1 ) ) );
 			break;
