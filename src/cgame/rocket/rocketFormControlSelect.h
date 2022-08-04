@@ -96,18 +96,7 @@ public:
 	void UpdateValue()
 	{
 		Rml::String value = Cvar::GetValue( cvar.c_str() ).c_str();
-
-		for ( int i = 0; i < GetNumOptions(); ++i )
-		{
-			Rml::Element *o = GetOption( i );
-			if ( o->GetAttribute("value", Rml::String()) == value )
-			{
-				SetSelection( i );
-				return;
-			}
-		}
-
-		SetSelection( -1 );
+		SetValue( value );
 	}
 
 private:
