@@ -60,12 +60,6 @@
 							<blocklink class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'><translate>Stop server</translate></blocklink>
 							<blocklink class="leftalign" onclick='Events.pushevent("exec pause", event)'><translate>Pause server</translate></blocklink>
 
-							<h2><translate>Configuration</translate></h2>
-							<indent>
-								<blocklink onclick='Events.pushevent("show server_setup", event)'><translate>Server setup</translate></blocklink>
-								<blocklink onclick='Events.pushevent("show server_bots", event)'><translate>Bot settings</translate></blocklink>
-							</indent>
-
 							<h2><translate>Map</translate></h2>
 							<indent>
 								<!-- <blocklink onclick='Events.pushevent("show callvote_map", event)'><translate>Change map</translate></blocklink> -->
@@ -107,6 +101,8 @@
 							<blocklink onclick='Events.pushevent("show options_sound", event)'><translate>Sound</translate></blocklink>
 							<blocklink onclick='Events.pushevent("show options_ui", event)'><translate>User interface and HUD</translate></blocklink>
 							<!-- <blocklink onclick='Events.pushevent("show options_fov", event)'><translate>Fields of view</translate></blocklink> -->
+							<blocklink onclick='Events.pushevent("show server_setup", event)'><translate>Server setup</translate></blocklink>
+
 						</indent>
 
 						<h2><translate>Help</translate></h2>
