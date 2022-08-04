@@ -2257,6 +2257,7 @@ public:
 			{
 				t0 = cg.time;
 				offset = -M_PI_2; // sin(-pi/2) is minimal
+				regenerationInterval = interval;
 			}
 			// change regeneration speed
 			else if ( interval != regenerationInterval )
