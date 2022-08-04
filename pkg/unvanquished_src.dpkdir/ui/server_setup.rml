@@ -7,6 +7,8 @@
 		<h1><translate>Server Setup</translate></h1>
 
 		<tabset>
+
+		<!-- GENERAL SERVER CONFIG -->
 		<tab><translate>General</translate></tab><panel>
 			<row>
 				<h3><translate>Friendly fire damage multipliers</translate></h3>
@@ -62,6 +64,7 @@
 			</row>
 		</panel>
 
+		<!-- GENERAL BOT CONFIG -->
 		<tab>Bots: General</tab><panel>
 			<row>
 				<h3> minimum team size </h3>
@@ -107,6 +110,7 @@
 			</row>
 		</panel>
 
+		<!-- HUMANS BOT CONFIG -->
 		<tab>Bots: Humans </tab> <panel>
 			<h2> Overall </h2>
 			<row>
@@ -155,9 +159,9 @@
 				<input cvar="g_bot_lcannon" type="checkbox" />
 				<h3> Lucifer Cannon </h3>
 			</row>
-
 		</panel>
 
+		<!-- ALIENS BOT CONFIG -->
 		<tab>Bots: Aliens </tab> <panel>
 			<h2> Overall </h2>
 			<row>
