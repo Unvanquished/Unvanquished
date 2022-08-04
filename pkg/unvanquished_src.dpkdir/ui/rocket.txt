@@ -51,7 +51,6 @@
 		ui/server_create.rml
 
 		ui/server_setup.rml
-		ui/server_bots.rml
 
 		ui/callvote_draw.rml
 		ui/callvote_map.rml
