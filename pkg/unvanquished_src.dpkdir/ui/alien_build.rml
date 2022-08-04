@@ -115,7 +115,7 @@ tabs {
 		local circlemenu = document:GetElementById("alienBuildMenu")
 		circlemenu.inner_rml = CirclemenuSkeleton(#alien_buildables)
 		for i = 1,#alien_buildables do
-			circlemenu.child_nodes[i].inner_rml = string.format(
+			circlemenu.child_nodes[i+1].inner_rml = string.format(
 				'<button class=%s onclick="AlienBuildableClick(%d,event)" onmouseover="AlienBuildableHover(document,%d)">%s<img src="/%s"/></button>',
 				alien_buildables[i][5], i, i, AvailabilityIcon(alien_buildables[i][5]), alien_buildables[i][1])
 		end

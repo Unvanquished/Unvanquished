@@ -67,7 +67,7 @@
 				local circlemenu = document:GetElementById("beaconMenu")
 				circlemenu.inner_rml = CirclemenuSkeleton(#beacons)
 				for i=1,#beacons do
-					circlemenu.child_nodes[i].inner_rml = string.format(
+					circlemenu.child_nodes[i+1].inner_rml = string.format(
 						'<button onclick="BeaconClick(%d, event)" onmouseover="BeaconHover(document,%d)"><img src="/%s"/></button>',
 						i, i, beacons[i][1])
 				end
