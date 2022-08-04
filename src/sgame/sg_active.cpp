@@ -2257,6 +2257,27 @@ void ClientThink( int clientNum )
 	{
 		ClientThink_real( ent );
 	}
+
+	// ugly hack alert, this cannot run in ClientBegin() as it runs too early, and the menu doesn't show.
+	// display the help menu, if connecting the first time
+	if ( !ent->client->sess.seenWelcome 
+	     && ( ent->client->pers.enterTime + 250 < level.time ) )
+	{
+		ent->client->sess.seenWelcome = 1;
+
+		// 0 - don't show
+		// 1 - always show to all
+		// 2 - show only to unregistered
+		switch ( g_showHelpOnConnection.Get() )
+		{
+		case 0:
+			if (0)
+		default:
+			if ( !ent->client->pers.admin )
+		case 1:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_WELCOME );
+		}
+	}
 }
 
 void G_RunClient( gentity_t *ent )

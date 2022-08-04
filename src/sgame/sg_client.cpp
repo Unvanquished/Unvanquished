@@ -1355,25 +1355,6 @@ void ClientBegin( int clientNum )
 
 	// count current clients and rank for scoreboard
 	CalculateRanks();
-
-	// display the help menu, if connecting the first time
-	if ( !client->sess.seenWelcome )
-	{
-		client->sess.seenWelcome = 1;
-
-		// 0 - don't show
-		// 1 - always show to all
-		// 2 - show only to unregistered
-		switch ( g_showHelpOnConnection.Get() )
-		{
-		case 0:
-			if (0)
-		default:
-			if ( !client->pers.admin )
-		case 1:
-			G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
-		}
-	}
 }
 
 /** Creates basic client entity of specific type, copying state from an old instance. */

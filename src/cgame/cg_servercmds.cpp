@@ -415,6 +415,7 @@ static void CG_Menu( int menuType, int arg )
 	switch ( menuType )
 	{
 		case MN_WELCOME:
+			Rocket_DocumentAction( "changelog", "show" );
 			break;
 
 		case MN_TEAM:
