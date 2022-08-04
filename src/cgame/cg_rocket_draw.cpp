@@ -2250,6 +2250,11 @@ public:
 		int newNumBarbs = cg.snap->ps.ammo;
 		int interval = BG_GetBarbRegenerationInterval( cg.snap->ps );
 
+		if ( BG_PrimaryWeapon( cg.snap->ps.stats ) != WP_ALEVEL3_UPG )
+		{
+			return;
+		}
+
 		if ( newNumBarbs < maxBarbs )
 		{
 			// start regenerating barb now
