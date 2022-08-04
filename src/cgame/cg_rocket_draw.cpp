@@ -917,26 +917,19 @@ private:
 	Color::Color backColor;
 };
 
-class PositionElement : public HudElement
+class PositionElement : public TextHudElement
 {
 public:
 	PositionElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_GAME, true )
+			TextHudElement( tag, ELEMENT_GAME, true )
 	{
-		Rml::XMLAttributes xml;
-		currentPositionElement = dynamic_cast< Rml::ElementText* >( AppendChild( Rml::Factory::InstanceElement(
-			this,
-			"#text",
-			"span",
-			xml) ) );
-		currentPositionElement->SetClass( "position_current", true );
 	}
 
 	void DoOnRender() override
 	{
 		if ( !cg_drawPosition.Get() )
 		{
-			currentPositionElement->SetText( "" );
+			SetText( "" );
 		}
 		else
 		{
@@ -948,13 +941,10 @@ public:
 
 				// HACK: Put extra spaces to separate the children because setting them to block makes them disappear.
 				// TODO: Figure out why setting these two elements to block makes them disappear.
-				currentPositionElement->SetText( va( "%0.0f   %0.0f   %0.0f", origin[0], origin[1], origin[2] ) );
+				SetText( va( "%0.0f   %0.0f   %0.0f", origin[0], origin[1], origin[2] ) );
 			}
 		}
 	}
-
-private:
-	Rml::ElementText* currentPositionElement;
 };
 
 class CreditsValueElement : public TextHudElement
