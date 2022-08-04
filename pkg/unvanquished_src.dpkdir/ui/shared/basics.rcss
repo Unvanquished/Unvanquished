@@ -100,7 +100,7 @@ progress
 {
 	display: block;
 	z-index: -1;
-	decorator: image( /gfx/colors/white );
+	fill-image: /gfx/colors/white;
 }
 
 .material-icon {
