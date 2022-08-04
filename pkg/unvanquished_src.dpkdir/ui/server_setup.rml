@@ -62,139 +62,135 @@
 			</row>
 		</panel>
 
-		<tab><translate>Bots</translate></tab><panel>
-			<tabset>
-				<tab>General</tab><panel>
-					<row>
-						<h3> minimum team size </h3>
-						<input type="range" min="0" max="31" step="1" cvar="g_bot_defaultFill"/>
-						<p class="inline"> Fill teams until they have enough players (only works for future games) </p>
-					</row>
-					<row>
-						<h3> default skill level </h3>
-						<input type="range" min="1" max="9" step="1" cvar="g_bot_default_skill"/>
-						<p class="inline"> only works for new bots </p>
-					</row>
-					<h2> Humanity </h2>
-					<row>
-						<input type="range" min="45" max="360" step="1" cvar="g_bot_fov"/>
-						<h3> Field of view </h3>
-						<p class="inline">
-							Current: <inlinecvar cvar="g_bot_fov" type="number" format="%.0f"/> degrees
-							<ilink onclick='Events.pushevent("exec reset g_bot_fov", event)'> (reset) </ilink>
-						</p>
-					</row>
-					<row>
-						<input type="range" min="0" max="2000" step="10" cvar="g_bot_reactiontime"/>
-						<h3> Reaction time </h3>
-						<p class="inline">
-							Current: <inlinecvar cvar="g_bot_reactiontime" type="number" format="%.0f"/> msecs
-							<ilink onclick='Events.pushevent("exec reset g_bot_reactiontime", event)'> (reset) </ilink>
-						</p>
-					</row>
+		<tab>Bots: General</tab><panel>
+			<row>
+				<h3> minimum team size </h3>
+				<input type="range" min="0" max="31" step="1" cvar="g_bot_defaultFill"/>
+				<p class="inline"> Fill teams until they have enough players (only works for future games) </p>
+			</row>
+			<row>
+				<h3> default skill level </h3>
+				<input type="range" min="1" max="9" step="1" cvar="g_bot_default_skill"/>
+				<p class="inline"> only works for new bots </p>
+			</row>
+			<h2> Humanity </h2>
+			<row>
+				<input type="range" min="45" max="360" step="1" cvar="g_bot_fov"/>
+				<h3> Field of view </h3>
+				<p class="inline">
+					Current: <inlinecvar cvar="g_bot_fov" type="number" format="%.0f"/> degrees
+					<ilink onclick='Events.pushevent("exec reset g_bot_fov", event)'> (reset) </ilink>
+				</p>
+			</row>
+			<row>
+				<input type="range" min="0" max="2000" step="10" cvar="g_bot_reactiontime"/>
+				<h3> Reaction time </h3>
+				<p class="inline">
+					Current: <inlinecvar cvar="g_bot_reactiontime" type="number" format="%.0f"/> msecs
+					<ilink onclick='Events.pushevent("exec reset g_bot_reactiontime", event)'> (reset) </ilink>
+				</p>
+			</row>
 
-					<h2> Behaviour </h2>
-					<row>
-						<input cvar="g_bot_attackStruct" type="checkbox" />
-						<h3> Attack structures </h3>
-					</row>
-					<h2>Cheating</h2>
-					<row>
-						<input cvar="g_bot_infinite_funds" type="checkbox" />
-						<h3> Infinite funds </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_infiniteMomentum" type="checkbox" />
-						<h3> Ignore momentum </h3>
-					</row>
-				</panel>
+			<h2> Behaviour </h2>
+			<row>
+				<input cvar="g_bot_attackStruct" type="checkbox" />
+				<h3> Attack structures </h3>
+			</row>
+			<h2>Cheating</h2>
+			<row>
+				<input cvar="g_bot_infinite_funds" type="checkbox" />
+				<h3> Infinite funds </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_infiniteMomentum" type="checkbox" />
+				<h3> Ignore momentum </h3>
+			</row>
+		</panel>
 
-				<tab> Humans </tab> <panel>
-					<h2> Overall </h2>
-					<row>
-						<input cvar="g_bot_buy" type="checkbox" />
-						<h3> Human bots purchase equipment </h3>
-					</row>
+		<tab>Bots: Humans </tab> <panel>
+			<h2> Overall </h2>
+			<row>
+				<input cvar="g_bot_buy" type="checkbox" />
+				<h3> Human bots purchase equipment </h3>
+			</row>
 
-					<h2> Individually </h2>
-					<row>
-						<input cvar="g_bot_ckit" type="checkbox" />
-						<h3> Construction Kit (repairs) </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_rifle" type="checkbox" />
-						<h3> SMG </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_painsaw" type="checkbox" />
-						<h3> Painsaw </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_shotgun" type="checkbox" />
-						<h3> Shotgun </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_lasgun" type="checkbox" />
-						<h3> Lasgun </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_mdriver" type="checkbox" />
-						<h3> Mass Driver </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_chain" type="checkbox" />
-						<h3> Chaingun </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_flamer" type="checkbox" />
-						<h3> Flamethrower </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_prifle" type="checkbox" />
-						<h3> Pulse Rifle </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_lcannon" type="checkbox" />
-						<h3> Lucifer Cannon </h3>
-					</row>
+			<h2> Individually </h2>
+			<row>
+				<input cvar="g_bot_ckit" type="checkbox" />
+				<h3> Construction Kit (repairs) </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_rifle" type="checkbox" />
+				<h3> SMG </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_painsaw" type="checkbox" />
+				<h3> Painsaw </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_shotgun" type="checkbox" />
+				<h3> Shotgun </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_lasgun" type="checkbox" />
+				<h3> Lasgun </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_mdriver" type="checkbox" />
+				<h3> Mass Driver </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_chain" type="checkbox" />
+				<h3> Chaingun </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_flamer" type="checkbox" />
+				<h3> Flamethrower </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_prifle" type="checkbox" />
+				<h3> Pulse Rifle </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_lcannon" type="checkbox" />
+				<h3> Lucifer Cannon </h3>
+			</row>
 
-				</panel>
+		</panel>
 
-				<tab> Aliens </tab> <panel>
-					<h2> Overall </h2>
-					<row>
-						<input cvar="g_bot_evolve" type="checkbox" />
-						<h3> Alien bots morph </h3>
-					</row>
+		<tab>Bots: Aliens </tab> <panel>
+			<h2> Overall </h2>
+			<row>
+				<input cvar="g_bot_evolve" type="checkbox" />
+				<h3> Alien bots morph </h3>
+			</row>
 
-					<h2> Individually </h2>
-					<row>
-						<input cvar="g_bot_level1" type="checkbox" />
-						<h3> Mantis </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_level2" type="checkbox" />
-						<h3> Marauder </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_level2upg" type="checkbox" />
-						<h3> Advanced Marauder </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_level3" type="checkbox" />
-						<h3> Dragoon </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_level3upg" type="checkbox" />
-						<h3> Advanced Dragoon </h3>
-					</row>
-					<row>
-						<input cvar="g_bot_level4" type="checkbox" />
-						<h3> Tyrant </h3>
-					</row>
-				</panel>
-				</tabset>
-			</panel>
+			<h2> Individually </h2>
+			<row>
+				<input cvar="g_bot_level1" type="checkbox" />
+				<h3> Mantis </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_level2" type="checkbox" />
+				<h3> Marauder </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_level2upg" type="checkbox" />
+				<h3> Advanced Marauder </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_level3" type="checkbox" />
+				<h3> Dragoon </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_level3upg" type="checkbox" />
+				<h3> Advanced Dragoon </h3>
+			</row>
+			<row>
+				<input cvar="g_bot_level4" type="checkbox" />
+				<h3> Tyrant </h3>
+			</row>
+		</panel>
 
 		</tabset>
 	</body>
