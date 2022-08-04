@@ -62,7 +62,7 @@
 
 							<h2><translate>Configuration</translate></h2>
 							<indent>
-								<blocklink onclick='Events.pushevent("show server_general", event)'><translate>Server setup</translate></blocklink>
+								<blocklink onclick='Events.pushevent("show server_setup", event)'><translate>Server setup</translate></blocklink>
 								<blocklink onclick='Events.pushevent("show server_bots", event)'><translate>Bot settings</translate></blocklink>
 							</indent>
 
