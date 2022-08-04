@@ -78,6 +78,10 @@
 			image-color: rgba(108, 200, 255, 200);
 		}
 
+		region.oxygen progress {
+			width: 100%;
+		}
+
 		minimap {
 			display: block;
 			width: 12em;
