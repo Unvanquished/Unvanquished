@@ -108,6 +108,30 @@
 			</row>
 		</panel>
 
+		<!-- BUILDPOINTS CONFIG -->
+		<tab> Build system </tab><panel>
+			<row>
+				<h3> Starting value </h3>
+				<input type="range" min="0" max="400" step="10" cvar="g_BPInitialBudget"/>
+				<p class="inline"> Initial build points count </p>
+			</row>
+			<row>
+				<h3> Miner bonus </h3>
+				<input type="range" min="0" max="400" step="10" cvar="g_BPBudgetPerMiner"/>
+				<p class="inline"> Budget per Miner </p>
+			</row>
+			<row>
+				<h3> Initial regeneration speed </h3>
+				<input type="range" min="0" max="50" step="4" cvar="g_BPInitialBudget"/>
+				<p class="inline"> Initial build points count </p>
+			</row>
+			<row>
+				<h3> Half regeneration time </h3>
+				<input type="range" min="0" max="60" step="2" cvar="g_BPRecoveryRateHalfLife"/>
+				<p class="inline"> The duration one will wait before BP recovery gets twice as slow (in minutes) </p>
+			</row>
+		</panel>
+
 		<!-- GENERAL BOT CONFIG -->
 		<tab>Bots: General</tab><panel>
 			<row>
