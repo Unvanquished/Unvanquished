@@ -14,8 +14,8 @@ body
 .circlemenu icon{
 	display:inline-block;
 	position:absolute;
-	bottom: .8em;
-	right: -.6em;
+	bottom: 0.3em;
+	right: 0.75em;
 	font-size: 1.7em;
 }
 .circlemenu button {

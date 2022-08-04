@@ -1,10 +1,11 @@
 /* circlemenu */
 
 .circlemenu tab {
-	width: 8%;
 	color: #83fff5;
 	white-space: nowrap;
 	text-align: center;
+	padding-left: 25dp;
+	padding-right: 25dp;
 }
 
 .circlemenu tab:selected {
@@ -20,9 +21,11 @@ tabset.circlemenu panel {
 }
 
 tabset.circlemenu tabs {
+	display: inline;
 	position: absolute;
 	top: 50%;
-	margin: -17em auto 0;
+	margin: -225dp auto auto;
+	width: 100%;
 }
 
 div.circlemenu-circle {
