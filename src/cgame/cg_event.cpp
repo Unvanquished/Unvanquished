@@ -956,14 +956,20 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_WATER_UNDER:
-			cg.underwater = true;
-			cg.underwaterTime = cg.time;
+			if ( clientNum == cg.clientNum )
+			{
+				cg.underwater = true;
+				cg.underwaterTime = cg.time;
+			}
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.watrUnSound );
 			break;
 
 		case EV_WATER_CLEAR:
-			cg.underwater = false;
-			cg.underwaterTime = cg.time;
+			if ( clientNum == cg.clientNum )
+			{
+				cg.underwater = false;
+				cg.underwaterTime = cg.time;
+			}
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, CG_CustomSound( es->number, "*gasp" ) );
 			break;
 
