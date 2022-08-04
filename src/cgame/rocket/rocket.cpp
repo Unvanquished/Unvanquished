@@ -306,23 +306,6 @@ void Rocket_RocketDebug_f()
 	}
 
 	Rml::Debugger::SetVisible( !Rml::Debugger::IsVisible() );
-
-	if ( Rml::Debugger::IsVisible() )
-	{
-		if ( !Q_stricmp( CG_Argv( 1 ), "hud" ) )
-		{
-			Rml::Debugger::SetContext( hudContext );
-		}
-		else
-		{
-			Rml::Debugger::SetContext( menuContext );
-		}
-		CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
-	}
-	else
-	{
-		CG_SetKeyCatcher( rocketInfo.keyCatcher & ~KEYCATCH_UI );
-	}
 }
 
 void Rocket_Lua_f( void )
