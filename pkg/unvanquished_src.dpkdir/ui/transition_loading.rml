@@ -81,6 +81,7 @@
 				left: 0em;
 				bottom: 10em;
 				text-align: center;
+				width: 100%;
 			}
 
 			servername {
