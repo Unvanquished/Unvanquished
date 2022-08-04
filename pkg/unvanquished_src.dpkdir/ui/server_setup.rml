@@ -11,6 +11,11 @@
 		<!-- GENERAL SERVER CONFIG -->
 		<tab><translate>General</translate></tab><panel>
 			<row>
+				<h3><translate>Free funds frequency</translate></h3>
+				<input type="range" min="0" max="3600" step="1" cvar="g_freeFundPeriod" />
+				<p><translate>Reward players to stay alive every few seconds</translate></p>
+			</row>
+			<row>
 				<h3><translate>Friendly fire damage multipliers</translate></h3>
 				<input type="range" min="0" max="1" step="0.05" cvar="g_friendlyFireAlienMultiplier" />
 				<p><translate>Alien:</translate>&nbsp;<inlinecvar cvar="g_friendlyFireAlienMultiplier" type="number" format="%.2f"/></p>
