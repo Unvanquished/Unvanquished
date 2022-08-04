@@ -89,23 +89,11 @@ static float CG_Rocket_GetStaminaProgress()
 
 static float CG_Rocket_GetPlayerOxygenProgress()
 {
-	// Hack to show prettier output by flowing the bar back up for a short
-	// time. It doesn't correspond to anything in the game physics.
-	static constexpr int breathAgainDuration = 350; // ms
-	static float lastValue = 1.0f;
-
 	// regular progress bar status
 	if ( cg.underwater )
 	{
 		float underwaterDuration = cg.time - cg.underwaterTime;
-		lastValue = 1.0f - underwaterDuration / static_cast<float>( OXYGEN_MAX_TIME );
-		return lastValue;
-	}
-
-	float overwaterDuration = cg.time - cg.underwaterTime;
-	if ( overwaterDuration < (1.0f - lastValue) * breathAgainDuration )
-	{
-		return lastValue + overwaterDuration / breathAgainDuration;
+		return 1.0f - underwaterDuration / static_cast<float>( OXYGEN_MAX_TIME );
 	}
 
 	return 0.0f;
