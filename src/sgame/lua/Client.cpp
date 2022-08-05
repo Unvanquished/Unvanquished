@@ -69,6 +69,8 @@ GET_FUNC( ping, lua_pushinteger(L, c->ent->client->ps.ping ) )
 GET_FUNC( class, lua_pushstring(L, BG_Class(c->ent->client->ps.stats[STAT_CLASS] )->name ) )
 GET_FUNC( stamina, lua_pushinteger(L, c->ent->client->ps.stats[STAT_STAMINA] ) )
 GET_FUNC( score, lua_pushinteger(L, c->ent->client->pers.namelog->score ) )
+GET_FUNC( god, lua_pushboolean(L, c->ent->flags & FL_GODMODE ) )
+GET_FUNC( notarget, lua_pushboolean(L, c->ent->flags & FL_NOTARGET ) )
 
 int Methodkill(lua_State* L, Client* c)
 {
@@ -134,6 +136,8 @@ luaL_Reg ClientGetters[] =
     GETTER( class ),
     GETTER( stamina ),
     GETTER( score ),
+    GETTER( god ),
+    GETTER( notarget ),
 	{ nullptr, nullptr },
 };
 
@@ -228,6 +232,38 @@ int Setstamina(lua_State* L)
     return 0;
 }
 
+int Setgod(lua_State* L)
+{
+    Client* c = LuaLib<Client>::check(L, 1);
+    if (!c) return 0;
+    bool god = lua_toboolean(L, 2);
+    if (god)
+    {
+        c->ent->flags |= FL_GODMODE;
+    }
+    else
+    {
+        c->ent->flags &= ~FL_GODMODE;
+    }
+    return 0;
+}
+
+int Setnotarget(lua_State* L)
+{
+    Client* c = LuaLib<Client>::check(L, 1);
+    if (!c) return 0;
+    bool notarget = lua_toboolean(L, 2);
+    if (notarget)
+    {
+        c->ent->flags |= FL_NOTARGET;
+    }
+    else
+    {
+        c->ent->flags &= ~FL_NOTARGET;
+    }
+    return 0;
+}
+
 #define SETTER(name) { #name, Set##name }
 luaL_Reg ClientSetters[] =
 {
@@ -236,7 +272,8 @@ luaL_Reg ClientSetters[] =
     SETTER(evos),
     SETTER(health),
     SETTER(stamina),
-
+    SETTER(god),
+    SETTER(notarget),
 	{ nullptr, nullptr },
 };
 
