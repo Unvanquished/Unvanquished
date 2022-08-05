@@ -60,7 +60,7 @@ void Rocket_LoadDocument( const char *path )
 // Scale the UI proportional to the screen size
 void Rocket_SetDocumentScale( Rml::ElementDocument& document )
 {
-	// This makes 1dp one pixel on a 1920�1080 screen
+	// This makes 1dp one pixel on a 1366x768 screen
 	float size = std::min( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight );
 	float ratio = size / 768.0f;
 	document.GetContext()->SetDensityIndependentPixelRatio(ratio);
