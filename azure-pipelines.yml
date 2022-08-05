@@ -5,8 +5,8 @@ strategy:
   matrix:
     Linux GCC Native DLL:
       VM_IMAGE: 'ubuntu-18.04'
-      INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install zlib1g-dev libfreetype6-dev liblua5.2-dev python-yaml python-jinja2 ninja-build libncursesw5-dev'
-      CMAKE_OPTIONS: '-G Ninja -DDAEMON_CBSE_PYTHON_PATH=/usr/bin/python2 -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
+      INSTALL_DEPS: 'sudo apt-get update && sudo apt-get -y -q --no-install-recommends install zlib1g-dev libfreetype6-dev liblua5.2-dev python-yaml python-jinja2 ninja-build libncursesw5-dev gcc-8 g++-8'
+      CMAKE_OPTIONS: '-G Ninja -DDAEMON_CBSE_PYTHON_PATH=/usr/bin/python2 -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
       BUILDER_OPTIONS: '-j$(nproc) -k 10'
     Linux Clang Native DLL:
       VM_IMAGE: 'ubuntu-18.04'
