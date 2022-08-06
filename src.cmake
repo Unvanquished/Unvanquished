@@ -348,6 +348,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/lua/Level.cpp
     ${GAMELOGIC_DIR}/sgame/lua/Client.h
     ${GAMELOGIC_DIR}/sgame/lua/Client.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Buildable.h
+    ${GAMELOGIC_DIR}/sgame/lua/Buildable.cpp
     ${GAMELOGIC_DIR}/sgame/lua/SGameGlobal.cpp
     ${GAMELOGIC_DIR}/sgame/lua/SGameGlobal.h
 
