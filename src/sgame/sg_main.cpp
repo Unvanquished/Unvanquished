@@ -37,7 +37,7 @@ level_locals_t level;
 gentity_t          *g_entities;
 gclient_t          *g_clients;
 
-Cvar::Range<Cvar::Cvar<int>> g_showHelpOnConnection("g_showHelpOnConnection", "show MN_WELCOME on connect (1 = all, 2 = unregistered)", Cvar::NONE, 1, 0, 2);
+Cvar::Range<Cvar::Cvar<int>> g_showHelpOnConnection("g_showHelpOnConnection", "show MN_WELCOME on connect (1 = all, 2 = unregistered)", Cvar::NONE, 0, 0, 2);
 
 Cvar::Range<Cvar::Cvar<int>> g_gravity(
 		"g_gravity",
