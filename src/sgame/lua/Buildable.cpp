@@ -47,6 +47,21 @@ namespace Unv {
 namespace SGame {
 namespace Lua {
 
+static int Methoddecon(lua_State* L, Buildable* b)
+{
+    if (b && b->ent && b->ent->s.eType == entityType_t::ET_BUILDABLE)
+    {
+        G_DeconstructUnprotected( b->ent, nullptr );
+    }
+    return 0;
+}
+
+RegType<Buildable> BuildableMethods[] =
+{
+    { "decon", Methoddecon },
+    { nullptr, nullptr },
+};
+
 #define GET_FUNC( var, func) \
 static int Get##var( lua_State* L ) \
 { \
@@ -60,16 +75,36 @@ static int Get##var( lua_State* L ) \
 	return 1; \
 }
 
+static inline BuildableComponent* bc( gentity_t* ent )
+{
+    BuildableComponent* c = ent->entity->Get<BuildableComponent>();
+    if ( !c )
+    {
+        Sys::Drop( "Expected BuildableComponent for entity %s", etos(ent) );
+        return nullptr;
+    }
+    return c;
+}
+
+static inline HealthComponent* hc( gentity_t* ent )
+{
+    HealthComponent* c = ent->entity->Get<HealthComponent>();
+    if ( !c )
+    {
+        Sys::Drop( "Expected HealthComponent for entity %s", etos(ent) );
+        return nullptr;
+    }
+    return c;
+}
+
 GET_FUNC( name, lua_pushstring(L, BG_Buildable( c->ent->s.modelindex )->name ) )
-GET_FUNC( powered, lua_pushboolean(L, c->ent->powered ) )
+GET_FUNC( powered, lua_pushboolean(L, bc(c->ent)->Powered() ) )
 GET_FUNC( target, LuaLib<EntityProxy>::push( L, Entity::CreateProxy( c->ent->target.get(), L ) ) )
 GET_FUNC( health, lua_pushnumber(L, Entities::HealthOf( c->ent ) ) )
 GET_FUNC( team, lua_pushstring(L, BG_TeamName(c->ent->buildableTeam) ) )
+GET_FUNC( marked, lua_pushboolean(L, bc(c->ent)->MarkedForDeconstruction() ) )
+GET_FUNC( marked_time, lua_pushinteger(L, bc(c->ent)->GetMarkTime() ) )
 
-RegType<Buildable> BuildableMethods[] =
-{
-    { nullptr, nullptr },
-};
 #define GETTER(name) { #name, Get##name }
 luaL_Reg BuildableGetters[] =
 {
@@ -78,13 +113,70 @@ luaL_Reg BuildableGetters[] =
     GETTER( target ),
     GETTER( health ),
     GETTER( team ),
+    GETTER( marked ),
+    GETTER( marked_time ),
 	{ nullptr, nullptr },
 };
 
 
+#define SET_FUNC( var, func) \
+static int Set##var( lua_State* L ) \
+{ \
+    Buildable* c = LuaLib<Buildable>::check(L, 1); \
+    if (!c || !c->ent || c->ent->s.eType != entityType_t::ET_BUILDABLE) \
+    { \
+        Log::Warn("trying to access stale buildable info!"); \
+        return 0; \
+    } \
+	func; \
+	return 0; \
+}
+
+SET_FUNC( powered, c->ent->powered = lua_toboolean(L, 2) )
+SET_FUNC( health, hc(c->ent)->SetHealth(luaL_checknumber(L, 2)) )
+
+static int Settarget(lua_State* L)
+{
+    Buildable* c = LuaLib<Buildable>::check(L, 1);
+    if (!c || !c->ent || c->ent->s.eType != entityType_t::ET_BUILDABLE)
+    {
+        Log::Warn("trying to access stale buildable info!");
+        return 0;
+    }
+    EntityProxy* proxy = LuaLib<EntityProxy>::check(L, 2);
+    if (!proxy || !proxy->ent)
+    {
+        c->ent->target = nullptr;
+        return 0;
+    }
+    c->ent->target = proxy->ent;
+	return 0;
+}
+
+static int Setmarked(lua_State* L)
+{
+    Buildable* c = LuaLib<Buildable>::check(L, 1);
+    if (!c || !c->ent || c->ent->s.eType != entityType_t::ET_BUILDABLE)
+    {
+        Log::Warn("trying to access stale buildable info!");
+        return 0;
+    }
+    BuildableComponent* b = bc(c->ent);
+    bool mark = lua_toboolean(L, 2);
+    if (mark != b->MarkedForDeconstruction())
+    {
+        b->ToggleDeconstructionMark();
+    }
+	return 0;
+}
+
 #define SETTER(name) { #name, Set##name }
 luaL_Reg BuildableSetters[] =
 {
+    SETTER( powered ),
+    SETTER( target ),
+    SETTER( health ),
+    SETTER( marked ),
 	{ nullptr, nullptr },
 };
 

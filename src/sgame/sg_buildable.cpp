@@ -1006,7 +1006,7 @@ bool G_CheckDeconProtectionAndWarn( gentity_t *buildable, gentity_t *player )
 
 void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 {
-	if ( !g_instantBuilding.Get() )
+	if ( !g_instantBuilding.Get() && ent )
 	{
 		// Check if the buildable is protected from instant deconstruction.
 		G_CheckDeconProtectionAndWarn( buildable, ent );
