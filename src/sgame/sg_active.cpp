@@ -2265,16 +2265,9 @@ void ClientThink( int clientNum )
 	{
 		ent->client->sess.seenWelcome = 1;
 
-		// 0 - don't show
-		// 1 - always show to all
-		// 2 - show only to unregistered
-		switch ( g_showHelpOnConnection.Get() )
+		if ( g_showHelpOnConnection.Get() == 2
+				|| ( g_showHelpOnConnection.Get() == 1 && !ent->client->pers.admin ) )
 		{
-		case 0:
-			if (0)
-		default:
-			if ( !ent->client->pers.admin )
-		case 1:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_WELCOME );
 		}
 	}
