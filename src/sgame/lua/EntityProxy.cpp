@@ -114,6 +114,22 @@ static int Getclient(lua_State* L)
 	return 1;
 }
 
+static int Getbuildable(lua_State* L)
+{
+	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+	if (!proxy || !proxy->ent || proxy->ent->s.eType != entityType_t::ET_BUILDABLE) 
+	{
+		proxy->buildable.reset();
+		return 0;
+	}
+	if (!proxy->buildable || proxy->buildable->ent != proxy->ent)
+	{
+		proxy->buildable.reset(new Buildable(proxy->ent));
+	}
+	LuaLib<Buildable>::push(L, proxy->buildable.get(), false);
+	return 1;
+}
+
 static int Setorigin(lua_State* L)
 {
 	if (lua_istable(L, 2))
@@ -326,6 +342,7 @@ luaL_Reg EntityProxyGetters[] =
 	GETTER(pain),
 	GETTER(die),
 	GETTER(client),
+	GETTER(buildable),
 
 	{ nullptr, nullptr }
 };

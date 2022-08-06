@@ -32,61 +32,72 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef LUAENTITYPROXY_H_
-#define LUAENTITYPROXY_H_
-
-#include <unordered_map>
-
-#include "shared/bg_lua.h"
-#include "sgame/lua/Client.h"
 #include "sgame/lua/Buildable.h"
+#include "shared/lua/LuaLib.h"
 #include "sgame/sg_local.h"
+#include "sgame/Entities.h"
+#include "sgame/CBSE.h"
+#include "sgame/lua/Entity.h"
+#include "sgame/lua/EntityProxy.h"
+
+using Unv::Shared::Lua::LuaLib;
+using Unv::Shared::Lua::RegType;
 
 namespace Unv {
 namespace SGame {
 namespace Lua {
 
-struct EntityProxy
+#define GET_FUNC( var, func) \
+static int Get##var( lua_State* L ) \
+{ \
+    Buildable* c = LuaLib<Buildable>::check(L, 1); \
+    if (!c || !c->ent || c->ent->s.eType != entityType_t::ET_BUILDABLE) \
+    { \
+        Log::Warn("trying to access stale buildable info!"); \
+        return 0; \
+    } \
+	func; \
+	return 1; \
+}
+
+GET_FUNC( name, lua_pushstring(L, BG_Buildable( c->ent->s.modelindex )->name ) )
+GET_FUNC( powered, lua_pushboolean(L, c->ent->powered ) )
+GET_FUNC( target, LuaLib<EntityProxy>::push( L, Entity::CreateProxy( c->ent->target.get(), L ) ) )
+GET_FUNC( health, lua_pushnumber(L, Entities::HealthOf( c->ent ) ) )
+GET_FUNC( team, lua_pushstring(L, BG_TeamName(c->ent->buildableTeam) ) )
+
+RegType<Buildable> BuildableMethods[] =
 {
-	EntityProxy(gentity_t* ent, lua_State* L);
-	gentity_t* ent;
+    { nullptr, nullptr },
+};
+#define GETTER(name) { #name, Get##name }
+luaL_Reg BuildableGetters[] =
+{
+    GETTER( name ),
+    GETTER( powered ),
+    GETTER( target ),
+    GETTER( health ),
+    GETTER( team ),
+	{ nullptr, nullptr },
+};
 
-	enum FunctionType
-	{
-		THINK,
-		RESET,
-		REACHED,
-		BLOCKED,
-		TOUCH,
-		USE,
-		PAIN,
-		DIE,
-	};
 
-	struct EntityFunction
-	{
-		FunctionType type;
-		int luaRef;
-		union {
-			// Storage for the original gentity's functions.
-			void ( *think )( gentity_t *self );
-			void ( *reset )( gentity_t *self );
-			void ( *reached )( gentity_t *self );
-			void ( *blocked )( gentity_t *self, gentity_t *other );
-			void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
-			void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
-			void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
-			void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
-		};
-	};
-	std::unordered_map<FunctionType, EntityFunction, std::hash<int>> funcs;
-	std::unique_ptr<Client> client;
-	std::unique_ptr<Buildable> buildable;
-	lua_State* L;
+#define SETTER(name) { #name, Set##name }
+luaL_Reg BuildableSetters[] =
+{
+	{ nullptr, nullptr },
 };
 
 } // namespace Lua
 } // namespace SGame
 } // namespace Unv
 
-#endif // LUAENTITYPROXY_H_
+namespace Unv {
+namespace Shared {
+namespace Lua {
+LUASGAMETYPEDEFINE(Buildable, false)
+template<>
+void ExtraInit<Unv::SGame::Lua::Buildable>(lua_State* /*L*/, int /*metatable_index*/) {}
+}  // namespace Lua
+}  // namespace Shared
+}  // namespace Unv
