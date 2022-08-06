@@ -206,7 +206,7 @@ int Sethealth(lua_State* L)
     if (!c) return 0;
     if (!lua_isnumber(L, 2))
     {
-        Log::Warn("Lua client.setevos expected number.");
+        Log::Warn("Lua client.sethealth expected number.");
     }
 
     HealthComponent* health = c->ent->entity->Get<HealthComponent>();
@@ -219,16 +219,16 @@ int Setstamina(lua_State* L)
 {
     Client* c = LuaLib<Client>::check(L, 1);
     if (!c) return 0;
-    if (c->ent->client->pers.team != TEAM_ALIENS)
+    if (c->ent->client->pers.team != TEAM_HUMANS)
     {
-        Log::Warn("Cannot add evos to non-alien team member.");
+        Log::Warn("Cannot add stamina to non-human team member.");
     }
-    if (!lua_isnumber(L, 2))
+    if (!lua_isinteger(L, 2))
     {
-        Log::Warn("Lua client.setevos expected number.");
+        Log::Warn("Lua client.setstamina expected number.");
     }
 
-    c->ent->client->ps.stats[STAT_STAMINA] = (luaL_checknumber(L, 2));
+    c->ent->client->ps.stats[STAT_STAMINA] = luaL_checkinteger(L, 2);
     return 0;
 }
 
