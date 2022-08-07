@@ -1703,7 +1703,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	}
 
 	int max_miners = g_maxMiners.Get();
-	if (max_miners >= 0)
+	if (max_miners >= 0 && (buildable == BA_H_DRILL || buildable == BA_A_LEECH))
 	{
 		// maybe rewrite loop as
 		//   ForEntities([](Entity& entity, MiningComponent& mining) {});
@@ -1713,8 +1713,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		{
 			if (tmp->s.eType == entityType_t::ET_BUILDABLE) 
 			{
-				HealthComponent* health = tmp->entity->Get<HealthComponent>();
-				if (!G_OnSameTeam(tmp, ent) || !health->Alive() || !Entities::IsAlive(tmp))
+				if (!G_OnSameTeam(tmp, ent) || !Entities::IsAlive(tmp))
 				{
 					continue;
 				}
