@@ -1703,16 +1703,17 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	}
 
 	int max_miners = g_maxMiners.Get();
-	if (max_miners >= 0 && (buildable == BA_H_DRILL || buildable == BA_A_LEECH))
+	if ( max_miners >= 0 && ( buildable == BA_H_DRILL || buildable == BA_A_LEECH ) )
 	{
 		int miners = 0;
-		ForEntities<MiningComponent>([&](Entity& entity, MiningComponent& mining) {
-			if (Entities::IsAlive(entity) && G_OnSameTeam(entity.oldEnt, ent))
+		ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& mining )
+		{
+			if ( Entities::IsAlive(entity) && G_OnSameTeam( entity.oldEnt, ent ) )
 			{
 				miners++;
 			}
 		});
-		if (miners >= max_miners)
+		if ( miners >= max_miners )
 		{
 			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOHUMANBP : IBE_NOALIENBP;
 		}
