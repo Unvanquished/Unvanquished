@@ -205,7 +205,7 @@ extern Cvar::Cvar<bool> g_bot_attackStruct;
 extern Cvar::Cvar<float> g_bot_fov;
 extern Cvar::Cvar<int> g_bot_chasetime;
 extern Cvar::Cvar<int> g_bot_reactiontime;
-extern Cvar::Cvar<int> g_bot_defaultFill;
+extern Cvar::Callback<Cvar::Cvar<int>> g_bot_defaultFill;
 extern Cvar::Cvar<bool> g_bot_infinite_funds;
 extern Cvar::Cvar<bool> g_bot_infiniteMomentum;
 

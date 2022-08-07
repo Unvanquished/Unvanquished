@@ -683,3 +683,13 @@ void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 
 	exhausted = exhausted && stamina <= jumpCost * 2;
 }
+
+void G_SetBotFill( int fill )
+{
+	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
+	{
+		level.team[team].botFillTeamSize = fill;
+	}
+
+	G_BotFill(true);
+}
