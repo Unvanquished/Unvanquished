@@ -135,7 +135,7 @@
 		}
 
 		/* Player weapon/class icons */
-		datagrid img
+		datagridcell:nth-child(1) img, datagridcolumn:nth-child(1) img
 		{
 			width: 1em;
 			height: 1em;
