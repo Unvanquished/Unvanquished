@@ -100,12 +100,14 @@
 	border-bottom-color: #CCCCCC;
 	border-right-color: #CCCCCC;
 	border-left-color: #CCCCCC;
+	display: block;
 }
 tab:selected .tabkey {
 	display: none;
 }
 tab {
 	position: relative;
+	display: inline-block;
 	top: 0.4em;
 }
 tab:selected {
