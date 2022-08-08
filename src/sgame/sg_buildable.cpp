@@ -1706,7 +1706,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	if ( max_miners >= 0 && ( buildable == BA_H_DRILL || buildable == BA_A_LEECH ) )
 	{
 		int miners = 0;
-		ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& mining )
+		ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& )
 		{
 			if ( Entities::IsAlive(entity) && G_OnSameTeam( entity.oldEnt, ent ) )
 			{
