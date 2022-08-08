@@ -125,7 +125,7 @@ tabs {
 </head>
 <body id="human_build" class="circlemenu human" onkeydown="CirclemenuHandleKey(event, document, HumanBuildableClick)" onshow="BuildHumanBuildMenu(document)">
 <tabset class="circlemenu">
-<tab></tab>
+<tab><translate>Build</translate></tab>
 <panel>
 <div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="humanBuildMenu"/>
