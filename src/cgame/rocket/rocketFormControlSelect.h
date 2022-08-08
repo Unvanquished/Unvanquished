@@ -50,7 +50,13 @@ public:
 		if ( it != changed_attributes.end() )
 		{
 			cvar = it->second.Get<Rml::String>();
-			UpdateValue();
+			// Don't try to compare values when none have been added yet. This will happen because
+			// attributes are parsed before children are added, so when this code runs initially,
+			// we will never have any children.
+			if ( GetNumOptions() > 0 )
+			{
+				UpdateValue();
+			}
 		}
 	}
 
@@ -95,8 +101,20 @@ public:
 
 	void UpdateValue()
 	{
-		Rml::String value = Cvar::GetValue( cvar.c_str() ).c_str();
-		SetValue( value );
+		Rml::String cvarValue = Cvar::GetValue( cvar.c_str() );
+		for ( int i = 0; i < GetNumOptions(); ++i )
+		{
+			Rml::Element* e = GetOption(i);
+			Rml::String value = e->GetAttribute<Rml::String>( "value", Rml::String() );
+			if ( value == cvarValue )
+			{
+				SetSelection( i );
+				return;
+			}
+		}
+		// No matches...Let's add an option for our current value.
+		Add( Str::Format( "Custom Value (%s)", cvarValue ), cvarValue, 0, false );
+		SetSelection(0);
 	}
 
 private:
