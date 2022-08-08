@@ -146,6 +146,7 @@
 
 		div.playername {
 			color: white;
+			padding-right: 10dp;
 		}
 
 	</style>
