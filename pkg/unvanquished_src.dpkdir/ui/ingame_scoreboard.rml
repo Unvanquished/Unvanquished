@@ -108,7 +108,7 @@
 		}
 
 		datagridcell:nth-child(1), datagridcolumn:nth-child(1) {
-                        max-width: 14%;
+                        max-width: 3em;
                         position: relative;
                         bottom: 0.1em;
                 }
@@ -137,11 +137,12 @@
 		/* Player weapon/class icons */
 		datagridcell:nth-child(1) img, datagridcolumn:nth-child(1) img
 		{
-			width: 1em;
-			height: 1em;
+			width: 0.9em;
+			height: 0.9em;
 			/* transform: scale is used to make the icons bigger
 			   without harming the layout */
-			transform: scale(1.5) translateY(1dp);
+			transform: scale(1.5) translateY(2dp);
+			padding-right: 5dp;
 		}
 
 		div.playername {
