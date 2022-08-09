@@ -41,7 +41,11 @@ Maryland 20850 USA.
 class CvarElementFormControlSelect : public Rml::ElementFormControlSelect, public Rml::EventListener
 {
 public:
-	CvarElementFormControlSelect( const Rml::String &tag ) : Rml::ElementFormControlSelect( tag ), owner( nullptr ) { }
+	CvarElementFormControlSelect( const Rml::String &tag ) :
+			Rml::ElementFormControlSelect( tag ),
+			owner( nullptr ),
+			// Ignore the first value change since that is the one that is set by default.
+			ignore_value_change( true ) { }
 
 	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
 	{
@@ -93,6 +97,11 @@ public:
 			}
 			else if ( this == event.GetTargetElement() && event == "change" )
 			{
+				if ( ignore_value_change )
+				{
+					ignore_value_change = false;
+					return;
+				}
 				Cvar::SetValue( cvar.c_str(), GetValue().c_str() );
 				Cvar::AddFlags( cvar.c_str(), Cvar::USER_ARCHIVE );
 			}
@@ -108,19 +117,22 @@ public:
 			Rml::String value = e->GetAttribute<Rml::String>( "value", Rml::String() );
 			if ( value == cvarValue )
 			{
+				// If the selection is already correct, do not force set the cvar.
+				ignore_value_change = GetSelection() != i;
 				SetSelection( i );
 				return;
 			}
 		}
 		// No matches...Let's add an option for our current value.
 		Add( Str::Format( "Custom Value (%s)", cvarValue ), cvarValue, 0, false );
-		SetSelection(0);
+		SetSelection( 0 );
+		ignore_value_change = true;
 	}
 
 private:
 	Rml::String cvar;
-	Rml::String type;
 	Rml::Element *owner;
+	bool ignore_value_change;
 };
 
 #endif
