@@ -74,7 +74,7 @@
 		region.oxygen progress {
 			height: 1.2em;
 		}
-		region.oxygen progress fill {
+		region.oxygen progress {
 			image-color: rgba(108, 200, 255, 200);
 		}
 

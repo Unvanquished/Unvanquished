@@ -25,7 +25,7 @@ progress
 	height: 15%;
 }
 
-progress fill
+progress
 {
 	image-color: #FF00FF84;
 }

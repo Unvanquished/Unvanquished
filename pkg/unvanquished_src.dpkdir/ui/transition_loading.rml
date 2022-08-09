@@ -41,7 +41,7 @@
 				height: 100%;
 			}
 
-			progress fill {
+			progress {
 				image-color: #999999CC;
 			}
 
