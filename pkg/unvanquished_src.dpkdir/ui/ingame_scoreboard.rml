@@ -16,6 +16,7 @@
 
 		.winner {
 			display: block;
+			width: 100%;
 			position: absolute;
 			top: .7em;
 			text-align: center;
