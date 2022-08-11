@@ -139,7 +139,7 @@ tabs {
 </head>
 <body id="alien_evo" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, EvolutionClick)" onshow="BuildEvolveMenu(document)">
 <tabset class="circlemenu">
-<tab>Evolve</tab>
+<tab><translate>Evolve</translate></tab>
 <panel>
 <div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="evolveMenu"/>
