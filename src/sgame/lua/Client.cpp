@@ -72,6 +72,20 @@ GET_FUNC( score, lua_pushinteger(L, c->ent->client->pers.namelog->score ) )
 GET_FUNC( god, lua_pushboolean(L, c->ent->flags & FL_GODMODE ) )
 GET_FUNC( notarget, lua_pushboolean(L, c->ent->flags & FL_NOTARGET ) )
 
+static int Getclean_name( lua_State* L )
+{
+    Client* c = LuaLib<Client>::check(L, 1);
+    if (!c || !c->ent || !c->ent->client)
+    {
+        Log::Warn("trying to access stale client info!");
+        return 0;
+    }
+	char cleanName[MAX_NAME_LENGTH] = {0};
+    G_SanitiseString(c->ent->client->pers.netname, cleanName, sizeof(cleanName));
+    lua_pushstring(L, cleanName);
+	return 1;
+}
+
 int Methodkill(lua_State* L, Client* c)
 {
     if (!c || !c->ent || !c->ent->client)
@@ -128,6 +142,7 @@ luaL_Reg ClientGetters[] =
 {
     GETTER( connected ),
     GETTER( name ),
+    GETTER( clean_name ),
     GETTER( credits ),
     GETTER( evos ),
     GETTER( weapon ),
