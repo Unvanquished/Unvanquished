@@ -85,6 +85,20 @@ static int SetTeammomentum( lua_State* L )
     return 0;
 }
 
+static int SetTeamtotal_budget( lua_State* L )
+{
+    TeamProxy* t = LuaLib<TeamProxy>::check( L, 1 );
+    level.team[ t->team ].totalBudget = luaL_checknumber( L, 2 );
+    return 0;
+}
+
+static int SetTeamqueued_budget( lua_State* L )
+{
+    TeamProxy* t = LuaLib<TeamProxy>::check( L, 1 );
+    level.team[ t->team ].queuedBudget = luaL_checkinteger( L, 2 );
+    return 0;
+}
+
 RegType<TeamProxy> TeamProxyMethods[] =
 {
 	{ nullptr, nullptr },
@@ -109,7 +123,9 @@ luaL_Reg TeamProxySetters[] =
 {
     TEAM_SETTER( locked ),
     TEAM_SETTER( momentum ),
-	{ nullptr, nullptr },
+    TEAM_SETTER( total_budget ),
+    TEAM_SETTER( queued_budget ),
+    { nullptr, nullptr },
 };
 
 static TeamProxy alienTeamProxy { TEAM_ALIENS };
