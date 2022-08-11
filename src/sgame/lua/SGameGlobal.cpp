@@ -40,6 +40,7 @@ Maryland 20850 USA.
 #include "sgame/lua/Level.h"
 #include "sgame/lua/Client.h"
 #include "sgame/lua/Buildable.h"
+#include "sgame/lua/Bot.h"
 #include "sgame/sg_local.h"
 #include "shared/lua/LuaLib.h"
 
@@ -118,6 +119,7 @@ void InitializeSGameGlobal(lua_State* L)
 	LuaLib<TeamProxy>::Register(L);
 	LuaLib<Client>::Register(L);
 	LuaLib<Buildable>::Register(L);
+	LuaLib<Bot>::Register(L);
 	InitializeHooks(L);
 	LuaLib<SGameGlobal>::push( L, &sgame, false );
 	lua_setglobal( L, "sgame" );
