@@ -117,7 +117,7 @@ static int Getclient(lua_State* L)
 static int Getbuildable(lua_State* L)
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
-	if (!proxy || !proxy->ent || proxy->ent->s.eType != entityType_t::ET_BUILDABLE) 
+	if (!proxy || !proxy->ent || proxy->ent->s.eType != entityType_t::ET_BUILDABLE)
 	{
 		proxy->buildable.reset();
 		return 0;
@@ -127,6 +127,22 @@ static int Getbuildable(lua_State* L)
 		proxy->buildable.reset(new Buildable(proxy->ent));
 	}
 	LuaLib<Buildable>::push(L, proxy->buildable.get(), false);
+	return 1;
+}
+
+static int Getbot(lua_State* L)
+{
+	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+	if (!proxy || !proxy->ent || !proxy->ent->botMind)
+	{
+		proxy->bot.reset();
+		return 0;
+	}
+	if (!proxy->bot || proxy->bot->ent != proxy->ent)
+	{
+		proxy->bot.reset(new Bot(proxy->ent));
+	}
+	LuaLib<Bot>::push(L, proxy->bot.get(), false);
 	return 1;
 }
 
@@ -343,6 +359,7 @@ luaL_Reg EntityProxyGetters[] =
 	GETTER(die),
 	GETTER(client),
 	GETTER(buildable),
+	GETTER(bot),
 
 	{ nullptr, nullptr }
 };
