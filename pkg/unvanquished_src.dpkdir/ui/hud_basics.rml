@@ -71,11 +71,15 @@
 			bottom: 10%;
 			width: 40%;
 		}
-		region.oxygen progressbar {
+		region.oxygen progress {
 			height: 1.2em;
 		}
-		region.oxygen progressbar fill {
+		region.oxygen progress {
 			image-color: rgba(108, 200, 255, 200);
+		}
+
+		region.oxygen progress {
+			width: 100%;
 		}
 
 		minimap {
@@ -238,7 +242,7 @@
 	</region>
 
 	<region class="oxygen">
-		<progressbar src="oxygen"/>
+		<progress src="oxygen"/>
 	</region>
 </body>
 </rml>

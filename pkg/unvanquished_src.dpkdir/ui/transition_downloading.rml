@@ -22,7 +22,7 @@
 				background-color: #00000000;
 			}
 
-			progressbar {
+			progress {
 				width: 100%;
 				height: 100%;
 			}
@@ -65,7 +65,7 @@
 		</percentage>
 
 		<barbox>
-			<progressbar src="download" class="barValue"/>
+			<progress src="download" class="barValue"/>
 		</barbox>
 	</body>
 </rml>
