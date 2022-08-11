@@ -78,12 +78,12 @@ class SGameGlobal
 
 	static int SendServerCommand( lua_State* L )
 	{
-		if (!lua_isnumber(L, 1) || !lua_isstring(L, 2))
+		if (!lua_isinteger(L, 1) || !lua_isstring(L, 2))
 		{
 			Log::Warn("invalid arguments to SendServerCommand.");
 			return 0;
 		}
-		int entNum = luaL_checknumber(L, 1);
+		int entNum = luaL_checkinteger(L, 1);
 		const char* cmd = luaL_checkstring(L, 2);
 		trap_SendServerCommand(entNum, cmd);
 		return 0;
