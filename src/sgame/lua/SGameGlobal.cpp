@@ -98,8 +98,20 @@ RegType<SGameGlobal> SGameGlobalMethods[] =
 };
 luaL_Reg SGameGlobalGetters[] =
 {
+	/// sgame.entity
+	///   Get in game entities. Analogous to the g_entities global in C++.
+	/// Returns:
+	///   {@link Entity} object.
 	{ "entity", SGameGlobal::GetEntity },
+	/// sgame.level
+	///   Get globals related to the game. Analogous to the level global in C++.
+	/// Returns:
+	///   {@link Level} object.
 	{ "level", SGameGlobal::GetLevel },
+	/// sgame.hooks
+	///   Get object used to install hooks in various places.
+	/// Returns:
+	///   {@link Hooks} object.
 	{ "hooks", SGameGlobal::GetHooks },
 	{ nullptr, nullptr },
 };
@@ -137,6 +149,11 @@ LUASGAMETYPEDEFINE(SGameGlobal, false)
 template<>
 void ExtraInit<Unv::SGame::Lua::SGameGlobal>(lua_State* L, int metatable_index)
 {
+	/// sgame.SendServerCommand
+	///   Send a server command to a client or clients. Equivalent to trap_SendServerCommand().
+	/// Args:
+	///   entity_number: (integer) client number or -1 for all clients.
+	///   command: (string) Command to send to the clients.
 	lua_pushcfunction( L, Unv::SGame::Lua::SGameGlobal::SendServerCommand );
 	lua_setfield( L, metatable_index - 1, "SendServerCommand" );
 }
