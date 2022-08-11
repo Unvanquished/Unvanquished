@@ -14,8 +14,8 @@ body
 .circlemenu icon{
 	display:inline-block;
 	position:absolute;
-	bottom: .8em;
-	right: -.6em;
+	bottom: 0.3em;
+	right: 0.75em;
 	font-size: 1.7em;
 }
 .circlemenu button {
@@ -115,7 +115,7 @@ tabs {
 		local circlemenu = document:GetElementById("humanBuildMenu")
 		circlemenu.inner_rml = CirclemenuSkeleton(#human_buildables)
 		for i = 1,#human_buildables do
-			circlemenu.child_nodes[i].inner_rml = string.format(
+			circlemenu.child_nodes[i+1].inner_rml = string.format(
 				'<button class=%s onclick="HumanBuildableClick(%d,event)" onmouseover="HumanBuildableHover(document,%d)">%s<img src="/%s"/></button>',
 				human_buildables[i][5], i, i, AvailabilityIcon(human_buildables[i][5]), human_buildables[i][1])
 		end
@@ -125,7 +125,7 @@ tabs {
 </head>
 <body id="human_build" class="circlemenu human" onkeydown="CirclemenuHandleKey(event, document, HumanBuildableClick)" onshow="BuildHumanBuildMenu(document)">
 <tabset class="circlemenu">
-<tab></tab>
+<tab><translate>Build</translate></tab>
 <panel>
 <div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="humanBuildMenu"/>

@@ -14,8 +14,8 @@ body
 .circlemenu icon{
 	display:inline-block;
 	position:absolute;
-	bottom: .8em;
-	right: -.6em;
+	bottom: 0.3em;
+	right: 0.75em;
 	font-size: 1.7em;
 }
 .circlemenu button {
@@ -129,7 +129,7 @@ tabs {
 		circlemenu.inner_rml = CirclemenuSkeleton(#button_to_index)
 		for b = 1,#button_to_index do
 			i = button_to_index[b]
-			circlemenu.child_nodes[b].inner_rml = string.format(
+			circlemenu.child_nodes[b+1].inner_rml = string.format(
 				'<button class=%s onclick="EvolutionClick(%d,event)" onmouseover="EvolutionHover(document,%d)">%s<img src="/%s"/></button>',
 				evolutions[i][4], b, i, AvailabilityIcon(evolutions[i][4]), evolutions[i][1])
 		end
@@ -139,7 +139,7 @@ tabs {
 </head>
 <body id="alien_evo" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, EvolutionClick)" onshow="BuildEvolveMenu(document)">
 <tabset class="circlemenu">
-<tab></tab>
+<tab><translate>Evolve</translate></tab>
 <panel>
 <div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="evolveMenu"/>

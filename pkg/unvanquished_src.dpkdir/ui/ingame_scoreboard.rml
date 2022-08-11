@@ -16,6 +16,7 @@
 
 		.winner {
 			display: block;
+			width: 100%;
 			position: absolute;
 			top: .7em;
 			text-align: center;
@@ -92,23 +93,23 @@
                         padding-bottom: 0.1em;
 		}
 
-                datagridrow, datagridheader {
-                        padding-right: 0.2em;
-                }
+		datagridrow, datagridheader {
+				padding-right: 0.2em;
+		}
 
 		datagridrow:nth-child(odd) {
 			background: rgba( 50%, 50%, 50%, 20%);
 		}
 
-                datagridcell, datagridcolumn {
-                        overflow: hidden;
-                        width: 100%;
-                        margin: 0em;
-                        padding: 0em;
-                }
+		datagridcell, datagridcolumn {
+				overflow: hidden;
+				width: 100%;
+				margin: 0em;
+				padding: 0em;
+		}
 
 		datagridcell:nth-child(1), datagridcolumn:nth-child(1) {
-                        max-width: 14%;
+                        max-width: 3em;
                         position: relative;
                         bottom: 0.1em;
                 }
@@ -120,10 +121,10 @@
 			white-space: pre;
 		}
 
-                datagridcell:nth-child(n+3), datagridcolumn:nth-child(n+3) {
-                        text-align: right;
-                        max-width: 11%;
-                }
+		datagridcell:nth-child(n+3), datagridcolumn:nth-child(n+3) {
+				text-align: right;
+				max-width: 11%;
+		}
 
 		datagridcell {
 			text-align: center;
@@ -131,25 +132,24 @@
 
 		datagridcolumn {
 			text-align: left;
-                        padding-top: 0.25em;
+			padding-top: 0.25em;
 		}
 
 		/* Player weapon/class icons */
-		datagrid img
+		datagridcell:nth-child(1) img, datagridcolumn:nth-child(1) img
 		{
-			width: 1.2em;
-			height: 1.2em;
+			width: 0.9em;
+			height: 0.9em;
 			/* transform: scale is used to make the icons bigger
 			   without harming the layout */
-			transform: scale(1.15);
-			vertical-align: middle;
+			transform: scale(1.5) translateY(2dp);
+			padding-right: 5dp;
 		}
 
 		div.playername {
 			color: white;
-			padding-right: 0.75em;
+			padding-right: 10dp;
 		}
-
 
 	</style>
 </head>
@@ -198,4 +198,3 @@
 </body>
 
 </rml>
-

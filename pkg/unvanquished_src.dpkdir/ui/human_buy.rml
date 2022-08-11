@@ -15,8 +15,8 @@
 .circlemenu icon{
   display:inline-block;
   position:absolute;
-  bottom: .8em;
-  right: -.6em;
+  bottom: 0.3em;
+  right: 0.75em;
   font-size: 1.7em;
 }
 .circlemenu button {
@@ -100,12 +100,14 @@
 	border-bottom-color: #CCCCCC;
 	border-right-color: #CCCCCC;
 	border-left-color: #CCCCCC;
+	display: block;
 }
 tab:selected .tabkey {
 	display: none;
 }
 tab {
 	position: relative;
+	display: inline-block;
 	top: 0.4em;
 }
 tab:selected {
@@ -148,7 +150,7 @@ tab:selected {
 				local circlemenu = document:GetElementById("weapons")
 				circlemenu.inner_rml = CirclemenuSkeleton(#weapons)
 				for i=1,#weapons do
-					circlemenu.child_nodes[i].inner_rml = string.format(
+					circlemenu.child_nodes[i+1].inner_rml = string.format(
 						'<button class="%s" onclick="WeaponClick(%d)" onmouseover="WeaponHover(document,%d)">%s<img src="/%s"/></button>',
 						weapons[i][5], i, i, AvailabilityIcon(weapons[i][5]), weapons[i][1])
 				end
@@ -183,7 +185,7 @@ tab:selected {
 				local circlemenu = document:GetElementById("upgrades")
 				circlemenu.inner_rml = CirclemenuSkeleton(#upgrades)
 				for i=1,#upgrades do
-					circlemenu.child_nodes[i].inner_rml = string.format(
+					circlemenu.child_nodes[i+1].inner_rml = string.format(
 						'<button class="%s" onclick="UpgradeClick(%d)" onmouseover="UpgradeHover(document,%d)">%s<img src="/%s"/></button>',
 						upgrades[i][5], i, i, AvailabilityIcon(upgrades[i][5]), upgrades[i][1])
 				end
@@ -192,9 +194,9 @@ tab:selected {
 			function HumanBuyHandleKey(event, document)
 				local tabset = Element.As.ElementTabSet(document:GetElementById("tabset"))
 				if event.parameters.key_identifier == rmlui.key_identifier.TAB then
-					tabset.active_tab = 1 - tabset.active_tab
+					tabset.active_tab = tabset.active_tab + 1 <= tabset.num_tabs and tabset.active_tab + 1 or 1
 				else
-					local handler = ({[0]=WeaponClick, [1]=UpgradeClick})[tabset.active_tab]
+					local handler = ({[1]=WeaponClick, [2]=UpgradeClick})[tabset.active_tab]
 					CirclemenuHandleKey(event, document, handler)
 				end
 			end
@@ -205,7 +207,7 @@ tab:selected {
 	 onrefreshdata="BuildWeaponMenu(document) BuildUpgradeMenu(document)">
 	<tabset class="circlemenu" id="tabset">
 		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">
-			<p><translate>Weapons</translate></p>
+			<span><translate>Weapons</translate></span>
 			<div class="tabkey"><translate>TAB</translate></div>
 		</tab>
 		<panel>
@@ -221,7 +223,7 @@ tab:selected {
 			</div>
 		</panel>
 		<tab onclick="UpgradeClear(document) BuildUpgradeMenu(document)">
-			<p><translate>Upgrades</translate></p>
+			<span><translate>Upgrades</translate></span>
 			<div class="tabkey"><translate>TAB</translate></div>
 		</tab>
 		<panel>
