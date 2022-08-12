@@ -90,6 +90,7 @@ luaL_Reg ClassProxyGetters[] =
 	GETTER(mass),
 	GETTER(jump_magnitude),
 	GETTER(price),
+	{ nullptr, nullptr },
 };
 
 luaL_Reg ClassProxySetters[] =
