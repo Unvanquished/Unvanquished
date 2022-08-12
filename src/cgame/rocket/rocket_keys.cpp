@@ -294,7 +294,7 @@ void Rocket_ProcessTextInput( int c )
 		return;
 	}
 
-	menuContext->ProcessTextInput( c );
+	menuContext->ProcessTextInput( static_cast<Rml::Character>(c) );
 }
 
 void Rocket_MouseMove( int x, int y )

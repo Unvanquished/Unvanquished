@@ -116,27 +116,27 @@ public:
 					case Rml::Input::KI_BACK:
 						if ( cursor_character_index > 0 )
 						{
-							text.erase( cursor_character_index - 1, 1 );
+							MoveCursorBackward();
+							text.erase( cursor_character_index, Q_UTF8_Width( text.c_str() + cursor_character_index ) );
 							UpdateText();
-							MoveCursor( -1 );
 						}
 						break;
 
 					case Rml::Input::KI_DELETE:
-						if ( cursor_character_index < (int) text.size() )
+						if ( cursor_character_index < text.size() )
 						{
-							text.erase( cursor_character_index, 1 );
+							text.erase( cursor_character_index, Q_UTF8_Width( text.c_str() + cursor_character_index ) );
 							UpdateText();
 						}
 
 						break;
 
 					case Rml::Input::KI_LEFT:
-						MoveCursor( -1 );
+						MoveCursorBackward();
 						break;
 
 					case Rml::Input::KI_RIGHT:
-						MoveCursor( 1 );
+						MoveCursorForward();
 						break;
 
 					case Rml::Input::KI_RETURN:
@@ -184,7 +184,7 @@ public:
 				{
 					const Rml::String& character = event.GetParameter< Rml::String >( "text", "" );
 
-					if ( (int) text.size() == cursor_character_index )
+					if ( text.size() == cursor_character_index )
 					{
 						text.append( character );
 					}
@@ -195,7 +195,7 @@ public:
 					}
 
 					UpdateText();
-					MoveCursor( 1 );
+					MoveCursorForward();
 				}
 			}
 		}
@@ -273,11 +273,18 @@ protected:
 		Rml::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0], Rml::Vector2f( 0, 0 ), cursor_size, GetProperty< Rml::Colourb >( "color" ) );
 	}
 
-	void MoveCursor( int amt )
+	void MoveCursorForward()
 	{
-		cursor_character_index += amt;
+		cursor_character_index += Q_UTF8_Width( text.c_str() + cursor_character_index );
+	}
 
-		cursor_character_index = Rml::Math::Clamp<int>( cursor_character_index, 0, text.size() );
+	void MoveCursorBackward()
+	{
+		while ( cursor_character_index > 0 )
+		{
+			--cursor_character_index;
+			if ( !Q_UTF8_ContByte( text[ cursor_character_index ] ) ) break;
+		}
 	}
 
 	void UpdateCursorPosition()
@@ -412,7 +419,7 @@ protected:
 private:
 	Rml::FontEngineInterface* const font_engine_interface;
 	Rml::Vector2f cursor_position;
-	int cursor_character_index;
+	size_t cursor_character_index;
 	Rml::Element *text_element;
 
 	Rml::Geometry cursor_geometry;
