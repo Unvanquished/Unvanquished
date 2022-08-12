@@ -600,7 +600,6 @@ void G_BotFill(bool immediately)
 		std::vector<int> current; // list of filler bots
 		int target; // if <0, too many bots, if >0, not enough
 	} fillers[ NUM_TEAMS ] = {};
-	int totalFillers = 0;
 	int missingFillers = 0;
 
 	for (int client = 0; client < MAX_CLIENTS; client++)
@@ -609,7 +608,6 @@ void G_BotFill(bool immediately)
 		if ( pers.connected == CON_CONNECTED && pers.isFillerBot )
 		{
 			fillers[ pers.team ].current.push_back( client );
-			totalFillers++;
 		}
 	}
 
@@ -623,7 +621,6 @@ void G_BotFill(bool immediately)
 			G_BotDel( fill.current.back() );
 			fill.current.pop_back();
 			fill.target++;
-			totalFillers--;
 		}
 		// remember how much bots are missing
 		if ( fill.target > 0 )
