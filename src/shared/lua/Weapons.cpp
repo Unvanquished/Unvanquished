@@ -102,12 +102,14 @@ luaL_Reg WeaponProxyGetters[] =
 	GETTER(purchasable),
 	GETTER(long_ranged),
 	GETTER(team),
+	{ nullptr, nullptr },
 };
 
 luaL_Reg WeaponProxySetters[] =
 {
 	{ nullptr, nullptr },
 };
+
 LUACORETYPEDEFINE(WeaponProxy, false)
 
 int Weapons::index( lua_State* L )
@@ -151,7 +153,7 @@ template<> void ExtraInit<Weapons>( lua_State* L, int metatable_index )
 
 	for ( int i = WP_NONE + 1; i < WP_NUM_WEAPONS; ++i)
 	{
-		Weapons::weapons.push_back( WeaponProxy( i ) );
+		Weapons::weapons.emplace_back( i );
 	}
 }
 RegType<Weapons> WeaponsMethods[] =

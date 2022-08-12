@@ -96,6 +96,7 @@ luaL_Reg BuildableProxyGetters[] =
 	GETTER(build_time),
 	GETTER(usable),
 	GETTER(team),
+	{ nullptr, nullptr },
 };
 
 luaL_Reg BuildableProxySetters[] =

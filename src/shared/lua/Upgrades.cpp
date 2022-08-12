@@ -86,6 +86,7 @@ luaL_Reg UpgradeProxyGetters[] =
 	GETTER(purchasable),
 	GETTER(usable),
 	GETTER(team),
+	{ nullptr, nullptr },
 };
 
 luaL_Reg UpgradeProxySetters[] =

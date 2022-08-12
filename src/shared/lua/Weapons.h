@@ -46,7 +46,7 @@ struct WeaponProxy
 {
 	WeaponProxy( int weapon );
 
-	const weaponAttributes_t* attributes;
+	const weaponAttributes_t* const attributes;
 };
 
 struct Weapons
