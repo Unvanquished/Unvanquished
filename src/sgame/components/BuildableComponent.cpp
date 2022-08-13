@@ -5,7 +5,8 @@ BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_Health
 	: BuildableComponentBase(entity, r_HealthComponent, r_ThinkingComponent, r_TeamComponent)
 	, state(CONSTRUCTING)
 	, constructionHasFinished(false)
-	, marked(false) {
+	, marked(false)
+	, protectAnimationUntil(-1) {
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 
 	// TODO: Make power state a member variable.

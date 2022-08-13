@@ -1,7 +1,7 @@
 #include "MainBuildableComponent.h"
 
 MainBuildableComponent::MainBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent)
-	: MainBuildableComponentBase(entity, r_BuildableComponent)
+	: MainBuildableComponentBase(entity, r_BuildableComponent), lastAttackWarnLevel(-1)
 {}
 
 void MainBuildableComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util::optional<Vec3> /*location*/,
