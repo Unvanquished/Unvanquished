@@ -2428,15 +2428,11 @@ bool G_admin_slap( gentity_t *ent )
 
 	const HealthComponent* health = vic->entity->Get<HealthComponent>();
 
-	if ( damage && ( health->Health() - damage > 0 ) )
+	if ( health->Health() - damage > 0 )
 	{
-		/*AP( va( "print_tr " QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ) " %s %s %s", 
-			 G_quoted_admin_name( ent ), vic->client->pers.netname, 
-			 (damage > 0 ? va( "with %.0f damage", damage ) : "" ) ) ); */ // this code doesn't work yet
-
-		AP( va( "print \"^3slap:^* %s ^*slapped %s ^*%s", // old Tremulous way of doing the print
-			G_quoted_admin_name( ent ), vic->client->pers.netname, 
-			damage > 0 ? va( "with %.0f damage", damage ): "" ) );
+		AP( va( "print_tr " QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ) " %s %s %s", 
+			 G_quoted_admin_name( ent ), Quote( vic->client->pers.netname ), 
+			 ( damage > 0 ? Quote( va( "with %.0f damage", damage ) ) : QQ( "" ) ) ) );
 	}
 
 	CPx( vic - g_entities, va( "cp_tr " QQ( N_("[cross]$1$$2$ is not amused![cross]") ) " %s %s", 
