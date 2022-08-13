@@ -58,6 +58,7 @@ static const char *const modNames[] =
 	"MOD_LAVA",
 	"MOD_CRUSH",
 	"MOD_TELEFRAG",
+	"MOD_SLAP",
 	"MOD_FALLING",
 	"MOD_SUICIDE",
 	"MOD_TARGET_LASER",

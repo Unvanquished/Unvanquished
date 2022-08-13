@@ -130,6 +130,7 @@ int G_admin_joindelay( g_admin_spec_t const* ptr );
 // admin command functions
 bool        G_admin_time( gentity_t *ent );
 bool        G_admin_setlevel( gentity_t *ent );
+bool        G_admin_slap( gentity_t *ent );
 bool        G_admin_kick( gentity_t *ent );
 bool        G_admin_adjustban( gentity_t *ent );
 bool        G_admin_ban( gentity_t *ent );
