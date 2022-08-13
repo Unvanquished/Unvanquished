@@ -4003,7 +4003,7 @@ bool G_admin_adminhelp( gentity_t *ent )
 
 				if ( admincmd->function )
 				{
-					ADMP( va( "%s %s", QQ( N_(" ^3Description:^* $1t$") ), admincmd->function ) );
+					ADMP( va( "%s %s", QQ( N_(" ^3Description:^* $1t$") ), Quote( admincmd->function ) ) );
 				}
 
 				ADMP( va( "%s %s %s", QQ( N_(" ^3Syntax:^* $1$ $2t$") ), admincmd->keyword, admincmd->syntax ? Quote( admincmd->syntax ) : "" ) );
