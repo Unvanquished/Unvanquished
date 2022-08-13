@@ -36,6 +36,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
 #include "shared/navgen/navgen.h"
+#include "Entities.h"
+#include "CBSE.h"
 
 struct g_admin_cmd_t
 {
@@ -369,6 +371,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"setlevel",     G_admin_setlevel,    false, "setlevel",
 		N_("sets the admin level of a player"),
 		N_("[^3name|slot#|admin#^7] [^3level^7]")
+	},
+
+	{
+		"slap",     G_admin_slap,    false, "slap",
+		N_("slaps a player, optionally with damage"),
+		N_("[^3name|slot#|admin#^7] (^3damage^7)")
 	},
 
 	{
@@ -2346,6 +2354,96 @@ bool G_admin_setlevel( gentity_t *ent )
 		G_admin_authlog( vic );
 		G_admin_cmdlist( vic );
 	}
+
+	return true;
+}
+
+bool G_admin_slap( gentity_t *ent )
+{
+	int            pid;
+	double         damage;
+	char           name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
+	gentity_t      *vic;
+	vec3_t         dir;
+
+	if ( level.intermissiontime )
+	{
+		return false;
+	}
+
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( QQ( N_("^3slap:^* usage: slap [^3name|slot#|admin#^7] (^3damage^7)") ) ); 
+		return false; // todo: G_admin_helptext( "slap" ) instead of this copypasta
+	}
+
+	trap_Argv( 1, name, sizeof( name ) );
+
+	if ( ( pid = G_ClientNumberFromString( name, err, sizeof( err ) ) ) == -1 )
+	{
+		ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "slap", Quote( err ) ) );
+		return false;
+	}
+
+	vic = &g_entities[ pid ];
+
+	if ( !admin_higher( ent, vic ) )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* sorry, but your intended victim has a higher admin"
+		          " level than you") ), "slap" ) ); // todo: move this print to a single helper function
+		return false; 
+	}
+
+	if ( G_Team( vic ) == TEAM_NONE || vic->client->pers.classSelection == PCL_NONE )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* cannot slap spectators!") ), "slap" ) );
+		return false; 
+	}
+
+	dir[0] = crandom();
+	dir[1] = crandom();
+	dir[2] = random();
+
+	// todo: G_Knockback
+	vec3_t kvel;
+    float mass = BG_Class( vic->client->pers.classSelection )->health;
+
+    VectorScale( dir, ( 250 * ( float ) 200 / mass ), kvel );
+    VectorAdd( vic->client->ps.velocity, kvel, vic->client->ps.velocity );
+
+    // set the timer so that the other client can't cancel
+    // out the movement immediately
+    vic->client->ps.pm_time = 200;
+    vic->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	// G_Knockback finish ...
+
+	if ( trap_Argc() > 2 )
+	{
+		char dmg_str [ MAX_STRING_CHARS ];
+
+		trap_Argv( 2, dmg_str, sizeof( dmg_str ) );
+		
+		damage = atoi( dmg_str );
+	}
+
+	const HealthComponent* health = vic->entity->Get<HealthComponent>();
+
+	if ( damage && ( health->Health() - damage > 0 ) )
+	{
+		/*AP( va( "print_tr " QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ) " %s %s %s", 
+			 G_quoted_admin_name( ent ), vic->client->pers.netname, 
+			 (damage > 0 ? va( "with %.0f damage", damage ) : "" ) ) ); */ // this code doesn't work yet
+
+		AP( va( "print \"^3slap:^* %s ^*slapped %s ^*%s", // old Tremulous way of doing the print
+			G_quoted_admin_name( ent ), vic->client->pers.netname, 
+			damage > 0 ? va( "with %.0f damage", damage ): "" ) );
+	}
+
+	CPx( vic - g_entities, va( "cp_tr " QQ( N_("[cross]$1$$2$ is not amused![cross]") ) " %s %s", 
+		G_quoted_admin_name( ent ), 
+		( health->Health() - damage > 0 ) ? "^7" : "^i" ) );
+
+	vic->entity->Damage( damage, ent, Util::nullopt, Util::nullopt, 0, MOD_SLAP );
 
 	return true;
 }

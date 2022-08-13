@@ -507,6 +507,11 @@ static void CG_Obituary( entityState_t *ent )
 				message = G_( "%s%s ^*tried to invade %s%s^*'s personal space" );
 				break;
 
+			case MOD_SLAP:
+				message = G_( "%s%s ^*felt %s%s^*'s authority" );
+				messageAssisted = G_( "%s%s ^*felt %s%s^*'s authority; %s%s^* assisted" );
+				break;
+
 			default:
 				message = G_( "%s%s ^*was killed by %s%s" );
 				messageAssisted = G_( "%s%s ^*was killed by %s%s^* and %s%s" );
