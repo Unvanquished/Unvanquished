@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_key_name.h"
 #include "shared/parse.h"
 #include "shared/navgen/navgen.h"
+#include "shared/parse.h"
 
 cg_t            cg;
 cgs_t           cgs;
@@ -1342,6 +1343,7 @@ void CG_Shutdown()
 	CG_Rocket_CleanUpDataSources();
 	Rocket_Shutdown();
 	BG_UnloadAllConfigs();
+	Parse_FreeGlobalDefines();
 }
 
 const vec3_t cg_shaderColors[ SHC_NUM_SHADER_COLORS ] =

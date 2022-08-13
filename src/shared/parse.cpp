@@ -3993,6 +3993,25 @@ int Parse_AddGlobalDefine( const char *string )
 
 /*
 ===============
+Parse_FreeGlobalDefines
+
+Frees all global defines.
+===============
+*/
+void Parse_FreeGlobalDefines()
+{
+	define_t* define;
+	define_t* next;
+	for ( define = globaldefines; define; define = next )
+	{
+		next = define->next;
+		Parse_FreeDefine( define );
+	}
+	globaldefines = nullptr;
+}
+
+/*
+===============
 Parse_CopyDefine
 ===============
 */

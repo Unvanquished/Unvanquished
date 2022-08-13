@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "shared/parse.h"
 #include "Entities.h"
 #include "CBSE.h"
 #include "backend/CBSEBackend.h"
@@ -729,6 +730,8 @@ void G_ShutdownGame( int /* restart */ )
 	}
 
 	delete level.emptyEntity;
+
+	Parse_FreeGlobalDefines();
 }
 
 //===================================================================
