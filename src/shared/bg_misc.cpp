@@ -1054,6 +1054,10 @@ void BG_UnloadAllConfigs()
 
         BG_Free( (char *)ba.humanName );
         BG_Free( (char *)ba.info );
+        if( ba.icon )
+        {
+            BG_Free( (char *)ba.icon );
+        }
     }
 
     for ( unsigned i = 0; i < bg_numClasses; i++ )
@@ -1069,6 +1073,11 @@ void BG_UnloadAllConfigs()
         if( ca.fovCvar && *ca.fovCvar != '\0' )
         {
             BG_Free( (char *)ca.fovCvar );
+        }
+
+        if( ca.icon )
+        {
+            BG_Free( (char *)ca.icon );
         }
     }
 
