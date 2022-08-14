@@ -797,7 +797,8 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		}
 
 		if ( ( mode == SAY_TEAM || mode == SAY_AREA ) &&
-		     cg.snap->ps.pm_type != PM_INTERMISSION )
+		     cg.snap->ps.pm_type != PM_INTERMISSION &&
+		     ci->team != TEAM_NONE )
 		{
 			int locationNum;
 
@@ -931,6 +932,12 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			}
 			else if ( cgs.clientinfo[ clientNum ].team == TEAM_HUMANS )
 			{
+				trap_S_StartLocalSound( cgs.media.humanTalkSound, soundChannel_t::CHAN_LOCAL_SOUND );
+				break;
+			}
+			else if ( cgs.clientinfo[ clientNum ].team == TEAM_NONE )
+			{
+				// TODO spectator team chat sound?
 				trap_S_StartLocalSound( cgs.media.humanTalkSound, soundChannel_t::CHAN_LOCAL_SOUND );
 				break;
 			}
