@@ -2361,7 +2361,7 @@ bool G_admin_setlevel( gentity_t *ent )
 bool G_admin_slap( gentity_t *ent )
 {
 	int            pid;
-	double         damage;
+	double         damage = 0.0f;
 	char           name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
 	gentity_t      *vic;
 	vec3_t         dir;
@@ -2394,9 +2394,11 @@ bool G_admin_slap( gentity_t *ent )
 		return false; 
 	}
 
-	if ( G_Team( vic ) == TEAM_NONE || vic->client->pers.classSelection == PCL_NONE )
+	const HealthComponent* health = vic->entity->Get<HealthComponent>();
+
+	if ( G_Team( vic ) == TEAM_NONE || !health )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$:^* cannot slap spectators!") ), "slap" ) );
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* cannot slap spectators or dead players!") ), "slap" ) );
 		return false; 
 	}
 
@@ -2426,9 +2428,7 @@ bool G_admin_slap( gentity_t *ent )
 		damage = atoi( dmg_str );
 	}
 
-	const HealthComponent* health = vic->entity->Get<HealthComponent>();
-
-	if ( health && ( health->Health() - damage ) > 0 )
+	if ( ( health->Health() - damage ) > 0 )
 	{
 		AP( va( "print_tr " QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ) " %s %s %s", 
 			 G_quoted_admin_name( ent ), Quote( vic->client->pers.netname ), 
