@@ -1069,7 +1069,7 @@ static bool G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const cha
 		return false;
 	}
 
-	if ( ( ent && !G_OnSameTeam( ent, other ) ) &&
+	if ( ( ent && G_Team( ent ) != G_Team( other ) ) &&
 	     ( mode == SAY_TEAM || mode == SAY_AREA || mode == SAY_TPRIVMSG ) )
 	{
 		if ( other->client->pers.team != TEAM_NONE )
