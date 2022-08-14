@@ -2404,17 +2404,17 @@ bool G_admin_slap( gentity_t *ent )
 	dir[1] = crandom();
 	dir[2] = random();
 
-	// todo: G_Knockback
+	// from G_Knockback ...
 	vec3_t kvel;
-    float mass = BG_Class( vic->client->pers.classSelection )->health;
+	float mass = BG_Class( vic->client->pers.classSelection )->health;
 
-    VectorScale( dir, ( 250 * ( float ) 200 / mass ), kvel );
-    VectorAdd( vic->client->ps.velocity, kvel, vic->client->ps.velocity );
+	VectorScale( dir, ( 250 * static_cast<float>( 200 ) / mass ), kvel );
+	VectorAdd( vic->client->ps.velocity, kvel, vic->client->ps.velocity );
 
-    // set the timer so that the other client can't cancel
-    // out the movement immediately
-    vic->client->ps.pm_time = 200;
-    vic->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	// set the timer so that the other client can't cancel
+	// out the movement immediately
+	vic->client->ps.pm_time = 200;
+	vic->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 	// G_Knockback finish ...
 
 	if ( trap_Argc() > 2 )
@@ -2428,7 +2428,7 @@ bool G_admin_slap( gentity_t *ent )
 
 	const HealthComponent* health = vic->entity->Get<HealthComponent>();
 
-	if ( health->Health() - damage > 0 )
+	if ( health && ( health->Health() - damage ) > 0 )
 	{
 		AP( va( "print_tr " QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ) " %s %s %s", 
 			 G_quoted_admin_name( ent ), Quote( vic->client->pers.netname ), 
