@@ -2361,7 +2361,7 @@ bool G_admin_setlevel( gentity_t *ent )
 bool G_admin_slap( gentity_t *ent )
 {
 	int            pid;
-	double         damage = 0.0f;
+	double         damage = 0.0f; // in case no damage is specified
 	char           name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
 	gentity_t      *vic;
 	vec3_t         dir;
@@ -2373,33 +2373,34 @@ bool G_admin_slap( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_("^3slap:^* usage: slap [^3name|slot#|admin#^7] (^3damage^7)") ) ); 
+		ADMP( QQ( N_( "^3slap:^* usage: slap [^3name|slot#|admin#^7] (^3damage^7)" ) ) ); 
 		return false; // todo: G_admin_helptext( "slap" ) instead of this copypasta
 	}
 
 	trap_Argv( 1, name, sizeof( name ) );
 
-	if ( ( pid = G_ClientNumberFromString( name, err, sizeof( err ) ) ) == -1 )
+	pid = G_ClientNumberFromString( name, err, sizeof( err ) );
+
+	if ( pid == -1 )
 	{
 		ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "slap", Quote( err ) ) );
-		return false;
+		return false; // none or >1 possible matches. stop here.
 	}
 
 	vic = &g_entities[ pid ];
 
 	if ( !admin_higher( ent, vic ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$:^* sorry, but your intended victim has a higher admin"
-		          " level than you") ), "slap" ) ); // todo: move this print to a single helper function
+		ADMP( va( "%s %s", QQ( N_( "^3$1$:^* sorry, but your intended victim has a higher admin"
+		          " level than you" ) ), "slap" ) ); // todo: move this print to a single helper function
 		return false; 
 	}
 
 	const HealthComponent* health = vic->entity->Get<HealthComponent>();
-
-	if ( G_Team( vic ) == TEAM_NONE || !health )
-	{
-		ADMP( va( "%s %s", QQ( N_("^3$1$:^* cannot slap spectators or dead players!") ), "slap" ) );
-		return false; 
+	if ( G_Team( vic ) == TEAM_NONE || !health ) // do NOT use health->Alive() here
+	{                                            // or it will crash when used on bots
+		ADMP( va( "%s %s", QQ( N_( "^3$1$:^* cannot slap spectators or dead players!" ) ), "slap" ) );
+		return false;
 	}
 
 	dir[0] = crandom();
@@ -2409,6 +2410,8 @@ bool G_admin_slap( gentity_t *ent )
 	// from G_Knockback ...
 	vec3_t kvel;
 	float mass = BG_Class( vic->client->pers.classSelection )->health;
+	// health != mass however for the purposes of this functionn
+	// using the max health of the class works a lot better
 
 	VectorScale( dir, ( 250 * static_cast<float>( 200 ) / mass ), kvel );
 	VectorAdd( vic->client->ps.velocity, kvel, vic->client->ps.velocity );
@@ -2422,24 +2425,22 @@ bool G_admin_slap( gentity_t *ent )
 	if ( trap_Argc() > 2 )
 	{
 		char dmg_str [ MAX_STRING_CHARS ];
-
 		trap_Argv( 2, dmg_str, sizeof( dmg_str ) );
-		
 		damage = atoi( dmg_str );
 	}
 
-	if ( ( health->Health() - damage ) > 0 )
+	vic->entity->Damage( damage, ent, Util::nullopt, Util::nullopt, 0, MOD_SLAP );
+
+	if ( health->Alive() )
 	{
 		AP( va( "print_tr " QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ) " %s %s %s", 
 			 G_quoted_admin_name( ent ), Quote( vic->client->pers.netname ), 
 			 ( damage > 0 ? Quote( va( "with %.0f damage", damage ) ) : QQ( "" ) ) ) );
-	}
+	} // only print the chat msg if they don't die. otherwise the MOD_SLAP event will suffice.
 
-	CPx( vic - g_entities, va( "cp_tr " QQ( N_("[cross]$1$$2$ is not amused![cross]") ) " %s %s", 
+	CPx( vic - g_entities, va( "cp_tr " QQ( N_( "[cross]$1$$2$ is not amused![cross]" ) ) " %s %s", 
 		G_quoted_admin_name( ent ), 
-		( health->Health() - damage > 0 ) ? "^7" : "^i" ) );
-
-	vic->entity->Damage( damage, ent, Util::nullopt, Util::nullopt, 0, MOD_SLAP );
+		( health->Alive() ) ? "^7" : "^i" ) ); // if they die, make the text red
 
 	return true;
 }
