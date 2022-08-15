@@ -41,6 +41,8 @@ Maryland 20850 USA.
 #include <RmlUi/Core/Factory.h>
 #include <RmlUi/Core/ElementText.h>
 
+Cvar::Cvar<bool> cg_drawPosition("cg_drawPosition", "show position. Requires cg_drawSpeed to be enabled.", Cvar::NONE, false);
+
 static void CG_GetRocketElementColor( Color::Color& color )
 {
 	Rocket_GetProperty( "color", &color, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
