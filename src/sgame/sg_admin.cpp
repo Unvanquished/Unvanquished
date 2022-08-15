@@ -2408,6 +2408,9 @@ bool G_admin_slap( gentity_t *ent )
 	dir[2] = random();
 
 	// from G_Knockback ...
+	// this code is duplicated from KnockbackComponent because
+	// using knockback in ent->Damage() won't throw the victim
+	// about if the damage caused to them is 0.
 	vec3_t kvel;
 	float mass = BG_Class( vic->client->pers.classSelection )->health;
 	// health != mass however for the purposes of this functionn
