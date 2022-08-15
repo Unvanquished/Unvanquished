@@ -2345,6 +2345,7 @@ namespace CombatFeedback
   void DrawDamageIndicators(void);
 }
 
-
+// cg_event.cpp
+void CG_SetUnderwater( bool underwater );
 
 #endif
