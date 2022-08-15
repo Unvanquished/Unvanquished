@@ -364,8 +364,7 @@ void CG_NotifyHooks()
 			}
 
 			lastTeam = ps->persistant[ PERS_TEAM ];
-			cg.underwater = false;
-			cg.underwaterTime = cg.time;
+			CG_SetUnderwater( false );
 		}
 	}
 }
