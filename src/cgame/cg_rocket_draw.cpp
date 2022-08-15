@@ -905,9 +905,7 @@ public:
 			{
 				val = speedSamples[( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
 			}
-			// HACK: Put extra spaces to separate the children because setting them to block makes them disappear.
-			// TODO: Figure out why setting these two elements to block makes them disappear.
-			maxSpeedElement->SetText( va( "%d   ", ( int ) speedSamples[ maxSpeedSampleInWindow ] ) );
+			maxSpeedElement->SetText( va( "%d ", ( int ) speedSamples[ maxSpeedSampleInWindow ] ) );
 			currentSpeedElement->SetText( va( "%d", ( int ) val ) );
 		}
 	}
@@ -932,19 +930,14 @@ public:
 		if ( !cg_drawPosition.Get() )
 		{
 			SetText( "" );
+			return;
 		}
-		else
-		{
-			if ( cg.predictedPlayerState.clientNum == cg.clientNum )
-			{
-				// Add text to be configured via CSS
-				vec3_t origin;
-				VectorCopy( cg.predictedPlayerState.origin, origin );
 
-				// HACK: Put extra spaces to separate the children because setting them to block makes them disappear.
-				// TODO: Figure out why setting these two elements to block makes them disappear.
-				SetText( va( "%0.0f   %0.0f   %0.0f", origin[0], origin[1], origin[2] ) );
-			}
+		if ( cg.predictedPlayerState.clientNum == cg.clientNum )
+		{
+			// Add text to be configured via CSS
+			vec3_t const & origin = cg.predictedPlayerState.origin;
+			SetText( va( "%0.0f %0.0f %0.0f", origin[0], origin[1], origin[2] ) );
 		}
 	}
 };
