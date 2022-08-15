@@ -2413,8 +2413,6 @@ bool G_admin_slap( gentity_t *ent )
 	// about if the damage caused to them is 0.
 	vec3_t kvel;
 	float mass = BG_Class( vic->client->pers.classSelection )->health;
-	// health != mass however for the purposes of this functionn
-	// using the max health of the class works a lot better
 
 	VectorScale( dir, ( 250 * static_cast<float>( 200 ) / mass ), kvel );
 	VectorAdd( vic->client->ps.velocity, kvel, vic->client->ps.velocity );
