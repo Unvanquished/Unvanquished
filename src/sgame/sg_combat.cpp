@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 
+Cvar::Cvar<float> g_rewardDestruction( "g_rewardDestruction", "Reward players when they destroy a building by momentum * g_rewardDestruction", Cvar::NONE, 0.f );
 // damage region data
 damageRegion_t g_damageRegions[ PCL_NUM_CLASSES ][ MAX_DAMAGE_REGIONS ];
 int            g_numDamageRegions[ PCL_NUM_CLASSES ];
@@ -293,6 +294,9 @@ void G_RewardAttackers( gentity_t *self )
 		{
 			// Add score
 			G_AddMomentumToScore( player, reward );
+
+			// Add credits
+			G_AddCreditToClient( player->client, static_cast<short>( reward * g_rewardDestruction.Get() ), true );
 
 			// Add momentum
 			G_AddMomentumForDestroyingStep( self, player, reward );
