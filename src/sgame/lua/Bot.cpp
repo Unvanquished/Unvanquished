@@ -97,7 +97,7 @@ static int MethodSetBehavior( lua_State* L, Bot* c )
 
 RegType<Bot> BotMethods[] =
 {
-    { "SetBehavior", MethodSetBehavior },
+    { "set_behavior", MethodSetBehavior },
     { nullptr, nullptr },
 };
 #define GETTER(name) { #name, Get##name }
