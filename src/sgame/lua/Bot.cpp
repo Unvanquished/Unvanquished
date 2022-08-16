@@ -41,6 +41,9 @@ Maryland 20850 USA.
 using Unv::Shared::Lua::LuaLib;
 using Unv::Shared::Lua::RegType;
 
+/// Handle interactions with Bots.
+// @module bot
+
 namespace Unv {
 namespace SGame {
 namespace Lua {
@@ -58,10 +61,23 @@ static int Get##var( lua_State* L ) \
 	return 1; \
 }
 
+/// Bot skill level. From 1-9. Higher skill levels are better.
+// @tfield integer skill_level Read/Write.
+// @within Bot
 GET_FUNC( skill_level, lua_pushinteger( L, c->ent->botMind->botSkill.level ) )
+/// How fast the bot will aim; basically the bot reaction time.
+// @tfield number aim_slowness Read/Write.
+// @within Bot
 GET_FUNC( aim_slowness, lua_pushnumber( L, c->ent->botMind->botSkill.aimSlowness ) )
+/// Randomness in the bot aim.
+// @tfield number aim_shake Read/Write.
+// @within Bot
 GET_FUNC( aim_shake, lua_pushnumber( L, c->ent->botMind->botSkill.aimShake ) )
 
+/// Name of the current behavior tree.
+// @tfield string behavior Read only.
+// @within Bot
+// @see set_behavior
 static int Getbehavior( lua_State* L)
 {
     Bot* c = LuaLib<Bot>::check(L, 1);
@@ -78,6 +94,11 @@ static int Getbehavior( lua_State* L)
 	return 1;
 }
 
+/// Set a new behavior tree for the bots.
+// @function set_behavior
+// @tparam string behavior New behavior tree file.
+// @within Bot
+// @see behavior
 static int MethodSetBehavior( lua_State* L, Bot* c )
 {
     if (!c || !c->ent || !c->ent->botMind)

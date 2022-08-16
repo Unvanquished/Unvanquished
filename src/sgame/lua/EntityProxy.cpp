@@ -40,6 +40,9 @@ Maryland 20850 USA.
 using Unv::Shared::Lua::RegType;
 using Unv::Shared::Lua::LuaLib;
 
+/// Handle interactions with Entities.
+// @module entityproxy
+
 namespace Unv {
 namespace SGame {
 namespace Lua {
@@ -47,6 +50,8 @@ namespace Lua {
 #define GETTER(name) { #name, Get##name }
 #define SETTER(name) { #name, Set##name }
 
+/// Access information and interact with in game entities. Wrapper class for gentity_t.
+// @table EntityProxy
 EntityProxy::EntityProxy(gentity_t* ent, lua_State* L) :
 		ent(ent), L(L) {}
 
@@ -67,19 +72,56 @@ static int Get##var( lua_State* L ) \
 	return 1; \
 }
 
+/// Entity origin. Array of floats starting at index 1.
+// @tfield array origin Read/Write.
+// @within EntityProxy
 GET_FUNC2(origin, Shared::Lua::PushVec3(L, proxy->ent->s.origin))
+/// Entity classname.
+// @tfield string class_name Read only.
+// @within EntityProxy
 GET_FUNC2(class_name, lua_pushstring(L, proxy->ent->classname))
+/// Entity name. Probably unused and only useful in a narrow set of usecases. Probably not what you want.
+// @tfield string name Read only.
+// @within EntityProxy
 GET_FUNC2(name, lua_pushstring(L, proxy->ent->names[0]))
+/// Entity alias. Probably unused and only useful in a narrow set of usecases. Probably not what you want.
+// @tfield string alias Read only.
+// @within EntityProxy
 GET_FUNC2(alias, lua_pushstring(L, proxy->ent->names[2]))
+/// Target name. Probably unused and only useful in a narrow set of usecases. Probably not what you want.
+// @tfield string target_name Read only.
+// @within EntityProxy
 GET_FUNC2(target_name, lua_pushstring(L, proxy->ent->names[1]))
+/// Target name2. Probably unused and only useful in a narrow set of usecases. Probably not what you want.
+// @tfield string target_name2 Read only.
 // Intentionally the same index as alias. Check sg_spawn.cpp for why.
+// @within EntityProxy
 GET_FUNC2(target_name2, lua_pushstring(L, proxy->ent->names[2]))
+/// Entity angles. Controls orientation of the entity. Array of floats starting at index 1.
+// @tfield array angles Read/Write.
+// @within EntityProxy
 GET_FUNC2(angles, Shared::Lua::PushVec3(L, proxy->ent->s.angles))
+/// The next level.time the entity will think.
+// @tfield integer nextthink Read/Write.
+// @see level.time
+// @within EntityProxy
 GET_FUNC2(nextthink, lua_pushinteger(L, proxy->ent->nextthink))
+/// The mins for the entity AABB. Array of floats starting at index 1.
+// @tfield array mins Read/Write.
+// @within EntityProxy
 GET_FUNC2(mins, Shared::Lua::PushVec3(L, proxy->ent->r.mins))
+/// The maxs for the entity AABB. Array of floats starting at index 1.
+// @tfield array maxs Read/Write.
+// @within EntityProxy
 GET_FUNC2(maxs, Shared::Lua::PushVec3(L, proxy->ent->r.maxs))
+/// The entity number. Also the entity's index in g_entities.
+// @tfield integer number Read only.
+// @within EntityProxy
 GET_FUNC2(number, lua_pushinteger(L, proxy->ent - g_entities))
 
+/// The entity team.
+// @tfield string team Read only.
+// @within EntityProxy
 static int Getteam(lua_State* L)
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
@@ -102,6 +144,11 @@ static int Getteam(lua_State* L)
 	return 1;
 }
 
+/// Fields related to players. Will be nil if the entity is not a player.
+// @tfield Client client Read/Write.
+// @within EntityProxy
+// @see client
+// @usage if ent.client ~= nil then print(ent.client.name) end -- Print client name
 static int Getclient(lua_State* L)
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
@@ -114,6 +161,10 @@ static int Getclient(lua_State* L)
 	return 1;
 }
 
+/// Fields related to buildables. Will be nil if the entity is not a buildable.
+// @tfield Buildable buildable Read/Write.
+// @within EntityProxy
+// @see buildable
 static int Getbuildable(lua_State* L)
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
@@ -130,6 +181,10 @@ static int Getbuildable(lua_State* L)
 	return 1;
 }
 
+/// Fields related to bots. Will be nil if the entity is not a bot.
+// @tfield Bot bot Read/Write.
+// @within EntityProxy
+// @see bot
 static int Getbot(lua_State* L)
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
@@ -321,13 +376,65 @@ void PushArgs(lua_State* L, T arg, Args... args)
 		return 1; \
 	}
 
+/// The Lua think function. Will be called every time the entity thinks.
+// General notes about these Lua Entity functions:
+// Does not override the existing function. Runs in addition to it.
+// On read, returns true or nil if the think function is set.
+// On write, accepts a function.
+// Set to nil to clear the Lua function.
+// @tfield function|bool think function(EntityProxy self)
+// @tparam EntityProxy self The current entity.
+// @within EntityProxy
 ExecFunc(think, THINK, (gentity_t* self), 1, self)
+/// The Lua reset function. Will be called every time the entity restets.
+// @tfield function|bool reset function(EntityProxy self)
+// @tparam EntityProxy self The current entity.
+// @within EntityProxy
+// @see think
 ExecFunc(reset, RESET, (gentity_t* self), 1, self)
+/// The Lua reached function. Will be called every time a mover reaches its destination.
+// @tfield function|bool reset function(EntityProxy self)
+// @tparam EntityProxy self The current entity.
+// @within EntityProxy
+// @see think
 ExecFunc(reached, REACHED, (gentity_t* self), 1, self)
+/// The Lua blocked function. Will be called every time a mover is blocked.
+// @tfield function|bool blocked function(EntityProxy self, EntityProxy blocker)
+// @tparam EntityProxy self The current entity (the mover).
+// @tparam EntityProxy blocker The blocking entity.
+// @within EntityProxy
+// @see think
 ExecFunc(blocked, BLOCKED, (gentity_t* self, gentity_t* other), 2, self, other)
+/// The Lua touch function. Will be called every time a collidable entity is touched.
+// @tfield function|bool touch function(EntityProxy self, EntityProxy toucher)
+// @tparam EntityProxy self The current entity.
+// @tparam EntityProxy toucher The touching entity.
+// @within EntityProxy
+// @see think
 ExecFunc(touch, TOUCH, (gentity_t* self, gentity_t* other, trace_t* trace), 2, self, other, trace)
+/// The Lua use function. Will be called every time a usable entity is used.
+// @tfield function|bool use function(EntityProxy self, EntityProxy caller, EntityProxy activator)
+// @tparam EntityProxy self The current entity.
+// @tparam EntityProxy caller The calling entity (idk what this means.)
+// @tparam EntityProxy activator The entity that uses this entity.
+// @within EntityProxy
+// @see think
 ExecFunc(use, USE, (gentity_t* self, gentity_t* other, gentity_t* act), 3, self, other, act)
+/// The Lua pain function. Will be called every time an entity takes damage.
+// @tfield function|bool pain function(EntityProxy self, EntityProxy attacker, integer damage)
+// @tparam EntityProxy self The current entity.
+// @tparam EntityProxy attacker|nil The entity that initiated the damage.
+// @tparam integer damage The amount of damage taken.
+// @within EntityProxy
+// @see think
 ExecFunc(pain, PAIN, (gentity_t* self, gentity_t* attacker, int damage), 3, self, attacker, damage)
+/// The Lua die function. Will be called every time an entity dies.
+// @tfield function|bool die function(EntityProxy self, EntityProxy inflictor, integer attacker)
+// @tparam EntityProxy self The current entity.
+// @tparam EntityProxy|nil inflictor The entity that killed the entity. idk when these are different.
+// @tparam EntityProxy|nil attacker The entity that killed the entity.
+// @within EntityProxy
+// @see think
 ExecFunc(die, DIE, (gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int mod), 4, self, inflictor, attacker, mod)
 
 RegType<EntityProxy> EntityProxyMethods[] =

@@ -43,10 +43,17 @@ Maryland 20850 USA.
 using Unv::Shared::Lua::LuaLib;
 using Unv::Shared::Lua::RegType;
 
+/// Handle interactions with Buildables.
+// @module buildable
+
 namespace Unv {
 namespace SGame {
 namespace Lua {
 
+/// Deconstruct this buildable.
+// @function decon
+// @within Buildable
+// @usage buildable:decon()
 static int Methoddecon(lua_State* L, Buildable* b)
 {
     if (b && b->ent && b->ent->s.eType == entityType_t::ET_BUILDABLE)
@@ -97,12 +104,33 @@ static inline HealthComponent* hc( gentity_t* ent )
     return c;
 }
 
+/// Get the buildable type.
+// @tfield string name Read only.
+// @within Buildable
 GET_FUNC( name, lua_pushstring(L, BG_Buildable( c->ent->s.modelindex )->name ) )
+/// Whether the buildable is powered.
+// @tfield boolean powered Read/Write.
+// @within Buildable
 GET_FUNC( powered, lua_pushboolean(L, bc(c->ent)->Powered() ) )
+/// The entity the buildable is targeting.
+// @tfield EntityProxy target Read only.
+// @within Buildable
 GET_FUNC( target, LuaLib<EntityProxy>::push( L, Entity::CreateProxy( c->ent->target.get(), L ) ) )
+/// Buildable health.
+// @tfield number health Read/Write.
+// @within Buildable
 GET_FUNC( health, lua_pushnumber(L, Entities::HasHealthComponent(c->ent) ? Entities::HealthOf( c->ent ) : 0 ) )
+/// Buildable team.
+// @tfield string team Read only.
+// @within Buildable
 GET_FUNC( team, lua_pushstring(L, BG_TeamName(c->ent->buildableTeam) ) )
+/// Whether this buildable is marked for deconstruction.
+// @tfield boolean marked Read only.
+// @within Buildable
 GET_FUNC( marked, lua_pushboolean(L, bc(c->ent)->MarkedForDeconstruction() ) )
+/// The level.time at which this buildable was marked.
+// @tfield integer marked_time Read only.
+// @within Buildable
 GET_FUNC( marked_time, lua_pushinteger(L, bc(c->ent)->GetMarkTime() ) )
 
 #define GETTER(name) { #name, Get##name }
