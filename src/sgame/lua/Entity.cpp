@@ -39,6 +39,9 @@ Maryland 20850 USA.
 using Unv::Shared::Lua::LuaLib;
 using Unv::Shared::Lua::RegType;
 
+/// Handle interactions with Entities.
+// @module entity
+
 namespace Unv {
 namespace SGame {
 namespace Lua {
@@ -55,6 +58,11 @@ EntityProxy* Entity::CreateProxy( gentity_t* ent, lua_State* L )
 	return proxies[entNum];
 }
 
+/// Find an entity based on their name. This function is probably useless since most entities don't have a name.
+// @function find
+// @tparam string name The entity name.
+// @treturn EntityProxy|nil Returns EntityProxy if it finds a match or nil.
+// @within entity
 int Entity::Find( lua_State* L )
 {
 	const char* name = luaL_checkstring(L, 1);
@@ -70,6 +78,11 @@ int Entity::Find( lua_State* L )
 	return 0;
 }
 
+/// Allows iterating over a group of entities given a class name.
+// @function iterate_classname
+// @tparam string class_name The class name to search for.
+// @treturn EntityProxy...|nil Returns one or more EntityProxies if any matches or nil.
+// @within entity
 int Entity::IterateByClassName( lua_State* L )
 {
 	const char* name = luaL_checkstring(L, 1);
@@ -86,6 +99,12 @@ int Entity::IterateByClassName( lua_State* L )
 	return ret;
 }
 
+/// Fetch an entity by its entity number via entity[idx]. Do not use index() directly.
+// @function index
+// @tparam integer index The entity number.
+// @treturn EntityProxy|nil Returns EntityProxy if there one exists or nil.
+// @usage local ent = sgame.entity[0] -- Get the first entity.
+// @within entity
 int Entity::index( lua_State* L )
 {
 	int type = lua_type(L, -1);

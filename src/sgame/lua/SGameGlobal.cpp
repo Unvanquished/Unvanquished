@@ -54,28 +54,49 @@ using Unv::Shared::Lua::RegType;
 static Entity entity;
 static Level level;
 static Hooks hooks;
-
+/// SGame global to access SGame related fields.
+// Accessed via the sgame global.
+// @module sgame
 class SGameGlobal
 {
 	public:
+
+	/// Get in game entities.
+	// @field entity Get in game entities. Analogous to the g_entities global in C++.
+	// @usage print(sgame.entiites[0].client.name) -- Print first connected client's name.
+	// @see entity
+	// @see entityproxy.EntityProxy
 	static int GetEntity( lua_State* L )
 	{
 		LuaLib<Entity>::push( L, &entity, false );
 		return 1;
 	}
 
+	/// Get globals related to the game.
+	// @field level Get globals related to the game. Analogous to the level global in C++.
+	// @see level.Level
+	// @usage sgame.level.aliens.total_budget = 500 -- Give aliens more build points.
 	static int GetLevel( lua_State* L )
 	{
 		LuaLib<Level>::push( L, &level, false );
 		return 1;
 	}
 
+	/// Get object used to install hooks in various places.
+	// @field hooks Get object used to install hooks in various places.
+	// @see hooks
+	// @usage sgame.hooks.RegisterChatHook(function(ent, team, message) print(ent.client.name .. ' says: ' .. message) end) -- Print out the message every time.
 	static int GetHooks( lua_State* L )
 	{
 		LuaLib<Hooks>::push( L, &hooks, false );
 		return 1;
 	}
 
+	/// Send a server command to a client or clients. Equivalent to trap_SendServerCommand.
+	/// @function SendServerCommand
+	/// @tparam integer entity_number client number or -1 for all clients.
+	/// @tparam string command Command to send to the clients.
+	// @usage sgame.SendServerCommand(-1, 'print "WAZZUP!!") -- Print wazzup to all connected clients.
 	static int SendServerCommand( lua_State* L )
 	{
 		if (!lua_isinteger(L, 1) || !lua_isstring(L, 2))
@@ -98,20 +119,8 @@ RegType<SGameGlobal> SGameGlobalMethods[] =
 };
 luaL_Reg SGameGlobalGetters[] =
 {
-	/// sgame.entity
-	///   Get in game entities. Analogous to the g_entities global in C++.
-	/// Returns:
-	///   {@link Entity} object.
 	{ "entity", SGameGlobal::GetEntity },
-	/// sgame.level
-	///   Get globals related to the game. Analogous to the level global in C++.
-	/// Returns:
-	///   {@link Level} object.
 	{ "level", SGameGlobal::GetLevel },
-	/// sgame.hooks
-	///   Get object used to install hooks in various places.
-	/// Returns:
-	///   {@link Hooks} object.
 	{ "hooks", SGameGlobal::GetHooks },
 	{ nullptr, nullptr },
 };
@@ -149,11 +158,6 @@ LUASGAMETYPEDEFINE(SGameGlobal, false)
 template<>
 void ExtraInit<Unv::SGame::Lua::SGameGlobal>(lua_State* L, int metatable_index)
 {
-	/// sgame.SendServerCommand
-	///   Send a server command to a client or clients. Equivalent to trap_SendServerCommand().
-	/// Args:
-	///   entity_number: (integer) client number or -1 for all clients.
-	///   command: (string) Command to send to the clients.
 	lua_pushcfunction( L, Unv::SGame::Lua::SGameGlobal::SendServerCommand );
 	lua_setfield( L, metatable_index - 1, "SendServerCommand" );
 }

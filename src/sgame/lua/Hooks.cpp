@@ -40,6 +40,10 @@ Maryland 20850 USA.
 
 using Unv::Shared::Lua::LuaLib;
 using Unv::Shared::Lua::RegType;
+/// Register hooks to install callbacks on various game events.
+// Multiple callbacks can be registered for each event; however,
+// no callbacks may be unregistered.
+/// @module hooks
 
 namespace Unv {
 namespace SGame {
@@ -53,9 +57,12 @@ static std::vector<LuaHook> clientConnectHooks;
 static std::vector<LuaHook> teamChangeHooks;
 static std::vector<LuaHook> playerSpawnHooks;
 static std::vector<LuaHook> gameEndHooks;
-
-// Will be called as function(EntityProxy, team, message)
-// where team = <team> is all chat.
+/// Install a callback that will be called for every chat message.
+// The callback should be  function(EntityProxy, team, message).
+// where team = 'alien', 'human', '&lt;team&gt;' (for all chat)
+// and message is just the message including any quake3 colors.
+// @function RegisterChatHook
+// @tparam function callback function(EntityProxy, team, message)
 int RegisterChatHook(lua_State* L)
 {
     if (lua_isfunction(L, 1))
@@ -86,9 +93,11 @@ void ExecChatHooks(gentity_t* ent, team_t team, Str::StringRef message)
 }
 
 
-
-// Will be called as function(EntityProxy, connect)
-// connect = true for connecting and false for disconnecting.
+/// Install a callback that will be called for every client connect or disconnect.
+// The callback should be  function(EntityProxy, connect).
+// where connect = true for connect and false for disconnect.
+// @function RegisterClientConnectHook
+// @tparam function callback function(EntityProxy, connect)
 int RegisterClientConnectHook(lua_State* L)
 {
     if (lua_isfunction(L, 1))
@@ -117,7 +126,11 @@ void ExecClientConnectHooks(gentity_t* ent, bool connect)
     }
 }
 
-// Will be called as function(EntityProxy, team)
+/// Install a callback that will be called for every time a client changes teams.
+// The callback should be  function(EntityProxy, newTeam).
+// where newTeam will be 'alien', 'human', 'spectator'.
+// @function RegisterTeamChangeHook
+// @tparam function callback function(EntityProxy, newTeam)
 int RegisterTeamChangeHook(lua_State* L)
 {
     if (lua_isfunction(L, 1))
@@ -146,7 +159,11 @@ void ExecTeamChangeHooks(gentity_t* ent, team_t team)
     }
 }
 
-// Will be called as function(EntityProxy)
+/// Install a callback that will be called for every time a player changes classes.
+// This includes initial spawning, but also evolving, de-evolving, buying a bsuit, etc.
+// The callback should be  function(EntityProxy).
+// @function RegisterPlayerSpawnHook
+// @tparam function callback function(EntityProxy)
 int RegisterPlayerSpawnHook(lua_State* L)
 {
     if (lua_isfunction(L, 1))
@@ -174,6 +191,12 @@ void ExecPlayerSpawnHooks(gentity_t* ent)
     }
 }
 
+/// Install a callback that will be called to check whether a game should end.
+// The callback should be  function() and should return either 'human', 'alien', depending
+// on whether the respective team has won the game. If no team has won, the function should
+// return false.
+// @function RegisterGameEndHook
+// @tparam function callback function()
 int RegisterGameEndHook(lua_State* L)
 {
     if (lua_isfunction(L, 1))

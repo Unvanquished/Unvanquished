@@ -42,6 +42,9 @@ Maryland 20850 USA.
 using Unv::Shared::Lua::LuaLib;
 using Unv::Shared::Lua::RegType;
 
+/// Handle interactions with Players.
+// @module client
+
 namespace Unv {
 namespace SGame {
 namespace Lua {
@@ -58,20 +61,58 @@ static int Get##var( lua_State* L ) \
 	func; \
 	return 1; \
 }
-
+/// Whether a client is fully connected (vs connecting to the server and loading the map...).
+// @tfield bool connected Read only.
+// @within Client
 GET_FUNC( connected, lua_pushboolean(L, c->ent->client->pers.connected == clientConnected_t::CON_CONNECTED) )
+/// The client's full unescaped name.
+// @tfield string name Read/Write.
+// @within Client
 GET_FUNC( name, lua_pushstring(L, c->ent->client->pers.netname ) )
+/// The client's credits. Only writable for humans.
+// @tfield integer credits Read/Write.
+// @within Client
 GET_FUNC( credits, lua_pushinteger(L, c->ent->client->pers.credit ) )
+/// The client's evos. Only writable for aliens.
+// @tfield number evos Read/Write.
+// @within Client
 GET_FUNC( evos, lua_pushnumber(L, c->ent->client->pers.credit / static_cast<double>(CREDITS_PER_EVO) ) )
+/// The client's weapon.
+// @tfield string evos Read only.
+// @within Client
 GET_FUNC( weapon, lua_pushstring(L, BG_Weapon(c->ent->client->ps.stats[STAT_WEAPON] )->name ) )
+/// The client's health.
+// @tfield number health Read/Write.
+// @within Client
 GET_FUNC( health, lua_pushnumber(L, Entities::HasHealthComponent(c->ent) ? Entities::HealthOf(c->ent) : 0 ) )
+/// The client's ping.
+// @tfield integer ping Read only.
+// @within Client
 GET_FUNC( ping, lua_pushinteger(L, c->ent->client->ps.ping ) )
+/// The client's class.
+// @tfield string class Read only.
+// @within Client
 GET_FUNC( class, lua_pushstring(L, BG_Class(c->ent->client->ps.stats[STAT_CLASS] )->name ) )
+/// The client's stamina. Only applicable for humans.
+// @tfield integer stamina Read/Write.
+// @within Client
 GET_FUNC( stamina, lua_pushinteger(L, c->ent->client->ps.stats[STAT_STAMINA] ) )
+/// The client's score.
+// @tfield integer score Read only.
+// @within Client
 GET_FUNC( score, lua_pushinteger(L, c->ent->client->pers.namelog->score ) )
+/// Make the client invulnerable. The client cannot take any damage.
+// @tfield bool god Read/Write.
+// @within Client
 GET_FUNC( god, lua_pushboolean(L, c->ent->flags & FL_GODMODE ) )
+/// Make the client untargetable by buildables.
+// @tfield bool notarget Read/Write.
+// @within Client
 GET_FUNC( notarget, lua_pushboolean(L, c->ent->flags & FL_NOTARGET ) )
 
+/// The client's name without color codes or other escapes or emoticon. Useful for programatic comparisons.
+// @tfield string clean_name Read only.
+// @within Client
 static int Getclean_name( lua_State* L )
 {
     Client* c = LuaLib<Client>::check(L, 1);
@@ -86,6 +127,10 @@ static int Getclean_name( lua_State* L )
 	return 1;
 }
 
+/// Kill the client instantly.
+// @function kill
+// @usage client:kill()
+// @within Client
 int Methodkill(lua_State* L, Client* c)
 {
     if (!c || !c->ent || !c->ent->client)
@@ -99,6 +144,11 @@ int Methodkill(lua_State* L, Client* c)
     return 0;
 }
 
+/// Teleport the client to a location.
+// @function teleport
+// @tparam array location An array of floats starting at index 1.
+// @usage client:teleport({3892, 2, 48})
+// @within Client
 int Methodteleport(lua_State* L, Client* c)
 {
     if (!c || !c->ent || !c->ent->client)
@@ -116,6 +166,11 @@ int Methodteleport(lua_State* L, Client* c)
     return 0;
 }
 
+/// Execute a game command as if the client had sent it themself.
+// @function cmd
+// @tparam string cmd The command string.
+// @usage client:cmd('buy rifle')
+// @within Client
 int Methodcommand(lua_State* L, Client* c)
 {
     if (!c || !c->ent || !c->ent->client)
