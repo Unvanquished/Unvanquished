@@ -6,6 +6,7 @@
 			width: 100%;
 			height: 100%;
 			font-size: 18dp;
+			font-effect: outline( 2px #111 );
 		}
 		div {
 			position: absolute;
