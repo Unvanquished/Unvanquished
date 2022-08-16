@@ -10,6 +10,7 @@ body {
 	color: #999999;
 	cursor: ui/assets/cursor;
 	font-size: 12dp;
+	font-effect: outline( 1px #111 );
 }
 
 p {
