@@ -14,7 +14,9 @@ Unvanquished is an arena game with RTS elements (you can build) in which 2 very 
 
 This repository contains the gamelogic of the game Unvanquished.
 
-If you just want to play the game, then technically you only need to build the [Dæmon engine](https://github.com/DaemonEngine/Daemon) and [download the game's assets](#downloading-the-games-assets).
+The game provide up-to-date downloads on the [download page](https://unvanquished.net/download/).
+
+If you just want to play the game or run a server, then technically you only need to build the [Dæmon engine](https://github.com/DaemonEngine/Daemon) and [download the game's assets](#downloading-the-games-assets).
 
 You need to build this repository if you want to contribute to the gamelogic or make a mod.
 
@@ -128,7 +130,11 @@ cmake -H. -Bbuild -DCMAKE_TOOLCHAIN_FILE=cmake/cross-toolchain-mingw64.cmake
 cmake --build build -- -j4
 ```
 
-## Launch Instructions
+## Running the game
+
+### Windows
+
+On Windows you'll have to use `daemon.exe` and `daemonded.exe` instead of `./daemon` and `./daemonded`, everything else will be the same.
 
 ### Linux, macOS, MSYS2
 
@@ -142,9 +148,10 @@ cd build
 
 #### Downloading the game's assets
 
-If you don't have the assets, you can download them first.
+If you don't have the assets, you can download them first. You can download an universal zip from the [download page](https://unvanquished.net/download/), here is the [link to the latest version](https://unvanquished.net/download/zip). The `pkg/` folder would have to be stored next to your `daemon` binary.
 
-The package downloader script can use `aria2c`, `curl` or `wget`, `aria2c` is recommended.
+Otherwise you can use the package downloader script. This script can use `aria2c`, `curl` or `wget`, `aria2c` is recommended.
+
 You can do `./download-paks --help` for more options.
 
 ```sh
@@ -156,9 +163,19 @@ cd build
 ./daemon
 ```
 
+If you want to run a server, you may prefer to use the non-graphical `daemonded` server binary instead of `daemon` and start the first map (here, `plat23` as an example) from the command line:
+
+```
+./daemonded +map plat23
+```
+
+You may also want to copy and extend some [configuration samples](dist/configs), they must be stored in your user home directory, see [Game locations](https://wiki.unvanquished.net/wiki/Game_locations) on the wiki for details, including [other instructions about running a server](https://wiki.unvanquished.net/wiki/Server/Running).
+
 #### Loading base asset package from sources
 
-As a developer, you will want to load assets from repository. To do that:
+This is not needed to run the released game or a server.
+
+As a developer, you may want to load assets from repository. To do that:
 
 ```sh
 cd build
@@ -173,7 +190,9 @@ If you are looking for the sources of the whole assets, have a look at the [Unva
 
 #### Loading your own assets
 
-As a developer, you will want to load your own assets in addition to those shipped with the game. To do that:
+This is not needed to run the released game or a server.
+
+As a developer, you may want to load your own assets in addition to those shipped with the game. To do that:
 
 ```sh
 cd build
@@ -197,14 +216,3 @@ You can now put loose assets into `assets_src.dpkdir` or you can put additional 
 			-set vm.sgame.type 3 -set vm.cgame.type 3 \
 			+devmap plat23
 ```
-
-### Windows
-
-#### If Unvanquished's assets are installed on your system
-
-Run `daemon.exe -pakpath <PATH>`, where `<PATH>` is the path to the `pkg/` directory that contains the game's assets.
-
-#### If you don't have the assets
-
-1. Copy the `pkg/` directory from the release zip ([torrent](https://cdn.unvanquished.net/latest.php) | [web](https://github.com/Unvanquished/Unvanquished/releases)) into your build directory.
-2. Run `daemon.exe`.
