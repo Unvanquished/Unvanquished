@@ -162,6 +162,7 @@ int Methodteleport(lua_State* L, Client* c)
     {
         return 0;
     }
+    origin[ 2 ] -= c->ent->client->ps.viewheight;
     G_TeleportPlayer(c->ent, origin, angles, 0);
     return 0;
 }
