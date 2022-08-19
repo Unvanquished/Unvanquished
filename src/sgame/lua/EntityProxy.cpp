@@ -429,10 +429,11 @@ ExecFunc(use, USE, (gentity_t* self, gentity_t* other, gentity_t* act), 3, self,
 // @see think
 ExecFunc(pain, PAIN, (gentity_t* self, gentity_t* attacker, int damage), 3, self, attacker, damage)
 /// The Lua die function. Will be called every time an entity dies.
-// @tfield function|bool die function(EntityProxy self, EntityProxy inflictor, integer attacker)
+// @tfield function|bool die function(EntityProxy self, EntityProxy inflictor, EntityProxy attacker, integer mod)
 // @tparam EntityProxy self The current entity.
 // @tparam EntityProxy|nil inflictor The entity that killed the entity. idk when these are different.
 // @tparam EntityProxy|nil attacker The entity that killed the entity.
+// @tparam integer mod The kill cause number. Look at bg_public.h.
 // @within EntityProxy
 // @see think
 ExecFunc(die, DIE, (gentity_t* self, gentity_t* inflictor, gentity_t* attacker, int mod), 4, self, inflictor, attacker, mod)
