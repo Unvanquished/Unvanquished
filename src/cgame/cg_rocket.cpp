@@ -603,7 +603,7 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 
 		case ELEMENT_GAME:
 			return rocketInfo.cstate.connState
-				== connstate_t::CA_ACTIVE;
+				== connstate_t::CA_ACTIVE && cg.snap != nullptr;
 
 		default:
 			break;
@@ -631,11 +631,6 @@ bool CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			return (ps->persistant[ PERS_TEAM ] != TEAM_NONE)
 				&& (ps->stats[ STAT_HEALTH ] > 0)
 				&& (ps->weapon != WP_NONE);
-
-		case ELEMENT_DEAD:
-			// If you're on a team and spectating, you're probably dead
-			return (ps->persistant[ PERS_TEAM ] != TEAM_NONE)
-				&& (ps->persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT);
 
 		default:
 			return false;
