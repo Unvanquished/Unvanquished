@@ -2337,7 +2337,7 @@ class SpawnQueueElement : public TextHudElement
 {
 public:
 	SpawnQueueElement( const Rml::String& tag ) :
-			TextHudElement( tag, ELEMENT_DEAD ),
+			TextHudElement( tag, ELEMENT_GAME ),
 			position_( -1 ) {}
 
 	void DoOnUpdate() override
@@ -2380,7 +2380,7 @@ class NumSpawnsElement : public TextHudElement
 {
 public:
 	NumSpawnsElement( const Rml::String& tag ) :
-			TextHudElement( tag, ELEMENT_DEAD ),
+			TextHudElement( tag, ELEMENT_GAME ),
 			spawns_( -1 ) {}
 
 	void DoOnUpdate() override
