@@ -2376,6 +2376,50 @@ public:
 	int position_;
 };
 
+class NumSpawnsElement : public TextHudElement
+{
+public:
+	NumSpawnsElement( const Rml::String& tag ) :
+			TextHudElement( tag, ELEMENT_DEAD ),
+			spawns_( -1 ) {}
+
+	void DoOnUpdate() override
+	{
+		if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) || cg.snap->ps.pm_type == PM_DEAD )
+		{
+			if ( IsVisible() )
+			{
+				spawns_ = -1;
+				SetProperty( Rml::PropertyId::Visibility, Rml::Property( Rml::Style::Visibility::Hidden ) );
+			}
+			return;
+		}
+
+		int newSpawns = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
+		if ( newSpawns == spawns_ )
+		{
+			return;
+		}
+		spawns_ = newSpawns;
+		if ( spawns_ == 1 )
+		{
+			SetText( _( "There are no spawns remaining" ) );
+		}
+		else
+		{
+			SetText( va( P_( "There is %d spawn remaining", "There are %d spawns remaining", spawns_ ), spawns_ ) );
+		}
+
+		if ( !IsVisible() )
+		{
+			SetProperty( Rml::PropertyId::Visibility, Rml::Property( Rml::Style::Visibility::Visible ) );
+		}
+	}
+
+	int spawns_;
+};
+
+
 static void CG_Rocket_DrawPlayerHealth()
 {
 	static int lastHealth = 0;
@@ -3364,36 +3408,6 @@ static void CG_Rocket_DrawTeamVote()
 	CG_Rocket_DrawVote_internal( CG_MyTeam() );
 }
 
-static void CG_Rocket_DrawNumSpawns()
-{
-	int    position, spawns;
-	const char *s;
-
-	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
-	{
-		Rocket_SetInnerRMLRaw( "" );
-		return;
-	}
-
-	spawns   = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] & 0x000000ff;
-	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
-
-	if ( position < 1 || cg.intermissionStarted )
-	{
-		s = "";
-	}
-	else if ( spawns == 0 )
-	{
-		s = _( "There are no spawns remaining" );
-	}
-	else
-	{
-		s = va( P_( "There is %d spawn remaining", "There are %d spawns remaining", spawns ), spawns );
-	}
-
-	Rocket_SetInnerRML( s, 0 );
-}
-
 static void CG_Rocket_DrawWarmup()
 {
 	int   sec = 0;
@@ -3591,7 +3605,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "minimap", nullptr, &CG_Rocket_DrawMinimap, ELEMENT_ALL },
 	{ "momentum_bar", nullptr, &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
 	{ "motd", &CG_Rocket_DrawMOTD, nullptr, ELEMENT_ALL },
-	{ "numSpawns", &CG_Rocket_DrawNumSpawns, nullptr, ELEMENT_DEAD },
 	{ "progress_value", &CG_Rocket_DrawProgressValue, nullptr, ELEMENT_ALL },
 	{ "tutorial", &CG_Rocket_DrawTutorial, nullptr, ELEMENT_GAME },
 	{ "unlocked_items", nullptr, &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
@@ -3671,4 +3684,5 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<BarbsHudElement>( "barbs" );
 	RegisterElement<TranslateElement>( "translate" );
 	RegisterElement<SpawnQueueElement>( "spawnPos" );
+	RegisterElement<NumSpawnsElement>( "numSpawns" );
 }
