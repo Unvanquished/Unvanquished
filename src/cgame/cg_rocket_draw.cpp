@@ -2333,6 +2333,49 @@ private:
 	float offset;
 };
 
+class SpawnQueueElement : public TextHudElement
+{
+public:
+	SpawnQueueElement( const Rml::String& tag ) :
+			TextHudElement( tag, ELEMENT_DEAD ),
+			position_( -1 ) {}
+
+	void DoOnUpdate() override
+	{
+		if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) || cg.snap->ps.pm_type == PM_DEAD )
+		{
+			if ( IsVisible() )
+			{
+				position_ = -1;
+				SetProperty( Rml::PropertyId::Visibility, Rml::Property( Rml::Style::Visibility::Hidden ) );
+			}
+			return;
+		}
+
+		int newPosition = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
+		if ( newPosition == position_ )
+		{
+			return;
+		}
+		position_ = newPosition;
+		if ( position_ == 1 )
+		{
+			SetText( _( "You are at the front of the spawn queue" ) );
+		}
+		else
+		{
+			SetText( va( _( "You are at position %d in the spawn queue" ), position_ ) );
+		}
+
+		if ( !IsVisible() )
+		{
+			SetProperty( Rml::PropertyId::Visibility, Rml::Property( Rml::Style::Visibility::Visible ) );
+		}
+	}
+
+	int position_;
+};
+
 static void CG_Rocket_DrawPlayerHealth()
 {
 	static int lastHealth = 0;
@@ -3321,38 +3364,6 @@ static void CG_Rocket_DrawTeamVote()
 	CG_Rocket_DrawVote_internal( CG_MyTeam() );
 }
 
-static void CG_Rocket_DrawSpawnQueuePosition()
-{
-	int    position;
-	const char *s;
-
-	if ( !( cg.snap->ps.pm_flags & PMF_QUEUED ) )
-	{
-		Rocket_SetInnerRMLRaw( "" );
-		return;
-	}
-
-	position = cg.snap->ps.persistant[ PERS_SPAWNQUEUE ] >> 8;
-
-	if ( position < 1 )
-	{
-		Rocket_SetInnerRMLRaw( "" );
-		return;
-	}
-
-	if ( position == 1 )
-	{
-		s = va( _( "You are at the front of the spawn queue" ) );
-	}
-
-	else
-	{
-		s = va( _( "You are at position %d in the spawn queue" ), position );
-	}
-
-	Rocket_SetInnerRML( s, 0 );
-}
-
 static void CG_Rocket_DrawNumSpawns()
 {
 	int    position, spawns;
@@ -3582,7 +3593,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "motd", &CG_Rocket_DrawMOTD, nullptr, ELEMENT_ALL },
 	{ "numSpawns", &CG_Rocket_DrawNumSpawns, nullptr, ELEMENT_DEAD },
 	{ "progress_value", &CG_Rocket_DrawProgressValue, nullptr, ELEMENT_ALL },
-	{ "spawnPos", &CG_Rocket_DrawSpawnQueuePosition, nullptr, ELEMENT_DEAD },
 	{ "tutorial", &CG_Rocket_DrawTutorial, nullptr, ELEMENT_GAME },
 	{ "unlocked_items", nullptr, &CG_Rocket_DrawPlayerUnlockedItems, ELEMENT_BOTH },
 	{ "version", &CG_Rocket_DrawVersion, nullptr, ELEMENT_ALL },
@@ -3660,4 +3670,5 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<PredictedMineEfficiencyElement>( "predictedMineEfficiency" );
 	RegisterElement<BarbsHudElement>( "barbs" );
 	RegisterElement<TranslateElement>( "translate" );
+	RegisterElement<SpawnQueueElement>( "spawnPos" );
 }
