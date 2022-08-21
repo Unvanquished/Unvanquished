@@ -139,6 +139,15 @@ public:
 						MoveCursorForward();
 						break;
 
+					case Rml::Input::KI_C:
+						if ( event.GetParameter< int >( "ctrl_key", 0 ) == 1 )
+						{
+							text.clear();
+							cursor_character_index = 0;
+							UpdateText();
+						}
+						break;
+
 					case Rml::Input::KI_RETURN:
 					case Rml::Input::KI_NUMPADENTER:
 						if ( text.empty() )

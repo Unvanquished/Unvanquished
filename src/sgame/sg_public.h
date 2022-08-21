@@ -339,6 +339,7 @@ void              G_UpdateZaps( int msec );
 void              G_ClearPlayerZapEffects( gentity_t *player );
 void              G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode );
 void              G_FireUpgrade( gentity_t *self, upgrade_t upgrade );
+void G_SetBotFill( int fill );
 
 // CombatFeedback.cpp
 namespace CombatFeedback

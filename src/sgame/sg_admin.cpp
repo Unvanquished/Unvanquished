@@ -4099,7 +4099,7 @@ bool G_admin_adminhelp( gentity_t *ent )
 
 				if ( admincmd->function )
 				{
-					ADMP( va( "%s %s", QQ( N_(" ^3Description:^* $1t$") ), admincmd->function ) );
+					ADMP( va( "%s %s", QQ( N_(" ^3Description:^* $1t$") ), Quote( admincmd->function ) ) );
 				}
 
 				ADMP( va( "%s %s %s", QQ( N_(" ^3Syntax:^* $1$ $2t$") ), admincmd->keyword, admincmd->syntax ? Quote( admincmd->syntax ) : "" ) );
@@ -4367,7 +4367,7 @@ bool G_admin_restart( gentity_t *ent )
 
 	if ( !builtin && !G_LayoutExists( map, layout ) )
 	{
-		ADMP( va( "%s %s", QQ( N_("^3restart:^* layout '$1$' does not exist") ), layout ) );
+		ADMP( va( "%s %s", QQ( N_("^3restart:^* layout '$1$' does not exist") ), Quote( layout ) ) );
 		return false;
 	}
 
@@ -4442,12 +4442,12 @@ bool G_admin_restart( gentity_t *ent )
 
 	AP( va( "print_tr %s %s %s %s %s %s %s %s", QQ( N_("^3restart:^* map restarted by $1$ $2t$$3$$4$$5t$$6$$7$") ),
 	        G_quoted_admin_name( ent ),
-	        ( layout[ 0 ] ) ? QQ( N_( "^7(forcing layout '" ) ) : "",
-			( layout[ 0 ] ) ? Quote( layout ) : "",
-			( layout[ 0 ] ) ? QQ( "^7') " ) : "",
-	        ( teampref[ 0 ] ) ? QQ( N_( "^7(with teams option: '" ) ) : "",
-	        ( teampref[ 0 ] ) ? Quote( teampref ) : "",
-	        ( teampref[ 0 ] ) ? QQ( "^7')" ) : "" ) );
+	        ( layout[ 0 ] ) ? QQ( N_( "^7(forcing layout '" ) ) : QQ(""),
+			( layout[ 0 ] ) ? Quote( layout ) : QQ(""),
+			( layout[ 0 ] ) ? QQ( "^7') " ) : QQ(""),
+	        ( teampref[ 0 ] ) ? QQ( N_( "^7(with teams option: '" ) ) : QQ(""),
+	        ( teampref[ 0 ] ) ? Quote( teampref ) : QQ(""),
+	        ( teampref[ 0 ] ) ? QQ( "^7')" ) : QQ("") ) );
 	return true;
 }
 
