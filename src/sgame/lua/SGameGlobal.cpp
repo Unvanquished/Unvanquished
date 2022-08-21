@@ -119,8 +119,9 @@ class SGameGlobal
 	// @tparam array origin Position of the buildable.
 	// @tparam array angles Orientation of the buildable.
 	// @tparam array normal Normal of the buildable.
+	// @treturn buildable.BuildableProxy The buildable.
 	// @usage -- trapper -328.875000 -1913.489868 69.430603 0.000000 100.000000 91.000000 1.000000 0.000000 0.000000 30.000000 100.000000 0.000000
-	// @usage sgame.SpawnBuildable('trapper', {328.875000,-1913.489868,-1913.489868}, {0, 100, 91}, {1, 0, 0}) -- You can ignore the last three numbers from the layout line.
+	// @usage buildable = sgame.SpawnBuildable('trapper', {328.875000,-1913.489868,-1913.489868}, {0, 100, 91}, {1, 0, 0}) -- You can ignore the last three numbers from the layout line.
 	static int SpawnBuildable( lua_State* L )
 	{
 		vec3_t origin;
@@ -143,10 +144,14 @@ class SGameGlobal
 		VectorCopy( origin, builder->s.pos.trBase );
 		VectorCopy( angles, builder->s.angles );
 		VectorCopy( normal, builder->s.origin2 );
-		G_SpawnBuildable( builder, ba->number );
-		// Spawn the buildable immediately.
-		builder->think( builder );
-		return 0;
+		gentity_t* buildable = G_SpawnBuildableImmediately( builder, ba->number );
+		if ( !buildable )
+		{
+			return 0;
+		}
+		EntityProxy* proxy = Entity::CreateProxy( buildable, L );
+		LuaLib<EntityProxy>::push( L, proxy, false );
+		return 1;
 	}
 };
 

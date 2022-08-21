@@ -2066,6 +2066,16 @@ void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 	ent->think = SpawnBuildableThink;
 }
 
+// Immediately spawn buildable instead of waiting a few frames. Also return the newly built buildable.
+// Assumes that ent is a placeholder entity that will be freed automatically by this function.
+gentity_t* G_SpawnBuildableImmediately( gentity_t *ent, buildable_t buildable )
+{
+	ent->s.modelindex = buildable;
+	gentity_t* ret = FinishSpawningBuildable( ent, false );
+	G_FreeEntity( ent );
+	return ret;
+}
+
 void G_LayoutSave( const char *name )
 {
 	char         map[ MAX_QPATH ];
