@@ -1240,10 +1240,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_WARN_ATTACK:
-			// if eventParm is non-zero, this is for humans and there's a nearby reactor, otherwise it's for aliens
+			// if eventParm is non-zero, there is a nearby main structure (OM/RC). Humans are only notified
+			// of base attacks if RC is in range. Aliens are notified of any base attacks, but base attacks
+			// without the OM in range do not give you the location of the attack.
 			if ( es->eventParm >= MAX_CLIENTS && es->eventParm < MAX_GENTITIES )
 			{
 				const char *location;
+				const char *emoticon = CG_MyTeam() == TEAM_ALIENS ? "[overmind]" : "[reactor]";
 				centity_t  *locent = CG_GetLocation( cg_entities[ es->eventParm ].currentState.origin );
 
 				CG_CenterPrint( _( "Our base is under attack!" ), 1.25f );
@@ -1259,11 +1262,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 				if ( location && *location )
 				{
-					Log::Notice( _( "[reactor] Under attack – %s" ), location );
+					Log::Notice( _( "%s Under attack – %s" ), emoticon, location );
 				}
 				else
 				{
-					Log::Notice( _( "[reactor] Under attack" ) );
+					Log::Notice( _( "%s Under attack" ), emoticon );
 				}
 			}
 			else // this is for aliens, and the overmind is in range
