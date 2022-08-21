@@ -294,7 +294,7 @@ int Setstamina(lua_State* L)
     {
         Log::Warn("Cannot add stamina to non-human team member.");
     }
-    if (!lua_isinteger(L, 2))
+    if (!lua_isnumber(L, 2))
     {
         Log::Warn("Lua client.setstamina expected number.");
     }
