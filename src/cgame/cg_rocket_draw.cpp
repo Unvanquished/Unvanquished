@@ -925,7 +925,7 @@ public:
 	{
 	}
 
-	void DoOnRender() override
+	void DoOnUpdate() override
 	{
 		if ( !cg_drawPosition.Get() )
 		{
@@ -933,12 +933,9 @@ public:
 			return;
 		}
 
-		if ( cg.predictedPlayerState.clientNum == cg.clientNum )
-		{
-			// Add text to be configured via CSS
-			vec3_t const & origin = cg.predictedPlayerState.origin;
-			SetText( va( "%0.0f %0.0f %0.0f", origin[0], origin[1], origin[2] ) );
-		}
+		// Add text to be configured via CSS
+		vec3_t const & origin = cg.predictedPlayerState.origin;
+		SetText( va( "%0.0f %0.0f %0.0f", origin[0], origin[1], origin[2] ) );
 	}
 };
 
