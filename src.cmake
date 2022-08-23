@@ -97,7 +97,6 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/cg_drawtools.cpp
     ${GAMELOGIC_DIR}/cgame/cg_ents.cpp
     ${GAMELOGIC_DIR}/cgame/cg_event.cpp
-    ${GAMELOGIC_DIR}/cgame/cg_gameinfo.cpp
     ${GAMELOGIC_DIR}/cgame/cg_key_name.cpp
     ${GAMELOGIC_DIR}/cgame/cg_key_name.h
     ${GAMELOGIC_DIR}/cgame/cg_local.h

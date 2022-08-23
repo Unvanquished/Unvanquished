@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/FileSystem.h"
 #include "cg_local.h"
 
 static void AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
@@ -1083,7 +1084,19 @@ static void CG_Rocket_SortPlayerList( const char*, const char *sortBy )
 static void CG_Rocket_BuildMapList( const char* )
 {
 	Rocket_DSClearTable( "mapList", "default" );
-	CG_LoadArenas();
+	rocketInfo.data.mapList.clear();
+	auto mapList = FS::GetAvailableMaps(false);
+	rocketInfo.data.mapList.reserve( mapList.size() );
+
+	for ( const std::string& mapName : mapList )
+	{
+		rocketInfo.data.mapList.push_back( {mapName} );
+	}
+
+	std::sort(
+		rocketInfo.data.mapList.begin(), rocketInfo.data.mapList.end(),
+		[]( const mapInfo_t& a, const mapInfo_t& b ) { return Q_stricmp( a.mapLoadName.c_str(), b.mapLoadName.c_str() ) < 0; }
+	);
 
 	for ( size_t i = 0; i < rocketInfo.data.mapList.size(); ++i )
 	{
