@@ -3773,12 +3773,6 @@ static void PM_Weapon()
 		pm->ps->weaponTime = 0;
 	}
 
-	// no slash during charge
-	if ( pm->ps->stats[ STAT_STATE ] & SS_CHARGING )
-	{
-		return;
-	}
-
 	// check for weapon change
 	// can't change if weapon is firing, but can change
 	// again if lowering or raising
