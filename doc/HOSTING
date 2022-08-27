@@ -1,0 +1,117 @@
+# Introduction
+
+This document tries to explain what is required to host a
+dedicated server, provided you already have a working
+unvanquished installation and "pak" files (those who have a
+`.dpk` file extension), which are not necessarily the
+official ones.
+
+# Non-goals
+
+It does *not* try to explain how to compile or modify
+unvanquised, how to configure a server with a modified engine,
+or how to setup your system or network. The aim is the
+simplest possible configuration.
+
+# Pre-requisites
+
+* Computer with inbound access from the Internet (either a
+  public IP or port forwarding);
+* HTTP server to host files for players to download;
+
+
+While an HTTP server is not strictly necessary, it is
+highly recommended.
+Not doing this means that if your players lack one of the
+requirements, they might be unable to join at all.
+I'll skip the details on this, as this discussion is out
+of the scope for this current document.
+
+# Daemon installation
+
+Create a directory in which you will place the following
+files:
+
+* daemonded
+* crash_server
+* nacl_helper_bootstrap
+* nacl_loader
+* irt_core-x86_64.nexe
+
+# HTTP configuration
+
+You will need to have a directory (I advise you to dedicate
+it to unvanquished, but this is not mandatory) containing
+`.dpk` files and another file named `PAKSERVER`, containing
+the string `ALLOW_UNRESTRICTED_DOWNLOAD`.
+If you get this wrong, your users will experience the
+infamous "UDP download", which will net users 3KiB/s.
+
+# Starting the server
+
+To start the game, you need to run the command:
+
+```
+daemonded -homepath PATH_TO_CONFIG -pakpath PATH_TO_PAKS \
+	+exec server.cfg
+```
+
+PATH_TO_PAKS is the relative or absolute path from where
+you started the process to reach the HTTP directory you
+setup just before.
+
+PATH_TO_CONFIG is the relative or absolute path from where
+you started the process to reach the game's configuration
+and logs folder.
+
+`server.cfg` can be any file in `PATH_TO_CONFIG/config`
+folder, but it will be easier to get help if you stick with
+conventional names.
+
+## Server "homepath" setup
+
+homepath will expect a specific layout. Files there are not
+technically required, but not having them will mean game
+will rely on the built-in alternatives.
+
+* `config/`
+* `config/server.cfg`
+* `config/map/`
+* `config/map/default.cfg`
+* `game/`
+* `game/admin.dat`
+* `game/maprotation.cfg`
+* `game/default/`
+* `game/default/maprotation.cfg`
+
+Note that 2 "maprotation.cfg" files can be used. Both will
+work, but server will be less noisy in logs if you prefer
+`game/default/maprotation.cfg`
+Some of those paths and names can be overriden by config
+options, but, as usual, I recommend you to stick with the
+conventions, except if you don't want help when you get
+problems (because it will just make people helping you loose
+time for no benefit).
+
+You can find examples for those files in the `dist/config`
+
+### `server.cfg` changes
+
+To host your own, recognizable, server, and let people
+download from it (which I strongly recommend) you need to
+modify several lines in the `server.cfg` file:
+
+* sv_hostname: name that will appear in the server list
+* g_motd: will print a message on loading screen
+* sv_allowdownload: should be 1 to allow download
+* sv_wwwBaseURL: indicates the URI clients will download
+  pak-files from
+* sv_wwwDownload: should be 1 to allow HTTP method
+* sv_wwwFallbackURL "dl.unvanquished.net/pkg": this will
+  allow players to download packages you do not have from
+  a different server. I DO NOT RECOMMEND USING THIS OPTION
+  as there is no guarantee the other server will still host
+  the files you want, and the error is not obvious.
+* fs_extrapaks: if your server requires unofficial packages
+  to be loaded to work (more on this topic in a different
+  doc file)
