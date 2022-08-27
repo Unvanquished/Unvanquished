@@ -529,6 +529,14 @@ void G_admin_cmdlist( gentity_t *ent )
 	char out[ MAX_STRING_CHARS ] = "";
 	unsigned len, outlen;
 
+	// If this is the local client, no need to send them commands.
+	// The local client will get their commands registered in
+	// G_admin_register_cmds.
+	if ( level.inClient && ent->client->ps.clientNum == 0 )
+	{
+		return;
+	}
+
 	outlen = 0;
 
 	for ( unsigned i = 0; i < adminNumCmds; i++ )
