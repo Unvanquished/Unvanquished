@@ -1715,7 +1715,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		});
 		if ( miners >= max_miners )
 		{
-			//TODO 0.54: make this a more appropriate error message, or remove g_maxMiners completely
 			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
 		}
 	}
