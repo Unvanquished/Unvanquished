@@ -227,6 +227,7 @@ void              G_ShutdownGame( int restart );
 void              G_CheckPmoveParamChanges();
 void              G_SendClientPmoveParams(int client);
 void              G_PrepareEntityNetCode();
+Str::StringRef G_NextMapCommand();
 
 // sg_maprotation.c
 void              G_PrintRotations();

@@ -163,6 +163,7 @@ Cvar::Cvar<std::string> g_mapRotationStack("g_mapRotationStack", "FOR INTERNAL U
 Cvar::Cvar<std::string> g_nextMap("g_nextMap", "map to load next (cleared after use)", Cvar::NONE, "");
 Cvar::Cvar<std::string> g_nextMapLayouts("g_nextMapLayouts", "list of layouts (one's chosen randomly) to go with g_nextMap", Cvar::NONE, "");
 Cvar::Cvar<std::string> g_initialMapRotation("g_initialMapRotation", "map rotation to use on server startup", Cvar::NONE, "rotation1");
+static Cvar::Cvar<bool> g_persistDevmap("g_persistDevmap", "allow cheats next map if allowed now", Cvar::NONE, false);
 Cvar::Cvar<std::string> g_mapLog("g_mapLog", "contains results of recent games", Cvar::NONE, "");
 Cvar::Cvar<std::string> g_mapStartupMessage("g_mapStartupMessage", "message sent to players on connection (reset after game)", Cvar::NONE, "");
 Cvar::Cvar<int> g_mapStartupMessageDelay("g_mapStartupMessageDelay", "show g_mapStartupMessage x milliseconds after connection", Cvar::NONE, 5000);
@@ -1411,7 +1412,7 @@ static void ExitLevel()
 	}
 	else if ( G_MapExists( g_nextMap.Get().c_str() ) )
 	{
-		trap_SendConsoleCommand( va( "map %s %s", Cmd::Escape( g_nextMap.Get() ).c_str(), Cmd::Escape( g_nextMapLayouts.Get() ).c_str() ) );
+		trap_SendConsoleCommand( va( "%s %s %s", G_NextMapCommand(), Cmd::Escape( g_nextMap.Get() ).c_str(), Cmd::Escape( g_nextMapLayouts.Get() ).c_str() ) );
 	}
 	else if ( G_MapRotationActive() )
 	{
@@ -2542,4 +2543,14 @@ void G_PrepareEntityNetCode() {
 	ForEntities<SpectatorComponent>([&](Entity& entity, SpectatorComponent&){
 		entity.PrepareNetCode();
 	});
+}
+
+Str::StringRef G_NextMapCommand()
+{
+	if ( g_cheats && g_persistDevmap.Get() )
+	{
+		return "devmap";
+	}
+
+	return "map";
 }

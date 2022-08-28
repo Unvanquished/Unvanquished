@@ -3392,7 +3392,7 @@ bool G_admin_changemap( gentity_t *ent )
 	admin_log( map );
 	admin_log( layout );
 
-	trap_SendConsoleCommand( Str::Format( "map %s %s", Cmd::Escape( map ), Cmd::Escape( layout ) ).c_str() );
+	trap_SendConsoleCommand( Str::Format( "%s %s %s", G_NextMapCommand(), Cmd::Escape( map ), Cmd::Escape( layout ) ).c_str() );
 
 	level.restarted = true;
 	G_MapLog_Result( 'M' );
