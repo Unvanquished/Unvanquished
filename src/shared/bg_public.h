@@ -41,6 +41,9 @@ inline glm::vec3 VEC2GLM( const T& v ) {
 
 #include "engine/qcommon/q_shared.h"
 
+// Custom definitions.
+#include "CustomDefs.h"
+
 //Unvanquished balance header
 #include "bg_gameplay.h"
 

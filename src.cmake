@@ -63,6 +63,7 @@ set(TINYGETTEXTLIST
 )
 
 set(GAMESHAREDLIST
+    ${GAMELOGIC_DIR}/shared/CustomDefs.h
     ${GAMELOGIC_DIR}/shared/bg_alloc.cpp
     ${GAMELOGIC_DIR}/shared/bg_gameplay.h
     ${GAMELOGIC_DIR}/shared/bg_local.h

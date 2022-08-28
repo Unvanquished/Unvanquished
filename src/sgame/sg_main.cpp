@@ -271,8 +271,8 @@ Cvar::Cvar<bool> g_bot_infiniteMomentum("g_bot_infiniteMomentum", "allow bots to
 
 //</bot stuff>
 
-static Cvar::Cvar<std::string> gamename("gamename", "game/mod identifier", Cvar::SERVERINFO | Cvar::ROM, GAME_VERSION);
-static Cvar::Cvar<std::string> gamedate("gamedate", "date the sgame was compiled", Cvar::ROM, __DATE__);
+static Cvar::Cvar<std::string> gamename("gamename", "game/mod identifier", Cvar::SERVERINFO | Cvar::ROM, CUSTOM_GAME_VERSION);
+static Cvar::Cvar<std::string> gamedate("gamedate", "date the sgame was compiled", Cvar::ROM, CUSTOM_GAME_DATE);
 
 void               CheckExitRules();
 static void        G_LogGameplayStats( int state );
@@ -422,8 +422,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	srand( randomSeed );
 
 	Log::Notice( "------- Game Initialization -------" );
-	Log::Notice( "gamename: %s", GAME_VERSION );
-	Log::Notice( "gamedate: %s", __DATE__ );
+	Log::Notice( "gamename: %s", CUSTOM_GAME_NAME );
+	Log::Notice( "gameversion: %s", CUSTOM_GAME_VERSION );
+	Log::Notice( "gamedate: %s", CUSTOM_GAME_DATE );
 
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
@@ -1591,7 +1592,7 @@ G_LogGameplayStats
 static void G_LogGameplayStats( int state )
 {
 	char       mapname[ 128 ];
-	char       logline[ sizeof( Q3_VERSION ) + sizeof( mapname ) + 1024 ];
+	char       logline[ sizeof( CUSTOM_GAME_NAME_VERSION ) + sizeof( ENGINE_NAME_VERSION ) + sizeof( mapname ) + 1024 ];
 
 	static int nextCalculation = 0;
 
@@ -1612,7 +1613,8 @@ static void G_LogGameplayStats( int state )
 			Com_sprintf( logline, sizeof( logline ),
 			             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
 			             "#\n"
-			             "# Version: %s\n"
+			             "# Game:    %s\n"
+			             "# Engine:  %s\n"
 			             "# Map:     %s\n"
 			             "# Date:    %04i-%02i-%02i\n"
 			             "# Time:    %02i:%02i:%02i\n"
@@ -1625,7 +1627,8 @@ static void G_LogGameplayStats( int state )
 			             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16\n"
 			             "#  T #A #H AMom HMom ---- ATBP HTBP AUBP HUBP ABRV HBRV ACre HCre AVal HVal\n"
 			             "# -------------------------------------------------------------------------\n",
-			             Q3_VERSION,
+			             CUSTOM_GAME_NAME_VERSION,
+			             ENGINE_NAME_VERSION,
 			             mapname,
 			             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
 			             t.tm_hour, t.tm_min, t.tm_sec,

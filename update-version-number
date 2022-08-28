@@ -26,11 +26,18 @@ VERSION_SHORT="$(echo "${VERSION}" | cut -d'.' -f'1,2')"
 sedInPlace () {
 	TMP_FILE="$(mktemp ${TMPDIR}/config.XXXXXXXXXX)"
 	sed "${1}" "${2}" > "${TMP_FILE}"
-	mv "${TMP_FILE}" "${2}"
+	cat "${TMP_FILE}" > "${2}"
+	rm "${TMP_FILE}"
 }
 
 # Update Defs.h
-sedInPlace 's|\(#define \+PRODUCT_VERSION *"\)[^"]*"|\1'"${VERSION}"'"|' "${SOURCE_PATH}/daemon/src/common/Defs.h"
+sedInPlace 's|\(#define \+ENGINE_VERSION *"\)[^"]*"|\1'"${VERSION}"'"|' "${SOURCE_PATH}/daemon/src/common/Defs.h"
+
+# Update CustomDefs.h
+sedInPlace 's|\(#define \+CUSTOM_GAME_VERSION *"\)[^"]*"|\1'"${VERSION}"'"|' "${SOURCE_PATH}/src/shared/CustomDefs.h"
+
+# Update gameinfo.conf
+sedInPlace 's|\(VERSION *\)[^ ]*|\1'"${VERSION}"'|' "${SOURCE_PATH}/src/gameinfo.conf"
 
 # Update Info.plist
 sedInPlace '/<key>CFBundleVersion<\/key>/{N;s|<string>[^<]*</string>|<string>'"${VERSION}"'</string>|}' "${SOURCE_PATH}/macosx/Info.plist"
