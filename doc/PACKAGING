@@ -81,6 +81,20 @@ at the "root" of the package:
 
 Those files are both a list of names, one name per line.
 
+In the case of a mod or full game, executable files also
+have requirements: they must be placed at archive's root and
+use the following naming scheme:
+
+[cgame|sgame]-ARCHITECTURE.nexe
+
+ARCHITECTURE must be either "x86_64" or "x86".
+Examples:
+
+* cgame-x86_64.nexe
+* cgame-x86.nexe
+* sgame-x86_64.nexe
+* sgame-x86.nexe
+
 ## Maps
 
 Each map package must contain a single map.
