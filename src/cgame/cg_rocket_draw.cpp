@@ -41,6 +41,8 @@ Maryland 20850 USA.
 #include <RmlUi/Core/Factory.h>
 #include <RmlUi/Core/ElementText.h>
 
+Cvar::Cvar<bool> cg_drawPosition("cg_drawPosition", "show position. Requires cg_drawSpeed to be enabled.", Cvar::NONE, false);
+
 static void CG_GetRocketElementColor( Color::Color& color )
 {
 	Rocket_GetProperty( "color", &color, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
@@ -903,9 +905,7 @@ public:
 			{
 				val = speedSamples[( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
 			}
-			// HACK: Put extra spaces to separate the children because setting them to block makes them disappear.
-			// TODO: Figure out why setting these two elements to block makes them disappear.
-			maxSpeedElement->SetText( va( "%d   ", ( int ) speedSamples[ maxSpeedSampleInWindow ] ) );
+			maxSpeedElement->SetText( va( "%d ", ( int ) speedSamples[ maxSpeedSampleInWindow ] ) );
 			currentSpeedElement->SetText( va( "%d", ( int ) val ) );
 		}
 	}
@@ -915,6 +915,28 @@ private:
 	Rml::ElementText* currentSpeedElement;
 	bool shouldDrawSpeed;
 	Color::Color backColor;
+};
+
+class PositionElement : public TextHudElement
+{
+public:
+	PositionElement( const Rml::String& tag ) :
+			TextHudElement( tag, ELEMENT_GAME, true )
+	{
+	}
+
+	void DoOnUpdate() override
+	{
+		if ( !cg_drawPosition.Get() )
+		{
+			SetText( "" );
+			return;
+		}
+
+		// Add text to be configured via CSS
+		vec3_t const & origin = cg.predictedPlayerState.origin;
+		SetText( va( "%0.0f %0.0f %0.0f", origin[0], origin[1], origin[2] ) );
+	}
 };
 
 class CreditsValueElement : public TextHudElement
@@ -3660,6 +3682,7 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<CrosshairIndicatorHudElement>( "crosshair_indicator" );
 	RegisterElement<CrosshairHudElement>( "crosshair" );
 	RegisterElement<SpeedGraphElement>( "speedometer" );
+	RegisterElement<PositionElement>( "position_indicator" );
 	RegisterElement<CreditsValueElement>( "credits" );
 	RegisterElement<EvosValueElement>( "evos" );
 	RegisterElement<WeaponIconElement>( "weapon_icon" );
