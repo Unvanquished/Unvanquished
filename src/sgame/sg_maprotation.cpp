@@ -1103,11 +1103,11 @@ static void G_IssueMapChange( int index, int rotation )
 		// allow a manually defined g_layouts setting to override the maprotation
 		if ( g_layouts.Get().empty() && map->layouts[ 0 ] )
 		{
-			trap_SendConsoleCommand( Str::Format( "map %s %s", Cmd::Escape( map->name ), Cmd::Escape( map->layouts ) ).c_str() );
+			trap_SendConsoleCommand( Str::Format( "%s %s %s", G_NextMapCommand(), Cmd::Escape( map->name ), Cmd::Escape( map->layouts ) ).c_str() );
 		}
 		else
 		{
-			trap_SendConsoleCommand( Str::Format( "map %s", Cmd::Escape( map->name ) ).c_str() );
+			trap_SendConsoleCommand( Str::Format( "%s %s", G_NextMapCommand(), Cmd::Escape( map->name ) ).c_str() );
 		}
 	}
 }
