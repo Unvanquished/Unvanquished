@@ -59,6 +59,8 @@ daemonded -homepath PATH_TO_CONFIG -pakpath PATH_TO_PAKS \
 PATH_TO_PAKS is the relative or absolute path from where
 you started the process to reach the HTTP directory you
 setup just before.
+This directory should be used to store customisations, like
+unofficial maps or mods.
 
 PATH_TO_CONFIG is the relative or absolute path from where
 you started the process to reach the game's configuration
@@ -83,6 +85,7 @@ will rely on the built-in alternatives.
 * `game/maprotation.cfg`
 * `game/default/`
 * `game/default/maprotation.cfg`
+* `pkg/`
 
 Note that 2 "maprotation.cfg" files can be used. Both will
 work, but server will be less noisy in logs if you prefer
@@ -115,3 +118,32 @@ modify several lines in the `server.cfg` file:
 * fs_extrapaks: if your server requires unofficial packages
   to be loaded to work (more on this topic in a different
   doc file)
+
+### `config/map/` folder
+
+This folder is used to store per-map configuration, allowing
+to alter the number of bots for this map, to prevent players
+to join a specific team, to forbid some equipments and
+buildings, etc.
+
+In there, the file named `default.cfg` applies to any map
+that does not have a specific configuration file.
+
+### `game/` folder
+
+* `admin.dat` describes what players are allowed to and
+  their public key;
+* `maprotation.cfg` and `default/maprotation.cfg` are used
+  to describe how to select next map;
+* `games.log` and `stats/` stores game-related logs and
+  stats;
+* `layouts/` can store different starting positions for
+  buildings (to be described in a different document);
+* `maps/` can store map customisations, such as AI custom
+  navigation files;
+
+### `pkg` folder
+
+This is where official `.dpk` files should be placed, as it
+avoid to "pollute" the pakpath folder with required files.
+This allows an easier maintenance.
