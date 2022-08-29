@@ -48,12 +48,12 @@ void MiningComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfD
 }
 
 float MiningComponent::InterferenceMod(float distance) {
-	if (RGS_RANGE <= 0.0f) return 1.0f;
-	if (distance > 2.0f * RGS_RANGE) return 1.0f;
+	if (g_minerRange.Get() <= 0.0f) return 1.0f;
+	if (distance > 2.0f * g_minerRange.Get()) return 1.0f;
 
-	// q is the ratio of the part of a sphere with radius RGS_RANGE that intersects
+	// q is the ratio of the part of a sphere with radius g_minerRange.Get() that intersects
 	// with another sphere of equal size and given distance
-	float dr = distance / RGS_RANGE;
+	float dr = distance / g_minerRange.Get();
 	float q  = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
 
 	// Two miners together should mine at a rate proportional to the volume of the
@@ -99,7 +99,7 @@ void MiningComponent::InformNeighbors() {
 
 	ForEntities<MiningComponent>([&] (Entity& other, MiningComponent& miningComponent) {
 		if (&other == &entity) return;
-		if (G_Distance(entity.oldEnt, other.oldEnt) > RGS_RANGE * 2.0f) return;
+		if (G_Distance(entity.oldEnt, other.oldEnt) > g_minerRange.Get() * 2.0f) return;
 
 		miningComponent.CalculateEfficiency();
 	});

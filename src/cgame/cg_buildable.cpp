@@ -744,7 +744,7 @@ static bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker
 			break;
 
 		case BA_A_LEECH:
-			*range = RGS_RANGE;
+			*range = cgs.minerRange;
 			shc = SHC_GREY;
 			break;
 
@@ -764,7 +764,7 @@ static bool CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker
 			break;
 
 		case BA_H_DRILL:
-			*range = RGS_RANGE;
+			*range = cgs.minerRange;
 			shc = SHC_GREY;
 			break;
 

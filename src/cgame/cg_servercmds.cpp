@@ -162,6 +162,7 @@ void CG_ParseServerinfo()
 	cgs.buildPointBudgetPerMiner       = atof( Info_ValueForKey( info, "g_BPBudgetPerMiner" ) );
 	cgs.buildPointRecoveryInitialRate  = atof( Info_ValueForKey( info, "g_BPRecoveryInitialRate" ) );
 	cgs.buildPointRecoveryRateHalfLife = atof( Info_ValueForKey( info, "g_BPRecoveryRateHalfLife" ) );
+	cgs.minerRange                     = atof( Info_ValueForKey( info, "g_minerRange" ) );
 
 	BG_SetForbiddenEquipment(  std::string( Info_ValueForKey( info, "g_disabledEquipment"  ) ) );
 	BG_SetForbiddenClasses(    std::string( Info_ValueForKey( info, "g_disabledClasses"    ) ) );

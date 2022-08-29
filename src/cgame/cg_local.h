@@ -1653,6 +1653,8 @@ struct cgs_t
 	float    buildPointRecoveryInitialRate;
 	float    buildPointRecoveryRateHalfLife;
 
+	float    minerRange;
+
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];
 	int      voteNo[ NUM_TEAMS ];

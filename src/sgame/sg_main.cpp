@@ -220,8 +220,9 @@ Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Ove
 
 Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, false);
 
-Cvar::Cvar<int> g_maxMiners("g_maxMiners", "set maximum number of miners per team. -1 = disabled.", Cvar::NONE, -1);
-Cvar::Cvar<float> g_minMinerEfficiency("g_minMinerEfficiency", "Minimum miner efficiency required to build. From 0 to 1.", Cvar::NONE, 0.0f);
+Cvar::Cvar<float> g_minerRange("g_minerRange", "the range that miners will interfere with each other.", Cvar::SERVERINFO, RGS_RANGE);
+Cvar::Cvar<int>   g_maxMiners("g_maxMiners", "set maximum number of miners per team. -1 = disabled.", Cvar::NONE, -1);
+Cvar::Cvar<float> g_minMinerEfficiency("g_minMinerEfficiency", "minimum miner efficiency required to build. From 0 to 1.", Cvar::NONE, 0.0f);
 
 // <bot stuff>
 
