@@ -24,6 +24,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sg_local.h"
 #include "Entities.h"
+#include "CBSE.h"
 
 // -----------
 // definitions
@@ -332,9 +333,25 @@ void G_DecreaseMomentum()
 	// decrease momentum
 	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
+		float momentumFloor = 0.0f;
+		if ( g_maxMiners.Get() > 0 )
+		{
+			// TODO: Cache this in level_t.
+			int miners = 0;
+			ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& miner)
+			{
+				if ( Entities::IsAlive(entity) && miner.Active() && G_Team( entity.oldEnt ) == team )
+				{
+					miners++;
+				}
+			});
+			// OM/RC counts as a miner, so don't count that...
+			momentumFloor = MOMENTUM_MAX * ( static_cast<float>( miners ) / g_maxMiners.Get() );
+		}
 		amount = level.team[ team ].momentum * ( decreaseFactor - 1.0f );
 
 		level.team[ team ].momentum += amount;
+		level.team[ team ].momentum = Math::Clamp( level.team[ team ].momentum, momentumFloor, MOMENTUM_MAX );
 
 		// notify legacy stage sensors
 		NotifyLegacyStageSensors( (team_t) team, amount );
