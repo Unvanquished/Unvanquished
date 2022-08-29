@@ -400,10 +400,12 @@ enum itemBuildError_t
   IBE_NOOVERMIND,       // no overmind present
   IBE_ONEOVERMIND,      // may not build two overminds
   IBE_NOALIENBP,        // not enough build points (aliens)
+  IBE_NOMORELEECHES,    // no more leeches allowed
 
   IBE_NOREACTOR,        // not enough power in this area and no reactor present
   IBE_ONEREACTOR,       // may not build two reactors
   IBE_NOHUMANBP,        // not enough build points (humans)
+  IBE_NOMOREDRILLS,     // no more drills allowed
 
   IBE_NORMAL,           // surface is too steep
   IBE_NOROOM,           // no room
@@ -808,6 +810,7 @@ enum dynMenu_t
   MN_A_ONEOVERMIND,
   MN_A_NOBP,
   MN_A_NOOVMND,
+  MN_A_NOMORELEECHES,
 
   //human stuff
   MN_H_SPAWN,
@@ -828,7 +831,8 @@ enum dynMenu_t
   MN_H_NOREACTOR,
   MN_H_NOBP,
   MN_H_NOTPOWERED,
-  MN_H_ONEREACTOR
+  MN_H_ONEREACTOR,
+  MN_H_NOMOREDRILLS
 };
 
 // animations

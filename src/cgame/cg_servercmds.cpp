@@ -596,6 +596,11 @@ static void CG_Menu( int menuType, int arg )
 			shortMsg = _("There can only be one Reactor");
 			break;
 
+		case MN_H_NOMOREDRILLS:
+			longMsg = nullptr;
+			shortMsg = _("Your team cannot have any more drills");
+			break;
+
 		case MN_H_NOSLOTS:
 			longMsg = _("You have no room to carry this. Please sell any conflicting "
 			          "upgrades before purchasing this item.");
@@ -658,6 +663,11 @@ static void CG_Menu( int menuType, int arg )
 			longMsg = _("There can only be one Overmind. Deconstruct the existing one if you "
 			          "wish to move it.");
 			shortMsg = _("There can only be one Overmind");
+			break;
+
+		case MN_A_NOMORELEECHES:
+			longMsg = nullptr;
+			shortMsg = _("Your team cannot have any more leeches");
 			break;
 
 		case MN_A_NOBP:

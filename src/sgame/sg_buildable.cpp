@@ -1715,8 +1715,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		});
 		if ( miners >= max_miners )
 		{
-			//TODO 0.54: make this a more appropriate error message, or remove g_maxMiners completely
-			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOHUMANBP : IBE_NOALIENBP;
+			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
 		}
 	}
 		
@@ -2106,6 +2105,10 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 			G_TriggerMenu( ent->client->ps.clientNum, MN_A_ONEOVERMIND );
 			return false;
 
+		case IBE_NOMORELEECHES:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_A_NOMORELEECHES );
+			return false;
+
 		case IBE_NORMAL:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_NORMAL );
 			return false;
@@ -2124,6 +2127,10 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_NOREACTOR:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOREACTOR );
+			return false;
+
+		case IBE_NOMOREDRILLS:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOMOREDRILLS );
 			return false;
 
 		case IBE_NOROOM:
