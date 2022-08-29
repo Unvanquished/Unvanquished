@@ -413,6 +413,7 @@ enum itemBuildError_t
   IBE_DISABLED,         // building has been disabled for team
   IBE_LASTSPAWN,        // may not replace last spawn with non-spawn
   IBE_MAINSTRUCTURE,    // may not replace main structure with other buildable
+  IBE_EFFTOOLOW,        // miner efficiency too low
 
   IBE_MAXERRORS
 };
@@ -805,6 +806,7 @@ enum dynMenu_t
   MN_B_DISABLED,
   MN_B_REVOKED,
   MN_B_SURRENDER,
+  MN_B_EFFTOOLOW,
 
   //alien build
   MN_A_ONEOVERMIND,

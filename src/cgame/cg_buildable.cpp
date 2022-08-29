@@ -1142,7 +1142,7 @@ void CG_GhostBuildable( int buildableInfo )
 	{
 		ent.customShader = cgs.media.greenBuildShader;
 	}
-	else if ( reason == IBE_NORMAL || reason == IBE_NOROOM || reason == IBE_SURFACE )
+	else if ( reason == IBE_NORMAL || reason == IBE_NOROOM || reason == IBE_SURFACE || reason == IBE_EFFTOOLOW )
 	{
 		ent.customShader = cgs.media.redBuildShader;
 	}

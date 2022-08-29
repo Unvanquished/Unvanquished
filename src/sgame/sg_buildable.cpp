@@ -1182,7 +1182,7 @@ void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 
 		// Add to build timer.
 		ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
-	}	
+	}
 
 	G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
 }
@@ -1703,22 +1703,30 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	}
 
 	int max_miners = g_maxMiners.Get();
-	if ( max_miners >= 0 && ( buildable == BA_H_DRILL || buildable == BA_A_LEECH ) )
+	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 	{
-		int miners = 0;
-		ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& )
+		float eff = G_RGSPredictOwnEfficiency( origin );
+		if ( eff < g_minMinerEfficiency.Get() )
 		{
-			if ( Entities::IsAlive(entity) && G_OnSameTeam( entity.oldEnt, ent ) )
+			return IBE_EFFTOOLOW;
+		}
+		if ( max_miners > 0 )
+		{
+			int miners = 0;
+			ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& )
 			{
-				miners++;
+				if ( Entities::IsAlive(entity) && G_OnSameTeam( entity.oldEnt, ent ) )
+				{
+					miners++;
+				}
+			});
+			if ( miners >= max_miners )
+			{
+				return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
 			}
-		});
-		if ( miners >= max_miners )
-		{
-			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
 		}
 	}
-		
+
 	return reason;
 }
 
@@ -2147,6 +2155,10 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_MAINSTRUCTURE:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_MAINSTRUCTURE );
+			return false;
+
+		case IBE_EFFTOOLOW:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_B_EFFTOOLOW );
 			return false;
 
 		default:

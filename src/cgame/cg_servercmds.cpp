@@ -573,6 +573,12 @@ static void CG_Menu( int menuType, int arg )
 			shortMsg = _("Cannot build after admitting defeat");
 			break;
 
+		case MN_B_EFFTOOLOW:
+			longMsg = _("Miner efficiency too low. Try building it further away "
+						"from other miners.");
+			shortMsg = _("Miner efficiency too low.");
+			break;
+
 		case MN_H_NOBP:
 			longMsg = _("There are no resources remaining. Free up resources by "
 			            "marking existing buildables for deconstruction.");
