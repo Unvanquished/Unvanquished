@@ -944,17 +944,11 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 						                       g_buildPointBudgetPerMiner.Get()) -
 						                 (int)(level.team[team].totalBudget);
 
-						signed char deltaEffNetwork = (signed char)((float)0x7f * deltaEff);
-						signed char deltaBPNetwork  = (signed char)deltaBP;
-
-						unsigned int deltasNetwork = (unsigned char)deltaEffNetwork |
-						                             (unsigned char)deltaBPNetwork << 8;
-
 						// The efficiency and budget deltas are signed values that are encode as the
 						// least and most significant byte of the de-facto short
 						// ps->stats[STAT_PREDICTION], respectively. The efficiency delta is a value
 						// between -1 and 1, the budget delta is an integer between -128 and 127.
-						client->ps.stats[STAT_PREDICTION] = (int)deltasNetwork;
+						client->ps.stats[STAT_PREDICTION] = BG_EncodeRGSDeltaEfficiency( deltaEff, deltaBP );
 					}
 
 					// Let the client know which buildables will be removed by building

@@ -1715,6 +1715,10 @@ bool BG_BuildableDisabled( int buildable );
 
 weapon_t BG_PrimaryWeapon( int const stats[] );
 
+// The RGS efficiency and BP delta is encoded inside stats[STAT_PREDICTION].
+// Use these functions to encode and decode the values.
+void BG_DecodeRGSDeltaEfficiency( int networkValue, float *eff, int *bp );
+int  BG_EncodeRGSDeltaEfficiency( float eff, int bp );
 // bg_voice.c
 #define MAX_VOICES             8
 #define MAX_VOICE_NAME_LEN     16

@@ -2427,6 +2427,28 @@ weapon_t BG_PrimaryWeapon( int const stats[] )
 	return WP_NONE;
 }
 
+void BG_DecodeRGSDeltaEfficiency( int networkValue, float *eff, int *bp )
+{
+	if ( eff )
+	{
+		int8_t deltaEff = static_cast<int8_t>( static_cast<uint8_t>( networkValue & 0xff ) );
+		*eff = deltaEff / static_cast<float>( 0x7f );
+	}
+	if ( bp )
+	{
+		int8_t deltaBp = static_cast<int8_t>( static_cast<uint8_t>( networkValue >> 8 ) );
+		*bp = deltaBp;
+	}
+}
+
+int  BG_EncodeRGSDeltaEfficiency( float eff, int bp )
+{
+	int8_t  deltaEffNetwork = static_cast<int8_t>( static_cast<float>( 0x7f ) * eff );
+	int8_t deltaBPNetwork  = static_cast<int8_t>( bp );
+	return static_cast<uint8_t>( deltaEffNetwork ) |
+		   ( static_cast<uint8_t>( deltaBPNetwork ) << 8 );
+}
+
 static std::unordered_map<std::string, emoticonData_t, Str::IHash, Str::IEqual> emoticons;
 /*
 ============

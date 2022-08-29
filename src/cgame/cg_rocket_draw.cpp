@@ -2173,9 +2173,9 @@ public:
 			// most significant byte of the de-facto short ps->stats[STAT_PREDICTION], respectively.
 			// The efficiency delta is a value between -1 and 1, the budget delta is an integer
 			// between -128 and 127.
-			float deltaEfficiency    = (float)(signed char)(ps->stats[STAT_PREDICTION] & 0xff) / (float)0x7f;
-			int   deltaBudget        = (int)(signed char)(ps->stats[STAT_PREDICTION] >> 8);
-
+			float deltaEfficiency;
+			int   deltaBudget;
+			BG_DecodeRGSDeltaEfficiency( ps->stats[STAT_PREDICTION], &deltaEfficiency, &deltaBudget );
 			int   deltaEfficiencyPct = (int)(deltaEfficiency * 100.0f);
 
 			if ( deltaEfficiencyPct != lastDeltaEfficiencyPct_ ||
