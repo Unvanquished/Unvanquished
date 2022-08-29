@@ -139,6 +139,7 @@ const char        *ClientUserinfoChanged( int clientNum, bool forceName );
 void              ClientDisconnect( int clientNum );
 void              ClientBegin( int clientNum );
 void              ClientAdminChallenge( int clientNum );
+void              G_GiveClientMinerFunds( gentity_t *ent );
 
 // sg_clustering.c
 namespace BaseClustering {

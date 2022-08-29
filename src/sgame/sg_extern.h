@@ -170,6 +170,7 @@ extern  Cvar::Cvar<float> g_devolveMaxBaseDistance;
 extern Cvar::Cvar<float> g_minerRange;
 extern Cvar::Cvar<int>   g_maxMiners;
 extern Cvar::Cvar<float> g_minMinerEfficiency;
+extern Cvar::Cvar<int>   g_freeFundsPerMiner;
 
 // bots: buying weapons cvars
 extern Cvar::Cvar<bool> g_bot_buy;
