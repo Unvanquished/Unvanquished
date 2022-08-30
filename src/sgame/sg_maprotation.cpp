@@ -845,24 +845,24 @@ void G_PrintCurrentRotation( gentity_t *ent )
 			}
 		}
 
-		ADMBP( va( "^7%s%3i %s%s\n",
+		ADMBP( va( "^7%s%3i %s%s",
 		           ( currentMap && currentShown && !override ) ? MAP_CURRENT_MARKER : " ",
 		           i, colour, G_RotationNode_ToString( node ) ) );
 
 		while ( node->type == NT_CONDITION )
 		{
 			node = node->u.condition.target;
-			ADMBP( va( "%*s%s%s\n", indentation, "", colour, G_RotationNode_ToString( node ) ) );
+			ADMBP( va( "%*s%s%s", indentation, "", colour, G_RotationNode_ToString( node ) ) );
 			indentation += 2;
 		}
 
 		if ( override )
 		{
-			ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
+			ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s", currentMapName ) ); // use current map colour here
 		}
 		if ( currentMap && currentShown && G_MapExists( g_nextMap.Get().c_str() ) )
 		{
-			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.Get().c_str() ) );
+			ADMBP( va( MAP_DEFAULT "     %s", g_nextMap.Get().c_str() ) );
 			currentMap = false;
 		}
 	}
@@ -871,11 +871,11 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	// (e.g. server just started up) and that entry is not for a map
 	if ( !currentShown )
 	{
-		ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
+		ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s", currentMapName ) ); // use current map colour here
 
 		if ( G_MapExists( g_nextMap.Get().c_str() ) )
 		{
-			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.Get().c_str() ) );
+			ADMBP( va( MAP_DEFAULT "     %s", g_nextMap.Get().c_str() ) );
 		}
 	}
 
