@@ -35,6 +35,11 @@ static Cvar::Cvar<bool> g_indestructibleBuildables(
 		"g_indestructibleBuildables",
 		"make buildables impossible to destroy", Cvar::NONE, false);
 
+static Cvar::Range<Cvar::Cvar<float>> g_BPMinerQueueFraction(
+		"g_BPMinerQueueFraction",
+		"upon miner construction, this fraction of the miner max yield is queued",
+		Cvar::NONE, 0.5, 0, 1);
+
 /**
  * @return Whether the means of death allow for an under-attack warning.
  */
@@ -2003,6 +2008,13 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		} else {
 			HealthComponent *healthComponent = built->entity->Get<HealthComponent>();
 			healthComponent->SetHealth(healthComponent->MaxHealth() * BUILDABLE_START_HEALTH_FRAC);
+		}
+
+		if (buildable == BA_A_LEECH || buildable == BA_H_DRILL) {
+			// Building a new miner incurs a queued BP penalty to punish teams who repeatedly
+			// lose and rebuild their miners in the late game.
+			level.team[G_Team(builder)].queuedBudget +=
+				g_BPMinerQueueFraction.Get() * g_buildPointBudgetPerMiner.Get();
 		}
 	}
 
