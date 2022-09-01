@@ -3,6 +3,8 @@
 
 const float OvermindComponent::ATTACK_RANGE  = 300.0f;
 const float OvermindComponent::ATTACK_DAMAGE = 10.0f;
+const float DAMAGE_INC_PER_MINER = 30.0f;
+const float RANGE_INC_PER_MINER = 400.0f;
 
 OvermindComponent::OvermindComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent,
                                      MainBuildableComponent& r_MainBuildableComponent)
@@ -34,10 +36,12 @@ void OvermindComponent::Think(int timeDelta) {
 
 	// If target is an enemy in reach, attack it.
 	// TODO: Add LocationComponent and Utility::Distance.
+	int miners = level.team[GetTeamComponent().Team()].numMiners;
+	float range = (ATTACK_RANGE + (RANGE_INC_PER_MINER * miners));
 	if (target && Entities::OnOpposingTeams(entity, *target) &&
-	    G_Distance(entity.oldEnt, target->oldEnt) < ATTACK_RANGE) {
+	    G_Distance(entity.oldEnt, target->oldEnt) < range) {
 
-		float damage = ATTACK_DAMAGE * ((float)timeDelta / 1000.0f);
+		float damage = (ATTACK_DAMAGE + (miners * DAMAGE_INC_PER_MINER)) * ((float)timeDelta / 1000.0f);
 
 		// Psychic damage penetrates armor and goes right to your soul.
 		target->Damage(damage, entity.oldEnt, {}, {}, DAMAGE_NO_PROTECTION, MOD_OVERMIND);
@@ -73,6 +77,8 @@ Entity* OvermindComponent::FindTarget() {
 }
 
 bool OvermindComponent::CompareTargets(Entity& a, Entity& b) const {
+	int miners = level.team[GetTeamComponent().Team()].numMiners;
+	float range = (ATTACK_RANGE + (RANGE_INC_PER_MINER * miners));
 	team_t aTeam = G_Team(a.oldEnt);
 	team_t bTeam = G_Team(b.oldEnt);
 
@@ -86,8 +92,8 @@ bool OvermindComponent::CompareTargets(Entity& a, Entity& b) const {
 	// Rules for humans.
 	if (aTeam == TEAM_HUMANS && bTeam == TEAM_HUMANS) {
 		// Prefer the one in attack range.
-		if (aDistance < ATTACK_RANGE && bDistance > ATTACK_RANGE) return true;
-		if (aDistance > ATTACK_RANGE && bDistance < ATTACK_RANGE) return false;
+		if (aDistance < range && bDistance > range) return true;
+		if (aDistance > range && bDistance < range) return false;
 
 		// The overmind senses weakness!
 		if (Entities::HealthFraction(a) < Entities::HealthFraction(b)) return true;

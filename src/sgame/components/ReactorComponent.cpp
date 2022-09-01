@@ -2,6 +2,8 @@
 
 const float ReactorComponent::ATTACK_RANGE  = 200.0f;
 const float ReactorComponent::ATTACK_DAMAGE = 25.0f;
+const float DAMAGE_INC_PER_MINER = 75.0f;
+const float RANGE_INC_PER_MINER = 400.0f;
 
 ReactorComponent::ReactorComponent(Entity& entity, HumanBuildableComponent& r_HumanBuildableComponent,
                                    MainBuildableComponent& r_MainBuildableComponent)
@@ -14,8 +16,9 @@ ReactorComponent::ReactorComponent(Entity& entity, HumanBuildableComponent& r_Hu
 
 void ReactorComponent::Think(int timeDelta) {
 	if (!GetMainBuildableComponent().GetBuildableComponent().Active()) return;
-
-	float baseDamage = ATTACK_DAMAGE * ((float)timeDelta / 1000.0f);
+	int miners = level.team[GetTeamComponent().Team()].numMiners;
+	float baseDamage = (ATTACK_DAMAGE + (miners * DAMAGE_INC_PER_MINER)) * ((float)timeDelta / 1000.0f);
+	float range = (ATTACK_RANGE + (RANGE_INC_PER_MINER * miners));
 
 	// Zap close enemies.
 	ForEntities<AlienClassComponent>([&](Entity& other, AlienClassComponent&) {
@@ -28,9 +31,9 @@ void ReactorComponent::Think(int timeDelta) {
 		// TODO: Add LocationComponent and Utility::BBOXDistance.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 
-		if (distance >= ATTACK_RANGE) return;
+		if (distance >= range) return;
 
-		float damage = baseDamage * (1.0f - (0.7f * distance / ATTACK_RANGE));
+		float damage = baseDamage * (1.0f - (0.7f * distance / range));
 
 		CreateTeslaTrail(other);
 
