@@ -197,8 +197,6 @@ Assuming you already have a release `pkg/` folder, you can do it this way:
 
 Note that only the basic `unvanquished_src.dpkdir` asset package is provided that way, and running Unvanquished only with that package will bring you some warnings about other missing packages and you will miss soundtrack and stuff like that.
 
-As a side note, if you don't have a release `pkg/` folder yet this should be enough to start the game and reach the main menu and from there, join a server. If the server supports autodownload mechanism, Unvanquished will fetch all the missing packages from it. Unless you're testing a nightly server for some upcoming incompatible release it's recommended to use a `pkg/` folder from a release instead.
-
 ℹ️ If you are looking for the sources of the whole assets, have a look at the [UnvanquishedAssets](https://github.com/UnvanquishedAssets/UnvanquishedAssets) repository. Beware that unlike the `unvanquished_src.dpkdir` package most of them can't be loaded correctly by the engine without being built first.
 
 ## Making a simple mod
