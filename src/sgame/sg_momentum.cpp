@@ -336,16 +336,7 @@ void G_DecreaseMomentum()
 		float momentumFloor = 0.0f;
 		if ( g_maxMiners.Get() > 0 )
 		{
-			// TODO: Cache this in level_t.
-			int miners = 0;
-			ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& miner)
-			{
-				if ( Entities::IsAlive(entity) && miner.Active() && G_Team( entity.oldEnt ) == team )
-				{
-					miners++;
-				}
-			});
-			// OM/RC counts as a miner, so don't count that...
+			int miners = level.team[ team ].numMiners;
 			momentumFloor = MOMENTUM_MAX * ( static_cast<float>( miners ) / g_maxMiners.Get() );
 		}
 		amount = level.team[ team ].momentum * ( decreaseFactor - 1.0f );

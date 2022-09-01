@@ -1,8 +1,9 @@
 #include "MiningComponent.h"
 
 MiningComponent::MiningComponent(Entity& entity, bool blueprint,
-                                 ThinkingComponent& r_ThinkingComponent)
-	: MiningComponentBase(entity, blueprint, r_ThinkingComponent)
+                                 ThinkingComponent& r_ThinkingComponent,
+								 TeamComponent& r_TeamComponent)
+	: MiningComponentBase(entity, blueprint, r_ThinkingComponent, r_TeamComponent)
 	, active(false) {
 
 	// Already calculate the predicted efficiency.
@@ -31,6 +32,8 @@ void MiningComponent::HandleFinishConstruction() {
 
 	// Update both team's budgets.
 	G_UpdateBuildPointBudgets();
+
+	level.team[GetTeamComponent().Team()].numMiners++;
 }
 
 void MiningComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
@@ -45,6 +48,8 @@ void MiningComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfD
 
 	// Update both team's budgets.
 	G_UpdateBuildPointBudgets();
+
+	level.team[GetTeamComponent().Team()].numMiners--;
 }
 
 float MiningComponent::InterferenceMod(float distance) {

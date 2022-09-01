@@ -1710,6 +1710,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		{
 			return IBE_EFFTOOLOW;
 		}
+		// Can't use level.team.numMiners here because we need to count inactive miners too.
 		if ( max_miners > 0 )
 		{
 			int miners = 0;

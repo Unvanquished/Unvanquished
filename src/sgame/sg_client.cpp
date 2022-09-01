@@ -1902,17 +1902,7 @@ void G_GiveClientMinerFunds( gentity_t *ent )
 	{
 		return;
 	}
-	// TODO: Cache this in level_t.
-	int miners = 0;
-	ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& miner)
-	{
-		if ( Entities::IsAlive(entity) && miner.Active() && G_OnSameTeam( entity.oldEnt, ent ) )
-		{
-			miners++;
-		}
-	});
 	// Don't count the OM/RC.
+	int miners = level.team[ ent->client->pers.team ].numMiners;
 	G_AddCreditToClient( ent->client, g_freeFundsPerMiner.Get() * miners, true );
-
-
 }

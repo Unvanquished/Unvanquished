@@ -230,6 +230,7 @@ components:
             - Die
         requires:
             Thinking:
+            Team:
 
     ##############################
     # Entity-specific components #

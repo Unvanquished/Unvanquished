@@ -783,6 +783,7 @@ struct level_locals_t
 
 		// gameplay state
 		int              numSpawns;
+		int              numMiners;
 		int              numClients;
 		int              numPlayers; // non-bot clients
 		int              numBots;
