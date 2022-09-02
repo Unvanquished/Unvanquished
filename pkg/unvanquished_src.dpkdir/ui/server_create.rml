@@ -41,12 +41,12 @@
 
 			<row>
 				<input type="text" cvar="g_password" class="text" id="password"/>
-				<h3><translate>Password </translate></h3>
+				<h3><translate>Password</translate></h3>
 			</row>
 
 			<row>
 				<input type="checkbox" id="devmode" style="margin-right:1em;"/>
-				<h3><translate>Developper mode (enable cheats)</translate></h3>
+				<h3><translate>Developer mode (enable cheats)</translate></h3>
 			</row>
 
 			<row>
