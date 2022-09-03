@@ -2530,6 +2530,10 @@ void G_LayoutLoad()
 				Log::Warn( "bad buildable name (%s) in layout."
 				          " skipping", buildName );
 			}
+			else if ( buildable == BA_A_LEECH || buildable == BA_H_DRILL )
+			{
+				Log::Warn( "Leeches and drills in layouts is not allowed." );
+			}
 			else
 			{
 				LayoutBuildItem( (buildable_t) buildable, origin, angles, origin2, angles2 );

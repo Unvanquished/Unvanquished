@@ -541,6 +541,12 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 			return false;
 		}
 
+		if ( buildable == BA_A_LEECH || buildable == BA_H_DRILL )
+		{
+			Log::Warn( "Leeches and drills in layouts is not allowed." );
+			return false;
+		}
+
 		if ( buildable == BA_A_SPAWN || buildable == BA_H_SPAWN )
 		{
 			spawnedEntity->s.angles[ YAW ] += 180.0f;
