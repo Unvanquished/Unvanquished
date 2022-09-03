@@ -1550,6 +1550,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	bool         invert;
 	int              contents;
 	playerState_t    *ps = &ent->client->ps;
+	team_t            team = static_cast<team_t>( ent->client->pers.team );
 
 	// Stop all buildables from interacting with traces
 	SetBuildableLinkState( false );
@@ -1585,7 +1586,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	{
 		reason = replacementError;
 	}
-	else if ( ent->client->pers.team == TEAM_ALIENS )
+	else if ( team == TEAM_ALIENS )
 	{
 		// Check for Overmind
 		if ( buildable != BA_A_OVERMIND )
@@ -1609,7 +1610,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 			reason = IBE_DISABLED;
 		}
 	}
-	else if ( ent->client->pers.team == TEAM_HUMANS )
+	else if ( team == TEAM_HUMANS )
 	{
 		// Check for Reactor
 		if ( buildable != BA_H_REACTOR )
@@ -1705,6 +1706,11 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	int max_miners = g_maxMiners.Get();
 	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 	{
+		gentity_t *main = G_MainBuildable( team );
+		if ( Distance( main->s.origin, entity_origin ) <= g_minerRange.Get() )
+		{
+			return team == TEAM_ALIENS ? IBE_TOOCLOSEOM : IBE_TOOCLOSERC;
+		}
 		float eff = G_RGSPredictOwnEfficiency( origin );
 		if ( eff < g_minMinerEfficiency.Get() )
 		{
@@ -1723,7 +1729,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 			});
 			if ( miners >= max_miners )
 			{
-				return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
+				return team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
 			}
 		}
 	}
@@ -2160,6 +2166,14 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_EFFTOOLOW:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_EFFTOOLOW );
+			return false;
+
+		case IBE_TOOCLOSEOM:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_A_TOOCLOSEOM );
+			return false;
+
+		case IBE_TOOCLOSERC:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_TOOCLOSERC );
 			return false;
 
 		default:

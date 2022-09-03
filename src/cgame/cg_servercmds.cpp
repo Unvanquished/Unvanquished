@@ -608,6 +608,11 @@ static void CG_Menu( int menuType, int arg )
 			shortMsg = _("Your team cannot have any more drills");
 			break;
 
+		case MN_H_TOOCLOSERC:
+			longMsg = nullptr;
+			shortMsg = _("You are building too close to the reactor");
+			break;
+
 		case MN_H_NOSLOTS:
 			longMsg = _("You have no room to carry this. Please sell any conflicting "
 			          "upgrades before purchasing this item.");
@@ -675,6 +680,11 @@ static void CG_Menu( int menuType, int arg )
 		case MN_A_NOMORELEECHES:
 			longMsg = nullptr;
 			shortMsg = _("Your team cannot have any more leeches");
+			break;
+
+		case MN_A_TOOCLOSEOM:
+			longMsg = nullptr;
+			shortMsg = _("You are building too close to the overmind");
 			break;
 
 		case MN_A_NOBP:
