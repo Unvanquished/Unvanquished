@@ -1471,7 +1471,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		cost -= G_BuildableDeconValue( ent );
 
 		// check if we have enough resources now
-		if ( G_GetSpendableBudget( attr->team ) >= cost )
+		if ( G_GetFreeBudget( attr->team ) >= cost )
 		{
 			return IBE_NONE;
 		}
