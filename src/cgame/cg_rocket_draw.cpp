@@ -1812,22 +1812,20 @@ public:
 private:
 	void Clear()
 	{
-		if ( !map.empty() )
+		if ( !map_.empty() )
 		{
-			map = "";
+			map_ = "";
 			SetInnerRML( "" );
 		}
 	}
 
-	Rml::String map;
+	Rml::String map_;
 };
 
 #define CENTER_PRINT_DURATION 3000
 class CenterPrintElement : public HudElement
 {
 public:
-	int showTime_ = -1;
-
 	CenterPrintElement( const Rml::String& tag ) :
 			HudElement( tag, ELEMENT_GAME ) {}
 
@@ -1858,6 +1856,9 @@ public:
 
 		SetProperty( "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );
 	}
+
+private:
+	int showTime_ = -1;
 };
 
 class BeaconAgeElement : public TextHudElement
@@ -2395,6 +2396,7 @@ public:
 		}
 	}
 
+private:
 	int position_;
 };
 
@@ -2438,6 +2440,7 @@ public:
 		}
 	}
 
+private:
 	int spawns_;
 };
 
