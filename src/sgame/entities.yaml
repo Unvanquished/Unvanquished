@@ -167,6 +167,7 @@ components:
         messages:
             - ZapTarget
             - ClearZap
+            - Die
         requires:
             Thinking:
 

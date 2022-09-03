@@ -205,3 +205,7 @@ void ZapComponent::UpdateZap(int timeDelta)
 	zap.timeAlive += timeDelta;
 	UpdateZapEffect(muzzle, &zap);
 }
+
+void ZapComponent::HandleDie(gentity_t*, meansOfDeath_t) {
+	HandleClearZap(*zap.creator->entity);
+}
