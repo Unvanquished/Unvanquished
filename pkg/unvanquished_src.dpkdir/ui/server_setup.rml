@@ -11,9 +11,9 @@
 		<!-- GENERAL SERVER CONFIG -->
 		<tab><translate>General</translate></tab><panel>
 			<row>
-				<h3><translate>Free funds frequency</translate></h3>
+				<h3><translate>Free funds period</translate></h3>
 				<input type="range" min="0" max="3600" step="1" cvar="g_freeFundPeriod" />
-				<p><translate>Reward players to stay alive every few seconds</translate></p>
+				<p><translate>Time interval at which players receive free credits/evos</translate></p>
 			</row>
 			<row>
 				<h3><translate>Friendly fire damage multipliers</translate></h3>
@@ -59,8 +59,8 @@
 			</row>
 			<row>
 				<input cvar="g_dretchpunt" type="checkbox" />
-				<h3><translate>Dretch-punt</translate></h3>
-				<p><translate>Dretches can be pounted out-of-the-way by large aliens.</translate></p>
+				<h3><translate>Dretch punt</translate></h3>
+				<p><translate>Dretches can be pushed out of the way by attacking them.</translate></p>
 			</row>
 			<row>
 				<input cvar="g_antiSpawnBlock" type="checkbox" />
@@ -74,37 +74,37 @@
 			<row>
 				<h3> Half life time </h3>
 				<input type="range" min="0" max="60" step="1" cvar="g_momentumHalfLife"/>
-				<p class="inline"> minutes for momentum to decrease 50%, 0 or less disables this behavior </p>
+				<p class="inline"> Time for momentum to decrease 50%. 0 disables this behavior. </p>
 			</row>
 			<row>
 				<h3> Double reward delay </h3>
 				<input type="range" min="0" max="240" step="5" cvar="g_momentumRewardDoubleTime"/>
-				<p class="inline"> some momentum rewards double after x minutes </p>
+				<p class="inline"> Interval at which some momentum rewards double </p>
 			</row>
 			<row>
 				<h3> Base modifier </h3>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumBaseMod"/>
-				<p class="inline"> generic momentum reward multiplier </p>
+				<p class="inline"> Generic momentum reward multiplier </p>
 			</row>
 			<row>
 				<h3> Kills reward multiplier </h3>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumKillMod"/>
-				<p class="inline"> momentum reward multiplier for kills </p>
+				<p class="inline"> Momentum reward multiplier for kills </p>
 			</row>
 			<row>
 				<h3> Building reward multiplier </h3>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumBuildMod"/>
-				<p class="inline"> momentum reward multiplier for construction </p>
+				<p class="inline"> Momentum reward multiplier for construction </p>
 			</row>
 			<row>
 				<h3> Deconstruction penalty multiplier </h3>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumDeconMod"/>
-				<p class="inline"> momentum penalty multiplier for deconstruction </p>
+				<p class="inline"> Momentum penalty multiplier for deconstruction </p>
 			</row>
 			<row>
 				<h3> Destruction reward multiplier </h3>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumDestroyMod"/>
-				<p class="inline"> momentum reward multiplier for killing buildables </p>
+				<p class="inline"> Momentum reward multiplier for killing buildables </p>
 			</row>
 		</panel>
 
@@ -118,7 +118,7 @@
 			<row>
 				<h3> Miner bonus </h3>
 				<input type="range" min="0" max="400" step="10" cvar="g_BPBudgetPerMiner"/>
-				<p class="inline"> Budget per Miner </p>
+				<p class="inline"> Build point budget per miner </p>
 			</row>
 			<row>
 				<h3> Initial regeneration speed </h3>
@@ -128,7 +128,7 @@
 			<row>
 				<h3> Half regeneration time </h3>
 				<input type="range" min="0" max="60" step="2" cvar="g_BPRecoveryRateHalfLife"/>
-				<p class="inline"> The duration one will wait before BP recovery gets twice as slow (in minutes) </p>
+				<p class="inline"> The duration one will wait before BP recovery gets twice as slow </p>
 			</row>
 		</panel>
 
@@ -137,12 +137,12 @@
 			<row>
 				<h3> minimum team size </h3>
 				<input type="range" min="0" max="31" step="1" cvar="g_bot_defaultFill"/>
-				<p class="inline"> Fill teams until they have enough players (only works for future games) </p>
+				<p class="inline"> Fill teams until they have enough players </p>
 			</row>
 			<row>
-				<h3> default skill level </h3>
+				<h3> Default skill level </h3>
 				<input type="range" min="1" max="9" step="1" cvar="g_bot_default_skill"/>
-				<p class="inline"> only works for new bots </p>
+				<p class="inline"> Only works for new bots. </p>
 			</row>
 			<h2> Humanity </h2>
 			<row>
