@@ -1707,7 +1707,8 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 	{
 		gentity_t *main = G_MainBuildable( team );
-		if ( Distance( main->s.origin, entity_origin ) <= g_minerRange.Get() )
+		// Times two because drills interfere with each other times two (once for each drill's radius).
+		if ( Distance( main->s.origin, entity_origin ) <= g_minerRange.Get() * 2 )
 		{
 			return team == TEAM_ALIENS ? IBE_TOOCLOSEOM : IBE_TOOCLOSERC;
 		}
