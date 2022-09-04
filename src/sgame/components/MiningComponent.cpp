@@ -1,11 +1,9 @@
 #include "MiningComponent.h"
 
-MiningComponent::MiningComponent(Entity& entity, bool blueprint,
-                                 ThinkingComponent& r_ThinkingComponent,
-								 TeamComponent& r_TeamComponent)
-	: MiningComponentBase(entity, blueprint, r_ThinkingComponent, r_TeamComponent)
+MiningComponent::MiningComponent(Entity& entity, bool blueprint, ThinkingComponent& r_ThinkingComponent,
+		TeamComponent& r_TeamComponent, BuildableComponent& r_BuildableComponent)
+	: MiningComponentBase(entity, blueprint, r_ThinkingComponent, r_TeamComponent, r_BuildableComponent)
 	, active(false) {
-
 	// Already calculate the predicted efficiency.
 	CalculateEfficiency();
 
@@ -21,35 +19,39 @@ void MiningComponent::HandlePrepareNetCode() {
 	// TODO: Transmit budget grant.
 }
 
-void MiningComponent::HandleFinishConstruction() {
-	active = true;
-
-	// Now that we are active, calculate the current efficiency.
-	CalculateEfficiency();
-
+void MiningComponent::SetActive(bool a) {
+	if (Active() == a) {
+		return;
+	}
+	if (a) {
+		active = true;
+		// Now that we are active, calculate the current efficiency.
+		CalculateEfficiency();
+		level.team[GetTeamComponent().Team()].numMiners++;
+	} else {
+		active = false;
+		// Efficiency will be zero from now on.
+		currentEfficiency   = 0.0f;
+		predictedEfficiency = 0.0f;
+		level.team[GetTeamComponent().Team()].numMiners--;
+	}
 	// Inform neighbouring miners so they can react immediately.
 	InformNeighbors();
 
 	// Update both team's budgets.
 	G_UpdateBuildPointBudgets();
+}
 
-	level.team[GetTeamComponent().Team()].numMiners++;
+void MiningComponent::HandleFinishConstruction() {
+	SetActive(true);
+	REGISTER_THINKER(
+		Think, ThinkingComponent::SCHEDULER_AVERAGE, 1000
+	);
 }
 
 void MiningComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
-	active = false;
-
-	// Efficiency will be zero from now on.
-	currentEfficiency   = 0.0f;
-	predictedEfficiency = 0.0f;
-
-	// Inform neighbouring miners so they can react immediately.
-	InformNeighbors();
-
-	// Update both team's budgets.
-	G_UpdateBuildPointBudgets();
-
-	level.team[GetTeamComponent().Team()].numMiners--;
+	GetThinkingComponent().UnregisterActiveThinker();
+	SetActive(false);
 }
 
 float MiningComponent::InterferenceMod(float distance) {
@@ -112,4 +114,27 @@ void MiningComponent::InformNeighbors() {
 
 float MiningComponent::Efficiency(bool predict) {
 	return predict ? predictedEfficiency : currentEfficiency;
+}
+
+void MiningComponent::Think(int) {
+	if (!GetBuildableComponent().Active()) {
+		return;
+	}
+	team_t team = GetTeamComponent().Team();
+	gentity_t *main = G_ActiveMainBuildable(team);
+	if (!main) {
+		return;
+	}
+	if (G_Distance(main, entity.oldEnt) < g_minerRange.Get() * 2) {
+		if (!Active()) {
+			return;
+		}
+		G_TeamCommand(team, "cp_tr " QQ(N_("^1Miner powering down because main buildable too close!")));
+		SetActive(false);
+		return;
+	}
+	if (!Active()) {
+		G_TeamCommand(team, "cp_tr " QQ(N_("^2Miner powering back up!")));
+		SetActive(true);
+	}
 }

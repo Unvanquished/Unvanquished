@@ -232,6 +232,7 @@ components:
         requires:
             Thinking:
             Team:
+            Buildable:
 
     ##############################
     # Entity-specific components #
