@@ -1149,42 +1149,40 @@ class LocationElement : public HudElement
 {
 public:
 	LocationElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_GAME ) {}
+			HudElement( tag, ELEMENT_GAME ),
+			lastlocation_( Util::nullopt ) {}
 
 	void DoOnUpdate() override
 	{
-		Rml::String newLocation;
-		centity_t  *locent;
-
 		if ( cg.intermissionStarted )
 		{
-			if ( !location.empty() )
+			if ( lastlocation_ )
 			{
-				location = "";
-				SetInnerRML( location );
+				SetInnerRML( "" );
+				lastlocation_ = {};
 			}
 			return;
 		}
 
-		locent = CG_GetPlayerLocation();
+		const centity_t *locent = CG_GetPlayerLocation();
 
-		if ( locent )
+		if ( locent == lastlocation_ )
 		{
-			location = CG_ConfigString( CS_LOCATIONS + locent->currentState.generic1 );
-		}
-		else
-		{
-			location = CG_ConfigString( CS_LOCATIONS );
+			return;
 		}
 
-		if ( location != newLocation )
-		{
-			SetInnerRML( Rocket_QuakeToRML( location.c_str(), RP_EMOTICONS ) );
-		}
+		lastlocation_ = locent;
+		int cs_index = locent != nullptr
+			? CS_LOCATIONS + locent->currentState.generic1
+			: CS_LOCATIONS;
+			location_ = CG_ConfigString( CS_LOCATIONS );
+
+		SetInnerRML( Rocket_QuakeToRML( CG_ConfigString( cs_index ), RP_EMOTICONS ) );
 	}
 
 private:
-	Rml::String location;
+	Rml::String location_;
+	Util::optional<const centity_t *> lastlocation_;
 };
 
 class TimerElement : public TextHudElement
