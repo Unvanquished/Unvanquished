@@ -1761,7 +1761,9 @@ float CalcAimPitch( gentity_t *self, vec3_t targetPos, vec_t launchSpeed )
 
 	//convert to degrees (ps.viewangles units)
 	angle = RAD2DEG( angle );
-	return angle;
+
+	static constexpr float minimum_angle = 15.0f;
+	return std::max( angle, minimum_angle );
 }
 
 float CalcPounceAimPitch( gentity_t *self, vec3_t targetPos )
