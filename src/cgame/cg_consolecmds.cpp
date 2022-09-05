@@ -429,6 +429,10 @@ void CG_HideScores_f()
 
 static void CG_BeaconMenu_f()
 {
+	if ( !cg.snap || cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+	{
+		return;
+	}
 	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
 }
 
