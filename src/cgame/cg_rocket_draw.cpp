@@ -2423,7 +2423,7 @@ public:
 			return;
 		}
 		spawns_ = newSpawns;
-		if ( spawns_ == 1 )
+		if ( spawns_ == 0 )
 		{
 			SetText( _( "There are no spawns remaining" ) );
 		}
