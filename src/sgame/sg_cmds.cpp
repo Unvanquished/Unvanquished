@@ -1950,7 +1950,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		if ( *reason ) // layout?
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "%s %s %s", G_NextMapCommand(), Cmd::Escape( arg ).c_str(), Cmd::Escape( reason ).c_str() );
+			             "%s %s %s", G_NextMapCommand().c_str(), Cmd::Escape(arg).c_str(), Cmd::Escape(reason).c_str());
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Change to map '%s' layout '%s'", arg, reason );
@@ -1958,7 +1958,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		else
 		{
 			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "%s %s", G_NextMapCommand(), Cmd::Escape( arg ).c_str() );
+			             "%s %s", G_NextMapCommand().c_str(), Cmd::Escape(arg).c_str());
 			Com_sprintf( level.team[ team ].voteDisplayString,
 			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Change to map '%s'", arg );

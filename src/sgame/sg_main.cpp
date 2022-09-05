@@ -1412,7 +1412,7 @@ static void ExitLevel()
 	}
 	else if ( G_MapExists( g_nextMap.Get().c_str() ) )
 	{
-		trap_SendConsoleCommand( va( "%s %s %s", G_NextMapCommand(), Cmd::Escape( g_nextMap.Get() ).c_str(), Cmd::Escape( g_nextMapLayouts.Get() ).c_str() ) );
+		trap_SendConsoleCommand( Str::Format( "%s %s %s", G_NextMapCommand(), Cmd::Escape( g_nextMap.Get() ), Cmd::Escape( g_nextMapLayouts.Get() ) ).c_str() );
 	}
 	else if ( G_MapRotationActive() )
 	{
