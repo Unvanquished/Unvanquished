@@ -119,7 +119,7 @@ static void P_WorldEffects( gentity_t *ent )
 
 	if ( ent->client->noclip )
 	{
-		ent->client->airOutTime = level.time + 12000; // don't need air
+		ent->client->airOutTime = level.time + OXYGEN_MAX_TIME; // don't need air
 		return;
 	}
 
