@@ -441,7 +441,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		}
 		else if ( g_showKillerHP.Get() )
 		{
-			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^*, had $2$ HP.\n") ),
+			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^*, had $2$ HP.") ),
 			                        Quote( killerName ),
 			                        (int)std::ceil(attacker->entity->Get<HealthComponent>()->Health()) ) );
 		}
@@ -1048,8 +1048,8 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	if ( actor->client && G_OnSameTeam( self, actor ) )
 	{
 		G_TeamCommand( G_Team( actor ),
-		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$\n") ) :
-						   QQ( N_("$1$ ^3DESTROYED^* by $2$\n") ),
+		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$") ) :
+						   QQ( N_("$1$ ^3DESTROYED^* by $2$") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),
 		                   Quote( actor->client->pers.netname ) ) );
 	}

@@ -1248,7 +1248,7 @@ static void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	float    distance;
 
 	if(!fallbackSpeed)
-		Sys::Drop("No default speed was supplied to reset_moverspeed for entity #%i of type %s.\n", self->s.number, self->classname);
+		Sys::Drop("No default speed was supplied to reset_moverspeed for entity #%i of type %s.", self->s.number, self->classname);
 
 	G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
@@ -1365,7 +1365,7 @@ static void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 	float    angle;
 
 	if(!fallbackSpeed)
-		Sys::Drop("No default speed was supplied to reset_rotatorspeed for entity #%i of type %s.\n", self->s.number, self->classname);
+		Sys::Drop("No default speed was supplied to reset_rotatorspeed for entity #%i of type %s.", self->s.number, self->classname);
 
 	// calculate time to reach second position from speed
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );

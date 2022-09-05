@@ -749,13 +749,13 @@ void G_PrintRotations()
 	int i, j;
 	int size = sizeof( mapRotations );
 
-	Log::Notice( "Map rotations as parsed:\n" );
+	Log::Notice( "Map rotations as parsed:" );
 
 	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
 		mapRotation_t *mr = &mapRotations.rotations[ i ];
 
-		Log::Notice( "rotation: %s\n{", mr->name );
+		Log::Notice( "rotation: %s{", mr->name );
 
 		size += mr->numNodes * sizeof( mrNode_t );
 
@@ -807,20 +807,20 @@ void G_PrintCurrentRotation( gentity_t *ent )
 
 	if ( mapRotation == nullptr )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("^3listrotation:^* there is no active map rotation on this server\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_("^3listrotation:^* there is no active map rotation on this server") ) );
 		return;
 	}
 
 	if ( mapRotation->numNodes == 0 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("^3listrotation:^* there are no maps in the active map rotation\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_("^3listrotation:^* there are no maps in the active map rotation") ) );
 		return;
 	}
 
 	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
 
 	ADMBP_begin();
-	ADMBP( va( "%s:\n", mapRotation->name ) );
+	ADMBP( va( "%s:", mapRotation->name ) );
 
 	while ( ( node = mapRotation->nodes[ i++ ] ) )
 	{

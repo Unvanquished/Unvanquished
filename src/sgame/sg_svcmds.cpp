@@ -139,9 +139,9 @@ static void Svcmd_EntityShow_f()
 	{
 		Log::Notice("%26s", vtos( selection->s.origin ) );
 	}
-	Log::Notice( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
+	Log::Notice( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
 	Log::Notice( "Classname: ^5%s^*", selection->classname );
-	Log::Notice( "Capabilities:%s%s%s%s%s%s%s\n",
+	Log::Notice( "Capabilities:%s%s%s%s%s%s%s",
 			selection->act ? " acts" : "",
 			selection->think ? " thinks" : "",
 			selection->pain ? " pains" : "",
@@ -402,12 +402,12 @@ static void Svcmd_AdmitDefeat_f()
 	if ( team == TEAM_ALIENS )
 	{
 		G_TeamCommand( TEAM_ALIENS, "cp \"Hivemind Link Broken\" 1" );
-		trap_SendServerCommand( -1, "print_tr \"" N_("Alien team has admitted defeat\n") "\"" );
+		trap_SendServerCommand( -1, "print_tr " QQ( N_("Alien team has admitted defeat") ) );
 	}
 	else if ( team == TEAM_HUMANS )
 	{
 		G_TeamCommand( TEAM_HUMANS, "cp \"Life Support Terminated\" 1" );
-		trap_SendServerCommand( -1, "print_tr \"" N_("Human team has admitted defeat\n") "\"" );
+		trap_SendServerCommand( -1, "print_tr " QQ( N_("Human team has admitted defeat") ) );
 	}
 	else
 	{
@@ -440,7 +440,7 @@ static void Svcmd_TeamWin_f()
 
 static void Svcmd_Evacuation_f()
 {
-	trap_SendServerCommand( -1, "print_tr \"" N_("Evacuation ordered\n") "\"" );
+	trap_SendServerCommand( -1, "print_tr " QQ( N_("Evacuation ordered") ) );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
 	G_notify_sensor_end( TEAM_NONE );
@@ -491,7 +491,7 @@ static void Svcmd_TeamMessage_f()
 
 	arg = ConcatArgs( 2 );
 	G_TeamCommand( team, va( "chat -1 %d %s", SAY_TEAM, Quote( arg ) ) );
-	G_LogPrintf( "SayTeam: -1 \"console\": %s\n", arg );
+	G_LogPrintf( "SayTeam: -1 \"console\": %s", arg );
 }
 
 static void Svcmd_CenterPrint_f()
@@ -579,7 +579,7 @@ static void Svcmd_DumpUser_f()
 
 	trap_GetUserinfo( cl - level.clients, userinfo, sizeof( userinfo ) );
 	info = &userinfo[ 0 ];
-	Log::Notice( "userinfo\n--------" );
+	Log::Notice( "userinfo--------" );
 
 	//Info_Print( userinfo );
 	while ( 1 )
@@ -615,7 +615,7 @@ static void Svcmd_Pr_f()
 		return;
 	}
 
-	trap_SendServerCommand( cl, va( "print %s\\\n", Quote( ConcatArgs( 2 ) ) ) );
+	trap_SendServerCommand( cl, va( "print %s", Quote( ConcatArgs( 2 ) ) ) );
 }
 
 static void Svcmd_PrintQueue_f()

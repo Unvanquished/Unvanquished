@@ -271,7 +271,7 @@ void G_CM_SectorList_f()
 			c++;
 		}
 
-		Log::Notice( "sector %i: %i entities\n", i, c );
+		Log::Notice( "sector %i: %i entities", i, c );
 	}
 }
 
@@ -384,7 +384,7 @@ void G_CM_UnlinkEntity( gentity_t *gEnt )
 		}
 	}
 
-	Log::Warn( "G_CM_UnlinkEntity: not found in worldSector\n" );
+	Log::Warn( "G_CM_UnlinkEntity: not found in worldSector" );
 }
 
 /*
@@ -621,7 +621,7 @@ static void G_CM_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 
 		if ( ap->count == ap->maxcount )
 		{
-			Log::Notice( "G_CM_AreaEntities: MAXCOUNT\n" );
+			Log::Notice( "G_CM_AreaEntities: MAXCOUNT" );
 			return;
 		}
 
