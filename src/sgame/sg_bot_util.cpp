@@ -2095,9 +2095,40 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_LUCIFER_CANNON:
-			if ( self->client->ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Math::Clamp( random(), 0.5f, 1.0f ) )
 			{
-				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
+				const int CRITICAL_HEALTH = 30; //TODO do not use a constant
+				int selfHP = self->client->ps.stats[ STAT_HEALTH ];
+
+				gentity_t const* botTarget = self->botMind->goal.getTargetedEntity();
+				float targetHP;
+				if ( botTarget->client )
+				{
+					class_t targetType = static_cast<class_t>( botTarget->client->ps.stats[ STAT_CLASS ] );
+					const classAttributes_t * targetAttr = BG_Class( targetType );
+					// Ignore armor because aliens don't have armors or damage reductions anyway.
+					targetHP = static_cast<float>( targetAttr->health );
+				}
+				else //assume we're fighting a building, but it could also be a map entity, and this would then fail
+				{
+					auto targetType = static_cast<buildable_t>( botTarget->s.modelindex );
+					const buildableAttributes_t * targetAttr = BG_Buildable( targetType );
+					targetHP = static_cast<float>( targetAttr->health );
+				}
+				// TODO: use charging is there are more than one enemies around
+				if ( targetHP <= LCANNON_SECONDARY_DAMAGE || selfHP <= CRITICAL_HEALTH )
+				{
+					BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
+				}
+				else
+				{
+					float dmgRatio = targetHP / LCANNON_DAMAGE;
+					float chargeMax = static_cast<float>( LCANNON_CHARGE_TIME_MAX );
+					float charge = chargeMax * std::min( dmgRatio, 0.95f );;
+					if ( self->client->ps.weaponCharge < charge )
+					{
+						BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
+					}
+				}
 			}
 			break;
 		default:
