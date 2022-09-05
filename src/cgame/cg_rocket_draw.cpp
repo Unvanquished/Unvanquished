@@ -270,13 +270,13 @@ class AmmoHudElement : public TextHudElement
 public:
 	AmmoHudElement( const Rml::String& tag ) :
 			TextHudElement( tag, ELEMENT_BOTH ),
-			showTotalAmmo( false ),
-			builder( false ),
-			ammo( 0 ),
-			spentBudget( 0 ),
-			markedBudget( 0 ),
-			totalBudget( 0 ),
-			queuedBudget( 0 ) {}
+			showTotalAmmo_( false ),
+			builder_( false ),
+			ammo_( 0 ),
+			spentBudget_( 0 ),
+			markedBudget_( 0 ),
+			totalBudget_( 0 ),
+			queuedBudget_( 0 ) {}
 
 	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
@@ -284,7 +284,7 @@ public:
 		if ( changed_attributes.find( "type" ) != changed_attributes.end() )
 		{
 			const Rml::String& type = GetAttribute<Rml::String>( "type", "" );
-			showTotalAmmo = type == "total";
+			showTotalAmmo_ = type == "total";
 		}
 	}
 
@@ -301,59 +301,59 @@ public:
 			case WP_ABUILD:
 			case WP_ABUILD2:
 			case WP_HBUILD:
-				if ( builder &&
-				     spentBudget  == cg.snap->ps.persistant[ PERS_SPENTBUDGET ] &&
-				     markedBudget == cg.snap->ps.persistant[ PERS_MARKEDBUDGET ] &&
-				     totalBudget  == cg.snap->ps.persistant[ PERS_TOTALBUDGET ] &&
-				     queuedBudget == cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ] )
+				if ( builder_ &&
+				     spentBudget_  == cg.snap->ps.persistant[ PERS_SPENTBUDGET ] &&
+				     markedBudget_ == cg.snap->ps.persistant[ PERS_MARKEDBUDGET ] &&
+				     totalBudget_  == cg.snap->ps.persistant[ PERS_TOTALBUDGET ] &&
+				     queuedBudget_ == cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ] )
 				{
 					return;
 				}
 
-				spentBudget  = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
-				markedBudget = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
-				totalBudget  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
-				queuedBudget = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
-				builder      = true;
+				spentBudget_  = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
+				markedBudget_ = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
+				totalBudget_  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
+				queuedBudget_ = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
+				builder_      = true;
 
 				break;
 
 			default:
-				if ( showTotalAmmo )
+				if ( showTotalAmmo_ )
 				{
 					int maxAmmo = BG_Weapon( weapon )->maxAmmo;
-					if ( !builder &&
-					     ammo == cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo ) )
+					if ( !builder_ &&
+					     ammo_ == cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo ) )
 					{
 						return;
 					}
 
-					ammo = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
+					ammo_ = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
 				}
 				else
 				{
-					if ( !builder &&
-					     ammo == cg.snap->ps.ammo )
+					if ( !builder_ &&
+					     ammo_ == cg.snap->ps.ammo )
 					{
 						return;
 					}
 
-					ammo = cg.snap->ps.ammo;
+					ammo_ = cg.snap->ps.ammo;
 				}
 
-				builder = false;
+				builder_ = false;
 
 				break;
 		}
 
-		if ( builder )
+		if ( builder_ )
 		{
-			int freeBudget = totalBudget - (spentBudget + queuedBudget);
-			int available  = freeBudget + markedBudget;
+			int freeBudget = totalBudget_ - (spentBudget_ + queuedBudget_);
+			int available  = freeBudget + markedBudget_;
 
-			if ( markedBudget != 0 )
+			if ( markedBudget_ != 0 )
 			{
-				SetText( va( "%d+%d = %d", freeBudget, markedBudget, available ) );
+				SetText( va( "%d+%d = %d", freeBudget, markedBudget_, available ) );
 			}
 			else
 			{
@@ -362,18 +362,18 @@ public:
 		}
 		else
 		{
-			SetText( va( "%d", ammo ) );
+			SetText( va( "%d", ammo_ ) );
 		}
 	}
 
 private:
-	bool showTotalAmmo;
-	bool builder;
-	int  ammo;
-	int  spentBudget;
-	int  markedBudget;
-	int  totalBudget;
-	int  queuedBudget;
+	bool showTotalAmmo_;
+	bool builder_;
+	int  ammo_;
+	int  spentBudget_;
+	int  markedBudget_;
+	int  totalBudget_;
+	int  queuedBudget_;
 };
 
 
@@ -382,7 +382,7 @@ class ClipsHudElement : public TextHudElement
 public:
 	ClipsHudElement( const Rml::String& tag ) :
 		TextHudElement( tag, ELEMENT_HUMANS ),
-		clips( 0 ) {}
+		clips_( 0 ) {}
 
 	void DoOnUpdate() override
 	{
@@ -391,24 +391,24 @@ public:
 
 		if ( BG_Weapon( BG_PrimaryWeapon( ps->stats ) )->infiniteAmmo )
 		{
-			if ( clips != -1 )
+			if ( clips_ != -1 )
 			{
 				SetText( "" );
 			}
-			clips = -1;
+			clips_ = -1;
 			return;
 		}
 		value = ps->clips;
 
-		if ( value > -1 && value != clips )
+		if ( value > -1 && value != clips_ )
 		{
 			SetText( va( "%d", value ) );
-			clips = value;
+			clips_ = value;
 		}
 	}
 
 private:
-	int clips;
+	int clips_;
 };
 
 
@@ -419,9 +419,9 @@ class FpsHudElement : public TextHudElement
 public:
 	FpsHudElement( const Rml::String& tag )
 			: TextHudElement( tag, ELEMENT_ALL ),
-			  shouldShowFps( true ),
-			  index(0),
-			  previous(0) {}
+			  shouldShowFps_( true ),
+			  index_(0),
+			  previous_(0) {}
 
 	void DoOnUpdate() override
 	{
@@ -429,33 +429,33 @@ public:
 		int        fps;
 		int        t, frameTime;
 
-		if ( !cg_drawFPS.Get() && shouldShowFps )
+		if ( !cg_drawFPS.Get() && shouldShowFps_ )
 		{
-			shouldShowFps = false;
+			shouldShowFps_ = false;
 			SetText( "" );
 			return;
-		} else if ( !shouldShowFps )
+		} else if ( !shouldShowFps_ )
 		{
-			shouldShowFps = true;
+			shouldShowFps_ = true;
 		}
 
 		// don't use serverTime, because that will be drifting to
 		// correct for Internet lag changes, timescales, timedemos, etc.
 		t = trap_Milliseconds();
-		frameTime = t - previous;
-		previous = t;
+		frameTime = t - previous_;
+		previous_ = t;
 
-		previousTimes[ index % FPS_FRAMES ] = frameTime;
-		index++;
+		previousTimes_[ index_ % FPS_FRAMES ] = frameTime;
+		index_++;
 
-		if ( index > FPS_FRAMES )
+		if ( index_ > FPS_FRAMES )
 		{
 			// average multiple frames together to smooth changes out a bit
 			total = 0;
 
 			for ( i = 0; i < FPS_FRAMES; i++ )
 			{
-				total += previousTimes[ i ];
+				total += previousTimes_[ i ];
 			}
 
 			if ( !total )
@@ -472,11 +472,10 @@ public:
 		SetText( va( "%d", fps ) );
 	}
 private:
-	bool shouldShowFps;
-	int previousTimes[ FPS_FRAMES ];
-	int index;
-	int previous;
-
+	bool shouldShowFps_;
+	int previousTimes_[ FPS_FRAMES ];
+	int index_;
+	int previous_;
 };
 
 #define CROSSHAIR_INDICATOR_HITFADE 500
@@ -485,14 +484,15 @@ class CrosshairIndicatorHudElement : public HudElement
 {
 public:
 	CrosshairIndicatorHudElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_BOTH, true ) {}
+			HudElement( tag, ELEMENT_BOTH, true ),
+			color_( Color::White ) {}
 
 	void OnPropertyChange( const Rml::PropertyIdSet& changed_properties ) override
 	{
 		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.Contains( Rml::PropertyId::Color ) )
 		{
-			GetColor( "color", color );
+			GetColor( "color", color_ );
 		}
 	}
 
@@ -532,14 +532,14 @@ public:
 			if ( cg.crosshairFoe )
 			{
 				baseColor = Color::Red;
-				baseColor.SetAlpha( color.Alpha() * 0.75f );
+				baseColor.SetAlpha( color_.Alpha() * 0.75f );
 				onRelevantEntity = true;
 			}
 
 			else if ( cg.crosshairFriend )
 			{
 				baseColor = Color::Green;
-				baseColor.SetAlpha( color.Alpha() * 0.75f );
+				baseColor.SetAlpha( color_.Alpha() * 0.75f );
 				onRelevantEntity = true;
 			}
 
@@ -586,16 +586,14 @@ public:
 		trap_R_ClearColor();
 	}
 private:
-	Color::Color color;
-
-
+	Color::Color color_;
 };
 
 class CrosshairHudElement : public HudElement {
 public:
 	CrosshairHudElement( const Rml::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, true ),
-			color( Color::White ) {
+			color_( Color::White ) {
 	}
 
 	void OnPropertyChange( const Rml::PropertyIdSet& changed_properties ) override
@@ -603,7 +601,7 @@ public:
 		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.Contains( Rml::PropertyId::Color ) )
 		{
-			GetColor( "color", color );
+			GetColor( "color", color_ );
 		}
 	}
 
@@ -659,15 +657,15 @@ public:
 
 		if ( crosshair )
 		{
-			CG_GetRocketElementColor( color );
-			trap_R_SetColor( color );
+			CG_GetRocketElementColor( color_ );
+			trap_R_SetColor( color_ );
 			CG_DrawPic( x, y, w, h, crosshair );
 			trap_R_ClearColor();
 		}
 	}
 
 private:
-	Color::Color color;
+	Color::Color color_;
 };
 
 #define SPEEDOMETER_NUM_SAMPLES 4096
@@ -781,7 +779,8 @@ class SpeedGraphElement : public HudElement
 {
 public:
 	SpeedGraphElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_GAME, true )
+			HudElement( tag, ELEMENT_GAME, true ),
+			shouldDrawSpeed_( false )
 	{
 		Rml::XMLAttributes xml;
 		maxSpeedElement = dynamic_cast< Rml::ElementText* >( AppendChild( Rml::Factory::InstanceElement(
@@ -804,7 +803,7 @@ public:
 
 		if ( changed_properties.Contains( Rml::PropertyId::BackgroundColor ) )
 		{
-			GetColor( "background-color", backColor );
+			GetColor( "background-color", backColor_ );
 		}
 	}
 
@@ -820,17 +819,17 @@ public:
 
 		if ( !cg_drawSpeed.Get() )
 		{
-			if ( shouldDrawSpeed )
+			if ( shouldDrawSpeed_ )
 			{
 				currentSpeedElement->SetText( "" );
 				maxSpeedElement->SetText( "" );
-				shouldDrawSpeed = false;
+				shouldDrawSpeed_ = false;
 			}
 			return;
 		}
-		else if ( !shouldDrawSpeed )
+		else if ( !shouldDrawSpeed_ )
 		{
-			shouldDrawSpeed = true;
+			shouldDrawSpeed_ = true;
 		}
 
 
@@ -846,7 +845,7 @@ public:
 				max = SPEEDOMETER_MIN_RANGE;
 			}
 
-			trap_R_SetColor( backColor );
+			trap_R_SetColor( backColor_ );
 			CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
 
 			for ( i = 1; i < SPEEDOMETER_NUM_DISPLAYED_SAMPLES; i++ )
@@ -913,8 +912,8 @@ public:
 private:
 	Rml::ElementText* maxSpeedElement;
 	Rml::ElementText* currentSpeedElement;
-	bool shouldDrawSpeed;
-	Color::Color backColor;
+	bool shouldDrawSpeed_;
+	Color::Color backColor_;
 };
 
 class PositionElement : public TextHudElement
@@ -958,21 +957,21 @@ class CreditsValueElement : public TextHudElement
 public:
 	CreditsValueElement( const Rml::String& tag ) :
 			TextHudElement( tag, ELEMENT_HUMANS ),
-			credits( -1 ) {}
+			credits_( -1 ) {}
 
 	void DoOnUpdate() override
 	{
 		playerState_t *ps = &cg.snap->ps;
 		int value = ps->persistant[ PERS_CREDIT ];;
-		if ( credits != value )
+		if ( credits_ != value )
 		{
-			credits = value;
-			SetText( va( "%d", credits ) );
+			credits_ = value;
+			SetText( va( "%d", credits_ ) );
 		}
 	}
 
 private:
-	int credits;
+	int credits_;
 };
 
 class EvosValueElement : public TextHudElement
@@ -980,7 +979,7 @@ class EvosValueElement : public TextHudElement
 public:
 	EvosValueElement( const Rml::String& tag ) :
 			TextHudElement( tag, ELEMENT_ALIENS ),
-			evos( -1 ) {}
+			evos_( -1 ) {}
 
 	void DoOnUpdate() override
 	{
@@ -996,15 +995,15 @@ public:
 		// value is in tenth of evo points
 		value = value * 10 / CREDITS_PER_EVO;
 
-		if ( evos != value )
+		if ( evos_ != value )
 		{
-			evos = value;
+			evos_ = value;
 			SetText( va( "%i.%i", value/10, value%10 ) );
 		}
 	}
 
 private:
-	int evos;
+	int evos_;
 };
 
 class WeaponIconElement : public HudElement
@@ -1012,8 +1011,8 @@ class WeaponIconElement : public HudElement
 public:
 	WeaponIconElement( const Rml::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH ),
-			weapon( WP_NONE ),
-			isNoAmmo( false ) {}
+			weapon_( WP_NONE ),
+			isNoAmmo_( false ) {}
 
 	void DoOnUpdate() override
 	{
@@ -1023,46 +1022,46 @@ public:
 		ps = &cg.snap->ps;
 		newWeapon = BG_GetPlayerWeapon( ps );
 
-		if ( newWeapon != weapon )
+		if ( newWeapon != weapon_ )
 		{
-			weapon = newWeapon;
+			weapon_ = newWeapon;
 			// don't display if dead
-			if ( ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon == WP_NONE ) && !IsVisible() )
+			if ( ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 || weapon_ == WP_NONE ) && !IsVisible() )
 			{
 				SetProperty( "display", "none" );
 				return;
 			}
 
-			if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
+			if ( weapon_ < WP_NONE || weapon_ >= WP_NUM_WEAPONS )
 			{
-				Sys::Drop( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
+				Sys::Drop( "CG_DrawWeaponIcon: weapon out of range: %d", weapon_ );
 			}
 
-			if ( !cg_weapons[ weapon ].registered )
+			if ( !cg_weapons[ weapon_ ].registered )
 			{
 				Log::Warn( "CG_DrawWeaponIcon: weapon %d (%s) "
-				"is not registered", weapon, BG_Weapon( weapon )->name );
+				"is not registered", weapon_, BG_Weapon( weapon_ )->name );
 				SetProperty( "display", "none" );
 				return;
 			}
 
-			SetInnerRML( va( "<img src='/%s' />", CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ) );
+			SetInnerRML( va( "<img src='/%s' />", CG_GetShaderNameFromHandle( cg_weapons[ weapon_ ].weaponIcon ) ) );
 			SetProperty( "display", "block" );
 		}
 
-		if ( !isNoAmmo && ps->clips == 0 && ps->ammo == 0 && !BG_Weapon( weapon )->infiniteAmmo )
+		if ( !isNoAmmo_ && ps->clips == 0 && ps->ammo == 0 && !BG_Weapon( weapon_ )->infiniteAmmo )
 		{
 			SetClass( "no_ammo", true );
 		}
-		else if ( isNoAmmo )
+		else if ( isNoAmmo_ )
 		{
 			SetClass( "no_ammo", false );
 		}
 
 	}
 private:
-	int weapon;
-	bool isNoAmmo;
+	int weapon_;
+	bool isNoAmmo_;
 };
 
 class WallwalkElement : public HudElement
@@ -1077,7 +1076,7 @@ public:
 	void DoOnUpdate() override
 	{
 		bool wallwalking = cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING;
-		if ( wallwalking != isActive )
+		if ( wallwalking != isActive_ )
 		{
 			SetActive( wallwalking );
 		}
@@ -1086,13 +1085,13 @@ public:
 private:
 	void SetActive( bool active )
 	{
-		isActive = active;
+		isActive_ = active;
 		SetClass( "active", active );
 		SetClass( "inactive", !active );
 
 	}
 
-	bool isActive;
+	bool isActive_;
 };
 
 class StaminaElement : public HudElement
@@ -1100,22 +1099,22 @@ class StaminaElement : public HudElement
 public:
 	StaminaElement( const Rml::String& tag ) :
 			HudElement( tag, ELEMENT_HUMANS ),
-			isActive( false )
+			isActive_( false )
 	{
 	}
 
 	void DoOnUpdate() override
 	{
 		bool sprinting = cg.snap->ps.stats[ STAT_STATE ] & SS_SPEEDBOOST;
-		if ( sprinting != isActive )
+		if ( sprinting != isActive_ )
 		{
-			isActive = sprinting;
+			isActive_ = sprinting;
 			SetClass( "sprinting", sprinting );
 		}
 	}
 
 private:
-	bool isActive;
+	bool isActive_;
 };
 
 class UsableBuildableElement : public HudElement
@@ -1189,13 +1188,11 @@ public:
 		int cs_index = locent != nullptr
 			? CS_LOCATIONS + locent->currentState.generic1
 			: CS_LOCATIONS;
-			location_ = CG_ConfigString( CS_LOCATIONS );
 
 		SetInnerRML( Rocket_QuakeToRML( CG_ConfigString( cs_index ), RP_EMOTICONS ) );
 	}
 
 private:
-	Rml::String location_;
 	Util::optional<const centity_t *> lastlocation_;
 };
 
@@ -1365,8 +1362,8 @@ class LagometerElement : public HudElement
 public:
 	LagometerElement( const Rml::String& tag ) :
 			HudElement( tag, ELEMENT_GAME, true ),
-			shouldDrawLagometer( true ),
-			adjustedColor( Color::White )
+			shouldDrawLagometer_( true ),
+			adjustedColor_( 0.0f, 0.0f, 0.0f, 0.0f )
 	{
 	}
 
@@ -1375,7 +1372,7 @@ public:
 		HudElement::OnPropertyChange( changed_properties );
 		if ( changed_properties.Contains( Rml::PropertyId::BackgroundColor ) )
 		{
-			GetColor( "background-color", adjustedColor );
+			GetColor( "background-color", adjustedColor_ );
 		}
 	}
 
@@ -1388,7 +1385,7 @@ public:
 		float  vscale;
 		rectDef_t rect;
 
-		if ( !shouldDrawLagometer )
+		if ( !shouldDrawLagometer_ )
 		{
 			return;
 		}
@@ -1396,7 +1393,7 @@ public:
 		// grab info from libRocket
 		GetElementRect( rect );
 
-		trap_R_SetColor( adjustedColor );
+		trap_R_SetColor( adjustedColor_ );
 		CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
 		trap_R_ClearColor();
 
@@ -1515,9 +1512,8 @@ public:
 	}
 
 private:
-	bool shouldDrawLagometer;
-	Color::Color adjustedColor;
-
+	bool shouldDrawLagometer_;
+	Color::Color adjustedColor_;
 };
 
 class PingElement : public TextHudElement
@@ -1525,7 +1521,7 @@ class PingElement : public TextHudElement
 public:
 	PingElement( const Rml::String& tag ) :
 				 TextHudElement( tag, ELEMENT_GAME, true ),
-				 shouldDrawPing( true )
+				 shouldDrawPing_( true )
 	{
 	}
 
@@ -1536,17 +1532,17 @@ public:
 		if ( ( cg.snap && cg.snap->ps.pm_type == PM_INTERMISSION )
 			|| cg.demoPlayback )
 		{
-			if ( shouldDrawPing )
+			if ( shouldDrawPing_ )
 			{
 				SetText( "" );
 				ping_ = "";
-				shouldDrawPing = false;
+				shouldDrawPing_ = false;
 			}
 			return;
 		}
-		else if ( !shouldDrawPing )
+		else if ( !shouldDrawPing_ )
 		{
-			shouldDrawPing = true;
+			shouldDrawPing_ = true;
 		}
 
 		if ( cg_nopredict.Get() || cg.pmoveParams.synchronous )
@@ -1566,7 +1562,7 @@ public:
 		}
 	}
 private:
-	bool shouldDrawPing;
+	bool shouldDrawPing_;
 	Rml::String ping_;
 };
 
@@ -1763,7 +1759,7 @@ class LevelshotElement : public HudElement
 {
 public:
 	LevelshotElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_ALL ), mapIndex( -1 ) {}
+			HudElement( tag, ELEMENT_ALL ), mapIndex_( -1 ) {}
 
 	void DoOnUpdate() override
 	{
@@ -1774,11 +1770,11 @@ public:
 			return;
 		}
 
-		if ( mapIndex != rocketInfo.data.mapIndex )
+		if ( mapIndex_ != rocketInfo.data.mapIndex )
 		{
-			mapIndex = rocketInfo.data.mapIndex;
+			mapIndex_ = rocketInfo.data.mapIndex;
 			std::error_code ignored;
-			const std::string& mapName = rocketInfo.data.mapList[ mapIndex ].mapLoadName;
+			const std::string& mapName = rocketInfo.data.mapList[ mapIndex_ ].mapLoadName;
 			FS::PakPath::LoadPakPrefix(
 				*FS::FindPak( "map-" + mapName ), Str::Format( "meta/%s/", mapName ), ignored );
 			SetInnerRML( Str::Format( "<img class='levelshot' src='/meta/%s/%s' />", mapName, mapName ) );
@@ -1788,22 +1784,21 @@ public:
 private:
 	void Clear()
 	{
-		if ( mapIndex != -1)
+		if ( mapIndex_ != -1)
 		{
-			mapIndex = -1;
+			mapIndex_ = -1;
 			SetInnerRML("");
 		}
 	}
 
-	int mapIndex;
-
+	int mapIndex_;
 };
 
 class LevelshotLoadingElement : public HudElement
 {
 public:
 	LevelshotLoadingElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_ALL ) {}
+			HudElement( tag, ELEMENT_ALL ), map_("") {}
 
 	void DoOnUpdate() override
 	{
@@ -1814,9 +1809,9 @@ public:
 		}
 
 		const char *newMap = Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" );
-		if ( map != newMap )
+		if ( map_ != newMap )
 		{
-			map = newMap;
+			map_ = newMap;
 			SetInnerRML( Str::Format( "<img src='/meta/%s/%s' />", newMap, newMap ) );
 		}
 	}
@@ -1884,10 +1879,10 @@ public:
 	{
 		if ( cg.beaconRocket.ageAlpha > 0 )
 		{
-			if ( age != cg.beaconRocket.age )
+			if ( age_ != cg.beaconRocket.age )
 			{
-				age = cg.beaconRocket.age;
-				SetText( age );
+				age_ = cg.beaconRocket.age;
+				SetText( age_ );
 			}
 
 			if ( alpha_ != cg.beaconRocket.ageAlpha )
@@ -1913,7 +1908,7 @@ private:
 	}
 
 	float alpha_;
-	Rml::String age;
+	Rml::String age_;
 };
 
 class BeaconDistanceElement : public TextHudElement
@@ -1921,16 +1916,17 @@ class BeaconDistanceElement : public TextHudElement
 public:
 	BeaconDistanceElement( const Rml::String& tag ) :
 	TextHudElement( tag, ELEMENT_GAME ),
-	alpha_(0) {}
+	alpha_(0),
+	distance_("") {}
 
 	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.distanceAlpha > 0 )
 		{
-			if ( distance != cg.beaconRocket.distance )
+			if ( distance_ != cg.beaconRocket.distance )
 			{
-				distance = cg.beaconRocket.distance;
-				SetText( distance );
+				distance_ = cg.beaconRocket.distance;
+				SetText( distance_ );
 			}
 
 			if ( alpha_ != cg.beaconRocket.distanceAlpha )
@@ -1956,24 +1952,25 @@ private:
 	}
 
 	float alpha_;
-	Rml::String distance;
+	Rml::String distance_;
 };
 
 class BeaconInfoElement : public TextHudElement
 {
 public:
 	BeaconInfoElement( const Rml::String& tag ) :
-	TextHudElement( tag, ELEMENT_GAME ),
-	alpha_(0) {}
+			TextHudElement( tag, ELEMENT_GAME ),
+			alpha_(0),
+			info_("") {}
 
 	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.infoAlpha > 0 )
 		{
-			if ( info != cg.beaconRocket.info )
+			if ( info_ != cg.beaconRocket.info )
 			{
-				info = cg.beaconRocket.info;
-				SetText( info );
+				info_ = cg.beaconRocket.info;
+				SetText( info_ );
 			}
 
 			if ( alpha_ != cg.beaconRocket.infoAlpha )
@@ -1999,7 +1996,7 @@ private:
 	}
 
 	float alpha_;
-	Rml::String info;
+	Rml::String info_;
 };
 
 class BeaconNameElement : public HudElement
@@ -2007,16 +2004,17 @@ class BeaconNameElement : public HudElement
 public:
 	BeaconNameElement( const Rml::String& tag ) :
 	HudElement( tag, ELEMENT_GAME ),
-	alpha_(0) {}
+	alpha_(0),
+	name_("") {}
 
 	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.nameAlpha > 0 )
 		{
-			if ( name != cg.beaconRocket.name )
+			if ( name_ != cg.beaconRocket.name )
 			{
-				name = cg.beaconRocket.name;
-				SetInnerRML( Rocket_QuakeToRML( name.c_str(), RP_EMOTICONS ) );
+				name_ = cg.beaconRocket.name;
+				SetInnerRML( Rocket_QuakeToRML( name_.c_str(), RP_EMOTICONS ) );
 			}
 
 			if ( alpha_ != cg.beaconRocket.nameAlpha )
@@ -2042,14 +2040,15 @@ private:
 	}
 
 	float alpha_;
-	Rml::String name;
+	Rml::String name_;
 };
 
 class BeaconIconElement : public HudElement
 {
 public:
 	BeaconIconElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_GAME, true ) {}
+			HudElement( tag, ELEMENT_GAME, true ),
+			color_(Color::White) {}
 
 	void OnPropertyChange( const Rml::PropertyIdSet& changed_properties ) override
 	{
@@ -2091,16 +2090,17 @@ class BeaconOwnerElement : public HudElement
 public:
 	BeaconOwnerElement( const Rml::String& tag ) :
 	HudElement( tag, ELEMENT_GAME ),
-	alpha_(0) {}
+	alpha_(0),
+	owner_("") {}
 
 	void DoOnUpdate() override
 	{
 		if ( cg.beaconRocket.ownerAlpha > 0 )
 		{
-			if ( owner != cg.beaconRocket.owner )
+			if ( owner_ != cg.beaconRocket.owner )
 			{
-				owner = cg.beaconRocket.owner;
-				SetInnerRML( Rocket_QuakeToRML( owner.c_str(), RP_EMOTICONS ) );
+				owner_ = cg.beaconRocket.owner;
+				SetInnerRML( Rocket_QuakeToRML( owner_.c_str(), RP_EMOTICONS ) );
 			}
 
 			if ( alpha_ != cg.beaconRocket.ownerAlpha )
@@ -2126,7 +2126,7 @@ private:
 	}
 
 	float alpha_;
-	Rml::String owner;
+	Rml::String owner_;
 };
 
 class PredictedMineEfficiencyElement : public HudElement
@@ -2134,10 +2134,10 @@ class PredictedMineEfficiencyElement : public HudElement
 public:
 	PredictedMineEfficiencyElement( const Rml::String& tag ) :
 			HudElement( tag, ELEMENT_BOTH, false ),
-			shouldBeVisible( false ),
-			lastDeltaEfficiencyPct( -999 ),
-			lastDeltaBudget( -999 ),
-			pluralSuffix{ { BA_A_LEECH, "es" }, { BA_H_DRILL, "s" } }
+			shouldBeVisible_( false ),
+			lastDeltaEfficiencyPct_( -999 ),
+			lastDeltaBudget_( -999 ),
+			pluralSuffix_{ { BA_A_LEECH, "es" }, { BA_H_DRILL, "s" } }
 	{
 
 	}
@@ -2149,7 +2149,7 @@ public:
 
 		if ( buildable != BA_H_DRILL && buildable != BA_A_LEECH )
 		{
-			shouldBeVisible = false;
+			shouldBeVisible_ = false;
 			if ( IsVisible() )
 			{
 				SetProperty( Rml::PropertyId::Display,
@@ -2157,13 +2157,13 @@ public:
 				SetInnerRML( "" );
 
 				// Pick impossible value
-				lastDeltaEfficiencyPct = -999;
-				lastDeltaBudget        = -999;
+				lastDeltaEfficiencyPct_ = -999;
+				lastDeltaBudget_        = -999;
 			}
 		}
 		else
 		{
-			shouldBeVisible = true;
+			shouldBeVisible_ = true;
 			if ( !IsVisible() )
 			{
 				SetProperty( Rml::PropertyId::Display,
@@ -2176,7 +2176,7 @@ public:
 
 	void PopulateText()
 	{
-		if ( shouldBeVisible )
+		if ( shouldBeVisible_ )
 		{
 			playerState_t *ps = &cg.snap->ps;
 			buildable_t buildable = ( buildable_t )( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
@@ -2192,27 +2192,27 @@ public:
 
 			int   deltaEfficiencyPct = (int)(deltaEfficiency * 100.0f);
 
-			if ( deltaEfficiencyPct != lastDeltaEfficiencyPct ||
-			     deltaBudget        != lastDeltaBudget )
+			if ( deltaEfficiencyPct != lastDeltaEfficiencyPct_ ||
+			     deltaBudget        != lastDeltaBudget_ )
 			{
 				if        ( deltaBudget < 0 ) {
 					color = Color::Red;
 					// Icon U+E000
 					msg = va( "<span class='material-icon error'>\xee\x80\x80</span> You are losing build points!"
 					          " Build the %s%s further apart for greater efficiency.",
-					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
+					          BG_Buildable( buildable )->humanName, pluralSuffix_[ buildable ].c_str() );
 				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 10 ) {
 					color = Color::Orange;
 					// Icon U+E002
 					msg = va( "<span class='material-icon warning'>\xee\x80\x82</span> Minimal build point gain."
 					          " Build the %s%s further apart for greater efficiency.",
-					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
+					          BG_Buildable( buildable )->humanName, pluralSuffix_[ buildable ].c_str() );
 				} else if ( deltaBudget < cgs.buildPointBudgetPerMiner / 2 ) {
 					color = Color::Yellow;
 					// Icon U+E002
 					msg = va( "<span class='material-icon warning'>\xee\x80\x82</span> Subpar build point gain."
 					          " Build the %s%s further apart for greater efficiency.",
-					          BG_Buildable( buildable )->humanName, pluralSuffix[ buildable ].c_str() );
+					          BG_Buildable( buildable )->humanName, pluralSuffix_[ buildable ].c_str() );
 				} else {
 					color = Color::Green;
 				}
@@ -2233,16 +2233,16 @@ public:
 					deltaEfficiencyPctStr, deltaBudgetStr, msg ? "<br/>" : "", msg ? msg : ""
 				));
 
-				lastDeltaEfficiencyPct = deltaEfficiencyPct;
-				lastDeltaBudget        = deltaBudget;
+				lastDeltaEfficiencyPct_ = deltaEfficiencyPct;
+				lastDeltaBudget_        = deltaBudget;
 			}
 		}
 	}
 private:
-	bool shouldBeVisible;
-	int  lastDeltaEfficiencyPct;
-	int  lastDeltaBudget;
-	std::unordered_map<int, std::string> pluralSuffix;
+	bool shouldBeVisible_;
+	int  lastDeltaEfficiencyPct_;
+	int  lastDeltaBudget_;
+	std::unordered_map<int, std::string> pluralSuffix_;
 };
 
 class BarbsHudElement : public HudElement
@@ -2250,24 +2250,24 @@ class BarbsHudElement : public HudElement
 public:
 	BarbsHudElement ( const Rml::String& tag ) :
 	HudElement ( tag, ELEMENT_ALIENS ),
-	numBarbs( 0 ),
-	maxBarbs( BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ),
-	regenerationInterval ( 0 ),
-	t0 ( 0 ),
-	offset ( 0 ) {}
+	numBarbs_( 0 ),
+	maxBarbs_( BG_Weapon( WP_ALEVEL3_UPG )->maxAmmo ),
+	regenerationInterval_ ( 0 ),
+	t0_ ( 0 ),
+	offset_ ( 0 ) {}
 
 	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
 		HudElement::OnAttributeChange( changed_attributes );
 		if ( changed_attributes.find( "src" ) != changed_attributes.end() )
 		{
-			if ( maxBarbs > 0 )
+			if ( maxBarbs_ > 0 )
 			{
 				Rml::String src = GetAttribute<Rml::String>( "src", "" );
 				Rml::String base( va("<img class='barbs' src='%s' />", src.c_str() ) );
 				Rml::String rml;
 
-				for ( int i = 0; i < maxBarbs; i++ )
+				for ( int i = 0; i < maxBarbs_; i++ )
 				{
 					rml += base;
 				}
@@ -2290,44 +2290,44 @@ public:
 			return;
 		}
 
-		if ( newNumBarbs < maxBarbs )
+		if ( newNumBarbs < maxBarbs_ )
 		{
 			// start regenerating barb now
-			if ( newNumBarbs > numBarbs || ( newNumBarbs < numBarbs && numBarbs == maxBarbs ) )
+			if ( newNumBarbs > numBarbs_ || ( newNumBarbs < numBarbs_ && numBarbs_ == maxBarbs_ ) )
 			{
-				t0 = cg.time;
-				offset = -M_PI_2; // sin(-pi/2) is minimal
-				regenerationInterval = interval;
+				t0_ = cg.time;
+				offset_ = -M_PI_2; // sin(-pi/2) is minimal
+				regenerationInterval_ = interval;
 			}
 			// change regeneration speed
-			else if ( interval != regenerationInterval )
+			else if ( interval != regenerationInterval_ )
 			{
 				float sinOld = GetSin();
 				float cosOld = GetCos();
 
 				// avoid sudden jumps in opacity
-				t0 = cg.time;
+				t0_ = cg.time;
 				if ( cosOld >= 0.0f )
 				{
-					offset = asinf( sinOld );
+					offset_ = asinf( sinOld );
 				}
 				else
 				{
-					offset = M_PI - asinf( sinOld );
+					offset_ = M_PI - asinf( sinOld );
 				}
-				regenerationInterval = interval;
+				regenerationInterval_ = interval;
 			}
 		}
-		numBarbs = newNumBarbs;
+		numBarbs_ = newNumBarbs;
 
 		for ( int i = 0; i < GetNumChildren(); i++ )
 		{
 			Element *barb = GetChild(i);
-			if (i < numBarbs ) // draw existing barbs
+			if (i < numBarbs_ ) // draw existing barbs
 			{
 				barb->SetProperty( "opacity", "1.0" );
 			}
-			else if (i == numBarbs ) // draw regenerating barb
+			else if (i == numBarbs_ ) // draw regenerating barb
 			{
 				float opacity = GetSin() / 8.0f + ( 1.0f / 8.0f ); // in [0, 0.125]
 				barb->SetProperty( "opacity", va( "%f", opacity ) );
@@ -2353,19 +2353,19 @@ private:
 
 	float GetParam()
 	{
-		float timeElapsed = ( cg.time - t0 ) / 1000.0f; // in s
+		float timeElapsed = ( cg.time - t0_ ) / 1000.0f; // in s
 		float frequency = (float)LEVEL3_BOUNCEBALL_REGEN_CREEP
-		                / (float)regenerationInterval; // in Hz
-		return offset + 2.0f * M_PI * frequency * timeElapsed;
+		                / (float)regenerationInterval_; // in Hz
+		return offset_ + 2.0f * M_PI * frequency * timeElapsed;
 	}
 
-	int numBarbs;
-	int maxBarbs;
-	int regenerationInterval;
+	int numBarbs_;
+	int maxBarbs_;
+	int regenerationInterval_;
 
 	// t0 and offset are used to make sure that there are no sudden jumps in opacity.
-	int t0;
-	float offset;
+	int t0_;
+	float offset_;
 };
 
 class SpawnQueueElement : public TextHudElement
