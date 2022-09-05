@@ -921,7 +921,9 @@ class PositionElement : public TextHudElement
 {
 public:
 	PositionElement( const Rml::String& tag ) :
-			TextHudElement( tag, ELEMENT_GAME, true )
+			TextHudElement( tag, ELEMENT_GAME, true ),
+			lastpos_(),
+			shown_(false)
 	{
 	}
 
@@ -929,14 +931,26 @@ public:
 	{
 		if ( !cg_drawPosition.Get() )
 		{
-			SetText( "" );
+			if ( shown_ )
+			{
+				SetText( "" );
+				shown_ = false;
+			}
 			return;
 		}
 
-		// Add text to be configured via CSS
-		vec3_t const & origin = cg.predictedPlayerState.origin;
-		SetText( va( "%0.0f %0.0f %0.0f", origin[0], origin[1], origin[2] ) );
+		shown_ = true;
+		glm::vec3 origin = VEC2GLM( cg.predictedPlayerState.origin );
+		if ( lastpos_ != origin )
+		{
+			SetText( Str::Format( "%0.0f %0.0f %0.0f",
+					origin[0], origin[1], origin[2] ) );
+			lastpos_ = origin;
+		}
 	}
+
+	glm::vec3 lastpos_;
+	bool shown_;
 };
 
 class CreditsValueElement : public TextHudElement
