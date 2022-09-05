@@ -758,7 +758,7 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 		case F_SOUNDINDEX:
 			if ( strlen( rawString ) >= MAX_QPATH )
 			{
-				Sys::Drop( "Sound filename %s in field %s of %s exceeds MAX_QPATH\n", rawString, fieldDescriptor->name, etos( entity ) );
+				Sys::Drop( "Sound filename %s in field %s of %s exceeds MAX_QPATH", rawString, fieldDescriptor->name, etos( entity ) );
 			}
 
 			* ( int * ) entityDataField  = G_SoundIndex( rawString );
@@ -1110,7 +1110,7 @@ static void SP_worldspawn()
 	{
 		level.warmupTime = level.matchTime + ( g_warmup.Get() * 1000 );
 		trap_SetConfigstring( CS_WARMUP, va( "%i", level.warmupTime ) );
-		G_LogPrintf( "Warmup: %i\n", g_warmup.Get() );
+		G_LogPrintf( "Warmup: %i", g_warmup.Get() );
 	}
 
 	level.timelimit = g_timelimit.Get();
