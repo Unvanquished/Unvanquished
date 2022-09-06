@@ -546,6 +546,8 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			htmlEscapeStrings['<'] = "&lt;";
 			htmlEscapeStrings['>'] = "&gt;";
 			htmlEscapeStrings['&'] = "&amp;";
+			htmlEscapeStrings['"'] = "&quot;";
+			htmlEscapeStrings['\''] = "&apos;";
 			htmlEscapeStrings['\n'] = "<br />";
 
 			std::string htmlEscapedString = htmlEscapeStrings[ c ];
