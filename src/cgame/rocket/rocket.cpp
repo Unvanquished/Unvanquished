@@ -559,7 +559,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			else if ( emoticons && ( emoticon = BG_EmoticonAt( token.Begin() ) ) )
 			{
 				out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
-				while ( *iter->Begin() != ']' )
+				while ( iter != parser.end() && *iter->Begin() != ']' )
 				{
 					++iter;
 				}
