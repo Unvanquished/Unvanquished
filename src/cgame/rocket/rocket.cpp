@@ -486,25 +486,41 @@ void Rocket_Update()
 	Rml::Lua::Timer::Update(rocketInfo.realtime);
 }
 
+static std::string CG_EscapeHTMLChar( const char c, bool reuse = true, bool linebreak = false )
+{
+	std::unordered_map<char, std::string> htmlEscapeStrings;
+
+	htmlEscapeStrings['<'] = "&lt;";
+	htmlEscapeStrings['>'] = "&gt;";
+	htmlEscapeStrings['&'] = "&amp;";
+	htmlEscapeStrings['"'] = "&quot;";
+	htmlEscapeStrings['\''] = "&apos;";
+
+	if ( linebreak )
+	{
+		htmlEscapeStrings['\n'] = "<br />";
+	}
+
+	std::string htmlEscapedString = htmlEscapeStrings[ c ];
+
+	// Reuse the current character if no conversion was found.
+	if ( htmlEscapedString == "" && reuse )
+	{
+		return std::string( 1, c );
+	}
+
+	return htmlEscapedString;
+}
+
 std::string CG_EscapeHTMLText( Str::StringRef text )
 {
 	std::string out;
-	for (char c : text) {
-		switch (c) {
-		case '<':
-			out += "&lt;";
-			break;
-		case '>':
-			out += "&gt;";
-			break;
-		case '&':
-			out += "&amp;";
-			break;
-		default:
-			out += c;
-			break;
-		}
+
+	for (char c : text)
+	{
+		out += CG_EscapeHTMLChar( c );
 	}
+
 	return out;
 }
 
@@ -542,15 +558,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			char c = *token.Begin();
 			const emoticonData_t *emoticon;
 
-			std::unordered_map<char, std::string> htmlEscapeStrings;
-			htmlEscapeStrings['<'] = "&lt;";
-			htmlEscapeStrings['>'] = "&gt;";
-			htmlEscapeStrings['&'] = "&amp;";
-			htmlEscapeStrings['"'] = "&quot;";
-			htmlEscapeStrings['\''] = "&apos;";
-			htmlEscapeStrings['\n'] = "<br />";
-
-			std::string htmlEscapedString = htmlEscapeStrings[ c ];
+			std::string htmlEscapedString = CG_EscapeHTMLChar( c, false, true );
 
 			if ( htmlEscapedString != "" )
 			{
