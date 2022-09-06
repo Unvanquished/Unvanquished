@@ -797,16 +797,6 @@ public:
 		currentSpeedElement->SetClass( "speed_current", true );
 	}
 
-	void OnPropertyChange( const Rml::PropertyIdSet& changed_properties ) override
-	{
-		HudElement::OnPropertyChange( changed_properties );
-
-		if ( changed_properties.Contains( Rml::PropertyId::BackgroundColor ) )
-		{
-			GetColor( "background-color", backColor_ );
-		}
-	}
-
 	void DoOnRender() override
 	{
 		int          i;
@@ -844,9 +834,6 @@ public:
 			{
 				max = SPEEDOMETER_MIN_RANGE;
 			}
-
-			trap_R_SetColor( backColor_ );
-			CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
 
 			for ( i = 1; i < SPEEDOMETER_NUM_DISPLAYED_SAMPLES; i++ )
 			{
@@ -913,7 +900,6 @@ private:
 	Rml::ElementText* maxSpeedElement;
 	Rml::ElementText* currentSpeedElement;
 	bool shouldDrawSpeed_;
-	Color::Color backColor_;
 };
 
 class PositionElement : public TextHudElement
