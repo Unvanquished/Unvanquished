@@ -75,6 +75,46 @@ void Rocket_UpdateLanguage()
 		hudContext->Update();
 	updateLanguage = false;
 }
+
+// Rml already implement ElementText so we better not want to
+// name this TextElement to avoid confusion.
+class CustomizableTextElement : public Rml::Element
+{
+public:
+	CustomizableTextElement(const Rml::String& tag) : Rml::Element(tag) {}
+
+private:
+	void OnUpdate() override
+	{
+		int flags = 0;
+
+		if ( originalRML_.empty() )
+		{
+			GetInnerRML(originalRML_);
+			if ( HasAttribute( "quake" ) )
+			{
+				flags |= RP_QUAKE;
+			}
+
+			if ( HasAttribute( "emoticons" ) )
+			{
+				flags |= RP_EMOTICONS;
+			}
+
+			if ( flags != 0 )
+			{
+				SetInnerRML( Rocket_QuakeToRML( originalRML_.c_str(), flags ) );
+			}
+			else
+			{
+				SetInnerRML( originalRML_.c_str() );
+			}
+		}
+	}
+
+	Rml::String originalRML_;
+};
+
 class TranslateElement : public Rml::Element
 {
 public:
@@ -3705,6 +3745,7 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<BeaconOwnerElement>( "beacon_owner" );
 	RegisterElement<PredictedMineEfficiencyElement>( "predictedMineEfficiency" );
 	RegisterElement<BarbsHudElement>( "barbs" );
+	RegisterElement<CustomizableTextElement>( "text" );
 	RegisterElement<TranslateElement>( "translate" );
 	RegisterElement<SpawnQueueElement>( "spawnPos" );
 	RegisterElement<NumSpawnsElement>( "numSpawns" );
