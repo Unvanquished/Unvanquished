@@ -2906,8 +2906,8 @@ static void CG_Rocket_DrawMinimap()
 	}
 }
 
-#define FOLLOWING_STRING "following "
-#define CHASING_STRING   "chasing "
+#define FOLLOWING_STRING "following^7 "
+#define CHASING_STRING   "chasing^7 "
 static void CG_Rocket_DrawFollow()
 {
 	if ( cg.snap && cg.snap->ps.pm_flags & PMF_FOLLOW )
