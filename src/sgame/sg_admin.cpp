@@ -2420,9 +2420,8 @@ bool G_admin_slap( gentity_t *ent )
 	// using knockback in ent->Damage() won't throw the victim
 	// about if the damage caused to them is 0.
 	vec3_t kvel;
-	float mass = BG_Class( vic->client->pers.classSelection )->health;
 
-	VectorScale( dir, ( 250 * static_cast<float>( 200 ) / mass ), kvel );
+	VectorScale( dir, 1000.f, kvel );
 	VectorAdd( vic->client->ps.velocity, kvel, vic->client->ps.velocity );
 
 	// set the timer so that the other client can't cancel
