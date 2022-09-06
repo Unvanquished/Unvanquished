@@ -566,7 +566,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 					out.append( spanstr );
 				}
 				out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
-				while ( *iter->Begin() != ']' )
+				while ( iter != parser.end() && *iter->Begin() != ']' )
 				{
 					++iter;
 				}
