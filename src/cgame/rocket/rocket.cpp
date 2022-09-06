@@ -541,21 +541,18 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 		{
 			char c = *token.Begin();
 			const emoticonData_t *emoticon;
-			if ( c == '<' )
+
+			std::unordered_map<char, std::string> htmlEscapeStrings;
+			htmlEscapeStrings['<'] = "&lt;";
+			htmlEscapeStrings['>'] = "&gt;";
+			htmlEscapeStrings['&'] = "&amp;";
+			htmlEscapeStrings['\n'] = "<br />";
+
+			std::string htmlEscapedString = htmlEscapeStrings[ c ];
+
+			if ( htmlEscapedString != "" )
 			{
-				out.append( "&lt;" );
-			}
-			else if ( c == '>' )
-			{
-				out.append( "&gt;" );
-			}
-			else if ( c == '&' )
-			{
-				out.append( "&amp;" );
-			}
-			else if ( c == '\n' )
-			{
-				out.append( "<br />" );
+				out.append( htmlEscapedString );
 			}
 			else if ( emoticons && ( emoticon = BG_EmoticonAt( token.Begin() ) ) )
 			{
