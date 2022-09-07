@@ -108,10 +108,10 @@ gentity_t *G_NewEntity()
 			}
 			continue;
 		}
-		
-		 // reuse this slot
-		 G_InitGentity( newEntity );
-		 return newEntity;
+
+		// reuse this slot
+		G_InitGentity( newEntity );
+		return newEntity;
 	}
 
 	if ( i == ENTITYNUM_MAX_NORMAL )
