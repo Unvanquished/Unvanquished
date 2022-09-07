@@ -2277,6 +2277,37 @@ static void G_EvaluateAcceleration( gentity_t *ent, int msec )
 	VectorCopy( ent->acceleration, ent->oldAccel );
 }
 
+__attribute__((noinline)) int benchmark_oldschoolforentities()
+{
+	int k = 0;
+	for (int i=0; i<10000; i++) {
+		for ( int j = MAX_CLIENTS; j < MAX_GENTITIES; j++ ) {
+			if ( g_entities[i].inuse && g_entities[i].s.eType == entityType_t::ET_BUILDABLE )
+				k++;
+		}
+	}
+	return k;
+}
+
+__attribute__((noinline)) int benchmark_forentities()
+{
+	int j = 0;
+	for (int i=0; i<10000; i++) {
+		ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent&){ j++; });
+	}
+	return j;
+}
+
+__attribute__((noinline)) int benchmark_iterateentities()
+{
+	int j = 0;
+	for (int i=0; i<10000; i++) {
+		for ( gentity_t *ent : iterate_buildable_entities )
+			j++;
+	}
+	return j;
+}
+
 /*
 ================
 G_RunFrame
@@ -2500,6 +2531,14 @@ void G_RunFrame( int levelTime )
 
 	BotDebugDrawMesh();
 	G_BotUpdateObstacles();
+
+	//int a = benchmark_oldschoolforentities();
+	//int b = benchmark_forentities();
+	//int c = benchmark_iterateentities();
+
+	//if ( a != b || b != c )
+	//	Log::Warn("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaaaaaaaa");
+
 	level.frameMsec = trap_Milliseconds();
 }
 
