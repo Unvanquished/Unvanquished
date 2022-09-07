@@ -1941,7 +1941,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 		Log::Warn( "invalid class requested" );
 		return false;
 	}
-	if ( !cl->canBuyNow() )
+	if ( !BotCanEvolveToClass( ent, newClass ) )
 	{
 		return false;
 	}
@@ -1977,7 +1977,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 
 		evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
 
-		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) && BotCanEvolveToClass( ent, newClass ) )
+		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{
 			ent->client->pers.evolveHealthFraction =
 				Math::Clamp( Entities::HealthFraction(ent), 0.0f, 1.0f );
