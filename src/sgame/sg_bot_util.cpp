@@ -1915,13 +1915,18 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 	int clientNum;
 	int i;
 	vec3_t infestOrigin;
-	class_t currentClass = ent->client->pers.classSelection;
+	class_t currentClass = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
 	evolveInfo_t evolveInfo;
 	int entityList[ MAX_GENTITIES ];
 	vec3_t range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
 	vec3_t mins, maxs;
 	int num;
 	gentity_t *other;
+
+	if ( currentClass == newClass )
+	{
+		return true;
+	}
 
 	if ( Entities::IsDead( ent ) )
 	{
