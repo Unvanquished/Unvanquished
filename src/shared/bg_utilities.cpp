@@ -146,6 +146,11 @@ void BG_MoveOriginToBBOXCenter( vec3_t point, const vec3_t mins, const vec3_t ma
 	point[ 2 ] = point[ 2 ] + ( maxs[ 2 ] + mins[ 2 ] ) * 0.5f;
 }
 
+void BG_MoveOriginToBBOXCenter( glm::vec3& point, glm::vec3 const& mins, glm::vec3 const& maxs )
+{
+	point = point + ( maxs + mins ) * 0.5f;
+}
+
 void ModifyFlag(int &flags, int flag, bool value) {
 	if (value) {
 		flags |= flag;
