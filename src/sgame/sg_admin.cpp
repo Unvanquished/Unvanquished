@@ -2381,7 +2381,7 @@ bool G_admin_slap( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_( "^3slap:^* usage: slap [^3name|slot#|admin#^7] (^3damage^7)" ) ) ); 
+		ADMP( QQ( N_( "^3slap:^* usage: slap [^3name|slot#|admin#^7] (^3damage^7) (^3acceleration^7)" ) ) );
 		return false; // todo: G_admin_helptext( "slap" ) instead of this copypasta
 	}
 
@@ -2411,6 +2411,20 @@ bool G_admin_slap( gentity_t *ent )
 		return false;
 	}
 
+	int accel = 1000;  // default acceleration
+	if ( trap_Argc() > 3 )
+	{
+		char accel_str[ 12 ]; // 11 is max strlen() for 32-bit (signed) int
+		char *end;
+		trap_Argv( 3, accel_str, sizeof( accel_str ) );
+		accel = strtol( accel_str, &end, 10 );
+		if ( end == accel_str || *end != 0 )
+		{
+			ADMP( QQ( N_( "invalid acceleration" ) ) );
+			return false;
+		}
+	}
+
 	dir[0] = crandom();
 	dir[1] = crandom();
 	dir[2] = random();
@@ -2421,7 +2435,7 @@ bool G_admin_slap( gentity_t *ent )
 	// about if the damage caused to them is 0.
 	vec3_t kvel;
 
-	VectorScale( dir, 1000.f, kvel );
+	VectorScale( dir, static_cast<float> (accel), kvel );
 	VectorAdd( vic->client->ps.velocity, kvel, vic->client->ps.velocity );
 
 	// set the timer so that the other client can't cancel
