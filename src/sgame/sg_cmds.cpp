@@ -1579,7 +1579,7 @@ static bool botFillVoteArgValid(char *arg)
 {
 	char *end;
 	int num = strtol( arg, &end, 10 );
-	if ( *arg == 0 || end == arg || num < 0 || num > 12 )   // 12 is max number of bots
+	if ( *arg == 0 || end == arg || num < 0 || num > g_maxVoteBotFill.Get() )
 		return false;
 	else
 		return true;

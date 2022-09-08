@@ -84,6 +84,8 @@ Cvar::Cvar<int> g_admitDefeatVotesPercent("g_admitDefeatVotesPercent", "percenta
 Cvar::Cvar<int> g_nextMapVotesPercent("g_nextMapVotesPercent", "percentage required for nextmap vote", Cvar::NONE, 51);
 Cvar::Cvar<int> g_pollVotesPercent("g_pollVotesPercent", "percentage required for a poll to 'pass'", Cvar::NONE, 0);
 
+Cvar::Cvar<int> g_maxVoteBotFill("g_maxVoteBotFill", "maximum number bots per team allowed by votes", Cvar::NONE, 12);
+
 Cvar::Range<Cvar::Cvar<int>> g_teamForceBalance("g_teamForceBalance", "disallow joining a team with more players (1 = always, 2 = allow N vs. 0)", Cvar::NONE, 0, 0, 2);
 Cvar::Cvar<bool> g_smoothClients("g_smoothClients", "something about player movement extrapolation", Cvar::NONE, true);
 Cvar::Cvar<bool> pmove_fixed("pmove_fixed", "use pmove_msec instead of 66", Cvar::NONE, false);
