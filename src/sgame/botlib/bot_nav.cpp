@@ -352,7 +352,7 @@ bool BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm:
 
 	dtPolyRef randRef;
 	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->nav->filter, frand, &randRef, nearPoint );
-	
+
 	if ( dtStatusFailed( status ) )
 	{
 		return false;

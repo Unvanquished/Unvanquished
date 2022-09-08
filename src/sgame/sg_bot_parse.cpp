@@ -941,6 +941,7 @@ static const struct AIActionMap_s
 	{ "fireWeapon",        BotActionFireWeapon,        0, 0 },
 	{ "flee",              BotActionFlee,              0, 0 },
 	{ "gesture",           BotActionGesture,           0, 0 },
+	{ "getInSafety",       BotActionGetInSafety,       0, 0 },
 	{ "heal",              BotActionHeal,              0, 0 },
 	{ "jump",              BotActionJump,              0, 0 },
 	{ "moveInDir",         BotActionMoveInDir,         1, 2 },

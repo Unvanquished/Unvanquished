@@ -4,6 +4,8 @@
 #include "CBSE.h"
 #include "Entities.h"
 
+Log::Logger juggernautLogger = Log::Logger("juggernaut", "", Log::Level::NOTICE).WithoutSuppression();
+
 // TODO: make this an enum cvar, someday
 static Cvar::Cvar<int> g_juggernautTeam("g_juggernautTeam",
 		"juggernaut team", Cvar::NONE, (int)TEAM_ALIENS);

@@ -25,11 +25,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
-#include "botlib/bot_api.h"
+#include "botlib/bot_local.h"
 #include "Entities.h"
 #include "CBSE.h"
 
 #include <glm/gtx/norm.hpp>
+
+extern Log::Logger juggernautLogger;
 
 /*
 ======================
@@ -915,6 +917,133 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	BotSprint( self, true );
+
+	return STATUS_RUNNING;
+}
+
+// modifies target to the closest navmesh point
+static bool
+CheckFleeingPoint( const gentity_t *self, botTarget_t &target )
+{
+	glm::vec3 navmeshPoint; // point to check
+	glm::vec3 destination = target.getPos(); // target destination to check
+
+	// recast tricks
+	rVec rdest = qVec( &destination[0] );
+	rVec nearPoint;
+	dtPolyRef nearPoly;
+
+	Bot_t *bot = &agents[ self->s.number ];
+
+	if ( !BotFindNearestPoly( bot, rdest, &nearPoly, nearPoint ) )
+	{
+		juggernautLogger.Debug("Couln't find nearest poly");
+		return false;
+	}
+
+	VectorCopy( nearPoint, navmeshPoint );
+	recast2quake( &navmeshPoint[0] );
+
+	if ( Length2D( destination - navmeshPoint ) > 50.0f ) {
+		juggernautLogger.Debug("Flee point is too far from a navmesh");
+		return false;
+	}
+
+	if ( Length2D( VEC2GLM(self->s.origin) - navmeshPoint ) < 30.0f ) {
+		juggernautLogger.Debug("Flee point is too close from myself");
+		return false;
+	}
+
+	target = navmeshPoint;
+	if ( !FindRouteToTarget( self, target, false ) ) {
+		juggernautLogger.Debug("No route to flee point");
+		return false;
+	}
+
+	return true;
+}
+
+static Util::optional<botTarget_t>
+FindSaferDestination( const gentity_t *self )
+{
+	// utility type
+	struct botDirectionAndDistance_t { float direction; float distance; };
+
+	float direction = FindLessRiskyDirection( self );
+
+	constexpr float pi = static_cast<float>( M_PI );
+	// M_PI/6.0f is 30°,  M_PI/3.0f is 60°  and  M_PI/2.0f is 90°
+	const botDirectionAndDistance_t directionsAndDistances[] = {
+		{ direction          , 175.0f },
+		{ direction + pi/6.0f, 175.0f },
+		{ direction - pi/6.0f, 175.0f },
+		// a bit further
+		{ direction          , 350.0f },
+		{ direction + pi/6.0f, 350.0f },
+		{ direction - pi/6.0f, 350.0f },
+		// less far, but with more angle
+		{ direction + pi/3.0f, 175.0f },
+		{ direction - pi/3.0f, 175.0f },
+		{ direction + pi/3.0f, 350.0f },
+		{ direction - pi/3.0f, 350.0f },
+		//// even more angle
+		//{ direction + pi/2.0f, 175.0f },
+		//{ direction - pi/2.0f, 175.0f },
+		//{ direction + pi/2.0f, 350.0f },
+		//{ direction - pi/2.0f, 350.0f },
+		// further again
+		{ direction          , 500.0f },
+		{ direction + pi/6.0f, 500.0f },
+		{ direction - pi/6.0f, 500.0f },
+		{ direction          , 800.0f },
+		{ direction + pi/6.0f, 800.0f },
+		{ direction - pi/6.0f, 800.0f },
+		// more angle
+		{ direction + pi/3.0f, 500.0f },
+		{ direction - pi/3.0f, 500.0f },
+		{ direction + pi/3.0f, 800.0f },
+		{ direction - pi/3.0f, 800.0f },
+	};
+
+	botTarget_t target;
+	glm::vec3 destination;
+	for ( const botDirectionAndDistance_t &dirDist : directionsAndDistances )
+	{
+		destination[0] = self->s.origin[0] + dirDist.distance*cosf(dirDist.direction);
+		destination[1] = self->s.origin[1] + dirDist.distance*sinf(dirDist.direction);
+		destination[2] = self->s.origin[2];
+		target = destination;
+
+		if ( CheckFleeingPoint( self, target ) )
+			return target;
+	}
+
+	juggernautLogger.Debug("Couldn't find flee point");
+	return {};
+}
+
+AINodeStatus_t BotActionGetInSafety( gentity_t *self, AIGenericNode_t *node )
+{
+	if ( node != self->botMind->currentNode )
+	{
+		self->botMind->currentNode = node;
+	}
+
+	if ( Entities::HasFullHealth(self) || !BotFindClosestEnemy(self) )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	Util::optional<botTarget_t> safeSpot = FindSaferDestination( self );
+
+	if ( !safeSpot )
+		return STATUS_FAILURE;
+
+	if ( !BotChangeGoal( self, *safeSpot ) ) {
+		juggernautLogger.Warn("Couldn't change goal");
+		return STATUS_FAILURE;
+	}
+	BotMoveToGoal( self );
 
 	return STATUS_RUNNING;
 }
