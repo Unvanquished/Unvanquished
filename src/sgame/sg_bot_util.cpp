@@ -1218,7 +1218,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				range = glm::distance( muzzle, proj );
 
 				// make sure the sign of the range is correct
-				glm::vec3 rdir = glm::normalize( npos - muzzle );
+				glm::vec3 rdir = npos - muzzle;
 				if ( glm::dot( rdir, dir ) < 0 )
 				{
 					range = -range;
