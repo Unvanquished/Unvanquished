@@ -1542,8 +1542,8 @@ static const struct {
 	{ "poll",         false, V_ANY,    T_NONE,    false,  false,    qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
 	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
 	{ "fillbots",     true,  V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "fillbots_humans",     true,  V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "fillbots_aliens",     true,  V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "fillbots_humans",     true,  V_PUBLIC, T_OTHER,   false,  true,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "fillbots_aliens",     true,  V_PUBLIC, T_OTHER,   false,  true,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
 	{ }
 	// note: map votes use the reason, if given, as the layout name
 };
