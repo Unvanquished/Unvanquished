@@ -30,6 +30,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "shared/bg_local.h" // MIN_WALK_NORMAL
 #include "Entities.h"
 
+#include <glm/geometric.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/vector_angle.hpp>
+
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 static const int MIN_SKILL = 1;
 static const int MAX_SKILL = 9;
@@ -807,6 +811,17 @@ static bool BotEntityIsVisible( const gentity_t *self, gentity_t *target, int ma
 	return BotTargetIsVisible( self, bt, mask );
 }
 
+static float BotAimAngle( gentity_t *self, const glm::vec3 &pos )
+{
+	glm::vec3 forward;
+
+	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	glm::vec3 viewPos = BG_GetClientViewOrigin( &self->client->ps );
+	glm::vec3 ideal = pos - viewPos;
+
+	return glm::degrees( glm::angle( glm::normalize( forward ), glm::normalize( ideal ) ) );
+}
+
 gentity_t* BotFindBestEnemy( gentity_t *self )
 {
 	float bestVisibleEnemyScore = 0.0f;
@@ -832,8 +847,9 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			continue;
 		}
 
+		glm::vec3 vorigin = VEC2GLM( target->s.origin );
 		if ( target->s.eType == entityType_t::ET_PLAYER && self->client->pers.team == TEAM_HUMANS
-		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.Get() / 2 )
+		    && BotAimAngle( self, vorigin ) > g_bot_fov.Get() / 2 )
 		{
 			continue;
 		}
@@ -953,11 +969,17 @@ botTarget_t BotGetRetreatTarget( const gentity_t *self )
 botTarget_t BotGetRoamTarget( const gentity_t *self )
 {
 	botTarget_t target;
-	vec3_t targetPos;
+	glm::vec3 point;
 
-	BotFindRandomPoint( self->s.number, targetPos );
+	if ( !BotFindRandomPointInRadius( self->s.number, VEC2GLM( self->s.origin ), point, 2000 ) )
+	{
+		target = VEC2GLM( self->s.origin );
+	}
+	else
+	{
+		target = point;
+	}
 
-	target = targetPos;
 	return target;
 }
 
@@ -967,15 +989,15 @@ BotTarget Helpers
 ========================
 */
 
-static void BotTargetGetBoundingBox( botTarget_t target, vec3_t mins, vec3_t maxs, botRouteTarget_t *routeTarget )
+static void BotTargetGetBoundingBox( botTarget_t target, glm::vec3 &mins, glm::vec3 &maxs, botRouteTarget_t *routeTarget )
 {
 	ASSERT( target.isValid() );
 
 	if ( target.targetsCoordinates() )
 	{
 		// point target
-		VectorSet( maxs, 96, 96, 96 );
-		VectorSet( mins, -96, -96, -96 );
+		maxs = glm::vec3(  96,  96,  96 );
+		mins = glm::vec3( -96, -96, -96 );
 		routeTarget->type = botRouteTargetType_t::BOT_TARGET_STATIC;
 		return;
 	}
@@ -986,16 +1008,16 @@ static void BotTargetGetBoundingBox( botTarget_t target, vec3_t mins, vec3_t max
 	if ( isPlayer )
 	{
 		class_t class_ = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
-		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
+		BG_BoundingBox( class_, &mins, &maxs, nullptr, nullptr, nullptr );
 	}
 	else if ( target.getTargetType() == entityType_t::ET_BUILDABLE )
 	{
-		BG_BuildableBoundingBox( ( buildable_t ) ent->s.modelindex, mins, maxs );
+		BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), &mins, &maxs );
 	}
 	else
 	{
-		VectorCopy( ent->r.mins, mins );
-		VectorCopy( ent->r.maxs, maxs );
+		mins = VEC2GLM( ent->r.mins );
+		maxs = VEC2GLM( ent->r.maxs );
 	}
 
 	if ( isPlayer )
@@ -1012,15 +1034,14 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 {
 	ASSERT( target.isValid() );
 
-	vec3_t mins, maxs;
+	glm::vec3 mins, maxs;
 
-	target.getPos( routeTarget->pos );
+	routeTarget->setPos( target.getPos() );
 	BotTargetGetBoundingBox( target, mins, maxs, routeTarget );
 
-	for ( int i = 0; i < 3; i++ )
-	{
-		routeTarget->polyExtents[ i ] = std::max( Q_fabs( mins[ i ] ), maxs[ i ] );
-	}
+	routeTarget->polyExtents[ 0 ] = std::max( Q_fabs( mins[ 0 ] ), maxs[ 0 ] );
+	routeTarget->polyExtents[ 1 ] = std::max( Q_fabs( mins[ 1 ] ), maxs[ 1 ] );
+	routeTarget->polyExtents[ 2 ] = std::max( Q_fabs( mins[ 2 ] ), maxs[ 2 ] );
 
 	// move center a bit lower so we don't get polys above the object
 	// and get polys below the object on a slope
@@ -1033,9 +1054,6 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 			( entType == entityType_t::ET_BUILDABLE
 			  && target.getTargetedEntity()->s.origin2[ 2 ] < MIN_WALK_NORMAL ) )
 	{
-		vec3_t targetPos;
-		vec3_t end;
-		vec3_t invNormal = { 0, 0, -1 };
 		trace_t trace;
 
 		routeTarget->polyExtents[ 0 ] += 25;
@@ -1043,11 +1061,12 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		routeTarget->polyExtents[ 2 ] += 300;
 
 		// try to find a position closer to the ground
-		target.getPos( targetPos );
-		VectorMA( targetPos, 600, invNormal, end );
+		glm::vec3 invNormal = { 0, 0, -1 };
+		glm::vec3 targetPos = target.getPos();
+		glm::vec3 end = targetPos + 600.f * invNormal;
 		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->s.number,
 		            CONTENTS_SOLID, MASK_ENTITY );
-		VectorCopy( trace.endpos, routeTarget->pos );
+		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
 	
 
@@ -1070,7 +1089,7 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 	}
 
 	self->botMind->goal = target;
-	self->botMind->nav.directPathToGoal = false;
+	self->botMind->m_nav.directPathToGoal = false;
 	return true;
 }
 
@@ -1081,7 +1100,7 @@ bool BotChangeGoalEntity( gentity_t *self, gentity_t const *goal )
 	return BotChangeGoal( self, target );
 }
 
-bool BotChangeGoalPos( gentity_t *self, vec3_t goal )
+bool BotChangeGoalPos( gentity_t *self, const glm::vec3 &goal )
 {
 	botTarget_t target;
 	target = goal;
@@ -1093,16 +1112,16 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	ASSERT( target.targetsValidEntity() );
 
 	float range, secondaryRange;
-	vec3_t forward, right, up;
-	vec3_t muzzle;
-	vec3_t maxs, mins;
-	vec3_t targetPos;
+	glm::vec3 forward, right, up;
+	glm::vec3 muzzle;
+	glm::vec3 maxs, mins;
+	glm::vec3 targetPos;
 	trace_t trace;
 	float width = 0, height = 0;
 
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up , muzzle );
-	target.getPos( targetPos );
+	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], &up[0] );
+	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
+	targetPos = target.getPos();
 	switch ( self->client->ps.weapon )
 	{
 		case WP_ABUILD:
@@ -1165,23 +1184,18 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			break;
 		case WP_FLAMER:
 			{
-				vec3_t dir;
-				vec3_t rdir;
-				vec3_t nvel;
-				vec3_t npos;
-				vec3_t proj;
 				trajectory_t t;
 			
 				// Correct muzzle so that the missile does not start in the ceiling
-				VectorMA( muzzle, -7.0f, up, muzzle );
+				muzzle += -7.0f * up;
 
 				// Correct muzzle so that the missile fires from the player's hand
-				VectorMA( muzzle, 4.5f, right, muzzle );
+				muzzle += 4.5f * right;
 
 				// flamer projectiles add the player's velocity scaled by FLAMER_LAG to the fire direction with length FLAMER_SPEED
-				VectorSubtract( targetPos, muzzle, dir );
-				VectorNormalize( dir );
-				VectorScale( self->client->ps.velocity, FLAMER_LAG, nvel );
+				glm::vec3 dir = targetPos - muzzle;
+				dir = glm::normalize( dir );
+				glm::vec3 nvel = VEC2GLM( self->client->ps.velocity ) * FLAMER_LAG;
 				VectorMA( nvel, FLAMER_SPEED, dir, t.trDelta );
 				SnapVector( t.trDelta );
 				VectorCopy( muzzle, t.trBase );
@@ -1189,16 +1203,17 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				t.trTime = level.time - 50;
 			
 				// find projectile's final position
-				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, npos );
+				glm::vec3 npos;
+				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, &npos[0] );
 
 				// find distance traveled by projectile along fire line
-				ProjectPointOntoVector( npos, muzzle, targetPos, proj );
-				range = Distance( muzzle, proj );
+				glm::vec3 proj;
+				ProjectPointOntoVector( &npos[0], &muzzle[0], &targetPos[0], &proj[0] );
+				range = glm::distance( muzzle, proj );
 
 				// make sure the sign of the range is correct
-				VectorSubtract( npos, muzzle, rdir );
-				VectorNormalize( rdir );
-				if ( DotProduct( rdir, dir ) < 0 )
+				glm::vec3 rdir = glm::normalize( npos - muzzle );
+				if ( glm::dot( rdir, dir ) < 0 )
 				{
 					range = -range;
 				}
@@ -1238,14 +1253,14 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			range = 4098 * 4; //large range for guns because guns have large ranges :)
 			secondaryRange = 0; //no secondary attack
 	}
-	VectorSet( maxs, width, width, width );
-	VectorSet( mins, -width, -width, -height );
+	maxs = {  width,  width,  width };
+	mins = { -width, -width, -height };
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
 
 	return !G_OnSameTeam( self, &g_entities[trace.entityNum] )
 		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
-		&& Distance( muzzle, trace.endpos ) <= std::max( range, secondaryRange );
+		&& glm::distance( muzzle, VEC2GLM( trace.endpos ) ) <= std::max( range, secondaryRange );
 }
 
 bool BotEntityIsValidTarget( const gentity_t *ent )
@@ -1293,19 +1308,19 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	ASSERT( target.targetsValidEntity() );
 
 	trace_t trace;
-	vec3_t  muzzle, targetPos;
-	vec3_t  forward, right, up;
+	glm::vec3  muzzle, targetPos;
+	glm::vec3  forward, right, up;
 
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
-	target.getPos( targetPos );
+	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], &up[0] );
+	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
+	targetPos = target.getPos();
 
-	if ( !trap_InPVS( muzzle, targetPos ) )
+	if ( !trap_InPVS( &muzzle[0], &targetPos[0] ) )
 	{
 		return false;
 	}
 
-	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, self->s.number, mask, 0 );
+	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], self->s.number, mask, 0 );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -1328,11 +1343,10 @@ Bot Aiming
 ========================
 */
 
-void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation )
+glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 {
 	ASSERT( target.targetsValidEntity() );
-
-	target.getPos( aimLocation );
+	glm::vec3 aimLocation = target.getPos();
 	const gentity_t *targetEnt = target.getTargetedEntity();
 	team_t targetTeam = G_Team( targetEnt );
 	bool isTargetBuildable = target.getTargetType() == entityType_t::ET_BUILDABLE;
@@ -1370,10 +1384,11 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 			}
 			if( weapon_speed )
 			{
-				VectorMA( aimLocation, Distance( self->s.origin, aimLocation ) / weapon_speed, targetEnt->s.pos.trDelta, aimLocation );
+				aimLocation += glm::distance( VEC2GLM( self->s.origin ), aimLocation ) / weapon_speed * VEC2GLM( targetEnt->s.pos.trDelta );
 			}
 		}
 	}
+	return aimLocation;
 }
 
 static int BotGetAimPredictionTime( gentity_t *self )
@@ -1382,24 +1397,18 @@ static int BotGetAimPredictionTime( gentity_t *self )
 	return std::max( 1, int(time) );
 }
 
-static void BotPredictPosition( gentity_t *self, gentity_t const *predict, vec3_t pos, int time )
+static glm::vec3 BotPredictPosition( gentity_t *self, gentity_t const *predict, int time )
 {
 	botTarget_t target;
-	vec3_t aimLoc;
 	target = predict;
-	BotGetIdealAimLocation( self, target, aimLoc );
-	VectorMA( aimLoc, time / 1000.0f, predict->s.apos.trDelta, pos );
+	glm::vec3 aimLoc = BotGetIdealAimLocation( self, target );
+	return aimLoc + time / 1000.0f * VEC2GLM( predict->s.apos.trDelta );
 }
 
 void BotAimAtEnemy( gentity_t *self )
 {
 	ASSERT( self->botMind->goal.targetsValidEntity() );
 
-	vec3_t desired;
-	vec3_t current;
-	vec3_t viewOrigin;
-	vec3_t newAim;
-	vec3_t angles;
 	int i;
 	float frac;
 	const gentity_t *enemy = self->botMind->goal.getTargetedEntity();
@@ -1407,20 +1416,22 @@ void BotAimAtEnemy( gentity_t *self )
 	if ( self->botMind->futureAimTime < level.time )
 	{
 		int predictTime = self->botMind->futureAimTimeInterval = BotGetAimPredictionTime( self );
-		BotPredictPosition( self, enemy, self->botMind->futureAim, predictTime );
+		self->botMind->futureAim = BotPredictPosition( self, enemy, predictTime );
 		self->botMind->futureAimTime = level.time + predictTime;
 	}
 
-	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
-	VectorSubtract( self->botMind->futureAim, viewOrigin, desired );
-	VectorNormalize( desired );
-	AngleVectors( self->client->ps.viewangles, current, nullptr, nullptr );
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
+	glm::vec3 desired = VEC2GLM( self->botMind->futureAim ) - viewOrigin;
+	desired = glm::normalize( desired );
+	glm::vec3 current;
+	AngleVectors( self->client->ps.viewangles, &current[0], nullptr, nullptr );
 
 	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
-	VectorLerp( current, desired, frac, newAim );
+	glm::vec3 newAim = glm::mix( current, desired, frac );
 
 	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
-	vectoangles( newAim, angles );
+	glm::vec3 angles;
+	vectoangles( &newAim[0], &angles[0] );
 
 	for ( i = 0; i < 3; i++ )
 	{
@@ -1428,9 +1439,9 @@ void BotAimAtEnemy( gentity_t *self )
 	}
 }
 
-void BotAimAtLocation( gentity_t *self, vec3_t target )
+void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 {
-	vec3_t aimVec, aimAngles, viewBase;
+	glm::vec3 aimVec, aimAngles, viewBase;
 	int i;
 	usercmd_t *rAngles = &self->botMind->cmdBuffer;
 
@@ -1439,10 +1450,10 @@ void BotAimAtLocation( gentity_t *self, vec3_t target )
 		return;
 	}
 
-	BG_GetClientViewOrigin( &self->client->ps, viewBase );
-	VectorSubtract( target, viewBase, aimVec );
+	BG_GetClientViewOrigin( &self->client->ps, &viewBase[0] );
+	aimVec = target - viewBase;
 
-	vectoangles( aimVec, aimAngles );
+	vectoangles( &aimVec[0], &aimAngles[0] );
 
 	VectorSet( self->client->ps.delta_angles, 0.0f, 0.0f, 0.0f );
 
@@ -1458,12 +1469,8 @@ void BotAimAtLocation( gentity_t *self, vec3_t target )
 	rAngles->angles[2] = aimAngles[2];
 }
 
-void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
+void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
 {
-	vec3_t viewBase;
-	vec3_t aimVec, forward;
-	vec3_t skilledVec;
-
 	if ( !( self && self->client ) )
 	{
 		return;
@@ -1473,23 +1480,25 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	float slow = Math::Clamp( slowAmount, 0.1f, 1.0f );
 
 	//get the point that the bot is aiming from
-	BG_GetClientViewOrigin( &self->client->ps, viewBase );
+	glm::vec3 viewBase = BG_GetClientViewOrigin( &self->client->ps );
 
 	//get the Vector from the bot to the enemy (ideal aim Vector)
-	VectorSubtract( target, viewBase, aimVec );
-	float length = VectorNormalize( aimVec );
+	glm::vec3 aimVec = target - viewBase;
+	float length = glm::length( aimVec );
+	aimVec = glm::normalize( aimVec );
 
 	//take the current aim Vector
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
+	glm::vec3 forward;
+	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
 
-	float cosAngle = DotProduct( forward, aimVec );
+	float cosAngle = glm::dot( forward, aimVec );
 	cosAngle = ( cosAngle + 1.0f ) / 2.0f;
 	cosAngle = 1.0f - cosAngle;
 	cosAngle = Math::Clamp( cosAngle, 0.1f, 0.5f );
-	VectorLerp( forward, aimVec, slow * ( cosAngle ), skilledVec );
+	glm::vec3 skilledVec = glm::mix( forward, aimVec, slow * cosAngle );
 
 	//now find a point to return, this point will be aimed at
-	VectorMA( viewBase, length, skilledVec, target );
+	target = viewBase + length * skilledVec;
 }
 
 float BotAimAngle( gentity_t *self, vec3_t pos )
@@ -1682,7 +1691,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
-			if ( self->botMind->nav.directPathToGoal )
+			if ( self->botMind->nav().directPathToGoal )
 			{
 				if ( self->client->time1000 % 300 == 0 )
 				{
@@ -1713,20 +1722,20 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 	}
 }
 
-float CalcAimPitch( gentity_t *self, vec3_t targetPos, vec_t launchSpeed )
+float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 {
-	vec3_t startPos;
+	glm::vec3 startPos;
 	float initialHeight;
-	vec3_t forward, right, up;
-	vec3_t muzzle;
+	glm::vec3 forward, right, up;
+	glm::vec3 muzzle;
 	float distance2D;
 	float x, y, v, g;
 	float check;
 	float angle1, angle2, angle;
 
-	AngleVectors( self->s.origin, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
-	VectorCopy( muzzle, startPos );
+	AngleVectors( self->s.origin, &forward[0], &right[0], &up[0] );
+	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
+	startPos = muzzle;
 
 	//project everything onto a 2D plane with initial position at (0,0)
 	initialHeight = startPos[2];
@@ -1764,7 +1773,7 @@ float CalcAimPitch( gentity_t *self, vec3_t targetPos, vec_t launchSpeed )
 	return angle;
 }
 
-float CalcPounceAimPitch( gentity_t *self, vec3_t targetPos )
+float CalcPounceAimPitch( gentity_t *self, glm::vec3 &targetPos )
 {
 	vec_t speed = ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL3 ) ? LEVEL3_POUNCE_JUMP_MAG : LEVEL3_POUNCE_JUMP_MAG_UPG;
 	return CalcAimPitch( self, targetPos, speed );
@@ -1773,7 +1782,7 @@ float CalcPounceAimPitch( gentity_t *self, vec3_t targetPos )
 	// botCmdBuffer->angles[PITCH] = ANGLE2SHORT(-angle);
 }
 
-float CalcBarbAimPitch( gentity_t *self, vec3_t targetPos )
+float CalcBarbAimPitch( gentity_t *self, glm::vec3 &targetPos )
 {
 	vec_t speed = LEVEL3_BOUNCEBALL_SPEED;
 	return CalcAimPitch( self, targetPos, speed );
@@ -1785,21 +1794,19 @@ float CalcBarbAimPitch( gentity_t *self, vec3_t targetPos )
 void BotFireWeaponAI( gentity_t *self )
 {
 	float distance;
-	vec3_t targetPos;
-	vec3_t forward, right, up;
-	vec3_t muzzle;
+	glm::vec3 forward, right, up;
+	glm::vec3 muzzle;
 	trace_t trace;
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
-	BotGetIdealAimLocation( self, self->botMind->goal, targetPos );
+	AngleVectors( self->client->ps.viewangles, &forward[0], &right[0], &up[0] );
+	G_CalcMuzzlePoint( self, &forward[0], &right[0], &up[0], &muzzle[0] );
+	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal );
 
-	trap_Trace( &trace, muzzle, nullptr, nullptr, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
-	distance = Distance( muzzle, trace.endpos );
+	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], ENTITYNUM_NONE, MASK_SHOT, 0 );
+	distance = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
 	bool readyFire = self->client->ps.IsWeaponReady();
-	vec3_t target;
-	self->botMind->goal.getPos( target );
+	glm::vec3 target = self->botMind->goal.getPos();
 	switch ( self->s.weapon )
 	{
 		case WP_ABUILD:
@@ -1896,9 +1903,9 @@ void BotFireWeaponAI( gentity_t *self )
 	}
 }
 
-static bool BotChangeClass( gentity_t *self, class_t newClass, vec3_t newOrigin )
+static bool BotChangeClass( gentity_t *self, class_t newClass, glm::vec3 newOrigin )
 {
-	if ( !G_RoomForClassChange( self, newClass, newOrigin ) )
+	if ( !G_RoomForClassChange( self, newClass, &newOrigin[0] ) )
 	{
 		return false;
 	}
@@ -1914,12 +1921,12 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 {
 	int clientNum;
 	int i;
-	vec3_t infestOrigin;
+	glm::vec3 infestOrigin;
 	class_t currentClass = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
 	evolveInfo_t evolveInfo;
 	int entityList[ MAX_GENTITIES ];
-	vec3_t range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
-	vec3_t mins, maxs;
+	glm::vec3 range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
+	glm::vec3 mins, maxs;
 	int num;
 	gentity_t *other;
 
@@ -1955,10 +1962,10 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 		}
 
 		//check there are no humans nearby
-		VectorAdd( ent->client->ps.origin, range, maxs );
-		VectorSubtract( ent->client->ps.origin, range, mins );
+		maxs = VEC2GLM( ent->client->ps.origin ) + range;
+		mins = VEC2GLM( ent->client->ps.origin ) - range;
 
-		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+		num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
 		for ( i = 0; i < num; i++ )
 		{
 			other = &g_entities[ entityList[ i ] ];
@@ -1977,7 +1984,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 
 		evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
 
-		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
+		if ( G_RoomForClassChange( ent, newClass, &infestOrigin[0] ) )
 		{
 			ent->client->pers.evolveHealthFraction =
 				Math::Clamp( Entities::HealthFraction(ent), 0.0f, 1.0f );
@@ -2122,7 +2129,7 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		return false;
 	}
 
-	vec3_t newOrigin;
+	glm::vec3 newOrigin = {};
 	struct
 	{
 		upgrade_t upg;
@@ -2216,9 +2223,9 @@ void BotSellUpgrades( gentity_t *self )
 			// shouldn't really need to test for this, but just to be safe
 			if ( i == UP_LIGHTARMOUR || i == UP_MEDIUMARMOUR || i == UP_BATTLESUIT )
 			{
-				vec3_t newOrigin;
+				glm::vec3 newOrigin = {};
 
-				if ( !G_RoomForClassChange( self, PCL_HUMAN_NAKED, newOrigin ) )
+				if ( !G_RoomForClassChange( self, PCL_HUMAN_NAKED, &newOrigin[0] ) )
 				{
 					continue;
 				}
@@ -2323,7 +2330,7 @@ void BotSearchForEnemy( gentity_t *self )
 void BotResetStuckTime( gentity_t *self )
 {
 	self->botMind->stuckTime = level.time;
-	VectorCopy( self->client->ps.origin, self->botMind->stuckPosition );
+	self->botMind->stuckPosition = VEC2GLM( self->client->ps.origin );
 }
 
 void BotCalculateStuckTime( gentity_t *self )
@@ -2331,7 +2338,7 @@ void BotCalculateStuckTime( gentity_t *self )
 	// last think time condition to avoid stuck condition after respawn or /pause
 	bool dataValid = level.time - self->botMind->lastThink < 1000;
 	if ( !dataValid
-			|| DistanceSquared( self->botMind->stuckPosition, self->client->ps.origin ) >= Square( BOT_STUCK_RADIUS ) )
+			|| glm::distance2( self->botMind->stuckPosition, VEC2GLM( self->client->ps.origin ) ) >= Square( BOT_STUCK_RADIUS ) )
 	{
 		BotResetStuckTime( self );
 	}
@@ -2351,7 +2358,7 @@ botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
 	}
 
 	ent = newTarget;
-	VectorClear( coord );
+	coord = glm::vec3();
 	type = targetType::ENTITY;
 
 	if (!targetsValidEntity())
@@ -2362,8 +2369,9 @@ botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
 	return *this;
 }
 
-botTarget_t& botTarget_t::operator=(const vec3_t newTarget) {
-	VectorCopy(newTarget, coord);
+botTarget_t& botTarget_t::operator=( glm::vec3 newTarget )
+{
+	coord = newTarget;
 	ent = nullptr;
 	type = targetType::COORDS;
 	return *this;
@@ -2371,7 +2379,7 @@ botTarget_t& botTarget_t::operator=(const vec3_t newTarget) {
 
 void botTarget_t::clear() {
 	ent = nullptr;
-	VectorClear(coord);
+	coord = glm::vec3();
 	type = targetType::EMPTY;
 }
 
@@ -2415,18 +2423,16 @@ const gentity_t *botTarget_t::getTargetedEntity() const
 	return ent.get();
 }
 
-void botTarget_t::getPos(vec3_t pos) const
+glm::vec3 botTarget_t::getPos() const
 {
 	if ( type == targetType::ENTITY && ent )
 	{
-		VectorCopy( ent->s.origin, pos );
+		return VEC2GLM( ent->s.origin );
 	}
-	else if ( type == targetType::COORDS )
+	if ( type == targetType::COORDS )
 	{
-		VectorCopy( coord, pos );
+		return coord;
 	}
-	else
-	{
-		Log::Warn("Bot: couldn't get position of target");
-	}
+	Log::Warn("Bot: couldn't get position of target");
+	return glm::vec3();
 }

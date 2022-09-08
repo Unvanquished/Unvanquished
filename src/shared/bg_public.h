@@ -1808,5 +1808,11 @@ void CompleteCommand(int argNum);
 
 #include "Clustering.h"
 
+glm::vec3 BG_GetClientNormal( const playerState_t *ps );
+glm::vec3 BG_GetClientViewOrigin( const playerState_t *ps );
+
+void BG_BoundingBox( class_t cl, glm::vec3* mins, glm::vec3* maxs, glm::vec3* cmaxs, glm::vec3* dmins, glm::vec3* dmaxs );
+void BG_BoundingBox( buildable_t buildablel, glm::vec3* mins, glm::vec3* maxs );
+
 //==================================================================
 #endif /* BG_PUBLIC_H_ */

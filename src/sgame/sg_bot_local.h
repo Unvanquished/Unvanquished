@@ -47,6 +47,7 @@ class botTarget_t
 public:
 	botTarget_t& operator=(const gentity_t *ent);
 	botTarget_t& operator=(const vec3_t pos);
+	botTarget_t& operator=( glm::vec3 pos );
 	void clear();
 	entityType_t getTargetType() const;
 	bool isValid() const;
@@ -59,10 +60,10 @@ public:
 	const gentity_t *getTargetedEntity() const;
 	// note if you don't check with "isValid" first, you may
 	// have garbage as a result
-	void getPos(vec3_t out) const;
+	glm::vec3 getPos() const;
 private:
 	GentityConstRef ent;
-	vec3_t coord;
+	glm::vec3 coord;
 	enum class targetType { EMPTY, COORDS, ENTITY } type;
 };
 
@@ -115,12 +116,19 @@ struct botMemory_t
 
 	int         futureAimTime;
 	int         futureAimTimeInterval;
-	vec3_t      futureAim;
-	botNavCmd_t nav;
+	glm::vec3   futureAim;
+private:
+	botNavCmd_t m_nav;
+public:
+	botNavCmd_t const& nav() const { return m_nav; };
+	void clearNav() { memset( &m_nav, 0, sizeof( m_nav ) ); }
+	void setGoal( botTarget_t target, bool direct ) { goal = target; m_nav.directPathToGoal = direct; }
+	friend void G_BotThink( gentity_t * );
+	friend bool BotChangeGoal( gentity_t *, botTarget_t );
 
 	int lastThink;
 	int stuckTime;
-	vec3_t stuckPosition;
+	glm::vec3 stuckPosition;
 
 	int spawnTime;
 	//avoid relying on buttons to remember what AI was doing
@@ -133,6 +141,6 @@ void G_BotShutdownNav();
 void G_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
 bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
 void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
-bool G_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
+bool G_BotNavTrace( int botClientNum, botTrace_t *botTrace, const glm::vec3& start, const glm::vec3& end );
 
 #endif

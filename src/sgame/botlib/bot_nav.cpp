@@ -102,14 +102,14 @@ static void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short f
 	}
 }
 
-void G_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+void G_BotDisableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
 {
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_DISABLED );
+	BotSetPolyFlags( &origin[0], &mins[0], &maxs[0], POLYFLAGS_DISABLED );
 }
 
-void G_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
 {
-	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
+	BotSetPolyFlags( &origin[0], &mins[0], &maxs[0], POLYFLAGS_WALK );
 }
 
 void G_BotSetNavMesh( int botClientNum, qhandle_t nav )
@@ -323,23 +323,13 @@ static float frand()
 	return ( float ) rand() / ( float ) RAND_MAX;
 }
 
-void BotFindRandomPoint( int botClientNum, vec3_t point )
+bool BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm::vec3 &point, float radius )
 {
-	qVec origin = g_entities[ botClientNum ].s.origin;
-
-	if ( !BotFindRandomPointInRadius( botClientNum, origin, point, 2000 ) )
-	{
-		VectorCopy( origin, point );
-	}
-}
-
-bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
-{
-	rVec rorigin = qVec( origin );
+	rVec rorigin = qVec( &origin[0] );
 	rVec nearPoint;
 	dtPolyRef nearPoly;
 
-	VectorSet( point, 0, 0, 0 );
+	point = { 0, 0, 0 };
 
 	Bot_t *bot = &agents[ botClientNum ];
 
@@ -356,13 +346,14 @@ bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t p
 		return false;
 	}
 
-	VectorCopy( nearPoint, point );
-	recast2quake( point );
+	point = recast2quake( const_cast<rVec const&>( nearPoint ) );
 	return true;
 }
 
-bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
+bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start_, const glm::vec3& end_ )
 {
+	vec3_t start = { start_[0], start_[1], start_[2] };
+	vec3_t end = { end_[0], end_[1], end_[2] };
 	dtPolyRef startRef;
 	dtStatus status;
 	rVec extents( 75, 96, 75 );

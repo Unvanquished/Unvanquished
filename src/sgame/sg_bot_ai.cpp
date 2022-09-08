@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 
+#include <glm/gtx/norm.hpp>
+
 /*
 ======================
 g_bot_ai.c
@@ -615,8 +617,9 @@ AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t* )
 AINodeStatus_t BotActionTeleport( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *action = ( AIActionNode_t * ) node;
-	vec3_t pos = {AIUnBoxFloat(action->params[0]),AIUnBoxFloat(action->params[1]),AIUnBoxFloat(action->params[2])};
-	VectorCopy( pos,self->client->ps.origin );
+	self->client->ps.origin[0] = AIUnBoxFloat( action->params[0] );
+	self->client->ps.origin[1] = AIUnBoxFloat( action->params[1] );
+	self->client->ps.origin[2] = AIUnBoxFloat( action->params[2] );
 	return STATUS_SUCCESS;
 }
 
@@ -660,6 +663,7 @@ AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *nod
 
 AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 {
+	botMemory_t const* mind = self->botMind;
 	if ( !self->botMind->goal.isValid() )
 	{
 		return STATUS_FAILURE;
@@ -673,8 +677,7 @@ AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 	}
 	else
 	{
-		vec3_t pos;
-		self->botMind->goal.getPos( pos );
+		glm::vec3 pos = mind->goal.getPos();
 		BotSlowAim( self, pos, 0.5 );
 		BotAimAtLocation( self, pos );
 	}
@@ -736,7 +739,7 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 	}
 	else if( a->nparams == 3 )
 	{
-		vec3_t pos = { AIUnBoxFloat(a->params[0]), AIUnBoxFloat(a->params[1]), AIUnBoxFloat(a->params[2]) };
+		glm::vec3 pos = { AIUnBoxFloat(a->params[0]), AIUnBoxFloat(a->params[1]), AIUnBoxFloat(a->params[2]) };
 		if ( !BotChangeGoalPos( self, pos ) )
 		{
 			return STATUS_FAILURE;
@@ -782,6 +785,7 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
 	team_t myTeam = ( team_t ) self->client->pers.team;
+	botMemory_t const* mind = self->botMind;
 
 	if ( self->botMind->currentNode != node )
 	{
@@ -802,7 +806,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
-	if ( !self->botMind->nav.havePath )
+	if ( !mind->nav().havePath )
 	{
 		return STATUS_FAILURE;
 	}
@@ -853,7 +857,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
 	self->botMind->enemyLastSeen = level.time;
 
-	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !self->botMind->nav.directPathToGoal )
+	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !mind->nav().directPathToGoal )
 	{
 		BotMoveToGoal( self );
 		return STATUS_RUNNING;
@@ -949,7 +953,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 
 	if ( node != self->botMind->currentNode )
 	{
-		vec3_t point;
+		glm::vec3 point;
 		botEntityAndDistance_t ent = AIEntityToGentity( self, e );
 
 		if ( !ent.ent )
@@ -957,7 +961,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 
-		if ( !BotFindRandomPointInRadius( self->s.number, ent.ent->s.origin, point, radius ) )
+		if ( !BotFindRandomPointInRadius( self->s.number, VEC2GLM( ent.ent->s.origin ), point, radius ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1164,9 +1168,9 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	// retrieve creep size or booster's range to have proper distance
-	int targetType = self->botMind->goal.getTargetedEntity()->s.modelindex;
-	float dist = -1; // minus one to make sure to step on creep
+	// retrieve creep size to have proper distance
+	buildable_t targetType = static_cast<buildable_t>( self->botMind->goal.getTargetedEntity()->s.modelindex );
+	float dist = -1.f;
 	if ( targetType != BA_A_BOOSTER )
 	{
 		dist += BG_Buildable( targetType )->creepSize;
@@ -1188,10 +1192,6 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 */
 AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
-	vec3_t targetPos;
-	vec3_t myPos;
-	VectorCopy( self->s.origin, myPos );
-
 	bool fullyHealed = Entities::HasFullHealth(self) &&
 		BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
@@ -1229,23 +1229,24 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 	auto const& goal = self->botMind->goal;
 	const gentity_t * medistation = goal.getTargetedEntity();
 
-	goal.getPos( targetPos );
+	glm::vec3 targetPos = goal.getPos();
+	glm::vec3 myPos = VEC2GLM( self->s.origin );
 	targetPos[2] += BG_BuildableModelConfig( BA_H_MEDISTAT )->maxs[2];
 	myPos[2] += self->r.mins[2]; //mins is negative
-	float distanceSquared = DistanceSquared( myPos, targetPos );
 
+	float dist2 = glm::distance2( myPos, targetPos );
 	// If medistation is busy, do something else until can go on it anew.
 	// See https://github.com/Unvanquished/Unvanquished/pull/1598
 	// (It would be nice to allow the BT to check for the failure cause.
 	//  How? That's a good question)
 	if ( medistation->target && medistation->target.get() != self
-	     && distanceSquared > Square( 200 ) )
+	     && dist2 > Square( 200 ) )
 	{
 		return STATUS_FAILURE;
 	}
 
 	//keep moving to the medi until we are on top of it
-	if ( distanceSquared > Square( BG_BuildableModelConfig( BA_H_MEDISTAT )->mins[1] ) )
+	if ( dist2 > Square( BG_BuildableModelConfig( BA_H_MEDISTAT )->mins[1] ) )
 	{
 		BotMoveToGoal( self );
 	}
@@ -1254,9 +1255,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 {
-	vec3_t forward;
-	vec3_t targetPos;
-	vec3_t selfPos;
+	botMemory_t const* mind = self->botMind;
 
 	if ( node != self->botMind->currentNode )
 	{
@@ -1282,22 +1281,21 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		G_ForceWeaponChange( self, WP_HBUILD );
 	}
 
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-	self->botMind->goal.getPos( targetPos );
-	VectorMA( self->s.origin, self->r.maxs[1], forward, selfPos );
+	glm::vec3 forward;
+	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
 
 	//move to the damaged building until we are in range
 	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_SHOT ) || DistanceToGoalSquared( self ) > Square( 100 ) )
 	{
 		BotMoveToGoal( self );
+		return STATUS_RUNNING;
 	}
-	else
-	{
-		//aim at the buildable
-		BotSlowAim( self, targetPos, 0.5 );
-		BotAimAtLocation( self, targetPos );
-		// we automatically heal a building if close enough and aiming at it
-	}
+
+	//aim at the buildable
+	glm::vec3 targetPos = mind->goal.getPos();
+	BotSlowAim( self, targetPos, 0.5 );
+	BotAimAtLocation( self, targetPos );
+	// we automatically heal a building if close enough and aiming at it
 	return STATUS_RUNNING;
 }
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
