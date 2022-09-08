@@ -82,7 +82,9 @@ extern Cvar::Cvar<int> g_pollVotesPercent;
 extern Cvar::Range<Cvar::Cvar<int>> g_teamForceBalance;
 extern Cvar::Cvar<bool> g_smoothClients;
 
-extern Cvar::Cvar<int> g_maxVoteBotFill;
+extern Cvar::Cvar<int> g_maxVoteFillBots;
+extern Cvar::Cvar<int> g_fillBotsVotesPercent;
+extern Cvar::Cvar<int> g_fillBotsTeamVotesPercent;
 
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner;

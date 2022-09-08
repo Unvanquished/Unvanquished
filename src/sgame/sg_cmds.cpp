@@ -1541,9 +1541,9 @@ static const struct {
 	{ "nextmap",      false, V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
 	{ "poll",         false, V_ANY,    T_NONE,    false,  false,    qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
 	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "fillbots",     true,  V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "fillbots_humans",     true,  V_PUBLIC, T_OTHER,   false,  true,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "fillbots_aliens",     true,  V_PUBLIC, T_OTHER,   false,  true,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "fillbots",     true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "fillbots_humans",     true,  V_PUBLIC, T_OTHER,   false,  true,    qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "fillbots_aliens",     true,  V_PUBLIC, T_OTHER,   false,  true,    qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
 	{ }
 	// note: map votes use the reason, if given, as the layout name
 };
@@ -1579,7 +1579,7 @@ static bool botFillVoteArgValid(char *arg)
 {
 	char *end;
 	int num = strtol( arg, &end, 10 );
-	if ( *arg == 0 || end == arg || num < 0 || num > g_maxVoteBotFill.Get() )
+	if ( *arg == 0 || end == arg || num < 0 || num > g_maxVoteFillBots.Get() )
 		return false;
 	else
 		return true;
