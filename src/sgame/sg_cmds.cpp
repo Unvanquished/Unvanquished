@@ -1871,15 +1871,6 @@ static void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		for ( i = 0; i < MAX_CLIENTS; ++i )
-		{
-			if ( g_entities[i].r.svFlags & SVF_BOT &&
-			     g_entities[i].client->pers.team != TEAM_NONE )
-			{
-				break;
-			}
-		}
-
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %s", arg );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), "Fill with %s bots", arg );
 
@@ -1894,15 +1885,6 @@ static void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		for ( i = 0; i < MAX_CLIENTS; ++i )
-		{
-			if ( g_entities[i].r.svFlags & SVF_BOT &&
-			     g_entities[i].client->pers.team != TEAM_NONE )
-			{
-				break;
-			}
-		}
-
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %s humans", arg );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), "Fill humans with %s bots", arg );
 
@@ -1915,15 +1897,6 @@ static void Cmd_CallVote_f( gentity_t *ent )
 									va( "print_tr %s %s %s", QQ( N_("$1$: invalid number") ),
 										cmd, Quote( arg ) ) );
 			return;
-		}
-
-		for ( i = 0; i < MAX_CLIENTS; ++i )
-		{
-			if ( g_entities[i].r.svFlags & SVF_BOT &&
-			     g_entities[i].client->pers.team != TEAM_NONE )
-			{
-				break;
-			}
 		}
 
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %s aliens", arg );
