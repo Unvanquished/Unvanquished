@@ -4,7 +4,7 @@
 	<link type="text/template" href="/ui/shared/window.rml" />
 	<style>
 		body {
-			width: 35em;
+			width: 30em;
 			height: 20em;
 			margin: auto;
 		}
@@ -37,10 +37,14 @@
 			background-color: #6771ad;
 		}
 
-		button.wide {
+		button.wide, button.human {
 			width: 100%;
 			margin-left: auto;
 			margin-right: auto;
+		}
+
+		h2 {
+			margin: 0 0 0.3em 0;
 		}
 
 		p {
@@ -50,21 +54,16 @@
 </head>
 
 <body id="ingame_teamselect" template="window">
+	<h2>Welcome to the Juggernaut Arena</h2>
+	<p><translate>Humans will try to hunt the juggernaut. Someone who kills the juggernaut becomes the juggernaut.</translate></p>
+	<p><translate>The first player to do the required amount of kills wins.</translate></p>
 
-	<button class="wide" onclick='Events.pushevent("hide ingame_teamselect; exec team auto", event)' style="z-index: 10;">
-		<!-- High z-index, so we are placed 'ontop' of the drag-handle at the top of the window -->
-		<translate>Auto-select a team</translate>
-	</button>
-
-	<p><translate>Aliens are highly mobile and possess a wide variety of movement-based attacks. They are sturdy, but must rely on stealth and evasion.</translate></p>
-	<p><translate>Humans can equip themselves with an assortment of weapons and equipment. They are flexible and lethal at a distance, but fragile.</translate></p>
-
-	<button class="alien" onclick='Events.pushevent("hide ingame_teamselect; exec team alien", event)'><translate>Join Aliens</translate></button>
-	<button class="human" onclick='Events.pushevent("hide ingame_teamselect; exec team human", event)'><translate>Join Humans</translate></button>
+	<button class="human" onclick='Events.pushevent("hide ingame_teamselect; exec team human", event)'><translate>Join the Fight</translate></button>
 
 	<p><translate>Alternatively you can watch the game without playing.</translate></p>
 
 	<button class="wide"  onclick='Events.pushevent("hide ingame_teamselect; exec team spec", event)'><translate>Spectate</translate></button>
+	<p><translate>When there is no juggernaut like at the begining of the game or if the juggernauts commits suicide, some random player is promoted.</translate></p>
 
 </body>
 </rml>
