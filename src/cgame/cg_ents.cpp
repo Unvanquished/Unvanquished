@@ -1108,7 +1108,7 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 	switch ( es->eType )
 	{
 		case entityType_t::ET_LEV2_ZAP_CHAIN:
-			for ( i = 0; i <= LEVEL2_AREAZAP_MAX_TARGETS; i++ )
+			for ( i = 0; i < LEVEL2_AREAZAP_MAX_TARGETS; i++ )
 			{
 				if ( CG_IsTrailSystemValid( &cent->level2ZapTS[ i ] ) )
 				{
