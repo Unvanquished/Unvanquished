@@ -3605,9 +3605,7 @@ static void PM_Weapon()
 	// Charging for a pounce or canceling a pounce (Dragoon)
 	if ( pm->ps->weapon == WP_ALEVEL3 || pm->ps->weapon == WP_ALEVEL3_UPG )
 	{
-		int max;
-
-		max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
+		int max = pm->ps->weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_TIME : LEVEL3_POUNCE_TIME_UPG;
 
 		if ( usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 ) )
 		{
@@ -3618,14 +3616,7 @@ static void PM_Weapon()
 			pm->ps->weaponCharge -= pml.msec;
 		}
 
-		if ( pm->ps->weaponCharge > max )
-		{
-			pm->ps->weaponCharge = max;
-		}
-		else if ( pm->ps->weaponCharge < 0 )
-		{
-			pm->ps->weaponCharge = 0;
-		}
+		pm->ps->weaponCharge = Math::Clamp(pm->ps->weaponCharge, 0, max);
 	}
 
 	// Trample charge mechanics
