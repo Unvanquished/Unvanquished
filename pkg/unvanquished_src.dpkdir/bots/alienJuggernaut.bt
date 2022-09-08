@@ -10,7 +10,7 @@ selector
 		{
 			decorator timer( 1000 )
 			{
-				condition ( ( percentHealth( E_SELF ) > 0.8 || random > 0.3 )
+				condition ( ( percentHealth( E_SELF ) > 0.8 || random > 0.1 )
 						|| distanceTo( E_GOAL ) < 120 )
 				{
 					action fight
