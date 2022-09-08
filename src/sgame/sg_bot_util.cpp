@@ -1734,7 +1734,7 @@ float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 	glm::vec3 startPos;
 	glm::vec3 forward, right, up;
 	glm::vec3 muzzle;
-	float angle1, angle2, angle;
+
 	float g = self->client->ps.gravity;
 	float v = launchSpeed;
 
@@ -1758,16 +1758,12 @@ float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 		check = Square( Square( v ) ) - g * ( g * Square( dr ) + 2 * dz * Square( v ) );
 	}
 
-	//calculate required angle of launch
-	angle1 = atanf( ( Square( v ) + sqrtf( check ) ) / ( g * dr ) );
-	angle2 = atanf( ( Square( v ) - sqrtf( check ) ) / ( g * dr ) );
+	// the same equation with a + sign would also give a correct result,
+	// but with a longer path. Let's use this one instead
+	float angle = atanf( ( Square( v ) - sqrtf( check ) ) / ( g * dr ) );
 
-	//take the smaller angle
-	angle = std::min( angle1, angle2 );
-
-	//convert to degrees (ps.viewangles units)
-	angle = RAD2DEG( angle );
-	return angle;
+	// give a result in degrees (ps.viewangles units)
+	return RAD2DEG( angle );
 }
 
 float CalcPounceAimPitch( gentity_t *self, glm::vec3 &targetPos )
