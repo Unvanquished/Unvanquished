@@ -1867,7 +1867,13 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3_UPG:
-			if ( self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE )
+		{
+			// We add some protection for barbs so that bots don't
+			// barb themselves too easily. The safety factor
+			// hopefully accounts for the movement of the bot and
+			// its target
+			constexpr float barbSafetyFactor = 4.0f/3.0f;
+			if ( self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE && distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius) )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
@@ -1882,6 +1888,7 @@ void BotFireWeaponAI( gentity_t *self )
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //goon chomp
 			}
 			break;
+		}
 		case WP_ALEVEL4:
 			if ( distance > LEVEL4_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL4_TRAMPLE_CHARGE_MAX )
 			{
