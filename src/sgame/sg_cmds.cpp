@@ -578,7 +578,7 @@ static void Cmd_Devteam_f( gentity_t *ent )
 
 	G_UpdateTeamConfigStrings();
 	ClientUserinfoChanged( ent->client->ps.clientNum, false );
-	ClientSpawn( ent, spawn, ent->client->ps.origin, nullptr );
+	ClientSpawn( ent, spawn, ent->s.origin, ent->s.angles );
 }
 
 /*
