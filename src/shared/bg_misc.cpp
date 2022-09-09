@@ -446,7 +446,7 @@ evolveInfo_t BG_ClassEvolveInfoFromTo( const int from, const int to )
 	evolveCost = toCost - fromCost;
 
 	isDevolving = evolveCost <= 0;
-	// exception for peolpe evolving to dretch
+	// exception for people evolving to dretch
 	if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) && to == PCL_ALIEN_LEVEL0 ) {
 		isDevolving = false;
 	}
