@@ -509,10 +509,7 @@ bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
 		return false;
 	}
 
-	// TODO: one might be willing to allow switching to same cost classes,
-	// notably, from dretch to advanced granger when base in on fire.
-
-	return cl->canBuyNow() && info.evolveCost > 0 // no devolving
+	return cl->canBuyNow()
 		&& self->client->ps.persistant[PERS_CREDIT] >= info.evolveCost;
 }
 
@@ -542,11 +539,16 @@ float PercentAmmoRemaining( weapon_t weapon, playerState_t const* ps )
 	}
 }
 
-AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
+AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t* )
 {
+	class_t currentClass = static_cast<class_t>( self->client->ps.stats[ STAT_CLASS ] );
+
 	for ( auto const& cl : classes )
 	{
-		if ( BotEvolveToClass( self, cl.item ) )
+		evolveInfo_t info = BG_ClassEvolveInfoFromTo( currentClass, cl.item );
+
+		if ( info.evolveCost > 0 // no devolving or evolving to the same
+				&& BotEvolveToClass( self, cl.item ) )
 		{
 			return STATUS_SUCCESS;
 		}
