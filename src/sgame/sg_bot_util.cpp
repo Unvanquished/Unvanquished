@@ -498,11 +498,11 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 }
 
 
+// This will only check if the bot is allowed to do so. To check if it *can*,
+// use G_AlienEvolve with dryRun = true, or just try to evolve.
 bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
 {
 	equipment_t<class_t>* cl = std::find( std::begin( classes ), std::end( classes ), newClass );
-	int fromClass = self->client->ps.stats[STAT_CLASS];
-	evolveInfo_t info = BG_ClassEvolveInfoFromTo( fromClass, newClass );
 
 	if ( cl == std::end( classes ) )
 	{
@@ -510,13 +510,7 @@ bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
 		return false;
 	}
 
-	if ( !g_bot_evolve.Get() || Entities::IsDead( self ) )
-	{
-		return false;
-	}
-
-	return cl->canBuyNow()
-		&& self->client->ps.persistant[PERS_CREDIT] >= info.evolveCost;
+	return cl->canBuyNow();
 }
 
 bool WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
