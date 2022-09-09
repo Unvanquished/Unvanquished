@@ -522,32 +522,29 @@ void G_BotSpectatorThink( gentity_t *self )
 	if ( self->client->sess.restartTeam == TEAM_NONE )
 	{
 		int teamnum = self->client->pers.team;
-		int clientNum = self->client->ps.clientNum;
 
 		// I think all that decision taking about birth... should go in BT.
 		if ( teamnum == TEAM_HUMANS )
 		{
-			self->client->pers.classSelection = PCL_HUMAN_NAKED;
-			self->client->ps.stats[STAT_CLASS] = PCL_HUMAN_NAKED;
-			BotSetNavmesh( self, PCL_HUMAN_NAKED );
-			//we want to spawn with rifle unless it is disabled or we need to build
+			// TODO: use wp->canBuyNow() from sg_bot_util
+			weapon_t weapon = WP_NONE;
 			if ( g_bot_rifle.Get() )
 			{
-				self->client->pers.humanItemSelection = WP_MACHINEGUN;
+				weapon = WP_MACHINEGUN;
 			}
-			else
+			else if ( g_bot_ckit.Get() )
 			{
-				self->client->pers.humanItemSelection = WP_HBUILD;
+				weapon = WP_HBUILD;
 			}
+
+			G_ScheduleSpawn( self->client, PCL_HUMAN_NAKED, weapon );
+			BotSetNavmesh( self, PCL_HUMAN_NAKED );
 		}
 		else if ( teamnum == TEAM_ALIENS )
 		{
-			self->client->pers.classSelection = PCL_ALIEN_LEVEL0;
-			self->client->ps.stats[STAT_CLASS] = PCL_ALIEN_LEVEL0;
+			G_ScheduleSpawn( self->client, PCL_ALIEN_LEVEL0 );
 			BotSetNavmesh( self, PCL_ALIEN_LEVEL0 );
 		}
-
-		G_PushSpawnQueue( &level.team[ teamnum ].spawnQueue, clientNum );
 	}
 }
 
