@@ -588,22 +588,26 @@ Cmd_Give_f
 Give items to a client
 ==================
 */
+static void Cmd_Give_printUsage( gentity_t *ent )
+{
+	ADMP( QQ( N_( "usage: give [what]" ) ) );
+	ADMP( QQ( N_( "usage: valid choices are: all, health [amount], funds [amount], "
+	              "bp [amount], momentum [amount] [team], stamina, poison, fuel, ammo" ) ) );
+}
 static void Cmd_Give_f( gentity_t *ent )
 {
-	char     *name;
 	bool give_all = false;
-	float    amount;
+	float amount = 0.0f;
 	team_t team = G_Team( ent );
+	bool valid = false;
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_( "usage: give [what]" ) ) );
-		ADMP( QQ( N_( "usage: valid choices are: all, health [amount], funds [amount], "
-		              "bp [amount], momentum [amount] [team], stamina, poison, fuel, ammo" ) ) );
+		Cmd_Give_printUsage( ent );
 		return;
 	}
 
-	name = ConcatArgs( 1 );
+	char *name = ConcatArgs( 1 );
 
 	if ( Q_stricmp( name, "all" ) == 0 )
 	{
@@ -624,6 +628,10 @@ static void Cmd_Give_f( gentity_t *ent )
 			amount = Math::Clamp(amount, -30000.0f, 30000.0f);
 		}
 
+		if ( fabsf(amount) >= 1.0f )
+		{
+			valid = true;
+		}
 		G_AddCreditToClient( ent->client, ( short ) amount, true );
 	}
 
@@ -650,20 +658,29 @@ static void Cmd_Give_f( gentity_t *ent )
 			}
 		}
 
-		if ( team != TEAM_NONE )
+		if ( team != TEAM_NONE && amount >= 0.1f )
 		{
+			valid = true;
 			G_AddMomentumGeneric( team, amount );
 		}
 	}
 
 	if ( team != TEAM_NONE && Q_strnicmp( name, "bp", strlen("bp") ) == 0 )
 	{
-		float bp = trap_Argc() < 3 ? 300.0f : atof( name + strlen("bp") );
-		level.team[ent->client->pers.team].totalBudget += bp;
+		amount = trap_Argc() < 3 ? 300.0f : atof( name + strlen("bp") );
+
+		if ( fabsf(amount) >= 1.0f )
+		{
+			valid = true;
+		}
+
+		level.team[ent->client->pers.team].totalBudget +=
+			static_cast<int>( amount );
 	}
 
 	if ( Entities::IsDead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
+		ADMP( QQ( N_( "you can't use /give when dead or spectating" ) ) );
 		return;
 	}
 
@@ -676,7 +693,7 @@ static void Cmd_Give_f( gentity_t *ent )
 		}
 		else
 		{
-			float amount = atof( name + strlen("health") );
+			amount = atof( name + strlen("health") );
 			if (amount < 0)
 			{
 				ent->entity->Damage(-amount, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
@@ -686,20 +703,28 @@ static void Cmd_Give_f( gentity_t *ent )
 				ent->entity->Heal(amount, nullptr);
 			}
 		}
+
+		if ( fabsf(amount) >= 1.0f )
+		{
+			valid = true;
+		}
 	}
 
 	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "stamina" ) == 0 ) )
 	{
+		valid = true;
 		ent->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 	}
 
 	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "fuel" ) == 0 ) )
 	{
+		valid = true;
 		G_RefillFuel(ent, false);
 	}
 
 	if ( team != TEAM_NONE && ( Q_stricmp( name, "poison" ) == 0 ) )
 	{
+		valid = true;
 		if ( ent->client->pers.team == TEAM_HUMANS )
 		{
 			ent->client->ps.stats[ STAT_STATE ] |= SS_POISONED;
@@ -715,7 +740,13 @@ static void Cmd_Give_f( gentity_t *ent )
 
 	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "ammo" ) == 0 ) )
 	{
+		valid = true;
 		G_RefillAmmo( ent, false );
+	}
+
+	if ( !valid )
+	{
+		Cmd_Give_printUsage( ent );
 	}
 }
 
