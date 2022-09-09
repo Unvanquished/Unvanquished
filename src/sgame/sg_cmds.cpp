@@ -1862,8 +1862,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	case VOTE_BOT_FILL:
 		if ( !botFillVoteArgValid( arg ) )
 		{
-			trap_SendServerCommand( ent - g_entities,
-									va( "print_tr %s %s", QQ( N_("$1$: invalid number") ), cmd ) );
+			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
 			return;
 		}
 
@@ -1875,8 +1874,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	case VOTE_BOT_FILL_HUMANS:
 		if ( !botFillVoteArgValid( arg ) )
 		{
-			trap_SendServerCommand( ent - g_entities,
-									va( "print_tr %s %s", QQ( N_("$1$: invalid number") ), cmd ) );
+			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
 			return;
 		}
 
@@ -1888,8 +1886,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	case VOTE_BOT_FILL_ALIENS:
 		if ( !botFillVoteArgValid( arg ) )
 		{
-			trap_SendServerCommand( ent - g_entities,
-									va( "print_tr %s %s", QQ( N_("$1$: invalid number") ), cmd ) );
+			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
 			return;
 		}
 
