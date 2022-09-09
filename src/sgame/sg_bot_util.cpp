@@ -495,9 +495,19 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
 {
 	equipment_t<class_t>* cl = std::find( std::begin( classes ), std::end( classes ), newClass );
-
 	int fromClass = self->client->ps.stats[STAT_CLASS];
 	evolveInfo_t info = BG_ClassEvolveInfoFromTo( fromClass, newClass );
+
+	if ( cl == std::end( classes ) )
+	{
+		Log::Warn( "invalid class requested" );
+		return false;
+	}
+
+	if ( !g_bot_evolve.Get() || Entities::IsDead( self ) )
+	{
+		return false;
+	}
 
 	// TODO: one might be willing to allow switching to same cost classes,
 	// notably, from dretch to advanced granger when base in on fire.
@@ -534,11 +544,6 @@ float PercentAmmoRemaining( weapon_t weapon, playerState_t const* ps )
 
 AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t* )
 {
-	if ( !g_bot_evolve.Get() )
-	{
-		return STATUS_FAILURE;
-	}
-
 	for ( auto const& cl : classes )
 	{
 		if ( BotEvolveToClass( self, cl.item ) )
@@ -1942,19 +1947,8 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 		return true;
 	}
 
-	if ( Entities::IsDead( ent ) )
-	{
-		return false;
-	}
-
 	clientNum = ent->client - level.clients;
 
-	equipment_t<class_t>* cl = std::find( std::begin( classes ), std::end( classes ), newClass );
-	if ( cl == std::end( classes ) )
-	{
-		Log::Warn( "invalid class requested" );
-		return false;
-	}
 	if ( !BotCanEvolveToClass( ent, newClass ) )
 	{
 		return false;
