@@ -2471,108 +2471,283 @@ bool G_ScheduleSpawn( gclient_t *client, class_t class_, weapon_t humanItem )
 	return false;
 }
 
+// This is called by G_AlienEvolve once everything has been checked to actually
+// make the client evolve.
+static void G_AlienEvolve_evolve( gentity_t *ent, class_t newClass, const vec3_t &infestOrigin, short cost )
+{
+	int    oldBoostTime = -1;
+	vec3_t oldVel;
+
+	ent->client->pers.evolveHealthFraction =
+	       ent->entity->Get<HealthComponent>()->HealthFraction();
+
+	if ( cost < 0 )
+	{
+		ent->client->pers.devolveReturningCredits -=
+			cost * DEVOLVE_RETURN_FRACTION
+				* ent->client->pers.evolveHealthFraction;
+	}
+	else
+	{
+		// remove credit
+		G_AddCreditToClient( ent->client, cost, true );
+	}
+	ent->client->pers.classSelection = newClass;
+	ClientUserinfoChanged( ent->client->ps.clientNum, false );
+	VectorCopy( infestOrigin, ent->s.pos.trBase );
+	VectorCopy( ent->client->ps.velocity, oldVel );
+
+	if ( ent->client->ps.stats[ STAT_STATE ] & SS_BOOSTED )
+	{
+		oldBoostTime = ent->client->boostedTime;
+	}
+
+	ClientSpawn( ent, ent, ent->s.pos.trBase, ent->s.apos.trBase );
+
+	VectorCopy( oldVel, ent->client->ps.velocity );
+
+	if ( oldBoostTime > 0 )
+	{
+		ent->client->boostedTime = oldBoostTime;
+		ent->client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
+	}
+}
+
+// returns true if evolve succeded
+// this function does all the checking needed, except checking that the caller
+// is alive.
+//
+// if report is set to true, send messages to tell the client how it went
+// if dryRun is set to true, do all the check but don't actually evolve at the
+//     last step, this allows knowing if you can evolve
+bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
+{
+	int       clientNum = ent->client->ps.clientNum;
+	vec3_t    infestOrigin;
+	vec3_t    range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
+	vec3_t    mins, maxs;
+	class_t   currentClass = ent->client->pers.classSelection;
+
+	if ( newClass <= PCL_NONE || newClass >= PCL_NUM_CLASSES )
+	{
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_A_UNKNOWNCLASS );
+		}
+		return false;
+	}
+
+	// check that we have an overmind
+	if ( !G_ActiveOvermind() )
+	{
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_A_NOOVMND_EVOLVE );
+		}
+		return false;
+	}
+
+	// check there are no humans nearby
+	VectorAdd( ent->client->ps.origin, range, maxs );
+	VectorSubtract( ent->client->ps.origin, range, mins );
+
+	int entityList[ MAX_GENTITIES ];
+	int num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+
+	int alienBuildingsInRange = 0;
+	int humansInRange = 0;
+	bool visibleToHumans = false;
+
+	for ( int i = 0; i < num; i++ )
+	{
+		const gentity_t *other = &g_entities[ entityList[ i ] ];
+
+		if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
+		     ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
+		       other->powered ) )
+		{
+			humansInRange++;
+			if( !visibleToHumans && G_LineOfSight( ent, other ) )
+			{
+				visibleToHumans = true;
+			}
+
+		}
+		else if ( ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS ) )
+		{
+			alienBuildingsInRange++;
+		}
+	}
+	if ( visibleToHumans && alienBuildingsInRange < ( humansInRange * g_evolveAroundHumans.Get() ) ) {
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
+		}
+		return false;
+	}
+
+
+	// check that we are not wallwalking
+	if ( ent->client->ps.eFlags & EF_WALLCLIMB )
+	{
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_A_EVOLVEWALLWALK );
+		}
+		return false;
+	}
+
+	if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
+	     ( currentClass == PCL_ALIEN_BUILDER0 ||
+	       currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
+	     ent->client->ps.stats[ STAT_MISC ] > 0 )
+	{
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_A_EVOLVEBUILDTIMER );
+		}
+		return false;
+	}
+
+	if ( ent->client->ps.weaponTime > 0 )
+	{
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_A_EVOLVEWEAPONTIMER );
+		}
+		return false;
+	}
+
+	if ( !G_RoomForClassChange( ent, newClass, infestOrigin ) )
+	{
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_A_NOEROOM );
+		}
+		return false;
+	}
+
+	evolveInfo_t evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
+	if ( !evolveInfo.classIsUnlocked || ent->client->pers.credit < evolveInfo.evolveCost )
+	{
+		if ( report )
+		{
+			G_TriggerMenuArgs( clientNum, MN_A_CANTEVOLVE, newClass );
+		}
+		return false;
+	}
+
+	if ( evolveInfo.isDevolving && G_DistanceToBase( ent ) >= g_devolveMaxBaseDistance.Get() ) {
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_A_NOTINBASE );
+		}
+		return false;
+	}
+
+	// all the checks passed
+	if ( !dryRun )
+	{
+		// let's do it!
+		G_AlienEvolve_evolve( ent, newClass, infestOrigin, evolveInfo.evolveCost );
+	}
+	return true;
+}
+
 /*
 =================
 Cmd_Class_f
 =================
 */
+static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report )
+{
+	int clientNum = ent->client->ps.clientNum;
+	team_t team = G_Team( ent );
+	class_t newClass = BG_ClassByName( s )->number;
+
+	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
+	{
+		G_StopFollowing( ent );
+	}
+
+	if ( team == TEAM_ALIENS )
+	{
+		if ( newClass != PCL_ALIEN_BUILDER0 &&
+		     newClass != PCL_ALIEN_BUILDER0_UPG &&
+		     newClass != PCL_ALIEN_LEVEL0 )
+		{
+			if ( report )
+			{
+				G_TriggerMenuArgs( clientNum, MN_A_CLASSNOTSPAWN, newClass );
+			}
+			return false;
+		}
+
+		if ( BG_ClassDisabled( newClass ) )
+		{
+			if ( report )
+			{
+				G_TriggerMenuArgs( clientNum, MN_A_CLASSNOTALLOWED, newClass );
+			}
+			return false;
+		}
+
+		if ( !BG_ClassUnlocked( newClass ) )
+		{
+			if ( report )
+			{
+				G_TriggerMenuArgs( clientNum, MN_A_CLASSLOCKED, newClass );
+			}
+			return false;
+		}
+
+		// spawn from an egg
+		if ( G_ScheduleSpawn( ent->client, newClass ) )
+		{
+			return true;
+		}
+	}
+	else if ( team == TEAM_HUMANS )
+	{
+		weapon_t weapon;
+		// set the item to spawn with
+		if ( !Q_stricmp( s, BG_Weapon( WP_MACHINEGUN )->name ) &&
+		     !BG_WeaponDisabled( WP_MACHINEGUN ) )
+		{
+			weapon = WP_MACHINEGUN;
+		}
+		else if ( !Q_stricmp( s, BG_Weapon( WP_HBUILD )->name ) &&
+		          !BG_WeaponDisabled( WP_HBUILD ) )
+		{
+			weapon = WP_HBUILD;
+		}
+		else
+		{
+			if ( report )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM );
+			}
+			return false;
+		}
+
+		// spawn from a telenode
+		newClass = PCL_HUMAN_NAKED;
+		if ( G_ScheduleSpawn( ent->client, newClass, weapon ) )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 {
-	int       clientNum;
-	int       i;
-	vec3_t    infestOrigin;
-	class_t   currentClass = ent->client->pers.classSelection;
-	class_t   newClass;
-	int       entityList[ MAX_GENTITIES ];
-	vec3_t    range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
-	vec3_t    mins, maxs;
-	int       num;
-	gentity_t *other;
-	int       oldBoostTime = -1;
-	vec3_t    oldVel;
-
-	clientNum = ent->client - level.clients;
-	newClass = BG_ClassByName( s )->number;
+	int clientNum = ent->client - level.clients;
 
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		team_t team;
-		if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
-		{
-			G_StopFollowing( ent );
-		}
-
-		team = (team_t) ent->client->pers.team;
-		if ( team == TEAM_ALIENS )
-		{
-			if ( newClass != PCL_ALIEN_BUILDER0 &&
-			     newClass != PCL_ALIEN_BUILDER0_UPG &&
-			     newClass != PCL_ALIEN_LEVEL0 )
-			{
-				if ( report )
-				{
-					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTSPAWN, newClass );
-				}
-				return false;
-			}
-
-			if ( BG_ClassDisabled( newClass ) )
-			{
-				if ( report )
-				{
-					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTALLOWED, newClass );
-				}
-				return false;
-			}
-
-			if ( !BG_ClassUnlocked( newClass ) )
-			{
-				if ( report )
-				{
-					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSLOCKED, newClass );
-				}
-				return false;
-			}
-
-			// spawn from an egg
-			if ( G_ScheduleSpawn( ent->client, newClass ) )
-			{
-				return true;
-			}
-		}
-		else if ( team == TEAM_HUMANS )
-		{
-			weapon_t weapon;
-			//set the item to spawn with
-			if ( !Q_stricmp( s, BG_Weapon( WP_MACHINEGUN )->name ) &&
-			     !BG_WeaponDisabled( WP_MACHINEGUN ) )
-			{
-				weapon = WP_MACHINEGUN;
-			}
-			else if ( !Q_stricmp( s, BG_Weapon( WP_HBUILD )->name ) &&
-			          !BG_WeaponDisabled( WP_HBUILD ) )
-			{
-				weapon = WP_HBUILD;
-			}
-			else
-			{
-				if ( report )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM );
-				}
-				return false;
-			}
-
-			// spawn from a telenode
-			//TODO merge with alien's code
-			newClass = PCL_HUMAN_NAKED;
-			if ( G_ScheduleSpawn( ent->client, newClass, weapon ) )
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return Cmd_Class_spawn_internal( ent, s, report );
 	}
 
 	if ( Entities::IsDead( ent ) )
@@ -2582,164 +2757,13 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 
 	if ( ent->client->pers.team == TEAM_ALIENS )
 	{
-		if ( newClass == PCL_NONE )
-		{
-			if ( report )
-			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_A_UNKNOWNCLASS );
-			}
-			return false;
-		}
+		class_t newClass = BG_ClassByName( s )->number;
 
-		//if we are not currently spectating, we are attempting evolution
+		// CHECKME: this if and its comment is weird, do we really need it?
+		// if we are not currently spectating, we are attempting evolution
 		if ( ent->client->pers.classSelection != PCL_NONE )
 		{
-			evolveInfo_t evolveInfo;
-
-			//check that we have an overmind
-			if ( !G_ActiveOvermind() )
-			{
-				if ( report )
-				{
-					G_TriggerMenu( clientNum, MN_A_NOOVMND_EVOLVE );
-				}
-				return false;
-			}
-
-			//check there are no humans nearby
-			VectorAdd( ent->client->ps.origin, range, maxs );
-			VectorSubtract( ent->client->ps.origin, range, mins );
-
-			num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-			int alienBuildingsInRange = 0;
-			int humansInRange = 0;
-			bool visibleToHumans = false;
-
-			for ( i = 0; i < num; i++ )
-			{
-				other = &g_entities[ entityList[ i ] ];
-
-				if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
-				     ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
-				       other->powered ) )
-				{
-					humansInRange++;
-					if( !visibleToHumans && G_LineOfSight( ent, other ) )
-					{
-						visibleToHumans = true;
-					}
-
-				}
-				else if ( ( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS ) )
-				{
-					alienBuildingsInRange++;
-				}
-			}
-			if ( visibleToHumans && alienBuildingsInRange < ( humansInRange * g_evolveAroundHumans.Get() ) ) {
-				if ( report )
-				{
-					G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
-				}
-				return false;
-			}
-
-
-			//check that we are not wallwalking
-			if ( ent->client->ps.eFlags & EF_WALLCLIMB )
-			{
-				if ( report )
-				{
-					G_TriggerMenu( clientNum, MN_A_EVOLVEWALLWALK );
-				}
-				return false;
-			}
-
-			if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
-			     ( currentClass == PCL_ALIEN_BUILDER0 ||
-			       currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
-			     ent->client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				if ( report )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEBUILDTIMER );
-				}
-				return false;
-			}
-
-			if ( ent->client->ps.weaponTime > 0 )
-			{
-				if ( report )
-				{
-					G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEWEAPONTIMER );
-				}
-				return false;
-			}
-
-			evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
-
-			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
-			{
-				if ( evolveInfo.classIsUnlocked && ent->client->pers.credit >= evolveInfo.evolveCost )
-				{
-					if ( evolveInfo.isDevolving && G_DistanceToBase( ent ) >= g_devolveMaxBaseDistance.Get() ) {
-						if ( report )
-						{
-							G_TriggerMenu( clientNum, MN_A_NOTINBASE );
-						}
-						return false;
-					}
-
-					ent->client->pers.evolveHealthFraction =
-					       ent->entity->Get<HealthComponent>()->HealthFraction();
-
-					if ( evolveInfo.evolveCost < 0 ){
-						ent->client->pers.devolveReturningCredits -=
-							evolveInfo.evolveCost * DEVOLVE_RETURN_FRACTION
-								* ent->client->pers.evolveHealthFraction;
-					}
-					else
-					{
-						//remove credit
-						G_AddCreditToClient( ent->client, -(short)evolveInfo.evolveCost, true );
-					}
-					ent->client->pers.classSelection = newClass;
-					ClientUserinfoChanged( clientNum, false );
-					VectorCopy( infestOrigin, ent->s.pos.trBase );
-					VectorCopy( ent->client->ps.velocity, oldVel );
-
-					if ( ent->client->ps.stats[ STAT_STATE ] & SS_BOOSTED )
-					{
-						oldBoostTime = ent->client->boostedTime;
-					}
-
-					ClientSpawn( ent, ent, ent->s.pos.trBase, ent->s.apos.trBase );
-
-					VectorCopy( oldVel, ent->client->ps.velocity );
-
-					if ( oldBoostTime > 0 )
-					{
-						ent->client->boostedTime = oldBoostTime;
-						ent->client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
-					}
-				}
-				else
-				{
-					if ( report )
-					{
-						G_TriggerMenuArgs( clientNum, MN_A_CANTEVOLVE, newClass );
-					}
-					return false;
-				}
-			}
-			else
-			{
-				if ( report )
-				{
-					G_TriggerMenu( clientNum, MN_A_NOEROOM );
-				}
-				return false;
-			}
+			G_AlienEvolve( ent, newClass, report, false );
 		}
 	}
 	else if ( ent->client->pers.team == TEAM_HUMANS )
@@ -2758,10 +2782,9 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 static void Cmd_Class_f( gentity_t *ent )
 {
 	char s[ MAX_TOKEN_CHARS ];
-	int  i;
 	int  args = trap_Argc() - 1;
 
-	for ( i = 1; i <= args; ++i )
+	for ( int i = 1; i <= args; ++i )
 	{
 		trap_Argv( i, s, sizeof( s ) );
 
