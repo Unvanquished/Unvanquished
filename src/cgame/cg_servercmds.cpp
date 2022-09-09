@@ -1351,6 +1351,14 @@ static void CG_PmoveParams_f() {
 	cg.pmoveParams.accurate = atoi(arg4);
 }
 
+static void CG_Rocket_f()
+{
+	const Cmd::Args& args = trap_Args();
+	const std::string& document = args.Argv(1);
+	const std::string& action = args.Argv(2);
+	Rocket_DocumentAction( document.c_str(), action.c_str() );
+}
+
 static const consoleCommand_t svcommands[] =
 {	// sorting: use 'sort -f'
 	{ "achat",            CG_AdminChat_f          },
@@ -1367,6 +1375,7 @@ static const consoleCommand_t svcommands[] =
 	{ "print",            CG_Print_f              },
 	{ "print_tr",         CG_PrintTR_f            },
 	{ "print_tr_p",       CG_PrintTR_plural_f     },
+	{ "rocket",           CG_Rocket_f             },
 	{ "scores",           CG_ParseScores          },
 	{ "serverclosemenus", CG_ServerCloseMenus_f   },
 	{ "servermenu",       CG_ServerMenu_f         },
