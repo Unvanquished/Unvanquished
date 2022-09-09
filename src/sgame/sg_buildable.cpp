@@ -1418,7 +1418,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 
 	// check if we can already afford the new buildable
-	if ( G_GetFreeBudget( attr->team ) >= cost )
+	if ( Math::Clamp( G_GetFreeBudget( attr->team ), 0, std::numeric_limits<int>::max() ) >= cost )
 	{
 		return IBE_NONE;
 	}
@@ -1471,7 +1471,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		cost -= G_BuildableDeconValue( ent );
 
 		// check if we have enough resources now
-		if ( G_GetFreeBudget( attr->team ) >= cost )
+		if ( Math::Clamp( G_GetFreeBudget( attr->team ), 0, std::numeric_limits<int>::max() ) >= cost )
 		{
 			return IBE_NONE;
 		}
