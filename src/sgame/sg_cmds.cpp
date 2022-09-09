@@ -2454,6 +2454,23 @@ bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 			toMins, toMaxs, newOrigin );
 }
 
+// Put a player in the spawn queue with the desired equipment
+// return true on success
+// `humanItem` is optional, defaults to WP_NONE.
+// If an human has WP_NONE, it only has no weapon, and only the default blaster
+bool G_ScheduleSpawn( gclient_t *client, class_t class_, weapon_t humanItem )
+{
+	if ( G_PushSpawnQueue( &level.team[ client->pers.team ].spawnQueue, client->ps.clientNum ) )
+	{
+		client->pers.humanItemSelection = humanItem;
+		client->pers.classSelection = class_;
+		client->ps.stats[ STAT_CLASS ] = class_;
+
+		return true;
+	}
+	return false;
+}
+
 /*
 =================
 Cmd_Class_f
@@ -2518,27 +2535,24 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			}
 
 			// spawn from an egg
-			//TODO merge with human's code
-			if ( G_PushSpawnQueue( &level.team[ team ].spawnQueue, clientNum ) )
+			if ( G_ScheduleSpawn( ent->client, newClass ) )
 			{
-				ent->client->pers.classSelection = newClass;
-				ent->client->ps.stats[ STAT_CLASS ] = newClass;
-
 				return true;
 			}
 		}
 		else if ( team == TEAM_HUMANS )
 		{
+			weapon_t weapon;
 			//set the item to spawn with
 			if ( !Q_stricmp( s, BG_Weapon( WP_MACHINEGUN )->name ) &&
 			     !BG_WeaponDisabled( WP_MACHINEGUN ) )
 			{
-				ent->client->pers.humanItemSelection = WP_MACHINEGUN;
+				weapon = WP_MACHINEGUN;
 			}
 			else if ( !Q_stricmp( s, BG_Weapon( WP_HBUILD )->name ) &&
 			          !BG_WeaponDisabled( WP_HBUILD ) )
 			{
-				ent->client->pers.humanItemSelection = WP_HBUILD;
+				weapon = WP_HBUILD;
 			}
 			else
 			{
@@ -2552,11 +2566,8 @@ static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 			// spawn from a telenode
 			//TODO merge with alien's code
 			newClass = PCL_HUMAN_NAKED;
-			if ( G_PushSpawnQueue( &level.team[ team ].spawnQueue, clientNum ) )
+			if ( G_ScheduleSpawn( ent->client, newClass, weapon ) )
 			{
-				ent->client->pers.classSelection = newClass;
-				ent->client->ps.stats[ STAT_CLASS ] = newClass;
-
 				return true;
 			}
 		}
