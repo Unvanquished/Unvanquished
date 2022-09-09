@@ -2524,8 +2524,6 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 {
 	int       clientNum = ent->client->ps.clientNum;
 	vec3_t    infestOrigin;
-	vec3_t    range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
-	vec3_t    mins, maxs;
 	class_t   currentClass = ent->client->pers.classSelection;
 
 	if ( newClass <= PCL_NONE || newClass >= PCL_NUM_CLASSES )
@@ -2548,11 +2546,12 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 	}
 
 	// check there are no humans nearby
-	VectorAdd( ent->client->ps.origin, range, maxs );
-	VectorSubtract( ent->client->ps.origin, range, mins );
+	glm::vec3 range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
+	glm::vec3 maxs = VEC2GLM( ent->client->ps.origin ) + range;
+	glm::vec3 mins = VEC2GLM( ent->client->ps.origin ) - range;
 
 	int entityList[ MAX_GENTITIES ];
-	int num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	int num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
 
 	int alienBuildingsInRange = 0;
 	int humansInRange = 0;
