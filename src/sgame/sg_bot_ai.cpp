@@ -759,11 +759,6 @@ AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode_t *node )
 	AIActionNode_t *action = ( AIActionNode_t * ) node;
 	class_t c = ( class_t )  AIUnBoxInt( action->params[ 0 ] );
 
-	if ( self->client->ps.stats[ STAT_CLASS ] == c )
-	{
-		return STATUS_SUCCESS;
-	}
-
 	if ( BotEvolveToClass( self, c ) )
 	{
 		return STATUS_SUCCESS;
