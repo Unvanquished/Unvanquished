@@ -249,7 +249,8 @@ static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
 {
 	class_t c = ( class_t ) AIUnBoxInt( params[ 0 ] );
 
-	return AIBoxInt( BotCanEvolveToClass( self, c ) );
+	return AIBoxInt( BotCanEvolveToClass( self, c ) &&
+		G_AlienEvolve( self, c, false, /* dryRun = */ true ) );
 }
 
 // Returns a team's momentum for use in behavior trees.
