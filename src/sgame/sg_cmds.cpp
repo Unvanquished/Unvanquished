@@ -1577,9 +1577,8 @@ static bool isDisabledVoteType(const char *vote)
 
 static bool botFillVoteArgValid( char *arg )
 {
-	char *end;
-	int num = strtol( arg, &end, 10 );
-	return !( *arg == 0 || end == arg || num < 0 || num > g_maxVoteFillBots.Get() );
+	int num = -1;
+	return Str::ParseInt( num, arg ) && num >= 0 && num <= g_maxVoteFillBots.Get();
 }
 
 /*
