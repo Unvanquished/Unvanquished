@@ -231,10 +231,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 	amount *= MomentumMod( type );
 
 	// limit a team's total
-	if ( level.team[ team ].momentum + amount > MOMENTUM_MAX )
-	{
-		amount = MOMENTUM_MAX - level.team[ team ].momentum;
-	}
+	amount = Math::Clamp( amount, 0.f - level.team[ team ].momentum, MOMENTUM_MAX - level.team[ team ].momentum );
 
 	if ( amount != 0.0f )
 	{
