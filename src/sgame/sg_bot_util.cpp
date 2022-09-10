@@ -127,19 +127,19 @@ bool equipment_t<weapon_t>::unlocked( void ) const
 template <>
 bool equipment_t<class_t>::allowed( void ) const
 {
-	return authorized.Get() && !BG_ClassDisabled( item );
+	return authorized.Get() && g_bot_evolve.Get() && !BG_ClassDisabled( item );
 }
 
 template <>
 bool equipment_t<upgrade_t>::allowed( void ) const
 {
-	return authorized.Get() && !BG_UpgradeDisabled( item );
+	return authorized.Get() && g_bot_buy.Get() && !BG_UpgradeDisabled( item );
 }
 
 template <>
 bool equipment_t<weapon_t>::allowed( void ) const
 {
-	return authorized.Get() && !BG_WeaponDisabled( item );
+	return authorized.Get() && g_bot_buy.Get() && !BG_WeaponDisabled( item );
 }
 
 // slots
