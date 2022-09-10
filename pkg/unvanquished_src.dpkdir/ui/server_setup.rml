@@ -1,6 +1,7 @@
 <rml>
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/rcss" href="/ui/shared/tooltip.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
 	<body id="server_setup" template="window" style="width: 46em; margin: 1em;">
@@ -11,20 +12,29 @@
 		<!-- GENERAL SERVER CONFIG -->
 		<tab><translate>General</translate></tab><panel>
 			<row>
-				<h3><translate>Free funds period</translate></h3>
+				<parent>
+					<h3><translate>Free funds frequency</translate></h3>
+					<tooltip><translate>Every X seconds the player is alive, they will receive free funds.</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="3600" step="1" cvar="g_freeFundPeriod" />
-				<p><translate>Time interval at which players receive free credits/evos</translate></p>
+				<p><inlinecvar cvar="g_freeFundPeriod" type="number" format="%g"/>&nbsp;<translate>seconds</translate><ilink onclick='Events.pushevent("exec reset g_freeFundPeriod", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3><translate>Friendly fire damage multipliers</translate></h3>
+				<parent>
+					<h3><translate>Friendly fire damage multipliers</translate></h3>
+					<tooltip><translate>Damage multiplier for team damage (doesn't include buildings, or self)</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="1" step="0.05" cvar="g_friendlyFireAlienMultiplier" />
-				<p><translate>Alien:</translate>&nbsp;<inlinecvar cvar="g_friendlyFireAlienMultiplier" type="number" format="%.2f"/></p>
+				<p><translate>Alien:</translate>&nbsp;<inlinecvar cvar="g_friendlyFireAlienMultiplier" type="number" format="%.2f"/><ilink onclick='Events.pushevent("exec reset g_friendlyFireAlienMultiplier", event)'> (reset) </ilink></p>
 				<input type="range" min="0" max="1" step="0.05" cvar="g_friendlyFireHumanMultiplier" />
-				<p><translate>Human:</translate>&nbsp;<inlinecvar cvar="g_friendlyFireHumanMultiplier" type="number" format="%.2f"/></p>
+				<p><translate>Human:</translate>&nbsp;<inlinecvar cvar="g_friendlyFireHumanMultiplier" type="number" format="%.2f"/><ilink onclick='Events.pushevent("exec reset g_friendlyFireHumanMultiplier", event)'> (reset) </ilink></p>
 			</row>
 			<row>
 				<input cvar="g_friendlyBuildableFire" type="checkbox" />
-				<h3><translate>Friendly buildable fire</translate></h3>
+				<parent>
+					<h3><translate>Friendly buildable fire</translate></h3>
+					<tooltip>Can one hurt the team's buildable?</tooltip>
+				</parent>
 			</row>
 			<row>
 				<input cvar="g_allowVote" type="checkbox" />
@@ -34,8 +44,14 @@
 			<h2><translate>Warmup</translate></h2>
 			<row>
 				<input cvar="g_doWarmup" type="checkbox" />
-				<h3><translate>Do warmups at every game start</translate></h3>
-				<p><translate>Gives players on slower computers time to join.</translate></p>
+				<parent>
+					<h3><translate>Do warmups at every game start</translate></h3>
+					<tooltip><translate>Gives players on slower computers time to join.</translate></tooltip>
+				</parent>
+				<if cvar="g_doWarmup" condition="==" value="1">
+					<input type="range" min="0" max="30" step="1" cvar="g_warmup" />
+					<p><inlinecvar cvar="g_warmup" type="number" format="%g"/>&nbsp;<translate>seconds</translate><ilink onclick='Events.pushevent("exec reset g_warmup", event)'> (reset) </ilink></p>
+				</if>
 			</row>
 
 			<h2><translate>Teams</translate></h2>
@@ -59,90 +75,133 @@
 			</row>
 			<row>
 				<input cvar="g_dretchpunt" type="checkbox" />
-				<h3><translate>Dretch punt</translate></h3>
-				<p><translate>Dretches can be pushed out of the way by attacking them.</translate></p>
+				<parent>
+					<h3><translate>Dretch punt</translate></h3>
+					<tooltip><translate>Dretches can be pushed out of the way by attacking them.</translate></tooltip>
+				</parent>
 			</row>
 			<row>
 				<input cvar="g_antiSpawnBlock" type="checkbox" />
-				<h3><translate>Anti spawn-block</translate></h3>
-				<p><translate>Push slow people away from spawns.</translate></p>
+				<parent>
+					<h3><translate>Anti spawn-block</translate></h3>
+					<tooltip><translate>Push slow people away from spawns.</translate></tooltip>
+				</parent>
 			</row>
 		</panel>
 
 		<!-- MOMENTUM CONFIG -->
 		<tab> Momentum </tab><panel>
 			<row>
-				<h3> Half life time </h3>
+				<parent>
+					<h3><translate>Half life time</translate></h3>
+					<tooltip><translate>Time for momentum to decrease 50%. 0 disables this behavior.</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="60" step="1" cvar="g_momentumHalfLife"/>
-				<p class="inline"> Time for momentum to decrease 50%. 0 disables this behavior. </p>
+				<p><inlinecvar cvar="g_momentumHalfLife" type="number" format="%g"/>&nbsp;<translate>minutes</translate><ilink onclick='Events.pushevent("exec reset g_momentumHalfLife", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Double reward delay </h3>
+				<parent>
+					<h3><translate>Double reward delay</translate></h3>
+					<tooltip><translate>Time after which some momentum rewards double</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="240" step="5" cvar="g_momentumRewardDoubleTime"/>
-				<p class="inline"> Interval at which some momentum rewards double </p>
+				<p><inlinecvar cvar="g_momentumRewardDoubleTime" type="number" format="%g"/>&nbsp;<translate>minutes</translate><ilink onclick='Events.pushevent("exec reset g_momentumRewardDoubleTime", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Base modifier </h3>
+				<parent>
+					<h3><translate>Base Multiplier</translate></h3>
+					<tooltip><translate>Generic momentum reward multiplier</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumBaseMod"/>
-				<p class="inline"> Generic momentum reward multiplier </p>
+				<p><inlinecvar cvar="g_momentumBaseMod" type="number" format="%g"/>&nbsp;<ilink onclick='Events.pushevent("exec reset g_momentumBaseMod", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Kills reward multiplier </h3>
+				<parent>
+					<h3><translate>Kills reward multiplier</translate></h3>
+					<tooltip><translate>Momentum reward multiplier for kills</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumKillMod"/>
-				<p class="inline"> Momentum reward multiplier for kills </p>
+				<p><inlinecvar cvar="g_momentumKillMod" type="number" format="%g"/>&nbsp;<ilink onclick='Events.pushevent("exec reset g_momentumKillMod", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Building reward multiplier </h3>
+				<parent>
+					<h3><translate>Building reward multiplier</translate></h3>
+					<tooltip><translate>Momentum reward multiplier for construction</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumBuildMod"/>
-				<p class="inline"> Momentum reward multiplier for construction </p>
+				<p><inlinecvar cvar="g_momentumBuildMod" type="number" format="%g"/>&nbsp;<ilink onclick='Events.pushevent("exec reset g_momentumBuildMod", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Deconstruction penalty multiplier </h3>
+				<parent>
+					<h3><translate>Decon penalty multiplier</translate></h3>
+					<tooltip><translate>Momentum penalty multiplier for deconstruction</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumDeconMod"/>
-				<p class="inline"> Momentum penalty multiplier for deconstruction </p>
+				<p><inlinecvar cvar="g_momentumDeconMod" type="number" format="%g"/>&nbsp;<ilink onclick='Events.pushevent("exec reset g_momentumDeconMod", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Destruction reward multiplier </h3>
+				<parent>
+					<h3><translate>Building Kill reward multiplier</translate></h3>
+					<tooltip><translate>Momentum reward multiplier for killing buildables</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumDestroyMod"/>
-				<p class="inline"> Momentum reward multiplier for killing buildables </p>
+				<p><inlinecvar cvar="g_momentumDestroyMod" type="number" format="%g"/>&nbsp;<ilink onclick='Events.pushevent("exec reset g_momentumDestroyMod", event)'> (reset) </ilink></p>
 			</row>
 		</panel>
 
 		<!-- BUILDPOINTS CONFIG -->
 		<tab> Build system </tab><panel>
 			<row>
-				<h3> Starting value </h3>
+				<parent>
+					<h3><translate>Starting value</translate></h3>
+					<tooltip><translate>Initial build points count</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="400" step="10" cvar="g_BPInitialBudget"/>
-				<p class="inline"> Initial build points count </p>
+				<p><inlinecvar cvar="g_BPInitialBudget" type="number" format="%g"/>&nbsp; bp<ilink onclick='Events.pushevent("exec reset g_BPInitialBudget", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Miner bonus </h3>
+				<parent>
+					<h3><translate>Miner bonus</translate></h3>
+					<tooltip><translate>Build point budget per miner</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="400" step="10" cvar="g_BPBudgetPerMiner"/>
-				<p class="inline"> Build point budget per miner </p>
+				<p><inlinecvar cvar="g_BPBudgetPerMiner" type="number" format="%g"/>&nbsp; bp<ilink onclick='Events.pushevent("exec reset g_BPBudgetPerMiner", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Initial regeneration speed </h3>
-				<input type="range" min="0" max="50" step="4" cvar="g_BPInitialBudget"/>
-				<p class="inline"> Initial build points count </p>
+				<parent>
+					<h3><translate>Initial regeneration speed</translate></h3>
+					<tooltip><translate>The initial speed at which BP will be recovered (in BP per minute)</translate></tooltip>
+				</parent>
+				<input type="range" min="0" max="50" step="4" cvar="g_BPRecoveryInitialRate"/>
+				<p><inlinecvar cvar="g_BPRecoveryInitialRate" type="number" format="%g"/>&nbsp; bp/min<ilink onclick='Events.pushevent("exec reset g_BPRecoveryInitialRate", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Half regeneration time </h3>
+				<parent>
+					<h3><translate>Half regeneration time</translate></h3>
+					<tooltip><translate>The duration one will wait before BP recovery gets twice as slow</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="60" step="2" cvar="g_BPRecoveryRateHalfLife"/>
-				<p class="inline"> The duration one will wait before BP recovery gets twice as slow </p>
+				<p><inlinecvar cvar="g_BPRecoveryRateHalfLife" type="number" format="%g"/>&nbsp; <translate>minutes</translate><ilink onclick='Events.pushevent("exec reset g_BPRecoveryRateHalfLife", event)'> (reset) </ilink></p>
 			</row>
 		</panel>
 
 		<!-- GENERAL BOT CONFIG -->
 		<tab>Bots: General</tab><panel>
 			<row>
-				<h3> minimum team size </h3>
+				<parent>
+					<h3><translate>Minimum bots per team</translate></h3>
+					<tooltip><translate>Fill teams until they have enough players</translate></tooltip>
+				</parent>
 				<input type="range" min="0" max="31" step="1" cvar="g_bot_defaultFill"/>
-				<p class="inline"> Fill teams until they have enough players </p>
+				<p><inlinecvar cvar="g_bot_defaultFill" type="number" format="%g"/>&nbsp; <translate>bots</translate><ilink onclick='Events.pushevent("exec reset g_bot_defaultFill", event)'> (reset) </ilink></p>
 			</row>
 			<row>
-				<h3> Default skill level </h3>
+				<parent>
+					<h3><translate>Default skill level</translate></h3>
+					<tooltip><translate>Only works for new bots.</translate></tooltip>
+				</parent>
 				<input type="range" min="1" max="9" step="1" cvar="g_bot_default_skill"/>
-				<p class="inline"> Only works for new bots. </p>
+				<p><inlinecvar cvar="g_bot_default_skill" type="number" format="%g"/>&nbsp;<ilink onclick='Events.pushevent("exec reset g_bot_default_skill", event)'> (reset) </ilink></p>
 			</row>
 			<h2> Humanity </h2>
 			<row>
