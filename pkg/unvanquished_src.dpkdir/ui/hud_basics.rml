@@ -145,6 +145,9 @@
 		position_indicator {
 			width: 100%;
 			height: 100%;
+			/* Dejavu has monospaced numbers, but Roboto does not
+			   This stops the numbers "jiggling" left and right */
+			font-family: Dejavu Sans;
 		}
 
 		speedometer span,
