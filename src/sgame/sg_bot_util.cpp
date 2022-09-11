@@ -1766,6 +1766,15 @@ float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 float CalcPounceAimPitch( gentity_t *self, glm::vec3 &targetPos )
 {
 	vec_t speed = ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL3 ) ? LEVEL3_POUNCE_JUMP_MAG : LEVEL3_POUNCE_JUMP_MAG_UPG;
+
+	// Aim a bit higher to account for
+	// 1. enemies moving (often backwards when fighting)
+	// 2. bbox "mins" differences
+	// 3. and last but not least, to make it more likely that you pounce
+	//    *on them*, actually dealing damage
+	// This does still hit the enemy if it moves towards you
+	targetPos[2] += 32.0f; // aim 1m higher
+
 	return CalcAimPitch( self, targetPos, speed );
 
 	//in usrcmd angles, a positive angle is down, so multiply angle by -1
