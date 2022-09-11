@@ -85,6 +85,19 @@ struct GentityRef_impl
 		return *this;
 	}
 
+	bool operator==(const GentityRef_impl<T>& other) const {
+		if (!this->entity || !other->entity) {
+			return false;
+		}
+		if (this->entity != other->entity) {
+			return false;
+		}
+		if (this->generation != other->generation) {
+			return false;
+		}
+		return true;
+	}
+
 	operator bool() const {
 		return entity != nullptr && entity->generation == generation;
 	}
