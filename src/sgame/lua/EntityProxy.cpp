@@ -173,7 +173,7 @@ static int Getbuildable(lua_State* L)
 		proxy->buildable.reset();
 		return 0;
 	}
-	if (!proxy->buildable || proxy->buildable->ent != proxy->ent)
+	if (!proxy->buildable || proxy->buildable->ent.get() != proxy->ent)
 	{
 		proxy->buildable.reset(new Buildable(proxy->ent));
 	}

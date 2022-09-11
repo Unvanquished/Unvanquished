@@ -58,7 +58,7 @@ static int Methoddecon(lua_State* L, Buildable* b)
 {
     if (b && b->ent && b->ent->s.eType == entityType_t::ET_BUILDABLE)
     {
-        G_DeconstructUnprotected( b->ent, nullptr );
+        G_DeconstructUnprotected( b->ent.get(), nullptr );
     }
     return 0;
 }
@@ -82,23 +82,23 @@ static int Get##var( lua_State* L ) \
 	return 1; \
 }
 
-static inline BuildableComponent* bc( gentity_t* ent )
+static inline BuildableComponent* bc( GentityRef& ent )
 {
     BuildableComponent* c = ent->entity->Get<BuildableComponent>();
     if ( !c )
     {
-        Sys::Drop( "Expected BuildableComponent for entity %s", etos(ent) );
+        Sys::Drop( "Expected BuildableComponent for entity %s", etos(ent.get()) );
         return nullptr;
     }
     return c;
 }
 
-static inline HealthComponent* hc( gentity_t* ent )
+static inline HealthComponent* hc( GentityRef& ent )
 {
     HealthComponent* c = ent->entity->Get<HealthComponent>();
     if ( !c )
     {
-        Sys::Drop( "Expected HealthComponent for entity %s", etos(ent) );
+        Sys::Drop( "Expected HealthComponent for entity %s", etos(ent.get()) );
         return nullptr;
     }
     return c;
@@ -119,7 +119,7 @@ GET_FUNC( target, LuaLib<EntityProxy>::push( L, Entity::CreateProxy( c->ent->tar
 /// Buildable health.
 // @tfield number health Read/Write.
 // @within Buildable
-GET_FUNC( health, lua_pushnumber(L, Entities::HasHealthComponent(c->ent) ? Entities::HealthOf( c->ent ) : 0 ) )
+GET_FUNC( health, lua_pushnumber(L, Entities::HasHealthComponent(c->ent.get()) ? Entities::HealthOf( c->ent.get() ) : 0 ) )
 /// Buildable team.
 // @tfield string team Read only.
 // @within Buildable
