@@ -193,7 +193,7 @@ static int Getbot(lua_State* L)
 		proxy->bot.reset();
 		return 0;
 	}
-	if (!proxy->bot || proxy->bot->ent != proxy->ent)
+	if (!proxy->bot || proxy->bot->ent.get() != proxy->ent)
 	{
 		proxy->bot.reset(new Bot(proxy->ent));
 	}
