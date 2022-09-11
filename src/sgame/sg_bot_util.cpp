@@ -1731,16 +1731,13 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 
 float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 {
-	glm::vec3 startPos;
-	glm::vec3 forward, right, up;
-	glm::vec3 muzzle;
-
 	float g = self->client->ps.gravity;
 	float v = launchSpeed;
 
-	AngleVectors( VEC2GLM( self->s.origin ), &forward, &right, &up );
-	muzzle = G_CalcMuzzlePoint( self, forward );
-	startPos = muzzle;
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
+	const glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
+	const glm::vec3 &startPos = muzzle;
 
 	// Project everything onto a 2D plane with initial position at (0,0)
 	// dz (Δz) is the difference in height and dr (Δr) the distance forward
