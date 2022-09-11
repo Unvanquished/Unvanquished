@@ -109,7 +109,7 @@ static inline HealthComponent* hc( gentity_t* ent )
 // @within Buildable
 GET_FUNC( name, lua_pushstring(L, BG_Buildable( c->ent->s.modelindex )->name ) )
 /// Whether the buildable is powered.
-// @tfield boolean powered Read/Write.
+// @tfield boolean powered Read only.
 // @within Buildable
 GET_FUNC( powered, lua_pushboolean(L, bc(c->ent)->Powered() ) )
 /// The entity the buildable is targeting.
@@ -160,7 +160,6 @@ static int Set##var( lua_State* L ) \
 	return 0; \
 }
 
-SET_FUNC( powered, c->ent->powered = lua_toboolean(L, 2) )
 SET_FUNC( health, hc(c->ent)->SetHealth(luaL_checknumber(L, 2)) )
 
 static int Settarget(lua_State* L)
@@ -201,7 +200,6 @@ static int Setmarked(lua_State* L)
 #define SETTER(name) { #name, Set##name }
 luaL_Reg BuildableSetters[] =
 {
-    SETTER( powered ),
     SETTER( target ),
     SETTER( health ),
     SETTER( marked ),
