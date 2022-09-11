@@ -303,7 +303,7 @@ int Setstamina(lua_State* L)
     return 0;
 }
 
-int Setgod(lua_State* L)
+static int Setgod(lua_State* L)
 {
     Client* c = LuaLib<Client>::check(L, 1);
     if (!c) return 0;

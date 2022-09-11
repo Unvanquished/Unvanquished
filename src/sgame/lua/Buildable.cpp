@@ -132,6 +132,10 @@ GET_FUNC( marked, lua_pushboolean(L, bc(c->ent)->MarkedForDeconstruction() ) )
 // @tfield integer marked_time Read only.
 // @within Buildable
 GET_FUNC( marked_time, lua_pushinteger(L, bc(c->ent)->GetMarkTime() ) )
+/// Make the buildable invulnerable. The buildable cannot take any damage.
+// @tfield bool god Read/Write.
+// @within Buildable
+GET_FUNC( god, lua_pushboolean(L, c->ent->flags & FL_GODMODE ) )
 
 #define GETTER(name) { #name, Get##name }
 luaL_Reg BuildableGetters[] =
@@ -143,7 +147,8 @@ luaL_Reg BuildableGetters[] =
     GETTER( team ),
     GETTER( marked ),
     GETTER( marked_time ),
-	{ nullptr, nullptr },
+    GETTER( god ),
+    { nullptr, nullptr },
 };
 
 
@@ -197,13 +202,30 @@ static int Setmarked(lua_State* L)
 	return 0;
 }
 
+static int Setgod(lua_State* L)
+{
+    Buildable* c = LuaLib<Buildable>::check(L, 1);
+    if (!c) return 0;
+    bool god = lua_toboolean(L, 2);
+    if (god)
+    {
+        c->ent->flags |= FL_GODMODE;
+    }
+    else
+    {
+        c->ent->flags &= ~FL_GODMODE;
+    }
+    return 0;
+}
+
 #define SETTER(name) { #name, Set##name }
 luaL_Reg BuildableSetters[] =
 {
     SETTER( target ),
     SETTER( health ),
     SETTER( marked ),
-	{ nullptr, nullptr },
+    SETTER( god ),
+    { nullptr, nullptr },
 };
 
 } // namespace Lua
