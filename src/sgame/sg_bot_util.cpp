@@ -134,6 +134,7 @@ bool equipment_t<class_t>::allowed( void ) const
 template <>
 bool equipment_t<upgrade_t>::allowed( void ) const
 {
+// HACK: only humans can buy equipment, so this should be fine for now.
 	return authorized.Get() && g_bot_buy.Get() && !BG_UpgradeDisabled( item );
 }
 
