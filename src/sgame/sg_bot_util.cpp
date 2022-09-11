@@ -127,6 +127,7 @@ bool equipment_t<weapon_t>::unlocked( void ) const
 template <>
 bool equipment_t<class_t>::allowed( void ) const
 {
+// HACK: only aliens can "buy" classes, aka evolve, so this should work, for now.
 	return authorized.Get() && g_bot_evolve.Get() && !BG_ClassDisabled( item );
 }
 
