@@ -131,19 +131,22 @@ bool equipment_t<weapon_t>::unlocked( void ) const
 template <>
 bool equipment_t<class_t>::allowed( void ) const
 {
-	return authorized.Get() && !BG_ClassDisabled( item );
+// HACK: only aliens can "buy" classes, aka evolve, so this should work, for now.
+	return authorized.Get() && g_bot_evolve.Get() && !BG_ClassDisabled( item );
 }
 
 template <>
 bool equipment_t<upgrade_t>::allowed( void ) const
 {
-	return authorized.Get() && !BG_UpgradeDisabled( item );
+// HACK: only humans can buy equipment, so this should be fine for now.
+	return authorized.Get() && g_bot_buy.Get() && !BG_UpgradeDisabled( item );
 }
 
 template <>
 bool equipment_t<weapon_t>::allowed( void ) const
 {
-	return authorized.Get() && !BG_WeaponDisabled( item );
+// HACK: only humans can buy equipment, so this should be fine for now.
+	return authorized.Get() && g_bot_buy.Get() && !BG_WeaponDisabled( item );
 }
 
 // slots
