@@ -1931,78 +1931,30 @@ static bool BotChangeClass( gentity_t *self, class_t newClass, glm::vec3 newOrig
 
 bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 {
-	int clientNum;
-	int i;
-	glm::vec3 infestOrigin;
 	class_t currentClass = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
-	evolveInfo_t evolveInfo;
-	int entityList[ MAX_GENTITIES ];
-	glm::vec3 range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
-	glm::vec3 mins, maxs;
-	int num;
-	gentity_t *other;
 
 	if ( currentClass == newClass )
 	{
 		return true;
 	}
 
-	clientNum = ent->client - level.clients;
-
 	if ( !BotCanEvolveToClass( ent, newClass ) )
 	{
 		return false;
 	}
 
-	//if we are not currently spectating, we are attempting evolution
-	if ( ent->client->pers.classSelection != PCL_NONE )
+	// disable wallwalking if on
+	if ( ( ent->client->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
 	{
-		if ( ( ent->client->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
-		{
-			ent->client->pers.cmd.upmove = 0;
-		}
-
-		//check there are no humans nearby
-		maxs = VEC2GLM( ent->client->ps.origin ) + range;
-		mins = VEC2GLM( ent->client->ps.origin ) - range;
-
-		num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
-		for ( i = 0; i < num; i++ )
-		{
-			other = &g_entities[ entityList[ i ] ];
-
-			if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
-				( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
-			{
-				return false;
-			}
-		}
-
-		if ( !G_ActiveOvermind() )
-		{
-			return false;
-		}
-
-		evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
-
-		if ( G_RoomForClassChange( ent, newClass, &infestOrigin[0] ) )
-		{
-			ent->client->pers.evolveHealthFraction =
-				Math::Clamp( Entities::HealthFraction(ent), 0.0f, 1.0f );
-
-			//remove credit
-			G_AddCreditToClient( ent->client, -( short )evolveInfo.evolveCost, true );
-			ent->client->pers.classSelection = newClass;
-			BotSetNavmesh( ent, newClass );
-			ClientUserinfoChanged( clientNum, false );
-			VectorCopy( infestOrigin, ent->s.pos.trBase );
-			ClientSpawn( ent, ent, ent->s.pos.trBase, ent->s.apos.trBase );
-
-			//trap_SendServerCommand( -1, va( "print \"evolved to %s\n\"", classname) );
-
-			return true;
-		}
+		ent->client->pers.cmd.upmove = 0;
 	}
+
+	if ( G_AlienEvolve( ent, newClass, false, false ) )
+	{
+		BotSetNavmesh( ent, newClass );
+		return true;
+	}
+
 	return false;
 }
 
