@@ -156,7 +156,7 @@ static int Getclient(lua_State* L)
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
 	if (!proxy || !proxy->ent || !proxy->ent->client) return 0;
-	if (!proxy->client || GentityRef(proxy->client->ent) != proxy->ent)
+	if (!proxy->client || proxy->client->ent != proxy->ent)
 	{
 		proxy->client.reset(new Client(proxy->ent.get()));
 	}

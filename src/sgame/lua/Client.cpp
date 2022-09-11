@@ -84,7 +84,7 @@ GET_FUNC( weapon, lua_pushstring(L, BG_Weapon(c->ent->client->ps.stats[STAT_WEAP
 /// The client's health.
 // @tfield number health Read/Write.
 // @within Client
-GET_FUNC( health, lua_pushnumber(L, Entities::HasHealthComponent(c->ent) ? Entities::HealthOf(c->ent) : 0 ) )
+GET_FUNC( health, lua_pushnumber(L, Entities::HasHealthComponent(c->ent.get()) ? Entities::HealthOf(c->ent.get()) : 0 ) )
 /// The client's ping.
 // @tfield integer ping Read only.
 // @within Client
@@ -140,7 +140,7 @@ int Methodkill(lua_State* L, Client* c)
     }
     HealthComponent* health = c->ent->entity->Get<HealthComponent>();
     if (!health || !health->Alive()) return 0;
-    Entities::Kill(c->ent, MOD_SUICIDE);
+    Entities::Kill(c->ent.get(), MOD_SUICIDE);
     return 0;
 }
 
@@ -163,7 +163,7 @@ int Methodteleport(lua_State* L, Client* c)
         return 0;
     }
     origin[ 2 ] -= c->ent->client->ps.viewheight;
-    G_TeleportPlayer(c->ent, origin, angles, 0);
+    G_TeleportPlayer(c->ent.get(), origin, angles, 0);
     return 0;
 }
 
@@ -181,7 +181,7 @@ int Methodcommand(lua_State* L, Client* c)
     }
     const char* cmd = luaL_checkstring(L, 1);
     Cmd::PushArgs(cmd);
-    ClientCommand(c->ent - g_entities);
+    ClientCommand(c->ent.get() - g_entities);
     Cmd::PopArgs();
     return 0;
 }
@@ -223,7 +223,7 @@ int Setname(lua_State* L)
     const char* newName = luaL_checkstring(L, 2);
     if (!newName) return 0;
     char err[ MAX_STRING_CHARS ] = {};
-    if (!G_admin_name_check(c->ent, newName, err, sizeof(err)))
+    if (!G_admin_name_check(c->ent.get(), newName, err, sizeof(err)))
     {
         Log::Warn("error changing name: %s", err);
         return 0;
