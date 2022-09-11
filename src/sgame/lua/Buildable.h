@@ -45,7 +45,7 @@ namespace Lua {
 struct Buildable
 {
     Buildable(gentity_t* ent) : ent(ent) {}
-    gentity_t* ent;
+    GentityRef ent;
 };
 
 
