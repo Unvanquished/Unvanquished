@@ -5797,7 +5797,12 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		BotUsage( ent );
 		return false;
 	}
-	int count = atoi( args[2].data() );
+	int count = 0;
+	if ( !Str::ParseInt( count, args[2].data() ) || count < 0 )
+	{
+		BotUsage( ent );
+		return false;
+	}
 	std::vector<team_t> teams;
 	if ( args.Argc() >= 4 )
 	{

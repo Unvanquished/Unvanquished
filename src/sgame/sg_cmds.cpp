@@ -1556,22 +1556,25 @@ static const struct {
 	Cvar::Cvar<int> *specialCvar;
 	Cvar::Cvar<bool> *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be true)
 } voteInfo[] = {
-	// Name           Stop?  Type      Target     Immune  Quorum    Reason            Vote percentage var  Extra
-	{ "kick",         false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "spectate",     false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "mute",         true,  V_PUBLIC, T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "unmute",       true,  V_PUBLIC, T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "denybuild",    true,  V_TEAM,   T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "allowbuild",   true,  V_TEAM,   T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "extend",       true,  V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime, nullptr },
-	{ "admitdefeat",  true,  V_TEAM,   T_NONE,    false,  true,     qtrinary::qno,    &g_admitDefeatVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "draw",         true,  V_PUBLIC, T_NONE,    true,   true,     qtrinary::qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-	{ "map_restart",  true,  V_PUBLIC, T_NONE,    false,  true,     qtrinary::qno,    &g_mapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "map",          true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
-	{ "layout",       true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
-	{ "nextmap",      false, V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "poll",         false, V_ANY,    T_NONE,    false,  false,    qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
-	{ "kickbots",     true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	// Name              Stop?  Type      Target     Immune  Quorum    Reason            Vote percentage var  Extra
+	{ "kick",            false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "spectate",        false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "mute",            true,  V_PUBLIC, T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "unmute",          true,  V_PUBLIC, T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "denybuild",       true,  V_TEAM,   T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "allowbuild",      true,  V_TEAM,   T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "extend",          true,  V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime, nullptr },
+	{ "admitdefeat",     true,  V_TEAM,   T_NONE,    false,  true,     qtrinary::qno,    &g_admitDefeatVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "draw",            true,  V_PUBLIC, T_NONE,    true,   true,     qtrinary::qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+	{ "map_restart",     true,  V_PUBLIC, T_NONE,    false,  true,     qtrinary::qno,    &g_mapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "map",             true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
+	{ "layout",          true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
+	{ "nextmap",         false, V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "poll",            false, V_ANY,    T_NONE,    false,  false,    qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
+	{ "kickbots",        true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "fillbots",        true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "fillbots_humans", true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
+	{ "fillbots_aliens", true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
 	{ }
 	// note: map votes use the reason, if given, as the layout name
 };
@@ -1601,6 +1604,24 @@ static bool isDisabledVoteType(const char *vote)
 		if (Q_stricmp(vote, *i) == 0) return true;
 	}
 	return false;
+}
+
+/*
+Return true if arg is valid, and store the number in argnum.
+Otherwise, return false and do not modify argnum.
+*/
+static bool botFillVoteParseArg( int& argnum, char *arg )
+{
+	int num = -1;
+	if ( Str::ParseInt( num, arg ) && num >= 0 && num <= g_maxVoteFillBots.Get() )
+	{
+		argnum = num;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /*
@@ -1879,6 +1900,51 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Remove all bots") );
 
 		break;
+
+	case VOTE_BOT_FILL:
+		{
+			int num = 0;
+			if ( !botFillVoteParseArg( num, arg ) )
+			{
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+				return;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d", num );
+			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill each team with bots to %d"), num );
+
+			break;
+		}
+
+	case VOTE_BOT_FILL_HUMANS:
+		{
+			int num = 0;
+			if ( !botFillVoteParseArg( num, arg ) )
+			{
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+				return;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d humans", num );
+			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only humans with bots to %d"), num );
+
+			break;
+		}
+
+	case VOTE_BOT_FILL_ALIENS:
+		{
+			int num = 0;
+			if ( !botFillVoteParseArg( num, arg ) )
+			{
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+				return;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d aliens", num );
+			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only aliens with bots to %d"), num );
+
+			break;
+		}
 
 	case VOTE_MUTE:
 		if ( level.clients[ clientNum ].pers.namelog->muted )
