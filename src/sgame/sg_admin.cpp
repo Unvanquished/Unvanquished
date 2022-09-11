@@ -374,15 +374,15 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"slap",     G_admin_slap,    false, "slap",
-		N_("slaps a player, optionally with damage"),
-		N_("[^3name|slot#|admin#^7] (^3damage^7)")
-	},
-
-	{
 		"showbans",     G_admin_showbans,    true,  "showbans",
 		N_("display a (partial) list of active bans"),
 		N_("(^5name|IP(/mask)^7) (^5start at ban#^7)")
+	},
+
+	{
+		"slap",     G_admin_slap,    false, "slap",
+		N_("slaps a player, optionally with damage"),
+		N_("[^3name|slot#|admin#^7] (^3damage^7)")
 	},
 
 	{
