@@ -157,7 +157,7 @@ int Entity::Delete( lua_State* L )
 		Log::Warn("Lua code only allowed to delete entities created by lua.");
 		return 0;
 	}
-	G_FreeEntity(proxy->ent);
+	G_FreeEntity(proxy->ent.get());
 	return 0;
 }
 

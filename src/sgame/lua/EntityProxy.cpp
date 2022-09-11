@@ -60,6 +60,7 @@ EntityProxy::EntityProxy(gentity_t* ent, lua_State* L) :
 static int Get##var( lua_State* L ) \
 { \
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 ); \
+	if (!proxy || !proxy->ent) return 0; \
 	lua_push##type( L, proxy->ent->var ); \
 	return 1; \
 }
@@ -68,6 +69,7 @@ static int Get##var( lua_State* L ) \
 static int Get##var( lua_State* L ) \
 { \
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 ); \
+	if (!proxy || !proxy->ent) return 0; \
 	func; \
 	return 1; \
 }
@@ -117,7 +119,7 @@ GET_FUNC2(maxs, Shared::Lua::PushVec3(L, proxy->ent->r.maxs))
 /// The entity number. Also the entity's index in g_entities.
 // @tfield integer number Read only.
 // @within EntityProxy
-GET_FUNC2(number, lua_pushinteger(L, proxy->ent - g_entities))
+GET_FUNC2(number, lua_pushinteger(L, proxy->ent.get() - g_entities))
 
 /// The entity team.
 // @tfield string team Read only.
@@ -125,6 +127,7 @@ GET_FUNC2(number, lua_pushinteger(L, proxy->ent - g_entities))
 static int Getteam(lua_State* L)
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+	if ( !proxy || !proxy->ent ) return 0;
 	team_t team = TEAM_NONE;
 	switch (proxy->ent->s.eType)
 	{
@@ -153,9 +156,9 @@ static int Getclient(lua_State* L)
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
 	if (!proxy || !proxy->ent || !proxy->ent->client) return 0;
-	if (!proxy->client || proxy->client->ent != proxy->ent)
+	if (!proxy->client || GentityRef(proxy->client->ent) != proxy->ent)
 	{
-		proxy->client.reset(new Client(proxy->ent));
+		proxy->client.reset(new Client(proxy->ent.get()));
 	}
 	LuaLib<Client>::push(L, proxy->client.get(), false);
 	return 1;
@@ -173,9 +176,9 @@ static int Getbuildable(lua_State* L)
 		proxy->buildable.reset();
 		return 0;
 	}
-	if (!proxy->buildable || proxy->buildable->ent.get() != proxy->ent)
+	if (!proxy->buildable || proxy->buildable->ent != proxy->ent)
 	{
-		proxy->buildable.reset(new Buildable(proxy->ent));
+		proxy->buildable.reset(new Buildable(proxy->ent.get()));
 	}
 	LuaLib<Buildable>::push(L, proxy->buildable.get(), false);
 	return 1;
@@ -193,9 +196,9 @@ static int Getbot(lua_State* L)
 		proxy->bot.reset();
 		return 0;
 	}
-	if (!proxy->bot || proxy->bot->ent.get() != proxy->ent)
+	if (!proxy->bot || proxy->bot->ent != proxy->ent)
 	{
-		proxy->bot.reset(new Bot(proxy->ent));
+		proxy->bot.reset(new Bot(proxy->ent.get()));
 	}
 	LuaLib<Bot>::push(L, proxy->bot.get(), false);
 	return 1;
