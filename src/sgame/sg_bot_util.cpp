@@ -1732,45 +1732,35 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 {
 	glm::vec3 startPos;
-	float initialHeight;
 	glm::vec3 forward, right, up;
 	glm::vec3 muzzle;
-	float distance2D;
-	float x, y, v, g;
-	float check;
 	float angle1, angle2, angle;
+	float g = self->client->ps.gravity;
+	float v = launchSpeed;
 
 	AngleVectors( VEC2GLM( self->s.origin ), &forward, &right, &up );
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	startPos = muzzle;
 
-	//project everything onto a 2D plane with initial position at (0,0)
-	initialHeight = startPos[2];
-	targetPos[2] -= initialHeight;
-	startPos[2] -= initialHeight;
-	distance2D = sqrtf( Square( startPos[0] - targetPos[0] ) + Square( startPos[1] - targetPos[1] ) );
-	targetPos[0] = distance2D;
+	// Project everything onto a 2D plane with initial position at (0,0)
+	// dz (Δz) is the difference in height and dr (Δr) the distance forward
+	float dz = targetPos[2] - startPos[2];
+	float dr = glm::length(glm::vec2(targetPos) - glm::vec2(startPos));
 
-	//for readability's sake
-	x = targetPos[0];
-	y = targetPos[2];
-	v = launchSpeed;
-	g = self->client->ps.gravity;
-
-	//make sure we won't get NaN
-	check = Square( Square( v ) ) - g * ( g * Square( x ) + 2 * y * Square( v ) );
-
-	//as long as we will get NaN, increase velocity to compensate
-	//This is better than returning some failure value because it gives us the best launch angle possible, even if it wont hit in the end.
+	// As long as we would get NaN (sqrt of a negative number), increase
+	// velocity to compensate.
+	// This is better than returning some failure value because it gives us
+	// the best launch angle possible, even if it can't hit in the end.
+	float check = Square( Square( v ) ) - g * ( g * Square( dr ) + 2 * dz * Square( v ) );
 	while ( check < 0 )
 	{
 		v += 5;
-		check = Square( Square( v ) ) - g * ( g * Square( x ) + 2 * y * Square( v ) );
+		check = Square( Square( v ) ) - g * ( g * Square( dr ) + 2 * dz * Square( v ) );
 	}
 
 	//calculate required angle of launch
-	angle1 = atanf( ( Square( v ) + sqrtf( check ) ) / ( g * x ) );
-	angle2 = atanf( ( Square( v ) - sqrtf( check ) ) / ( g * x ) );
+	angle1 = atanf( ( Square( v ) + sqrtf( check ) ) / ( g * dr ) );
+	angle2 = atanf( ( Square( v ) - sqrtf( check ) ) / ( g * dr ) );
 
 	//take the smaller angle
 	angle = std::min( angle1, angle2 );
