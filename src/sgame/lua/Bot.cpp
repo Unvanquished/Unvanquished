@@ -104,7 +104,7 @@ static int MethodSetBehavior( lua_State* L, Bot* c )
         Log::Warn("empty behavior");
         return 0;
     }
-    G_BotChangeBehavior( g_entities - c->ent, behavior );
+    G_BotChangeBehavior( g_entities - c->ent.get(), behavior );
     return 0;
 }
 
