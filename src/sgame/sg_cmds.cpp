@@ -1575,10 +1575,22 @@ static bool isDisabledVoteType(const char *vote)
 	return false;
 }
 
-static bool botFillVoteArgValid( char *arg )
+/*
+Return true if arg is valid, and store the number in argnum.
+Otherwise, return false and do not modify argnum.
+*/
+static bool botFillVoteParseArg( int& argnum, char *arg )
 {
 	int num = -1;
-	return Str::ParseInt( num, arg ) && num >= 0 && num <= g_maxVoteFillBots.Get();
+	if ( Str::ParseInt( num, arg ) && num >= 0 && num <= g_maxVoteFillBots.Get() )
+	{
+		argnum = num;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /*
@@ -1859,40 +1871,49 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_BOT_FILL:
-		if ( !botFillVoteArgValid( arg ) )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
-			return;
+			int num = 0;
+			if ( !botFillVoteParseArg( num, arg ) )
+			{
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+				return;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d", num );
+			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill each team with bots to %d"), num );
+
+			break;
 		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %s", arg );
-		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill with bots to %s"), arg );
-
-		break;
 
 	case VOTE_BOT_FILL_HUMANS:
-		if ( !botFillVoteArgValid( arg ) )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
-			return;
+			int num = 0;
+			if ( !botFillVoteParseArg( num, arg ) )
+			{
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+				return;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d humans", num );
+			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only humans with bots to %d"), num );
+
+			break;
 		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %s humans", arg );
-		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only humans with bots to %s"), arg );
-
-		break;
 
 	case VOTE_BOT_FILL_ALIENS:
-		if ( !botFillVoteArgValid( arg ) )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
-			return;
+			int num = 0;
+			if ( !botFillVoteParseArg( num, arg ) )
+			{
+				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+				return;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d aliens", num );
+			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only aliens with bots to %d"), num );
+
+			break;
 		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %s aliens", arg );
-		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only aliens with bots to %s"), arg );
-
-		break;
 
 	case VOTE_MUTE:
 		if ( level.clients[ clientNum ].pers.namelog->muted )
