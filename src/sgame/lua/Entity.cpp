@@ -140,7 +140,7 @@ int Entity::pairs( lua_State* L )
 
 int Entity::New( lua_State* L )
 {
-	gentity_t* ent = G_NewEntity();
+	gentity_t* ent = G_NewEntity(initEntityStyle_t::NO_CBSE);
 	ent->classname = "lua";
 	ent->s.eType = entityType_t::ET_GENERAL;
 	trap_LinkEntity(ent);

@@ -140,7 +140,7 @@ class SGameGlobal
 			Log::Warn( "invalid buildable: %s", buildableName );
 			return 0;
 		}
-		gentity_t *builder = G_NewEntity();
+		gentity_t *builder = G_NewEntity(initEntityStyle_t::NO_CBSE);
 		VectorCopy( origin, builder->s.pos.trBase );
 		VectorCopy( angles, builder->s.angles );
 		VectorCopy( normal, builder->s.origin2 );

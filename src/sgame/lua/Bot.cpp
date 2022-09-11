@@ -62,17 +62,9 @@ static int Get##var( lua_State* L ) \
 }
 
 /// Bot skill level. From 1-9. Higher skill levels are better.
-// @tfield integer skill_level Read/Write.
+// @tfield integer skill Read/Write.
 // @within Bot
-GET_FUNC( skill_level, lua_pushinteger( L, c->ent->botMind->botSkill.level ) )
-/// How fast the bot will aim; basically the bot reaction time.
-// @tfield number aim_slowness Read/Write.
-// @within Bot
-GET_FUNC( aim_slowness, lua_pushnumber( L, c->ent->botMind->botSkill.aimSlowness ) )
-/// Randomness in the bot aim.
-// @tfield number aim_shake Read/Write.
-// @within Bot
-GET_FUNC( aim_shake, lua_pushnumber( L, c->ent->botMind->botSkill.aimShake ) )
+GET_FUNC( skill, lua_pushinteger( L, c->ent->botMind->skillLevel ) )
 
 /// Name of the current behavior tree.
 // @tfield string behavior Read only.
@@ -124,14 +116,12 @@ RegType<Bot> BotMethods[] =
 #define GETTER(name) { #name, Get##name }
 luaL_Reg BotGetters[] =
 {
-    GETTER( skill_level ),
-    GETTER( aim_slowness ),
-    GETTER( aim_shake ),
+    GETTER( skill ),
     GETTER( behavior ),
 	{ nullptr, nullptr },
 };
 
-static int Setskill_level( lua_State* L )
+static int Setskill( lua_State* L )
 {
     Bot* c = LuaLib<Bot>::check(L, 1);
     if (!c || !c->ent || !c->ent->botMind)
@@ -139,40 +129,15 @@ static int Setskill_level( lua_State* L )
         Log::Warn("trying to access stale bot info!");
         return 0;
     }
-    c->ent->botMind->botSkill.level = luaL_checkinteger( L, 1 );
-    return 0;
-}
-
-static int Setaim_slowness( lua_State* L )
-{
-    Bot* c = LuaLib<Bot>::check(L, 1);
-    if (!c || !c->ent || !c->ent->botMind)
-    {
-        Log::Warn("trying to access stale bot info!");
-        return 0;
-    }
-    c->ent->botMind->botSkill.aimSlowness = luaL_checknumber( L, 1 );
-    return 0;
-}
-
-static int Setaim_shake( lua_State* L )
-{
-    Bot* c = LuaLib<Bot>::check(L, 1);
-    if (!c || !c->ent || !c->ent->botMind)
-    {
-        Log::Warn("trying to access stale bot info!");
-        return 0;
-    }
-    c->ent->botMind->botSkill.aimShake = luaL_checknumber( L, 1 );
+    int skill = luaL_checkinteger( L, 1 );
+    G_BotSetSkill( c->ent->client->num(), skill );
     return 0;
 }
 
 #define SETTER(name) { #name, Set##name }
 luaL_Reg BotSetters[] =
 {
-    SETTER( skill_level ),
-    SETTER( aim_slowness ),
-    SETTER( aim_shake ),
+    SETTER( skill ),
 	{ nullptr, nullptr },
 };
 
