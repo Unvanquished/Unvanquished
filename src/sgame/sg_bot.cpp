@@ -187,7 +187,7 @@ const char * G_BotGetBehavior( int clientNum )
 	return bot->botMind->behaviorTree->name;
 }
 
-void G_BotChangeBehavior( int clientNum, const char* behavior )
+void G_BotChangeBehavior( int clientNum, Str::StringRef behavior )
 {
 	gentity_t *bot = &g_entities[clientNum];
 
@@ -200,14 +200,14 @@ void G_BotChangeBehavior( int clientNum, const char* behavior )
 	G_BotSetBehavior( bot->botMind, behavior );
 }
 
-bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
+bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior )
 {
 	botMind->runningNodes.clear();
 	botMind->currentNode = nullptr;
 	botMind->clearNav();
 	BotResetEnemyQueue( &botMind->enemyQueue );
 
-	botMind->behaviorTree = ReadBehaviorTree( behavior, &treeList );
+	botMind->behaviorTree = ReadBehaviorTree( behavior.c_str(), &treeList );
 
 	if ( !botMind->behaviorTree )
 	{
@@ -223,7 +223,7 @@ bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
 	return true;
 }
 
-bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
+bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef behavior )
 {
 	botMemory_t *botMind;
 	gentity_t *self = &g_entities[ clientNum ];
