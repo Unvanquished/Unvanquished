@@ -1364,15 +1364,15 @@ void ClientBegin( int clientNum )
 		// 0 - don't show
 		// 1 - always show to all
 		// 2 - show only to unregistered
-		if ( g_showWelcome.Get() == 0 )
+		switch ( g_showHelpOnConnection.Get() )
 		{
-			return;
+		case 0:
+			if (0)
+		default:
+			if ( !client->pers.admin )
+		case 1:
+			G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
 		}
-		else if ( g_showWelcome.Get() == 2 && client->pers.admin )
-		{
-			return;
-		}
-		G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
 	}
 }
 

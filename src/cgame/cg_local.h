@@ -1275,16 +1275,6 @@ struct cg_t
 	Filter<WeaponOffsets>   weaponOffsetsFilter;
 };
 
-enum rocketElementType_t
-{
-	ELEMENT_ALL,
-	ELEMENT_GAME,
-	ELEMENT_LOADING,
-	ELEMENT_HUMANS,
-	ELEMENT_ALIENS,
-	ELEMENT_BOTH,
-};
-
 enum class rocketVarType_t {
 	ROCKET_STRING,
 	ROCKET_FLOAT,
@@ -1308,7 +1298,6 @@ enum rocketMenuType_t {
 	ROCKETMENU_CHAT,
 	ROCKETMENU_BEACONS,
 	ROCKETMENU_ERROR,
-	ROCKETMENU_WELCOME,
 	ROCKETMENU_NUM_TYPES
 };
 
@@ -1739,6 +1728,16 @@ enum rangeMarker_t
 	RM_SPHERE,
 	RM_SPHERICAL_CONE_64,
 	RM_SPHERICAL_CONE_240,
+};
+
+enum rocketElementType_t
+{
+	ELEMENT_ALL,
+	ELEMENT_GAME,
+	ELEMENT_LOADING,
+	ELEMENT_HUMANS,
+	ELEMENT_ALIENS,
+	ELEMENT_BOTH,
 };
 
 enum altShader_t
