@@ -2435,13 +2435,12 @@ glm::vec3 botTarget_t::getPos() const
 	return glm::vec3();
 }
 
-// Reimplementation of daemon's function of same name.
-// This lacks doc because I am unsure about what it does exactly, and don't
-// want to think about it for now.
-// TODO: replace with code from GLM: pretty sure there's an equivalent.
-glm::vec3 ProjectPointOntoVector( const glm::vec3 &point, const glm::vec3 &vStart, const glm::vec3 &vEnd )
+
+// Reimplementation of Daemon's ProjectPointOntoVector.
+// Projects `point` onto the line passing through linePoint1 and linePoint2.
+glm::vec3 ProjectPointOntoVector( const glm::vec3 &point, const glm::vec3 &linePoint1, const glm::vec3 &linePoint2 )
 {
-	glm::vec3 pVec = point - vStart;
-	glm::vec3 vec = glm::normalize( vEnd - vStart );
-	return vStart + glm::dot( pVec, vec ) * vec;
+	glm::vec3 pointRelative = point - linePoint1;
+	glm::vec3 lineDir = glm::normalize( linePoint2 - linePoint1 );
+	return linePoint1 + glm::dot( pointRelative, lineDir ) * lineDir;
 }
