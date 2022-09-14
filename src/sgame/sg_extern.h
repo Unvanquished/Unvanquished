@@ -163,12 +163,12 @@ extern Cvar::Cvar<int> g_combatCooldown;
 extern Cvar::Range<Cvar::Cvar<int>> g_debugEntities;
 
 extern Cvar::Cvar<bool> g_instantBuilding;
+extern Cvar::Cvar<bool> g_cheatIgnoreNobuild;
 
 extern  Cvar::Cvar<float> g_evolveAroundHumans;
 extern  Cvar::Cvar<float> g_devolveMaxBaseDistance;
 
 extern Cvar::Cvar<int> g_maxMiners;
-extern Cvar::Cvar<bool> g_cheatIgnoreNobuild;
 
 // bots: buying weapons cvars
 extern Cvar::Cvar<bool> g_bot_buy;

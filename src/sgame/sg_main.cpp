@@ -210,6 +210,7 @@ Cvar::Cvar<int> g_combatCooldown("g_combatCooldown", "team change disallowed unt
 Cvar::Range<Cvar::Cvar<int>> g_debugEntities("g_debugEntities", "entity debug level", Cvar::NONE, 0, -2, 3);
 
 Cvar::Cvar<bool> g_instantBuilding("g_instantBuilding", "cheat mode for building", Cvar::NONE, false);
+Cvar::Cvar<bool> g_cheatIgnoreNobuild("g_cheatIgnoreNobuild", "ignore nobuild area", Cvar::NONE, false);
 
 Cvar::Cvar<int> g_emptyTeamsSkipMapTime("g_emptyTeamsSkipMapTime", "end game over x minutes if no real players", Cvar::NONE, 0);
 
@@ -221,7 +222,6 @@ Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Ove
 Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, false);
 
 Cvar::Cvar<int> g_maxMiners("g_maxMiners", "set maximum number of miners per team. -1 = disabled.", Cvar::NONE, -1);
-Cvar::Cvar<bool> g_cheatIgnoreNobuild("g_cheatIgnoreNobuild", "ignore nobuild area", Cvar::NONE, false);
 
 // <bot stuff>
 

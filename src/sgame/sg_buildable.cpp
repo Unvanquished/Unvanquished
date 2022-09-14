@@ -1598,7 +1598,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 		// Check surface permissions
 		bool invalid = (tr1.contents & (CUSTOM_CONTENTS_NOALIENBUILD | CUSTOM_CONTENTS_NOBUILD)) || (contents & (CUSTOM_CONTENTS_NOALIENBUILD | CUSTOM_CONTENTS_NOBUILD));
-		if ( invalid && !g_cheatIgnoreNobuild.Get() )
+		if ( invalid && !( g_cheats && g_cheatIgnoreNobuild.Get() ) )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -1622,7 +1622,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 		// Check permissions
 		bool invalid = (tr1.contents & (CUSTOM_CONTENTS_NOHUMANBUILD | CUSTOM_CONTENTS_NOBUILD)) || (contents & (CUSTOM_CONTENTS_NOHUMANBUILD | CUSTOM_CONTENTS_NOBUILD));
-		if ( invalid && !g_cheatIgnoreNobuild.Get() )
+		if ( invalid && !( g_cheats && g_cheatIgnoreNobuild.Get() ) )
 		{
 			reason = IBE_SURFACE;
 		}
