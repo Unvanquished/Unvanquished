@@ -1188,8 +1188,6 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	             client->pers.netname,
 	             client->pers.netname );
 
-	G_SendClientPmoveParams(clientNum);
-
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if ( firstTime )
 	{
@@ -1313,6 +1311,7 @@ void ClientBegin( int clientNum )
 		trap_UnlinkEntity( ent );
 	}
 
+	G_SendClientPmoveParams(clientNum);
 	G_InitGentity( ent );
 
 	// Create a basic client entity, will be replaced by a more specific one later.
