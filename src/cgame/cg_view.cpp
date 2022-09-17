@@ -1401,7 +1401,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	}
 	else if ( newJuggernaut )
 	{
-		*effect = cgs.media.whiteOnlyCgrade;
+		*effect = cgs.media.blackOnlyCgrade;
 		*fade = 1.0;
 		*fadeRate = 1.0; // huge
 	}
