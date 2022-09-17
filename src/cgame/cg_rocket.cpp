@@ -509,12 +509,12 @@ void CG_Rocket_Frame( cgClientState_t state )
 				Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_DOWNLOADING ].id, "show" );
 				break;
 			case connstate_t::CA_LOADING:
-			case connstate_t::CA_PRIMED:
 				Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
 				break;
-
-			case connstate_t::CA_ACTIVE:
+			case connstate_t::CA_PRIMED:
 				Rocket_DocumentAction( "", "blurall" );
+				break;
+			case connstate_t::CA_ACTIVE:
 				break;
 
 			default:
