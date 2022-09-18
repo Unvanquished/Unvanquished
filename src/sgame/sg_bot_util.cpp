@@ -593,6 +593,8 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		upgrades[i] = UP_NONE;
 	}
 
+	auto buyArmors = [&]()
+	{
 	for ( auto const &armor : armors )
 	{
 		// buy armor if one of following is true:
@@ -609,6 +611,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 			break;
 		}
 	}
+	};
 
 	//TODO this really needs more generic code, but that would require
 	//deeper refactoring (probably move equipments and classes into structs)
@@ -617,6 +620,8 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	int nbRadars = numTeamUpgrades[UP_RADAR];
 	bool teamNeedsRadar = 100 *  nbRadars / nbTeam < g_bot_radarRatio.Get();
 
+	auto buyRadar = [&]()
+	{
 	// others[0] is radar, buying this utility makes sense even if one can't buy
 	// a better weapon, because it helps the whole team.
 	if ( numUpgrades > 0 && teamNeedsRadar
@@ -629,7 +634,10 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		usedSlots |= others[0].slots();
 		numUpgrades ++;
 	}
+	};
 
+	auto buyWeapons = [&]()
+	{
 	for ( auto const &wp : weapons )
 	{
 		if ( wp.canBuyNow() && usableCapital >= wp.price()
@@ -644,7 +652,10 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 			break;
 		}
 	}
+	};
 
+	auto buyTools = [&]()
+	{
 	for ( auto const &tool : others )
 	{
 		// skip radar checks, since already done
@@ -662,6 +673,23 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 			numUpgrades ++;
 		}
 	}
+	};
+
+	if ( self->botMind->botSkillSet[BOT_H_PREFER_ARMOR] )
+	{
+		buyArmors();
+		buyRadar();
+		buyWeapons();
+		buyTools();
+	}
+	else
+	{
+		buyWeapons();
+		buyRadar();
+		buyArmors();
+		buyTools();
+	}
+
 	return numUpgrades;
 }
 
