@@ -108,6 +108,7 @@ enum bot_skill
 	BOT_H_RUN_ON_FLEE, // when fleeing, RUN
 	BOT_H_BUY_ARMOR, // knows armor exists at all
 	BOT_H_PREFER_ARMOR, // prefer to buy armor rather than guns
+	BOT_H_MEDKIT, // knows the medkit even exist
 
 	BOT_NUM_SKILLS
 };

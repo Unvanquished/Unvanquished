@@ -313,6 +313,7 @@ static const std::vector<botSkillTreeElement_t> survival_skills = {
 		{ "prefer-armor", BOT_H_PREFER_ARMOR, 5, pred_human, {} },
 	}},
 	{ "flee-run",           BOT_H_RUN_ON_FLEE,  5, pred_human, {} },
+	{ "medkit",             BOT_H_MEDKIT,       5, pred_human, {} },
 };
 
 static const std::vector<botSkillTreeElement_t> initial_unlockable_skills = {
