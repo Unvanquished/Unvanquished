@@ -36,6 +36,8 @@ This file contains the headers of the internal functions used by bot only.
 
 #include "sg_local.h"
 
+#include <bitset>
+
 struct botEntityAndDistance_t
 {
 	gentity_t const *ent;
@@ -87,6 +89,14 @@ struct botSkill_t
 	float aimShake;
 };
 
+// boolean flags that tells which skill (compétence) the bot has
+enum bot_skill
+{
+	BOT_NUM_SKILLS
+};
+
+using skillSet_t = std::bitset<BOT_NUM_SKILLS>;
+
 #define MAX_NODE_DEPTH 20
 struct AIBehaviorTree_t;
 struct AIGenericNode_t;
@@ -103,7 +113,9 @@ struct botMemory_t
 	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );
 	usercmd_t   cmdBuffer;
 
-	botSkill_t botSkill;
+	botSkill_t  botSkill; // numerical values
+	skillSet_t  botSkillSet; // boolean flags
+
 	botEntityAndDistance_t bestEnemy;
 	botEntityAndDistance_t closestDamagedBuilding;
 	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];

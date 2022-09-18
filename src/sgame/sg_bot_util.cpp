@@ -2215,6 +2215,10 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	// TODO: different aim for different teams
 	self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
 	self->botMind->botSkill.aimShake = 10 - skill;
+
+	std::pair<std::string, skillSet_t>
+		pair = BotDetermineSkills(self, skill);
+	self->botMind->botSkillSet = pair.second;
 }
 
 void BotResetEnemyQueue( enemyQueue_t *queue )
