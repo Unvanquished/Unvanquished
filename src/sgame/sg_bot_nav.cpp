@@ -412,9 +412,40 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	return blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f;
 }
 
-// try to find a path around the obstacle by projecting 5
+// Determine a new direction, which may be unchanged (forward) or sideway. It
+// does try the following every second: one time left, one time right and one
+// time forward until they find their way.
+static void BotFindDefaultSteerTarget( gentity_t *self, glm::vec3 &dir )
+{
+	// turn this into a 2D problem
+	dir[2] = 0;
+	// a vector 90° from dir, pointing right and of same magnitude
+	glm::vec3 right = glm::vec3(dir[1], -dir[0], 0);
+
+	int clientNum = self - g_entities;
+	// We add a delta determined from clientNum to avoid bots
+	// dancing in sync
+	int time = (110 * clientNum + self->client->time1000) % 1000;
+
+	// 280 instead of 700/2=350 because we want some left/right
+	// asymetry in case it helps
+	bool invert = time < 280;
+	// half of the time we go straight instead
+	bool sideways = time > 700;
+
+	if ( sideways )
+	{
+		// 2*right + 1*dir means an angle of atan(2/1) = 63°. This
+		// seems about right
+		dir += right * (invert ? -1.0f : 1.0f)
+			     * 2.0f;
+	}
+}
+
+// Try to find a path around the obstacle by projecting 5
 // traces in 15° steps in both directions.
-// return true if a path could be found
+// Return true if a path could be found.
+// This function will always set "dir", even if it fails.
 static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 {
 	glm::vec3 forward;
@@ -491,16 +522,18 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 		}
 	}
 
-	//we couldnt find a new position
+	// We couldnt find a "smart" new position, try going forward or sideways
+	BotFindDefaultSteerTarget( self, dir );
 	return false;
 }
 
 // This function tries to detect obstacles and to find a way
-// around them, by modifying dir
-//return true on error
+// around them. It always sets dir as the output value.
+// Returns true on error
 static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir )
 {
 	gentity_t const *blocker = BotGetPathBlocker( self, dir );
+	dir = self->botMind->nav().glm_dir();
 
 	if ( !blocker )
 	{
@@ -595,13 +628,13 @@ Global Bot Navigation
 // Returns false on failure.
 bool BotMoveToGoal( gentity_t *self )
 {
-	glm::vec3 dir = self->botMind->nav().glm_dir();
+	glm::vec3 dir;
 	if ( BotAvoidObstacles( self, dir ) )
 	{
+		BotSeek( self, dir );
 		return false;
 	}
 
-	BotAvoidObstacles( self, dir );
 	BotSeek( self, dir );
 
 	// dumb bots don't know how to be efficient
