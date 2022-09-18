@@ -317,6 +317,9 @@ static const std::vector<botSkillTreeElement_t> survival_skills = {
 };
 
 static const std::vector<botSkillTreeElement_t> fighting_skills = {
+	// aliens
+	{ "aim-head",           BOT_A_AIM_HEAD,       5, pred_alien, {} },
+
 	// humans
 	{ "predict-aim",        BOT_H_PREDICTIVE_AIM, 5, pred_human, {} },
 };

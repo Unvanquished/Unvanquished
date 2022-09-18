@@ -1407,9 +1407,12 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (for luci)
 	if ( !isTargetBuildable && targetTeam == TEAM_HUMANS )
 	{
-		//aim at head
-		//FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
-		aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
+		// Aim at head
+		// FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
+		if ( self->botMind->botSkillSet[BOT_A_AIM_HEAD] )
+		{
+			aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
+		}
 
 	}
 	else
