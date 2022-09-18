@@ -251,7 +251,6 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef beh
 	{
 		return false;
 	}
-	BotSetSkillLevel( self, skill );
 
 	self->r.svFlags |= SVF_BOT;
 
@@ -265,26 +264,142 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef beh
 	return true;
 }
 
+struct botSkillTreeElement_t {
+	Str::StringRef name;
+	bot_skill skill;
+	int cost;
+	// function that determines if this skill is available
+	std::function<bool(const gentity_t *self, skillSet_t existing_skills)> predicate;
+	// skills that are unlocked once you unlock this one
+	std::vector<botSkillTreeElement_t> unlocked_skills;
+};
+
+static const std::vector<botSkillTreeElement_t> initial_unlockable_skills = {
+};
+
+// Note: this function modifies possible_choices to remove the one we just
+//       chose, and add the new unlocked skills to that list.
+static Util::optional<botSkillTreeElement_t> ChooseOneSkill(const gentity_t *bot, skillSet_t skillSet, std::vector<botSkillTreeElement_t> &possible_choices, std::mt19937_64& rng)
+{
+	int total_skill_points = 0;
+	for (const auto &skill : possible_choices)
+	{
+		if (skill.predicate(bot, skillSet))
+		{
+			total_skill_points += skill.cost;
+		}
+	}
+
+	if (total_skill_points <= 0)
+		return Util::nullopt;
+
+	std::uniform_int_distribution<int> dist(0, total_skill_points - 1);
+	int random = dist(rng);
+
+	// find which skill this corresponds to (higher point skills are more
+	// likely to be found)
+	int cursor = 0;
+	for (auto skill = possible_choices.begin(); skill != possible_choices.end(); skill++)
+	{
+		if (!skill->predicate(bot, skillSet))
+		{
+			continue;
+		}
+
+		cursor += skill->cost;
+		if (random < cursor)
+		{
+			botSkillTreeElement_t result = *skill;
+
+			// update the list of future choices
+			possible_choices.erase(skill);
+			for (const auto &child : result.unlocked_skills)
+			{
+				possible_choices.push_back(std::move(child));
+			}
+			result.unlocked_skills.clear();
+
+			return result;
+		}
+	}
+	return Util::nullopt;
+}
+
+// This selects a set of skills for a bot.
+//
+// The algorithm is stable and deterministic.
+// Deterministic:
+//     a bot's skill set is determined only by the bot's name and the bot's
+//     skill level. A different bot will have a different skillset, but this
+//     means that a bot with the same name will have the same skillset from
+//     a game to another.
+// Stable:
+//     when a bot changes skill level, the first skills unlocked are common
+//     between both skill levels. This means that a bot whose skill is raised
+//     by BotSetSkillLevel will keep the skills it already had, and get new
+//     ones.
+//     This essentially means that a bot will keep its "personality" after
+//     a skill change, although keeping its base skills or unlocking new ones.
+std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
+{
+	std::vector<botSkillTreeElement_t> possible_choices = initial_unlockable_skills;
+	int skill_points = skill * 4; // FIXME
+
+	// rng preparation
+	std::string name = bot->client->pers.netname;
+	std::seed_seq seed(name.begin(), name.end());
+	std::mt19937_64 rng(seed);
+
+	skillSet_t skillSet;
+	std::string skill_list;
+
+	while (!possible_choices.empty())
+	{
+		Util::optional<botSkillTreeElement_t> new_skill =
+			ChooseOneSkill(bot, skillSet, possible_choices, rng);
+		if ( !new_skill )
+		{
+			// no skill left to unlock
+			break;
+		}
+		skill_points -= new_skill->cost;
+
+		if ( skill_points < 0 )
+		{
+			// we don't have money to spend anymore, we are done
+			break;
+		}
+
+		skillSet[new_skill->skill] = true;
+
+		if (!skill_list.empty())
+		{
+			skill_list.append(" ");
+		}
+		skill_list.append(new_skill->name);
+	}
+
+
+	return { skill_list, skillSet };
+}
+
 bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler )
 {
-	int clientNum;
 	char userinfo[MAX_INFO_STRING];
 	const char* s = 0;
-	gentity_t *bot;
 	bool autoname = false;
-	bool okay;
 
 	ASSERT( navMeshLoaded );
 
 	// find what clientNum to use for bot
-	clientNum = trap_BotAllocateClient();
+	int clientNum = trap_BotAllocateClient();
 
 	if ( clientNum < 0 )
 	{
 		Log::Warn( "no more slots for bot" );
 		return false;
 	}
-	bot = &g_entities[ clientNum ];
+	gentity_t *bot = &g_entities[ clientNum ];
 	G_InitGentity( bot );
 	bot->r.svFlags |= SVF_BOT;
 
@@ -297,7 +412,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	}
 
 	//default bot data
-	okay = G_BotSetDefaults( clientNum, team, skill, behavior );
+	bool okay = G_BotSetDefaults( clientNum, team, skill, behavior );
 
 	// register user information
 	userinfo[0] = '\0';
@@ -341,6 +456,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	bot->pain = BotPain; // ClientBegin resets the pain function
 	level.clients[clientNum].pers.isFillerBot = filler;
 	G_ChangeTeam( bot, team );
+	BotSetSkillLevel( bot, skill );
 	return true;
 }
 
