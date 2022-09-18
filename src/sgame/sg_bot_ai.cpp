@@ -828,12 +828,13 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		proposedTarget = self->botMind->bestEnemy.ent;
 
 		//we can see another enemy (not our target) so switch to it
-		// FIXME: this if or what's in it is wrong.
 		if ( self->botMind->bestEnemy.ent
 		  && ( self->botMind->goal.getTargetedEntity()
 		    != self->botMind->bestEnemy.ent )
 		  && BotPathIsWalkable( self, proposedTarget ) )
 		{
+			// force the BT to evaluate again and this action to
+			// retarget
 			return STATUS_SUCCESS;
 		}
 		else if ( level.time - self->botMind->enemyLastSeen >= g_bot_chasetime.Get() )
