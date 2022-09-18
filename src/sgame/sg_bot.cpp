@@ -290,17 +290,24 @@ static bool pred_alien(const gentity_t *self, skillSet_t existing_skills)
 static const std::vector<botSkillTreeElement_t> movement_skills = {
 	// aliens
 	{ "mara-attack-jump",   BOT_A_MARA_JUMP_ON_ATTACK,   5, pred_alien, {} },
-	{ "mara-flee-jump",     BOT_A_MARA_JUMP_ON_FLEE,     5, pred_alien, {} },
 	{ "mantis-attack-jump", BOT_A_LEAP_ON_ATTACK,        5, pred_alien, {} },
-	{ "mantis-flee-jump",   BOT_A_LEAP_ON_FLEE,          5, pred_alien, {} },
 	{ "goon-attack-jump",   BOT_A_POUNCE_ON_ATTACK,      5, pred_alien, {} },
-	{ "goon-attack-flee",   BOT_A_POUNCE_ON_FLEE,        5, pred_alien, {} },
 	{ "tyrant-attack-run",  BOT_A_TYRANT_CHARGE_ON_ATTACK, 5, pred_alien, {} },
+};
+
+static const std::vector<botSkillTreeElement_t> survival_skills = {
+	// aliens
+	{ "mara-flee-jump",     BOT_A_MARA_JUMP_ON_FLEE,     5, pred_alien, {} },
+	{ "mantis-flee-jump",   BOT_A_LEAP_ON_FLEE,          5, pred_alien, {} },
+	{ "goon-flee-jump",     BOT_A_POUNCE_ON_FLEE,        5, pred_alien, {} },
 	{ "tyrant-flee-run",    BOT_A_TYRANT_CHARGE_ON_FLEE, 5, pred_alien, {} },
 };
 
 static const std::vector<botSkillTreeElement_t> initial_unlockable_skills = {
+	// movement skills
 	{ "movement", BOT_B_BASIC_MOVEMENT, 2, pred_always, movement_skills },
+	// situation awareness and survival
+	{ "feels-pain", BOT_B_PAIN, 2, pred_always, survival_skills },
 };
 
 // Note: this function modifies possible_choices to remove the one we just

@@ -2276,7 +2276,8 @@ void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
 	if ( G_Team( attacker ) != TEAM_NONE
 		&& !G_OnSameTeam( self, attacker )
-		&& attacker->s.eType == entityType_t::ET_PLAYER )
+		&& attacker->s.eType == entityType_t::ET_PLAYER
+		&& self->botMind->botSkillSet[BOT_B_PAIN] )
 	{
 
 		BotPushEnemy( &self->botMind->enemyQueue, attacker );
