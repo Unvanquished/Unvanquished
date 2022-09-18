@@ -648,12 +648,6 @@ bool BotMoveToGoal( gentity_t *self )
 
 	BotSeek( self, dir );
 
-	// dumb bots don't know how to be efficient
-	if( self->botMind->botSkill.level < 5 )
-	{
-		return true;
-	}
-
 	team_t targetTeam = TEAM_NONE;
 	if ( self->botMind->goal.targetsValidEntity() )
 	{
@@ -686,7 +680,7 @@ bool BotMoveToGoal( gentity_t *self )
 		case PCL_ALIEN_LEVEL0:
 			break;
 		case PCL_ALIEN_LEVEL1:
-			if ( ps.weaponCharge <= 50 )//I don't remember why 50
+			if ( self->botMind->botSkillSet[BOT_A_LEAP_ON_FLEE] && ps.weaponCharge <= 50 ) // I don't remember why 50
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL1_POUNCE_MINPITCH;
@@ -700,21 +694,21 @@ bool BotMoveToGoal( gentity_t *self )
 			// a lot of maneuverability
 			int msec = level.time - level.previousTime;
 			constexpr float jumpChance = 0.2f; // chance per second
-			if ( (jumpChance / 1000.0f) * msec > random() )
+			if ( self->botMind->botSkillSet[BOT_A_MARA_JUMP_ON_FLEE] && (jumpChance / 1000.0f) * msec > random() )
 			{
 				BotJump( self );
 			}
 			break;
 		}
 		case PCL_ALIEN_LEVEL3:
-			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_FLEE] && ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG;
 			}
 		break;
 		case PCL_ALIEN_LEVEL3_UPG:
-			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_FLEE] && ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG_UPG;
