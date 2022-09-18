@@ -309,6 +309,7 @@ static const std::vector<botSkillTreeElement_t> survival_skills = {
 	{ "tyrant-flee-run",    BOT_A_TYRANT_CHARGE_ON_FLEE, 5, pred_alien, {} },
 
 	// humans
+	{ "prefer-armor",       BOT_H_PREFER_ARMOR, 5, pred_human, {} },
 	{ "flee-run",           BOT_H_RUN_ON_FLEE,  5, pred_human, {} },
 };
 
