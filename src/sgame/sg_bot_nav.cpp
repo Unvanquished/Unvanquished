@@ -670,7 +670,10 @@ bool BotMoveToGoal( gentity_t *self )
 		case PCL_HUMAN_LIGHT:
 		case PCL_HUMAN_MEDIUM:
 		case PCL_HUMAN_BSUIT:
-			BotSprint( self, true );
+			if ( self->botMind->botSkillSet[BOT_H_RUN_ON_FLEE] )
+			{
+				BotSprint( self, true );
+			}
 			break;
 		//those classes do not really have capabilities allowing them to be
 		//significantly faster while fleeing (except jumps, but that also

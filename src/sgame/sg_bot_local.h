@@ -105,6 +105,7 @@ enum bot_skill
 	BOT_A_LEAP_ON_FLEE, // mantis
 	BOT_A_POUNCE_ON_FLEE, // dragoon and adv dragoon
 	BOT_A_TYRANT_CHARGE_ON_FLEE,
+	BOT_H_RUN_ON_FLEE, // when fleeing, RUN
 
 	BOT_NUM_SKILLS
 };
