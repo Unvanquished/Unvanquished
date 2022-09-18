@@ -628,6 +628,12 @@ AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode_t *node 
 	AIActionNode_t *action = ( AIActionNode_t * ) node;
 	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
 
+	if ( u == UP_MEDKIT && !self->botMind->botSkillSet[BOT_H_MEDKIT] )
+	{
+		// we don't know how to use it
+		return STATUS_FAILURE;
+	}
+
 	if ( !BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
 	{
 		return STATUS_FAILURE;
