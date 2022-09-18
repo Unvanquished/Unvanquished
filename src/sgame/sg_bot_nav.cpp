@@ -715,7 +715,10 @@ bool BotMoveToGoal( gentity_t *self )
 			}
 			break;
 		case PCL_ALIEN_LEVEL4:
-			wpm = WPM_SECONDARY;
+			if ( self->botMind->botSkillSet[BOT_A_TYRANT_CHARGE_ON_FLEE] )
+			{
+				wpm = WPM_SECONDARY;
+			}
 		break;
 	}
 	if ( wpm != WPM_NONE )

@@ -1728,8 +1728,8 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			}
 			break;
 		case PCL_ALIEN_LEVEL4:
-			//use rush to approach faster
-			if ( !inAttackRange )
+			// Use rush to approach faster
+			if ( self->botMind->botSkillSet[BOT_A_TYRANT_CHARGE_ON_ATTACK] && !inAttackRange )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 			}
