@@ -95,8 +95,11 @@ enum bot_skill
 	// movement skills
 	BOT_B_BASIC_MOVEMENT, // doesn't do anything as of now
 	BOT_A_MARA_JUMP_ON_ATTACK,
+	BOT_A_MARA_JUMP_ON_FLEE,
 	BOT_A_LEAP_ON_ATTACK, // mantis
+	BOT_A_LEAP_ON_FLEE,
 	BOT_A_POUNCE_ON_ATTACK, // dragoon and adv dragoon
+	BOT_A_POUNCE_ON_FLEE,
 	BOT_NUM_SKILLS
 };
 
