@@ -106,6 +106,7 @@ enum bot_skill
 	BOT_A_POUNCE_ON_FLEE, // dragoon and adv dragoon
 	BOT_A_TYRANT_CHARGE_ON_FLEE,
 	BOT_H_RUN_ON_FLEE, // when fleeing, RUN
+	BOT_H_BUY_ARMOR, // knows armor exists at all
 	BOT_H_PREFER_ARMOR, // prefer to buy armor rather than guns
 
 	BOT_NUM_SKILLS

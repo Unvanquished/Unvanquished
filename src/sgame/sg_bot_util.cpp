@@ -686,7 +686,11 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	{
 		buyWeapons();
 		buyRadar();
-		buyArmors();
+		if ( self->botMind->botSkillSet[BOT_H_BUY_ARMOR] )
+		{
+			// we may wish to pretend we don't know armor exists at all
+			buyArmors();
+		}
 		buyTools();
 	}
 
