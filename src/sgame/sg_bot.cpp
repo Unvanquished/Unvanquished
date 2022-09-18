@@ -316,9 +316,16 @@ static const std::vector<botSkillTreeElement_t> survival_skills = {
 	{ "medkit",             BOT_H_MEDKIT,       5, pred_human, {} },
 };
 
+static const std::vector<botSkillTreeElement_t> fighting_skills = {
+	// humans
+	{ "predict-aim",        BOT_H_PREDICTIVE_AIM, 5, pred_human, {} },
+};
+
 static const std::vector<botSkillTreeElement_t> initial_unlockable_skills = {
 	// movement skills
 	{ "movement", BOT_B_BASIC_MOVEMENT, 2, pred_always, movement_skills },
+	// fighting skills
+	{ "fighting", BOT_B_BASIC_FIGHT, 2, pred_always, fighting_skills },
 	// situation awareness and survival
 	{ "feels-pain", BOT_B_PAIN, 2, pred_always, survival_skills },
 };

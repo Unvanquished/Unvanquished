@@ -110,6 +110,10 @@ enum bot_skill
 	BOT_H_PREFER_ARMOR, // prefer to buy armor rather than guns
 	BOT_H_MEDKIT, // knows the medkit even exist
 
+	// fighting skills
+	BOT_B_BASIC_FIGHT, // doesn't do anything as of now
+	BOT_H_PREDICTIVE_AIM, // predict where to aim depending on weapon and enemy speed
+
 	BOT_NUM_SKILLS
 };
 
