@@ -1370,7 +1370,7 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 		aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
 
 	}
-	else if ( isTargetBuildable || targetTeam == TEAM_ALIENS )
+	else
 	{
 		//make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
 		if ( self->botMind->botSkill.level >= 5 )
