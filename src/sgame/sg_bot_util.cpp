@@ -1414,8 +1414,8 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 	}
 	else
 	{
-		//make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
-		if ( self->botMind->botSkill.level >= 5 )
+		// Make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
+		if ( self->botMind->botSkillSet[BOT_H_PREDICTIVE_AIM] )
 		{
 			//would be better if it was possible to do self.weapon->speed directly
 			int weapon_speed = 0;
