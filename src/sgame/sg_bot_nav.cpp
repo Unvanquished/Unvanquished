@@ -598,10 +598,10 @@ bool BotMoveToGoal( gentity_t *self )
 	glm::vec3 dir = self->botMind->nav().glm_dir();
 	if ( BotAvoidObstacles( self, dir ) )
 	{
+		BotSeek( self, dir );
 		return false;
 	}
 
-	BotAvoidObstacles( self, dir );
 	BotSeek( self, dir );
 
 	// dumb bots don't know how to be efficient
