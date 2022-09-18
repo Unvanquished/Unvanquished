@@ -172,10 +172,12 @@ void ToggleFlag(int &flags, int flag) {
 }
 
 // imported from daemon.
-// Given 3 degree angles, computes yaw, pitch and roll, that is,
-// computes normalized vectors describing a 3D space.
+// Given 3 degree angles (yaw, pitch and roll) computes three vectors that
+// point forwards, rightwards and upwards.
+//
+// The vectors are orthogonal and normalized.
+//
 // NOTES:
-// * I am not sure the vectors are actually normalized.
 // * it would likely be more efficient to work with a quaternion here.
 // * working with a quaternion would also allow to return a value
 void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right, glm::vec3 *up )
