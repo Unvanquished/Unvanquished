@@ -2293,12 +2293,12 @@ static gentity_t *BotPopEnemy( enemyQueue_t *queue )
 
 void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
-	if ( G_Team( attacker ) != TEAM_NONE && G_Team( attacker ) != self->client->pers.team )
+	if ( G_Team( attacker ) != TEAM_NONE
+		&& !G_OnSameTeam( self, attacker )
+		&& attacker->s.eType == entityType_t::ET_PLAYER )
 	{
-		if ( attacker->s.eType == entityType_t::ET_PLAYER )
-		{
-			BotPushEnemy( &self->botMind->enemyQueue, attacker );
-		}
+
+		BotPushEnemy( &self->botMind->enemyQueue, attacker );
 	}
 }
 
