@@ -691,7 +691,12 @@ AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode_t* )
 	{
 		return STATUS_SUCCESS;
 	}
-	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
+	// We could handle failure here, but returning STATUS_FAILURE doesn't
+	// work well as bots will get stuck. we don't handle permanent failures
+	// yet with the current BT (that is, failures that aren't fixed by
+	// changing goal, such as obstacles or facing another bot.)
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
 }
 
 AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode_t *node )
@@ -972,7 +977,12 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 	{
 		return STATUS_SUCCESS;
 	}
-	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
+	// We could handle failure here, but returning STATUS_FAILURE doesn't
+	// work well as bots will get stuck. we don't handle permanent failures
+	// yet with the current BT (that is, failures that aren't fixed by
+	// changing goal, such as obstacles or facing another bot.)
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
 }
 
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
@@ -992,7 +1002,12 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 	{
 		return STATUS_SUCCESS;
 	}
-	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
+	// We could handle failure here, but returning STATUS_FAILURE doesn't
+	// work well as bots will get stuck. we don't handle permanent failures
+	// yet with the current BT (that is, failures that aren't fixed by
+	// changing goal, such as obstacles or facing another bot.)
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
 }
 
 static botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
@@ -1041,7 +1056,12 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	{
 		return STATUS_SUCCESS;
 	}
-	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
+	// We could handle failure here, but returning STATUS_FAILURE doesn't
+	// work well as bots will get stuck. we don't handle permanent failures
+	// yet with the current BT (that is, failures that aren't fixed by
+	// changing goal, such as obstacles or facing another bot.)
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
 }
 
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
@@ -1068,7 +1088,12 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 	{
 		return STATUS_SUCCESS;
 	}
-	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
+	// We could handle failure here, but returning STATUS_FAILURE doesn't
+	// work well as bots will get stuck. we don't handle permanent failures
+	// yet with the current BT (that is, failures that aren't fixed by
+	// changing goal, such as obstacles or facing another bot.)
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
 }
 
 AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );

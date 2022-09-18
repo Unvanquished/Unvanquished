@@ -593,13 +593,9 @@ Global Bot Navigation
 // to move faster if the skill is high enough, depending on it's
 // class.
 // Returns false on failure.
-bool BotMoveToGoal( gentity_t *self )
+void BotMoveToGoal( gentity_t *self )
 {
 	glm::vec3 dir = self->botMind->nav().glm_dir();
-	if ( BotAvoidObstacles( self, dir ) )
-	{
-		return false;
-	}
 
 	BotAvoidObstacles( self, dir );
 	BotSeek( self, dir );
@@ -607,7 +603,7 @@ bool BotMoveToGoal( gentity_t *self )
 	// dumb bots don't know how to be efficient
 	if( self->botMind->botSkill.level < 5 )
 	{
-		return true;
+		return;
 	}
 
 	team_t targetTeam = TEAM_NONE;
@@ -620,7 +616,7 @@ bool BotMoveToGoal( gentity_t *self )
 	// when available (still need to implement wall walking, but that will be more complex)
 	if ( G_Team( self ) != targetTeam )
 	{
-		return true;
+		return;
 	}
 
 	weaponMode_t wpm = WPM_NONE;
@@ -680,7 +676,6 @@ bool BotMoveToGoal( gentity_t *self )
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
 	}
-	return true;
 }
 
 bool FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial )

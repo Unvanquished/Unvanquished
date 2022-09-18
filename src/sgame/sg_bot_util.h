@@ -113,7 +113,7 @@ extern bool navMeshLoaded;
 bool         G_BotNavInit();
 void         G_BotNavCleanup();
 bool     FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial );
-bool         BotMoveToGoal( gentity_t *self );
+void         BotMoveToGoal( gentity_t *self );
 void         BotSetNavmesh( gentity_t  *ent, class_t newClass );
 
 // local navigation
