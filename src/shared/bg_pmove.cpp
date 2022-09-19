@@ -3951,6 +3951,7 @@ static void PM_Weapon()
 			break;
 
 		case WP_MASS_DRIVER:
+		case WP_LAS_GUN:
 			attack2 = attack3 = false;
 			// attack2 is handled on the client for zooming (cg_view.c)
 
