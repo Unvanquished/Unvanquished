@@ -52,7 +52,7 @@ extern Cvar::Cvar<bool> g_lockTeamsAtStart;
 extern Cvar::Cvar<float> g_minNameChangePeriod;
 extern Cvar::Cvar<int> g_maxNameChanges;
 
-extern Cvar::Range<Cvar::Cvar<int>> g_showHelpOnConnection;
+extern Cvar::Range<Cvar::Cvar<int>> g_showWelcome;
 extern Cvar::Cvar<int> g_timelimit;
 extern Cvar::Cvar<bool> g_dretchPunt;
 extern Cvar::Callback<Cvar::Cvar<std::string>> g_password;
