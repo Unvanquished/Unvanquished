@@ -46,7 +46,8 @@ public:
 			Rml::Element( tag ),
 			font_engine_interface( Rml::GetFontEngineInterface() ),
 			cursor_character_index( 0 ),
-			text_element( nullptr )
+			text_element( nullptr ),
+			noCmd( false )
 	{
 		// Spawn text container and add it to this element
 		text_element = AppendChild( Rml::Factory::InstanceElement( this, "div", "*", Rml::XMLAttributes() ) );
@@ -82,6 +83,19 @@ public:
 		{
 			cmd = GetAttribute<Rml::String>( "exec", "" );
 		}
+
+		if ( changed_attributes.find( "noCmd" ) != changed_attributes.end() )
+		{
+			noCmd = GetAttribute<bool>( "noCmd", false );
+		}
+	}
+
+	void ClearAndHide()
+	{
+		text.clear();
+		cursor_character_index = 0;
+		UpdateText();
+		GetOwnerDocument()->Hide();
 	}
 
 	void ProcessEvent( Rml::Event &event )
@@ -155,29 +169,29 @@ public:
 							GetOwnerDocument()->Hide();
 							return;
 						}
-						else if ( cmd == "/" )
-						{
-							trap_SendConsoleCommand( va( "%s\n", text.c_str() ) );
-							text.clear();
-							cursor_character_index = 0;
-							UpdateText();
-							GetOwnerDocument()->Hide();
-							return;
-						}
 
 						if ( cmd.empty() )
 						{
 							cmd = cg_sayCommand.Get().c_str();
 						}
 
-						if ( !cmd.empty() && !text.empty() )
+						if ( cmd == "/" )
 						{
-							trap_SendConsoleCommand( va( "%s %s", cmd.c_str(), Cmd::Escape( text.c_str() ).c_str() ) );
-							text.clear();
-							cursor_character_index = 0;
-							UpdateText();
-							GetOwnerDocument()->Hide();
+							cmd = "";
 						}
+
+						if ( text[0] == '/' && !noCmd )
+						{
+							cmd = "";
+							// Skip the leading /.
+							text = text.substr(1);
+						}
+
+						if ( !text.empty() )
+						{
+							trap_SendConsoleCommand( va( "%s%s%s", cmd.c_str(), cmd.empty() ? "": " ", Cmd::Escape( text.c_str() ).c_str() ) );
+						}
+						ClearAndHide();
 						break;
 
 					default:
@@ -436,6 +450,7 @@ private:
 	Rml::Vector2f dimensions;
 	Rml::String text;
 	Rml::String cmd;
+	bool noCmd;
 
 };
 #endif
