@@ -1182,7 +1182,7 @@ void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 
 		// Add to build timer.
 		ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
-	}	
+	}
 
 	G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
 }
@@ -1418,7 +1418,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 
 	// check if we can already afford the new buildable
-	if ( G_GetFreeBudget( attr->team ) >= cost )
+	if ( Math::Clamp( G_GetFreeBudget( attr->team ), 0, std::numeric_limits<int>::max() ) >= cost )
 	{
 		return IBE_NONE;
 	}
@@ -1471,7 +1471,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		cost -= G_BuildableDeconValue( ent );
 
 		// check if we have enough resources now
-		if ( G_GetFreeBudget( attr->team ) >= cost )
+		if ( Math::Clamp( G_GetFreeBudget( attr->team ), 0, std::numeric_limits<int>::max() ) >= cost )
 		{
 			return IBE_NONE;
 		}
@@ -1718,7 +1718,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
 		}
 	}
-		
+
 	return reason;
 }
 
