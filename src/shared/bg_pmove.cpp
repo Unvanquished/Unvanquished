@@ -687,6 +687,7 @@ static void PM_CheckWaterPounce()
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL1:
+		case WP_ALEVEL1_UPG:
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
 			break;
@@ -754,6 +755,7 @@ static bool PM_CheckPounce()
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL1:
+		case WP_ALEVEL1_UPG:
 		case WP_ALEVEL3:
 		case WP_ALEVEL3_UPG:
 			break;
@@ -784,6 +786,7 @@ static bool PM_CheckPounce()
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL1:
+		case WP_ALEVEL1_UPG:
 			// Check if player wants to pounce
 			if ( !usercmdButtonPressed( pm->cmd.buttons, BTN_ATTACK2 ) )
 			{
@@ -831,6 +834,7 @@ static bool PM_CheckPounce()
 	switch ( pm->ps->weapon )
 	{
 		case WP_ALEVEL1:
+		case WP_ALEVEL1_UPG:
 			// wallwalking (ground surface normal is off more than 45° from Z direction)
 			if ( pm->ps->groundEntityNum == ENTITYNUM_WORLD && acosf( pml.groundTrace.plane.normal[ 2 ] ) > M_PI_4 )
 			{
@@ -3592,7 +3596,7 @@ static void PM_Weapon()
 	}
 
 	// Pounce cooldown (Mantis)
-	if ( pm->ps->weapon == WP_ALEVEL1 )
+	if ( pm->ps->weapon == WP_ALEVEL1 || pm->ps->weapon == WP_ALEVEL1_UPG )
 	{
 		pm->ps->weaponCharge -= pml.msec;
 
@@ -4098,6 +4102,7 @@ static void PM_Weapon()
 		switch ( pm->ps->weapon )
 		{
 			case WP_ALEVEL1:
+			case WP_ALEVEL1_UPG:
 				if ( attack1 )
 				{
 					num /= RAND_MAX / 6 + 1;

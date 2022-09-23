@@ -242,6 +242,12 @@ static classData_t bg_classData[] =
 		WP_ALEVEL1 //weapon_t  startWeapon;
 	},
 	{
+		PCL_ALIEN_LEVEL1_UPG, //int     number;
+		"level1upg", //char    *name;
+		WP_ALEVEL1_UPG //weapon_t  startWeapon;
+	},
+
+	{
 		PCL_ALIEN_LEVEL2, //int     number;
 		"level2", //char    *name;
 		WP_ALEVEL2 //weapon_t  startWeapon;
@@ -569,6 +575,7 @@ static const weaponData_t bg_weaponsData[] =
 {
 	{ WP_ALEVEL0,           "level0"    },
 	{ WP_ALEVEL1,           "level1"    },
+	{ WP_ALEVEL1_UPG,       "level1upg" },
 	{ WP_ALEVEL2,           "level2"    },
 	{ WP_ALEVEL2_UPG,       "level2upg" },
 	{ WP_ALEVEL3,           "level3"    },

@@ -179,6 +179,7 @@ equipment_t<class_t> classes[] =
 	{ g_bot_level2upg , PCL_ALIEN_LEVEL2_UPG   },
 	{ g_bot_level2    , PCL_ALIEN_LEVEL2       },
 	{ g_bot_level1    , PCL_ALIEN_LEVEL1       },
+	{ g_bot_level1upg , PCL_ALIEN_LEVEL1_UPG   },
 	{ g_bot_level0    , PCL_ALIEN_LEVEL0       },
 	{ g_bot_builderupg, PCL_ALIEN_BUILDER0_UPG },
 	{ g_bot_builder   , PCL_ALIEN_BUILDER0     },
@@ -391,6 +392,9 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 				break;
 			case WP_ALEVEL1:
 				enemyScore = 0.3;
+				break;
+			case WP_ALEVEL1_UPG:
+				enemyScore = 0.35;
 				break;
 			case WP_ALEVEL2:
 				enemyScore = 0.4;
@@ -1078,7 +1082,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		            CONTENTS_SOLID, MASK_ENTITY );
 		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
-	
+
 
 	// increase extents a little to account for obstacles cutting into the navmesh
 	// also accounts for navmesh erosion at mesh boundrys
@@ -1149,6 +1153,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_ALEVEL1:
+		case WP_ALEVEL1_UPG:
 			range = LEVEL1_CLAW_RANGE;
 			secondaryRange = LEVEL1_POUNCE_DISTANCE;
 			width = height = LEVEL1_CLAW_WIDTH;
@@ -1195,7 +1200,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 		case WP_FLAMER:
 			{
 				trajectory_t t;
-			
+
 				// Correct muzzle so that the missile does not start in the ceiling
 				muzzle += -7.0f * up;
 
@@ -1211,7 +1216,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				VectorCopy( muzzle, t.trBase );
 				t.trType = trType_t::TR_LINEAR;
 				t.trTime = level.time - 50;
-			
+
 				// find projectile's final position
 				glm::vec3 npos;
 				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, &npos[0] );
@@ -1698,6 +1703,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			BotStrafeDodge( self );
 			break;
 		case PCL_ALIEN_LEVEL1:
+		case PCL_ALIEN_LEVEL1_UPG:
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:

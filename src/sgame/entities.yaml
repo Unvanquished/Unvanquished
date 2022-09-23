@@ -371,6 +371,10 @@ entities:
         components:
             AlienClass:
 
+    AdvMantis:
+        components:
+            AlienClass:
+
     Marauder:
         components:
             AlienClass:

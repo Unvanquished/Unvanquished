@@ -1581,6 +1581,18 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 				}
 					break;
 
+				case WP_ALEVEL1_UPG:
+				{
+					gentity_t *target = FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
+					                               LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW, false );
+					if ( target && target->client )
+					{
+						target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
+						target->client->lastLevel1SlowTime = level.time;
+					}
+				}
+					break;
+
 				case WP_ALEVEL3:
 					FireMelee( self, LEVEL3_CLAW_RANGE, LEVEL3_CLAW_WIDTH, LEVEL3_CLAW_WIDTH,
 					           LEVEL3_CLAW_DMG, MOD_LEVEL3_CLAW, false );
