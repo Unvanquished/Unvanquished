@@ -1426,6 +1426,10 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 			ClientEntityCreate<MantisEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
 
+		case PCL_ALIEN_LEVEL1_UPG:
+			ClientEntityCreate<AdvMantisEntity>( ent, oldEntity, client, pcl, evolving );
+			break;
+
 		case PCL_ALIEN_LEVEL2:
 			ClientEntityCreate<MarauderEntity>( ent, oldEntity, client, pcl, evolving );
 			break;

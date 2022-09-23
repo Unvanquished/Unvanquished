@@ -604,6 +604,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 						break;
 
 					case WP_ALEVEL1:
+					case WP_ALEVEL1_UPG:
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
@@ -689,6 +690,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 						break;
 
 					case WP_ALEVEL1:
+					case WP_ALEVEL1_UPG:
 					case WP_ALEVEL2:
 					case WP_ALEVEL4:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
@@ -2684,6 +2686,7 @@ float CG_ChargeProgress()
 	switch ( cg.snap->ps.weapon )
 	{
 	case WP_ALEVEL1:
+	case WP_ALEVEL1_UPG:
 		min = 0;
 		max = LEVEL1_POUNCE_COOLDOWN;
 		break;

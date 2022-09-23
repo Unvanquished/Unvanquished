@@ -186,6 +186,7 @@ equipment_t<class_t> classes[] =
 	{ g_bot_level2upg , PCL_ALIEN_LEVEL2_UPG   },
 	{ g_bot_level2    , PCL_ALIEN_LEVEL2       },
 	{ g_bot_level1    , PCL_ALIEN_LEVEL1       },
+	{ g_bot_level1upg , PCL_ALIEN_LEVEL1_UPG   },
 	{ g_bot_level0    , PCL_ALIEN_LEVEL0       },
 	{ g_bot_builderupg, PCL_ALIEN_BUILDER0_UPG },
 	{ g_bot_builder   , PCL_ALIEN_BUILDER0     },
@@ -460,6 +461,9 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 				break;
 			case WP_ALEVEL1:
 				enemyScore = 0.3;
+				break;
+			case WP_ALEVEL1_UPG:
+				enemyScore = 0.35;
 				break;
 			case WP_ALEVEL2:
 				enemyScore = 0.4;
@@ -1297,6 +1301,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_ALEVEL1:
+		case WP_ALEVEL1_UPG:
 			range = LEVEL1_CLAW_RANGE;
 			if ( self->botMind->skillSet[BOT_A_LEAP_ON_ATTACK] )
 			{
@@ -1897,6 +1902,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			botIsJumper = self->botMind->skillSet[BOT_A_SMALL_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL1:
+		case PCL_ALIEN_LEVEL1_UPG:
 			if ( BotAttackUpward( self ) )
 			{
 				return;

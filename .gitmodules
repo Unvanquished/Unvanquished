@@ -10,3 +10,6 @@
 [submodule "libs/glm"]
 	path = libs/glm
 	url = https://github.com/Unvanquished/glm.git
+[submodule "pkg/res-advmantis_src.dpkdir"]
+	path = pkg/res-advmantis_src.dpkdir
+	url = https://github.com/DolceTriade/res-advmantis_src.dpkdir.git
