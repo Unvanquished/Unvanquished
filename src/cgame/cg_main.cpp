@@ -837,6 +837,7 @@ static void CG_RegisterGraphics()
 	cgs.media.humanBuildableBleedPS = CG_RegisterParticleSystem( "particles/buildables/human_base/bleed" );
 	cgs.media.alienBuildableBleedPS = CG_RegisterParticleSystem( "particles/buildables/alien_base/bleed" );
 	cgs.media.alienBuildableBurnPS  = CG_RegisterParticleSystem( "particles/buildables/alien_base/burn" );
+	cgs.media.humanBuildableCorrodePS = CG_RegisterParticleSystem( "particles/buildables/human_base/corrode" );
 
 	cgs.media.floorFirePS = CG_RegisterParticleSystem( "particles/weapons/flamer/floorfire" );
 

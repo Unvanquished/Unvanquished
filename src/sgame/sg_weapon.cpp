@@ -897,7 +897,7 @@ void G_CheckCkitRepair( gentity_t *self )
 		HealthComponent *healthComponent = traceEnt->entity->Get<HealthComponent>();
 
 		if (healthComponent && healthComponent->Alive() && !healthComponent->FullHealth()) {
-			traceEnt->entity->Heal(HBUILD_HEALRATE, nullptr);
+			traceEnt->entity->Heal(HBUILD_HEALRATE, self);
 
 			if (healthComponent->FullHealth()) {
 				G_AddEvent(self, EV_BUILD_REPAIRED, 0);
@@ -1577,6 +1577,25 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					{
 						target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
 						target->client->lastLevel1SlowTime = level.time;
+					}
+				}
+					break;
+
+				case WP_ALEVEL1_UPG:
+				{
+					gentity_t *target = FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
+					                               LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW, false );
+					if ( target )
+					{
+						if ( target->client )
+						{
+							target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
+							target->client->lastLevel1SlowTime = level.time;
+						}
+						else if ( target->s.eType == entityType_t::ET_BUILDABLE )
+						{
+							target->entity->Corrode(true);
+						}
 					}
 				}
 					break;

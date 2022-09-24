@@ -68,6 +68,10 @@ messages:
         - name: spawnPoint
           type: glm::vec3&
 
+    Corrode:
+        - name: corrode
+          type: bool
+
 components:
     #####################
     # Common Components #
@@ -100,6 +104,15 @@ components:
         requires:
             Thinking:
 
+
+    Corrodible:
+        messages:
+            - PrepareNetCode
+            - Corrode
+            - Heal
+        requires:
+            Thinking:
+
     Health:
         parameters:
             maxHealth: float
@@ -107,6 +120,12 @@ components:
             - PrepareNetCode
             - Heal
             - Damage
+
+    Acidbomb:
+        messages:
+            - Die
+        requires:
+            Team:
 
     #-----------------+
     # Client Specific |
@@ -184,6 +203,7 @@ components:
             Buildable:
             Team:
                 team: TEAM_HUMANS
+            Corrodible:
 
     MainBuildable:
         messages:
@@ -370,6 +390,11 @@ entities:
     Mantis:
         components:
             AlienClass:
+
+    AdvMantis:
+        components:
+            AlienClass:
+            Acidbomb:
 
     Marauder:
         components:

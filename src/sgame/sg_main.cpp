@@ -254,7 +254,8 @@ Cvar::Cvar<bool> g_bot_evolve("g_bot_evolve", "whether bots can evolve", Cvar::N
 Cvar::Cvar<bool> g_bot_builder("g_bot_builder", "whether bots use non-advanced Granger", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_builderupg("g_bot_builderupg", "whether bots use Advanced Granger", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_level0("g_bot_level0", "whether bots use Dretch", Cvar::NONE, true);
-Cvar::Cvar<bool> g_bot_level1("g_bot_level1", "whether bots use Mantis", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_level1("g_bot_level1", "whether bots use non-advanced Mantis", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_level1upg("g_bot_level1upg", "whether bots use Advanced Mantis", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_level2("g_bot_level2", "whether bots use non-advanced Marauder", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_level2upg("g_bot_level2upg", "whether bots use Advanced Marauder", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_level3("g_bot_level3", "whether bots use non-advanced Dragoon", Cvar::NONE, true);

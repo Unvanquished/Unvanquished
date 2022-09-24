@@ -461,6 +461,7 @@ enum persEnum_t
 #define EF_B_MARKED         0x0020
 #define EF_B_ONFIRE         0x0040
 #define EF_B_LOCKON         0x0080
+#define EF_B_CORRODE        0x2000
 
 // for players
 #define EF_UNUSED_1         0x0010 // UNUSED
@@ -511,6 +512,7 @@ enum weapon_t
 
   WP_ALEVEL0,
   WP_ALEVEL1,
+  WP_ALEVEL1_UPG,
   WP_ALEVEL2,
   WP_ALEVEL2_UPG,
   WP_ALEVEL3,
@@ -578,6 +580,7 @@ enum missile_t
 	MIS_BOUNCEBALL,
 	MIS_ROCKET,
 	MIS_SPIKER,
+  MIS_ACIDBOMB,
 
 	MIS_NUM_MISSILES
 };
@@ -1033,6 +1036,7 @@ enum class_t
   //offensive classes
   PCL_ALIEN_LEVEL0,
   PCL_ALIEN_LEVEL1,
+  PCL_ALIEN_LEVEL1_UPG,
   PCL_ALIEN_LEVEL2,
   PCL_ALIEN_LEVEL2_UPG,
   PCL_ALIEN_LEVEL3,
@@ -1129,6 +1133,7 @@ enum meansOfDeath_t
   MOD_SLOWBLOB,
   MOD_POISON,
   MOD_SWARM,
+  MOD_CORRODE,
 
   MOD_HSPAWN,
   MOD_ROCKETPOD,
