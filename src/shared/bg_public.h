@@ -459,6 +459,7 @@ enum persEnum_t
 #define EF_B_MARKED         BIT(8)
 #define EF_B_ONFIRE         BIT(9)
 #define EF_B_LOCKON         BIT(10)
+#define EF_B_CORRODE        BIT(11)  // Overlaps with luci overcharge.
 
 // for players
 #define EF_WARN_CHARGE      BIT(11) // Lucifer Cannon is about to overcharge
@@ -582,6 +583,7 @@ enum missile_t
 	MIS_BOUNCEBALL,
 	MIS_ROCKET,
 	MIS_SPIKER,
+  MIS_ACIDBOMB,
 
 	MIS_NUM_MISSILES
 };
@@ -1135,6 +1137,7 @@ enum meansOfDeath_t
   MOD_SLOWBLOB,
   MOD_POISON,
   MOD_SWARM,
+  MOD_CORRODE,
 
   MOD_HSPAWN,
   MOD_ROCKETPOD,

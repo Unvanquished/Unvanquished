@@ -370,6 +370,53 @@ static void CG_OnFire( centity_t *cent )
 }
 
 /*
+==================
+CG_Corrode
+
+Sets buildable particle system to a corrode effect if buildable is corroding
+==================
+*/
+static void CG_Corrode( centity_t *cent )
+{
+	entityState_t *es = &cent->currentState;
+
+	if ( es->eType != entityType_t::ET_BUILDABLE )
+	{
+		return;
+	}
+
+	if ( !( es->eFlags & EF_B_CORRODE ) )
+	{
+		if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+		{
+			CG_DestroyParticleSystem( &cent->buildableStatusPS );
+		}
+
+		return;
+	}
+
+	switch ( CG_Team(*es) )
+	{
+		case TEAM_HUMANS:
+			if ( !CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+			{
+				cent->buildableStatusPS = CG_SpawnNewParticleSystem( cgs.media.humanBuildableCorrodePS );
+			}
+			break;
+
+		default:
+			// alien buildables cannot corrode … yet
+			return;
+	}
+
+	if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+	{
+		CG_SetAttachmentCent( &cent->buildableStatusPS->attachment, cent );
+		CG_AttachToCent( &cent->buildableStatusPS->attachment );
+	}
+}
+
+/*
 ======================
 CG_ParseBuildableAnimationFile
 
@@ -2361,7 +2408,8 @@ void CG_Buildable( centity_t *cent )
 	cent->lastBuildableHealth = health;
 
 	// set particle effect to fire if buildable is burning
-	CG_OnFire( cent );
+	// CG_OnFire( cent );
+	CG_Corrode( cent );
 
 	// smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );

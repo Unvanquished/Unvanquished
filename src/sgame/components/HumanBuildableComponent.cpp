@@ -3,10 +3,10 @@
 
 static Log::Logger humanBuildableLogger("sgame.humanbuildings");
 
-HumanBuildableComponent::HumanBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent,
-	TeamComponent& r_TeamComponent)
-	: HumanBuildableComponentBase(entity, r_BuildableComponent, r_TeamComponent)
+HumanBuildableComponent::HumanBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent, TeamComponent& r_TeamComponent, CorrodibleComponent& r_CorrodibleComponent)
+	: HumanBuildableComponentBase(entity, r_BuildableComponent, r_TeamComponent, r_CorrodibleComponent)
 {}
+
 
 void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	switch (GetBuildableComponent().GetState()) {

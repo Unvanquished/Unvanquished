@@ -88,6 +88,7 @@ static const struct {
 	{ "[advgranger]",  false, true,  TEAM_ALIENS }, // granger spit (slowblob)
 	{ "[booster]",     false, true,  TEAM_ALIENS }, // poison
 	{ "[hive]",        true,  true,  TEAM_ALIENS },
+	{ "☣",             false, true,  TEAM_ALIENS }, // corrode
 
 	{ LONGFORM,        true,  false, TEAM_HUMANS }, // H spawn (human building explosion)
 	{ "^dR^*[turret]", true,  true,  TEAM_HUMANS }, // rocket pod. FIXME: we need a rocket pod emoticon

@@ -749,7 +749,8 @@ static const missileData_t bg_missilesData[] =
   { MIS_SLOWBLOB,     "slowblob"     },
   { MIS_BOUNCEBALL,   "bounceball"   },
   { MIS_ROCKET,       "rocket"       },
-  { MIS_SPIKER,       "spiker"       }
+  { MIS_SPIKER,       "spiker"       },
+  { MIS_ACIDBOMB,     "acidbomb"     },
 };
 
 static const size_t              bg_numMissiles = ARRAY_LEN( bg_missilesData );
@@ -866,6 +867,7 @@ static const meansOfDeathData_t bg_meansOfDeathData[] =
 	{ MOD_SLOWBLOB, "MOD_SLOWBLOB" },
 	{ MOD_POISON, "MOD_POISON" },
 	{ MOD_SWARM, "MOD_SWARM" },
+	{ MOD_CORRODE, "MOD_CORRODE" },
 	{ MOD_HSPAWN, "MOD_HSPAWN" },
 	{ MOD_ROCKETPOD, "MOD_ROCKETPOD" },
 	{ MOD_MGTURRET, "MOD_MGTURRET" },
