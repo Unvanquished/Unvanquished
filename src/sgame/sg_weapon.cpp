@@ -897,7 +897,7 @@ void G_CheckCkitRepair( gentity_t *self )
 		HealthComponent *healthComponent = traceEnt->entity->Get<HealthComponent>();
 
 		if (healthComponent && healthComponent->Alive() && !healthComponent->FullHealth()) {
-			traceEnt->entity->Heal(HBUILD_HEALRATE, nullptr);
+			traceEnt->entity->Heal(HBUILD_HEALRATE, self);
 
 			if (healthComponent->FullHealth()) {
 				G_AddEvent(self, EV_BUILD_REPAIRED, 0);
