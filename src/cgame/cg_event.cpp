@@ -87,6 +87,7 @@ static const struct {
 	{ "[granger]",     false, true,  TEAM_ALIENS }, // granger spit (slowblob)
 	{ "[booster]",     false, true,  TEAM_ALIENS }, // poison
 	{ "[hive]",        true,  true,  TEAM_ALIENS },
+	{ "☣",             false, true,  TEAM_ALIENS }, // corrode
 
 	{ LONGFORM,        true,  false, TEAM_HUMANS }, // H spawn
 	{ "[rocketpod]",   true,  true,  TEAM_HUMANS },

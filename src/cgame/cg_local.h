@@ -1565,6 +1565,7 @@ struct cgMedia_t
 	qhandle_t   alienBuildableBleedPS;
 	qhandle_t   humanBuildableBleedPS;
 	qhandle_t   alienBuildableBurnPS;
+	qhandle_t   humanBuildableCorrodePS;
 
 	qhandle_t   floorFirePS;
 

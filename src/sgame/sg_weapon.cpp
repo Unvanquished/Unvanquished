@@ -1585,10 +1585,17 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 				{
 					gentity_t *target = FireMelee( self, LEVEL1_CLAW_RANGE, LEVEL1_CLAW_WIDTH, LEVEL1_CLAW_WIDTH,
 					                               LEVEL1_CLAW_DMG, MOD_LEVEL1_CLAW, false );
-					if ( target && target->client )
+					if ( target )
 					{
-						target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
-						target->client->lastLevel1SlowTime = level.time;
+						if ( target->client )
+						{
+							target->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
+							target->client->lastLevel1SlowTime = level.time;
+						}
+						else if ( target->s.eType == entityType_t::ET_BUILDABLE )
+						{
+							target->entity->Corrode(true);
+						}
 					}
 				}
 					break;
