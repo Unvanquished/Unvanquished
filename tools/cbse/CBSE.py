@@ -540,7 +540,7 @@ if __name__ == '__main__':
         description="Outputs C++ plumbing code for the gamelogic given a component/entity definition file.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument('definitions', metavar='DEFINITION_FILE', nargs=1, type=open, help ="The definitions to use, - for stdin.")
+    parser.add_argument('definitions', metavar='DEFINITION_FILE', type=open, help ="The definitions to use, - for stdin.")
     parser.add_argument('-t', '--template-dir', default="templates", type=str, help="Directory with template files.")
     parser.add_argument('-o', '--output-dir', default=None, type=str, help="Output directory for the generated source files.")
     parser.add_argument('-s', '--skeletons', action="store_true", help="Put latest skeleton files in a subfolder.")
@@ -549,8 +549,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Load everything from the definition file
-    definitions = parse_definitions(yaml.load(args.definitions[0], OrderedLoader))
-    args.definitions[0].close()
+    definitions = parse_definitions(yaml.load(args.definitions, OrderedLoader))
+    args.definitions.close()
 
     # Manage output directories and files
     Output = namedtuple('Output', ['template', 'subdir', 'outname', 'overwrite'])
