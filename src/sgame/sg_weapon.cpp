@@ -1199,7 +1199,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 				float damage = LEVEL2_AREAZAP_DMG * ( 1 - powf( ( zap->distances[ i ] /
 				               LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1;
 
-				target->entity->Damage(damage, zap->creator, VEC2GLM( target->s.origin ),
+				zap->targets[i]->entity->Damage(damage, zap->creator, VEC2GLM( zap->targets[i]->s.origin ),
 				                       VEC2GLM( forward ), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP);
 			}
 		}
