@@ -579,7 +579,6 @@ if __name__ == '__main__':
 
     if args.output_dir != None:
         base_dir       = args.output_dir + os.path.sep
-        backend_dir    = base_dir + subdir_names['components'] + os.path.sep
         components_dir = base_dir + subdir_names['components'] + os.path.sep
         skeletons_dir  = components_dir + subdir_names['skeletons'] + os.path.sep
 
