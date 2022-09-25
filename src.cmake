@@ -159,6 +159,8 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_events.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_hud.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_keys.cpp
+    ${GAMELOGIC_DIR}/cgame/rocket/emojis/emojimap.h
+    ${GAMELOGIC_DIR}/cgame/rocket/emojis/emojimap.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Cmd.cpp
