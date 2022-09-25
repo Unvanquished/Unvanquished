@@ -2620,7 +2620,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 	VectorCopy( cent->lerpOrigin, end );
 	VectorMA( cent->lerpOrigin, -SHADOW_DISTANCE, surfNormal, end );
 
-	trap_CM_BoxTrace( &trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID, 0 );
+	CM_BoxTrace( &trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	// no shadow if too high
 	if ( trace.fraction == 1.0 || trace.startsolid || trace.allsolid )
@@ -2711,8 +2711,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 	}
 
 	// trace down to find the surface
-	trap_CM_BoxTrace( &trace, start, end, nullptr, nullptr, 0,
-	                  ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ), 0 );
+	CM_BoxTrace( &trace, start, end, nullptr, nullptr, 0, ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ), 0, traceType_t::TT_AABB );
 
 	if ( trace.fraction == 1.0f )
 	{

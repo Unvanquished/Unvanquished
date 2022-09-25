@@ -245,8 +245,6 @@ CG_Trace
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                const vec3_t end, int skipNumber, int mask, int skipmask )
 {
-	trace_t t;
-
 	vec3_t mymins = {0.0f, 0.0f, 0.0f};
 	vec3_t mymaxs = {0.0f, 0.0f, 0.0f};
 
@@ -257,7 +255,8 @@ void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 		VectorCopy(maxs, mymaxs);
 	}
 
-	trap_CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
+	trace_t t;
+	CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask, traceType_t::TT_AABB );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_AABB );
@@ -475,8 +474,7 @@ static void CG_TouchTriggerPrediction()
 			continue;
 		}
 
-		trap_CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin,
-		                  cg_pmove.mins, cg_pmove.maxs, cmodel, MASK_ALL, 0 );
+		CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin, cg_pmove.mins, cg_pmove.maxs, cmodel, MASK_ALL, 0, traceType_t::TT_AABB );
 
 		if ( !trace.startsolid )
 		{
