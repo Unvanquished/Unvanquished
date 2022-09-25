@@ -1880,7 +1880,8 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	}
 
 	// let the client system know what our weapon and zoom settings are
-	trap_SetUserCmdValue( cg.weaponSelect, 0, cg.zoomSensitivity );
+	// also notify about our typing status.
+	trap_SetUserCmdValue( cg.weaponSelect, trap_Key_GetCatcher() ? UF_TYPING : 0x0, cg.zoomSensitivity );
 
 	if ( cg.clientFrame == 0 )
 	{

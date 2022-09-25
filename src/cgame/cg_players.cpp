@@ -2574,7 +2574,10 @@ static void CG_PlayerSprites( centity_t *cent )
 	if ( cent->currentState.eFlags & EF_CONNECTION )
 	{
 		CG_PlayerFloatSprite( cent, cgs.media.connectionShader );
-		return;
+	}
+	else if ( cent->currentState.eFlags & EF_TYPING )
+	{
+		CG_PlayerFloatSprite( cent, cgs.media.balloonShader );
 	}
 }
 

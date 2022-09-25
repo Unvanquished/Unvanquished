@@ -2249,6 +2249,14 @@ void ClientThink( int clientNum )
 
 	ent = g_entities + clientNum;
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
+	if ( ent->client->pers.cmd.flags & UF_TYPING )
+	{
+		ent->client->ps.eFlags |= EF_TYPING;
+	}
+	else
+	{
+		ent->client->ps.eFlags &= ~EF_TYPING;
+	}
 
 	// mark the time we got info, so we can display the phone jack if we don't get any for a while
 	ent->client->lastCmdTime = level.time;
