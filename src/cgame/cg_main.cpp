@@ -808,7 +808,7 @@ static void CG_RegisterGraphics()
 	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
-	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon", (RegisterShaderFlags_t) ( RSF_SPRITE | RSF_NOMIP ) );
+	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "particles/feedback/disconnect" );
 
