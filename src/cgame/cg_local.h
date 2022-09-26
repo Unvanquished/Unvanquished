@@ -1319,6 +1319,7 @@ struct rocketMenu_t
 #define MAX_OUTPUTS 16
 #define MAX_MODS 64
 #define MAX_DEMOS 256
+#define MAX_ARENA_MAPS 128
 
 struct server_t
 {
@@ -1354,6 +1355,12 @@ struct modInfo_t
 {
 	char *name;
 	char *description;
+};
+
+struct arenaInfo_t
+{
+	char *mapName;
+	char *mapLoadName;
 };
 
 struct mapInfo_t
@@ -1392,6 +1399,9 @@ struct rocketDataSource_t
 	char *demoList[ MAX_DEMOS ];
 	int demoCount;
 	int demoIndex;
+
+	arenaInfo_t arenaList[ MAX_ARENA_MAPS ];
+	int arenaCount;
 
 	std::vector<mapInfo_t> mapList;
 	int mapIndex;
@@ -2311,6 +2321,7 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name );
 //
 // cg_gameinfo.c
 //
+void CG_LoadArenas();
 void CG_LoadMapList();
 
 //
