@@ -2408,7 +2408,7 @@ void CG_Buildable( centity_t *cent )
 	cent->lastBuildableHealth = health;
 
 	// set particle effect to fire if buildable is burning
-	// CG_OnFire( cent );
+	CG_OnFire( cent );
 	CG_Corrode( cent );
 
 	// smoke etc for damaged buildables
