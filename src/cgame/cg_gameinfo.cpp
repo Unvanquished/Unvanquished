@@ -33,10 +33,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 ===============
-CG_LoadArenas
+CG_LoadMapList
 ===============
 */
-void CG_LoadArenas()
+void CG_LoadMapList()
 {
 	rocketInfo.data.mapList.clear();
 	for (const std::string& mapName : FS::GetAvailableMaps(false))
