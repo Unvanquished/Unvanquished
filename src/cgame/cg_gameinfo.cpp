@@ -34,24 +34,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // arena info
 //
-static int  cg_numArenas;
-static char *cg_arenaInfos[ MAX_ARENAS ];
+static std::vector<arenaInfo_t> arenaList;
 
 /*
 ===============
 CG_ParseInfos
 ===============
 */
-static int CG_ParseInfos( const char *buf, int max, char *infos[] )
+static void CG_ParseInfos( const char *buf )
 {
 	char *token;
-	int  count = 0;
 	char key[ MAX_TOKEN_CHARS ];
-	char info[ MAX_INFO_STRING ];
 
-	auto infoPostfixLen = strlen( "\\num\\" ) + strlen( va( "%d", MAX_ARENAS ) );
-
-	while ( 1 )
+	while ( true )
 	{
 		token = COM_Parse( &buf );
 
@@ -62,25 +57,19 @@ static int CG_ParseInfos( const char *buf, int max, char *infos[] )
 
 		if ( strcmp( token, "{" ) )
 		{
-			Log::Notice( "Missing { in info file\n" );
+			Log::Warn( "Missing { in arena file" );
 			break;
 		}
 
-		if ( count == max )
-		{
-			Log::Notice( "Max infos exceeded\n" );
-			break;
-		}
+		arenaInfo_t arenaInfo;
 
-		info[ 0 ] = '\0';
-
-		while ( 1 )
+		while ( true )
 		{
 			token = COM_ParseExt( &buf, true );
 
 			if ( !token[ 0 ] )
 			{
-				Log::Notice( "Unexpected end of info file\n" );
+				Log::Warn( "Unexpected end of arena file" );
 				break;
 			}
 
@@ -98,59 +87,112 @@ static int CG_ParseInfos( const char *buf, int max, char *infos[] )
 				strcpy( token, "<NULL>" );
 			}
 
-			Info_SetValueForKey( info, key, token, false );
+			/* Standard in all games. */
+			if ( strcmp( key, "map" ) == 0 )
+			{
+				arenaInfo.name = token;
+			}
+			/* Standard in all games. */
+			else if ( strcmp( key, "longname" ) == 0 )
+			{
+				arenaInfo.longName = token;
+			}
+			/* Also used in Smokin' Guns and Q3 Rally. */
+			else if ( strcmp( key, "author" ) == 0 )
+			{
+				arenaInfo.authors.push_back( token );
+			}
+
+			/* Some other common keys:
+
+			* type: list of game types as words in a string,
+			  example: "tourney ffa team",
+			  Used by almost games that has various game modes:
+			  Quake 3, Quake Live, World of Padman, Q3 Rally,
+			  Urban Terror, Return to Castle Wolfenstein…
+			* bots: list of bot identity as words in a string,
+			  example: "sarge, uriel",
+			  used by Quake 3, Q3 Rally…
+			* bot_skill: bot skill level,
+			  example: 3,
+			  used by Quake Live.
+			* timelimit: timelimit in minutes,
+			  example: 10,
+			  used by Quake 3, Quake Live, Wild West,
+			  Return to Castle Wolfenstein,
+			  Wolfenstein: Enemy Territory…
+			* fraglimit: amount of frags to end a game,
+			  example: 20.
+			  used by Quake 3, Quake Live…
+			* briefing: a string displayed to the player
+			  before he enters the match,
+			  used by Wolfenstein: Enemy Territory.
+			* desc_line1 (2, 3 ,4): lines of text describing
+			  the map,
+			  used by Smokin' Guns.
+
+			And others.
+
+			They are ignored for now as we don't make use of them.
+
+			As this code does not make use of “Info” storage format,
+			we can also implement list of things by using multiple
+			time the same key name, like the ogg metadata format
+			does.
+
+			Example, instead of:
+
+			  type "tourney ffa team"
+
+			We can implement:
+
+			  type "tourney"
+			  type "ffa"
+			  type "team"
+
+			This is also similar to how it is done in the .mapinfo
+			files from Xonotic (using a different file format). */
 		}
 
-		//NOTE: extra space for arena number
-		infos[ count ] = (char*) BG_Alloc( strlen( info ) + infoPostfixLen + 1 );
-
-		if ( infos[ count ] )
+		if ( !arenaInfo.name.empty() )
 		{
-			strcpy( infos[ count ], info );
-			count++;
+			arenaList.push_back( arenaInfo );
 		}
 	}
-
-	return count;
 }
 
 /*
 ===============
 CG_LoadArenasFromFile
-TODO: consider deleting, unless we want to display 'longname' somewhere
 ===============
 */
-static void CG_LoadArenasFromFile( char *filename )
+static bool CG_LoadArenasFromFile( std::string filename, bool legacy = false )
 {
+	if ( legacy )
+	{
+		Log::Debug( "Loading legacy arena file: %s", filename );
+	}
+	else
+	{
+		Log::Debug( "Loading arena file: %s", filename );
+	}
+
 	std::error_code err;
 	std::string text = FS::PakPath::ReadFile( filename, err );
+
 	if ( err )
 	{
-		Log::Warn( "file not found: %s", filename );
-		return;
+		if ( !legacy )
+		{
+			Log::Warn( "Arena file not found: %s", filename );
+		}
+
+		return false;
 	}
 
-	if ( text.size() >= MAX_ARENAS_TEXT )
-	{
-		Log::Warn( "file too large: %s is %i, max allowed is %i",
-			filename, text.size(), MAX_ARENAS_TEXT );
-		return;
-	}
+	CG_ParseInfos( text.c_str() );
 
-	cg_numArenas += CG_ParseInfos( text.c_str(), MAX_ARENAS - cg_numArenas, &cg_arenaInfos[ cg_numArenas ] );
-}
-
-/*
-===============
-CG_MapLoadNameCompare
-===============
-*/
-static int CG_MapLoadNameCompare( const void *a, const void *b )
-{
-	arenaInfo_t *A = ( arenaInfo_t * ) a;
-	arenaInfo_t *B = ( arenaInfo_t * ) b;
-
-	return Q_stricmp( A->mapLoadName, B->mapLoadName );
+	return true;
 }
 
 /*
@@ -158,45 +200,55 @@ static int CG_MapLoadNameCompare( const void *a, const void *b )
 CG_LoadArenas
 ===============
 */
-void CG_LoadArenas()
+void CG_LoadArenas( std::string mapname )
 {
-	int  numdirs;
-	char filename[ 128 ];
-	char dirlist[ 4096 ];
-	char *dirptr;
-	int  i, n;
-	int  dirlen;
+	arenaList.clear();
 
-	cg_numArenas = 0;
-	rocketInfo.data.arenaCount = 0;
+	std::string filename = Str::Format( "meta/%s/%s.arena", mapname, mapname );
 
-	// get all directories from meta
-	numdirs = trap_FS_GetFileListRecursive( "meta", ".arena", dirlist, sizeof( dirlist ) );
-	dirptr = dirlist;
-
-	for ( i = 0; i < numdirs; i++, dirptr += dirlen + 1 )
+	if ( !CG_LoadArenasFromFile( filename ) )
 	{
-		dirlen = strlen( dirptr );
-		Q_strncpyz( filename, "meta/", sizeof filename );
-		Q_strcat( filename, sizeof filename, dirptr );
-		CG_LoadArenasFromFile( filename );
+		/* Legacy games may store more than one map metadata in a
+		single .arena file, the .arena file not having a basename
+		in common with any map.
+
+		The .arena files (whatever the amount of map described in)
+		may be stored in various folders. Many games use the scripts/
+		folder, some may use the maps/ one (like Smokin' Guns).
+
+		Some games like Quake 3 and Quake Live also reads a file
+		named scripts/arenas.txt and Quake Live also reads files
+		with .sp_arena extension in script/ for single-player
+		training maps. */
+
+		char dirlist[ 4096 ];
+		int numdirs = trap_FS_GetFileListRecursive( "", ".arena", dirlist, sizeof( dirlist ) );
+		char *dirptr = dirlist;
+
+		for ( int i = 0, dirlen = 0; i < numdirs; i++, dirptr += dirlen + 1 )
+		{
+			dirlen = strlen( dirptr );
+
+			CG_LoadArenasFromFile( dirptr, true );
+		}
+
+		CG_LoadArenasFromFile( "scripts/arenas.txt", true );
 	}
 
-	Log::Warn( S_SKIPNOTIFY "%i arenas parsed\n", cg_numArenas );
+	Log::Debug( "%i arenas parsed", arenaList.size() );
+}
 
-	for ( n = 0; n < cg_numArenas; n++ )
+arenaInfo_t CG_GetArenaInfo( std::string mapName )
+{
+	for ( arenaInfo_t &arenaInfo : arenaList )
 	{
-		rocketInfo.data.arenaList[ rocketInfo.data.arenaCount ].mapLoadName = BG_strdup( Info_ValueForKey( cg_arenaInfos[ n ], "map" ) );
-		rocketInfo.data.arenaList[ rocketInfo.data.arenaCount ].mapName = BG_strdup( Info_ValueForKey( cg_arenaInfos[ n ], "longname" ) );
-		rocketInfo.data.arenaCount++;
-
-		if ( rocketInfo.data.arenaCount >= MAX_ARENA_MAPS )
+		if ( arenaInfo.name == mapName )
 		{
-			break;
+			return arenaInfo;
 		}
 	}
 
-	qsort( rocketInfo.data.arenaList, rocketInfo.data.arenaCount, sizeof( mapInfo_t ), CG_MapLoadNameCompare );
+	return {};
 }
 
 /*
