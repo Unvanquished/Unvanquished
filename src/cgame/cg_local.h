@@ -2311,7 +2311,7 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name );
 //
 // cg_gameinfo.c
 //
-void CG_LoadArenas();
+void CG_LoadMapList();
 
 //
 // Rocket Functions

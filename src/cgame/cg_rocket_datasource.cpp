@@ -1083,7 +1083,7 @@ static void CG_Rocket_SortPlayerList( const char*, const char *sortBy )
 static void CG_Rocket_BuildMapList( const char* )
 {
 	Rocket_DSClearTable( "mapList", "default" );
-	CG_LoadArenas();
+	CG_LoadMapList();
 
 	for ( size_t i = 0; i < rocketInfo.data.mapList.size(); ++i )
 	{
