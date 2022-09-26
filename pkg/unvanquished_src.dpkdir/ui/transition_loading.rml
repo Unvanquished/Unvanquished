@@ -86,13 +86,19 @@
 				width: 100%;
 			}
 
-			servername {
-				display: block;
+			.serverlevelname {
 				font-size: 3em;
 			}
 
-			servermotd {
-				display: block;
+			.serverlevelauthors {
+				font-size: 1.5em;
+			}
+
+			.servername {
+				font-size: 3em;
+			}
+
+			.servermotd {
 				font-size: 1.5em;
 			}
 		</style>
@@ -104,8 +110,10 @@
 		</div>
 
 		<infobox>
-			<servername><hostname/></servername>
-			<servermotd><motd/></servermotd>
+			<div class="serverlevelname"><levelname/></div>
+			<div class="serverlevelauthors"><levelauthors/></div>
+			<div class="servername"><hostname/></div>
+			<div class="servermotd"><motd/></div>
 		</infobox>
 
 		<barbox>
