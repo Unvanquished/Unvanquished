@@ -1163,6 +1163,73 @@ static void GenerateNavmeshes()
 	cg.loadingNavmesh = false;
 }
 
+static void SetMapInfoFromArenaInfo( arenaInfo_t arenaInfo )
+{
+	cg.mapLongName = arenaInfo.longName;
+
+	if ( arenaInfo.authors.size() != 0 )
+	{
+		if ( arenaInfo.authors.size() == 1 )
+		{
+			cg.mapAuthors = Str::Format( _( "by %s"), arenaInfo.authors[ 0 ] );
+		}
+		else
+		{
+			std::string first_authors;
+			for ( std::string &author : arenaInfo.authors )
+			{
+				if ( &author == &arenaInfo.authors.back() )
+				{
+					break;
+				}
+
+				if ( &author != &arenaInfo.authors.front() )
+				{
+					first_authors += ", ";
+				}
+
+				first_authors += author;
+			}
+
+			cg.mapAuthors = Str::Format( _( "by %s and %s"), first_authors, arenaInfo.authors.back() );
+		}
+	}
+}
+
+static void SetMapInfo()
+{
+	std::string mapName = Cvar::GetValue( "mapname" );
+
+	/* Use longname from .arena file as map name if exists,
+	also read author name if exists. */
+	CG_LoadArenas( mapName );
+
+	arenaInfo_t arenaInfo = CG_GetArenaInfo( mapName);
+
+	if ( arenaInfo.longName.empty() )
+	{
+		/* Use worldspawn's message key from .bsp file
+		as a fallback if no other name is found.
+
+		This may be not optimal: the server reads it from
+		the BSP and the client reads it from the network. */
+		const char *message = CG_ConfigString( CS_MESSAGE );
+
+		if ( strlen( message ) != 0 ) {
+			arenaInfo.longName = message;
+		}
+	}
+
+	if ( arenaInfo.longName.empty() )
+	{
+		/* Use map basename for .bsp name as a fallback if
+		not other name is found. */
+		arenaInfo.longName = mapName;
+	}
+
+	SetMapInfoFromArenaInfo( arenaInfo );
+}
+
 /*
 =================
 CG_Init
@@ -1203,6 +1270,11 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	// old servers
 	cgs.gameState = gameState;
+
+	/* Set level name and authors string to be used by the UI.
+	It must be done after cgs.gameState is set or the map name
+	from the BSP can't be fetched. */
+	SetMapInfo();
 
 	// Must be done before trap_UpdateScreen()
 	// or the game will crash.

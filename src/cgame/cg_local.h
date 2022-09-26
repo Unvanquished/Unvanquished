@@ -1222,6 +1222,8 @@ struct cg_t
 	int                     upMoveTime;
 
 	/* loading */
+	std::string mapLongName;
+	std::string mapAuthors;
 	char                    loadingText[ MAX_LOADING_TEXT_LENGTH ];
 	float                   loadingFraction; // loading percentages
 	float                   mediaLoadingFraction;
@@ -1319,7 +1321,6 @@ struct rocketMenu_t
 #define MAX_OUTPUTS 16
 #define MAX_MODS 64
 #define MAX_DEMOS 256
-#define MAX_ARENA_MAPS 128
 
 struct server_t
 {
@@ -1359,8 +1360,9 @@ struct modInfo_t
 
 struct arenaInfo_t
 {
-	char *mapName;
-	char *mapLoadName;
+	std::string name;
+	std::string longName;
+	std::vector<std::string> authors;
 };
 
 struct mapInfo_t
@@ -1399,9 +1401,6 @@ struct rocketDataSource_t
 	char *demoList[ MAX_DEMOS ];
 	int demoCount;
 	int demoIndex;
-
-	arenaInfo_t arenaList[ MAX_ARENA_MAPS ];
-	int arenaCount;
 
 	std::vector<mapInfo_t> mapList;
 	int mapIndex;
@@ -2321,7 +2320,8 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name );
 //
 // cg_gameinfo.c
 //
-void CG_LoadArenas();
+void CG_LoadArenas( std::string mapname );
+arenaInfo_t CG_GetArenaInfo( std::string mapName );
 void CG_LoadMapList();
 
 //
