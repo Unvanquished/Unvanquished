@@ -205,8 +205,6 @@ components:
             - PrepareNetCode
 
     Mining:
-        parameters:
-            blueprint: bool
         messages:
             - PrepareNetCode
             - FinishConstruction
