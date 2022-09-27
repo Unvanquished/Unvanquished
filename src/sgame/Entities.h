@@ -44,6 +44,7 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
 
 // only forward declarations needed for this header; no CBSE.h, or this would be pointless
 class Entity;
+template<class T> constexpr int ComponentPriority();
 
 namespace Entities {
 	/**
@@ -104,6 +105,141 @@ namespace Entities {
 
 	bool AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
 	bool KnockbackRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod);
+
+	// Component iteration internals
+	namespace detail {
+		class ComponentBitset {
+			using word = uint32_t;
+			static constexpr unsigned wordBits = std::numeric_limits<word>::digits;
+			static constexpr unsigned numWords = (MAX_GENTITIES + wordBits - 1) / wordBits;
+
+			word data_[numWords];
+
+		public:
+			ComponentBitset() : data_{} {}
+			int Scan(int start) const; // find nonzero bit or return MAX_GENTITIES
+			void Set(int num); // set bit to 1
+			void Clear(int num); // set bit to 0
+		};
+
+		extern ComponentBitset componentSets[];
+
+		// template hack to reuse the same code for EntityIterator and ComponentIterator
+		template<typename ThisType>
+		class EntityIteratorBase {
+		protected:
+			const ComponentBitset* bits_;
+			int entityNum_;
+
+			EntityIteratorBase() = default;
+
+		public:
+			bool operator!=(const ThisType& other) const {
+				return entityNum_ != other.entityNum_;
+			}
+
+			void operator++()
+			{
+				entityNum_ = bits_->Scan(entityNum_ + 1);
+			}
+
+			static ThisType MakeBegin(const ComponentBitset* bits)
+			{
+				ThisType it;
+				it.bits_ = bits;
+				it.entityNum_ = -1;
+				++it;
+				return it;
+			}
+
+			static ThisType MakeEnd()
+			{
+				ThisType it;
+				it.entityNum_ = MAX_GENTITIES;
+				return it;
+			}
+
+			struct Collection {
+				ComponentBitset* bits;
+
+				ThisType begin() { return ThisType::MakeBegin(bits); }
+				ThisType end() { return ThisType::MakeEnd(); }
+			};
+		};
+
+		class EntityIterator : public EntityIteratorBase<EntityIterator> {
+		public:
+			Entity& operator*() const
+			{
+				return *g_entities[this->entityNum_].entity;
+			}
+		};
+
+		// Hack to trick two-phase template compilation into letting me use Get() without
+		// having the definition of Entity
+		template<typename ComponentT, typename OldEntity = gentity_t>
+		ComponentT* Get(OldEntity& ent)
+		{
+			return ent.entity->template Get<ComponentT>();
+		}
+
+		template<typename ComponentT>
+		class ComponentIterator : public EntityIteratorBase<ComponentIterator<ComponentT>> {
+		public:
+			ComponentT& operator*() const
+			{
+				return *Get<ComponentT>(g_entities[this->entityNum_]);
+			}
+		};
+	}
+
+	// === Looping over all entities with a given component ===
+	//
+	// You may use Entities::Having to loop over all entities having a given component, or
+	// Entities::Each to loop over the components themselves.
+	//
+	// The only approved way to use the entity iterators and entity collections is to request a
+	// collection and then immediately iterate over it with a for-each loop. Other uses are
+	// likely to result in unexpected behavior because the C++ iterator model is not a good fit
+	// for the domain.
+	//
+	// Destroying entities during the loop is safe. Even the current one, as long as you don't
+	// access the reference afterwards.
+	// Creating entities during the loop is also safe, but it may be stupid because the new entity,
+	// supposing it has the component in question, will be randomly included in the loop or not
+	// depending on its entity num.
+
+	// for (Entity& ent : Entities::Having<HealthComponent>()) { ... }
+	template<typename ComponentT>
+	detail::EntityIterator::Collection Having()
+	{
+		return { &detail::componentSets[ComponentPriority<ComponentT>()] };
+	}
+
+	// for (MiningComponent& miner : Entities::Each<MiningComponent>()) { ... }
+	template<typename ComponentT>
+	typename detail::ComponentIterator<ComponentT>::Collection Each()
+	{
+		return { &detail::componentSets[ComponentPriority<ComponentT>()] };
+	}
+
+	// Find a single entity with the specified component, or nullptr
+	template<typename ComponentT>
+	Entity* AnyWith()
+	{
+		int num = detail::componentSets[ComponentPriority<ComponentT>()].Scan(0);
+		return num < MAX_GENTITIES ? g_entities[num].entity : nullptr;
+	}
+
+	// Find a single component of the specified type, or nullptr
+	template<typename ComponentT>
+	ComponentT* Any()
+	{
+		int num = detail::componentSets[ComponentPriority<ComponentT>()].Scan(0);
+		return num < MAX_GENTITIES ? detail::Get<ComponentT>(g_entities[num]) : nullptr;
+	}
+
+	// TODO: add Count<Component> ?
 }
 
 #endif /* SGAME_ENTITIES_H_ */

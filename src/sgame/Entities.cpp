@@ -158,3 +158,51 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 
 	return hit;
 }
+
+namespace Entities {
+namespace detail {
+	ComponentBitset componentSets[NumComponents()];
+
+	int ComponentBitset::Scan(int startSigned) const
+	{
+		auto start = static_cast<unsigned>(startSigned);
+		// HACK: assume ENTITYNUM_NONE and ENTITYNUM_WORLD don't have components
+		if (start >= static_cast<unsigned>(level.num_entities)) {
+			return MAX_GENTITIES;
+		}
+		unsigned shift = start % wordBits;
+		unsigned i = start / wordBits;
+		word partialWord = data_[i] >> shift;
+		if (partialWord != 0) {
+			return CountTrailingZeroes(partialWord) + start;
+		}
+		unsigned iMax = (level.num_entities - 1) / wordBits;
+		while (++i <= iMax) {
+			if (data_[i] != 0) {
+				return i * wordBits + CountTrailingZeroes(data_[i]);
+			}
+		}
+		return MAX_GENTITIES;
+	}
+
+	void ComponentBitset::Set(int num)
+	{
+		data_[num / wordBits] |= word(1) << (num % wordBits);
+	}
+
+	void ComponentBitset::Clear(int num)
+	{
+		data_[num / wordBits] &= ~(word(1) << (num % wordBits));
+	}
+} // namespace detail
+} // namespace Entities
+
+void RegisterComponentCreate(int entityNum, int componentNum)
+{
+	Entities::detail::componentSets[componentNum].Set(entityNum);
+}
+
+void RegisterComponentDestroy(int entityNum, int componentNum)
+{
+	Entities::detail::componentSets[componentNum].Clear(entityNum);
+}
