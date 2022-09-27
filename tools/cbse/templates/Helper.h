@@ -40,6 +40,15 @@
 #ifndef CBSE_H_
 #define CBSE_H_
 
+// Component creation/destruction callbacks.
+// The functions could be defined different ways (templates, overloads, etc.) but
+// generally should be found when called like the following for any component type:
+//     FooComponent* x;
+//     OnComponentCreate(x);
+//     OnComponentDestroy(x);
+template<typename T> OnComponentCreate(T*) {}
+template<typename T> OnComponentDestroy(T*) {}
+
 // Add here any definitions, forward declarations and includes that provide all
 // the types used in the entities definition file (and thus the CBSE backend).
 // Make sure none of the includes in this file includes any header that is part

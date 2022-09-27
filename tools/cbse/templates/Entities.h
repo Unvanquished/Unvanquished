@@ -68,11 +68,11 @@
 				{% endfor %}
 			};
 
-			/** Default constructor of {{entity.get_type_name()}}. */
+			/** Constructor of {{entity.get_type_name()}}. */
 			{{entity.get_type_name()}}(Params params);
 
-			/** Default destructor of {{entity.get_type_name()}}. */
-			virtual ~{{entity.get_type_name()}}() = default;
+			/** Destructor of {{entity.get_type_name()}}. */
+			virtual ~{{entity.get_type_name()}}();
 
 			{% for component in entity.get_components() %}
 				{{component.get_type_name()}} {{component.get_variable_name()}}; /**< {{entity.get_type_name()}}'s {{component.get_type_name()}} instance. */
