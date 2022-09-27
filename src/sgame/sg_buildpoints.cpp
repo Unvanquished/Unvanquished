@@ -52,7 +52,7 @@ float G_RGSPredictOwnEfficiency(vec3_t origin) {
 static float RGSPredictEfficiencyLoss(Entity& miner, vec3_t newMinerOrigin) {
 	float distance               = Distance(miner.oldEnt->s.origin, newMinerOrigin);
 	float oldPredictedEfficiency = miner.Get<MiningComponent>()->Efficiency(true);
-	float newPredictedEfficiency = oldPredictedEfficiency * MiningComponent::InterferenceMod(distance);
+	float newPredictedEfficiency = oldPredictedEfficiency * MiningComponent::PredictedInterferenceMod(distance);
 	float efficiencyLoss         = newPredictedEfficiency - oldPredictedEfficiency;
 
 	buildpointLogger.Debug("Predicted efficiency loss of existing miner: %f - %f = %f.",

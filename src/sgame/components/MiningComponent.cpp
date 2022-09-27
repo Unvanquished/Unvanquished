@@ -1,5 +1,19 @@
 #include "MiningComponent.h"
 
+
+static Cvar::Callback<Cvar::Cvar<float>> g_buildPointMinerActivationTime(
+		"g_buildPointMinerActivationTime",
+		"Time before a drill or leech is fully active, in seconds",
+		Cvar::SERVERINFO,
+		3.0f*60,
+		[](int) {
+			ForEntities<MiningComponent>([&] (Entity& other, MiningComponent& miningComponent) {
+				miningComponent.CalculateEfficiency();
+			});
+			G_UpdateBuildPointBudgets();
+		});
+
+
 MiningComponent::MiningComponent(Entity& entity, bool blueprint,
                                  ThinkingComponent& r_ThinkingComponent)
 	: MiningComponentBase(entity, blueprint, r_ThinkingComponent)
@@ -11,6 +25,8 @@ MiningComponent::MiningComponent(Entity& entity, bool blueprint,
 	// Inform neighbouring miners so they can adjust their own predictions.
 	// Note that blueprint miners skip this.
 	InformNeighbors();
+
+	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 250);
 }
 
 void MiningComponent::HandlePrepareNetCode() {
@@ -47,7 +63,25 @@ void MiningComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfD
 	G_UpdateBuildPointBudgets();
 }
 
-float MiningComponent::InterferenceMod(float distance) {
+float MiningComponent::AliveTimePercentage() const {
+	float fullyActiveTime = g_buildPointMinerActivationTime.Get() * 1000.0f;
+
+	Log::Warn("creation time: %i", entity.oldEnt->creationTime);
+	if (entity.oldEnt->creationTime < 1000)
+		return 1.0f; // spawned with world, can be considered alive since long
+
+	// TODO: use time after activating, and not after spawning
+	float activeTime = static_cast<float>(
+			level.time - entity.oldEnt->creationTime);
+
+	return Math::Clamp(activeTime / fullyActiveTime, 0.0f, 1.0f);
+}
+
+float MiningComponent::AliveTimeMod() const {
+	return AliveTimePercentage();
+}
+
+float MiningComponent::PredictedInterferenceMod(float distance) {
 	if (RGS_RANGE <= 0.0f) return 1.0f;
 	if (distance > 2.0f * RGS_RANGE) return 1.0f;
 
@@ -60,6 +94,17 @@ float MiningComponent::InterferenceMod(float distance) {
 	// union of their areas of effect. If more miners intersect, this is just an
 	// approximation that tends to punish cluttering of miners.
 	return ((1.0f - q) + 0.5f * q);
+}
+
+float MiningComponent::EffectiveInterferenceMod(const Entity& other) const {
+	float expected = PredictedInterferenceMod(
+			G_Distance(entity.oldEnt, other.oldEnt));
+
+	// compensate for the AliveTimeMod, so that the interference doesn't
+	// temporarily give lower bp for a somewhat close drill
+
+	const MiningComponent *othersComp = other.Get<MiningComponent>();
+	return 1.0f - (othersComp->AliveTimePercentage() * (1.0f - expected));
 }
 
 void MiningComponent::CalculateEfficiency() {
@@ -76,11 +121,10 @@ void MiningComponent::CalculateEfficiency() {
 		HealthComponent *healthComponent = other.Get<HealthComponent>();
 		if (healthComponent && !healthComponent->Alive()) return;
 
-		float interferenceMod = InterferenceMod(G_Distance(entity.oldEnt, other.oldEnt));
-
 		// TODO: Exclude enemy miners in construction from the prediction.
 
-		predictedEfficiency *= interferenceMod;
+		predictedEfficiency *= MiningComponent::PredictedInterferenceMod(
+				G_Distance(entity.oldEnt, other.oldEnt));
 
 		// Current efficiency is zero when not active.
 		if (!active) return;
@@ -88,11 +132,12 @@ void MiningComponent::CalculateEfficiency() {
 		// Only consider active neighbours for the current efficiency.
 		if (!miningComponent.Active()) return;
 
-		currentEfficiency *= interferenceMod;
+		currentEfficiency *= EffectiveInterferenceMod(other);
+		currentEfficiency *= AliveTimeMod();
 	});
 }
 
-void MiningComponent::InformNeighbors() {
+void MiningComponent::InformNeighbors() const {
 	// Blueprint miners cause neither real nor predicted interference, so no need to tell neighbours
 	// about them.
 	if (blueprint) return;
@@ -105,6 +150,22 @@ void MiningComponent::InformNeighbors() {
 	});
 }
 
-float MiningComponent::Efficiency(bool predict) {
+float MiningComponent::Efficiency(bool predict) const {
 	return predict ? predictedEfficiency : currentEfficiency;
+}
+
+void MiningComponent::Think(int)
+{
+	// Already calculate the predicted efficiency.
+	CalculateEfficiency();
+
+	// Inform neighbouring miners so they can adjust their own predictions.
+	// Note that blueprint miners skip this.
+	InformNeighbors();
+
+	// Update both team's budgets.
+	G_UpdateBuildPointBudgets();
+
+	// TODO: stop thinking after some time
+	//GetThinkingComponent().UnregisterActiveThinker();
 }
