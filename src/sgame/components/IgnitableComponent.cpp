@@ -23,6 +23,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 */
 
 #include "IgnitableComponent.h"
+#include "../Entities.h"
 
 static Log::Logger fireLogger("sgame.fire");
 
@@ -163,20 +164,20 @@ void IgnitableComponent::ConsiderStop(int timeDelta) {
 	float averagePostMinBurnTime = BASE_AVERAGE_BURN_TIME - MIN_BURN_TIME;
 
 	// Increase average burn time dynamically for burning entities in range.
-	ForEntities<IgnitableComponent>([&](Entity &other, IgnitableComponent &ignitable){
-		if (&other == &entity) return;
-		if (!ignitable.onFire) return;
+	for (IgnitableComponent& ignitable : Entities::Each<IgnitableComponent>()) {
+		if (&ignitable == this) continue;
+		if (!ignitable.onFire) continue;
 
 		// TODO: Use LocationComponent.
-		float distance = G_Distance(other.oldEnt, entity.oldEnt);
+		float distance = G_Distance(ignitable.entity.oldEnt, entity.oldEnt);
 
-		if (distance > EXTRA_BURN_TIME_RADIUS) return;
+		if (distance > EXTRA_BURN_TIME_RADIUS) continue;
 
 		float distanceFrac = distance / EXTRA_BURN_TIME_RADIUS;
 		float distanceMod  = 1.0f - distanceFrac;
 
 		averagePostMinBurnTime += EXTRA_AVERAGE_BURN_TIME * distanceMod;
-	});
+	}
 
 	// The burn stop chance follows an exponential distribution.
 	float lambda = 1.0f / averagePostMinBurnTime;
