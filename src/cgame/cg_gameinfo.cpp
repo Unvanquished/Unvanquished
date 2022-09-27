@@ -42,7 +42,7 @@ static char *cg_arenaInfos[ MAX_ARENAS ];
 CG_ParseInfos
 ===============
 */
-int CG_ParseInfos( const char *buf, int max, char *infos[] )
+static int CG_ParseInfos( const char *buf, int max, char *infos[] )
 {
 	char *token;
 	int  count = 0;
@@ -120,7 +120,7 @@ CG_LoadArenasFromFile
 TODO: consider deleting, unless we want to display 'longname' somewhere
 ===============
 */
-void CG_LoadArenasFromFile( char *filename )
+static void CG_LoadArenasFromFile( char *filename )
 {
 	std::error_code err;
 	std::string text = FS::PakPath::ReadFile( filename, err );
