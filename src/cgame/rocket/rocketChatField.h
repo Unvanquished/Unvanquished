@@ -284,6 +284,10 @@ protected:
 
 	void MoveCursorForward()
 	{
+		if (cursor_character_index >= text.size() )
+		{
+			return;
+		}
 		cursor_character_index += Q_UTF8_Width( text.c_str() + cursor_character_index );
 	}
 
