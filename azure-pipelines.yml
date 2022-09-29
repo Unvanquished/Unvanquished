@@ -19,7 +19,7 @@ strategy:
       CMAKE_OPTIONS: '-G Ninja -DDAEMON_CBSE_PYTHON_PATH=/usr/bin/python2 -DBUILD_GAME_NATIVE_DLL=0 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=1'
       BUILDER_OPTIONS: '-j$(nproc) -k 10'
     Mac:
-      VM_IMAGE: 'macOS-10.15'
+      VM_IMAGE: 'macOS-11'
       INSTALL_DEPS: 'pip3 install -r src/utils/cbse/requirements.txt'
       CMAKE_OPTIONS: '-DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
       BUILDER_OPTIONS: '-j$(sysctl -n hw.logicalcpu)'
