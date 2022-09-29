@@ -66,6 +66,7 @@ Maryland 20850 USA.
 #include "lua/Events.h"
 #include "lua/Timer.h"
 #include "../cg_local.h"
+#include "emojis/emojimap.h"
 
 class DaemonFileInterface : public Rml::FileInterface
 {
@@ -354,6 +355,7 @@ void Rocket_Init()
 		.GetId();
 
 	// Set backup font
+	Rml::GetFontEngineInterface()->LoadFontFace( "fonts/NotoColorEmoji.ttf", /*fallback_face=*/true, Rml::Style::FontWeight::Normal );
 	Rml::GetFontEngineInterface()->LoadFontFace( "fonts/unifont.ttf", /*fallback_face=*/true, Rml::Style::FontWeight::Normal );
 
 	// Initialize keymap
@@ -508,6 +510,24 @@ std::string CG_EscapeHTMLText( Str::StringRef text )
 	return out;
 }
 
+static Str::StringRef EmojiAt( const char* s )
+{
+	if ( s && *s != '[' )
+	{
+		return "";
+	}
+
+	const char* bracket = strpbrk( s + 1, "[]" );
+	if ( bracket == nullptr || *bracket != ']' )
+	{
+		return "";
+	}
+
+	std::string name(s + 1, bracket);
+	auto e = FindEmoji( name );
+	return e;
+}
+
 // TODO: Make this take Rml::String as an input.
 // FIXME: This always parses colors even when RP_QUAKE is not specified. Many callers rely on this behavior.
 Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
@@ -525,6 +545,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 		{
 			char c = *token.Begin();
 			const emoticonData_t *emoticon;
+			Str::StringRef emoji("");
 			if ( c == '<' )
 			{
 				if ( span && !spanHasContent )
@@ -566,6 +587,19 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 					out.append( spanstr );
 				}
 				out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				while ( iter != parser.end() && *iter->Begin() != ']' )
+				{
+					++iter;
+				}
+			}
+			else if ( ( parseFlags & RP_EMOTICONS ) && !( emoji = EmojiAt( token.Begin() ) ).empty() )
+			{
+				if ( span && !spanHasContent )
+				{
+					spanHasContent = true;
+					out.append( spanstr );
+				}
+				out.append( emoji.c_str() );
 				while ( iter != parser.end() && *iter->Begin() != ']' )
 				{
 					++iter;
