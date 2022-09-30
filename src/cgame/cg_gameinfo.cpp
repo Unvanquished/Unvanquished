@@ -41,9 +41,10 @@ static std::vector<arenaInfo_t> arenaList;
 CG_ParseInfos
 ===============
 */
-static void CG_ParseInfos( const char *buf )
+static void CG_ParseInfos( Str::StringRef text )
 {
-	char *token;
+	const char *buf = text.c_str();
+	const char *token;
 	char key[ MAX_TOKEN_CHARS ];
 
 	while ( true )
@@ -84,7 +85,7 @@ static void CG_ParseInfos( const char *buf )
 
 			if ( !token[ 0 ] )
 			{
-				strcpy( token, "<NULL>" );
+				token = "<NULL>";
 			}
 
 			/* Standard in all games. */
@@ -166,7 +167,7 @@ static void CG_ParseInfos( const char *buf )
 CG_LoadArenasFromFile
 ===============
 */
-static bool CG_LoadArenasFromFile( std::string filename, bool legacy = false )
+static bool CG_LoadArenasFromFile( Str::StringRef filename, bool legacy = false )
 {
 	if ( legacy )
 	{
@@ -190,7 +191,7 @@ static bool CG_LoadArenasFromFile( std::string filename, bool legacy = false )
 		return false;
 	}
 
-	CG_ParseInfos( text.c_str() );
+	CG_ParseInfos( text );
 
 	return true;
 }
@@ -200,7 +201,7 @@ static bool CG_LoadArenasFromFile( std::string filename, bool legacy = false )
 CG_LoadArenas
 ===============
 */
-void CG_LoadArenas( std::string mapname )
+void CG_LoadArenas( Str::StringRef mapname )
 {
 	arenaList.clear();
 
@@ -238,7 +239,7 @@ void CG_LoadArenas( std::string mapname )
 	Log::Debug( "%i arenas parsed", arenaList.size() );
 }
 
-arenaInfo_t CG_GetArenaInfo( std::string mapName )
+arenaInfo_t CG_GetArenaInfo( Str::StringRef mapName )
 {
 	for ( arenaInfo_t &arenaInfo : arenaList )
 	{
