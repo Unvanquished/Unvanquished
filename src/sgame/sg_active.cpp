@@ -92,9 +92,9 @@ static void P_DamageFeedback( gentity_t *player )
 	if ( ( level.time > player->pain_debounce_time ) && !( player->flags & FL_GODMODE ) )
 	{
 		player->pain_debounce_time = level.time + 700;
-		int transmittedHalth = (int)std::ceil(player->entity->Get<HealthComponent>()->Health());
-		transmittedHalth = Math::Clamp(transmittedHalth, 0, 255);
-		G_AddEvent( player, EV_PAIN, transmittedHalth );
+		int transmittedHealth = (int)std::ceil(player->entity->Get<HealthComponent>()->Health());
+		transmittedHealth = Math::Clamp(transmittedHealth, 0, 255);
+		G_AddEvent( player, EV_PAIN, transmittedHealth );
 		client->ps.damageEvent++;
 	}
 
