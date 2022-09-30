@@ -30,8 +30,6 @@ class SpawnerComponent: public SpawnerComponentBase {
 
 		// ///////////////////// //
 
-		~SpawnerComponent();
-
 		Entity *GetBlocker();
 
 		void WarnBlocker(Entity& entity, bool lastWarning);
@@ -63,8 +61,6 @@ class SpawnerComponent: public SpawnerComponentBase {
 		void OnLoss();
 
 		void Think(int timeDelta);
-
-		bool dying;
 
 		int blockTime;
 };

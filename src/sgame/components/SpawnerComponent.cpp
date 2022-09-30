@@ -11,25 +11,13 @@ constexpr float BLOCKER_DAMAGE       = 10.0f;
 SpawnerComponent::SpawnerComponent(Entity& entity, TeamComponent& r_TeamComponent,
 	ThinkingComponent& r_ThinkingComponent)
 	: SpawnerComponentBase(entity, r_TeamComponent, r_ThinkingComponent)
-	, dying(false)
 	, blockTime(0)
 {
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 500);
 	level.team[GetTeamComponent().Team()].numSpawns++;
 }
 
-SpawnerComponent::~SpawnerComponent() {
-	if (!dying) {
-		OnLoss();
-	}
-}
-
 void SpawnerComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
-	OnLoss();
-	dying = true;
-}
-
-void SpawnerComponent::OnLoss() {
 	TeamComponent::team_t team = GetTeamComponent().Team();
 
 	int newNumSpawns = --level.team[team].numSpawns;
