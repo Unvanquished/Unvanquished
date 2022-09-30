@@ -955,7 +955,7 @@ glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward )
 	glm::vec3 muzzlePoint = VEC2GLM( self->client->ps.origin );
 	glm::vec3 normal = BG_GetClientNormal( &self->client->ps );
 	muzzlePoint += static_cast<float>( self->client->ps.viewheight ) * normal;
-	muzzlePoint += 1.f * forward;
+	muzzlePoint += 1.0f * forward;
 	// snap to integer coordinates for more efficient network bandwidth usage
 	// Meh. I doubt it saves much. Casting to short ints might have, though. (copypaste)
 	return glm::floor( muzzlePoint + 0.5f );
