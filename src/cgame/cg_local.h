@@ -2320,8 +2320,8 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name );
 //
 // cg_gameinfo.c
 //
-void CG_LoadArenas( std::string mapname );
-arenaInfo_t CG_GetArenaInfo( std::string mapName );
+void CG_LoadArenas( Str::StringRef mapname );
+arenaInfo_t CG_GetArenaInfo( Str::StringRef mapName );
 void CG_LoadMapList();
 
 //
