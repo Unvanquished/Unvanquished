@@ -1693,8 +1693,8 @@ void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_
 #define MAX_ARENAS      1024
 #define MAX_ARENAS_TEXT 8192
 
-float    atof_neg( char *token, bool allowNegative );
-int      atoi_neg( char *token, bool allowNegative );
+float    atof_neg( const char *token, bool allowNegative );
+int      atoi_neg( const char *token, bool allowNegative );
 
 BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 		BG_ParseBuildableList( const std::string& );

@@ -659,7 +659,7 @@ CG_ParseValueAndVariance
 Parse a value and its random variance
 ===============
 */
-static void CG_ParseValueAndVariance( char *token, float *value, float *variance, bool allowNegative )
+static void CG_ParseValueAndVariance( const char *token, float *value, float *variance, bool allowNegative )
 {
 	char  valueBuffer[ 16 ];
 	char  *variancePtr = nullptr, *varEndPointer = nullptr;
@@ -718,11 +718,9 @@ CG_ParseParticle helpers
 */
 static void CG_CopyLine( int *i, char *toks, int num, size_t size, const char **text_p )
 {
-	char *token;
-
 	while( *i < num )
 	{
-		token = COM_ParseExt( text_p, false );
+		const char *token = COM_ParseExt( text_p, false );
 
 		if ( !*token )
 		{
@@ -738,7 +736,7 @@ static void CG_CopyLine( int *i, char *toks, int num, size_t size, const char **
 
 static bool CG_ParseType( pMoveType_t *pmt, const char **text_p )
 {
-	char *token = COM_Parse( text_p );
+	const char *token = COM_Parse( text_p );
 
 	if( !*token )
 	{
@@ -779,7 +777,7 @@ static bool CG_ParseType( pMoveType_t *pmt, const char **text_p )
 
 static bool CG_ParseDir( pMoveValues_t *pmv, const char **text_p )
 {
-	char *token = COM_Parse( text_p );
+	const char *token = COM_Parse( text_p );
 
 	if ( !*token )
 	{
@@ -800,7 +798,7 @@ static bool CG_ParseDir( pMoveValues_t *pmv, const char **text_p )
 
 static bool CG_ParseFinal( pLerpValues_t *plv, const char **text_p, bool allowNegative )
 {
-	char *token = COM_Parse( text_p );
+	const char *token = COM_Parse( text_p );
 
 	if( !*token )
 	{
@@ -829,14 +827,13 @@ Parse a particle section
 */
 static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 {
-	char  *token;
 	float number, randFrac;
 	int   i;
 
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( text_p );
+		const char *token = COM_Parse( text_p );
 
 		if ( !*token )
 		{
@@ -1517,13 +1514,12 @@ Parse a particle ejector section
 */
 static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **text_p )
 {
-	char  *token;
 	float number;
 
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( text_p );
+		const char *token = COM_Parse( text_p );
 
 		if ( !*token )
 		{
@@ -1652,13 +1648,12 @@ Parse a particle system section
 */
 static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text_p, const char *name )
 {
-	char                  *token;
 	baseParticleEjector_t *bpe;
 
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( text_p );
+		const char *token = COM_Parse( text_p );
 
 		if ( !*token )
 		{
@@ -1739,7 +1734,6 @@ static bool CG_ParseParticleFile( const char *fileName )
 {
 	const char         *text_p;
 	int          i;
-	char         *token;
 	char         psName[ MAX_QPATH ];
 	bool     psNameSet = false;
 
@@ -1757,7 +1751,7 @@ static bool CG_ParseParticleFile( const char *fileName )
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( &text_p );
+		const char *token = COM_Parse( &text_p );
 
 		if ( !*token )
 		{

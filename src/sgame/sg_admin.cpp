@@ -995,7 +995,7 @@ void G_admin_writeconfig()
 
 static void admin_readconfig_string( const char **cnf, char *s, unsigned size )
 {
-	char *t;
+	const char *t;
 
 	//COM_MatchToken(cnf, "=");
 	s[ 0 ] = '\0';
@@ -1032,10 +1032,8 @@ static void admin_readconfig_string( const char **cnf, char *s, unsigned size )
 
 static void admin_readconfig_int( const char **cnf, int *v )
 {
-	char *t;
-
 	//COM_MatchToken(cnf, "=");
-	t = COM_ParseExt( cnf, false );
+	const char *t = COM_ParseExt( cnf, false );
 
 	if ( !strcmp( t, "=" ) )
 	{
@@ -1889,7 +1887,6 @@ bool G_admin_readconfig( gentity_t *ent )
 	fileHandle_t      f;
 	int               len;
 	char              *cnf1, *cnf2;
-	char              *t;
 	bool              level_open, admin_open, ban_open, command_open;
 	int               i;
 	char              ip[ 44 ];
@@ -1927,7 +1924,7 @@ bool G_admin_readconfig( gentity_t *ent )
 
 	while ( 1 )
 	{
-		t = COM_Parse( &cnf );
+		const char *t = COM_Parse( &cnf );
 
 		if ( !*t )
 		{

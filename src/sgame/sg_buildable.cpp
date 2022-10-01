@@ -2349,7 +2349,7 @@ void G_LayoutSelect()
 	char layouts2[ MAX_CVAR_VALUE_STRING ];
 	const char *layoutPtr;
 	char map[ MAX_QPATH ];
-	char *layout;
+	const char *layout;
 	int  cnt = 0;
 	int  layoutNum;
 

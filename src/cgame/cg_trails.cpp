@@ -754,12 +754,10 @@ Parse a trail beam
 */
 static bool CG_ParseTrailBeam( baseTrailBeam_t *btb, const char **text_p )
 {
-	char *token;
-
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( text_p );
+		const char *token = COM_Parse( text_p );
 
 		if ( !*token )
 		{
@@ -1118,12 +1116,10 @@ Parse a trail system section
 */
 static bool CG_ParseTrailSystem( baseTrailSystem_t *bts, const char **text_p, const char *name )
 {
-	char *token;
-
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( text_p );
+		const char *token = COM_Parse( text_p );
 
 		if ( !*token )
 		{
@@ -1207,7 +1203,6 @@ static bool CG_ParseTrailFile( const char *fileName )
 {
 	const char         *text_p;
 	int          i;
-	char         *token;
 	char         tsName[ MAX_QPATH ];
 	bool     tsNameSet = false;
 
@@ -1225,7 +1220,7 @@ static bool CG_ParseTrailFile( const char *fileName )
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( &text_p );
+		const char *token = COM_Parse( &text_p );
 
 		if ( !*token )
 		{

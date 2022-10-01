@@ -367,7 +367,6 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 {
 	const char         *text_p;
 	int          i;
-	char         *token;
 	float        fps;
 	animation_t  *animations;
 
@@ -387,7 +386,7 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 	// read information for each frame
 	for ( i = BANIM_NONE + 1; i < MAX_BUILDABLE_ANIMATIONS; i++ )
 	{
-		token = COM_Parse( &text_p );
+		const char *token = COM_Parse( &text_p );
 
 		if ( !*token )
 		{
@@ -467,7 +466,6 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 {
 	const char         *text_p;
 	int          i;
-	char         *token;
 	sound_t      *sounds;
 
 	sounds = cg_buildables[ buildable ].sounds;
@@ -486,7 +484,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 	// read information for each frame
 	for ( i = BANIM_NONE + 1; i < MAX_BUILDABLE_ANIMATIONS; i++ )
 	{
-		token = COM_Parse( &text_p );
+		const char *token = COM_Parse( &text_p );
 
 		if ( !*token )
 		{
