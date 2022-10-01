@@ -482,9 +482,7 @@ static void CG_Rocket_ExecServerList( const char *table )
 
 static bool Parse( const char **p, char **out )
 {
-	char *token;
-
-	token = COM_ParseExt( p, false );
+	const char *token = COM_ParseExt( p, false );
 
 	if ( token && token[ 0 ] != 0 )
 	{

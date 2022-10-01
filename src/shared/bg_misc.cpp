@@ -1996,7 +1996,7 @@ atof_neg
 atof with an allowance for negative values
 ===============
 */
-float atof_neg( char *token, bool allowNegative )
+float atof_neg( const char *token, bool allowNegative )
 {
 	float value;
 
@@ -2017,7 +2017,7 @@ atoi_neg
 atoi with an allowance for negative values
 ===============
 */
-int atoi_neg( char *token, bool allowNegative )
+int atoi_neg( const char *token, bool allowNegative )
 {
 	int value;
 

@@ -339,7 +339,7 @@ static team_t ParseTeam(const char* token)
 static int ParseSlotList(const char** text)
 {
 	int slots = 0;
-	char* token;
+	const char *token;
 	int count;
 
 	token = COM_Parse( text );
@@ -489,9 +489,7 @@ static configVar_t* BG_FindConfigVar(const char *varName)
 
 static bool BG_ParseConfigVar(configVar_t *var, const char **text, const char *filename)
 {
-	char *token;
-
-	token = COM_Parse( text );
+	const char *token = COM_Parse( text );
 
 	if( !*token )
 	{
@@ -1262,7 +1260,6 @@ Reads an animation.cfg to check for nonsegmentation
 bool BG_NonSegModel( const char *filename )
 {
 	const char *text_p;
-	char *token;
 	char text[ 20000 ];
 
 	if ( !BG_ReadWholeFile( filename, text, sizeof( text ) ) )
@@ -1276,7 +1273,7 @@ bool BG_NonSegModel( const char *filename )
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( &text_p );
+		const char *token = COM_Parse( &text_p );
 
 		//EOF
 		if ( !token[ 0 ] )
@@ -2072,7 +2069,7 @@ Can be the same as the attribute configuration file.
 */
 void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 {
-	char        *token;
+	const char *token;
 	char        text_buffer[ 20000 ];
 	const char        *text;
 	int         defined = 0;
@@ -2378,7 +2375,7 @@ Parses a configuration file describing a beacon type
 */
 void BG_ParseBeaconAttributeFile( const char *filename, beaconAttributes_t *ba )
 {
-	char        *token;
+	const char *token;
 	char        text_buffer[ 20000 ];
 	const char        *text;
 #ifdef BUILD_CGAME

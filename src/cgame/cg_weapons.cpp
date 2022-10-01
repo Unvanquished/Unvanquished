@@ -223,7 +223,6 @@ static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi 
 {
 	const char         *text_p;
 	int          i;
-	char         *token;
 	float        fps;
 	animation_t  *animations;
 
@@ -247,7 +246,7 @@ static bool CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi 
 
 	for ( i = WANIM_NONE + 1; i < MAX_WEAPON_ANIMATIONS; i++ )
 	{
-		token = COM_Parse2( &text_p );
+		const char *token = COM_Parse2( &text_p );
 		animations[ i ].firstFrame = atoi( token );
 
 		token = COM_Parse2( &text_p );
@@ -299,7 +298,6 @@ Parse a weapon mode section
 */
 static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_p )
 {
-	char *token;
 	int  i;
 
 	wim->flashDlight = 0;
@@ -308,7 +306,7 @@ static bool CG_ParseWeaponModeSection( weaponInfoMode_t *wim, const char **text_
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( text_p );
+		const char *token = COM_Parse( text_p );
 
 		if ( !*token )
 		{
@@ -601,7 +599,6 @@ Parses a configuration file describing a weapon
 static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *wi )
 {
 	const char         *text_p;
-	char         *token;
 	weaponMode_t weaponMode = WPM_NONE;
 	char         token2[ MAX_QPATH ];
 	int          i;
@@ -622,7 +619,7 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( &text_p );
+		const char *token = COM_Parse( &text_p );
 
 		if ( !*token )
 		{

@@ -585,7 +585,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 {
-	char  *token;
+	const char *token;
 	float angleSpan, heightSpan;
 	int   count;
 
@@ -650,7 +650,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "0" );
+					token = "0";
 				}
 
 				regions[ count ].minHeight = atof( token );
@@ -661,7 +661,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "100" );
+					token = "100";
 				}
 
 				regions[ count ].maxHeight = atof( token );
@@ -672,7 +672,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "0" );
+					token = "0";
 				}
 
 				regions[ count ].minAngle = atoi( token );
@@ -683,7 +683,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "360" );
+					token = "360";
 				}
 
 				regions[ count ].maxAngle = atoi( token );
@@ -694,7 +694,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "1.0" );
+					token = "1.0";
 				}
 
 				regions[ count ].modifier = atof( token );

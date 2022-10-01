@@ -113,7 +113,6 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 {
 	const char         *text_p;
 	int          i;
-	char         *token;
 
 	std::error_code err;
 	std::string text = FS::PakPath::ReadFile( filename, err );
@@ -136,7 +135,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse2( &text_p );
+		const char *token = COM_Parse2( &text_p );
 
 		if ( !token[ 0 ] )
 		{
@@ -144,7 +143,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		}
 		if ( !Q_stricmp( token, "modifiers" ) )
 		{
-			char* token = COM_Parse2( &text_p );
+			token = COM_Parse2( &text_p );
 			if ( !token || *token != '{' )
 			{
 				Log::Warn( "Expected '{' but found '%s' in %s's character.cfg, skipping", token, ci->modelName );
@@ -369,7 +368,6 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 {
 	const char         *text_p, *prev;
 	int          i;
-	char         *token;
 	float        fps;
 	int          skip;
 	animation_t  *animations;
@@ -399,7 +397,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 	while ( 1 )
 	{
 		prev = text_p; // so we can unget
-		token = COM_Parse2( &text_p );
+		const char *token = COM_Parse2( &text_p );
 
 		if ( !token )
 		{
@@ -509,7 +507,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		// read information for each frame
 		for ( i = 0; i < MAX_PLAYER_ANIMATIONS; i++ )
 		{
-			token = COM_Parse2( &text_p );
+			const char *token = COM_Parse2( &text_p );
 
 			if ( !*token )
 			{
@@ -630,7 +628,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		// read information for each frame
 		for ( i = 0; i < MAX_NONSEG_PLAYER_ANIMATIONS; i++ )
 		{
-			token = COM_Parse2( &text_p );
+			const char *token = COM_Parse2( &text_p );
 
 			if ( !*token )
 			{
