@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150" height="150" version="1.1" viewBox="0 0 39.688 39.688" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+    <cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/"/>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Gireen</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+   <cc:License rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#Notice"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#Attribution"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#ShareAlike"/>
+   </cc:License>
+  </rdf:RDF>
+ </metadata>
+ <g transform="matrix(.14798 0 0 .15566 -46.188 -15.896)" opacity=".96" stroke-width=".91984">
+  <path transform="matrix(2.0735 0 0 1.971 -3379.3 1116.5)" d="m1823.4-490.88-6.2558 9.8965-3.166 9.2266 4.6269 7.1738 0.2442 10.031-2.0957-0.45898-0.033-9.6172-5.2227 0.0762-2.7109 9 0.373 15.496 4.3164 6.2695 3.4199-0.10937-0.2148-11.422 2.168 8e-3 -0.01 11.711-2.5528 2.8398-0.2441 3.5879 1.0996 9.7383s1.3092 2.8761 0.7305 4.0996c-0.9977 2.109-2.8165 4.2617-2.8165 4.2617h59.94s-1.8188-2.1527-2.8164-4.2617c-0.5788-1.2236 0.7305-4.0996 0.7305-4.0996l1.0996-9.7383-0.2442-3.5879-2.5527-2.8398-0.01-11.711 2.168-8e-3 -0.2149 11.422 3.4199 0.10937 4.3164-6.2695 0.3711-15.496-2.709-9-5.2226-0.0762-0.033 9.6172-2.0957 0.45898 0.2441-10.031 4.627-7.1738-3.166-9.2266-6.2559-9.8965h-11.205l-0.6679 2.084h-19.51l-0.668-2.084z" fill="#fff" opacity="1"/>
+ </g>
+</svg>
