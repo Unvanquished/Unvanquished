@@ -24,32 +24,42 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "sg_local.h"
 
-enum VoteType {
-	V_TEAM, V_PUBLIC, V_ANY
-};
-enum VoteTarget{
-	T_NONE, T_PLAYER, T_OTHER
-};
-enum VoteOptions{
-	VOTE_ALWAYS, // default
-	VOTE_BEFORE, // within the first N minutes
-	VOTE_AFTER,  // not within the first N minutes
-	VOTE_REMAIN, // within N/2 minutes before SD
-	VOTE_NO_AUTO,// don't automatically vote 'yes'
+enum VoteType
+{
+	V_TEAM,
+	V_PUBLIC,
+	V_ANY
 };
 
-struct VoteDefinition {
-	bool        stopOnIntermission;
-	int             type;
-	int             target;
-	bool        adminImmune; // from needing a reason and from being the target
-	bool        quorum;
-	qtrinary        reasonNeeded;
+enum VoteTarget
+{
+	T_NONE,
+	T_PLAYER,
+	T_OTHER
+};
+
+enum VoteOptions
+{
+	VOTE_ALWAYS,   // default
+	VOTE_BEFORE,   // within the first N minutes
+	VOTE_AFTER,    // not within the first N minutes
+	VOTE_REMAIN,   // within N/2 minutes before SD
+	VOTE_NO_AUTO,  // don't automatically vote 'yes'
+};
+
+struct VoteDefinition
+{
+	bool stopOnIntermission;
+	int type;
+	int target;
+	bool adminImmune;  // from needing a reason and from being the target
+	bool quorum;
+	qtrinary reasonNeeded;
 	Cvar::Cvar<int> *percentage;
-	int             special;
+	int special;
 	Cvar::Cvar<int> *specialCvar;
-	Cvar::Cvar<bool> *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be true)
+	Cvar::Cvar<bool>
+		*reasonFlag;  // where a reason requirement is configurable (reasonNeeded must be true)
 };
-
 
 void G_HandleVote( gentity_t *ent );
