@@ -444,7 +444,8 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	Log::Notice( "gamedate: %s", __DATE__ );
 
 	// set some level globals
-	memset( &level, 0, sizeof( level ) );
+	level.~level_locals_t();
+	new (&level) level_locals_t();
 	level.time = levelTime;
 	level.inClient = inClient;
 	level.startTime = levelTime;

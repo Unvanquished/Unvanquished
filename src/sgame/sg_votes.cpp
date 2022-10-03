@@ -30,27 +30,26 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // Basic vote information
 // Entries must be in the same order as for voteType_t
-static const VoteDefinition voteInfo[] = {
-	// Name              Stop?  Type      Target     Immune  Quorum    Reason            Vote percentage var  Extra
-	{ "kick",            false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "spectate",        false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "mute",            true,  V_PUBLIC, T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "unmute",          true,  V_PUBLIC, T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "denybuild",       true,  V_TEAM,   T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "allowbuild",      true,  V_TEAM,   T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "extend",          true,  V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime, nullptr },
-	{ "admitdefeat",     true,  V_TEAM,   T_NONE,    false,  true,     qtrinary::qno,    &g_admitDefeatVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "draw",            true,  V_PUBLIC, T_NONE,    true,   true,     qtrinary::qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-	{ "map_restart",     true,  V_PUBLIC, T_NONE,    false,  true,     qtrinary::qno,    &g_mapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "map",             true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
-	{ "layout",          true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr },
-	{ "nextmap",         false, V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "poll",            false, V_ANY,    T_NONE,    false,  false,    qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr },
-	{ "kickbots",        true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "fillbots",        true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "fillbots_humans", true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ "fillbots_aliens", true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr, nullptr },
-	{ }
+static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
+	// Name                Stop?  Type      Target     Immune  Quorum    Reason            Vote percentage var  Extra
+	{ "kick",            { false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "spectate",        { false, V_ANY,    T_PLAYER,  true,   true,     qtrinary::qyes,   &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "mute",            { true,  V_PUBLIC, T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "unmute",          { true,  V_PUBLIC, T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "denybuild",       { true,  V_TEAM,   T_PLAYER,  true,   true,     qtrinary::qyes,   &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "allowbuild",      { true,  V_TEAM,   T_PLAYER,  false,  true,     qtrinary::qno,    &g_denyVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "extend",          { true,  V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime, nullptr } },
+	{ "admitdefeat",     { true,  V_TEAM,   T_NONE,    false,  true,     qtrinary::qno,    &g_admitDefeatVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "draw",            { true,  V_PUBLIC, T_NONE,    true,   true,     qtrinary::qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired } },
+	{ "map_restart",     { true,  V_PUBLIC, T_NONE,    false,  true,     qtrinary::qno,    &g_mapVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "map",             { true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr } },
+	{ "layout",          { true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore, nullptr } },
+	{ "nextmap",         { false, V_PUBLIC, T_OTHER,   false,  false,    qtrinary::qmaybe, &g_nextMapVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "poll",            { false, V_ANY,    T_NONE,    false,  false,    qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr, nullptr } },
+	{ "kickbots",        { true,  V_PUBLIC, T_NONE,    false,  false,    qtrinary::qno,    &g_kickVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "fillbots",        { true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "fillbots_humans", { true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
+	{ "fillbots_aliens", { true,  V_PUBLIC, T_OTHER,   false,  true,     qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr, nullptr } },
 	// note: map votes use the reason, if given, as the layout name
 };
 
@@ -61,7 +60,16 @@ G_CheckStopVote
 */
 bool G_CheckStopVote( team_t team )
 {
-	return level.team[ team ].voteTime && voteInfo[ level.team[ team ].voteType ].stopOnIntermission;
+    if ( level.team[ team ].voteType.empty() )
+    {
+        return false;
+    }
+    const auto& it = voteInfo.find( level.team[ team ].voteType );
+    if ( it == voteInfo.end() )
+    {
+        return false;
+    }
+	return level.team[ team ].voteTime && it->second.stopOnIntermission;
 }
 
 /*
@@ -102,14 +110,13 @@ static bool botFillVoteParseArg( int& argnum, char *arg )
 void G_HandleVote( gentity_t *ent )
 {
 	char   cmd[ MAX_TOKEN_CHARS ],
-	       vote[ MAX_TOKEN_CHARS ],
+	       voteStr[ MAX_TOKEN_CHARS ],
 	       arg[ MAX_TOKEN_CHARS ];
 	char   name[ MAX_NAME_LENGTH ] = "";
 	char   caller[ MAX_NAME_LENGTH ] = "";
 	char   reason[ MAX_TOKEN_CHARS ];
 	int    clientNum = -1;
 	int    id = -1;
-	int    voteId;
 	team_t team;
 	int    i;
 
@@ -137,24 +144,15 @@ void G_HandleVote( gentity_t *ent )
 
 	G_ResetVote( team );
 
-	trap_Argv( 1, vote, sizeof( vote ) );
+	trap_Argv( 1, voteStr, sizeof( voteStr ) );
+    std::string vote = Str::ToLower( voteStr );
+
 
 	// look up the vote detail
-	for ( voteId = 0; voteInfo[voteId].name; ++voteId )
-	{
-		if ( ( team == TEAM_NONE && voteInfo[voteId].type == V_TEAM   ) ||
-		     ( team != TEAM_NONE && voteInfo[voteId].type == V_PUBLIC ) )
-		{
-			continue;
-		}
-		if ( !Q_stricmp( voteInfo[voteId].name, vote ) )
-		{
-			break;
-		}
-	}
-
-	// not found? report & return
-	if ( !voteInfo[voteId].name )
+    auto it = voteInfo.find( vote );
+    if ( it == voteInfo.end()
+        || ( team == TEAM_NONE && it->second.type == V_TEAM   )
+        || ( team != TEAM_NONE && it->second.type == V_PUBLIC ) )
 	{
 		bool added = false;
 
@@ -165,14 +163,15 @@ void G_HandleVote( gentity_t *ent )
 
 		Q_strcat( cmd, sizeof( cmd ), "print \"" );
 
-		for( voteId = 0; voteInfo[voteId].name; ++voteId )
+		for ( const auto& it : voteInfo )
 		{
-			if ( ( team == TEAM_NONE && voteInfo[voteId].type != V_TEAM   ) ||
-			     ( team != TEAM_NONE && voteInfo[voteId].type != V_PUBLIC ) )
+            const VoteDefinition& vi = it.second;
+			if ( ( team == TEAM_NONE && vi.type != V_TEAM   ) ||
+			     ( team != TEAM_NONE && vi.type != V_PUBLIC ) )
 			{
-				if ( !voteInfo[voteId].percentage || voteInfo[voteId].percentage->Get() > 0 )
+				if ( !vi.percentage || vi.percentage->Get() > 0 )
 				{
-					Q_strcat( cmd, sizeof( cmd ), va( "%s%s", added ? ", " : "", voteInfo[voteId].name ) );
+					Q_strcat( cmd, sizeof( cmd ), va( "%s%s", added ? ", " : "", it.first.c_str() ) );
 					added = true;
 				}
 			}
@@ -183,6 +182,7 @@ void G_HandleVote( gentity_t *ent )
 
 		return;
 	}
+    const VoteDefinition& vi = it->second;
 
 	if ( g_voteLimit.Get() > 0 &&
 	     ent->client->pers.namelog->voteCount >= g_voteLimit.Get() &&
@@ -194,11 +194,11 @@ void G_HandleVote( gentity_t *ent )
 		return;
 	}
 
-	int voteThreshold = voteInfo[voteId].percentage ?
-		voteInfo[voteId].percentage->Get() : 50;
-	if ( voteThreshold <= 0 || isDisabledVoteType(vote) )
+	int voteThreshold = vi.percentage ?
+		vi.percentage->Get() : 50;
+	if ( voteThreshold <= 0 || isDisabledVoteType( vote.c_str() ) )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled") ), voteInfo[voteId].name ) );
+		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled") ), vote.c_str() ) );
 		return;
 	}
 	if ( voteThreshold > 100)
@@ -206,39 +206,38 @@ void G_HandleVote( gentity_t *ent )
 		voteThreshold = 100;
 	}
 
-	level.team[ team ].voteType = (voteType_t) voteId;
-	level.team[ team ].quorum = voteInfo[voteId].quorum;
+	level.team[ team ].quorum = vi.quorum;
 	level.team[ team ].voteDelay = 0;
 	level.team[ team ].voteThreshold = voteThreshold;
 
-	switch ( voteInfo[voteId].special )
+	switch ( vi.special )
 	{
 	case VOTE_BEFORE:
-		if ( level.numConnectedPlayers > 1 && level.matchTime >= ( voteInfo[voteId].specialCvar->Get() * 60000 ) )
+		if ( level.numConnectedPlayers > 1 && level.matchTime >= ( vi.specialCvar->Get() * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed once $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->Get() ) );
+			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed once $2$ minutes have passed") ), vote.c_str(), vi.specialCvar->Get() ) );
 			return;
 		}
 
 		break;
 
 	case VOTE_AFTER:
-		if ( level.numConnectedPlayers > 1 && level.matchTime < ( voteInfo[voteId].specialCvar->Get() * 60000 ) )
+		if ( level.numConnectedPlayers > 1 && level.matchTime < ( vi.specialCvar->Get() * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed until $2$ minutes have passed") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->Get() ) );
+			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed until $2$ minutes have passed") ), vote.c_str(), vi.specialCvar->Get() ) );
 			return;
 		}
 
 		break;
 
 	case VOTE_REMAIN:
-		if ( !level.timelimit || level.matchTime < ( level.timelimit - voteInfo[voteId].specialCvar->Get() / 2 ) * 60000 )
+		if ( !level.timelimit || level.matchTime < ( level.timelimit - vi.specialCvar->Get() / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining") ),
-			                            voteInfo[voteId].name, voteInfo[voteId].specialCvar->Get() / 2 ) );
+			                            vote.c_str(), vi.specialCvar->Get() / 2 ) );
 			return;
 		}
 
@@ -251,18 +250,18 @@ void G_HandleVote( gentity_t *ent )
 	arg[0] = '\0';
 	reason[0] = '\0';
 
-	if( voteInfo[voteId].target != T_NONE )
+	if( vi.target != T_NONE )
 	{
 		trap_Argv( 2, arg, sizeof( arg ) );
 	}
 
-	if( voteInfo[voteId].reasonNeeded != qtrinary::qno )
+	if( vi.reasonNeeded != qtrinary::qno )
 	{
-		char *creason = ConcatArgs( voteInfo[voteId].target != T_NONE ? 3 : 2 );
+		char *creason = ConcatArgs( vi.target != T_NONE ? 3 : 2 );
 		Color::StripColors( creason, reason, sizeof( reason ) );
 	}
 
-	if ( voteInfo[voteId].target == T_PLAYER )
+	if ( vi.target == T_PLAYER )
 	{
 		char err[ MAX_STRING_CHARS ];
 
@@ -292,7 +291,7 @@ void G_HandleVote( gentity_t *ent )
 			return;
 		}
 
-		if ( voteInfo[voteId].adminImmune && G_admin_permission( g_entities + clientNum, ADMF_IMMUNITY ) )
+		if ( vi.adminImmune && G_admin_permission( g_entities + clientNum, ADMF_IMMUNITY ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune") ), cmd ) );
@@ -300,7 +299,7 @@ void G_HandleVote( gentity_t *ent )
 			                va( "^7%s^3 attempted %s %s"
 			                    " on immune admin ^7%s"
 			                    " ^3for: %s",
-			                    ent->client->pers.netname, cmd, vote,
+			                    ent->client->pers.netname, cmd, vote.c_str(),
 			                    g_entities[ clientNum ].client->pers.netname,
 			                    reason[ 0 ] ? reason : "no reason" ) );
 			return;
@@ -322,34 +321,35 @@ void G_HandleVote( gentity_t *ent )
 		}
 	}
 
-	if ( voteInfo[voteId].reasonNeeded == qtrinary::qyes && !reason[ 0 ] &&
-	     !( voteInfo[voteId].adminImmune && G_admin_permission( ent, ADMF_UNACCOUNTABLE ) ) &&
-	     !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->Get() ) )
+	if ( vi.reasonNeeded == qtrinary::qyes && !reason[ 0 ] &&
+	     !( vi.adminImmune && G_admin_permission( ent, ADMF_UNACCOUNTABLE ) ) &&
+	     !( vi.reasonFlag && vi.reasonFlag->Get() ) )
 	{
 		trap_SendServerCommand( ent - g_entities,
 		                        va( "print_tr %s %s", QQ( N_("$1$: You must provide a reason") ), cmd ) );
 		return;
 	}
 
-	switch( voteId )
-	{
-	case VOTE_KICK:
+
+
+	if ( vote == "kick" )
+    {
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "ban %s 1s%s %s^* called vote kick (%s^*)", level.clients[ clientNum ].pers.ip.str,
 		             Cmd::Escape( g_adminTempBan.Get() ).c_str(), Cmd::Escape( ent->client->pers.netname ).c_str(), Cmd::Escape( reason ).c_str() );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ), N_("Kick player '%s'"), name );
-		break;
-
-	case VOTE_SPECTATE:
+    }
+    else if ( vote == "spectate" )
+    {
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "speclock %d 1s%s", clientNum, Cmd::Escape( g_adminTempBan.Get() ).c_str() );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Move player '%s' to spectators"), name );
-		break;
-
-	case VOTE_BOT_KICK:
+    }
+    else if ( vote == "kickbots" )
+    {
 		for ( i = 0; i < MAX_CLIENTS; ++i )
 		{
 			if ( g_entities[i].r.svFlags & SVF_BOT &&
@@ -368,55 +368,46 @@ void G_HandleVote( gentity_t *ent )
 
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot del all" );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Remove all bots") );
+    }
+    else if ( vote == "fillbots")
+    {
+        int num = 0;
+        if ( !botFillVoteParseArg( num, arg ) )
+        {
+            trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+            return;
+        }
 
-		break;
+        Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d", num );
+        Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill each team with bots to %d"), num );
 
-	case VOTE_BOT_FILL:
-		{
-			int num = 0;
-			if ( !botFillVoteParseArg( num, arg ) )
-			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
-				return;
-			}
+    }
+    else if ( vote == "fillbots_humans" )
+    {
+        int num = 0;
+        if ( !botFillVoteParseArg( num, arg ) )
+        {
+            trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+            return;
+        }
 
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d", num );
-			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill each team with bots to %d"), num );
+        Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d humans", num );
+        Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only humans with bots to %d"), num );
+    }
+	else if ( vote == "fillbots_aliens" )
+    {
+        int num = 0;
+        if ( !botFillVoteParseArg( num, arg ) )
+        {
+            trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+            return;
+        }
 
-			break;
-		}
-
-	case VOTE_BOT_FILL_HUMANS:
-		{
-			int num = 0;
-			if ( !botFillVoteParseArg( num, arg ) )
-			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
-				return;
-			}
-
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d humans", num );
-			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only humans with bots to %d"), num );
-
-			break;
-		}
-
-	case VOTE_BOT_FILL_ALIENS:
-		{
-			int num = 0;
-			if ( !botFillVoteParseArg( num, arg ) )
-			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( N_("$1$: number must be non-negative and smaller than $2$") ), cmd, std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
-				return;
-			}
-
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d aliens", num );
-			Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only aliens with bots to %d"), num );
-
-			break;
-		}
-
-	case VOTE_MUTE:
+        Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "bot fill %d aliens", num );
+        Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ), N_("Fill only aliens with bots to %d"), num );
+    }
+	else if ( vote == "mute" )
+    {
 		if ( level.clients[ clientNum ].pers.namelog->muted )
 		{
 			trap_SendServerCommand( ent - g_entities,
@@ -429,9 +420,9 @@ void G_HandleVote( gentity_t *ent )
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Mute player '%s'"), name );
-		break;
-
-	case VOTE_UNMUTE:
+    }
+	else if ( vote == "mute" )
+    {
 		if ( !level.clients[ clientNum ].pers.namelog->muted )
 		{
 			trap_SendServerCommand( ent - g_entities,
@@ -444,9 +435,9 @@ void G_HandleVote( gentity_t *ent )
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Unmute player '%s'"), name );
-		break;
-
-	case VOTE_DENYBUILD:
+    }
+	else if ( vote == "denybuild" )
+    {
 		if ( level.clients[ clientNum ].pers.namelog->denyBuild )
 		{
 			trap_SendServerCommand( ent - g_entities,
@@ -459,9 +450,9 @@ void G_HandleVote( gentity_t *ent )
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             "Take away building rights from '%s'", name );
-		break;
-
-	case VOTE_ALLOWBUILD:
+    }
+	else if ( vote == "allowbuild" )
+    {
 		if ( !level.clients[ clientNum ].pers.namelog->denyBuild )
 		{
 			trap_SendServerCommand( ent - g_entities,
@@ -474,36 +465,36 @@ void G_HandleVote( gentity_t *ent )
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             "Allow '%s' to build", name );
-		break;
-
-	case VOTE_EXTEND:
+    }
+	else if ( vote == "extend" )
+    {
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "time %i", level.timelimit + g_extendVotesTime.Get() );
 		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
 		             "Extend the timelimit by %d minutes", g_extendVotesTime.Get() );
-		break;
-
-	case VOTE_ADMIT_DEFEAT:
+    }
+	else if ( vote == "admitdefeat" )
+    {
 		level.team[ team ].voteDelay = 3000;
 
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "admitdefeat %d", team );
 		strcpy( level.team[ team ].voteDisplayString, "Admit Defeat" );
-		break;
-
-	case VOTE_DRAW:
+    }
+	else if ( vote == "draw" )
+    {
 		level.team[ team ].voteDelay = 3000;
 		strcpy( level.team[ team ].voteString, "evacuation" );
 		strcpy( level.team[ team ].voteDisplayString, "End match in a draw" );
-		break;
-
-	case VOTE_MAP_RESTART:
-		strcpy( level.team[ team ].voteString, vote );
+    }
+	else if ( vote == "map_restart" )
+    {
+		strcpy( level.team[ team ].voteString, vote.c_str() );
 		strcpy( level.team[ team ].voteDisplayString, "Restart current map" );
 		// map_restart comes with a default delay
-		break;
-
-	case VOTE_MAP:
+    }
+	else if ( vote == "map" )
+    {
 		if ( !G_MapExists( arg ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
@@ -532,29 +523,27 @@ void G_HandleVote( gentity_t *ent )
 		}
 
 		reason[0] = '\0'; // nullify since we've used it here...
-		break;
+    }
+    else if ( vote == "layout" )
+    {
+        char map[ 64 ];
 
-	case VOTE_LAYOUT:
-		{
-			char map[ 64 ];
+        trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
-			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
+        if ( Q_stricmp( arg, S_BUILTIN_LAYOUT ) &&
+                !G_LayoutExists( map, arg ) )
+        {
+            trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("callvote: "
+                                    "layout '$1$' could not be found on the server") ), Quote( arg ) ) );
+            return;
+        }
 
-			if ( Q_stricmp( arg, S_BUILTIN_LAYOUT ) &&
-			     !G_LayoutExists( map, arg ) )
-			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("callvote: "
-				                        "layout '$1$' could not be found on the server") ), Quote( arg ) ) );
-				return;
-			}
-
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "restart %s", Cmd::Escape( arg ).c_str() );
-			Com_sprintf( level.team[ team ].voteDisplayString,
-			             sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'", arg );
-		}
-		break;
-
-	case VOTE_NEXT_MAP:
+        Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "restart %s", Cmd::Escape( arg ).c_str() );
+        Com_sprintf( level.team[ team ].voteDisplayString,
+                        sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'", arg );
+    }
+    else if ( vote == "nextmap" )
+    {
 		if ( G_MapExists( g_nextMap.Get().c_str() ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
@@ -589,18 +578,15 @@ void G_HandleVote( gentity_t *ent )
 		}
 
 		reason[0] = '\0'; // nullify since we've used it here...
-		break;
-
-	case VOTE_POLL:
+    }
+	else if ( vote == "poll" )
+    {
 		level.team[ team ].voteString[0] = '\0';
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             "(poll) %s", reason );
 		reason[0] = '\0'; // nullify since we've used it here...
-		break;
-
-	//default:;
-	}
+    }
 
 	// Append the vote reason (if applicable)
 	if ( reason[ 0 ] )
@@ -653,7 +639,7 @@ void G_HandleVote( gentity_t *ent )
 	trap_SetConfigstring( CS_VOTE_CALLER + team,
 	                      caller );
 
-	if ( voteInfo[voteId].special != VOTE_NO_AUTO )
+	if ( vi.special != VOTE_NO_AUTO )
 	{
 		ent->client->pers.namelog->voteCount++;
 		ent->client->pers.voteYes |= 1 << team;

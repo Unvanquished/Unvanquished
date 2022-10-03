@@ -39,7 +39,6 @@ enum VoteOptions{
 };
 
 struct VoteDefinition {
-    const char     *name;
 	bool        stopOnIntermission;
 	int             type;
 	int             target;

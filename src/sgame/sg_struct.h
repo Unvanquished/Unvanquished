@@ -799,7 +799,7 @@ struct level_locals_t
 	struct
 	{
 		// voting state
-		voteType_t voteType;
+		std::string voteType;
 		int  voteThreshold; // need at least this percent to pass
 		char voteString[ MAX_STRING_CHARS ];
 		char voteDisplayString[ MAX_STRING_CHARS ];
