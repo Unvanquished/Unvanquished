@@ -235,6 +235,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_team.cpp
     ${GAMELOGIC_DIR}/sgame/sg_trapcalls.h
     ${GAMELOGIC_DIR}/sgame/sg_utils.cpp
+    ${GAMELOGIC_DIR}/sgame/sg_votes.h
+    ${GAMELOGIC_DIR}/sgame/sg_votes.cpp
     ${GAMELOGIC_DIR}/sgame/sg_weapon.cpp
     ${GAMELOGIC_DIR}/sgame/CBSE.h
     ${GAMELOGIC_DIR}/sgame/CombatFeedback.cpp
