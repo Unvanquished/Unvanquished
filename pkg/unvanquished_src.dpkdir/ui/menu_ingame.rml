@@ -47,6 +47,7 @@
 								<ilink onclick='Events.pushevent("exec teamvote no", event)'><translate>no</translate></ilink>
 							</blocklink>
 							<blocklink onclick='Events.pushevent("exec callvote kickbots", event)'><translate>Kick bots</translate></blocklink>
+							<blocklink onclick='Events.pushevent("show callvote_fillbots", event)'><translate>Fill with bots</translate></blocklink>
 							<blocklink onclick='Events.pushevent("show callvote_map", event)'><translate>Change map</translate></blocklink>
 							<blocklink onclick='Events.pushevent("exec callvote extend", event)'><translate>Extend timelimit</translate></blocklink>
 							<blocklink onclick='Events.pushevent("show callvote_draw", event)'><translate>Call a draw</translate></blocklink>
