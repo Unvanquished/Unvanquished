@@ -47,6 +47,8 @@ enum VoteOptions
 	VOTE_NO_AUTO,  // don't automatically vote 'yes'
 };
 
+using VoteHandler = std::function<bool(gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id)>;
+
 struct VoteDefinition
 {
 	bool stopOnIntermission;
@@ -60,6 +62,7 @@ struct VoteDefinition
 	Cvar::Cvar<int> *specialCvar;
 	Cvar::Cvar<bool>
 		*reasonFlag;  // where a reason requirement is configurable (reasonNeeded must be true)
+    VoteHandler handler;
 };
 
 void G_HandleVote( gentity_t *ent );
