@@ -29,6 +29,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "shared/parse.h"
 
+/*
+Return true if arg is valid, and store the number in argnum.
+Otherwise, return false and do not modify argnum.
+*/
+static bool botFillVoteParseArg( int &argnum, Str::StringRef arg )
+{
+	int num = -1;
+	if ( Str::ParseInt( num, arg ) && num >= 0 && num <= g_maxVoteFillBots.Get() )
+	{
+		argnum = num;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
 // Some macro magic to work around the lack of designated initializers.
 #define F( A ) def.A
 #define DEFINE_VOTE( vote, ... )    \
@@ -57,7 +76,19 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_kickVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			Com_sprintf(
+				level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+				"ban %s 1s%s %s^* called vote kick (%s^*)", level.clients[ clientNum ].pers.ip.str,
+				Cmd::Escape( g_adminTempBan.Get() ).c_str(),
+				Cmd::Escape( ent->client->pers.netname ).c_str(), Cmd::Escape( reason ).c_str() );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ), N_( "Kick player '%s'" ),
+						name.c_str() );
+			return true;
+		})
 	),
 	DEFINE_VOTE(spectate,
 		F(stopOnIntermission = true),
@@ -69,7 +100,16 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_kickVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"speclock %d 1s%s", clientNum, Cmd::Escape( g_adminTempBan.Get() ).c_str() );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ),
+						N_( "Move player '%s' to spectators" ), name.c_str() );
+			return true;
+		})
 	),
 	DEFINE_VOTE(mute,
 		F(stopOnIntermission = false),
@@ -81,7 +121,24 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_denyVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			if ( level.clients[ clientNum ].pers.namelog->muted )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s", QQ( N_( "$1$: player is already muted" ) ), cmd.c_str() ) );
+				return false;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"mute %d", id );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ), N_( "Mute player '%s'" ),
+						name.c_str() );
+			return true;
+		})
 	),
 	DEFINE_VOTE(unmute,
 		F(stopOnIntermission = false),
@@ -93,7 +150,25 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_denyVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			if ( !level.clients[ clientNum ].pers.namelog->muted )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s", QQ( N_( "$1$: player is not currently muted" ) ),
+						cmd.c_str() ) );
+				return false;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"unmute %d", id );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ), N_( "Unmute player '%s'" ),
+						name.c_str() );
+			return true;
+		})
 	),
 	DEFINE_VOTE(denybuild,
 		F(stopOnIntermission = true),
@@ -105,7 +180,25 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_denyVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			if ( level.clients[ clientNum ].pers.namelog->denyBuild )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s", QQ( N_( "$1$: player already lost building rights" ) ),
+						cmd.c_str() ) );
+				return false;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"denybuild %d", id );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ),
+						"Take away building rights from '%s'", name.c_str() );
+			return true;
+		})
 	),
 	DEFINE_VOTE(allowbuild,
 		F(stopOnIntermission = true),
@@ -117,7 +210,25 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_denyVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			if ( !level.clients[ clientNum ].pers.namelog->denyBuild )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s", QQ( N_( "$1$: player already has building rights" ) ),
+						cmd.c_str() ) );
+				return false;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"allowbuild %d", id );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ), "Allow '%s' to build",
+						name.c_str() );
+			return true;
+		})
 	),
 	DEFINE_VOTE(extend,
 		F(stopOnIntermission = true),
@@ -129,7 +240,16 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_extendVotesPercent),
 		F(special = VOTE_REMAIN),
 		F(specialCvar = &g_extendVotesTime),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"time %i", level.timelimit + g_extendVotesTime.Get() );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ),
+						"Extend the timelimit by %d minutes", g_extendVotesTime.Get() );
+			return true;
+		})
 	),
 	DEFINE_VOTE(admitdefeat,
 		F(stopOnIntermission = true),
@@ -141,7 +261,15 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_admitDefeatVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			level.team[ team ].voteDelay = 3000;
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"admitdefeat %d", team );
+			strcpy( level.team[ team ].voteDisplayString, "Admit Defeat" );
+			return true;
+		})
 	),
 	DEFINE_VOTE(draw,
 		F(stopOnIntermission = true),
@@ -153,7 +281,14 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_drawVotesPercent),
 		F(special = VOTE_AFTER),
 		F(specialCvar = &g_drawVotesAfter),
-		F(reasonFlag = &g_drawVoteReasonRequired)
+		F(reasonFlag = &g_drawVoteReasonRequired),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			level.team[ team ].voteDelay = 3000;
+			strcpy( level.team[ team ].voteString, "evacuation" );
+			strcpy( level.team[ team ].voteDisplayString, "End match in a draw" );
+			return true;
+		})
 	),
 	DEFINE_VOTE(map_restart,
 		F(stopOnIntermission = true),
@@ -165,7 +300,14 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_mapVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			strcpy( level.team[ team ].voteString, "map_restart" );
+			strcpy( level.team[ team ].voteDisplayString, "Restart current map" );
+			// map_restart comes with a default delay
+			return true;
+		})
 	),
 	DEFINE_VOTE(map,
 		F(stopOnIntermission = true),
@@ -177,7 +319,42 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_mapVotesPercent),
 		F(special = VOTE_BEFORE),
 		F(specialCvar = &g_mapVotesBefore),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			if ( !G_MapExists( arg.c_str() ) )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s %s",
+						QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ), cmd.c_str(),
+						Quote( arg ) ) );
+				return false;
+			}
+
+			level.team[ team ].voteDelay = 3000;
+
+			if ( !reason.empty() )  // layout?
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+							"%s %s %s", G_NextMapCommand().c_str(), Cmd::Escape( arg ).c_str(),
+							Cmd::Escape( reason ).c_str() );
+				Com_sprintf( level.team[ team ].voteDisplayString,
+							sizeof( level.team[ team ].voteDisplayString ),
+							"Change to map '%s' layout '%s'", arg.c_str(), reason.c_str() );
+			}
+			else
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+							"%s %s", G_NextMapCommand().c_str(), Cmd::Escape( arg ).c_str() );
+				Com_sprintf( level.team[ team ].voteDisplayString,
+							sizeof( level.team[ team ].voteDisplayString ), "Change to map '%s'",
+							arg.c_str() );
+			}
+
+			reason.clear();  // nullify reason since we've used it here
+			return true;
+		})
 	),
 	DEFINE_VOTE(layout,
 		F(stopOnIntermission = true),
@@ -189,7 +366,27 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_mapVotesPercent),
 		F(special = VOTE_BEFORE),
 		F(specialCvar = &g_mapVotesBefore),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			if ( Q_stricmp( arg.c_str(), S_BUILTIN_LAYOUT ) &&
+				!G_LayoutExists( Cvar::GetValue( "mapname" ), arg ) )
+			{
+				trap_SendServerCommand( ent - g_entities,
+										va( "print_tr %s %s",
+											QQ( N_( "callvote: "
+													"layout '$1$' could not be found on the server" ) ),
+											Quote( arg ) ) );
+				return false;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"restart %s", Cmd::Escape( arg ).c_str() );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'",
+						arg.c_str() );
+			return true;
+		})
 	),
 	DEFINE_VOTE(nextmap,
 		F(stopOnIntermission = false),
@@ -201,7 +398,50 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_nextMapVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			if ( G_MapExists( g_nextMap.Get().c_str() ) )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s %s", QQ( N_( "$1$: the next map is already set to '$2$'" ) ),
+						cmd.c_str(), Quote( g_nextMap.Get().c_str() ) ) );
+				return false;
+			}
+
+			if ( !G_MapExists( arg.c_str() ) )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s %s",
+						QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ), cmd.c_str(),
+						Quote( arg ) ) );
+				return false;
+			}
+
+			if ( !reason.empty() )  // layout?
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+							"set g_nextMap %s; set g_nextMapLayouts %s", Cmd::Escape( arg ).c_str(),
+							Cmd::Escape( reason ).c_str() );
+				Com_sprintf( level.team[ team ].voteDisplayString,
+							sizeof( level.team[ team ].voteDisplayString ),
+							"Set the next map to '%s' layout '%s'", arg.c_str(), reason.c_str() );
+			}
+			else
+			{
+				Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+							"set g_nextMap %s; set g_nextMapLayouts \"\"",
+							Cmd::Escape( arg ).c_str() );
+				Com_sprintf( level.team[ team ].voteDisplayString,
+							sizeof( level.team[ team ].voteDisplayString ), "Set the next map to '%s'",
+							arg.c_str() );
+			}
+
+			reason.clear();  // nullify since we've used it here...
+			return true;
+		})
 	),
 	DEFINE_VOTE(poll,
 		F(stopOnIntermission = false),
@@ -213,7 +453,15 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_pollVotesPercent),
 		F(special = VOTE_NO_AUTO),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			level.team[ team ].voteString[ 0 ] = '\0';
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ), "(poll) %s", reason.c_str() );
+			reason.clear();  // nullify since we've used it here...
+			return true;
+		})
 	),
 	DEFINE_VOTE(kickbots,
 		F(stopOnIntermission = true),
@@ -225,7 +473,33 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_kickVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			int i = 0;
+			for ( i = 0; i < MAX_CLIENTS; ++i )
+			{
+				if ( g_entities[ i ].r.svFlags & SVF_BOT &&
+					g_entities[ i ].client->pers.team != TEAM_NONE )
+				{
+					break;
+				}
+			}
+
+			if ( i == MAX_CLIENTS )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s", QQ( N_( "$1$: there are no active bots" ) ), cmd.c_str() ) );
+				return false;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"bot del all" );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ), N_( "Remove all bots" ) );
+			return true;
+		})
 	),
 	DEFINE_VOTE(fillbots,
 		F(stopOnIntermission = true),
@@ -237,7 +511,27 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_fillBotsVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			int num = 0;
+			if ( !botFillVoteParseArg( num, arg ) )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s %s",
+						QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ),
+						cmd.c_str(), std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+				return false;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"bot fill %d", num );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ),
+						N_( "Fill each team with bots to %d" ), num );
+			return true;
+		})
 	),
 	DEFINE_VOTE(fillbots_humans,
 		F(stopOnIntermission = true),
@@ -249,7 +543,27 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_fillBotsTeamVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			int num = 0;
+			if ( !botFillVoteParseArg( num, arg ) )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s %s",
+						QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ),
+						cmd.c_str(), std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+				return false;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"bot fill humans %d", num );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ),
+						N_( "Fill each team with bots to %d" ), num );
+			return true;
+		})
 	),
 	DEFINE_VOTE(fillbots_aliens,
 		F(stopOnIntermission = true),
@@ -261,7 +575,27 @@ static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
 		F(percentage = &g_fillBotsTeamVotesPercent),
 		F(special = VOTE_ALWAYS),
 		F(specialCvar = nullptr),
-		F(reasonFlag = nullptr)
+		F(reasonFlag = nullptr),
+		F(handler = []( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+		{
+			int num = 0;
+			if ( !botFillVoteParseArg( num, arg ) )
+			{
+				trap_SendServerCommand(
+					ent - g_entities,
+					va( "print_tr %s %s %s",
+						QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ),
+						cmd.c_str(), std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+				return false;
+			}
+
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
+						"bot fill aliens %d", num );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+						sizeof( level.team[ team ].voteDisplayString ),
+						N_( "Fill each team with bots to %d" ), num );
+			return true;
+		})
 	),
 };
 
@@ -302,24 +636,6 @@ static bool isDisabledVoteType( const char *vote )
 	return false;
 }
 
-/*reason[0] = '\0'; // nullify since we've used it here...
-Return true if arg is valid, and store the number in argnum.
-Otherwise, return false and do not modify argnum.
-*/
-static bool botFillVoteParseArg( int &argnum, Str::StringRef arg )
-{
-	int num = -1;
-	if ( Str::ParseInt( num, arg ) && num >= 0 && num <= g_maxVoteFillBots.Get() )
-	{
-		argnum = num;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 void G_HandleVote( gentity_t *ent )
 {
 	const Cmd::Args &args = trap_Args();
@@ -349,7 +665,7 @@ void G_HandleVote( gentity_t *ent )
 
 	G_ResetVote( team );
 
-	std::string vote = Str::ToLower( args.Argv( 1 ) );
+	std::string vote =  args.Argc() > 1 ? Str::ToLower( args.Argv( 1 ) ) : "";
 
 	// look up the vote detail
 	auto it = voteInfo.find( vote );
@@ -556,303 +872,9 @@ void G_HandleVote( gentity_t *ent )
 		return;
 	}
 
-	if ( vote == "kick" )
+	if ( !vi.handler(ent, team, cmd, arg, reason, name, clientNum, id) )
 	{
-		Com_sprintf(
-			level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			"ban %s 1s%s %s^* called vote kick (%s^*)", level.clients[ clientNum ].pers.ip.str,
-			Cmd::Escape( g_adminTempBan.Get() ).c_str(),
-			Cmd::Escape( ent->client->pers.netname ).c_str(), Cmd::Escape( reason ).c_str() );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ), N_( "Kick player '%s'" ),
-		             name.c_str() );
-	}
-	else if ( vote == "spectate" )
-	{
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "speclock %d 1s%s", clientNum, Cmd::Escape( g_adminTempBan.Get() ).c_str() );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             N_( "Move player '%s' to spectators" ), name.c_str() );
-	}
-	else if ( vote == "kickbots" )
-	{
-		int i = 0;
-		for ( i = 0; i < MAX_CLIENTS; ++i )
-		{
-			if ( g_entities[ i ].r.svFlags & SVF_BOT &&
-			     g_entities[ i ].client->pers.team != TEAM_NONE )
-			{
-				break;
-			}
-		}
-
-		if ( i == MAX_CLIENTS )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s", QQ( N_( "$1$: there are no active bots" ) ), cmd.c_str() ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "bot del all" );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ), N_( "Remove all bots" ) );
-	}
-	else if ( vote == "fillbots" )
-	{
-		int num = 0;
-		if ( !botFillVoteParseArg( num, arg ) )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s %s",
-			        QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ),
-			        cmd.c_str(), std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "bot fill %d", num );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             N_( "Fill each team with bots to %d" ), num );
-	}
-	else if ( vote == "fillbots_humans" )
-	{
-		int num = 0;
-		if ( !botFillVoteParseArg( num, arg ) )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s %s",
-			        QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ),
-			        cmd.c_str(), std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "bot fill %d humans", num );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             N_( "Fill only humans with bots to %d" ), num );
-	}
-	else if ( vote == "fillbots_aliens" )
-	{
-		int num = 0;
-		if ( !botFillVoteParseArg( num, arg ) )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s %s",
-			        QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ),
-			        cmd.c_str(), std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "bot fill %d aliens", num );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             N_( "Fill only aliens with bots to %d" ), num );
-	}
-	else if ( vote == "mute" )
-	{
-		if ( level.clients[ clientNum ].pers.namelog->muted )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s", QQ( N_( "$1$: player is already muted" ) ), cmd.c_str() ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "mute %d", id );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ), N_( "Mute player '%s'" ),
-		             name.c_str() );
-	}
-	else if ( vote == "mute" )
-	{
-		if ( !level.clients[ clientNum ].pers.namelog->muted )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s", QQ( N_( "$1$: player is not currently muted" ) ),
-			        cmd.c_str() ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "unmute %d", id );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ), N_( "Unmute player '%s'" ),
-		             name.c_str() );
-	}
-	else if ( vote == "denybuild" )
-	{
-		if ( level.clients[ clientNum ].pers.namelog->denyBuild )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s", QQ( N_( "$1$: player already lost building rights" ) ),
-			        cmd.c_str() ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "denybuild %d", id );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             "Take away building rights from '%s'", name.c_str() );
-	}
-	else if ( vote == "allowbuild" )
-	{
-		if ( !level.clients[ clientNum ].pers.namelog->denyBuild )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s", QQ( N_( "$1$: player already has building rights" ) ),
-			        cmd.c_str() ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "allowbuild %d", id );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ), "Allow '%s' to build",
-		             name.c_str() );
-	}
-	else if ( vote == "extend" )
-	{
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "time %i", level.timelimit + g_extendVotesTime.Get() );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ),
-		             "Extend the timelimit by %d minutes", g_extendVotesTime.Get() );
-	}
-	else if ( vote == "admitdefeat" )
-	{
-		level.team[ team ].voteDelay = 3000;
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "admitdefeat %d", team );
-		strcpy( level.team[ team ].voteDisplayString, "Admit Defeat" );
-	}
-	else if ( vote == "draw" )
-	{
-		level.team[ team ].voteDelay = 3000;
-		strcpy( level.team[ team ].voteString, "evacuation" );
-		strcpy( level.team[ team ].voteDisplayString, "End match in a draw" );
-	}
-	else if ( vote == "map_restart" )
-	{
-		strcpy( level.team[ team ].voteString, vote.c_str() );
-		strcpy( level.team[ team ].voteDisplayString, "Restart current map" );
-		// map_restart comes with a default delay
-	}
-	else if ( vote == "map" )
-	{
-		if ( !G_MapExists( arg.c_str() ) )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s %s",
-			        QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ), cmd.c_str(),
-			        Quote( arg ) ) );
-			return;
-		}
-
-		level.team[ team ].voteDelay = 3000;
-
-		if ( !reason.empty() )  // layout?
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "%s %s %s", G_NextMapCommand().c_str(), Cmd::Escape( arg ).c_str(),
-			             Cmd::Escape( reason ).c_str() );
-			Com_sprintf( level.team[ team ].voteDisplayString,
-			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Change to map '%s' layout '%s'", arg.c_str(), reason.c_str() );
-		}
-		else
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "%s %s", G_NextMapCommand().c_str(), Cmd::Escape( arg ).c_str() );
-			Com_sprintf( level.team[ team ].voteDisplayString,
-			             sizeof( level.team[ team ].voteDisplayString ), "Change to map '%s'",
-			             arg.c_str() );
-		}
-
-		reason.clear();  // nullify reason since we've used it here
-	}
-	else if ( vote == "layout" )
-	{
-		if ( Q_stricmp( arg.c_str(), S_BUILTIN_LAYOUT ) &&
-		     !G_LayoutExists( Cvar::GetValue( "mapname" ), arg ) )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        va( "print_tr %s %s",
-			                            QQ( N_( "callvote: "
-			                                    "layout '$1$' could not be found on the server" ) ),
-			                            Quote( arg ) ) );
-			return;
-		}
-
-		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "restart %s", Cmd::Escape( arg ).c_str() );
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'",
-		             arg.c_str() );
-	}
-	else if ( vote == "nextmap" )
-	{
-		if ( G_MapExists( g_nextMap.Get().c_str() ) )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s %s", QQ( N_( "$1$: the next map is already set to '$2$'" ) ),
-			        cmd.c_str(), Quote( g_nextMap.Get().c_str() ) ) );
-			return;
-		}
-
-		if ( !G_MapExists( arg.c_str() ) )
-		{
-			trap_SendServerCommand(
-				ent - g_entities,
-				va( "print_tr %s %s %s",
-			        QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ), cmd.c_str(),
-			        Quote( arg ) ) );
-			return;
-		}
-
-		if ( !reason.empty() )  // layout?
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "set g_nextMap %s; set g_nextMapLayouts %s", Cmd::Escape( arg ).c_str(),
-			             Cmd::Escape( reason ).c_str() );
-			Com_sprintf( level.team[ team ].voteDisplayString,
-			             sizeof( level.team[ team ].voteDisplayString ),
-			             "Set the next map to '%s' layout '%s'", arg.c_str(), reason.c_str() );
-		}
-		else
-		{
-			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-			             "set g_nextMap %s; set g_nextMapLayouts \"\"",
-			             Cmd::Escape( arg ).c_str() );
-			Com_sprintf( level.team[ team ].voteDisplayString,
-			             sizeof( level.team[ team ].voteDisplayString ), "Set the next map to '%s'",
-			             arg.c_str() );
-		}
-
-		reason.clear();  // nullify since we've used it here...
-	}
-	else if ( vote == "poll" )
-	{
-		level.team[ team ].voteString[ 0 ] = '\0';
-		Com_sprintf( level.team[ team ].voteDisplayString,
-		             sizeof( level.team[ team ].voteDisplayString ), "(poll) %s", reason.c_str() );
-		reason.clear();  // nullify since we've used it here...
+		return;
 	}
 
 	// Append the vote reason (if applicable)
