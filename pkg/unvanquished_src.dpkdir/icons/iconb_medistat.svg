@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150" height="150" version="1.1" viewBox="0 0 39.688 39.688" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+    <cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/"/>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Gireen</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+   <cc:License rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#Notice"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#Attribution"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#ShareAlike"/>
+   </cc:License>
+  </rdf:RDF>
+ </metadata>
+ <g transform="matrix(.28223 0 0 .28223 -55.916 -76.068)" fill="#fff" opacity=".96">
+  <rect x="225.39" y="381.04" width="86.1" height="12.642" ry="6.3208" opacity="1"/>
+  <rect x="223.85" y="386.51" width="89.175" height="8.8833" rx="0" ry="1.025" opacity="1"/>
+  <path d="m261.06 288.03c-0.89874 0-1.6235 0.72476-1.6235 1.6235v15.008h-15.013c-0.89874 0-1.6185 0.72476-1.6185 1.6235v13.581c0 0.89873 0.71973 1.6185 1.6185 1.6185h15.013v15.013c0 0.89872 0.72476 1.6235 1.6235 1.6235h13.576c0.89873 0 1.6235-0.72476 1.6235-1.6235v-15.013h15.013c0.89871 0 1.6185-0.71974 1.6185-1.6185v-13.581c0-0.89872-0.71975-1.6235-1.6185-1.6235h-15.013v-15.008c0-0.89875-0.72475-1.6235-1.6235-1.6235z" opacity="1"/>
+  <rect x="236.43" y="362.37" width="62.857" height="12.342" opacity=".21"/>
+  <rect x="236.43" y="339.37" width="62.857" height="12.325" opacity=".21"/>
+  <rect x="236.43" y="321.81" width="62.857" height="7.2056" opacity=".21"/>
+ </g>
+</svg>
