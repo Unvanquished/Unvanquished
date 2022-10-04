@@ -66,3 +66,4 @@ struct VoteDefinition
 };
 
 void G_HandleVote( gentity_t *ent );
+bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemplate, std::string displayTemplate );

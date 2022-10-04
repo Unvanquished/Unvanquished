@@ -65,7 +65,7 @@ static bool botFillVoteParseArg( int &argnum, Str::StringRef arg )
 
 // Basic vote information
 // clang-format off
-static const std::unordered_map<std::string, VoteDefinition> voteInfo = {
+static std::unordered_map<std::string, VoteDefinition> voteInfo = {
 	DEFINE_VOTE(kick,
 		F(stopOnIntermission = false),
 		F(type = V_ANY),
@@ -795,7 +795,7 @@ void G_HandleVote( gentity_t *ent )
 	if ( vi.reasonNeeded != qtrinary::qno )
 	{
 		reason = args.ConcatArgs( vi.target != T_NONE ? 3 : 2 );
-		Color::StripColors( reason );
+		reason = Color::StripColors( reason );
 	}
 
 	if ( vi.target == T_PLAYER )
@@ -819,7 +819,7 @@ void G_HandleVote( gentity_t *ent )
 			return;
 		}
 		name = level.clients[ clientNum ].pers.netname;
-		Color::StripColors( name );
+		name = Color::StripColors( name );
 		id = level.clients[ clientNum ].pers.namelog->id;
 
 		if ( g_entities[ clientNum ].r.svFlags & SVF_BOT )
@@ -924,7 +924,7 @@ void G_HandleVote( gentity_t *ent )
 	}
 
 	std::string caller = ent->client->pers.netname;
-	Color::StripColors( caller );
+	caller = Color::StripColors( caller );
 
 	level.team[ team ].voteTime = level.time;
 	trap_SetConfigstring( CS_VOTE_TIME + team, va( "%d", level.team[ team ].voteTime ) );
@@ -1138,4 +1138,72 @@ void G_Vote( gentity_t *ent, team_t team, bool voting )
 
 		trap_SetConfigstring( CS_VOTE_NO + team, va( "%d", level.team[ team ].voteNo ) );
 	}
+}
+
+static constexpr char MARKER = '$';
+static bool IsEscapedMarker( Str::StringRef s, size_t pos )
+{
+	return pos + 1 < s.size() && s[ pos ] == MARKER && s[ pos + 1 ] ==  MARKER;
+}
+
+static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+{
+	std::unordered_map<std::string, std::string> params = {
+		{ "team", BG_TeamNamePlural( team ) },
+		{ "arg", arg },
+		{ "reason", reason },
+		{ "name", name },
+		{ "slot", std::to_string( clientNum ) },
+		{ "namelogId", std::to_string( id ) },
+	};
+	std::string out;
+	out.reserve( str.size() + arg.size() + reason.size() );
+	size_t c = 0;
+	size_t s = 0;
+	size_t e = 0;
+	while ( c < str.size() )
+	{
+		s = str.find( MARKER, c );
+		if ( s != std::string::npos && !IsEscapedMarker( str, s ) )
+		{
+			e = str.find( MARKER, s + 1 );
+			if ( e != std::string::npos )
+			{
+				out += str.substr( c, s - c );
+				out += params[ str.substr( s + 1, e - s - 1 ).c_str() ];
+				c = e + 1;
+			}
+			else
+			{
+				Log::Warn("Unterminated %c in str: %s", MARKER, str );
+				return "";
+			}
+		}
+		else
+		{
+			out += str.substr( c );
+		}
+	}
+	Log::Notice(" -- %s", out.c_str());
+	return out;
+}
+
+bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemplate, std::string displayTemplate )
+{
+	auto it = voteInfo.find( vote );
+	if ( it != voteInfo.end() )
+	{
+		return false;
+	}
+	it = voteInfo.emplace( std::move( vote ), std::move( def ) ).first;
+	auto handler = [vt = move(voteTemplate), dt = move(displayTemplate)]( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+	{
+		std::string vote = G_HandleVoteTemplate( vt, ent, team, cmd, arg, reason, name, clientNum, id );
+		Q_strncpyz( level.team[ team ].voteString, vote.c_str(), sizeof ( level.team[ team ].voteString ) );
+		std::string display = G_HandleVoteTemplate( dt, ent, team, cmd, arg, reason, name, clientNum, id );
+		Q_strncpyz( level.team[ team ].voteDisplayString, display.c_str(), sizeof ( level.team[ team ].voteDisplayString ) );
+		return true;
+	};
+	it->second.handler = std::move( handler );
+	return true;
 }
