@@ -693,7 +693,7 @@ static const struct svcmd
 	{ "alienWin",           false, Svcmd_TeamWin_f              },
 	{ "asay",               true,  Svcmd_MessageWrapper         },
 	{ "chat",               true,  Svcmd_MessageWrapper         },
-	{ "cp",                 true,  Svcmd_CenterPrint_f          },
+	{ "cp",                 false, Svcmd_CenterPrint_f          },
 	{ "dumpuser",           false, Svcmd_DumpUser_f             },
 	{ "eject",              false, Svcmd_EjectClient_f          },
 	{ "entityFire",         false, Svcmd_EntityFire_f           },
