@@ -626,9 +626,9 @@ static void CG_Menu( int menuType, int arg )
 			break;
 
 		case MN_H_NOENERGYAMMOHERE:
-			longMsg = _("You must be near a Reactor or a powered Armoury "
+			longMsg = _("You must be near a Reactor, a Drill or a powered Armoury "
 			          "in order to purchase energy ammunition.");
-			shortMsg = _("You must be near a Reactor or a powered Armoury");
+			shortMsg = _("You must be near a Reactor, a Drill or a powered Armoury");
 			break;
 
 		case MN_H_NOROOMARMOURCHANGE:
