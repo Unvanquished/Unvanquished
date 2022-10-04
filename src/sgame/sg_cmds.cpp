@@ -741,7 +741,7 @@ static void Cmd_Give_f( gentity_t *ent )
 	if ( team != TEAM_NONE && ( give_all || Q_stricmp( name, "ammo" ) == 0 ) )
 	{
 		valid = true;
-		G_RefillAmmo( ent, false );
+		G_GiveMaxAmmo( ent );
 	}
 
 	if ( !valid )
