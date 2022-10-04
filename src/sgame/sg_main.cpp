@@ -86,6 +86,9 @@ Cvar::Cvar<int> g_pollVotesPercent("g_pollVotesPercent", "percentage required fo
 Cvar::Cvar<int> g_maxVoteFillBots("g_maxVoteFillBots", "maximum number of bots per team allowed by votes", Cvar::NONE, 10);
 Cvar::Cvar<int> g_fillBotsVotesPercent("g_fillBotsVotesPercent", "percentage required for votes to fill both teams with bots", Cvar::NONE, 51);
 Cvar::Cvar<int> g_fillBotsTeamVotesPercent("g_fillBotsTeamVotesPercent", "percentage required for votes to fill only one team with bots", Cvar::NONE, 67);
+Cvar::Cvar<int> g_customVotesPercent( "g_customVotesPercent",
+                                      "percentage required for custom votes to pass", Cvar::NONE,
+                                      51 );
 
 Cvar::Range<Cvar::Cvar<int>> g_teamForceBalance("g_teamForceBalance", "disallow joining a team with more players (1 = always, 2 = allow N vs. 0)", Cvar::NONE, 0, 0, 2);
 Cvar::Cvar<bool> g_smoothClients("g_smoothClients", "something about player movement extrapolation", Cvar::NONE, true);

@@ -54,8 +54,8 @@ using VoteHandler =
 struct VoteDefinition
 {
 	bool stopOnIntermission;
-	int type;
-	int target;
+	VoteType type;
+	VoteTarget target;
 	bool adminImmune;  // from needing a reason and from being the target
 	bool quorum;
 	qtrinary reasonNeeded;
