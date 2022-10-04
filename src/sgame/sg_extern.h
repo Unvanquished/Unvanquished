@@ -76,6 +76,7 @@ extern Cvar::Cvar<int> g_drawVotesAfter;
 extern Cvar::Cvar<bool> g_drawVoteReasonRequired;
 extern Cvar::Cvar<int> g_admitDefeatVotesPercent;
 extern Cvar::Cvar<int> g_pollVotesPercent;
+extern Cvar::Cvar<int> g_customVotesPercent;
 extern Cvar::Range<Cvar::Cvar<int>> g_teamForceBalance;
 extern Cvar::Cvar<bool> g_smoothClients;
 

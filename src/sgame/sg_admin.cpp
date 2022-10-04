@@ -34,13 +34,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
-#include "sg_bot_util.h"
-#include "engine/qcommon/q_unicode.h"
-#include "shared/navgen/navgen.h"
-#include "Entities.h"
-#include "CBSE.h"
 
 #include <glm/gtx/norm.hpp>
+
+#include "CBSE.h"
+#include "Entities.h"
+#include "engine/qcommon/q_unicode.h"
+#include "sg_bot_util.h"
+#include "sg_votes.h"
+#include "shared/navgen/navgen.h"
 
 struct g_admin_cmd_t
 {
@@ -86,6 +88,14 @@ struct g_admin_command_t
 	char                   flag[ MAX_ADMIN_FLAG_LEN ];
 };
 
+struct g_admin_vote_t
+{
+	std::string name;
+	std::string vote;
+	std::string display;
+	VoteDefinition def;
+};
+
 struct g_admin_spec_t
 {
 	g_admin_spec_t     *next;
@@ -110,7 +120,7 @@ struct g_admin_admin_t
 	int                  counter;
 };
 
-int G_admin_joindelay( g_admin_spec_t const* ptr )
+int G_admin_joindelay( const g_admin_spec_t *ptr )
 {
 	return ptr->expires;
 }
@@ -494,6 +504,7 @@ g_admin_admin_t   *g_admin_admins = nullptr;
 g_admin_ban_t     *g_admin_bans = nullptr;
 g_admin_spec_t    *g_admin_specs = nullptr;
 g_admin_command_t *g_admin_commands = nullptr;
+std::vector<g_admin_vote_t> g_admin_votes;
 
 /* ent must be non-nullptr */
 #define G_ADMIN_NAME( ent ) ( ent->client->pers.admin ? ent->client->pers.admin->name : ent->client->pers.netname )
@@ -871,7 +882,7 @@ static bool admin_higher( gentity_t *admin, gentity_t *victim )
 	                           victim->client->pers.admin );
 }
 
-static void admin_writeconfig_string( char *s, fileHandle_t f )
+static void admin_writeconfig_string( const char *s, fileHandle_t f )
 {
 	if ( s[ 0 ] )
 	{
@@ -1002,6 +1013,27 @@ void G_admin_writeconfig()
 		trap_FS_Write( "flag    = ", 10, f );
 		admin_writeconfig_string( c->flag, f );
 		trap_FS_Write( "\n", 1, f );
+	}
+
+	for ( const auto &v : g_admin_votes )
+	{
+		trap_FS_Write( "[vote]\n", 7, f );
+		trap_FS_Write( "name               = ", 21, f );
+		admin_writeconfig_string( v.name.c_str(), f );
+		trap_FS_Write( "stopOnIntermission = ", 21, f );
+		admin_writeconfig_int( v.def.stopOnIntermission, f );
+		trap_FS_Write( "adminImmune        = ", 21, f );
+		admin_writeconfig_int( v.def.adminImmune, f );
+		trap_FS_Write( "quorum             = ", 21, f );
+		admin_writeconfig_int( v.def.quorum, f );
+		trap_FS_Write( "type               = ", 21, f );
+		admin_writeconfig_string( VoteTypeString( v.def.type ).c_str(), f );
+		trap_FS_Write( "target             = ", 21, f );
+		admin_writeconfig_string( VoteTargetString( v.def.target ).c_str(), f );
+		trap_FS_Write( "vote               = ", 21, f );
+		admin_writeconfig_string( v.vote.c_str(), f );
+		trap_FS_Write( "display            = ", 21, f );
+		admin_writeconfig_string( v.display.c_str(), f );
 	}
 
 	trap_FS_FCloseFile( f );
@@ -1899,11 +1931,12 @@ bool G_admin_readconfig( gentity_t *ent )
 	g_admin_admin_t   *a = nullptr;
 	g_admin_ban_t     *b = nullptr;
 	g_admin_command_t *c = nullptr;
+	g_admin_vote_t    *v = nullptr;
 	int               lc = 0, ac = 0, bc = 0, cc = 0;
 	fileHandle_t      f;
 	int               len;
 	char              *cnf1, *cnf2;
-	bool              level_open, admin_open, ban_open, command_open;
+	bool              level_open, admin_open, ban_open, command_open, vote_open;
 	int               i;
 	char              ip[ 44 ];
 
@@ -1935,7 +1968,7 @@ bool G_admin_readconfig( gentity_t *ent )
 
 	admin_level_maxname = 0;
 
-	level_open = admin_open = ban_open = command_open = false;
+	level_open = admin_open = ban_open = command_open = vote_open = false;
 	COM_BeginParseSession( g_admin.Get().c_str() );
 
 	while ( 1 )
@@ -1960,7 +1993,7 @@ bool G_admin_readconfig( gentity_t *ent )
 
 			memset( l, 0, sizeof( *l ) );
 			level_open = true;
-			admin_open = ban_open = command_open = false;
+			admin_open = ban_open = command_open = vote_open = false;
 			lc++;
 		}
 		else if ( !Q_stricmp( t, "[admin]" ) )
@@ -1976,7 +2009,7 @@ bool G_admin_readconfig( gentity_t *ent )
 
 			memset( a, 0, sizeof( *a ) );
 			admin_open = true;
-			level_open = ban_open = command_open = false;
+			level_open = ban_open = command_open = vote_open = false;
 			ac++;
 		}
 		else if ( !Q_stricmp( t, "[ban]" ) || !Q_stricmp( t, "[warning]" ) )
@@ -1996,7 +2029,7 @@ bool G_admin_readconfig( gentity_t *ent )
 			b->warnCount = ( t[ 1 ] == 'w' ) ? -1 : 0;
 
 			ban_open = true;
-			level_open = admin_open = command_open = false;
+			level_open = admin_open = command_open = vote_open = false;
 			bc++;
 		}
 		else if ( !Q_stricmp( t, "[command]" ) )
@@ -2011,8 +2044,18 @@ bool G_admin_readconfig( gentity_t *ent )
 			}
 
 			command_open = true;
-			level_open = admin_open = ban_open = false;
+			level_open = admin_open = ban_open = vote_open = false;
 			cc++;
+		}
+		else if ( !Q_stricmp( t, "[vote]" ) )
+		{
+			g_admin_votes.emplace_back();
+			v = &g_admin_votes.back();
+			v->def.reasonNeeded = qtrinary::qno;
+			v->def.special = VOTE_NO_AUTO;
+			v->def.percentage = &g_customVotesPercent;
+			vote_open = true;
+			level_open = admin_open = ban_open = command_open = false;
 		}
 		else if ( level_open )
 		{
@@ -2147,6 +2190,71 @@ bool G_admin_readconfig( gentity_t *ent )
 				COM_ParseError( "[command] unrecognized token \"%s\"", t );
 			}
 		}
+		else if ( vote_open )
+		{
+			if ( !Q_stricmp( t, "name" ) )
+			{
+				char name[ 32 ];
+				admin_readconfig_string( &cnf, name, sizeof( name ) );
+				v->name = name;
+				if ( v->name.empty() )
+				{
+					COM_ParseError( "error parsing vote name: name must be under 32 chars" );
+				}
+			}
+			else if ( !Q_stricmp( t, "stopOnIntermission" ) )
+			{
+				int i;
+				admin_readconfig_int( &cnf, &i );
+				v->def.stopOnIntermission = i;
+			}
+			else if ( !Q_stricmp( t, "adminImmune" ) )
+			{
+				int i;
+				admin_readconfig_int( &cnf, &i );
+				v->def.adminImmune = i;
+			}
+			else if ( !Q_stricmp( t, "quorum" ) )
+			{
+				int i;
+				admin_readconfig_int( &cnf, &i );
+				v->def.quorum = i;
+			}
+			else if ( !Q_stricmp( t, "type" ) )
+			{
+				char type[ 15 ];
+				admin_readconfig_string( &cnf, type, sizeof( type ) );
+				if ( !ParseVoteType( type, &v->def.type ) )
+				{
+					COM_ParseError( "error parsing votetype: %s", type );
+				}
+			}
+			else if ( !Q_stricmp( t, "target" ) )
+			{
+				char type[ 15 ];
+				admin_readconfig_string( &cnf, type, sizeof( type ) );
+				if ( !ParseVoteTarget( type, &v->def.target ) )
+				{
+					COM_ParseError( "error parsing votetarget: %s", type );
+				}
+			}
+			else if ( !Q_stricmp( t, "vote" ) )
+			{
+				char vote[ MAX_STRING_CHARS ];
+				admin_readconfig_string( &cnf, vote, sizeof( vote ) );
+				v->vote = vote;
+			}
+			else if ( !Q_stricmp( t, "display" ) )
+			{
+				char display[ MAX_STRING_CHARS ];
+				admin_readconfig_string( &cnf, display, sizeof( display ) );
+				v->display = display;
+			}
+			else
+			{
+				COM_ParseError( "[vote] unrecognized token \"%s\"", t );
+			}
+		}
 		else
 		{
 			COM_ParseError( "unexpected token \"%s\"", t );
@@ -2154,8 +2262,11 @@ bool G_admin_readconfig( gentity_t *ent )
 	}
 
 	BG_Free( cnf2 );
-	ADMP( va( "%s %d %d %d %d", QQ( N_("^3readconfig:^* loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands") ),
-	          lc, ac, bc, cc ) );
+	ADMP( va(
+		"%s %d %d %d %d %zi",
+		QQ( N_(
+			"^3readconfig:^* loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands $5$ votes" ) ),
+		lc, ac, bc, cc, g_admin_votes.size() ) );
 
 	if ( lc == 0 )
 	{
@@ -2188,6 +2299,15 @@ bool G_admin_readconfig( gentity_t *ent )
 	for ( c = g_admin_commands; c; c = c->next )
 	{
 		trap_AddCommand(c->command);
+	}
+
+	// register user-defined votes
+	for ( const auto &v : g_admin_votes )
+	{
+		if ( !G_AddCustomVote( v.name, v.def, v.vote, v.display ) )
+		{
+			Log::Warn( "Failed to register vote '%s': vote already exists", v.name );
+		}
 	}
 
 	return true;
@@ -5782,6 +5902,8 @@ void G_admin_cleanup()
 	}
 
 	g_admin_commands = nullptr;
+
+	g_admin_votes.clear();
 }
 
 static void BotUsage( gentity_t *ent )
