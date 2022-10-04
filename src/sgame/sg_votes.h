@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 enum VoteType
 {
+	V_ANY,
 	V_TEAM,
 	V_PUBLIC,
-	V_ANY
 };
 
 enum VoteTarget
@@ -47,7 +47,9 @@ enum VoteOptions
 	VOTE_NO_AUTO,  // don't automatically vote 'yes'
 };
 
-using VoteHandler = std::function<bool(gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id)>;
+using VoteHandler =
+	std::function<bool( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
+                        std::string& reason, std::string& name, int clientNum, int id )>;
 
 struct VoteDefinition
 {
@@ -57,13 +59,20 @@ struct VoteDefinition
 	bool adminImmune;  // from needing a reason and from being the target
 	bool quorum;
 	qtrinary reasonNeeded;
-	Cvar::Cvar<int> *percentage;
+	Cvar::Cvar<int>* percentage;
 	int special;
-	Cvar::Cvar<int> *specialCvar;
-	Cvar::Cvar<bool>
-		*reasonFlag;  // where a reason requirement is configurable (reasonNeeded must be true)
-    VoteHandler handler;
+	Cvar::Cvar<int>* specialCvar;
+	Cvar::Cvar<bool>*
+		reasonFlag;  // where a reason requirement is configurable (reasonNeeded must be true)
+	VoteHandler handler;
 };
 
-void G_HandleVote( gentity_t *ent );
-bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemplate, std::string displayTemplate );
+void G_HandleVote( gentity_t* ent );
+bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemplate,
+                      std::string displayTemplate );
+bool ParseVoteType( Str::StringRef s, VoteType* type );
+Str::StringRef VoteTypeString( VoteType type );
+bool ParseVoteTarget( Str::StringRef s, VoteTarget* type );
+Str::StringRef VoteTargetString( VoteTarget type );
+bool ParseVoteOptions( Str::StringRef s, VoteOptions* type );
+Str::StringRef VoteOptionsString( VoteOptions type );

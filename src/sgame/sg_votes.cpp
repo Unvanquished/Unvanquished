@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 Return true if arg is valid, and store the number in argnum.
 Otherwise, return false and do not modify argnum.
 */
-static bool botFillVoteParseArg( int &argnum, Str::StringRef arg )
+static bool botFillVoteParseArg( int& argnum, Str::StringRef arg )
 {
 	int num = -1;
 	if ( Str::ParseInt( num, arg ) && num >= 0 && num <= g_maxVoteFillBots.Get() )
@@ -46,7 +46,6 @@ static bool botFillVoteParseArg( int &argnum, Str::StringRef arg )
 		return false;
 	}
 }
-
 
 // Some macro magic to work around the lack of designated initializers.
 #define F( A ) def.A
@@ -611,7 +610,7 @@ bool G_CheckStopVote( team_t team )
 	{
 		return false;
 	}
-	const auto &it = voteInfo.find( level.team[ team ].voteType );
+	const auto& it = voteInfo.find( level.team[ team ].voteType );
 	if ( it == voteInfo.end() )
 	{
 		return false;
@@ -627,7 +626,7 @@ Check for disabled vote types.
 Does not distinguish between public and team votes.
 ==================
 */
-static bool isDisabledVoteType( const char *vote )
+static bool isDisabledVoteType( const char* vote )
 {
 	for ( Parse_WordListSplitter i( g_disabledVoteCalls.Get() ); *i; ++i )
 	{
@@ -636,9 +635,9 @@ static bool isDisabledVoteType( const char *vote )
 	return false;
 }
 
-void G_HandleVote( gentity_t *ent )
+void G_HandleVote( gentity_t* ent )
 {
-	const Cmd::Args &args = trap_Args();
+	const Cmd::Args& args = trap_Args();
 	std::string cmd = Str::ToLower( args.Argv( 0 ) );
 	team_t team = (team_t)( ( cmd == "callteamvote" ) ? ent->client->pers.team : TEAM_NONE );
 
@@ -665,7 +664,7 @@ void G_HandleVote( gentity_t *ent )
 
 	G_ResetVote( team );
 
-	std::string vote =  args.Argc() > 1 ? Str::ToLower( args.Argv( 1 ) ) : "";
+	std::string vote = args.Argc() > 1 ? Str::ToLower( args.Argv( 1 ) ) : "";
 
 	// look up the vote detail
 	auto it = voteInfo.find( vote );
@@ -683,9 +682,9 @@ void G_HandleVote( gentity_t *ent )
 		cmd.reserve( MAX_STRING_CHARS );
 		cmd += "print \"";
 
-		for ( const auto &it : voteInfo )
+		for ( const auto& it : voteInfo )
 		{
-			const VoteDefinition &vi = it.second;
+			const VoteDefinition& vi = it.second;
 			if ( ( team == TEAM_NONE && vi.type != V_TEAM ) ||
 			     ( team != TEAM_NONE && vi.type != V_PUBLIC ) )
 			{
@@ -701,7 +700,7 @@ void G_HandleVote( gentity_t *ent )
 		trap_SendServerCommand( ent - g_entities, cmd.c_str() );
 		return;
 	}
-	const VoteDefinition &vi = it->second;
+	const VoteDefinition& vi = it->second;
 
 	if ( g_voteLimit.Get() > 0 && ent->client->pers.namelog->voteCount >= g_voteLimit.Get() &&
 	     !G_admin_permission( ent, ADMF_NO_VOTE_LIMIT ) )
@@ -872,7 +871,7 @@ void G_HandleVote( gentity_t *ent )
 		return;
 	}
 
-	if ( !vi.handler(ent, team, cmd, arg, reason, name, clientNum, id) )
+	if ( !vi.handler( ent, team, cmd, arg, reason, name, clientNum, id ) )
 	{
 		return;
 	}
@@ -967,7 +966,7 @@ void G_CheckVote( team_t team )
 	float votePassThreshold = (float)level.team[ team ].voteThreshold / 100.0f;
 	bool pass = false;
 	bool quorum = true;
-	char *cmd;
+	char* cmd;
 
 	if ( level.team[ team ].voteExecuteTime /* > 0 ?? more readable imho */ &&
 	     level.team[ team ].voteExecuteTime < level.time )
@@ -1081,7 +1080,7 @@ void G_ResetVote( team_t team )
 G_Vote
 ==================
 */
-void G_Vote( gentity_t *ent, team_t team, bool voting )
+void G_Vote( gentity_t* ent, team_t team, bool voting )
 {
 	if ( !level.team[ team ].voteTime )
 	{
@@ -1141,20 +1140,23 @@ void G_Vote( gentity_t *ent, team_t team, bool voting )
 }
 
 static constexpr char MARKER = '$';
+
 static bool IsEscapedMarker( Str::StringRef s, size_t pos )
 {
-	return pos + 1 < s.size() && s[ pos ] == MARKER && s[ pos + 1 ] ==  MARKER;
+	return pos + 1 < s.size() && s[ pos ] == MARKER && s[ pos + 1 ] == MARKER;
 }
 
-static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, team_t team,
+                                         std::string& cmd, std::string& arg, std::string& reason,
+                                         std::string& name, int clientNum, int id )
 {
 	std::unordered_map<std::string, std::string> params = {
-		{ "team", BG_TeamNamePlural( team ) },
-		{ "arg", arg },
-		{ "reason", reason },
-		{ "name", name },
-		{ "slot", std::to_string( clientNum ) },
-		{ "namelogId", std::to_string( id ) },
+		{"team",       BG_TeamNamePlural( team )  },
+		{ "arg",       arg						},
+		{ "reason",    reason                     },
+		{ "name",      name					   },
+		{ "slot",      std::to_string( clientNum )},
+		{ "namelogId", std::to_string( id )       },
 	};
 	std::string out;
 	out.reserve( str.size() + arg.size() + reason.size() );
@@ -1175,7 +1177,7 @@ static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, tea
 			}
 			else
 			{
-				Log::Warn("Unterminated %c in str: %s", MARKER, str );
+				Log::Warn( "Unterminated %c in str: %s", MARKER, str );
 				return "";
 			}
 		}
@@ -1184,11 +1186,12 @@ static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, tea
 			out += str.substr( c );
 		}
 	}
-	Log::Notice(" -- %s", out.c_str());
+	Log::Notice( " -- %s", out.c_str() );
 	return out;
 }
 
-bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemplate, std::string displayTemplate )
+bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemplate,
+                      std::string displayTemplate )
 {
 	auto it = voteInfo.find( vote );
 	if ( it != voteInfo.end() )
@@ -1196,14 +1199,116 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 		return false;
 	}
 	it = voteInfo.emplace( std::move( vote ), std::move( def ) ).first;
-	auto handler = [vt = move(voteTemplate), dt = move(displayTemplate)]( gentity_t* ent, team_t team, std::string& cmd, std::string& arg, std::string& reason, std::string& name, int clientNum, int id )
+	auto handler = [ vt = move( voteTemplate ), dt = move( displayTemplate ) ](
+					   gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
+					   std::string& reason, std::string& name, int clientNum, int id )
 	{
-		std::string vote = G_HandleVoteTemplate( vt, ent, team, cmd, arg, reason, name, clientNum, id );
-		Q_strncpyz( level.team[ team ].voteString, vote.c_str(), sizeof ( level.team[ team ].voteString ) );
-		std::string display = G_HandleVoteTemplate( dt, ent, team, cmd, arg, reason, name, clientNum, id );
-		Q_strncpyz( level.team[ team ].voteDisplayString, display.c_str(), sizeof ( level.team[ team ].voteDisplayString ) );
+		std::string vote =
+			G_HandleVoteTemplate( vt, ent, team, cmd, arg, reason, name, clientNum, id );
+		Q_strncpyz( level.team[ team ].voteString, vote.c_str(),
+		            sizeof( level.team[ team ].voteString ) );
+		std::string display =
+			G_HandleVoteTemplate( dt, ent, team, cmd, arg, reason, name, clientNum, id );
+		Q_strncpyz( level.team[ team ].voteDisplayString, display.c_str(),
+		            sizeof( level.team[ team ].voteDisplayString ) );
 		return true;
 	};
 	it->second.handler = std::move( handler );
 	return true;
+}
+
+bool ParseVoteType( Str::StringRef s, VoteType* type )
+{
+	static const std::unordered_map<std::string, VoteType> map = {
+		{"V_ANY",     V_ANY   },
+		{ "V_TEAM",   V_TEAM  },
+		{ "V_PUBLIC", V_PUBLIC},
+	};
+	const auto& it = map.find( s );
+	if ( it == map.end() )
+	{
+		return false;
+	}
+	*type = it->second;
+	return true;
+}
+
+Str::StringRef VoteTypeString( VoteType type )
+{
+	switch ( type )
+	{
+		case V_TEAM:
+			return "V_TEAM";
+		case V_PUBLIC:
+			return "V_PUBLIC";
+		case V_ANY:
+		default:
+			return "V_ANY";
+	}
+}
+
+bool ParseVoteTarget( Str::StringRef s, VoteTarget* type )
+{
+	static const std::unordered_map<std::string, VoteTarget> map = {
+		{"T_NONE",    T_NONE  },
+		{ "T_PLAYER", T_PLAYER},
+		{ "T_OTHER",  T_OTHER },
+	};
+	const auto& it = map.find( s );
+	if ( it == map.end() )
+	{
+		return false;
+	}
+	*type = it->second;
+	return true;
+}
+
+Str::StringRef VoteTargetString( VoteTarget type )
+{
+	switch ( type )
+	{
+		case T_PLAYER:
+			return "T_PLAYER";
+		case T_OTHER:
+			return "T_OTHER";
+		case T_NONE:
+		default:
+			return "T_NONE";
+	}
+}
+
+bool ParseVoteOptions( Str::StringRef s, VoteOptions* type )
+{
+	static const std::unordered_map<std::string, VoteOptions> map = {
+		{"VOTE_ALWAYS",   VOTE_ALWAYS },
+        { "VOTE_BEFORE",  VOTE_BEFORE },
+		{ "VOTE_AFTER",   VOTE_AFTER  },
+        { "VOTE_REMAIN",  VOTE_REMAIN },
+		{ "VOTE_NO_AUTO", VOTE_NO_AUTO},
+	};
+	const auto& it = map.find( s );
+	if ( it == map.end() )
+	{
+		return false;
+	}
+	*type = it->second;
+	return true;
+}
+
+Str::StringRef VoteOptionsString( VoteOptions type )
+{
+	switch ( type )
+	{
+		case VOTE_BEFORE:
+			return "VOTE_BEFORE";
+		case VOTE_AFTER:
+			return "VOTE_AFTER";
+		case VOTE_REMAIN:
+			return "VOTE_REMAIN";
+		case VOTE_NO_AUTO:
+			return "VOTE_NO_AUTO";
+		case VOTE_ALWAYS:
+		default:
+			return "VOTE_ALWAYS";
+	}
 }
