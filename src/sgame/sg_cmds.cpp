@@ -631,8 +631,8 @@ static void Cmd_Give_f( gentity_t *ent )
 		if ( fabsf(amount) >= 1.0f )
 		{
 			valid = true;
+			G_AddCreditToClient( ent->client, ( short ) amount, true );
 		}
-		G_AddCreditToClient( ent->client, ( short ) amount, true );
 	}
 
 	// give momentum
@@ -672,10 +672,10 @@ static void Cmd_Give_f( gentity_t *ent )
 		if ( fabsf(amount) >= 1.0f )
 		{
 			valid = true;
-		}
 
-		level.team[ent->client->pers.team].totalBudget +=
-			static_cast<int>( amount );
+			level.team[ent->client->pers.team].totalBudget +=
+				static_cast<int>( amount );
+		}
 	}
 
 	if ( Entities::IsDead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
@@ -688,25 +688,25 @@ static void Cmd_Give_f( gentity_t *ent )
 	{
 		if ( give_all || trap_Argc() < 3 )
 		{
+			valid = true;
 			ent->entity->Heal(1000.0f, nullptr);
 			BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
 		}
 		else
 		{
 			amount = atof( name + strlen("health") );
-			if (amount < 0)
+			if ( fabsf(amount) >= 1.0f )
 			{
-				ent->entity->Damage(-amount, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
+				valid = true;
+				if (amount < 0)
+				{
+					ent->entity->Damage(-amount, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
+				}
+				else
+				{
+					ent->entity->Heal(amount, nullptr);
+				}
 			}
-			else
-			{
-				ent->entity->Heal(amount, nullptr);
-			}
-		}
-
-		if ( fabsf(amount) >= 1.0f )
-		{
-			valid = true;
 		}
 	}
 
