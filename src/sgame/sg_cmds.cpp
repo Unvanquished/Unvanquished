@@ -658,7 +658,7 @@ static void Cmd_Give_f( gentity_t *ent )
 			}
 		}
 
-		if ( team != TEAM_NONE && amount >= 0.1f )
+		if ( team != TEAM_NONE && fabsf(amount) >= 0.1f )
 		{
 			valid = true;
 			G_AddMomentumGeneric( team, amount );
