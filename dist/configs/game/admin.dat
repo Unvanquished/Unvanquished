@@ -1,0 +1,49 @@
+[level]
+level   = 5
+name    = ^1Server Operator
+flags   = ALLFLAGS -IMMUTABLE -INCOGNITO
+
+[level]
+level   = 4
+name    = ^3Senior Admin
+flags   = listplayers admintest adminhelp time putteam spec999 warn kick mute showbans ban namelog buildlog ADMINCHAT register unregister l0 l1 pause revert bot
+
+[level]
+level   = 3
+name    = ^2Junior Admin
+flags   = listplayers admintest adminhelp time putteam spec999 warn kick mute ADMINCHAT buildlog register unregister l0 l1 bot
+
+[level]
+level   = 2
+name    = ^6Team Manager
+flags   = listplayers admintest adminhelp time putteam spec999 register unregister bot
+
+[level]
+level   = 1
+name    = ^5Server Regular
+flags   = listplayers admintest adminhelp time register unregister
+
+[level]
+level   = 0
+name    = ^4Unknown Player
+flags   = listplayers admintest adminhelp time register
+
+[vote]
+name               = slap
+stopOnIntermission = 1
+adminImmune        = 1
+quorum             = 1
+type               = V_ANY
+target             = T_PLAYER
+vote               = slap $slot$
+display            = Slap $name$ silly
+
+[vote]
+name               = max_miners
+stopOnIntermission = 0
+adminImmune        = 0
+quorum             = 1
+type               = V_ANY
+target             = T_OTHER
+vote               = set g_maxMiners $arg$
+display            = Set max miners to '$arg$'
