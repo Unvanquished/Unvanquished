@@ -644,7 +644,7 @@ static void Cmd_Give_f( gentity_t *ent )
 		{
 			++end;
 			team = BG_PlayableTeamFromString( end );
-			if ( team != TEAM_NONE )
+			if ( team == TEAM_NONE )
 			{
 				team = G_Team( ent );
 			}
