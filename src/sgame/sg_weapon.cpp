@@ -70,6 +70,8 @@ static void GiveMaxClips( gentity_t *self )
 		return;
 	}
 
+	self->client->lastAmmoRefillTime = level.time;
+
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
@@ -88,6 +90,8 @@ static void GiveFullClip( gentity_t *self )
 	{
 		return;
 	}
+
+	self->client->lastAmmoRefillTime = level.time;
 
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
@@ -153,8 +157,6 @@ bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
 	{
 		return false;
 	}
-
-	self->client->lastAmmoRefillTime = level.time;
 
 	if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->maxClips > 0 )
 	{
