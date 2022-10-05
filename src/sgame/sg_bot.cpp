@@ -174,6 +174,19 @@ int G_BotGetSkill( int clientNum )
 	return bot->botMind->botSkill.level;
 }
 
+void G_BotSetSkill( int clientNum, int skill )
+{
+	gentity_t *bot = &g_entities[clientNum];
+
+	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
+	{
+		return;
+	}
+
+	BotSetSkillLevel( bot, skill );
+}
+
+
 const char * G_BotGetBehavior( int clientNum )
 {
 	gentity_t *bot = &g_entities[clientNum];
