@@ -703,3 +703,35 @@ void G_SetBotFill( int fill )
 
 	G_BotFill(true);
 }
+
+// assumes bot is a bot, otherwise will crash.
+static std::string BotGoalToString( gentity_t *bot )
+{
+	const botTarget_t& target = bot->botMind->goal;
+	if ( !target.isValid() )
+	{
+		return "<invalid>";
+	}
+
+	if ( target.targetsValidEntity() )
+	{
+		return etos( target.getTargetedEntity() );
+	}
+	else if ( target.targetsCoordinates() )
+	{
+		return vtos( &target.getPos()[0] );
+	}
+
+	return "<unknown goal>";
+}
+
+std::string G_BotToString( gentity_t *bot )
+{
+	if ( !( bot->r.svFlags & SVF_BOT ) )
+	{
+		return "";
+	}
+	return Str::Format( "^*%s^*: %s [s=%d b=%s g=%s]",
+			bot->client->pers.netname, BG_TeamName( G_Team( bot ) ), bot->botMind->botSkill.level,
+			bot->botMind->behaviorTree->name, BotGoalToString( bot ) );
+}
