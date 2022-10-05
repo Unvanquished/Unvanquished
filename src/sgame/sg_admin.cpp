@@ -268,6 +268,13 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"listbots",   G_admin_listbots,  true,  "listbots",
+		N_("display a list of all server bots and some debug info about each"),
+		""
+	},
+
+
+	{
 		"listinactive", G_admin_listinactive, true, "listadmins",
 		N_("display a list of inactive server admins and their levels"),
 		N_("[^5months^7] (^5start admin#^7)")
@@ -6056,6 +6063,24 @@ bool G_admin_bot( gentity_t *ent )
 		BotUsage( ent );
 		return false;
 	}
+	return true;
+}
+
+bool G_admin_listbots( gentity_t *ent )
+{
+	ADMP( va( "%s %d", QQ( N_( "^3listbots:^* $1$ bots in game:") ), level.numPlayingBots ) );
+	ADMP( QQ( N_( "Slot Name Team [s=skill b=behavior g=goal]" ) ) );
+	ADMBP_begin();
+	ForEntities<ClientComponent>( []( Entity& entity, ClientComponent& )
+	{
+		gentity_t* ent = entity.oldEnt;
+		if ( !( ent->r.svFlags & SVF_BOT ) )
+		{
+			return;
+		}
+		ADMBP( va( "%zu %s", ent - g_entities, G_BotToString( ent ).c_str() ) );
+	} );
+	ADMBP_end();
 	return true;
 }
 
