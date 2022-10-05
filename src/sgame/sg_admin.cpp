@@ -5748,6 +5748,7 @@ static void BotUsage( gentity_t *ent )
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
 	                                        "            bot behavior (<name> | <slot#>) <behavior>\n"
+	                                        "            bot skill <skill level> [<team>]\n"
 	                                        "            bot debug_reload" ) );
 	ADMP( bot_usage );
 }
@@ -6015,6 +6016,32 @@ bool G_admin_bot( gentity_t *ent )
 		{
 			BotUsage( ent );
 			return false;
+		}
+	}
+	else if ( !Q_stricmp( arg1, "skill" ) )
+	{
+		if ( args.Argc() < 3 )
+		{
+			ADMP( QQ( N_( "missing skill." ) ) );
+			BotUsage( ent );
+			return false;
+		}
+		const std::string& skillStr = args.Argv( 2 );
+		int skill = BotSkillFromString( ent, skillStr.c_str() );
+		team_t team = TEAM_NONE;
+		if ( args.Argc() > 3 )
+		{
+			const std::string& teamStr = args.Argv( 3 );
+			team = BG_PlayableTeamFromString( teamStr.c_str() );
+		}
+		for ( int i = 0; i < MAX_CLIENTS; ++i )
+		{
+			if ( team != TEAM_NONE && G_Team( &g_entities[ i ] ) != team )
+			{
+				continue;
+			}
+			// Will ignore non-bots, unfortunately you can't change human skill with a command
+			G_BotSetSkill( i, skill );
 		}
 	}
 	else if ( !Q_stricmp( arg1, "debug_reload" )  )
