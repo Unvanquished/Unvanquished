@@ -296,6 +296,17 @@ public:
 				usage();
 				return;
 			}
+			if ( args.Argc() > 3 )
+			{
+				lua_newtable(L);
+				for (int i = 3; i < args.Argc(); ++i)
+				{
+					lua_pushstring(L, args.Argv( i ).c_str());
+					lua_rawseti(L, -2, i - 2);  // lua arrays start at 1
+				}
+				lua_setglobal(L, "arg");
+
+			}
 			LoadScript(args.Argv(2)) && RunCode();
 			return;
 		}
