@@ -939,12 +939,19 @@ static void Cmd_Team_f( gentity_t *ent )
 		{
 			team = TEAM_NONE;
 		}
-		else if ( level.team[ TEAM_HUMANS ].locked || players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
+		else if ( level.team[ TEAM_HUMANS ].locked )
 		{
 			team = TEAM_ALIENS;
 		}
-
-		else if ( level.team[ TEAM_ALIENS ].locked || players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ] )
+		else if ( level.team[ TEAM_ALIENS ].locked )
+		{
+			team = TEAM_HUMANS;
+		}
+		else if ( players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
+		{
+			team = TEAM_ALIENS;
+		}
+		else if ( players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ] )
 		{
 			team = TEAM_HUMANS;
 		}
