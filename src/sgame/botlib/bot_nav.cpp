@@ -95,9 +95,9 @@ static void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short f
 
 		query->queryPolygons( center, extents, &filter, polys, &polyCount, maxPolys );
 
-		for ( int i = 0; i < polyCount; i++ )
+		for ( int j = 0; j < polyCount; j++ )
 		{
-			mesh->setPolyFlags( polys[ i ], flags );
+			mesh->setPolyFlags( polys[ j ], flags );
 		}
 	}
 }

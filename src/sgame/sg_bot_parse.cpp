@@ -1260,7 +1260,6 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	char treefilename[ MAX_QPATH ];
 	int handle;
 	pc_token_list *tokenlist;
-	AIBehaviorTree_t *tree;
 	pc_token_list *current;
 	AIGenericNode_t *node;
 
@@ -1374,7 +1373,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	tokenlist = CreateTokenList( handle );
 	Parse_FreeSourceHandle( handle );
 
-	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
+	auto *tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
 
 	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
 

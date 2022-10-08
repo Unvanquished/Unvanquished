@@ -2091,7 +2091,6 @@ CG_Buildable
 void CG_Buildable( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
-	vec3_t        angles;
 	vec3_t        surfNormal, xNormal, mins, maxs;
 	vec3_t        refNormal = { 0.0f, 0.0f, 1.0f };
 	float         scale;
@@ -2127,7 +2126,6 @@ void CG_Buildable( centity_t *cent )
 
 	VectorCopy( es->origin2, surfNormal );
 
-	VectorCopy( es->angles, angles );
 	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
 
 	if ( es->pos.trType == trType_t::TR_STATIONARY )
@@ -2146,7 +2144,7 @@ void CG_Buildable( centity_t *cent )
 		}
 		else
 		{
-			CG_PositionAndOrientateBuildable( angles, cent->lerpOrigin, surfNormal,
+			CG_PositionAndOrientateBuildable( es->angles, cent->lerpOrigin, surfNormal,
 			                                  es->number, mins, maxs, ent.axis,
 			                                  ent.origin );
 			VectorCopy( ent.axis[ 0 ], cent->buildableCache.axis[ 0 ] );
