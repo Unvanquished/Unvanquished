@@ -324,7 +324,6 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	gentity_t *ent;
 	int       anim;
 	int       killer;
-	int       i;
 	const char *killerName, *obit;
 
 	const gentity_t *assistantEnt;
@@ -409,7 +408,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	}
 
 	// deactivate all upgrades
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	for ( int i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		BG_DeactivateUpgrade( i, self->client->ps.stats );
 	}
@@ -465,7 +464,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	// send updated scores to any clients that are following this one,
 	// or they would get stale scoreboards
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
 		gclient_t *client;
 

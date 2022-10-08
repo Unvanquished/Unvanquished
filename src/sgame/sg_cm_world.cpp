@@ -400,7 +400,6 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	int           leafs[ MAX_TOTAL_ENT_LEAFS ];
 	int           cluster;
 	int           num_leafs;
-	int           i, j, k;
 	int           area;
 	int           lastLeaf;
 	float         *origin, *angles;
@@ -423,13 +422,13 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	else if ( gEnt->r.contents & ( CONTENTS_SOLID | CONTENTS_BODY ) )
 	{
 		// assume that x/y are equal and symetric
-		i = Math::Clamp( gEnt->r.maxs[ 0 ], 1.0f, 255.0f );
+		int i = Math::Clamp( gEnt->r.maxs[ 0 ], 1.0f, 255.0f );
 
 		// z is not symetric
-		j = Math::Clamp( -gEnt->r.mins[ 2 ], 1.0f, 255.0f );
+		int j = Math::Clamp( -gEnt->r.mins[ 2 ], 1.0f, 255.0f );
 
 		// and z maxs can be negative...
-		k = Math::Clamp( gEnt->r.maxs[ 2 ] + 32.0f, 1.0f, 255.0f );
+		int k = Math::Clamp( gEnt->r.maxs[ 2 ] + 32.0f, 1.0f, 255.0f );
 
 		gEnt->s.solid = ( k << 16 ) | ( j << 8 ) | i;
 	}
@@ -447,11 +446,10 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	{
 		// expand for rotation
 		float max;
-		int   i;
 
 		max = RadiusFromBounds( gEnt->r.mins, gEnt->r.maxs );
 
-		for ( i = 0; i < 3; i++ )
+		for ( int i = 0; i < 3; i++ )
 		{
 			gEnt->r.absmin[ i ] = origin[ i ] - max;
 			gEnt->r.absmax[ i ] = origin[ i ] + max;
@@ -489,7 +487,7 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	}
 
 	// set areas, even from clusters that don't fit in the entity array
-	for ( i = 0; i < num_leafs; i++ )
+	for ( int i = 0; i < num_leafs; i++ )
 	{
 		area = CM_LeafArea( leafs[ i ] );
 
@@ -511,7 +509,7 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	// store as many explicit clusters as we can
 	gEnt->r.numClusters = 0;
 
-	for ( i = 0; i < num_leafs; i++ )
+	for ( int i = 0; i < num_leafs; i++ )
 	{
 		cluster = CM_LeafCluster( leafs[ i ] );
 
@@ -521,15 +519,10 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 
 			if ( gEnt->r.numClusters == MAX_ENT_CLUSTERS )
 			{
+				gEnt->r.lastCluster = CM_LeafCluster( lastLeaf );
 				break;
 			}
 		}
-	}
-
-	// store off a last cluster if we need to
-	if ( i != num_leafs )
-	{
-		gEnt->r.lastCluster = CM_LeafCluster( lastLeaf );
 	}
 
 	gEnt->r.linkcount++;

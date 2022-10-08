@@ -52,9 +52,9 @@ public:
 	void Accumulate( int time, const T& sample )
 	{
 		samples.remove_if(
-			[&]( const std::pair<int,T>& sample )
+			[&]( const std::pair<int,T>& oldSample )
 			{
-				return time - sample.first > width;
+				return time - oldSample.first > width;
 			}
 		);
 		samples.emplace( samples.begin( ), time, sample );

@@ -422,8 +422,6 @@ G_InitGame
 */
 void G_InitGame( int levelTime, int randomSeed, bool inClient )
 {
-	int i;
-
 	srand( randomSeed );
 
 	Log::Notice( "------- Game Initialization -------" );
@@ -534,7 +532,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	level.clients = g_clients;
 
 	// set client fields on player ents
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
 		g_entities[ i ].client = level.clients + i;
 	}
@@ -543,7 +541,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// inside that range are NEVER anything but clients
 	level.num_entities = MAX_CLIENTS;
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for( int i = 0; i < MAX_CLIENTS; i++ )
 	{
 		g_entities[ i ].classname = "clientslot";
 	}

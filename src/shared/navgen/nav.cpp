@@ -226,8 +226,6 @@ static void AddTri( std::vector<float> &verts, std::vector<int> &tris, vec3_t v1
 // TODO: Can this stuff be done using the already-loaded CM data structures
 // (e.g. cbrush_t instead of dbrush_t) instead of reopening the BSP?
 void NavmeshGenerator::LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
-	int j;
-
 	int solidFlags = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
 	int surfaceSkip = 0;
 
@@ -285,7 +283,7 @@ void NavmeshGenerator::LoadBrushTris( std::vector<float> &verts, std::vector<int
 			winding_t *w = BaseWindingForPlane( plane->normal, plane->dist );
 
 			/* walk the list of brush sides */
-			for ( j = 0; j < numSides && w != nullptr; j++ )
+			for ( int j = 0; j < numSides && w != nullptr; j++ )
 			{
 				const dbrushside_t *chopSide = &bspBrushSides[j + firstSide];
 				if ( chopSide == side ) {
@@ -1030,8 +1028,8 @@ bool NavmeshGenerator::Step()
 	for ( int i = 0; i < ntiles; i++ )
 	{
 		TileCacheData *tile = &tiles[ i ];
-		dtStatus status = d_->tileCache->addTile( tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0 );
-		if ( dtStatusFailed( status ) ) {
+		dtStatus tileStatus = d_->tileCache->addTile( tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0 );
+		if ( dtStatusFailed( tileStatus ) ) {
 			dtFree( tile->data );
 			tile->data = 0;
 			continue;

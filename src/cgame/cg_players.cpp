@@ -112,7 +112,6 @@ models/players/visor/character.cfg, etc
 static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 {
 	const char         *text_p;
-	int          i;
 
 	std::error_code err;
 	std::string text = FS::PakPath::ReadFile( filename, err );
@@ -214,7 +213,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		}
 		else if ( !Q_stricmp( token, "headoffset" ) )
 		{
-			for ( i = 0; i < 3; i++ )
+			for ( int i = 0; i < 3; i++ )
 			{
 				token = COM_Parse2( &text_p );
 
@@ -805,7 +804,6 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 	if ( ci->skeletal )
 	{
-		int i, j;
 		// load the animations
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/character.cfg", modelName );
 
@@ -825,7 +823,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 			}
 
 			// make LEGS_IDLE the default animation
-			for ( i = 0; i < MAX_PLAYER_ANIMATIONS; i++ )
+			for ( int i = 0; i < MAX_PLAYER_ANIMATIONS; i++ )
 			{
 				if ( i == LEGS_IDLE )
 				{
@@ -961,7 +959,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 			}
 
 			// TODO: Don't assume WP_BLASTER is first human weapon
-			for ( i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i <= TORSO_GESTURE_CKIT; i++, j++ )
+			for ( int i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i <= TORSO_GESTURE_CKIT; i++, j++ )
 			{
 				if ( i == TORSO_GESTURE ) { continue; }
 				if ( i == TORSO_GESTURE_CKIT ) { j = WP_HBUILD; }
@@ -986,7 +984,7 @@ NSPA_STAND, "idle", true, false, false )
 			}
 
 			// make LEGS_IDLE the default animation
-			for ( i = 0; i < MAX_NONSEG_PLAYER_ANIMATIONS; i++ )
+			for ( int i = 0; i < MAX_NONSEG_PLAYER_ANIMATIONS; i++ )
 			{
 				if ( i == NSPA_STAND )
 				{

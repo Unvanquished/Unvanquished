@@ -338,8 +338,6 @@ protected:
 		{
 			if ( token.Type() == Color::Token::TokenType::COLOR )
 			{
-				Rml::XMLAttributes xml;
-
 				// Child element initialized
 				if ( span && child )
 				{
@@ -359,7 +357,7 @@ protected:
 					out.clear();
 				}
 
-
+				Rml::XMLAttributes xml;
 				child = Rml::Factory::InstanceElement( parent, "#text", "span", xml );
 				Color::Color32Bit color32 = token.Color();
 				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
