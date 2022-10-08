@@ -445,7 +445,8 @@ enum persEnum_t
 #define PS_SPRINTTOGGLE       BIT(3)
 
 // entityState_t->eFlags
-// notice that some flags are overlapped, so their meaning depends on context
+// PLEASE DO NOT MAKE THEM OVERLAP FOR NOTHING:
+// this will only be a pain for future changes
 #define EF_DEAD             BIT(0) // don't draw a foe marker over players with EF_DEAD
 #define EF_TELEPORT_BIT     BIT(1) // toggled every time the origin abruptly changes
 #define EF_PLAYER_EVENT     BIT(2) // only used for eType > ET_EVENTS
@@ -456,41 +457,40 @@ enum persEnum_t
 #define EF_NO_BOUNCE_SOUND  BIT(5) // for missiles
 
 // buildable flags:
-#define EF_B_SPAWNED        BIT(3)
-#define EF_B_POWERED        BIT(4)
-#define EF_B_MARKED         BIT(5)
-#define EF_B_ONFIRE         BIT(6)
-#define EF_B_LOCKON         BIT(7)
+#define EF_B_SPAWNED        BIT(6)
+#define EF_B_POWERED        BIT(7)
+#define EF_B_MARKED         BIT(8)
+#define EF_B_ONFIRE         BIT(9)
+#define EF_B_LOCKON         BIT(10)
 
 // for players
-#define EF_UNUSED_1         BIT(4)  // UNUSED
-#define EF_WARN_CHARGE      BIT(5)  // Lucifer Cannon is about to overcharge
-#define EF_WALLCLIMB        BIT(6)  // wall walking
-#define EF_WALLCLIMBCEILING BIT(7)  // wall walking ceiling hack
-#define EF_NODRAW           BIT(8)  // may have an event, but no model (unspawned items)
-#define EF_FIRING           BIT(9)  // for lightning gun
-#define EF_FIRING2          BIT(10) // alt fire
-#define EF_FIRING3          BIT(11) // third fire
-#define EF_MOVER_STOP       BIT(12) // will push otherwise
-#define EF_TYPING           BIT(13) // UNUSED
-#define EF_CONNECTION       BIT(14) // draw a connection trouble sprite
-#define EF_BLOBLOCKED       BIT(15) // caught by a trapper
-
-// entityState_t->modelIndex2 "public flags" when used for client entities
-#define PF_JETPACK_ENABLED  BIT(0)
-#define PF_JETPACK_ACTIVE   BIT(1)
+#define EF_WARN_CHARGE      BIT(11) // Lucifer Cannon is about to overcharge
+#define EF_WALLCLIMB        BIT(12) // wall walking
+#define EF_WALLCLIMBCEILING BIT(13) // wall walking ceiling hack
+#define EF_NODRAW           BIT(14) // may have an event, but no model (unspawned items)
+#define EF_FIRING           BIT(15) // for lightning gun
+#define EF_FIRING2          BIT(16) // alt fire
+#define EF_FIRING3          BIT(17) // third fire
+#define EF_MOVER_STOP       BIT(18) // will push otherwise
+#define EF_CONNECTION       BIT(19) // draw a connection trouble sprite
+#define EF_BLOBLOCKED       BIT(20) // caught by a trapper
+#define EF_TYPING           BIT(21) // player is writting a message
 
 // for beacons:
-#define EF_BC_DYING         BIT(3) // beacon is fading out
-#define EF_BC_ENEMY         BIT(4) // entity/base is from the enemy
-#define EF_BC_TAG_PLAYER    BIT(5) // entity is a player
-#define EF_BC_BASE_OUTPOST  BIT(6) // base is an outpost
+#define EF_BC_DYING         BIT(21) // beacon is fading out
+#define EF_BC_ENEMY         BIT(22) // entity/base is from the enemy
+#define EF_BC_TAG_PLAYER    BIT(23) // entity is a player
+#define EF_BC_BASE_OUTPOST  BIT(24) // base is an outpost
 
 #define EF_BC_TAG_RELEVANT  (EF_BC_ENEMY|EF_BC_TAG_PLAYER)   // relevant flags for tags
 #define EF_BC_BASE_RELEVANT (EF_BC_ENEMY|EF_BC_BASE_OUTPOST) // relevant flags for bases
 
 // For usercmd_t flags
 #define UF_TYPING           BIT(0) // player is typing
+
+// entityState_t->modelIndex2 "public flags" when used for client entities
+#define PF_JETPACK_ENABLED  BIT(0)
+#define PF_JETPACK_ACTIVE   BIT(1)
 
 enum weaponMode_t
 {
