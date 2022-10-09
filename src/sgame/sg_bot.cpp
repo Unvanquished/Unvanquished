@@ -410,6 +410,7 @@ void G_BotThink( gentity_t *self )
 	botCmdBuffer->rightmove = 0;
 	botCmdBuffer->upmove = 0;
 	botCmdBuffer->doubleTap = dtType_t::DT_NONE;
+	botCmdBuffer->flags = 0;
 
 	//acknowledge recieved server commands
 	//MUST be done
