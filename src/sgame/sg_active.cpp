@@ -2249,7 +2249,7 @@ void ClientThink( int clientNum )
 
 	ent = g_entities + clientNum;
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
-	if ( ent->client->pers.cmd.flags & UF_TYPING )
+	if ( ent->client->pers.cmd.flags & UF_TYPING && !( ent->r.svFlags & SVF_BOT ) && Entities::IsAlive( ent ) )
 	{
 		ent->client->ps.eFlags |= EF_TYPING;
 	}
