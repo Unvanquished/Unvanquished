@@ -705,6 +705,9 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 
 void BotFindClosestBuildings( gentity_t *self )
 {
+	gentity_t *testEnt;
+	botEntityAndDistance_t *ent;
+
 	// clear out building list
 	for ( unsigned i = 0; i < ARRAY_LEN( self->botMind->closestBuildings ); i++ )
 	{
@@ -712,8 +715,21 @@ void BotFindClosestBuildings( gentity_t *self )
 		self->botMind->closestBuildings[ i ].distance = std::numeric_limits<float>::max();
 	}
 
-	for ( gentity_t *testEnt : iterate_buildable_entities )
+	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
 	{
+		float newDist;
+		// ignore entities that aren't in use
+		if ( !testEnt->inuse )
+		{
+			continue;
+		}
+
+		// skip non buildings
+		if ( testEnt->s.eType != entityType_t::ET_BUILDABLE )
+		{
+			continue;
+		}
+
 		// ignore dead targets
 		if ( Entities::IsDead( testEnt ) )
 		{
@@ -726,9 +742,9 @@ void BotFindClosestBuildings( gentity_t *self )
 			continue;
 		}
 
-		float newDist = Distance( self->s.origin, testEnt->s.origin );
+		newDist = Distance( self->s.origin, testEnt->s.origin );
 
-		botEntityAndDistance_t *ent = &self->botMind->closestBuildings[ testEnt->s.modelindex ];
+		ent = &self->botMind->closestBuildings[ testEnt->s.modelindex ];
 
 		if ( newDist < ent->distance )
 		{
