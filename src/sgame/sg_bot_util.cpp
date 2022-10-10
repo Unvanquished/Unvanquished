@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
 #include "botlib/bot_api.h"
-#include "sg_entities_iterator.h"
 #include "CBSE.h"
 #include "shared/bg_local.h" // MIN_WALK_NORMAL
 #include "Entities.h"
@@ -1531,6 +1530,26 @@ Bot Team Querys
 ========================
 */
 
+int FindBots( int *botEntityNumbers, int maxBots, team_t team )
+{
+	gentity_t *testEntity;
+	int numBots = 0;
+	int i;
+	memset( botEntityNumbers, 0, sizeof( int )*maxBots );
+	for ( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		testEntity = &g_entities[i];
+		if ( testEntity->r.svFlags & SVF_BOT )
+		{
+			if ( testEntity->client->pers.team == team && numBots < maxBots )
+			{
+				botEntityNumbers[numBots++] = i;
+			}
+		}
+	}
+	return numBots;
+}
+
 bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 {
 	//this function only checks if there are Humans in the SpawnQueue
@@ -1629,17 +1648,21 @@ static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_N
 
 bool BotTeamateHasWeapon( gentity_t *self, int weapon )
 {
-	for ( const gentity_t *bot : iterate_bot_entities )
+	int botNumbers[MAX_CLIENTS];
+	int i;
+	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( team_t ) self->client->pers.team );
+
+	for ( i = 0; i < numBots; i++ )
 	{
+		gentity_t *bot = &g_entities[botNumbers[i]];
 		if ( bot == self )
+		{
 			continue;
-
-		if ( !G_OnSameTeam( self, bot ) )
-			continue;
-
-		if ( BG_InventoryContainsWeapon( weapon,
-				bot->client->ps.stats ) )
+		}
+		if ( BG_InventoryContainsWeapon( weapon, bot->client->ps.stats ) )
+		{
 			return true;
+		}
 	}
 	return false;
 }
