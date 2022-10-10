@@ -149,10 +149,10 @@ public:
 		: predicate(predicate_) {}
 
 	EntityIterator begin() const {
-		return ++EntityIterator(-1, predicate, 0, level.maxclients);
+		return ++EntityIterator(-1, predicate, 0, level.num_entities);
 	}
 	EntityIterator end() const {
-		return EntityIterator(level.maxclients, predicate, 0, level.maxclients);
+		return EntityIterator(level.num_entities, predicate, 0, level.num_entities);
 	}
 };
 
