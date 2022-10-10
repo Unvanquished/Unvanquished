@@ -893,30 +893,6 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	}
 }
 
-gentity_t* BotFindClosestEnemy( gentity_t *self )
-{
-	gentity_t* closestEnemy = nullptr;
-	float minDistance = Square( ALIENSENSE_RANGE );
-
-	for ( gentity_t *target : iterate_entities )
-	{
-		float newDistance;
-
-		if ( !BotEntityIsValidEnemyTarget( self, target ) )
-		{
-			continue;
-		}
-
-		newDistance = DistanceSquared( self->s.origin, target->s.origin );
-		if ( newDistance <= minDistance )
-		{
-			minDistance = newDistance;
-			closestEnemy = target;
-		}
-	}
-	return closestEnemy;
-}
-
 botTarget_t BotGetRushTarget( const gentity_t *self )
 {
 	botTarget_t target;
