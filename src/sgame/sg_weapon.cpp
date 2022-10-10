@@ -28,7 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // perform the server side effects of a weapon firing
 
 #include "sg_local.h"
-#include "sg_entities_iterator.h"
 #include "Entities.h"
 #include "CBSE.h"
 
@@ -633,7 +632,9 @@ static void HiveMissileThink( gentity_t *self )
 {
 	vec3_t    dir;
 	trace_t   tr;
-	float     d;
+	gentity_t *ent;
+	int       i;
+	float     d, nearest;
 
 	if ( level.time > self->timestamp ) // swarm lifetime exceeded
 	{
@@ -647,14 +648,17 @@ static void HiveMissileThink( gentity_t *self )
 		return;
 	}
 
-	float nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
+	nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
 
 	//find the closest human
-	for ( gentity_t *ent : iterate_client_entities )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
+		ent = &g_entities[ i ];
+
+		if ( !ent->inuse ) continue;
 		if ( ent->flags & FL_NOTARGET ) continue;
 
-		if ( Entities::IsAlive( ent ) && G_Team( ent ) == TEAM_HUMANS &&
+		if ( ent->client && Entities::IsAlive( ent ) && G_Team( ent ) == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
 			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
