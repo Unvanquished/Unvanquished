@@ -1,4 +1,6 @@
 #include "TurretComponent.h"
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/io.hpp>
 #include "../Entities.h"
 
 static Log::Logger turretLogger("sgame.turrets");
@@ -26,7 +28,7 @@ TurretComponent::~TurretComponent() {
 
 void TurretComponent::HandlePrepareNetCode() {
 	// TODO: Make these angles completely relative to the turret's base, not just to its yaw.
-	VectorCopy(relativeAimAngles.Data(), entity.oldEnt->s.angles2);
+	VectorCopy(relativeAimAngles, entity.oldEnt->s.angles2);
 }
 
 void TurretComponent::SetRange(float range) {
@@ -85,25 +87,25 @@ bool TurretComponent::MoveHeadToTarget(int timeDelta) {
 	float timeMod = (float)timeDelta / 1000.0f;
 
 	// Compute maximum angle changes for this execution.
-	Vec3 maxAngleChange;
+	glm::vec3 maxAngleChange;
 	maxAngleChange[PITCH] = timeMod * PITCH_SPEED;
 	maxAngleChange[YAW]   = timeMod * YAW_SPEED;
 	maxAngleChange[ROLL]  = 0.0f;
 
 	// Compute angles to target, relative to the turret's base.
-	Vec3 relativeAnglesToTarget = DirectionToRelativeAngles(directionToTarget);
+	glm::vec3 relativeAnglesToTarget = DirectionToRelativeAngles(directionToTarget);
 
 	// Compute difference between angles to target and current angles.
-	Vec3 deltaAngles;
-	AnglesSubtract(relativeAnglesToTarget.Data(), relativeAimAngles.Data(), deltaAngles.Data());
+	glm::vec3 deltaAngles;
+	AnglesSubtract(&relativeAnglesToTarget[0], &relativeAimAngles[0], &deltaAngles[0]);
 
 	// Stop if there is nothing to do.
-	if (Math::Length(deltaAngles) < 0.1f) {
+	if (glm::length(deltaAngles) < 0.1f) {
 		return true;
 	}
 
 	bool targetReached = true;
-	Vec3 oldRelativeAimAngles = relativeAimAngles;
+	glm::vec3 oldRelativeAimAngles = relativeAimAngles;
 
 	// Adjust aim angles towards target angles.
 	for (int angle = 0; angle < 3; angle++) {
@@ -125,7 +127,7 @@ bool TurretComponent::MoveHeadToTarget(int timeDelta) {
 		targetReached = false;
 	}
 
-	if (Math::DistanceSq(oldRelativeAimAngles, relativeAimAngles) > 0.0f) {
+	if (glm::distance2(oldRelativeAimAngles, relativeAimAngles) > 0.0f) {
 		turretLogger.Debug(
 			"Aiming. Elapsed: %d ms. Delta: %.2f. Max: %.2f. Old: %s. New: %s. Reached: %s.",
 			timeDelta, deltaAngles, maxAngleChange, oldRelativeAimAngles, relativeAimAngles, targetReached
@@ -133,8 +135,8 @@ bool TurretComponent::MoveHeadToTarget(int timeDelta) {
 	}
 
 	// TODO: Move gentity_t.buildableAim to BuildableComponent.
-	Vec3 absoluteAimAngles = RelativeAnglesToAbsoluteAngles(relativeAimAngles);
-	absoluteAimAngles.Store(entity.oldEnt->buildableAim);
+	glm::vec3 absoluteAimAngles = RelativeAnglesToAbsoluteAngles(relativeAimAngles);
+	VectorCopy(absoluteAimAngles, entity.oldEnt->buildableAim);
 
 	return targetReached;
 }
@@ -142,14 +144,14 @@ bool TurretComponent::MoveHeadToTarget(int timeDelta) {
 void TurretComponent::TrackEntityTarget() {
 	if (!target) return;
 
-	Vec3 oldDirectionToTarget = directionToTarget;
+	glm::vec3 oldDirectionToTarget = directionToTarget;
 
-	Vec3 targetOrigin = Vec3::Load(target->s.origin);
-	Vec3 muzzle       = Vec3::Load(entity.oldEnt->s.pos.trBase);
+	glm::vec3 targetOrigin = VEC2GLM(target->s.origin);
+	glm::vec3 muzzle       = VEC2GLM(entity.oldEnt->s.pos.trBase);
 
-	directionToTarget = Math::Normalize(targetOrigin - muzzle);
+	directionToTarget = glm::normalize(targetOrigin - muzzle);
 
-	if (Math::DistanceSq(directionToTarget, oldDirectionToTarget) > 0.0f) {
+	if (glm::distance2(directionToTarget, oldDirectionToTarget) > 0.0f) {
 		turretLogger.Debug("Following an entity target. New direction: %s.", directionToTarget);
 	}
 }
@@ -161,7 +163,7 @@ void TurretComponent::ResetDirection() {
 }
 
 void TurretComponent::ResetPitch() {
-	Vec3 targetRelativeAngles = relativeAimAngles;
+	glm::vec3 targetRelativeAngles = relativeAimAngles;
 	targetRelativeAngles[PITCH] = 0.0f;
 
 	directionToTarget = RelativeAnglesToDirection(targetRelativeAngles);
@@ -170,7 +172,7 @@ void TurretComponent::ResetPitch() {
 }
 
 void TurretComponent::LowerPitch() {
-	Vec3 targetRelativeAngles = relativeAimAngles;
+	glm::vec3 targetRelativeAngles = relativeAimAngles;
 	targetRelativeAngles[PITCH] = PITCH_CAP;
 
 	directionToTarget = RelativeAnglesToDirection(targetRelativeAngles);
@@ -181,12 +183,12 @@ void TurretComponent::LowerPitch() {
 bool TurretComponent::TargetCanBeHit() {
 	if (!target) return false;
 
-	Vec3 aimDirection = RelativeAnglesToDirection(relativeAimAngles);
-	Vec3 traceStart   = Vec3::Load(entity.oldEnt->s.pos.trBase);
-	Vec3 traceEnd     = traceStart + range * aimDirection;
+	glm::vec3 aimDirection = RelativeAnglesToDirection(relativeAimAngles);
+	glm::vec3 traceStart   = VEC2GLM(entity.oldEnt->s.pos.trBase);
+	glm::vec3 traceEnd     = traceStart + range * aimDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, traceStart.Data(), nullptr, nullptr, traceEnd.Data(), entity.oldEnt->s.number,
+	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->s.number,
 	           MASK_SHOT, 0);
 
 	return (tr.entityNum == target->s.number);
@@ -231,12 +233,12 @@ void TurretComponent::SetBaseDirection() {
 	vec3_t torsoDirectionOldVec;
 	AngleVectors(entity.oldEnt->s.angles, torsoDirectionOldVec, nullptr, nullptr);
 
-	Vec3 torsoDirection = Math::Normalize(Vec3::Load(torsoDirectionOldVec));
-	Vec3 traceStart     = Vec3::Load(entity.oldEnt->s.pos.trBase);
-	Vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
+	glm::vec3 torsoDirection = glm::normalize(VEC2GLM(torsoDirectionOldVec));
+	glm::vec3 traceStart     = VEC2GLM(entity.oldEnt->s.pos.trBase);
+	glm::vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, traceStart.Data(), nullptr, nullptr, traceEnd.Data(), entity.oldEnt->s.number,
+	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->s.number,
 	           MASK_SHOT, 0);
 
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.
@@ -250,21 +252,21 @@ void TurretComponent::SetBaseDirection() {
 	turretLogger.Verbose("Base direction set to %s.", baseDirection);
 }
 
-Vec3 TurretComponent::TorsoAngles() const {
+glm::vec3 TurretComponent::TorsoAngles() const {
 	// HACK: This just works (visually) for turrets on even ground. The problem here is that
 	//       entity.oldEnt->s.angles are only preliminary angles. The real angles of the turret
 	//       model are calculated on the client side.
-	return Vec3::Load(entity.oldEnt->s.angles);
+	return VEC2GLM(entity.oldEnt->s.angles);
 }
 
-Vec3 TurretComponent::RelativeAnglesToAbsoluteAngles(const Vec3 relativeAngles) const {
+glm::vec3 TurretComponent::RelativeAnglesToAbsoluteAngles(const glm::vec3 relativeAngles) const {
 	quat_t torsoRotation;
 	quat_t relativeRotation;
 	quat_t absoluteRotation;
 	vec3_t absoluteAngles;
 
-	AnglesToQuat(TorsoAngles().Data(), torsoRotation);
-	AnglesToQuat(relativeAngles.Data(), relativeRotation);
+	AnglesToQuat(&TorsoAngles()[0], torsoRotation);
+	AnglesToQuat(&relativeAngles[0], relativeRotation);
 
 	// Rotate by torso rotation in world space, then by relative orientation in torso space.
 	// This is equivalent to rotating by relative orientation in world space, then by torso rotation
@@ -273,22 +275,17 @@ Vec3 TurretComponent::RelativeAnglesToAbsoluteAngles(const Vec3 relativeAngles) 
 	QuatMultiply(torsoRotation, relativeRotation, absoluteRotation);
 
 	QuatToAngles(absoluteRotation, absoluteAngles);
-
-	/*turretLogger.Debug("RelativeAnglesToAbsoluteAngles: %s → %s. Torso angles: %s.",
-		Utility::Print(relativeAngles), Utility::Print(Vec3::Load(absoluteAngles)), TorsoAngles()
-	);*/
-
-	return Vec3::Load(absoluteAngles);
+	return VEC2GLM(absoluteAngles);
 }
 
-Vec3 TurretComponent::AbsoluteAnglesToRelativeAngles(const Vec3 absoluteAngles) const {
+glm::vec3 TurretComponent::AbsoluteAnglesToRelativeAngles(const glm::vec3 absoluteAngles) const {
 	quat_t torsoRotation;
 	quat_t absoluteRotation;
 	quat_t relativeRotation;
 	vec3_t relativeAngles;
 
-	AnglesToQuat(TorsoAngles().Data(), torsoRotation);
-	AnglesToQuat(absoluteAngles.Data(), absoluteRotation);
+	AnglesToQuat(&TorsoAngles()[0], torsoRotation);
+	AnglesToQuat(&absoluteAngles[0], absoluteRotation);
 
 	// This is the inverse of RelativeAnglesToAbsoluteAngles. See the comment there for details.
 	quat_t inverseTorsoOrientation;
@@ -297,30 +294,25 @@ Vec3 TurretComponent::AbsoluteAnglesToRelativeAngles(const Vec3 absoluteAngles) 
 	QuatMultiply(inverseTorsoOrientation, absoluteRotation, relativeRotation);
 
 	QuatToAngles(relativeRotation, relativeAngles);
-
-	/*turretLogger.Debug("AbsoluteAnglesToRelativeAngles: %s → %s. Torso angles: %s.",
-		Utility::Print(absoluteAngles), Utility::Print(Vec3::Load(relativeAngles)), TorsoAngles()
-	);*/
-
-	return Vec3::Load(relativeAngles);
+	return VEC2GLM(relativeAngles);
 }
 
-Vec3 TurretComponent::DirectionToAbsoluteAngles(const Vec3 direction) const {
+glm::vec3 TurretComponent::DirectionToAbsoluteAngles(const glm::vec3 direction) const {
 	vec3_t absoluteAngles;
-	vectoangles(direction.Data(), absoluteAngles);
-	return Vec3::Load(absoluteAngles);
+	vectoangles(&direction[0], absoluteAngles);
+	return VEC2GLM(absoluteAngles);
 }
 
-Vec3 TurretComponent::DirectionToRelativeAngles(const Vec3 direction) const {
+glm::vec3 TurretComponent::DirectionToRelativeAngles(const glm::vec3 direction) const {
 	return AbsoluteAnglesToRelativeAngles(DirectionToAbsoluteAngles(direction));
 }
 
-Vec3 TurretComponent::AbsoluteAnglesToDirection(const Vec3 absoluteAngles) const {
+glm::vec3 TurretComponent::AbsoluteAnglesToDirection(const glm::vec3 absoluteAngles) const {
 	vec3_t direction;
-	AngleVectors(absoluteAngles.Data(), direction, nullptr, nullptr);
-	return Vec3::Load(direction);
+	AngleVectors(&absoluteAngles[0], direction, nullptr, nullptr);
+	return VEC2GLM(direction);
 }
 
-Vec3 TurretComponent::RelativeAnglesToDirection(const Vec3 relativeAngles) const {
+glm::vec3 TurretComponent::RelativeAnglesToDirection(const glm::vec3 relativeAngles) const {
 	return AbsoluteAnglesToDirection(RelativeAnglesToAbsoluteAngles(relativeAngles));
 }

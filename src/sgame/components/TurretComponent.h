@@ -105,13 +105,13 @@ class TurretComponent: public TurretComponentBase {
 		 */
 		bool TargetValid(Entity& target, bool newTarget);
 
-		Vec3 TorsoAngles() const;
-		Vec3 RelativeAnglesToAbsoluteAngles(const Vec3 relativeAngles) const;
-		Vec3 AbsoluteAnglesToRelativeAngles(const Vec3 absoluteAngles) const;
-		Vec3 DirectionToAbsoluteAngles(const Vec3 direction) const;
-		Vec3 DirectionToRelativeAngles(const Vec3 direction) const;
-		Vec3 AbsoluteAnglesToDirection(const Vec3 absoluteAngles) const;
-		Vec3 RelativeAnglesToDirection(const Vec3 relativeAngles) const;
+		glm::vec3 TorsoAngles() const;
+		glm::vec3 RelativeAnglesToAbsoluteAngles(const glm::vec3 relativeAngles) const;
+		glm::vec3 AbsoluteAnglesToRelativeAngles(const glm::vec3 absoluteAngles) const;
+		glm::vec3 DirectionToAbsoluteAngles(const glm::vec3 direction) const;
+		glm::vec3 DirectionToRelativeAngles(const glm::vec3 direction) const;
+		glm::vec3 AbsoluteAnglesToDirection(const glm::vec3 absoluteAngles) const;
+		glm::vec3 RelativeAnglesToDirection(const glm::vec3 relativeAngles) const;
 
 		/** An entity target that the turret can track. */
 		gentity_t* target;
@@ -120,13 +120,13 @@ class TurretComponent: public TurretComponentBase {
 		float range;
 
 		/** The turret's target direction after construction and a direction reset. */
-		Vec3 baseDirection;
+		glm::vec3 baseDirection;
 
 		/** The direction that the head will move to when asked to make a move. */
-		Vec3 directionToTarget;
+		glm::vec3 directionToTarget;
 
 		/** The angle of the turret's head orientation relative to the turret's torso. */
-		Vec3 relativeAimAngles;
+		glm::vec3 relativeAimAngles;
 
 		/** A timer used to forget about targets that were behind cover for a while. */
 		int lastLineOfSightToTarget;
