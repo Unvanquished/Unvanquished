@@ -26,7 +26,6 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 // handle the server-side beacon-related stuff
 
 #include "sg_local.h"
-#include "sg_entities_iterator.h"
 #include "Entities.h"
 
 // entityState_t   | cbeacon_t    | description
@@ -604,8 +603,8 @@ namespace Beacon //this should eventually become a class
 	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, bool refreshTagged )
 	{
 		tagtrace_ent_t list[ MAX_GENTITIES ];
-		int count = 0;
-		gentity_t *reticleEnt = nullptr;
+		int i, count = 0;
+		gentity_t *ent, *reticleEnt = nullptr;
 		vec3_t seg, delta;
 		float dot;
 
@@ -623,12 +622,17 @@ namespace Beacon //this should eventually become a class
 			}
 		}
 
-		for( gentity_t *ent : iterate_entities )
+		for( i = 0; i < level.num_entities; i++ )
 		{
+			ent = g_entities + i;
+
 			if( ent == reticleEnt )
 				continue;
 
-			if( !EntityTaggable( ent - g_entities, team, true ) )
+			if( !ent->inuse )
+				continue;
+
+			if( !EntityTaggable( i, team, true ) )
 				continue;
 
 			VectorSubtract( ent->r.currentOrigin, begin, delta );
@@ -644,7 +648,7 @@ namespace Beacon //this should eventually become a class
 			{
 				trace_t tr;
 				trap_Trace( &tr, begin, nullptr, nullptr, ent->r.currentOrigin, skip, mask, 0 );
-				if( &g_entities[tr.entityNum] != ent )
+				if( tr.entityNum != i )
 					continue;
 			}
 

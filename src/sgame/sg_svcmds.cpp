@@ -35,7 +35,6 @@ Maryland 20850 USA.
 // this file holds commands that can be executed by the server console, but not remote clients
 
 #include "sg_local.h"
-#include "sg_entities_iterator.h"
 
 #define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
 
@@ -90,7 +89,7 @@ static void Svcmd_EntityFire_f()
 }
 
 
-static inline void PrintEntityOverviewLine( const gentity_t *entity )
+static inline void PrintEntityOverviewLine( gentity_t *entity )
 {
 	Log::Notice( "%3i: %15s/^5%-24s^*%s%s",
 			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
@@ -211,9 +210,13 @@ Svcmd_EntityList_f
 
 static void  Svcmd_EntityList_f()
 {
+	int       entityNum;
 	int i;
-	int currentEntityCount = 0;
+	int currentEntityCount;
+	gentity_t *displayedEntity;
 	char* filter;
+
+	displayedEntity = g_entities;
 
 	if(trap_Argc() > 1)
 	{
@@ -224,23 +227,27 @@ static void  Svcmd_EntityList_f()
 		filter = nullptr;
 	}
 
-	for ( const gentity_t *ent : iterate_entities )
+	for ( entityNum = 0, currentEntityCount = 0; entityNum < level.num_entities; entityNum++, displayedEntity++ )
 	{
+		if ( !displayedEntity->inuse )
+		{
+			continue;
+		}
 		currentEntityCount++;
 
-		if(filter && !Com_Filter(filter, ent->classname, false) )
+		if(filter && !Com_Filter(filter, displayedEntity->classname, false) )
 		{
-			for (i = 0; i < MAX_ENTITY_ALIASES && ent->names[i]; ++i)
+			for (i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->names[i]; ++i)
 			{
-				if( Com_Filter(filter, ent->names[i], false) )
+				if( Com_Filter(filter, displayedEntity->names[i], false) )
 				{
-					PrintEntityOverviewLine( ent );
+					PrintEntityOverviewLine( displayedEntity );
 					break;
 				}
 			}
 			continue;
 		}
-		PrintEntityOverviewLine( ent );
+		PrintEntityOverviewLine( displayedEntity );
 	}
 
 	Log::Notice( "A total of %i entities are currently in use.", currentEntityCount);

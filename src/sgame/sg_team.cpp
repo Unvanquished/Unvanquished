@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
-#include "sg_entities_iterator.h"
 #include "Entities.h"
 
 /*
@@ -209,6 +208,8 @@ G_LeaveTeam
 void G_LeaveTeam( gentity_t *self )
 {
 	team_t    team = (team_t) self->client->pers.team;
+	gentity_t *ent;
+	int       i;
 
 	if ( G_IsPlayableTeam( team ) )
 	{
@@ -230,8 +231,15 @@ void G_LeaveTeam( gentity_t *self )
 	G_Vote( self, team, false );
 	self->suicideTime = 0;
 
-	for ( gentity_t *ent : iterate_entities )
+	for ( i = 0; i < level.num_entities; i++ )
 	{
+		ent = &g_entities[ i ];
+
+		if ( !ent->inuse )
+		{
+			continue;
+		}
+
 		if ( ent->client && ent->client->pers.connected == CON_CONNECTED )
 		{
 			// cure poison
