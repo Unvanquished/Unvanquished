@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_ai.h"
 #include "sg_bot_util.h"
 #include "botlib/bot_api.h"
-#include "sg_entities_iterator.h"
 #include "CBSE.h"
 #include "shared/bg_local.h" // MIN_WALK_NORMAL
 #include "Entities.h"
@@ -681,10 +680,17 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 	gentity_t* closestBuilding = nullptr;
 	float newDistance;
 	float rangeSquared = Square( range );
+	gentity_t *target = &g_entities[MAX_CLIENTS];
+	int i;
 
-	for ( gentity_t *target : iterate_buildable_entities )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++, target++ )
 	{
-		if ( target->s.modelindex == buildingType &&
+		if ( !target->inuse )
+		{
+			continue;
+		}
+		if ( target->s.eType == entityType_t::ET_BUILDABLE &&
+		     target->s.modelindex == buildingType &&
 		     target->powered && target->spawned &&
 		     Entities::IsAlive( target ) )
 		{
@@ -705,6 +711,9 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 
 void BotFindClosestBuildings( gentity_t *self )
 {
+	gentity_t *testEnt;
+	botEntityAndDistance_t *ent;
+
 	// clear out building list
 	for ( unsigned i = 0; i < ARRAY_LEN( self->botMind->closestBuildings ); i++ )
 	{
@@ -712,8 +721,21 @@ void BotFindClosestBuildings( gentity_t *self )
 		self->botMind->closestBuildings[ i ].distance = std::numeric_limits<float>::max();
 	}
 
-	for ( gentity_t *testEnt : iterate_buildable_entities )
+	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
 	{
+		float newDist;
+		// ignore entities that aren't in use
+		if ( !testEnt->inuse )
+		{
+			continue;
+		}
+
+		// skip non buildings
+		if ( testEnt->s.eType != entityType_t::ET_BUILDABLE )
+		{
+			continue;
+		}
+
 		// ignore dead targets
 		if ( Entities::IsDead( testEnt ) )
 		{
@@ -726,9 +748,9 @@ void BotFindClosestBuildings( gentity_t *self )
 			continue;
 		}
 
-		float newDist = Distance( self->s.origin, testEnt->s.origin );
+		newDist = Distance( self->s.origin, testEnt->s.origin );
 
-		botEntityAndDistance_t *ent = &self->botMind->closestBuildings[ testEnt->s.modelindex ];
+		ent = &self->botMind->closestBuildings[ testEnt->s.modelindex ];
 
 		if ( newDist < ent->distance )
 		{
@@ -742,13 +764,26 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
 	float minDistSqr;
 
+	gentity_t *target;
 	self->botMind->closestDamagedBuilding.ent = nullptr;
 	self->botMind->closestDamagedBuilding.distance = std::numeric_limits<float>::max();
 
 	minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
 
-	for ( gentity_t *target : iterate_buildable_entities )
+	for ( target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities]; target++ )
 	{
+		float distSqr;
+
+		if ( !target->inuse )
+		{
+			continue;
+		}
+
+		if ( target->s.eType != entityType_t::ET_BUILDABLE )
+		{
+			continue;
+		}
+
 		if ( target->buildableTeam != self->client->pers.team )
 		{
 			continue;
@@ -769,7 +804,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		float distSqr = DistanceSquared( self->s.origin, target->s.origin );
+		distSqr = DistanceSquared( self->s.origin, target->s.origin );
 		if ( distSqr < minDistSqr )
 		{
 			self->botMind->closestDamagedBuilding.ent = target;
@@ -803,11 +838,12 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	float bestInvisibleEnemyScore = 0.0f;
 	gentity_t *bestVisibleEnemy = nullptr;
 	gentity_t *bestInvisibleEnemy = nullptr;
+	gentity_t *target;
 	team_t    team = G_Team( self );
 	bool  hasRadar = ( team == TEAM_ALIENS ) ||
 	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 
-	for ( gentity_t *target : iterate_entities )
+	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
 	{
 		float newScore;
 
@@ -861,10 +897,16 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 {
 	gentity_t* closestEnemy = nullptr;
 	float minDistance = Square( ALIENSENSE_RANGE );
+	gentity_t *target;
 
-	for ( gentity_t *target : iterate_entities )
+	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
 	{
 		float newDistance;
+		//ignore entities that arnt in use
+		if ( !target->inuse )
+		{
+			continue;
+		}
 
 		if ( !BotEntityIsValidEnemyTarget( self, target ) )
 		{
@@ -1488,6 +1530,26 @@ Bot Team Querys
 ========================
 */
 
+int FindBots( int *botEntityNumbers, int maxBots, team_t team )
+{
+	gentity_t *testEntity;
+	int numBots = 0;
+	int i;
+	memset( botEntityNumbers, 0, sizeof( int )*maxBots );
+	for ( i = 0; i < MAX_CLIENTS; i++ )
+	{
+		testEntity = &g_entities[i];
+		if ( testEntity->r.svFlags & SVF_BOT )
+		{
+			if ( testEntity->client->pers.team == team && numBots < maxBots )
+			{
+				botEntityNumbers[numBots++] = i;
+			}
+		}
+	}
+	return numBots;
+}
+
 bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 {
 	//this function only checks if there are Humans in the SpawnQueue
@@ -1586,17 +1648,21 @@ static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_N
 
 bool BotTeamateHasWeapon( gentity_t *self, int weapon )
 {
-	for ( const gentity_t *bot : iterate_bot_entities )
+	int botNumbers[MAX_CLIENTS];
+	int i;
+	int numBots = FindBots( botNumbers, MAX_CLIENTS, ( team_t ) self->client->pers.team );
+
+	for ( i = 0; i < numBots; i++ )
 	{
+		gentity_t *bot = &g_entities[botNumbers[i]];
 		if ( bot == self )
+		{
 			continue;
-
-		if ( !G_OnSameTeam( self, bot ) )
-			continue;
-
-		if ( BG_InventoryContainsWeapon( weapon,
-				bot->client->ps.stats ) )
+		}
+		if ( BG_InventoryContainsWeapon( weapon, bot->client->ps.stats ) )
+		{
 			return true;
+		}
 	}
 	return false;
 }

@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
-#include "sg_entities_iterator.h"
 #include "Entities.h"
 
 static botMemory_t g_botMind[MAX_CLIENTS];
@@ -361,9 +360,12 @@ void G_BotDel( int clientNum )
 
 void G_BotDelAllBots()
 {
-	for ( gentity_t *bot : iterate_bot_entities )
+	for ( int i = 0; i < MAX_CLIENTS; i++ )
 	{
-		G_BotDel( bot - g_entities );
+		if ( g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED )
+		{
+			G_BotDel( i );
+		}
 	}
 
 	for ( auto &teamsBotNames : botNames )
@@ -563,9 +565,12 @@ bool G_BotInit()
 
 void G_BotCleanup()
 {
-	for ( gentity_t *bot : iterate_bot_entities )
+	for ( int i = 0; i < MAX_CLIENTS; ++i )
 	{
-		G_BotDel( bot - g_entities );
+		if ( g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED )
+		{
+			G_BotDel( i );
+		}
 	}
 
 	G_BotClearNames();
