@@ -681,10 +681,17 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 	gentity_t* closestBuilding = nullptr;
 	float newDistance;
 	float rangeSquared = Square( range );
+	gentity_t *target = &g_entities[MAX_CLIENTS];
+	int i;
 
-	for ( gentity_t *target : iterate_buildable_entities )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++, target++ )
 	{
-		if ( target->s.modelindex == buildingType &&
+		if ( !target->inuse )
+		{
+			continue;
+		}
+		if ( target->s.eType == entityType_t::ET_BUILDABLE &&
+		     target->s.modelindex == buildingType &&
 		     target->powered && target->spawned &&
 		     Entities::IsAlive( target ) )
 		{
@@ -758,13 +765,26 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
 	float minDistSqr;
 
+	gentity_t *target;
 	self->botMind->closestDamagedBuilding.ent = nullptr;
 	self->botMind->closestDamagedBuilding.distance = std::numeric_limits<float>::max();
 
 	minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
 
-	for ( gentity_t *target : iterate_buildable_entities )
+	for ( target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities]; target++ )
 	{
+		float distSqr;
+
+		if ( !target->inuse )
+		{
+			continue;
+		}
+
+		if ( target->s.eType != entityType_t::ET_BUILDABLE )
+		{
+			continue;
+		}
+
 		if ( target->buildableTeam != self->client->pers.team )
 		{
 			continue;
@@ -785,7 +805,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		float distSqr = DistanceSquared( self->s.origin, target->s.origin );
+		distSqr = DistanceSquared( self->s.origin, target->s.origin );
 		if ( distSqr < minDistSqr )
 		{
 			self->botMind->closestDamagedBuilding.ent = target;
