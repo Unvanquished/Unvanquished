@@ -53,8 +53,15 @@ public:
 			if ( !filename.empty() )
 			{
 				std::string buffer;
-				buffer = FS::PakPath::ReadFile(filename);
-				SetInnerRML(buffer);
+				std::error_code err;
+				buffer = FS::PakPath::ReadFile( filename, err );
+				if ( err )
+				{
+					Log::Warn( "Error reading %s: %s", filename, err.message() );
+					return;
+				}
+
+				SetInnerRML( buffer );
 			}
 		}
 	}
