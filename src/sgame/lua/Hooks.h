@@ -49,6 +49,7 @@ void ExecChatHooks(gentity_t* ent, team_t team, Str::StringRef message);
 void ExecClientConnectHooks(gentity_t* ent, bool connect);
 void ExecTeamChangeHooks(gentity_t* ent, team_t team);
 void ExecPlayerSpawnHooks(gentity_t* ent);
+void ExecBuildableSpawnedHooks(gentity_t* ent);
 team_t ExecGameEndHooks();
 
 } // namespace Lua

@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 #include "sg_cm_world.h"
+#include "sgame/lua/Hooks.h"
 
 static Cvar::Cvar<bool> g_indestructibleBuildables(
 		"g_indestructibleBuildables",
@@ -2047,6 +2048,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 
 	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, true );
 
+	Unv::SGame::Lua::ExecBuildableSpawnedHooks( built );
 	return built;
 }
 
