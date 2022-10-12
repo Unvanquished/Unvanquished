@@ -57,6 +57,7 @@ static std::vector<LuaHook> clientConnectHooks;
 static std::vector<LuaHook> teamChangeHooks;
 static std::vector<LuaHook> playerSpawnHooks;
 static std::vector<LuaHook> gameEndHooks;
+static std::vector<LuaHook> buildableSpawnedHooks;
 /// Install a callback that will be called for every chat message.
 // The callback should be  function(EntityProxy, team, message).
 // where team = 'alien', 'human', '&lt;team&gt;' (for all chat)
@@ -232,6 +233,36 @@ team_t ExecGameEndHooks()
     return TEAM_NONE;
 }
 
+/// Install a callback that will be called for every time a buildable is spawned.
+// The callback should be function(EntityProxy).
+// @function RegisterBuildableSpawnedHook
+// @tparam function callback function(EntityProxy)
+int RegisterBuildableSpawnedHook(lua_State* L)
+{
+    if (lua_isfunction(L, 1))
+    {
+        int ref = luaL_ref(L, LUA_REGISTRYINDEX);
+        buildableSpawnedHooks.emplace_back(L, ref);
+    }
+    return 0;
+}
+
+void ExecBuildableSpawnedHooks(gentity_t* ent)
+{
+    // nullptr ent can be for console chats.
+    if (!ent) return;
+    for (const auto& hook: buildableSpawnedHooks)
+    {
+        lua_rawgeti(hook.first, LUA_REGISTRYINDEX, hook.second); \
+        EntityProxy* proxy = Entity::CreateProxy(ent, hook.first);
+        LuaLib<EntityProxy>::push(hook.first, proxy, false);
+        if (lua_pcall(hook.first, 1, 0, 0) != 0)
+		{
+			Log::Warn( "Could not run lua buildable spawned hook callback: %s",
+				lua_tostring(hook.first, -1));
+		}
+    }
+}
 
 RegType<Hooks> HooksMethods[] =
 {
@@ -275,6 +306,8 @@ void ExtraInit<Unv::SGame::Lua::Hooks>(lua_State* L, int metatable_index)
 	lua_setfield( L, metatable_index - 1, "RegisterPlayerSpawnHook" );
     lua_pushcfunction( L, Unv::SGame::Lua::RegisterGameEndHook);
 	lua_setfield( L, metatable_index - 1, "RegisterGameEndHook" );
+    lua_pushcfunction( L, Unv::SGame::Lua::RegisterBuildableSpawnedHook);
+	lua_setfield( L, metatable_index - 1, "RegisterBuildableSpawnedHook" );
 }
 }  // namespace Lua
 }  // namespace Shared
