@@ -1328,16 +1328,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		botEntityAndDistance_t *ngoal;
-
-		ngoal = &self->botMind->closestBuildings[ BA_H_ARMOURY ];
-
-		if ( !ngoal->ent )
-		{
-			return STATUS_FAILURE; // no suitable goal found
-		}
-
-		if ( !BotChangeGoalEntity( self, ngoal->ent ) )
+		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_ARMOURY ].ent ) )
 		{
 			return STATUS_FAILURE;
 		}
