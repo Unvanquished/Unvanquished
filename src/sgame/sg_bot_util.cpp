@@ -221,44 +221,31 @@ Scoring functions for logic
 =======================
 */
 
-botEntityAndDistance_t BotGetClosestBuildingAmongTypes(
-		gentity_t *self, const std::initializer_list<buildable_t> buildables )
+botEntityAndDistance_t BotGetHealTarget( const gentity_t *self )
 {
-	botEntityAndDistance_t best_choice = { nullptr, 1.0e30f };
-	for ( buildable_t buildable : buildables )
+	if ( G_Team( self ) == TEAM_HUMANS )
+	{
+		// may be null with near infinite distance
+		return self->botMind->closestBuildings[BA_H_MEDISTAT];
+	}
+
+	static constexpr glm::vec3 up( 0.0f, 0.0f, 1.0f );
+
+	for ( buildable_t buildable : { BA_A_BOOSTER, BA_A_OVERMIND, BA_A_SPAWN, BA_A_LEECH })
 	{
 		botEntityAndDistance_t candidate =
 			self->botMind->closestBuildings[ buildable ];
-		if ( candidate.ent && candidate.distance < best_choice.distance )
+
+		// We skip buildings on roof or walls as bots can't wallwalk.
+		// Unless it's a booster, as boosters are often put on walls
+		// and have a large area of effect.
+		if ( candidate.ent && ( glm::dot( VEC2GLM(candidate.ent->s.origin2), up ) <= MIN_WALK_NORMAL || buildable == BA_A_BOOSTER ) )
 		{
-			best_choice = candidate;
+			return candidate;
 		}
 	}
-	return best_choice;
-}
-
-const gentity_t *BotGetHealTarget( gentity_t *self )
-{
-	if ( G_Team(self) == TEAM_HUMANS )
-	{
-		return self->botMind->closestBuildings[BA_H_MEDISTAT].ent;
-	}
-
-	// Aliens
-	if ( self->botMind->closestBuildings[BA_A_BOOSTER].ent )
-	{
-		// powered booster
-		return self->botMind->closestBuildings[BA_A_BOOSTER].ent;
-	}
-	else
-	{
-		// no working booster, rely on creep instead
-		return BotGetClosestBuildingAmongTypes( self,
-				{ BA_A_SPAWN, BA_A_OVERMIND, BA_A_BARRICADE,
-				  BA_A_ACIDTUBE, BA_A_TRAPPER, BA_A_HIVE,
-				  BA_A_LEECH, BA_A_SPIKER }
-				).ent;
-	}
+	// ent will be null, but that makes it a valid default value
+	return self->botMind->closestBuildings[ BA_A_OVERMIND ];
 }
 
 // computes the maximum credits this bot could spend in
@@ -384,32 +371,9 @@ float BotGetHealScore( gentity_t *self )
 		return 0.0f;
 	}
 
-	float distToHealer = 0;
-
-	if ( self->client->pers.team == TEAM_ALIENS )
-	{
-		if ( self->botMind->closestBuildings[ BA_A_BOOSTER ].ent )
-		{
-			distToHealer = self->botMind->closestBuildings[ BA_A_BOOSTER ].distance;
-		}
-		else
-		{
-			// no booster, let's use creep instead
-			distToHealer =
-				BotGetClosestBuildingAmongTypes( self,
-					{ BA_A_SPAWN, BA_A_OVERMIND,
-					  BA_A_BARRICADE, BA_A_ACIDTUBE,
-					  BA_A_TRAPPER, BA_A_HIVE, BA_A_LEECH,
-					  BA_A_SPIKER }
-					).distance;
-		}
-	}
-	else
-	{
-		distToHealer = self->botMind->closestBuildings[ BA_H_MEDISTAT ].distance;
-	}
-
+	float distToHealer = BotGetHealTarget( self ).distance;
 	float timeDist = distToHealer / GetMaximalSpeed( self );
+
 	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentHealth ) / sqrt( timeDist );
 }
 

@@ -47,9 +47,7 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
 bool   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
-botEntityAndDistance_t BotGetClosestBuildingAmongTypes(
-		gentity_t *self, const std::initializer_list<buildable_t> buildables );
-const gentity_t *BotGetHealTarget( gentity_t *self );
+botEntityAndDistance_t BotGetHealTarget( const gentity_t *self );
 
 // aiming
 glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target );
