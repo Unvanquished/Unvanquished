@@ -200,8 +200,8 @@
 					<h3><translate>Default skill level</translate></h3>
 					<tooltip><translate>Only works for new bots.</translate></tooltip>
 				</parent>
-				<input type="range" min="1" max="9" step="1" cvar="g_bot_default_skill"/>
-				<p><inlinecvar cvar="g_bot_default_skill" type="number" format="%g"/>&nbsp;<ilink onclick='Events.pushevent("exec reset g_bot_default_skill", event)'> (reset) </ilink></p>
+				<input type="range" min="1" max="9" step="1" cvar="g_bot_defaultSkill"/>
+				<p><inlinecvar cvar="g_bot_defaultSkill" type="number" format="%g"/>&nbsp;<ilink onclick='Events.pushevent("exec reset g_bot_defaultSkill", event)'> (reset) </ilink></p>
 			</row>
 			<h2> Humanity </h2>
 			<row>
