@@ -1087,7 +1087,7 @@ AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 
-		if ( !BotChangeGoalEntity( self, BotGetHealTarget( self ) ) )
+		if ( !BotChangeGoalEntity( self, BotGetHealTarget( self ).ent ) )
 		{
 			return STATUS_FAILURE;
 		}
