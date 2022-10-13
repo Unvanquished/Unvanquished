@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/vec3.hpp>
 
 bool PlayersBehindBotInSpawnQueue( gentity_t *self );
+int      BotGetDefaultSkill();
 void     BotSetSkillLevel( gentity_t *self, int skill );
 
 // unsticking
