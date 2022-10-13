@@ -262,15 +262,11 @@ Cvar::Cvar<bool> g_bot_level3("g_bot_level3", "whether bots use non-advanced Dra
 Cvar::Cvar<bool> g_bot_level3upg("g_bot_level3upg", "whether bots use Advanced Dragoon", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_level4("g_bot_level4", "whether bots use Tyrant", Cvar::NONE, true);
 
-// bot default configurations
-Cvar::Range<Cvar::Cvar<int>> g_bot_default_skill( "g_bot_default_skill", "Default skill value bots will have when added", Cvar::NONE, 5, 1, 9 );
-
 // misc bot cvars
 Cvar::Cvar<bool> g_bot_attackStruct("g_bot_attackStruct", "whether bots target buildables", Cvar::NONE, true);
 Cvar::Cvar<float> g_bot_fov("g_bot_fov", "bots' \"field of view\"", Cvar::NONE, 125);
 Cvar::Cvar<int> g_bot_chasetime("g_bot_chasetime", "bots stop chasing after x ms out of sight", Cvar::NONE, 5000);
 Cvar::Cvar<int> g_bot_reactiontime("g_bot_reactiontime", "bots' reaction time to enemies (milliseconds)", Cvar::NONE, 500);
-Cvar::Callback<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0, G_SetBotFill);
 Cvar::Cvar<bool> g_bot_infinite_funds("g_bot_infinite_funds", "give bots unlimited funds", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_infiniteMomentum("g_bot_infiniteMomentum", "allow bots to ignore momentum, but not other restrictions", Cvar::NONE, false);
 
@@ -625,12 +621,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// Initialize build point counts for the intial layout.
 	G_UpdateBuildPointBudgets();
-
-	for ( int i = TEAM_NONE + 1; i < NUM_TEAMS; ++i )
-	{
-		ASSERT( G_IsPlayableTeam( i ) );
-		level.team[ i ].botFillTeamSize = g_bot_defaultFill.Get();
-	}
 }
 
 /*

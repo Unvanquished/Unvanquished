@@ -5796,14 +5796,10 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 		return false;
 	}
 
-	int skill;
+	int skill = 0;
 	if ( args.Argc() >= 5 )
 	{
 		skill = BotSkillFromString( ent, args[4].data() );
-	}
-	else
-	{
-		skill = g_bot_default_skill.Get();
 	}
 
 	const char* behavior = args.Argc() >= 6 ? args[5].data() : BOT_DEFAULT_BEHAVIOR;
@@ -5844,7 +5840,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	{
 		teams = { team_t::TEAM_ALIENS, team_t::TEAM_HUMANS };
 	}
-	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : g_bot_default_skill.Get();
+	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : 0;
 
 	for (team_t team : teams)
 	{

@@ -594,6 +594,21 @@ void G_BotCleanup()
 }
 
 // add or remove bots to match team size targets set by 'bot fill' command
+static void G_BotCheckDefaultFill()
+{
+	static Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
+
+	Util::optional<int> fillCount = g_bot_defaultFill.GetModifiedValue();
+	if ( fillCount )
+	{
+		for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
+		{
+			level.team[team].botFillTeamSize = *fillCount;
+			level.team[team].botFillSkillLevel = 0; // default
+		}
+	}
+}
+
 void G_BotFill(bool immediately)
 {
 	static int nextCheck = 0;
@@ -608,6 +623,8 @@ void G_BotFill(bool immediately)
 	{
 		return;
 	}
+
+	G_BotCheckDefaultFill();
 
 	struct fill_t
 	{
@@ -693,16 +710,6 @@ void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 	}
 
 	exhausted = exhausted && stamina <= jumpCost * 2;
-}
-
-void G_SetBotFill( int fill )
-{
-	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
-	{
-		level.team[team].botFillTeamSize = fill;
-	}
-
-	G_BotFill(true);
 }
 
 // assumes bot is a bot, otherwise will crash.
