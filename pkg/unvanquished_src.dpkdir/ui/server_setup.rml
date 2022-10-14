@@ -228,7 +228,7 @@
 			</row>
 			<h2>Cheating</h2>
 			<row>
-				<input cvar="g_bot_infinite_funds" type="checkbox" />
+				<input cvar="g_bot_infiniteFunds" type="checkbox" />
 				<h3> Infinite funds </h3>
 			</row>
 			<row>
