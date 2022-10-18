@@ -1888,9 +1888,9 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	case VOTE_BOT_KICK:
 		{
 			int numBots = 0;
-			for ( const auto& team : level.team )
+			for ( const auto& teamData : level.team )
 			{
-				numBots += team.numBots;
+				numBots += teamData.numBots;
 			}
 
 			if ( numBots == 0 )
