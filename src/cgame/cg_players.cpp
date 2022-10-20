@@ -2692,7 +2692,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 
 	// if the feet aren't in liquid, don't make a mark
 	// this won't handle moving water brushes, but they wouldn't draw right anyway...
-	contents = trap_CM_PointContents( end, 0 );
+	contents = CM_PointContents( end, 0 );
 
 	if ( !( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ) )
 	{
@@ -2703,7 +2703,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 	start[ 2 ] += 32;
 
 	// if the head isn't out of liquid, don't make a mark
-	contents = trap_CM_PointContents( start, 0 );
+	contents = CM_PointContents( start, 0 );
 
 	if ( contents & ( CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) )
 	{

@@ -1583,7 +1583,7 @@ static void CG_ScanForCrosshairEntity()
 	}
 
 	// ignore targets in fog
-	if ( trap_CM_PointContents( trace.endpos, 0 ) & CONTENTS_FOG )
+	if ( CM_PointContents( trace.endpos, 0 ) & CONTENTS_FOG )
 	{
 		return;
 	}

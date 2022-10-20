@@ -2310,7 +2310,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	// we're not doing particle physics, but at least cull them in solids
 	if ( !cg_bounceParticles.Get() )
 	{
-		int contents = trap_CM_PointContents( newOrigin, 0 );
+		int contents = CM_PointContents( newOrigin, 0 );
 
 		if ( ( contents & CONTENTS_SOLID ) || ( contents & CONTENTS_NODROP ) )
 		{
@@ -2337,7 +2337,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	}
 
 	//remove particles that get into a CONTENTS_NODROP brush
-	if ( ( trap_CM_PointContents( trace.endpos, 0 ) & CONTENTS_NODROP ) ||
+	if ( ( CM_PointContents( trace.endpos, 0 ) & CONTENTS_NODROP ) ||
 	     ( bp->cullOnStartSolid && trace.startsolid ) )
 	{
 		CG_DestroyParticle( p, nullptr );
