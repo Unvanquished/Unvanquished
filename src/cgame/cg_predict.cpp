@@ -323,7 +323,7 @@ int   CG_PointContents( const vec3_t point, int passEntityNum )
 	clipHandle_t  cmodel;
 	int           contents;
 
-	contents = trap_CM_PointContents( point, 0 );
+	contents = CM_PointContents( point, 0 );
 
 	for ( i = 0; i < cg_numSolidEntities; i++ )
 	{
