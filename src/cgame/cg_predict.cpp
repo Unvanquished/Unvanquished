@@ -189,19 +189,14 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		switch ( collisionType )
 		{
 		case traceType_t::TT_CAPSULE:
-			trap_CM_TransformedCapsuleTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask,
-			                                 origin, angles );
-			break;
-
 		case traceType_t::TT_AABB:
-			trap_CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask,
-			                             origin, angles );
+			CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask, origin, angles, collisionType );
 			break;
 
 		case traceType_t::TT_BISPHERE:
 			ASSERT(maxs != nullptr);
 			ASSERT(mins != nullptr);
-			trap_CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
+			CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
 			                                  mask, skipmask, origin );
 			break;
 
@@ -284,7 +279,7 @@ void  CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const
 		VectorCopy(maxs, mymaxs);
 	}
 
-	trap_CM_CapsuleTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
+	CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask, traceType_t::TT_CAPSULE );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_CAPSULE );
@@ -307,7 +302,7 @@ void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
 	mins[ 0 ] = startRadius;
 	maxs[ 0 ] = endRadius;
 
-	trap_CM_BiSphereTrace( &t, start, end, startRadius, endRadius, 0, mask, skipmask );
+	CM_BiSphereTrace( &t, start, end, startRadius, endRadius, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_BISPHERE );
@@ -353,7 +348,7 @@ int   CG_PointContents( const vec3_t point, int passEntityNum )
 			continue;
 		}
 
-		contents |= trap_CM_TransformedPointContents( point, cmodel, ent->origin, ent->angles );
+		contents |= CM_TransformedPointContents( point, cmodel, ent->origin, ent->angles );
 	}
 
 	return contents;

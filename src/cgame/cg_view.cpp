@@ -1311,7 +1311,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 			continue;
 		}
 
-		dist = trap_CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
+		dist = CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
 		weight = 1.0f - dist / cgs.gameGradingDistances[i];
 		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
@@ -1505,7 +1505,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 			continue;
 		}
 
-		dist = trap_CM_DistanceToModel( loc, cgs.gameReverbModels[i] );
+		dist = CM_DistanceToModel( loc, cgs.gameReverbModels[i] );
 		weight = 1.0f - dist / cgs.gameReverbDistances[i];
 		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
