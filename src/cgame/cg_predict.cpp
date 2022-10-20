@@ -152,7 +152,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		if ( ent->solid == SOLID_BMODEL )
 		{
 			// special value for bmodel
-			cmodel = trap_CM_InlineModel( ent->modelindex );
+			cmodel = CM_InlineModel( ent->modelindex );
 			VectorCopy( cent->lerpAngles, angles );
 			BG_EvaluateTrajectory( &cent->currentState.pos, cg.physicsTime, origin );
 		}
@@ -181,7 +181,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			if( !BoundsIntersect( bmins, bmaxs, tmins, tmaxs ) )
 				continue;
 
-			cmodel = trap_CM_TempBoxModel( bmins, bmaxs );
+			cmodel = CM_TempBoxModel( bmins, bmaxs, /* capsule = */ false );
 			VectorCopy( vec3_origin, angles );
 			VectorCopy( vec3_origin, origin );
 		}
@@ -341,7 +341,7 @@ int   CG_PointContents( const vec3_t point, int passEntityNum )
 			continue;
 		}
 
-		cmodel = trap_CM_InlineModel( ent->modelindex );
+		cmodel = CM_InlineModel( ent->modelindex );
 
 		if ( !cmodel )
 		{
@@ -462,7 +462,7 @@ static void CG_TouchTriggerPrediction()
 			continue;
 		}
 
-		cmodel = trap_CM_InlineModel( ent->modelindex );
+		cmodel = CM_InlineModel( ent->modelindex );
 
 		if ( !cmodel )
 		{
