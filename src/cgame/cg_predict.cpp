@@ -194,14 +194,12 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			break;
 
 		case traceType_t::TT_BISPHERE:
-			ASSERT(maxs != nullptr);
-			ASSERT(mins != nullptr);
 			CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
 			                                  mask, skipmask, origin );
 			break;
 
 		default: // Shouldn't Happen
-			ASSERT(0);
+			ASSERT_UNREACHABLE();
 		}
 
 		if ( trace.allsolid || trace.fraction < tr->fraction )
