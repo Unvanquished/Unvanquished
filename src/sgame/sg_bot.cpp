@@ -433,7 +433,7 @@ void G_BotThink( gentity_t *self )
 	BotCalculateStuckTime( self );
 
 	//infinite funds cvar
-	if ( g_bot_infinite_funds.Get() )
+	if ( g_bot_infiniteFunds.Get() )
 	{
 		G_AddCreditToClient( self->client, HUMAN_MAX_CREDITS, true );
 	}
