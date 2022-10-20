@@ -870,7 +870,7 @@ static void CG_RegisterGraphics()
 	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/feedback/damage/font", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 	// register the inline models
-	cgs.numInlineModels = trap_CM_NumInlineModels();
+	cgs.numInlineModels = CM_NumInlineModels();
 
 	if ( cgs.numInlineModels > MAX_SUBMODELS )
 	{
@@ -1254,7 +1254,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	CG_SetMapNameFromServerinfo();
 
 	// load the new map
-	trap_CM_LoadMap(cgs.mapname);
+	CM_LoadMap(cgs.mapname);
 
 	CG_InitMinimap();
 
