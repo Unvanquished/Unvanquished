@@ -1147,7 +1147,10 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			break;
 		case WP_ALEVEL1:
 			range = LEVEL1_CLAW_RANGE;
-			secondaryRange = LEVEL1_POUNCE_DISTANCE;
+			if ( self->botMind->botSkillSet[BOT_A_LEAP_ON_ATTACK] )
+			{
+				secondaryRange = LEVEL1_POUNCE_DISTANCE;
+			}
 			width = height = LEVEL1_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2:
@@ -1162,14 +1165,21 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			break;
 		case WP_ALEVEL3:
 			range = LEVEL3_CLAW_RANGE;
-			//need to check if we can pounce to the target
-			secondaryRange = LEVEL3_POUNCE_JUMP_MAG; //An arbitrary value for pounce, has nothing to do with actual range
+			// We could check if the pounce to the target would succeed
+			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] )
+			{
+				secondaryRange = LEVEL3_POUNCE_JUMP_MAG; // An arbitrary value for pounce, has nothing to do with actual range
+			}
 			width = height = LEVEL3_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3_UPG:
 			range = LEVEL3_CLAW_RANGE;
-			//we can pounce, or we have barbs
-			secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; //An arbitrary value for pounce and barbs, has nothing to do with actual range
+			// If we can pounce
+			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] )
+			{
+				secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; // An arbitrary value for pounce and barbs, has nothing to do with actual range
+			}
+			// If we have barbs, even better
 			if ( self->client->ps.ammo > 0 )
 			{
 				secondaryRange = 900;
@@ -1706,7 +1716,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
 			botIsSmall = true;
-			botIsJumper = true;
+			botIsJumper = self->botMind->botSkillSet[BOT_A_MARA_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL3:
 			break;
@@ -1845,7 +1855,7 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
-			else if ( self->client->ps.weaponCharge == 0 )
+			else if ( self->botMind->botSkillSet[BOT_A_LEAP_ON_ATTACK] && self->client->ps.weaponCharge == 0 )
 			{
 				BotMoveInDir( self, MOVE_FORWARD );
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
@@ -1865,7 +1875,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3:
-			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1887,7 +1897,7 @@ void BotFireWeaponAI( gentity_t *self )
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 			}
-			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			else if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -2219,6 +2229,7 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	std::pair<std::string, skillSet_t>
 		pair = BotDetermineSkills(self, skill);
 	self->botMind->botSkillSet = pair.second;
+	self->botMind->botSkillSetExplaination = std::move(pair.first);
 }
 
 void BotResetEnemyQueue( enemyQueue_t *queue )
