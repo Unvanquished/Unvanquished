@@ -2303,7 +2303,7 @@ static void G_EvaluateAcceleration( gentity_t *ent, int msec )
 ================
 G_RunFrame
 
-Advances the non-player objects in the world
+Advances the objects in the world
 ================
 */
 void G_RunFrame( int levelTime )
