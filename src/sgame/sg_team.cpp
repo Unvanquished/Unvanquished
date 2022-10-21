@@ -27,6 +27,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "Entities.h"
 
+// Time between location updates
+static Cvar::Range<Cvar::Cvar<int>> g_teamLocationUpdateTime("g_teamLocationUpdateTime", "How often team status information will be sent", Cvar::NONE, 500, 10, 5000);
+
+
 /*
 ================
 G_TeamFromString
@@ -536,7 +540,7 @@ void CheckTeamStatus()
 	int       i;
 	gentity_t *loc, *ent;
 
-	if ( level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME )
+	if ( level.time - level.lastTeamLocationTime > g_teamLocationUpdateTime.Get() )
 	{
 		level.lastTeamLocationTime = level.time;
 
