@@ -273,7 +273,6 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		""
 	},
 
-
 	{
 		"listinactive", G_admin_listinactive, true, "listadmins",
 		N_("display a list of inactive server admins and their levels"),
@@ -1079,7 +1078,7 @@ static void admin_default_levels()
 	l->level = level++;
 	Q_strncpyz( l->name, "^6Team Manager", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
-	            "listplayers admintest adminhelp time putteam spec999 register unregister bot",
+	            "listplayers admintest adminhelp time putteam spec999 register unregister bot listbots",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
@@ -1087,7 +1086,7 @@ static void admin_default_levels()
 	Q_strncpyz( l->name, "^2Junior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute ADMINCHAT "
-	            "buildlog register unregister l0 l1 bot",
+	            "buildlog register unregister l0 l1 bot listbots",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
@@ -1095,7 +1094,7 @@ static void admin_default_levels()
 	Q_strncpyz( l->name, "^3Senior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute showbans ban "
-	            "namelog buildlog ADMINCHAT register unregister l0 l1 pause revert bot",
+	            "namelog buildlog ADMINCHAT register unregister l0 l1 pause revert bot listbots",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
