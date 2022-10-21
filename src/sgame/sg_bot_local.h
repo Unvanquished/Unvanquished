@@ -92,6 +92,11 @@ struct botSkill_t
 // boolean flags that tells which skill (compétence) the bot has
 enum bot_skill
 {
+	// movement skills
+	BOT_B_BASIC_MOVEMENT, // doesn't do anything as of now
+	BOT_A_MARA_JUMP_ON_ATTACK,
+	BOT_A_LEAP_ON_ATTACK, // mantis
+	BOT_A_POUNCE_ON_ATTACK, // dragoon and adv dragoon
 	BOT_NUM_SKILLS
 };
 
@@ -115,6 +120,7 @@ struct botMemory_t
 
 	botSkill_t  botSkill; // numerical values
 	skillSet_t  botSkillSet; // boolean flags
+	std::string botSkillSetExplaination;
 
 	botEntityAndDistance_t bestEnemy;
 	botEntityAndDistance_t closestDamagedBuilding;

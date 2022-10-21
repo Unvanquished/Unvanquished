@@ -274,7 +274,28 @@ struct botSkillTreeElement_t {
 	std::vector<botSkillTreeElement_t> unlocked_skills;
 };
 
+static bool pred_always(const gentity_t *self, skillSet_t existing_skills)
+{
+	Q_UNUSED(self);
+	Q_UNUSED(existing_skills);
+	return true;
+}
+
+static bool pred_alien(const gentity_t *self, skillSet_t existing_skills)
+{
+	Q_UNUSED(existing_skills);
+	return G_Team(self) == TEAM_ALIENS;
+}
+
+static const std::vector<botSkillTreeElement_t> movement_skills = {
+	// aliens
+	{ "mara-attack-jump",   BOT_A_MARA_JUMP_ON_ATTACK,   5, pred_alien, {} },
+	{ "mantis-attack-jump", BOT_A_LEAP_ON_ATTACK,        5, pred_alien, {} },
+	{ "goon-attack-jump",   BOT_A_POUNCE_ON_ATTACK,      5, pred_alien, {} },
+ };
+
 static const std::vector<botSkillTreeElement_t> initial_unlockable_skills = {
+	{ "movement", BOT_B_BASIC_MOVEMENT, 2, pred_always, movement_skills },
 };
 
 // Note: this function modifies possible_choices to remove the one we just
@@ -857,7 +878,11 @@ std::string G_BotToString( gentity_t *bot )
 	{
 		return "";
 	}
-	return Str::Format( "^*%s^*: %s [s=%d b=%s g=%s]",
-			bot->client->pers.netname, BG_TeamName( G_Team( bot ) ), bot->botMind->botSkill.level,
-			bot->botMind->behaviorTree->name, BotGoalToString( bot ) );
+	return Str::Format( "^*%s^*: %s [s=%d ss=\"%s\" b=%s g=%s]",
+			bot->client->pers.netname,
+			BG_TeamName( G_Team( bot ) ),
+			bot->botMind->botSkill.level,
+			bot->botMind->botSkillSetExplaination,
+			bot->botMind->behaviorTree->name,
+			BotGoalToString( bot ) );
 }
