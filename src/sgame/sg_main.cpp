@@ -1233,9 +1233,6 @@ void CalculateRanks()
 	qsort( level.sortedClients, level.numConnectedClients,
 	       sizeof( level.sortedClients[ 0 ] ), SortRanks );
 
-	// see if it is time to end the level
-	CheckExitRules();
-
 	// if we are at the intermission, send the new info to everyone
 	if ( level.intermissiontime )
 	{
