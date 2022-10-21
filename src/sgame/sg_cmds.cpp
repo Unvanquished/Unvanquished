@@ -804,7 +804,7 @@ static void Cmd_Notarget_f( gentity_t *ent )
 	trap_SendServerCommand( ent->num(), va( "print_tr %s", msg ) );
 }
 
-void Cmd_PrintMomentum_f( gentity_t * )
+static void Cmd_PrintMomentum_f( gentity_t * )
 {
 	Log::Notice( "Alien momentum: %.2f, Human momentum: %.2f"
 			, level.team[ TEAM_ALIENS ].momentum
