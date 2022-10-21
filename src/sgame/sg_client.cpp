@@ -1087,7 +1087,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	}
 
 	ent->client = client;
-	memset( client, 0, sizeof( *client ) );
+	*client = {};
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
@@ -1229,7 +1229,7 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	client = &level.clients[ clientNum ];
 
 	ent->client = client;
-	memset( client, 0, sizeof( *client ) );
+	*client = {};
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
@@ -1600,7 +1600,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	}
 
 	eventSequence = client->ps.eventSequence;
-	memset( client, 0, sizeof( *client ) );
+	*client = {};
 
 	client->pers = saved;
 	client->sess = savedSess;

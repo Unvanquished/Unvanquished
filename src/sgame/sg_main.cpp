@@ -528,7 +528,10 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	{
 		ASSERT_UNREACHABLE();
 	}
-	memset( g_clients, 0, MAX_CLIENTS * sizeof( g_clients[ 0 ] ) );
+	for ( int i = 0; i < MAX_CLIENTS; i++ )
+	{
+		g_clients[i] = {};
+	}
 	level.clients = g_clients;
 
 	// set client fields on player ents
