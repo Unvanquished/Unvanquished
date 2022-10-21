@@ -661,6 +661,24 @@ AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *nod
 	return STATUS_SUCCESS;
 }
 
+AINodeStatus_t BotActionDebugColor( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *action = ( AIActionNode_t * ) node;
+
+	float alpha = action->nparams > 3
+		? AIUnBoxFloat( action->params[ 3 ] )
+		: 1.0f;
+
+	self->client->debugColor = Color::Color(
+		AIUnBoxFloat( action->params[ 0 ] ),
+		AIUnBoxFloat( action->params[ 1 ] ),
+		AIUnBoxFloat( action->params[ 2 ] ),
+		alpha
+	);
+
+	return STATUS_SUCCESS;
+}
+
 AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 {
 	botMemory_t const* mind = self->botMind;
