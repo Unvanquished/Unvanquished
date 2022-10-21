@@ -565,6 +565,8 @@ struct gclient_t
 	clientPersistant_t pers;
 	clientSession_t    sess;
 
+	Color::Color32Bit debugColor;
+
 	bool           readyToExit; // wishes to leave the intermission
 
 	bool           noclip;

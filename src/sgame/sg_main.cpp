@@ -2386,6 +2386,14 @@ void G_RunFrame( int levelTime )
 
 	G_CheckPmoveParamChanges();
 
+	// reset client's debug colors
+	gclient_t *cl;
+	for ( i = 0, cl = &g_clients[ 0 ]; i < MAX_CLIENTS; i++, cl++ )
+	{
+		// reset the debug color at the (almost) beginning of the frame logic
+		cl->debugColor = Color::Color32Bit(0, 0, 0, 0);
+	}
+
 	// go through all allocated objects
 	ent = &g_entities[ 0 ];
 	for ( i = 0; i < level.num_entities; i++, ent++ )

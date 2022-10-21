@@ -76,6 +76,12 @@ static void CG_ParseScores()
 	cg.scoreInvalidated = true;
 }
 
+static Color::Color32Bit IntToColor( int value )
+{
+	Color::Color32Bit color(value >> 24 & 0xff, value >> 16 & 0xff, value >> 8 & 0xff, value & 0xff);
+	return color;
+}
+
 /*
 =================
 CG_ParseTeamInfo
@@ -108,6 +114,7 @@ static void CG_ParseTeamInfo()
 		}
 
 		cgs.clientinfo[ client ].location       = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].debugColor     = IntToColor( atoi( CG_Argv( ++i ) ) );
 		cgs.clientinfo[ client ].health         = atoi( CG_Argv( ++i ) );
 		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
 		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
