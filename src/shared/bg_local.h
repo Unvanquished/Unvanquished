@@ -33,27 +33,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define STEPSIZE          18
 
-#define TIMER_LAND        130
-#define TIMER_GESTURE     ( 34 * 66 + 50 )
-#define TIMER_ATTACK      500 //nonsegmented models
-
-#define FALLING_THRESHOLD -900.0f //what vertical speed to start falling sound at
-
-extern  pmove_t *pm;
-
-// movement parameters
-#define pm_duckScale         (0.25f)
-#define pm_swimScale         (0.50f)
-
-#define pm_accelerate        (10.0f)
-#define pm_wateraccelerate   (4.0f)
-#define pm_flyaccelerate     (4.0f)
-
-#define pm_waterfriction     (1.125f)
-#define pm_spectatorfriction (5.0f)
-
-void            PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out );
-void            PM_AddTouchEnt( int entityNum );
-
 //==================================================================
 #endif /* BG_LOCAL_H_ */
