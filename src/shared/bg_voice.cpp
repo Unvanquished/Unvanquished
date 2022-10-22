@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "engine/qcommon/q_shared.h"
 #include "shared/parse.h"
 #include "bg_public.h"
-#include "bg_local.h"
 
 int         trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 int trap_FS_OpenPakFile( Str::StringRef path, fileHandle_t &f );

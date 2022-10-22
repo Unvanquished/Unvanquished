@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "botlib/bot_api.h"
 #include "CBSE.h"
-#include "shared/bg_local.h" // MIN_WALK_NORMAL
+#include "shared/bg_gameplay.h" // MIN_WALK_NORMAL
 #include "Entities.h"
 
 #include <glm/geometric.hpp>
