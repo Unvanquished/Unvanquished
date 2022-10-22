@@ -42,6 +42,7 @@ Navigation Mesh Loading
 ========================
 */
 
+extern void BotAddSavedObstacles();
 // FIXME: use nav handle instead of classes
 bool G_BotNavInit()
 {
@@ -70,6 +71,7 @@ bool G_BotNavInit()
 		}
 	}
 	navMeshLoaded = true;
+	BotAddSavedObstacles();
 	return true;
 }
 

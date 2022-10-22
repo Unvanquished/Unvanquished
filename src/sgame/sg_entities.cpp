@@ -166,10 +166,7 @@ void G_FreeEntity( gentity_t *entity )
 		Log::Debug("Freeing Entity %s", etos(entity));
 	}
 
-	if ( entity->obstacleHandle )
-	{
-		G_BotRemoveObstacle( entity->obstacleHandle );
-	}
+	G_BotRemoveObstacle( entity - g_entities );
 
 	if( entity->eclass && entity->eclass->instanceCounter > 0 )
 	{

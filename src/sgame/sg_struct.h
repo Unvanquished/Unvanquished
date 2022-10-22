@@ -452,9 +452,6 @@ struct gentity_t
 
 	bool    pointAgainstWorld; // don't use the bbox for map collisions
 
-	// handle of obstacle that was added to prevent bots to
-	// move toward it. Used for movers and big enough buildings.
-	qhandle_t   obstacleHandle;
 	botMemory_t *botMind;
 
 	gentity_t   *alienTag, *humanTag;
