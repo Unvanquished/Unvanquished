@@ -577,9 +577,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
 
-	// setup bot code
-	G_BotInit();
-
 	// Initialize item locking state
 	BG_InitUnlockackables();
 
