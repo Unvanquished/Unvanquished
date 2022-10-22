@@ -386,10 +386,10 @@ bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start_
 	return true;
 }
 
-void G_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
+void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, qhandle_t *obstacleHandle )
 {
-	qVec min = mins;
-	qVec max = maxs;
+	qVec min = &mins[0];
+	qVec max = &maxs[0];
 	rBounds box( min, max );
 
 	for ( int i = 0; i < numNavData; i++ )
