@@ -597,14 +597,12 @@ bool IsAutomaticMover( const gentity_t *ent )
 void BotHandleDoor( gentity_t *ent )
 {
 	if ( IsDoor( ent ) && !IsAutomaticMover( ent ) )
-			{
-				if ( ent->obstacleHandle )
-				{
-					G_BotRemoveObstacle( ent->obstacleHandle );
-					ent->obstacleHandle = 0;
-				}
-		G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), &ent->obstacleHandle );
-			}
+	{
+		// the door might have moved, we don't want to keep an incorrect state
+		G_BotRemoveObstacle( ent->s.clientNum );
+
+		G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent - g_entities );
+	}
 }
 
 static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
@@ -2674,18 +2672,14 @@ static void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 
 	if( self->r.linked )
 	{
-		if ( self->obstacleHandle )
-		{
-			G_BotRemoveObstacle( self->obstacleHandle );
-			self->obstacleHandle = 0;
-		}
+		G_BotRemoveObstacle( self->s.clientNum );
 		trap_UnlinkEntity( self );
 	}
 	else
 	{
 		VectorAdd( self->restingPosition, self->r.mins, mins );
 		VectorAdd( self->restingPosition, self->r.maxs, maxs );
-		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), &self->obstacleHandle );
+		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), self - g_entities );
 		trap_LinkEntity( self );
 		if( !( self->spawnflags & 2 ) )
 			G_KillBrushModel( self, activator );
@@ -2700,16 +2694,12 @@ static void func_spawn_reset( gentity_t *self )
 	{
 		VectorAdd( self->restingPosition, self->r.mins, mins );
 		VectorAdd( self->restingPosition, self->r.maxs, maxs );
-		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), &self->obstacleHandle );
+		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), self - g_entities );
 		trap_LinkEntity( self );
 	}
 	else
 	{
-		if ( self->obstacleHandle )
-		{
-			G_BotRemoveObstacle( self->obstacleHandle );
-			self->obstacleHandle = 0;
-		}
+		G_BotRemoveObstacle( self->s.clientNum );
 		trap_UnlinkEntity( self );
 	}
 }

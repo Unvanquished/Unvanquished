@@ -386,11 +386,25 @@ bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start_
 	return true;
 }
 
-void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, qhandle_t *obstacleHandle )
+struct bbox_t {
+	glm::vec3 mins;
+	glm::vec3 maxs;
+};
+static std::map<int, bbox_t> savedObstacles;
+static std::map<int, qhandle_t> obstacleHandles; // handles of detour's obstacles, if any
+
+extern bool navMeshLoaded;
+void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum )
 {
 	qVec min = &mins[0];
 	qVec max = &maxs[0];
 	rBounds box( min, max );
+
+	if ( !navMeshLoaded )
+	{
+		savedObstacles[obstacleNum] = { mins, maxs };
+		return;
+	}
 
 	for ( int i = 0; i < numNavData; i++ )
 	{
@@ -408,25 +422,47 @@ void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, qhandle_t *
 
 		tempBox.maxs[ 0 ] += offset;
 		tempBox.maxs[ 2 ] += offset;
-		
+
 		// offset mins down by agent height so obstacles placed on ledges are handled correctly
 		tempBox.mins[ 1 ] -= params->walkableHeight;
 
 		nav->cache->addBoxObstacle( tempBox.mins, tempBox.maxs, &ref );
-		*obstacleHandle = ref;
+		obstacleHandles[i] = ref;
 	}
 }
 
-void G_BotRemoveObstacle( qhandle_t obstacleHandle )
+// We do lazy load navmesh when bots are added. The downside is that this means
+// map entities are loaded before the navmesh are. This workaround does keep
+// those obstacle (such as doors and buildables) in mind until when navmesh is
+// finally loaded, or generated.
+void BotAddSavedObstacles()
 {
-	for ( int i = 0; i < numNavData; i++ )
+	for ( std::pair<int, bbox_t> obstacle : savedObstacles )
 	{
-		NavData_t *nav = &BotNavData[ i ];
-		if ( nav->cache->getObstacleCount() <= 0 )
+		G_BotAddObstacle(obstacle.second.mins, obstacle.second.maxs, obstacle.first);
+	}
+	savedObstacles.clear();
+}
+
+void G_BotRemoveObstacle( int obstacleNum )
+{
+	auto obstacle = savedObstacles.find(obstacleNum);
+	if (obstacle != savedObstacles.end()) {
+		savedObstacles.erase(obstacle);
+	}
+
+	auto handle = obstacleHandles.find(obstacleNum);
+	if (handle != obstacleHandles.end()) {
+		for ( int i = 0; i < numNavData; i++ )
 		{
-			continue;
+			NavData_t *nav = &BotNavData[ i ];
+			if ( nav->cache->getObstacleCount() <= 0 )
+			{
+				continue;
+			}
+			nav->cache->removeObstacle( handle->second );
 		}
-		nav->cache->removeObstacle( obstacleHandle );
+		obstacleHandles.erase(handle);
 	}
 }
 

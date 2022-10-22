@@ -62,8 +62,8 @@ int  G_BotAddNames(team_t team, int arg, int last);
 //     useful warning, but who knows...
 void G_BotDisableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs );
 void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs );
-void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, qhandle_t *handle );
-void G_BotRemoveObstacle( qhandle_t handle );
+void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum );
+void G_BotRemoveObstacle( int obstacleNum );
 void G_BotUpdateObstacles();
 bool G_BotInit();
 void G_BotCleanup();
