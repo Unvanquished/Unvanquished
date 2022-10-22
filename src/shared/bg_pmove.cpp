@@ -31,6 +31,24 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "bg_public.h"
 #include "bg_local.h"
 
+#define TIMER_LAND        130
+#define TIMER_GESTURE     ( 34 * 66 + 50 )
+#define TIMER_ATTACK      500 //nonsegmented models
+
+#define FALLING_THRESHOLD -900.0f //what vertical speed to start falling sound at
+
+// movement parameters
+#define pm_duckScale         (0.25f)
+#define pm_swimScale         (0.50f)
+
+#define pm_accelerate        (10.0f)
+#define pm_wateraccelerate   (4.0f)
+#define pm_flyaccelerate     (4.0f)
+
+#define pm_waterfriction     (1.125f)
+#define pm_spectatorfriction (5.0f)
+
+
 // all of the locals will be zeroed before each
 // pmove, just to make damn sure we don't have
 // any differences when running on client or server
@@ -54,7 +72,7 @@ struct pml_t
 
 };
 
-pmove_t *pm;
+static pmove_t *pm;
 pml_t   pml;
 
 static int c_pmove = 0;
@@ -118,7 +136,7 @@ static void PM_AddEvent( int newEvent )
 PM_AddTouchEnt
 ===============
 */
-void PM_AddTouchEnt( int entityNum )
+static void PM_AddTouchEnt( int entityNum )
 {
 	int i;
 
@@ -303,7 +321,7 @@ PM_ClipVelocity
 Slide off of the impacting surface
 ==================
 */
-void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out )
+static void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out )
 {
 	float t = -DotProduct( in, normal );
 	VectorMA( in, t, normal, out );
