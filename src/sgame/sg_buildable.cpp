@@ -1829,7 +1829,7 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 	}
 }
 
-static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, const vec3_t origin,
+static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, const glm::vec3 &origin,
                          const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
 	gentity_t  *built;
@@ -1892,7 +1892,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		built->builtBy = nullptr;
 	}
 
-	G_SetOrigin( built, VEC2GLM( origin ) );
+	G_SetOrigin( built, origin );
 
 	// HACK: These are preliminary angles. The real angles of the model are calculated client side.
 	// TODO: Use proper angles with respect to the world?
@@ -2008,10 +2008,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	// Add bot obstacles
 	if ( built->r.maxs[2] - built->r.mins[2] > 47.0f ) // HACK: Fixed jump height
 	{
-		vec3_t mins;
-		vec3_t maxs;
-		VectorCopy( built->r.mins, mins );
-		VectorCopy( built->r.maxs, maxs );
 		// HACK: work around bots unable to reach armory due to
 		// navmesh margins in *some* situations.
 		// fixVal is choosen to work on all known cases:
@@ -2019,11 +2015,13 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		// * 0.8 was enough on both
 		// Note that said bug is not reported, but notably happens
 		// on chasm with default layout as of 0.52.1
-		const float fixVal = 0.8;
+		glm::vec3 mins = VEC2GLM( built->r.mins );
+		glm::vec3 maxs = VEC2GLM( built->r.maxs );
+		constexpr float fixVal = 0.8;
 		mins[0] *= fixVal; mins[1] *= fixVal;
 		maxs[0] *= fixVal; maxs[1] *= fixVal;
-		VectorAdd( mins, origin, mins );
-		VectorAdd( maxs, origin, maxs );
+		mins += origin;
+		maxs += origin;
 		G_BotAddObstacle( mins, maxs, &built->obstacleHandle );
 	}
 
@@ -2085,7 +2083,7 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			SpawnBuildable( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
+			SpawnBuildable( ent, buildable, VEC2GLM(origin), normal, ent->s.apos.trBase, groundEntNum );
 			G_SpendBudget( BG_Buildable( buildable )->team, BG_Buildable( buildable )->buildPoints );
 			return true;
 
@@ -2172,7 +2170,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 
-	built = SpawnBuildable( ent, buildable, ent->s.pos.trBase, normal, ent->s.angles, ENTITYNUM_NONE );
+	built = SpawnBuildable( ent, buildable, VEC2GLM( ent->s.pos.trBase ), normal, ent->s.angles, ENTITYNUM_NONE );
 
 	// This particular function is used by buildables that skip construction.
 	built->entity->Get<BuildableComponent>()->SetState(BuildableComponent::CONSTRUCTED);
