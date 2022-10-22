@@ -66,7 +66,6 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_alloc.cpp
     ${GAMELOGIC_DIR}/shared/bg_gameplay.h
     ${GAMELOGIC_DIR}/shared/bg_gameplay.cpp
-    ${GAMELOGIC_DIR}/shared/bg_local.h
     ${GAMELOGIC_DIR}/shared/bg_misc.cpp
     ${GAMELOGIC_DIR}/shared/bg_parse.cpp
     ${GAMELOGIC_DIR}/shared/bg_pmove.cpp

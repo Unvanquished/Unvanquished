@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "common/FileSystem.h"
+#include "shared/bg_gameplay.h"
 #include "sg_local.h"
 #include "CustomSurfaceFlags.h"
 #include "Entities.h"
@@ -278,10 +279,9 @@ static void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t* )
 		return;
 	}
 
-	// Client must be high enough to pass over. Note that STEPSIZE (18) is
-	// hardcoded here because we don't include bg_local.h!
+	// Client must be high enough to pass over.
 	client_z = other->s.origin[ 2 ] + other->r.mins[ 2 ];
-	min_z = self->s.origin[ 2 ] - 18 +
+	min_z = self->s.origin[ 2 ] - STEPSIZE +
 	        ( int )( self->r.maxs[ 2 ] * BARRICADE_SHRINKPROP );
 
 	if ( client_z < min_z )

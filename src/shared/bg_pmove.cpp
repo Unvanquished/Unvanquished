@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "engine/qcommon/q_shared.h"
 #include "bg_public.h"
-#include "bg_local.h"
+#include "bg_gameplay.h"
 
 #define TIMER_LAND        130
 #define TIMER_GESTURE     ( 34 * 66 + 50 )

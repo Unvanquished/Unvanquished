@@ -37,6 +37,7 @@
 #include "common/cm/cm_patch.h"
 #include "common/cm/cm_polylib.h"
 #include "common/FileSystem.h"
+#include "shared/bg_gameplay.h"
 #include "navgen.h"
 
 static Log::Logger LOG( VM_STRING_PREFIX "navgen", "", Log::Level::NOTICE );
