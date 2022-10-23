@@ -1823,5 +1823,19 @@ void BG_BoundingBox( buildable_t buildablel, glm::vec3* mins, glm::vec3* maxs );
 void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right, glm::vec3 *up );
 WARN_UNUSED_RESULT glm::mat3 RotationMatrix( const glm::vec3 &angles );
 
+// a scalar product that handles the z component differently, typically you
+// would use it with z_factor = 0, to ignore the z direction totally
+inline float ScalarProduct2D(glm::vec3 u, glm::vec3 v, float z_factor = 0.0f)
+{
+	return u[0]*v[0] + u[1]*v[1] + z_factor*u[2]*v[2];
+}
+
+// a norm that handles the z component differently, typically you
+// would use it with z_factor = 0, to ignore the z direction totally
+inline float Length2D(glm::vec3 u, float z_factor = 0.0f)
+{
+	return sqrtf(ScalarProduct2D(u, u, z_factor));
+}
+
 //==================================================================
 #endif /* BG_PUBLIC_H_ */
