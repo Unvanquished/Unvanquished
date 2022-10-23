@@ -15,6 +15,8 @@ ReactorComponent::ReactorComponent(Entity& entity, HumanBuildableComponent& r_Hu
 void ReactorComponent::Think(int timeDelta) {
 	if (!GetMainBuildableComponent().GetBuildableComponent().Active()) return;
 
+	if (g_gameMode.Get() == "juggernaut") return; // We want the buildables to be harmless in this mode
+
 	float baseDamage = ATTACK_DAMAGE * ((float)timeDelta / 1000.0f);
 
 	// Zap close enemies.
