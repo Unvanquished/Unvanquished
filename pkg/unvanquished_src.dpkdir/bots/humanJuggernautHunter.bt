@@ -1,6 +1,7 @@
 selector
 {
 	behavior unstick
+	behavior use_medkit
 
 	sequence
 	{
