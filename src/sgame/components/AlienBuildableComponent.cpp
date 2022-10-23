@@ -24,6 +24,11 @@ void AlienBuildableComponent::HandleDamage(float /*amount*/, gentity_t* /*source
 }
 
 void AlienBuildableComponent::Think(int /*timeDelta*/) {
+	if ( g_gameMode.Get() == "juggernaut" )
+	{
+		return; // FIXME: juggernaut hack
+	}
+
 	// TODO: Find an elegant way to access per-buildable configuration.
 	float creepSize = (float)BG_Buildable((buildable_t)entity.oldEnt->s.modelindex)->creepSize;
 
