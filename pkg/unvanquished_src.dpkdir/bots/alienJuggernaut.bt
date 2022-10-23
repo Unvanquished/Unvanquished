@@ -17,8 +17,14 @@ selector
 				}
 			}
 
-			// if condition fails once, keep trying to hide
-			action getInSafety
+			// make getInSafety fail sometime if an enemy is close: keep them on their toes
+			decorator timer( 1000 )
+			{
+				condition ( random > 0.1 || distanceTo( E_ENEMY ) > 180 )
+				{
+					action getInSafety
+				}
+			}
 
 			// if getInSafety fails, FIGHT
 			action fight
