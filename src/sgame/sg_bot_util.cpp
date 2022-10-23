@@ -1928,7 +1928,7 @@ void BotFireWeaponAI( gentity_t *self )
 			// barb themselves too easily. The safety factor
 			// hopefully accounts for the movement of the bot and
 			// its target
-			constexpr float barbSafetyFactor = 4.0f/3.0f;
+			constexpr float barbSafetyFactor = 5.0f/3.0f;
 			if ( self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE && distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius) )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
