@@ -1924,12 +1924,15 @@ void BotFireWeaponAI( gentity_t *self )
 			break;
 		case WP_ALEVEL3_UPG:
 		{
+			bool hasBarbs = self->client->ps.ammo > 0;
+			bool outOfClawsRange = distance > LEVEL3_CLAW_UPG_RANGE;
 			// We add some protection for barbs so that bots don't
 			// barb themselves too easily. The safety factor
 			// hopefully accounts for the movement of the bot and
 			// its target
 			constexpr float barbSafetyFactor = 5.0f/3.0f;
-			if ( self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE && distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius) )
+			bool barbIsSafe = distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius);
+			if ( outOfClawsRange && hasBarbs && barbIsSafe )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
