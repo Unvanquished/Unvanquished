@@ -1926,16 +1926,32 @@ void BotFireWeaponAI( gentity_t *self )
 		{
 			bool hasBarbs = self->client->ps.ammo > 0;
 			bool outOfClawsRange = distance > LEVEL3_CLAW_UPG_RANGE;
+
 			// We add some protection for barbs so that bots don't
 			// barb themselves too easily. The safety factor
 			// hopefully accounts for the movement of the bot and
 			// its target
 			constexpr float barbSafetyFactor = 5.0f/3.0f;
 			bool barbIsSafe = distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius);
+
 			if ( outOfClawsRange && hasBarbs && barbIsSafe )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
-				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
+
+				glm::vec3 delta = targetPos - VEC2GLM( self->s.origin );
+
+				// Check that the direction we are looking at
+				// is aligned with the direction of the enemy.
+				// This is to ensure we don't barb the wall
+				// instead of the enemy on the other side of
+				// the corridor because we haven't aimed yet.
+				float scalarAlignment = Alignment2D(delta, forward);
+				bool barbAimed = scalarAlignment > 0.997f; // acos(0.997) is 4.4° in the 2D plane
+
+				if ( barbAimed )
+				{
+					BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
+				}
 			}
 			else if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
