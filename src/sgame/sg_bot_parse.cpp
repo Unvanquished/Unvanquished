@@ -252,6 +252,11 @@ static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( false );
 }
 
+static AIValue_t dangerEvaluation( gentity_t *self, const AIValue_t * )
+{
+	return AIBoxFloat( BotDangerEvaluation( self ) );
+}
+
 static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
 {
 	class_t c = ( class_t ) AIUnBoxInt( params[ 0 ] );
@@ -345,6 +350,7 @@ static const struct AIConditionMap_s
 	{ "canEvolveTo",       botCanEvolveTo,    1 },
 	{ "class",             botClass,          0 },
 	{ "cvar",              cvar,              1 },
+	{ "dangerEvaluation",  dangerEvaluation,  0 },
 	{ "directPathTo",      directPathTo,      1 },
 	{ "distanceTo",        distanceTo,        1 },
 	{ "goalBuildingType",  goalBuildingType,  0 },

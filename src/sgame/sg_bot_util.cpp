@@ -1000,6 +1000,35 @@ static float EnemyPlayerDangerHeuristic( playerState_t &ps )
 	return sqrtf( classHeuristic * weaponHeuristic );
 }
 
+// Am I in trouble?
+// Note that this ignores buildables, which we want for a juggernaut as well as
+// for regular games as we definitely don't want bots to avoid bases too much
+float BotDangerEvaluation( const gentity_t *self )
+{
+	float danger = 0.0f;
+
+	for ( gentity_t *target = g_entities; target < &g_entities[level.maxclients]; target++ )
+	{
+		if ( !BotEntityIsValidEnemyTarget( self, target ) )
+		{
+			continue;
+		}
+
+		bool visible = G_LineOfSight( self, target );
+		// we aren't aware of enemies too far away
+		if ( DistanceSquared( self->s.origin, target->s.origin ) > Square( ALIENSENSE_RANGE ) && !visible )
+		{
+			continue;
+		}
+
+		float weight = visible ? 2.0f : 1.0f;
+
+		danger += weight * EnemyPlayerDangerHeuristic( target->client->ps );
+	}
+
+	return danger;
+}
+
 // returns a float between -π and π, representing the direction
 float FindLessRiskyDirection( const gentity_t *self )
 {
