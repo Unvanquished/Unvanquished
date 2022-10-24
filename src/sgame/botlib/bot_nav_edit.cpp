@@ -178,7 +178,7 @@ void BotDebugDrawMesh()
 
 static bool CheckHost( gentity_t *ent )
 {
-	if ( level.inClient && ent->client->ps.clientNum == 0 )
+	if ( level.inClient && ent->num() == 0 )
 	{
 		// It's ok for further messages from commands to use Log::Notice since we have established
 		// that the client console is the server console

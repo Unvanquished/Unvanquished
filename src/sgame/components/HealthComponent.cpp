@@ -209,9 +209,9 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		if (source->client) {
 			// Add to the attacker's account on the target.
 			// TODO: Move damage account array to HealthComponent.
-			entity.oldEnt->credits[source->client->ps.clientNum].value += loss;
-			entity.oldEnt->credits[source->client->ps.clientNum].time = level.time;
-			entity.oldEnt->credits[source->client->ps.clientNum].team = (team_t)source->client->pers.team;
+			entity.oldEnt->credits[source->num()].value += loss;
+			entity.oldEnt->credits[source->num()].time = level.time;
+			entity.oldEnt->credits[source->num()].team = (team_t)source->client->pers.team;
 		}
 	}
 

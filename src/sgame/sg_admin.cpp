@@ -541,7 +541,7 @@ void G_admin_cmdlist( gentity_t *ent )
 	// If this is the local client, no need to send them commands.
 	// The local client will get their commands registered in
 	// G_admin_register_cmds.
-	if ( level.inClient && ent->client->ps.clientNum == 0 )
+	if ( level.inClient && ent->num() == 0 )
 	{
 		return;
 	}

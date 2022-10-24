@@ -1371,7 +1371,7 @@ void ClientBegin( int clientNum )
 		default:
 			if ( !client->pers.admin )
 		case 1:
-			G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
+			G_TriggerMenu( clientNum, MN_WELCOME );
 		}
 	}
 }

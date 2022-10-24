@@ -423,7 +423,7 @@ void G_BotThink( gentity_t *self )
 
 	//acknowledge recieved server commands
 	//MUST be done
-	while ( trap_BotGetServerCommand( self->client->ps.clientNum, buf, sizeof( buf ) ) );
+	while ( trap_BotGetServerCommand( self->num(), buf, sizeof( buf ) ) );
 
 	BotSearchForEnemy( self );
 	BotFindClosestBuildings( self );
@@ -475,7 +475,7 @@ void G_BotSpectatorThink( gentity_t *self )
 
 	//acknowledge recieved console messages
 	//MUST be done
-	while ( trap_BotGetServerCommand( self->client->ps.clientNum, buf, sizeof( buf ) ) );
+	while ( trap_BotGetServerCommand( self->num(), buf, sizeof( buf ) ) );
 
 	self->botMind->spawnTime = level.time;
 

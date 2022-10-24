@@ -1004,14 +1004,14 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 	// open build menu
 	if ( buildable <= BA_NONE )
 	{
-		G_TriggerMenu( self->client->ps.clientNum, menu );
+		G_TriggerMenu( self->num(), menu );
 		return;
 	}
 
 	// can't build just yet
 	if ( self->client->ps.stats[ STAT_MISC ] > 0 )
 	{
-		G_AddEvent( self, EV_BUILD_DELAY, self->client->ps.clientNum );
+		G_AddEvent( self, EV_BUILD_DELAY, self->num() );
 		return;
 	}
 
@@ -1804,7 +1804,7 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 	{
 		case UP_GRENADE:
 		case UP_FIREBOMB:
-			trap_SendServerCommand( self->client->ps.clientNum, "vcommand grenade" );
+			trap_SendServerCommand( self->num(), "vcommand grenade" );
 			break;
 
 		default:
