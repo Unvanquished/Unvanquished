@@ -730,7 +730,7 @@ namespace Beacon //this should eventually become a class
 		beacon = New( origin, BCT_TAG, data, team );
 		beacon->tagAttachment = attachment;
 		*attachment = beacon;
-		beacon->s.bc_target = ent - g_entities;
+		beacon->s.bc_target = ent->num();
 
 		// Reset the entity's tag score.
 		ent->tagScore = 0;

@@ -186,7 +186,7 @@ static bool CheckHost( gentity_t *ent )
 	}
 
 	trap_SendServerCommand(
-		ent - g_entities,
+		ent->num(),
 		"print_tr " QQ( "you must be the host of a local devmap to use this command" ) );
 	return false;
 }

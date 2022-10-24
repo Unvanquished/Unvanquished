@@ -516,7 +516,7 @@ void respawn( gentity_t *ent )
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		if ( level.clients[ i ].sess.spectatorState == SPECTATOR_FOLLOW &&
-		     level.clients[ i ].sess.spectatorClient == ent - g_entities )
+		     level.clients[ i ].sess.spectatorClient == ent->num() )
 		{
 			if ( !( level.clients[ i ].pers.stickySpec ) )
 			{
@@ -816,9 +816,9 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	// check for malformed or illegal info strings
 	if ( !Info_Validate( userinfo ) )
 	{
-		trap_SendServerCommand( ent - g_entities,
+		trap_SendServerCommand( ent->num(),
 		                        "disconnect \"illegal or malformed userinfo\"" );
-		trap_DropClient( ent - g_entities,
+		trap_DropClient( ent->num(),
 		                 "dropped: illegal or malformed userinfo" );
 		return "Illegal or malformed userinfo";
 	}
@@ -845,7 +845,7 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		     level.time - client->pers.namelog->nameChangeTime <=
 		     g_minNameChangePeriod.Get() * 1000 )
 		{
-			trap_SendServerCommand( ent - g_entities, va(
+			trap_SendServerCommand( ent->num(), va(
 			                          "print_tr %s %g", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$)") ),
 			                          g_minNameChangePeriod.Get() ) );
 			revertName = true;
@@ -853,25 +853,25 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		else if ( !forceName && g_maxNameChanges.Get() > 0 &&
 		          client->pers.namelog->nameChanges >= g_maxNameChanges.Get() )
 		{
-			trap_SendServerCommand( ent - g_entities, va(
+			trap_SendServerCommand( ent->num(), va(
 			                          "print_tr %s %d", QQ( N_("Maximum name changes reached (g_maxNameChanges = $1$)") ),
 			                          g_maxNameChanges.Get() ) );
 			revertName = true;
 		}
 		else if ( !forceName && client->pers.namelog->muted )
 		{
-			trap_SendServerCommand( ent - g_entities,
+			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s", QQ( N_("You cannot change your name while you are muted") ) ) );
 			revertName = true;
 		}
 		else if ( !G_admin_name_check( ent, newname, err, sizeof( err ) ) )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( "$1t$ $2$" ), Quote( err ), Quote( newname ) ) );
+			trap_SendServerCommand( ent->num(), va( "print_tr %s %s %s", QQ( "$1t$ $2$" ), Quote( err ), Quote( newname ) ) );
 			revertName = true;
 		}
 		else if ( Q_UTF8_Strlen( newname ) > MAX_NAME_CHARACTERS )
 		{
-			trap_SendServerCommand( ent - g_entities,
+			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %d", QQ( N_("Name is too long! Must be less than $1$ characters.") ), MAX_NAME_CHARACTERS ) );
 			revertName = true;
 
@@ -1135,7 +1135,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
 	if ( ent->inuse )
 	{
-		G_LogPrintf( "Forcing disconnect on active client: %i", (int)( ent - g_entities ) );
+		G_LogPrintf( "Forcing disconnect on active client: %i", ent->num() );
 		// so lets just fix up anything that should happen on a disconnect
 		ClientDisconnect( ent-g_entities );
 	}
@@ -1346,7 +1346,7 @@ void ClientBegin( int clientNum )
 
 	if ( !startMsg.empty() )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "cpd %d %s", g_mapStartupMessageDelay.Get(), Quote( startMsg.c_str() ) ) );
+		trap_SendServerCommand( ent->num(), va( "cpd %d %s", g_mapStartupMessageDelay.Get(), Quote( startMsg.c_str() ) ) );
 	}
 
 	G_namelog_restore( client );
@@ -1502,7 +1502,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	bool evolving = ent == spawn;
 	ClientSpawnCBSE(ent, evolving);
 
-	index = ent - g_entities;
+	index = ent->num();
 	client = ent->client;
 
 	teamLocal = client->pers.team;
@@ -1808,7 +1808,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// evolving several times to run down the attack cooldown
 	client->ps.commandTime = level.time - (evolving ? 1 : 100);
 	ent->client->pers.cmd.serverTime = level.time;
-	ClientThink( ent - g_entities );
+	ClientThink( ent->num() );
 
 	// positively link the client, even if the command times are weird
 	if ( client->sess.spectatorState == SPECTATOR_NOT )

@@ -76,7 +76,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 	// warning: otherEntityNum2 is only 10 bits wide
 	event->s.otherEntityNum2 = flags;
 	event->s.angles2[0] = damage;
-	event->s.otherEntityNum = victim - g_entities;
+	event->s.otherEntityNum = victim->num();
 
 	glm::vec3 point;
 	if (!point_opt || indirect)

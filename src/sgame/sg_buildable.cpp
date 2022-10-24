@@ -1229,7 +1229,7 @@ static int G_FreeMarkedBuildables( gentity_t *deconner, char *readable,
 
 		if ( nums )
 		{
-			Q_strcat( nums, nsize, va( " %ld", ( long )( ent - g_entities ) ) );
+			Q_strcat( nums, nsize, va( " %ld", ( long )( ent->num() ) ) );
 		}
 
 		numRemoved++;
@@ -2044,8 +2044,8 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		                   Quote( readable ) ) );
 		G_LogPrintf( "Construct: %d %d %s%s: %s^* is building "
 		             "%s%s%s",
-		             ( int )( builder - g_entities ),
-		             ( int )( built - g_entities ),
+		             builder->num(),
+		             built->num(),
 		             BG_Buildable( built->s.modelindex )->name,
 		             buildnums,
 		             builder->client->pers.netname,
@@ -2637,7 +2637,7 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 	G_KillBox( built );
 
 	G_LogPrintf( "revert: restore %d %s",
-	             ( int )( built - g_entities ), BG_Buildable( built->s.modelindex )->name );
+	             built->num(), BG_Buildable( built->s.modelindex )->name );
 
 	G_FreeEntity( ent );
 }
@@ -2676,7 +2676,7 @@ void G_BuildLogRevert( int id )
 						if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 						{
 							G_LogPrintf( "revert: remove %d %s",
-										 ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
+										 ent->num(), BG_Buildable( ent->s.modelindex )->name );
 						}
 
 						// Revert resources

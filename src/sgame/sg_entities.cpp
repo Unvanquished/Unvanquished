@@ -62,13 +62,13 @@ void G_InitGentity( gentity_t *entity )
 	entity->inuse = true;
 	entity->enabled = true;
 	entity->classname = "noclass";
-	entity->s.number = entity - g_entities;
+	entity->s.number = entity->num();
 	entity->r.ownerNum = ENTITYNUM_NONE;
 	entity->creationTime = level.time;
 	
 	if ( g_debugEntities.Get() > 2 )
 	{
-		Log::Debug("Initing Entity %i", entity - g_entities );
+		Log::Debug("Initing Entity %i", entity->num() );
 	}
 }
 
@@ -929,7 +929,7 @@ bool G_IsVisible( gentity_t *start, gentity_t *end, int contents )
 	trap_Trace( &trace, start->s.pos.trBase, nullptr, nullptr, end->s.pos.trBase,
 	            start->num(), contents, 0 );
 
-	return trace.fraction >= 1.0f || trace.entityNum == end - g_entities;
+	return trace.fraction >= 1.0f || trace.entityNum == end->num();
 }
 
 /*

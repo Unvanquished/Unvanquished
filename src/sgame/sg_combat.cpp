@@ -135,15 +135,15 @@ static void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *atta
 {
 	if ( attacker && attacker != self )
 	{
-		self->client->ps.stats[ STAT_VIEWLOCK ] = attacker - g_entities;
+		self->client->ps.stats[ STAT_VIEWLOCK ] = attacker->num();
 	}
 	else if ( inflictor && inflictor != self )
 	{
-		self->client->ps.stats[ STAT_VIEWLOCK ] = inflictor - g_entities;
+		self->client->ps.stats[ STAT_VIEWLOCK ] = inflictor->num();
 	}
 	else
 	{
-		self->client->ps.stats[ STAT_VIEWLOCK ] = self - g_entities;
+		self->client->ps.stats[ STAT_VIEWLOCK ] = self->num();
 	}
 }
 
@@ -389,7 +389,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	{
 		G_LogPrintf( "Die: %d %d %s %d %d: %s^* killed %s^*; %s^* assisted",
 		             killer,
-		             ( int )( self - g_entities ),
+		             self->num(),
 		             obit,
 		             assistant,
 		             assistantTeam,
@@ -401,7 +401,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	{
 		G_LogPrintf( "Die: %d %d %s: %s^* killed %s",
 		             killer,
-		             ( int )( self - g_entities ),
+		             self->num(),
 		             obit,
 		             killerName,
 		             self->client->pers.netname );
@@ -440,7 +440,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		}
 		else if ( g_showKillerHP.Get() )
 		{
-			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^*, had $2$ HP.") ),
+			trap_SendServerCommand( self->num(), va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^*, had $2$ HP.") ),
 			                        Quote( killerName ),
 			                        (int)std::ceil(attacker->entity->Get<HealthComponent>()->Health()) ) );
 		}
@@ -569,7 +569,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 		// use own entityid if killed by non-client to prevent uint8_t overflow
 		G_AddEvent( self, EV_DEATH1 + i,
-		            ( killer < MAX_CLIENTS ) ? killer : self - g_entities );
+		            ( killer < MAX_CLIENTS ) ? killer : self->num() );
 
 		// globally cycle through the different death animations
 		i = ( i + 1 ) % 3;
@@ -1036,8 +1036,8 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	}
 
 	G_LogPrintf( "^3Deconstruct: %d %d %s %s: %s %s by %s",
-	             ( int )( actor - g_entities ),
-	             ( int )( self - g_entities ),
+	             actor->num(),
+	             self->num(),
 	             BG_Buildable( self->s.modelindex )->name,
 	             modNames[ mod ],
 	             BG_Buildable( self->s.modelindex )->humanName,

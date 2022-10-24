@@ -124,7 +124,7 @@ void SpawnerComponent::WarnBlocker(Entity& blocker, bool lastWarning) {
 
 	message = "cp \"" + message + "\"";
 
-	trap_SendServerCommand(blocker.oldEnt - g_entities, message.c_str());
+	trap_SendServerCommand(blocker.oldEnt->num(), message.c_str());
 }
 
 Entity* SpawnerComponent::CheckSpawnPointHelper(

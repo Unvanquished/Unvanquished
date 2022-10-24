@@ -429,10 +429,9 @@ static void BotFindDefaultSteerTarget( gentity_t *self, glm::vec3 &dir )
 	// a vector 90° from dir, pointing right and of same magnitude
 	glm::vec3 right = glm::vec3(dir[1], -dir[0], 0);
 
-	int clientNum = self - g_entities;
 	// We add a delta determined from clientNum to avoid bots
 	// dancing in sync
-	int time = (110 * clientNum + self->client->time1000) % 1000;
+	int time = (110 * self->num() + self->client->time1000) % 1000;
 
 	// 280 instead of 700/2=350 because we want some left/right
 	// asymetry in case it helps

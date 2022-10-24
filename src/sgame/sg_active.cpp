@@ -264,7 +264,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 
 	// Cannot push enemy players unless they are walking on the player
 	if ( !G_OnSameTeam( ent, victim ) &&
-	     victim->client->ps.groundEntityNum != ent - g_entities )
+	     victim->client->ps.groundEntityNum != ent->num() )
 	{
 		return;
 	}
@@ -556,7 +556,7 @@ static void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	if ( G_IsPlayableTeam( team ) )
 	{
 		client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
-		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
+		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent->num() );
 
 		if ( !ClientInactivityTimer( ent, queued || !level.team[ team ].numSpawns ) )
 		{
@@ -1866,7 +1866,7 @@ static void ClientThink_real( gentity_t *self )
 	}
 
 	// client is admin but program hasn't responded to challenge? Resend
-	ClientAdminChallenge( self - g_entities );
+	ClientAdminChallenge( self->num() );
 
 	//
 	// check for exiting intermission
