@@ -846,7 +846,7 @@ int G_PopSpawnQueue( spawnQueue_t *sq )
 		sq->clients[ sq->front ] = -1;
 		sq->front = QUEUE_PLUS1( sq->front );
 		G_StopFollowing( g_entities + clientNum );
-		g_entities[ clientNum ].client->ps.pm_flags &= ~PMF_QUEUED;
+		g_clients[ clientNum ].ps.pm_flags &= ~PMF_QUEUED;
 
 		return clientNum;
 	}
@@ -908,7 +908,7 @@ bool G_PushSpawnQueue( spawnQueue_t *sq, int clientNum )
 	sq->back = QUEUE_PLUS1( sq->back );
 	sq->clients[ sq->back ] = clientNum;
 
-	g_entities[ clientNum ].client->ps.pm_flags |= PMF_QUEUED;
+	g_clients[ clientNum ].ps.pm_flags |= PMF_QUEUED;
 	return true;
 }
 
@@ -941,7 +941,7 @@ bool G_RemoveFromSpawnQueue( spawnQueue_t *sq, int clientNum )
 				while ( i != QUEUE_PLUS1( sq->back ) );
 
 				sq->back = QUEUE_MINUS1( sq->back );
-				g_entities[ clientNum ].client->ps.pm_flags &= ~PMF_QUEUED;
+				g_clients[ clientNum ].ps.pm_flags &= ~PMF_QUEUED;
 
 				return true;
 			}
@@ -1532,7 +1532,6 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 {
 	int       teamCnt[ NUM_TEAMS ];
 	int       playerNum;
-	gentity_t *playerEnt;
 	gclient_t *client;
 	int       team;
 
@@ -1543,15 +1542,9 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 		teamValue[ team ] = 0;
 	}
 
-	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		playerEnt = &g_entities[ playerNum ];
-		client = playerEnt->client;
-
-		if ( !client )
-		{
-			continue;
-		}
+		client = &g_clients[ playerNum ];
 
 		team = client->pers.team;
 

@@ -86,7 +86,7 @@ void G_ReadSessionData( gclient_t *client )
 	char       botTree[ MAX_QPATH ];
 	char       ignorelist[ 17 ];
 
-	var = va( "session%li", ( long )( client - level.clients ) );
+	var = va( "session%i", client->num() );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof( s ) );
 
 	sscanf( s, "%i %i %i %i %i %63s %16s",
@@ -126,7 +126,7 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 	memset( &sess->ignoreList, 0, sizeof( sess->ignoreList ) );
 	sess->seenWelcome = 0;
 
-	G_WriteClientSessionData( client - level.clients );
+	G_WriteClientSessionData( client->num() );
 }
 
 /*

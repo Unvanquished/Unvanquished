@@ -305,7 +305,7 @@ static void Svcmd_ForceTeam_f()
 		return;
 	}
 
-	G_ChangeTeam( &g_entities[ cl - level.clients ], team );
+	G_ChangeTeam( cl->ent(), team );
 }
 
 /*
@@ -552,7 +552,7 @@ static void Svcmd_EjectClient_f()
 			return;
 		}
 
-		trap_DropClient( cl - level.clients, reason );
+		trap_DropClient( cl->num(), reason );
 	}
 }
 
@@ -577,7 +577,7 @@ static void Svcmd_DumpUser_f()
 		return;
 	}
 
-	trap_GetUserinfo( cl - level.clients, userinfo, sizeof( userinfo ) );
+	trap_GetUserinfo( cl->num(), userinfo, sizeof( userinfo ) );
 	info = &userinfo[ 0 ];
 	Log::Notice( "userinfo--------" );
 

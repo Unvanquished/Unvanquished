@@ -781,11 +781,11 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 
 	*loMask = *hiMask = 0;
 
-	for ( clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
+	for ( clientNum = 0; clientNum < level.maxclients; clientNum++ )
 	{
-		client = g_entities[ clientNum ].client;
+		client = &g_clients[ clientNum ];
 
-		if ( client && client->pers.team == team )
+		if ( client->pers.team == team )
 		{
 			if ( clientNum < 32 )
 			{

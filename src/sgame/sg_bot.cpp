@@ -249,13 +249,13 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef beh
 	{
 		return false;
 	}
-	BotSetSkillLevel( &g_entities[clientNum], skill );
+	BotSetSkillLevel( self, skill );
 
-	g_entities[clientNum].r.svFlags |= SVF_BOT;
+	self->r.svFlags |= SVF_BOT;
 
 	if ( team != TEAM_NONE )
 	{
-		level.clients[clientNum].sess.restartTeam = team;
+		self->client->sess.restartTeam = team;
 	}
 
 	self->pain = BotPain;
