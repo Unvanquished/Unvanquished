@@ -160,6 +160,9 @@ struct GentityRef_impl
 	}
 };
 
+extern gentity_t *g_entities;
+extern gclient_t *g_clients;
+
 using GentityRef = GentityRef_impl<gentity_t *>;
 using GentityConstRef = GentityRef_impl<const gentity_t *>;
 
@@ -458,6 +461,13 @@ struct gentity_t
 	gentity_t   **tagAttachment;
 	int         tagScore;
 	int         tagScoreTime;
+
+	// gives the entityNum
+	int num() const {
+		ASSERT(this - g_entities >= 0);
+		ASSERT(this - g_entities < MAX_GENTITIES);
+		return this - g_entities;
+	}
 };
 
 /**
@@ -620,6 +630,13 @@ struct gclient_t
 	int        nextCrushTime;
 
 	int        lastLevel1SlowTime;
+
+	// gives the entityNum
+	int num() const {
+		ASSERT(this - g_clients >= 0);
+		ASSERT(this - g_clients < MAX_CLIENTS);
+		return this - g_clients;
+	}
 };
 
 /**
