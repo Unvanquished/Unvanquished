@@ -164,7 +164,7 @@ static clientList_t G_ClientListForTeam( team_t team )
 
 		if ( ent->inuse && ( ent->client->pers.team == team ) )
 		{
-			Com_ClientListAdd( &clientList, ent->client->ps.clientNum );
+			Com_ClientListAdd( &clientList, ent->num() );
 		}
 	}
 

@@ -548,7 +548,7 @@ static void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 
 	if ( !self->powered || Entities::IsDead(self) )
 	{
-		G_TriggerMenu( activator->client->ps.clientNum, MN_H_NOTPOWERED );
+		G_TriggerMenu( activator->num(), MN_H_NOTPOWERED );
 		return;
 	}
 

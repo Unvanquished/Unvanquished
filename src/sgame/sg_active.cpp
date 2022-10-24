@@ -2216,7 +2216,7 @@ static void ClientThink_real( gentity_t *self )
 
 			if ( !ent && client->pers.team == TEAM_ALIENS )
 			{
-				G_TriggerMenu( client->ps.clientNum, MN_A_INFEST );
+				G_TriggerMenu( client->num(), MN_A_INFEST );
 			}
 		}
 	}

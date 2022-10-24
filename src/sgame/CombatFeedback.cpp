@@ -34,6 +34,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
                Util::optional<glm::vec3> point_opt, float damage,
                meansOfDeath_t mod, bool lethal)
 {
+	ASSERT(attacker->client);
 	bool indirect = false;
 	int flags = 0;
 	gentity_t *event;
@@ -70,7 +71,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 	event->think = G_FreeEntity;
 
 	event->r.svFlags = SVF_SINGLECLIENT | SVF_BROADCAST;
-	event->r.singleClient = attacker->client->ps.clientNum;
+	event->r.singleClient = attacker->num();
 
 	// warning: otherEntityNum2 is only 10 bits wide
 	event->s.otherEntityNum2 = flags;
