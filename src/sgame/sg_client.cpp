@@ -633,11 +633,7 @@ static const char *G_UnnamedClientName( gclient_t *client )
 
 	client->pers.namelog->unnamedNumber = number;
 
-	gentity_t *ent;
-	int clientNum = client - level.clients;
-	ent = g_entities + clientNum;
-
-	if ( ent->r.svFlags & SVF_BOT )
+	if ( client->ent()->r.svFlags & SVF_BOT )
 	{
 		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
 			!g_unnamedBotNamePrefix.Get().empty() ? g_unnamedBotNamePrefix.Get().c_str() : UNNAMED_BOT "#",

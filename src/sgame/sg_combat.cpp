@@ -466,9 +466,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	// or they would get stale scoreboards
 	for ( int i = 0; i < level.maxclients; i++ )
 	{
-		gclient_t *client;
-
-		client = &level.clients[ i ];
+		gclient_t *client = &level.clients[ i ];
 
 		if ( client->pers.connected != CON_CONNECTED )
 		{

@@ -711,12 +711,12 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 				trap_SendServerCommand( -1,
 				                        va( "print_tr %s %s %s", QQ( N_("$1$^* moved from $2$ to spectators due to inactivity") ),
 				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->pers.team ) ) ) );
-				G_LogPrintf( "Inactivity: %d.", (int)( client - level.clients ) );
+				G_LogPrintf( "Inactivity: %d.", client->num() );
 				G_ChangeTeam( ent, TEAM_NONE );
 			}
 			else
 			{
-				trap_DropClient( client - level.clients, "Dropped due to inactivity" );
+				trap_DropClient( client->num(), "Dropped due to inactivity" );
 				return false;
 			}
 		}
@@ -726,7 +726,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 		     !G_admin_permission( ent, ADMF_ACTIVITY ) )
 		{
 			client->inactivityWarning = true;
-			trap_SendServerCommand( client - level.clients,
+			trap_SendServerCommand( client->num(),
 			                        va( "cp_tr %s", putSpec ? QQ( N_("Ten seconds until inactivity spectate!") ) : QQ( N_("Ten seconds until inactivity drop!") ) ) );
 		}
 	}

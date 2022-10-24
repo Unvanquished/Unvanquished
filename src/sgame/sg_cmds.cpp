@@ -1241,7 +1241,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 	//Send to ADMF_SPEC_ALLCHAT candidates
 	for ( i = 0; i < level.maxclients; i++ )
 	{
-		if ( g_entities[ i ].client->pers.team == TEAM_NONE &&
+		if ( g_clients[ i ].pers.team == TEAM_NONE &&
 		     G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
 		{
 			G_SayTo( ent, &g_entities[ i ], SAY_AREA, msg );
@@ -3920,7 +3920,7 @@ bool G_FollowNewClient( gentity_t *ent, int dir )
 		}
 
 		// can't follow self
-		if ( &g_entities[ clientnum ] == ent )
+		if ( clientnum == ent->num() )
 		{
 			continue;
 		}

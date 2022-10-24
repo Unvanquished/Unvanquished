@@ -73,7 +73,7 @@ void G_namelog_connect( gclient_t *client )
 	}
 
 	client->pers.namelog = n;
-	n->slot = client - level.clients;
+	n->slot = client->num();
 	n->banned = false;
 
 	newname = n->name[ n->nameOffset ];
