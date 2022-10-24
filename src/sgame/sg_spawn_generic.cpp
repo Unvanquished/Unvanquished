@@ -49,7 +49,7 @@ static void target_print_act( gentity_t *self, gentity_t*, gentity_t *activator 
 	{
 		if ( activator && activator->client )
 		{
-			trap_SendServerCommand( activator - g_entities, va( "cp %s", Quote( self->message ) ) );
+			trap_SendServerCommand( activator->num(), va( "cp %s", Quote( self->message ) ) );
 		}
 
 		return;

@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 struct gentity_t;
 
 #define AP(x)         trap_SendServerCommand(-1, x)
-#define CP(x)         trap_SendServerCommand(ent - g_entities, x)
+#define CP(x)         trap_SendServerCommand(ent->num(), x)
 #define CPx(x, y)     trap_SendServerCommand(x, y)
 #define ADMP(x)       G_admin_print(ent, x)
 #define ADMP_P(x,c)   G_admin_print_plural(ent, x, c)

@@ -1454,8 +1454,8 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	char string[ 1024 ];
 	int  i;
 
-	Com_sprintf( string, sizeof( string ), "chat %ld %d %s",
-	             ent ? ( long )( ent - g_entities ) : -1,
+	Com_sprintf( string, sizeof( string ), "chat %d %d %s",
+	             ent ? ent->num() : -1,
 	             G_admin_permission( ent, ADMF_ADMINCHAT ) ? SAY_ADMINS : SAY_ADMINS_PUBLIC,
 	             Quote( msg ) );
 
@@ -1471,7 +1471,7 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	// Send to the logfile and server console
 	G_LogPrintf( "%s: %d \"%s^*\": ^6%s",
 	             G_admin_permission( ent, ADMF_ADMINCHAT ) ? "AdminMsg" : "AdminMsgPublic",
-	             ent ? ( int )( ent - g_entities ) : -1, ent ? ent->client->pers.netname : "console",
+	             ent ? ent->num() : -1, ent ? ent->client->pers.netname : "console",
 	             msg );
 }
 
