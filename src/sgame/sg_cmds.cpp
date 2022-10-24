@@ -1644,7 +1644,8 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	char   name[ MAX_NAME_LENGTH ] = "";
 	char   caller[ MAX_NAME_LENGTH ] = "";
 	char   reason[ MAX_TOKEN_CHARS ];
-	int    clientNum = -1;
+	int    targetNum = -1;
+	gclient_t *target = nullptr;
 	int    id = -1;
 	int    voteId;
 	team_t team;
@@ -1810,25 +1811,27 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		}
 
 		// with a little extra work only players from the right team are considered
-		clientNum = G_ClientNumberFromString( arg, err, sizeof( err ) );
+		targetNum = G_ClientNumberFromString( arg, err, sizeof( err ) );
 
-		if ( clientNum == -1 )
+		if ( targetNum == -1 )
 		{
 			ADMP( va( "%s %s %s", QQ( "$1$: $2t$" ), cmd, Quote( err ) ) );
 			return;
 		}
 
-		Color::StripColors( level.clients[ clientNum ].pers.netname, name, sizeof( name ) );
-		id = level.clients[ clientNum ].pers.namelog->id;
+		target = &g_clients[ targetNum ];
 
-		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
+		Color::StripColors( target->pers.netname, name, sizeof( name ) );
+		id = target->pers.namelog->id;
+
+		if ( target->ent()->r.svFlags & SVF_BOT )
 		{
 			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %s", QQ( N_("$1$: player is a bot") ), cmd ) );
 			return;
 		}
 
-		if ( voteInfo[voteId].adminImmune && G_admin_permission( g_entities + clientNum, ADMF_IMMUNITY ) )
+		if ( voteInfo[voteId].adminImmune && G_admin_permission( target->ent(), ADMF_IMMUNITY ) )
 		{
 			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune") ), cmd ) );
@@ -1837,12 +1840,12 @@ static void Cmd_CallVote_f( gentity_t *ent )
 			                    " on immune admin ^7%s"
 			                    " ^3for: %s",
 			                    ent->client->pers.netname, cmd, vote,
-			                    g_entities[ clientNum ].client->pers.netname,
+			                    target->pers.netname,
 			                    reason[ 0 ] ? reason : "no reason" ) );
 			return;
 		}
 
-		if ( level.clients[ clientNum ].pers.localClient )
+		if ( target->pers.localClient )
 		{
 			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune") ), cmd ) );
@@ -1850,7 +1853,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		}
 
 		if ( team != TEAM_NONE &&
-			 ent->client->pers.team != level.clients[ clientNum ].pers.team )
+			 ent->client->pers.team != target->pers.team )
 		{
 			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %s", QQ( N_("$1$: player is not on your team") ), cmd ) );
@@ -1871,7 +1874,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	{
 	case VOTE_KICK:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "ban %s 1s%s %s^* called vote kick (%s^*)", level.clients[ clientNum ].pers.ip.str,
+		             "ban %s 1s%s %s^* called vote kick (%s^*)", target->pers.ip.str,
 		             Cmd::Escape( g_adminTempBan.Get() ).c_str(), Cmd::Escape( ent->client->pers.netname ).c_str(), Cmd::Escape( reason ).c_str() );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ), N_("Kick player '%s'"), name );
@@ -1879,7 +1882,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 
 	case VOTE_SPECTATE:
 		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-		             "speclock %d 1s%s", clientNum, Cmd::Escape( g_adminTempBan.Get() ).c_str() );
+		             "speclock %d 1s%s", targetNum, Cmd::Escape( g_adminTempBan.Get() ).c_str() );
 		Com_sprintf( level.team[ team ].voteDisplayString,
 		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Move player '%s' to spectators"), name );
@@ -1953,7 +1956,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		}
 
 	case VOTE_MUTE:
-		if ( level.clients[ clientNum ].pers.namelog->muted )
+		if ( target->pers.namelog->muted )
 		{
 			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %s", QQ( N_("$1$: player is already muted") ), cmd ) );
@@ -1968,7 +1971,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_UNMUTE:
-		if ( !level.clients[ clientNum ].pers.namelog->muted )
+		if ( !target->pers.namelog->muted )
 		{
 			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %s", QQ( N_("$1$: player is not currently muted") ), cmd ) );
@@ -1983,7 +1986,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_DENYBUILD:
-		if ( level.clients[ clientNum ].pers.namelog->denyBuild )
+		if ( target->pers.namelog->denyBuild )
 		{
 			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %s", QQ( N_("$1$: player already lost building rights") ), cmd ) );
@@ -1998,7 +2001,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_ALLOWBUILD:
-		if ( !level.clients[ clientNum ].pers.namelog->denyBuild )
+		if ( !target->pers.namelog->denyBuild )
 		{
 			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %s", QQ( N_("$1$: player already has building rights") ), cmd ) );
