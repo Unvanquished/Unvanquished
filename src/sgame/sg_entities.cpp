@@ -258,7 +258,7 @@ const char *etos( const gentity_t *entity )
 
 	Com_sprintf( resultString, MAX_ETOS_LENGTH,
 			"%s%s^7(^5%s^*|^5#%i^*)",
-			entity->names[0] ? entity->names[0] : "", entity->names[0] ? " " : "", entity->classname, entity->s.number
+			entity->names[0] ? entity->names[0] : "", entity->names[0] ? " " : "", entity->classname, entity->num()
 			);
 
 	return resultString;
@@ -927,7 +927,7 @@ bool G_IsVisible( gentity_t *start, gentity_t *end, int contents )
 	trace_t trace;
 
 	trap_Trace( &trace, start->s.pos.trBase, nullptr, nullptr, end->s.pos.trBase,
-	            start->s.number, contents, 0 );
+	            start->num(), contents, 0 );
 
 	return trace.fraction >= 1.0f || trace.entityNum == end - g_entities;
 }

@@ -189,7 +189,7 @@ static void gfx_portal_locateCamera( gentity_t *self )
 		return;
 	}
 
-	self->r.ownerNum = owner->s.number;
+	self->r.ownerNum = owner->num();
 
 	// frame holds the rotate speed
 	if ( owner->spawnflags & 1 )

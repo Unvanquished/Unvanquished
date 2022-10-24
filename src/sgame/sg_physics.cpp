@@ -128,7 +128,7 @@ void G_Physics( gentity_t *ent, int )
 
 			VectorMA( origin, -2.0f, ent->s.origin2, origin );
 
-			trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number,
+			trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->num(),
 			            ent->clipmask, 0 );
 
 			if ( tr.fraction == 1.0f )
@@ -147,7 +147,7 @@ void G_Physics( gentity_t *ent, int )
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->s.number,
+	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin, ent->num(),
 	            ent->clipmask, 0 );
 
 	VectorCopy( tr.endpos, ent->r.currentOrigin );

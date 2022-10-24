@@ -6,7 +6,7 @@ EggComponent::EggComponent(Entity& entity, AlienBuildableComponent& r_AlienBuild
 
 void EggComponent::HandleCheckSpawnPoint(Entity *&blocker, glm::vec3& spawnPoint) {
 	CheckSpawnPoint(
-		entity.oldEnt->s.number, VEC2GLM( entity.oldEnt->s.origin ),
+		entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.origin ),
 		VEC2GLM( entity.oldEnt->s.origin2 ), blocker, spawnPoint
 	);
 }

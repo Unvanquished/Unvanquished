@@ -48,12 +48,12 @@ worldEntity_t wentities[ MAX_GENTITIES ];
 
 static worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
 {
-	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
+	if ( !gEnt || gEnt->num() < 0 || gEnt->num() >= MAX_GENTITIES )
 	{
 		Sys::Drop( "G_CM_WorldEntityForGentity: bad gEnt" );
 	}
 
-	return &wentities[ gEnt->s.number ];
+	return &wentities[ gEnt->num() ];
 }
 
 static gentity_t *G_CM_GEntityForWorldEntity( worldEntity_t *ent )
@@ -78,12 +78,12 @@ void G_CM_SetBrushModel( gentity_t *ent, const char *name )
 
 	if ( !name )
 	{
-		Sys::Drop( "G_CM_SetBrushModel: NULL for #%i", ent->s.number );
+		Sys::Drop( "G_CM_SetBrushModel: NULL for #%i", ent->num() );
 	}
 
 	if ( name[ 0 ] != '*' )
 	{
-		Sys::Drop( "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
+		Sys::Drop( "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->num() );
 	}
 
 	ent->s.modelindex = atoi( name + 1 );
@@ -716,7 +716,7 @@ void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, c
 
 	if ( trace->fraction < 1 )
 	{
-		trace->entityNum = touch->s.number;
+		trace->entityNum = touch->num();
 	}
 }
 
@@ -810,12 +810,12 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 		if ( trace.allsolid )
 		{
 			clip->trace.allsolid = true;
-			trace.entityNum = touch->s.number;
+			trace.entityNum = touch->num();
 		}
 		else if ( trace.startsolid )
 		{
 			clip->trace.startsolid = true;
-			trace.entityNum = touch->s.number;
+			trace.entityNum = touch->num();
 		}
 
 		if ( trace.fraction < clip->trace.fraction )
@@ -825,7 +825,7 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 			// make sure we keep a startsolid from a previous trace
 			oldStart = clip->trace.startsolid;
 
-			trace.entityNum = touch->s.number;
+			trace.entityNum = touch->num();
 			clip->trace = trace;
 			clip->trace.startsolid |= oldStart;
 		}

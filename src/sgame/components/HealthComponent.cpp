@@ -267,7 +267,7 @@ void HealthComponent::ScaleDamageAccounts(float healthRestored) {
 	float totalAccreditedDamage = 0.0f;
 	std::vector<Entity*> relevantClients;
 	ForEntities<ClientComponent>([&](Entity& other, ClientComponent&) {
-		float clientDamage = entity.oldEnt->credits[other.oldEnt->s.number].value;
+		float clientDamage = entity.oldEnt->credits[other.oldEnt->num()].value;
 		if (clientDamage > 0.0f) {
 			totalAccreditedDamage += clientDamage;
 			relevantClients.push_back(&other);
@@ -292,6 +292,6 @@ void HealthComponent::ScaleDamageAccounts(float healthRestored) {
 
 	// Scale down or clear damage accounts.
 	for (Entity* other : relevantClients) {
-		entity.oldEnt->credits[other->oldEnt->s.number].value *= scale;
+		entity.oldEnt->credits[other->oldEnt->num()].value *= scale;
 	}
 }

@@ -92,7 +92,7 @@ static void Svcmd_EntityFire_f()
 static inline void PrintEntityOverviewLine( gentity_t *entity )
 {
 	Log::Notice( "%3i: %15s/^5%-24s^*%s%s",
-			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
+			entity->num(), Com_EntityTypeName( entity->s.eType ), entity->classname,
 			entity->names[0] ? entity->names[0] : "", entity->names[1] ? " …" : "");
 }
 

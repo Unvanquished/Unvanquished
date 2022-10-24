@@ -2365,15 +2365,15 @@ static bool FindRoomForClassChangeVertically(
 	// before starting the real trace
 	VectorCopy( newOrigin, temp );
 	temp[ 2 ] += nudgeHeight;
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->num(), MASK_PLAYERSOLID, 0 );
 	temp[ 2 ] = newOrigin[2] + nudgeHeight * tr.fraction;
 
 	// trace down to the ground so that we can evolve on slopes
-	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0 );
 	VectorCopy( tr.endpos, newOrigin );
 
 	// make REALLY sure
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0 );
 	return !tr.startsolid && tr.fraction == 1.0f;
 }
 
@@ -2410,14 +2410,14 @@ static bool FindRoomForClassChangeLaterally(
 		vec3_t start_point;
 		VectorMA( origin, distance, delta, start_point );
 		trap_Trace( &trace, start_point, toMins, toMaxs,
-				origin, ent->s.number,
+				origin, ent->num(),
 				MASK_PLAYERSOLID, 0 );
 
 		vec3_t first_trace_end;
 		VectorCopy(trace.endpos, first_trace_end);
 		// make REALLY sure
 		trap_Trace( &trace, first_trace_end, toMins, toMaxs,
-				first_trace_end, ent->s.number,
+				first_trace_end, ent->num(),
 				MASK_PLAYERSOLID, 0 );
 
 		if ( trace.startsolid || trace.fraction < 1.0f )
@@ -2857,7 +2857,7 @@ static void Cmd_Ignite_f( gentity_t *player )
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
 	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 1000, forward, end );
-	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, player->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, player->num(), MASK_PLAYERSOLID, 0 );
 
 	if ( trace.entityNum == ENTITYNUM_WORLD ) {
 		G_SpawnFire( trace.endpos, trace.plane.normal, player );
@@ -4578,7 +4578,7 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	VectorMA( origin, 65536, forward, end );
 
 	G_UnlaggedOn( ent, origin, 65536 );
-	trap_Trace( &tr, origin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr, origin, nullptr, nullptr, end, ent->num(), MASK_PLAYERSOLID, 0 );
 	G_UnlaggedOff( );
 
 	// Evaluate flood limit.
@@ -4588,7 +4588,7 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	if ( !( flags & BCF_PRECISE ) )
 		Beacon::MoveTowardsRoom( tr.endpos );
 
-	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->s.number, BCH_REMOVE ) );
+	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->num(), BCH_REMOVE ) );
 	return;
 }
 

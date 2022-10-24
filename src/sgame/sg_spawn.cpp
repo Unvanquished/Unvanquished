@@ -524,7 +524,7 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.Get() > -2 )
-			Log::Warn("Entity ^5#%i^* is missing classname – we are unable to spawn it.", spawnedEntity->s.number );
+			Log::Warn("Entity ^5#%i^* is missing classname – we are unable to spawn it.", spawnedEntity->num() );
 		return false;
 	}
 
@@ -573,7 +573,7 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 		{
 			std::string count = spawnedEntity->eclass ? std::to_string(spawnedEntity->eclass->instanceCounter) : "??";
 			Log::Notice("Successfully spawned entity ^5#%i^* as ^3#%s^*th instance of ^5%s",
-			            spawnedEntity->s.number, count, spawnedClass->name);
+			            spawnedEntity->num(), count, spawnedClass->name);
 		}
 
 		/*
@@ -588,7 +588,7 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		if (!Q_stricmp(S_WORLDSPAWN, spawnedEntity->classname))
 		{
-			Log::Warn("a ^5" S_WORLDSPAWN "^* class was misplaced into position ^5#%i^* of the spawn string – Ignoring", spawnedEntity->s.number );
+			Log::Warn("a ^5" S_WORLDSPAWN "^* class was misplaced into position ^5#%i^* of the spawn string – Ignoring", spawnedEntity->num() );
 		}
 		else
 		{
@@ -810,11 +810,11 @@ static void G_SpawnGEntityFromSpawnVars()
 	{
 		if ( level.numSpawnVars == 1 )
 		{
-			Log::Warn("encountered ghost-entity #%i with only one field: %s = %s", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+			Log::Warn("encountered ghost-entity #%i with only one field: %s = %s", spawningEntity->num(), level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
 		}
 		else
 		{
-			Log::Warn("encountered ghost entity #%i with no fields", spawningEntity->s.number);
+			Log::Warn("encountered ghost entity #%i with no fields", spawningEntity->num());
 		}
 		G_FreeEntity( spawningEntity );
 		return;
@@ -896,7 +896,7 @@ bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFi
 	{
 		if ( typeOfDeprecation < ENT_V_TMPORARY || g_debugEntities.Get() >= 1 )
 		{
-			Log::Warn("Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead", entity->s.number, actualFieldname, expectedFieldname );
+			Log::Warn("Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead", entity->num(), actualFieldname, expectedFieldname );
 		}
 	}
 

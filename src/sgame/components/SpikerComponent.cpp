@@ -41,7 +41,7 @@ void SpikerComponent::HandleDamage(float /*amount*/, gentity_t* /*source*/, Util
 	// Shoot if there is a viable target.
 	if (lastExpectedDamage > 0.0f) {
 		logger.Verbose("Spiker #%i was hurt while an enemy is close enough to also get hurt, so "
-			"go eye for an eye.", entity.oldEnt->s.number);
+			"go eye for an eye.", entity.oldEnt->num());
 
 		Fire();
 	}
@@ -109,7 +109,7 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 
 			if (!lastSensing) {
 				logger.Verbose("Spiker #%i now senses an enemy and will check more frequently for "
-					"the best moment to shoot.", entity.oldEnt->s.number);
+					"the best moment to shoot.", entity.oldEnt->num());
 
 				RegisterFastThinker();
 			}
@@ -124,7 +124,7 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 
 		if (sensing) {
 			logger.Verbose("Spiker #%i senses an enemy and expects to do %.1f damage.%s%s",
-				entity.oldEnt->s.number, expectedDamage, (lessDamage && !enoughDamage)
+				entity.oldEnt->num(), expectedDamage, (lessDamage && !enoughDamage)
 				? " This has not increased, so it's time to shoot." : "", enoughDamage ?
 				" This is already enough, shoot now." : "");
 		}
@@ -132,7 +132,7 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 		if (senseLost) {
 			logger.Verbose("Spiker #%i lost track of all enemies after expecting to do %.1f damage."
 				" This makes the spiker angry, so it will shoot anyway.",
-				entity.oldEnt->s.number, lastExpectedDamage);
+				entity.oldEnt->num(), lastExpectedDamage);
 		}
 
 		// Shoot when
@@ -163,7 +163,7 @@ bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_INFLATION}) {
 		mins[0] = mins[1] = mins[2] = -traceSize;
 		maxs[0] = maxs[1] = maxs[2] =  traceSize;
-		trap_Trace( &trace, entity.oldEnt->s.origin, mins, maxs, &end[0], entity.oldEnt->s.number, ma->clipmask, 0 );
+		trap_Trace( &trace, entity.oldEnt->s.origin, mins, maxs, &end[0], entity.oldEnt->num(), ma->clipmask, 0 );
 		gentity_t* hit = &g_entities[trace.entityNum];
 
 		if (hit && G_OnSameTeam(entity.oldEnt, hit)) {
@@ -178,11 +178,11 @@ bool SpikerComponent::Fire() {
 	gentity_t *self = entity.oldEnt;
 	// Check if still resting.
 	if (restUntil > level.time) {
-		logger.Verbose("Spiker #%i wanted to fire but wasn't ready.", entity.oldEnt->s.number);
+		logger.Verbose("Spiker #%i wanted to fire but wasn't ready.", entity.oldEnt->num());
 
 		return false;
 	} else {
-		logger.Verbose("Spiker #%i is firing!", entity.oldEnt->s.number);
+		logger.Verbose("Spiker #%i is firing!", entity.oldEnt->num());
 	}
 
 	// Play shooting animation.
@@ -235,7 +235,7 @@ bool SpikerComponent::Fire() {
 			bool fire = SafeToShoot(VEC2GLM( dir ));
 
 			logger.Debug("Spiker #%d %s: Row %d/%d: Spike %2d/%2d: "
-				"( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )", self->s.number,
+				"( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )", self->num(),
 				fire ? "fires" : "skips", row + 1, MISSILEROWS, spike + 1, spikes,
 				RAD2DEG(spikeAltitude), RAD2DEG(spikeAzimuth), dir[0], dir[1], dir[2]);
 

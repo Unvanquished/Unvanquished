@@ -231,7 +231,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		int     anim;
 
 		trap_Trace( &tr, self->s.origin, self->r.mins, self->r.maxs,
-		            self->s.origin, self->s.number, MASK_PLAYERSOLID, 0 );
+		            self->s.origin, self->num(), MASK_PLAYERSOLID, 0 );
 
 		if ( tr.startsolid || tr.fraction < 1.0f )
 		{
@@ -467,7 +467,7 @@ static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range 
 		return false;
 	}
 
-	trap_Trace( &trace, self->s.pos.trBase, nullptr, nullptr, target->s.pos.trBase, self->s.number,
+	trap_Trace( &trace, self->s.pos.trBase, nullptr, nullptr, target->s.pos.trBase, self->num(),
 	            MASK_SHOT, 0 );
 
 	if ( trace.contents & CONTENTS_SOLID ) // can we see the target?
@@ -1085,7 +1085,7 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, BUILDER_DECONSTRUCT_RANGE, forward, end );
-	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->num(), MASK_PLAYERSOLID, 0 );
 	buildable = &g_entities[ trace.entityNum ];
 
 	// Check if target is valid.
@@ -1558,7 +1558,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, trap_Trace, entity_origin, angles, &tr1 );
 	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
-	trap_Trace( &tr3, ps->origin, nullptr, nullptr, entity_origin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr3, ps->origin, nullptr, nullptr, entity_origin, ent->num(), MASK_PLAYERSOLID, 0 );
 
 	VectorCopy( entity_origin, origin );
 	*groundEntNum = tr1.entityNum;
@@ -2183,7 +2183,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	VectorScale( built->s.origin2, -4096.0f, dest );
 	VectorAdd( dest, built->s.origin, dest );
 
-	trap_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->s.number,
+	trap_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->num(),
 	            built->clipmask, 0 );
 
 	if ( tr.startsolid && !force )
