@@ -188,10 +188,10 @@ bool TurretComponent::TargetCanBeHit() {
 	glm::vec3 traceEnd     = traceStart + range * aimDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->s.number,
+	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->num(),
 	           MASK_SHOT, 0);
 
-	return (tr.entityNum == target->s.number);
+	return (tr.entityNum == target->num());
 }
 
 bool TurretComponent::TargetValid(Entity& target, bool newTarget) {
@@ -238,7 +238,7 @@ void TurretComponent::SetBaseDirection() {
 	glm::vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->s.number,
+	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->num(),
 	           MASK_SHOT, 0);
 
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.

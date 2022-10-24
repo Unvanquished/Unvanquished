@@ -978,7 +978,7 @@ botTarget_t BotGetRoamTarget( const gentity_t *self )
 	botTarget_t target;
 	glm::vec3 point;
 
-	if ( !BotFindRandomPointInRadius( self->s.number, VEC2GLM( self->s.origin ), point, 2000 ) )
+	if ( !BotFindRandomPointInRadius( self->num(), VEC2GLM( self->s.origin ), point, 2000 ) )
 	{
 		target = VEC2GLM( self->s.origin );
 	}
@@ -1071,7 +1071,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		glm::vec3 invNormal = { 0, 0, -1 };
 		glm::vec3 targetPos = target.getPos();
 		glm::vec3 end = targetPos + 600.f * invNormal;
-		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->s.number,
+		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->num(),
 		            CONTENTS_SOLID, MASK_ENTITY );
 		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
@@ -1262,7 +1262,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	maxs = {  width,  width,  width };
 	mins = { -width, -width, -height };
 
-	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
+	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->num(), MASK_SHOT, 0 );
 
 	return !G_OnSameTeam( self, &g_entities[trace.entityNum] )
 		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
@@ -1326,7 +1326,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], self->s.number, mask, 0 );
+	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], self->num(), mask, 0 );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -1334,7 +1334,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	}
 
 	//target is in range
-	if ( ( trace.entityNum == target.getTargetedEntity()->s.number
+	if ( ( trace.entityNum == target.getTargetedEntity()->num()
 				|| trace.fraction == 1.0f )
 			&& !trace.startsolid )
 	{
@@ -1583,7 +1583,7 @@ bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 				}
 			}
 
-			if ( sq->clients[ i ] == self->s.number )
+			if ( sq->clients[ i ] == self->num() )
 			{
 				if ( i < sq->front )
 				{

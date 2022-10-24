@@ -175,8 +175,8 @@ bool RocketpodComponent::CompareTargets(Entity &a, Entity &b) {
 	glm::vec3 directionToA = glm::normalize( VEC2GLM( a.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
 	glm::vec3 directionToB = glm::normalize( VEC2GLM( b.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
 
-	bool safeToShootAtA = SafeShot( entity.oldEnt->s.number, VEC2GLM( entity.oldEnt->s.pos.trBase ), directionToA );
-	bool safeToShootAtB = SafeShot( entity.oldEnt->s.number, VEC2GLM( entity.oldEnt->s.pos.trBase ), directionToB );
+	bool safeToShootAtA = SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), directionToA );
+	bool safeToShootAtB = SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), directionToB );
 
 	if ( safeToShootAtA && !safeToShootAtB)
 	{
@@ -198,7 +198,7 @@ bool RocketpodComponent::SafeShot() {
 	glm::vec3 aimDirection;
 	AngleVectors( entity.oldEnt->buildableAim, &aimDirection[0], nullptr, nullptr );
 
-	return SafeShot( entity.oldEnt->s.number, VEC2GLM( entity.oldEnt->s.pos.trBase ), aimDirection );
+	return SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), aimDirection );
 }
 
 bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin, const glm::vec3& direction) {

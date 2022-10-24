@@ -208,7 +208,7 @@ static int ImpactFlamer( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	}
 
 	// set the environment on fire
-	if ( hitEnt->s.number == ENTITYNUM_WORLD )
+	if ( hitEnt->num() == ENTITYNUM_WORLD )
 	{
 		if ( random() < FLAMER_LEAVE_FIRE_CHANCE )
 		{
@@ -225,7 +225,7 @@ static int ImpactFirebombSub( gentity_t *ent, trace_t *trace, gentity_t *hitEnt 
 	hitEnt->entity->Ignite( ent->parent );
 
 	// set the environment on fire
-	if ( hitEnt->s.number == ENTITYNUM_WORLD )
+	if ( hitEnt->num() == ENTITYNUM_WORLD )
 	{
 		G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
 	}
@@ -315,7 +315,7 @@ static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 	else
 	{
 		// Prevent a collision with the client when returning.
-		ent->r.ownerNum = hitEnt->s.number;
+		ent->r.ownerNum = hitEnt->num();
 
 		ent->think = G_ExplodeMissile;
 		ent->nextthink = level.time + FRAMETIME;
@@ -430,7 +430,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		{
 			G_AddEvent( ent, EV_MISSILE_HIT_ENTITY, dirAsByte );
 
-			ent->s.otherEntityNum = hitEnt->s.number;
+			ent->s.otherEntityNum = hitEnt->num();
 		}
 		else if ( trace->surfaceFlags & SURF_METAL )
 		{
@@ -621,7 +621,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 	// generic
 	m->s.eType             = entityType_t::ET_MISSILE;
 	m->s.modelindex        = missile;
-	m->r.ownerNum          = parent->s.number;
+	m->r.ownerNum          = parent->num();
 	m->parent              = parent;
 	m->target              = target;
 	m->think               = think;
@@ -715,7 +715,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire->entity->Ignite(fireStarter);
 
 	// attacker
-	fire->r.ownerNum = fireStarter->s.number;
+	fire->r.ownerNum = fireStarter->num();
 
 	// normal
 	VectorNormalize( normal ); // make sure normal is a direction

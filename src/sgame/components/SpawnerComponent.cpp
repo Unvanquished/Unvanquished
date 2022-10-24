@@ -44,7 +44,7 @@ void SpawnerComponent::Think(int timeDelta) {
 		}
 
 		// Suicide if blocked by the map.
-		if (blocker->oldEnt->s.number == ENTITYNUM_WORLD
+		if (blocker->oldEnt->num() == ENTITYNUM_WORLD
 		    || blocker->oldEnt->s.eType == entityType_t::ET_MOVER) {
 			Entities::Kill(entity, nullptr, MOD_SUICIDE);
 		}

@@ -70,12 +70,12 @@ static gentity_t *G_TestEntityPosition( gentity_t *ent )
 	if ( ent->client )
 	{
 		trap_Trace( &tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin,
-		            ent->s.number, ent->clipmask, 0 );
+		            ent->num(), ent->clipmask, 0 );
 	}
 	else
 	{
 		trap_Trace( &tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase,
-		            ent->s.number, ent->clipmask, 0 );
+		            ent->num(), ent->clipmask, 0 );
 	}
 
 	if ( tr.startsolid )
@@ -146,14 +146,14 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move
 	// EF_MOVER_STOP will just stop when contacting another entity
 	// instead of pushing it, but entities can still ride on top of it
 	if ( ( pusher->s.eFlags & EF_MOVER_STOP ) &&
-	     check->s.groundEntityNum != pusher->s.number )
+	     check->s.groundEntityNum != pusher->num() )
 	{
 		return false;
 	}
 
 	//don't try to move buildables unless standing on a mover
 	if ( check->s.eType == entityType_t::ET_BUILDABLE &&
-	     check->s.groundEntityNum != pusher->s.number )
+	     check->s.groundEntityNum != pusher->num() )
 	{
 		return false;
 	}
@@ -206,7 +206,7 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move
 	}
 
 	// may have pushed them off an edge
-	if ( check->s.groundEntityNum != pusher->s.number )
+	if ( check->s.groundEntityNum != pusher->num() )
 	{
 		check->s.groundEntityNum = ENTITYNUM_NONE;
 	}
@@ -339,7 +339,7 @@ static bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t
 		}
 
 		// if the entity is standing on the pusher, it will definitely be moved
-		if ( check->s.groundEntityNum != pusher->s.number )
+		if ( check->s.groundEntityNum != pusher->num() )
 		{
 			// see if the ent needs to be tested
 			if ( check->r.absmin[ 0 ] >= maxs[ 0 ]
@@ -1246,7 +1246,7 @@ static void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	float    distance;
 
 	if(!fallbackSpeed)
-		Sys::Drop("No default speed was supplied to reset_moverspeed for entity #%i of type %s.", self->s.number, self->classname);
+		Sys::Drop("No default speed was supplied to reset_moverspeed for entity #%i of type %s.", self->num(), self->classname);
 
 	G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
@@ -1363,7 +1363,7 @@ static void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 	float    angle;
 
 	if(!fallbackSpeed)
-		Sys::Drop("No default speed was supplied to reset_rotatorspeed for entity #%i of type %s.", self->s.number, self->classname);
+		Sys::Drop("No default speed was supplied to reset_rotatorspeed for entity #%i of type %s.", self->num(), self->classname);
 
 	// calculate time to reach second position from speed
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
@@ -1858,7 +1858,7 @@ void SP_func_door_model( gentity_t *self )
 	// for drawing, but clip against the brushes
 	if ( !self->model2 )
 	{
-		Log::Warn("func_door_model %d spawned with no model2 key", self->s.number );
+		Log::Warn("func_door_model %d spawned with no model2 key", self->num() );
 	}
 	else
 	{

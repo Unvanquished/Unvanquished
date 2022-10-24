@@ -170,7 +170,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	damage = self->entity->Get<HealthComponent>()->MaxHealth() / 4.0f;
 	if ( killer && killer->client )
 	{
-		damage = std::min( damage, self->credits[ killer->s.number ].value );
+		damage = std::min( damage, self->credits[ killer->num() ].value );
 	}
 
 	// Find the best assistant
@@ -346,7 +346,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( attacker )
 	{
-		killer = attacker->s.number;
+		killer = attacker->num();
 
 		if ( attacker->client )
 		{
@@ -367,7 +367,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( assistantEnt )
 	{
-		assistant = assistantEnt->s.number;
+		assistant = assistantEnt->num();
 
 		if ( assistantEnt->client )
 		{
@@ -416,7 +416,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	// broadcast the death event to everyone
 	ent = G_NewTempEntity( VEC2GLM( self->r.currentOrigin ), EV_OBITUARY );
 	ent->s.eventParm = meansOfDeath;
-	ent->s.otherEntityNum = self->s.number;
+	ent->s.otherEntityNum = self->num();
 	ent->s.otherEntityNum2 = killer;
 	ent->s.otherEntityNum3 = assistant;
 	ent->s.generic1 = assistantTeam;
@@ -480,7 +480,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 			continue;
 		}
 
-		if ( client->sess.spectatorClient == self->s.number )
+		if ( client->sess.spectatorClient == self->num() )
 		{
 			ScoreboardMessage( g_entities + i );
 		}
@@ -817,7 +817,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
-	if ( tr.fraction == 1.0  || tr.entityNum == targ->s.number )
+	if ( tr.fraction == 1.0  || tr.entityNum == targ->num() )
 	{
 		return true;
 	}

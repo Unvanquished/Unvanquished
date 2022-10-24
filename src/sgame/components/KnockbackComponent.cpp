@@ -54,5 +54,5 @@ void KnockbackComponent::HandleDamage(float amount, gentity_t* /*source*/, Util:
 	}
 
 	knockbackLogger.Debug("Knockback: client: %i, strength: %.1f (massMod: %.1f).",
-	                      entity.oldEnt->s.number, strength, massMod);
+	                      entity.oldEnt->num(), strength, massMod);
 }
