@@ -637,6 +637,20 @@ struct gclient_t
 		ASSERT(this - g_clients < MAX_CLIENTS);
 		return this - g_clients;
 	}
+
+	// strictly speaking, we could return a non-const pointer, but this is
+	// probably more in phase with the idea
+	const gentity_t *ent() const {
+		ASSERT(this - g_clients >= 0);
+		ASSERT(this - g_clients < MAX_CLIENTS);
+		return &g_entities[this - g_clients];
+	}
+
+	gentity_t *ent() {
+		ASSERT(this - g_clients >= 0);
+		ASSERT(this - g_clients < MAX_CLIENTS);
+		return &g_entities[this - g_clients];
+	}
 };
 
 /**
