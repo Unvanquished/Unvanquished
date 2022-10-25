@@ -228,8 +228,8 @@ Cvar::Cvar<int> g_maxMiners("g_maxMiners", "set maximum number of miners per tea
 // bot buy cvars
 Cvar::Cvar<bool> g_bot_buy("g_bot_buy", "whether bots use the Armoury", Cvar::NONE, true);
 // human weapons
-Cvar::Cvar<bool> g_bot_ckit("g_bot_ckit", "whether bots buy the Construction Kit (only current use is for repairs)", Cvar::NONE, true);
-Cvar::Cvar<bool> g_bot_rifle("g_bot_rifle", "whether bots use SMG", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_ckit("g_bot_ckit", "whether bots use the Construction Kit (only current use is for repairs)", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_rifle("g_bot_rifle", "whether bots use the SMG", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_painsaw("g_bot_painsaw", "whether bots buy the Painsaw", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_shotgun("g_bot_shotgun", "whether bots buy the Shotgun", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_lasgun("g_bot_lasgun", "whether bots buy the Lasgun", Cvar::NONE, true);
