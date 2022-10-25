@@ -1546,6 +1546,8 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 	{
 		client = &g_clients[ playerNum ];
 
+		if ( !client->ent()->inuse ) continue;
+
 		team = client->pers.team;
 
 		teamCredits[ team ] += client->pers.credit;
