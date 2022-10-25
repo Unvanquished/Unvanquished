@@ -943,6 +943,63 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	}
 }
 
+// This function gives an estimate of how dangerous a player is,
+// 1.0f is maximum danger, such as tyrant or bsuit+luci
+static float EnemyPlayerDangerHeuristic( playerState_t &ps )
+{
+	if ( ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
+	{
+		class_t class_ = static_cast<class_t>( ps.stats[ STAT_CLASS ] );
+
+		// grangers
+		if ( class_ == PCL_ALIEN_BUILDER0 )
+			return 0.2f;
+		if ( class_ == PCL_ALIEN_BUILDER0_UPG )
+			return 0.4f;
+
+		int classPrice = BG_Class( class_ )->price;
+		int maxClassPrice = BG_Class( PCL_ALIEN_LEVEL4 )->price;
+
+		return 0.5f + 0.5f * classPrice / maxClassPrice;
+	}
+
+	// Humans:
+	// We don't take into account upgrades that aren't armors, they are
+	// either visible but harmless (radar) or invisible (grenade)
+	int classPrice = 0;
+	for ( int upgradeNum = UP_NONE + 1; upgradeNum < UP_BATTLESUIT; upgradeNum++ )
+	{
+		if ( BG_InventoryContainsUpgrade( upgradeNum, ps.stats ) )
+		{
+			classPrice = BG_Upgrade( upgradeNum )->price;
+		}
+	}
+	// We shift price a bit so that armor prices get
+	// a danger level closer to their actual value
+	classPrice = std::max(0, classPrice - 100);
+	int maxClassPrice = BG_Upgrade( UP_BATTLESUIT )->price - 100;
+
+	float classHeuristic = 0.4f + 0.6f * classPrice / maxClassPrice;
+
+	// Weapon
+	weapon_t weapon = static_cast<weapon_t>( ps.stats[ STAT_WEAPON ] );
+	float weaponHeuristic;
+	if (weapon == WP_NONE || weapon == WP_HBUILD)
+	{
+		weaponHeuristic = 0.25f; // blaster
+	}
+	else
+	{
+		int weaponPrice = BG_Weapon( weapon )->price;
+		int maxWeaponPrice = BG_Weapon( WP_LUCIFER_CANNON )->price;
+
+		weaponHeuristic = 0.5f + 0.5f * weaponPrice / maxWeaponPrice;
+	}
+
+	// this is the geometric mean. I found it makes a lot of sense
+	return sqrtf( classHeuristic * weaponHeuristic );
+}
+
 // returns a float between -π and π, representing the direction
 float FindLessRiskyDirection( const gentity_t *self )
 {
@@ -971,6 +1028,7 @@ float FindLessRiskyDirection( const gentity_t *self )
 		// TL;DR: go on the opposite direction of the enemies far away
 		// in case of doubt
 		float weight = tanhf( cbrtf( distance / 200.0f ) );
+		weight *= EnemyPlayerDangerHeuristic( target->client->ps );
 
 		// change the abs() to be equal to weight
 		delta *= weight/distance;
