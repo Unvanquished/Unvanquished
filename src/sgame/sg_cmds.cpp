@@ -2525,7 +2525,7 @@ static void G_AlienEvolve_evolve( gentity_t *ent, class_t newClass, const vec3_t
 //     last step, this allows knowing if you can evolve
 bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 {
-	int       clientNum = ent->client->ps.clientNum;
+	int       clientNum = ent->num();
 	vec3_t    infestOrigin;
 	class_t   currentClass = ent->client->pers.classSelection;
 
@@ -2663,7 +2663,7 @@ Cmd_Class_f
 */
 static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report )
 {
-	int clientNum = ent->client->ps.clientNum;
+	int clientNum = ent->num();
 	team_t team = G_Team( ent );
 	class_t newClass = BG_ClassByName( s )->number;
 
@@ -2745,7 +2745,7 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 
 static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
 {
-	int clientNum = ent->client - level.clients;
+	int clientNum = ent->num();
 
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
