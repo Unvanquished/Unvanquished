@@ -4,7 +4,7 @@ selector
 
 	sequence
 	{
-		condition alertedToEnemy
+		condition alertedToEnemy && isVisible( E_ENEMY )
 
 		fallback
 		{
