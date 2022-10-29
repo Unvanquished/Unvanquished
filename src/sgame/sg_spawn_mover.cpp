@@ -601,7 +601,7 @@ void BotHandleDoor( gentity_t *ent )
 		// the door might have moved, we don't want to keep an incorrect state
 		G_BotRemoveObstacle( ent->num() );
 
-		G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent - g_entities );
+		G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
 	}
 }
 
@@ -2679,7 +2679,7 @@ static void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 	{
 		VectorAdd( self->restingPosition, self->r.mins, mins );
 		VectorAdd( self->restingPosition, self->r.maxs, maxs );
-		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), self - g_entities );
+		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), self->num() );
 		trap_LinkEntity( self );
 		if( !( self->spawnflags & 2 ) )
 			G_KillBrushModel( self, activator );
@@ -2694,7 +2694,7 @@ static void func_spawn_reset( gentity_t *self )
 	{
 		VectorAdd( self->restingPosition, self->r.mins, mins );
 		VectorAdd( self->restingPosition, self->r.maxs, maxs );
-		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), self - g_entities );
+		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), self->num() );
 		trap_LinkEntity( self );
 	}
 	else

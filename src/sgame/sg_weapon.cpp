@@ -1397,7 +1397,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 	{
 		for ( i = 0; i < MAX_TRAMPLE_BUILDABLES_TRACKED; i++ )
 		{
-			if ( self->client->trampleBuildablesHit[ i ] == victim - g_entities )
+			if ( self->client->trampleBuildablesHit[ i ] == victim->num() )
 			{
 				return;
 			}
@@ -1405,7 +1405,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 
 		self->client->trampleBuildablesHit[
 		  self->client->trampleBuildablesHitPos++ % MAX_TRAMPLE_BUILDABLES_TRACKED ] =
-		    victim - g_entities;
+		    victim->num();
 	}
 
 	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.weaponCharge / LEVEL4_TRAMPLE_DURATION;

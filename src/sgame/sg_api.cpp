@@ -205,6 +205,6 @@ bool trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
 
 void trap_AdjustAreaPortalState(gentity_t *ent, bool open)
 {
-	VM::SendMsg<AdjustAreaPortalStateMsg>(ent - g_entities, open);
+	VM::SendMsg<AdjustAreaPortalStateMsg>(ent->num(), open);
 	G_CM_AdjustAreaPortalState( ent, open );
 }

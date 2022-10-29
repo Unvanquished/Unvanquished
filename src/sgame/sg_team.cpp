@@ -328,7 +328,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	Beacon::PropagateAll( );
 
 	G_LogPrintf( "ChangeTeam: %d %s: %s^* switched teams",
-	             ( int )( ent - g_entities ), BG_TeamName( newTeam ), ent->client->pers.netname );
+	             ent->num(), BG_TeamName( newTeam ), ent->client->pers.netname );
 
 	G_namelog_update_score( ent->client );
 	TeamplayInfoMessage( ent );
@@ -506,7 +506,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 
 	if( string[ 0 ] )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "tinfo%s", string ) );
+		trap_SendServerCommand( ent->num(), va( "tinfo%s", string ) );
 		ent->client->pers.teamInfo = level.time;
 	}
 }
