@@ -750,6 +750,18 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 		invalid = true;
 	}
 
+	if ( !(client->ent()->r.svFlags & SVF_BOT) )
+	{
+		const char *find = "[bot]";
+		const char *found;
+		const char *out_str;
+		while ( (out_str = out_string.c_str()) && (found = Q_stristr(out_str, find)) )
+		{
+			std::size_t index = found - out_str;
+			out_string.erase(index, strlen(find));
+		}
+	}
+
 	// don't allow comment-beginning strings because it messes up various parsers
 	if ( out_string.find( "//" ) != std::string::npos ||
 		out_string.find( "/*" ) != std::string::npos )
