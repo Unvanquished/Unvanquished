@@ -6076,17 +6076,18 @@ bool G_admin_listbots( gentity_t *ent )
 {
 	ADMP( va( "%s %d", QQ( N_( "^3listbots:^* $1$ bots in game:") ), level.numPlayingBots ) );
 	ADMP( QQ( N_( "Slot Name Team [s=skill ss=skillset b=behavior g=goal]" ) ) );
-	ADMBP_begin();
-	ForEntities<ClientComponent>( []( Entity& entity, ClientComponent& )
+	ForEntities<ClientComponent>( [ent]( Entity& entity, ClientComponent& )
 	{
-		gentity_t* ent = entity.oldEnt;
-		if ( !( ent->r.svFlags & SVF_BOT ) )
+		gentity_t* bot = entity.oldEnt;
+		if ( !( bot->r.svFlags & SVF_BOT ) )
 		{
 			return;
 		}
-		ADMBP( va( "%i %s", ent->num(), G_BotToString( ent ).c_str() ) );
+		trap_SendServerCommand( ent ? ent->num() : -2, Str::Format( "print %s %d %s",
+			QQ( "$1$ $2$" ),
+			bot->num(),
+			Quote( G_BotToString( bot ).c_str() ) ).c_str() );
 	} );
-	ADMBP_end();
 	return true;
 }
 
