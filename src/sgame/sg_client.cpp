@@ -1735,7 +1735,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// the respawned flag will be cleared after the attack and jump keys come up
 	client->ps.pm_flags |= PMF_RESPAWNED;
 
-	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
+	trap_GetUsercmd( client->num(), &ent->client->pers.cmd );
 	G_SetClientViewAngle( ent, spawn_angles );
 
 	if ( client->sess.spectatorState == SPECTATOR_NOT )

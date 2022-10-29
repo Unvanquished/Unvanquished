@@ -124,7 +124,7 @@ gentity_t *G_NewEntity()
 		{
 			if ( g_debugEntities.Get() ) {
 				Log::Verbose( "Reusing Entity %i, freed at %i (%ims ago)",
-				              forcedEnt-g_entities, forcedEnt->freetime, level.time - forcedEnt->freetime );
+				              forcedEnt->num(), forcedEnt->freetime, level.time - forcedEnt->freetime );
 			}
 			// reuse this slot
 			G_InitGentity( forcedEnt );
@@ -166,7 +166,7 @@ void G_FreeEntity( gentity_t *entity )
 		Log::Debug("Freeing Entity %s", etos(entity));
 	}
 
-	G_BotRemoveObstacle( entity - g_entities );
+	G_BotRemoveObstacle( entity->num() );
 
 	if( entity->eclass && entity->eclass->instanceCounter > 0 )
 	{

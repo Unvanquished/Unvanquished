@@ -559,7 +559,7 @@ void G_admin_cmdlist( gentity_t *ent )
 
 		if ( len + outlen >= sizeof( out ) - 1 )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "cmds%s", out ) );
+			trap_SendServerCommand( ent->num(), va( "cmds%s", out ) );
 			outlen = 0;
 		}
 
@@ -567,7 +567,7 @@ void G_admin_cmdlist( gentity_t *ent )
 		outlen += len;
 	}
 
-	trap_SendServerCommand( ent - g_entities, va( "cmds%s", out ) );
+	trap_SendServerCommand( ent->num(), va( "cmds%s", out ) );
 }
 
 // match a certain flag within these flags
@@ -787,7 +787,7 @@ bool G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 		}
 
 		// can rename ones self to the same name using different colors
-		if ( i == ( ent - g_entities ) )
+		if ( i == ( ent->num() ) )
 		{
 			continue;
 		}
@@ -1130,7 +1130,7 @@ void G_admin_authlog( gentity_t *ent )
 	             ( level ) ? level->flags : "" );
 
 	G_LogPrintf( "AdminAuth: %i \"%s^*\" \"%s^*\" [%d] (%s): %s",
-	             ( int )( ent - g_entities ), ent->client->pers.netname,
+	             ent->num(), ent->client->pers.netname,
 	             ent->client->pers.admin->name, ent->client->pers.admin->level,
 	             ent->client->pers.guid, aflags );
 }
@@ -2348,7 +2348,7 @@ bool G_admin_setlevel( gentity_t *ent )
 
 		if ( l && !a->pubkey[ 0 ] )
 		{
-			trap_GetPlayerPubkey( vic - g_entities, a->pubkey, sizeof( a->pubkey ) );
+			trap_GetPlayerPubkey( vic->num(), a->pubkey, sizeof( a->pubkey ) );
 		}
 
 		vic->client->pers.pubkey_authenticated = 1;
@@ -2466,7 +2466,7 @@ bool G_admin_slap( gentity_t *ent )
 			 ( damage > 0 ? Quote( va( "with %.0f damage", damage ) ) : QQ( "" ) ) ) );
 	} // only print the chat msg if they don't die. otherwise the MOD_SLAP event will suffice.
 
-	CPx( vic - g_entities, va( "cp_tr " QQ( N_( "[cross]$1$$2$ is not amused![cross]" ) ) " %s %s",
+	CPx( vic->num(), va( "cp_tr " QQ( N_( "[cross]$1$$2$ is not amused![cross]" ) ) " %s %s",
 		G_quoted_admin_name( ent ),
 		( health->Alive() ) ? "^7" : "^i" ) ); // if they die, make the text red
 
@@ -5563,7 +5563,7 @@ bool G_admin_register( gentity_t *ent )
 	}
 
 	trap_SendConsoleCommand( va( "setlevel %d %d;",
-	                         ( int )( ent - g_entities ),
+	                         ent->num(),
 	                         level ) );
 
 	AP( va( "print_tr %s %s", QQ( N_("^3register:^* $1$^* is now a protected name") ),
@@ -5585,8 +5585,7 @@ bool G_admin_unregister( gentity_t *ent )
 		return false;
 	}
 
-	trap_SendConsoleCommand( va( "setlevel %d 0;",
-	                         ( int )( ent - g_entities ) ) );
+	trap_SendConsoleCommand( va( "setlevel %d 0;", ent->num() ) );
 
 	AP( va( "print_tr %s %s", QQ( N_("^3unregister:^* $1$^* is now an unprotected name") ),
 	        Quote( ent->client->pers.admin->name ) ) );
@@ -6086,7 +6085,7 @@ bool G_admin_listbots( gentity_t *ent )
 		{
 			return;
 		}
-		ADMBP( va( "%zu %s", ent - g_entities, G_BotToString( ent ).c_str() ) );
+		ADMBP( va( "%i %s", ent->num(), G_BotToString( ent ).c_str() ) );
 	} );
 	ADMBP_end();
 	return true;

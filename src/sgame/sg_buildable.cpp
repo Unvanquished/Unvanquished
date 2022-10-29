@@ -2022,7 +2022,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		maxs[0] *= fixVal; maxs[1] *= fixVal;
 		mins += origin;
 		maxs += origin;
-		G_BotAddObstacle( mins, maxs, built - g_entities );
+		G_BotAddObstacle( mins, maxs, built->num() );
 	}
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
