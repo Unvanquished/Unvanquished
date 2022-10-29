@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "Entities.h"
 
+static Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
+
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
 
@@ -591,8 +593,6 @@ void G_BotCleanup()
 // add or remove bots to match team size targets set by 'bot fill' command
 static void G_BotCheckDefaultFill()
 {
-	static Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
-
 	Util::optional<int> fillCount = g_bot_defaultFill.GetModifiedValue();
 	if ( fillCount )
 	{
@@ -611,6 +611,8 @@ void G_BotFill(bool immediately)
 		return;  // don't check every frame to prevent warning spam
 	}
 
+	G_BotCheckDefaultFill();
+
 	nextCheck = level.time + 2000;
 	//FIXME this function can actually be called before bots had time to connect
 	//  resulting in filling too many bots.
@@ -618,8 +620,6 @@ void G_BotFill(bool immediately)
 	{
 		return;
 	}
-
-	G_BotCheckDefaultFill();
 
 	struct fill_t
 	{

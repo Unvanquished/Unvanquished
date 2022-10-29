@@ -553,6 +553,10 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
 
+	// initalize bot fill team size from g_bot_defaultFill now so that it will be overwritten
+	// by a `bot fill` in map configs
+	G_BotFill(false);
+
 	// retrieve map name and layout to load configs.
 	{
 		std::string map = Cvar::GetValue( "mapname");
