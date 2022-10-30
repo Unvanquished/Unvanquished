@@ -444,16 +444,16 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	// set the abs box
 	if ( gEnt->r.bmodel && ( angles[ 0 ] || angles[ 1 ] || angles[ 2 ] ) )
 	{
-		// expand for rotation
-		float max;
+		glm::mat3 matrix = RotationMatrix( VEC2GLM( angles ) );
 
-		max = RadiusFromBounds( gEnt->r.mins, gEnt->r.maxs );
+		glm::vec3 mins = matrix * VEC2GLM( gEnt->r.mins );
+		glm::vec3 maxs = matrix * VEC2GLM( gEnt->r.maxs );
 
-		for ( int i = 0; i < 3; i++ )
-		{
-			gEnt->r.absmin[ i ] = origin[ i ] - max;
-			gEnt->r.absmax[ i ] = origin[ i ] + max;
-		}
+		glm::vec3 absmin = glm::min(mins, maxs) + VEC2GLM(origin);
+		glm::vec3 absmax = glm::max(mins, maxs) + VEC2GLM(origin);
+
+		VectorCopy(absmin, gEnt->r.absmin);
+		VectorCopy(absmax, gEnt->r.absmax);
 	}
 	else
 	{
