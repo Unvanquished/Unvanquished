@@ -1408,7 +1408,7 @@ static glm::vec3 BotPredictPosition( gentity_t *self, gentity_t const *predict, 
 	botTarget_t target;
 	target = predict;
 	glm::vec3 aimLoc = BotGetIdealAimLocation( self, target );
-	return aimLoc + time / 1000.0f * VEC2GLM( predict->s.apos.trDelta );
+	return aimLoc + time / 1000.0f * VEC2GLM( predict->s.pos.trDelta );
 }
 
 void BotAimAtEnemy( gentity_t *self )
