@@ -677,6 +677,7 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 			ent->s.apos.trType = trType_t::TR_LINEAR_STOP;
 			break;
 
+		// TODO: have bots treat them as obstacles too, because they *are* obstacles.
 		case MODEL_POS1:
 			break;
 
