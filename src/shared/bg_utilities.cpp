@@ -220,3 +220,11 @@ void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right
 		(*up)[2] = cr * cp;
 	}
 }
+
+// This is a drop in replacement for AnglesToAxis
+WARN_UNUSED_RESULT glm::mat3 RotationMatrix( const glm::vec3 &angles ) {
+	glm::mat3 m;
+	AngleVectors( angles, &m[0], &m[1], &m[2] );
+	m[1] *= -1.0f;
+	return m;
+}
