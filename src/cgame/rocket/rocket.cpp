@@ -486,25 +486,43 @@ void Rocket_Update()
 	Rml::Lua::Timer::Update(rocketInfo.realtime);
 }
 
+static std::unordered_map<char, std::string> htmlEscapeStrings = {
+	{ '<', "&lt;" },
+	{ '>', "&gt;" },
+	{ '&', "&amp;" },
+	{ '"', "&quot;" },
+	{ '\'', "&apos;" },
+};
+
+static std::string CG_EscapeHTMLChar( const char c, bool reuse = true, bool endline = false )
+{
+	std::string s = htmlEscapeStrings[ c ];
+
+	// Reuse the current character if no conversion is found.
+	if ( s.empty() )
+	{
+		if ( endline && c == '\n' )
+		{
+			s = "<br />";
+		}
+		else if ( reuse )
+		{
+			return std::string( 1, c );
+		}
+	}
+
+	return s;
+}
+
 std::string CG_EscapeHTMLText( Str::StringRef text )
 {
 	std::string out;
-	for (char c : text) {
-		switch (c) {
-		case '<':
-			out += "&lt;";
-			break;
-		case '>':
-			out += "&gt;";
-			break;
-		case '&':
-			out += "&amp;";
-			break;
-		default:
-			out += c;
-			break;
-		}
+
+	for (char c : text)
+	{
+		out += CG_EscapeHTMLChar( c );
 	}
+
 	return out;
 }
 
@@ -514,8 +532,24 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 {
 	Rml::String out;
 	Rml::String spanstr;
-	bool span = false;
-	bool spanHasContent = false;
+
+	// HACK: Guess when a string needs RP_QUAKE.
+	if ( ! ( parseFlags & RP_QUAKE ) )
+	{
+		const char *escape = strchr( in, '^' );
+		if ( escape != NULL && escape[ 1 ] != '^' )
+		{
+			parseFlags |= RP_QUAKE;
+		}
+	}
+
+	bool emoticons = parseFlags & RP_EMOTICONS;
+	bool quake = parseFlags & RP_QUAKE;
+
+	if ( quake )
+	{
+		out.append( "<span>" );
+	}
 
 	Color::Parser parser(in, Color::Color());
 	for ( auto iter = parser.begin(); iter != parser.end(); ++iter )
@@ -525,46 +559,15 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 		{
 			char c = *token.Begin();
 			const emoticonData_t *emoticon;
-			if ( c == '<' )
+
+			std::string s = CG_EscapeHTMLChar( c, false, true );
+
+			if ( !s.empty() )
 			{
-				if ( span && !spanHasContent )
-				{
-					spanHasContent = true;
-					out.append( spanstr );
-				}
-				out.append( "&lt;" );
+				out.append( s );
 			}
-			else if ( c == '>' )
+			else if ( emoticons && ( emoticon = BG_EmoticonAt( token.Begin() ) ) )
 			{
-				if ( span && !spanHasContent )
-				{
-					spanHasContent = true;
-					out.append( spanstr );
-				}
-				out.append( "&gt;" );
-			}
-			else if ( c == '&' )
-			{
-				if ( span && !spanHasContent )
-				{
-					spanHasContent = true;
-					out.append( spanstr );
-				}
-				out.append( "&amp;" );
-			}
-			else if ( c == '\n' )
-			{
-				out.append( span && spanHasContent ? "</span><br />" : "<br />" );
-				span = false;
-				spanHasContent = false;
-			}
-			else if ( ( parseFlags & RP_EMOTICONS ) && ( emoticon = BG_EmoticonAt( token.Begin() ) ) )
-			{
-				if ( span && !spanHasContent )
-				{
-					spanHasContent = true;
-					out.append( spanstr );
-				}
 				out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
 				while ( iter != parser.end() && *iter->Begin() != ']' )
 				{
@@ -573,51 +576,35 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 			}
 			else
 			{
-				if ( span && !spanHasContent )
-				{
-					out.append( spanstr );
-					spanHasContent = true;
-				}
 				out.append( token.Begin(), token.Size() );
 			}
 		}
-		else if ( token.Type() == Color::Token::TokenType::COLOR )
+		else if ( quake && ( token.Type() == Color::Token::TokenType::COLOR ) )
 		{
-			if ( span && spanHasContent )
+			// HACK: Why is zeroed alpha used to detect reset color code?
+			if ( token.Color().Alpha() == 0  )
 			{
-				out.append( "</span>" );
-				span = false;
-				spanHasContent = false;
+				out.append( "</span><span>" );
 			}
-
-			if ( token.Color().Alpha() != 0  )
+			else
 			{
-				char rgb[32];
+				char rgb[38];
 				Color::Color32Bit color32 = token.Color();
-				Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
+				Com_sprintf( rgb, sizeof( rgb ), "</span><span style='color: #%02X%02X%02X;'>",
 						(int) color32.Red(),
 						(int) color32.Green(),
 						(int) color32.Blue() );
 
-				// don't add the span yet, because it might be empty
-				spanstr = rgb;
-
-				span = true;
-				spanHasContent = false;
+				out.append( rgb );
 			}
 		}
 		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
 		{
-			if ( span && !spanHasContent )
-			{
-				out.append( spanstr );
-				spanHasContent = true;
-			}
 			out.append( 1, Color::Constants::ESCAPE );
 		}
 	}
 
-	if ( span && spanHasContent )
+	if ( quake )
 	{
 		out.append( "</span>" );
 	}
