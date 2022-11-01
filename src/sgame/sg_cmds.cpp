@@ -2493,7 +2493,7 @@ static void G_AlienEvolve_evolve( gentity_t *ent, class_t newClass, const vec3_t
 	else
 	{
 		// remove credit
-		G_AddCreditToClient( ent->client, cost, true );
+		G_AddCreditToClient( ent->client, -short(cost), true );
 	}
 	ent->client->pers.classSelection = newClass;
 	ClientUserinfoChanged( ent->client->ps.clientNum, false );
