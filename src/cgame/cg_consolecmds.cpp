@@ -429,7 +429,10 @@ void CG_HideScores_f()
 
 static void CG_BeaconMenu_f()
 {
-	if ( !cg.snap || cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+	if ( !cg.snap
+		|| cg.clientNum != cg.snap->ps.clientNum /* following */
+		|| cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT /* spectating */ )
+
 	{
 		return;
 	}
