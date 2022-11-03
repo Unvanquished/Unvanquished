@@ -1428,7 +1428,7 @@ void BotAimAtEnemy( gentity_t *self )
 	}
 
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
-	glm::vec3 desired = VEC2GLM( self->botMind->futureAim ) - viewOrigin;
+	glm::vec3 desired = self->botMind->futureAim - viewOrigin;
 	desired = glm::normalize( desired );
 	glm::vec3 current;
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &current, nullptr, nullptr );
