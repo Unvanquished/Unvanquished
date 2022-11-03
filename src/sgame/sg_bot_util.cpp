@@ -2325,7 +2325,10 @@ botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
 
 	if (!targetsValidEntity())
 	{
-		Log::Warn("bot: selecting invalid entity as target");
+		Log::Warn( "bot: selecting invalid entity as target, %s",
+			!newTarget->inuse ? "entity isn't allocated" :
+			!Entities::IsAlive(newTarget) ? "entity is dead" :
+				"for some unspecified reason" );
 	}
 
 	return *this;
