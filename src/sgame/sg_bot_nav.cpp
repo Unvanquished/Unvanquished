@@ -579,17 +579,13 @@ static void BotDirectionToUsercmd( gentity_t *self, const glm::vec3 &dir, usercm
 	signed char speed = BotGetMaxMoveSpeed( self );
 
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, nullptr );
-	forward[2] = 0;
-	forward = glm::normalize( forward );
-	right[2] = 0;
-	right = glm::normalize( right );
 
 	// get direction and non-optimal magnitude
-	forwardmove = speed * glm::dot( forward, dir );
-	rightmove = speed * glm::dot( right, dir );
+	forwardmove = speed * Alignment2D( forward, dir ); // Alignment2D is cos() so we have forwardmove²+rightmove² = 1
+	rightmove = speed * Alignment2D( right, dir );
 
 	// find optimal magnitude to make speed as high as possible
-	if ( Q_fabs( forwardmove ) > Q_fabs( rightmove ) )
+	if ( fabsf( forwardmove ) > fabsf( rightmove ) )
 	{
 		float highestforward = forwardmove < 0 ? -speed : speed;
 
