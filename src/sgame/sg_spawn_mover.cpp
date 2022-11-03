@@ -599,7 +599,7 @@ void BotHandleDoor( gentity_t *ent )
 	if ( IsDoor( ent ) && !IsAutomaticMover( ent ) )
 	{
 		// the door might have moved, we don't want to keep an incorrect state
-		G_BotRemoveObstacle( ent->s.clientNum );
+		G_BotRemoveObstacle( ent->num() );
 
 		G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent - g_entities );
 	}

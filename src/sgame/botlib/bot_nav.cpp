@@ -391,7 +391,7 @@ struct bbox_t {
 	glm::vec3 maxs;
 };
 static std::map<int, bbox_t> savedObstacles;
-static std::map<int, qhandle_t> obstacleHandles; // handles of detour's obstacles, if any
+static std::map<int, std::array<dtObstacleRef, MAX_NAV_DATA>> obstacleHandles; // handles of detour's obstacles, if any
 
 extern bool navMeshLoaded;
 void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum )
@@ -406,9 +406,10 @@ void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacl
 		return;
 	}
 
+	std::array<dtObstacleRef, MAX_NAV_DATA> handles;
+	std::fill(handles.begin(), handles.end(), (unsigned int)-1);
 	for ( int i = 0; i < numNavData; i++ )
 	{
-		dtObstacleRef ref;
 		NavData_t *nav = &BotNavData[ i ];
 
 		const dtTileCacheParams *params = nav->cache->getParams();
@@ -426,8 +427,12 @@ void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacl
 		// offset mins down by agent height so obstacles placed on ledges are handled correctly
 		tempBox.mins[ 1 ] -= params->walkableHeight;
 
-		nav->cache->addBoxObstacle( tempBox.mins, tempBox.maxs, &ref );
-		obstacleHandles[i] = ref;
+		nav->cache->addBoxObstacle( tempBox.mins, tempBox.maxs, &handles[i] );
+	}
+	auto result = obstacleHandles.insert({obstacleNum, std::move(handles)});
+	if ( !result.second )
+	{
+		Log::Warn("Insertion of obstacle %i failed. Was an obstacle of this number inserted already?", obstacleNum);
 	}
 }
 
@@ -451,18 +456,22 @@ void G_BotRemoveObstacle( int obstacleNum )
 		savedObstacles.erase(obstacle);
 	}
 
-	auto handle = obstacleHandles.find(obstacleNum);
-	if (handle != obstacleHandles.end()) {
+	auto iterator = obstacleHandles.find(obstacleNum);
+	if (iterator != obstacleHandles.end()) {
 		for ( int i = 0; i < numNavData; i++ )
 		{
 			NavData_t *nav = &BotNavData[ i ];
+			std::array<dtObstacleRef, MAX_NAV_DATA> &handles = iterator->second;
 			if ( nav->cache->getObstacleCount() <= 0 )
 			{
 				continue;
 			}
-			nav->cache->removeObstacle( handle->second );
+			if ( handles[i] != (unsigned int)-1 )
+			{
+				nav->cache->removeObstacle( handles[i] );
+			}
 		}
-		obstacleHandles.erase(handle);
+		obstacleHandles.erase(iterator);
 	}
 }
 
