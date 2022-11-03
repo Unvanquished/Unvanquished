@@ -2377,10 +2377,7 @@ bool botTarget_t::targetsCoordinates() const
 
 bool botTarget_t::targetsValidEntity() const
 {
-	if (ent) {
-		return BotEntityIsValidTarget(ent.get());
-	}
-	return false;
+	return BotEntityIsValidTarget(ent.get());
 }
 
 const gentity_t *botTarget_t::getTargetedEntity() const
