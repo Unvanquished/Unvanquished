@@ -1058,8 +1058,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 
 	// account for building on wall or ceiling
 	if ( entType == entityType_t::ET_PLAYER ||
-			( entType == entityType_t::ET_BUILDABLE
-			  && target.getTargetedEntity()->s.origin2[ 2 ] < MIN_WALK_NORMAL ) )
+		entType == entityType_t::ET_BUILDABLE )
 	{
 		trace_t trace;
 
@@ -1070,12 +1069,19 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		// try to find a position closer to the ground
 		glm::vec3 invNormal = { 0, 0, -1 };
 		glm::vec3 targetPos = target.getPos();
+		if ( entType == entityType_t::ET_BUILDABLE
+			&& G_OnSameTeam( self, target.getTargetedEntity() )
+			&& target.getTargetedEntity()->s.modelindex == BA_H_MEDISTAT )
+		{
+			glm::vec3 normal = VEC2GLM( target.getTargetedEntity()->s.origin2 );
+			targetPos += normal * 50.0f;
+			invNormal = -normal;
+		}
 		glm::vec3 end = targetPos + 600.f * invNormal;
 		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->num(),
 		            CONTENTS_SOLID, MASK_ENTITY );
 		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
-	
 
 	// increase extents a little to account for obstacles cutting into the navmesh
 	// also accounts for navmesh erosion at mesh boundrys
