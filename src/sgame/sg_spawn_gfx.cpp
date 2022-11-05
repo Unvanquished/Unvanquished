@@ -106,7 +106,7 @@ Finds an empty spot radius units from origin
 */
 static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spot )
 {
-	glm::vec3 total;
+	glm::vec3 total = {};
 	//54(!) traces to test for empty spots
 	for ( int i = -1; i <= 1; i++ )
 	{
