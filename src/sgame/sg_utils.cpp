@@ -785,8 +785,6 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 	{
 		client = &g_clients[ clientNum ];
 
-		if ( !client->ent()->inuse ) continue;
-
 		if ( client->pers.team == team )
 		{
 			if ( clientNum < 32 )
