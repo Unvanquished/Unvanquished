@@ -184,9 +184,19 @@ namespace Clustering {
 			 * @param laxity Factor that scales the allowed deviation from the average edge length.
 			 * @param edgeVisCallback Relation that decides whether an edge should be considered.
 			 */
-			EuclideanClustering(float laxity = 1.0,
-			                    std::function<bool(Data, Data)> edgeVisCallback = nullptr)
-			    : laxity(laxity), edgeVisCallback(edgeVisCallback)
+			EuclideanClustering(float laxity_ = 1.0,
+			                    std::function<bool(Data, Data)> edgeVisCallback_ = nullptr) :
+				clusters(),
+				records(),
+				edges(),
+				mstEdges(),
+				forestEdges(),
+				mstAverageDistance(0.0f),
+				mstStandardDeviation(0.0f),
+				dirtyClusters(true),
+				dirtyMST(true),
+				laxity(laxity_),
+				edgeVisCallback(edgeVisCallback_)
 			{}
 
 			/**
