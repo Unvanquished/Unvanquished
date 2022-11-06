@@ -1247,36 +1247,17 @@ static AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	return node;
 }
 
-/*
-======================
-ReadBehaviorTree
-
-Load a behavior tree of the given name from a file
-======================
-*/
-
-AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
+// Add preprocessor defines for use in the behavior tree
+static void SetBehaviorTreeDefines()
 {
-	int i;
-	char treefilename[ MAX_QPATH ];
-	int handle;
-	pc_token_list *tokenlist;
-	pc_token_list *current;
-	AIGenericNode_t *node;
-
-	currentList = list;
-
-	// check if this behavior tree has already been loaded
-	for ( i = 0; i < list->numTrees; i++ )
+	// This function only needs to be used once
+	static bool loaded = false;
+	if ( loaded )
 	{
-		AIBehaviorTree_t *tree = list->trees[ i ];
-		if ( !Q_stricmp( tree->name, name ) )
-		{
-			return tree;
-		}
+		return;
 	}
+	loaded = true;
 
-	// add preprocessor defines for use in the behavior tree
 	// add upgrades
 	D( UP_LIGHTARMOUR );
 	D( UP_MEDIUMARMOUR );
@@ -1361,6 +1342,38 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( SAY_TEAM );
 	D( SAY_AREA );
 	D( SAY_AREA_TEAM );
+}
+
+/*
+======================
+ReadBehaviorTree
+
+Load a behavior tree of the given name from a file
+======================
+*/
+
+AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
+{
+	int i;
+	char treefilename[ MAX_QPATH ];
+	int handle;
+	pc_token_list *tokenlist;
+	pc_token_list *current;
+	AIGenericNode_t *node;
+
+	currentList = list;
+
+	// check if this behavior tree has already been loaded
+	for ( i = 0; i < list->numTrees; i++ )
+	{
+		AIBehaviorTree_t *tree = list->trees[ i ];
+		if ( !Q_stricmp( tree->name, name ) )
+		{
+			return tree;
+		}
+	}
+
+	SetBehaviorTreeDefines();
 
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
