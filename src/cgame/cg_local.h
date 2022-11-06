@@ -1782,7 +1782,6 @@ extern Cvar::Cvar<bool> cg_drawBuildableHealth;
 extern Cvar::Cvar<bool> cg_drawMinimap;
 extern Cvar::Cvar<int> cg_minimapActive;
 extern Cvar::Cvar<float> cg_crosshairSize;
-extern Cvar::Cvar<std::string> cg_crosshairFile;
 extern Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo;
 extern Cvar::Cvar<bool> cg_draw2D;
 extern Cvar::Cvar<bool> cg_animSpeed;

@@ -75,120 +75,6 @@ void CG_RegisterUpgrade( int upgradeNum )
 }
 
 /*
-=======================
-CG_LoadCustomCrosshairs
-
-Load custom crosshairs specified by the user
-=======================
-*/
-
-static void CG_LoadCustomCrosshairs()
-{
-	const char         *text_p, *token;
-	weapon_t     weapon;
-
-	std::string filename = cg_crosshairFile.Get();
-	if ( filename.empty() )
-	{
-		return;
-	}
-	std::error_code err;
-	std::string text = FS::PakPath::ReadFile( filename, err );
-	if ( err )
-	{
-		Log::Warn( "couldn't read custom crosshair file '%s': %s", filename, err.message() );
-		return;
-	}
-
-	// parse the text
-	text_p = text.c_str();
-
-	while ( 1 )
-	{
-		token = COM_Parse2( &text_p );
-
-		if ( !*token )
-		{
-			break;
-		}
-
-		if ( ( weapon = BG_WeaponNumberByName( token ) ) )
-		{
-			token = COM_Parse( &text_p );
-
-			if ( !Q_stricmp( token, "crosshair" ) )
-			{
-				token = COM_Parse( &text_p );
-
-				if ( !token )
-				{
-					break;
-				}
-
-				cg_weapons[ weapon ].crossHair = trap_R_RegisterShader( token, RSF_DEFAULT );
-
-				if ( !cg_weapons[ weapon ].crossHair )
-				{
-					Log::Warn( "weapon crosshair not found %s", token );
-				}
-
-				continue;
-			}
-			else if ( !Q_stricmp( token, "crosshairIndicator" ) )
-			{
-				token = COM_Parse( &text_p );
-
-				if ( !token )
-				{
-					break;
-				}
-
-				cg_weapons[ weapon ].crossHairIndicator = trap_R_RegisterShader( token, RSF_DEFAULT );
-
-				if ( !cg_weapons[ weapon ].crossHairIndicator )
-				{
-					Log::Warn( "weapon crosshair indicator not found %s", token );
-				}
-
-				continue;
-			}
-			else if ( !Q_stricmp( token, "crosshairSize" ) )
-			{
-				int size;
-
-				token = COM_Parse( &text_p );
-
-				if ( !token )
-				{
-					break;
-				}
-
-				size = atoi( token );
-
-				if ( size < 0 )
-				{
-					size = 0;
-				}
-
-				cg_weapons[ weapon ].crossHairSize = size;
-
-				continue;
-			}
-			else
-			{
-				Log::Warn( "Unexpected keyword %s in crosshair file", token );
-				break;
-			}
-		}
-		else
-		{
-			Log::Warn( "Unknown weapon %s in crosshair file", token );
-			break;
-		}
-	}
-}
-
-/*
 ===============
 CG_InitUpgrades
 
@@ -204,11 +90,6 @@ void CG_InitUpgrades()
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		CG_RegisterUpgrade( i );
-	}
-
-	if ( !cg_crosshairFile.Get().empty() )
-	{
-		CG_LoadCustomCrosshairs();
 	}
 }
 

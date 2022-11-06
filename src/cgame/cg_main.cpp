@@ -59,7 +59,6 @@ Cvar::Cvar<bool> cg_drawBuildableHealth("cg_drawBuildableHealth", "show buildabl
 Cvar::Cvar<bool> cg_drawMinimap("cg_drawMinimap", "show minimap", Cvar::NONE, true);
 Cvar::Cvar<int> cg_minimapActive("cg_minimapActive", "FOR INTERNAL USE", Cvar::NONE, 0);
 Cvar::Cvar<float> cg_crosshairSize("cg_crosshairSize", "crosshair scale factor", Cvar::NONE, 1);
-Cvar::Cvar<std::string> cg_crosshairFile("cg_crosshairFile", "VFS path of custom crosshairs file", Cvar::NONE, "");
 Cvar::Cvar<bool> cg_draw2D("cg_draw2D", "show HUD", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_debugAnim("cg_debuganim", "show animation debug logs", Cvar::CHEAT, false);
 Cvar::Cvar<bool> cg_debugEvents("cg_debugevents", "log received events", Cvar::CHEAT, false);
