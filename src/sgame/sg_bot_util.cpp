@@ -1415,8 +1415,6 @@ void BotAimAtEnemy( gentity_t *self )
 {
 	ASSERT( self->botMind->goal.targetsValidEntity() );
 
-	int i;
-	float frac;
 	const gentity_t *enemy = self->botMind->goal.getTargetedEntity();
 
 	if ( self->botMind->futureAimTime < level.time )
@@ -1432,14 +1430,14 @@ void BotAimAtEnemy( gentity_t *self )
 	glm::vec3 current;
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &current, nullptr, nullptr );
 
-	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
+	float frac = ( 1.0f - ( static_cast<float>( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
 	glm::vec3 newAim = glm::mix( current, desired, frac );
 
 	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
 	glm::vec3 angles;
 	vectoangles( &newAim[0], &angles[0] );
 
-	for ( i = 0; i < 3; i++ )
+	for ( int i = 0; i < 3; i++ )
 	{
 		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angles[ i ] );
 	}
@@ -1896,8 +1894,9 @@ void BotFireWeaponAI( gentity_t *self )
 	}
 }
 
-static bool BotChangeClass( gentity_t *self, class_t newClass, glm::vec3 newOrigin )
+static bool BotChangeClass( gentity_t *self, class_t newClass )
 {
+	glm::vec3 newOrigin;
 	if ( !G_RoomForClassChange( self, newClass, &newOrigin[0] ) )
 	{
 		return false;
@@ -2063,7 +2062,6 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		return false;
 	}
 
-	glm::vec3 newOrigin = {};
 	struct
 	{
 		upgrade_t upg;
@@ -2078,7 +2076,7 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 	for ( auto const& armor : armorToClass )
 	{
 		//fail if there's not enough space
-		if ( upgrade == armor.upg && !BotChangeClass( self, armor.cls, newOrigin ) )
+		if ( upgrade == armor.upg && !BotChangeClass( self, armor.cls ) )
 		{
 			return false;
 		}
