@@ -39,9 +39,7 @@ Maryland 20850 USA.
 #undef DotProduct
 #endif
 
-#include "common/Compiler.h"
-#include "common/Color.h"
-#include "common/String.h"
+#include "common/Common.h"
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
