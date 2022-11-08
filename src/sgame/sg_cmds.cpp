@@ -62,10 +62,10 @@ void G_SanitiseString( const char *in, char *out, int len )
 	{
 		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
-			int cp = Q_UTF8_CodePoint( token.Begin() );
+			int cp = Q_UTF8_CodePoint( token.NormalizedToken().begin() );
 			if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 			{
-				int sz = token.Size();
+				int sz = token.NormalizedToken().size();
 				if ( Q_Unicode_IsUpper( cp ) )
 				{
 					cp = Q_Unicode_ToLower( cp );

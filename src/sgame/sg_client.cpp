@@ -667,14 +667,16 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 
 	for ( const auto& token : Color::Parser( in ) )
 	{
-		if ( out_string.size() + token.Size() >= outSize )
+		Str::StringView tokenContent = token.NormalizedToken();
+
+		if ( out_string.size() + tokenContent.size() >= outSize )
 		{
 			break;
 		}
 
 		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
-			int cp = Q_UTF8_CodePoint(token.Begin());
+			int cp = Q_UTF8_CodePoint( tokenContent.begin() );
 
 			// don't allow leading spaces
 			// TODO: use a Unicode-aware isspace
@@ -688,16 +690,6 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 			if ( cp >= 0 && cp < ' ' )
 			{
 				continue;
-			}
-
-			// single trailing ^ will mess up some things
-			if ( cp == Color::Constants::ESCAPE && !*token.End() )
-			{
-				if ( out_string.size() + 2 >= outSize )
-				{
-					break;
-				}
-				out_string += Color::Constants::ESCAPE;
 			}
 
 			if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
@@ -727,12 +719,12 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 		}
 		else if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
-			lastColor.assign( token.Begin(), token.End() );
+			lastColor.assign( tokenContent.begin(), tokenContent.end() );
 		}
 
-		out_string.append(token.Begin(), token.Size());
+		out_string.append( tokenContent.begin(), tokenContent.end() );
 
-		if ( !g_emoticonsAllowedInNames.Get() && BG_EmoticonAt( token.Begin() ) )
+		if ( !g_emoticonsAllowedInNames.Get() && BG_EmoticonAt( token.RawToken().begin() ) )
 		{
 			if ( out_string.size() + lastColor.size() >= outSize )
 			{
