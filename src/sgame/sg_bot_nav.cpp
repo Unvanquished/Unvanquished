@@ -585,8 +585,8 @@ static void BotDirectionToUsercmd( gentity_t *self, const glm::vec3 &dir, usercm
 	right = glm::normalize( right );
 
 	// get direction and non-optimal magnitude
-	forwardmove = speed * DotProduct( forward, dir );
-	rightmove = speed * DotProduct( right, dir );
+	forwardmove = speed * glm::dot( forward, dir );
+	rightmove = speed * glm::dot( right, dir );
 
 	// find optimal magnitude to make speed as high as possible
 	if ( Q_fabs( forwardmove ) > Q_fabs( rightmove ) )
