@@ -1272,7 +1272,10 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 bool BotEntityIsValidTarget( const gentity_t *ent )
 {
 	// spectators are not considered alive
-	return ent != nullptr && ent->inuse && Entities::IsAlive(ent);
+	return ent != nullptr
+		&& ent->inuse
+		&& !(ent->flags & FL_NOTARGET)
+		&& Entities::IsAlive(ent);
 }
 
 bool BotEntityIsValidEnemyTarget( const gentity_t *self, const gentity_t *enemy )
