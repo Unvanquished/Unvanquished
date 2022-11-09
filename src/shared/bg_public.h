@@ -146,7 +146,6 @@ struct playerState_t
 
 // the possibility and the cost of evolving to an alien form
 struct evolveInfo_t {
-	bool classIsUnlocked;
 	bool isDevolving;
 	int  evolveCost;
 };

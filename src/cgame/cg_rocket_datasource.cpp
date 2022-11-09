@@ -1528,7 +1528,7 @@ static Str::StringRef EvolveAvailability( class_t alienClass )
 	if ( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
 		return "active";
 
-	if ( !info.classIsUnlocked )
+	if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) )
 		return "locked";
 
 	if ( cg.predictedPlayerState.persistant[ PERS_CREDIT ] < info.evolveCost )
