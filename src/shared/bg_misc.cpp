@@ -425,7 +425,6 @@ to allow devolving, or if you can afford the upgrade.
 */
 evolveInfo_t BG_ClassEvolveInfoFromTo( const int from, const int to )
 {
-	bool classIsUnlocked;
 	bool isDevolving;
 	int fromCost, toCost;
 	int evolveCost;
@@ -434,11 +433,8 @@ evolveInfo_t BG_ClassEvolveInfoFromTo( const int from, const int to )
 	     from <= PCL_NONE || from >= PCL_NUM_CLASSES ||
 	     to <= PCL_NONE || to >= PCL_NUM_CLASSES )
 	{
-		return { false, false, 0 };
+		return { false, 0 };
 	}
-
-	classIsUnlocked = BG_ClassUnlocked( to )
-		&& !BG_ClassDisabled( to );
 
 	fromCost = BG_Class( from )->price;
 	toCost = BG_Class( to )->price;
@@ -456,7 +452,7 @@ evolveInfo_t BG_ClassEvolveInfoFromTo( const int from, const int to )
 		isDevolving = false;
 	}
 
-	return { classIsUnlocked, isDevolving, evolveCost };
+	return { isDevolving, evolveCost };
 }
 
 /*
