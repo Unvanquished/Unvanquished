@@ -628,12 +628,9 @@ const char *CG_TutorialText()
 
 			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
-				if ( BG_AlienCanEvolve( ps->stats[ STAT_CLASS ], ps->persistant[ PERS_CREDIT ] ) )
-				{
-					Q_strcat( text, MAX_TUTORIAL_TEXT,
-					          va( _( "Press %s to evolve\n" ),
-					              CG_KeyNameForCommand( "+activate" ) ) );
-				}
+				Q_strcat( text, MAX_TUTORIAL_TEXT,
+				          va( _( "Press %s to evolve\n" ),
+				              CG_KeyNameForCommand( "+activate" ) ) );
 			}
 		}
 	}
