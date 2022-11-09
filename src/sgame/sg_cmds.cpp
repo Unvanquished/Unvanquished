@@ -2630,7 +2630,9 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 	}
 
 	evolveInfo_t evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
-	if ( !evolveInfo.classIsUnlocked || ent->client->pers.credit < evolveInfo.evolveCost )
+	// allow bots to bypass the unlock restriction
+	bool unlocked = BG_ClassUnlocked( newClass ) || (ent->r.svFlags & SVF_BOT && g_bot_infiniteMomentum.Get());
+	if ( BG_ClassDisabled( newClass ) || !unlocked || ent->client->pers.credit < evolveInfo.evolveCost )
 	{
 		if ( report )
 		{
