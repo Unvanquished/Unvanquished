@@ -460,33 +460,6 @@ evolveInfo_t BG_ClassEvolveInfoFromTo( const int from, const int to )
 }
 
 /*
-==============
-BG_AlienCanEvolve
-
-answers true if the alien can evolve to any other form.
-
-FIXME: this function will always return true because it will notice you can
-       devolve to dretch or granger, even when far from the overmind
-==============
-*/
-bool BG_AlienCanEvolve( int from, int credits )
-{
-	int to;
-	evolveInfo_t info;
-
-	for ( to = PCL_NONE + 1; to < PCL_NUM_CLASSES; to++ )
-	{
-		info = BG_ClassEvolveInfoFromTo( from, to );
-		if ( info.classIsUnlocked && credits >= info.evolveCost )
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-/*
 ===============
 BG_GetBarbRegenerationInterval
 ===============

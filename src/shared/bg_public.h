@@ -1537,7 +1537,6 @@ team_t                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
 evolveInfo_t            BG_ClassEvolveInfoFromTo(int from, int to);
-bool                    BG_AlienCanEvolve(int from, int credits);
 
 int                       BG_GetBarbRegenerationInterval(const playerState_t& ps);
 
