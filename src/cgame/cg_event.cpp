@@ -121,7 +121,7 @@ static void CG_Obituary( entityState_t *ent )
 
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
-	assistant = ent->otherEntityNum3;
+	assistant = ent->groundEntityNum; // we hijack the field for this
 	assistantTeam = (team_t) ( ent->generic1 & 0xFF ); // ugly hack allowing for future expansion(!)
 	mod = ent->eventParm;
 
