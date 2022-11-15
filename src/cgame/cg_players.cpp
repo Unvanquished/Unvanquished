@@ -2625,12 +2625,10 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 		return false;
 	}
 
-	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB &&
-	     cg_playerShadows.Get() ) {
-		// add inverse shadow map
-		{
-		  CG_StartShadowCaster( cent->lerpOrigin, mins, maxs );
-		}
+	// add inverse shadow map
+	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB && cg_playerShadows.Get() )
+	{
+		CG_StartShadowCaster( cent->lerpOrigin, &mins[0], &maxs[0] );
 	}
 
 	if ( cg_shadows != shadowingMode_t::SHADOWING_BLOB) // no mark for stencil or projection shadows
@@ -2734,7 +2732,7 @@ void CG_Player( centity_t *cent )
 	int           clientNum;
 	int           renderfx;
 	entityState_t *es = &cent->currentState;
-	class_t       class_ = (class_t) ( ( es->misc >> 8 ) & 0xFF );
+	class_t       class_ = static_cast<class_t>( ( es->misc >> 8 ) & 0xFF );
 	float         scale;
 	vec3_t        tempAxis[ 3 ], tempAxis2[ 3 ];
 	vec3_t        angles;

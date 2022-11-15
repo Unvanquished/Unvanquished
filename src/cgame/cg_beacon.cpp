@@ -147,6 +147,18 @@ else if( !Q_stricmp( token.string, #x ) ) \
 	Parse_FreeSourceHandle( fd  );
 }
 
+#define Distance2(a,b) sqrtf(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
+
+static glm::vec3 EntityCenter( entityState_t const* es, centity_t const* ce )
+{
+	class_t pClass = static_cast<class_t>( ( es->misc >> 8 ) & 0xFF );
+	glm::vec3 center = VEC2GLM( ce->lerpOrigin );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( pClass, mins, maxs );
+	BG_MoveOriginToBBOXCenter( &center[0], &mins[0], &maxs[0] );
+	return center;
+}
+
 /**
  * @brief Fills cg.beacons with explicit (ET_BEACON entity) beacons.
  * @return Whether all beacons found space in cg.beacons.
@@ -188,23 +200,15 @@ static bool LoadExplicitBeacons()
 		beacon->alphaMod = 1.0f;
 
 		// Snap beacon origin to exact player location if known.
+		// TODO: Interpolate when target entity pops in.
 		centity_t *targetCent; entityState_t *targetES;
 		if ( beacon->target && ( targetCent = &cg_entities[ beacon->target ] )->valid &&
 		     ( targetES = &targetCent->currentState )->eType == entityType_t::ET_PLAYER )
 		{
-			vec3_t mins, maxs, center;
-			int pClass = ( ( targetES->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
-
-			VectorCopy( targetCent->lerpOrigin, center );
-			BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
-			BG_MoveOriginToBBOXCenter( center, mins, maxs );
-
-			// TODO: Interpolate when target entity pops in.
-			VectorCopy( center, beacon->origin );
+			VectorCopy( EntityCenter( targetES, targetCent ), beacon->origin );
 		}
 		else
 		{
-			// TODO: Interpolate when target entity pops out.
 			VectorCopy( ent->lerpOrigin, beacon->origin );
 		}
 
@@ -246,16 +250,7 @@ static bool LoadImplicitBeacons()
 			cbeacon_t *beacon = &ent->beacon;
 
 			// Set location on exact center of target player entity.
-			{
-				vec3_t mins, maxs, center;
-				int pClass = ( ( es->misc >> 8 ) & 0xFF ); // TODO: Write function for this.
-
-				VectorCopy( ent->lerpOrigin, center );
-				BG_ClassBoundingBox( pClass, mins, maxs, nullptr, nullptr, nullptr );
-				BG_MoveOriginToBBOXCenter( center, mins, maxs );
-
-				VectorCopy( center, beacon->origin );
-			}
+			VectorCopy( EntityCenter( es, ent ), beacon->origin );
 
 			// Add alpha fade at the borders of the sense range.
 			beacon->alphaMod = Math::Clamp(

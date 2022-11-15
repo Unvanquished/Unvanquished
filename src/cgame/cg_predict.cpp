@@ -161,7 +161,9 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			VectorAdd( cent->lerpOrigin, bmaxs, bmaxs );
 
 			if( !BoundsIntersect( bmins, bmaxs, tmins, tmaxs ) )
+			{
 				continue;
+			}
 
 			cmodel = CM_TempBoxModel( bmins, bmaxs, /* capsule = */ false );
 			VectorCopy( vec3_origin, angles );

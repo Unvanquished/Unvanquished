@@ -1107,7 +1107,7 @@ void CG_GhostBuildable( int buildableInfo )
 	vec3_t        mins, maxs;
 	trace_t       tr;
 	float         scale;
-	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK );
+	buildable_t   buildable = static_cast<buildable_t>( buildableInfo & SB_BUILDABLE_MASK );
 	ASSERT( BA_NONE < buildable && buildable < BA_NUM_BUILDABLES );
 	const buildableModelConfig_t *bmc = BG_BuildableModelConfig( buildable );
 

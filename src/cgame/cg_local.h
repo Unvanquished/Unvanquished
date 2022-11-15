@@ -665,7 +665,7 @@ struct cbeacon_t
 	bool      eventFired;
 
 	beaconType_t  type;
-	vec3_t        origin;
+	vec3_t        origin; //TODO: glm::vec3
 	int           flags;
 	int           oldFlags;
 	int           ctime;
