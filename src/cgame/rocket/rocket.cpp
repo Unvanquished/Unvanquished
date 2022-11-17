@@ -521,7 +521,32 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	for ( auto iter = parser.begin(); iter != parser.end(); ++iter )
 	{
 		const Color::Token& token = *iter;
-		if ( token.Type() != Color::Token::TokenType::COLOR )
+		if ( token.Type() == Color::Token::TokenType::COLOR )
+		{
+			if ( span && spanHasContent )
+			{
+				out.append( "</span>" );
+				span = false;
+				spanHasContent = false;
+			}
+
+			if ( token.Color().Alpha() != 0  )
+			{
+				char rgb[32];
+				Color::Color32Bit color32 = token.Color();
+				Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
+						(int) color32.Red(),
+						(int) color32.Green(),
+						(int) color32.Blue() );
+
+				// don't add the span yet, because it might be empty
+				spanstr = rgb;
+
+				span = true;
+				spanHasContent = false;
+			}
+		}
+		else
 		{
 			Str::StringView text = token.PlainText();
 			char c = text[ 0 ];
@@ -580,31 +605,6 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 					spanHasContent = true;
 				}
 				out.append( text.begin(), text.size() );
-			}
-		}
-		else // token.Type() == Color::Token::TokenType::COLOR
-		{
-			if ( span && spanHasContent )
-			{
-				out.append( "</span>" );
-				span = false;
-				spanHasContent = false;
-			}
-
-			if ( token.Color().Alpha() != 0  )
-			{
-				char rgb[32];
-				Color::Color32Bit color32 = token.Color();
-				Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
-						(int) color32.Red(),
-						(int) color32.Green(),
-						(int) color32.Blue() );
-
-				// don't add the span yet, because it might be empty
-				spanstr = rgb;
-
-				span = true;
-				spanHasContent = false;
 			}
 		}
 	}
