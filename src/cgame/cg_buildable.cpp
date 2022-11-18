@@ -1855,28 +1855,12 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 CG_SortDistance
 ==================
 */
-static int CG_SortDistance( const void *a, const void *b )
+static int CG_SortDistance( const centity_t *a, const centity_t *b )
 {
-	centity_t *aent, *bent;
-	float     adist, bdist;
+	float adist = Distance( cg.refdef.vieworg, a->lerpOrigin );
+	float bdist = Distance( cg.refdef.vieworg, b->lerpOrigin );
 
-	aent = &cg_entities[ * ( int * ) a ];
-	bent = &cg_entities[ * ( int * ) b ];
-	adist = Distance( cg.refdef.vieworg, aent->lerpOrigin );
-	bdist = Distance( cg.refdef.vieworg, bent->lerpOrigin );
-
-	if ( adist > bdist )
-	{
-		return -1;
-	}
-	else if ( adist < bdist )
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+	return adist > bdist;
 }
 
 /*
@@ -1928,36 +1912,33 @@ static bool CG_BuildableRemovalPending( int entityNum )
 /*
 ==================
 CG_DrawBuildableStatus
+
+This draws the little boxes over buildables when someone plays as a human
+or alien builder
 ==================
 */
 void CG_DrawBuildableStatus()
 {
-	centity_t     *cent;
-	entityState_t *es;
-	int           buildableList[ MAX_ENTITIES_IN_SNAPSHOT ];
-	unsigned      buildables = 0;
+	std::vector<centity_t *> buildableList;
 
 	if ( !cg_drawBuildableHealth.Get() )
 	{
 		return;
 	}
 
-	for ( unsigned i = 0; i < cg.snap->entities.size(); i++ )
+	for ( entityState_t &es : cg.snap->entities )
 	{
-		cent = &cg_entities[ cg.snap->entities[ i ].number ];
-		es = &cent->currentState;
-
-		if ( es->eType == entityType_t::ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es->modelindex ) )
+		if ( es.eType == entityType_t::ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es.modelindex ) )
 		{
-			buildableList[ buildables++ ] = cg.snap->entities[ i ].number;
+			buildableList.push_back(&cg_entities[ es.number ]);
 		}
 	}
 
-	qsort( buildableList, buildables, sizeof( int ), CG_SortDistance );
+	std::sort( buildableList.begin(), buildableList.end(), CG_SortDistance );
 
-	for ( unsigned i = 0; i < buildables; i++ )
+	for ( centity_t *cent : buildableList )
 	{
-		CG_BuildableStatusDisplay( &cg_entities[ buildableList[ i ] ] );
+		CG_BuildableStatusDisplay( cent );
 	}
 
 	if ( cg.predictedPlayerState.stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK )
