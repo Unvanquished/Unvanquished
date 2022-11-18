@@ -208,14 +208,13 @@ Parse a map rotation command section
 */
 static bool G_ParseMapCommandSection( mrNode_t *node, const char **text_p )
 {
-	char  *token;
 	mrMapDescription_t *map = &node->u.map;
 	int   commandLength = 0;
 
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( text_p );
+		const char *token = COM_Parse( text_p );
 
 		if ( !*token )
 		{
@@ -269,7 +268,7 @@ static bool G_ParseMapCommandSection( mrNode_t *node, const char **text_p )
 	return false;
 }
 
-static bool G_ParseIntegerCondition( mrCondition_t *condition, char *token, const char **text_p, conditionVariable_t conditionVariable )
+static bool G_ParseIntegerCondition( mrCondition_t *condition, const char *token, const char **text_p, conditionVariable_t conditionVariable )
 {
 	condition->lhs = conditionVariable;
 	token = COM_Parse( text_p );
@@ -315,7 +314,7 @@ G_ParseNode
 Parse a node
 ===============
 */
-static bool G_ParseNode( mrNode_t **node, char *token, const char **text_p, bool conditional )
+static bool G_ParseNode( mrNode_t **node, const char *token, const char **text_p, bool conditional )
 {
 	if ( !Q_stricmp( token, "if" ) )
 	{
@@ -454,13 +453,12 @@ Parse a map rotation section
 */
 static bool G_ParseMapRotation( mapRotation_t *mr, const char **text_p )
 {
-	char   *token;
 	mrNode_t *node = nullptr;
 
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( text_p );
+		const char *token = COM_Parse( text_p );
 
 		if ( !*token )
 		{
@@ -520,7 +518,6 @@ static bool G_ParseMapRotationFile( const char *fileName )
 	const char *text_p;
 	int          i, j;
 	int          len;
-	char         *token;
 	char         text[ 20000 ];
 	char         mrName[ MAX_QPATH ];
 	bool     mrNameSet = false;
@@ -553,7 +550,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse( &text_p );
+		const char *token = COM_Parse( &text_p );
 
 		if ( !*token )
 		{
@@ -749,13 +746,13 @@ void G_PrintRotations()
 	int i, j;
 	int size = sizeof( mapRotations );
 
-	Log::Notice( "Map rotations as parsed:\n" );
+	Log::Notice( "Map rotations as parsed:" );
 
 	for ( i = 0; i < mapRotations.numRotations; i++ )
 	{
 		mapRotation_t *mr = &mapRotations.rotations[ i ];
 
-		Log::Notice( "rotation: %s\n{", mr->name );
+		Log::Notice( "rotation: %s{", mr->name );
 
 		size += mr->numNodes * sizeof( mrNode_t );
 
@@ -807,20 +804,20 @@ void G_PrintCurrentRotation( gentity_t *ent )
 
 	if ( mapRotation == nullptr )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("^3listrotation:^* there is no active map rotation on this server\n") "\"" );
+		trap_SendServerCommand( ent->num(), "print_tr " QQ( N_("^3listrotation:^* there is no active map rotation on this server") ) );
 		return;
 	}
 
 	if ( mapRotation->numNodes == 0 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("^3listrotation:^* there are no maps in the active map rotation\n") "\"" );
+		trap_SendServerCommand( ent->num(), "print_tr " QQ( N_("^3listrotation:^* there are no maps in the active map rotation") ) );
 		return;
 	}
 
 	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
 
 	ADMBP_begin();
-	ADMBP( va( "%s:\n", mapRotation->name ) );
+	ADMBP( va( "%s:", mapRotation->name ) );
 
 	while ( ( node = mapRotation->nodes[ i++ ] ) )
 	{

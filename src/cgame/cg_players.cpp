@@ -112,8 +112,6 @@ models/players/visor/character.cfg, etc
 static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 {
 	const char         *text_p;
-	int          i;
-	char         *token;
 
 	std::error_code err;
 	std::string text = FS::PakPath::ReadFile( filename, err );
@@ -136,7 +134,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	// read optional parameters
 	while ( 1 )
 	{
-		token = COM_Parse2( &text_p );
+		const char *token = COM_Parse2( &text_p );
 
 		if ( !token[ 0 ] )
 		{
@@ -144,7 +142,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		}
 		if ( !Q_stricmp( token, "modifiers" ) )
 		{
-			char* token = COM_Parse2( &text_p );
+			token = COM_Parse2( &text_p );
 			if ( !token || *token != '{' )
 			{
 				Log::Warn( "Expected '{' but found '%s' in %s's character.cfg, skipping", token, ci->modelName );
@@ -215,7 +213,7 @@ static bool CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		}
 		else if ( !Q_stricmp( token, "headoffset" ) )
 		{
-			for ( i = 0; i < 3; i++ )
+			for ( int i = 0; i < 3; i++ )
 			{
 				token = COM_Parse2( &text_p );
 
@@ -369,7 +367,6 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 {
 	const char         *text_p, *prev;
 	int          i;
-	char         *token;
 	float        fps;
 	int          skip;
 	animation_t  *animations;
@@ -399,7 +396,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 	while ( 1 )
 	{
 		prev = text_p; // so we can unget
-		token = COM_Parse2( &text_p );
+		const char *token = COM_Parse2( &text_p );
 
 		if ( !token )
 		{
@@ -509,7 +506,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		// read information for each frame
 		for ( i = 0; i < MAX_PLAYER_ANIMATIONS; i++ )
 		{
-			token = COM_Parse2( &text_p );
+			const char *token = COM_Parse2( &text_p );
 
 			if ( !*token )
 			{
@@ -630,7 +627,7 @@ static bool CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		// read information for each frame
 		for ( i = 0; i < MAX_NONSEG_PLAYER_ANIMATIONS; i++ )
 		{
-			token = COM_Parse2( &text_p );
+			const char *token = COM_Parse2( &text_p );
 
 			if ( !*token )
 			{
@@ -807,7 +804,6 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 
 	if ( ci->skeletal )
 	{
-		int i, j;
 		// load the animations
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/character.cfg", modelName );
 
@@ -827,7 +823,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 			}
 
 			// make LEGS_IDLE the default animation
-			for ( i = 0; i < MAX_PLAYER_ANIMATIONS; i++ )
+			for ( int i = 0; i < MAX_PLAYER_ANIMATIONS; i++ )
 			{
 				if ( i == LEGS_IDLE )
 				{
@@ -963,7 +959,7 @@ static bool CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName,
 			}
 
 			// TODO: Don't assume WP_BLASTER is first human weapon
-			for ( i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i <= TORSO_GESTURE_CKIT; i++, j++ )
+			for ( int i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i <= TORSO_GESTURE_CKIT; i++, j++ )
 			{
 				if ( i == TORSO_GESTURE ) { continue; }
 				if ( i == TORSO_GESTURE_CKIT ) { j = WP_HBUILD; }
@@ -988,7 +984,7 @@ NSPA_STAND, "idle", true, false, false )
 			}
 
 			// make LEGS_IDLE the default animation
-			for ( i = 0; i < MAX_NONSEG_PLAYER_ANIMATIONS; i++ )
+			for ( int i = 0; i < MAX_NONSEG_PLAYER_ANIMATIONS; i++ )
 			{
 				if ( i == NSPA_STAND )
 				{
@@ -2574,7 +2570,10 @@ static void CG_PlayerSprites( centity_t *cent )
 	if ( cent->currentState.eFlags & EF_CONNECTION )
 	{
 		CG_PlayerFloatSprite( cent, cgs.media.connectionShader );
-		return;
+	}
+	else if ( cent->currentState.eFlags & EF_TYPING )
+	{
+		CG_PlayerFloatSprite( cent, cgs.media.balloonShader );
 	}
 }
 
@@ -2621,7 +2620,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 	VectorCopy( cent->lerpOrigin, end );
 	VectorMA( cent->lerpOrigin, -SHADOW_DISTANCE, surfNormal, end );
 
-	trap_CM_BoxTrace( &trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID, 0 );
+	CM_BoxTrace( &trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	// no shadow if too high
 	if ( trace.fraction == 1.0 || trace.startsolid || trace.allsolid )
@@ -2693,7 +2692,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 
 	// if the feet aren't in liquid, don't make a mark
 	// this won't handle moving water brushes, but they wouldn't draw right anyway...
-	contents = trap_CM_PointContents( end, 0 );
+	contents = CM_PointContents( end, 0 );
 
 	if ( !( contents & ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) ) )
 	{
@@ -2704,7 +2703,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 	start[ 2 ] += 32;
 
 	// if the head isn't out of liquid, don't make a mark
-	contents = trap_CM_PointContents( start, 0 );
+	contents = CM_PointContents( start, 0 );
 
 	if ( contents & ( CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ) )
 	{
@@ -2712,8 +2711,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 	}
 
 	// trace down to find the surface
-	trap_CM_BoxTrace( &trace, start, end, nullptr, nullptr, 0,
-	                  ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ), 0 );
+	CM_BoxTrace( &trace, start, end, nullptr, nullptr, 0, ( CONTENTS_WATER | CONTENTS_SLIME | CONTENTS_LAVA ), 0, traceType_t::TT_AABB );
 
 	if ( trace.fraction == 1.0f )
 	{

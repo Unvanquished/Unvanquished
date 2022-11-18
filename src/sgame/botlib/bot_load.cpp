@@ -212,9 +212,9 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	{
 		NavMeshTileHeader ignored;
 		trap_FS_Read( &ignored, sizeof(ignored), f );
-		char error[256] = {};
-		trap_FS_Read( error, sizeof(error) - 1, f );
-		Log::Warn( "Can't load %s: Cached navmesh generation failure (%s)", filename, error );
+		char errorBuf[256] = {};
+		trap_FS_Read( errorBuf, sizeof(errorBuf) - 1, f );
+		Log::Warn( "Can't load %s: Cached navmesh generation failure (%s)", filename, errorBuf );
 		trap_FS_FCloseFile( f );
 		return false;
 	}
@@ -305,7 +305,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		}
 
 		dtCompressedTileRef tile = 0;
-		dtStatus status = nav.cache->addTile( data, tileHeader.dataSize, DT_TILE_FREE_DATA, &tile );
+		status = nav.cache->addTile( data, tileHeader.dataSize, DT_TILE_FREE_DATA, &tile );
 
 		if ( dtStatusFailed( status ) )
 		{

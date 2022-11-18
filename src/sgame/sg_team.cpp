@@ -91,8 +91,7 @@ void G_AreaTeamCommand( const gentity_t *ent, const char *cmd )
 {
 	int    entityList[ MAX_GENTITIES ];
 	int    num, i;
-	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
-	vec3_t mins, maxs;
+	glm::vec3 range = { 1000.0f, 1000.0f, 1000.0f };
 	team_t team = (team_t) ent->client->pers.team;
 
 	for ( i = 0; i < 3; i++ )
@@ -100,10 +99,10 @@ void G_AreaTeamCommand( const gentity_t *ent, const char *cmd )
 		range[ i ] = g_sayAreaRange.Get();
 	}
 
-	VectorAdd( ent->s.origin, range, maxs );
-	VectorSubtract( ent->s.origin, range, mins );
+	glm::vec3 maxs = VEC2GLM( ent->s.origin ) + range;
+	glm::vec3 mins = VEC2GLM( ent->s.origin ) - range;
 
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -164,7 +163,7 @@ static clientList_t G_ClientListForTeam( team_t team )
 
 		if ( ent->inuse && ( ent->client->pers.team == team ) )
 		{
-			Com_ClientListAdd( &clientList, ent->client->ps.clientNum );
+			Com_ClientListAdd( &clientList, ent->num() );
 		}
 	}
 
@@ -329,7 +328,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	Beacon::PropagateAll( );
 
 	G_LogPrintf( "ChangeTeam: %d %s: %s^* switched teams",
-	             ( int )( ent - g_entities ), BG_TeamName( newTeam ), ent->client->pers.netname );
+	             ent->num(), BG_TeamName( newTeam ), ent->client->pers.netname );
 
 	G_namelog_update_score( ent->client );
 	TeamplayInfoMessage( ent );
@@ -507,7 +506,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 
 	if( string[ 0 ] )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "tinfo%s", string ) );
+		trap_SendServerCommand( ent->num(), va( "tinfo%s", string ) );
 		ent->client->pers.teamInfo = level.time;
 	}
 }

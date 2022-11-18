@@ -210,6 +210,7 @@ Cvar::Cvar<int> g_combatCooldown("g_combatCooldown", "team change disallowed unt
 Cvar::Range<Cvar::Cvar<int>> g_debugEntities("g_debugEntities", "entity debug level", Cvar::NONE, 0, -2, 3);
 
 Cvar::Cvar<bool> g_instantBuilding("g_instantBuilding", "cheat mode for building", Cvar::NONE, false);
+Cvar::Cvar<bool> g_ignoreNobuild("g_ignoreNobuild", "ignore nobuild area", Cvar::NONE, false);
 
 Cvar::Cvar<int> g_emptyTeamsSkipMapTime("g_emptyTeamsSkipMapTime", "end game over x minutes if no real players", Cvar::NONE, 0);
 
@@ -227,8 +228,8 @@ Cvar::Cvar<int> g_maxMiners("g_maxMiners", "set maximum number of miners per tea
 // bot buy cvars
 Cvar::Cvar<bool> g_bot_buy("g_bot_buy", "whether bots use the Armoury", Cvar::NONE, true);
 // human weapons
-Cvar::Cvar<bool> g_bot_ckit("g_bot_ckit", "whether bots buy the Construction Kit (only current use is for repairs)", Cvar::NONE, true);
-Cvar::Cvar<bool> g_bot_rifle("g_bot_rifle", "whether bots use SMG", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_ckit("g_bot_ckit", "whether bots use the Construction Kit (only current use is for repairs)", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_rifle("g_bot_rifle", "whether bots use the SMG", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_painsaw("g_bot_painsaw", "whether bots buy the Painsaw", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_shotgun("g_bot_shotgun", "whether bots buy the Shotgun", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_lasgun("g_bot_lasgun", "whether bots buy the Lasgun", Cvar::NONE, true);
@@ -261,16 +262,12 @@ Cvar::Cvar<bool> g_bot_level3("g_bot_level3", "whether bots use non-advanced Dra
 Cvar::Cvar<bool> g_bot_level3upg("g_bot_level3upg", "whether bots use Advanced Dragoon", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_level4("g_bot_level4", "whether bots use Tyrant", Cvar::NONE, true);
 
-// bot default configurations
-Cvar::Range<Cvar::Cvar<int>> g_bot_default_skill( "g_bot_default_skill", "Default skill value bots will have when added", Cvar::NONE, 5, 1, 9 );
-
 // misc bot cvars
 Cvar::Cvar<bool> g_bot_attackStruct("g_bot_attackStruct", "whether bots target buildables", Cvar::NONE, true);
 Cvar::Cvar<float> g_bot_fov("g_bot_fov", "bots' \"field of view\"", Cvar::NONE, 125);
 Cvar::Cvar<int> g_bot_chasetime("g_bot_chasetime", "bots stop chasing after x ms out of sight", Cvar::NONE, 5000);
 Cvar::Cvar<int> g_bot_reactiontime("g_bot_reactiontime", "bots' reaction time to enemies (milliseconds)", Cvar::NONE, 500);
-Cvar::Callback<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0, G_SetBotFill);
-Cvar::Cvar<bool> g_bot_infinite_funds("g_bot_infinite_funds", "give bots unlimited funds", Cvar::NONE, false);
+Cvar::Cvar<bool> g_bot_infiniteFunds("g_bot_infiniteFunds", "give bots unlimited funds", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_infiniteMomentum("g_bot_infiniteMomentum", "allow bots to ignore momentum, but not other restrictions", Cvar::NONE, false);
 
 //</bot stuff>
@@ -421,8 +418,6 @@ G_InitGame
 */
 void G_InitGame( int levelTime, int randomSeed, bool inClient )
 {
-	int i;
-
 	srand( randomSeed );
 
 	Log::Notice( "------- Game Initialization -------" );
@@ -533,7 +528,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	level.clients = g_clients;
 
 	// set client fields on player ents
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
 		g_entities[ i ].client = level.clients + i;
 	}
@@ -542,7 +537,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	// inside that range are NEVER anything but clients
 	level.num_entities = MAX_CLIENTS;
 
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for( int i = 0; i < MAX_CLIENTS; i++ )
 	{
 		g_entities[ i ].classname = "clientslot";
 	}
@@ -557,6 +552,10 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
+
+	// initalize bot fill team size from g_bot_defaultFill now so that it will be overwritten
+	// by a `bot fill` in map configs
+	G_BotFill(false);
 
 	// retrieve map name and layout to load configs.
 	{
@@ -577,9 +576,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
-
-	// setup bot code
-	G_BotInit();
 
 	// Initialize item locking state
 	BG_InitUnlockackables();
@@ -626,12 +622,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// Initialize build point counts for the intial layout.
 	G_UpdateBuildPointBudgets();
-
-	for ( int i = TEAM_NONE + 1; i < NUM_TEAMS; ++i )
-	{
-		ASSERT( G_IsPlayableTeam( i ) );
-		level.team[ i ].botFillTeamSize = g_bot_defaultFill.Get();
-	}
 }
 
 /*
@@ -860,7 +850,7 @@ int G_PopSpawnQueue( spawnQueue_t *sq )
 		sq->clients[ sq->front ] = -1;
 		sq->front = QUEUE_PLUS1( sq->front );
 		G_StopFollowing( g_entities + clientNum );
-		g_entities[ clientNum ].client->ps.pm_flags &= ~PMF_QUEUED;
+		g_clients[ clientNum ].ps.pm_flags &= ~PMF_QUEUED;
 
 		return clientNum;
 	}
@@ -922,7 +912,7 @@ bool G_PushSpawnQueue( spawnQueue_t *sq, int clientNum )
 	sq->back = QUEUE_PLUS1( sq->back );
 	sq->clients[ sq->back ] = clientNum;
 
-	g_entities[ clientNum ].client->ps.pm_flags |= PMF_QUEUED;
+	g_clients[ clientNum ].ps.pm_flags |= PMF_QUEUED;
 	return true;
 }
 
@@ -955,7 +945,7 @@ bool G_RemoveFromSpawnQueue( spawnQueue_t *sq, int clientNum )
 				while ( i != QUEUE_PLUS1( sq->back ) );
 
 				sq->back = QUEUE_MINUS1( sq->back );
-				g_entities[ clientNum ].client->ps.pm_flags &= ~PMF_QUEUED;
+				g_clients[ clientNum ].ps.pm_flags &= ~PMF_QUEUED;
 
 				return true;
 			}
@@ -1234,9 +1224,6 @@ void CalculateRanks()
 	qsort( level.sortedClients, level.numConnectedClients,
 	       sizeof( level.sortedClients[ 0 ] ), SortRanks );
 
-	// see if it is time to end the level
-	CheckExitRules();
-
 	// if we are at the intermission, send the new info to everyone
 	if ( level.intermissiontime )
 	{
@@ -1471,8 +1458,8 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	char string[ 1024 ];
 	int  i;
 
-	Com_sprintf( string, sizeof( string ), "chat %ld %d %s",
-	             ent ? ( long )( ent - g_entities ) : -1,
+	Com_sprintf( string, sizeof( string ), "chat %d %d %s",
+	             ent ? ent->num() : -1,
 	             G_admin_permission( ent, ADMF_ADMINCHAT ) ? SAY_ADMINS : SAY_ADMINS_PUBLIC,
 	             Quote( msg ) );
 
@@ -1488,7 +1475,7 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	// Send to the logfile and server console
 	G_LogPrintf( "%s: %d \"%s^*\": ^6%s",
 	             G_admin_permission( ent, ADMF_ADMINCHAT ) ? "AdminMsg" : "AdminMsgPublic",
-	             ent ? ( int )( ent - g_entities ) : -1, ent ? ent->client->pers.netname : "console",
+	             ent ? ent->num() : -1, ent ? ent->client->pers.netname : "console",
 	             msg );
 }
 
@@ -1549,7 +1536,6 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 {
 	int       teamCnt[ NUM_TEAMS ];
 	int       playerNum;
-	gentity_t *playerEnt;
 	gclient_t *client;
 	int       team;
 
@@ -1560,15 +1546,11 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 		teamValue[ team ] = 0;
 	}
 
-	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		playerEnt = &g_entities[ playerNum ];
-		client = playerEnt->client;
+		client = &g_clients[ playerNum ];
 
-		if ( !client )
-		{
-			continue;
-		}
+		if ( !client->ent()->inuse ) continue;
 
 		team = client->pers.team;
 

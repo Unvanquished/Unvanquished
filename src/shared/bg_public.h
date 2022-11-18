@@ -146,7 +146,6 @@ struct playerState_t
 
 // the possibility and the cost of evolving to an alien form
 struct evolveInfo_t {
-	bool classIsUnlocked;
 	bool isDevolving;
 	int  evolveCost;
 };
@@ -258,23 +257,23 @@ enum weaponstate_t
 };
 
 // pmove->pm_flags
-#define PMF_DUCKED         0x000001
-#define PMF_JUMP_HELD      0x000002
-#define PMF_CROUCH_HELD    0x000004
-#define PMF_BACKWARDS_JUMP 0x000008 // go into backwards land
-#define PMF_BACKWARDS_RUN  0x000010 // coast down to backwards run
-#define PMF_JUMPED         0x000020 // whether we entered the air with a jump
-#define PMF_TIME_KNOCKBACK 0x000040 // pm_time is an air-accelerate only time
-#define PMF_TIME_WATERJUMP 0x000080 // pm_time is waterjump
-#define PMF_RESPAWNED      0x000100 // clear after attack and jump buttons come up
-// available               0x000200
-#define PMF_WEAPON_RELOAD  0x000400 // force a weapon switch
-#define PMF_FOLLOW         0x000800 // spectate following another player
-#define PMF_QUEUED         0x001000 // player is queued
-#define PMF_TIME_WALLJUMP  0x002000 // for limiting wall jumping
-#define PMF_CHARGE         0x004000 // keep track of pouncing (and trampling it seems?)
-#define PMF_WEAPON_SWITCH  0x008000 // force a weapon switch
-#define PMF_SPRINTHELD     0x010000
+#define PMF_DUCKED         BIT(0)
+#define PMF_JUMP_HELD      BIT(1)
+#define PMF_CROUCH_HELD    BIT(2)
+#define PMF_BACKWARDS_JUMP BIT(3) // go into backwards land
+#define PMF_BACKWARDS_RUN  BIT(4) // coast down to backwards run
+#define PMF_JUMPED         BIT(5) // whether we entered the air with a jump
+#define PMF_TIME_KNOCKBACK BIT(6) // pm_time is an air-accelerate only time
+#define PMF_TIME_WATERJUMP BIT(7) // pm_time is waterjump
+#define PMF_RESPAWNED      BIT(8) // clear after attack and jump buttons come up
+// available               BIT(9)
+#define PMF_WEAPON_RELOAD  BIT(10) // force a weapon switch
+#define PMF_FOLLOW         BIT(11) // spectate following another player
+#define PMF_QUEUED         BIT(12) // player is queued
+#define PMF_TIME_WALLJUMP  BIT(13) // for limiting wall jumping
+#define PMF_CHARGE         BIT(14) // keep track of pouncing (and trampling it seems?)
+#define PMF_WEAPON_SWITCH  BIT(15) // force a weapon switch
+#define PMF_SPRINTHELD     BIT(16)
 
 #define PMF_ALL_TIMES      ( PMF_TIME_WATERJUMP | PMF_TIME_KNOCKBACK | PMF_TIME_WALLJUMP )
 
@@ -353,15 +352,15 @@ enum statIndex_t
   STAT_FUEL,       // humans: jetpack fuel
 };
 
-#define SCA_WALLCLIMBER     0x00000001
-#define SCA_TAKESFALLDAMAGE 0x00000002
-#define SCA_CANZOOM         0x00000004
-#define SCA_FOVWARPS        0x00000008
-#define SCA_ALIENSENSE      0x00000010
-#define SCA_CANUSELADDERS   0x00000020
-#define SCA_WALLJUMPER      0x00000040
-#define SCA_WALLRUNNER      0x00000080
-#define SCA_SLIDER          0x00000100
+#define SCA_WALLCLIMBER     BIT(0)
+#define SCA_TAKESFALLDAMAGE BIT(1)
+#define SCA_CANZOOM         BIT(2)
+#define SCA_FOVWARPS        BIT(3)
+#define SCA_ALIENSENSE      BIT(4)
+#define SCA_CANUSELADDERS   BIT(5)
+#define SCA_WALLJUMPER      BIT(6)
+#define SCA_WALLRUNNER      BIT(7)
+#define SCA_SLIDER          BIT(8)
 
 // STAT_STATE fields. 16 bit available
 #define SS_WALLCLIMBING     BIT(0)
@@ -439,55 +438,58 @@ enum persEnum_t
   // netcode has space for 2 more. TODO: extend
 };
 
-#define PS_WALLCLIMBINGFOLLOW 0x00000001
-#define PS_WALLCLIMBINGTOGGLE 0x00000002
-#define PS_NONSEGMODEL        0x00000004
-#define PS_SPRINTTOGGLE       0x00000008
+#define PS_WALLCLIMBINGFOLLOW BIT(0)
+#define PS_WALLCLIMBINGTOGGLE BIT(1)
+#define PS_NONSEGMODEL        BIT(2)
+#define PS_SPRINTTOGGLE       BIT(3)
 
 // entityState_t->eFlags
-// notice that some flags are overlapped, so their meaning depends on context
-#define EF_DEAD             0x0001 // don't draw a foe marker over players with EF_DEAD
-#define EF_TELEPORT_BIT     0x0002 // toggled every time the origin abruptly changes
-#define EF_PLAYER_EVENT     0x0004 // only used for eType > ET_EVENTS
+// PLEASE DO NOT MAKE THEM OVERLAP FOR NOTHING:
+// this will only be a pain for future changes
+#define EF_DEAD             BIT(0) // don't draw a foe marker over players with EF_DEAD
+#define EF_TELEPORT_BIT     BIT(1) // toggled every time the origin abruptly changes
+#define EF_PLAYER_EVENT     BIT(2) // only used for eType > ET_EVENTS
 
 // for missiles:
-#define EF_BOUNCE           0x0008 // for missiles
-#define EF_BOUNCE_HALF      0x0010 // for missiles
-#define EF_NO_BOUNCE_SOUND  0x0020 // for missiles
+#define EF_BOUNCE           BIT(3) // for missiles
+#define EF_BOUNCE_HALF      BIT(4) // for missiles
+#define EF_NO_BOUNCE_SOUND  BIT(5) // for missiles
 
 // buildable flags:
-#define EF_B_SPAWNED        0x0008
-#define EF_B_POWERED        0x0010
-#define EF_B_MARKED         0x0020
-#define EF_B_ONFIRE         0x0040
-#define EF_B_LOCKON         0x0080
+#define EF_B_SPAWNED        BIT(6)
+#define EF_B_POWERED        BIT(7)
+#define EF_B_MARKED         BIT(8)
+#define EF_B_ONFIRE         BIT(9)
+#define EF_B_LOCKON         BIT(10)
 
 // for players
-#define EF_UNUSED_1         0x0010 // UNUSED
-#define EF_WARN_CHARGE      0x0020 // Lucifer Cannon is about to overcharge
-#define EF_WALLCLIMB        0x0040 // wall walking
-#define EF_WALLCLIMBCEILING 0x0080 // wall walking ceiling hack
-#define EF_NODRAW           0x0100 // may have an event, but no model (unspawned items)
-#define EF_FIRING           0x0200 // for lightning gun
-#define EF_FIRING2          0x0400 // alt fire
-#define EF_FIRING3          0x0800 // third fire
-#define EF_MOVER_STOP       0x1000 // will push otherwise
-#define EF_UNUSED_2         0x2000 // UNUSED
-#define EF_CONNECTION       0x4000 // draw a connection trouble sprite
-#define EF_BLOBLOCKED       0x8000 // caught by a trapper
+#define EF_WARN_CHARGE      BIT(11) // Lucifer Cannon is about to overcharge
+#define EF_WALLCLIMB        BIT(12) // wall walking
+#define EF_WALLCLIMBCEILING BIT(13) // wall walking ceiling hack
+#define EF_NODRAW           BIT(14) // may have an event, but no model (unspawned items)
+#define EF_FIRING           BIT(15) // for lightning gun
+#define EF_FIRING2          BIT(16) // alt fire
+#define EF_FIRING3          BIT(17) // third fire
+#define EF_MOVER_STOP       BIT(18) // will push otherwise
+#define EF_CONNECTION       BIT(19) // draw a connection trouble sprite
+#define EF_BLOBLOCKED       BIT(20) // caught by a trapper
+#define EF_TYPING           BIT(21) // player is writting a message
+
+// for beacons:
+#define EF_BC_DYING         BIT(21) // beacon is fading out
+#define EF_BC_ENEMY         BIT(22) // entity/base is from the enemy
+#define EF_BC_TAG_PLAYER    BIT(23) // entity is a player
+#define EF_BC_BASE_OUTPOST  BIT(24) // base is an outpost
+
+#define EF_BC_TAG_RELEVANT  (EF_BC_ENEMY|EF_BC_TAG_PLAYER)   // relevant flags for tags
+#define EF_BC_BASE_RELEVANT (EF_BC_ENEMY|EF_BC_BASE_OUTPOST) // relevant flags for bases
+
+// For usercmd_t flags
+#define UF_TYPING           BIT(0) // player is typing
 
 // entityState_t->modelIndex2 "public flags" when used for client entities
 #define PF_JETPACK_ENABLED  BIT(0)
 #define PF_JETPACK_ACTIVE   BIT(1)
-
-// for beacons:
-#define EF_BC_DYING         BIT(3) // beacon is fading out
-#define EF_BC_ENEMY         BIT(4) // entity/base is from the enemy
-#define EF_BC_TAG_PLAYER    BIT(5) // entity is a player
-#define EF_BC_BASE_OUTPOST  BIT(6) // base is an outpost
-
-#define EF_BC_TAG_RELEVANT  (EF_BC_ENEMY|EF_BC_TAG_PLAYER)   // relevant flags for tags
-#define EF_BC_BASE_RELEVANT (EF_BC_ENEMY|EF_BC_BASE_OUTPOST) // relevant flags for bases
 
 enum weaponMode_t
 {
@@ -583,15 +585,15 @@ enum missile_t
 };
 
 // bitmasks for upgrade slots
-#define SLOT_NONE     0x00000000
-#define SLOT_HEAD     0x00000001
-#define SLOT_TORSO    0x00000002
-#define SLOT_ARMS     0x00000004
-#define SLOT_LEGS     0x00000008
-#define SLOT_BACKPACK 0x00000010
-#define SLOT_WEAPON   0x00000020
-#define SLOT_SIDEARM  0x00000040
-#define SLOT_GRENADE  0x00000080
+#define SLOT_NONE     0
+#define SLOT_HEAD     BIT(0)
+#define SLOT_TORSO    BIT(1)
+#define SLOT_ARMS     BIT(2)
+#define SLOT_LEGS     BIT(3)
+#define SLOT_BACKPACK BIT(4)
+#define SLOT_WEAPON   BIT(5)
+#define SLOT_SIDEARM  BIT(6)
+#define SLOT_GRENADE  BIT(7)
 
 // NOTE: manually update AIEntity_t if you edit this enum (TODO: get rid of this task)
 enum buildable_t
@@ -632,8 +634,8 @@ enum buildable_t
 // that an identical event started twice in a row can
 // be distinguished.  And off the value with ~EV_EVENT_BITS
 // to retrieve the actual event number
-#define EV_EVENT_BIT1    0x00000100
-#define EV_EVENT_BIT2    0x00000200
+#define EV_EVENT_BIT1    BIT(8)
+#define EV_EVENT_BIT2    BIT(9)
 #define EV_EVENT_BITS    ( EV_EVENT_BIT1 | EV_EVENT_BIT2 )
 
 #define EVENT_VALID_MSEC 300
@@ -1015,8 +1017,8 @@ struct animation_t
 
 // flip the togglebit every time an animation
 // changes so a restart of the same anim can be detected
-#define ANIM_TOGGLEBIT            0x80
-#define ANIM_FORCEBIT             0x40
+#define ANIM_FORCEBIT             BIT(6)
+#define ANIM_TOGGLEBIT            BIT(7)
 
 // Time between location updates
 #define TEAM_LOCATION_UPDATE_TIME 500
@@ -1200,14 +1202,14 @@ enum beaconConflictHandler_t
 };
 
 // beacon flags
-#define BCF_RESERVED      0x0001 // generated automatically, not created by players
+#define BCF_RESERVED      BIT(0) // generated automatically, not created by players
 
-#define BCF_PER_PLAYER    0x0002 // one beacon per player
-#define BCF_PER_TEAM      0x0004 // one beacon per team
-#define BCF_DATA_UNIQUE   0x0008 // data extends type
+#define BCF_PER_PLAYER    BIT(1) // one beacon per player
+#define BCF_PER_TEAM      BIT(2) // one beacon per team
+#define BCF_DATA_UNIQUE   BIT(3) // data extends type
 
-#define BCF_PRECISE       0x0010 // place exactly at crosshair
-#define BCF_IMPORTANT     0x0020 // display at 100% alpha
+#define BCF_PRECISE       BIT(4) // place exactly at crosshair
+#define BCF_IMPORTANT     BIT(5) // display at 100% alpha
 
 struct beaconAttributes_t
 {
@@ -1534,7 +1536,6 @@ team_t                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
 evolveInfo_t            BG_ClassEvolveInfoFromTo(int from, int to);
-bool                    BG_AlienCanEvolve(int from, int credits);
 
 int                       BG_GetBarbRegenerationInterval(const playerState_t& ps);
 
@@ -1690,8 +1691,8 @@ void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_
 #define MAX_ARENAS      1024
 #define MAX_ARENAS_TEXT 8192
 
-float    atof_neg( char *token, bool allowNegative );
-int      atoi_neg( char *token, bool allowNegative );
+float    atof_neg( const char *token, bool allowNegative );
+int      atoi_neg( const char *token, bool allowNegative );
 
 BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 		BG_ParseBuildableList( const std::string& );
@@ -1816,6 +1817,7 @@ void BG_BoundingBox( class_t cl, glm::vec3* mins, glm::vec3* maxs, glm::vec3* cm
 void BG_BoundingBox( buildable_t buildablel, glm::vec3* mins, glm::vec3* maxs );
 
 void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right, glm::vec3 *up );
+WARN_UNUSED_RESULT glm::mat3 RotationMatrix( const glm::vec3 &angles );
 
 //==================================================================
 #endif /* BG_PUBLIC_H_ */

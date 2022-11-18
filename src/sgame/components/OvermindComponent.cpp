@@ -15,7 +15,7 @@ OvermindComponent::OvermindComponent(Entity& entity, AlienBuildableComponent& r_
 }
 
 void OvermindComponent::HandlePrepareNetCode() {
-	entity.oldEnt->s.otherEntityNum = storedTarget ? storedTarget->s.number : ENTITYNUM_NONE;
+	entity.oldEnt->s.otherEntityNum = storedTarget ? storedTarget->num() : ENTITYNUM_NONE;
 }
 
 void OvermindComponent::HandleFinishConstruction() {

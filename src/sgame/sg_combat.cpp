@@ -135,15 +135,15 @@ static void LookAtKiller( gentity_t *self, gentity_t *inflictor, gentity_t *atta
 {
 	if ( attacker && attacker != self )
 	{
-		self->client->ps.stats[ STAT_VIEWLOCK ] = attacker - g_entities;
+		self->client->ps.stats[ STAT_VIEWLOCK ] = attacker->num();
 	}
 	else if ( inflictor && inflictor != self )
 	{
-		self->client->ps.stats[ STAT_VIEWLOCK ] = inflictor - g_entities;
+		self->client->ps.stats[ STAT_VIEWLOCK ] = inflictor->num();
 	}
 	else
 	{
-		self->client->ps.stats[ STAT_VIEWLOCK ] = self - g_entities;
+		self->client->ps.stats[ STAT_VIEWLOCK ] = self->num();
 	}
 }
 
@@ -170,7 +170,7 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
 	damage = self->entity->Get<HealthComponent>()->MaxHealth() / 4.0f;
 	if ( killer && killer->client )
 	{
-		damage = std::min( damage, self->credits[ killer->s.number ].value );
+		damage = std::min( damage, self->credits[ killer->num() ].value );
 	}
 
 	// Find the best assistant
@@ -324,7 +324,6 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	gentity_t *ent;
 	int       anim;
 	int       killer;
-	int       i;
 	const char *killerName, *obit;
 
 	const gentity_t *assistantEnt;
@@ -347,7 +346,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( attacker )
 	{
-		killer = attacker->s.number;
+		killer = attacker->num();
 
 		if ( attacker->client )
 		{
@@ -368,7 +367,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( assistantEnt )
 	{
-		assistant = assistantEnt->s.number;
+		assistant = assistantEnt->num();
 
 		if ( assistantEnt->client )
 		{
@@ -390,7 +389,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	{
 		G_LogPrintf( "Die: %d %d %s %d %d: %s^* killed %s^*; %s^* assisted",
 		             killer,
-		             ( int )( self - g_entities ),
+		             self->num(),
 		             obit,
 		             assistant,
 		             assistantTeam,
@@ -402,14 +401,14 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	{
 		G_LogPrintf( "Die: %d %d %s: %s^* killed %s",
 		             killer,
-		             ( int )( self - g_entities ),
+		             self->num(),
 		             obit,
 		             killerName,
 		             self->client->pers.netname );
 	}
 
 	// deactivate all upgrades
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	for ( int i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		BG_DeactivateUpgrade( i, self->client->ps.stats );
 	}
@@ -417,7 +416,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	// broadcast the death event to everyone
 	ent = G_NewTempEntity( VEC2GLM( self->r.currentOrigin ), EV_OBITUARY );
 	ent->s.eventParm = meansOfDeath;
-	ent->s.otherEntityNum = self->s.number;
+	ent->s.otherEntityNum = self->num();
 	ent->s.otherEntityNum2 = killer;
 	ent->s.otherEntityNum3 = assistant;
 	ent->s.generic1 = assistantTeam;
@@ -441,7 +440,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		}
 		else if ( g_showKillerHP.Get() )
 		{
-			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^*, had $2$ HP.\n") ),
+			trap_SendServerCommand( self->num(), va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^*, had $2$ HP.") ),
 			                        Quote( killerName ),
 			                        (int)std::ceil(attacker->entity->Get<HealthComponent>()->Health()) ) );
 		}
@@ -465,11 +464,9 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	// send updated scores to any clients that are following this one,
 	// or they would get stale scoreboards
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
-		gclient_t *client;
-
-		client = &level.clients[ i ];
+		gclient_t *client = &level.clients[ i ];
 
 		if ( client->pers.connected != CON_CONNECTED )
 		{
@@ -481,7 +478,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 			continue;
 		}
 
-		if ( client->sess.spectatorClient == self->s.number )
+		if ( client->sess.spectatorClient == self->num() )
 		{
 			ScoreboardMessage( g_entities + i );
 		}
@@ -570,7 +567,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 		// use own entityid if killed by non-client to prevent uint8_t overflow
 		G_AddEvent( self, EV_DEATH1 + i,
-		            ( killer < MAX_CLIENTS ) ? killer : self - g_entities );
+		            ( killer < MAX_CLIENTS ) ? killer : self->num() );
 
 		// globally cycle through the different death animations
 		i = ( i + 1 ) % 3;
@@ -585,7 +582,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 {
-	char  *token;
+	const char *token;
 	float angleSpan, heightSpan;
 	int   count;
 
@@ -650,7 +647,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "0" );
+					token = "0";
 				}
 
 				regions[ count ].minHeight = atof( token );
@@ -661,7 +658,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "100" );
+					token = "100";
 				}
 
 				regions[ count ].maxHeight = atof( token );
@@ -672,7 +669,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "0" );
+					token = "0";
 				}
 
 				regions[ count ].minAngle = atoi( token );
@@ -683,7 +680,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "360" );
+					token = "360";
 				}
 
 				regions[ count ].maxAngle = atoi( token );
@@ -694,7 +691,7 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 				if ( !token[ 0 ] )
 				{
-					strcpy( token, "1.0" );
+					token = "1.0";
 				}
 
 				regions[ count ].modifier = atof( token );
@@ -818,7 +815,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
-	if ( tr.fraction == 1.0  || tr.entityNum == targ->s.number )
+	if ( tr.fraction == 1.0  || tr.entityNum == targ->num() )
 	{
 		return true;
 	}
@@ -1037,8 +1034,8 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	}
 
 	G_LogPrintf( "^3Deconstruct: %d %d %s %s: %s %s by %s",
-	             ( int )( actor - g_entities ),
-	             ( int )( self - g_entities ),
+	             actor->num(),
+	             self->num(),
 	             BG_Buildable( self->s.modelindex )->name,
 	             modNames[ mod ],
 	             BG_Buildable( self->s.modelindex )->humanName,
@@ -1048,8 +1045,8 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 	if ( actor->client && G_OnSameTeam( self, actor ) )
 	{
 		G_TeamCommand( G_Team( actor ),
-		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$\n") ) :
-						   QQ( N_("$1$ ^3DESTROYED^* by $2$\n") ),
+		               va( "print_tr %s %s %s", mod == MOD_DECONSTRUCT ? QQ( N_("$1$ ^3DECONSTRUCTED^* by $2$") ) :
+						   QQ( N_("$1$ ^3DESTROYED^* by $2$") ),
 		                   Quote( BG_Buildable( self->s.modelindex )->humanName ),
 		                   Quote( actor->client->pers.netname ) ) );
 	}

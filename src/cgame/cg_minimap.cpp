@@ -44,7 +44,7 @@ ParseFloats
 */
 static bool ParseFloats( float* res, const int number, const char **text )
 {
-    char* token;
+    const char* token;
     int i = number;
 
     while( i --> 0 )
@@ -68,7 +68,7 @@ CG_ParseMinimapZone
 */
 static bool CG_ParseMinimapZone( minimapZone_t* z, const char **text )
 {
-    char* token;
+    const char* token;
     bool hasImage = false;
     bool hasBounds = false;
 
@@ -163,7 +163,7 @@ static bool CG_ParseMinimap( minimap_t* m, const char* filename )
 {
     char text_buffer[ 20000 ];
     const char* text;
-    char* token;
+    const char* token;
 
     m->nZones = 0;
     m->lastZone = -1;

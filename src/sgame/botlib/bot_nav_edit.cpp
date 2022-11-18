@@ -178,7 +178,7 @@ void BotDebugDrawMesh()
 
 static bool CheckHost( gentity_t *ent )
 {
-	if ( level.inClient && ent->client->ps.clientNum == 0 )
+	if ( level.inClient && ent->num() == 0 )
 	{
 		// It's ok for further messages from commands to use Log::Notice since we have established
 		// that the client console is the server console
@@ -186,11 +186,12 @@ static bool CheckHost( gentity_t *ent )
 	}
 
 	trap_SendServerCommand(
-		ent - g_entities,
+		ent->num(),
 		"print_tr " QQ( "you must be the host of a local devmap to use this command" ) );
 	return false;
 }
 
+bool G_BotNavInit();
 void Cmd_NavEdit( gentity_t *ent )
 {
 	if ( !CheckHost( ent ) ) return;
@@ -212,6 +213,11 @@ void Cmd_NavEdit( gentity_t *ent )
 		if ( args.Argc() < 3 )
 		{
 			Log::Notice( usage );
+			return;
+		}
+
+		if ( !G_BotNavInit() )
+		{
 			return;
 		}
 

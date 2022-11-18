@@ -284,6 +284,10 @@ protected:
 
 	void MoveCursorForward()
 	{
+		if (cursor_character_index >= text.size() )
+		{
+			return;
+		}
 		cursor_character_index += Q_UTF8_Width( text.c_str() + cursor_character_index );
 	}
 
@@ -332,10 +336,10 @@ protected:
 
 		for ( const auto& token : Color::Parser( in.c_str(), Color::White ) )
 		{
+			Str::StringView raw = token.RawToken();
+
 			if ( token.Type() == Color::Token::TokenType::COLOR )
 			{
-				Rml::XMLAttributes xml;
-
 				// Child element initialized
 				if ( span && child )
 				{
@@ -355,20 +359,16 @@ protected:
 					out.clear();
 				}
 
-
+				Rml::XMLAttributes xml;
 				child = Rml::Factory::InstanceElement( parent, "#text", "span", xml );
 				Color::Color32Bit color32 = token.Color();
 				child->SetProperty( "color", va( "#%02X%02X%02X", (int) color32.Red(), (int) color32.Green(), (int) color32.Blue() ) );
-				out.append( token.Begin(), token.Size() );
+				out.append( raw.begin(), raw.end() );
 				span = true;
 			}
-			else if ( token.Type() == Color::Token::TokenType::ESCAPE )
+			else
 			{
-				out.push_back( Color::Constants::ESCAPE );
-			}
-			else if ( token.Type() == Color::Token::TokenType::CHARACTER )
-			{
-				auto c = *token.Begin();
+				auto c = *raw.begin();
 
 				if ( c == '<' )
 				{
@@ -405,7 +405,7 @@ protected:
 				}
 				else
 				{
-					out.append( token.Begin(), token.Size() );
+					out.append( raw.begin(), raw.end() );
 				}
 			}
 		}

@@ -59,7 +59,6 @@ Cvar::Cvar<bool> cg_drawBuildableHealth("cg_drawBuildableHealth", "show buildabl
 Cvar::Cvar<bool> cg_drawMinimap("cg_drawMinimap", "show minimap", Cvar::NONE, true);
 Cvar::Cvar<int> cg_minimapActive("cg_minimapActive", "FOR INTERNAL USE", Cvar::NONE, 0);
 Cvar::Cvar<float> cg_crosshairSize("cg_crosshairSize", "crosshair scale factor", Cvar::NONE, 1);
-Cvar::Cvar<std::string> cg_crosshairFile("cg_crosshairFile", "VFS path of custom crosshairs file", Cvar::NONE, "");
 Cvar::Cvar<bool> cg_draw2D("cg_draw2D", "show HUD", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_debugAnim("cg_debuganim", "show animation debug logs", Cvar::CHEAT, false);
 Cvar::Cvar<bool> cg_debugEvents("cg_debugevents", "log received events", Cvar::CHEAT, false);
@@ -808,7 +807,7 @@ static void CG_RegisterGraphics()
 	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
-	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon", (RegisterShaderFlags_t) ( RSF_SPRITE | RSF_NOMIP ) );
+	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "particles/feedback/disconnect" );
 
@@ -870,7 +869,7 @@ static void CG_RegisterGraphics()
 	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/feedback/damage/font", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
 	// register the inline models
-	cgs.numInlineModels = trap_CM_NumInlineModels();
+	cgs.numInlineModels = CM_NumInlineModels();
 
 	if ( cgs.numInlineModels > MAX_SUBMODELS )
 	{
@@ -1254,7 +1253,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	CG_SetMapNameFromServerinfo();
 
 	// load the new map
-	trap_CM_LoadMap(cgs.mapname);
+	CM_LoadMap(cgs.mapname);
 
 	CG_InitMinimap();
 

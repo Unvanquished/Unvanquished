@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/vec3.hpp>
 
 bool PlayersBehindBotInSpawnQueue( gentity_t *self );
+int      BotGetDefaultSkill();
 void     BotSetSkillLevel( gentity_t *self, int skill );
 
 // unsticking
@@ -47,6 +48,7 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
 bool   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
+botEntityAndDistance_t BotGetHealTarget( const gentity_t *self );
 
 // aiming
 glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target );

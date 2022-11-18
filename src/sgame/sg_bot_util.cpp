@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
+static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "Default skill value bots will have when added", Cvar::NONE, 5, 1, 9 );
+
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 static const int MIN_SKILL = 1;
 static const int MAX_SKILL = 9;
@@ -221,6 +223,33 @@ Scoring functions for logic
 =======================
 */
 
+botEntityAndDistance_t BotGetHealTarget( const gentity_t *self )
+{
+	if ( G_Team( self ) == TEAM_HUMANS )
+	{
+		// may be null with near infinite distance
+		return self->botMind->closestBuildings[BA_H_MEDISTAT];
+	}
+
+	static constexpr glm::vec3 up( 0.0f, 0.0f, 1.0f );
+
+	for ( buildable_t buildable : { BA_A_BOOSTER, BA_A_OVERMIND, BA_A_SPAWN, BA_A_LEECH })
+	{
+		botEntityAndDistance_t candidate =
+			self->botMind->closestBuildings[ buildable ];
+
+		// We skip buildings on roof or walls as bots can't wallwalk.
+		// Unless it's a booster, as boosters are often put on walls
+		// and have a large area of effect.
+		if ( candidate.ent && ( glm::dot( VEC2GLM(candidate.ent->s.origin2), up ) <= MIN_WALK_NORMAL || buildable == BA_A_BOOSTER ) )
+		{
+			return candidate;
+		}
+	}
+	// ent will be null, but that makes it a valid default value
+	return self->botMind->closestBuildings[ BA_A_OVERMIND ];
+}
+
 // computes the maximum credits this bot could spend in
 // equipment (or classes) with infinite credits.
 static int GetMaxEquipmentCost( gentity_t const* self )
@@ -344,35 +373,9 @@ float BotGetHealScore( gentity_t *self )
 		return 0.0f;
 	}
 
-	float distToHealer = 0;
-
-	if ( self->client->pers.team == TEAM_ALIENS )
-	{
-		//Alien code is notoriously bugged if the heal source can not be reached,
-		//which includes sources on walls and ceilings.
-		//This way of doing code more or less works, because boosters have rather
-		//big area (but aliens won't take poison) and players usually put them in
-		//places they can reach without too much hassle.
-		//The bug can be noted if overmind is removed and closest egg is high enough.
-		if ( self->botMind->closestBuildings[ BA_A_BOOSTER ].ent )
-		{
-			distToHealer = self->botMind->closestBuildings[ BA_A_BOOSTER ].distance;
-		}
-		else if ( self->botMind->closestBuildings[ BA_A_OVERMIND ].ent )
-		{
-			distToHealer = self->botMind->closestBuildings[ BA_A_OVERMIND ].distance;
-		}
-		else if ( self->botMind->closestBuildings[ BA_A_SPAWN ].ent )
-		{
-			distToHealer = self->botMind->closestBuildings[ BA_A_SPAWN ].distance;
-		}
-	}
-	else
-	{
-		distToHealer = self->botMind->closestBuildings[ BA_H_MEDISTAT ].distance;
-	}
-
+	float distToHealer = BotGetHealTarget( self ).distance;
 	float timeDist = distToHealer / GetMaximalSpeed( self );
+
 	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentHealth ) / sqrt( timeDist );
 }
 
@@ -495,11 +498,11 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 }
 
 
+// This will only check if the bot is allowed to do so. To check if it *can*,
+// use G_AlienEvolve with dryRun = true, or just try to evolve.
 bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
 {
 	equipment_t<class_t>* cl = std::find( std::begin( classes ), std::end( classes ), newClass );
-	int fromClass = self->client->ps.stats[STAT_CLASS];
-	evolveInfo_t info = BG_ClassEvolveInfoFromTo( fromClass, newClass );
 
 	if ( cl == std::end( classes ) )
 	{
@@ -507,13 +510,7 @@ bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
 		return false;
 	}
 
-	if ( !g_bot_evolve.Get() || Entities::IsDead( self ) )
-	{
-		return false;
-	}
-
-	return cl->canBuyNow()
-		&& self->client->ps.persistant[PERS_CREDIT] >= info.evolveCost;
+	return cl->canBuyNow();
 }
 
 bool WeaponIsEmpty( weapon_t weapon, playerState_t *ps )
@@ -981,7 +978,7 @@ botTarget_t BotGetRoamTarget( const gentity_t *self )
 	botTarget_t target;
 	glm::vec3 point;
 
-	if ( !BotFindRandomPointInRadius( self->s.number, VEC2GLM( self->s.origin ), point, 2000 ) )
+	if ( !BotFindRandomPointInRadius( self->num(), VEC2GLM( self->s.origin ), point, 2000 ) )
 	{
 		target = VEC2GLM( self->s.origin );
 	}
@@ -1074,7 +1071,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		glm::vec3 invNormal = { 0, 0, -1 };
 		glm::vec3 targetPos = target.getPos();
 		glm::vec3 end = targetPos + 600.f * invNormal;
-		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->s.number,
+		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->num(),
 		            CONTENTS_SOLID, MASK_ENTITY );
 		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
@@ -1265,7 +1262,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	maxs = {  width,  width,  width };
 	mins = { -width, -width, -height };
 
-	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT, 0 );
+	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->num(), MASK_SHOT, 0 );
 
 	return !G_OnSameTeam( self, &g_entities[trace.entityNum] )
 		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
@@ -1275,7 +1272,10 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 bool BotEntityIsValidTarget( const gentity_t *ent )
 {
 	// spectators are not considered alive
-	return ent != nullptr && ent->inuse && Entities::IsAlive(ent);
+	return ent != nullptr
+		&& ent->inuse
+		&& !(ent->flags & FL_NOTARGET)
+		&& Entities::IsAlive(ent);
 }
 
 bool BotEntityIsValidEnemyTarget( const gentity_t *self, const gentity_t *enemy )
@@ -1329,7 +1329,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], self->s.number, mask, 0 );
+	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], self->num(), mask, 0 );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -1337,7 +1337,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	}
 
 	//target is in range
-	if ( ( trace.entityNum == target.getTargetedEntity()->s.number
+	if ( ( trace.entityNum == target.getTargetedEntity()->num()
 				|| trace.fraction == 1.0f )
 			&& !trace.startsolid )
 	{
@@ -1370,7 +1370,7 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 		aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
 
 	}
-	else if ( isTargetBuildable || targetTeam == TEAM_ALIENS )
+	else
 	{
 		//make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
 		if ( self->botMind->botSkill.level >= 5 )
@@ -1411,15 +1411,13 @@ static glm::vec3 BotPredictPosition( gentity_t *self, gentity_t const *predict, 
 	botTarget_t target;
 	target = predict;
 	glm::vec3 aimLoc = BotGetIdealAimLocation( self, target );
-	return aimLoc + time / 1000.0f * VEC2GLM( predict->s.apos.trDelta );
+	return aimLoc + time / 1000.0f * VEC2GLM( predict->s.pos.trDelta );
 }
 
 void BotAimAtEnemy( gentity_t *self )
 {
 	ASSERT( self->botMind->goal.targetsValidEntity() );
 
-	int i;
-	float frac;
 	const gentity_t *enemy = self->botMind->goal.getTargetedEntity();
 
 	if ( self->botMind->futureAimTime < level.time )
@@ -1435,14 +1433,14 @@ void BotAimAtEnemy( gentity_t *self )
 	glm::vec3 current;
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &current, nullptr, nullptr );
 
-	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
+	float frac = ( 1.0f - ( static_cast<float>( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
 	glm::vec3 newAim = glm::mix( current, desired, frac );
 
 	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
 	glm::vec3 angles;
 	vectoangles( &newAim[0], &angles[0] );
 
-	for ( i = 0; i < 3; i++ )
+	for ( int i = 0; i < 3; i++ )
 	{
 		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angles[ i ] );
 	}
@@ -1511,19 +1509,6 @@ void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
 	target = viewBase + length * skilledVec;
 }
 
-float BotAimAngle( gentity_t *self, vec3_t pos )
-{
-	vec3_t viewPos;
-	vec3_t forward;
-	vec3_t ideal;
-
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-	BG_GetClientViewOrigin( &self->client->ps, viewPos );
-	VectorSubtract( pos, viewPos, ideal );
-
-	return AngleBetweenVectors( forward, ideal );
-}
-
 /*
 ========================
 Bot Team Querys
@@ -1586,7 +1571,7 @@ bool PlayersBehindBotInSpawnQueue( gentity_t *self )
 				}
 			}
 
-			if ( sq->clients[ i ] == self->s.number )
+			if ( sq->clients[ i ] == self->num() )
 			{
 				if ( i < sq->front )
 				{
@@ -1912,8 +1897,9 @@ void BotFireWeaponAI( gentity_t *self )
 	}
 }
 
-static bool BotChangeClass( gentity_t *self, class_t newClass, glm::vec3 newOrigin )
+static bool BotChangeClass( gentity_t *self, class_t newClass )
 {
+	glm::vec3 newOrigin;
 	if ( !G_RoomForClassChange( self, newClass, &newOrigin[0] ) )
 	{
 		return false;
@@ -1928,78 +1914,30 @@ static bool BotChangeClass( gentity_t *self, class_t newClass, glm::vec3 newOrig
 
 bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 {
-	int clientNum;
-	int i;
-	glm::vec3 infestOrigin;
 	class_t currentClass = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
-	evolveInfo_t evolveInfo;
-	int entityList[ MAX_GENTITIES ];
-	glm::vec3 range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
-	glm::vec3 mins, maxs;
-	int num;
-	gentity_t *other;
 
 	if ( currentClass == newClass )
 	{
 		return true;
 	}
 
-	clientNum = ent->client - level.clients;
-
 	if ( !BotCanEvolveToClass( ent, newClass ) )
 	{
 		return false;
 	}
 
-	//if we are not currently spectating, we are attempting evolution
-	if ( ent->client->pers.classSelection != PCL_NONE )
+	// disable wallwalking if on
+	if ( ( ent->client->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
 	{
-		if ( ( ent->client->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
-		{
-			ent->client->pers.cmd.upmove = 0;
-		}
-
-		//check there are no humans nearby
-		maxs = VEC2GLM( ent->client->ps.origin ) + range;
-		mins = VEC2GLM( ent->client->ps.origin ) - range;
-
-		num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
-		for ( i = 0; i < num; i++ )
-		{
-			other = &g_entities[ entityList[ i ] ];
-
-			if ( ( other->client && other->client->pers.team == TEAM_HUMANS ) ||
-				( other->s.eType == entityType_t::ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
-			{
-				return false;
-			}
-		}
-
-		if ( !G_ActiveOvermind() )
-		{
-			return false;
-		}
-
-		evolveInfo = BG_ClassEvolveInfoFromTo( currentClass, newClass );
-
-		if ( G_RoomForClassChange( ent, newClass, &infestOrigin[0] ) )
-		{
-			ent->client->pers.evolveHealthFraction =
-				Math::Clamp( Entities::HealthFraction(ent), 0.0f, 1.0f );
-
-			//remove credit
-			G_AddCreditToClient( ent->client, -( short )evolveInfo.evolveCost, true );
-			ent->client->pers.classSelection = newClass;
-			BotSetNavmesh( ent, newClass );
-			ClientUserinfoChanged( clientNum, false );
-			VectorCopy( infestOrigin, ent->s.pos.trBase );
-			ClientSpawn( ent, ent, ent->s.pos.trBase, ent->s.apos.trBase );
-
-			//trap_SendServerCommand( -1, va( "print \"evolved to %s\n\"", classname) );
-
-			return true;
-		}
+		ent->client->pers.cmd.upmove = 0;
 	}
+
+	if ( G_AlienEvolve( ent, newClass, false, false ) )
+	{
+		BotSetNavmesh( ent, newClass );
+		return true;
+	}
+
 	return false;
 }
 
@@ -2127,7 +2065,6 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 		return false;
 	}
 
-	glm::vec3 newOrigin = {};
 	struct
 	{
 		upgrade_t upg;
@@ -2142,7 +2079,7 @@ bool BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 	for ( auto const& armor : armorToClass )
 	{
 		//fail if there's not enough space
-		if ( upgrade == armor.upg && !BotChangeClass( self, armor.cls, newOrigin ) )
+		if ( upgrade == armor.upg && !BotChangeClass( self, armor.cls ) )
 		{
 			return false;
 		}
@@ -2247,6 +2184,11 @@ void BotSellUpgrades( gentity_t *self )
 
 void BotSetSkillLevel( gentity_t *self, int skill )
 {
+	if ( skill == 0 ) {
+		skill = g_bot_defaultSkill.Get();
+	}
+	ASSERT( skill >= MIN_SKILL && skill <= MAX_SKILL );
+
 	self->botMind->botSkill.level = skill;
 	// TODO: different aim for different teams
 	self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
@@ -2293,12 +2235,12 @@ static gentity_t *BotPopEnemy( enemyQueue_t *queue )
 
 void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
-	if ( G_Team( attacker ) != TEAM_NONE && G_Team( attacker ) != self->client->pers.team )
+	if ( G_Team( attacker ) != TEAM_NONE
+		&& !G_OnSameTeam( self, attacker )
+		&& attacker->s.eType == entityType_t::ET_PLAYER )
 	{
-		if ( attacker->s.eType == entityType_t::ET_PLAYER )
-		{
-			BotPushEnemy( &self->botMind->enemyQueue, attacker );
-		}
+
+		BotPushEnemy( &self->botMind->enemyQueue, attacker );
 	}
 }
 
@@ -2435,13 +2377,12 @@ glm::vec3 botTarget_t::getPos() const
 	return glm::vec3();
 }
 
-// Reimplementation of daemon's function of same name.
-// This lacks doc because I am unsure about what it does exactly, and don't
-// want to think about it for now.
-// TODO: replace with code from GLM: pretty sure there's an equivalent.
-glm::vec3 ProjectPointOntoVector( const glm::vec3 &point, const glm::vec3 &vStart, const glm::vec3 &vEnd )
+
+// Reimplementation of Daemon's ProjectPointOntoVector.
+// Projects `point` onto the line passing through linePoint1 and linePoint2.
+glm::vec3 ProjectPointOntoVector( const glm::vec3 &point, const glm::vec3 &linePoint1, const glm::vec3 &linePoint2 )
 {
-	glm::vec3 pVec = point - vStart;
-	glm::vec3 vec = glm::normalize( vEnd - vStart );
-	return vStart + glm::dot( pVec, vec ) * vec;
+	glm::vec3 pointRelative = point - linePoint1;
+	glm::vec3 lineDir = glm::normalize( linePoint2 - linePoint1 );
+	return linePoint1 + glm::dot( pointRelative, lineDir ) * lineDir;
 }

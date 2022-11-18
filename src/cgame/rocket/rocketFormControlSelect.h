@@ -72,6 +72,10 @@ public:
 			// Need to cache this because it is not available
 			// when this element is being removed
 			owner = GetOwnerDocument();
+			if ( owner == nullptr )
+			{
+				return;
+			}
 			owner->AddEventListener( "show", this );
 			owner->AddEventListener( "change", this );
 		}
@@ -80,7 +84,7 @@ public:
 	virtual void OnChildRemove( Element *child )
 	{
 		Rml::ElementFormControlSelect::OnChildRemove( child );
-		if ( child == this )
+		if ( child == this && owner )
 		{
 			owner->RemoveEventListener( "show", this );
 			owner->RemoveEventListener( "change", this );
@@ -89,6 +93,10 @@ public:
 
 	virtual void ProcessEvent( Rml::Event &event )
 	{
+		if ( !owner )
+		{
+			return;
+		}
 		if ( !cvar.empty() )
 		{
 			if ( owner == event.GetTargetElement() && event == "show" )

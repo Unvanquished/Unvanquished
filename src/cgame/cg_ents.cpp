@@ -853,6 +853,7 @@ static void CG_Lev2ZapChain( centity_t *cent )
 
 	for ( i = 1; i < count; i++ )
 	{
+		int trail = i - 1;
 		if ( i == 1 )
 		{
 			// First entity is the attacker
@@ -866,17 +867,17 @@ static void CG_Lev2ZapChain( centity_t *cent )
 
 		target = &cg_entities[ entityNums[ i ] ];
 
-		if ( !CG_IsTrailSystemValid( &cent->level2ZapTS[ i ] ) )
+		if ( !CG_IsTrailSystemValid( &cent->level2ZapTS[ trail ] ) )
 		{
-			cent->level2ZapTS[ i ] = CG_SpawnNewTrailSystem( cgs.media.level2ZapTS );
+			cent->level2ZapTS[ trail ] = CG_SpawnNewTrailSystem( cgs.media.level2ZapTS );
 		}
 
-		if ( CG_IsTrailSystemValid( &cent->level2ZapTS[ i ] ) )
+		if ( CG_IsTrailSystemValid( &cent->level2ZapTS[ trail ] ) )
 		{
-			CG_SetAttachmentCent( &cent->level2ZapTS[ i ]->frontAttachment, source );
-			CG_SetAttachmentCent( &cent->level2ZapTS[ i ]->backAttachment, target );
-			CG_AttachToCent( &cent->level2ZapTS[ i ]->frontAttachment );
-			CG_AttachToCent( &cent->level2ZapTS[ i ]->backAttachment );
+			CG_SetAttachmentCent( &cent->level2ZapTS[ trail ]->frontAttachment, source );
+			CG_SetAttachmentCent( &cent->level2ZapTS[ trail ]->backAttachment, target );
+			CG_AttachToCent( &cent->level2ZapTS[ trail ]->frontAttachment );
+			CG_AttachToCent( &cent->level2ZapTS[ trail ]->backAttachment );
 		}
 	}
 }

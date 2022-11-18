@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static Cvar::Cvar<bool> g_indestructibleBuildables(
 		"g_indestructibleBuildables",
-		"make buildables impossible to destroy", Cvar::NONE, false);
+		"make buildables impossible to destroy (Note: this only applies only to buildings built after the variable is set, This also means it must be set before map load for the default buildables to be protected)", Cvar::NONE, false);
 
 /**
  * @return Whether the means of death allow for an under-attack warning.
@@ -231,7 +231,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		int     anim;
 
 		trap_Trace( &tr, self->s.origin, self->r.mins, self->r.maxs,
-		            self->s.origin, self->s.number, MASK_PLAYERSOLID, 0 );
+		            self->s.origin, self->num(), MASK_PLAYERSOLID, 0 );
 
 		if ( tr.startsolid || tr.fraction < 1.0f )
 		{
@@ -467,7 +467,7 @@ static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range 
 		return false;
 	}
 
-	trap_Trace( &trace, self->s.pos.trBase, nullptr, nullptr, target->s.pos.trBase, self->s.number,
+	trap_Trace( &trace, self->s.pos.trBase, nullptr, nullptr, target->s.pos.trBase, self->num(),
 	            MASK_SHOT, 0 );
 
 	if ( trace.contents & CONTENTS_SOLID ) // can we see the target?
@@ -548,7 +548,7 @@ static void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 
 	if ( !self->powered || Entities::IsDead(self) )
 	{
-		G_TriggerMenu( activator->client->ps.clientNum, MN_H_NOTPOWERED );
+		G_TriggerMenu( activator->num(), MN_H_NOTPOWERED );
 		return;
 	}
 
@@ -1085,7 +1085,7 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, BUILDER_DECONSTRUCT_RANGE, forward, end );
-	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->num(), MASK_PLAYERSOLID, 0 );
 	buildable = &g_entities[ trace.entityNum ];
 
 	// Check if target is valid.
@@ -1182,7 +1182,7 @@ void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 
 		// Add to build timer.
 		ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
-	}	
+	}
 
 	G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
 }
@@ -1229,7 +1229,7 @@ static int G_FreeMarkedBuildables( gentity_t *deconner, char *readable,
 
 		if ( nums )
 		{
-			Q_strcat( nums, nsize, va( " %ld", ( long )( ent - g_entities ) ) );
+			Q_strcat( nums, nsize, va( " %ld", ( long )( ent->num() ) ) );
 		}
 
 		numRemoved++;
@@ -1558,7 +1558,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, trap_Trace, entity_origin, angles, &tr1 );
 	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
-	trap_Trace( &tr3, ps->origin, nullptr, nullptr, entity_origin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr3, ps->origin, nullptr, nullptr, entity_origin, ent->num(), MASK_PLAYERSOLID, 0 );
 
 	VectorCopy( entity_origin, origin );
 	*groundEntNum = tr1.entityNum;
@@ -1597,8 +1597,8 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		}
 
 		// Check surface permissions
-		if ( (tr1.contents & (CUSTOM_CONTENTS_NOALIENBUILD | CUSTOM_CONTENTS_NOBUILD))
-			|| (contents & (CUSTOM_CONTENTS_NOALIENBUILD | CUSTOM_CONTENTS_NOBUILD)) )
+		bool invalid = (tr1.contents & (CUSTOM_CONTENTS_NOALIENBUILD | CUSTOM_CONTENTS_NOBUILD)) || (contents & (CUSTOM_CONTENTS_NOALIENBUILD | CUSTOM_CONTENTS_NOBUILD));
+		if ( invalid && !g_ignoreNobuild.Get() )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -1621,8 +1621,8 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		}
 
 		// Check permissions
-		if ( (tr1.contents & (CUSTOM_CONTENTS_NOHUMANBUILD | CUSTOM_CONTENTS_NOBUILD))
-			|| (contents & (CUSTOM_CONTENTS_NOHUMANBUILD | CUSTOM_CONTENTS_NOBUILD)) )
+		bool invalid = (tr1.contents & (CUSTOM_CONTENTS_NOHUMANBUILD | CUSTOM_CONTENTS_NOBUILD)) || (contents & (CUSTOM_CONTENTS_NOHUMANBUILD | CUSTOM_CONTENTS_NOBUILD));
+		if ( invalid && !g_ignoreNobuild.Get() )
 		{
 			reason = IBE_SURFACE;
 		}
@@ -1718,7 +1718,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
 		}
 	}
-		
+
 	return reason;
 }
 
@@ -1765,9 +1765,7 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 		}
 
 		case BA_A_LEECH: {
-			BUILDABLE_ENTITY_START(LeechEntity);
-			params.Mining_blueprint = false;
-			BUILDABLE_ENTITY_END(LeechEntity);
+			BUILDABLE_ENTITY_CREATE(LeechEntity);
 			break;
 		}
 
@@ -1797,9 +1795,7 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 		}
 
 		case BA_H_DRILL: {
-			BUILDABLE_ENTITY_START(DrillEntity);
-			params.Mining_blueprint = false;
-			BUILDABLE_ENTITY_END(DrillEntity);
+			BUILDABLE_ENTITY_CREATE(DrillEntity);
 			break;
 		}
 
@@ -1833,7 +1829,7 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 	}
 }
 
-static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, const vec3_t origin,
+static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, const glm::vec3 &origin,
                          const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
 	gentity_t  *built;
@@ -1896,7 +1892,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		built->builtBy = nullptr;
 	}
 
-	G_SetOrigin( built, VEC2GLM( origin ) );
+	G_SetOrigin( built, origin );
 
 	// HACK: These are preliminary angles. The real angles of the model are calculated client side.
 	// TODO: Use proper angles with respect to the world?
@@ -2012,10 +2008,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	// Add bot obstacles
 	if ( built->r.maxs[2] - built->r.mins[2] > 47.0f ) // HACK: Fixed jump height
 	{
-		vec3_t mins;
-		vec3_t maxs;
-		VectorCopy( built->r.mins, mins );
-		VectorCopy( built->r.maxs, maxs );
 		// HACK: work around bots unable to reach armory due to
 		// navmesh margins in *some* situations.
 		// fixVal is choosen to work on all known cases:
@@ -2023,12 +2015,14 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		// * 0.8 was enough on both
 		// Note that said bug is not reported, but notably happens
 		// on chasm with default layout as of 0.52.1
-		const float fixVal = 0.8;
+		glm::vec3 mins = VEC2GLM( built->r.mins );
+		glm::vec3 maxs = VEC2GLM( built->r.maxs );
+		constexpr float fixVal = 0.8;
 		mins[0] *= fixVal; mins[1] *= fixVal;
 		maxs[0] *= fixVal; maxs[1] *= fixVal;
-		VectorAdd( mins, origin, mins );
-		VectorAdd( maxs, origin, maxs );
-		G_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+		mins += origin;
+		maxs += origin;
+		G_BotAddObstacle( mins, maxs, built->num() );
 	}
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
@@ -2044,14 +2038,14 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		G_TeamCommand( (team_t) builder->client->pers.team,
 		               va( "print_tr %s %s %s %s", ( readable[ 0 ] ) ?
 						QQ( N_("$1$ ^2built^* by $2$^*, ^3replacing^* $3$") ) :
-						QQ( N_("$1$ ^2built^* by $2$$3$\n") ),
+						QQ( N_("$1$ ^2built^* by $2$$3$") ),
 		                   Quote( BG_Buildable( built->s.modelindex )->humanName ),
 		                   Quote( builder->client->pers.netname ),
 		                   Quote( readable ) ) );
 		G_LogPrintf( "Construct: %d %d %s%s: %s^* is building "
-		             "%s%s%s\n",
-		             ( int )( builder - g_entities ),
-		             ( int )( built - g_entities ),
+		             "%s%s%s",
+		             builder->num(),
+		             built->num(),
 		             BG_Buildable( built->s.modelindex )->name,
 		             buildnums,
 		             builder->client->pers.netname,
@@ -2089,7 +2083,7 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			SpawnBuildable( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
+			SpawnBuildable( ent, buildable, VEC2GLM(origin), normal, ent->s.apos.trBase, groundEntNum );
 			G_SpendBudget( BG_Buildable( buildable )->team, BG_Buildable( buildable )->buildPoints );
 			return true;
 
@@ -2176,7 +2170,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 
-	built = SpawnBuildable( ent, buildable, ent->s.pos.trBase, normal, ent->s.angles, ENTITYNUM_NONE );
+	built = SpawnBuildable( ent, buildable, VEC2GLM( ent->s.pos.trBase ), normal, ent->s.angles, ENTITYNUM_NONE );
 
 	// This particular function is used by buildables that skip construction.
 	built->entity->Get<BuildableComponent>()->SetState(BuildableComponent::CONSTRUCTED);
@@ -2189,7 +2183,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	VectorScale( built->s.origin2, -4096.0f, dest );
 	VectorAdd( dest, built->s.origin, dest );
 
-	trap_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->s.number,
+	trap_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->num(),
 	            built->clipmask, 0 );
 
 	if ( tr.startsolid && !force )
@@ -2353,7 +2347,7 @@ void G_LayoutSelect()
 	char layouts2[ MAX_CVAR_VALUE_STRING ];
 	const char *layoutPtr;
 	char map[ MAX_QPATH ];
-	char *layout;
+	const char *layout;
 	int  cnt = 0;
 	int  layoutNum;
 
@@ -2642,8 +2636,8 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 	built->momentumEarned = ent->momentumEarned;
 	G_KillBox( built );
 
-	G_LogPrintf( "revert: restore %d %s\n",
-	             ( int )( built - g_entities ), BG_Buildable( built->s.modelindex )->name );
+	G_LogPrintf( "revert: restore %d %s",
+	             built->num(), BG_Buildable( built->s.modelindex )->name );
 
 	G_FreeEntity( ent );
 }
@@ -2681,8 +2675,8 @@ void G_BuildLogRevert( int id )
 					{
 						if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 						{
-							G_LogPrintf( "revert: remove %d %s\n",
-										 ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
+							G_LogPrintf( "revert: remove %d %s",
+										 ent->num(), BG_Buildable( ent->s.modelindex )->name );
 						}
 
 						// Revert resources

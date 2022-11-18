@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <memory>
 #include <vector>
 
+#include "common/Common.h"
 #include "common/KeyIdentification.h"
 #include "engine/qcommon/q_shared.h"
 #include "engine/renderer/tr_types.h"
@@ -1783,7 +1784,6 @@ extern Cvar::Cvar<bool> cg_drawBuildableHealth;
 extern Cvar::Cvar<bool> cg_drawMinimap;
 extern Cvar::Cvar<int> cg_minimapActive;
 extern Cvar::Cvar<float> cg_crosshairSize;
-extern Cvar::Cvar<std::string> cg_crosshairFile;
 extern Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo;
 extern Cvar::Cvar<bool> cg_draw2D;
 extern Cvar::Cvar<bool> cg_animSpeed;

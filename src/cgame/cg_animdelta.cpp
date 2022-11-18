@@ -48,7 +48,7 @@ int LoadDeltaAnimation( weapon_t weapon, const char* modelName, bool iqm )
 bool AnimDelta::ParseConfiguration(clientInfo_t* ci, const char* token2, const char** data_p)
 {
 	if ( Q_stricmp( token2, "handBones" ) ) return false;
-	char* token = COM_Parse2( data_p );
+	const char* token = COM_Parse2( data_p );
 	if ( !token || token[0] != '{' )
 	{
 		Log::Warn( "Expected '{' but found '%s' in %s's AnimDelta", token, ci->modelName );

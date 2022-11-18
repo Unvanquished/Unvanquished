@@ -46,7 +46,6 @@ class botTarget_t
 {
 public:
 	botTarget_t& operator=(const gentity_t *ent);
-	botTarget_t& operator=(const vec3_t pos);
 	botTarget_t& operator=( glm::vec3 pos );
 	void clear();
 	entityType_t getTargetType() const;
@@ -131,6 +130,7 @@ public:
 	glm::vec3 stuckPosition;
 
 	int spawnTime;
+private:
 	//avoid relying on buttons to remember what AI was doing
 	bool wantSprinting = false;
 	bool exhausted = false;
@@ -142,6 +142,6 @@ void G_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
 bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
 void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
 bool G_BotNavTrace( int botClientNum, botTrace_t *botTrace, const glm::vec3& start, const glm::vec3& end );
-glm::vec3 ProjectPointOntoVector( const glm::vec3 &point, const glm::vec3 &vStart, const glm::vec3 &vEnd );
+glm::vec3 ProjectPointOntoVector( const glm::vec3 &point, const glm::vec3 &linePoint1, const glm::vec3 &linePoint2 );
 
 #endif

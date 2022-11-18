@@ -367,7 +367,6 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 {
 	const char         *text_p;
 	int          i;
-	char         *token;
 	float        fps;
 	animation_t  *animations;
 
@@ -387,7 +386,7 @@ static bool CG_ParseBuildableAnimationFile( const char *filename, buildable_t bu
 	// read information for each frame
 	for ( i = BANIM_NONE + 1; i < MAX_BUILDABLE_ANIMATIONS; i++ )
 	{
-		token = COM_Parse( &text_p );
+		const char *token = COM_Parse( &text_p );
 
 		if ( !*token )
 		{
@@ -467,7 +466,6 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 {
 	const char         *text_p;
 	int          i;
-	char         *token;
 	sound_t      *sounds;
 
 	sounds = cg_buildables[ buildable ].sounds;
@@ -486,7 +484,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 	// read information for each frame
 	for ( i = BANIM_NONE + 1; i < MAX_BUILDABLE_ANIMATIONS; i++ )
 	{
-		token = COM_Parse( &text_p );
+		const char *token = COM_Parse( &text_p );
 
 		if ( !*token )
 		{
@@ -1191,121 +1189,6 @@ void CG_GhostBuildable( int buildableInfo )
 	// add to refresh list
 	trap_R_AddRefEntityToScene( &ent );
 }
-
-/*
-static void CG_GhostBuildableStatus( int buildableInfo )
-{
-	playerState_t *ps;
-	vec3_t        angles, entity_origin;
-	vec3_t        mins, maxs;
-	trace_t       tr;
-	float         x, y;
-	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK ); // assumed not BA_NONE
-
-	ps = &cg.predictedPlayerState;
-
-	BG_BuildableBoundingBox( buildable, mins, maxs );
-
-	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, CG_Trace, entity_origin, angles, &tr );
-
-	entity_origin[ 2 ] += mins[ 2 ];
-	entity_origin[ 2 ] += ( std::abs( mins[ 2 ] ) + std::abs( maxs[ 2 ] ) ) / 2;
-
-	if ( CG_WorldToScreen( entity_origin, &x, &y ) )
-	{
-		team_t team = BG_Buildable( buildable )->team;
-		const buildStat_t *bs = ( team == TEAM_ALIENS )
-		                      ? &cgs.alienBuildStat
-		                      : &cgs.humanBuildStat;
-
-		float  d = Distance( entity_origin, cg.refdef.vieworg );
-		float  picX = x;
-		float  picY = y;
-		float  picH = bs->frameHeight;
-		float  picM;
-		float  scale = ( picH / d ) * 3.0f;
-
-
-		const char *text = nullptr;
-		qhandle_t  shader = 0;
-
-		picM = picH * scale;
-		picH = picM * ( 1.0f - bs->verticalMargin );
-
-		Color::Color  backColor = bs->backColor;
-		backColor.SetAlpha( bs->backColor.Alpha() / 3 );
-
-		switch ( SB_BUILDABLE_TO_IBE( buildableInfo ) )
-		{
-			case IBE_NOOVERMIND:
-			case IBE_NOREACTOR:
-			case IBE_NOPOWERHERE:
-				shader = bs->noPowerShader;
-				break;
-
-			case IBE_NOALIENBP:
-				text = "[leech]";
-				break;
-
-			case IBE_NOHUMANBP:
-				text = "[drill]";
-				break;
-
-			case IBE_NOCREEP:
-				text = "[egg]";
-				break;
-
-			case IBE_SURFACE:
-				text = "✕";
-				break;
-
-			case IBE_DISABLED:
-				text = "⨂";
-				break;
-
-			case IBE_NORMAL:
-				text = "∡";
-				break;
-
-			case IBE_LASTSPAWN:
-				text = ( team == TEAM_ALIENS ) ? "[egg]" : "[telenode]";
-				break;
-
-			case IBE_MAINSTRUCTURE:
-				text = ( team == TEAM_ALIENS ) ? "[overmind]" : "[reactor]";
-				break;
-
-			case IBE_NOROOM:
-				text = "⧉";
-				break;
-
-			default:
-				break;
-		}
-
-		if ( shader )
-		{
-			trap_R_SetColor( backColor );
-			CG_DrawPic( picX - picM / 2, picY - picM / 2, picM, picM, cgs.media.whiteShader );
-			trap_R_SetColor( bs->foreColor );
-			CG_DrawPic( picX - picH / 2, picY - picH / 2, picH, picH, bs->noPowerShader );
-			trap_R_ClearColor();
-		}
-
-		if ( text )
-		{
-			float     tx = 0, ty = 0;
-			trap_R_SetColor( backColor );
-
-			CG_DrawPic( tx - ( picM - picH ) / 2, ty - ( picM - picH ) / 4 - ( ty - picY ) * 2,
-			            ( picX - tx ) * 2 + ( picM - picH ), ( ty - picY ) * 2 + ( picM - picH ),
-			            cgs.media.whiteShader );
-
-			trap_R_ClearColor();
-		}
-	}
-}
-*/
 
 /*
 ==================
@@ -2093,7 +1976,6 @@ CG_Buildable
 void CG_Buildable( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
-	vec3_t        angles;
 	vec3_t        surfNormal, xNormal, mins, maxs;
 	vec3_t        refNormal = { 0.0f, 0.0f, 1.0f };
 	float         scale;
@@ -2129,7 +2011,6 @@ void CG_Buildable( centity_t *cent )
 
 	VectorCopy( es->origin2, surfNormal );
 
-	VectorCopy( es->angles, angles );
 	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
 
 	if ( es->pos.trType == trType_t::TR_STATIONARY )
@@ -2148,7 +2029,7 @@ void CG_Buildable( centity_t *cent )
 		}
 		else
 		{
-			CG_PositionAndOrientateBuildable( angles, cent->lerpOrigin, surfNormal,
+			CG_PositionAndOrientateBuildable( es->angles, cent->lerpOrigin, surfNormal,
 			                                  es->number, mins, maxs, ent.axis,
 			                                  ent.origin );
 			VectorCopy( ent.axis[ 0 ], cent->buildableCache.axis[ 0 ] );

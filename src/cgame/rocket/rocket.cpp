@@ -521,9 +521,35 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 	for ( auto iter = parser.begin(); iter != parser.end(); ++iter )
 	{
 		const Color::Token& token = *iter;
-		if ( token.Type() == Color::Token::TokenType::CHARACTER )
+		if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
-			char c = *token.Begin();
+			if ( span && spanHasContent )
+			{
+				out.append( "</span>" );
+				span = false;
+				spanHasContent = false;
+			}
+
+			if ( token.Color().Alpha() != 0  )
+			{
+				char rgb[32];
+				Color::Color32Bit color32 = token.Color();
+				Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
+						(int) color32.Red(),
+						(int) color32.Green(),
+						(int) color32.Blue() );
+
+				// don't add the span yet, because it might be empty
+				spanstr = rgb;
+
+				span = true;
+				spanHasContent = false;
+			}
+		}
+		else
+		{
+			Str::StringView text = token.PlainText();
+			char c = text[ 0 ];
 			const emoticonData_t *emoticon;
 			if ( c == '<' )
 			{
@@ -558,7 +584,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 				span = false;
 				spanHasContent = false;
 			}
-			else if ( ( parseFlags & RP_EMOTICONS ) && ( emoticon = BG_EmoticonAt( token.Begin() ) ) )
+			else if ( ( parseFlags & RP_EMOTICONS ) && ( emoticon = BG_EmoticonAt( token.RawToken().begin() ) ) )
 			{
 				if ( span && !spanHasContent )
 				{
@@ -566,7 +592,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 					out.append( spanstr );
 				}
 				out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
-				while ( iter != parser.end() && *iter->Begin() != ']' )
+				while ( iter != parser.end() && *iter->RawToken().begin() != ']' )
 				{
 					++iter;
 				}
@@ -578,42 +604,8 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 					out.append( spanstr );
 					spanHasContent = true;
 				}
-				out.append( token.Begin(), token.Size() );
+				out.append( text.begin(), text.size() );
 			}
-		}
-		else if ( token.Type() == Color::Token::TokenType::COLOR )
-		{
-			if ( span && spanHasContent )
-			{
-				out.append( "</span>" );
-				span = false;
-				spanHasContent = false;
-			}
-
-			if ( token.Color().Alpha() != 0  )
-			{
-				char rgb[32];
-				Color::Color32Bit color32 = token.Color();
-				Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
-						(int) color32.Red(),
-						(int) color32.Green(),
-						(int) color32.Blue() );
-
-				// don't add the span yet, because it might be empty
-				spanstr = rgb;
-
-				span = true;
-				spanHasContent = false;
-			}
-		}
-		else if ( token.Type() == Color::Token::TokenType::ESCAPE )
-		{
-			if ( span && !spanHasContent )
-			{
-				out.append( spanstr );
-				spanHasContent = true;
-			}
-			out.append( 1, Color::Constants::ESCAPE );
 		}
 	}
 

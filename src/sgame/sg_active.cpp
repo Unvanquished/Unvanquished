@@ -92,9 +92,9 @@ static void P_DamageFeedback( gentity_t *player )
 	if ( ( level.time > player->pain_debounce_time ) && !( player->flags & FL_GODMODE ) )
 	{
 		player->pain_debounce_time = level.time + 700;
-		int transmittedHalth = (int)std::ceil(player->entity->Get<HealthComponent>()->Health());
-		transmittedHalth = Math::Clamp(transmittedHalth, 0, 255);
-		G_AddEvent( player, EV_PAIN, transmittedHalth );
+		int transmittedHealth = (int)std::ceil(player->entity->Get<HealthComponent>()->Health());
+		transmittedHealth = Math::Clamp(transmittedHealth, 0, 255);
+		G_AddEvent( player, EV_PAIN, transmittedHealth );
 		client->ps.damageEvent++;
 	}
 
@@ -264,7 +264,7 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 
 	// Cannot push enemy players unless they are walking on the player
 	if ( !G_OnSameTeam( ent, victim ) &&
-	     victim->client->ps.groundEntityNum != ent - g_entities )
+	     victim->client->ps.groundEntityNum != ent->num() )
 	{
 		return;
 	}
@@ -556,7 +556,7 @@ static void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	if ( G_IsPlayableTeam( team ) )
 	{
 		client->ps.persistant[ PERS_UNLOCKABLES ] = BG_UnlockablesMask( client->pers.team );
-		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
+		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent->num() );
 
 		if ( !ClientInactivityTimer( ent, queued || !level.team[ team ].numSpawns ) )
 		{
@@ -709,14 +709,14 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 			if( putSpec )
 			{
 				trap_SendServerCommand( -1,
-				                        va( "print_tr %s %s %s", QQ( N_("$1$^* moved from $2$ to spectators due to inactivity\n") ),
+				                        va( "print_tr %s %s %s", QQ( N_("$1$^* moved from $2$ to spectators due to inactivity") ),
 				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->pers.team ) ) ) );
-				G_LogPrintf( "Inactivity: %d\n", (int)( client - level.clients ) );
+				G_LogPrintf( "Inactivity: %d.", client->num() );
 				G_ChangeTeam( ent, TEAM_NONE );
 			}
 			else
 			{
-				trap_DropClient( client - level.clients, "Dropped due to inactivity" );
+				trap_DropClient( client->num(), "Dropped due to inactivity" );
 				return false;
 			}
 		}
@@ -726,8 +726,8 @@ bool ClientInactivityTimer( gentity_t *ent, bool active )
 		     !G_admin_permission( ent, ADMF_ACTIVITY ) )
 		{
 			client->inactivityWarning = true;
-			trap_SendServerCommand( client - level.clients,
-			                        va( "cp_tr %s", putSpec ? N_("\"Ten seconds until inactivity spectate!\n\"") : N_("\"Ten seconds until inactivity drop!\n\"") ) );
+			trap_SendServerCommand( client->num(),
+			                        va( "cp_tr %s", putSpec ? QQ( N_("Ten seconds until inactivity spectate!") ) : QQ( N_("Ten seconds until inactivity drop!") ) ) );
 		}
 	}
 
@@ -1866,7 +1866,7 @@ static void ClientThink_real( gentity_t *self )
 	}
 
 	// client is admin but program hasn't responded to challenge? Resend
-	ClientAdminChallenge( self - g_entities );
+	ClientAdminChallenge( self->num() );
 
 	//
 	// check for exiting intermission
@@ -2216,7 +2216,7 @@ static void ClientThink_real( gentity_t *self )
 
 			if ( !ent && client->pers.team == TEAM_ALIENS )
 			{
-				G_TriggerMenu( client->ps.clientNum, MN_A_INFEST );
+				G_TriggerMenu( client->num(), MN_A_INFEST );
 			}
 		}
 	}
@@ -2249,6 +2249,14 @@ void ClientThink( int clientNum )
 
 	ent = g_entities + clientNum;
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
+	if ( ent->client->pers.cmd.flags & UF_TYPING && !( ent->r.svFlags & SVF_BOT ) && Entities::IsAlive( ent ) )
+	{
+		ent->client->ps.eFlags |= EF_TYPING;
+	}
+	else
+	{
+		ent->client->ps.eFlags &= ~EF_TYPING;
+	}
 
 	// mark the time we got info, so we can display the phone jack if we don't get any for a while
 	ent->client->lastCmdTime = level.time;

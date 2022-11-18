@@ -22,6 +22,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include <glm/geometric.hpp>
 namespace Clustering {
 	/**
 	 * @brief A cluster of objects located in euclidean space.
@@ -29,7 +30,7 @@ namespace Clustering {
 	template <typename Data, int Dim>
 	class EuclideanCluster {
 		public:
-			using point_type  = Math::Vector<Dim, float>;
+			using point_type  = glm::vec<Dim, float>;
 			using record_type = std::pair<const Data, point_type>;
 			using iter_type   = typename std::unordered_map<Data, point_type>::const_iterator;
 
@@ -124,7 +125,7 @@ namespace Clustering {
 				// Find average distance and mean object
 				for (auto& record : records) {
 					point_type& location = record.second;
-					float distance = Distance(location, center);
+					float distance = glm::distance(location, center);
 					averageDistance += distance;
 					if (distance < smallestDistance) {
 						smallestDistance = distance;
@@ -135,7 +136,7 @@ namespace Clustering {
 
 				// Find standard deviation
 				for (auto& record : records) {
-					float deviation = averageDistance - Distance(record.second, center);
+					float deviation = averageDistance - glm::distance(record.second, center);
 					standardDeviation += deviation * deviation;
 				}
 				standardDeviation = sqrtf(standardDeviation / size);
@@ -183,9 +184,19 @@ namespace Clustering {
 			 * @param laxity Factor that scales the allowed deviation from the average edge length.
 			 * @param edgeVisCallback Relation that decides whether an edge should be considered.
 			 */
-			EuclideanClustering(float laxity = 1.0,
-			                    std::function<bool(Data, Data)> edgeVisCallback = nullptr)
-			    : laxity(laxity), edgeVisCallback(edgeVisCallback)
+			EuclideanClustering(float laxity_ = 1.0,
+			                    std::function<bool(Data, Data)> edgeVisCallback_ = nullptr) :
+				clusters(),
+				records(),
+				edges(),
+				mstEdges(),
+				forestEdges(),
+				mstAverageDistance(0.0f),
+				mstStandardDeviation(0.0f),
+				dirtyClusters(true),
+				dirtyMST(true),
+				laxity(laxity_),
+				edgeVisCallback(edgeVisCallback_)
 			{}
 
 			/**
@@ -200,7 +211,7 @@ namespace Clustering {
 				// Iterate over all other objects and save the distance.
 				for (const vertex_record_type& record : records) {
 					if (edgeVisCallback == nullptr || edgeVisCallback(data, record.first)) {
-						float distance = Distance(location, record.second);
+						float distance = glm::distance(location, record.second);
 						edges.emplace(distance, edge_type(data, record.first));
 					}
 				}

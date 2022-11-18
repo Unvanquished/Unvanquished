@@ -31,9 +31,6 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 extern  level_locals_t level;
 
-extern gentity_t *g_entities;
-extern gclient_t *g_clients;
-
 extern bool g_cheats;
 
 // ---------
@@ -163,6 +160,7 @@ extern Cvar::Cvar<int> g_combatCooldown;
 extern Cvar::Range<Cvar::Cvar<int>> g_debugEntities;
 
 extern Cvar::Cvar<bool> g_instantBuilding;
+extern Cvar::Cvar<bool> g_ignoreNobuild;
 
 extern  Cvar::Cvar<float> g_evolveAroundHumans;
 extern  Cvar::Cvar<float> g_devolveMaxBaseDistance;
@@ -204,16 +202,12 @@ extern Cvar::Cvar<bool> g_bot_level3;
 extern Cvar::Cvar<bool> g_bot_level3upg;
 extern Cvar::Cvar<bool> g_bot_level4;
 
-// bot default configurations
-extern Cvar::Range<Cvar::Cvar<int>> g_bot_default_skill;
-
 // misc bot cvars
 extern Cvar::Cvar<bool> g_bot_attackStruct;
 extern Cvar::Cvar<float> g_bot_fov;
 extern Cvar::Cvar<int> g_bot_chasetime;
 extern Cvar::Cvar<int> g_bot_reactiontime;
-extern Cvar::Callback<Cvar::Cvar<int>> g_bot_defaultFill;
-extern Cvar::Cvar<bool> g_bot_infinite_funds;
+extern Cvar::Cvar<bool> g_bot_infiniteFunds;
 extern Cvar::Cvar<bool> g_bot_infiniteMomentum;
 
 #endif // SG_EXTERN_H_

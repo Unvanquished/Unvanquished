@@ -152,7 +152,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		if ( ent->solid == SOLID_BMODEL )
 		{
 			// special value for bmodel
-			cmodel = trap_CM_InlineModel( ent->modelindex );
+			cmodel = CM_InlineModel( ent->modelindex );
 			VectorCopy( cent->lerpAngles, angles );
 			BG_EvaluateTrajectory( &cent->currentState.pos, cg.physicsTime, origin );
 		}
@@ -181,7 +181,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			if( !BoundsIntersect( bmins, bmaxs, tmins, tmaxs ) )
 				continue;
 
-			cmodel = trap_CM_TempBoxModel( bmins, bmaxs );
+			cmodel = CM_TempBoxModel( bmins, bmaxs, /* capsule = */ false );
 			VectorCopy( vec3_origin, angles );
 			VectorCopy( vec3_origin, origin );
 		}
@@ -189,24 +189,17 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		switch ( collisionType )
 		{
 		case traceType_t::TT_CAPSULE:
-			trap_CM_TransformedCapsuleTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask,
-			                                 origin, angles );
-			break;
-
 		case traceType_t::TT_AABB:
-			trap_CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask,
-			                             origin, angles );
+			CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask, origin, angles, collisionType );
 			break;
 
 		case traceType_t::TT_BISPHERE:
-			ASSERT(maxs != nullptr);
-			ASSERT(mins != nullptr);
-			trap_CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
+			CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
 			                                  mask, skipmask, origin );
 			break;
 
 		default: // Shouldn't Happen
-			ASSERT(0);
+			ASSERT_UNREACHABLE();
 		}
 
 		if ( trace.allsolid || trace.fraction < tr->fraction )
@@ -245,8 +238,6 @@ CG_Trace
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                const vec3_t end, int skipNumber, int mask, int skipmask )
 {
-	trace_t t;
-
 	vec3_t mymins = {0.0f, 0.0f, 0.0f};
 	vec3_t mymaxs = {0.0f, 0.0f, 0.0f};
 
@@ -257,7 +248,8 @@ void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 		VectorCopy(maxs, mymaxs);
 	}
 
-	trap_CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
+	trace_t t;
+	CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask, traceType_t::TT_AABB );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_AABB );
@@ -285,7 +277,7 @@ void  CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const
 		VectorCopy(maxs, mymaxs);
 	}
 
-	trap_CM_CapsuleTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask );
+	CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask, traceType_t::TT_CAPSULE );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_CAPSULE );
@@ -308,7 +300,7 @@ void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
 	mins[ 0 ] = startRadius;
 	maxs[ 0 ] = endRadius;
 
-	trap_CM_BiSphereTrace( &t, start, end, startRadius, endRadius, 0, mask, skipmask );
+	CM_BiSphereTrace( &t, start, end, startRadius, endRadius, 0, mask, skipmask );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_BISPHERE );
@@ -329,7 +321,7 @@ int   CG_PointContents( const vec3_t point, int passEntityNum )
 	clipHandle_t  cmodel;
 	int           contents;
 
-	contents = trap_CM_PointContents( point, 0 );
+	contents = CM_PointContents( point, 0 );
 
 	for ( i = 0; i < cg_numSolidEntities; i++ )
 	{
@@ -347,14 +339,14 @@ int   CG_PointContents( const vec3_t point, int passEntityNum )
 			continue;
 		}
 
-		cmodel = trap_CM_InlineModel( ent->modelindex );
+		cmodel = CM_InlineModel( ent->modelindex );
 
 		if ( !cmodel )
 		{
 			continue;
 		}
 
-		contents |= trap_CM_TransformedPointContents( point, cmodel, ent->origin, ent->angles );
+		contents |= CM_TransformedPointContents( point, cmodel, ent->origin, ent->angles );
 	}
 
 	return contents;
@@ -468,15 +460,14 @@ static void CG_TouchTriggerPrediction()
 			continue;
 		}
 
-		cmodel = trap_CM_InlineModel( ent->modelindex );
+		cmodel = CM_InlineModel( ent->modelindex );
 
 		if ( !cmodel )
 		{
 			continue;
 		}
 
-		trap_CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin,
-		                  cg_pmove.mins, cg_pmove.maxs, cmodel, MASK_ALL, 0 );
+		CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin, cg_pmove.mins, cg_pmove.maxs, cmodel, MASK_ALL, 0, traceType_t::TT_AABB );
 
 		if ( !trace.startsolid )
 		{

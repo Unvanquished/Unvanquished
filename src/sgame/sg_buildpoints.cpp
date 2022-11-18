@@ -28,24 +28,6 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 static Log::Logger buildpointLogger("sgame.buildpoints");
 
 /**
- * @brief Predict the efficiency of a mining structure constructed at the given point.
- * @note Creates a pseudo leech entity on the stack and calculate its rate.
- * @return Predicted efficiency of the new miner only.
- */
-float G_RGSPredictOwnEfficiency(vec3_t origin) {
-	gentity_t leechOldEnt;
-	VectorCopy(origin, leechOldEnt.s.origin);
-
-	LeechEntity::Params params;
-	params.oldEnt           = &leechOldEnt;
-	params.Health_maxHealth = 1.0f;
-	params.Mining_blueprint = true;
-	LeechEntity leechEntity(params);
-
-	return leechEntity.Get<MiningComponent>()->Efficiency(true);
-}
-
-/**
  * @brief Predict the efficiency loss of an existing miner if another one is constructed closeby.
  * @return Efficiency loss as negative value.
  */
@@ -67,7 +49,7 @@ static float RGSPredictEfficiencyLoss(Entity& miner, vec3_t newMinerOrigin) {
  * @todo Consider RGS set for deconstruction.
  */
 float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
-	float delta = G_RGSPredictOwnEfficiency(origin);
+	float delta = MiningComponent::FindEfficiencies(team, VEC2GLM(origin), nullptr).predicted;
 
 	buildpointLogger.Debug("Predicted efficiency of new miner itself: %f.", delta);
 

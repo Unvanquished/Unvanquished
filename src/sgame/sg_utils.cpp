@@ -316,7 +316,7 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
       continue;
 
     trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
-                e->r.currentOrigin, e->s.number, e->clipmask, 0 );
+                e->r.currentOrigin, e->num(), e->clipmask, 0 );
 
 	if( tr.entityNum != ENTITYNUM_NONE ) {
 	  Entities::Kill(e, activator, MOD_CRUSH);
@@ -358,7 +358,7 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm )
 
 	if ( !event )
 	{
-		Log::Warn( "G_AddEvent: zero event added for entity %i", ent->s.number );
+		Log::Warn( "G_AddEvent: zero event added for entity %i", ent->num() );
 		return;
 	}
 
@@ -781,11 +781,11 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 
 	*loMask = *hiMask = 0;
 
-	for ( clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
+	for ( clientNum = 0; clientNum < level.maxclients; clientNum++ )
 	{
-		client = g_entities[ clientNum ].client;
+		client = &g_clients[ clientNum ];
 
-		if ( client && client->pers.team == team )
+		if ( client->pers.team == team )
 		{
 			if ( clientNum < 32 )
 			{
@@ -809,10 +809,10 @@ bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool u
 	}
 
 	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, nullptr, nullptr, to->s.origin,
-	            from->s.number, mask, 0 );
+	            from->num(), mask, 0 );
 
 	// Also check for fraction in case the mask is chosen so that the trace skips the target entity
-	return ( trace.entityNum == to->s.number || trace.fraction == 1.0f );
+	return ( trace.entityNum == to->num() || trace.fraction == 1.0f );
 }
 
 /**
@@ -955,7 +955,7 @@ glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward )
 	glm::vec3 muzzlePoint = VEC2GLM( self->client->ps.origin );
 	glm::vec3 normal = BG_GetClientNormal( &self->client->ps );
 	muzzlePoint += static_cast<float>( self->client->ps.viewheight ) * normal;
-	muzzlePoint += 1.f * forward;
+	muzzlePoint += 1.0f * forward;
 	// snap to integer coordinates for more efficient network bandwidth usage
 	// Meh. I doubt it saves much. Casting to short ints might have, though. (copypaste)
 	return glm::floor( muzzlePoint + 0.5f );

@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_spawn.h"
 
+#include <glm/geometric.hpp>
 /*
 ======================================================================
 
@@ -103,42 +104,35 @@ findEmptySpot
 Finds an empty spot radius units from origin
 ==============
 */
-static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
+static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spot )
 {
-	int     i, j, k;
-	vec3_t  delta, test, total;
-	trace_t trace;
-
-	VectorClear( total );
-
+	glm::vec3 total = {};
 	//54(!) traces to test for empty spots
-	for ( i = -1; i <= 1; i++ )
+	for ( int i = -1; i <= 1; i++ )
 	{
-		for ( j = -1; j <= 1; j++ )
+		for ( int j = -1; j <= 1; j++ )
 		{
-			for ( k = -1; k <= 1; k++ )
+			for ( int k = -1; k <= 1; k++ )
 			{
-				VectorSet( delta, ( i * radius ),
-				           ( j * radius ),
-				           ( k * radius ) );
+				glm::vec3 delta( i, j, k );
+				delta *= radius;
 
-				VectorAdd( origin, delta, test );
+				glm::vec3 test = origin + delta;
 
-				trap_Trace( &trace, test, nullptr, nullptr, test, ENTITYNUM_NONE, MASK_SOLID, 0 );
+				trace_t trace;
+				trap_Trace( &trace, &test[0], nullptr, nullptr, &test[0], ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 				if ( !trace.allsolid )
 				{
-					trap_Trace( &trace, test, nullptr, nullptr, origin, ENTITYNUM_NONE, MASK_SOLID, 0 );
-					VectorScale( delta, trace.fraction, delta );
-					VectorAdd( total, delta, total );
+					trap_Trace( &trace, &test[0], nullptr, nullptr, &origin[0], ENTITYNUM_NONE, MASK_SOLID, 0 );
+					delta *= trace.fraction;
+					total += delta;
 				}
 			}
 		}
 	}
 
-	VectorNormalize( total );
-	VectorScale( total, radius, total );
-	VectorAdd( origin, total, spot );
+	spot = origin + glm::normalize( total ) * radius;
 }
 
 void SP_gfx_light_flare( gentity_t *self )
@@ -149,7 +143,9 @@ void SP_gfx_light_flare( gentity_t *self )
 
 	//try to find a spot near to the flare which is empty. This
 	//is used to facilitate visibility testing
-	findEmptySpot( self->s.origin, 8.0f, self->s.angles2 );
+	glm::vec3 angles2 = VEC2GLM( self->s.angles2 );
+	findEmptySpot( VEC2GLM( self->s.origin ), 8.0f, angles2 );
+	VectorCopy( &angles2[0], self->s.angles2 );
 
 	self->act = gfx_light_flare_toggle;
 
@@ -189,7 +185,7 @@ static void gfx_portal_locateCamera( gentity_t *self )
 		return;
 	}
 
-	self->r.ownerNum = owner->s.number;
+	self->r.ownerNum = owner->num();
 
 	// frame holds the rotate speed
 	if ( owner->spawnflags & 1 )

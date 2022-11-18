@@ -35,7 +35,7 @@ CG_ParseColor
 */
 bool CG_ParseColor( byte *c, const char **text_p )
 {
-	char *token;
+	const char *token;
 	int  i;
 
 	for ( i = 0; i <= 2; i++ )

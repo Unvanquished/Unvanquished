@@ -95,9 +95,9 @@ static void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short f
 
 		query->queryPolygons( center, extents, &filter, polys, &polyCount, maxPolys );
 
-		for ( int i = 0; i < polyCount; i++ )
+		for ( int j = 0; j < polyCount; j++ )
 		{
-			mesh->setPolyFlags( polys[ i ], flags );
+			mesh->setPolyFlags( polys[ j ], flags );
 		}
 	}
 }
@@ -216,12 +216,9 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 
 	if ( !bot->offMesh )
 	{
-		if ( bot->needReplan )
+		if ( bot->needReplan && FindRoute( bot, spos, rtarget, false ) )
 		{
-			if ( FindRoute( bot, spos, rtarget, false ) )
-			{
-				bot->needReplan = false;
-			}
+			bot->needReplan = false;
 		}
 
 		cmd->havePath = !bot->needReplan;
@@ -386,15 +383,30 @@ bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start_
 	return true;
 }
 
-void G_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
+struct bbox_t {
+	glm::vec3 mins;
+	glm::vec3 maxs;
+};
+static std::map<int, bbox_t> savedObstacles;
+static std::map<int, std::array<dtObstacleRef, MAX_NAV_DATA>> obstacleHandles; // handles of detour's obstacles, if any
+
+extern bool navMeshLoaded;
+void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum )
 {
-	qVec min = mins;
-	qVec max = maxs;
+	qVec min = &mins[0];
+	qVec max = &maxs[0];
 	rBounds box( min, max );
 
+	if ( !navMeshLoaded )
+	{
+		savedObstacles[obstacleNum] = { mins, maxs };
+		return;
+	}
+
+	std::array<dtObstacleRef, MAX_NAV_DATA> handles;
+	std::fill(handles.begin(), handles.end(), (unsigned int)-1);
 	for ( int i = 0; i < numNavData; i++ )
 	{
-		dtObstacleRef ref;
 		NavData_t *nav = &BotNavData[ i ];
 
 		const dtTileCacheParams *params = nav->cache->getParams();
@@ -408,25 +420,55 @@ void G_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacle
 
 		tempBox.maxs[ 0 ] += offset;
 		tempBox.maxs[ 2 ] += offset;
-		
+
 		// offset mins down by agent height so obstacles placed on ledges are handled correctly
 		tempBox.mins[ 1 ] -= params->walkableHeight;
 
-		nav->cache->addBoxObstacle( tempBox.mins, tempBox.maxs, &ref );
-		*obstacleHandle = ref;
+		nav->cache->addBoxObstacle( tempBox.mins, tempBox.maxs, &handles[i] );
+	}
+	auto result = obstacleHandles.insert({obstacleNum, std::move(handles)});
+	if ( !result.second )
+	{
+		Log::Warn("Insertion of obstacle %i failed. Was an obstacle of this number inserted already?", obstacleNum);
 	}
 }
 
-void G_BotRemoveObstacle( qhandle_t obstacleHandle )
+// We do lazy load navmesh when bots are added. The downside is that this means
+// map entities are loaded before the navmesh are. This workaround does keep
+// those obstacle (such as doors and buildables) in mind until when navmesh is
+// finally loaded, or generated.
+void BotAddSavedObstacles()
 {
-	for ( int i = 0; i < numNavData; i++ )
+	for ( std::pair<int, bbox_t> obstacle : savedObstacles )
 	{
-		NavData_t *nav = &BotNavData[ i ];
-		if ( nav->cache->getObstacleCount() <= 0 )
+		G_BotAddObstacle(obstacle.second.mins, obstacle.second.maxs, obstacle.first);
+	}
+	savedObstacles.clear();
+}
+
+void G_BotRemoveObstacle( int obstacleNum )
+{
+	auto obstacle = savedObstacles.find(obstacleNum);
+	if (obstacle != savedObstacles.end()) {
+		savedObstacles.erase(obstacle);
+	}
+
+	auto iterator = obstacleHandles.find(obstacleNum);
+	if (iterator != obstacleHandles.end()) {
+		for ( int i = 0; i < numNavData; i++ )
 		{
-			continue;
+			NavData_t *nav = &BotNavData[ i ];
+			std::array<dtObstacleRef, MAX_NAV_DATA> &handles = iterator->second;
+			if ( nav->cache->getObstacleCount() <= 0 )
+			{
+				continue;
+			}
+			if ( handles[i] != (unsigned int)-1 )
+			{
+				nav->cache->removeObstacle( handles[i] );
+			}
 		}
-		nav->cache->removeObstacle( obstacleHandle );
+		obstacleHandles.erase(iterator);
 	}
 }
 

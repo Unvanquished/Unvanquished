@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "Entities.h"
 
+static Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
+
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
 
@@ -174,6 +176,19 @@ int G_BotGetSkill( int clientNum )
 	return bot->botMind->botSkill.level;
 }
 
+void G_BotSetSkill( int clientNum, int skill )
+{
+	gentity_t *bot = &g_entities[clientNum];
+
+	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
+	{
+		return;
+	}
+
+	BotSetSkillLevel( bot, skill );
+}
+
+
 const char * G_BotGetBehavior( int clientNum )
 {
 	gentity_t *bot = &g_entities[clientNum];
@@ -187,7 +202,7 @@ const char * G_BotGetBehavior( int clientNum )
 	return bot->botMind->behaviorTree->name;
 }
 
-void G_BotChangeBehavior( int clientNum, const char* behavior )
+void G_BotChangeBehavior( int clientNum, Str::StringRef behavior )
 {
 	gentity_t *bot = &g_entities[clientNum];
 
@@ -200,14 +215,14 @@ void G_BotChangeBehavior( int clientNum, const char* behavior )
 	G_BotSetBehavior( bot->botMind, behavior );
 }
 
-bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
+bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior )
 {
 	botMind->runningNodes.clear();
 	botMind->currentNode = nullptr;
 	botMind->clearNav();
 	BotResetEnemyQueue( &botMind->enemyQueue );
 
-	botMind->behaviorTree = ReadBehaviorTree( behavior, &treeList );
+	botMind->behaviorTree = ReadBehaviorTree( behavior.c_str(), &treeList );
 
 	if ( !botMind->behaviorTree )
 	{
@@ -223,7 +238,7 @@ bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior )
 	return true;
 }
 
-bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
+bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef behavior )
 {
 	botMemory_t *botMind;
 	gentity_t *self = &g_entities[ clientNum ];
@@ -236,13 +251,13 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 	{
 		return false;
 	}
-	BotSetSkillLevel( &g_entities[clientNum], skill );
+	BotSetSkillLevel( self, skill );
 
-	g_entities[clientNum].r.svFlags |= SVF_BOT;
+	self->r.svFlags |= SVF_BOT;
 
 	if ( team != TEAM_NONE )
 	{
-		level.clients[clientNum].sess.restartTeam = team;
+		self->client->sess.restartTeam = team;
 	}
 
 	self->pain = BotPain;
@@ -259,11 +274,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	bool autoname = false;
 	bool okay;
 
-	if ( !navMeshLoaded )
-	{
-		Log::Warn( "No Navigation Mesh file is available for this map" );
-		return false;
-	}
+	ASSERT( navMeshLoaded );
 
 	// find what clientNum to use for bot
 	clientNum = trap_BotAllocateClient();
@@ -410,10 +421,11 @@ void G_BotThink( gentity_t *self )
 	botCmdBuffer->rightmove = 0;
 	botCmdBuffer->upmove = 0;
 	botCmdBuffer->doubleTap = dtType_t::DT_NONE;
+	botCmdBuffer->flags = 0;
 
 	//acknowledge recieved server commands
 	//MUST be done
-	while ( trap_BotGetServerCommand( self->client->ps.clientNum, buf, sizeof( buf ) ) );
+	while ( trap_BotGetServerCommand( self->num(), buf, sizeof( buf ) ) );
 
 	BotSearchForEnemy( self );
 	BotFindClosestBuildings( self );
@@ -421,7 +433,7 @@ void G_BotThink( gentity_t *self )
 	BotCalculateStuckTime( self );
 
 	//infinite funds cvar
-	if ( g_bot_infinite_funds.Get() )
+	if ( g_bot_infiniteFunds.Get() )
 	{
 		G_AddCreditToClient( self->client, HUMAN_MAX_CREDITS, true );
 	}
@@ -465,7 +477,7 @@ void G_BotSpectatorThink( gentity_t *self )
 
 	//acknowledge recieved console messages
 	//MUST be done
-	while ( trap_BotGetServerCommand( self->client->ps.clientNum, buf, sizeof( buf ) ) );
+	while ( trap_BotGetServerCommand( self->num(), buf, sizeof( buf ) ) );
 
 	self->botMind->spawnTime = level.time;
 
@@ -512,32 +524,29 @@ void G_BotSpectatorThink( gentity_t *self )
 	if ( self->client->sess.restartTeam == TEAM_NONE )
 	{
 		int teamnum = self->client->pers.team;
-		int clientNum = self->client->ps.clientNum;
 
 		// I think all that decision taking about birth... should go in BT.
 		if ( teamnum == TEAM_HUMANS )
 		{
-			self->client->pers.classSelection = PCL_HUMAN_NAKED;
-			self->client->ps.stats[STAT_CLASS] = PCL_HUMAN_NAKED;
-			BotSetNavmesh( self, PCL_HUMAN_NAKED );
-			//we want to spawn with rifle unless it is disabled or we need to build
+			// TODO: use wp->canBuyNow() from sg_bot_util
+			weapon_t weapon = WP_NONE;
 			if ( g_bot_rifle.Get() )
 			{
-				self->client->pers.humanItemSelection = WP_MACHINEGUN;
+				weapon = WP_MACHINEGUN;
 			}
-			else
+			else if ( g_bot_ckit.Get() )
 			{
-				self->client->pers.humanItemSelection = WP_HBUILD;
+				weapon = WP_HBUILD;
 			}
+
+			G_ScheduleSpawn( self->client, PCL_HUMAN_NAKED, weapon );
+			BotSetNavmesh( self, PCL_HUMAN_NAKED );
 		}
 		else if ( teamnum == TEAM_ALIENS )
 		{
-			self->client->pers.classSelection = PCL_ALIEN_LEVEL0;
-			self->client->ps.stats[STAT_CLASS] = PCL_ALIEN_LEVEL0;
+			G_ScheduleSpawn( self->client, PCL_ALIEN_LEVEL0 );
 			BotSetNavmesh( self, PCL_ALIEN_LEVEL0 );
 		}
-
-		G_PushSpawnQueue( &level.team[ teamnum ].spawnQueue, clientNum );
 	}
 }
 
@@ -546,20 +555,22 @@ void G_BotIntermissionThink( gclient_t *client )
 	client->readyToExit = true;
 }
 
+// Initialization happens whenever someone first tries to add a bot.
+// This incurs some delay (a few tenths of a second), but on servers bots
+// are normally added at the beginning of the round so it shouldn't be noticeable.
 bool G_BotInit()
 {
+	if ( treeList.maxTrees == 0 )
+	{
+		InitTreeList( &treeList );
+	}
+
 	if ( !G_BotNavInit() )
 	{
 		Log::Notice( "Failed to load navmeshes" );
 		G_BotNavCleanup();
 		return false;
 	}
-
-	if ( treeList.maxTrees == 0 )
-	{
-		InitTreeList( &treeList );
-	}
-
 	return true;
 }
 
@@ -580,12 +591,27 @@ void G_BotCleanup()
 }
 
 // add or remove bots to match team size targets set by 'bot fill' command
+static void G_BotCheckDefaultFill()
+{
+	Util::optional<int> fillCount = g_bot_defaultFill.GetModifiedValue();
+	if ( fillCount )
+	{
+		for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
+		{
+			level.team[team].botFillTeamSize = *fillCount;
+			level.team[team].botFillSkillLevel = 0; // default
+		}
+	}
+}
+
 void G_BotFill(bool immediately)
 {
 	static int nextCheck = 0;
 	if (!immediately && level.time < nextCheck) {
 		return;  // don't check every frame to prevent warning spam
 	}
+
+	G_BotCheckDefaultFill();
 
 	nextCheck = level.time + 2000;
 	//FIXME this function can actually be called before bots had time to connect
@@ -681,12 +707,34 @@ void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 	exhausted = exhausted && stamina <= jumpCost * 2;
 }
 
-void G_SetBotFill( int fill )
+// assumes bot is a bot, otherwise will crash.
+static std::string BotGoalToString( gentity_t *bot )
 {
-	for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
+	const botTarget_t& target = bot->botMind->goal;
+	if ( !target.isValid() )
 	{
-		level.team[team].botFillTeamSize = fill;
+		return "<invalid>";
 	}
 
-	G_BotFill(true);
+	if ( target.targetsValidEntity() )
+	{
+		return etos( target.getTargetedEntity() );
+	}
+	else if ( target.targetsCoordinates() )
+	{
+		return vtos( &target.getPos()[0] );
+	}
+
+	return "<unknown goal>";
+}
+
+std::string G_BotToString( gentity_t *bot )
+{
+	if ( !( bot->r.svFlags & SVF_BOT ) )
+	{
+		return "";
+	}
+	return Str::Format( "^*%s^*: %s [s=%d b=%s g=%s]",
+			bot->client->pers.netname, BG_TeamName( G_Team( bot ) ), bot->botMind->botSkill.level,
+			bot->botMind->behaviorTree->name, BotGoalToString( bot ) );
 }

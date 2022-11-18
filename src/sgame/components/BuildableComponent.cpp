@@ -56,7 +56,7 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 	G_SetBuildableAnim(entity.oldEnt, Powered() ? BANIM_DESTROY : BANIM_DESTROY_UNPOWERED, true);
 	G_SetIdleBuildableAnim(entity.oldEnt, BANIM_DESTROYED);
 
-	entity.oldEnt->killedBy = killer->s.number;
+	entity.oldEnt->killedBy = killer->num();
 
 	G_LogDestruction(entity.oldEnt, killer, meansOfDeath);
 
@@ -77,7 +77,7 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 		if (level.time > location->warnTimer) {
 			bool inBase = G_InsideBase(entity.oldEnt);
 
-			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? 0 : location->s.number, team);
+			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? 0 : location->num(), team);
 			Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, team);
 			location->warnTimer = level.time + ATTACKWARN_NEARBY_PERIOD;
 		}

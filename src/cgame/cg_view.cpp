@@ -1311,7 +1311,7 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 			continue;
 		}
 
-		dist = trap_CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
+		dist = CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
 		weight = 1.0f - dist / cgs.gameGradingDistances[i];
 		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
@@ -1505,7 +1505,7 @@ static void CG_AddReverbEffects( vec3_t loc )
 			continue;
 		}
 
-		dist = trap_CM_DistanceToModel( loc, cgs.gameReverbModels[i] );
+		dist = CM_DistanceToModel( loc, cgs.gameReverbModels[i] );
 		weight = 1.0f - dist / cgs.gameReverbDistances[i];
 		weight = Math::Clamp( weight, 0.0f, 1.0f ); // Maths::clampFraction( weight )
 
@@ -1880,7 +1880,8 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	}
 
 	// let the client system know what our weapon and zoom settings are
-	trap_SetUserCmdValue( cg.weaponSelect, 0, cg.zoomSensitivity );
+	// also notify about our typing status.
+	trap_SetUserCmdValue( cg.weaponSelect, trap_Key_GetCatcher() ? UF_TYPING : 0x0, cg.zoomSensitivity );
 
 	if ( cg.clientFrame == 0 )
 	{

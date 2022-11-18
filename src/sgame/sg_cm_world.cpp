@@ -48,12 +48,12 @@ worldEntity_t wentities[ MAX_GENTITIES ];
 
 static worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
 {
-	if ( !gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES )
+	if ( !gEnt || gEnt->num() < 0 || gEnt->num() >= MAX_GENTITIES )
 	{
 		Sys::Drop( "G_CM_WorldEntityForGentity: bad gEnt" );
 	}
 
-	return &wentities[ gEnt->s.number ];
+	return &wentities[ gEnt->num() ];
 }
 
 static gentity_t *G_CM_GEntityForWorldEntity( worldEntity_t *ent )
@@ -78,12 +78,12 @@ void G_CM_SetBrushModel( gentity_t *ent, const char *name )
 
 	if ( !name )
 	{
-		Sys::Drop( "G_CM_SetBrushModel: NULL for #%i", ent->s.number );
+		Sys::Drop( "G_CM_SetBrushModel: NULL for #%i", ent->num() );
 	}
 
 	if ( name[ 0 ] != '*' )
 	{
-		Sys::Drop( "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
+		Sys::Drop( "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->num() );
 	}
 
 	ent->s.modelindex = atoi( name + 1 );
@@ -271,7 +271,7 @@ void G_CM_SectorList_f()
 			c++;
 		}
 
-		Log::Notice( "sector %i: %i entities\n", i, c );
+		Log::Notice( "sector %i: %i entities", i, c );
 	}
 }
 
@@ -384,7 +384,7 @@ void G_CM_UnlinkEntity( gentity_t *gEnt )
 		}
 	}
 
-	Log::Warn( "G_CM_UnlinkEntity: not found in worldSector\n" );
+	Log::Warn( "G_CM_UnlinkEntity: not found in worldSector" );
 }
 
 /*
@@ -400,7 +400,6 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	int           leafs[ MAX_TOTAL_ENT_LEAFS ];
 	int           cluster;
 	int           num_leafs;
-	int           i, j, k;
 	int           area;
 	int           lastLeaf;
 	float         *origin, *angles;
@@ -423,13 +422,13 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	else if ( gEnt->r.contents & ( CONTENTS_SOLID | CONTENTS_BODY ) )
 	{
 		// assume that x/y are equal and symetric
-		i = Math::Clamp( gEnt->r.maxs[ 0 ], 1.0f, 255.0f );
+		int i = Math::Clamp( gEnt->r.maxs[ 0 ], 1.0f, 255.0f );
 
 		// z is not symetric
-		j = Math::Clamp( -gEnt->r.mins[ 2 ], 1.0f, 255.0f );
+		int j = Math::Clamp( -gEnt->r.mins[ 2 ], 1.0f, 255.0f );
 
 		// and z maxs can be negative...
-		k = Math::Clamp( gEnt->r.maxs[ 2 ] + 32.0f, 1.0f, 255.0f );
+		int k = Math::Clamp( gEnt->r.maxs[ 2 ] + 32.0f, 1.0f, 255.0f );
 
 		gEnt->s.solid = ( k << 16 ) | ( j << 8 ) | i;
 	}
@@ -445,17 +444,16 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	// set the abs box
 	if ( gEnt->r.bmodel && ( angles[ 0 ] || angles[ 1 ] || angles[ 2 ] ) )
 	{
-		// expand for rotation
-		float max;
-		int   i;
+		glm::mat3 matrix = RotationMatrix( VEC2GLM( angles ) );
 
-		max = RadiusFromBounds( gEnt->r.mins, gEnt->r.maxs );
+		glm::vec3 mins = matrix * VEC2GLM( gEnt->r.mins );
+		glm::vec3 maxs = matrix * VEC2GLM( gEnt->r.maxs );
 
-		for ( i = 0; i < 3; i++ )
-		{
-			gEnt->r.absmin[ i ] = origin[ i ] - max;
-			gEnt->r.absmax[ i ] = origin[ i ] + max;
-		}
+		glm::vec3 absmin = glm::min(mins, maxs) + VEC2GLM(origin);
+		glm::vec3 absmax = glm::max(mins, maxs) + VEC2GLM(origin);
+
+		VectorCopy(absmin, gEnt->r.absmin);
+		VectorCopy(absmax, gEnt->r.absmax);
 	}
 	else
 	{
@@ -489,7 +487,7 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	}
 
 	// set areas, even from clusters that don't fit in the entity array
-	for ( i = 0; i < num_leafs; i++ )
+	for ( int i = 0; i < num_leafs; i++ )
 	{
 		area = CM_LeafArea( leafs[ i ] );
 
@@ -511,7 +509,7 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	// store as many explicit clusters as we can
 	gEnt->r.numClusters = 0;
 
-	for ( i = 0; i < num_leafs; i++ )
+	for ( int i = 0; i < num_leafs; i++ )
 	{
 		cluster = CM_LeafCluster( leafs[ i ] );
 
@@ -521,15 +519,10 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 
 			if ( gEnt->r.numClusters == MAX_ENT_CLUSTERS )
 			{
+				gEnt->r.lastCluster = CM_LeafCluster( lastLeaf );
 				break;
 			}
 		}
-	}
-
-	// store off a last cluster if we need to
-	if ( i != num_leafs )
-	{
-		gEnt->r.lastCluster = CM_LeafCluster( lastLeaf );
 	}
 
 	gEnt->r.linkcount++;
@@ -621,7 +614,7 @@ static void G_CM_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 
 		if ( ap->count == ap->maxcount )
 		{
-			Log::Notice( "G_CM_AreaEntities: MAXCOUNT\n" );
+			Log::Notice( "G_CM_AreaEntities: MAXCOUNT" );
 			return;
 		}
 
@@ -723,7 +716,7 @@ void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, c
 
 	if ( trace->fraction < 1 )
 	{
-		trace->entityNum = touch->s.number;
+		trace->entityNum = touch->num();
 	}
 }
 
@@ -817,12 +810,12 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 		if ( trace.allsolid )
 		{
 			clip->trace.allsolid = true;
-			trace.entityNum = touch->s.number;
+			trace.entityNum = touch->num();
 		}
 		else if ( trace.startsolid )
 		{
 			clip->trace.startsolid = true;
-			trace.entityNum = touch->s.number;
+			trace.entityNum = touch->num();
 		}
 
 		if ( trace.fraction < clip->trace.fraction )
@@ -832,7 +825,7 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 			// make sure we keep a startsolid from a previous trace
 			oldStart = clip->trace.startsolid;
 
-			trace.entityNum = touch->s.number;
+			trace.entityNum = touch->num();
 			clip->trace = trace;
 			clip->trace.startsolid |= oldStart;
 		}

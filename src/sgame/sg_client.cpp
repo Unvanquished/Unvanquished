@@ -516,7 +516,7 @@ void respawn( gentity_t *ent )
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		if ( level.clients[ i ].sess.spectatorState == SPECTATOR_FOLLOW &&
-		     level.clients[ i ].sess.spectatorClient == ent - g_entities )
+		     level.clients[ i ].sess.spectatorClient == ent->num() )
 		{
 			if ( !( level.clients[ i ].pers.stickySpec ) )
 			{
@@ -633,11 +633,7 @@ static const char *G_UnnamedClientName( gclient_t *client )
 
 	client->pers.namelog->unnamedNumber = number;
 
-	gentity_t *ent;
-	int clientNum = client - level.clients;
-	ent = g_entities + clientNum;
-
-	if ( ent->r.svFlags & SVF_BOT )
+	if ( client->ent()->r.svFlags & SVF_BOT )
 	{
 		Com_sprintf( name, sizeof( name ), "%.*s%d", (int)sizeof( name ) - 11,
 			!g_unnamedBotNamePrefix.Get().empty() ? g_unnamedBotNamePrefix.Get().c_str() : UNNAMED_BOT "#",
@@ -671,14 +667,16 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 
 	for ( const auto& token : Color::Parser( in ) )
 	{
-		if ( out_string.size() + token.Size() >= outSize )
+		Str::StringView tokenContent = token.NormalizedToken();
+
+		if ( out_string.size() + tokenContent.size() >= outSize )
 		{
 			break;
 		}
 
 		if ( token.Type() == Color::Token::TokenType::CHARACTER )
 		{
-			int cp = Q_UTF8_CodePoint(token.Begin());
+			int cp = Q_UTF8_CodePoint( tokenContent.begin() );
 
 			// don't allow leading spaces
 			// TODO: use a Unicode-aware isspace
@@ -692,16 +690,6 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 			if ( cp >= 0 && cp < ' ' )
 			{
 				continue;
-			}
-
-			// single trailing ^ will mess up some things
-			if ( cp == Color::Constants::ESCAPE && !*token.End() )
-			{
-				if ( out_string.size() + 2 >= outSize )
-				{
-					break;
-				}
-				out_string += Color::Constants::ESCAPE;
 			}
 
 			if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
@@ -731,12 +719,12 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 		}
 		else if ( token.Type() == Color::Token::TokenType::COLOR )
 		{
-			lastColor.assign( token.Begin(), token.End() );
+			lastColor.assign( tokenContent.begin(), tokenContent.end() );
 		}
 
-		out_string.append(token.Begin(), token.Size());
+		out_string.append( tokenContent.begin(), tokenContent.end() );
 
-		if ( !g_emoticonsAllowedInNames.Get() && BG_EmoticonAt( token.Begin() ) )
+		if ( !g_emoticonsAllowedInNames.Get() && BG_EmoticonAt( token.RawToken().begin() ) )
 		{
 			if ( out_string.size() + lastColor.size() >= outSize )
 			{
@@ -816,9 +804,9 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 	// check for malformed or illegal info strings
 	if ( !Info_Validate( userinfo ) )
 	{
-		trap_SendServerCommand( ent - g_entities,
+		trap_SendServerCommand( ent->num(),
 		                        "disconnect \"illegal or malformed userinfo\"" );
-		trap_DropClient( ent - g_entities,
+		trap_DropClient( ent->num(),
 		                 "dropped: illegal or malformed userinfo" );
 		return "Illegal or malformed userinfo";
 	}
@@ -845,7 +833,7 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		     level.time - client->pers.namelog->nameChangeTime <=
 		     g_minNameChangePeriod.Get() * 1000 )
 		{
-			trap_SendServerCommand( ent - g_entities, va(
+			trap_SendServerCommand( ent->num(), va(
 			                          "print_tr %s %g", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$)") ),
 			                          g_minNameChangePeriod.Get() ) );
 			revertName = true;
@@ -853,25 +841,25 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		else if ( !forceName && g_maxNameChanges.Get() > 0 &&
 		          client->pers.namelog->nameChanges >= g_maxNameChanges.Get() )
 		{
-			trap_SendServerCommand( ent - g_entities, va(
+			trap_SendServerCommand( ent->num(), va(
 			                          "print_tr %s %d", QQ( N_("Maximum name changes reached (g_maxNameChanges = $1$)") ),
 			                          g_maxNameChanges.Get() ) );
 			revertName = true;
 		}
 		else if ( !forceName && client->pers.namelog->muted )
 		{
-			trap_SendServerCommand( ent - g_entities,
+			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s", QQ( N_("You cannot change your name while you are muted") ) ) );
 			revertName = true;
 		}
 		else if ( !G_admin_name_check( ent, newname, err, sizeof( err ) ) )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s %s", QQ( "$1t$ $2$" ), Quote( err ), Quote( newname ) ) );
+			trap_SendServerCommand( ent->num(), va( "print_tr %s %s %s", QQ( "$1t$ $2$" ), Quote( err ), Quote( newname ) ) );
 			revertName = true;
 		}
 		else if ( Q_UTF8_Strlen( newname ) > MAX_NAME_CHARACTERS )
 		{
-			trap_SendServerCommand( ent - g_entities,
+			trap_SendServerCommand( ent->num(),
 			                        va( "print_tr %s %d", QQ( N_("Name is too long! Must be less than $1$ characters.") ), MAX_NAME_CHARACTERS ) );
 			revertName = true;
 
@@ -1135,7 +1123,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
 	if ( ent->inuse )
 	{
-		G_LogPrintf( "Forcing disconnect on active client: %i", (int)( ent - g_entities ) );
+		G_LogPrintf( "Forcing disconnect on active client: %i", ent->num() );
 		// so lets just fix up anything that should happen on a disconnect
 		ClientDisconnect( ent-g_entities );
 	}
@@ -1346,7 +1334,7 @@ void ClientBegin( int clientNum )
 
 	if ( !startMsg.empty() )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "cpd %d %s", g_mapStartupMessageDelay.Get(), Quote( startMsg.c_str() ) ) );
+		trap_SendServerCommand( ent->num(), va( "cpd %d %s", g_mapStartupMessageDelay.Get(), Quote( startMsg.c_str() ) ) );
 	}
 
 	G_namelog_restore( client );
@@ -1372,7 +1360,7 @@ void ClientBegin( int clientNum )
 		{
 			return;
 		}
-		G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
+		G_TriggerMenu( client->num(), MN_WELCOME );
 	}
 }
 
@@ -1502,7 +1490,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	bool evolving = ent == spawn;
 	ClientSpawnCBSE(ent, evolving);
 
-	index = ent - g_entities;
+	index = ent->num();
 	client = ent->client;
 
 	teamLocal = client->pers.team;
@@ -1739,7 +1727,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// the respawned flag will be cleared after the attack and jump keys come up
 	client->ps.pm_flags |= PMF_RESPAWNED;
 
-	trap_GetUsercmd( client - level.clients, &ent->client->pers.cmd );
+	trap_GetUsercmd( client->num(), &ent->client->pers.cmd );
 	G_SetClientViewAngle( ent, spawn_angles );
 
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
@@ -1808,7 +1796,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// evolving several times to run down the attack cooldown
 	client->ps.commandTime = level.time - (evolving ? 1 : 100);
 	ent->client->pers.cmd.serverTime = level.time;
-	ClientThink( ent - g_entities );
+	ClientThink( ent->num() );
 
 	// positively link the client, even if the command times are weird
 	if ( client->sess.spectatorState == SPECTATOR_NOT )

@@ -268,6 +268,13 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"listbots",   G_admin_listbots,  true,  "listbots",
+		N_("display a list of all server bots and some debug info about each"),
+		""
+	},
+
+
+	{
 		"listinactive", G_admin_listinactive, true, "listadmins",
 		N_("display a list of inactive server admins and their levels"),
 		N_("[^5months^7] (^5start admin#^7)")
@@ -534,7 +541,7 @@ void G_admin_cmdlist( gentity_t *ent )
 	// If this is the local client, no need to send them commands.
 	// The local client will get their commands registered in
 	// G_admin_register_cmds.
-	if ( level.inClient && ent->client->ps.clientNum == 0 )
+	if ( level.inClient && ent->num() == 0 )
 	{
 		return;
 	}
@@ -552,7 +559,7 @@ void G_admin_cmdlist( gentity_t *ent )
 
 		if ( len + outlen >= sizeof( out ) - 1 )
 		{
-			trap_SendServerCommand( ent - g_entities, va( "cmds%s", out ) );
+			trap_SendServerCommand( ent->num(), va( "cmds%s", out ) );
 			outlen = 0;
 		}
 
@@ -560,7 +567,7 @@ void G_admin_cmdlist( gentity_t *ent )
 		outlen += len;
 	}
 
-	trap_SendServerCommand( ent - g_entities, va( "cmds%s", out ) );
+	trap_SendServerCommand( ent->num(), va( "cmds%s", out ) );
 }
 
 // match a certain flag within these flags
@@ -780,7 +787,7 @@ bool G_admin_name_check( gentity_t *ent, const char *name, char *err, int len )
 		}
 
 		// can rename ones self to the same name using different colors
-		if ( i == ( ent - g_entities ) )
+		if ( i == ( ent->num() ) )
 		{
 			continue;
 		}
@@ -995,7 +1002,7 @@ void G_admin_writeconfig()
 
 static void admin_readconfig_string( const char **cnf, char *s, unsigned size )
 {
-	char *t;
+	const char *t;
 
 	//COM_MatchToken(cnf, "=");
 	s[ 0 ] = '\0';
@@ -1032,10 +1039,8 @@ static void admin_readconfig_string( const char **cnf, char *s, unsigned size )
 
 static void admin_readconfig_int( const char **cnf, int *v )
 {
-	char *t;
-
 	//COM_MatchToken(cnf, "=");
-	t = COM_ParseExt( cnf, false );
+	const char *t = COM_ParseExt( cnf, false );
 
 	if ( !strcmp( t, "=" ) )
 	{
@@ -1125,7 +1130,7 @@ void G_admin_authlog( gentity_t *ent )
 	             ( level ) ? level->flags : "" );
 
 	G_LogPrintf( "AdminAuth: %i \"%s^*\" \"%s^*\" [%d] (%s): %s",
-	             ( int )( ent - g_entities ), ent->client->pers.netname,
+	             ent->num(), ent->client->pers.netname,
 	             ent->client->pers.admin->name, ent->client->pers.admin->level,
 	             ent->client->pers.guid, aflags );
 }
@@ -1889,7 +1894,6 @@ bool G_admin_readconfig( gentity_t *ent )
 	fileHandle_t      f;
 	int               len;
 	char              *cnf1, *cnf2;
-	char              *t;
 	bool              level_open, admin_open, ban_open, command_open;
 	int               i;
 	char              ip[ 44 ];
@@ -1927,7 +1931,7 @@ bool G_admin_readconfig( gentity_t *ent )
 
 	while ( 1 )
 	{
-		t = COM_Parse( &cnf );
+		const char *t = COM_Parse( &cnf );
 
 		if ( !*t )
 		{
@@ -2344,7 +2348,7 @@ bool G_admin_setlevel( gentity_t *ent )
 
 		if ( l && !a->pubkey[ 0 ] )
 		{
-			trap_GetPlayerPubkey( vic - g_entities, a->pubkey, sizeof( a->pubkey ) );
+			trap_GetPlayerPubkey( vic->num(), a->pubkey, sizeof( a->pubkey ) );
 		}
 
 		vic->client->pers.pubkey_authenticated = 1;
@@ -2403,7 +2407,7 @@ bool G_admin_slap( gentity_t *ent )
 	{
 		ADMP( va( "%s %s", QQ( N_( "^3$1$:^* sorry, but your intended victim has a higher admin"
 		          " level than you" ) ), "slap" ) ); // todo: move this print to a single helper function
-		return false; 
+		return false;
 	}
 
 	const HealthComponent* health = vic->entity->Get<HealthComponent>();
@@ -2457,13 +2461,13 @@ bool G_admin_slap( gentity_t *ent )
 
 	if ( health->Alive() )
 	{
-		AP( va( "print_tr " QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ) " %s %s %s", 
-			 G_quoted_admin_name( ent ), Quote( vic->client->pers.netname ), 
+		AP( va( "print_tr " QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ) " %s %s %s",
+			 G_quoted_admin_name( ent ), Quote( vic->client->pers.netname ),
 			 ( damage > 0 ? Quote( va( "with %.0f damage", damage ) ) : QQ( "" ) ) ) );
 	} // only print the chat msg if they don't die. otherwise the MOD_SLAP event will suffice.
 
-	CPx( vic - g_entities, va( "cp_tr " QQ( N_( "[cross]$1$$2$ is not amused![cross]" ) ) " %s %s", 
-		G_quoted_admin_name( ent ), 
+	CPx( vic->num(), va( "cp_tr " QQ( N_( "[cross]$1$$2$ is not amused![cross]" ) ) " %s %s",
+		G_quoted_admin_name( ent ),
 		( health->Alive() ) ? "^7" : "^i" ) ); // if they die, make the text red
 
 	return true;
@@ -5559,7 +5563,7 @@ bool G_admin_register( gentity_t *ent )
 	}
 
 	trap_SendConsoleCommand( va( "setlevel %d %d;",
-	                         ( int )( ent - g_entities ),
+	                         ent->num(),
 	                         level ) );
 
 	AP( va( "print_tr %s %s", QQ( N_("^3register:^* $1$^* is now a protected name") ),
@@ -5581,8 +5585,7 @@ bool G_admin_unregister( gentity_t *ent )
 		return false;
 	}
 
-	trap_SendConsoleCommand( va( "setlevel %d 0;",
-	                         ( int )( ent - g_entities ) ) );
+	trap_SendConsoleCommand( va( "setlevel %d 0;", ent->num() ) );
 
 	AP( va( "print_tr %s %s", QQ( N_("^3unregister:^* $1$^* is now an unprotected name") ),
 	        Quote( ent->client->pers.admin->name ) ) );
@@ -5626,12 +5629,33 @@ void G_admin_print_plural( gentity_t *ent, Str::StringRef m, int number )
 
 /*
 ================
+ G_admin_print_raw
+
+This function is used to print raw/untranslated things to the clients.
+
+ The supplied string is assumed to be quoted as needed.
+================
+*/
+void G_admin_print_raw( gentity_t *ent, Str::StringRef m )
+{
+	if ( ent )
+	{
+		trap_SendServerCommand( ent->s.number, va( "print %s", m.c_str() ) );
+	}
+	else
+	{
+		trap_SendServerCommand( -2, va( "print %s", m.c_str() ) );
+	}
+}
+
+
+/*
+================
  G_admin_buffer_begin, G_admin_buffer_print, G_admin_buffer_end,
 
  These function facilitates the ADMBP* defines, and output is as for ADMP().
 
  The supplied text is raw; it will be quoted but not marked translatable.
- FIXME: it actually is marked translatable (print_tr is used) but shouldn't be
 ================
 */
 void G_admin_buffer_begin()
@@ -5642,7 +5666,7 @@ void G_admin_buffer_begin()
 
 void G_admin_buffer_end( gentity_t *ent )
 {
-	G_admin_print( ent, G_EscapeServerCommandArg( g_bfb ) );
+	G_admin_print_raw( ent, G_EscapeServerCommandArg( g_bfb ) );
 }
 
 static inline void G_admin_buffer_print_raw( gentity_t *ent, Str::StringRef m, bool appendNewLine )
@@ -5730,6 +5754,7 @@ static void BotUsage( gentity_t *ent )
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
 	                                        "            bot behavior (<name> | <slot#>) <behavior>\n"
+	                                        "            bot skill <skill level> [<team>]\n"
 	                                        "            bot debug_reload" ) );
 	ADMP( bot_usage );
 }
@@ -5770,17 +5795,19 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 		return false;
 	}
 
-	int skill;
+	int skill = 0;
 	if ( args.Argc() >= 5 )
 	{
 		skill = BotSkillFromString( ent, args[4].data() );
 	}
-	else
-	{
-		skill = g_bot_default_skill.Get();
-	}
 
 	const char* behavior = args.Argc() >= 6 ? args[5].data() : BOT_DEFAULT_BEHAVIOR;
+
+	if ( !G_BotInit() )
+	{
+		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
+		return false;
+	}
 
 	bool result = G_BotAdd( name, team, skill, behavior );
 	if ( !result )
@@ -5818,7 +5845,13 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	{
 		teams = { team_t::TEAM_ALIENS, team_t::TEAM_HUMANS };
 	}
-	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : g_bot_default_skill.Get();
+	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : 0;
+
+	if ( !G_BotInit() )
+	{
+		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
+		return false;
+	}
 
 	for (team_t team : teams)
 	{
@@ -5831,7 +5864,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 }
 
 // This command does NOT load the navmesh that it creates.
-// For the time being you need to restart the map for that.
+// However the mesh will be used if you run /navgen before the first bot fill/add command.
 bool G_admin_navgen( gentity_t* ent )
 {
 	static NavmeshGenerator navgen;
@@ -5999,6 +6032,32 @@ bool G_admin_bot( gentity_t *ent )
 			return false;
 		}
 	}
+	else if ( !Q_stricmp( arg1, "skill" ) )
+	{
+		if ( args.Argc() < 3 )
+		{
+			ADMP( QQ( N_( "missing skill." ) ) );
+			BotUsage( ent );
+			return false;
+		}
+		const std::string& skillStr = args.Argv( 2 );
+		int skill = BotSkillFromString( ent, skillStr.c_str() );
+		team_t team = TEAM_NONE;
+		if ( args.Argc() > 3 )
+		{
+			const std::string& teamStr = args.Argv( 3 );
+			team = BG_PlayableTeamFromString( teamStr.c_str() );
+		}
+		for ( int i = 0; i < MAX_CLIENTS; ++i )
+		{
+			if ( team != TEAM_NONE && G_Team( &g_entities[ i ] ) != team )
+			{
+				continue;
+			}
+			// Will ignore non-bots, unfortunately you can't change human skill with a command
+			G_BotSetSkill( i, skill );
+		}
+	}
 	else if ( !Q_stricmp( arg1, "debug_reload" )  )
 	{
 		G_BotDelAllBots();
@@ -6011,6 +6070,24 @@ bool G_admin_bot( gentity_t *ent )
 		BotUsage( ent );
 		return false;
 	}
+	return true;
+}
+
+bool G_admin_listbots( gentity_t *ent )
+{
+	ADMP( va( "%s %d", QQ( N_( "^3listbots:^* $1$ bots in game:") ), level.numPlayingBots ) );
+	ADMP( QQ( N_( "Slot Name Team [s=skill b=behavior g=goal]" ) ) );
+	ADMBP_begin();
+	ForEntities<ClientComponent>( []( Entity& entity, ClientComponent& )
+	{
+		gentity_t* ent = entity.oldEnt;
+		if ( !( ent->r.svFlags & SVF_BOT ) )
+		{
+			return;
+		}
+		ADMBP( va( "%i %s", ent->num(), G_BotToString( ent ).c_str() ) );
+	} );
+	ADMBP_end();
 	return true;
 }
 

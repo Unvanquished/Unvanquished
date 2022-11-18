@@ -11,25 +11,13 @@ constexpr float BLOCKER_DAMAGE       = 10.0f;
 SpawnerComponent::SpawnerComponent(Entity& entity, TeamComponent& r_TeamComponent,
 	ThinkingComponent& r_ThinkingComponent)
 	: SpawnerComponentBase(entity, r_TeamComponent, r_ThinkingComponent)
-	, dying(false)
 	, blockTime(0)
 {
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 500);
 	level.team[GetTeamComponent().Team()].numSpawns++;
 }
 
-SpawnerComponent::~SpawnerComponent() {
-	if (!dying) {
-		OnLoss();
-	}
-}
-
 void SpawnerComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
-	OnLoss();
-	dying = true;
-}
-
-void SpawnerComponent::OnLoss() {
 	TeamComponent::team_t team = GetTeamComponent().Team();
 
 	int newNumSpawns = --level.team[team].numSpawns;
@@ -56,7 +44,7 @@ void SpawnerComponent::Think(int timeDelta) {
 		}
 
 		// Suicide if blocked by the map.
-		if (blocker->oldEnt->s.number == ENTITYNUM_WORLD
+		if (blocker->oldEnt->num() == ENTITYNUM_WORLD
 		    || blocker->oldEnt->s.eType == entityType_t::ET_MOVER) {
 			Entities::Kill(entity, nullptr, MOD_SUICIDE);
 		}
@@ -136,7 +124,7 @@ void SpawnerComponent::WarnBlocker(Entity& blocker, bool lastWarning) {
 
 	message = "cp \"" + message + "\"";
 
-	trap_SendServerCommand(blocker.oldEnt - g_entities, message.c_str());
+	trap_SendServerCommand(blocker.oldEnt->num(), message.c_str());
 }
 
 Entity* SpawnerComponent::CheckSpawnPointHelper(

@@ -43,10 +43,11 @@ struct botMemory_t;
 
 bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler = false );
 int  G_BotGetSkill( int clientNum );
+void G_BotSetSkill( int clientNum, int skill );
 const char *G_BotGetBehavior( int clientNum );
-void G_BotChangeBehavior( int clientNum, const char* behavior );
-bool G_BotSetBehavior( botMemory_t *botMind, const char* behavior );
-bool G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
+void G_BotChangeBehavior( int clientNum, Str::StringRef behavior );
+bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior );
+bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef behavior );
 void G_BotDel( int clientNum );
 void G_BotDelAllBots();
 void G_BotThink( gentity_t *self );
@@ -61,14 +62,15 @@ int  G_BotAddNames(team_t team, int arg, int last);
 //     useful warning, but who knows...
 void G_BotDisableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs );
 void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs );
-void G_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
-void G_BotRemoveObstacle( qhandle_t handle );
+void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum );
+void G_BotRemoveObstacle( int obstacleNum );
 void G_BotUpdateObstacles();
 bool G_BotInit();
 void G_BotCleanup();
 void G_BotFill( bool immediately );
 void G_BotRemoveObstacle( qhandle_t handle );
 void G_BotUpdateObstacles();
+std::string G_BotToString( gentity_t *bot );
 
 const char BOT_DEFAULT_BEHAVIOR[] = "default";
 const char BOT_NAME_FROM_LIST[] = "*";

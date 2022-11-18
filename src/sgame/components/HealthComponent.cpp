@@ -209,9 +209,9 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		if (source->client) {
 			// Add to the attacker's account on the target.
 			// TODO: Move damage account array to HealthComponent.
-			entity.oldEnt->credits[source->client->ps.clientNum].value += loss;
-			entity.oldEnt->credits[source->client->ps.clientNum].time = level.time;
-			entity.oldEnt->credits[source->client->ps.clientNum].team = (team_t)source->client->pers.team;
+			entity.oldEnt->credits[source->num()].value += loss;
+			entity.oldEnt->credits[source->num()].time = level.time;
+			entity.oldEnt->credits[source->num()].team = (team_t)source->client->pers.team;
 		}
 	}
 
@@ -267,7 +267,7 @@ void HealthComponent::ScaleDamageAccounts(float healthRestored) {
 	float totalAccreditedDamage = 0.0f;
 	std::vector<Entity*> relevantClients;
 	ForEntities<ClientComponent>([&](Entity& other, ClientComponent&) {
-		float clientDamage = entity.oldEnt->credits[other.oldEnt->s.number].value;
+		float clientDamage = entity.oldEnt->credits[other.oldEnt->num()].value;
 		if (clientDamage > 0.0f) {
 			totalAccreditedDamage += clientDamage;
 			relevantClients.push_back(&other);
@@ -292,6 +292,6 @@ void HealthComponent::ScaleDamageAccounts(float healthRestored) {
 
 	// Scale down or clear damage accounts.
 	for (Entity* other : relevantClients) {
-		entity.oldEnt->credits[other->oldEnt->s.number].value *= scale;
+		entity.oldEnt->credits[other->oldEnt->num()].value *= scale;
 	}
 }

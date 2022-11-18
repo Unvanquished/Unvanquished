@@ -482,9 +482,7 @@ static void CG_Rocket_ExecServerList( const char *table )
 
 static bool Parse( const char **p, char **out )
 {
-	char *token;
-
-	token = COM_ParseExt( p, false );
+	const char *token = COM_ParseExt( p, false );
 
 	if ( token && token[ 0 ] != 0 )
 	{
@@ -1530,7 +1528,7 @@ static Str::StringRef EvolveAvailability( class_t alienClass )
 	if ( cg.predictedPlayerState.stats[ STAT_CLASS ] == alienClass )
 		return "active";
 
-	if ( !info.classIsUnlocked )
+	if ( !BG_ClassUnlocked( alienClass ) || BG_ClassDisabled( alienClass ) )
 		return "locked";
 
 	if ( cg.predictedPlayerState.persistant[ PERS_CREDIT ] < info.evolveCost )

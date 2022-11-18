@@ -1,15 +1,14 @@
 #include "MiningComponent.h"
+#include "../Entities.h"
 
-MiningComponent::MiningComponent(Entity& entity, bool blueprint,
-                                 ThinkingComponent& r_ThinkingComponent)
-	: MiningComponentBase(entity, blueprint, r_ThinkingComponent)
+MiningComponent::MiningComponent(Entity& entity, ThinkingComponent& r_ThinkingComponent)
+	: MiningComponentBase(entity, r_ThinkingComponent)
 	, active(false) {
 
 	// Already calculate the predicted efficiency.
 	CalculateEfficiency();
 
 	// Inform neighbouring miners so they can adjust their own predictions.
-	// Note that blueprint miners skip this.
 	InformNeighbors();
 }
 
@@ -62,41 +61,39 @@ float MiningComponent::InterferenceMod(float distance) {
 	return ((1.0f - q) + 0.5f * q);
 }
 
-void MiningComponent::CalculateEfficiency() {
-	currentEfficiency   = active ? 1.0f : 0.0f;
-	predictedEfficiency = 1.0f;
+MiningComponent::Efficiencies MiningComponent::FindEfficiencies(
+	team_t team, const glm::vec3& location, MiningComponent* skip)
+{
+	MiningComponent::Efficiencies efficiencies{ 1.0f, 1.0f };
 
-	ForEntities<MiningComponent>([&] (Entity& other, MiningComponent& miningComponent) {
-		if (&other == &entity) return;
-
-		// Never consider blueprint miners.
-		if (miningComponent.Blueprint()) return;
+	ForEntities<MiningComponent>([&](Entity& other, MiningComponent& miningComponent) {
+		if (&miningComponent == skip) return;
 
 		// Do not consider dead neighbours, even when predicting, as they can never become active.
-		HealthComponent *healthComponent = other.Get<HealthComponent>();
-		if (healthComponent && !healthComponent->Alive()) return;
+		if (!Entities::IsAlive(other)) return;
 
-		float interferenceMod = InterferenceMod(G_Distance(entity.oldEnt, other.oldEnt));
+		float interferenceMod = InterferenceMod(glm::distance(location, VEC2GLM(other.oldEnt->s.origin)));
 
-		// TODO: Exclude enemy miners in construction from the prediction.
+		// Enemy miners under construction are a secret
+		if (!(G_Team(other.oldEnt) != team && !miningComponent.active)) {
+			efficiencies.predicted *= interferenceMod;
+		}
 
-		predictedEfficiency *= interferenceMod;
-
-		// Current efficiency is zero when not active.
-		if (!active) return;
-
-		// Only consider active neighbours for the current efficiency.
-		if (!miningComponent.Active()) return;
-
-		currentEfficiency *= interferenceMod;
+		if (miningComponent.active) {
+			efficiencies.actual *= interferenceMod;
+		}
 	});
+	return efficiencies;
+}
+
+void MiningComponent::CalculateEfficiency() {
+	Efficiencies efficiencies = FindEfficiencies(
+		G_Team(entity.oldEnt), VEC2GLM(entity.oldEnt->s.origin), this);
+	currentEfficiency = active ? efficiencies.actual : 0.0f;
+	predictedEfficiency = efficiencies.predicted;
 }
 
 void MiningComponent::InformNeighbors() {
-	// Blueprint miners cause neither real nor predicted interference, so no need to tell neighbours
-	// about them.
-	if (blueprint) return;
-
 	ForEntities<MiningComponent>([&] (Entity& other, MiningComponent& miningComponent) {
 		if (&other == &entity) return;
 		if (G_Distance(entity.oldEnt, other.oldEnt) > RGS_RANGE * 2.0f) return;

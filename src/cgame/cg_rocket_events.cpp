@@ -222,9 +222,18 @@ static void CG_Rocket_EventExecForm()
 				*ss = 0;
 				Q_strcat( cmd, sizeof( cmd ), k );
 				Q_strcat( cmd, sizeof( cmd ), Info_ValueForKey( params, s + 1 ) );
+				k = ss + 1;
 			}
-
-			k = ss + 1;
+			else
+			{
+				Log::Warn("Unterminated $ in execForm: %s", CG_Argv( 1 ) );
+				return;
+			}
+		}
+		else
+		{
+			Q_strcat( cmd, sizeof( cmd ), k );
+			break;
 		}
 	}
 
@@ -337,5 +346,3 @@ void CG_Rocket_ProcessEvents()
 	}
 
 }
-
-

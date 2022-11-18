@@ -70,6 +70,8 @@ static void GiveMaxClips( gentity_t *self )
 		return;
 	}
 
+	self->client->lastAmmoRefillTime = level.time;
+
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
 
@@ -88,6 +90,8 @@ static void GiveFullClip( gentity_t *self )
 	{
 		return;
 	}
+
+	self->client->lastAmmoRefillTime = level.time;
 
 	ps = &self->client->ps;
 	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
@@ -153,8 +157,6 @@ bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
 	{
 		return false;
 	}
-
-	self->client->lastAmmoRefillTime = level.time;
 
 	if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->maxClips > 0 )
 	{
@@ -1002,14 +1004,14 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 	// open build menu
 	if ( buildable <= BA_NONE )
 	{
-		G_TriggerMenu( self->client->ps.clientNum, menu );
+		G_TriggerMenu( self->num(), menu );
 		return;
 	}
 
 	// can't build just yet
 	if ( self->client->ps.stats[ STAT_MISC ] > 0 )
 	{
-		G_AddEvent( self, EV_BUILD_DELAY, self->client->ps.clientNum );
+		G_AddEvent( self, EV_BUILD_DELAY, self->num() );
 		return;
 	}
 
@@ -1199,7 +1201,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 				float damage = LEVEL2_AREAZAP_DMG * ( 1 - powf( ( zap->distances[ i ] /
 				               LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1;
 
-				target->entity->Damage(damage, zap->creator, VEC2GLM( target->s.origin ),
+				zap->targets[i]->entity->Damage(damage, zap->creator, VEC2GLM( zap->targets[i]->s.origin ),
 				                       VEC2GLM( forward ), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP);
 			}
 		}
@@ -1395,7 +1397,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 	{
 		for ( i = 0; i < MAX_TRAMPLE_BUILDABLES_TRACKED; i++ )
 		{
-			if ( self->client->trampleBuildablesHit[ i ] == victim - g_entities )
+			if ( self->client->trampleBuildablesHit[ i ] == victim->num() )
 			{
 				return;
 			}
@@ -1403,7 +1405,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 
 		self->client->trampleBuildablesHit[
 		  self->client->trampleBuildablesHitPos++ % MAX_TRAMPLE_BUILDABLES_TRACKED ] =
-		    victim - g_entities;
+		    victim->num();
 	}
 
 	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.weaponCharge / LEVEL4_TRAMPLE_DURATION;
@@ -1802,7 +1804,7 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 	{
 		case UP_GRENADE:
 		case UP_FIREBOMB:
-			trap_SendServerCommand( self->client->ps.clientNum, "vcommand grenade" );
+			trap_SendServerCommand( self->num(), "vcommand grenade" );
 			break;
 
 		default:
