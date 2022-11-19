@@ -596,6 +596,12 @@ static void G_BotCheckDefaultFill()
 	Util::optional<int> fillCount = g_bot_defaultFill.GetModifiedValue();
 	if ( fillCount )
 	{
+		if ( !G_BotInit() )
+		{
+			Log::Warn( "Navigation mesh files unavailable for this map" );
+			return;
+		}
+
 		for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
 		{
 			level.team[team].botFillTeamSize = *fillCount;
