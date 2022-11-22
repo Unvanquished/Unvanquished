@@ -147,8 +147,6 @@ else if( !Q_stricmp( token.string, #x ) ) \
 	Parse_FreeSourceHandle( fd  );
 }
 
-#define Distance2(a,b) sqrtf(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
-
 /**
  * @brief Fills cg.beacons with explicit (ET_BEACON entity) beacons.
  * @return Whether all beacons found space in cg.beacons.

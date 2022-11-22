@@ -1428,7 +1428,7 @@ void BotAimAtEnemy( gentity_t *self )
 	}
 
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
-	glm::vec3 desired = VEC2GLM( self->botMind->futureAim ) - viewOrigin;
+	glm::vec3 desired = self->botMind->futureAim - viewOrigin;
 	desired = glm::normalize( desired );
 	glm::vec3 current;
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &current, nullptr, nullptr );
@@ -1675,33 +1675,45 @@ void BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer )
 }
 void BotClassMovement( gentity_t *self, bool inAttackRange )
 {
-	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	botMemory_t *mind = self->botMind;
+	usercmd_t *botCmdBuffer = &mind->cmdBuffer;
+	bool botIsSmall = false;
+	bool botIsJumper = false;
+
+	// If we are targetting a buildable or we are targetting a human who
+	// isn't looking at us (likely fleeing), so we try to reach the human
+	// as fast as we can.
+	// Making special tricks for buildables is still useful because turrets
+	// are slow to aim and defenders do more team-damage this way.
+	bool shouldStrafe = true;
+	if ( mind->goal.getTargetType() == entityType_t::ET_PLAYER )
+	{
+		glm::vec3 forward1, forward2;
+		AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward1, nullptr, nullptr );
+		AngleVectors( VEC2GLM( mind->goal.getTargetedEntity()->client->ps.viewangles ), &forward2, nullptr, nullptr );
+		// strafe only if it is looking at us (opposite view vectors, so alignment ≃ -1)
+		shouldStrafe = Alignment2D( forward1, forward2 ) < -0.5f;
+	}
 
 	switch ( self->client->ps.stats[STAT_CLASS] )
 	{
 		case PCL_ALIEN_LEVEL0:
-			BotStrafeDodge( self );
+			botIsSmall = true;
 			break;
 		case PCL_ALIEN_LEVEL1:
+			botIsSmall = true;
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
-			if ( self->botMind->nav().directPathToGoal )
-			{
-				if ( self->client->time1000 % 300 == 0 )
-				{
-					BotJump( self );
-				}
-				BotStrafeDodge( self );
-			}
+			botIsSmall = true;
+			botIsJumper = true;
 			break;
 		case PCL_ALIEN_LEVEL3:
 			break;
 		case PCL_ALIEN_LEVEL3_UPG:
-			if ( self->botMind->goal.getTargetType() == entityType_t::ET_BUILDABLE && self->client->ps.ammo > 0
-				&& inAttackRange )
+			if ( mind->goal.getTargetType() == entityType_t::ET_BUILDABLE && self->client->ps.ammo > 0 && inAttackRange )
 			{
-				//dont move when sniping buildings
+				// Don't move when sniping buildings as adv goon
 				BotStandStill( self );
 			}
 			break;
@@ -1714,6 +1726,16 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			break;
 		default:
 			break;
+	}
+
+	if ( shouldStrafe && botIsSmall )
+	{
+		BotStrafeDodge( self );
+	}
+
+	if ( botIsJumper && self->client->time1000 % 300 == 0 && self->botMind->nav().directPathToGoal )
+	{
+		BotJump( self );
 	}
 }
 
@@ -2303,7 +2325,10 @@ botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
 
 	if (!targetsValidEntity())
 	{
-		Log::Warn("bot: selecting invalid entity as target");
+		Log::Warn( "bot: selecting invalid entity as target, %s",
+			!newTarget->inuse ? "entity isn't allocated" :
+			!Entities::IsAlive(newTarget) ? "entity is dead" :
+				"for some unspecified reason" );
 	}
 
 	return *this;
@@ -2352,10 +2377,7 @@ bool botTarget_t::targetsCoordinates() const
 
 bool botTarget_t::targetsValidEntity() const
 {
-	if (ent) {
-		return BotEntityIsValidTarget(ent.get());
-	}
-	return false;
+	return BotEntityIsValidTarget(ent.get());
 }
 
 const gentity_t *botTarget_t::getTargetedEntity() const

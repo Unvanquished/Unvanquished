@@ -795,7 +795,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// we killed it, yay!
-	if ( !BotEntityIsValidEnemyTarget( self, mind->goal.getTargetedEntity() ) )
+	if ( !mind->goal.targetsValidEntity()
+		|| !BotEntityIsValidEnemyTarget( self, mind->goal.getTargetedEntity() ) )
 	{
 		return STATUS_SUCCESS;
 	}

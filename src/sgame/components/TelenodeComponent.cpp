@@ -28,7 +28,7 @@ bool TelenodeComponent::CheckSpawnPoint(
 	spawnPoint = spawnerOrigin + displacement * spawnerNormal;
 
 	blocker = SpawnerComponent::CheckSpawnPointHelper(
-		spawnerNumber, spawnerOrigin, spawnPoint, VEC2GLM( clientMins ), VEC2GLM( clientMaxs )
+		spawnerNumber, spawnerOrigin, spawnPoint, clientMins, clientMaxs
 	);
 
 	return !blocker;
