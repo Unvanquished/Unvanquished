@@ -33,10 +33,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static  pmove_t   cg_pmove;
 
-static  int       cg_numSolidEntities;
-static  centity_t *cg_solidEntities[ MAX_ENTITIES_IN_SNAPSHOT ];
-static  int       cg_numTriggerEntities;
-static  centity_t *cg_triggerEntities[ MAX_ENTITIES_IN_SNAPSHOT ];
+static BoundedVector<centity_t *, MAX_GENTITIES> cg_solidEntities;
+static BoundedVector<centity_t *, MAX_GENTITIES> cg_triggerEntities;
 
 /*
 ====================
@@ -51,35 +49,23 @@ It also adds content flags to allow for more specific traces in synchronized cod
 */
 void CG_BuildSolidList()
 {
-	centity_t     *cent;
-	snapshot_t    *snap;
-	entityState_t *ent;
+	cg_solidEntities.clear();
+	cg_triggerEntities.clear();
 
-	cg_numSolidEntities = 0;
-	cg_numTriggerEntities = 0;
-
-	if ( cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport )
-	{
-		snap = cg.nextSnap;
-	}
-	else
-	{
-		snap = cg.snap;
-	}
+	snapshot_t *snap = (cg.nextSnap && !cg.nextFrameTeleport && !cg.thisFrameTeleport)
+		? cg.nextSnap
+		: cg.snap;
 
 	for ( unsigned i = 0; i < snap->entities.size(); i++ )
 	{
-		cent = &cg_entities[ snap->entities[ i ].number ];
-		ent = &cent->currentState;
+		centity_t *cent = &cg_entities[ snap->entities[ i ].number ];
+		entityState_t *ent = &cent->currentState;
 
 		if ( ent->eType == entityType_t::ET_ITEM || ent->eType == entityType_t::ET_PUSHER || ent->eType == entityType_t::ET_TELEPORTER )
 		{
-			cg_triggerEntities[ cg_numTriggerEntities ] = cent;
-			cg_numTriggerEntities++;
-			continue;
+			cg_triggerEntities.append(cent);
 		}
-
-		if ( cent->nextState.solid && ent->eType != entityType_t::ET_MISSILE )
+		else if ( cent->nextState.solid && ent->eType != entityType_t::ET_MISSILE )
 		{
 			cent->contents |= CONTENTS_SOLID;
 
@@ -95,9 +81,7 @@ void CG_BuildSolidList()
 					break;
 			}
 
-			cg_solidEntities[ cg_numSolidEntities ] = cent;
-			cg_numSolidEntities++;
-			continue;
+			cg_solidEntities.append(cent);
 		}
 	}
 }
@@ -112,9 +96,8 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
                                    const vec3_t maxs, const vec3_t end, int skipNumber,
                                    int mask, int skipmask, trace_t *tr, traceType_t collisionType )
 {
-	int           i, x, zd, zu;
+	int           x, zd, zu;
 	trace_t       trace;
-	entityState_t *ent;
 	clipHandle_t  cmodel;
 	vec3_t        tmins, tmaxs;
 	vec3_t        bmins, bmaxs;
@@ -129,10 +112,9 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	if( maxs )
 		VectorAdd( maxs, tmaxs, tmaxs );
 
-	for ( i = 0; i < cg_numSolidEntities; i++ )
+	for ( centity_t *cent : cg_solidEntities )
 	{
-		centity_t *cent = cg_solidEntities[ i ];
-		ent = &cent->currentState;
+		entityState_t *ent = &cent->currentState;
 
 		if ( ent->number == skipNumber )
 		{
@@ -315,19 +297,14 @@ CG_PointContents
 */
 int   CG_PointContents( const vec3_t point, int passEntityNum )
 {
-	int           i;
-	entityState_t *ent;
-	centity_t     *cent;
 	clipHandle_t  cmodel;
 	int           contents;
 
 	contents = CM_PointContents( point, 0 );
 
-	for ( i = 0; i < cg_numSolidEntities; i++ )
+	for ( centity_t *cent : cg_solidEntities )
 	{
-		cent = cg_solidEntities[ i ];
-
-		ent = &cent->currentState;
+		entityState_t *ent = &cent->currentState;
 
 		if ( ent->number == passEntityNum )
 		{
@@ -430,11 +407,8 @@ Predict push triggers and items
 */
 static void CG_TouchTriggerPrediction()
 {
-	int           i;
 	trace_t       trace;
-	entityState_t *ent;
 	clipHandle_t  cmodel;
-	centity_t     *cent;
 	bool      spectator;
 
 	// dead clients don't activate triggers
@@ -450,10 +424,9 @@ static void CG_TouchTriggerPrediction()
 		return;
 	}
 
-	for ( i = 0; i < cg_numTriggerEntities; i++ )
+	for ( centity_t *cent : cg_triggerEntities )
 	{
-		cent = cg_triggerEntities[ i ];
-		ent = &cent->currentState;
+		entityState_t *ent = &cent->currentState;
 
 		if ( ent->solid != SOLID_BMODEL )
 		{
