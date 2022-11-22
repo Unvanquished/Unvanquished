@@ -694,8 +694,18 @@ bool BotMoveToGoal( gentity_t *self )
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
-			BotJump( self );
+		{
+			// make marauder jump randomly to be harder to hit
+			// don't do this on every frame though, we would loose
+			// a lot of maneuverability
+			int msec = level.time - level.previousTime;
+			constexpr float jumpChance = 0.2f; // chance per second
+			if ( (jumpChance / 1000.0f) * msec > random() )
+			{
+				BotJump( self );
+			}
 			break;
+		}
 		case PCL_ALIEN_LEVEL3:
 			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
