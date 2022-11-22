@@ -967,7 +967,7 @@ void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir )
 	}
 	else
 	{
-		AngleVectors( &angles[0], &movedir[0], nullptr, nullptr );
+		AngleVectors( angles, &movedir, nullptr, nullptr );
 	}
 
 	angles = glm::vec3();
