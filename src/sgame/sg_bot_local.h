@@ -89,7 +89,10 @@ struct botSkill_t
 	float aimShake;
 };
 
-// boolean flags that tells which skill (compétence) the bot has
+// boolean flags that tells which skill (compétence) the bot has.
+//
+// When you add a skill, add it to the skill tree in sg_bot_skilltree.cpp and
+// change the number of skillpoint a bot has in BotDetermineSkills
 enum bot_skill
 {
 	// movement skills
@@ -106,7 +109,7 @@ enum bot_skill
 	BOT_A_POUNCE_ON_FLEE, // dragoon and adv dragoon
 	BOT_A_TYRANT_CHARGE_ON_FLEE,
 	BOT_H_RUN_ON_FLEE, // when fleeing, RUN
-	BOT_H_BUY_ARMOR, // knows armor exists at all
+	BOT_H_BUY_ARMOR, // knows armor exists at all, if the bot doesn't have BOT_H_PREFER_ARMOR too it will always prefer to buy guns
 	BOT_H_PREFER_ARMOR, // prefer to buy armor rather than guns
 	BOT_H_MEDKIT, // knows the medkit even exist
 
