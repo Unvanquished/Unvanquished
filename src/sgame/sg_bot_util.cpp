@@ -1743,7 +1743,9 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 		BotStrafeDodge( self );
 	}
 
-	if ( botIsJumper && self->client->time1000 % 300 == 0 && self->botMind->nav().directPathToGoal )
+	int msec = level.time - level.previousTime;
+	constexpr float jumpChance = 0.1f; // chance per second
+	if ( botIsJumper && self->botMind->nav().directPathToGoal && (jumpChance / 1000.0f) * msec > random() )
 	{
 		BotJump( self );
 	}
