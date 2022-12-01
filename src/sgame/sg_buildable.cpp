@@ -52,29 +52,27 @@ bool G_IsWarnableMOD(meansOfDeath_t mod) {
 }
 
 static gentity_t *FindBuildable(buildable_t buildable) {
-	gentity_t* found = nullptr;
-
-	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent&) {
+	for (Entity& entity : Entities::Having<BuildableComponent>()) {
 		if (entity.oldEnt->s.modelindex == buildable) {
-			found = entity.oldEnt;
+			return entity.oldEnt;
 		}
-	});
+	}
 
-	return found;
+	return nullptr;
 }
 
+// TODO This doesn't need to be a template; an entity collection could be an argument
 template<typename Component>
 static gentity_t *LookUpMainBuildable(bool requireActive)
 {
-	gentity_t *answer = nullptr;
-	ForEntities<Component>([&](Entity& entity, Component&) {
+	for (Entity& entity : Entities::Having<Component>()) {
 		if (!requireActive ||
 		    entity.Get<BuildableComponent>()->GetState() == BuildableComponent::CONSTRUCTED)
 		{
-			answer = entity.oldEnt;
+			return entity.oldEnt;
 		}
-	});
-	return answer;
+	}
+	return nullptr;
 }
 
 gentity_t *G_Overmind() {
@@ -760,32 +758,32 @@ void G_UpdateBuildablePowerStates()
 		int unpoweredBuildableTotal = 0;
 		activeMainBuildable = G_ActiveMainBuildable(team);
 
-		ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
-			if (G_Team(entity.oldEnt) != team) return;
+		for (Entity& entity : Entities::Having<BuildableComponent>()) {
+			if (G_Team(entity.oldEnt) != team) continue;
 
 			// Never shut down the main buildable or miners.
-			if (entity.Get<MainBuildableComponent>()) return;
-			if (entity.Get<MiningComponent>()) return;
+			if (entity.Get<MainBuildableComponent>()) continue;
+			if (entity.Get<MiningComponent>()) continue;
 
 			// Never shut down spawns.
 			// TODO: Refer to a SpawnerComponent here.
-			if (entity.Get<TelenodeComponent>() || entity.Get<EggComponent>()) return;
+			if (entity.Get<TelenodeComponent>() || entity.Get<EggComponent>()) continue;
 
 			// Power off all buildables if there is no main buildable.
 			if (!activeMainBuildable) {
-				buildableComponent.SetPowerState(false);
-				return;
+				entity.Get<BuildableComponent>()->SetPowerState(false);
+				continue;
 			}
 
 			// In order to make good a deficit, don't shut down buildables that have no cost.
-			if (BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints <= 0) return;
+			if (BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints <= 0) continue;
 			if (!entity.oldEnt->powered) {
 				unpoweredBuildables.push_back(&entity);
 				unpoweredBuildableTotal += BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints;
 			} else {
 				poweredBuildables.push_back(&entity);
 			}
-		});
+		}
 
 		// If there is no active main buildable, all buildables that can shut down already did so.
 		if (!activeMainBuildable) continue;
@@ -1367,38 +1365,31 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	// check for collision
 	// -------------------
 
-	// TODO: Once ForEntities allows break semantics, rewrite.
-	itemBuildError_t collisionError = IBE_NONE;
-	ForEntities<BuildableComponent>([&] (Entity& entity, BuildableComponent& buildableComponent) {
-		// HACK: Fake a break.
-		if (collisionError != IBE_NONE) return;
-
+	for (Entity& entity : Entities::Having<BuildableComponent>()) {
 		buildable_t otherBuildable = (buildable_t)entity.oldEnt->s.modelindex;
 		team_t      otherTeam      = entity.oldEnt->buildableTeam;
 
 		if (BuildablesIntersect(buildable, origin, otherBuildable, entity.oldEnt->s.origin)) {
 			if (otherTeam != attr->team) {
-				collisionError = IBE_NOROOM;
-				return;
+				return IBE_NOROOM;
 			}
 
-			if (!buildableComponent.MarkedForDeconstruction()) {
-				collisionError = IBE_NOROOM;
-				return;
+			if (!entity.Get<BuildableComponent>()->MarkedForDeconstruction()) {
+				return IBE_NOROOM;
 			}
 
 			// Ignore main buildable replacement since it will already be on the list.
 			if (!(BG_IsMainStructure(buildable) && BG_IsMainStructure(otherBuildable))) {
 				// Apply general replacement rules.
-				if ((collisionError = BuildableReplacementChecks((buildable_t)entity.oldEnt->s.modelindex, buildable)) != IBE_NONE) {
-					return;
+				itemBuildError_t ibe = BuildableReplacementChecks((buildable_t)entity.oldEnt->s.modelindex, buildable);
+				if (ibe != IBE_NONE) {
+					return ibe;
 				}
 
 				level.markedBuildables[level.numBuildablesForRemoval++] = entity.oldEnt;
 			}
 		}
-	});
-	if (collisionError != IBE_NONE) return collisionError;
+	}
 
 	// -------------------
 	// check for resources

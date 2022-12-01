@@ -223,14 +223,10 @@ bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin,
 bool RocketpodComponent::EnemyClose() {
 	const missileAttributes_t* missileAttributes = BG_Missile(MIS_ROCKET);
 
-	bool enemyClose = false;
-
-	ForEntities<ClientComponent>([&](Entity& other, ClientComponent&) {
-		if (enemyClose) return;
-
-		if (other.Get<SpectatorComponent>()) return;
-		if (Entities::IsDead(other)) return;
-		if (!Entities::OnOpposingTeams(entity, other)) return;
+	for (Entity& other : Entities::Having<ClientComponent>()) {
+		if (other.Get<SpectatorComponent>()) continue;
+		if (Entities::IsDead(other)) continue;
+		if (!Entities::OnOpposingTeams(entity, other)) continue;
 
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 
@@ -252,11 +248,11 @@ bool RocketpodComponent::EnemyClose() {
 		float safetyDistance = splashRadius + turretRadius;
 
 		if (closestExplosionCenter < safetyDistance) {
-			enemyClose = true;
+			return true;
 		}
-	});
+	}
 
-	return enemyClose;
+	return false;
 }
 
 void RocketpodComponent::Shoot() {
