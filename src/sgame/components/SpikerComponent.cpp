@@ -1,6 +1,7 @@
 #include "SpikerComponent.h"
 
 #include <glm/geometric.hpp>
+#include "../Entities.h"
 
 static Log::Logger logger("sgame.spiker");
 
@@ -68,14 +69,14 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 	bool  sensing = false;
 
 	// Calculate expected damage to decide on the best moment to shoot.
-	ForEntities<HealthComponent>([&](Entity& other, HealthComponent& healthComponent) {
-		if (G_Team(other.oldEnt) == TEAM_NONE)                            return;
-		if (G_OnSameTeam(entity.oldEnt, other.oldEnt))                    return;
-		if ((other.oldEnt->flags & FL_NOTARGET))                          return;
-		if (!healthComponent.Alive())                                     return;
-		if (G_Distance(entity.oldEnt, other.oldEnt) > SPIKE_RANGE)        return;
-		if (other.Get<BuildableComponent>())                              return;
-		if (!G_LineOfSight(entity.oldEnt, other.oldEnt))                  return;
+	for (Entity& other : Entities::Having<HealthComponent>()) {
+		if (G_Team(other.oldEnt) == TEAM_NONE)                            continue;
+		if (G_OnSameTeam(entity.oldEnt, other.oldEnt))                    continue;
+		if ((other.oldEnt->flags & FL_NOTARGET))                          continue;
+		if (!other.Get<HealthComponent>()->Alive())                       continue;
+		if (G_Distance(entity.oldEnt, other.oldEnt) > SPIKE_RANGE)        continue;
+		if (other.Get<BuildableComponent>())                              continue;
+		if (!G_LineOfSight(entity.oldEnt, other.oldEnt))                  continue;
 
 		glm::vec3 dorsal    = VEC2GLM( entity.oldEnt->s.origin2 );
 		glm::vec3 toTarget  = VEC2GLM( other.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.origin );
@@ -85,7 +86,7 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 		// With a straight shot, only entities in the spiker's upper hemisphere can be hit.
 		// Since the spikes obey gravity, increase or decrease this radius of damage by up to
 		// GRAVITY_COMPENSATION_ANGLE degrees depending on the spiker's orientation.
-		if (glm::dot( glm::normalize( toTarget  ), dorsal) < gravityCompensation) return;
+		if (glm::dot( glm::normalize( toTarget  ), dorsal) < gravityCompensation) continue;
 
 		// Approximate average damage the entity would receive from spikes.
 		const missileAttributes_t* ma = BG_Missile(MIS_SPIKER);
@@ -114,7 +115,7 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 				RegisterFastThinker();
 			}
 		}
-	});
+	}
 
 	bool senseLost = lastSensing && !sensing;
 
