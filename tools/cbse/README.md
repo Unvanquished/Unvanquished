@@ -66,13 +66,6 @@ for (Entity* grabber : GetEntitiesColliding(pointsBonus->hitbox)) {
 }
 ```
 
-Likewise it is possible to iterate over all entities with a certain component to help process them in batch:
-```cpp
-ForEntities<FireComponent>([] (Entity* entity, FireComponent& fire) {
-   fire.Spread();
-});
-```
-
 ### Defining a component
 
 Messages and components are defined in a YAML document. Messages are simply defined as list of parameters of the form (name, type) and the list of message handled is under the ``messages`` key of the dictionnary defining a component.
