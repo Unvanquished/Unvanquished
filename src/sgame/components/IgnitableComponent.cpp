@@ -204,16 +204,16 @@ void IgnitableComponent::ConsiderSpread(int /*timeDelta*/) {
 
 	fireLogger.Notice("Trying to spread.");
 
-	ForEntities<IgnitableComponent>([&](Entity &other, IgnitableComponent &ignitable){
-		if (&other == &entity) return;
+	for (Entity& other : Entities::Having<IgnitableComponent>()) {
+		if (&other == &entity) continue;
 
 		// Don't re-ignite.
-		if (ignitable.onFire) return;
+		if (other.Get<IgnitableComponent>()->onFire) continue;
 
 		// TODO: Use LocationComponent.
 		float distance = G_Distance(other.oldEnt, entity.oldEnt);
 
-		if (distance > SPREAD_RADIUS) return;
+		if (distance > SPREAD_RADIUS) continue;
 
 		float distanceFrac = distance / SPREAD_RADIUS;
 		float distanceMod  = 1.0f - distanceFrac;
@@ -225,7 +225,7 @@ void IgnitableComponent::ConsiderSpread(int /*timeDelta*/) {
 				                  spreadChance*100.0f);
 			}
 		}
-	});
+	}
 
 	// Don't spread again until re-ignited.
 	spreadAt = INT_MAX;

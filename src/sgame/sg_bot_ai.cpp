@@ -168,17 +168,17 @@ static botEntityAndDistance_t ClosestBuilding(gentity_t *self, bool alignment)
 	botEntityAndDistance_t result;
 	result.distance = HUGE_QFLT;
 	result.ent = nullptr;
-	ForEntities<BuildableComponent>([&](Entity& e, BuildableComponent&) {
+	for (Entity& e : Entities::Having<BuildableComponent>()) {
 		if (!e.Get<HealthComponent>()->Alive() ||
 		    (e.Get<TeamComponent>()->Team() == G_Team(self)) != alignment) {
-			return;
+			continue;
 		}
 		float distance = G_Distance(self, e.oldEnt);
 		if (distance < result.distance) {
 			result.distance = distance;
 			result.ent = e.oldEnt;
 		}
-	});
+	}
 	return result;
 }
 
