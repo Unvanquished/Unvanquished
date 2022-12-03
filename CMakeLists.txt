@@ -27,6 +27,11 @@
 cmake_minimum_required(VERSION 3.12)
 project(Unvanquished C CXX)
 
+# On Mac, default to x86_64 unless user requests something else
+if (NOT CMAKE_OSX_ARCHITECTURES)
+    set(CMAKE_OSX_ARCHITECTURES x86_64)
+endif()
+
 # When we build in the source dir, the daemon executable cannot be create
 # as there is already a daemon directory, so we disallow building in the
 # source dir.
