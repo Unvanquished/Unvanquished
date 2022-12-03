@@ -1919,7 +1919,7 @@ or alien builder
 */
 void CG_DrawBuildableStatus()
 {
-	std::vector<centity_t *> buildableList;
+	BoundedVector<centity_t *, MAX_GENTITIES> buildableList;
 
 	if ( !cg_drawBuildableHealth.Get() )
 	{
@@ -1930,7 +1930,7 @@ void CG_DrawBuildableStatus()
 	{
 		if ( es.eType == entityType_t::ET_BUILDABLE && CG_PlayerIsBuilder( (buildable_t) es.modelindex ) )
 		{
-			buildableList.push_back(&cg_entities[ es.number ]);
+			buildableList.append(&cg_entities[ es.number ]);
 		}
 	}
 
