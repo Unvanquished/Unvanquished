@@ -95,7 +95,7 @@ static void CG_Rocket_DFServerPlayers( int handle, const char *data )
 
 static void CG_Rocket_DFPlayerName( int handle, const char *data )
 {
-	Rocket_DataFormatterFormattedData( handle, va("<div class=\"playername\">%s</div>", CG_Rocket_QuakeToRML( cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) ) , false );
+	Rocket_DataFormatterFormattedData( handle, va("<span class=\"playername\">%s</span>", CG_Rocket_QuakeToRML( cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name ) ) , false );
 }
 
 static void CG_Rocket_DFUpgradeName( int handle, const char *data )
