@@ -27,6 +27,11 @@
 cmake_minimum_required(VERSION 3.12)
 project(Unvanquished C CXX)
 
+# On Mac, default to x86_64 unless user requests something else
+if (NOT CMAKE_OSX_ARCHITECTURES)
+    set(CMAKE_OSX_ARCHITECTURES x86_64)
+endif()
+
 # When we build in the source dir, the daemon executable cannot be create
 # as there is already a daemon directory, so we disallow building in the
 # source dir.
@@ -87,6 +92,10 @@ if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
         set(LUA_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/liblua.a)
     else()
         find_package(Freetype REQUIRED)
+        if (APPLE)
+            find_package(ZLIB REQUIRED)
+            set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
+        endif()
         find_package(Lua REQUIRED)
     endif()
     include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)

@@ -593,6 +593,8 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		upgrades[i] = UP_NONE;
 	}
 
+	auto buyArmors = [&]()
+	{
 	for ( auto const &armor : armors )
 	{
 		// buy armor if one of following is true:
@@ -609,6 +611,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 			break;
 		}
 	}
+	};
 
 	//TODO this really needs more generic code, but that would require
 	//deeper refactoring (probably move equipments and classes into structs)
@@ -617,6 +620,8 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	int nbRadars = numTeamUpgrades[UP_RADAR];
 	bool teamNeedsRadar = 100 *  nbRadars / nbTeam < g_bot_radarRatio.Get();
 
+	auto buyRadar = [&]()
+	{
 	// others[0] is radar, buying this utility makes sense even if one can't buy
 	// a better weapon, because it helps the whole team.
 	if ( numUpgrades > 0 && teamNeedsRadar
@@ -629,7 +634,10 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		usedSlots |= others[0].slots();
 		numUpgrades ++;
 	}
+	};
 
+	auto buyWeapons = [&]()
+	{
 	for ( auto const &wp : weapons )
 	{
 		if ( wp.canBuyNow() && usableCapital >= wp.price()
@@ -644,7 +652,10 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 			break;
 		}
 	}
+	};
 
+	auto buyTools = [&]()
+	{
 	for ( auto const &tool : others )
 	{
 		// skip radar checks, since already done
@@ -662,6 +673,27 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 			numUpgrades ++;
 		}
 	}
+	};
+
+	if ( self->botMind->botSkillSet[BOT_H_PREFER_ARMOR] )
+	{
+		buyArmors();
+		buyRadar();
+		buyWeapons();
+		buyTools();
+	}
+	else
+	{
+		buyWeapons();
+		buyRadar();
+		if ( self->botMind->botSkillSet[BOT_H_BUY_ARMOR] )
+		{
+			// we may wish to pretend we don't know armor exists at all
+			buyArmors();
+		}
+		buyTools();
+	}
+
 	return numUpgrades;
 }
 
@@ -1147,7 +1179,10 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			break;
 		case WP_ALEVEL1:
 			range = LEVEL1_CLAW_RANGE;
-			secondaryRange = LEVEL1_POUNCE_DISTANCE;
+			if ( self->botMind->botSkillSet[BOT_A_LEAP_ON_ATTACK] )
+			{
+				secondaryRange = LEVEL1_POUNCE_DISTANCE;
+			}
 			width = height = LEVEL1_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2:
@@ -1162,14 +1197,21 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			break;
 		case WP_ALEVEL3:
 			range = LEVEL3_CLAW_RANGE;
-			//need to check if we can pounce to the target
-			secondaryRange = LEVEL3_POUNCE_JUMP_MAG; //An arbitrary value for pounce, has nothing to do with actual range
+			// We could check if the pounce to the target would succeed
+			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] )
+			{
+				secondaryRange = LEVEL3_POUNCE_JUMP_MAG; // An arbitrary value for pounce, has nothing to do with actual range
+			}
 			width = height = LEVEL3_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3_UPG:
 			range = LEVEL3_CLAW_RANGE;
-			//we can pounce, or we have barbs
-			secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; //An arbitrary value for pounce and barbs, has nothing to do with actual range
+			// If we can pounce
+			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] )
+			{
+				secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; // An arbitrary value for pounce and barbs, has nothing to do with actual range
+			}
+			// If we have barbs, even better
 			if ( self->client->ps.ammo > 0 )
 			{
 				secondaryRange = 900;
@@ -1365,15 +1407,18 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (for luci)
 	if ( !isTargetBuildable && targetTeam == TEAM_HUMANS )
 	{
-		//aim at head
-		//FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
-		aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
+		// Aim at head
+		// FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
+		if ( self->botMind->botSkillSet[BOT_A_AIM_HEAD] )
+		{
+			aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
+		}
 
 	}
 	else
 	{
-		//make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
-		if ( self->botMind->botSkill.level >= 5 )
+		// Make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
+		if ( self->botMind->botSkillSet[BOT_H_PREDICTIVE_AIM] )
 		{
 			//would be better if it was possible to do self.weapon->speed directly
 			int weapon_speed = 0;
@@ -1706,7 +1751,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
 			botIsSmall = true;
-			botIsJumper = true;
+			botIsJumper = self->botMind->botSkillSet[BOT_A_MARA_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL3:
 			break;
@@ -1718,8 +1763,8 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			}
 			break;
 		case PCL_ALIEN_LEVEL4:
-			//use rush to approach faster
-			if ( !inAttackRange )
+			// Use rush to approach faster
+			if ( self->botMind->botSkillSet[BOT_A_TYRANT_CHARGE_ON_ATTACK] && !inAttackRange )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 			}
@@ -1733,7 +1778,9 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 		BotStrafeDodge( self );
 	}
 
-	if ( botIsJumper && self->client->time1000 % 300 == 0 && self->botMind->nav().directPathToGoal )
+	int msec = level.time - level.previousTime;
+	constexpr float jumpChance = 0.1f; // chance per second
+	if ( botIsJumper && self->botMind->nav().directPathToGoal && (jumpChance / 1000.0f) * msec > random() )
 	{
 		BotJump( self );
 	}
@@ -1845,7 +1892,7 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
-			else if ( self->client->ps.weaponCharge == 0 )
+			else if ( self->botMind->botSkillSet[BOT_A_LEAP_ON_ATTACK] && self->client->ps.weaponCharge == 0 )
 			{
 				BotMoveInDir( self, MOVE_FORWARD );
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
@@ -1865,7 +1912,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3:
-			if ( distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -1887,7 +1934,7 @@ void BotFireWeaponAI( gentity_t *self )
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 			}
-			else if ( distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			else if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -2215,6 +2262,11 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	// TODO: different aim for different teams
 	self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
 	self->botMind->botSkill.aimShake = 10 - skill;
+
+	std::pair<std::string, skillSet_t>
+		pair = BotDetermineSkills(self, skill);
+	self->botMind->botSkillSet = pair.second;
+	self->botMind->botSkillSetExplaination = std::move(pair.first);
 }
 
 void BotResetEnemyQueue( enemyQueue_t *queue )
@@ -2259,7 +2311,8 @@ void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
 	if ( G_Team( attacker ) != TEAM_NONE
 		&& !G_OnSameTeam( self, attacker )
-		&& attacker->s.eType == entityType_t::ET_PLAYER )
+		&& attacker->s.eType == entityType_t::ET_PLAYER
+		&& self->botMind->botSkillSet[BOT_B_PAIN] )
 	{
 
 		BotPushEnemy( &self->botMind->enemyQueue, attacker );

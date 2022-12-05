@@ -1692,9 +1692,6 @@ void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playe
 void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap );
 void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time );
 
-#define MAX_ARENAS      1024
-#define MAX_ARENAS_TEXT 8192
-
 float    atof_neg( const char *token, bool allowNegative );
 int      atoi_neg( const char *token, bool allowNegative );
 

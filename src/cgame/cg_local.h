@@ -1222,6 +1222,8 @@ struct cg_t
 	int                     upMoveTime;
 
 	/* loading */
+	std::string mapLongName;
+	std::string mapAuthors;
 	char                    loadingText[ MAX_LOADING_TEXT_LENGTH ];
 	float                   loadingFraction; // loading percentages
 	float                   mediaLoadingFraction;
@@ -1365,6 +1367,13 @@ struct modInfo_t
 {
 	char *name;
 	char *description;
+};
+
+struct arenaInfo_t
+{
+	std::string name;
+	std::string longName;
+	std::vector<std::string> authors;
 };
 
 struct mapInfo_t
@@ -2312,7 +2321,9 @@ float CG_Rocket_ProgressBarValue( Str::StringRef name );
 //
 // cg_gameinfo.c
 //
-void CG_LoadArenas();
+void CG_LoadArenas( Str::StringRef mapname );
+arenaInfo_t CG_GetArenaInfo( Str::StringRef mapName );
+void CG_LoadMapList();
 
 //
 // Rocket Functions

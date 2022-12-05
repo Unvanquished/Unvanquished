@@ -3467,9 +3467,14 @@ static void CG_Rocket_DrawLoadingText()
 	Rocket_SetInnerRML( cg.loadingText, 0 );
 }
 
+static void CG_Rocket_DrawLevelAuthors()
+{
+	Rocket_SetInnerRML( cg.mapAuthors.c_str(), RP_QUAKE );
+}
+
 static void CG_Rocket_DrawLevelName()
 {
-	Rocket_SetInnerRML( CG_ConfigString( CS_MESSAGE ), RP_QUAKE );
+	Rocket_SetInnerRML( cg.mapLongName.c_str(), RP_QUAKE );
 }
 
 static void CG_Rocket_DrawMOTD()
@@ -3622,6 +3627,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "hostname", &CG_Rocket_DrawHostname, nullptr, ELEMENT_ALL },
 	{ "inventory", &CG_DrawHumanInventory, nullptr, ELEMENT_HUMANS },
 	{ "jetpack", &CG_Rocket_HaveJetpck, nullptr, ELEMENT_HUMANS },
+	{ "levelauthors", &CG_Rocket_DrawLevelAuthors, nullptr, ELEMENT_ALL },
 	{ "levelname", &CG_Rocket_DrawLevelName, nullptr, ELEMENT_ALL },
 	{ "loadingText", &CG_Rocket_DrawLoadingText, nullptr, ELEMENT_ALL },
 	{ "mine_rate", &CG_Rocket_DrawMineRate, nullptr, ELEMENT_BOTH },

@@ -137,6 +137,13 @@ static AIValue_t currentWeapon( gentity_t *self, const AIValue_t* )
 static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 {
 	int upgrade = AIUnBoxInt( params[ 0 ] );
+
+	if ( upgrade == UP_MEDKIT && !self->botMind->botSkillSet[BOT_H_MEDKIT] )
+	{
+		// we don't know how to use it, pretend we don't have it
+		return AIBoxInt( (int) false );
+	}
+
 	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats )
 		&& BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
 }

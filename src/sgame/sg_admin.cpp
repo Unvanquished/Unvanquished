@@ -273,7 +273,6 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		""
 	},
 
-
 	{
 		"listinactive", G_admin_listinactive, true, "listadmins",
 		N_("display a list of inactive server admins and their levels"),
@@ -1079,7 +1078,7 @@ static void admin_default_levels()
 	l->level = level++;
 	Q_strncpyz( l->name, "^6Team Manager", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
-	            "listplayers admintest adminhelp time putteam spec999 register unregister bot",
+	            "listplayers admintest adminhelp time putteam spec999 register unregister bot listbots",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
@@ -1087,7 +1086,7 @@ static void admin_default_levels()
 	Q_strncpyz( l->name, "^2Junior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute ADMINCHAT "
-	            "buildlog register unregister l0 l1 bot",
+	            "buildlog register unregister l0 l1 bot listbots",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
@@ -1095,7 +1094,7 @@ static void admin_default_levels()
 	Q_strncpyz( l->name, "^3Senior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute showbans ban "
-	            "namelog buildlog ADMINCHAT register unregister l0 l1 pause revert bot",
+	            "namelog buildlog ADMINCHAT register unregister l0 l1 pause revert bot listbots",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
@@ -6076,18 +6075,18 @@ bool G_admin_bot( gentity_t *ent )
 bool G_admin_listbots( gentity_t *ent )
 {
 	ADMP( va( "%s %d", QQ( N_( "^3listbots:^* $1$ bots in game:") ), level.numPlayingBots ) );
-	ADMP( QQ( N_( "Slot Name Team [s=skill b=behavior g=goal]" ) ) );
-	ADMBP_begin();
-	ForEntities<ClientComponent>( []( Entity& entity, ClientComponent& )
+	ADMP( QQ( N_( "Slot Name Team [s=skill ss=skillset b=behavior g=goal]" ) ) );
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
-		gentity_t* ent = entity.oldEnt;
-		if ( !( ent->r.svFlags & SVF_BOT ) )
+		if ( !( g_entities[i].r.svFlags & SVF_BOT ) )
 		{
-			return;
+			continue;
 		}
-		ADMBP( va( "%i %s", ent->num(), G_BotToString( ent ).c_str() ) );
-	} );
-	ADMBP_end();
+		trap_SendServerCommand( ent ? ent->num() : -2, Str::Format( "print %s %d %s",
+			QQ( "$1$ $2$" ),
+			i,
+			Quote( G_BotToString( &g_entities[i] ).c_str() ) ).c_str() );
+	}
 	return true;
 }
 

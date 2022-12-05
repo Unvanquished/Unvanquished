@@ -251,7 +251,6 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef beh
 	{
 		return false;
 	}
-	BotSetSkillLevel( self, skill );
 
 	self->r.svFlags |= SVF_BOT;
 
@@ -267,24 +266,21 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef beh
 
 bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, bool filler )
 {
-	int clientNum;
 	char userinfo[MAX_INFO_STRING];
 	const char* s = 0;
-	gentity_t *bot;
 	bool autoname = false;
-	bool okay;
 
 	ASSERT( navMeshLoaded );
 
 	// find what clientNum to use for bot
-	clientNum = trap_BotAllocateClient();
+	int clientNum = trap_BotAllocateClient();
 
 	if ( clientNum < 0 )
 	{
 		Log::Warn( "no more slots for bot" );
 		return false;
 	}
-	bot = &g_entities[ clientNum ];
+	gentity_t *bot = &g_entities[ clientNum ];
 	G_InitGentity( bot );
 	bot->r.svFlags |= SVF_BOT;
 
@@ -297,7 +293,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	}
 
 	//default bot data
-	okay = G_BotSetDefaults( clientNum, team, skill, behavior );
+	bool okay = G_BotSetDefaults( clientNum, team, skill, behavior );
 
 	// register user information
 	userinfo[0] = '\0';
@@ -341,6 +337,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	bot->pain = BotPain; // ClientBegin resets the pain function
 	level.clients[clientNum].pers.isFillerBot = filler;
 	G_ChangeTeam( bot, team );
+	BotSetSkillLevel( bot, skill );
 	return true;
 }
 
@@ -741,7 +738,11 @@ std::string G_BotToString( gentity_t *bot )
 	{
 		return "";
 	}
-	return Str::Format( "^*%s^*: %s [s=%d b=%s g=%s]",
-			bot->client->pers.netname, BG_TeamName( G_Team( bot ) ), bot->botMind->botSkill.level,
-			bot->botMind->behaviorTree->name, BotGoalToString( bot ) );
+	return Str::Format( "^*%s^*: %s [s=%d ss=\"%s\" b=%s g=%s]",
+			bot->client->pers.netname,
+			BG_TeamName( G_Team( bot ) ),
+			bot->botMind->botSkill.level,
+			bot->botMind->botSkillSetExplaination,
+			bot->botMind->behaviorTree->name,
+			BotGoalToString( bot ) );
 }
