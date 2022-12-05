@@ -164,12 +164,10 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 	std::vector<botSkillTreeElement_t> possible_choices = initial_unlockable_skills;
 	// aliens have 61 points to spend max
 	// humans have 40 points to spend max
-	// here we give a bit more money to humans because they have more
-	// expensive skills
-	float max = G_Team(bot) == TEAM_ALIENS ? 61.0f : 46.0f;
+	float max = G_Team(bot) == TEAM_ALIENS ? 61.0f : 40.0f;
 
-	// unlock every skill at skill 8
-	int skill_points = static_cast<float>(skill) / 8.0f * max;
+	// unlock every skill at skill 7
+	int skill_points = static_cast<float>(skill) / 7.0f * max;
 
 	// rng preparation
 	std::string name = bot->client->pers.netname;
