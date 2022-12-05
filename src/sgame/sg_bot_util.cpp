@@ -1932,7 +1932,7 @@ void BotFireWeaponAI( gentity_t *self )
 			// hopefully accounts for the movement of the bot and
 			// its target
 			constexpr float barbSafetyFactor = 5.0f/3.0f;
-			bool barbIsSafe = distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius);
+			bool barbIsSafe = distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius) || !self->botMind->botSkillSet[BOT_A_SAFE_BARBS];
 
 			if ( outOfClawsRange && hasBarbs && barbIsSafe )
 			{
@@ -1948,7 +1948,7 @@ void BotFireWeaponAI( gentity_t *self )
 				float scalarAlignment = Alignment2D(delta, forward);
 				bool barbAimed = scalarAlignment > 0.997f; // acos(0.997) is 4.4° in the 2D plane
 
-				if ( barbAimed )
+				if ( barbAimed || !self->botMind->botSkillSet[BOT_A_AIM_BARBS] )
 				{
 					BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 				}

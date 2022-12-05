@@ -108,6 +108,7 @@ enum bot_skill
 	BOT_A_LEAP_ON_FLEE, // mantis
 	BOT_A_POUNCE_ON_FLEE, // dragoon and adv dragoon
 	BOT_A_TYRANT_CHARGE_ON_FLEE,
+	BOT_A_SAFE_BARBS, // don't barb yourself as adv goon
 	BOT_H_RUN_ON_FLEE, // when fleeing, RUN
 	BOT_H_BUY_ARMOR, // knows armor exists at all, if the bot doesn't have BOT_H_PREFER_ARMOR too it will always prefer to buy guns
 	BOT_H_PREFER_ARMOR, // prefer to buy armor rather than guns
@@ -116,6 +117,7 @@ enum bot_skill
 	// fighting skills
 	BOT_B_BASIC_FIGHT, // doesn't do anything as of now
 	BOT_A_AIM_HEAD,
+	BOT_A_AIM_BARBS, // precisely target barbs
 	BOT_H_PREDICTIVE_AIM, // predict where to aim depending on weapon and enemy speed
 
 	BOT_NUM_SKILLS
