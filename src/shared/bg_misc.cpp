@@ -2000,7 +2000,7 @@ int atoi_neg( const char *token, bool allowNegative )
 	return value;
 }
 
-#define MAX_NUM_PACKED_ENTITY_NUMS 10
+#define MAX_NUM_PACKED_ENTITY_NUMS 7
 
 /*
 ===============
@@ -2042,6 +2042,8 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 			           "exceeds %d bits", entityNum, GENTITYNUM_BITS );
 		}
 
+		static_assert(MAX_MISC >= GENTITYNUM_BITS, "we are packing a entityNum inside a the \"misc\" field so it has to be large enough");
+		static_assert(GENTITYNUM_BITS * 2 <= 32, "we are packing two entityNum inside some 32 bits fields so it has to be large enough");
 		switch ( i )
 		{
 			case 0:
@@ -2057,31 +2059,19 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 				break;
 
 			case 3:
-				es->time |= entityNum << ( GENTITYNUM_BITS * 2 );
-				break;
-
-			case 4:
 				es->time2 |= entityNum;
 				break;
 
-			case 5:
+			case 4:
 				es->time2 |= entityNum << GENTITYNUM_BITS;
 				break;
 
-			case 6:
-				es->time2 |= entityNum << ( GENTITYNUM_BITS * 2 );
-				break;
-
-			case 7:
+			case 5:
 				es->constantLight |= entityNum;
 				break;
 
-			case 8:
+			case 6:
 				es->constantLight |= entityNum << GENTITYNUM_BITS;
-				break;
-
-			case 9:
-				es->constantLight |= entityNum << ( GENTITYNUM_BITS * 2 );
 				break;
 
 			default:
@@ -2125,31 +2115,19 @@ int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int cou
 				break;
 
 			case 3:
-				*entityNum = ( es->time >> ( GENTITYNUM_BITS * 2 ) );
-				break;
-
-			case 4:
 				*entityNum = es->time2;
 				break;
 
-			case 5:
+			case 4:
 				*entityNum = ( es->time2 >> GENTITYNUM_BITS );
 				break;
 
-			case 6:
-				*entityNum = ( es->time2 >> ( GENTITYNUM_BITS * 2 ) );
-				break;
-
-			case 7:
+			case 5:
 				*entityNum = es->constantLight;
 				break;
 
-			case 8:
+			case 6:
 				*entityNum = ( es->constantLight >> GENTITYNUM_BITS );
-				break;
-
-			case 9:
-				*entityNum = ( es->constantLight >> ( GENTITYNUM_BITS * 2 ) );
 				break;
 
 			default:
