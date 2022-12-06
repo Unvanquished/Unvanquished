@@ -772,6 +772,14 @@ static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclien
 	}
 }
 
+// Each color code or "visible" character counts as 1
+static int NameLength( const char* name )
+{
+	Color::Parser parser(name);
+	return std::distance(parser.begin(), parser.end());
+}
+
+
 /*
 ===========
 ClientUserInfoChanged
@@ -857,12 +865,13 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 			trap_SendServerCommand( ent->num(), va( "print_tr %s %s %s", QQ( "$1t$ $2$" ), Quote( err ), Quote( newname ) ) );
 			revertName = true;
 		}
-		else if ( Q_UTF8_Strlen( newname ) > MAX_NAME_CHARACTERS )
+		else if ( NameLength( newname ) > MAX_NAME_CHARACTERS )
 		{
-			trap_SendServerCommand( ent->num(),
-			                        va( "print_tr %s %d", QQ( N_("Name is too long! Must be less than $1$ characters.") ), MAX_NAME_CHARACTERS ) );
+			trap_SendServerCommand( ent->num(), va(
+				"print_tr %s %d",
+				QQ( N_("Name is too long! Must be less than $1$ characters or color codes.") ),
+				MAX_NAME_CHARACTERS ) );
 			revertName = true;
-
 		}
 
 		if ( revertName )
