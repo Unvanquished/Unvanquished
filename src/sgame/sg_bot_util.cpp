@@ -2378,10 +2378,16 @@ botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
 
 	if (!targetsValidEntity())
 	{
-		Log::Warn( "bot: selecting invalid entity as target, %s",
-			!newTarget->inuse ? "entity isn't allocated" :
-			!Entities::IsAlive(newTarget) ? "entity is dead" :
-				"for some unspecified reason" );
+		// this is sometimes legitimate, for example when attempting to
+		// heal on a medistation with g_indestructibleBuildables.
+		if (!(ent->flags & FL_NOTARGET))
+		{
+			Log::Warn( "bot: selecting invalid entity as target, %s",
+				!newTarget->inuse ? "entity isn't allocated" :
+				ent->flags & FL_NOTARGET ? "entity is FL_NOTARGET" :
+				!Entities::IsAlive(newTarget) ? "entity is dead" :
+					"for some unspecified reason" );
+		}
 	}
 
 	return *this;
