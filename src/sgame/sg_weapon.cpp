@@ -707,6 +707,12 @@ static void RocketThink( gentity_t *self )
 
 	self->nextthink = level.time + ROCKET_TURN_PERIOD;
 
+	// Don't turn anymore if the target is dead or gone
+	if ( !self->target )
+	{
+		return;
+	}
+
 	// Calculate current and target direction.
 	VectorNormalize2( self->s.pos.trDelta, currentDir );
 	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, targetDir );
