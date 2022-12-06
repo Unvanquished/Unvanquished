@@ -135,6 +135,9 @@ struct GentityRef_impl
 	T entity;
 	unsigned generation;
 
+	GentityRef_impl() = default; // uninitialized!
+	GentityRef_impl(T ent) { *this = ent; }
+
 	GentityRef_impl<T>& operator=(T ent) {
 		entity = ent;
 		if (ent) {
