@@ -37,10 +37,7 @@ class OvermindComponent: public OvermindComponentBase {
 		// ///////////////////// //
 
 	private:
-		// TODO: Entity exist on the heap and pointers to them can be invalidated. Add a central
-		//       registration for entities so that Entity can be tracked via a unique identifier.
-		//       For now we use a legacy entity here, which allows detection of its removal.
-		gentity_t* storedTarget;
+		GentityRef storedTarget;
 
 		void Think(int timeDelta);
 
