@@ -1,0 +1,177 @@
+#! /usr/bin/env python3
+#-*- coding: UTF-8 -*-
+
+# ===========================================================================
+#
+# Copyright (c) 2022 Unvanquished Developers
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+# ===========================================================================
+
+import argparse
+import struct
+import sys
+
+"""
+Version 2 binary format
+
+Header version number then connection count,
+then arrays of various types.
+The userids field is useless.
+
+Example:
+header count {x1 z1 y1 x2 z2 y2}[] rad[] flags[] areas[] dirs[] userids[]
+i      i      f  f  f  f  f  f     f     H       B       B      I
+
+int header;
+int count;
+struct coords_t { float x1, z1, y1, x2, z2, y2 };
+coords_t[count] coords;
+float rad[count];
+unsigned short flags[count];
+unsigned byte areas[count];
+unsigned byte dirs[count];
+unsigned int userids[count];
+"""
+
+"""
+Version 3 text format
+
+Header line with prefix and integer version number,
+then one connection per line, all numbers as integers.
+There is no useless userids field.
+
+Example:
+navcon 3
+x1 z1 y1 x2 z2 y2 rad flags areas dirs
+[…]
+"""
+
+header_text_prefix = "navcon"
+current_format_version = 3
+
+def read_unpack(file_handler, value_format):
+    value_size = struct.calcsize(value_format)
+
+    if isinstance(file_handler, str):
+        value_bytes = bytes(file_handler[:value_size], "utf-8")
+    else:
+        value_bytes = file_handler.read(value_size)
+
+    value = struct.unpack(value_format, value_bytes)[0]
+
+    if isinstance(value, float):
+        value = round(value, 0)
+
+    return int(value)
+
+def read_format2(file_handler):
+    format_dict = {
+        "x1": "f",
+        "z1": "f",
+        "y1": "f",
+        "x2": "f",
+        "z2": "f",
+        "y2": "f",
+        "rad": "f",
+        "flags": "H",
+        "areas": "B",
+        "dirs": "B",
+        "userids": "I",
+    }
+
+    coords_list = ["x1", "z1", "y1", "x2", "z2", "y2"]
+
+    connection_count = read_unpack(file_handler, "<i")
+    print("Converting {} connections".format(str(connection_count)), file=sys.stderr)
+
+    connection_list = [{} for i in range(0, connection_count)]
+
+    for key_name in format_dict.keys():
+        for i in range(0, connection_count):
+            if key_name == coords_list[0]:
+                subkey_list = coords_list
+            elif key_name in coords_list[1:]:
+                continue
+            else:
+                subkey_list = [key_name]
+
+            for subkey_name in subkey_list:
+                value_int = read_unpack(file_handler, format_dict[subkey_name])
+
+                if subkey_name != "userids":
+                    connection_list[i][subkey_name] = value_int
+
+    file_handler.close()
+
+    return connection_list
+
+def write_format3(file_handler, connection_list):
+    print("{} {}".format(header_text_prefix, str(current_format_version)), file=file_handler)
+
+    for connection in connection_list:
+        print(*connection.values(), file=file_handler)
+
+def main():
+    description="%(prog)s converts a navcon file"
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument("-i", "--in-place", dest="in_place", help="convert navcon file in place", action="store_true")
+    parser.add_argument("file_name", metavar="FILENAME", help="navcon file path")
+    args = parser.parse_args()
+
+    if args.file_name:
+        file_handler = open(args.file_name, "rb")
+
+        header_magic = read_unpack(file_handler, "<i")
+        header_text_magic = read_unpack(header_text_prefix, "<i")
+
+        if header_magic == 2:
+            print("Converting {}".format(args.file_name), file=sys.stderr)
+            print("Converting from format version {} to {}".format(header_magic, current_format_version), file=sys.stderr)
+
+            connection_list = read_format2(file_handler)
+
+            if args.in_place:
+                file_handler.close()
+                file_handler = open(args.file_name, "w")
+            else:
+                file_handler = sys.stdout
+
+            write_format3(file_handler, connection_list)
+
+            file_handler.close()
+
+        elif header_magic == header_text_magic:
+            file_handler.close()
+            print("Not converting {}".format(args.file_name), file=sys.stderr)
+            print("Already in format version {}".format(current_format_version), file=sys.stderr)
+            exit(1)
+        else:
+            file_handler.close()
+            print("Not converting {}".format(args.file_name), file=sys.stderr)
+            print("Unknown format", file=sys.stderr)
+            exit(1)
+
+    else:
+        print("Bad number of parameters", file=sys.stderr)
+        exit(1)
+
+if __name__ == "__main__":
+    main()
