@@ -39,6 +39,7 @@ const Cmd::Args& trap_Args();
 void             trap_SendConsoleCommand( const char *text );
 int              trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 int trap_FS_OpenPakFile( Str::StringRef path, fileHandle_t &f );
+int              trap_FS_Seek( fileHandle_t f, int offset, fsOrigin_t origin );
 int              trap_FS_Read( void *buffer, int len, fileHandle_t f );
 int              trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void             trap_FS_FCloseFile( fileHandle_t f );
