@@ -39,6 +39,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "sgame/sg_local.h"
 #include "bot_local.h"
 
+static const char* NAVCON_HEADER_PREFIX = "navcon";
+static const int NAVCON_VERSION = 3;
+
 static Cvar::Range<Cvar::Cvar<int>> maxNavNodes(
 	"bot_maxNavNodes", "maximum number of nodes in navmesh", Cvar::NONE, 4096, 0, 65535);
 
@@ -70,6 +73,27 @@ void BotAssertionInit()
 #endif
 }
 
+void BotDebugPrintOffMeshConnections( OffMeshConnections &con )
+{
+	#ifdef DEBUG_BUILD
+	for ( int n = 0; n < con.offMeshConCount; n++ )
+	{
+		// userids is unused.
+		Log::Debug( "%0.f %.0f %.0f %.0f %.0f %.0f %.0f %hd %hhd %hhd",
+			con.verts[ ( 6 * n ) + 0 ],
+			con.verts[ ( 6 * n ) + 1 ],
+			con.verts[ ( 6 * n ) + 2 ],
+			con.verts[ ( 6 * n ) + 3 ],
+			con.verts[ ( 6 * n ) + 4 ],
+			con.verts[ ( 6 * n ) + 5 ],
+			con.rad[ n ],
+			con.flags[ n ],
+			con.areas[ n ],
+			con.dirs[ n ] );
+	}
+	#endif
+}
+
 void BotSaveOffMeshConnections( NavData_t *nav )
 {
 	char filePath[ MAX_QPATH ];
@@ -81,101 +105,212 @@ void BotSaveOffMeshConnections( NavData_t *nav )
 
 	if ( !f )
 	{
+		Log::Warn( "Failed to open navcon file %f", filePath );
 		return;
 	}
 
+	Log::Debug("Saving format version %d navcon file %s", NAVCON_VERSION, filePath );
+
 	int conCount = nav->process.con.offMeshConCount;
-	OffMeshConnectionHeader header;
-	header.version = LittleLong( NAVMESHCON_VERSION );
-	header.numConnections = LittleLong( conCount );
-	trap_FS_Write( &header, sizeof( header ), f );
+	char *s = va( "%s %d\n", NAVCON_HEADER_PREFIX, NAVCON_VERSION );
 
-	size_t size = sizeof( float ) * 6 * conCount;
-	float *verts = ( float * ) dtAlloc( size, DT_ALLOC_TEMP );
-	memcpy( verts, nav->process.con.verts, size );
-	SwapArray( verts, conCount * 6 );
-	trap_FS_Write( verts, size, f );
-	dtFree( verts );
+	trap_FS_Write( s, strlen( s ), f );
 
-	size = sizeof( float ) * conCount;
-	float *rad = ( float * ) dtAlloc( size, DT_ALLOC_TEMP );
-	memcpy( rad, nav->process.con.rad, size );
-	SwapArray( rad, conCount );
-	trap_FS_Write( rad, size, f );
-	dtFree( rad );
+	for ( int n = 0; n < conCount; n++ )
+	{
+		// userids is unused.
+		s = va( "%.0f %.0f %.0f %.0f %.0f %.0f %.0f %hd %hhd %hhd\n",
+			nav->process.con.verts[ ( 6 * n ) + 0 ],
+			nav->process.con.verts[ ( 6 * n ) + 1 ],
+			nav->process.con.verts[ ( 6 * n ) + 2 ],
+			nav->process.con.verts[ ( 6 * n ) + 3 ],
+			nav->process.con.verts[ ( 6 * n ) + 4 ],
+			nav->process.con.verts[ ( 6 * n ) + 5 ],
+			nav->process.con.rad[ n ],
+			nav->process.con.flags[ n ],
+			nav->process.con.areas[ n ],
+			nav->process.con.dirs[ n ] );
 
-	size = sizeof( unsigned short ) * conCount;
-	unsigned short *flags = ( unsigned short * ) dtAlloc( size, DT_ALLOC_TEMP );
-	memcpy( flags, nav->process.con.flags, size );
-	SwapArray( flags, conCount );
-	trap_FS_Write( flags, size, f );
-	dtFree( flags );
-
-	trap_FS_Write( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
-	trap_FS_Write( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
-
-	size = sizeof( unsigned int ) * conCount;
-	unsigned int *userids = ( unsigned int * ) dtAlloc( size, DT_ALLOC_TEMP );
-	memcpy( userids, nav->process.con.userids, size );
-	SwapArray( userids, conCount );
-	trap_FS_Write( userids, size, f );
-	dtFree( userids );
+		trap_FS_Write( s, strlen( s ), f );
+	}
 
 	trap_FS_FCloseFile( f );
+
+	Log::Debug( "Saved %d connections to navcon file %s", conCount, filePath );
+
+	BotDebugPrintOffMeshConnections( nav->process.con );
 }
 
 static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &con )
 {
+	con.offMeshConCount = 0;
+
 	char filePath[ MAX_QPATH ];
 	fileHandle_t f = 0;
 
 	std::string mapname = Cvar::GetValue("mapname");
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname.c_str(), species );
-	G_FOpenGameOrPakPath( filePath, f );
+	int len = G_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
 	{
 		return;
 	}
 
-	OffMeshConnectionHeader header;
-	trap_FS_Read( &header, sizeof( header ), f );
+	int version;
+	trap_FS_Read( &version, sizeof( version ), f );
 
-	header.version = LittleLong( header.version );
-	header.numConnections = LittleLong( header.numConnections );
+	version = LittleLong( version );
 
-	if ( header.version != NAVMESHCON_VERSION )
+	// Old binary format.
+	if ( version == 2 )
 	{
+		Log::Debug("Loading format version %d navcon file %s", version, filePath );
+
+		int conCount;
+		trap_FS_Read( &conCount, sizeof( conCount ), f );
+
+		conCount = LittleLong( conCount );
+
+		if ( conCount > con.MAX_CON )
+		{
+			Log::Warn( "Too many connections in navcon file %s", filePath );
+			trap_FS_FCloseFile( f );
+			return;
+		}
+
+		con.offMeshConCount = conCount;
+
+		trap_FS_Read( con.verts, sizeof( float ) * 6 * conCount, f );
+		SwapArray( con.verts, conCount * 6 );
+
+		trap_FS_Read( con.rad, sizeof( float ) * conCount, f );
+		SwapArray( con.rad, conCount );
+
+		trap_FS_Read( con.flags, sizeof( unsigned short ) * conCount, f );
+		SwapArray( con.flags, conCount );
+
+		trap_FS_Read( con.areas, sizeof( unsigned char ) * conCount, f );
+		trap_FS_Read( con.dirs, sizeof( unsigned char ) * conCount, f );
+
+		// userids is loaded but unused.
+		trap_FS_Read( con.userids, sizeof( unsigned int ) * conCount, f );
+		SwapArray( con.userids, conCount );
+
+		Log::Debug( "Loaded %d connections from navcon file %s", conCount, filePath );
 		trap_FS_FCloseFile( f );
+
+		BotDebugPrintOffMeshConnections( con );
 		return;
 	}
 
-	int conCount = header.numConnections;
+	// Seek to the beginning of the file.
+	trap_FS_Seek( f, 0, fsOrigin_t::FS_SEEK_SET );
 
-	if ( conCount > con.MAX_CON )
-	{
-		trap_FS_FCloseFile( f );
-		return;
-	}
+	// New text format.
+	char *navcon = (char*) BG_Alloc( len + 1 );
 
-	con.offMeshConCount = conCount;
-
-	trap_FS_Read( con.verts, sizeof( float ) * 6 * conCount, f );
-	SwapArray( con.verts, conCount * 6 );
-
-	trap_FS_Read( con.rad, sizeof( float ) * conCount, f );
-	SwapArray( con.rad, conCount );
-
-	trap_FS_Read( con.flags, sizeof( unsigned short ) * conCount, f );
-	SwapArray( con.flags, conCount );
-
-	trap_FS_Read( con.areas, sizeof( unsigned char ) * conCount, f );
-	trap_FS_Read( con.dirs, sizeof( unsigned char ) * conCount, f );
-
-	trap_FS_Read( con.userids, sizeof( unsigned int ) * conCount, f );
-	SwapArray( con.userids, conCount );
-
+	trap_FS_Read( navcon, len, f );
 	trap_FS_FCloseFile( f );
+	navcon[ len ] = '\0';
+
+	int lineLength = strcspn( navcon, "\n" );
+
+	// Do not read numbers from the next line with sscanf;
+	navcon[ lineLength ] = '\0';
+
+	if ( strncmp( navcon, NAVCON_HEADER_PREFIX, strlen( NAVCON_HEADER_PREFIX ) ) != 0 )
+	{
+		Log::Warn( "Unknown format for navcon file %s", filePath );
+		return;
+	}
+
+	// The dummy is used to detect when there are more fields than needed.
+	char dummy;
+
+	int scanned = sscanf( navcon, va( "%s %%d %%c", NAVCON_HEADER_PREFIX ), &version, &dummy );
+
+	if ( scanned != 1 )
+	{
+		if ( scanned > 1 )
+		{
+			Log::Warn( "Malformed navcon header, extra field after format version in navcon file %s: %s", filePath, navcon );
+			return;
+		}
+
+		Log::Warn( "Missing format version for navcon file %s", filePath );
+		return;
+	}
+
+	if ( version != NAVCON_VERSION )
+	{
+		if ( version == 2 )
+		{
+			Log::Warn("Format version %d should not be a text format for navcon file %s", version, filePath );
+			return;
+		}
+
+		Log::Warn("Unknown format version %d for navcon file %s", version, filePath );
+		return;
+	}
+
+	Log::Debug("Loading format version %d navcon file %s", version, filePath );
+
+	con.offMeshConCount = 0;
+
+	for( int pos = lineLength + 1, entry = 0; pos < len; pos += lineLength + 1, entry++ )
+	{
+		lineLength = strcspn( navcon + pos, "\n" );
+
+		// Do not read numbers from the next line with sscanf;
+		navcon[ pos + lineLength ] = '\0';
+
+		if ( con.offMeshConCount > con.MAX_CON )
+		{
+			Log::Warn( "Too many connections in navcon file %s", filePath );
+			break;
+		}
+
+		char *line = navcon + pos;
+
+		scanned = sscanf( line, "%f %f %f %f %f %f %f %hd %hhd %hhd %c",
+			&con.verts[ ( 6 * con.offMeshConCount ) + 0 ],
+			&con.verts[ ( 6 * con.offMeshConCount ) + 1 ],
+			&con.verts[ ( 6 * con.offMeshConCount ) + 2 ],
+			&con.verts[ ( 6 * con.offMeshConCount ) + 3 ],
+			&con.verts[ ( 6 * con.offMeshConCount ) + 4 ],
+			&con.verts[ ( 6 * con.offMeshConCount ) + 5 ],
+			&con.rad[ con.offMeshConCount ],
+			&con.flags[ con.offMeshConCount ],
+			&con.areas[ con.offMeshConCount ],
+			&con.dirs[ con.offMeshConCount ],
+			&dummy );
+
+		if ( scanned != 10 )
+		{
+			if ( scanned > 10 )
+			{
+				Log::Warn( "Malformed navcon entry %d in navcon file %s, more than %d fields: %s", entry, filePath, 10, line );
+			}
+			else
+			{
+				Log::Warn( "Malformed navcon entry %d in navcon file %s, %d numbers instead of %d: %s", entry, filePath, scanned, 10, line );
+			}
+			// Read next entry in place.
+			continue;
+		}
+
+		// userids is unused.
+		con.userids[ con.offMeshConCount ] = 0U;
+		con.offMeshConCount++;
+	}
+
+	Log::Debug( "Loaded %d connections from navcon file %s", con.offMeshConCount, filePath );
+
+	BotDebugPrintOffMeshConnections( con );
+
+	BG_Free( navcon );
+	return;
 }
 
 static bool BotLoadNavMesh( const char *species, NavData_t &nav )

@@ -65,13 +65,6 @@ struct dtRouteResult
 	bool      invalid;
 };
 
-static const int NAVMESHCON_VERSION = 2;
-struct OffMeshConnectionHeader
-{
-	int version;
-	int numConnections;
-};
-
 struct OffMeshConnection
 {
 	rVec  start;
