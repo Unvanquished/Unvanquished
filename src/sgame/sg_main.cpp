@@ -104,6 +104,22 @@ Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget(
 		[](int) {
 			G_UpdateBuildPointBudgets();
 		});
+Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetHumans(
+		"g_BPInitialBudgetHumans",
+		"Initial build points count for humans",
+		Cvar::SERVERINFO,
+		-1,
+		[](int) {
+			G_UpdateBuildPointBudgets();
+		});
+Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetAliens(
+		"g_BPInitialBudgetAliens",
+		"Initial build points count for humans",
+		Cvar::SERVERINFO,
+		-1,
+		[](int) {
+			G_UpdateBuildPointBudgets();
+		});
 Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
 		"g_BPBudgetPerMiner",
 		"Budget per Miner",

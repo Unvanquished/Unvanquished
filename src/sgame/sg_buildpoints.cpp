@@ -69,8 +69,21 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
  * @brief Calculate the build point budgets for both teams.
  */
 void G_UpdateBuildPointBudgets() {
+	int abp = g_BPInitialBudgetAliens.Get();
+	int hbp = g_BPInitialBudgetHumans.Get();
 	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		level.team[team].totalBudget = g_buildPointInitialBudget.Get();
+		if ( team == TEAM_ALIENS && abp >= 0 )
+		{
+			level.team[team].totalBudget = abp;
+		}
+		else if ( team == TEAM_HUMANS && hbp >= 0 )
+		{
+			level.team[team].totalBudget = hbp;
+		}
+		else
+		{
+			level.team[team].totalBudget = g_buildPointInitialBudget.Get();
+		}
 	}
 
 	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
