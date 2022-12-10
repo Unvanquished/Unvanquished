@@ -1735,6 +1735,13 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_2X | SS_HEALING_4X | SS_HEALING_8X );
 	client->ps.stats[ STAT_STATE ] |= FindAlienHealthSource( self );
 
+	if ( client->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
+	{
+		client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
+		client->ps.stats[ STAT_STATE ] |= SS_BOOSTEDNEW;
+		client->boostedTime = level.time;
+	}
+
 	if ( self->nextRegenTime < level.time )
 	{
 		if      ( client->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
