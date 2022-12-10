@@ -248,7 +248,7 @@ Once you've successfully tested your code as `nexe` binary, you create a dpk arc
 
 The dpk file is named this way: `<BASENAME>_<VERSION>.dpk`. Here the basename is `mod-custom` and the version is `0.1`. The version string for dpk packages better start with a number, see the [packaging version guidelines](https://wiki.unvanquished.net/wiki/Packaging_version_guidelines) and the [dpk format](https://wiki.unvanquished.net/wiki/Formats/DPK) wiki pages for details.
 
-You then start a game server with your custom mod this way:
+You then start a game server with your custom mod this way: 
 
 ```sh
 ./daemonded -set fs_extrapaks mod-custom +map plat23
