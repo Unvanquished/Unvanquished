@@ -2038,7 +2038,7 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 
 		if ( entityNum & ~GENTITYNUM_MASK )
 		{
-			Sys::Error( "BG_PackEntityNumbers passed an entity number (%d) which "
+			Sys::Drop( "BG_PackEntityNumbers passed an entity number (%d) which "
 			           "exceeds %d bits", entityNum, GENTITYNUM_BITS );
 		}
 
@@ -2075,7 +2075,7 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 				break;
 
 			default:
-				Sys::Error( "Entity index %d not handled", i );
+				Sys::Drop( "Entity index %d not handled", i );
 		}
 	}
 }
@@ -2131,7 +2131,7 @@ int BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, unsigned int cou
 				break;
 
 			default:
-				Sys::Error( "Entity index %d not handled", i );
+				Sys::Drop( "Entity index %d not handled", i );
 		}
 
 		*entityNum &= GENTITYNUM_MASK;
