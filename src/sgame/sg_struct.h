@@ -603,7 +603,8 @@ struct gclient_t
 	bool   inactivityWarning; // true if the five second warning has been given
 	int        boostedTime; // last time we touched a booster
 
-	int        airOutTime;
+	int        lowOxygenDamage; // the damage we will take when we run out of oxygen
+	// (see also lowOxygenTime which is in playerState_t since it needs to be transmitted)
 
 	int        time100; // timer for 100ms interval events
 	int        time1000; // timer for one second interval events

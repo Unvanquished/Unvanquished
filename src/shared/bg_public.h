@@ -80,6 +80,7 @@ struct playerState_t
 	int    pm_flags; // ducked, jump_held, etc
 	int    pm_time;
 
+	int    lowOxygenTime; // time at which we will be suffocating and taking drowning damage
 
 	vec3_t velocity;
 	int    weaponTime;
