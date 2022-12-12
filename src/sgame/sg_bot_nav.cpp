@@ -150,7 +150,13 @@ bool GoalInRange( const gentity_t *self, float r )
 
 	if ( self->botMind->goal.targetsCoordinates() )
 	{
-		return ( glm::distance( VEC2GLM( self->s.origin ), self->botMind->nav().glm_tpos() ) < r );
+		// We handle the z direction here differently,
+		// to still count standing over a turret on the
+		// target point or sitting next to a buildable
+		// counts as a "we have reached our destination".
+		glm::vec3 deltaPos = VEC2GLM( self->s.origin ) - self->botMind->nav().glm_tpos();
+		return Length2D( deltaPos ) < r
+				&& fabsf( deltaPos.z ) <= 90;
 	}
 
 	while ( ( ent = G_IterateEntitiesWithinRadius( ent, VEC2GLM( self->s.origin ), r ) ) )
