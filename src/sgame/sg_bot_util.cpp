@@ -1308,6 +1308,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 
 	return !G_OnSameTeam( self, &g_entities[trace.entityNum] )
 		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
+		&& ( g_entities[trace.entityNum].s.eType != entityType_t::ET_BUILDABLE || g_bot_attackStruct.Get() )
 		&& glm::distance( muzzle, VEC2GLM( trace.endpos ) ) <= std::max( range, secondaryRange );
 }
 
