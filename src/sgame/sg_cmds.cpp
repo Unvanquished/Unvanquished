@@ -680,9 +680,15 @@ static void Cmd_Give_f( gentity_t *ent )
 
 	if ( Entities::IsDead( ent ) || ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		ADMP( QQ( N_( "you can't use /give when dead or spectating" ) ) );
+		// If we already added something, then don't complain about something that worked
+		if ( !valid )
+		{
+			ADMP( QQ( N_( "you can't use /give when dead or spectating" ) ) );
+		}
 		return;
 	}
+
+	// Commands from now on only apply to people who are alive
 
 	if ( team != TEAM_NONE && ( give_all || Q_strnicmp( name, "health", strlen("health") ) == 0 ) )
 	{
