@@ -1538,6 +1538,10 @@ void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
 	//get the Vector from the bot to the enemy (ideal aim Vector)
 	glm::vec3 aimVec = target - viewBase;
 	float length = glm::length( aimVec );
+	if ( length < 1.0f )
+	{
+		return;
+	}
 	aimVec = glm::normalize( aimVec );
 
 	//take the current aim Vector

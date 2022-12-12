@@ -569,8 +569,16 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir )
 	return true;
 }
 
+// `dir` does not need to be normalized
 static void BotDirectionToUsercmd( gentity_t *self, const glm::vec3 &dir, usercmd_t *cmd )
 {
+	if ( glm::length2( glm::vec2(dir) ) < 1.0e-5f )
+	{
+		cmd->forwardmove = 0;
+		cmd->rightmove = 0;
+		return;
+	}
+
 	glm::vec3 forward;
 	glm::vec3 right;
 
@@ -594,7 +602,7 @@ static void BotDirectionToUsercmd( gentity_t *self, const glm::vec3 &dir, usercm
 		cmd->forwardmove = ClampChar( highestforward );
 		cmd->rightmove = ClampChar( highestright );
 	}
-	else if ( rightmove != 0 )
+	else
 	{
 		float highestright = rightmove < 0 ? -speed : speed;
 
@@ -603,19 +611,12 @@ static void BotDirectionToUsercmd( gentity_t *self, const glm::vec3 &dir, usercm
 		cmd->forwardmove = ClampChar( highestforward );
 		cmd->rightmove = ClampChar( highestright );
 	}
-	else
-	{
-		cmd->forwardmove = 0;
-		cmd->rightmove = 0;
-	}
 }
 
 // Makes bot aim more or less slowly in a direction
-static void BotSeek( gentity_t *self, glm::vec3 &direction )
+static void BotSeek( gentity_t *self, const glm::vec3 &direction )
 {
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
-
-	direction = glm::normalize( direction );
 
 	// move directly toward the target
 	BotDirectionToUsercmd( self, direction, &self->botMind->cmdBuffer );
