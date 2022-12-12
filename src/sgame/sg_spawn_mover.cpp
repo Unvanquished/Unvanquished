@@ -2283,6 +2283,8 @@ static void Start_Train( gentity_t *self )
 	//unlikely to be right on a path_corner
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
 	self->s.pos.trDuration = VectorLength( move ) * 1000 / self->speed;
+	self->s.pos.trDuration = std::max( 1, self->s.pos.trDuration );
+
 	SetMoverState( self, MOVER_1TO2, level.time );
 
 	self->spawnflags &= ~TRAIN_START_OFF;
