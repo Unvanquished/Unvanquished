@@ -1624,8 +1624,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.persistant[ PERS_SPAWN_COUNT ]++;
 	client->ps.persistant[ PERS_SPECSTATE ] = client->sess.spectatorState;
 
-	client->airOutTime = level.time + 12000;
-
 	trap_GetUserinfo( index, userinfo, sizeof( userinfo ) );
 	client->ps.eFlags = flags;
 
