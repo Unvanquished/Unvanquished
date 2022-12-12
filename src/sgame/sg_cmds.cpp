@@ -696,7 +696,10 @@ static void Cmd_Give_f( gentity_t *ent )
 		{
 			valid = true;
 			ent->entity->Heal(1000.0f, nullptr);
-			BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
+			if ( team == TEAM_HUMANS )
+			{
+				BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
+			}
 		}
 		else
 		{
