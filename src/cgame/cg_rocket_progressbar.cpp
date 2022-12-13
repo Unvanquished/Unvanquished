@@ -89,15 +89,27 @@ static float CG_Rocket_GetStaminaProgress()
 
 static float CG_Rocket_GetPlayerOxygenProgress()
 {
+	int outTime = cg.snap->ps.lowOxygenTime;
+
 	// regular progress bar status
-	if ( cg.underwater )
+	if ( outTime )
 	{
-		float underwaterDuration = cg.time - cg.underwaterTime;
-		return 1.0f - underwaterDuration / static_cast<float>( OXYGEN_MAX_TIME );
+		// the time number is sent cropped, we have to do modulo arithmetics to determine the delta
+		int timeLeft = ( outTime - cg.time ) & ((1 << LOW_OXYGEN_TIME_BITS) - 1);
+
+		if ( timeLeft > OXYGEN_MAX_TIME )
+		{
+			// this happens when we just took damage but we haven't
+			// received the new time yet. Let's do some prediction.
+			timeLeft = (timeLeft + 1000) & ((1 << LOW_OXYGEN_TIME_BITS) - 1);
+		}
+
+		return static_cast<float>( timeLeft ) / static_cast<float>( OXYGEN_MAX_TIME );
 	}
 
 	return 0.0f;
 }
+static_assert( (1<<LOW_OXYGEN_TIME_BITS) > OXYGEN_MAX_TIME + 1000, "you need to make LOW_OXYGEN_TIME_BITS large enough to accomodate OXYGEN_MAX_TIME plus a margin for cgame to do prediction" );
 
 static float CG_Rocket_GetPoisonProgress()
 {
