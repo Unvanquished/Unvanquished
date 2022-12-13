@@ -321,6 +321,8 @@ extern int   MEDKIT_STARTUP_SPEED;
 
 // how long you can sustain underwater before taking damage
 #define OXYGEN_MAX_TIME                   12000
+// how many bits are needed to store this number (plus a margin cgame needs)
+#define LOW_OXYGEN_TIME_BITS              14
 
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points

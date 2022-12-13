@@ -2615,6 +2615,7 @@ static const NetcodeTable playerStateFields =
 	{ PSF( bobCycle          ), 8                , 0 },
 	{ PSF( pm_flags          ), 16               , 0 },
 	{ PSF( pm_time           ), -16              , 0 },
+	{ PSF( lowOxygenTime     ), LOW_OXYGEN_TIME_BITS, 0 },
 	{ PSF( origin[ 0 ]       ), 0                , 0 },
 	{ PSF( origin[ 1 ]       ), 0                , 0 },
 	{ PSF( origin[ 2 ]       ), 0                , 0 },
@@ -2665,6 +2666,7 @@ static const NetcodeTable playerStateFields =
 	{ PSF( tauntTimer        ), 12               , 0 },
 	{ PSF( weaponAnim        ), ANIM_BITS        , 0 }
 };
+static_assert( (1<<LOW_OXYGEN_TIME_BITS) > OXYGEN_MAX_TIME, "you need to make LOW_OXYGEN_TIME_BITS large enough to accomodate OXYGEN_MAX_TIME" );
 
 namespace VM {
 	void GetNetcodeTables(NetcodeTable& playerStateTable, int& playerStateSize);

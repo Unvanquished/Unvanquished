@@ -961,18 +961,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_WATER_UNDER:
-			if ( clientNum == cg.clientNum )
-			{
-				CG_SetUnderwater( true );
-			}
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.watrUnSound );
 			break;
 
 		case EV_WATER_CLEAR:
-			if ( clientNum == cg.clientNum )
-			{
-				CG_SetUnderwater( false );
-			}
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, CG_CustomSound( es->number, "*gasp" ) );
 			break;
 
@@ -1157,11 +1149,6 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_DEATH1:
 		case EV_DEATH2:
 		case EV_DEATH3:
-			if ( clientNum == cg.clientNum )
-			{
-				cg.underwater = false;
-				cg.underwaterTime = cg.time;
-			}
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_VOICE,
 			                   CG_CustomSound( es->number, va( "*death%i", event - EV_DEATH1 + 1 ) ) );
 			break;
@@ -1448,11 +1435,4 @@ void CG_CheckEvents( centity_t *cent )
 	{
 		cent->currentState.event = oldEvent;
 	}
-}
-
-// enables or disables the oxygen bar HUD element
-void CG_SetUnderwater( bool underwater )
-{
-	cg.underwater = underwater;
-	cg.underwaterTime = cg.time;
 }
