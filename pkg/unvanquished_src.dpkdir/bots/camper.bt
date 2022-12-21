@@ -8,7 +8,6 @@ selector
 		action fight
 	}
 
-	
 	condition team == TEAM_HUMANS
 	{
 		selector
