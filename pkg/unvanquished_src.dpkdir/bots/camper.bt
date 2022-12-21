@@ -2,10 +2,12 @@ selector
 {
 	behavior unstick
 	
-	condition alertedToEnemy
+	sequence
 	{
+		condition alertedToEnemy
 		action fight
 	}
+
 	
 	condition team == TEAM_HUMANS
 	{
