@@ -180,8 +180,6 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 {
 	fileHandle_t f = 0;
 
-	BotLoadOffMeshConnections( filename, nav.process.con );
-
 	std::string mapname = Cvar::GetValue("mapname");
 	std::string filePath = NavmeshFilename( mapname, filename );
 	Log::Notice( " loading navigation mesh file '%s'...", filePath );
@@ -212,6 +210,8 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		trap_FS_FCloseFile( f );
 		return false;
 	}
+
+	BotLoadOffMeshConnections( filename, nav.process.con );
 
 	nav.mesh = dtAllocNavMesh();
 
