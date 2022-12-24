@@ -122,7 +122,7 @@ void BotSaveOffMeshConnections( NavData_t *nav )
 	trap_FS_FCloseFile( f );
 }
 
-static void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
+static void BotLoadOffMeshConnections( const char *filename, OffMeshConnections &con )
 {
 	char filePath[ MAX_QPATH ];
 	fileHandle_t f = 0;
@@ -150,28 +150,28 @@ static void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 
 	int conCount = header.numConnections;
 
-	if ( conCount > nav->process.con.MAX_CON )
+	if ( conCount > con.MAX_CON )
 	{
 		trap_FS_FCloseFile( f );
 		return;
 	}
 
-	nav->process.con.offMeshConCount = conCount;
+	con.offMeshConCount = conCount;
 
-	trap_FS_Read( nav->process.con.verts, sizeof( float ) * 6 * conCount, f );
-	SwapArray( nav->process.con.verts, conCount * 6 );
+	trap_FS_Read( con.verts, sizeof( float ) * 6 * conCount, f );
+	SwapArray( con.verts, conCount * 6 );
 
-	trap_FS_Read( nav->process.con.rad, sizeof( float ) * conCount, f );
-	SwapArray( nav->process.con.rad, conCount );
+	trap_FS_Read( con.rad, sizeof( float ) * conCount, f );
+	SwapArray( con.rad, conCount );
 
-	trap_FS_Read( nav->process.con.flags, sizeof( unsigned short ) * conCount, f );
-	SwapArray( nav->process.con.flags, conCount );
+	trap_FS_Read( con.flags, sizeof( unsigned short ) * conCount, f );
+	SwapArray( con.flags, conCount );
 
-	trap_FS_Read( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
-	trap_FS_Read( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
+	trap_FS_Read( con.areas, sizeof( unsigned char ) * conCount, f );
+	trap_FS_Read( con.dirs, sizeof( unsigned char ) * conCount, f );
 
-	trap_FS_Read( nav->process.con.userids, sizeof( unsigned int ) * conCount, f );
-	SwapArray( nav->process.con.userids, conCount );
+	trap_FS_Read( con.userids, sizeof( unsigned int ) * conCount, f );
+	SwapArray( con.userids, conCount );
 
 	trap_FS_FCloseFile( f );
 }
@@ -180,7 +180,7 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 {
 	fileHandle_t f = 0;
 
-	BotLoadOffMeshConnections( filename, &nav );
+	BotLoadOffMeshConnections( filename, nav.process.con );
 
 	std::string mapname = Cvar::GetValue("mapname");
 	std::string filePath = NavmeshFilename( mapname, filename );
