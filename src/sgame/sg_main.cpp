@@ -2304,8 +2304,6 @@ void G_RunFrame( int levelTime )
 		level.time = levelTime;
 		level.matchTime = levelTime - level.startTime;
 
-		level.frameMsec = trap_Milliseconds();
-
 		CheckExitRules();
 
 		return;
@@ -2349,7 +2347,6 @@ void G_RunFrame( int levelTime )
 		return;
 	}
 
-	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
 	level.matchTime = levelTime - level.startTime;
@@ -2358,8 +2355,6 @@ void G_RunFrame( int levelTime )
 
 	// generate public-key messages
 	G_admin_pubkey();
-
-	level.frameMsec = trap_Milliseconds();
 
 	// now we are done spawning
 	level.spawning = false;
@@ -2508,7 +2503,6 @@ void G_RunFrame( int levelTime )
 
 	BotDebugDrawMesh();
 	G_BotUpdateObstacles();
-	level.frameMsec = trap_Milliseconds();
 }
 
 void G_PrepareEntityNetCode() {
