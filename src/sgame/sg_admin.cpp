@@ -5906,7 +5906,8 @@ bool G_admin_navgen( gentity_t* ent )
 				trap_FS_FCloseFile( f );
 			}
 		}
-		else {
+		else
+		{
 			const classAttributes_t* species = BG_ClassByName( args.Argv( i ).c_str() );
 			if ( species->number == PCL_NONE )
 			{
@@ -5917,6 +5918,11 @@ bool G_admin_navgen( gentity_t* ent )
 			}
 			targets.push_back( species->number );
 		}
+	}
+
+	if ( targets.empty() )
+	{
+		return true;
 	}
 
 	navgen.Init( mapName );
