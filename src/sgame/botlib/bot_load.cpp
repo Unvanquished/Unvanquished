@@ -186,17 +186,11 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 	std::string filePath = NavmeshFilename( mapname, filename );
 	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
-	int len = G_FOpenGameOrPakPath( filePath, f );
+	G_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
 	{
 		Log::Warn("Cannot open Navigation Mesh file '%s'", filePath);
-		return false;
-	}
-
-	if ( len < 0 )
-	{
-		Log::Warn("Negative Length for Navigation Mesh file");
 		return false;
 	}
 
