@@ -63,16 +63,8 @@ struct pc_token_list
 	pc_token_list *next;
 };
 
-struct AITreeList_t
-{
-	AIBehaviorTree_t **trees;
-	int numTrees;
-	int maxTrees;
-};
+using AITreeList_t = std::vector<AIBehaviorTree_t *>;
 
-void              InitTreeList( AITreeList_t *list );
-void              AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree );
-void              RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree );
 void              FreeTreeList( AITreeList_t *list );
 
 pc_token_list *CreateTokenList( int handle );
