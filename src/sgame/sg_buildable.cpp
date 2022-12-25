@@ -2384,6 +2384,7 @@ void G_LayoutSelect()
 		else
 		{
 			//use the map's builtin layout
+			Cvar::SetValue( "layout", "" );
 			return;
 		}
 	}
@@ -2417,6 +2418,7 @@ void G_LayoutSelect()
 	if ( !cnt )
 	{
 		Log::Warn( "None of the specified layouts could be found, using map default." );
+		Cvar::SetValue( "layout", "" );
 		return;
 	}
 
