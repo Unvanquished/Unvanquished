@@ -3849,7 +3849,7 @@ bool G_admin_listplayers( gentity_t *ent )
 				hint = admin_higher( ent, &g_entities[ i ] );
 			}
 
-			if ( hint || !G_admin_permission( &g_entities[ i ], ADMF_INCOGNITO ) )
+			if ( authed && ( hint || !G_admin_permission( &g_entities[ i ], ADMF_INCOGNITO ) ) )
 			{
 				l = G_admin_level( p->pers.admin->level );
 				G_SanitiseString( p->pers.netname, namecleaned,
@@ -3879,7 +3879,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		           i,
 		           Color::ToString( color ).c_str(),
 		           t,
-		           l ? l->level : 0,
+		           ( l && authed ) ? l->level : 0,
 		           hint ? '*' : ' ',
 		           admin_level_maxname + colorlen,
 		           lname,
@@ -3888,9 +3888,9 @@ bool G_admin_listplayers( gentity_t *ent )
 		           denied,
 		           canseeWarn ? ( p->pers.hasWarnings ? "^3W" : " " ) : "",
 		           p->pers.netname,
-		           ( registeredname ) ? "(a.k.a. " : "",
-		           ( registeredname ) ? registeredname : "",
-		           ( registeredname ) ? "^*)" : "",
+		           ( registeredname && authed ) ? "(a.k.a. " : "",
+		           ( registeredname && authed ) ? registeredname : "",
+		           ( registeredname && authed ) ? "^*)" : "",
 		           ( !authed ) ? "^1NOT AUTHED" : "" ) );
 	}
 
