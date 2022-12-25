@@ -361,26 +361,6 @@ bool G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 {
 	if ( !numNavData )
 	{
-		vec3_t clearVec = { 0, 0, 0 };
-
-		for ( int i = 0; i < MAX_CLIENTS; i++ )
-		{
-			// should only init the corridor once
-			if ( !agents[ i ].corridor.getPath() )
-			{
-				if ( !agents[ i ].corridor.init( MAX_BOT_PATH ) )
-				{
-					return false;
-				}
-			}
-
-			agents[ i ].corridor.reset( 0, clearVec );
-			agents[ i ].clientNum = i;
-			agents[ i ].needReplan = true;
-			agents[ i ].nav = nullptr;
-			agents[ i ].offMesh = false;
-			memset( agents[ i ].routeResults, 0, sizeof( agents[ i ].routeResults ) );
-		}
 		NavEditInit();
 	}
 
