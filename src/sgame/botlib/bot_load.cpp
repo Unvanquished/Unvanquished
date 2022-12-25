@@ -359,11 +359,6 @@ void G_BotShutdownNav()
 
 bool G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 {
-	if ( !numNavData )
-	{
-		NavEditInit();
-	}
-
 	if ( numNavData == MAX_NAV_DATA )
 	{
 		Log::Warn( "maximum number of navigation meshes exceeded" );

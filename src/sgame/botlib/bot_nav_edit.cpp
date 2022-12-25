@@ -439,15 +439,12 @@ void Cmd_NavTest( gentity_t *ent )
 	}
 }
 
-void NavEditInit()
-{
-	memset( &cmd, 0, sizeof( cmd ) );
-}
-
 void NavEditShutdown()
 {
 	if ( cmd.enabled )
 	{
 		Cvar::SetValue( "r_debugSurface", "0" );
 	}
+
+	memset( &cmd, 0, sizeof( cmd ) );
 }
