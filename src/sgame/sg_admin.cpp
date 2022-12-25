@@ -3787,7 +3787,7 @@ bool G_admin_listplayers( gentity_t *ent )
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
 	char            bot, muted, denied;
-	int             authed = 1;
+	int             authed;
 	char            namecleaned[ MAX_NAME_LENGTH ];
 	char            name2cleaned[ MAX_NAME_LENGTH ];
 	g_admin_level_t *l;
@@ -3839,6 +3839,9 @@ bool G_admin_listplayers( gentity_t *ent )
 		l = d;
 		registeredname = nullptr;
 		hint = canset;
+
+		authed = 1; // bots don't have a pubkey, so this is required otherwise
+		            // the "authed" state is stuck until the next real player.
 
 		if ( p->pers.admin )
 		{
