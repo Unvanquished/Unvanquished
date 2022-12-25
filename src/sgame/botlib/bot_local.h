@@ -202,7 +202,6 @@ extern int numNavData;
 extern NavData_t BotNavData[ MAX_NAV_DATA ];
 extern Bot_t agents[ MAX_CLIENTS ];
 
-void NavEditInit();
 void NavEditShutdown();
 void BotSaveOffMeshConnections( NavData_t *nav );
 
