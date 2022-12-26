@@ -3882,7 +3882,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		           i,
 		           Color::ToString( color ).c_str(),
 		           t,
-		           ( l && authed ) ? l->level : 0,
+		           l ? l->level : 0,
 		           hint ? '*' : ' ',
 		           admin_level_maxname + colorlen,
 		           lname,
