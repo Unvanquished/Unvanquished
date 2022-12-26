@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "botlib/bot_types.h"
 #include "botlib/bot_api.h"
 #include "shared/bot_nav_shared.h"
+#include "shared/navgen/navgen.h"
 
 #include "shared/bg_local.h"
 
@@ -35,6 +36,36 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //tells if all navmeshes loaded successfully
 bool navMeshLoaded = false;
+
+/*
+===========================
+Navigation Mesh Generation
+===========================
+*/
+
+// blocks the main thread!
+void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
+{
+	std::string mapName = Cvar::GetValue( "mapname" );
+	NavmeshGenerator navgen;
+
+	for ( int i = PCL_NONE; ++i < PCL_NUM_CLASSES; )
+	{
+		if ( !classes[ i ] )
+		{
+			continue;
+		}
+
+		navgen.Init( mapName );
+		navgen.StartGeneration( Util::enum_cast<class_t>( i ) );
+
+		while ( !navgen.Step() )
+		{
+			// ping the engine with a useless message so that it does not think the sgame VM has hung
+			Cvar::GetValue( "x" );
+		}
+	}
+}
 
 /*
 ========================

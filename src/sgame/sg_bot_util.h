@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifndef BOT_UTIL_H_
 #define BOT_UTIL_H_
+#include <bitset>
 #include "sg_local.h"
 #include "botlib/bot_types.h"
 #include "sg_bot_local.h"
@@ -109,6 +110,9 @@ enum botMoveDir_t
 	MOVE_LEFT = BIT( 2 ),
 	MOVE_RIGHT = BIT( 3 )
 };
+
+// navmesh generation
+void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes );
 
 // global navigation
 extern bool navMeshLoaded;
