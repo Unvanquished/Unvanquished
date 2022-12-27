@@ -883,11 +883,16 @@ static bool admin_higher( gentity_t *admin, gentity_t *victim )
 	                           victim->client->pers.admin );
 }
 
-static void admin_writeconfig_string( const char *s, fileHandle_t f )
+static void admin_writeconfig_string( Str::StringRef s, fileHandle_t f )
 {
-	if ( s[ 0 ] )
+	if ( !s.empty() )
 	{
-		trap_FS_Write( s, strlen( s ), f );
+		// (ch & 0xFF) < ' ' is the definition of whitespace used by the COM_Parse* functions
+		if ( ( s.front() & 0xFF ) <= ' ' || ( s.back() & 0xFF ) <= ' ' )
+		{
+			Log::Warn( "String '%s' will be incorrectly serialized in admin config", s );
+		}
+		trap_FS_Write( s.c_str(), s.size(), f );
 	}
 
 	trap_FS_Write( "\n", 1, f );
@@ -1042,41 +1047,40 @@ void G_admin_writeconfig()
 	trap_FS_FCloseFile( f );
 }
 
-static void admin_readconfig_string( const char **cnf, char *s, unsigned size )
+// Reads "=" and the rest of a line with leading and trailing whitespace skipped
+static void admin_readconfig_string( const char **cnf, char *s, size_t size )
 {
 	const char *t;
 
-	//COM_MatchToken(cnf, "=");
-	s[ 0 ] = '\0';
+	const char *begin = *cnf;
 	t = COM_ParseExt( cnf, false );
 
 	if ( strcmp( t, "=" ) )
 	{
 		COM_ParseWarning( "expected '=' before \"%s\"", t );
-		Q_strncpyz( s, t, size );
 	}
-
-	while ( 1 )
+	else
 	{
-		t = COM_ParseExt( cnf, false );
-
-		if ( !*t )
-		{
-			break;
-		}
-
-		if ( strlen( t ) + strlen( s ) >= size )
-		{
-			break;
-		}
-
-		if ( *s )
-		{
-			Q_strcat( s, size, " " );
-		}
-
-		Q_strcat( s, size, t );
+		begin = *cnf;
 	}
+
+	size_t length = strcspn( *cnf, "\n" );
+	*cnf = begin + length;
+
+	while ( length > 0 && ( *begin & 0xFF ) <= ' ' )
+	{
+		++begin;
+		--length;
+	}
+
+	while ( length > 0 && ( begin[ length - 1 ] & 0xFF ) <= ' ' )
+	{
+		--length;
+	}
+
+	length = std::min( size - 1, length );
+	memcpy( s, begin, length );
+	s[ length ] = '\0';
 }
 
 static void admin_readconfig_int( const char **cnf, int *v )
