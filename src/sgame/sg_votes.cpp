@@ -498,15 +498,15 @@ void G_HandleVote( gentity_t* ent )
 		cmd.reserve( MAX_STRING_CHARS );
 		cmd += "print \"";
 
-		for ( const auto& it : voteInfo )
+		for ( const auto& it2 : voteInfo )
 		{
-			const VoteDefinition& vi = it.second;
+			const VoteDefinition& vi = it2.second;
 			if ( ( team == TEAM_NONE && vi.type != V_TEAM ) ||
 			     ( team != TEAM_NONE && vi.type != V_PUBLIC ) )
 			{
 				if ( !vi.percentage || vi.percentage->Get() > 0 )
 				{
-					cmd += va( "%s%s", added ? ", " : "", it.first.c_str() );
+					cmd += va( "%s%s", added ? ", " : "", it2.first.c_str() );
 					added = true;
 				}
 			}
@@ -1028,9 +1028,9 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 					   gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
 					   std::string& reason, std::string& name, int clientNum, int id )
 	{
-		std::string vote =
+		std::string voteCmd =
 			G_HandleVoteTemplate( vt, ent, team, cmd, arg, reason, name, clientNum, id );
-		Q_strncpyz( level.team[ team ].voteString, vote.c_str(),
+		Q_strncpyz( level.team[ team ].voteString, voteCmd.c_str(),
 		            sizeof( level.team[ team ].voteString ) );
 		std::string display =
 			G_HandleVoteTemplate( dt, ent, team, cmd, arg, reason, name, clientNum, id );
