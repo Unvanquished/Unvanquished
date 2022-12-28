@@ -33,6 +33,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 #include "common/cm/cm_public.h"
 #include "sgame/sg_local.h"
+#include "sgame/sg_bot_util.h"
 #include "DetourDebugDraw.h"
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -191,7 +192,6 @@ static bool CheckHost( gentity_t *ent )
 	return false;
 }
 
-bool G_BotNavInit();
 void Cmd_NavEdit( gentity_t *ent )
 {
 	if ( !CheckHost( ent ) ) return;
@@ -216,8 +216,10 @@ void Cmd_NavEdit( gentity_t *ent )
 			return;
 		}
 
-		if ( !G_BotNavInit() )
+		G_BotNavInit( false );
+		if ( navMeshLoaded != navMeshStatus_t::LOADED )
 		{
+			Log::Warn( "Couldn't load navmeshes" );
 			return;
 		}
 

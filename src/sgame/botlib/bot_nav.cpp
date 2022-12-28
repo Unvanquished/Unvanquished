@@ -405,14 +405,13 @@ struct bbox_t {
 static std::map<int, bbox_t> savedObstacles;
 static std::map<int, std::array<dtObstacleRef, MAX_NAV_DATA>> obstacleHandles; // handles of detour's obstacles, if any
 
-extern bool navMeshLoaded;
 void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum )
 {
 	qVec min = &mins[0];
 	qVec max = &maxs[0];
 	rBounds box( min, max );
 
-	if ( !navMeshLoaded )
+	if ( navMeshLoaded != navMeshStatus_t::LOADED )
 	{
 		savedObstacles[obstacleNum] = { mins, maxs };
 		return;

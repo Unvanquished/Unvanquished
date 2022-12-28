@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 
 static Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
+static Cvar::Cvar<bool> generateNeededMesh("g_bot_navgen_onDemand", "automatically generate navmeshes when a bot is added", Cvar::NONE, false);
 
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
@@ -270,7 +271,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	const char* s = 0;
 	bool autoname = false;
 
-	ASSERT( navMeshLoaded );
+	ASSERT_EQ( navMeshLoaded, navMeshStatus_t::LOADED );
 
 	// find what clientNum to use for bot
 	int clientNum = trap_BotAllocateClient();
@@ -553,14 +554,28 @@ void G_BotIntermissionThink( gclient_t *client )
 }
 
 // Initialization happens whenever someone first tries to add a bot.
-// This incurs some delay (a few tenths of a second), but on servers bots
-// are normally added at the beginning of the round so it shouldn't be noticeable.
+// Assuming the meshes already exist, this incurs some delay (a few tenths of a second), but on
+// servers bots are normally added at the beginning of the round so it shouldn't be noticeable.
+//
+// If the mesh has to be generated on demand, that may take several tens of seconds.
 bool G_BotInit()
 {
-	if ( !G_BotNavInit() )
+	switch ( navMeshLoaded )
+	{
+	case navMeshStatus_t::LOADED:
+		return true;
+	case navMeshStatus_t::LOAD_FAILED:
+		Log::Warn( "Navmesh initialization previously failed, doing nothing" );
+		return false;
+	case navMeshStatus_t::UNINITIALIZED:
+		break;
+	}
+
+	G_BotNavInit( generateNeededMesh.Get() );
+
+	if ( navMeshLoaded != navMeshStatus_t::LOADED )
 	{
 		Log::Notice( "Failed to load navmeshes" );
-		G_BotNavCleanup();
 		return false;
 	}
 	return true;

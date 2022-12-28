@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/gtx/norm.hpp>
 
 //tells if all navmeshes loaded successfully
-bool navMeshLoaded = false;
+navMeshStatus_t navMeshLoaded = navMeshStatus_t::UNINITIALIZED;
 
 /*
 ===========================
@@ -75,14 +75,16 @@ Navigation Mesh Loading
 
 extern void BotAddSavedObstacles();
 // FIXME: use nav handle instead of classes
-bool G_BotNavInit()
+void G_BotNavInit( bool generateNeeded )
 {
-	if ( navMeshLoaded )
+	if ( navMeshLoaded != navMeshStatus_t::UNINITIALIZED )
 	{
-		return true;
+		return;
 	}
 
 	Log::Notice( "==== Bot Navigation Initialization ====" );
+
+	std::bitset<PCL_NUM_CLASSES> missing;
 
 	for ( class_t i : RequiredNavmeshes() )
 	{
@@ -96,20 +98,40 @@ bool G_BotNavInit()
 
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
-		if ( !G_BotSetupNav( &bot, &model->navHandle ) )
+		switch ( G_BotSetupNav( &bot, &model->navHandle ) )
 		{
-			return false;
+		case navMeshStatus_t::UNINITIALIZED:
+			if ( generateNeeded )
+			{
+				missing[ i ] = true;
+				break;
+			}
+			DAEMON_FALLTHROUGH;
+		case navMeshStatus_t::LOAD_FAILED:
+			Log::Warn( "Cannot load navigation mesh file for %s", BG_Class( i )->name );
+			navMeshLoaded = navMeshStatus_t::LOAD_FAILED;
+			G_BotShutdownNav();
+			return;
+		case navMeshStatus_t::LOADED:
+			break;
 		}
 	}
-	navMeshLoaded = true;
+
+	if ( missing.any() )
+	{
+		G_BotShutdownNav(); // TODO: allow shutdown/load of individual species
+		G_BlockingGenerateNavmesh( missing );
+		return G_BotNavInit( false );
+	}
+
+	navMeshLoaded = navMeshStatus_t::LOADED;
 	BotAddSavedObstacles();
-	return true;
 }
 
 void G_BotNavCleanup()
 {
 	G_BotShutdownNav();
-	navMeshLoaded = false;
+	navMeshLoaded = navMeshStatus_t::UNINITIALIZED;
 }
 
 void BotSetNavmesh( gentity_t  *self, class_t newClass )

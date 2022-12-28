@@ -38,6 +38,14 @@ This file contains the headers of the internal functions used by bot only.
 
 #include <bitset>
 
+enum class navMeshStatus_t
+{
+	UNINITIALIZED,
+	LOAD_FAILED,
+	LOADED,
+};
+extern navMeshStatus_t navMeshLoaded;
+
 struct botEntityAndDistance_t
 {
 	gentity_t const *ent;
@@ -177,7 +185,7 @@ private:
 	bool exhausted = false;
 };
 
-bool G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
+navMeshStatus_t G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void G_BotShutdownNav();
 void G_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
 bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );

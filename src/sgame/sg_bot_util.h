@@ -115,9 +115,7 @@ enum botMoveDir_t
 void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes );
 
 // global navigation
-extern bool navMeshLoaded;
-
-bool         G_BotNavInit();
+void         G_BotNavInit( bool generateNeeded );
 void         G_BotNavCleanup();
 bool     FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial );
 bool         BotMoveToGoal( gentity_t *self );
