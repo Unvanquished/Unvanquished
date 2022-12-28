@@ -124,13 +124,13 @@ void BotSaveOffMeshConnections( NavData_t *nav )
 	trap_FS_FCloseFile( f );
 }
 
-static void BotLoadOffMeshConnections( const char *filename, OffMeshConnections &con )
+static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &con )
 {
 	char filePath[ MAX_QPATH ];
 	fileHandle_t f = 0;
 
 	std::string mapname = Cvar::GetValue("mapname");
-	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname.c_str(), filename );
+	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname.c_str(), species );
 	G_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
@@ -178,12 +178,12 @@ static void BotLoadOffMeshConnections( const char *filename, OffMeshConnections 
 	trap_FS_FCloseFile( f );
 }
 
-static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
+static bool BotLoadNavMesh( const char *species, NavData_t &nav )
 {
 	fileHandle_t f = 0;
 
 	std::string mapname = Cvar::GetValue("mapname");
-	std::string filePath = NavmeshFilename( mapname, filename );
+	std::string filePath = NavmeshFilename( mapname, species );
 	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
 	G_FOpenGameOrPakPath( filePath, f );
@@ -208,12 +208,12 @@ static bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 		trap_FS_Read( &ignored, sizeof(ignored), f );
 		char errorBuf[256] = {};
 		trap_FS_Read( errorBuf, sizeof(errorBuf) - 1, f );
-		Log::Warn( "Can't load %s: Cached navmesh generation failure (%s)", filename, errorBuf );
+		Log::Warn( "Can't load navmesh for %s: Cached navmesh generation failure (%s)", species, errorBuf );
 		trap_FS_FCloseFile( f );
 		return false;
 	}
 
-	BotLoadOffMeshConnections( filename, nav.process.con );
+	BotLoadOffMeshConnections( species, nav.process.con );
 
 	nav.mesh = dtAllocNavMesh();
 
@@ -391,9 +391,9 @@ bool G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 	}
 
 	NavData_t *nav = &BotNavData[ numNavData ];
-	const char *filename = botClass->name;
+	const char *species = botClass->name;
 
-	if ( !BotLoadNavMesh( filename, *nav ) )
+	if ( !BotLoadNavMesh( species, *nav ) )
 	{
 		G_BotShutdownNav();
 		return false;
@@ -404,14 +404,14 @@ bool G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 
 	if ( !nav->query )
 	{
-		Log::Notice( "Could not allocate Detour Navigation Mesh Query for navmesh %s", filename );
+		Log::Notice( "Could not allocate Detour Navigation Mesh Query for navmesh %s", species );
 		G_BotShutdownNav();
 		return false;
 	}
 
 	if ( dtStatusFailed( nav->query->init( nav->mesh, maxNavNodes.Get() ) ) )
 	{
-		Log::Notice( "Could not init Detour Navigation Mesh Query for navmesh %s", filename );
+		Log::Notice( "Could not init Detour Navigation Mesh Query for navmesh %s", species );
 		G_BotShutdownNav();
 		return false;
 	}
