@@ -1302,14 +1302,16 @@ static int admin_out( void *admin, char *str )
 	l = G_admin_level( a->level );
 
 	int lncol = Color::StrlenNocolor( l->name );
+	int namelen  = strlen( l->name );
 
 	if ( a->lastSeen.tm_mday )
 	{
 		trap_GetTimeString( lastSeen, sizeof( lastSeen ), "%Y-%m-%d", &a->lastSeen );
 	}
 
-	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s %s %s",
-	             a->level, admin_level_maxname + lncol, l ? l->name : "(null)",
+	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s ^*%s %s",
+	             a->level, namelen + ( admin_level_maxname - lncol ), 
+	             l ? l->name : "(null)",
 	             lastSeen, a->name );
 
 	return 0;
@@ -3877,6 +3879,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		}
 
 		int colorlen = Color::StrlenNocolor( lname );
+		int namelen  = strlen( lname );
 
 		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^* ^5%c^1%c%c%s^7 %s^* %s%s%s %s",
 		           i,
@@ -3884,7 +3887,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		           t,
 		           l ? l->level : 0,
 		           hint ? '*' : ' ',
-		           admin_level_maxname + colorlen,
+		           namelen + ( admin_level_maxname - colorlen ),
 		           lname,
 		           bot,
 		           muted,
