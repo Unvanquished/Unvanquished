@@ -37,7 +37,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "bot_types.h"
 #include "sgame/sg_bot_local.h"
 
-void BotInit();
+void BotAssertionInit();
 void BotDebugDrawMesh();
 void Cmd_NavEdit( gentity_t *ent );
 void Cmd_AddConnection( gentity_t *ent );

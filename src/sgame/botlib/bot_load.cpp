@@ -34,6 +34,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "common/Common.h"
 
 #include "DetourAssert.h"
+#include "RecastAssert.h"
 
 #include "sgame/sg_local.h"
 #include "bot_local.h"
@@ -61,10 +62,11 @@ static void FailAssertion(const char* expression, const char* file, int line)
 }
 #endif
 
-void BotInit()
+void BotAssertionInit()
 {
 #ifdef DEBUG_BUILD
-	dtAssertFailSetCustom(FailAssertion);
+	dtAssertFailSetCustom( FailAssertion );
+	rcAssertFailSetCustom( FailAssertion );
 #endif
 }
 
