@@ -56,12 +56,14 @@ void G_BotIntermissionThink( gclient_t *client );
 void G_BotListNames( gentity_t *ent );
 bool G_BotClearNames();
 int  G_BotAddNames(team_t team, int arg, int last);
+
 //TODO Area enabling API is very likely untested, plus, it only enables WALK or disable all
 //     so my advice here is: DO NOT USE THAT until a better one is provided.
-//     Since I'm the only one touching that kind of things anyway, I don't think this is a
-//     useful warning, but who knows...
+// those two function give incorrect behavior if an area is disabled more than once: a node disabled twice will be enabled back on the first try
+// TODO: decide if we want to use G_BotAddObstacle instead
 void G_BotDisableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs );
 void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs );
+
 void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum );
 void G_BotRemoveObstacle( int obstacleNum );
 void G_BotUpdateObstacles();
