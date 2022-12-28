@@ -967,17 +967,38 @@ static bool IsEscapedMarker( Str::StringRef s, size_t pos )
 	return pos + 1 < s.size() && s[ pos ] == MARKER && s[ pos + 1 ] == MARKER;
 }
 
+// Use a custom escape to avoid issues with Cmd::Escape unintentionally terminating quotes
+// for strings based on user input.
+static std::string VoteEscape( Str::StringRef s, bool escape )
+{
+	if ( !escape )
+	{
+		return s;
+	}
+	std::string out;
+	out.reserve( s.size() * 2 );
+	for ( const auto& c : s )
+	{
+		out += '\\';
+		out += c;
+	}
+	return out;
+}
+
+// We only want to escape for commands that are executed. For display only, there is no injection concern,
+// so don't escape those.
 static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, team_t team,
                                          std::string& cmd, std::string& arg, std::string& reason,
-                                         std::string& name, int clientNum, int id )
+                                         std::string& name, int clientNum, int id, bool escape )
 {
 	std::unordered_map<std::string, std::string> params = {
-		{"team",       BG_TeamNamePlural( team )  },
-		{ "arg",       arg						},
-		{ "reason",    reason                     },
-		{ "name",      name					   },
-		{ "slot",      std::to_string( clientNum )},
-		{ "namelogId", std::to_string( id )       },
+		{ "team", BG_TeamNamePlural( team ) },
+		{ "arg", VoteEscape( arg, escape ) },
+		{ "reason", VoteEscape( reason, escape ) },
+		{ "name", VoteEscape( name, escape ) },
+		{ "slot", std::to_string( clientNum ) },
+		{ "namelogId", std::to_string( id ) },
+		{ "caller", VoteEscape( ent->client->pers.netname, escape ) },
 	};
 	std::string out;
 	out.reserve( str.size() + arg.size() + reason.size() );
@@ -1029,11 +1050,11 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 					   std::string& reason, std::string& name, int clientNum, int id )
 	{
 		std::string voteCmd =
-			G_HandleVoteTemplate( vt, ent, team, cmd, arg, reason, name, clientNum, id );
+			G_HandleVoteTemplate( vt, ent, team, cmd, arg, reason, name, clientNum, id, true );
 		Q_strncpyz( level.team[ team ].voteString, voteCmd.c_str(),
 		            sizeof( level.team[ team ].voteString ) );
 		std::string display =
-			G_HandleVoteTemplate( dt, ent, team, cmd, arg, reason, name, clientNum, id );
+			G_HandleVoteTemplate( dt, ent, team, cmd, arg, reason, name, clientNum, id, false );
 		Q_strncpyz( level.team[ team ].voteDisplayString, display.c_str(),
 		            sizeof( level.team[ team ].voteDisplayString ) );
 		return true;
@@ -1045,9 +1066,9 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 bool ParseVoteType( Str::StringRef s, VoteType* type )
 {
 	static const std::unordered_map<std::string, VoteType> map = {
-		{"V_ANY",     V_ANY   },
-		{ "V_TEAM",   V_TEAM  },
-		{ "V_PUBLIC", V_PUBLIC},
+		{ "V_ANY", V_ANY },
+		{ "V_TEAM", V_TEAM },
+		{ "V_PUBLIC", V_PUBLIC },
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
@@ -1075,9 +1096,9 @@ Str::StringRef VoteTypeString( VoteType type )
 bool ParseVoteTarget( Str::StringRef s, VoteTarget* type )
 {
 	static const std::unordered_map<std::string, VoteTarget> map = {
-		{"T_NONE",    T_NONE  },
-		{ "T_PLAYER", T_PLAYER},
-		{ "T_OTHER",  T_OTHER },
+		{ "T_NONE", T_NONE },
+		{ "T_PLAYER", T_PLAYER },
+		{ "T_OTHER", T_OTHER },
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
@@ -1105,11 +1126,9 @@ Str::StringRef VoteTargetString( VoteTarget type )
 bool ParseVoteOptions( Str::StringRef s, VoteOptions* type )
 {
 	static const std::unordered_map<std::string, VoteOptions> map = {
-		{"VOTE_ALWAYS",   VOTE_ALWAYS },
-        { "VOTE_BEFORE",  VOTE_BEFORE },
-		{ "VOTE_AFTER",   VOTE_AFTER  },
-        { "VOTE_REMAIN",  VOTE_REMAIN },
-		{ "VOTE_NO_AUTO", VOTE_NO_AUTO},
+		{ "VOTE_ALWAYS", VOTE_ALWAYS },   { "VOTE_BEFORE", VOTE_BEFORE },
+		{ "VOTE_AFTER", VOTE_AFTER },     { "VOTE_REMAIN", VOTE_REMAIN },
+		{ "VOTE_NO_AUTO", VOTE_NO_AUTO },
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
