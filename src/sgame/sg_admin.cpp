@@ -1293,7 +1293,6 @@ static int admin_out( void *admin, char *str )
 	g_admin_admin_t *a = ( g_admin_admin_t * ) admin;
 	g_admin_level_t *l;
 	char            lastSeen[64] = "          ";
-	char            lname[ MAX_NAME_LENGTH ];
 
 	if ( !str )
 	{
@@ -1302,10 +1301,8 @@ static int admin_out( void *admin, char *str )
 
 	l = G_admin_level( a->level );
 
-	Q_strncpyz( lname, l->name, sizeof( lname ) );
-
-	int lncol = Color::StrlenNocolor( lname );
-	int namelen = strlen( lname );
+	int lncol = Color::StrlenNocolor( l->name );
+	int namelen  = strlen( l->name );
 
 	if ( a->lastSeen.tm_mday )
 	{
@@ -1314,7 +1311,7 @@ static int admin_out( void *admin, char *str )
 
 	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s ^*%s %s",
 	             a->level, namelen + ( admin_level_maxname - lncol ), 
-	             l ? lname : "(null)",
+	             l ? l->name : "(null)",
 	             lastSeen, a->name );
 
 	return 0;
