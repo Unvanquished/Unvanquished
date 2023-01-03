@@ -73,27 +73,6 @@ void BotAssertionInit()
 #endif
 }
 
-void BotDebugPrintOffMeshConnections( OffMeshConnections &con )
-{
-	#ifdef DEBUG_BUILD
-	for ( int n = 0; n < con.offMeshConCount; n++ )
-	{
-		// userids is unused.
-		Log::Debug( "%0.f %.0f %.0f %.0f %.0f %.0f %.0f %hd %hhd %hhd",
-			con.verts[ ( 6 * n ) + 0 ],
-			con.verts[ ( 6 * n ) + 1 ],
-			con.verts[ ( 6 * n ) + 2 ],
-			con.verts[ ( 6 * n ) + 3 ],
-			con.verts[ ( 6 * n ) + 4 ],
-			con.verts[ ( 6 * n ) + 5 ],
-			con.rad[ n ],
-			con.flags[ n ],
-			con.areas[ n ],
-			con.dirs[ n ] );
-	}
-	#endif
-}
-
 void BotSaveOffMeshConnections( NavData_t *nav )
 {
 	char filePath[ MAX_QPATH ];
@@ -137,8 +116,6 @@ void BotSaveOffMeshConnections( NavData_t *nav )
 	trap_FS_FCloseFile( f );
 
 	Log::Debug( "Saved %d connections to navcon file %s", conCount, filePath );
-
-	BotDebugPrintOffMeshConnections( nav->process.con );
 }
 
 static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &con )
@@ -200,7 +177,6 @@ static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &
 		Log::Debug( "Loaded %d connections from navcon file %s", conCount, filePath );
 		trap_FS_FCloseFile( f );
 
-		BotDebugPrintOffMeshConnections( con );
 		return;
 	}
 
@@ -306,8 +282,6 @@ static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &
 	}
 
 	Log::Debug( "Loaded %d connections from navcon file %s", con.offMeshConCount, filePath );
-
-	BotDebugPrintOffMeshConnections( con );
 
 	BG_Free( navcon );
 	return;
