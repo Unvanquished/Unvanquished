@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/gtx/norm.hpp>
 
 //tells if all navmeshes loaded successfully
+// Only G_BotNavInit and G_BotNavCleanup should set it
 navMeshStatus_t navMeshLoaded = navMeshStatus_t::UNINITIALIZED;
 
 /*
@@ -67,6 +68,83 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 	}
 }
 
+static Cvar::Range<Cvar::Cvar<int>> msecPerFrame(
+	"g_bot_navgen_msecPerFrame", "time budget per frame for navmesh generation",
+	Cvar::NONE, 20, 1, 1500 );
+
+static NavmeshGenerator navgen;
+static std::vector<class_t> navgenQueue;
+static class_t generatingNow;
+static int nextLogTime;
+
+static void G_BotBackgroundNavgenShutdown()
+{
+	navgen.~NavmeshGenerator();
+	new (&navgen) NavmeshGenerator();
+	navgenQueue.clear();
+	generatingNow = PCL_NONE;
+}
+
+void G_BotBackgroundNavgen()
+{
+	if ( navgenQueue.empty() )
+	{
+		return;
+	}
+
+	ASSERT_EQ( navMeshLoaded, navMeshStatus_t::GENERATING );
+
+	int stopTime = Sys::Milliseconds() + msecPerFrame.Get();
+
+	navgen.Init( Cvar::GetValue( "mapname" ) );
+
+	if ( generatingNow == PCL_NONE )
+	{
+		class_t next = navgenQueue.back();
+		generatingNow = next;
+		navgen.StartGeneration( next );
+	}
+
+	if ( level.time > nextLogTime )
+	{
+		std::string percent = std::to_string( int(navgen.SpeciesFractionCompleted() * 100) );
+		trap_SendServerCommand( -1, va( "print_tr %s %s %s",
+			QQ( N_( "Server: generating bot navigation mesh for $1$... $2$%" ) ),
+			BG_Class( generatingNow )->name, percent.c_str() ) );
+		nextLogTime = level.time + 10000;
+	}
+
+	while ( Sys::Milliseconds() < stopTime )
+	{
+		if ( navgen.Step() )
+		{
+			ASSERT_EQ( generatingNow, navgenQueue.back() );
+			navgenQueue.pop_back();
+			generatingNow = PCL_NONE;
+			break;
+		}
+	}
+
+	if ( navgenQueue.empty() ) // finished?
+	{
+		G_BotBackgroundNavgenShutdown();
+
+		navMeshLoaded = navMeshStatus_t::UNINITIALIZED; // HACK: make G_BotNavInit not return at the start
+		G_BotNavInit( 0 );
+
+		if ( navMeshLoaded == navMeshStatus_t::LOAD_FAILED )
+		{
+			trap_SendServerCommand( -1, "print_tr " QQ( N_( "^1Bot navmesh generation failed!" ) ) );
+			G_BotDelAllBots();
+		}
+		else
+		{
+			ASSERT_EQ( navMeshLoaded, navMeshStatus_t::LOADED );
+			// Bots on spectate will now join in their think function
+		}
+	}
+}
+
 /*
 ========================
 Navigation Mesh Loading
@@ -75,7 +153,8 @@ Navigation Mesh Loading
 
 extern void BotAddSavedObstacles();
 // FIXME: use nav handle instead of classes
-void G_BotNavInit( bool generateNeeded )
+// see g_bot_navgen_onDemand for meaning of generateNeeded
+void G_BotNavInit( int generateNeeded )
 {
 	if ( navMeshLoaded != navMeshStatus_t::UNINITIALIZED )
 	{
@@ -120,8 +199,25 @@ void G_BotNavInit( bool generateNeeded )
 	if ( missing.any() )
 	{
 		G_BotShutdownNav(); // TODO: allow shutdown/load of individual species
-		G_BlockingGenerateNavmesh( missing );
-		return G_BotNavInit( false );
+
+		if ( generateNeeded == -1 )
+		{
+			G_BlockingGenerateNavmesh( missing );
+			return G_BotNavInit( 0 );
+		}
+		else
+		{
+			ASSERT( navgenQueue.empty() );
+			for ( int i = PCL_NUM_CLASSES; --i > PCL_NONE; )
+			{
+				if ( missing[ i ] )
+				{
+					navgenQueue.push_back( Util::enum_cast<class_t>( i ) );
+				}
+			}
+			navMeshLoaded = navMeshStatus_t::GENERATING;
+			return;
+		}
 	}
 
 	navMeshLoaded = navMeshStatus_t::LOADED;
@@ -131,6 +227,7 @@ void G_BotNavInit( bool generateNeeded )
 void G_BotNavCleanup()
 {
 	G_BotShutdownNav();
+	G_BotBackgroundNavgenShutdown();
 	navMeshLoaded = navMeshStatus_t::UNINITIALIZED;
 }
 

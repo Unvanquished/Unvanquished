@@ -41,6 +41,7 @@ This file contains the headers of the internal functions used by bot only.
 enum class navMeshStatus_t
 {
 	UNINITIALIZED,
+	GENERATING,
 	LOAD_FAILED,
 	LOADED,
 };

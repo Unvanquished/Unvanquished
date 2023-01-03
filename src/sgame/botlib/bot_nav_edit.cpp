@@ -216,7 +216,7 @@ void Cmd_NavEdit( gentity_t *ent )
 			return;
 		}
 
-		G_BotNavInit( false );
+		G_BotNavInit( 0 );
 		if ( navMeshLoaded != navMeshStatus_t::LOADED )
 		{
 			Log::Warn( "Couldn't load navmeshes" );
