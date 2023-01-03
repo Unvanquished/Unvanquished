@@ -5756,8 +5756,7 @@ static void BotUsage( gentity_t *ent )
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
 	                                        "            bot behavior (<name> | <slot#>) <behavior>\n"
-	                                        "            bot skill <skill level> [<team>]\n"
-	                                        "            bot debug_reload" ) );
+	                                        "            bot skill <skill level> [<team>]" ) );
 	ADMP( bot_usage );
 }
 
@@ -6065,13 +6064,6 @@ bool G_admin_bot( gentity_t *ent )
 			// Will ignore non-bots, unfortunately you can't change human skill with a command
 			G_BotSetSkill( i, skill );
 		}
-	}
-	else if ( !Q_stricmp( arg1, "debug_reload" )  )
-	{
-		G_BotDelAllBots();
-		G_BotCleanup();
-		G_BotInit();
-		return true;
 	}
 	else
 	{
