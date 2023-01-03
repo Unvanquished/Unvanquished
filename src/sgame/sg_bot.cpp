@@ -400,6 +400,18 @@ Bot Thinks
 =======================
 */
 
+static void SetPing( gentity_t *self )
+{
+	if ( navMeshLoaded == navMeshStatus_t::GENERATING )
+	{
+		self->client->ps.ping = 998;
+	}
+	else
+	{
+		self->client->ps.ping = self->botMind->botSkill.level;
+	}
+}
+
 void G_BotThink( gentity_t *self )
 {
 	char buf[MAX_STRING_CHARS];
@@ -439,8 +451,7 @@ void G_BotThink( gentity_t *self )
 		G_AddCreditToClient( self->client, HUMAN_MAX_CREDITS, true );
 	}
 
-	//hacky ping fix
-	self->client->ps.ping = rand() % 50 + 50;
+	SetPing( self );
 
 	if ( !self->botMind->behaviorTree )
 	{
@@ -473,8 +484,7 @@ void G_BotThink( gentity_t *self )
 void G_BotSpectatorThink( gentity_t *self )
 {
 	char buf[MAX_STRING_CHARS];
-	//hacky ping fix
-	self->client->ps.ping = rand() % 50 + 50;
+	SetPing( self );
 
 	//acknowledge recieved console messages
 	//MUST be done
