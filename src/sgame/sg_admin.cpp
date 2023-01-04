@@ -414,6 +414,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"tactic",        G_admin_tactic,     false,  "tactic",
+		N_("set the bot tactic for your team"),
+		N_("<behavior> [how-many-bots]")
+	},
+
+	{
 		"time",         G_admin_time,        true,  "time", // setting requires "gametimelimit"
 		N_("show the current local server time or set this game's time limit"),
 		N_("[^3minutes^7]")
@@ -2372,6 +2378,82 @@ bool G_admin_setlevel( gentity_t *ent )
 
 	return true;
 }
+
+static int lastTacticId = 0;
+static int lastTacticTime[ NUM_TEAMS ] = { 0 };
+
+static int nextTacticId( int id )
+{
+	int next = id + 1;
+	return ( next >= MAX_CLIENTS ) ? 0 : next;
+}
+
+bool G_admin_tactic( gentity_t *ent )
+{
+	char behavior[ MAX_STRING_CHARS ];
+
+	if ( level.intermissiontime )
+	{
+		return false;
+	}
+
+	team_t user_team = G_Team( ent );
+	if ( level.time - lastTacticTime[ user_team ] < g_tacticMilliSeconds.Get() )
+	{
+		AP( va( "print_tr %s %.1f", QQ( N_("^3tactic:^* may only be done every $1$ seconds") ), g_tacticMilliSeconds.Get()/1000.0 ) );
+		return false;
+	}
+	lastTacticTime[ user_team ] = level.time;
+
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( QQ( N_( "^3tactic:^* usage: tactic <behavior> [how-many-bots]" ) ) ) ;
+		return false;
+	}
+
+	int numBots = 1;
+	trap_Argv( 1, behavior, sizeof( behavior ) );
+	if ( trap_Argc() > 2 )
+	{
+		char numBotsStr[ MAX_STRING_CHARS ];
+		trap_Argv( 2, numBotsStr, sizeof( numBotsStr ) );
+		if ( !Str::ParseInt( numBots, numBotsStr ) || numBots < 1 )
+		{
+			ADMP( QQ( N_( "^3tactic:^* number must be above 0" ) ) );
+			return false;
+		}
+	}
+
+	if ( ! ( user_team == TEAM_ALIENS || user_team == TEAM_HUMANS ) )
+	{
+		ADMP( QQ( N_( "^3tactic:^* join a team first" ) ) );
+		return false;
+	}
+
+	int id = nextTacticId( lastTacticId );
+	int stopId = id;
+	bool once = false;
+	int lastChangedId = 0;
+	int changedBots = 0;
+	for ( ; !( once && (changedBots >= numBots || id == stopId) ); id = nextTacticId( id ) )
+	{
+		once = true;
+		if ( !( g_entities[ id ].r.svFlags & SVF_BOT ) || !G_OnSameTeam( &g_entities[ id ], ent ) )
+		{
+			continue;
+		}
+		// now we know: it is a bot on the commanding player's team
+		G_BotChangeBehavior( id, behavior );
+		lastChangedId = id;
+		changedBots++;
+	}
+	lastTacticId = lastChangedId;
+
+	G_Say( ent, SAY_TEAM, va( changedBots == 1 ? "^A[%d bot]^5 command \"%s\"!" : "^A[%d bots]^5 command \"%s\"!", changedBots, behavior ) );
+
+	return true;
+}
+
 
 bool G_admin_slap( gentity_t *ent )
 {
