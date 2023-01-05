@@ -2379,9 +2379,6 @@ bool G_admin_setlevel( gentity_t *ent )
 	return true;
 }
 
-static int lastTacticId = 0;
-static int lastTacticTime[ NUM_TEAMS ] = { 0 };
-
 static int nextTacticId( int id )
 {
 	int next = id + 1;
@@ -2397,13 +2394,13 @@ bool G_admin_tactic( gentity_t *ent )
 		return false;
 	}
 
-	team_t user_team = G_Team( ent );
-	if ( level.time - lastTacticTime[ user_team ] < g_tacticMilliSeconds.Get() )
+	team_t userTeam = G_Team( ent );
+	if ( level.time - level.team[ userTeam ].lastTacticTime < g_tacticMilliSeconds.Get() )
 	{
-		AP( va( "print_tr %s %.1f", QQ( N_("^3tactic:^* may only be done every $1$ seconds") ), g_tacticMilliSeconds.Get()/1000.0 ) );
+		ADMP( va( "%s %g", QQ( N_("^3tactic:^* may only be done every $1$ seconds") ), g_tacticMilliSeconds.Get()/1000.0 ) );
 		return false;
 	}
-	lastTacticTime[ user_team ] = level.time;
+	level.team[ userTeam ].lastTacticTime = level.time;
 
 	if ( trap_Argc() < 2 )
 	{
@@ -2411,26 +2408,30 @@ bool G_admin_tactic( gentity_t *ent )
 		return false;
 	}
 
-	int numBots = 1;
+	int numBots = MAX_CLIENTS;
 	trap_Argv( 1, behavior, sizeof( behavior ) );
 	if ( trap_Argc() > 2 )
 	{
 		char numBotsStr[ MAX_STRING_CHARS ];
 		trap_Argv( 2, numBotsStr, sizeof( numBotsStr ) );
-		if ( !Str::ParseInt( numBots, numBotsStr ) || numBots < 1 )
+		if ( !Str::ParseInt( numBots, numBotsStr ) || numBots < 0 )
 		{
-			ADMP( QQ( N_( "^3tactic:^* number must be above 0" ) ) );
+			ADMP( QQ( N_( "^3tactic:^* number must be non-negative" ) ) );
 			return false;
+		}
+		if (numBots == 0)
+		{
+			numBots = MAX_CLIENTS;
 		}
 	}
 
-	if ( ! ( user_team == TEAM_ALIENS || user_team == TEAM_HUMANS ) )
+	if ( ! ( userTeam == TEAM_ALIENS || userTeam == TEAM_HUMANS ) )
 	{
 		ADMP( QQ( N_( "^3tactic:^* join a team first" ) ) );
 		return false;
 	}
 
-	int id = nextTacticId( lastTacticId );
+	int id = nextTacticId( level.team[ userTeam ].lastTacticId );
 	int stopId = id;
 	bool once = false;
 	int lastChangedId = 0;
@@ -2447,7 +2448,7 @@ bool G_admin_tactic( gentity_t *ent )
 		lastChangedId = id;
 		changedBots++;
 	}
-	lastTacticId = lastChangedId;
+	level.team[ userTeam ].lastTacticId = lastChangedId;
 
 	G_Say( ent, SAY_TEAM, va( changedBots == 1 ? "^A[%d bot]^5 command \"%s\"!" : "^A[%d bots]^5 command \"%s\"!", changedBots, behavior ) );
 

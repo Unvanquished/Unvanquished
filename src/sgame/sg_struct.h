@@ -834,6 +834,8 @@ struct level_locals_t
 		int              botFillTeamSize;
 		int              botFillSkillLevel;
 		int              lastTeamStatus;
+		int              lastTacticId;
+		int              lastTacticTime;
 	} team[ NUM_TEAMS ];
 
 	struct {
