@@ -166,6 +166,8 @@ void CG_ParseServerinfo()
 	BG_SetForbiddenEquipment(  std::string( Info_ValueForKey( info, "g_disabledEquipment"  ) ) );
 	BG_SetForbiddenClasses(    std::string( Info_ValueForKey( info, "g_disabledClasses"    ) ) );
 	BG_SetForbiddenBuildables( std::string( Info_ValueForKey( info, "g_disabledBuildables" ) ) );
+
+	BG_SetTacticBehaviors( std::string( Info_ValueForKey( info, "g_tacticBehaviors"  ) ) );
 }
 
 /*

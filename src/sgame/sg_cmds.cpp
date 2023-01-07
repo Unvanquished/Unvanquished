@@ -3681,6 +3681,11 @@ static void Cmd_Tactic_f( gentity_t * ent )
 
 	char behavior[ MAX_STRING_CHARS ];
 	trap_Argv( 1, behavior, sizeof( behavior ) );
+	if ( !BG_TacticBehaviorAllowed( std::string( behavior ) ) )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3tactic:^* $1$ is not allowed") ), behavior ) );
+		return;
+	}
 
 	int numBots = MAX_CLIENTS;
 	if ( trap_Argc() > 2 )

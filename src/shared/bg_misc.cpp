@@ -2153,6 +2153,27 @@ static struct gameElements_t
 	BoundedVector<upgrade_t,   UP_NUM_UPGRADES>   upgrades;
 } bg_disabledGameElements;
 
+static BoundedVector<std::string, MAX_TACTIC_BEHAVIORS> bg_tacticBehaviors;
+
+BoundedVector<std::string, MAX_TACTIC_BEHAVIORS>
+BG_ParseTacticBehaviorsList( const std::string &behaviorsCsv )
+{
+	BoundedVector<std::string, MAX_TACTIC_BEHAVIORS> behaviors;
+	int count = 0;
+
+	for (Parse_WordListSplitter i(behaviorsCsv); *i; ++i, ++count)
+	{
+		if ( count >= MAX_TACTIC_BEHAVIORS )
+		{
+			Log::Warn( "too many behaviors in: %s", behaviorsCsv );
+			break;
+		}
+		behaviors.append( *i );
+	}
+
+	return behaviors;
+}
+
 /*
 ============
 BG_ParseEquipmentList
@@ -2248,6 +2269,23 @@ BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 	}
 
 	return results;
+}
+
+void BG_SetTacticBehaviors(std::string behaviorsCsv)
+{
+	bg_tacticBehaviors = BG_ParseTacticBehaviorsList( behaviorsCsv );
+}
+
+bool BG_TacticBehaviorAllowed( std::string behavior )
+{
+	for ( auto b : bg_tacticBehaviors)
+	{
+		if ( b == behavior )
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 /*
