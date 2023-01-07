@@ -3645,6 +3645,83 @@ static void Cmd_Reload_f( gentity_t *ent )
 	}
 }
 
+static int nextTacticId( int id )
+{
+	int next = id + 1;
+	return ( next >= MAX_CLIENTS ) ? 0 : next;
+}
+
+static void Cmd_Tactic_f( gentity_t * ent )
+{
+	if ( level.intermissiontime )
+	{
+		return;
+	}
+
+	int milliSeconds = g_tacticMilliSeconds.Get();
+	if ( milliSeconds < 0 )
+	{
+		ADMP( va( "%s", QQ( N_("^3tactic^* is disabled") ) ) );
+		return;
+	}
+
+	team_t userTeam = G_Team( ent );
+	if ( level.time - level.team[ userTeam ].lastTacticTime < milliSeconds )
+	{
+		ADMP( va( "%s %g", QQ( N_("^3tactic:^* may only be done every $1$ seconds") ), g_tacticMilliSeconds.Get()/1000.0 ) );
+		return;
+	}
+	level.team[ userTeam ].lastTacticTime = level.time;
+
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( QQ( N_( "^3tactic:^* usage: tactic <behavior> [how-many-bots]" ) ) ) ;
+		return;
+	}
+
+	char behavior[ MAX_STRING_CHARS ];
+	trap_Argv( 1, behavior, sizeof( behavior ) );
+
+	int numBots = MAX_CLIENTS;
+	if ( trap_Argc() > 2 )
+	{
+		char numBotsStr[ MAX_STRING_CHARS ];
+		trap_Argv( 2, numBotsStr, sizeof( numBotsStr ) );
+		if ( !Str::ParseInt( numBots, numBotsStr ) || numBots < 0 )
+		{
+			ADMP( QQ( N_( "^3tactic:^* number must be non-negative" ) ) );
+			return;
+		}
+		if (numBots == 0)
+		{
+			numBots = MAX_CLIENTS;
+		}
+	}
+
+	/* check here if the user is on a team if making this an admin command */
+
+	int id = nextTacticId( level.team[ userTeam ].lastTacticId );
+	int stopId = id;
+	bool once = false;
+	int lastChangedId = 0;
+	int changedBots = 0;
+	for ( ; !( once && (changedBots >= numBots || id == stopId) ); id = nextTacticId( id ) )
+	{
+		once = true;
+		if ( !( g_entities[ id ].r.svFlags & SVF_BOT ) || !G_OnSameTeam( &g_entities[ id ], ent ) )
+		{
+			continue;
+		}
+		// now we know: it is a bot on the commanding player's team
+		G_BotChangeBehavior( id, behavior );
+		lastChangedId = id;
+		changedBots++;
+	}
+	level.team[ userTeam ].lastTacticId = lastChangedId;
+
+	G_Say( ent, SAY_TEAM, va( changedBots == 1 ? "^A[%d bot]^5 command \"%s\"!" : "^A[%d bots]^5 command \"%s\"!", changedBots, behavior ) );
+}
+
 void Cmd_TeamStatus_f( gentity_t * ent )
 {
 	int builders = 0;
@@ -4692,6 +4769,7 @@ static const commands_t cmds[] =
 	{ "score",           CMD_INTERMISSION,                    ScoreboardMessage      },
 	{ "sell",            CMD_HUMAN | CMD_ALIVE,               Cmd_Sell_f             },
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
+	{ "tactic",          CMD_TEAM,                            Cmd_Tactic_f           },
 	{ "team",            0,                                   Cmd_Team_f             },
 	{ "teamstatus",      CMD_TEAM,                            Cmd_TeamStatus_f       },
 	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
