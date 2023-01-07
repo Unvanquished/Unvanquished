@@ -1107,6 +1107,14 @@ static bool G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const cha
 		return false;
 	}
 
+	if ( ( G_admin_permission( ent, ADMF_NO_GLOBALCHAT ) && mode == SAY_PRIVMSG )
+		 || ( G_admin_permission( ent, ADMF_NO_TEAMCHAT ) && mode == SAY_TPRIVMSG ) )
+	{
+		trap_SendServerCommand( ent->num(), "print_tr \"" N_("say: You do not have permission "
+		                                                     "to use private messaging.") "\"" );
+		return false;
+	}
+
 	if ( ( ent && G_Team( ent ) != G_Team( other ) ) &&
 	     ( mode == SAY_TEAM || mode == SAY_AREA || mode == SAY_TPRIVMSG ) )
 	{
@@ -1142,6 +1150,25 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 {
 	int       j;
 	gentity_t *other;
+
+	// check if subject to negative flags
+	if ( ( ent ) && ( G_admin_permission( ent, ADMF_NO_GLOBALCHAT )
+		 && ( mode == SAY_ALL || mode == SAY_AREA
+		 || mode == SAY_ALL_ME ) ) )
+	{
+		trap_SendServerCommand( ent->num(), "print_tr \"" N_("say: You do not have permission "
+		                                                     "to use global chat.") "\"" );
+		return;
+	}
+
+	if ( ( ent ) && ( G_admin_permission( ent, ADMF_NO_TEAMCHAT )
+		 && ( mode == SAY_TEAM || mode == SAY_AREA_TEAM
+		 || mode == SAY_TEAM_ME ) ) )
+	{
+		trap_SendServerCommand( ent->num(), "print_tr \"" N_("say: You do not have permission "
+		                                                     "to use team chat.") "\"" );
+		return;
+	}
 
 	// check if blocked by g_specChat 0
 	if ( ( !g_specChat.Get() ) && ( mode != SAY_TEAM ) &&
@@ -1657,6 +1684,15 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	{
 		trap_SendServerCommand( ent->num(),
 		                        va( "print_tr %s %s", QQ( N_("$1$: voting not allowed here") ), cmd ) );
+		return;
+	}
+
+	if ( ( G_admin_permission( ent, ADMF_NO_GLOBALVOTE ) && !Q_stricmp( cmd, "callvote" ) )
+	     || ( G_admin_permission( ent, ADMF_NO_TEAMVOTE ) && !Q_stricmp( cmd, "callteamvote" ) ) )
+	{
+		trap_SendServerCommand( ent->num(),
+		                        va( "print_tr %s %s %s", QQ( N_("$1$: you are not permitted to call $2$ votes") ), 
+								    cmd, Q_stricmp( cmd, "callvote" ) ? QQ( "team" ) : QQ( "global" ) ) );
 		return;
 	}
 
@@ -3536,7 +3572,7 @@ static void Cmd_Build_f( gentity_t *ent )
 	vec3_t      origin, normal;
 	int         groundEntNum;
 
-	if ( ent->client->pers.namelog->denyBuild )
+	if ( ent->client->pers.namelog->denyBuild || G_admin_permission( ent, ADMF_NO_BUILD ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_B_REVOKED );
 		return;

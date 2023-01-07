@@ -476,7 +476,13 @@ static const g_admin_flag_t g_admin_flags[] = {
 	{ ADMF_NOCENSORFLOOD,   "no flood protection" },
 	{ ADMF_NO_VOTE_LIMIT,   "vote limitations do not apply" },
 	{ ADMF_SPEC_ALLCHAT,    "can see team chat as spectator" },
-	{ ADMF_UNACCOUNTABLE,   "does not need to specify reason for kick/ban" }
+	{ ADMF_UNACCOUNTABLE,   "does not need to specify reason for kick/ban" },
+	// now the negative flags
+	{ ADMF_NO_GLOBALCHAT,   "may not use the global chat" },
+	{ ADMF_NO_TEAMCHAT,     "may not use the team chat" },
+	{ ADMF_NO_GLOBALVOTE,   "may not call global votes" },
+	{ ADMF_NO_TEAMVOTE,     "may not call team votes" },
+	{ ADMF_NO_BUILD,        "may not build" }
 };
 #define adminNumFlags ARRAY_LEN( g_admin_flags )
 
@@ -591,7 +597,7 @@ static bool admin_permission( char *flags, const char *flag, bool *perm )
 			return true;
 		}
 
-		if ( !strcmp( token, ADMF_ALLFLAGS ) )
+		if ( !strcmp( token, ADMF_ALLFLAGS ) && flag[ 0 ] != '.' )
 		{
 			allflags = true;
 			p = *perm;
@@ -685,7 +691,7 @@ bool G_admin_permission( gentity_t *ent, const char *flag )
 	// console always wins
 	if ( !ent )
 	{
-		return true;
+		return flag[ 0 ] != '.'; // negative flags must not apply to the console
 	}
 
 	if ( ent->client->pers.admin && ent->client->pers.pubkey_authenticated != 1 )
@@ -3835,8 +3841,11 @@ bool G_admin_listplayers( gentity_t *ent )
 		}
 
 		bot = ( level.gentities[ i ].r.svFlags & SVF_BOT ) ? 'R' : ' ';
-		muted = p->pers.namelog->muted ? 'M' : ' ';
-		denied = p->pers.namelog->denyBuild ? 'B' : ' ';
+		muted = ( p->pers.namelog->muted 
+		          || G_admin_permission( p->ent(), ADMF_NO_GLOBALCHAT ) 
+		          || G_admin_permission( p->ent(), ADMF_NO_TEAMCHAT ) ) ? 'M' : ' '; 
+		denied = ( p->pers.namelog->denyBuild 
+		           || G_admin_permission( p->ent(), ADMF_NO_BUILD ) ) ? 'B' : ' ';
 
 		l = d;
 		registeredname = nullptr;
@@ -4883,7 +4892,8 @@ bool G_admin_flaglist( gentity_t *ent )
 
 	for( unsigned i = 0; i < adminNumFlags; i++ )
 	{
-		ADMBP( va( "  ^5%-20s ^7%s",
+		ADMBP( va( "  ^%d%-20s ^7%s",
+		           ( g_admin_flags[ i ].flag[ 0 ] == '.' ? 1 : 5 ),
 		           g_admin_flags[ i ].flag,
 		           g_admin_flags[ i ].description ) );
 	}
@@ -5038,10 +5048,10 @@ bool G_admin_flag( gentity_t *ent )
 		}
 	}
 
-	// flag name must be alphanumeric
+	// flag name must be alphanumeric, and may optionally start with a period [.] character.
 	for ( i = 0; flag[ i ]; ++i )
 	{
-		if ( !Str::cisalnum( flag[ i ] ) )
+		if ( !( Str::cisalnum( flag[ i ] ) || ( i == 0 && flag[ i ] == '.' ) ) )
 		{
 			break;
 		}
@@ -5065,7 +5075,8 @@ bool G_admin_flag( gentity_t *ent )
 		return false;
 	}
 
-	if ( !G_admin_permission( ent, flag ) )
+	if ( !G_admin_permission( ent, flag )
+		 && flag[0] != '.' )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$:^* you may only change flags that you also have") ), command ) );
 		return false;
