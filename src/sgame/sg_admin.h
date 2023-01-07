@@ -64,6 +64,12 @@ struct gentity_t;
  * INCOGNITO - does not show up as an admin in /listplayers
  * ALLFLAGS - all flags (including command flags) apply to this player
  * ADMINCHAT - receives and can send /a admin messages
+ =======================================================================
+ * .NOGLOBALCHAT - may not use the global chat
+ * .NOTEAMCHAT - may not use the team chat
+ * .NOVOTE - may not call global votes
+ * .NOTEAMVOTE - may not call team votes
+ * .NOBUILD - may not build
  */
 #define ADMF_IMMUNITY        "IMMUNITY"
 #define ADMF_NOCENSORFLOOD   "NOCENSORFLOOD"
@@ -78,6 +84,13 @@ struct gentity_t;
 #define ADMF_INCOGNITO       "INCOGNITO"
 #define ADMF_ALLFLAGS        "ALLFLAGS"
 #define ADMF_ADMINCHAT       "ADMINCHAT"
+
+// "negative" flags
+#define ADMF_NO_GLOBALCHAT  ".NOGLOBALCHAT"
+#define ADMF_NO_TEAMCHAT    ".NOTEAMCHAT"
+#define ADMF_NO_GLOBALVOTE  ".NOGLOBALVOTE"
+#define ADMF_NO_TEAMVOTE    ".NOTEAMVOTE"
+#define ADMF_NO_BUILD       ".NOBUILD"
 
 #define MAX_ADMIN_LISTITEMS  20
 #define MAX_ADMIN_SHOWBANS   10

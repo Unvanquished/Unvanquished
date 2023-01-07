@@ -1075,7 +1075,7 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	gentity_t *buildable;
 
 	// Check for revoked building rights.
-	if ( ent->client->pers.namelog->denyBuild )
+	if ( ent->client->pers.namelog->denyBuild || G_admin_permission( ent, ADMF_NO_BUILD ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_B_REVOKED );
 		return nullptr;
