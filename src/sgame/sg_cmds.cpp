@@ -3724,7 +3724,14 @@ static void Cmd_Tactic_f( gentity_t * ent )
 	}
 	level.team[ userTeam ].lastTacticId = lastChangedId;
 
-	G_Say( ent, SAY_TEAM, va( changedBots == 1 ? "^A[%d bot]^5 command \"%s\"!" : "^A[%d bots]^5 command \"%s\"!", changedBots, behavior ) );
+	if ( changedBots == 0 )
+	{
+		ADMP( QQ( N_( "^3tactic:^* there are no bots to command on your team" ) ) );
+	}
+	else
+	{
+		G_Say( ent, SAY_TEAM, va( changedBots == 1 ? "^A[%d bot]^5 command \"%s\"!" : "^A[%d bots]^5 command \"%s\"!", changedBots, behavior ) );
+	}
 }
 
 void Cmd_TeamStatus_f( gentity_t * ent )
