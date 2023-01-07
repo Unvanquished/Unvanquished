@@ -1720,7 +1720,7 @@ bool BG_UpgradeDisabled( int upgrade );
 bool BG_ClassDisabled( int class_ );
 bool BG_BuildableDisabled( int buildable );
 
-bool BG_TacticBehaviorAllowed(std::string behaivor);
+bool BG_TacticBehaviorAllowed(std::string behavior);
 
 weapon_t BG_PrimaryWeapon( int const stats[] );
 

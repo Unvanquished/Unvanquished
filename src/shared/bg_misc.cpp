@@ -2271,14 +2271,14 @@ BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 	return results;
 }
 
-void BG_SetTacticBehaviors(std::string behaviorsCsv)
+void BG_SetTacticBehaviors( std::string behaviorsCsv )
 {
 	bg_tacticBehaviors = BG_ParseTacticBehaviorsList( behaviorsCsv );
 }
 
 bool BG_TacticBehaviorAllowed( std::string behavior )
 {
-	for ( auto b : bg_tacticBehaviors)
+	for ( auto b : bg_tacticBehaviors )
 	{
 		if ( b == behavior )
 		{
