@@ -594,14 +594,41 @@ bool IsAutomaticMover( const gentity_t *ent )
 	return true;
 }
 
-void BotHandleDoor( gentity_t *ent )
+// This function adds obstacles for doors that the bot can't open,
+// that is doors that are not automatic, or doors that are already opened.
+void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 {
-	if ( IsDoor( ent ) && !IsAutomaticMover( ent ) )
+	switch ( moverState )
 	{
-		// the door might have moved, we don't want to keep an incorrect state
-		G_BotRemoveObstacle( ent->num() );
+		case MOVER_POS1:
+		case ROTATOR_POS1:
+			if ( IsDoor( ent ) )
+			{
+				G_BotRemoveObstacle( ent->num() );
+				if ( !IsAutomaticMover( ent ) )
+				{
+					G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
+				}
+			}
+			break;
 
-		G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
+		case MOVER_POS2:
+		case ROTATOR_POS2:
+			if ( IsDoor( ent ) )
+			{
+				G_BotRemoveObstacle( ent->num() );
+				G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
+			}
+			break;
+
+		case MODEL_POS1: // TODO: have bots treat them as obstacles too, because they *are* obstacles.
+		case MODEL_POS2: // TODO: have bots treat them as obstacles too, because they *are* obstacles.
+		case ROTATOR_1TO2:
+		case ROTATOR_2TO1:
+		case MOVER_1TO2:
+		case MOVER_2TO1:
+		default:
+			break;
 	}
 }
 
@@ -620,15 +647,11 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 		case MOVER_POS1:
 			VectorCopy( ent->restingPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = trType_t::TR_STATIONARY;
-
-			BotHandleDoor( ent );
 			break;
 
 		case MOVER_POS2:
 			VectorCopy( ent->activatedPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = trType_t::TR_STATIONARY;
-
-			BotHandleDoor( ent );
 			break;
 
 		case MOVER_1TO2:
@@ -650,15 +673,11 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 		case ROTATOR_POS1:
 			VectorCopy( ent->restingPosition, ent->s.apos.trBase );
 			ent->s.apos.trType = trType_t::TR_STATIONARY;
-
-			BotHandleDoor( ent );
 			break;
 
 		case ROTATOR_POS2:
 			VectorCopy( ent->activatedPosition, ent->s.apos.trBase );
 			ent->s.apos.trType = trType_t::TR_STATIONARY;
-
-			BotHandleDoor( ent );
 			break;
 
 		case ROTATOR_1TO2:
@@ -699,6 +718,8 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 	}
 
 	trap_LinkEntity( ent );
+
+	BotHandleDoor( ent, moverState );
 }
 
 /*
