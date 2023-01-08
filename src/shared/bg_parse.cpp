@@ -1425,6 +1425,11 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 				cc->mins[ i ] = atof( token );
 			}
 
+			if (cc->mins[ 0 ] != cc->mins[ 1 ])
+			{
+				Log::Warn("BG_ParseClassModelFile: mins are expected to be the same for the x and y axis. You might see strange behaviour");
+			}
+
 			defined |= MINS;
 		}
 		else if ( !Q_stricmp( token, "maxs" ) )
@@ -1436,6 +1441,11 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 				PARSE(text, token);
 
 				cc->maxs[ i ] = atof( token );
+			}
+
+			if (cc->maxs[ 0 ] != cc->maxs[ 1 ])
+			{
+				Log::Warn("BG_ParseClassModelFile: maxs are expected to be the same for the x and y axis. You might see strange behaviour");
 			}
 
 			defined |= MAXS;
