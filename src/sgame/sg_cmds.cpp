@@ -3671,7 +3671,6 @@ static void Cmd_Tactic_f( gentity_t * ent )
 		ADMP( va( "%s %g", QQ( N_("^3tactic:^* may only be done every $1$ seconds") ), g_tacticMilliSeconds.Get()/1000.0 ) );
 		return;
 	}
-	level.team[ userTeam ].lastTacticTime = level.time;
 
 	if ( trap_Argc() < 2 )
 	{
@@ -3702,6 +3701,8 @@ static void Cmd_Tactic_f( gentity_t * ent )
 			numBots = MAX_CLIENTS;
 		}
 	}
+
+	level.team[ userTeam ].lastTacticTime = level.time;
 
 	int id = level.team[ userTeam ].lastTacticId;
 	int stopId = id;

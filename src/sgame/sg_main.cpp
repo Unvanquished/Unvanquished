@@ -184,7 +184,7 @@ Cvar::Cvar<int> g_floodMaxDemerits("g_floodMaxDemerits", "client message rate co
 Cvar::Cvar<int> g_floodMinTime("g_floodMinTime", "mute period after flooding, in milliseconds", Cvar::NONE, 2000);
 Cvar::Cvar<int> g_teamStatus("g_teamStatus", "allow /teamstatus command. 0 = disabled, otherwise you can only /teamstatus every <g_teamStatus> seconds.", Cvar::NONE, 5);
 
-Cvar::Cvar<int> g_tacticMilliSeconds("g_tacticMilliSeconds", "clients can only /tactic every <g_tacticMilliSeconds> milliseconds, -1 = disabled.", Cvar::NONE, -1);
+Cvar::Cvar<int> g_tacticMilliSeconds("g_tacticMilliSeconds", "clients can only /tactic every <g_tacticMilliSeconds> milliseconds, -1 = disabled.", Cvar::NONE, 1000);
 
 Cvar::Cvar<std::string> g_defaultLayouts("g_defaultLayouts", "layouts to pick randomly from each map", Cvar::NONE, "");
 Cvar::Cvar<std::string> g_layouts("g_layouts", "layouts for next map (cleared after use)", Cvar::NONE, "");
