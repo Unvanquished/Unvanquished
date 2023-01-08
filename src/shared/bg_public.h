@@ -60,9 +60,6 @@ DEPRECATED inline glm::vec3 VEC2GLM( glm::vec3 v ) {
 
 #define POWER_REFRESH_TIME 2000 // nextthink time for power checks
 
-// how many behaviors can be used for the tactic command
-#define MAX_TACTIC_BEHAVIORS ( 64 )
-
 // any change in playerState_t should be reflected in the table in bg_misc.cpp
 // (Gordon: unless it doesn't need transmission over the network, in which case it should probably go into the new pmext struct anyway)
 struct playerState_t
