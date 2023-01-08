@@ -3703,26 +3703,21 @@ static void Cmd_Tactic_f( gentity_t * ent )
 		}
 	}
 
-	/* check here if the user is on a team if making this an admin command */
-
-	int id = nextTacticId( level.team[ userTeam ].lastTacticId );
+	int id = level.team[ userTeam ].lastTacticId;
 	int stopId = id;
-	bool once = false;
-	int lastChangedId = 0;
 	int changedBots = 0;
-	for ( ; !( once && (changedBots >= numBots || id == stopId) ); id = nextTacticId( id ) )
+	do
 	{
-		once = true;
+		id = nextTacticId( id );
 		if ( !( g_entities[ id ].r.svFlags & SVF_BOT ) || !G_OnSameTeam( &g_entities[ id ], ent ) )
 		{
 			continue;
 		}
 		// now we know: it is a bot on the commanding player's team
 		G_BotChangeBehavior( id, behavior );
-		lastChangedId = id;
+		level.team[ userTeam ].lastTacticId = id;
 		changedBots++;
-	}
-	level.team[ userTeam ].lastTacticId = lastChangedId;
+	} while ( ( changedBots < numBots && id != stopId ) );
 
 	if ( changedBots == 0 )
 	{
