@@ -561,10 +561,8 @@ static void CG_Menu( int menuType, int arg )
 			break;
 
 		case MN_B_REVOKED:
-			longMsg = _("Your teammates have lost faith in your ability to build "
-			          "for the team. You will not be allowed to build until your "
-			          "team votes to reinstate your building rights.");
-			shortMsg = _("Your building rights have been revoked");
+			longMsg = _("You are no longer permitted to build.");
+			shortMsg = _("You are no longer permitted to build");
 			break;
 
 		case MN_B_SURRENDER:
