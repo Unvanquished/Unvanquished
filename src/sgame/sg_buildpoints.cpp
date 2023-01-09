@@ -23,6 +23,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sg_local.h"
+#include "shared/parse.h"
 #include "CBSE.h"
 
 static Log::Logger buildpointLogger("sgame.buildpoints");
@@ -69,8 +70,41 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
  * @brief Calculate the build point budgets for both teams.
  */
 void G_UpdateBuildPointBudgets() {
-	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		level.team[team].totalBudget = g_buildPointInitialBudget.Get();
+	level.team[ TEAM_NONE ].totalBudget = DEFAULT_BP_INITIAL_BUDGET;
+
+	int count = 0;
+	for (Parse_WordListSplitter w(g_buildPointInitialBudget.Get()); *w; ++w)
+	{
+		count++;
+	}
+
+	if ( count == 0 )
+	{
+		for (int team = TEAM_NONE + 1; team < NUM_TEAMS; team++)
+		{
+			level.team[team].totalBudget = DEFAULT_BP_INITIAL_BUDGET;
+		}
+		Log::Warn("g_buildPointInitialBudget must be a non-empty list of integers");
+		return;
+	}
+
+	Parse_WordListSplitter w(g_buildPointInitialBudget.Get());
+	for (int team = TEAM_NONE + 1; team < NUM_TEAMS; team++)
+	{
+		int bp;
+		if ( !Cvar::ParseCvarValue(*w, bp) )
+		{
+			bp = DEFAULT_BP_INITIAL_BUDGET;
+			Log::Warn("g_buildPointInitialBudget values must be integers, defaulting to %i bp", bp);
+		}
+		level.team[team].totalBudget = bp;
+
+		if (count > team)
+		{
+			// If we have more teams than words, then we just keep
+			// the last word (number) for every team
+			++w;
+		}
 	}
 
 	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {

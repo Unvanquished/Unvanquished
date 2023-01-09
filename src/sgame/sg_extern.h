@@ -83,7 +83,7 @@ extern Cvar::Cvar<int> g_maxVoteFillBots;
 extern Cvar::Cvar<int> g_fillBotsVotesPercent;
 extern Cvar::Cvar<int> g_fillBotsTeamVotesPercent;
 
-extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget;
+extern  Cvar::Callback<Cvar::Cvar<std::string>> g_buildPointInitialBudget;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner;
 extern  Cvar::Cvar<int> g_buildPointRecoveryInitialRate;
 extern  Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife;

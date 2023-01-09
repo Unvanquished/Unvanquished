@@ -96,12 +96,12 @@ Cvar::Cvar<float> g_minNameChangePeriod("g_minNameChangePeriod", "player must wa
 Cvar::Cvar<int> g_maxNameChanges("g_maxNameChanges", "max name changes per game", Cvar::NONE, 5);
 
 // gameplay: mining
-Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget(
+Cvar::Callback<Cvar::Cvar<std::string>> g_buildPointInitialBudget(
 		"g_BPInitialBudget",
 		"Initial build points count",
 		Cvar::SERVERINFO,
-		DEFAULT_BP_INITIAL_BUDGET,
-		[](int) {
+		XSTRING( DEFAULT_BP_INITIAL_BUDGET ),
+		[](std::string) {
 			G_UpdateBuildPointBudgets();
 		});
 Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
@@ -1606,9 +1606,9 @@ static void G_LogGameplayStats( int state )
 			             "# Time:    %02i:%02i:%02i\n"
 			             "# Format:  %i\n"
 			             "#\n"
-			             "# g_momentumHalfLife:        %4g\n"
-			             "# g_initialBuildPoints:      %4i\n"
-			             "# g_budgetPerMiner:          %4i\n"
+			             "# g_momentumHalfLife:       %4g\n"
+			             "# g_BPInitialBudget:        %s\n"
+			             "# g_BPBudgetPerMiner:       %4i\n"
 			             "#\n"
 			             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16\n"
 			             "#  T #A #H AMom HMom ---- ATBP HTBP AUBP HUBP ABRV HBRV ACre HCre AVal HVal\n"
@@ -1619,7 +1619,7 @@ static void G_LogGameplayStats( int state )
 			             t.tm_hour, t.tm_min, t.tm_sec,
 			             LOG_GAMEPLAY_STATS_VERSION,
 			             g_momentumHalfLife.Get(),
-			             g_buildPointInitialBudget.Get(),
+			             g_buildPointInitialBudget.Get().c_str(),
 			             g_buildPointBudgetPerMiner.Get() );
 
 			break;
