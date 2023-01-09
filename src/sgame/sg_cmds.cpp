@@ -3658,7 +3658,7 @@ static void Cmd_Tactic_f( gentity_t * ent )
 		return;
 	}
 
-	int milliSeconds = g_tacticMilliSeconds.Get();
+	int milliSeconds = g_tacticMilliseconds.Get();
 	if ( milliSeconds < 0 )
 	{
 		ADMP( va( "%s", QQ( N_("^3tactic^* is disabled") ) ) );
@@ -3668,7 +3668,7 @@ static void Cmd_Tactic_f( gentity_t * ent )
 	team_t userTeam = G_Team( ent );
 	if ( level.time - level.team[ userTeam ].lastTacticTime < milliSeconds )
 	{
-		ADMP( va( "%s %g", QQ( N_("^3tactic:^* may only be done every $1$ seconds") ), g_tacticMilliSeconds.Get()/1000.0 ) );
+		ADMP( va( "%s %g", QQ( N_("^3tactic:^* may only be done every $1$ seconds") ), g_tacticMilliseconds.Get()/1000.0 ) );
 		return;
 	}
 
