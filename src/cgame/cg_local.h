@@ -1372,9 +1372,9 @@ struct mapInfo_t
 
 struct rocketDataSource_t
 {
-	server_t servers[ AS_FAVORITES + 1 ][ MAX_SERVERS ];
-	int serverCount[ AS_FAVORITES + 1 ];
-	int serverIndex[ AS_FAVORITES + 1 ];
+	server_t servers[ AS_NUM_TYPES ][ MAX_SERVERS ];
+	int serverCount[ AS_NUM_TYPES ];
+	int serverIndex[ AS_NUM_TYPES ];
 	bool buildingServerInfo;
 	bool retrievingServers;
 

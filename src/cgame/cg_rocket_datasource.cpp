@@ -244,83 +244,74 @@ void CG_Rocket_BuildServerList( const char *args )
 	rocketInfo.serversLastRefresh = rocketInfo.realtime;
 	rocketInfo.currentNetSrc = netSrc;
 
-	if ( netSrc != AS_FAVORITES )
+	int numServers;
+
+	rocketInfo.data.retrievingServers = true;
+
+	Rocket_DSClearTable( "server_browser", args );
+	CG_Rocket_CleanUpServerList( args );
+
+	trap_LAN_MarkServerVisible( netSrc, -1, true );
+
+	numServers = trap_LAN_GetServerCount( netSrc );
+
+	// Still waiting for a response...
+	if ( numServers == -1 )
 	{
-		int numServers;
-
-		rocketInfo.data.retrievingServers = true;
-
-		Rocket_DSClearTable( "server_browser", args );
-		CG_Rocket_CleanUpServerList( args );
-
-		trap_LAN_MarkServerVisible( netSrc, -1, true );
-
-		numServers = trap_LAN_GetServerCount( netSrc );
-
-		// Still waiting for a response...
-		if ( numServers == -1 )
-		{
-			return;
-		}
-
-		for ( i = 0; i < numServers; ++i )
-		{
-			char info[ MAX_STRING_CHARS ];
-			int ping, bots, clients, maxClients;
-
-			memset( &data, 0, sizeof( data ) );
-
-			if ( !trap_LAN_ServerIsVisible( netSrc, i ) )
-			{
-				continue;
-			}
-
-			ping = trap_LAN_GetServerPing( netSrc, i );
-
-			if ( ping >= 0 || !Q_stricmp( args, "favorites" ) )
-			{
-				char addr[ 50 ]; // long enough for IPv6 literal plus port no.
-				char mapname[ 256 ];
-				trap_LAN_GetServerInfo( netSrc, i, info, sizeof( info ) );
-
-				bots = atoi( Info_ValueForKey( info, "bots" ) );
-				clients = atoi( Info_ValueForKey( info, "clients" ) );
-				maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
-				Q_strncpyz( addr, Info_ValueForKey( info, "addr" ), sizeof( addr ) );
-				Q_strncpyz( mapname, Info_ValueForKey( info, "mapname" ), sizeof( mapname ) );
-				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, mapname, addr, netSrc );
-			}
-		}
-
-		for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
-		{
-			if ( rocketInfo.data.servers[ netSrc ][ i ].ping <= 0 )
-			{
-				continue;
-			}
-
-			Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
-			Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
-			Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), false );
-			Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), false );
-			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
-			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
-			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
-			Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
-
-			Rocket_DSAddRow( "server_browser", args, data );
-
-			if ( rocketInfo.data.retrievingServers )
-			{
-				rocketInfo.data.retrievingServers = false;
-			}
-		}
-
+		return;
 	}
 
-	else if ( !Q_stricmp( args, "serverInfo" ) )
+	for ( i = 0; i < numServers; ++i )
 	{
-		CG_Rocket_BuildServerInfo();
+		char info[ MAX_STRING_CHARS ];
+		int ping, bots, clients, maxClients;
+
+		memset( &data, 0, sizeof( data ) );
+
+		if ( !trap_LAN_ServerIsVisible( netSrc, i ) )
+		{
+			continue;
+		}
+
+		ping = trap_LAN_GetServerPing( netSrc, i );
+
+		if ( ping >= 0 )
+		{
+			char addr[ 50 ]; // long enough for IPv6 literal plus port no.
+			char mapname[ 256 ];
+			trap_LAN_GetServerInfo( netSrc, i, info, sizeof( info ) );
+
+			bots = atoi( Info_ValueForKey( info, "bots" ) );
+			clients = atoi( Info_ValueForKey( info, "clients" ) );
+			maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
+			Q_strncpyz( addr, Info_ValueForKey( info, "addr" ), sizeof( addr ) );
+			Q_strncpyz( mapname, Info_ValueForKey( info, "mapname" ), sizeof( mapname ) );
+			AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, mapname, addr, netSrc );
+		}
+	}
+
+	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
+	{
+		if ( rocketInfo.data.servers[ netSrc ][ i ].ping <= 0 )
+		{
+			continue;
+		}
+
+		Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
+		Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
+		Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), false );
+		Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), false );
+		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), false );
+		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, false );
+		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
+		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
+
+		Rocket_DSAddRow( "server_browser", args, data );
+
+		if ( rocketInfo.data.retrievingServers )
+		{
+			rocketInfo.data.retrievingServers = false;
+		}
 	}
 }
 
@@ -427,7 +418,7 @@ void CG_Rocket_CleanUpServerList( const char *table )
 	int j;
 	int netSrc = CG_StringToNetSource( table );
 
-	for ( i = AS_LOCAL; i <= AS_FAVORITES; ++i )
+	for ( i = AS_LOCAL; i < AS_NUM_TYPES; ++i )
 	{
 		if ( !table || !*table || i == netSrc )
 		{
