@@ -1090,6 +1090,8 @@ static void SP_worldspawn()
 	G_SpawnStringIntoCVar( "alienAllowBuilding", g_alienAllowBuilding );
 
 	G_SpawnStringIntoCVar( "BPInitialBudget", g_buildPointInitialBudget );
+	G_SpawnStringIntoCVar( "BPInitialBudgetHumans", g_BPInitialBudgetHumans );
+	G_SpawnStringIntoCVar( "BPInitialBudgetAliens", g_BPInitialBudgetAliens );
 	G_SpawnStringIntoCVar( "BPBudgetPerMiner", g_buildPointBudgetPerMiner );
 	G_SpawnStringIntoCVar( "BPRecoveryRateHalfLife", g_buildPointRecoveryRateHalfLife );
 
