@@ -3,8 +3,6 @@
 
 #include <glm/geometric.hpp>
 
-constexpr float ATTACK_RANGE         = (float)ROCKETPOD_RANGE; // cgame needs to know this.
-constexpr int   ATTACK_PERIOD        = ROCKETPOD_ATTACK_PERIOD; // cgame needs to know this.
 constexpr int   SHUTTER_OPEN_TIME    = 1000;
 constexpr int   TARGET_SEARCH_PERIOD = 500;
 constexpr int   LOCKON_TIME          = 500;
@@ -17,9 +15,9 @@ RocketpodComponent::RocketpodComponent(Entity& entity, HumanBuildableComponent& 
 	, lastTargetSearch(-TARGET_SEARCH_PERIOD)
 	, openingShuttersSince(-SHUTTER_OPEN_TIME)
 	, lockingOnSince(-LOCKON_TIME)
-	, lastShot(-ATTACK_PERIOD)
+	, lastShot(-ROCKETPOD_ATTACK_PERIOD)
 {
-	GetTurretComponent().SetRange(ATTACK_RANGE);
+	GetTurretComponent().SetRange(ROCKETPOD_RANGE);
 
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_BEFORE, 0);
 }
@@ -131,7 +129,7 @@ void RocketpodComponent::Think(int timeDelta) {
 				// The lockon timer has expired and it's safe to shoot, so do so.
 				firing = true;
 
-				if (lastShot + ATTACK_PERIOD <= level.time) {
+				if (lastShot + ROCKETPOD_ATTACK_PERIOD <= level.time) {
 					Shoot();
 				}
 			} else if (!lockingOn) {
@@ -208,7 +206,7 @@ bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin,
 
 	glm::vec3 mins = {-missileSize, -missileSize, -missileSize};
 	glm::vec3 maxs = { missileSize,  missileSize,  missileSize};
-	glm::vec3 end  = origin + ATTACK_RANGE * direction;
+	glm::vec3 end  = origin + ROCKETPOD_RANGE * direction;
 
 	trace_t trace;
 	trap_Trace( &trace, &origin[0], &mins[0], &maxs[0], &end[0], passEntityNumber, MASK_SHOT, 0 );

@@ -2,8 +2,6 @@
 
 #include <glm/geometric.hpp>
 
-constexpr float ATTACK_RANGE         = (float)MGTURRET_RANGE; // cgame needs to know this.
-constexpr int   ATTACK_PERIOD        = MGTURRET_ATTACK_PERIOD; // cgame needs to know this.
 constexpr float MAX_DAMAGE           = 4.0f;
 constexpr float MIN_DAMAGE           = 2.0f;
 constexpr int   TARGET_SEARCH_PERIOD = 500;
@@ -12,9 +10,9 @@ MGTurretComponent::MGTurretComponent(Entity& entity, HumanBuildableComponent& r_
 	: MGTurretComponentBase(entity, r_HumanBuildableComponent, r_TurretComponent)
 	, firing(false)
 	, lastTargetSearch(-TARGET_SEARCH_PERIOD)
-	, lastShot(-ATTACK_PERIOD)
+	, lastShot(-MGTURRET_ATTACK_PERIOD)
 {
-	GetTurretComponent().SetRange(ATTACK_RANGE);
+	GetTurretComponent().SetRange(MGTURRET_RANGE);
 
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_BEFORE, 0);
 }
@@ -78,7 +76,7 @@ void MGTurretComponent::Think(int timeDelta) {
 				GetTurretComponent().MoveHeadToTarget(timeDelta);
 			}
 
-			if (lastShot + ATTACK_PERIOD <= level.time) {
+			if (lastShot + MGTURRET_ATTACK_PERIOD <= level.time) {
 				Shoot();
 			}
 
@@ -126,7 +124,7 @@ void MGTurretComponent::Shoot() {
 	ASSERT(target);
 
 	float damageMod = 1.0f - Math::Clamp(
-		G_Distance(entity.oldEnt, target->oldEnt) / ATTACK_RANGE, 0.0f, 1.0f
+		G_Distance(entity.oldEnt, target->oldEnt) / MGTURRET_RANGE, 0.0f, 1.0f
 	);
 
 	float damage = MIN_DAMAGE + (MAX_DAMAGE - MIN_DAMAGE) * damageMod;
