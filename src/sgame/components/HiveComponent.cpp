@@ -2,7 +2,6 @@
 #include "../Entities.h"
 
 #include <glm/geometric.hpp>
-constexpr float SENSE_RANGE   = HIVE_SENSE_RANGE; // Also needed by cgame.
 constexpr int   ATTACK_PERIOD = 3000;
 
 HiveComponent::HiveComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent)
@@ -78,7 +77,7 @@ bool HiveComponent::TargetValid(Entity& candidate, bool checkDistance) const {
 	if ((candidate.oldEnt->flags & FL_NOTARGET)) return false;
 
 	// If asked to, check if target is in sense range.
-	if (checkDistance && G_Distance(entity.oldEnt, candidate.oldEnt) > SENSE_RANGE) return false;
+	if (checkDistance && G_Distance(entity.oldEnt, candidate.oldEnt) > HIVE_SENSE_RANGE) return false;
 
 	// Check for line of sight.
 	if (!G_LineOfFire(entity.oldEnt, candidate.oldEnt)) return false;
@@ -91,8 +90,8 @@ bool HiveComponent::CompareTargets(Entity& a, Entity& b) const {
 	float bDistance = G_Distance(entity.oldEnt, b.oldEnt);
 
 	// Prefer the one in attack range.
-	if (aDistance < SENSE_RANGE && bDistance > SENSE_RANGE) return true;
-	if (aDistance > SENSE_RANGE && bDistance < SENSE_RANGE) return false;
+	if (aDistance < HIVE_SENSE_RANGE && bDistance > HIVE_SENSE_RANGE) return true;
+	if (aDistance > HIVE_SENSE_RANGE && bDistance < HIVE_SENSE_RANGE) return false;
 
 	// TODO: Prefer target that is targeted by fewer hives.
 
