@@ -37,22 +37,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "bot_types.h"
 #include "sgame/sg_bot_local.h"
 
-void BotInit();
+void BotAssertionInit();
 void BotDebugDrawMesh();
 void Cmd_NavEdit( gentity_t *ent );
 void Cmd_AddConnection( gentity_t *ent );
 void Cmd_NavTest( gentity_t *ent );
-
-void         BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void         BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-bool     BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end );
-
-void BotFindRandomPoint( int botClientNum, vec3_t point );
-bool BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, glm::vec3 &point, float radius );
-
-// be careful: those two function give incorrect behavior if an area is disabled more than once: a node disabled twice will be enabled back on the first try
-// TODO: decide if we want to use G_BotAddObstacle instead
-void G_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void G_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 
 #endif

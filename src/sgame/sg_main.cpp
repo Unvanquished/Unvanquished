@@ -104,6 +104,22 @@ Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget(
 		[](int) {
 			G_UpdateBuildPointBudgets();
 		});
+Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetHumans(
+		"g_BPInitialBudgetHumans",
+		"Initial build points count for humans",
+		Cvar::SERVERINFO,
+		-1,
+		[](int) {
+			G_UpdateBuildPointBudgets();
+		});
+Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetAliens(
+		"g_BPInitialBudgetAliens",
+		"Initial build points count for humans",
+		Cvar::SERVERINFO,
+		-1,
+		[](int) {
+			G_UpdateBuildPointBudgets();
+		});
 Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
 		"g_BPBudgetPerMiner",
 		"Budget per Miner",
@@ -552,6 +568,8 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
+
+	BotAssertionInit();
 
 	// initalize bot fill team size from g_bot_defaultFill now so that it will be overwritten
 	// by a `bot fill` in map configs
@@ -2304,8 +2322,6 @@ void G_RunFrame( int levelTime )
 		level.time = levelTime;
 		level.matchTime = levelTime - level.startTime;
 
-		level.frameMsec = trap_Milliseconds();
-
 		CheckExitRules();
 
 		return;
@@ -2349,7 +2365,6 @@ void G_RunFrame( int levelTime )
 		return;
 	}
 
-	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
 	level.matchTime = levelTime - level.startTime;
@@ -2358,8 +2373,6 @@ void G_RunFrame( int levelTime )
 
 	// generate public-key messages
 	G_admin_pubkey();
-
-	level.frameMsec = trap_Milliseconds();
 
 	// now we are done spawning
 	level.spawning = false;
@@ -2508,7 +2521,6 @@ void G_RunFrame( int levelTime )
 
 	BotDebugDrawMesh();
 	G_BotUpdateObstacles();
-	level.frameMsec = trap_Milliseconds();
 }
 
 void G_PrepareEntityNetCode() {

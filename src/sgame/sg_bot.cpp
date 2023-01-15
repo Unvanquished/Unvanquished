@@ -557,11 +557,6 @@ void G_BotIntermissionThink( gclient_t *client )
 // are normally added at the beginning of the round so it shouldn't be noticeable.
 bool G_BotInit()
 {
-	if ( treeList.maxTrees == 0 )
-	{
-		InitTreeList( &treeList );
-	}
-
 	if ( !G_BotNavInit() )
 	{
 		Log::Notice( "Failed to load navmeshes" );

@@ -135,6 +135,9 @@ struct GentityRef_impl
 	T entity;
 	unsigned generation;
 
+	GentityRef_impl() = default; // uninitialized!
+	GentityRef_impl(T ent) { *this = ent; }
+
 	GentityRef_impl<T>& operator=(T ent) {
 		entity = ent;
 		if (ent) {
@@ -717,10 +720,8 @@ struct level_locals_t
 
 	bool     inClient;
 
-	int      framenum;
 	int      time; // time the map was first started in milliseconds (map restart will update startTime)
 	int      previousTime; // so movers can back up when blocked
-	int      frameMsec; // trap_Milliseconds() at end frame
 
 	int      startTime; // level.time the map was last (re)started in milliseconds
 	int      matchTime; // ms since the current match begun

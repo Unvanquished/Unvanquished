@@ -459,10 +459,6 @@ int CG_StringToNetSource( const char *src )
 	{
 		return AS_LOCAL;
 	}
-	else if ( !Q_stricmp( src, "favorites" ) )
-	{
-		return AS_FAVORITES;
-	}
 	return AS_GLOBAL;
 }
 
@@ -472,9 +468,6 @@ const char *CG_NetSourceToString( int netSrc )
 	{
 		case AS_LOCAL:
 			return "local";
-
-		case AS_FAVORITES:
-			return "favorites";
 
 		default:
 			return "internet";

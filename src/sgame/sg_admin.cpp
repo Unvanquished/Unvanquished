@@ -476,7 +476,13 @@ static const g_admin_flag_t g_admin_flags[] = {
 	{ ADMF_NOCENSORFLOOD,   "no flood protection" },
 	{ ADMF_NO_VOTE_LIMIT,   "vote limitations do not apply" },
 	{ ADMF_SPEC_ALLCHAT,    "can see team chat as spectator" },
-	{ ADMF_UNACCOUNTABLE,   "does not need to specify reason for kick/ban" }
+	{ ADMF_UNACCOUNTABLE,   "does not need to specify reason for kick/ban" },
+	// now the negative flags
+	{ ADMF_NO_GLOBALCHAT,   "may not use the global chat" },
+	{ ADMF_NO_TEAMCHAT,     "may not use the team chat" },
+	{ ADMF_NO_GLOBALVOTE,   "may not call global votes" },
+	{ ADMF_NO_TEAMVOTE,     "may not call team votes" },
+	{ ADMF_NO_BUILD,        "may not build" }
 };
 #define adminNumFlags ARRAY_LEN( g_admin_flags )
 
@@ -591,7 +597,7 @@ static bool admin_permission( char *flags, const char *flag, bool *perm )
 			return true;
 		}
 
-		if ( !strcmp( token, ADMF_ALLFLAGS ) )
+		if ( !strcmp( token, ADMF_ALLFLAGS ) && flag[ 0 ] != '.' )
 		{
 			allflags = true;
 			p = *perm;
@@ -685,7 +691,7 @@ bool G_admin_permission( gentity_t *ent, const char *flag )
 	// console always wins
 	if ( !ent )
 	{
-		return true;
+		return flag[ 0 ] != '.'; // negative flags must not apply to the console
 	}
 
 	if ( ent->client->pers.admin && ent->client->pers.pubkey_authenticated != 1 )
@@ -1302,14 +1308,16 @@ static int admin_out( void *admin, char *str )
 	l = G_admin_level( a->level );
 
 	int lncol = Color::StrlenNocolor( l->name );
+	int namelen  = strlen( l->name );
 
 	if ( a->lastSeen.tm_mday )
 	{
 		trap_GetTimeString( lastSeen, sizeof( lastSeen ), "%Y-%m-%d", &a->lastSeen );
 	}
 
-	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s %s %s",
-	             a->level, admin_level_maxname + lncol, l ? l->name : "(null)",
+	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s ^*%s %s",
+	             a->level, namelen + ( admin_level_maxname - lncol ), 
+	             l ? l->name : "(null)",
 	             lastSeen, a->name );
 
 	return 0;
@@ -3787,7 +3795,7 @@ bool G_admin_listplayers( gentity_t *ent )
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
 	char            bot, muted, denied;
-	int             authed = 1;
+	int             authed;
 	char            namecleaned[ MAX_NAME_LENGTH ];
 	char            name2cleaned[ MAX_NAME_LENGTH ];
 	g_admin_level_t *l;
@@ -3833,12 +3841,18 @@ bool G_admin_listplayers( gentity_t *ent )
 		}
 
 		bot = ( level.gentities[ i ].r.svFlags & SVF_BOT ) ? 'R' : ' ';
-		muted = p->pers.namelog->muted ? 'M' : ' ';
-		denied = p->pers.namelog->denyBuild ? 'B' : ' ';
+		muted = ( p->pers.namelog->muted 
+		          || G_admin_permission( p->ent(), ADMF_NO_GLOBALCHAT ) 
+		          || G_admin_permission( p->ent(), ADMF_NO_TEAMCHAT ) ) ? 'M' : ' '; 
+		denied = ( p->pers.namelog->denyBuild 
+		           || G_admin_permission( p->ent(), ADMF_NO_BUILD ) ) ? 'B' : ' ';
 
 		l = d;
 		registeredname = nullptr;
 		hint = canset;
+
+		authed = 1; // bots don't have a pubkey, so this is required otherwise
+		            // the "authed" state is stuck until the next real player.
 
 		if ( p->pers.admin )
 		{
@@ -3849,7 +3863,7 @@ bool G_admin_listplayers( gentity_t *ent )
 				hint = admin_higher( ent, &g_entities[ i ] );
 			}
 
-			if ( hint || !G_admin_permission( &g_entities[ i ], ADMF_INCOGNITO ) )
+			if ( authed && ( hint || !G_admin_permission( &g_entities[ i ], ADMF_INCOGNITO ) ) )
 			{
 				l = G_admin_level( p->pers.admin->level );
 				G_SanitiseString( p->pers.netname, namecleaned,
@@ -3874,6 +3888,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		}
 
 		int colorlen = Color::StrlenNocolor( lname );
+		int namelen  = strlen( lname );
 
 		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^* ^5%c^1%c%c%s^7 %s^* %s%s%s %s",
 		           i,
@@ -3881,7 +3896,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		           t,
 		           l ? l->level : 0,
 		           hint ? '*' : ' ',
-		           admin_level_maxname + colorlen,
+		           namelen + ( admin_level_maxname - colorlen ),
 		           lname,
 		           bot,
 		           muted,
@@ -3893,6 +3908,15 @@ bool G_admin_listplayers( gentity_t *ent )
 		           ( registeredname ) ? "^*)" : "",
 		           ( !authed ) ? "^1NOT AUTHED" : "" ) );
 	}
+
+	ADMBP( va( "\n^3listplayers:^* legend:" ) );
+
+	if ( canset ){
+		ADMBP( va( "^2*^* = you may set this player's admin level." ) );
+	}
+
+	ADMBP( va( "^5R^* = this player is a bot.       ^1M^* = this player is muted." ) );
+	ADMBP( va( "^1B^* = this player may not build.  %s", ( canseeWarn ? "^3W^* = this player has been warned." : "" ) ) );
 
 	ADMBP_end();
 	return true;
@@ -4868,7 +4892,8 @@ bool G_admin_flaglist( gentity_t *ent )
 
 	for( unsigned i = 0; i < adminNumFlags; i++ )
 	{
-		ADMBP( va( "  ^5%-20s ^7%s",
+		ADMBP( va( "  ^%d%-20s ^7%s",
+		           ( g_admin_flags[ i ].flag[ 0 ] == '.' ? 1 : 5 ),
 		           g_admin_flags[ i ].flag,
 		           g_admin_flags[ i ].description ) );
 	}
@@ -5023,10 +5048,10 @@ bool G_admin_flag( gentity_t *ent )
 		}
 	}
 
-	// flag name must be alphanumeric
+	// flag name must be alphanumeric, and may optionally start with a period [.] character.
 	for ( i = 0; flag[ i ]; ++i )
 	{
-		if ( !Str::cisalnum( flag[ i ] ) )
+		if ( !( Str::cisalnum( flag[ i ] ) || ( i == 0 && flag[ i ] == '.' ) ) )
 		{
 			break;
 		}
@@ -5050,7 +5075,8 @@ bool G_admin_flag( gentity_t *ent )
 		return false;
 	}
 
-	if ( !G_admin_permission( ent, flag ) )
+	if ( !G_admin_permission( ent, flag )
+		 && flag[0] != '.' )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$:^* you may only change flags that you also have") ), command ) );
 		return false;
@@ -5753,8 +5779,7 @@ static void BotUsage( gentity_t *ent )
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
 	                                        "            bot behavior (<name> | <slot#>) <behavior>\n"
-	                                        "            bot skill <skill level> [<team>]\n"
-	                                        "            bot debug_reload" ) );
+	                                        "            bot skill <skill level> [<team>]" ) );
 	ADMP( bot_usage );
 }
 
@@ -5906,7 +5931,8 @@ bool G_admin_navgen( gentity_t* ent )
 				trap_FS_FCloseFile( f );
 			}
 		}
-		else {
+		else
+		{
 			const classAttributes_t* species = BG_ClassByName( args.Argv( i ).c_str() );
 			if ( species->number == PCL_NONE )
 			{
@@ -5917,6 +5943,11 @@ bool G_admin_navgen( gentity_t* ent )
 			}
 			targets.push_back( species->number );
 		}
+	}
+
+	if ( targets.empty() )
+	{
+		return true;
 	}
 
 	navgen.Init( mapName );
@@ -6056,13 +6087,6 @@ bool G_admin_bot( gentity_t *ent )
 			// Will ignore non-bots, unfortunately you can't change human skill with a command
 			G_BotSetSkill( i, skill );
 		}
-	}
-	else if ( !Q_stricmp( arg1, "debug_reload" )  )
-	{
-		G_BotDelAllBots();
-		G_BotCleanup();
-		G_BotInit();
-		return true;
 	}
 	else
 	{

@@ -418,7 +418,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	ent->s.eventParm = meansOfDeath;
 	ent->s.otherEntityNum = self->num();
 	ent->s.otherEntityNum2 = killer;
-	ent->s.otherEntityNum3 = assistant;
+	ent->s.groundEntityNum = assistant; // we hijack the field for this
 	ent->s.generic1 = assistantTeam;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 

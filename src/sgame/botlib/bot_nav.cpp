@@ -120,10 +120,25 @@ void G_BotSetNavMesh( int botClientNum, qhandle_t nav )
 		return;
 	}
 
-	Bot_t *bot = &agents[ botClientNum ];
+	Bot_t &bot = agents[ botClientNum ];
 
-	bot->nav = &BotNavData[ nav ];
-	bot->needReplan = true;
+	// should only init the corridor once
+	if ( !bot.corridor.getPath() )
+	{
+		if ( !bot.corridor.init( MAX_BOT_PATH ) )
+		{
+			Sys::Drop( "Out of memory (bot corridor init)" );
+		}
+	}
+
+	bot.nav = &BotNavData[ nav ];
+	float clearVec[3]{};
+	bot.corridor.reset( 0, clearVec );
+	bot.clientNum = botClientNum;
+	bot.needReplan = true;
+	bot.offMesh = false;
+	bot.numCorners = 0;
+	memset( bot.routeResults, 0, sizeof( bot.routeResults ) );
 }
 
 static void GetEntPosition( int num, rVec &pos )

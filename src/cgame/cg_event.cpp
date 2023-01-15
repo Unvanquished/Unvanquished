@@ -121,7 +121,7 @@ static void CG_Obituary( entityState_t *ent )
 
 	target = ent->otherEntityNum;
 	attacker = ent->otherEntityNum2;
-	assistant = ent->otherEntityNum3;
+	assistant = ent->groundEntityNum; // we hijack the field for this
 	assistantTeam = (team_t) ( ent->generic1 & 0xFF ); // ugly hack allowing for future expansion(!)
 	mod = ent->eventParm;
 
@@ -1100,7 +1100,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		//       This is necessary as the reactor attacks all adjacent targets.
 		case EV_TESLATRAIL:
 			{
-				centity_t *source = &cg_entities[ es->generic1 ];
+				centity_t *source = &cg_entities[ es->otherEntityNum ];
 				centity_t *target = &cg_entities[ es->clientNum ];
 
 				if ( !CG_IsTrailSystemValid( &source->muzzleTS ) )

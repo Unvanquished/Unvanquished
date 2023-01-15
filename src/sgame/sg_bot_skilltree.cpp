@@ -68,6 +68,7 @@ static const std::vector<botSkillTreeElement_t> survival_skills = {
 	{ "mantis-flee-jump",   BOT_A_LEAP_ON_FLEE,          3, pred_alien, {} },
 	{ "goon-flee-jump",     BOT_A_POUNCE_ON_FLEE,        4, pred_alien, {} },
 	{ "tyrant-flee-run",    BOT_A_TYRANT_CHARGE_ON_FLEE, 4, pred_alien, {} },
+	{ "safe-barbs",         BOT_A_SAFE_BARBS,            3, pred_alien, {} },
 
 	// humans
 	{ "buy-armor",          BOT_H_BUY_ARMOR,   10, pred_human, {
@@ -80,6 +81,7 @@ static const std::vector<botSkillTreeElement_t> survival_skills = {
 static const std::vector<botSkillTreeElement_t> fighting_skills = {
 	// aliens
 	{ "aim-head",           BOT_A_AIM_HEAD,      10, pred_alien, {} },
+	{ "aim-barbs",          BOT_A_AIM_BARBS,     7,  pred_alien, {} },
 
 	// humans
 	{ "predict-aim",        BOT_H_PREDICTIVE_AIM, 5, pred_human, {} },
@@ -160,14 +162,12 @@ static Util::optional<botSkillTreeElement_t> ChooseOneSkill(const gentity_t *bot
 std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 {
 	std::vector<botSkillTreeElement_t> possible_choices = initial_unlockable_skills;
-	// aliens have 51 points to spend max
+	// aliens have 61 points to spend max
 	// humans have 40 points to spend max
-	// here we give a bit more money to humans because they have more
-	// expensive skills
-	float max = G_Team(bot) == TEAM_ALIENS ? 51.0f : 46.0f;
+	float max = G_Team(bot) == TEAM_ALIENS ? 61.0f : 40.0f;
 
-	// unlock every skill at skill 8
-	int skill_points = static_cast<float>(skill) / 8.0f * max;
+	// unlock every skill at skill 7
+	int skill_points = static_cast<float>(skill) / 7.0f * max;
 
 	// rng preparation
 	std::string name = bot->client->pers.netname;

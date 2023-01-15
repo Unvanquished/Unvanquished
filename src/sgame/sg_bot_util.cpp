@@ -1308,6 +1308,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 
 	return !G_OnSameTeam( self, &g_entities[trace.entityNum] )
 		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
+		&& ( g_entities[trace.entityNum].s.eType != entityType_t::ET_BUILDABLE || g_bot_attackStruct.Get() )
 		&& glm::distance( muzzle, VEC2GLM( trace.endpos ) ) <= std::max( range, secondaryRange );
 }
 
@@ -1538,6 +1539,10 @@ void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
 	//get the Vector from the bot to the enemy (ideal aim Vector)
 	glm::vec3 aimVec = target - viewBase;
 	float length = glm::length( aimVec );
+	if ( length < 1.0f )
+	{
+		return;
+	}
 	aimVec = glm::normalize( aimVec );
 
 	//take the current aim Vector
@@ -1924,15 +1929,34 @@ void BotFireWeaponAI( gentity_t *self )
 			break;
 		case WP_ALEVEL3_UPG:
 		{
+			bool hasBarbs = self->client->ps.ammo > 0;
+			bool outOfClawsRange = distance > LEVEL3_CLAW_UPG_RANGE;
+
 			// We add some protection for barbs so that bots don't
 			// barb themselves too easily. The safety factor
 			// hopefully accounts for the movement of the bot and
 			// its target
-			constexpr float barbSafetyFactor = 4.0f/3.0f;
-			if ( self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE && distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius) )
+			constexpr float barbSafetyFactor = 5.0f/3.0f;
+			bool barbIsSafe = distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius) || !self->botMind->botSkillSet[BOT_A_SAFE_BARBS];
+
+			if ( outOfClawsRange && hasBarbs && barbIsSafe )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcBarbAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
-				BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
+
+				glm::vec3 delta = targetPos - VEC2GLM( self->s.origin );
+
+				// Check that the direction we are looking at
+				// is aligned with the direction of the enemy.
+				// This is to ensure we don't barb the wall
+				// instead of the enemy on the other side of
+				// the corridor because we haven't aimed yet.
+				float scalarAlignment = Alignment2D(delta, forward);
+				bool barbAimed = scalarAlignment > 0.997f; // acos(0.997) is 4.4° in the 2D plane
+
+				if ( barbAimed || !self->botMind->botSkillSet[BOT_A_AIM_BARBS] )
+				{
+					BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
+				}
 			}
 			else if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
@@ -2378,10 +2402,16 @@ botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
 
 	if (!targetsValidEntity())
 	{
-		Log::Warn( "bot: selecting invalid entity as target, %s",
-			!newTarget->inuse ? "entity isn't allocated" :
-			!Entities::IsAlive(newTarget) ? "entity is dead" :
-				"for some unspecified reason" );
+		// this is sometimes legitimate, for example when attempting to
+		// heal on a medistation with g_indestructibleBuildables.
+		if (!(ent->flags & FL_NOTARGET))
+		{
+			Log::Warn( "bot: selecting invalid entity as target, %s",
+				!newTarget->inuse ? "entity isn't allocated" :
+				ent->flags & FL_NOTARGET ? "entity is FL_NOTARGET" :
+				!Entities::IsAlive(newTarget) ? "entity is dead" :
+					"for some unspecified reason" );
+		}
 	}
 
 	return *this;

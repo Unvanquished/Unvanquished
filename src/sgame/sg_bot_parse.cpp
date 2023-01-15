@@ -1361,7 +1361,6 @@ Load a behavior tree of the given name from a file
 
 AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 {
-	int i;
 	char treefilename[ MAX_QPATH ];
 	int handle;
 	pc_token_list *tokenlist;
@@ -1371,9 +1370,8 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	currentList = list;
 
 	// check if this behavior tree has already been loaded
-	for ( i = 0; i < list->numTrees; i++ )
+	for ( AIBehaviorTree_t *tree : *list )
 	{
-		AIBehaviorTree_t *tree = list->trees[ i ];
 		if ( !Q_stricmp( tree->name, name ) )
 		{
 			return tree;
@@ -1401,7 +1399,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	tree->run = BotBehaviorNode;
 	tree->type = BEHAVIOR_NODE;
 
-	AddTreeToList( list, tree );
+	list->push_back( tree );
 
 	current = tokenlist;
 
@@ -1412,7 +1410,8 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	}
 	else
 	{
-		RemoveTreeFromList( list, tree );
+		FreeBehaviorTree( tree );
+		list->pop_back();
 		tree = nullptr;
 	}
 
@@ -1470,57 +1469,14 @@ void FreeTokenList( pc_token_list *list )
 }
 
 // functions for keeping a list of behavior trees loaded
-void InitTreeList( AITreeList_t *list )
-{
-	list->trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * 10 );
-	list->maxTrees = 10;
-	list->numTrees = 0;
-}
-
-void AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree )
-{
-	if ( list->maxTrees == list->numTrees )
-	{
-		AIBehaviorTree_t **trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * list->maxTrees );
-		list->maxTrees *= 2;
-		memcpy( trees, list->trees, sizeof( AIBehaviorTree_t * ) * list->numTrees );
-		BG_Free( list->trees );
-		list->trees = trees;
-	}
-
-	list->trees[ list->numTrees ] = tree;
-	list->numTrees++;
-}
-
-void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
-{
-	int i;
-
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *testTree = list->trees[ i ];
-		if ( !Q_stricmp( testTree->name, tree->name ) )
-		{
-			FreeBehaviorTree( testTree );
-			memmove( &list->trees[ i ], &list->trees[ i + 1 ], sizeof( AIBehaviorTree_t * ) * ( list->numTrees - i - 1 ) );
-			list->numTrees--;
-		}
-	}
-}
-
 void FreeTreeList( AITreeList_t *list )
 {
-	int i;
-	for ( i = 0; i < list->numTrees; i++ )
+	for ( AIBehaviorTree_t *tree : *list )
 	{
-		AIBehaviorTree_t *tree = list->trees[ i ];
 		FreeBehaviorTree( tree );
 	}
 
-	BG_Free( list->trees );
-	list->trees = nullptr;
-	list->maxTrees = 0;
-	list->numTrees = 0;
+	list->clear();
 }
 
 // functions for freeing the memory of condition expressions

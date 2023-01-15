@@ -558,7 +558,7 @@ bool IsDoor( const gentity_t *ent )
 		if ( !Q_stricmp( fn, ent->classname ) )
 		{
 			return true;
-			}
+		}
 	}
 	return false;
 }
@@ -594,14 +594,52 @@ bool IsAutomaticMover( const gentity_t *ent )
 	return true;
 }
 
-void BotHandleDoor( gentity_t *ent )
+// This function adds obstacles for doors that the bot can't open,
+// that is doors that are not automatic, or doors that are already opened.
+void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 {
-	if ( IsDoor( ent ) && !IsAutomaticMover( ent ) )
+	switch ( moverState )
 	{
-		// the door might have moved, we don't want to keep an incorrect state
-		G_BotRemoveObstacle( ent->num() );
+		// See comment below for MOVER_POS2
+		case MOVER_POS1:
+		case ROTATOR_POS1:
+		case ROTATOR_POS2:
+			if ( IsDoor( ent ) )
+			{
+				G_BotRemoveObstacle( ent->num() );
+				if ( !IsAutomaticMover( ent ) )
+				{
+					G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
+				}
+			}
+			break;
 
-		G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
+		// We add regular opened doors as obstacles even if the doors are not automatic to avoid bots
+		// walking through the door pane, when it's opened (it's
+		// considered an obstacle because the door can't open further).
+		// See https://github.com/Unvanquished/Unvanquished/issues/2358
+		//
+		// We can't do that for rotating doors as this would break
+		// round "iris" doors, the axis-aligned bounding box would
+		// disable too much navmesh, making passing through the door
+		// difficult.
+		// https://github.com/Unvanquished/Unvanquished/pull/2360#issuecomment-1376145592
+		case MOVER_POS2:
+			if ( IsDoor( ent ) )
+			{
+				G_BotRemoveObstacle( ent->num() );
+				G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
+			}
+			break;
+
+		case MODEL_POS1: // TODO: have bots treat them as obstacles too, because they *are* obstacles.
+		case MODEL_POS2: // TODO: have bots treat them as obstacles too, because they *are* obstacles.
+		case ROTATOR_1TO2:
+		case ROTATOR_2TO1:
+		case MOVER_1TO2:
+		case MOVER_2TO1:
+		default:
+			break;
 	}
 }
 
@@ -620,15 +658,11 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 		case MOVER_POS1:
 			VectorCopy( ent->restingPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = trType_t::TR_STATIONARY;
-
-			BotHandleDoor( ent );
 			break;
 
 		case MOVER_POS2:
 			VectorCopy( ent->activatedPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = trType_t::TR_STATIONARY;
-
-			BotHandleDoor( ent );
 			break;
 
 		case MOVER_1TO2:
@@ -650,15 +684,11 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 		case ROTATOR_POS1:
 			VectorCopy( ent->restingPosition, ent->s.apos.trBase );
 			ent->s.apos.trType = trType_t::TR_STATIONARY;
-
-			BotHandleDoor( ent );
 			break;
 
 		case ROTATOR_POS2:
 			VectorCopy( ent->activatedPosition, ent->s.apos.trBase );
 			ent->s.apos.trType = trType_t::TR_STATIONARY;
-
-			BotHandleDoor( ent );
 			break;
 
 		case ROTATOR_1TO2:
@@ -699,6 +729,8 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 	}
 
 	trap_LinkEntity( ent );
+
+	BotHandleDoor( ent, moverState );
 }
 
 /*
@@ -2283,6 +2315,8 @@ static void Start_Train( gentity_t *self )
 	//unlikely to be right on a path_corner
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
 	self->s.pos.trDuration = VectorLength( move ) * 1000 / self->speed;
+	self->s.pos.trDuration = std::max( 1, self->s.pos.trDuration );
+
 	SetMoverState( self, MOVER_1TO2, level.time );
 
 	self->spawnflags &= ~TRAIN_START_OFF;

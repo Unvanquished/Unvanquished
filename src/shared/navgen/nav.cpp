@@ -853,8 +853,11 @@ static NavgenStatus rasterizeTileLayers( Geometry& geo, rcContext &context, int 
 	//makes them un-walkable
 	rcFilterWalkableLowHeightSpans( &context, cfg.walkableHeight, *rc.solid );
 
-	//by default, make gaps walkable (because using a BBox system makes agents cubes). In theory a great idea, but
-	//it does not work correctly.
+	// Make gaps walkable: as clients have cubic BBox, they can walk a bit
+	// over a ledge as long as a part of their bbox stays over ground.
+	//
+	// This piece of code seems to handle thin walls correctly, and only
+	// marks voids walkable.
 	if ( filterGaps ) {
 		rcFilterGaps( &context, cfg.walkableRadius, cfg.walkableClimb, cfg.walkableHeight, *rc.solid );
 	}
