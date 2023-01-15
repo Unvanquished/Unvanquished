@@ -77,21 +77,8 @@
 				</row>
 
 				<row>
-					<select cvar="r_ext_multisample">
-						<option value="0"><translate>None</translate></option>
-						<option value="2">2×</option>
-						<option value="4">4×</option>
-						<option value="8">8×</option>
-						<option value="16">16×</option>
-					</select>
-					<h3><translate>Multisampling level (MSAA)</translate></h3>
-					<p><translate>Anti-aliasing smoothes out “jaggy edges“ but is very costly to your frame-rate.</translate></p>
-				</row>
-
-				<row>
 					<input cvar="r_FXAA" type="checkbox" />
 					<h3><translate>Fast approximate anti-aliasing (FXAA)</translate></h3>
-					<p><translate>Faster than full MSAA, but not as sharp.</translate></p>
 				</row>
 
 				<buttonbar>
