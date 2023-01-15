@@ -144,7 +144,7 @@
 			padding-right: 5dp;
 		}
 
-		div.playername {
+		span.playername {
 			color: white;
 			padding-right: 10dp;
 		}
