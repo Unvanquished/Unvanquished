@@ -2274,6 +2274,22 @@ bool BG_TacticBehaviorAllowed( std::string behavior )
 	return bg_tacticBehaviors.find( behavior ) != bg_tacticBehaviors.end();
 }
 
+std::string BG_TacticBehaviorsToString( std::string sep )
+{
+	std::string result = "";
+	std::set<std::string>::iterator behavior = bg_tacticBehaviors.begin();
+	while ( behavior != bg_tacticBehaviors.end() )
+	{
+		result.append( *behavior );
+		behavior++;
+		if ( behavior != bg_tacticBehaviors.end() )
+		{
+			result.append( sep );
+		}
+	}
+	return result;
+}
+
 /*
 ============
 BG_SetForbiddenEquipment
