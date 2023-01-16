@@ -1026,6 +1026,17 @@ static void InitDisabledItemCvars()
 	G_SpawnStringIntoCVar( "disabledBuildables", g_disabledBuildables );
 }
 
+static void InitTacticBehaviorsCvar()
+{
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_tacticBehaviors(
+	   "g_tacticBehaviors",
+		"Allowed behaviors for the tactic command, example: " QQ("default, camper, reckless"),
+		Cvar::NONE,
+		"",
+		BG_SetTacticBehaviors
+		);
+}
+
 /**
  * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
  */
@@ -1096,6 +1107,7 @@ static void SP_worldspawn()
 	G_SpawnStringIntoCVar( "BPRecoveryRateHalfLife", g_buildPointRecoveryRateHalfLife );
 
 	InitDisabledItemCvars();
+	InitTacticBehaviorsCvar();
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
