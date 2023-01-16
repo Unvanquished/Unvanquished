@@ -3706,7 +3706,7 @@ static void Cmd_Tactic_f( gentity_t * ent )
 	int milliSeconds = g_tacticMilliseconds.Get();
 	if ( milliSeconds < 0 )
 	{
-		ADMP( va( "%s", QQ( N_("^3tactic^* is disabled") ) ) );
+		ADMP( va( "%s", QQ( N_("^3tactic:^* not allowed by server") ) ) );
 		return;
 	}
 
