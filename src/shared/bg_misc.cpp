@@ -2153,6 +2153,20 @@ static struct gameElements_t
 	BoundedVector<upgrade_t,   UP_NUM_UPGRADES>   upgrades;
 } bg_disabledGameElements;
 
+static std::set<std::string> bg_tacticBehaviors;
+
+std::set<std::string> BG_ParseTacticBehaviorsList( const std::string &behaviorsCsv )
+{
+	std::set<std::string> behaviors;
+
+	for (Parse_WordListSplitter i(behaviorsCsv); *i; ++i)
+	{
+		behaviors.insert( *i );
+	}
+
+	return behaviors;
+}
+
 /*
 ============
 BG_ParseEquipmentList
@@ -2248,6 +2262,16 @@ BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 	}
 
 	return results;
+}
+
+void BG_SetTacticBehaviors( std::string behaviorsCsv )
+{
+	bg_tacticBehaviors = BG_ParseTacticBehaviorsList( behaviorsCsv );
+}
+
+bool BG_TacticBehaviorAllowed( std::string behavior )
+{
+	return bg_tacticBehaviors.find( behavior ) != bg_tacticBehaviors.end();
 }
 
 /*
