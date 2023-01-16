@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150" height="150" version="1.1" viewBox="0 0 39.688 39.688" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/"/>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Gireen</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+   <cc:License rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#Notice"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#Attribution"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#ShareAlike"/>
+   </cc:License>
+  </rdf:RDF>
+ </metadata>
+ <g transform="matrix(.9 0 0 .9 1.9816 -229.59)">
+  <g transform="matrix(.20202 0 0 .20202 -30.413 216.52)" fill="#fff" opacity=".96" stroke-width="1.0706">
+   <path transform="matrix(2.1761,0,0,2.1761,-3763.8,1653.8)" d="m1821.1-652.24c-0.043-4e-3 -0.085 0.013-0.1289 0.0566-6.0442 6.0442-17.958 40.727-11.816 53.01 1.9481 3.8961-7.3015 9.9309-2.4609 14.771 0.7057 0.70573 3.0565-1.045 3.9375-0.16406 0.1629 0.1629 3.0634 1.2041 3.6113 0.65625 0.6226-0.62255 3.3741-7.1299 6.2363-4.2676 1.3727 1.3727 12.371 1.5938 16.024 1.5938 1.5035 0 1.3322 2.1554 3.1465 3.0625 0.5135 0.25677 1.1061 1.6354 3.9355 1.6582v4e-3c0.1025 5e-3 0.18-4e-3 0.2773-2e-3 0.098-2e-3 0.1762 7e-3 0.2793 2e-3v-4e-3c2.8294-0.0228 3.4201-1.4014 3.9336-1.6582 1.8143-0.90713 1.643-3.0625 3.1465-3.0625 3.6521 0 14.651-0.22108 16.024-1.5938 2.8622-2.8623 5.6157 3.645 6.2382 4.2676 0.5479 0.54788 3.4465-0.49335 3.6094-0.65625 0.881-0.88099 3.2337 0.86979 3.9395 0.16406 4.8406-4.8406-4.409-10.875-2.461-14.771 6.1414-12.283-5.7722-46.966-11.816-53.01-0.044-0.0436-0.088-0.0605-0.1308-0.0566-0.6408 0.0582-1.1795 5.1404-1.6758 5.6367-0.5155 0.51548-3.4566-2.4666-4.1016-2.7891-3.3796-1.6898-6.5346 3.4155-7.8789 4.7598-0.4781 0.47813-4.7644-4.3939-8.6914-4.8848v-0.0371c-0.1367-6e-3 -0.2759 0.01-0.4141 0.0156-0.1378-6e-3 -0.2776-0.0219-0.414-0.0156v0.0371c-3.9265 0.49216-8.2134 5.3628-8.6914 4.8848-1.3443-1.3442-4.4974-6.4496-7.877-4.7598-0.6449 0.32247-3.5861 3.3045-4.1015 2.7891-0.4963-0.49627-1.037-5.5786-1.6778-5.6367z" opacity="1"/>
+   <ellipse cx="249.33" cy="273.49" rx="60.23" ry="60.735" fill-opacity=".53298" opacity="1"/>
+  </g>
+ </g>
+</svg>
