@@ -3719,7 +3719,7 @@ static void Cmd_Tactic_f( gentity_t * ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		std::string behaviors = BG_TacticBehaviorsToString( " " );
+		std::string behaviors = BG_TacticBehaviorsToString( ", " );
 		if ( behaviors.empty() )
 		{
 			ADMP( QQ( N_( "^3tactic:^* not allowed by server" ) ) );
