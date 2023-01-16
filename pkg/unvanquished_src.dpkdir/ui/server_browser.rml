@@ -24,6 +24,10 @@
 				display: block;
 			}
 
+			datagridcell {
+				overflow: hidden;
+			}
+
 			button {
 				width: 10em;
 			}
