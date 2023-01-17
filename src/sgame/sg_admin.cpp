@@ -5774,11 +5774,12 @@ void G_admin_cleanup()
 static void BotUsage( gentity_t *ent )
 {
 	static const char bot_usage[] = QQ( N_( "^3bot:^* usage: bot add (<name> | *) (aliens | humans) [<skill level> [<behavior>]]\n"
-	                                        "            bot fill <count> [<team> [<skill level>]]\n"
+	                                        "            bot behavior (<name> | <slot#>) <behavior>\n"
 	                                        "            bot del (<name> | all)\n"
+	                                        "            bot fill <count> [<team> [<skill level>]]\n"
+	                                        "            bot info <bots>…\n"
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
-	                                        "            bot behavior (<name> | <slot#>) <behavior>\n"
 	                                        "            bot skill <skill level> [<team>]" ) );
 	ADMP( bot_usage );
 }
@@ -5887,6 +5888,43 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	return true;
 }
 
+static bool BotInfoCmd( gentity_t *ent, const Cmd::Args& args )
+{
+	int argc = args.Argc();
+	if ( argc < 3 )
+	{
+		BotUsage( ent );
+		return false;
+	}
+	int botIds[ MAX_CLIENTS ] = { 0 };
+	for ( int i = 2; i < argc; i++ )
+	{
+		char err[ MAX_STRING_CHARS ];
+		botIds[ i - 2 ] = G_ClientNumberFromString( args[ i ].data(), err, sizeof( err ) );
+		if ( botIds[ i - 2 ] < 0 )
+		{
+			ADMP( va( "%s %s %s %s", QQ( "^3$1$:^* $2t$: $3$" ), "bot", Quote( err ), Quote( args[ i ].data() ) ) );
+			return false;
+		}
+	}
+	ADMBP_begin();
+	ADMP( QQ( N_( "Slot Name Team [s=skill ss=skillset b=behavior g=goal]" ) ) );
+	for ( int i = 0; i + 2 < argc; i++ )
+	{
+		int id = botIds[ i ];
+		if ( !( g_entities[ id ].r.svFlags & SVF_BOT ) )
+		{
+			ADMBP( va( "%d (not a bot)", id ) );
+		}
+		else
+		{
+			ADMBP( va( "%d %s", id, G_BotToString( &g_entities[ id ] ).c_str() ) );
+		}
+	}
+	ADMBP_end();
+	return true;
+}
+
 // This command does NOT load the navmesh that it creates.
 // However the mesh will be used if you run /navgen before the first bot fill/add command.
 bool G_admin_navgen( gentity_t* ent )
@@ -5980,6 +6018,10 @@ bool G_admin_bot( gentity_t *ent )
 	else if ( !Q_stricmp( arg1, "fill" ) )
 	{
 		return BotFillCmd( ent, args );
+	}
+	else if ( !Q_stricmp( arg1, "info" ) )
+	{
+		return BotInfoCmd( ent, args );
 	}
 	else if ( !Q_stricmp( arg1, "del" ) && args.Argc() == 3 )
 	{
