@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "sg_bot_util.h"
 #include "engine/qcommon/q_unicode.h"
 #include "shared/navgen/navgen.h"
 #include "Entities.h"
@@ -5891,8 +5892,6 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 // However the mesh will be used if you run /navgen before the first bot fill/add command.
 bool G_admin_navgen( gentity_t* ent )
 {
-	static NavmeshGenerator navgen;
-
 	const Cmd::Args& args = trap_Args();
 	if ( args.Argc() < 2 )
 	{
@@ -5901,14 +5900,16 @@ bool G_admin_navgen( gentity_t* ent )
 	}
 
 	std::string mapName = Cvar::GetValue( "mapname" );
+	std::bitset<PCL_NUM_CLASSES> targets;
 
-	std::vector<class_t> targets;
 	for ( int i = 1; i < args.Argc(); i++ )
 	{
 		if ( Str::IsIEqual( args.Argv( i ), "all" ) )
 		{
-			std::vector<class_t> all = RequiredNavmeshes();
-			targets.insert( targets.end(), all.begin(), all.end() );
+			for ( class_t species : RequiredNavmeshes() )
+			{
+				targets[ species ] = true;
+			}
 		}
 		else if ( Str::IsIEqual ( args.Argv( i ), "missing" ) )
 		{
@@ -5919,14 +5920,14 @@ bool G_admin_navgen( gentity_t* ent )
 					"maps/%s-%s.navMesh", mapName, BG_Class( species )->name );
 				if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0)
 				{
-					targets.push_back( species );
+					targets[ species ] = true;
 					continue;
 				}
 				NavMeshSetHeader header;
 				std::string error = GetNavmeshHeader( f, header );
 				if ( !error.empty() )
 				{
-					targets.push_back( species );
+					targets[ species ] = true;
 				}
 				trap_FS_FCloseFile( f );
 			}
@@ -5941,25 +5942,11 @@ bool G_admin_navgen( gentity_t* ent )
 						  Quote( args.Argv( i ).c_str() ) ) );
 				return false;
 			}
-			targets.push_back( species->number );
+			targets[ species->number ] = true;
 		}
 	}
 
-	if ( targets.empty() )
-	{
-		return true;
-	}
-
-	navgen.Init( mapName );
-	for ( class_t species : targets )
-	{
-		navgen.StartGeneration( species );
-		while ( !navgen.Step() )
-		{
-			// ping the engine with a useless message so that it does not think the sgame VM has hung
-			Cvar::GetValue( "x" );
-		}
-	}
+	G_BlockingGenerateNavmesh( targets );
 	return true;
 }
 
