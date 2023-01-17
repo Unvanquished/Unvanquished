@@ -398,12 +398,8 @@ bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start_
 	return true;
 }
 
-struct bbox_t {
-	glm::vec3 mins;
-	glm::vec3 maxs;
-};
-static std::map<int, bbox_t> savedObstacles;
-static std::map<int, std::array<dtObstacleRef, MAX_NAV_DATA>> obstacleHandles; // handles of detour's obstacles, if any
+std::map<int, saved_obstacle_t> savedObstacles;
+std::map<int, std::array<dtObstacleRef, MAX_NAV_DATA>> obstacleHandles; // handles of detour's obstacles, if any
 
 void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum )
 {
@@ -411,9 +407,9 @@ void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacl
 	qVec max = &maxs[0];
 	rBounds box( min, max );
 
+	savedObstacles[obstacleNum] = { navMeshLoaded == navMeshStatus_t::LOADED, { mins, maxs } };
 	if ( navMeshLoaded != navMeshStatus_t::LOADED )
 	{
-		savedObstacles[obstacleNum] = { mins, maxs };
 		return;
 	}
 
@@ -453,11 +449,12 @@ void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacl
 // finally loaded, or generated.
 void BotAddSavedObstacles()
 {
-	for ( std::pair<int, bbox_t> obstacle : savedObstacles )
+	for ( auto &obstacle : savedObstacles )
 	{
-		G_BotAddObstacle(obstacle.second.mins, obstacle.second.maxs, obstacle.first);
+		if ( !obstacle.second.added )
+			G_BotAddObstacle(obstacle.second.bbox.mins, obstacle.second.bbox.maxs, obstacle.first);
+		obstacle.second.added = true;
 	}
-	savedObstacles.clear();
 }
 
 void G_BotRemoveObstacle( int obstacleNum )

@@ -191,6 +191,22 @@ struct Bot_t
 	dtRouteResult     routeResults[ MAX_ROUTE_CACHE ];
 };
 
+
+/*
+ * These are used to keep in mind what obstacles we sent to Detour
+ */
+struct bbox_t {
+	glm::vec3 mins;
+	glm::vec3 maxs;
+};
+struct saved_obstacle_t {
+	bool added;
+	bbox_t bbox;
+};
+extern std::map<int, saved_obstacle_t> savedObstacles;
+extern std::map<int, std::array<dtObstacleRef, MAX_NAV_DATA>> obstacleHandles; // handles of detour's obstacles, if any
+
+
 extern int numNavData;
 extern NavData_t BotNavData[ MAX_NAV_DATA ];
 extern Bot_t agents[ MAX_CLIENTS ];
