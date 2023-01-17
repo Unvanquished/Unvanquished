@@ -67,6 +67,7 @@ void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm:
 void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum );
 void G_BotRemoveObstacle( int obstacleNum );
 void G_BotUpdateObstacles();
+void G_BotBackgroundNavgen();
 bool G_BotInit();
 void G_BotCleanup();
 void G_BotFill( bool immediately );

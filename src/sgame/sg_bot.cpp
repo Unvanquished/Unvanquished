@@ -28,6 +28,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 
 static Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
+static Cvar::Range<Cvar::Cvar<int>> generateNeededMesh(
+	"g_bot_navgen_onDemand",
+	"automatically generate navmeshes when a bot is added (1 = in background, -1 = blocking)",
+	Cvar::NONE, 1, -1, 1);
 
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
@@ -270,7 +274,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	const char* s = 0;
 	bool autoname = false;
 
-	ASSERT( navMeshLoaded );
+	ASSERT( navMeshLoaded == navMeshStatus_t::LOADED || navMeshLoaded == navMeshStatus_t::GENERATING );
 
 	// find what clientNum to use for bot
 	int clientNum = trap_BotAllocateClient();
@@ -476,6 +480,11 @@ void G_BotSpectatorThink( gentity_t *self )
 	//MUST be done
 	while ( trap_BotGetServerCommand( self->num(), buf, sizeof( buf ) ) );
 
+	if ( navMeshLoaded == navMeshStatus_t::GENERATING )
+	{
+		return;
+	}
+
 	self->botMind->spawnTime = level.time;
 
 	if ( self->client->ps.pm_flags & PMF_QUEUED )
@@ -553,14 +562,33 @@ void G_BotIntermissionThink( gclient_t *client )
 }
 
 // Initialization happens whenever someone first tries to add a bot.
-// This incurs some delay (a few tenths of a second), but on servers bots
-// are normally added at the beginning of the round so it shouldn't be noticeable.
+// Assuming the meshes already exist, this incurs some delay (a few tenths of a second), but on
+// servers bots are normally added at the beginning of the round so it shouldn't be noticeable.
+//
+// If the mesh does not already exist and g_bot_navgen_onDemand is 1, the function returns true
+// and bots can join, but they don't spawn until the navmesh is finished.
+//
+// If the mesh does not exist and g_bot_navgen_onDemand is -1, the function will block and the
+// server will freeze until the navmesh is done (usually tens of seconds).
 bool G_BotInit()
 {
-	if ( !G_BotNavInit() )
+	switch ( navMeshLoaded )
+	{
+	case navMeshStatus_t::GENERATING:
+	case navMeshStatus_t::LOADED:
+		return true;
+	case navMeshStatus_t::LOAD_FAILED:
+		Log::Warn( "Navmesh initialization previously failed, doing nothing" );
+		return false;
+	case navMeshStatus_t::UNINITIALIZED:
+		break;
+	}
+
+	G_BotNavInit( generateNeededMesh.Get() );
+
+	if ( navMeshLoaded != navMeshStatus_t::LOADED && navMeshLoaded != navMeshStatus_t::GENERATING )
 	{
 		Log::Notice( "Failed to load navmeshes" );
-		G_BotNavCleanup();
 		return false;
 	}
 	return true;
