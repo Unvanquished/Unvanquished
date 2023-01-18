@@ -5897,7 +5897,7 @@ static bool BotInfoCmd( gentity_t *ent, const Cmd::Args& args )
 		return false;
 	}
 	int botIds[ MAX_CLIENTS ] = { 0 };
-	for ( int i = 2; i < argc; i++ )
+	for ( int i = 2; i < argc && i - 2 < MAX_CLIENTS; i++ )
 	{
 		char err[ MAX_STRING_CHARS ];
 		botIds[ i - 2 ] = G_ClientNumberFromString( args[ i ].data(), err, sizeof( err ) );
