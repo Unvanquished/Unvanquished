@@ -1717,9 +1717,9 @@ bool BG_BuildableDisabled( int buildable );
 
 weapon_t BG_PrimaryWeapon( int const stats[] );
 
-void BG_SetTacticBehaviors(std::string tacticCsv);
-bool BG_TacticBehaviorAllowed(std::string behavior);
-std::string BG_TacticBehaviorsToString(std::string sep);
+void BG_SetTacticBehaviors( Str::StringRef tacticCsv );
+bool BG_TacticBehaviorAllowed( Str::StringRef behavior );
+std::string BG_TacticBehaviorsToString( Str::StringRef sep );
 
 // bg_voice.c
 #define MAX_VOICES             8
