@@ -1709,17 +1709,17 @@ void BG_SetForbiddenEquipment(std::string forbidden_csv);
 void BG_SetForbiddenClasses(std::string forbidden_csv);
 void BG_SetForbiddenBuildables(std::string forbidden_csv);
 
-void BG_SetTacticBehaviors(std::string tacticCsv);
-
 bool BG_WeaponDisabled( int weapon );
 bool BG_UpgradeDisabled( int upgrade );
 
 bool BG_ClassDisabled( int class_ );
 bool BG_BuildableDisabled( int buildable );
 
-bool BG_TacticBehaviorAllowed(std::string behavior);
-
 weapon_t BG_PrimaryWeapon( int const stats[] );
+
+void BG_SetTacticBehaviors( Str::StringRef tacticCsv );
+bool BG_TacticBehaviorAllowed( Str::StringRef behavior );
+std::string BG_TacticBehaviorsToString( Str::StringRef sep );
 
 // bg_voice.c
 #define MAX_VOICES             8

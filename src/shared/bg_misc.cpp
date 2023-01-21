@@ -2264,14 +2264,30 @@ BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 	return results;
 }
 
-void BG_SetTacticBehaviors( std::string behaviorsCsv )
+void BG_SetTacticBehaviors( Str::StringRef behaviorsCsv )
 {
 	bg_tacticBehaviors = BG_ParseTacticBehaviorsList( behaviorsCsv );
 }
 
-bool BG_TacticBehaviorAllowed( std::string behavior )
+bool BG_TacticBehaviorAllowed( Str::StringRef behavior )
 {
 	return bg_tacticBehaviors.find( behavior ) != bg_tacticBehaviors.end();
+}
+
+std::string BG_TacticBehaviorsToString( Str::StringRef sep )
+{
+	std::string result = "";
+	std::set<std::string>::iterator behavior = bg_tacticBehaviors.begin();
+	while ( behavior != bg_tacticBehaviors.end() )
+	{
+		result.append( *behavior );
+		behavior++;
+		if ( behavior != bg_tacticBehaviors.end() )
+		{
+			result.append( sep );
+		}
+	}
+	return result;
 }
 
 /*

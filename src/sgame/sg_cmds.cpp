@@ -3706,7 +3706,7 @@ static void Cmd_Tactic_f( gentity_t * ent )
 	int milliSeconds = g_tacticMilliseconds.Get();
 	if ( milliSeconds < 0 )
 	{
-		ADMP( va( "%s", QQ( N_("^3tactic^* is disabled") ) ) );
+		ADMP( va( "%s", QQ( N_("^3tactic:^* not allowed by server") ) ) );
 		return;
 	}
 
@@ -3719,7 +3719,16 @@ static void Cmd_Tactic_f( gentity_t * ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_( "^3tactic:^* usage: tactic <behavior> [how-many-bots]" ) ) ) ;
+		std::string behaviors = BG_TacticBehaviorsToString( ", " );
+		if ( behaviors.empty() )
+		{
+			ADMP( QQ( N_( "^3tactic:^* not allowed by server" ) ) );
+		}
+		else
+		{
+			ADMP( QQ( N_( "^3tactic:^* usage: tactic <behavior> [how-many-bots]" ) ) ) ;
+			ADMP( va( "%s %s", QQ( N_("   <behavior> is one of: $1$") ), Quote( behaviors.c_str() ) ) );
+		}
 		return;
 	}
 
