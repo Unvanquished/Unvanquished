@@ -1198,7 +1198,13 @@ static void SetMapInfoFromArenaInfo( arenaInfo_t arenaInfo )
 
 static void SetMapInfo()
 {
-	std::string mapName = Cvar::GetValue( "mapname" );
+	/* When SetMapInfo() is called,
+
+	- cgs.mapname may not work because it is not set yet.
+	- Cvar::GetValue( "mapname" ) may not work because
+	  only client used as a server has it set. */
+
+	std::string mapName = Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" );
 
 	/* Use longname from .arena file as map name if exists,
 	also read author name if exists. */
