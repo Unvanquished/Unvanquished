@@ -104,7 +104,7 @@
 				<row>
 					<h3><translate>Dynamic lights</translate></h3>
 					<input cvar="r_dynamicLight" type="checkbox" checked-value="2" />
-					<p><translate>Lighting made by weapons and buildings.</translate></p>
+					<p><translate>Realtime dynamic lights emitted by moving objects like weapons and buildings.</translate></p>
 				</row>
 				<row>
 					<h3><translate>Rim lighting</translate></h3>
