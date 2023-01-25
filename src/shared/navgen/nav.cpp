@@ -1062,25 +1062,7 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 
 	float height = rcAbs( geo_.getMaxs()[1] ) + rcAbs( geo_.getMins()[1] );
 	if ( height / config_.cellHeight > RC_SPAN_MAX_HEIGHT ) {
-		LOG.Warn("Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh." );
-		float prevCellHeight = config_.cellHeight;
-		float minCellHeight = height / RC_SPAN_MAX_HEIGHT;
-
-		int divisor = ( int ) config_.stepSize;
-
-		while ( divisor && config_.cellHeight < minCellHeight )
-		{
-			config_.cellHeight = config_.stepSize / divisor;
-			divisor--;
-		}
-
-		if ( !divisor ) {
-			initStatus_ = { NavgenStatus::PERMANENT_FAILURE, "Map is too tall to generate a navigation mesh" };
-			return;
-		}
-
-		LOG.Verbose( "Previous cell height: %f", prevCellHeight );
-		LOG.Verbose( "New cell height: %f", config_.cellHeight );
+		initStatus_ = { NavgenStatus::PERMANENT_FAILURE, "Map is too tall to generate a navigation mesh" };
 	}
 }
 
