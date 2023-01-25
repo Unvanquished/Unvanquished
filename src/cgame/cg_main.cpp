@@ -146,8 +146,7 @@ Cvar::Cvar<float> cg_motionblur("cg_motionblur", "strength of motion blur", Cvar
 Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed to trigger motion blur", Cvar::NONE, 600);
 Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "desaturate world view when dead or spawning", Cvar::NONE, true);
 
-// TODO(0.54): turn this on by default.
-static Cvar::Cvar<bool> cg_navgenOnLoad("cg_navgenOnLoad", "generate navmeshes when starting a local game", Cvar::NONE, false);
+static Cvar::Cvar<bool> cg_navgenOnLoad("cg_navgenOnLoad", "generate navmeshes when starting a local game", Cvar::NONE, true);
 
 // search 'fovCvar' to find usage of these (names come from config files)
 // 0 means use global FOV setting
