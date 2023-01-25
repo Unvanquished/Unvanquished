@@ -1053,11 +1053,7 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 	if (mapName == mapName_) return;
 
 	// TODO: some way of setting the config (former daemonmap flags)?
-	config_.cellHeight = 2.0f;
-	config_.stepSize = STEPSIZE;
-	config_.excludeCaulk = 1;
-	config_.excludeSky = 1;
-	config_.filterGaps = 1;
+	config_ = NavgenConfig::Default();
 
 	mapName_ = mapName;
 	recastContext_.enableLog(true);
