@@ -508,6 +508,14 @@ void CG_Rocket_Frame( cgClientState_t state )
 				Rocket_DocumentAction( "", "blurall" );
 				break;
 			case connstate_t::CA_ACTIVE:
+				// In order to preserve the welcome screen, we need to not hide all the windows
+				// if the previous state was CA_PRIMED (ie, if the client is first connecting to the server),
+				// however, in other instances (like vid_restart), the client will go directly from CA_LOADING
+				// to CA_ACTIVE, so we need to ensure that no windows are open in that case.
+				if ( oldConnState != connstate_t::CA_PRIMED )
+				{
+					Rocket_DocumentAction( "", "blurall" );
+				}
 				break;
 
 			default:
