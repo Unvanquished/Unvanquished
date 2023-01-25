@@ -1354,10 +1354,8 @@ void ClientBegin( int clientNum )
 	CalculateRanks();
 
 	// display the help menu, if connecting the first time
-	if ( !client->sess.seenWelcome )
+	if ( !client->sess.seenWelcome  )
 	{
-		client->sess.seenWelcome = 1;
-
 		// 0 - don't show
 		// 1 - always show to all
 		// 2 - show only to unregistered
@@ -1369,6 +1367,7 @@ void ClientBegin( int clientNum )
 		{
 			return;
 		}
+		client->sess.seenWelcome = 1;
 		G_TriggerMenu( client->num(), MN_WELCOME );
 	}
 }
