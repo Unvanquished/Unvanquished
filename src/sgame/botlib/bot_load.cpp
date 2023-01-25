@@ -301,10 +301,8 @@ static navMeshStatus_t BotLoadNavMesh( int f, const char *species, NavData_t &na
 		trap_FS_FCloseFile( f );
 		return navMeshStatus_t::UNINITIALIZED;
 	}
-	else if ( header.params.tileHeight == PERMANENT_NAVGEN_ERROR )
+	else if ( header.numTiles < 0 )
 	{
-		NavMeshTileHeader ignored;
-		trap_FS_Read( &ignored, sizeof(ignored), f );
 		char errorBuf[256] = {};
 		trap_FS_Read( errorBuf, sizeof(errorBuf) - 1, f );
 		Log::Warn( "Can't load navmesh for %s: Cached navmesh generation failure (%s)", species, errorBuf );

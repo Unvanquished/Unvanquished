@@ -49,7 +49,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #define MIN_WALK_NORMAL 0.7f
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
-static const int NAVMESHSET_VERSION = 4; // Increment when navgen algorithm or data format changes
+static const int NAVMESHSET_VERSION = 5; // Increment when navgen algorithm or data format changes
 
 enum navPolyFlags
 {
@@ -94,12 +94,11 @@ struct NavMeshSetHeader
 	int version;
 	unsigned productVersionHash;
 	unsigned headerSize;
-	int numTiles;
+	int numTiles; // -1 indicates generation failed
 	NavgenConfig config;
 	dtNavMeshParams params;
 	dtTileCacheParams cacheParams;
 };
-constexpr int PERMANENT_NAVGEN_ERROR = -789; // as value of header.params.tileHeight
 
 inline unsigned ProductVersionHash()
 {
