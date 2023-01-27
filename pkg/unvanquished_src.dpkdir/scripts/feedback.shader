@@ -8,8 +8,8 @@ gfx/feedback/bubble
 	{
 		map gfx/feedback/bubble
 		blendFunc GL_ONE GL_ONE
-		rgbGen    vertex
-		alphaGen  vertex
+		rgbGen vertex
+		alphaGen vertex
 	}
 }
 

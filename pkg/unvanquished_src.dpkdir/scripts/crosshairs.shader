@@ -1,7 +1,7 @@
-//   ----------
-//   CROSSHAIRS
-//   ----------
-//   shared crosshair for all classes
+// ----------
+// CROSSHAIRS
+// ----------
+// shared crosshair for all classes
 
 gfx/feedback/crosshairs/alien
 {
