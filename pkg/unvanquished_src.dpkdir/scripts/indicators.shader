@@ -1,6 +1,6 @@
-//   ----------
-//   INDICATORS
-//   ----------
+// ----------
+// INDICATORS
+// ----------
 
 gfx/feedback/indicators/alienBuilder
 {

@@ -117,5 +117,3 @@ License for the Hangul Syllables (U+AC00..U+D7A3) portion of the font:
 
    [The xfonts-baekmuk package also contains a verison of the
    above notice in Korean.]
-
-

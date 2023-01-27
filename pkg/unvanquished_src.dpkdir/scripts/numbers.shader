@@ -98,7 +98,7 @@ ui/assets/numbers/two_32b
 	}
 }
 
-//  ===============================================================
+// ===
 ui/assets/numbers/zero_32b
 {
 	nopicmip
@@ -108,4 +108,3 @@ ui/assets/numbers/zero_32b
 		rgbgen vertex
 	}
 }
-
