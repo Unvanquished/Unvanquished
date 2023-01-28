@@ -1,0 +1,2 @@
+ignore ui/assets/background/human.png
+ignore ui/assets/background/tyrant.png
