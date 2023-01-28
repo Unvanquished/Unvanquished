@@ -119,7 +119,7 @@ static void P_WorldEffects( gentity_t *ent )
 
 	if ( ent->client->noclip )
 	{
-		ent->client->airOutTime = level.time + OXYGEN_MAX_TIME; // don't need air
+		ent->client->ps.lowOxygenTime = 0; // don't need air
 		return;
 	}
 
@@ -130,24 +130,27 @@ static void P_WorldEffects( gentity_t *ent )
 	//
 	if ( waterlevel == 3 )
 	{
-		// if out of air, start drowning
-		if ( ent->client->airOutTime < level.time )
+		if ( ent->client->ps.lowOxygenTime == 0 )
 		{
-			// drown!
-			ent->client->airOutTime += 1000;
+			// we just entered water
+			ent->client->ps.lowOxygenTime = level.time + OXYGEN_MAX_TIME;
+		}
+
+		// if out of air, start drowning
+		if ( ent->client->ps.lowOxygenTime < level.time )
+		{
+			// We are drowning!
+
+			// time for next damage calculation
+			ent->client->ps.lowOxygenTime += 1000;
 
 			if ( Entities::IsAlive( ent ) )
 			{
 				// take more damage the longer underwater
-				ent->damage += 2;
-
-				if ( ent->damage > 15 )
-				{
-					ent->damage = 15;
-				}
+				ent->client->lowOxygenDamage = std::min( ent->client->lowOxygenDamage + 2, 15 );
 
 				// play a gurp sound instead of a general pain sound
-				if ( ent->entity->Get<HealthComponent>()->Health() <= (float)ent->damage )
+				if ( ent->entity->Get<HealthComponent>()->Health() <= (float)ent->client->lowOxygenDamage )
 				{
 					G_Sound( ent, soundChannel_t::CHAN_VOICE, G_SoundIndex( "*drown" ) );
 				}
@@ -163,15 +166,15 @@ static void P_WorldEffects( gentity_t *ent )
 				// don't play a general pain sound
 				ent->pain_debounce_time = level.time + 200;
 
-				ent->entity->Damage((float)ent->damage, nullptr, Util::nullopt, Util::nullopt,
+				ent->entity->Damage((float)ent->client->lowOxygenDamage, nullptr, Util::nullopt, Util::nullopt,
 				                    DAMAGE_PURE, MOD_WATER);
 			}
 		}
 	}
 	else
 	{
-		ent->client->airOutTime = level.time + OXYGEN_MAX_TIME;
-		ent->damage = 2;
+		ent->client->ps.lowOxygenTime = 0;
+		ent->client->lowOxygenDamage = 2;
 	}
 
 	//

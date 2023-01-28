@@ -1232,9 +1232,6 @@ struct cg_t
 	float navmeshLoadingFraction;
 	bool loadingNavmesh;
 
-	bool underwater;
-	int  underwaterTime;
-
 	int                     lastBuildAttempt;
 	int                     lastEvolveAttempt;
 
@@ -2386,8 +2383,5 @@ namespace CombatFeedback
   void Event(entityState_t *es);
   void DrawDamageIndicators(void);
 }
-
-// cg_event.cpp
-void CG_SetUnderwater( bool underwater );
 
 #endif

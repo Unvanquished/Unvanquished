@@ -62,9 +62,9 @@ Debugging command to print the current position
 */
 static void CG_Viewpos_f()
 {
-	Log::Notice( "(%i %i %i) : %i", ( int ) cg.refdef.vieworg[ 0 ],
-	           ( int ) cg.refdef.vieworg[ 1 ], ( int ) cg.refdef.vieworg[ 2 ],
-	           ( int ) cg.refdefViewAngles[ YAW ] );
+	Log::Notice( "%.0f %.0f %.0f %.0f %.0f", cg.refdef.vieworg[ 0 ],
+	           cg.refdef.vieworg[ 1 ], cg.refdef.vieworg[ 2 ],
+	           cg.refdefViewAngles[ YAW ], cg.refdefViewAngles[ PITCH ] );
 }
 
 /*
