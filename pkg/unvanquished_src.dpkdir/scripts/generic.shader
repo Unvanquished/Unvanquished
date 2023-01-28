@@ -30,4 +30,3 @@ models/generic/sphericalCone64
 		blendFunc blend
 	}
 }
-
