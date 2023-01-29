@@ -146,6 +146,9 @@ struct playerState_t
 	int           tauntTimer; // don't allow another taunt until this runs out
 	int           misc[ MAX_MISC ]; // misc data
 
+	int debugColor;
+	int debugNumbers;
+
 	bool IsWeaponReady() const;
 };
 

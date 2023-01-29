@@ -2664,7 +2664,9 @@ static const NetcodeTable playerStateFields =
 	{ PSF( ammo              ), 12               , 0 },
 	{ PSF( clips             ), 4                , 0 },
 	{ PSF( tauntTimer        ), 12               , 0 },
-	{ PSF( weaponAnim        ), ANIM_BITS        , 0 }
+	{ PSF( weaponAnim        ), ANIM_BITS        , 0 },
+	{ PSF( debugColor        ), 32               , 0 },
+	{ PSF( debugNumbers      ), 32               , 0 },
 };
 static_assert( (1<<LOW_OXYGEN_TIME_BITS) > OXYGEN_MAX_TIME, "you need to make LOW_OXYGEN_TIME_BITS large enough to accomodate OXYGEN_MAX_TIME" );
 
