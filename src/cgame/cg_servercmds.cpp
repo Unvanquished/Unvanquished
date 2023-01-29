@@ -1193,7 +1193,7 @@ CG_Print_f
 */
 static void CG_Print_f()
 {
-	Log::Notice( CG_Argv( 1 ) );
+	Log::CommandInteractionMessage( CG_Argv( 1 ) );
 }
 
 /*
@@ -1203,12 +1203,12 @@ CG_PrintTR_f
 */
 static void CG_PrintTR_f()
 {
-	Log::Notice( TranslateText_Internal( false, 1 ) );
+	Log::CommandInteractionMessage( TranslateText_Internal( false, 1 ) );
 }
 
 static void CG_PrintTR_plural_f()
 {
-	Log::Notice( TranslateText_Internal( true, 1 ) );
+	Log::CommandInteractionMessage( TranslateText_Internal( true, 1 ) );
 }
 
 /*
