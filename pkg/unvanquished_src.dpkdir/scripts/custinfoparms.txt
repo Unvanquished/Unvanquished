@@ -1,8 +1,0 @@
-//custom surfaceParms file
-
-//custom CONTENTS_ flags
-{
-	noalienbuild 0x1000
-	nohumanbuild 0x2000
-	nobuild 0x4000
-}
