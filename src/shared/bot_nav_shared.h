@@ -49,7 +49,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #define MIN_WALK_NORMAL 0.7f
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
-static const int NAVMESHSET_VERSION = 5; // Increment when navgen algorithm or data format changes
+static const int NAVMESHSET_VERSION = 6; // Increment when navgen algorithm or data format changes
 
 enum navPolyFlags
 {
@@ -88,17 +88,37 @@ struct NavgenConfig {
 	static NavgenConfig Default() { return { 2.0f, STEPSIZE, 1, 1, 1 }; }
 };
 
+struct NavgenMapIdentification
+{
+	enum MapVerificationMethod : int
+	{
+		PAK_CHECKSUM,
+		BSP_SIZE,
+	};
+
+	MapVerificationMethod method;
+	union
+	{
+		int pakChecksum;
+		int bspSize; // TODO modification time maybe?
+	};
+};
+
 struct NavMeshSetHeader
 {
 	int magic;
 	int version;
 	unsigned productVersionHash;
 	unsigned headerSize;
+	NavgenMapIdentification mapId;
 	int numTiles; // -1 indicates generation failed
 	NavgenConfig config;
 	dtNavMeshParams params;
 	dtTileCacheParams cacheParams;
 };
+
+NavgenMapIdentification GetNavgenMapId( Str::StringRef mapName );
+std::string GetNavmeshHeader( fileHandle_t f, NavMeshSetHeader& header, Str::StringRef mapName );
 
 inline unsigned ProductVersionHash()
 {
@@ -139,38 +159,6 @@ static inline void SwapNavMeshTileHeader( NavMeshTileHeader &header )
 		dtSwapEndian( &header.dataSize );
 		dtSwapEndian( &header.tileRef );
 	}
-}
-
-// Returns a non-empty string on error
-inline std::string GetNavmeshHeader( fileHandle_t f, NavMeshSetHeader& header )
-{
-	if ( sizeof(header) != trap_FS_Read( &header, sizeof( header ), f ) )
-	{
-		return "File too small";
-	}
-	SwapNavMeshSetHeader( header );
-
-	if ( header.magic != NAVMESHSET_MAGIC )
-	{
-		return "File is wrong magic";
-	}
-
-	// In principle we only need NAVMESHSET_VERSION, but people probably won't remember to change it
-	// so add some extra checks
-	if ( header.version != NAVMESHSET_VERSION ||
-	     header.productVersionHash != ProductVersionHash() ||
-	     header.headerSize != sizeof(header) )
-	{
-		return "File is wrong version";
-	}
-
-	NavgenConfig defaultConfig = NavgenConfig::Default();
-	if ( 0 != memcmp( &header.config, &defaultConfig, sizeof(NavgenConfig) ) )
-	{
-		return "Navgen config changed";
-	}
-
-	return "";
 }
 
 struct FastLZCompressor : public dtTileCacheCompressor

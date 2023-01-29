@@ -111,6 +111,7 @@ void NavmeshGenerator::WriteFile() {
 	header.version = NAVMESHSET_VERSION;
 	header.productVersionHash = ProductVersionHash();
 	header.headerSize = sizeof(header);
+	header.mapId = GetNavgenMapId( mapName_ );
 	header.config = config_;
 
 	SwapNavMeshSetHeader( header );

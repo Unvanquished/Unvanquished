@@ -294,7 +294,7 @@ static navMeshStatus_t BotLoadNavMesh( int f, const char *species, NavData_t &na
 	constexpr auto internalErrorStatus = navMeshStatus_t::LOAD_FAILED;
 
 	NavMeshSetHeader header;
-	std::string error = GetNavmeshHeader( f, header );
+	std::string error = GetNavmeshHeader( f, header, Cvar::GetValue( "mapname" ) );
 	if ( !error.empty() )
 	{
 		Log::Warn( "Loading navmesh for %s failed: %s", species, error );

@@ -5936,7 +5936,7 @@ bool G_admin_navgen( gentity_t* ent )
 					continue;
 				}
 				NavMeshSetHeader header;
-				std::string error = GetNavmeshHeader( f, header );
+				std::string error = GetNavmeshHeader( f, header, mapName );
 				if ( !error.empty() )
 				{
 					targets[ species ] = true;
