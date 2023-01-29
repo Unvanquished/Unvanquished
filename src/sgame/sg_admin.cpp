@@ -134,6 +134,7 @@ static void G_admin_notIntermission( gentity_t *ent )
 
 // big ugly global buffer for use with buffered printing of long outputs
 static std::string       g_bfb;
+static int bfbNaughtyCharacters;
 #define MAX_MESSAGE_SIZE static_cast<size_t>(1022)
 
 static bool G_admin_maprestarted( gentity_t * );
@@ -5688,6 +5689,7 @@ void G_admin_buffer_begin()
 {
 	g_bfb.clear();
 	g_bfb.reserve(MAX_MESSAGE_SIZE);
+	bfbNaughtyCharacters = 0;
 }
 
 void G_admin_buffer_end( gentity_t *ent )
@@ -5697,13 +5699,23 @@ void G_admin_buffer_end( gentity_t *ent )
 
 static inline void G_admin_buffer_print_raw( gentity_t *ent, Str::StringRef m, bool appendNewLine )
 {
-	// Ensure we don't overflow client buffers.
-	if ( g_bfb.size() + m.size() >= MAX_MESSAGE_SIZE )
+	int additionalNaughtyCharacters = 0;
+	for (char c : m)
+	{
+		if ( c == '\\' || c == '"' || c == '$' )
+		{
+			++additionalNaughtyCharacters;
+		}
+	}
+
+	// Ensure we don't overflow client buffers. Allow for surrounding quotes and each needed escaping backslash
+	if ( g_bfb.size() + m.size() + bfbNaughtyCharacters + additionalNaughtyCharacters + 2 >= MAX_MESSAGE_SIZE )
 	{
 		G_admin_buffer_end( ent );
 		G_admin_buffer_begin();
 	}
 	g_bfb += m;
+	bfbNaughtyCharacters += additionalNaughtyCharacters;
 
 	if ( appendNewLine )
 	{
