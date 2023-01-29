@@ -4108,7 +4108,7 @@ bool G_admin_adminhelp( gentity_t *ent )
 		out += "\n";
 
 		ADMP( Quote( out ) );
-		ADMP( va( "%s %d", QQ( N_("^3adminhelp:^* $1$ available commands"
+		ADMP( va( "%s %d", QQ( N_("^3adminhelp:^* $1$ available commands\n"
 		"run adminhelp [^3command^7] for adminhelp with a specific command.") ),count ) );
 
 		return true;
