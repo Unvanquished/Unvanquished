@@ -5775,7 +5775,7 @@ void G_admin_cleanup()
 static void BotUsage( gentity_t *ent )
 {
 	static const char bot_usage[] = QQ( N_( "^3bot:^* usage: bot add (<name> | *) (aliens | humans) [<skill level> [<behavior>]]\n"
-	                                        "            bot fill <count> [<team> [<skill level>]]\n"
+	                                        "            bot fill <count> [(<team> | *) [<skill level>]]\n"
 	                                        "            bot del (<name> | all)\n"
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
@@ -5856,7 +5856,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		return false;
 	}
 	std::vector<team_t> teams;
-	if ( args.Argc() >= 4 )
+	if ( args.Argc() >= 4 && args[3] != "*" )
 	{
 		team_t team = BG_PlayableTeamFromString(args[3].data());
 		if (team == team_t::TEAM_NONE)
