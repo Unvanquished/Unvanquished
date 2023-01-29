@@ -1114,7 +1114,7 @@ static void GenerateNavmeshes()
 			continue;
 		}
 		NavMeshSetHeader header;
-		std::string error = GetNavmeshHeader( f, header );
+		std::string error = GetNavmeshHeader( f, header, mapName );
 		if ( !error.empty() )
 		{
 			Log::Notice( "Existing navmesh file %s can't be used: %s", filename, error );
