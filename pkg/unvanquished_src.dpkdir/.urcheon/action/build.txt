@@ -1,2 +1,11 @@
 ignore ui/assets/background/human.png
 ignore ui/assets/background/tyrant.png
+ignore translation/game/de.po
+ignore translation/game/en.po
+ignore translation/game/es.po
+ignore translation/game/fr.po
+ignore translation/game/gl.po
+ignore translation/game/it.po
+ignore translation/game/pl.po
+ignore translation/game/ru.po
+ignore translation/game/uk.po
