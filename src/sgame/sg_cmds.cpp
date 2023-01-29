@@ -5042,6 +5042,12 @@ Send a message to all active admins
 */
 void Cmd_AdminMessage_f( gentity_t *ent )
 {
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( "\"" N_("usage: a [message]") "\"" );
+		return;
+	}
+
 	// Check permissions and add the appropriate user [prefix]
 	if ( !G_admin_permission( ent, ADMF_ADMINCHAT ) )
 	{
@@ -5055,12 +5061,6 @@ void Cmd_AdminMessage_f( gentity_t *ent )
 			ADMP( "\"" N_("Your message has been sent to any available admins "
 			      "and to the server logs.") "\"" );
 		}
-	}
-
-	if ( trap_Argc() < 2 )
-	{
-		ADMP( "\"" N_("usage: a [message]") "\"" );
-		return;
 	}
 
 	G_AdminMessage( ent, ConcatArgs( 1 ) );
