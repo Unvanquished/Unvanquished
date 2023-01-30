@@ -525,6 +525,9 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 
 // checks if jumping would get rid of blocker
 // return true if yes
+//
+// This currently doesn't handle jumping over map geometry, but that could be
+// nice some day.
 static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm::vec3 &dir )
 {
 	glm::vec3 playerMins;
@@ -692,7 +695,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 // This function tries to detect obstacles and to find a way
 // around them. It always sets dir as the output value.
 // Returns true on error
-static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir )
+static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeometry )
 {
 	dir = self->botMind->nav().glm_dir();
 	gentity_t const *blocker = BotGetPathBlocker( self, dir );
@@ -702,15 +705,6 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir )
 		return false;
 	}
 
-	// ignore some stuff like geometry, movers...
-	switch( blocker->s.eType )
-	{
-		case entityType_t::ET_GENERAL:
-		case entityType_t::ET_MOVER:
-			return false;
-		default:
-			break;
-	}
 	if ( BotShouldJump( self, blocker, dir ) )
 	{
 		BotJump( self );
@@ -720,6 +714,19 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir )
 	if ( BotFindSteerTarget( self, dir ) )
 	{
 		return false;
+	}
+
+	// ignore some stuff like geometry, movers...
+	switch( blocker->s.eType )
+	{
+		case entityType_t::ET_GENERAL:
+		case entityType_t::ET_MOVER:
+			if ( ignoreGeometry )
+			{
+				return false;
+			}
+		default:
+			break;
 	}
 
 	return true;
@@ -797,10 +804,32 @@ Global Bot Navigation
 bool BotMoveToGoal( gentity_t *self )
 {
 	glm::vec3 dir;
-	if ( BotAvoidObstacles( self, dir ) )
+	constexpr int ignoreGeometryThreshold = 1700; // 1.7s, we seem stuck
+	constexpr int softStuckThreshold = 5000; // 5s, something's fishy
+	int stuckTime = level.time - self->botMind->stuckTime;
+
+	// At start, ignore geometry, unless we seem stuck for too long.
+	// This avoids the following two bugs:
+	//
+	//  * https://github.com/Unvanquished/Unvanquished/issues/2358
+	//    Maybe this issue would be better avoided by treating open door
+	//    panes as obstacle, but in the current state this would make bot
+	//    "loose focus" because their path was deemed invalid.
+	//
+	//  * https://github.com/Unvanquished/Unvanquished/issues/2263
+	//    Maybe this issue would be better avoided by building thighter
+	//    navmesh, so that the corners would be less susceptible to be
+	//    blocking. A quick try didn't seem to show that other solution to
+	//    be satisfying.
+
+	bool ignoreGeometry = stuckTime < ignoreGeometryThreshold;
+	if ( BotAvoidObstacles( self, dir, ignoreGeometry ) )
 	{
 		BotSeek( self, dir );
-		return false;
+		bool softStuck = stuckTime > softStuckThreshold;
+		// if we have not moved much for some time, let's propagate
+		// a failure status, so we can find another goal
+		return softStuck;
 	}
 
 	BotSeek( self, dir );
