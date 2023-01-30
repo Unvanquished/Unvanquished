@@ -1604,7 +1604,7 @@ void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t 
 
 void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );
 
-void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap );
+void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s );
 void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time );
 
 float    atof_neg( const char *token, bool allowNegative );

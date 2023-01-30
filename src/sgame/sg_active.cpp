@@ -1260,7 +1260,7 @@ static void SendPendingPredictableEvents( playerState_t *ps )
 		// create temporary entity for event
 		t = G_NewTempEntity( VEC2GLM( ps->origin ), event );
 		number = t->s.number;
-		BG_PlayerStateToEntityState( ps, &t->s, true );
+		BG_PlayerStateToEntityState( ps, &t->s );
 		t->s.number = number;
 		t->s.eType = Util::enum_cast<entityType_t>(Util::ordinal(entityType_t::ET_EVENTS) + event );
 		t->s.eFlags |= EF_PLAYER_EVENT;
@@ -2149,7 +2149,7 @@ static void ClientThink_real( gentity_t *self )
 	}
 	else
 	{
-		BG_PlayerStateToEntityState( &client->ps, &self->s, true );
+		BG_PlayerStateToEntityState( &client->ps, &self->s );
 	}
 
 	// update attached tags right after evaluating movement
@@ -2423,7 +2423,7 @@ void ClientEndFrame( gentity_t *ent )
 	}
 	else
 	{
-		BG_PlayerStateToEntityState( &ent->client->ps, &ent->s, true );
+		BG_PlayerStateToEntityState( &ent->client->ps, &ent->s );
 	}
 
 	SendPendingPredictableEvents( &ent->client->ps );

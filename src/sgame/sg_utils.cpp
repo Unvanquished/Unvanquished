@@ -221,7 +221,7 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 	G_SetClientViewAngle( player, angles );
 
 	// save results of pmove
-	BG_PlayerStateToEntityState( &player->client->ps, &player->s, true );
+	BG_PlayerStateToEntityState( &player->client->ps, &player->s );
 
 	// use the precise origin for linking
 	VectorCopy( player->client->ps.origin, player->r.currentOrigin );

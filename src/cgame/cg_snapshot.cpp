@@ -94,7 +94,7 @@ static void CG_SetInitialSnapshot( snapshot_t *snap )
 
 	cg.snap = snap;
 
-	BG_PlayerStateToEntityState( &snap->ps, &cg_entities[ snap->ps.clientNum ].currentState, false );
+	BG_PlayerStateToEntityState( &snap->ps, &cg_entities[ snap->ps.clientNum ].currentState );
 
 	// sort out solid entities
 	CG_BuildSolidList();
@@ -173,7 +173,7 @@ static void CG_TransitionSnapshot()
 	// so the CG_OnPlayerWeaponChange callback is never called
 	oldWeapon = oldFrame->ps.weapon;
 
-	BG_PlayerStateToEntityState( &cg.snap->ps, &cg_entities[ cg.snap->ps.clientNum ].currentState, false );
+	BG_PlayerStateToEntityState( &cg.snap->ps, &cg_entities[ cg.snap->ps.clientNum ].currentState );
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = false;
 
 	for ( unsigned i = 0; i < cg.snap->entities.size(); i++ )
@@ -226,7 +226,7 @@ static void CG_SetNextSnap( snapshot_t *snap )
 
 	cg.nextSnap = snap;
 
-	BG_PlayerStateToEntityState( &snap->ps, &cg_entities[ snap->ps.clientNum ].nextState, false );
+	BG_PlayerStateToEntityState( &snap->ps, &cg_entities[ snap->ps.clientNum ].nextState );
 	cg_entities[ cg.snap->ps.clientNum ].interpolate = true;
 
 	// check for extrapolation errors

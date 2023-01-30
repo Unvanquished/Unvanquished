@@ -1364,14 +1364,12 @@ static void PlayerStateToEntityState( playerState_t *ps, entityState_t *s )
 	}
 	else if ( ps->entityEventSequence < ps->eventSequence )
 	{
-		int seq;
-
 		if ( ps->entityEventSequence < ps->eventSequence - MAX_EVENTS )
 		{
 			ps->entityEventSequence = ps->eventSequence - MAX_EVENTS;
 		}
 
-		seq = ps->entityEventSequence & ( MAX_EVENTS - 1 );
+		int seq = ps->entityEventSequence & ( MAX_EVENTS - 1 );
 		s->event = ps->events[ seq ] | ( ( ps->entityEventSequence & 3 ) << 8 );
 		s->eventParm = ps->eventParms[ seq ];
 		ps->entityEventSequence++;
@@ -1440,16 +1438,15 @@ static void PlayerStateToEntityState( playerState_t *ps, entityState_t *s )
 }
 
 // snap is true when called by sgame, false when called by cgame
-void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, bool snap )
+void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s )
 {
 	PlayerStateToEntityState( ps, s );
 
 	s->pos.trType = trType_t::TR_INTERPOLATE;
-	if ( snap )
-	{
-		SnapVector( s->pos.trBase );
-		SnapVector( s->apos.trBase );
-	}
+#ifdef SGAME
+	SnapVector( s->pos.trBase );
+	SnapVector( s->apos.trBase );
+#endif
 }
 
 /*
