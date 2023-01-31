@@ -590,13 +590,13 @@ static void BotFindDefaultSteerTarget( gentity_t *self, glm::vec3 &dir )
 
 	// We add a delta determined from clientNum to avoid bots
 	// dancing in sync
-	int time = (110 * self->num() + self->client->time1000) % 1000;
+	int time = (110 * self->num() + self->client->time10000) % 1600;
 
-	// 280 instead of 700/2=350 because we want some left/right
+	bool invert = time < 800;
+	// part of the time we go straight instead
+	// 600 instead of 800 because we want some left/right
 	// asymetry in case it helps
-	bool invert = time < 280;
-	// half of the time we go straight instead
-	bool sideways = time > 700;
+	bool sideways = std::abs(time - 600) < 500;
 
 	if ( sideways )
 	{
