@@ -600,8 +600,8 @@ void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 {
 	switch ( moverState )
 	{
-		// See comment below for MOVER_POS2
 		case MOVER_POS1:
+		case MOVER_POS2:
 		case ROTATOR_POS1:
 		case ROTATOR_POS2:
 			if ( IsDoor( ent ) )
@@ -611,24 +611,6 @@ void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 				{
 					G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
 				}
-			}
-			break;
-
-		// We add regular opened doors as obstacles even if the doors are not automatic to avoid bots
-		// walking through the door pane, when it's opened (it's
-		// considered an obstacle because the door can't open further).
-		// See https://github.com/Unvanquished/Unvanquished/issues/2358
-		//
-		// We can't do that for rotating doors as this would break
-		// round "iris" doors, the axis-aligned bounding box would
-		// disable too much navmesh, making passing through the door
-		// difficult.
-		// https://github.com/Unvanquished/Unvanquished/pull/2360#issuecomment-1376145592
-		case MOVER_POS2:
-			if ( IsDoor( ent ) )
-			{
-				G_BotRemoveObstacle( ent->num() );
-				G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
 			}
 			break;
 
