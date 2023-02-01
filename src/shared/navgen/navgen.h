@@ -150,7 +150,7 @@ private:
 
 	void LoadBSP();
 	void LoadGeometry();
-	void LoadBrushTris(std::vector<float>& verts, std::vector<int>& tris);
+	void LoadTris(std::vector<float>& verts, std::vector<int>& tris);
 	void WriteFile();
 
 public:
