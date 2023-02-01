@@ -187,14 +187,21 @@ void NavmeshGenerator::LoadBSP()
 	{
 		((int*)header)[i] = LittleLong(((int*)header)[i]);
 	}
-	for (int lump: {LUMP_MODELS, LUMP_BRUSHES, LUMP_SHADERS, LUMP_BRUSHSIDES, LUMP_PLANES})
+	for (int lump: {LUMP_MODELS, LUMP_BRUSHES, LUMP_SHADERS, LUMP_BRUSHSIDES, LUMP_PLANES, LUMP_SURFACES, LUMP_DRAWVERTS})
 	{
+		if ((lump == LUMP_SURFACES || lump == LUMP_DRAWVERTS) && !config_.generatePatchTris)
+		{
+			continue;
+		}
 		unsigned nBytes = header->lumps[lump].fileofs;
 		char *base = &mapData_[0] + header->lumps[lump].filelen;
 		for (unsigned i = 0; i < nBytes; i += 4)
 		{
 			if (lump == LUMP_SHADERS && i % sizeof(dshader_t) < offsetof(dshader_t, surfaceFlags))
 				continue;
+			// There is one more exception to 4-byte fields, byte color[4] in drawVert_t, but we don't use it
+#define color DO_NOT_USE_BYTE_SWAPPED
+
 			int* p = reinterpret_cast<int*>(base + i);
 			*p = LittleLong(*p);
 		}
@@ -224,7 +231,7 @@ static void AddTri( std::vector<float> &verts, std::vector<int> &tris, vec3_t v1
 
 // TODO: Can this stuff be done using the already-loaded CM data structures
 // (e.g. cbrush_t instead of dbrush_t) instead of reopening the BSP?
-void NavmeshGenerator::LoadBrushTris( std::vector<float> &verts, std::vector<int> &tris ) {
+void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tris ) {
 	int solidFlags = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
 	int surfaceSkip = 0;
 
@@ -252,6 +259,10 @@ void NavmeshGenerator::LoadBrushTris( std::vector<float> &verts, std::vector<int
 	auto* bspShaders = reinterpret_cast<const dshader_t*>(cmod_base + shadersLump.fileofs);
 	auto* bspBrushSides = reinterpret_cast<const dbrushside_t*>(cmod_base + sidesLump.fileofs);
 	auto* bspPlanes = reinterpret_cast<const dplane_t*>(cmod_base + planesLump.fileofs);
+
+	/*
+	 * Load brush tris
+	 */
 
 	//go through the brushes
 	for ( int i = model->firstBrush, m = 0; m < model->numBrushes; i++, m++ ) {
@@ -308,27 +319,22 @@ void NavmeshGenerator::LoadBrushTris( std::vector<float> &verts, std::vector<int
 			}
 		}
 	}
-}
 
-static void LoadPatchTris( std::vector<float> &verts, std::vector<int> &tris ) {
-// Disabling this code for now. It should be straightforward to port, but I haven't
-// bothered because I can't see any effect on the navmesh, even on parts with curved
-// areas using patches. So maybe we are better of dropping this and saving some triangles.
-	Q_UNUSED(verts);
-	Q_UNUSED(tris);
-#if 0
-	vec3_t mins, maxs;
-	int solidFlags = 0;
-	int temp = 0;
+	if ( !config_.generatePatchTris )
+	{
+		return;
+	}
+	LOG.Debug( "Generated %d brush tris", tris.size() / 3 );
+	LOG.Debug( "Generated %d brush verts", verts.size() / 3 );
 
-	char surfaceparm[16];
-
-	strcpy( surfaceparm, "default" );
-	ApplySurfaceParm( surfaceparm, &solidFlags, NULL, NULL );
-
-	strcpy( surfaceparm, "playerclip" );
-	ApplySurfaceParm( surfaceparm, &temp, NULL, NULL );
-	solidFlags |= temp;
+	/*
+	 * Load patch tris
+	 */
+	const lump_t& surfacesLump = header.lumps[LUMP_SURFACES];
+	const lump_t& vertsLump = header.lumps[LUMP_DRAWVERTS];
+	
+	auto* bspSurfaces = reinterpret_cast<const dsurface_t*>(cmod_base + surfacesLump.fileofs);
+	auto* bspVerts = reinterpret_cast<const drawVert_t*>(cmod_base + vertsLump.fileofs);
 
 	/*
 	    Patches are not used during the bsp building process where
@@ -339,11 +345,12 @@ static void LoadPatchTris( std::vector<float> &verts, std::vector<int> &tris ) {
 	 */
 
 	// calculate bounds of all verts
+	vec3_t mins, maxs;
 	rcCalcBounds( &verts[ 0 ], verts.size() / 3, mins, maxs );
 
 	// convert from recast to quake3 coordinates
-	recast2quake( mins );
-	recast2quake( maxs );
+	std::swap( mins[ 1 ], mins[ 2 ] );
+	std::swap( maxs[ 1 ], maxs[ 2 ] );
 
 	vec3_t tmin, tmax;
 
@@ -357,17 +364,15 @@ static void LoadPatchTris( std::vector<float> &verts, std::vector<int> &tris ) {
 	VectorCopy( tmin, mins );
 	VectorCopy( tmax, maxs );
 
-	/* get model, index 0 is worldspawn entity */
-	const bspModel_t *model = &bspModels[0];
-	for ( int k = model->firstBSPSurface, n = 0; n < model->numBSPSurfaces; k++,n++ )
+	for ( int k = model->firstSurface, n = 0; n < model->numSurfaces; k++, n++ )
 	{
-		const bspDrawSurface_t *surface = &bspDrawSurfaces[k];
+		const dsurface_t *surface = &bspSurfaces[ k ];
 
 		if ( !( bspShaders[surface->shaderNum].contentFlags & solidFlags ) ) {
 			continue;
 		}
 
-		if ( surface->surfaceType != MST_PATCH ) {
+		if ( surface->surfaceType != mapSurfaceType_t::MST_PATCH ) {
 			continue;
 		}
 
@@ -378,10 +383,10 @@ static void LoadPatchTris( std::vector<float> &verts, std::vector<int> &tris ) {
 		cGrid_t grid;
 		grid.width = surface->patchWidth;
 		grid.height = surface->patchHeight;
-		grid.wrapHeight = qfalse;
-		grid.wrapWidth = qfalse;
+		grid.wrapHeight = false;
+		grid.wrapWidth = false;
 
-		bspDrawVert_t *curveVerts = &bspDrawVerts[surface->firstVert];
+		const drawVert_t *curveVerts = &bspVerts[surface->firstVert];
 
 		// make sure the patch intersects the bounds of the brushes
 		ClearBounds( tmin, tmax );
@@ -435,7 +440,6 @@ static void LoadPatchTris( std::vector<float> &verts, std::vector<int> &tris ) {
 			}
 		}
 	}
-#endif
 }
 
 void NavmeshGenerator::LoadGeometry()
@@ -447,9 +451,8 @@ void NavmeshGenerator::LoadGeometry()
 	int numVerts, numTris;
 
 	//count surfaces
-	LoadBrushTris( verts, tris );
+	LoadTris( verts, tris );
 	if ( initStatus_.code != NavgenStatus::OK ) return;
-	LoadPatchTris( verts, tris );
 
 	numTris = tris.size() / 3;
 	numVerts = verts.size() / 3;

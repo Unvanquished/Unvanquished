@@ -49,7 +49,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #define MIN_WALK_NORMAL 0.7f
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
-static const int NAVMESHSET_VERSION = 6; // Increment when navgen algorithm or data format changes
+static const int NAVMESHSET_VERSION = 7; // Increment when navgen algorithm or data format changes
 
 enum navPolyFlags
 {
@@ -84,8 +84,9 @@ struct NavgenConfig {
 	int excludeCaulk; // boolean - exclude caulk surfaces
 	int excludeSky; // boolean - exclude surfaces with surfaceparm sky from navmesh generation
 	int filterGaps; // boolean - add new walkable spans so bots can walk over small gaps
+	int generatePatchTris; // boolean - generate triangles from the BSP's patches
 
-	static NavgenConfig Default() { return { 2.0f, STEPSIZE, 1, 1, 1 }; }
+	static NavgenConfig Default() { return { 2.0f, STEPSIZE, 1, 1, 1, 1 }; }
 };
 
 struct NavgenMapIdentification
