@@ -352,18 +352,6 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 	std::swap( mins[ 1 ], mins[ 2 ] );
 	std::swap( maxs[ 1 ], maxs[ 2 ] );
 
-	vec3_t tmin, tmax;
-
-	// need to recalculate mins and maxs because they no longer represent
-	// the minimum and maximum vector components respectively
-	ClearBounds( tmin, tmax );
-
-	AddPointToBounds( mins, tmin, tmax );
-	AddPointToBounds( maxs, tmin, tmax );
-
-	VectorCopy( tmin, mins );
-	VectorCopy( tmax, maxs );
-
 	for ( int k = model->firstSurface, n = 0; n < model->numSurfaces; k++, n++ )
 	{
 		const dsurface_t *surface = &bspSurfaces[ k ];
@@ -389,6 +377,7 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 		const drawVert_t *curveVerts = &bspVerts[surface->firstVert];
 
 		// make sure the patch intersects the bounds of the brushes
+		vec3_t tmin, tmax;
 		ClearBounds( tmin, tmax );
 
 		for ( int x = 0; x < grid.width; x++ )
