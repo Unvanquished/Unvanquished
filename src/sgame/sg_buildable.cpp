@@ -2462,7 +2462,7 @@ void G_LayoutLoad()
 	}
 
 	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-	len = G_FOpenGameOrPakPath( va( "layouts/%s/%s.dat", map, level.layout ), f );
+	len = BG_FOpenGameOrPakPath( va( "layouts/%s/%s.dat", map, level.layout ), f );
 
 	if ( len < 0 )
 	{

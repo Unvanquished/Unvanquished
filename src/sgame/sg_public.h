@@ -319,7 +319,7 @@ std::string G_EscapeServerCommandArg( Str::StringRef str );
 char *Quote( Str::StringRef str );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
 float G_DistanceToBBox( const vec3_t origin, gentity_t* ent );
-int G_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
+int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
 bool G_IsOnFire( const gentity_t *ent );
 
 // sg_weapon.c
