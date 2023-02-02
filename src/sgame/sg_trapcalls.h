@@ -27,24 +27,10 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 #include <glm/vec3.hpp>
 
+#include "shared/CommonProxies.h"
+
 struct gentity_t;
 
-int              trap_Milliseconds();
-void             trap_Cvar_Set( const char *var_name, const char *value );
-int              trap_Cvar_VariableIntegerValue( const char *var_name );
-void             trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
-int              trap_Argc();
-void             trap_Argv( int n, char *buffer, int bufferLength );
-const Cmd::Args& trap_Args();
-void             trap_SendConsoleCommand( const char *text );
-int              trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
-int trap_FS_OpenPakFile( Str::StringRef path, fileHandle_t &f );
-int              trap_FS_Seek( fileHandle_t f, int offset, fsOrigin_t origin );
-int              trap_FS_Read( void *buffer, int len, fileHandle_t f );
-int              trap_FS_Write( const void *buffer, int len, fileHandle_t f );
-void             trap_FS_FCloseFile( fileHandle_t f );
-// TODO: in many cases we want only VFS (pakpath) files, not VFS + gamepath which this gives
-int              trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 void             trap_LocateGameData( int numGEntities, int sizeofGEntity_t, int sizeofGClient );
 void             trap_DropClient( int clientNum, const char *reason );
 void             trap_SendServerCommand( int clientNum, const char *text );
@@ -69,8 +55,6 @@ int              trap_BotAllocateClient();
 void             trap_BotFreeClient( int clientNum );
 void             trap_GetUsercmd( int clientNum, usercmd_t *cmd );
 bool         trap_GetEntityToken( char *buffer, int bufferSize );
-void             trap_AddCommand( const char *cmdName );
-void             trap_RemoveCommand( const char *cmdName );
 int              trap_BotGetServerCommand( int clientNum, char *message, int size );
 
 int              trap_RSA_GenerateMessage( const char *public_key, char *cleartext, char *encrypted );
@@ -79,6 +63,5 @@ void             trap_GenFingerprint( const char *pubkey, int size, char *buffer
 void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
-bool         trap_FindPak( const char *name );
 
 #endif // SG_TRAPCALLS_H_

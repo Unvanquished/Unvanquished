@@ -27,14 +27,8 @@
 #include <vector>
 #include <queue>
 
-// Filesystem APIs are stupidly declared in different headers
-#ifdef BUILD_CGAME
-#include "engine/client/cg_api.h"
-#else
-#include "sgame/sg_trapcalls.h"
-#endif
-
 #include "engine/qcommon/qcommon.h"
+#include "shared/CommonProxies.h"
 #include "common/cm/cm_patch.h"
 #include "common/cm/cm_polylib.h"
 #include "common/FileSystem.h"
