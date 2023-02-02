@@ -119,7 +119,7 @@ enum bot_skill
 	BOT_A_TYRANT_CHARGE_ON_FLEE,
 	BOT_A_SAFE_BARBS, // don't barb yourself as adv goon
 	BOT_H_RUN_ON_FLEE, // when fleeing, RUN
-	BOT_H_BUY_ARMOR, // knows armor exists at all, if the bot doesn't have BOT_H_PREFER_ARMOR too it will always prefer to buy guns
+	BOT_H_BUY_MODERN_ARMOR, // if this is disabled, bot will buy the second-to-last unlocked armor, and will never buy battlesuit
 	BOT_H_PREFER_ARMOR, // prefer to buy armor rather than guns
 	BOT_H_MEDKIT, // knows the medkit even exist
 

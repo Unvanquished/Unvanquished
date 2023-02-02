@@ -71,7 +71,7 @@ static const std::vector<botSkillTreeElement_t> survival_skills = {
 	{ "safe-barbs",         BOT_A_SAFE_BARBS,            3, pred_alien, {} },
 
 	// humans
-	{ "buy-armor",          BOT_H_BUY_ARMOR,   10, pred_human, {
+	{ "buy-modern-armor",   BOT_H_BUY_MODERN_ARMOR, 10, pred_human, {
 		{ "prefer-armor", BOT_H_PREFER_ARMOR, 5, pred_human, {} },
 	}},
 	{ "flee-run",           BOT_H_RUN_ON_FLEE,  5, pred_human, {} },

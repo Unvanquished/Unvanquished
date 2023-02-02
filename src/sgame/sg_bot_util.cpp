@@ -557,6 +557,26 @@ AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t* )
 	return STATUS_FAILURE;
 }
 
+static bool BotSkillArmorIsDesirable( const gentity_t *self, upgrade_t armor )
+{
+	if ( self->botMind->botSkillSet[BOT_H_BUY_MODERN_ARMOR] ) {
+		return true;
+	}
+
+	// let's pretend that we have one less armor rank unlocked:
+	switch ( armor )
+	{
+	case UP_LIGHTARMOUR:
+		return BG_UpgradeUnlocked( UP_MEDIUMARMOUR );
+	case UP_MEDIUMARMOUR:
+		return BG_UpgradeUnlocked( UP_BATTLESUIT );
+	case UP_BATTLESUIT:
+		return false;
+	default:
+		ASSERT_UNREACHABLE();
+	}
+}
+
 // Allow human bots to decide what to buy
 // pre-condition:
 // * weapon is a valid pointer
@@ -601,7 +621,9 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		// * already worn (assumed that armors are sorted by preference)
 		// * better (more expensive), authorized, and have the slots
 		if ( BG_InventoryContainsUpgrade( armor.item, self->client->ps.stats ) ||
-				( armor.canBuyNow() && usableCapital >= armor.price()
+				( armor.canBuyNow()
+				&& BotSkillArmorIsDesirable( self, armor.item )
+				&& usableCapital >= armor.price()
 				&& ( usedSlots & armor.slots() ) == 0 ) )
 		{
 			upgrades[numUpgrades] = armor.item;
@@ -677,6 +699,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 
 	if ( self->botMind->botSkillSet[BOT_H_PREFER_ARMOR] )
 	{
+		// buy armor before anything else
 		buyArmors();
 		buyRadar();
 		buyWeapons();
@@ -686,11 +709,8 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	{
 		buyWeapons();
 		buyRadar();
-		if ( self->botMind->botSkillSet[BOT_H_BUY_ARMOR] )
-		{
-			// we may wish to pretend we don't know armor exists at all
-			buyArmors();
-		}
+		// armor isn't the highest priority in this case
+		buyArmors();
 		buyTools();
 	}
 
