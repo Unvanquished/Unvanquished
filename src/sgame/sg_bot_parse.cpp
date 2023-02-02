@@ -1382,7 +1382,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
-	handle = Parse_LoadSourceHandle( treefilename, G_FOpenGameOrPakPath );
+	handle = Parse_LoadSourceHandle( treefilename, BG_FOpenGameOrPakPath );
 	if ( !handle )
 	{
 		Log::Warn( "Cannot load behavior tree %s: File not found", treefilename );

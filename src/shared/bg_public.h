@@ -1822,6 +1822,8 @@ glm::vec3 BG_GetClientViewOrigin( const playerState_t *ps );
 void BG_BoundingBox( class_t cl, glm::vec3* mins, glm::vec3* maxs, glm::vec3* cmaxs, glm::vec3* dmins, glm::vec3* dmaxs );
 void BG_BoundingBox( buildable_t buildablel, glm::vec3* mins, glm::vec3* maxs );
 
+int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
+
 void AngleVectors( const glm::vec3 &angles, glm::vec3 *forward, glm::vec3 *right, glm::vec3 *up );
 WARN_UNUSED_RESULT glm::mat3 RotationMatrix( const glm::vec3 &angles );
 

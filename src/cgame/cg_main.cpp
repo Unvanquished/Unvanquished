@@ -1106,9 +1106,7 @@ static void GenerateNavmeshes()
 	{
 		fileHandle_t f;
 		std::string filename = NavmeshFilename( mapName, BG_Class( species )->name );
-		// Search homepath then pakpath, matching G_FOpenGameOrPakPath
-		if ( trap_FS_FOpenFile( filename.c_str(), &f, fsMode_t::FS_READ ) < 0 &&
-		     trap_FS_OpenPakFile( filename, f ) < 0 )
+		if ( BG_FOpenGameOrPakPath( filename, f ) < 0 )
 		{
 			missing.push_back( species );
 			continue;

@@ -127,7 +127,7 @@ static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &
 
 	std::string mapname = Cvar::GetValue("mapname");
 	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname.c_str(), species );
-	int len = G_FOpenGameOrPakPath( filePath, f );
+	int len = BG_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
 	{
@@ -468,7 +468,7 @@ navMeshStatus_t G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle 
 	int f;
 	std::string mapname = Cvar::GetValue( "mapname" );
 	std::string filePath = NavmeshFilename( mapname, species );
-	G_FOpenGameOrPakPath( filePath, f );
+	BG_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
 	{

@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stddef.h>
 #include "engine/qcommon/q_shared.h"
 #include "common/FileSystem.h"
+#include "shared/CommonProxies.h"
 #include "bg_public.h"
 #include "parse.h"
 
@@ -2746,4 +2747,19 @@ void BG_BoundingBox( buildable_t buildable, glm::vec3* mins, glm::vec3* maxs )
 	{
 		*maxs = VEC2GLM( buildableModelConfig->maxs );
 	}
+}
+
+// Looks for a file in <homepath>/game/ first, and then
+// in the VFS if it is not found there. This is good if you want to allow server-side
+// overrides of pak files which do not need to be downloaded by clients. For example, bot behaviors.
+int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle )
+{
+	// Try homepath
+	int length = trap_FS_FOpenFile( filename.c_str(), &handle, fsMode_t::FS_READ );
+	if ( length < 0 )
+	{
+		// Try pakpath
+		length = trap_FS_OpenPakFile( filename, handle );
+	}
+	return length;
 }

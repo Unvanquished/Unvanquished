@@ -524,7 +524,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 	fileHandle_t f;
 
 	// load the file
-	len = G_FOpenGameOrPakPath( fileName, f );
+	len = BG_FOpenGameOrPakPath( fileName, f );
 
 	if ( len < 0 )
 	{

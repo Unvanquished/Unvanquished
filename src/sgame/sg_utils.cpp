@@ -925,21 +925,6 @@ float G_DistanceToBBox( const vec3_t origin, gentity_t* ent )
 	return sqrtf( distanceSquared );
 }
 
-// Looks for a file in <homepath>/game/ first, and then
-// in the VFS if it is not found there. This is good if you want to allow server-side
-// overrides of pak files which do not need to be downloaded by clients. For example, bot behaviors.
-int G_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle )
-{
-	// Try homepath
-	int length = trap_FS_FOpenFile( filename.c_str(), &handle, fsMode_t::FS_READ );
-	if ( length < 0 )
-	{
-		// Try pakpath
-		length = trap_FS_OpenPakFile( filename, handle );
-	}
-	return length;
-}
-
 bool G_IsOnFire( const gentity_t *ent )
 {
 	return ent->s.eFlags & EF_B_ONFIRE;
