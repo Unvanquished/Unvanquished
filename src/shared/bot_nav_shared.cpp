@@ -32,14 +32,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 */
 
 #include "common/FileSystem.h"
+#include "shared/CommonProxies.h"
 #include "bot_nav_shared.h"
-
-// File APIs...
-#ifdef BUILD_CGAME
-#include "engine/client/cg_api.h"
-#else
-#include "sgame/sg_trapcalls.h"
-#endif
 
 NavgenMapIdentification GetNavgenMapId( Str::StringRef mapName )
 {
