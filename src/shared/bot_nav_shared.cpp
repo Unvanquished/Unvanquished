@@ -108,7 +108,12 @@ std::string GetNavmeshHeader( fileHandle_t f, NavMeshSetHeader& header, Str::Str
 	}
 
 	NavgenConfig defaultConfig = NavgenConfig::Default();
-	if ( 0 != memcmp( &header.config, &defaultConfig, sizeof(NavgenConfig) ) )
+	// Do not compare cellHeight when validating as it can be
+	// automatically increased while generating navMeshes.
+	if ( &header.config.stepSize == &defaultConfig.stepSize
+		&& &header.config.excludeCaulk == &defaultConfig.excludeCaulk
+		&& &header.config.excludeSky == &defaultConfig.excludeSky
+		&& &header.config.filterGaps == &defaultConfig.filterGaps )
 	{
 		return "Navgen config changed";
 	}
