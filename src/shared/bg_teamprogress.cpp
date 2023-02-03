@@ -95,15 +95,12 @@ static bool Disabled( unlockable_t *unlockable )
 #ifdef BUILD_CGAME
 static void InformUnlockableStatusChanges( int *statusChanges, int count )
 {
-	char         text[ MAX_STRING_CHARS ];
-	char         *textptr = text;
-	int          unlockableNum;
+	std::string text;
 	bool     firstPass = true, unlocked = true;
-	unlockable_t *unlockable;
 
-	for ( unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
+	for ( int unlockableNum = 0; unlockableNum < NUM_UNLOCKABLES; unlockableNum++ )
 	{
-		unlockable = &unlockables[ unlockableNum ];
+		unlockable_t *unlockable = &unlockables[ unlockableNum ];
 
 		if ( !statusChanges[ unlockableNum ] || Disabled( unlockable ) )
 		{
@@ -114,27 +111,21 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 		{
 			if ( statusChanges[ unlockableNum ] > 0 )
 			{
-				Com_sprintf( text, sizeof( text ),
-				             "^2ITEM%s UNLOCKED: ^*", ( count > 1 ) ? "S" : "" );
+				text += Str::Format( "^2ITEM%s UNLOCKED: ^*", ( count > 1 ) ? "S" : "" );
 			}
 			else
 			{
 				unlocked = false;
-				Com_sprintf( text, sizeof( text ),
-				             "^1ITEM%s LOCKED: ^*", ( count > 1 ) ? "S" : "" );
+				text += Str::Format( "^1ITEM%s LOCKED: ^*", ( count > 1 ) ? "S" : "" );
 			}
-
-			textptr = text + strlen( text );
 			firstPass = false;
 		}
 		else
 		{
-			Com_sprintf( textptr, sizeof( text ) - ( textptr - text ), ", " );
-			textptr += 2;
+			text += ", ";
 		}
 
-		Com_sprintf( textptr, sizeof( text ) - ( textptr - text ), "%s", UnlockableHumanName( unlockable ) );
-		textptr += strlen( textptr );
+		text += UnlockableHumanName( unlockable );
 	}
 
 	// TODO: Add sound for items being locked for each team
@@ -156,7 +147,7 @@ static void InformUnlockableStatusChanges( int *statusChanges, int count )
 			break;
 	}
 
-	CG_CenterPrint( text, 1.0f );
+	CG_CenterPrint( text.c_str(), 1.0f );
 }
 #endif // BUILD_CGAME
 
