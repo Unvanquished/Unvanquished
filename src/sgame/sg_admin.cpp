@@ -5950,6 +5950,7 @@ bool G_admin_navgen( gentity_t* ent )
 		}
 		else if ( Str::IsIEqual ( args.Argv( i ), "missing" ) )
 		{
+			NavgenConfig config = ReadNavgenConfig( mapName );
 			for (class_t species : RequiredNavmeshes())
 			{
 				fileHandle_t f;
@@ -5961,7 +5962,7 @@ bool G_admin_navgen( gentity_t* ent )
 					continue;
 				}
 				NavMeshSetHeader header;
-				std::string error = GetNavmeshHeader( f, header, mapName );
+				std::string error = GetNavmeshHeader( f, config, header, mapName );
 				if ( !error.empty() )
 				{
 					targets[ species ] = true;

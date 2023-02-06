@@ -189,7 +189,8 @@ private:
 	bool exhausted = false;
 };
 
-navMeshStatus_t G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
+struct NavgenConfig;
+navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, const botClass_t *botClass, qhandle_t *navHandle );
 void G_BotShutdownNav();
 void G_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
 bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );

@@ -1102,6 +1102,7 @@ static void GenerateNavmeshes()
 {
 	std::string mapName = Cvar::GetValue( "mapname" );
 	std::vector<class_t> missing;
+	NavgenConfig config = ReadNavgenConfig( mapName );
 	for ( class_t species : RequiredNavmeshes() )
 	{
 		fileHandle_t f;
@@ -1112,7 +1113,7 @@ static void GenerateNavmeshes()
 			continue;
 		}
 		NavMeshSetHeader header;
-		std::string error = GetNavmeshHeader( f, header, mapName );
+		std::string error = GetNavmeshHeader( f, config, header, mapName );
 		if ( !error.empty() )
 		{
 			Log::Notice( "Existing navmesh file %s can't be used: %s", filename, error );

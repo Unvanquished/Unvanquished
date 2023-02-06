@@ -72,8 +72,128 @@ NavgenMapIdentification GetNavgenMapId( Str::StringRef mapName )
 	return mapId;
 }
 
+static void ParseOption( Str::StringRef name, Str::StringRef value, Str::StringRef file, NavgenConfig &config )
+{
+	float floatValue;
+	if ( !Str::ToFloat( value, floatValue ) )
+	{
+		floatValue = 0;
+	}
+
+	int boolValue;
+	if ( !Str::ParseInt( boolValue, value ) )
+	{
+		boolValue = -1;
+	}
+
+	if ( Str::IsIEqual( name, "cellHeight" ) )
+	{
+		if ( floatValue > 0 )
+		{
+			config.requestedCellHeight = floatValue;
+			return;
+		}
+	}
+	else if ( Str::IsIEqual( name, "stepSize" ) )
+	{
+		if ( floatValue > 0 )
+		{
+			config.stepSize = floatValue;
+			return;
+		}
+	}
+	else if ( Str::IsIEqual( name, "excludeCaulk" ) )
+	{
+		if ( !( boolValue & ~1 ) )
+		{
+			config.excludeCaulk = boolValue;
+			return;
+		}
+	}
+	else if ( Str::IsIEqual( name, "excludeSky" ) )
+	{
+		if ( !( boolValue & ~1 ) )
+		{
+			config.excludeSky = boolValue;
+			return;
+		}
+	}
+	else if ( Str::IsIEqual( name, "filterGaps" ) )
+	{
+		if ( !( boolValue & ~1 ) )
+		{
+			config.filterGaps = boolValue;
+			return;
+		}
+	}
+	else if ( Str::IsIEqual( name, "generatePatchTris" ) )
+	{
+		if ( !( boolValue & ~1 ) )
+		{
+			config.generatePatchTris = boolValue;
+			return;
+		}
+	}
+	else
+	{
+		Log::Warn( "%s: unknown navgen setting '%s'", file, name );
+		return;
+	}
+
+	Log::Warn( "'%s' is not a valid value for %s", value, name );
+}
+
+// A configuration file can be placed in the VFS or in <homepath>/game/ that will
+// customize the values in NavgenConfig (the former daemonmap flags).
+// For example:
+//
+// /* C or C++-style comments can be used in here since it's based on COM_Parse */
+// filtergaps 1
+// excludeCaulk 0
+// cellheight 2.5
+NavgenConfig ReadNavgenConfig( Str::StringRef mapName )
+{
+	NavgenConfig config = NavgenConfig::Default();
+	std::string path = Str::Format( "maps/%s.navcfg", mapName );
+	int f;
+	int len = BG_FOpenGameOrPakPath( path, f );
+	if ( len >= 0 )
+	{
+		std::string buf;
+		buf.resize( len );
+		buf.resize( trap_FS_Read( &buf[ 0 ], len, f ) );
+		trap_FS_FCloseFile( f );
+		const char *p = buf.c_str();
+		while ( true )
+		{
+			const char *token = COM_Parse( &p );
+			if ( !p )
+			{
+				break;
+			}
+
+			std::string name = token;
+			const char *value = COM_ParseExt( &p, false );
+
+			if ( !*value )
+			{
+				Log::Warn( "%s: Missing value after '%s'", path, name );
+				continue;
+			}
+
+			ParseOption( name, value, path, config );
+
+			while ( *( token = COM_ParseExt( &p, false ) ) )
+			{
+				Log::Warn( "%s: Junk at end of line starting with '%s'", path, name );
+			}
+		}
+	}
+	return config;
+}
+
 // Returns a non-empty string on error
-std::string GetNavmeshHeader( fileHandle_t f, NavMeshSetHeader& header, Str::StringRef mapName )
+std::string GetNavmeshHeader( fileHandle_t f, const NavgenConfig& config, NavMeshSetHeader& header, Str::StringRef mapName )
 {
 	if ( sizeof(header) != trap_FS_Read( &header, sizeof( header ), f ) )
 	{
@@ -101,8 +221,7 @@ std::string GetNavmeshHeader( fileHandle_t f, NavMeshSetHeader& header, Str::Str
 		return "Map is different version";
 	}
 
-	NavgenConfig defaultConfig = NavgenConfig::Default();
-	if ( 0 != memcmp( &header.config, &defaultConfig, sizeof(NavgenConfig) ) )
+	if ( 0 != memcmp( &header.config, &config, sizeof(NavgenConfig) ) )
 	{
 		return "Navgen config changed";
 	}
