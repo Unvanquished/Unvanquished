@@ -180,6 +180,7 @@ void G_BotNavInit( int generateNeeded )
 	Log::Notice( "==== Bot Navigation Initialization ====" );
 
 	std::bitset<PCL_NUM_CLASSES> missing;
+	NavgenConfig config = ReadNavgenConfig( Cvar::GetValue( "mapname" ) );
 
 	for ( class_t i : RequiredNavmeshes() )
 	{
@@ -193,7 +194,7 @@ void G_BotNavInit( int generateNeeded )
 
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
-		switch ( G_BotSetupNav( &bot, &model->navHandle ) )
+		switch ( G_BotSetupNav( config, &bot, &model->navHandle ) )
 		{
 		case navMeshStatus_t::UNINITIALIZED:
 			if ( generateNeeded )

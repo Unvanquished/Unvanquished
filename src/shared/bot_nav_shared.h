@@ -119,7 +119,9 @@ struct NavMeshSetHeader
 };
 
 NavgenMapIdentification GetNavgenMapId( Str::StringRef mapName );
-std::string GetNavmeshHeader( fileHandle_t f, NavMeshSetHeader& header, Str::StringRef mapName );
+NavgenConfig ReadNavgenConfig( Str::StringRef mapName );
+std::string GetNavmeshHeader(
+	fileHandle_t f, const NavgenConfig& config, NavMeshSetHeader& header, Str::StringRef mapName );
 
 inline unsigned ProductVersionHash()
 {

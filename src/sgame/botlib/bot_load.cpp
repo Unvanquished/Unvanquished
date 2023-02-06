@@ -289,12 +289,12 @@ static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &
 
 // Returns UNINITIALIZED (if cache is invalidated),
 // LOAD_FAILED (for cached failure or internal error), or LOADED
-static navMeshStatus_t BotLoadNavMesh( int f, const char *species, NavData_t &nav )
+static navMeshStatus_t BotLoadNavMesh( int f, const NavgenConfig &config, const char *species, NavData_t &nav )
 {
 	constexpr auto internalErrorStatus = navMeshStatus_t::LOAD_FAILED;
 
 	NavMeshSetHeader header;
-	std::string error = GetNavmeshHeader( f, header, Cvar::GetValue( "mapname" ) );
+	std::string error = GetNavmeshHeader( f, config, header, Cvar::GetValue( "mapname" ) );
 	if ( !error.empty() )
 	{
 		Log::Warn( "Loading navmesh for %s failed: %s", species, error );
@@ -454,7 +454,7 @@ void G_BotShutdownNav()
 	numNavData = 0;
 }
 
-navMeshStatus_t G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
+navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, const botClass_t *botClass, qhandle_t *navHandle )
 {
 	if ( numNavData == MAX_NAV_DATA )
 	{
@@ -477,7 +477,7 @@ navMeshStatus_t G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle 
 
 	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
-	navMeshStatus_t loadStatus =  BotLoadNavMesh( f, species, *nav );
+	navMeshStatus_t loadStatus =  BotLoadNavMesh( f, config, species, *nav );
 	if ( loadStatus != navMeshStatus_t::LOADED )
 	{
 		return loadStatus;

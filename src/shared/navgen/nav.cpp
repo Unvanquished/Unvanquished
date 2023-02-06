@@ -1037,9 +1037,7 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 {
 	if (mapName == mapName_) return;
 
-	// TODO: some way of setting the config (former daemonmap flags)?
-	config_ = NavgenConfig::Default();
-
+	config_ = ReadNavgenConfig( mapName );
 	mapName_ = mapName;
 	recastContext_.enableLog(true);
 	initStatus_ = {};
