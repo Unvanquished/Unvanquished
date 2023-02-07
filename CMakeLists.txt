@@ -145,7 +145,6 @@ try_flag(WARNINGS           "-Woverloaded-virtual")
 try_flag(WARNINGS           "-Wstrict-null-sentinel")
 
 # remove
-try_flag(WARNINGS           "-Wno-error=switch")
 try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
 try_flag(WARNINGS           "-Wno-maybe-uninitialized")
 

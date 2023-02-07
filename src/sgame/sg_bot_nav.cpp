@@ -193,6 +193,8 @@ void G_BotNavInit( int generateNeeded )
 			return;
 		case navMeshStatus_t::LOADED:
 			break;
+		case navMeshStatus_t::GENERATING:
+			ASSERT_UNREACHABLE();
 		}
 	}
 
