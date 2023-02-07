@@ -4747,8 +4747,6 @@ Return is time in msec until the user can speak again
 */
 int G_FloodLimited( gentity_t *ent )
 {
-	int deltatime, ms;
-
 	if ( g_floodMinTime.Get() <= 0 )
 	{
 		return 0;
@@ -4759,7 +4757,8 @@ int G_FloodLimited( gentity_t *ent )
 		return 0;
 	}
 
-	deltatime = level.time - ent->client->pers.floodTime;
+	int time = level.time + level.pausedTime;
+	int deltatime = time - ent->client->pers.floodTime;
 
 	ent->client->pers.floodDemerits += g_floodMinTime.Get() - deltatime;
 
@@ -4768,9 +4767,9 @@ int G_FloodLimited( gentity_t *ent )
 		ent->client->pers.floodDemerits = 0;
 	}
 
-	ent->client->pers.floodTime = level.time;
+	ent->client->pers.floodTime = time;
 
-	ms = ent->client->pers.floodDemerits - g_floodMaxDemerits.Get();
+	int ms = ent->client->pers.floodDemerits - g_floodMaxDemerits.Get();
 
 	if ( ms <= 0 )
 	{
