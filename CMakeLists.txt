@@ -143,15 +143,9 @@ try_flag(WARNINGS           "-Wno-unknown-pragmas")
 try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
 try_flag(WARNINGS           "-Woverloaded-virtual")
 try_flag(WARNINGS           "-Wstrict-null-sentinel")
-try_flag(WARNINGS           "-Wno-error=sign-promo")
-
-if (NOT BE_VERBOSE)
-    try_flag(WARNINGS       "-Wno-error=strict-overflow")
-endif()
 
 # remove
 try_flag(WARNINGS           "-Wno-error=switch")
-try_flag(WARNINGS           "-Wno-error=unused-function")
 try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
 try_flag(WARNINGS           "-Wno-maybe-uninitialized")
 
