@@ -98,7 +98,7 @@ void BotSaveOffMeshConnections( NavData_t *nav )
 	for ( int n = 0; n < conCount; n++ )
 	{
 		// userids is unused.
-		s = va( "%.0f %.0f %.0f %.0f %.0f %.0f %.0f %hd %hhd %hhd\n",
+		s = va( "%.0f %.0f %.0f %.0f %.0f %.0f %.0f %d %d %d\n",
 			nav->process.con.verts[ ( 6 * n ) + 0 ],
 			nav->process.con.verts[ ( 6 * n ) + 1 ],
 			nav->process.con.verts[ ( 6 * n ) + 2 ],
