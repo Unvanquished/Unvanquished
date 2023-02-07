@@ -249,7 +249,7 @@ static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &
 
 		char *line = navcon + pos;
 
-		scanned = sscanf( line, "%f %f %f %f %f %f %f %hd %hhd %hhd %c",
+		scanned = sscanf( line, "%f %f %f %f %f %f %f %hu %hhu %hhu %c",
 			&con.verts[ ( 6 * con.offMeshConCount ) + 0 ],
 			&con.verts[ ( 6 * con.offMeshConCount ) + 1 ],
 			&con.verts[ ( 6 * con.offMeshConCount ) + 2 ],
