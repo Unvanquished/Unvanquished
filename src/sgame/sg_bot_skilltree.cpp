@@ -24,6 +24,39 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_bot_util.h"
+#include "../shared/parse.h"
+
+static std::set<std::string> bg_allowedSkillset;
+
+static std::set<std::string> BG_ParseAllowedSkillsetList( const std::string &behaviorsCsv )
+{
+	std::set<std::string> skills;
+
+	for (Parse_WordListSplitter i(behaviorsCsv); *i; ++i)
+	{
+		skills.insert( *i );
+	}
+
+	return skills;
+}
+
+static void BG_SetAllowedSkillset( Str::StringRef behaviorsCsv )
+{
+	bg_allowedSkillset = BG_ParseAllowedSkillsetList( behaviorsCsv );
+}
+
+static bool BG_SkillAllowed( Str::StringRef behavior )
+{
+	return bg_allowedSkillset.find( behavior ) != bg_allowedSkillset.end();
+}
+
+static Cvar::Callback<Cvar::Cvar<std::string>> g_allowedSkillset(
+    "g_allowedSkillset",
+	"Allowed skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+	Cvar::NONE,
+	"mara-attack-jump, mantis-attack-jump, goon-attack-jump, tyrant-attack-run, mara-flee-jump, mantis-flee-jump, goon-flee-jump, tyrant-flee-run, safe-barbs, buy-modern-armor, prefer-armor, flee-run, medkit, aim-head, aim-barbs, predict-aim, movement, fighting, feels-pain",
+	BG_SetAllowedSkillset
+    );
 
 struct botSkillTreeElement_t {
 	Str::StringRef name;
@@ -186,6 +219,12 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 			// no skill left to unlock
 			break;
 		}
+
+		if ( !BG_SkillAllowed( new_skill->name ) )
+		{
+			continue;
+		}
+
 		skill_points -= new_skill->cost;
 
 		if ( skill_points < 0 )
