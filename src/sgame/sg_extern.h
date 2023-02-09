@@ -213,5 +213,6 @@ extern Cvar::Cvar<int> g_bot_chasetime;
 extern Cvar::Cvar<int> g_bot_reactiontime;
 extern Cvar::Cvar<bool> g_bot_infiniteFunds;
 extern Cvar::Cvar<bool> g_bot_infiniteMomentum;
+extern Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill;
 
 #endif // SG_EXTERN_H_

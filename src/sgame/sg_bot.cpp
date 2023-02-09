@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "Entities.h"
 
-static Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
+Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
 static Cvar::Range<Cvar::Cvar<int>> generateNeededMesh(
 	"g_bot_navgen_onDemand",
 	"automatically generate navmeshes when a bot is added (1 = in background, -1 = blocking)",
@@ -388,6 +388,7 @@ void G_BotDelAllBots()
 		}
 	}
 
+	g_bot_defaultFill.GetModifiedValue(); // clear modified flag
 	for ( auto &team : level.team )
 	{
 		team.botFillTeamSize = 0;

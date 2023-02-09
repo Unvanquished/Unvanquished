@@ -5884,6 +5884,10 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	}
 	int skill = args.Argc() >= 5 ? BotSkillFromString(ent, args[4].data()) : 0;
 
+	// Clear the cvar's modified flag. A bot command in the map config will be processed before the cvar
+	// would be checked but the command should take precedence.
+	g_bot_defaultFill.GetModifiedValue();
+
 	if ( !G_BotInit() )
 	{
 		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
