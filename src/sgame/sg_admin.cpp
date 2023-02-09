@@ -5840,6 +5840,16 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 
 	const char* behavior = args.Argc() >= 6 ? args[5].data() : BOT_DEFAULT_BEHAVIOR;
 
+	if ( level.inClient && g_clients[ 0 ].pers.connected < CON_CONNECTED )
+	{
+		bool navgenOnLoad;
+		if ( Cvar::ParseCvarValue( Cvar::GetValue( "cg_navgenOnLoad" ), navgenOnLoad ) && navgenOnLoad )
+		{
+			Log::Warn( "Calling 'bot add' before the cgame has loaded - navmeshes may be generated twice."
+			           " Consider disabling cg_navgenOnLoad" );
+		}
+	}
+
 	if ( !G_BotInit() )
 	{
 		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
@@ -5887,6 +5897,16 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	// Clear the cvar's modified flag. A bot command in the map config will be processed before the cvar
 	// would be checked but the command should take precedence.
 	g_bot_defaultFill.GetModifiedValue();
+
+	if ( level.inClient && g_clients[ 0 ].pers.connected < CON_CONNECTED )
+	{
+		bool navgenOnLoad;
+		if ( Cvar::ParseCvarValue( Cvar::GetValue( "cg_navgenOnLoad" ), navgenOnLoad ) && navgenOnLoad )
+		{
+			Log::Warn( "Calling 'bot fill' before the cgame has loaded - navmeshes may be generated twice."
+			           " Consider disabling cg_navgenOnLoad" );
+		}
+	}
 
 	if ( !G_BotInit() )
 	{
