@@ -26,6 +26,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "../shared/parse.h"
 
+// aliens have 61 points to spend max
+// humans have 40 points to spend max
+Cvar::Cvar<int> g_skillsetBudgetAliens( "g_skillsetBudgetAliens", "the skillset budget for aliens.", Cvar::NONE, 61 );
+Cvar::Cvar<int> g_skillsetBudgetHumans( "g_skillsetBudgetHumans", "the skillset budget for humans.", Cvar::NONE, 42 );
+
 static std::set<std::string> bg_allowedSkillset;
 
 static std::set<std::string> BG_ParseAllowedSkillsetList( const std::string &behaviorsCsv )
@@ -195,9 +200,8 @@ static Util::optional<botSkillTreeElement_t> ChooseOneSkill(const gentity_t *bot
 std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 {
 	std::vector<botSkillTreeElement_t> possible_choices = initial_unlockable_skills;
-	// aliens have 61 points to spend max
-	// humans have 40 points to spend max
-	float max = G_Team(bot) == TEAM_ALIENS ? 61.0f : 40.0f;
+
+	float max = G_Team(bot) == TEAM_ALIENS ? static_cast<float>( g_skillsetBudgetAliens.Get() ) : static_cast<float>( g_skillsetBudgetHumans.Get() );
 
 	// unlock every skill at skill 7
 	int skill_points = static_cast<float>(skill) / 7.0f * max;
