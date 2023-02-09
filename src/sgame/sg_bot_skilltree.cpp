@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // aliens have 61 points to spend max
 // humans have 40 points to spend max
 Cvar::Cvar<int> g_skillsetBudgetAliens( "g_skillsetBudgetAliens", "the skillset budget for aliens.", Cvar::NONE, 61 );
-Cvar::Cvar<int> g_skillsetBudgetHumans( "g_skillsetBudgetHumans", "the skillset budget for humans.", Cvar::NONE, 42 );
+Cvar::Cvar<int> g_skillsetBudgetHumans( "g_skillsetBudgetHumans", "the skillset budget for humans.", Cvar::NONE, 40 );
 
 static std::set<std::string> bg_allowedSkillset;
 
