@@ -1193,7 +1193,20 @@ void CalculateRanks()
 
 			if ( bot )
 			{
-				B[ clientNum ] = 'b';
+				if ( navMeshLoaded == navMeshStatus_t::GENERATING )
+				{
+					B[ clientNum ] = 'G';
+				}
+				else
+				{
+					int skill = level.gentities[ clientNum ].botMind->botSkill.level;
+
+					// Bot skill can be 0 while spawning, just before skill is set.
+					ASSERT( skill >= 0 && skill <= 9 );
+
+					B[ clientNum ] = '0' + (char) skill;
+				}
+
 				level.team[ team ].numBots++;
 			}
 			else
