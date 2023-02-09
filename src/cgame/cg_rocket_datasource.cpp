@@ -936,7 +936,28 @@ void CG_Rocket_BuildPlayerList( const char* )
 
 		Info_SetValueForKey( buf, "num", va( "%d", score->client ), false );
 		Info_SetValueForKey( buf, "score", va( "%d", score->score ), false );
-		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
+
+		const char* B = Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ),"B" );
+		const char bot_status = B[ score->client ];
+
+		// HACK: Display bot status in “Ping” column.
+		if ( bot_status == '-' )
+		{
+			// This player is not a bot.
+			Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), false );
+		}
+		// Bot skill can be 0 while spawning, just before skill is set.
+		else if ( bot_status >= '0' && bot_status <= '9' )
+		{
+			// Bot skill.
+			Info_SetValueForKey( buf, "ping", va( "sk%c", bot_status ), false );
+		}
+		else
+		{
+			// Example: “G” is for “Generating navmeshes”.
+			Info_SetValueForKey( buf, "ping", va( "%c", bot_status ), false );
+		}
+
 		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), false );
 		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), false );
 		Info_SetValueForKey( buf, "time", va( "%d", score->time ), false );
