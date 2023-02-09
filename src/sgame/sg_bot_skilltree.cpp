@@ -33,11 +33,11 @@ Cvar::Cvar<int> g_skillsetBudgetHumans( "g_skillsetBudgetHumans", "the skillset 
 
 static std::set<std::string> bg_allowedSkillset;
 
-static std::set<std::string> BG_ParseAllowedSkillsetList( const std::string &behaviorsCsv )
+static std::set<std::string> BG_ParseAllowedSkillsetList( const std::string &skillsCsv )
 {
 	std::set<std::string> skills;
 
-	for (Parse_WordListSplitter i(behaviorsCsv); *i; ++i)
+	for (Parse_WordListSplitter i(skillsCsv); *i; ++i)
 	{
 		skills.insert( *i );
 	}
@@ -45,9 +45,9 @@ static std::set<std::string> BG_ParseAllowedSkillsetList( const std::string &beh
 	return skills;
 }
 
-static void BG_SetAllowedSkillset( Str::StringRef behaviorsCsv )
+static void BG_SetAllowedSkillset( Str::StringRef skillsCsv )
 {
-	bg_allowedSkillset = BG_ParseAllowedSkillsetList( behaviorsCsv );
+	bg_allowedSkillset = BG_ParseAllowedSkillsetList( skillsCsv );
 }
 
 static bool BG_SkillAllowed( Str::StringRef behavior )
