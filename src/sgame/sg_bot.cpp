@@ -617,8 +617,9 @@ static void G_BotCheckDefaultFill()
 	Util::optional<int> fillCount = g_bot_defaultFill.GetModifiedValue();
 	if ( fillCount ) // if modified
 	{
+		int adjustedCount = Math::Clamp( *fillCount, 0, MAX_CLIENTS );
 		// init bots if they aren't already and if we need to
-		if ( fillCount != 0 && !G_BotInit() )
+		if ( adjustedCount != 0 && !G_BotInit() )
 		{
 			Log::Warn( "Navigation mesh files unavailable for this map" );
 			return;
@@ -626,7 +627,7 @@ static void G_BotCheckDefaultFill()
 
 		for ( int team = TEAM_NONE + 1; team < NUM_TEAMS; ++team )
 		{
-			level.team[team].botFillTeamSize = *fillCount;
+			level.team[team].botFillTeamSize = adjustedCount;
 			level.team[team].botFillSkillLevel = 0; // default
 		}
 	}

@@ -5871,12 +5871,13 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		BotUsage( ent );
 		return false;
 	}
-	int count = 0;
-	if ( !Str::ParseInt( count, args[2].data() ) || count < 0 )
+	int count;
+	if ( !Str::ParseInt( count, args[2].data() ) )
 	{
 		BotUsage( ent );
 		return false;
 	}
+	count = Math::Clamp( count, 0, MAX_CLIENTS );
 	std::vector<team_t> teams;
 	if ( args.Argc() >= 4 && args[3] != "*" )
 	{
@@ -5898,7 +5899,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	// would be checked but the command should take precedence.
 	g_bot_defaultFill.GetModifiedValue();
 
-	if ( level.inClient && g_clients[ 0 ].pers.connected < CON_CONNECTED )
+	if ( count != 0 && level.inClient && g_clients[ 0 ].pers.connected < CON_CONNECTED )
 	{
 		bool navgenOnLoad;
 		if ( Cvar::ParseCvarValue( Cvar::GetValue( "cg_navgenOnLoad" ), navgenOnLoad ) && navgenOnLoad )
@@ -5908,7 +5909,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		}
 	}
 
-	if ( !G_BotInit() )
+	if ( count != 0 && !G_BotInit() )
 	{
 		ADMP( QQ( N_( "Navigation mesh files unavailable for this map" ) ) );
 		return false;
