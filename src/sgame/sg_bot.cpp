@@ -639,6 +639,13 @@ void G_BotFill(bool immediately)
 		return;  // don't check every frame to prevent warning spam
 	}
 
+	if ( !immediately && level.inClient && g_clients[ 0 ].pers.connected < CON_CONNECTED )
+	{
+		// In case cg_navgenOnLoad is enabled, give that a chance to finish so
+		// that we don't have two dueling navgens.
+		return;
+	}
+
 	G_BotCheckDefaultFill();
 
 	nextCheck = level.time + 2000;
