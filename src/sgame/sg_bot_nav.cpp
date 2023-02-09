@@ -72,6 +72,8 @@ static Cvar::Range<Cvar::Cvar<int>> msecPerFrame(
 	"g_bot_navgen_msecPerFrame", "time budget per frame for navmesh generation",
 	Cvar::NONE, 20, 1, 1500 );
 
+static Cvar::Cvar<int> frameToggle("g_bot_navgen_frame", "FOR INTERNAL USE", Cvar::NONE, 0);
+
 static NavmeshGenerator navgen;
 static std::vector<class_t> navgenQueue;
 static class_t generatingNow;
@@ -113,6 +115,20 @@ void G_BotBackgroundNavgen()
 			BG_Class( generatingNow )->name, percent.c_str() ) );
 		nextLogTime = level.time + 10000;
 	}
+
+	// HACK: if the game simulation time gets behind the real time, the server runs a bunch of
+	// game frames within one server frame to catch up. If we do a lot of navgen then it can't
+	// catch up which may lead to a cascade of very long server frames. What we want to do is
+	// one navgen slice per *server frame*, not per game frame. There doesn't seem to be any API
+	// for the server frame count, so put a command in the command buffer and check for the
+	// next server frame by seeing whether it has executed.
+	static int lastToggle = -12345;
+	if ( lastToggle == frameToggle.Get() )
+	{
+		return;
+	}
+	lastToggle = frameToggle.Get();
+	trap_SendConsoleCommand( "toggle g_bot_navgen_frame" );
 
 	while ( Sys::Milliseconds() < stopTime )
 	{
