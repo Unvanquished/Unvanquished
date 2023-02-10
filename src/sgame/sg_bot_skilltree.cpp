@@ -164,6 +164,7 @@ static bool pred_human(const gentity_t *self, skillSet_t existing_skills)
 
 static const std::vector<botSkillTreeElement_t> movement_skills = {
 	// aliens
+	{ "small-attack-jump",  BOT_A_SMALL_JUMP_ON_ATTACK,  5, pred_alien, {} },
 	{ "mara-attack-jump",   BOT_A_MARA_JUMP_ON_ATTACK,   5, pred_alien, {} },
 	{ "mantis-attack-jump", BOT_A_LEAP_ON_ATTACK,        3, pred_alien, {} },
 	{ "goon-attack-jump",   BOT_A_POUNCE_ON_ATTACK,      5, pred_alien, {} },

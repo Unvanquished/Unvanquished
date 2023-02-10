@@ -1827,9 +1827,11 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 	{
 		case PCL_ALIEN_LEVEL0:
 			botIsSmall = true;
+			botIsJumper = self->botMind->botSkillSet[BOT_A_SMALL_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL1:
 			botIsSmall = true;
+			botIsJumper = self->botMind->botSkillSet[BOT_A_SMALL_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
