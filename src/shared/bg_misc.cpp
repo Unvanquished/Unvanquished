@@ -79,7 +79,8 @@ const buildableAttributes_t *BG_BuildableByName( const char *name )
 {
 	for ( unsigned i = 0; i < bg_numBuildables; i++ )
 	{
-		if ( !Q_stricmp( bg_buildableList[ i ].name, name ) )
+		if ( !Q_stricmp( bg_buildableList[ i ].name, name )
+				|| !Q_stricmp( bg_buildableList[ i ].entityName, name ) )
 		{
 			return &bg_buildableList[ i ];
 		}
@@ -2249,7 +2250,7 @@ BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 		else
 		{
 			// tremulous' repeater was replaced by drill
-			if ( strcmp( "repeater", *i ) )
+			if ( !strcmp( "repeater", *i ) )
 			{
 				results.append( BA_H_DRILL );
 				Log::Warn( "Deprecated %s was replaced by a drill", *i );
