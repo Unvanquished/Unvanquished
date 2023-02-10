@@ -1895,7 +1895,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			break;
 	}
 
-	if ( shouldStrafe && botIsSmall )
+	if ( shouldStrafe && botIsSmall && self->botMind->botSkillSet[BOT_A_STRAFE_ON_ATTACK] )
 	{
 		BotStrafeDodge( self );
 	}
