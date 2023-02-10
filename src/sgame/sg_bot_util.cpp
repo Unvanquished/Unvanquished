@@ -1524,7 +1524,7 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 	return aimLocation;
 }
 
-static int BotGetAimPredictionTime( gentity_t *self )
+static int BotGetAimTime( gentity_t *self )
 {
 	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( random(), 0.5f );
 	return std::max( 1, int(time) );
@@ -1546,9 +1546,13 @@ void BotAimAtEnemy( gentity_t *self )
 
 	if ( self->botMind->futureAimTime < level.time )
 	{
-		int predictTime = self->botMind->futureAimTimeInterval = BotGetAimPredictionTime( self );
+		int aimTime = self->botMind->futureAimTimeInterval = BotGetAimTime( self );
+		self->botMind->futureAimTime = level.time + aimTime;
+
+		// Do aim prediction
+		// Here, we cap aim prediction time because extrapolating too much is harmful if this bot is slow to aim
+		int predictTime = std::min( aimTime, 220 );
 		self->botMind->futureAim = BotPredictPosition( self, enemy, predictTime );
-		self->botMind->futureAimTime = level.time + predictTime;
 	}
 
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
