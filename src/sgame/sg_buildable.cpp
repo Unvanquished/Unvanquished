@@ -78,8 +78,7 @@ static gentity_t *LookUpMainBuildable(bool requireActive)
 }
 
 gentity_t *G_Overmind() {
-	Entity* ent = Entities::AnyWith<OvermindComponent>();
-	return ent ? ent->oldEnt : nullptr;
+	return LookUpMainBuildable<OvermindComponent>(false);
 }
 
 gentity_t *G_ActiveOvermind() {
@@ -1707,13 +1706,13 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	if ( max_miners >= 0 && ( buildable == BA_H_DRILL || buildable == BA_A_LEECH ) )
 	{
 		int miners = 0;
-		for (Entity& entity : Entities::Having<MiningComponent>())
+		ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& )
 		{
 			if ( Entities::IsAlive(entity) && G_OnSameTeam( entity.oldEnt, ent ) )
 			{
 				miners++;
 			}
-		}
+		});
 		if ( miners >= max_miners )
 		{
 			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;
