@@ -1197,7 +1197,7 @@ void CalculateRanks()
 				}
 				else
 				{
-					int skill = level.gentities[ clientNum ].botMind->botSkill.level;
+					int skill = level.gentities[ clientNum ].botMind->skillLevel;
 
 					// Bot skill can be 0 while spawning, just before skill is set.
 					ASSERT( skill >= 0 && skill <= 9 );
