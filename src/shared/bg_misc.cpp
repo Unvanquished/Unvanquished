@@ -2241,7 +2241,27 @@ BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 
 	for (Parse_WordListSplitter i(allowed); *i; ++i)
 	{
-		buildable_t result = BG_BuildableByName(*i)->number;
+		std::string truncatedName = *i;
+		const size_t TEAM = strlen( "team_" );
+		if ( truncatedName.substr( 0, TEAM ) == "team_" )
+		{
+			std::string TEAMS[] =
+			{
+				"alien_",
+				"human_",
+			};
+
+			if ( truncatedName.substr( TEAM, TEAMS[0].size() ) == TEAMS[0] )
+			{
+				truncatedName = truncatedName.substr( TEAM + TEAMS[0].size() );
+			}
+			else if ( truncatedName.substr( TEAM, TEAMS[1].size() ) == TEAMS[1] )
+			{
+				truncatedName = truncatedName.substr( TEAM + TEAMS[1].size() );
+			}
+		}
+
+		buildable_t result = BG_BuildableByName( truncatedName.c_str() )->number;
 
 		if (result != BA_NONE)
 		{
@@ -2250,14 +2270,14 @@ BoundedVector<buildable_t, BA_NUM_BUILDABLES>
 		else
 		{
 			// tremulous' repeater was replaced by drill
-			if ( strcmp( "repeater", *i ) )
+			if ( truncatedName == "repeater" )
 			{
 				results.append( BA_H_DRILL );
-				Log::Warn( "Deprecated %s was replaced by a drill", *i );
+				Log::Warn( "Deprecated %s was replaced by a drill", truncatedName.c_str() );
 			}
 			else
 			{
-				Log::Warn( "unknown buildable %s", *i );
+				Log::Warn( "unknown buildable %s", truncatedName.c_str() );
 			}
 		}
 	}
