@@ -84,8 +84,8 @@ static bool G_SkillPreferred( Str::StringRef behavior )
 	return G_GetPreferredSkillset().find( behavior ) != G_GetPreferredSkillset().end();
 }
 
-// aliens have 84 points to spend max
-static int skillsetBudgetAliens = 84;
+// aliens have 84 points to spend max, but we give them a bit less for balancing
+static int skillsetBudgetAliens = 80;
 // humans have 48 points to spend max
 static int skillsetBudgetHumans = 48;
 
@@ -277,7 +277,7 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 
 	float max = G_Team(bot) == TEAM_ALIENS ? static_cast<float>( skillsetBudgetAliens ) : static_cast<float>( skillsetBudgetHumans );
 
-	// unlock every skill at skill 7
+	// unlock every skill at skill 7 (almost every for aliens)
 	int skill_points = static_cast<float>(skill + 2) / 9.0f * max;
 
 	// rng preparation
