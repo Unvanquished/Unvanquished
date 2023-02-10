@@ -1082,14 +1082,7 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		     client->pers.aliveSeconds % g_freeFundPeriod.Get() == 0 )
 		{
 			// Give clients some credit periodically
-			if ( client->pers.team == TEAM_ALIENS )
-			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
-			}
-			else if ( client->pers.team == TEAM_HUMANS )
-			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
-			}
+			G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
 		}
 
 		int devolveReturnedCredits = std::min(
