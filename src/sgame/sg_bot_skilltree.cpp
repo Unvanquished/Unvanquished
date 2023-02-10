@@ -33,7 +33,7 @@ static void G_UpdateSkillsets()
 		gentity_t *bot = &g_entities[ i ];
 		if ( bot->r.svFlags & SVF_BOT )
 		{
-			BotSetSkillLevel( bot, bot->botMind->botSkill.level );
+			BotSetSkillLevel( bot, bot->botMind->skillLevel );
 		}
 	}
 }
@@ -189,6 +189,8 @@ static const std::vector<botSkillTreeElement_t> survival_skills = {
 };
 
 static const std::vector<botSkillTreeElement_t> fighting_skills = {
+	{ "fast-aim",           BOT_B_FAST_AIM,      8,  pred_always, {} },
+
 	// aliens
 	{ "aim-head",           BOT_A_AIM_HEAD,      10, pred_alien, {} },
 	{ "aim-barbs",          BOT_A_AIM_BARBS,     7,  pred_alien, {} },

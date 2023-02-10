@@ -127,6 +127,7 @@ enum bot_skill
 
 	// fighting skills
 	BOT_B_BASIC_FIGHT, // doesn't do anything as of now
+	BOT_B_FAST_AIM,
 	BOT_A_AIM_HEAD,
 	BOT_A_AIM_BARBS, // precisely target barbs
 	BOT_H_PREDICTIVE_AIM, // predict where to aim depending on weapon and enemy speed
