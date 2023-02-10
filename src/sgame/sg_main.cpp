@@ -2464,17 +2464,16 @@ void G_RunFrame( int levelTime )
 	}
 
 	// ThinkingComponent should have been called already but who knows maybe we forgot some.
-	for (ThinkingComponent& thinkingComponent : Entities::Each<ThinkingComponent>()) {
+	ForEntities<ThinkingComponent>([](Entity& entity, ThinkingComponent& thinkingComponent) {
 		// A newly created entity can randomly run things, or not, in the above loop over
 		// entities depending on whether it was added in a hole in g_entities or at the end, so
 		// ignore the entity if it was created this frame.
-		if (thinkingComponent.entity.oldEnt->creationTime != level.time
-			&& thinkingComponent.GetLastThinkTime() != level.time
-			&& !thinkingComponent.entity.oldEnt->freeAfterEvent) {
+		if (entity.oldEnt->creationTime != level.time && thinkingComponent.GetLastThinkTime() != level.time
+			&& !entity.oldEnt->freeAfterEvent) {
 			Log::Warn("ThinkingComponent was not called");
 			thinkingComponent.Think();
 		}
-	}
+	});
 
 	// perform final fixups on the players
 	ent = &g_entities[ 0 ];
@@ -2541,9 +2540,9 @@ void G_PrepareEntityNetCode() {
 	}
 
 	// Prepare netcode for specs
-	for (Entity& entity : Entities::Having<SpectatorComponent>()) {
+	ForEntities<SpectatorComponent>([&](Entity& entity, SpectatorComponent&){
 		entity.PrepareNetCode();
-	}
+	});
 }
 
 Str::StringRef G_NextMapCommand()

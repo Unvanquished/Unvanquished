@@ -116,21 +116,21 @@ float Entities::HealthFraction(gentity_t const* ent) {
 bool Entities::AntiHumanRadiusDamage(Entity& entity, float amount, float range, meansOfDeath_t mod) {
 	bool hit = false;
 
-	for (Entity& other : Entities::Having<HumanClassComponent>()) {
+	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent&) {
 		// Abort early if they have notarget enabled.
-		if (other.oldEnt->flags & FL_NOTARGET) continue;
+		if (other.oldEnt->flags & FL_NOTARGET) return;
 		// TODO: Add LocationComponent.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 		float damage   = amount * (1.0f - 0.7f * distance / range);
 
-		if (distance > range) continue;
-		if (damage <= 0.0f) continue;
-		if (!G_IsVisible(entity.oldEnt, other.oldEnt, MASK_SOLID)) continue;
+		if (distance > range) return;
+		if (damage <= 0.0f) return;
+		if (!G_IsVisible(entity.oldEnt, other.oldEnt, MASK_SOLID)) return;
 
 		if (other.Damage(damage, entity.oldEnt, {}, {}, DAMAGE_NO_LOCDAMAGE, mod)) {
 			hit = true;
 		}
-	}
+	});
 
 	return hit;
 }
@@ -141,20 +141,20 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 	// FIXME: Only considering entities with HealthComponent.
 	// TODO: Allow ForEntities to iterate over all entities.
 	// NOTE: This will hurt entities with FL_NOTARGET enabled since it isn't really aiming at them.
-	for (Entity& other : Entities::Having<HealthComponent>()) {
+	ForEntities<HealthComponent>([&] (Entity& other, HealthComponent&) {
 		// TODO: Add LocationComponent.
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 		float damage   = amount * (1.0f - distance / range);
 
-		if (damage <= 0.0f) continue;
-		if (!G_IsVisible(entity.oldEnt, other.oldEnt, MASK_SOLID)) continue;
+		if (damage <= 0.0f) return;
+		if (!G_IsVisible(entity.oldEnt, other.oldEnt, MASK_SOLID)) return;
 
 		glm::vec3 knockbackDir = VEC2GLM( other.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.origin );
 
 		if (other.Damage(damage, entity.oldEnt, {}, knockbackDir, DAMAGE_NO_LOCDAMAGE | DAMAGE_KNOCKBACK, mod)) {
 			hit = true;
 		}
-	}
+	});
 
 	return hit;
 }

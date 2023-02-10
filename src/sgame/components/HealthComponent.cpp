@@ -1,6 +1,5 @@
 #include "HealthComponent.h"
 #include "math.h"
-#include "../Entities.h"
 
 static Log::Logger healthLogger("sgame.health");
 
@@ -267,13 +266,13 @@ void HealthComponent::ScaleDamageAccounts(float healthRestored) {
 	// Get total damage account and remember relevant clients.
 	float totalAccreditedDamage = 0.0f;
 	std::vector<Entity*> relevantClients;
-	for (Entity& other : Entities::Having<ClientComponent>()) {
+	ForEntities<ClientComponent>([&](Entity& other, ClientComponent&) {
 		float clientDamage = entity.oldEnt->credits[other.oldEnt->num()].value;
 		if (clientDamage > 0.0f) {
 			totalAccreditedDamage += clientDamage;
 			relevantClients.push_back(&other);
 		}
-	}
+	});
 
 	if (relevantClients.empty()) return;
 

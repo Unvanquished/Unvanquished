@@ -28,16 +28,16 @@ void AlienBuildableComponent::Think(int /*timeDelta*/) {
 	float creepSize = (float)BG_Buildable((buildable_t)entity.oldEnt->s.modelindex)->creepSize;
 
 	// Slow close humans.
-	for (Entity& other : Entities::Having<HumanClassComponent>()) {
+	ForEntities<HumanClassComponent>([&] (Entity& other, HumanClassComponent&) {
 		// TODO: Add LocationComponent.
-		if (G_Distance(entity.oldEnt, other.oldEnt) > creepSize) continue;
+		if (G_Distance(entity.oldEnt, other.oldEnt) > creepSize) return;
 
 		// TODO: Send (Creep)Slow message instead.
-		if (other.oldEnt->flags & FL_NOTARGET) continue;
-		if (other.oldEnt->client->ps.groundEntityNum == ENTITYNUM_NONE) continue;
+		if (other.oldEnt->flags & FL_NOTARGET) return;
+		if (other.oldEnt->client->ps.groundEntityNum == ENTITYNUM_NONE) return;
 		other.oldEnt->client->ps.stats[STAT_STATE] |= SS_CREEPSLOWED;
 		other.oldEnt->client->lastCreepSlowTime = level.time;
-	}
+	});
 }
 
 void AlienBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {

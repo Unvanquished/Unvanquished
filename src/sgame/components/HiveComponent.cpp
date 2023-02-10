@@ -52,15 +52,15 @@ void HiveComponent::Think(int /*timeDelta*/) {
 Entity* HiveComponent::FindTarget() {
 	Entity* target = nullptr;
 
-	for (Entity& candidate : Entities::Having<HumanClassComponent>()) {
+	ForEntities<HumanClassComponent>([&](Entity& candidate, HumanClassComponent&) {
 		// Check if target is valid and in sense range.
-		if (!TargetValid(candidate, true)) continue;
+		if (!TargetValid(candidate, true)) return;
 
 		// Check if better target.
 		if (!target || CompareTargets(candidate, *target)) {
 			target = &candidate;
 		}
-	}
+	});
 
 	return target;
 }
