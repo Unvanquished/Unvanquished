@@ -278,7 +278,7 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 	float max = G_Team(bot) == TEAM_ALIENS ? static_cast<float>( skillsetBudgetAliens ) : static_cast<float>( skillsetBudgetHumans );
 
 	// unlock every skill at skill 7
-	int skill_points = static_cast<float>(skill) / 7.0f * max;
+	int skill_points = static_cast<float>(skill + 2) / 9.0f * max;
 
 	// rng preparation
 	std::string name = bot->client->pers.netname;
