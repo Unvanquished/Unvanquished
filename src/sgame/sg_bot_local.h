@@ -93,9 +93,7 @@ struct enemyQueue_t
 
 struct botSkill_t
 {
-	int level;
-	float aimSlowness;
-	float aimShake;
+       int level;
 };
 
 // boolean flags that tells which skill (compétence) the bot has.
@@ -153,7 +151,7 @@ struct botMemory_t
 	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );
 	usercmd_t   cmdBuffer;
 
-	botSkill_t  botSkill; // numerical values
+	botSkill_t  botSkill;
 	skillSet_t  botSkillSet; // boolean flags
 	std::string botSkillSetExplaination;
 

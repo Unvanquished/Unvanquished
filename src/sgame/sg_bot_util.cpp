@@ -2364,9 +2364,6 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	ASSERT( skill >= MIN_SKILL && skill <= MAX_SKILL );
 
 	self->botMind->botSkill.level = skill;
-	// TODO: different aim for different teams
-	self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-	self->botMind->botSkill.aimShake = 10 - skill;
 
 	std::pair<std::string, skillSet_t>
 		pair = BotDetermineSkills(self, skill);
