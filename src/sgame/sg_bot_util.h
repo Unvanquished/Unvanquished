@@ -53,7 +53,7 @@ void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
 botEntityAndDistance_t BotGetHealTarget( const gentity_t *self );
 
 // aiming
-glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target );
+glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target, int lagPredictTime );
 void  BotAimAtEnemy( gentity_t *self );
 void  BotSlowAim( gentity_t *self, glm::vec3& target, float slow );
 void  BotAimAtLocation( gentity_t *self, const glm::vec3 &target );
