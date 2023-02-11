@@ -66,23 +66,23 @@ MiningComponent::Efficiencies MiningComponent::FindEfficiencies(
 {
 	MiningComponent::Efficiencies efficiencies{ 1.0f, 1.0f };
 
-	for (MiningComponent& miningComponent : Entities::Each<MiningComponent>()) {
-		if (&miningComponent == skip) continue;
+	ForEntities<MiningComponent>([&](Entity& other, MiningComponent& miningComponent) {
+		if (&miningComponent == skip) return;
 
 		// Do not consider dead neighbours, even when predicting, as they can never become active.
-		if (!Entities::IsAlive(miningComponent.entity)) continue;
+		if (!Entities::IsAlive(other)) return;
 
-		float interferenceMod = InterferenceMod(glm::distance(location, VEC2GLM(miningComponent.entity.oldEnt->s.origin)));
+		float interferenceMod = InterferenceMod(glm::distance(location, VEC2GLM(other.oldEnt->s.origin)));
 
 		// Enemy miners under construction are a secret
-		if (!(G_Team(miningComponent.entity.oldEnt) != team && !miningComponent.active)) {
+		if (!(G_Team(other.oldEnt) != team && !miningComponent.active)) {
 			efficiencies.predicted *= interferenceMod;
 		}
 
 		if (miningComponent.active) {
 			efficiencies.actual *= interferenceMod;
 		}
-	}
+	});
 	return efficiencies;
 }
 
@@ -94,12 +94,12 @@ void MiningComponent::CalculateEfficiency() {
 }
 
 void MiningComponent::InformNeighbors() {
-	for (Entity& other : Entities::Having<MiningComponent>()) {
-		if (&other == &entity) continue;
-		if (G_Distance(entity.oldEnt, other.oldEnt) > RGS_RANGE * 2.0f) continue;
+	ForEntities<MiningComponent>([&] (Entity& other, MiningComponent& miningComponent) {
+		if (&other == &entity) return;
+		if (G_Distance(entity.oldEnt, other.oldEnt) > RGS_RANGE * 2.0f) return;
 
-		other.Get<MiningComponent>()->CalculateEfficiency();
-	}
+		miningComponent.CalculateEfficiency();
+	});
 }
 
 float MiningComponent::Efficiency(bool predict) {

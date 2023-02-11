@@ -52,32 +52,33 @@ bool G_IsWarnableMOD(meansOfDeath_t mod) {
 }
 
 static gentity_t *FindBuildable(buildable_t buildable) {
-	for (Entity& entity : Entities::Having<BuildableComponent>()) {
-		if (entity.oldEnt->s.modelindex == buildable) {
-			return entity.oldEnt;
-		}
-	}
+	gentity_t* found = nullptr;
 
-	return nullptr;
+	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent&) {
+		if (entity.oldEnt->s.modelindex == buildable) {
+			found = entity.oldEnt;
+		}
+	});
+
+	return found;
 }
 
-// TODO This doesn't need to be a template; an entity collection could be an argument
 template<typename Component>
 static gentity_t *LookUpMainBuildable(bool requireActive)
 {
-	for (Entity& entity : Entities::Having<Component>()) {
+	gentity_t *answer = nullptr;
+	ForEntities<Component>([&](Entity& entity, Component&) {
 		if (!requireActive ||
 		    entity.Get<BuildableComponent>()->GetState() == BuildableComponent::CONSTRUCTED)
 		{
-			return entity.oldEnt;
+			answer = entity.oldEnt;
 		}
-	}
-	return nullptr;
+	});
+	return answer;
 }
 
 gentity_t *G_Overmind() {
-	Entity* ent = Entities::AnyWith<OvermindComponent>();
-	return ent ? ent->oldEnt : nullptr;
+	return LookUpMainBuildable<OvermindComponent>(false);
 }
 
 gentity_t *G_ActiveOvermind() {
@@ -758,32 +759,32 @@ void G_UpdateBuildablePowerStates()
 		int unpoweredBuildableTotal = 0;
 		activeMainBuildable = G_ActiveMainBuildable(team);
 
-		for (Entity& entity : Entities::Having<BuildableComponent>()) {
-			if (G_Team(entity.oldEnt) != team) continue;
+		ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent& buildableComponent) {
+			if (G_Team(entity.oldEnt) != team) return;
 
 			// Never shut down the main buildable or miners.
-			if (entity.Get<MainBuildableComponent>()) continue;
-			if (entity.Get<MiningComponent>()) continue;
+			if (entity.Get<MainBuildableComponent>()) return;
+			if (entity.Get<MiningComponent>()) return;
 
 			// Never shut down spawns.
 			// TODO: Refer to a SpawnerComponent here.
-			if (entity.Get<TelenodeComponent>() || entity.Get<EggComponent>()) continue;
+			if (entity.Get<TelenodeComponent>() || entity.Get<EggComponent>()) return;
 
 			// Power off all buildables if there is no main buildable.
 			if (!activeMainBuildable) {
-				entity.Get<BuildableComponent>()->SetPowerState(false);
-				continue;
+				buildableComponent.SetPowerState(false);
+				return;
 			}
 
 			// In order to make good a deficit, don't shut down buildables that have no cost.
-			if (BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints <= 0) continue;
+			if (BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints <= 0) return;
 			if (!entity.oldEnt->powered) {
 				unpoweredBuildables.push_back(&entity);
 				unpoweredBuildableTotal += BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints;
 			} else {
 				poweredBuildables.push_back(&entity);
 			}
-		}
+		});
 
 		// If there is no active main buildable, all buildables that can shut down already did so.
 		if (!activeMainBuildable) continue;
@@ -1365,31 +1366,38 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	// check for collision
 	// -------------------
 
-	for (Entity& entity : Entities::Having<BuildableComponent>()) {
+	// TODO: Once ForEntities allows break semantics, rewrite.
+	itemBuildError_t collisionError = IBE_NONE;
+	ForEntities<BuildableComponent>([&] (Entity& entity, BuildableComponent& buildableComponent) {
+		// HACK: Fake a break.
+		if (collisionError != IBE_NONE) return;
+
 		buildable_t otherBuildable = (buildable_t)entity.oldEnt->s.modelindex;
 		team_t      otherTeam      = entity.oldEnt->buildableTeam;
 
 		if (BuildablesIntersect(buildable, origin, otherBuildable, entity.oldEnt->s.origin)) {
 			if (otherTeam != attr->team) {
-				return IBE_NOROOM;
+				collisionError = IBE_NOROOM;
+				return;
 			}
 
-			if (!entity.Get<BuildableComponent>()->MarkedForDeconstruction()) {
-				return IBE_NOROOM;
+			if (!buildableComponent.MarkedForDeconstruction()) {
+				collisionError = IBE_NOROOM;
+				return;
 			}
 
 			// Ignore main buildable replacement since it will already be on the list.
 			if (!(BG_IsMainStructure(buildable) && BG_IsMainStructure(otherBuildable))) {
 				// Apply general replacement rules.
-				itemBuildError_t ibe = BuildableReplacementChecks((buildable_t)entity.oldEnt->s.modelindex, buildable);
-				if (ibe != IBE_NONE) {
-					return ibe;
+				if ((collisionError = BuildableReplacementChecks((buildable_t)entity.oldEnt->s.modelindex, buildable)) != IBE_NONE) {
+					return;
 				}
 
 				level.markedBuildables[level.numBuildablesForRemoval++] = entity.oldEnt;
 			}
 		}
-	}
+	});
+	if (collisionError != IBE_NONE) return collisionError;
 
 	// -------------------
 	// check for resources
@@ -1698,13 +1706,13 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	if ( max_miners >= 0 && ( buildable == BA_H_DRILL || buildable == BA_A_LEECH ) )
 	{
 		int miners = 0;
-		for (Entity& entity : Entities::Having<MiningComponent>())
+		ForEntities<MiningComponent> ( [&](Entity& entity, MiningComponent& )
 		{
 			if ( Entities::IsAlive(entity) && G_OnSameTeam( entity.oldEnt, ent ) )
 			{
 				miners++;
 			}
-		}
+		});
 		if ( miners >= max_miners )
 		{
 			return ent->client->pers.team == TEAM_HUMANS ? IBE_NOMOREDRILLS : IBE_NOMORELEECHES;

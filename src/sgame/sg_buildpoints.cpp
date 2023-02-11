@@ -24,7 +24,6 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 
 #include "sg_local.h"
 #include "CBSE.h"
-#include "Entities.h"
 
 static Log::Logger buildpointLogger("sgame.buildpoints");
 
@@ -54,11 +53,11 @@ float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
 
 	buildpointLogger.Debug("Predicted efficiency of new miner itself: %f.", delta);
 
-	for (Entity& miner : Entities::Having<MiningComponent>()) {
-		if (G_Team(miner.oldEnt) != team) continue;
+	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent&) {
+		if (G_Team(miner.oldEnt) != team) return;
 
 		delta += RGSPredictEfficiencyLoss(miner, origin);
-	}
+	});
 
 	buildpointLogger.Debug("Predicted efficiency delta: %f. Build point delta: %f.", delta,
 	                       delta * g_buildPointBudgetPerMiner.Get());
@@ -87,10 +86,10 @@ void G_UpdateBuildPointBudgets() {
 		}
 	}
 
-	for (MiningComponent& miningComponent : Entities::Each<MiningComponent>()) {
-		level.team[G_Team(miningComponent.entity.oldEnt)].totalBudget +=
-			miningComponent.Efficiency() * g_buildPointBudgetPerMiner.Get();
-	}
+	ForEntities<MiningComponent>([&] (Entity& entity, MiningComponent& miningComponent) {
+		level.team[G_Team(entity.oldEnt)].totalBudget += miningComponent.Efficiency() *
+		                                                 g_buildPointBudgetPerMiner.Get();
+	});
 }
 
 void G_RecoverBuildPoints() {
@@ -140,11 +139,12 @@ int G_GetMarkedBudget(team_t team)
 {
 	int sum = 0;
 
-	for (Entity& entity : Entities::Having<BuildableComponent>()) {
-		if (G_Team(entity.oldEnt) == team && entity.Get<BuildableComponent>()->MarkedForDeconstruction()) {
+	ForEntities<BuildableComponent>(
+	[&](Entity& entity, BuildableComponent& buildableComponent) {
+		if (G_Team(entity.oldEnt) == team && buildableComponent.MarkedForDeconstruction()) {
 			sum += G_BuildableDeconValue(entity.oldEnt);
 		}
-	}
+	});
 
 	return sum;
 }
@@ -203,7 +203,7 @@ void G_GetTotalBuildableValues(int *buildableValuesByTeam)
 		buildableValuesByTeam[team] = 0;
 	}
 
-	for (Entity& entity : Entities::Having<BuildableComponent>()) {
+	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent&) {
 		buildableValuesByTeam[G_Team(entity.oldEnt)] += G_BuildableDeconValue(entity.oldEnt);
-	}
+	});
 }
