@@ -1473,7 +1473,7 @@ Bot Aiming
 ========================
 */
 
-glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
+glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target, int lagPredictTime )
 {
 	ASSERT( target.targetsValidEntity() );
 	glm::vec3 aimLocation = target.getPos();
@@ -1481,9 +1481,11 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 	team_t targetTeam = G_Team( targetEnt );
 	bool isTargetBuildable = target.getTargetType() == entityType_t::ET_BUILDABLE;
 
+	float predictTime = lagPredictTime / 1000.0f; // in seconds
+
 	//this retrieves the target's species, to aim at weak point:
 	// * for humans, it's the head (but code only applies an offset here, with the hope it's the head)
-	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (for luci)
+	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (e.g. for luci)
 	if ( !isTargetBuildable && targetTeam == TEAM_HUMANS )
 	{
 		// Aim at head
@@ -1494,7 +1496,8 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 		}
 
 	}
-	else
+
+	if ( !isTargetBuildable && G_Team(self) == TEAM_HUMANS )
 	{
 		// Make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
 		if ( self->botMind->botSkillSet[BOT_H_PREDICTIVE_AIM] )
@@ -1517,11 +1520,12 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 			}
 			if( weapon_speed )
 			{
-				aimLocation += glm::distance( VEC2GLM( self->s.origin ), aimLocation ) / weapon_speed * VEC2GLM( targetEnt->s.pos.trDelta );
+				predictTime += glm::distance( VEC2GLM(self->s.origin), aimLocation ) / weapon_speed;
 			}
 		}
 	}
-	return aimLocation;
+
+	return aimLocation + predictTime * VEC2GLM( targetEnt->s.pos.trDelta );
 }
 
 static int BotGetAimTime( gentity_t *self )
@@ -1530,20 +1534,8 @@ static int BotGetAimTime( gentity_t *self )
 	return std::max( 1, int(time) );
 }
 
-static glm::vec3 BotPredictPosition( gentity_t *self, gentity_t const *predict, int time )
-{
-	botTarget_t target;
-	target = predict;
-	glm::vec3 aimLoc = BotGetIdealAimLocation( self, target );
-	return aimLoc + time / 1000.0f * VEC2GLM( predict->s.pos.trDelta );
-}
-
 void BotAimAtEnemy( gentity_t *self )
 {
-	ASSERT( self->botMind->goal.targetsValidEntity() );
-
-	const gentity_t *enemy = self->botMind->goal.getTargetedEntity();
-
 	if ( self->botMind->futureAimTime < level.time )
 	{
 		int aimTime = self->botMind->futureAimTimeInterval = BotGetAimTime( self );
@@ -1551,8 +1543,8 @@ void BotAimAtEnemy( gentity_t *self )
 
 		// Do aim prediction
 		// Here, we cap aim prediction time because extrapolating too much is harmful if this bot is slow to aim
-		int predictTime = std::min( aimTime, 220 );
-		self->botMind->futureAim = BotPredictPosition( self, enemy, predictTime );
+		int lagPredictTime = std::min( aimTime, 220 );
+		self->botMind->futureAim = BotGetIdealAimLocation( self, self->botMind->goal, lagPredictTime );
 	}
 
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
@@ -1983,7 +1975,7 @@ void BotFireWeaponAI( gentity_t *self )
 
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
 	muzzle = G_CalcMuzzlePoint( self, forward );
-	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal );
+	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 
 	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
