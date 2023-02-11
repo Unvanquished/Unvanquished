@@ -31,9 +31,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 Cvar::Cvar<int> g_skillsetBudgetAliens( "g_skillsetBudgetAliens", "the skillset budget for aliens.", Cvar::NONE, 61 );
 Cvar::Cvar<int> g_skillsetBudgetHumans( "g_skillsetBudgetHumans", "the skillset budget for humans.", Cvar::NONE, 40 );
 
-static std::set<std::string> bg_allowedSkillset;
+static std::set<std::string>& G_GetAllowedSkillset()
+{
+	static std::set<std::string> allowedSkillset;
+	return allowedSkillset;
+}
 
-static std::set<std::string> BG_ParseAllowedSkillsetList( const std::string &skillsCsv )
+static std::set<std::string> G_ParseAllowedSkillsetList( const std::string &skillsCsv )
 {
 	std::set<std::string> skills;
 
@@ -45,23 +49,27 @@ static std::set<std::string> BG_ParseAllowedSkillsetList( const std::string &ski
 	return skills;
 }
 
-static void BG_SetAllowedSkillset( Str::StringRef skillsCsv )
+static void G_SetAllowedSkillset( Str::StringRef skillsCsv )
 {
-	bg_allowedSkillset = BG_ParseAllowedSkillsetList( skillsCsv );
+	G_GetAllowedSkillset() = G_ParseAllowedSkillsetList( skillsCsv );
 }
 
-static bool BG_SkillAllowed( Str::StringRef behavior )
+static bool G_SkillAllowed( Str::StringRef behavior )
 {
-	return bg_allowedSkillset.find( behavior ) != bg_allowedSkillset.end();
+	return G_GetAllowedSkillset().find( behavior ) != G_GetAllowedSkillset().end();
 }
 
-static Cvar::Callback<Cvar::Cvar<std::string>> g_allowedSkillset(
-    "g_allowedSkillset",
-	"Allowed skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
-	Cvar::NONE,
-	"mara-attack-jump, mantis-attack-jump, goon-attack-jump, tyrant-attack-run, mara-flee-jump, mantis-flee-jump, goon-flee-jump, tyrant-flee-run, safe-barbs, buy-modern-armor, prefer-armor, flee-run, medkit, aim-head, aim-barbs, predict-aim, movement, fighting, feels-pain",
-	BG_SetAllowedSkillset
-    );
+void G_InitSkilltreeCvars()
+{
+	std::string defaultSkillset = "mara-attack-jump, mantis-attack-jump, goon-attack-jump, tyrant-attack-run, mara-flee-jump, mantis-flee-jump, goon-flee-jump, tyrant-flee-run, safe-barbs, buy-modern-armor, prefer-armor, flee-run, medkit, aim-head, aim-barbs, predict-aim, movement, fighting, feels-pain";
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_allowedSkillset(
+        "g_allowedSkillset",
+		"Allowed skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+		Cvar::NONE,
+		defaultSkillset,
+		G_SetAllowedSkillset
+        );
+}
 
 struct botSkillTreeElement_t {
 	Str::StringRef name;
@@ -224,7 +232,7 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 			break;
 		}
 
-		if ( !BG_SkillAllowed( new_skill->name ) )
+		if ( !G_SkillAllowed( new_skill->name ) )
 		{
 			continue;
 		}
