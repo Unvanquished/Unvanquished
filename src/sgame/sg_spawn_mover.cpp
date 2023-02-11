@@ -39,6 +39,12 @@ Maryland 20850 USA.
 
 #define DEFAULT_FUNC_TRAIN_SPEED 100
 
+static Cvar::Range<Cvar::Cvar<int>> g_bot_ignoreSmallObstacles(
+		"g_bot_ignoreSmallObstacles",
+		"this allows bots to ignore \"negligible\" navmesh blockers."
+		"0 is disabled. Should only be enabled on maps with known problem."
+		"Maximum is 18, which is bots' stepsize.", Cvar::NONE, 0, 0, 18 );
+
 /*
 ===============================================================================
 
@@ -604,14 +610,22 @@ void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 	}
 	glm::vec3 mins = VEC2GLM( ent->r.absmin );
 	glm::vec3 maxs = VEC2GLM( ent->r.absmax );
+	// this is a hack that allows to ignore "irrelevant" doors,
+	// implemented for nova's electric fence support
 	switch ( moverState )
 	{
 		case MOVER_POS1:
 		case MOVER_POS2:
 		case ROTATOR_POS1:
 		case ROTATOR_POS2:
-			G_BotRemoveObstacle( ent->num() );
-			G_BotAddObstacle( mins, maxs, ent->num() );
+			if ( std::abs( ent->activatedPosition[0] - ent->restingPosition[0] ) > g_bot_ignoreSmallObstacles.Get()
+					|| std::abs( ent->activatedPosition[1] - ent->restingPosition[1] ) > g_bot_ignoreSmallObstacles.Get()
+					|| std::abs( ent->activatedPosition[2] - ent->restingPosition[2] ) > g_bot_ignoreSmallObstacles.Get()
+					)
+			{
+				G_BotRemoveObstacle( ent->num() );
+				G_BotAddObstacle( mins, maxs, ent->num() );
+			}
 			break;
 
 		case MODEL_POS1: // TODO: have bots treat them as obstacles too, because they *are* obstacles.
