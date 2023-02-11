@@ -104,33 +104,33 @@ static void G_SetSkillsetBudgetAliens( int val )
 void G_InitSkilltreeCvars()
 {
 	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledSkillset(
-        "g_disabledSkillset",
+		"g_disabledSkillset",
 		"Disabled skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
 		Cvar::NONE,
 		"",
 		G_SetDisabledSkillset
-        );
+		);
 	static Cvar::Callback<Cvar::Cvar<std::string>> g_preferredSkillset(
-        "g_preferredSkillset",
+		"g_preferredSkillset",
 		"Preferred skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
 		Cvar::NONE,
 		"",
 		G_SetPreferredSkillset
-        );
+		);
 	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetAliens(
-	    "g_skillsetBudgetAliens",
+		"g_skillsetBudgetAliens",
 		"the skillset budget for aliens.",
 		Cvar::NONE,
 		skillsetBudgetAliens,
 		G_SetSkillsetBudgetAliens
-        );
+		);
 	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetHumans(
-	    "g_skillsetBudgetHumans",
+		"g_skillsetBudgetHumans",
 		"the skillset budget for humans.",
 		Cvar::NONE,
 		skillsetBudgetHumans,
 		G_SetSkillsetBudgetHumans
-        );
+		);
 }
 
 struct botSkillTreeElement_t {
