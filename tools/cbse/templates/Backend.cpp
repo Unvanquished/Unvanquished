@@ -117,6 +117,9 @@ bool Entity::SendMessage(EntityMessage msg, const void* data) {
         }
 
     {% endfor %}
+
+	std::set<{{component.get_type_name()}}*> {{component.get_base_type_name()}}::allSet;
+
 {% endfor %}
 
 // ////////////////////// //
@@ -195,18 +198,7 @@ bool Entity::SendMessage(EntityMessage msg, const void* data) {
 				, {{required.get_variable_name()}}
 			{%- endfor -%})
 		{% endfor %}
-	{
-		{% for component in entity.get_components() %}
-			OnComponentCreate(&{{component.get_variable_name()}});
-		{% endfor %}
-	}
-
-	// {{entity.get_type_name()}}'s destructor.
-	{{entity.get_type_name()}}::~{{entity.get_type_name()}}() {
-		{% for component in entity.get_components()|reverse %}
-			OnComponentDestroy(&{{component.get_variable_name()}});
-		{% endfor %}
-	}
+	{}
 {% endfor %}
 
 #undef myoffsetof
