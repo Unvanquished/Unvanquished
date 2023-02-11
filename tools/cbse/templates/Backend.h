@@ -92,19 +92,17 @@ using MessageHandler = void (*)(Entity*, const void* /*_data*/);
 // Component priorities //
 // //////////////////// //
 
-// This defines a compile-time index for components.
-//* It is used to index the offset table.
-template<typename T> constexpr int ComponentPriority();
-{% for component in components %}
+//* This is a trait that declares a compile-time index for components
+//* it is used to index the offset table.
+namespace detail {
+	template<typename T> struct ComponentPriority;
+	{% for component in components %}
 
-template<> constexpr int ComponentPriority<{{component.get_type_name()}}>() {
-	return {{component.get_priority()}};
+		template<> struct ComponentPriority<{{component.get_type_name()}}> {
+			static const int value = {{component.get_priority()}};
+		};
+	{% endfor %}
 };
-{% endfor %}
-
-constexpr int NumComponents() {
-	return {{components|length}};
-}
 
 // ////////////////////////////// //
 // Declaration of the base Entity //
@@ -145,7 +143,7 @@ class Entity {
 		 * @return Pointer to component of type T or nullptr.
 		 */
 		template<typename T> const T* Get() const {
-			int index = ComponentPriority<T>();
+			int index = detail::ComponentPriority<T>::value;
 			int offset = componentOffsets[index];
 			if (offset) {
 				return (const T*) (((char*) this) + offset);
@@ -236,7 +234,13 @@ class AllComponents {
 			{%- for name in component.get_own_required_component_names() -%}
 				, {{name}}({{name}})
 			{%- endfor -%}
-			{}
+			{
+				allSet.insert(reinterpret_cast<{{component.get_type_name()}}*>(this));
+			}
+
+			~{{component.get_base_type_name()}}() {
+				allSet.erase(reinterpret_cast<{{component.get_type_name()}}*>(this));
+			}
 
 			{% for required in component.get_own_required_components() %}
 				/**
@@ -257,6 +261,10 @@ class AllComponents {
 			/** A reference to the entity that owns the component instance. Allows sending back messages. */
 			Entity& entity;
 
+			static AllComponents<{{component.get_type_name()}}> GetAll() {
+				return {allSet};
+			}
+
 		protected:
 			{% for declaration in component.get_own_param_declarations() %}
 				{{declaration}}; /**< An initialization parameter. */
@@ -266,9 +274,15 @@ class AllComponents {
 			{% for declaration in component.get_own_required_component_declarations() %}
 				{{declaration}}; /**< A component of the owning entity that this component depends on. */
 			{% endfor %}
+
+			static std::set<{{component.get_type_name()}}*> allSet;
 	};
 
 {% endfor %}
+
+// ////////////////////////// //
+// Definitions of ForEntities //
+// ////////////////////////// //
 
 template <typename Component> bool HasComponents(const Entity& ent) {
     return ent.Get<Component>() != nullptr;
@@ -276,6 +290,17 @@ template <typename Component> bool HasComponents(const Entity& ent) {
 
 template <typename Component1, typename Component2, typename ... Components> bool HasComponents(const Entity& ent) {
     return HasComponents<Component1>(ent) && HasComponents<Component2, Components...>(ent);
+}
+
+template <typename Component1, typename ... Components, typename FuncType>
+void ForEntities(FuncType f) {
+    for(auto* component1: Component1::GetAll()) {
+        Entity& ent = component1->entity;
+
+        if (HasComponents<Component1, Components...>(ent)) {
+            f(ent, *component1, *ent.Get<Components>()...);
+        }
+    }
 }
 
 #endif // CBSE_BACKEND_H_
