@@ -31,13 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 Cvar::Cvar<int> g_skillsetBudgetAliens( "g_skillsetBudgetAliens", "the skillset budget for aliens.", Cvar::NONE, 61 );
 Cvar::Cvar<int> g_skillsetBudgetHumans( "g_skillsetBudgetHumans", "the skillset budget for humans.", Cvar::NONE, 40 );
 
-static std::set<std::string>& G_GetDisabledSkillset()
-{
-	static std::set<std::string> disabledSkillset;
-	return disabledSkillset;
-}
-
-static std::set<std::string> G_ParseDisabledSkillsetList( const std::string &skillsCsv )
+static std::set<std::string> G_ParseSkillsetList( const std::string &skillsCsv )
 {
 	std::set<std::string> skills;
 
@@ -49,14 +43,36 @@ static std::set<std::string> G_ParseDisabledSkillsetList( const std::string &ski
 	return skills;
 }
 
+static std::set<std::string>& G_GetDisabledSkillset()
+{
+	static std::set<std::string> disabledSkillset;
+	return disabledSkillset;
+}
+
 static void G_SetDisabledSkillset( Str::StringRef skillsCsv )
 {
-	G_GetDisabledSkillset() = G_ParseDisabledSkillsetList( skillsCsv );
+	G_GetDisabledSkillset() = G_ParseSkillsetList( skillsCsv );
 }
 
 static bool G_SkillDisabled( Str::StringRef behavior )
 {
 	return G_GetDisabledSkillset().find( behavior ) != G_GetDisabledSkillset().end();
+}
+
+static std::set<std::string>& G_GetPreferredSkillset()
+{
+	static std::set<std::string> preferredSkillset;
+	return preferredSkillset;
+}
+
+static void G_SetPreferredSkillset( Str::StringRef skillsCsv )
+{
+	G_GetPreferredSkillset() = G_ParseSkillsetList( skillsCsv );
+}
+
+static bool G_SkillPreferred( Str::StringRef behavior )
+{
+	return G_GetPreferredSkillset().find( behavior ) != G_GetPreferredSkillset().end();
 }
 
 void G_InitSkilltreeCvars()
@@ -67,6 +83,13 @@ void G_InitSkilltreeCvars()
 		Cvar::NONE,
 		"",
 		G_SetDisabledSkillset
+        );
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_preferredSkillset(
+        "g_preferredSkillset",
+		"Preferred skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+		Cvar::NONE,
+		"",
+		G_SetPreferredSkillset
         );
 }
 
@@ -236,12 +259,17 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 			continue;
 		}
 
-		skill_points -= new_skill->cost;
+		bool preferred = G_SkillPreferred( new_skill->name );
 
-		if ( skill_points < 0 )
+		if ( !preferred )
+		{
+			skill_points -= new_skill->cost;
+		}
+
+		if ( skill_points < 0 && !preferred )
 		{
 			// we don't have money to spend anymore, we are done
-			break;
+			continue;
 		}
 
 		skillSet[new_skill->skill] = true;
