@@ -31,13 +31,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 Cvar::Cvar<int> g_skillsetBudgetAliens( "g_skillsetBudgetAliens", "the skillset budget for aliens.", Cvar::NONE, 61 );
 Cvar::Cvar<int> g_skillsetBudgetHumans( "g_skillsetBudgetHumans", "the skillset budget for humans.", Cvar::NONE, 40 );
 
-static std::set<std::string>& G_GetAllowedSkillset()
+static std::set<std::string>& G_GetDisabledSkillset()
 {
-	static std::set<std::string> allowedSkillset;
-	return allowedSkillset;
+	static std::set<std::string> disabledSkillset;
+	return disabledSkillset;
 }
 
-static std::set<std::string> G_ParseAllowedSkillsetList( const std::string &skillsCsv )
+static std::set<std::string> G_ParseDisabledSkillsetList( const std::string &skillsCsv )
 {
 	std::set<std::string> skills;
 
@@ -49,25 +49,24 @@ static std::set<std::string> G_ParseAllowedSkillsetList( const std::string &skil
 	return skills;
 }
 
-static void G_SetAllowedSkillset( Str::StringRef skillsCsv )
+static void G_SetDisabledSkillset( Str::StringRef skillsCsv )
 {
-	G_GetAllowedSkillset() = G_ParseAllowedSkillsetList( skillsCsv );
+	G_GetDisabledSkillset() = G_ParseDisabledSkillsetList( skillsCsv );
 }
 
-static bool G_SkillAllowed( Str::StringRef behavior )
+static bool G_SkillDisabled( Str::StringRef behavior )
 {
-	return G_GetAllowedSkillset().find( behavior ) != G_GetAllowedSkillset().end();
+	return G_GetDisabledSkillset().find( behavior ) != G_GetDisabledSkillset().end();
 }
 
 void G_InitSkilltreeCvars()
 {
-	std::string defaultSkillset = "mara-attack-jump, mantis-attack-jump, goon-attack-jump, tyrant-attack-run, mara-flee-jump, mantis-flee-jump, goon-flee-jump, tyrant-flee-run, safe-barbs, buy-modern-armor, prefer-armor, flee-run, medkit, aim-head, aim-barbs, predict-aim, movement, fighting, feels-pain";
-	static Cvar::Callback<Cvar::Cvar<std::string>> g_allowedSkillset(
-        "g_allowedSkillset",
-		"Allowed skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledSkillset(
+        "g_disabledSkillset",
+		"Disabled skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
 		Cvar::NONE,
-		defaultSkillset,
-		G_SetAllowedSkillset
+		"",
+		G_SetDisabledSkillset
         );
 }
 
@@ -232,7 +231,7 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 			break;
 		}
 
-		if ( !G_SkillAllowed( new_skill->name ) )
+		if ( G_SkillDisabled( new_skill->name ) )
 		{
 			continue;
 		}
