@@ -1102,6 +1102,11 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
 			trap_AdjustAreaPortalState( ent, true );
+
+		//HACK: this is really ugly, should have specialise code,
+		//but I'm both lazy, buzy to fix old mess, and annoyed by
+		//said years-old mess
+		ent->health = ent->config.health;
 	}
 	else if ( ent->moverState == MOVER_2TO1 )
 	{
