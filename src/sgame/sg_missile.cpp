@@ -394,7 +394,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			if ( !ma->doLocationalDamage ) dflags |= DAMAGE_NO_LOCDAMAGE;
 			if ( ma->doKnockback )         dflags |= DAMAGE_KNOCKBACK;
 
-			hitEnt->entity->Damage(ent->damage * MissileTimeDmgMod(ent), attacker,
+			hitEnt->Damage(ent->damage * MissileTimeDmgMod(ent), attacker,
 			                       VEC2GLM( trace->endpos ), VEC2GLM( dir ), dflags,
 			                       (meansOfDeath_t)ent->methodOfDeath);
 		}

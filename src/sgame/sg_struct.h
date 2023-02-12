@@ -474,6 +474,11 @@ struct gentity_t
 		ASSERT(this - g_entities < MAX_GENTITIES);
 		return this - g_entities;
 	}
+
+	bool Damage( float amount, gentity_t* source,
+		Util::optional<glm::vec3> location,
+		Util::optional<glm::vec3> direction,
+		int flags, meansOfDeath_t meansOfDeath );
 };
 
 /**

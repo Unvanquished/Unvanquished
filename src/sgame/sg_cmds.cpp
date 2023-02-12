@@ -709,7 +709,7 @@ static void Cmd_Give_f( gentity_t *ent )
 				valid = true;
 				if (amount < 0)
 				{
-					ent->entity->Damage(-amount, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
+					ent->Damage(-amount, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
 				}
 				else
 				{
@@ -4671,7 +4671,7 @@ static void Cmd_Damage_f( gentity_t *ent )
 	point[ 1 ] += dy;
 	point[ 2 ] += dz;
 
-	ent->entity->Damage((float)damage, nullptr, point, Util::nullopt,
+	ent->Damage((float)damage, nullptr, point, Util::nullopt,
 	                    nonloc ? DAMAGE_NO_LOCDAMAGE : 0, MOD_TARGET_LASER);
 }
 

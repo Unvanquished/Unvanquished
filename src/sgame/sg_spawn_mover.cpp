@@ -1466,7 +1466,7 @@ static void func_door_block( gentity_t *self, gentity_t *other )
 
 	if ( self->damage )
 	{
-		other->entity->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, 0, MOD_CRUSH);
+		other->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, 0, MOD_CRUSH);
 	}
 
 	if ( self->spawnflags & 4 )

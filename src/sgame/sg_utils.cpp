@@ -960,3 +960,31 @@ glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward )
 	// Meh. I doubt it saves much. Casting to short ints might have, though. (copypaste)
 	return glm::floor( muzzlePoint + 0.5f );
 }
+
+//Dunno which ones are really useful, CBSE is not even self-contained.
+#include "sg_local.h"
+#include "Entities.h"
+#include "CBSE.h"
+#include "sg_cm_world.h"
+
+bool gentity_t::Damage( float amount, gentity_t* source,
+		Util::optional<glm::vec3> location,
+		Util::optional<glm::vec3> direction,
+		int flags, meansOfDeath_t meansOfDeath )
+{
+	if ( s.eType != entityType_t::ET_MOVER )
+	{
+		return entity->Damage( amount, source, location, direction, flags, meansOfDeath );
+	}
+
+	if ( pain )
+	{
+		pain( this, source, amount );
+	}
+	health -= amount;
+	if ( health <= 0 && die )
+	{
+		die( this, nullptr, source, 0 );
+	}
+	return true; // seriously, not sure what's this about
+}
