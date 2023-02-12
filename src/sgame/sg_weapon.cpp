@@ -36,6 +36,14 @@ static vec3_t muzzle;
 
 static void SendHitEvent( gentity_t *attacker, gentity_t *target, glm::vec3 const& origin, glm::vec3 const&  normal, entity_event_t evType );
 
+static bool TakesDamages( gentity_t const* ent )
+{
+	return false
+		|| Entities::IsAlive( ent )
+		|| ( ent && ent->s.eType == entityType_t::ET_MOVER )
+		;
+}
+
 void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 {
 	playerState_t *ps = &ent->client->ps;
@@ -450,7 +458,7 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 
 	G_WideTrace( &tr, self, range, width, height, &traceEnt );
 
-	if ( !Entities::IsAlive( traceEnt ) )
+	if ( not TakesDamages( traceEnt ) )
 	{
 		return nullptr;
 	}
@@ -1073,9 +1081,11 @@ bool G_CheckDretchAttack( gentity_t *self )
 
 	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
-	if ( !Entities::IsAlive( traceEnt )
-			|| G_OnSameTeam( self, traceEnt )
-			|| !G_DretchCanDamageEntity( self, traceEnt ) )
+	//this is ugly, but so is all that mess in any case. I'm just trying to fix shit here, so go complain to whoever broke the game, not to me.
+
+	if ( not TakesDamages( traceEnt )
+				|| G_OnSameTeam( self, traceEnt )
+				|| !G_DretchCanDamageEntity( self, traceEnt ) )
 	{
 		return false;
 	}
@@ -1131,6 +1141,7 @@ static void FindZapChainTargets( zap_t *zap )
 
 		distance = Distance( ent->s.origin, enemy->s.origin );
 
+		//TODO: implement support for map-entities
 		if ( G_Team( enemy ) == TEAM_HUMANS
 				&& ( enemy->client || enemy->s.eType == entityType_t::ET_BUILDABLE )
 				&& Entities::IsAlive( enemy )
@@ -1349,7 +1360,7 @@ bool G_CheckPounceAttack( gentity_t *self )
 	G_WideTrace( &tr, self, pounceRange, LEVEL3_POUNCE_WIDTH,
 	             LEVEL3_POUNCE_WIDTH, &traceEnt );
 
-	if ( !Entities::IsAlive( traceEnt ) )
+	if ( not TakesDamages( traceEnt ) )
 	{
 		return false;
 	}
@@ -1388,7 +1399,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 		return;
 	}
 
-	if ( !Entities::IsAlive( victim ) )
+	if ( not TakesDamages( victim ) )
 	{
 		return;
 	}
