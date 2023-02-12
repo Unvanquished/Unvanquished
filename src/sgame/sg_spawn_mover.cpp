@@ -1568,7 +1568,10 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 
 static void Think_MoverDeath( gentity_t *self, gentity_t*, gentity_t* attacker, int )
 {
-	BinaryMover_act( self, nullptr, attacker );
+	if ( self->moverState == MOVER_POS1 )
+	{
+		BinaryMover_act( self, nullptr, attacker );
+	}
 }
 
 static void func_door_reset( gentity_t *self )
