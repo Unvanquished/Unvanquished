@@ -1566,9 +1566,9 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 	}
 }
 
-static void Think_DoorDeath( gentity_t *self, gentity_t*, gentity_t* attacker, int )
+static void Think_MoverDeath( gentity_t *self, gentity_t*, gentity_t* attacker, int )
 {
-	BinaryMover_act( self, self, attacker );
+	BinaryMover_act( self, nullptr, attacker );
 }
 
 static void func_door_reset( gentity_t *self )
@@ -1674,7 +1674,8 @@ void SP_func_door( gentity_t *self )
 		self->think = Think_MatchGroup;
 		if ( self->config.health )
 		{
-			self->die = Think_DoorDeath;
+			self->health = self->config.health;
+			self->die = Think_MoverDeath;
 		}
 	}
 	else
@@ -2182,6 +2183,10 @@ void SP_func_button( gentity_t *self )
 	{
 		// touchable button
 		self->touch = Touch_Button;
+	}
+	else
+	{
+		self->die = Think_MoverDeath;
 	}
 
 	self->use = func_button_use;
