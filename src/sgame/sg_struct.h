@@ -390,8 +390,6 @@ struct gentity_t
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
 
-	bool  takedamage;
-
 	int       flightSplashDamage; // quad will increase this without increasing radius
 	int       flightSplashRadius;
 	int       splashDamage; // quad will increase this without increasing radius
@@ -474,6 +472,11 @@ struct gentity_t
 		ASSERT(this - g_entities < MAX_GENTITIES);
 		return this - g_entities;
 	}
+
+	bool Damage( float amount, gentity_t* source,
+		Util::optional<glm::vec3> location,
+		Util::optional<glm::vec3> direction,
+		int flags, meansOfDeath_t meansOfDeath );
 };
 
 /**

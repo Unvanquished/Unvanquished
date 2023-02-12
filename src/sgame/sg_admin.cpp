@@ -2466,7 +2466,7 @@ bool G_admin_slap( gentity_t *ent )
 		damage = atoi( dmg_str );
 	}
 
-	vic->entity->Damage( damage, ent, Util::nullopt, Util::nullopt, 0, MOD_SLAP );
+	vic->Damage( damage, ent, Util::nullopt, Util::nullopt, 0, MOD_SLAP );
 
 	if ( health->Alive() )
 	{

@@ -232,7 +232,7 @@ static void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t* )
 		dflags = 0;
 	}
 
-	other->entity->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, dflags,
+	other->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, dflags,
 	                      MOD_TRIGGER_HURT);
 }
 
