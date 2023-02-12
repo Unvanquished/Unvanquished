@@ -574,7 +574,7 @@ bool IsDoor( const gentity_t *ent )
 // for now, but not sure how this should be handled.
 bool IsAutomaticMover( const gentity_t *ent )
 {
-	if ( ent->takedamage )
+	if ( ent->config.health )
 	{
 		return false;
 	}
@@ -1584,8 +1584,6 @@ static void func_door_reset( gentity_t *self )
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
 	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
 
-	self->takedamage = !!self->health;
-
 	reset_moverspeed( self, 400 );
 }
 
@@ -1695,8 +1693,6 @@ void SP_func_door( gentity_t *self )
 static void func_door_rotating_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
-
-	self->takedamage = !!self->health;
 
 	reset_rotatorspeed( self, 120 );
 }
@@ -1820,8 +1816,6 @@ static void func_door_model_reset( gentity_t *self )
 {
 	G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, 200);
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
-
-	self->takedamage = !!self->health;
 
 	self->s.torsoAnim = self->s.weapon * ( 1000.0f / self->speed ); //framerate
 	if ( self->s.torsoAnim <= 0 )
@@ -2139,8 +2133,6 @@ static void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *acti
 static void func_button_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
-
-	self->takedamage = !!self->health;
 
 	reset_moverspeed( self, 40 );
 }
@@ -2770,7 +2762,6 @@ void SP_func_spawn( gentity_t *self )
 
 static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, int )
 {
-	self->takedamage = false;
 	trap_UnlinkEntity( self );
 
 	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self,
@@ -2781,7 +2772,6 @@ static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attac
 static void func_destructable_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 100);
-	self->takedamage = true;
 }
 
 /*
@@ -2793,7 +2783,6 @@ static void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t
 {
   if( self->r.linked )
   {
-	self->takedamage = false;
     trap_UnlinkEntity( self );
     if( self->health <= 0 )
     {
@@ -2805,7 +2794,6 @@ static void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t
     trap_LinkEntity( self );
     G_KillBrushModel( self, activator );
 		func_destructable_reset ( self );
-    self->takedamage = true;
   }
 }
 
@@ -2848,6 +2836,5 @@ void SP_func_destructable( gentity_t *self )
   if( !( self->spawnflags & 1 ) )
   {
     trap_LinkEntity( self );
-    self->takedamage = true;
   }
 }
