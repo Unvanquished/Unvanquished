@@ -2816,6 +2816,12 @@ void SP_func_destructable( gentity_t *self )
   G_SpawnInt( "damage", "0", &self->splashDamage );
   G_SpawnInt( "radius", "0", &self->splashRadius );
 
+	if ( ( self->splashDamage != 0 && self->splashRadius == 0 )
+		|| ( self->splashDamage == 0 && self->splashRadius != 0 ) )
+	{
+		Log::Warn( "Destructible entity %d have only one of: \"radius, damage\", which makes no sense.", self->num() );
+	}
+
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   self->s.eType = entityType_t::ET_MOVER;
   self->r.contents |= CONTENTS_MOVER;
