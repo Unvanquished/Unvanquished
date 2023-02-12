@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "sg_local.h"
 #include "Entities.h"
+#include "CBSE.h"
+#include "sg_cm_world.h"
 
 #include <glm/geometric.hpp>
 
@@ -944,4 +946,36 @@ glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward )
 	// snap to integer coordinates for more efficient network bandwidth usage
 	// Meh. I doubt it saves much. Casting to short ints might have, though. (copypaste)
 	return glm::floor( muzzlePoint + 0.5f );
+}
+
+bool gentity_t::Damage( float amount, gentity_t* source,
+		Util::optional<glm::vec3> location,
+		Util::optional<glm::vec3> direction,
+		int flags, meansOfDeath_t meansOfDeath )
+{
+	if ( s.eType != entityType_t::ET_MOVER )
+	{
+		return entity->Damage( amount, source, location, direction, flags, meansOfDeath );
+	}
+
+	// it seems returning true allows to signal caller a change
+	// was made, according to slipher.
+	// Since this is definitely reasonable, let's return false
+	// if the entity can not take damages.
+	// And to take damages, imply you have a health pool.
+	if ( config.health == 0 )
+	{
+		return false;
+	}
+
+	if ( pain )
+	{
+		pain( this, source, amount );
+	}
+	health -= amount;
+	if ( health <= 0 && die )
+	{
+		die( this, nullptr, source, 0 );
+	}
+	return true;
 }

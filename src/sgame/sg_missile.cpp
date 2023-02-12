@@ -379,7 +379,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	// Deal impact damage.
 	if ( !( impactFlags & MIF_NO_DAMAGE ) )
 	{
-		if ( ent->damage && Entities::IsAlive( hitEnt ) )
+		if ( ent->damage && ( Entities::IsAlive( hitEnt ) || ( hitEnt && hitEnt->s.eType == entityType_t::ET_MOVER ) ) )
 		{
 			vec3_t dir;
 
@@ -394,7 +394,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			if ( !ma->doLocationalDamage ) dflags |= DAMAGE_NO_LOCDAMAGE;
 			if ( ma->doKnockback )         dflags |= DAMAGE_KNOCKBACK;
 
-			hitEnt->entity->Damage(ent->damage * MissileTimeDmgMod(ent), attacker,
+			hitEnt->Damage(ent->damage * MissileTimeDmgMod(ent), attacker,
 			                       VEC2GLM( trace->endpos ), VEC2GLM( dir ), dflags,
 			                       (meansOfDeath_t)ent->methodOfDeath);
 		}

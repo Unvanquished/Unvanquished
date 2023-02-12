@@ -574,7 +574,7 @@ bool IsDoor( const gentity_t *ent )
 // for now, but not sure how this should be handled.
 bool IsAutomaticMover( const gentity_t *ent )
 {
-	if ( ent->takedamage )
+	if ( ent->config.health )
 	{
 		return false;
 	}
@@ -1102,6 +1102,11 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
 			trap_AdjustAreaPortalState( ent, true );
+
+		//HACK: this is really ugly, should have specialise code,
+		//but I'm both lazy, buzy to fix old mess, and annoyed by
+		//said years-old mess
+		ent->health = ent->config.health;
 	}
 	else if ( ent->moverState == MOVER_2TO1 )
 	{
@@ -1466,7 +1471,7 @@ static void func_door_block( gentity_t *self, gentity_t *other )
 
 	if ( self->damage )
 	{
-		other->entity->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, 0, MOD_CRUSH);
+		other->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, 0, MOD_CRUSH);
 	}
 
 	if ( self->spawnflags & 4 )
@@ -1566,12 +1571,18 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 	}
 }
 
+static void Think_MoverDeath( gentity_t *self, gentity_t*, gentity_t* attacker, int )
+{
+	if ( self->moverState == MOVER_POS1 )
+	{
+		BinaryMover_act( self, nullptr, attacker );
+	}
+}
+
 static void func_door_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
 	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
-
-	self->takedamage = !!self->health;
 
 	reset_moverspeed( self, 400 );
 }
@@ -1661,11 +1672,17 @@ void SP_func_door( gentity_t *self )
 	InitMover( self );
 
 	self->nextthink = level.time + FRAMETIME;
+	self->health = self->config.health;
 
 	if ( self->names[ 0 ] || self->config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
 		self->think = Think_MatchGroup;
+		if ( self->config.health )
+		{
+			self->health = self->config.health;
+			self->die = Think_MoverDeath;
+		}
 	}
 	else
 	{
@@ -1676,8 +1693,6 @@ void SP_func_door( gentity_t *self )
 static void func_door_rotating_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
-
-	self->takedamage = !!self->health;
 
 	reset_rotatorspeed( self, 120 );
 }
@@ -1801,8 +1816,6 @@ static void func_door_model_reset( gentity_t *self )
 {
 	G_ResetFloatField(&self->speed, true, self->config.speed, self->eclass->config.speed, 200);
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
-
-	self->takedamage = !!self->health;
 
 	self->s.torsoAnim = self->s.weapon * ( 1000.0f / self->speed ); //framerate
 	if ( self->s.torsoAnim <= 0 )
@@ -2121,8 +2134,6 @@ static void func_button_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
 
-	self->takedamage = !!self->health;
-
 	reset_moverspeed( self, 40 );
 }
 
@@ -2172,6 +2183,10 @@ void SP_func_button( gentity_t *self )
 	{
 		// touchable button
 		self->touch = Touch_Button;
+	}
+	else
+	{
+		self->die = Think_MoverDeath;
 	}
 
 	self->use = func_button_use;
@@ -2747,7 +2762,6 @@ void SP_func_spawn( gentity_t *self )
 
 static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, int )
 {
-	self->takedamage = false;
 	trap_UnlinkEntity( self );
 
 	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self,
@@ -2758,7 +2772,6 @@ static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attac
 static void func_destructable_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 100);
-	self->takedamage = true;
 }
 
 /*
@@ -2770,7 +2783,6 @@ static void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t
 {
   if( self->r.linked )
   {
-	self->takedamage = false;
     trap_UnlinkEntity( self );
     if( self->health <= 0 )
     {
@@ -2782,7 +2794,6 @@ static void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t
     trap_LinkEntity( self );
     G_KillBrushModel( self, activator );
 		func_destructable_reset ( self );
-    self->takedamage = true;
   }
 }
 
@@ -2797,6 +2808,12 @@ void SP_func_destructable( gentity_t *self )
 
   G_SpawnInt( "damage", "0", &self->splashDamage );
   G_SpawnInt( "radius", "0", &self->splashRadius );
+
+	if ( ( self->splashDamage != 0 && self->splashRadius == 0 )
+		|| ( self->splashDamage == 0 && self->splashRadius != 0 ) )
+	{
+		Log::Warn( "Destructible entity %d have only one of: \"radius, damage\", which makes no sense.", self->num() );
+	}
 
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   self->s.eType = entityType_t::ET_MOVER;
@@ -2819,6 +2836,5 @@ void SP_func_destructable( gentity_t *self )
   if( !( self->spawnflags & 1 ) )
   {
     trap_LinkEntity( self );
-    self->takedamage = true;
   }
 }
