@@ -166,7 +166,7 @@ static void P_WorldEffects( gentity_t *ent )
 				// don't play a general pain sound
 				ent->pain_debounce_time = level.time + 200;
 
-				ent->entity->Damage((float)ent->client->lowOxygenDamage, nullptr, Util::nullopt, Util::nullopt,
+				ent->Damage((float)ent->client->lowOxygenDamage, nullptr, Util::nullopt, Util::nullopt,
 				                    DAMAGE_PURE, MOD_WATER);
 			}
 		}
@@ -187,12 +187,12 @@ static void P_WorldEffects( gentity_t *ent )
 		{
 			if ( ent->watertype & CONTENTS_LAVA )
 			{
-				ent->entity->Damage(30.0f * waterlevel, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
+				ent->Damage(30.0f * waterlevel, nullptr, Util::nullopt, Util::nullopt, 0, MOD_LAVA);
 			}
 
 			if ( ent->watertype & CONTENTS_SLIME )
 			{
-				ent->entity->Damage(10.0f * waterlevel, nullptr, Util::nullopt, Util::nullopt, 0, MOD_SLIME);
+				ent->Damage(10.0f * waterlevel, nullptr, Util::nullopt, Util::nullopt, 0, MOD_SLIME);
 			}
 		}
 	}
@@ -1027,7 +1027,7 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		// deal poison damage
 		if ( client->ps.stats[ STAT_STATE ] & SS_POISONED )
 		{
-			ent->entity->Damage(ALIEN_POISON_DMG, client->lastPoisonClient, Util::nullopt,
+			ent->Damage(ALIEN_POISON_DMG, client->lastPoisonClient, Util::nullopt,
 			                    Util::nullopt, DAMAGE_NO_LOCDAMAGE, MOD_POISON);
 		}
 
@@ -1035,13 +1035,13 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		if ( client->pers.team == TEAM_ALIENS &&
 		     level.surrenderTeam == TEAM_ALIENS )
 		{
-			ent->entity->Damage((float)BG_Class(client->ps.stats[STAT_CLASS])->regenRate,
+			ent->Damage((float)BG_Class(client->ps.stats[STAT_CLASS])->regenRate,
 			                    nullptr, Util::nullopt, Util::nullopt, DAMAGE_PURE, MOD_SUICIDE);
 		}
 		else if ( client->pers.team == TEAM_HUMANS &&
 		          level.surrenderTeam == TEAM_HUMANS )
 		{
-			ent->entity->Damage(5.0f, nullptr, Util::nullopt, Util::nullopt, DAMAGE_PURE, MOD_SUICIDE);
+			ent->Damage(5.0f, nullptr, Util::nullopt, Util::nullopt, DAMAGE_PURE, MOD_SUICIDE);
 		}
 
 		// lose some voice enthusiasm
@@ -1177,7 +1177,7 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence )
 				VectorAdd( client->ps.origin, mins, point );
 
 				ent->pain_debounce_time = level.time + 200; // no general pain sound
-				ent->entity->Damage((float)damage, nullptr, VEC2GLM( point ), VEC2GLM( dir ),
+				ent->Damage((float)damage, nullptr, VEC2GLM( point ), VEC2GLM( dir ),
 				                    DAMAGE_NO_LOCDAMAGE, MOD_FALLING);
 				break;
 
