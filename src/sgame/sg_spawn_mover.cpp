@@ -1566,6 +1566,11 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 	}
 }
 
+static void Think_DoorDeath( gentity_t *self, gentity_t*, gentity_t* attacker, int )
+{
+	BinaryMover_act( self, self, attacker );
+}
+
 static void func_door_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
@@ -1661,11 +1666,16 @@ void SP_func_door( gentity_t *self )
 	InitMover( self );
 
 	self->nextthink = level.time + FRAMETIME;
+	self->health = self->config.health;
 
 	if ( self->names[ 0 ] || self->config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
 		self->think = Think_MatchGroup;
+		if ( self->config.health )
+		{
+			self->die = Think_DoorDeath;
+		}
 	}
 	else
 	{
