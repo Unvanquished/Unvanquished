@@ -816,6 +816,97 @@ Global Bot Navigation
 =========================
 */
 
+static Cvar::Cvar<int> g_bot_upwardNavconMinHeight("g_bot_upwardNavconMinHeight", "minimal height difference for bots to use special upward movement.", Cvar::NONE, 100);
+static Cvar::Cvar<int> g_bot_upwardLeapAngleCorr("g_bot_upwardLeapAngleCorr", "is added to the angle for mantis and dragoon when leaping upward (in degrees).", Cvar::NONE, 20);
+
+void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
+{
+	const playerState_t& ps  = self->client->ps;
+	weaponMode_t wpm = WPM_NONE;
+	int magnitude = 0;
+	switch ( ps.stats [ STAT_CLASS ] )
+	{
+	case PCL_ALIEN_LEVEL1:
+		if ( ps.weaponCharge <= 50 ) // I don't remember why 50
+		{
+			wpm = WPM_SECONDARY;
+			magnitude = LEVEL1_POUNCE_MINPITCH;
+		}
+		break;
+	case PCL_ALIEN_LEVEL2:
+	case PCL_ALIEN_LEVEL2_UPG:
+		{
+			BotJump( self );
+			break;
+		}
+	case PCL_ALIEN_LEVEL3:
+		if ( ps.weaponCharge < LEVEL3_POUNCE_TIME )
+		{
+			wpm = WPM_SECONDARY;
+			magnitude = LEVEL3_POUNCE_JUMP_MAG;
+		}
+		break;
+	case PCL_ALIEN_LEVEL3_UPG:
+		if ( ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+		{
+			wpm = WPM_SECONDARY;
+			magnitude = LEVEL3_POUNCE_JUMP_MAG_UPG;
+		}
+		break;
+	default:
+		return;
+	}
+	if ( wpm != WPM_NONE )
+	{
+		usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
+		botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, nextCorner, magnitude ) - g_bot_upwardLeapAngleCorr.Get() );
+		BotFireWeapon( wpm, &botCmdBuffer );
+	}
+}
+
+static void BotTryMoveUpward( gentity_t *self )
+{
+	int selfClientNum = self->client->num();
+	bool overNavcon = G_IsBotOverNavcon( selfClientNum );
+	glm::vec3 ownPos = VEC2GLM( self->s.origin );
+	glm::vec3 nextCorner;
+	bool hasNextCorner = G_BotPathNextCorner( selfClientNum, nextCorner );
+
+	if ( overNavcon )
+	{
+		self->botMind->lastNavconTime = level.time;
+	}
+
+	if ( !hasNextCorner )
+	{
+		nextCorner = self->botMind->nav().glm_tpos();
+	}
+
+	// if not trying to move upward
+	if ( nextCorner.z - ownPos.z < g_bot_upwardNavconMinHeight.Get() )
+	{
+		return;
+	}
+
+	int diff = level.time - self->botMind->lastNavconTime;
+	if ( diff < 0 || diff > LEVEL3_POUNCE_TIME_UPG * 3 / 2 )
+	{
+		return;
+	}
+
+	switch ( self->client->ps.stats [ STAT_CLASS ] )
+	{
+	case PCL_ALIEN_LEVEL3:
+	case PCL_ALIEN_LEVEL3_UPG:
+		BotStandStill( self );
+		break;
+	default:
+		break;
+	}
+
+	BotMoveUpward( self, nextCorner );
+}
+
 // This function makes the bot move and aim at it's goal, trying
 // to move faster if the skill is high enough, depending on it's
 // class.
@@ -863,6 +954,7 @@ bool BotMoveToGoal( gentity_t *self )
 	// when available (still need to implement wall walking, but that will be more complex)
 	if ( G_Team( self ) != targetTeam )
 	{
+		BotTryMoveUpward( self );
 		return true;
 	}
 
