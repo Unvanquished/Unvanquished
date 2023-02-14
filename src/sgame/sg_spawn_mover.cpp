@@ -1189,6 +1189,11 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
 			trap_AdjustAreaPortalState( ent, true );
+
+		//HACK: this is really ugly, should have specialise code,
+		//but I'm both lazy, buzy to fix old mess, and annoyed by
+		//said years-old mess
+		ent->health = ent->config.health;
 	}
 	else if ( ent->moverState == ROTATOR_2TO1 )
 	{
@@ -1573,7 +1578,7 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 
 static void Think_MoverDeath( gentity_t *self, gentity_t*, gentity_t* attacker, int )
 {
-	if ( self->moverState == MOVER_POS1 )
+	if ( self->moverState == MOVER_POS1 || self->moverState == ROTATOR_POS1 )
 	{
 		BinaryMover_act( self, nullptr, attacker );
 	}
@@ -1800,11 +1805,16 @@ void SP_func_door_rotating( gentity_t *self )
 	InitRotator( self );
 
 	self->nextthink = level.time + FRAMETIME;
+	self->health = self->config.health;
 
 	if ( self->names[ 0 ] || self->config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
 		self->think = Think_MatchGroup;
+		if ( self->config.health )
+		{
+			self->die = Think_MoverDeath;
+		}
 	}
 	else
 	{
