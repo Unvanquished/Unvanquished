@@ -531,21 +531,21 @@ SetMoverState
 ===============
 */
 
-			// most elevators are *not* func_door, so that broken.
-			// Some (one on forlorn) is a func_door, with a "targetname",
-			// and I suspect this is what makes it different from doors.
-			// That distinction means that, doors with a targetname will
-			// break for bots.
-			// Also, for now, doors without targetname work because bots
-			// just walk to kiss (or worse!) them, until they open wide
-			// for them to enter.
-			// The correct solution here would be to generate navcons
-			// for all movers, with labels indicating the bot how to
-			// handle the situation correctly (including waiting patiently
-			// that elevator reached desired navmesh).
-			// Also, this code is currently seemlingly inverted.
+// most elevators are *not* func_door, so that broken.
+// Some (one on forlorn) is a func_door, with a "targetname",
+// and I suspect this is what makes it different from doors.
+// That distinction means that, doors with a targetname will
+// break for bots.
+// Also, for now, doors without targetname work because bots
+// just walk to kiss (or worse!) them, until they open wide
+// for them to enter.
+// The correct solution here would be to generate navcons
+// for all movers, with labels indicating the bot how to
+// handle the situation correctly (including waiting patiently
+// that elevator reached desired navmesh).
+// Also, this code is currently seemlingly inverted.
 bool IsDoor( const gentity_t *ent )
-			{
+{
 	const char * funcs[] =
 	{
 		"func_door",
@@ -598,20 +598,20 @@ bool IsAutomaticMover( const gentity_t *ent )
 // that is doors that are not automatic, or doors that are already opened.
 void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 {
+	if ( !IsDoor( ent ) || IsAutomaticMover( ent ) )
+	{
+		return;
+	}
+	glm::vec3 mins = VEC2GLM( ent->r.absmin );
+	glm::vec3 maxs = VEC2GLM( ent->r.absmax );
 	switch ( moverState )
 	{
 		case MOVER_POS1:
 		case MOVER_POS2:
 		case ROTATOR_POS1:
 		case ROTATOR_POS2:
-			if ( IsDoor( ent ) )
-			{
-				G_BotRemoveObstacle( ent->num() );
-				if ( !IsAutomaticMover( ent ) )
-				{
-					G_BotAddObstacle( VEC2GLM( ent->r.absmin ), VEC2GLM( ent->r.absmax ), ent->num() );
-				}
-			}
+			G_BotRemoveObstacle( ent->num() );
+			G_BotAddObstacle( mins, maxs, ent->num() );
 			break;
 
 		case MODEL_POS1: // TODO: have bots treat them as obstacles too, because they *are* obstacles.
