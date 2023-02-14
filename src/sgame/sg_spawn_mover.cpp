@@ -1698,6 +1698,7 @@ void SP_func_door( gentity_t *self )
 static void func_door_rotating_reset( gentity_t *self )
 {
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 0);
+	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 2);
 
 	reset_rotatorspeed( self, 120 );
 }
