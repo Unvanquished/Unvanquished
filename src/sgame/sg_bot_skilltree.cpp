@@ -24,6 +24,114 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_bot_util.h"
+#include "../shared/parse.h"
+
+static void G_UpdateSkillsets()
+{
+	for ( int i = 0; i < level.maxclients; i++ )
+	{
+		gentity_t *bot = &g_entities[ i ];
+		if ( bot->r.svFlags & SVF_BOT )
+		{
+			BotSetSkillLevel( bot, bot->botMind->botSkill.level );
+		}
+	}
+}
+
+static std::set<std::string> G_ParseSkillsetList( Str::StringRef skillsCsv )
+{
+	std::set<std::string> skills;
+
+	for (Parse_WordListSplitter i(skillsCsv); *i; ++i)
+	{
+		skills.insert( *i );
+	}
+
+	return skills;
+}
+
+static std::set<std::string>& G_GetDisabledSkillset()
+{
+	static std::set<std::string> disabledSkillset;
+	return disabledSkillset;
+}
+
+static void G_SetDisabledSkillset( Str::StringRef skillsCsv )
+{
+	G_GetDisabledSkillset() = G_ParseSkillsetList( skillsCsv );
+	G_UpdateSkillsets();
+}
+
+static bool G_SkillDisabled( Str::StringRef behavior )
+{
+	return G_GetDisabledSkillset().find( behavior ) != G_GetDisabledSkillset().end();
+}
+
+static std::set<std::string>& G_GetPreferredSkillset()
+{
+	static std::set<std::string> preferredSkillset;
+	return preferredSkillset;
+}
+
+static void G_SetPreferredSkillset( Str::StringRef skillsCsv )
+{
+	G_GetPreferredSkillset() = G_ParseSkillsetList( skillsCsv );
+	G_UpdateSkillsets();
+}
+
+static bool G_SkillPreferred( Str::StringRef behavior )
+{
+	return G_GetPreferredSkillset().find( behavior ) != G_GetPreferredSkillset().end();
+}
+
+// aliens have 61 points to spend max
+static int skillsetBudgetAliens = 61;
+// humans have 40 points to spend max
+static int skillsetBudgetHumans = 40;
+
+static void G_SetSkillsetBudgetHumans( int val )
+{
+	skillsetBudgetHumans = val;
+	G_UpdateSkillsets();
+}
+
+static void G_SetSkillsetBudgetAliens( int val )
+{
+	skillsetBudgetAliens = val;
+	G_UpdateSkillsets();
+}
+
+void G_InitSkilltreeCvars()
+{
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledSkillset(
+		"g_disabledSkillset",
+		"Disabled skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+		Cvar::NONE,
+		"",
+		G_SetDisabledSkillset
+		);
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_preferredSkillset(
+		"g_preferredSkillset",
+		"Preferred skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+		Cvar::NONE,
+		"",
+		G_SetPreferredSkillset
+		);
+	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetAliens(
+		"g_skillsetBudgetAliens",
+		"the skillset budget for aliens.",
+		Cvar::NONE,
+		skillsetBudgetAliens,
+		G_SetSkillsetBudgetAliens
+		);
+	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetHumans(
+		"g_skillsetBudgetHumans",
+		"the skillset budget for humans.",
+		Cvar::NONE,
+		skillsetBudgetHumans,
+		G_SetSkillsetBudgetHumans
+		);
+}
 
 struct botSkillTreeElement_t {
 	Str::StringRef name;
@@ -162,9 +270,8 @@ static Util::optional<botSkillTreeElement_t> ChooseOneSkill(const gentity_t *bot
 std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 {
 	std::vector<botSkillTreeElement_t> possible_choices = initial_unlockable_skills;
-	// aliens have 61 points to spend max
-	// humans have 40 points to spend max
-	float max = G_Team(bot) == TEAM_ALIENS ? 61.0f : 40.0f;
+
+	float max = G_Team(bot) == TEAM_ALIENS ? static_cast<float>( skillsetBudgetAliens ) : static_cast<float>( skillsetBudgetHumans );
 
 	// unlock every skill at skill 7
 	int skill_points = static_cast<float>(skill) / 7.0f * max;
@@ -186,12 +293,23 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 			// no skill left to unlock
 			break;
 		}
-		skill_points -= new_skill->cost;
 
-		if ( skill_points < 0 )
+		if ( G_SkillDisabled( new_skill->name ) )
+		{
+			continue;
+		}
+
+		bool preferred = G_SkillPreferred( new_skill->name );
+
+		if ( !preferred )
+		{
+			skill_points -= new_skill->cost;
+		}
+
+		if ( skill_points < 0 && !preferred )
 		{
 			// we don't have money to spend anymore, we are done
-			break;
+			continue;
 		}
 
 		skillSet[new_skill->skill] = true;

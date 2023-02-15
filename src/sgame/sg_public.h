@@ -349,4 +349,7 @@ namespace CombatFeedback
   void HitNotify(gentity_t *attacker, gentity_t *victim, Util::optional<glm::vec3> point, float damage, meansOfDeath_t mod, bool lethal);
 }
 
+// sg_bot_skilltree.cpp
+void G_InitSkilltreeCvars();
+
 #endif // SG_PUBLIC_H_
