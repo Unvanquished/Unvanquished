@@ -1608,7 +1608,6 @@ void SP_func_door( gentity_t *self )
 
 	self->blocked = func_door_block;
 	self->reset = func_door_reset;
-	self->use = func_door_use;
 
 	// default wait of 2 seconds
 	if ( !self->config.wait.time )
@@ -1703,7 +1702,6 @@ void SP_func_door_rotating( gentity_t *self )
 
 	self->blocked = func_door_block;
 	self->reset = func_door_rotating_reset;
-	self->use = func_door_use;
 
 	// if speed is negative, positize it and add reverse flag
 	if ( self->config.speed < 0 )
@@ -1834,7 +1832,6 @@ void SP_func_door_model( gentity_t *self )
 	}
 
 	self->reset = func_door_model_reset;
-	self->use = func_door_use;
 
 	//default wait of 2 seconds
 	if ( self->config.wait.time <= 0 )
@@ -2173,8 +2170,6 @@ void SP_func_button( gentity_t *self )
 		// touchable button
 		self->touch = Touch_Button;
 	}
-
-	self->use = func_button_use;
 
 	InitMover( self );
 }
