@@ -45,6 +45,7 @@ static Cvar::Range<Cvar::Cvar<int>> g_bot_ignoreSmallObstacles(
 		"0 is disabled. Should only be enabled on maps with known problem."
 		"Maximum is 18, which is bots' stepsize.", Cvar::NONE, 0, 0, 18 );
 
+constexpr int ACTIVATE = 0x80; // spawnflags with this bit can be triggered by `+activate`
 /*
 ===============================================================================
 
@@ -1638,7 +1639,6 @@ void SP_func_door( gentity_t *self )
 
 	self->blocked = func_door_block;
 	self->reset = func_door_reset;
-	self->use = func_door_use;
 
 	// default wait of 2 seconds
 	if ( !self->config.wait.time )
@@ -1707,6 +1707,13 @@ void SP_func_door( gentity_t *self )
 	{
 		self->think = Think_SpawnNewDoorTrigger;
 	}
+
+	if ( self->spawnflags & ACTIVATE )
+	{
+		self->use = func_door_use;
+		self->touch = nullptr;
+		self->think = nullptr;
+	}
 }
 
 static void func_door_rotating_reset( gentity_t *self )
@@ -1738,7 +1745,6 @@ void SP_func_door_rotating( gentity_t *self )
 
 	self->blocked = func_door_block;
 	self->reset = func_door_rotating_reset;
-	self->use = func_door_use;
 
 	// if speed is negative, positize it and add reverse flag
 	if ( self->config.speed < 0 )
@@ -1835,6 +1841,13 @@ void SP_func_door_rotating( gentity_t *self )
 	{
 		self->think = Think_SpawnNewDoorTrigger;
 	}
+
+	if ( self->spawnflags & ACTIVATE )
+	{
+		self->use = func_door_use;
+		self->touch = nullptr;
+		self->think = nullptr;
+	}
 }
 
 static void func_door_model_reset( gentity_t *self )
@@ -1872,7 +1885,6 @@ void SP_func_door_model( gentity_t *self )
 	}
 
 	self->reset = func_door_model_reset;
-	self->use = func_door_use;
 
 	//default wait of 2 seconds
 	if ( self->config.wait.time <= 0 )
@@ -1959,6 +1971,13 @@ void SP_func_door_model( gentity_t *self )
 	{
 		self->nextthink = level.time + FRAMETIME;
 		self->think = Think_SpawnNewDoorTrigger;
+	}
+
+	if ( self->spawnflags & ACTIVATE )
+	{
+		self->use = func_door_use;
+		self->touch = nullptr;
+		self->think = nullptr;
 	}
 }
 
@@ -2204,17 +2223,20 @@ void SP_func_button( gentity_t *self )
 	distance = abs_movedir[ 0 ] * size[ 0 ] + abs_movedir[ 1 ] * size[ 1 ] + abs_movedir[ 2 ] * size[ 2 ] - lip;
 	VectorMA( self->restingPosition, distance, self->movedir, self->activatedPosition );
 
-	if ( !self->config.health ) //FIXME wont work yet with class fallbacks
+	// touchable button by default
+	self->touch = Touch_Button;
+
+	if ( self->spawnflags & ACTIVATE ) //keep the same value as for doors
 	{
-		// touchable button
-		self->touch = Touch_Button;
-	}
-	else
-	{
-		self->die = Think_MoverDeath;
+		self->use = func_button_use;
+		self->touch = nullptr;
 	}
 
-	self->use = func_button_use;
+	if ( self->config.health ) //FIXME wont work yet with class fallbacks
+	{
+		self->die = Think_MoverDeath;
+		self->touch = nullptr;
+	}
 
 	InitMover( self );
 }
