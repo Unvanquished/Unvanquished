@@ -38,7 +38,7 @@ static void G_UpdateSkillsets()
 	}
 }
 
-static std::set<std::string> G_ParseSkillsetList( const std::string &skillsCsv )
+static std::set<std::string> G_ParseSkillsetList( Str::StringRef skillsCsv )
 {
 	std::set<std::string> skills;
 
