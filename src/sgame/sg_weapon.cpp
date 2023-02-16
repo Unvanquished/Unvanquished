@@ -143,7 +143,7 @@ static bool CanUseAmmoRefill( gentity_t *self )
 		// clipless weapons can be refilled whenever they lack ammo
 		return ( ps->ammo != wa->maxAmmo );
 	}
-	else if ( ps->clips != wa->maxClips )
+	else if ( ps->clips != wa->maxClips || ps->ammo != wa->maxAmmo )
 	{
 		// clip weapons have to miss a clip to be refillable
 		return true;
@@ -170,6 +170,7 @@ bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
 	if ( BG_Weapon( self->client->ps.stats[ STAT_WEAPON ] )->maxClips > 0 )
 	{
 		GiveMaxClips( self );
+		GiveFullClip( self );
 
 		if ( triggerEvent )
 		{
