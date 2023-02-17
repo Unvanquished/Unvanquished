@@ -251,7 +251,8 @@ void G_LeaveTeam( gentity_t *self )
 			// reset damage dealt to the other clients
 			ent->credits[ self->client->ps.clientNum ] = { 0.0f, 0, TEAM_NONE };
 		}
-		else if ( ent->s.eType == entityType_t::ET_MISSILE && ent->r.ownerNum == self->s.number )
+		else if ( ( ent->s.eType == entityType_t::ET_MISSILE || ent->s.eType == entityType_t::ET_FIRE )
+		          && ent->r.ownerNum == self->s.number )
 		{
 			G_FreeEntity( ent );
 		}
