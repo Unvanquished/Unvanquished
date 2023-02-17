@@ -424,9 +424,9 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( attacker && attacker->client )
 	{
-		if ( ( attacker == self || G_OnSameTeam( self, attacker ) ) )
+		if ( attacker != self && G_OnSameTeam( self, attacker ) )
 		{
-			//punish team kills and suicides
+			//punish team kills, don't punish suicides
 			if ( attacker->client->pers.team == TEAM_ALIENS )
 			{
 				G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, true );
