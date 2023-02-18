@@ -181,16 +181,11 @@ public:
 
 	int spawnTime;
 
-	void setArgVector( glm::vec3 &val ) { argVector = val; hasArgVectorPrivate = true; }
-	bool hasArgVector( ) { return hasArgVectorPrivate; }
-	glm::vec3 getArgVector( ) { return argVector; }
+	Util::optional< glm::vec3 > argVector;
 private:
 	//avoid relying on buttons to remember what AI was doing
 	bool wantSprinting = false;
 	bool exhausted = false;
-
-    bool hasArgVectorPrivate = false;
-	glm::vec3 argVector;
 };
 
 navMeshStatus_t G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
