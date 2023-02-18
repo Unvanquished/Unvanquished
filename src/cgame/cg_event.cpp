@@ -215,22 +215,22 @@ static void CG_Obituary( entityState_t *ent )
 				{
 					Log::Notice( "%s %s (+ %s%s%s^*) killed %s%s",
 					             teamTag[ attackerTeam ], meansOfDeath[ mod ].icon, 
-								 teamTag[ assistantTeam ], assistantName, 
-								 ( assistantTeam == ci->team ? " ^a!!" : "" ),
-								 teamTag[ ci->team ], targetName );
+					             teamTag[ assistantTeam ], assistantName, 
+					             ( assistantTeam == ci->team ? " ^a!!" : "" ),
+					             teamTag[ ci->team ], targetName );
 				}
 				else
 				{
 					Log::Notice( "%s %s %s%s", 
 					             teamTag[ attackerTeam ], meansOfDeath[ mod ].icon, 
-								 teamTag[ ci->team ], targetName );
+					             teamTag[ ci->team ], targetName );
 				}
 			}
 			else if ( !cgs.clientinfo[ attacker ].infoValid || attacker == target )
 			{
 				Log::Notice( "%s %s%s", 
 				             meansOfDeath[ mod ].icon, 
-							 teamTag[ ci->team ], targetName );
+				             teamTag[ ci->team ], targetName );
 			}
 			else
 			{
@@ -238,19 +238,19 @@ static void CG_Obituary( entityState_t *ent )
 				{
 					Log::Notice( "%s%s%s^* (+ %s%s%s^*) %s %s%s", 
 					             teamTag[ attackerTeam ], attackerName, 
-								 ( attackerTeam == ci->team ? " ^1!!!^*" : "" ),
-								 teamTag[ assistantTeam ], assistantName, 
-								 ( assistantTeam == ci->team ? " ^a!!" : "" ),
-								 meansOfDeath[ mod ].icon, 
-								 teamTag[ ci->team ], targetName );
+					             ( attackerTeam == ci->team ? " ^1!!!^*" : "" ),
+					             teamTag[ assistantTeam ], assistantName, 
+					             ( assistantTeam == ci->team ? " ^a!!" : "" ),
+					             meansOfDeath[ mod ].icon, 
+					             teamTag[ ci->team ], targetName );
 				}
 				else
 				{
 					Log::Notice( "%s%s%s^* %s %s%s", 
 					             teamTag[ attackerTeam ], attackerName, 
-								 ( attackerTeam == ci->team ? " ^1!!!^*" : "" ),
-								 meansOfDeath[ mod ].icon, 
-								 teamTag[ ci->team ], targetName );
+					             ( attackerTeam == ci->team ? " ^1!!!^*" : "" ),
+					             meansOfDeath[ mod ].icon, 
+					             teamTag[ ci->team ], targetName );
 				}
 
 				// nice big message for teamkills
@@ -363,7 +363,10 @@ static void CG_Obituary( entityState_t *ent )
 		{
 			if ( messageAssisted && assistantInfo )
 			{
-				Log::Notice( messageAssisted, teamTag[ ci->team ], targetName , teamTag[ assistantTeam ], assistantName);
+				Log::Notice( messageAssisted, 
+				             teamTag[ ci->team ], targetName, 
+				             ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
+				             teamTag[ assistantTeam ], assistantName);
 			}
 			else
 			{
@@ -552,20 +555,20 @@ static void CG_Obituary( entityState_t *ent )
 				{
 					Log::Notice( messageAssisted, 
 					             teamTag[ ci->team ], targetName, 
-								 ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-								 teamTag[ attackerTeam ], attackerName, 
-								 BG_ClassModelConfig( attackerClass )->humanName, 
-								 ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
-								 teamTag[ assistantTeam ], assistantName );
+					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+					             teamTag[ attackerTeam ], attackerName, 
+					             BG_ClassModelConfig( attackerClass )->humanName, 
+					             ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
+					             teamTag[ assistantTeam ], assistantName );
 				}
 				else
 				{
 					Log::Notice( messageAssisted, 
 					             teamTag[ ci->team ], targetName, 
-								 ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-								 teamTag[ attackerTeam ], attackerName, 
-								 ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
-								 teamTag[ assistantTeam ], assistantName );
+					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+					             teamTag[ attackerTeam ], attackerName, 
+					             ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
+					             teamTag[ assistantTeam ], assistantName );
 				}
 			}
 			else
@@ -574,16 +577,16 @@ static void CG_Obituary( entityState_t *ent )
 				{
 					Log::Notice( message, 
 					             teamTag[ ci->team ], targetName, 
-								 ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-								 teamTag[ attackerTeam ], attackerName, 
-								 BG_ClassModelConfig( attackerClass )->humanName );
+					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+					             teamTag[ attackerTeam ], attackerName, 
+					             BG_ClassModelConfig( attackerClass )->humanName );
 				}
 				else
 				{
 					Log::Notice( message, 
 					             teamTag[ ci->team ], targetName, 
-								 ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-								 teamTag[ attackerTeam ], attackerName );
+					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+					             teamTag[ attackerTeam ], attackerName );
 				}
 			}
 
