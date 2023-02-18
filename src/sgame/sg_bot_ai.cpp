@@ -1080,7 +1080,8 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionStayHere( gentity_t *self, AIGenericNode_t *node )
 {
-	glm::vec3 point;
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	float radius = AIUnBoxFloat( a->params[ 0 ] );
 
 	if ( ! self->botMind->hasArgVector() )
 	{
@@ -1089,7 +1090,9 @@ AINodeStatus_t BotActionStayHere( gentity_t *self, AIGenericNode_t *node )
 
 	if ( node != self->botMind->currentNode )
 	{
-		if ( !BotFindRandomPointInRadius( self->s.number, self->botMind->getArgVector(), point, 500 ) )
+		glm::vec3 point;
+
+		if ( !BotFindRandomPointInRadius( self->s.number, self->botMind->getArgVector(), point, radius ) )
 		{
 			return STATUS_FAILURE;
 		}
