@@ -426,7 +426,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 	{
 		if ( G_OnSameTeam( self, attacker ) )
 		{
-			// punish team kills
+			// punish team kills and suicides
 			if ( attacker->client->pers.team == TEAM_ALIENS )
 			{
 				// don't punish suicides with reduced funds
