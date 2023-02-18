@@ -45,7 +45,7 @@ static const struct {
 	team_t   team;
 } meansOfDeath[] = {
 	// Icon            Envkill Assist? (Team)
-	{ "☠",             false, false, TEAM_HUMANS },
+	{ "☠",             false, false, TEAM_HUMANS }, // unknown
 	{ "[shotgun]",     false, true,  TEAM_HUMANS },
 	{ "[blaster]",     false, true,  TEAM_HUMANS },
 	{ "[painsaw]",     false, true,  TEAM_HUMANS },
@@ -58,15 +58,16 @@ static const struct {
 	{ "[lcannon]",     false, true,  TEAM_HUMANS }, // splash
 	{ "[flamer]",      false, true,  TEAM_HUMANS },
 	{ "[flamer]",      false, true,  TEAM_HUMANS }, // splash
-	{ "[flamer]",      false, true,  TEAM_HUMANS }, // burn
+	{ "[fire]",        false, true,  TEAM_HUMANS }, // burn
 	{ "[grenade]",     false, true,  TEAM_HUMANS },
 	{ "[firebomb]",    false, true,  TEAM_HUMANS },
-	{ "crushed",       true,  false, TEAM_NONE   }, // weight (H) // FIXME
+	{ "crushed",       false, true,  TEAM_HUMANS }, // weight (H) // FIXME
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // water
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // slime
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // lava
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // crush
 	{ "[telenode]",    false, false, TEAM_NONE   }, // telefrag
+	{ "[cross]",       false, false, TEAM_NONE   }, // Admin Authority™ (/slap command)
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // falling
 	{ "☠",             false, false, TEAM_NONE   }, // suicide
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // target laser - shouldn't happen
@@ -79,24 +80,24 @@ static const struct {
 	{ "[dragoon]",     false, true,  TEAM_ALIENS }, // pounce
 	{ "[advdragoon]",  false, true,  TEAM_ALIENS },
 	{ "[marauder]",    false, true,  TEAM_ALIENS },
-	{ "[advmarauder]", false, true,  TEAM_ALIENS },
+	{ "[advmarauder]", false, true,  TEAM_ALIENS }, // zap
 	{ "[tyrant]",      false, true,  TEAM_ALIENS },
 	{ "[tyrant]",      false, true,  TEAM_ALIENS }, // trample
 	{ "crushed",       false, true,  TEAM_ALIENS }, // weight (A) // FIXME
 
-	{ "[granger]",     false, true,  TEAM_ALIENS }, // granger spit (slowblob)
+	{ "[advgranger]",  false, true,  TEAM_ALIENS }, // granger spit (slowblob)
 	{ "[booster]",     false, true,  TEAM_ALIENS }, // poison
 	{ "[hive]",        true,  true,  TEAM_ALIENS },
 
 	{ LONGFORM,        true,  false, TEAM_HUMANS }, // H spawn
-	{ "[rocketpod]",   true,  true,  TEAM_HUMANS },
+	{ "^dR[turret]",   true,  true,  TEAM_HUMANS }, // rocket pod FIXME: we need a rocket pod emoticon
 	{ "[turret]",      true,  true,  TEAM_HUMANS },
 	{ "[reactor]",     true,  true,  TEAM_HUMANS },
 
 	{ LONGFORM,        true,  false, TEAM_ALIENS }, // A spawn
 	{ "[acidtube]",    true,  true,  TEAM_ALIENS },
-	{ "[overmind]",    true,  true,  TEAM_ALIENS },
-	{ "",              true,  false, TEAM_NONE },
+	{ "[hovel]",       true,  true,  TEAM_ALIENS }, // spiker. FIXME: we need a hovel emoticon
+	{ "[overmind]",    true,  false, TEAM_ALIENS },
 	{ "",              true,  false, TEAM_NONE },
 	{ "",              true,  false, TEAM_NONE },
 };
@@ -212,19 +213,16 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				if ( meansOfDeath[ mod ].showAssist && assistantInfo )
 				{
-					Log::Notice( "%s (+ %s%s%s^*) %s %s%s", 
-					             teamTag[ attackerTeam ], 
-								 teamTag[ assistantTeam ], 
-								 assistantName, 
+					Log::Notice( "%s %s (+ %s%s%s^*) killed %s%s",
+					             teamTag[ attackerTeam ], meansOfDeath[ mod ].icon, 
+								 teamTag[ assistantTeam ], assistantName, 
 								 ( assistantTeam == ci->team ? " ^a!!" : "" ),
-								 meansOfDeath[ mod ].icon, 
 								 teamTag[ ci->team ], targetName );
 				}
 				else
 				{
 					Log::Notice( "%s %s %s%s", 
-					             teamTag[ attackerTeam ], 
-								 meansOfDeath[ mod ].icon, 
+					             teamTag[ attackerTeam ], meansOfDeath[ mod ].icon, 
 								 teamTag[ ci->team ], targetName );
 				}
 			}
