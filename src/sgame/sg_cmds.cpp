@@ -3770,6 +3770,9 @@ static void Cmd_Tactic_f( gentity_t * ent )
 		}
 		// now we know: it is a bot on the commanding player's team
 		G_BotChangeBehavior( id, behavior );
+		// use the commanding player's position as the bot's arg vector
+		glm::vec3 position = VEC2GLM( ent->s.origin );
+		g_entities[ id ].botMind->setArgVector( position );
 		level.team[ userTeam ].lastTacticId = id;
 		changedBots++;
 	} while ( ( changedBots < numBots && id != stopId ) );
