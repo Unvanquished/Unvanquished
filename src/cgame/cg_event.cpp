@@ -78,7 +78,7 @@ static const struct {
 	{ "[basilisk]",    false, true,  TEAM_ALIENS },
 	{ "[dragoon]",     false, true,  TEAM_ALIENS },
 	{ "[dragoon]",     false, true,  TEAM_ALIENS }, // pounce
-	{ "[advdragoon]",  false, true,  TEAM_ALIENS },
+	{ "[advdragoon]",  false, true,  TEAM_ALIENS }, // barbs
 	{ "[marauder]",    false, true,  TEAM_ALIENS },
 	{ "[advmarauder]", false, true,  TEAM_ALIENS }, // zap
 	{ "[tyrant]",      false, true,  TEAM_ALIENS },
@@ -89,17 +89,17 @@ static const struct {
 	{ "[booster]",     false, true,  TEAM_ALIENS }, // poison
 	{ "[hive]",        true,  true,  TEAM_ALIENS },
 
-	{ LONGFORM,        true,  false, TEAM_HUMANS }, // H spawn
-	{ "^dR[turret]",   true,  true,  TEAM_HUMANS }, // rocket pod FIXME: we need a rocket pod emoticon
+	{ LONGFORM,        true,  false, TEAM_HUMANS }, // H spawn (human building explosion)
+	{ "^dR[turret]",   true,  true,  TEAM_HUMANS }, // rocket pod. FIXME: we need a rocket pod emoticon
 	{ "[turret]",      true,  true,  TEAM_HUMANS },
 	{ "[reactor]",     true,  true,  TEAM_HUMANS },
 
-	{ LONGFORM,        true,  false, TEAM_ALIENS }, // A spawn
+	{ LONGFORM,        true,  false, TEAM_ALIENS }, // A spawn (alien building explosion)
 	{ "[acidtube]",    true,  true,  TEAM_ALIENS },
-	{ "[hovel]",       true,  true,  TEAM_ALIENS }, // spiker. FIXME: we need a hovel emoticon
+	{ "[hovel]",       true,  true,  TEAM_ALIENS }, // spiker. FIXME: we need a spiker emoticon
 	{ "[overmind]",    true,  false, TEAM_ALIENS },
-	{ "",              true,  false, TEAM_NONE },
-	{ "",              true,  false, TEAM_NONE },
+	{ "",              true,  false, TEAM_NONE },   // (MOD_DECONSTRUCT)
+	{ "",              true,  false, TEAM_NONE },   // (MOD_REPLACE)
 };
 
 static void CG_Obituary( entityState_t *ent )
