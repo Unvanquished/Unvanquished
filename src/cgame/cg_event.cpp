@@ -212,26 +212,47 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				if ( meansOfDeath[ mod ].showAssist && assistantInfo )
 				{
-					Log::Notice( "%s (+ %s%s^*) %s %s%s", teamTag[ attackerTeam ], teamTag[ assistantTeam ], assistantName, meansOfDeath[ mod ].icon, teamTag[ ci->team ], targetName );
+					Log::Notice( "%s (+ %s%s%s^*) %s %s%s", 
+					             teamTag[ attackerTeam ], 
+								 teamTag[ assistantTeam ], 
+								 assistantName, 
+								 ( assistantTeam == ci->team ? " ^a!!" : "" ),
+								 meansOfDeath[ mod ].icon, 
+								 teamTag[ ci->team ], targetName );
 				}
 				else
 				{
-					Log::Notice( "%s %s %s%s", teamTag[ attackerTeam ], meansOfDeath[ mod ].icon, teamTag[ ci->team ], targetName );
+					Log::Notice( "%s %s %s%s", 
+					             teamTag[ attackerTeam ], 
+								 meansOfDeath[ mod ].icon, 
+								 teamTag[ ci->team ], targetName );
 				}
 			}
 			else if ( attacker == target )
 			{
-				Log::Notice( "%s %s%s", meansOfDeath[ mod ].icon, teamTag[ ci->team ], targetName );
+				Log::Notice( "%s %s%s", 
+				             meansOfDeath[ mod ].icon, 
+							 teamTag[ ci->team ], targetName );
 			}
 			else
 			{
 				if ( meansOfDeath[ mod ].showAssist && assistantInfo )
 				{
-					Log::Notice( "%s%s^* (+ %s%s^*) %s %s%s", teamTag[ attackerTeam ], attackerName, teamTag[ assistantTeam ], assistantName, meansOfDeath[ mod ].icon, teamTag[ ci->team ], targetName );
+					Log::Notice( "%s%s%s^* (+ %s%s%s^*) %s %s%s", 
+					             teamTag[ attackerTeam ], attackerName, 
+								 ( attackerTeam == ci->team ? " ^1!!!^*" : "" ),
+								 teamTag[ assistantTeam ], assistantName, 
+								 ( assistantTeam == ci->team ? " ^a!!" : "" ),
+								 meansOfDeath[ mod ].icon, 
+								 teamTag[ ci->team ], targetName );
 				}
 				else
 				{
-					Log::Notice( "%s%s^* %s %s%s", teamTag[ attackerTeam ], attackerName, meansOfDeath[ mod ].icon, teamTag[ ci->team ], targetName );
+					Log::Notice( "%s%s%s^* %s %s%s", 
+					             teamTag[ attackerTeam ], attackerName, 
+								 ( attackerTeam == ci->team ? " ^1!!!^*" : "" ),
+								 meansOfDeath[ mod ].icon, 
+								 teamTag[ ci->team ], targetName );
 				}
 
 				// nice big message for teamkills
@@ -290,49 +311,49 @@ static void CG_Obituary( entityState_t *ent )
 
 			case MOD_MGTURRET:
 				message = G_( "%s%s ^*was gunned down by a turret" );
-				messageAssisted = G_( "%s%s ^*was gunned down by a turret; %s%s^* assisted" );
+				messageAssisted = G_( "%s%s ^*was gunned down by a turret; %s%s%s^* assisted" );
 				break;
 
 			case MOD_ROCKETPOD:
 				message = G_( "%s%s ^*caught a rocket" );
-				messageAssisted = G_( "%s%s ^*caught a rocket; %s%s^* assisted" );
+				messageAssisted = G_( "%s%s ^*caught a rocket; %s%s%s^* assisted" );
 				break;
 
 			case MOD_ATUBE:
 				message = G_( "%s%s ^*was melted by an acid tube" );
-				messageAssisted = G_( "%s%s ^*was melted by an acid tube; %s%s^* assisted" );
+				messageAssisted = G_( "%s%s ^*was melted by an acid tube; %s%s%s^* assisted" );
 				break;
 
 			case MOD_SPIKER:
 				message = G_( "%s%s ^*was flechetted by a spiker" );
-				messageAssisted = G_( "%s%s ^*was flechetted by a spiker; %s%s^* assisted" );
+				messageAssisted = G_( "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted" );
 				break;
 
 			case MOD_OVERMIND:
 				message = G_( "%s%s ^*was whipped by the overmind" );
-				messageAssisted = G_( "%s%s ^*was whipped by the overmind; %s%s^* assisted" );
+				messageAssisted = G_( "%s%s ^*was whipped by the overmind; %s%s%s^* assisted" );
 				break;
 
 			case MOD_REACTOR:
 				message = G_( "%s%s ^*was fried by the reactor" );
-				messageAssisted = G_( "%s%s ^*was fried by the reactor; %s%s^* assisted" );
+				messageAssisted = G_( "%s%s ^*was fried by the reactor; %s%s%s^* assisted" );
 				break;
 
 			case MOD_SLOWBLOB:
 				message = G_( "%s%s ^*couldn't avoid the granger" );
-				messageAssisted = G_( "%s%s ^*couldn't avoid the granger; %s%s^* assisted" );
+				messageAssisted = G_( "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted" );
 				break;
 
 			case MOD_SWARM:
 				message = G_( "%s%s ^*was consumed by the swarm" );
-				messageAssisted = G_( "%s%s ^*was consumed by the swarm; %s%s^* assisted" );
+				messageAssisted = G_( "%s%s ^*was consumed by the swarm; %s%s%s^* assisted" );
 				break;
 
 			// Shouldn't happen
 
 			case MOD_TARGET_LASER:
 				message = G_( "%s%s ^*saw the light" );
-				messageAssisted = G_( "%s%s ^*saw the light; %s%s^* assisted" );
+				messageAssisted = G_( "%s%s ^*saw the light; %s%s%s^* assisted" );
 				break;
 
 			default:
@@ -358,163 +379,163 @@ static void CG_Obituary( entityState_t *ent )
 		switch ( mod )
 		{
 			case MOD_PAINSAW:
-				message = G_( "%s%s ^*was sawn by %s%s" );
-				messageAssisted = G_( "%s%s ^*was sawn by %s%s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was sawn by %s%s%s" );
+				messageAssisted = G_( "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted" );
 				break;
 
 			case MOD_BLASTER:
-				message = G_( "%s%s ^*was blasted by %s%s" );
-				messageAssisted = G_( "%s%s ^*was blasted by %s%s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was blasted by %s%s%s" );
+				messageAssisted = G_( "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted" );
 				break;
 
 			case MOD_MACHINEGUN:
-				message = G_( "%s%s ^*was machinegunned by %s%s" );
-				messageAssisted = G_( "%s%s ^*was machinegunned by %s%s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was machinegunned by %s%s%s" );
+				messageAssisted = G_( "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted" );
 				break;
 
 			case MOD_CHAINGUN:
-				message = G_( "%s%s ^*was mowed down by %s%s" );
-				messageAssisted = G_( "%s%s ^*was mowed down by %s%s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was mowed down by %s%s%s" );
+				messageAssisted = G_( "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted" );
 				break;
 
 			case MOD_SHOTGUN:
-				message = G_( "%s%s ^*was gunned down by %s%s" );
-				messageAssisted = G_( "%s%s ^*was gunned down by %s%s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was gunned down by %s%s%s" );
+				messageAssisted = G_( "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted" );
 				break;
 
 			case MOD_PRIFLE:
-				message = G_( "%s%s ^*was seared by %s%s^*'s pulse blast" );
-				messageAssisted = G_( "%s%s ^*was seared by %s%s^*'s pulse blast; %s%s^* assisted" );
+				message = G_( "%s%s ^*was seared by %s%s%s^*'s pulse blast" );
+				messageAssisted = G_( "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted" );
 				break;
 
 			case MOD_MDRIVER:
-				message = G_( "%s%s ^*was sniped by %s%s" );
-				messageAssisted = G_( "%s%s ^*was sniped by %s%s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was sniped by %s%s%s" );
+				messageAssisted = G_( "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LASGUN:
-				message = G_( "%s%s ^*was lasered by %s%s" );
-				messageAssisted = G_( "%s%s ^*was lasered by %s%s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was lasered by %s%s%s" );
+				messageAssisted = G_( "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted" );
 				break;
 
 			case MOD_FLAMER:
 			case MOD_FLAMER_SPLASH:
-				message = G_( "%s%s ^*was grilled by %s%s^*'s flame" );
-				messageAssisted = G_( "%s%s ^*was grilled by %s%s^*'s flame; %s%s^* assisted" );
+				message = G_( "%s%s ^*was grilled by %s%s%s^*'s flame" );
+				messageAssisted = G_( "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted" );
 				messageSuicide = G_( "%s%s ^*was charred to a crisp" );
 				break;
 
 			case MOD_BURN:
-				message = G_( "%s%s ^*was burned by %s%s^*'s fire" );
-				messageAssisted = G_( "%s%s ^*was burned by %s%s^*'s fire; %s%s^* assisted" );
+				message = G_( "%s%s ^*was burned by %s%s%s^*'s fire" );
+				messageAssisted = G_( "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted" );
 				messageSuicide = G_( "%s%s ^*was burned to death" );
 				break;
 
 			case MOD_LCANNON:
-				message = G_( "%s%s ^*was annihilated by %s%s^*'s plasma blast" );
-				messageAssisted = G_( "%s%s ^*was annihilated by %s%s^*'s plasma blast; %s%s^* assisted" );
+				message = G_( "%s%s ^*was annihilated by %s%s%s^*'s plasma blast" );
+				messageAssisted = G_( "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LCANNON_SPLASH:
-				message = G_( "%s%s ^*was irradiated by %s%s^*'s plasma blast" );
-				messageAssisted = G_( "%s%s ^*was irradiated by %s%s^*'s plasma blast; %s%s^* assisted" );
+				message = G_( "%s%s ^*was irradiated by %s%s%s^*'s plasma blast" );
+				messageAssisted = G_( "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted" );
 				messageSuicide = G_( "%s%s ^*was irradiated" );
 				break;
 
 			case MOD_GRENADE:
-				message = G_( "%s%s ^*was blown up by %s%s^*'s grenade" );
-				messageAssisted = G_( "%s%s ^*was blown up by %s%s^*'s grenade; %s%s^* assisted" );
+				message = G_( "%s%s ^*was blown up by %s%s%s^*'s grenade" );
+				messageAssisted = G_( "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted" );
 				messageSuicide = G_( "%s%s ^*was blown up" );
 				break;
 
 			case MOD_FIREBOMB:
-				message = G_( "%s%s ^*was incinerated by %s%s^*'s firebomb" );
-				messageAssisted = G_( "%s%s ^*was incinerated by %s%s^*'s firebomb; %s%s^* assisted" );
+				message = G_( "%s%s ^*was incinerated by %s%s%s^*'s firebomb" );
+				messageAssisted = G_( "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted" );
 				messageSuicide = G_( "%s%s ^*was incinerated" );
 				break;
 
 			case MOD_ABUILDER_CLAW:
-				message = G_( "%s%s ^*was gently nibbled by %s%s^*'s granger" );
-				messageAssisted = G_( "%s%s ^*was gently nibbled by %s%s^*'s granger; %s%s^* assisted" );
+				message = G_( "%s%s ^*was gently nibbled by %s%s%s^*'s granger" );
+				messageAssisted = G_( "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL0_BITE:
-				message = G_( "%s%s ^*was bitten by %s%s" );
-				messageAssisted = G_( "%s%s ^*was bitten by %s%s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was bitten by %s%s%s" );
+				messageAssisted = G_( "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL1_CLAW:
-				message = G_( "%s%s ^*was sliced by %s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was sliced by %s%s^*'s %s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was sliced by %s%s%s^*'s %s" );
+				messageAssisted = G_( "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL1;
 				break;
 
 			case MOD_LEVEL2_CLAW:
-				message = G_( "%s%s ^*was shredded by %s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was shredded by %s%s^*'s %s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was shredded by %s%s%s^*'s %s" );
+				messageAssisted = G_( "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL2;
 				break;
 
 			case MOD_LEVEL2_ZAP:
-				message = G_( "%s%s ^*was electrocuted by %s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was electrocuted by %s%s^*'s %s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was electrocuted by %s%s%s^*'s %s" );
+				messageAssisted = G_( "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL2;
 				break;
 
 			case MOD_LEVEL3_CLAW:
-				message = G_( "%s%s ^*was eviscerated by %s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was eviscerated by %s%s^*'s %s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was eviscerated by %s%s%s^*'s %s" );
+				messageAssisted = G_( "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL3_POUNCE:
-				message = G_( "%s%s ^*was pounced upon by %s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was pounced upon by %s%s^*'s %s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was pounced upon by %s%s%s^*'s %s" );
+				messageAssisted = G_( "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL3_BOUNCEBALL:
-				message = G_( "%s%s ^*was barbed by %s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was barbed by %s%s^*'s %s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was barbed by %s%s%s^*'s %s" );
+				messageAssisted = G_( "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
 				messageSuicide = G_( "%s%s ^*was barbed" );
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL4_CLAW:
-				message = G_( "%s%s ^*was mauled by %s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was mauled by %s%s^*'s %s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*was mauled by %s%s%s^*'s %s" );
+				messageAssisted = G_( "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL4;
 				break;
 
 			case MOD_LEVEL4_TRAMPLE:
-				message = G_( "%s%s ^*should have gotten out of the way of %s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*should have gotten out of the way of %s%s^*'s %s^*; %s%s^* assisted" );
+				message = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s" );
+				messageAssisted = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL4;
 				break;
 
 			case MOD_WEIGHT_H:
 			case MOD_WEIGHT_A:
-				message = G_( "%s%s ^*was crushed under %s%s^*'s weight" );
-				messageAssisted = G_( "%s%s ^*was crushed under %s%s^*'s weight; %s%s^* assisted" );
+				message = G_( "%s%s ^*was crushed under %s%s%s^*'s weight" );
+				messageAssisted = G_( "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted" );
 				break;
 
 			case MOD_POISON:
-				message = G_( "%s%s ^*should have used a medkit against %s%s^*'s poison" );
-				messageAssisted = G_( "%s%s ^*should have used a medkit against %s%s^*'s poison; %s%s^* assisted" );
+				message = G_( "%s%s ^*should have used a medkit against %s%s%s^*'s poison" );
+				messageAssisted = G_( "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted" );
 				break;
 
 			case MOD_TELEFRAG:
-				message = G_( "%s%s ^*tried to invade %s%s^*'s personal space" );
+				message = G_( "%s%s ^*tried to invade %s%s%s^*'s personal space" );
 				break;
 
 			case MOD_SLAP:
-				message = G_( "%s%s ^*felt %s%s^*'s authority" );
-				messageAssisted = G_( "%s%s ^*felt %s%s^*'s authority; %s%s^* assisted" );
+				message = G_( "%s%s ^*felt %s%s%s^*'s authority" );
+				messageAssisted = G_( "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted" );
 				break;
 
 			default:
-				message = G_( "%s%s ^*was killed by %s%s" );
-				messageAssisted = G_( "%s%s ^*was killed by %s%s^* and %s%s" );
+				message = G_( "%s%s ^*was killed by %s%s%s" );
+				messageAssisted = G_( "%s%s ^*was killed by %s%s%s^* and %s%s%s" );
 				messageSuicide = G_( "%s%s ^*committed suicide" );
 				break;
 		}
@@ -531,22 +552,40 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				if ( attackerClass != -1 )
 				{
-					Log::Notice( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, BG_ClassModelConfig( attackerClass )->humanName, teamTag[ assistantTeam ], assistantName );
+					Log::Notice( messageAssisted, 
+					             teamTag[ ci->team ], targetName, 
+								 ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+								 teamTag[ attackerTeam ], attackerName, 
+								 BG_ClassModelConfig( attackerClass )->humanName, 
+								 ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
+								 teamTag[ assistantTeam ], assistantName );
 				}
 				else
 				{
-					Log::Notice( messageAssisted, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, teamTag[ assistantTeam ], assistantName );
+					Log::Notice( messageAssisted, 
+					             teamTag[ ci->team ], targetName, 
+								 ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+								 teamTag[ attackerTeam ], attackerName, 
+								 ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
+								 teamTag[ assistantTeam ], assistantName );
 				}
 			}
 			else
 			{
 				if ( attackerClass != -1 )
 				{
-					Log::Notice( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName, BG_ClassModelConfig( attackerClass )->humanName );
+					Log::Notice( message, 
+					             teamTag[ ci->team ], targetName, 
+								 ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+								 teamTag[ attackerTeam ], attackerName, 
+								 BG_ClassModelConfig( attackerClass )->humanName );
 				}
 				else
 				{
-					Log::Notice( message, teamTag[ ci->team ], targetName, teamTag[ attackerTeam ], attackerName );
+					Log::Notice( message, 
+					             teamTag[ ci->team ], targetName, 
+								 ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+								 teamTag[ attackerTeam ], attackerName );
 				}
 			}
 
