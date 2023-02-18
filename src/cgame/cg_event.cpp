@@ -134,7 +134,7 @@ static void CG_Obituary( entityState_t *ent )
 	ci = &cgs.clientinfo[ target ];
 	gender = ci->gender;
 
-	if ( attacker < 0 || attacker >= MAX_CLIENTS )
+	if ( !cgs.clientinfo[ attacker ].infoValid )
 	{
 		attacker = ENTITYNUM_WORLD;
 		attackerInfo = nullptr;
@@ -226,7 +226,7 @@ static void CG_Obituary( entityState_t *ent )
 								 teamTag[ ci->team ], targetName );
 				}
 			}
-			else if ( attacker == target )
+			else if ( !cgs.clientinfo[ attacker ].infoValid || attacker == target )
 			{
 				Log::Notice( "%s %s%s", 
 				             meansOfDeath[ mod ].icon, 
@@ -542,7 +542,7 @@ static void CG_Obituary( entityState_t *ent )
 		{
 
 			// Argument order: victim, attacker, [class,] [assistant]. Each has team tag first.
-			if ( messageSuicide && attacker == target )
+			if ( messageSuicide && ( !cgs.clientinfo[ attacker ].infoValid || attacker == target ) )
 			{
 				Log::Notice( messageSuicide, teamTag[ ci->team ], targetName );
 			}
