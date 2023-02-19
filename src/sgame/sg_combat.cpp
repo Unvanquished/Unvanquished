@@ -603,6 +603,12 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 			Log::Warn("%i kills, ending game", g_juggernautKillLimit.Get()); //FIXME
 			level.unconditionalWin = G_JuggernautTeam();
 		}
+
+		// give jugg poison
+		attacker->client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
+		attacker->client->ps.stats[ STAT_STATE ] |= SS_BOOSTEDNEW;
+		attacker->client->boostedTime = level.time;
+
 		CalculateRanks();
 	}
 

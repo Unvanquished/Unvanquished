@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "sg_cm_world.h"
 
+#include "sg_juggernaut.h"
+
 bool ClientInactivityTimer( gentity_t *ent, bool active );
 
 static Cvar::Cvar<float> g_devolveReturnRate(
@@ -1628,6 +1630,12 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
  */
 static int FindAlienHealthSource( gentity_t *self )
 {
+	if ( g_gameMode.Get() == "juggernaut"
+			&& G_Team( self ) == G_JuggernautTeam() ) {
+		return self->client->ps.stats[ STAT_STATE ] & SS_BOOSTED
+			? SS_HEALING_8X : SS_HEALING_2X;
+	}
+
 	int       ret = 0, closeTeammates = 0;
 	float     distance, minBoosterDistance = FLT_MAX;
 	bool      needsHealing;

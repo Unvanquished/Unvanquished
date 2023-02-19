@@ -96,7 +96,7 @@ const int   CREEP_SCALEDOWN_TIME = 3000;
 const float BARRICADE_SHRINKPROP = 0.25f;
 const int   BARRICADE_SHRINKTIMEOUT = 500;
 
-const int   BOOST_TIME = 20000;
+const int   BOOST_TIME = 12000;
 const int   BOOST_WARN_TIME = 15000;
 const int   BOOST_REPEAT_ANIM = 2000;
 
