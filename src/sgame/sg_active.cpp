@@ -1060,13 +1060,9 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		     client->pers.aliveSeconds % g_freeFundPeriod.Get() == 0 )
 		{
 			// Give clients some credit periodically
-			if ( client->pers.team == TEAM_ALIENS )
+			if ( G_IsPlayableTeam( client->pers.team ) )
 			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
-			}
-			else if ( client->pers.team == TEAM_HUMANS )
-			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
+				G_AddCreditToClient( client, HUMAN_MAX_CREDITS - BG_GetPlayerValue( client->ps ) - client->pers.credit, true );
 			}
 		}
 
