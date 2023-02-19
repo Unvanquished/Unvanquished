@@ -45,7 +45,7 @@ static const struct {
 	team_t   team;
 } meansOfDeath[] = {
 	// Icon            Envkill Assist? (Team)
-	{ "☠",             false, false, TEAM_HUMANS }, // unknown
+	{ "☠",             false, false, TEAM_NONE   }, // unknown
 	{ "[shotgun]",     false, true,  TEAM_HUMANS },
 	{ "[blaster]",     false, true,  TEAM_HUMANS },
 	{ "[painsaw]",     false, true,  TEAM_HUMANS },
@@ -61,7 +61,7 @@ static const struct {
 	{ "[fire]",        false, true,  TEAM_HUMANS }, // burn
 	{ "[grenade]",     false, true,  TEAM_HUMANS },
 	{ "[firebomb]",    false, true,  TEAM_HUMANS },
-	{ "crushed",       false, true,  TEAM_HUMANS }, // weight (H) // FIXME
+	{ "crushed",       false, true,  TEAM_HUMANS }, // crushed by human player. FIXME: emoticon
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // water
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // slime
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // lava
@@ -73,7 +73,7 @@ static const struct {
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // target laser - shouldn't happen
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // trigger hurt
 
-	{ "[granger]",     false, true,  TEAM_ALIENS },
+	{ "[granger]",     false, true,  TEAM_ALIENS }, // granger claw
 	{ "[dretch]",      false, true,  TEAM_ALIENS },
 	{ "[basilisk]",    false, true,  TEAM_ALIENS },
 	{ "[dragoon]",     false, true,  TEAM_ALIENS },
@@ -83,7 +83,7 @@ static const struct {
 	{ "[advmarauder]", false, true,  TEAM_ALIENS }, // zap
 	{ "[tyrant]",      false, true,  TEAM_ALIENS },
 	{ "[tyrant]",      false, true,  TEAM_ALIENS }, // trample
-	{ "crushed",       false, true,  TEAM_ALIENS }, // weight (A) // FIXME
+	{ "crushed",       false, true,  TEAM_ALIENS }, // crushed by alien player. FIXME: emoticon?
 
 	{ "[advgranger]",  false, true,  TEAM_ALIENS }, // granger spit (slowblob)
 	{ "[booster]",     false, true,  TEAM_ALIENS }, // poison
