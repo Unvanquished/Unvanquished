@@ -424,17 +424,24 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 
 	if ( attacker && attacker->client )
 	{
-		if ( ( attacker == self || G_OnSameTeam( self, attacker ) ) )
+		if ( G_OnSameTeam( self, attacker ) )
 		{
-			//punish team kills and suicides
+			// punish team kills and suicides
 			if ( attacker->client->pers.team == TEAM_ALIENS )
 			{
-				G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, true );
+				// don't punish suicides with reduced funds
+				if ( attacker != self )
+				{
+					G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, true );
+				}
 				G_AddCreditsToScore( attacker, -ALIEN_TK_SUICIDE_PENALTY );
 			}
 			else if ( attacker->client->pers.team == TEAM_HUMANS )
 			{
-				G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, true );
+				if ( attacker != self )
+				{
+					G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, true );
+				}
 				G_AddCreditsToScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
 			}
 		}
