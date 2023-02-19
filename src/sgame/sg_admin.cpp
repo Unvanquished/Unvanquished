@@ -6049,13 +6049,11 @@ bool G_admin_bot( gentity_t *ent )
 			float coords[ 3 ];
 			for ( int i = 0; i < 3; i++ )
 			{
-				int val;
-				if ( !Str::ParseInt( val, args[4 + i].data() ) )
+				if ( !Cvar::ParseCvarValue( args[ 4 + i ].data(), coords[ i ] ) )
 				{
 					BotUsage( ent );
 					return false;
 				}
-				coords[ i ] = static_cast< float >( val );
 			}
 			g_entities[ clientNum ].botMind->userSpecifiedPosition = glm::vec3( coords[0], coords[1], coords[2] );
 		}
