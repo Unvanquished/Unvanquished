@@ -61,7 +61,7 @@ static const struct {
 	{ "[fire]",        false, true,  TEAM_HUMANS }, // burn
 	{ "[grenade]",     false, true,  TEAM_HUMANS },
 	{ "[firebomb]",    false, true,  TEAM_HUMANS },
-	{ "crushed",       false, true,  TEAM_HUMANS }, // crushed by human player. FIXME: emoticon
+	{ "crushed",       false, true,  TEAM_HUMANS }, // crushed by human player. FIXME: emoticon?
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // water
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // slime
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // lava
@@ -75,7 +75,7 @@ static const struct {
 
 	{ "[granger]",     false, true,  TEAM_ALIENS }, // granger claw
 	{ "[dretch]",      false, true,  TEAM_ALIENS },
-	{ "[basilisk]",    false, true,  TEAM_ALIENS },
+	{ "[mantis]",      false, true,  TEAM_ALIENS },
 	{ "[dragoon]",     false, true,  TEAM_ALIENS },
 	{ "[dragoon]",     false, true,  TEAM_ALIENS }, // pounce
 	{ "[advdragoon]",  false, true,  TEAM_ALIENS }, // barbs
