@@ -134,7 +134,8 @@ static void CG_Obituary( entityState_t *ent )
 	ci = &cgs.clientinfo[ target ];
 	gender = ci->gender;
 
-	if ( !cgs.clientinfo[ attacker ].infoValid )
+	if ( ( attacker < 0 || attacker >= MAX_CLIENTS ) 
+	     || ( !cgs.clientinfo[ attacker ].infoValid ) )
 	{
 		attacker = ENTITYNUM_WORLD;
 		attackerInfo = nullptr;
