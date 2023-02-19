@@ -3774,11 +3774,11 @@ static void Cmd_Tactic_f( gentity_t * ent )
 		if ( Entities::IsAlive( ent ) )
 		{
 			glm::vec3 position = VEC2GLM( ent->s.origin );
-			g_entities[ id ].botMind->argVector = position;
+			g_entities[ id ].botMind->userSpecifiedPosition = position;
 		}
 		else
 		{
-			g_entities[ id ].botMind->argVector = Util::nullopt;
+			g_entities[ id ].botMind->userSpecifiedPosition = Util::nullopt;
 		}
 		level.team[ userTeam ].lastTacticId = id;
 		changedBots++;

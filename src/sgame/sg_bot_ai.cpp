@@ -1083,17 +1083,17 @@ AINodeStatus_t BotActionStayHere( gentity_t *self, AIGenericNode_t *node )
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
 	float radius = AIUnBoxFloat( a->params[ 0 ] );
 
-	if ( !self->botMind->argVector )
+	if ( !self->botMind->userSpecifiedPosition )
 	{
 		return STATUS_FAILURE;
 	}
 
 	if ( node != self->botMind->currentNode )
 	{
-		glm::vec3 argVector = *self->botMind->argVector;
+		glm::vec3 userSpecifiedPosition = *self->botMind->userSpecifiedPosition;
 		glm::vec3 point;
 
-		if ( !BotFindRandomPointInRadius( self->s.number, argVector, point, radius ) )
+		if ( !BotFindRandomPointInRadius( self->s.number, userSpecifiedPosition, point, radius ) )
 		{
 			return STATUS_FAILURE;
 		}

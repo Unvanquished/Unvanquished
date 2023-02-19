@@ -181,7 +181,7 @@ public:
 
 	int spawnTime;
 
-	Util::optional< glm::vec3 > argVector;
+	Util::optional< glm::vec3 > userSpecifiedPosition;
 private:
 	//avoid relying on buttons to remember what AI was doing
 	bool wantSprinting = false;

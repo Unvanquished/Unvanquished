@@ -5791,7 +5791,7 @@ static void BotUsage( gentity_t *ent )
 	                                        "            bot del (<name> | all)\n"
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
-	                                        "            bot behavior (<name> | <slot#>) <behavior> [<vector>]\n"
+	                                        "            bot behavior (<name> | <slot#>) <behavior> [<x> <y> <z>]\n"
 	                                        "            bot skill <skill level> [<team>]" ) );
 	ADMP( bot_usage );
 }
@@ -6042,7 +6042,7 @@ bool G_admin_bot( gentity_t *ent )
 		// set the argument vector if present
 		if ( args.Argc() != 7 )
 		{
-			g_entities[ clientNum ].botMind->argVector = Util::nullopt;
+			g_entities[ clientNum ].botMind->userSpecifiedPosition = Util::nullopt;
 		}
 		else
 		{
@@ -6057,7 +6057,7 @@ bool G_admin_bot( gentity_t *ent )
 				}
 				coords[ i ] = static_cast< float >( val );
 			}
-			g_entities[ clientNum ].botMind->argVector = glm::vec3( coords[0], coords[1], coords[2] );
+			g_entities[ clientNum ].botMind->userSpecifiedPosition = glm::vec3( coords[0], coords[1], coords[2] );
 		}
 		const char *behavior = args[3].data();
 		G_BotChangeBehavior( clientNum, behavior );
