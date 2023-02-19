@@ -84,10 +84,10 @@ static bool G_SkillPreferred( Str::StringRef behavior )
 	return G_GetPreferredSkillset().find( behavior ) != G_GetPreferredSkillset().end();
 }
 
-// aliens have 61 points to spend max
-static int skillsetBudgetAliens = 61;
-// humans have 40 points to spend max
-static int skillsetBudgetHumans = 40;
+// aliens have 84 points to spend max
+static int skillsetBudgetAliens = 84;
+// humans have 48 points to spend max
+static int skillsetBudgetHumans = 48;
 
 static void G_SetSkillsetBudgetHumans( int val )
 {
