@@ -270,5 +270,6 @@ AINodeStatus_t BotActionSuicide( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionJump( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* );
+AINodeStatus_t BotActionStayHere( gentity_t *self, AIGenericNode_t* );
 
 #endif

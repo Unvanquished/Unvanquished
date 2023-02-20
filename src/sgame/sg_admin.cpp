@@ -5791,7 +5791,7 @@ static void BotUsage( gentity_t *ent )
 	                                        "            bot del (<name> | all)\n"
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
-	                                        "            bot behavior (<name> | <slot#>) <behavior>\n"
+	                                        "            bot behavior (<name> | <slot#>) <behavior> [<x> <y> <z>]\n"
 	                                        "            bot skill <skill level> [<team>]" ) );
 	ADMP( bot_usage );
 }
@@ -6027,7 +6027,7 @@ bool G_admin_bot( gentity_t *ent )
 			G_BotDel( clientNum ); //delete the bot
 		}
 	}
-	else if ( !Q_stricmp( arg1, "behavior" ) && args.Argc() == 4 )
+	else if ( !Q_stricmp( arg1, "behavior" ) && (args.Argc() == 4 || args.Argc() == 7) )
 	{
 		RETURN_IF_INTERMISSION;
 
@@ -6038,6 +6038,24 @@ bool G_admin_bot( gentity_t *ent )
 		{
 			ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "bot", Quote( err ) ) );
 			return false;
+		}
+		// set the argument vector if present
+		if ( args.Argc() != 7 )
+		{
+			g_entities[ clientNum ].botMind->userSpecifiedPosition = Util::nullopt;
+		}
+		else
+		{
+			float coords[ 3 ];
+			for ( int i = 0; i < 3; i++ )
+			{
+				if ( !Cvar::ParseCvarValue( args[ 4 + i ].data(), coords[ i ] ) )
+				{
+					BotUsage( ent );
+					return false;
+				}
+			}
+			g_entities[ clientNum ].botMind->userSpecifiedPosition = glm::vec3( coords[0], coords[1], coords[2] );
 		}
 		const char *behavior = args[3].data();
 		G_BotChangeBehavior( clientNum, behavior );

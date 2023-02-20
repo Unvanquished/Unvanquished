@@ -3770,6 +3770,17 @@ static void Cmd_Tactic_f( gentity_t * ent )
 		}
 		// now we know: it is a bot on the commanding player's team
 		G_BotChangeBehavior( id, behavior );
+		// if alive, use the commanding player's position as the bot's user specified position
+		// not all bot actions use this position, but it cannot hurt to set it
+		if ( Entities::IsAlive( ent ) )
+		{
+			glm::vec3 position = VEC2GLM( ent->s.origin );
+			g_entities[ id ].botMind->userSpecifiedPosition = position;
+		}
+		else
+		{
+			g_entities[ id ].botMind->userSpecifiedPosition = Util::nullopt;
+		}
 		level.team[ userTeam ].lastTacticId = id;
 		changedBots++;
 	} while ( ( changedBots < numBots && id != stopId ) );
