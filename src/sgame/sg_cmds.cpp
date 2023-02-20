@@ -3781,6 +3781,9 @@ static void Cmd_Tactic_f( gentity_t * ent )
 		{
 			g_entities[ id ].botMind->userSpecifiedPosition = Util::nullopt;
 		}
+		// use the commanding player's client number as the bot's user specified client number
+		// not all bot actions use this number, but it cannot hurt to set it
+		g_entities[ id ].botMind->userSpecifiedClientNum = ent->s.number;
 		level.team[ userTeam ].lastTacticId = id;
 		changedBots++;
 	} while ( ( changedBots < numBots && id != stopId ) );

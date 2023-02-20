@@ -5791,7 +5791,7 @@ static void BotUsage( gentity_t *ent )
 	                                        "            bot del (<name> | all)\n"
 	                                        "            bot names (aliens | humans) <names>…\n"
 	                                        "            bot names (clear | list)\n"
-	                                        "            bot behavior (<name> | <slot#>) <behavior> [<x> <y> <z>]\n"
+	                                        "            bot behavior (<name> | <slot#>) <behavior> [<name> | <slot#> | <x> <y> <z>]\n"
 	                                        "            bot skill <skill level> [<team>]" ) );
 	ADMP( bot_usage );
 }
@@ -6027,7 +6027,7 @@ bool G_admin_bot( gentity_t *ent )
 			G_BotDel( clientNum ); //delete the bot
 		}
 	}
-	else if ( !Q_stricmp( arg1, "behavior" ) && (args.Argc() == 4 || args.Argc() == 7) )
+	else if ( !Q_stricmp( arg1, "behavior" ) && (args.Argc() == 4 || args.Argc() == 5 || args.Argc() == 7) )
 	{
 		RETURN_IF_INTERMISSION;
 
@@ -6039,12 +6039,20 @@ bool G_admin_bot( gentity_t *ent )
 			ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "bot", Quote( err ) ) );
 			return false;
 		}
-		// set the argument vector if present
-		if ( args.Argc() != 7 )
+		g_entities[ clientNum ].botMind->userSpecifiedPosition = Util::nullopt;
+		g_entities[ clientNum ].botMind->userSpecifiedClientNum = Util::nullopt;
+
+		if ( args.Argc() == 5 )
 		{
-			g_entities[ clientNum ].botMind->userSpecifiedPosition = Util::nullopt;
+			int followPid = G_ClientNumberFromString( args[4].data(), err, sizeof( err ) );
+			if ( followPid == -1 )
+			{
+				ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "bot", Quote( err ) ) );
+				return false;
+			}
+			g_entities[ clientNum ].botMind->userSpecifiedClientNum = followPid;
 		}
-		else
+		else if ( args.Argc() == 7 )
 		{
 			float coords[ 3 ];
 			for ( int i = 0; i < 3; i++ )

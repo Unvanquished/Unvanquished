@@ -940,6 +940,7 @@ static const struct AIActionMap_s
 	{ "fight",             BotActionFight,             0, 0 },
 	{ "fireWeapon",        BotActionFireWeapon,        0, 0 },
 	{ "flee",              BotActionFlee,              0, 0 },
+	{ "follow",            BotActionFollow,            1, 1 },
 	{ "gesture",           BotActionGesture,           0, 0 },
 	{ "heal",              BotActionHeal,              0, 0 },
 	{ "jump",              BotActionJump,              0, 0 },
