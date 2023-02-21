@@ -6044,6 +6044,7 @@ bool G_admin_bot( gentity_t *ent )
 
 		if ( args.Argc() == 5 )
 		{
+			// set the user-specified client number
 			int followPid = G_ClientNumberFromString( args[4].data(), err, sizeof( err ) );
 			if ( followPid == -1 )
 			{
@@ -6054,6 +6055,7 @@ bool G_admin_bot( gentity_t *ent )
 		}
 		else if ( args.Argc() == 7 )
 		{
+			// set the user-specified position
 			float coords[ 3 ];
 			for ( int i = 0; i < 3; i++ )
 			{
