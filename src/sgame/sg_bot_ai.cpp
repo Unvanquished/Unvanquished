@@ -1113,6 +1113,47 @@ AINodeStatus_t BotActionStayHere( gentity_t *self, AIGenericNode_t *node )
 	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
+AINodeStatus_t BotActionFollow( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	float radius = AIUnBoxFloat( a->params[ 0 ] );
+
+	if ( !self->botMind->userSpecifiedClientNum )
+	{
+		return STATUS_FAILURE;
+	}
+
+	int userSpecifiedClientNum = *self->botMind->userSpecifiedClientNum;
+
+	if ( !Entities::IsAlive( &g_entities[ userSpecifiedClientNum ] ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( node != self->botMind->currentNode )
+	{
+		glm::vec3 point;
+
+		if ( !BotFindRandomPointInRadius( self->s.number, VEC2GLM( g_entities[ userSpecifiedClientNum ].s.origin ), point, radius ) )
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !BotChangeGoalPos( self, point ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	if ( GoalInRange( self, BotGetGoalRadius( self ) ) )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
+}
+
 static AINodeStatus_t BotActionReachHealA( gentity_t *self );
 static AINodeStatus_t BotActionReachHealH( gentity_t *self );
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
