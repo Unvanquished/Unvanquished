@@ -90,7 +90,7 @@ static const struct {
 	{ "[hive]",        true,  true,  TEAM_ALIENS },
 
 	{ LONGFORM,        true,  false, TEAM_HUMANS }, // H spawn (human building explosion)
-	{ "^dR[turret]",   true,  true,  TEAM_HUMANS }, // rocket pod. FIXME: we need a rocket pod emoticon
+	{ "^dR^*[turret]", true,  true,  TEAM_HUMANS }, // rocket pod. FIXME: we need a rocket pod emoticon
 	{ "[turret]",      true,  true,  TEAM_HUMANS },
 	{ "[reactor]",     true,  true,  TEAM_HUMANS },
 
