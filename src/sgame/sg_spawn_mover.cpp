@@ -1576,11 +1576,21 @@ static void func_door_reset( gentity_t *self )
 	reset_moverspeed( self, 400 );
 }
 
+#if 0
+// allows to trigger doors and buttons with +activate
 static void func_door_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	if (GetMoverGroupState( self ) != MOVER_1TO2 )
 		BinaryMover_act( self, caller, activator );
 }
+
+static void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
+{
+	if ( self->moverState == MOVER_POS1 )
+		BinaryMover_act( self, caller, activator );
+}
+#endif
+
 
 void SP_func_door( gentity_t *self )
 {
@@ -2106,12 +2116,6 @@ static void Touch_Button( gentity_t *ent, gentity_t *other, trace_t* )
 	{
 		BinaryMover_act( ent, other, other );
 	}
-}
-
-static void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
-{
-	if ( self->moverState == MOVER_POS1 )
-		BinaryMover_act( self, caller, activator );
 }
 
 static void func_button_reset( gentity_t *self )
