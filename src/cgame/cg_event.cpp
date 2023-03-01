@@ -528,6 +528,7 @@ static void CG_Obituary( entityState_t *ent )
 
 			case MOD_TELEFRAG:
 				message = G_( "%s%s ^*tried to invade %s%s%s^*'s personal space" );
+				messageSuicide = G_( "%s%s ^*ended up in the void" );
 				break;
 
 			case MOD_SLAP:
