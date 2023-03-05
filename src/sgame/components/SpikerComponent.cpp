@@ -10,7 +10,7 @@ constexpr int   COOLDOWN = 5000;
 constexpr float DAMAGE_THRESHOLD = 60.0f;
 /** Total number of missiles to shoot. Some might be skipped if they endanger allies.
  *  Actual values is +/- MISSILEROWS. */
-constexpr int   MISSILES = 26;
+constexpr int   MISSILES = 39;
 /** Number of rows from which to launch spikes. */
 constexpr int   MISSILEROWS = 4;
 /** An estimate on how far away spikes are still relevant, used to upper bound computations. */
@@ -166,12 +166,12 @@ bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 		trap_Trace( &trace, entity.oldEnt->s.origin, mins, maxs, &end[0], entity.oldEnt->num(), ma->clipmask, 0 );
 		gentity_t* hit = &g_entities[trace.entityNum];
 
-		if (hit && G_OnSameTeam(entity.oldEnt, hit)) {
-			return false;
+		if (hit && G_Team( hit ) == TEAM_HUMANS) {
+			return true;
 		}
 	}
 
-	return true;
+	return false;
 }
 
 bool SpikerComponent::Fire() {
@@ -211,6 +211,7 @@ bool SpikerComponent::Fire() {
 	PerpendicularVector(rotAxis, zenith);
 
 	// Distribute and launch missiles.
+	int launched = 0;
 	for (int row = 0; row < MISSILEROWS; row++) {
 		// Set the base altitude and get the perimeter for the current row.
 		float rowAltitude = (((float)row + 0.5f) * M_PI_2) / (float)MISSILEROWS;
@@ -242,6 +243,7 @@ bool SpikerComponent::Fire() {
 			if (!fire) {
 				continue;
 			}
+			++launched;
 
 			G_SpawnMissile(
 				MIS_SPIKER, self, self->s.origin, dir, nullptr, G_FreeEntity,
@@ -249,7 +251,7 @@ bool SpikerComponent::Fire() {
 		}
 	}
 
-	restUntil = level.time + COOLDOWN;
+	restUntil = level.time + COOLDOWN * launched * MISSILES;
 	RegisterSlowThinker();
 
 	return true;
