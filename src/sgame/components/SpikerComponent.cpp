@@ -4,13 +4,14 @@
 
 static Log::Logger logger("sgame.spiker");
 
+static Cvar::Cvar<bool> sg_spiker_experiments( "sg_spiker_experiments", "wether to use experimental reloading for spikers or not", Cvar::NONE, true );
 /** Delay between shots. */
 constexpr int   COOLDOWN = 5000;
 /** Shoot prematurely whenever this much damage is expected. */
 constexpr float DAMAGE_THRESHOLD = 60.0f;
 /** Total number of missiles to shoot. Some might be skipped if they endanger allies.
  *  Actual values is +/- MISSILEROWS. */
-constexpr int   MISSILES = 39;
+static Cvar::Cvar<int> sg_spiker_missiles( "sg_spiker_missiles", "number of missiles spikers have", Cvar::NONE, 39 );
 /** Number of rows from which to launch spikes. */
 constexpr int   MISSILEROWS = 4;
 /** An estimate on how far away spikes are still relevant, used to upper bound computations. */
@@ -96,7 +97,7 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 		float hitEdge      = bboxEdge + ((1.0f / M_ROOT3) * ma->size); // Add half missile edge.
 		float hitArea      = hitEdge * hitEdge; // Approximate area resulting in a hit.
 		float effectArea   = 2.0f * M_PI * distance * distance; // Area of a half sphere.
-		float damage       = (hitArea / effectArea) * (float)MISSILES * spikeDamage;
+		float damage       = (hitArea / effectArea) * (float)sg_spiker_missiles.Get() * spikeDamage;
 
 		// Sum up expected damage for all targets, regardless of whether they are in sense range.
 		expectedDamage += damage;
@@ -158,6 +159,7 @@ bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 	trace_t trace;
 	vec3_t mins, maxs;
 	glm::vec3 end = VEC2GLM( entity.oldEnt->s.origin ) + (SPIKE_RANGE * direction);
+	bool use_experiments = sg_spiker_experiments.Get();
 
 	// Test once with normal and once with inflated missile bounding box.
 	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_INFLATION}) {
@@ -166,7 +168,7 @@ bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 		trap_Trace( &trace, entity.oldEnt->s.origin, mins, maxs, &end[0], entity.oldEnt->num(), ma->clipmask, 0 );
 		gentity_t* hit = &g_entities[trace.entityNum];
 
-		if (hit && G_Team( hit ) == TEAM_HUMANS) {
+		if (hit && ( not use_experiments && G_OnSameTeam( entity.oldEnt, hit ) ) || ( use_experiments && G_Team( hit ) == TEAM_HUMANS ) ) {
 			return true;
 		}
 	}
@@ -218,7 +220,7 @@ bool SpikerComponent::Fire() {
 		float rowPerimeter = 2.0f * M_PI * cosf(rowAltitude);
 
 		// Attempt to distribute spikes with equal expected angular distance on all rows.
-		int spikes = (int)round(((float)MISSILES * rowPerimeter) / totalPerimeter);
+		int spikes = (int)round(((float)sg_spiker_missiles.Get() * rowPerimeter) / totalPerimeter);
 
 		// Launch missiles in the current row.
 		for (int spike = 0; spike < spikes; spike++) {
@@ -250,8 +252,7 @@ bool SpikerComponent::Fire() {
 				level.time + (int)(1000.0f * SPIKE_RANGE / (float)BG_Missile(MIS_SPIKER)->speed));
 		}
 	}
-
-	restUntil = level.time + COOLDOWN * launched * MISSILES;
+	restUntil = level.time + COOLDOWN * ( sg_spiker_experiments.Get() ? launched * sg_spiker_missiles.Get() : 1 );
 	RegisterSlowThinker();
 
 	return true;
