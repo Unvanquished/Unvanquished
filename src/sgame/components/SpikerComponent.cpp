@@ -168,7 +168,7 @@ bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 		trap_Trace( &trace, entity.oldEnt->s.origin, mins, maxs, &end[0], entity.oldEnt->num(), ma->clipmask, 0 );
 		gentity_t* hit = &g_entities[trace.entityNum];
 
-		if (hit && ( not use_experiments && G_OnSameTeam( entity.oldEnt, hit ) ) || ( use_experiments && G_Team( hit ) == TEAM_HUMANS ) ) {
+		if (hit && ( ( not use_experiments && G_OnSameTeam( entity.oldEnt, hit ) ) || ( use_experiments && G_Team( hit ) == TEAM_HUMANS ) ) ) {
 			return true;
 		}
 	}
