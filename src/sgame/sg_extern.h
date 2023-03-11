@@ -105,7 +105,7 @@ extern Cvar::Cvar<bool> g_alienAllowBuilding;
 
 extern Cvar::Cvar<float> g_alienOffCreepRegenHalfLife;
 
-extern Cvar::Cvar<bool> g_teamImbalanceWarnings;
+extern Cvar::Cvar<int> g_teamImbalanceWarnings;
 extern Cvar::Cvar<int> g_freeFundPeriod;
 
 extern Cvar::Range<Cvar::Cvar<int>> g_unlagged;

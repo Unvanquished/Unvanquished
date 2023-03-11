@@ -573,7 +573,7 @@ void CheckTeamStatus()
 	}
 
 	// Warn on imbalanced teams
-	if ( g_teamImbalanceWarnings.Get() && !level.intermissiontime &&
+	if ( g_teamImbalanceWarnings.Get() > 0 && !level.intermissiontime &&
 	     ( level.time - level.lastTeamImbalancedTime >
 	       ( g_teamImbalanceWarnings.Get() * 1000 ) ) &&
 	     level.numTeamImbalanceWarnings < 3 && !level.restarted )
