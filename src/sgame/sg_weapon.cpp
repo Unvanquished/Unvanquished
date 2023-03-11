@@ -40,7 +40,7 @@ static bool TakesDamages( gentity_t const* ent )
 {
 	return false
 		|| Entities::IsAlive( ent )
-		|| ( ent && ent->s.eType == entityType_t::ET_MOVER )
+		|| ( ent && ent->s.eType == entityType_t::ET_MOVER && ent->health > 0 )
 		;
 }
 
