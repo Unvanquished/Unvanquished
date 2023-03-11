@@ -365,11 +365,12 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 				}
 			}
 
-			break;
+			return p;
 		}
 	}
 
-	return p;
+	Log::Notice( "MAX_PARTICLES hit" );
+	return nullptr;
 }
 
 /*
@@ -497,11 +498,12 @@ static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe
 				Log::Debug( "PE %s created", ps->class_->name );
 			}
 
-			break;
+			return pe;
 		}
 	}
 
-	return pe;
+	Log::Notice( "MAX_PARTICLE_EJECTORS hit" );
+	return nullptr;
 }
 
 /*
@@ -551,11 +553,12 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 				Log::Debug( "PS %s created", bps->name );
 			}
 
-			break;
+			return ps;
 		}
 	}
 
-	return ps;
+	Log::Notice( "MAX_PARTICLE_SYSTEMS hit" );
+	return nullptr;
 }
 
 /*
