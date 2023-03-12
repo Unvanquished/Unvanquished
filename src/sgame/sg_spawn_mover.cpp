@@ -2729,7 +2729,7 @@ static void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 
 	if( self->r.linked )
 	{
-		G_BotRemoveObstacle( self->s.clientNum );
+		G_BotRemoveObstacle( self->num() );
 		trap_UnlinkEntity( self );
 	}
 	else
@@ -2756,7 +2756,7 @@ static void func_spawn_reset( gentity_t *self )
 	}
 	else
 	{
-		G_BotRemoveObstacle( self->s.clientNum );
+		G_BotRemoveObstacle( self->num() );
 		trap_UnlinkEntity( self );
 	}
 }
