@@ -2181,9 +2181,17 @@ static void ClientThink_real( gentity_t *self )
 		gentity_t *ent;
 
 		// look for object infront of player
+
+		glm::vec3 viewpoint = VEC2GLM( client->ps.origin );
+		viewpoint[2] += client->ps.viewheight;
+		// should take target's radius instead, but let's try with that for now
+		glm::vec3 mins, maxs;
+		BG_BoundingBox( static_cast<class_t>( client->ps.stats[STAT_CLASS] ), &mins, &maxs, nullptr, nullptr, nullptr );
+		auto range1 = ENTITY_USE_RANGE + RadiusFromBounds( &mins[0], &maxs[0] );
+
 		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
-		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
-		trap_Trace( &trace, client->ps.origin, nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
+		VectorMA( viewpoint, range1, view, point );
+		trap_Trace( &trace, &viewpoint[0], nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
 
 		ent = &g_entities[ trace.entityNum ];
 		bool activableTarget = ent->s.eType == entityType_t::ET_BUILDABLE || ent->s.eType == entityType_t::ET_MOVER;
@@ -2192,7 +2200,7 @@ static void ClientThink_real( gentity_t *self )
 		     ( !ent->buildableTeam   || ent->buildableTeam   == client->pers.team ) &&
 		     ( !ent->conditions.team || ent->conditions.team == client->pers.team ) &&
 		     trace.fraction < 1.0f &&
-				 !( activableTarget && Distance( self->s.origin, ent->s.origin ) < ENTITY_USE_RANGE ) )
+				 !( activableTarget && Distance( self->s.origin, ent->s.origin ) < range1 ) )
 		{
 			if ( g_debugEntities.Get() > 1 )
 			{
