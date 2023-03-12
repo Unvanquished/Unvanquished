@@ -146,7 +146,7 @@ Introduce a new particle into the world
 */
 static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *parent )
 {
-	int               i, j;
+	int               i;
 	particle_t        *p = nullptr;
 	particleEjector_t *pe = parent;
 	particleSystem_t  *ps = parent->parent;
@@ -234,10 +234,9 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 				VectorAdd( p->origin, bp->displacement, p->origin );
 			}
 
-			for ( j = 0; j <= 2; j++ )
-			{
-				p->origin[ j ] += ( crandom() * bp->randDisplacement[ j ] );
-			}
+			p->origin[ 0 ] += ( crandom() * bp->randDisplacement[ 0 ] );
+			p->origin[ 1 ] += ( crandom() * bp->randDisplacement[ 1 ] );
+			p->origin[ 2 ] += ( crandom() * bp->randDisplacement[ 2 ] );
 
 			switch ( bp->velMoveType )
 			{
