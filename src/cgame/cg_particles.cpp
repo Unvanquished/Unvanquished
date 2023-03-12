@@ -88,12 +88,13 @@ Randomly spread a vector by some amount
 */
 static void CG_SpreadVector( vec3_t v, float spread )
 {
-	vec3_t p, r1, r2;
 	float  randomSpread = crandom() * spread;
 	float  randomRotation = random() * 360.0f;
 
+	vec3_t p;
 	PerpendicularVector( p, v );
 
+	vec3_t r1, r2;
 	RotatePointAroundVector( r1, p, v, randomSpread );
 	RotatePointAroundVector( r2, v, r1, randomRotation );
 
@@ -112,9 +113,7 @@ static void CG_DestroyParticle( particle_t *p, vec3_t impactNormal )
 	//this particle has an onDeath particle system attached
 	if ( p->class_->onDeathSystemName[ 0 ] != '\0' )
 	{
-		particleSystem_t *ps;
-
-		ps = CG_SpawnNewParticleSystem( p->class_->onDeathSystemHandle );
+		particleSystem_t *ps = CG_SpawnNewParticleSystem( p->class_->onDeathSystemHandle );
 
 		if ( CG_IsParticleSystemValid( &ps ) )
 		{
@@ -146,8 +145,6 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 {
 	particleEjector_t *pe = parent;
 	particleSystem_t  *ps = parent->parent;
-	vec3_t            attachmentPoint, attachmentVelocity;
-	vec3_t            transform[ 3 ];
 
 	for ( int i = 0; i < MAX_PARTICLES; i++ )
 	{
@@ -211,6 +208,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 				}
 			}
 
+			vec3_t attachmentPoint;
 			if ( !CG_AttachmentPoint( &ps->attachment, attachmentPoint ) )
 			{
 				return nullptr;
@@ -218,6 +216,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 
 			VectorCopy( attachmentPoint, p->origin );
 
+			vec3_t transform[ 3 ];
 			if ( CG_AttachmentAxis( &ps->attachment, transform ) )
 			{
 				vec3_t transDisplacement;
@@ -321,6 +320,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 			             CG_RandomiseValue( bp->velMoveValues.mag, bp->velMoveValues.magRandFrac ),
 			             p->velocity );
 
+			vec3_t attachmentVelocity;
 			if ( CG_AttachmentVelocity( &ps->attachment, attachmentVelocity ) )
 			{
 				VectorMA( p->velocity,
@@ -380,9 +380,6 @@ introducing new particles
 */
 static void CG_SpawnNewParticles()
 {
-	float                 lerpFrac;
-	int                   count;
-
 	for ( int i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
 	{
 		particleEjector_t *pe = &particleEjectors[ i ];
@@ -415,7 +412,7 @@ static void CG_SpawnNewParticles()
 					}
 
 					//calculate next ejection time
-					lerpFrac = 1.0 - ( ( float ) pe->count / ( float ) pe->totalParticles );
+					float lerpFrac = 1.0 - ( ( float ) pe->count / ( float ) pe->totalParticles );
 					pe->nextEjectionTime = cg.time + ( int ) CG_RandomiseValue(
 					                         CG_LerpValues( pe->ejectPeriod.initial,
 					                                        pe->ejectPeriod.final,
@@ -426,7 +423,7 @@ static void CG_SpawnNewParticles()
 
 			if ( pe->count == 0 || ps->lazyRemove )
 			{
-				count = 0;
+				int count = 0;
 
 				//wait for child particles to die before declaring this pe invalid
 				for ( int j = 0; j < MAX_PARTICLES; j++ )
@@ -647,14 +644,13 @@ Parse a value and its random variance
 */
 static void CG_ParseValueAndVariance( const char *token, float *value, float *variance, bool allowNegative )
 {
-	char  valueBuffer[ 16 ];
-	char  *variancePtr = nullptr, *varEndPointer = nullptr;
-	float localValue = 0.0f;
-	float localVariance = 0.0f;
 
+	char  valueBuffer[ 16 ];
 	Q_strncpyz( valueBuffer, token, sizeof( valueBuffer ) );
 
-	variancePtr = strchr( valueBuffer, '~' );
+	char *variancePtr = strchr( valueBuffer, '~' );
+	float localValue = 0.0f;
+	float localVariance = 0.0f;
 
 	//variance included
 	if ( variancePtr )
@@ -664,7 +660,7 @@ static void CG_ParseValueAndVariance( const char *token, float *value, float *va
 
 		localValue = atof_neg( valueBuffer, allowNegative );
 
-		varEndPointer = strchr( variancePtr, '%' );
+		char *varEndPointer = strchr( variancePtr, '%' );
 
 		if ( varEndPointer )
 		{
@@ -813,7 +809,6 @@ Parse a particle section
 */
 static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 {
-	float number, randFrac;
 	// read optional parameters
 	while ( 1 )
 	{
@@ -1174,7 +1169,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 			// if there is another token on the same line interpret it as an
 			// additional displacement in all three directions, for compatibility
 			// with the old scripts where this was the only option
-			randFrac = 0;
+			float randFrac = 0;
 			token = COM_ParseExt( text_p, false );
 
 			if ( token )
@@ -1223,6 +1218,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 				break;
 			}
 
+			float number;
 			CG_ParseValueAndVariance( token, &number, &bp->dLightRadius.delayRandFrac, false );
 			bp->dLightRadius.delay = ( int ) number;
 
@@ -1268,6 +1264,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 				break;
 			}
 
+			float number;
 			CG_ParseValueAndVariance( token, &number, &bp->radius.delayRandFrac, false );
 			bp->radius.delay = ( int ) number;
 
@@ -1305,6 +1302,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 				break;
 			}
 
+			float number;
 			CG_ParseValueAndVariance( token, &number, &bp->alpha.delayRandFrac, false );
 			bp->alpha.delay = ( int ) number;
 
@@ -1331,6 +1329,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 				break;
 			}
 
+			float number;
 			CG_ParseValueAndVariance( token, &number, &bp->colorDelayRandFrac, false );
 			bp->colorDelay = ( int ) number;
 
@@ -1389,6 +1388,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 				break;
 			}
 
+			float number;
 			CG_ParseValueAndVariance( token, &number, &bp->rotation.delayRandFrac, false );
 			bp->rotation.delay = ( int ) number;
 
@@ -1415,6 +1415,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 				break;
 			}
 
+			float number;
 			CG_ParseValueAndVariance( token, &number, &bp->lifeTimeRandFrac, false );
 			bp->lifeTime = ( int ) number;
 		}
@@ -1498,8 +1499,6 @@ Parse a particle ejector section
 */
 static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **text_p )
 {
-	float number;
-
 	// read optional parameters
 	while ( 1 )
 	{
@@ -1546,6 +1545,7 @@ static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **te
 				break;
 			}
 
+			float number;
 			CG_ParseValueAndVariance( token, &number, &bpe->eject.delayRandFrac, false );
 			bpe->eject.delay = ( int ) number;
 		}
@@ -1601,6 +1601,7 @@ static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **te
 			}
 			else
 			{
+				float number;
 				CG_ParseValueAndVariance( token, &number, &bpe->totalParticlesRandFrac, false );
 				bpe->totalParticles = ( int ) number;
 			}
@@ -1632,8 +1633,6 @@ Parse a particle system section
 */
 static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text_p, const char *name )
 {
-	baseParticleEjector_t *bpe;
-
 	// read optional parameters
 	while ( 1 )
 	{
@@ -1652,7 +1651,7 @@ static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text
 				return false;
 			}
 
-			bpe = &baseParticleEjectors[ numBaseParticleEjectors ];
+			baseParticleEjector_t *bpe = &baseParticleEjectors[ numBaseParticleEjectors ];
 
 			//check for infinite count + zero period
 			if ( bpe->totalParticles == PARTICLES_INFINITE &&
@@ -1716,11 +1715,6 @@ Load the particle systems from a particle file
 */
 static bool CG_ParseParticleFile( const char *fileName )
 {
-	const char         *text_p;
-	int          i;
-	char         psName[ MAX_QPATH ];
-	bool     psNameSet = false;
-
 	std::error_code err;
 	std::string text = FS::PakPath::ReadFile( fileName, err );
 	if ( err )
@@ -1730,7 +1724,10 @@ static bool CG_ParseParticleFile( const char *fileName )
 	}
 
 	// parse the text
-	text_p = text.c_str();
+	const char *text_p = text.c_str();
+
+	char psName[ MAX_QPATH ];
+	bool psNameSet = false;
 
 	// read optional parameters
 	while ( 1 )
@@ -1777,6 +1774,7 @@ static bool CG_ParseParticleFile( const char *fileName )
 			Q_strncpyz( psName, token, sizeof( psName ) );
 
 			//check for name space clashes
+			int i;
 			for ( i = 0; i < numBaseParticleSystems; i++ )
 			{
 				if ( !Q_stricmp( baseParticleSystems[ i ].name, psName ) )
@@ -1813,11 +1811,6 @@ Load particle systems from .particle files
 */
 void CG_LoadParticleSystems()
 {
-	int  j, numFiles, fileLen;
-	char fileList[ MAX_PARTICLE_FILES * MAX_QPATH ];
-	char fileName[ MAX_QPATH ];
-	char *filePtr;
-
 	//clear out the old
 	numBaseParticleSystems = 0;
 	numBaseParticleEjectors = 0;
@@ -1842,17 +1835,20 @@ void CG_LoadParticleSystems()
 	}
 
 	//and bring in the new
-	numFiles = trap_FS_GetFileList( "scripts", ".particle",
+	char fileList[ MAX_PARTICLE_FILES * MAX_QPATH ];
+	int numFiles = trap_FS_GetFileList( "scripts", ".particle",
 	                                fileList, MAX_PARTICLE_FILES * MAX_QPATH );
-	filePtr = fileList;
 
-	for ( int i = 0; i < numFiles; i++, filePtr += fileLen + 1 )
+	char *filePtr = fileList;
+	for ( int i = 0; i < numFiles; i++ )
 	{
-		fileLen = strlen( filePtr );
+		int fileLen = strlen( filePtr );
+		char fileName[ MAX_QPATH ];
 		Q_strncpyz( fileName, "scripts/", sizeof fileName );
 		Q_strcat( fileName, sizeof fileName, filePtr );
 		// Log::Notice(_( "...loading '%s'"), fileName );
 		CG_ParseParticleFile( fileName );
+		filePtr += fileLen + 1;
 	}
 
 	//connect any child systems to their psHandle
@@ -1863,6 +1859,7 @@ void CG_LoadParticleSystems()
 		if ( bp->childSystemName[ 0 ] )
 		{
 			//particle class has a child, resolve the name
+			int j;
 			for ( j = 0; j < numBaseParticleSystems; j++ )
 			{
 				baseParticleSystem_t *bps = &baseParticleSystems[ j ];
@@ -1888,6 +1885,7 @@ void CG_LoadParticleSystems()
 		if ( bp->onDeathSystemName[ 0 ] )
 		{
 			//particle class has a child, resolve the name
+			int j;
 			for ( j = 0; j < numBaseParticleSystems; j++ )
 			{
 				baseParticleSystem_t *bps = &baseParticleSystems[ j ];
@@ -2068,13 +2066,9 @@ Destroy inactive particle systems
 */
 static void CG_GarbageCollectParticleSystems()
 {
-	int count;
-	int               centNum;
-
 	for ( int i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
 	{
 		particleSystem_t *ps = &particleSystems[ i ];
-		count = 0;
 
 		//don't bother checking already invalid systems
 		if ( !ps->valid )
@@ -2082,6 +2076,7 @@ static void CG_GarbageCollectParticleSystems()
 			continue;
 		}
 
+		int count = 0;
 		for ( int j = 0; j < MAX_PARTICLE_EJECTORS; j++ )
 		{
 			particleEjector_t *pe = &particleEjectors[ j ];
@@ -2099,8 +2094,8 @@ static void CG_GarbageCollectParticleSystems()
 
 		//check systems where the parent cent has left the PVS
 		//( local player entity is always valid )
-		if ( ( centNum = CG_AttachmentCentNum( &ps->attachment ) ) >= 0 &&
-		     centNum != cg.snap->ps.clientNum )
+		int centNum = CG_AttachmentCentNum( &ps->attachment );
+		if ( centNum >= 0 && centNum != cg.snap->ps.clientNum )
 		{
 			if ( !cg_entities[ centNum ].valid )
 			{
@@ -2124,9 +2119,7 @@ Calculate the fraction of time passed
 */
 static float CG_CalculateTimeFrac( int birth, int life, int delay )
 {
-	float frac;
-
-	frac = ( ( float ) cg.time - ( float )( birth + delay ) ) / ( float )( life - delay );
+	float frac = ( ( float ) cg.time - ( float )( birth + delay ) ) / ( float )( life - delay );
 
 	return Math::Clamp( frac, 0.0f, 1.0f );
 }
@@ -2140,19 +2133,17 @@ Compute the physics on a specific particle
 */
 static void CG_EvaluateParticlePhysics( particle_t *p )
 {
-	particleSystem_t *ps = p->parent->parent;
-	baseParticle_t   *bp = p->class_;
-	vec3_t           acceleration, newOrigin;
-	vec3_t           mins, maxs;
-	float            deltaTime, bounce, radius, dot;
-	trace_t          trace;
-	vec3_t           transform[ 3 ];
-
 	if ( p->atRest )
 	{
 		VectorClear( p->velocity );
 		return;
 	}
+
+	particleSystem_t *ps = p->parent->parent;
+	baseParticle_t *bp = p->class_;
+
+	vec3_t acceleration;
+	vec3_t transform[ 3 ];
 
 	switch ( bp->accMoveType )
 	{
@@ -2262,6 +2253,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	}
 
 	// Some particles have a visual radius that differs from their collision radius
+	float radius;
 	if ( bp->physicsRadius )
 	{
 		radius = bp->physicsRadius;
@@ -2273,13 +2265,16 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 		                            p->radius.delay ) );
 	}
 
+	vec3_t mins, maxs;
 	VectorSet( mins, -radius, -radius, -radius );
 	VectorSet( maxs, radius, radius, radius );
 
-	bounce = CG_RandomiseValue( bp->bounceFrac, bp->bounceFracRandFrac );
+	float bounce = CG_RandomiseValue( bp->bounceFrac, bp->bounceFracRandFrac );
 
-	deltaTime = ( float )( cg.time - p->lastEvalTime ) * 0.001;
+	float deltaTime = ( float )( cg.time - p->lastEvalTime ) * 0.001;
 	VectorMA( p->velocity, deltaTime, acceleration, p->velocity );
+
+	vec3_t newOrigin;
 	VectorMA( p->origin, deltaTime, p->velocity, newOrigin );
 	p->lastEvalTime = cg.time;
 
@@ -2300,6 +2295,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 		return;
 	}
 
+	trace_t trace;
 	CG_Trace( &trace, p->origin, mins, maxs, newOrigin, CG_AttachmentCentNum( &ps->attachment ),
 	          CONTENTS_SOLID, 0 );
 
@@ -2326,7 +2322,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 	}
 
 	//reflect the velocity on the trace plane
-	dot = DotProduct( p->velocity, trace.plane.normal );
+	float dot = DotProduct( p->velocity, trace.plane.normal );
 	VectorMA( p->velocity, -2.0f * dot, trace.plane.normal, p->velocity );
 
 	VectorScale( p->velocity, bounce, p->velocity );
@@ -2370,8 +2366,6 @@ CG_Radix
 static void CG_Radix( int bits, int size, particle_t **source, particle_t **dest )
 {
 	int count[ 256 ];
-	int index[ 256 ];
-
 	memset( count, 0, sizeof( count ) );
 
 	for ( int i = 0; i < size; i++ )
@@ -2379,6 +2373,7 @@ static void CG_Radix( int bits, int size, particle_t **source, particle_t **dest
 		count[ GETKEY( source[ i ]->sortKey, bits ) ]++;
 	}
 
+	int index[ 256 ];
 	index[ 0 ] = 0;
 
 	for ( int i = 1; i < 256; i++ )
@@ -2416,9 +2411,6 @@ Depth sort the particles
 */
 static void CG_CompactAndSortParticles()
 {
-	int    numParticles;
-	vec3_t delta;
-
 	for ( int i = 0; i < MAX_PARTICLES; i++ )
 	{
 		sortedParticles[ i ] = &particles[ i ];
@@ -2446,11 +2438,12 @@ static void CG_CompactAndSortParticles()
 		}
 	}
 
-	numParticles = n;
+	int numParticles = n;
 
 	//set sort keys
 	for ( int i = 0; i < numParticles; i++ )
 	{
+		vec3_t delta;
 		VectorSubtract( sortedParticles[ i ]->origin, cg.refdef.vieworg, delta );
 		sortedParticles[ i ]->sortKey = ( int ) DotProduct( delta, delta );
 	}
@@ -2479,25 +2472,18 @@ Actually render a particle
 */
 static void CG_RenderParticle( particle_t *p )
 {
-	float                timeFrac, scale;
-	int                  index;
-	baseParticle_t       *bp = p->class_;
-	particleSystem_t     *ps = p->parent->parent;
-	baseParticleSystem_t *bps = ps->class_;
-	vec3_t               alight, dlight, lightdir;
-	vec3_t               up = { 0.0f, 0.0f, 1.0f };
+	float timeFrac = CG_CalculateTimeFrac( p->birthTime, p->lifeTime, 0 );
 
-	refEntity_t re{};
-
-	timeFrac = CG_CalculateTimeFrac( p->birthTime, p->lifeTime, 0 );
-
-	scale = CG_LerpValues( p->radius.initial,
+	float scale = CG_LerpValues( p->radius.initial,
 	                       p->radius.final,
 	                       CG_CalculateTimeFrac( p->birthTime,
 	                           p->lifeTime,
 	                           p->radius.delay ) );
 
+	refEntity_t re{};
 	re.shaderTime = float(double(p->birthTime) * 0.001);
+
+	baseParticle_t *bp = p->class_;
 
 	if ( bp->numFrames ) //shader based
 	{
@@ -2506,6 +2492,7 @@ static void CG_RenderParticle( particle_t *p )
 		//apply environmental lighting to the particle
 		if ( bp->realLight )
 		{
+			vec3_t alight, dlight, lightdir;
 			trap_R_LightForPoint( p->origin, alight, dlight, lightdir );
 
 			re.shaderRGBA.SetRed( alight[0] );
@@ -2548,6 +2535,7 @@ static void CG_RenderParticle( particle_t *p )
 			return;
 		}
 
+		int index;
 		if ( bp->framerate == 0.0f )
 		{
 			//sync animation time to lifeTime of particle
@@ -2588,6 +2576,7 @@ static void CG_RenderParticle( particle_t *p )
 			}
 			else
 			{
+				vec3_t up = { 0.0f, 0.0f, 1.0f };
 				ProjectPointOnPlane( re.axis[ 2 ], up, re.axis[ 0 ] );
 				VectorNormalize( re.axis[ 2 ] );
 				CrossProduct( re.axis[ 2 ], re.axis[ 0 ], re.axis[ 1 ] );
@@ -2617,6 +2606,9 @@ static void CG_RenderParticle( particle_t *p )
 		re.frame = p->lf.frame;
 		re.backlerp = p->lf.backlerp;
 	}
+
+	particleSystem_t *ps = p->parent->parent;
+	baseParticleSystem_t *bps = ps->class_;
 
 	if ( bps->thirdPersonOnly &&
 	     CG_AttachmentCentNum( &ps->attachment ) == cg.snap->ps.clientNum &&
@@ -2650,8 +2642,6 @@ Add particles to the scene
 */
 void CG_AddParticles()
 {
-	int        numPS = 0, numPE = 0, numP = 0;
-
 	//remove expired particle systems
 	CG_GarbageCollectParticleSystems();
 
@@ -2682,6 +2672,8 @@ void CG_AddParticles()
 
 	if ( cg_debugParticles.Get() >= 2 )
 	{
+		int numPS = 0, numPE = 0, numP = 0;
+
 		for ( int i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
 		{
 			if ( particleSystems[ i ].valid )
@@ -2719,9 +2711,7 @@ Particle system entity client code
 */
 void CG_ParticleSystemEntity( centity_t *cent )
 {
-	entityState_t *es;
-
-	es = &cent->currentState;
+	entityState_t *es = &cent->currentState;
 
 	if ( es->eFlags & EF_NODRAW )
 	{
@@ -2776,15 +2766,12 @@ Test a particle system
 */
 void CG_TestPS_f()
 {
-	vec3_t origin;
-	vec3_t up = { 0.0f, 0.0f, 1.0f };
-	char   psName[ MAX_QPATH ];
-
 	if ( trap_Argc() < 2 )
 	{
 		return;
 	}
 
+	char psName[ MAX_QPATH ];
 	Q_strncpyz( psName, CG_Argv( 1 ), MAX_QPATH );
 	testPSHandle = CG_RegisterParticleSystem( psName );
 
@@ -2794,11 +2781,13 @@ void CG_TestPS_f()
 
 		testPS = CG_SpawnNewParticleSystem( testPSHandle );
 
+		vec3_t origin;
 		VectorMA( cg.refdef.vieworg, 100, cg.refdef.viewaxis[ 0 ], origin );
 
 		if ( CG_IsParticleSystemValid( &testPS ) )
 		{
 			CG_SetAttachmentPoint( &testPS->attachment, origin );
+			vec3_t up = { 0.0f, 0.0f, 1.0f };
 			CG_SetParticleSystemNormal( testPS, up );
 			CG_AttachToPoint( &testPS->attachment );
 		}
