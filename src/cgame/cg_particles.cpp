@@ -144,16 +144,14 @@ Introduce a new particle into the world
 */
 static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *parent )
 {
-	int               i;
-	particle_t        *p = nullptr;
 	particleEjector_t *pe = parent;
 	particleSystem_t  *ps = parent->parent;
 	vec3_t            attachmentPoint, attachmentVelocity;
 	vec3_t            transform[ 3 ];
 
-	for ( i = 0; i < MAX_PARTICLES; i++ )
+	for ( int i = 0; i < MAX_PARTICLES; i++ )
 	{
-		p = &particles[ i ];
+		particle_t *p = &particles[ i ];
 
 		//FIXME: the + 1 may be unnecessary
 		if ( !p->valid && cg.clientFrame > p->frameWhenInvalidated + 1 )
@@ -382,18 +380,13 @@ introducing new particles
 */
 static void CG_SpawnNewParticles()
 {
-	int                   i, j;
-	particle_t            *p;
-	particleSystem_t      *ps;
-	particleEjector_t     *pe;
-	baseParticleEjector_t *bpe;
 	float                 lerpFrac;
 	int                   count;
 
-	for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
+	for ( int i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
 	{
-		pe = &particleEjectors[ i ];
-		ps = pe->parent;
+		particleEjector_t *pe = &particleEjectors[ i ];
+		particleSystem_t *ps = pe->parent;
 
 		if ( pe->valid )
 		{
@@ -403,7 +396,7 @@ static void CG_SpawnNewParticles()
 				continue;
 			}
 
-			bpe = particleEjectors[ i ].class_;
+			baseParticleEjector_t *bpe = particleEjectors[ i ].class_;
 
 			//if this system is scheduled for removal don't make any new particles
 			if ( !ps->lazyRemove )
@@ -411,7 +404,7 @@ static void CG_SpawnNewParticles()
 				while ( pe->nextEjectionTime <= cg.time &&
 				        ( pe->count > 0 || pe->totalParticles == PARTICLES_INFINITE ) )
 				{
-					for ( j = 0; j < bpe->numParticles; j++ )
+					for ( int j = 0; j < bpe->numParticles; j++ )
 					{
 						CG_SpawnNewParticle( bpe->particles[ j ], pe );
 					}
@@ -436,9 +429,9 @@ static void CG_SpawnNewParticles()
 				count = 0;
 
 				//wait for child particles to die before declaring this pe invalid
-				for ( j = 0; j < MAX_PARTICLES; j++ )
+				for ( int j = 0; j < MAX_PARTICLES; j++ )
 				{
-					p = &particles[ j ];
+					particle_t *p = &particles[ j ];
 
 					if ( p->valid && p->parent == pe )
 					{
@@ -465,13 +458,11 @@ Allocate a new particle ejector
 static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe,
 		particleSystem_t *parent )
 {
-	int               i;
-	particleEjector_t *pe = nullptr;
 	particleSystem_t  *ps = parent;
 
-	for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
+	for ( int i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
 	{
-		pe = &particleEjectors[ i ];
+		particleEjector_t *pe = &particleEjectors[ i ];
 
 		if ( !pe->valid )
 		{
@@ -514,8 +505,6 @@ Allocate a new particle system
 */
 particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 {
-	int                  i, j;
-	particleSystem_t     *ps = nullptr;
 	baseParticleSystem_t *bps = &baseParticleSystems[ psHandle - 1 ];
 
 	if ( !bps->registered )
@@ -524,9 +513,9 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 		return nullptr;
 	}
 
-	for ( i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
+	for ( int i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
 	{
-		ps = &particleSystems[ i ];
+		particleSystem_t *ps = &particleSystems[ i ];
 
 		if ( !ps->valid )
 		{
@@ -542,7 +531,7 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 			// use "up" as an arbitrary (non-null) "last" normal
 			VectorSet( ps->lastNormal, 0, 0, 1 );
 
-			for ( j = 0; j < bps->numEjectors; j++ )
+			for ( int j = 0; j < bps->numEjectors; j++ )
 			{
 				CG_SpawnNewParticleEjector( bps->ejectors[ j ], ps );
 			}
@@ -569,14 +558,9 @@ Load the shaders required for a particle system
 */
 qhandle_t CG_RegisterParticleSystem( const char *name )
 {
-	int                   i, j, k, l;
-	baseParticleSystem_t  *bps;
-	baseParticleEjector_t *bpe;
-	baseParticle_t        *bp;
-
-	for ( i = 0; i < MAX_BASEPARTICLE_SYSTEMS; i++ )
+	for ( int i = 0; i < MAX_BASEPARTICLE_SYSTEMS; i++ )
 	{
-		bps = &baseParticleSystems[ i ];
+		baseParticleSystem_t *bps = &baseParticleSystems[ i ];
 
 		if ( !Q_strnicmp( bps->name, name, MAX_QPATH ) )
 		{
@@ -586,21 +570,21 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 				return i + 1;
 			}
 
-			for ( j = 0; j < bps->numEjectors; j++ )
+			for ( int j = 0; j < bps->numEjectors; j++ )
 			{
-				bpe = bps->ejectors[ j ];
+				baseParticleEjector_t *bpe = bps->ejectors[ j ];
 
-				for ( l = 0; l < bpe->numParticles; l++ )
+				for ( int l = 0; l < bpe->numParticles; l++ )
 				{
-					bp = bpe->particles[ l ];
+					baseParticle_t *bp = bpe->particles[ l ];
 
-					for ( k = 0; k < bp->numFrames; k++ )
+					for ( int k = 0; k < bp->numFrames; k++ )
 					{
 						bp->shaders[ k ] = trap_R_RegisterShader(bp->shaderNames[k],
 											 RSF_SPRITE);
 					}
 
-					for ( k = 0; k < bp->numModels; k++ )
+					for ( int k = 0; k < bp->numModels; k++ )
 					{
 						bp->models[ k ] = trap_R_RegisterModel( bp->modelNames[ k ] );
 					}
@@ -830,8 +814,6 @@ Parse a particle section
 static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 {
 	float number, randFrac;
-	int   i;
-
 	// read optional parameters
 	while ( 1 )
 	{
@@ -1057,7 +1039,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 		}
 		else if ( !Q_stricmp( token, "velocity" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for ( int i = 0; i <= 2; i++ )
 			{
 				token = COM_Parse( text_p );
 
@@ -1080,7 +1062,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 		}
 		else if ( !Q_stricmp( token, "velocityPoint" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for ( int i = 0; i <= 2; i++ )
 			{
 				token = COM_Parse( text_p );
 
@@ -1129,7 +1111,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 		}
 		else if ( !Q_stricmp( token, "acceleration" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for ( int i = 0; i <= 2; i++ )
 			{
 				token = COM_Parse( text_p );
 
@@ -1152,7 +1134,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 		}
 		else if ( !Q_stricmp( token, "accelerationPoint" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for ( int i = 0; i <= 2; i++ )
 			{
 				token = COM_Parse( text_p );
 
@@ -1176,7 +1158,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 		///
 		else if ( !Q_stricmp( token, "displacement" ) )
 		{
-			for ( i = 0; i <= 2; i++ )
+			for ( int i = 0; i <= 2; i++ )
 			{
 				token = COM_Parse( text_p );
 
@@ -1200,7 +1182,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 				CG_ParseValueAndVariance( token, nullptr, &randFrac, true );
 			}
 
-			for ( i = 0; i < 3; i++ )
+			for ( int i = 0; i < 3; i++ )
 			{
 				// convert randDisplacement from proportions to absolute values
 				if ( bp->displacement[ i ] != 0 )
@@ -1831,7 +1813,7 @@ Load particle systems from .particle files
 */
 void CG_LoadParticleSystems()
 {
-	int  i, j, numFiles, fileLen;
+	int  j, numFiles, fileLen;
 	char fileList[ MAX_PARTICLE_FILES * MAX_QPATH ];
 	char fileName[ MAX_QPATH ];
 	char *filePtr;
@@ -1841,19 +1823,19 @@ void CG_LoadParticleSystems()
 	numBaseParticleEjectors = 0;
 	numBaseParticles = 0;
 
-	for ( i = 0; i < MAX_BASEPARTICLE_SYSTEMS; i++ )
+	for ( int i = 0; i < MAX_BASEPARTICLE_SYSTEMS; i++ )
 	{
 		baseParticleSystem_t *bps = &baseParticleSystems[ i ];
 		memset( bps, 0, sizeof( baseParticleSystem_t ) );
 	}
 
-	for ( i = 0; i < MAX_BASEPARTICLE_EJECTORS; i++ )
+	for ( int i = 0; i < MAX_BASEPARTICLE_EJECTORS; i++ )
 	{
 		baseParticleEjector_t *bpe = &baseParticleEjectors[ i ];
 		memset( bpe, 0, sizeof( baseParticleEjector_t ) );
 	}
 
-	for ( i = 0; i < MAX_BASEPARTICLES; i++ )
+	for ( int i = 0; i < MAX_BASEPARTICLES; i++ )
 	{
 		baseParticle_t *bp = &baseParticles[ i ];
 		memset( bp, 0, sizeof( baseParticle_t ) );
@@ -1864,7 +1846,7 @@ void CG_LoadParticleSystems()
 	                                fileList, MAX_PARTICLE_FILES * MAX_QPATH );
 	filePtr = fileList;
 
-	for ( i = 0; i < numFiles; i++, filePtr += fileLen + 1 )
+	for ( int i = 0; i < numFiles; i++, filePtr += fileLen + 1 )
 	{
 		fileLen = strlen( filePtr );
 		Q_strncpyz( fileName, "scripts/", sizeof fileName );
@@ -1874,7 +1856,7 @@ void CG_LoadParticleSystems()
 	}
 
 	//connect any child systems to their psHandle
-	for ( i = 0; i < numBaseParticles; i++ )
+	for ( int i = 0; i < numBaseParticles; i++ )
 	{
 		baseParticle_t *bp = &baseParticles[ i ];
 
@@ -1988,9 +1970,6 @@ unable to manipulate this particle system any longer.
 */
 void CG_DestroyParticleSystem( particleSystem_t **ps )
 {
-	int               i;
-	particleEjector_t *pe;
-
 	if ( *ps == nullptr || !( *ps )->valid )
 	{
 		Log::Warn( "tried to destroy a NULL particle system" );
@@ -2002,9 +1981,9 @@ void CG_DestroyParticleSystem( particleSystem_t **ps )
 		Log::Debug( "PS destroyed" );
 	}
 
-	for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
+	for ( int i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
 	{
-		pe = &particleEjectors[ i ];
+		particleEjector_t *pe = &particleEjectors[ i ];
 
 		if ( pe->valid && pe->parent == *ps )
 		{
@@ -2024,9 +2003,6 @@ Test a particle system for 'count infinite' ejectors
 */
 bool CG_IsParticleSystemInfinite( particleSystem_t *ps )
 {
-	int               i;
-	particleEjector_t *pe;
-
 	if ( ps == nullptr )
 	{
 		Log::Warn( "tried to test a NULL particle system" );
@@ -2045,9 +2021,9 @@ bool CG_IsParticleSystemInfinite( particleSystem_t *ps )
 		return false;
 	}
 
-	for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
+	for ( int i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
 	{
-		pe = &particleEjectors[ i ];
+		particleEjector_t *pe = &particleEjectors[ i ];
 
 		if ( pe->valid && pe->parent == ps )
 		{
@@ -2092,14 +2068,12 @@ Destroy inactive particle systems
 */
 static void CG_GarbageCollectParticleSystems()
 {
-	int               i, j, count;
-	particleSystem_t  *ps;
-	particleEjector_t *pe;
+	int count;
 	int               centNum;
 
-	for ( i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
+	for ( int i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
 	{
-		ps = &particleSystems[ i ];
+		particleSystem_t *ps = &particleSystems[ i ];
 		count = 0;
 
 		//don't bother checking already invalid systems
@@ -2108,9 +2082,9 @@ static void CG_GarbageCollectParticleSystems()
 			continue;
 		}
 
-		for ( j = 0; j < MAX_PARTICLE_EJECTORS; j++ )
+		for ( int j = 0; j < MAX_PARTICLE_EJECTORS; j++ )
 		{
-			pe = &particleEjectors[ j ];
+			particleEjector_t *pe = &particleEjectors[ j ];
 
 			if ( pe->valid && pe->parent == ps )
 			{
@@ -2397,23 +2371,22 @@ static void CG_Radix( int bits, int size, particle_t **source, particle_t **dest
 {
 	int count[ 256 ];
 	int index[ 256 ];
-	int i;
 
 	memset( count, 0, sizeof( count ) );
 
-	for ( i = 0; i < size; i++ )
+	for ( int i = 0; i < size; i++ )
 	{
 		count[ GETKEY( source[ i ]->sortKey, bits ) ]++;
 	}
 
 	index[ 0 ] = 0;
 
-	for ( i = 1; i < 256; i++ )
+	for ( int i = 1; i < 256; i++ )
 	{
 		index[ i ] = index[ i - 1 ] + count[ i - 1 ];
 	}
 
-	for ( i = 0; i < size; i++ )
+	for ( int i = 0; i < size; i++ )
 	{
 		dest[ index[ GETKEY( source[ i ]->sortKey, bits ) ]++ ] = source[ i ];
 	}
@@ -2443,39 +2416,40 @@ Depth sort the particles
 */
 static void CG_CompactAndSortParticles()
 {
-	int    i, j = 0;
 	int    numParticles;
 	vec3_t delta;
 
-	for ( i = 0; i < MAX_PARTICLES; i++ )
+	for ( int i = 0; i < MAX_PARTICLES; i++ )
 	{
 		sortedParticles[ i ] = &particles[ i ];
 	}
 
-	for ( i = MAX_PARTICLES - 1; i >= 0; i-- )
+	int n = 0;
+	for ( n = MAX_PARTICLES - 1; n >= 0; n-- )
 	{
-		if ( sortedParticles[ i ]->valid )
+		int i = 0;
+		if ( sortedParticles[ n ]->valid )
 		{
 			//find the first hole
-			while ( j < MAX_PARTICLES && sortedParticles[ j ]->valid )
+			while ( i < MAX_PARTICLES && sortedParticles[ i ]->valid )
 			{
-				j++;
+				i++;
 			}
 
 			//no more holes
-			if ( j >= i )
+			if ( i >= n )
 			{
 				break;
 			}
 
-			sortedParticles[ j ] = sortedParticles[ i ];
+			sortedParticles[ i ] = sortedParticles[ n ];
 		}
 	}
 
-	numParticles = i;
+	numParticles = n;
 
 	//set sort keys
-	for ( i = 0; i < numParticles; i++ )
+	for ( int i = 0; i < numParticles; i++ )
 	{
 		VectorSubtract( sortedParticles[ i ]->origin, cg.refdef.vieworg, delta );
 		sortedParticles[ i ]->sortKey = ( int ) DotProduct( delta, delta );
@@ -2485,12 +2459,12 @@ static void CG_CompactAndSortParticles()
 
 	//FIXME: wtf?
 	//reverse order of particles array
-	for ( i = 0; i < numParticles; i++ )
+	for ( int i = 0; i < numParticles; i++ )
 	{
 		radixBuffer[ i ] = sortedParticles[ numParticles - i - 1 ];
 	}
 
-	for ( i = 0; i < numParticles; i++ )
+	for ( int i = 0; i < numParticles; i++ )
 	{
 		sortedParticles[ i ] = radixBuffer[ i ];
 	}
@@ -2676,8 +2650,6 @@ Add particles to the scene
 */
 void CG_AddParticles()
 {
-	int        i;
-	particle_t *p;
 	int        numPS = 0, numPE = 0, numP = 0;
 
 	//remove expired particle systems
@@ -2689,9 +2661,9 @@ void CG_AddParticles()
 	//sorting
 	CG_CompactAndSortParticles();
 
-	for ( i = 0; i < MAX_PARTICLES; i++ )
+	for ( int i = 0; i < MAX_PARTICLES; i++ )
 	{
-		p = sortedParticles[ i ];
+		particle_t *p = sortedParticles[ i ];
 
 		if ( p->valid )
 		{
@@ -2710,7 +2682,7 @@ void CG_AddParticles()
 
 	if ( cg_debugParticles.Get() >= 2 )
 	{
-		for ( i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
+		for ( int i = 0; i < MAX_PARTICLE_SYSTEMS; i++ )
 		{
 			if ( particleSystems[ i ].valid )
 			{
@@ -2718,7 +2690,7 @@ void CG_AddParticles()
 			}
 		}
 
-		for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
+		for ( int i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
 		{
 			if ( particleEjectors[ i ].valid )
 			{
@@ -2726,7 +2698,7 @@ void CG_AddParticles()
 			}
 		}
 
-		for ( i = 0; i < MAX_PARTICLES; i++ )
+		for ( int i = 0; i < MAX_PARTICLES; i++ )
 		{
 			if ( particles[ i ].valid )
 			{
