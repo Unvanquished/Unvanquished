@@ -2787,6 +2787,7 @@ void SP_func_spawn( gentity_t *self )
 
 static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, int )
 {
+	G_BotRemoveObstacle( self->num() );
 	trap_UnlinkEntity( self );
 
 	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self,
@@ -2796,6 +2797,9 @@ static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attac
 
 static void func_destructable_reset( gentity_t *self )
 {
+	glm::vec3 mins = VEC2GLM( self->r.absmin );
+	glm::vec3 maxs = VEC2GLM( self->r.absmax );
+	G_BotAddObstacle( mins, maxs, self->num() );
 	G_ResetIntField(&self->health, true, self->config.health, self->eclass->config.health, 100);
 }
 
