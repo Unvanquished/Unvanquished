@@ -2787,6 +2787,7 @@ void SP_func_spawn( gentity_t *self )
 
 static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, int )
 {
+	G_FireEntity( self, attacker );
 	G_BotRemoveObstacle( self->num() );
 	trap_UnlinkEntity( self );
 
