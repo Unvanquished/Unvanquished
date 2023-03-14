@@ -55,6 +55,11 @@ static void CG_Rocket_EventShow()
 	Rocket_DocumentAction( CG_Argv( 1 ), "show" );
 }
 
+static void CG_Rocket_EventBlurAll()
+{
+	Rocket_DocumentAction( "", "blurall" );
+}
+
 static void CG_Rocket_EventBlur()
 {
 	Rocket_DocumentAction( CG_Argv( 1 ), "blur" );
@@ -299,6 +304,7 @@ struct eventCmd_t
 static const eventCmd_t eventCmdList[] =
 {
 	{ "blur", &CG_Rocket_EventBlur },
+	{ "blurall", &CG_Rocket_EventBlurAll },
 	{ "buildDS", &CG_Rocket_BuildDS },
 	{ "close", &CG_Rocket_EventClose },
 	{ "exec", &CG_Rocket_EventExec },
