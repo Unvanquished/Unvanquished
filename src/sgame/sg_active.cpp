@@ -900,6 +900,8 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		return;
 	}
 
+	ASSERT( G_IsPlayableTeam( G_Team(ent) ) );
+
 	gclient_t *client = ent->client;
 	playerState_t *ps = &client->ps;
 	team_t team       = (team_t)ps->persistant[PERS_TEAM];
