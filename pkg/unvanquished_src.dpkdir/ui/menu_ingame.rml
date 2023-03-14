@@ -21,7 +21,7 @@
 					<sidesection  id="sidebar_ingame">
 						<h1><translate>Match menu</translate></h1>
 						<blocklink class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'><translate>Leave match</translate></blocklink>
-						<blocklink class="leftalign" onclick='Events.pushevent("hide menu_ingame", event)'><translate>Resume action</translate></blocklink>
+						<blocklink class="leftalign" onclick='Events.pushevent("blurall", event)'><translate>Resume action</translate></blocklink>
 
 						<h2><translate>Teams</translate></h2>
 						<indent>
