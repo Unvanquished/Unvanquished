@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/FileSystem.h"
 #include "cg_local.h"
 
+static Log::Logger logger("cgame.particles", "[Particle Systems]");
+
 static baseParticleSystem_t  baseParticleSystems[ MAX_BASEPARTICLE_SYSTEMS ];
 static baseParticleEjector_t baseParticleEjectors[ MAX_BASEPARTICLE_EJECTORS ];
 static baseParticle_t        baseParticles[ MAX_BASEPARTICLES ];
@@ -290,7 +292,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 				case PMT_NORMAL:
 					if ( !ps->normalValid )
 					{
-						Log::Warn("a particle with velocityType "
+						logger.Warn("a particle with velocityType "
 						           "normal has no normal" );
 						return nullptr;
 					}
@@ -369,7 +371,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 		}
 	}
 
-	Log::Notice( "MAX_PARTICLES hit" );
+	logger.Notice( "MAX_PARTICLES hit" );
 	return nullptr;
 }
 
@@ -495,14 +497,14 @@ static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe
 
 			if ( cg_debugParticles.Get() >= 1 )
 			{
-				Log::Debug( "PE %s created", ps->class_->name );
+				logger.Debug( "PE %s created", ps->class_->name );
 			}
 
 			return pe;
 		}
 	}
 
-	Log::Notice( "MAX_PARTICLE_EJECTORS hit" );
+	logger.Notice( "MAX_PARTICLE_EJECTORS hit" );
 	return nullptr;
 }
 
@@ -521,7 +523,7 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 
 	if ( !bps->registered )
 	{
-		Log::Warn("a particle system has not been registered yet" );
+		logger.Warn("a particle system has not been registered yet" );
 		return nullptr;
 	}
 
@@ -550,14 +552,14 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 
 			if ( cg_debugParticles.Get() >= 1 )
 			{
-				Log::Debug( "PS %s created", bps->name );
+				logger.Debug( "PS %s created", bps->name );
 			}
 
 			return ps;
 		}
 	}
 
-	Log::Notice( "MAX_PARTICLE_SYSTEMS hit" );
+	logger.Notice( "MAX_PARTICLE_SYSTEMS hit" );
 	return nullptr;
 }
 
@@ -641,7 +643,7 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 
 			if ( cg_debugParticles.Get() >= 1 )
 			{
-				Log::Debug( "Registered particle system %s", name );
+				logger.Debug( "Registered particle system %s", name );
 			}
 
 			bps->registered = true;
@@ -651,7 +653,7 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 		}
 	}
 
-	Log::Warn("failed to register particle system %s", name);
+	logger.Warn("failed to register particle system %s", name);
 	return 0;
 }
 
@@ -917,7 +919,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 		{
 			if ( bp->numModels > 0 )
 			{
-				Log::Warn("'shader' not allowed in "
+				logger.Warn("'shader' not allowed in "
 				           "conjunction with 'model'" );
 				break;
 			}
@@ -944,7 +946,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 		{
 			if ( bp->numFrames > 0 )
 			{
-				Log::Warn("'model' not allowed in "
+				logger.Warn("'model' not allowed in "
 				           "conjunction with 'shader'" );
 				break;
 			}
@@ -990,7 +992,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 			bp->modelAnimation.loopFrames = atoi( token );
 			if ( bp->modelAnimation.loopFrames && bp->modelAnimation.loopFrames != bp->modelAnimation.numFrames )
 			{
-				Log::Warn("CG_ParseParticle: loopFrames != numFrames");
+				logger.Warn("CG_ParseParticle: loopFrames != numFrames");
 				bp->modelAnimation.loopFrames = bp->modelAnimation.numFrames;
 			}
 
@@ -1389,13 +1391,13 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 				}
 				else
 				{
-					Log::Warn( "missing '{'" );
+					logger.Warn( "missing '{'" );
 					break;
 				}
 			}
 			else
 			{
-				Log::Warn( "missing '{'" );
+				logger.Warn( "missing '{'" );
 				break;
 			}
 		}
@@ -1487,7 +1489,7 @@ static bool CG_ParseParticle( baseParticle_t *bp, const char **text_p )
 		}
 		else
 		{
-			Log::Warn( "unknown token '%s' in particle", token );
+			logger.Warn( "unknown token '%s' in particle", token );
 			return false;
 		}
 	}
@@ -1535,19 +1537,19 @@ static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **te
 
 			if ( !CG_ParseParticle( &baseParticles[ numBaseParticles ], text_p ) )
 			{
-				Log::Warn( "failed to parse particle" );
+				logger.Warn( "failed to parse particle" );
 				return false;
 			}
 
 			if ( bpe->numParticles == MAX_PARTICLES_PER_EJECTOR )
 			{
-				Log::Warn( "ejector has > %d particles", MAX_PARTICLES_PER_EJECTOR );
+				logger.Warn( "ejector has > %d particles", MAX_PARTICLES_PER_EJECTOR );
 				return false;
 			}
 
 			if ( numBaseParticles == MAX_BASEPARTICLES )
 			{
-				Log::Warn( "maximum number of particles (%d) reached", MAX_BASEPARTICLES );
+				logger.Warn( "maximum number of particles (%d) reached", MAX_BASEPARTICLES );
 				return false;
 			}
 
@@ -1634,7 +1636,7 @@ static bool CG_ParseParticleEjector( baseParticleEjector_t *bpe, const char **te
 		}
 		else
 		{
-			Log::Warn( "unknown token '%s' in particle ejector", token );
+			logger.Warn( "unknown token '%s' in particle ejector", token );
 			return false;
 		}
 	}
@@ -1667,7 +1669,7 @@ static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text
 		{
 			if ( !CG_ParseParticleEjector( &baseParticleEjectors[ numBaseParticleEjectors ], text_p ) )
 			{
-				Log::Warn( "failed to parse particle ejector" );
+				logger.Warn( "failed to parse particle ejector" );
 				return false;
 			}
 
@@ -1677,19 +1679,19 @@ static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text
 			if ( bpe->totalParticles == PARTICLES_INFINITE &&
 			     ( bpe->eject.initial == 0.0f || bpe->eject.final == 0.0f ) )
 			{
-				Log::Warn( "ejector with 'count infinite' potentially has zero period" );
+				logger.Warn( "ejector with 'count infinite' potentially has zero period" );
 				return false;
 			}
 
 			if ( bps->numEjectors == MAX_EJECTORS_PER_SYSTEM )
 			{
-				Log::Warn( "particle system has > %d ejectors", MAX_EJECTORS_PER_SYSTEM );
+				logger.Warn( "particle system has > %d ejectors", MAX_EJECTORS_PER_SYSTEM );
 				return false;
 			}
 
 			if ( numBaseParticleEjectors == MAX_BASEPARTICLE_EJECTORS )
 			{
-				Log::Warn( "maximum number of particle ejectors (%d) reached",
+				logger.Warn( "maximum number of particle ejectors (%d) reached",
 				           MAX_BASEPARTICLE_EJECTORS );
 				return false;
 			}
@@ -1711,14 +1713,14 @@ static bool CG_ParseParticleSystem( baseParticleSystem_t *bps, const char **text
 		{
 			if ( cg_debugParticles.Get() >= 1 )
 			{
-				Log::Debug( "Parsed particle system %s", name );
+				logger.Debug( "Parsed particle system %s", name );
 			}
 
 			return true; //reached the end of this particle system
 		}
 		else
 		{
-			Log::Warn( "unknown token '%s' in particle system %s", token, bps->name );
+			logger.Warn( "unknown token '%s' in particle system %s", token, bps->name );
 			return false;
 		}
 	}
@@ -1744,7 +1746,7 @@ static bool CG_ParseParticleFile( const char *fileName )
 	std::string text = FS::PakPath::ReadFile( fileName, err );
 	if ( err )
 	{
-		Log::Warn( "couldn't read particle file '%s': %s", fileName, err.message() );
+		logger.Warn( "couldn't read particle file '%s': %s", fileName, err.message() );
 		return false;
 	}
 
@@ -1769,7 +1771,7 @@ static bool CG_ParseParticleFile( const char *fileName )
 
 				if ( !CG_ParseParticleSystem( &baseParticleSystems[ numBaseParticleSystems ], &text_p, psName ) )
 				{
-					Log::Warn( "%s: failed to parse particle system %s", fileName, psName );
+					logger.Warn( "%s: failed to parse particle system %s", fileName, psName );
 					return false;
 				}
 
@@ -1778,7 +1780,7 @@ static bool CG_ParseParticleFile( const char *fileName )
 
 				if ( numBaseParticleSystems == MAX_BASEPARTICLE_SYSTEMS )
 				{
-					Log::Warn( "maximum number of particle systems (%d) reached",
+					logger.Warn( "maximum number of particle systems (%d) reached",
 					           MAX_BASEPARTICLE_SYSTEMS );
 					return false;
 				}
@@ -1787,7 +1789,7 @@ static bool CG_ParseParticleFile( const char *fileName )
 			}
 			else
 			{
-				Log::Warn( "unnamed particle system" );
+				logger.Warn( "unnamed particle system" );
 				return false;
 			}
 		}
@@ -1800,7 +1802,7 @@ static bool CG_ParseParticleFile( const char *fileName )
 			{
 				if ( !Q_stricmp( baseParticleSystems[ i ].name, psName ) )
 				{
-					Log::Warn( "a particle system is already named %s", psName );
+					logger.Warn( "a particle system is already named %s", psName );
 					break;
 				}
 			}
@@ -1815,7 +1817,7 @@ static bool CG_ParseParticleFile( const char *fileName )
 		}
 		else
 		{
-			Log::Warn( "particle system already named" );
+			logger.Warn( "particle system already named" );
 			return false;
 		}
 	}
@@ -1870,7 +1872,7 @@ void CG_LoadParticleSystems()
 		fileLen = strlen( filePtr );
 		Q_strncpyz( fileName, "scripts/", sizeof fileName );
 		Q_strcat( fileName, sizeof fileName, filePtr );
-		// Log::Notice(_( "...loading '%s'"), fileName );
+		// logger.Notice(_( "...loading '%s'"), fileName );
 		CG_ParseParticleFile( fileName );
 	}
 
@@ -1899,7 +1901,7 @@ void CG_LoadParticleSystems()
 			if ( j == numBaseParticleSystems )
 			{
 				//couldn't find named particle system
-				Log::Warn( "failed to find child %s", bp->childSystemName );
+				logger.Warn( "failed to find child %s", bp->childSystemName );
 				bp->childSystemName[ 0 ] = '\0';
 			}
 		}
@@ -1924,7 +1926,7 @@ void CG_LoadParticleSystems()
 			if ( j == numBaseParticleSystems )
 			{
 				//couldn't find named particle system
-				Log::Warn( "failed to find onDeath system %s", bp->onDeathSystemName );
+				logger.Warn( "failed to find onDeath system %s", bp->onDeathSystemName );
 				bp->onDeathSystemName[ 0 ] = '\0';
 			}
 		}
@@ -1940,7 +1942,7 @@ void CG_SetParticleSystemNormal( particleSystem_t *ps, vec3_t normal )
 {
 	if ( ps == nullptr || !ps->valid )
 	{
-		Log::Warn( "tried to modify a NULL particle system" );
+		logger.Warn( "tried to modify a NULL particle system" );
 		return;
 	}
 
@@ -1960,7 +1962,7 @@ void CG_SetParticleSystemLastNormal( particleSystem_t *ps, const vec3_t normal )
 {
 	if ( ps == nullptr || !ps->valid )
 	{
-		Log::Warn( "tried to modify a NULL particle system" );
+		logger.Warn( "tried to modify a NULL particle system" );
 		return;
 	}
 
@@ -1994,13 +1996,13 @@ void CG_DestroyParticleSystem( particleSystem_t **ps )
 
 	if ( *ps == nullptr || !( *ps )->valid )
 	{
-		Log::Warn( "tried to destroy a NULL particle system" );
+		logger.Warn( "tried to destroy a NULL particle system" );
 		return;
 	}
 
 	if ( cg_debugParticles.Get() >= 1 )
 	{
-		Log::Debug( "PS destroyed" );
+		logger.Debug( "PS destroyed" );
 	}
 
 	for ( i = 0; i < MAX_PARTICLE_EJECTORS; i++ )
@@ -2030,13 +2032,13 @@ bool CG_IsParticleSystemInfinite( particleSystem_t *ps )
 
 	if ( ps == nullptr )
 	{
-		Log::Warn( "tried to test a NULL particle system" );
+		logger.Warn( "tried to test a NULL particle system" );
 		return false;
 	}
 
 	if ( !ps->valid )
 	{
-		Log::Warn( "tried to test an invalid particle system" );
+		logger.Warn( "tried to test an invalid particle system" );
 		return false;
 	}
 
@@ -2137,7 +2139,7 @@ static void CG_GarbageCollectParticleSystems()
 
 		if ( cg_debugParticles.Get() >= 1 && !ps->valid )
 		{
-			Log::Debug( "PS %s garbage collected", ps->class_->name );
+			logger.Debug( "PS %s garbage collected", ps->class_->name );
 		}
 	}
 }
@@ -2735,7 +2737,7 @@ void CG_AddParticles()
 			}
 		}
 
-		Log::Debug( "PS: %d  PE: %d  P: %d", numPS, numPE, numP );
+		logger.Debug( "PS: %d  PE: %d  P: %d", numPS, numPE, numP );
 	}
 }
 
