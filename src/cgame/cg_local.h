@@ -193,21 +193,41 @@ struct attachment_t
 
 //======================================================================
 
-//particle system stuff
+// Maximum .particle files to load.
 #define MAX_PARTICLE_FILES        128
 
 #define MAX_PS_SHADER_FRAMES      32
 #define MAX_PS_MODELS             8
+
+// Maximum ejector definitions in a particle system definition.
 #define MAX_EJECTORS_PER_SYSTEM   4
+// Maximum particle definitions in an ejector definition.
 #define MAX_PARTICLES_PER_EJECTOR 4
 
-#define MAX_BASEPARTICLE_SYSTEMS  192
+/* Maximum particle systems, ejectors and particle definitions to load from .particle files.
+
+One particle file may contain more than one particle system definitions. Making particle system
+definition maximum greater than particle file maximum makes sure it's not obviously low. */
+#define MAX_BASEPARTICLE_SYSTEMS  (MAX_PARTICLE_FILES + 564)
 #define MAX_BASEPARTICLE_EJECTORS (MAX_BASEPARTICLE_SYSTEMS * MAX_EJECTORS_PER_SYSTEM)
 #define MAX_BASEPARTICLES         (MAX_BASEPARTICLE_EJECTORS * MAX_PARTICLES_PER_EJECTOR)
 
-#define MAX_PARTICLE_SYSTEMS      48
+/* Maximum particle systems, ejectors and particle objects to process and render.
+
+Not all particle system, ejector or particle definitions will instantiate particle
+systems, ejectors or particles at a given time.
+
+A single particle system definition can instantiate many particle systems
+and then many ejectors, and a single ejector with a single particle definition
+can instantiate many particles.
+
+The chosen numeric values for those maximums are arbitrary, but making them greater
+than or equal to the maximum of their definitions makes sure they're not obviously low. */
+#define MAX_PARTICLE_SYSTEMS      MAX_BASEPARTICLE_SYSTEMS
 #define MAX_PARTICLE_EJECTORS     (MAX_PARTICLE_SYSTEMS * MAX_EJECTORS_PER_SYSTEM)
-#define MAX_PARTICLES             (MAX_PARTICLE_EJECTORS * 5)
+/* FIXME: Something in the game is preventing to render more than a thousand particle textures.
+#define MAX_PARTICLES             (MAX_PARTICLE_EJECTORS * MAX_PARTICLES_PER_EJECTOR) */
+#define MAX_PARTICLES             1024
 
 #define PARTICLES_INFINITE        -1
 #define PARTICLES_SAME_AS_INITIAL -2
