@@ -1338,6 +1338,7 @@ static void SetBehaviorTreeDefines()
 	D( E_A_BOOSTER );
 	D( E_A_HIVE );
 	D( E_A_LEECH );
+	D( E_A_SPIKER );
 	D( E_H_SPAWN );
 	D( E_H_MGTURRET );
 	D( E_H_ROCKETPOD );
