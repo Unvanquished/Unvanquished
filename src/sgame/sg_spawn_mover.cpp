@@ -612,6 +612,7 @@ void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 	glm::vec3 maxs = VEC2GLM( ent->r.absmax );
 	// this is a hack that allows to ignore "irrelevant" doors,
 	// implemented for nova's electric fence support
+	auto ignoreSize = g_bot_ignoreSmallObstacles.Get();
 	switch ( moverState )
 	{
 		case MOVER_POS1:
@@ -619,8 +620,8 @@ void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 		case ROTATOR_POS1:
 		case ROTATOR_POS2:
 			if ( std::abs( ent->activatedPosition[0] - ent->restingPosition[0] ) > g_bot_ignoreSmallObstacles.Get()
-					|| std::abs( ent->activatedPosition[1] - ent->restingPosition[1] ) > g_bot_ignoreSmallObstacles.Get()
-					|| std::abs( ent->activatedPosition[2] - ent->restingPosition[2] ) > g_bot_ignoreSmallObstacles.Get()
+					&& std::abs( ent->activatedPosition[1] - ent->restingPosition[1] ) > g_bot_ignoreSmallObstacles.Get()
+					&& std::abs( ent->activatedPosition[2] - ent->restingPosition[2] ) > g_bot_ignoreSmallObstacles.Get()
 					)
 			{
 				G_BotRemoveObstacle( ent->num() );
