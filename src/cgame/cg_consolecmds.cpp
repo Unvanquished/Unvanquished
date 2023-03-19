@@ -156,15 +156,12 @@ static void CG_CompleteClass()
 
 static void CG_CompleteBuy_internal( bool negatives )
 {
-	int i;
-
-	for( i = 0; i < UP_NUM_UPGRADES; i++ )
+	for( int i = 0; i < UP_NUM_UPGRADES; i++ )
 	{
 		const upgradeAttributes_t *item = BG_Upgrade( i );
 		if ( item->purchasable && item->team == TEAM_HUMANS )
 		{
 			trap_CompleteCallback( item->name );
-
 			if ( negatives )
 			{
 				trap_CompleteCallback( va( "-%s", item->name ) );
@@ -173,22 +170,17 @@ static void CG_CompleteBuy_internal( bool negatives )
 	}
 
 	trap_CompleteCallback( "grenade" ); // called "gren" elsewhere, so special-case it
-
 	if ( negatives )
 	{
 		trap_CompleteCallback( "-grenade" );
-
-		i = BG_GetPlayerWeapon( &cg.snap->ps );
-
 	}
 
-	for( i = 0; i < WP_NUM_WEAPONS; i++ )
+	for( int i = 0; i < WP_NUM_WEAPONS; i++ )
 	{
 		const weaponAttributes_t *item = BG_Weapon( i );
 		if ( item->purchasable && item->team == TEAM_HUMANS )
 		{
 			trap_CompleteCallback( item->name );
-
 			if ( negatives )
 			{
 				trap_CompleteCallback( va( "-%s", BG_Weapon( i )->name ) );
