@@ -1501,7 +1501,7 @@ static void CG_Rocket_BuildArmouryBuyList( const char *table )
 	}
 
 
-	if ( tblIndex != ROCKETDS_UPGRADES )
+	if ( tblIndex == ROCKETDS_WEAPONS )
 	{
 		// Make ckit first so that it can be accessed with a low number key in circlemenus
 		AddWeaponToBuyList( WP_HBUILD, "default", ROCKETDS_BOTH );
@@ -1516,7 +1516,7 @@ static void CG_Rocket_BuildArmouryBuyList( const char *table )
 		}
 	}
 
-	if ( tblIndex != ROCKETDS_WEAPONS )
+	if ( tblIndex == ROCKETDS_UPGRADES )
 	{
 		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
 		{
