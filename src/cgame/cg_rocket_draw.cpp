@@ -2498,8 +2498,7 @@ static void CG_Rocket_DrawPlayerHealthCross()
 		}
 	}
 
-	//TODO: it is possible to be poisoned while healing
-	else if ( stats & SS_POISONED )
+	if ( stats & SS_POISONED )
 	{
 		shader = cgs.media.healthCrossPoisoned;
 	}
