@@ -2460,6 +2460,7 @@ static void CG_Rocket_DrawPlayerHealthCross()
 	float     ref_alpha;
 	rectDef_t rect;
 	Color::Color color;
+	int stats = cg.snap->ps.stats[ STAT_STATE ];
 
 	// grab info from libRocket
 	CG_GetRocketElementColor( ref_color );
@@ -2468,12 +2469,12 @@ static void CG_Rocket_DrawPlayerHealthCross()
 	// Pick the current icon
 	shader = cgs.media.healthCross;
 
-	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
+	if ( stats & SS_HEALING_8X )
 	{
 		shader = cgs.media.healthCross4X;
 	}
 
-	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_4X )
+	else if ( stats & SS_HEALING_4X )
 	{
 		if ( cg.snap->ps.persistant[ PERS_TEAM ] == TEAM_ALIENS )
 		{
@@ -2485,7 +2486,7 @@ static void CG_Rocket_DrawPlayerHealthCross()
 		}
 	}
 
-	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
+	else if ( stats & SS_HEALING_2X )
 	{
 		if ( CG_MyTeam() == TEAM_ALIENS )
 		{
@@ -2497,7 +2498,8 @@ static void CG_Rocket_DrawPlayerHealthCross()
 		}
 	}
 
-	else if ( cg.snap->ps.stats[ STAT_STATE ] & SS_POISONED )
+	//TODO: it is possible to be poisoned while healing
+	else if ( stats & SS_POISONED )
 	{
 		shader = cgs.media.healthCrossPoisoned;
 	}
@@ -2513,7 +2515,7 @@ static void CG_Rocket_DrawPlayerHealthCross()
 
 	ref_alpha = ref_color.Alpha();
 
-	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_HEALING_2X )
+	if ( stats & SS_HEALING_2X )
 	{
 		ref_alpha = 1.0f;
 	}
