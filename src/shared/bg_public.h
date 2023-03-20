@@ -1606,6 +1606,9 @@ public:
 		ASSERT_LT(n, size_);
 		return array[n];
 	}
+	bool push_back(T elem) {
+		return append(elem);
+	}
 	Util::optional<T> pop_back() {
 		if (size_ == 0)
 			return {};

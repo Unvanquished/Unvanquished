@@ -1435,24 +1435,16 @@ struct rocketDataSource_t
 	int selectedTeamIndex;
 
 	int selectedHumanSpawnItem;
-
 	int selectedAlienSpawnClass;
 
 	int armouryBuyList[3][ ( WP_LUCIFER_CANNON - WP_BLASTER ) + UP_NUM_UPGRADES + 1 ];
 	int selectedArmouryBuyItem[3];
 	int armouryBuyListCount[3];
 
-	int alienEvolveList[ PCL_NUM_CLASSES ];
-	int alienEvolveListCount;
-
-	int humanBuildList[ BA_NUM_BUILDABLES ];
-	int humanBuildListCount;
-
-	int alienBuildList[ BA_NUM_BUILDABLES ];
-	int alienBuildListCount;
-
-	int beaconList[ NUM_BEACON_TYPES ];
-	int beaconListCount;
+	BoundedVector<int, PCL_NUM_CLASSES> alienEvolveList;
+	BoundedVector<int, BA_NUM_BUILDABLES> humanBuildList;
+	BoundedVector<int, BA_NUM_BUILDABLES> alienBuildList;
+	BoundedVector<int, NUM_BEACON_TYPES> beaconList;
 };
 
 struct rocketInfo_t
