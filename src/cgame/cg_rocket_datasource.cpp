@@ -1234,14 +1234,14 @@ static void CG_Rocket_BuildHumanSpawnItems( const char* )
 
 static void CG_Rocket_SetHumanSpawnItems( const char*, int index )
 {
-	rocketInfo.data.selectedHumanSpawnItem = index;
+	rocketInfo.data.selectedSpawnOptions[ TEAM_HUMANS ] = index;
 }
 
 static void CG_Rocket_ExecHumanSpawnItems( const char* )
 {
 	const char *cmd = nullptr;
 
-	switch ( rocketInfo.data.selectedHumanSpawnItem )
+	switch ( rocketInfo.data.selectedSpawnOptions[ TEAM_HUMANS ] )
 	{
 		case 0:
 			cmd = "class rifle";
@@ -1261,7 +1261,7 @@ static void CG_Rocket_ExecHumanSpawnItems( const char* )
 
 static void CG_Rocket_CleanUpHumanSpawnItems( const char* )
 {
-	rocketInfo.data.selectedHumanSpawnItem = -1;
+	rocketInfo.data.selectedSpawnOptions[ TEAM_HUMANS ] = -1;
 }
 
 
@@ -1608,7 +1608,7 @@ static void CG_Rocket_BuildAlienEvolveList( const char *table )
 
 static void CG_Rocket_CleanUpHumanBuildList( const char*)
 {
-	rocketInfo.data.humanBuildList.clear();
+	rocketInfo.data.buildLists[ TEAM_HUMANS ].clear();
 }
 
 static Str::StringRef BuildableAvailability( buildable_t buildable )
@@ -1664,14 +1664,14 @@ static void CG_Rocket_BuildHumanBuildList( const char *table )
 
 			Rocket_DSAddRow( "humanBuildList", "default", buf );
 
-			rocketInfo.data.humanBuildList.push_back( i );
+			rocketInfo.data.buildLists[ TEAM_HUMANS ].push_back( i );
 		}
 	}
 }
 
 static void CG_Rocket_CleanUpAlienBuildList( const char* )
 {
-	rocketInfo.data.alienBuildList.clear();
+	rocketInfo.data.buildLists[ TEAM_ALIENS ].clear();
 }
 
 static void CG_Rocket_BuildAlienBuildList( const char *table )
@@ -1709,7 +1709,7 @@ static void CG_Rocket_BuildAlienBuildList( const char *table )
 
 			Rocket_DSAddRow( "alienBuildList", "default", buf );
 
-			rocketInfo.data.alienBuildList.push_back( i );
+			rocketInfo.data.buildLists[ TEAM_ALIENS ].push_back( i );
 		}
 	}
 }
@@ -1758,19 +1758,19 @@ static void CG_Rocket_BuildAlienSpawnList( const char *table )
 
 static void CG_Rocket_CleanUpAlienSpawnList( const char* )
 {
-	rocketInfo.data.selectedAlienSpawnClass = -1;
+	rocketInfo.data.selectedSpawnOptions[ TEAM_ALIENS ] = -1;
 }
 
 static void CG_Rocket_SetAlienSpawnList( const char*, int index )
 {
-	rocketInfo.data.selectedAlienSpawnClass = index;
+	rocketInfo.data.selectedSpawnOptions[ TEAM_ALIENS ] = index;
 }
 
 static void CG_Rocket_ExecAlienSpawnList( const char* )
 {
 	const char *_class = nullptr;
 
-	switch ( rocketInfo.data.selectedAlienSpawnClass )
+	switch ( rocketInfo.data.selectedSpawnOptions[ TEAM_ALIENS ] )
 	{
 		case 0:
 			_class = "level0";
