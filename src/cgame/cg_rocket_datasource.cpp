@@ -1529,8 +1529,7 @@ static void CG_Rocket_BuildArmouryBuyList( const char *table )
 
 static void CG_Rocket_CleanUpAlienEvolveList( const char* )
 {
-	rocketInfo.data.alienEvolveListCount = 0;
-
+	rocketInfo.data.alienEvolveList.clear();
 }
 
 static Str::StringRef EvolveAvailability( class_t alienClass )
@@ -1602,14 +1601,14 @@ static void CG_Rocket_BuildAlienEvolveList( const char *table )
 
 			Rocket_DSAddRow( "alienEvolveList", "default", buf );
 
-			rocketInfo.data.alienEvolveList[ rocketInfo.data.alienEvolveListCount++ ] = i;
+			rocketInfo.data.alienEvolveList.push_back( i );
 		}
 	}
 }
 
 static void CG_Rocket_CleanUpHumanBuildList( const char*)
 {
-	rocketInfo.data.humanBuildListCount = 0;
+	rocketInfo.data.humanBuildList.clear();
 }
 
 static Str::StringRef BuildableAvailability( buildable_t buildable )
@@ -1665,14 +1664,14 @@ static void CG_Rocket_BuildHumanBuildList( const char *table )
 
 			Rocket_DSAddRow( "humanBuildList", "default", buf );
 
-			rocketInfo.data.humanBuildList[ rocketInfo.data.humanBuildListCount++ ] = i;
+			rocketInfo.data.humanBuildList.push_back( i );
 		}
 	}
 }
 
 static void CG_Rocket_CleanUpAlienBuildList( const char* )
 {
-	rocketInfo.data.alienBuildListCount = 0;
+	rocketInfo.data.alienBuildList.clear();
 }
 
 static void CG_Rocket_BuildAlienBuildList( const char *table )
@@ -1710,7 +1709,7 @@ static void CG_Rocket_BuildAlienBuildList( const char *table )
 
 			Rocket_DSAddRow( "alienBuildList", "default", buf );
 
-			rocketInfo.data.alienBuildList[ rocketInfo.data.alienBuildListCount++ ] = i;
+			rocketInfo.data.alienBuildList.push_back( i );
 		}
 	}
 }
@@ -1794,7 +1793,7 @@ static void CG_Rocket_ExecAlienSpawnList( const char* )
 
 static void CG_Rocket_CleanUpBeaconList( const char* )
 {
-	rocketInfo.data.beaconListCount = 0;
+	rocketInfo.data.beaconList.clear();
 }
 
 static void CG_Rocket_BuildBeaconList( const char *table )
@@ -1830,7 +1829,7 @@ static void CG_Rocket_BuildBeaconList( const char *table )
 
 			Rocket_DSAddRow( "beaconList", "default", buf );
 
-			rocketInfo.data.beaconList[ rocketInfo.data.beaconListCount++ ] = i;
+			rocketInfo.data.beaconList.push_back( i );
 		}
 	}
 }
