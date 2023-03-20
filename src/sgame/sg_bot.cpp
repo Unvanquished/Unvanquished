@@ -770,11 +770,11 @@ std::string G_BotToString( gentity_t *bot )
 	{
 		return "";
 	}
-	return Str::Format( "^*%s^*: %s [s=%d ss=\"%s\" b=%s g=%s]",
+	return Str::Format( "^*%s^*: %s [b=%s g=%s s=%d ss=\"%s\"]",
 			bot->client->pers.netname,
 			BG_TeamName( G_Team( bot ) ),
-			bot->botMind->botSkill.level,
-			bot->botMind->botSkillSetExplaination,
 			bot->botMind->behaviorTree->name,
-			BotGoalToString( bot ) );
+			BotGoalToString( bot ),
+			bot->botMind->botSkill.level,
+			bot->botMind->botSkillSetExplaination );
 }
