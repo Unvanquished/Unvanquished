@@ -1628,7 +1628,7 @@ static Str::StringRef BuildableAvailability( buildable_t buildable )
 	return "available";
 }
 
-static void CG_Rocket_BuildHumanBuildList( const char *table )
+static void CG_Rocket_BuildGenericBuildList( const char *table, team_t team, char const* tableName )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
@@ -1641,13 +1641,13 @@ static void CG_Rocket_BuildHumanBuildList( const char *table )
 	{
 		int i;
 
-		Rocket_DSClearTable( "humanBuildList", "default" );
-		CG_Rocket_CleanUpHumanBuildList( "default" );
+		Rocket_DSClearTable( tableName, "default" );
+		rocketInfo.data.buildLists[ team ].clear();
 
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
-			// We are building the human buildable list
-			if ( BG_Buildable( i )->team != TEAM_HUMANS )
+			// We are building the buildable list
+			if ( BG_Buildable( i )->team != team )
 			{
 				continue;
 			}
@@ -1662,11 +1662,16 @@ static void CG_Rocket_BuildHumanBuildList( const char *table )
 			Info_SetValueForKey( buf, "cmdName", BG_Buildable( i )->name, false );
 			Info_SetValueForKey( buf, "availability", BuildableAvailability( buildable_t(i) ).c_str(), false );
 
-			Rocket_DSAddRow( "humanBuildList", "default", buf );
+			Rocket_DSAddRow( tableName, "default", buf );
 
-			rocketInfo.data.buildLists[ TEAM_HUMANS ].push_back( i );
+			rocketInfo.data.buildLists[ team ].push_back( i );
 		}
 	}
+}
+
+static void CG_Rocket_BuildHumanBuildList( const char *table )
+{
+	CG_Rocket_BuildGenericBuildList( table, TEAM_HUMANS, "humanBuildList" );
 }
 
 static void CG_Rocket_CleanUpAlienBuildList( const char* )
@@ -1676,42 +1681,7 @@ static void CG_Rocket_CleanUpAlienBuildList( const char* )
 
 static void CG_Rocket_BuildAlienBuildList( const char *table )
 {
-	static char buf[ MAX_STRING_CHARS ];
-
-	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
-	{
-		return;
-	}
-
-	if ( !Q_stricmp( table, "default" ) )
-	{
-		int i;
-
-		Rocket_DSClearTable( "alienBuildList", "default" );
-		CG_Rocket_CleanUpAlienBuildList( "default" );
-
-		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
-		{
-			if ( BG_Buildable( i )->team != TEAM_ALIENS )
-			{
-				continue;
-			}
-
-			buf[ 0 ] = '\0';
-
-			Info_SetValueForKey( buf, "num", va( "%d", (int) i ), false );
-			Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
-			Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
-			Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
-			Info_SetValueForKey( buf, "icon", BG_Buildable( i )->icon, false );
-			Info_SetValueForKey( buf, "cmdName", BG_Buildable( i )->name, false );
-			Info_SetValueForKey( buf, "availability", BuildableAvailability( buildable_t(i) ).c_str(), false );
-
-			Rocket_DSAddRow( "alienBuildList", "default", buf );
-
-			rocketInfo.data.buildLists[ TEAM_ALIENS ].push_back( i );
-		}
-	}
+	CG_Rocket_BuildGenericBuildList( table, TEAM_ALIENS, "alienBuildList" );
 }
 
 static void AddAlienSpawnClass( class_t _class )
