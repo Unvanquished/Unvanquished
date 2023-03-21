@@ -2416,7 +2416,18 @@ weapon_t BG_PrimaryWeapon( int const stats[] )
 	return WP_NONE;
 }
 
-static std::unordered_map<std::string, emoticonData_t, Str::IHash, Str::IEqual> emoticons;
+static emoticonData_t Icon( int codePoint )
+{
+	return { codePoint, {} };
+}
+static std::unordered_map<std::string, emoticonData_t, Str::IHash, Str::IEqual> emoticons {
+	// TODO add more from fontawesome
+	{ "cat", Icon( 0xF6BE ) },
+	{ "crossbones", Icon( 0xF714 ) },
+	{ "lock", Icon( 0xF023 ) },
+	{ "smile", Icon( 0xF118 ) },
+};
+
 /*
 ============
 BG_LoadEmoticons
@@ -2438,11 +2449,12 @@ void BG_LoadEmoticons()
 			Log::Warn( "Conflicting emoticon images found: %s and emoticons/%s", data.imageFile, filename );
 			continue;
 		}
-		data.imageFile = "emoticons/" + filename;
+		// An image may override an icon font emoticon
+		data = { 0, "emoticons/" + filename };
 		count++;
 	}
 
-	Log::Verbose( "Loaded %d emoticons", count );
+	Log::Verbose( "Loaded %d image emoticons", count );
 }
 
 const emoticonData_t* BG_Emoticon( const std::string& name )

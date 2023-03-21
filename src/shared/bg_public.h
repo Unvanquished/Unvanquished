@@ -1777,10 +1777,14 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, int team,
                                  int pClass, int weapon,
                                  int enthusiasm, int *trackNum );
 
+// Exactly one of the fields is nonzero/nonempty. codePoint if the emoticon is displayed with the
+// icon font, or imageFile if it is a standalone image.
 struct emoticonData_t
 {
+	int codePoint;
 	std::string imageFile;
 };
+
 void BG_LoadEmoticons();
 const emoticonData_t* BG_Emoticon( const std::string& name );
 const emoticonData_t* BG_EmoticonAt( const char *s );
