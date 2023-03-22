@@ -1527,11 +1527,6 @@ static void CG_Rocket_BuildArmouryBuyList( const char *table )
 
 }
 
-static void CG_Rocket_CleanUpAlienEvolveList( const char* )
-{
-	rocketInfo.data.alienEvolveList.clear();
-}
-
 static Str::StringRef EvolveAvailability( class_t alienClass )
 {
 	evolveInfo_t info = BG_ClassEvolveInfoFromTo( cg.predictedPlayerState.stats[ STAT_CLASS ], alienClass );
@@ -1566,7 +1561,6 @@ static void CG_Rocket_BuildAlienEvolveList( const char *table )
 		float price;
 
 		Rocket_DSClearTable( "alienEvolveList", "default" );
-		CG_Rocket_CleanUpAlienEvolveList( "default" );
 
 		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
 		{
@@ -1600,15 +1594,8 @@ static void CG_Rocket_BuildAlienEvolveList( const char *table )
 			Info_SetValueForKey( buf, "visible", (doublegranger ? "false" : "true"), false );
 
 			Rocket_DSAddRow( "alienEvolveList", "default", buf );
-
-			rocketInfo.data.alienEvolveList.push_back( i );
 		}
 	}
-}
-
-static void CG_Rocket_CleanUpHumanBuildList( const char*)
-{
-	rocketInfo.data.buildLists[ TEAM_HUMANS ].clear();
 }
 
 static Str::StringRef BuildableAvailability( buildable_t buildable )
@@ -1642,8 +1629,6 @@ static void CG_Rocket_BuildGenericBuildList( const char *table, team_t team, cha
 		int i;
 
 		Rocket_DSClearTable( tableName, "default" );
-		rocketInfo.data.buildLists[ team ].clear();
-
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
 			// We are building the buildable list
@@ -1663,8 +1648,6 @@ static void CG_Rocket_BuildGenericBuildList( const char *table, team_t team, cha
 			Info_SetValueForKey( buf, "availability", BuildableAvailability( buildable_t(i) ).c_str(), false );
 
 			Rocket_DSAddRow( tableName, "default", buf );
-
-			rocketInfo.data.buildLists[ team ].push_back( i );
 		}
 	}
 }
@@ -1672,11 +1655,6 @@ static void CG_Rocket_BuildGenericBuildList( const char *table, team_t team, cha
 static void CG_Rocket_BuildHumanBuildList( const char *table )
 {
 	CG_Rocket_BuildGenericBuildList( table, TEAM_HUMANS, "humanBuildList" );
-}
-
-static void CG_Rocket_CleanUpAlienBuildList( const char* )
-{
-	rocketInfo.data.buildLists[ TEAM_ALIENS ].clear();
 }
 
 static void CG_Rocket_BuildAlienBuildList( const char *table )
@@ -1761,11 +1739,6 @@ static void CG_Rocket_ExecAlienSpawnList( const char* )
 //////// beacon shit
 
 
-static void CG_Rocket_CleanUpBeaconList( const char* )
-{
-	rocketInfo.data.beaconList.clear();
-}
-
 static void CG_Rocket_BuildBeaconList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
@@ -1781,7 +1754,6 @@ static void CG_Rocket_BuildBeaconList( const char *table )
 		const beaconAttributes_t *ba;
 
 		Rocket_DSClearTable( "beaconList", "default" );
-		CG_Rocket_CleanUpBeaconList( "default" );
 
 		for ( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
 		{
@@ -1798,8 +1770,6 @@ static void CG_Rocket_BuildBeaconList( const char *table )
 			Info_SetValueForKey( buf, "icon", CG_GetShaderNameFromHandle( ba->icon[ 0 ][ 0 ] ), false );
 
 			Rocket_DSAddRow( "beaconList", "default", buf );
-
-			rocketInfo.data.beaconList.push_back( i );
 		}
 	}
 }
@@ -1838,16 +1808,20 @@ struct dataSourceCmd_t
 	int  ( *get )( const char *table );
 };
 
+static void nullCleanFunc( char const* )
+{
+}
+
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
-	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &CG_Rocket_CleanUpAlienBuildList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &CG_Rocket_CleanUpAlienEvolveList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "alienSpawnClass", &CG_Rocket_BuildAlienSpawnList, &nullSortFunc, &CG_Rocket_CleanUpAlienSpawnList, &CG_Rocket_SetAlienSpawnList, &nullFilterFunc, &CG_Rocket_ExecAlienSpawnList, &nullGetFunc },
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &CG_Rocket_CleanUpBeaconList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
-	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &CG_Rocket_CleanUpHumanBuildList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "humanSpawnItems", &CG_Rocket_BuildHumanSpawnItems, &nullSortFunc, CG_Rocket_CleanUpHumanSpawnItems, &CG_Rocket_SetHumanSpawnItems, &nullFilterFunc, &CG_Rocket_ExecHumanSpawnItems, &nullGetFunc },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetLanguageListIndex },
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
