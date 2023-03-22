@@ -1431,15 +1431,6 @@ static void PlayerStateToEntityState( playerState_t *ps, entityState_t *s )
 		s->eFlags &= ~EF_DEAD;
 	}
 
-	if ( ps->stats[ STAT_STATE ] & SS_BLOBLOCKED )
-	{
-		s->eFlags |= EF_BLOBLOCKED;
-	}
-	else
-	{
-		s->eFlags &= ~EF_BLOBLOCKED;
-	}
-
 	if ( ps->externalEvent )
 	{
 		s->event = ps->externalEvent;
@@ -1494,6 +1485,15 @@ static void PlayerStateToEntityState( playerState_t *ps, entityState_t *s )
 	else
 	{
 		s->modelindex2 &= ~PF_JETPACK_ACTIVE;
+	}
+
+	if ( ps->stats[ STAT_STATE ] & SS_BLOBLOCKED )
+	{
+		s->modelindex2 |= PF_BLOBLOCKED;
+	}
+	else
+	{
+		s->modelindex2 &= ~PF_BLOBLOCKED;
 	}
 
 	// use misc field to store team/class info:
