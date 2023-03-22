@@ -1267,7 +1267,6 @@ static void CG_Rocket_CleanUpHumanSpawnItems( const char* )
 
 enum
 {
-	ROCKETDS_BOTH,
 	ROCKETDS_WEAPONS,
 	ROCKETDS_UPGRADES
 };
@@ -1290,7 +1289,7 @@ static void CG_Rocket_CleanUpArmouryBuyList( const char *table )
 			break;
 
 		default:
-			tblIndex = ROCKETDS_BOTH;
+			return;
 	}
 
 	rocketInfo.data.selectedArmouryBuyItem[ tblIndex ] = 0;
@@ -1445,7 +1444,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 	if ( BG_Upgrade( i )->team == TEAM_HUMANS && BG_Upgrade( i )->purchasable &&
 	        i != UP_MEDKIT )
 	{
-		Info_SetValueForKey( buf, "num", va( "%d", tblIndex == ROCKETDS_BOTH ? i + WP_NUM_WEAPONS : i ), false );
+		Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, false );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), false );
 		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, false );
@@ -1463,8 +1462,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 
 static void CG_Rocket_BuildArmouryBuyList( const char *table )
 {
-	int i;
-	int tblIndex = ROCKETDS_BOTH;
+	int tblIndex = -1;
 
 	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
 	{
@@ -1482,19 +1480,19 @@ static void CG_Rocket_BuildArmouryBuyList( const char *table )
 		tblIndex = ROCKETDS_UPGRADES;
 	}
 
-	if ( tblIndex == ROCKETDS_BOTH )
+	if ( tblIndex == -1 )
 	{
-		CG_Rocket_CleanUpArmouryBuyList( "default" );
-		Rocket_DSClearTable( "armouryBuyList", "default" );
+		Log::Warn( "unknown \"table\" name provided: \"%s\". Must either start with 'u' (for upgrades) or 'w' (for weapons).", table ? table : "[empty string]" );
+		return;
 	}
 
-	if ( tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_WEAPONS )
+	if ( tblIndex == ROCKETDS_WEAPONS )
 	{
 		CG_Rocket_CleanUpArmouryBuyList( "weapons" );
 		Rocket_DSClearTable( "armouryBuyList", "weapons" );
 	}
 
-	if ( tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_UPGRADES )
+	if ( tblIndex == ROCKETDS_UPGRADES )
 	{
 		CG_Rocket_CleanUpArmouryBuyList( "upgrades" );
 		Rocket_DSClearTable( "armouryBuyList", "upgrades" );
@@ -1504,23 +1502,20 @@ static void CG_Rocket_BuildArmouryBuyList( const char *table )
 	if ( tblIndex == ROCKETDS_WEAPONS )
 	{
 		// Make ckit first so that it can be accessed with a low number key in circlemenus
-		AddWeaponToBuyList( WP_HBUILD, "default", ROCKETDS_BOTH );
 		AddWeaponToBuyList( WP_HBUILD, "weapons", ROCKETDS_WEAPONS );
 
-		for ( i = 0; i <= WP_NUM_WEAPONS; ++i )
+		for ( int i = 0; i <= WP_NUM_WEAPONS; ++i )
 		{
 			if ( i == WP_HBUILD ) continue;
 
-			AddWeaponToBuyList( i, "default", ROCKETDS_BOTH );
 			AddWeaponToBuyList( i, "weapons", ROCKETDS_WEAPONS );
 		}
 	}
 
 	if ( tblIndex == ROCKETDS_UPGRADES )
 	{
-		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
+		for ( int i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
 		{
-			AddUpgradeToBuyList( i, "default", ROCKETDS_BOTH );
 			AddUpgradeToBuyList( i, "upgrades", ROCKETDS_UPGRADES );
 		}
 	}
