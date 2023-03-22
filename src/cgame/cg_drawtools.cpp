@@ -433,6 +433,10 @@ bool CG_WorldToScreen( vec3_t point, float *x, float *y )
 		front = false;
 	}
 
+	// Avoid division-by-zero.
+	// This can happen when the player is spawning.
+	z = z ? z : 0.0001f;
+
 	if ( x )
 	{
 		*x = 320.0f - DotProduct( trans, cg.refdef.viewaxis[ 1 ] ) * xc / ( z * px );
