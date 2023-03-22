@@ -256,7 +256,7 @@ void              G_namelog_update_name( gclient_t *client );
 void              G_namelog_cleanup();
 
 // sg_physcis.c
-void              G_Physics( gentity_t *ent, int msec );
+void              G_Physics( gentity_t *ent );
 
 // sg_session.c
 void              G_ReadSessionData( gclient_t *client );

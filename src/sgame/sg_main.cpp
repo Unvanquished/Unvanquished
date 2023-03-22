@@ -2437,11 +2437,11 @@ void G_RunFrame( int levelTime )
 			case entityType_t::ET_BUILDABLE:
 				// TODO: Do buildables make any use of G_Physics' functionality apart from the call
 				//       to G_RunThink?
-				G_Physics( ent, msec );
+				G_Physics( ent );
 				continue;
 
 			case entityType_t::ET_CORPSE:
-				G_Physics( ent, msec );
+				G_Physics( ent );
 				continue;
 
 			case entityType_t::ET_MOVER:
@@ -2451,7 +2451,7 @@ void G_RunFrame( int levelTime )
 			default:
 				if ( ent->physicsObject )
 				{
-					G_Physics( ent, msec );
+					G_Physics( ent );
 					continue;
 				}
 				else if ( i < MAX_CLIENTS )
