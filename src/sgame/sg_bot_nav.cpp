@@ -868,7 +868,8 @@ bool BotMoveToGoal( gentity_t *self )
 	weaponMode_t wpm = WPM_NONE;
 	int magnitude = 0;
 	const playerState_t& ps  = self->client->ps;
-	if ( !self->botMind->botSkillSet[BOT_FAST_FLEE] )
+	if ( ( G_Team( self ) == TEAM_HUMANS && self->botMind->botSkillSet[BOT_H_FAST_FLEE] )
+			|| ( G_Team( self ) == TEAM_ALIENS && self->botMind->botSkillSet[BOT_A_FAST_FLEE] ) )
 	{
 		return true;
 	}

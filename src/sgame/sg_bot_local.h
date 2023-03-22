@@ -113,7 +113,8 @@ enum bot_skill
 
 	// situation awareness and survival
 	BOT_B_PAIN, // basic awareness: notice an enemy if it bites you, or shoots at you
-	BOT_FAST_FLEE,
+	BOT_A_FAST_FLEE,
+	BOT_H_FAST_FLEE,
 	BOT_A_SAFE_BARBS, // don't barb yourself as adv goon
 	BOT_H_BUY_MODERN_ARMOR, // if this is disabled, bot will buy the second-to-last unlocked armor, and will never buy battlesuit
 	BOT_H_PREFER_ARMOR, // prefer to buy armor rather than guns

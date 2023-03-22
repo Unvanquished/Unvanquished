@@ -171,16 +171,16 @@ static const std::vector<botSkillTreeElement_t> movement_skills = {
 };
 
 static const std::vector<botSkillTreeElement_t> survival_skills = {
-	// all bots
-	{ "fast-flee",          BOT_FAST_FLEE,               4, pred_always, {} },
-
 	// aliens
 	{ "safe-barbs",         BOT_A_SAFE_BARBS,            3, pred_alien, {} },
+	{ "a-fast-flee",        BOT_A_FAST_FLEE,             4, pred_always, {} },
+
 
 	// humans
 	{ "buy-modern-armor",   BOT_H_BUY_MODERN_ARMOR, 10, pred_human, {
 		{ "prefer-armor", BOT_H_PREFER_ARMOR, 5, pred_human, {} },
 	}},
+	{ "h-fast-flee",        BOT_H_FAST_FLEE,    4, pred_always, {} },
 	{ "medkit",             BOT_H_MEDKIT,       8, pred_human, {} },
 };
 
