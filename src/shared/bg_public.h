@@ -477,14 +477,17 @@ enum persEnum_t
 #define EF_FIRING3          BIT(17) // third fire
 #define EF_MOVER_STOP       BIT(18) // will push otherwise
 #define EF_CONNECTION       BIT(19) // draw a connection trouble sprite
-#define EF_BLOBLOCKED       BIT(20) // caught by a trapper
-#define EF_TYPING           BIT(21) // player is writting a message
+
+// overlaps with EF_BC_DYING!
+#define EF_TYPING           BIT(21) // player is writing a message
 
 // for beacons:
+#define EF_BC_BASE_OUTPOST  BIT(20) // base is an outpost
 #define EF_BC_DYING         BIT(21) // beacon is fading out
 #define EF_BC_ENEMY         BIT(22) // entity/base is from the enemy
 #define EF_BC_TAG_PLAYER    BIT(23) // entity is a player
-#define EF_BC_BASE_OUTPOST  BIT(24) // base is an outpost
+
+// EF_xxx can go up to BIT(23)
 
 #define EF_BC_TAG_RELEVANT  (EF_BC_ENEMY|EF_BC_TAG_PLAYER)   // relevant flags for tags
 #define EF_BC_BASE_RELEVANT (EF_BC_ENEMY|EF_BC_BASE_OUTPOST) // relevant flags for bases
@@ -495,6 +498,8 @@ enum persEnum_t
 // entityState_t->modelIndex2 "public flags" when used for client entities
 #define PF_JETPACK_ENABLED  BIT(0)
 #define PF_JETPACK_ACTIVE   BIT(1)
+#define PF_BLOBLOCKED       BIT(2) // caught by a trapper
+// PF_xxx can go up to BIT(MODELINDEX_BITS - 1)
 
 enum weaponMode_t
 {
