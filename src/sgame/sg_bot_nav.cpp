@@ -555,12 +555,6 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	trace_t trace;
 	const float TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 
-	//blocker is not on our team, so ignore
-	if ( G_Team( self ) != G_Team( blocker ) )
-	{
-		return false;
-	}
-
 	//already normalized
 
 	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
