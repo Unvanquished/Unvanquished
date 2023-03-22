@@ -134,6 +134,18 @@ static void ParseOption( Str::StringRef name, Str::StringRef value, Str::StringR
 			return;
 		}
 	}
+	else if ( Str::IsIEqual( name, "autojump" ) )
+	{
+		if ( floatValue < 0.f || 1.f < floatValue )
+		{
+			Log::Warn( "%s: incorrect value for autojump '%f': must be between 0 and 1", file, floatValue );
+		}
+		else if ( floatValue > 0.0f )
+		{
+			config.autojumpSecurity = floatValue;
+			return;
+		}
+	}
 	else
 	{
 		Log::Warn( "%s: unknown navgen setting '%s'", file, name );
