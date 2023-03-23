@@ -1500,6 +1500,12 @@ static void CG_AddReverbEffects( vec3_t loc )
 
 	for(; i < MAX_REVERB_EFFECTS; i++ )
 	{
+		if ( !cgs.gameReverbDistances[i] )
+		{
+			// Avoid division-by-zero.
+			continue;
+		}
+
 		if( !cgs.gameReverbEffects[i][0] )
 		{
 			continue;
