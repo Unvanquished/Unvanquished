@@ -55,6 +55,15 @@ void CG_RunLerpFrame( lerpFrame_t *lf )
 	}
 	lf->animationEnded = false;
 
+	/* Don't process animations with frameLerp 0
+	or some computation will divide by zero.
+	This happens with md3 first-person weapon models
+	that doesn't have any animation. */
+	if ( !lf->animation->frameLerp )
+	{
+		return;
+	}
+
 	// if we have passed the current frame, move it to
 	// oldFrame and calculate a new frame
 	if (cg.time > lf->frameTime)
