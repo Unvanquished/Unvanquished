@@ -799,6 +799,7 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 // TODO: Move decision making out of these actions and into the rest of the behavior tree
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
+	bool canSprint = true;
 	team_t myTeam = ( team_t ) self->client->pers.team;
 	botMemory_t* mind = self->botMind;
 
@@ -886,7 +887,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	BotAimAtEnemy( self );
 	glm::vec3 dummy;
 	//TODO when failing to handle obstacle, a different target should be taken
-	BotAvoidObstacles( self, dummy, false );
+	//  for now, at least avoid wasting stamina
+	canSprint = !BotAvoidObstacles( self, dummy, false );
 	BotMoveInDir( self, MOVE_FORWARD );
 
 	if ( inAttackRange )
@@ -932,7 +934,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		BotStandStill( self );
 	}
 
-	BotSprint( self, true );
+	BotSprint( self, canSprint );
 
 	return STATUS_RUNNING;
 }
