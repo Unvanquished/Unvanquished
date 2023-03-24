@@ -837,7 +837,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	//aliens have radar so they will always 'see' the enemy if they are in radar range
-	if ( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( g_bot_aliensenseRange.Get() ) )
+	float goalDist = DistanceToGoalSquared( self );
+	if ( myTeam == TEAM_ALIENS && goalDist <= Square( g_bot_aliensenseRange.Get() ) )
 	{
 		mind->enemyLastSeen = level.time;
 	}
@@ -895,21 +896,21 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	// We are human and we either are at fire range, or have
 	// a direct path to goal
 
-	if ( mind->skillLevel >= 3 && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
-	        && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || mind->skillLevel < 5 )
+	if ( mind->skillLevel >= 3 && goalDist < Square( MAX_HUMAN_DANCE_DIST )
+	        && ( goalDist > Square( MIN_HUMAN_DANCE_DIST ) || mind->skillLevel < 5 )
 	        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
 	{
 		BotMoveInDir( self, MOVE_BACKWARD );
 	}
-	else if ( DistanceToGoalSquared( self ) <= Square( MIN_HUMAN_DANCE_DIST ) ) //we wont hit this if skill < 5
+	else if ( goalDist <= Square( MIN_HUMAN_DANCE_DIST ) ) //we wont hit this if skill < 5
 	{
 		// We will be moving toward enemy, strafing to
 		// the result: we go around the enemy
 		BotAlternateStrafe( self );
 	}
-	else if ( DistanceToGoalSquared( self ) >= Square( MAX_HUMAN_DANCE_DIST ) && self->client->ps.weapon != WP_PAIN_SAW )
+	else if ( goalDist >= Square( MAX_HUMAN_DANCE_DIST ) && self->client->ps.weapon != WP_PAIN_SAW )
 	{
-		if ( DistanceToGoalSquared( self ) - Square( MAX_HUMAN_DANCE_DIST ) < 100 )
+		if ( goalDist - Square( MAX_HUMAN_DANCE_DIST ) < 100 )
 		{
 			BotStandStill( self );
 		}
