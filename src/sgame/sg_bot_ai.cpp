@@ -884,6 +884,9 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	// direct navmesh path and we are not at at weapon range (if human)
 
 	BotAimAtEnemy( self );
+	glm::vec3 dummy;
+	//TODO when failing to handle obstacle, a different target should be taken
+	BotAvoidObstacles( self, dummy, false );
 	BotMoveInDir( self, MOVE_FORWARD );
 
 	if ( inAttackRange )

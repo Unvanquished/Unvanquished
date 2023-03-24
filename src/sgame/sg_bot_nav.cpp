@@ -731,7 +731,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 // This function tries to detect obstacles and to find a way
 // around them. It always sets dir as the output value.
 // Returns true on error
-static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeometry )
+bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeometry )
 {
 	dir = self->botMind->nav().glm_dir();
 	gentity_t const *blocker = BotGetPathBlocker( self, dir );
