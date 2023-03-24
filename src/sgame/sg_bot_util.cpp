@@ -316,8 +316,8 @@ static int GetMaxEquipmentCost( gentity_t const* self )
 // The returned value depends on:
 // * distance between the caller and the closest supply building
 // * caller's skill
-// The only supply building sources considered are human's armoury
-// and alien booster.
+// The only supply building sources considered are armoury, drill,
+// reactor and alien booster.
 //
 // NOTE: the distance modifier is the same as for BotGetHealScore
 // NOTE: in some cases (adv dragoon), it is possible for a bot to
@@ -358,11 +358,8 @@ float BotGetResupplyScore( gentity_t *self )
 			dist = closestBuildings[ BA_H_ARMOURY ].distance;
 			if ( weapon->usesEnergy )
 			{
-				float rcDist = closestBuildings[ BA_H_REACTOR ].distance;
-				if ( rcDist < dist )
-				{
-					dist = rcDist;
-				}
+				dist = std::min( dist, closestBuildings[ BA_H_REACTOR ].distance );
+				dist = std::min( dist, closestBuildings[ BA_H_DRILL ].distance );
 			}
 			break;
 		default:
