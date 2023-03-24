@@ -597,6 +597,8 @@ float PercentAmmoRemaining( weapon_t weapon, playerState_t const* ps )
 	}
 }
 
+static Cvar::Cvar<float> g_bot_probLevel2upg("g_bot_probLevel2upg", "probability for a bot to evolve to advanced marauder", Cvar::NONE, 0.3);
+
 AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t* )
 {
 	class_t currentClass = static_cast<class_t>( self->client->ps.stats[ STAT_CLASS ] );
@@ -604,6 +606,11 @@ AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t* )
 	for ( auto const& cl : classes )
 	{
 		evolveInfo_t info = BG_ClassEvolveInfoFromTo( currentClass, cl.item );
+
+		if ( cl.item == PCL_ALIEN_LEVEL3 && rand() < RAND_MAX * g_bot_probLevel2upg.Get() )
+		{
+			continue;
+		}
 
 		if ( info.evolveCost > 0 // no devolving or evolving to the same
 				&& BotEvolveToClass( self, cl.item ) )
