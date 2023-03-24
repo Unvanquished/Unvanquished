@@ -226,7 +226,7 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 
 	target = e.ent;
 
-	return AIBoxInt( BotTargetInAttackRange( self, target ) );
+	return AIBoxInt( BotTargetInAttackRange( self, target, BG_GetPlayerWeapon( &self->client->ps ) ) );
 }
 
 static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )

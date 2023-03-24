@@ -61,7 +61,7 @@ void  BotAimAtLocation( gentity_t *self, const glm::vec3 &target );
 bool BotEntityIsValidTarget( const gentity_t *ent );
 bool BotEntityIsValidEnemyTarget( const gentity_t *self, const gentity_t *enemy );
 bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask );
-bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target );
+bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target, weapon_t wp );
 void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
 botTarget_t BotGetRoamTarget( const gentity_t *self );
 botTarget_t BotGetRetreatTarget( const gentity_t *self );

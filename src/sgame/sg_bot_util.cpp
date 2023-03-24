@@ -1209,7 +1209,7 @@ bool BotChangeGoalPos( gentity_t *self, const glm::vec3 &goal )
 	return BotChangeGoal( self, target );
 }
 
-bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
+bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target, weapon_t wp )
 {
 	ASSERT( target.targetsValidEntity() );
 
@@ -1224,7 +1224,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	targetPos = target.getPos();
-	switch ( self->client->ps.weapon )
+	switch ( wp )
 	{
 		case WP_ABUILD:
 			range = ABUILDER_CLAW_RANGE;

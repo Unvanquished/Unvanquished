@@ -740,7 +740,7 @@ AINodeStatus_t BotActionAlternateStrafe( gentity_t *self, AIGenericNode_t* )
 
 AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t* )
 {
-	BotClassMovement( self, BotTargetInAttackRange( self, self->botMind->goal ) );
+	BotClassMovement( self, BotTargetInAttackRange( self, self->botMind->goal, BG_GetPlayerWeapon( &self->client->ps ) ) );
 	return STATUS_SUCCESS;
 }
 
@@ -869,8 +869,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// We have a valid visible target
-
-	bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
+	bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal, BG_GetPlayerWeapon( &self->client->ps ) );
 	self->botMind->enemyLastSeen = level.time;
 
 	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !mind->nav().directPathToGoal )
