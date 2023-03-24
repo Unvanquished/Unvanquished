@@ -1504,7 +1504,7 @@ bool BG_InventoryContainsWeapon( int weapon, const int stats[] );
 int      BG_SlotsForInventory( int stats[] );
 void     BG_AddUpgradeToInventory( int item, int stats[] );
 void     BG_RemoveUpgradeFromInventory( int item, int stats[] );
-bool BG_InventoryContainsUpgrade( int item, int stats[] );
+bool BG_InventoryContainsUpgrade( int item, const int stats[] );
 void     BG_ActivateUpgrade( int item, int stats[] );
 void     BG_DeactivateUpgrade( int item, int stats[] );
 bool BG_UpgradeIsActive( int item, int stats[] );
