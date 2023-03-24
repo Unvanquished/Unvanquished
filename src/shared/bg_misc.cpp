@@ -1913,14 +1913,14 @@ Returns the players current weapon or the weapon they are switching to.
 Only needs to be used for human weapons.
 =================
 */
-weapon_t BG_GetPlayerWeapon( playerState_t *ps )
+weapon_t BG_GetPlayerWeapon( playerState_t const *ps )
 {
 	if ( ps->persistant[ PERS_NEWWEAPON ] )
 	{
-		return (weapon_t) ps->persistant[ PERS_NEWWEAPON ];
+		return static_cast<weapon_t>( ps->persistant[ PERS_NEWWEAPON ] );
 	}
 
-	return (weapon_t) ps->weapon;
+	return static_cast<weapon_t>( ps->weapon );
 }
 
 /*
