@@ -187,6 +187,10 @@ private:
 	//avoid relying on buttons to remember what AI was doing
 	bool wantSprinting = false;
 	bool exhausted = false;
+	int lastDistanceScan = INT_MIN;
+public:
+	//TODO this should be private
+	bool rescanMoveTarget( void );
 };
 
 navMeshStatus_t G_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );

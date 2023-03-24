@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/gtx/vector_angle.hpp>
 
 static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "Default skill value bots will have when added", Cvar::NONE, 5, 1, 9 );
+static Cvar::Cvar<int> g_bot_rescanDelay( "g_bot_rescanDelay", "delay in ms between 2 scans for close buildings in some actions. Smaller delays can impact performances. MUST BE > 0.", Cvar::NONE, 5000 );
 
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 static const int MIN_SKILL = 1;
@@ -2510,4 +2511,22 @@ glm::vec3 ProjectPointOntoVector( const glm::vec3 &point, const glm::vec3 &lineP
 	glm::vec3 pointRelative = point - linePoint1;
 	glm::vec3 lineDir = glm::normalize( linePoint2 - linePoint1 );
 	return linePoint1 + glm::dot( pointRelative, lineDir ) * lineDir;
+}
+
+bool botMemory_t::rescanMoveTarget( void )
+{
+	int delay = g_bot_rescanDelay.Get();
+	if ( delay <= 0 )
+	{
+		Log::Warn( "g_bot_rescanDelay have invalid value %d, using 5s instead.", delay );
+		g_bot_rescanDelay.Set( 5000 );
+		delay = 5000;
+	}
+	if ( level.time >= lastDistanceScan + delay )
+	{
+		lastDistanceScan = level.time;
+		return true;
+	}
+
+	return false;
 }

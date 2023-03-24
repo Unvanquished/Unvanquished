@@ -786,7 +786,7 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
 	team_t myTeam = ( team_t ) self->client->pers.team;
-	botMemory_t const* mind = self->botMind;
+	botMemory_t* mind = self->botMind;
 
 	if ( self->botMind->currentNode != node )
 	{
@@ -805,6 +805,12 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		|| !BotEntityIsValidEnemyTarget( self, mind->goal.getTargetedEntity() ) )
 	{
 		return STATUS_SUCCESS;
+	}
+
+	if ( mind->rescanMoveTarget()
+			&& !BotChangeGoalEntity( self, mind->bestEnemy.ent ) )
+	{
+		return STATUS_FAILURE;
 	}
 
 	if ( !mind->nav().havePath )
@@ -921,7 +927,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( node != self->botMind->currentNode )
+	botMemory_t &mind = *self->botMind;
+	if ( node != mind.currentNode )
 	{
 		if ( !BotChangeGoal( self, BotGetRetreatTarget( self ) ) )
 		{
@@ -930,7 +937,13 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->currentNode = node;
 	}
 
-	if ( !self->botMind->goal.isValid() )
+	if ( mind.rescanMoveTarget()
+			&& !BotChangeGoal( self, BotGetRetreatTarget( self ) ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( !mind.goal.isValid() )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1053,7 +1066,8 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( self->botMind->currentNode != node )
+	botMemory_t &mind = *self->botMind;
+	if ( mind.currentNode != node )
 	{
 		if ( !BotChangeGoal( self, BotGetRushTarget( self ) ) )
 		{
@@ -1061,12 +1075,18 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 		}
 		else
 		{
-			self->botMind->currentNode = node;
+			mind.currentNode = node;
 			return STATUS_RUNNING;
 		}
 	}
 
-	if ( !self->botMind->goal.isValid() )
+	if ( mind.rescanMoveTarget()
+			&& !BotChangeGoal( self, BotGetRushTarget( self ) ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( !mind.goal.isValid() )
 	{
 		return STATUS_FAILURE;
 	}
@@ -1174,6 +1194,12 @@ AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 		self->botMind->currentNode = node;
+	}
+
+	if ( self->botMind->rescanMoveTarget()
+			&& !BotChangeGoalEntity( self, BotGetHealTarget( self ).ent ) )
+	{
+		return STATUS_FAILURE;
 	}
 
 	if ( fullyHealed )
@@ -1304,6 +1330,12 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->currentNode = node;
 	}
 
+	if ( self->botMind->rescanMoveTarget()
+			&& !BotChangeGoalEntity( self, self->botMind->closestDamagedBuilding.ent ) )
+	{
+		return STATUS_FAILURE;
+	}
+
 	if ( !self->botMind->goal.targetsValidEntity() )
 	{
 		return STATUS_FAILURE;
@@ -1415,6 +1447,12 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 		self->botMind->currentNode = node;
+	}
+
+	if ( self->botMind->rescanMoveTarget()
+			&& !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_ARMOURY ].ent ) )
+	{
+		return STATUS_FAILURE;
 	}
 
 	if ( !self->botMind->goal.targetsValidEntity() )
