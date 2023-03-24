@@ -885,7 +885,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	BotAimAtEnemy( self );
 	BotMoveInDir( self, MOVE_FORWARD );
 
-	if ( inAttackRange || self->client->ps.weapon == WP_PAIN_SAW )
+	if ( inAttackRange )
 	{
 		BotFireWeaponAI( self );
 	}
