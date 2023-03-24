@@ -1655,7 +1655,7 @@ BG_InventoryContainsUpgrade
 Does the player hold an upgrade?
 ========================
 */
-bool BG_InventoryContainsUpgrade( int item, int stats[] )
+bool BG_InventoryContainsUpgrade( int item, const int stats[] )
 {
 	return ( stats[ STAT_ITEMS ] & ( 1 << item ) );
 }
