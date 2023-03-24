@@ -607,18 +607,24 @@ to the rest of the behavior tree
 ======================
 */
 
+static bool BotWantSideArm( gentity_t *self )
+{
+	if ( G_Team( self ) != TEAM_HUMANS )
+	{
+		return false;
+	}
+	const playerState_t *ps = &self->client->ps;
+	weapon_t primaryWP = static_cast<weapon_t>( ps->stats[STAT_WEAPON] );
+	weapon_t equipedWP = BG_GetPlayerWeapon( ps );
+
+	return equipedWP == WP_HBUILD
+		|| WeaponIsEmpty( primaryWP, ps )
+		|| not BotTargetInAttackRange( self, self->botMind->goal, primaryWP );
+}
+
 AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t* )
 {
-	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), &self->client->ps ) && G_Team( self ) == TEAM_HUMANS )
-	{
-		G_ForceWeaponChange( self, WP_BLASTER );
-	}
-
-	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_HBUILD )
-	{
-		G_ForceWeaponChange( self, WP_BLASTER );
-	}
-
+	G_ForceWeaponChange( self, BotWantSideArm( self ) ? WP_BLASTER : WP_NONE );
 	BotFireWeaponAI( self );
 	return STATUS_SUCCESS;
 }
@@ -828,17 +834,11 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	playerState_t const* ps = &self->client->ps;
-	weapon_t primaryWP = static_cast<weapon_t>( ps->weapon );
+	weapon_t primaryWP = static_cast<weapon_t>( ps->stats[STAT_WEAPON] );
 	weapon_t equipedWP = BG_GetPlayerWeapon( ps );
-	if ( WeaponIsEmpty( equipedWP, ps ) && myTeam == TEAM_HUMANS )
-	{
-		G_ForceWeaponChange( self, WP_BLASTER );
-	}
 
-	if ( equipedWP == WP_HBUILD )
-	{
-		G_ForceWeaponChange( self, WP_BLASTER );
-	}
+	G_ForceWeaponChange( self, BotWantSideArm( self ) ? WP_BLASTER : WP_NONE );
+	equipedWP = BG_GetPlayerWeapon( ps );
 
 	//aliens have radar so they will always 'see' the enemy if they are in radar range
 	float goalDist = DistanceToGoalSquared( self );
@@ -872,10 +872,11 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// We have a valid visible target
-	bool inAttackRange = BotTargetInAttackRange( self, mind->goal, BG_GetPlayerWeapon( &self->client->ps ) );
+	bool equipedInRange = BotTargetInAttackRange( self, mind->goal, equipedWP );
+	bool primaryInRange = BotTargetInAttackRange( self, mind->goal, primaryWP );
 	mind->enemyLastSeen = level.time;
 
-	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !mind->nav().directPathToGoal )
+	if ( !( primaryInRange && myTeam == TEAM_HUMANS ) && !mind->nav().directPathToGoal )
 	{
 		BotMoveToGoal( self );
 		return STATUS_RUNNING;
@@ -891,14 +892,14 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	canSprint = !BotAvoidObstacles( self, dummy, false );
 	BotMoveInDir( self, MOVE_FORWARD );
 
-	if ( inAttackRange )
+	if ( equipedInRange )
 	{
 		BotFireWeaponAI( self );
 	}
 
 	if ( myTeam == TEAM_ALIENS )
 	{
-		BotClassMovement( self, inAttackRange );
+		BotClassMovement( self, primaryInRange );
 		return STATUS_RUNNING;
 	}
 
@@ -907,7 +908,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( mind->skillLevel >= 3 && goalDist < Square( MAX_HUMAN_DANCE_DIST )
 	        && ( goalDist > Square( MIN_HUMAN_DANCE_DIST ) || mind->skillLevel < 5 )
-	        && primaryWP != WP_PAIN_SAW && primaryWP != WP_FLAMER )
+	        && primaryInRange )
 	{
 		BotMoveInDir( self, MOVE_BACKWARD );
 	}
@@ -929,7 +930,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		}
 	}
 
-	if ( inAttackRange && mind->goal.getTargetType() == entityType_t::ET_BUILDABLE )
+	if ( primaryInRange && mind->goal.getTargetType() == entityType_t::ET_BUILDABLE )
 	{
 		BotStandStill( self );
 	}

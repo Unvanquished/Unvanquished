@@ -46,17 +46,31 @@ static bool TakesDamages( gentity_t const* ent )
 
 void G_ForceWeaponChange( gentity_t *ent, weapon_t weapon )
 {
+	if ( G_Team( ent ) != TEAM_HUMANS ) // only humans have several weapons
+	{
+		return;
+	}
 	playerState_t *ps = &ent->client->ps;
+
+	weapon_t prevWeapon = BG_GetPlayerWeapon( &ent->client->ps );
+	weapon_t newWeapon;
 
 	if ( weapon == WP_NONE || !BG_InventoryContainsWeapon( weapon, ps->stats ) )
 	{
 		// switch to the first non blaster weapon
-		ps->persistant[ PERS_NEWWEAPON ] = BG_PrimaryWeapon( ps->stats );
+		newWeapon = BG_PrimaryWeapon( ps->stats );
 	}
 	else
 	{
-		ps->persistant[ PERS_NEWWEAPON ] = weapon;
+		newWeapon = weapon;
 	}
+
+	if ( newWeapon == prevWeapon )
+	{
+		return;
+	}
+
+	ps->persistant[ PERS_NEWWEAPON ] = newWeapon;
 
 	// force this here to prevent flamer effect from continuing
 	ps->generic1 = WPM_NOTFIRING;
