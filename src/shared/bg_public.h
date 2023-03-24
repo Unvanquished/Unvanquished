@@ -1520,7 +1520,7 @@ int BG_GetPlayerPrice( playerState_t &ps );
 int BG_GetPlayerValue( playerState_t &ps );
 
 bool                    BG_PlayerCanChangeWeapon( playerState_t *ps );
-weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
+weapon_t                    BG_GetPlayerWeapon( playerState_t const *ps );
 bool                    BG_PlayerLowAmmo( const playerState_t *ps, bool *energy );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned int count );
