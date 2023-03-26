@@ -2005,8 +2005,8 @@ float    CG_DistanceToBase();
 // cg_animation.c
 //
 int CG_AnimNumber( int anim );
-void CG_RunLerpFrame( lerpFrame_t *lf, float scale );
-void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, bool animChanged );
+void CG_RunLerpFrame( lerpFrame_t *lf );
+void CG_RunMD5LerpFrame( lerpFrame_t *lf, bool animChanged );
 void CG_BlendLerpFrame( lerpFrame_t *lf );
 void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton );
 

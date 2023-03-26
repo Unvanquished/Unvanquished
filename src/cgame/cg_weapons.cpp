@@ -1087,7 +1087,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 		CG_SetWeaponLerpFrameAnimation( (weapon_t) es->weapon, lf, es->weaponAnim );
 	}
 
-	CG_RunLerpFrame( lf, 1.0f );
+	CG_RunLerpFrame( lf );
 
 	*old = lf->oldFrame;
 	*now = lf->frame;

@@ -33,7 +33,7 @@ CG_DoorAnimation
 */
 static void CG_DoorAnimation( centity_t *cent, int *old, int *now, float *backLerp )
 {
-	CG_RunLerpFrame( &cent->lerpFrame, 1.0f );
+	CG_RunLerpFrame( &cent->lerpFrame );
 
 	*old = cent->lerpFrame.oldFrame;
 	*now = cent->lerpFrame.frame;
@@ -118,7 +118,7 @@ static void CG_AMOAnimation( centity_t *cent, int *old, int *now, float *backLer
 			cent->lerpFrame.frameTime += delta;
 		}
 
-		CG_RunLerpFrame( &cent->lerpFrame, 1.0f );
+		CG_RunLerpFrame( &cent->lerpFrame );
 		cent->miscTime = cg.time;
 	}
 
