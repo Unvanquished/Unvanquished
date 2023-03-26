@@ -88,7 +88,7 @@ void updateIfValid( vec3_t dst, vec3_t const src )
 // any differences when running on client or server
 struct pml_t
 {
-	vec3_t   forward, right, up;
+	glm::vec3 forward, right, up;
 	float    frametime;
 
 	int      msec;
@@ -891,7 +891,7 @@ static bool PM_CheckPounce()
 				jumpMagnitude = LEVEL1_WALLPOUNCE_MAGNITUDE;
 
 				// if looking in the direction of the surface, jump in opposite normal direction
-				if ( DotProduct( pml.groundTrace.plane.normal, pml.forward ) < 0.0f )
+				if ( glm::dot( VEC2GLM( pml.groundTrace.plane.normal ), pml.forward ) < 0.0f )
 				{
 					VectorCopy( pml.groundTrace.plane.normal, jumpDirection );
 				}
@@ -1143,7 +1143,7 @@ static bool PM_CheckWallJump()
 		return false;
 	}
 
-	ProjectPointOnPlane( movedir, pml.forward, refNormal );
+	ProjectPointOnPlane( movedir, &pml.forward[0], refNormal );
 	VectorNormalize( movedir );
 
 	if ( pm->cmd.forwardmove < 0 )
@@ -1206,8 +1206,8 @@ static bool PM_CheckWallJump()
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
-	ProjectPointOnPlane( forward, pml.forward, &pm->ps->grapplePoint[0] );
-	ProjectPointOnPlane( right, pml.right, &pm->ps->grapplePoint[0] );
+	ProjectPointOnPlane( forward, &pml.forward[0], &pm->ps->grapplePoint[0] );
+	ProjectPointOnPlane( right, &pml.right[0], &pm->ps->grapplePoint[0] );
 
 	VectorScale( pm->ps->grapplePoint, normalFraction, dir );
 
@@ -1901,8 +1901,8 @@ static void PM_AirMove()
 	// project moves down to flat plane
 	pml.forward[ 2 ] = 0;
 	pml.right[ 2 ] = 0;
-	VectorNormalize( pml.forward );
-	VectorNormalize( pml.right );
+	pml.forward = glm::normalize( pml.forward );
+	pml.right = glm::normalize( pml.right );
 
 	vec3_t wishvel;
 	wishvel[ 0 ] = pml.forward[ 0 ] * fmove + pml.right[ 0 ] * smove;
@@ -1948,11 +1948,8 @@ static void PM_ClimbMove()
 	PM_SetMovementDir();
 
 	// project the forward and right directions onto the ground plane
-	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward );
-	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right );
-	//
-	VectorNormalize( pml.forward );
-	VectorNormalize( pml.right );
+	pml.forward = glm::normalize( PM_ClipVelocity( pml.forward, VEC2GLM( pml.groundTrace.plane.normal ) ) );
+	pml.right = glm::normalize( PM_ClipVelocity( pml.right, VEC2GLM( pml.groundTrace.plane.normal ) ) );
 
 	vec3_t wishvel;
 	for ( int i = 0; i < 3; i++ )
@@ -2055,11 +2052,8 @@ static void PM_WalkMove()
 	pml.right[ 2 ] = 0;
 
 	// project the forward and right directions onto the ground plane
-	PM_ClipVelocity( pml.forward, pml.groundTrace.plane.normal, pml.forward );
-	PM_ClipVelocity( pml.right, pml.groundTrace.plane.normal, pml.right );
-	//
-	VectorNormalize( pml.forward );
-	VectorNormalize( pml.right );
+	pml.forward = glm::normalize( PM_ClipVelocity( pml.forward, VEC2GLM( pml.groundTrace.plane.normal ) ) );
+	pml.right = glm::normalize( PM_ClipVelocity( pml.right, VEC2GLM( pml.groundTrace.plane.normal ) ) );
 
 	vec3_t wishvel;
 	for ( int i = 0; i < 3; i++ )
@@ -2486,7 +2480,7 @@ static void PM_GroundClimbTrace()
 
 	// construct a vector which reflects the direction the player is looking at
 	// with respect to the surface normal
-	ProjectPointOnPlane( moveDir, pml.forward, surfNormal );
+	ProjectPointOnPlane( moveDir, &pml.forward[0], surfNormal );
 	VectorNormalize( moveDir );
 
 	VectorCopy( moveDir, lookDir );
@@ -4611,7 +4605,7 @@ static void PmoveSingle( pmove_t *pmove )
 
 	pml.frametime = pml.msec * 0.001;
 
-	AngleVectors( &pm->ps->viewangles[0], pml.forward, pml.right, pml.up );
+	AngleVectors( pm->ps->viewangles, &pml.forward, &pml.right, &pml.up );
 
 	if ( pm->cmd.upmove < 10 )
 	{
@@ -4697,7 +4691,7 @@ static void PmoveSingle( pmove_t *pmove )
 	}
 	else if ( pml.walking )
 	{
-		if ( pm->waterlevel > 2 && DotProduct( pml.forward, pml.groundTrace.plane.normal ) > 0 )
+		if ( pm->waterlevel > 2 && glm::dot( pml.forward, VEC2GLM( pml.groundTrace.plane.normal ) ) > 0 )
 		{
 			PM_WaterMove();
 		}
