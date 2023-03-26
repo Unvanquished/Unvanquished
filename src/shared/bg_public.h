@@ -311,7 +311,7 @@ struct pmove_t
 	int    numtouch;
 	int    touchents[ MAXTOUCH ];
 
-	vec3_t mins, maxs; // bounding box size
+	glm::vec3 mins, maxs; // bounding box size
 
 	int    watertype;
 	int    waterlevel;

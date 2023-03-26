@@ -419,7 +419,7 @@ static void CG_TouchTriggerPrediction()
 			continue;
 		}
 
-		CM_BoxTrace( &trace, &cg.predictedPlayerState.origin[0], &cg.predictedPlayerState.origin[0], cg_pmove.mins, cg_pmove.maxs, cmodel, MASK_ALL, 0, traceType_t::TT_AABB );
+		CM_BoxTrace( &trace, &cg.predictedPlayerState.origin[0], &cg.predictedPlayerState.origin[0], &cg_pmove.mins[0], &cg_pmove.maxs[0], cmodel, MASK_ALL, 0, traceType_t::TT_AABB );
 
 		if ( !trace.startsolid )
 		{
