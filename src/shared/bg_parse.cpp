@@ -493,7 +493,7 @@ static bool BG_ParseConfigVar(configVar_t *var, const char **text, const char *f
 
 	if( !*token )
 	{
-		Log::Warn( "%s expected argument for '%s'\n", filename, var->name );
+		Log::Warn( "%s expected argument for '%s'", filename, var->name );
 		return false;
 	}
 
@@ -520,7 +520,7 @@ bool BG_CheckConfigVars()
 		if( !bg_configVars[i].defined )
 		{
 			ok = false;
-			Log::Warn( "config var %s was not defined\n", bg_configVars[i].name );
+			Log::Warn( "config var %s was not defined", bg_configVars[i].name );
 		}
 	}
 
@@ -2051,7 +2051,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		}*/
 		/*else
 		{
-			Log::Warn( "%s: unknown token '%s'\n", filename, token );
+			Log::Warn( "%s: unknown token '%s'", filename, token );
 		}*/
 	}
 
@@ -2330,7 +2330,7 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		}
 		/*else
 		{
-			Log::Warn( "%s: unknown token '%s'\n", filename, token );
+			Log::Warn( "%s: unknown token '%s'", filename, token );
 		}*/
 	}
 

@@ -121,7 +121,7 @@ static void CG_Rocket_SortDS()
 		return;
 	}
 
-	Log::Warn( "Invalid syntax for 'sortDS'\n sortDS <data source> <table name> <sort by>\n" );
+	Log::Warn( "Invalid syntax for 'sortDS'\n sortDS <data source> <table name> <sort by>" );
 }
 
 static void CG_Rocket_ExecDS()
@@ -211,7 +211,7 @@ static void CG_Rocket_EventExecForm()
 
 	if ( !*params )
 	{
-		Log::Warn( "Invalid form submit.  No named values exist.\n" );
+		Log::Warn( "Invalid form submit.  No named values exist." );
 		return;
 	}
 
