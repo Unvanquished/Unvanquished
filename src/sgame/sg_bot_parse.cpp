@@ -138,7 +138,7 @@ static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 {
 	int upgrade = AIUnBoxInt( params[ 0 ] );
 
-	if ( upgrade == UP_MEDKIT && !self->botMind->botSkillSet[BOT_H_MEDKIT] )
+	if ( upgrade == UP_MEDKIT && !self->botMind->skillSet[BOT_H_MEDKIT] )
 	{
 		// we don't know how to use it, pretend we don't have it
 		return AIBoxInt( (int) false );
@@ -210,7 +210,7 @@ static AIValue_t botClass( gentity_t *self, const AIValue_t* )
 
 static AIValue_t botSkill( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( self->botMind->botSkill.level );
+	return AIBoxInt( self->botMind->skillLevel );
 }
 
 static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
