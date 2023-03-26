@@ -2602,7 +2602,7 @@ static void CG_RenderParticle( particle_t *p )
 		p->lf.animation = &bp->modelAnimation;
 
 		//run animation
-		CG_RunLerpFrame( &p->lf, 1.0f );
+		CG_RunLerpFrame( &p->lf );
 
 		re.oldframe = p->lf.oldFrame;
 		re.frame = p->lf.frame;

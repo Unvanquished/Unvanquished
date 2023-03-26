@@ -908,7 +908,7 @@ static void CG_RunBuildableLerpFrame( centity_t *cent )
 		                        cg_buildables[ buildable ].sounds[ lf->animationNumber ].sound );
 	}
 
-	CG_RunLerpFrame( lf, 1.0f );
+	CG_RunLerpFrame( lf );
 
 	if ( lf->animationEnded )
 	{

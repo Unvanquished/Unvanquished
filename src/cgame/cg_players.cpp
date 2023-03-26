@@ -1640,7 +1640,7 @@ Sets cg.snap, cg.oldFrame, and cg.backlerp
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
-static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel, float speedScale )
+static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel )
 {
 	bool animChanged = false;
 
@@ -1653,7 +1653,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 	if ( ci->skeletal )
 	{
-		CG_RunMD5LerpFrame( lf, speedScale, animChanged );
+		CG_RunMD5LerpFrame( lf, animChanged );
 
 		// blend old and current animation
 		CG_BlendLerpFrame( lf );
@@ -1663,7 +1663,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	}
 	else
 	{
-		CG_RunLerpFrame( lf, speedScale );
+		CG_RunLerpFrame( lf );
 	}
 }
 
@@ -1731,7 +1731,6 @@ static void CG_SegmentAnimation( centity_t *cent, lerpFrame_t *lf, refSkeleton_t
 {
 	clientInfo_t *ci;
 	int          clientNum;
-	float        speedScale = 1.0f;
 
 	clientNum = cent->currentState.clientNum;
 
@@ -1742,7 +1741,7 @@ static void CG_SegmentAnimation( centity_t *cent, lerpFrame_t *lf, refSkeleton_t
 	}
 
 	ci = &cgs.clientinfo[ clientNum ];
-	CG_RunPlayerLerpFrame( ci, lf, anim, skel, speedScale );
+	CG_RunPlayerLerpFrame( ci, lf, anim, skel );
 
 	*oldFrame = lf->oldFrame;
 	*frame = lf->frame;
@@ -1758,7 +1757,6 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 {
 	clientInfo_t  *ci;
 	int           clientNum;
-	float         speedScale;
 	static refSkeleton_t blend;
 
 	clientNum = cent->currentState.clientNum;
@@ -1767,8 +1765,6 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	{
 		return;
 	}
-
-	speedScale = 1;
 
 	ci = &cgs.clientinfo[ clientNum ];
 
@@ -1793,16 +1789,16 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	// do the shuffle turn frames locally
 	if ( cent->pe.nonseg.yawing && CG_AnimNumber( cent->currentState.legsAnim ) == NSPA_STAND )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, &legsSkeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, &legsSkeleton );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton );
 	}
 
 	if ( blend.type == refSkeletonType_t::SK_RELATIVE )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, &blend, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, &blend );
 		trap_R_BlendSkeleton( &legsSkeleton, &blend, 0.5 );
 	}
 }
@@ -2369,7 +2365,7 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 		}
 	}
 
-	CG_RunLerpFrame( lf, 1.0f );
+	CG_RunLerpFrame( lf );
 
 	*old = lf->oldFrame;
 	*now = lf->frame;
@@ -3300,13 +3296,13 @@ void CG_Corpse( centity_t *cent )
 	else if ( !ci->nonsegmented )
 	{
 		memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, es->legsAnim, nullptr, 1 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, es->legsAnim, nullptr );
 		legs.oldframe = cent->pe.legs.oldFrame;
 		legs.frame = cent->pe.legs.frame;
 		legs.backlerp = cent->pe.legs.backlerp;
 
 		memset( &cent->pe.torso, 0, sizeof( lerpFrame_t ) );
-		CG_RunPlayerLerpFrame( ci, &cent->pe.torso, es->torsoAnim, nullptr, 1 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.torso, es->torsoAnim, nullptr );
 		torso.oldframe = cent->pe.torso.oldFrame;
 		torso.frame = cent->pe.torso.frame;
 		torso.backlerp = cent->pe.torso.backlerp;
@@ -3314,7 +3310,7 @@ void CG_Corpse( centity_t *cent )
 	else
 	{
 		memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, es->legsAnim, nullptr, 1 );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, es->legsAnim, nullptr );
 		legs.oldframe = cent->pe.nonseg.oldFrame;
 		legs.frame = cent->pe.nonseg.frame;
 		legs.backlerp = cent->pe.nonseg.backlerp;

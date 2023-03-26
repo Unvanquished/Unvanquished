@@ -45,7 +45,7 @@ CG_RunLerpFrame
 cg.time should be between oldFrameTime and frameTime after exit
 ===============
 */
-void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
+void CG_RunLerpFrame( lerpFrame_t *lf )
 {
 	// debugging tool to get no animations
 	if ( !cg_animSpeed.Get() )
@@ -72,7 +72,10 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 
 			animation_t *anim = lf->animation;
 			int numFrames = anim->numFrames;
-			float frameLength = anim->frameLerp / scale;
+
+			/* Previously the code was dividing frameLength by scale
+			But scale was always eqal to 1.0f so we did not it */
+			float frameLength = anim->frameLerp;
 
 			int relativeFrame = ceil((cg.time - lf->animationTime) / frameLength);
 			if (relativeFrame >= numFrames)
@@ -119,14 +122,14 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 	}
 }
 
-void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, bool animChanged )
+void CG_RunMD5LerpFrame( lerpFrame_t *lf, bool animChanged )
 {
 	if (animChanged)
 	{
 		lf->frame = lf->oldFrame = 0;
 		lf->frameTime = lf->oldFrameTime = cg.time;
 	}
-	CG_RunLerpFrame(lf, scale);
+	CG_RunLerpFrame( lf );
 }
 
 /*
