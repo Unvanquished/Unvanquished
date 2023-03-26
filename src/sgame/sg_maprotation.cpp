@@ -44,9 +44,10 @@ enum conditionVariable_t
 
 enum conditionOperator_t
 {
-  CO_LT,
-  CO_EQ,
-  CO_GT
+	CO_LT,
+	CO_EQ,
+	CO_GT,
+	CO_BETWEEN, //if foobar between n m
 };
 #define CONDITION_OPERATOR(op) ( ( op ) + '<' )
 
@@ -59,6 +60,7 @@ struct mrCondition_t
 	conditionOperator_t operator_;
 
 	int                 intValue;
+	int                 intValue2; //used only for CO_BETWEEN
 	team_t              lastWin;
 };
 
@@ -290,6 +292,10 @@ static bool G_ParseIntegerCondition( mrCondition_t *condition, const char *token
 	{
 		condition->operator_ = CO_EQ;
 	}
+	else if ( !Q_stricmp( token, "?" ) )
+	{
+		condition->operator_ = CO_BETWEEN;
+	}
 	else
 	{
 		Log::Warn("invalid operator in expression: %s", token );
@@ -297,13 +303,23 @@ static bool G_ParseIntegerCondition( mrCondition_t *condition, const char *token
 	}
 
 	token = COM_Parse( text_p );
-
 	if ( !*token )
 	{
 		return false;
 	}
 
 	condition->intValue = atoi( token );
+
+	if ( condition->operator_ == CO_BETWEEN )
+	{
+		token = COM_Parse( text_p );
+		if ( !*token )
+		{
+			return false;
+		}
+
+		condition->intValue2 = atoi( token );
+	}
 	return true;
 }
 
@@ -1164,15 +1180,15 @@ static bool G_EvaluateIntegerCondition( mrCondition_t *localCondition, int value
 	{
 		case CO_LT:
 			return valueCompared < localCondition->intValue;
-			break;
 
 		case CO_GT:
 			return valueCompared > localCondition->intValue;
-			break;
 
 		case CO_EQ:
 			return valueCompared == localCondition->intValue;
-			break;
+
+		case CO_BETWEEN:
+			return valueCompared >= localCondition->intValue && valueCompared <= localCondition->intValue2;
 	}
 	return false;
 }
