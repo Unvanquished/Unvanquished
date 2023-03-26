@@ -628,7 +628,7 @@ AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode_t *node 
 	AIActionNode_t *action = ( AIActionNode_t * ) node;
 	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
 
-	if ( u == UP_MEDKIT && !self->botMind->botSkillSet[BOT_H_MEDKIT] )
+	if ( u == UP_MEDKIT && !self->botMind->skillSet[BOT_H_MEDKIT] )
 	{
 		// we don't know how to use it
 		return STATUS_FAILURE;
@@ -885,8 +885,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	// We are human and we either are at fire range, or have
 	// a direct path to goal
 
-	if ( self->botMind->botSkill.level >= 3 && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
-	        && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->botSkill.level < 5 )
+	if ( self->botMind->skillLevel >= 3 && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
+	        && ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->skillLevel < 5 )
 	        && self->client->ps.weapon != WP_PAIN_SAW && self->client->ps.weapon != WP_FLAMER )
 	{
 		BotMoveInDir( self, MOVE_BACKWARD );

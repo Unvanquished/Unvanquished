@@ -91,11 +91,6 @@ struct enemyQueue_t
 	int back;
 };
 
-struct botSkill_t
-{
-       int level;
-};
-
 // boolean flags that tells which skill (compétence) the bot has.
 //
 // When you add a skill, add it to the skill tree in sg_bot_skilltree.cpp and
@@ -151,9 +146,9 @@ struct botMemory_t
 	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );
 	usercmd_t   cmdBuffer;
 
-	botSkill_t  botSkill;
-	skillSet_t  botSkillSet; // boolean flags
-	std::string botSkillSetExplaination;
+	int         skillLevel;
+	skillSet_t  skillSet; // boolean flags
+	std::string skillSetExplaination;
 
 	botEntityAndDistance_t bestEnemy;
 	botEntityAndDistance_t closestDamagedBuilding;
