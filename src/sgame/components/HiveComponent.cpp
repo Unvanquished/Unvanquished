@@ -107,7 +107,7 @@ void HiveComponent::Fire(Entity& target) {
 	glm::vec3 targetPoint = VEC2GLM( target.oldEnt->s.origin );
 	glm::vec3 dirToTarget = glm::normalize( targetPoint - muzzle );
 
-	vectoangles( &dirToTarget[0], entity.oldEnt->buildableAim );
+	vectoangles( &dirToTarget[0], &entity.oldEnt->buildableAim[0] );
 	entity.oldEnt->target = target.oldEnt;
 
 	G_FireWeapon(entity.oldEnt, WP_HIVE, WPM_PRIMARY);

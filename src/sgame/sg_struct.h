@@ -336,7 +336,7 @@ struct gentity_t
 	// "ent->s.pos.trBase = $NAME" when "moverState == moverState_t::.*_$NAME"
 	// In case $NAME is 1TO2 or 2TO1:
 	// ent->s.pos.trDelta = scale( ( last - next ), ( 1000 / ent->s.pos.trDuration ) )
-	vec3_t restingPosition, activatedPosition;
+	glm::vec3 restingPosition, activatedPosition;
 
 	// sounds played when "moverState == moverState_t::.*_$NAME"
 	int soundPos1, soundPos2;
@@ -374,12 +374,12 @@ struct gentity_t
 
 	// acceleration evaluation
 	bool  evaluateAcceleration;
-	vec3_t    oldVelocity;
-	vec3_t    acceleration;
-	vec3_t    oldAccel;
-	vec3_t    jerk;
+	glm::vec3 oldVelocity;
+	glm::vec3 acceleration;
+	glm::vec3 oldAccel;
+	glm::vec3 jerk;
 
-	vec3_t       movedir;
+	glm::vec3 movedir;
 
 	int       nextthink;
 	void ( *think )( gentity_t *self );
@@ -445,7 +445,7 @@ struct gentity_t
 
 	int         killedBy; // clientNum of killer
 
-	vec3_t      buildableAim; // aim vector for buildables
+	glm::vec3 buildableAim; // aim vector for buildables
 
 	// turret
 	float       turretCurrentDamage;
@@ -539,7 +539,7 @@ struct clientPersistant_t
 	int      floodDemerits;
 	int      floodTime;
 
-	vec3_t   lastDeathLocation;
+	glm::vec3 lastDeathLocation;
 	char     guid[ 33 ];
 	addr_t   ip;
 	char     voice[ MAX_VOICE_NAME_LEN ];
@@ -558,9 +558,9 @@ struct clientPersistant_t
 
 struct unlagged_t
 {
-	vec3_t   origin;
-	vec3_t   mins;
-	vec3_t   maxs;
+	glm::vec3 origin;
+	glm::vec3 mins;
+	glm::vec3 maxs;
 	bool used;
 };
 
@@ -595,11 +595,11 @@ struct gclient_t
 	byte   oldbuttons[ USERCMD_BUTTONS / 8 ];
 	byte   latched_buttons[ USERCMD_BUTTONS / 8 ];
 
-	vec3_t oldOrigin;
+	glm::vec3 oldOrigin;
 
 	// sum up damage over an entire frame, so shotgun blasts give a single big kick
 	int      damage_received;  // damage received this frame
-	vec3_t   damage_from;      // last damage direction
+	glm::vec3 damage_from;      // last damage direction
 	bool damage_fromWorld; // if true, don't use the damage_from vector
 
 	// timers
@@ -698,10 +698,10 @@ struct buildLog_t
 	buildable_t modelindex;
 	float       momentumEarned;
 	bool        markedForDeconstruction;
-	vec3_t      origin;
-	vec3_t      angles;
-	vec3_t      origin2;
-	vec3_t      angles2;
+	glm::vec3 origin;
+	glm::vec3 angles;
+	glm::vec3 origin2;
+	glm::vec3 angles2;
 };
 
 #define MAX_SPAWN_VARS       64
@@ -765,8 +765,8 @@ struct level_locals_t
 	char             *changemap;
 	bool         readyToExit; // at least one client wants to exit
 	int              exitTime;
-	vec3_t           intermission_origin; // also used for spectator spawns
-	vec3_t           intermission_angle;
+	glm::vec3 intermission_origin; // also used for spectator spawns
+	glm::vec3 intermission_angle;
 
 	gentity_t        *locationHead; // head of the location list
 	gentity_t        *fakeLocation; // fake location for anything which might need one

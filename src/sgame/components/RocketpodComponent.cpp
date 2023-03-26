@@ -194,7 +194,7 @@ bool RocketpodComponent::CompareTargets(Entity &a, Entity &b) {
 
 bool RocketpodComponent::SafeShot() {
 	glm::vec3 aimDirection;
-	AngleVectors( entity.oldEnt->buildableAim, &aimDirection[0], nullptr, nullptr );
+	AngleVectors( entity.oldEnt->buildableAim, &aimDirection, nullptr, nullptr );
 
 	return SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), aimDirection );
 }
@@ -237,7 +237,7 @@ bool RocketpodComponent::EnemyClose() {
 		glm::vec3 turretMins, turretMaxs;
 		BG_BuildableBoundingBox( BA_H_ROCKETPOD, &turretMins[0], &turretMaxs[0] );
 
-		float enemyRadius   = std::max( glm::length( VEC2GLM( cmc->mins ) ), glm::length( VEC2GLM( cmc->maxs ) ) );
+		float enemyRadius   = std::max( glm::length( cmc->mins ), glm::length( cmc->maxs ) );
 		float turretRadius  = std::max( glm::length( turretMins ), glm::length( turretMaxs ) );
 		float missileRadius = missileAttributes->size;
 		float splashRadius  = missileAttributes->splashRadius;

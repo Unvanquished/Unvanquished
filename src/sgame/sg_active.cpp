@@ -106,7 +106,7 @@ static void P_DamageFeedback( gentity_t *player )
 	}
 	else
 	{
-		vectoangles( client->damage_from, angles );
+		vectoangles( &client->damage_from[0], angles );
 		client->ps.damagePitch = angles[ PITCH ] / 360.0 * 256;
 		client->ps.damageYaw = angles[ YAW ] / 360.0 * 256;
 	}
@@ -1545,18 +1545,18 @@ void G_UnlaggedOn( gentity_t *attacker, vec3_t muzzle, float range )
 			continue;
 		}
 
-		if ( VectorCompare( ent->r.currentOrigin, calc->origin ) )
+		if ( glm::all( glm::equal( VEC2GLM( ent->r.currentOrigin ), calc->origin ) ) )
 		{
 			continue;
 		}
 
 		if ( muzzle )
 		{
-			float r1 = Distance( calc->origin, calc->maxs );
-			float r2 = Distance( calc->origin, calc->mins );
+			float r1 = glm::distance( calc->origin, calc->maxs );
+			float r2 = glm::distance( calc->origin, calc->mins );
 			float maxRadius = ( r1 > r2 ) ? r1 : r2;
 
-			if ( Distance( muzzle, calc->origin ) > range + maxRadius )
+			if ( Distance( muzzle, &calc->origin[0] ) > range + maxRadius )
 			{
 				continue;
 			}
@@ -1628,14 +1628,14 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 
 	// increase the range by the player's largest possible radius since it's
 	// the players bounding box that collides, not their origin
-	r1 = Distance( calc->origin, calc->mins );
-	r2 = Distance( calc->origin, calc->maxs );
+	r1 = glm::distance( calc->origin, calc->mins );
+	r2 = glm::distance( calc->origin, calc->maxs );
 	range += ( r1 > r2 ) ? r1 : r2;
 
-	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
+	G_UnlaggedOn( ent, &ent->client->oldOrigin[0], range );
 
-	trap_Trace( &tr, ent->client->oldOrigin, ent->r.mins, ent->r.maxs,
-	            &ent->client->ps.origin[0], ent->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr, ent->client->oldOrigin, VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ),
+	            ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
 	{

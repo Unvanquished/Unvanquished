@@ -354,7 +354,6 @@ static void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 {
 	gentity_t *target = self->target.entity;
-	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
 	float     distanceToTarget = LOCKBLOB_RANGE;
 	int       lowMsec = 0;
@@ -368,17 +367,18 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 
 	// highMsec and lowMsec can only move toward
 	// one another, so the loop must terminate
+	glm::vec3 dirToTarget;
 	while ( highMsec - lowMsec > TRAPPER_ACCURACY )
 	{
 		int   partitionMsec = ( highMsec + lowMsec ) / 2;
 		float time = ( float ) partitionMsec / 1000.0f;
 		float projectileDistance = LOCKBLOB_SPEED * ( time + MISSILE_PRESTEP_TIME / 1000.0f );
 
-		VectorMA( target->s.pos.trBase, time, target->s.pos.trDelta, dirToTarget );
-		VectorMA( dirToTarget, time * time, halfAcceleration, dirToTarget );
-		VectorMA( dirToTarget, time * time * time, thirdJerk, dirToTarget );
-		VectorSubtract( dirToTarget, self->s.pos.trBase, dirToTarget );
-		distanceToTarget = VectorLength( dirToTarget );
+		dirToTarget = VEC2GLM( target->s.pos.trBase ) + time * VEC2GLM( target->s.pos.trDelta );
+		dirToTarget += time * time * VEC2GLM( halfAcceleration );
+		dirToTarget += time * time * time * VEC2GLM( thirdJerk );
+		dirToTarget -= VEC2GLM( self->s.pos.trBase );
+		distanceToTarget = glm::length( dirToTarget );
 
 		if ( projectileDistance < distanceToTarget )
 		{
@@ -394,8 +394,8 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 		}
 	}
 
-	VectorNormalize( dirToTarget );
-	vectoangles( dirToTarget, self->buildableAim );
+	dirToTarget = glm::normalize( dirToTarget );
+	vectoangles( &dirToTarget[0], &self->buildableAim[0] );
 
 	//fire at target
 	G_FireWeapon( self, WP_LOCKBLOB_LAUNCHER, WPM_PRIMARY );
