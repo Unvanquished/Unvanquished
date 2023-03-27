@@ -959,7 +959,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			continue;
 		}
 
-		if ( DistanceSquared( self->s.origin, target->s.origin ) > Square( ALIENSENSE_RANGE ) )
+		if ( DistanceSquared( self->s.origin, target->s.origin ) > Square( g_bot_aliensenseRange.Get() ) )
 		{
 			continue;
 		}
@@ -1003,7 +1003,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 gentity_t* BotFindClosestEnemy( gentity_t *self )
 {
 	gentity_t* closestEnemy = nullptr;
-	float minDistance = Square( ALIENSENSE_RANGE );
+	float minDistance = Square( g_bot_aliensenseRange.Get() );
 	gentity_t *target;
 
 	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
