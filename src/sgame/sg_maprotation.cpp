@@ -24,9 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-// sg_maprotation.c -- the map rotation system
+// See https://wiki.unvanquished.net/wiki/Server/Map_rotation for user documentation
 
 #include "sg_local.h"
+#include "common/FileSystem.h"
 
 #define MAX_MAP_ROTATIONS     64
 #define MAX_MAP_ROTATION_MAPS 256
@@ -415,7 +416,7 @@ static bool G_ParseNode( mrNode_t **node, const char *token, const char **text_p
 
 		if ( !*token )
 		{
-			Log::Warn("goto or resume without label" );
+			COM_ParseError("goto or resume without label" );
 			return false;
 		}
 
@@ -432,6 +433,12 @@ static bool G_ParseNode( mrNode_t **node, const char *token, const char **text_p
 	}
 	else
 	{
+		if ( !FS::Path::IsValid( token, false ) )
+		{
+			COM_ParseError( "invalid token '%s'", token );
+			return false;
+		}
+
 		mrMapDescription_t *map;
 
 		( *node )->type = NT_MAP;
@@ -469,13 +476,13 @@ static bool G_ParseMapRotation( mapRotation_t *mr, const char **text_p )
 		{
 			if ( node == nullptr )
 			{
-				Log::Warn("map command section with no associated map" );
+				COM_ParseError("map command section with no associated map" );
 				return false;
 			}
 
 			if ( !G_ParseMapCommandSection( node, text_p ) )
 			{
-				Log::Warn("failed to parse map command section" );
+				COM_ParseError("failed to parse map command section" );
 				return false;
 			}
 
@@ -547,6 +554,8 @@ static bool G_ParseMapRotationFile( const char *fileName )
 	// parse the text
 	text_p = text;
 
+	COM_BeginParseSession( fileName );
+
 	// read optional parameters
 	while ( 1 )
 	{
@@ -564,7 +573,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 				//check for name space clashes
 				if ( G_RotationExists( mrName ) )
 				{
-					Log::Warn("a map rotation is already named %s", mrName );
+					COM_ParseError("a map rotation is already named %s", mrName );
 					return false;
 				}
 
@@ -592,7 +601,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 			}
 			else
 			{
-				Log::Warn("unnamed map rotation" );
+				COM_ParseError("unnamed map rotation" );
 				return false;
 			}
 		}
@@ -604,7 +613,7 @@ static bool G_ParseMapRotationFile( const char *fileName )
 		}
 		else
 		{
-			Log::Warn("map rotation already named" );
+			COM_ParseError("map rotation already named" );
 			return false;
 		}
 	}
