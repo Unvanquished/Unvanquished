@@ -753,7 +753,6 @@ Print the parsed map rotations
 void G_PrintRotations()
 {
 	int i, j;
-	int size = sizeof( mapRotations );
 
 	Log::Notice( "Map rotations as parsed:" );
 
@@ -762,8 +761,6 @@ void G_PrintRotations()
 		mapRotation_t *mr = &mapRotations.rotations[ i ];
 
 		Log::Notice( "rotation: %s{", mr->name );
-
-		size += mr->numNodes * sizeof( mrNode_t );
 
 		for ( j = 0; j < mr->numNodes; j++ )
 		{
@@ -774,8 +771,6 @@ void G_PrintRotations()
 			{
 				Log::Notice( "%*s%s", indentation, "", G_RotationNode_ToString( node ) );
 				node = node->u.condition.target;
-
-				size += sizeof( mrNode_t );
 
 				indentation += 2;
 			}
@@ -791,8 +786,6 @@ void G_PrintRotations()
 
 		Log::Notice( MAP_DEFAULT "}" );
 	}
-
-	Log::Notice( "Total memory used: %d bytes", size );
 }
 
 /*
