@@ -34,33 +34,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define NOT_ROTATING          -1
 
-enum conditionVariable_t
-{
-  CV_ERR,
-  CV_RANDOM,
-  CV_NUMCLIENTS,
-  CV_NUMPLAYERS,
-  CV_LASTWIN
-};
-
-enum conditionOperator_t
-{
-  CO_LT,
-  CO_EQ,
-  CO_GT
-};
-#define CONDITION_OPERATOR(op) ( ( op ) + '<' )
-
 struct mrNode_t;
 struct mrCondition_t
 {
 	mrNode_t            *target;
-
-	conditionVariable_t lhs;
-	conditionOperator_t operator_;
-
-	int                 intValue;
-	team_t              lastWin;
+	char *exprString;
 };
 
 struct mrMapDescription_t
@@ -269,43 +247,337 @@ static bool G_ParseMapCommandSection( mrNode_t *node, const char **text_p )
 	return false;
 }
 
-static bool G_ParseIntegerCondition( mrCondition_t *condition, const char *token, const char **text_p, conditionVariable_t conditionVariable )
+using mrValue_t = float; // value type for expressions in 'if' conditions
+
+// upper nibble is precedence
+// operators and their precedences are the same as C-like languages
+enum mrOperation_t {
+	OP_LEFT_PAREN = 0x10,
+
+	OP_OR = 0x20,
+
+	OP_AND = 0x30,
+
+	OP_EQUAL = 0x40,
+	OP_UNEQUAL = 0x41,
+
+	OP_LESS = 0x50,
+	OP_LESS_EQUAL = 0x51,
+	OP_GREATER = 0x52,
+	OP_GREATER_EQUAL = 0x53,
+
+	OP_ADD = 0x60,
+	OP_SUBTRACT = 0x61,
+
+	OP_MULTIPLY = 0x70,
+	OP_DIVIDE = 0x71,
+	OP_MODULO = 0x72,
+
+	// unary operators
+	OP_MINUS = 0x80,
+	OP_NOT = 0x81,
+	OP_LAST_WIN = 0x82,
+};
+
+static int Precedence( mrOperation_t op )
 {
-	condition->lhs = conditionVariable;
-	token = COM_Parse( text_p );
+	return op >> 4;
+}
 
-	if ( !*token )
+static bool ParseValue( const char *token, mrValue_t &result )
+{
+	if ( Str::ToFloat( token, result ) )
 	{
-		return false;
+		return true;
 	}
 
-	if ( !Q_stricmp( token, "<" ) )
+	if ( !Q_stricmp( token, "numPlayers" ) )
 	{
-		condition->operator_ = CO_LT;
+		result = level.numConnectedPlayers;
 	}
-	else if ( !Q_stricmp( token, ">" ) )
+	else if ( !Q_stricmp( token, "numClients" ) )
 	{
-		condition->operator_ = CO_GT;
+		result = level.numConnectedClients;
 	}
-	else if ( !Q_stricmp( token, "=" ) )
+	else if ( !Q_stricmp( token, "aliens" ) )
 	{
-		condition->operator_ = CO_EQ;
+		result = TEAM_ALIENS;
+	}
+	else if ( !Q_stricmp( token, "humans" ) )
+	{
+		result = TEAM_HUMANS;
+	}
+	else if ( !Q_stricmp( token, "random" ) )
+	{
+		result = rand() & 1;
 	}
 	else
 	{
-		Log::Warn("invalid operator in expression: %s", token );
 		return false;
 	}
+	return true;
+}
 
-	token = COM_Parse( text_p );
+static mrValue_t EvalUnary( mrOperation_t op, mrValue_t operand )
+{
+	switch ( op )
+	{
+	case OP_MINUS:
+		return -operand;
+	case OP_NOT:
+		return !operand;
+	case OP_LAST_WIN:
+		return operand == level.lastWin;
+	default:
+		ASSERT_UNREACHABLE();
+	}
+}
 
-	if ( !*token )
+static mrValue_t EvalUnaries( std::vector<mrOperation_t> &stack, mrValue_t value )
+{
+	while ( Precedence( stack.back() ) == Precedence( OP_MINUS ) )
+	{
+		value = EvalUnary( stack.back(), value );
+		stack.pop_back();
+	}
+	return value;
+}
+
+static mrValue_t EvalBinary( mrValue_t lhs, mrOperation_t op, mrValue_t rhs )
+{
+	switch ( op )
+	{
+	case OP_OR:
+		return lhs || rhs;
+	case OP_AND:
+		return lhs && rhs;
+	case OP_EQUAL:
+		return lhs == rhs;
+	case OP_UNEQUAL:
+		return lhs != rhs;
+	case OP_LESS:
+		return lhs < rhs;
+	case OP_LESS_EQUAL:
+		return lhs <= rhs;
+	case OP_GREATER:
+		return lhs > rhs;
+	case OP_GREATER_EQUAL:
+		return lhs >= rhs;
+	case OP_ADD:
+		return lhs + rhs;
+	case OP_SUBTRACT:
+		return lhs - rhs;
+	case OP_MULTIPLY:
+		return lhs * rhs;
+	case OP_DIVIDE:
+		return lhs / rhs;
+	case OP_MODULO:
+		return fmodf( lhs, rhs );
+	default:
+		ASSERT_UNREACHABLE();
+	}
+}
+
+static void EvalBinaries( std::vector<mrOperation_t> &opStack, std::vector<mrValue_t> &valueStack, int minPrecedence )
+{
+	while ( Precedence( opStack.back() ) >= minPrecedence )
+	{
+		mrValue_t rhs = valueStack.back();
+		valueStack.pop_back();
+		valueStack.back() = EvalBinary( valueStack.back(), opStack.back(), rhs );
+		opStack.pop_back();
+	}
+}
+
+static bool ParseUnary( const char *token, mrOperation_t &result )
+{
+	if ( !strcmp( token, "-" ) )
+	{
+		result = OP_MINUS;
+	}
+	else if ( !strcmp( token, "!" ) )
+	{
+		result = OP_NOT;
+	}
+	else if ( !Q_stricmp( token, "lastWin" ) )
+	{
+		result = OP_LAST_WIN;
+	}
+	else
 	{
 		return false;
 	}
-
-	condition->intValue = atoi( token );
 	return true;
+}
+
+static bool ParseBinary( const char *token, mrOperation_t &result )
+{
+	if ( !strcmp( token, "||" ) )
+	{
+		result = OP_OR;
+	}
+	else if ( !strcmp( token, "&&" ) )
+	{
+		result = OP_AND;
+	}
+	else if ( !strcmp( token, "=" ) || !strcmp( token, "==" ) )
+	{
+		result = OP_EQUAL;
+	}
+	else if ( !strcmp( token, "!=" ) )
+	{
+		result = OP_UNEQUAL;
+	}
+	else if ( !strcmp( token, "<" ) )
+	{
+		result = OP_LESS;
+	}
+	else if ( !strcmp( token, "<=" ) )
+	{
+		result = OP_LESS_EQUAL;
+	}
+	else if ( !strcmp( token, ">" ) )
+	{
+		result = OP_GREATER;
+	}
+	else if ( !strcmp( token, ">=" ) )
+	{
+		result = OP_GREATER_EQUAL;
+	}
+	else if ( !strcmp( token, "+" ) )
+	{
+		result = OP_ADD;
+	}
+	else if ( !strcmp( token, "-" ) )
+	{
+		result = OP_SUBTRACT;
+	}
+	else if ( !strcmp( token, "*" ) )
+	{
+		result = OP_MULTIPLY;
+	}
+	else if ( !strcmp( token, "/" ) )
+	{
+		result = OP_DIVIDE;
+	}
+	else if ( !strcmp( token, "%" ) )
+	{
+		result = OP_MODULO;
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
+
+// Shunting yard parser for the expression of an 'if' node
+static bool ParseExpression( const char **text_p, mrValue_t &result, std::string &str, const char*& lastToken )
+{
+	std::vector<mrOperation_t> opStack{ OP_LEFT_PAREN };
+	std::vector<mrValue_t> valueStack;
+	bool expectValue = true;
+	int parenLevel = 0;
+	std::string error;
+	str.clear();
+	const char *token;
+	while ( true )
+	{
+		// COM_Parse2 sort of knows C tokens although it has a lot of deficiencies like
+		// lumping '/' '-' and '*' with alnum strings
+		token = COM_Parse2( text_p );
+		if ( !*text_p )
+		{
+			if ( expectValue || parenLevel > 0 )
+			{
+				error = "Unexpected end of file";
+			}
+			break;
+		}
+		if ( expectValue )
+		{
+			mrOperation_t unary;
+			if ( ParseUnary( token, unary ) )
+			{
+				opStack.push_back( unary );
+			}
+			else if ( !strcmp( token, "(" ) )
+			{
+				opStack.push_back( OP_LEFT_PAREN );
+				++parenLevel;
+			}
+			else
+			{
+				expectValue = false;
+				mrValue_t value;
+				if ( !ParseValue( token, value ) )
+				{
+					error = Str::Format( "Could not parse '%s' as a value", token );
+					break;
+				}
+				valueStack.push_back( EvalUnaries( opStack, value ) );
+			}
+		}
+		else
+		{
+			if ( !strcmp( token, ")" ) )
+			{
+				if ( --parenLevel < 0 )
+				{
+					error = "Closing ')' without opening '('";
+					break;
+				}
+				EvalBinaries( opStack, valueStack, Precedence( OP_LEFT_PAREN ) + 1 );
+				ASSERT_EQ( opStack.back(), OP_LEFT_PAREN );
+				opStack.pop_back();
+				valueStack.back() = EvalUnaries( opStack, valueStack.back() );
+			}
+			else
+			{
+				expectValue = true;
+				mrOperation_t binaryOp;
+				if ( !ParseBinary( token, binaryOp ) )
+				{
+					if ( parenLevel > 0 )
+					{
+						error = Str::Format( "Got '%s'; expected binary operator or ')'", token );
+						break;
+					}
+					else
+					{
+						// assume this is the target of the condition
+						if ( !strcmp( token, "#" ) )
+						{
+							// HACK: we have to back up because COM_Parse considers #label (implicit goto) to be one token
+							--*text_p;
+							token = COM_Parse( text_p );
+						}
+						break;
+					}
+					break;
+				}
+				EvalBinaries( opStack, valueStack, Precedence( binaryOp ) );
+				opStack.push_back( binaryOp );
+			}
+		}
+		if ( !str.empty() ) str.push_back( ' ' );
+		str += token;
+	}
+
+	if ( !error.empty() )
+	{
+		COM_ParseError( "While parsing 'if' expression: %s", error.c_str() );
+		return false;
+	}
+	else
+	{
+		lastToken = token;
+		EvalBinaries( opStack, valueStack, Precedence( OP_LEFT_PAREN ) + 1 );
+		ASSERT_EQ( opStack.size(), 1U ); // dummy OP_LEFT_PAREN
+		ASSERT_EQ( valueStack.size(), 1U );
+		result = valueStack.back();
+		return true;
+	}
 }
 
 /*
@@ -319,76 +591,24 @@ static bool G_ParseNode( mrNode_t **node, const char *token, const char **text_p
 {
 	if ( !Q_stricmp( token, "if" ) )
 	{
-		mrCondition_t *condition;
-
-		( *node )->type = NT_CONDITION;
-		condition = & ( *node )->u.condition;
-
-		token = COM_Parse( text_p );
-
-		if ( !*token )
+		mrValue_t unusedResult;
+		std::string str;
+		if ( !ParseExpression( text_p, unusedResult, str, token ) )
 		{
 			return false;
 		}
 
-		if ( !Q_stricmp( token, "numPlayers" ) )
+		if ( !*text_p )
 		{
-			if ( !G_ParseIntegerCondition( condition, token, text_p, CV_NUMPLAYERS) )
-			{
-				return false;
-			}
-		}
-		else if ( !Q_stricmp( token, "numClients" ) )
-		{
-			if ( !G_ParseIntegerCondition( condition, token, text_p, CV_NUMCLIENTS) )
-			{
-				return false;
-			}
-		}
-		else if ( !Q_stricmp( token, "lastWin" ) )
-		{
-			condition->lhs = CV_LASTWIN;
-
-			token = COM_Parse( text_p );
-
-			if ( !*token )
-			{
-				return false;
-			}
-
-			if ( !Q_stricmp( token, "aliens" ) )
-			{
-				condition->lastWin = TEAM_ALIENS;
-			}
-			else if ( !Q_stricmp( token, "humans" ) )
-			{
-				condition->lastWin = TEAM_HUMANS;
-			}
-			else
-			{
-				Log::Warn("invalid right hand side in expression: %s", token );
-				return false;
-			}
-		}
-		else if ( !Q_stricmp( token, "random" ) )
-		{
-			condition->lhs = CV_RANDOM;
-		}
-		else
-		{
-			Log::Warn("invalid left hand side in expression: %s", token );
+			COM_ParseError( "Unexpected EOF after 'if' condition" );
 			return false;
 		}
 
-		token = COM_Parse( text_p );
-
-		if ( !*token )
-		{
-			return false;
-		}
-
-		condition->target = G_AllocateNode();
-		*node = condition->target;
+		(*node)->type = NT_CONDITION;
+		mrCondition_t &condition = (*node)->u.condition;
+		condition.exprString = BG_strdup( str.c_str() );
+		condition.target = G_AllocateNode();
+		*node = condition.target;
 
 		return G_ParseNode( node, token, text_p, true );
 	}
@@ -701,29 +921,7 @@ static const char *G_RotationNode_ToString( const mrNode_t *node )
 			return node->u.map.name;
 
 		case NT_CONDITION:
-			switch ( node->u.condition.lhs )
-			{
-				case CV_RANDOM:
-					return MAP_CONTROL "condition: random";
-					break;
-
-				case CV_NUMPLAYERS:
-					return va( MAP_CONTROL "condition: numPlayers %c %i",
-					           CONDITION_OPERATOR( node->u.condition.operator_ ),
-					           node->u.condition.intValue );
-
-				case CV_NUMCLIENTS:
-					return va( MAP_CONTROL "condition: numClients %c %i",
-					           CONDITION_OPERATOR( node->u.condition.operator_ ),
-					           node->u.condition.intValue );
-
-				case CV_LASTWIN:
-					return va( MAP_CONTROL "condition: lastWin %s",
-					           BG_TeamName( node->u.condition.lastWin ) );
-
-				default:
-					return MAP_CONTROL "condition: ???";
-			}
+			return va( MAP_CONTROL "condition: %s", node->u.condition.exprString );
 			break;
 
 		case NT_GOTO:
@@ -1160,25 +1358,6 @@ static bool G_GotoLabel( int rotation, int nodeIndex, char *name,
 	return false;
 }
 
-static bool G_EvaluateIntegerCondition( mrCondition_t *localCondition, int valueCompared )
-{
-	switch ( localCondition->operator_ )
-	{
-		case CO_LT:
-			return valueCompared < localCondition->intValue;
-			break;
-
-		case CO_GT:
-			return valueCompared > localCondition->intValue;
-			break;
-
-		case CO_EQ:
-			return valueCompared == localCondition->intValue;
-			break;
-	}
-	return false;
-}
-
 /*
 ===============
 G_EvaluateMapCondition
@@ -1188,41 +1367,25 @@ Evaluate a map condition
 */
 static bool G_EvaluateMapCondition( mrCondition_t **condition )
 {
-	bool    result = false;
 	mrCondition_t *localCondition = *condition;
-
-	switch ( localCondition->lhs )
+	mrValue_t result;
+	std::string unused;
+	const char* text_p = localCondition->exprString;
+	const char* nextToken;
+	bool parsed = ParseExpression( &text_p, result, unused, nextToken );
+	if ( !parsed || *nextToken )
 	{
-		case CV_RANDOM:
-			result = rand() / ( RAND_MAX / 2 + 1 );
-			break;
-
-		case CV_NUMPLAYERS:
-			result = G_EvaluateIntegerCondition(localCondition, level.numConnectedPlayers);
-			break;
-
-		case CV_NUMCLIENTS:
-			result = G_EvaluateIntegerCondition(localCondition, level.numConnectedClients);
-			break;
-
-		case CV_LASTWIN:
-			result = level.lastWin == localCondition->lastWin;
-			break;
-
-		default:
-		case CV_ERR:
-			Log::Warn("malformed map switch localCondition" );
-			break;
+		Sys::Drop( "Unexpected map rotation condition parsing failure" );
 	}
 
 	if ( localCondition->target->type == NT_CONDITION )
 	{
 		*condition = &localCondition->target->u.condition;
 
-		return result && G_EvaluateMapCondition( condition );
+		return !!result && G_EvaluateMapCondition( condition );
 	}
 
-	return result;
+	return !!result;
 }
 
 /*
@@ -1516,6 +1679,7 @@ static void G_FreeNode( mrNode_t *node )
 	if ( node->type == NT_CONDITION )
 	{
 		G_FreeNode( node->u.condition.target );
+		BG_Free( node->u.condition.exprString );
 	}
 
 	BG_Free( node );
