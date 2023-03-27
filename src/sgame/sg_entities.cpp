@@ -924,10 +924,7 @@ Test for a LOS between two entities
 */
 bool G_IsVisible( gentity_t *start, gentity_t *end, int contents )
 {
-	trace_t trace;
-
-	trap_Trace( &trace, start->s.pos.trBase, nullptr, nullptr, end->s.pos.trBase,
-	            start->num(), contents, 0 );
+	trace_t trace = G_RayTrace( start->s.pos.trBase, end->s.pos.trBase, start->num(), contents, 0 );
 
 	return trace.fraction >= 1.0f || trace.entityNum == end->num();
 }

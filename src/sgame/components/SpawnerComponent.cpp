@@ -131,12 +131,8 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 	int spawnerNumber, const glm::vec3 spawnerOrigin, const glm::vec3 spawnPoint, const glm::vec3 clientMins,
 	const glm::vec3 clientMaxs
 ){
-	trace_t tr;
-
 	// Check for a clear line towards the spawn location.
-	trap_Trace(
-		&tr, &spawnerOrigin[0], nullptr, nullptr, &spawnPoint[0], spawnerNumber, MASK_SHOT, 0
-	);
+	trace_t tr = G_RayTrace( spawnerOrigin, spawnPoint, spawnerNumber, MASK_SHOT, 0 );
 
 	if (tr.entityNum != ENTITYNUM_NONE) {
 		return g_entities[tr.entityNum].entity;

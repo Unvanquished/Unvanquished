@@ -2183,7 +2183,7 @@ static void ClientThink_real( gentity_t *self )
 		// look for object infront of player
 		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
 		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
-		trap_Trace( &trace, client->ps.origin, nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
+		trace = G_RayTrace( client->ps.origin, point, self->s.number, MASK_SHOT, 0 );
 
 		ent = &g_entities[ trace.entityNum ];
 

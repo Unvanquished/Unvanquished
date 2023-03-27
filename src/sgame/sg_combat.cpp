@@ -811,7 +811,6 @@ void G_SelectiveDamage( gentity_t *targ, gentity_t * /*inflictor*/, gentity_t *a
 bool G_CanDamage( gentity_t *targ, vec3_t origin )
 {
 	vec3_t  dest;
-	trace_t tr;
 	vec3_t  midpoint;
 
 	// use the midpoint of the bounds instead of the origin, because
@@ -820,7 +819,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorScale( midpoint, 0.5, midpoint );
 
 	VectorCopy( midpoint, dest );
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	trace_t tr = G_RayTrace( origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 	if ( tr.fraction == 1.0  || tr.entityNum == targ->num() )
 	{
@@ -832,7 +831,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	dest[ 0 ] += 15.0;
 	dest[ 1 ] += 15.0;
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	tr = G_RayTrace( origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -842,7 +841,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	dest[ 0 ] += 15.0;
 	dest[ 1 ] -= 15.0;
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	tr = G_RayTrace( origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -852,7 +851,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	dest[ 0 ] -= 15.0;
 	dest[ 1 ] += 15.0;
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	tr = G_RayTrace( origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -862,7 +861,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	dest[ 0 ] -= 15.0;
 	dest[ 1 ] -= 15.0;
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	tr = G_RayTrace( origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 	if ( tr.fraction == 1.0 )
 	{

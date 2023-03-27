@@ -119,12 +119,11 @@ static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spo
 
 				glm::vec3 test = origin + delta;
 
-				trace_t trace;
-				trap_Trace( &trace, &test[0], nullptr, nullptr, &test[0], ENTITYNUM_NONE, MASK_SOLID, 0 );
+				trace_t trace = G_RayTrace( test, test, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 				if ( !trace.allsolid )
 				{
-					trap_Trace( &trace, &test[0], nullptr, nullptr, &origin[0], ENTITYNUM_NONE, MASK_SOLID, 0 );
+					trace = G_RayTrace( test, origin, ENTITYNUM_NONE, MASK_SOLID, 0 );
 					delta *= trace.fraction;
 					total += delta;
 				}

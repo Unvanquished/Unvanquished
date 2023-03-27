@@ -171,6 +171,20 @@ bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *e
 	return G_CM_EntityContact( mins, maxs, ent, traceType_t::TT_AABB );
 }
 
+trace_t G_RayTrace( glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	G_CM_Trace( &tr, &start[0], nullptr, nullptr, &end[0], entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
+trace_t G_RayTrace( vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	G_CM_Trace( &tr, start, nullptr, nullptr, end, entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                  const vec3_t end, int passEntityNum, int contentmask, int skipmask )
 {

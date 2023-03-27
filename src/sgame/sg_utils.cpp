@@ -803,15 +803,12 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 
 bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase )
 {
-	trace_t trace;
-
 	if ( !from || !to )
 	{
 		return false;
 	}
 
-	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, nullptr, nullptr, to->s.origin,
-	            from->num(), mask, 0 );
+	trace_t trace = G_RayTrace( useTrajBase ? from->s.pos.trBase : from->s.origin, to->s.origin, from->num(), mask, 0 );
 
 	// Also check for fraction in case the mask is chosen so that the trace skips the target entity
 	return ( trace.entityNum == to->num() || trace.fraction == 1.0f );
@@ -840,9 +837,7 @@ bool G_LineOfFire( const gentity_t *from, const gentity_t *to )
  */
 bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 {
-	trace_t trace;
-
-	trap_Trace( &trace, point1, nullptr, nullptr, point2, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	trace_t trace = G_RayTrace( point1, point2, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }

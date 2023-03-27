@@ -5169,8 +5169,7 @@ bool G_admin_builder( gentity_t *ent )
 
 	glm::vec3 end = start + 1000.f * forward;
 
-	//TODO there are many occurrences of trap_Trace without mins/maxs, a specialized API is likely needed
-	trap_Trace( &tr, &start[0], nullptr, nullptr, &end[0], ent->s.number, MASK_PLAYERSOLID, 0 );
+	tr = G_RayTrace( start, end, ent->s.number, MASK_PLAYERSOLID, 0 );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == entityType_t::ET_BUILDABLE ) )
