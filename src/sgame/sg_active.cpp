@@ -2216,7 +2216,7 @@ static void ClientThink_real( gentity_t *self )
 
 		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
 		VectorMA( viewpoint, range1, view, point );
-		trap_Trace( &trace, &viewpoint[0], nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
+		trace = G_RayTrace( &viewpoint[0], point, self->s.number, MASK_SHOT, 0 );
 
 		ent = &g_entities[ trace.entityNum ];
 		bool activableTarget = ent->s.eType == entityType_t::ET_BUILDABLE || ent->s.eType == entityType_t::ET_MOVER;
