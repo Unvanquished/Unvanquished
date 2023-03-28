@@ -823,7 +823,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	//aliens have radar so they will always 'see' the enemy if they are in radar range
-	if ( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( ALIENSENSE_RANGE ) )
+	if ( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( g_bot_aliensenseRange.Get() ) )
 	{
 		self->botMind->enemyLastSeen = level.time;
 	}
