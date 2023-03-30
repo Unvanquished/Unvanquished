@@ -67,8 +67,7 @@ bool EggComponent::CheckSpawnPoint(
 	spawnPoint = spawnerOrigin + displacement * spawnerNormal;
 
 	blocker = SpawnerComponent::CheckSpawnPointHelper(
-		spawnerNumber, spawnerOrigin, spawnPoint, VEC2GLM( clientMins ), VEC2GLM( clientMaxs )
-	);
+		spawnerNumber, spawnerOrigin, spawnPoint, PCL_ALIEN_BUILDER0_UPG );
 
 	return !blocker;
 }

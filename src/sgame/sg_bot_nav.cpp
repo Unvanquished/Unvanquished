@@ -516,7 +516,6 @@ void BotWalk( gentity_t *self, bool enable )
 static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir )
 {
 	glm::vec3 playerMins, playerMaxs;
-	trace_t trace;
 	const float TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 
 	if ( !( self && self->client ) )
@@ -534,7 +533,7 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 	glm::vec3 origin = VEC2GLM( self->s.origin );
 	glm::vec3 end = origin + TRACE_LENGTH * dir;
 
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+	trace_t trace = G_EntityTrace( pClass, origin, end, self->s.number, MASK_SHOT, 0 );
 	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < MIN_WALK_NORMAL ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return &g_entities[trace.entityNum];
@@ -552,7 +551,6 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	glm::vec3 playerMins;
 	glm::vec3 playerMaxs;
 	float jumpMagnitude;
-	trace_t trace;
 	const float TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 
 	//blocker is not on our team, so ignore
@@ -566,15 +564,16 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
 	BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
 
-	playerMins[2] += STEPSIZE;
-	playerMaxs[2] += STEPSIZE;
-
 	//Log::Debug(vtos(self->movedir));
 	glm::vec3 origin = VEC2GLM( self->s.origin );
 	glm::vec3 end = origin + TRACE_LENGTH * dir;
 
+	origin[2] += STEPSIZE;
+	end[2] += STEPSIZE;
+
 	//make sure we are moving into a block
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+	trace_t trace = G_EntityTrace( pClass, origin, end, self->s.number, MASK_SHOT, 0 );
+
 	if ( trace.fraction >= 1.0f || blocker != &g_entities[trace.entityNum] )
 	{
 		return false;
@@ -586,11 +585,11 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	jumpMagnitude = Square( jumpMagnitude ) / ( self->client->ps.gravity * 2 );
 
 	//prepare for trace
-	playerMins[2] += jumpMagnitude;
-	playerMaxs[2] += jumpMagnitude;
+	origin[2] += jumpMagnitude;
+	end[2] += jumpMagnitude;
 
 	//check if jumping will clear us of entity
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+	trace = G_EntityTrace( pClass, origin, end, self->s.number, MASK_SHOT, 0 );
 
 	//if we can jump over it, then jump
 	//note that we also test for a blocking barricade because barricades will collapse to let us through
@@ -636,7 +635,6 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 	glm::vec3 testPoint1, testPoint2;
 	glm::vec3 playerMins, playerMaxs;
 	float yaw1, yaw2;
-	trace_t trace1, trace2;
 	int i;
 	glm::vec3 angles;
 
@@ -648,10 +646,6 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 	//get bbox
 	class_t pclass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
 	BG_BoundingBox( pclass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
-
-	//account for stepsize
-	playerMins[2] += STEPSIZE;
-	playerMaxs[2] += STEPSIZE;
 
 	//get the yaw (left/right) we dont care about up/down
 	vectoangles( &dir[0], &angles[0] );
@@ -667,6 +661,10 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 	//find an unobstructed position
 	//we check the full 180 degrees in front of us
 	glm::vec3 origin = VEC2GLM( self->s.origin );
+
+	//account for stepsize
+	origin[2] += STEPSIZE;
+
 	for ( i = 0; i < 5; i++, yaw1 -= 15 , yaw2 += 15 )
 	{
 		//compute forward for right
@@ -675,10 +673,10 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 		//forward is already normalized
 		//try the right
 		testPoint1 = origin + BOT_OBSTACLE_AVOID_RANGE * forward;
+		testPoint1[2] += STEPSIZE;
 
 		//test it
-		trap_Trace( &trace1, origin, playerMins, playerMaxs, testPoint1, self->s.number,
-		            MASK_SHOT, 0 );
+		trace_t trace1 = G_EntityTrace( pclass, origin, testPoint1, self->s.number, MASK_SHOT, 0 );
 
 		//check if unobstructed
 		if ( trace1.fraction >= 1.0f )
@@ -693,10 +691,10 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 		//forward is already normalized
 		//try the left
 		testPoint2 = origin + BOT_OBSTACLE_AVOID_RANGE * forward;
+		testPoint2[2] += STEPSIZE;
 
 		//test it
-		trap_Trace( &trace2, origin, playerMins, playerMaxs, testPoint2, self->s.number,
-		            MASK_SHOT, 0 );
+		trace_t trace2 = G_EntityTrace( pclass, origin, testPoint2, self->s.number, MASK_SHOT, 0 );
 
 		//check if unobstructed
 		if ( trace2.fraction >= 1.0f )

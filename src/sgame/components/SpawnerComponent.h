@@ -47,14 +47,11 @@ class SpawnerComponent: public SpawnerComponentBase {
 		 * @param spawnerNumber Entity number of an existing spawner.
 		 * @param spawnerOrigin The origin of the spawner.
 		 * @param spawnPoint The spawn point of the client.
-		 * @param clientMins The minimum bounding box point of the client.
-		 * @param clientMaxs The maximum bounding box point of the client.
+		 * @param pcl The class that will spawn
 		 * @return An entity that blocks the spawn or nullptr.
 		 */
 		static Entity* CheckSpawnPointHelper(
-			int spawnerNumber, const glm::vec3 spawnerOrigin, const glm::vec3 spawnPoint,
-			const glm::vec3 clientMins, const glm::vec3 clientMaxs
-		);
+			int spawnerNumber, const glm::vec3 spawnerOrigin, const glm::vec3 spawnPoint, class_t pcl );
 
 	private:
 

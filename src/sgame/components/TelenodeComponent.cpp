@@ -28,8 +28,7 @@ bool TelenodeComponent::CheckSpawnPoint(
 	spawnPoint = spawnerOrigin + displacement * spawnerNormal;
 
 	blocker = SpawnerComponent::CheckSpawnPointHelper(
-		spawnerNumber, spawnerOrigin, spawnPoint, clientMins, clientMaxs
-	);
+		spawnerNumber, spawnerOrigin, spawnPoint, PCL_HUMAN_NAKED );
 
 	return !blocker;
 }

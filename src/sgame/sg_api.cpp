@@ -185,6 +185,24 @@ trace_t G_RayTrace( vec3_t const start, vec3_t const end, int entityNum, int con
 	return tr;
 }
 
+trace_t G_EntityTrace( class_t pcl, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( pcl, &mins, &maxs, nullptr, nullptr, nullptr );
+	G_CM_Trace( &tr, &start[0], &mins[0], &maxs[0], &end[0], entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
+trace_t G_EntityTrace( class_t pcl, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( pcl, &mins, &maxs, nullptr, nullptr, nullptr );
+	G_CM_Trace( &tr, start, &mins[0], &maxs[0], end, entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                  const vec3_t end, int passEntityNum, int contentmask, int skipmask )
 {

@@ -128,9 +128,7 @@ void SpawnerComponent::WarnBlocker(Entity& blocker, bool lastWarning) {
 }
 
 Entity* SpawnerComponent::CheckSpawnPointHelper(
-	int spawnerNumber, const glm::vec3 spawnerOrigin, const glm::vec3 spawnPoint, const glm::vec3 clientMins,
-	const glm::vec3 clientMaxs
-){
+	int spawnerNumber, const glm::vec3 spawnerOrigin, const glm::vec3 spawnPoint, class_t pcl){
 	// Check for a clear line towards the spawn location.
 	trace_t tr = G_RayTrace( spawnerOrigin, spawnPoint, spawnerNumber, MASK_SHOT, 0 );
 
@@ -138,10 +136,7 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 		return g_entities[tr.entityNum].entity;
 	} else {
 		// Check whether a spawned client has space.
-		trap_Trace(
-			&tr, &spawnPoint[0], &clientMins[0], &clientMaxs[0], &spawnPoint[0],
-			ENTITYNUM_NONE, MASK_PLAYERSOLID, 0
-		);
+		tr = G_EntityTrace( pcl, spawnPoint, spawnPoint, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0);
 
 		if (tr.entityNum != ENTITYNUM_NONE) {
 			return g_entities[tr.entityNum].entity;
