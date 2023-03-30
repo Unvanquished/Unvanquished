@@ -235,6 +235,24 @@ trace_t G_EntityTrace( entityShared_t const &ent, vec3_t const start, vec3_t con
 	return tr;
 }
 
+trace_t G_BoxTrace( float halfSide, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 sizeMins = { -halfSide, -halfSide, -halfSide };
+	glm::vec3 sizeMaxs = {  halfSide,  halfSide,  halfSide };
+	G_CM_Trace( &tr, &start[0], &sizeMins[0], &sizeMaxs[0], &end[0], entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
+trace_t G_BoxTrace( float halfSide, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 sizeMins = { -halfSide, -halfSide, -halfSide };
+	glm::vec3 sizeMaxs = {  halfSide,  halfSide,  halfSide };
+	G_CM_Trace( &tr, start, &sizeMins[0], &sizeMaxs[0], end, entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                  const vec3_t end, int passEntityNum, int contentmask, int skipmask )
 {

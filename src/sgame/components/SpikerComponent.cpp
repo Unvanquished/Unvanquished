@@ -155,15 +155,11 @@ void SpikerComponent::Think(int /*timeDelta*/) {
 bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 	const missileAttributes_t* ma = BG_Missile(MIS_SPIKER);
 	float missileSize = (float)ma->size;
-	trace_t trace;
-	vec3_t mins, maxs;
 	glm::vec3 end = VEC2GLM( entity.oldEnt->s.origin ) + (SPIKE_RANGE * direction);
 
 	// Test once with normal and once with inflated missile bounding box.
 	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_INFLATION}) {
-		mins[0] = mins[1] = mins[2] = -traceSize;
-		maxs[0] = maxs[1] = maxs[2] =  traceSize;
-		trap_Trace( &trace, entity.oldEnt->s.origin, mins, maxs, &end[0], entity.oldEnt->num(), ma->clipmask, 0 );
+		trace_t trace = G_BoxTrace( traceSize, VEC2GLM( entity.oldEnt->s.origin ), end, entity.oldEnt->num(), ma->clipmask, 0 );
 		gentity_t* hit = &g_entities[trace.entityNum];
 
 		if (hit && G_OnSameTeam(entity.oldEnt, hit)) {

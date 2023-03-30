@@ -350,6 +350,8 @@ trace_t G_EntityTrace( buildable_t building, glm::vec3 const& start, glm::vec3 c
 trace_t G_EntityTrace( buildable_t building, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
 trace_t G_EntityTrace( entityShared_t const &ent, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
 trace_t G_EntityTrace( entityShared_t const &ent, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
+trace_t G_BoxTrace( float halfSide, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
+trace_t G_BoxTrace( float halfSide, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
 
 // CombatFeedback.cpp
 namespace CombatFeedback

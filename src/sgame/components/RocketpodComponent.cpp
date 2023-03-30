@@ -204,12 +204,8 @@ bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin,
 
 	float missileSize = missileAttributes->size;
 
-	glm::vec3 mins = {-missileSize, -missileSize, -missileSize};
-	glm::vec3 maxs = { missileSize,  missileSize,  missileSize};
 	glm::vec3 end  = origin + ROCKETPOD_RANGE * direction;
-
-	trace_t trace;
-	trap_Trace( &trace, &origin[0], &mins[0], &maxs[0], &end[0], passEntityNumber, MASK_SHOT, 0 );
+	trace_t trace = G_BoxTrace( missileSize, origin, end, passEntityNumber, missileAttributes->clipmask, 0 );
 
 	// TODO: Refactor area damage (testing) helpers.
 	return !G_RadiusDamage(
