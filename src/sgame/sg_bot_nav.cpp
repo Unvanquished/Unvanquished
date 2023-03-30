@@ -586,9 +586,17 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	//check if jumping will clear us of entity
 	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 
+	classAttributes_t const* pcl = BG_Class( pClass );
+	bool ladder = ( pcl->abilities & SCA_CANUSELADDERS )
+		&& trace.entityNum == ENTITYNUM_WORLD
+		&& trace.surfaceFlags & SURF_LADDER
+		;
+
 	//if we can jump over it, then jump
 	//note that we also test for a blocking barricade because barricades will collapse to let us through
-	return blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f;
+	return blocker->s.modelindex == BA_A_BARRICADE
+		|| trace.fraction == 1.0f
+		|| ladder;
 }
 
 // Determine a new direction, which may be unchanged (forward) or sideway. It
