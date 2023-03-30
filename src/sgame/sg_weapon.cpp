@@ -639,7 +639,6 @@ Target tracking for the hive missile.
 static void HiveMissileThink( gentity_t *self )
 {
 	vec3_t    dir;
-	trace_t   tr;
 	gentity_t *ent;
 	int       i;
 	float     d, nearest;
@@ -669,8 +668,7 @@ static void HiveMissileThink( gentity_t *self )
 		if ( ent->client && Entities::IsAlive( ent ) && G_Team( ent ) == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
-			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
-			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask, 0 );
+			trace_t tr = G_EntityTrace( self->r, self->r.currentOrigin, ent->r.currentOrigin, self->r.ownerNum, self->clipmask, 0 );
 
 			if ( tr.entityNum != ENTITYNUM_WORLD )
 			{

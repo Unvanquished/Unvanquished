@@ -228,11 +228,9 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 	}
 	else
 	{
-		trace_t tr;
 		int     anim;
 
-		trap_Trace( &tr, self->s.origin, self->r.mins, self->r.maxs,
-		            self->s.origin, self->num(), MASK_PLAYERSOLID, 0 );
+		trace_t tr = G_EntityTrace( self->r, self->s.origin, self->s.origin, self->num(), MASK_PLAYERSOLID, 0 );
 
 		if ( tr.startsolid || tr.fraction < 1.0f )
 		{
@@ -2152,7 +2150,6 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 {
-	trace_t     tr;
 	vec3_t      normal, dest;
 	gentity_t   *built;
 	buildable_t buildable = (buildable_t) ent->s.modelindex;
@@ -2183,8 +2180,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	VectorScale( built->s.origin2, -4096.0f, dest );
 	VectorAdd( dest, built->s.origin, dest );
 
-	trap_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->num(),
-	            built->clipmask, 0 );
+	trace_t tr = G_EntityTrace( built->r, built->s.origin, dest, built->num(), built->clipmask, 0 );
 
 	if ( tr.startsolid && !force )
 	{

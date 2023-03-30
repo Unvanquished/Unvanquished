@@ -1583,7 +1583,6 @@ void G_UnlaggedOn( gentity_t *attacker, vec3_t muzzle, float range )
 static void G_UnlaggedDetectCollisions( gentity_t *ent )
 {
 	unlagged_t *calc;
-	trace_t    tr;
 	float      r1, r2;
 	float      range;
 
@@ -1615,8 +1614,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 
 	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
 
-	trap_Trace( &tr, ent->client->oldOrigin, ent->r.mins, ent->r.maxs,
-	            ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	trace_t tr = G_EntityTrace( ent->r, ent->client->oldOrigin, ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
 	{

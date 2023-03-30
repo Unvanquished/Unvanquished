@@ -203,6 +203,20 @@ trace_t G_EntityTrace( class_t pcl, vec3_t const start, vec3_t const end, int en
 	return tr;
 }
 
+trace_t G_EntityTrace( entityShared_t const &ent, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	G_CM_Trace( &tr, &start[0], ent.mins, ent.maxs, &end[0], entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
+trace_t G_EntityTrace( entityShared_t const &ent, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	G_CM_Trace( &tr, start, ent.mins, ent.maxs, end, entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                  const vec3_t end, int passEntityNum, int contentmask, int skipmask )
 {

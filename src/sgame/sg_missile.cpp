@@ -501,19 +501,16 @@ void G_ExplodeMissile( gentity_t *ent )
 void G_RunMissile( gentity_t *ent )
 {
 	vec3_t   origin;
-	trace_t  tr;
-	int      passent;
 	bool impact = false;
 
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 
 	// ignore interactions with the missile owner
-	passent = ent->r.ownerNum;
+	int passent = ent->r.ownerNum;
 
 	// general trace to see if we hit anything at all
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
-	            origin, passent, ent->clipmask, 0 );
+	trace_t tr = G_EntityTrace( ent->r, ent->r.currentOrigin, origin, passent, ent->clipmask, 0 );
 
 	if ( tr.startsolid || tr.allsolid )
 	{
@@ -546,8 +543,7 @@ void G_RunMissile( gentity_t *ent )
 				}
 				else
 				{
-					trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
-					            origin, passent, CONTENTS_BODY, 0 );
+					tr = G_EntityTrace( ent->r, ent->r.currentOrigin, origin, passent, CONTENTS_BODY, 0 );
 
 					if ( tr.fraction < 1.0f )
 					{

@@ -302,28 +302,25 @@ G_KillBrushModel
 */
 void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
 {
-  gentity_t *e;
-  vec3_t mins, maxs;
-  trace_t tr;
+	vec3_t mins, maxs;
 
-  for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
-  {
-    if( !e->r.linked || !e->clipmask )
-      continue;
+	for( gentity_t* e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
+	{
+		if( !e->r.linked || !e->clipmask )
+			continue;
 
-    VectorAdd( e->r.currentOrigin, e->r.mins, mins );
-    VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
+		VectorAdd( e->r.currentOrigin, e->r.mins, mins );
+		VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
 
-    if( !trap_EntityContact( mins, maxs, ent ) )
-      continue;
+		if( !trap_EntityContact( mins, maxs, ent ) )
+			continue;
 
-    trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
-                e->r.currentOrigin, e->num(), e->clipmask, 0 );
+		trace_t tr = G_EntityTrace( e->r, e->r.currentOrigin, e->r.currentOrigin, e->num(), e->clipmask, 0 );
 
-	if( tr.entityNum != ENTITYNUM_NONE ) {
-	  Entities::Kill(e, activator, MOD_CRUSH);
+		if( tr.entityNum != ENTITYNUM_NONE ) {
+			Entities::Kill(e, activator, MOD_CRUSH);
+		}
 	}
-  }
 }
 
 //==============================================================================

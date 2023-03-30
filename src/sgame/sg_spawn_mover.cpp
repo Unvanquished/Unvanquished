@@ -75,13 +75,11 @@ static gentity_t *G_TestEntityPosition( gentity_t *ent )
 
 	if ( ent->client )
 	{
-		trap_Trace( &tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin,
-		            ent->num(), ent->clipmask, 0 );
+		tr = G_EntityTrace( ent->r, ent->client->ps.origin, ent->client->ps.origin, ent->num(), ent->clipmask, 0 );
 	}
 	else
 	{
-		trap_Trace( &tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase,
-		            ent->num(), ent->clipmask, 0 );
+		tr = G_EntityTrace( ent->r, ent->s.pos.trBase, ent->s.pos.trBase, ent->num(), ent->clipmask, 0 );
 	}
 
 	if ( tr.startsolid )
