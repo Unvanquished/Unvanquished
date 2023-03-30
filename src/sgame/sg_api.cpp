@@ -203,6 +203,24 @@ trace_t G_EntityTrace( class_t pcl, vec3_t const start, vec3_t const end, int en
 	return tr;
 }
 
+trace_t G_EntityTrace( buildable_t building, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( building, &mins, &maxs );
+	G_CM_Trace( &tr, &start[0], &mins[0], &maxs[0], &end[0], entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
+trace_t G_EntityTrace( buildable_t building, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( building, &mins, &maxs );
+	G_CM_Trace( &tr, start, &mins[0], &maxs[0], end, entityNum, contentmask, skipmask, traceType_t::TT_AABB );
+	return tr;
+}
+
 trace_t G_EntityTrace( entityShared_t const &ent, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
 {
 	trace_t tr;

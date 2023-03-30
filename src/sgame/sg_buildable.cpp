@@ -1541,7 +1541,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	vec3_t           angles;
 	vec3_t           entity_origin;
 	vec3_t           mins, maxs;
-	trace_t          tr1, tr2;
 	itemBuildError_t reason = IBE_NONE;
 	gentity_t        *tempent;
 	float            minNormal;
@@ -1554,8 +1553,10 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 	BG_BuildableBoundingBox( buildable, mins, maxs );
 
+	trace_t tr1;
 	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, trap_Trace, entity_origin, angles, &tr1 );
-	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
+
+	trace_t tr2 = G_EntityTrace( buildable, entity_origin, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
 	trace_t tr3 = G_RayTrace( ps->origin, entity_origin, ent->num(), MASK_PLAYERSOLID, 0 );
 
 	VectorCopy( entity_origin, origin );

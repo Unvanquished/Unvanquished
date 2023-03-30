@@ -346,6 +346,8 @@ trace_t G_RayTrace( glm::vec3 const& start, glm::vec3 const& end, int entityNum,
 trace_t G_RayTrace( vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
 trace_t G_EntityTrace( class_t pcl, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
 trace_t G_EntityTrace( class_t pcl, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
+trace_t G_EntityTrace( buildable_t building, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
+trace_t G_EntityTrace( buildable_t building, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
 trace_t G_EntityTrace( entityShared_t const &ent, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
 trace_t G_EntityTrace( entityShared_t const &ent, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
 
