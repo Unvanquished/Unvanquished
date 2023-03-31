@@ -217,7 +217,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 CG_Trace
 ================
 */
-void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
+static void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                const vec3_t end, int skipNumber, int mask, int skipmask )
 {
 	vec3_t mymins = {0.0f, 0.0f, 0.0f};
@@ -953,4 +953,54 @@ void CG_PredictPlayerState()
 
 	// fire events and other transition triggered things
 	CG_TransitionPlayerState( &cg.predictedPlayerState, &oldPlayerState );
+}
+
+trace_t G_RayTrace( glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	CG_Trace( &tr, &start[0], nullptr, nullptr, &end[0], entityNum, contentmask, skipmask );
+	return tr;
+}
+
+trace_t G_RayTrace( vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	CG_Trace( &tr, start, nullptr, nullptr, end, entityNum, contentmask, skipmask );
+	return tr;
+}
+
+trace_t G_EntityTrace( buildable_t building, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( building, &mins, &maxs );
+	CG_Trace( &tr, &start[0], &mins[0], &maxs[0], &end[0], entityNum, contentmask, skipmask );
+	return tr;
+}
+
+trace_t G_EntityTrace( buildable_t building, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( building, &mins, &maxs );
+	CG_Trace( &tr, start, &mins[0], &maxs[0], end, entityNum, contentmask, skipmask );
+	return tr;
+}
+
+trace_t G_BoxTrace( float halfSide, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 sizeMins = { -halfSide, -halfSide, -halfSide };
+	glm::vec3 sizeMaxs = {  halfSide,  halfSide,  halfSide };
+	CG_Trace( &tr, &start[0], &sizeMins[0], &sizeMaxs[0], &end[0], entityNum, contentmask, skipmask );
+	return tr;
+}
+
+trace_t G_BoxTrace( float halfSide, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	glm::vec3 sizeMins = { -halfSide, -halfSide, -halfSide };
+	glm::vec3 sizeMaxs = {  halfSide,  halfSide,  halfSide };
+	CG_Trace( &tr, start, &sizeMins[0], &sizeMaxs[0], end, entityNum, contentmask, skipmask );
+	return tr;
 }

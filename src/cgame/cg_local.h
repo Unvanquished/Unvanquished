@@ -2022,11 +2022,16 @@ void CG_ModelDoor( centity_t *cent );
 
 void CG_BuildSolidList();
 int  CG_PointContents( const vec3_t point, int passEntityNum );
-void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-               const vec3_t end, int skipNumber, int mask, int skipmask );
 void CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                   const vec3_t end, int skipNumber, int mask, int skipmask );
 void CG_PredictPlayerState();
+
+trace_t G_RayTrace( glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
+trace_t G_RayTrace( vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
+trace_t G_EntityTrace( buildable_t building, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
+trace_t G_EntityTrace( buildable_t building, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
+trace_t G_BoxTrace( float halfSide, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
+trace_t G_BoxTrace( float halfSide, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
 
 //
 // cg_events.c
@@ -2380,12 +2385,5 @@ namespace CombatFeedback
   void Event(entityState_t *es);
   void DrawDamageIndicators(void);
 }
-
-trace_t G_RayTrace( glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
-trace_t G_RayTrace( vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
-trace_t G_EntityTrace( buildable_t building, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
-trace_t G_EntityTrace( buildable_t building, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
-trace_t G_BoxTrace( float halfSide, glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
-trace_t G_BoxTrace( float halfSide, vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
 
 #endif
