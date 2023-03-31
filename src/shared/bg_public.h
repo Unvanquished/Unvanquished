@@ -1514,7 +1514,7 @@ bool BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
                         vec3_t outAxis[ 3 ], bool inverse, bool ceiling );
 void     BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 void     BG_GetClientViewOrigin( const playerState_t *ps, vec3_t viewOrigin );
-void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t mins, const vec3_t maxs,
+void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, buildable_t buildabe,
                                                void ( *trace )( trace_t *, const vec3_t, const vec3_t,
                                                const vec3_t, const vec3_t, int, int, int ),
                                                vec3_t outOrigin, vec3_t outAngles, trace_t *tr );

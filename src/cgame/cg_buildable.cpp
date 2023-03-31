@@ -1102,7 +1102,6 @@ void CG_GhostBuildable( int buildableInfo )
 {
 	playerState_t *ps;
 	vec3_t        angles, entity_origin;
-	vec3_t        mins, maxs;
 	trace_t       tr;
 	float         scale;
 	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK );
@@ -1113,15 +1112,15 @@ void CG_GhostBuildable( int buildableInfo )
 
 	refEntity_t ent{};
 
-	BG_BuildableBoundingBox( buildable, mins, maxs );
-
-	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, CG_Trace, entity_origin, angles, &tr );
+	BG_PositionBuildableRelativeToPlayer( ps, buildable, CG_Trace, entity_origin, angles, &tr );
 
 	if ( cg_rangeMarkerForBlueprint.Get() && tr.entityNum != ENTITYNUM_NONE )
 	{
 		CG_DrawBuildableRangeMarker( buildable, entity_origin, tr.plane.normal, 1.0f );
 	}
 
+	vec3_t mins, maxs;
+	BG_BuildableBoundingBox( buildable, mins, maxs );
 	CG_PositionAndOrientateBuildable( angles, entity_origin, tr.plane.normal, ps->clientNum,
 	                                  mins, maxs, ent.axis, ent.origin );
 
