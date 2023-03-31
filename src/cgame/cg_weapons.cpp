@@ -2335,7 +2335,6 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 	float   r, u, a;
 	vec3_t  end;
 	vec3_t  forward, right, up;
-	trace_t tr;
 	entityState_t dummy;
 
 	// derive the right and up vectors from the forward vector, because
