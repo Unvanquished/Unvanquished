@@ -2267,10 +2267,6 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 		                            p->radius.delay ) );
 	}
 
-	vec3_t mins, maxs;
-	VectorSet( mins, -radius, -radius, -radius );
-	VectorSet( maxs, radius, radius, radius );
-
 	float bounce = CG_RandomiseValue( bp->bounceFrac, bp->bounceFracRandFrac );
 
 	float deltaTime = ( float )( cg.time - p->lastEvalTime ) * 0.001;
@@ -2297,9 +2293,7 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 		return;
 	}
 
-	trace_t trace;
-	CG_Trace( &trace, p->origin, mins, maxs, newOrigin, CG_AttachmentCentNum( &ps->attachment ),
-	          CONTENTS_SOLID, 0 );
+	trace_t trace = G_BoxTrace( radius, p->origin, newOrigin, CG_AttachmentCentNum( &ps->attachment ), CONTENTS_SOLID, 0 );
 
 	//not hit anything or not a collider
 	if ( trace.fraction == 1.0f || bounce == 0.0f )
