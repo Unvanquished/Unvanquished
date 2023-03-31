@@ -220,18 +220,9 @@ CG_Trace
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                const vec3_t end, int skipNumber, int mask, int skipmask )
 {
-	vec3_t mymins = {0.0f, 0.0f, 0.0f};
-	vec3_t mymaxs = {0.0f, 0.0f, 0.0f};
-
-	if (mins) {
-		VectorCopy(mins, mymins);
-	}
-	if (maxs) {
-		VectorCopy(maxs, mymaxs);
-	}
-
 	trace_t t;
-	CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask, traceType_t::TT_AABB );
+
+	CM_BoxTrace( &t, start, end, mins, maxs, 0, mask, skipmask, traceType_t::TT_AABB );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_AABB );
@@ -249,17 +240,7 @@ void  CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const
 {
 	trace_t t;
 
-	vec3_t mymins = {0.0f, 0.0f, 0.0f};
-	vec3_t mymaxs = {0.0f, 0.0f, 0.0f};
-
-	if (mins) {
-		VectorCopy(mins, mymins);
-	}
-	if (maxs) {
-		VectorCopy(maxs, mymaxs);
-	}
-
-	CM_BoxTrace( &t, start, end, mymins, mymaxs, 0, mask, skipmask, traceType_t::TT_CAPSULE );
+	CM_BoxTrace( &t, start, end, mins, maxs, 0, mask, skipmask, traceType_t::TT_CAPSULE );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_CAPSULE );
