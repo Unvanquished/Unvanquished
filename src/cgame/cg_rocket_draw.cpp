@@ -3761,12 +3761,12 @@ static void CG_Rocket_DrawLoadingText()
 
 static void CG_Rocket_DrawLevelAuthors()
 {
-	Rocket_SetInnerRML( cg.mapAuthors.c_str(), RP_QUAKE );
+	Rocket_SetInnerRML( cg.mapAuthors.c_str(), RP_QUAKE | RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawLevelName()
 {
-	Rocket_SetInnerRML( cg.mapLongName.c_str(), RP_QUAKE );
+	Rocket_SetInnerRML( cg.mapLongName.c_str(), RP_QUAKE | RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawMOTD()
