@@ -1271,7 +1271,6 @@ CG_AddPacketEntities
 */
 void CG_AddPacketEntities()
 {
-	centity_t     *cent;
 	playerState_t *ps;
 
 	// set cg.frameInterpolation
@@ -1317,39 +1316,41 @@ void CG_AddPacketEntities()
 	// lerp the non-predicted value for lightning gun origins
 	CG_CalcEntityLerpPositions( &cg_entities[ cg.snap->ps.clientNum ] );
 
-	for ( unsigned num = 0; num < MAX_GENTITIES; num++ )
-	{
-		cg_entities[ num ].valid = false;
-	}
+	bool done[ MAX_GENTITIES ] = {};
 
 	// add each entity sent over by the server
-	for ( unsigned num = 0; num < cg.snap->entities.size(); num++ )
+	for ( const entityState_t &ent : cg.snap->entities )
 	{
-		cent = &cg_entities[ cg.snap->entities[ num ].number ];
-		cent->valid = true;
-	}
+		const unsigned num = ent.number;
+		centity_t *cent = &cg_entities[ num ];
 
-	for ( unsigned num = 0; num < MAX_GENTITIES; num++ )
-	{
-		cent = &cg_entities[ num ];
-
-		if ( cent->valid && !cent->oldValid )
+		if ( !cent->valid )
 		{
 			CG_CEntityPVSEnter( cent );
 		}
-		else if ( !cent->valid && cent->oldValid )
+
+		cent->valid = true;
+
+		CG_AddCEntity( cent );
+
+		done[ num ] = true;
+	}
+	
+	for ( unsigned num = 0; num < MAX_GENTITIES; num++ )
+	{
+		if ( done[ num ] )
+		{
+			continue;
+		}
+
+		centity_t *cent = &cg_entities[ num ];
+
+		if ( cent->valid )
 		{
 			CG_CEntityPVSLeave( cent );
 		}
 
-		cent->oldValid = cent->valid;
-	}
-
-	// add each entity sent over by the server
-	for ( unsigned num = 0; num < cg.snap->entities.size(); num++ )
-	{
-		cent = &cg_entities[ cg.snap->entities[ num ].number ];
-		CG_AddCEntity( cent );
+		cent->valid = false;
 	}
 
 	//make an attempt at drawing bounding boxes of selected entity types
@@ -1360,7 +1361,7 @@ void CG_AddPacketEntities()
 			vec3_t        mins, maxs;
 			entityState_t *es;
 
-			cent = &cg_entities[ cg.snap->entities[ num ].number ];
+			centity_t *cent = &cg_entities[ cg.snap->entities[ num ].number ];
 			es = &cent->currentState;
 
 			switch ( es->eType )
