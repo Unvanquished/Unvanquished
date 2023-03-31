@@ -143,3 +143,18 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
         Sys::Drop("unhandled VM major syscall number %i", major);
     }
 }
+
+trace_t G_RayTrace( glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	CG_Trace( &tr, &start[0], nullptr, nullptr, &end[0], entityNum, contentmask, skipmask );
+	return tr;
+}
+
+trace_t G_RayTrace( vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask )
+{
+	trace_t tr;
+	CG_Trace( &tr, start, nullptr, nullptr, end, entityNum, contentmask, skipmask );
+	return tr;
+}
+

@@ -2384,4 +2384,7 @@ namespace CombatFeedback
   void DrawDamageIndicators(void);
 }
 
+trace_t G_RayTrace( glm::vec3 const& start, glm::vec3 const& end, int entityNum, int contentmask, int skipmask );
+trace_t G_RayTrace( vec3_t const start, vec3_t const end, int entityNum, int contentmask, int skipmask );
+
 #endif

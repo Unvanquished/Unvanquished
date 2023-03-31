@@ -1015,13 +1015,11 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 
 	if ( timeshift )
 	{
-		trace_t tr;
 		vec3_t  lastOrigin;
 
 		BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, lastOrigin );
 
-		CG_Trace( &tr, lastOrigin, vec3_origin, vec3_origin, cent->lerpOrigin,
-		          cent->currentState.number, MASK_SHOT, 0 );
+		trace_t tr = G_RayTrace( lastOrigin, cent->lerpOrigin, cent->currentState.number, MASK_SHOT, 0 );
 
 		// don't let the projectile go through the floor
 		if ( tr.fraction < 1.0f )

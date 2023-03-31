@@ -254,7 +254,6 @@ static void CG_Creep( centity_t *cent )
 {
 	int     msec;
 	float   size, frac;
-	trace_t tr;
 	vec3_t  temp;
 	int     time;
 	const buildableAttributes_t *attr = BG_Buildable( cent->currentState.modelindex );
@@ -298,8 +297,7 @@ static void CG_Creep( centity_t *cent )
 	VectorScale( temp, -attr->creepSize, temp );
 	VectorAdd( temp, cent->lerpOrigin, temp );
 
-	CG_Trace( &tr, cent->lerpOrigin, nullptr, nullptr, temp, cent->currentState.number,
-	          MASK_PLAYERSOLID, 0 );
+	trace_t tr = G_RayTrace( cent->lerpOrigin, temp, cent->currentState.number, MASK_PLAYERSOLID, 0 );
 
 	if ( size > 0.0f && tr.fraction < 1.0f )
 	{
@@ -1501,7 +1499,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	int           health = CG_Health(*es);
 	float         x, y;
 	bool          powered, marked, showMineEfficiency;
-	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
 	int           i, j;
@@ -1591,7 +1588,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		// look through up to 3 players and/or transparent buildables
 		for ( i = 0; i < 3; i++ )
 		{
-			CG_Trace( &tr, trOrigin, nullptr, nullptr, origin, entNum, MASK_SHOT, 0 );
+			trace_t tr = G_RayTrace( trOrigin, origin, entNum, MASK_SHOT, 0 );
 
 			if ( tr.entityNum == cent->currentState.number )
 			{

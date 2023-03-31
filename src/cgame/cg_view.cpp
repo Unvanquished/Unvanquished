@@ -1059,15 +1059,13 @@ the surface player is looking at
 */
 static void CG_DrawSurfNormal()
 {
-	trace_t    tr;
 	vec3_t     end, temp;
 	polyVert_t normal[ 4 ];
 	vec4_t     color = { 0.0f, 255.0f, 0.0f, 128.0f };
 
 	VectorMA( cg.refdef.vieworg, 8192, cg.refdef.viewaxis[ 0 ], end );
 
-	CG_Trace( &tr, cg.refdef.vieworg, nullptr, nullptr, end, cg.predictedPlayerState.clientNum,
-	          MASK_SOLID, 0 );
+	trace_t tr = G_RayTrace( cg.refdef.vieworg, end, cg.predictedPlayerState.clientNum, MASK_SOLID, 0 );
 
 	VectorCopy( tr.endpos, normal[ 0 ].xyz );
 	normal[ 0 ].st[ 0 ] = 0;
