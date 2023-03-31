@@ -1550,9 +1550,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	// Stop all buildables from interacting with traces
 	SetBuildableLinkState( false );
 
-	trace_t tr1;
-	BG_PositionBuildableRelativeToPlayer( ps, buildable, trap_Trace, entity_origin, angles, &tr1 );
-
+	trace_t tr1 = BG_PositionBuildableRelativeToPlayer( ps, buildable, G_EntityTrace, entity_origin, angles );
 	trace_t tr2 = G_EntityTrace( buildable, entity_origin, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
 	trace_t tr3 = G_RayTrace( ps->origin, entity_origin, ent->num(), MASK_PLAYERSOLID, 0 );
 

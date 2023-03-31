@@ -1797,11 +1797,10 @@ BG_PositionBuildableRelativeToPlayer
 Find a place to build a buildable
 ===============
 */
-void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
+trace_t BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
     buildable_t buildable,
-    void ( *trace )( trace_t *, const vec3_t, const vec3_t,
-                     const vec3_t, const vec3_t, int, int, int ),
-    vec3_t outOrigin, vec3_t outAngles, trace_t *tr )
+    trace_t ( *trace )( buildable_t, const vec3_t, const vec3_t, int, int, int ),
+    vec3_t outOrigin, vec3_t outAngles )
 {
 	vec3_t aimDir, forward, entityOrigin, targetOrigin;
 	vec3_t angles, playerOrigin, playerNormal;
@@ -1829,11 +1828,10 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 	VectorMA( targetOrigin, -128, playerNormal, targetOrigin );
 
 	// The mask is MASK_DEADSOLID on purpose to avoid collisions with other entities
-	vec3_t mins, maxs;
-	BG_BuildableBoundingBox( buildable, mins, maxs );
-	( *trace )( tr, entityOrigin, mins, maxs, targetOrigin, ps->clientNum, MASK_DEADSOLID, 0 );
-	VectorCopy( tr->endpos, outOrigin );
+	trace_t tr = ( *trace )( buildable, entityOrigin, targetOrigin, ps->clientNum, MASK_DEADSOLID, 0 );
+	VectorCopy( tr.endpos, outOrigin );
 	vectoangles( forward, outAngles );
+	return tr;
 }
 
 /**

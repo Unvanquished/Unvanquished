@@ -1102,7 +1102,6 @@ void CG_GhostBuildable( int buildableInfo )
 {
 	playerState_t *ps;
 	vec3_t        angles, entity_origin;
-	trace_t       tr;
 	float         scale;
 	buildable_t   buildable = (buildable_t)( buildableInfo & SB_BUILDABLE_MASK );
 	ASSERT( BA_NONE < buildable && buildable < BA_NUM_BUILDABLES );
@@ -1112,7 +1111,7 @@ void CG_GhostBuildable( int buildableInfo )
 
 	refEntity_t ent{};
 
-	BG_PositionBuildableRelativeToPlayer( ps, buildable, CG_Trace, entity_origin, angles, &tr );
+	trace_t tr = BG_PositionBuildableRelativeToPlayer( ps, buildable, G_EntityTrace, entity_origin, angles );
 
 	if ( cg_rangeMarkerForBlueprint.Get() && tr.entityNum != ENTITYNUM_NONE )
 	{
