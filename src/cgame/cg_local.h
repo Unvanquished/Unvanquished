@@ -757,6 +757,7 @@ struct centity_t
 	entityState_t  nextState; // from cg.nextFrame, if available
 	bool       interpolate; // true if next is valid to interpolate to
 	bool       currentValid; // true if cg.frame holds this entity
+	bool valid;
 
 	int            muzzleFlashTime; // move to playerEntity?
 	int            previousEvent;
@@ -818,8 +819,6 @@ struct centity_t
 
 	float                 radarVisibility;
 
-	bool              valid;
-	bool              oldValid;
 	int                   pvsEnterTime;
 
 	cbeacon_t             beacon;
