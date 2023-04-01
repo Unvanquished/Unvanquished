@@ -4,7 +4,10 @@ Unvanquished is an arena game with RTS elements (you can build) in which two ver
 
 [![GitHub tag](https://img.shields.io/github/tag/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/tags)
 [![GitHub release](https://img.shields.io/github/release/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
-[![Github release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/latest/total.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
+[![Github universal zip release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/total.svg?label=zip%20downloads)](https://github.com/Unvanquished/Unvanquished/releases/latest)
+[![Github updater release](https://img.shields.io/github/downloads/Unvanquished/updater/total.svg?label=updater%20downloads)](https://github.com/Unvanquished/updater/releases/latest)
+[![Flatpak release](https://img.shields.io/flathub/downloads/net.unvanquished.Unvanquished.svg?label=flatpak%20installs)](https://flathub.org/apps/details/net.unvanquished.Unvanquished)
+[![Sourceforge files](https://img.shields.io/sourceforge/dt/unvanquished.svg?label=sourceforge%20files)](https://sourceforge.net/projects/unvanquished/files/latest/download)
 
 [![IRC](https://img.shields.io/badge/irc-%23unvanquished%2C%23unvanquished--dev-4cc51c.svg)](https://web.libera.chat/#unvanquished,#unvanquished-dev)
 
