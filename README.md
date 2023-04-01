@@ -9,7 +9,10 @@ Unvanquished is an arena game with RTS elements (you can build) in which two ver
 [![Flatpak release](https://img.shields.io/flathub/downloads/net.unvanquished.Unvanquished.svg?label=flatpak%20installs)](https://flathub.org/apps/details/net.unvanquished.Unvanquished)
 [![Sourceforge files](https://img.shields.io/sourceforge/dt/unvanquished.svg?label=sourceforge%20files)](https://sourceforge.net/projects/unvanquished/files/latest/download)
 
-[![IRC](https://img.shields.io/badge/irc-%23unvanquished%2C%23unvanquished--dev-4cc51c.svg)](https://web.libera.chat/#unvanquished,#unvanquished-dev)
+[![IRC](https://img.shields.io/badge/irc-%23unvanquished%2C%23unvanquished--dev-9cf.svg)](https://unvanquished.net/chat/)
+[![Matrix](https://img.shields.io/badge/matrix-Unvanquished-9cf)](https://matrix.to/#/!WnuetRiQZJNBTKwMrF:matrix.org?via=matrix.org)
+[![Discord](https://img.shields.io/badge/discord-Unvanquished-9cf)](https://discord.gg/usuDT9Pyna)
+
 
 | Windows | macOS | Linux |
 |---------|-----|-------|
