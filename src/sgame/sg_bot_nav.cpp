@@ -889,15 +889,21 @@ static void BotTryMoveUpward( gentity_t *self )
 	}
 
 	int diff = level.time - self->botMind->lastNavconTime;
-	if ( diff < 0 || diff > LEVEL3_POUNCE_TIME_UPG * 3 / 2 )
-	{
-		return;
-	}
-
+	int limit = LEVEL3_POUNCE_TIME_UPG * 3 / 2;  // seems to be reasonable for all classes
 	switch ( self->client->ps.stats [ STAT_CLASS ] )
 	{
+	case PCL_ALIEN_LEVEL1:
+		if ( diff < 0 || diff > limit )
+		{
+			return;
+		}
+		break;
 	case PCL_ALIEN_LEVEL3:
 	case PCL_ALIEN_LEVEL3_UPG:
+		if ( diff < 0 || diff > limit )
+		{
+			return;
+		}
 		BotStandStill( self );
 		break;
 	default:
