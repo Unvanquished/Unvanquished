@@ -741,6 +741,27 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeome
 		return false;
 	}
 
+	// check for crouching
+	{
+		glm::vec3 playerMins;
+		glm::vec3 playerCMaxs;
+		trace_t trace;
+
+		class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
+		BG_BoundingBox( pClass, &playerMins, nullptr, &playerCMaxs, nullptr, nullptr );
+
+		glm::vec3 origin = VEC2GLM( self->s.origin );
+		glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * dir;
+
+		//make sure we are moving into a block
+		trap_Trace( &trace, origin, playerMins, playerCMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
+		if ( trace.fraction >= 1.0f )
+		{
+			self->botMind->cmdBuffer.upmove = -127;
+			return false;
+		}
+	}
+
 	if ( BotShouldJump( self, blocker, dir ) )
 	{
 		BotJump( self );
