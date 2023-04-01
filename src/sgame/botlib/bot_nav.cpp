@@ -218,6 +218,8 @@ static void G_UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal 
 	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
 }
 
+// return false if the bot has no next corner in mind, and true otherwise
+// currently, this uses closestPointOnPolyBoundary as an approximation
 bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result )
 {
 	Bot_t *bot = &agents[ botClientNum ];
