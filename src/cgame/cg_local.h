@@ -1782,6 +1782,7 @@ enum altShader_t
 extern  cgs_t               cgs;
 extern  cg_t                cg;
 extern  centity_t           cg_entities[ MAX_GENTITIES ];
+extern int cg_highestActiveEntity;
 
 extern  weaponInfo_t        cg_weapons[ 32 ];
 extern  upgradeInfo_t       cg_upgrades[ 32 ];
