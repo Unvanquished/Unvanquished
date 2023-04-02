@@ -28,6 +28,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+/* It is dynamically adjusted in CG_AddPacketEntities() to avoid looping
+over unused entities. It can be zero before the first frame starts adding
+entities, as none is added yet and none has to be removed yet. This should
+never reach the MAX_GENTITIES value. */
+int cg_highestActiveEntity = 0;
+
 static Cvar::Range<Cvar::Cvar<float>>
 	cg_drawDebugDistance("cg_drawDebugDistance", "draw a sphere around "
 			"yourself to give an idea of distances. Set this "
@@ -1318,10 +1324,17 @@ void CG_AddPacketEntities()
 
 	bool done[ MAX_GENTITIES ] = {};
 
+	int highest = 0;
+
 	// add each entity sent over by the server
 	for ( const entityState_t &ent : cg.snap->entities )
 	{
-		const unsigned num = ent.number;
+		const int num = ent.number;
+
+		/* This number may become cg_highestActiveEntity
+		to loop over the cg_entities array. */
+		ASSERT( num < MAX_GENTITIES );
+
 		centity_t *cent = &cg_entities[ num ];
 
 		if ( !cent->valid )
@@ -1334,9 +1347,22 @@ void CG_AddPacketEntities()
 		CG_AddCEntity( cent );
 
 		done[ num ] = true;
+
+		if ( num > highest )
+		{
+			highest = num;
+		}
 	}
-	
-	for ( unsigned num = 0; num < MAX_GENTITIES; num++ )
+
+	/* We assume cg_highestActiveEntity is never greater
+	than MAX_GENTITIES. cg_highestActiveEntity carries the
+	highest entity number used by an entity in the previous game frame.
+	This is not the amount of entities from the previous game frame.
+	A short lifetime entity with a small number will have to be removed
+	before a long lifetime entity with a high number is removed, so we
+	need to iterate all entities (valid or not) up to the previous highest
+	entity to be able to remove entities that should be removed. */
+	for ( int num = 0; num <= cg_highestActiveEntity; num++ )
 	{
 		if ( done[ num ] )
 		{
@@ -1352,6 +1378,20 @@ void CG_AddPacketEntities()
 
 		cent->valid = false;
 	}
+
+	if ( cg_debugPVS.Get() )
+	{
+		if ( highest > cg_highestActiveEntity )
+		{
+			Log::Debug("Highest entity in PVS went up: %u", highest);
+		}
+		else if ( highest < cg_highestActiveEntity )
+		{
+			Log::Debug("Highest entity in PVS went down: %u", highest);
+		}
+	}
+
+	cg_highestActiveEntity = highest;
 
 	//make an attempt at drawing bounding boxes of selected entity types
 	if ( cg_drawBBOX.Get() > 0 )
