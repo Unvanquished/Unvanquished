@@ -51,7 +51,7 @@ static bool expectToken( const char *s, pc_token_list **list, bool next )
 	return true;
 }
 
-static AIValue_t AIBoxToken( const pc_token_stripped_t *token )
+static AIValue_t AIBoxToken( const pc_token_stripped_t *token, bool negative = false )
 {
 	if ( token->type == tokenType_t::TT_STRING )
 	{
@@ -60,9 +60,9 @@ static AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 
 	if ( static_cast<float>( token->intvalue ) != token->floatvalue )
 	{
-		return AIBoxFloat( token->floatvalue );
+		return AIBoxFloat( negative ? -token->floatvalue : token->floatvalue );
 	}
-	return AIBoxInt( token->intvalue );
+	return AIBoxInt( negative ? -token->intvalue : token->intvalue );
 }
 
 // functions that are used to provide values to the behavior tree in condition nodes
@@ -596,12 +596,18 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 
 		numParams = 0;
 		parse = parenBegin->next;
+		bool negative = false;
 		while ( parse != parenEnd )
 		{
-			if ( parse->token.type == tokenType_t::TT_NUMBER || parse->token.type == tokenType_t::TT_STRING )
+			if ( parse->token.type == tokenType_t::TT_PUNCTUATION && parse->token.string[ 0 ] == '-' )
 			{
-				params[ numParams ] = AIBoxToken( &parse->token );
+				negative = true;
+			}
+			else if ( parse->token.type == tokenType_t::TT_NUMBER || parse->token.type == tokenType_t::TT_STRING )
+			{
+				params[ numParams ] = AIBoxToken( &parse->token, negative );
 				numParams++;
+				negative = false;
 			}
 			parse = parse->next;
 		}
