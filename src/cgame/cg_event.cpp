@@ -102,8 +102,13 @@ static const struct {
 	{ "",              true,  false, TEAM_NONE },   // (MOD_REPLACE)
 };
 
+static Cvar::Cvar<bool> cg_showObituaries( "cg_showObituaries", "show obituaries in chat", Cvar::NONE, true );
 static void CG_Obituary( entityState_t *ent )
 {
+	if ( not cg_showObituaries.Get() )
+	{
+		return;
+	}
 	int          mod;
 	int          target, attacker, assistant;
 	int          attackerClass = -1;
