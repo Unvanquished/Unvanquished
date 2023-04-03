@@ -146,6 +146,14 @@ static void ParseOption( Str::StringRef name, Str::StringRef value, Str::StringR
 			return;
 		}
 	}
+	else if ( Str::IsIEqual( name, "crouch" ) )
+	{
+		if ( !( boolValue & ~1 ) )
+		{
+			config.crouchSupport = boolValue;
+			return;
+		}
+	}
 	else
 	{
 		Log::Warn( "%s: unknown navgen setting '%s'", file, name );
