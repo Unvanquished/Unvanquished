@@ -86,6 +86,7 @@ struct NavgenConfig {
 	int filterGaps; // boolean - add new walkable spans so bots can walk over small gaps
 	int generatePatchTris; // boolean - generate triangles from the BSP's patches
 	float autojumpSecurity; // percentage - allow to use part of jump magnitude (with default gravity of 800) as stepsize. The result can not excess the agent's height, except if STEPSIZE is already doing it (then STEPSIZE will be used)
+	bool crouchSupport = true;
 
 	static NavgenConfig Default() { return { 2.0f, STEPSIZE, 1, 1, 1, 1, 0.5f }; }
 };
