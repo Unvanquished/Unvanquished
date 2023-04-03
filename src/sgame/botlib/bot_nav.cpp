@@ -192,6 +192,14 @@ static bool overOffMeshConnectionStart( const Bot_t *bot, rVec pos )
 	return false;
 }
 
+bool G_IsBotOverNavcon( int botClientNum )
+{
+	rVec spos;
+	Bot_t *bot = &agents[ botClientNum ];
+	GetEntPosition( botClientNum, spos );
+	return overOffMeshConnectionStart( bot, spos );
+}
+
 static void G_UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
 {
 	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
@@ -208,6 +216,24 @@ static void G_UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal 
 	}
 
 	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
+}
+
+// return false if the bot has no next corner in mind, and true otherwise
+// currently, this uses closestPointOnPolyBoundary as an approximation
+bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result )
+{
+	Bot_t *bot = &agents[ botClientNum ];
+	gentity_t *ent = &g_entities[ botClientNum ];
+	if ( bot->numCorners <= 0 )
+	{
+		return false;
+	}
+	dtPolyRef firstPoly = bot->corridor.getFirstPoly();
+	float corner[ 3 ] = { 0 };
+	bot->nav->query->closestPointOnPolyBoundary( firstPoly, ent->s.origin, corner );
+	std::swap( corner[ 1 ], corner[ 2 ] );  // recast and daemon have these swapped
+	result = VEC2GLM( corner );
+	return true;
 }
 
 void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd )

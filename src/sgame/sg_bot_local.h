@@ -180,6 +180,7 @@ public:
 	glm::vec3 stuckPosition;
 
 	int spawnTime;
+	int lastNavconTime;
 
 	Util::optional< glm::vec3 > userSpecifiedPosition;
 	Util::optional< int > userSpecifiedClientNum;
@@ -194,7 +195,9 @@ navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, const botClass_t *bot
 void G_BotShutdownNav();
 void G_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
 bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
+bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result );
 void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
+bool G_IsBotOverNavcon( int botClientNum );
 bool G_BotNavTrace( int botClientNum, botTrace_t *botTrace, const glm::vec3& start, const glm::vec3& end );
 glm::vec3 ProjectPointOntoVector( const glm::vec3 &point, const glm::vec3 &linePoint1, const glm::vec3 &linePoint2 );
 
