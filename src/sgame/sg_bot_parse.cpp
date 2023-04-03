@@ -1447,8 +1447,10 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	}
 	else
 	{
+		auto it = std::find( list->begin(), list->end(), tree );
+		ASSERT_NQ( it, list->end() );
+		list->erase( it );
 		FreeBehaviorTree( tree );
-		list->pop_back();
 		tree = nullptr;
 	}
 
@@ -1649,7 +1651,8 @@ void FreeNode( AIGenericNode_t *node )
 		case DECORATOR_NODE:
 			FreeDecoratorNode( ( AIDecoratorNode_t * ) node );
 			break;
-		default:
+		case BEHAVIOR_NODE:
+			// this is a pointer into the tree list
 			break;
 	}
 }
