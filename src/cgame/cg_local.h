@@ -630,7 +630,7 @@ struct buildableCache_t
 
 //=================================================
 
-#define MAX_CBEACONS 50
+#define MAX_CBEACONS 1024
 
 // the point of keeping the beacon data separately from centities is
 // to be able to handle virtual beacons (client-side beacons) without
