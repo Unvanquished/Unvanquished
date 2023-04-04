@@ -92,44 +92,12 @@ void G_UpdateBuildPointBudgets() {
 	});
 }
 
-void G_RecoverBuildPoints() {
-	static int nextBuildPoint[NUM_TEAMS] = {0};
-
-	float rate = g_buildPointRecoveryInitialRate.Get() /
-	             std::pow(2.0f, (float)level.matchTime /
-	                            (60000.0f * g_buildPointRecoveryRateHalfLife.Get()));
-	float interval = 60000.0f / rate;
-
-	// The interval grows exponentially, so check for an excessively large value which could cause overflow.
-	// The maximum allowed game time is 0x70000000 (7 << 28); limit interval to 1 << 27.
-	if (interval > 0x1.0p27f) return;
-
-	int nextBuildPointTime = level.time + int(interval);
-
-	for (team_t team = TEAM_NONE; (team = G_IterateTeams(team)); ) {
-		if (!level.team[team].queuedBudget) {
-			nextBuildPoint[team] = -1;
-			continue;
-		}
-
-		if (nextBuildPoint[team] == -1) {
-			nextBuildPoint[team] = nextBuildPointTime;
-			continue;
-		}
-
-		if (nextBuildPoint[team] <= level.time) {
-			nextBuildPoint[team] = nextBuildPointTime;
-			level.team[team].queuedBudget--;
-		}
-	}
-}
-
 /**
  * @brief Get the potentially negative number of free build points for a team.
  */
 int G_GetFreeBudget(team_t team)
 {
-	return (int)level.team[team].totalBudget - (level.team[team].spentBudget + level.team[team].queuedBudget);
+	return (int)level.team[team].totalBudget - level.team[team].spentBudget;
 }
 
 /**
@@ -142,7 +110,7 @@ int G_GetMarkedBudget(team_t team)
 	ForEntities<BuildableComponent>(
 	[&](Entity& entity, BuildableComponent& buildableComponent) {
 		if (G_Team(entity.oldEnt) == team && buildableComponent.MarkedForDeconstruction()) {
-			sum += G_BuildableDeconValue(entity.oldEnt);
+			sum += G_BuildableCost(entity.oldEnt);
 		}
 	});
 
@@ -158,18 +126,15 @@ int G_GetSpendableBudget(team_t team)
 	return G_GetFreeBudget(team) + G_GetMarkedBudget(team);
 }
 
-void G_FreeBudget( team_t team, int immediateAmount, int queuedAmount )
+void G_FreeBudget( team_t team, int amount )
 {
 	if ( G_IsPlayableTeam( team ) )
 	{
-		level.team[ team ].spentBudget  -= (immediateAmount + queuedAmount);
-		level.team[ team ].queuedBudget += queuedAmount;
-
-		// Note that there can be more build points in queue than total - spent.
+		level.team[ team ].spentBudget  -= amount;
 
 		if ( level.team[ team ].spentBudget < 0 ) {
 			level.team[ team ].spentBudget = 0;
-			Log::Warn("A team spent a negative buildable budget total.");
+			Log::Warn("A team spent a negative amount of build points.");
 		}
 	}
 }
@@ -182,20 +147,16 @@ void G_SpendBudget( team_t team, int amount )
 	}
 }
 
-int G_BuildableDeconValue(gentity_t *ent)
+/**
+ * @brief The build point cost of a buildable.
+ */
+int G_BuildableCost(gentity_t *ent)
 {
-	HealthComponent* healthComponent = ent->entity->Get<HealthComponent>();
-
-	if (!healthComponent->Alive()) {
-		return 0;
-	}
-
-	return (int)roundf((float)BG_Buildable(ent->s.modelindex)->buildPoints
-	                   * healthComponent->HealthFraction());
+	return BG_Buildable(ent->s.modelindex)->buildPoints;
 }
 
 /**
- * @brief Calculates the current value of buildables (in build points) for both teams.
+ * @brief Calculates the health-adjusted value of buildables (in BP) for both teams.
  */
 void G_GetTotalBuildableValues(int *buildableValuesByTeam)
 {
@@ -203,7 +164,15 @@ void G_GetTotalBuildableValues(int *buildableValuesByTeam)
 		buildableValuesByTeam[team] = 0;
 	}
 
-	ForEntities<BuildableComponent>([&](Entity& entity, BuildableComponent&) {
-		buildableValuesByTeam[G_Team(entity.oldEnt)] += G_BuildableDeconValue(entity.oldEnt);
+	ForEntities<BuildableComponent, HealthComponent>([&](
+			Entity& entity, BuildableComponent&, HealthComponent& healthComponent
+	) {
+		if (!healthComponent.Alive()) return;
+
+		int cost = G_BuildableCost(entity.oldEnt);
+		float vitality = healthComponent.HealthFraction();
+		int value = (int)roundf((float)cost * vitality);
+
+		buildableValuesByTeam[G_Team(entity.oldEnt)] += value;
 	});
 }

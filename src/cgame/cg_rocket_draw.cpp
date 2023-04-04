@@ -275,8 +275,7 @@ public:
 			ammo_( 0 ),
 			spentBudget_( 0 ),
 			markedBudget_( 0 ),
-			totalBudget_( 0 ),
-			queuedBudget_( 0 ) {}
+			totalBudget_( 0 ) {}
 
 	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
@@ -304,8 +303,7 @@ public:
 				if ( builder_ &&
 				     spentBudget_  == cg.snap->ps.persistant[ PERS_SPENTBUDGET ] &&
 				     markedBudget_ == cg.snap->ps.persistant[ PERS_MARKEDBUDGET ] &&
-				     totalBudget_  == cg.snap->ps.persistant[ PERS_TOTALBUDGET ] &&
-				     queuedBudget_ == cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ] )
+				     totalBudget_  == cg.snap->ps.persistant[ PERS_TOTALBUDGET ]  )
 				{
 					return;
 				}
@@ -313,7 +311,6 @@ public:
 				spentBudget_  = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
 				markedBudget_ = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
 				totalBudget_  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
-				queuedBudget_ = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
 				builder_      = true;
 
 				break;
@@ -348,7 +345,7 @@ public:
 
 		if ( builder_ )
 		{
-			int freeBudget = totalBudget_ - (spentBudget_ + queuedBudget_);
+			int freeBudget = totalBudget_ - spentBudget_;
 			int available  = freeBudget + markedBudget_;
 
 			if ( markedBudget_ != 0 )
@@ -373,7 +370,6 @@ private:
 	int  spentBudget_;
 	int  markedBudget_;
 	int  totalBudget_;
-	int  queuedBudget_;
 };
 
 
@@ -3194,23 +3190,6 @@ static void CG_Rocket_DrawPlayerMomentumBar()
 	trap_R_ClearColor();
 }
 
-static void CG_Rocket_DrawMineRate()
-{
-	int totalBudget  = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
-	int queuedBudget = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
-
-	if (queuedBudget != 0) {
-		float matchTime = (float)(cg.time - cgs.levelStartTime);
-		float rate = cgs.buildPointRecoveryInitialRate /
-		             std::pow(2.0f, matchTime / (60000.0f * cgs.buildPointRecoveryRateHalfLife));
-		Rocket_SetInnerRMLRaw( va( "Recovering %d / %d BP @ %.1f BP/min.",
-		                       queuedBudget, totalBudget, rate) );
-	} else {
-		Rocket_SetInnerRMLRaw( va( "The full budget of %d BP is available.",
-		                       totalBudget) );
-	}
-}
-
 static qhandle_t CG_GetUnlockableIcon( int num )
 {
 	int index = BG_UnlockableTypeIndex( num );
@@ -3630,7 +3609,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "levelauthors", &CG_Rocket_DrawLevelAuthors, nullptr, ELEMENT_ALL },
 	{ "levelname", &CG_Rocket_DrawLevelName, nullptr, ELEMENT_ALL },
 	{ "loadingText", &CG_Rocket_DrawLoadingText, nullptr, ELEMENT_ALL },
-	{ "mine_rate", &CG_Rocket_DrawMineRate, nullptr, ELEMENT_BOTH },
 	{ "minimap", nullptr, &CG_Rocket_DrawMinimap, ELEMENT_ALL },
 	{ "momentum_bar", nullptr, &CG_Rocket_DrawPlayerMomentumBar, ELEMENT_BOTH },
 	{ "motd", &CG_Rocket_DrawMOTD, nullptr, ELEMENT_ALL },

@@ -83,10 +83,11 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 		}
 	}
 
-	// If not deconstructed, add all build points to queue.
-	if (meansOfDeath != MOD_DECONSTRUCT && meansOfDeath != MOD_REPLACE) {
-		G_FreeBudget(team, 0, BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints);
-	}
+	// Remove marked state.
+	marked = false;
+
+	// Return build points spent.
+	G_FreeBudget(team, BG_Buildable(entity.oldEnt->s.modelindex)->buildPoints);
 }
 
 void BuildableComponent::Think(int timeDelta) {

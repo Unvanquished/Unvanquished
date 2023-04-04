@@ -823,7 +823,6 @@ struct level_locals_t
 		int              numAliveClients;
 		float            totalBudget; // Read access always rounds towards zero.
 		int              spentBudget;
-		int              queuedBudget;
 		int              kills;
 		spawnQueue_t     spawnQueue;
 		bool             locked;

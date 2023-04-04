@@ -110,13 +110,12 @@ void ABarricade_Shrink( gentity_t *self, bool shrink );
 // sg_buildpoints
 float             G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team);
 void              G_UpdateBuildPointBudgets();
-void              G_RecoverBuildPoints();
 int               G_GetFreeBudget(team_t team);
 int               G_GetMarkedBudget(team_t team);
 int               G_GetSpendableBudget(team_t team);
-void              G_FreeBudget(team_t team, int immediateAmount , int queuedAmount);
+void              G_FreeBudget(team_t team, int amount);
 void              G_SpendBudget(team_t team, int amount);
-int               G_BuildableDeconValue(gentity_t *ent);
+int               G_BuildableCost(gentity_t *ent);
 void              G_GetTotalBuildableValues(int *buildableValuesByTeam);
 
 // sg_client.c

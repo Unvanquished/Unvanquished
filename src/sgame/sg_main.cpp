@@ -128,16 +128,6 @@ Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
 		[](int) {
 			G_UpdateBuildPointBudgets();
 		});
-Cvar::Cvar<int> g_buildPointRecoveryInitialRate(
-		"g_BPRecoveryInitialRate",
-		"The initial speed at which BP will be recovered (in BP per minute)",
-		Cvar::SERVERINFO,
-		DEFAULT_BP_RECOVERY_INITIAL_RATE);
-Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife(
-		"g_BPRecoveryRateHalfLife",
-		"The duration one will wait before BP recovery gets twice as slow (in minutes)",
-		Cvar::SERVERINFO,
-		DEFAULT_BP_RECOVERY_RATE_HALF_LIFE);
 
 Cvar::Range<Cvar::Cvar<int>> g_debugMomentum("g_debugMomentum", "momentum debug level", Cvar::NONE, 0, 0, 2);
 Cvar::Cvar<float> g_momentumHalfLife("g_momentumHalfLife", "minutes for momentum to decrease 50%", Cvar::SERVERINFO, DEFAULT_MOMENTUM_HALF_LIFE);
@@ -2494,9 +2484,6 @@ void G_RunFrame( int levelTime )
 
 	// save position information for all active clients
 	G_UnlaggedStore();
-
-	// Check if a build point can be removed from the queue.
-	G_RecoverBuildPoints();
 
 	// Power down buildables if there is a budget deficit.
 	G_UpdateBuildablePowerStates();

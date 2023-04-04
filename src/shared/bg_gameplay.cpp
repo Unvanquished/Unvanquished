@@ -265,12 +265,10 @@ const int   PLAYER_BASE_VALUE = 200;
 const float PLAYER_PRICE_TO_VALUE = 0.5f;
 const int   DEFAULT_FREEKILL_PERIOD = 120;
 
-// resources
+// mining
 const float RGS_RANGE = 1000.0f;
 const int   DEFAULT_BP_INITIAL_BUDGET = 80;
 const int   DEFAULT_BP_BUDGET_PER_MINER = 50;
-const int   DEFAULT_BP_RECOVERY_INITIAL_RATE = 16;
-const int   DEFAULT_BP_RECOVERY_RATE_HALF_LIFE = 10;
 
 // momentum
 const float MOMENTUM_MAX = 300.0f;

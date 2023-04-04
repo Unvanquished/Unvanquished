@@ -427,7 +427,7 @@ enum itemBuildError_t
 enum persEnum_t
 {
   PERS_SCORE,          // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-  PERS_MOMENTUM,     // the total momentum of a team
+  PERS_MOMENTUM,       // the total momentum of a team
   PERS_SPAWNQUEUE,     // number of spawns and position in spawn queue
   PERS_SPECSTATE,
   PERS_SPAWN_COUNT,    // incremented every respawn
@@ -438,9 +438,8 @@ enum persEnum_t
   PERS_NEWWEAPON,      // weapon to switch to
   PERS_SPENTBUDGET,
   PERS_MARKEDBUDGET,
-  PERS_TOTALBUDGET,
-  PERS_QUEUEDBUDGET
-  // netcode has space for 2 more. TODO: extend
+  PERS_TOTALBUDGET
+  // netcode has space for 3 more
 };
 
 #define PS_WALLCLIMBINGFOLLOW BIT(0)

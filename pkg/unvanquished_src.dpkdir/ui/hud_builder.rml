@@ -49,8 +49,5 @@
 	<div id="timer">
 		<progress direction="right" src="btimer"/>
 	</div>
-	<div id="rate">
-		<mine_rate/>
-	</div>
 </body>
 </rml>

@@ -239,8 +239,6 @@ extern const int   DEFAULT_FREEKILL_PERIOD; // in s
 extern const float RGS_RANGE; // must be > 0
 extern const int   DEFAULT_BP_INITIAL_BUDGET; // in BP
 extern const int   DEFAULT_BP_BUDGET_PER_MINER; // in BP
-extern const int   DEFAULT_BP_RECOVERY_INITIAL_RATE; // in BP/min
-extern const int   DEFAULT_BP_RECOVERY_RATE_HALF_LIFE; // in min
 
 // momentum
 extern const float MOMENTUM_MAX;

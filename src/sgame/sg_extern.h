@@ -87,8 +87,6 @@ extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointInitialBudget;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetHumans;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetAliens;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner;
-extern  Cvar::Cvar<int> g_buildPointRecoveryInitialRate;
-extern  Cvar::Cvar<int> g_buildPointRecoveryRateHalfLife;
 
 extern Cvar::Range<Cvar::Cvar<int>> g_debugMomentum;
 extern Cvar::Cvar<float> g_momentumHalfLife;

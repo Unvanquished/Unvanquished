@@ -1616,9 +1616,8 @@ static Str::StringRef BuildableAvailability( buildable_t buildable )
 {
 	int spentBudget     = cg.snap->ps.persistant[ PERS_SPENTBUDGET ];
 	int markedBudget    = cg.snap->ps.persistant[ PERS_MARKEDBUDGET ];
-	int totalBudet      = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
-	int queuedBudget    = cg.snap->ps.persistant[ PERS_QUEUEDBUDGET ];
-	int availableBudget = std::max( 0, totalBudet - ((spentBudget - markedBudget) + queuedBudget));
+	int totalBudget     = cg.snap->ps.persistant[ PERS_TOTALBUDGET ];
+	int availableBudget = std::max( 0, totalBudget - (spentBudget - markedBudget) );
 
 	if ( BG_BuildableDisabled( buildable ) || !BG_BuildableUnlocked( buildable ) )
 		return "locked";

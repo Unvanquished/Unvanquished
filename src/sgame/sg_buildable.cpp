@@ -1120,13 +1120,6 @@ static void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t 
 		return;
 	}
 
-	const buildableAttributes_t *attr = BG_Buildable( self->s.modelindex );
-
-	// return some build points immediately
-	int immediateRefund = G_BuildableDeconValue( self );
-	int queuedRefund    = attr->buildPoints - immediateRefund;
-	G_FreeBudget( self->buildableTeam, immediateRefund, queuedRefund );
-
 	// remove momentum
 	G_RemoveMomentumForDecon( self, deconner );
 
@@ -1134,7 +1127,7 @@ static void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t 
 	float healthFraction = self->entity->Get<HealthComponent>()->HealthFraction();
 	if ( healthFraction < 1.0f ) G_RewardAttackers( self );
 
-	// deconstruct
+	// deconstruct (returns build points)
 	Entities::Kill(self, deconner, deconType);
 
 	// TODO: Check if freeing needs to be deferred.
@@ -1415,7 +1408,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	// if we already have set buildables for removal, decrease cost
 	for ( entNum = 0; entNum < level.numBuildablesForRemoval; entNum++ )
 	{
-		cost -= G_BuildableDeconValue( level.markedBuildables[ entNum ] );
+		cost -= G_BuildableCost( level.markedBuildables[ entNum ] );
 	}
 
 	// check if we can already afford the new buildable
@@ -1469,7 +1462,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 		level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
 
-		cost -= G_BuildableDeconValue( ent );
+		cost -= G_BuildableCost( ent );
 
 		// check if we have enough resources now
 		if ( G_GetFreeBudget( attr->team ) >= cost )
@@ -2683,7 +2676,7 @@ void G_BuildLogRevert( int id )
 						}
 
 						// Revert resources
-						G_FreeBudget( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints, 0 );
+						G_FreeBudget( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
 						momentumChange[ log->buildableTeam ] -= log->momentumEarned;
 
 						// Free buildable
