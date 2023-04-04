@@ -27,11 +27,11 @@ See below for [build](#building-the-game-binaries) and [launch](#running-the-gam
 To fetch and build Unvanquished, you'll need:
 `git`,
 `cmake`,
-`python` = 2,
+`python` ≥ 2,
 `python-yaml`,
 `python-jinja`,
-and a C++11 compiler. The following are actively supported:
-`gcc` ≥ 4.8,
+and a C++14 compiler. The following are actively supported:
+`gcc` ≥ 8,
 `clang` ≥ 3.5,
 Visual Studio/MSVC (at least Visual Studio 2019).
 
@@ -52,7 +52,6 @@ Required:
 `OpenAL`,
 `libogg`,
 `libvorbis`,
-`libtheora`,
 `libopus`,
 `libopusfile`.
 
