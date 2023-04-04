@@ -693,6 +693,11 @@ AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t* )
 
 AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode_t* )
 {
+	if ( !self->botMind->goal.isValid() )
+	{
+		return STATUS_FAILURE;
+	}
+
 	if ( GoalInRange( self, BotGetGoalRadius( self ) ) )
 	{
 		return STATUS_SUCCESS;
