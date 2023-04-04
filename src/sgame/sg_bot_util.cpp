@@ -1182,7 +1182,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		glm::vec3 targetPos = target.getPos();
 		glm::vec3 end = targetPos + 600.f * invNormal;
 		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->num(),
-		            CONTENTS_SOLID, MASK_ENTITY );
+		            CONTENTS_SOLID | CONTENTS_PLAYERCLIP, MASK_ENTITY );
 		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
 	
