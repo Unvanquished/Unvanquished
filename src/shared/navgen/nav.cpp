@@ -26,6 +26,11 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <map>
+#include <unordered_set>
+
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/hash.hpp>
 
 #include "engine/qcommon/qcommon.h"
 #include "shared/CommonProxies.h"
@@ -226,6 +231,7 @@ static void AddTri( std::vector<float> &verts, std::vector<int> &tris, vec3_t v1
 // TODO: Can this stuff be done using the already-loaded CM data structures
 // (e.g. cbrush_t instead of dbrush_t) instead of reopening the BSP?
 void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tris ) {
+	std::map<size_t,std::unordered_set<glm::vec3>> laddersVerts;
 	int solidFlags = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
 	int surfaceSkip = 0;
 
@@ -308,12 +314,72 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 			if ( w ) {
 				for ( int j = 2; j < w->numpoints; j++ ) {
 					AddTri( verts, tris, w->p[0], w->p[j - 1], w->p[j] );
+					if ( brushShader->surfaceFlags & SURF_LADDER )
+					{
+						glm::vec3 tmp;
+						tmp = VEC2GLM( w->p[ 0 ] );
+						laddersVerts[i].emplace( tmp );
+						tmp = VEC2GLM( w->p[ j - 1 ] );
+						laddersVerts[i].emplace( tmp );
+						tmp = VEC2GLM( w->p[ j ] );
+						laddersVerts[i].emplace( tmp );
+					}
 				}
 				FreeWinding( w );
 			}
 		}
 	}
 
+
+	//sg_ladders.reserve( laddersVerts.size() );
+	for( auto const& ladder : laddersVerts )
+	{
+		ladder_t tmp;
+		std::string coords;
+		std::vector<glm::vec3> horizontalFaces[2];
+		glm::vec3 ref;
+		bool hasRef = false;
+		for( auto const& point : ladder.second )
+		{
+			if( !hasRef )
+			{
+				ref = point;
+				horizontalFaces[0].push_back( point );
+				hasRef = true;
+			}
+			else
+			{
+				horizontalFaces[ ( static_cast<int>( point.z ) == static_cast<int>( ref.z ) ) ? 0 : 1 ].push_back( point );
+			}
+			coords += glm::to_string( point );
+			coords += " ";
+		}
+		glm::vec3 centers[2];
+		for( size_t i = 0; i < 2; ++i )
+		{
+			centers[i] = std::accumulate( horizontalFaces[i].begin(), horizontalFaces[i].end(), glm::vec3() );
+		}
+		for( size_t i = 0; i < 2; ++i )
+		{
+			centers[i] =
+			{
+				centers[i].x / horizontalFaces[i].size(),
+				centers[i].y / horizontalFaces[i].size(),
+				centers[i].z / horizontalFaces[i].size(),
+			};
+		}
+		tmp.up = centers[0];
+		tmp.bottom = centers[1];
+		if ( centers[0].z < centers[1].z )
+		{
+			std::swap( tmp.up, tmp.bottom );
+		}
+		tmp.radius = 10; //TODO use real ladder radii here
+		//sg_ladders.emplace_back( std::move( tmp ) );
+
+		//TODO: use a non-hardcoded radius
+		Log::Notice( "Ladder: %d %d %d %d %d %d 30 1 63 0", tmp.bottom.x, tmp.bottom.z, tmp.bottom.y, tmp.up.x, tmp.up.z, tmp.up.y );
+	}
 	if ( !config_.generatePatchTris )
 	{
 		return;
