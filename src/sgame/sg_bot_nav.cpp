@@ -534,7 +534,7 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 	glm::vec3 origin = VEC2GLM( self->s.origin );
 	glm::vec3 end = origin + TRACE_LENGTH * dir;
 
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < MIN_WALK_NORMAL ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return &g_entities[trace.entityNum];
@@ -568,7 +568,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	glm::vec3 end = origin + TRACE_LENGTH * dir;
 
 	//make sure we are moving into a block
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 	if ( trace.fraction >= 1.0f || blocker != &g_entities[trace.entityNum] )
 	{
 		return false;
@@ -584,7 +584,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	playerMaxs[2] += jumpMagnitude;
 
 	//check if jumping will clear us of entity
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 
 	//if we can jump over it, then jump
 	//note that we also test for a blocking barricade because barricades will collapse to let us through
@@ -672,7 +672,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 
 		//test it
 		trap_Trace( &trace1, origin, playerMins, playerMaxs, testPoint1, self->s.number,
-		            MASK_SHOT, 0 );
+		            MASK_PLAYERSOLID, 0 );
 
 		//check if unobstructed
 		if ( trace1.fraction >= 1.0f )
@@ -690,7 +690,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 
 		//test it
 		trap_Trace( &trace2, origin, playerMins, playerMaxs, testPoint2, self->s.number,
-		            MASK_SHOT, 0 );
+		            MASK_PLAYERSOLID, 0 );
 
 		//check if unobstructed
 		if ( trace2.fraction >= 1.0f )
