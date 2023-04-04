@@ -3310,6 +3310,7 @@ static bool Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade )
 	return sold;
 }
 
+Cvar::Cvar<int> g_firebombCooldown("g_firebombCooldown", "clients can buy firebombs every <g_firebombCooldown> milliseconds.", Cvar::NONE, 0);
 
 static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflicting, bool quiet )
 {
@@ -3433,6 +3434,13 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 			goto cant_buy;
 		}
 
+		int lastFirebombDiff = level.time - ent->client->lastFirebombBuyTime;
+		if ( upgrade == UP_FIREBOMB && lastFirebombDiff < g_firebombCooldown.Get() )
+		{
+			trap_SendServerCommand( ent->num(), va( "print_tr \"" N_("You can buy a firebomb in $1$ seconds") "\" %.1f", ( g_firebombCooldown.Get() - lastFirebombDiff ) / 1000.0 ) );
+			return false;
+		}
+
 		for (;;)
 		{
 			//can afford this?
@@ -3462,6 +3470,11 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 			}
 
 			break; // okay, can buy this
+		}
+
+		if ( upgrade == UP_FIREBOMB )
+		{
+			ent->client->lastFirebombBuyTime = level.time;
 		}
 
 		if ( upgrade == UP_LIGHTARMOUR )
