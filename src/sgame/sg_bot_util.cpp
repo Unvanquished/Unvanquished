@@ -2100,30 +2100,30 @@ void BotFireWeaponAI( gentity_t *self )
 				int selfHP = self->client->ps.stats[ STAT_HEALTH ];
 
 				gentity_t const* botTarget = self->botMind->goal.getTargetedEntity();
-				float targetHP;
+				float targetMaxHP;
 				if ( botTarget->client )
 				{
 					class_t targetType = static_cast<class_t>( botTarget->client->ps.stats[ STAT_CLASS ] );
 					const classAttributes_t * targetAttr = BG_Class( targetType );
 					// Ignore armor because aliens don't have armors or damage reductions anyway.
-					targetHP = static_cast<float>( targetAttr->health );
+					targetMaxHP = static_cast<float>( targetAttr->health );
 				}
 				else //assume we're fighting a building, but it could also be a map entity, and this would then fail
 				{
 					auto targetType = static_cast<buildable_t>( botTarget->s.modelindex );
 					const buildableAttributes_t * targetAttr = BG_Buildable( targetType );
-					targetHP = static_cast<float>( targetAttr->health );
+					targetMaxHP = static_cast<float>( targetAttr->health );
 				}
 				// TODO: use charging is there are more than one enemies around
-				if ( targetHP <= LCANNON_SECONDARY_DAMAGE || selfHP <= CRITICAL_HEALTH )
+				if ( targetMaxHP <= LCANNON_SECONDARY_DAMAGE || selfHP <= CRITICAL_HEALTH )
 				{
 					BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 				}
 				else
 				{
-					float dmgRatio = targetHP / LCANNON_DAMAGE;
+					float dmgRatio = targetMaxHP / LCANNON_DAMAGE;
 					float chargeMax = static_cast<float>( LCANNON_CHARGE_TIME_MAX );
-					float charge = chargeMax * std::min( dmgRatio, 0.95f );;
+					float charge = chargeMax * std::min( dmgRatio, 0.95f );
 					if ( self->client->ps.weaponCharge < charge )
 					{
 						BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
