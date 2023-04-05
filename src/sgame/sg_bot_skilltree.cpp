@@ -284,6 +284,7 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 	skillSet_t skillSet;
 	std::string skill_list;
 
+	std::vector<std::string> skillNames;
 	while (!possible_choices.empty())
 	{
 		Util::optional<botSkillTreeElement_t> new_skill =
@@ -313,14 +314,17 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 		}
 
 		skillSet[new_skill->skill] = true;
+		skillNames.push_back( new_skill->name );
+	}
 
+	std::sort( skillNames.begin(), skillNames.end() );
+	for ( auto const& skill_ : skillNames )
+	{
 		if (!skill_list.empty())
 		{
 			skill_list.append(" ");
 		}
-		skill_list.append(new_skill->name);
+		skill_list.append( skill_ );
 	}
-
-
 	return { skill_list, skillSet };
 }
