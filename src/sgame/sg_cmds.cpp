@@ -3310,7 +3310,7 @@ static bool Cmd_Sell_conflictingUpgrades( gentity_t *ent, upgrade_t upgrade )
 	return sold;
 }
 
-Cvar::Cvar<int> g_firebombCooldown("g_firebombCooldown", "clients can buy firebombs every <g_firebombCooldown> milliseconds.", Cvar::NONE, 0);
+static Cvar::Cvar<int> g_firebombCooldown("g_firebombCooldown", "clients can buy firebombs every <g_firebombCooldown> milliseconds.", Cvar::NONE, 0);
 
 static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflicting, bool quiet )
 {
