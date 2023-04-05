@@ -192,9 +192,10 @@ float             G_AddMomentumGeneric( team_t team, float amount );
 float             G_AddMomentumGenericStep( team_t team, float amount );
 float             G_PredictMomentumForBuilding( gentity_t *buildable );
 float             G_AddMomentumForBuilding( gentity_t *buildable );
-float             G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner );
+float             G_RemoveMomentumForDeconstruction( gentity_t *buildable, gentity_t *deconner );
 float             G_AddMomentumForKillingStep( gentity_t *victim, gentity_t *attacker, float share );
 float             G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float amount );
+float             G_RemoveMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float amount );
 void              G_AddMomentumEnd();
 
 // sg_main.c

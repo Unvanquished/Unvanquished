@@ -202,41 +202,57 @@ static const gentity_t *G_FindKillAssist( const gentity_t *self, const gentity_t
  */
 void G_RewardAttackers( gentity_t *self )
 {
-	float     value, share, reward, enemyDamage, damageShare;
+	float     baseReward, basePenalty, reward, penalty, vitality, share, damageShare;
 	int       playerNum, maxHealth;
 	gentity_t *player;
 	team_t    ownTeam, playerTeam;
+	bool      momentumChanged = false;
 
 	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		ownTeam   = (team_t) self->client->pers.team;
-		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
-		value     = BG_GetPlayerValue( self->client->ps );
+		ownTeam     = (team_t) self->client->pers.team;
+		maxHealth   = self->entity->Get<HealthComponent>()->MaxHealth();
+		baseReward  = BG_GetPlayerValue( self->client->ps );
+		basePenalty = 0.0f;
 	}
 	else if ( self->s.eType == entityType_t::ET_BUILDABLE )
 	{
 		ownTeam   = (team_t) self->buildableTeam;
 		maxHealth = self->entity->Get<HealthComponent>()->MaxHealth();
 
+		// Determine base reward for destruction of enemy buildings
 		if ( self->entity->Get<MainBuildableComponent>() )
 		{
-			value = MAIN_STRUCTURE_MOMENTUM_VALUE;
+			baseReward = MAIN_STRUCTURE_MOMENTUM_VALUE;
 		}
 		else if ( self->entity->Get<MiningComponent>() )
 		{
-			value = MINER_MOMENTUM_VALUE;
+			baseReward = MINER_MOMENTUM_VALUE;
 		}
 		else
 		{
-			value = BG_Buildable( self->s.modelindex )->buildPoints;
+			baseReward = BG_Buildable( self->s.modelindex )->buildPoints;
 		}
 
-		// Give partial credits for buildables in construction
+		// Determine base penalty for deconstruction by force
+		if ( self->momentumEarned )
+		{
+			basePenalty = self->momentumEarned;
+		}
+		else
+		{
+			// assume the buildable has just been placed
+			basePenalty = G_PredictMomentumForBuilding( self );
+		}
+
+		// Reduce rewards and penalties for buildables in construction
 		if ( !self->spawned )
 		{
-			value *= ( level.time - self->creationTime ) /
-			         ( float )BG_Buildable( self->s.modelindex )->buildTime;
+			vitality = ( level.time - self->creationTime ) /
+			           ( float )BG_Buildable( self->s.modelindex )->buildTime;
+			baseReward *= vitality;
+			basePenalty = 0.0f; // no reward issued yet, so no penalty either
 		}
 	}
 	else
@@ -244,29 +260,7 @@ void G_RewardAttackers( gentity_t *self )
 		return;
 	}
 
-	// Sum up damage dealt by enemies
-	enemyDamage = 0.0f;
-
-	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
-	{
-		player     = &g_entities[ playerNum ];
-		playerTeam = (team_t) player->client->pers.team;
-
-		// Player must be on the other team
-		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
-		{
-			continue;
-		}
-
-		enemyDamage += self->credits[ playerNum ].value;
-	}
-
-	if ( enemyDamage <= 0 )
-	{
-		return;
-	}
-
-	// Give individual rewards
+	// Issue rewards
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player      = &g_entities[ playerNum ];
@@ -276,8 +270,8 @@ void G_RewardAttackers( gentity_t *self )
 		// Clear reward array
 		self->credits[ playerNum ].value = 0.0f;
 
-		// Player must be on the other team
-		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
+		// Player must be on a team
+		if ( playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
 		{
 			continue;
 		}
@@ -288,35 +282,61 @@ void G_RewardAttackers( gentity_t *self )
 			continue;
 		}
 
-		share  = damageShare / ( float )maxHealth;
-		reward = value * share;
+		share = damageShare / ( float )maxHealth;
 
-		if ( self->s.eType == entityType_t::ET_BUILDABLE )
+		if ( playerTeam == ownTeam )
 		{
-			// Add score
-			G_AddMomentumToScore( player, reward );
+			if ( basePenalty <= 0.0f ) // still in construction
+			{
+				continue;
+			}
 
-			// Add credits
-			G_AddCreditToClient( player->client, static_cast<short>( reward * g_rewardDestruction.Get() ), true );
+			penalty = basePenalty * share;
 
-			// Add momentum
-			G_AddMomentumForDestroyingStep( self, player, reward );
+			if ( self->s.eType == entityType_t::ET_BUILDABLE )
+			{
+				// Remove momentum
+				G_RemoveMomentumForDestroyingStep( self, player, penalty );
+
+				momentumChanged = true;
+			}
 		}
 		else
 		{
-			// Add score
-			G_AddCreditsToScore( player, ( int )reward );
+			reward = baseReward * share;
 
-			// Add credits
-			G_AddCreditToClient( player->client, ( short )reward, true );
+			if ( self->s.eType == entityType_t::ET_BUILDABLE )
+			{
+				// Add score
+				G_AddMomentumToScore( player, reward );
 
-			// Add momentum
-			G_AddMomentumForKillingStep( self, player, share );
+				// Add credits
+				G_AddCreditToClient( player->client, static_cast<short>( reward * g_rewardDestruction.Get() ), true );
+
+				// Add momentum
+				G_AddMomentumForDestroyingStep( self, player, reward );
+			}
+			else
+			{
+				// Add score
+				G_AddCreditsToScore( player, ( int )reward );
+
+				// Add credits
+				G_AddCreditToClient( player->client, ( short )reward, true );
+
+				// Add momentum
+				G_AddMomentumForKillingStep( self, player, share );
+			}
+
+			momentumChanged = true;
 		}
 	}
 
 	// Complete momentum modification
-	G_AddMomentumEnd();
+	if ( momentumChanged )
+	{
+		G_AddMomentumEnd();
+	}
 }
 
 void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )

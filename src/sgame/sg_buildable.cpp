@@ -1121,11 +1121,13 @@ static void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t 
 	}
 
 	// remove momentum
-	G_RemoveMomentumForDecon( self, deconner );
+	G_RemoveMomentumForDeconstruction( self, deconner );
 
 	// reward attackers if the structure was hurt before deconstruction
-	float healthFraction = self->entity->Get<HealthComponent>()->HealthFraction();
-	if ( healthFraction < 1.0f ) G_RewardAttackers( self );
+	if ( self->entity->Get<HealthComponent>()->HealthFraction() < 1.0f )
+	{
+		G_RewardAttackers( self );
+	}
 
 	// deconstruct (returns build points)
 	Entities::Kill(self, deconner, deconType);

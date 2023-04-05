@@ -40,6 +40,7 @@ enum momentum_t
 	CONF_GENERIC,
 	CONF_BUILDING,
 	CONF_DECONSTRUCTING,
+	CONF_FORCEDECON,
 	CONF_DESTROYING,
 	CONF_KILLING,
 
@@ -57,6 +58,7 @@ static const char *MomentumTypeToReason( momentum_t type )
 		case CONF_GENERIC:        return "generic actions";
 		case CONF_BUILDING:       return "building a structure";
 		case CONF_DECONSTRUCTING: return "deconstructing a structure";
+		case CONF_FORCEDECON:     return "destroying own structure";
 		case CONF_DESTROYING:     return "destroying a structure";
 		case CONF_KILLING:        return "killing a player";
 		default:                  return "(unknown momentum type)";
@@ -177,6 +179,7 @@ static float MomentumMod( momentum_t type )
 			break;
 
 		case CONF_DECONSTRUCTING:
+		case CONF_FORCEDECON:
 			// always used on top of build mod, so neutral baseMod/timeMod/playerCountMod
 			baseMod        = 1.0f;
 			typeMod        = g_momentumDeconMod.Get();
@@ -422,7 +425,7 @@ float G_AddMomentumForBuilding( gentity_t *buildable )
 /**
  * Removes momentum for deconstructing a buildable.
  */
-float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
+float G_RemoveMomentumForDeconstruction( gentity_t *buildable, gentity_t *deconner )
 {
 	float     value;
 	team_t    team;
@@ -459,7 +462,7 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 }
 
 /**
- * Adds momentum for destroying a buildable.
+ * Adds momentum for destroying an enemy buildable.
  *
  * G_AddMomentumEnd has to be called after all G_AddMomentum*Step steps are done.
  */
@@ -485,7 +488,33 @@ float G_AddMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker,
 }
 
 /**
- * Adds momentum for killing a player.
+ * Removes momentum for destroying a friendly buildable.
+ *
+ * G_AddMomentumEnd has to be called after all G_AddMomentum*Step steps are done.
+ */
+float G_RemoveMomentumForDestroyingStep( gentity_t *buildable, gentity_t *attacker, float amount )
+{
+	team_t team;
+
+	// sanity check buildable
+	if ( !buildable || buildable->s.eType != entityType_t::ET_BUILDABLE )
+	{
+		return 0.0f;
+	}
+
+	// sanity check attacker
+	if ( !attacker || !attacker->client )
+	{
+		return 0.0f;
+	}
+
+	team = (team_t) attacker->client->pers.team;
+
+	return AddMomentum( CONF_FORCEDECON, team, -amount, attacker, true );
+}
+
+/**
+ * Adds momentum for killing an enemy player.
  *
  * G_AddMomentumEnd has to be called after all G_AddMomentum*Step steps are done.
  */
