@@ -235,6 +235,9 @@ extern const int   DEFAULT_FREEKILL_PERIOD; // in s
 extern const float RGS_RANGE; // must be > 0
 extern const int   DEFAULT_BP_INITIAL_BUDGET; // in BP
 extern const int   DEFAULT_BP_BUDGET_PER_MINER; // in BP
+extern const int   DEFAULT_BUILD_TIME_DOUBLE_TIME; // in seconds
+extern const int   DEFAULT_BUILD_TIME_GRACE_PERIOD; // in seconds
+extern const float DEFAULT_BUILD_TIME_MAX_MULTIPLIER; // < 0 means unbounded
 
 // momentum
 extern const float MOMENTUM_MAX;

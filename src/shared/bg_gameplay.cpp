@@ -267,6 +267,11 @@ const float RGS_RANGE = 1000.0f;
 const int   DEFAULT_BP_INITIAL_BUDGET = 80;
 const int   DEFAULT_BP_BUDGET_PER_MINER = 50;
 
+// construction
+const int   DEFAULT_BUILD_TIME_DOUBLE_TIME = 900; // in seconds
+const int   DEFAULT_BUILD_TIME_GRACE_PERIOD = 0; // in seconds
+const float DEFAULT_BUILD_TIME_MAX_MULTIPLIER = 0; // < 1 means unbounded
+
 // momentum
 const float MOMENTUM_MAX = 300.0f;
 const float MOMENTUM_PER_CREDIT = 0.01f;

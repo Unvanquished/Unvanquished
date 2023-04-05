@@ -264,7 +264,7 @@ static void CG_Creep( centity_t *cent )
 	// should the creep be growing or receding?
 	if ( time >= 0 )
 	{
-		int scaleUpTime = attr->buildTime;
+		int scaleUpTime = CG_GetBuildDuration( cent );
 
 		msec = cg.time - time;
 
@@ -1848,7 +1848,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 		else
 		{
-			int timeLeft = es->time + attr->buildTime - cg.time;
+			int timeLeft = es->time + CG_GetBuildDuration( cent ) - cg.time;
 			float nX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 5 ) * 0.5f );
 
 			CG_DrawTime( nX, subY, subH, subH, timeLeft );
@@ -2124,8 +2124,9 @@ void CG_Buildable( centity_t *cent )
 		// If buildable has spawned or is a human buildable, don't alter the size
 		bool  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
+		int buildTime = CG_GetBuildDuration( cent );
 		float adjustScale = spawned ? 1.0f :
-			sinf( static_cast<float>(cg.time - es->time) / ba->buildTime * M_PI/2.0f );
+			sinf( static_cast<float>(cg.time - es->time) / buildTime * M_PI/2.0f );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET || es->modelindex == BA_H_ROCKETPOD )
@@ -2423,4 +2424,25 @@ float CG_DistanceToBase()
 	if (!ent)
 		return 1e+37f; // in accordance to sgame
 	return Distance(cg.predictedPlayerEntity.lerpOrigin, ent->lerpOrigin);
+}
+
+int CG_GetBuildDuration( centity_t *cent )
+{
+	entityState_t *es = &cent->currentState;
+
+	// Get settings
+	int baseDuration = BG_Buildable(es->modelindex)->buildTime;
+	int doubleTime = cgs.buildTimeDoubleTime;
+	int gracePeriod = cgs.buildTimeGracePeriod;
+	float maxMult = cgs.buildTimeMaxMultiplier;
+
+	// Obtain grace-period-adjusted creation time
+	int creationTime = es->time / 1000;  // in s
+	int adjustedTime = std::max(creationTime - gracePeriod, 0);
+
+	// Compute the build duration multiplier
+	float rawMult = std::pow(2.0f, (float)adjustedTime / (float)doubleTime);
+	float multiplier = maxMult < 1.0f ? rawMult : std::min(rawMult, maxMult);
+
+	return (int)roundf((float)baseDuration * multiplier);
 }

@@ -88,6 +88,10 @@ extern  Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetHumans;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_BPInitialBudgetAliens;
 extern  Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner;
 
+extern  Cvar::Cvar<int> g_buildTimeDoubleTime;
+extern  Cvar::Cvar<int> g_buildTimeGracePeriod;
+extern  Cvar::Cvar<float> g_buildTimeMaxMultiplier;
+
 extern Cvar::Range<Cvar::Cvar<int>> g_debugMomentum;
 extern Cvar::Cvar<float> g_momentumHalfLife;
 extern Cvar::Cvar<float> g_momentumRewardDoubleTime;

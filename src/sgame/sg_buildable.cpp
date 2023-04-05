@@ -1991,7 +1991,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		if (g_instantBuilding.Get()) {
 			// Build instantly in cheat mode.
 			// HACK: This causes animation issues and can result in built->creationTime < 0.
-			built->creationTime -= attr->buildTime;
+			built->creationTime -= G_GetBuildDuration( built );
 		} else {
 			HealthComponent *healthComponent = built->entity->Get<HealthComponent>();
 			healthComponent->SetHealth(healthComponent->MaxHealth() * BUILDABLE_START_HEALTH_FRAC);
@@ -2723,4 +2723,23 @@ void G_BuildLogRevert( int id )
 	}
 
 	G_AddMomentumEnd();
+}
+
+int G_GetBuildDuration( gentity_t* ent )
+{
+	// Get settings
+	int baseDuration = BG_Buildable(ent->s.modelindex)->buildTime;
+	int doubleTime = g_buildTimeDoubleTime.Get();
+	int gracePeriod = g_buildTimeGracePeriod.Get();
+	float maxMult = g_buildTimeMaxMultiplier.Get();
+
+	// Obtain grace-period-adjusted creation time
+	int creationTime = ent->creationTime / 1000;  // in s
+	int adjustedTime = std::max(creationTime - gracePeriod, 0);
+
+	// Compute the build duration multiplier
+	float rawMult = std::pow(2.0f, (float)adjustedTime / (float)doubleTime);
+	float multiplier = maxMult < 1.0f ? rawMult : std::min(rawMult, maxMult);
+
+	return (int)roundf((float)baseDuration * multiplier);
 }

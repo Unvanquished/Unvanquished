@@ -1687,9 +1687,15 @@ struct cgs_t
 	float    momentumHalfLife; // used for momentum bar (un)lock markers
 	float    unlockableMinTime;  // used for momentum bar (un)lock markers
 
+	// mining
 	float    buildPointBudgetPerMiner;
 	float    buildPointRecoveryInitialRate;
 	float    buildPointRecoveryRateHalfLife;
+
+	// building
+	int      buildTimeDoubleTime;
+	int      buildTimeGracePeriod;
+	float    buildTimeMaxMultiplier;
 
 	int      voteTime[ NUM_TEAMS ];
 	int      voteYes[ NUM_TEAMS ];
@@ -2022,6 +2028,7 @@ void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
 const centity_t *CG_LookupMainBuildable();
 float    CG_DistanceToBase();
+int      CG_GetBuildDuration( centity_t *cent );
 
 //
 // cg_animation.c

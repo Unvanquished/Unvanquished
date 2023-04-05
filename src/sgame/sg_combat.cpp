@@ -249,8 +249,8 @@ void G_RewardAttackers( gentity_t *self )
 		// Reduce rewards and penalties for buildables in construction
 		if ( !self->spawned )
 		{
-			vitality = ( level.time - self->creationTime ) /
-			           ( float )BG_Buildable( self->s.modelindex )->buildTime;
+			vitality = (float)( level.time - self->creationTime ) /
+			           (float)G_GetBuildDuration( self );
 			baseReward *= vitality;
 			basePenalty = 0.0f; // no reward issued yet, so no penalty either
 		}

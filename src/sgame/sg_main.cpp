@@ -129,6 +129,23 @@ Cvar::Callback<Cvar::Cvar<int>> g_buildPointBudgetPerMiner(
 			G_UpdateBuildPointBudgets();
 		});
 
+// gameplay: construction
+Cvar::Cvar<int> g_buildTimeDoubleTime(
+		"g_buildTimeDoubleTime",
+		"The rate at which construction time doubles (in seconds)",
+		Cvar::SERVERINFO,
+		DEFAULT_BUILD_TIME_DOUBLE_TIME);
+Cvar::Cvar<int> g_buildTimeGracePeriod(
+		"g_buildTimeGracePeriod",
+		"Time after which the build time increase sets in (in seconds)",
+		Cvar::SERVERINFO,
+		DEFAULT_BUILD_TIME_GRACE_PERIOD);
+Cvar::Cvar<float> g_buildTimeMaxMultiplier(
+		"g_buildTimeMaxMultiplier",
+		"Maximum build time multiplier (1 disables, < 1 means no maximum)",
+		Cvar::SERVERINFO,
+		DEFAULT_BUILD_TIME_MAX_MULTIPLIER);
+
 Cvar::Range<Cvar::Cvar<int>> g_debugMomentum("g_debugMomentum", "momentum debug level", Cvar::NONE, 0, 0, 2);
 Cvar::Cvar<float> g_momentumHalfLife("g_momentumHalfLife", "minutes for momentum to decrease 50%", Cvar::SERVERINFO, DEFAULT_MOMENTUM_HALF_LIFE);
 Cvar::Cvar<float> g_momentumRewardDoubleTime("g_momentumRewardDoubleTime", "some momentum rewards double after x minutes", Cvar::NONE, DEFAULT_CONF_REWARD_DOUBLE_TIME);
