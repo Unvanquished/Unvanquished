@@ -1034,23 +1034,7 @@ static void FireBuild( gentity_t *self, dynMenu_t menu )
 	{
 		if ( !g_instantBuilding.Get() )
 		{
-			int buildTime = BG_Buildable( buildable )->buildTime;
-
-			switch ( G_Team( self ) )
-			{
-				case TEAM_ALIENS:
-					buildTime *= ALIEN_BUILDDELAY_MOD;
-					break;
-
-				case TEAM_HUMANS:
-					buildTime *= HUMAN_BUILDDELAY_MOD;
-					break;
-
-				default:
-					break;
-			}
-
-			self->client->ps.stats[ STAT_MISC ] += buildTime;
+			self->client->ps.stats[ STAT_MISC ] = std::max(g_buildingCooldown.Get(), 0);
 		}
 
 		self->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;

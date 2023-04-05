@@ -161,6 +161,7 @@ extern Cvar::Cvar<int> g_combatCooldown;
 
 extern Cvar::Range<Cvar::Cvar<int>> g_debugEntities;
 
+extern Cvar::Cvar<int>  g_buildingCooldown;
 extern Cvar::Cvar<bool> g_instantBuilding;
 extern Cvar::Cvar<bool> g_ignoreNobuild;
 

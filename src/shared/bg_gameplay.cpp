@@ -80,6 +80,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 const int   BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE = 200;
 const int   BUILDER_LONG_DECONSTRUCT_CHARGE = 800;
+const int   DEFAULT_BUILDING_COOLDOWN = 5000;  // in ms
 
 const float BUILDER_DECONSTRUCT_RANGE = 100;
 
@@ -244,10 +245,6 @@ const int   WEIGHTDMG_REPEAT = 200;
 // buildable explosion
 const int   HUMAN_DETONATION_DELAY = 4000;
 const float DETONATION_DELAY_RAND_RANGE = 0.25f;
-
-// buildable limits
-const float HUMAN_BUILDDELAY_MOD = 0.6f;
-const float ALIEN_BUILDDELAY_MOD = 0.6f;
 
 // base attack warnings
 const int   ATTACKWARN_PRIMARY_PERIOD = 7500;

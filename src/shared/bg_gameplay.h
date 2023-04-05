@@ -39,7 +39,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 extern const int   BUILDER_MAX_SHORT_DECONSTRUCT_CHARGE;
 // Holding +deconstruct for this many milliseconds force-deconstructs a buildable
 extern const int   BUILDER_LONG_DECONSTRUCT_CHARGE;
-
+extern const int   DEFAULT_BUILDING_COOLDOWN;
 extern const float BUILDER_DECONSTRUCT_RANGE;
 
 /*
@@ -209,10 +209,6 @@ extern const int   WEIGHTDMG_REPEAT; // in ms, low value reduces damage precisio
 // buildable explosion
 extern const int   HUMAN_DETONATION_DELAY;
 extern const float DETONATION_DELAY_RAND_RANGE;
-
-// buildable limits
-extern const float HUMAN_BUILDDELAY_MOD;
-extern const float ALIEN_BUILDDELAY_MOD;
 
 // base attack warnings
 extern const int   ATTACKWARN_PRIMARY_PERIOD;
