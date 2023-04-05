@@ -108,6 +108,60 @@ void CG_DrawField( float x, float y, int width, float cw, float ch, int value )
 	}
 }
 
+/*
+==============
+CG_DrawTime
+
+Draws time as minutes and seconds in format mm:ss, capped at 99:59
+==============
+*/
+void CG_DrawTime( float x, float y, float cw, float ch, int ms )
+{
+	float charWidth = (cw != 0.0f ? cw : CGAME_CHAR_WIDTH);
+	float charHeight = (ch != 0.0f ? ch : CGAME_CHAR_HEIGHT);
+	int   value;
+
+	int s = ms < 0 ? 0 : (int)roundf((float)ms / 1000.0f);
+	int min = s / 60;
+	int sec = s % 60;
+
+	if ( min > 99 )
+	{
+		min = 99;
+		sec = 59;
+	}
+
+	for ( int i = 0; i < 5; i++ )
+	{
+		switch ( i )
+		{
+			case 0:
+				value = min / 10;
+				break;
+
+			case 1:
+				value = min %= 10;
+				break;
+
+			case 2:
+				value = 11; // colon
+				break;
+
+			case 3:
+				value = sec / 10;
+				break;
+
+			case 4:
+				value = sec %= 10;
+				break;
+		}
+
+		CG_DrawPic( x, y, charWidth, charHeight, cgs.media.numberShaders[ value ] );
+
+		x += ( 2.0f * cgs.aspectScale ) + charWidth;
+	}
+}
+
 void CG_MouseEvent( int /*dx*/, int /*dy*/ )
 {
 }

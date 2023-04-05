@@ -682,7 +682,7 @@ CG_RegisterGraphics
 static void CG_RegisterGraphics()
 {
 	int         i;
-	static const char *const sb_nums[ 11 ] =
+	static const char *const sb_nums[ 12 ] =
 	{
 		"ui/assets/numbers/zero_32b",
 		"ui/assets/numbers/one_32b",
@@ -695,6 +695,7 @@ static void CG_RegisterGraphics()
 		"ui/assets/numbers/eight_32b",
 		"ui/assets/numbers/nine_32b",
 		"ui/assets/numbers/minus_32b",
+		"ui/assets/numbers/colon_32b",
 	};
 	static const char *const buildWeaponTimerPieShaders[ 8 ] =
 	{
@@ -717,7 +718,7 @@ static void CG_RegisterGraphics()
 
 	CG_UpdateLoadingStep( LOAD_ASSETS );
 
-	for ( i = 0; i < 11; i++ )
+	for ( i = 0; i < 12; i++ )
 	{
 		cgs.media.numberShaders[ i ] = trap_R_RegisterShader(sb_nums[i], (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 	}
