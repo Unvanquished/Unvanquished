@@ -592,11 +592,23 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 		&& trace.surfaceFlags & SURF_LADDER
 		;
 
+	if ( blocker->s.eType == entityType_t::ET_BUILDABLE
+			&& blocker->s.modelindex == BA_A_BARRICADE
+			&& G_OnSameTeam( self, blocker ) )
+	{
+		glm::vec3 mins, maxs;
+		BG_BoundingBox( static_cast<buildable_t>( blocker->s.modelindex ), &mins, &maxs );
+		maxs.z *= BARRICADE_SHRINKPROP;
+		glm::vec3 pos = VEC2GLM( blocker->s.origin );
+		BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
+		if ( origin.z + playerMins.z >= pos.z + maxs.z )
+		{
+			return true;
+		}
+	}
+
 	//if we can jump over it, then jump
-	//note that we also test for a blocking barricade because barricades will collapse to let us through
-	return blocker->s.modelindex == BA_A_BARRICADE
-		|| trace.fraction == 1.0f
-		|| ladder;
+	return trace.fraction == 1.0f || ladder;
 }
 
 // Determine a new direction, which may be unchanged (forward) or sideway. It
