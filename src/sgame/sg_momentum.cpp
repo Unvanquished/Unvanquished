@@ -432,6 +432,14 @@ float G_RemoveMomentumForDecon( gentity_t *buildable, gentity_t *deconner )
 	{
 		return 0.0f;
 	}
+
+	// Do not penalize deconstructing buildables in construction.
+	// These have not provided a momentum reward yet.
+	if ( !buildable->spawned )
+	{
+		return 0.0f;
+	}
+
 	team = BG_Buildable( buildable->s.modelindex )->team;
 
 	if ( buildable->momentumEarned )
