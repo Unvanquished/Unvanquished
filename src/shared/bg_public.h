@@ -1426,6 +1426,8 @@ struct upgradeAttributes_t
 	const char *humanName;
 	const char *info;
 
+	int      repeatRate = 0;
+
 	const char *icon;
 
 	bool  purchasable;

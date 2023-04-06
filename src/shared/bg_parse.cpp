@@ -1796,7 +1796,8 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 		// unused
 		ICON = 1 << 4,
 		TEAM = 1 << 5,
-		UNLOCKTHRESHOLD = 1 << 6
+		UNLOCKTHRESHOLD = 1 << 6,
+		RATE = 1 << 7,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1883,6 +1884,12 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 
 			ua->unlockThreshold = atoi(token);
 			defined |= UNLOCKTHRESHOLD;
+		}
+		else if ( !Q_stricmp( token, "repeatRate" ) )
+		{
+			PARSE(text, token);
+			ua->repeatRate = atoi( token );
+			defined |= RATE;
 		}
 		else if( (var = BG_FindConfigVar( va( "u_%s_%s", ua->name, token ) ) ) != nullptr )
 		{
