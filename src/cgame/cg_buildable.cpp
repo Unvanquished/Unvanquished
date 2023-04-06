@@ -2125,7 +2125,7 @@ void CG_Buildable( centity_t *cent )
 		bool  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS );
 
 		int buildTime = CG_GetBuildDuration( cent );
-		float adjustScale = spawned ? 1.0f :
+		float adjustScale = spawned ? 1.0f : 0.75f + 0.25f *
 			sinf( static_cast<float>(cg.time - es->time) / buildTime * M_PI/2.0f );
 		ent.skeleton = bSkeleton;
 
