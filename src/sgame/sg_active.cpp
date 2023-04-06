@@ -33,6 +33,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active );
 
 static Cvar::Cvar<float> g_devolveReturnRate(
 	"g_devolveReturnRate", "Evolution points per second returned after devolving", Cvar::NONE, 0.4);
+static Cvar::Cvar<bool> g_remotePoison( "g_remotePoison", "booster gives poison when in heal range", Cvar::NONE, false );
 
 /*
 ===============
@@ -1735,7 +1736,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 	client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_2X | SS_HEALING_4X | SS_HEALING_8X );
 	client->ps.stats[ STAT_STATE ] |= FindAlienHealthSource( self );
 
-	if ( client->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
+	if ( g_remotePoison.Get() && client->ps.stats[ STAT_STATE ] & SS_HEALING_8X )
 	{
 		client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
 		client->ps.stats[ STAT_STATE ] |= SS_BOOSTEDNEW;
