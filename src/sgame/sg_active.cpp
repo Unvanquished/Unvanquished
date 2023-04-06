@@ -1976,9 +1976,13 @@ static void ClientThink_real( gentity_t *self )
 	{
 		// Remove from inventory
 		BG_DeactivateUpgrade( UP_GRENADE, client->ps.stats );
-		BG_RemoveUpgradeFromInventory( UP_GRENADE, client->ps.stats );
+		if ( not self->client->ps.weaponTime )
+		{
+			BG_RemoveUpgradeFromInventory( UP_GRENADE, client->ps.stats );
 
-		G_FireUpgrade( self, UP_GRENADE );
+			G_FireUpgrade( self, UP_GRENADE );
+			self->client->ps.weaponTime += BG_Upgrade( UP_GRENADE )->repeatRate;
+		}
 	}
 
 	// Throw human firebomb
@@ -1987,9 +1991,13 @@ static void ClientThink_real( gentity_t *self )
 	{
 		// Remove from inventory
 		BG_DeactivateUpgrade( UP_FIREBOMB, client->ps.stats );
-		BG_RemoveUpgradeFromInventory( UP_FIREBOMB, client->ps.stats );
+		if ( not self->client->ps.weaponTime )
+		{
+			BG_RemoveUpgradeFromInventory( UP_FIREBOMB, client->ps.stats );
 
-		G_FireUpgrade( self, UP_FIREBOMB );
+			G_FireUpgrade( self, UP_FIREBOMB );
+			self->client->ps.weaponTime += BG_Upgrade( UP_FIREBOMB )->repeatRate;
+		}
 	}
 
 	// set speed
