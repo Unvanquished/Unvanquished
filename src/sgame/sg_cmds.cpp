@@ -47,6 +47,7 @@ Cvar::Range<Cvar::Cvar<int>> g_killDelay(
 		"how many seconds a player needs to wait before the suicide (/kill) command take effect",
 		Cvar::NONE,
 		20, 0, 120 );
+static Cvar::Cvar<bool> g_voteAllowChange( "g_voteAllowChange", "allows players to change their mind (they might spam)", Cvar::NONE, false );
 
 /*
 ==================
@@ -2271,8 +2272,13 @@ static void Cmd_Vote_f( gentity_t *ent )
 
 	if ( ent->client->pers.voted & ( 1 << team ) )
 	{
-		trap_SendServerCommand( ent->num(), va( "print_tr %s %s", QQ( N_("$1$: vote canceled") ),  cmd ) );
-		G_Vote( ent, team, false );
+		if ( g_voteAllowChange.Get() )
+		{
+			trap_SendServerCommand( ent->num(), va( "print_tr %s %s", QQ( N_("$1$: vote canceled") ),  cmd ) );
+			G_Vote( ent, team, false );
+			return;
+		}
+		trap_SendServerCommand( ent->num(), va( "print_tr %s %s", QQ( N_("$1$: vote already cast") ),  cmd ) );
 		return;
 	}
 
