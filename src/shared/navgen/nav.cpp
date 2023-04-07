@@ -228,16 +228,30 @@ static void AddTri( std::vector<float> &verts, std::vector<int> &tris, vec3_t v1
 	AddVert( verts, tris, v3 );
 }
 
+static bool SkipContent( const dshader_t *shader ) {
+	const int solidFlags = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
+
+	return !( shader->contentFlags & solidFlags );
+}
+
+static bool SkipSurface( const NavgenConfig *config, const dshader_t *shader ) {
+	if ( config->excludeSky && shader->surfaceFlags & SURF_SKY )
+	{
+		return true;
+	}
+
+	if ( config->excludeCaulk && !Q_stricmp( shader->shader, "textures/common/caulk" ) )
+	{
+		return true;
+	}
+
+	return false;
+}
+
 // TODO: Can this stuff be done using the already-loaded CM data structures
 // (e.g. cbrush_t instead of dbrush_t) instead of reopening the BSP?
 void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tris ) {
 	std::map<size_t,std::unordered_set<glm::vec3>> laddersVerts;
-	int solidFlags = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
-	int surfaceSkip = 0;
-
-	if ( config_.excludeSky ) {
-		surfaceSkip = SURF_SKY;
-	}
 
 	const byte* const cmod_base = reinterpret_cast<const byte*>(mapData_.data());
 	auto& header = *reinterpret_cast<const dheader_t*>(mapData_.data());
@@ -270,9 +284,11 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 		int firstSide = bspBrushes[i].firstSide;
 		const dshader_t* brushShader = &bspShaders[bspBrushes[i].shaderNum];
 
-		if ( !( brushShader->contentFlags & solidFlags ) ) {
+		if ( SkipContent( brushShader ) )
+		{
 			continue;
 		}
+
 		/* walk the list of brush sides */
 		for ( int p = 0; p < numSides; p++ )
 		{
@@ -281,11 +297,8 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 			const dplane_t *plane = &bspPlanes[side->planeNum];
 			const dshader_t* shader = &bspShaders[side->shaderNum];
 
-			if ( shader->surfaceFlags & surfaceSkip ) {
-				continue;
-			}
-
-			if ( config_.excludeCaulk && !Q_stricmp( shader->shader, "textures/common/caulk" ) ) {
+			if ( SkipSurface( &config_, shader ) )
+			{
 				continue;
 			}
 
@@ -414,9 +427,19 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 
 	for ( int k = model->firstSurface, n = 0; n < model->numSurfaces; k++, n++ )
 	{
+		// Surface is what is named Patch in NetRadiant editor.
 		const dsurface_t *surface = &bspSurfaces[ k ];
+		const dshader_t *surfaceShader = &bspShaders[surface->shaderNum];
 
-		if ( !( bspShaders[surface->shaderNum].contentFlags & solidFlags ) ) {
+		/* Patches don't have any content but their shader may
+		have contentparm. */
+		if ( SkipContent( surfaceShader ) )
+		{
+			continue;
+		}
+
+		if ( SkipSurface( &config_, surfaceShader ) )
+		{
 			continue;
 		}
 
