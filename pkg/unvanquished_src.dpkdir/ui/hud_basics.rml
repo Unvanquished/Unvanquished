@@ -94,7 +94,7 @@
 			display: block;
 			width: 25em;
 			height: 12em;
-			padding: 0.5em;
+			padding-right: 0.5em;
 
 			float: right;
 		}

@@ -160,6 +160,21 @@
 				color: red;
 			}
 
+			div#base_status {
+				position: absolute;
+				text-align: center;
+				top: 1%;
+				width: 25%;
+				margin-left: auto;
+				margin-right: auto;
+				color: white;
+				background-color: #6e1b1caa;
+			}
+
+			base_status {
+				font-size: 1.3em;
+			}
+
 			div#momentum {
 				position: absolute;
 				width: 40%;
@@ -199,6 +214,9 @@
 	</head>
 	<body id="hud_alien">
 		<alien_sense />
+		<div id="base_status">
+			<base_status />
+		</div>
 		<div id="momentum">
 			<unlocked_items/>
 			<momentum_bar/>
