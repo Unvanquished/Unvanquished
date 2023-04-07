@@ -902,7 +902,7 @@ static NavgenStatus rasterizeTileLayers( Geometry& geo, rcContext &context, int 
 	//It " Creates partitioned triangle mesh (AABB tree), where each node contains at max trisPerChunk triangles."
 	//why? No idea.
 	const int ncid = rcGetChunksOverlappingRect( chunkyMesh, tbmin, tbmax, cid, chunkyMesh->nnodes );
-	if ( !ncid ) { // TODO is this supposed to mean failure?
+	if ( !ncid ) {
 		delete[] cid;
 		*ntiles = 0;
 		return {};
