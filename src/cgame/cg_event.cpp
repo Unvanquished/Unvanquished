@@ -1319,17 +1319,18 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.turretSpinupSound );
 			break;
 
-		case EV_NO_SPAWNS:
+		case EV_MAIN_REPORTS_NO_SPAWNS:
 			switch ( CG_MyTeam() )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindSpawns, soundChannel_t::CHAN_ANNOUNCER );
-					CG_CenterPrint( "The Overmind needs spawns!", 1.5f );
+					CG_CenterPrint( "^1The Overmind needs spawns!", 1.5f );
 					break;
 
 				case TEAM_HUMANS:
-					// TODO: Add a sound.
-					CG_CenterPrint( "There are no telenodes left!", 1.5f );
+					// TODO: Add an audio announcement.
+					trap_S_StartLocalSound( cgs.media.buildableRepairedSound, soundChannel_t::CHAN_ANNOUNCER );
+					CG_CenterPrint( "^1No telenode left!", 1.5f );
 					break;
 
 				default:

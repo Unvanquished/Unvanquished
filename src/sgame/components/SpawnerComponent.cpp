@@ -24,9 +24,11 @@ void SpawnerComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOf
 
 	ASSERT_GE(newNumSpawns, 0);
 
-	// Warn if the last spawn is lost and there is a main buildable.
+	// Warn if the last spawn is lost while there still is an active main
+	// buildable. This logic is dictated by the aliens' audio announcement,
+	// which appears to be issued by the Overmind itself.
 	if (newNumSpawns == 0 && G_ActiveMainBuildable(team)) {
-		G_BroadcastEvent(EV_NO_SPAWNS, 0, team);
+		G_BroadcastEvent(EV_MAIN_REPORTS_NO_SPAWNS, 0, team);
 	}
 }
 

@@ -1321,7 +1321,7 @@ static constexpr const char *const eventnames[] =
   "EV_STOPLOOPINGSOUND",
   "EV_TAUNT",
 
-  "EV_NO_SPAWNS",
+  "EV_MAIN_REPORTS_NO_SPAWNS",
   "EV_MAIN_UNDER_ATTACK",
   "EV_MAIN_DYING",
 
