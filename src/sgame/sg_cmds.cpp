@@ -2271,8 +2271,8 @@ static void Cmd_Vote_f( gentity_t *ent )
 
 	if ( ent->client->pers.voted & ( 1 << team ) )
 	{
-		trap_SendServerCommand( ent->num(),
-		                        va( "print_tr %s %s", QQ( N_("$1$: vote already cast") ),  cmd ) );
+		trap_SendServerCommand( ent->num(), va( "print_tr %s %s", QQ( N_("$1$: vote canceled") ),  cmd ) );
+		G_Vote( ent, team, false );
 		return;
 	}
 
