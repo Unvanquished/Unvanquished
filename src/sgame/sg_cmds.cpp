@@ -2758,24 +2758,19 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 	}
 	else if ( team == TEAM_HUMANS )
 	{
-		weapon_t weapon;
-		// set the item to spawn with
-		if ( !Q_stricmp( s, BG_Weapon( WP_MACHINEGUN )->name ) &&
-		     !BG_WeaponDisabled( WP_MACHINEGUN ) )
-		{
-			weapon = WP_MACHINEGUN;
-		}
-		else if ( !Q_stricmp( s, BG_Weapon( WP_HBUILD )->name ) &&
-		          !BG_WeaponDisabled( WP_HBUILD ) )
-		{
-			weapon = WP_HBUILD;
-		}
-		else
+		weapon_t weapon = BG_WeaponNumberByName( s );
+		if ( weapon == WP_NONE )
 		{
 			if ( report )
 			{
 				G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM );
 			}
+			return false;
+		}
+
+		if ( BG_WeaponDisabled( weapon ) )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_SPAWNITEMNOTALLOWED );
 			return false;
 		}
 

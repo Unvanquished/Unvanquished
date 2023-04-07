@@ -650,6 +650,10 @@ static void CG_Menu( int menuType, int arg )
 			shortMsg = _("Unknown starting item");
 			break;
 
+		case MN_H_SPAWNITEMNOTALLOWED:
+			shortMsg = _("Starting item not allowed");
+			break;
+
 			//===============================
 
 		case MN_A_NOOVMND:
