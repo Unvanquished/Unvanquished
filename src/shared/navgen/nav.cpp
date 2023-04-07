@@ -245,6 +245,11 @@ static bool SkipSurface( const NavgenConfig *config, const dshader_t *shader ) {
 		return true;
 	}
 
+	if ( !Q_stricmp( shader->shader, "textures/common/outside" ) )
+	{
+		return true;
+	}
+
 	return false;
 }
 
