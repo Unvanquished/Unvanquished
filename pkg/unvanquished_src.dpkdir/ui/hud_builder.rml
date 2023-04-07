@@ -6,7 +6,7 @@
 		width: 100%;
 		height: 100%;
 	}
-	div#mine {
+	div#building {
 		position: absolute;
 		text-align: center;
 		width: 10%;
@@ -43,8 +43,8 @@
 </style>
 </head>
 <body id="hud_builder">
-	<div id="mine">
-		<predictedMineEfficiency />
+	<div id="building">
+		<build_prediction />
 	</div>
 	<div id="timer">
 		<progress direction="right" src="btimer"/>
