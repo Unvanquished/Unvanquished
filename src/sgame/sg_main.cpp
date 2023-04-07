@@ -2008,57 +2008,50 @@ void G_Vote( gentity_t *ent, team_t team, bool voting )
 		return;
 	}
 
-	if ( voting && (ent->client->pers.voted & ( 1 << team )) )
-	{
-		return;
-	}
-
-	if ( !voting && !( ent->client->pers.voted & ( 1 << team ) ) )
-	{
-		return;
-	}
-
-	ent->client->pers.voted |= 1 << team;
-
 	//TODO maybe refactor vote no/yes in one and only one variable and divide the NLOC by 2 ?
-
 	if ( voting )
 	{
+		if ( (ent->client->pers.voted & ( 1 << team )) )
+		{
+			return;
+		}
 		level.team[ team ].voted++;
-	}
-	else
-	{
-		level.team[ team ].voted--;
-	}
-
-	if ( ent->client->pers.voteYes & ( 1 << team ) )
-	{
-		if ( voting )
+		ent->client->pers.voted |= 1 << team;
+		if ( ent->client->pers.voteYes & ( 1 << team ) )
 		{
 			level.team[ team ].voteYes++;
-		}
-		else
-		{
-			level.team[ team ].voteYes--;
+			trap_SetConfigstring( CS_VOTE_YES + team, va( "%d", level.team[ team ].voteYes ) );
 		}
 
-		trap_SetConfigstring( CS_VOTE_YES + team,
-		                      va( "%d", level.team[ team ].voteYes ) );
-	}
-
-	if ( ent->client->pers.voteNo & ( 1 << team ) )
-	{
-		if ( voting )
+		if ( ent->client->pers.voteNo & ( 1 << team ) )
 		{
 			level.team[ team ].voteNo++;
+			trap_SetConfigstring( CS_VOTE_NO + team, va( "%d", level.team[ team ].voteNo ) );
 		}
-		else
-		{
-			level.team[ team ].voteNo--;
-		}
+		return;
+	}
 
-		trap_SetConfigstring( CS_VOTE_NO + team,
-		                      va( "%d", level.team[ team ].voteNo ) );
+	if ( !( ent->client->pers.voted & ( 1 << team ) ) )
+	{
+		return;
+	}
+
+	ent->client->pers.voted &= ~( 1 << team );
+	level.team[ team ].voted--;
+	bool wasYes = ent->client->pers.voteYes & ( 1 << team );
+	bool wasNo  = ent->client->pers.voteNo  & ( 1 << team );
+	ent->client->pers.voteYes &= ~( 1 << team );
+	ent->client->pers.voteNo  &= ~( 1 << team );
+
+	if ( wasYes )
+	{
+		level.team[ team ].voteYes--;
+		trap_SetConfigstring( CS_VOTE_YES + team, va( "%d", level.team[ team ].voteYes ) );
+	}
+	if ( wasNo )
+	{
+		level.team[ team ].voteNo--;
+		trap_SetConfigstring( CS_VOTE_NO + team, va( "%d", level.team[ team ].voteNo ) );
 	}
 }
 
