@@ -2426,23 +2426,27 @@ float CG_DistanceToBase()
 	return Distance(cg.predictedPlayerEntity.lerpOrigin, ent->lerpOrigin);
 }
 
-int CG_GetBuildDuration( centity_t *cent )
+int CG_PredictBuildDuration( buildable_t buildable, int creationTime )
 {
-	entityState_t *es = &cent->currentState;
-
 	// Get settings
-	int baseDuration = BG_Buildable(es->modelindex)->buildTime;
+	int baseDuration = BG_Buildable(buildable)->buildTime;
 	int doubleTime = cgs.buildTimeDoubleTime;
 	int gracePeriod = cgs.buildTimeGracePeriod;
 	float maxMult = cgs.buildTimeMaxMultiplier;
 
-	// Obtain grace-period-adjusted creation time
-	int creationTime = es->time / 1000;  // in s
-	int adjustedTime = std::max(creationTime - gracePeriod, 0);
+	// Obtain grace-period-adjusted creation time (in s)
+	int adjustedTime = std::max(creationTime / 1000 - gracePeriod, 0);
 
 	// Compute the build duration multiplier
 	float rawMult = std::pow(2.0f, (float)adjustedTime / (float)doubleTime);
 	float multiplier = maxMult < 1.0f ? rawMult : std::min(rawMult, maxMult);
 
 	return (int)roundf((float)baseDuration * multiplier);
+}
+
+int CG_GetBuildDuration( centity_t *cent )
+{
+	entityState_t *es = &cent->currentState;
+
+	return CG_PredictBuildDuration((buildable_t)es->modelindex, es->time);
 }
