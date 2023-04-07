@@ -1902,6 +1902,116 @@ private:
 	int showTime_ = -1;
 };
 
+class BaseStatusElement : public HudElement
+{
+public:
+	BaseStatusElement( const Rml::String& tag ) :
+			HudElement( tag, ELEMENT_GAME ),
+			lastCode_( -1 ),
+			lastTeam_( TEAM_NONE )
+	{}
+
+	void DoOnUpdate() override
+	{
+		team_t team = CG_MyTeam();
+		int code = cg.snap->ps.persistant[ PERS_BASESTATUS ];
+
+		if ( code != lastCode_ || team != lastTeam_ )
+		{
+			const char* mainBuildingStr;
+			const char* spawnPlrStr;
+			const char* vitalityStr;
+			const char* text;
+			Color::Color color;
+
+			bool noSpawn = code & BaseStatus::NO_SPAWN;
+			bool noMain = code & BaseStatus::NO_MAIN;
+			bool mainBuilding = code & BaseStatus::MAIN_BUILDING;
+
+			int timeLeft = code & BaseStatus::TIME_LEFT_MASK;
+			int mins = timeLeft / 60;
+			int secs = timeLeft % 60;
+
+			switch ( team )
+			{
+				case TEAM_ALIENS:
+					mainBuildingStr = "Overmind";
+					spawnPlrStr = "Eggs";
+					vitalityStr = "alive";
+					break;
+
+				case TEAM_HUMANS:
+					mainBuildingStr = "Reactor";
+					spawnPlrStr = "Telenodes";
+					vitalityStr = "online";
+					break;
+
+				default:
+					SetInnerRML("");
+					lastCode_ = code;
+					lastTeam_ = team;
+					return;
+			}
+
+			if ( noSpawn && !noMain && !mainBuilding )
+			{
+				text = va("There are no %s!", spawnPlrStr);
+				color = Color::Red;
+			}
+			else if ( noSpawn && noMain )
+			{
+				text = va(
+					"There are no %s and no %s!",
+					spawnPlrStr, mainBuildingStr
+				);
+				color = Color::Red;
+			}
+			else if ( noSpawn && mainBuilding )
+			{
+				text = va(
+					"%s %s in %02d:%02d with no %s",
+					mainBuildingStr, vitalityStr, mins, secs, spawnPlrStr
+				);
+				color = Color::Red;
+			}
+			else if ( !noSpawn && noMain )
+			{
+				text = va("There is no %s!", mainBuildingStr);
+				color = Color::Orange;
+			}
+			else if ( !noSpawn && mainBuilding )
+			{
+				text = va("%s %s in %02d:%02d",
+					mainBuildingStr, vitalityStr, mins, secs
+				);
+				color = Color::Yellow;
+			}
+			else
+			{
+				text = nullptr;
+			}
+
+			if ( text )
+			{
+				SetInnerRML(CG_Rocket_QuakeToRML(va(
+					"%s%s", Color::ToString(color).c_str(), text
+				)));
+			}
+			else
+			{
+				SetInnerRML("");
+			}
+
+			lastCode_ = code;
+			lastTeam_ = team;
+		}
+	}
+
+private:
+	int lastCode_;
+	team_t lastTeam_;
+};
+
 class BeaconAgeElement : public TextHudElement
 {
 public:
@@ -3773,6 +3883,7 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<LevelshotElement>( "levelshot" );
 	RegisterElement<LevelshotLoadingElement>( "levelshot_loading" );
 	RegisterElement<CenterPrintElement>( "center_print" );
+	RegisterElement<BaseStatusElement>( "base_status" );
 	RegisterElement<BeaconAgeElement>( "beacon_age" );
 	RegisterElement<BeaconDistanceElement>( "beacon_distance" );
 	RegisterElement<BeaconIconElement>( "beacon_icon" );

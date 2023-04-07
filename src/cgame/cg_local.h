@@ -2010,6 +2010,7 @@ void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
 const centity_t *CG_LookupMainBuildable();
 float    CG_DistanceToBase();
+int CG_GetBuildDuration( const centity_t *cent );
 
 //
 // cg_animation.c

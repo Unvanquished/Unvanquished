@@ -2306,6 +2306,7 @@ static void ClientThink_real( gentity_t *self )
 	client->ps.persistant[ PERS_MARKEDBUDGET ] = G_GetMarkedBudget( (team_t)client->pers.team );
 	client->ps.persistant[ PERS_TOTALBUDGET ]  = (int)level.team[client->pers.team].totalBudget;
 	client->ps.persistant[ PERS_QUEUEDBUDGET ] = level.team[client->pers.team].queuedBudget;
+	client->ps.persistant[ PERS_BASESTATUS ] = G_GetBaseStatusCode( (team_t)client->pers.team );
 
 	// perform once-a-second actions
 	ClientTimerActions( self, msec );

@@ -176,6 +176,21 @@
 				left: 2%;
 			}
 
+			div#base_status {
+				position: absolute;
+				text-align: center;
+				top: 1%;
+				width: 25%;
+				margin-left: auto;
+				margin-right: auto;
+				color: white;
+				background-color: #6efbff40;
+			}
+
+			base_status {
+				font-size: 0.55em;
+			}
+
 			div#momentum {
 				position: absolute;
 				width: 40%;
@@ -276,6 +291,9 @@
 			<div class="health"><health_cross class="health"/>
 			<health class="health" />
 			<progress class="health" src="health" /></div>
+		</div>
+		<div id="base_status">
+			<base_status />
 		</div>
 		<div id="momentum">
 			<unlocked_items/>

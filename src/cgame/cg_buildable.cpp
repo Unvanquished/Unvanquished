@@ -2424,3 +2424,16 @@ float CG_DistanceToBase()
 		return 1e+37f; // in accordance to sgame
 	return Distance(cg.predictedPlayerEntity.lerpOrigin, ent->lerpOrigin);
 }
+
+// Returns the time a buildable will take to be completed
+// This is because those commits are cherry-picked from an
+// experiment with buildtimes, which is still ongoing, trying
+// to reduce git conflicts here.
+int CG_GetBuildDuration( const centity_t *cent )
+{
+	const entityState_t *es = &cent->currentState;
+
+	// Get settings
+	int baseDuration = BG_Buildable(es->modelindex)->buildTime;
+	return baseDuration;
+}

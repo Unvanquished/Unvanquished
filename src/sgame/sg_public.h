@@ -77,6 +77,7 @@ gentity_t         *G_Reactor();
 gentity_t         *G_ActiveReactor();
 gentity_t         *G_MainBuildable(team_t team);
 gentity_t         *G_ActiveMainBuildable(team_t team);
+int               G_GetBaseStatusCode(team_t team);
 float             G_DistanceToBase(gentity_t *self);
 bool              G_InsideBase(gentity_t *self);
 bool              G_DretchCanDamageEntity( const gentity_t *self, const gentity_t *other );
@@ -101,6 +102,7 @@ buildLog_t        *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void              G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void              G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void              G_BuildLogRevert( int id );
+int               G_GetBuildDuration( const gentity_t* ent );
 void              G_UpdateBuildablePowerStates();
 void              G_BuildableTouchTriggers( gentity_t *ent );
 
