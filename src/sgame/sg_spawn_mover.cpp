@@ -1788,13 +1788,8 @@ void SP_func_door_rotating( gentity_t *self )
 
 	G_SpawnFloat( "rotatorAngle", "0", &self->rotatorAngle );
 
-	// default distance of 90 degrees. This is something the mapper should not
-	// leave out, so we'll tell him if he does.
 	if ( !self->rotatorAngle )
 	{
-		Log::Warn( "%s at %s with no rotatorAngle set.",
-		          self->classname, vtos( self->s.origin ) );
-
 		self->rotatorAngle = 90.0;
 	}
 
