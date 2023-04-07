@@ -77,6 +77,7 @@ gentity_t         *G_Reactor();
 gentity_t         *G_ActiveReactor();
 gentity_t         *G_MainBuildable(team_t team);
 gentity_t         *G_ActiveMainBuildable(team_t team);
+int               G_GetBaseStatusCode(team_t team);
 float             G_DistanceToBase(gentity_t *self);
 bool              G_InsideBase(gentity_t *self);
 bool              G_DretchCanDamageEntity( const gentity_t *self, const gentity_t *other );

@@ -110,6 +110,37 @@ gentity_t *G_ActiveMainBuildable(team_t team) {
 }
 
 /**
+ * @return An integer to be placed inside PERS_BASESTATUS
+ */
+int G_GetBaseStatusCode(team_t team) {
+	gentity_t *main = G_MainBuildable(team);
+	int code = 0;
+
+	if ( level.team[team].numSpawns <= 0 )
+	{
+		code |= BaseStatus::NO_SPAWN;
+	}
+
+	if ( !main || Entities::IsDead(main) ) // dead and not in construction
+	{
+		code |= BaseStatus::NO_MAIN;
+	}
+	else if ( !main->spawned ) // dead but in construction
+	{
+		int creationTime = main->creationTime;
+		int buildDuration = G_GetBuildDuration(main);
+		int completionTime = creationTime + buildDuration;
+		int timeLeft = completionTime - level.time;
+		int timeLeftSecs = (int)roundf((float)timeLeft / 1000.0f);
+
+		code |= BaseStatus::MAIN_BUILDING;
+		code |= (timeLeftSecs & BaseStatus::TIME_LEFT_MASK);
+	}
+
+	return code;
+}
+
+/**
  * @return The distance of an entity to its own base or a huge value if the base is not found.
  *
  * Please keep it in sync with CG_DistanceToBase
