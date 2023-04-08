@@ -1279,7 +1279,7 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 	// frames for this new model
 	clientNum = ci - cgs.clientinfo;
 
-	for ( int num = 0; num <= cg_highestActiveEntity; num++ )
+	for ( int num = 0; num < MAX_CLIENTS; num++ )
 	{
 		centity_t *cent = &cg_entities[ num ];
 		if ( cent->currentState.clientNum == clientNum &&
