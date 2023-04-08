@@ -1,0 +1,137 @@
+selector
+{
+	behavior unstick
+
+	condition team == TEAM_HUMANS
+	{
+		selector
+		{
+			behavior use_medkit
+
+			sequence
+			{
+				condition alertedToEnemy
+				selector
+				{
+					decorator timer( 1000 )
+					{
+						selector
+						{
+							// defending reactor, or try to avoid being killed while healing (hence the different values)
+							// the isVisible check is here to prevent "defending" when enemies are detected by radars
+							condition ( ( distanceTo( E_H_REACTOR ) <= 300 || distanceTo( E_H_MEDISTAT ) <= 250 ) && isVisible( E_ENEMY ) )
+							{
+								action fight
+							}
+
+							sequence
+							{
+								condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
+								condition baseRushScore < 0.75
+								selector
+								{
+									decorator timer( 3000 )
+									{
+										action heal
+									}
+									action roamInRadius( E_H_MEDISTAT, 250 )
+								}
+							}
+						}
+					}
+
+					sequence
+					{
+						//if goal is a close enough enemy building or if we're gonna die
+						condition ( percentHealth( E_SELF ) < 0.3 || ( distanceTo( E_GOAL ) < 400 && goalType == ET_BUILDABLE ) )
+						condition ( distanceTo( E_FRIENDLYBUILDING ) > 400 )
+						selector
+						{
+							// no need to check the upgrade is in inventory, since action would fail
+							action activateUpgrade( UP_FIREBOMB )
+							action activateUpgrade( UP_GRENADE )
+						}
+					}
+					action fight
+				}
+			}
+
+			selector
+			{
+				sequence
+				{
+					condition healScore > 0.25
+					selector
+					{
+						decorator timer( 3000 )
+						{
+							action heal
+						}
+						action roamInRadius( E_H_MEDISTAT, 250 )
+					}
+				}
+			}
+
+			sequence
+			{
+				condition ( distanceTo( E_H_ARMOURY ) < 500 )
+				action equip
+			}
+
+			action follow( 250 )
+			action roam
+		}
+
+	}
+
+	condition team == TEAM_ALIENS
+	{
+		selector
+		{
+			condition ( aliveTime > 1500 && healScore < 0.5 )
+			{
+				action evolve
+			}
+
+			sequence
+			{
+				condition alertedToEnemy
+				selector
+				{
+					decorator timer( 1000 )
+					{
+						selector
+						{
+							sequence
+							{
+								condition alertedToEnemy
+								condition ( distanceTo( E_A_OVERMIND ) <= 100 || distanceTo( E_A_BOOSTER ) <= 100 )
+								action fight
+							}
+							sequence
+							{
+								condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
+								condition baseRushScore < 0.75
+								action heal
+							}
+						}
+					}
+
+					action fight
+				}
+			}
+
+			selector
+			{
+				sequence
+				{
+					condition healScore > 0.25
+					action heal
+				}
+			}
+
+			action follow( 250 )
+			action roam
+		}
+	}
+}
