@@ -105,7 +105,7 @@ public:
 					SetCvarValueAndFlags( cvar, GetValue() );
 				}
 
-				else if ( event == Rml::EventId::Change && type == "range" )
+				else if ( event == Rml::EventId::Change && !ignoreChangeEvent && type == "range" )
 				{
 					SetCvarValueAndFlags( cvar, GetValue() );
 				}
@@ -139,6 +139,11 @@ private:
 	{
 		if ( !type.empty() )
 		{
+			// A change event may be dispatched from inside SetAttribute. Ignore it to prevent spurious
+			// Cvar::Set calls. In particular this prevents a slider cvar from being clamped if it is
+			// outside the slider's range (in other cases the cvar setting is merely wasteful).
+			ignoreChangeEvent = true;
+
 			if ( type == "checkbox" )
 			{
 				bool result;
@@ -172,8 +177,9 @@ private:
 			{
 				SetValue( Cvar::GetValue( cvar.c_str() ).c_str() );
 			}
-		}
 
+			ignoreChangeEvent = false;
+		}
 	}
 
 	void SetCvarValueAndFlags( const Rml::String& cvar, Rml::String value )
@@ -194,6 +200,7 @@ private:
 	Rml::String cvar;
 	Rml::String type;
 	Rml::Element *owner;
+	bool ignoreChangeEvent = false;
 };
 
 #endif
