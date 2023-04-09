@@ -30,7 +30,8 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 repo_dir="$(realpath "${script_dir}/../..")"
 dpk_dir="${repo_dir}/pkg/unvanquished_src.dpkdir"
 pot_dir="${dpk_dir}/translation"
-pot_file="${pot_dir}/game.pot"
+main_pot_file="${pot_dir}/game.pot"
+commands_pot_file="${pot_dir}/commands.pot"
 
 temp_pot_file="$(mktemp)"
 
@@ -48,11 +49,18 @@ cd "${repo_dir}"
 	>> "${temp_pot_file}"
 
 find 'src/cgame' 'src/sgame' 'src/shared' \
-	-type f -name '*.c' -o -name '*.cpp' \
+	-name '*.cpp' -a ! -name sg_admin.cpp -a ! -name sg_cmds.cpp \
 | sort \
 | xgettext --from-code=UTF-8 \
 	-j -o "${temp_pot_file}" \
 	-k_ -kN_ -kP_:1,2 -k -f -
 
 mkdir -p "${pot_dir}"
-mv "${temp_pot_file}" "${pot_file}"
+mv "${temp_pot_file}" "${main_pot_file}"
+
+temp_pot_file="$(mktemp)"
+xgettext --from-code=UTF-8 \
+	-o "${temp_pot_file}" \
+	-k_ -kN_ -kP_:1,2 -k \
+	src/sgame/sg_admin.cpp src/sgame/sg_cmds.cpp
+mv "${temp_pot_file}" "${commands_pot_file}"
