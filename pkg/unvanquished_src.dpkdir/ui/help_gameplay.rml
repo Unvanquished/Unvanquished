@@ -55,8 +55,7 @@
 				<br />
 				<br />
 				<translate emoticons>When you are using more BP (Build Point) than the mining structures ([leech] Leech, [drill] Drill) are capable of providing (current BPs + BPs you will recover over time), buildables will power down until the other buildables have enough energy to remain operational.</translate>
-				<translate emoticons>Spawn structures ([egg] eggs and [telenode] telenodes), mining structures (leech and drill) and unique
-				structures ([overmind] overmind and [reactor] reactor) are NOT affected by the lack of BPs.</translate>
+				<translate emoticons>Spawn structures ([egg] eggs and [telenode] telenodes), mining structures (leech and drill) and unique structures ([overmind] overmind and [reactor] reactor) are NOT affected by the lack of BPs.</translate>
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/leech" />
@@ -126,9 +125,7 @@
 				<translate emoticons>Staying at an intermediate distance of the [overmind] overmind or [egg] eggs will give you some slightly improved healing too, although lower than creep. This can help defending bases.</translate>
 				<br />
 				<br />
-				<translate>Aliens have a third healing boost: proximity with other aliens. If you are near a friendly fellow alien, you
-				will heal slightly faster, and with two teammate, you will heal as fast as you would by touching an alien buildable. With some
-				teamwork, this is a great way to besiege enemies!</translate>
+				<translate>Aliens have a third healing boost: proximity with other aliens. If you are near a friendly fellow alien, you will heal slightly faster, and with two teammates, you will heal as fast as you would by touching an alien buildable. With some teamwork, this is a great way to besiege enemies!</translate>
 				<br />
 				<br />
 				<img class="emoticon" src="/emoticons/human" />

@@ -19,9 +19,7 @@
 				<translate>Welcome to Unvanquished</translate>
 				<br />
 				<br />
-				<translate>
-					Close this menu and click anywhere to join a team and begin playing!
-				</translate>
+				<translate>Close this menu and click anywhere to join a team and begin playing!</translate>
 			</panel>
 		</tabset>
 	</body>
