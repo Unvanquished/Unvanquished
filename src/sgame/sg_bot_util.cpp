@@ -1370,10 +1370,13 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->num(), MASK_SHOT, 0 );
 
-	return !G_OnSameTeam( self, &g_entities[trace.entityNum] )
-		&& G_Team( &g_entities[ trace.entityNum ] ) != TEAM_NONE
-		&& ( g_entities[trace.entityNum].s.eType != entityType_t::ET_BUILDABLE || g_bot_attackStruct.Get() )
-		&& glm::distance( muzzle, VEC2GLM( trace.endpos ) ) <= std::max( range, secondaryRange );
+	gentity_t const* hit = &g_entities[trace.entityNum];
+	bool hitEnemy = not ( G_OnSameTeam( self, hit ) || G_Team( hit ) == TEAM_NONE );
+	bool allowed = hit->s.eType != entityType_t::ET_BUILDABLE || g_bot_attackStruct.Get();
+	float dist = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
+	range = std::max( range, secondaryRange );
+
+	return hitEnemy && allowed && dist <= range;
 }
 
 bool BotEntityIsValidTarget( const gentity_t *ent )
