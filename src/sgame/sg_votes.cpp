@@ -969,11 +969,11 @@ static bool IsEscapedMarker( Str::StringRef s, size_t pos )
 
 // Use a custom escape to avoid issues with Cmd::Escape unintentionally terminating quotes
 // for strings based on user input.
-static std::string VoteEscape( Str::StringRef s, bool escape )
+static std::string VoteEscape( Str::StringRef s )
 {
-	if ( !escape )
+	if ( s.empty() )
 	{
-		return s;
+		return "";
 	}
 	std::string out;
 	out.reserve( s.size() * 2 );
@@ -992,13 +992,13 @@ static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, tea
                                          std::string& name, int clientNum, int id, bool escape )
 {
 	std::unordered_map<std::string, std::string> params = {
-		{ "team", BG_TeamNamePlural( team ) },
-		{ "arg", VoteEscape( arg, escape ) },
-		{ "reason", VoteEscape( reason, escape ) },
-		{ "name", VoteEscape( name, escape ) },
-		{ "slot", std::to_string( clientNum ) },
-		{ "namelogId", std::to_string( id ) },
-		{ "caller", VoteEscape( ent->client->pers.netname, escape ) },
+		{"team",       BG_TeamNamePlural( team )  },
+		{ "arg",       arg						},
+		{ "reason",    reason                     },
+		{ "name",      name					   },
+		{ "slot",      std::to_string( clientNum )},
+		{ "namelogId", std::to_string( id )       },
+		{ "caller",    ent->client->pers.netname  },
 	};
 	std::string out;
 	out.reserve( str.size() + arg.size() + reason.size() );
@@ -1014,7 +1014,8 @@ static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, tea
 			if ( e != std::string::npos )
 			{
 				out += str.substr( c, s - c );
-				out += Quote( Cmd::Escape( params[ str.substr( s + 1, e - s - 1 ).c_str() ] ) );
+				const auto& param = params[ str.substr( s + 1, e - s - 1 ) ];
+				out += Quote( Cmd::Escape( escape ? VoteEscape( param ) : param ) );
 				c = e + 1;
 			}
 			else

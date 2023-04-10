@@ -2265,7 +2265,7 @@ bool G_admin_readconfig( gentity_t *ent )
 	ADMP( va(
 		"%s %d %d %d %d %zi",
 		QQ( N_(
-			"^3readconfig:^* loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands $5$ votes" ) ),
+			"^3readconfig:^* loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands, $5$ votes" ) ),
 		lc, ac, bc, cc, g_admin_votes.size() ) );
 
 	if ( lc == 0 )
