@@ -1027,9 +1027,9 @@ void G_admin_writeconfig()
 		trap_FS_Write( "quorum             = ", 21, f );
 		admin_writeconfig_int( v.def.quorum, f );
 		trap_FS_Write( "type               = ", 21, f );
-		admin_writeconfig_string( VoteTypeString( v.def.type ).c_str(), f );
+		admin_writeconfig_string( G_VoteTypeString( v.def.type ).c_str(), f );
 		trap_FS_Write( "target             = ", 21, f );
-		admin_writeconfig_string( VoteTargetString( v.def.target ).c_str(), f );
+		admin_writeconfig_string( G_VoteTargetString( v.def.target ).c_str(), f );
 		trap_FS_Write( "vote               = ", 21, f );
 		admin_writeconfig_string( v.vote.c_str(), f );
 		trap_FS_Write( "display            = ", 21, f );
@@ -2224,7 +2224,7 @@ bool G_admin_readconfig( gentity_t *ent )
 			{
 				char type[ 15 ];
 				admin_readconfig_string( &cnf, type, sizeof( type ) );
-				if ( !ParseVoteType( type, &v->def.type ) )
+				if ( !G_ParseVoteType( type, &v->def.type ) )
 				{
 					COM_ParseError( "error parsing votetype: %s", type );
 				}
@@ -2233,7 +2233,7 @@ bool G_admin_readconfig( gentity_t *ent )
 			{
 				char type[ 15 ];
 				admin_readconfig_string( &cnf, type, sizeof( type ) );
-				if ( !ParseVoteTarget( type, &v->def.target ) )
+				if ( !G_ParseVoteTarget( type, &v->def.target ) )
 				{
 					COM_ParseError( "error parsing votetarget: %s", type );
 				}

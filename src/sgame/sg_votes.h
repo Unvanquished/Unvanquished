@@ -100,9 +100,9 @@ void G_HandleVote( gentity_t* ent );
 // See dist/configs/game/admin.dat for examples of votes.
 bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemplate,
                       std::string displayTemplate );
-bool ParseVoteType( Str::StringRef s, VoteType* type );
-Str::StringRef VoteTypeString( VoteType type );
-bool ParseVoteTarget( Str::StringRef s, VoteTarget* type );
-Str::StringRef VoteTargetString( VoteTarget type );
-bool ParseVoteOptions( Str::StringRef s, VoteOptions* type );
-Str::StringRef VoteOptionsString( VoteOptions type );
+bool G_ParseVoteType( Str::StringRef s, VoteType* type );
+Str::StringRef G_VoteTypeString( VoteType type );
+bool G_ParseVoteTarget( Str::StringRef s, VoteTarget* type );
+Str::StringRef G_VoteTargetString( VoteTarget type );
+bool G_ParseVoteOptions( Str::StringRef s, VoteOptions* type );
+Str::StringRef G_VoteOptionsString( VoteOptions type );
