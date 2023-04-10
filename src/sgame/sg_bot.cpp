@@ -281,7 +281,6 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 
 	if ( clientNum < 0 )
 	{
-		Log::Warn( "no more slots for bot" );
 		return false;
 	}
 	gentity_t *bot = &g_entities[ clientNum ];
