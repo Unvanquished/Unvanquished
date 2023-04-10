@@ -77,7 +77,7 @@ static bool HandleMuteVote( gentity_t* ent, team_t team, std::string& cmd, std::
 	if ( level.clients[ clientNum ].pers.namelog->muted )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "$1$: player is already muted" ) ), cmd.c_str() ) );
 		return false;
 	}
@@ -96,7 +96,7 @@ static bool HandleUnmuteVote( gentity_t* ent, team_t team, std::string& cmd, std
 	if ( !level.clients[ clientNum ].pers.namelog->muted )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "$1$: player is not currently muted" ) ), cmd.c_str() ) );
 		return false;
 	}
@@ -115,7 +115,7 @@ static bool HandleDenybuildVote( gentity_t* ent, team_t team, std::string& cmd, 
 	if ( level.clients[ clientNum ].pers.namelog->denyBuild )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "$1$: player already lost building rights" ) ),
 		        cmd.c_str() ) );
 		return false;
@@ -135,7 +135,7 @@ static bool HandleAllowbuildVote( gentity_t* ent, team_t team, std::string& cmd,
 	if ( !level.clients[ clientNum ].pers.namelog->denyBuild )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "$1$: player already has building rights" ) ),
 		        cmd.c_str() ) );
 		return false;
@@ -194,7 +194,7 @@ static bool HandleMapVote( gentity_t* ent, team_t team, std::string& cmd, std::s
 	if ( !G_MapExists( arg.c_str() ) )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s %s",
 		        QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ), cmd.c_str(),
 		        Quote( arg ) ) );
@@ -231,7 +231,7 @@ static bool HandleLayoutVote( gentity_t* ent, team_t team, std::string& cmd, std
 	if ( Q_stricmp( arg.c_str(), S_BUILTIN_LAYOUT ) &&
 	     !G_LayoutExists( Cvar::GetValue( "mapname" ), arg ) )
 	{
-		trap_SendServerCommand( ent - g_entities,
+		trap_SendServerCommand( ent->num(),
 		                        va( "print_tr %s %s",
 		                            QQ( N_( "callvote: "
 		                                    "layout '$1$' could not be found on the server" ) ),
@@ -253,7 +253,7 @@ static bool HandleNextMapVote( gentity_t* ent, team_t team, std::string& cmd, st
 	if ( G_MapExists( g_nextMap.Get().c_str() ) )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s %s", QQ( N_( "$1$: the next map is already set to '$2$'" ) ),
 		        cmd.c_str(), Quote( g_nextMap.Get().c_str() ) ) );
 		return false;
@@ -262,7 +262,7 @@ static bool HandleNextMapVote( gentity_t* ent, team_t team, std::string& cmd, st
 	if ( !G_MapExists( arg.c_str() ) )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s %s",
 		        QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ), cmd.c_str(),
 		        Quote( arg ) ) );
@@ -316,7 +316,7 @@ static bool HandleKickbotsVote( gentity_t* ent, team_t team, std::string& cmd, s
 	if ( i == MAX_CLIENTS )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "$1$: there are no active bots" ) ), cmd.c_str() ) );
 		return false;
 	}
@@ -335,7 +335,7 @@ static bool HandleFillBotsVote( gentity_t* ent, team_t team, std::string& cmd, s
 	if ( !botFillVoteParseArg( num, arg ) )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s %s",
 		        QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ), cmd.c_str(),
 		        std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
@@ -358,7 +358,7 @@ static bool HandleFillBotsHumanVote( gentity_t* ent, team_t team, std::string& c
 	if ( !botFillVoteParseArg( num, arg ) )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s %s",
 		        QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ), cmd.c_str(),
 		        std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
@@ -381,7 +381,7 @@ static bool HandleFillBotsAliensVote( gentity_t* ent, team_t team, std::string& 
 	if ( !botFillVoteParseArg( num, arg ) )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s %s",
 		        QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ), cmd.c_str(),
 		        std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
@@ -466,7 +466,7 @@ void G_HandleVote( gentity_t* ent )
 	if ( !g_allowVote.Get() )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "$1$: voting not allowed here" ) ), cmd.c_str() ) );
 		return;
 	}
@@ -474,7 +474,7 @@ void G_HandleVote( gentity_t* ent )
 	if ( level.team[ team ].voteTime )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "$1$: a vote is already in progress" ) ), cmd.c_str() ) );
 		return;
 	}
@@ -496,9 +496,9 @@ void G_HandleVote( gentity_t* ent )
 	{
 		bool added = false;
 
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_( "Invalid vote string" ) "\"" );
+		trap_SendServerCommand( ent->num(), "print_tr \"" N_( "Invalid vote string" ) "\"" );
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s", team == TEAM_NONE ? QQ( N_( "Valid vote commands are: " ) )
 		                                         : QQ( N_( "Valid team-vote commands are: " ) ) ) );
 		cmd.clear();
@@ -520,7 +520,7 @@ void G_HandleVote( gentity_t* ent )
 		}
 
 		cmd += "\"";
-		trap_SendServerCommand( ent - g_entities, cmd.c_str() );
+		trap_SendServerCommand( ent->num(), cmd.c_str() );
 		return;
 	}
 	const VoteDefinition& vi = it->second;
@@ -529,7 +529,7 @@ void G_HandleVote( gentity_t* ent )
 	     !G_admin_permission( ent, ADMF_NO_VOTE_LIMIT ) )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s %d",
 		        QQ( N_( "$1$: you have already called the maximum number of votes ($2$)" ) ),
 		        cmd.c_str(), g_voteLimit.Get() ) );
@@ -540,7 +540,7 @@ void G_HandleVote( gentity_t* ent )
 	if ( voteThreshold <= 0 || isDisabledVoteType( vote.c_str() ) )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "'$1$' votes have been disabled" ) ), vote.c_str() ) );
 		return;
 	}
@@ -560,7 +560,7 @@ void G_HandleVote( gentity_t* ent )
 			     level.matchTime >= ( vi.specialCvar->Get() * 60000 ) )
 			{
 				trap_SendServerCommand(
-					ent - g_entities,
+					ent->num(),
 					va( "print_tr %s %s %d",
 				        QQ( N_( "'$1$' votes are not allowed once $2$ minutes have passed" ) ),
 				        vote.c_str(), vi.specialCvar->Get() ) );
@@ -574,7 +574,7 @@ void G_HandleVote( gentity_t* ent )
 			     level.matchTime < ( vi.specialCvar->Get() * 60000 ) )
 			{
 				trap_SendServerCommand(
-					ent - g_entities,
+					ent->num(),
 					va( "print_tr %s %s %d",
 				        QQ( N_( "'$1$' votes are not allowed until $2$ minutes have passed" ) ),
 				        vote.c_str(), vi.specialCvar->Get() ) );
@@ -588,7 +588,7 @@ void G_HandleVote( gentity_t* ent )
 			     level.matchTime < ( level.timelimit - vi.specialCvar->Get() / 2 ) * 60000 )
 			{
 				trap_SendServerCommand(
-					ent - g_entities,
+					ent->num(),
 					va( "print_tr %s %s %d",
 				        QQ( N_(
 							"'$1$' votes are only allowed with less than $2$ minutes remaining" ) ),
@@ -635,7 +635,7 @@ void G_HandleVote( gentity_t* ent )
 		if ( !arg[ 0 ] )
 		{
 			trap_SendServerCommand(
-				ent - g_entities,
+				ent->num(),
 				va( "print_tr %s %s", QQ( N_( "$1$: no target" ) ), cmd.c_str() ) );
 			return;
 		}
@@ -655,7 +655,7 @@ void G_HandleVote( gentity_t* ent )
 		if ( g_entities[ clientNum ].r.svFlags & SVF_BOT )
 		{
 			trap_SendServerCommand(
-				ent - g_entities,
+				ent->num(),
 				va( "print_tr %s %s", QQ( N_( "$1$: player is a bot" ) ), cmd.c_str() ) );
 			return;
 		}
@@ -663,7 +663,7 @@ void G_HandleVote( gentity_t* ent )
 		if ( vi.adminImmune && G_admin_permission( g_entities + clientNum, ADMF_IMMUNITY ) )
 		{
 			trap_SendServerCommand(
-				ent - g_entities,
+				ent->num(),
 				va( "print_tr %s %s", QQ( N_( "$1$: admin is immune" ) ), cmd.c_str() ) );
 			G_AdminMessage( nullptr, va( "^7%s^3 attempted %s %s"
 			                             " on immune admin ^7%s"
@@ -677,7 +677,7 @@ void G_HandleVote( gentity_t* ent )
 		if ( level.clients[ clientNum ].pers.localClient )
 		{
 			trap_SendServerCommand(
-				ent - g_entities,
+				ent->num(),
 				va( "print_tr %s %s", QQ( N_( "$1$: admin is immune" ) ), cmd.c_str() ) );
 			return;
 		}
@@ -685,7 +685,7 @@ void G_HandleVote( gentity_t* ent )
 		if ( team != TEAM_NONE && ent->client->pers.team != level.clients[ clientNum ].pers.team )
 		{
 			trap_SendServerCommand(
-				ent - g_entities,
+				ent->num(),
 				va( "print_tr %s %s", QQ( N_( "$1$: player is not on your team" ) ),
 			        cmd.c_str() ) );
 			return;
@@ -697,7 +697,7 @@ void G_HandleVote( gentity_t* ent )
 	     !( vi.reasonFlag && vi.reasonFlag->Get() ) )
 	{
 		trap_SendServerCommand(
-			ent - g_entities,
+			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "$1$: You must provide a reason" ) ), cmd.c_str() ) );
 		return;
 	}
@@ -716,7 +716,7 @@ void G_HandleVote( gentity_t* ent )
 	}
 
 	G_LogPrintf( "%s: %d \"%s^*\": %s", team == TEAM_NONE ? "CallVote" : "CallTeamVote",
-	             (int)( ent - g_entities ), ent->client->pers.netname,
+	             (int)( ent->num() ), ent->client->pers.netname,
 	             level.team[ team ].voteString );
 
 	if ( team == TEAM_NONE )
