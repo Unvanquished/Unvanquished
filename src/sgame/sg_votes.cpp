@@ -115,9 +115,8 @@ static bool HandleDenybuildVote( gentity_t* ent, team_t team, std::string& cmd, 
 	if ( level.clients[ clientNum ].pers.namelog->denyBuild )
 	{
 		trap_SendServerCommand(
-			ent->num(),
-			va( "print_tr %s %s", QQ( N_( "$1$: player already lost building rights" ) ),
-		        cmd.c_str() ) );
+			ent->num(), va( "print_tr %s %s",
+		                    QQ( N_( "$1$: player already lost building rights" ) ), cmd.c_str() ) );
 		return false;
 	}
 
@@ -135,9 +134,8 @@ static bool HandleAllowbuildVote( gentity_t* ent, team_t team, std::string& cmd,
 	if ( !level.clients[ clientNum ].pers.namelog->denyBuild )
 	{
 		trap_SendServerCommand(
-			ent->num(),
-			va( "print_tr %s %s", QQ( N_( "$1$: player already has building rights" ) ),
-		        cmd.c_str() ) );
+			ent->num(), va( "print_tr %s %s", QQ( N_( "$1$: player already has building rights" ) ),
+		                    cmd.c_str() ) );
 		return false;
 	}
 
@@ -194,10 +192,9 @@ static bool HandleMapVote( gentity_t* ent, team_t team, std::string& cmd, std::s
 	if ( !G_MapExists( arg.c_str() ) )
 	{
 		trap_SendServerCommand(
-			ent->num(),
-			va( "print_tr %s %s %s",
-		        QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ), cmd.c_str(),
-		        Quote( arg ) ) );
+			ent->num(), va( "print_tr %s %s %s",
+		                    QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ),
+		                    cmd.c_str(), Quote( arg ) ) );
 		return false;
 	}
 
@@ -262,10 +259,9 @@ static bool HandleNextMapVote( gentity_t* ent, team_t team, std::string& cmd, st
 	if ( !G_MapExists( arg.c_str() ) )
 	{
 		trap_SendServerCommand(
-			ent->num(),
-			va( "print_tr %s %s %s",
-		        QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ), cmd.c_str(),
-		        Quote( arg ) ) );
+			ent->num(), va( "print_tr %s %s %s",
+		                    QQ( N_( "$1$: 'maps/$2$.bsp' could not be found on the server" ) ),
+		                    cmd.c_str(), Quote( arg ) ) );
 		return false;
 	}
 
@@ -335,10 +331,9 @@ static bool HandleFillBotsVote( gentity_t* ent, team_t team, std::string& cmd, s
 	if ( !botFillVoteParseArg( num, arg ) )
 	{
 		trap_SendServerCommand(
-			ent->num(),
-			va( "print_tr %s %s %s",
-		        QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ), cmd.c_str(),
-		        std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+			ent->num(), va( "print_tr %s %s %s",
+		                    QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ),
+		                    cmd.c_str(), std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
 		return false;
 	}
 
@@ -358,10 +353,9 @@ static bool HandleFillBotsHumanVote( gentity_t* ent, team_t team, std::string& c
 	if ( !botFillVoteParseArg( num, arg ) )
 	{
 		trap_SendServerCommand(
-			ent->num(),
-			va( "print_tr %s %s %s",
-		        QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ), cmd.c_str(),
-		        std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+			ent->num(), va( "print_tr %s %s %s",
+		                    QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ),
+		                    cmd.c_str(), std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
 		return false;
 	}
 
@@ -381,10 +375,9 @@ static bool HandleFillBotsAliensVote( gentity_t* ent, team_t team, std::string& 
 	if ( !botFillVoteParseArg( num, arg ) )
 	{
 		trap_SendServerCommand(
-			ent->num(),
-			va( "print_tr %s %s %s",
-		        QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ), cmd.c_str(),
-		        std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
+			ent->num(), va( "print_tr %s %s %s",
+		                    QQ( N_( "$1$: number must be non-negative and smaller than $2$" ) ),
+		                    cmd.c_str(), std::to_string( g_maxVoteFillBots.Get() + 1 ).c_str() ) );
 		return false;
 	}
 
@@ -635,8 +628,7 @@ void G_HandleVote( gentity_t* ent )
 		if ( !arg[ 0 ] )
 		{
 			trap_SendServerCommand(
-				ent->num(),
-				va( "print_tr %s %s", QQ( N_( "$1$: no target" ) ), cmd.c_str() ) );
+				ent->num(), va( "print_tr %s %s", QQ( N_( "$1$: no target" ) ), cmd.c_str() ) );
 			return;
 		}
 
@@ -685,9 +677,8 @@ void G_HandleVote( gentity_t* ent )
 		if ( team != TEAM_NONE && ent->client->pers.team != level.clients[ clientNum ].pers.team )
 		{
 			trap_SendServerCommand(
-				ent->num(),
-				va( "print_tr %s %s", QQ( N_( "$1$: player is not on your team" ) ),
-			        cmd.c_str() ) );
+				ent->num(), va( "print_tr %s %s", QQ( N_( "$1$: player is not on your team" ) ),
+			                    cmd.c_str() ) );
 			return;
 		}
 	}
@@ -716,8 +707,7 @@ void G_HandleVote( gentity_t* ent )
 	}
 
 	G_LogPrintf( "%s: %d \"%s^*\": %s", team == TEAM_NONE ? "CallVote" : "CallTeamVote",
-	             (int)( ent->num() ), ent->client->pers.netname,
-	             level.team[ team ].voteString );
+	             (int)( ent->num() ), ent->client->pers.netname, level.team[ team ].voteString );
 
 	if ( team == TEAM_NONE )
 	{
