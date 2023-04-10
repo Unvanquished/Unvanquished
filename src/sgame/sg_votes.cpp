@@ -1063,7 +1063,7 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 	return true;
 }
 
-bool ParseVoteType( Str::StringRef s, VoteType* type )
+bool G_ParseVoteType( Str::StringRef s, VoteType* type )
 {
 	static const std::unordered_map<std::string, VoteType, Str::IHash> map = {
 		{"V_ANY",     V_ANY   },
@@ -1079,7 +1079,7 @@ bool ParseVoteType( Str::StringRef s, VoteType* type )
 	return true;
 }
 
-Str::StringRef VoteTypeString( VoteType type )
+Str::StringRef G_VoteTypeString( VoteType type )
 {
 	switch ( type )
 	{
@@ -1093,7 +1093,7 @@ Str::StringRef VoteTypeString( VoteType type )
 	}
 }
 
-bool ParseVoteTarget( Str::StringRef s, VoteTarget* type )
+bool G_ParseVoteTarget( Str::StringRef s, VoteTarget* type )
 {
 	static const std::unordered_map<std::string, VoteTarget, Str::IHash> map = {
 		{"T_NONE",    T_NONE  },
@@ -1109,7 +1109,7 @@ bool ParseVoteTarget( Str::StringRef s, VoteTarget* type )
 	return true;
 }
 
-Str::StringRef VoteTargetString( VoteTarget type )
+Str::StringRef G_VoteTargetString( VoteTarget type )
 {
 	switch ( type )
 	{
@@ -1123,7 +1123,7 @@ Str::StringRef VoteTargetString( VoteTarget type )
 	}
 }
 
-bool ParseVoteOptions( Str::StringRef s, VoteOptions* type )
+bool G_ParseVoteOptions( Str::StringRef s, VoteOptions* type )
 {
 	static const std::unordered_map<std::string, VoteOptions, Str::IHash> map = {
 		{"VOTE_ALWAYS",   VOTE_ALWAYS },
@@ -1141,7 +1141,7 @@ bool ParseVoteOptions( Str::StringRef s, VoteOptions* type )
 	return true;
 }
 
-Str::StringRef VoteOptionsString( VoteOptions type )
+Str::StringRef G_VoteOptionsString( VoteOptions type )
 {
 	switch ( type )
 	{
