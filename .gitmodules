@@ -3,7 +3,7 @@
 	url = https://github.com/DaemonEngine/CBSE-Toolchain.git 
 [submodule "libs/recastnavigation"]
 	path = libs/recastnavigation
-	url = https://github.com/DaemonEngine/recastnavigation.git
+	url = https://github.com/Unvanquished/recastnavigation.git
 [submodule "daemon"]
 	path = daemon
 	url = https://github.com/DaemonEngine/Daemon.git
