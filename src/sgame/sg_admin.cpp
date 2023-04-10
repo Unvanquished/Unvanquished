@@ -1034,6 +1034,8 @@ void G_admin_writeconfig()
 		admin_writeconfig_string( v.vote.c_str(), f );
 		trap_FS_Write( "display            = ", 21, f );
 		admin_writeconfig_string( v.display.c_str(), f );
+		trap_FS_Write( "reasonNeeded       = ", 21, f );
+		admin_writeconfig_string( G_ReasonNeededString( v.def.reasonNeeded ).c_str(), f );
 	}
 
 	trap_FS_FCloseFile( f );
@@ -2249,6 +2251,15 @@ bool G_admin_readconfig( gentity_t *ent )
 				char display[ MAX_STRING_CHARS ];
 				admin_readconfig_string( &cnf, display, sizeof( display ) );
 				v->display = display;
+			}
+			else if ( !Q_stricmp( t, "reasonNeeded" ) )
+			{
+				char type[ 15 ];
+				admin_readconfig_string( &cnf, type, sizeof( type ) );
+				if ( !G_ParseReasonNeeded( type, &v->def.reasonNeeded ) )
+				{
+					COM_ParseError( "error parsing reasonNeeded: %s", type );
+				}
 			}
 			else
 			{

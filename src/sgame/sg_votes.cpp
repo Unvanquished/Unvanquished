@@ -1159,3 +1159,33 @@ Str::StringRef G_VoteOptionsString( VoteOptions type )
 			return "VOTE_ALWAYS";
 	}
 }
+
+bool G_ParseReasonNeeded( Str::StringRef s, qtrinary* tri )
+{
+	static const std::unordered_map<std::string, qtrinary, Str::IHash> map = {
+		{"yes",    qtrinary::qyes  },
+		{ "no",    qtrinary::qno   },
+		{ "maybe", qtrinary::qmaybe},
+	};
+	const auto& it = map.find( s );
+	if ( it == map.end() )
+	{
+		return false;
+	}
+	*tri = it->second;
+	return true;
+}
+
+Str::StringRef G_ReasonNeededString( qtrinary tri )
+{
+	switch ( tri )
+	{
+		case qtrinary::qyes:
+			return "yes";
+		case qtrinary::qmaybe:
+			return "maybe";
+		case qtrinary::qno:
+		default:
+			return "no";
+	}
+}

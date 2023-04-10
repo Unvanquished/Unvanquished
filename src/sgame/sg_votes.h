@@ -106,3 +106,5 @@ bool G_ParseVoteTarget( Str::StringRef s, VoteTarget* type );
 Str::StringRef G_VoteTargetString( VoteTarget type );
 bool G_ParseVoteOptions( Str::StringRef s, VoteOptions* type );
 Str::StringRef G_VoteOptionsString( VoteOptions type );
+bool G_ParseReasonNeeded( Str::StringRef s, qtrinary* tri );
+Str::StringRef G_ReasonNeededString( qtrinary tri );
