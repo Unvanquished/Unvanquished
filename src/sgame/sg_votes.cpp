@@ -985,8 +985,8 @@ static std::string VoteEscape( Str::StringRef s, bool escape )
 	return out;
 }
 
-// We only want to escape for commands that are executed. For display only, there is no injection concern,
-// so don't escape those.
+// We only want to escape for commands that are executed. For display only, there is no injection
+// concern, so don't escape those.
 static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, team_t team,
                                          std::string& cmd, std::string& arg, std::string& reason,
                                          std::string& name, int clientNum, int id, bool escape )
@@ -1066,9 +1066,9 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 bool ParseVoteType( Str::StringRef s, VoteType* type )
 {
 	static const std::unordered_map<std::string, VoteType> map = {
-		{ "V_ANY", V_ANY },
-		{ "V_TEAM", V_TEAM },
-		{ "V_PUBLIC", V_PUBLIC },
+		{"V_ANY",     V_ANY   },
+		{ "V_TEAM",   V_TEAM  },
+		{ "V_PUBLIC", V_PUBLIC},
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
@@ -1096,9 +1096,9 @@ Str::StringRef VoteTypeString( VoteType type )
 bool ParseVoteTarget( Str::StringRef s, VoteTarget* type )
 {
 	static const std::unordered_map<std::string, VoteTarget> map = {
-		{ "T_NONE", T_NONE },
-		{ "T_PLAYER", T_PLAYER },
-		{ "T_OTHER", T_OTHER },
+		{"T_NONE",    T_NONE  },
+		{ "T_PLAYER", T_PLAYER},
+		{ "T_OTHER",  T_OTHER },
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
@@ -1126,9 +1126,11 @@ Str::StringRef VoteTargetString( VoteTarget type )
 bool ParseVoteOptions( Str::StringRef s, VoteOptions* type )
 {
 	static const std::unordered_map<std::string, VoteOptions> map = {
-		{ "VOTE_ALWAYS", VOTE_ALWAYS },   { "VOTE_BEFORE", VOTE_BEFORE },
-		{ "VOTE_AFTER", VOTE_AFTER },     { "VOTE_REMAIN", VOTE_REMAIN },
-		{ "VOTE_NO_AUTO", VOTE_NO_AUTO },
+		{"VOTE_ALWAYS",   VOTE_ALWAYS },
+        { "VOTE_BEFORE",  VOTE_BEFORE },
+		{ "VOTE_AFTER",   VOTE_AFTER  },
+        { "VOTE_REMAIN",  VOTE_REMAIN },
+		{ "VOTE_NO_AUTO", VOTE_NO_AUTO},
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
