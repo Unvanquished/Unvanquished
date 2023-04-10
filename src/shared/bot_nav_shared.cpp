@@ -173,7 +173,7 @@ static void ParseOption( Str::StringRef name, Str::StringRef value, Str::StringR
 // cellheight 2.5
 NavgenConfig ReadNavgenConfig( Str::StringRef mapName )
 {
-	NavgenConfig config = NavgenConfig::Default();
+	NavgenConfig config;
 	std::string path = Str::Format( "maps/%s.navcfg", mapName );
 	int f;
 	int len = BG_FOpenGameOrPakPath( path, f );
@@ -241,7 +241,7 @@ std::string GetNavmeshHeader( fileHandle_t f, const NavgenConfig& config, NavMes
 		return "Map is different version";
 	}
 
-	if ( 0 != memcmp( &header.config, &config, sizeof(NavgenConfig) ) )
+	if ( header.config != config )
 	{
 		return "Navgen config changed";
 	}

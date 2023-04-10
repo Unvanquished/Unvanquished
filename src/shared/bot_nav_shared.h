@@ -79,16 +79,32 @@ enum navPolyAreas
 
 // Part of header which must contain 4-byte members only
 struct NavgenConfig {
-	float requestedCellHeight;
-	float stepSize;
-	int excludeCaulk; // boolean - exclude caulk surfaces
-	int excludeSky; // boolean - exclude surfaces with surfaceparm sky from navmesh generation
-	int filterGaps; // boolean - add new walkable spans so bots can walk over small gaps
-	int generatePatchTris; // boolean - generate triangles from the BSP's patches
-	float autojumpSecurity; // percentage - allow to use part of jump magnitude (with default gravity of 800) as stepsize. The result can not excess the agent's height, except if STEPSIZE is already doing it (then STEPSIZE will be used)
-	bool crouchSupport = true;
+	float requestedCellHeight = 2.f;
+	float stepSize = STEPSIZE;
+	float autojumpSecurity = 0.5f; // percentage - allow to use part of jump magnitude (with default gravity of 800) as stepsize. The result can not excess the agent's height, except if STEPSIZE is already doing it (then STEPSIZE will be used)
+	bool excludeCaulk = 1; // exclude caulk surfaces
+	bool excludeSky = 1; // exclude surfaces with surfaceparm sky from navmesh generation
+	bool filterGaps = 1; // add new walkable spans so bots can walk over small gaps
+	bool generatePatchTris = 1; // generate triangles from the BSP's patches
+	bool crouchSupport = true; // use crouchMaxs.z value instead of Maxs.z to compute paths
 
-	static NavgenConfig Default() { return { 2.0f, STEPSIZE, 1, 1, 1, 1, 0.5f }; }
+	bool operator==( NavgenConfig const& other ) const
+	{
+		return requestedCellHeight == other.requestedCellHeight
+			&& stepSize == other.stepSize
+			&& excludeCaulk == other.excludeCaulk
+			&& excludeSky == other.excludeSky
+			&& filterGaps == other.filterGaps
+			&& generatePatchTris == other.generatePatchTris
+			&& autojumpSecurity == other.autojumpSecurity
+			&& crouchSupport == other.crouchSupport
+			;
+	}
+
+	bool operator!=( NavgenConfig const& other ) const
+	{
+		return not ( *this == other );
+	}
 };
 
 struct NavgenMapIdentification
