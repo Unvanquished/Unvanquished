@@ -1065,7 +1065,7 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 
 bool ParseVoteType( Str::StringRef s, VoteType* type )
 {
-	static const std::unordered_map<std::string, VoteType> map = {
+	static const std::unordered_map<std::string, VoteType, Str::IHash> map = {
 		{"V_ANY",     V_ANY   },
 		{ "V_TEAM",   V_TEAM  },
 		{ "V_PUBLIC", V_PUBLIC},
@@ -1095,7 +1095,7 @@ Str::StringRef VoteTypeString( VoteType type )
 
 bool ParseVoteTarget( Str::StringRef s, VoteTarget* type )
 {
-	static const std::unordered_map<std::string, VoteTarget> map = {
+	static const std::unordered_map<std::string, VoteTarget, Str::IHash> map = {
 		{"T_NONE",    T_NONE  },
 		{ "T_PLAYER", T_PLAYER},
 		{ "T_OTHER",  T_OTHER },
@@ -1125,7 +1125,7 @@ Str::StringRef VoteTargetString( VoteTarget type )
 
 bool ParseVoteOptions( Str::StringRef s, VoteOptions* type )
 {
-	static const std::unordered_map<std::string, VoteOptions> map = {
+	static const std::unordered_map<std::string, VoteOptions, Str::IHash> map = {
 		{"VOTE_ALWAYS",   VOTE_ALWAYS },
         { "VOTE_BEFORE",  VOTE_BEFORE },
 		{ "VOTE_AFTER",   VOTE_AFTER  },
