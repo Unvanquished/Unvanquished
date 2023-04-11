@@ -84,8 +84,8 @@ static bool G_SkillPreferred( Str::StringRef behavior )
 	return G_GetPreferredSkillset().find( behavior ) != G_GetPreferredSkillset().end();
 }
 
-// aliens have 84 points to spend max, but we give them a bit less for balancing
-static int skillsetBudgetAliens = 80;
+// aliens have 67 points to spend max, but we give them a bit less for balancing
+static int skillsetBudgetAliens = 63;
 // humans have 48 points to spend max
 static int skillsetBudgetHumans = 48;
 
@@ -175,14 +175,14 @@ static const std::vector<botSkillTreeElement_t> movement_skills = {
 static const std::vector<botSkillTreeElement_t> survival_skills = {
 	// aliens
 	{ "safe-barbs",         BOT_A_SAFE_BARBS,            3, pred_alien, {} },
-	{ "a-fast-flee",        BOT_A_FAST_FLEE,             4, pred_always, {} },
+	{ "a-fast-flee",        BOT_A_FAST_FLEE,             7, pred_alien, {} },
 
 
 	// humans
 	{ "buy-modern-armor",   BOT_H_BUY_MODERN_ARMOR, 10, pred_human, {
 		{ "prefer-armor", BOT_H_PREFER_ARMOR, 5, pred_human, {} },
 	}},
-	{ "h-fast-flee",        BOT_H_FAST_FLEE,    4, pred_always, {} },
+	{ "h-fast-flee",        BOT_H_FAST_FLEE,    5, pred_human, {} },
 	{ "medkit",             BOT_H_MEDKIT,       8, pred_human, {} },
 };
 
