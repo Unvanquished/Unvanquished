@@ -1,6 +1,6 @@
 attacking
 {
-	"voice/human/attacking"
+	"voice/human/attacking.ogg"
 	{
 		team humans
 		class humans
@@ -8,7 +8,7 @@ attacking
 		enthusiasm 0
 	}
 
-	"voice/alien/attacking"
+	"voice/alien/attacking.ogg"
 	{
 		team aliens
 		class aliens
@@ -19,7 +19,7 @@ attacking
 
 attack
 {
-	"voice/human/attack"
+	"voice/human/attack.ogg"
 	{
 		team humans
 		class humans
@@ -27,7 +27,7 @@ attack
 		enthusiasm 0
 	}
 
-	"voice/alien/attack"
+	"voice/alien/attack.ogg"
 	{
 		team aliens
 		class aliens
@@ -38,7 +38,7 @@ attack
 
 backup
 {
-	"voice/human/backup"
+	"voice/human/backup.ogg"
 	{
 		team humans
 		class humans
@@ -46,7 +46,7 @@ backup
 		enthusiasm 0
 	}
 
-	"voice/alien/backup"
+	"voice/alien/backup.ogg"
 	{
 		team aliens
 		class aliens
@@ -57,7 +57,7 @@ backup
 
 baserepairs
 {
-	"voice/human/baserepairs"
+	"voice/human/baserepairs.ogg"
 	{
 		team humans
 		class humans
@@ -65,7 +65,7 @@ baserepairs
 		enthusiasm 0
 	}
 
-	"voice/alien/repairbase"
+	"voice/alien/repairbase.ogg"
 	{
 		team aliens
 		class aliens
@@ -76,7 +76,7 @@ baserepairs
 
 basestatus
 {
-	"voice/human/basestatus"
+	"voice/human/basestatus.ogg"
 	{
 		team humans
 		class humans
@@ -84,7 +84,7 @@ basestatus
 		enthusiasm 0
 	}
 
-	"voice/alien/basestatus"
+	"voice/alien/basestatus.ogg"
 	{
 		team aliens
 		class aliens
@@ -95,7 +95,7 @@ basestatus
 
 bequiet
 {
-	"voice/human/bequiet"
+	"voice/human/bequiet.ogg"
 	{
 		team humans
 		class humans
@@ -106,7 +106,7 @@ bequiet
 
 builders
 {
-	"voice/human/builders"
+	"voice/human/builders.ogg"
 	{
 		team humans
 		class humans
@@ -114,7 +114,7 @@ builders
 		enthusiasm 0
 	}
 
-	"voice/alien/builders"
+	"voice/alien/builders.ogg"
 	{
 		team aliens
 		class aliens
@@ -125,7 +125,7 @@ builders
 
 building
 {
-	"voice/human/building"
+	"voice/human/building.ogg"
 	{
 		team humans
 		class humans
@@ -133,7 +133,7 @@ building
 		enthusiasm 0
 	}
 
-	"voice/alien/building"
+	"voice/alien/building.ogg"
 	{
 		team aliens
 		class aliens
@@ -144,7 +144,7 @@ building
 
 clearthepath
 {
-	"voice/human/clearthepath"
+	"voice/human/clearthepath.ogg"
 	{
 		team humans
 		class humans
@@ -152,7 +152,7 @@ clearthepath
 		enthusiasm 0
 	}
 
-	"voice/alien/clearthepath"
+	"voice/alien/clearthepath.ogg"
 	{
 		team aliens
 		class aliens
@@ -163,7 +163,7 @@ clearthepath
 
 defending
 {
-	"voice/human/defending"
+	"voice/human/defending.ogg"
 	{
 		team humans
 		class humans
@@ -171,7 +171,7 @@ defending
 		enthusiasm 0
 	}
 
-	"voice/alien/defending"
+	"voice/alien/defending.ogg"
 	{
 		team aliens
 		class aliens
@@ -182,7 +182,7 @@ defending
 
 defend
 {
-	"voice/human/defend"
+	"voice/human/defend.ogg"
 	{
 		team humans
 		class humans
@@ -190,7 +190,7 @@ defend
 		enthusiasm 0
 	}
 
-	"voice/alien/defend"
+	"voice/alien/defend.ogg"
 	{
 		team aliens
 		class aliens
@@ -201,7 +201,7 @@ defend
 
 eggs
 {
-	"voice/alien/eggs"
+	"voice/alien/eggs.ogg"
 	{
 		team aliens
 		class aliens
@@ -212,7 +212,7 @@ eggs
 
 enemyisnear
 {
-	"voice/human/enemynearby"
+	"voice/human/enemynearby.ogg"
 	{
 		team humans
 		class humans
@@ -220,7 +220,7 @@ enemyisnear
 		enthusiasm 0
 	}
 
-	"voice/alien/enemyisnear"
+	"voice/alien/enemyisnear.ogg"
 	{
 		team aliens
 		class aliens
@@ -231,7 +231,7 @@ enemyisnear
 
 enemyomdown
 {
-	"voice/human/enemyomdown"
+	"voice/human/enemyomdown.ogg"
 	{
 		team humans
 		class humans
@@ -242,7 +242,7 @@ enemyomdown
 
 enemyspawnsdown
 {
-	"voice/human/enemyspawnsdown"
+	"voice/human/enemyspawnsdown.ogg"
 	{
 		team humans
 		class humans
@@ -250,7 +250,7 @@ enemyspawnsdown
 		enthusiasm 0
 	}
 
-	"voice/alien/enemyspawnsdown"
+	"voice/alien/enemyspawnsdown.ogg"
 	{
 		team aliens
 		class aliens
@@ -261,7 +261,7 @@ enemyspawnsdown
 
 enemynodesdown
 {
-	"voice/alien/enemynodesdown"
+	"voice/alien/enemynodesdown.ogg"
 	{
 		team aliens
 		class aliens
@@ -272,7 +272,7 @@ enemynodesdown
 
 enemyterritory
 {
-	"voice/alien/enemyterritory"
+	"voice/alien/enemyterritory.ogg"
 	{
 		team aliens
 		class aliens
@@ -283,7 +283,7 @@ enemyterritory
 
 fallback
 {
-	"voice/human/fallback"
+	"voice/human/fallback.ogg"
 	{
 		team humans
 		class humans
@@ -291,7 +291,7 @@ fallback
 		enthusiasm 0
 	}
 
-	"voice/alien/fallback"
+	"voice/alien/fallback.ogg"
 	{
 		team aliens
 		class aliens
@@ -302,7 +302,7 @@ fallback
 
 fixbase
 {
-	"voice/alien/fixbase"
+	"voice/alien/fixbase.ogg"
 	{
 		team aliens
 		class aliens
@@ -313,7 +313,7 @@ fixbase
 
 flank
 {
-	"voice/human/flank"
+	"voice/human/flank.ogg"
 	{
 		team humans
 		class humans
@@ -321,7 +321,7 @@ flank
 		enthusiasm 0
 	}
 
-	"voice/alien/flank"
+	"voice/alien/flank.ogg"
 	{
 		team aliens
 		class aliens
@@ -332,7 +332,7 @@ flank
 
 following
 {
-	"voice/human/following"
+	"voice/human/following.ogg"
 	{
 		team humans
 		class humans
@@ -340,7 +340,7 @@ following
 		enthusiasm 0
 	}
 
-	"voice/alien/following"
+	"voice/alien/following.ogg"
 	{
 		team aliens
 		class aliens
@@ -351,7 +351,7 @@ following
 
 followme
 {
-	"voice/human/followme"
+	"voice/human/followme.ogg"
 	{
 		team humans
 		class humans
@@ -359,7 +359,7 @@ followme
 		enthusiasm 0
 	}
 
-	"voice/alien/followme"
+	"voice/alien/followme.ogg"
 	{
 		team aliens
 		class aliens
@@ -370,7 +370,7 @@ followme
 
 gogogo
 {
-	"voice/human/gogogo"
+	"voice/human/gogogo.ogg"
 	{
 		team humans
 		class humans
@@ -378,7 +378,7 @@ gogogo
 		enthusiasm 0
 	}
 
-	"voice/alien/gogogo"
+	"voice/alien/gogogo.ogg"
 	{
 		team aliens
 		class aliens
@@ -389,7 +389,7 @@ gogogo
 
 grangers
 {
-	"voice/alien/grangers"
+	"voice/alien/grangers.ogg"
 	{
 		team aliens
 		class aliens
@@ -400,7 +400,7 @@ grangers
 
 grenade
 {
-	"voice/human/grenade"
+	"voice/human/grenade.ogg"
 	{
 		team humans
 		class humans
@@ -408,7 +408,7 @@ grenade
 		enthusiasm 0
 	}
 
-	"voice/alien/grenade"
+	"voice/alien/grenade.ogg"
 	{
 		team aliens
 		class aliens
@@ -419,7 +419,7 @@ grenade
 
 holdback
 {
-	"voice/human/holdback"
+	"voice/human/holdback.ogg"
 	{
 		team humans
 		class humans
@@ -427,7 +427,7 @@ holdback
 		enthusiasm 0
 	}
 
-	"voice/alien/holdback"
+	"voice/alien/holdback.ogg"
 	{
 		team aliens
 		class aliens
@@ -438,7 +438,7 @@ holdback
 
 holdposition
 {
-	"voice/human/holdposition"
+	"voice/human/holdposition.ogg"
 	{
 		team humans
 		class humans
@@ -446,7 +446,7 @@ holdposition
 		enthusiasm 0
 	}
 
-	"voice/alien/holdposition"
+	"voice/alien/holdposition.ogg"
 	{
 		team aliens
 		class aliens
@@ -457,7 +457,7 @@ holdposition
 
 incoming
 {
-	"voice/human/incoming"
+	"voice/human/incoming.ogg"
 	{
 		team humans
 		class humans
@@ -465,7 +465,7 @@ incoming
 		enthusiasm 0
 	}
 
-	"voice/alien/incoming"
+	"voice/alien/incoming.ogg"
 	{
 		team aliens
 		class aliens
@@ -476,7 +476,7 @@ incoming
 
 inposition
 {
-	"voice/human/inposition"
+	"voice/human/inposition.ogg"
 	{
 		team humans
 		class humans
@@ -487,7 +487,7 @@ inposition
 
 moveup
 {
-	"voice/human/moveup"
+	"voice/human/moveup.ogg"
 	{
 		team humans
 		class humans
@@ -495,7 +495,7 @@ moveup
 		enthusiasm 0
 	}
 
-	"voice/alien/moveup"
+	"voice/alien/moveup.ogg"
 	{
 		team aliens
 		class aliens
@@ -506,7 +506,7 @@ moveup
 
 mowemdown
 {
-	"voice/human/mowemdown"
+	"voice/human/mowemdown.ogg"
 	{
 		team humans
 		class humans
@@ -517,7 +517,7 @@ mowemdown
 
 needammo
 {
-	"voice/human/needammo"
+	"voice/human/needammo.ogg"
 	{
 		team humans
 		class aliens
@@ -528,7 +528,7 @@ needammo
 
 needhealth
 {
-	"voice/human/needhealth"
+	"voice/human/needhealth.ogg"
 	{
 		team humans
 		class humans
@@ -536,7 +536,7 @@ needhealth
 		enthusiasm 0
 	}
 
-	"voice/alien/needhealth"
+	"voice/alien/needhealth.ogg"
 	{
 		team aliens
 		class aliens
@@ -547,7 +547,7 @@ needhealth
 
 no
 {
-	"voice/human/no"
+	"voice/human/no.ogg"
 	{
 		team humans
 		class humans
@@ -555,7 +555,7 @@ no
 		enthusiasm 0
 	}
 
-	"voice/alien/no"
+	"voice/alien/no.ogg"
 	{
 		team aliens
 		class aliens
@@ -566,7 +566,7 @@ no
 
 rebuildbase
 {
-	"voice/alien/rebuildbase"
+	"voice/alien/rebuildbase.ogg"
 	{
 		team aliens
 		class aliens
@@ -577,7 +577,7 @@ rebuildbase
 
 regroup
 {
-	"voice/human/regroup"
+	"voice/human/regroup.ogg"
 	{
 		team humans
 		class humans
@@ -585,7 +585,7 @@ regroup
 		enthusiasm 0
 	}
 
-	"voice/alien/regroup"
+	"voice/alien/regroup.ogg"
 	{
 		team aliens
 		class aliens
@@ -596,7 +596,7 @@ regroup
 
 reporting
 {
-	"voice/human/reporting"
+	"voice/human/reporting.ogg"
 	{
 		team humans
 		class humans
@@ -604,7 +604,7 @@ reporting
 		enthusiasm 0
 	}
 
-	"voice/alien/reportingin"
+	"voice/alien/reportingin.ogg"
 	{
 		team aliens
 		class aliens
@@ -615,7 +615,7 @@ reporting
 
 retreat
 {
-	"voice/human/retreat"
+	"voice/human/retreat.ogg"
 	{
 		team humans
 		class humans
@@ -626,7 +626,7 @@ retreat
 
 silence
 {
-	"voice/alien/silence"
+	"voice/alien/silence.ogg"
 	{
 		team aliens
 		class aliens
@@ -637,7 +637,7 @@ silence
 
 sorry
 {
-	"voice/human/sorry"
+	"voice/human/sorry.ogg"
 	{
 		team humans
 		class humans
@@ -645,7 +645,7 @@ sorry
 		enthusiasm 0
 	}
 
-	"voice/alien/sorry"
+	"voice/alien/sorry.ogg"
 	{
 		team aliens
 		class aliens
@@ -656,7 +656,7 @@ sorry
 
 spawns
 {
-	"voice/human/spawns"
+	"voice/human/spawns.ogg"
 	{
 		team humans
 		class humans
@@ -664,7 +664,7 @@ spawns
 		enthusiasm 0
 	}
 
-	"voice/alien/spawns"
+	"voice/alien/spawns.ogg"
 	{
 		team aliens
 		class aliens
@@ -675,7 +675,7 @@ spawns
 
 stayalert
 {
-	"voice/human/stayalert"
+	"voice/human/stayalert.ogg"
 	{
 		team humans
 		class humans
@@ -683,7 +683,7 @@ stayalert
 		enthusiasm 0
 	}
 
-	"voice/alien/stayalert"
+	"voice/alien/stayalert.ogg"
 	{
 		team aliens
 		class aliens
@@ -694,7 +694,7 @@ stayalert
 
 stayalive
 {
-	"voice/human/stayalive"
+	"voice/human/stayalive.ogg"
 	{
 		team humans
 		class humans
@@ -702,7 +702,7 @@ stayalive
 		enthusiasm 0
 	}
 
-	"voice/alien/stayalive"
+	"voice/alien/stayalive.ogg"
 	{
 		team aliens
 		class aliens
@@ -713,7 +713,7 @@ stayalive
 
 stayfocused
 {
-	"voice/human/stayfocused"
+	"voice/human/stayfocused.ogg"
 	{
 		team humans
 		class humans
@@ -721,7 +721,7 @@ stayfocused
 		enthusiasm 0
 	}
 
-	"voice/alien/stayfocused"
+	"voice/alien/stayfocused.ogg"
 	{
 		team aliens
 		class aliens
@@ -732,7 +732,7 @@ stayfocused
 
 sticktogether
 {
-	"voice/human/sticktogether"
+	"voice/human/sticktogether.ogg"
 	{
 		team humans
 		class humans
@@ -740,7 +740,7 @@ sticktogether
 		enthusiasm 0
 	}
 
-	"voice/alien/sticktogether"
+	"voice/alien/sticktogether.ogg"
 	{
 		team aliens
 		class aliens
@@ -751,7 +751,7 @@ sticktogether
 
 thanks
 {
-	"voice/human/thanks"
+	"voice/human/thanks.ogg"
 	{
 		team humans
 		class humans
@@ -759,7 +759,7 @@ thanks
 		enthusiasm 0
 	}
 
-	"voice/alien/thanks"
+	"voice/alien/thanks.ogg"
 	{
 		team aliens
 		class aliens
@@ -770,7 +770,7 @@ thanks
 
 watchout
 {
-	"voice/human/watchout"
+	"voice/human/watchout.ogg"
 	{
 		team humans
 		class humans
@@ -781,7 +781,7 @@ watchout
 
 yes
 {
-	"voice/human/yes"
+	"voice/human/yes.ogg"
 	{
 		team humans
 		class humans
@@ -789,7 +789,7 @@ yes
 		enthusiasm 0
 	}
 
-	"voice/alien/yes"
+	"voice/alien/yes.ogg"
 	{
 		team aliens
 		class aliens

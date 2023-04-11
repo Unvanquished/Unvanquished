@@ -67,8 +67,8 @@
 
 							<h2> Bots </h2>
 							<indent>
-								<blocklink onClick='Events.pushevent("exec bot add * aliens", event)'> Add an alien bot </blocklink>
-								<blocklink onClick='Events.pushevent("exec bot add * humans", event)'> Add a human bot </blocklink>
+								<blocklink onClick='Events.pushevent("exec bot add Lavishment aliens", event)'> Add an alien bot </blocklink>
+								<blocklink onClick='Events.pushevent("exec bot add Pulsifer humans", event)'> Add a human bot </blocklink>
 								<blocklink onClick='Events.pushevent("exec bot del all", event)'> Remove all bots </blocklink>
 							</indent>
 
