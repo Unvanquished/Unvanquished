@@ -118,6 +118,16 @@ if (BUILD_SGAME OR BUILD_CGAME)
                         ${LIB_DIR}/recastnavigation/DetourCrowd/Include)
 
     # Recast
+    set(RC_MAX_LAYERS 63 CACHE STRING "Must be 255 or smaller.")
+    set(RC_MAX_NEIS 16 CACHE STRING "")
+
+    if (RC_MAX_LAYERS GREATER 255)
+        message(FATAL_ERROR "RC_MAX_LAYERS must be 255 or smaller")
+    endif()
+
+    add_definitions(-DRC_MAX_LAYERS_DEF=${RC_MAX_LAYERS})
+    add_definitions(-DRC_MAX_NEIS_DEF=${RC_MAX_NEIS})
+
     add_library(srclibs-recast EXCLUDE_FROM_ALL ${RECASTLIST})
     set_target_properties(srclibs-recast PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
     include_directories(
