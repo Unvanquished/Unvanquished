@@ -49,7 +49,10 @@ cd "${repo_dir}"
 	>> "${temp_pot_file}"
 
 find 'src/cgame' 'src/sgame' 'src/shared' \
-	-name '*.cpp' -a ! -name sg_admin.cpp -a ! -name sg_cmds.cpp \
+	-name '*.cpp' \
+	-a ! -name sg_admin.cpp \
+	-a ! -name sg_cmds.cpp \
+	-a ! -name sg_maprotation.cpp \
 | sort \
 | xgettext --from-code=UTF-8 \
 	-j -o "${temp_pot_file}" \
@@ -62,5 +65,8 @@ temp_pot_file="$(mktemp)"
 xgettext --from-code=UTF-8 \
 	-o "${temp_pot_file}" \
 	-k_ -kN_ -kP_:1,2 -k \
-	src/sgame/sg_admin.cpp src/sgame/sg_cmds.cpp
+	src/sgame/sg_admin.cpp \
+	src/sgame/sg_cmds.cpp \
+	sg_maprotation.cpp
+
 mv "${temp_pot_file}" "${commands_pot_file}"
