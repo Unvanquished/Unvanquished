@@ -65,8 +65,8 @@ static void G_BotListTeamNames( gentity_t *ent, const char *heading, team_t team
 
 void G_BotListNames( gentity_t *ent )
 {
-	G_BotListTeamNames( ent, QQ( N_( "^3Alien bot names:" ) ), TEAM_ALIENS, "^1*" );
-	G_BotListTeamNames( ent, QQ( N_( "^3Human bot names:" ) ), TEAM_HUMANS, "^5*" );
+	G_BotListTeamNames( ent, QQ( "^3" N_( "Alien bot names:" ) ), TEAM_ALIENS, "^1*" );
+	G_BotListTeamNames( ent, QQ( "^3" N_( "Human bot names:" ) ), TEAM_HUMANS, "^5*" );
 }
 
 bool G_BotClearNames()

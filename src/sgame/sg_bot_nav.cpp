@@ -150,7 +150,7 @@ void G_BotBackgroundNavgen()
 
 		if ( navMeshLoaded == navMeshStatus_t::LOAD_FAILED )
 		{
-			trap_SendServerCommand( -1, "print_tr " QQ( N_( "^1Bot navmesh generation failed!" ) ) );
+			trap_SendServerCommand( -1, "print_tr " QQ( "^1" N_( "Bot navmesh generation failed!" ) ) );
 			G_BotDelAllBots();
 		}
 		else
