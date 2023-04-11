@@ -137,83 +137,93 @@ struct botSkillTreeElement_t {
 	Str::StringRef name;
 	bot_skill skill;
 	int cost;
-	// function that determines if this skill is available
-	std::function<bool(const gentity_t *self, skillSet_t existing_skills)> predicate;
-	// skills that are unlocked once you unlock this one
-	std::vector<botSkillTreeElement_t> unlocked_skills;
+	team_t allowed_teams; // TEAM_NONE means that the skill is available for every team
+	skillSet_t prerequisite; // This skill needs ONE OF those prerequisite to be selectable
 };
 
-static bool pred_always(const gentity_t *self, skillSet_t existing_skills)
+// used as a convenience function to build the "prerequisite" bitset
+static skillSet_t needs_one_of(std::initializer_list<bot_skill> skills)
 {
-	Q_UNUSED(self);
-	Q_UNUSED(existing_skills);
-	return true;
+	skillSet_t sum(0);
+	for (bot_skill skill : skills)
+	{
+		sum[skill] = true;
+	}
+	return sum;
 }
 
-static bool pred_alien(const gentity_t *self, skillSet_t existing_skills)
+
+static const std::vector<botSkillTreeElement_t> skillTree =
 {
-	Q_UNUSED(existing_skills);
-	return G_Team(self) == TEAM_ALIENS;
-}
+	////
+	// Basic "categories". They bring no or almost no benefit. They
+	// are here to encourage the bot to specialise in a "field"
+	////
 
-static bool pred_human(const gentity_t *self, skillSet_t existing_skills)
-{
-	Q_UNUSED(existing_skills);
-	return G_Team(self) == TEAM_HUMANS;
-}
-
-static const std::vector<botSkillTreeElement_t> movement_skills = {
-	// aliens
-	{ "strafe-attack",      BOT_A_STRAFE_ON_ATTACK,      6, pred_alien, {} },
-	{ "small-attack-jump",  BOT_A_SMALL_JUMP_ON_ATTACK,  5, pred_alien, {} },
-	{ "mara-attack-jump",   BOT_A_MARA_JUMP_ON_ATTACK,   5, pred_alien, {} },
-	{ "mantis-attack-jump", BOT_A_LEAP_ON_ATTACK,        3, pred_alien, {} },
-	{ "goon-attack-jump",   BOT_A_POUNCE_ON_ATTACK,      5, pred_alien, {} },
-	{ "tyrant-attack-run",  BOT_A_TYRANT_CHARGE_ON_ATTACK, 5, pred_alien, {} },
-};
-
-static const std::vector<botSkillTreeElement_t> survival_skills = {
-	// aliens
-	{ "safe-barbs",         BOT_A_SAFE_BARBS,            3, pred_alien, {} },
-	{ "a-fast-flee",        BOT_A_FAST_FLEE,             7, pred_alien, {} },
-
-
-	// humans
-	{ "buy-modern-armor",   BOT_H_BUY_MODERN_ARMOR, 10, pred_human, {
-		{ "prefer-armor", BOT_H_PREFER_ARMOR, 5, pred_human, {} },
-	}},
-	{ "h-fast-flee",        BOT_H_FAST_FLEE,    5, pred_human, {} },
-	{ "medkit",             BOT_H_MEDKIT,       8, pred_human, {} },
-};
-
-static const std::vector<botSkillTreeElement_t> fighting_skills = {
-	{ "fast-aim",           BOT_B_FAST_AIM,      8,  pred_always, {} },
-
-	// aliens
-	{ "aim-head",           BOT_A_AIM_HEAD,      10, pred_alien, {} },
-	{ "aim-barbs",          BOT_A_AIM_BARBS,     7,  pred_alien, {} },
-
-	// humans
-	{ "predict-aim",        BOT_H_PREDICTIVE_AIM, 5, pred_human, {} },
-};
-
-static const std::vector<botSkillTreeElement_t> initial_unlockable_skills = {
 	// movement skills
-	{ "movement", BOT_B_BASIC_MOVEMENT, 2, pred_always, movement_skills },
+	{ "movement",           BOT_B_BASIC_MOVEMENT,          2,  TEAM_NONE, 0 },
 	// fighting skills
-	{ "fighting", BOT_B_BASIC_FIGHT, 3, pred_always, fighting_skills },
+	{ "fighting",           BOT_B_BASIC_FIGHT,             3,  TEAM_NONE, 0 },
 	// situation awareness and survival
-	{ "feels-pain", BOT_B_PAIN, 2, pred_always, survival_skills },
+	{ "feels-pain",         BOT_B_PAIN,                    2,  TEAM_NONE, 0 },
+
+
+	////
+	// Movement skills
+	////
+
+	// aliens
+	{ "strafe-attack",      BOT_A_STRAFE_ON_ATTACK,        6,  TEAM_ALIENS, needs_one_of({BOT_B_BASIC_MOVEMENT}) },
+	{ "small-attack-jump",  BOT_A_SMALL_JUMP_ON_ATTACK,    5,  TEAM_ALIENS, needs_one_of({BOT_B_BASIC_MOVEMENT}) },
+	{ "mara-attack-jump",   BOT_A_MARA_JUMP_ON_ATTACK,     5,  TEAM_ALIENS, needs_one_of({BOT_B_BASIC_MOVEMENT}) },
+	{ "mantis-attack-jump", BOT_A_LEAP_ON_ATTACK,          3,  TEAM_ALIENS, needs_one_of({BOT_B_BASIC_MOVEMENT}) },
+	{ "goon-attack-jump",   BOT_A_POUNCE_ON_ATTACK,        5,  TEAM_ALIENS, needs_one_of({BOT_B_BASIC_MOVEMENT}) },
+	{ "tyrant-attack-run",  BOT_A_TYRANT_CHARGE_ON_ATTACK, 5,  TEAM_ALIENS, needs_one_of({BOT_B_BASIC_MOVEMENT}) },
+
+
+	////
+	// Survival skills
+	////
+
+	// aliens
+	{ "safe-barbs",         BOT_A_SAFE_BARBS,              3,  TEAM_ALIENS, needs_one_of({BOT_B_PAIN}) },
+	{ "a-fast-flee",        BOT_A_FAST_FLEE,               7,  TEAM_ALIENS, needs_one_of({BOT_B_PAIN}) },
+
+	// humans
+	{ "buy-modern-armor",   BOT_H_BUY_MODERN_ARMOR,        10, TEAM_HUMANS, needs_one_of({BOT_B_PAIN}) },
+	{ "prefer-armor",       BOT_H_PREFER_ARMOR,            5,  TEAM_HUMANS, needs_one_of({BOT_H_BUY_MODERN_ARMOR}) },
+	{ "h-fast-flee",        BOT_H_FAST_FLEE,               5,  TEAM_HUMANS, needs_one_of({BOT_B_PAIN}) },
+	{ "medkit",             BOT_H_MEDKIT,                  8,  TEAM_HUMANS, needs_one_of({BOT_B_PAIN}) },
+
+
+	////
+	// Fighting skills
+	////
+
+	{ "fast-aim",           BOT_B_FAST_AIM,                8,  TEAM_NONE,   needs_one_of({BOT_B_BASIC_FIGHT}) },
+
+	// aliens
+	{ "aim-head",           BOT_A_AIM_HEAD,                10, TEAM_ALIENS, needs_one_of({BOT_B_BASIC_FIGHT}) },
+	{ "aim-barbs",          BOT_A_AIM_BARBS,               7,  TEAM_ALIENS, needs_one_of({BOT_B_BASIC_FIGHT}) },
+
+	// humans
+	{ "predict-aim",        BOT_H_PREDICTIVE_AIM,          5,  TEAM_HUMANS, needs_one_of({BOT_B_BASIC_FIGHT}) },
 };
 
-// Note: this function modifies possible_choices to remove the one we just
-//       chose, and add the new unlocked skills to that list.
-static Util::optional<botSkillTreeElement_t> ChooseOneSkill(const gentity_t *bot, skillSet_t skillSet, std::vector<botSkillTreeElement_t> &possible_choices, std::mt19937_64& rng)
+static bool SkillIsAvailable(const botSkillTreeElement_t &skill, team_t team, skillSet_t activated_skills)
+{
+	return !G_SkillDisabled(skill.name)
+		&& (skill.allowed_teams == TEAM_NONE || skill.allowed_teams == team) // and correspond to our team
+		&& (skill.prerequisite == 0 || (activated_skills & skill.prerequisite) != 0); // and has one of the prerequisites matching, if any
+}
+
+// Note: this function modifies possible_choices to remove the one we just chose.
+static Util::optional<botSkillTreeElement_t> ChooseOneSkill(team_t team, skillSet_t skillSet, std::vector<botSkillTreeElement_t> &possible_choices, std::mt19937_64& rng)
 {
 	int total_skill_points = 0;
 	for (const auto &skill : possible_choices)
 	{
-		if (skill.predicate(bot, skillSet))
+		if (SkillIsAvailable(skill, team, skillSet))
 		{
 			total_skill_points += skill.cost;
 		}
@@ -230,7 +240,7 @@ static Util::optional<botSkillTreeElement_t> ChooseOneSkill(const gentity_t *bot
 	int cursor = 0;
 	for (auto skill = possible_choices.begin(); skill != possible_choices.end(); skill++)
 	{
-		if (!skill->predicate(bot, skillSet))
+		if (!SkillIsAvailable(*skill, team, skillSet))
 		{
 			continue;
 		}
@@ -238,17 +248,9 @@ static Util::optional<botSkillTreeElement_t> ChooseOneSkill(const gentity_t *bot
 		cursor += skill->cost;
 		if (random < cursor)
 		{
-			botSkillTreeElement_t result = *skill;
-
-			// update the list of future choices
+			botSkillTreeElement_t choice = *skill;
 			possible_choices.erase(skill);
-			for (const auto &child : result.unlocked_skills)
-			{
-				possible_choices.push_back(std::move(child));
-			}
-			result.unlocked_skills.clear();
-
-			return result;
+			return choice;
 		}
 	}
 	return Util::nullopt;
@@ -271,9 +273,10 @@ static Util::optional<botSkillTreeElement_t> ChooseOneSkill(const gentity_t *bot
 //     a skill change, although keeping its base skills or unlocking new ones.
 std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 {
-	std::vector<botSkillTreeElement_t> possible_choices = initial_unlockable_skills;
+	std::vector<botSkillTreeElement_t> possible_choices = skillTree;
 
 	float max = G_Team(bot) == TEAM_ALIENS ? static_cast<float>( skillsetBudgetAliens ) : static_cast<float>( skillsetBudgetHumans );
+	team_t team = G_Team(bot);
 
 	// unlock every skill at skill 7 (almost every for aliens)
 	int skill_points = static_cast<float>(skill + 2) / 9.0f * max;
@@ -283,23 +286,18 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 	std::seed_seq seed(name.begin(), name.end());
 	std::mt19937_64 rng(seed);
 
-	skillSet_t skillSet;
+	skillSet_t skillSet(0);
 	std::string skill_list;
 
 	std::vector<std::string> skillNames;
-	while (!possible_choices.empty())
+	while (true)
 	{
 		Util::optional<botSkillTreeElement_t> new_skill =
-			ChooseOneSkill(bot, skillSet, possible_choices, rng);
+			ChooseOneSkill(team, skillSet, possible_choices, rng);
 		if ( !new_skill )
 		{
 			// no skill left to unlock
 			break;
-		}
-
-		if ( G_SkillDisabled( new_skill->name ) )
-		{
-			continue;
 		}
 
 		bool preferred = G_SkillPreferred( new_skill->name );
