@@ -1258,13 +1258,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindDying, soundChannel_t::CHAN_ANNOUNCER );
-					CG_CenterPrint( _( "^1The Overmind is dying!" ), 1.5f );
+					CG_CenterPrint( va( "^1%s", _( "The Overmind is dying!" ) ), 1.5f );
 					break;
 
 				case TEAM_HUMANS:
 					// TODO: Add a "reactor is going down" sound.
 					//trap_S_StartLocalSound( cgs.media.humanReactorDying, soundChannel_t::CHAN_ANNOUNCER );
-					CG_CenterPrint( _( "^1The reactor is going down!" ), 1.5f );
+					CG_CenterPrint( va( "^1%s", _( "The reactor is going down!" ) ), 1.5f );
 					break;
 
 				default:

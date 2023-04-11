@@ -478,7 +478,7 @@ static void CG_Menu( int menuType, int arg )
 
 		case MN_WARMUP:
 			longMsg = _("You must wait until the warmup time is finished "
-			          "before joining a team. ");
+			          "before joining a team.");
 			shortMsg = _("You cannot join a team during warmup.");
 			break;
 

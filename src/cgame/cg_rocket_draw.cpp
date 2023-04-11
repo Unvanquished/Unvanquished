@@ -3049,10 +3049,10 @@ static void CG_Rocket_DrawChatType()
 		char prompt[12];
 	} sayText[] = {
 		{ "",   "" },
-		{ "^2", N_("Say: ") },
-		{ "^5", N_("Team Say: ") },
-		{ "^6", N_("Admin Say: ") },
-		{ "",   N_("Command: ") },
+		{ "^2", N_("Say:") " " },
+		{ "^5", N_("Team Say:") " " },
+		{ "^6", N_("Admin Say:") " " },
+		{ "",   N_("Command:") " " },
 	};
 
 	if ( (size_t) cg.sayType < ARRAY_LEN( sayText ) )
