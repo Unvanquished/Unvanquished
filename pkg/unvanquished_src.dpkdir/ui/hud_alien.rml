@@ -1,0 +1,238 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+
+		<style>
+			body {
+				width: 100%;
+				height: 100%;
+			}
+
+			.speed_max,
+			.speed_current {
+				color: black;
+				font-size: 1.6em;
+				padding: 2em;
+				margin: -5.4em;
+			}
+			div.item_select img {
+				color: blue;
+			}
+			div.item_select img.selected {
+				width: 21.3em;
+				height: 21.3em;
+				color: black;
+			}
+			div.item_select img.inactive,
+			div.item_select img.no_ammo {
+				image-color: red;
+			}
+			alien_sense {
+				position: absolute;
+				width: 85%;
+				height: 85%;
+				top: 4.8em;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			div#barbs {
+				position: absolute;
+				height: 8.3em;
+				width: 1.6em;
+			}
+			img.sides {
+				width: 2.7em;
+				height: 2.7em;
+			}
+			#left img.sides,
+			#right img.sides {
+				width: 80%;
+				height: auto;
+				position: absolute;
+				z-index: 1;
+				/* opacity:0.6; */
+			}
+			progress#health-bar {
+				position: absolute;
+				width: 65%;
+				height: 37%;
+				left: 0em;
+				bottom: 0em;
+				fill-image: /ui/assets/alien/bar-l;
+			}
+			progress#poison-bar {
+				position: absolute;
+				width: 65%;
+				height: 37%;
+				right: 0em;
+				bottom: 0em;
+				fill-image: /ui/assets/alien/bar-r;
+			}
+			wallwalk.wallwalking img.sides {
+				display: none;
+			}
+			wallwalk.wallwalking.active img.sides {
+				display: block;
+			}
+			#left img.sides {
+				left: 0em;
+				position: absolute;
+				bottom: 0em;
+			}
+			#right img.sides {
+				right: 0em;
+				position: absolute;
+				bottom: 0em;
+			}
+			#right img.poison {
+				opacity: 0.2;
+			}
+			.bg,
+			.health,
+			.spikes {
+				image-color: #ff0000aa;
+			}
+			#health-bar {
+				image-color: #b3000094;
+			}
+			#poison-bar {
+				image-color: #ff009b94;
+			}
+			#left,
+			#right {
+				display: block;
+				width: 35em;
+				height: 28em;
+				bottom: 0em;
+				position: absolute;
+			}
+			#left {
+				left: 0em;
+			}
+			#right {
+				right: 0em;
+			}
+
+			#health-icon {
+				position: absolute;
+				right: -1.6em;
+				bottom: 0.09em;
+				width: 1.2em;
+				height: 1.2em;
+				image-color: #ff0000ff;
+			}
+			#health {
+				font-size: 5em;
+				color: #f02119;
+				position: absolute;
+				left: 12.5%;
+				width: 20%;
+				bottom: 0.2em;
+				line-height: 1.3em;
+				text-align: right;
+			}
+			#poison-icon {
+				position: absolute;
+				right: 50%;
+				bottom: 20%;
+				width: 13%;
+				height: auto;
+				image-color: #f500ffaa;
+			}
+
+			weapon_icon img {
+				position: absolute;
+				right: 12.6em;
+				bottom: 3.9em;
+				width: 5.1em;
+				height: auto;
+				image-color: #ff0000ff;
+			}
+
+			#evos {
+				font-size: 2em;
+				position: absolute;
+				right: 3%;
+				bottom: 3%;
+				text-align: right;
+			}
+			#evos evos {
+				color: red;
+			}
+
+			div#momentum {
+				position: absolute;
+				width: 40%;
+				height: 6%;
+				bottom: 2%;
+				margin-left: auto;
+				margin-right: auto;
+
+				vertical-align: bottom;
+			}
+
+			momentum_bar {
+				width: 100%;
+				height: 50%;
+				background-color: #3a232355; /* General bar color */
+				color: #6e1b1caa; /* Filled-section bar color */
+			}
+
+			unlocked_items {
+				width: 100%;
+				height: 50%;
+				/* Two-colour system. HACK
+				 * locked colour = CSS cell-color
+				 * unlocked colour = CSS color
+				 */
+				cell-color: #93141466;
+				color: #703030ff;
+
+				momentum-border-width: 0;
+			}
+
+			health,
+			health_cross {
+				z-index: 1;
+			}
+		</style>
+	</head>
+	<body id="hud_alien">
+		<alien_sense />
+		<div id="momentum">
+			<unlocked_items/>
+			<momentum_bar/>
+		</div>
+		<div id="left">
+			<img class="bg sides" src="/ui/assets/alien/bg-l" />
+			<progress src="health" id="health-bar" />
+			<wallwalk>
+				<img class="spikes sides" src="/ui/assets/alien/smallspikes-l" />
+			</wallwalk>
+			<wallwalk class="wallwalking">
+				<img class="spikes sides" src="/ui/assets/alien/spikes-l" />
+			</wallwalk>
+
+			<img class="light sides" src="/ui/assets/alien/ll" />
+
+			<div id="health">
+				<health />
+				<health_cross class="health" id="health-icon"/>
+			</div>
+		</div>
+		<div id="right">
+			<img class="bg sides" src="/ui/assets/alien/bg-r" />
+			<progress direction="left" src="poison" id="poison-bar" />
+			<wallwalk>
+				<img class="spikes sides" src="/ui/assets/alien/smallspikes-r" />
+			</wallwalk>
+			<wallwalk class="wallwalking">
+				<img class="spikes sides" src="/ui/assets/alien/spikes-r" />
+			</wallwalk>
+			<img class="light sides" src="/ui/assets/alien/lr" />
+			<weapon_icon />
+			<!-- FIXME: We may want to include <evos/> in the translatable string. -->
+			<div id="evos"><evos/>&nbsp;<translate>morph points</translate></div>
+		</div>
+	</body>
+</rml>

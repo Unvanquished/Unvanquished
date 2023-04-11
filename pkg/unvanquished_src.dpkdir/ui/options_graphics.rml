@@ -1,0 +1,279 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+
+		<style>
+			/* Halving hack, as we don't have tables */
+			half {
+				display: block;
+				padding: 0;
+				float: left;
+				width: 45%;
+			}
+		</style>
+	</head>
+	<body id="options_graphics" template="window" style="width: 46em; margin: 1em;" onload='Events.pushevent("buildDS resolutions", event)'>
+		<h1><translate>Graphics</translate></h1>
+
+		<tabset>
+			<tab><translate>Presets</translate></tab>
+			<panel class="presets">
+				<h2><translate>Presets</translate></h2>
+				<row>
+					<button onclick='Events.pushevent("exec preset presets/graphics/lowest.cfg", event)'><translate>Lowest</translate></button>
+					<span><translate>Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel textures…</translate></span>
+				</row>
+				<row>
+					<button onclick='Events.pushevent("exec preset presets/graphics/low.cfg", event)'><translate>Low</translate></button>
+					<span><translate>Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-pixel textures…</translate></span>
+				</row>
+				<row>
+					<button onclick='Events.pushevent("exec preset presets/graphics/medium.cfg", event)'><translate>Medium</translate></button>
+					<span><translate>Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel textures…</translate></span>
+				</row>
+				<row>
+					<button onclick='Events.pushevent("exec preset presets/graphics/high.cfg", event)'><translate>High</translate></button>
+					<span><translate>Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-pixel textures…</translate></span>
+				</row>
+				<row>
+					<button onclick='Events.pushevent("exec preset presets/graphics/ultra.cfg", event)'><translate>Ultra</translate></button>
+					<span><translate>Relief mapping and other features and effects enabled, up to 4096-pixel textures…</translate></span>
+				</row>
+			</panel>
+			<tab><translate>Video</translate></tab>
+			<panel>
+				<h2><translate>Video</translate></h2>
+				<row>
+					<h3><translate>Brightness</translate></h3>
+					<input type="range" min="0" max="2" step="0.01" cvar="r_gamma"/>
+					<p class="inline">
+						<translate>Gamma:</translate>&nbsp;<inlinecvar cvar="r_gamma" type="number" format="%.2f"/>
+						&nbsp;<ilink onclick='Events.pushevent("exec reset r_gamma", event)'>(<translate>reset</translate>)</ilink>
+					</p>
+				</row>
+
+				<row>
+					<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
+					<h3><translate>Screen Resolution</translate></h3>
+				</row>
+				<row>
+					<input cvar="r_noBorder" type="checkbox"/>
+					<h3><translate>Borderless window</translate></h3>
+				</row>
+				<row>
+					<input cvar="r_fullscreen" type="checkbox"/>
+					<h3><translate>Fullscreen</translate></h3>
+				</row>
+
+				<row>
+					<select cvar="r_swapinterval">
+						<option value="0"><translate>Off</translate></option>
+						<option value="-1"><translate>Flexible Vsync</translate></option>
+						<option value="1"><translate>Full Vsync</translate></option>
+					</select>
+					<h3><translate>Vsync</translate></h3>
+					<p><translate>Vsync prevents “visual tearing” but increases input latency. Flexible Vsync only activates when the frame-rate is above the refresh-rate of the monitor, avoiding stuttering when the FPS drops.</translate></p>
+				</row>
+
+				<row>
+					<input cvar="r_FXAA" type="checkbox" />
+					<h3><translate>Fast approximate anti-aliasing (FXAA)</translate></h3>
+				</row>
+
+				<buttonbar>
+					<button onclick='Events.pushevent("exec r_mode -1; exec vid_restart", event)'><translate>Apply now</translate></button>
+				</buttonbar>
+			</panel>
+
+			<tab><translate>Lighting</translate></tab>
+			<panel>
+				<h2><translate>Lights</translate></h2>
+				<row>
+					<select cvar="r_vertexLighting">
+						<option value="0"><translate>Light mapping</translate>&nbsp;(<translate>normal</translate>)</option>
+						<option value="1"><translate>Grid lighting</translate>&nbsp;(<translate>low, ugly</translate>)</option>
+					</select>
+					<h3><translate>Lighting system</translate></h3>
+				</row>
+				<row>
+					<h3><translate>Light styles</translate></h3>
+					<input cvar="r_lightStyles" type="checkbox" checked-value="1" />
+					<p><translate>Precomputed dynamic lights emitted by static map objects.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Dynamic lights</translate></h3>
+					<input cvar="r_dynamicLight" type="checkbox" checked-value="2" />
+					<p><translate>Realtime dynamic lights emitted by moving objects like weapons and buildings.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Rim lighting</translate></h3>
+					<input cvar="r_rimLighting" type="checkbox" />
+					<p><translate>Light the edges of models from behind.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Half Lambert lighting</translate></h3>
+					<input cvar="r_halfLambertLighting" type="checkbox" />
+					<p><translate>Non-physical lighting technique to make models less dark.</translate></p>
+				</row>
+				<row>
+					<select cvar="cg_shadows" style="width:20em;">
+						<option value="0"><translate>None</translate></option>
+						<option value="1"><translate>Blobs</translate>&nbsp;(<translate>low</translate>)</option>
+						<!-- Implementations for those options are broken and can make the game unusable
+						<option value="3"><translate>Exponential mapping</translate></option>
+						<option value="5"><translate>Variance mapping</translate></option>
+						<option value="6"><translate>Exponential + variance</translate>&nbsp;(<translate>high</translate>)</option>
+						-->
+					</select>
+					<h3><translate>Shadows</translate></h3>
+				</row>
+				<buttonbar>
+					<button onclick='Events.pushevent("exec vid_restart", event)'><translate>Apply now</translate></button>
+				</buttonbar>
+			</panel>
+
+			<tab><translate>Textures</translate></tab>
+			<panel>
+				<h2><translate>General</translate></h2>
+				<row>
+					<select cvar="r_picmip" style="width: 20em;">
+						<option value="2"><translate>Low</translate>&nbsp;(1:4)</option>
+						<option value="1"><translate>Medium</translate>&nbsp;(1:2)</option>
+						<option value="0"><translate>Full</translate>&nbsp;(1:1)</option>
+					</select>
+					<h3><translate>Texture size</translate></h3>
+					<p><translate>Lower texture size is useful for cards with limited video memory (VRAM).</translate></p>
+				</row>
+
+				<h2><translate>Mip-mapping</translate></h2>
+				<p><translate>Mip-mapping makes distant surfaces look better by using lower-resolution textures on them. This generally does not affect performance.</translate></p>
+				<row>
+					<select cvar="r_ext_texture_filter_anisotropic">
+						<option value="0"><translate>No</translate></option>
+						<option value="2">2×</option>
+						<option value="4">4×</option>
+						<option value="8">8×</option>
+						<option value="16">16×</option>
+					</select>
+					<h3><translate>Anisotropic mip-mapping</translate></h3>
+					<p><translate>Better interpretation of mip-maps on angled surfaces.</translate></p>
+				</row>
+				<row>
+					<select cvar="r_textureMode">
+						<option value="GL_LINEAR_MIPMAP_NEAREST"><translate>Bilinear</translate></option>
+						<option value="GL_LINEAR_MIPMAP_LINEAR"><translate>Trilinear</translate>&nbsp;(<translate>better</translate>)</option>
+					</select>
+					<h3><translate>Texture scaling filter</translate></h3>
+				</row>
+
+				<buttonbar>
+					<button onclick='Events.pushevent("exec vid_restart", event)'><translate>Apply now</translate></button>
+				</buttonbar>
+			</panel>
+
+			<tab>Materials</tab>
+			<panel>
+				<h2><translate>Materials</translate></h2>
+				<row>
+					<h3><translate>Normal mapping</translate></h3>
+					<input cvar="r_normalMapping" type="checkbox" />
+					<p><translate>Simulates extra lighting detail on flat surfaces.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Deluxe mapping</translate></h3>
+					<input cvar="r_deluxeMapping" type="checkbox" />
+					<p><translate>Light direction based on baked textures.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Relief mapping</translate></h3>
+					<input cvar="r_reliefMapping" type="checkbox" />
+					<p><translate>Adds bumps on supported surfaces.</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Specular mapping</translate></h3>
+					<input cvar="r_specularMapping" type="checkbox" />
+					<p><translate>Simulate light specularity.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Physical mapping</translate></h3>
+					<input cvar="r_physicalMapping" type="checkbox" />
+					<p><translate>Material appearance based on physical approximations.</translate></p>
+				</row>
+
+				<buttonbar>
+					<button onclick='Events.pushevent("exec vid_restart", event)'><translate>Apply now</translate></button>
+				</buttonbar>
+			</panel>
+
+			<tab>Effects</tab>
+			<panel>
+				<h2><translate>Effects</translate></h2>
+				<row>
+					<h3><translate>Bloom</translate></h3>
+					<input cvar="r_bloom" type="checkbox" />
+					<p><translate>Makes bright areas on your screen glow.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Heat-haze</translate></h3>
+					<input cvar="r_heatHaze" type="checkbox" />
+					<p><translate>Simulate air refraction in severe heat.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Screen space ambient occlusion (SSAO)</translate></h3>
+					<input cvar="r_ssao" type="checkbox" />
+					<p><translate>Simulate dark corners.</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+
+				<h2><translate>Particles</translate></h2>
+				<row>
+					<h3><translate>Particle physics</translate></h3>
+					<input cvar="cg_bounceParticles" type="checkbox" />
+					<p><translate>Allow particles to bounce off surfaces.</translate></p>
+				</row>
+				<buttonbar>
+					<button onclick='Events.pushevent("exec vid_restart", event)'><translate>Apply now</translate></button>
+				</buttonbar>
+			</panel>
+
+			<tab><translate>Gameplay</translate></tab>
+			<panel>
+				<h2><translate>Building markers</translate></h2>
+				<row>
+					<select cvar="cg_rangeMarkerBuildableTypes" style="width: 20em;">
+						<option value="none"><translate>None</translate>&nbsp;(<translate>disabled</translate>)</option>
+						<option value="all"><translate>All structures</translate></option>
+						<option value="support"><translate>Support structures</translate></option>
+						<option value="offensive"><translate>Offensive structures</translate></option>
+						<option value="alien"><translate>Alien structures</translate></option>
+						<option value="human"><translate>Human structures</translate></option>
+						<option value="aliensupport"><translate>Alien support structures</translate></option>
+						<option value="humansupport"><translate>Human support structures</translate></option>
+						<option value="alienoffensive"><translate>Offensive alien structures</translate></option>
+						<option value="humanoffensive"><translate>Offensive human structures</translate></option>
+					</select>
+					<h3><translate>Building ranges</translate></h3>
+				</row>
+				<h2><translate>Motion blur</translate></h2>
+				<row>
+					<select cvar="cg_motionblur">
+						<option value="0.10"><translate>High</translate>&nbsp;(0.10)</option>
+						<option value="0.05"><translate>Moderate</translate>&nbsp;(0.05)</option>
+						<option value="0.02"><translate>Low</translate>&nbsp;(0.02)</option>
+						<option value="0"><translate>Off</translate></option>
+					</select>
+					<h3><translate>Intensity</translate></h3>
+					<p><translate>Level of motion-blur.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Minimum movement speed for motion-blur to activate</translate></h3>
+					<input type="range" min="10" max="1500" step="10" cvar="cg_motionblurMinSpeed"/>
+					<p class="inline">
+						<translate>Current:</translate>&nbsp;<inlinecvar cvar="cg_motionblurMinSpeed" type="number" format="%.0f"/>
+						&nbsp;<ilink onclick='Events.pushevent("exec reset cg_motionblurMinSpeed", event)'>(<translate>reset</translate>)</ilink>
+					</p>
+				</row>
+			</panel>
+		</tabset>
+	</body>
+</rml>

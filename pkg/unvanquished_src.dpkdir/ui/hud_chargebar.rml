@@ -1,0 +1,28 @@
+<rml>
+<head>
+<link type="text/rcss" href="/ui/shared/basics.rcss" />
+<style>
+	body {
+		width: 100%;
+		height: 100%;
+	}
+	div {
+		position: absolute;
+		width: 40%;
+		height: 3%;
+		bottom: 2%;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	progress {
+		width: 100%;
+		height: 100%;
+	}
+</style>
+</head>
+<body id="hud_chargebar">
+<div>
+<progress direction="right" src="charge"/>
+</div>
+</body>
+</rml>

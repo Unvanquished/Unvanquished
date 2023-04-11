@@ -1,0 +1,242 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<style>
+		body {
+			width: 100%;
+			height: 100%;
+		}
+
+		/* Screen regions */
+		region {
+			position: fixed;
+			display: block;
+		}
+
+		region.topright {
+			top: 0em;
+			right: 0em;
+
+			text-align: right;
+			font-size: 1.2em;
+			width: 50em;
+			height: 25em;
+		}
+
+		region.votes {
+			bottom: 60%;
+			text-align: left;
+			width: 40%;
+			left: 0.5em;
+		}
+
+		region.tutorial {
+			bottom: 21%;
+			text-align: left;
+			width: 40%;
+			left: 4em;
+		}
+
+		region.crosshair {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			text-align: center;
+		}
+
+		region.speedo {
+			position: absolute;
+			bottom: 38%;
+			margin-left: auto;
+			margin-right: auto;
+			width: 8%;
+			height: 4%;
+			text-align: center;
+			font-size: 1.4em;
+			background-color: #1e1e1e1e;
+		}
+
+		region.beacon {
+			right: 1em;
+			bottom: 45%;
+			text-align: right;
+			/*width: 20%;*/
+			width: 50%;
+		}
+
+		region.oxygen {
+			left: 30%;
+			bottom: 10%;
+			width: 40%;
+		}
+		region.oxygen progress {
+			height: 1.2em;
+		}
+		region.oxygen progress {
+			image-color: rgba(108, 200, 255, 200);
+		}
+
+		region.oxygen progress {
+			width: 100%;
+		}
+
+		minimap {
+			display: block;
+			width: 12em;
+			height: 12em;
+
+			float: right;
+
+			background-color: black;
+		}
+
+		statsbox {
+			display: block;
+			width: 25em;
+			height: 12em;
+			padding: 0.5em;
+
+			float: right;
+		}
+
+		stat {
+			display: block;
+		}
+
+		lagometer {
+			width: 4.5em;
+			height: 7em;
+			background-color: #77777755;
+		}
+
+		crosshair,
+		crosshair_indicator {
+			position: absolute;
+			color: white;
+			margin: auto auto;
+			width: 100%;
+			height: auto;
+
+			color: #ffffff77; /* Transparency */
+		}
+
+		crosshair_name {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 60%;
+			width: 20em;
+			height: 2em;
+
+			font-size: 1.5em;
+		}
+
+		follow {
+			display: block;
+			position: absolute;
+			bottom: 6em;
+			left: 0em;
+			width: 100%;
+			text-align: center;
+			font-size: 1.5em;
+		}
+
+		speedometer,
+		position_indicator {
+			width: 100%;
+			height: 100%;
+			/* Dejavu has monospaced numbers, but Roboto does not
+			   This stops the numbers "jiggling" left and right */
+			font-family: Dejavu Sans;
+		}
+
+		speedometer span,
+		position_indicator span {
+			margin: auto auto;
+			padding: 5%;
+		}
+
+		location {
+			display: block;
+			font-size: 1.5em;
+			width: 100%;
+			height: 1.5em;
+		}
+
+		beacon_name {
+			font-size: 1.5em;
+		}
+
+		beacon_icon {
+			display: inline;
+			width: 3em;
+			height: 3em;
+			margin-right: 0.5em;
+		}
+
+		.emoticon {
+			height: 1.1em;
+		}
+	</style>
+</head>
+<body id="hud_basics">
+	<region class="topright">
+		<if cvar="cg_minimapActive" condition="==" value="1">
+			<minimap />
+		</if>
+
+		<statsbox>
+			<location />
+
+			<if cvar="cg_drawTimer" condition="==" value="1">
+				<stat><translate>Game</translate>&nbsp;<timer /></stat>
+			</if>
+			<if cvar="cg_drawClock" condition="!=" value="0">
+				<stat><translate>Life</translate>&nbsp;<clock /></stat>
+			</if>
+			<if cvar="cg_drawFPS" condition="==" value="1">
+				<!-- FIXME: We may want to include <fps/> in the translatable string. -->
+				<stat><fps/>&nbsp;<translate>fps</translate></stat>
+			</if>
+			<!-- FIXME: We may want to include <ms/> in the translatable string. -->
+			<stat><ping/>&nbsp;<translate>ms</translate></stat>
+			<if cvar="cg_lagometer" condition="==" value="1">
+				<stat><lagometer /></stat>
+			</if>
+		</statsbox>
+	</region>
+
+	<region class="votes">
+		<p><votes /></p>
+		<p><votes_team /></p>
+	</region>
+	<region class="tutorial">
+		<tutorial />
+	</region>
+
+	<region class="crosshair">
+		<crosshair/>
+		<crosshair_indicator/>
+		<crosshair_name/>
+		<follow/>
+	</region>
+
+	<if cvar="cg_drawSpeed" condition="!=" value="0">
+		<!-- Do we need this if? -->
+		<region class="speedo"><speedometer /><position_indicator/> </region>
+	</if>
+
+	<region class="beacon">
+		<beacon_icon /><br />
+		<beacon_name /><br />
+		<beacon_info /><br />
+		<beacon_distance /><br />
+		<beacon_age /><br />
+		<beacon_owner />
+	</region>
+
+	<region class="oxygen">
+		<progress src="oxygen"/>
+	</region>
+</body>
+</rml>

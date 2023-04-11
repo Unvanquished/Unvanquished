@@ -1,0 +1,71 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<style>
+			/* TODO: find out why this is a subclass */
+			.levelshot {
+				width: 100%;
+			}
+			/* select and selectbox elements are implicit, but their styles must be explicitely written */
+			row#maplist dataselect,
+			row#maplist select,
+			input#hostname,
+			input#password {
+				width: 25em;
+			}
+			row#maplist selectbox {
+				max-height: 25em;
+				overflow-y: auto;
+			}
+		</style>
+		<script>
+			function MapMode(document)
+				local AsInput = Element.As.ElementFormControlInput
+				if AsInput(document:GetElementById("devmode")).checked
+				then
+					return 'execForm "devmap $map$ $layout$"'
+				end
+				return 'execForm "map $map$ $layout$"'
+			end
+		</script>
+
+	</head>
+	<body template="window" id="createserver" onshow='Events.pushevent("buildDS mapList", event)' style="width: 40em; margin: 1em;">
+		<h1><translate>Start local/LAN game</translate></h1>
+		<form onsubmit='Events.pushevent(MapMode(document), event)'>
+			<row>
+				<input type="text" cvar="sv_hostname" class="text" id="hostname"/>
+				<h3><translate>Hostname</translate></h3>
+			</row>
+
+			<row>
+				<input type="text" cvar="g_password" class="text" id="password"/>
+				<h3><translate>Password</translate></h3>
+			</row>
+
+			<row>
+				<input type="checkbox" id="devmode" style="margin-right:1em;"/>
+				<h3><translate>Developer mode (enable cheats)</translate></h3>
+			</row>
+
+			<row>
+				<input type="text" cvar="fs_extrapaks" class="text" id="extrapaks"/>
+				<h3><translate>Extra packages to load</translate></h3>
+			</row>
+
+			<row>
+				<input type="text" class="text" id="layout" name="layout"/>
+				<h3><translate>Map building layout to use</translate></h3>
+			</row>
+
+			<row id="maplist">
+				<dataselect source="mapList.default" fields="mapName" valuefield="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
+				<h3><translate>Map</translate></h3>
+			</row>
+
+			<input type="submit"><button><translate>Start</translate></button></input>
+			<levelshot />
+		</form>
+	</body>
+</rml>

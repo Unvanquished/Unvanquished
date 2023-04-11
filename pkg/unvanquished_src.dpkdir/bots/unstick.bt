@@ -1,0 +1,61 @@
+// Subroutine to try to prevent bots from getting stuck
+selector
+{
+	decorator return( STATUS_FAILURE )
+	{
+		// protect bots that are repairing from being considered stuck
+		sequence
+		{
+			condition haveWeapon( WP_HBUILD ) && distanceTo( E_GOAL ) <= 100 && percentHealth( E_GOAL ) < 1.0
+			action resetStuckTime
+		}
+	}
+
+	decorator return( STATUS_FAILURE )
+	{
+		// protect alien bots that are healing from being considered stuck
+		sequence
+		{
+			condition team == TEAM_ALIENS && percentHealth( E_SELF ) < 1.0
+			condition goalBuildingType == E_A_OVERMIND && distanceTo( E_GOAL ) <= 128 || goalBuildingType == E_A_BOOSTER && distanceTo( E_GOAL ) <= 200
+			action resetStuckTime
+		}
+	}
+
+
+	condition(stuckTime > 10000)
+	{
+		selector
+		{
+			condition(stuckTime > 20000)
+			{
+				action suicide
+			}
+
+			decorator timer(3000)
+			{
+				decorator return(STATUS_FAILURE)
+				{
+					action jump
+				}
+			}
+			condition(stuckTime > 17500)
+			{
+				action moveInDir(MOVE_FORWARD)
+			}
+			condition(stuckTime > 15000)
+			{
+				action moveInDir(MOVE_RIGHT)
+			}
+			condition(stuckTime > 12500)
+			{
+				action moveInDir(MOVE_BACKWARD)
+			}
+			sequence
+			{
+				action moveInDir(MOVE_LEFT)
+				action moveTo(E_SELF) // cancel old target which may be causing the bot to walk into a wall, etc.
+			}
+		}
+	}
+}

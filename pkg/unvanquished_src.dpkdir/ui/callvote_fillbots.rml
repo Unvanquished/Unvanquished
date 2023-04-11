@@ -1,0 +1,26 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+	</head>
+	<body id="callvote_fillbots" template="window" style="width: 35em; margin: 1em;">
+		<h1><translate>Fill with bots</translate></h1>
+		<br />
+		<p>How many players (users and bots) should teams have?</p>
+		<form onsubmit='Events.pushevent("execForm \"callvote $action$ $amount$\"; hide", event)'>
+			<row>
+				<select name="action">
+					<option value="fillbots"><translate>Both teams</translate></option>
+					<option value="fillbots_aliens"><translate>Aliens</translate></option>
+					<option value="fillbots_humans"><translate>Humans</translate></option>
+				</select>
+				<h3><translate>Team</translate></h3>
+			</row>
+			<row>
+				<input type="text" class="text" style="width: 12em;" name="amount" value="4"/>
+				<h3><translate>Amount</translate></h3>
+			</row>
+			<input type="submit"><button><translate>Call vote</translate></button></input>
+		</form>
+	</body>
+</rml>
