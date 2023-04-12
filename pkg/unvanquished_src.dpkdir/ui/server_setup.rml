@@ -192,7 +192,7 @@
 					<h3><translate>Minimum bots per team</translate></h3>
 					<tooltip><translate>Fill teams until they have enough players</translate></tooltip>
 				</parent>
-				<input type="range" min="0" max="31" step="1" cvar="g_bot_defaultFill"/>
+				<input type="range" min="0" max="9" step="1" cvar="g_bot_defaultFill"/>
 				<p><inlinecvar cvar="g_bot_defaultFill" type="number" format="%g"/>&nbsp; <translate>bots</translate><ilink onclick='Events.pushevent("exec reset g_bot_defaultFill", event)'> (reset) </ilink></p>
 			</row>
 			<row>
