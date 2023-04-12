@@ -67,6 +67,6 @@ xgettext --from-code=UTF-8 \
 	-k_ -kN_ -kP_:1,2 -k \
 	src/sgame/sg_admin.cpp \
 	src/sgame/sg_cmds.cpp \
-	sg_maprotation.cpp
+	src/sgame/sg_maprotation.cpp
 
 mv "${temp_pot_file}" "${commands_pot_file}"
