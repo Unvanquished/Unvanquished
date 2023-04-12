@@ -1606,7 +1606,8 @@ struct cgMedia_t
 	qhandle_t   tealCgrade;
 	qhandle_t   desaturatedCgrade;
 
-	qhandle_t   scopeShader;
+	qhandle_t sniperScopeShader;
+	qhandle_t lgunScopeShader;
 
 	animation_t jetpackAnims[ MAX_JETPACK_ANIMATIONS ];
 

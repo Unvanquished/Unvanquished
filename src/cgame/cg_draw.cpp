@@ -332,7 +332,22 @@ static void CG_Draw2D()
 	if ( cg.zoomed )
 	{
 		Color::Color black = { 0.f, 0.f, 0.f, 0.5f };
-		trap_R_DrawStretchPic( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), 0, cgs.glconfig.vidHeight, cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.scopeShader );
+		qhandle_t shader;
+		switch ( cg.predictedPlayerState.weapon )
+		{
+			case WP_MASS_DRIVER:
+				shader = cgs.media.sniperScopeShader;
+				break;
+			case WP_LAS_GUN:
+				shader = cgs.media.lgunScopeShader;
+				break;
+			default:
+				Log::Warn( "No shader for gun: %s",
+				           BG_Weapon( cg.predictedPlayerState.weapon )->name );
+				return;
+		}
+		trap_R_DrawStretchPic( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), 0,
+		                       cgs.glconfig.vidHeight, cgs.glconfig.vidHeight, 0, 0, 1, 1, shader );
 		trap_R_SetColor( black );
 		trap_R_DrawStretchPic( 0, 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
 		trap_R_DrawStretchPic( cgs.glconfig.vidWidth - ( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ) ), 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
