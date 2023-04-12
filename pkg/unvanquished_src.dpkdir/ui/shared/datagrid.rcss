@@ -15,7 +15,7 @@ datagridheader {
 
 /* Alternate colours of each row */
 datagridrow:nth-child(even) {
-	background-color: #333333;
+	background-color: #444444;
 }
 datagridrow:nth-child(odd) {
 	background-color: #222222;
