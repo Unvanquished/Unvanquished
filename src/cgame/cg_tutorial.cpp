@@ -36,8 +36,7 @@ struct bind_t {
 };
 } // namespace
 
-// toggleconsole's name is inaccurate: you can only *open* the console with it!
-static const char* const OPEN_CONSOLE_CMD = "toggleconsole";
+static const char* const OPEN_CONSOLE_CMD = "toggleConsole";
 static const char* const OPEN_MENU_CMD = "toggleMenu";
 
 static bind_t bindings[] =
@@ -725,7 +724,7 @@ const char *CG_TutorialText()
 
 		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
 
-		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to open the console." ), CG_KeyNameForCommand( "toggleconsole" ) ) );
+		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to open the console." ), CG_KeyNameForCommand( "toggleConsole" ) ) );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s for the menu." ),
 			CG_KeyNameForCommand( "toggleMenu" ) ) );
