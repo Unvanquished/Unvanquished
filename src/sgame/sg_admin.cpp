@@ -2206,19 +2206,16 @@ bool G_admin_readconfig( gentity_t *ent )
 			}
 			else if ( !Q_stricmp( t, "stopOnIntermission" ) )
 			{
-				int i;
 				admin_readconfig_int( &cnf, &i );
 				v->def.stopOnIntermission = i;
 			}
 			else if ( !Q_stricmp( t, "adminImmune" ) )
 			{
-				int i;
 				admin_readconfig_int( &cnf, &i );
 				v->def.adminImmune = i;
 			}
 			else if ( !Q_stricmp( t, "quorum" ) )
 			{
-				int i;
 				admin_readconfig_int( &cnf, &i );
 				v->def.quorum = i;
 			}
@@ -2313,11 +2310,11 @@ bool G_admin_readconfig( gentity_t *ent )
 	}
 
 	// register user-defined votes
-	for ( const auto &v : g_admin_votes )
+	for ( const auto &vote : g_admin_votes )
 	{
-		if ( !G_AddCustomVote( v.name, v.def, v.vote, v.display ) )
+		if ( !G_AddCustomVote( vote.name, vote.def, vote.vote, vote.display ) )
 		{
-			Log::Warn( "Failed to register vote '%s': vote already exists", v.name );
+			Log::Warn( "Failed to register vote '%s': vote already exists", vote.name );
 		}
 	}
 
