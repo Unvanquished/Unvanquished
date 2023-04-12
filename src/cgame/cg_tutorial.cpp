@@ -235,7 +235,7 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to spit. Spits can slow humans and remove fire." ),
+		          va( _( "Press %s to spit. Spit can slow humans and remove fire." ),
 		              CG_KeyNameForCommand( "+attack3" ) ) );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
 
