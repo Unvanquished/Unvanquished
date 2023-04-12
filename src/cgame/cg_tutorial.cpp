@@ -102,7 +102,7 @@ static const char *CG_KeyNameForCommand( const char *command )
 			if ( binding.command == OPEN_CONSOLE_CMD )
 			{
 				// Hard-coded console toggle key binding
-				keyNames = "SHIFT-ESCAPE";
+				keyNames = _( "SHIFT-ESCAPE" );
 				// cl_consoleKeys is yet another source of keys for toggling the console,
 				// but it is omitted out of laziness.
 			}
