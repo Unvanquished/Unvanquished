@@ -38,6 +38,7 @@ struct bind_t {
 
 // toggleconsole's name is inaccurate: you can only *open* the console with it!
 static const char* const OPEN_CONSOLE_CMD = "toggleconsole";
+static const char* const OPEN_MENU_CMD = "toggleMenu";
 
 static bind_t bindings[] =
 {
@@ -57,6 +58,7 @@ static bind_t bindings[] =
 	{ "message_public", N_( "Global chat" ),                           {} },
 	{ "message_team",   N_( "Team chat" ),                             {} },
 	{ OPEN_CONSOLE_CMD, N_( "Toggle Console" ),                        {} },
+	{ OPEN_MENU_CMD,    N_( "Toggle Menu" ),                           {} },
 	{ "itemact grenade", N_( "Throw a grenade" ),                      {} }
 };
 
@@ -105,6 +107,11 @@ static const char *CG_KeyNameForCommand( const char *command )
 				keyNames = _( "SHIFT-ESCAPE" );
 				// cl_consoleKeys is yet another source of keys for toggling the console,
 				// but it is omitted out of laziness.
+			}
+			else if ( binding.command == OPEN_MENU_CMD )
+			{
+				// Hard-coded menu toggle key binding
+				keyNames = _( "ESCAPE" );
 			}
 
 			for ( Keyboard::Key key : binding.keys )
@@ -720,7 +727,8 @@ const char *CG_TutorialText()
 
 		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to open the console." ), CG_KeyNameForCommand( "toggleconsole" ) ) );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, _( "Press ESCAPE for the menu." ) );
+		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s for the menu." ),
+			CG_KeyNameForCommand( "toggleMenu" ) ) );
 	}
 
 	return text;
