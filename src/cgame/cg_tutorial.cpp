@@ -490,9 +490,8 @@ static void CG_HumanText( char *text, playerState_t *ps )
 
 	if ( BG_InventoryContainsUpgrade( UP_JETPACK, ps->stats ) )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Hold %s to use the %s." ),
-			CG_KeyNameForCommand( "+moveup" ),
-			_( BG_Upgrade( UP_JETPACK )->humanName ) ));
+		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Hold %s to use the Jetpack." ),
+			CG_KeyNameForCommand( "+moveup" ) ) );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
 	}
 
@@ -501,9 +500,8 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT, COLOR_ALARM );
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to use your %s." ),
-		              CG_KeyNameForCommand( "itemact medkit" ),
-		              _( BG_Upgrade( UP_MEDKIT )->humanName ) ) );
+		          va( _( "Press %s to use your Medkit." ),
+		              CG_KeyNameForCommand( "itemact medkit" ) ) );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
 	}
 
@@ -511,9 +509,8 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	{
 		case BA_H_ARMOURY:
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to buy equipment upgrades at the %s." ),
-			              CG_KeyNameForCommand( "+activate" ),
-			              _( BG_Buildable( cg.nearUsableBuildable )->humanName ) ) );
+			          va( _( "Press %s to buy equipment upgrades at the Armoury." ),
+			              CG_KeyNameForCommand( "+activate" ) ) );
 			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
 			break;
 
