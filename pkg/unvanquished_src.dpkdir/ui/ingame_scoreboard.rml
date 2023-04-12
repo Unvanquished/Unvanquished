@@ -157,6 +157,7 @@
 	<half>
 		<teamname><translate>Aliens</translate></teamname>
 		<teambox class="alien">
+			<playerscount team="aliens"/>
 			<datagrid source="playerList.aliens" id="aliens">
 				<col fields="num" formatter="GearOrReady"></col>
 				<col fields="num" formatter="PlayerName">Name</col>
@@ -170,6 +171,7 @@
 	<half>
 		<teamname><translate>Humans</translate></teamname>
 		<teambox class="human">
+			<playerscount team="humans"/>
 			<datagrid source="playerList.humans" id="humans">
 				<col fields="num" formatter="GearOrReady"></col>
 				<col fields="num" formatter="PlayerName">Name</col>
