@@ -1992,7 +1992,8 @@ void CheckExitRules()
 	{
 		// nobody wins because the teams are empty after x amount of game time
 		level.lastWin = TEAM_NONE;
-		trap_SendServerCommand( -1, "print \"Empty teams skip map time exceeded.\n\"" );
+		trap_SendServerCommand( -1, "print_tr "
+			QQ( N_("Empty teams skip map time exceeded.") ) );
 		trap_SetConfigstring( CS_WINNER, "Stalemate" );
 		LogExit( "Timelimit hit." );
 		G_MapLog_Result( 't' );
