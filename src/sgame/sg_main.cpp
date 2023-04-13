@@ -2356,9 +2356,13 @@ void G_RunFrame( int levelTime )
 			}
 		}
 
+		// We may de-hardcode this value.
 		if ( level.pausedTime > 120000 )
 		{
-			trap_SendServerCommand( -1, "print_tr \"" N_("Server: The game has been unpaused automatically (2 minute max)") "\"" );
+			// FIXME: This assumes plural.
+			trap_SendServerCommand( -1, va( "print_tr_p %s %d",
+				QQ( N_("Server: The game has been unpaused automatically ($1$ minutes max)") ),
+				2 ) );
 			trap_SendServerCommand( -1, "cp \"The game has been unpaused!\"" );
 			level.pausedTime = 0;
 		}
