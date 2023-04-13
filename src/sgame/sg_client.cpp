@@ -1151,7 +1151,8 @@ const char *ClientConnect( int clientNum, bool firstTime )
 			if ( !G_ClientIsLagging( level.clients + i ) )
 			{
 				G_LogPrintf( "Duplicate GUID: %i", i );
-				trap_SendServerCommand( i, "cp \"Your GUID is not secure\"" );
+				trap_SendServerCommand( i, "cp_tr "
+					QQ( N_("Your GUID is not secure") ) );
 				G_LogPrintf( "FailedConnecting: %i [%s] (%s) \"%s^*\" \"%s^*\"",
 				             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 				             client->pers.netname,
