@@ -1933,7 +1933,7 @@ void CheckExitRules()
 		if ( level.matchTime >= level.timelimit * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
-			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit") "\"" );
+			trap_SendServerCommand( -1, "print_tr " QQ( N_("Timelimit hit") ) );
 			trap_SetConfigstring( CS_WINNER, "Stalemate" );
 			G_notify_sensor_end( TEAM_NONE );
 			LogExit( "Timelimit hit." );
@@ -1965,7 +1965,7 @@ void CheckExitRules()
 	{
 		//humans win
 		level.lastWin = TEAM_HUMANS;
-		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win") "\"" );
+		trap_SendServerCommand( -1, "print_tr " QQ( N_("Humans win") ) );
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
 		G_notify_sensor_end( TEAM_HUMANS );
 		LogExit( "Humans win." );
@@ -1979,7 +1979,7 @@ void CheckExitRules()
 	{
 		//aliens win
 		level.lastWin = TEAM_ALIENS;
-		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win") "\"" );
+		trap_SendServerCommand( -1, "print_tr " QQ( N_("Aliens win") ) );
 		trap_SetConfigstring( CS_WINNER, "Aliens Win" );
 		G_notify_sensor_end( TEAM_ALIENS );
 		LogExit( "Aliens win." );
