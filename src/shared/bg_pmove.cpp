@@ -1517,6 +1517,13 @@ static void PM_LandJetpack( bool force )
 
 static bool PM_CheckJump()
 {
+	// can't jump while crouched, prevents cheating in vents and
+	// displaying "jumping" model animation which goes outside of
+	// vents. See #312, #1538
+	if ( pm->ps->pm_flags & PMF_DUCKED )
+	{
+		return false;
+	}
 	// can't jump while in air
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
