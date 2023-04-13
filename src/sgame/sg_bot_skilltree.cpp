@@ -84,7 +84,7 @@ static bool G_SkillPreferred( Str::StringRef behavior )
 	return G_GetPreferredSkillset().find( behavior ) != G_GetPreferredSkillset().end();
 }
 
-// aliens have 67 points to spend max, but we give them a bit less for balancing
+// aliens have 71 points to spend max, but we give them a bit less for balancing
 static int skillsetBudgetAliens = 63;
 // humans have 48 points to spend max
 static int skillsetBudgetHumans = 48;
