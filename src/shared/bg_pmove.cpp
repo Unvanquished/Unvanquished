@@ -1276,10 +1276,10 @@ static bool PM_CheckWallRun()
 static bool PM_CheckJetpack()
 {
 	static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
-	int                 sideVelocity;
+	team_t team = static_cast<team_t>( pm->ps->persistant[ PERS_TEAM ] );
 
 	if ( pm->ps->pm_type != PM_NORMAL ||
-	     pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS ||
+	     team != TEAM_HUMANS ||
 	     !BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) )
 	{
 		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1335,7 +1335,7 @@ static bool PM_CheckJetpack()
 	// check ignite conditions
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_WARM ) )
 	{
-		sideVelocity = sqrtf( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ] +
+		int sideVelocity = sqrtf( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ] +
 		                      pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ] );
 
 		// we got off ground by jumping and are not yet in free fall, where free fall is defined as
