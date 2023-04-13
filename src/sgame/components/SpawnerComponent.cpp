@@ -40,6 +40,7 @@ void SpawnerComponent::Think(int timeDelta) {
 	if (blocker) {
 		if (!blocker->oldEnt) {
 			logger.Warn("Spawn blocking entity has oldEnt == nullptr");
+			Entities::Kill(entity, nullptr, MOD_SUICIDE);
 			return;
 		}
 
@@ -135,7 +136,7 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 
 	// Check for a clear line towards the spawn location.
 	trap_Trace(
-		&tr, &spawnerOrigin[0], nullptr, nullptr, &spawnPoint[0], spawnerNumber, MASK_SHOT, 0
+		&tr, &spawnerOrigin[0], nullptr, nullptr, &spawnPoint[0], spawnerNumber, MASK_PLAYERSOLID, 0
 	);
 
 	if (tr.entityNum != ENTITYNUM_NONE) {
