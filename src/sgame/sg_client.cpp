@@ -841,17 +841,19 @@ const char *ClientUserinfoChanged( int clientNum, bool forceName )
 		     level.time - client->pers.namelog->nameChangeTime <=
 		     g_minNameChangePeriod.Get() * 1000 )
 		{
-			trap_SendServerCommand( ent->num(), va(
-			                          "print_tr %s %g", QQ( N_("Name change spam protection (g_minNameChangePeriod = $1$)") ),
-			                          g_minNameChangePeriod.Get() ) );
+			trap_SendServerCommand( ent->num(), va("print_tr %s %s %g",
+				QQ( N_("Name change spam protection ($1$ = $2$)") ),
+				"g_minNameChangePeriod",
+				g_minNameChangePeriod.Get() ) );
 			revertName = true;
 		}
 		else if ( !forceName && g_maxNameChanges.Get() > 0 &&
 		          client->pers.namelog->nameChanges >= g_maxNameChanges.Get() )
 		{
-			trap_SendServerCommand( ent->num(), va(
-			                          "print_tr %s %d", QQ( N_("Maximum name changes reached (g_maxNameChanges = $1$)") ),
-			                          g_maxNameChanges.Get() ) );
+			trap_SendServerCommand( ent->num(), va("print_tr %s %s %d",
+				QQ( N_("Maximum name changes reached ($1$ = $2$)") ),
+				"g_maxNameChanges",
+				g_maxNameChanges.Get() ) );
 			revertName = true;
 		}
 		else if ( !forceName && client->pers.namelog->muted )
