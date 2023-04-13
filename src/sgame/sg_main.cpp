@@ -1943,13 +1943,16 @@ void CheckExitRules()
 		else if ( level.matchTime >= ( level.timelimit - 5 ) * 60000 &&
 		          level.timelimitWarning < TW_IMMINENT )
 		{
-			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
+			trap_SendServerCommand( -1, va( "cp_tr_p %s %d",
+				QQ( N_("$1$ minutes remaining!" ) ),
+				5 ) );
 			level.timelimitWarning = TW_IMMINENT;
 		}
 		else if ( level.matchTime >= ( level.timelimit - 1 ) * 60000 &&
 		          level.timelimitWarning < TW_PASSED )
 		{
-			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
+			trap_SendServerCommand( -1, "cp_tr "
+				QQ( N_("1 minute remaining!") ) );
 			level.timelimitWarning = TW_PASSED;
 		}
 	}
@@ -2338,7 +2341,8 @@ void G_RunFrame( int levelTime )
 		while ( ptime3000 > 3000 )
 		{
 			ptime3000 -= 3000;
-			trap_SendServerCommand( -1, "cp \"The game has been paused. Please wait.\"" );
+			trap_SendServerCommand( -1, "cp_tr "
+				QQ( N_("The game has been paused. Please wait.") ) );
 
 			if ( level.pausedTime >= 110000  && level.pausedTime <= 119000 )
 			{
@@ -2363,7 +2367,8 @@ void G_RunFrame( int levelTime )
 			trap_SendServerCommand( -1, va( "print_tr_p %s %d",
 				QQ( N_("Server: The game has been unpaused automatically ($1$ minutes max)") ),
 				2 ) );
-			trap_SendServerCommand( -1, "cp \"The game has been unpaused!\"" );
+			trap_SendServerCommand( -1, "cp_tr "
+				QQ( N_("The game has been unpaused!") ) );
 			level.pausedTime = 0;
 		}
 
