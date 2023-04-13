@@ -1275,6 +1275,11 @@ static bool PM_CheckWallRun()
  */
 static bool PM_CheckJetpack()
 {
+	// do not use jetpack on ladders
+	if ( pml.ladder )
+	{
+		return false;
+	}
 	static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
 	team_t team = static_cast<team_t>( pm->ps->persistant[ PERS_TEAM ] );
 
