@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-13 01:19+0000\n"
+"PO-Revision-Date: 2023-04-13 09:26+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -79,7 +79,7 @@ msgstr "Toutes les équipes"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
-msgstr "Aliens"
+msgstr "Extraterrestres"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
@@ -446,15 +446,15 @@ msgstr "Jeu"
 
 #: ui/hud_basics.rml:195
 msgid "Life"
-msgstr ""
+msgstr "Vie"
 
 #: ui/hud_basics.rml:199
 msgid "fps"
-msgstr ""
+msgstr "fps"
 
 #: ui/hud_basics.rml:202
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
@@ -462,7 +462,7 @@ msgstr "pts de constr."
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr "crédits"
+msgstr "Crédits"
 
 #: ui/human_buy.rml:208
 msgid "Weapons"
@@ -470,7 +470,7 @@ msgstr ""
 
 #: ui/human_buy.rml:209 ui/human_buy.rml:225
 msgid "TAB"
-msgstr ""
+msgstr "TAB"
 
 #: ui/human_buy.rml:217
 msgid "Range:"
@@ -512,7 +512,7 @@ msgstr ""
 
 #: ui/ingame_scoreboard.rml:184
 msgid "Spectators"
-msgstr ""
+msgstr "Spectateurs"
 
 #: ui/ingame_scoreboard.rml:191 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
@@ -541,17 +541,18 @@ msgstr ""
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
 msgid "Join Aliens"
-msgstr ""
+msgstr "Rejoindre les Extraterrestres"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:29
 msgid "Join Humans"
-msgstr ""
+msgstr "Rejoindre les Humains"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
 msgstr ""
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
+#, fuzzy
 msgid "Spectate"
 msgstr "Spectateur"
 
@@ -575,11 +576,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:26 ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Équipes"
 
 #: ui/menu_ingame.rml:33
 msgid "Democracy"
-msgstr ""
+msgstr "Démocratie"
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
@@ -587,15 +588,15 @@ msgstr ""
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
-msgstr ""
+msgstr "oui"
 
 #: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46 src/cgame/cg_tutorial.cpp:120
 msgid "or"
-msgstr ""
+msgstr "ou"
 
 #: ui/menu_ingame.rml:40 ui/menu_ingame.rml:47
 msgid "no"
-msgstr ""
+msgstr "non"
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
@@ -635,15 +636,15 @@ msgstr ""
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
-msgstr ""
+msgstr "Bots"
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
-msgstr ""
+msgstr "Ajouter un bot extraterrestre"
 
 #: ui/menu_ingame.rml:73
 msgid "Add a human bot"
-msgstr ""
+msgstr "Ajouter un bot humain"
 
 #: ui/menu_ingame.rml:74
 msgid "Remove all bots"
@@ -1191,27 +1192,27 @@ msgstr ""
 
 #: ui/options_graphics.rml:248
 msgid "Alien structures"
-msgstr ""
+msgstr "Structures extraterrestres"
 
 #: ui/options_graphics.rml:249
 msgid "Human structures"
-msgstr ""
+msgstr "Structures humaines"
 
 #: ui/options_graphics.rml:250
 msgid "Alien support structures"
-msgstr ""
+msgstr "Structures extraterrestres de support"
 
 #: ui/options_graphics.rml:251
 msgid "Human support structures"
-msgstr ""
+msgstr "Structures humaines de support"
 
 #: ui/options_graphics.rml:252
 msgid "Offensive alien structures"
-msgstr ""
+msgstr "Structures offensives extraterrestres"
 
 #: ui/options_graphics.rml:253
 msgid "Offensive human structures"
-msgstr ""
+msgstr "Structures offensives humaines"
 
 #: ui/options_graphics.rml:255
 msgid "Building ranges"
@@ -1554,7 +1555,7 @@ msgstr ""
 
 #: ui/options_player.rml:58
 msgid "Humans and aliens"
-msgstr ""
+msgstr "Humains et extraterrestres"
 
 #: ui/options_player.rml:60
 msgid "First-person weapons"
@@ -1658,13 +1659,12 @@ msgstr "Miniscule"
 
 # Cette traduction est incorrecte en contexte car non accordée
 #: ui/options_ui.rml:36
-#, fuzzy
 msgid "Small"
-msgstr "Petit(e)"
+msgstr "Petite"
 
 #: ui/options_ui.rml:37
 msgid "Regular"
-msgstr ""
+msgstr "Ordinaire"
 
 #: ui/options_ui.rml:38
 msgid "Huge"
@@ -1672,11 +1672,11 @@ msgstr "Énorme"
 
 #: ui/options_ui.rml:44
 msgid "Show ping"
-msgstr ""
+msgstr "Montrer le ping"
 
 #: ui/options_ui.rml:46
 msgid "Time that information takes to get to the server and back."
-msgstr ""
+msgstr "Temps que l’information met à aller au serveur et à en revenir."
 
 #: ui/options_ui.rml:49
 msgid "Show movement speed"
@@ -1712,7 +1712,7 @@ msgstr ""
 
 #: ui/options_welcome.rml:17
 msgid "Select Battlefield"
-msgstr ""
+msgstr "Choisir le champs de bataille"
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
@@ -1736,7 +1736,7 @@ msgstr "Latence"
 
 #: ui/server_browser.rml:50 ui/server_browser.rml:66
 msgid "Connect"
-msgstr ""
+msgstr "Se connecter"
 
 #: ui/server_browser.rml:51 ui/server_browser.rml:67
 msgid "Refresh"
@@ -1756,7 +1756,7 @@ msgstr ""
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
-msgstr ""
+msgstr "Mode développeur (active la triche)"
 
 #: ui/server_create.rml:54
 msgid "Extra packages to load"
@@ -1796,11 +1796,11 @@ msgstr ""
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr ""
+msgstr "Extraterrestres :"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr ""
+msgstr "Humains :"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
@@ -1824,11 +1824,11 @@ msgstr ""
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
-msgstr ""
+msgstr "Autoriser les constructions extraterrestres"
 
 #: ui/server_setup.rml:64
 msgid "Allow human building"
-msgstr ""
+msgstr "Autoriser les constructions humaines"
 
 #: ui/server_setup.rml:67
 msgid "Physics"
@@ -3629,20 +3629,20 @@ msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
 msgstr ""
-"L’équipe des aliens a trop de joueurs. Patientez jusqu’à ce qu’une place se "
-"libère, ou rejoignez l’équipe des humains."
+"L’équipe extraterrestre a trop de joueurs. Patientez jusqu’à ce qu’une place "
+"se libère, ou rejoignez l’équipe humaine."
 
 #: src/cgame/cg_servercmds.cpp:452
 msgid "The alien team has too many players"
-msgstr "L’équipe des aliens a trop de joueurs"
+msgstr "L’équipe extraterrestre a trop de joueurs"
 
 #: src/cgame/cg_servercmds.cpp:456
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
 msgstr ""
-"L’équipe des humains a trop de joueurs. Patientez jusqu’à ce qu’une place se "
-"libère, ou rejoignez l’équipe des aliens."
+"L’équipe humaine a trop de joueurs. Patientez jusqu’à ce qu’une place se "
+"libère, ou rejoignez l’équipe extraterrestre."
 
 #: src/cgame/cg_servercmds.cpp:458
 msgid "The human team has too many players"
@@ -3651,22 +3651,22 @@ msgstr "L’équipe des humains a trop de joueurs"
 #: src/cgame/cg_servercmds.cpp:462
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
-"L’équipe des aliens est verrouillée. Vous ne pouvez pas les rejoindre pour "
-"le moment."
+"L’équipe extraterrestre est verrouillée. Vous ne pouvez pas les rejoindre "
+"pour le moment."
 
 #: src/cgame/cg_servercmds.cpp:464
 msgid "The alien team is locked"
-msgstr "L’équipe des aliens est verrouillée"
+msgstr "L’équipe extraterrestre est verrouillée"
 
 #: src/cgame/cg_servercmds.cpp:468
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
-"L’équipe des humains est verrouillée. Vous ne pouvez pas les rejoindre pour "
-"le moment."
+"L’équipe humaine est verrouillée. Vous ne pouvez pas les rejoindre pour le "
+"moment."
 
 #: src/cgame/cg_servercmds.cpp:470
 msgid "The human team is locked"
-msgstr "L’équipe des humains est verrouillée"
+msgstr "L’équipe humaine est verrouillée"
 
 #: src/cgame/cg_servercmds.cpp:474
 msgid ""
@@ -4401,11 +4401,11 @@ msgstr ""
 
 #: src/sgame/sg_bot.cpp:68
 msgid "Alien bot names:"
-msgstr ""
+msgstr "Noms de bots extraterrestres :"
 
 #: src/sgame/sg_bot.cpp:69
 msgid "Human bot names:"
-msgstr ""
+msgstr "Noms de bots humains :"
 
 #: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
@@ -4445,15 +4445,15 @@ msgstr ""
 
 #: src/sgame/sg_client.cpp:1193
 msgid "$1$^* connected"
-msgstr ""
+msgstr "$1$^* s’est connecté"
 
 #: src/sgame/sg_client.cpp:1274
 msgid "$1$^* is connecting…"
-msgstr ""
+msgstr "$1$^* se connecte…"
 
 #: src/sgame/sg_client.cpp:1340
 msgid "$1$^* entered the game"
-msgstr ""
+msgstr "$1$^* a rejoint la partie"
 
 #: src/sgame/sg_combat.cpp:450
 msgid "Your killer, $1$^*, had $2$ HP."
@@ -4461,23 +4461,23 @@ msgstr ""
 
 #: src/sgame/sg_combat.cpp:1055
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
-msgstr ""
+msgstr "$1$ ^3DÉMONTÉ^* par $2$"
 
 #: src/sgame/sg_combat.cpp:1056
 msgid "$1$ ^3DESTROYED^* by $2$"
-msgstr ""
+msgstr "$1$ ^3DÉTRUIT^* par $2$"
 
 #: src/sgame/sg_main.cpp:1945
 msgid "Timelimit hit"
-msgstr ""
+msgstr "Temps dépassé"
 
 #: src/sgame/sg_main.cpp:1974
 msgid "Humans win"
-msgstr ""
+msgstr "Victoire des humains"
 
 #: src/sgame/sg_main.cpp:1988
 msgid "Aliens win"
-msgstr ""
+msgstr "Victoire des extraterrestres"
 
 #: src/sgame/sg_main.cpp:2183
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
@@ -4515,23 +4515,24 @@ msgstr ""
 
 #: src/sgame/sg_svcmds.cpp:405
 msgid "Alien team has admitted defeat"
-msgstr ""
+msgstr "L’équipe extraterrestre a reconnu sa défaite"
 
 #: src/sgame/sg_svcmds.cpp:410
 msgid "Human team has admitted defeat"
-msgstr ""
+msgstr "L’équipe humaine a reconnu sa défaite"
 
 #: src/sgame/sg_svcmds.cpp:443
 msgid "Evacuation ordered"
-msgstr ""
+msgstr "Évacuation demandée"
 
 #: src/sgame/sg_team.cpp:586
 msgid "Teams are imbalanced. Humans have more players."
-msgstr ""
+msgstr "Les équipes sont déséquilibrées. Les humains ont plus de joueurs."
 
 #: src/sgame/sg_team.cpp:593
 msgid "Teams are imbalanced. Aliens have more players."
 msgstr ""
+"Les équipes sont déséquilibrées. Les extraterrestres ont plus de joueurs."
 
 #: src/shared/bg_misc.cpp:2485
 msgid "spectator"
@@ -4539,7 +4540,7 @@ msgstr "spectateur"
 
 #: src/shared/bg_misc.cpp:2490
 msgid "alien"
-msgstr "alien"
+msgstr "extraterrestre"
 
 #: src/shared/bg_misc.cpp:2495
 msgid "human"
@@ -4551,7 +4552,7 @@ msgstr "spectateurs"
 
 #: src/shared/bg_misc.cpp:2510
 msgid "aliens"
-msgstr "aliens"
+msgstr "extraterrestres"
 
 #: src/shared/bg_misc.cpp:2515
 msgid "humans"
