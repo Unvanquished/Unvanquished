@@ -1223,7 +1223,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 			}
 		}
 
-		zap->effectChannel = G_NewEntity();
+		zap->effectChannel = G_NewEntity( NO_CBSE );
 		zap->effectChannel->s.eType = entityType_t::ET_LEV2_ZAP_CHAIN;
 		zap->effectChannel->classname = "lev2zapchain";
 		UpdateZapEffect( zap );

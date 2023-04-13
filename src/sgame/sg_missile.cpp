@@ -616,7 +616,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 
 	ma = BG_Missile( missile );
 
-	m = G_NewEntity();
+	m = G_NewEntity( NO_CBSE );
 
 	// generic
 	m->s.eType             = entityType_t::ET_MISSILE;
@@ -704,7 +704,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 		}
 	}
 
-	fire = G_NewEntity();
+	fire = G_NewEntity( HAS_CBSE );
 
 	// create a fire entity
 	fire->classname = "fire";

@@ -1574,7 +1574,7 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 	mins[ best ] -= self->config.triggerRange;
 
 	// create a trigger with this size
-	other = G_NewEntity();
+	other = G_NewEntity( NO_CBSE );
 	other->classname = S_DOOR_SENSOR;
 	VectorCopy( mins, other->r.mins );
 	VectorCopy( maxs, other->r.maxs );
@@ -1898,7 +1898,7 @@ void SP_func_door_model( gentity_t *self )
 	}
 
 	//brush model
-	clipBrush = self->clipBrush = G_NewEntity();
+	clipBrush = self->clipBrush = G_NewEntity( NO_CBSE );
 	clipBrush->model = self->model;
 	trap_SetBrushModel( clipBrush, clipBrush->model );
 	clipBrush->s.eType = entityType_t::ET_INVISIBLE;
@@ -2047,7 +2047,7 @@ static void SpawnPlatSensor( gentity_t *self )
 
 	// the middle trigger will be a thin trigger just
 	// above the starting position
-	sensor = G_NewEntity();
+	sensor = G_NewEntity( NO_CBSE );
 	sensor->classname = S_PLAT_SENSOR;
 	sensor->touch = Touch_PlatCenterTrigger;
 	sensor->r.contents = CONTENTS_TRIGGER;
