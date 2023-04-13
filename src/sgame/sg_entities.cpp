@@ -74,7 +74,7 @@ void G_InitGentity( gentity_t *entity )
 
 /*
 =================
-G_NewEntity
+FindEntitySlot
 
 Either finds a free entity, or allocates a new one.
 
@@ -87,7 +87,7 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-gentity_t *G_NewEntity()
+static gentity_t *FindEntitySlot()
 {
 	// we iterate through all the entities and look for a free one that was allocated enough time ago,
 	// as well as one that died recently in case the first kind is not available
@@ -113,7 +113,6 @@ gentity_t *G_NewEntity()
 		}
 
 		// reuse this slot
-		G_InitGentity( newEntity );
 		return newEntity;
 	}
 
@@ -127,7 +126,6 @@ gentity_t *G_NewEntity()
 				              forcedEnt->num(), forcedEnt->freetime, level.time - forcedEnt->freetime );
 			}
 			// reuse this slot
-			G_InitGentity( forcedEnt );
 			return forcedEnt;
 		}
 
@@ -136,7 +134,7 @@ gentity_t *G_NewEntity()
 			Log::Warn( "%4i: %s", i, g_entities[ i ].classname );
 		}
 
-		Sys::Drop( "G_Spawn: no free entities" );
+		Sys::Drop( "FindEntitySlot: no free entities" );
 	}
 
 	// open up a new slot
@@ -146,8 +144,14 @@ gentity_t *G_NewEntity()
 	trap_LocateGameData( level.num_entities, sizeof( gentity_t ),
 	                     sizeof( level.clients[ 0 ] ) );
 
-	G_InitGentity( newEntity );
 	return newEntity;
+}
+
+gentity_t *G_NewEntity()
+{
+	gentity_t *ent = FindEntitySlot();
+	G_InitGentity( ent );
+	return ent;
 }
 
 /*
