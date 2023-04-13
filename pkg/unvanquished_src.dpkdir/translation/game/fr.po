@@ -1687,17 +1687,16 @@ msgstr ""
 
 #: ui/options_ui.rml:35 ingame_options.menu:240 options.menu:251
 msgid "Tiny"
-msgstr "Miniscule"
+msgstr "Minuscule"
 
 # Cette traduction est incorrecte en contexte car non accordée
-#: ui/options_ui.rml:36 ingame_options.menu:240 options.menu:251
-#, fuzzy
+#: ui/options_ui.rml:36
 msgid "Small"
-msgstr "Petit(e)"
+msgstr "Petite"
 
 #: ui/options_ui.rml:37
 msgid "Regular"
-msgstr ""
+msgstr "Ordinaire"
 
 #: ui/options_ui.rml:38 ingame_options.menu:240 options.menu:251
 msgid "Huge"
@@ -1705,15 +1704,15 @@ msgstr "Énorme"
 
 #: ui/options_ui.rml:44
 msgid "Show ping"
-msgstr ""
+msgstr "Montrer le ping"
 
 #: ui/options_ui.rml:46
 msgid "Time that information takes to get to the server and back."
-msgstr ""
+msgstr "Temps que cette information met à aller au serveur et revenir."
 
 #: ui/options_ui.rml:49
 msgid "Show movement speed"
-msgstr ""
+msgstr "Afficher la vitesse de mouvement"
 
 #: ui/options_ui.rml:51
 msgid "Current, maximum and graph of movement-speed."
