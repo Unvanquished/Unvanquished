@@ -429,7 +429,7 @@ static void SpawnCorpse( gentity_t *ent )
 		return;
 	}
 
-	body = G_NewEntity();
+	body = G_NewEntity( NO_CBSE );
 
 	VectorCopy( ent->s.apos.trBase, body->s.angles );
 	body->s.eFlags = EF_DEAD;

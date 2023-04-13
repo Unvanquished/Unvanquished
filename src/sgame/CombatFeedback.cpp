@@ -63,7 +63,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 	if (lethal)
 		flags |= HIT_LETHAL;
 
-	event = G_NewEntity();
+	event = G_NewEntity( NO_CBSE );
 	event->s.eType = Util::enum_cast<entityType_t>(Util::ordinal(
 	                 entityType_t::ET_EVENTS) + EV_HIT);
 

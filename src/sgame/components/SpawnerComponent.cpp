@@ -38,11 +38,6 @@ void SpawnerComponent::Think(int timeDelta) {
 	Entity* blocker = GetBlocker();
 
 	if (blocker) {
-		if (!blocker->oldEnt) {
-			logger.Warn("Spawn blocking entity has oldEnt == nullptr");
-			return;
-		}
-
 		// Suicide if blocked by the map.
 		if (blocker->oldEnt->num() == ENTITYNUM_WORLD
 		    || blocker->oldEnt->s.eType == entityType_t::ET_MOVER) {

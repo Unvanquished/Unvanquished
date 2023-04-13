@@ -531,10 +531,7 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	}
 	level.gentities = g_entities;
 
-	// entity used as drop-in for unmigrated entities
-	level.emptyEntity = new EmptyEntity({ nullptr });
-
-	// initialize special entities so they don't need to be special cased in the CBSE code later on
+	// initialize special entities
 	G_InitGentityMinimal( g_entities + ENTITYNUM_NONE );
 	G_InitGentityMinimal( g_entities + ENTITYNUM_WORLD );
 
@@ -733,16 +730,10 @@ void G_ShutdownGame( int /* restart */ )
 
 	/*
 	 * delete cbse entities attached to gentities
-	 * note, that this does not deal with several gentities having the same Entity attached
-	 * (except for the EmptyEntity) as we'd otherwise be trying to delete dangling pointers
 	 */
 	for (int i = 0; i < level.num_entities; i++) {
-		Entity* entity = level.gentities[i].entity;
-		if (entity != level.emptyEntity)
-			delete entity;
+		delete level.gentities[i].entity;
 	}
-
-	delete level.emptyEntity;
 
 	Parse_FreeGlobalDefines();
 }
@@ -2246,6 +2237,9 @@ void G_RunThink( gentity_t *ent )
 		ent->nextthink = 0;
 		ent->think(ent);
 	}
+
+	if ( !ent->inuse )
+		return;
 
 	// Free entities with FREE_AFTER_THINKING set.
 	if ((deferredFreeing = ent->entity->Get<DeferredFreeingComponent>())) {

@@ -765,12 +765,6 @@ struct level_locals_t
 	vec3_t           intermission_origin; // also used for spectator spawns
 	vec3_t           intermission_angle;
 
-	/**
-	 *  drop-in for yet unmigrated entities
-	 */
-	Entity* emptyEntity;
-
-
 	gentity_t        *locationHead; // head of the location list
 	gentity_t        *fakeLocation; // fake location for anything which might need one
 

@@ -570,7 +570,7 @@ static void Cmd_Devteam_f( gentity_t *ent )
 	ent->client->pers.teamInfo = level.startTime - 1;
 	ent->client->sess.spectatorState = SPECTATOR_NOT;
 
-	spawn = G_NewEntity();
+	spawn = G_NewEntity( NO_CBSE );
 	VectorCopy( ent->s.pos.trBase, spawn->s.pos.trBase );
 	VectorCopy( ent->s.angles, spawn->s.angles );
 	VectorCopy( ent->s.origin, spawn->s.origin );

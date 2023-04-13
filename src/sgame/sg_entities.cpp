@@ -47,17 +47,18 @@ basic gentity lifecycle handling
 =================================================================================
 */
 
-/**
- * @brief Every entity slot is initialized like this, including the world and none
- */
+// init the CBSE entity for an entity without any CBSE logic
 void G_InitGentityMinimal( gentity_t *entity )
 {
-	entity->entity = level.emptyEntity;
+	EmptyEntity::Params params;
+	params.oldEnt = entity;
+	entity->entity = new EmptyEntity( params );
 }
 
 void G_InitGentity( gentity_t *entity )
 {
-	G_InitGentityMinimal( entity );
+	ASSERT( !entity->inuse );
+	ASSERT_EQ( entity->entity, nullptr );
 	++entity->generation;
 	entity->inuse = true;
 	entity->enabled = true;
@@ -147,10 +148,14 @@ static gentity_t *FindEntitySlot()
 	return newEntity;
 }
 
-gentity_t *G_NewEntity()
+gentity_t *G_NewEntity( initEntityStyle_t style )
 {
 	gentity_t *ent = FindEntitySlot();
 	G_InitGentity( ent );
+	if ( style == NO_CBSE )
+	{
+		G_InitGentityMinimal( ent );
+	}
 	return ent;
 }
 
@@ -183,10 +188,7 @@ void G_FreeEntity( gentity_t *entity )
 		BaseClustering::Remove(entity);
 	}
 
-	if (entity->entity != level.emptyEntity)
-	{
-		delete entity->entity;
-	}
+	delete entity->entity;
 
 	unsigned generation = entity->generation;
 
@@ -194,7 +196,7 @@ void G_FreeEntity( gentity_t *entity )
 	new(entity) gentity_t{};
 
 	entity->generation = generation + 1;
-	entity->entity = level.emptyEntity;
+	entity->entity = nullptr;
 	entity->classname = "freent";
 	entity->freetime = level.time;
 	entity->inuse = false;
@@ -214,7 +216,7 @@ gentity_t *G_NewTempEntity( glm::vec3 origin, int event )
 {
 	gentity_t *newEntity;
 
-	newEntity = G_NewEntity();
+	newEntity = G_NewEntity( NO_CBSE );
 	newEntity->s.eType = Util::enum_cast<entityType_t>( Util::ordinal(entityType_t::ET_EVENTS) + event );
 
 	newEntity->classname = "tempEntity";
