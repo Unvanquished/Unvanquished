@@ -1436,9 +1436,9 @@ struct rocketDataSource_t
 
 	int selectedSpawnOptions[ NUM_TEAMS ];
 
-	int armouryBuyList[3][ ( WP_LUCIFER_CANNON - WP_BLASTER ) + UP_NUM_UPGRADES + 1 ];
-	int selectedArmouryBuyItem[3];
-	int armouryBuyListCount[3];
+	int armouryBuyList[2][ ( WP_LUCIFER_CANNON - WP_BLASTER ) + UP_NUM_UPGRADES + 1 ];
+	int selectedArmouryBuyItem[2];
+	int armouryBuyListCount[2];
 };
 
 struct rocketInfo_t
