@@ -1201,8 +1201,8 @@ static bool PM_CheckWallJump()
 
 	pm->ps->groundEntityNum = ENTITYNUM_NONE;
 
-	ProjectPointOnPlane( forward, pml.forward, pm->ps->grapplePoint );
-	ProjectPointOnPlane( right, pml.right, pm->ps->grapplePoint );
+	ProjectPointOnPlane( forward, pml.forward, &pm->ps->grapplePoint[0] );
+	ProjectPointOnPlane( right, pml.right, &pm->ps->grapplePoint[0] );
 
 	VectorScale( pm->ps->grapplePoint, normalFraction, dir );
 
@@ -2727,8 +2727,8 @@ static void PM_GroundClimbTrace()
 					if ( fabsf( DotProduct( surfNormal, trace.plane.normal ) ) < ( 1.0f - eps ) )
 					{
 						// we had a smooth transition, rotate along old surface x new surface
-						CrossProduct( surfNormal, trace.plane.normal, pm->ps->grapplePoint );
-						VectorNormalize( pm->ps->grapplePoint ); // necessary?
+						pm->ps->grapplePoint = glm::cross( VEC2GLM( surfNormal ), VEC2GLM( trace.plane.normal ) );
+						pm->ps->grapplePoint = glm::normalize( pm->ps->grapplePoint ); // necessary?
 					}
 					else
 					{
@@ -2737,13 +2737,13 @@ static void PM_GroundClimbTrace()
 						pm->ps->grapplePoint[ 2 ] = 0.0f;
 
 						// sanity check grapplePoint, use an arbitrary axis as fallback
-						if ( VectorLength( pm->ps->grapplePoint ) < eps )
+						if ( glm::length( pm->ps->grapplePoint ) < eps )
 						{
-							VectorCopy( horizontal, pm->ps->grapplePoint );
+							pm->ps->grapplePoint = VEC2GLM( horizontal );
 						}
 						else
 						{
-							VectorNormalize( pm->ps->grapplePoint );
+							pm->ps->grapplePoint = glm::normalize( pm->ps->grapplePoint );
 						}
 					}
 
@@ -2756,7 +2756,7 @@ static void PM_GroundClimbTrace()
 				if ( VectorCompareEpsilon( surfNormal, ceilingNormal, eps ) )
 				{
 					vectoangles( trace.plane.normal, toAngles );
-					vectoangles( pm->ps->grapplePoint, surfAngles );
+					vectoangles( &pm->ps->grapplePoint[0], surfAngles );
 
 					pm->ps->delta_angles[ 1 ] -= ANGLE2SHORT( ( ( surfAngles[ 1 ] - toAngles[ 1 ] ) * 2 ) - 180.0f );
 				}
@@ -4391,7 +4391,7 @@ void PM_UpdateViewAngles( playerState_t *ps, const usercmd_t *cmd )
 	AnglesToAxis( tempang, axis );
 
 	if ( !( ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) ||
-	     !BG_RotateAxis( ps->grapplePoint, axis, rotaxis, false,
+	     !BG_RotateAxis( &ps->grapplePoint[0], axis, rotaxis, false,
 	                     ps->eFlags & EF_WALLCLIMBCEILING ) )
 	{
 		AxisCopy( axis, rotaxis );

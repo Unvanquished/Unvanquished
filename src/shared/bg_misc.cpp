@@ -2606,6 +2606,7 @@ const char *Trans_GenderContext( gender_t gender )
 
 // using the stringizing operator to save typing...
 #define PSF( x ) # x, offsetof( playerState_t, x )
+#define STR( x ) # x
 
 static const NetcodeTable playerStateFields =
 {
@@ -2660,9 +2661,9 @@ static const NetcodeTable playerStateFields =
 	{ PSF( damageCount       ), 8                , 0 },
 	{ PSF( generic1          ), 10               , 0 },
 	{ PSF( loopSound         ), 16               , 0 },
-	{ PSF( grapplePoint[ 0 ] ), 0                , 0 },
-	{ PSF( grapplePoint[ 1 ] ), 0                , 0 },
-	{ PSF( grapplePoint[ 2 ] ), 0                , 0 },
+	{ PSF( grapplePoint.x    ), 0                , 0 },
+	{ PSF( grapplePoint.y    ), 0                , 0 },
+	{ PSF( grapplePoint.z    ), 0                , 0 },
 	{ PSF( ammo              ), 12               , 0 },
 	{ PSF( clips             ), 4                , 0 },
 	{ PSF( tauntTimer        ), 12               , 0 },
@@ -2692,7 +2693,7 @@ glm::vec3 BG_GetClientNormal( const playerState_t *ps )
 		{
 			return glm::vec3( 0, 0, -1 );
 		}
-		return VEC2GLM( ps->grapplePoint );
+		return ps->grapplePoint;
 	}
 	return glm::vec3( 0, 0, 1 );
 }

@@ -142,7 +142,7 @@ struct playerState_t
 
 	int           generic1;
 	int           loopSound;
-	vec3_t        grapplePoint; // location of grapple to pull towards if PMF_GRAPPLE_PULL
+	glm::vec3 grapplePoint; // location of grapple to pull towards if PMF_GRAPPLE_PULL
 	int           weaponAnim; // mask off ANIM_TOGGLEBIT
 	int           ammo;
 	int           clips; // clips held

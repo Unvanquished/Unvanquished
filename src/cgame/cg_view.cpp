@@ -383,7 +383,7 @@ void CG_OffsetThirdPersonView()
 		AnglesToAxis( rotationAngles, axis );
 
 		if ( !( cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING ) ||
-		     !BG_RotateAxis( cg.snap->ps.grapplePoint, axis, rotaxis, false,
+		     !BG_RotateAxis( &cg.snap->ps.grapplePoint[0], axis, rotaxis, false,
 		                     cg.snap->ps.eFlags & EF_WALLCLIMBCEILING ) )
 		{
 			AxisCopy( axis, rotaxis );
@@ -517,7 +517,7 @@ void CG_OffsetShoulderView()
 	AnglesToAxis( rotationAngles, axis );
 
 	if ( !( cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING ) ||
-	     !BG_RotateAxis( cg.snap->ps.grapplePoint, axis, rotaxis, false,
+	     !BG_RotateAxis( &cg.snap->ps.grapplePoint[0], axis, rotaxis, false,
 	                     cg.snap->ps.eFlags & EF_WALLCLIMBCEILING ) )
 	{
 		AxisCopy( axis, rotaxis );
