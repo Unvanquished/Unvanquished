@@ -355,6 +355,11 @@ PM_ClipVelocity
 Slide off of the impacting surface
 ==================
 */
+static glm::vec3 PM_ClipVelocity( const glm::vec3& in, const glm::vec3& normal )
+{
+	return in - glm::dot( in, normal ) * normal;
+}
+
 static void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out )
 {
 	float t = -DotProduct( in, normal );
@@ -1830,7 +1835,7 @@ static void PM_WaterMove()
 	{
 		float vel = glm::length( pm->ps->velocity );
 		// slide along the ground plane
-		PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
+		pm->ps->velocity = PM_ClipVelocity( pm->ps->velocity, VEC2GLM( pml.groundTrace.plane.normal ) );
 		pm->ps->velocity = glm::normalize(  pm->ps->velocity ) * vel;
 	}
 
@@ -1917,7 +1922,7 @@ static void PM_AirMove()
 	// slide along the steep plane
 	if ( pml.groundPlane )
 	{
-		PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
+		pm->ps->velocity = PM_ClipVelocity( pm->ps->velocity, VEC2GLM( pml.groundTrace.plane.normal ) );
 	}
 
 	PM_StepSlideMove( true, false );
@@ -1991,7 +1996,7 @@ static void PM_ClimbMove()
 	float vel = glm::length( pm->ps->velocity );
 
 	// slide along the ground plane
-	PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
+	pm->ps->velocity = PM_ClipVelocity( pm->ps->velocity, VEC2GLM( pml.groundTrace.plane.normal ) );
 
 	// don't decrease velocity when going up or down a slope
 	pm->ps->velocity = glm::normalize( pm->ps->velocity );
@@ -2096,7 +2101,7 @@ static void PM_WalkMove()
 	Slide( wishdir, wishspeed, *pm->ps );
 
 	// slide along the ground plane
-	PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
+	pm->ps->velocity = PM_ClipVelocity( pm->ps->velocity, VEC2GLM( pml.groundTrace.plane.normal ) );
 
 	// don't do anything if standing still
 	if ( !pm->ps->velocity[ 0 ] && !pm->ps->velocity[ 1 ] )
@@ -2136,7 +2141,7 @@ static void PM_LadderMove()
 		float vel = glm::length( pm->ps->velocity );
 
 		// slide along the ground plane
-		PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
+		pm->ps->velocity = PM_ClipVelocity( pm->ps->velocity, VEC2GLM( pml.groundTrace.plane.normal ) );
 
 		pm->ps->velocity = glm::normalize( pm->ps->velocity ) * vel;
 	}
@@ -4845,7 +4850,7 @@ static bool  PM_SlideMove( bool gravity )
 		if ( pml.groundPlane )
 		{
 			// slide along the ground plane
-			PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
+			pm->ps->velocity = PM_ClipVelocity( pm->ps->velocity, VEC2GLM( pml.groundTrace.plane.normal ) );
 		}
 	}
 
@@ -5136,7 +5141,7 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 
 		if ( trace.fraction < 1.0f )
 		{
-			PM_ClipVelocity( &pm->ps->velocity[0], trace.plane.normal, &pm->ps->velocity[0] );
+			pm->ps->velocity = PM_ClipVelocity( pm->ps->velocity, VEC2GLM( trace.plane.normal ) );
 		}
 	}
 
