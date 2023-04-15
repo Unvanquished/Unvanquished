@@ -851,18 +851,18 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 	gentity_t *traceEnt, *target;
 	gclient_t *client;
 	team_t    team;
-	vec3_t viewOrigin, forward, end;
 
 	if ( !( client = self->client ) ) return;
 
 	team = (team_t)client->pers.team;
 
-	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 65536, forward, end );
+	glm::vec3 forward;
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
+	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	glm::vec3 end = viewOrigin + 65536.f * forward;
 
-	G_UnlaggedOn( self, viewOrigin, 65536 );
-	traceEnt = Beacon::TagTrace( viewOrigin, end, self->s.number, MASK_SHOT, team, true );
+	G_UnlaggedOn( self, &viewOrigin[0], 65536 );
+	traceEnt = Beacon::TagTrace( &viewOrigin[0], &end[0], self->s.number, MASK_SHOT, team, true );
 	G_UnlaggedOff( );
 
 	for ( target = nullptr; ( target = G_IterateEntities( target ) ); )
@@ -1254,7 +1254,7 @@ static void SendPendingPredictableEvents( playerState_t *ps )
 		extEvent = ps->externalEvent;
 		ps->externalEvent = 0;
 		// create temporary entity for event
-		t = G_NewTempEntity( VEC2GLM( ps->origin ), event );
+		t = G_NewTempEntity( ps->origin, event );
 		number = t->s.number;
 		BG_PlayerStateToEntityState( ps, &t->s, true );
 		t->s.number = number;
@@ -1618,12 +1618,13 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	calc = &ent->client->unlaggedCalc;
 
 	// if the client isn't moving, this is not necessary
-	if ( VectorCompare( ent->client->oldOrigin, ent->client->ps.origin ) )
+	glm::vec3 oldOrigin = VEC2GLM( ent->client->oldOrigin );
+	if ( glm::all( glm::equal( oldOrigin, ent->client->ps.origin ) ) )
 	{
 		return;
 	}
 
-	range = Distance( ent->client->oldOrigin, ent->client->ps.origin );
+	range = glm::distance( oldOrigin, ent->client->ps.origin );
 
 	// increase the range by the player's largest possible radius since it's
 	// the players bounding box that collides, not their origin
@@ -1634,7 +1635,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
 
 	trap_Trace( &tr, ent->client->oldOrigin, ent->r.mins, ent->r.maxs,
-	            ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	            &ent->client->ps.origin[0], ent->s.number, MASK_PLAYERSOLID, 0 );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
 	{
@@ -2237,7 +2238,7 @@ static void ClientThink_real( gentity_t *self )
 		else
 		{
 			// no entity in front of player - do a small area search
-			for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, VEC2GLM( client->ps.origin ), ENTITY_USE_RANGE ) ); )
+			for ( ent = nullptr; ( ent = G_IterateEntitiesWithinRadius( ent, client->ps.origin, ENTITY_USE_RANGE ) ); )
 			{
 				if ( ent && ent->use && ent->buildableTeam == client->pers.team)
 				{

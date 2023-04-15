@@ -1424,7 +1424,7 @@ void CG_AddPacketEntities()
 
 	if ( cg_drawDebugDistance.Get() > 0.0f )
 	{
-		CG_DrawSphere( cg.snap->ps.origin, cg_drawDebugDistance.Get(),
+		CG_DrawSphere( &cg.snap->ps.origin[0], cg_drawDebugDistance.Get(),
 		               cgs.media.plainColorShader, Color::Color(0, 0.5, 1, 0.2) );
 	}
 }

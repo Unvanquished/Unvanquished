@@ -1636,10 +1636,10 @@ static int CG_CalcViewValues()
 
 	ps = &cg.predictedPlayerState;
 
-	CG_CalcColorGradingForPoint( ps->origin );
+	CG_CalcColorGradingForPoint( &ps->origin[0] );
 	CG_AddColorGradingEffects( ps );
 
-	CG_AddReverbEffects( ps->origin );
+	CG_AddReverbEffects( &ps->origin[0] );
 
 	// intermission view
 	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_FREEZE ||

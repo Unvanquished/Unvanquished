@@ -419,7 +419,7 @@ static void CG_TouchTriggerPrediction()
 			continue;
 		}
 
-		CM_BoxTrace( &trace, cg.predictedPlayerState.origin, cg.predictedPlayerState.origin, cg_pmove.mins, cg_pmove.maxs, cmodel, MASK_ALL, 0, traceType_t::TT_AABB );
+		CM_BoxTrace( &trace, &cg.predictedPlayerState.origin[0], &cg.predictedPlayerState.origin[0], cg_pmove.mins, cg_pmove.maxs, cmodel, MASK_ALL, 0, traceType_t::TT_AABB );
 
 		if ( !trace.startsolid )
 		{
@@ -849,12 +849,12 @@ void CG_PredictPlayerState()
 			else
 			{
 				vec3_t adjusted, new_angles;
-				CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
+				CG_AdjustPositionForMover( &cg.predictedPlayerState.origin[0],
 				                           cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted, cg.predictedPlayerState.viewangles, new_angles );
 
 				if ( cg_showmiss.Get() )
 				{
-					if ( !VectorCompare( oldPlayerState.origin, adjusted ) )
+					if ( !VectorCompare( &oldPlayerState.origin[0], adjusted ) )
 					{
 						Log::Debug( "prediction error" );
 					}
@@ -949,9 +949,9 @@ void CG_PredictPlayerState()
 	}
 
 	// adjust for the movement of the groundentity
-	CG_AdjustPositionForMover( cg.predictedPlayerState.origin,
+	CG_AdjustPositionForMover( &cg.predictedPlayerState.origin[0],
 	                           cg.predictedPlayerState.groundEntityNum,
-	                           cg.physicsTime, cg.time, cg.predictedPlayerState.origin, cg.predictedPlayerState.viewangles, cg.predictedPlayerState.viewangles);
+	                           cg.physicsTime, cg.time, &cg.predictedPlayerState.origin[0], cg.predictedPlayerState.viewangles, cg.predictedPlayerState.viewangles);
 
 	// fire events and other transition triggered things
 	CG_TransitionPlayerState( &cg.predictedPlayerState, &oldPlayerState );

@@ -260,7 +260,7 @@ static bool LoadImplicitBeacons()
 			// Add alpha fade at the borders of the sense range.
 			beacon->alphaMod = Math::Clamp(
 				( ( (float)ALIENSENSE_RANGE -
-			        Distance( cg.predictedPlayerState.origin, beacon->origin ) ) /
+			        Distance( &cg.predictedPlayerState.origin[0], beacon->origin ) ) /
 			      ( ALIENSENSE_BORDER_FRAC * (float)ALIENSENSE_RANGE ) ), 0.0f, 1.0f );
 
 			// A value of 0 means the target is out of range, don't create a beacon in that case.
@@ -371,7 +371,7 @@ static void SetHighlightedBeacon()
 		VectorSubtract( beacon->origin, cg.refdef.vieworg, delta );
 		VectorNormalize( delta );
 		beacon->dot = DotProduct( delta, cg.refdef.viewaxis[ 0 ] );
-		beacon->dist = Distance( cg.predictedPlayerState.origin, beacon->origin );
+		beacon->dist = Distance( &cg.predictedPlayerState.origin[0], beacon->origin );
 
 		// Set highlighted beacon to smallest angle below threshold.
 		if( beacon->dot > cgs.bc.highlightAngle &&

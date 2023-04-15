@@ -76,7 +76,7 @@ static gentity_t *G_TestEntityPosition( gentity_t *ent )
 
 	if ( ent->client )
 	{
-		trap_Trace( &tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin,
+		trap_Trace( &tr, ent->client->ps.origin, VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), ent->client->ps.origin,
 		            ent->num(), ent->clipmask, 0 );
 	}
 	else

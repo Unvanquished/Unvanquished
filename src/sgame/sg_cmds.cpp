@@ -1931,8 +1931,8 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 
 	// check there are no humans nearby
 	glm::vec3 range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
-	glm::vec3 maxs = VEC2GLM( ent->client->ps.origin ) + range;
-	glm::vec3 mins = VEC2GLM( ent->client->ps.origin ) - range;
+	glm::vec3 maxs = ent->client->ps.origin + range;
+	glm::vec3 mins = ent->client->ps.origin - range;
 
 	int entityList[ MAX_GENTITIES ];
 	int num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
@@ -2242,12 +2242,12 @@ Cmd_Ignite_f
 */
 static void Cmd_Ignite_f( gentity_t *player )
 {
-	vec3_t    viewOrigin, forward, end;
 	trace_t   trace;
 
-	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
-	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 1000, forward, end );
+	glm::vec3 forward;
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &player->client->ps );
+	AngleVectors( player->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	glm::vec3 end = viewOrigin + forward * 1000.f;
 	trace = G_RayTrace( viewOrigin, end, player->num(), MASK_PLAYERSOLID, 0 );
 
 	if ( trace.entityNum == ENTITYNUM_WORLD ) {
@@ -2510,7 +2510,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 	upgrade_t upgrade;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( &ent->client->ps.origin[0], ENTITY_USE_RANGE, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		return false;
@@ -2666,7 +2666,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 	upgrade = BG_UpgradeByName( s )->number;
 
 	// check if armoury is in reach
-	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( &ent->client->ps.origin[0], ENTITY_USE_RANGE, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 
@@ -4044,7 +4044,6 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	beaconType_t type;
 	team_t       team;
 	int          flags;
-	vec3_t       origin, end, forward;
 	trace_t      tr;
 	const beaconAttributes_t *battr;
 
@@ -4075,13 +4074,14 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	team  = (team_t)ent->client->pers.team;
 
 	// Trace in view direction.
-	BG_GetClientViewOrigin( &ent->client->ps, origin );
-	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( origin, 65536, forward, end );
+	glm::vec3 forward;
+	glm::vec3 origin = BG_GetClientViewOrigin( &ent->client->ps );
+	AngleVectors( ent->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	glm::vec3 end = origin + 65536.f * forward;
 
-	G_UnlaggedOn( ent, origin, 65536 );
+	G_UnlaggedOn( ent, &origin[0], 65536 );
 	tr = G_RayTrace( origin, end, ent->num(), MASK_PLAYERSOLID, 0 );
-	G_UnlaggedOff( );
+	G_UnlaggedOff();
 
 	// Evaluate flood limit.
 	if( G_FloodLimited( ent ) )

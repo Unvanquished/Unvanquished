@@ -2148,7 +2148,7 @@ static bool BotChangeClass( gentity_t *self, class_t newClass )
 	{
 		return false;
 	}
-	VectorCopy( newOrigin, self->client->ps.origin );
+	self->client->ps.origin = newOrigin;
 	self->client->ps.stats[ STAT_CLASS ] = newClass;
 	self->client->pers.classSelection = newClass;
 	BotSetNavmesh( self, newClass );
@@ -2346,7 +2346,7 @@ void BotSellWeapons( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( &self->client->ps.origin[0], ENTITY_USE_RANGE, BA_H_ARMOURY ) )
 	{
 		return;
 	}
@@ -2386,7 +2386,7 @@ void BotSellUpgrades( gentity_t *self )
 	int i;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( self->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( &self->client->ps.origin[0], ENTITY_USE_RANGE, BA_H_ARMOURY ) )
 	{
 		return;
 	}
@@ -2408,7 +2408,7 @@ void BotSellUpgrades( gentity_t *self )
 				{
 					continue;
 				}
-				VectorCopy( newOrigin, self->client->ps.origin );
+				self->client->ps.origin = newOrigin;
 				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
 				self->client->pers.classSelection = PCL_HUMAN_NAKED;
 				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
@@ -2517,7 +2517,7 @@ void BotSearchForEnemy( gentity_t *self )
 void BotResetStuckTime( gentity_t *self )
 {
 	self->botMind->stuckTime = level.time;
-	self->botMind->stuckPosition = VEC2GLM( self->client->ps.origin );
+	self->botMind->stuckPosition = self->client->ps.origin;
 }
 
 void BotCalculateStuckTime( gentity_t *self )
@@ -2525,7 +2525,7 @@ void BotCalculateStuckTime( gentity_t *self )
 	// last think time condition to avoid stuck condition after respawn or /pause
 	bool dataValid = level.time - self->botMind->lastThink < 1000;
 	if ( !dataValid
-			|| glm::distance2( self->botMind->stuckPosition, VEC2GLM( self->client->ps.origin ) ) >= Square( BOT_STUCK_RADIUS ) )
+			|| glm::distance2( self->botMind->stuckPosition, self->client->ps.origin ) >= Square( BOT_STUCK_RADIUS ) )
 	{
 		BotResetStuckTime( self );
 	}

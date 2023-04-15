@@ -65,7 +65,7 @@ static bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	AngleVectors( ps->viewangles, forward, nullptr, nullptr );
 	VectorMA( ps->origin, 8096, forward, end );
 
-	CM_BoxTrace( &trace, ps->origin, end, nullptr, nullptr, 0,
+	CM_BoxTrace( &trace, &ps->origin[0], end, nullptr, nullptr, 0,
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP, 0, traceType_t::TT_AABB );
 
 	pos = qVec( trace.endpos );

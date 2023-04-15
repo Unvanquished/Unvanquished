@@ -1070,7 +1070,6 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 {
-	vec3_t viewOrigin, forward, end;
 	trace_t trace;
 	gentity_t *buildable;
 
@@ -1082,9 +1081,10 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	}
 
 	// Trace for target.
-	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
-	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, BUILDER_DECONSTRUCT_RANGE, forward, end );
+	glm::vec3 forward;
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &ent->client->ps );
+	AngleVectors( ent->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	glm::vec3 end = viewOrigin + BUILDER_DECONSTRUCT_RANGE * forward;
 	trace = G_RayTrace( viewOrigin, end, ent->num(), MASK_PLAYERSOLID, 0 );
 	buildable = &g_entities[ trace.entityNum ];
 
@@ -1558,7 +1558,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, trap_Trace, entity_origin, angles, &tr1 );
 	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
-	tr3 = G_RayTrace( ps->origin, entity_origin, ent->num(), MASK_PLAYERSOLID, 0 );
+	tr3 = G_RayTrace( ps->origin, VEC2GLM( entity_origin ), ent->num(), MASK_PLAYERSOLID, 0 );
 
 	VectorCopy( entity_origin, origin );
 	*groundEntNum = tr1.entityNum;
@@ -2072,13 +2072,13 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	float  dist;
 	vec3_t origin, normal;
 	int    groundEntNum;
-	vec3_t forward, aimDir;
 
 	BG_GetClientNormal( &ent->client->ps, normal);
-	AngleVectors( ent->client->ps.viewangles, aimDir, nullptr, nullptr );
-	ProjectPointOnPlane( forward, aimDir, normal );
-	VectorNormalize( forward );
-	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+	glm::vec3 forward, aimDir;
+	AngleVectors( ent->client->ps.viewangles, &aimDir[0], nullptr, nullptr );
+	ProjectPointOnPlane( &forward[0], &aimDir[0], normal );
+	forward = glm::normalize( forward );
+	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * glm::dot( forward, aimDir );
 
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{

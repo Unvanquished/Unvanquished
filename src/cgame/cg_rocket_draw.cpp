@@ -1171,7 +1171,7 @@ public:
 
 		if ( es.eType == entityType_t::ET_BUILDABLE
 				&& es.modelindex == BA_H_ARMOURY
-				&& Distance(cg.predictedPlayerState.origin, es.origin) < ENTITY_USE_RANGE - 0.2f // use an epsilon to account for rounding errors
+				&& Distance(&cg.predictedPlayerState.origin[0], es.origin) < ENTITY_USE_RANGE - 0.2f // use an epsilon to account for rounding errors
 				&& CG_IsOnMyTeam(es) )
 		{
 			if ( !IsVisible() )

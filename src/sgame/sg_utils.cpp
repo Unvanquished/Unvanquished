@@ -988,7 +988,7 @@ Set muzzle location relative to pivoting eye.
 */
 glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward )
 {
-	glm::vec3 muzzlePoint = VEC2GLM( self->client->ps.origin );
+	glm::vec3 muzzlePoint = self->client->ps.origin;
 	glm::vec3 normal = BG_GetClientNormal( &self->client->ps );
 	muzzlePoint += static_cast<float>( self->client->ps.viewheight ) * normal;
 	muzzlePoint += 1.0f * forward;

@@ -68,7 +68,7 @@ DEPRECATED inline glm::vec3 VEC2GLM( glm::vec3 v ) {
 struct playerState_t
 {
 	// the first group of fields must be identical to the ones in OpaquePlayerState
-	vec3_t origin;
+	glm::vec3 origin;
 	int ping; // server to game info for scoreboard
 	int persistant[16];
 	int    viewheight;

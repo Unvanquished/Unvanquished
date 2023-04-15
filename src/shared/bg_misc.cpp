@@ -2619,9 +2619,9 @@ static const NetcodeTable playerStateFields =
 	{ PSF( pm_flags          ), 16               , 0 },
 	{ PSF( pm_time           ), -16              , 0 },
 	{ PSF( lowOxygenTime     ), LOW_OXYGEN_TIME_BITS, 0 },
-	{ PSF( origin[ 0 ]       ), 0                , 0 },
-	{ PSF( origin[ 1 ]       ), 0                , 0 },
-	{ PSF( origin[ 2 ]       ), 0                , 0 },
+	{ PSF( origin.x          ), 0                , 0 },
+	{ PSF( origin.y          ), 0                , 0 },
+	{ PSF( origin.z          ), 0                , 0 },
 	{ PSF( velocity.x        ), 0                , 0 },
 	{ PSF( velocity.y        ), 0                , 0 },
 	{ PSF( velocity.z        ), 0                , 0 },
@@ -2700,7 +2700,7 @@ glm::vec3 BG_GetClientNormal( const playerState_t *ps )
 
 glm::vec3 BG_GetClientViewOrigin( const playerState_t *ps )
 {
-	return VEC2GLM( ps->origin ) + static_cast<float>( ps->viewheight ) * BG_GetClientNormal( ps );
+	return ps->origin + static_cast<float>( ps->viewheight ) * BG_GetClientNormal( ps );
 }
 
 void BG_BoundingBox( class_t pClass,
