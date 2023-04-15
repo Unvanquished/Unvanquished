@@ -170,7 +170,7 @@ static void PM_AddEvent( int newEvent )
 PM_AddTouchEnt
 ===============
 */
-void PM_AddTouchEnt( int entityNum )
+static void PM_AddTouchEnt( int entityNum )
 {
 	int i;
 
@@ -355,7 +355,7 @@ PM_ClipVelocity
 Slide off of the impacting surface
 ==================
 */
-void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out )
+static void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out )
 {
 	float t = -DotProduct( in, normal );
 	VectorMA( in, t, normal, out );
