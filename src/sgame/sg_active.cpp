@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "sg_cm_world.h"
 
+#include <glm/gtx/norm.hpp>
 bool ClientInactivityTimer( gentity_t *ent, bool active );
 
 static Cvar::Cvar<float> g_devolveReturnRate(
@@ -348,7 +349,7 @@ static void PushBot(gentity_t * ent, gentity_t * other)
 	vec3_t dir, ang, f, r;
 	float oldspeed;
 
-	oldspeed = VectorLength(other->client->ps.velocity);
+	oldspeed = glm::length( other->client->ps.velocity );
 	if(oldspeed < 200)
 	{
 		oldspeed = 200;
@@ -365,10 +366,9 @@ static void PushBot(gentity_t * ent, gentity_t * other)
 	VectorMA(other->client->ps.velocity, 100 * ((level.time + (ent->s.number * 1000)) % 4000 < 2000 ? 1.0 : -1.0), r,
 	other->client->ps.velocity);
 
-	if(VectorLengthSquared(other->client->ps.velocity) > oldspeed * oldspeed)
+	if ( glm::length2( other->client->ps.velocity ) > oldspeed * oldspeed )
 	{
-		VectorNormalize(other->client->ps.velocity);
-		VectorScale(other->client->ps.velocity, oldspeed, other->client->ps.velocity);
+		other->client->ps.velocity = glm::normalize( other->client->ps.velocity ) * oldspeed;
 	}
 }
 /*

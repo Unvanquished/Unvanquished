@@ -1323,7 +1323,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				// flamer projectiles add the player's velocity scaled by FLAMER_LAG to the fire direction with length FLAMER_SPEED
 				glm::vec3 dir = targetPos - muzzle;
 				dir = glm::normalize( dir );
-				glm::vec3 nvel = VEC2GLM( self->client->ps.velocity ) * FLAMER_LAG;
+				glm::vec3 nvel = self->client->ps.velocity * FLAMER_LAG;
 				VectorMA( nvel, FLAMER_SPEED, dir, t.trDelta );
 				SnapVector( t.trDelta );
 				VectorCopy( muzzle, t.trBase );

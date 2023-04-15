@@ -318,17 +318,16 @@ Handles both ground friction and water friction
 */
 static void PM_Friction()
 {
-	vec3_t &vel = pm->ps->velocity;
+	glm::vec3 &vel = pm->ps->velocity;
 
 	// make sure vertical velocity is NOT set to zero when wall climbing
-	vec3_t vec;
-	VectorCopy( vel, vec );
+	glm::vec3 vec = vel;
 
 	if ( pml.walking && !( pm->ps->stats[ STAT_STATE ] & SS_WALLCLIMBING ) )
 	{
 		vec[ 2 ] = 0; // ignore slope movement
 	}
-	float speed = VectorLength( vec );
+	float speed = glm::length( vec );
 
 	if ( speed < 0.1f )
 	{
@@ -379,10 +378,7 @@ static void PM_Friction()
 	}
 
 	newspeed /= speed;
-
-	vel[ 0 ] = vel[ 0 ] * newspeed;
-	vel[ 1 ] = vel[ 1 ] * newspeed;
-	vel[ 2 ] = vel[ 2 ] * newspeed;
+	vel *= newspeed;
 }
 
 /*
@@ -396,7 +392,7 @@ static void PM_Accelerate( const vec3_t wishdir, float wishspeed, float accel )
 {
 #if 1
 	// q2 style
-	float currentspeed = DotProduct( pm->ps->velocity, wishdir );
+	float currentspeed = glm::dot( pm->ps->velocity, VEC2GLM( wishdir ) );
 	float addspeed = wishspeed - currentspeed;
 
 	if ( addspeed <= 0 )
@@ -405,7 +401,7 @@ static void PM_Accelerate( const vec3_t wishdir, float wishspeed, float accel )
 	}
 
 	float accelspeed = std::min( accel * pml.frametime * wishspeed, addspeed );
-	VectorMA( pm->ps->velocity, accelspeed, wishdir, pm->ps->velocity );
+	pm->ps->velocity += accelspeed * VEC2GLM( wishdir );
 #else
 	// proper way (avoids strafe jump maxspeed bug), but feels bad
 	vec3_t wishVelocity;
@@ -1183,10 +1179,9 @@ static bool PM_CheckWallJump()
 	          dir, pm->ps->velocity );
 
 	//for a long run of wall jumps the velocity can get pretty large, this caps it
-	if ( VectorLength( pm->ps->velocity ) > LEVEL2_WALLJUMP_MAXSPEED )
+	if ( glm::length( pm->ps->velocity ) > LEVEL2_WALLJUMP_MAXSPEED )
 	{
-		VectorNormalize( pm->ps->velocity );
-		VectorScale( pm->ps->velocity, LEVEL2_WALLJUMP_MAXSPEED, pm->ps->velocity );
+		pm->ps->velocity = glm::normalize( pm->ps->velocity ) * LEVEL2_WALLJUMP_MAXSPEED;
 	}
 
 	PM_AddEvent( EV_JUMP );
@@ -1779,14 +1774,12 @@ static void PM_WaterMove()
 	PM_Accelerate( wishdir, wishspeed, pm_wateraccelerate );
 
 	// make sure we can go up slopes easily under water
-	if ( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0 )
+	if ( pml.groundPlane && DotProduct( &pm->ps->velocity[0], pml.groundTrace.plane.normal ) < 0 )
 	{
-		float vel = VectorLength( pm->ps->velocity );
+		float vel = glm::length( pm->ps->velocity );
 		// slide along the ground plane
-		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
-
-		VectorNormalize( pm->ps->velocity );
-		VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
+		PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
+		pm->ps->velocity = glm::normalize(  pm->ps->velocity ) * vel;
 	}
 
 	PM_SlideMove( false );
@@ -1872,7 +1865,7 @@ static void PM_AirMove()
 	// slide along the steep plane
 	if ( pml.groundPlane )
 	{
-		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
+		PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
 	}
 
 	PM_StepSlideMove( true, false );
@@ -1943,14 +1936,14 @@ static void PM_ClimbMove()
 
 	Slide( wishdir, wishspeed, *pm->ps );
 
-	float vel = VectorLength( pm->ps->velocity );
+	float vel = glm::length( pm->ps->velocity );
 
 	// slide along the ground plane
-	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
+	PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
 
 	// don't decrease velocity when going up or down a slope
-	VectorNormalize( pm->ps->velocity );
-	VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
+	pm->ps->velocity = glm::normalize( pm->ps->velocity );
+	pm->ps->velocity *= vel;
 
 	// don't do anything if standing still
 	if ( !pm->ps->velocity[ 0 ] && !pm->ps->velocity[ 1 ] && !pm->ps->velocity[ 2 ] )
@@ -1972,7 +1965,7 @@ static void PM_WalkMove()
 	// Slide
 	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_SLIDER )
 		&& pm->cmd.upmove < 0
-		&& VectorLength(pm->ps->velocity) > HUMAN_SLIDE_THRESHOLD )
+		&& glm::length( pm->ps->velocity ) > HUMAN_SLIDE_THRESHOLD )
 	{
 		pm->ps->stats[ STAT_STATE ] |= SS_SLIDING;
 		PM_StepSlideMove( false, true );
@@ -2049,7 +2042,7 @@ static void PM_WalkMove()
 	Slide( wishdir, wishspeed, *pm->ps );
 
 	// slide along the ground plane
-	PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
+	PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
 
 	// don't do anything if standing still
 	if ( !pm->ps->velocity[ 0 ] && !pm->ps->velocity[ 1 ] )
@@ -2073,12 +2066,8 @@ static void PM_LadderMove()
 
 	float scale = PM_CmdScale( &pm->cmd, true );
 
-	vec3_t wishvel;
-	for ( int i = 0; i < 3; i++ )
-	{
-		wishvel[ i ] = pml.forward[ i ] * pm->cmd.forwardmove
-		             + pml.right[ i ]   * pm->cmd.rightmove;
-	}
+	glm::vec3 wishvel = VEC2GLM( pml.forward ) * static_cast<float>( pm->cmd.forwardmove )
+		+ VEC2GLM( pml.right ) * static_cast<float>( pm->cmd.rightmove );
 	wishvel[ 2 ] += pm->cmd.upmove;
 
 	vec3_t wishdir;
@@ -2088,15 +2077,14 @@ static void PM_LadderMove()
 	PM_Accelerate( wishdir, wishspeed, pm_accelerate );
 
 	//slanty ladders
-	if ( pml.groundPlane && DotProduct( pm->ps->velocity, pml.groundTrace.plane.normal ) < 0.0f )
+	if ( pml.groundPlane && glm::dot( pm->ps->velocity, VEC2GLM( pml.groundTrace.plane.normal ) ) < 0.0f )
 	{
-		float vel = VectorLength( pm->ps->velocity );
+		float vel = glm::length( pm->ps->velocity );
 
 		// slide along the ground plane
-		PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
+		PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
 
-		VectorNormalize( pm->ps->velocity );
-		VectorScale( pm->ps->velocity, vel, pm->ps->velocity );
+		pm->ps->velocity = glm::normalize( pm->ps->velocity ) * vel;
 	}
 
 	PM_SlideMove( false );
@@ -2145,7 +2133,7 @@ static void PM_DeadMove()
 	}
 
 	// extra friction
-	float forward = VectorLength( pm->ps->velocity );
+	float forward = glm::length( pm->ps->velocity );
 	forward -= 20;
 
 	if ( forward <= 0 )
@@ -2154,8 +2142,7 @@ static void PM_DeadMove()
 	}
 	else
 	{
-		VectorNormalize( pm->ps->velocity );
-		VectorScale( pm->ps->velocity, forward, pm->ps->velocity );
+		pm->ps->velocity = glm::normalize( pm->ps->velocity ) * forward;
 	}
 }
 
@@ -2970,7 +2957,7 @@ static void PM_GroundTrace()
 	}
 
 	// check if getting thrown off the ground
-	if ( pm->ps->velocity[ 2 ] > 0.0f && DotProduct( pm->ps->velocity, trace.plane.normal ) > 10.0f )
+	if ( pm->ps->velocity[ 2 ] > 0.0f && glm::dot( pm->ps->velocity, VEC2GLM( trace.plane.normal ) ) > 10.0f )
 	{
 		if ( pm->debugLevel > 1 )
 		{
@@ -3635,16 +3622,16 @@ static void PM_Weapon()
 				if ( pm->cmd.forwardmove > 0 )
 				{
 					int    charge = pml.msec;
-					vec3_t dir, vel;
+					vec3_t dir;
 
 					AngleVectors( pm->ps->viewangles, dir, nullptr, nullptr );
-					VectorCopy( pm->ps->velocity, vel );
+					glm::vec3 vel = pm->ps->velocity;
 					vel[ 2 ] = 0;
 					dir[ 2 ] = 0;
-					VectorNormalize( vel );
+					vel = glm::normalize( vel );
 					VectorNormalize( dir );
 
-					charge *= DotProduct( dir, vel );
+					charge *= glm::dot( VEC2GLM( dir ), vel );
 
 					pm->ps->weaponCharge += charge;
 				}
@@ -3690,7 +3677,7 @@ static void PM_Weapon()
 			}
 
 			// If the charger has stopped moving take a chunk of charge away
-			if ( VectorLength( pm->ps->velocity ) < 64.0f || pm->cmd.rightmove )
+			if ( glm::length( pm->ps->velocity ) < 64.0f || pm->cmd.rightmove )
 			{
 				pm->ps->weaponCharge -= LEVEL4_TRAMPLE_STOP_PENALTY * pml.msec;
 			}
@@ -4809,7 +4796,7 @@ static bool  PM_SlideMove( bool gravity )
 		if ( pml.groundPlane )
 		{
 			// slide along the ground plane
-			PM_ClipVelocity( pm->ps->velocity, pml.groundTrace.plane.normal, pm->ps->velocity );
+			PM_ClipVelocity( &pm->ps->velocity[0], pml.groundTrace.plane.normal, &pm->ps->velocity[0] );
 		}
 	}
 
@@ -4827,7 +4814,7 @@ static bool  PM_SlideMove( bool gravity )
 	}
 
 	// never turn against original velocity
-	VectorNormalize2( pm->ps->velocity, planes[ numplanes ] );
+	VectorNormalize2( &pm->ps->velocity[0], planes[ numplanes ] );
 	numplanes++;
 
 	for ( bumpcount = 0; bumpcount < numbumps; bumpcount++ )
@@ -4899,7 +4886,7 @@ static bool  PM_SlideMove( bool gravity )
 		// find a plane that it enters
 		for ( i = 0; i < numplanes; i++ )
 		{
-			into = DotProduct( pm->ps->velocity, planes[ i ] );
+			into = glm::dot( pm->ps->velocity, VEC2GLM( planes[ i ] ) );
 
 			if ( into >= 0.1 )
 			{
@@ -4913,7 +4900,7 @@ static bool  PM_SlideMove( bool gravity )
 			}
 
 			// slide along the plane
-			PM_ClipVelocity( pm->ps->velocity, planes[ i ], clipVelocity );
+			PM_ClipVelocity( &pm->ps->velocity[0], planes[ i ], clipVelocity );
 
 			// slide along the plane
 			PM_ClipVelocity( endVelocity, planes[ i ], endClipVelocity );
@@ -4944,7 +4931,7 @@ static bool  PM_SlideMove( bool gravity )
 				// slide the original velocity along the crease
 				CrossProduct( planes[ i ], planes[ j ], dir );
 				VectorNormalize( dir );
-				d = DotProduct( dir, pm->ps->velocity );
+				d = DotProduct( dir, &pm->ps->velocity[0] );
 				VectorScale( dir, d, clipVelocity );
 
 				CrossProduct( planes[ i ], planes[ j ], dir );
@@ -5033,7 +5020,7 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 	else
 	{
 		// never step up when you still have up velocity
-		if ( DotProduct( trace.plane.normal, pm->ps->velocity ) > 0.0f &&
+		if ( glm::dot( VEC2GLM( trace.plane.normal ), pm->ps->velocity ) > 0.0f &&
 		     ( trace.fraction == 1.0f || DotProduct( trace.plane.normal, normal ) < 0.7f ) )
 		{
 			return stepped;
@@ -5094,7 +5081,7 @@ static bool PM_StepSlideMove( bool gravity, bool predictive )
 
 		if ( trace.fraction < 1.0f )
 		{
-			PM_ClipVelocity( pm->ps->velocity, trace.plane.normal, pm->ps->velocity );
+			PM_ClipVelocity( &pm->ps->velocity[0], trace.plane.normal, &pm->ps->velocity[0] );
 		}
 	}
 
@@ -5113,20 +5100,16 @@ PM_PredictStepMove
 */
 static bool PM_PredictStepMove()
 {
-	vec3_t   velocity, origin;
+	vec3_t origin;
 	float    impactSpeed;
-	bool stepped = false;
 
-	VectorCopy( pm->ps->velocity, velocity );
+	glm::vec3 velocity = pm->ps->velocity;
 	VectorCopy( pm->ps->origin, origin );
 	impactSpeed = pml.impactSpeed;
 
-	if ( PM_StepSlideMove( false, true ) )
-	{
-		stepped = true;
-	}
+	bool stepped = PM_StepSlideMove( false, true );
 
-	VectorCopy( velocity, pm->ps->velocity );
+	pm->ps->velocity = velocity;
 	VectorCopy( origin, pm->ps->origin );
 	pml.impactSpeed = impactSpeed;
 

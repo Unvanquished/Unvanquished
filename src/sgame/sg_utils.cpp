@@ -271,7 +271,7 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 	VectorCopy( origin, player->client->ps.origin );
 	player->client->ps.groundEntityNum = ENTITYNUM_NONE;
 
-	AngleVectors( angles, player->client->ps.velocity, nullptr, nullptr );
+	AngleVectors( angles, &player->client->ps.velocity[0], nullptr, nullptr );
 	VectorScale( player->client->ps.velocity, speed, player->client->ps.velocity );
 	player->client->ps.pm_time = 0.4f * std::abs( speed ); // duration of loss of control
 	if ( player->client->ps.pm_time > 160 )

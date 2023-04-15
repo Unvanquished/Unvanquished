@@ -1726,7 +1726,7 @@ static int CG_CalcViewValues()
 		CG_OffsetFirstPersonView();
 
 		// Compute motion blur vector
-		speed = VectorNormalize2( cg.snap->ps.velocity, cg.refdef.blurVec );
+		speed = VectorNormalize2( &cg.snap->ps.velocity[0], cg.refdef.blurVec );
 
 		speed = (speed - cg_motionblurMinSpeed.Get());
 		if( speed < 0.0f ) speed = 0.0f;

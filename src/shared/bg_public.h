@@ -85,7 +85,7 @@ struct playerState_t
 
 	int    lowOxygenTime; // time at which we will be suffocating and taking drowning damage
 
-	vec3_t velocity;
+	glm::vec3 velocity;
 	int    weaponTime;
 	int    gravity;
 
