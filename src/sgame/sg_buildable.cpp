@@ -904,11 +904,11 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 /**
  * @return Whether origin is within a distance of radius of a buildable of the given type.
  */
-bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
+bool G_BuildableInRange( const glm::vec3 &origin, float radius, buildable_t buildable )
 {
 	gentity_t *neighbor = nullptr;
 
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, VEC2GLM( origin ), radius ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
 	{
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !neighbor->spawned || Entities::IsDead( neighbor ) ||
 		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )

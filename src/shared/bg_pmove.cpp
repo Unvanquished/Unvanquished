@@ -445,11 +445,11 @@ PM_Accelerate
 Handles user intended acceleration
 ==============
 */
-static void PM_Accelerate( const vec3_t wishdir, float wishspeed, float accel )
+static void PM_Accelerate( const glm::vec3& wishdir, float wishspeed, float accel )
 {
 #if 1
 	// q2 style
-	float currentspeed = glm::dot( pm->ps->velocity, VEC2GLM( wishdir ) );
+	float currentspeed = glm::dot( pm->ps->velocity, wishdir );
 	float addspeed = wishspeed - currentspeed;
 
 	if ( addspeed <= 0 )
@@ -458,7 +458,7 @@ static void PM_Accelerate( const vec3_t wishdir, float wishspeed, float accel )
 	}
 
 	float accelspeed = std::min( accel * pml.frametime * wishspeed, addspeed );
-	pm->ps->velocity += accelspeed * VEC2GLM( wishdir );
+	pm->ps->velocity += accelspeed * wishdir;
 #else
 	// proper way (avoids strafe jump maxspeed bug), but feels bad
 	vec3_t wishVelocity;
@@ -1468,7 +1468,7 @@ static bool PM_CheckJetpack()
 	pm->ps->pm_flags &= ~PMF_JUMPED;
 
 	// thrust
-	PM_Accelerate( thrustDir, JETPACK_TARGETSPEED, JETPACK_ACCELERATION );
+	PM_Accelerate( VEC2GLM( thrustDir ), JETPACK_TARGETSPEED, JETPACK_ACCELERATION );
 
 	// remove fuel
 	pm->ps->stats[ STAT_FUEL ] -= pml.msec * JETPACK_FUEL_USAGE;
@@ -1828,7 +1828,7 @@ static void PM_WaterMove()
 		wishspeed = pm->ps->speed * pm_swimScale;
 	}
 
-	PM_Accelerate( wishdir, wishspeed, pm_wateraccelerate );
+	PM_Accelerate( VEC2GLM( wishdir ), wishspeed, pm_wateraccelerate );
 
 	// make sure we can go up slopes easily under water
 	if ( pml.groundPlane && DotProduct( &pm->ps->velocity[0], pml.groundTrace.plane.normal ) < 0 )
@@ -1863,7 +1863,7 @@ static void PM_GhostMove( bool noclip )
 	VectorCopy( wishvel, wishdir );
 	float wishspeed = VectorNormalize( wishdir ) * scale;
 
-	PM_Accelerate( wishdir, wishspeed, pm_flyaccelerate );
+	PM_Accelerate( VEC2GLM( wishdir ), wishspeed, pm_flyaccelerate );
 
 	if ( noclip )
 	{
@@ -1914,7 +1914,7 @@ static void PM_AirMove()
 	float wishspeed = VectorNormalize( wishdir ) * scale;
 
 	// not on ground, so little effect on velocity
-	PM_Accelerate( wishdir, wishspeed,
+	PM_Accelerate( VEC2GLM( wishdir ), wishspeed,
 	               BG_Class( pm->ps->stats[ STAT_CLASS ] )->airAcceleration );
 
 	// we may have a ground plane that is very steep, even
@@ -2129,9 +2129,8 @@ static void PM_LadderMove()
 		+ VEC2GLM( pml.right ) * static_cast<float>( pm->cmd.rightmove );
 	wishvel[ 2 ] += pm->cmd.upmove;
 
-	vec3_t wishdir;
-	VectorCopy( wishvel, wishdir );
-	float wishspeed = VectorNormalize( wishdir ) * scale;
+	glm::vec3 wishdir = glm::normalize( wishvel );
+	float wishspeed = glm::length( wishvel ) * scale;
 
 	PM_Accelerate( wishdir, wishspeed, pm_accelerate );
 
@@ -5249,7 +5248,7 @@ void Slide( vec3_t wishdir, float wishspeed, playerState_t &ps )
 	bool slid = ( pml.groundTrace.surfaceFlags & SURF_SLICK ) || ps.pm_flags & PMF_TIME_KNOCKBACK;
 	classAttributes_t const* pcl = BG_Class( ps.stats[ STAT_CLASS ] );
 	accelerate = slid ? pcl->airAcceleration : pcl->acceleration;
-	PM_Accelerate( wishdir, wishspeed, accelerate );
+	PM_Accelerate( VEC2GLM( wishdir ), wishspeed, accelerate );
 
 	if ( slid )
 	{

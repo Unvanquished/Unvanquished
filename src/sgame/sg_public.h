@@ -81,7 +81,7 @@ float             G_DistanceToBase(gentity_t *self);
 bool              G_InsideBase(gentity_t *self);
 bool              G_DretchCanDamageEntity( const gentity_t *self, const gentity_t *other );
 gentity_t         *G_Build( gentity_t *builder, buildable_t buildable, const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
-bool              G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable );
+bool              G_BuildableInRange( glm::vec3 const& origin, float radius, buildable_t buildable );
 gentity_t         *G_GetDeconstructibleBuildable( gentity_t *ent );
 bool              G_DeconstructDead( gentity_t *buildable );
 void              G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent );
