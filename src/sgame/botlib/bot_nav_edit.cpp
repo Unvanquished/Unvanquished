@@ -62,7 +62,7 @@ static bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	// Nav edit commands are only allowed in a local game, where the host is guaranteed to be in slot 0
 	const playerState_t *ps = &g_clients[ 0 ].ps;
 
-	AngleVectors( ps->viewangles, forward, nullptr, nullptr );
+	AngleVectors( &ps->viewangles[0], forward, nullptr, nullptr );
 	VectorMA( ps->origin, 8096, forward, end );
 
 	CM_BoxTrace( &trace, &ps->origin[0], end, nullptr, nullptr, 0,

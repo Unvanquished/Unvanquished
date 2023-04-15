@@ -74,7 +74,7 @@ struct playerState_t
 	int    viewheight;
 	int clientNum; // ranges from 0 to MAX_CLIENTS-1
 	int   delta_angles[ 3 ]; // add to command angles to get view direction
-	vec3_t viewangles; // for fixed views
+	glm::vec3 viewangles; // for fixed views
 	int    commandTime; // cmd->serverTime of last executed command
 	// end of fields which must be identical to OpaquePlayerState
 

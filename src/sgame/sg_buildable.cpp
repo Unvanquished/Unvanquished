@@ -1083,7 +1083,7 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	// Trace for target.
 	glm::vec3 forward;
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &ent->client->ps );
-	AngleVectors( ent->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	AngleVectors( ent->client->ps.viewangles, &forward, nullptr, nullptr );
 	glm::vec3 end = viewOrigin + BUILDER_DECONSTRUCT_RANGE * forward;
 	trace = G_RayTrace( viewOrigin, end, ent->num(), MASK_PLAYERSOLID, 0 );
 	buildable = &g_entities[ trace.entityNum ];
@@ -2075,7 +2075,7 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 	BG_GetClientNormal( &ent->client->ps, normal);
 	glm::vec3 forward, aimDir;
-	AngleVectors( ent->client->ps.viewangles, &aimDir[0], nullptr, nullptr );
+	AngleVectors( ent->client->ps.viewangles, &aimDir, nullptr, nullptr );
 	ProjectPointOnPlane( &forward[0], &aimDir[0], normal );
 	forward = glm::normalize( forward );
 	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * glm::dot( forward, aimDir );

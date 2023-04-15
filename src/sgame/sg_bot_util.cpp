@@ -932,7 +932,7 @@ static float BotAimAngle( gentity_t *self, const glm::vec3 &pos )
 {
 	glm::vec3 forward;
 
-	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	AngleVectors( self->client->ps.viewangles, &forward, nullptr, nullptr );
 	glm::vec3 viewPos = BG_GetClientViewOrigin( &self->client->ps );
 	glm::vec3 ideal = pos - viewPos;
 
@@ -1236,7 +1236,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	trace_t trace;
 	float width = 0, height = 0;
 
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+	AngleVectors( self->client->ps.viewangles, &forward, &right, &up );
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	targetPos = target.getPos();
 	switch ( self->client->ps.weapon )
@@ -1442,7 +1442,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	glm::vec3  muzzle, targetPos;
 	glm::vec3  forward, right, up;
 
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+	AngleVectors( self->client->ps.viewangles, &forward, &right, &up );
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	targetPos = target.getPos();
 
@@ -1557,7 +1557,7 @@ void BotAimAtEnemy( gentity_t *self )
 	glm::vec3 desired = self->botMind->futureAim - viewOrigin;
 	desired = glm::normalize( desired );
 	glm::vec3 current;
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &current, nullptr, nullptr );
+	AngleVectors( self->client->ps.viewangles, &current, nullptr, nullptr );
 
 	float frac = ( 1.0f - ( static_cast<float>( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
 	glm::vec3 newAim = glm::mix( current, desired, frac );
@@ -1627,7 +1627,7 @@ void BotSlowAim( gentity_t *self, glm::vec3 &target, float slowAmount )
 
 	//take the current aim Vector
 	glm::vec3 forward;
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
+	AngleVectors( self->client->ps.viewangles, &forward, nullptr, nullptr );
 
 	float cosAngle = glm::dot( forward, aimVec );
 	cosAngle = ( cosAngle + 1.0f ) / 2.0f;
@@ -1840,8 +1840,8 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 	if ( mind->goal.getTargetType() == entityType_t::ET_PLAYER )
 	{
 		glm::vec3 forward1, forward2;
-		AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward1, nullptr, nullptr );
-		AngleVectors( VEC2GLM( mind->goal.getTargetedEntity()->client->ps.viewangles ), &forward2, nullptr, nullptr );
+		AngleVectors( self->client->ps.viewangles, &forward1, nullptr, nullptr );
+		AngleVectors( mind->goal.getTargetedEntity()->client->ps.viewangles, &forward2, nullptr, nullptr );
 		// strafe only if it is looking at us (opposite view vectors, so alignment ≃ -1)
 		shouldStrafe = Alignment2D( forward1, forward2 ) < -0.5f;
 	}
@@ -1916,7 +1916,7 @@ float CalcAimPitch( gentity_t *self, glm::vec3 &targetPos, float launchSpeed )
 	float v = launchSpeed;
 
 	glm::vec3 forward;
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
+	AngleVectors( self->client->ps.viewangles, &forward, nullptr, nullptr );
 	const glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
 	const glm::vec3 &startPos = muzzle;
 
@@ -1980,7 +1980,7 @@ void BotFireWeaponAI( gentity_t *self )
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
 	BotResetStuckTime( self );
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+	AngleVectors( self->client->ps.viewangles, &forward, &right, &up );
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 

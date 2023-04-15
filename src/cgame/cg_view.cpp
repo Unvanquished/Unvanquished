@@ -1667,11 +1667,11 @@ static int CG_CalcViewValues()
 
 	if ( BG_ClassHasAbility( ps->stats[ STAT_CLASS ], SCA_WALLCLIMBER ) )
 	{
-		CG_smoothWWTransitions( ps, ps->viewangles, cg.refdefViewAngles );
+		CG_smoothWWTransitions( ps, &ps->viewangles[0], cg.refdefViewAngles );
 	}
 	else if ( BG_ClassHasAbility( ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
 	{
-		CG_smoothWJTransitions( ps, ps->viewangles, cg.refdefViewAngles );
+		CG_smoothWJTransitions( ps, &ps->viewangles[0], cg.refdefViewAngles );
 	}
 	else
 	{

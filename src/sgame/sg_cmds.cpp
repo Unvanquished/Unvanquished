@@ -2246,7 +2246,7 @@ static void Cmd_Ignite_f( gentity_t *player )
 
 	glm::vec3 forward;
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &player->client->ps );
-	AngleVectors( player->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	AngleVectors( player->client->ps.viewangles, &forward, nullptr, nullptr );
 	glm::vec3 end = viewOrigin + forward * 1000.f;
 	trace = G_RayTrace( viewOrigin, end, player->num(), MASK_PLAYERSOLID, 0 );
 
@@ -2922,7 +2922,6 @@ static void Cmd_Build_f( gentity_t *ent )
 	char        s[ MAX_TOKEN_CHARS ];
 	buildable_t buildable;
 	float       dist;
-	vec3_t      origin, normal;
 	int         groundEntNum;
 
 	if ( ent->client->pers.namelog->denyBuild || G_admin_permission( ent, ADMF_NO_BUILD ) )
@@ -2946,17 +2945,18 @@ static void Cmd_Build_f( gentity_t *ent )
 	     !BG_BuildableDisabled( buildable ) && BG_BuildableUnlocked( buildable ) )
 	{
 		dynMenu_t err;
-		vec3_t forward, aimDir;
 		itemBuildError_t reason;
 
-		BG_GetClientNormal( &ent->client->ps, normal );
-		AngleVectors( ent->client->ps.viewangles, aimDir, nullptr, nullptr );
-		ProjectPointOnPlane( forward, aimDir, normal);
-		VectorNormalize( forward );
+		glm::vec3 forward, aimDir;
+		glm::vec3 normal = BG_GetClientNormal( &ent->client->ps );
+		AngleVectors( ent->client->ps.viewangles, &aimDir, nullptr, nullptr );
+		ProjectPointOnPlane( &forward[0], &aimDir[0], &normal[0] );
+		forward = glm::normalize( forward );
 
-		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * glm::dot( forward, aimDir );
 
-		reason = G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum );
+		vec3_t origin;
+		reason = G_CanBuild( ent, buildable, dist, origin, &normal[0], &groundEntNum );
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE | SB_BUILDABLE_FROM_IBE( reason );
 
 		// these are the errors displayed when the builder first selects something to use
@@ -4076,7 +4076,7 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	// Trace in view direction.
 	glm::vec3 forward;
 	glm::vec3 origin = BG_GetClientViewOrigin( &ent->client->ps );
-	AngleVectors( ent->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	AngleVectors( ent->client->ps.viewangles, &forward, nullptr, nullptr );
 	glm::vec3 end = origin + 65536.f * forward;
 
 	G_UnlaggedOn( ent, &origin[0], 65536 );

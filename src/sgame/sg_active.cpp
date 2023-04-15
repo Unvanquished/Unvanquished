@@ -858,7 +858,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 
 	glm::vec3 forward;
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
-	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	AngleVectors( self->client->ps.viewangles, &forward, nullptr, nullptr );
 	glm::vec3 end = viewOrigin + 65536.f * forward;
 
 	G_UnlaggedOn( self, &viewOrigin[0], 65536 );
@@ -954,7 +954,7 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 					int dist;
 
 					BG_GetClientNormal( &client->ps,normal );
-					AngleVectors( client->ps.viewangles, aimDir, nullptr, nullptr );
+					AngleVectors( &client->ps.viewangles[0], aimDir, nullptr, nullptr );
 					ProjectPointOnPlane( forward, aimDir, normal );
 					VectorNormalize( forward );
 
@@ -2203,7 +2203,6 @@ static void ClientThink_real( gentity_t *self )
 	     Entities::IsAlive( self ) )
 	{
 		trace_t   trace;
-		vec3_t    view, point;
 		gentity_t *ent;
 
 		// look for object infront of player
@@ -2215,9 +2214,10 @@ static void ClientThink_real( gentity_t *self )
 		BG_BoundingBox( static_cast<class_t>( client->ps.stats[STAT_CLASS] ), &mins, &maxs, nullptr, nullptr, nullptr );
 		auto range1 = ENTITY_USE_RANGE + RadiusFromBounds( &mins[0], &maxs[0] );
 
-		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
-		VectorMA( viewpoint, range1, view, point );
-		trace = G_RayTrace( &viewpoint[0], point, self->s.number, MASK_SHOT, 0 );
+		glm::vec3 view;
+		AngleVectors( client->ps.viewangles, &view, nullptr, nullptr );
+		glm::vec3 point = client->ps.origin + ENTITY_USE_RANGE * view;
+		trace = G_RayTrace( viewpoint, point, self->s.number, MASK_SHOT, 0 );
 
 		ent = &g_entities[ trace.entityNum ];
 		bool activableTarget = ent->s.eType == entityType_t::ET_BUILDABLE || ent->s.eType == entityType_t::ET_MOVER;

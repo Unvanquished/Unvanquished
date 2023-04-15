@@ -850,7 +850,7 @@ void CG_PredictPlayerState()
 			{
 				vec3_t adjusted, new_angles;
 				CG_AdjustPositionForMover( &cg.predictedPlayerState.origin[0],
-				                           cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted, cg.predictedPlayerState.viewangles, new_angles );
+				                           cg.predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted, &cg.predictedPlayerState.viewangles[0], new_angles );
 
 				if ( cg_showmiss.Get() )
 				{
@@ -951,7 +951,7 @@ void CG_PredictPlayerState()
 	// adjust for the movement of the groundentity
 	CG_AdjustPositionForMover( &cg.predictedPlayerState.origin[0],
 	                           cg.predictedPlayerState.groundEntityNum,
-	                           cg.physicsTime, cg.time, &cg.predictedPlayerState.origin[0], cg.predictedPlayerState.viewangles, cg.predictedPlayerState.viewangles);
+	                           cg.physicsTime, cg.time, &cg.predictedPlayerState.origin[0], &cg.predictedPlayerState.viewangles[0], &cg.predictedPlayerState.viewangles[0]);
 
 	// fire events and other transition triggered things
 	CG_TransitionPlayerState( &cg.predictedPlayerState, &oldPlayerState );

@@ -235,14 +235,13 @@ static int ImpactFirebombSub( gentity_t *ent, trace_t *trace, gentity_t *hitEnt 
 
 static int ImpactLockblock( gentity_t*, trace_t*, gentity_t *hitEnt )
 {
-	vec3_t dir;
-
 	if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
 	{
+		glm::vec3 dir;
 		hitEnt->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
 		hitEnt->client->lastLockTime = level.time;
-		AngleVectors( hitEnt->client->ps.viewangles, dir, nullptr, nullptr );
-		hitEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
+		AngleVectors( hitEnt->client->ps.viewangles, &dir, nullptr, nullptr );
+		hitEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( &dir[0] );
 	}
 
 	return MIB_IMPACT;

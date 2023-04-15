@@ -2800,7 +2800,7 @@ static void PM_GroundClimbTrace()
 		// if we were wallwalking the last frame, apply delta correction
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
-			vec3_t forward, rotated, angles;
+			vec3_t rotated, angles;
 
 			if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
 			{
@@ -2819,8 +2819,9 @@ static void PM_GroundClimbTrace()
 			if ( surfNormal[ 2 ] < 0 )
 			{
 				vec3_t xNormal;
+				glm::vec3 forward;
 
-				AngleVectors( pm->ps->viewangles, forward, nullptr, nullptr );
+				AngleVectors( pm->ps->viewangles, &forward, nullptr, nullptr );
 
 				if ( pm->ps->eFlags & EF_WALLCLIMBCEILING )
 				{
@@ -2834,7 +2835,7 @@ static void PM_GroundClimbTrace()
 					VectorNormalize( xNormal );
 				}
 
-				RotatePointAroundVector( rotated, xNormal, forward, 180 );
+				RotatePointAroundVector( rotated, xNormal, &forward[0], 180 );
 				vectoangles( rotated, angles );
 				pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
 			}
@@ -2919,7 +2920,7 @@ static void PM_GroundTrace()
 		//just transitioned from ceiling to floor... apply delta correction
 		if( pm->ps->eFlags & EF_WALLCLIMB || pm->ps->eFlags & EF_WALLCLIMBCEILING)
 		{
-			vec3_t  forward, rotated, angles;
+			vec3_t  rotated, angles;
 			vec3_t  surfNormal = {0,0,-1};
 
 			if(!(pm->ps->eFlags & EF_WALLCLIMBCEILING))
@@ -2932,7 +2933,8 @@ static void PM_GroundTrace()
 				//The rotation applied there causes our view to turn around
 				//We correct this here
 				vec3_t xNormal;
-				AngleVectors( pm->ps->viewangles, forward, nullptr, nullptr );
+				glm::vec3 forward;
+				AngleVectors( pm->ps->viewangles, &forward, nullptr, nullptr );
 				if(pm->ps->eFlags & EF_WALLCLIMBCEILING)
 				{
 					VectorCopy(pm->ps->grapplePoint, xNormal);
@@ -2941,7 +2943,7 @@ static void PM_GroundTrace()
 					CrossProduct( surfNormal, refNormal, xNormal );
 					VectorNormalize( xNormal );
 				}
-				RotatePointAroundVector(rotated, xNormal, forward, 180);
+				RotatePointAroundVector(rotated, xNormal, &forward[0], 180);
 				vectoangles( rotated, angles );
 				pm->ps->delta_angles[ YAW ] -= ANGLE2SHORT( angles[ YAW ] - pm->ps->viewangles[ YAW ] );
 			}
@@ -3678,16 +3680,16 @@ static void PM_Weapon()
 				if ( pm->cmd.forwardmove > 0 )
 				{
 					int    charge = pml.msec;
-					vec3_t dir;
+					glm::vec3 dir;
 
-					AngleVectors( pm->ps->viewangles, dir, nullptr, nullptr );
+					AngleVectors( pm->ps->viewangles, &dir, nullptr, nullptr );
 					glm::vec3 vel = pm->ps->velocity;
 					vel[ 2 ] = 0;
 					dir[ 2 ] = 0;
 					vel = glm::normalize( vel );
-					VectorNormalize( dir );
+					dir = glm::normalize( dir );
 
-					charge *= glm::dot( VEC2GLM( dir ), vel );
+					charge *= glm::dot( dir, vel );
 
 					pm->ps->weaponCharge += charge;
 				}
