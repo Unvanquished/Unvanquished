@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-13 09:26+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2023-04-17 08:11+0000\n"
+"Last-Translator: Grise3 <hackergrigri@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -20,24 +20,24 @@ msgstr ""
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "Construire"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr ""
+msgstr "Prix :"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Évoluer"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "points de métamorphose"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Choisissez votre forme de départ :"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
@@ -52,14 +52,16 @@ msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
+"Les dretches sont une forme d'attaque furtive et les grangers sont la forme "
+"de construction extraterrestre."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Retour à la sélection de l'équipe"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "Appelez un vote pour un tirage au sort"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
@@ -91,8 +93,9 @@ msgid "Team"
 msgstr "Équipe"
 
 #: ui/callvote_fillbots.rml:21
+#, fuzzy
 msgid "Amount"
-msgstr ""
+msgstr "Montant"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
@@ -100,19 +103,21 @@ msgstr "Changer de carte"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Vote : changer la carte suivante"
 
 #: ui/callvote_map.rml:32
+#, fuzzy
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Vote : définir la carte actuelle"
 
 #: ui/callvote_map.rml:33
+#, fuzzy
 msgid "Set current map (host)"
-msgstr ""
+msgstr "Définir la carte actuelle (hôte)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Méthode"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
@@ -120,43 +125,49 @@ msgstr "Carte"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Effectuer une action"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Erreur !"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: ui/help_gameplay.rml:16 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Bienvenue"
 
 #: ui/help_gameplay.rml:19
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"Dans cette section vous trouverez un résumé de la plupart des éléments du "
+"gameplay pour savoir comment devenir un bon joueur."
 
 #: ui/help_gameplay.rml:23
 msgid "Feel free to join us in the community and developer chats!"
 msgstr ""
+"N'hésitez pas à nous rejoindre dans les discutions de la communauté et des "
+"développeurs !"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "We are chatting on IRC and Matrix in <b>#unvanquished</b> and "
 "<b>#unvanquished-dev</b> on Libera.Chat"
 msgstr ""
+"Nous discutons sur IRC et Matrix dans <b>#unvanquished</b> et <b"
+">#unvanquished-dev</b> sur Libera.Chat"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forum, <b>forums.unvanquished.net</b>"
-msgstr ""
+msgstr "Discutez des actualités sur le forum, <b>forums.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>"
-msgstr ""
+msgstr "Discutez des actualités sur le forum, <b>forums.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:30
 msgid "Income &amp; evolution"
@@ -167,6 +178,9 @@ msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"Les extraterrestres peuvent gagner des points d'évolution en tuant des "
+"humains. Ils peuvent ensuite utiliser ces points d'évolution pour évoluer "
+"vers des [dragoon] formes plus avancées."
 
 #: ui/help_gameplay.rml:37
 msgid ""
@@ -174,12 +188,18 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"Les extraterrestres peuvent évoluer de partout si ce n'est dans la ligne de "
+"mire d'un joueur humain ou d'une construction. Les extraterrestres peuvent "
+"également passer à des formes moins avancées de [granger] (à un certain coût)"
+" lorsqu'ils sont proches de l'Overmind [overmind]."
 
 #: ui/help_gameplay.rml:40
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
+"Construisez un overmind avec un [granger] granger s'il est détruit, vous "
+"avez besoin d'un overmind vivant pour évoluer !"
 
 #: ui/help_gameplay.rml:44
 msgid ""
@@ -187,16 +207,24 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
+"Les humains peuvent gagner des crédits en tuant des extraterrestres et en "
+"détruisant des constructions extraterrestres, puis ils peuvent utiliser ces "
+"crédits pour acheter de nouvelles armes [lcannon], des armures ou une "
+"combinaison de combat [bsuit] et des accessoires comme un radar ou un "
+"jetpack."
 
 #: ui/help_gameplay.rml:47
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
+"Les humains achètent et vendent des armes à l'[armurerie] armurerie, assurez-"
+"vous qu'il y en a une ! Utilisez le kit de construction pour construire une "
+"armurerie s'il en manque."
 
 #: ui/help_gameplay.rml:51
 msgid "Powering buildables"
-msgstr ""
+msgstr "Alimenter les structures"
 
 #: ui/help_gameplay.rml:54
 msgid ""
@@ -206,6 +234,12 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
+"Construire une structure nécessite des points de construction. Votre équipe "
+"commencera avec un petit pool de points de construction, mais si vous "
+"souhaitez placer un plus grand nombre de constructions dans une zone, vous "
+"pouvez construire une structure minière [leech] pour augmenter la puissance "
+"disponible et fournir plus de points de construction. Méfiez-vous que vous "
+"perdrez les points de construction si les structures minières sont détruites."
 
 #: ui/help_gameplay.rml:57
 msgid ""
@@ -214,6 +248,11 @@ msgid ""
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
+"Lorsque vous utilisez plus de points de construction que les structures "
+"minières ([leech] Leech, [drill] Drill) ne sont capables de fournir (pts de "
+"construction actuels + pts de construction que vous récupérerez au fil du "
+"temps), les constructions s'éteindront jusqu'à ce que les autres "
+"constructions aient assez d'énergie pour rester opérationnel."
 
 #: ui/help_gameplay.rml:58
 msgid ""
@@ -221,10 +260,14 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
+"Les structures de ponte (œufs [egg] et télénodes [télénode]), les structures "
+"minières (sangsue et forage) et les structures uniques ([overmind] overmind "
+"et [reactor] réacteur) ne sont PAS affectées par le manque de points de "
+"construction."
 
 #: ui/help_gameplay.rml:62
 msgid "Mining structures"
-msgstr ""
+msgstr "Structures minières"
 
 #: ui/help_gameplay.rml:65
 msgid ""
@@ -232,12 +275,18 @@ msgid ""
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
+"Les points de construction sont acquis via deux structures minières : le "
+"drill [drill] et le leech [leech]. Ces bâtiments doivent être répartis pour "
+"plus d'efficacité."
 
 #: ui/help_gameplay.rml:68
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
+"Ne construisez pas de structures minières trop proches les unes des autres, "
+"sinon elles se feront concurrence et finiront par coûter des ressources de "
+"construction !"
 
 #: ui/help_gameplay.rml:71
 msgid ""
@@ -247,6 +296,12 @@ msgid ""
 "mining structure finishes building, and will be subtracted back if the "
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
+"Les constructeurs verront une autre barre au-dessus de la barre de santé "
+"d'un générateur de ressources qui représente son efficacité. Une prédiction "
+"s'affichera lorsque vous positionnerez la structure. Les points de "
+"construction sont disponibles instantanément lorsque la structure minière "
+"termine sa construction et seront soustraits si le bâtiment est détruit. Ne "
+"construisez pas de drill non protégées !"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -255,6 +310,10 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
+"Lorsqu'un bâtiment est détruit, les mineurs récupèrent lentement ses points "
+"de construction. Le taux de récupération des mines diminue avec le temps, de "
+"sorte qu'il devient de plus en plus difficile de reconstruire les bâtiments "
+"détruits dans un match de longue durée. Cela remplace la mort subite."
 
 #: ui/help_gameplay.rml:78
 msgid "Stages &amp; Momentum"
@@ -266,44 +325,61 @@ msgid ""
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
+"Construire et détruire des structures ainsi que tuer des ennemis rapporte à "
+"votre équipe une nouvelle ressource appelée élan. Si vous gagnez "
+"suffisamment d'élan, de nouvelles armes, structures ou classes seront "
+"déverrouillées."
 
 #: ui/help_gameplay.rml:84
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
+"L'élan diminue de façon exponentielle avec le temps, donc si vous restez "
+"inactif, votre équipe perdra l'accès aux nouveaux éléments. Les mises à "
+"niveau existantes resteront fonctionnelles."
 
 #: ui/help_gameplay.rml:88
 msgid "Wildfire"
-msgstr ""
+msgstr "Incendies"
 
 #: ui/help_gameplay.rml:91
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
+"Les constructions extraterrestres peuvent prendre feu lorsqu'elles sont "
+"touchées par le lance-flammes [flamer] ou la bombe incendiaire [firebomb]."
 
 #: ui/help_gameplay.rml:94
+#, fuzzy
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
+"Si les structures sont construites trop près, le feu peut sauter par-dessus "
+"les malheureux voisins."
 
 #: ui/help_gameplay.rml:97
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
+"Un petit [fire] a de bonnes chances de s'éteindre après un certain temps, "
+"mais un groupe de structures en feu se maintiendra suffisamment chaud pour "
+"un plus grand chaos."
 
 #: ui/help_gameplay.rml:100
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
+"L'attaque au crachat de granger avancé [advgranger] peut être utilisée pour "
+"éteindre les incendies ou ralentir les intrus !"
 
 #: ui/help_gameplay.rml:104
 msgid "Under attack"
-msgstr ""
+msgstr "Attaqué"
 
 #: ui/help_gameplay.rml:107
 msgid ""
@@ -312,22 +388,32 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
+"Le réacteur [reactor] et l' [overmind] overmind émettront des avertissements "
+"à l'équipe lorsqu'ils auront 75 % de santé, 50 % de santé, 25 % de santé et "
+"lorsqu'ils seront détruits. La destruction d'autres bâtiments déclenchera "
+"des avertissements \"Attaqué\" pour l'équipe propriétaire ."
 
 #: ui/help_gameplay.rml:111
 msgid "Healing"
-msgstr ""
+msgstr "Guérison"
 
 #: ui/help_gameplay.rml:114
 msgid "Dying feeds the ennemy, you may want to save your life!"
-msgstr ""
+msgstr "Mourir nourrit l'ennemi, vous voudrez peut-être sauver votre vie !"
 
 #: ui/help_gameplay.rml:118
+#, fuzzy
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
+"Les extraterrestres guérissent lentement où qu'ils soient, mais ils "
+"guérissent plus rapidement en groupe et à proximité de constructions "
+"extraterrestres. Construire vers l'avant peut être décisif! La guérison de "
+"quelque manière que ce soit contribuera également à restaurer les "
+"projectiles de dragoon avancés [advdragoon]."
 
 #: ui/help_gameplay.rml:122
 msgid ""
@@ -335,13 +421,21 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
+"Le booster donne une guérison rapide aux extraterrestres à proximité, "
+"construisez-en un dès que vous le pouvez, essayez de le déverrouiller le "
+"plus tôt possible. Le booster vous donnera également du poison pour rendre "
+"vos attaques plus meurtrières."
 
 #: ui/help_gameplay.rml:125
+#, fuzzy
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
+"Rester à une distance intermédiaire de l' [overmind] overmind ou des "
+"œufs[egg] vous donnera également une guérison légèrement améliorée, bien que "
+"inférieure au fluage. Cela peut aider à défendre les bases."
 
 #: ui/help_gameplay.rml:128
 msgid ""
@@ -350,95 +444,131 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
+"Les extraterrestres ont un troisième bonus de guérison : la proximité avec "
+"d'autres extraterrestres. Si vous êtes à proximité d'un extraterrestre "
+"amical, vous guérirez légèrement plus rapidement, et avec deux coéquipiers, "
+"vous guérirez aussi vite que vous le feriez en touchant une construction "
+"extraterrestre. Avec un peu de travail d'équipe, c'est un excellent moyen "
+"d'assiéger les ennemis !"
 
 #: ui/help_gameplay.rml:132
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
+"Les humains portent avec eux un kit médical qu'ils peuvent utiliser pour "
+"guérir une fois, après quoi ils doivent retourner à la médistation [medstat] "
+"pour guérir et remplir leur kit médical."
 
 #: ui/help_gameplay.rml:136
 msgid "Wallwalking"
-msgstr ""
+msgstr "Marcher sur les murs"
 
 #: ui/help_gameplay.rml:139
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
+"Certaines formes extraterrestres comme le [dretch] dretch, le [mantis] "
+"mantis et le [advgranger] granger avancé peuvent marcher sur les murs !"
 
 #: ui/help_gameplay.rml:142
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
+"Utilisez-le pour atteindre des endroits spéciaux ou utilisez des raccourcis "
+"à travers les évents."
 
 #: ui/help_gameplay.rml:145
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
+"Les structures défensives extraterrestres comme le trapper et le spiker "
+"fonctionnent mieux sur les murs, les construire au plafond les protégera des "
+"grenades."
 
 #: ui/help_gameplay.rml:148
 msgid "The advanced granger can be unlocked with momentum."
-msgstr ""
+msgstr "Le granger avancé peut être débloqué avec de l'élan."
 
 #: ui/help_gameplay.rml:152
 msgid "Since Tremulous"
-msgstr ""
+msgstr "Depuis Tremulous"
 
 #: ui/help_gameplay.rml:155
 msgid "Since Tremulous, the stamina has been increased."
-msgstr ""
+msgstr "Depuis Tremulous, l'endurance a été augmentée."
 
 #: ui/help_gameplay.rml:158
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
+"Tous les coûts et gains d'évolution extraterrestre ont été doublés. Le "
+"nouveau maximum d'evos qu'un extraterrestre peut stocker est de 20 ("
+"anciennement 9)."
 
 #: ui/help_gameplay.rml:161
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
+"Les étapes ont été remplacées par de l'élan et les points de construction "
+"dépendent directement du nombre de drill(es)."
 
 #: ui/help_gameplay.rml:164
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
+"Les humains n'ont plus la tour de défense Tesla ni l'ordinateur de défense, "
+"mais ils peuvent construire des lances roquettes."
 
 #: ui/help_gameplay.rml:167
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
+"Les extraterrestres ont le spiker qui peut profondément blesser les humains "
+"imprudents, mais c'est une structure très vulnérable, ne le mettez pas à la "
+"vue de tous !"
 
 #: ui/help_gameplay.rml:170
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
+"Le basilic a été remplacé par le mantis, il ne peut plus saisir mais sa "
+"morsure ralentit leurs victimes, et il peut se précipiter pour des approches "
+"très rapides."
 
 #: ui/help_gameplay.rml:173
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
+"Les extraterrestres peuvent désévoluer près de l'overmind, et le crachat de "
+"granger avancé peut faire des choses intéressantes, essayez-le sur le feu ou "
+"les humains !"
 
 #: ui/help_textentry.rml:19 ui/menu_ingame.rml:112 ui/menu_main.rml:49
 msgid "Colour codes and symbols"
-msgstr ""
+msgstr "Codes de couleurs et symboles"
 
 #: ui/help_textentry.rml:22
+#, fuzzy
 msgid ""
 "Colours are used by typing their escape code starting with a caret (^) "
 "symbol. Colour can be reset again to normal using ^*, or an actual caret can "
 "be typed using ^^."
 msgstr ""
+"Les couleurs sont utilisées en tapant leur code commençant par un signe "
+"insertion (^). La couleur peut être réinitialisée à la normale en utilisant "
+"^*, ou un curseur réel peut être tapé en utilisant ^^."
 
 #: ui/help_textentry.rml:61
 msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
-msgstr ""
+msgstr "Exemple : ^^3Fred^^1Baggins deviens ^3Fred^1Baggins"
 
 #: ui/hud_basics.rml:192
 msgid "Game"
@@ -466,23 +596,24 @@ msgstr "Crédits"
 
 #: ui/human_buy.rml:208
 msgid "Weapons"
-msgstr ""
+msgstr "Armes"
 
 #: ui/human_buy.rml:209 ui/human_buy.rml:225
 msgid "TAB"
 msgstr "TAB"
 
 #: ui/human_buy.rml:217
+#, fuzzy
 msgid "Range:"
-msgstr ""
+msgstr "Portée :"
 
 #: ui/human_buy.rml:218
 msgid "Damage:"
-msgstr ""
+msgstr "Dommage :"
 
 #: ui/human_buy.rml:219
 msgid "Fire Rate:"
-msgstr ""
+msgstr "Cadence de tir :"
 
 #: ui/human_buy.rml:224
 msgid "Upgrades"
@@ -490,11 +621,11 @@ msgstr "Évolutions"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "Choisissez votre équipement de départ :"
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
-msgstr ""
+msgstr "SMG"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
@@ -505,10 +636,14 @@ msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
+"Le SMG est une arme de démarrage à tir rapide, et le kit de construction "
+"construit et répare des structures humaines. Tous les équipements peuvent "
+"être échangés à l'armurerie."
 
 #: ui/ingame_beaconmenu.rml:78
+#, fuzzy
 msgid "Beacons"
-msgstr ""
+msgstr "Balises"
 
 #: ui/ingame_scoreboard.rml:184
 msgid "Spectators"
@@ -517,27 +652,32 @@ msgstr "Spectateurs"
 #: ui/ingame_scoreboard.rml:191 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "Carte :"
 
 #: ui/ingame_scoreboard.rml:192
 msgid "Time:"
-msgstr ""
+msgstr "Temps :"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "Sélection automatique d'une équipe"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
+"Les extraterrestres sont très mobiles et possèdent une grande variété "
+"d'attaques basées sur le mouvement. Ils sont robustes, mais doivent compter "
+"sur la furtivité et l'évasion."
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
+"Les humains peuvent s'équiper d'un assortiment d'armes et d'équipements. Ils "
+"sont adaptables et mortels à distance, mais fragiles."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
 msgid "Join Aliens"
@@ -549,7 +689,7 @@ msgstr "Rejoindre les Humains"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "Alternativement, vous pouvez regarder le match sans jouer."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
 #, fuzzy
@@ -561,18 +701,20 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at https://bugs.unvanquished.net"
 msgstr ""
+"Il s'agit d'une version bêta d'Unvanquished. Veuillez signaler tout problème "
+"que vous pourriez rencontrer sur https://bugs.unvanquished.net"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
-msgstr ""
+msgstr "Menu du match"
 
 #: ui/menu_ingame.rml:23
 msgid "Leave match"
-msgstr ""
+msgstr "quitter le match"
 
 #: ui/menu_ingame.rml:24
 msgid "Resume action"
-msgstr ""
+msgstr "Reprendre l'action"
 
 #: ui/menu_ingame.rml:26 ui/server_setup.rml:57
 msgid "Teams"
@@ -584,7 +726,7 @@ msgstr "Démocratie"
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
-msgstr ""
+msgstr "Vote global :"
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
@@ -600,43 +742,45 @@ msgstr "non"
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
-msgstr ""
+msgstr "Vote d'équipe :"
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
-msgstr ""
+msgstr "Expulser les robots"
 
 #: ui/menu_ingame.rml:52
 msgid "Extend timelimit"
-msgstr ""
+msgstr "Prolonger la limite de temps"
 
 #: ui/menu_ingame.rml:53
+#, fuzzy
 msgid "Call a draw"
-msgstr ""
+msgstr "Appeler un tirage"
 
 #: ui/menu_ingame.rml:54
 msgid "Admit defeat"
-msgstr ""
+msgstr "Admettre la défaite"
 
 #: ui/menu_ingame.rml:60
+#, fuzzy
 msgid "Host menu"
-msgstr ""
+msgstr "Menu secondaire"
 
 #: ui/menu_ingame.rml:61
 msgid "Stop server"
-msgstr ""
+msgstr "Arrêter le serveur"
 
 #: ui/menu_ingame.rml:62
 msgid "Pause server"
-msgstr ""
+msgstr "Mettre le serveur en pause"
 
 #: ui/menu_ingame.rml:67
 msgid "Reset match"
-msgstr ""
+msgstr "Réinitialiser la partie"
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
-msgstr "Bots"
+msgstr "Robots"
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
@@ -655,12 +799,13 @@ msgid "Players"
 msgstr "Joueurs"
 
 #: ui/menu_ingame.rml:80
+#, fuzzy
 msgid "Disclipline: kick/ban/mute/nobuild"
-msgstr ""
+msgstr "Modération : expulser/bannir/muter/interdire la construction"
 
 #: ui/menu_ingame.rml:87
 msgid "Main menu"
-msgstr ""
+msgstr "Menu principal"
 
 #: ui/menu_ingame.rml:89 ui/menu_main.rml:28
 msgid "Play"
@@ -668,15 +813,16 @@ msgstr "Lecture"
 
 #: ui/menu_ingame.rml:91 ui/menu_main.rml:30
 msgid "Server listings"
-msgstr ""
+msgstr "Listes des serveurs"
 
 #: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
+#, fuzzy
 msgid "Start local/LAN game"
-msgstr ""
+msgstr "Démarrer le jeu en local/LAN"
 
 #: ui/menu_ingame.rml:93 ui/menu_main.rml:32
 msgid "Recorded demos"
-msgstr ""
+msgstr "Démos enregistrées"
 
 #: ui/menu_ingame.rml:96 ui/menu_main.rml:35
 msgid "Options"
@@ -688,15 +834,15 @@ msgstr "Joueur"
 
 #: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
 msgid "Graphics"
-msgstr ""
+msgstr "graphiques"
 
 #: ui/menu_ingame.rml:100 ui/menu_main.rml:39 ui/options_keys.rml:7
 msgid "Key bindings"
-msgstr ""
+msgstr "Raccourcis clavier"
 
 #: ui/menu_ingame.rml:101 ui/menu_main.rml:40 ui/options_mouse.rml:7
 msgid "Mouse and Aiming"
-msgstr ""
+msgstr "Souris et visée"
 
 #: ui/menu_ingame.rml:102 ui/menu_main.rml:41 ui/options_sound.rml:7
 msgid "Sound"
@@ -704,74 +850,79 @@ msgstr "Son"
 
 #: ui/menu_ingame.rml:103 ui/menu_main.rml:42
 msgid "User interface and HUD"
-msgstr ""
+msgstr "Interface utilisateur et ATH"
 
 #: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
+#, fuzzy
 msgid "Fields of view"
-msgstr ""
+msgstr "Champs de vision"
 
 #: ui/menu_ingame.rml:105
 msgid "Server setup"
-msgstr ""
+msgstr "Configuration du serveur"
 
 #: ui/menu_ingame.rml:109 ui/menu_main.rml:46
 msgid "Help"
 msgstr "Aide"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
+#, fuzzy
 msgid "Gameplay guide"
-msgstr ""
+msgstr "Guide de jeu"
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
-msgstr ""
+msgstr "Quitter le jeu"
 
 #: ui/menu_ingame.rml:119 ui/menu_main.rml:56
 msgid "Beta"
-msgstr ""
+msgstr "Bêta"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr ""
+msgstr "Angles de vue"
 
 #: ui/options_fov.rml:11
 msgid "FOV = “width” of player's vision, measured in degrees."
-msgstr ""
+msgstr "Champ de vue = \"largeur\" de la vision du joueur, mesurée en degrés."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild “motion sickness” from playing first-person "
 "shooters. A higher FOV can help combat this."
 msgstr ""
+"De nombreux joueurs souffrent d'un léger \"mal des transports\" en jouant "
+"aux jeux de tir à la première personne. Un champ de vue plus élevé peut "
+"aider à lutter contre cela."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "degrés"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:273
 #: ui/options_mouse.rml:21 ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "réinitialiser"
 
 #: ui/options_fov.rml:40
 msgid "Mantis"
-msgstr ""
+msgstr "Mantis"
 
 #: ui/options_fov.rml:48
 msgid "Marauder"
-msgstr ""
+msgstr "Marauder"
 
 #: ui/options_fov.rml:56
 msgid "Dragoon"
-msgstr ""
+msgstr "Dragoon"
 
 #: ui/options_fov.rml:64
 msgid "Tyrant"
-msgstr ""
+msgstr "Tyrant"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
@@ -779,11 +930,11 @@ msgstr ""
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
-msgstr ""
+msgstr "Présentation de la caméra"
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "Désactiver"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
@@ -795,15 +946,16 @@ msgstr "Par défaut"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "Fort"
 
 #: ui/options_fov.rml:81
 msgid "“Up and down” movement"
-msgstr ""
+msgstr "Mouvement \"de haut en bas\""
 
 #: ui/options_fov.rml:85
+#, fuzzy
 msgid "Camera rolling"
-msgstr ""
+msgstr "Caméra roulante"
 
 #: ui/options_fov.rml:92
 msgid "“Twisting” movement"
@@ -811,17 +963,19 @@ msgstr ""
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Préconfigurations"
 
 #: ui/options_graphics.rml:24
 msgid "Lowest"
-msgstr ""
+msgstr "Le plus bas"
 
 #: ui/options_graphics.rml:25
 msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel "
 "textures…"
 msgstr ""
+"Subdivisions basses, pas de ciel, pas d'ombre, pas de particules "
+"rebondissantes, textures de 64 pixels…"
 
 #: ui/options_graphics.rml:28 ui/options_graphics.rml:141
 #: ui/options_graphics.rml:262
@@ -829,24 +983,29 @@ msgid "Low"
 msgstr "Faible"
 
 #: ui/options_graphics.rml:29
+#, fuzzy
 msgid ""
 "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
 "pixel textures…"
 msgstr ""
+"Multisampling, mip-mapping anisotrope, ombres, particules rebondissantes, "
+"textures 256 pixels…"
 
 #: ui/options_graphics.rml:32 ui/options_graphics.rml:142
 msgid "Medium"
 msgstr "Moyen"
 
 #: ui/options_graphics.rml:33
+#, fuzzy
 msgid ""
 "Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
 "textures…"
 msgstr ""
+"Normal, mapping spéculaire et physique, bloom, filtrage trilinéaire, "
+"textures 512 pixels…"
 
 # Cette traduction est incorrecte car selon le contexte il faut tantôt du masculin (élevé) tantôt du féminin (élevée).
 #: ui/options_graphics.rml:36 ui/options_graphics.rml:260
-#, fuzzy
 msgid "High"
 msgstr "Haut(e)"
 
@@ -855,120 +1014,135 @@ msgid ""
 "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
 "pixel textures…"
 msgstr ""
+"Lumières dynamiques,brume de chaleur, flou de mouvement, meilleur multi-"
+"échantillonnage, textures au delà de 2048 pixels…"
 
 #: ui/options_graphics.rml:40
 msgid "Ultra"
-msgstr ""
+msgstr "Ultra"
 
 #: ui/options_graphics.rml:41
 msgid ""
 "Relief mapping and other features and effects enabled, up to 4096-pixel "
 "textures…"
 msgstr ""
+"Modélisation du relief et autres fonctionnalités et effets disponibles, "
+"textures au delà de 4096 pixels…"
 
 #: ui/options_graphics.rml:44 ui/options_graphics.rml:46
 msgid "Video"
-msgstr ""
+msgstr "Vidéo"
 
 #: ui/options_graphics.rml:48
 msgid "Brightness"
-msgstr ""
+msgstr "Luminosité"
 
 #: ui/options_graphics.rml:51
 msgid "Gamma:"
-msgstr ""
+msgstr "Gamma :"
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Résolution d'écran"
 
 #: ui/options_graphics.rml:62
 msgid "Borderless window"
-msgstr ""
+msgstr "Fenêtre sans bordures"
 
 #: ui/options_graphics.rml:66
 msgid "Fullscreen"
-msgstr ""
+msgstr "Plein écran"
 
 # Cette traduction est incorrecte car non accordée selon le contexte.
 #: ui/options_graphics.rml:71 ui/options_graphics.rml:263
-#, fuzzy
 msgid "Off"
 msgstr "Désactivé(e)"
 
 #: ui/options_graphics.rml:72
+#, fuzzy
 msgid "Flexible Vsync"
-msgstr ""
+msgstr "Vsync dynamique"
 
 #: ui/options_graphics.rml:73
+#, fuzzy
 msgid "Full Vsync"
-msgstr ""
+msgstr "Vsync plein"
 
 #: ui/options_graphics.rml:75
 msgid "Vsync"
-msgstr ""
+msgstr "Vsync"
 
 #: ui/options_graphics.rml:76
+#, fuzzy
 msgid ""
 "Vsync prevents “visual tearing” but increases input latency. Flexible Vsync "
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
+"Vsync évite les \"déchirures visuelles\"mais augmente la latence en entrée. "
+"Vsync dynamique s'active uniquement quand la fréquence d'images est "
+"supérieure au taux de rafraîchissement de l'écran, évitant les saccades "
+"quand le FPS chute."
 
 #: ui/options_graphics.rml:81
 msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr ""
+msgstr "Anticrénelage approximatif rapide"
 
 #: ui/options_graphics.rml:85 ui/options_graphics.rml:132
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
 #: ui/options_graphics.rml:235
 msgid "Apply now"
-msgstr ""
+msgstr "Appliquer maintenant"
 
 #: ui/options_graphics.rml:89
 msgid "Lighting"
-msgstr ""
+msgstr "Éclairage"
 
 #: ui/options_graphics.rml:91
 msgid "Lights"
-msgstr ""
+msgstr "Lumières"
 
 #: ui/options_graphics.rml:94
+#, fuzzy
 msgid "Light mapping"
-msgstr ""
+msgstr "Plaquage de la lumière"
 
 #: ui/options_graphics.rml:94
 msgid "normal"
-msgstr ""
+msgstr "normal"
 
 #: ui/options_graphics.rml:95
 msgid "Grid lighting"
-msgstr ""
+msgstr "Grille d'éclairage"
 
 #: ui/options_graphics.rml:95
 msgid "low, ugly"
-msgstr ""
+msgstr "lent, laid"
 
 #: ui/options_graphics.rml:97
 msgid "Lighting system"
-msgstr ""
+msgstr "Système d'éclairage"
 
 #: ui/options_graphics.rml:100
 msgid "Light styles"
-msgstr ""
+msgstr "Style de lumière"
 
 #: ui/options_graphics.rml:102
+#, fuzzy
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
+"Lumières dynamiques précalculées émises par des objets statiques de la carte"
 
 #: ui/options_graphics.rml:105
 msgid "Dynamic lights"
-msgstr ""
+msgstr "Lumières dynamiques"
 
 #: ui/options_graphics.rml:107
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
+"Lumières dynamiques en temps réel émises par des objets en mouvement comme "
+"des armes et des bâtiments."
 
 #: ui/options_graphics.rml:110
 msgid "Rim lighting"
@@ -976,7 +1150,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:112
 msgid "Light the edges of models from behind."
-msgstr ""
+msgstr "Éclairez les bords des modèles par derrière."
 
 #: ui/options_graphics.rml:115
 msgid "Half Lambert lighting"
@@ -985,6 +1159,7 @@ msgstr ""
 #: ui/options_graphics.rml:117
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
+"Technique d'éclairage non physique pour rendre les modèles moins sombres."
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:244
 msgid "None"
@@ -997,7 +1172,7 @@ msgstr "Tâches"
 
 #: ui/options_graphics.rml:122
 msgid "low"
-msgstr ""
+msgstr "faible"
 
 #: ui/options_graphics.rml:124
 msgid "Exponential mapping"
@@ -1008,20 +1183,21 @@ msgid "Variance mapping"
 msgstr "Variance"
 
 #: ui/options_graphics.rml:126
+#, fuzzy
 msgid "Exponential + variance"
-msgstr ""
+msgstr "Exponentielle + variance"
 
 #: ui/options_graphics.rml:126
 msgid "high"
-msgstr ""
+msgstr "haute"
 
 #: ui/options_graphics.rml:129
 msgid "Shadows"
-msgstr ""
+msgstr "ombres"
 
 #: ui/options_graphics.rml:136
 msgid "Textures"
-msgstr ""
+msgstr "Textures"
 
 #: ui/options_graphics.rml:138 ui/server_setup.rml:13
 msgid "General"
@@ -1029,38 +1205,47 @@ msgstr "Général"
 
 #: ui/options_graphics.rml:143
 msgid "Full"
-msgstr ""
+msgstr "Complet"
 
 #: ui/options_graphics.rml:145
 msgid "Texture size"
-msgstr ""
+msgstr "Taille des textures"
 
 #: ui/options_graphics.rml:146
 msgid ""
 "Lower texture size is useful for cards with limited video memory (VRAM)."
 msgstr ""
+"Une taille de texture inférieure est utile pour les cartes avec une mémoire "
+"vidéo limitée (VRAM)."
 
 #: ui/options_graphics.rml:149
+#, fuzzy
 msgid "Mip-mapping"
-msgstr ""
+msgstr "Mip-mapping"
 
 #: ui/options_graphics.rml:150
+#, fuzzy
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
+"Le mip-mapping améliore l'apparence des surfaces distantes en utilisant des "
+"textures de résolution inférieure. Cela n'affecte généralement pas les "
+"performances."
 
 #: ui/options_graphics.rml:153 ui/options_ui.rml:12
 msgid "No"
 msgstr "Non"
 
 #: ui/options_graphics.rml:159
+#, fuzzy
 msgid "Anisotropic mip-mapping"
-msgstr ""
+msgstr "Mip-mapping anisotrope"
 
 #: ui/options_graphics.rml:160
+#, fuzzy
 msgid "Better interpretation of mip-maps on angled surfaces."
-msgstr ""
+msgstr "Meilleure interprétation des mip-maps sur les surfaces inclinées."
 
 #: ui/options_graphics.rml:164
 msgid "Bilinear"
@@ -1072,59 +1257,66 @@ msgstr "Trilinéaire"
 
 #: ui/options_graphics.rml:165
 msgid "better"
-msgstr ""
+msgstr "mieux"
 
 #: ui/options_graphics.rml:167
 msgid "Texture scaling filter"
-msgstr ""
+msgstr "Filtre de mise à l'échelle des textures"
 
 #: ui/options_graphics.rml:177
 msgid "Materials"
-msgstr ""
+msgstr "Matériaux"
 
 #: ui/options_graphics.rml:179
+#, fuzzy
 msgid "Normal mapping"
-msgstr ""
+msgstr "Cartographie normale"
 
 #: ui/options_graphics.rml:181
 msgid "Simulates extra lighting detail on flat surfaces."
-msgstr ""
+msgstr "Simule des détails d'éclairage supplémentaires sur des surfaces planes."
 
 #: ui/options_graphics.rml:184
+#, fuzzy
 msgid "Deluxe mapping"
-msgstr ""
+msgstr "Cartographie de luxe"
 
 #: ui/options_graphics.rml:186
+#, fuzzy
 msgid "Light direction based on baked textures."
-msgstr ""
+msgstr "Direction de la lumière basée sur le baking de texture ."
 
 #: ui/options_graphics.rml:189
+#, fuzzy
 msgid "Relief mapping"
-msgstr ""
+msgstr "Cartographie du relief"
 
 #: ui/options_graphics.rml:191
 msgid "Adds bumps on supported surfaces."
-msgstr ""
+msgstr "Ajoute des bosses sur les surfaces prises en charge."
 
 #: ui/options_graphics.rml:191 ui/options_graphics.rml:225
 msgid "Experimental."
-msgstr ""
+msgstr "Expérimental."
 
 #: ui/options_graphics.rml:194
+#, fuzzy
 msgid "Specular mapping"
-msgstr ""
+msgstr "Cartographie spéculaire"
 
 #: ui/options_graphics.rml:196
+#, fuzzy
 msgid "Simulate light specularity."
-msgstr ""
+msgstr "Simuler la spécularité de la lumière."
 
 #: ui/options_graphics.rml:199
+#, fuzzy
 msgid "Physical mapping"
-msgstr ""
+msgstr "Cartographie physique"
 
 #: ui/options_graphics.rml:201
 msgid "Material appearance based on physical approximations."
-msgstr ""
+msgstr "Aspect matériel basé sur des approximations physiques."
 
 #: ui/options_graphics.rml:211 ui/options_sound.rml:13
 msgid "Effects"
@@ -1136,15 +1328,16 @@ msgstr ""
 
 #: ui/options_graphics.rml:215
 msgid "Makes bright areas on your screen glow."
-msgstr ""
+msgstr "Fait briller les zones lumineuses de votre écran."
 
 #: ui/options_graphics.rml:218
 msgid "Heat-haze"
-msgstr ""
+msgstr "Brume de chaleur"
 
 #: ui/options_graphics.rml:220
+#, fuzzy
 msgid "Simulate air refraction in severe heat."
-msgstr ""
+msgstr "Simule la réfraction de l'air en cas de forte chaleur."
 
 #: ui/options_graphics.rml:223
 msgid "Screen space ambient occlusion (SSAO)"
