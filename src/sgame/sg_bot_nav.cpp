@@ -552,7 +552,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	glm::vec3 playerMins;
 	glm::vec3 playerMaxs;
 	float jumpMagnitude;
-	trace_t trace;
+	trace_t tr1, tr2;
 	const float TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 
 	//already normalized
@@ -568,8 +568,8 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	glm::vec3 end = origin + TRACE_LENGTH * dir;
 
 	//make sure we are moving into a block
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
-	if ( trace.fraction >= 1.0f || blocker != &g_entities[trace.entityNum] )
+	trap_Trace( &tr1, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
+	if ( tr1.fraction >= 1.0f || blocker != &g_entities[tr1.entityNum] )
 	{
 		return false;
 	}
@@ -584,12 +584,12 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	playerMaxs[2] += jumpMagnitude;
 
 	//check if jumping will clear us of entity
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
+	trap_Trace( &tr2, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 
 	classAttributes_t const* pcl = BG_Class( pClass );
 	bool ladder = ( pcl->abilities & SCA_CANUSELADDERS )
-		&& trace.entityNum == ENTITYNUM_WORLD
-		&& trace.surfaceFlags & SURF_LADDER
+		&& ( ( tr1.entityNum == ENTITYNUM_WORLD && tr1.surfaceFlags & SURF_LADDER )
+		|| ( tr2.entityNum == ENTITYNUM_WORLD && tr2.surfaceFlags & SURF_LADDER ) )
 		;
 
 	if ( blocker->s.eType == entityType_t::ET_BUILDABLE
@@ -608,7 +608,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	}
 
 	//if we can jump over it, then jump
-	return trace.fraction == 1.0f || ladder;
+	return tr2.fraction == 1.0f || ladder;
 }
 
 // Determine a new direction, which may be unchanged (forward) or sideway. It
