@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-17 08:45+0000\n"
-"Last-Translator: Grise3 <hackergrigri@gmail.com>\n"
+"PO-Revision-Date: 2023-04-17 18:11+0000\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.17\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -353,13 +353,12 @@ msgstr ""
 "touchées par le lance-flammes [flamer] ou la bombe incendiaire [firebomb]."
 
 #: ui/help_gameplay.rml:94
-#, fuzzy
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
-"Si les structures sont construites trop près, le feu peut sauter par-dessus "
-"les malheureux voisins."
+"Si les structures sont construites trop proches, le feu peut se propager aux "
+"malheureux voisins."
 
 #: ui/help_gameplay.rml:97
 msgid ""
@@ -403,7 +402,6 @@ msgid "Dying feeds the ennemy, you may want to save your life!"
 msgstr "Mourir nourrit l'ennemi, vous voudrez peut-être sauver votre vie !"
 
 #: ui/help_gameplay.rml:118
-#, fuzzy
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -412,9 +410,9 @@ msgid ""
 msgstr ""
 "Les extraterrestres guérissent lentement où qu'ils soient, mais ils "
 "guérissent plus rapidement en groupe et à proximité de constructions "
-"extraterrestres. Construire vers l'avant peut être décisif! La guérison de "
-"quelque manière que ce soit contribuera également à restaurer les "
-"projectiles de dragoon avancés [advdragoon]."
+"extraterrestres. Construire des bases avancées peut être décisif! La "
+"guérison de quelque manière que ce soit contribuera également à restaurer "
+"les projectiles de dragoon avancés [advdragoon]."
 
 #: ui/help_gameplay.rml:122
 msgid ""
@@ -754,9 +752,8 @@ msgid "Extend timelimit"
 msgstr "Prolonger la limite de temps"
 
 #: ui/menu_ingame.rml:53
-#, fuzzy
 msgid "Call a draw"
-msgstr "Appeler un tirage"
+msgstr "Demander le match nul"
 
 #: ui/menu_ingame.rml:54
 msgid "Admit defeat"
