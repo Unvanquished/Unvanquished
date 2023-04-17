@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-17 08:11+0000\n"
-"Last-Translator: Grise3 <hackergrigri@gmail.com>\n"
+"PO-Revision-Date: 2023-04-17 08:45+0000\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -61,7 +61,7 @@ msgstr "Retour à la sélection de l'équipe"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr "Appelez un vote pour un tirage au sort"
+msgstr "Faire un vote pour un match nul"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
@@ -167,7 +167,8 @@ msgstr "Discutez des actualités sur le forum, <b>forums.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>"
-msgstr "Discutez des actualités sur le forum, <b>forums.unvanquished.net</b>"
+msgstr ""
+"Découvrez en plus au sujet du jeu dans le wiki, <b>wiki.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:30
 msgid "Income &amp; evolution"
