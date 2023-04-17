@@ -1,0 +1,19 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+	</head>
+	<body id="options_welcome" template="window" style="width: 32em; margin: 30%; padding:-32em;">
+		<h1><translate>Hello there!</translate></h1>
+		<!-- GENERAL KENOBI! -->
+		<h2><translate>How should we call you?</translate></h2>
+		<row>
+			<colorinput type="text" cvar="name" style="overflow: hidden; white-space: pre;"/>
+			<h3><translate>Nickname</translate></h3>
+			<p><translate>Your name visible to others.</translate></p>
+			<p><ilink onclick='Events.pushevent("show help_textentry", event)'><translate>Colours and symbols can be used.</translate></ilink></p>
+		</row>
+		<p><translate>You can change this at any time in the options.</translate></p>
+		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='document:Hide() Events.pushevent("show serverbrowser", event)'><translate>Select Battlefield</translate></button>
+	</body>
+</rml>

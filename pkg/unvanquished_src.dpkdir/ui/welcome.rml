@@ -1,0 +1,26 @@
+﻿<rml>
+	<head>
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<style>
+		panel {
+			width: 65%;
+			padding: 0.5em;
+		}
+		</style>
+	</head>
+	<body template="window" id="welcome" style="width:45em; margin: 1em;">
+		<h1>Welcome to Unvanquished</h1>
+		<tabset>
+			<tab>
+				<img class="emoticon" src="/emoticons/official" />
+				<translate>Welcome</translate>
+			</tab>
+			<panel>
+				<translate>Welcome to Unvanquished</translate>
+				<br />
+				<br />
+				<translate>Close this menu and click anywhere to join a team and begin playing!</translate>
+			</panel>
+		</tabset>
+	</body>
+</rml>

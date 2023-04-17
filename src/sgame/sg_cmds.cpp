@@ -546,12 +546,6 @@ static void Cmd_Devteam_f( gentity_t *ent )
 		return;
 	}
 
-	spawn = G_NewEntity();
-	VectorCopy( ent->s.pos.trBase, spawn->s.pos.trBase );
-	VectorCopy( ent->s.angles, spawn->s.angles );
-	VectorCopy( ent->s.origin, spawn->s.origin );
-	VectorCopy( ent->s.angles2, spawn->s.angles2 );
-
 	switch ( G_TeamFromString( ConcatArgs( 1 ) ) )
 	{
 		case TEAM_ALIENS:
@@ -576,9 +570,16 @@ static void Cmd_Devteam_f( gentity_t *ent )
 	ent->client->pers.teamInfo = level.startTime - 1;
 	ent->client->sess.spectatorState = SPECTATOR_NOT;
 
+	spawn = G_NewEntity( NO_CBSE );
+	VectorCopy( ent->s.pos.trBase, spawn->s.pos.trBase );
+	VectorCopy( ent->s.angles, spawn->s.angles );
+	VectorCopy( ent->s.origin, spawn->s.origin );
+	VectorCopy( ent->s.angles2, spawn->s.angles2 );
+
 	G_UpdateTeamConfigStrings();
 	ClientUserinfoChanged( ent->client->ps.clientNum, false );
 	ClientSpawn( ent, spawn, ent->s.origin, ent->s.angles );
+	G_FreeEntity( spawn );
 }
 
 /*

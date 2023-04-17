@@ -1,0 +1,30 @@
+/* ##### Stripey data-grids ##### */
+
+datagridbody {
+	overflow-y: auto;
+}
+
+datagridcell {
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+}
+
+datagridheader {
+	margin-top: 1em;
+}
+
+/* Alternate colours of each row */
+datagridrow:nth-child(even) {
+	background-color: #444444;
+}
+datagridrow:nth-child(odd) {
+	background-color: #222222;
+}
+
+datagridrow:hover {
+	background-color: #666666;
+}
+
+datagridrow:selected {
+	background-color: #136d67; /* Dark cyan */
+}

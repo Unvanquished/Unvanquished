@@ -1848,7 +1848,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		log = nullptr;
 	}
 
-	built = G_NewEntity();
+	built = G_NewEntity( HAS_CBSE );
 
 	// ----------------------------
 	// Set legacy fields below here
@@ -2441,7 +2441,7 @@ static void LayoutBuildItem( buildable_t buildable, vec3_t origin,
 {
 	gentity_t *builder;
 
-	builder = G_NewEntity();
+	builder = G_NewEntity( NO_CBSE ); // this is a temp entity, not the actual buildable
 	VectorCopy( origin, builder->s.pos.trBase );
 	VectorCopy( angles, builder->s.angles );
 	VectorCopy( origin2, builder->s.origin2 );
@@ -2707,7 +2707,7 @@ void G_BuildLogRevert( int id )
 		default:
 			// Spawn buildable
 			// HACK: Uses legacy pseudo entity. TODO: CBSE-ify.
-			buildable = G_NewEntity();
+			buildable = G_NewEntity( NO_CBSE );
 			VectorCopy( log->origin, buildable->s.pos.trBase );
 			VectorCopy( log->angles, buildable->s.angles );
 			VectorCopy( log->origin2, buildable->s.origin2 );

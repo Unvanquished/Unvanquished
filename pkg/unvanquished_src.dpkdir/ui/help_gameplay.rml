@@ -1,0 +1,178 @@
+﻿<rml>
+	<head>
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<style>
+			panel {
+				width: 65%;
+				padding: 0.5em;
+			}
+		</style>
+	</head>
+	<body template="window" id="help_gameplay" style="width:45em; margin: 1em;">
+		<h1>Gameplay Guide</h1>
+		<tabset>
+			<tab>
+				<img class="emoticon" src="/emoticons/official" />
+				<translate>Welcome</translate>
+			</tab>
+			<panel>
+				<translate>In this section you will find a summary of major gameplay elements to know to become a successful player.</translate>
+				<br />
+				<br />
+				<!-- FIXME: use a proper list (ul+li isn't supported as of now) -->
+				<translate>Feel free to join us in the community and developer chats!</translate><br />
+				&nbsp;&nbsp;&nbsp;• <translate>We are chatting on IRC and Matrix in <b>#unvanquished</b> and <b>#unvanquished-dev</b> on Libera.Chat</translate><br />
+				&nbsp;&nbsp;&nbsp;• <translate>Discuss news in the forum, <b>forums.unvanquished.net</b></translate><br />
+				&nbsp;&nbsp;&nbsp;• <translate>Discover more about the game in the wiki, <b>wiki.unvanquished.net</b></translate>
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/tyrant" />
+				<translate>Income &amp; evolution</translate>
+			</tab>
+			<panel>
+				<img class="emoticon" src="/emoticons/dretch" />
+				<translate emoticons>Aliens can earn evolution points by killing humans. They can then use those evolution points to evolve into [dragoon] more advanced forms.</translate>
+				<br />
+				<br />
+				<translate emoticons>Aliens can evolve from everywhere if not in line of sight of an human player or buildable. Aliens can also devolve to [granger] less advanced forms (at some cost) when being near the [overmind] overmind.</translate>
+				<br />
+				<br />
+				<translate emoticons>Build an overmind with a [granger] granger if it gets destroyed, you need a live overmind to evolve!</translate>
+				<br />
+				<br />
+				<img class="emoticon" src="/emoticons/human" />
+				<translate emoticons>Humans can earn credits by killing aliens and destroying alien buildables, then they can uses those credits to buy new [lcannon] weapons, body armours or [bsuit] battlesuit, and accessories like a radar or a jetpack.</translate>
+				<br />
+				<br />
+				<translate emoticons>Humans buy and sell weapons at the [armoury] armoury, make sure one is built! Use the construction kit to build an armoury if it's missing.</translate>
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/drill" />
+				<translate>Powering buildables</translate>
+			</tab>
+			<panel>
+				<translate emoticons>Building a structure requires build points. Your team will start with a small pool of build points but if you want to place a greater number of buildables in an area, you can build a [leech] mining structure to increase the available power and provide more build points. Be wary that you will loose the build points if the mining structures are destroyed.</translate>
+				<br />
+				<br />
+				<translate emoticons>When you are using more BP (Build Point) than the mining structures ([leech] Leech, [drill] Drill) are capable of providing (current BPs + BPs you will recover over time), buildables will power down until the other buildables have enough energy to remain operational.</translate>
+				<translate emoticons>Spawn structures ([egg] eggs and [telenode] telenodes), mining structures (leech and drill) and unique structures ([overmind] overmind and [reactor] reactor) are NOT affected by the lack of BPs.</translate>
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/leech" />
+				<translate>Mining structures</translate>
+			</tab>
+			<panel>
+				<translate emoticons>Build points are acquired via two mining structures: the human [drill] drill and the alien [leech] leech. These buildings need to be spread out for efficiency.</translate>
+				<br />
+				<br />
+				<translate>Don't build mining structures too close together or they will compete with each other and ultimately cost build resources!</translate>
+				<br />
+				<br />
+				<translate>Builders will see another bar above the health bar of a resource generator which represents its efficiency. A prediction will be shown when you position the buildable. The build points are available instantly when the mining structure finishes building, and will be subtracted back if the building is destroyed. Don't build unprotected drills!</translate>
+				<br />
+				<br />
+				<translate>When a building is destroyed, the miners will recover its build points slowly. The mine recovery rate decreases over time, so that it gets increasingly harder to rebuild destroyed buildings in a long lasting match. This replaces sudden death.</translate>
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/bsuit" />
+				<translate>Stages &amp; Momentum</translate>
+			</tab>
+			<panel>
+				<translate>Building and destroying structures as well as killing enemies earns your team a new resource called momentum. If you gain enough momentum new weapons, structures or classes will be unlocked.</translate>
+				<br />
+				<br />
+				<translate>Momentum decreases exponentially over time so if you idle your team will lose access to new items. Existing upgrades will remain functional.</translate>
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/flamer" />
+				<translate>Wildfire</translate>
+			</tab>
+			<panel>
+				<translate emoticons>Alien buildables can catch fire when they are hit with the [flamer] flamethrower or the [firebomb] firebomb.</translate>
+				<br />
+				<br />
+				<translate>If structures are built too close, the fire can jump over to the unfortunate neighbors.</translate>
+				<br />
+				<br />
+				<translate emoticons>A small [fire] fire has a good chance to go out after a while but a group of burning structures will keep itself hot enough for greater mayhem.</translate>
+				<br />
+				<br />
+				<translate emoticons>The [advgranger] advanced granger's spit attack can be used to put out fires or slow down intruders!</translate>
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/lcannon" />
+				<translate>Under attack</translate>
+			</tab>
+			<panel>
+				<translate emoticons>The [reactor] reactor and the [overmind] overmind will issue warnings to the team when at 75% health, at 50% health, at 25% health and when destroyed.Destroying other buildings will trigger “under attack” warnings for the owning team.</translate>
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/medstat" />
+				<translate>Healing</translate>
+			</tab>
+			<panel>
+				<translate>Dying feeds the ennemy, you may want to save your life!</translate>
+				<br />
+				<br />
+				<img class="emoticon" src="/emoticons/dretch" />
+				<translate>Aliens heal slowly wherever they are, but they heal faster in groups and near alien buildables. Building forward ones can be decisive! Healing in any manner will also contribute to restoring the [advdragoon] advanced dragoon projectiles.</translate>
+				<br/>
+				<br/>
+				<img class="emoticon" src="/emoticons/booster" />
+				<translate>The booster gives rapid healing for nearby aliens, build one as soon as you can, try to unlock it the soonest possible. The booster will also gives you some poison to make your attacks more deadly.</translate>
+				<br />
+				<br />
+				<translate emoticons>Staying at an intermediate distance of the [overmind] overmind or [egg] eggs will give you some slightly improved healing too, although lower than creep. This can help defending bases.</translate>
+				<br />
+				<br />
+				<translate>Aliens have a third healing boost: proximity with other aliens. If you are near a friendly fellow alien, you will heal slightly faster, and with two teammates, you will heal as fast as you would by touching an alien buildable. With some teamwork, this is a great way to besiege enemies!</translate>
+				<br />
+				<br />
+				<img class="emoticon" src="/emoticons/human" />
+				<translate emoticons>Humans carry with them a medkit they can use to heal once, after that they have to return to the [medstat] medistation to heal and refill their medkit.</translate>
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/dretch" />
+				<translate>Wallwalking</translate>
+			</tab>
+			<panel>
+				<translate emoticons>Some alien forms like the [dretch] dretch, the [mantis] mantis and the [advgranger] advanced granger can walk on walls!</translate>
+				<br />
+				<br />
+				<translate>Use this to reach special places or use shortcuts through vents.</translate>
+				<br />
+				<br />
+				<translate>Alien defensive structures like trapper and spiker work better on walls, building them on ceiling will protect them from grenades.</translate>
+				<br />
+				<br />
+				<translate>The advanced granger can be unlocked with momentum.</translate>
+			</panel>
+			<tab>
+				<img class="emoticon" src="/emoticons/dev" />
+				<translate>Since Tremulous</translate>
+			</tab>
+			<panel>
+				<translate>Since Tremulous, the stamina has been increased.</translate>
+				<br />
+				<br />
+				<translate>All alien evolution costs and gains have been doubled. The new maximum of evos an alien can store is 20 (formerly 9).</translate>
+				<br />
+				<br />
+				<translate>Stages were replace with momentum, and build points depend directly on the number of drills.</translate>
+				<br />
+				<br />
+				<translate>Humans no longer have the Tesla defense tower nor the defense computer but they can build rocket pods.</translate>
+				<br />
+				<br />
+				<translate>Aliens got the spiker buildable that can deeply hurt imprudent humans, but that's a very vulnerable structure, don't put it in plain sight!</translate>
+				<br />
+				<br />
+				<translate>The basilisk was replaced by the mantis, it cannot grab anymore but its bite slows down their victims, and it can lunge for very fast approachs.</translate>
+				<br />
+				<br />
+				<translate>Aliens can devolve near the overmind, and the advanced granger spit can do interesting things, try it on fire or humans!</translate>
+				<img class="emoticon" src="/emoticons/granger" />
+			</panel>
+		</tabset>
+	</body>
+</rml>

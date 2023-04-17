@@ -101,9 +101,6 @@ extern const float ALIENSENSE_BORDER_FRAC; // In this outer fraction of the rang
 extern const float REGEN_BOOSTER_RANGE;
 extern const float REGEN_TEAMMATE_RANGE;
 
-extern const int   ALIEN_POISON_TIME;
-extern const int   ALIEN_POISON_DMG;
-
 extern const int   ALIEN_SPAWN_REPEAT_TIME;
 
 extern const int   ALIEN_CLIENT_REGEN_WAIT; // in ms

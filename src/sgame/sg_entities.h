@@ -197,6 +197,12 @@ enum gentityCallEvent_t
 
 };
 
+enum initEntityStyle_t
+{
+	NO_CBSE,
+	HAS_CBSE,
+};
+
 struct gentityCallDefinition_t
 {
 	const char *event;
@@ -221,7 +227,7 @@ struct gentityCall_t
 //lifecycle
 void       G_InitGentityMinimal( gentity_t *e );
 void       G_InitGentity( gentity_t *e );
-gentity_t  *G_NewEntity();
+gentity_t  *G_NewEntity( initEntityStyle_t style );
 gentity_t  *G_NewTempEntity( glm::vec3 origin, int event );
 void       G_FreeEntity( gentity_t *e );
 

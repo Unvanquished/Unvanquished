@@ -1,0 +1,18 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+	</head>
+	<body id="callvote_draw" template="window" style="width: 35em; margin: 1em;">
+		<h1><translate>Call a vote for a draw</translate></h1>
+
+		<form onsubmit='Events.pushevent("execForm \"callvote draw $reason$\"; hide", event)'>
+			<row>
+				<input type="text" cvar="ui_dialogCvar1" class="text" style="width: 25em;" name="reason"/>
+				<h3><translate>Reason</translate></h3>
+			</row>
+
+			<input type="submit"><button><translate>Call vote</translate></button></input>
+		</form>
+	</body>
+</rml>

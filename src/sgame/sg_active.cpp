@@ -34,6 +34,26 @@ bool ClientInactivityTimer( gentity_t *ent, bool active );
 static Cvar::Cvar<float> g_devolveReturnRate(
 	"g_devolveReturnRate", "Evolution points per second returned after devolving", Cvar::NONE, 0.4);
 
+static Cvar::Cvar<bool> g_poisonIgnoreArmor(
+	"g_poisonIgnoreArmor",
+	"Make poison damage armored and armorless humans equally",
+	Cvar::NONE,
+	false);
+static Cvar::Range<Cvar::Cvar<int>> g_poisonDamage(
+	"g_poisonDamage",
+	"Damage per second dealt to a poisoned individual",
+	Cvar::NONE,
+	5,
+	0,
+	500);
+static Cvar::Range<Cvar::Cvar<int>> g_poisonDuration(
+	"g_poisonDuration",
+	"Number of seconds the poison effect lasts",
+	Cvar::NONE,
+	10,
+	0,
+	500);
+
 /*
 ===============
 P_DamageFeedback
@@ -880,6 +900,8 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		return;
 	}
 
+	ASSERT( G_IsPlayableTeam( G_Team(ent) ) );
+
 	gclient_t *client = ent->client;
 	playerState_t *ps = &client->ps;
 	team_t team       = (team_t)ps->persistant[PERS_TEAM];
@@ -1027,8 +1049,10 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		// deal poison damage
 		if ( client->ps.stats[ STAT_STATE ] & SS_POISONED )
 		{
-			ent->Damage(ALIEN_POISON_DMG, client->lastPoisonClient, Util::nullopt,
-			                    Util::nullopt, DAMAGE_NO_LOCDAMAGE, MOD_POISON);
+			int flags = g_poisonIgnoreArmor.Get() ? DAMAGE_PURE : DAMAGE_NO_LOCDAMAGE;
+			int dmg = g_poisonDamage.Get();
+			ent->Damage(dmg, client->lastPoisonClient, Util::nullopt,
+			                    Util::nullopt, flags, MOD_POISON);
 		}
 
 		// turn off life support when a team admits defeat
@@ -1060,14 +1084,7 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		     client->pers.aliveSeconds % g_freeFundPeriod.Get() == 0 )
 		{
 			// Give clients some credit periodically
-			if ( client->pers.team == TEAM_ALIENS )
-			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
-			}
-			else if ( client->pers.team == TEAM_HUMANS )
-			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
-			}
+			G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
 		}
 
 		int devolveReturnedCredits = std::min(
@@ -1955,7 +1972,7 @@ static void ClientThink_real( gentity_t *self )
 	}
 
 	if ( (client->ps.stats[ STAT_STATE ] & SS_POISONED) &&
-	     client->lastPoisonTime + ALIEN_POISON_TIME < level.time )
+	     client->lastPoisonTime + g_poisonDuration.Get()*1000 < level.time )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 	}

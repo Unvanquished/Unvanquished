@@ -1,0 +1,145 @@
+units
+{
+	ui/hud_human.rml
+	ui/hud_jetpack.rml
+	ui/hud_alien.rml
+	ui/hud_overlay.rml
+	ui/hud_messagebuffer.rml
+	ui/hud_basics.rml
+	ui/hud_barbs.rml
+	ui/hud_chargebar.rml
+	ui/hud_bp.rml
+	ui/hud_builder.rml
+	ui/hud_spawnwait.rml
+	ui/ingame_scoreboard.rml
+}
+
+// Default huds
+// TODO: Make these inheritable for the subclasses, so we don't need to copy+paste common elements
+
+spectator.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_spawnwait
+}
+human.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_jetpack
+	hud_human
+}
+
+alien.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+}
+
+// Individual classes/weapons
+ckit.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_jetpack
+	hud_human
+
+	hud_chargebar
+
+	hud_builder
+}
+
+lcannon.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_jetpack
+	hud_human
+
+	hud_chargebar
+}
+
+level1.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_chargebar
+}
+
+level3.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_chargebar
+}
+
+level3upg.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_barbs
+	hud_chargebar
+}
+
+level4.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_chargebar
+}
+
+abuild.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_chargebar
+
+	hud_bp
+	hud_builder
+}
+
+abuildupg.hudgroup
+{
+	hud_basics
+	hud_overlay
+	hud_messagebuffer
+
+	hud_alien
+
+	hud_chargebar
+
+	hud_bp
+	hud_builder
+}

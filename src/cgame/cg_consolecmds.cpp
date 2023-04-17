@@ -105,13 +105,13 @@ static void CG_ClientList_f()
 		switch ( ci->team )
 		{
 			case TEAM_ALIENS:
-				Log::Notice( "%2d %sA   ^*%s\n", i,
+				Log::Notice( "%2d %sA   ^*%s", i,
 				            Color::ToString( Color::Red ),
 				            ci->name );
 				break;
 
 			case TEAM_HUMANS:
-				Log::Notice( "%2d %sH   ^*%s\n", i,
+				Log::Notice( "%2d %sH   ^*%s", i,
 				            Color::ToString( Color::Cyan ),
 				            ci->name );
 				break;
@@ -119,14 +119,14 @@ static void CG_ClientList_f()
 			default:
 			case TEAM_NONE:
 			case NUM_TEAMS:
-				Log::Notice( "%2d S   %s\n", i, ci->name );
+				Log::Notice( "%2d S   %s", i, ci->name );
 				break;
 		}
 
 		count++;
 	}
 
-	Log::Notice(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
+	Log::Notice(_( "Listed %2d clients"), count ); // FIXME PLURAL
 }
 
 static void CG_ReloadHud_f()

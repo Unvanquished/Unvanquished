@@ -1,0 +1,25 @@
+<rml>
+<head>
+<link type="text/rcss" href="/ui/shared/basics.rcss" />
+<style>
+	body {
+		height: 100%;
+		width: 100%;
+	}
+	barbs {
+		width: 100%;
+		height: 1.3%;
+		position: absolute;
+		top: 51%;
+	}
+	barbs img {
+		width: 1.3%;
+		margin: 0 auto;
+		display: block;
+	}
+</style>
+</head>
+<body id="hud_barbs">
+	<barbs src="/ui/assets/alien/tremublob"/>
+</body>
+</rml>

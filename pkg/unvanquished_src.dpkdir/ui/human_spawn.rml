@@ -1,0 +1,52 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window_unmovable.rml" />
+	<style>
+		body {
+			width: 30em;
+			height: 10em;
+			margin: auto;
+		}
+		body > * {
+			font-size: 1.1em;
+		}
+
+		button {
+			line-height: 1.45em;
+		}
+
+		button.rifle {
+			width: 40%;
+			float: left;
+			margin-left: 0em;
+		}
+
+		button.ckit {
+			width: 40%;
+			float: right;
+			margin-right: 0em;
+		}
+
+		button.teamselect {
+			width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		p {
+			clear: both;
+		}
+	</style>
+</head>
+<body id="human_spawn" template="window_unmovable">
+	<p><translate>Choose your starting equipment:</translate></p>
+
+	<button class="rifle" onclick='Events.pushevent("hide human_spawn; exec class rifle", event)'><translate>SMG</translate></button>
+	<button class="ckit" onclick='Events.pushevent("hide human_spawn; exec class ckit", event)'><translate>Construction Kit</translate></button>
+
+	<p><translate>The SMG is a rapid-fire starting weapon, and the construction kit builds and repairs human structures. All equipment can be traded at the armoury.</translate></p>
+
+	<button class="teamselect" onclick='Events.pushevent("hide human_spawn; show ingame_teamselect", event)'><translate>Back to team selection</translate></button>
+</body>
+</rml>

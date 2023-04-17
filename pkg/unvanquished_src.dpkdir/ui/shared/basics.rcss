@@ -1,0 +1,112 @@
+/* Basic UI features and colour selection
+ *
+ * NB UI colours are chosen elsewhere to.  Test after changes to see :)
+ */
+
+/* #### Basic text elements #### */
+body {
+	/* Global font default size */
+	font-family: Roboto;
+	color: #999999;
+	cursor: ui/assets/cursor;
+	font-size: 12dp;
+	font-effect: outline( 1px #111 );
+}
+
+div {
+	display: block;
+}
+
+p {
+	display: block;
+	margin-bottom: 0.3em;
+}
+
+h1 {
+	display: block;
+	font-size: 1.65em;
+	font-family: Dejavu Sans;
+	font-weight: bold;
+	text-align: right;
+	color: #666666;
+	border-bottom: 0.08em #666666;
+}
+
+h2 {
+	display: block;
+	font-size: 1.6em;
+	margin-top: 0.5em;
+	color: #666666;
+}
+
+h3 {
+	display: block;
+	color: white;
+	height: 1.3em; /* Same as input boxes */
+}
+
+indent {
+	display: block;
+	margin-left: 1.5em;
+}
+
+/* #### Links #### */
+/* Inline */
+ilink {
+	color: #136d67; /* Dark cyan */
+	tab-index: auto;
+}
+ilink:hover {
+	color: #00f8ff; /* Bright cyan */
+}
+
+/* ##### Scroll-bars #### */
+scrollbarvertical {
+	width: 0.8em;
+	margin-right: -0.8em;
+	/* window's border-right is .17em but makes it a bit larger to
+	   fill the empty pixel that can appear at some resolution */
+	margin-left: -0.18em;
+	background-color: rgba(0, 0, 0, 0);
+}
+
+scrollbarvertical sliderbar {
+	background-color: #136d6788; /* Dark cyan */
+}
+
+scrollbarvertical sliderbar:hover {
+	background-color: #00f8ff44; /* Bright cyan */
+}
+
+/* #### Useful classes #### */
+
+.hidden {
+	display: none;
+}
+
+.right {
+	float: right;
+}
+
+.inline {
+	display: inline;
+}
+
+img.emoticon {
+	height: 1em;
+	width: auto;
+}
+
+progress {
+	display: block;
+	z-index: -1;
+	fill-image: /gfx/colors/white;
+}
+
+.material-icon {
+	font-family: Material Icons;
+	height: 1em;
+	width: auto;
+	margin-top: auto;
+	margin-bottom: auto;
+}

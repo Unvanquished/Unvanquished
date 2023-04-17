@@ -33,7 +33,7 @@ static void G_UpdateSkillsets()
 		gentity_t *bot = &g_entities[ i ];
 		if ( bot->r.svFlags & SVF_BOT )
 		{
-			BotSetSkillLevel( bot, bot->botMind->botSkill.level );
+			BotSetSkillLevel( bot, bot->botMind->skillLevel );
 		}
 	}
 }
@@ -84,10 +84,10 @@ static bool G_SkillPreferred( Str::StringRef behavior )
 	return G_GetPreferredSkillset().find( behavior ) != G_GetPreferredSkillset().end();
 }
 
-// aliens have 61 points to spend max
-static int skillsetBudgetAliens = 61;
-// humans have 40 points to spend max
-static int skillsetBudgetHumans = 40;
+// aliens have 84 points to spend max, but we give them a bit less for balancing
+static int skillsetBudgetAliens = 80;
+// humans have 48 points to spend max
+static int skillsetBudgetHumans = 48;
 
 static void G_SetSkillsetBudgetHumans( int val )
 {
@@ -164,27 +164,33 @@ static bool pred_human(const gentity_t *self, skillSet_t existing_skills)
 
 static const std::vector<botSkillTreeElement_t> movement_skills = {
 	// aliens
+	{ "strafe-attack",      BOT_A_STRAFE_ON_ATTACK,      6, pred_alien, {} },
+	{ "small-attack-jump",  BOT_A_SMALL_JUMP_ON_ATTACK,  5, pred_alien, {} },
 	{ "mara-attack-jump",   BOT_A_MARA_JUMP_ON_ATTACK,   5, pred_alien, {} },
-	{ "mantis-attack-jump", BOT_A_LEAP_ON_ATTACK,        4, pred_alien, {} },
+	{ "mantis-attack-jump", BOT_A_LEAP_ON_ATTACK,        3, pred_alien, {} },
 	{ "goon-attack-jump",   BOT_A_POUNCE_ON_ATTACK,      5, pred_alien, {} },
 	{ "tyrant-attack-run",  BOT_A_TYRANT_CHARGE_ON_ATTACK, 5, pred_alien, {} },
 };
 
 static const std::vector<botSkillTreeElement_t> survival_skills = {
 	// aliens
+	{ "mara-flee-jump",     BOT_A_MARA_JUMP_ON_FLEE,     4, pred_alien, {} },
+	{ "mantis-flee-jump",   BOT_A_LEAP_ON_FLEE,          3, pred_alien, {} },
+	{ "goon-flee-jump",     BOT_A_POUNCE_ON_FLEE,        4, pred_alien, {} },
+	{ "tyrant-flee-run",    BOT_A_TYRANT_CHARGE_ON_FLEE, 4, pred_alien, {} },
 	{ "safe-barbs",         BOT_A_SAFE_BARBS,            3, pred_alien, {} },
-	{ "a-fast-flee",        BOT_A_FAST_FLEE,             4, pred_always, {} },
-
 
 	// humans
 	{ "buy-modern-armor",   BOT_H_BUY_MODERN_ARMOR, 10, pred_human, {
 		{ "prefer-armor", BOT_H_PREFER_ARMOR, 5, pred_human, {} },
 	}},
-	{ "h-fast-flee",        BOT_H_FAST_FLEE,    4, pred_always, {} },
+	{ "flee-run",           BOT_H_RUN_ON_FLEE,  5, pred_human, {} },
 	{ "medkit",             BOT_H_MEDKIT,       8, pred_human, {} },
 };
 
 static const std::vector<botSkillTreeElement_t> fighting_skills = {
+	{ "fast-aim",           BOT_B_FAST_AIM,      8,  pred_always, {} },
+
 	// aliens
 	{ "aim-head",           BOT_A_AIM_HEAD,      10, pred_alien, {} },
 	{ "aim-barbs",          BOT_A_AIM_BARBS,     7,  pred_alien, {} },
@@ -271,8 +277,8 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 
 	float max = G_Team(bot) == TEAM_ALIENS ? static_cast<float>( skillsetBudgetAliens ) : static_cast<float>( skillsetBudgetHumans );
 
-	// unlock every skill at skill 7
-	int skill_points = static_cast<float>(skill) / 7.0f * max;
+	// unlock every skill at skill 7 (almost every for aliens)
+	int skill_points = static_cast<float>(skill + 2) / 9.0f * max;
 
 	// rng preparation
 	std::string name = bot->client->pers.netname;

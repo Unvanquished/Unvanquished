@@ -1,0 +1,32 @@
+<rml>
+<head>
+<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<style>
+		body {
+			height: 100%;
+			width: 100%;
+			font-family: DejaVu Sans;
+		}
+
+		div {
+			font-size: 1.8em;
+			position: absolute;
+			right: 1%;
+			bottom: 5%;
+			text-align: right;
+			opacity: 0.5;
+			color: gray;
+		}
+
+		ammo {
+			color: red;
+		}
+</style>
+</head>
+<body id="hud_bp">
+	<div>
+		<!-- FIXME: We may want to include <ammo/> in the translatable string. -->
+		<ammo/>&nbsp;<translate>build points</translate>
+	</div>
+</body>
+</rml>

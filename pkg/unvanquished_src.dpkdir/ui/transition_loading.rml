@@ -1,0 +1,135 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<style>
+			body {
+				width: 100%;
+				height: 100%;
+				z-index: 20; /* Stay ontop of all windows */
+			}
+
+			div.levelshot,
+			div.levelshot img {
+				/* HACK: Pretend to be the background */
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+			}
+			div.levelshot {
+				z-index: -1;
+				background: black;
+			}
+			div.levelshot img {
+				opacity: 0.65;
+			}
+
+			barbox {
+				display: block;
+				width: 100%;
+				height: 2.4em;
+
+				position: absolute;
+				left: 0em;
+				bottom: 0em;
+
+				background-color: #00000080;
+			}
+
+			progress {
+				width: 100%;
+				height: 100%;
+			}
+
+			progress {
+				image-color: #1ab0b5;
+			}
+
+			statusbox {
+				display: block;
+
+				position: absolute;
+				left: 1em;
+				bottom: .2em;
+
+				text-align: left;
+			}
+
+			percentage {
+				display: block;
+				width: 5em;
+
+				position: absolute;
+				right: 1em;
+				bottom: .2em;
+
+				text-align: right;
+			}
+
+			statusbox,
+			percentage {
+				color: white;
+				font-size: 1.5em;
+				font-weight: bold;
+				/* Dejavu has monospaced numbers, but Roboto does not
+				   This stops the the percentage number "jiggling" left and right */
+				font-family: Dejavu Sans;
+			}
+
+			infobox {
+				display: block;
+				position: absolute;
+				bottom: 6em;
+				width: 100%;
+				padding: .7em 1em 1em 1em;
+				background-color: #00000080;
+				border-color: white;
+				border-width: .05em 0em .05em 0em;
+				color: white;
+				text-align: center;
+			}
+
+			.serverlevelname {
+				font-size: 3em;
+			}
+
+			.serverlevelauthors {
+				font-size: 1.5em;
+			}
+
+			.servername {
+				font-size: 3em;
+			}
+
+			.servermotd {
+				font-size: 1.5em;
+			}
+		</style>
+		<title><translate>Loading</translate></title>
+	</head>
+	<body id="loading" nohide>
+		<div class="levelshot">
+		<levelshot_loading/>
+		</div>
+
+		<infobox>
+			<div class="serverlevelname"><levelname/></div>
+			<div class="serverlevelauthors"><levelauthors/></div>
+			<div class="servername"><hostname/></div>
+			<div class="servermotd"><motd/></div>
+		</infobox>
+
+		<barbox>
+			<progress src="overall" class="barValue"/>
+		</barbox>
+
+		<statusbox>
+			<loadingText/>
+		</statusbox>
+
+		<percentage>
+			<progress_value src="overall"/>
+		</percentage>
+	</body>
+</rml>

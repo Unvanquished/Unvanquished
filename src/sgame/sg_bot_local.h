@@ -91,13 +91,6 @@ struct enemyQueue_t
 	int back;
 };
 
-struct botSkill_t
-{
-	int level;
-	float aimSlowness;
-	float aimShake;
-};
-
 // boolean flags that tells which skill (compétence) the bot has.
 //
 // When you add a skill, add it to the skill tree in sg_bot_skilltree.cpp and
@@ -106,22 +99,28 @@ enum bot_skill
 {
 	// movement skills
 	BOT_B_BASIC_MOVEMENT, // doesn't do anything as of now
-	BOT_A_MARA_JUMP_ON_ATTACK,
+	BOT_A_SMALL_JUMP_ON_ATTACK, // small aliens (dretch and mantis) do jump from time to time when attacking, this helps dodging
+	BOT_A_MARA_JUMP_ON_ATTACK, // marauder jumps when in a fight
+	BOT_A_STRAFE_ON_ATTACK, // strafe when attacking to dodge bullets better
 	BOT_A_LEAP_ON_ATTACK, // mantis
 	BOT_A_POUNCE_ON_ATTACK, // dragoon and adv dragoon
 	BOT_A_TYRANT_CHARGE_ON_ATTACK,
 
 	// situation awareness and survival
 	BOT_B_PAIN, // basic awareness: notice an enemy if it bites you, or shoots at you
-	BOT_A_FAST_FLEE,
-	BOT_H_FAST_FLEE,
+	BOT_A_MARA_JUMP_ON_FLEE,
+	BOT_A_LEAP_ON_FLEE, // mantis
+	BOT_A_POUNCE_ON_FLEE, // dragoon and adv dragoon
+	BOT_A_TYRANT_CHARGE_ON_FLEE,
 	BOT_A_SAFE_BARBS, // don't barb yourself as adv goon
+	BOT_H_RUN_ON_FLEE, // when fleeing, RUN
 	BOT_H_BUY_MODERN_ARMOR, // if this is disabled, bot will buy the second-to-last unlocked armor, and will never buy battlesuit
 	BOT_H_PREFER_ARMOR, // prefer to buy armor rather than guns
 	BOT_H_MEDKIT, // knows the medkit even exist
 
 	// fighting skills
 	BOT_B_BASIC_FIGHT, // doesn't do anything as of now
+	BOT_B_FAST_AIM,
 	BOT_A_AIM_HEAD,
 	BOT_A_AIM_BARBS, // precisely target barbs
 	BOT_H_PREDICTIVE_AIM, // predict where to aim depending on weapon and enemy speed
@@ -147,9 +146,9 @@ struct botMemory_t
 	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );
 	usercmd_t   cmdBuffer;
 
-	botSkill_t  botSkill; // numerical values
-	skillSet_t  botSkillSet; // boolean flags
-	std::string botSkillSetExplaination;
+	int         skillLevel;
+	skillSet_t  skillSet; // boolean flags
+	std::string skillSetExplaination;
 
 	botEntityAndDistance_t bestEnemy;
 	botEntityAndDistance_t closestDamagedBuilding;

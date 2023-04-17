@@ -47,17 +47,18 @@ basic gentity lifecycle handling
 =================================================================================
 */
 
-/**
- * @brief Every entity slot is initialized like this, including the world and none
- */
+// init the CBSE entity for an entity without any CBSE logic
 void G_InitGentityMinimal( gentity_t *entity )
 {
-	entity->entity = level.emptyEntity;
+	EmptyEntity::Params params;
+	params.oldEnt = entity;
+	entity->entity = new EmptyEntity( params );
 }
 
 void G_InitGentity( gentity_t *entity )
 {
-	G_InitGentityMinimal( entity );
+	ASSERT( !entity->inuse );
+	ASSERT_EQ( entity->entity, nullptr );
 	++entity->generation;
 	entity->inuse = true;
 	entity->enabled = true;
@@ -74,7 +75,7 @@ void G_InitGentity( gentity_t *entity )
 
 /*
 =================
-G_NewEntity
+FindEntitySlot
 
 Either finds a free entity, or allocates a new one.
 
@@ -87,7 +88,7 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-gentity_t *G_NewEntity()
+static gentity_t *FindEntitySlot()
 {
 	// we iterate through all the entities and look for a free one that was allocated enough time ago,
 	// as well as one that died recently in case the first kind is not available
@@ -113,7 +114,6 @@ gentity_t *G_NewEntity()
 		}
 
 		// reuse this slot
-		G_InitGentity( newEntity );
 		return newEntity;
 	}
 
@@ -127,7 +127,6 @@ gentity_t *G_NewEntity()
 				              forcedEnt->num(), forcedEnt->freetime, level.time - forcedEnt->freetime );
 			}
 			// reuse this slot
-			G_InitGentity( forcedEnt );
 			return forcedEnt;
 		}
 
@@ -136,7 +135,7 @@ gentity_t *G_NewEntity()
 			Log::Warn( "%4i: %s", i, g_entities[ i ].classname );
 		}
 
-		Sys::Drop( "G_Spawn: no free entities" );
+		Sys::Drop( "FindEntitySlot: no free entities" );
 	}
 
 	// open up a new slot
@@ -146,8 +145,18 @@ gentity_t *G_NewEntity()
 	trap_LocateGameData( level.num_entities, sizeof( gentity_t ),
 	                     sizeof( level.clients[ 0 ] ) );
 
-	G_InitGentity( newEntity );
 	return newEntity;
+}
+
+gentity_t *G_NewEntity( initEntityStyle_t style )
+{
+	gentity_t *ent = FindEntitySlot();
+	G_InitGentity( ent );
+	if ( style == NO_CBSE )
+	{
+		G_InitGentityMinimal( ent );
+	}
+	return ent;
 }
 
 /*
@@ -179,10 +188,7 @@ void G_FreeEntity( gentity_t *entity )
 		BaseClustering::Remove(entity);
 	}
 
-	if (entity->entity != level.emptyEntity)
-	{
-		delete entity->entity;
-	}
+	delete entity->entity;
 
 	unsigned generation = entity->generation;
 
@@ -190,7 +196,7 @@ void G_FreeEntity( gentity_t *entity )
 	new(entity) gentity_t{};
 
 	entity->generation = generation + 1;
-	entity->entity = level.emptyEntity;
+	entity->entity = nullptr;
 	entity->classname = "freent";
 	entity->freetime = level.time;
 	entity->inuse = false;
@@ -210,7 +216,7 @@ gentity_t *G_NewTempEntity( glm::vec3 origin, int event )
 {
 	gentity_t *newEntity;
 
-	newEntity = G_NewEntity();
+	newEntity = G_NewEntity( NO_CBSE );
 	newEntity->s.eType = Util::enum_cast<entityType_t>( Util::ordinal(entityType_t::ET_EVENTS) + event );
 
 	newEntity->classname = "tempEntity";

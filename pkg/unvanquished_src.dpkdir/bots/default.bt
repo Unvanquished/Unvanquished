@@ -1,0 +1,14 @@
+selector
+{
+	behavior unstick
+
+	condition ( team == TEAM_ALIENS )
+	{
+		behavior default_aliens
+	}
+
+	condition ( team == TEAM_HUMANS )
+	{
+		behavior default_humans
+	}
+}

@@ -150,7 +150,7 @@ void G_BotBackgroundNavgen()
 
 		if ( navMeshLoaded == navMeshStatus_t::LOAD_FAILED )
 		{
-			trap_SendServerCommand( -1, "print_tr " QQ( N_( "^1Bot navmesh generation failed!" ) ) );
+			trap_SendServerCommand( -1, "print_tr " QQ( "^1" N_( "Bot navmesh generation failed!" ) ) );
 			G_BotDelAllBots();
 		}
 		else
@@ -592,11 +592,23 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 		|| ( tr2.entityNum == ENTITYNUM_WORLD && tr2.surfaceFlags & SURF_LADDER ) )
 		;
 
+	if ( blocker->s.eType == entityType_t::ET_BUILDABLE
+			&& blocker->s.modelindex == BA_A_BARRICADE
+			&& G_OnSameTeam( self, blocker ) )
+	{
+		glm::vec3 mins, maxs;
+		BG_BoundingBox( static_cast<buildable_t>( blocker->s.modelindex ), &mins, &maxs );
+		maxs.z *= BARRICADE_SHRINKPROP;
+		glm::vec3 pos = VEC2GLM( blocker->s.origin );
+		BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
+		if ( origin.z + playerMins.z >= pos.z + maxs.z )
+		{
+			return true;
+		}
+	}
+
 	//if we can jump over it, then jump
-	//note that we also test for a blocking barricade because barricades will collapse to let us through
-	return blocker->s.modelindex == BA_A_BARRICADE
-		|| tr2.fraction == 1.0f
-		|| ladder;
+	return tr2.fraction == 1.0f || ladder;
 }
 
 // Determine a new direction, which may be unchanged (forward) or sideway. It
@@ -969,18 +981,16 @@ bool BotMoveToGoal( gentity_t *self )
 	weaponMode_t wpm = WPM_NONE;
 	int magnitude = 0;
 	const playerState_t& ps  = self->client->ps;
-	if ( ( G_Team( self ) == TEAM_HUMANS && self->botMind->botSkillSet[BOT_H_FAST_FLEE] )
-			|| ( G_Team( self ) == TEAM_ALIENS && self->botMind->botSkillSet[BOT_A_FAST_FLEE] ) )
-	{
-		return true;
-	}
 	switch ( ps.stats [ STAT_CLASS ] )
 	{
 		case PCL_HUMAN_NAKED:
 		case PCL_HUMAN_LIGHT:
 		case PCL_HUMAN_MEDIUM:
 		case PCL_HUMAN_BSUIT:
-			BotSprint( self, true );
+			if ( self->botMind->skillSet[BOT_H_RUN_ON_FLEE] )
+			{
+				BotSprint( self, true );
+			}
 			break;
 		//those classes do not really have capabilities allowing them to be
 		//significantly faster while fleeing (except jumps, but that also
@@ -990,7 +1000,7 @@ bool BotMoveToGoal( gentity_t *self )
 		case PCL_ALIEN_LEVEL0:
 			break;
 		case PCL_ALIEN_LEVEL1:
-			if ( ps.weaponCharge <= 50 ) // I don't remember why 50
+			if ( self->botMind->skillSet[BOT_A_LEAP_ON_FLEE] && ps.weaponCharge <= 50 ) // I don't remember why 50
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL1_POUNCE_MINPITCH;
@@ -1004,28 +1014,31 @@ bool BotMoveToGoal( gentity_t *self )
 			// a lot of maneuverability
 			int msec = level.time - level.previousTime;
 			constexpr float jumpChance = 0.2f; // chance per second
-			if ( (jumpChance / 1000.0f) * msec > random() )
+			if ( self->botMind->skillSet[BOT_A_MARA_JUMP_ON_FLEE] && (jumpChance / 1000.0f) * msec > random() )
 			{
 				BotJump( self );
 			}
 			break;
 		}
 		case PCL_ALIEN_LEVEL3:
-			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			if ( self->botMind->skillSet[BOT_A_POUNCE_ON_FLEE] && ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG;
 			}
 		break;
 		case PCL_ALIEN_LEVEL3_UPG:
-			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			if ( self->botMind->skillSet[BOT_A_POUNCE_ON_FLEE] && ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG_UPG;
 			}
 			break;
 		case PCL_ALIEN_LEVEL4:
-			wpm = WPM_SECONDARY;
+			if ( self->botMind->skillSet[BOT_A_TYRANT_CHARGE_ON_FLEE] )
+			{
+				wpm = WPM_SECONDARY;
+			}
 		break;
 	}
 	if ( wpm != WPM_NONE )

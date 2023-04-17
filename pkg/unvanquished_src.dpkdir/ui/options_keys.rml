@@ -1,0 +1,196 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+	</head>
+	<body id="options_keys" template="window" style="width: 41em; margin: 1em;">
+		<h1><translate>Key bindings</translate></h1>
+
+		<p><translate>Press Escape to cancel changing a key binding.</translate></p>
+
+		<tabset>
+			<tab><translate>Presets</translate></tab>
+			<panel class="presets">
+				<row>
+					<button onclick='Events.pushevent("exec preset presets/input/wasd.cfg", event)'>WASD</button>
+					<span><translate>Classic First Person Shooter binds,<br />keys will be adjusted to your layout.</translate></span>
+				</row>
+				<row>
+					<button onclick='Events.pushevent("exec preset presets/input/esdf.cfg", event)'>ESDF</button>
+					<span><translate>One column shifted to the right,<br />keys will be adjusted to your layout.</translate></span>
+				</row>
+				<row>
+					<button onclick='Events.pushevent("exec preset presets/input/ltouchpad.cfg", event)'>LTouchpad</button>
+					<span><translate>Special binds for left-handed,<br />touchpad users.</translate></span>
+				</row>
+				<if cvar="in_joystick" condition="==" value="1">
+				<row>
+					<button onclick='Events.pushevent("exec preset presets/input/gamepad.cfg", event)'><translate>Gamepad</translate></button>
+					<span><translate>Does not work in menus yet,<br />&nbsp;Experimental.</translate></span>
+				</row>
+				</if>
+			</panel>
+			<tab><translate>Move</translate></tab>
+			<panel>
+				<row>
+					<keybind cmd="+speed" />
+					<p><translate>Run / Walk:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+sprint" team="humans" />
+					<p><translate>Sprint:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+forward" />
+					<p><translate>Forward:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+back" />
+					<p><translate>Backpedal:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+moveleft" />
+					<p><translate>Move left:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+moveright" />
+					<p><translate>Move right:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+moveup" />
+					<p><translate>Jump:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+movedown" team="humans" />
+					<p><translate>Crouch:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+movedown" team="aliens" />
+					<p><translate>Wallwalk:</translate></p>
+				</row>
+			</panel>
+			<tab><translate>Abilities</translate></tab>
+			<panel>
+				<row>
+					<keybind cmd="+attack" />
+					<p><translate>Primary attack:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+attack2" />
+					<p><translate>Secondary attack:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+attack3" team="aliens" />
+					<p><translate>Shoot barb:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="itemact grenade" team="humans" />
+					<p><translate>Throw grenade:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="reload" team="humans" />
+					<p><translate>Reload:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="itemact medkit" team="humans" />
+					<p><translate>Use medkit:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+activate" team="humans" />
+					<p><translate>Use structure:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+activate" team="aliens" />
+					<p><translate>Evolve:</translate></p>
+				</row>
+			</panel>
+			<tab><translate>Chat/Vote</translate></tab>
+			<panel>
+				<row>
+					<keybind cmd="+taunt" />
+					<p><translate>Gesture:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="message_public" />
+					<p><translate>Global chat:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="message_team" />
+					<p><translate>Team chat:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="message_admin" />
+					<p><translate>Admin chat:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="vote yes" />
+					<p><translate>Vote Yes:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="vote no" />
+					<p><translate>Vote No:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="teamvote yes" />
+					<p><translate>Team vote Yes:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="teamvote no" />
+					<p><translate>Team vote No:</translate></p>
+				</row>
+			</panel>
+			<tab><translate>Misc</translate></tab>
+			<panel>
+				<row>
+					<keybind cmd="+scores" />
+					<p><translate>Show scores:</translate></p>
+				</row>
+				<row>
+					<keybind cmd='+deconstruct' />
+					<p><translate>Mark structure for replacement:</translate></p>
+				</row>
+				<p><translate>Hold the key to deconstruct structure.</translate></p>
+				<row>
+					<keybind cmd='beaconMenu' />
+					<p><translate>Beacon menu:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="<console>" />
+					<p><translate>Toggle console:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="modcase SHIFT screenshotPNG screenshotJPEG" />
+					<p><translate>Screenshot:</translate></p>
+				</row>
+				<p><translate>Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are taken in JPEG.</translate></p>
+			</panel>
+			<tab><translate>Quake-look</translate></tab>
+			<panel>
+				<row>
+					<keybind cmd="+lookup" />
+					<p><translate>Look up:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+lookdown" />
+					<p><translate>Look down:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+left" />
+					<p><translate>Turn left:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+right" />
+					<p><translate>Turn right:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="+mlook" />
+					<p><translate>Mouse look:</translate></p>
+				</row>
+				<row>
+					<keybind cmd="centerview" />
+					<p><translate>Centerview:</translate></p>
+				</row>
+			</panel>
+			</tabset>
+	</body>
+</rml>
