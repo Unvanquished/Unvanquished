@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
 "PO-Revision-Date: 2023-04-17 18:11+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -1362,27 +1362,28 @@ msgstr "Permettre aux particules de rebondir sur les surfaces."
 
 #: ui/options_graphics.rml:239
 msgid "Gameplay"
-msgstr ""
+msgstr "Gameplay"
 
 #: ui/options_graphics.rml:241
 msgid "Building markers"
-msgstr ""
+msgstr "Marqueurs de construction"
 
 #: ui/options_graphics.rml:244
 msgid "disabled"
-msgstr ""
+msgstr "désactivé"
 
 #: ui/options_graphics.rml:245
 msgid "All structures"
-msgstr ""
+msgstr "toute les structures"
 
 #: ui/options_graphics.rml:246
+#, fuzzy
 msgid "Support structures"
-msgstr ""
+msgstr "Structures de soutien"
 
 #: ui/options_graphics.rml:247
 msgid "Offensive structures"
-msgstr ""
+msgstr "structures offensives"
 
 #: ui/options_graphics.rml:248
 msgid "Alien structures"
@@ -1414,54 +1415,62 @@ msgstr ""
 
 #: ui/options_graphics.rml:257
 msgid "Motion blur"
-msgstr ""
+msgstr "Flou de mouvement"
 
 #: ui/options_graphics.rml:261
 msgid "Moderate"
-msgstr ""
+msgstr "Modéré"
 
 #: ui/options_graphics.rml:265
 msgid "Intensity"
-msgstr ""
+msgstr "Intensité"
 
 #: ui/options_graphics.rml:266
 msgid "Level of motion-blur."
-msgstr ""
+msgstr "Niveau de flou de mouvement."
 
 #: ui/options_graphics.rml:269
 msgid "Minimum movement speed for motion-blur to activate"
-msgstr ""
+msgstr "Vitesse de déplacement minimale pour activer le flou de mouvement"
 
 #: ui/options_graphics.rml:272 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr ""
+msgstr "Actuel :"
 
 #: ui/options_keys.rml:9
+#, fuzzy
 msgid "Press Escape to cancel changing a key binding."
-msgstr ""
+msgstr "Appuyez sur Échap pour annuler la modification d'une liaison de touche."
 
 #: ui/options_keys.rml:16
+#, fuzzy
 msgid ""
 "Classic First Person Shooter binds,<br />keys will be adjusted to your "
 "layout."
 msgstr ""
+"Liaisons classiques de tir à la première personne,<br />les touches seront "
+"ajustées à votre disposition."
 
 #: ui/options_keys.rml:20
+#, fuzzy
 msgid ""
 "One column shifted to the right,<br />keys will be adjusted to your layout."
 msgstr ""
+"Une colonne décalée vers la droite,<br />les touches seront ajustées à votre "
+"mise en page."
 
 #: ui/options_keys.rml:24
+#, fuzzy
 msgid "Special binds for left-handed,<br />touchpad users."
-msgstr ""
+msgstr "bindes spéciales pour les gauchers<br />utilisateurs du pavé tactile."
 
 #: ui/options_keys.rml:28
 msgid "Gamepad"
-msgstr ""
+msgstr "Manette de jeu"
 
 #: ui/options_keys.rml:29
 msgid "Does not work in menus yet,<br />&nbsp;Experimental."
-msgstr ""
+msgstr "Ne fonctionne pas encore dans les menus,<br />&nbsp;Expérimental."
 
 #: ui/options_keys.rml:33
 msgid "Move"
@@ -1485,11 +1494,11 @@ msgstr "Reculer :"
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr ""
+msgstr "Se déplacer à gauche :"
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr ""
+msgstr "Se déplacer à droite :"
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
@@ -1500,28 +1509,31 @@ msgid "Crouch:"
 msgstr "S’accroupir :"
 
 #: ui/options_keys.rml:69
+#, fuzzy
 msgid "Wallwalk:"
-msgstr ""
+msgstr "Marche murale :"
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
-msgstr ""
+msgstr "Capacités"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr ""
+msgstr "Attaque principale :"
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr ""
+msgstr "Attaque secondaire :"
 
 #: ui/options_keys.rml:84
+#, fuzzy
 msgid "Shoot barb:"
-msgstr ""
+msgstr "Tire de \"barb\" :"
 
 #: ui/options_keys.rml:88
+#, fuzzy
 msgid "Throw grenade:"
-msgstr ""
+msgstr "Lancer des grenades :"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
@@ -1529,35 +1541,39 @@ msgstr "Recharger :"
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr ""
+msgstr "Utilisez le kit médical :"
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr ""
+msgstr "Utiliser la structure :"
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr ""
+msgstr "Évoluer :"
 
 #: ui/options_keys.rml:107
+#, fuzzy
 msgid "Chat/Vote"
-msgstr ""
+msgstr "Communiquer/Voter"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
 msgstr "Faire un geste :"
 
 #: ui/options_keys.rml:115
+#, fuzzy
 msgid "Global chat:"
-msgstr ""
+msgstr "communication globale :"
 
 #: ui/options_keys.rml:119
+#, fuzzy
 msgid "Team chat:"
-msgstr ""
+msgstr "Communication d'équipe :"
 
 #: ui/options_keys.rml:123
+#, fuzzy
 msgid "Admin chat:"
-msgstr ""
+msgstr "Communication d'administrateur :"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
@@ -1569,35 +1585,40 @@ msgstr "Voter « non » :"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
-msgstr ""
+msgstr "Vote d'équipe Oui :"
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
-msgstr ""
+msgstr "Vote d'équipe Non :"
 
 #: ui/options_keys.rml:142
 msgid "Misc"
 msgstr "Divers"
 
 #: ui/options_keys.rml:146
+#, fuzzy
 msgid "Show scores:"
-msgstr ""
+msgstr "Afficher les scores :"
 
 #: ui/options_keys.rml:150
+#, fuzzy
 msgid "Mark structure for replacement:"
-msgstr ""
+msgstr "Marquez une structure pour le remplacement :"
 
 #: ui/options_keys.rml:152
+#, fuzzy
 msgid "Hold the key to deconstruct structure."
-msgstr ""
+msgstr "Maintenez la clé pour déconstruire la structure."
 
 #: ui/options_keys.rml:155
+#, fuzzy
 msgid "Beacon menu:"
-msgstr ""
+msgstr "Menu balise :"
 
 #: ui/options_keys.rml:159
+#, fuzzy
 msgid "Toggle console:"
-msgstr ""
+msgstr "Basculer la console :"
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
@@ -1608,144 +1629,163 @@ msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
 msgstr ""
+"Maintenez SHIFT lorsque vous prenez une capture d'écran pour capturer un "
+"PNG, sinon les photos sont prises en JPEG."
 
 #: ui/options_keys.rml:167
+#, fuzzy
 msgid "Quake-look"
-msgstr ""
+msgstr "Regard de Quake"
 
 #: ui/options_keys.rml:171
+#, fuzzy
 msgid "Look up:"
-msgstr ""
+msgstr "Chercher:"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr ""
+msgstr "Baisser les yeux :"
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
-msgstr ""
+msgstr "Tourner à gauche :"
 
 #: ui/options_keys.rml:183
 msgid "Turn right:"
-msgstr ""
+msgstr "Tourner à droite :"
 
 #: ui/options_keys.rml:187
+#, fuzzy
 msgid "Mouse look:"
-msgstr ""
+msgstr "Apparence de la souris :"
 
 #: ui/options_keys.rml:191
 msgid "Centerview:"
 msgstr "Centrer la vue :"
 
 #: ui/options_mouse.rml:9
+#, fuzzy
 msgid "Y axis"
-msgstr ""
+msgstr "Axe Y"
 
 #: ui/options_mouse.rml:11
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: ui/options_mouse.rml:12
 msgid "Inverted"
-msgstr ""
+msgstr "Inversé"
 
 #: ui/options_mouse.rml:14
 msgid "Behavior of vertical mouse movement."
-msgstr ""
+msgstr "Comportement du mouvement vertical de la souris."
 
 #: ui/options_mouse.rml:17
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Sensibilité de la souris"
 
 #: ui/options_mouse.rml:25
+#, fuzzy
 msgid "Mouse filter"
-msgstr ""
+msgstr "Filtre de la souris"
 
 #: ui/options_mouse.rml:27
+#, fuzzy
 msgid "Smooth out sudden mouse movements."
-msgstr ""
+msgstr "Adoucissez les mouvements brusques de la souris."
 
 #: ui/options_mouse.rml:30
+#, fuzzy
 msgid "Free look"
-msgstr ""
+msgstr "Regard libre"
 
 #: ui/options_mouse.rml:32
 msgid "Turn off only if you are a Quake junkie."
-msgstr ""
+msgstr "Désactivez-le uniquement si vous êtes un accro de Quake."
 
 #: ui/options_player.rml:7
 msgid "Player Setup"
-msgstr ""
+msgstr "Configuration du Joueur"
 
 #: ui/options_player.rml:9
 msgid "Personal"
-msgstr ""
+msgstr "Personnel"
 
 #: ui/options_player.rml:12 ui/options_welcome.rml:12
 msgid "Nickname"
-msgstr ""
+msgstr "Pseudonyme"
 
 #: ui/options_player.rml:14 ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr ""
+msgstr "Couleurs et symboles peuvent être utilisés."
 
 #: ui/options_player.rml:17
 msgid "Tutorial mode"
-msgstr ""
+msgstr "Mode tutoriel"
 
 #: ui/options_player.rml:19
 msgid "Display hints for key bindings on-screen."
-msgstr ""
+msgstr "Affichez des conseils pour les raccourcis clavier à l'écran."
 
 #: ui/options_player.rml:23
+#, fuzzy
 msgid "Show only team chat"
-msgstr ""
+msgstr "Afficher uniquement la communication d'équipe"
 
 #: ui/options_player.rml:26
 msgid "Movement"
-msgstr ""
+msgstr "Mouvement"
 
 #: ui/options_player.rml:28
 msgid "Wall-walking auto-pitch"
 msgstr ""
 
 #: ui/options_player.rml:30
+#, fuzzy
 msgid ""
 "Always “twist” and “rotate” the view when you wall-walk from one surface to "
 "another."
 msgstr ""
+"Toujours « tordre » et « faire pivoter » la vue lorsque vous passez d'une "
+"surface à l'autre."
 
 #: ui/options_player.rml:39
 msgid "Wall-walking pitch-speed"
 msgstr ""
 
 #: ui/options_player.rml:40
+#, fuzzy
 msgid "How fast your view “rotates” and “twists” as you wall-walk."
 msgstr ""
+"À quelle vitesse votre vue \"tourne\" et \"tord\" lorsque vous marchez sur "
+"le mur."
 
 #: ui/options_player.rml:43
+#, fuzzy
 msgid "Wall-walking toggles"
-msgstr ""
+msgstr "Bascules de marche murale"
 
 #: ui/options_player.rml:45 ui/options_player.rml:50
 msgid "“Tap key” instead of “hold key” to activate."
 msgstr ""
+"\"Appuyez sur la touche\" au lieu de \"maintenir la touche\" pour activer."
 
 #: ui/options_player.rml:48
 msgid "Sprint toggles"
 msgstr ""
 
 #: ui/options_player.rml:53
+#, fuzzy
 msgid "Cosmetic"
-msgstr ""
+msgstr "Cosmétique"
 
 #: ui/options_player.rml:56
 msgid "Disable"
-msgstr ""
+msgstr "Désactiver"
 
 #: ui/options_player.rml:57
 msgid "Humans only"
-msgstr ""
+msgstr "Humains seulement"
 
 #: ui/options_player.rml:58
 msgid "Humans and aliens"
@@ -1753,59 +1793,65 @@ msgstr "Humains et extraterrestres"
 
 #: ui/options_player.rml:60
 msgid "First-person weapons"
-msgstr ""
+msgstr "Armes à la première personne"
 
 #: ui/options_player.rml:61
 msgid "Show gun, pincer, hand and mandible models in first-person."
 msgstr ""
+"Montrez des modèles de pistolet, de pince, de main et de mandibule à la "
+"première personne."
 
 #: ui/options_player.rml:64
 msgid "Left-handed mode"
-msgstr ""
+msgstr "Mode gaucher"
 
 #: ui/options_player.rml:66
 msgid "Mirror first-person gun models."
-msgstr ""
+msgstr "Miroir des modèles d'armes à la première personne."
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
-msgstr ""
+msgstr "Volume global"
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "Musique"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
-msgstr ""
+msgstr "Intensité de la réverbération"
 
 #: ui/options_sound.rml:23
+#, fuzzy
 msgid "“Echo” effect"
-msgstr ""
+msgstr "Effet « écho »"
 
 #: ui/options_sound.rml:26
+#, fuzzy
 msgid "Doppler Intensity"
-msgstr ""
+msgstr "Intensité Doppler"
 
 #: ui/options_sound.rml:28
+#, fuzzy
 msgid "“Pitch-shift” effect when moving from or toward a sound."
-msgstr ""
+msgstr "Effet « pitch-shift » lors du déplacement depuis ou vers un son."
 
 #: ui/options_sound.rml:31
+#, fuzzy
 msgid "OpenAL Device"
-msgstr ""
+msgstr "Appareil OpenAL"
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
-msgstr ""
+msgstr "Périphérique/carte de sortie audio"
 
 #: ui/options_ui.rml:7
 msgid "User interface"
-msgstr ""
+msgstr "Interface utilisateur"
 
 #: ui/options_ui.rml:10
 msgid "Real-time clock"
-msgstr ""
+msgstr "Horloge en temps réel"
 
 #: ui/options_ui.rml:13
 msgid "12 Hour"
@@ -1817,19 +1863,20 @@ msgstr "24 heures"
 
 #: ui/options_ui.rml:16
 msgid "Show the time in real-life."
-msgstr ""
+msgstr "Afficher l'heure dans la vraie vie."
 
 #: ui/options_ui.rml:19
+#, fuzzy
 msgid "Game-time clock"
-msgstr ""
+msgstr "Horloge de jeu"
 
 #: ui/options_ui.rml:21
 msgid "Show how long a match has lasted."
-msgstr ""
+msgstr "Afficher la durée d'un match."
 
 #: ui/options_ui.rml:24
 msgid "Crosshair visiblity"
-msgstr ""
+msgstr "Visibilité du viseur"
 
 #: ui/options_ui.rml:26
 msgid "Never"
@@ -1837,7 +1884,7 @@ msgstr "Jamais"
 
 #: ui/options_ui.rml:27
 msgid "Ranged weapons only"
-msgstr ""
+msgstr "Armes à distance uniquement"
 
 #: ui/options_ui.rml:28
 msgid "Always"
@@ -1845,7 +1892,7 @@ msgstr "Toujours"
 
 #: ui/options_ui.rml:33
 msgid "Crosshair size"
-msgstr ""
+msgstr "Taille du viseur"
 
 #: ui/options_ui.rml:35
 msgid "Tiny"
@@ -1873,36 +1920,40 @@ msgid "Time that information takes to get to the server and back."
 msgstr "Temps que l’information met à aller au serveur et à en revenir."
 
 #: ui/options_ui.rml:49
+#, fuzzy
 msgid "Show movement speed"
-msgstr ""
+msgstr "Afficher la vitesse de déplacement"
 
 #: ui/options_ui.rml:51
+#, fuzzy
 msgid "Current, maximum and graph of movement-speed."
-msgstr ""
+msgstr "Actuel, maximum et graphique de la vitesse de déplacement."
 
 #: ui/options_ui.rml:54
+#, fuzzy
 msgid "Show FPS"
-msgstr ""
+msgstr "Afficher les fps"
 
 #: ui/options_ui.rml:56
 msgid "Frames per second."
-msgstr ""
+msgstr "Images par seconde."
 
 #: ui/options_welcome.rml:7
+#, fuzzy
 msgid "Hello there!"
-msgstr ""
+msgstr "Bonjour!"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr ""
+msgstr "Comment doit-on t'appeler ?"
 
 #: ui/options_welcome.rml:13
 msgid "Your name visible to others."
-msgstr ""
+msgstr "Votre nom est visible pour les autres."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
-msgstr ""
+msgstr "Vous pouvez le modifier à tout moment dans les options."
 
 #: ui/options_welcome.rml:17
 msgid "Select Battlefield"
@@ -1910,7 +1961,7 @@ msgstr "Choisir le champs de bataille"
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr ""
+msgstr "Listes de serveurs"
 
 #: ui/server_browser.rml:39
 msgid "Internet"
@@ -1922,7 +1973,7 @@ msgstr "Nom :"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
-msgstr ""
+msgstr "Joueurs (Robots)"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
@@ -1941,12 +1992,13 @@ msgid "LAN"
 msgstr "Réseau local"
 
 #: ui/server_create.rml:39
+#, fuzzy
 msgid "Hostname"
-msgstr ""
+msgstr "Nom de l'hôte"
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr ""
+msgstr "Mot de passe"
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
@@ -1954,47 +2006,55 @@ msgstr "Mode développeur (active la triche)"
 
 #: ui/server_create.rml:54
 msgid "Extra packages to load"
-msgstr ""
+msgstr "Paquets supplémentaires à charger"
 
 #: ui/server_create.rml:59
+#, fuzzy
 msgid "Map building layout to use"
-msgstr ""
+msgstr "Mise en page de construction de carte à utiliser"
 
 #: ui/server_create.rml:67
 msgid "Start"
-msgstr ""
+msgstr "Commencer"
 
 #: ui/server_setup.rml:8
 msgid "Server Setup"
-msgstr ""
+msgstr "Configuration du serveur"
 
 #: ui/server_setup.rml:16
+#, fuzzy
 msgid "Free funds frequency"
-msgstr ""
+msgstr "Fréquence des fonds gratuits"
 
 #: ui/server_setup.rml:17
+#, fuzzy
 msgid "Every X seconds the player is alive, they will receive free funds."
 msgstr ""
+"Toutes les X secondes où le joueur est en vie, il recevra des fonds gratuits."
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
-msgstr ""
+msgstr "secondes"
 
 #: ui/server_setup.rml:24
+#, fuzzy
 msgid "Friendly fire damage multipliers"
-msgstr ""
+msgstr "Multiplicateurs de dégâts de tir ami"
 
 #: ui/server_setup.rml:25
+#, fuzzy
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
 msgstr ""
+"Multiplicateur de dégâts pour les dégâts d'équipe (n'inclut pas les "
+"bâtiments ou soi-même)"
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr "Extraterrestres :"
+msgstr "Extraterrestres :"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr "Humains :"
+msgstr "Humains :"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
@@ -2002,19 +2062,22 @@ msgstr ""
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
-msgstr ""
+msgstr "Autoriser le vote"
 
 #: ui/server_setup.rml:44
+#, fuzzy
 msgid "Warmup"
-msgstr ""
+msgstr "Réchauffer"
 
 #: ui/server_setup.rml:48
+#, fuzzy
 msgid "Do warmups at every game start"
-msgstr ""
+msgstr "Faites des échauffements à chaque début de partie"
 
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
 msgstr ""
+"Donne aux joueurs sur des ordinateurs plus lents le temps de se joindre."
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
@@ -2026,11 +2089,11 @@ msgstr "Autoriser les constructions humaines"
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr ""
+msgstr "La physique"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr ""
+msgstr "La gravité"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
@@ -2038,7 +2101,7 @@ msgstr ""
 
 #: ui/server_setup.rml:80
 msgid "Dretches can be pushed out of the way by attacking them."
-msgstr ""
+msgstr "Les Dretches peuvent être repoussés en les attaquant."
 
 #: ui/server_setup.rml:86
 msgid "Anti spawn-block"
@@ -2046,47 +2109,51 @@ msgstr ""
 
 #: ui/server_setup.rml:87
 msgid "Push slow people away from spawns."
-msgstr ""
+msgstr "Éloigne les personnes lentes des points d'apparition."
 
 #: ui/server_setup.rml:96
+#, fuzzy
 msgid "Half life time"
-msgstr ""
+msgstr "Temps de demi-vie"
 
 #: ui/server_setup.rml:97
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
-msgstr ""
+msgstr "Il est temps que l'élan diminue de 50 %. 0 désactive ce comportement."
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
-msgstr ""
+msgstr "minutes"
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
-msgstr ""
+msgstr "Délai de double récompense"
 
 #: ui/server_setup.rml:105
+#, fuzzy
 msgid "Time after which some momentum rewards double"
-msgstr ""
+msgstr "Temps après lequel un certain élan récompense le double"
 
 #: ui/server_setup.rml:112
 msgid "Base Multiplier"
-msgstr ""
+msgstr "Multiplicateur de base"
 
 #: ui/server_setup.rml:113
 msgid "Generic momentum reward multiplier"
-msgstr ""
+msgstr "Multiplicateur de récompense d'élan générique"
 
 #: ui/server_setup.rml:120
 msgid "Kills reward multiplier"
-msgstr ""
+msgstr "Tue le multiplicateur de récompense"
 
 #: ui/server_setup.rml:121
+#, fuzzy
 msgid "Momentum reward multiplier for kills"
-msgstr ""
+msgstr "multiplicateur de récompense d'élan pour les éliminations"
 
 #: ui/server_setup.rml:128
+#, fuzzy
 msgid "Building reward multiplier"
-msgstr ""
+msgstr "Construire un multiplicateur de récompense"
 
 #: ui/server_setup.rml:129
 msgid "Momentum reward multiplier for construction"
@@ -2139,474 +2206,501 @@ msgstr ""
 #: ui/server_setup.rml:181
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
+"La durée d'attente avant que la récupération de points de constructions ne "
+"devienne deux fois plus lente"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
-msgstr ""
+msgstr "Minimum de robots par équipe"
 
 #: ui/server_setup.rml:193
 msgid "Fill teams until they have enough players"
-msgstr ""
+msgstr "Remplir les équipes jusqu'à ce qu'elles aient suffisamment de joueurs"
 
 #: ui/server_setup.rml:196
 msgid "bots"
-msgstr ""
+msgstr "Robots"
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
-msgstr ""
+msgstr "Niveau de difficulté par défaut"
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
-msgstr ""
+msgstr "Ne fonctionne que pour les nouveaux bots."
 
 #: ui/transition_downloading.rml:55
 msgid "Additional files are required. Please be patient while they download."
 msgstr ""
+"Des fichiers supplémentaires sont nécessaires. Veuillez patienter pendant le "
+"téléchargement."
 
 #: ui/transition_downloading.rml:56
 msgid "Time left:"
-msgstr ""
+msgstr "Temps restant :"
 
 #: ui/transition_downloading.rml:57
 msgid "Download rate:"
-msgstr ""
+msgstr "Taux de téléchargement :"
 
 #: ui/transition_downloading.rml:58
 msgid "Size:"
-msgstr ""
+msgstr "Taille :"
 
 #: ui/transition_loading.rml:109
 msgid "Loading"
-msgstr ""
+msgstr "Chargement"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
-msgstr ""
+msgstr "Bienvenue sur Unvanquished"
 
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
+"Fermez ce menu et cliquez n'importe où pour rejoindre une équipe et "
+"commencer à jouer !"
 
 #: src/cgame/cg_event.cpp:276
 msgctxt "male"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*est tombé jusqu'à en mourir"
 
 #: src/cgame/cg_event.cpp:276
+#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*est tombé jusqu'à en mourir"
 
 #: src/cgame/cg_event.cpp:276
+#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*est tombé jusqu'à en mourir"
 
 #: src/cgame/cg_event.cpp:280
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^* a été écrasé à mort"
 
 #: src/cgame/cg_event.cpp:280
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^* a été écrasé à mort"
 
 #: src/cgame/cg_event.cpp:280
+#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^* a été écrasé à mort"
 
 #: src/cgame/cg_event.cpp:284
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*s'est noyé"
 
 #: src/cgame/cg_event.cpp:284
+#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*s'est noyé"
 
 #: src/cgame/cg_event.cpp:284
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*s'est noyé"
 
 #: src/cgame/cg_event.cpp:288
 msgctxt "male"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^* a fondu"
 
 #: src/cgame/cg_event.cpp:288
 msgctxt "female"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^* a fondu"
 
 #: src/cgame/cg_event.cpp:288
 msgctxt "neuter"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^* a fondu"
 
 #: src/cgame/cg_event.cpp:292
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^* s'est baigné dans de la lave"
 
 #: src/cgame/cg_event.cpp:292
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^* s'est baigné dans de la lave"
 
 #: src/cgame/cg_event.cpp:292
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^* s'est baigné dans de la lave"
 
 #: src/cgame/cg_event.cpp:296
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*était au mauvais endroit"
 
 #: src/cgame/cg_event.cpp:296
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*était au mauvais endroit"
 
 #: src/cgame/cg_event.cpp:296
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*était au mauvais endroit"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*a été pris dans l'explosion"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*a été pris dans l'explosion"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*a été pris dans l'explosion"
 
 #: src/cgame/cg_event.cpp:306
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*a été pris dans l'acide"
 
 #: src/cgame/cg_event.cpp:306
+#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*a été pris dans l'acide"
 
 #: src/cgame/cg_event.cpp:306
+#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*a été pris dans l'acide"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^* a été abattu par une tourelle"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^* a été abattu par une tourelle"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^* a été abattu par une tourelle"
 
 #: src/cgame/cg_event.cpp:313
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* a été abattu par une tourelle ,assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:313
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* a été abattu par une tourelle ,assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:313
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* a été abattu par une tourelle ,assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*a attrapé une fusée"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*a attrapée une fusée"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*a attrapé une fusée"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a attrapé une fusée , assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a attrapée une fusée , assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a attrapé une fusée , assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*a été fondu par un tube d'acide"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*a été fondue par un tube d'acide"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*a été fondu par un tube d'acide"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été fondu par un tube d'acide assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été fondue par un tube d'acide assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été fondu par un tube d'acide assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:327
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*a été fléché par un spiker"
 
 #: src/cgame/cg_event.cpp:327
+#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*a été fléchée par un spiker"
 
 #: src/cgame/cg_event.cpp:327
+#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*a été fléché par un spiker"
 
 #: src/cgame/cg_event.cpp:328
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été fléché par un spiker , assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:328
+#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été fléchée par un spiker , assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:328
+#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été fléché par un spiker , assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:332
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*a été fouetté par l'overmind"
 
 #: src/cgame/cg_event.cpp:332
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*a été fouettée par l'overmind"
 
 #: src/cgame/cg_event.cpp:332
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
-msgstr ""
+msgstr "%s%s ^*a été fouetté par l'overmind"
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été fouetté par l'overmind, assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été fouettée par l'overmind, assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:333
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été fouetté par l'overmind, assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:337
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*a été grillé par le réacteur"
 
 #: src/cgame/cg_event.cpp:337
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*a été grillée par le réacteur"
 
 #: src/cgame/cg_event.cpp:337
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*a été grillé par le réacteur"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été grillé par le réacteur, assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été grillée par le réacteur, assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:338
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été grillé par le réacteur, assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:342
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr ""
+msgstr "%s%s ^*n'a pas pu éviter la granger"
 
 #: src/cgame/cg_event.cpp:342
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr ""
+msgstr "%s%s ^*n'a pas pu éviter la granger"
 
 #: src/cgame/cg_event.cpp:342
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger"
-msgstr ""
+msgstr "%s%s ^*n'a pas pu éviter la granger"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*n'a pas pu éviter la granger, assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*n'a pas pu éviter la granger, assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*n'a pas pu éviter la granger, assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:347
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr ""
+msgstr "%s%s ^*a été consommé par l'essaim"
 
 #: src/cgame/cg_event.cpp:347
+#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr ""
+msgstr "%s%s ^*a été consommée par l'essaim"
 
 #: src/cgame/cg_event.cpp:347
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm"
-msgstr ""
+msgstr "%s%s ^*a été consommé par l'essaim"
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été consommé par l'essaim assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été consommée par l'essaim assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:348
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été consommé par l'essaim assisté par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "male"
 msgid "%s%s ^*saw the light"
-msgstr ""
+msgstr "%s%s ^*a vu la lumière"
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "female"
 msgid "%s%s ^*saw the light"
-msgstr ""
+msgstr "%s%s ^*a vue la lumière"
 
 #: src/cgame/cg_event.cpp:354
 msgctxt "neuter"
 msgid "%s%s ^*saw the light"
-msgstr ""
+msgstr "%s%s ^*a vu la lumière"
 
 #: src/cgame/cg_event.cpp:355
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a vu la lumière aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:355
+#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a vue la lumière aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:355
+#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a vu la lumière aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:384
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a été scié par %s%s%s"
 
 #: src/cgame/cg_event.cpp:384
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a été sciée par %s%s%s"
 
 #: src/cgame/cg_event.cpp:384
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a été scié par %s%s%s"
 
 #: src/cgame/cg_event.cpp:385
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été scié par %s%s%s aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:385
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été sciée par %s%s%s aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:385
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été scié par %s%s%s aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:389
 msgctxt "male"
