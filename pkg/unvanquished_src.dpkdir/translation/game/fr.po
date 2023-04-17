@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
 "PO-Revision-Date: 2023-04-17 08:45+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"Last-Translator: Grise3 <hackergrigri@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -1341,24 +1341,27 @@ msgid "Simulate air refraction in severe heat."
 msgstr "Simule la réfraction de l'air en cas de forte chaleur."
 
 #: ui/options_graphics.rml:223
+#, fuzzy
 msgid "Screen space ambient occlusion (SSAO)"
-msgstr ""
+msgstr "Occlusion ambiante de l'espace écran (OAEE)"
 
 #: ui/options_graphics.rml:225
 msgid "Simulate dark corners."
-msgstr ""
+msgstr "Simule des coins sombres."
 
 #: ui/options_graphics.rml:228
 msgid "Particles"
-msgstr ""
+msgstr "Particules"
 
 #: ui/options_graphics.rml:230
+#, fuzzy
 msgid "Particle physics"
-msgstr ""
+msgstr "La physique des particules"
 
 #: ui/options_graphics.rml:232
+#, fuzzy
 msgid "Allow particles to bounce off surfaces."
-msgstr ""
+msgstr "Permettre aux particules de rebondir sur les surfaces."
 
 #: ui/options_graphics.rml:239
 msgid "Gameplay"
