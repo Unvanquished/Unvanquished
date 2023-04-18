@@ -392,7 +392,7 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 	 */
 	const lump_t& surfacesLump = header.lumps[LUMP_SURFACES];
 	const lump_t& vertsLump = header.lumps[LUMP_DRAWVERTS];
-	
+
 	auto* bspSurfaces = reinterpret_cast<const dsurface_t*>(cmod_base + surfacesLump.fileofs);
 	auto* bspVerts = reinterpret_cast<const drawVert_t*>(cmod_base + vertsLump.fileofs);
 

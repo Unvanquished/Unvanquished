@@ -74,7 +74,7 @@ enum class botRouteTargetType_t
 };
 
 // type: determines if the object can move or not
-// pos: the object's position 
+// pos: the object's position
 // polyExtents: how far away from pos to search for a nearby navmesh polygon for finding a route
 struct botRouteTarget_t
 {

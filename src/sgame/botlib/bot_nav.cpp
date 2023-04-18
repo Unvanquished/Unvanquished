@@ -303,7 +303,7 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 		recast2quake( cmd->pos );
 
 		// if there are no corners, we have reached the goal
-		// FIXME: this must be done because of a weird bug where the target is not reachable even if 
+		// FIXME: this must be done because of a weird bug where the target is not reachable even if
 		// the path was checked for a partial path beforehand
 		if ( bot->numCorners == 0 )
 		{
@@ -321,7 +321,7 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 			recast2quake( cmd->tpos );
 		}
 	}
-	
+
 	if ( bot->offMesh )
 	{
 		qVec pos, proj;
@@ -333,7 +333,7 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 		end[ 2 ] = pos[ 2 ];
 
 		ProjectPointOntoVectorBounded( pos, start, end, proj );
-		
+
 		VectorCopy( proj, cmd->pos );
 		cmd->directPathToGoal = false;
 		VectorSubtract( end, pos, cmd->dir );
@@ -378,7 +378,7 @@ bool BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm:
 
 	dtPolyRef randRef;
 	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->nav->filter, frand, &randRef, nearPoint );
-	
+
 	if ( dtStatusFailed( status ) )
 	{
 		return false;

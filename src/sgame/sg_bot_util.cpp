@@ -1185,7 +1185,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		            CONTENTS_SOLID | CONTENTS_PLAYERCLIP, MASK_ENTITY );
 		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
-	
+
 
 	// increase extents a little to account for obstacles cutting into the navmesh
 	// also accounts for navmesh erosion at mesh boundrys
@@ -1312,7 +1312,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 		case WP_FLAMER:
 			{
 				trajectory_t t;
-			
+
 				// Correct muzzle so that the missile does not start in the ceiling
 				muzzle += -7.0f * up;
 
@@ -1328,7 +1328,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				VectorCopy( muzzle, t.trBase );
 				t.trType = trType_t::TR_LINEAR;
 				t.trTime = level.time - 50;
-			
+
 				// find projectile's final position
 				glm::vec3 npos;
 				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, &npos[0] );

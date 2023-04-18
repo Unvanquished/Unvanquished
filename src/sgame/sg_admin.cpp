@@ -1318,7 +1318,7 @@ static int admin_out( void *admin, char *str )
 	}
 
 	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s ^*%s %s",
-	             a->level, namelen + ( admin_level_maxname - lncol ), 
+	             a->level, namelen + ( admin_level_maxname - lncol ),
 	             l ? l->name : "(null)",
 	             lastSeen, a->name );
 
@@ -3843,10 +3843,10 @@ bool G_admin_listplayers( gentity_t *ent )
 		}
 
 		bot = ( level.gentities[ i ].r.svFlags & SVF_BOT ) ? 'R' : ' ';
-		muted = ( p->pers.namelog->muted 
-		          || G_admin_permission( p->ent(), ADMF_NO_GLOBALCHAT ) 
-		          || G_admin_permission( p->ent(), ADMF_NO_TEAMCHAT ) ) ? 'M' : ' '; 
-		denied = ( p->pers.namelog->denyBuild 
+		muted = ( p->pers.namelog->muted
+		          || G_admin_permission( p->ent(), ADMF_NO_GLOBALCHAT )
+		          || G_admin_permission( p->ent(), ADMF_NO_TEAMCHAT ) ) ? 'M' : ' ';
+		denied = ( p->pers.namelog->denyBuild
 		           || G_admin_permission( p->ent(), ADMF_NO_BUILD ) ) ? 'B' : ' ';
 
 		l = d;

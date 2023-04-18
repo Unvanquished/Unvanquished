@@ -66,7 +66,7 @@ void G_InitGentity( gentity_t *entity )
 	entity->s.number = entity->num();
 	entity->r.ownerNum = ENTITYNUM_NONE;
 	entity->creationTime = level.time;
-	
+
 	if ( g_debugEntities.Get() > 2 )
 	{
 		Log::Debug("Initing Entity %i", entity->num() );
