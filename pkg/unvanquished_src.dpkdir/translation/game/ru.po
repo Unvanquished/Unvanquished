@@ -6,16 +6,17 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2014-04-24 16:37+0000\n"
-"Last-Translator: neumond <knifeslaughter@gmail.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2023-04-19 05:42+0000\n"
+"Last-Translator: slipher <slipher@protonmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Pootle 2.5.0-beta1\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.18-dev\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -517,7 +518,7 @@ msgstr ""
 #: ui/ingame_scoreboard.rml:191 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "Карта:"
 
 #: ui/ingame_scoreboard.rml:192
 msgid "Time:"
@@ -603,7 +604,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
-msgstr ""
+msgstr "Выгнать ботов"
 
 #: ui/menu_ingame.rml:52
 msgid "Extend timelimit"
@@ -615,7 +616,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:54
 msgid "Admit defeat"
-msgstr ""
+msgstr "Признать поражение"
 
 #: ui/menu_ingame.rml:60
 msgid "Host menu"
@@ -623,11 +624,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:61
 msgid "Stop server"
-msgstr ""
+msgstr "Остановить сервер"
 
 #: ui/menu_ingame.rml:62
 msgid "Pause server"
-msgstr ""
+msgstr "Приостановить сервер"
 
 #: ui/menu_ingame.rml:67
 msgid "Reset match"
@@ -1150,11 +1151,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:228
 msgid "Particles"
-msgstr ""
+msgstr "Частицы"
 
 #: ui/options_graphics.rml:230
 msgid "Particle physics"
-msgstr ""
+msgstr "Физика частиц"
 
 #: ui/options_graphics.rml:232
 msgid "Allow particles to bounce off surfaces."
@@ -1487,11 +1488,11 @@ msgstr ""
 
 #: ui/options_player.rml:14 ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr ""
+msgstr "Можно использовать цвета и символы."
 
 #: ui/options_player.rml:17
 msgid "Tutorial mode"
-msgstr ""
+msgstr "Режим обучения"
 
 #: ui/options_player.rml:19
 msgid "Display hints for key bindings on-screen."
