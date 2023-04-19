@@ -170,7 +170,6 @@ bool        G_admin_restart( gentity_t *ent );
 bool        G_admin_nextmap( gentity_t *ent );
 bool        G_admin_namelog( gentity_t *ent );
 bool        G_admin_lock( gentity_t *ent );
-bool        G_admin_lockentity( gentity_t *ent );
 bool        G_admin_flaglist( gentity_t *ent );
 bool        G_admin_flag( gentity_t *ent );
 bool        G_admin_pause( gentity_t *ent );

@@ -271,6 +271,68 @@ static gclient_t *ClientForString( char *s )
 
 /*
 ===================
+Svcmd_EntityLock_f
+===================
+*/
+
+static void Svcmd_EntityLock_f()
+{
+	char      argument[ 4 ];
+	int       e;
+	gentity_t *door;
+	vec3_t    mins, maxs;
+
+	if ( trap_Argc() < 1 )
+	{
+		Log::Notice( "usage: entitylock <entityNum> (tip: use " 
+		             "'cg_drawEntityInfo on' on your client to find this)" );
+		return;
+	}
+
+	trap_Argv( 1, argument, sizeof( argument ) );
+
+	if ( !atoi( argument ) )
+	{
+		Log::Notice( "entitylock: this is not numeric" );
+		return;
+	}
+
+	e = atoi( argument );
+
+	if ( e >= level.num_entities || e < MAX_CLIENTS )
+	{
+		Log::Notice( "entitylock: not a valid entity" );
+		return;
+	}
+
+	door = &g_entities[ e ];
+
+	if ( door->s.eType != entityType_t::ET_MOVER )
+	{
+		Log::Notice( "entitylock: must be a ^5MOVER ^*entity " 
+		             "such as a door, button or platform");
+		return;
+	}
+
+	door->locked = !door->locked;
+
+	if ( door->locked )
+	{
+		VectorAdd( door->restingPosition, door->r.mins, mins );
+		VectorAdd( door->restingPosition, door->r.maxs, maxs );
+		G_BotAddObstacle( VEC2GLM( mins ), VEC2GLM( maxs ), door->num() );
+	}
+	else
+	{
+		G_BotRemoveObstacle( door->num() );
+	}
+
+	Log::Notice( "entitylock: entity ^5%s^7#^5%d^* %s", 
+	             door->classname, e, door->locked ? "locked" : "unlocked" );
+}
+
+/*
+===================
 Svcmd_ForceTeam_f
 
 forceteam <player> <team>
@@ -698,6 +760,7 @@ static const struct svcmd
 	{ "eject",              false, Svcmd_EjectClient_f          },
 	{ "entityFire",         false, Svcmd_EntityFire_f           },
 	{ "entityList",         false, Svcmd_EntityList_f           },
+	{ "entityLock",         false, Svcmd_EntityLock_f           },
 	{ "entityShow",         false, Svcmd_EntityShow_f           },
 	{ "evacuation",         false, Svcmd_Evacuation_f           },
 	{ "forceTeam",          false, Svcmd_ForceTeam_f            },
