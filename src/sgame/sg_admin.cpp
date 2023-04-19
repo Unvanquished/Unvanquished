@@ -300,6 +300,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"lockentity",   G_admin_lockentity,  false, "lockentity",
+		N_("locks or unlocks a door entity"),
+		"[^3entityNum^7]"
+	},
+
+	{
 		"maprestarted", G_admin_maprestarted, false, "",
 		nullptr,
 		nullptr
@@ -4796,6 +4802,63 @@ bool G_admin_lock( gentity_t *ent )
 	return true;
 }
 
+bool G_admin_lockentity( gentity_t *ent )
+{
+	char      command[ MAX_ADMIN_CMD_LEN ];
+	int       e;
+	gentity_t *door;
+	vec3_t    mins, maxs;
+
+	trap_Argv( 0, command, sizeof( command ) );
+
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* usage: $1$ [entityNum] (tip: use " 
+		                          "'cg_drawEntityInfo on' on your client to find this)") ), command ) );
+		return false;
+	}
+
+	if ( !atoi( ConcatArgs( 1 ) ) )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* this is not numeric") ), command ) );
+		return false;
+	}
+
+	e = atoi( ConcatArgs( 1 ) );
+
+	if ( e >= level.num_entities || e < MAX_CLIENTS )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* not a valid entity") ), command ) );
+		return false;
+	}
+
+	door = &g_entities[ e ];
+
+	if ( door->s.eType != entityType_t::ET_MOVER )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* must be a ^5MOVER ^*entity " 
+		                          "such as a door, button or platform") ), command ) );
+		return false;
+	}
+
+	door->locked = !door->locked;
+
+	if ( door->locked )
+	{
+		VectorAdd( door->restingPosition, door->r.mins, mins );
+		VectorAdd( door->restingPosition, door->r.maxs, maxs );
+		G_BotAddObstacle( VEC2GLM( mins ), VEC2GLM( maxs ), door->num() );
+	}
+	else
+	{
+		G_BotRemoveObstacle( door->num() );
+	}
+
+	ADMP( va( "%s %s %s %d %s", QQ( N_("^3$1$:^* entity ^5$2$^7#^5$3$^* $4$") ), 
+	          command, door->classname, e, door->locked ? "locked" : "unlocked" ) );
+
+	return true;
+}
 
 static int G_admin_flag_sort( const void *pa, const void *pb )
 {
