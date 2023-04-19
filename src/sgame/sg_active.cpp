@@ -33,6 +33,7 @@ bool ClientInactivityTimer( gentity_t *ent, bool active );
 
 static Cvar::Cvar<float> g_devolveReturnRate(
 	"g_devolveReturnRate", "Evolution points per second returned after devolving", Cvar::NONE, 0.4);
+static Cvar::Cvar<int> g_tagDelay( "g_tagDelay", "duration in ms one has to stare at an enemy to place a beacon", Cvar::NONE, 500 );
 
 static Cvar::Cvar<bool> g_poisonIgnoreArmor(
 	"g_poisonIgnoreArmor",
@@ -878,8 +879,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 		{
 			target->tagScore     += timePassed;
 			target->tagScoreTime  = level.time;
-
-			if( target->tagScore > 1000 )
+			if( target->tagScore > g_tagDelay.Get() )
 				Beacon::Tag( target, team, ( target->s.eType == entityType_t::ET_BUILDABLE ) );
 		}
 	}
