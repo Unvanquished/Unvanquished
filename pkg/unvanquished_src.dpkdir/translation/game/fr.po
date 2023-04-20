@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-19 20:20+0000\n"
+"PO-Revision-Date: 2023-04-21 15:51+0000\n"
 "Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -93,7 +93,6 @@ msgid "Team"
 msgstr "Équipe"
 
 #: ui/callvote_fillbots.rml:21
-#, fuzzy
 msgid "Amount"
 msgstr "Montant"
 
@@ -106,7 +105,6 @@ msgid "Vote: change nextmap"
 msgstr "Vote : changer la carte suivante"
 
 #: ui/callvote_map.rml:32
-#, fuzzy
 msgid "Vote: set current map"
 msgstr "Vote : définir la carte actuelle"
 
@@ -171,8 +169,9 @@ msgstr ""
 "Découvrez en plus au sujet du jeu dans le wiki, <b>wiki.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:30
+#, fuzzy
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "Revenu &amp; évolution"
 
 #: ui/help_gameplay.rml:34
 msgid ""
@@ -317,8 +316,9 @@ msgstr ""
 "détruits dans un match de longue durée. Cela remplace la mort subite."
 
 #: ui/help_gameplay.rml:78
+#, fuzzy
 msgid "Stages &amp; Momentum"
-msgstr ""
+msgstr "Étapes & amp; momentum"
 
 #: ui/help_gameplay.rml:81
 msgid ""
@@ -426,7 +426,6 @@ msgstr ""
 "vos attaques plus meurtrières."
 
 #: ui/help_gameplay.rml:125
-#, fuzzy
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
@@ -555,7 +554,6 @@ msgid "Colour codes and symbols"
 msgstr "Codes de couleurs et symboles"
 
 #: ui/help_textentry.rml:22
-#, fuzzy
 msgid ""
 "Colours are used by typing their escape code starting with a caret (^) "
 "symbol. Colour can be reset again to normal using ^*, or an actual caret can "
@@ -602,7 +600,6 @@ msgid "TAB"
 msgstr "TAB"
 
 #: ui/human_buy.rml:217
-#, fuzzy
 msgid "Range:"
 msgstr "Portée :"
 
@@ -640,7 +637,6 @@ msgstr ""
 "être échangés à l'armurerie."
 
 #: ui/ingame_beaconmenu.rml:78
-#, fuzzy
 msgid "Beacons"
 msgstr "Balises"
 
@@ -691,7 +687,6 @@ msgid "Alternatively you can watch the game without playing."
 msgstr "Alternativement, vous pouvez regarder le match sans jouer."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
-#, fuzzy
 msgid "Spectate"
 msgstr "Spectateur"
 
@@ -797,7 +792,6 @@ msgid "Players"
 msgstr "Joueurs"
 
 #: ui/menu_ingame.rml:80
-#, fuzzy
 msgid "Disclipline: kick/ban/mute/nobuild"
 msgstr "Modération : expulser/bannir/muter/interdire la construction"
 
@@ -814,7 +808,6 @@ msgid "Server listings"
 msgstr "Listes des serveurs"
 
 #: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
-#, fuzzy
 msgid "Start local/LAN game"
 msgstr "Démarrer le jeu en local/LAN"
 
@@ -851,7 +844,6 @@ msgid "User interface and HUD"
 msgstr "Interface utilisateur et ATH"
 
 #: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
-#, fuzzy
 msgid "Fields of view"
 msgstr "Champs de vision"
 
@@ -864,7 +856,6 @@ msgid "Help"
 msgstr "Aide"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
-#, fuzzy
 msgid "Gameplay guide"
 msgstr "Guide de jeu"
 
@@ -981,7 +972,6 @@ msgid "Low"
 msgstr "Faible"
 
 #: ui/options_graphics.rml:29
-#, fuzzy
 msgid ""
 "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
 "pixel textures…"
@@ -1057,7 +1047,6 @@ msgid "Off"
 msgstr "Désactivé(e)"
 
 #: ui/options_graphics.rml:72
-#, fuzzy
 msgid "Flexible Vsync"
 msgstr "Vsync dynamique"
 
@@ -1071,7 +1060,6 @@ msgid "Vsync"
 msgstr "Vsync"
 
 #: ui/options_graphics.rml:76
-#, fuzzy
 msgid ""
 "Vsync prevents “visual tearing” but increases input latency. Flexible Vsync "
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
@@ -1101,7 +1089,6 @@ msgid "Lights"
 msgstr "Lumières"
 
 #: ui/options_graphics.rml:94
-#, fuzzy
 msgid "Light mapping"
 msgstr "Plaquage de la lumière"
 
@@ -1280,12 +1267,10 @@ msgid "Deluxe mapping"
 msgstr "Cartographie de luxe"
 
 #: ui/options_graphics.rml:186
-#, fuzzy
 msgid "Light direction based on baked textures."
 msgstr "Direction de la lumière basée sur le baking de texture ."
 
 #: ui/options_graphics.rml:189
-#, fuzzy
 msgid "Relief mapping"
 msgstr "Cartographie du relief"
 
@@ -1298,12 +1283,10 @@ msgid "Experimental."
 msgstr "Expérimental."
 
 #: ui/options_graphics.rml:194
-#, fuzzy
 msgid "Specular mapping"
 msgstr "Cartographie spéculaire"
 
 #: ui/options_graphics.rml:196
-#, fuzzy
 msgid "Simulate light specularity."
 msgstr "Simuler la spécularité de la lumière."
 
@@ -1333,12 +1316,10 @@ msgid "Heat-haze"
 msgstr "Brume de chaleur"
 
 #: ui/options_graphics.rml:220
-#, fuzzy
 msgid "Simulate air refraction in severe heat."
 msgstr "Simule la réfraction de l'air en cas de forte chaleur."
 
 #: ui/options_graphics.rml:223
-#, fuzzy
 msgid "Screen space ambient occlusion (SSAO)"
 msgstr "Occlusion ambiante de l'espace écran (OAEE)"
 
