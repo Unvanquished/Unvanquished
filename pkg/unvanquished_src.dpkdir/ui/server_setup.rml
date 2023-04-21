@@ -5,7 +5,7 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
 	<body id="server_setup" template="window" style="width: 46em; margin: 1em;">
-		<h1><translate>Server Setup</translate></h1>
+		<h1><translate>Server setup</translate></h1>
 
 		<tabset>
 
