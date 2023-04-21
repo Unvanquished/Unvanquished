@@ -13,7 +13,6 @@ Unvanquished is an arena game with RTS elements (you can build) in which two ver
 [![Matrix](https://img.shields.io/badge/matrix-Unvanquished-9cf)](https://matrix.to/#/!WnuetRiQZJNBTKwMrF:matrix.org?via=matrix.org)
 [![Discord](https://img.shields.io/badge/discord-Unvanquished-9cf)](https://discord.gg/usuDT9Pyna)
 
-
 | Windows | macOS | Linux |
 |---------|-----|-------|
 | [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Azure branch](https://img.shields.io/azure-devops/build/UnvanquishedDevelopment/8c34c73e-2b4f-43c9-b146-33aee7f3593a/2/master.svg)](https://dev.azure.com/UnvanquishedDevelopment/Unvanquished/_build?definitionId=2) | [![Azure branch](https://img.shields.io/azure-devops/build/UnvanquishedDevelopment/8c34c73e-2b4f-43c9-b146-33aee7f3593a/2/master.svg)](https://dev.azure.com/UnvanquishedDevelopment/Unvanquished/_build?definitionId=2) |
@@ -27,6 +26,12 @@ Unvanquished is an arena game with RTS elements (you can build) in which two ver
 💡️ You need to build this repository if you want to contribute to the game logic or make a mod with custom game logic binaries.
 
 See below for [build](#building-the-game-binaries) and [launch](#running-the-game) instructions.
+
+## Translating the game
+
+[![Weblate](https://hosted.weblate.org/widgets/unvanquished/-/multi-auto.svg)](https://hosted.weblate.org/projects/unvanquished/unvanquished)
+
+The Unvanquished game is translated on the [Weblate](https://hosted.weblate.org/projects/unvanquished/unvanquished) platform, this is the easier way to contribute translations since it offers a central place were people can contribute and review translations while reducing risks of merge conflicts. Weblate preserves authorship and automatically produces commits that can be associated with your GitHub account.
 
 ## Requirements to build the game binaries
 
