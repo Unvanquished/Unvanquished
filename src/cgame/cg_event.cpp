@@ -105,7 +105,7 @@ static const struct {
 static Cvar::Cvar<bool> cg_showObituaries( "cg_showObituaries", "show obituaries in chat", Cvar::NONE, true );
 static void CG_Obituary( entityState_t *ent )
 {
-	if ( not cg_showObituaries.Get() )
+	if ( !cg_showObituaries.Get() )
 	{
 		return;
 	}
