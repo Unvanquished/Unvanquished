@@ -1,0 +1,24 @@
+selector
+{
+	behavior unstick
+	
+	condition alertedToEnemy
+	{
+		action fight
+	}
+	
+	condition team == TEAM_HUMANS
+	{
+		action equip
+	}
+	
+	condition team == TEAM_ALIENS
+	{
+		condition ( aliveTime > 1500 )
+		{
+			action evolve
+		}
+	}
+	
+	action rush
+}

@@ -105,13 +105,13 @@ static void CG_ClientList_f()
 		switch ( ci->team )
 		{
 			case TEAM_ALIENS:
-				Log::Notice( "%2d %sA   ^*%s\n", i,
+				Log::Notice( "%2d %sA   ^*%s", i,
 				            Color::ToString( Color::Red ),
 				            ci->name );
 				break;
 
 			case TEAM_HUMANS:
-				Log::Notice( "%2d %sH   ^*%s\n", i,
+				Log::Notice( "%2d %sH   ^*%s", i,
 				            Color::ToString( Color::Cyan ),
 				            ci->name );
 				break;
@@ -119,14 +119,14 @@ static void CG_ClientList_f()
 			default:
 			case TEAM_NONE:
 			case NUM_TEAMS:
-				Log::Notice( "%2d S   %s\n", i, ci->name );
+				Log::Notice( "%2d S   %s", i, ci->name );
 				break;
 		}
 
 		count++;
 	}
 
-	Log::Notice(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
+	Log::Notice(_( "Listed %2d clients"), count ); // FIXME PLURAL
 }
 
 static void CG_ReloadHud_f()
@@ -156,15 +156,12 @@ static void CG_CompleteClass()
 
 static void CG_CompleteBuy_internal( bool negatives )
 {
-	int i;
-
-	for( i = 0; i < UP_NUM_UPGRADES; i++ )
+	for( int i = 0; i < UP_NUM_UPGRADES; i++ )
 	{
 		const upgradeAttributes_t *item = BG_Upgrade( i );
 		if ( item->purchasable && item->team == TEAM_HUMANS )
 		{
 			trap_CompleteCallback( item->name );
-
 			if ( negatives )
 			{
 				trap_CompleteCallback( va( "-%s", item->name ) );
@@ -173,22 +170,17 @@ static void CG_CompleteBuy_internal( bool negatives )
 	}
 
 	trap_CompleteCallback( "grenade" ); // called "gren" elsewhere, so special-case it
-
 	if ( negatives )
 	{
 		trap_CompleteCallback( "-grenade" );
-
-		i = BG_GetPlayerWeapon( &cg.snap->ps );
-
 	}
 
-	for( i = 0; i < WP_NUM_WEAPONS; i++ )
+	for( int i = 0; i < WP_NUM_WEAPONS; i++ )
 	{
 		const weaponAttributes_t *item = BG_Weapon( i );
 		if ( item->purchasable && item->team == TEAM_HUMANS )
 		{
 			trap_CompleteCallback( item->name );
-
 			if ( negatives )
 			{
 				trap_CompleteCallback( va( "-%s", BG_Weapon( i )->name ) );
@@ -439,11 +431,25 @@ static void CG_BeaconMenu_f()
 	Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_BEACONS ].id, "show" );
 }
 
-static const struct
+static const struct cg_cmd_t
 {
 	const char *cmd;
 	void ( *function )();
 	void ( *completer )();
+
+	bool operator<( cg_cmd_t const& other ) const
+	{
+		return Q_stricmp( cmd, other.cmd ) < 0;
+	}
+
+	bool operator<( char const* other ) const
+	{
+		if ( other )
+		{
+			return Q_stricmp( cmd, other ) < 0;
+		}
+		return true;
+	}
 } commands[] =
 {
 	{ "+scores",           CG_ShowScores_f,        0                },
@@ -544,13 +550,14 @@ Cmd_Argc() / Cmd_Argv()
 bool ConsoleCommand()
 {
 	char buffer[BIG_INFO_STRING];
-	consoleCommand_t *cmd;
 
-	cmd = (consoleCommand_t*) bsearch( CG_Argv( 0 ), commands,
-	               ARRAY_LEN( commands ), sizeof( commands[ 0 ] ),
-	               cmdcmp );
-
-	if ( !cmd || !cmd->function )
+	const cg_cmd_t *cmd = std::lower_bound( std::begin( commands ), std::end( commands ), CG_Argv( 0 ) );
+	bool found = cmd != std::end( commands ) && Str::IsIEqual( CG_Argv( 0 ), cmd->cmd );
+	if ( found && cmd->function )
+	{
+		cmd->function();
+	}
+	else
 	{
 		//This command was added to provide completion of server-side commands
 		//forward it to the server
@@ -558,10 +565,7 @@ bool ConsoleCommand()
 		trap_EscapedArgs( buffer, sizeof ( buffer ) );
 		trap_SendClientCommand( buffer );
 	}
-	else
-	{
-		cmd->function();
-	}
+
 	return true;
 }
 
@@ -611,8 +615,6 @@ Cmd_Argc() / Cmd_Argv()
 void CompleteCommand( int argNum )
 {
 	const char *cmd;
-	unsigned i;
-
 	Q_UNUSED(argNum);
 
 	cmd = CG_Argv( 0 );
@@ -622,12 +624,9 @@ void CompleteCommand( int argNum )
 		cmd++;
 	}
 
-	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
+	const cg_cmd_t *it = std::lower_bound( std::begin( commands ), std::end( commands ), CG_Argv( 0 ) );
+	if ( it != std::end( commands ) && Str::IsIEqual( CG_Argv( 0 ), it->cmd ) && it->completer )
 	{
-		if ( !Q_stricmp( cmd, commands[ i ].cmd ) && commands[ i ].completer )
-		{
-			commands[ i ].completer();
-			return;
-		}
+		it->completer();
 	}
 }

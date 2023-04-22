@@ -1,0 +1,119 @@
+[Sourced from the Debian package ttf-unifont]
+
+This package was debianized by Paul Hardy <unifoundry@unifoundry.com> on
+Mon,  7 Jul 2008 00:28:10 -0700.
+
+It was downloaded from http://unifoundry.com
+
+Upstream Author: Paul Hardy <unifoundry@unifoundry.com>
+
+Copyright: Original unifont.hex and Perl scripts:
+              (c) 1998-2003 Roman Czyborra;
+           Unibit and Wen Quan Yi glyphs:
+              (c) 2004-2008 Qianqian Fang and the Wen Quan Yi Board
+                  of Trustees;
+           Shell, Perl, & FontForge scripts for converting unifont.hex
+              into TrueType:
+              (c) 2005-2008 Luis Gonzalez Miranda;
+           Additions to complete Unicode 5.1 Plane 0, C programs,
+              modifications to original programs, & GNU/Linux packaging:
+              (c) 2007-2008 Paul Hardy
+           Mods to debian/ directory and Makefiles for Debian packaging:
+              (c) 2008 Anthony Fok & Paul Hardy
+           Hangul Syllables glyphs (U+AC00..U+D7A3):
+              (c) 1986-2002 Jeong-Hwan Kim
+
+
+License for this package (all software by Paul Hardy, including GNU/Linux
+packaging, all software by Luis Gonzalez Miranda, and Debian modifications
+by Anthony Fok):
+
+   This package is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+
+   This package is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this package; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+On Debian systems, the complete text of the GNU General Public License
+version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+The Debian packaging is (C) 2008, Paul Hardy <unifoundry@unifoundry.com>
+and is licensed under the GPL.  See above.
+
+
+License for Roman Czyborra's work (including all Perl scripts in this
+package except "hex2sfd",  and all .hex font files except "wqy-cjk.hex"
+and "blanks.hex"):
+
+     The following is taken from http://czyborra.com/
+
+     All of my works you find here are freeware. You may freely copy,
+     use, quote, modify or redistribute them as long as you properly
+     attribute my contribution and have given a quick thought about
+     whether Roman might perhaps be interested to read what you did
+     with his stuff. Horizontal rules don't apply.
+
+
+License for the Wen Quan Yi fonts (used in file "wqy-cjk.hex",
+which is merged with other .hex files to build the default BDF,
+PCF, and TrueType fonts):
+
+   The Unibit and other Wen Quan Yi fonts are released under the
+   terms of the GNU General Public License (GPL) version 2, with
+   the exception that embedding the font in a document does not
+   by itself bind that document to the terms of the GNU GPL.  The
+   following paragraphs are taken from the Wen Quan Yi distribution:
+
+        ** GPL v2.0 license with font embedding exception:
+
+        As a special exception, if you create a document which
+        uses this font, and embed this font or unaltered portions
+        of this font into the document, this font does not by
+        itself cause the resulting document to be covered by
+        the GNU General Public License. This exception does not
+        however invalidate any other reasons why the document
+        might be covered by the GNU General Public License.
+        If you modify this font, you may extend this exception
+        to your version of the font, but you are not obligated
+        to do so. If you do not wish to do so, delete this
+        exception statement from your version.
+
+   See http://wqy.sourceforge.net/cgi-bin/enindex.cgi (English)
+   or http://wenq.org (Chinese) for more information on Wen Quan Yi.
+
+
+License for "blanks.hex":
+
+   Paul Hardy has previously released "blanks.hex" into the public domain.
+
+
+License for the Hangul Syllables (U+AC00..U+D7A3) portion of the font:
+
+   Changwoo Ryu obtained the Hangul Syllables glyphs from the fonts
+   in the xfonts-baekmuk Debian package, which he maintains.  An
+   identical set of Hangul Syllables glyphs appears in the file
+   unifont.bdf in the bf-utf-source Debian package, also maintained
+   by Changwoo Ryu.  The xfonts-baekmuk package is licensed as follows:
+
+   Copyright (c) 1986-2002 Kim Jeong-Hwan [Jeong-Hwan Kim]
+   All rights reserved.
+
+   Permission to use, copy, modify and distribute this font is
+   hereby granted, provided that both the copyright notice and
+   this permission notice appear in all copies of the font,
+   derivative works or modified versions, and that the following
+   acknowledgement appear in supporting documentation:
+       Baekmuk Batang, Baekmuk Dotum, Baekmuk Gulim, and
+       Baekmuk Headline are registered trademarks owned by
+       Kim Jeong-Hwan.
+
+   [The xfonts-baekmuk package also contains a verison of the
+   above notice in Korean.]

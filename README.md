@@ -4,13 +4,18 @@ Unvanquished is an arena game with RTS elements (you can build) in which two ver
 
 [![GitHub tag](https://img.shields.io/github/tag/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/tags)
 [![GitHub release](https://img.shields.io/github/release/Unvanquished/Unvanquished.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
-[![Github release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/latest/total.svg)](https://github.com/Unvanquished/Unvanquished/releases/latest)
+[![Github universal zip release](https://img.shields.io/github/downloads/Unvanquished/Unvanquished/total.svg?label=zip%20downloads)](https://github.com/Unvanquished/Unvanquished/releases/latest)
+[![Github updater release](https://img.shields.io/github/downloads/Unvanquished/updater/total.svg?label=updater%20downloads)](https://github.com/Unvanquished/updater/releases/latest)
+[![Flatpak release](https://img.shields.io/flathub/downloads/net.unvanquished.Unvanquished.svg?label=flatpak%20installs)](https://flathub.org/apps/details/net.unvanquished.Unvanquished)
+[![Sourceforge files](https://img.shields.io/sourceforge/dt/unvanquished.svg?label=sourceforge%20files)](https://sourceforge.net/projects/unvanquished/files/latest/download)
 
-[![IRC](https://img.shields.io/badge/irc-%23unvanquished%2C%23unvanquished--dev-4cc51c.svg)](https://web.libera.chat/#unvanquished,#unvanquished-dev)
+[![IRC](https://img.shields.io/badge/irc-%23unvanquished%2C%23unvanquished--dev-9cf.svg)](https://unvanquished.net/chat/)
+[![Matrix](https://img.shields.io/badge/matrix-Unvanquished-9cf)](https://matrix.to/#/!WnuetRiQZJNBTKwMrF:matrix.org?via=matrix.org)
+[![Discord](https://img.shields.io/badge/discord-Unvanquished-9cf)](https://discord.gg/usuDT9Pyna)
 
-| Windows | OSX | Linux |
+| Windows | macOS | Linux |
 |---------|-----|-------|
-| [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) | [![Travis branch](https://img.shields.io/travis/Unvanquished/Unvanquished/master.svg)](https://travis-ci.org/Unvanquished/Unvanquished/branches) |
+| [![AppVeyor branch](https://img.shields.io/appveyor/ci/DolceTriade/unvanquished/master.svg)](https://ci.appveyor.com/project/DolceTriade/unvanquished/history) | [![Azure branch](https://img.shields.io/azure-devops/build/UnvanquishedDevelopment/8c34c73e-2b4f-43c9-b146-33aee7f3593a/2/master.svg)](https://dev.azure.com/UnvanquishedDevelopment/Unvanquished/_build?definitionId=2) | [![Azure branch](https://img.shields.io/azure-devops/build/UnvanquishedDevelopment/8c34c73e-2b4f-43c9-b146-33aee7f3593a/2/master.svg)](https://dev.azure.com/UnvanquishedDevelopment/Unvanquished/_build?definitionId=2) |
 
 ℹ️ We provide ready-to-use downloads for the Unvanquished game on the [download page](https://unvanquished.net/download/).
 
@@ -22,16 +27,22 @@ Unvanquished is an arena game with RTS elements (you can build) in which two ver
 
 See below for [build](#building-the-game-binaries) and [launch](#running-the-game) instructions.
 
+## Translating the game
+
+[![Weblate](https://hosted.weblate.org/widgets/unvanquished/-/multi-auto.svg)](https://hosted.weblate.org/projects/unvanquished/unvanquished)
+
+The Unvanquished game is translated on the [Weblate](https://hosted.weblate.org/projects/unvanquished/unvanquished) platform, this is the easier way to contribute translations since it offers a central place were people can contribute and review translations while reducing risks of merge conflicts. Weblate preserves authorship and automatically produces commits that can be associated with your GitHub account.
+
 ## Requirements to build the game binaries
 
 To fetch and build Unvanquished, you'll need:
 `git`,
 `cmake`,
-`python` = 2,
+`python` ≥ 2,
 `python-yaml`,
 `python-jinja`,
-and a C++11 compiler. The following are actively supported:
-`gcc` ≥ 4.8,
+and a C++14 compiler. The following are actively supported:
+`gcc` ≥ 8,
 `clang` ≥ 3.5,
 Visual Studio/MSVC (at least Visual Studio 2019).
 
@@ -52,7 +63,6 @@ Required:
 `OpenAL`,
 `libogg`,
 `libvorbis`,
-`libtheora`,
 `libopus`,
 `libopusfile`.
 

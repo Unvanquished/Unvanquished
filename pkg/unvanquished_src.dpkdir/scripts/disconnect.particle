@@ -1,0 +1,25 @@
+particles/feedback/disconnect
+{
+	ejector
+	{
+		particle
+		{
+			shader sync gfx/feedback/bubble
+			displacement          0 0 0 ~60
+
+			velocityType          static
+			velocityDir           linear
+			velocityMagnitude     15
+			velocity              0 0 1 ~90
+
+			radius                0 24 32
+			alpha                 0 1 -
+
+			lifeTime              1000~300
+		}
+
+		count   3
+		delay   0
+		period  0 - 0
+	}
+}

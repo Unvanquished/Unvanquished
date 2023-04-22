@@ -514,11 +514,10 @@ CG_MinimapDrawTeammates
 static void CG_MinimapDrawTeammates( const minimap_t* m )
 {
     int ownTeam = CG_MyTeam();
-    int i;
 
-    for ( i = 0; i < MAX_GENTITIES; i++ )
+    for ( int num = 0; num <= cg_highestActiveEntity; num++ )
     {
-        centity_t* mate = &cg_entities[i];
+        centity_t* mate = &cg_entities[ num ];
         playerEntity_t* state = &mate->pe;
 
         int clientNum = mate->currentState.clientNum;

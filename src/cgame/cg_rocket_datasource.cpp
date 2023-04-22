@@ -1234,14 +1234,14 @@ static void CG_Rocket_BuildHumanSpawnItems( const char* )
 
 static void CG_Rocket_SetHumanSpawnItems( const char*, int index )
 {
-	rocketInfo.data.selectedHumanSpawnItem = index;
+	rocketInfo.data.selectedSpawnOptions[ TEAM_HUMANS ] = index;
 }
 
 static void CG_Rocket_ExecHumanSpawnItems( const char* )
 {
 	const char *cmd = nullptr;
 
-	switch ( rocketInfo.data.selectedHumanSpawnItem )
+	switch ( rocketInfo.data.selectedSpawnOptions[ TEAM_HUMANS ] )
 	{
 		case 0:
 			cmd = "class rifle";
@@ -1261,13 +1261,12 @@ static void CG_Rocket_ExecHumanSpawnItems( const char* )
 
 static void CG_Rocket_CleanUpHumanSpawnItems( const char* )
 {
-	rocketInfo.data.selectedHumanSpawnItem = -1;
+	rocketInfo.data.selectedSpawnOptions[ TEAM_HUMANS ] = -1;
 }
 
 
 enum
 {
-	ROCKETDS_BOTH,
 	ROCKETDS_WEAPONS,
 	ROCKETDS_UPGRADES
 };
@@ -1290,7 +1289,7 @@ static void CG_Rocket_CleanUpArmouryBuyList( const char *table )
 			break;
 
 		default:
-			tblIndex = ROCKETDS_BOTH;
+			return;
 	}
 
 	rocketInfo.data.selectedArmouryBuyItem[ tblIndex ] = 0;
@@ -1445,7 +1444,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 	if ( BG_Upgrade( i )->team == TEAM_HUMANS && BG_Upgrade( i )->purchasable &&
 	        i != UP_MEDKIT )
 	{
-		Info_SetValueForKey( buf, "num", va( "%d", tblIndex == ROCKETDS_BOTH ? i + WP_NUM_WEAPONS : i ), false );
+		Info_SetValueForKey( buf, "num", va( "%d", i ), false );
 		Info_SetValueForKey( buf, "name", BG_Upgrade( i )->humanName, false );
 		Info_SetValueForKey( buf, "price", va( "%d", BG_Upgrade( i )->price ), false );
 		Info_SetValueForKey( buf, "description", BG_Upgrade( i )->info, false );
@@ -1463,8 +1462,7 @@ static void AddUpgradeToBuyList( int i, const char *table, int tblIndex )
 
 static void CG_Rocket_BuildArmouryBuyList( const char *table )
 {
-	int i;
-	int tblIndex = ROCKETDS_BOTH;
+	int tblIndex = -1;
 
 	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
 	{
@@ -1482,54 +1480,45 @@ static void CG_Rocket_BuildArmouryBuyList( const char *table )
 		tblIndex = ROCKETDS_UPGRADES;
 	}
 
-	if ( tblIndex == ROCKETDS_BOTH )
+	if ( tblIndex == -1 )
 	{
-		CG_Rocket_CleanUpArmouryBuyList( "default" );
-		Rocket_DSClearTable( "armouryBuyList", "default" );
+		Log::Warn( "unknown \"table\" name provided: \"%s\". Must either start with 'u' (for upgrades) or 'w' (for weapons).", table ? table : "[empty string]" );
+		return;
 	}
 
-	if ( tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_WEAPONS )
+	if ( tblIndex == ROCKETDS_WEAPONS )
 	{
 		CG_Rocket_CleanUpArmouryBuyList( "weapons" );
 		Rocket_DSClearTable( "armouryBuyList", "weapons" );
 	}
 
-	if ( tblIndex == ROCKETDS_BOTH || tblIndex == ROCKETDS_UPGRADES )
+	if ( tblIndex == ROCKETDS_UPGRADES )
 	{
 		CG_Rocket_CleanUpArmouryBuyList( "upgrades" );
 		Rocket_DSClearTable( "armouryBuyList", "upgrades" );
 	}
 
 
-	if ( tblIndex != ROCKETDS_UPGRADES )
+	if ( tblIndex == ROCKETDS_WEAPONS )
 	{
 		// Make ckit first so that it can be accessed with a low number key in circlemenus
-		AddWeaponToBuyList( WP_HBUILD, "default", ROCKETDS_BOTH );
 		AddWeaponToBuyList( WP_HBUILD, "weapons", ROCKETDS_WEAPONS );
 
-		for ( i = 0; i <= WP_NUM_WEAPONS; ++i )
+		for ( int i = 0; i <= WP_NUM_WEAPONS; ++i )
 		{
 			if ( i == WP_HBUILD ) continue;
 
-			AddWeaponToBuyList( i, "default", ROCKETDS_BOTH );
 			AddWeaponToBuyList( i, "weapons", ROCKETDS_WEAPONS );
 		}
 	}
 
-	if ( tblIndex != ROCKETDS_WEAPONS )
+	if ( tblIndex == ROCKETDS_UPGRADES )
 	{
-		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
+		for ( int i = UP_NONE + 1; i < UP_NUM_UPGRADES; ++i )
 		{
-			AddUpgradeToBuyList( i, "default", ROCKETDS_BOTH );
 			AddUpgradeToBuyList( i, "upgrades", ROCKETDS_UPGRADES );
 		}
 	}
-
-}
-
-static void CG_Rocket_CleanUpAlienEvolveList( const char* )
-{
-	rocketInfo.data.alienEvolveListCount = 0;
 
 }
 
@@ -1567,7 +1556,6 @@ static void CG_Rocket_BuildAlienEvolveList( const char *table )
 		float price;
 
 		Rocket_DSClearTable( "alienEvolveList", "default" );
-		CG_Rocket_CleanUpAlienEvolveList( "default" );
 
 		for ( i = 0; i < PCL_NUM_CLASSES; ++i )
 		{
@@ -1601,15 +1589,8 @@ static void CG_Rocket_BuildAlienEvolveList( const char *table )
 			Info_SetValueForKey( buf, "visible", (doublegranger ? "false" : "true"), false );
 
 			Rocket_DSAddRow( "alienEvolveList", "default", buf );
-
-			rocketInfo.data.alienEvolveList[ rocketInfo.data.alienEvolveListCount++ ] = i;
 		}
 	}
-}
-
-static void CG_Rocket_CleanUpHumanBuildList( const char*)
-{
-	rocketInfo.data.humanBuildListCount = 0;
 }
 
 static Str::StringRef BuildableAvailability( buildable_t buildable )
@@ -1629,7 +1610,7 @@ static Str::StringRef BuildableAvailability( buildable_t buildable )
 	return "available";
 }
 
-static void CG_Rocket_BuildHumanBuildList( const char *table )
+static void CG_Rocket_BuildGenericBuildList( const char *table, team_t team, char const* tableName )
 {
 	static char buf[ MAX_STRING_CHARS ];
 
@@ -1642,13 +1623,11 @@ static void CG_Rocket_BuildHumanBuildList( const char *table )
 	{
 		int i;
 
-		Rocket_DSClearTable( "humanBuildList", "default" );
-		CG_Rocket_CleanUpHumanBuildList( "default" );
-
+		Rocket_DSClearTable( tableName, "default" );
 		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
 		{
-			// We are building the human buildable list
-			if ( BG_Buildable( i )->team != TEAM_HUMANS )
+			// We are building the buildable list
+			if ( BG_Buildable( i )->team != team )
 			{
 				continue;
 			}
@@ -1663,56 +1642,19 @@ static void CG_Rocket_BuildHumanBuildList( const char *table )
 			Info_SetValueForKey( buf, "cmdName", BG_Buildable( i )->name, false );
 			Info_SetValueForKey( buf, "availability", BuildableAvailability( buildable_t(i) ).c_str(), false );
 
-			Rocket_DSAddRow( "humanBuildList", "default", buf );
-
-			rocketInfo.data.humanBuildList[ rocketInfo.data.humanBuildListCount++ ] = i;
+			Rocket_DSAddRow( tableName, "default", buf );
 		}
 	}
 }
 
-static void CG_Rocket_CleanUpAlienBuildList( const char* )
+static void CG_Rocket_BuildHumanBuildList( const char *table )
 {
-	rocketInfo.data.alienBuildListCount = 0;
+	CG_Rocket_BuildGenericBuildList( table, TEAM_HUMANS, "humanBuildList" );
 }
 
 static void CG_Rocket_BuildAlienBuildList( const char *table )
 {
-	static char buf[ MAX_STRING_CHARS ];
-
-	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
-	{
-		return;
-	}
-
-	if ( !Q_stricmp( table, "default" ) )
-	{
-		int i;
-
-		Rocket_DSClearTable( "alienBuildList", "default" );
-		CG_Rocket_CleanUpAlienBuildList( "default" );
-
-		for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; ++i )
-		{
-			if ( BG_Buildable( i )->team != TEAM_ALIENS )
-			{
-				continue;
-			}
-
-			buf[ 0 ] = '\0';
-
-			Info_SetValueForKey( buf, "num", va( "%d", (int) i ), false );
-			Info_SetValueForKey( buf, "name", BG_Buildable( i )->humanName, false );
-			Info_SetValueForKey( buf, "cost", va( "%d", BG_Buildable( i )->buildPoints ), false );
-			Info_SetValueForKey( buf, "description", BG_Buildable( i )->info, false );
-			Info_SetValueForKey( buf, "icon", BG_Buildable( i )->icon, false );
-			Info_SetValueForKey( buf, "cmdName", BG_Buildable( i )->name, false );
-			Info_SetValueForKey( buf, "availability", BuildableAvailability( buildable_t(i) ).c_str(), false );
-
-			Rocket_DSAddRow( "alienBuildList", "default", buf );
-
-			rocketInfo.data.alienBuildList[ rocketInfo.data.alienBuildListCount++ ] = i;
-		}
-	}
+	CG_Rocket_BuildGenericBuildList( table, TEAM_ALIENS, "alienBuildList" );
 }
 
 static void AddAlienSpawnClass( class_t _class )
@@ -1759,19 +1701,19 @@ static void CG_Rocket_BuildAlienSpawnList( const char *table )
 
 static void CG_Rocket_CleanUpAlienSpawnList( const char* )
 {
-	rocketInfo.data.selectedAlienSpawnClass = -1;
+	rocketInfo.data.selectedSpawnOptions[ TEAM_ALIENS ] = -1;
 }
 
 static void CG_Rocket_SetAlienSpawnList( const char*, int index )
 {
-	rocketInfo.data.selectedAlienSpawnClass = index;
+	rocketInfo.data.selectedSpawnOptions[ TEAM_ALIENS ] = index;
 }
 
 static void CG_Rocket_ExecAlienSpawnList( const char* )
 {
 	const char *_class = nullptr;
 
-	switch ( rocketInfo.data.selectedAlienSpawnClass )
+	switch ( rocketInfo.data.selectedSpawnOptions[ TEAM_ALIENS ] )
 	{
 		case 0:
 			_class = "level0";
@@ -1792,11 +1734,6 @@ static void CG_Rocket_ExecAlienSpawnList( const char* )
 //////// beacon shit
 
 
-static void CG_Rocket_CleanUpBeaconList( const char* )
-{
-	rocketInfo.data.beaconListCount = 0;
-}
-
 static void CG_Rocket_BuildBeaconList( const char *table )
 {
 	static char buf[ MAX_STRING_CHARS ];
@@ -1812,7 +1749,6 @@ static void CG_Rocket_BuildBeaconList( const char *table )
 		const beaconAttributes_t *ba;
 
 		Rocket_DSClearTable( "beaconList", "default" );
-		CG_Rocket_CleanUpBeaconList( "default" );
 
 		for ( i = BCT_NONE + 1; i < NUM_BEACON_TYPES; i++ )
 		{
@@ -1829,8 +1765,6 @@ static void CG_Rocket_BuildBeaconList( const char *table )
 			Info_SetValueForKey( buf, "icon", CG_GetShaderNameFromHandle( ba->icon[ 0 ][ 0 ] ), false );
 
 			Rocket_DSAddRow( "beaconList", "default", buf );
-
-			rocketInfo.data.beaconList[ rocketInfo.data.beaconListCount++ ] = i;
 		}
 	}
 }
@@ -1869,16 +1803,20 @@ struct dataSourceCmd_t
 	int  ( *get )( const char *table );
 };
 
+static void nullCleanFunc( char const* )
+{
+}
+
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
-	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &CG_Rocket_CleanUpAlienBuildList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &CG_Rocket_CleanUpAlienEvolveList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "alienSpawnClass", &CG_Rocket_BuildAlienSpawnList, &nullSortFunc, &CG_Rocket_CleanUpAlienSpawnList, &CG_Rocket_SetAlienSpawnList, &nullFilterFunc, &CG_Rocket_ExecAlienSpawnList, &nullGetFunc },
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &CG_Rocket_CleanUpBeaconList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
-	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &CG_Rocket_CleanUpHumanBuildList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "humanSpawnItems", &CG_Rocket_BuildHumanSpawnItems, &nullSortFunc, CG_Rocket_CleanUpHumanSpawnItems, &CG_Rocket_SetHumanSpawnItems, &nullFilterFunc, &CG_Rocket_ExecHumanSpawnItems, &nullGetFunc },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetLanguageListIndex },
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &nullGetFunc },

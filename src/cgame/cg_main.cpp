@@ -809,7 +809,10 @@ static void CG_RegisterGraphics()
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "particles/feedback/disconnect" );
 
-	cgs.media.scopeShader = trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.sniperScopeShader =
+		trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t)( RSF_NOMIP ) );
+	cgs.media.lgunScopeShader =
+		trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t)( RSF_NOMIP ) );
 
 	CG_UpdateMediaFraction( 0.2f );
 

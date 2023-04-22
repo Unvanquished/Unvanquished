@@ -1279,12 +1279,13 @@ static void CG_LoadClientInfo( clientInfo_t *ci )
 	// frames for this new model
 	clientNum = ci - cgs.clientinfo;
 
-	for ( i = 0; i < MAX_GENTITIES; i++ )
+	for ( int num = 0; num < MAX_CLIENTS; num++ )
 	{
-		if ( cg_entities[ i ].currentState.clientNum == clientNum &&
-		     cg_entities[ i ].currentState.eType == entityType_t::ET_PLAYER )
+		centity_t *cent = &cg_entities[ num ];
+		if ( cent->currentState.clientNum == clientNum &&
+		     cent->currentState.eType == entityType_t::ET_PLAYER )
 		{
-			CG_ResetPlayerEntity( &cg_entities[ i ] );
+			CG_ResetPlayerEntity( cent );
 		}
 	}
 }
@@ -3489,16 +3490,14 @@ void CG_PlayerDisconnect( vec3_t org )
 
 centity_t *CG_GetLocation( vec3_t origin )
 {
-	int       i;
-	centity_t *eloc, *best;
 	float     bestlen, len;
 
-	best = nullptr;
+	centity_t *best = nullptr;
 	bestlen = 3.0f * 8192.0f * 8192.0f;
 
-	for ( i = MAX_CLIENTS; i < MAX_GENTITIES; i++ )
+	for ( int num = MAX_CLIENTS; num <= cg_highestActiveEntity; num++ )
 	{
-		eloc = &cg_entities[ i ];
+		centity_t *eloc = &cg_entities[ num ];
 
 		if ( !eloc->valid || eloc->currentState.eType != entityType_t::ET_LOCATION )
 		{

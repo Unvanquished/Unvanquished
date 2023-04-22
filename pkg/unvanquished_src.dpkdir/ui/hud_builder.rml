@@ -1,0 +1,56 @@
+<rml>
+<head>
+<link type="text/rcss" href="/ui/shared/basics.rcss" />
+<style>
+	body {
+		width: 100%;
+		height: 100%;
+	}
+	div#mine {
+		position: absolute;
+		text-align: center;
+		width: 10%;
+		margin-top: 30%;
+		margin-left: auto;
+		margin-right: auto;
+		color: white;
+		background-color: #666666cc;
+	}
+	div#timer progress {
+		position: absolute;
+		width: 40%;
+		height: 0.8em;
+		bottom: 0%;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	div#rate {
+		position: absolute;
+		font-size: 1.3em;
+		height: 1.5em;
+		bottom: 0em;
+		left: 0em;
+		margin-left: 1em;
+	}
+
+	.warning {
+		color: yellow;
+	}
+
+	.error {
+		color: red;
+	}
+</style>
+</head>
+<body id="hud_builder">
+	<div id="mine">
+		<predictedMineEfficiency />
+	</div>
+	<div id="timer">
+		<progress direction="right" src="btimer"/>
+	</div>
+	<div id="rate">
+		<mine_rate/>
+	</div>
+</body>
+</rml>

@@ -1,0 +1,49 @@
+<rml>
+<head>
+<link type="text/rcss" href="/ui/shared/basics.rcss" />
+<style>
+	body {
+		height: 100%;
+		width: 100%;
+	}
+	jetpack {
+		display: inline-block;
+		position: fixed;
+		left: 0%;
+		bottom: 0%;
+		width: 25%;
+		height: 20%;
+	}
+	progress {
+		display: inline-block;
+		margin-top: 27%;
+		margin-left: 5%;
+		width: 80%;
+		height: 15%;
+	}
+
+	progress {
+		image-color: #ff00ff84;
+	}
+	img {
+		position: absolute;
+		color: white;
+		height: 25%;
+		margin-left: 4%;
+		margin-top: 5%;
+	}
+	jetpack.inactive {
+		opacity: 0;
+	}
+	jetpack.active {
+		opacity: 1;
+	}
+</style>
+</head>
+<body id="hud_jetpack">
+<jetpack>
+	<progress src="fuel"/>
+	<img src="/icons/iconu_jetpack"/>
+</jetpack>
+</body>
+</rml>

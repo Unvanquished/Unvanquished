@@ -31,7 +31,7 @@ static Log::Logger logger("cgame.cf");
 
 const float DAMAGE_INDICATOR_ASPECT_RATIO = 982.0f / 2048.0f;
 const float DAMAGE_INDICATOR_BASE_SCALE = 0.7f;
-const float DAMAGE_INDICATOR_DISTANCE_EXPONENT = -0.5f;     
+const float DAMAGE_INDICATOR_DISTANCE_EXPONENT = -0.5f;
 
 Cvar::Cvar<bool> damageIndicators_enable(
 	"cgame.damageIndicators.enable",

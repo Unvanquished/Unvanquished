@@ -34,6 +34,27 @@ bool ClientInactivityTimer( gentity_t *ent, bool active );
 static Cvar::Cvar<float> g_devolveReturnRate(
 	"g_devolveReturnRate", "Evolution points per second returned after devolving", Cvar::NONE, 0.4);
 static Cvar::Cvar<bool> g_remotePoison( "g_remotePoison", "booster gives poison when in heal range", Cvar::NONE, false );
+static Cvar::Cvar<int> g_tagDelay( "g_tagDelay", "duration in ms one has to stare at an enemy to place a beacon", Cvar::NONE, 500 );
+
+static Cvar::Cvar<bool> g_poisonIgnoreArmor(
+	"g_poisonIgnoreArmor",
+	"Make poison damage armored and armorless humans equally",
+	Cvar::NONE,
+	false);
+static Cvar::Range<Cvar::Cvar<int>> g_poisonDamage(
+	"g_poisonDamage",
+	"Damage per second dealt to a poisoned individual",
+	Cvar::NONE,
+	5,
+	0,
+	500);
+static Cvar::Range<Cvar::Cvar<int>> g_poisonDuration(
+	"g_poisonDuration",
+	"Number of seconds the poison effect lasts",
+	Cvar::NONE,
+	10,
+	0,
+	500);
 
 /*
 ===============
@@ -859,8 +880,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 		{
 			target->tagScore     += timePassed;
 			target->tagScoreTime  = level.time;
-
-			if( target->tagScore > 1000 )
+			if( target->tagScore > g_tagDelay.Get() )
 				Beacon::Tag( target, team, ( target->s.eType == entityType_t::ET_BUILDABLE ) );
 		}
 	}
@@ -880,6 +900,8 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 	{
 		return;
 	}
+
+	ASSERT( G_IsPlayableTeam( G_Team(ent) ) );
 
 	gclient_t *client = ent->client;
 	playerState_t *ps = &client->ps;
@@ -1028,8 +1050,10 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		// deal poison damage
 		if ( client->ps.stats[ STAT_STATE ] & SS_POISONED )
 		{
-			ent->Damage(ALIEN_POISON_DMG, client->lastPoisonClient, Util::nullopt,
-			                    Util::nullopt, DAMAGE_NO_LOCDAMAGE, MOD_POISON);
+			int flags = g_poisonIgnoreArmor.Get() ? DAMAGE_PURE : DAMAGE_NO_LOCDAMAGE;
+			int dmg = g_poisonDamage.Get();
+			ent->Damage(dmg, client->lastPoisonClient, Util::nullopt,
+			                    Util::nullopt, flags, MOD_POISON);
 		}
 
 		// turn off life support when a team admits defeat
@@ -1061,14 +1085,7 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		     client->pers.aliveSeconds % g_freeFundPeriod.Get() == 0 )
 		{
 			// Give clients some credit periodically
-			if ( client->pers.team == TEAM_ALIENS )
-			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
-			}
-			else if ( client->pers.team == TEAM_HUMANS )
-			{
-				G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
-			}
+			G_AddCreditToClient( client, PLAYER_BASE_VALUE, true );
 		}
 
 		int devolveReturnedCredits = std::min(
@@ -1963,7 +1980,7 @@ static void ClientThink_real( gentity_t *self )
 	}
 
 	if ( (client->ps.stats[ STAT_STATE ] & SS_POISONED) &&
-	     client->lastPoisonTime + ALIEN_POISON_TIME < level.time )
+	     client->lastPoisonTime + g_poisonDuration.Get()*1000 < level.time )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 	}
@@ -2189,16 +2206,26 @@ static void ClientThink_real( gentity_t *self )
 		gentity_t *ent;
 
 		// look for object infront of player
+
+		glm::vec3 viewpoint = VEC2GLM( client->ps.origin );
+		viewpoint[2] += client->ps.viewheight;
+		// should take target's radius instead, but let's try with that for now
+		glm::vec3 mins, maxs;
+		BG_BoundingBox( static_cast<class_t>( client->ps.stats[STAT_CLASS] ), &mins, &maxs, nullptr, nullptr, nullptr );
+		auto range1 = ENTITY_USE_RANGE + RadiusFromBounds( &mins[0], &maxs[0] );
+
 		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
-		VectorMA( client->ps.origin, ENTITY_USE_RANGE, view, point );
-		trap_Trace( &trace, client->ps.origin, nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
+		VectorMA( viewpoint, range1, view, point );
+		trap_Trace( &trace, &viewpoint[0], nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
 
 		ent = &g_entities[ trace.entityNum ];
+		bool activableTarget = ent->s.eType == entityType_t::ET_BUILDABLE || ent->s.eType == entityType_t::ET_MOVER;
 
 		if ( ent && ent->use &&
 		     ( !ent->buildableTeam   || ent->buildableTeam   == client->pers.team ) &&
 		     ( !ent->conditions.team || ent->conditions.team == client->pers.team ) &&
-		     Distance( self->s.origin, ent->s.origin ) < ENTITY_USE_RANGE )
+		     trace.fraction < 1.0f &&
+				 !( activableTarget && Distance( self->s.origin, ent->s.origin ) < range1 ) )
 		{
 			if ( g_debugEntities.Get() > 1 )
 			{

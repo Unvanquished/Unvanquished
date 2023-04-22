@@ -1,0 +1,103 @@
+/* circlemenu */
+
+.circlemenu tab {
+	color: #83fff5;
+	white-space: nowrap;
+	text-align: center;
+	padding-left: 25dp;
+	padding-right: 25dp;
+}
+
+.circlemenu tab:selected {
+	font-size: 1.5em;
+	border-bottom-width: 0.1em;
+	border-bottom-color: #83fff5;
+}
+
+tabset.circlemenu panel {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+}
+
+tabset.circlemenu tabs {
+	display: inline;
+	position: absolute;
+	top: 50%;
+	margin: -225dp auto auto;
+	width: 100%;
+}
+
+div.circlemenu-circle {
+	display: block;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.circlemenu button {
+	display: block;
+	position: relative;
+	width: 6.7em;
+	height: 6.7em;
+	left: -3.35em;
+	top: -3.35em;
+	text-align: center;
+	decorator: image(/ui/assets/circlemenu/circle);
+	z-index: 2;
+}
+.circlemenu button:hover,
+.circlemenu button:active,
+.circlemenu button:focus {
+	decorator: image(/ui/assets/circlemenu/circle-hover);
+}
+
+.circlemenu button.disabled,
+.circlemenu button.disabled:hover,
+.circlemenu button.disabled:active,
+.circlemenu button.disabled:focus {
+	decorator: image(/ui/assets/circlemenu/circle);
+	image-color: rgb(12, 12, 12);
+}
+
+.circlemenu icon {
+	display: inline-block;
+	font-family: FontAwesome;
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+}
+
+.circlemenu button.cancelButton {
+	position: absolute;
+	width: 9em;
+	height: 9em;
+	left: -4.5em;
+	top: -4.5em;
+	line-height: 9em;
+}
+.circlemenu button.cancelButton > * {
+	color: #eeec;
+	font-size: 1.5em;
+}
+
+.circlemenu button img {
+	display: block;
+	width: 4.2em;
+	height: 4.2em;
+	margin: auto;
+}
+
+.circlemenu .key {
+	color: #eeec;
+	decorator: image(/ui/assets/circlemenu/circle);
+	position: absolute;
+	left: -0.7em;
+	top: -0.7em;
+	width: 1.4em;
+	height: 1.4em;
+	text-align: center;
+}

@@ -1,0 +1,70 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/template" href="/ui/shared/window_unmovable.rml" />
+	<style>
+		body {
+			width: 35em;
+			height: 20em;
+			margin: auto;
+		}
+		body > * {
+			font-size: 1.1em;
+		}
+
+		button {
+			line-height: 1.45em;
+		}
+		button.alien {
+			width: 40%;
+			float: left;
+			margin-left: 0em;
+			background-color: #6d131d;
+		}
+
+		button.alien:hover {
+			background-color: #91676c;
+		}
+
+		button.human {
+			width: 40%;
+			float: right;
+			margin-right: 0em;
+			background-color: #131f6d;
+		}
+
+		button.human:hover {
+			background-color: #6771ad;
+		}
+
+		button.wide {
+			width: 100%;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		p {
+			clear: both;
+		}
+	</style>
+</head>
+
+<body id="ingame_teamselect" template="window_unmovable">
+
+	<button class="wide" onclick='Events.pushevent("hide ingame_teamselect; exec team auto", event)' style="z-index: 10;">
+		<!-- High z-index, so we are placed 'ontop' of the drag-handle at the top of the window -->
+		<translate>Auto-select a team</translate>
+	</button>
+
+	<p><translate>Aliens are highly mobile and possess a wide variety of movement-based attacks. They are sturdy, but must rely on stealth and evasion.</translate></p>
+	<p><translate>Humans can equip themselves with an assortment of weapons and equipment. They are flexible and lethal at a distance, but fragile.</translate></p>
+
+	<button class="alien" onclick='Events.pushevent("hide ingame_teamselect; exec team alien", event)'><translate>Join Aliens</translate></button>
+	<button class="human" onclick='Events.pushevent("hide ingame_teamselect; exec team human", event)'><translate>Join Humans</translate></button>
+
+	<p><translate>Alternatively you can watch the game without playing.</translate></p>
+
+	<button class="wide"  onclick='Events.pushevent("hide ingame_teamselect; exec team spec", event)'><translate>Spectate</translate></button>
+
+</body>
+</rml>

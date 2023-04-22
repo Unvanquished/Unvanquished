@@ -127,9 +127,6 @@ const float ALIENSENSE_BORDER_FRAC = 0.2f;
 const float REGEN_BOOSTER_RANGE = 200.0f;
 const float REGEN_TEAMMATE_RANGE = 300.0f;
 
-const int   ALIEN_POISON_TIME = 10000;
-const int   ALIEN_POISON_DMG = 5;
-
 const int   ALIEN_SPAWN_REPEAT_TIME = 10000;
 
 const int   ALIEN_CLIENT_REGEN_WAIT = 2000;

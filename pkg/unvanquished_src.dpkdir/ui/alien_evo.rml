@@ -1,0 +1,156 @@
+<rml>
+<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
+<style>
+	body {
+		width: 100%;
+		height: 100%;
+		background: #00000066;
+		text-align: center;
+	}
+	.circlemenu icon {
+		display: inline-block;
+		position: absolute;
+		bottom: 0.3em;
+		right: 0.75em;
+		font-size: 1.7em;
+	}
+	.circlemenu button {
+		image-color: red;
+	}
+	.circlemenu button.locked {
+		decorator: image(/ui/assets/circlemenu/circle);
+		image-color: rgb(50, 0, 0);
+	}
+	.circlemenu button.locked:hover {
+		decorator: image(/ui/assets/circlemenu/circle);
+		image-color: rgb(70, 0, 0);
+	}
+	.circlemenu button.locked:hover img,
+	.circlemenu button.locked:hover icon,
+	.circlemenu button.overmindfar:hover img,
+	.circlemenu button.overmindfar:hover icon,
+	.circlemenu button.expensive:hover img,
+	.circlemenu button.expensive:hover icon {
+		opacity: 1;
+	}
+
+	.circlemenu button.overmindfar img,
+	.circlemenu button.locked img {
+		opacity: 0.6;
+	}
+	.circlemenu button.overmindfar icon,
+	.circlemenu button.locked icon {
+		color: #ffffff;
+		opacity: 0.6;
+	}
+
+	.circlemenu button.overmindfar,
+	.circlemenu button.expensive {
+		decorator: image(/ui/assets/circlemenu/circle);
+		image-color: rgb(100, 0, 0);
+	}
+	.circlemenu button.overmindfar:hover,
+	.circlemenu button.expensive:hover {
+		decorator: image(/ui/assets/circlemenu/circle);
+		image-color: rgb(120, 0, 0);
+	}
+
+	.circlemenu button.overmindfar img,
+	.circlemenu button.expensive img {
+		opacity: 0.6;
+	}
+	.circlemenu button.overmindfar icon,
+	.circlemenu button.expensive icon {
+		color: #c5000a;
+		opacity: 0.7;
+	}
+
+	.circlemenu button {
+		position: relative;
+		image-color: red;
+	}
+
+	.circlemenu button.active {
+		decorator: image(/ui/assets/circlemenu/circle-hover);
+		image-color: rgb(150, 0, 0);
+	}
+	.circlemenu button.active:hover {
+		decorator: image(/ui/assets/circlemenu/circle-hover);
+		image-color: rgb(170, 0, 0);
+	}
+	.circlemenu button.active icon {
+		color: #9affbd;
+	}
+	.circlemenu button.active .sell {
+		display: none;
+	}
+	tabs {
+		display: none;
+	}
+</style>
+<script src="lua/util.lua"></script>
+<script>
+	function ClearEvolveInfo(document)
+		document:GetElementById("e_name").inner_rml = ""
+		document:GetElementById("e_price").inner_rml = ""
+		document:GetElementById("e_desc").inner_rml = ""
+	end
+	function EvolutionClick(idx, event)
+		idx = button_to_index[idx]
+		if idx == nil then return end
+		CDataSource.Build("alienEvolveList", "default")
+		local data = CDataSource.Read("alienEvolveList", "default", "availability,cmdName")[idx]
+		if data[1] == "available" then
+			Cmd.exec("class " .. data[2])
+			Events.pushevent("hide alien_evo", event)
+		end
+	end
+	function EvolutionHover(document, idx)
+		local evolution = evolutions[idx]
+		document:GetElementById("e_name").inner_rml = evolution[2]
+		document:GetElementById("e_price").inner_rml = evolution[5]
+		document:GetElementById("e_desc").inner_rml = evolution[3]
+	end
+	function BuildEvolveMenu(document)
+		ClearEvolveInfo(document)
+		CDataSource.Build("alienEvolveList", "default")
+		evolutions = CDataSource.Read("alienEvolveList", "default", "icon,name,description,availability,price,visible")
+		button_to_index = {}
+		for i = 1,#evolutions do
+			if evolutions[i][6] == "true" then
+				table.insert(button_to_index, i)
+			end
+		end
+		local circlemenu = document:GetElementById("evolveMenu")
+		circlemenu.inner_rml = CirclemenuSkeleton(#button_to_index)
+		for b = 1,#button_to_index do
+			i = button_to_index[b]
+			circlemenu.child_nodes[b+1].inner_rml = string.format(
+				'<button class=%s onclick="EvolutionClick(%d,event)" onmouseover="EvolutionHover(document,%d)">%s<img src="/%s"/></button>',
+				evolutions[i][4], b, i, AvailabilityIcon(evolutions[i][4]), evolutions[i][1])
+		end
+		document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#button_to_index)
+	end
+</script>
+</head>
+<body id="alien_evo" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, EvolutionClick)" onshow="BuildEvolveMenu(document)">
+<tabset class="circlemenu">
+<tab><translate>Evolve</translate></tab>
+<panel>
+<div class="circlemenu-circle" id="keyboardHints"/>
+<div class="circlemenu-circle" id="evolveMenu"/>
+<div class="infobox">
+<h2 id="e_name"></h2>
+<p class="text">
+<!--Price: -->
+<!-- FIXME: We may want to include <span id="e_price"/> in the translatable string, maybe with a specific markup to make it easy. -->
+<span id="e_price"/>&nbsp;<translate>morph points</translate>
+<br /><span id="e_desc"/></p>
+</div>
+</panel>
+</tabset>
+</body>
+</rml>

@@ -51,7 +51,7 @@ static bool expectToken( const char *s, pc_token_list **list, bool next )
 	return true;
 }
 
-static AIValue_t AIBoxToken( const pc_token_stripped_t *token )
+static AIValue_t AIBoxToken( const pc_token_stripped_t *token, bool negative = false )
 {
 	if ( token->type == tokenType_t::TT_STRING )
 	{
@@ -60,9 +60,9 @@ static AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 
 	if ( static_cast<float>( token->intvalue ) != token->floatvalue )
 	{
-		return AIBoxFloat( token->floatvalue );
+		return AIBoxFloat( negative ? -token->floatvalue : token->floatvalue );
 	}
-	return AIBoxInt( token->intvalue );
+	return AIBoxInt( negative ? -token->intvalue : token->intvalue );
 }
 
 // functions that are used to provide values to the behavior tree in condition nodes
@@ -138,7 +138,7 @@ static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 {
 	int upgrade = AIUnBoxInt( params[ 0 ] );
 
-	if ( upgrade == UP_MEDKIT && !self->botMind->botSkillSet[BOT_H_MEDKIT] )
+	if ( upgrade == UP_MEDKIT && !self->botMind->skillSet[BOT_H_MEDKIT] )
 	{
 		// we don't know how to use it, pretend we don't have it
 		return AIBoxInt( (int) false );
@@ -210,7 +210,7 @@ static AIValue_t botClass( gentity_t *self, const AIValue_t* )
 
 static AIValue_t botSkill( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( self->botMind->botSkill.level );
+	return AIBoxInt( self->botMind->skillLevel );
 }
 
 static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
@@ -596,12 +596,18 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 
 		numParams = 0;
 		parse = parenBegin->next;
+		bool negative = false;
 		while ( parse != parenEnd )
 		{
-			if ( parse->token.type == tokenType_t::TT_NUMBER || parse->token.type == tokenType_t::TT_STRING )
+			if ( parse->token.type == tokenType_t::TT_PUNCTUATION && parse->token.string[ 0 ] == '-' )
 			{
-				params[ numParams ] = AIBoxToken( &parse->token );
+				negative = true;
+			}
+			else if ( parse->token.type == tokenType_t::TT_NUMBER || parse->token.type == tokenType_t::TT_STRING )
+			{
+				params[ numParams ] = AIBoxToken( &parse->token, negative );
 				numParams++;
+				negative = false;
 			}
 			parse = parse->next;
 		}
@@ -1447,8 +1453,10 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	}
 	else
 	{
+		auto it = std::find( list->begin(), list->end(), tree );
+		ASSERT_NQ( it, list->end() );
+		list->erase( it );
 		FreeBehaviorTree( tree );
-		list->pop_back();
 		tree = nullptr;
 	}
 
@@ -1649,7 +1657,8 @@ void FreeNode( AIGenericNode_t *node )
 		case DECORATOR_NODE:
 			FreeDecoratorNode( ( AIDecoratorNode_t * ) node );
 			break;
-		default:
+		case BEHAVIOR_NODE:
+			// this is a pointer into the tree list
 			break;
 	}
 }

@@ -546,12 +546,6 @@ static void Cmd_Devteam_f( gentity_t *ent )
 		return;
 	}
 
-	spawn = G_NewEntity();
-	VectorCopy( ent->s.pos.trBase, spawn->s.pos.trBase );
-	VectorCopy( ent->s.angles, spawn->s.angles );
-	VectorCopy( ent->s.origin, spawn->s.origin );
-	VectorCopy( ent->s.angles2, spawn->s.angles2 );
-
 	switch ( G_TeamFromString( ConcatArgs( 1 ) ) )
 	{
 		case TEAM_ALIENS:
@@ -576,9 +570,16 @@ static void Cmd_Devteam_f( gentity_t *ent )
 	ent->client->pers.teamInfo = level.startTime - 1;
 	ent->client->sess.spectatorState = SPECTATOR_NOT;
 
+	spawn = G_NewEntity( NO_CBSE );
+	VectorCopy( ent->s.pos.trBase, spawn->s.pos.trBase );
+	VectorCopy( ent->s.angles, spawn->s.angles );
+	VectorCopy( ent->s.origin, spawn->s.origin );
+	VectorCopy( ent->s.angles2, spawn->s.angles2 );
+
 	G_UpdateTeamConfigStrings();
 	ClientUserinfoChanged( ent->client->ps.clientNum, false );
 	ClientSpawn( ent, spawn, ent->s.origin, ent->s.angles );
+	G_FreeEntity( spawn );
 }
 
 /*
@@ -1700,7 +1701,7 @@ static void Cmd_CallVote_f( gentity_t *ent )
 	     || ( G_admin_permission( ent, ADMF_NO_TEAMVOTE ) && !Q_stricmp( cmd, "callteamvote" ) ) )
 	{
 		trap_SendServerCommand( ent->num(),
-		                        va( "print_tr %s %s %s", QQ( N_("$1$: you are not permitted to call $2$ votes") ), 
+		                        va( "print_tr %s %s %s", QQ( N_("$1$: you are not permitted to call $2$ votes") ),
 								    cmd, Q_stricmp( cmd, "callvote" ) ? QQ( "team" ) : QQ( "global" ) ) );
 		return;
 	}
@@ -3809,20 +3810,20 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 		bool spawned;
 	} structures[ BA_NUM_BUILDABLES ] = {};
 
-	if ( g_teamStatus.Get() <= 0 ) 
+	if ( g_teamStatus.Get() <= 0 )
 	{
 		trap_SendServerCommand( ent->num(), "print \"teamstatus is disabled.\n\"" );
 		return;
 	}
 
-	if ( ent->client->pers.namelog->muted ) 
+	if ( ent->client->pers.namelog->muted )
 	{
 		trap_SendServerCommand( ent->num(), "print \"You are muted and cannot use message commands.\n\"" );
 		return;
 	}
 
 	if ( level.team[ G_Team( ent ) ].lastTeamStatus
-		&& ( level.time - level.team[ G_Team( ent ) ].lastTeamStatus ) < g_teamStatus.Get() * 1000 ) 
+		&& ( level.time - level.team[ G_Team( ent ) ].lastTeamStatus ) < g_teamStatus.Get() * 1000 )
 	{
 		trap_SendServerCommand( ent->num(), va( "print \"Your team's status may only be checked every %i seconds.\"", g_teamStatus.Get() ) );
 		return;
@@ -3831,14 +3832,14 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 	level.team[ G_Team( ent ) ].lastTeamStatus = level.time;
 
 	tmp = &g_entities[ 0 ];
-	for ( int i = 0; i < level.num_entities; i++, tmp++ ) 
+	for ( int i = 0; i < level.num_entities; i++, tmp++ )
 	{
 		if ( !G_OnSameTeam( tmp, ent ) )
 		{
 			continue;
 		}
-		
-		if ( i < MAX_CLIENTS && tmp->client && tmp->entity ) 
+
+		if ( i < MAX_CLIENTS && tmp->client && tmp->entity )
 		{
 			const HealthComponent* health = tmp->entity->Get<HealthComponent>();
 			if ( tmp->client->pers.connected == CON_CONNECTED
@@ -3852,7 +3853,7 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 			continue;
 		}
 
-		if ( tmp->s.eType == entityType_t::ET_BUILDABLE ) 
+		if ( tmp->s.eType == entityType_t::ET_BUILDABLE )
 		{
 			int type = tmp->s.modelindex;
 			ASSERT( type < BA_NUM_BUILDABLES );
@@ -3868,8 +3869,8 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 			}
 		}
 	}
-	
-	if ( G_Team( ent ) == TEAM_ALIENS ) 
+
+	if ( G_Team( ent ) == TEAM_ALIENS )
 	{
 		G_Say( ent, SAY_TEAM,
 		      va( "^3[overmind]: %s(%d) ^3Spawns: ^5%d ^3Builders: ^5%d ^3Boosters: ^5%d ^3Leeches: ^5%d",
@@ -3877,8 +3878,8 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 		    	"^5Building", structures[ BA_A_OVERMIND ].health * 100 / BG_Buildable( BA_A_OVERMIND )->health, // OM health logic part 2
 				level.team[ TEAM_ALIENS ].numSpawns, builders, // spawns, builders
 				structures[ BA_A_BOOSTER ].count, structures[ BA_A_LEECH ].count ) ); // booster, leech
-	} 
-	else 
+	}
+	else
 	{
 		G_Say( ent, SAY_TEAM,
 		      va( "^3[reactor]: %s(%d) ^3Spawns: ^5%d ^3Builders: ^5%d ^3Armouries: ^5%d ^3Medistations: ^5%d ^3Drills: ^5%d",

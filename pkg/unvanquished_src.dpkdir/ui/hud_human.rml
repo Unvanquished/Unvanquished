@@ -1,0 +1,295 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+
+		<style>
+			body {
+				width: 100%;
+				height: 100%;
+			}
+			#setfont {
+				/* setting it on the body element mysteriously doesn't work */
+				font-size: 2.3em;
+			}
+			div#hudbg img {
+				position: fixed;
+				width: 31%;
+				height: 20%;
+				bottom: 0%;
+				image-color: #267070aa;
+				z-index: -1;
+			}
+			div#hudbg img#right {
+				position: fixed;
+				right: 0%;
+			}
+			div#hudbg img#left {
+				position: fixed;
+				left: 0%;
+			}
+			div#gunstuff {
+				position: fixed;
+				right: 0%;
+				bottom: 0%;
+				width: 25%;
+				height: 20%;
+				float: right;
+				z-index: 1;
+			}
+
+			clip_stack {
+				z-index: -1;
+			}
+			div#bars {
+				position: fixed;
+				left: 0%;
+				bottom: 0%;
+				width: 25%;
+				height: 20%;
+			}
+
+			.credits {
+				margin-top: 2%;
+				width: 80%;
+				margin-left: 15%;
+				display: block;
+				text-align: center;
+				color: #aaffffff;
+			}
+
+			div.ammo {
+				margin-top: 40%;
+			}
+			stamina {
+				margin-top: 50%;
+			}
+			div.clips,
+			div.health {
+				margin-top: 5%;
+			}
+
+			div.ammo,
+			div.clips,
+			stamina,
+			div.health {
+				height: 15%;
+				display: block;
+				position: relative;
+				width: 80%;
+			}
+			div.ammo,
+			div.clips {
+				margin-left: 15%;
+			}
+			stamina,
+			div.health {
+				margin-left: 5%;
+			}
+
+			ammo_stack,
+			clip_stack,
+			progress.health,
+			stamina progress {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				display: block;
+				width: 100%;
+				height: 100%;
+				z-index: -1;
+			}
+			ammo_stack,
+			clip_stack {
+				color: #4a928f80;
+			}
+			progress.health {
+				image-color: #ff001c7a;
+			}
+
+			stamina progress {
+				image-color: #82ffee52;
+				transition: image-color 0.15s cubic-in;
+			}
+
+			stamina img {
+				transition: opacity 0.15s cubic-in;
+			}
+			stamina img.run,
+			stamina.sprinting img.sprint {
+				opacity: 1;
+			}
+			stamina img.sprint,
+			stamina.sprinting img.run {
+				/* Hide the unused sprint icon */
+				opacity: 0;
+			}
+
+			ammo,
+			clips,
+			health.health {
+				position: absolute;
+				top: 50%;
+				margin-top: -0.5em;
+				left: 0;
+				height: 100%;
+				line-height: 100%;
+				padding-left: 0.5em;
+				color: #aaffffff;
+				width: 100%;
+				text-align: center;
+				display: block;
+			}
+
+			weapon_icon img {
+				top: -60%;
+				left: -1%;
+			}
+			weapon_icon img,
+			img.clip,
+			health_cross,
+			stamina img {
+				z-index: 3;
+				width: auto;
+				height: 180%;
+				display: block;
+				position: absolute;
+				image-color: #aaffffff;
+			}
+			health.health,
+			health_cross {
+				color: #ff6562ff;
+			}
+			health_cross {
+				top: -42%;
+				left: 1%;
+				width: 1.85em;
+				height: 1.85em;
+			}
+			stamina img {
+				height: 150%;
+				top: -50%;
+				left: -1%;
+			}
+			img.clip {
+				height: 120%;
+				top: -10%;
+				left: 2%;
+			}
+
+			div#momentum {
+				position: absolute;
+				width: 40%;
+				height: 6%;
+				bottom: 2%;
+				margin-left: auto;
+				margin-right: auto;
+
+				vertical-align: bottom;
+			}
+
+			momentum_bar {
+				width: 100%;
+				height: 50%;
+				background-color: #6efbff20; /* General bar color */
+				color: #6efbff40; /* Filled-section bar color */
+			}
+
+			unlocked_items {
+				width: 100%;
+				height: 50%;
+				/* Two-colour system. HACK
+								locked colour = CSS cell-color
+								unlocked colour = CSS color
+							 */
+				cell-color: #22888860;
+				color: #88ffff90;
+
+				momentum-border-width: 0;
+			}
+
+			usable_buildable {
+				width: 1.5em;
+				position: absolute;
+				bottom: 20%;
+				color: #aaffffff;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			usable_buildable img {
+				display: inline;
+				width: 1.5em;
+				height: 1.5em;
+			}
+
+			inventory {
+				margin-top: auto;
+				margin-bottom: auto;
+				position: absolute;
+				left: 0em;
+				width: 1.5em;
+			}
+
+			inventory img {
+				width: 1.35em;
+				float: left;
+				clear: right;
+				image-color: #c0c0c0;
+			}
+
+			div#scanner {
+				position: fixed;
+				width: 48%;
+				height: 15%;
+				bottom: 15%;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			scanner {
+				width: 100%;
+				height: 100%;
+			}
+			scanner.active {
+				decorator: image("/ui/assets/human/scanner");
+			}
+	</style>
+	</head>
+	<body id="hud_human">
+	<div id="setfont">
+		<div id="hudbg">
+			<img id="right" src="/ui/assets/human/rightbg"/>
+			<img id="left" src="/ui/assets/human/leftbg"/>
+		</div>
+		<div id="gunstuff">
+			<div class="ammo"><weapon_icon/><ammo/><ammo_stack/></div>
+			<div class="clips"><img class="clip" src="/ui/assets/human/clip"/>
+			<clips/><clip_stack/></div>
+			<!-- FIXME: We may want to include <credits/> in the translatable string. -->
+			<div class="credits"><credits/>&nbsp;<translate>Credits</translate></div>
+		</div>
+		<div id="bars">
+			<stamina>
+				<img class="run" src="/ui/assets/human/run"/>
+				<img class="sprint" src="/ui/assets/human/sprint"/>
+				<progress src="stamina" />
+			</stamina>
+			<div class="health"><health_cross class="health"/>
+			<health class="health" />
+			<progress class="health" src="health" /></div>
+		</div>
+		<div id="momentum">
+			<unlocked_items/>
+			<momentum_bar/>
+		</div>
+		<div id="items">
+			<usable_buildable>
+				<img src="/ui/assets/neutral/use" />
+			</usable_buildable>
+			<inventory />
+		</div>
+		<div id="scanner">
+			<scanner />
+		</div>
+	</div>
+	</body>
+</rml>

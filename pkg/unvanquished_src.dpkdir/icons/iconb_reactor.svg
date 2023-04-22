@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150" height="150" version="1.1" viewBox="0 0 39.688 39.688" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+    <cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/"/>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Gireen</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+   <cc:License rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#Notice"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#Attribution"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+    <cc:requires rdf:resource="http://creativecommons.org/ns#ShareAlike"/>
+   </cc:License>
+  </rdf:RDF>
+ </metadata>
+ <g transform="matrix(.10845 0 0 .10845 -2.2482 -16.199)" opacity=".96" stroke-width="1.0794">
+  <path transform="matrix(2.4108 0 0 2.4108 -3821.2 1479.6)" d="m1669-545v0.0117l-13.891 0.14648-12.588 6.2969-17.426 2.2734-4.8418 3.9844-0.1797 6.7402-2.1504 0.43946 0.4278 40.74 3.4296 1.0762 0.254 33.314 13.82 1.0547 14.779 9.3652 0.8691 3.1875-27.77 1.7988-5.5157 5.293 0.4454 14.725 1.4824 6.8144 1.7773 0.88867 47.076 0.0586v2e-3h1.0762v-2e-3l47.076-0.0586 1.7774-0.88867 1.4805-6.8144 0.4472-14.725-5.5156-5.293-27.77-1.7988 0.8691-3.1875 14.779-9.3652 13.82-1.0547 0.2539-33.314 3.4297-1.0762 0.4277-40.74-2.1504-0.43946-0.1796-6.7402-4.8418-3.9844-17.426-2.2734-12.59-6.2969-13.889-0.14648v-0.0117l-0.5391 6e-3zm-18.396 24.893 0.1289 5.4102 2.9883 2.959 0.1348 28.627-3.6309 7.0352-1.748 0.44922-1.9297 4.0078-0.041 4.0098-1.3457 0.95899-0.2637 2.5547 3.1816 1.6504-2.789 1.4043-0.3965-0.54687 1.1445 9.9297-9.041-4.7617-0.022-54.623 6.9727-9.0488zm37.869 0 6.6562 0.0156 6.9727 9.0488-0.022 54.623-9.041 4.7617 1.1445-9.9297-0.3965 0.54687-2.7891-1.4043 3.1817-1.6504-0.2637-2.5547-1.3457-0.95899-0.041-4.0098-1.9297-4.0078-1.748-0.44922-3.6309-7.0352 0.1348-28.627 2.9882-2.959z" fill="#fff" opacity="1"/>
+ </g>
+</svg>

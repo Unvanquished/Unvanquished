@@ -1,0 +1,15 @@
+<template name="window" content="content">
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/rcss" href="/ui/shared/controls.rcss" />
+	<link type="text/rcss" href="/ui/shared/window.rcss" />
+	<script src="../lua/util.lua" />
+</head>
+<body onkeydown="detectEscape(event, document)">
+	<window>
+		<handle move_target="#document" />
+		<closebutton onclick="document:Hide()" />  <!-- Defined after the handle, so it's "ontop" -->
+		<div id="content"></div>
+	</window>
+</body>
+</template>

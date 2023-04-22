@@ -150,7 +150,7 @@ void G_BotBackgroundNavgen()
 
 		if ( navMeshLoaded == navMeshStatus_t::LOAD_FAILED )
 		{
-			trap_SendServerCommand( -1, "print_tr " QQ( N_( "^1Bot navmesh generation failed!" ) ) );
+			trap_SendServerCommand( -1, "print_tr " QQ( "^1" N_( "Bot navmesh generation failed!" ) ) );
 			G_BotDelAllBots();
 		}
 		else
@@ -534,7 +534,7 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 	glm::vec3 origin = VEC2GLM( self->s.origin );
 	glm::vec3 end = origin + TRACE_LENGTH * dir;
 
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < MIN_WALK_NORMAL ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return &g_entities[trace.entityNum];
@@ -552,7 +552,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	glm::vec3 playerMins;
 	glm::vec3 playerMaxs;
 	float jumpMagnitude;
-	trace_t trace;
+	trace_t tr1, tr2;
 	const float TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 
 	//already normalized
@@ -568,8 +568,8 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	glm::vec3 end = origin + TRACE_LENGTH * dir;
 
 	//make sure we are moving into a block
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
-	if ( trace.fraction >= 1.0f || blocker != &g_entities[trace.entityNum] )
+	trap_Trace( &tr1, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
+	if ( tr1.fraction >= 1.0f || blocker != &g_entities[tr1.entityNum] )
 	{
 		return false;
 	}
@@ -584,11 +584,31 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	playerMaxs[2] += jumpMagnitude;
 
 	//check if jumping will clear us of entity
-	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT, 0 );
+	trap_Trace( &tr2, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
+
+	classAttributes_t const* pcl = BG_Class( pClass );
+	bool ladder = ( pcl->abilities & SCA_CANUSELADDERS )
+		&& ( ( tr1.entityNum == ENTITYNUM_WORLD && tr1.surfaceFlags & SURF_LADDER )
+		|| ( tr2.entityNum == ENTITYNUM_WORLD && tr2.surfaceFlags & SURF_LADDER ) )
+		;
+
+	if ( blocker->s.eType == entityType_t::ET_BUILDABLE
+			&& blocker->s.modelindex == BA_A_BARRICADE
+			&& G_OnSameTeam( self, blocker ) )
+	{
+		glm::vec3 mins, maxs;
+		BG_BoundingBox( static_cast<buildable_t>( blocker->s.modelindex ), &mins, &maxs );
+		maxs.z *= BARRICADE_SHRINKPROP;
+		glm::vec3 pos = VEC2GLM( blocker->s.origin );
+		BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
+		if ( origin.z + playerMins.z >= pos.z + maxs.z )
+		{
+			return true;
+		}
+	}
 
 	//if we can jump over it, then jump
-	//note that we also test for a blocking barricade because barricades will collapse to let us through
-	return blocker->s.modelindex == BA_A_BARRICADE || trace.fraction == 1.0f;
+	return tr2.fraction == 1.0f || ladder;
 }
 
 // Determine a new direction, which may be unchanged (forward) or sideway. It
@@ -672,7 +692,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 
 		//test it
 		trap_Trace( &trace1, origin, playerMins, playerMaxs, testPoint1, self->s.number,
-		            MASK_SHOT, 0 );
+		            MASK_PLAYERSOLID, 0 );
 
 		//check if unobstructed
 		if ( trace1.fraction >= 1.0f )
@@ -690,7 +710,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 
 		//test it
 		trap_Trace( &trace2, origin, playerMins, playerMaxs, testPoint2, self->s.number,
-		            MASK_SHOT, 0 );
+		            MASK_PLAYERSOLID, 0 );
 
 		//check if unobstructed
 		if ( trace2.fraction >= 1.0f )
@@ -967,7 +987,7 @@ bool BotMoveToGoal( gentity_t *self )
 		case PCL_HUMAN_LIGHT:
 		case PCL_HUMAN_MEDIUM:
 		case PCL_HUMAN_BSUIT:
-			if ( self->botMind->botSkillSet[BOT_H_RUN_ON_FLEE] )
+			if ( self->botMind->skillSet[BOT_H_RUN_ON_FLEE] )
 			{
 				BotSprint( self, true );
 			}
@@ -980,7 +1000,7 @@ bool BotMoveToGoal( gentity_t *self )
 		case PCL_ALIEN_LEVEL0:
 			break;
 		case PCL_ALIEN_LEVEL1:
-			if ( self->botMind->botSkillSet[BOT_A_LEAP_ON_FLEE] && ps.weaponCharge <= 50 ) // I don't remember why 50
+			if ( self->botMind->skillSet[BOT_A_LEAP_ON_FLEE] && ps.weaponCharge <= 50 ) // I don't remember why 50
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL1_POUNCE_MINPITCH;
@@ -994,28 +1014,28 @@ bool BotMoveToGoal( gentity_t *self )
 			// a lot of maneuverability
 			int msec = level.time - level.previousTime;
 			constexpr float jumpChance = 0.2f; // chance per second
-			if ( self->botMind->botSkillSet[BOT_A_MARA_JUMP_ON_FLEE] && (jumpChance / 1000.0f) * msec > random() )
+			if ( self->botMind->skillSet[BOT_A_MARA_JUMP_ON_FLEE] && (jumpChance / 1000.0f) * msec > random() )
 			{
 				BotJump( self );
 			}
 			break;
 		}
 		case PCL_ALIEN_LEVEL3:
-			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_FLEE] && ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			if ( self->botMind->skillSet[BOT_A_POUNCE_ON_FLEE] && ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG;
 			}
 		break;
 		case PCL_ALIEN_LEVEL3_UPG:
-			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_FLEE] && ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			if ( self->botMind->skillSet[BOT_A_POUNCE_ON_FLEE] && ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG_UPG;
 			}
 			break;
 		case PCL_ALIEN_LEVEL4:
-			if ( self->botMind->botSkillSet[BOT_A_TYRANT_CHARGE_ON_FLEE] )
+			if ( self->botMind->skillSet[BOT_A_TYRANT_CHARGE_ON_FLEE] )
 			{
 				wpm = WPM_SECONDARY;
 			}

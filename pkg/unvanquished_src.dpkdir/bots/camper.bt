@@ -1,0 +1,43 @@
+selector
+{
+	behavior unstick
+	
+	sequence
+	{
+		condition alertedToEnemy
+		action fight
+	}
+
+	condition team == TEAM_HUMANS
+	{
+		selector
+		{
+			action equip
+			
+			condition percentHealth( E_SELF ) < 1.0 || !haveUpgrade( UP_MEDKIT )
+			{
+				action heal
+			}
+
+			action roamInRadius( E_H_REACTOR, 500 )
+		}
+	}
+
+	condition team == TEAM_ALIENS
+	{
+		selector
+		{
+			condition percentHealth( E_SELF ) < 1.0
+			{
+				action heal
+			}
+			condition ( aliveTime > 1500 )
+			{
+				action evolve
+			}
+			action roamInRadius( E_A_OVERMIND, 500 )
+		}
+	}
+
+	action roam
+}

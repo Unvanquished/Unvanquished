@@ -1,0 +1,139 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+	<link type="text/rcss" href="/ui/shared/infobox.rcss" />
+<style>
+	body {
+		width: 100%;
+		height: 100%;
+		background: #00000066;
+		text-align: center;
+	}
+	.circlemenu icon {
+		display: inline-block;
+		position: absolute;
+		bottom: 0.3em;
+		right: 0.75em;
+		font-size: 1.7em;
+	}
+	.circlemenu button {
+		image-color: red;
+	}
+	.circlemenu button.locked {
+		decorator: image(/ui/assets/circlemenu/circle-hover);
+		image-color: rgb(50, 0, 0);
+	}
+	.circlemenu button.locked:hover {
+		decorator: image(/ui/assets/circlemenu/circle-hover);
+		image-color: rgb(70, 0, 0);
+	}
+	.circlemenu button.locked:hover img,
+	.circlemenu button.locked:hover icon,
+	.circlemenu button.expensive:hover img,
+	.circlemenu button.expensive:hover icon {
+		opacity: 1;
+	}
+	.circlemenu button.locked img {
+		opacity: 0.6;
+	}
+	.circlemenu button.locked icon {
+		color: #ffffff;
+		opacity: 0.6;
+	}
+
+	.circlemenu button.expensive {
+		decorator: image(/ui/assets/circlemenu/circle-hover);
+		image-color: rgb(100, 0, 0);
+	}
+	.circlemenu button.expensive:hover {
+		decorator: image(/ui/assets/circlemenu/circle-hover);
+		image-color: rgb(120, 0, 0);
+	}
+
+	.circlemenu button.expensive img {
+		opacity: 0.6;
+	}
+	.circlemenu button.expensive:hover img {
+		opacity: 1;
+	}
+	.circlemenu button.expensive icon {
+		color: #c5000a;
+		opacity: 0.7;
+	}
+
+	.circlemenu button {
+		position: relative;
+	}
+
+	.circlemenu button.active {
+		decorator: image(/ui/assets/circlemenu/circle-hover);
+		image-color: rgb(150, 0, 0);
+	}
+	.circlemenu button.active:hover {
+		decorator: image(/ui/assets/circlemenu/circle-hover);
+		image-color: rgb(170, 0, 0);
+	}
+	.circlemenu button.active icon {
+		color: #9affbd;
+	}
+	.circlemenu button.active .sell {
+		display: none;
+	}
+	tabs {
+		display: none;
+	}
+</style>
+<script src="lua/util.lua" />
+<script>
+	function ClearAlienBuildableInfo(document)
+		document:GetElementById("b_name").inner_rml = ""
+		document:GetElementById("b_price").inner_rml = ""
+		document:GetElementById("b_desc").inner_rml = ""
+	end
+	function AlienBuildableClick(idx, event)
+		if idx > #alien_buildables then return end
+		CDataSource.Build("alienBuildList", "default")
+		local data = CDataSource.Read("alienBuildList", "default", "availability,cmdName")[idx]
+		if data[1] == "available" then
+			Cmd.exec("build " .. data[2])
+			Events.pushevent("hide alien_build", event)
+		end
+	end
+	function AlienBuildableHover(document, idx)
+		buildable = alien_buildables[idx]
+		document:GetElementById("b_name").inner_rml = buildable[2]
+		document:GetElementById("b_price").inner_rml = buildable[4]
+		document:GetElementById("b_desc").inner_rml = buildable[3]
+	end
+	function BuildAlienBuildMenu(document)
+		ClearAlienBuildableInfo(document)
+		CDataSource.Build("alienBuildList", "default")
+		alien_buildables = CDataSource.Read("alienBuildList", "default", "icon,name,description,cost,availability")
+		local circlemenu = document:GetElementById("alienBuildMenu")
+		circlemenu.inner_rml = CirclemenuSkeleton(#alien_buildables)
+		for i = 1,#alien_buildables do
+			circlemenu.child_nodes[i+1].inner_rml = string.format(
+				'<button class=%s onclick="AlienBuildableClick(%d,event)" onmouseover="AlienBuildableHover(document,%d)">%s<img src="/%s"/></button>',
+				alien_buildables[i][5], i, i, AvailabilityIcon(alien_buildables[i][5]), alien_buildables[i][1])
+		end
+		document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#alien_buildables)
+	end
+</script>
+</head>
+<body id="alien_build" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, AlienBuildableClick)" onshow="BuildAlienBuildMenu(document)">
+<tabset class="circlemenu">
+<tab><translate>Build</translate></tab>
+<panel>
+<div class="circlemenu-circle" id="keyboardHints"/>
+<div class="circlemenu-circle" id="alienBuildMenu"/>
+<div class="infobox">
+<h2 id="b_name"></h2>
+<p class="text">
+<translate>Price:</translate>&nbsp;<span id="b_price"/><br/>
+<span id="b_desc" /></p>
+</div>
+</panel>
+</tabset>
+</body>
+</rml>

@@ -96,7 +96,7 @@ public:
 	{
 		return v[ i ];
 	}
-	
+
 	inline operator const float*() const
 	{
 		return v;

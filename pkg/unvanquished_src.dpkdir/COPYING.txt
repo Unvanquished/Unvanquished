@@ -1,0 +1,11 @@
+------------------------------------------------- Unvanquished Media License ---
+Unvanquished media is licensed under the CREATIVE COMMONS ATTRIBUTION-SHAREALIKE
+2.5 LICENSE. Please read http://creativecommons.org/licenses/by-sa/2.5/ to learn
+more about this license.
+
+---------------------------------------------------- Code License Exceptions ---
+The following files contain sections of code that are not licensed under the
+CC By SA 2.5. The license text for these licenses is contained within the files
+as listed.
+
+    ui/lua/util.lua                                              BSD license

@@ -36,6 +36,12 @@
 static const int MAX_LAYERS = 32;
 static const int EXPECTED_LAYERS_PER_TILE = 4;
 
+struct ladder_t
+{
+	glm::vec3 bottom, up;
+	float radius;
+};
+
 struct TileCacheData
 {
 	unsigned char* data;

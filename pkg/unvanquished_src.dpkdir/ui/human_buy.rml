@@ -1,0 +1,238 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/rcss" href="/ui/shared/circlemenu.rcss" />
+		<link type="text/rcss" href="/ui/shared/infobox.rcss" />
+		<style>
+			body {
+				width: 100%;
+				height: 100%;
+				background: #00000066;
+				text-align: center;
+			}
+
+			.circlemenu icon {
+				display: inline-block;
+				position: absolute;
+				bottom: 0.3em;
+				right: 0.75em;
+				font-size: 1.7em;
+			}
+			.circlemenu button {
+				image-color: #83fff5;
+			}
+			.circlemenu button.locked {
+				decorator: image(/ui/assets/circlemenu/circle);
+				image-color: rgb(0, 100, 100);
+			}
+			.circlemenu button.locked:hover {
+				decorator: image(/ui/assets/circlemenu/circle);
+				image-color: rgb(0, 120, 120);
+			}
+			.circlemenu button.locked:hover img,
+			.circlemenu button.locked:hover icon,
+			.circlemenu button.expensive:hover img,
+			.circlemenu button.expensive:hover icon {
+				opacity: 1;
+			}
+			.circlemenu button.locked img {
+				opacity: 0.6;
+			}
+			.circlemenu button.locked icon {
+				color: #ffffff;
+				opacity: 0.6;
+			}
+
+			.circlemenu button.expensive {
+				decorator: image(/ui/assets/circlemenu/circle);
+				image-color: rgb(0, 150, 150);
+			}
+			.circlemenu button.expensive:hover {
+				decorator: image(/ui/assets/circlemenu/circle);
+				image-color: rgb(0, 170, 170);
+			}
+
+			.circlemenu button.expensive img {
+				opacity: 0.6;
+			}
+			.circlemenu button.expensive:hover img {
+				opacity: 1;
+			}
+			.circlemenu button.expensive icon {
+				color: #0a00c5;
+
+				opacity: 0.7;
+			}
+
+			.circlemenu button {
+				position: relative;
+			}
+
+			.circlemenu button.active {
+				decorator: image(/ui/assets/circlemenu/circle-hover);
+				image-color: rgb(0, 200, 200);
+			}
+			.circlemenu button.active:hover {
+				decorator: image(/ui/assets/circlemenu/circle-hover);
+				image-color: rgb(0, 220, 220);
+			}
+			.circlemenu button.active icon {
+				color: #9affbd;
+			}
+			.circlemenu button.active .sell {
+				display: none;
+			}
+
+			.tabkey {
+				background-color: #99999999;
+				color: #cccccc;
+				font-size: 0.8em;
+				line-height: 1.1em;
+				padding-left: 0.1em;
+				padding-right: 0.1em;
+				border-top-width: 0.1em;
+				border-bottom-width: 0.1em;
+				border-right-width: 0.1em;
+				border-left-width: 0.1em;
+				border-top-color: #cccccc;
+				border-bottom-color: #cccccc;
+				border-right-color: #cccccc;
+				border-left-color: #cccccc;
+				display: block;
+			}
+			tab:selected .tabkey {
+				display: none;
+			}
+			tab {
+				position: relative;
+				display: inline-block;
+				top: 0.4em;
+			}
+			tab:selected {
+				top: 0;
+			}
+		</style>
+		<script>
+			function WeaponClick(idx)
+				if idx > #weapons then return end
+				-- Query again in case credits/momentum changed
+				CDataSource.Build("armouryBuyList", "weapons")
+				local data = CDataSource.Read("armouryBuyList", "weapons", "availability,cmdName")[idx]
+				if data[1] == "available" then
+					Cmd.exec("buy +" .. data[2])
+				elseif data[1] == "active" then
+					Cmd.exec("sell " .. data[2])
+				end
+			end
+			function WeaponClear(document)
+				document:GetElementById("w_name").inner_rml = ""
+				document:GetElementById("w_price").inner_rml = ""
+				document:GetElementById("w_rate").style.width = "0"
+				document:GetElementById("w_range").style.width = "0"
+				document:GetElementById("w_damage").style.width = "0"
+				document:GetElementById("w_description").inner_rml = ""
+			end
+			function WeaponHover(document, idx)
+				WeaponClear(document)
+				local data = weapons[idx]
+				document:GetElementById("w_name").inner_rml = data[2]
+				document:GetElementById("w_price").inner_rml = data[4]
+				document:GetElementById("w_rate").style.width = data[6] .. '%'
+				document:GetElementById("w_range").style.width = data[7] .. '%'
+				document:GetElementById("w_damage").style.width = data[8] .. '%'
+				document:GetElementById("w_description").inner_rml = data[3]
+			end
+			function BuildWeaponMenu(document)
+				CDataSource.Build("armouryBuyList", "weapons")
+				weapons = CDataSource.Read("armouryBuyList", "weapons", "icon,name,description,price,availability,rate,range,damage")
+				local circlemenu = document:GetElementById("weapons")
+				circlemenu.inner_rml = CirclemenuSkeleton(#weapons)
+				for i=1,#weapons do
+					circlemenu.child_nodes[i+1].inner_rml = string.format(
+						'<button class="%s" onclick="WeaponClick(%d)" onmouseover="WeaponHover(document,%d)">%s<img src="/%s"/></button>',
+						weapons[i][5], i, i, AvailabilityIcon(weapons[i][5]), weapons[i][1])
+				end
+				document:GetElementById("weaponKeyboardHints").inner_rml = CirclemenuKeyboardHints(#weapons)
+			end
+			function UpgradeClick(idx)
+				if idx > #upgrades then return end
+				-- Query again in case credits/momentum changed
+				CDataSource.Build("armouryBuyList", "upgrades")
+				local data = CDataSource.Read("armouryBuyList", "upgrades", "availability,cmdName")[idx]
+				if data[1] == "available" then
+					Cmd.exec("buy +" .. data[2])
+				elseif data[1] == "active" then
+					Cmd.exec("sell " .. data[2])
+				end
+			end
+			function UpgradeClear(document)
+				document:GetElementById("u_name").inner_rml = ""
+				document:GetElementById("u_price").inner_rml = ""
+				document:GetElementById("u_description").inner_rml = ""
+			end
+			function UpgradeHover(document, idx)
+				UpgradeClear(document)
+				local data = upgrades[idx]
+				document:GetElementById("u_name").inner_rml = data[2]
+				document:GetElementById("u_price").inner_rml = data[4]
+				document:GetElementById("u_description").inner_rml = data[3]
+			end
+			function BuildUpgradeMenu(document)
+				CDataSource.Build("armouryBuyList", "upgrades")
+				upgrades = CDataSource.Read("armouryBuyList", "upgrades", "icon,name,description,price,availability")
+				local circlemenu = document:GetElementById("upgrades")
+				circlemenu.inner_rml = CirclemenuSkeleton(#upgrades)
+				for i=1,#upgrades do
+					circlemenu.child_nodes[i+1].inner_rml = string.format(
+						'<button class="%s" onclick="UpgradeClick(%d)" onmouseover="UpgradeHover(document,%d)">%s<img src="/%s"/></button>',
+						upgrades[i][5], i, i, AvailabilityIcon(upgrades[i][5]), upgrades[i][1])
+				end
+				document:GetElementById("upgradeKeyboardHints").inner_rml = CirclemenuKeyboardHints(#upgrades)
+			end
+			function HumanBuyHandleKey(event, document)
+				local tabset = Element.As.ElementTabSet(document:GetElementById("tabset"))
+				if event.parameters.key_identifier == rmlui.key_identifier.TAB then
+					tabset.active_tab = tabset.active_tab + 1 <= tabset.num_tabs and tabset.active_tab + 1 or 1
+				else
+					local handler = ({[1]=WeaponClick, [2]=UpgradeClick})[tabset.active_tab]
+					CirclemenuHandleKey(event, document, handler)
+				end
+			end
+		</script>
+	</head>
+	<body id="human_buy" class="circlemenu human" onkeydown="HumanBuyHandleKey(event, document)"
+	 onshow="WeaponClear(document) UpgradeClear(document) BuildWeaponMenu(document) BuildUpgradeMenu(document)"
+	 onrefreshdata="BuildWeaponMenu(document) BuildUpgradeMenu(document)">
+	<tabset class="circlemenu" id="tabset">
+		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">
+			<span><translate>Weapons</translate></span>
+			<div class="tabkey"><translate>TAB</translate></div>
+		</tab>
+		<panel>
+		<div class="circlemenu-circle" id="weaponKeyboardHints"/>
+		<div class="circlemenu-circle" id="weapons"/>
+			<div class="infobox">
+			<h2 id="w_name"></h2>
+			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="w_price"></div></div></p>
+			<p><div class="attr"><translate>Range:</translate></div><div class="bar"><div id="w_range" class="barValue"></div></div></p>
+			<p><div class="attr"><translate>Damage:</translate></div><div class="bar"><div id="w_damage" class="barValue"></div></div></p>
+			<p><div class="attr"><translate>Fire Rate:</translate></div><div class="bar"><div id="w_rate" class="barValue"></div></div></p>
+			<p class="text" id="w_description"></p>
+			</div>
+		</panel>
+		<tab onclick="UpgradeClear(document) BuildUpgradeMenu(document)">
+			<span><translate>Upgrades</translate></span>
+			<div class="tabkey"><translate>TAB</translate></div>
+		</tab>
+		<panel>
+		<div class="circlemenu-circle" id="upgradeKeyboardHints"/>
+		<div class="circlemenu-circle" id="upgrades"/>
+			<div class="infobox">
+			<h2 id="u_name"></h2>
+			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="u_price"></div></div></p>
+			<p class="text" id="u_description"></p>
+			</div>
+		</panel>
+	</tabset>
+	</body>
+</rml>

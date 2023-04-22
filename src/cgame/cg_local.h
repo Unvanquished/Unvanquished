@@ -193,21 +193,41 @@ struct attachment_t
 
 //======================================================================
 
-//particle system stuff
+// Maximum .particle files to load.
 #define MAX_PARTICLE_FILES        128
 
 #define MAX_PS_SHADER_FRAMES      32
 #define MAX_PS_MODELS             8
+
+// Maximum ejector definitions in a particle system definition.
 #define MAX_EJECTORS_PER_SYSTEM   4
+// Maximum particle definitions in an ejector definition.
 #define MAX_PARTICLES_PER_EJECTOR 4
 
-#define MAX_BASEPARTICLE_SYSTEMS  192
+/* Maximum particle systems, ejectors and particle definitions to load from .particle files.
+
+One particle file may contain more than one particle system definitions. Making particle system
+definition maximum greater than particle file maximum makes sure it's not obviously low. */
+#define MAX_BASEPARTICLE_SYSTEMS  (MAX_PARTICLE_FILES + 564)
 #define MAX_BASEPARTICLE_EJECTORS (MAX_BASEPARTICLE_SYSTEMS * MAX_EJECTORS_PER_SYSTEM)
 #define MAX_BASEPARTICLES         (MAX_BASEPARTICLE_EJECTORS * MAX_PARTICLES_PER_EJECTOR)
 
-#define MAX_PARTICLE_SYSTEMS      48
+/* Maximum particle systems, ejectors and particle objects to process and render.
+
+Not all particle system, ejector or particle definitions will instantiate particle
+systems, ejectors or particles at a given time.
+
+A single particle system definition can instantiate many particle systems
+and then many ejectors, and a single ejector with a single particle definition
+can instantiate many particles.
+
+The chosen numeric values for those maximums are arbitrary, but making them greater
+than or equal to the maximum of their definitions makes sure they're not obviously low. */
+#define MAX_PARTICLE_SYSTEMS      MAX_BASEPARTICLE_SYSTEMS
 #define MAX_PARTICLE_EJECTORS     (MAX_PARTICLE_SYSTEMS * MAX_EJECTORS_PER_SYSTEM)
-#define MAX_PARTICLES             (MAX_PARTICLE_EJECTORS * 5)
+/* FIXME: Something in the game is preventing to render more than a thousand particle textures.
+#define MAX_PARTICLES             (MAX_PARTICLE_EJECTORS * MAX_PARTICLES_PER_EJECTOR) */
+#define MAX_PARTICLES             1024
 
 #define PARTICLES_INFINITE        -1
 #define PARTICLES_SAME_AS_INITIAL -2
@@ -737,6 +757,7 @@ struct centity_t
 	entityState_t  nextState; // from cg.nextFrame, if available
 	bool       interpolate; // true if next is valid to interpolate to
 	bool       currentValid; // true if cg.frame holds this entity
+	bool valid;
 
 	int            muzzleFlashTime; // move to playerEntity?
 	int            previousEvent;
@@ -798,8 +819,6 @@ struct centity_t
 
 	float                 radarVisibility;
 
-	bool              valid;
-	bool              oldValid;
 	int                   pvsEnterTime;
 
 	cbeacon_t             beacon;
@@ -1415,25 +1434,11 @@ struct rocketDataSource_t
 
 	int selectedTeamIndex;
 
-	int selectedHumanSpawnItem;
+	int selectedSpawnOptions[ NUM_TEAMS ];
 
-	int selectedAlienSpawnClass;
-
-	int armouryBuyList[3][ ( WP_LUCIFER_CANNON - WP_BLASTER ) + UP_NUM_UPGRADES + 1 ];
-	int selectedArmouryBuyItem[3];
-	int armouryBuyListCount[3];
-
-	int alienEvolveList[ PCL_NUM_CLASSES ];
-	int alienEvolveListCount;
-
-	int humanBuildList[ BA_NUM_BUILDABLES ];
-	int humanBuildListCount;
-
-	int alienBuildList[ BA_NUM_BUILDABLES ];
-	int alienBuildListCount;
-
-	int beaconList[ NUM_BEACON_TYPES ];
-	int beaconListCount;
+	int armouryBuyList[2][ ( WP_LUCIFER_CANNON - WP_BLASTER ) + UP_NUM_UPGRADES + 1 ];
+	int selectedArmouryBuyItem[2];
+	int armouryBuyListCount[2];
 };
 
 struct rocketInfo_t
@@ -1606,7 +1611,8 @@ struct cgMedia_t
 	qhandle_t   tealCgrade;
 	qhandle_t   desaturatedCgrade;
 
-	qhandle_t   scopeShader;
+	qhandle_t sniperScopeShader;
+	qhandle_t lgunScopeShader;
 
 	animation_t jetpackAnims[ MAX_JETPACK_ANIMATIONS ];
 
@@ -1762,6 +1768,7 @@ enum altShader_t
 extern  cgs_t               cgs;
 extern  cg_t                cg;
 extern  centity_t           cg_entities[ MAX_GENTITIES ];
+extern int cg_highestActiveEntity;
 
 extern  weaponInfo_t        cg_weapons[ 32 ];
 extern  upgradeInfo_t       cg_upgrades[ 32 ];

@@ -1,0 +1,51 @@
+/* infobox (for circlemenus) */
+
+div.infobox {
+	position: absolute;
+	left: 15em;
+	top: -12em;
+	width: 18em;
+}
+
+.infobox p {
+	display: block;
+}
+
+.infobox h2 {
+	margin: auto;
+	margin-bottom: 0.8em;
+	font-size: 2em;
+	display: block;
+	text-align: center;
+}
+
+.infobox p.text {
+	background: #25252599;
+	padding: 0.4em;
+	font-size: 0.9em;
+}
+
+.infobox .attr {
+	width: 50%;
+	display: inline-block;
+	text-align: right;
+}
+.infobox .bar {
+	padding-bottom: 0em;
+	text-align: center;
+	line-height: 0.3em;
+	background: #252424;
+	width: 40%;
+	margin-left: 10%;
+	height: 0.8em;
+	display: inline-block;
+}
+.infobox .barValue {
+	float: left;
+	height: 0.8em;
+	width: 0.8em;
+	background: #bbbbbbaa;
+	border-width: 0.1em;
+	border-color: #86868633;
+	display: inline-block;
+}

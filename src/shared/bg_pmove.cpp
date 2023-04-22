@@ -1275,11 +1275,16 @@ static bool PM_CheckWallRun()
  */
 static bool PM_CheckJetpack()
 {
+	// do not use jetpack on ladders
+	if ( pml.ladder )
+	{
+		return false;
+	}
 	static const vec3_t thrustDir = { 0.0f, 0.0f, 1.0f };
-	int                 sideVelocity;
+	team_t team = static_cast<team_t>( pm->ps->persistant[ PERS_TEAM ] );
 
 	if ( pm->ps->pm_type != PM_NORMAL ||
-	     pm->ps->persistant[ PERS_TEAM ] != TEAM_HUMANS ||
+	     team != TEAM_HUMANS ||
 	     !BG_InventoryContainsUpgrade( UP_JETPACK, pm->ps->stats ) )
 	{
 		pm->ps->stats[ STAT_STATE2 ] &= ~SS2_JETPACK_ACTIVE;
@@ -1335,7 +1340,7 @@ static bool PM_CheckJetpack()
 	// check ignite conditions
 	if ( !( pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_WARM ) )
 	{
-		sideVelocity = sqrtf( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ] +
+		int sideVelocity = sqrtf( pm->ps->velocity[ 0 ] * pm->ps->velocity[ 0 ] +
 		                      pm->ps->velocity[ 1 ] * pm->ps->velocity[ 1 ] );
 
 		// we got off ground by jumping and are not yet in free fall, where free fall is defined as
@@ -1512,11 +1517,6 @@ static void PM_LandJetpack( bool force )
 
 static bool PM_CheckJump()
 {
-	vec3_t   normal;
-	int      staminaJumpCost;
-	float    magnitude;
-	bool jetpackJump;
-
 	// can't jump while in air
 	if ( pm->ps->groundEntityNum == ENTITYNUM_NONE )
 	{
@@ -1529,8 +1529,11 @@ static bool PM_CheckJump()
 		return false;
 	}
 
+	class_t pcl = static_cast<class_t>( pm->ps->stats[ STAT_CLASS ] );
+	classAttributes_t const* attr = BG_Class( pcl );
+	team_t team = static_cast<team_t>( pm->ps->persistant[ PERS_TEAM ] );
 	// needs jump ability
-	if ( BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude <= 0.0f )
+	if ( attr->jumpMagnitude <= 0.0f )
 	{
 		return false;
 	}
@@ -1538,15 +1541,14 @@ static bool PM_CheckJump()
 	// can't jump and pounce at the same time
 	// TODO: This prevents jumps in an unintuitive manner, since the charge
 	//       meter has nothing to do with the land time.
-	if ( ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3 ||
-	       pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG ) &&
+	if ( ( pcl == PCL_ALIEN_LEVEL3 || pcl == PCL_ALIEN_LEVEL3_UPG ) &&
 	     pm->ps->weaponCharge > 0 )
 	{
 		return false;
 	}
 
 	// can't jump and charge at the same time
-	if ( pm->ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL4 && pm->ps->weaponCharge > 0 )
+	if ( pcl == PCL_ALIEN_LEVEL4 && pm->ps->weaponCharge > 0 )
 	{
 		return false;
 	}
@@ -1563,11 +1565,11 @@ static bool PM_CheckJump()
 		return false;
 	}
 
-	staminaJumpCost = BG_Class( pm->ps->stats[ STAT_CLASS ] )->staminaJumpCost;
-	jetpackJump     = false;
+	int staminaJumpCost = attr->staminaJumpCost;
+	bool jetpackJump = false;
 
 	// humans need stamina or jetpack to jump
-	if ( ( pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS ) &&
+	if ( ( team == TEAM_HUMANS ) &&
 	     ( pm->ps->stats[ STAT_STAMINA ] < staminaJumpCost ) )
 	{
 		// use jetpack instead of stamina to take off
@@ -1583,7 +1585,7 @@ static bool PM_CheckJump()
 	}
 
 	// take some stamina off
-	if ( !jetpackJump && pm->ps->persistant[ PERS_TEAM ] == TEAM_HUMANS )
+	if ( !jetpackJump && team == TEAM_HUMANS )
 	{
 		pm->ps->stats[ STAT_STAMINA ] -= staminaJumpCost;
 	}
@@ -1597,18 +1599,17 @@ static bool PM_CheckJump()
 
 	// don't allow walljump for a short while after jumping from the ground
 	// TODO: There was an issue about this potentially having side effects.
-	if ( BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS ], SCA_WALLJUMPER )
-		|| BG_ClassHasAbility( pm->ps->stats[ STAT_CLASS], SCA_WALLRUNNER ) )
+	if ( BG_ClassHasAbility( pcl, SCA_WALLJUMPER ) || BG_ClassHasAbility( pcl, SCA_WALLRUNNER ) )
 	{
 		pm->ps->pm_flags |= PMF_TIME_WALLJUMP;
 		pm->ps->pm_time = 200;
 	}
 
 	// jump in surface normal direction
-	BG_GetClientNormal( pm->ps, normal );
+	glm::vec3 normal = BG_GetClientNormal( pm->ps );
 
 	// retrieve jump magnitude
-	magnitude = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
+	float magnitude = attr->jumpMagnitude;
 
 	// if jetpack is active or being used for the jump, scale down jump magnitude
 	if ( jetpackJump || pm->ps->stats[ STAT_STATE2 ] & SS2_JETPACK_ACTIVE )
@@ -1628,7 +1629,7 @@ static bool PM_CheckJump()
 		pm->ps->velocity[ 2 ] = 0.0f;
 	}
 
-	VectorMA( pm->ps->velocity, magnitude, normal, pm->ps->velocity );
+	VectorMA( pm->ps->velocity, magnitude, &normal[0], pm->ps->velocity );
 
 	PM_AddEvent( EV_JUMP );
 	PM_PlayJumpingAnimation();
@@ -3948,6 +3949,7 @@ static void PM_Weapon()
 			break;
 
 		case WP_MASS_DRIVER:
+		case WP_LAS_GUN:
 			attack2 = attack3 = false;
 			// attack2 is handled on the client for zooming (cg_view.c)
 

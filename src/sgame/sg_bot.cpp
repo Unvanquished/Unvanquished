@@ -65,8 +65,8 @@ static void G_BotListTeamNames( gentity_t *ent, const char *heading, team_t team
 
 void G_BotListNames( gentity_t *ent )
 {
-	G_BotListTeamNames( ent, QQ( N_( "^3Alien bot names:" ) ), TEAM_ALIENS, "^1*" );
-	G_BotListTeamNames( ent, QQ( N_( "^3Human bot names:" ) ), TEAM_HUMANS, "^5*" );
+	G_BotListTeamNames( ent, QQ( "^3" N_( "Alien bot names:" ) ), TEAM_ALIENS, "^1*" );
+	G_BotListTeamNames( ent, QQ( "^3" N_( "Human bot names:" ) ), TEAM_HUMANS, "^5*" );
 }
 
 bool G_BotClearNames()
@@ -177,7 +177,7 @@ int G_BotGetSkill( int clientNum )
 		return 0;
 	}
 
-	return bot->botMind->botSkill.level;
+	return bot->botMind->skillLevel;
 }
 
 void G_BotSetSkill( int clientNum, int skill )
@@ -285,7 +285,6 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 		return false;
 	}
 	gentity_t *bot = &g_entities[ clientNum ];
-	G_InitGentity( bot );
 	bot->r.svFlags |= SVF_BOT;
 
 	// TODO: probably this should do more of the same stuff as ClientBegin?
@@ -730,7 +729,7 @@ void botMemory_t::willSprint( bool enable )
 // walking, and stamina not recharging at all.
 void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 {
-	exhausted = exhausted || ( botSkill.level >= 5 && stamina <= jumpCost + jumpCost / 10 );
+	exhausted = exhausted || ( skillLevel >= 5 && stamina <= jumpCost + jumpCost / 10 );
 	if ( !exhausted && wantSprinting )
 	{
 		usercmdPressButton( cmd.buttons, BTN_SPRINT );
@@ -775,6 +774,6 @@ std::string G_BotToString( gentity_t *bot )
 			BG_TeamName( G_Team( bot ) ),
 			bot->botMind->behaviorTree->name,
 			BotGoalToString( bot ),
-			bot->botMind->botSkill.level,
-			bot->botMind->botSkillSetExplaination );
+			bot->botMind->skillLevel,
+			bot->botMind->skillSetExplaination );
 }

@@ -131,6 +131,7 @@ static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &
 
 	if ( !f )
 	{
+		Log::Debug("Failed to load \"maps/%s-%s.navcon\"", mapname.c_str(), species );
 		return;
 	}
 
@@ -139,11 +140,10 @@ static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &
 
 	version = LittleLong( version );
 
+	Log::Debug("Loading format version %d navcon file %s", version, filePath );
 	// Old binary format.
 	if ( version == 2 )
 	{
-		Log::Debug("Loading format version %d navcon file %s", version, filePath );
-
 		int conCount;
 		trap_FS_Read( &conCount, sizeof( conCount ), f );
 
@@ -229,8 +229,6 @@ static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &
 		Log::Warn("Unknown format version %d for navcon file %s", version, filePath );
 		return;
 	}
-
-	Log::Debug("Loading format version %d navcon file %s", version, filePath );
 
 	con.offMeshConCount = 0;
 

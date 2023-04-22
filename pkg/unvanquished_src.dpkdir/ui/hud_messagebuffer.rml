@@ -1,0 +1,25 @@
+<rml>
+<head>
+	<link type="text/rcss" href="/ui/shared/basics.rcss" />
+	<style>
+		body {
+			width: 75%;
+			height: 15%;
+			padding: 1em;
+		}
+
+		console_text {
+			color: white;
+			height: 100%;
+		}
+
+		img {
+			height: 1.3em;
+			color: white;
+		}
+	</style>
+</head>
+<body id="hud_messagebuffer">
+<console_text/>
+</body>
+</rml>

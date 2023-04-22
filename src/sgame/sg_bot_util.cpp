@@ -366,7 +366,7 @@ float BotGetResupplyScore( gentity_t *self )
 			ASSERT_UNREACHABLE();
 	}
 	float timeDist = dist / GetMaximalSpeed( self );
-	return ( 1 + 5 * self->botMind->botSkill.level ) * ( needPoison ? 1 : ( 1 - percentAmmo ) ) / sqrt( timeDist );
+	return ( 1 + 5 * self->botMind->skillLevel ) * ( needPoison ? 1 : ( 1 - percentAmmo ) ) / sqrt( timeDist );
 }
 
 // Gives a value between 0 and 1 representing how much a bot should want to rush.
@@ -388,7 +388,7 @@ float BotGetResupplyScore( gentity_t *self )
 float BotGetBaseRushScore( gentity_t *ent )
 {
 	ASSERT( ent && ent->botMind && ent->client );
-	const float skill_modifier = 1 - 2 * SkillModifier( ent->botMind->botSkill.level );
+	const float skill_modifier = 1 - 2 * SkillModifier( ent->botMind->skillLevel );
 	// if nothing allowed from current stage have a cost,
 	// return average value on which other parameters can weight
 	float rush_score = 0.5;
@@ -434,7 +434,7 @@ float BotGetHealScore( gentity_t *self )
 	float distToHealer = BotGetHealTarget( self ).distance;
 	float timeDist = distToHealer / GetMaximalSpeed( self );
 
-	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentHealth ) / sqrt( timeDist );
+	return ( 1 + 5 * SkillModifier( self->botMind->skillLevel ) ) * ( 1 - percentHealth ) / sqrt( timeDist );
 }
 
 float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
@@ -617,7 +617,7 @@ AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t* )
 
 static bool BotSkillArmorIsDesirable( const gentity_t *self, upgrade_t armor )
 {
-	if ( self->botMind->botSkillSet[BOT_H_BUY_MODERN_ARMOR] ) {
+	if ( self->botMind->skillSet[BOT_H_BUY_MODERN_ARMOR] ) {
 		return true;
 	}
 
@@ -755,7 +755,7 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 	}
 	};
 
-	if ( self->botMind->botSkillSet[BOT_H_PREFER_ARMOR] )
+	if ( self->botMind->skillSet[BOT_H_PREFER_ARMOR] )
 	{
 		// buy armor before anything else
 		buyArmors();
@@ -1182,10 +1182,10 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		glm::vec3 targetPos = target.getPos();
 		glm::vec3 end = targetPos + 600.f * invNormal;
 		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->num(),
-		            CONTENTS_SOLID, MASK_ENTITY );
+		            CONTENTS_SOLID | CONTENTS_PLAYERCLIP, MASK_ENTITY );
 		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
-	
+
 
 	// increase extents a little to account for obstacles cutting into the navmesh
 	// also accounts for navmesh erosion at mesh boundrys
@@ -1257,7 +1257,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			break;
 		case WP_ALEVEL1:
 			range = LEVEL1_CLAW_RANGE;
-			if ( self->botMind->botSkillSet[BOT_A_LEAP_ON_ATTACK] )
+			if ( self->botMind->skillSet[BOT_A_LEAP_ON_ATTACK] )
 			{
 				secondaryRange = LEVEL1_POUNCE_DISTANCE;
 			}
@@ -1276,7 +1276,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 		case WP_ALEVEL3:
 			range = LEVEL3_CLAW_RANGE;
 			// We could check if the pounce to the target would succeed
-			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] )
+			if ( self->botMind->skillSet[BOT_A_POUNCE_ON_ATTACK] )
 			{
 				secondaryRange = LEVEL3_POUNCE_JUMP_MAG; // An arbitrary value for pounce, has nothing to do with actual range
 			}
@@ -1285,7 +1285,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 		case WP_ALEVEL3_UPG:
 			range = LEVEL3_CLAW_RANGE;
 			// If we can pounce
-			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] )
+			if ( self->botMind->skillSet[BOT_A_POUNCE_ON_ATTACK] )
 			{
 				secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; // An arbitrary value for pounce and barbs, has nothing to do with actual range
 			}
@@ -1312,7 +1312,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 		case WP_FLAMER:
 			{
 				trajectory_t t;
-			
+
 				// Correct muzzle so that the missile does not start in the ceiling
 				muzzle += -7.0f * up;
 
@@ -1328,7 +1328,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				VectorCopy( muzzle, t.trBase );
 				t.trType = trType_t::TR_LINEAR;
 				t.trTime = level.time - 50;
-			
+
 				// find projectile's final position
 				glm::vec3 npos;
 				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, &npos[0] );
@@ -1473,7 +1473,7 @@ Bot Aiming
 ========================
 */
 
-glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
+glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target, int lagPredictTime )
 {
 	ASSERT( target.targetsValidEntity() );
 	glm::vec3 aimLocation = target.getPos();
@@ -1481,23 +1481,26 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 	team_t targetTeam = G_Team( targetEnt );
 	bool isTargetBuildable = target.getTargetType() == entityType_t::ET_BUILDABLE;
 
+	float predictTime = lagPredictTime / 1000.0f; // in seconds
+
 	//this retrieves the target's species, to aim at weak point:
 	// * for humans, it's the head (but code only applies an offset here, with the hope it's the head)
-	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (for luci)
+	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (e.g. for luci)
 	if ( !isTargetBuildable && targetTeam == TEAM_HUMANS )
 	{
 		// Aim at head
 		// FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
-		if ( self->botMind->botSkillSet[BOT_A_AIM_HEAD] )
+		if ( self->botMind->skillSet[BOT_A_AIM_HEAD] )
 		{
 			aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
 		}
 
 	}
-	else
+
+	if ( !isTargetBuildable && G_Team(self) == TEAM_HUMANS )
 	{
 		// Make lucifer cannons (& other slow human weapons, maybe aliens would need it, too?) aim ahead based on the target's velocity
-		if ( self->botMind->botSkillSet[BOT_H_PREDICTIVE_AIM] )
+		if ( self->botMind->skillSet[BOT_H_PREDICTIVE_AIM] )
 		{
 			//would be better if it was possible to do self.weapon->speed directly
 			int weapon_speed = 0;
@@ -1517,38 +1520,36 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target )
 			}
 			if( weapon_speed )
 			{
-				aimLocation += glm::distance( VEC2GLM( self->s.origin ), aimLocation ) / weapon_speed * VEC2GLM( targetEnt->s.pos.trDelta );
+				predictTime += glm::distance( VEC2GLM(self->s.origin), aimLocation ) / weapon_speed;
 			}
 		}
 	}
-	return aimLocation;
+
+	return aimLocation + predictTime * VEC2GLM( targetEnt->s.pos.trDelta );
 }
 
-static int BotGetAimPredictionTime( gentity_t *self )
+static int BotGetAimTime( gentity_t *self )
 {
-	auto time = ( 10 - self->botMind->botSkill.level ) * 100 * std::max( random(), 0.5f );
+	int baseTime = G_Team( self ) == TEAM_ALIENS ? 250 : 150;
+	if ( self->botMind->skillSet[BOT_B_FAST_AIM] )
+	{
+		baseTime = baseTime * 3 / 5;
+	}
+	auto time = ( 10 - self->botMind->skillLevel ) * baseTime * std::max( random(), 0.5f );
 	return std::max( 1, int(time) );
-}
-
-static glm::vec3 BotPredictPosition( gentity_t *self, gentity_t const *predict, int time )
-{
-	botTarget_t target;
-	target = predict;
-	glm::vec3 aimLoc = BotGetIdealAimLocation( self, target );
-	return aimLoc + time / 1000.0f * VEC2GLM( predict->s.pos.trDelta );
 }
 
 void BotAimAtEnemy( gentity_t *self )
 {
-	ASSERT( self->botMind->goal.targetsValidEntity() );
-
-	const gentity_t *enemy = self->botMind->goal.getTargetedEntity();
-
 	if ( self->botMind->futureAimTime < level.time )
 	{
-		int predictTime = self->botMind->futureAimTimeInterval = BotGetAimPredictionTime( self );
-		self->botMind->futureAim = BotPredictPosition( self, enemy, predictTime );
-		self->botMind->futureAimTime = level.time + predictTime;
+		int aimTime = self->botMind->futureAimTimeInterval = BotGetAimTime( self );
+		self->botMind->futureAimTime = level.time + aimTime;
+
+		// Do aim prediction
+		// Here, we cap aim prediction time because extrapolating too much is harmful if this bot is slow to aim
+		int lagPredictTime = std::min( aimTime, 220 );
+		self->botMind->futureAim = BotGetIdealAimLocation( self, self->botMind->goal, lagPredictTime );
 	}
 
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
@@ -1848,6 +1849,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 	{
 		case PCL_ALIEN_LEVEL0:
 			botIsSmall = true;
+			botIsJumper = self->botMind->skillSet[BOT_A_SMALL_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL1:
 			if ( BotAttackUpward( self ) )
@@ -1855,6 +1857,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 				return;
 			}
 			botIsSmall = true;
+			botIsJumper = self->botMind->skillSet[BOT_A_SMALL_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
@@ -1863,7 +1866,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 				return;
 			}
 			botIsSmall = true;
-			botIsJumper = self->botMind->botSkillSet[BOT_A_MARA_JUMP_ON_ATTACK];
+			botIsJumper = self->botMind->skillSet[BOT_A_MARA_JUMP_ON_ATTACK];
 			break;
 		case PCL_ALIEN_LEVEL3:
 			if ( BotAttackUpward( self ) )
@@ -1884,7 +1887,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			break;
 		case PCL_ALIEN_LEVEL4:
 			// Use rush to approach faster
-			if ( self->botMind->botSkillSet[BOT_A_TYRANT_CHARGE_ON_ATTACK] && !inAttackRange )
+			if ( self->botMind->skillSet[BOT_A_TYRANT_CHARGE_ON_ATTACK] && !inAttackRange )
 			{
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 			}
@@ -1893,7 +1896,7 @@ void BotClassMovement( gentity_t *self, bool inAttackRange )
 			break;
 	}
 
-	if ( shouldStrafe && botIsSmall )
+	if ( shouldStrafe && botIsSmall && self->botMind->skillSet[BOT_A_STRAFE_ON_ATTACK] )
 	{
 		BotStrafeDodge( self );
 	}
@@ -1977,7 +1980,7 @@ void BotFireWeaponAI( gentity_t *self )
 
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
 	muzzle = G_CalcMuzzlePoint( self, forward );
-	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal );
+	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 
 	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
@@ -2012,7 +2015,7 @@ void BotFireWeaponAI( gentity_t *self )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
 			}
-			else if ( self->botMind->botSkillSet[BOT_A_LEAP_ON_ATTACK] && self->client->ps.weaponCharge == 0 )
+			else if ( self->botMind->skillSet[BOT_A_LEAP_ON_ATTACK] && self->client->ps.weaponCharge == 0 )
 			{
 				BotMoveInDir( self, MOVE_FORWARD );
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //mantis forward pounce
@@ -2032,7 +2035,7 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_ALEVEL3:
-			if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			if ( self->botMind->skillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -2052,7 +2055,7 @@ void BotFireWeaponAI( gentity_t *self )
 			// hopefully accounts for the movement of the bot and
 			// its target
 			constexpr float barbSafetyFactor = 5.0f/3.0f;
-			bool barbIsSafe = distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius) || !self->botMind->botSkillSet[BOT_A_SAFE_BARBS];
+			bool barbIsSafe = distance > (barbSafetyFactor * BG_Missile(MIS_BOUNCEBALL)->splashRadius) || !self->botMind->skillSet[BOT_A_SAFE_BARBS];
 
 			if ( outOfClawsRange && hasBarbs && barbIsSafe )
 			{
@@ -2068,12 +2071,12 @@ void BotFireWeaponAI( gentity_t *self )
 				float scalarAlignment = Alignment2D(delta, forward);
 				bool barbAimed = scalarAlignment > 0.997f; // acos(0.997) is 4.4° in the 2D plane
 
-				if ( barbAimed || !self->botMind->botSkillSet[BOT_A_AIM_BARBS] )
+				if ( barbAimed || !self->botMind->skillSet[BOT_A_AIM_BARBS] )
 				{
 					BotFireWeapon( WPM_TERTIARY, botCmdBuffer ); //goon barb
 				}
 			}
-			else if ( self->botMind->botSkillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			else if ( self->botMind->skillSet[BOT_A_POUNCE_ON_ATTACK] && distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
 			{
 				botCmdBuffer->angles[PITCH] = ANGLE2SHORT( -CalcPounceAimPitch( self, target ) ); //compute and apply correct aim pitch to hit target
 				BotFireWeapon( WPM_SECONDARY, botCmdBuffer ); //goon pounce
@@ -2095,9 +2098,40 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			break;
 		case WP_LUCIFER_CANNON:
-			if ( self->client->ps.weaponCharge < LCANNON_CHARGE_TIME_MAX * Math::Clamp( random(), 0.5f, 1.0f ) )
 			{
-				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
+				const int CRITICAL_HEALTH = 30; //TODO do not use a constant
+				int selfHP = self->client->ps.stats[ STAT_HEALTH ];
+
+				gentity_t const* botTarget = self->botMind->goal.getTargetedEntity();
+				float targetMaxHP;
+				if ( botTarget->client )
+				{
+					class_t targetType = static_cast<class_t>( botTarget->client->ps.stats[ STAT_CLASS ] );
+					const classAttributes_t * targetAttr = BG_Class( targetType );
+					// Ignore armor because aliens don't have armors or damage reductions anyway.
+					targetMaxHP = static_cast<float>( targetAttr->health );
+				}
+				else //assume we're fighting a building, but it could also be a map entity, and this would then fail
+				{
+					auto targetType = static_cast<buildable_t>( botTarget->s.modelindex );
+					const buildableAttributes_t * targetAttr = BG_Buildable( targetType );
+					targetMaxHP = static_cast<float>( targetAttr->health );
+				}
+				// TODO: use charging is there are more than one enemies around
+				if ( targetMaxHP <= LCANNON_SECONDARY_DAMAGE || selfHP <= CRITICAL_HEALTH )
+				{
+					BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
+				}
+				else
+				{
+					float dmgRatio = targetMaxHP / LCANNON_DAMAGE;
+					float chargeMax = static_cast<float>( LCANNON_CHARGE_TIME_MAX );
+					float charge = chargeMax * std::min( dmgRatio, 0.95f );
+					if ( self->client->ps.weaponCharge < charge )
+					{
+						BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
+					}
+				}
 			}
 			break;
 		default:
@@ -2397,15 +2431,12 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	}
 	ASSERT( skill >= MIN_SKILL && skill <= MAX_SKILL );
 
-	self->botMind->botSkill.level = skill;
-	// TODO: different aim for different teams
-	self->botMind->botSkill.aimSlowness = ( float ) skill / 10;
-	self->botMind->botSkill.aimShake = 10 - skill;
+	self->botMind->skillLevel = skill;
 
 	std::pair<std::string, skillSet_t>
 		pair = BotDetermineSkills(self, skill);
-	self->botMind->botSkillSet = pair.second;
-	self->botMind->botSkillSetExplaination = std::move(pair.first);
+	self->botMind->skillSet = pair.second;
+	self->botMind->skillSetExplaination = std::move(pair.first);
 }
 
 void BotResetEnemyQueue( enemyQueue_t *queue )
@@ -2451,7 +2482,7 @@ void BotPain( gentity_t *self, gentity_t *attacker, int )
 	if ( G_Team( attacker ) != TEAM_NONE
 		&& !G_OnSameTeam( self, attacker )
 		&& attacker->s.eType == entityType_t::ET_PLAYER
-		&& self->botMind->botSkillSet[BOT_B_PAIN] )
+		&& self->botMind->skillSet[BOT_B_PAIN] )
 	{
 
 		BotPushEnemy( &self->botMind->enemyQueue, attacker );

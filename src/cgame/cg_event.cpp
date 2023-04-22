@@ -134,7 +134,7 @@ static void CG_Obituary( entityState_t *ent )
 	ci = &cgs.clientinfo[ target ];
 	gender = ci->gender;
 
-	if ( ( attacker < 0 || attacker >= MAX_CLIENTS ) 
+	if ( ( attacker < 0 || attacker >= MAX_CLIENTS )
 	     || ( !cgs.clientinfo[ attacker ].infoValid ) )
 	{
 		attacker = ENTITYNUM_WORLD;
@@ -215,42 +215,42 @@ static void CG_Obituary( entityState_t *ent )
 				if ( meansOfDeath[ mod ].showAssist && assistantInfo )
 				{
 					Log::Notice( "%s %s (+ %s%s%s^*) killed %s%s",
-					             teamTag[ attackerTeam ], meansOfDeath[ mod ].icon, 
-					             teamTag[ assistantTeam ], assistantName, 
+					             teamTag[ attackerTeam ], meansOfDeath[ mod ].icon,
+					             teamTag[ assistantTeam ], assistantName,
 					             ( assistantTeam == ci->team ? " ^a!!" : "" ),
 					             teamTag[ ci->team ], targetName );
 				}
 				else
 				{
-					Log::Notice( "%s %s %s%s", 
-					             teamTag[ attackerTeam ], meansOfDeath[ mod ].icon, 
+					Log::Notice( "%s %s %s%s",
+					             teamTag[ attackerTeam ], meansOfDeath[ mod ].icon,
 					             teamTag[ ci->team ], targetName );
 				}
 			}
 			else if ( !cgs.clientinfo[ attacker ].infoValid || attacker == target )
 			{
-				Log::Notice( "%s %s%s", 
-				             meansOfDeath[ mod ].icon, 
+				Log::Notice( "%s %s%s",
+				             meansOfDeath[ mod ].icon,
 				             teamTag[ ci->team ], targetName );
 			}
 			else
 			{
 				if ( meansOfDeath[ mod ].showAssist && assistantInfo )
 				{
-					Log::Notice( "%s%s%s^* (+ %s%s%s^*) %s %s%s", 
-					             teamTag[ attackerTeam ], attackerName, 
+					Log::Notice( "%s%s%s^* (+ %s%s%s^*) %s %s%s",
+					             teamTag[ attackerTeam ], attackerName,
 					             ( attackerTeam == ci->team ? " ^1!!!^*" : "" ),
-					             teamTag[ assistantTeam ], assistantName, 
+					             teamTag[ assistantTeam ], assistantName,
 					             ( assistantTeam == ci->team ? " ^a!!" : "" ),
-					             meansOfDeath[ mod ].icon, 
+					             meansOfDeath[ mod ].icon,
 					             teamTag[ ci->team ], targetName );
 				}
 				else
 				{
-					Log::Notice( "%s%s%s^* %s %s%s", 
-					             teamTag[ attackerTeam ], attackerName, 
+					Log::Notice( "%s%s%s^* %s %s%s",
+					             teamTag[ attackerTeam ], attackerName,
 					             ( attackerTeam == ci->team ? " ^1!!!^*" : "" ),
-					             meansOfDeath[ mod ].icon, 
+					             meansOfDeath[ mod ].icon,
 					             teamTag[ ci->team ], targetName );
 				}
 
@@ -364,8 +364,8 @@ static void CG_Obituary( entityState_t *ent )
 		{
 			if ( messageAssisted && assistantInfo )
 			{
-				Log::Notice( messageAssisted, 
-				             teamTag[ ci->team ], targetName, 
+				Log::Notice( messageAssisted,
+				             teamTag[ ci->team ], targetName,
 				             ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
 				             teamTag[ assistantTeam ], assistantName);
 			}
@@ -555,20 +555,20 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				if ( attackerClass != -1 )
 				{
-					Log::Notice( messageAssisted, 
-					             teamTag[ ci->team ], targetName, 
+					Log::Notice( messageAssisted,
+					             teamTag[ ci->team ], targetName,
 					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-					             teamTag[ attackerTeam ], attackerName, 
-					             BG_ClassModelConfig( attackerClass )->humanName, 
+					             teamTag[ attackerTeam ], attackerName,
+					             BG_ClassModelConfig( attackerClass )->humanName,
 					             ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
 					             teamTag[ assistantTeam ], assistantName );
 				}
 				else
 				{
-					Log::Notice( messageAssisted, 
-					             teamTag[ ci->team ], targetName, 
+					Log::Notice( messageAssisted,
+					             teamTag[ ci->team ], targetName,
 					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-					             teamTag[ attackerTeam ], attackerName, 
+					             teamTag[ attackerTeam ], attackerName,
 					             ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
 					             teamTag[ assistantTeam ], assistantName );
 				}
@@ -577,16 +577,16 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				if ( attackerClass != -1 )
 				{
-					Log::Notice( message, 
-					             teamTag[ ci->team ], targetName, 
+					Log::Notice( message,
+					             teamTag[ ci->team ], targetName,
 					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-					             teamTag[ attackerTeam ], attackerName, 
+					             teamTag[ attackerTeam ], attackerName,
 					             BG_ClassModelConfig( attackerClass )->humanName );
 				}
 				else
 				{
-					Log::Notice( message, 
-					             teamTag[ ci->team ], targetName, 
+					Log::Notice( message,
+					             teamTag[ ci->team ], targetName,
 					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
 					             teamTag[ attackerTeam ], attackerName );
 				}
@@ -1258,13 +1258,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			{
 				case TEAM_ALIENS:
 					trap_S_StartLocalSound( cgs.media.alienOvermindDying, soundChannel_t::CHAN_ANNOUNCER );
-					CG_CenterPrint( _( "^1The Overmind is dying!" ), 1.5f );
+					CG_CenterPrint( va( "^1%s", _( "The Overmind is dying!" ) ), 1.5f );
 					break;
 
 				case TEAM_HUMANS:
 					// TODO: Add a "reactor is going down" sound.
 					//trap_S_StartLocalSound( cgs.media.humanReactorDying, soundChannel_t::CHAN_ANNOUNCER );
-					CG_CenterPrint( _( "^1The reactor is going down!" ), 1.5f );
+					CG_CenterPrint( va( "^1%s", _( "The reactor is going down!" ) ), 1.5f );
 					break;
 
 				default:

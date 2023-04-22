@@ -91,13 +91,6 @@ struct enemyQueue_t
 	int back;
 };
 
-struct botSkill_t
-{
-	int level;
-	float aimSlowness;
-	float aimShake;
-};
-
 // boolean flags that tells which skill (compétence) the bot has.
 //
 // When you add a skill, add it to the skill tree in sg_bot_skilltree.cpp and
@@ -106,7 +99,9 @@ enum bot_skill
 {
 	// movement skills
 	BOT_B_BASIC_MOVEMENT, // doesn't do anything as of now
-	BOT_A_MARA_JUMP_ON_ATTACK,
+	BOT_A_SMALL_JUMP_ON_ATTACK, // small aliens (dretch and mantis) do jump from time to time when attacking, this helps dodging
+	BOT_A_MARA_JUMP_ON_ATTACK, // marauder jumps when in a fight
+	BOT_A_STRAFE_ON_ATTACK, // strafe when attacking to dodge bullets better
 	BOT_A_LEAP_ON_ATTACK, // mantis
 	BOT_A_POUNCE_ON_ATTACK, // dragoon and adv dragoon
 	BOT_A_TYRANT_CHARGE_ON_ATTACK,
@@ -125,6 +120,7 @@ enum bot_skill
 
 	// fighting skills
 	BOT_B_BASIC_FIGHT, // doesn't do anything as of now
+	BOT_B_FAST_AIM,
 	BOT_A_AIM_HEAD,
 	BOT_A_AIM_BARBS, // precisely target barbs
 	BOT_H_PREDICTIVE_AIM, // predict where to aim depending on weapon and enemy speed
@@ -150,9 +146,9 @@ struct botMemory_t
 	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );
 	usercmd_t   cmdBuffer;
 
-	botSkill_t  botSkill; // numerical values
-	skillSet_t  botSkillSet; // boolean flags
-	std::string botSkillSetExplaination;
+	int         skillLevel;
+	skillSet_t  skillSet; // boolean flags
+	std::string skillSetExplaination;
 
 	botEntityAndDistance_t bestEnemy;
 	botEntityAndDistance_t closestDamagedBuilding;

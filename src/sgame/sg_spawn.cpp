@@ -787,7 +787,7 @@ static void G_SpawnGEntityFromSpawnVars()
 	gentity_t *spawningEntity;
 
 	// get the next free entity
-	spawningEntity = G_NewEntity();
+	spawningEntity = G_NewEntity( NO_CBSE );
 
 	for ( i = 0; i < level.numSpawnVars; i++ )
 	{
@@ -1160,7 +1160,7 @@ void G_SpawnEntitiesFromString()
 
 void G_SpawnFakeEntities()
 {
-	level.fakeLocation = G_NewEntity();
+	level.fakeLocation = G_NewEntity( NO_CBSE );
 	level.fakeLocation->s.origin[ 0 ] =
 	level.fakeLocation->s.origin[ 1 ] =
 	level.fakeLocation->s.origin[ 2 ] = 1.7e19f; // well out of range
