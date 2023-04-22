@@ -2773,7 +2773,10 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 
 		if ( BG_WeaponDisabled( weapon ) || end == std::find( start, end, weapon ) )
 		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_SPAWNITEMNOTALLOWED );
+			if ( report )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_H_SPAWNITEMNOTALLOWED );
+			}
 			return false;
 		}
 
