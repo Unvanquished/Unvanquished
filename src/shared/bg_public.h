@@ -174,7 +174,7 @@ enum team_t
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 enum
 {
-  CS_MUSIC = 2,
+  CS_MUSIC = RESERVED_CONFIGSTRINGS,
   CS_MESSAGE, // from the map worldspawn's message field
   CS_MOTD, // g_motd string for server message of the day
   CS_WARMUP, // server time when the match will be restarted
@@ -190,11 +190,7 @@ enum
   CS_INTERMISSION, // when 1, timelimit has been hit and intermission will start in a second or two
   CS_WINNER, // string indicating round winner
   CS_SHADERSTATE,
-  CS_BOTINFO,
   CS_CLIENTS_READY,
-
-  CS_UNUSED_1,
-  CS_UNUSED_2,
 
   CS_MODELS,
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
@@ -204,8 +200,7 @@ enum
   CS_PARTICLE_SYSTEMS = CS_REVERB_EFFECTS + MAX_REVERB_EFFECTS,
 
   CS_PLAYERS = CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS,
-  CS_OBJECTIVES = CS_PLAYERS + MAX_CLIENTS,
-  CS_LOCATIONS = CS_OBJECTIVES + MAX_OBJECTIVES,
+  CS_LOCATIONS = CS_PLAYERS + MAX_CLIENTS,
   CS_MAX = CS_LOCATIONS + MAX_LOCATIONS
 };
 
