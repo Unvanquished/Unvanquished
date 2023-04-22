@@ -2758,9 +2758,6 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 	}
 	else if ( team == TEAM_HUMANS )
 	{
-		weapon_t birthWeapons[] = { WP_HBUILD, WP_MACHINEGUN };
-		auto start = std::begin( birthWeapons );
-		auto end   = std::end  ( birthWeapons );
 		weapon_t weapon = BG_WeaponNumberByName( s );
 		if ( weapon == WP_NONE )
 		{
@@ -2771,7 +2768,9 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 			return false;
 		}
 
-		if ( BG_WeaponDisabled( weapon ) || end == std::find( start, end, weapon ) )
+		weapon_t birthWeapons[] = { WP_HBUILD, WP_MACHINEGUN };
+		auto end = std::end( birthWeapons );
+		if ( BG_WeaponDisabled( weapon ) || end == std::find( std::begin( birthWeapons ), end, weapon ) )
 		{
 			if ( report )
 			{
