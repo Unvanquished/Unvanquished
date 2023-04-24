@@ -300,16 +300,13 @@ static bool HandlePollVote( gentity_t* ent, team_t team, std::string& cmd, std::
 static bool HandleKickbotsVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
                                 std::string& reason, std::string& name, int clientNum, int id )
 {
-	int i = 0;
-	for ( i = 0; i < MAX_CLIENTS; ++i )
+	int numBots = 0;
+	for ( const auto& team : level.team )
 	{
-		if ( g_entities[ i ].r.svFlags & SVF_BOT && g_entities[ i ].client->pers.team != TEAM_NONE )
-		{
-			break;
-		}
+		numBots += team.numBots;
 	}
 
-	if ( i == MAX_CLIENTS )
+	if ( numBots == 0 )
 	{
 		trap_SendServerCommand(
 			ent->num(),
@@ -461,6 +458,16 @@ void G_HandleVote( gentity_t* ent )
 		trap_SendServerCommand(
 			ent->num(),
 			va( "print_tr %s %s", QQ( N_( "$1$: voting not allowed here" ) ), cmd.c_str() ) );
+		return;
+	}
+
+	if ( ( G_admin_permission( ent, ADMF_NO_GLOBALVOTE ) && team == TEAM_NONE ) ||
+	     ( G_admin_permission( ent, ADMF_NO_TEAMVOTE ) && team != TEAM_NONE ) )
+	{
+		trap_SendServerCommand(
+			ent->num(),
+			va( "print_tr %s %s %s", QQ( N_( "$1$: you are not permitted to call $2$ votes" ) ),
+		        cmd.c_str(), team != TEAM_NONE ? QQ( "team" ) : QQ( "global" ) ) );
 		return;
 	}
 
