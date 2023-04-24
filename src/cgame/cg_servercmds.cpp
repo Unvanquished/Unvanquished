@@ -1178,6 +1178,11 @@ static void CG_CenterPrintTR_f()
 	CG_CenterPrint( TranslateText_Internal( false, 1 ), 1.0f );
 }
 
+static void CG_CenterPrintTR_plural_f()
+{
+	CG_CenterPrint( TranslateText_Internal( true, 1 ), 1.0f );
+}
+
 /*
 =================
 CG_CenterPrintTR_Delay_f
@@ -1350,6 +1355,7 @@ static const consoleCommand_t svcommands[] =
 	{ "cpd",              CG_CenterPrint_Delay_f  },
 	{ "cpd_tr",           CG_CenterPrintTR_Delay_f},
 	{ "cp_tr",            CG_CenterPrintTR_f      },
+	{ "cp_tr_p",          CG_CenterPrintTR_plural_f },
 	{ "cs",               CG_ConfigStringModified },
 	{ "map_restart",      CG_MapRestart           },
 	{ "pmove_params",     CG_PmoveParams_f        },
