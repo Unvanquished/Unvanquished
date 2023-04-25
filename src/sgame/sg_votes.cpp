@@ -301,9 +301,9 @@ static bool HandleKickbotsVote( gentity_t* ent, team_t team, std::string& cmd, s
                                 std::string& reason, std::string& name, int clientNum, int id )
 {
 	int numBots = 0;
-	for ( const auto& team : level.team )
+	for ( const auto& t : level.team )
 	{
-		numBots += team.numBots;
+		numBots += t.numBots;
 	}
 
 	if ( numBots == 0 )
@@ -433,7 +433,7 @@ bool G_CheckStopVote( team_t team )
 /*
 ==================
 isDisabledVoteType
-reason[0] = '\0'; // nullify since we've used it here...
+
 Check for disabled vote types.
 Does not distinguish between public and team votes.
 ==================
@@ -974,12 +974,12 @@ static bool IsEscapedMarker( Str::StringRef s, size_t pos )
 }
 
 // Use a custom escape to avoid issues with Cmd::Escape unintentionally terminating quotes
-// for strings based on user input.
+// for strings based on user input. Note that this needs to work in both quoted and unquoted contexts.
 static std::string VoteEscape( Str::StringRef s )
 {
 	if ( s.empty() )
 	{
-		return "";
+		return "\"\"";
 	}
 	std::string out;
 	out.reserve( s.size() * 2 );
@@ -1021,7 +1021,7 @@ static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, tea
 			{
 				out += str.substr( c, s - c );
 				const auto& param = params[ str.substr( s + 1, e - s - 1 ) ];
-				out += Quote( Cmd::Escape( escape ? VoteEscape( param ) : param ) );
+				out += escape ? VoteEscape( param ) : param;
 				c = e + 1;
 			}
 			else
@@ -1058,10 +1058,25 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 	{
 		std::string voteCmd =
 			G_HandleVoteTemplate( vt, ent, team, cmd, arg, reason, name, clientNum, id, true );
-		Q_strncpyz( level.team[ team ].voteString, voteCmd.c_str(),
-		            sizeof( level.team[ team ].voteString ) );
 		std::string display =
 			G_HandleVoteTemplate( dt, ent, team, cmd, arg, reason, name, clientNum, id, false );
+
+		if ( voteCmd.size() > sizeof( level.team[ team ].voteString ) )
+		{
+			Log::Warn( "vote command string is too long: %s: %d > %d", voteCmd, voteCmd.size(),
+			           sizeof( level.team[ team ].voteString ) );
+			return false;
+		}
+		if ( display.size() > sizeof( level.team[ team ].voteDisplayString ) )
+		{
+			Log::Warn( "vote display string is too long: %s: %d > %d", display, display.size(),
+			           sizeof( level.team[ team ].voteDisplayString ) );
+			return false;
+		}
+
+		Q_strncpyz( level.team[ team ].voteString, voteCmd.c_str(),
+		            sizeof( level.team[ team ].voteString ) );
+
 		Q_strncpyz( level.team[ team ].voteDisplayString, display.c_str(),
 		            sizeof( level.team[ team ].voteDisplayString ) );
 		return true;
@@ -1072,7 +1087,7 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 
 bool G_ParseVoteType( Str::StringRef s, VoteType* type )
 {
-	static const std::unordered_map<std::string, VoteType, Str::IHash> map = {
+	static const std::unordered_map<std::string, VoteType, Str::IHash, Str::IEqual> map = {
 		{"V_ANY",     V_ANY   },
 		{ "V_TEAM",   V_TEAM  },
 		{ "V_PUBLIC", V_PUBLIC},
@@ -1102,7 +1117,7 @@ Str::StringRef G_VoteTypeString( VoteType type )
 
 bool G_ParseVoteTarget( Str::StringRef s, VoteTarget* type )
 {
-	static const std::unordered_map<std::string, VoteTarget, Str::IHash> map = {
+	static const std::unordered_map<std::string, VoteTarget, Str::IHash, Str::IEqual> map = {
 		{"T_NONE",    T_NONE  },
 		{ "T_PLAYER", T_PLAYER},
 		{ "T_OTHER",  T_OTHER },
@@ -1132,7 +1147,7 @@ Str::StringRef G_VoteTargetString( VoteTarget type )
 
 bool G_ParseVoteOptions( Str::StringRef s, VoteOptions* type )
 {
-	static const std::unordered_map<std::string, VoteOptions, Str::IHash> map = {
+	static const std::unordered_map<std::string, VoteOptions, Str::IHash, Str::IEqual> map = {
 		{"VOTE_ALWAYS",   VOTE_ALWAYS },
         { "VOTE_BEFORE",  VOTE_BEFORE },
 		{ "VOTE_AFTER",   VOTE_AFTER  },
@@ -1168,7 +1183,7 @@ Str::StringRef G_VoteOptionsString( VoteOptions type )
 
 bool G_ParseReasonNeeded( Str::StringRef s, qtrinary* tri )
 {
-	static const std::unordered_map<std::string, qtrinary, Str::IHash> map = {
+	static const std::unordered_map<std::string, qtrinary, Str::IHash, Str::IEqual> map = {
 		{"yes",    qtrinary::qyes  },
 		{ "no",    qtrinary::qno   },
 		{ "maybe", qtrinary::qmaybe},
