@@ -115,12 +115,20 @@ static const char *CG_KeyNameForCommand( const char *command )
 
 			for ( Keyboard::Key key : binding.keys )
 			{
-				if ( !keyNames.empty() )
+				if ( keyNames.empty() )
 				{
-					keyNames += va( " %s ", _("or") );
+					keyNames = CG_KeyDisplayName( key );
 				}
-				keyNames += CG_KeyDisplayName( key );
+				else if ( key == binding.keys.back() )
+				{
+					keyNames = Str::Format( _("%s or %s"), keyNames, CG_KeyDisplayName( key ) );
+				}
+				else
+				{
+					keyNames = Str::Format( _("%s, %s"), keyNames, CG_KeyDisplayName( key ) );
+				}
 			}
+
 			if ( keyNames.empty() )
 			{
 				keyNames = Str::Format( _( "\"%s\" (unbound)" ), _( binding.humanName ) );
