@@ -322,15 +322,25 @@ std::string CG_KeyBinding( const char* bind, int team )
 
 	if ( keys.empty() )
 	{
-		return "Unbound";
+		return _( "Unbound" );
 	}
 
-	std::string keyNames = CG_KeyDisplayName( keys[0] );
+	std::string keyNames;
 
-	for ( size_t i = 1; i < keys.size(); i++ )
+	for ( Keyboard::Key key : keys )
 	{
-		keyNames += " or ";
-		keyNames += CG_KeyDisplayName( keys[i] );
+		if ( key == keys.front() )
+		{
+			keyNames = CG_KeyDisplayName( key );
+		}
+		else if ( key == keys.back() )
+		{
+			keyNames = Str::Format( _("%s or %s"), keyNames, CG_KeyDisplayName( key ) );
+		}
+		else
+		{
+			keyNames = Str::Format( _("%s, %s"), keyNames, CG_KeyDisplayName( key ) );
+		}
 	}
 
 	return keyNames;
