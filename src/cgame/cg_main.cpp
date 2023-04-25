@@ -1167,32 +1167,27 @@ static void SetMapInfoFromArenaInfo( arenaInfo_t arenaInfo )
 {
 	cg.mapLongName = arenaInfo.longName;
 
-	if ( arenaInfo.authors.size() != 0 )
+	if ( !arenaInfo.authors.empty() )
 	{
-		if ( arenaInfo.authors.size() == 1 )
+		std::string authorNames;
+
+		for ( std::string &author: arenaInfo.authors )
 		{
-			cg.mapAuthors = Str::Format( _( "by %s"), arenaInfo.authors[ 0 ] );
-		}
-		else
-		{
-			std::string first_authors;
-			for ( std::string &author : arenaInfo.authors )
+			if ( author == arenaInfo.authors.front() )
 			{
-				if ( &author == &arenaInfo.authors.back() )
-				{
-					break;
-				}
-
-				if ( &author != &arenaInfo.authors.front() )
-				{
-					first_authors += ", ";
-				}
-
-				first_authors += author;
+				authorNames = author;
 			}
-
-			cg.mapAuthors = Str::Format( _( "by %s and %s"), first_authors, arenaInfo.authors.back() );
+			else if ( author == arenaInfo.authors.back() )
+			{
+				authorNames = Str::Format( "%s and %s", authorNames, author );
+			}
+			else
+			{
+				authorNames = Str::Format( "%s, %s", authorNames, author );
+			}
 		}
+
+		cg.mapAuthors = Str::Format( _( "by %s"), authorNames );
 	}
 }
 
