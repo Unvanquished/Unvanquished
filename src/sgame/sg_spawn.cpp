@@ -1170,7 +1170,7 @@ void G_SpawnFakeEntities()
 	level.fakeLocation->r.svFlags = SVF_BROADCAST;
 
 	level.fakeLocation->nextPathSegment = level.locationHead;
-	level.fakeLocation->s.generic1 = G_LocationIndex( "" );
+	level.fakeLocation->s.generic1 = 0;
 	level.locationHead = level.fakeLocation;
 
 	G_SetOrigin( level.fakeLocation, VEC2GLM( level.fakeLocation->s.origin ) );
