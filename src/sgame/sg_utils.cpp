@@ -146,22 +146,50 @@ static int G_FindConfigstringIndex( const char *name, int start, int max, bool c
 
 int G_ParticleSystemIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_PARTICLE_SYSTEMS, MAX_GAME_PARTICLE_SYSTEMS, true );
+	int i = G_FindConfigstringIndex( name, CS_PARTICLE_SYSTEMS, MAX_GAME_PARTICLE_SYSTEMS, true );
+
+	if ( !i )
+	{
+		Log::Warn( "Missing particle system: %s", name );
+	}
+
+	return i;
 }
 
 int G_ShaderIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_SHADERS, MAX_GAME_SHADERS, true );
+	int i = G_FindConfigstringIndex( name, CS_SHADERS, MAX_GAME_SHADERS, true );
+
+	if ( !i )
+	{
+		Log::Warn( "Missing shader: %s", name );
+	}
+
+	return i;
 }
 
 int G_ModelIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_MODELS, MAX_MODELS, true );
+	int i = G_FindConfigstringIndex( name, CS_MODELS, MAX_MODELS, true );
+
+	if ( !i )
+	{
+		Log::Warn( "Missing model: %s", name );
+	}
+
+	return i;
 }
 
 int G_SoundIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_SOUNDS, MAX_SOUNDS, true );
+	int i = G_FindConfigstringIndex( name, CS_SOUNDS, MAX_SOUNDS, true );
+
+	if ( !i )
+	{
+		Log::Warn( "Missing sound: %s", name );
+	}
+
+	return i;
 }
 
 /**
@@ -172,17 +200,38 @@ int G_SoundIndex( const char *name )
  */
 int G_GradingTextureIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_GRADING_TEXTURES+1, MAX_GRADING_TEXTURES-1, true );
+	int i = G_FindConfigstringIndex( name, CS_GRADING_TEXTURES+1, MAX_GRADING_TEXTURES-1, true );
+
+	if ( !i )
+	{
+		Log::Warn( "Missing grading texture: %s", name );
+	}
+
+	return i;
 }
 
 int G_ReverbEffectIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_REVERB_EFFECTS+1, MAX_REVERB_EFFECTS-1, true );
+	int i = G_FindConfigstringIndex( name, CS_REVERB_EFFECTS+1, MAX_REVERB_EFFECTS-1, true );
+
+	if ( !i )
+	{
+		Log::Warn( "Missing reverb effect: %s", name );
+	}
+
+	return i;
 }
 
 int G_LocationIndex( const char *name )
 {
-	return G_FindConfigstringIndex( name, CS_LOCATIONS, MAX_LOCATIONS, true );
+	int i = G_FindConfigstringIndex( name, CS_LOCATIONS, MAX_LOCATIONS, true );
+
+	if ( !i )
+	{
+		Log::Warn( "Missing location: %s", name );
+	}
+
+	return i;
 }
 
 /*
