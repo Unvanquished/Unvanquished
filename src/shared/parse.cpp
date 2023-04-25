@@ -555,7 +555,7 @@ static int Parse_ReadEscapeCharacter( script_t *script, char *ch )
 
 				int val = 0;
 
-				for ( ;; script->script_p++ )
+				while ( true )
 				{
 					c = *script->script_p;
 
@@ -565,6 +565,8 @@ static int Parse_ReadEscapeCharacter( script_t *script, char *ch )
 					else { break; }
 
 					val = ( val << 4 ) + c;
+
+					script->script_p++;
 				}
 
 				script->script_p--;
@@ -585,7 +587,7 @@ static int Parse_ReadEscapeCharacter( script_t *script, char *ch )
 
 				int val = 0;
 
-				for ( ;; script->script_p++ )
+				while ( true )
 				{
 					c = *script->script_p;
 
@@ -593,6 +595,8 @@ static int Parse_ReadEscapeCharacter( script_t *script, char *ch )
 					else { break; }
 
 					val = val * 10 + c;
+
+					script->script_p++;
 				}
 
 				script->script_p--;
