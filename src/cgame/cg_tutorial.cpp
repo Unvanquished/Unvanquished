@@ -130,7 +130,7 @@ static const char *CG_KeyNameForCommand( const char *command )
 		}
 	}
 
-	return "(⚠  BUG)"; // shouldn't happen: if it does, BUG
+	return "(⚠ BUG)"; // shouldn't happen: if it does, BUG
 }
 
 #define MAX_TUTORIAL_TEXT 4096
