@@ -137,6 +137,12 @@ static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spo
 
 void SP_gfx_light_flare( gentity_t *self )
 {
+	if ( !self->shaderKey )
+	{
+		Log::Warn( "Light flare entity %d at (%d, %d, %d) has no shader", self->num(), self->s.origin[0], self->s.origin[1], self->s.origin[2] );
+		return;
+	}
+
 	self->s.eType = entityType_t::ET_LIGHTFLARE;
 	self->s.modelindex = G_ShaderIndex( self->shaderKey );
 	VectorCopy( self->activatedPosition, self->s.origin2 );
