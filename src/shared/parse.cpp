@@ -497,7 +497,7 @@ Parse_ReadEscapeCharacter
 */
 static int Parse_ReadEscapeCharacter( script_t *script, char *ch )
 {
-	int c, val, i;
+	int c, val;
 
 	//step over the leading '\\'
 	script->script_p++;
@@ -553,7 +553,7 @@ static int Parse_ReadEscapeCharacter( script_t *script, char *ch )
 			{
 				script->script_p++;
 
-				for ( i = 0, val = 0;; i++, script->script_p++ )
+				for ( val = 0;; script->script_p++ )
 				{
 					c = *script->script_p;
 
@@ -581,7 +581,7 @@ static int Parse_ReadEscapeCharacter( script_t *script, char *ch )
 			{
 				if ( *script->script_p < '0' || *script->script_p > '9' ) { Parse_ScriptError( script, "unknown escape char" ); }
 
-				for ( i = 0, val = 0;; i++, script->script_p++ )
+				for ( val = 0;; script->script_p++ )
 				{
 					c = *script->script_p;
 
