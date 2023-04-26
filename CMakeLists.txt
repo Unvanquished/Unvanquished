@@ -144,6 +144,7 @@ set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE 1
 target_include_directories(srclibs-tinygettext PUBLIC ${LIB_DIR}/tinygettext/include)
 target_compile_definitions(srclibs-tinygettext PUBLIC TINYGETTEXT_UTF8_ONLY)
 
+# FIXME: This is unused when building engine directly from Daemon repository.
 # Warning options
 # keep
 try_flag(WARNINGS           "/wd4068")

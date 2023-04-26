@@ -444,6 +444,8 @@ G_InitGame
 */
 void G_InitGame( int levelTime, int randomSeed, bool inClient )
 {
+	Log::Notice("SGame " PLATFORM_STRING " " XSTRING(ARCH_STRING) " " XSTRING(DAEMON_CXX_COMPILER_STRING) " " __DATE__);
+
 	srand( randomSeed );
 
 	Log::Notice( "------- Game Initialization -------" );
