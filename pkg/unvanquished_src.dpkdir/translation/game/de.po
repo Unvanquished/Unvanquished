@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-23 17:25+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"PO-Revision-Date: 2023-04-26 05:43+0000\n"
+"Last-Translator: Viech <viech@unvanquished.net>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/de/>\n"
 "Language: de\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "Konstruieren"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
@@ -29,53 +29,55 @@ msgstr "Preis:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Verwandeln"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "Entwicklungspunkte"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Wähle eine Startklasse:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "Dretch"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
+"Dretches sind die kleinste Kampfeinheit, Granger die Konstrukteure der "
+"Aliens."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Zurück zur Teamauswahl"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "Ein Unentschieden vorschlagen"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr "Grund"
+msgstr "Begründung"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Abstimmung starten"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
-msgstr ""
+msgstr "Mit Bots füllen"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "Beide Teams"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
@@ -92,81 +94,86 @@ msgstr "Team"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "Anzahl"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
-msgstr ""
+msgstr "Karte ändern"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Abstimmung: Nächste Karte ändern"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Abstimmung: Karte ändern"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "Karte ändern (Host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Methode"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
-msgstr "Map"
+msgstr "Karte"
 
 #: ui/callvote_map.rml:42
+#, fuzzy
 msgid "Perform action"
-msgstr ""
+msgstr "Aktion"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Fehler!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "OK"
 
 #: ui/help_gameplay.rml:16 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Willkommen"
 
 #: ui/help_gameplay.rml:19
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
-msgstr ""
+msgstr "Hier findest du eine Übersicht über die wichtigsten Spielmechaniken."
 
 #: ui/help_gameplay.rml:23
 msgid "Feel free to join us in the community and developer chats!"
-msgstr ""
+msgstr "Besuche uns gerne in unseren Spiel- und Entwicklungschats!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "We are chatting on IRC and Matrix in <b>#unvanquished</b> and "
 "<b>#unvanquished-dev</b> on Libera.Chat"
 msgstr ""
+"Wir sind im IRC (Libera.Chat) und in der Matrix in <b>#unvanquished</b> und "
+"<b>#unvanquished-dev</b> zu finden"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forum, <b>forums.unvanquished.net</b>"
-msgstr ""
+msgstr "Diskutiere in unserem Forum mit: <b>forums.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>"
-msgstr ""
+msgstr "Erfahre mehr über das Spiel in der Wiki: <b>wiki.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:30
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "Einkommen &amp; Entwicklung"
 
 #: ui/help_gameplay.rml:34
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"Außerirdische erhalten Enticklungspunkte, wenn sie Menschen erledigen. Damit "
+"können sie sich in [dragoon] stärke Klassen verwandeln."
 
 #: ui/help_gameplay.rml:37
 msgid ""
@@ -174,12 +181,17 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"Außerirdische können sich überall unbeobachtet verwandeln. In der Nähe des "
+"[overmind] Overmind können sie sich auch zu [granger] schwächeren Klassen "
+"zurückentwickeln."
 
 #: ui/help_gameplay.rml:40
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
+"Baue das Overmind mit einem [granger] Granger wieder auf, wenn es zerstört "
+"wird. Bis dahin ist keine Verwandlung möglich!"
 
 #: ui/help_gameplay.rml:44
 msgid ""
@@ -187,16 +199,21 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
+"Menschen verdienen mit der Vernichtung von Aliens Geld. Damit können sie "
+"sich neue [lcannon] Waffen, [bsuit] Rüstungen und weitere Ausrüstung kaufen, "
+"etwa ein Radar oder einen Raketenrucksack."
 
 #: ui/help_gameplay.rml:47
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
+"Menschen erhalten ihre Ausrüstung am [armoury] Arsenal, es sollte daher "
+"immer eins geben! Benutze das Bauwerkzeug, wenn es fehlt."
 
 #: ui/help_gameplay.rml:51
 msgid "Powering buildables"
-msgstr ""
+msgstr "Stromversorgung"
 
 #: ui/help_gameplay.rml:54
 msgid ""
@@ -206,6 +223,10 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
+"Gebäude benötigen Baupunkte zur Konstruktion und zum Unterhalt. Jedes Team "
+"startet mit einer Handvoll Punkte, mehr werden von [leech] Extraktoren "
+"bereitgestellt. Sollten diese zerstört werden, fehlen die Baupunkte zum "
+"Unterhalt und betroffene Gebäude können sich abschalten."
 
 #: ui/help_gameplay.rml:57
 msgid ""
@@ -214,6 +235,10 @@ msgid ""
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
+"Genauer gesagt schalten sich Gebäude aus, wann immer es eine Differenz "
+"zwischen den von Extraktoren ([leech] Egel und [drill] Bohrer) "
+"bereitgestellten Baupunkten, plus Basispunkte, und den zurzeit genutzten "
+"oder gesperrten Punkten gibt."
 
 #: ui/help_gameplay.rml:58
 msgid ""
@@ -221,10 +246,13 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
+"Eintrittsgebäude ([egg] Eier und [telenode] Teleporter), Extraktoren (Egel "
+"und Bohrer) und Hauptebäude ([overmind] Overmind und [reactor] Reaktor) sind "
+"von Abschaltungen nicht betroffen."
 
 #: ui/help_gameplay.rml:62
 msgid "Mining structures"
-msgstr ""
+msgstr "Extraktoren"
 
 #: ui/help_gameplay.rml:65
 msgid ""
@@ -232,12 +260,17 @@ msgid ""
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
+"Baupunkte werden von Extraktoren bereitgestellt: Der [drill] Bohrer der "
+"Menschen und der [leech] Egel der Außerirdischen. Diese arbeiten nur "
+"effizient, wenn sie weit voneinenader weg gebaut werden."
 
 #: ui/help_gameplay.rml:68
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
+"Werden Extraktoren zu nah beieinander gebaut, streiten sie um die Baupunkte. "
+"Ab drei nahen Extraktoren können dadurch Baupunkte verloren gehen!"
 
 #: ui/help_gameplay.rml:71
 msgid ""
@@ -247,6 +280,11 @@ msgid ""
 "mining structure finishes building, and will be subtracted back if the "
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
+"Konstrukteure sehen über der Lebensanzeige von Extraktoren deren Effizienz. "
+"Eine Vorhersage wird schon bei deren Planung angezeigt. Nach der "
+"Konstruktion eines Extraktors stehen die Baupunkte sofort zur Verfügung, "
+"werden aber bei dessen Zerstörung auch unmittelbar entfernt. Schütze sie "
+"daher durch Defensivgebäude!"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -255,6 +293,10 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
+"Wird ein Gebäude zerstört, werden dessen Baupunkte zunächst gesperrt und "
+"einzeln wieder freigeschaltet. Die Rückkehrrate nimmt mit der Zeit ab, "
+"sodass ein Neubau immer schwieriger wird. Diese Mechanik ersetzt ein \"Sudden"
+" Death\"."
 
 #: ui/help_gameplay.rml:78
 msgid "Stages &amp; Momentum"
