@@ -1252,10 +1252,23 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	// clear everything
 	// reset cgs in-place to avoid creating a huge struct on stack (caused a stack overflow)
 	// this is equivalent to cgs = cgs_t()
+#ifdef _MSC_VER
+	/* Use a C++11 braced initializer instead of a bracket initializer when
+	zeroing a struct. This works around a bug in how MSVC generates implicit
+	default constructors. */
 	cgs.~cgs_t();
-	new(&cgs) cgs_t{}; // Using {} instead of () to work around MSVC bug
+	new(&cgs) cgs_t{};
 	cg.~cg_t();
 	new(&cg) cg_t{};
+#else
+	/* The MSVC workaround is known to crash ICC, there is no reason to apply
+	MSVC workarounds on non-MSVC compilers. */
+	cgs.~cgs_t();
+	new(&cgs) cgs_t();
+	cg.~cg_t();
+	new(&cg) cg_t();
+#endif
+
 	for ( centity_t& ent : cg_entities) { ent = {}; }
 
 	CG_UpdateLoadingStep( LOAD_START );
