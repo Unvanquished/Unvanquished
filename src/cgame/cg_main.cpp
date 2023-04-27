@@ -1399,6 +1399,9 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	CG_ShaderStateChanged();
 
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
+
+	// Request server to resend pmoveParams.
+	trap_SendClientCommand( "client_ready" );
 }
 
 /*
