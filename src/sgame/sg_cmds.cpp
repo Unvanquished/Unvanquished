@@ -2842,6 +2842,11 @@ static void Cmd_Class_f( gentity_t *ent )
 	}
 }
 
+static void Cmd_ClientReady_f( gentity_t *ent )
+{
+	G_SendClientPmoveParams( ent->num() );
+}
+
 static void Cmd_Deconstruct_f( gentity_t *ent )
 {
 	// Check for valid build weapon.
@@ -4810,6 +4815,7 @@ static const commands_t cmds[] =
 	{ "callteamvote",    CMD_MESSAGE | CMD_TEAM,              Cmd_CallVote_f         },
 	{ "callvote",        CMD_MESSAGE,                         Cmd_CallVote_f         },
 	{ "class",           CMD_TEAM,                            Cmd_Class_f            },
+	{ "client_ready",    0,                                   Cmd_ClientReady_f      },
 	{ "damage",          CMD_CHEAT | CMD_ALIVE,               Cmd_Damage_f           },
 	{ "deconstruct",     CMD_TEAM | CMD_ALIVE,                Cmd_Deconstruct_f      },
 	{ "devteam",         CMD_CHEAT,                           Cmd_Devteam_f          },
