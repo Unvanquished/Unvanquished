@@ -1249,15 +1249,6 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 {
 	const char *s;
 
-	// clear everything
-	// reset cgs in-place to avoid creating a huge struct on stack (caused a stack overflow)
-	// this is equivalent to cgs = cgs_t()
-	cgs.~cgs_t();
-	new(&cgs) cgs_t{}; // Using {} instead of () to work around MSVC bug
-	cg.~cg_t();
-	new(&cg) cg_t{};
-	for ( centity_t& ent : cg_entities) { ent = {}; }
-
 	CG_UpdateLoadingStep( LOAD_START );
 
 	// get the rendering configuration from the client system
