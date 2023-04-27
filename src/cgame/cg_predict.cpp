@@ -36,6 +36,10 @@ static  pmove_t   cg_pmove;
 static BoundedVector<centity_t *, MAX_GENTITIES> cg_solidEntities;
 static BoundedVector<centity_t *, MAX_GENTITIES> cg_triggerEntities;
 
+static Cvar::Range<Cvar::Cvar<int>> cg_predict( "cg_predict",
+	"number of backup commands for prediction",
+	Cvar::NONE, CMD_BACKUP, 0, CMD_BACKUP );
+
 /*
 ====================
 CG_BuildSolidList
@@ -804,7 +808,7 @@ void CG_PredictPlayerState()
 		stateIndex = cg.stateHead;
 	}
 
-	for ( cmdNum = current - CMD_BACKUP + 1; cmdNum <= current; cmdNum++ )
+	for ( cmdNum = current - cg_predict.Get() + 1; cmdNum <= current; cmdNum++ )
 	{
 		// get the command
 		trap_GetUserCmd( cmdNum, &cg_pmove.cmd );
