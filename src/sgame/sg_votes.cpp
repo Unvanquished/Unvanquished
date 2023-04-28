@@ -1061,13 +1061,13 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 		std::string display =
 			G_HandleVoteTemplate( dt, ent, team, cmd, arg, reason, name, clientNum, id, false );
 
-		if ( voteCmd.size() > sizeof( level.team[ team ].voteString ) )
+		if ( voteCmd.size() >= sizeof( level.team[ team ].voteString ) )
 		{
 			Log::Warn( "vote command string is too long: %s: %d > %d", voteCmd, voteCmd.size(),
 			           sizeof( level.team[ team ].voteString ) );
 			return false;
 		}
-		if ( display.size() > sizeof( level.team[ team ].voteDisplayString ) )
+		if ( display.size() >= sizeof( level.team[ team ].voteDisplayString ) )
 		{
 			Log::Warn( "vote display string is too long: %s: %d > %d", display, display.size(),
 			           sizeof( level.team[ team ].voteDisplayString ) );
