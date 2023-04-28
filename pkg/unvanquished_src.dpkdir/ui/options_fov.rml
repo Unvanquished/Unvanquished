@@ -8,7 +8,7 @@
 		<h1><translate>Fields of view</translate></h1>
 
 		<h2><translate>Angles of view</translate></h2>
-		<p><translate>FOV = “width” of player's vision, measured in degrees.</translate></p>
+		<p><translate>FOV = wideness of player's vision, measured in degrees.</translate></p>
 		<p><translate>Many players suffer mild motion sickness from playing first-person shooters. A higher FOV can help combat this.</translate></p>
 		<row>
 			<input type="range" min="80" max="140" step="1" cvar="cg_fov_human" class="right"/>
