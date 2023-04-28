@@ -62,6 +62,10 @@ indent {
 	margin-left: 1.5em;
 }
 
+web {
+	color: #ffffff;
+}
+
 /* #### Links #### */
 /* Inline */
 ilink {

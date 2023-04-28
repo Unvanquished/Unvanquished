@@ -75,6 +75,41 @@ void Rocket_UpdateLanguage()
 		hudContext->Update();
 	updateLanguage = false;
 }
+
+class WebElement : public Rml::Element
+{
+public:
+	WebElement(const Rml::String& tag) : Rml::Element(tag) {}
+
+private:
+	const std::unordered_map<std::string, std::string> webUrls = {
+		{ "bugs", "bugs.unvanquished.net" },
+		{ "chat", "unvanquished.net/chat" },
+		{ "forums", "forums.unvanquished.net" },
+		{ "wiki", "wiki.unvanquished.net" },
+	};
+
+	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
+	{
+		Rml::Element::OnAttributeChange( changed_attributes );
+
+		if ( changed_attributes.find( "dest" ) != changed_attributes.end() )
+		{
+			const Rml::String dest = GetAttribute< Rml::String >( "dest",  "" );
+
+			if ( webUrls.find( dest ) != webUrls.end() )
+			{
+				SetInnerRML( webUrls.at( dest ) );
+			}
+			else
+			{
+				Log::Warn( "Unknown \"dest\" attribute in web RML tag" );
+				SetInnerRML( "⚠ BUG" );
+			}
+		}
+	}
+};
+
 class TranslateElement : public Rml::Element
 {
 public:
@@ -3781,6 +3816,7 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<BeaconOwnerElement>( "beacon_owner" );
 	RegisterElement<PredictedMineEfficiencyElement>( "predictedMineEfficiency" );
 	RegisterElement<BarbsHudElement>( "barbs" );
+	RegisterElement<WebElement>( "web" );
 	RegisterElement<TranslateElement>( "translate" );
 	RegisterElement<SpawnQueueElement>( "spawnPos" );
 	RegisterElement<NumSpawnsElement>( "numSpawns" );
