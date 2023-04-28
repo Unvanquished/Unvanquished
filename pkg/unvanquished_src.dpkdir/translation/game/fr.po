@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-28 04:05+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2023-04-28 20:14+0000\n"
+"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -582,7 +582,7 @@ msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr "pts de constr."
+msgstr "pts de constr"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
@@ -2090,24 +2090,26 @@ msgid "Momentum penalty multiplier for deconstruction"
 msgstr "Multiplicateur de pénalité de construction"
 
 #: ui/server_setup.rml:144
+#, fuzzy
 msgid "Building Kill reward multiplier"
-msgstr ""
+msgstr "Multiplicateur de récompenses de construction"
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
-msgstr ""
+msgstr "Multiplicateur de récompense Momentum pour détruire des constructions"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
-msgstr ""
+msgstr "Valeur de départ"
 
 #: ui/server_setup.rml:157
 msgid "Initial build points count"
-msgstr ""
+msgstr "Nombre initial de points de construction"
 
 #: ui/server_setup.rml:164
+#, fuzzy
 msgid "Miner bonus"
-msgstr ""
+msgstr "Bonus de mineur"
 
 #: ui/server_setup.rml:165
 msgid "Build point budget per miner"
@@ -2115,15 +2117,19 @@ msgstr ""
 
 #: ui/server_setup.rml:172
 msgid "Initial regeneration speed"
-msgstr ""
+msgstr "Vitesse de régénération initiale"
 
 #: ui/server_setup.rml:173
+#, fuzzy
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
 msgstr ""
+"La vitesse initiale à laquelle les points de construction seront récupérés ("
+"en points par minute)"
 
 #: ui/server_setup.rml:180
+#, fuzzy
 msgid "Half regeneration time"
-msgstr ""
+msgstr "Temps de demi-régénération"
 
 #: ui/server_setup.rml:181
 msgid "The duration one will wait before BP recovery gets twice as slow"
