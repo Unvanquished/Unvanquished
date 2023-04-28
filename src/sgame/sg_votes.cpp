@@ -998,13 +998,13 @@ static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, tea
                                          std::string& name, int clientNum, int id, bool escape )
 {
 	std::unordered_map<std::string, std::string> params = {
-		{"team",       BG_TeamNamePlural( team )  },
-		{ "arg",       arg						},
-		{ "reason",    reason                     },
-		{ "name",      name					   },
-		{ "slot",      std::to_string( clientNum )},
-		{ "namelogId", std::to_string( id )       },
-		{ "caller",    ent->client->pers.netname  },
+		{ "team", BG_TeamNamePlural( team ) },
+		{ "arg", arg },
+		{ "reason", reason },
+		{ "name", name },
+		{ "slot", std::to_string( clientNum ) },
+		{ "namelogId", std::to_string( id ) },
+		{ "caller", ent->client->pers.netname },
 	};
 	std::string out;
 	out.reserve( str.size() + arg.size() + reason.size() );
@@ -1088,9 +1088,9 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 bool G_ParseVoteType( Str::StringRef s, VoteType* type )
 {
 	static const std::unordered_map<std::string, VoteType, Str::IHash, Str::IEqual> map = {
-		{"V_ANY",     V_ANY   },
-		{ "V_TEAM",   V_TEAM  },
-		{ "V_PUBLIC", V_PUBLIC},
+		{ "V_ANY", V_ANY },
+		{ "V_TEAM", V_TEAM },
+		{ "V_PUBLIC", V_PUBLIC },
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
@@ -1118,9 +1118,9 @@ Str::StringRef G_VoteTypeString( VoteType type )
 bool G_ParseVoteTarget( Str::StringRef s, VoteTarget* type )
 {
 	static const std::unordered_map<std::string, VoteTarget, Str::IHash, Str::IEqual> map = {
-		{"T_NONE",    T_NONE  },
-		{ "T_PLAYER", T_PLAYER},
-		{ "T_OTHER",  T_OTHER },
+		{ "T_NONE", T_NONE },
+		{ "T_PLAYER", T_PLAYER },
+		{ "T_OTHER", T_OTHER },
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
@@ -1148,11 +1148,11 @@ Str::StringRef G_VoteTargetString( VoteTarget type )
 bool G_ParseVoteOptions( Str::StringRef s, VoteOptions* type )
 {
 	static const std::unordered_map<std::string, VoteOptions, Str::IHash, Str::IEqual> map = {
-		{"VOTE_ALWAYS",   VOTE_ALWAYS },
-        { "VOTE_BEFORE",  VOTE_BEFORE },
-		{ "VOTE_AFTER",   VOTE_AFTER  },
-        { "VOTE_REMAIN",  VOTE_REMAIN },
-		{ "VOTE_NO_AUTO", VOTE_NO_AUTO},
+		{ "VOTE_ALWAYS", VOTE_ALWAYS },
+		{ "VOTE_BEFORE", VOTE_BEFORE },
+		{ "VOTE_AFTER", VOTE_AFTER },
+		{ "VOTE_REMAIN", VOTE_REMAIN },
+		{ "VOTE_NO_AUTO", VOTE_NO_AUTO },
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
@@ -1184,9 +1184,9 @@ Str::StringRef G_VoteOptionsString( VoteOptions type )
 bool G_ParseReasonNeeded( Str::StringRef s, qtrinary* tri )
 {
 	static const std::unordered_map<std::string, qtrinary, Str::IHash, Str::IEqual> map = {
-		{"yes",    qtrinary::qyes  },
-		{ "no",    qtrinary::qno   },
-		{ "maybe", qtrinary::qmaybe},
+		{ "yes", qtrinary::qyes },
+		{ "no", qtrinary::qno },
+		{ "maybe", qtrinary::qmaybe },
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
