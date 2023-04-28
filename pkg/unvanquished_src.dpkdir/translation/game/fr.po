@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-21 15:51+0000\n"
-"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2023-04-28 04:05+0000\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -109,7 +109,6 @@ msgid "Vote: set current map"
 msgstr "Vote : définir la carte actuelle"
 
 #: ui/callvote_map.rml:33
-#, fuzzy
 msgid "Set current map (host)"
 msgstr "Définir la carte actuelle (hôte)"
 
@@ -169,7 +168,6 @@ msgstr ""
 "Découvrez en plus au sujet du jeu dans le wiki, <b>wiki.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:30
-#, fuzzy
 msgid "Income &amp; evolution"
 msgstr "Revenu &amp; évolution"
 
@@ -316,7 +314,6 @@ msgstr ""
 "détruits dans un match de longue durée. Cela remplace la mort subite."
 
 #: ui/help_gameplay.rml:78
-#, fuzzy
 msgid "Stages &amp; Momentum"
 msgstr "Étapes & amp; momentum"
 
@@ -755,9 +752,8 @@ msgid "Admit defeat"
 msgstr "Admettre la défaite"
 
 #: ui/menu_ingame.rml:60
-#, fuzzy
 msgid "Host menu"
-msgstr "Menu secondaire"
+msgstr "Menu de l’hôte"
 
 #: ui/menu_ingame.rml:61
 msgid "Stop server"
@@ -915,7 +911,7 @@ msgstr "Tyrant"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
-msgstr ""
+msgstr "Dodelinement de la vue"
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
@@ -927,7 +923,7 @@ msgstr "Désactiver"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "Léger"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
@@ -942,13 +938,12 @@ msgid "“Up and down” movement"
 msgstr "Mouvement \"de haut en bas\""
 
 #: ui/options_fov.rml:85
-#, fuzzy
 msgid "Camera rolling"
-msgstr "Caméra roulante"
+msgstr "Roulement de caméra"
 
 #: ui/options_fov.rml:92
 msgid "“Twisting” movement"
-msgstr ""
+msgstr "Mouvement de torsion"
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
@@ -984,12 +979,11 @@ msgid "Medium"
 msgstr "Moyen"
 
 #: ui/options_graphics.rml:33
-#, fuzzy
 msgid ""
 "Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
 "textures…"
 msgstr ""
-"Normal, mapping spéculaire et physique, bloom, filtrage trilinéaire, "
+"Texturage normal, spéculaire et physique, bloom, filtrage trilinéaire, "
 "textures 512 pixels…"
 
 # Cette traduction est incorrecte car selon le contexte il faut tantôt du masculin (élevé) tantôt du féminin (élevée).
@@ -1051,9 +1045,8 @@ msgid "Flexible Vsync"
 msgstr "Vsync dynamique"
 
 #: ui/options_graphics.rml:73
-#, fuzzy
 msgid "Full Vsync"
-msgstr "Vsync plein"
+msgstr "Vsync complet"
 
 #: ui/options_graphics.rml:75
 msgid "Vsync"
@@ -1113,7 +1106,6 @@ msgid "Light styles"
 msgstr "Style de lumière"
 
 #: ui/options_graphics.rml:102
-#, fuzzy
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
 "Lumières dynamiques précalculées émises par des objets statiques de la carte"
@@ -1131,7 +1123,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:110
 msgid "Rim lighting"
-msgstr ""
+msgstr "Éclairage des rebords"
 
 #: ui/options_graphics.rml:112
 msgid "Light the edges of models from behind."
@@ -1139,7 +1131,7 @@ msgstr "Éclairez les bords des modèles par derrière."
 
 #: ui/options_graphics.rml:115
 msgid "Half Lambert lighting"
-msgstr ""
+msgstr "Éclairage Half-Lambert"
 
 #: ui/options_graphics.rml:117
 msgid "Non-physical lighting technique to make models less dark."
@@ -1168,7 +1160,6 @@ msgid "Variance mapping"
 msgstr "Variance"
 
 #: ui/options_graphics.rml:126
-#, fuzzy
 msgid "Exponential + variance"
 msgstr "Exponentielle + variance"
 
@@ -1204,12 +1195,10 @@ msgstr ""
 "vidéo limitée (VRAM)."
 
 #: ui/options_graphics.rml:149
-#, fuzzy
 msgid "Mip-mapping"
 msgstr "Mip-mapping"
 
 #: ui/options_graphics.rml:150
-#, fuzzy
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
@@ -1223,12 +1212,10 @@ msgid "No"
 msgstr "Non"
 
 #: ui/options_graphics.rml:159
-#, fuzzy
 msgid "Anisotropic mip-mapping"
 msgstr "Mip-mapping anisotrope"
 
 #: ui/options_graphics.rml:160
-#, fuzzy
 msgid "Better interpretation of mip-maps on angled surfaces."
 msgstr "Meilleure interprétation des mip-maps sur les surfaces inclinées."
 
@@ -1253,18 +1240,16 @@ msgid "Materials"
 msgstr "Matériaux"
 
 #: ui/options_graphics.rml:179
-#, fuzzy
 msgid "Normal mapping"
-msgstr "Cartographie normale"
+msgstr "Texturage de normale"
 
 #: ui/options_graphics.rml:181
 msgid "Simulates extra lighting detail on flat surfaces."
 msgstr "Simule des détails d'éclairage supplémentaires sur des surfaces planes."
 
 #: ui/options_graphics.rml:184
-#, fuzzy
 msgid "Deluxe mapping"
-msgstr "Cartographie de luxe"
+msgstr "Texturage de lumière directionnelle"
 
 #: ui/options_graphics.rml:186
 msgid "Light direction based on baked textures."
@@ -1291,9 +1276,8 @@ msgid "Simulate light specularity."
 msgstr "Simuler la spécularité de la lumière."
 
 #: ui/options_graphics.rml:199
-#, fuzzy
 msgid "Physical mapping"
-msgstr "Cartographie physique"
+msgstr "Texturage physique"
 
 #: ui/options_graphics.rml:201
 msgid "Material appearance based on physical approximations."
@@ -1305,7 +1289,7 @@ msgstr "Effets"
 
 #: ui/options_graphics.rml:213
 msgid "Bloom"
-msgstr ""
+msgstr "Éblouissement"
 
 #: ui/options_graphics.rml:215
 msgid "Makes bright areas on your screen glow."
@@ -1332,12 +1316,10 @@ msgid "Particles"
 msgstr "Particules"
 
 #: ui/options_graphics.rml:230
-#, fuzzy
 msgid "Particle physics"
-msgstr "La physique des particules"
+msgstr "Physique de particule"
 
 #: ui/options_graphics.rml:232
-#, fuzzy
 msgid "Allow particles to bounce off surfaces."
 msgstr "Permettre aux particules de rebondir sur les surfaces."
 
@@ -1358,7 +1340,6 @@ msgid "All structures"
 msgstr "toute les structures"
 
 #: ui/options_graphics.rml:246
-#, fuzzy
 msgid "Support structures"
 msgstr "Structures de soutien"
 
@@ -1392,7 +1373,7 @@ msgstr "Structures offensives humaines"
 
 #: ui/options_graphics.rml:255
 msgid "Building ranges"
-msgstr ""
+msgstr "Portées des constructions"
 
 #: ui/options_graphics.rml:257
 msgid "Motion blur"
@@ -1419,31 +1400,28 @@ msgid "Current:"
 msgstr "Actuel :"
 
 #: ui/options_keys.rml:9
-#, fuzzy
 msgid "Press Escape to cancel changing a key binding."
-msgstr "Appuyez sur Échap pour annuler la modification d'une liaison de touche."
+msgstr "Appuyez sur Échap pour annuler la modification d’un raccourci."
 
 #: ui/options_keys.rml:16
-#, fuzzy
 msgid ""
 "Classic First Person Shooter binds,<br />keys will be adjusted to your "
 "layout."
 msgstr ""
-"Liaisons classiques de tir à la première personne,<br />les touches seront "
+"Raccourcis classiques de tir à la première personne,<br />les touches seront "
 "ajustées à votre disposition."
 
 #: ui/options_keys.rml:20
-#, fuzzy
 msgid ""
 "One column shifted to the right,<br />keys will be adjusted to your layout."
 msgstr ""
-"Une colonne décalée vers la droite,<br />les touches seront ajustées à votre "
-"mise en page."
+"Décalée d’une colonne vers la droite,<br />les touches seront ajustées à "
+"votre disposition."
 
 #: ui/options_keys.rml:24
-#, fuzzy
 msgid "Special binds for left-handed,<br />touchpad users."
-msgstr "bindes spéciales pour les gauchers<br />utilisateurs du pavé tactile."
+msgstr ""
+"Raccourcis spéciaux pour les gauchers<br />utilisateurs du pavé tactile."
 
 #: ui/options_keys.rml:28
 msgid "Gamepad"
@@ -1490,9 +1468,8 @@ msgid "Crouch:"
 msgstr "S’accroupir :"
 
 #: ui/options_keys.rml:69
-#, fuzzy
 msgid "Wallwalk:"
-msgstr "Marche murale :"
+msgstr "Marcher sur les murs :"
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
@@ -1512,9 +1489,8 @@ msgid "Shoot barb:"
 msgstr "Tire de \"barb\" :"
 
 #: ui/options_keys.rml:88
-#, fuzzy
 msgid "Throw grenade:"
-msgstr "Lancer des grenades :"
+msgstr "Lancer la grenades :"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
@@ -1533,28 +1509,24 @@ msgid "Evolve:"
 msgstr "Évoluer :"
 
 #: ui/options_keys.rml:107
-#, fuzzy
 msgid "Chat/Vote"
-msgstr "Communiquer/Voter"
+msgstr "Discuter/Voter"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
 msgstr "Faire un geste :"
 
 #: ui/options_keys.rml:115
-#, fuzzy
 msgid "Global chat:"
-msgstr "communication globale :"
+msgstr "Discussion générale :"
 
 #: ui/options_keys.rml:119
-#, fuzzy
 msgid "Team chat:"
-msgstr "Communication d'équipe :"
+msgstr "Discussion d'équipe :"
 
 #: ui/options_keys.rml:123
-#, fuzzy
 msgid "Admin chat:"
-msgstr "Communication d'administrateur :"
+msgstr "Discussion avec l’administrateur :"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
@@ -1577,29 +1549,24 @@ msgid "Misc"
 msgstr "Divers"
 
 #: ui/options_keys.rml:146
-#, fuzzy
 msgid "Show scores:"
-msgstr "Afficher les scores :"
+msgstr "Afficher les scores :"
 
 #: ui/options_keys.rml:150
-#, fuzzy
 msgid "Mark structure for replacement:"
-msgstr "Marquez une structure pour le remplacement :"
+msgstr "Marquer une structure pour être remplacée :"
 
 #: ui/options_keys.rml:152
-#, fuzzy
 msgid "Hold the key to deconstruct structure."
-msgstr "Maintenez la clé pour déconstruire la structure."
+msgstr "Maintenez la touche pour déconstruire la structure."
 
 #: ui/options_keys.rml:155
-#, fuzzy
 msgid "Beacon menu:"
-msgstr "Menu balise :"
+msgstr "Menu balise :"
 
 #: ui/options_keys.rml:159
-#, fuzzy
 msgid "Toggle console:"
-msgstr "Basculer la console :"
+msgstr "Alterner la console :"
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
@@ -1614,14 +1581,12 @@ msgstr ""
 "PNG, sinon les photos sont prises en JPEG."
 
 #: ui/options_keys.rml:167
-#, fuzzy
 msgid "Quake-look"
-msgstr "Regard de Quake"
+msgstr "Vision à la Quake"
 
 #: ui/options_keys.rml:171
-#, fuzzy
 msgid "Look up:"
-msgstr "Chercher:"
+msgstr "Regarder vers le haut :"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
@@ -1636,16 +1601,14 @@ msgid "Turn right:"
 msgstr "Tourner à droite :"
 
 #: ui/options_keys.rml:187
-#, fuzzy
 msgid "Mouse look:"
-msgstr "Apparence de la souris :"
+msgstr "Vue à la souris :"
 
 #: ui/options_keys.rml:191
 msgid "Centerview:"
 msgstr "Centrer la vue :"
 
 #: ui/options_mouse.rml:9
-#, fuzzy
 msgid "Y axis"
 msgstr "Axe Y"
 
@@ -1671,14 +1634,12 @@ msgid "Mouse filter"
 msgstr "Filtre de la souris"
 
 #: ui/options_mouse.rml:27
-#, fuzzy
 msgid "Smooth out sudden mouse movements."
-msgstr "Adoucissez les mouvements brusques de la souris."
+msgstr "Adouci les mouvements brusques de la souris."
 
 #: ui/options_mouse.rml:30
-#, fuzzy
 msgid "Free look"
-msgstr "Regard libre"
+msgstr "Vision libre"
 
 #: ui/options_mouse.rml:32
 msgid "Turn off only if you are a Quake junkie."
@@ -1709,9 +1670,8 @@ msgid "Display hints for key bindings on-screen."
 msgstr "Affichez des conseils pour les raccourcis clavier à l'écran."
 
 #: ui/options_player.rml:23
-#, fuzzy
 msgid "Show only team chat"
-msgstr "Afficher uniquement la communication d'équipe"
+msgstr "Afficher uniquement la discussion d'équipe"
 
 #: ui/options_player.rml:26
 msgid "Movement"
@@ -1719,7 +1679,7 @@ msgstr "Mouvement"
 
 #: ui/options_player.rml:28
 msgid "Wall-walking auto-pitch"
-msgstr ""
+msgstr "Tangage automatique de marche murale"
 
 #: ui/options_player.rml:30
 #, fuzzy
@@ -1732,19 +1692,17 @@ msgstr ""
 
 #: ui/options_player.rml:39
 msgid "Wall-walking pitch-speed"
-msgstr ""
+msgstr "Vitesse de tangage de marche murale"
 
 #: ui/options_player.rml:40
-#, fuzzy
 msgid "How fast your view “rotates” and “twists” as you wall-walk."
 msgstr ""
 "À quelle vitesse votre vue \"tourne\" et \"tord\" lorsque vous marchez sur "
-"le mur."
+"un mur."
 
 #: ui/options_player.rml:43
-#, fuzzy
 msgid "Wall-walking toggles"
-msgstr "Bascules de marche murale"
+msgstr "Alterner la marche murale"
 
 #: ui/options_player.rml:45 ui/options_player.rml:50
 msgid "“Tap key” instead of “hold key” to activate."
@@ -1753,10 +1711,9 @@ msgstr ""
 
 #: ui/options_player.rml:48
 msgid "Sprint toggles"
-msgstr ""
+msgstr "Alterner le sprint"
 
 #: ui/options_player.rml:53
-#, fuzzy
 msgid "Cosmetic"
 msgstr "Cosmétique"
 
@@ -1847,9 +1804,8 @@ msgid "Show the time in real-life."
 msgstr "Afficher l'heure dans la vraie vie."
 
 #: ui/options_ui.rml:19
-#, fuzzy
 msgid "Game-time clock"
-msgstr "Horloge de jeu"
+msgstr "Horloge de temps de jeu"
 
 #: ui/options_ui.rml:21
 msgid "Show how long a match has lasted."
@@ -1901,26 +1857,22 @@ msgid "Time that information takes to get to the server and back."
 msgstr "Temps que l’information met à aller au serveur et à en revenir."
 
 #: ui/options_ui.rml:49
-#, fuzzy
 msgid "Show movement speed"
 msgstr "Afficher la vitesse de déplacement"
 
 #: ui/options_ui.rml:51
-#, fuzzy
 msgid "Current, maximum and graph of movement-speed."
-msgstr "Actuel, maximum et graphique de la vitesse de déplacement."
+msgstr "Vitesse de déplacement actuelle et maximum avec graphique"
 
 #: ui/options_ui.rml:54
-#, fuzzy
 msgid "Show FPS"
-msgstr "Afficher les fps"
+msgstr "Afficher les IPS"
 
 #: ui/options_ui.rml:56
 msgid "Frames per second."
 msgstr "Images par seconde."
 
 #: ui/options_welcome.rml:7
-#, fuzzy
 msgid "Hello there!"
 msgstr "Bonjour!"
 
@@ -1973,7 +1925,6 @@ msgid "LAN"
 msgstr "Réseau local"
 
 #: ui/server_create.rml:39
-#, fuzzy
 msgid "Hostname"
 msgstr "Nom de l'hôte"
 
@@ -1990,9 +1941,8 @@ msgid "Extra packages to load"
 msgstr "Paquets supplémentaires à charger"
 
 #: ui/server_create.rml:59
-#, fuzzy
 msgid "Map building layout to use"
-msgstr "Mise en page de construction de carte à utiliser"
+msgstr "Agencement de construction à utiliser"
 
 #: ui/server_create.rml:67
 msgid "Start"
@@ -2003,31 +1953,28 @@ msgid "Server Setup"
 msgstr "Configuration du serveur"
 
 #: ui/server_setup.rml:16
-#, fuzzy
 msgid "Free funds frequency"
-msgstr "Fréquence des fonds gratuits"
+msgstr "Fréquence des financements gratuits"
 
 #: ui/server_setup.rml:17
-#, fuzzy
 msgid "Every X seconds the player is alive, they will receive free funds."
 msgstr ""
-"Toutes les X secondes où le joueur est en vie, il recevra des fonds gratuits."
+"Toutes les X secondes où le joueur est en vie, il recevra des financements "
+"gratuits."
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
 msgstr "secondes"
 
 #: ui/server_setup.rml:24
-#, fuzzy
 msgid "Friendly fire damage multipliers"
 msgstr "Multiplicateurs de dégâts de tir ami"
 
 #: ui/server_setup.rml:25
-#, fuzzy
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
 msgstr ""
-"Multiplicateur de dégâts pour les dégâts d'équipe (n'inclut pas les "
-"bâtiments ou soi-même)"
+"Multiplicateur de dégâts pour les dégâts d'équipe (n’inclut pas les "
+"bâtiments ni soi-même)"
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
@@ -2039,21 +1986,19 @@ msgstr "Humains :"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
-msgstr ""
+msgstr "Feu ami de construction"
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
 msgstr "Autoriser le vote"
 
 #: ui/server_setup.rml:44
-#, fuzzy
 msgid "Warmup"
-msgstr "Réchauffer"
+msgstr "Échauffement"
 
 #: ui/server_setup.rml:48
-#, fuzzy
 msgid "Do warmups at every game start"
-msgstr "Faites des échauffements à chaque début de partie"
+msgstr "Faire des échauffements à chaque début de partie"
 
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
@@ -2078,7 +2023,7 @@ msgstr "La gravité"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
-msgstr ""
+msgstr "Dégagement de dretch"
 
 #: ui/server_setup.rml:80
 msgid "Dretches can be pushed out of the way by attacking them."
@@ -2086,14 +2031,13 @@ msgstr "Les Dretches peuvent être repoussés en les attaquant."
 
 #: ui/server_setup.rml:86
 msgid "Anti spawn-block"
-msgstr ""
+msgstr "Anti-blocage de point de réapparition"
 
 #: ui/server_setup.rml:87
 msgid "Push slow people away from spawns."
 msgstr "Éloigne les personnes lentes des points d'apparition."
 
 #: ui/server_setup.rml:96
-#, fuzzy
 msgid "Half life time"
 msgstr "Temps de demi-vie"
 
@@ -2110,9 +2054,8 @@ msgid "Double reward delay"
 msgstr "Délai de double récompense"
 
 #: ui/server_setup.rml:105
-#, fuzzy
 msgid "Time after which some momentum rewards double"
-msgstr "Temps après lequel un certain élan récompense le double"
+msgstr "Temps après lequel les récompenses de momentum doublent"
 
 #: ui/server_setup.rml:112
 msgid "Base Multiplier"
@@ -2127,26 +2070,24 @@ msgid "Kills reward multiplier"
 msgstr "Tue le multiplicateur de récompense"
 
 #: ui/server_setup.rml:121
-#, fuzzy
 msgid "Momentum reward multiplier for kills"
-msgstr "multiplicateur de récompense d'élan pour les éliminations"
+msgstr "Multiplicateur de récompense de momentum pour les éliminations"
 
 #: ui/server_setup.rml:128
-#, fuzzy
 msgid "Building reward multiplier"
-msgstr "Construire un multiplicateur de récompense"
+msgstr "Multiplicateur de récompense de construction"
 
 #: ui/server_setup.rml:129
 msgid "Momentum reward multiplier for construction"
-msgstr ""
+msgstr "Multiplicateur de récompense de construction"
 
 #: ui/server_setup.rml:136
 msgid "Decon penalty multiplier"
-msgstr ""
+msgstr "Multiplicateur de pénalité de construction"
 
 #: ui/server_setup.rml:137
 msgid "Momentum penalty multiplier for deconstruction"
-msgstr ""
+msgstr "Multiplicateur de pénalité de construction"
 
 #: ui/server_setup.rml:144
 msgid "Building Kill reward multiplier"
