@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
 "PO-Revision-Date: 2023-04-28 20:14+0000\n"
-"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -4417,11 +4417,11 @@ msgstr "arme suivante"
 
 #: src/cgame/cg_tutorial.cpp:57
 msgid "Global chat"
-msgstr ""
+msgstr "Discussion générale"
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Team chat"
-msgstr ""
+msgstr "Discussion d’équipe"
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
