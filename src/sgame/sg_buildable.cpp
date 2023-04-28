@@ -1208,7 +1208,7 @@ void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 		}
 
 		// Add to build timer.
-		ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildTime / 4;
+		ent->client->ps.stats[ STAT_MISC ] += BG_Buildable( buildable->s.modelindex )->buildMinTime / 4;
 	}
 
 	G_Deconstruct( buildable, ent, MOD_DECONSTRUCT );
@@ -2758,19 +2758,9 @@ void G_BuildLogRevert( int id )
 
 int G_GetBuildDuration( gentity_t* ent )
 {
-	// Get settings
-	int baseDuration = BG_Buildable(ent->s.modelindex)->buildTime;
-	int doubleTime = g_buildTimeDoubleTime.Get();
-	int gracePeriod = g_buildTimeGracePeriod.Get();
-	float maxMult = g_buildTimeMaxMultiplier.Get();
-
-	// Obtain grace-period-adjusted creation time
-	int creationTime = ent->creationTime / 1000;  // in s
-	int adjustedTime = std::max(creationTime - gracePeriod, 0);
-
-	// Compute the build duration multiplier
-	float rawMult = std::pow(2.0f, (float)adjustedTime / (float)doubleTime);
-	float multiplier = maxMult < 1.0f ? rawMult : std::min(rawMult, maxMult);
-
-	return (int)roundf((float)baseDuration * multiplier);
+	return BG_BuildDuration(
+		(buildable_t)ent->s.modelindex, ent->creationTime,
+		g_buildTimeDoubleTime.Get(), g_buildTimeGracePeriod.Get(),
+		g_buildTimeMaxMultiplier.Get()
+	);
 }

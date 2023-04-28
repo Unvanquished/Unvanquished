@@ -88,7 +88,7 @@ void AlienBuildableComponent::CreepRecede(int /*timeDelta*/) {
 		entity.oldEnt->s.time = -(level.time - (int)(
 			(float)CREEP_SCALEDOWN_TIME *
 			(1.0f - ((float)(level.time - entity.oldEnt->creationTime) /
-					 (float)BG_Buildable(entity.oldEnt->s.modelindex)->buildTime)))
+					 (float)BG_Buildable(entity.oldEnt->s.modelindex)->buildMinTime)))
 		);
 	}
 

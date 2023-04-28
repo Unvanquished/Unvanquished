@@ -553,8 +553,8 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		DEATHMOD = 1 << 7,
 		TEAM = 1 << 8,
 		BUILDWEAPON = 1 << 9,
-		BUILDTIME = 1 << 10,
-		UNUSED_11 = 1 << 11,
+		BUILDMINTIME = 1 << 10,
+		BUILDDOUBLEMOD = 1 << 11,
 		UNLOCKTHRESHOLD = 1 << 12
 	};
 
@@ -691,13 +691,19 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
 			defined |= BUILDWEAPON;
 		}
-		else if ( !Q_stricmp( token, "buildTime" ) )
+		else if ( !Q_stricmp( token, "buildMinTime" ) )
 		{
 			PARSE(text, token);
 
-			ba->buildTime = atoi(token);
+			ba->buildMinTime = atoi(token);
+			defined |= BUILDMINTIME;
+		}
+		else if ( !Q_stricmp( token, "buildDoubleMod" ) )
+		{
+			PARSE(text, token);
 
-			defined |= BUILDTIME;
+			ba->buildDoubleMod = atoi(token);
+			defined |= BUILDDOUBLEMOD;
 		}
 		else if ( !Q_stricmp( token, "usable" ) )
 		{
@@ -758,7 +764,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 	else if ( !( defined & DEATHMOD) ) { token = "meansOfDeath"; }
 	else if ( !( defined & TEAM) ) { token = "team"; }
 	else if ( !( defined & BUILDWEAPON) ) { token = "buildWeapon"; }
-	else if ( !( defined & BUILDTIME) ) { token = "buildTime"; }
+	else if ( !( defined & BUILDMINTIME) ) { token = "buildMinTime"; }
 	else if ( !( defined & NORMAL) ) { token = "minNormal"; }
 
 	if ( *token )

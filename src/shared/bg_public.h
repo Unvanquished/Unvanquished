@@ -1343,13 +1343,15 @@ struct buildableAttributes_t
 	int         meansOfDeath;
 
 	team_t      team;
-	weapon_t    buildWeapon;
 
-	int         buildTime;
-	bool    usable;
+	weapon_t    buildWeapon;
+	int         buildMinTime;
+	int         buildDoubleMod;
+
+	bool        usable;
 
 	float       minNormal;
-	bool    invertNormal;
+	bool        invertNormal;
 
 	int         creepSize;
 
@@ -1531,6 +1533,9 @@ const buildableAttributes_t *BG_Buildable( int buildable );
 
 buildableModelConfig_t      *BG_BuildableModelConfig( int buildable );
 void                        BG_BuildableBoundingBox( int buildable, vec3_t mins, vec3_t maxs );
+
+int                         BG_BuildDuration( buildable_t buildable, int creationTime, int doubleTime,
+                                              int gracePeriod, float maxMult);
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 

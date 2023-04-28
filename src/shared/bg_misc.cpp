@@ -190,6 +190,36 @@ void BG_BuildableBoundingBox( int buildable,
 
 /*
 ===============
+BG_BuildDuration
+===============
+*/
+int BG_BuildDuration(
+	buildable_t buildable,
+	int creationTime,  // in ms since level start
+	int doubleTime,    // in s
+	int gracePeriod,   // in s
+	float maxMult
+) {
+	// Get settings
+	float minDuration = (float)BG_Buildable(buildable)->buildMinTime;  // in s
+	float doubleMod = (float)BG_Buildable(buildable)->buildDoubleMod;
+
+	// Obtain grace-period-adjusted creation time
+	int adjustedTime = std::max(creationTime / 1000 - gracePeriod, 0);  // in s
+	int adjustedDoubleTime = doubleMod > 0  ? doubleMod*doubleTime : (float)doubleTime;
+
+	// Compute the build duration multiplier
+	float rawMult = std::pow(2.0f, (float)adjustedTime / adjustedDoubleTime);
+	float multiplier = maxMult < 1.0f ? rawMult : std::min(rawMult, maxMult);
+
+	// Compute the build duration
+	float duration = minDuration * multiplier;  // in s
+
+	return (int)roundf(duration * 1000.0f);  // in ms
+}
+
+/*
+===============
 BG_InitBuildableModelConfigs
 ===============
 */
