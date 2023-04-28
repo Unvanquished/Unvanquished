@@ -178,7 +178,7 @@ const int   MGTURRET_ATTACK_PERIOD = 125;
 const float MGTURRET_RANGE = 350;
 const int   MGTURRET_SPREAD = 200;
 
-const float ROCKETPOD_RANGE = 2000;
+const float ROCKETPOD_RANGE = 1300;
 const int   ROCKETPOD_ATTACK_PERIOD = 1000;
 
 const int   ROCKET_TURN_PERIOD = 50;
