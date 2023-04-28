@@ -9,7 +9,7 @@
 
 		<h2><translate>Angles of view</translate></h2>
 		<p><translate>FOV = “width” of player's vision, measured in degrees.</translate></p>
-		<p><translate>Many players suffer mild “motion sickness” from playing first-person shooters. A higher FOV can help combat this.</translate></p>
+		<p><translate>Many players suffer mild motion sickness from playing first-person shooters. A higher FOV can help combat this.</translate></p>
 		<row>
 			<input type="range" min="80" max="140" step="1" cvar="cg_fov_human" class="right"/>
 			<h3><translate>Humans</translate></h3>
@@ -78,7 +78,7 @@
 				<option value="0.002"><translate>Default</translate></option>
 				<option value="0.004"><translate>Strong</translate></option>
 			</select>
-			<p><translate>“Up and down” movement</translate></p>
+			<p><translate>Up and down movement</translate></p>
 		</row>
 
 		<row>
@@ -89,7 +89,7 @@
 				<option value="0.005"><translate>Default</translate></option>
 				<option value="0.010"><translate>Strong</translate></option>
 			</select>
-			<p><translate>“Twisting” movement</translate></p>
+			<p><translate>Twisting movement</translate></p>
 		</row>
 	</body>
 </rml>

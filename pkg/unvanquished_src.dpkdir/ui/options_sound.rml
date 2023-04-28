@@ -20,12 +20,12 @@
 		<row>
 			<h3><translate>Reverb intensity</translate></h3>
 			<input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.reverbIntensity"/>
-			<p><translate>“Echo” effect</translate></p>
+			<p><translate>Echo effect</translate></p>
 		</row>
 		<row>
 			<h3><translate>Doppler Intensity</translate></h3>
 			<input type="range" min=" 0" max=" 1" step="0.01" cvar="audio.dopplerExaggeration"/>
-			<p><translate>“Pitch-shift” effect when moving from or toward a sound.</translate></p>
+			<p><translate>Pitch-shift effect when moving from or toward a sound.</translate></p>
 		</row>
 		<row>
 			<h3><translate>OpenAL Device</translate></h3>
