@@ -271,8 +271,6 @@ void CG_OffsetThirdPersonView()
 	static vec3_t maxs = { 8, 8, 8 };
 	vec3_t        focusPoint;
 	vec3_t        surfNormal;
-	int           cmdNum;
-	usercmd_t     cmd, oldCmd;
 	float         range;
 	vec3_t        mouseInputAngles;
 	vec3_t        rotationAngles;
@@ -334,9 +332,10 @@ void CG_OffsetThirdPersonView()
 	if ( cg.demoPlayback || ( ( cg.snap->ps.pm_flags & PMF_FOLLOW ) && alive ) )
 	{
 		// Collect our input values from the mouse.
-		cmdNum = trap_GetCurrentCmdNumber();
-		trap_GetUserCmd( cmdNum, &cmd );
-		trap_GetUserCmd( cmdNum - 1, &oldCmd );
+		userCmdArray_t userCmdArray;
+		trap_GetUserCmdArray( userCmdArray );
+		usercmd_t cmd = userCmdArray[ 0 ];
+		usercmd_t oldCmd = userCmdArray[ 1 ];
 
 		// Prevent pitch from wrapping and clamp it within a [-75, 90] range.
 		// Cgame has no access to ps.delta_angles[] here, so we need to reproduce
@@ -459,8 +458,6 @@ CG_OffsetShoulderView
 void CG_OffsetShoulderView()
 {
 	int          i;
-	int          cmdNum;
-	usercmd_t    cmd, oldCmd;
 	vec3_t       rotationAngles;
 	vec3_t       axis[ 3 ], rotaxis[ 3 ];
 	float        deltaMousePitch;
@@ -490,9 +487,10 @@ void CG_OffsetShoulderView()
 	}
 
 	// Get mouse input for camera rotation.
-	cmdNum = trap_GetCurrentCmdNumber();
-	trap_GetUserCmd( cmdNum, &cmd );
-	trap_GetUserCmd( cmdNum - 1, &oldCmd );
+	userCmdArray_t userCmdArray;
+	trap_GetUserCmdArray( userCmdArray );
+	usercmd_t cmd = userCmdArray[ 0 ];
+	usercmd_t oldCmd = userCmdArray[ 1 ];
 
 	// Prevent pitch from wrapping and clamp it within a [30, -50] range.
 	// Cgame has no access to ps.delta_angles[] here, so we need to reproduce
@@ -743,12 +741,11 @@ void CG_OffsetFirstPersonView()
 	if ( cg.predictedPlayerState.pm_type == PM_GRABBED )
 	{
 		vec3_t    forward, right, up;
-		usercmd_t cmd;
-		int       cmdNum;
 		float     fFraction, rFraction, uFraction;
 
-		cmdNum = trap_GetCurrentCmdNumber();
-		trap_GetUserCmd( cmdNum, &cmd );
+		userCmdArray_t userCmdArray;
+		trap_GetUserCmdArray( userCmdArray );
+		usercmd_t cmd = userCmdArray[ 0 ];
 
 		AngleVectors( angles, forward, right, up );
 
@@ -887,13 +884,11 @@ static int CG_CalcFov()
 	float     f;
 	int       inwater;
 	float     attribFov;
-	usercmd_t cmd;
-	usercmd_t oldcmd;
-	int       cmdNum;
 
-	cmdNum = trap_GetCurrentCmdNumber();
-	trap_GetUserCmd( cmdNum, &cmd );
-	trap_GetUserCmd( cmdNum - 1, &oldcmd );
+	userCmdArray_t userCmdArray;
+	trap_GetUserCmdArray( userCmdArray );
+	usercmd_t cmd = userCmdArray[ 0 ];
+	usercmd_t oldcmd = userCmdArray[ 1 ];
 
 	// Cycle between follow and third-person follow modes on mouse middle click.
 	if ( usercmdButtonPressed( cmd.buttons, BTN_ATTACK3 ) && !usercmdButtonPressed( oldcmd.buttons, BTN_ATTACK3 ) )
