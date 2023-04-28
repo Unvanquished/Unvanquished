@@ -144,3 +144,15 @@ body.ingame .black2 {
 	top: 13%;
 	opacity: 0.6;
 }
+
+.devmsg {
+	position: absolute;
+	bottom: 1em;
+	left: 1em;
+	color: rgba(255, 0, 0, 200);
+}
+
+.devmsg web {
+	font-weight: normal;
+	color: rgba(255, 0, 0, 200);
+}
