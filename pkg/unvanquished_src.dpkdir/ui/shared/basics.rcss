@@ -57,6 +57,26 @@ em {
 	font-style: italic;
 }
 
+/* For now, render ordered list
+as unordered list as a fallback. */
+ul, ol {
+	display: table;
+	margin: 1em 0em;
+}
+
+li {
+	display: table-row;
+}
+
+li-bullet {
+	display: table-cell;
+	width: .6em;
+}
+
+li-content {
+	display: table-cell;
+}
+
 indent {
 	display: block;
 	margin-left: 1.5em;
