@@ -804,10 +804,13 @@ void CG_PredictPlayerState()
 		stateIndex = cg.stateHead;
 	}
 
-	for ( cmdNum = current - CMD_BACKUP + 1; cmdNum <= current; cmdNum++ )
+	std::array<usercmd_t, 64> ucmds;
+	trap_GetUserCmds( cmdNum, 64, ucmds );
+
+	for ( int i = 0, cmdNum = current - CMD_BACKUP + 1; cmdNum <= current; cmdNum++, i++ )
 	{
 		// get the command
-		trap_GetUserCmd( cmdNum, &cg_pmove.cmd );
+		cg_pmove.cmd = ucmds[ i ];
 
 		if ( cg_pmove.pmove_fixed )
 		{
