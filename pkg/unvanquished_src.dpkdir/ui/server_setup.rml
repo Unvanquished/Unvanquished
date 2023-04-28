@@ -133,7 +133,7 @@
 			</row>
 			<row>
 				<parent>
-					<h3><translate>Decon penalty multiplier</translate></h3>
+					<h3><translate>Deconstruction penalty multiplier</translate></h3>
 					<tooltip><translate>Momentum penalty multiplier for deconstruction</translate></tooltip>
 				</parent>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumDeconMod"/>
