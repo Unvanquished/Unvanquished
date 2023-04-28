@@ -141,7 +141,7 @@
 			</row>
 			<row>
 				<parent>
-					<h3><translate>Building Kill reward multiplier</translate></h3>
+					<h3><translate>Building kill reward multiplier</translate></h3>
 					<tooltip><translate>Momentum reward multiplier for killing buildables</translate></tooltip>
 				</parent>
 				<input type="range" min="0" max="5" step="0.1" cvar="g_momentumDestroyMod"/>
