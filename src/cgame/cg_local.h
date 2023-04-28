@@ -671,6 +671,7 @@ struct cbeacon_t
 	int           ctime;
 	int           etime;
 	int           mtime;
+	int           xtime;
 	int           data;
 	team_t        ownerTeam;
 	int           owner;

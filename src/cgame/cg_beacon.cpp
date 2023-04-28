@@ -37,6 +37,7 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
 #define bc_ctime time
 #define bc_etime time2
 #define bc_mtime apos.trTime
+#define bc_xtime apos.trDuration
 
 void CG_LoadBeaconsConfig()
 {
@@ -179,6 +180,7 @@ static bool LoadExplicitBeacons()
 		beacon->ctime = es->bc_ctime;
 		beacon->etime = es->bc_etime;
 		beacon->mtime = es->bc_mtime;
+		beacon->xtime = es->bc_xtime;
 		beacon->type = (beaconType_t)es->bc_type;
 		beacon->data = es->bc_data;
 		beacon->ownerTeam = (team_t)es->bc_team;
@@ -611,6 +613,64 @@ static void HandHLBeaconToUI()
 		{
 			Com_sprintf( br->info, sizeof( br->info ), "Carrying %s",
 			             BG_Weapon( beacon->data )->humanName );
+			showInfo = true;
+		}
+		else if ( beacon->type == BCT_TAG &&
+		        !( beacon->flags & EF_BC_TAG_PLAYER ) &&
+		        !( beacon->flags & EF_BC_ENEMY ) )
+		{
+			buildable_t buildable = ( buildable_t )beacon->data;
+
+			// NOTE: beacon->xtime is only populated for friendly beacons.
+			//       It is set to zero for buildables that are already complete
+			//       when the beacon is placed (layout buildings).
+			int creationTime = beacon->xtime;
+
+			int buildTime;
+			if ( !creationTime ) // layout buildable
+			{
+				buildTime = 0;
+			}
+			else // built after match start
+			{
+				buildTime = CG_PredictBuildDuration( buildable, creationTime );
+			}
+
+			int completionTime = creationTime + buildTime;
+			int timeLeft = completionTime - cg.time;
+
+			int ms = timeLeft < 0 ? -timeLeft : timeLeft;
+			int s = ( int )roundf( ( float )ms / 1000.0f );
+			int min = s / 60;
+			int sec = s % 60;
+
+			if ( min > 99 )
+			{
+				min = 99;
+				sec = 59;
+			}
+
+			if ( timeLeft >= 0 )
+			{
+				Com_sprintf( br->info, sizeof( br->info ),
+				             "Complete in %02d:%02d", min, sec );
+			}
+			else {
+				if ( !creationTime ) {
+					Com_sprintf( br->info, sizeof( br->info ),
+								"Arrived before you" );
+				} else if ( min > 1 ) {
+					Com_sprintf( br->info, sizeof( br->info ),
+								"Built %d minutes ago", min );
+				} else if ( min > 0 ) {
+					Com_sprintf( br->info, sizeof( br->info ),
+								"Built 1 minute ago" );
+				} else {
+					Com_sprintf( br->info, sizeof( br->info ),
+								"Built %d seconds ago", sec );
+				}
+			}
+
 			showInfo = true;
 		}
 

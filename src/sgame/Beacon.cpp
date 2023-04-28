@@ -27,6 +27,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "sg_local.h"
 #include "Entities.h"
+#include "components/BuildableComponent.h"
 
 // entityState_t   | cbeacon_t    | description
 // ----------------+--------------+-------------
@@ -39,7 +40,9 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 // time            | ctime        | creation time
 // time2           | etime        | expiration time
 // apos.trTime     | mtime        | modification (update) time
+// apos.trDuration | xtime        | extra time (e.g. buildable creation)
 
+// keep in sync with ../cgame/cg_beacon.cpp
 #define bc_target otherEntityNum
 #define bc_owner otherEntityNum2
 #define bc_type modelindex
@@ -48,6 +51,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 #define bc_ctime time
 #define bc_etime time2
 #define bc_mtime apos.trTime
+#define bc_xtime apos.trDuration
 
 namespace Beacon //this should eventually become a class
 {
@@ -743,8 +747,25 @@ namespace Beacon //this should eventually become a class
 		if( permanent ) beacon->s.bc_etime = 0;
 		else            RefreshTag( beacon, true );
 
-		// Update the base clusterings.
-		if ( ent->s.eType == entityType_t::ET_BUILDABLE ) BaseClustering::Update( beacon );
+		if ( ent->s.eType == entityType_t::ET_BUILDABLE )
+		{
+			if ( team == targetTeam )
+			{
+				// Save buildable creation time to allow build time predictions.
+				if ( ent->entity->Get<BuildableComponent>()->GetState() == BuildableComponent::CONSTRUCTED )
+				{
+					// Already in constructed state; assume a layout entity.
+					beacon->s.bc_xtime = 0;
+				}
+				else
+				{
+					beacon->s.bc_xtime = ent->creationTime;
+				}
+			}
+
+			// Update the base clusters.
+			BaseClustering::Update( beacon );
+		}
 
 		Propagate( beacon );
 	}
