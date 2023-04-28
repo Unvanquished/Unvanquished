@@ -269,7 +269,7 @@ const int   DEFAULT_BP_BUDGET_PER_MINER = 60;
 
 // construction
 const int   DEFAULT_BUILD_TIME_DOUBLE_TIME = 600; // in seconds
-const int   DEFAULT_BUILD_TIME_GRACE_PERIOD = 300; // in seconds
+const int   DEFAULT_BUILD_TIME_GRACE_PERIOD = 0; // in seconds
 const float DEFAULT_BUILD_TIME_MAX_MULTIPLIER = 0; // < 1 means unbounded
 
 // momentum
