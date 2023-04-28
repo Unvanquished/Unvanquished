@@ -15,7 +15,7 @@
 		<img class="fog" src="/ui/assets/background/fog" />
 		<img class="logo" src="/ui/assets/logos/fuzzy_blue" />
 
-		<div style="position: absolute; bottom: 1em; left: 1em; color: rgba(255, 0, 0, 200);"><translate>This is a beta version of Unvanquished. Please report any issue you may find at https://bugs.unvanquished.net</translate></div>
+		<div class="devmsg"><translate>This is a beta version of Unvanquished. Please report any issue you may find at <web dest="bugs" /></translate></div>
 
 		<sidebar>
 				<!-- HACK: Add some extra spacing atop the main menu -->
