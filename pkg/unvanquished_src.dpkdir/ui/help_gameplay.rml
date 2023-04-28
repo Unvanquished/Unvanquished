@@ -19,11 +19,13 @@
 				<translate>In this section you will find a summary of major gameplay elements to know to become a successful player.</translate>
 				<br />
 				<br />
-				<!-- FIXME: use a proper list (ul+li isn't supported as of now) -->
-				<translate>Feel free to join us in the community and developer chats!</translate><br />
-				&nbsp;&nbsp;&nbsp;• <translate>We are chatting on IRC and Matrix in <b>#unvanquished</b> and <b>#unvanquished-dev</b> on Libera.Chat</translate><br />
-				&nbsp;&nbsp;&nbsp;• <translate>Discuss news in the forum, <b>forums.unvanquished.net</b></translate><br />
-				&nbsp;&nbsp;&nbsp;• <translate>Discover more about the game in the wiki, <b>wiki.unvanquished.net</b></translate>
+				<translate>More can be found on our website and other community places!</translate>
+				<ul>
+					<li><translate>Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web dest="chat" /></translate></li>
+					<li><translate>Discuss news in the forums: <web dest="forums" /></translate></li>
+					<li><translate>Discover more about the game in the wiki: <web dest="wiki" /></translate></li>
+				</ul>
+				<translate>Please report bugs on: <web dest="bugs" /></translate>
 			</panel>
 			<tab>
 				<img class="emoticon" src="/emoticons/tyrant" />
