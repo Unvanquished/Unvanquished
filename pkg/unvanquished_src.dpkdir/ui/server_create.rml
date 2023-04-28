@@ -56,7 +56,7 @@
 
 			<row>
 				<input type="text" class="text" id="layout" name="layout"/>
-				<h3><translate>Map building layout to use</translate></h3>
+				<h3><translate>Building layout to use</translate></h3>
 			</row>
 
 			<row id="maplist">
