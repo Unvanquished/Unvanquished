@@ -102,7 +102,9 @@ void SP_pos_location( gentity_t *self )
 	}
 
 	self->nextPathSegment = level.locationHead;
-	self->s.generic1 = G_LocationIndex(message);
+
+	self->s.generic1 = message ? G_LocationIndex( message ) : 0;
+
 	level.locationHead = self;
 
 	G_SetOrigin( self, VEC2GLM( self->s.origin ) );
