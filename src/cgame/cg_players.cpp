@@ -3490,13 +3490,13 @@ void CG_PlayerDisconnect( vec3_t org )
 
 centity_t *CG_GetLocation( vec3_t origin )
 {
-	float     bestlen, len;
+	std::array<vec3_t, MAX_ENTITIES> posEntities = {};
+	std::array<bool, MAX_ENTITIES> validEntities = {};
 
-	centity_t *best = nullptr;
-	bestlen = 3.0f * 8192.0f * 8192.0f;
-
-	for ( int num = MAX_CLIENTS; num <= cg_highestActiveEntity; num++ )
+	for ( int num = MAX_CLIENTS, i = 0; num <= cg_highestActiveEntity; num++, i++ )
 	{
+		ASSERT( i < MAX_ENTITIES );
+
 		centity_t *eloc = &cg_entities[ num ];
 
 		if ( !eloc->valid || eloc->currentState.eType != entityType_t::ET_LOCATION )
@@ -3504,14 +3504,30 @@ centity_t *CG_GetLocation( vec3_t origin )
 			continue;
 		}
 
-		len = DistanceSquared( origin, eloc->lerpOrigin );
+		VectorCopy( eloc->lerpOrigin, posEntities[ i ] );
+
+		/* As input, validEntities tells if there is compute to do for this slot,
+		as output, validEntities tells if the entity of this slot is in PVS. */
+		validEntities[ i ] = true;
+	}
+
+	trap_R_inPVSArray( origin, posEntities, validEntities );
+
+	centity_t *best = nullptr;
+	float bestlen = 3.0f * 8192.0f * 8192.0f;
+
+	for ( int num = MAX_CLIENTS, i = 0; num <= cg_highestActiveEntity; num++, i++ )
+	{
+		centity_t *eloc = &cg_entities[ num ];
+
+		float len = DistanceSquared( origin, eloc->lerpOrigin );
 
 		if ( len > bestlen )
 		{
 			continue;
 		}
 
-		if ( !trap_R_inPVS( origin, eloc->lerpOrigin ) )
+		if ( !validEntities[ i ] )
 		{
 			continue;
 		}
