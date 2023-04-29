@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-26 05:43+0000\n"
+"PO-Revision-Date: 2023-04-29 16:58+0000\n"
 "Last-Translator: Viech <viech@unvanquished.net>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/de/>\n"
@@ -121,9 +121,8 @@ msgid "Map"
 msgstr "Karte"
 
 #: ui/callvote_map.rml:42
-#, fuzzy
 msgid "Perform action"
-msgstr "Aktion"
+msgstr "Ausführen"
 
 #: ui/error.rml:7
 msgid "Error!"
@@ -165,7 +164,7 @@ msgstr "Erfahre mehr über das Spiel in der Wiki: <b>wiki.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:30
 msgid "Income &amp; evolution"
-msgstr "Einkommen &amp; Entwicklung"
+msgstr "Einkommen"
 
 #: ui/help_gameplay.rml:34
 msgid ""
@@ -300,7 +299,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:78
 msgid "Stages &amp; Momentum"
-msgstr ""
+msgstr "Fortschritt"
 
 #: ui/help_gameplay.rml:81
 msgid ""
@@ -308,44 +307,58 @@ msgid ""
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
+"Für das bauen eigener und die Zerstörung gegnerischer Gebäude sowie für das "
+"erledigen gegnerischer Einheiten erhält dein Team Momentum. Wird genügend "
+"Momentum akquiriert, werden neue Waffen, Gebäude und Klassen freigeschaltet."
 
 #: ui/help_gameplay.rml:84
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
+"Momentum verfällt mit der Zeit. Wenn dein Team untätig wird, kann der Zugang "
+"zu freigeschalteten Verbesserungen wieder verloren gehen. Bereits erworbene "
+"Gegenstände und errichtete Gebäude bleiben jedoch erhalten."
 
 #: ui/help_gameplay.rml:88
 msgid "Wildfire"
-msgstr ""
+msgstr "Feuer"
 
 #: ui/help_gameplay.rml:91
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
+"Die Gebäude der Außerirdischen können feuer fangen, wenn sie mit dem [flamer]"
+" Flammenwerfer oder der [firebomb] Brandbombe getroffen werden."
 
 #: ui/help_gameplay.rml:94
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
+"Wurden Gebäude zu nah beieinander gebaut, kann das Feuer zwischen ihnen "
+"überspringen."
 
 #: ui/help_gameplay.rml:97
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
+"Ein kleineres [fire] Feuer geht oft schnell wieder aus aber eine Gruppe "
+"brennender Gebäude hält sich warm genug, um großen Schaden anzurichten."
 
 #: ui/help_gameplay.rml:100
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
+"Die Spucke des [advgranger] Großen Grangers kann Feuer löschen und Angreifer "
+"verlangsamen!"
 
 #: ui/help_gameplay.rml:104
 msgid "Under attack"
-msgstr ""
+msgstr "Angriffswarnug"
 
 #: ui/help_gameplay.rml:107
 msgid ""
@@ -354,14 +367,19 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
+"Der [reactor] Reaktor und das [overmind] Overmind warnen ihr Team, wenn ihr "
+"Leben auf unter 75%, 50% und 25% fällt und wenn sie gerade zerstört werden. "
+"Die Zerstörung anderer Gebäude löst ebenfalls eine Warnung aus."
 
 #: ui/help_gameplay.rml:111
 msgid "Healing"
-msgstr ""
+msgstr "Heilung"
 
 #: ui/help_gameplay.rml:114
 msgid "Dying feeds the ennemy, you may want to save your life!"
 msgstr ""
+"Wer stirbt, gibt dem Gegner Ressourcen. Es lohnt sich also, am Leben zu "
+"bleiben!"
 
 #: ui/help_gameplay.rml:118
 msgid ""
@@ -370,6 +388,11 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
+"Die Wunden der Außerirdischen heilen von selbst, jedoch schneller, wenn sie "
+"in Gesellschaft oder nahe ihrer Gebäude sind. Es kann sich daher lohnen, "
+"Gebäude auch ausserhalb der Basis zu bauen! Wenn der [advdragoon] Große "
+"Dragoner sich auf diese Weise heilt, dann stellen sich auch seine Projektile "
+"schneller wieder her."
 
 #: ui/help_gameplay.rml:122
 msgid ""
@@ -377,6 +400,10 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
+"Der Booster lässt nahe Außerirdische besonders schnell wieder zu Kräften "
+"kommen, baue daher einen, sobald er freigeschaltet ist! Der Booster versorgt "
+"die Zähne und Klauen zudem mit einem Gift, das zusätzlichen Schaden "
+"anrichtet."
 
 #: ui/help_gameplay.rml:125
 msgid ""
@@ -384,6 +411,8 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
+"In der Nähe des [overmind] Overmind und in der Nähe von [egg] Eiern ist die "
+"Lebensregeneration ein bisschen schneller als in der Nähe anderer Gebäude."
 
 #: ui/help_gameplay.rml:128
 msgid ""
@@ -392,84 +421,109 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
+"Die Heilung in der Gruppe hängt von der Anzahl der Außerirdischen ab: Zwei "
+"zusammen heilen nur ein wenig schneller, drei so schnell als wären sie in "
+"der Nähe eines verbündeten Gebäudes. Mit etwas Teamwork lässt sich so die "
+"gegnerische Basis belagern!"
 
 #: ui/help_gameplay.rml:132
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
+"Die Menschen tragen Medizin bei sich, mit der sie sich einmalig heilen "
+"können. Danach müssen sie für die Wundversorgung zur [medstat] Traumastation "
+"zurückkehren, wo ihnen auch neue Medizin ausgestellt wird."
 
 #: ui/help_gameplay.rml:136
 msgid "Wallwalking"
-msgstr ""
+msgstr "Wandlauf"
 
 #: ui/help_gameplay.rml:139
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
+"Der [Dretch], die [mantis] Fangschrecke und der [advgranger] Große Granger "
+"können an den Wänden laufen!"
 
 #: ui/help_gameplay.rml:142
 msgid "Use this to reach special places or use shortcuts through vents."
-msgstr ""
+msgstr "Nutze dies, um entlegene Orte und Abkürzungen zu erreichen."
 
 #: ui/help_gameplay.rml:145
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
+"Außerirdische Defensivgebäude wie der Fänger und die Distel funktionieren "
+"besser, wenn sie an einer Wand oder der Decke gebaut werden. Dort sind sie "
+"auch vor Granaten geschützt."
 
 #: ui/help_gameplay.rml:148
 msgid "The advanced granger can be unlocked with momentum."
-msgstr ""
+msgstr "Der Große Granger wird mit Momentum freigeschaltet."
 
 #: ui/help_gameplay.rml:152
 msgid "Since Tremulous"
-msgstr ""
+msgstr "Seit Tremulous"
 
 #: ui/help_gameplay.rml:155
 msgid "Since Tremulous, the stamina has been increased."
-msgstr ""
+msgstr "Im Vergleich zu Tremulous, haben die Menschen mehr Ausdauer."
 
 #: ui/help_gameplay.rml:158
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
+"Verwandlungskosten wurden skaliert; es können nun 20 statt 9 "
+"Verwandlungspunkte verwahrt werden."
 
 #: ui/help_gameplay.rml:161
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
+"Das Momentum-System ersetzt die drei Stufen. Baupunkte werden durch "
+"Extraktoren bereitgestellt."
 
 #: ui/help_gameplay.rml:164
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
+"Die Menschen haben keine Tesla-Türme und keinen Verteidigungscomputer mehr, "
+"dafür aber einen stationären Raketenwerfer."
 
 #: ui/help_gameplay.rml:167
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
+"Die Außerirdischen erhalten die Distel als weiteres Defensivgebäude, die mit "
+"Stacheln auf Angreifer schießt!"
 
 #: ui/help_gameplay.rml:170
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
+"Der Basilisk wurde durch die Fangschrecke ersetzt. Diese kann ihre Gegner "
+"nicht mehr festhalten, sie aber verlangsamen und sich selbst nach vorne "
+"schnellen."
 
 #: ui/help_gameplay.rml:173
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
+"Außerirdische können sich in der Nähe des Overmind zurückverwandeln, zum "
+"Beispiel in den Großen Granger, um Feuer zu löschen!"
 
 #: ui/help_textentry.rml:19 ui/menu_ingame.rml:112 ui/menu_main.rml:49
 msgid "Colour codes and symbols"
-msgstr ""
+msgstr "Farbcodes"
 
 #: ui/help_textentry.rml:22
 msgid ""
@@ -477,10 +531,13 @@ msgid ""
 "symbol. Colour can be reset again to normal using ^*, or an actual caret can "
 "be typed using ^^."
 msgstr ""
+"Farbcodes beginnen mit dem Zirkumflex (^). Die Standardfarbe wird durch die "
+"Zeichenfolge ^* aktiviert. Der Zirkumflex selbst lässt sich mit dem Code ^^ "
+"schreiben."
 
 #: ui/help_textentry.rml:61
 msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
-msgstr ""
+msgstr "Beispiel: ^^3Frodo^^1Beutelin wird zu ^3Frodo^1Beutelin"
 
 #: ui/hud_basics.rml:192
 msgid "Game"
@@ -488,15 +545,15 @@ msgstr "Spiel"
 
 #: ui/hud_basics.rml:195
 msgid "Life"
-msgstr ""
+msgstr "Leben"
 
 #: ui/hud_basics.rml:199
 msgid "fps"
-msgstr ""
+msgstr "BpS"
 
 #: ui/hud_basics.rml:202
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
@@ -508,23 +565,23 @@ msgstr "Credits"
 
 #: ui/human_buy.rml:208
 msgid "Weapons"
-msgstr ""
+msgstr "Waffen"
 
 #: ui/human_buy.rml:209 ui/human_buy.rml:225
 msgid "TAB"
-msgstr ""
+msgstr "TAB"
 
 #: ui/human_buy.rml:217
 msgid "Range:"
-msgstr ""
+msgstr "Reichweite:"
 
 #: ui/human_buy.rml:218
 msgid "Damage:"
-msgstr ""
+msgstr "Schaden:"
 
 #: ui/human_buy.rml:219
 msgid "Fire Rate:"
-msgstr ""
+msgstr "Feuerrate:"
 
 #: ui/human_buy.rml:224
 msgid "Upgrades"
@@ -532,38 +589,41 @@ msgstr "Upgrades"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "Wähle deine Startausrüstung:"
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
-msgstr ""
+msgstr "Maschinenpistole"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr "Konstruktionskit"
+msgstr "Bauwerkzeug"
 
 #: ui/human_spawn.rml:48
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
+"Die Maschinenpistole ist eine Schnellfeuerwaffe, das Bauwerkzeug wird zur "
+"Erweiterung und Reparatur der Basis benötigt. Die Ausrüstung kann am Arsenal "
+"getauscht werden."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr ""
+msgstr "Marker"
 
 #: ui/ingame_scoreboard.rml:184
 msgid "Spectators"
-msgstr ""
+msgstr "Zuschauende"
 
 #: ui/ingame_scoreboard.rml:191 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "Karte:"
 
 #: ui/ingame_scoreboard.rml:192
 msgid "Time:"
-msgstr ""
+msgstr "Zeit:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
