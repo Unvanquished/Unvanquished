@@ -150,7 +150,7 @@ int G_ParticleSystemIndex( const char *name )
 
 	if ( !i )
 	{
-		Log::Warn( "Missing particle system: %s", name );
+		Log::Warn( "Missing particle system: %s", name ? name : "<nullptr>" );
 	}
 
 	return i;
@@ -162,7 +162,7 @@ int G_ShaderIndex( const char *name )
 
 	if ( !i )
 	{
-		Log::Warn( "Missing shader: %s", name );
+		Log::Warn( "Missing shader: %s", name ? name : "<nullptr>" );
 	}
 
 	return i;
@@ -174,7 +174,7 @@ int G_ModelIndex( const char *name )
 
 	if ( !i )
 	{
-		Log::Warn( "Missing model: %s", name );
+		Log::Warn( "Missing model: %s", name ? name : "<nullptr>" );
 	}
 
 	return i;
@@ -186,7 +186,7 @@ int G_SoundIndex( const char *name )
 
 	if ( !i )
 	{
-		Log::Warn( "Missing sound: %s", name );
+		Log::Warn( "Missing sound: %s", name ? name : "<nullptr>" );
 	}
 
 	return i;
@@ -204,7 +204,7 @@ int G_GradingTextureIndex( const char *name )
 
 	if ( !i )
 	{
-		Log::Warn( "Missing grading texture: %s", name );
+		Log::Warn( "Missing grading texture: %s", name ? name : "<nullptr>" );
 	}
 
 	return i;
@@ -216,7 +216,7 @@ int G_ReverbEffectIndex( const char *name )
 
 	if ( !i )
 	{
-		Log::Warn( "Missing reverb effect: %s", name );
+		Log::Warn( "Missing reverb effect: %s", name ? name : "<nullptr>" );
 	}
 
 	return i;
@@ -228,7 +228,7 @@ int G_LocationIndex( const char *name )
 
 	if ( !i )
 	{
-		Log::Warn( "Missing location: %s", name );
+		Log::Warn( "Missing location: %s", name ? name : "<nullptr>" );
 	}
 
 	return i;
