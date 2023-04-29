@@ -3490,10 +3490,8 @@ void CG_PlayerDisconnect( vec3_t org )
 
 centity_t *CG_GetLocation( vec3_t origin )
 {
-	float     bestlen, len;
-
-	centity_t *best = nullptr;
-	bestlen = 3.0f * 8192.0f * 8192.0f;
+	std::vector<int> validEntities;
+	std::vector<std::array<float, 3>> posEntities;
 
 	for ( int num = MAX_CLIENTS; num <= cg_highestActiveEntity; num++ )
 	{
@@ -3504,14 +3502,30 @@ centity_t *CG_GetLocation( vec3_t origin )
 			continue;
 		}
 
-		len = DistanceSquared( origin, eloc->lerpOrigin );
+		std::array<float, 3> posEntity;
+		VectorCopy( eloc->lerpOrigin, posEntity );
+		posEntities.push_back( posEntity );
+		validEntities.push_back( num );
+	}
+
+	std::vector<bool> inPVS = trap_R_BatchInPVS( origin, posEntities );
+
+	centity_t *best = nullptr;
+	float bestlen = 3.0f * 8192.0f * 8192.0f;
+
+	for ( size_t v = 0; v < posEntities.size(); v++ )
+	{
+		int num = validEntities[ v ];
+		centity_t *eloc = &cg_entities[ num ];
+
+		float len = DistanceSquared( origin, eloc->lerpOrigin );
 
 		if ( len > bestlen )
 		{
 			continue;
 		}
 
-		if ( !trap_R_inPVS( origin, eloc->lerpOrigin ) )
+		if ( !inPVS[ v ] )
 		{
 			continue;
 		}
