@@ -332,10 +332,8 @@ void CG_OffsetThirdPersonView()
 	if ( cg.demoPlayback || ( ( cg.snap->ps.pm_flags & PMF_FOLLOW ) && alive ) )
 	{
 		// Collect our input values from the mouse.
-		userCmdArray_t userCmdArray;
-		trap_GetUserCmdArray( userCmdArray );
-		usercmd_t cmd = userCmdArray[ 0 ];
-		usercmd_t oldCmd = userCmdArray[ 1 ];
+		usercmd_t cmd = cg.userCmdArray[ 0 ];
+		usercmd_t oldCmd = cg.userCmdArray[ 1 ];
 
 		// Prevent pitch from wrapping and clamp it within a [-75, 90] range.
 		// Cgame has no access to ps.delta_angles[] here, so we need to reproduce
@@ -487,10 +485,8 @@ void CG_OffsetShoulderView()
 	}
 
 	// Get mouse input for camera rotation.
-	userCmdArray_t userCmdArray;
-	trap_GetUserCmdArray( userCmdArray );
-	usercmd_t cmd = userCmdArray[ 0 ];
-	usercmd_t oldCmd = userCmdArray[ 1 ];
+	usercmd_t cmd = cg.userCmdArray[ 0 ];
+	usercmd_t oldCmd = cg.userCmdArray[ 1 ];
 
 	// Prevent pitch from wrapping and clamp it within a [30, -50] range.
 	// Cgame has no access to ps.delta_angles[] here, so we need to reproduce
@@ -743,9 +739,7 @@ void CG_OffsetFirstPersonView()
 		vec3_t    forward, right, up;
 		float     fFraction, rFraction, uFraction;
 
-		userCmdArray_t userCmdArray;
-		trap_GetUserCmdArray( userCmdArray );
-		usercmd_t cmd = userCmdArray[ 0 ];
+		usercmd_t cmd = cg.userCmdArray[ 0 ];
 
 		AngleVectors( angles, forward, right, up );
 
@@ -885,10 +879,8 @@ static int CG_CalcFov()
 	int       inwater;
 	float     attribFov;
 
-	userCmdArray_t userCmdArray;
-	trap_GetUserCmdArray( userCmdArray );
-	usercmd_t cmd = userCmdArray[ 0 ];
-	usercmd_t oldcmd = userCmdArray[ 1 ];
+	usercmd_t cmd = cg.userCmdArray[ 0 ];
+	usercmd_t oldcmd = cg.userCmdArray[ 1 ];
 
 	// Cycle between follow and third-person follow modes on mouse middle click.
 	if ( usercmdButtonPressed( cmd.buttons, BTN_ATTACK3 ) && !usercmdButtonPressed( oldcmd.buttons, BTN_ATTACK3 ) )
@@ -1886,6 +1878,20 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 
 	// this counter will be bumped for every valid scene we generate
 	cg.clientFrame++;
+
+	/* Used by:
+	
+	- CG_PredictPlayerState
+	  * CG_InterpolatePlayerState
+	- CG_CalcViewValues
+	  * CG_OffsetThirdPersonView
+	  * CG_OffsetFirstPersonView
+	    - CG_OffsetShoulderView
+	  * CG_CalcFov
+
+	Such trap is slow, so we better want to call it only once per frame. */
+
+	cg.currentCmd = trap_GetUserCmdArray( cg.userCmdArray );
 
 	// update cg.predictedPlayerState
 	CG_PredictPlayerState();
