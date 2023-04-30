@@ -277,7 +277,7 @@ Svcmd_EntityLock_f
 
 static void Svcmd_EntityLock_f()
 {
-	char      argument[ 4 ];
+	char      argument[ 16 ];
 	int       e;
 	gentity_t *door;
 
