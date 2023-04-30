@@ -280,7 +280,6 @@ static void Svcmd_EntityLock_f()
 	char      argument[ 4 ];
 	int       e;
 	gentity_t *door;
-	vec3_t    mins, maxs;
 
 	if ( trap_Argc() < 1 )
 	{
@@ -316,9 +315,9 @@ static void Svcmd_EntityLock_f()
 
 	if ( door->locked )
 	{
-		VectorAdd( door->restingPosition, door->r.mins, mins );
-		VectorAdd( door->restingPosition, door->r.maxs, maxs );
-		G_BotAddObstacle( VEC2GLM( mins ), VEC2GLM( maxs ), door->num() );
+		glm::vec3 mins = VEC2GLM( door->restingPosition ) + VEC2GLM( door->r.mins );
+		glm::vec3 maxs = VEC2GLM( door->restingPosition ) + VEC2GLM( door->r.maxs );
+		G_BotAddObstacle( mins, maxs, door->num() );
 	}
 	else
 	{
