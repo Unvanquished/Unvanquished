@@ -4796,6 +4796,7 @@ bool G_admin_lock( gentity_t *ent )
 	return true;
 }
 
+
 static int G_admin_flag_sort( const void *pa, const void *pb )
 {
 	const char *a = (const char*) pa;
