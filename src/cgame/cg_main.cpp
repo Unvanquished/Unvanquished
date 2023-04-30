@@ -1129,10 +1129,10 @@ static void GenerateNavmeshes()
 		return;
 	}
 
-	const char* message = _("Generating bot navigation meshes");
+	const std::string message = _("Generating bot navigation meshes");
 	cg.navmeshLoadingFraction = 0;
 	cg.loadingNavmesh = true;
-	Q_strncpyz( cg.loadingText, message, sizeof(cg.loadingText) );
+	Q_strncpyz( cg.loadingText, message.c_str(), sizeof(cg.loadingText) );
 	trap_UpdateScreen();
 
 	NavmeshGenerator navgen;
