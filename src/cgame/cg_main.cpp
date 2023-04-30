@@ -450,7 +450,6 @@ enum cgLoadingStep_t {
 	LOAD_TRAILS,
 	LOAD_PARTICLES,
 	LOAD_CONFIGS,
-	LOAD_SOUNDS,
 	LOAD_GEOMETRY,
 	LOAD_ASSETS,
 	LOAD_WEAPONS,
@@ -459,7 +458,8 @@ enum cgLoadingStep_t {
 	LOAD_BUILDINGS,
 	LOAD_CLIENTS,
 	LOAD_HUDS,
-	LOAD_CHECK_NAVMESH, // only checking for existence, not generation
+	LOAD_SOUNDS,
+	LOAD_NAVMESH,
 	LOAD_GLSL,
 	LOAD_DONE
 };
@@ -471,18 +471,25 @@ CG_UpdateLoadingProgress
 ======================
 */
 
-static void CG_UpdateLoadingProgress( int step, const char *label, const char* loadingText )
+static void CG_UpdateLoadingProgress( const float fraction, const std::string &label, const std::string &text, bool loadingStep = false )
 {
-	cg.loadingFraction = ( 1.0f * step ) / LOAD_DONE;
+	cg.loadingFraction = fraction;
+	cg.loadingStep = loadingStep;
 
-	Q_strncpyz( cg.loadingText, loadingText, sizeof( cg.loadingText ) );
+	Q_strncpyz( cg.loadingText, text.c_str(), sizeof( cg.loadingText ) );
 
-	Log::Debug( "CG_Init: %d%% %s.", static_cast<int>( 100 * cg.loadingFraction ), label );
+	Log::Debug( "CG_Init: %d%% %s; %s", static_cast<int>( 100 * cg.loadingFraction ), label, text );
 
 	if( cg.loading )
 	{
 		trap_UpdateScreen();
 	}
+}
+
+static void CG_UpdateLoadingProgress( const cgLoadingStep_t step, const std::string &label, const std::string &text )
+{
+	float fraction = ( 1.0f * step ) / LOAD_DONE;
+	CG_UpdateLoadingProgress( fraction, label, text, true );
 }
 
 static void CG_UpdateLoadingStep( cgLoadingStep_t step )
@@ -505,10 +512,6 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 
 		case LOAD_CONFIGS:
 			CG_UpdateLoadingProgress( step, "Configurations", choose(_("Reading the manual…"), _("Looking at blueprints…"), nullptr) );
-			break;
-
-		case LOAD_SOUNDS:
-			CG_UpdateLoadingProgress( step, "Sounds", choose(_("Generating annoying noises…"), _("Recording granger purring…"), nullptr) );
 			break;
 
 		case LOAD_GEOMETRY:
@@ -539,12 +542,16 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 		CG_UpdateLoadingProgress( step, "Huds", choose(_("Customizing helmets…"), nullptr) );
 			break;
 
-		case LOAD_GLSL:
-			CG_UpdateLoadingProgress( step, "GLSL shaders", choose(_("Compiling GLSL shaders (please be patient)…"), nullptr) );
+		case LOAD_SOUNDS:
+			CG_UpdateLoadingProgress( step, "Sounds", choose(_("Generating annoying noises…"), _("Recording granger purring…"), nullptr) );
 			break;
 
-		case LOAD_CHECK_NAVMESH:
-			CG_UpdateLoadingProgress( step, "Navmesh existence", choose(_("Surveying the map…"), nullptr) );
+		case LOAD_NAVMESH:
+			CG_UpdateLoadingProgress( step, "Navmesh check", choose(_("Surveying the map…"), nullptr) );
+			break;
+
+		case LOAD_GLSL:
+			CG_UpdateLoadingProgress( step, "GLSL shaders", choose(_("Compiling GLSL shaders (please be patient)…"), nullptr) );
 			break;
 
 		case LOAD_DONE:
@@ -1103,64 +1110,64 @@ bool CG_ClientIsReady( int clientNum )
 // is not set up to handle long loading times in the sgame.
 static void GenerateNavmeshes()
 {
-	std::string mapName = Cvar::GetValue( "mapname" );
+	const std::string mapName = Cvar::GetValue( "mapname" );
 	std::vector<class_t> missing;
 	NavgenConfig config = ReadNavgenConfig( mapName );
+
 	for ( class_t species : RequiredNavmeshes() )
 	{
 		fileHandle_t f;
-		std::string filename = NavmeshFilename( mapName, BG_Class( species )->name );
+		const std::string filename = NavmeshFilename( mapName, BG_Class( species )->name );
+
 		if ( BG_FOpenGameOrPakPath( filename, f ) < 0 )
 		{
 			missing.push_back( species );
 			continue;
 		}
+
 		NavMeshSetHeader header;
-		std::string error = GetNavmeshHeader( f, config, header, mapName );
+		const std::string error = GetNavmeshHeader( f, config, header, mapName );
+
 		if ( !error.empty() )
 		{
 			Log::Notice( "Existing navmesh file %s can't be used: %s", filename, error );
 			missing.push_back( species );
 		}
+
 		trap_FS_FCloseFile( f );
 	}
+
 	if ( missing.empty() )
 	{
 		return;
 	}
 
-	const std::string message = _("Generating bot navigation meshes");
-	cg.navmeshLoadingFraction = 0;
-	cg.loadingNavmesh = true;
-	Q_strncpyz( cg.loadingText, message.c_str(), sizeof(cg.loadingText) );
-	trap_UpdateScreen();
+	const std::string label = "Navmesh generation";
+	CG_UpdateLoadingProgress( 0.0f, label, _("Generating bot navigation meshes…") );
 
 	NavmeshGenerator navgen;
 	navgen.Init( mapName );
-	float classesCompleted = 0.3; // Assume that Init() is 0.3 times as much work as generating 1 species
-	// and assume that each species takes the same amount of time, which is actually completely wrong:
-	// smaller ones take much longer
-	float classesTotal = classesCompleted + missing.size();
+
+	/* Assume that Init() is 0.3 times as much work as generating 1 species
+	and assume that each species takes the same amount of time, which is actually
+	completely wrong: smaller ones take much longer. */
+	float classesCompleted = 0.3;
+	const float classesTotal = classesCompleted + missing.size();
+
 	for ( class_t species : missing )
 	{
-		std::string message2 = Str::Format( "%s — %s", message, BG_ClassModelConfig( species )->humanName );
-		Q_strncpyz( cg.loadingText, message2.c_str(), sizeof(cg.loadingText) );
-		cg.loadingFraction = classesCompleted / classesTotal;
-		trap_UpdateScreen();
-
+		const std::string message = Str::Format( _( "Generating bot navigation meshes: %s…" ), BG_ClassModelConfig( species )->humanName );
 		navgen.StartGeneration( species );
+
 		do
 		{
-			float fraction = ( classesCompleted + navgen.SpeciesFractionCompleted() ) / classesTotal;
-			if ( fraction - cg.navmeshLoadingFraction > 0.01 )
-			{
-				cg.navmeshLoadingFraction = fraction;
-				trap_UpdateScreen();
-			}
+			const float max = (float) LOAD_NAVMESH / LOAD_DONE;
+			const float fraction = ( classesCompleted + navgen.SpeciesFractionCompleted() ) * max / classesTotal;
+			CG_UpdateLoadingProgress( fraction, label, message );
 		} while ( !navgen.Step() );
+
 		++classesCompleted;
 	}
-	cg.loadingNavmesh = false;
 }
 
 static void SetMapInfoFromArenaInfo( arenaInfo_t arenaInfo )
@@ -1335,12 +1342,6 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	// loading the configs
 	CG_ParseServerinfo();
 
-	CG_UpdateLoadingStep( LOAD_SOUNDS );
-	CG_RegisterSounds();
-
-	cgs.voices = BG_VoiceInit();
-	BG_PrintVoices( cgs.voices, cg_debugVoices.Get() );
-
 	// It updates loading steps by itself.
 	// LOAD_GEOMETRY
 	// LOAD_ASSETS
@@ -1365,23 +1366,16 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	CG_Rocket_LoadHuds();
 	CG_LoadBeaconsConfig();
 
-	CG_UpdateLoadingStep( LOAD_GLSL );
+	CG_UpdateLoadingStep( LOAD_SOUNDS );
+	CG_RegisterSounds();
+	cgs.voices = BG_VoiceInit();
+	BG_PrintVoices( cgs.voices, cg_debugVoices.Get() );
 	trap_S_EndRegistration();
 
 	if ( cg_navgenOnLoad.Get() && Cvar::GetValue( "sv_running" ) == "1" )
 	{
-		CG_UpdateLoadingStep( LOAD_CHECK_NAVMESH );
+		CG_UpdateLoadingStep( LOAD_NAVMESH );
 		GenerateNavmeshes();
-	}
-
-	if ( trap_Cvar_VariableIntegerValue( "r_lazyShaders" ) == 1 )
-	{
-		// EndRegistration is called after cgame initialization returns
-		CG_UpdateLoadingStep( LOAD_GLSL );
-	}
-	else
-	{
-		CG_UpdateLoadingStep( LOAD_DONE );
 	}
 
 	// Make sure we have update values (scores)
@@ -1393,6 +1387,19 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	// Request server to resend pmoveParams.
 	trap_SendClientCommand( "client_ready" );
+
+	/* There is currently no way to trigger the GLSL shader compilation,
+	the engine does it by itself. */
+	if ( trap_Cvar_VariableIntegerValue( "r_lazyShaders" ) == 1 )
+	{
+		/* HACK: While compiling GLSL shaders the screen will freeze
+		on latest loading screen, so we better print what we are doing. */
+		CG_UpdateLoadingStep( LOAD_GLSL );
+	}
+	else
+	{
+		CG_UpdateLoadingStep( LOAD_DONE );
+	}
 }
 
 /*
