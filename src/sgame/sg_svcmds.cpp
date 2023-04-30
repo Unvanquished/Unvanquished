@@ -291,13 +291,11 @@ static void Svcmd_EntityLock_f()
 
 	trap_Argv( 1, argument, sizeof( argument ) );
 
-	if ( !atoi( argument ) )
+	if ( !Str::ParseInt( e, argument ) )
 	{
 		Log::Notice( "entitylock: this is not numeric" );
 		return;
 	}
-
-	e = atoi( argument );
 
 	if ( e >= level.num_entities || e < MAX_CLIENTS )
 	{
