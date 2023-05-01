@@ -1057,6 +1057,17 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
+	if ( ent->locked )
+	{
+		if ( activator->client != nullptr
+		     && activator->client->lastLockWarnTime + 3000 < level.time )
+		{
+			activator->client->lastLockWarnTime = level.time;
+			CPx( activator->num(), "cp_tr " QQ(N_("^1This door is locked!")) );
+		}
+		return;
+	}
+
 	// only the master should be used
 	if ( ent->flags & FL_GROUPSLAVE )
 	{

@@ -355,6 +355,8 @@ struct gentity_t
 
 	int          health;
 
+	bool         locked;
+
 	float        speed;
 
 	/* state of the amount of a context depended size for this entity
@@ -625,6 +627,7 @@ struct gclient_t
 	int        lastCombatTime; // time of last damage received/dealt from/to clients
 	int        lastAmmoRefillTime;
 	int        lastFuelRefillTime;
+	int        lastLockWarnTime; // used for the entity locking system
 
 	unlagged_t unlaggedHist[ MAX_UNLAGGED_MARKERS ];
 	unlagged_t unlaggedBackup;
