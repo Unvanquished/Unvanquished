@@ -82,6 +82,7 @@ struct gentity_t;
 
 #define ADMF_IMMUTABLE       "IMMUTABLE"
 #define ADMF_INCOGNITO       "INCOGNITO"
+#define ADMF_SEES_INCOGNITO  "SEESINCOGNITO"
 #define ADMF_ALLFLAGS        "ALLFLAGS"
 #define ADMF_ADMINCHAT       "ADMINCHAT"
 
