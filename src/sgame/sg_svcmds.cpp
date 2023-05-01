@@ -281,9 +281,9 @@ static void Svcmd_EntityLock_f()
 	int       e;
 	gentity_t *door;
 
-	if ( trap_Argc() < 1 )
+	if ( trap_Argc() != 2 )
 	{
-		Log::Notice( "usage: entitylock <entityNum> (tip: use " 
+		Log::Notice( "usage: entitylock <entityNum> (tip: use "
 		             "'cg_drawEntityInfo on' on your client to find this)" );
 		return;
 	}
@@ -292,13 +292,13 @@ static void Svcmd_EntityLock_f()
 
 	if ( !Str::ParseInt( e, argument ) )
 	{
-		Log::Notice( "entitylock: this is not numeric" );
+		Log::Warn( "entitylock: this is not numeric: %s", argument );
 		return;
 	}
 
 	if ( e >= level.num_entities || e < MAX_CLIENTS )
 	{
-		Log::Notice( "entitylock: not a valid entity" );
+		Log::Warn( "entitylock: not a valid entity" );
 		return;
 	}
 
@@ -306,7 +306,7 @@ static void Svcmd_EntityLock_f()
 
 	if ( door->s.eType != entityType_t::ET_MOVER )
 	{
-		Log::Notice( "entitylock: must be a ^5MOVER ^*entity " 
+		Log::Notice( "entitylock: must be a ^5MOVER ^*entity "
 		             "such as a door, button or platform");
 		return;
 	}
@@ -324,7 +324,7 @@ static void Svcmd_EntityLock_f()
 		G_BotRemoveObstacle( door->num() );
 	}
 
-	Log::Notice( "entitylock: entity ^5%s^7#^5%d^* %s", 
+	Log::Notice( "entitylock: entity ^5%s^7#^5%d^* %s",
 	             door->classname, e, door->locked ? "locked" : "unlocked" );
 }
 
