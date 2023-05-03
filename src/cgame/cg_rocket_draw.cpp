@@ -2504,19 +2504,8 @@ public:
 		std::string teamname = GetAttribute< Rml::String >( "team", "" );
 
 		team_t team = BG_PlayableTeamFromString( teamname.c_str() );
-		size_t count = 0;
 
-		for ( int i = 0; i < cg.numScores; ++i )
-		{
-			score_t const& score = cg.scores[ i ];
-
-			if ( score.team == team )
-			{
-				++count;
-			}
-		}
-
-		SetText( va( "Player count: %zu", count ) );
+		SetText( va( "Player count: %d", cg.teamPlayerCount[ team ] ) );
 	}
 };
 

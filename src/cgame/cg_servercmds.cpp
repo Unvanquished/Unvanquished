@@ -52,6 +52,7 @@ static void CG_ParseScores()
 	cg.teamScores[ 1 ] = atoi( CG_Argv( 2 ) );
 
 	memset( cg.scores, 0, sizeof( cg.scores ) );
+	memset( cg.teamPlayerCount, 0, sizeof( cg.teamPlayerCount ) );
 
 	for ( i = 0; i < cg.numScores; i++ )
 	{
@@ -71,6 +72,8 @@ static void CG_ParseScores()
 		cgs.clientinfo[ cg.scores[ i ].client ].score = cg.scores[ i ].score;
 
 		cg.scores[ i ].team = cgs.clientinfo[ cg.scores[ i ].client ].team;
+
+		cg.teamPlayerCount[ cg.scores[ i ].team ]++;
 	}
 
 	cg.scoreInvalidated = true;

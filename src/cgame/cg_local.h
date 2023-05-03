@@ -1167,6 +1167,7 @@ struct cg_t
 	int      scoresRequestTime;
 	int      numScores;
 	int      teamScores[ 2 ];
+	int teamPlayerCount[ NUM_TEAMS ];
 	score_t  scores[ MAX_CLIENTS ];
 	bool showScores;
 	char     killerName[ MAX_NAME_LENGTH ];
