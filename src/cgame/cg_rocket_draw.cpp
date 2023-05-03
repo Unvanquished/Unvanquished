@@ -2505,7 +2505,7 @@ public:
 
 		team_t team = BG_PlayableTeamFromString( teamname.c_str() );
 
-		SetText( va( "Player count: %d", cg.teamPlayerCount[ team ] ) );
+		SetText( va( "%d", cg.teamPlayerCount[ team ] ) );
 	}
 };
 
