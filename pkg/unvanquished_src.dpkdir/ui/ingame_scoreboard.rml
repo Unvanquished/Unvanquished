@@ -155,9 +155,8 @@
 	<inlinecvar cvar="ui_winner" class="winner" />
 
 	<half>
-		<teamname><translate>Aliens</translate></teamname>
+		<teamname><translate>Aliens</translate> (<playerscount team="aliens"/>)</teamname>
 		<teambox class="alien">
-			<playerscount team="aliens"/>
 			<datagrid source="playerList.aliens" id="aliens">
 				<col fields="num" formatter="GearOrReady"></col>
 				<col fields="num" formatter="PlayerName">Name</col>
@@ -169,9 +168,8 @@
 	</half>
 
 	<half>
-		<teamname><translate>Humans</translate></teamname>
+		<teamname><translate>Humans</translate> (<playerscount team="humans"/>)</teamname>
 		<teambox class="human">
-			<playerscount team="humans"/>
 			<datagrid source="playerList.humans" id="humans">
 				<col fields="num" formatter="GearOrReady"></col>
 				<col fields="num" formatter="PlayerName">Name</col>
