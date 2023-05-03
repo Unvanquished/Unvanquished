@@ -180,8 +180,7 @@
 		</teambox>
 	</half>
 
-
-	<teamname><translate>Spectators</translate></teamname>
+	<teamname><translate>Spectators</translate> (<playerCount team="spectators"/>)</teamname>
 	<teambox class="spec">
 		<datasource  source="playerList.spectators" fields="num" formatter="PlayerName" />
 	</teambox>
