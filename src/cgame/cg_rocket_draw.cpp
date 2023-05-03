@@ -2490,10 +2490,10 @@ private:
 	int spawns_;
 };
 
-class PlayersCountElement : public TextHudElement
+class PlayerCountElement : public TextHudElement
 {
 public:
-	PlayersCountElement( const Rml::String& tag ) :
+	PlayerCountElement( const Rml::String& tag ) :
 			TextHudElement( tag, ELEMENT_GAME )
 			{}
 
@@ -3784,5 +3784,5 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<TranslateElement>( "translate" );
 	RegisterElement<SpawnQueueElement>( "spawnPos" );
 	RegisterElement<NumSpawnsElement>( "numSpawns" );
-	RegisterElement<PlayersCountElement>( "playerscount" );
+	RegisterElement<PlayerCountElement>( "playerCount" );
 }
