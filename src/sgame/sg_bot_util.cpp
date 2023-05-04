@@ -1306,7 +1306,8 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_PAIN_SAW:
-			range = PAINSAW_RANGE;
+			// Start running the saw when an alien is closeby, not literally in range
+			range = PAINSAW_RANGE + 60;
 			secondaryRange = 0;
 			break;
 		case WP_FLAMER:
