@@ -185,9 +185,6 @@ these should refer only to playerstates that belong to the client, not the follo
 static void CG_SetPVars()
 {
 	playerState_t *ps;
-	char          buffer[ MAX_CVAR_VALUE_STRING ];
-	int           i;
-	bool      first;
 
 	if ( !cg.snap )
 	{
@@ -214,55 +211,15 @@ static void CG_SetPVars()
 		case TEAM_NONE:
 			trap_Cvar_Set( "p_classname", "Spectator" );
 			trap_Cvar_Set( "p_weaponname", "Nothing" );
-
-			/*
-			 * if we were on a team before we would want these to be reset (or they could mess with bindings)
-			 * the only ones, that actually are helpful to hold on to are p_score and p_credits, since these actually
-			 * might be taken over when joining a team again, or be used to look up old values before leaving the game
-			 */
 			trap_Cvar_Set( "p_class" , "0" );
 			trap_Cvar_Set( "p_weapon", "0" );
-			trap_Cvar_Set( "p_hp", "0" );
-			trap_Cvar_Set( "p_maxhp", "0" );
-			trap_Cvar_Set( "p_ammo", "0" );
-			trap_Cvar_Set( "p_clips", "0" );
 			return;
 	}
 
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
-
 	trap_Cvar_Set( "p_classname", BG_Class( ps->stats[ STAT_CLASS ] )->name );
-
-
 	trap_Cvar_Set( "p_weapon", va( "%d", ps->stats[ STAT_WEAPON ] ) );
 	trap_Cvar_Set( "p_weaponname", BG_Weapon( ps->stats[ STAT_WEAPON ] )->humanName );
-	trap_Cvar_Set( "p_credits", va( "%d", ps->persistant[ PERS_CREDIT ] ) );
-	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
-
-	trap_Cvar_Set( "p_hp", va( "%d", ps->stats[ STAT_HEALTH ] ) );
-	trap_Cvar_Set( "p_maxhp", va( "%d", BG_Class( ps->stats[ STAT_CLASS ] )->health ) );
-	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
-	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
-
-	// set p_availableBuildings to a space-separated list of buildings
-	first = true;
-	*buffer = 0;
-
-	for ( i = BA_NONE; i < BA_NUM_BUILDABLES; ++i )
-	{
-		const buildableAttributes_t *buildable = BG_Buildable( i );
-
-		if ( buildable->team == ps->persistant[ PERS_TEAM ] &&
-		     BG_BuildableUnlocked( i ) &&
-		     (buildable->buildWeapon & ( 1 << ps->stats[ STAT_WEAPON ] ) ) )
-
-		{
-			Q_strcat( buffer, sizeof( buffer ), first ? buildable->name : va( " %s", buildable->name ) );
-			first = false;
-		}
-	}
-
-	trap_Cvar_Set( "p_availableBuildings", buffer );
 }
 
 /*
