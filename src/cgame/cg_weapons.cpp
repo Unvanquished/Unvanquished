@@ -1161,40 +1161,49 @@ static void CG_CalculateWeaponPosition( vec3_t out_origin, vec3_t out_angles )
 {
 	//weaponInfo_t *weapon = cg_weapons + cg.predictedPlayerState.weapon;
 	Filter<WeaponOffsets> &filter = cg.weaponOffsetsFilter;
-	WeaponOffsets offsets;
 
 	filter.SetWidth( 350 );
 
-	// bobbing
-	if( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob )
-	{
-		// on odd legs, invert some angles
-		float scale = ( cg.bobcycle & 1 ? -1 : 1 ) * cg.xyspeed;
-		VectorSet( offsets.bob,
-			cg.xyspeed * cg.bobfracsin * 0.005f,
-			scale * cg.bobfracsin * 0.005f,
-			scale * cg.bobfracsin * 0.01f );
-	}
-
-	// weapon inertia
 	vec3_t angles;
 	VectorCopy( cg.refdefViewAngles, angles );
-	VectorCopy( cg.refdefViewAngles, offsets.angles );
-	VectorClear( offsets.angvel );
 
-	if( !filter.IsEmpty( ) )
+	if ( filter.IsEmpty() || cg.time > filter.Last().first )
 	{
-		auto last = filter.Last( );
-		float dt = ( cg.time - last.first ) * 0.001f;
+		WeaponOffsets offsets; // new sample to add
 
-		offsets.angvel[ 0 ] = AngleNormalize180( angles[ 0 ] - last.second.angles[ 0 ] ) / dt;
-		offsets.angvel[ 1 ] = AngleNormalize180( angles[ 1 ] - last.second.angles[ 1 ] ) / dt;
-		offsets.angvel[ 2 ] = AngleNormalize180( angles[ 2 ] - last.second.angles[ 2 ] ) / dt;
+		// bobbing
+		if( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->bob )
+		{
+			// on odd legs, invert some angles
+			float scale = ( cg.bobcycle & 1 ? -1 : 1 ) * cg.xyspeed;
+			VectorSet( offsets.bob,
+				cg.xyspeed * cg.bobfracsin * 0.005f,
+				scale * cg.bobfracsin * 0.005f,
+				scale * cg.bobfracsin * 0.01f );
+		}
+
+		// weapon inertia
+		VectorCopy( cg.refdefViewAngles, offsets.angles );
+
+		if ( filter.IsEmpty() )
+		{
+			VectorClear( offsets.angvel );
+		}
+		else
+		{
+			const auto &last = filter.Last( );
+			float dt = ( cg.time - last.first ) * 0.001f;
+
+			offsets.angvel[ 0 ] = AngleNormalize180( angles[ 0 ] - last.second.angles[ 0 ] ) / dt;
+			offsets.angvel[ 1 ] = AngleNormalize180( angles[ 1 ] - last.second.angles[ 1 ] ) / dt;
+			offsets.angvel[ 2 ] = AngleNormalize180( angles[ 2 ] - last.second.angles[ 2 ] ) / dt;
+		}
+
+		// accumulate and get the smoothed out values
+		filter.Accumulate( cg.time, offsets );
 	}
 
-	// accumulate and get the smoothed out values
-	filter.Accumulate( cg.time, offsets );
-	offsets = filter.GaussianMA( cg.time );
+	WeaponOffsets offsets = filter.GaussianMA( cg.time );
 
 	// offset angles and origin
 	const float limitX = 1.5f;
