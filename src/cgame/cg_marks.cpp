@@ -124,7 +124,7 @@ static markPoly_t *CG_AllocMark()
 
 /*
 =================
-CG_ImpactMark
+CG_RegisterImpactMark
 
 origin should be a point within a unit of the plane
 dir should be the plane normal
@@ -136,10 +136,39 @@ passed to the renderer.
 #define MAX_MARK_FRAGMENTS 128
 #define MAX_MARK_POINTS    384
 
-void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
-                    float orientation, float red, float green, float blue, float alpha,
-                    bool alphaFade, float radius, bool temporary )
+struct impactMark_t
 {
+	qhandle_t markShader;
+	vec3_t origin;
+	vec3_t dir;
+	float orientation;
+	float red;
+	float green;
+	float blue;
+	float alpha;
+	bool alphaFade;
+	float radius;
+	bool temporary;
+};
+
+std::vector<impactMark_t> impactMarks;
+
+void CG_ProcessImpactMark( impactMark_t& impactMark )
+{
+	qhandle_t markShader = impactMark.markShader;
+	vec3_t origin;
+	VectorCopy( impactMark.origin, origin );
+	vec3_t dir;
+	VectorCopy( impactMark.dir, dir );
+	float orientation = impactMark.orientation;
+	float red = impactMark.red;
+	float green = impactMark.green;
+	float blue = impactMark.blue;
+	float alpha = impactMark.alpha;
+	bool alphaFade = impactMark.alphaFade;
+	float radius = impactMark.radius;
+	bool temporary = impactMark.temporary;
+
 	vec3_t         axis[ 3 ];
 	float          texCoordScale;
 	vec3_t         originalPoints[ 4 ];
@@ -165,7 +194,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 
 	if ( radius <= 0 )
 	{
-		Sys::Drop( "CG_ImpactMark called with <= 0 radius" );
+		Sys::Drop( "CG_ProcessImpactMark called with <= 0 radius" );
 	}
 
 	//if ( markTotal >= MAX_MARK_POLYS ) {
@@ -244,6 +273,42 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 		mark->color[ 3 ] = alpha;
 		memcpy( mark->verts, verts, mf->numPoints * sizeof( verts[ 0 ] ) );
 		markTotal++;
+	}
+}
+
+void CG_RegisterImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
+                    float orientation, float red, float green, float blue, float alpha,
+                    bool alphaFade, float radius, bool temporary )
+{
+	impactMark_t impactMark;
+	impactMark.markShader = markShader;
+	VectorCopy( origin, impactMark.origin );
+	VectorCopy( dir, impactMark.dir );
+	impactMark.orientation = orientation;
+	impactMark.red = red;
+	impactMark.green = green;
+	impactMark.blue = blue;
+	impactMark.alpha = alpha;
+	impactMark.alphaFade = alphaFade;
+	impactMark.radius = radius;
+	impactMark.temporary = temporary;
+
+	impactMarks.push_back( impactMark );
+}
+
+void CG_ResetImpactMarks()
+{
+	impactMarks.clear();
+}
+
+void CG_ProcessImpactMarks()
+{
+	/* TODO: implement trap_CM_MarkFragmentsArray to fetch fragments for all
+	impact marks in a single call instead of doing one trap_CM_MarkFragments
+	per impact mark. */
+	for ( auto impactMark : impactMarks )
+	{
+		CG_ProcessImpactMark( impactMark );
 	}
 }
 
