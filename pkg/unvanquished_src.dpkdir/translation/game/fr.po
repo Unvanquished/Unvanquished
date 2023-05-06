@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-28 20:14+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2023-05-06 20:10+0000\n"
+"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -2112,8 +2112,9 @@ msgid "Miner bonus"
 msgstr "Bonus de mineur"
 
 #: ui/server_setup.rml:165
+#, fuzzy
 msgid "Build point budget per miner"
-msgstr ""
+msgstr "Points de construction par mineur"
 
 #: ui/server_setup.rml:172
 msgid "Initial regeneration speed"
@@ -3362,17 +3363,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:502
 msgctxt "male"
 msgid "%s%s ^*was barbed"
-msgstr ""
+msgstr "%s%s ^*a été planté"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "female"
 msgid "%s%s ^*was barbed"
-msgstr ""
+msgstr "%s%s ^*a été plantée"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
-msgstr ""
+msgstr "%s%s ^*a été planté"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "male"
