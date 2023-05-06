@@ -1201,6 +1201,8 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 {
 	const char *s;
 
+	Rocket_SetActiveContext( KEYCATCH_UI );
+
 	CG_UpdateLoadingStep( LOAD_START );
 
 	// get the rendering configuration from the client system
@@ -1350,6 +1352,8 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	// Request server to resend pmoveParams.
 	trap_SendClientCommand( "client_ready" );
+
+	Rocket_SetActiveContext( 0 );
 }
 
 /*
