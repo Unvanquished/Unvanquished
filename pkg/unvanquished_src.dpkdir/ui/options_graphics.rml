@@ -224,8 +224,12 @@
 					<input cvar="r_ssao" type="checkbox" />
 					<p><translate>Simulate dark corners.</translate>&nbsp;<translate>Experimental.</translate></p>
 				</row>
-
-				<h2><translate>Particles</translate></h2>
+				<row>
+					<h3><translate>Marks</translate></h3>
+					<input cvar="cg_marks" type="checkbox" />
+					<p><translate>Draw marks (such as bullet holes or creep) on surfaces
+</translate></p>
+				</row>
 				<row>
 					<h3><translate>Particle physics</translate></h3>
 					<input cvar="cg_bounceParticles" type="checkbox" />
