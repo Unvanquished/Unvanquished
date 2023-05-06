@@ -2516,8 +2516,9 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 
 		if ( size > 0.0f )
 		{
-			CG_ImpactMark( cgs.media.creepShader, origin, up,
-			               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, false, size, true );
+			CG_RegisterMark( cgs.media.creepShader, origin, up,
+				0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+				false, size, true );
 		}
 	}
 }
@@ -2641,9 +2642,9 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 
 	// add the mark as a temporary, so it goes directly to the renderer
 	// without taking a spot in the cg_marks array
-	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
-	               cent->pe.legs.yawAngle, 0.0f, 0.0f, 0.0f, alpha, false,
-	               24.0f * BG_ClassModelConfig( class_ )->shadowScale, true );
+	CG_RegisterMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
+		cent->pe.legs.yawAngle, 0.0f, 0.0f, 0.0f, alpha,
+		false, 24.0f * BG_ClassModelConfig( class_ )->shadowScale, true );
 
 	return true;
 }
@@ -2713,9 +2714,9 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 		return;
 	}
 
-	CG_ImpactMark( cgs.media.wakeMarkShader, trace.endpos, trace.plane.normal,
-	               cent->pe.legs.yawAngle, 1.0f, 1.0f, 1.0f, 1.0f, false,
-	               32.0f * BG_ClassModelConfig( class_ )->shadowScale, true );
+	CG_RegisterMark( cgs.media.wakeMarkShader, trace.endpos, trace.plane.normal,
+		cent->pe.legs.yawAngle, 1.0f, 1.0f, 1.0f, 1.0f,
+		false, 32.0f * BG_ClassModelConfig( class_ )->shadowScale, true );
 }
 
 #define TRACE_DEPTH    32.0f
