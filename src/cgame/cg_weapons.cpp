@@ -2597,7 +2597,9 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	// mark
 	if ( wim->impactMark && wim->impactMarkSize > 0.0f )
 	{
-		CG_ImpactMark( wim->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, false, wim->impactMarkSize, false );
+		CG_RegisterMark( wim->impactMark, origin, normal,
+			random() * 360, 1, 1, 1, 1,
+			false, wim->impactMarkSize, false );
 	}
 
 	// tracer
@@ -2671,8 +2673,9 @@ void CG_HandleMissileHitWall( entityState_t *es, vec3_t origin )
 	// mark
 	if ( ma->impactMark && ma->impactMarkSize > 0.0f )
 	{
-		CG_ImpactMark( ma->impactMark, origin, normal, random() * 360, 1, 1, 1, 1, false,
-		               ma->impactMarkSize, false );
+		CG_RegisterMark( ma->impactMark, origin, normal,
+			random() * 360, 1, 1, 1, 1,
+			false, ma->impactMarkSize, false );
 	}
 }
 

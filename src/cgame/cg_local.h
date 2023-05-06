@@ -834,7 +834,7 @@ struct markPoly_t
 	markPoly_t *prevMark, *nextMark;
 
 	int               time;
-	qhandle_t         markShader;
+	qhandle_t shader;
 	bool          alphaFade; // fade alpha instead of rgb
 	float             color[ 4 ];
 	poly_t            poly;
@@ -2146,13 +2146,16 @@ void CG_DrawMinimap( const rectDef_t *rect, const Color::Color& color );
 // cg_marks.c
 //
 void CG_InitMarkPolys();
-void CG_AddMarks();
-void CG_ImpactMark( qhandle_t markShader,
+void CG_AddMarkPolys();
+void CG_RegisterMark( qhandle_t shader,
                     const vec3_t origin, const vec3_t dir,
                     float orientation,
                     float r, float g, float b, float a,
                     bool alphaFade,
                     float radius, bool temporary );
+
+void CG_ResetMarks();
+void CG_ProcessMarks();
 
 //
 // cg_snapshot.c

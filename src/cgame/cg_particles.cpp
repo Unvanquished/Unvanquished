@@ -2338,8 +2338,9 @@ static void CG_EvaluateParticlePhysics( particle_t *p )
 
 	if ( bp->bounceMarkName[ 0 ] && p->bounceMarkCount > 0 )
 	{
-		CG_ImpactMark( bp->bounceMark, trace.endpos, trace.plane.normal,
-		               random() * 360, 1, 1, 1, 1, true, bp->bounceMarkRadius, false );
+		CG_RegisterMark( bp->bounceMark, trace.endpos, trace.plane.normal,
+			random() * 360, 1, 1, 1, 1,
+			true, bp->bounceMarkRadius, false );
 		p->bounceMarkCount--;
 	}
 
