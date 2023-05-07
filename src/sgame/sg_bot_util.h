@@ -46,7 +46,6 @@ int        FindBots( int *botEntityNumbers, int maxBots, team_t team );
 gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
 void       BotFindClosestBuildings( gentity_t *self );
-gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
 bool   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
