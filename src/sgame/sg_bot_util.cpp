@@ -781,41 +781,6 @@ Entity Querys
 =======================
 */
 
-gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
-{
-	float minDistance = -1;
-	gentity_t* closestBuilding = nullptr;
-	float newDistance;
-	float rangeSquared = Square( range );
-	gentity_t *target = &g_entities[MAX_CLIENTS];
-	int i;
-
-	for ( i = MAX_CLIENTS; i < level.num_entities; i++, target++ )
-	{
-		if ( !target->inuse )
-		{
-			continue;
-		}
-		if ( target->s.eType == entityType_t::ET_BUILDABLE &&
-		     target->s.modelindex == buildingType &&
-		     target->powered && target->spawned &&
-		     Entities::IsAlive( target ) )
-		{
-			newDistance = DistanceSquared( self->s.origin, target->s.origin );
-			if ( range && newDistance > rangeSquared )
-			{
-				continue;
-			}
-			if ( newDistance < minDistance || minDistance == -1 )
-			{
-				minDistance = newDistance;
-				closestBuilding = target;
-			}
-		}
-	}
-	return closestBuilding;
-}
-
 void BotFindClosestBuildings( gentity_t *self )
 {
 	gentity_t *testEnt;
