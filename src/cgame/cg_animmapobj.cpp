@@ -60,6 +60,7 @@ void CG_ModelDoor( centity_t *cent )
 
 	//create the render entity
 	refEntity_t ent{};
+	ent.skeleton.scale = 1.0f; // make (non-animated?) skeletal models work
 	VectorCopy( cent->lerpOrigin, ent.origin );
 	VectorCopy( cent->lerpOrigin, ent.oldorigin );
 	AnglesToAxis( cent->lerpAngles, ent.axis );
