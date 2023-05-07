@@ -793,7 +793,7 @@ void BotFindClosestBuildings( gentity_t *self )
 		self->botMind->closestBuildings[ i ].distance = std::numeric_limits<float>::max();
 	}
 
-	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
+	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities]; testEnt++ )
 	{
 		float newDist;
 		// ignore entities that aren't in use
@@ -915,7 +915,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	bool  hasRadar = ( team == TEAM_ALIENS ) ||
 	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
 
-	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
+	for ( target = g_entities; target < &g_entities[level.num_entities]; target++ )
 	{
 		float newScore;
 
@@ -971,7 +971,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 	float minDistance = Square( g_bot_aliensenseRange.Get() );
 	gentity_t *target;
 
-	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
+	for ( target = g_entities; target < &g_entities[level.num_entities]; target++ )
 	{
 		float newDistance;
 		//ignore entities that arnt in use
