@@ -1367,7 +1367,7 @@ static void CG_Rocket_DrawDisconnect()
 	usercmd_t  cmd;
 
 	// draw the phone jack if we are completely past our buffers
-	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
+	cmdNum = cg.currentCmdNumber - CMD_BACKUP + 1;
 	trap_GetUserCmd( cmdNum, &cmd );
 
 	// special check for map_restart

@@ -334,7 +334,7 @@ void CG_OffsetThirdPersonView()
 	if ( cg.demoPlayback || ( ( cg.snap->ps.pm_flags & PMF_FOLLOW ) && alive ) )
 	{
 		// Collect our input values from the mouse.
-		cmdNum = trap_GetCurrentCmdNumber();
+		cmdNum = cg.currentCmdNumber;
 		trap_GetUserCmd( cmdNum, &cmd );
 		trap_GetUserCmd( cmdNum - 1, &oldCmd );
 
@@ -490,7 +490,7 @@ void CG_OffsetShoulderView()
 	}
 
 	// Get mouse input for camera rotation.
-	cmdNum = trap_GetCurrentCmdNumber();
+	cmdNum = cg.currentCmdNumber;
 	trap_GetUserCmd( cmdNum, &cmd );
 	trap_GetUserCmd( cmdNum - 1, &oldCmd );
 
@@ -747,7 +747,7 @@ void CG_OffsetFirstPersonView()
 		int       cmdNum;
 		float     fFraction, rFraction, uFraction;
 
-		cmdNum = trap_GetCurrentCmdNumber();
+		cmdNum = cg.currentCmdNumber;
 		trap_GetUserCmd( cmdNum, &cmd );
 
 		AngleVectors( angles, forward, right, up );
@@ -891,7 +891,7 @@ static int CG_CalcFov()
 	usercmd_t oldcmd;
 	int       cmdNum;
 
-	cmdNum = trap_GetCurrentCmdNumber();
+	cmdNum = cg.currentCmdNumber;
 	trap_GetUserCmd( cmdNum, &cmd );
 	trap_GetUserCmd( cmdNum - 1, &oldcmd );
 
@@ -1859,6 +1859,7 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 
 	cg.time = serverTime;
 	cg.demoPlayback = demoPlayback;
+	cg.currentCmdNumber = trap_GetCurrentCmdNumber();
 
 	CG_NotifyHooks();
 
