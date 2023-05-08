@@ -49,6 +49,10 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 #define bc_etime time2
 #define bc_mtime apos.trTime
 
+static Cvar::Cvar<bool> g_mainBuildableStartingBeacons(
+	"g_mainBuildableStartingBeacons", "get beacon for enemy's main structure at match start",
+	Cvar::NONE, true);
+
 namespace Beacon //this should eventually become a class
 {
 	/**
@@ -59,6 +63,23 @@ namespace Beacon //this should eventually become a class
 		ent->nextthink = level.time + 1000000;
 	}
 
+	static void TagMainBuildables()
+	{
+		if ( !g_mainBuildableStartingBeacons.Get() )
+		{
+			return;
+		}
+
+		for ( team_t team = TEAM_NONE; ( team = G_IterateTeams( team ) ); )
+		{
+			if ( gentity_t *buildable = G_MainBuildable( team ) )
+			{
+				team_t enemies = team == TEAM_ALIENS ? TEAM_HUMANS : TEAM_ALIENS;
+				Tag( buildable, enemies, true );
+			}
+		}
+	}
+
 	/**
 	 * @brief Handles beacon expiration and tag score decay. Called every server frame.
 	 */
@@ -66,9 +87,18 @@ namespace Beacon //this should eventually become a class
 	{
 		gentity_t *ent = nullptr;
 		static int nextframe = 0;
+		static bool taggedMainBuildables = false;
 
 		if( nextframe > level.time )
 			return;
+
+		// Don't do it at the very beginning since the builtin layout structures usually start in
+		// midair and may need some time to fall down. So the location might be wrong at the start
+		if ( !taggedMainBuildables && level.matchTime >= 1500 )
+		{
+			TagMainBuildables();
+			taggedMainBuildables = true;
+		}
 
 		while ( ( ent = G_IterateEntities( ent ) ) )
 		{
