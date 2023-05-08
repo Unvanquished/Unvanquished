@@ -1098,6 +1098,8 @@ struct cg_t
 	bool loading; // don't defer players at initial startup
 	bool intermissionStarted;
 
+	int currentCmdNumber; // usercmd_t number for this frame
+
 	// there are only one or two snapshot_t that are relevent at a time
 	int        latestSnapshotNum; // the number of snapshots the client system has received
 	int        latestSnapshotTime; // the time from latestSnapshotNum, so we don't need to read the snapshot yet
