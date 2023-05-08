@@ -162,7 +162,7 @@ void AIDestroyValue( AIValue_t v )
 	}
 }
 
-// Closest alive, but (unlike the botMind->closestBuildings) not necessarily active building
+// Closest alive, but not necessarily active building
 static botEntityAndDistance_t ClosestBuilding(gentity_t *self, bool alignment)
 {
 	botEntityAndDistance_t result;
@@ -207,6 +207,7 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 		return ClosestBuilding( self, true );
 
 	case E_ENEMYBUILDING:
+		// TODO use closestBuildings so the bot is not omniscient? Or add a non-cheating alternative
 		return ClosestBuilding( self, false );
 
 	case E_GOAL:

@@ -793,6 +793,8 @@ void BotFindClosestBuildings( gentity_t *self )
 		self->botMind->closestBuildings[ i ].distance = std::numeric_limits<float>::max();
 	}
 
+	auto alliedTag = G_Team( self ) == TEAM_ALIENS ? &gentity_t::alienTag : &gentity_t::humanTag;
+
 	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities]; testEnt++ )
 	{
 		float newDist;
@@ -814,10 +816,23 @@ void BotFindClosestBuildings( gentity_t *self )
 			continue;
 		}
 
-		// skip buildings that are currently building or aren't powered
-		if ( !testEnt->powered || !testEnt->spawned )
+		if ( G_OnSameTeam( self, testEnt ) )
 		{
-			continue;
+			// skip buildings that are currently building or aren't powered
+			if ( !testEnt->powered || !testEnt->spawned )
+			{
+				continue;
+			}
+		}
+		else
+		{
+			// skip enemy buildings without tag beacons
+			// FIXME: the bot should not magically know about the death of enemy structures and hence
+			// should be able to target a beacon whose corresponding buildable is already dead.
+			if ( nullptr == testEnt->*alliedTag )
+			{
+				continue;
+			}
 		}
 
 		newDist = Distance( self->s.origin, testEnt->s.origin );

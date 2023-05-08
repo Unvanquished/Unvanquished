@@ -149,6 +149,9 @@ struct botMemory_t
 
 	botEntityAndDistance_t bestEnemy;
 	botEntityAndDistance_t closestDamagedBuilding;
+
+	// For allied buildable types: closest alive and active buildable
+	// For enemy buildable types: closest alive buildable with a tag beacon
 	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
 
 	AIBehaviorTree_t *behaviorTree;
