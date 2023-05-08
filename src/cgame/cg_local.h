@@ -1651,10 +1651,9 @@ struct buildStat_t
 	bool  loaded;
 };
 
-// The client game static (cgs) structure hold everything
-// loaded or calculated from the gamestate.  It will NOT
-// be cleared when a tournement restart is done, allowing
-// all clients to begin playing instantly
+// More global variables, like cg_t. This used to say, "It will NOT be cleared when a tournament
+// restart is done, allowing all clients to begin playing instantly", but cg_t is never cleared
+// either so there is no difference.
 struct cgs_t
 {
 	GameStateCSs gameState; // gamestate from server
