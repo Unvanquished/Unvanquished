@@ -85,8 +85,6 @@ CG_SetInitialSnapshot
 
 This will only happen on the very first snapshot.
 At all other times, CG_TransitionSnapshot is used instead.
-
-FIXME: Also called by map_restart?
 ==================
 */
 static void CG_SetInitialSnapshot( snapshot_t *snap )
