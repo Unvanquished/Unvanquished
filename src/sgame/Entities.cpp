@@ -185,6 +185,11 @@ namespace detail {
 		return MAX_GENTITIES;
 	}
 
+	bool ComponentBitset::Test(int num) const
+	{
+		return data_[num / wordBits] & (word(1) << (num % wordBits));
+	}
+
 	void ComponentBitset::Set(int num)
 	{
 		data_[num / wordBits] |= word(1) << (num % wordBits);
@@ -199,10 +204,12 @@ namespace detail {
 
 void RegisterComponentCreate(int entityNum, int componentNum)
 {
+	ASSERT(!Entities::detail::componentSets[componentNum].Test(entityNum));
 	Entities::detail::componentSets[componentNum].Set(entityNum);
 }
 
 void RegisterComponentDestroy(int entityNum, int componentNum)
 {
+	ASSERT(Entities::detail::componentSets[componentNum].Test(entityNum));
 	Entities::detail::componentSets[componentNum].Clear(entityNum);
 }

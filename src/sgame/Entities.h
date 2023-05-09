@@ -118,6 +118,7 @@ namespace Entities {
 		public:
 			ComponentBitset() : data_{} {}
 			int Scan(int start) const; // find nonzero bit or return MAX_GENTITIES
+			bool Test(int num) const;
 			void Set(int num); // set bit to 1
 			void Clear(int num); // set bit to 0
 		};
