@@ -1979,6 +1979,7 @@ void BotFireWeaponAI( gentity_t *self )
 	trace_t trace;
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
+	BotResetStuckTime( self );
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
