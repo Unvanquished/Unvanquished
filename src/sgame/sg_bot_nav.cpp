@@ -1083,7 +1083,7 @@ bool BotMoveToGoal( gentity_t *self )
 
 	// if target is friendly, let's go there quickly (heal, poison) by using trick moves
 	// when available (still need to implement wall walking, but that will be more complex)
-	if ( G_Team( self ) != targetTeam )
+	if ( G_Team( self ) == TEAM_ALIENS && G_Team( self ) != targetTeam )
 	{
 		BotTryMoveUpward( self );
 		return true;
@@ -1099,6 +1099,10 @@ bool BotMoveToGoal( gentity_t *self )
 	if ( ( G_Team( self ) == TEAM_HUMANS && !self->botMind->skillSet[BOT_H_FAST_FLEE] )
 			|| ( G_Team( self ) == TEAM_ALIENS && !self->botMind->skillSet[BOT_A_FAST_FLEE] ) )
 	{
+		if ( G_Team( self ) == TEAM_HUMANS )
+		{
+			BotWalkIfStaminaLow( self );
+		}
 		return true;
 	}
 	switch ( ps.stats [ STAT_CLASS ] )
@@ -1108,6 +1112,7 @@ bool BotMoveToGoal( gentity_t *self )
 		case PCL_HUMAN_MEDIUM:
 		case PCL_HUMAN_BSUIT:
 			BotSprint( self, true );
+			BotWalkIfStaminaLow( self );
 			break;
 		//those classes do not really have capabilities allowing them to be
 		//significantly faster while fleeing (except jumps, but that also

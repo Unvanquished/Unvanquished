@@ -1054,7 +1054,10 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		BotStandStill( self );
 	}
 
-	BotSprint( self, true );
+	if ( !BotWalkIfStaminaLow( self ) )
+	{
+		BotSprint( self, true );
+	}
 
 	return STATUS_RUNNING;
 }
