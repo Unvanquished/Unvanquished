@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-06 20:10+0000\n"
+"PO-Revision-Date: 2023-05-11 09:51+0000\n"
 "Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -1108,7 +1108,7 @@ msgstr "Style de lumière"
 #: ui/options_graphics.rml:102
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
-"Lumières dynamiques précalculées émises par des objets statiques de la carte"
+"Lumières dynamiques précalculées émises par des objets statiques de la carte."
 
 #: ui/options_graphics.rml:105
 msgid "Dynamic lights"
@@ -1486,7 +1486,7 @@ msgstr "Attaque secondaire :"
 #: ui/options_keys.rml:84
 #, fuzzy
 msgid "Shoot barb:"
-msgstr "Tire de \"barb\" :"
+msgstr "Tire de \"pique\" :"
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
@@ -1629,7 +1629,6 @@ msgid "Mouse sensitivity"
 msgstr "Sensibilité de la souris"
 
 #: ui/options_mouse.rml:25
-#, fuzzy
 msgid "Mouse filter"
 msgstr "Filtre de la souris"
 
@@ -1760,7 +1759,6 @@ msgid "Reverb intensity"
 msgstr "Intensité de la réverbération"
 
 #: ui/options_sound.rml:23
-#, fuzzy
 msgid "“Echo” effect"
 msgstr "Effet « écho »"
 
@@ -1775,7 +1773,6 @@ msgid "“Pitch-shift” effect when moving from or toward a sound."
 msgstr "Effet « pitch-shift » lors du déplacement depuis ou vers un son."
 
 #: ui/options_sound.rml:31
-#, fuzzy
 msgid "OpenAL Device"
 msgstr "Appareil OpenAL"
 
@@ -1862,7 +1859,7 @@ msgstr "Afficher la vitesse de déplacement"
 
 #: ui/options_ui.rml:51
 msgid "Current, maximum and graph of movement-speed."
-msgstr "Vitesse de déplacement actuelle et maximum avec graphique"
+msgstr "Vitesse de déplacement actuelle et maximum avec graphique."
 
 #: ui/options_ui.rml:54
 msgid "Show FPS"
@@ -1874,7 +1871,7 @@ msgstr "Images par seconde."
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr "Bonjour!"
+msgstr "Salut !"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
@@ -2090,9 +2087,8 @@ msgid "Momentum penalty multiplier for deconstruction"
 msgstr "Multiplicateur de pénalité de construction"
 
 #: ui/server_setup.rml:144
-#, fuzzy
 msgid "Building Kill reward multiplier"
-msgstr "Multiplicateur de récompenses de construction"
+msgstr "Multiplicateur de récompense pour la destruction de construction"
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
@@ -2107,12 +2103,10 @@ msgid "Initial build points count"
 msgstr "Nombre initial de points de construction"
 
 #: ui/server_setup.rml:164
-#, fuzzy
 msgid "Miner bonus"
 msgstr "Bonus de mineur"
 
 #: ui/server_setup.rml:165
-#, fuzzy
 msgid "Build point budget per miner"
 msgstr "Points de construction par mineur"
 
@@ -2121,11 +2115,8 @@ msgid "Initial regeneration speed"
 msgstr "Vitesse de régénération initiale"
 
 #: ui/server_setup.rml:173
-#, fuzzy
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
-msgstr ""
-"La vitesse initiale à laquelle les points de construction seront récupérés ("
-"en points par minute)"
+msgstr "Vitesse initiale de récupération de points de construction par minute"
 
 #: ui/server_setup.rml:180
 #, fuzzy
@@ -2196,22 +2187,19 @@ msgid "%s%s ^*fell to death"
 msgstr "%s%s ^*est tombé jusqu'à en mourir"
 
 #: src/cgame/cg_event.cpp:276
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*fell to death"
-msgstr "%s%s ^*est tombé jusqu'à en mourir"
+msgstr "%s%s ^*est tombée jusqu'à en mourir"
 
 #: src/cgame/cg_event.cpp:276
-#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
 msgstr "%s%s ^*est tombé jusqu'à en mourir"
 
 #: src/cgame/cg_event.cpp:280
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
-msgstr "%s%s ^* a été écrasé à mort"
+msgstr "%s%s ^* a été écrasé"
 
 #: src/cgame/cg_event.cpp:280
 msgctxt "female"
@@ -2219,10 +2207,9 @@ msgid "%s%s ^*was crushed to death"
 msgstr "%s%s ^* a été écrasé à mort"
 
 #: src/cgame/cg_event.cpp:280
-#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
-msgstr "%s%s ^* a été écrasé à mort"
+msgstr "%s%s ^* a été écrasé"
 
 #: src/cgame/cg_event.cpp:284
 #, fuzzy
@@ -2231,10 +2218,9 @@ msgid "%s%s ^*drowned"
 msgstr "%s%s ^*s'est noyé"
 
 #: src/cgame/cg_event.cpp:284
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*drowned"
-msgstr "%s%s ^*s'est noyé"
+msgstr "%s%s ^*s'est noyée"
 
 #: src/cgame/cg_event.cpp:284
 msgctxt "neuter"
@@ -2302,22 +2288,19 @@ msgid "%s%s ^*was caught in the explosion"
 msgstr "%s%s ^*a été pris dans l'explosion"
 
 #: src/cgame/cg_event.cpp:306
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
-msgstr "%s%s ^*a été pris dans l'acide"
+msgstr "%s%s ^*s'est noyé dans l'acide"
 
 #: src/cgame/cg_event.cpp:306
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
-msgstr "%s%s ^*a été pris dans l'acide"
+msgstr "%s%s ^*s'est noyée dans l'acide"
 
 #: src/cgame/cg_event.cpp:306
-#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
-msgstr "%s%s ^*a été pris dans l'acide"
+msgstr "%s%s ^*s'est noyé dans l'acide"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "male"
@@ -2410,19 +2393,16 @@ msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr "%s%s ^*a été fondu par un tube d'acide aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:327
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*a été fléché par un spiker"
 
 #: src/cgame/cg_event.cpp:327
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*a été fléchée par un spiker"
 
 #: src/cgame/cg_event.cpp:327
-#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr "%s%s ^*a été fléché par un spiker"
@@ -2533,13 +2513,11 @@ msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr "%s%s ^*n'a pas pu éviter la granger aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:347
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "%s%s ^*a été consommé par l'essaim"
 
 #: src/cgame/cg_event.cpp:347
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr "%s%s ^*a été consommée par l'essaim"
@@ -3869,9 +3847,8 @@ msgid "Awaiting gamestate…"
 msgstr "En attente de l’état de la partie…"
 
 #: src/cgame/cg_rocket_draw.cpp:3052
-#, fuzzy
 msgid "Say:"
-msgstr "Dire:"
+msgstr "Dire :"
 
 #: src/cgame/cg_rocket_draw.cpp:3053
 #, fuzzy
@@ -4554,9 +4531,9 @@ msgstr "Trouvez une armurerie pour plus de munitions."
 
 #: src/cgame/cg_tutorial.cpp:413 src/cgame/cg_tutorial.cpp:421
 #: src/cgame/cg_tutorial.cpp:447
-#, c-format
+#, c-format, fuzzy
 msgid "Press %s to fire the %s."
-msgstr ""
+msgstr "Appuie sur %s pour tirer le %s."
 
 #: src/cgame/cg_tutorial.cpp:427
 #, c-format
@@ -4640,9 +4617,9 @@ msgid "Press %s to return to first-person spectator mode."
 msgstr "Appuyez sur %s pour revenir au mode spectateur à la première personne."
 
 #: src/cgame/cg_tutorial.cpp:595
-#, c-format, fuzzy
+#, c-format
 msgid "Press %s to follow the next player."
-msgstr "Appuyez sur %s pour suivre le joueur suivant"
+msgstr "Appuyez sur %s pour suivre le joueur suivant."
 
 #: src/cgame/cg_tutorial.cpp:602
 #, c-format, fuzzy
