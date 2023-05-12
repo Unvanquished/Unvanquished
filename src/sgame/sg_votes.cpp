@@ -357,10 +357,10 @@ static bool HandleFillBotsHumanVote( gentity_t* ent, team_t team, std::string& c
 	}
 
 	Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-	             "bot fill humans %d", num );
+	             "bot fill %d h", num );
 	Com_sprintf( level.team[ team ].voteDisplayString,
 	             sizeof( level.team[ team ].voteDisplayString ),
-	             N_( "Fill each team with bots to %d" ), num );
+	             N_( "Fill the human team with bots to %d" ), num );
 	return true;
 }
 
@@ -379,10 +379,10 @@ static bool HandleFillBotsAliensVote( gentity_t* ent, team_t team, std::string& 
 	}
 
 	Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
-	             "bot fill aliens %d", num );
+	             "bot fill %d a", num );
 	Com_sprintf( level.team[ team ].voteDisplayString,
 	             sizeof( level.team[ team ].voteDisplayString ),
-	             N_( "Fill each team with bots to %d" ), num );
+	             N_( "Fill the alien team with bots to %d" ), num );
 	return true;
 }
 
