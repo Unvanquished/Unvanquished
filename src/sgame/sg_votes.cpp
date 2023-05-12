@@ -396,7 +396,7 @@ static std::unordered_map<std::string, VoteDefinition> voteInfo = {
 	{"unmute",            { false, V_PUBLIC, T_PLAYER,   false,  true,  qtrinary::qno,    &g_denyVotesPercent,        VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleUnmuteVote } },
 	{"denybuild",         { true,  V_TEAM,   T_PLAYER,   true,   true,  qtrinary::qyes,   &g_denyVotesPercent,        VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleDenybuildVote } },
 	{"allowbuild",        { true,  V_TEAM,   T_PLAYER,   false,  true,  qtrinary::qno,    &g_denyVotesPercent,        VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleAllowbuildVote } },
-	{"extend",            { true,  V_PUBLIC, T_OTHER,    false,  false, qtrinary::qno,    &g_extendVotesTime ,        VOTE_REMAIN,  &g_extendVotesTime,  nullptr,                   &HandleExtendVote } },
+	{"extend",            { true,  V_PUBLIC, T_OTHER,    false,  false, qtrinary::qno,    &g_extendVotesPercent,      VOTE_REMAIN,  &g_extendVotesTime,  nullptr,                   &HandleExtendVote } },
 	{"admitdefeat",       { true,  V_TEAM,   T_NONE,     false,  true,  qtrinary::qno,    &g_admitDefeatVotesPercent, VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleAdmitDefeatVote } },
 	{"draw",              { true,  V_PUBLIC, T_NONE,     false,  true,  qtrinary::qyes,   &g_drawVotesPercent,        VOTE_AFTER,   &g_drawVotesAfter,   &g_drawVoteReasonRequired, &HandleDrawVote } },
 	{"map_restart",       { true,  V_PUBLIC, T_NONE,     false,  true,  qtrinary::qno,    &g_mapVotesPercent,         VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleMapRestart } },
