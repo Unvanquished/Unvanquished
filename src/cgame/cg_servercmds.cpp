@@ -166,6 +166,9 @@ void CG_ParseServerinfo()
 	cgs.buildPointRecoveryInitialRate  = atof( Info_ValueForKey( info, "g_BPRecoveryInitialRate" ) );
 	cgs.buildPointRecoveryRateHalfLife = atof( Info_ValueForKey( info, "g_BPRecoveryRateHalfLife" ) );
 
+	cgs.suddenDeathDrillCount = atof( Info_ValueForKey( info, "g_suddenDeathDrillCount" ) );
+	cgs.suddenDeathLeechCount = atof( Info_ValueForKey( info, "g_suddenDeathLeechCount" ) );
+
 	BG_SetForbiddenEquipment(  std::string( Info_ValueForKey( info, "g_disabledEquipment"  ) ) );
 	BG_SetForbiddenClasses(    std::string( Info_ValueForKey( info, "g_disabledClasses"    ) ) );
 	BG_SetForbiddenBuildables( std::string( Info_ValueForKey( info, "g_disabledBuildables" ) ) );
@@ -411,6 +414,7 @@ static void CG_Menu( int menuType, int arg )
 	int          menu = -1; // Menu to open
 	const char   *longMsg = nullptr; // command parameter
 	const char   *shortMsg = nullptr; // non-modal version of message
+	team_t       t = CG_MyTeam();
 
 	switch ( menuType )
 	{
@@ -559,6 +563,52 @@ static void CG_Menu( int menuType, int arg )
 		case MN_B_DISABLED:
 			longMsg = _("Building has been disabled on the server for your team.");
 			shortMsg = _("Building has been disabled for your team");
+			break;
+		
+		case MN_B_SUDDENDEATH_1:
+			longMsg = _( va( "^1SUDDEN DEATH HAS BEGUN.\n"
+						"^3You may only rebuild the following\n"
+						"^3buildings during Sudden Death:\n"
+						"%s" // om
+						"%s" // rc
+						"%s" // boost
+						"%s" // medi
+						"%s" // arm
+						"%s" // drill
+						"%s", // leech
+						( t == TEAM_ALIENS ? "^7Overmind\n" : "" ),
+						( t == TEAM_HUMANS ? "^7Reactor\n" : "" ),
+						( t == TEAM_ALIENS ? "^7Booster\n" : "" ),
+						( t == TEAM_HUMANS ? "^7Medistation\n" : "" ),
+						( t == TEAM_HUMANS ? "^7Armoury\n" : "" ),
+						( t == TEAM_HUMANS && cgs.suddenDeathDrillCount != 0 ? 
+						  va( "^7Drill^3* ^7(x^3%.0f^7)\n", 
+						      cgs.suddenDeathDrillCount > -1 ? cgs.suddenDeathDrillCount : 999 )
+							  // show the real drill count, or an unlikely max value;	
+						  : "" ),
+						( t == TEAM_ALIENS && cgs.suddenDeathLeechCount != 0 ? 
+						va( "^7Leech^3* ^7(x^3%.0f^7)\n", 
+						    cgs.suddenDeathLeechCount > -1 ? cgs.suddenDeathLeechCount : 999 )
+						    // show the real leech count, or an unlikely max value;
+						: "" ) ) );
+
+			shortMsg = _("Building is limited during Sudden Death");
+			break;
+
+		case MN_B_SUDDENDEATH_2:
+			longMsg = _("^1SUDDEN DEATH HAS BEGUN.\n"
+						"^3You may not build any structures\n"
+						"^3during Sudden Death.");
+			shortMsg = _("You may not build during Sudden Death");
+			break;
+
+		case MN_B_SUDDENDEATH_ONLYONE:
+			longMsg = _("^1SUDDEN DEATH HAS BEGUN.\n"
+						"^3You may only rebuild one of\n"
+						"^3these during Sudden Death.\n"
+						"^7Please deconstruct all existing\n"
+						"^7structures of this type first.");
+			shortMsg = _("You may only rebuild one of these during SD");
 			break;
 
 		case MN_B_REVOKED:

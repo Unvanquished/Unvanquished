@@ -515,6 +515,18 @@ static void Svcmd_Evacuation_f()
 	G_MapLog_Result( 'd' );
 }
 
+static void Svcmd_DelaySuddenDeath_f()
+{
+	if ( G_IsSuddenDeath() )
+	{
+		trap_SendServerCommand( -1, "cp \"^iThis vote is now void;\n^iSudden Death has already started.\n^iYou were too late!\"" );
+		trap_SendServerCommand( -1, va( "print_tr %s", QQ( N_("^iThis vote is now void; Sudden Death has already started. You were too late!") ) ) );
+		return;
+	}
+
+	G_UpdateSuddenDeathTime( ( level.suddenDeathStartTime + ( g_suddenDeathDelayTime.Get() * 60000 ) ) );
+}
+
 static void Svcmd_MapRotation_f()
 {
 	char rotationName[ MAX_QPATH ];
@@ -761,6 +773,7 @@ static const struct svcmd
 	{ "asay",               true,  Svcmd_MessageWrapper         },
 	{ "chat",               true,  Svcmd_MessageWrapper         },
 	{ "cp",                 false, Svcmd_CenterPrint_f          },
+	{ "delaysd",            false, Svcmd_DelaySuddenDeath_f     },
 	{ "dumpuser",           false, Svcmd_DumpUser_f             },
 	{ "eject",              false, Svcmd_EjectClient_f          },
 	{ "entityFire",         false, Svcmd_EntityFire_f           },

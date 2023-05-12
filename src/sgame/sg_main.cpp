@@ -75,6 +75,7 @@ Cvar::Cvar<bool> g_allowVote("g_allowVote", "whether votes of any kind are allow
 Cvar::Cvar<int> g_voteLimit("g_voteLimit", "max votes per player per round", Cvar::NONE, 5);
 Cvar::Cvar<int> g_extendVotesPercent("g_extendVotesPercent", "percentage required for extend timelimit vote", Cvar::NONE, 74);
 Cvar::Cvar<int> g_extendVotesTime("g_extendVotesTime", "number of minutes 'extend' vote adds to timelimit", Cvar::NONE, 10);
+Cvar::Cvar<int> g_suddenDeathDelayTime("g_suddenDeathDelayTime", "number of minutes 'extend' vote adds to Sudden Death time", Cvar::NONE, 5);
 Cvar::Cvar<int> g_kickVotesPercent("g_kickVotesPercent", "percentage required for votes to remove players", Cvar::NONE, 51);
 Cvar::Cvar<int> g_denyVotesPercent("g_denyVotesPercent", "percentage required for votes to strip/reinstate a player's chat/build privileges", Cvar::NONE, 51);
 Cvar::Cvar<int> g_mapVotesPercent("g_mapVotesPercent", "percentage required for map changing votes", Cvar::NONE, 51);
@@ -166,6 +167,22 @@ Cvar::Cvar<bool> g_alienAllowBuilding(
 		"can aliens build",
 		Cvar::NONE,
 		true);
+
+// sudden death
+Cvar::Callback<Cvar::Cvar<int>> g_suddenDeathTime(
+	"g_SuddenDeathTime", 
+	"Sudden Death begins after this time (in minutes). 0 = disabled. (configure with g_suddenDeathMode)", 
+	Cvar::NONE, 
+	0,
+	[](int) {
+		G_UpdateSuddenDeathTime( 0 );
+	});
+
+
+Cvar::Cvar<int> g_suddenDeathMode("g_suddenDeathMode", "Sudden Death mode. After g_suddenDeathTime, either: 0) SD disabled. OR 1) allow arm, medi, boost & main building rebuild. OR 2) allow no rebuilding.", Cvar::NONE, 0);
+// humans are more vulnerable than aliens at SD and rely on their buildings more, so we may allow a certain number of drills to be rebuilt after SD.
+Cvar::Range<Cvar::Cvar<int>> g_suddenDeathDrillCount("g_suddenDeathDrillCount", "Humans may be permitted to rebuild this many drills after Sudden Death.", Cvar::SERVERINFO, 1, -1, 64); 
+Cvar::Range<Cvar::Cvar<int>> g_suddenDeathLeechCount("g_suddenDeathLeechCount", "Aliens may be permitted to rebuild this many leeches after Sudden Death.", Cvar::SERVERINFO, 1, -1, 64); 
 
 Cvar::Cvar<float> g_alienOffCreepRegenHalfLife("g_alienOffCreepRegenHalfLife", "half-life in seconds for decay of creep's healing bonus", Cvar::NONE, 0);
 
@@ -637,6 +654,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	}
 
 	G_notify_sensor_start();
+
+	// update the Sudden Death time
+	G_UpdateSuddenDeathTime( g_suddenDeathTime.Get() * 60000 );
 
 	// Initialize build point counts for the intial layout.
 	G_UpdateBuildPointBudgets();
@@ -1252,6 +1272,193 @@ void CalculateRanks()
 	{
 		SendScoreboardMessageToAllClients();
 	}
+}
+
+/*
+========================================================================
+
+SUDDEN DEATH
+
+This is a basic, from-scratch reimplementation of Sudden Death,
+designed to behave similarly to that of Tremulous.
+
+g_SuddenDeathTime and g_SuddenDeathMode can be used to configure this.
+After g_SuddenDeathTime in minutes, SD will begin, limiting building.
+
+g_SuddenDeathMode:
+0 - disabled
+1 - allow the armoury, medistation, booster, reactor and overmind
+    to be rebuilt only, & only one of each.
+2 - allow nothing to be rebuilt. complete and true sudden death.
+
+All checks will be contained within this block to allow minimal
+edits to other files, and to maintain readability.
+
+========================================================================
+*/
+
+int G_TimeTilSuddenDeath()
+{
+	int sdTime = level.suddenDeathStartTime;
+	int sdMode = g_suddenDeathMode.Get();
+
+	if ( ( sdMode > 2 || sdMode <= 0 ) || sdTime <= 0 )
+	{
+		return -1; // SD is disabled or the cvar values are invalid.
+	}
+
+	if ( ( sdTime ) - ( level.time - level.startTime ) < 1 )
+	{
+		return 0; // it's sudden death!
+	}
+
+	return ( sdTime ) - ( level.time - level.startTime );
+}
+
+bool G_IsSuddenDeath()
+{
+	int sdTime = level.suddenDeathStartTime;
+	int sdMode = g_suddenDeathMode.Get();
+
+	if ( G_TimeTilSuddenDeath() != 0 || sdMode == 0 || sdTime == 0 ) 
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void G_UpdateSuddenDeathTime( int newTime )
+{
+	int t = newTime;
+
+	if ( newTime < 1 ) // if it's less than 1 it's probably not been set yet, or the cvar changed.
+	{
+		t = g_suddenDeathTime.Get() * 60000;
+	}
+
+	if ( level.suddenDeathStartTime > 0 ) // only tell people if it's changed after already being set
+	{
+		trap_SendServerCommand( -1, va( "cp \"^7Sudden Death now starts at ^3%02i:00\"", t / 60000 ) );
+		trap_SendServerCommand( -1, va( "print_tr %s %02i", QQ( N_("^7Sudden Death now starts at ^3$1$:00") ), t / 60000 ) );
+	}
+
+	level.suddenDeathStartTime = t;
+}
+
+void G_SuddenDeathWarning() // warn people SD is coming
+{
+	if ( G_TimeTilSuddenDeath() == -1 // SD is not enabled. stop here.
+		 || ( G_IsSuddenDeath() && level.suddenDeathWarning == TW_PASSED ) ) // SD has started and we've told everyone. nothing more to do.
+	{
+		return; 
+	}
+
+	if ( ( G_TimeTilSuddenDeath() > 60000 )
+		 && level.suddenDeathWarning >= TW_IMMINENT )
+	{
+		trap_SendServerCommand( -1, "cp \"^2Sudden Death has been rescinded!\"" );
+		trap_SendServerCommand( -1, va( "print_tr %s", QQ( N_("^2Sudden Death has been rescinded!") ) ) );
+		level.suddenDeathWarning = TW_NOT; // if SD has been delayed, reset the time warning.
+	}
+
+	if ( ( G_TimeTilSuddenDeath() <= 60000 )
+		 && level.suddenDeathWarning < TW_IMMINENT )
+	{
+		trap_SendServerCommand( -1, "cp \"^3Sudden Death is imminent!\"" );
+		trap_SendServerCommand( -1, va( "print_tr %s", QQ( N_("^3Sudden Death is imminent!") ) ) );
+		level.suddenDeathWarning = TW_IMMINENT;
+	}
+	else if ( G_IsSuddenDeath() && level.suddenDeathWarning < TW_PASSED )
+	{
+		trap_SendServerCommand( -1, "cp \"^1Sudden Death begins!\"" );
+		trap_SendServerCommand( -1, va( "print_tr %s", QQ( N_("^1Sudden Death begins!") ) ) );
+
+		level.suddenDeathWarning = TW_PASSED;
+	}
+}
+
+itemBuildError_t G_SuddenDeathBuildCheck( buildable_t buildable, bool build )
+{
+	struct buildable_status_t
+	{
+		int count;
+		bool marked = true; // will remain true if they are all marked
+	} structures[ BA_NUM_BUILDABLES ] = {};
+
+	if ( !G_IsSuddenDeath()              // if it's NOT SD or SD is disabled, stop here.
+		 || buildable == BA_H_REACTOR    // also stop here if the main buildable
+		 || buildable == BA_A_OVERMIND ) // is passed to this function.
+	{
+		return IBE_NONE;
+	}
+
+	if ( g_suddenDeathMode.Get() == 2 )
+	{
+		return IBE_SUDDENDEATH_2;
+	}
+
+	if ( !BG_Buildable( buildable )->availableAfterSD ) // ensure it can be rebuilt after SD
+	{
+		return IBE_SUDDENDEATH_1;
+	}
+
+	gentity_t *tmp = &g_entities[ 0 ];
+	for ( int i = 0; i < level.num_entities; i++, tmp++ ) 
+	{
+		if ( tmp->s.eType == entityType_t::ET_BUILDABLE ) 
+		{
+			int type = tmp->s.modelindex;
+			const BuildableComponent* BC = tmp->entity->Get<BuildableComponent>();
+			ASSERT( type < BA_NUM_BUILDABLES );
+			structures[ type ].count ++;
+			if ( !BC->MarkedForDeconstruction() )
+			{
+				structures[ type ].marked = false;
+			}
+		}
+	}
+
+	if ( buildable == BA_H_DRILL ) // special case for drills, because you can have >1 at SD and it's configurable by cvar.
+	{
+		if ( g_suddenDeathDrillCount.Get() == -1 )
+		{
+			return IBE_NONE; // -1 for unlimited drills
+		}
+
+		if ( structures[ BG_Buildable( buildable )->number ].count >= g_suddenDeathDrillCount.Get() )
+		{
+			return ( g_suddenDeathDrillCount.Get() == 1 ? IBE_SUDDENDEATH_ONLYONE : IBE_SUDDENDEATH_1 );
+		}
+
+		return IBE_NONE;
+	}
+
+	if ( buildable == BA_A_LEECH ) // special case for leeches, because you can have >1 at SD and it's configurable by cvar.
+	{
+		if ( g_suddenDeathLeechCount.Get() == -1 )
+		{
+			return IBE_NONE; // -1 for unlimited leeches
+		}
+
+		if ( structures[ BG_Buildable( buildable )->number ].count >= g_suddenDeathLeechCount.Get() )
+		{
+			return ( g_suddenDeathLeechCount.Get() == 1 ? IBE_SUDDENDEATH_ONLYONE : IBE_SUDDENDEATH_1 );
+		}
+
+		return IBE_NONE;
+	}
+
+	if ( structures[ BG_Buildable( buildable )->number ].count > 0 && build == false )
+	{
+		/*if ( structures[ BG_Buildable( buildable )->number ].marked == true )
+		{
+			return IBE_NONE; // rebuilding now will replace all existing of this type
+		}                    // this code is currently inoperable*/
+		return IBE_SUDDENDEATH_ONLYONE;
+	}
+
+	return IBE_NONE; // good to go
 }
 
 /*
@@ -2313,6 +2520,9 @@ void G_RunFrame( int levelTime )
 
 	// Power down buildables if there is a budget deficit.
 	G_UpdateBuildablePowerStates();
+
+	// do we need to tell people Sudden Death is due soon?
+	G_SuddenDeathWarning();
 
 	G_DecreaseMomentum();
 	G_CalculateAvgPlayers();

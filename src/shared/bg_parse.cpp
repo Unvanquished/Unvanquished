@@ -747,6 +747,10 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 		{
 			ba->dretchAttackable = true;
 		}
+		else if ( !Q_stricmp( token, "availableAfterSD" ) )
+		{
+			ba->availableAfterSD = true;
+		}
 		else if( (var = BG_FindConfigVar( va( "b_%s_%s", ba->name, token ) ) ) != nullptr )
 		{
 			BG_ParseConfigVar( var, &text, filename );

@@ -45,6 +45,7 @@ enum VoteOptions
 	VOTE_AFTER,    // not within the first N minutes
 	VOTE_REMAIN,   // within N/2 minutes before the timelimit
 	VOTE_NO_AUTO,  // don't automatically vote 'yes'
+	VOTE_SD_NOTSOON, // Sudden Death soon
 };
 
 

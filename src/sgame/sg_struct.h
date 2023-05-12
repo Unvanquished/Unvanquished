@@ -615,6 +615,9 @@ struct level_locals_t
 	team_t           lastWin;
 
 	timeWarning_t    timelimitWarning;
+	timeWarning_t    suddenDeathWarning;
+
+	int              suddenDeathStartTime;
 
 	team_t           unconditionalWin;
 

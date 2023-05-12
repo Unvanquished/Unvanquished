@@ -1163,6 +1163,14 @@ bool G_CheckDeconProtectionAndWarn( gentity_t *buildable, gentity_t *player )
 	{
 		return false;
 	}
+
+	if ( G_SuddenDeathBuildCheck( ( buildable_t ) buildable->s.modelindex, true ) != IBE_NONE )
+	{
+		G_TriggerMenu( player->client->ps.clientNum, 
+					   ( g_suddenDeathMode.Get() == 1 ? MN_B_SUDDENDEATH_1 : MN_B_SUDDENDEATH_2 ) );
+		return true;
+	}
+
 	switch ( buildable->s.modelindex )
 	{
 		case BA_A_OVERMIND:
@@ -1304,6 +1312,14 @@ static bool IsSetForDeconstruction( gentity_t *ent )
 
 static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, buildable_t newBuildable )
 {
+	// check for Sudden Death first
+	if ( G_IsSuddenDeath() 
+		 && ( !BG_Buildable( oldBuildable )->availableAfterSD 
+		 || !BG_Buildable( newBuildable )->availableAfterSD ) )
+	{
+		return ( g_suddenDeathMode.Get() == 1 ? IBE_SUDDENDEATH_1 : IBE_SUDDENDEATH_2 );
+	}
+
 	// don't replace the main buildable with any other buildable
 	if (    ( oldBuildable == BA_H_REACTOR  && newBuildable != BA_H_REACTOR  )
 	     || ( oldBuildable == BA_A_OVERMIND && newBuildable != BA_A_OVERMIND ) )
@@ -1723,6 +1739,12 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		}
 	}
 
+	// if there's nothing else preventing the build, check for SD
+	if ( reason == IBE_NONE )
+	{
+		reason = G_SuddenDeathBuildCheck( buildable, false );
+	}
+
 	return reason;
 }
 
@@ -2115,6 +2137,18 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_DISABLED:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_DISABLED );
+			return false;
+
+		case IBE_SUDDENDEATH_1:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_B_SUDDENDEATH_1 );
+			return false;
+
+		case IBE_SUDDENDEATH_2:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_B_SUDDENDEATH_2 );
+			return false;
+
+		case IBE_SUDDENDEATH_ONLYONE:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_B_SUDDENDEATH_ONLYONE );
 			return false;
 
 		case IBE_ONEREACTOR:

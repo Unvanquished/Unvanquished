@@ -158,6 +158,22 @@ static bool HandleExtendVote( gentity_t* ent, team_t team, std::string& cmd, std
 	return true;
 }
 
+static bool HandleDelaySDVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
+                               std::string& reason, std::string& name, int clientNum, int id )
+{
+	if ( G_TimeTilSuddenDeath() == -1 )
+	{
+		trap_SendServerCommand( ent->num(),
+		                        va( "print_tr %s %s", QQ( N_("$1$: Sudden Death is disabled") ), cmd.c_str() ) );
+		return false;
+	}
+	Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "delaysd" );
+	Com_sprintf( level.team[ team ].voteDisplayString,
+	             sizeof( level.team[ team ].voteDisplayString ),
+	             "Delay Sudden Death by %d minutes", g_suddenDeathDelayTime.Get() );
+	return true;
+}
+
 static bool HandleAdmitDefeatVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
                                    std::string& reason, std::string& name, int clientNum, int id )
 {
@@ -396,6 +412,7 @@ static std::unordered_map<std::string, VoteDefinition> voteInfo = {
 	{"unmute",            { false, V_PUBLIC, T_PLAYER,   false,  true,  qtrinary::qno,    &g_denyVotesPercent,        VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleUnmuteVote } },
 	{"denybuild",         { true,  V_TEAM,   T_PLAYER,   true,   true,  qtrinary::qyes,   &g_denyVotesPercent,        VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleDenybuildVote } },
 	{"allowbuild",        { true,  V_TEAM,   T_PLAYER,   false,  true,  qtrinary::qno,    &g_denyVotesPercent,        VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleAllowbuildVote } },
+	{"delaysd",           { true,  V_PUBLIC, T_OTHER,    false,  false, qtrinary::qno,    &g_extendVotesPercent,      VOTE_SD_NOTSOON, &g_suddenDeathDelayTime, nullptr,            &HandleDelaySDVote } },
 	{"extend",            { true,  V_PUBLIC, T_OTHER,    false,  false, qtrinary::qno,    &g_extendVotesPercent,      VOTE_REMAIN,  &g_extendVotesTime,  nullptr,                   &HandleExtendVote } },
 	{"admitdefeat",       { true,  V_TEAM,   T_NONE,     false,  true,  qtrinary::qno,    &g_admitDefeatVotesPercent, VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleAdmitDefeatVote } },
 	{"draw",              { true,  V_PUBLIC, T_NONE,     false,  true,  qtrinary::qyes,   &g_drawVotesPercent,        VOTE_AFTER,   &g_drawVotesAfter,   &g_drawVoteReasonRequired, &HandleDrawVote } },
@@ -593,6 +610,21 @@ void G_HandleVote( gentity_t* ent )
 				        QQ( N_(
 							"'$1$' votes are only allowed with less than $2$ minutes remaining" ) ),
 				        vote.c_str(), vi.specialCvar->Get() / 2 ) );
+				return;
+			}
+
+			break;
+		
+		case VOTE_SD_NOTSOON:
+			if ( ( G_TimeTilSuddenDeath() >= ( vi.specialCvar->Get() * 60000 / 2 ) )
+			     || G_IsSuddenDeath() ) // SD cannot be extended once started.
+			{
+				trap_SendServerCommand(
+					ent->num(),
+					va( "print_tr %s %s %d",
+				        QQ( N_(
+							"'$1$' votes are only allowed with less than $2$ minutes before it is due" ) ),
+				        vote.c_str(), vi.specialCvar->Get() ) );
 				return;
 			}
 
@@ -1154,6 +1186,7 @@ bool G_ParseVoteOptions( Str::StringRef s, VoteOptions* type )
 		{ "VOTE_AFTER", VOTE_AFTER },
 		{ "VOTE_REMAIN", VOTE_REMAIN },
 		{ "VOTE_NO_AUTO", VOTE_NO_AUTO },
+		{ "VOTE_SD_NOTSOON", VOTE_SD_NOTSOON },
 	};
 	const auto& it = map.find( s );
 	if ( it == map.end() )
@@ -1176,6 +1209,8 @@ Str::StringRef G_VoteOptionsString( VoteOptions type )
 			return "VOTE_REMAIN";
 		case VOTE_NO_AUTO:
 			return "VOTE_NO_AUTO";
+		case VOTE_SD_NOTSOON:
+			return "VOTE_SD_NOTSOON";
 		case VOTE_ALWAYS:
 			return "VOTE_ALWAYS";
 	}
