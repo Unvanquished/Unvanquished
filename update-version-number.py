@@ -18,6 +18,11 @@ REPLACEMENTS = [
         r"(<key>CFBundleVersion</key>\s*)<string>[^<]+</string>",
         r"\1<string>{version}</string>"
     ),
+    (
+        "download-paks",
+        r"current_unvanquished_version='[^']*'",
+        r"current_unvanquished_version='{version}'"
+    ),
 ]
 
 

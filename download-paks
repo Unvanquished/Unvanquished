@@ -55,19 +55,8 @@ DEFAULT_IFS="${IFS}"
 xdgHomeDir="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
 xdgCacheDir="${XDG_DATA_HOME:-${HOME}/.cache}/unvanquished/download-paks"
 
-version='unknown'
-if command -v git >/dev/null
-then
-	if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = 'true' ]
-	then
-		tag="$(git tag -l --sort=-version:refname 'v*' | head -n1)"
-		if ! [ -z "${tag}" ]
-		then
-			version="${tag:1}"
-		fi
-		unset tag
-	fi
-fi
+current_unvanquished_version='0.54.0'
+version="${current_unvanquished_version}"
 
 sum_file_name='md5sums'
 
