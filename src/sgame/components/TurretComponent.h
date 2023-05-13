@@ -114,7 +114,7 @@ class TurretComponent: public TurretComponentBase {
 		glm::vec3 RelativeAnglesToDirection(const glm::vec3 relativeAngles) const;
 
 		/** An entity target that the turret can track. */
-		gentity_t* target;
+		GentityRef target;
 
 		/** The attack range of the turret, used for checking whether a target can be hit. */
 		float range;
