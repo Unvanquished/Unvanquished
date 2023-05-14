@@ -647,11 +647,6 @@ public:
 private:
     void Update()
     {
-        if ( menuContext )
-        {
-			CG_Rocket_EnableCursor( show_cursor && focus );
-        }
-
         MouseMode mode;
 
         if ( !focus )
@@ -660,6 +655,7 @@ private:
         }
         else if ( show_cursor )
         {
+            CG_Rocket_EnableCursor( menuContext );
             mode = MouseMode::CustomCursor;
         }
         else
@@ -668,7 +664,6 @@ private:
         }
 
         trap_SetMouseMode( mode );
-
     }
 
     bool show_cursor = true;
