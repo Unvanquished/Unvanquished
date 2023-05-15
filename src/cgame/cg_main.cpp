@@ -1201,6 +1201,13 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 {
 	const char *s;
 
+	bool fullscreen;
+	if ( Cvar::ParseCvarValue( Cvar::GetValue( "r_fullscreen" ), fullscreen ) && !fullscreen )
+	{
+		// ungrab the mouse while loading in windowed mode
+		trap_SetMouseMode( MouseMode::SystemCursor );
+	}
+
 	CG_UpdateLoadingStep( LOAD_START );
 
 	// get the rendering configuration from the client system
