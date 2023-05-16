@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-11 09:51+0000\n"
-"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2023-05-17 22:56+0000\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -25,7 +25,7 @@ msgstr "Construire"
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr "Prix :"
+msgstr "Prix :"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -37,7 +37,7 @@ msgstr "points de métamorphose"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr "Choisissez votre forme de départ :"
+msgstr "Choisissez votre forme de départ :"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
@@ -52,12 +52,12 @@ msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
-"Les dretches sont une forme d'attaque furtive et les grangers sont la forme "
+"Les dretches sont une forme d’attaque furtive et les grangers sont la forme "
 "de construction extraterrestre."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr "Retour à la sélection de l'équipe"
+msgstr "Retour à la sélection de l’équipe"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -102,11 +102,11 @@ msgstr "Changer de carte"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Vote : changer la carte suivante"
+msgstr "Vote : changer la carte suivante"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr "Vote : définir la carte actuelle"
+msgstr "Vote : définir la carte actuelle"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
@@ -126,7 +126,7 @@ msgstr "Effectuer une action"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr "Erreur !"
+msgstr "Erreur !"
 
 #: ui/error.rml:11
 msgid "Ok"
@@ -147,8 +147,8 @@ msgstr ""
 #: ui/help_gameplay.rml:23
 msgid "Feel free to join us in the community and developer chats!"
 msgstr ""
-"N'hésitez pas à nous rejoindre dans les discutions de la communauté et des "
-"développeurs !"
+"N’hésitez pas à nous rejoindre dans les discutions de la communauté et des "
+"développeurs !"
 
 #: ui/help_gameplay.rml:24
 msgid ""
@@ -176,8 +176,8 @@ msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
-"Les extraterrestres peuvent gagner des points d'évolution en tuant des "
-"humains. Ils peuvent ensuite utiliser ces points d'évolution pour évoluer "
+"Les extraterrestres peuvent gagner des points d’évolution en tuant des "
+"humains. Ils peuvent ensuite utiliser ces points d’évolution pour évoluer "
 "vers des [dragoon] formes plus avancées."
 
 #: ui/help_gameplay.rml:37
@@ -186,18 +186,18 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
-"Les extraterrestres peuvent évoluer de partout si ce n'est dans la ligne de "
+"Les extraterrestres peuvent évoluer de partout si ce n’est dans la ligne de "
 "mire d'un joueur humain ou d'une construction. Les extraterrestres peuvent "
 "également passer à des formes moins avancées de [granger] (à un certain coût)"
-" lorsqu'ils sont proches de l'Overmind [overmind]."
+" lorsqu’ils sont proches de l'Overmind [overmind]."
 
 #: ui/help_gameplay.rml:40
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Construisez un overmind avec un [granger] granger s'il est détruit, vous "
-"avez besoin d'un overmind vivant pour évoluer !"
+"Construisez un overmind avec un [granger] granger s’il est détruit, vous "
+"avez besoin d’un overmind vivant pour évoluer !"
 
 #: ui/help_gameplay.rml:44
 msgid ""
@@ -216,9 +216,9 @@ msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"Les humains achètent et vendent des armes à l'[armurerie] armurerie, assurez-"
-"vous qu'il y en a une ! Utilisez le kit de construction pour construire une "
-"armurerie s'il en manque."
+"Les humains achètent et vendent des armes à l’[armurerie] armurerie, assurez-"
+"vous qu’il y en a une ! Utilisez le kit de construction pour construire une "
+"armurerie s’il en manque."
 
 #: ui/help_gameplay.rml:51
 msgid "Powering buildables"
@@ -249,7 +249,7 @@ msgstr ""
 "Lorsque vous utilisez plus de points de construction que les structures "
 "minières ([leech] Leech, [drill] Drill) ne sont capables de fournir (pts de "
 "construction actuels + pts de construction que vous récupérerez au fil du "
-"temps), les constructions s'éteindront jusqu'à ce que les autres "
+"temps), les constructions s’éteindront jusqu'à ce que les autres "
 "constructions aient assez d'énergie pour rester opérationnel."
 
 #: ui/help_gameplay.rml:58
@@ -273,9 +273,9 @@ msgid ""
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
-"Les points de construction sont acquis via deux structures minières : le "
+"Les points de construction sont acquis via deux structures minières : le "
 "drill [drill] et le leech [leech]. Ces bâtiments doivent être répartis pour "
-"plus d'efficacité."
+"plus d’efficacité."
 
 #: ui/help_gameplay.rml:68
 msgid ""
@@ -284,7 +284,7 @@ msgid ""
 msgstr ""
 "Ne construisez pas de structures minières trop proches les unes des autres, "
 "sinon elles se feront concurrence et finiront par coûter des ressources de "
-"construction !"
+"construction !"
 
 #: ui/help_gameplay.rml:71
 msgid ""
@@ -294,12 +294,12 @@ msgid ""
 "mining structure finishes building, and will be subtracted back if the "
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
-"Les constructeurs verront une autre barre au-dessus de la barre de santé "
-"d'un générateur de ressources qui représente son efficacité. Une prédiction "
-"s'affichera lorsque vous positionnerez la structure. Les points de "
+"Les constructeurs verront une autre barre au-dessus de la barre de santé d’"
+"un générateur de ressources qui représente son efficacité. Une prédiction s’"
+"affichera lorsque vous positionnerez la structure. Les points de "
 "construction sont disponibles instantanément lorsque la structure minière "
 "termine sa construction et seront soustraits si le bâtiment est détruit. Ne "
-"construisez pas de drill non protégées !"
+"construisez pas de drill non protégés !"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -371,8 +371,8 @@ msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
-"L'attaque au crachat de granger avancé [advgranger] peut être utilisée pour "
-"éteindre les incendies ou ralentir les intrus !"
+"L’attaque au crachat de granger avancé [advgranger] peut être utilisée pour "
+"éteindre les incendies ou ralentir les intrus !"
 
 #: ui/help_gameplay.rml:104
 msgid "Under attack"
@@ -396,7 +396,7 @@ msgstr "Guérison"
 
 #: ui/help_gameplay.rml:114
 msgid "Dying feeds the ennemy, you may want to save your life!"
-msgstr "Mourir nourrit l'ennemi, vous voudrez peut-être sauver votre vie !"
+msgstr "Mourir nourrit l'ennemi, vous voudrez peut-être sauver votre vie !"
 
 #: ui/help_gameplay.rml:118
 msgid ""
@@ -439,12 +439,12 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
-"Les extraterrestres ont un troisième bonus de guérison : la proximité avec "
+"Les extraterrestres ont un troisième bonus de guérison : la proximité avec "
 "d'autres extraterrestres. Si vous êtes à proximité d'un extraterrestre "
 "amical, vous guérirez légèrement plus rapidement, et avec deux coéquipiers, "
 "vous guérirez aussi vite que vous le feriez en touchant une construction "
 "extraterrestre. Avec un peu de travail d'équipe, c'est un excellent moyen "
-"d'assiéger les ennemis !"
+"d'assiéger les ennemis !"
 
 #: ui/help_gameplay.rml:132
 msgid ""
@@ -465,7 +465,7 @@ msgid ""
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
 "Certaines formes extraterrestres comme le [dretch] dretch, le [mantis] "
-"mantis et le [advgranger] granger avancé peuvent marcher sur les murs !"
+"mantis et le [advgranger] granger avancé peuvent marcher sur les murs !"
 
 #: ui/help_gameplay.rml:142
 msgid "Use this to reach special places or use shortcuts through vents."
@@ -525,8 +525,8 @@ msgid ""
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
 "Les extraterrestres ont le spiker qui peut profondément blesser les humains "
-"imprudents, mais c'est une structure très vulnérable, ne le mettez pas à la "
-"vue de tous !"
+"imprudents, mais c’est une structure très vulnérable, ne le mettez pas à la "
+"vue de tous !"
 
 #: ui/help_gameplay.rml:170
 msgid ""
@@ -544,7 +544,7 @@ msgid ""
 msgstr ""
 "Les extraterrestres peuvent désévoluer près de l'overmind, et le crachat de "
 "granger avancé peut faire des choses intéressantes, essayez-le sur le feu ou "
-"les humains !"
+"les humains !"
 
 #: ui/help_textentry.rml:19 ui/menu_ingame.rml:112 ui/menu_main.rml:49
 msgid "Colour codes and symbols"
@@ -598,15 +598,15 @@ msgstr "TAB"
 
 #: ui/human_buy.rml:217
 msgid "Range:"
-msgstr "Portée :"
+msgstr "Portée :"
 
 #: ui/human_buy.rml:218
 msgid "Damage:"
-msgstr "Dommage :"
+msgstr "Dommage :"
 
 #: ui/human_buy.rml:219
 msgid "Fire Rate:"
-msgstr "Cadence de tir :"
+msgstr "Cadence de tir :"
 
 #: ui/human_buy.rml:224
 msgid "Upgrades"
@@ -614,7 +614,7 @@ msgstr "Évolutions"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr "Choisissez votre équipement de départ :"
+msgstr "Choisissez votre équipement de départ :"
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
@@ -644,11 +644,11 @@ msgstr "Spectateurs"
 #: ui/ingame_scoreboard.rml:191 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr "Carte :"
+msgstr "Carte :"
 
 #: ui/ingame_scoreboard.rml:192
 msgid "Time:"
-msgstr "Temps :"
+msgstr "Temps :"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
@@ -717,7 +717,7 @@ msgstr "Démocratie"
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
-msgstr "Vote global :"
+msgstr "Vote global :"
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
@@ -733,7 +733,7 @@ msgstr "non"
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
-msgstr "Vote d'équipe :"
+msgstr "Vote d’équipe :"
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
@@ -789,7 +789,7 @@ msgstr "Joueurs"
 
 #: ui/menu_ingame.rml:80
 msgid "Disclipline: kick/ban/mute/nobuild"
-msgstr "Modération : expulser/bannir/muter/interdire la construction"
+msgstr "Modération : expulser/bannir/muter/interdire la construction"
 
 #: ui/menu_ingame.rml:87
 msgid "Main menu"
@@ -1021,7 +1021,7 @@ msgstr "Luminosité"
 
 #: ui/options_graphics.rml:51
 msgid "Gamma:"
-msgstr "Gamma :"
+msgstr "Gamma :"
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
@@ -1397,7 +1397,7 @@ msgstr "Vitesse de déplacement minimale pour activer le flou de mouvement"
 
 #: ui/options_graphics.rml:272 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr "Actuel :"
+msgstr "Actuel :"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
@@ -1437,35 +1437,35 @@ msgstr "Déplacement"
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
-msgstr "Courir / marcher :"
+msgstr "Courir / marcher :"
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr "Sprinter :"
+msgstr "Sprinter :"
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr "Avancer :"
+msgstr "Avancer :"
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
-msgstr "Reculer :"
+msgstr "Reculer :"
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr "Se déplacer à gauche :"
+msgstr "Se déplacer à gauche :"
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr "Se déplacer à droite :"
+msgstr "Se déplacer à droite :"
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
-msgstr "Sauter :"
+msgstr "Sauter :"
 
 #: ui/options_keys.rml:65
 msgid "Crouch:"
-msgstr "S’accroupir :"
+msgstr "S’accroupir :"
 
 #: ui/options_keys.rml:69
 msgid "Wallwalk:"
@@ -1477,16 +1477,16 @@ msgstr "Capacités"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr "Attaque principale :"
+msgstr "Attaque principale :"
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr "Attaque secondaire :"
+msgstr "Attaque secondaire :"
 
 #: ui/options_keys.rml:84
 #, fuzzy
 msgid "Shoot barb:"
-msgstr "Tire de \"pique\" :"
+msgstr "Tire de \"pique\" :"
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
@@ -1494,19 +1494,19 @@ msgstr "Lancer la grenades :"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
-msgstr "Recharger :"
+msgstr "Recharger :"
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr "Utilisez le kit médical :"
+msgstr "Utilisez le kit médical :"
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr "Utiliser la structure :"
+msgstr "Utiliser la structure :"
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr "Évoluer :"
+msgstr "Évoluer :"
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
@@ -1514,7 +1514,7 @@ msgstr "Discuter/Voter"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
-msgstr "Faire un geste :"
+msgstr "Faire un geste :"
 
 #: ui/options_keys.rml:115
 msgid "Global chat:"
@@ -1530,15 +1530,15 @@ msgstr "Discussion avec l’administrateur :"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr "Voter « oui » :"
+msgstr "Voter Oui :"
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr "Voter « non » :"
+msgstr "Voter Non :"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
-msgstr "Vote d'équipe Oui :"
+msgstr "Vote d'équipe Oui :"
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
@@ -1570,7 +1570,7 @@ msgstr "Alterner la console :"
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
-msgstr "Faire une capture d’écran :"
+msgstr "Faire une capture d’écran :"
 
 #: ui/options_keys.rml:165
 msgid ""
@@ -1590,15 +1590,15 @@ msgstr "Regarder vers le haut :"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr "Baisser les yeux :"
+msgstr "Baisser les yeux :"
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
-msgstr "Tourner à gauche :"
+msgstr "Tourner à gauche :"
 
 #: ui/options_keys.rml:183
 msgid "Turn right:"
-msgstr "Tourner à droite :"
+msgstr "Tourner à droite :"
 
 #: ui/options_keys.rml:187
 msgid "Mouse look:"
@@ -1606,7 +1606,7 @@ msgstr "Vue à la souris :"
 
 #: ui/options_keys.rml:191
 msgid "Centerview:"
-msgstr "Centrer la vue :"
+msgstr "Centrer la vue :"
 
 #: ui/options_mouse.rml:9
 msgid "Y axis"
@@ -1871,11 +1871,11 @@ msgstr "Images par seconde."
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr "Salut !"
+msgstr "Salut !"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr "Comment doit-on t'appeler ?"
+msgstr "Comment doit-on t’appeler ?"
 
 #: ui/options_welcome.rml:13
 msgid "Your name visible to others."
@@ -1899,7 +1899,7 @@ msgstr "Internet"
 
 #: ui/server_browser.rml:43 ui/server_browser.rml:59
 msgid "Name:"
-msgstr "Nom :"
+msgstr "Nom :"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
@@ -1975,7 +1975,7 @@ msgstr ""
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr "Extraterrestres :"
+msgstr "Extraterrestres :"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
@@ -2157,15 +2157,15 @@ msgstr ""
 
 #: ui/transition_downloading.rml:56
 msgid "Time left:"
-msgstr "Temps restant :"
+msgstr "Temps restant :"
 
 #: ui/transition_downloading.rml:57
 msgid "Download rate:"
-msgstr "Taux de téléchargement :"
+msgstr "Taux de téléchargement :"
 
 #: ui/transition_downloading.rml:58
 msgid "Size:"
-msgstr "Taille :"
+msgstr "Taille :"
 
 #: ui/transition_loading.rml:109
 msgid "Loading"
@@ -2178,8 +2178,8 @@ msgstr "Bienvenue sur Unvanquished"
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
-"Fermez ce menu et cliquez n'importe où pour rejoindre une équipe et "
-"commencer à jouer !"
+"Fermez ce menu et cliquez n’importe où pour rejoindre une équipe et "
+"commencer à jouer !"
 
 #: src/cgame/cg_event.cpp:276
 msgctxt "male"
@@ -2199,20 +2199,19 @@ msgstr "%s%s ^*est tombé jusqu'à en mourir"
 #: src/cgame/cg_event.cpp:280
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
-msgstr "%s%s ^* a été écrasé"
+msgstr "%s%s ^* a été tué par écrasement"
 
 #: src/cgame/cg_event.cpp:280
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
-msgstr "%s%s ^* a été écrasé à mort"
+msgstr "%s%s ^* a été tuée par écrasement"
 
 #: src/cgame/cg_event.cpp:280
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
-msgstr "%s%s ^* a été écrasé"
+msgstr "%s%s ^* a été tué par écrasement"
 
 #: src/cgame/cg_event.cpp:284
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*drowned"
 msgstr "%s%s ^*s'est noyé"
@@ -2250,7 +2249,7 @@ msgstr "%s%s ^* s'est baigné dans de la lave"
 #: src/cgame/cg_event.cpp:292
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
-msgstr "%s%s ^* s'est baigné dans de la lave"
+msgstr "%s%s ^* s'est baignée dans de la lave"
 
 #: src/cgame/cg_event.cpp:292
 msgctxt "neuter"
@@ -2290,17 +2289,17 @@ msgstr "%s%s ^*a été pris dans l'explosion"
 #: src/cgame/cg_event.cpp:306
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
-msgstr "%s%s ^*s'est noyé dans l'acide"
+msgstr "%s%s ^*a été pris dans l'acide"
 
 #: src/cgame/cg_event.cpp:306
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
-msgstr "%s%s ^*s'est noyée dans l'acide"
+msgstr "%s%s ^*a été prise dans l'acide"
 
 #: src/cgame/cg_event.cpp:306
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
-msgstr "%s%s ^*s'est noyé dans l'acide"
+msgstr "%s%s ^*a été pris dans l'acide"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "male"
@@ -3625,23 +3624,23 @@ msgstr "Vous avez tué votre^1COÉQUIPIER^* %s"
 
 #: src/cgame/cg_event.cpp:1239
 msgid "The Overmind is under attack!"
-msgstr "L'Overmind est attaqué !"
+msgstr "L’Overmind est attaqué !"
 
 #: src/cgame/cg_event.cpp:1246
 msgid "The reactor is under attack!"
-msgstr "Le réacteur est attaqué !"
+msgstr "Le réacteur est attaqué !"
 
 #: src/cgame/cg_event.cpp:1261
 msgid "The Overmind is dying!"
-msgstr "L'Overmind est mort !"
+msgstr "L'Overmind agonise !"
 
 #: src/cgame/cg_event.cpp:1267
 msgid "The reactor is going down!"
-msgstr "Le réacteur est détruit !"
+msgstr "Le réacteur est détruit !"
 
 #: src/cgame/cg_event.cpp:1286 src/cgame/cg_event.cpp:1308
 msgid "Our base is under attack!"
-msgstr "Notre base est attaquée !"
+msgstr "Notre base est attaquée !"
 
 #: src/cgame/cg_event.cpp:1299
 #, c-format
@@ -3707,7 +3706,7 @@ msgstr "Enregistrement du ronronnement de Granger…"
 
 #: src/cgame/cg_main.cpp:515
 msgid "Hello World!"
-msgstr "Bonjour tout le monde !"
+msgstr "Bonjour tout le monde !"
 
 #: src/cgame/cg_main.cpp:515
 #, fuzzy
@@ -3774,7 +3773,7 @@ msgstr "Arpenter la carte…"
 
 #: src/cgame/cg_main.cpp:551
 msgid "Done!"
-msgstr "terminé !"
+msgstr "Terminé !"
 
 #: src/cgame/cg_main.cpp:1129
 #, fuzzy
@@ -3848,25 +3847,23 @@ msgstr "En attente de l’état de la partie…"
 
 #: src/cgame/cg_rocket_draw.cpp:3052
 msgid "Say:"
-msgstr "Dire :"
+msgstr "Dire :"
 
 #: src/cgame/cg_rocket_draw.cpp:3053
-#, fuzzy
 msgid "Team Say:"
-msgstr "dire à l’équipe :"
+msgstr "Dire à l’équipe :"
 
 #: src/cgame/cg_rocket_draw.cpp:3054
-#, fuzzy
 msgid "Admin Say:"
-msgstr "Dire aux administrateurs :"
+msgstr "Dire à l’adiminstrateur :"
 
 #: src/cgame/cg_rocket_draw.cpp:3055
 msgid "Command:"
-msgstr "Commande :"
+msgstr "Commande :"
 
 #: src/cgame/cg_rocket_draw.cpp:3452
 msgid "FIGHT!"
-msgstr "À L’ATTAQUE !"
+msgstr "À L’ATTAQUE !"
 
 #: src/cgame/cg_rocket_draw.cpp:3546
 msgid "estimating"
@@ -4050,8 +4047,8 @@ msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
 msgstr ""
-"Votre équipe a décidé d'admettre la défaite et de concéder la partie : il "
-"n'y a plus d'intérêt à construire quelque chose."
+"Votre équipe a décidé d admettre la défaite et de concéder la partie : il n "
+"y a plus d'intérêt à construire quelque chose."
 
 #: src/cgame/cg_servercmds.cpp:572
 msgid "Cannot build after admitting defeat"
@@ -4326,19 +4323,19 @@ msgid "cgame: debug: no such menu %d"
 msgstr "cgame : débogage : aucun menu de ce type %d"
 
 #: src/cgame/cg_servercmds.cpp:902
-#, c-format, fuzzy
+#, c-format
 msgid "%sPrivate message from: ^7%s"
-msgstr "%sMessage privé de : ^7%s"
+msgstr "%sMessage privé de : ^7%s"
 
 #: src/cgame/cg_servercmds.cpp:910
 #, c-format
 msgid ">> to reply, say: /m %d [your message] <<"
-msgstr ">> pour répondre, dites : /m %d [votre message] <<"
+msgstr ">> pour répondre, dites : /m %d [votre message] <<"
 
 #: src/cgame/cg_servercmds.cpp:1392
-#, c-format, fuzzy
+#, c-format
 msgid "Unknown client game command: %s"
-msgstr "Commande de jeu client inconnue : %s"
+msgstr "Commande de jeu client inconnue : %s"
 
 #: src/cgame/cg_tutorial.cpp:44
 msgid "Run/Walk"
@@ -4667,19 +4664,19 @@ msgstr "$1$^* est passé de $2$ aux spectateurs en raison de l'inactivité"
 
 #: src/sgame/sg_active.cpp:753
 msgid "Ten seconds until inactivity spectate!"
-msgstr "Dix secondes jusqu'à l'inactivité spectateur !"
+msgstr "Dix secondes jusqu’à l'inactivité spectateur !"
 
 #: src/sgame/sg_active.cpp:753
 msgid "Ten seconds until inactivity drop!"
-msgstr "Dix secondes jusqu'à ce que l'inactivité baisse !"
+msgstr "Dix secondes jusqu’à ce que l'inactivité baisse !"
 
 #: src/sgame/sg_bot.cpp:68
 msgid "Alien bot names:"
-msgstr "Noms des robots extraterrestres :"
+msgstr "Noms des robots extraterrestres :"
 
 #: src/sgame/sg_bot.cpp:69
 msgid "Human bot names:"
-msgstr "Noms des robots humains :"
+msgstr "Noms des robots humains :"
 
 #: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
@@ -4687,11 +4684,11 @@ msgstr "$1$^*s'est déconnecté"
 
 #: src/sgame/sg_bot_nav.cpp:114
 msgid "Server: generating bot navigation mesh for $1$... $2$%"
-msgstr "Serveur : génération du maillage de navigation des bot pour $1$... $2$%"
+msgstr "Serveur : génération du maillage de navigation des bot pour $1$... $2$%"
 
 #: src/sgame/sg_bot_nav.cpp:153
 msgid "Bot navmesh generation failed!"
-msgstr "La génération du mesh de navigation des robots a échoué !"
+msgstr "La génération du mesh de navigation des bots a échoué !"
 
 #: src/sgame/sg_buildable.cpp:2041
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
@@ -4718,7 +4715,7 @@ msgstr "Vous ne pouvez pas changer votre nom pendant que vous êtes muté"
 #: src/sgame/sg_client.cpp:872
 msgid "Name is too long! Must be less than $1$ characters or color codes."
 msgstr ""
-"Le nom est trop long ! Doit contenir moins de $1$ caractères ou codes de "
+"Le nom est trop long ! Il doit contenir moins de $1$ caractères ou codes de "
 "couleur."
 
 #: src/sgame/sg_client.cpp:1193
@@ -4759,11 +4756,11 @@ msgstr "Victoire des extraterrestres"
 
 #: src/sgame/sg_main.cpp:2183
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
-msgstr "Échec du vote (1 $ sur 2 $ ; quorum non atteint)"
+msgstr "Échec du vote (1 $ sur 2 $ ; quorum non atteint)"
 
 #: src/sgame/sg_main.cpp:2183
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
-msgstr "Échec du vote d'équipe (1 $ sur 2 $ ; quorum non atteint)"
+msgstr "Échec du vote d’équipe (1 $ sur 2 $ ; quorum non atteint)"
 
 #: src/sgame/sg_main.cpp:2188
 msgid "Vote passed ($1$ — $2$)"
@@ -4776,20 +4773,20 @@ msgstr "Vote d'équipe passé (1$ - 2$)"
 #: src/sgame/sg_main.cpp:2193
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr "Échec du vote ($1$ — $2$ ; $3$% requis)"
+msgstr "Échec du vote ($1$ — $2$ ; $3$% requis)"
 
 #: src/sgame/sg_main.cpp:2193
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr "Échec du vote d'équipe (1 $ - 2 $ ; 3 $ % requis)"
+msgstr "Échec du vote d’équipe (1 $ - 2 $ ; 3 $ % requis)"
 
 #: src/sgame/sg_main.cpp:2358
 msgid "Server: Game will auto-unpause in $1$ seconds"
-msgstr "Serveur : le jeu se réactivera automatiquement dans $1$ secondes"
+msgstr "Serveur : le jeu se réactivera automatiquement dans $1$ secondes"
 
 #: src/sgame/sg_main.cpp:2374
 msgid "Server: The game has been unpaused automatically (2 minute max)"
-msgstr "Serveur : Le jeu a été automatiquement débloqué (2 minutes max)"
+msgstr "Serveur : Le jeu a été automatiquement débloqué (2 minutes max)"
 
 #: src/sgame/sg_svcmds.cpp:405
 msgid "Alien team has admitted defeat"
