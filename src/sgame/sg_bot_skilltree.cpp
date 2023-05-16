@@ -143,15 +143,15 @@ void G_InitSkilltreeCvars()
 		G_SetBaseSkillset
 		);
 
-	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetAliens(
-		"g_skillsetBudgetAliens",
+	static Cvar::Callback<Cvar::Cvar<int>> g_skillset_budgetAliens(
+		"g_skillset_budgetAliens",
 		"How many skillpoint for bot aliens' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
 		skillsetBudgetAliens,
 		G_SetSkillsetBudgetAliens
 		);
-	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetHumans(
-		"g_skillsetBudgetHumans",
+	static Cvar::Callback<Cvar::Cvar<int>> g_skillset_budgetHumans(
+		"g_skillset_budgetHumans",
 		"How many skillpoint for bot humans' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
 		skillsetBudgetHumans,
