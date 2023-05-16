@@ -127,8 +127,8 @@ static void G_SetSkillsetBudgetAliens( int val )
 
 void G_InitSkilltreeCvars()
 {
-	static Cvar::Callback<Cvar::Cvar<std::string>> g_skillset_disabledSkills(
-		"g_skillset_disabledSkills",
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_bot_skillset_disabledSkills(
+		"g_bot_skillset_disabledSkills",
 		"Skills that will not be selected randomly for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
 		Cvar::NONE,
 		"",
@@ -143,15 +143,15 @@ void G_InitSkilltreeCvars()
 		G_SetBaseSkillset
 		);
 
-	static Cvar::Callback<Cvar::Cvar<int>> g_bot_skillsetBudgetAliens(
-		"g_bot_skillsetBudgetAliens",
+	static Cvar::Callback<Cvar::Cvar<int>> g_bot_skillset_budgetAliens(
+		"g_bot_skillset_budgetAliens",
 		"How many skillpoint for bot aliens' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
 		skillsetBudgetAliens,
 		G_SetSkillsetBudgetAliens
 		);
-	static Cvar::Callback<Cvar::Cvar<int>> g_bot_skillsetBudgetHumans(
-		"g_bot_skillsetBudgetHumans",
+	static Cvar::Callback<Cvar::Cvar<int>> g_bot_skillset_budgetHumans(
+		"g_bot_skillset_budgetHumans",
 		"How many skillpoint for bot humans' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
 		skillsetBudgetHumans,
