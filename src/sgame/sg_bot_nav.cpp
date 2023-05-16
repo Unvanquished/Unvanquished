@@ -844,6 +844,8 @@ static constexpr int WALLCLIMB_MAX_TIME = 3000;
 static Cvar::Cvar<int> g_bot_upwardNavconMinHeight("g_bot_upwardNavconMinHeight", "minimal height difference for bots to use special upward movement.", Cvar::NONE, 100);
 static Cvar::Cvar<int> g_bot_upwardLeapAngleCorr("g_bot_upwardLeapAngleCorr", "is added to the angle for mantis and dragoon when leaping upward (in degrees).", Cvar::NONE, 20);
 
+// could use BG_ClassHasAbility( pcl, SCA_WALLCLIMBER ) to check if calling
+// this is a good idea
 static void BotClimbToGoal( gentity_t *self )
 {
 	glm::vec3 ownPos = VEC2GLM( self->s.origin );
