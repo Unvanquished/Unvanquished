@@ -830,6 +830,15 @@ Global Bot Navigation
 =========================
 */
 
+
+// HACK:
+// Set an upper bound on how long a bot will have the wall climb activated,
+// in order to prevent looping on strange wall geometries.
+// This works well in practice, as recast limits the navcon distance.
+// There are at least to cleaner ways to handle this:
+// - Calculate the required time when a bot activates the wall climb
+// - Disable the wall climb once a bot has reached the higher level navmesh
+// Both are non-trivial, because a bot might choose a new goal while wall climbing.
 static constexpr int WALLCLIMB_MAX_TIME = 3000;
 
 static Cvar::Cvar<int> g_bot_upwardNavconMinHeight("g_bot_upwardNavconMinHeight", "minimal height difference for bots to use special upward movement.", Cvar::NONE, 100);
