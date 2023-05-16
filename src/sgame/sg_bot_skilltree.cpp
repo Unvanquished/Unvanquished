@@ -26,6 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "../shared/parse.h"
 
+static std::array<std::set<std::string>, 9> baseSkillset;
+static std::set<std::string> disabledSkillset;
+
 static void G_UpdateSkillsets()
 {
 	for ( int i = 0; i < level.maxclients; i++ )
@@ -50,38 +53,59 @@ static std::set<std::string> G_ParseSkillsetList( Str::StringRef skillsCsv )
 	return skills;
 }
 
-static std::set<std::string>& G_GetDisabledSkillset()
+static std::set<std::pair<int, std::string>> G_ParseSkillsetListWithLevels( Str::StringRef skillsCsv )
 {
-	static std::set<std::string> disabledSkillset;
-	return disabledSkillset;
+	std::set<std::pair<int, std::string>> skills;
+
+	for (Parse_WordListSplitter i(skillsCsv); *i; ++i)
+	{
+		// Try to read a "n:skillname" pair where n represents a single digit
+		if ( strnlen(*i, 3) < 3 || !Str::cisdigit( (*i)[0] ) || (*i)[1] != ':' )
+		{
+			Log::Warn("Invalid \"int:skill\" pair: " QQ("%s"), *i);
+			continue;
+		}
+		int number = (*i)[0] - '0';
+		std::string skillName = *i + 2; // skip the first two character
+		skills.insert( { number, std::move(skillName) } );
+	}
+
+	return skills;
 }
 
 static void G_SetDisabledSkillset( Str::StringRef skillsCsv )
 {
-	G_GetDisabledSkillset() = G_ParseSkillsetList( skillsCsv );
+	disabledSkillset = G_ParseSkillsetList( skillsCsv );
 	G_UpdateSkillsets();
 }
 
 static bool G_SkillDisabled( Str::StringRef behavior )
 {
-	return G_GetDisabledSkillset().find( behavior ) != G_GetDisabledSkillset().end();
+	return disabledSkillset.find( behavior ) != disabledSkillset.end();
 }
 
-static std::set<std::string>& G_GetPreferredSkillset()
+static void G_SetBaseSkillset( Str::StringRef skillsCsv )
 {
-	static std::set<std::string> preferredSkillset;
-	return preferredSkillset;
-}
-
-static void G_SetPreferredSkillset( Str::StringRef skillsCsv )
-{
-	G_GetPreferredSkillset() = G_ParseSkillsetList( skillsCsv );
+	std::set<std::pair<int, std::string>> skills = G_ParseSkillsetListWithLevels( skillsCsv );
+	for ( int skillLevel = 1; skillLevel <= 9; skillLevel++ )
+	{
+		std::set<std::string> level;
+		for ( auto &skill : skills )
+		{
+			if (skill.first <= skillLevel)
+			{
+				level.insert(skill.second);
+			}
+		}
+		baseSkillset[skillLevel - 1] = std::move(level);
+	}
 	G_UpdateSkillsets();
 }
 
-static bool G_SkillPreferred( Str::StringRef behavior )
+static bool G_IsBaseSkillAtLevel( int skillLevel, Str::StringRef behavior )
 {
-	return G_GetPreferredSkillset().find( behavior ) != G_GetPreferredSkillset().end();
+	ASSERT( skillLevel >= 1 && skillLevel <= 9 );
+	return baseSkillset[skillLevel - 1].find( behavior ) != baseSkillset[skillLevel - 1].end();
 }
 
 // aliens have 71 points to spend max, but we give them a bit less for balancing
@@ -105,28 +129,30 @@ void G_InitSkilltreeCvars()
 {
 	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledSkillset(
 		"g_disabledSkillset",
-		"Disabled skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+		"Skills that will not be selected randomly for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
 		Cvar::NONE,
 		"",
 		G_SetDisabledSkillset
 		);
-	static Cvar::Callback<Cvar::Cvar<std::string>> g_preferredSkillset(
-		"g_preferredSkillset",
-		"Preferred skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_skillset_baseSkills(
+		"g_skillset_baseSkills",
+		"Preferred skills for bots depending on levels, this is a level:skillName key:value list, example: " QQ("6:mantis-attack-jump, 3:prefer-armor"),
 		Cvar::NONE,
 		"",
-		G_SetPreferredSkillset
+		G_SetBaseSkillset
 		);
+
 	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetAliens(
 		"g_skillsetBudgetAliens",
-		"the skillset budget for aliens.",
+		"How many skillpoint for bot aliens' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
 		skillsetBudgetAliens,
 		G_SetSkillsetBudgetAliens
 		);
 	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetHumans(
 		"g_skillsetBudgetHumans",
-		"the skillset budget for humans.",
+		"How many skillpoint for bot humans' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
 		skillsetBudgetHumans,
 		G_SetSkillsetBudgetHumans
@@ -218,14 +244,22 @@ static bool SkillIsAvailable(const botSkillTreeElement_t &skill, team_t team, sk
 }
 
 // Note: this function modifies possible_choices to remove the one we just chose.
-static Util::optional<botSkillTreeElement_t> ChooseOneSkill(team_t team, skillSet_t skillSet, std::vector<botSkillTreeElement_t> &possible_choices, std::mt19937_64& rng)
+static Util::optional<botSkillTreeElement_t> ChooseOneSkill(team_t team, skillSet_t skillSet, std::vector<botSkillTreeElement_t> &possible_choices, std::mt19937_64& rng, int skillLevel)
 {
 	int total_skill_points = 0;
-	for (const auto &skill : possible_choices)
+	for (auto skill = possible_choices.begin(); skill != possible_choices.end(); skill++)
 	{
-		if (SkillIsAvailable(skill, team, skillSet))
+		// force base skills to be selected first (if the the skill is for the correct team)
+		if (G_IsBaseSkillAtLevel(skillLevel, skill->name) && (skill->allowed_teams == TEAM_NONE || skill->allowed_teams == team))
 		{
-			total_skill_points += skill.cost;
+			// force this to be selected first
+			botSkillTreeElement_t choice = *skill;
+			possible_choices.erase(skill);
+			return choice;
+		}
+		if (SkillIsAvailable(*skill, team, skillSet))
+		{
+			total_skill_points += skill->cost;
 		}
 	}
 
@@ -289,21 +323,19 @@ std::vector<botSkillTreeElement_t> BotPickSkillset(std::string seed, int skillLe
 	while (true)
 	{
 		Util::optional<botSkillTreeElement_t> new_skill =
-			ChooseOneSkill(team, skillSet, possible_choices, rng);
+			ChooseOneSkill(team, skillSet, possible_choices, rng, skillLevel);
 		if ( !new_skill )
 		{
 			// no skill left to unlock
 			break;
 		}
 
-		bool preferred = G_SkillPreferred( new_skill->name );
+		skill_points -= new_skill->cost;
 
-		if ( !preferred )
-		{
-			skill_points -= new_skill->cost;
-		}
+		// force base skills to always be selected, no matter the cost
+		bool isBaseSkill = G_IsBaseSkillAtLevel( skillLevel, new_skill->name );
 
-		if ( skill_points < 0 && !preferred )
+		if ( skill_points < 0 && !isBaseSkill )
 		{
 			// we don't have money to spend anymore, we are done
 			continue;
