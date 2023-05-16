@@ -127,8 +127,8 @@ static void G_SetSkillsetBudgetAliens( int val )
 
 void G_InitSkilltreeCvars()
 {
-	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledSkillset(
-		"g_disabledSkillset",
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_skillset_disabledSkills(
+		"g_skillset_disabledSkills",
 		"Skills that will not be selected randomly for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
 		Cvar::NONE,
 		"",
