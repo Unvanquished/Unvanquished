@@ -830,8 +830,31 @@ Global Bot Navigation
 =========================
 */
 
+
+// HACK:
+// Set an upper bound on how long a bot will have the wall climb activated,
+// in order to prevent looping on strange wall geometries.
+// This works well in practice, as recast limits the navcon distance.
+// There are at least to cleaner ways to handle this:
+// - Calculate the required time when a bot activates the wall climb
+// - Disable the wall climb once a bot has reached the higher level navmesh
+// Both are non-trivial, because a bot might choose a new goal while wall climbing.
+static constexpr int WALLCLIMB_MAX_TIME = 3000;
+
 static Cvar::Cvar<int> g_bot_upwardNavconMinHeight("g_bot_upwardNavconMinHeight", "minimal height difference for bots to use special upward movement.", Cvar::NONE, 100);
 static Cvar::Cvar<int> g_bot_upwardLeapAngleCorr("g_bot_upwardLeapAngleCorr", "is added to the angle for mantis and dragoon when leaping upward (in degrees).", Cvar::NONE, 20);
+
+// could use BG_ClassHasAbility( pcl, SCA_WALLCLIMBER ) to check if calling
+// this is a good idea
+static void BotClimbToGoal( gentity_t *self )
+{
+	glm::vec3 ownPos = VEC2GLM( self->s.origin );
+	glm::vec3 dir = self->botMind->nav().glm_dir();
+	BotAimAtLocation( self, ownPos + 100.f * dir );
+	self->botMind->cmdBuffer.upmove = -127;
+	self->botMind->cmdBuffer.forwardmove = 127;
+	self->botMind->cmdBuffer.rightmove = 0;
+}
 
 void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 {
@@ -840,7 +863,15 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 	int magnitude = 0;
 	switch ( ps.stats [ STAT_CLASS ] )
 	{
+	case PCL_ALIEN_LEVEL0:
+		BotClimbToGoal( self );
+		break;
 	case PCL_ALIEN_LEVEL1:
+		if ( level.time - self->botMind->lastWallclimbActivationTime < WALLCLIMB_MAX_TIME )
+		{
+			BotClimbToGoal( self );
+			return;
+		}
 		if ( ps.weaponCharge <= 50 ) // I don't remember why 50
 		{
 			wpm = WPM_SECONDARY;
@@ -878,7 +909,7 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 	}
 }
 
-static void BotTryMoveUpward( gentity_t *self )
+static bool BotTryMoveUpward( gentity_t *self )
 {
 	int selfClientNum = self->client->num();
 	bool overNavcon = G_IsBotOverNavcon( selfClientNum );
@@ -897,26 +928,34 @@ static void BotTryMoveUpward( gentity_t *self )
 	}
 
 	// if not trying to move upward
-	if ( nextCorner.z - ownPos.z < g_bot_upwardNavconMinHeight.Get() )
+	if ( nextCorner.z - ownPos.z < g_bot_upwardNavconMinHeight.Get() && level.time - self->botMind->lastWallclimbActivationTime > WALLCLIMB_MAX_TIME )
 	{
-		return;
+		return false;
 	}
 
 	int diff = level.time - self->botMind->lastNavconTime;
 	int limit = LEVEL3_POUNCE_TIME_UPG * 3 / 2;  // seems to be reasonable for all classes
 	switch ( self->client->ps.stats [ STAT_CLASS ] )
 	{
-	case PCL_ALIEN_LEVEL1:
-		if ( diff < 0 || diff > limit )
+	case PCL_ALIEN_LEVEL0:
+		self->botMind->lastWallclimbActivationTime = self->botMind->lastNavconTime;
+		if ( diff < 0 || diff > WALLCLIMB_MAX_TIME )
 		{
-			return;
+			return false;
+		}
+		break;
+	case PCL_ALIEN_LEVEL1:
+		self->botMind->lastWallclimbActivationTime = self->botMind->lastNavconTime;
+		if ( diff < 0 || diff > WALLCLIMB_MAX_TIME )
+		{
+			return false;
 		}
 		break;
 	case PCL_ALIEN_LEVEL3:
 	case PCL_ALIEN_LEVEL3_UPG:
 		if ( diff < 0 || diff > limit )
 		{
-			return;
+			return false;
 		}
 		BotStandStill( self );
 		break;
@@ -925,6 +964,7 @@ static void BotTryMoveUpward( gentity_t *self )
 	}
 
 	BotMoveUpward( self, nextCorner );
+	return true;
 }
 
 // This function makes the bot move and aim at it's goal, trying
@@ -955,6 +995,11 @@ bool BotMoveToGoal( gentity_t *self )
 	bool ignoreGeometry = stuckTime < ignoreGeometryThreshold;
 	if ( BotAvoidObstacles( self, dir, ignoreGeometry ) )
 	{
+		if ( BotTryMoveUpward( self ) )
+		{
+			return true;
+		}
+
 		BotSeek( self, dir );
 		bool softStuck = stuckTime > softStuckThreshold;
 		// if we have not moved much for some time, let's propagate

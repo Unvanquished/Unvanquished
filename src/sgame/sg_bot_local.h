@@ -177,6 +177,7 @@ public:
 
 	int spawnTime;
 	int lastNavconTime;
+	int lastWallclimbActivationTime;
 
 	Util::optional< glm::vec3 > userSpecifiedPosition;
 	Util::optional< int > userSpecifiedClientNum;
