@@ -26,6 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "../shared/parse.h"
 
+static std::array<skillSet_t, 9> baseSkillset;
+static skillSet_t disabledSkillset;
+
 static void G_UpdateSkillsets()
 {
 	for ( int i = 0; i < level.maxclients; i++ )
@@ -60,28 +63,59 @@ static skillSet_t G_ParseSkillsetList( Str::StringRef skillsCsv )
 	return skills;
 }
 
-static skillSet_t &G_GetDisabledSkillset()
+static std::vector<std::pair<int, bot_skill>> G_ParseSkillsetListWithLevels( Str::StringRef skillsCsv )
 {
-	static skillSet_t disabledSkillset;
-	return disabledSkillset;
+	std::vector<std::pair<int, bot_skill>> skills;
+
+	for (Parse_WordListSplitter i(skillsCsv); *i; ++i)
+	{
+		// Try to read a "n:skillname" pair where n represents a single digit
+		if ( strnlen(*i, 3) < 3 || !Str::cisdigit( (*i)[0] ) || (*i)[1] != ':' )
+		{
+			Log::Warn("Invalid \"int:skill\" pair: " QQ("%s"), *i);
+			continue;
+		}
+		int number = (*i)[0] - '0';
+		bot_skill skill;
+		if ( !ParseSkill( *i + 2, skill ) )
+		{
+			Log::Warn( "unknown skill '%s' in g_bot_baseSkillset", *i + 2 );
+			continue;
+		}
+		skills.emplace_back( number, skill );
+	}
+
+	return skills;
 }
 
 static void G_SetDisabledSkillset( Str::StringRef skillsCsv )
 {
-	G_GetDisabledSkillset() = G_ParseSkillsetList( skillsCsv );
+	disabledSkillset = G_ParseSkillsetList( skillsCsv );
 	G_UpdateSkillsets();
 }
 
-static skillSet_t &G_GetPreferredSkillset()
+static void G_SetBaseSkillset( Str::StringRef skillsCsv )
 {
-	static skillSet_t preferredSkillset;
-	return preferredSkillset;
+	std::vector<std::pair<int, bot_skill>> skills = G_ParseSkillsetListWithLevels( skillsCsv );
+	for ( int skillLevel = 1; skillLevel <= 9; skillLevel++ )
+	{
+		skillSet_t level{};
+		for ( auto &skill : skills )
+		{
+			if (skill.first <= skillLevel)
+			{
+				level.set( skill.second );
+			}
+		}
+		baseSkillset[ skillLevel - 1 ] = level;
+	}
+	G_UpdateSkillsets();
 }
 
-static void G_SetPreferredSkillset( Str::StringRef skillsCsv )
+static bool G_IsBaseSkillAtLevel( int skillLevel, bot_skill skill )
 {
-	G_GetPreferredSkillset() = G_ParseSkillsetList( skillsCsv );
-	G_UpdateSkillsets();
+	ASSERT( skillLevel >= 1 && skillLevel <= 9 );
+	return baseSkillset[ skillLevel - 1 ][ skill ];
 }
 
 // aliens have 71 points to spend max, but we give them a bit less for balancing
@@ -105,28 +139,30 @@ void G_InitSkilltreeCvars()
 {
 	static Cvar::Callback<Cvar::Cvar<std::string>> g_disabledSkillset(
 		"g_bot_skillset_disabledSkills",
-		"Disabled skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+		"Skills that will not be selected randomly for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
 		Cvar::NONE,
 		"",
 		G_SetDisabledSkillset
 		);
-	static Cvar::Callback<Cvar::Cvar<std::string>> g_preferredSkillset(
-		"g_bot_skillset_preferredSkills",
-		"Preferred skills for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
+
+	static Cvar::Callback<Cvar::Cvar<std::string>> g_skillset_baseSkills(
+		"g_bot_skillset_baseSkills",
+		"Preferred skills for bots depending on levels, this is a level:skillName key:value list, example: " QQ("6:mantis-attack-jump, 3:prefer-armor"),
 		Cvar::NONE,
 		"",
-		G_SetPreferredSkillset
+		G_SetBaseSkillset
 		);
+
 	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetAliens(
 		"g_bot_skillset_budgetAliens",
-		"the skillset budget for aliens.",
+		"How many skillpoint for bot aliens' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
 		skillsetBudgetAliens,
 		G_SetSkillsetBudgetAliens
 		);
 	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetHumans(
 		"g_bot_skillset_budgetHumans",
-		"the skillset budget for humans.",
+		"How many skillpoint for bot humans' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
 		skillsetBudgetHumans,
 		G_SetSkillsetBudgetHumans
@@ -225,7 +261,7 @@ static bool ParseSkill( Str::StringRef name, bot_skill &skill )
 
 static bool SkillIsAvailable(const botSkillTreeElement_t &skill, team_t team, skillSet_t activated_skills)
 {
-	return !G_GetDisabledSkillset()[ skill.skill ]
+	return !disabledSkillset[ skill.skill ]
 		&& (skill.allowed_teams == TEAM_NONE || skill.allowed_teams == team) // and correspond to our team
 		&& (skill.prerequisite == 0 || (activated_skills & skill.prerequisite) != 0); // and has one of the prerequisites matching, if any
 }
@@ -234,11 +270,11 @@ static bool SkillIsAvailable(const botSkillTreeElement_t &skill, team_t team, sk
 static Util::optional<botSkillTreeElement_t> ChooseOneSkill(team_t team, skillSet_t skillSet, std::vector<botSkillTreeElement_t> &possible_choices, std::mt19937_64& rng)
 {
 	int total_skill_points = 0;
-	for (const auto &skill : possible_choices)
+	for (auto skill = possible_choices.begin(); skill != possible_choices.end(); skill++)
 	{
-		if (SkillIsAvailable(skill, team, skillSet))
+		if (SkillIsAvailable(*skill, team, skillSet))
 		{
-			total_skill_points += skill.cost;
+			total_skill_points += skill->cost;
 		}
 	}
 
@@ -269,6 +305,29 @@ static Util::optional<botSkillTreeElement_t> ChooseOneSkill(team_t team, skillSe
 	return Util::nullopt;
 }
 
+// Returns the base skill set according to g_bot_baseSkills and the given level and team.
+// Removes selected skills from `choices` and subtracts points used from `points`.
+static skillSet_t ChooseBaseSkills( int skillLevel, team_t team, std::vector<botSkillTreeElement_t> &choices, int &points)
+{
+	skillSet_t skills{};
+	for ( size_t i = 0; i < choices.size(); )
+	{
+		if ( G_IsBaseSkillAtLevel( skillLevel, choices[ i ].skill ) &&
+		     ( choices[ i ].allowed_teams == TEAM_NONE || choices[ i ].allowed_teams == team ) )
+		{
+			skills.set( choices[ i ].skill );
+			points -= choices[ i ].cost;
+			choices[ i ] = std::move( choices.back() );
+			choices.pop_back();
+		}
+		else
+		{
+			++i;
+		}
+	}
+	return skills;
+}
+
 // This selects a set of skills for a bot.
 //
 // The algorithm is stable and deterministic.
@@ -284,15 +343,16 @@ static Util::optional<botSkillTreeElement_t> ChooseOneSkill(team_t team, skillSe
 //     ones.
 //     This essentially means that a bot will keep its "personality" after
 //     a skill change, although keeping its base skills or unlocking new ones.
-std::vector<botSkillTreeElement_t> BotPickSkillset(std::string seed, int skillLevel, team_t team)
+skillSet_t BotPickSkillset(std::string seed, int skillLevel, team_t team)
 {
 	std::vector<botSkillTreeElement_t> possible_choices = skillTree;
-	skillSet_t skillSet(0);
 
 	float max = team == TEAM_ALIENS ? static_cast<float>( skillsetBudgetAliens ) : static_cast<float>( skillsetBudgetHumans );
 
 	// unlock every skill at skill 7 (almost every for aliens)
 	int skill_points = static_cast<float>(skillLevel + 2) / 9.0f * max;
+
+	skillSet_t skillSet = ChooseBaseSkills( skillLevel, team, possible_choices, skill_points );
 
 	// rng preparation
 	std::seed_seq seed_seq(seed.begin(), seed.end());
@@ -309,14 +369,9 @@ std::vector<botSkillTreeElement_t> BotPickSkillset(std::string seed, int skillLe
 			break;
 		}
 
-		bool preferred = G_GetPreferredSkillset()[ new_skill->skill ];
+		skill_points -= new_skill->cost;
 
-		if ( !preferred )
-		{
-			skill_points -= new_skill->cost;
-		}
-
-		if ( skill_points < 0 && !preferred )
+		if ( skill_points < 0 )
 		{
 			// we don't have money to spend anymore, we are done
 			continue;
@@ -325,21 +380,23 @@ std::vector<botSkillTreeElement_t> BotPickSkillset(std::string seed, int skillLe
 		skillSet[new_skill->skill] = true;
 		results.push_back(*new_skill);
 	}
-	return results;
+	return skillSet;
 }
 
 std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skillLevel)
 {
 	std::string seed = bot->client->pers.netname;
 
-	skillSet_t skillSet(0);
+	skillSet_t skillSet = BotPickSkillset( seed, skillLevel, G_Team( bot ));
 
 	std::vector<std::string> skillNames;
 
-	for ( const auto &skill : BotPickSkillset(seed, skillLevel, G_Team(bot)) )
+	for ( const botSkillTreeElement_t &s : skillTree )
 	{
-		skillSet[skill.skill] = true;
-		skillNames.push_back(skill.name);
+		if ( skillSet[ s.skill ] )
+		{
+			skillNames.push_back( s.name );
+		}
 	}
 
 	// pretty list string
