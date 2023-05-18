@@ -556,8 +556,6 @@ static void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 	G_TriggerMenu( activator->client->ps.clientNum, MN_H_ARMOURY );
 }
 
-void BotResetStuckTime( gentity_t * );
-
 static void HMedistat_Think( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
@@ -709,10 +707,6 @@ static void HMedistat_Think( gentity_t *self )
 			{
 				BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 			}
-		}
-		else if ( player->r.svFlags & SVF_BOT )
-		{
-			BotResetStuckTime( player );
 		}
 	}
 	// we lost our target
