@@ -311,6 +311,38 @@ static bool ParseValue( const char *token, mrValue_t &result )
 	{
 		result = rand() & 1;
 	}
+	else if ( !Q_stricmp( token, "time" ) ) // 0000 to 2359
+	{
+		// We use UTC time since localtime doesn't work in NaCl and maprotations would mostly
+		// be used on hosted servers which are normally configured to UTC anyway.
+		qtime_t t;
+		Com_GMTime( &t );
+		result = t.tm_hour * 100 + t.tm_min;
+	}
+	else if ( !Q_stricmp( token, "day" ) ) // 1 to 31
+	{
+		qtime_t t;
+		Com_GMTime( &t );
+		result = t.tm_mday;
+	}
+	else if ( !Q_stricmp( token, "month" ) ) // 1 to 12
+	{
+		qtime_t t;
+		Com_GMTime( &t );
+		result = t.tm_mon + 1;
+	}
+	else if ( !Q_stricmp( token, "year" ) )
+	{
+		qtime_t t;
+		Com_GMTime( &t );
+		result = 1900 + t.tm_year;
+	}
+	else if ( !Q_stricmp( token, "weekday" ) ) // 1 (Sunday) to 7 (Saturday)
+	{
+		qtime_t t;
+		Com_GMTime( &t );
+		result = t.tm_wday + 1;
+	}
 	else
 	{
 		return false;
