@@ -261,3 +261,11 @@ You then start a game server with your custom mod this way:
 ```
 
 See [above instructions](#configuring-the-server) about configuring the server and the wiki page for [running a server](https://wiki.unvanquished.net/wiki/Server/Running) providing more details, including ways to provide fast HTTP download for your mod.
+
+## Dealing with submodules
+
+Please don't commit submodules in pull requests, as the submodule references may not exist after the pull requests are rebased and merged.
+
+When a feature is split across more than one repository, submodules are expected to be committed after each pull requests has been merged.
+
+ℹ️ More details can be found in the wiki: [wiki:Dealing with submodules](https://wiki.unvanquished.net/wiki/Dealing_with_submodules).
