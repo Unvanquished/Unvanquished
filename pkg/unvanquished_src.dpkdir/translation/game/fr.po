@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-17 22:56+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2023-05-20 18:48+0000\n"
+"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -25,7 +25,7 @@ msgstr "Construire"
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr "Prix :"
+msgstr "Prix :"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -33,7 +33,7 @@ msgstr "Évoluer"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr "points de métamorphose"
+msgstr "pts de mutation"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
@@ -2775,17 +2775,17 @@ msgstr "%s%s ^* a été tué sournoisement par %s%s%s"
 #: src/cgame/cg_event.cpp:415
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* a été tué sournoisement par %s%s%s aidé par %s%s%s^*"
+msgstr "%s%s ^* a été tué sournoisement par %s%s%s ^* aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* a été tuée sournoisement par %s%s%s aidé par %s%s%s^*"
+msgstr "%s%s ^* a été tuée sournoisement par %s%s%s^* aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* a été tué sournoisement par %s%s%s aidé par %s%s%s^*"
+msgstr "%s%s ^* a été tué sournoisement par %s%s%s^* aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:419
 msgctxt "male"
@@ -4708,14 +4708,13 @@ msgid "Maximum name changes reached (g_maxNameChanges = $1$)"
 msgstr "Nombre maximum de changements de nom atteint (g_maxNameChanges = $1$)"
 
 #: src/sgame/sg_client.cpp:860
-#, fuzzy
 msgid "You cannot change your name while you are muted"
 msgstr "Vous ne pouvez pas changer votre nom pendant que vous êtes muté"
 
 #: src/sgame/sg_client.cpp:872
 msgid "Name is too long! Must be less than $1$ characters or color codes."
 msgstr ""
-"Le nom est trop long ! Il doit contenir moins de $1$ caractères ou codes de "
+"Le nom est trop long ! Il doit contenir moins de $1$ caractères ou codes de "
 "couleur."
 
 #: src/sgame/sg_client.cpp:1193
@@ -4764,7 +4763,7 @@ msgstr "Échec du vote d’équipe (1 $ sur 2 $ ; quorum non atteint)"
 
 #: src/sgame/sg_main.cpp:2188
 msgid "Vote passed ($1$ — $2$)"
-msgstr "Vote passé (1$ — 2$)"
+msgstr "Vote passé ($1$ —$2$)"
 
 #: src/sgame/sg_main.cpp:2188
 msgid "Team vote passed ($1$ — $2$)"
