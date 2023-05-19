@@ -1,8 +1,17 @@
 # Documentation: https://wiki.unvanquished.net/wiki/Continuous_integration
 
-branches:
-  except:
-    - debian
+only_commits:
+  files:
+    - .appveyor.yml
+    - appveyor/
+    # The rest of this list should stay in sync with azure-pipelines.yml
+    - daemon/
+    - libs/
+    - src/
+    - .gitmodules
+    - CMakeLists.txt
+    - '*.cmake'
+    - macosx
 
 image: Visual Studio 2019
 

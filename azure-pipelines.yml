@@ -1,5 +1,18 @@
 # Documentation: https://wiki.unvanquished.net/wiki/Continuous_integration
 
+trigger:
+  paths:
+    include:
+      - azure-pipelines.yml
+      # The rest of this list should stay in sync with .appveyor.yml
+      - daemon/
+      - libs/
+      - src/
+      - .gitmodules
+      - CMakeLists.txt
+      - '*.cmake'
+      - macosx
+
 strategy:
   matrix:
     Linux GCC Native DLL:
