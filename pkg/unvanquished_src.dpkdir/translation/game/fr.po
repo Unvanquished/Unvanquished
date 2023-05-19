@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
 "PO-Revision-Date: 2023-05-20 18:48+0000\n"
-"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
+"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -315,7 +315,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:78
 msgid "Stages &amp; Momentum"
-msgstr "Étapes & amp; momentum"
+msgstr "Étapes &amp; momentum"
 
 #: ui/help_gameplay.rml:81
 msgid ""
@@ -701,7 +701,7 @@ msgstr "Menu du match"
 
 #: ui/menu_ingame.rml:23
 msgid "Leave match"
-msgstr "quitter le match"
+msgstr "Quitter le match"
 
 #: ui/menu_ingame.rml:24
 msgid "Resume action"
@@ -821,7 +821,7 @@ msgstr "Joueur"
 
 #: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
 msgid "Graphics"
-msgstr "graphiques"
+msgstr "Graphiques"
 
 #: ui/menu_ingame.rml:100 ui/menu_main.rml:39 ui/options_keys.rml:7
 msgid "Key bindings"
@@ -3763,9 +3763,8 @@ msgid "Customizing helmets…"
 msgstr "Personnalisation des casques…"
 
 #: src/cgame/cg_main.cpp:543
-#, fuzzy
 msgid "Compiling GLSL shaders (please be patient)…"
-msgstr "Compilation des nuanceur GLSL (veuillez patienter)…"
+msgstr "Compilation des nuanceurs GLSL (veuillez patienter)…"
 
 #: src/cgame/cg_main.cpp:547
 msgid "Surveying the map…"
