@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-20 18:48+0000\n"
+"PO-Revision-Date: 2023-05-21 08:17+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -4762,7 +4762,7 @@ msgstr "Échec du vote d’équipe (1 $ sur 2 $ ; quorum non atteint)"
 
 #: src/sgame/sg_main.cpp:2188
 msgid "Vote passed ($1$ — $2$)"
-msgstr "Vote passé ($1$ —$2$)"
+msgstr "Vote passé ($1$ — $2$)"
 
 #: src/sgame/sg_main.cpp:2188
 msgid "Team vote passed ($1$ — $2$)"
