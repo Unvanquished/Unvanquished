@@ -2497,10 +2497,19 @@ static bool Cmd_Sell_upgrades( gentity_t *ent )
 
 static bool Cmd_Sell_armour( gentity_t *ent )
 {
+	#if defined(__clang_major__) && __clang_major__ >= 14
+		_Pragma("clang diagnostic push")
+		_Pragma("clang diagnostic ignored \"-Wbitwise-instead-of-logical\"")
+	#endif
+
 	return Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR ) |
 	       Cmd_Sell_upgradeItem( ent, UP_MEDIUMARMOUR ) |
 	       Cmd_Sell_upgradeItem( ent, UP_BATTLESUIT ) |
 	       Cmd_Sell_upgradeItem( ent, UP_RADAR );
+
+	#if defined(__clang_major__) && __clang_major__ >= 14
+		_Pragma("clang diagnostic pop")
+	#endif
 }
 
 static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
@@ -2591,7 +2600,16 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 	}
 	else if ( !Q_stricmp( s, "all" ) )
 	{
+		#if defined(__clang_major__) && __clang_major__ >= 14
+			_Pragma("clang diagnostic push")
+			_Pragma("clang diagnostic ignored \"-Wbitwise-instead-of-logical\"")
+		#endif
+
 		return Cmd_Sell_weapons( ent ) | Cmd_Sell_upgrades( ent );
+
+		#if defined(__clang_major__) && __clang_major__ >= 14
+			_Pragma("clang diagnostic pop")
+		#endif
 	}
 	else
 	{
