@@ -1052,7 +1052,7 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 		return false;
 	}
 	it = voteInfo.emplace( std::move( vote ), std::move( def ) ).first;
-	auto handler = [ vt = move( voteTemplate ), dt = move( displayTemplate ) ](
+	auto handler = [ vt = std::move( voteTemplate ), dt = std::move( displayTemplate ) ](
 					   gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
 					   std::string& reason, std::string& name, int clientNum, int id )
 	{
