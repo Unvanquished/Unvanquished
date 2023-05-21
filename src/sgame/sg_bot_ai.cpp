@@ -1159,6 +1159,16 @@ AINodeStatus_t BotActionFollow( gentity_t *self, AIGenericNode_t *node )
 	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
+// TODO: Currently this only works for human bots. Make it work for alien bots too.
+static bool BotCurrentlyHealingWithDedicatedBuildable( gentity_t *self )
+{
+	if ( G_Team( self ) == TEAM_HUMANS && ( self->client->ps.stats[ STAT_STATE ] & SS_HEALING_2X ) )
+	{
+		return true;
+	}
+	return false;
+}
+
 static AINodeStatus_t BotActionReachHealA( gentity_t *self );
 static AINodeStatus_t BotActionReachHealH( gentity_t *self );
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
@@ -1195,6 +1205,12 @@ AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 	if ( !self->botMind->goal.getTargetedEntity()->powered )
 	{
 		return STATUS_FAILURE;
+	}
+
+	// If we are properly healing, waiting without moving is good
+	if ( BotCurrentlyHealingWithDedicatedBuildable( self ) )
+	{
+		BotResetStuckTime( self );
 	}
 
 	if ( G_Team( self ) == TEAM_HUMANS )
