@@ -2497,10 +2497,11 @@ static bool Cmd_Sell_upgrades( gentity_t *ent )
 
 static bool Cmd_Sell_armour( gentity_t *ent )
 {
-	return Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR ) |
-	       Cmd_Sell_upgradeItem( ent, UP_MEDIUMARMOUR ) |
-	       Cmd_Sell_upgradeItem( ent, UP_BATTLESUIT ) |
-	       Cmd_Sell_upgradeItem( ent, UP_RADAR );
+	bool sold = Cmd_Sell_upgradeItem( ent, UP_LIGHTARMOUR );
+	sold |= Cmd_Sell_upgradeItem( ent, UP_MEDIUMARMOUR );
+	sold |= Cmd_Sell_upgradeItem( ent, UP_BATTLESUIT );
+	sold |= Cmd_Sell_upgradeItem( ent, UP_RADAR );
+	return sold;
 }
 
 static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
@@ -2591,7 +2592,9 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 	}
 	else if ( !Q_stricmp( s, "all" ) )
 	{
-		return Cmd_Sell_weapons( ent ) | Cmd_Sell_upgrades( ent );
+		bool sold = Cmd_Sell_weapons( ent );
+		sold |= Cmd_Sell_upgrades( ent );
+		return sold;
 	}
 	else
 	{
