@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-21 08:17+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2023-05-21 20:09+0000\n"
+"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -439,12 +439,12 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
-"Les extraterrestres ont un troisième bonus de guérison : la proximité avec "
+"Les extraterrestres ont un troisième bonus de guérison: la proximité avec "
 "d'autres extraterrestres. Si vous êtes à proximité d'un extraterrestre "
 "amical, vous guérirez légèrement plus rapidement, et avec deux coéquipiers, "
 "vous guérirez aussi vite que vous le feriez en touchant une construction "
 "extraterrestre. Avec un peu de travail d'équipe, c'est un excellent moyen "
-"d'assiéger les ennemis !"
+"d'assiéger les ennemis !"
 
 #: ui/help_gameplay.rml:132
 msgid ""
@@ -2760,17 +2760,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:414
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr "%s%s ^* a été tué sournoisement par %s%s%s"
+msgstr "%s%s ^* a été sournoisement tué par %s%s%s"
 
 #: src/cgame/cg_event.cpp:414
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr "%s%s ^* a été tuée sournoisement par %s%s%s"
+msgstr "%s%s ^* a été sournoisement tuée par %s%s%s"
 
 #: src/cgame/cg_event.cpp:414
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr "%s%s ^* a été tué sournoisement par %s%s%s"
+msgstr "%s%s ^* a été sournoisement tué par %s%s%s"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "male"
@@ -4679,7 +4679,7 @@ msgstr "Noms des robots humains :"
 
 #: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
-msgstr "$1$^*s'est déconnecté"
+msgstr "$1$ ^*s'est déconnecté"
 
 #: src/sgame/sg_bot_nav.cpp:114
 msgid "Server: generating bot navigation mesh for $1$... $2$%"
