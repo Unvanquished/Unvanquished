@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-17 08:11+0000\n"
-"Last-Translator: Grise3 <hackergrigri@gmail.com>\n"
+"PO-Revision-Date: 2023-05-22 20:56+0000\n"
+"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Breton <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/br/>\n"
 "Language: br\n"
@@ -21,7 +21,7 @@ msgstr ""
 "&& n % 100 != 92) ? 1 : ((((n % 10 == 3 || n % 10 == 4) || n % 10 == 9) && ("
 "n % 100 < 10 || n % 100 > 19) && (n % 100 < 70 || n % 100 > 79) && (n % 100 "
 "< 90 || n % 100 > 99)) ? 2 : ((n != 0 && n % 1000000 == 0) ? 3 : 4)));\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -3201,32 +3201,32 @@ msgstr ""
 #: src/cgame/cg_event.cpp:520
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
+msgstr "%s%s ^* a zo bet flastred dindan pouezh %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:520
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
+msgstr "%s%s ^* a zo bet flastred dindan pouezh %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:520
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
+msgstr "%s%s ^* a zo bet flastred dindan pouezh %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:521
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* a zo bet flastred dindan pouezh %s%s%s^* sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:521
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* a zo bet flastred dindan pouezh %s%s%s^* sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:521
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* a zo bet flastred dindan pouezh %s%s%s^* sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:525
 msgctxt "male"
