@@ -1,6 +1,15 @@
 # Documentation: https://wiki.unvanquished.net/wiki/Continuous_integration
 
 trigger:
+  branches:
+    include:
+      - master
+      - '*.*.*/sync' # Next-release branch
+
+pr:
+  branches:
+    include:
+      - '*'
   paths:
     include:
       - azure-pipelines.yml
