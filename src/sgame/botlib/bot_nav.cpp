@@ -264,7 +264,7 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 
 		cmd->havePath = !bot->needReplan;
 
-		bool overNavconStart = false;
+		bool usingNavcon = false;
 
 		if ( overOffMeshConnectionStart( bot, spos ) )
 		{
@@ -274,14 +274,14 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 			// numCorners is guaranteed to be >= 1 here
 			dtPolyRef con = bot->cornerPolys[ bot->numCorners - 1 ];
 
-			overNavconStart = true;
-
 			if ( bot->corridor.moveOverOffmeshConnection( con, refs, start, end, bot->nav->query ) )
 			{
 				bot->offMesh = true;
 				bot->offMeshPoly = con;
 				bot->offMeshEnd = end;
 				bot->offMeshStart = start;
+
+				usingNavcon = true;
 			}
 		}
 
@@ -325,11 +325,11 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 			recast2quake( cmd->tpos );
 		}
 
-		// when the bot is over an offmesh connection:
+		// when the bot is using an offmesh connection:
 		// save some characteristics about the connection in its mind, for later use
 		// this happens quite rarely, so we can afford a square root for the
 		// distance here
-		if ( overNavconStart )
+		if ( usingNavcon )
 		{
 			gentity_t *self = &g_entities[ botClientNum ];
 			self->botMind->lastNavconTime = level.time;
