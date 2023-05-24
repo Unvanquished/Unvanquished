@@ -55,5 +55,26 @@
 			<input cvar="cg_drawFPS" type="checkbox" />
 			<p><translate>Frames per second.</translate></p>
 		</row>
+		<row>
+			<h3><translate>Console colors</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset con_colorRed con_colorGreen con_colorBlue con_colorAlpha", event)'>(<translate>reset</translate>)</ilink></h3>
+			<p>
+				<row>
+					<input type="range" min="0" max="1" step="0.05" cvar="con_colorRed"/>
+					<translate>Red:</translate>&nbsp;<inlinecvar cvar="con_colorRed" type="number" format="%0.2f"/>
+				</row>
+				<row>
+					<input type="range" min="0" max="1" step="0.05" cvar="con_colorGreen"/>
+					<translate>Green:</translate>&nbsp;<inlinecvar cvar="con_colorGreen" type="number" format="%0.2f"/>
+				</row>
+				<row>
+					<input type="range" min="0" max="1" step="0.05" cvar="con_colorBlue"/>
+					<translate>Blue:</translate>&nbsp;<inlinecvar cvar="con_colorBlue" type="number" format="%0.2f"/>
+				</row>
+				<row>
+					<input type="range" min="0" max="1" step="0.05" cvar="con_colorAlpha"/>
+					<translate>Alpha:</translate>&nbsp;<inlinecvar cvar="con_colorAlpha" type="number" format="%0.2f"/>
+				</row>
+			</p>
+		</row>
 	</body>
 </rml>
