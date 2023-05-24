@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-21 20:09+0000\n"
+"PO-Revision-Date: 2023-05-25 08:48+0000\n"
 "Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -1490,7 +1490,7 @@ msgstr "Tire de \"pique\" :"
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
-msgstr "Lancer la grenades :"
+msgstr "Lancer la grenade :"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
