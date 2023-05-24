@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-22 20:56+0000\n"
+"PO-Revision-Date: 2023-05-25 08:48+0000\n"
 "Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Breton <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/br/>\n"
@@ -2445,122 +2445,128 @@ msgstr ""
 #: src/cgame/cg_event.cpp:394
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a zo bet mindrailhed gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:394
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a zo bet mindrailhed gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:394
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a zo bet mindrailhed gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a zo bet mindrailhed gant %s%s%s sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a zo bet mindrailhed gant %s%s%s sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:395
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a zo bet mindrailhed gant %s%s%s sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:399
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a zo bet falc'hed gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:399
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a zo bet falc'hed gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:399
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a zo bet falc'hed gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a zo bet falc'hed gant %s%s%s,sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a zo bet falc'hed gant %s%s%s,sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:400
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a zo bet falc'hed gant %s%s%s,sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:404
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a zo bet faezhet gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:404
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a zo bet faezhet gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:404
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*a zo bet faezhet gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a zo bet faezhet gant %s%s%s sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a zo bet faezhet gant %s%s%s sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a zo bet faezhet gant %s%s%s sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:409
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*a zo bet devet gant un diskargenn energiezh eus %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:409
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*a zo bet devet gant un diskargenn energiezh eus %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:409
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*a zo bet devet gant un diskargenn energiezh eus %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*a zo bet devet gant un diskargenn energiezh eus %s%s%s^* sikouret "
+"gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*a zo bet devet gant un diskargenn energiezh eus %s%s%s^* sikouret "
+"gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*a zo bet devet gant un diskargenn energiezh eus %s%s%s^* sikouret "
+"gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:414
 msgctxt "male"
@@ -3324,32 +3330,32 @@ msgstr ""
 #: src/cgame/cg_event.cpp:540
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^* a zo bet lazhet gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^* a zo bet lazhet gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^* a zo bet lazhet gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:541
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^* a zo bet lazhet gant %s%s%s ^* hag %s%s%s"
 
 #: src/cgame/cg_event.cpp:541
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^* a zo bet lazhet gant %s%s%s ^* hag %s%s%s"
 
 #: src/cgame/cg_event.cpp:541
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^* a zo bet lazhet gant %s%s%s ^* hag %s%s%s"
 
 #: src/cgame/cg_event.cpp:542
 msgctxt "male"
@@ -3389,7 +3395,7 @@ msgstr ""
 #: src/cgame/cg_event.cpp:260 src/cgame/cg_event.cpp:597
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
-msgstr ""
+msgstr "Lazhet 'peus da ^1MIGNON^* %s"
 
 #: src/cgame/cg_event.cpp:1239
 msgid "The Overmind is under attack!"
