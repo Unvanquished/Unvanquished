@@ -4821,22 +4821,16 @@ Returns true if the velocity was clipped in some way
 #define MAX_CLIP_PLANES 5
 static bool  PM_SlideMove( bool gravity )
 {
-	int     bumpcount, numbumps;
 	vec3_t  dir;
-	float   d;
-	int     numplanes;
 	vec3_t  planes[ MAX_CLIP_PLANES ];
 	vec3_t  primal_velocity;
 	vec3_t  clipVelocity;
-	int     i, j, k;
+	int     i;
 	trace_t trace;
 	vec3_t  end;
-	float   time_left;
-	float   into;
 	vec3_t  endVelocity;
 	vec3_t  endClipVelocity;
 
-	numbumps = 4;
 	validateVec3( pm->ps->velocity );
 
 	VectorCopy( pm->ps->velocity, primal_velocity );
@@ -4855,9 +4849,10 @@ static bool  PM_SlideMove( bool gravity )
 		}
 	}
 
-	time_left = pml.frametime;
+	float time_left = pml.frametime;
 
 	// never turn against the ground plane
+	int numplanes;
 	if ( pml.groundPlane )
 	{
 		numplanes = 1;
@@ -4872,7 +4867,8 @@ static bool  PM_SlideMove( bool gravity )
 	VectorNormalize2( &pm->ps->velocity[0], planes[ numplanes ] );
 	numplanes++;
 
-	for ( bumpcount = 0; bumpcount < numbumps; bumpcount++ )
+	int bumpcount;
+	for ( bumpcount = 0; bumpcount < 4; bumpcount++ )
 	{
 		// calculate position we are trying to move to
 		VectorMA( pm->ps->origin, time_left, pm->ps->velocity, end );
@@ -4941,7 +4937,7 @@ static bool  PM_SlideMove( bool gravity )
 		// find a plane that it enters
 		for ( i = 0; i < numplanes; i++ )
 		{
-			into = glm::dot( pm->ps->velocity, VEC2GLM( planes[ i ] ) );
+			float into = glm::dot( pm->ps->velocity, VEC2GLM( planes[ i ] ) );
 
 			if ( into >= 0.1 )
 			{
@@ -4961,7 +4957,7 @@ static bool  PM_SlideMove( bool gravity )
 			PM_ClipVelocity( endVelocity, planes[ i ], endClipVelocity );
 
 			// see if there is a second plane that the new move enters
-			for ( j = 0; j < numplanes; j++ )
+			for ( int j = 0; j < numplanes; j++ )
 			{
 				if ( j == i )
 				{
@@ -4986,7 +4982,7 @@ static bool  PM_SlideMove( bool gravity )
 				// slide the original velocity along the crease
 				CrossProduct( planes[ i ], planes[ j ], dir );
 				VectorNormalize( dir );
-				d = DotProduct( dir, &pm->ps->velocity[0] );
+				float d = DotProduct( dir, &pm->ps->velocity[0] );
 				VectorScale( dir, d, clipVelocity );
 
 				CrossProduct( planes[ i ], planes[ j ], dir );
@@ -4995,7 +4991,7 @@ static bool  PM_SlideMove( bool gravity )
 				VectorScale( dir, d, endClipVelocity );
 
 				// see if there is a third plane the new move enters
-				for ( k = 0; k < numplanes; k++ )
+				for ( int k = 0; k < numplanes; k++ )
 				{
 					if ( k == i || k == j )
 					{
