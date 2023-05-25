@@ -31,6 +31,58 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "bg_public.h"
 #include "bg_local.h"
 
+bool validateVec3( glm::vec3 const& val )
+{
+	if ( glm::any( glm::isnan( val ) ) )
+	{
+		Log::Warn( "%d: src have NaN components", __LINE__ );
+		return false;
+	}
+	return true;
+}
+
+void updateIfValid( glm::vec3& dst, glm::vec3 const& src )
+{
+	if ( glm::any( glm::isnan( src ) ) )
+	{
+		Log::Warn( "%d: src have NaN components", __LINE__ );
+		return;
+	}
+	dst = src;
+}
+
+void updateIfValid( glm::vec3& dst, vec3_t const src )
+{
+	glm::vec3 tmp = VEC2GLM( src );
+	if ( glm::any( glm::isnan( tmp ) ) )
+	{
+		Log::Warn( "%d: src have NaN components", __LINE__ );
+		return;
+	}
+	dst = tmp;
+}
+
+void updateIfValid( vec3_t dst, glm::vec3 const& src )
+{
+	if ( glm::any( glm::isnan( src ) ) )
+	{
+		Log::Warn( "%d: src have NaN components", __LINE__ );
+		return;
+	}
+	VectorCopy( src, dst );
+}
+
+void updateIfValid( vec3_t dst, vec3_t const src )
+{
+	glm::vec3 tmp = VEC2GLM( src );
+	if ( glm::any( glm::isnan( tmp ) ) )
+	{
+		Log::Warn( "%d: src have NaN components", __LINE__ );
+		return;
+	}
+	VectorCopy( src, dst );
+}
+
 // all of the locals will be zeroed before each
 // pmove, just to make damn sure we don't have
 // any differences when running on client or server
@@ -1950,8 +2002,10 @@ static void PM_ClimbMove()
 	{
 		return;
 	}
-
-	PM_StepSlideMove( false, false );
+	if ( validateVec3( pm->ps->velocity ) )
+	{
+		PM_StepSlideMove( false, false );
+	}
 }
 
 /*
@@ -4783,6 +4837,7 @@ static bool  PM_SlideMove( bool gravity )
 	vec3_t  endClipVelocity;
 
 	numbumps = 4;
+	validateVec3( pm->ps->velocity );
 
 	VectorCopy( pm->ps->velocity, primal_velocity );
 	VectorCopy( pm->ps->velocity, endVelocity );
@@ -4837,7 +4892,7 @@ static bool  PM_SlideMove( bool gravity )
 		if ( trace.fraction > 0 )
 		{
 			// actually covered some distance
-			VectorCopy( trace.endpos, pm->ps->origin );
+			updateIfValid( pm->ps->origin, VEC2GLM( trace.endpos ) );
 		}
 
 		if ( trace.fraction == 1 )
@@ -4986,6 +5041,10 @@ PM_StepSlideMove
 */
 static bool PM_StepSlideMove( bool gravity, bool predictive )
 {
+	if ( !validateVec3( pm->ps->velocity ) )
+	{
+		return false;
+	}
 	vec3_t   start_o, start_v;
 	vec3_t   down_o, down_v;
 	trace_t  trace;
