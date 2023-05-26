@@ -154,7 +154,7 @@ const float LEVEL1_SLOW_MOD = 0.75f;
 
 const float FLAMER_DAMAGE_MAXDST_MOD = 0.5f;
 const float FLAMER_SPLASH_MINDST_MOD = 0.5f;
-const float FLAMER_LEAVE_FIRE_CHANCE = 0.1f;
+const float FLAMER_LEAVE_FIRE_CHANCE = 0.2f;
 
 const int   PRIFLE_DAMAGE_FULL_TIME = 0;
 const int   PRIFLE_DAMAGE_HALF_LIFE = 0;
