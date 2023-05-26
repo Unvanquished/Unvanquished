@@ -41,12 +41,18 @@ static void G_UpdateSkillsets()
 	}
 }
 
+static bool G_SkillExists( Str::StringRef skillName );
 static std::set<std::string> G_ParseSkillsetList( Str::StringRef skillsCsv )
 {
 	std::set<std::string> skills;
 
 	for (Parse_WordListSplitter i(skillsCsv); *i; ++i)
 	{
+		if ( !G_SkillExists( *i ) )
+		{
+			Log::Warn("Invalid skill name: " QQ("%s"), *i);
+			continue;
+		}
 		skills.insert( *i );
 	}
 
@@ -66,8 +72,13 @@ static std::set<std::pair<int, std::string>> G_ParseSkillsetListWithLevels( Str:
 			continue;
 		}
 		int number = (*i)[0] - '0';
-		std::string skillName = *i + 2; // skip the first two character
-		skills.insert( { number, std::move(skillName) } );
+		std::string skill = *i + 2;
+		if ( !G_SkillExists( skill ) )
+		{
+			Log::Warn("Invalid skill name: " QQ("%s"), skill);
+			continue;
+		}
+		skills.insert( { number, std::move(skill) } );
 	}
 
 	return skills;
@@ -236,6 +247,18 @@ static const std::vector<botSkillTreeElement_t> skillTree =
 	{ "predict-aim",        BOT_H_PREDICTIVE_AIM,          5,  TEAM_HUMANS, needs_one_of({BOT_B_BASIC_FIGHT}) },
 };
 
+static bool G_SkillExists( Str::StringRef skillName )
+{
+	for ( const auto &skill: skillTree )
+	{
+		if (skill.name == skillName)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 static bool SkillIsAvailable(const botSkillTreeElement_t &skill, team_t team, skillSet_t activated_skills)
 {
 	return !G_SkillDisabled(skill.name)
@@ -386,8 +409,8 @@ std::string G_BotPrintSkillGraph(team_t team, int skillLevel)
 	{
 		output += "graph [labelloc=\"b\" labeljust=\"r\" label=\"\n";
 		output += Str::Format("percentages are skill selection chance for skillLevel %i\\l\n", skillLevel);
-		output += "green is for force-enabled skills (g_skillset_baseSkills)\\l";
-		output += "red is for force-disabled skills (g_skillset_disabledSkills)\\l\"];\n";
+		output += "green is for force-enabled skills (g_bot_skillset_baseSkills)\\l";
+		output += "red is for force-disabled skills (g_bot_skillset_disabledSkills)\\l\"];\n";
 	}
 
 	std::array<int, BOT_NUM_SKILLS> counts = {};
