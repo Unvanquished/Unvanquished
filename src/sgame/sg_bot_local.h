@@ -127,6 +127,41 @@ enum bot_skill
 
 using skillSet_t = std::bitset<BOT_NUM_SKILLS>;
 
+class botSkillTreeElement_t {
+public:
+	Str::StringRef name;
+	bot_skill skill;
+	int cost;
+	// function that determines if this skill is available
+	std::function<bool(const gentity_t *self, skillSet_t existing_skills)> predicate;
+	// skills that are unlocked once you unlock this one
+	std::vector<botSkillTreeElement_t> unlocked_skills;
+
+	botSkillTreeElement_t(
+			Str::StringRef name_,
+			bot_skill skill_,
+			int cost_,
+			std::function<bool(const gentity_t *, skillSet_t )> pred,
+			std::vector<botSkillTreeElement_t> unlocked
+			)
+	:name( name_ ), skill( skill_ ), cost( cost_ ), predicate( pred ), unlocked_skills( unlocked )
+	{
+		m_all_skills.emplace( *this );
+	}
+
+	bool operator<( botSkillTreeElement_t const& other ) const //allows sorting by name to use std::set
+	{
+		return name < other.name;
+	}
+
+	static std::set<botSkillTreeElement_t> const& allSkills()
+	{
+		return m_all_skills;
+	}
+private:
+	static std::set<botSkillTreeElement_t> m_all_skills;
+};
+
 #define MAX_NODE_DEPTH 20
 struct AIBehaviorTree_t;
 struct AIGenericNode_t;

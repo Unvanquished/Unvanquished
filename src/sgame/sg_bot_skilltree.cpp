@@ -133,15 +133,10 @@ void G_InitSkilltreeCvars()
 		);
 }
 
-struct botSkillTreeElement_t {
-	Str::StringRef name;
-	bot_skill skill;
-	int cost;
-	// function that determines if this skill is available
-	std::function<bool(const gentity_t *self, skillSet_t existing_skills)> predicate;
-	// skills that are unlocked once you unlock this one
-	std::vector<botSkillTreeElement_t> unlocked_skills;
-};
+// HACK: avoiding
+// false-positive
+// git conflicts
+std::set<botSkillTreeElement_t> botSkillTreeElement_t::m_all_skills;
 
 static bool pred_always(const gentity_t *self, skillSet_t existing_skills)
 {

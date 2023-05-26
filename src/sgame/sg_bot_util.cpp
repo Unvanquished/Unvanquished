@@ -36,6 +36,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "Default skill value bots will have when added", Cvar::NONE, 5, 1, 9 );
 
+// Those comments are just
+// a hackish way to prevent
+// git conflicts.
+static Cvar::Cvar<std::string> g_bot_fixedSkills( "g_bot_fixedSkills", "if not empty, this cvars disables the skillset randomness. It's built of key:value pairs, where key is a level number and value is the name of a skill.", Cvar::NONE, "" );
+
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 static const int MIN_SKILL = 1;
 static const int MAX_SKILL = 9;
@@ -2435,6 +2440,52 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 
 	self->botMind->skillLevel = skill;
 
+	std::string const& skills = g_bot_fixedSkills.Get();
+	if ( skills.size() > 0 )
+	{
+		std::set<botSkillTreeElement_t> const& allSkills = botSkillTreeElement_t::allSkills();
+		size_t start, end = SIZE_MAX;
+		do
+		{
+			start = end + 1; //yes, this overflows the 1st iteration, making start == 0
+			if ( start >= skills.size() )
+			{
+				break;
+			}
+			end = skills.find( ' ' );
+			if ( end == std::string::npos )
+			{
+				end = skills.size();
+			}
+			if ( !isdigit( skills[start] ) || skills[start + 1] != ':' )
+			{
+				Log::Warn( "Invalid key:value pair in g_bot_fixedSkills: \"%s\"", skills.substr( start, end ) );
+				continue;
+			}
+			uint8_t minSkill = skills[start] - '0';
+			start += 2;
+			if ( minSkill <= skill )
+			{
+				std::string name = skills.substr( start, end );
+				auto it = std::find_if( allSkills.begin(), allSkills.end(), [&]( botSkillTreeElement_t const& other )
+						{
+						return name == other.name;
+						} );
+				if ( it == allSkills.end() )
+				{
+					Log::Warn( "Invalid skill requested: \"%s\"", name.c_str() );
+				}
+				else
+				{
+					self->botMind->skillSet[it->skill] = true;
+					self->botMind->skillSetExplaination += it->name;
+					self->botMind->skillSetExplaination += ' ';
+				}
+			}
+		}
+		while ( start < std::string::npos );
+		return;
+	}
 	std::pair<std::string, skillSet_t>
 		pair = BotDetermineSkills(self, skill);
 	self->botMind->skillSet = pair.second;
