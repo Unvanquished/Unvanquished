@@ -833,7 +833,7 @@ Global Bot Navigation
 static Cvar::Cvar<int> g_bot_upwardNavconMinHeight("g_bot_upwardNavconMinHeight", "minimal height difference for bots to use special upward movement.", Cvar::NONE, 100);
 static Cvar::Cvar<int> g_bot_upwardLeapAngleCorr("g_bot_upwardLeapAngleCorr", "is added to the angle for mantis and dragoon when leaping upward (in degrees).", Cvar::NONE, 20);
 
-static int wallclimbStopTime( gentity_t *self )
+static int WallclimbStopTime( gentity_t *self )
 {
 	// experiments suggest an appropriate value of 4 milliseconds per distance
 	// unit, add 500 milliseconds as safety margin
@@ -865,7 +865,7 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 		BotClimbToGoal( self );
 		break;
 	case PCL_ALIEN_LEVEL1:
-		if ( level.time < wallclimbStopTime( self ) )
+		if ( level.time < WallclimbStopTime( self ) )
 		{
 			BotClimbToGoal( self );
 			return;
@@ -926,7 +926,7 @@ static bool BotTryMoveUpward( gentity_t *self )
 		{
 		case PCL_ALIEN_LEVEL0:
 		case PCL_ALIEN_LEVEL1:
-			if ( level.time > wallclimbStopTime( self ) )
+			if ( level.time > WallclimbStopTime( self ) )
 			{
 				return false;
 			}
@@ -942,7 +942,7 @@ static bool BotTryMoveUpward( gentity_t *self )
 	{
 	case PCL_ALIEN_LEVEL0:
 	case PCL_ALIEN_LEVEL1:
-		if ( level.time > wallclimbStopTime( self ) )
+		if ( level.time > WallclimbStopTime( self ) )
 		{
 			return false;
 		}
