@@ -2292,6 +2292,11 @@ static void Cmd_BotSaveSkillTree_f( gentity_t * )
 	}
 }
 
+static void Cmd_BotListSkills_f( gentity_t * )
+{
+	Log::Notice( "Skillset skills: %s", G_BotListSkillset( static_cast<team_t>( team ) ) );
+}
+
 /*
 =================
 Cmd_Ignite_f
@@ -4215,6 +4220,7 @@ static const commands_t cmds[] =
 	{ "deconstruct",     CMD_TEAM | CMD_ALIVE,                Cmd_Deconstruct_f      },
 	{ "devbotcountskillpoints", CMD_CHEAT,                    Cmd_BotCountSkillPoints_f },
 	{ "devbotgraphskilltree", CMD_CHEAT,                      Cmd_BotSaveSkillTree_f },
+	{ "devbotlistskills", CMD_CHEAT,                          Cmd_BotListSkills_f },
 	{ "devteam",         CMD_CHEAT,                           Cmd_Devteam_f          },
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },

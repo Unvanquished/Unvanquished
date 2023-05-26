@@ -482,3 +482,29 @@ int G_BotCountSkillPoints(team_t team)
 
 	return total;
 }
+
+// This function is used for debug only
+std::string G_BotListSkillset()
+{
+	std::vector<std::string> skillNames;
+	for (const auto &skill : skillTree)
+	{
+		skillNames.push_back(skill.name);
+	}
+
+	std::sort( skillNames.begin(), skillNames.end() );
+
+	bool first = true;
+	std::string output;
+	for (const auto &skillName : skillNames)
+	{
+		if (!first)
+		{
+			output += ", ";
+		}
+
+		output += skillName;
+		first = false;
+	}
+	return output;
+}
