@@ -264,6 +264,8 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 
 		cmd->havePath = !bot->needReplan;
 
+		bool usingNavcon = false;
+
 		if ( overOffMeshConnectionStart( bot, spos ) )
 		{
 			dtPolyRef refs[ 2 ];
@@ -278,6 +280,8 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 				bot->offMeshPoly = con;
 				bot->offMeshEnd = end;
 				bot->offMeshStart = start;
+
+				usingNavcon = true;
 			}
 		}
 
@@ -319,6 +323,33 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 				cmd->tpos[ 1 ] = height;
 			}
 			recast2quake( cmd->tpos );
+		}
+
+		// when the bot is using an offmesh connection:
+		// save some characteristics about the connection in its mind, for later use
+		// this happens quite rarely, so we can afford a square root for the
+		// distance here
+		if ( usingNavcon )
+		{
+			gentity_t *self = &g_entities[ botClientNum ];
+			self->botMind->lastNavconTime = level.time;
+			glm::vec3 nextCorner;
+			glm::vec3 ownPos = VEC2GLM( self->s.origin );
+			if ( G_BotPathNextCorner( self->client->num(), nextCorner ) )
+			{
+				// HACK: if the bot wants to move upward, make the distance
+				// positive, make it negative otherwise
+				self->botMind->lastNavconDistance = glm::distance( ownPos , nextCorner );
+				if ( nextCorner.z - ownPos.z < 0 )
+				{
+					self->botMind->lastNavconDistance = -self->botMind->lastNavconDistance;
+				}
+			}
+			else
+			{
+				// should not happen, but let's play it safe here
+				self->botMind->lastNavconDistance = 0;
+			}
 		}
 	}
 
