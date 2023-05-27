@@ -6,75 +6,78 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2014-04-27 22:47+0000\n"
-"Last-Translator: Daw11 <dawide11@alice.it>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2023-05-29 16:19+0000\n"
+"Last-Translator: Emily Fiorentini <emily@xewer.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.5.0-beta1\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.18-dev\n"
 "X-POOTLE-MTIME: 1398638831.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "Costruzione"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr ""
+msgstr "Costo:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Evolvi"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "punti evo"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Scegli da dove iniziare:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "Dretch"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
+"I dretch sono alieni che attaccano di nascosto mentre i granger costruiscono "
+"basi."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Indietro scelta squadra"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "Richiedi un pareggio"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "Motivo"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Crea una votazione"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
-msgstr ""
+msgstr "Riempi con dei bot"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "Entrambe le squadre"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
@@ -91,27 +94,27 @@ msgstr "Squadra"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "Quantità"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
-msgstr ""
+msgstr "Cambia mappa"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Voto: cambia la prossima mappa"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Voto: imposta la mappa corrente"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "Imposta la mappa corrente (host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Metodo"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
@@ -119,53 +122,61 @@ msgstr "Mappa"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Esegui un'azione"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Errore!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Va bene"
 
 #: ui/help_gameplay.rml:16 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Benvenuto"
 
 #: ui/help_gameplay.rml:19
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"In questa sezione troverai un riassunto della maggior parte degli elementi "
+"di gioco per diventare un bravo giocatore."
 
 #: ui/help_gameplay.rml:23
 msgid "Feel free to join us in the community and developer chats!"
 msgstr ""
+"Sentiti libero di unirti a noi nelle chat di comunità e per sviluppatori!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "We are chatting on IRC and Matrix in <b>#unvanquished</b> and "
 "<b>#unvanquished-dev</b> on Libera.Chat"
 msgstr ""
+"Stiamo chattando su IRC e Matrix in <b>#unvanquished</b> and <b"
+">#unvanquished-dev</b> su Libera.Chat"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forum, <b>forums.unvanquished.net</b>"
-msgstr ""
+msgstr "Discuti delle nuove notizie nel forum, <b>forums.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>"
 msgstr ""
+"Scopri di più riguardo al gioco nella wiki, <b>wiki.unvanquished.net</b>"
 
 #: ui/help_gameplay.rml:30
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "Entrate &amp; evoluzione"
 
 #: ui/help_gameplay.rml:34
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"Gli alieni possono ottenere punti di evoluzione uccidendo gli umani. Possono "
+"quindi usare questi punti per evolvere in forme più avanzate come [dragoon]."
 
 #: ui/help_gameplay.rml:37
 msgid ""
@@ -173,12 +184,17 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"Gli alieni possono evolvere dovunque se non troppo vicini a un umano oppure "
+"a una costruzione stessa. Possono retrocedere a forme meno avanzate come "
+"[granger] se vicini all'[overmind]."
 
 #: ui/help_gameplay.rml:40
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
+"Costruisci un overmind con un [granger] se viene distrutto, hai bisogno di "
+"un overmind vivente per evolvere!"
 
 #: ui/help_gameplay.rml:44
 msgid ""
@@ -186,16 +202,22 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
+"Gli umani possono ottenere crediti uccidendo alieni e distruggendo strutture "
+"aliene, quindi possono usare questi crediti per comprare nuove armi [lcannon]"
+", armature da combattimento [bsuit] e accessori come radar o jetpack."
 
 #: ui/help_gameplay.rml:47
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
+"Gli umani comprano e vendono armi dall'armeria [armeria], fai in modo che ne "
+"sia stata costruita almeno una! Usa il kit costruzione per un'armeria se "
+"mancante."
 
 #: ui/help_gameplay.rml:51
 msgid "Powering buildables"
-msgstr ""
+msgstr "Costruzioni che danno energia"
 
 #: ui/help_gameplay.rml:54
 msgid ""
@@ -205,6 +227,12 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
+"Costruire qualcosa richiede punti costruzione. La tua squadra comincerà con "
+"una piccola quantità di punti costruzione ma se vuoi piazzare un numero "
+"maggiore di costruzioni nell'area, puoi mettere una struttura di estrazione "
+"di energia [leech] per aumentare la quantità di potenza disponibile fornendo "
+"più punti costruzione. Tieni presente che perderai punti costruzione se le "
+"strutture di estrazione verranno distrutte."
 
 #: ui/help_gameplay.rml:57
 msgid ""
@@ -213,6 +241,11 @@ msgid ""
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
+"Se utilizzi piu punti costruzione di quanto le strutture di estrazione siano "
+"in grado di fornire [leech, drill] (punti ostruzione correnti + punti "
+"costruzione che riottieni col tempo), alcune strutture smetteranno di "
+"funzionare fino a quando atre strutture avranno abbastanza energie per "
+"rimanere in funzione."
 
 #: ui/help_gameplay.rml:58
 msgid ""
@@ -220,10 +253,13 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
+"Strutture di spawn (uova e telenodi), strutture di estrazione di energia ("
+"leech e drill) e strutture uniche (overmind e reattore) non vengono "
+"coinvolte dalla mancanza di punti costruzione."
 
 #: ui/help_gameplay.rml:62
 msgid "Mining structures"
-msgstr ""
+msgstr "Strutture di estrazione di energia"
 
 #: ui/help_gameplay.rml:65
 msgid ""
@@ -231,12 +267,19 @@ msgid ""
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
+"I punti costruzione si ottengono tramite due tipi di strutture di estrazione "
+"di energia: per gli umani il drill [drill] e per gli alieni il leech [leech]"
+". Queste strutture necessitano di essere distribuiti in modo sparso per "
+"motivi di efficienza."
 
 #: ui/help_gameplay.rml:68
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
+"Non costruire strutture di estrazione di energia troppo vicine tra loro "
+"altrimenti tenderanno a competere tra di loro col risultato di diventare un "
+"costo in termini di risorse per la costruzione!"
 
 #: ui/help_gameplay.rml:71
 msgid ""
@@ -246,6 +289,13 @@ msgid ""
 "mining structure finishes building, and will be subtracted back if the "
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
+"I costruttori avranno una barra riguardo il generatore di risorse sopra "
+"quella della salute che rappresenta la sua efficienza. Verrà mostrato un "
+"calcolo predittivo quando posizioni la struttura. I punti costruzione "
+"diventano disponibili immediatamente non appena viene terminata la "
+"costruzione di una struttura di estrazione di energia e invece verrà "
+"sottratta se la costruzione viene distrutta. Non costruire drill senza "
+"protezione!"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -254,10 +304,15 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
+"Quando una costruzione viene distrutta, le strutture di estrazione "
+"ripristineranno i punti costruzione lentamente. Il tasso di ripristino "
+"diminuisce col tempo, in modo che col tempo diventi sempre più difficile "
+"ricostruire strutture distrutte in una partita che dura molto tempo. Questo "
+"meccanismo sostituisce il sudden death."
 
 #: ui/help_gameplay.rml:78
 msgid "Stages &amp; Momentum"
-msgstr ""
+msgstr "Fasi &amp; Momento"
 
 #: ui/help_gameplay.rml:81
 msgid ""
@@ -265,44 +320,59 @@ msgid ""
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
+"Costruire e distruggere strutture come uccidere nemici fa guadagnare alla "
+"tua squadra una risorsa chiamata momento. Se guadagni sufficiente momento "
+"verrà sbloccato l'accesso a nuove armi, strutture o classi."
 
 #: ui/help_gameplay.rml:84
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
+"Il momento diminuisce esponenzialmente nel tempo quindi se non fai nulla per "
+"la tua squadra, questa perderà l'accesso ai nuovi elementi. Gli "
+"aggiornamenti esistenti rimarranno in funzione."
 
 #: ui/help_gameplay.rml:88
 msgid "Wildfire"
-msgstr ""
+msgstr "Incendio"
 
 #: ui/help_gameplay.rml:91
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
+"Le strutture aliene possono prendere fuoco quando vengono colpite con il "
+"lanciafiamme [flamer] oppure con una bomba incendiaria [firebomb]."
 
 #: ui/help_gameplay.rml:94
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
+"Se le strutture sono costruite troppo vicine, il fuoco può passare sugli "
+"sfortunati vicini."
 
 #: ui/help_gameplay.rml:97
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
+"Un piccolo fuoco [fire] ha una buona possibilità to estinguersi dopo un po', "
+"ma un gruppo di strutture che brucia si manterrà abbastanza caldo da creare "
+"caos maggiore."
 
 #: ui/help_gameplay.rml:100
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
+"Lo sputo del granger avanzato [advgranger] può essere usato per estinguere "
+"gli incendi oppure per rallentare gli intrusi!"
 
 #: ui/help_gameplay.rml:104
 msgid "Under attack"
-msgstr ""
+msgstr "Sotto attacco"
 
 #: ui/help_gameplay.rml:107
 msgid ""
@@ -311,14 +381,19 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
+"Il reattore [reactor] e l'overmind [overmind] darà l'allarme alla squadra se "
+"al 75% della sua salute, al 50%, al 25% e quando viene distrutto. La "
+"distruzione di altre costruzioni lancerà l'avvertimento di \"sotto attacco\" "
+"per la squadra."
 
 #: ui/help_gameplay.rml:111
 msgid "Healing"
-msgstr ""
+msgstr "Ripristino salute"
 
 #: ui/help_gameplay.rml:114
 msgid "Dying feeds the ennemy, you may want to save your life!"
 msgstr ""
+"Morire comporta il regalare punti al nemico, devi fare in modo di non morire!"
 
 #: ui/help_gameplay.rml:118
 msgid ""
@@ -327,6 +402,10 @@ msgid ""
 "manner will also contribute to restoring the [advdragoon] advanced dragoon "
 "projectiles."
 msgstr ""
+"Gli alieni recuperano salute lentamente ovunque sono, ma recuperano piu in "
+"fretta se in gruppo o vicino a costruzioni aliene. Costruire fuori può "
+"essere decisivo! Ripristinare la salute contribuirà a ripristinare i "
+"proiettili del dragone avanzato [advdragoon]."
 
 #: ui/help_gameplay.rml:122
 msgid ""
@@ -334,6 +413,10 @@ msgid ""
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
+"Il booster fornisce il ripristino della salute in fretta agli alieni nei "
+"dintorni, costruiscine uno il più in fretta possibile, cerca di averne "
+"l'accesso il prima possibile. Il booster fornirà anche del veleno per "
+"rendere gli attacchi piu mortali."
 
 #: ui/help_gameplay.rml:125
 msgid ""
@@ -341,6 +424,9 @@ msgid ""
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
+"Stando ad una certa distanza dall'overmind [overmind] o da un uovo [egg] "
+"ripristinerà la salute un po', comunque meno rispetto allo starci attaccato. "
+"Questo può aiutare nella difesa delle basi."
 
 #: ui/help_gameplay.rml:128
 msgid ""
@@ -349,50 +435,67 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
+"Gli alieni hanno anche una terza modalità di ripristino della salute: stare "
+"in prossimità di altri alieni. Se stai vicino ad un alieno amico, "
+"recupererai salute un po' più velocemente, e con due compagni ripristinerai "
+"ancora più velocemente tanto come quando tocchi una costruzione aliena. Con "
+"un po di gioco di squadra, questa può essere una buona strategia per "
+"assediare l'avversario!"
 
 #: ui/help_gameplay.rml:132
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
+"Gli umani portano con se un kit medico che possono usare per curarsi, dopo "
+"dovranno ritornare al medistation [medstat] per curarsi e riottenere il loro "
+"kit medico."
 
 #: ui/help_gameplay.rml:136
 msgid "Wallwalking"
-msgstr ""
+msgstr "Camminare sui muri"
 
 #: ui/help_gameplay.rml:139
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
+"Alcune forme aliene come i dretch [dretch], la mantide [mantis] e il granger "
+"avanzato [advgranger] possono camminare sui muri!"
 
 #: ui/help_gameplay.rml:142
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
+"Usa questo per raggiungere posti speciali o usa delle scorciatoie attraverso "
+"le prese d'aria."
 
 #: ui/help_gameplay.rml:145
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
+"Le strutture difensive aliene come il trapper e lo spiker funzionano meglio "
+"sui muri, costruendoli sul soffitto li proteggerà dalle granate."
 
 #: ui/help_gameplay.rml:148
 msgid "The advanced granger can be unlocked with momentum."
-msgstr ""
+msgstr "Il granger avanzato può essere sbloccato con il momento."
 
 #: ui/help_gameplay.rml:152
 msgid "Since Tremulous"
-msgstr ""
+msgstr "Dai tempi di Tremulous"
 
 #: ui/help_gameplay.rml:155
 msgid "Since Tremulous, the stamina has been increased."
-msgstr ""
+msgstr "Rispetto a Tremulous, la resistenza è stata aumentata."
 
 #: ui/help_gameplay.rml:158
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
+"Tutti i costi delle evoluzioni aliene e i guadagni, sono stati raddoppiati. "
+"Il nuovo massimo di evo che un alieno può avere è 20 (precedentemente 9)."
 
 #: ui/help_gameplay.rml:161
 msgid ""
