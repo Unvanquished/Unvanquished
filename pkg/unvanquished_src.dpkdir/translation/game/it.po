@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-29 16:19+0000\n"
+"PO-Revision-Date: 2023-05-31 09:42+0000\n"
 "Last-Translator: Emily Fiorentini <emily@xewer.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
@@ -502,34 +502,46 @@ msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
+"Gli stage sono stati sostituiti con il momento e i punti costruzione "
+"dipendono direttamente dal numero di drill."
 
 #: ui/help_gameplay.rml:164
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
+"Gli umani non hanno più la torre di difesa di Tesla e nemmeno il computer di "
+"difesa, ma possono costruire i moduli lanciarazzi."
 
 #: ui/help_gameplay.rml:167
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
+"Gli alieni hanno lo spiker come nuova costruzione che può ferire "
+"profondamente gli umani, ma è una struttura molto vulnerabile, non metterlo "
+"in piena vista!"
 
 #: ui/help_gameplay.rml:170
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
+"Il basilisco è stato sostituito dalla mantide, non può più immobilizzare ma "
+"il suo morso rallenta le sue vittime, e può saltare in modo molto veloce."
 
 #: ui/help_gameplay.rml:173
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
 msgstr ""
+"Gli alieni possono regredire di evoluzione vicino all'overmind, e lo sputo "
+"del granger avanzato può fare cose interessanti, provalo sul fuoco oppure "
+"sugli umani!"
 
 #: ui/help_textentry.rml:19 ui/menu_ingame.rml:112 ui/menu_main.rml:49
 msgid "Colour codes and symbols"
-msgstr ""
+msgstr "Codici colore e simboli"
 
 #: ui/help_textentry.rml:22
 msgid ""
@@ -537,10 +549,13 @@ msgid ""
 "symbol. Colour can be reset again to normal using ^*, or an actual caret can "
 "be typed using ^^."
 msgstr ""
+"I colori vengono usati inserendo il loro codice escape che inizia con il "
+"simbolo del cappelletto (^). I colori possono essere resettati usando ^*, il "
+"simbolo cappelletto vero e proprio si scrivere con ^^."
 
 #: ui/help_textentry.rml:61
 msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
-msgstr ""
+msgstr "Esempio: ^^3Fred^^1Baggins diventa ^3Fred^1Baggins"
 
 #: ui/hud_basics.rml:192
 msgid "Game"
@@ -548,7 +563,7 @@ msgstr "Gioco"
 
 #: ui/hud_basics.rml:195
 msgid "Life"
-msgstr ""
+msgstr "Vita"
 
 #: ui/hud_basics.rml:199
 msgid "fps"
@@ -568,7 +583,7 @@ msgstr "Crediti"
 
 #: ui/human_buy.rml:208
 msgid "Weapons"
-msgstr ""
+msgstr "Armi"
 
 #: ui/human_buy.rml:209 ui/human_buy.rml:225
 msgid "TAB"
@@ -576,15 +591,15 @@ msgstr ""
 
 #: ui/human_buy.rml:217
 msgid "Range:"
-msgstr ""
+msgstr "Intervallo:"
 
 #: ui/human_buy.rml:218
 msgid "Damage:"
-msgstr ""
+msgstr "Danni:"
 
 #: ui/human_buy.rml:219
 msgid "Fire Rate:"
-msgstr ""
+msgstr "Velocità di fuoco:"
 
 #: ui/human_buy.rml:224
 msgid "Upgrades"
@@ -592,7 +607,7 @@ msgstr "Potenziamenti"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "Scegli il tuo equipaggiamento di partenza:"
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
@@ -600,58 +615,66 @@ msgstr ""
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr ""
+msgstr "Kit di Costruzione"
 
 #: ui/human_spawn.rml:48
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
+"L'SMG è un'arma a fuoco rapido disponibile all'inizio. Il kil di costruzione "
+"crea e ripara le strutture umane. Tutto l'equipaggiamento può essere "
+"acquistato/venduto nell'armeria."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr ""
+msgstr "Segnali"
 
 #: ui/ingame_scoreboard.rml:184
 msgid "Spectators"
-msgstr ""
+msgstr "Spettatori"
 
 #: ui/ingame_scoreboard.rml:191 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "Mappa:"
 
 #: ui/ingame_scoreboard.rml:192
 msgid "Time:"
-msgstr ""
+msgstr "Tempo:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "Auto seleziona una squadra"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
+"Gli alieni sono molto agili e hanno un'ampia varietà di possibilità "
+"d'attacco basata su movimenti. Sono robusti, ma devono fare affidamento "
+"sulla guerriglia."
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
+"Gli umani possono equipaggiarsi con un buon assortimento di armi e "
+"strumenti. Sono flessibili e letali ad una certa distanza, ma fragili."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
 msgid "Join Aliens"
-msgstr ""
+msgstr "Unisciti agli Alieni"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:29
 msgid "Join Humans"
-msgstr ""
+msgstr "Unisciti agli Umani"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "Altrimenti puoi vedere senza giocare."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
 msgid "Spectate"
@@ -662,38 +685,40 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at https://bugs.unvanquished.net"
 msgstr ""
+"Questa è una versione beta di Unvanquished. Per qualsiasi tipo di problema "
+"che riscontri, fai una segnalazione su https://bugs.unvanquished.net"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
-msgstr ""
+msgstr "Menu partita"
 
 #: ui/menu_ingame.rml:23
 msgid "Leave match"
-msgstr ""
+msgstr "Lascia partita"
 
 #: ui/menu_ingame.rml:24
 msgid "Resume action"
-msgstr ""
+msgstr "Ripristina azione"
 
 #: ui/menu_ingame.rml:26 ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Squadre"
 
 #: ui/menu_ingame.rml:33
 msgid "Democracy"
-msgstr ""
+msgstr "Democrazia"
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
-msgstr ""
+msgstr "Voto globale:"
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
-msgstr ""
+msgstr "si"
 
 #: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46 src/cgame/cg_tutorial.cpp:120
 msgid "or"
-msgstr ""
+msgstr "oppure"
 
 #: ui/menu_ingame.rml:40 ui/menu_ingame.rml:47
 msgid "no"
@@ -701,23 +726,23 @@ msgstr ""
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
-msgstr ""
+msgstr "Voto di squadra:"
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
-msgstr ""
+msgstr "Espelli i bot"
 
 #: ui/menu_ingame.rml:52
 msgid "Extend timelimit"
-msgstr ""
+msgstr "Estendi il tempo limite"
 
 #: ui/menu_ingame.rml:53
 msgid "Call a draw"
-msgstr ""
+msgstr "Richiedi un pari"
 
 #: ui/menu_ingame.rml:54
 msgid "Admit defeat"
-msgstr ""
+msgstr "Ammetti la sconfitta"
 
 #: ui/menu_ingame.rml:60
 msgid "Host menu"
@@ -725,15 +750,15 @@ msgstr ""
 
 #: ui/menu_ingame.rml:61
 msgid "Stop server"
-msgstr ""
+msgstr "Ferma il server"
 
 #: ui/menu_ingame.rml:62
 msgid "Pause server"
-msgstr ""
+msgstr "Metti in pausa il server"
 
 #: ui/menu_ingame.rml:67
 msgid "Reset match"
-msgstr ""
+msgstr "Resetta la partita"
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
@@ -741,11 +766,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
-msgstr ""
+msgstr "Aggiungi un bot alieno"
 
 #: ui/menu_ingame.rml:73
 msgid "Add a human bot"
-msgstr ""
+msgstr "Aggiungi un bot umano"
 
 #: ui/menu_ingame.rml:74
 msgid "Remove all bots"
@@ -757,11 +782,11 @@ msgstr "Giocatori"
 
 #: ui/menu_ingame.rml:80
 msgid "Disclipline: kick/ban/mute/nobuild"
-msgstr ""
+msgstr "Azione disciplinare: espelli/banna/muta/no costruzione"
 
 #: ui/menu_ingame.rml:87
 msgid "Main menu"
-msgstr ""
+msgstr "Menu Principale"
 
 #: ui/menu_ingame.rml:89 ui/menu_main.rml:28
 msgid "Play"
@@ -769,15 +794,15 @@ msgstr "Gioca"
 
 #: ui/menu_ingame.rml:91 ui/menu_main.rml:30
 msgid "Server listings"
-msgstr ""
+msgstr "Lista dei Server"
 
 #: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr ""
+msgstr "Crea una partita locale/LAN"
 
 #: ui/menu_ingame.rml:93 ui/menu_main.rml:32
 msgid "Recorded demos"
-msgstr ""
+msgstr "Demo registrate"
 
 #: ui/menu_ingame.rml:96 ui/menu_main.rml:35
 msgid "Options"
@@ -789,15 +814,15 @@ msgstr "Giocatore"
 
 #: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
 msgid "Graphics"
-msgstr ""
+msgstr "Grafica"
 
 #: ui/menu_ingame.rml:100 ui/menu_main.rml:39 ui/options_keys.rml:7
 msgid "Key bindings"
-msgstr ""
+msgstr "Impostazione tasti"
 
 #: ui/menu_ingame.rml:101 ui/menu_main.rml:40 ui/options_mouse.rml:7
 msgid "Mouse and Aiming"
-msgstr ""
+msgstr "Mouse e Mira"
 
 #: ui/menu_ingame.rml:102 ui/menu_main.rml:41 ui/options_sound.rml:7
 msgid "Sound"
@@ -805,15 +830,15 @@ msgstr "Audio"
 
 #: ui/menu_ingame.rml:103 ui/menu_main.rml:42
 msgid "User interface and HUD"
-msgstr ""
+msgstr "Interfaccia utente e HUD"
 
 #: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr ""
+msgstr "Campi visivi"
 
 #: ui/menu_ingame.rml:105
 msgid "Server setup"
-msgstr ""
+msgstr "Impostazioni server"
 
 #: ui/menu_ingame.rml:109 ui/menu_main.rml:46
 msgid "Help"
@@ -821,11 +846,11 @@ msgstr "Aiuto"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
 msgid "Gameplay guide"
-msgstr ""
+msgstr "Guida gioco"
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
-msgstr ""
+msgstr "Lascia gioco"
 
 #: ui/menu_ingame.rml:119 ui/menu_main.rml:56
 msgid "Beta"
@@ -833,23 +858,26 @@ msgstr ""
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr ""
+msgstr "Angoli visivi"
 
 #: ui/options_fov.rml:11
 msgid "FOV = “width” of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = \"ampiezza\" di visione del giocatore, misurata in gradi."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild “motion sickness” from playing first-person "
 "shooters. A higher FOV can help combat this."
 msgstr ""
+"Molti giocatori soffrono un leggero \"disturbo del movimento\" nel giocare "
+"in prima persona agli sparatutto. Un FOV più alto può aiutare a ridurre "
+"questo fastidio."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "gradi"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
@@ -860,7 +888,7 @@ msgstr ""
 
 #: ui/options_fov.rml:40
 msgid "Mantis"
-msgstr ""
+msgstr "Mantide"
 
 #: ui/options_fov.rml:48
 msgid "Marauder"
@@ -876,19 +904,19 @@ msgstr ""
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
-msgstr ""
+msgstr "Vista ondeggiamento"
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
-msgstr ""
+msgstr "Rotazione verticale camera"
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "Disabilitato"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "Mite"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
@@ -896,33 +924,35 @@ msgstr "Predefinito"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "Forte"
 
 #: ui/options_fov.rml:81
 msgid "“Up and down” movement"
-msgstr ""
+msgstr "Movimento \"Su e giù\""
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
-msgstr ""
+msgstr "Basculamento camera"
 
 #: ui/options_fov.rml:92
 msgid "“Twisting” movement"
-msgstr ""
+msgstr "movimento di \"Torsione\""
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Impostazioni predefinite"
 
 #: ui/options_graphics.rml:24
 msgid "Lowest"
-msgstr ""
+msgstr "Inferiore"
 
 #: ui/options_graphics.rml:25
 msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel "
 "textures…"
 msgstr ""
+"Suddivisioni basse, nessun cielo, nessuna ombra, nessuna particella "
+"rimbalzante, texture a 64 pixel…"
 
 #: ui/options_graphics.rml:28 ui/options_graphics.rml:141
 #: ui/options_graphics.rml:262
@@ -934,6 +964,8 @@ msgid ""
 "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
 "pixel textures…"
 msgstr ""
+"Multi campionamento, mappatura mip anisotropica, ombre, particelle "
+"rimbalzanti, texture a 256 pixel…"
 
 #: ui/options_graphics.rml:32 ui/options_graphics.rml:142
 msgid "Medium"
@@ -944,6 +976,8 @@ msgid ""
 "Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
 "textures…"
 msgstr ""
+"Normale, mappatura speculare e fisica, effetto bloom, filtro trilineare, "
+"texture a 512 pixel…"
 
 #: ui/options_graphics.rml:36 ui/options_graphics.rml:260
 msgid "High"
@@ -954,6 +988,8 @@ msgid ""
 "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
 "pixel textures…"
 msgstr ""
+"Illuminazione dinamica, foschia, sfocatura movimento, multi campionamento "
+"migliore, texture fino a 2048 pixel…"
 
 #: ui/options_graphics.rml:40
 msgid "Ultra"
@@ -964,6 +1000,8 @@ msgid ""
 "Relief mapping and other features and effects enabled, up to 4096-pixel "
 "textures…"
 msgstr ""
+"Mappatura dei rilievi e altre caratteristiche ed effetti abilitati, texture "
+"fino a 4096 pixel…"
 
 #: ui/options_graphics.rml:44 ui/options_graphics.rml:46
 msgid "Video"
@@ -971,7 +1009,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:48
 msgid "Brightness"
-msgstr ""
+msgstr "Luminosità"
 
 #: ui/options_graphics.rml:51
 msgid "Gamma:"
@@ -979,15 +1017,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Risoluzione Schermo"
 
 #: ui/options_graphics.rml:62
 msgid "Borderless window"
-msgstr ""
+msgstr "Finestra senza bordi"
 
 #: ui/options_graphics.rml:66
 msgid "Fullscreen"
-msgstr ""
+msgstr "Schermo intero"
 
 #: ui/options_graphics.rml:71 ui/options_graphics.rml:263
 msgid "Off"
@@ -995,11 +1033,11 @@ msgstr "Spento"
 
 #: ui/options_graphics.rml:72
 msgid "Flexible Vsync"
-msgstr ""
+msgstr "Vsync flessibile"
 
 #: ui/options_graphics.rml:73
 msgid "Full Vsync"
-msgstr ""
+msgstr "Vsync completo"
 
 #: ui/options_graphics.rml:75
 msgid "Vsync"
@@ -1011,6 +1049,10 @@ msgid ""
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
+"Il vsync previene la \"lacerazione visiva\" ma aumenta la latenza "
+"dell'input. Il vsync flessibile è attivato solo quando il frame-rate è al di "
+"sopra del rate di aggiornamento del monitor, evitando intoppi quando gli FPS "
+"si abbassano."
 
 #: ui/options_graphics.rml:81
 msgid "Fast approximate anti-aliasing (FXAA)"
@@ -1020,68 +1062,70 @@ msgstr ""
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
 #: ui/options_graphics.rml:235
 msgid "Apply now"
-msgstr ""
+msgstr "Applica ora"
 
 #: ui/options_graphics.rml:89
 msgid "Lighting"
-msgstr ""
+msgstr "Luminosità"
 
 #: ui/options_graphics.rml:91
 msgid "Lights"
-msgstr ""
+msgstr "Luci"
 
 #: ui/options_graphics.rml:94
 msgid "Light mapping"
-msgstr ""
+msgstr "Mappatura della luce"
 
 #: ui/options_graphics.rml:94
 msgid "normal"
-msgstr ""
+msgstr "normale"
 
 #: ui/options_graphics.rml:95
 msgid "Grid lighting"
-msgstr ""
+msgstr "Illuminazione griglia"
 
 #: ui/options_graphics.rml:95
 msgid "low, ugly"
-msgstr ""
+msgstr "basso, brutto"
 
 #: ui/options_graphics.rml:97
 msgid "Lighting system"
-msgstr ""
+msgstr "Sistema di illuminazione"
 
 #: ui/options_graphics.rml:100
 msgid "Light styles"
-msgstr ""
+msgstr "Stile luce"
 
 #: ui/options_graphics.rml:102
 msgid "Precomputed dynamic lights emitted by static map objects."
-msgstr ""
+msgstr "Luci dinamiche precalcolate emesse da oggetti di una mappa statica."
 
 #: ui/options_graphics.rml:105
 msgid "Dynamic lights"
-msgstr ""
+msgstr "Luci dinamiche"
 
 #: ui/options_graphics.rml:107
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
+"Luci dinamiche in tempo reale emesse da oggetti in movimento come armi e "
+"costruzioni."
 
 #: ui/options_graphics.rml:110
 msgid "Rim lighting"
-msgstr ""
+msgstr "Illuminazione bordo"
 
 #: ui/options_graphics.rml:112
 msgid "Light the edges of models from behind."
-msgstr ""
+msgstr "Retro illumina i contorni di modelli."
 
 #: ui/options_graphics.rml:115
 msgid "Half Lambert lighting"
-msgstr ""
+msgstr "Illuminazione mezzo Lambert"
 
 #: ui/options_graphics.rml:117
 msgid "Non-physical lighting technique to make models less dark."
-msgstr ""
+msgstr "Tecnica di illuminazione non-fisica per rendere i modelli meno scuri."
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:244
 msgid "None"
@@ -1093,7 +1137,7 @@ msgstr "Blobs"
 
 #: ui/options_graphics.rml:122
 msgid "low"
-msgstr ""
+msgstr "basso"
 
 #: ui/options_graphics.rml:124
 msgid "Exponential mapping"
@@ -1105,15 +1149,15 @@ msgstr "Mapping varianza"
 
 #: ui/options_graphics.rml:126
 msgid "Exponential + variance"
-msgstr ""
+msgstr "Varianza esponenziale"
 
 #: ui/options_graphics.rml:126
 msgid "high"
-msgstr ""
+msgstr "alto"
 
 #: ui/options_graphics.rml:129
 msgid "Shadows"
-msgstr ""
+msgstr "Ombre"
 
 #: ui/options_graphics.rml:136
 msgid "Textures"
@@ -1125,26 +1169,31 @@ msgstr "Generale"
 
 #: ui/options_graphics.rml:143
 msgid "Full"
-msgstr ""
+msgstr "Completo"
 
 #: ui/options_graphics.rml:145
 msgid "Texture size"
-msgstr ""
+msgstr "Dimensione texture"
 
 #: ui/options_graphics.rml:146
 msgid ""
 "Lower texture size is useful for cards with limited video memory (VRAM)."
 msgstr ""
+"Texture di dimensioni più basse sono utili per schede video con memoria "
+"limitata (VRAM)."
 
 #: ui/options_graphics.rml:149
 msgid "Mip-mapping"
-msgstr ""
+msgstr "Mappatura mip"
 
 #: ui/options_graphics.rml:150
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
+"La mappatura mip fanno in modo che le superfici distanti abbiano un aspetto "
+"migliore utilizzando texture di risoluzione piu bassa. Questo in generale "
+"non creai problemi di prestazioni."
 
 #: ui/options_graphics.rml:153 ui/options_ui.rml:12
 msgid "No"
@@ -1152,11 +1201,11 @@ msgstr "No"
 
 #: ui/options_graphics.rml:159
 msgid "Anisotropic mip-mapping"
-msgstr ""
+msgstr "Mappatura mip anisotropica"
 
 #: ui/options_graphics.rml:160
 msgid "Better interpretation of mip-maps on angled surfaces."
-msgstr ""
+msgstr "Interpretazione migliore della mappatura mip su superfici angolate."
 
 #: ui/options_graphics.rml:164
 msgid "Bilinear"
@@ -1168,59 +1217,59 @@ msgstr "Trilineare"
 
 #: ui/options_graphics.rml:165
 msgid "better"
-msgstr ""
+msgstr "migliore"
 
 #: ui/options_graphics.rml:167
 msgid "Texture scaling filter"
-msgstr ""
+msgstr "Filtro di scalatura texture"
 
 #: ui/options_graphics.rml:177
 msgid "Materials"
-msgstr ""
+msgstr "Materiali"
 
 #: ui/options_graphics.rml:179
 msgid "Normal mapping"
-msgstr ""
+msgstr "Mappatura normale"
 
 #: ui/options_graphics.rml:181
 msgid "Simulates extra lighting detail on flat surfaces."
-msgstr ""
+msgstr "Simula dettagli di illuminazione extra su superfici piatte."
 
 #: ui/options_graphics.rml:184
 msgid "Deluxe mapping"
-msgstr ""
+msgstr "Mappatura di qualità"
 
 #: ui/options_graphics.rml:186
 msgid "Light direction based on baked textures."
-msgstr ""
+msgstr "Direzione della luce basata su diversi materiali di una texture."
 
 #: ui/options_graphics.rml:189
 msgid "Relief mapping"
-msgstr ""
+msgstr "Mappatura dei rilievi"
 
 #: ui/options_graphics.rml:191
 msgid "Adds bumps on supported surfaces."
-msgstr ""
+msgstr "Aggiunge dossi su superfici supportate."
 
 #: ui/options_graphics.rml:191 ui/options_graphics.rml:225
 msgid "Experimental."
-msgstr ""
+msgstr "Sperimentale."
 
 #: ui/options_graphics.rml:194
 msgid "Specular mapping"
-msgstr ""
+msgstr "Mappatura speculare"
 
 #: ui/options_graphics.rml:196
 msgid "Simulate light specularity."
-msgstr ""
+msgstr "Simula la specularità della luce."
 
 #: ui/options_graphics.rml:199
 msgid "Physical mapping"
-msgstr ""
+msgstr "Mappatura fisica"
 
 #: ui/options_graphics.rml:201
 msgid "Material appearance based on physical approximations."
-msgstr ""
+msgstr "Apparenza del materiale basata su approssimazioni fisiche."
 
 #: ui/options_graphics.rml:211 ui/options_sound.rml:13
 msgid "Effects"
@@ -1232,115 +1281,115 @@ msgstr ""
 
 #: ui/options_graphics.rml:215
 msgid "Makes bright areas on your screen glow."
-msgstr ""
+msgstr "Rende chiare aree incandescenti sul tuo schermo."
 
 #: ui/options_graphics.rml:218
 msgid "Heat-haze"
-msgstr ""
+msgstr "Foschia di calore"
 
 #: ui/options_graphics.rml:220
 msgid "Simulate air refraction in severe heat."
-msgstr ""
+msgstr "Simula la rifrazione dell'aria in presenza di forte calore."
 
 #: ui/options_graphics.rml:223
 msgid "Screen space ambient occlusion (SSAO)"
-msgstr ""
+msgstr "Occlusione dello spazio ambientale dello schermo"
 
 #: ui/options_graphics.rml:225
 msgid "Simulate dark corners."
-msgstr ""
+msgstr "Simula gli angoli scuri."
 
 #: ui/options_graphics.rml:228
 msgid "Particles"
-msgstr ""
+msgstr "Particelle"
 
 #: ui/options_graphics.rml:230
 msgid "Particle physics"
-msgstr ""
+msgstr "Fisica delle particelle"
 
 #: ui/options_graphics.rml:232
 msgid "Allow particles to bounce off surfaces."
-msgstr ""
+msgstr "Permette alle particelle di rimbalzare via dalle superfici."
 
 #: ui/options_graphics.rml:239
 msgid "Gameplay"
-msgstr ""
+msgstr "Gioco"
 
 #: ui/options_graphics.rml:241
 msgid "Building markers"
-msgstr ""
+msgstr "Marcatori di costruzione"
 
 #: ui/options_graphics.rml:244
 msgid "disabled"
-msgstr ""
+msgstr "disabilitato"
 
 #: ui/options_graphics.rml:245
 msgid "All structures"
-msgstr ""
+msgstr "Tutte le strutture"
 
 #: ui/options_graphics.rml:246
 msgid "Support structures"
-msgstr ""
+msgstr "Strutture di supporto"
 
 #: ui/options_graphics.rml:247
 msgid "Offensive structures"
-msgstr ""
+msgstr "Strutture offensive"
 
 #: ui/options_graphics.rml:248
 msgid "Alien structures"
-msgstr ""
+msgstr "Strutture aliene"
 
 #: ui/options_graphics.rml:249
 msgid "Human structures"
-msgstr ""
+msgstr "Strutture umane"
 
 #: ui/options_graphics.rml:250
 msgid "Alien support structures"
-msgstr ""
+msgstr "Strutture di supporto aliene"
 
 #: ui/options_graphics.rml:251
 msgid "Human support structures"
-msgstr ""
+msgstr "Strutture di supporto umane"
 
 #: ui/options_graphics.rml:252
 msgid "Offensive alien structures"
-msgstr ""
+msgstr "Strutture offensive aliene"
 
 #: ui/options_graphics.rml:253
 msgid "Offensive human structures"
-msgstr ""
+msgstr "Strutture offensive umane"
 
 #: ui/options_graphics.rml:255
 msgid "Building ranges"
-msgstr ""
+msgstr "Intervalli di costruzione"
 
 #: ui/options_graphics.rml:257
 msgid "Motion blur"
-msgstr ""
+msgstr "Sfocatura movimento"
 
 #: ui/options_graphics.rml:261
 msgid "Moderate"
-msgstr ""
+msgstr "Modera"
 
 #: ui/options_graphics.rml:265
 msgid "Intensity"
-msgstr ""
+msgstr "Intensità"
 
 #: ui/options_graphics.rml:266
 msgid "Level of motion-blur."
-msgstr ""
+msgstr "Livello di sfocatura movimento."
 
 #: ui/options_graphics.rml:269
 msgid "Minimum movement speed for motion-blur to activate"
-msgstr ""
+msgstr "Velocità minima di movimento per attivare la sfocatura"
 
 #: ui/options_graphics.rml:272 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr ""
+msgstr "Corrente:"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
-msgstr ""
+msgstr "Premi Escape per annullare il cambio associazione tasto."
 
 #: ui/options_keys.rml:16
 msgid ""
