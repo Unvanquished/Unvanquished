@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
 "PO-Revision-Date: 2023-05-31 09:42+0000\n"
-"Last-Translator: v0lt4g3 <fotovoltio@gmail.com>\n"
+"Last-Translator: Tomás Pérez Carrillo <tomasperezc21@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -45,7 +45,7 @@ msgstr "Dretch"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
 msgid ""
