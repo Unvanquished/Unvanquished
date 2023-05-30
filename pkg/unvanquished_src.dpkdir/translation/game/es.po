@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-09 22:50+0000\n"
-"Last-Translator: Tomás Pérez Carrillo <tomasperezc21@gmail.com>\n"
+"PO-Revision-Date: 2023-05-31 09:42+0000\n"
+"Last-Translator: v0lt4g3 <fotovoltio@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -75,7 +75,7 @@ msgstr ""
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "Ambos equipos"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
@@ -92,19 +92,19 @@ msgstr "Equipo"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "Cantidad"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
-msgstr ""
+msgstr "Cambiar mapa"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Votar: cambiar el siguiente mapa"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Votar: establecer el mapa actual"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
@@ -112,7 +112,7 @@ msgstr ""
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
@@ -120,19 +120,19 @@ msgstr "Mapa"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Realizar acción"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Error!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: ui/help_gameplay.rml:16 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Bienvenido"
 
 #: ui/help_gameplay.rml:19
 msgid ""
@@ -3590,7 +3590,7 @@ msgstr "Esperando respuesta...%i"
 
 #: src/cgame/cg_rocket_draw.cpp:2970
 msgid "Awaiting gamestate…"
-msgstr "Esperando para jugar"
+msgstr "Esperando por el estado del juego…"
 
 #: src/cgame/cg_rocket_draw.cpp:3052
 msgid "Say:"
@@ -3606,7 +3606,7 @@ msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3055
 msgid "Command:"
-msgstr ""
+msgstr "Comando:"
 
 #: src/cgame/cg_rocket_draw.cpp:3452
 msgid "FIGHT!"
