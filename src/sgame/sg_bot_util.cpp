@@ -36,6 +36,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "Default skill value bots will have when added", Cvar::NONE, 5, 1, 9 );
 
+//consider bot to be stuck if it does not move farther than this in some period of time
+constexpr float BOT_STUCK_RADIUS = 150.0f;
+
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 static const int MIN_SKILL = 1;
 static const int MAX_SKILL = 9;
