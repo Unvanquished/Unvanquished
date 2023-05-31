@@ -244,7 +244,14 @@
 				<input cvar="g_bot_buy" type="checkbox" />
 				<h3> Human bots purchase equipment </h3>
 			</row>
-
+			<row>
+				<input type="range" min="0" max="2000" step="10" cvar="g_bot_humanAimDelay"/>
+				<h3> Aim speed modifier (higher is slower)</h3>
+				<p class="inline">
+					Current: <inlinecvar cvar="g_bot_humanAimDelay" type="number" format="%.0f"/> msecs
+					<ilink onclick='Events.pushevent("exec reset g_bot_humanAimDelay", event)'> (reset) </ilink>
+				</p>
+			</row>
 			<h2> Individually </h2>
 			<h3> Primary Weapons </h3>
 			<row>
@@ -321,6 +328,14 @@
 			<row>
 				<input cvar="g_bot_evolve" type="checkbox" />
 				<h3> Alien bots morph </h3>
+			</row>
+			<row>
+				<input type="range" min="0" max="2000" step="10" cvar="g_bot_alienAimDelay"/>
+				<h3> Aim speed modifier (higher is slower)</h3>
+				<p class="inline">
+					Current: <inlinecvar cvar="g_bot_alienAimDelay" type="number" format="%.0f"/> msecs
+					<ilink onclick='Events.pushevent("exec reset g_bot_alienAimDelay", event)'> (reset) </ilink>
+				</p>
 			</row>
 
 			<h2> Individually </h2>
