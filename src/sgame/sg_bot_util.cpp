@@ -39,7 +39,7 @@ static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "D
 // Those comments are just
 // a hackish way to prevent
 // git conflicts.
-static Cvar::Cvar<std::string> g_bot_fixedSkills( "g_bot_fixedSkills", "if not empty, this cvars disables the skillset randomness. It's built of key:value pairs, where key is a level number and value is the name of a skill.", Cvar::NONE, "" );
+static Cvar::Cvar<std::string> g_bot_fixedSkills( "g_bot_fixedSkills", "if not empty, this cvars disables the skillset randomness. It's built of key:value pairs, where key is a level number and value is the name of a skill.", Cvar::NONE, "1:prefer-armor 1:medkit 3:strafe-attack 5:aim-barbs 5:feels-pain 5:a-fast-flee 5:h-fast-flee 5:small-attack-jump 5:mara-attack-jump 5:mantis-attack-jump 5:goon-attack-jump 5:tyrant-attack-run 5:buy-modern-armor 7:aim-head 7:predict-aim 7:safe-barbs" );
 
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
 static const int MIN_SKILL = 1;
