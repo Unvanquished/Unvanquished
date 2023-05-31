@@ -271,25 +271,21 @@ static Util::optional<botSkillTreeElement_t> ChooseOneSkill(team_t team, skillSe
 //     ones.
 //     This essentially means that a bot will keep its "personality" after
 //     a skill change, although keeping its base skills or unlocking new ones.
-std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
+std::vector<botSkillTreeElement_t> BotPickSkillset(std::string seed, int skillLevel, team_t team)
 {
 	std::vector<botSkillTreeElement_t> possible_choices = skillTree;
+	skillSet_t skillSet(0);
 
-	float max = G_Team(bot) == TEAM_ALIENS ? static_cast<float>( skillsetBudgetAliens ) : static_cast<float>( skillsetBudgetHumans );
-	team_t team = G_Team(bot);
+	float max = team == TEAM_ALIENS ? static_cast<float>( skillsetBudgetAliens ) : static_cast<float>( skillsetBudgetHumans );
 
 	// unlock every skill at skill 7 (almost every for aliens)
-	int skill_points = static_cast<float>(skill + 2) / 9.0f * max;
+	int skill_points = static_cast<float>(skillLevel + 2) / 9.0f * max;
 
 	// rng preparation
-	std::string name = bot->client->pers.netname;
-	std::seed_seq seed(name.begin(), name.end());
-	std::mt19937_64 rng(seed);
+	std::seed_seq seed_seq(seed.begin(), seed.end());
+	std::mt19937_64 rng(seed_seq);
 
-	skillSet_t skillSet(0);
-	std::string skill_list;
-
-	std::vector<std::string> skillNames;
+	std::vector<botSkillTreeElement_t> results;
 	while (true)
 	{
 		Util::optional<botSkillTreeElement_t> new_skill =
@@ -314,10 +310,28 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skill)
 		}
 
 		skillSet[new_skill->skill] = true;
-		skillNames.push_back( new_skill->name );
+		results.push_back(*new_skill);
+	}
+	return results;
+}
+
+std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skillLevel)
+{
+	std::string seed = bot->client->pers.netname;
+
+	skillSet_t skillSet(0);
+
+	std::vector<std::string> skillNames;
+
+	for ( const auto &skill : BotPickSkillset(seed, skillLevel, G_Team(bot)) )
+	{
+		skillSet[skill.skill] = true;
+		skillNames.push_back(skill.name);
 	}
 
+	// pretty list string
 	std::sort( skillNames.begin(), skillNames.end() );
+	std::string skill_list;
 	for ( auto const& skill_ : skillNames )
 	{
 		if (!skill_list.empty())
