@@ -31,6 +31,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <glm/gtx/norm.hpp>
 
+//NOTE: kept as constant to let compiler optimise Square( MAX_HUMAN_DANCE_DIST );
+//how far away we can be before we stop going forward when fighting an alien
+constexpr float MAX_HUMAN_DANCE_DIST = 300.0f;
+
+//NOTE: kept as constant to let compiler optimise Square( MIN_HUMAN_DANCE_DIST );
+//how far away we can be before we try to go around an alien when fighting an alien
+constexpr float MIN_HUMAN_DANCE_DIST = 100.0f;
+
 /*
 ======================
 g_bot_ai.c

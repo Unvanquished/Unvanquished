@@ -142,25 +142,4 @@ bool  BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm
 
 bool  BotPathIsWalkable( const gentity_t *self, botTarget_t target );
 
-//configurable constants
-//For a reference of how far a number represents, take a look at tremulous.h
-
-//how long our traces are for obstacle avoidence
-#define BOT_OBSTACLE_AVOID_RANGE 20.0f
-
-//at what hp do we use medkit?
-#define BOT_USEMEDKIT_HP 50
-
-//used for clamping distance to heal structure when deciding whether to go heal
-#define MAX_HEAL_DIST 2000.0f
-
-//how far away we can be before we stop going forward when fighting an alien
-#define MAX_HUMAN_DANCE_DIST 300.0f
-
-//how far away we can be before we try to go around an alien when fighting an alien
-#define MIN_HUMAN_DANCE_DIST 100.0f
-
-//consider bot to be stuck if it does not move farther than this in some period of time
-constexpr float BOT_STUCK_RADIUS = 150;
-
 #endif

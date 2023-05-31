@@ -34,6 +34,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
 
+//trace distance to trigger AI obstacled avoiding procedures.
+//this is a constant as fiddling with this value will impact both
+//server performance and efficiency of AI obstacle procedures.
+constexpr float BOT_OBSTACLE_AVOID_RANGE = 20.0f;
+
 //tells if all navmeshes loaded successfully
 // Only G_BotNavInit and G_BotNavCleanup should set it
 navMeshStatus_t navMeshLoaded = navMeshStatus_t::UNINITIALIZED;
@@ -517,7 +522,6 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 {
 	glm::vec3 playerMins, playerMaxs;
 	trace_t trace;
-	const float TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 
 	if ( !( self && self->client ) )
 	{
@@ -532,7 +536,7 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 	playerMaxs[2] += STEPSIZE;
 
 	glm::vec3 origin = VEC2GLM( self->s.origin );
-	glm::vec3 end = origin + TRACE_LENGTH * dir;
+	glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * dir;
 
 	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < MIN_WALK_NORMAL ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
@@ -553,7 +557,6 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	glm::vec3 playerMaxs;
 	float jumpMagnitude;
 	trace_t tr1, tr2;
-	const float TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 
 	//already normalized
 
@@ -565,7 +568,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 
 	//Log::Debug(vtos(self->movedir));
 	glm::vec3 origin = VEC2GLM( self->s.origin );
-	glm::vec3 end = origin + TRACE_LENGTH * dir;
+	glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * dir;
 
 	//make sure we are moving into a block
 	trap_Trace( &tr1, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
