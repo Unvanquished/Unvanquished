@@ -374,3 +374,111 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skillL
 	}
 	return { skill_list, skillSet };
 }
+
+// This function is used for debug only
+std::string G_BotPrintSkillGraph(team_t team, int skillLevel)
+{
+	std::string output;
+
+	output += "digraph skilltree {\n";
+
+	if (skillLevel)
+	{
+		output += "graph [labelloc=\"b\" labeljust=\"r\" label=\"\n";
+		output += Str::Format("percentages are skill selection chance for skillLevel %i\\l\n", skillLevel);
+		output += "green is for force-enabled skills (g_skillset_baseSkills)\\l";
+		output += "red is for force-disabled skills (g_skillset_disabledSkills)\\l\"];\n";
+	}
+
+	std::array<int, BOT_NUM_SKILLS> counts = {};
+	constexpr int N = 10000; // number of tries to smooth the values
+	if (skillLevel)
+	{
+		for (int i = 0; i<N; i++)
+		{
+			std::string seed = std::to_string(i);
+
+			for ( const auto &skill : BotPickSkillset(seed, skillLevel, team) )
+			{
+				counts[skill.skill]++;
+			}
+		}
+	}
+
+	for (const auto &skill : skillTree)
+	{
+		if (skill.allowed_teams != TEAM_NONE && skill.allowed_teams != team)
+		{
+			continue;
+		}
+		output += "\ta";
+		output += std::to_string(skill.skill);
+		output += "[label=\"";
+		output += skill.name;
+		if (skillLevel)
+		{
+			output += "\n";
+			float percent = 100.0f * counts[skill.skill] / N;
+			output += Str::Format("%.1f%%", percent);
+		}
+		output += "\"";
+
+		if (skillLevel)
+		{
+			if (G_IsBaseSkillAtLevel(skillLevel, skill.name))
+			{
+				output += " style=filled fillcolor=\"#aaeeaa\"";
+			}
+			else if (G_SkillDisabled(skill.name))
+			{
+				output += " style=filled fillcolor=\"#eeaaaa\"";
+			}
+		}
+		output += "];\n";
+	}
+	output += "\n";
+
+	for (const auto &skill : skillTree)
+	{
+		if (skill.allowed_teams != TEAM_NONE && skill.allowed_teams != team)
+		{
+			continue;
+		}
+
+		for (size_t i=0; i < skill.prerequisite.size(); i++)
+		{
+			if (skill.prerequisite[i]) {
+				output += "\ta";
+				output += std::to_string(i);
+				output += " -> a";
+				output += std::to_string(skill.skill);
+				output += ";\n";
+			}
+		}
+	}
+
+	output += "}\n";
+
+	return output;
+}
+
+// This function is used for debug only
+int G_BotCountSkillPoints(team_t team)
+{
+	// rng preparation
+	std::mt19937_64 rng;
+
+	std::vector<botSkillTreeElement_t> possible_choices = skillTree;
+	skillSet_t skillSet(0);
+
+	int total = 0;
+	Util::optional<botSkillTreeElement_t> new_skill;
+	while (!possible_choices.empty()
+			&& (new_skill = ChooseOneSkill(team, skillSet, possible_choices, rng, /*skillLevel=*/5)))
+	{
+		total += new_skill->cost;
+		skillSet[new_skill->skill] = true;
+	}
+
+	return total;
+}

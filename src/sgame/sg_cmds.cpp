@@ -2235,6 +2235,63 @@ static void Cmd_Deconstruct_f( gentity_t *ent )
 	}
 }
 
+static void Cmd_BotCountSkillPoints_f( gentity_t * )
+{
+	for (int team = TEAM_NONE + 1; team < NUM_TEAMS; team++)
+	{
+		int total = G_BotCountSkillPoints( static_cast<team_t>( team ) );
+		Log::Notice("Total for %s: %i", BG_TeamName(team), total);
+	}
+}
+
+static void Cmd_BotSaveSkillTree_f( gentity_t * )
+{
+	const Cmd::Args& args = trap_Args();
+
+	int skillLevel = 0;
+	if ( args.Argc() > 1 )
+	{
+		skillLevel = atoi( args.Argv( 1 ).c_str() );
+
+		if ( skillLevel < 1 || skillLevel > 9 )
+		{
+			Log::Notice( "Incorrect skill level provided" );
+			return;
+		}
+	}
+	else
+	{
+		Log::Notice( "Note: you can get skill statistics for a skill level by adding a number as argument" );
+	}
+
+	for (int team = TEAM_NONE + 1; team < NUM_TEAMS; team++)
+	{
+		std::string text = G_BotPrintSkillGraph(static_cast<team_t>(team), skillLevel);
+
+		std::string filename = "bot-skilltree-";
+		filename += BG_TeamName(team);
+		filename += ".dot";
+
+		fileHandle_t file;
+		trap_FS_FOpenFile( filename.c_str(), &file, fsMode_t::FS_WRITE );
+
+		if ( !file ) {
+			Log::Warn( "Error opening game/%s", filename );
+			return;
+		}
+
+		if (text.size() != static_cast<size_t>(trap_FS_Write(text.c_str(), text.size(), file)))
+		{
+			Log::Warn( "Error writing game/%s", filename );
+			trap_FS_FCloseFile( file );
+			return;
+		}
+
+		trap_FS_FCloseFile( file );
+		Log::Notice("game/%s written", filename);
+	}
+}
+
 /*
 =================
 Cmd_Ignite_f
@@ -4156,6 +4213,8 @@ static const commands_t cmds[] =
 	{ "client_ready",    0,                                   Cmd_ClientReady_f      },
 	{ "damage",          CMD_CHEAT | CMD_ALIVE,               Cmd_Damage_f           },
 	{ "deconstruct",     CMD_TEAM | CMD_ALIVE,                Cmd_Deconstruct_f      },
+	{ "devbotcountskillpoints", CMD_CHEAT,                    Cmd_BotCountSkillPoints_f },
+	{ "devbotgraphskilltree", CMD_CHEAT,                      Cmd_BotSaveSkillTree_f },
 	{ "devteam",         CMD_CHEAT,                           Cmd_Devteam_f          },
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },

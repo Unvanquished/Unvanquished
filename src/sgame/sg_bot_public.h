@@ -75,6 +75,9 @@ void G_BotRemoveObstacle( qhandle_t handle );
 void G_BotUpdateObstacles();
 std::string G_BotToString( gentity_t *bot );
 
+std::string G_BotPrintSkillGraph(team_t team, int skillLevel);
+int G_BotCountSkillPoints(team_t team);
+
 const char BOT_DEFAULT_BEHAVIOR[] = "default";
 const char BOT_NAME_FROM_LIST[] = "*";
 
