@@ -777,9 +777,10 @@ void G_ExecuteVote( team_t team )
 		G_MapLog_Result( 'r' );
 		level.restarted = true;
 	}
-	else if ( !Q_strnicmp( level.team[ team ].voteString, "map", 3 ) )
+	else if ( Str::IsIPrefix( "map ", level.team[ team ].voteString ) )
 	{
 		G_MapLog_Result( 'm' );
+		// FIXME this is hacky; the map command could fail and this would probably freeze the game
 		level.restarted = true;
 	}
 }
