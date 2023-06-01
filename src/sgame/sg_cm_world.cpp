@@ -446,11 +446,32 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	{
 		glm::mat3 matrix = RotationMatrix( VEC2GLM( angles ) );
 
-		glm::vec3 mins = matrix * VEC2GLM( gEnt->r.mins );
-		glm::vec3 maxs = matrix * VEC2GLM( gEnt->r.maxs );
+		const glm::vec3 corners[ 8 ] = {
+			{ gEnt->r.mins[ 0 ], gEnt->r.mins[ 1 ], gEnt->r.mins[ 2 ] },
+			{ gEnt->r.mins[ 0 ], gEnt->r.mins[ 1 ], gEnt->r.maxs[ 2 ] },
+			{ gEnt->r.mins[ 0 ], gEnt->r.maxs[ 1 ], gEnt->r.mins[ 2 ] },
+			{ gEnt->r.mins[ 0 ], gEnt->r.maxs[ 1 ], gEnt->r.maxs[ 2 ] },
+			{ gEnt->r.maxs[ 0 ], gEnt->r.mins[ 1 ], gEnt->r.mins[ 2 ] },
+			{ gEnt->r.maxs[ 0 ], gEnt->r.mins[ 1 ], gEnt->r.maxs[ 2 ] },
+			{ gEnt->r.maxs[ 0 ], gEnt->r.maxs[ 1 ], gEnt->r.mins[ 2 ] },
+			{ gEnt->r.maxs[ 0 ], gEnt->r.maxs[ 1 ], gEnt->r.maxs[ 2 ] },
+		};
 
-		glm::vec3 absmin = glm::min(mins, maxs) + VEC2GLM(origin);
-		glm::vec3 absmax = glm::max(mins, maxs) + VEC2GLM(origin);
+		glm::vec3 mins = matrix * corners[ 0 ];
+		glm::vec3 maxs = mins;
+
+		for ( int i = 1; i < 8; i++ )
+		{
+			glm::vec3 point = matrix * corners[ i ];
+			for ( int j = 0; j < 3; j++ )
+			{
+				mins[ j ] = std::min( mins[ j ], point[ j ] );
+				maxs[ j ] = std::max( maxs[ j ], point[ j ] );
+			}
+		}
+
+		glm::vec3 absmin = mins + VEC2GLM( origin );
+		glm::vec3 absmax = maxs + VEC2GLM( origin );
 
 		VectorCopy(absmin, gEnt->r.absmin);
 		VectorCopy(absmax, gEnt->r.absmax);
