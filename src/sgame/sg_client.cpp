@@ -1501,6 +1501,11 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	bool evolving = ent == spawn;
 	ClientSpawnCBSE(ent, evolving);
 
+	if ( !evolving )
+	{
+		++ent->generation; // invalidate GentityRef's
+	}
+
 	index = ent->num();
 	client = ent->client;
 
