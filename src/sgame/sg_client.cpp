@@ -1479,6 +1479,11 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm
 	bool evolving = ent == spawn;
 	ClientSpawnCBSE(ent, evolving);
 
+	if ( !evolving )
+	{
+		++ent->generation; // invalidate GentityRef's
+	}
+
 	index = ent->num();
 	client = ent->client;
 

@@ -66,6 +66,8 @@ class Entity;
 // Replacement for gentity_t* that can detect the case where an entity has been recycled.
 // operator bool checks that the entity is non-null and has not been freed since the reference
 // was formed.
+// For a player entity, we increment the generation number when it spawns or dies. It does
+// not increment upon evolve/armor change, although the CBSE entity is reallocated in that case.
 template<typename T>
 class GentityRef_impl
 {
