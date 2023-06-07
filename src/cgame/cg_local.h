@@ -1404,6 +1404,7 @@ struct rocketDataSource_t
 {
 	server_t servers[ AS_NUM_TYPES ][ MAX_SERVERS ];
 	int serverCount[ AS_NUM_TYPES ];
+	std::vector<bool> haveServerInfo[ AS_NUM_TYPES ];
 	int serverIndex[ AS_NUM_TYPES ];
 	bool buildingServerInfo;
 	bool retrievingServers;
