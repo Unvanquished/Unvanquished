@@ -34,18 +34,18 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-static void AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
+static bool AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
 {
 	server_t *node;
 
 	if ( rocketInfo.data.serverCount[ netSrc ] == MAX_SERVERS )
 	{
-		return;
+		return false;
 	}
 
 	if ( !*name || !*mapName )
 	{
-		return;
+		return false;
 	}
 
 	node = &rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverCount[ netSrc ] ];
@@ -60,6 +60,7 @@ static void AddToServerList( const char *name, const char *label, int clients, i
 	node->mapName = BG_strdup( mapName );
 
 	rocketInfo.data.serverCount[ netSrc ]++;
+	return true;
 }
 
 static void CG_Rocket_SetServerListServer( const char *table, int index )
@@ -232,6 +233,8 @@ void CG_Rocket_BuildServerInfo()
 static void CG_Rocket_BuildServerList( const char *args )
 {
 	rocketInfo.currentNetSrc = CG_StringToNetSource( args );
+	Rocket_DSClearTable("server_browser", args );
+	CG_Rocket_CleanUpServerList( args );
 	CG_Rocket_BuildServerList();
 }
 
@@ -256,9 +259,6 @@ void CG_Rocket_BuildServerList()
 
 	int numServers;
 
-	Rocket_DSClearTable( "server_browser", srcName );
-	CG_Rocket_CleanUpServerList( srcName );
-
 	trap_LAN_MarkServerVisible( netSrc, -1, true );
 
 	numServers = trap_LAN_GetServerCount( netSrc );
@@ -270,14 +270,23 @@ void CG_Rocket_BuildServerList()
 		return;
 	}
 
+	rocketInfo.data.haveServerInfo[ netSrc ].resize( numServers );
+
 	if ( !trap_LAN_UpdateVisiblePings( netSrc ) )
 	{
 		// all pings have completed
 		rocketInfo.data.retrievingServers = false;
 	}
 
+	int oldServerCount = rocketInfo.data.serverCount[ netSrc ];
+
 	for ( i = 0; i < numServers; ++i )
 	{
+		if ( rocketInfo.data.haveServerInfo[ netSrc ][ i ] )
+		{
+			continue;
+		}
+
 		char info[ MAX_STRING_CHARS ];
 		int ping, bots, clients, maxClients;
 
@@ -290,7 +299,8 @@ void CG_Rocket_BuildServerList()
 
 		ping = trap_LAN_GetServerPing( netSrc, i );
 
-		if ( ping >= 0 )
+		// FIXME how do we get serverinfos with 0 ping?
+		if ( ping > 0 )
 		{
 			char addr[ 50 ]; // long enough for IPv6 literal plus port no.
 			char mapname[ 256 ];
@@ -301,11 +311,12 @@ void CG_Rocket_BuildServerList()
 			maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 			Q_strncpyz( addr, Info_ValueForKey( info, "addr" ), sizeof( addr ) );
 			Q_strncpyz( mapname, Info_ValueForKey( info, "mapname" ), sizeof( mapname ) );
-			AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, mapname, addr, netSrc );
+			rocketInfo.data.haveServerInfo[ netSrc ][ i ] =
+				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, mapname, addr, netSrc );
 		}
 	}
 
-	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
+	for ( i = oldServerCount; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 	{
 		if ( rocketInfo.data.servers[ netSrc ][ i ].ping <= 0 )
 		{
@@ -440,6 +451,7 @@ void CG_Rocket_CleanUpServerList( const char *table )
 				BG_Free( rocketInfo.data.servers[ i ][ j ].mapName );
 			}
 			rocketInfo.data.serverCount[ i ] = 0;
+			rocketInfo.data.haveServerInfo[ i ].clear();
 		}
 	}
 }
