@@ -235,9 +235,12 @@ void CG_Rocket_BuildServerList( const char *args )
 	int netSrc = CG_StringToNetSource( args );
 	int i;
 
-	// Only refresh once every second
-	if ( rocketInfo.realtime < 1000 + rocketInfo.serversLastRefresh )
+	rocketInfo.data.retrievingServers = true;
+
+	// Only refresh once every 200 ms
+	if ( rocketInfo.realtime < 200 + rocketInfo.serversLastRefresh )
 	{
+		trap_LAN_UpdateVisiblePings( netSrc ); // keep the ping queue moving
 		return;
 	}
 
@@ -245,8 +248,6 @@ void CG_Rocket_BuildServerList( const char *args )
 	rocketInfo.currentNetSrc = netSrc;
 
 	int numServers;
-
-	rocketInfo.data.retrievingServers = true;
 
 	Rocket_DSClearTable( "server_browser", args );
 	CG_Rocket_CleanUpServerList( args );
@@ -256,9 +257,16 @@ void CG_Rocket_BuildServerList( const char *args )
 	numServers = trap_LAN_GetServerCount( netSrc );
 
 	// Still waiting for a response...
-	if ( numServers == -1 )
+	// HACK: assume not done if there are 0 servers, although it could be true
+	if ( numServers <= 0 )
 	{
 		return;
+	}
+
+	if ( !trap_LAN_UpdateVisiblePings( netSrc ) )
+	{
+		// all pings have completed
+		rocketInfo.data.retrievingServers = false;
 	}
 
 	for ( i = 0; i < numServers; ++i )
@@ -307,11 +315,6 @@ void CG_Rocket_BuildServerList( const char *args )
 		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
 
 		Rocket_DSAddRow( "server_browser", args, data );
-
-		if ( rocketInfo.data.retrievingServers )
-		{
-			rocketInfo.data.retrievingServers = false;
-		}
 	}
 }
 
