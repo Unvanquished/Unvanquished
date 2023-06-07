@@ -229,13 +229,21 @@ void CG_Rocket_BuildServerInfo()
 
 }
 
-void CG_Rocket_BuildServerList( const char *args )
+static void CG_Rocket_BuildServerList( const char *args )
+{
+	rocketInfo.currentNetSrc = CG_StringToNetSource( args );
+	CG_Rocket_BuildServerList();
+}
+
+void CG_Rocket_BuildServerList()
 {
 	char data[ MAX_INFO_STRING ] = { 0 };
-	int netSrc = CG_StringToNetSource( args );
 	int i;
 
 	rocketInfo.data.retrievingServers = true;
+
+	int netSrc = rocketInfo.currentNetSrc;
+	const char *srcName = CG_NetSourceToString( netSrc );
 
 	// Only refresh once every 200 ms
 	if ( rocketInfo.realtime < 200 + rocketInfo.serversLastRefresh )
@@ -245,12 +253,11 @@ void CG_Rocket_BuildServerList( const char *args )
 	}
 
 	rocketInfo.serversLastRefresh = rocketInfo.realtime;
-	rocketInfo.currentNetSrc = netSrc;
 
 	int numServers;
 
-	Rocket_DSClearTable( "server_browser", args );
-	CG_Rocket_CleanUpServerList( args );
+	Rocket_DSClearTable( "server_browser", srcName );
+	CG_Rocket_CleanUpServerList( srcName );
 
 	trap_LAN_MarkServerVisible( netSrc, -1, true );
 
@@ -314,7 +321,7 @@ void CG_Rocket_BuildServerList( const char *args )
 		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, false );
 		Info_SetValueForKey( data, "map", rocketInfo.data.servers[ netSrc ][ i ].mapName, false );
 
-		Rocket_DSAddRow( "server_browser", args, data );
+		Rocket_DSAddRow( "server_browser", srcName, data );
 	}
 }
 

@@ -2325,7 +2325,7 @@ void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, in
 int CG_Rocket_GetDataSourceIndex( const char *dataSource, const char *table );
 void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
 void CG_Rocket_BuildServerInfo();
-void CG_Rocket_BuildServerList( const char *args );
+void CG_Rocket_BuildServerList();
 void CG_Rocket_BuildPlayerList( const char *table );
 
 //
