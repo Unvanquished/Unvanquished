@@ -855,6 +855,9 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 
 	if ( !( client = self->client ) ) return;
 
+	// You can use noclip to inspect a team's tag beacons without changing them
+	if ( client->noclip ) return;
+
 	team = (team_t)client->pers.team;
 
 	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
