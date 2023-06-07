@@ -528,7 +528,7 @@ void CG_Rocket_Frame( cgClientState_t state )
 	// Continue to attempt to update serverlisting
 	if ( rocketInfo.data.retrievingServers )
 	{
-		CG_Rocket_BuildServerList( CG_NetSourceToString( rocketInfo.currentNetSrc ) );
+		CG_Rocket_BuildServerList();
 	}
 
 	// Continue to attempt to update serverinfo
