@@ -806,6 +806,8 @@ static bool TargetInOffmeshAttackRange( gentity_t *self )
 		return distSquare < Square( ( 100 * 8192 ) / CHAINGUN_SPREAD );
 	case WP_MACHINEGUN:
 		return distSquare < Square( ( 50 * 8192 ) / RIFLE_SPREAD );
+	case WP_FLAMER:
+		return distSquare < Square( 250 ); // determined by trial and error
 	default:
 		return true;
 	}
