@@ -58,6 +58,7 @@ public:
 		if ( child == this )
 		{
 			this->AddEventListener( Rml::EventId::Rowremove, this );
+			this->AddEventListener( Rml::EventId::Rowadd, this );
 		}
 	}
 
@@ -168,6 +169,23 @@ public:
 
 				lastSelectedRowIndex = -1;
 				SetAttribute( "selected-row", "-1" );
+			}
+			else if ( lastSelectedRowIndex >= firstRowRemoved )
+			{
+				lastSelectedRowIndex -= numRowsRemoved;
+				SetAttribute( "selected-row", std::to_string( lastSelectedRowIndex ) );
+			}
+		}
+		else if ( evt == Rml::EventId::Rowadd )
+		{
+			if ( !lastSelectedRow ) return;
+
+			int numRowsAdded = evt.GetParameter<int>( "num_rows_added", 0 );
+			int firstRowAdded = evt.GetParameter<int>( "first_row_added", 0 );
+			if ( firstRowAdded < lastSelectedRowIndex )
+			{
+				lastSelectedRowIndex += numRowsAdded;
+				SetAttribute( "selected-row", std::to_string( lastSelectedRowIndex ) );
 			}
 		}
 	}
