@@ -39,7 +39,7 @@ Maryland 20850 USA.
 #include "rocket.h"
 #include <RmlUi/Core.h>
 
-class SelectableDataGrid : public Rml::ElementDataGrid
+class SelectableDataGrid : public Rml::ElementDataGrid, public Rml::EventListener
 {
 public:
 	SelectableDataGrid( const Rml::String& tag ) :
@@ -50,6 +50,15 @@ public:
 
 	~SelectableDataGrid()
 	{
+	}
+
+	void OnChildAdd( Element *child ) override
+	{
+		ElementDataGrid::OnChildAdd( child );
+		if ( child == this )
+		{
+			this->AddEventListener( Rml::EventId::Rowremove, this );
+		}
 	}
 
 	/// Called for every event sent to this element or one of its descendants.
@@ -142,7 +151,11 @@ public:
 				eventQueue.push( new RocketEvent_t( Rml::String( va ( "execDS %s %s", dataSource.substr( 0, dataSource.find( "." ) ).c_str(), tableName.c_str() ) ) ) );
 			}
 		}
-		else if( evt == "rowremove" )
+	}
+
+	void ProcessEvent( Rml::Event &evt ) override
+	{
+		if ( evt == Rml::EventId::Rowremove )
 		{
 			int numRowsRemoved = evt.GetParameter< int >("num_rows_removed", 0);
 			if( !numRowsRemoved ) {
@@ -157,7 +170,6 @@ public:
 				SetAttribute( "selected-row", "-1" );
 			}
 		}
-
 	}
 
 private:
