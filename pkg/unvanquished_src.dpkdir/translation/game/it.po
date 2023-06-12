@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-06-02 07:16+0000\n"
+"PO-Revision-Date: 2023-06-13 10:48+0000\n"
 "Last-Translator: Emily Fiorentini <emily@xewer.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
@@ -1056,7 +1056,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:81
 msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr ""
+msgstr "Anti-aliasing veloce approssimato"
 
 #: ui/options_graphics.rml:85 ui/options_graphics.rml:132
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
@@ -2087,31 +2087,34 @@ msgstr "Bonus estrazione energia"
 
 #: ui/server_setup.rml:165
 msgid "Build point budget per miner"
-msgstr ""
+msgstr "Budget disponibile per estrattore di punti costruzione"
 
 #: ui/server_setup.rml:172
 msgid "Initial regeneration speed"
-msgstr ""
+msgstr "Velocità iniziale di rigenerazione"
 
 #: ui/server_setup.rml:173
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
 msgstr ""
+"La velocità iniziale con la quale i punti costruzione verranno ripristinati ("
+"punti al minuto)"
 
 #: ui/server_setup.rml:180
 msgid "Half regeneration time"
-msgstr ""
+msgstr "Metà tempo rigenerazione"
 
 #: ui/server_setup.rml:181
 msgid "The duration one will wait before BP recovery gets twice as slow"
 msgstr ""
+"Durata di tempo prima che il ripristino di punti diventi due volte più lento"
 
 #: ui/server_setup.rml:192
 msgid "Minimum bots per team"
-msgstr ""
+msgstr "Numero minimo di bot per squadra"
 
 #: ui/server_setup.rml:193
 msgid "Fill teams until they have enough players"
-msgstr ""
+msgstr "Riempi le squadre fino a quando non hanno abbastanza giocatori"
 
 #: ui/server_setup.rml:196
 msgid "bots"
@@ -2119,264 +2122,267 @@ msgstr ""
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
-msgstr ""
+msgstr "Livello di abilità predefinito"
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
-msgstr ""
+msgstr "Funziona solo per i bot nuovi."
 
 #: ui/transition_downloading.rml:55
 msgid "Additional files are required. Please be patient while they download."
 msgstr ""
+"Sono richiesti file aggiuntivi. Attendi per favore mentre vengono scaricati."
 
 #: ui/transition_downloading.rml:56
 msgid "Time left:"
-msgstr ""
+msgstr "Tempo residuo:"
 
 #: ui/transition_downloading.rml:57
 msgid "Download rate:"
-msgstr ""
+msgstr "Velocità scaricamento:"
 
 #: ui/transition_downloading.rml:58
 msgid "Size:"
-msgstr ""
+msgstr "Dimensione:"
 
 #: ui/transition_loading.rml:109
 msgid "Loading"
-msgstr ""
+msgstr "Caricamento"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
-msgstr ""
+msgstr "Benvenuti in Unvanquished"
 
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
+"Chiudi questo menu e clicca dove vuoi per unirti ad una squadra e cominciare "
+"a giocare!"
 
 #: src/cgame/cg_event.cpp:276
 msgctxt "male"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*è morto"
 
 #: src/cgame/cg_event.cpp:276
 msgctxt "female"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*è morta"
 
 #: src/cgame/cg_event.cpp:276
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*è morto"
 
 #: src/cgame/cg_event.cpp:280
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*è stato schiacciato"
 
 #: src/cgame/cg_event.cpp:280
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*è stata schiacciata"
 
 #: src/cgame/cg_event.cpp:280
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
-msgstr ""
+msgstr "%s%s ^*è stato schiacciato"
 
 #: src/cgame/cg_event.cpp:284
 msgctxt "male"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*è affogato"
 
 #: src/cgame/cg_event.cpp:284
 msgctxt "female"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*è affogata"
 
 #: src/cgame/cg_event.cpp:284
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*è affogato"
 
 #: src/cgame/cg_event.cpp:288
 msgctxt "male"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*si è squagliato"
 
 #: src/cgame/cg_event.cpp:288
 msgctxt "female"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*si è squagliata"
 
 #: src/cgame/cg_event.cpp:288
 msgctxt "neuter"
 msgid "%s%s ^*melted"
-msgstr ""
+msgstr "%s%s ^*si è squagliato"
 
 #: src/cgame/cg_event.cpp:292
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*si è tuffato nella lava"
 
 #: src/cgame/cg_event.cpp:292
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*si è tuffata nella lava"
 
 #: src/cgame/cg_event.cpp:292
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
-msgstr ""
+msgstr "%s%s ^*si è tuffato nella lava"
 
 #: src/cgame/cg_event.cpp:296
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*era nel posto sbagliato"
 
 #: src/cgame/cg_event.cpp:296
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*era nel posto sbagliato"
 
 #: src/cgame/cg_event.cpp:296
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*era nel posto sbagliato"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*è stato preso nell'esplosione"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*è stata presa nell'esplosione"
 
 #: src/cgame/cg_event.cpp:302
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
-msgstr ""
+msgstr "%s%s ^*è stato preso nell'esplosione"
 
 #: src/cgame/cg_event.cpp:306
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*è stato sciolto nell'acido"
 
 #: src/cgame/cg_event.cpp:306
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*è stata sciolta nell'acido"
 
 #: src/cgame/cg_event.cpp:306
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
-msgstr ""
+msgstr "%s%s ^*è stato sciolto nell'acido"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*è stato sparato da una torretta"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*è stata sparata da una torretta"
 
 #: src/cgame/cg_event.cpp:312
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*è stato sparato da una torretta"
 
 #: src/cgame/cg_event.cpp:313
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato sparato da una torretta; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:313
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stata sparata da una torretta; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:313
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato sparato da una torretta; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*ha preso un missile"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*ha preso un missile"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
-msgstr ""
+msgstr "%s%s ^*ha preso un missile"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ha preso un missile; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ha preso un missile; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ha preso un missile; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*è stato squagliato da un tubo d'acido"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*è stata squagliata da un tubo d'acido"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
-msgstr ""
+msgstr "%s%s ^*è stato squagliato da un tubo d'acido"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato squagliato da un tubo d'acido; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stata squagliata da un tubo d'acido; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato squagliato da un tubo d'acido; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:327
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*è stato infilzato da uno spiker"
 
 #: src/cgame/cg_event.cpp:327
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*è stata infilzata da uno spiker"
 
 #: src/cgame/cg_event.cpp:327
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
-msgstr ""
+msgstr "%s%s ^*è stato infilzato da uno spiker"
 
 #: src/cgame/cg_event.cpp:328
 msgctxt "male"
