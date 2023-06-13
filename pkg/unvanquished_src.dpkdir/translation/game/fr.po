@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-06-01 13:50+0000\n"
+"PO-Revision-Date: 2023-06-14 11:49+0000\n"
 "Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -4677,7 +4677,7 @@ msgstr "Noms des robots humains :"
 
 #: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
-msgstr "$1$ ^*s'est déconnecté"
+msgstr "$1$ ^* s'est déconnecté"
 
 #: src/sgame/sg_bot_nav.cpp:114
 msgid "Server: generating bot navigation mesh for $1$... $2$%"
