@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-06-13 10:48+0000\n"
-"Last-Translator: Emily Fiorentini <emily@xewer.com>\n"
+"PO-Revision-Date: 2023-06-16 02:06+0000\n"
+"Last-Translator: Andrea Zucchelli <zukka77@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
 "Language: it\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1-dev\n"
 "X-POOTLE-MTIME: 1398638831.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -567,11 +567,11 @@ msgstr "Vita"
 
 #: ui/hud_basics.rml:199
 msgid "fps"
-msgstr ""
+msgstr "fps"
 
 #: ui/hud_basics.rml:202
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
@@ -587,7 +587,7 @@ msgstr "Armi"
 
 #: ui/human_buy.rml:209 ui/human_buy.rml:225
 msgid "TAB"
-msgstr ""
+msgstr "TAB"
 
 #: ui/human_buy.rml:217
 msgid "Range:"
@@ -611,7 +611,7 @@ msgstr "Scegli il tuo equipaggiamento di partenza:"
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
-msgstr ""
+msgstr "SMG"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
@@ -762,7 +762,7 @@ msgstr "Resetta la partita"
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
-msgstr ""
+msgstr "Bot"
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
@@ -4589,105 +4589,105 @@ msgstr ""
 
 #: src/sgame/sg_client.cpp:853
 msgid "Maximum name changes reached (g_maxNameChanges = $1$)"
-msgstr ""
+msgstr "Numero massimo di cambi nome raggiunto (g_maxNameChanges = $1$)"
 
 #: src/sgame/sg_client.cpp:860
 msgid "You cannot change your name while you are muted"
-msgstr ""
+msgstr "Non puoi cambiare il nome mentre sei mutato"
 
 #: src/sgame/sg_client.cpp:872
 msgid "Name is too long! Must be less than $1$ characters or color codes."
-msgstr ""
+msgstr "Nome troppo lungo! Deve essere meno di $1$ caratteri o codici colore."
 
 #: src/sgame/sg_client.cpp:1193
 msgid "$1$^* connected"
-msgstr ""
+msgstr "$1$^* connesso"
 
 #: src/sgame/sg_client.cpp:1274
 msgid "$1$^* is connecting…"
-msgstr ""
+msgstr "$1$^* si sta connettendo…"
 
 #: src/sgame/sg_client.cpp:1340
 msgid "$1$^* entered the game"
-msgstr ""
+msgstr "$1$^* è entrato nel gioco"
 
 #: src/sgame/sg_combat.cpp:450
 msgid "Your killer, $1$^*, had $2$ HP."
-msgstr ""
+msgstr "Il tuo assasino, $1$^*, aveva $2$ HP."
 
 #: src/sgame/sg_combat.cpp:1055
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
-msgstr ""
+msgstr "$1$ ^3SMANTELLATO^* by $2$"
 
 #: src/sgame/sg_combat.cpp:1056
 msgid "$1$ ^3DESTROYED^* by $2$"
-msgstr ""
+msgstr "$1$ ^3DISTRUTTO^* by $2$"
 
 #: src/sgame/sg_main.cpp:1945
 msgid "Timelimit hit"
-msgstr ""
+msgstr "Limite tempo raggiunto"
 
 #: src/sgame/sg_main.cpp:1974
 msgid "Humans win"
-msgstr ""
+msgstr "Vincono gli Umani"
 
 #: src/sgame/sg_main.cpp:1988
 msgid "Aliens win"
-msgstr ""
+msgstr "Vincono gli Alieni"
 
 #: src/sgame/sg_main.cpp:2183
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
-msgstr ""
+msgstr "Voto fallito ($1$ of $2$; quorum non raggiunto)"
 
 #: src/sgame/sg_main.cpp:2183
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
-msgstr ""
+msgstr "Team vote fallito ($1$ of $2$; quorum non raggiunto)"
 
 #: src/sgame/sg_main.cpp:2188
 msgid "Vote passed ($1$ — $2$)"
-msgstr ""
+msgstr "Voto passato ($1$ — $2$)"
 
 #: src/sgame/sg_main.cpp:2188
 msgid "Team vote passed ($1$ — $2$)"
-msgstr ""
+msgstr "Team vote passato ($1$ — $2$)"
 
 #: src/sgame/sg_main.cpp:2193
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
+msgstr "Voto fallito ($1$ — $2$; $3$% necessario)"
 
 #: src/sgame/sg_main.cpp:2193
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
+msgstr "Team vote fallito ($1$ — $2$; $3$% necessario)"
 
 #: src/sgame/sg_main.cpp:2358
 msgid "Server: Game will auto-unpause in $1$ seconds"
-msgstr ""
+msgstr "Server: Il gioco riprenderà tra $1$ secondi"
 
 #: src/sgame/sg_main.cpp:2374
 msgid "Server: The game has been unpaused automatically (2 minute max)"
-msgstr ""
+msgstr "Server: Il gioco ha ripreso automaticamente (2 minuti max)"
 
 #: src/sgame/sg_svcmds.cpp:405
 msgid "Alien team has admitted defeat"
-msgstr ""
+msgstr "Gli Alieni hanno ammesso la sconfitta"
 
 #: src/sgame/sg_svcmds.cpp:410
 msgid "Human team has admitted defeat"
-msgstr ""
+msgstr "Gli Umani hanno ammesso la sconfitta"
 
 #: src/sgame/sg_svcmds.cpp:443
 msgid "Evacuation ordered"
-msgstr ""
+msgstr "Ordine di evaquazione"
 
 #: src/sgame/sg_team.cpp:586
 msgid "Teams are imbalanced. Humans have more players."
-msgstr ""
+msgstr "I team non sono bilanciati. Gli Umani hanno più giocatori."
 
 #: src/sgame/sg_team.cpp:593
 msgid "Teams are imbalanced. Aliens have more players."
-msgstr ""
+msgstr "I team non sono bilanciati. Gli Alieni hanno più giocatori."
 
 #: src/shared/bg_misc.cpp:2485
 msgid "spectator"
