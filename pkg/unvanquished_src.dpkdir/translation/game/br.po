@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-06-01 13:50+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2023-06-19 16:52+0000\n"
+"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Breton <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/br/>\n"
 "Language: br\n"
@@ -21,7 +21,7 @@ msgstr ""
 "&& n % 100 != 92) ? 1 : ((((n % 10 == 3 || n % 10 == 4) || n % 10 == 9) && ("
 "n % 100 < 10 || n % 100 > 19) && (n % 100 < 70 || n % 100 > 79) && (n % 100 "
 "< 90 || n % 100 > 99)) ? 2 : ((n != 0 && n % 1000000 == 0) ? 3 : 4)));\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -179,6 +179,10 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"an aliened a c'hell emdreiñ e pep lerc'h met ket e legerenn-gweled un den pe "
+"un savadur. Galloud a ra an aliened dilezel evit kemer da skouer a [granger] "
+"(met koust a ra poentoù metamorfoziñ ) pa in tost diouzh an Overmind "
+"[overmind]"
 
 #: ui/help_gameplay.rml:40
 msgid ""
@@ -308,7 +312,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:104
 msgid "Under attack"
-msgstr ""
+msgstr "taget"
 
 #: ui/help_gameplay.rml:107
 msgid ""
@@ -317,10 +321,14 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
+"Ar [reactor] reaktor hag an [overmind] overmind a \"lavaro\" d'he skipailh "
+"pa en do 75% eus e vuhez, 50% eus he vuhez, 25% eus he vuhez, ha pe e vint "
+"distrujet. An distrujadenn eux savadurioù all a lavaro \"taget\" evit he "
+"skipailh."
 
 #: ui/help_gameplay.rml:111
 msgid "Healing"
-msgstr ""
+msgstr "dialañs"
 
 #: ui/help_gameplay.rml:114
 msgid "Dying feeds the ennemy, you may want to save your life!"
@@ -2571,32 +2579,32 @@ msgstr ""
 #: src/cgame/cg_event.cpp:414
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr ""
+msgstr "%s%s ^* a zo bet kildrouget gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:414
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr ""
+msgstr "%s%s ^* a zo bet kildrouget gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:414
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
-msgstr ""
+msgstr "%s%s ^* a zo bet kildrouget gant %s%s%s"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* a zo bet kildrouget gant %s%s%s ^*, sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* a zo bet kildrouget gant %s%s%s^*,sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* a zo bet kildrouget gant %s%s%s^*,sikouret gant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:419
 msgctxt "male"
