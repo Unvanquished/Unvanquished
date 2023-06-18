@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-06-14 11:49+0000\n"
+"PO-Revision-Date: 2023-06-19 16:52+0000\n"
 "Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -3306,44 +3306,52 @@ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:500
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr ""
+msgstr "%s%s ^*a été sauvagement piqué par le gragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:500
+#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr ""
+msgstr "%s%s ^*a été sauvagement piquée par le gragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:500
+#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr ""
+msgstr "%s%s ^*a été sauvagement piqué par le gragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:501
+#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*a été sauvagement piqué par le gragoon de %s%s%s^*, aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:501
+#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*a été sauvagement piquée par le gragoon de %s%s%s^*, aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*a été sauvagement piquée par le gragoon de %s%s%s^*, aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "male"
 msgid "%s%s ^*was barbed"
-msgstr "%s%s ^*a été planté"
+msgstr "%s%s ^* s'est piqué"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "female"
 msgid "%s%s ^*was barbed"
-msgstr "%s%s ^*a été plantée"
+msgstr "%s%s ^*s'est piquée"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "neuter"
@@ -3643,10 +3651,10 @@ msgstr "Notre base est attaquée !"
 #: src/cgame/cg_event.cpp:1299
 #, c-format
 msgid "%s Under attack – %s"
-msgstr ""
+msgstr "%s est attaqué %s"
 
 #: src/cgame/cg_event.cpp:1303
-#, c-format, fuzzy
+#, c-format
 msgid "%s Under attack"
 msgstr "%s est attaqué"
 
