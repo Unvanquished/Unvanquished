@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-06-19 16:52+0000\n"
+"Last-Translator: Coconut <c0c0nut@protonmail.com>\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.18.1\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -24,7 +26,7 @@ msgstr ""
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr ""
+msgstr "Ár:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -32,19 +34,19 @@ msgstr ""
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "morph pontok"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Válassza ki a kezdő formát:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "Dretch"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
 msgid ""
@@ -54,7 +56,7 @@ msgstr ""
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Vissza a csapat kiválasztásához"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -62,11 +64,11 @@ msgstr ""
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "Indok"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Szavazás indítás"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
@@ -74,7 +76,7 @@ msgstr ""
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "Mindkét csapat"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
@@ -87,11 +89,12 @@ msgstr ""
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "Csapat"
 
 #: ui/callvote_fillbots.rml:21
+#, fuzzy
 msgid "Amount"
-msgstr ""
+msgstr "Mennyiség"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
