@@ -86,7 +86,7 @@ struct NavgenConfig {
 	bool excludeSky = 1; // exclude surfaces with surfaceparm sky from navmesh generation
 	bool filterGaps = 1; // add new walkable spans so bots can walk over small gaps
 	bool generatePatchTris = 1; // generate triangles from the BSP's patches
-	bool crouchSupport = true; // use crouchMaxs.z value instead of Maxs.z to compute paths
+	bool crouchSupport = false; // use crouchMaxs.z value instead of Maxs.z to compute paths
 
 	bool operator==( NavgenConfig const& other ) const
 	{
