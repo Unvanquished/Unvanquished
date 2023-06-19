@@ -1467,15 +1467,16 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target, in
 	//this retrieves the target's species, to aim at weak point:
 	// * for humans, it's the head (but code only applies an offset here, with the hope it's the head)
 	// * for aliens, there is no weak point, and human bots try to take missile's speed into consideration (e.g. for luci)
-	if ( !isTargetBuildable && targetTeam == TEAM_HUMANS )
+	if ( !isTargetBuildable && targetTeam == TEAM_HUMANS && self->botMind->skillSet[BOT_A_AIM_HEAD] )
 	{
 		// Aim at head
 		// FIXME: do not rely on hard-coded offset but evaluate which point have lower armor
-		if ( self->botMind->skillSet[BOT_A_AIM_HEAD] )
-		{
-			aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
-		}
-
+		aimLocation[2] += targetEnt->r.maxs[2] * 0.85;
+	}
+	else
+	{
+		// aim at middle
+		aimLocation[2] += 0.5f * ( targetEnt->r.mins[2] + targetEnt->r.maxs[2] );
 	}
 
 	if ( !isTargetBuildable && G_Team(self) == TEAM_HUMANS )
