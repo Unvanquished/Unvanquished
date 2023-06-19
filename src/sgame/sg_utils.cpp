@@ -945,10 +945,10 @@ std::string G_EscapeServerCommandArg( Str::StringRef str )
 // (for commands that have multi-line output)
 char *Quote( Str::StringRef str )
 {
-	static char buffer[ 4 ][ MAX_STRING_CHARS ];
+	static char buffer[ 256 ][ MAX_STRING_CHARS ];
 	static int index = -1;
 
-	index = ( index + 1 ) & 3;
+	index = ( index + 1 ) & 255;
 	Q_strncpyz( buffer[ index ], G_EscapeServerCommandArg( str ).c_str(), sizeof( buffer[ index ] ) );
 
 	return buffer[ index ];

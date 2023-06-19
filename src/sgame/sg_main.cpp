@@ -218,6 +218,9 @@ Cvar::Cvar<std::string> g_admin("g_admin", "admin levels file, relative to <home
 Cvar::Cvar<std::string> g_adminWarn("g_adminWarn", "duration of warning \"bans\"", Cvar::NONE, "1h");
 Cvar::Cvar<std::string> g_adminTempBan("g_adminTempBan", "ban duration for kick and speclock", Cvar::NONE, "2m");
 Cvar::Cvar<std::string> g_adminMaxBan("g_adminMaxBan", "maximum ban duration", Cvar::NONE, "2w");
+Cvar::Range<Cvar::Cvar<int>> g_adminStealthMode("g_adminStealthMode", "default admin Stealth mode. 0 = disabled, 1 = use registered name, 2 = all admins are anonymous. overridden by giving admins or levels the STEALTH / SUPERSTEALTH flags", Cvar::NONE, 0, 0, 2);
+Cvar::Cvar<std::string> g_adminStealthName("g_adminStealthName", "substitute name used for anonymous admins", Cvar::NONE, "^aan administrator");
+Cvar::Cvar<bool> g_adminStealthConsole("g_adminStealthConsole", "console is anonymous", Cvar::NONE, false);
 Cvar::Cvar<bool> g_adminRetainExpiredBans("g_adminRetainExpiredBans", "keep records of expired bans", Cvar::NONE, true);
 
 Cvar::Cvar<bool> g_privateMessages("g_privateMessages", "allow private messages", Cvar::NONE, true);
