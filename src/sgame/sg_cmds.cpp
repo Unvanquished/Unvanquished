@@ -492,7 +492,7 @@ char *ConcatArgsPrintable( int start )
 	static char line[ MAX_STRING_CHARS ];
 	int         len;
 	char        arg[ MAX_STRING_CHARS + 2 ];
-	char        *printArg;
+	const char *printArg;
 
 	len = 0;
 	c = trap_Argc();

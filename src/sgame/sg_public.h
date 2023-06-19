@@ -316,7 +316,9 @@ bool              G_IsPlayableTeam( team_t team );
 bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
 std::string G_EscapeServerCommandArg( Str::StringRef str );
-char *Quote( Str::StringRef str );
+// WARNING: this function can only be called BUFFERSIZE times by the same function,
+// or bad things will happen!
+const char *Quote( Str::StringRef str );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
 float G_DistanceToBBox( const vec3_t origin, gentity_t* ent );
 int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );

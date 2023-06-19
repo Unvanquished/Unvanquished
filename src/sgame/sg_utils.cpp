@@ -943,15 +943,17 @@ std::string G_EscapeServerCommandArg( Str::StringRef str )
 // Escape a command for used in server commands (sent from client to server)
 // Difference from Cmd::Escape and normal command parsing is that newlines are allowed
 // (for commands that have multi-line output)
-char *Quote( Str::StringRef str )
+// WARNING: this function can only be called BUFFERSIZE times by the same function,
+// or bad things will happen!
+const char *Quote( Str::StringRef str )
 {
-	static char buffer[ 4 ][ MAX_STRING_CHARS ];
+	int constexpr BUFFERSIZE = 256; // must be a power of 2
+	static std::string buffer[BUFFERSIZE];
 	static int index = -1;
 
-	index = ( index + 1 ) & 3;
-	Q_strncpyz( buffer[ index ], G_EscapeServerCommandArg( str ).c_str(), sizeof( buffer[ index ] ) );
-
-	return buffer[ index ];
+	index = ( index + 1 ) & ( BUFFERSIZE - 1 );
+	buffer[index] = G_EscapeServerCommandArg( str );
+	return buffer[index].c_str();
 }
 
 // TODO: Add LocationComponent
