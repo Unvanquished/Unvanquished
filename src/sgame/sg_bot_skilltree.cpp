@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static std::array<skillSet_t, 9> baseSkillset;
 static skillSet_t disabledSkillset;
 
+static std::string SkillSetToString(skillSet_t skillSet, const std::string& separator);
+
 static void G_UpdateSkillsets()
 {
 	for ( int i = 0; i < level.maxclients; i++ )
@@ -94,6 +96,7 @@ static void G_SetDisabledSkillset( Str::StringRef skillsCsv )
 	G_UpdateSkillsets();
 }
 
+static void CheckBaseSkillset();
 static void G_SetBaseSkillset( Str::StringRef skillsCsv )
 {
 	std::vector<std::pair<int, bot_skill>> skills = G_ParseSkillsetListWithLevels( skillsCsv );
@@ -109,6 +112,8 @@ static void G_SetBaseSkillset( Str::StringRef skillsCsv )
 		}
 		baseSkillset[ skillLevel - 1 ] = level;
 	}
+
+	CheckBaseSkillset();
 	G_UpdateSkillsets();
 }
 
@@ -414,4 +419,34 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skillL
 	std::string seed = bot->client->pers.netname;
 	skillSet_t skillSet = BotPickSkillset( seed, skillLevel, G_Team( bot ));
 	return { SkillSetToString( skillSet, " " ), skillSet };
+}
+
+// Sometimes there is code like
+// if (bot has basic skill) {
+//     ...
+//     if (bot has skill depending on basic skill) {
+//         ...
+//
+// So warn the user if a skill has a missing dependency which means that the
+// value of the skill may not really be seen
+static void CheckBaseSkillset()
+{
+	for ( const botSkillTreeElement_t &skill : skillTree )
+	{
+		// Find the lowest level the skill is in and see if it has unset dependencies
+		for ( int l = 1; l <= 9; l++ )
+		{
+			const skillSet_t &level = baseSkillset[ l - 1 ];
+			if ( level[ skill.skill ] )
+			{
+				if ( skill.prerequisite.any() && ( skill.prerequisite & level ).none() )
+				{
+					std::string deps = SkillSetToString( skill.prerequisite, " / " );
+					Log::Warn( "Base skillset for level %d includes %s, but includes none of its dependencies: %s",
+						l, skill.name, deps );
+				}
+				break;
+			}
+		}
+	}
 }
