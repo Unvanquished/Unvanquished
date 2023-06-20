@@ -383,12 +383,8 @@ skillSet_t BotPickSkillset(std::string seed, int skillLevel, team_t team)
 	return skillSet;
 }
 
-std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skillLevel)
+static std::string SkillSetToString( skillSet_t skillSet, const std::string &separator )
 {
-	std::string seed = bot->client->pers.netname;
-
-	skillSet_t skillSet = BotPickSkillset( seed, skillLevel, G_Team( bot ));
-
 	std::vector<std::string> skillNames;
 
 	for ( const botSkillTreeElement_t &s : skillTree )
@@ -406,9 +402,16 @@ std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skillL
 	{
 		if (!skill_list.empty())
 		{
-			skill_list.append(" ");
+			skill_list.append( separator );
 		}
 		skill_list.append( skill_ );
 	}
-	return { skill_list, skillSet };
+	return skill_list;
+}
+
+std::pair<std::string, skillSet_t> BotDetermineSkills(gentity_t *bot, int skillLevel)
+{
+	std::string seed = bot->client->pers.netname;
+	skillSet_t skillSet = BotPickSkillset( seed, skillLevel, G_Team( bot ));
+	return { SkillSetToString( skillSet, " " ), skillSet };
 }
