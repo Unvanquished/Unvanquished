@@ -38,21 +38,31 @@ static void G_UpdateSkillsets()
 	}
 }
 
-static std::set<std::string> G_ParseSkillsetList( Str::StringRef skillsCsv )
+static bool ParseSkill( Str::StringRef name, bot_skill &skill );
+
+static skillSet_t G_ParseSkillsetList( Str::StringRef skillsCsv )
 {
-	std::set<std::string> skills;
+	skillSet_t skills;
 
 	for (Parse_WordListSplitter i(skillsCsv); *i; ++i)
 	{
-		skills.insert( *i );
+		bot_skill skill;
+		if ( ParseSkill ( *i, skill ) )
+		{
+			skills.set( skill );
+		}
+		else
+		{
+			Log::Warn( "unknown skill '%s'", *i );
+		}
 	}
 
 	return skills;
 }
 
-static std::set<std::string>& G_GetDisabledSkillset()
+static skillSet_t &G_GetDisabledSkillset()
 {
-	static std::set<std::string> disabledSkillset;
+	static skillSet_t disabledSkillset;
 	return disabledSkillset;
 }
 
@@ -62,14 +72,9 @@ static void G_SetDisabledSkillset( Str::StringRef skillsCsv )
 	G_UpdateSkillsets();
 }
 
-static bool G_SkillDisabled( Str::StringRef behavior )
+static skillSet_t &G_GetPreferredSkillset()
 {
-	return G_GetDisabledSkillset().find( behavior ) != G_GetDisabledSkillset().end();
-}
-
-static std::set<std::string>& G_GetPreferredSkillset()
-{
-	static std::set<std::string> preferredSkillset;
+	static skillSet_t preferredSkillset;
 	return preferredSkillset;
 }
 
@@ -77,11 +82,6 @@ static void G_SetPreferredSkillset( Str::StringRef skillsCsv )
 {
 	G_GetPreferredSkillset() = G_ParseSkillsetList( skillsCsv );
 	G_UpdateSkillsets();
-}
-
-static bool G_SkillPreferred( Str::StringRef behavior )
-{
-	return G_GetPreferredSkillset().find( behavior ) != G_GetPreferredSkillset().end();
 }
 
 // aliens have 71 points to spend max, but we give them a bit less for balancing
@@ -210,9 +210,22 @@ static const std::vector<botSkillTreeElement_t> skillTree =
 	{ "predict-aim",        BOT_H_PREDICTIVE_AIM,          5,  TEAM_HUMANS, needs_one_of({BOT_B_BASIC_FIGHT}) },
 };
 
+static bool ParseSkill( Str::StringRef name, bot_skill &skill )
+{
+	for ( const botSkillTreeElement_t &s : skillTree )
+	{
+		if ( name == s.name )
+		{
+			skill = s.skill;
+			return true;
+		}
+	}
+	return false;
+}
+
 static bool SkillIsAvailable(const botSkillTreeElement_t &skill, team_t team, skillSet_t activated_skills)
 {
-	return !G_SkillDisabled(skill.name)
+	return !G_GetDisabledSkillset()[ skill.skill ]
 		&& (skill.allowed_teams == TEAM_NONE || skill.allowed_teams == team) // and correspond to our team
 		&& (skill.prerequisite == 0 || (activated_skills & skill.prerequisite) != 0); // and has one of the prerequisites matching, if any
 }
@@ -296,7 +309,7 @@ std::vector<botSkillTreeElement_t> BotPickSkillset(std::string seed, int skillLe
 			break;
 		}
 
-		bool preferred = G_SkillPreferred( new_skill->name );
+		bool preferred = G_GetPreferredSkillset()[ new_skill->skill ];
 
 		if ( !preferred )
 		{
