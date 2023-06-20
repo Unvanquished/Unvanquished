@@ -300,7 +300,7 @@ namespace Beacon //this should eventually become a class
 		for ( i = 0; i < numvecs; i++ )
 		{
 			VectorMA( origin, 500, vecs[ i ], end );
-			tr = G_RayTrace( origin, end, 0, MASK_SOLID, 0 );
+			tr = G_PointTrace( origin, end, 0, MASK_SOLID, 0 );
 			VectorAdd( accumulator, tr.endpos, accumulator );
 		}
 
@@ -642,7 +642,7 @@ namespace Beacon //this should eventually become a class
 
 		// Do a trace for bounding boxes under the reticle first, they are prefered
 		{
-			trace_t tr = G_RayTrace( begin, end, skip, mask, 0 );
+			trace_t tr = G_PointTrace( begin, end, skip, mask, 0 );
 			if ( EntityTaggable( tr.entityNum, team, true ) )
 			{
 				reticleEnt = g_entities + tr.entityNum;
@@ -675,7 +675,7 @@ namespace Beacon //this should eventually become a class
 
 			// LOS
 			{
-				trace_t tr = G_RayTrace( begin, ent->r.currentOrigin, skip, mask, 0 );
+				trace_t tr = G_PointTrace( begin, ent->r.currentOrigin, skip, mask, 0 );
 				if( tr.entityNum != i )
 					continue;
 			}

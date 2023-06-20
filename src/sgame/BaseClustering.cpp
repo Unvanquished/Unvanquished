@@ -127,7 +127,7 @@ namespace BaseClustering {
 
 			// Trace from mean buildable's origin towards cluster center, so that the beacon does
 			// not spawn inside a wall. Then use MoveTowardsRoom on the trace results.
-			trace_t tr = G_RayTrace( VEC2GLM( mean->s.origin ), center, 0, MASK_SOLID, 0);
+			trace_t tr = G_PointTrace( VEC2GLM( mean->s.origin ), center, 0, MASK_SOLID, 0);
 			Beacon::MoveTowardsRoom(tr.endpos);
 
 			// Prepare beacon flags.

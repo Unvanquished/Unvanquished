@@ -1439,7 +1439,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	trace = G_RayTrace( muzzle, targetPos, self->num(), mask, 0 );
+	trace = G_PointTrace( muzzle, targetPos, *self, mask, 0 );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -1972,7 +1972,7 @@ void BotFireWeaponAI( gentity_t *self )
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 
-	trace = G_RayTrace( muzzle, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
+	trace = G_PointTrace( muzzle, targetPos, ENTITYNUM_NONE, MASK_SHOT, 0 );
 	distance = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
 	bool readyFire = self->client->ps.IsWeaponReady();
 	glm::vec3 target = self->botMind->goal.getPos();

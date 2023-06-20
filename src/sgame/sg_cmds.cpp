@@ -2248,7 +2248,7 @@ static void Cmd_Ignite_f( gentity_t *player )
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
 	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 1000, forward, end );
-	trace = G_RayTrace( viewOrigin, end, player->num(), MASK_PLAYERSOLID, 0 );
+	trace = G_PointTrace( viewOrigin, end, *player, MASK_PLAYERSOLID, 0 );
 
 	if ( trace.entityNum == ENTITYNUM_WORLD ) {
 		G_SpawnFire( trace.endpos, trace.plane.normal, player );
@@ -4080,7 +4080,7 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	VectorMA( origin, 65536, forward, end );
 
 	G_UnlaggedOn( ent, origin, 65536 );
-	tr = G_RayTrace( origin, end, ent->num(), MASK_PLAYERSOLID, 0 );
+	tr = G_PointTrace( origin, end, *ent, MASK_PLAYERSOLID, 0 );
 	G_UnlaggedOff( );
 
 	// Evaluate flood limit.

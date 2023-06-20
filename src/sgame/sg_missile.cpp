@@ -530,7 +530,7 @@ void G_RunMissile( gentity_t *ent )
 		}
 		else
 		{
-			tr = G_RayTrace( ent->r.currentOrigin, origin, passent, ent->clipmask, 0 );
+			tr = G_PointTrace( ent->r.currentOrigin, origin, passent, ent->clipmask, 0 );
 
 			if ( tr.fraction < 1.0f )
 			{
