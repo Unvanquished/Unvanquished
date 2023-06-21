@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-05-31 09:42+0000\n"
-"Last-Translator: Tomás Pérez Carrillo <tomasperezc21@gmail.com>\n"
+"PO-Revision-Date: 2023-06-23 01:47+0000\n"
+"Last-Translator: memespider <crucisdeus@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 4.18.1\n"
 "X-POOTLE-MTIME: 1362811388.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -52,26 +52,28 @@ msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
+"Los Dretches son combatientes altamente furtivos; los Grangers construyen "
+"estructuras alienígenas."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Volver a la selección de equipo"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "Votación para tablas"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "Motivo"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Votación"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
-msgstr ""
+msgstr "Rellenar con bots"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -108,7 +110,7 @@ msgstr "Votar: establecer el mapa actual"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "Cambiar de mapa (host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
@@ -139,10 +141,12 @@ msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"En esta sección se resumen los principales elementos del juego que deberías "
+"conocer para convertirte en un jugador formidable."
 
 #: ui/help_gameplay.rml:23
 msgid "Feel free to join us in the community and developer chats!"
-msgstr ""
+msgstr "¡Únete a nuestros chats de comunidad y desarrollo!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
@@ -167,6 +171,8 @@ msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"Los alienígenas ganan puntos de evolución matando humanos. Éstos pueden "
+"usarse para evolucionar hacia [dragoon] clases más poderosas."
 
 #: ui/help_gameplay.rml:37
 msgid ""
@@ -174,12 +180,17 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"Los alienígenas pueden evolucionar siempre y cuando no estén a la vista de "
+"los humanos o sus estructuras. También pueden [granger] involucionar (a un "
+"precio) si se hallan alrededor de la [overmind] Mente Maestra."
 
 #: ui/help_gameplay.rml:40
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
+"Usa un [granger] granger para construir la Mente Maestra si ésta fuere "
+"destruida. ¡La necesitas viva para evolucionar!"
 
 #: ui/help_gameplay.rml:44
 msgid ""
@@ -187,16 +198,23 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
+"Los humanos obtienen créditos cada vez que matan a un alienígena o destruyen "
+"una de sus estructuras. Con éstos, pueden comprar nuevas [lcannon] armas, "
+"[battlesuit] armaduras y otros artilugios como visores radar o mochilas a "
+"reacción."
 
 #: ui/help_gameplay.rml:47
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
+"Los humanos sólo pueden comprar y vender armas alrededor de la [armoury] "
+"armería. Si no hay ninguna en pie, usa el kit de construcción para "
+"reinstaurarla cuanto antes."
 
 #: ui/help_gameplay.rml:51
 msgid "Powering buildables"
-msgstr ""
+msgstr "Suministro de estructuras"
 
 #: ui/help_gameplay.rml:54
 msgid ""
@@ -458,7 +476,7 @@ msgstr ""
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr "puntos de construccion"
+msgstr "puntos de construcción"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
@@ -647,7 +665,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:74
 msgid "Remove all bots"
-msgstr ""
+msgstr "Eliminar todos los bots"
 
 #: ui/menu_ingame.rml:78
 msgid "Players"
@@ -3388,11 +3406,11 @@ msgstr ""
 
 #: src/cgame/cg_event.cpp:1239
 msgid "The Overmind is under attack!"
-msgstr ""
+msgstr "¡La Mente Maestra está siendo atacada!"
 
 #: src/cgame/cg_event.cpp:1246
 msgid "The reactor is under attack!"
-msgstr ""
+msgstr "¡El Reactor está siendo atacado!"
 
 #: src/cgame/cg_event.cpp:1261
 msgid "The Overmind is dying!"
@@ -3404,7 +3422,7 @@ msgstr ""
 
 #: src/cgame/cg_event.cpp:1286 src/cgame/cg_event.cpp:1308
 msgid "Our base is under attack!"
-msgstr ""
+msgstr "¡Nuestra base está siendo atacada!"
 
 #: src/cgame/cg_event.cpp:1299
 #, c-format
@@ -3693,7 +3711,7 @@ msgid ""
 "on a team"
 msgstr ""
 "Los cheats (trampas) no están activados en este servidor, así que no podrás "
-"usar este comando mientras estés en un equipo."
+"usar este comando mientras estés en un equipo"
 
 #: src/cgame/cg_servercmds.cpp:501
 msgid "Join a team first"
@@ -3764,18 +3782,20 @@ msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
 msgstr ""
+"No se permite la demolición immediata de la estructura principal. Una vez "
+"marcada, constrúyela de nuevo para moverla."
 
 #: src/cgame/cg_servercmds.cpp:556
 msgid "You may not deconstruct this structure"
-msgstr ""
+msgstr "No puedes demoler esta estructura"
 
 #: src/cgame/cg_servercmds.cpp:560
 msgid "Building has been disabled on the server for your team."
-msgstr ""
+msgstr "Se ha desactivado la construcción para tu equipo desde el servidor."
 
 #: src/cgame/cg_servercmds.cpp:561
 msgid "Building has been disabled for your team"
-msgstr ""
+msgstr "Se ha desactivado la construcción para tu equipo"
 
 #: src/cgame/cg_servercmds.cpp:565
 msgid "You are no longer permitted to build."
@@ -3790,20 +3810,24 @@ msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
 msgstr ""
+"Tu equipo ha decidido rendirse: construir de nuevo ya no tiene ningún "
+"sentido."
 
 #: src/cgame/cg_servercmds.cpp:572
 msgid "Cannot build after admitting defeat"
-msgstr ""
+msgstr "No se puede construir habiéndose rendido"
 
 #: src/cgame/cg_servercmds.cpp:576
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
 msgstr ""
+"Se han agotado los recursos. Puedes liberar recursos marcando estructuras "
+"para su demolición."
 
 #: src/cgame/cg_servercmds.cpp:578
 msgid "There are no resources remaining"
-msgstr ""
+msgstr "Se han agotado los recursos"
 
 #: src/cgame/cg_servercmds.cpp:582
 msgid "This buildable is not powered."
@@ -3827,6 +3851,8 @@ msgstr ""
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
+"Sólo puede haber un Reactor. Para moverlo, primero debes marcar el que esté "
+"en pie."
 
 #: src/cgame/cg_servercmds.cpp:595
 msgid "There can only be one Reactor"
@@ -3893,11 +3919,11 @@ msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:634
 msgid "There is not enough room here to change armour."
-msgstr ""
+msgstr "Aquí no hay espacio suficiente para cambiar de armadura."
 
 #: src/cgame/cg_servercmds.cpp:635
 msgid "Not enough room here to change armour."
-msgstr ""
+msgstr "No tienes espacio para cambiarte la armadura."
 
 #: src/cgame/cg_servercmds.cpp:639
 msgid ""
@@ -3963,8 +3989,8 @@ msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
 msgstr ""
-"Aquí no hay espacio para evolucionar. Muévete lejos de las paredes u objetos "
-"cercanos y vuelve a intentarlo."
+"Aquí no hay espacio para evolucionar. Muévete lejos de las paredes u otros "
+"objetos cercanos y vuelve a intentarlo."
 
 #: src/cgame/cg_servercmds.cpp:681
 msgid "There is no room to evolve here"
@@ -4031,7 +4057,7 @@ msgstr "La %s no está permitida"
 #: src/cgame/cg_servercmds.cpp:738
 #, c-format
 msgid "The %s has not been unlocked yet"
-msgstr ""
+msgstr "Todavía no se ha desbloqueado el ítem «%s»"
 
 #: src/cgame/cg_servercmds.cpp:743
 #, c-format
@@ -4115,7 +4141,7 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
-msgstr ""
+msgstr "Mostrar / ocultar la consola"
 
 #: src/cgame/cg_tutorial.cpp:60
 msgid "Toggle Menu"
