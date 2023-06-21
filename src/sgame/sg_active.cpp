@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 bool ClientInactivityTimer( gentity_t *ent, bool active );
 
+static Cvar::Range<Cvar::Cvar<int>> g_alien_reqOMToRegen( "g_alien_reqOMToRegen", "0: alien players always regenerate; 1: alien players do not regenerate if they have no egg, OM, or builder; 2: same as 1, but builders won't allow regen;", Cvar::NONE, 0, 0, 2 );
 static Cvar::Cvar<float> g_devolveReturnRate(
 	"g_devolveReturnRate", "Evolution points per second returned after devolving", Cvar::NONE, 0.4);
 static Cvar::Cvar<bool> g_remotePoison( "g_remotePoison", "booster gives poison when in heal range", Cvar::NONE, false );
@@ -1725,10 +1726,49 @@ static int FindAlienHealthSource( gentity_t *self )
 	return ret;
 }
 
+// checks if alien regeneration is currently allowed.
+// Depends on g_alien_reqOMToRegen cvar:
+// 0: aliens can always regenerate
+// 1: aliens can only regenerate if they have either a builder, an egg or an OM
+// 2: aliens can only regenerate if they have either an egg or an OM
+static bool AllowAlienRegeneration( gentity_t const* self )
+{
+	int regenReqs = g_alien_reqOMToRegen.Get();
+	if ( regenReqs == 0 || G_ActiveMainBuildable( TEAM_ALIENS ) || level.team[TEAM_ALIENS].numSpawns > 0 )
+	{
+		return true;
+	}
+
+	if ( regenReqs == 1 )
+	{
+		int mates = 0;
+		int numMates = level.team[TEAM_ALIENS].numClients;
+		int numClients = level.numConnectedClients;
+		for ( int i = 0; i < numClients && mates < numMates; ++i )
+		{
+			if ( G_OnSameTeam( self, &g_entities[i] ) )
+			{
+				++mates;
+				class_t pcl = static_cast<class_t>( g_entities[i].client->ps.stats[STAT_CLASS] );
+				if ( pcl == PCL_ALIEN_BUILDER0 || pcl == PCL_ALIEN_BUILDER0_UPG )
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	return false;
+}
+
 // TODO: Synchronize
 // TODO: Move to HealthRegenComponent.
 static void G_ReplenishAlienHealth( gentity_t *self )
 {
+	if ( !AllowAlienRegeneration( self ) )
+	{
+		return;
+	}
 	gclient_t *client;
 	float     regenBaseRate, modifier;
 	int       count, interval;

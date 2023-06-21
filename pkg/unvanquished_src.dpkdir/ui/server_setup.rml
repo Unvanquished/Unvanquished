@@ -63,6 +63,19 @@
 				<input cvar="g_humanAllowBuilding" type="checkbox" />
 				<h3><translate>Allow human building</translate></h3>
 			</row>
+			<row>
+				<h3><translate>Alien regeneration conditions</translate></h3>
+				<input type="range" min="0" max="2" step="1" cvar="g_alien_reqOMToRegen" />
+				<p>
+					&nbsp;&nbsp;<translate>Current:</translate><inlinecvar cvar="g_alien_reqOMToRegen" type="number" format="%.0f"/><br/>
+					<translate>
+						&nbsp;&nbsp;&nbsp;0: always<br/>
+						&nbsp;&nbsp;&nbsp;1: requires either an egg or an overmind (active)<br/>
+						&nbsp;&nbsp;&nbsp;2: requires either a granger, an egg or an overmind (active)<br/>
+					</translate>
+					<ilink onclick='Events.pushevent("exec reset g_alien_reqOMToRegen", event)'> (reset) </ilink>
+				</p>
+			</row>
 
 			<h2><translate>Physics</translate></h2>
 			<row>
