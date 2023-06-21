@@ -613,8 +613,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	G_InitSpawnQueue( &level.team[ TEAM_ALIENS ].spawnQueue );
 	G_InitSpawnQueue( &level.team[ TEAM_HUMANS ].spawnQueue );
 
-	G_InitSkilltreeCvars();
-
 	if ( g_debugMapRotation.Get() )
 	{
 		G_PrintRotations();
@@ -1196,7 +1194,7 @@ void CalculateRanks()
 				}
 				else
 				{
-					int skill = level.gentities[ clientNum ].botMind->skillLevel;
+					int skill = level.gentities[ clientNum ].botMind->botSkill.level;
 
 					// Bot skill can be 0 while spawning, just before skill is set.
 					ASSERT( skill >= 0 && skill <= 9 );

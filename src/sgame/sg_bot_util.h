@@ -35,7 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 bool PlayersBehindBotInSpawnQueue( gentity_t *self );
 int      BotGetDefaultSkill();
 void     BotSetSkillLevel( gentity_t *self, int skill );
-std::pair<std::string, skillSet_t> BotDetermineSkills( gentity_t *bot, int skill);
 
 // unsticking
 void BotCalculateStuckTime( gentity_t *self );

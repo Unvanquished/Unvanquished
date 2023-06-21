@@ -177,7 +177,7 @@ int G_BotGetSkill( int clientNum )
 		return 0;
 	}
 
-	return bot->botMind->skillLevel;
+	return bot->botMind->botSkill.level;
 }
 
 void G_BotSetSkill( int clientNum, int skill )
@@ -729,7 +729,7 @@ void botMemory_t::willSprint( bool enable )
 // walking, and stamina not recharging at all.
 void botMemory_t::doSprint( int jumpCost, int stamina, usercmd_t& cmd )
 {
-	exhausted = exhausted || ( skillLevel >= 5 && stamina <= jumpCost + jumpCost / 10 );
+	exhausted = exhausted || ( botSkill.level >= 5 && stamina <= jumpCost + jumpCost / 10 );
 	if ( !exhausted && wantSprinting )
 	{
 		usercmdPressButton( cmd.buttons, BTN_SPRINT );
@@ -769,11 +769,10 @@ std::string G_BotToString( gentity_t *bot )
 	{
 		return "";
 	}
-	return Str::Format( "^*%s^*: %s [b=%s g=%s s=%d ss=\"%s\"]",
+	return Str::Format( "^*%s^*: %s [b=%s g=%s s=%d]",
 			bot->client->pers.netname,
 			BG_TeamName( G_Team( bot ) ),
 			bot->botMind->behaviorTree->name,
 			BotGoalToString( bot ),
-			bot->botMind->skillLevel,
-			bot->botMind->skillSetExplaination );
+			bot->botMind->botSkill.level );
 }
