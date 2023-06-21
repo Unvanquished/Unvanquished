@@ -123,10 +123,8 @@ static bool G_IsBaseSkillAtLevel( int skillLevel, bot_skill skill )
 	return baseSkillset[ skillLevel - 1 ][ skill ];
 }
 
-// aliens have 71 points to spend max, but we give them a bit less for balancing
-static int skillsetBudgetAliens = 63;
-// humans have 48 points to spend max
-static int skillsetBudgetHumans = 48;
+static int skillsetBudgetAliens;
+static int skillsetBudgetHumans;
 
 static void G_SetSkillsetBudgetHumans( int val )
 {
@@ -154,22 +152,27 @@ void G_InitSkilltreeCvars()
 		"g_bot_skillset_baseSkills",
 		"Preferred skills for bots depending on levels, this is a level:skillName key:value list, example: " QQ("6:mantis-attack-jump, 3:prefer-armor"),
 		Cvar::NONE,
-		"",
+		"1:movement 1:fighting 1:feels-pain 1:buy-modern-armor 1:medkit "
+		"3:strafe-attack "
+		"5:aim-barbs 5:mantis-attack-jump 5:small-attack-jump 5:mara-attack-jump 5:goon-attack-jump 5:tyrant-attack-run 5:a-fast-flee 5:h-fast-flee 5:prefer-armor "
+		"7:aim-head 7:predict-aim 7:safe-barbs "
+		, // unused: fast-aim
 		G_SetBaseSkillset
 		);
+	G_SetBaseSkillset( g_skillset_baseSkills.Get() ); // there's no cvar modification event if the cvar is unset on gamelogic load
 
 	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetAliens(
 		"g_bot_skillset_budgetAliens",
 		"How many skillpoint for bot aliens' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
-		skillsetBudgetAliens,
+		0,
 		G_SetSkillsetBudgetAliens
 		);
 	static Cvar::Callback<Cvar::Cvar<int>> g_skillsetBudgetHumans(
 		"g_bot_skillset_budgetHumans",
 		"How many skillpoint for bot humans' random skills. Base skill costs are also removed from this sum",
 		Cvar::NONE,
-		skillsetBudgetHumans,
+		0,
 		G_SetSkillsetBudgetHumans
 		);
 }
