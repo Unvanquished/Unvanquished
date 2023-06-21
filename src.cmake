@@ -195,7 +195,6 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_bot_parse.cpp
     ${GAMELOGIC_DIR}/sgame/sg_bot_parse.h
     ${GAMELOGIC_DIR}/sgame/sg_bot_public.h
-    ${GAMELOGIC_DIR}/sgame/sg_bot_skilltree.cpp
     ${GAMELOGIC_DIR}/sgame/sg_bot_util.cpp
     ${GAMELOGIC_DIR}/sgame/sg_bot_util.h
     ${GAMELOGIC_DIR}/sgame/sg_buildable.cpp
