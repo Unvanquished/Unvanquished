@@ -891,6 +891,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// We have a valid visible target
+	bool couldChangeToPrimary = G_Team( self ) == TEAM_HUMANS && BG_GetPlayerWeapon( &self->client->ps ) == WP_BLASTER && !WeaponIsEmpty( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps );
 
 	if ( mind->hasOffmeshGoal )
 	{
@@ -901,7 +902,6 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_SUCCESS;
 		}
 		bool inRange = TargetInOffmeshAttackRange( self );
-		bool couldChangeToPrimary = BG_GetPlayerWeapon( &self->client->ps ) == WP_BLASTER && !WeaponIsEmpty( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps );
 		if ( !inRange && BG_GetPlayerWeapon( &self->client->ps ) != WP_BLASTER )
 		{
 			G_ForceWeaponChange( self, WP_BLASTER );
@@ -914,12 +914,6 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		// check if the target has moved onto the navmesh
 		if ( mind->nav().directPathToGoal )
 		{
-			// target is on a navmesh now, switch to primary weapon if we have
-			// the blaster selected (the onmesh target code below assumes this)
-			if ( couldChangeToPrimary )
-			{
-				G_ForceWeaponChange( self, WP_NONE );
-			}
 			self->botMind->setHasOffmeshGoal( false );
 		}
 		else
@@ -932,6 +926,14 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// The target is visible, and on the navmesh
+
+	// switch to primary weapon if we have the blaster selected, and the primary
+	// weapon is not empty
+	if ( couldChangeToPrimary )
+	{
+		ASSERT( G_Team( self ) == TEAM_HUMANS );
+		G_ForceWeaponChange( self, WP_NONE );
+	}
 
 	bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
 	self->botMind->enemyLastSeen = level.time;
