@@ -891,7 +891,12 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// We have a valid visible target
-	bool couldChangeToPrimary = G_Team( self ) == TEAM_HUMANS && BG_GetPlayerWeapon( &self->client->ps ) == WP_BLASTER && !WeaponIsEmpty( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps );
+	bool couldChangeToPrimary = false;
+	if ( G_Team( self ) == TEAM_HUMANS )
+	{
+		weapon_t primaryWeapon = BG_PrimaryWeapon( self->client->ps.stats );
+		couldChangeToPrimary = BG_GetPlayerWeapon( &self->client->ps ) == WP_BLASTER && primaryWeapon != WP_HBUILD && !WeaponIsEmpty( primaryWeapon, &self->client->ps );
+	}
 
 	if ( mind->hasOffmeshGoal )
 	{
