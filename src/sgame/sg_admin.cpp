@@ -604,12 +604,6 @@ void G_admin_action( const char *action, const char *translation,
 	{
 		std::string name = qAdminNetName;
 
-		if ( G_admin_stealthed( admin ) > 0
-		     && G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
-		{
-			name = qAdminTaggedName;
-		}
-
 		if ( G_admin_stealthed( admin ) == 1
 		     && !G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
 		{
@@ -620,6 +614,13 @@ void G_admin_action( const char *action, const char *translation,
 		     && !G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
 		{
 			name = qAdminStealthName;
+		}
+
+		if ( ( G_admin_stealthed( admin ) > 0
+		       && G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
+		     || admin == &g_entities[ i ] ) // let the admin know they are stealthed
+		{
+			name = qAdminTaggedName;
 		}
 
 		trap_SendServerCommand( i, va( "print_tr %s %s", action, 
@@ -4338,9 +4339,19 @@ bool G_admin_adminhelp( gentity_t *ent )
 		ADMP( Quote( out ) );
 		ADMP( va( "%s %d", QQ( N_("^3adminhelp:^* $1$ available commands\n"
 		"run adminhelp [^3command^7] for adminhelp with a specific command.") ),count ) );
+
+		if ( G_admin_permission( ent, ADMF_STEALTH ) 
+		     || G_admin_permission( ent, ADMF_SUPERSTEALTH ) )
+		{
+			ADMP( QQ( N_( "\n^3adminhelp:^* You are cloaked by Admin Stealth\n"
+			      "and you will not be identified to some other\n"
+			      "players when using admin commands on this server.\n"
+			      "^1Note that with great power comes great responsibility." ) ) );
+		}
+
 		if ( G_admin_permission( ent, ADMF_SEES_STEALTH ) )
 		{
-			ADMP( QQ( N_( "\nYou may also see admins who are using Stealth.\n"
+			ADMP( QQ( N_( "\n^3adminhelp:^* You may also see admins who are using Stealth.\n"
 			      "They are identified by the following tags:\n"
 			      "^9●^* (standard Stealth) and ^0●^* (Super Stealth)\n"
 			      "when using admin commands." ) ) );
