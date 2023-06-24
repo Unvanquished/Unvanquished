@@ -574,7 +574,9 @@ void G_admin_action( const char *action, const char *translation,
 	// quote only has a limited buffer, so cache these values here.
 	Q_strncpyz( qAdminNetName, Quote( G_admin_name( admin ) ), sizeof( qAdminNetName ) );
 	Q_strncpyz( qAdminTaggedName, Quote( va( "%s%s", cloakTags[ G_admin_stealthed( admin ) ], G_admin_name( admin ) ) ), sizeof( qAdminTaggedName ) );
-	Q_strncpyz( qAdminAdminName, Quote( ( admin ) ? admin->client->pers.admin->name : "console" ), sizeof( qAdminAdminName ) );
+	Q_strncpyz( qAdminAdminName, Quote( ( admin ) 
+	                                    ? ( admin->client->pers.admin ? admin->client->pers.admin->name : qAdminNetName )
+	                                    : "console" ), sizeof( qAdminAdminName ) );
 	Q_strncpyz( qAdminStealthName, Quote( g_adminStealthName.Get().c_str() ), sizeof( qAdminStealthName ) );
 
 	/*
