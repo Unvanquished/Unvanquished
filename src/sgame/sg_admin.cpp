@@ -565,7 +565,17 @@ template <typename... Args>
 void G_admin_action( const char *action, const char *translation, 
                      gentity_t *admin, Args... args )
 {
-	char cloakTags[][8]           = { "^9●^*", "^0●^*" };
+	char cloakTags[][8] = { "", "^9●^*", "^0●^*" };
+	char qAdminNetName[ MAX_NAME_LENGTH ];
+	char qAdminTaggedName[ MAX_NAME_LENGTH + 8 ];
+	char qAdminAdminName[ MAX_NAME_LENGTH ];
+	char qAdminStealthName[ MAX_NAME_LENGTH ];
+
+	// quote only has a limited buffer, so cache these values here.
+	Q_strncpyz( qAdminNetName, Quote( G_admin_name( admin ) ), sizeof( qAdminNetName ) );
+	Q_strncpyz( qAdminTaggedName, Quote( va( "%s%s", cloakTags[ G_admin_stealthed( admin ) ], G_admin_name( admin ) ) ), sizeof( qAdminTaggedName ) );
+	Q_strncpyz( qAdminAdminName, Quote( ( admin ) ? admin->client->pers.admin->name : "console" ), sizeof( qAdminAdminName ) );
+	Q_strncpyz( qAdminStealthName, Quote( g_adminStealthName.Get().c_str() ), sizeof( qAdminStealthName ) );
 
 	/*
 		*action	     = The action carried out by the admin, in translatable format
@@ -582,41 +592,39 @@ void G_admin_action( const char *action, const char *translation,
 		               the /slap command has one additional to show the damage dealt.
 	*/
 
+	// tell the console what happened first
+	trap_SendServerCommand( -2, va( "print_tr %s %s", action, 
+	                        va( translation, 
+	                            qAdminTaggedName, 
+	                            args... ) ) );
+
 	for ( int i = 0; i < level.maxclients; i++ )
 	{
-		std::string name = G_admin_name( admin );
+		std::string name = qAdminNetName;
 
 		if ( G_admin_stealthed( admin ) > 0
 		     && G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
 		{
-			name = va( "%s%s", cloakTags[ ( G_admin_stealthed( admin ) -1 ) ], G_admin_name( admin ) );
+			name = qAdminTaggedName;
 		}
 
 		if ( G_admin_stealthed( admin ) == 1
 		     && !G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
 		{
-			name = admin->client->pers.admin->name;
+			name = qAdminAdminName;
 		}
 
 		if ( G_admin_stealthed( admin ) == 2
 		     && !G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
 		{
-			name = g_adminStealthName.Get().c_str();
+			name = qAdminStealthName;
 		}
 
 		trap_SendServerCommand( i, va( "print_tr %s %s", action, 
 		                        va( translation, 
-		                            Quote( name ), 
+		                            name.c_str(), 
 		                            args... ) ) );
-
 	}
-
-	// now tell the console what happened
-	trap_SendServerCommand( -2, va( "print_tr %s %s", action, 
-	                        va( translation, 
-	                            G_quoted_admin_name( admin ), 
-	                            args... ) ) );
-
 }
 
 void G_admin_register_cmds()
