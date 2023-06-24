@@ -1947,7 +1947,7 @@ void CheckExitRules()
 		else if ( level.matchTime >= ( level.timelimit - 5 ) * 60000 &&
 		          level.timelimitWarning < TW_IMMINENT )
 		{
-			trap_SendServerCommand( -1, va( "cp_tr_p %s %d",
+			trap_SendServerCommand( -1, va( "cp_tr %s %d",
 				QQ( N_("$1$ minutes remaining!" ) ),
 				5 ) );
 			level.timelimitWarning = TW_IMMINENT;
