@@ -86,6 +86,10 @@ struct gentity_t;
 #define ADMF_ALLFLAGS        "ALLFLAGS"
 #define ADMF_ADMINCHAT       "ADMINCHAT"
 
+#define ADMF_STEALTH         "STEALTH"
+#define ADMF_SUPERSTEALTH    "SUPERSTEALTH"
+#define ADMF_SEES_STEALTH    "SEESSTEALTH"
+
 // "negative" flags
 #define ADMF_NO_GLOBALCHAT  ".NOGLOBALCHAT"
 #define ADMF_NO_TEAMCHAT    ".NOTEAMCHAT"

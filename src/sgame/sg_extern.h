@@ -152,6 +152,9 @@ extern Cvar::Cvar<std::string> g_admin;
 extern Cvar::Cvar<std::string> g_adminWarn;
 extern Cvar::Cvar<std::string> g_adminTempBan;
 extern Cvar::Cvar<std::string> g_adminMaxBan;
+extern Cvar::Range<Cvar::Cvar<int>> g_adminStealthMode;
+extern Cvar::Cvar<std::string> g_adminStealthName;
+extern Cvar::Cvar<bool> g_adminStealthConsole;
 extern Cvar::Cvar<bool> g_adminRetainExpiredBans;
 
 extern Cvar::Cvar<bool> g_privateMessages;
