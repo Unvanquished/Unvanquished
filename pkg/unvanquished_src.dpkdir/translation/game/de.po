@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-29 16:58+0000\n"
-"Last-Translator: Viech <viech@unvanquished.net>\n"
+"PO-Revision-Date: 2023-07-14 19:46+0000\n"
+"Last-Translator: Erarnitox <erarnitox@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/de/>\n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 "X-POOTLE-MTIME: 1398345746.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -627,31 +627,36 @@ msgstr "Zeit:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "Team automatisch wählen"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
+"Aliens sind sehr beweglich und besitzen eine Vielzahl an bewegungsbasierten "
+"Attacken. Sie halten etwas aus, aber sind auf Tarnung und Ausweichmanöver "
+"angewiesen."
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
+"Menschen können sich mit Waffen und Ausrüstung eindecken. Sie sind beweglich "
+"und auf die Distanz sehr tödlich, aber halten nur wenig Schaden aus."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
 msgid "Join Aliens"
-msgstr ""
+msgstr "Aliens beitreten"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:29
 msgid "Join Humans"
-msgstr ""
+msgstr "Menschen beitreten"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "Alternativ kannst du das Spiel beobachten ohne zu spielen."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
 msgid "Spectate"
@@ -662,90 +667,92 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at https://bugs.unvanquished.net"
 msgstr ""
+"Das hier ist eine beta Version von Unvanquished. Bitte melde Fehler und "
+"Probleme auf die du stoßen solltest auf https://bugs.unvanquished.net"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
-msgstr ""
+msgstr "Kampf Menü"
 
 #: ui/menu_ingame.rml:23
 msgid "Leave match"
-msgstr ""
+msgstr "Kampf verlassen"
 
 #: ui/menu_ingame.rml:24
 msgid "Resume action"
-msgstr ""
+msgstr "Fortsetzen"
 
 #: ui/menu_ingame.rml:26 ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Teams"
 
 #: ui/menu_ingame.rml:33
 msgid "Democracy"
-msgstr ""
+msgstr "Demokratie"
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
-msgstr ""
+msgstr "Globale Abstimmung:"
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
-msgstr ""
+msgstr "ja"
 
 #: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46 src/cgame/cg_tutorial.cpp:120
 msgid "or"
-msgstr ""
+msgstr "oder"
 
 #: ui/menu_ingame.rml:40 ui/menu_ingame.rml:47
 msgid "no"
-msgstr ""
+msgstr "nein"
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
-msgstr ""
+msgstr "Team Abstimmung:"
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
-msgstr ""
+msgstr "Bots raus werfen"
 
 #: ui/menu_ingame.rml:52
 msgid "Extend timelimit"
-msgstr ""
+msgstr "Zeitlimit verlängern"
 
 #: ui/menu_ingame.rml:53
 msgid "Call a draw"
-msgstr ""
+msgstr "Auf unentschieden einigen"
 
 #: ui/menu_ingame.rml:54
 msgid "Admit defeat"
-msgstr ""
+msgstr "Aufgeben"
 
 #: ui/menu_ingame.rml:60
 msgid "Host menu"
-msgstr ""
+msgstr "Host Menü"
 
 #: ui/menu_ingame.rml:61
 msgid "Stop server"
-msgstr ""
+msgstr "Server stoppen"
 
 #: ui/menu_ingame.rml:62
 msgid "Pause server"
-msgstr ""
+msgstr "Server pausieren"
 
 #: ui/menu_ingame.rml:67
 msgid "Reset match"
-msgstr ""
+msgstr "Kampf zurücksetzen"
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
-msgstr ""
+msgstr "Bots"
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
-msgstr ""
+msgstr "Alien Bot hinzufügen"
 
 #: ui/menu_ingame.rml:73
 msgid "Add a human bot"
-msgstr ""
+msgstr "Menschlichen Bot hinzufügen"
 
 #: ui/menu_ingame.rml:74
 msgid "Remove all bots"
@@ -761,7 +768,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:87
 msgid "Main menu"
-msgstr ""
+msgstr "Hauptmenü"
 
 #: ui/menu_ingame.rml:89 ui/menu_main.rml:28
 msgid "Play"
@@ -769,11 +776,11 @@ msgstr "Spielen"
 
 #: ui/menu_ingame.rml:91 ui/menu_main.rml:30
 msgid "Server listings"
-msgstr ""
+msgstr "Server Liste"
 
 #: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr ""
+msgstr "Lokales Spiel starten"
 
 #: ui/menu_ingame.rml:93 ui/menu_main.rml:32
 msgid "Recorded demos"
@@ -789,27 +796,27 @@ msgstr "Spieler"
 
 #: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
 msgid "Graphics"
-msgstr ""
+msgstr "Grafik"
 
 #: ui/menu_ingame.rml:100 ui/menu_main.rml:39 ui/options_keys.rml:7
 msgid "Key bindings"
-msgstr ""
+msgstr "Tastenbelegung"
 
 #: ui/menu_ingame.rml:101 ui/menu_main.rml:40 ui/options_mouse.rml:7
 msgid "Mouse and Aiming"
-msgstr ""
+msgstr "Maus und Zielen"
 
 #: ui/menu_ingame.rml:102 ui/menu_main.rml:41 ui/options_sound.rml:7
 msgid "Sound"
-msgstr "Sound"
+msgstr "Ton"
 
 #: ui/menu_ingame.rml:103 ui/menu_main.rml:42
 msgid "User interface and HUD"
-msgstr ""
+msgstr "Benutzeroberfläche und HUD"
 
 #: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr ""
+msgstr "Blickfeld"
 
 #: ui/menu_ingame.rml:105
 msgid "Server setup"
@@ -821,42 +828,44 @@ msgstr "Hilfe"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
 msgid "Gameplay guide"
-msgstr ""
+msgstr "Spielanleitung"
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
-msgstr ""
+msgstr "Spiel verlassen"
 
 #: ui/menu_ingame.rml:119 ui/menu_main.rml:56
 msgid "Beta"
-msgstr ""
+msgstr "Beta"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr ""
+msgstr "Blickwinkel"
 
 #: ui/options_fov.rml:11
 msgid "FOV = “width” of player's vision, measured in degrees."
-msgstr ""
+msgstr "Blickfeld = \"Weite\" des Blickfeldes eines Spielers, gemessen in Grad."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild “motion sickness” from playing first-person "
 "shooters. A higher FOV can help combat this."
 msgstr ""
+"Vielen Spielern wird es beim Spielen von First-Person Shootern leicht übel. "
+"Ein höheres Blickfeld kann dagegen helfen."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "Grad"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:273
 #: ui/options_mouse.rml:21 ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "Zurücksetzen"
 
 #: ui/options_fov.rml:40
 msgid "Mantis"
@@ -884,11 +893,11 @@ msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "Deaktiviert"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "Leicht"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
@@ -896,11 +905,11 @@ msgstr "Standard"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "Stark"
 
 #: ui/options_fov.rml:81
 msgid "“Up and down” movement"
-msgstr ""
+msgstr "\"hoch und runter\" Bewegung"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
@@ -908,15 +917,15 @@ msgstr ""
 
 #: ui/options_fov.rml:92
 msgid "“Twisting” movement"
-msgstr ""
+msgstr "\"dreh\" Bewegung"
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Voreinstellungen"
 
 #: ui/options_graphics.rml:24
 msgid "Lowest"
-msgstr ""
+msgstr "Niedrigste"
 
 #: ui/options_graphics.rml:25
 msgid ""
@@ -979,15 +988,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Bildschirmauflösung"
 
 #: ui/options_graphics.rml:62
 msgid "Borderless window"
-msgstr ""
+msgstr "Vollbild Fenster"
 
 #: ui/options_graphics.rml:66
 msgid "Fullscreen"
-msgstr ""
+msgstr "Vollbild"
 
 #: ui/options_graphics.rml:71 ui/options_graphics.rml:263
 msgid "Off"
@@ -1013,14 +1022,15 @@ msgid ""
 msgstr ""
 
 #: ui/options_graphics.rml:81
+#, fuzzy
 msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr ""
+msgstr "Schnelle Annäherung für anit-aliasing (FXAA)"
 
 #: ui/options_graphics.rml:85 ui/options_graphics.rml:132
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
 #: ui/options_graphics.rml:235
 msgid "Apply now"
-msgstr ""
+msgstr "Jetzt anwenden"
 
 #: ui/options_graphics.rml:89
 msgid "Lighting"
@@ -1093,7 +1103,7 @@ msgstr "Kleckse"
 
 #: ui/options_graphics.rml:122
 msgid "low"
-msgstr ""
+msgstr "niedrig"
 
 #: ui/options_graphics.rml:124
 msgid "Exponential mapping"
@@ -3999,9 +4009,8 @@ msgid "There is not enough room here to change armour."
 msgstr "Es ist hier zu eng um die Rüstung zu wechseln."
 
 #: src/cgame/cg_servercmds.cpp:635
-#, fuzzy
 msgid "Not enough room here to change armour."
-msgstr "Es ist hier zu eng um die Rüstung zu wechseln."
+msgstr "Kein Platz um die Rüstung zu wechseln."
 
 #: src/cgame/cg_servercmds.cpp:639
 msgid ""
