@@ -26,6 +26,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "../shared/parse.h"
 
+static const std::string skillsetDefaultDisabledSkills = "";
+static const std::string skillsetDefaultBaseSkills = "1:medkit 1:buy-modern-armor 3:strafe-attack 5:aim-barbs 5:feels-pain 5:a-fast-flee 5:h-fast-flee 5:small-attack-jump 5:mara-attack-jump 5:mantis-attack-jump 5:goon-attack-jump 5:tyrant-attack-run 5:prefer-armor 7:aim-head 7:predict-aim 7:safe-barbs";
+
+static int skillsetBudgetAliens = 0;
+static int skillsetBudgetHumans = 0;
+
 static std::array<std::set<std::string>, 9> baseSkillset;
 static std::set<std::string> disabledSkillset;
 
@@ -108,11 +114,6 @@ static bool G_IsBaseSkillAtLevel( int skillLevel, Str::StringRef behavior )
 	return baseSkillset[skillLevel - 1].find( behavior ) != baseSkillset[skillLevel - 1].end();
 }
 
-// aliens have 71 points to spend max, but we give them a bit less for balancing
-static int skillsetBudgetAliens = 63;
-// humans have 48 points to spend max
-static int skillsetBudgetHumans = 48;
-
 static void G_SetSkillsetBudgetHumans( int val )
 {
 	skillsetBudgetHumans = val;
@@ -131,7 +132,7 @@ void G_InitSkilltreeCvars()
 		"g_bot_skillset_disabledSkills",
 		"Skills that will not be selected randomly for bots, example: " QQ("mantis-attack-jump, prefer-armor"),
 		Cvar::NONE,
-		"",
+		skillsetDefaultDisabledSkills,
 		G_SetDisabledSkillset
 		);
 
@@ -139,7 +140,7 @@ void G_InitSkilltreeCvars()
 		"g_bot_skillset_baseSkills",
 		"Preferred skills for bots depending on levels, this is a level:skillName key:value list, example: " QQ("6:mantis-attack-jump, 3:prefer-armor"),
 		Cvar::NONE,
-		"",
+		skillsetDefaultBaseSkills,
 		G_SetBaseSkillset
 		);
 
