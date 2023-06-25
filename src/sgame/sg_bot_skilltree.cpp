@@ -157,6 +157,9 @@ void G_InitSkilltreeCvars()
 		skillsetBudgetHumans,
 		G_SetSkillsetBudgetHumans
 		);
+
+	G_SetDisabledSkillset(g_bot_skillset_disabledSkills.Get());
+	G_SetBaseSkillset(g_bot_skillset_baseSkills.Get());
 }
 
 struct botSkillTreeElement_t {
