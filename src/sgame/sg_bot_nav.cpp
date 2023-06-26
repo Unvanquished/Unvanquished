@@ -78,6 +78,7 @@ static Cvar::Range<Cvar::Cvar<int>> msecPerFrame(
 	Cvar::NONE, 20, 1, 1500 );
 
 static Cvar::Cvar<int> frameToggle("g_bot_navgen_frame", "FOR INTERNAL USE", Cvar::NONE, 0);
+static Cvar::Cvar<bool> g_bot_autocrouch("g_bot_autocrouch", "whether bots should crouch when they detect an obstacle", Cvar::NONE, true);
 
 static NavmeshGenerator navgen;
 static std::vector<class_t> navgenQueue;
@@ -742,6 +743,7 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeome
 	}
 
 	// check for crouching
+	if ( g_bot_autocrouch.Get() )
 	{
 		glm::vec3 playerMins;
 		glm::vec3 playerCMaxs;
