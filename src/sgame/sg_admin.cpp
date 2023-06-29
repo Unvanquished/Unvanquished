@@ -511,7 +511,7 @@ g_admin_command_t *g_admin_commands = nullptr;
 std::vector<g_admin_vote_t> g_admin_votes;
 
 /* ent must be non-nullptr */
-#define G_ADMIN_NAME( ent ) ( ent->client->pers.netname ) // prefer netname at all times
+#define G_ADMIN_NAME( ent ) ( ent->client->pers.admin ? ent->client->pers.admin->name : ent->client->pers.netname )
 
 const char *G_admin_name( gentity_t *ent )
 {
@@ -572,8 +572,8 @@ void G_admin_action( const char *action, const char *translation,
 	char qAdminStealthName[ MAX_NAME_LENGTH ];
 
 	// quote only has a limited buffer, so cache these values here.
-	Q_strncpyz( qAdminNetName, Quote( G_admin_name( admin ) ), sizeof( qAdminNetName ) );
-	Q_strncpyz( qAdminTaggedName, Quote( va( "%s%s", cloakTags[ G_admin_stealthed( admin ) ], G_admin_name( admin ) ) ), sizeof( qAdminTaggedName ) );
+	Q_strncpyz( qAdminNetName, Quote( G_user_name( admin, "console" ) ), sizeof( qAdminNetName ) );
+	Q_strncpyz( qAdminTaggedName, Quote( va( "%s%s", cloakTags[ G_admin_stealthed( admin ) ], G_user_name( admin, "console" ) ) ), sizeof( qAdminTaggedName ) );
 	Q_strncpyz( qAdminAdminName, Quote( ( admin ) 
 	                                    ? ( admin->client->pers.admin ? admin->client->pers.admin->name : qAdminNetName )
 	                                    : "console" ), sizeof( qAdminAdminName ) );
