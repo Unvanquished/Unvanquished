@@ -4176,6 +4176,7 @@ static int ban_out( void *ban, char *str )
 	char          date[ 11 ];
 	g_admin_ban_t *b = ( g_admin_ban_t * ) ban;
 	char          *made = b->made;
+	bool          active;
 
 	if ( !str )
 	{
@@ -4194,35 +4195,41 @@ static int ban_out( void *ban, char *str )
 
 	date[ i ] = 0;
 
-	if ( !b->expires || b->expires - t > 0 )
+	active = ( !b->expires || b->expires - t > 0 );
+
+	if ( active )
 	{
 		G_admin_duration( b->expires ? b->expires - t : -1,
-						  time, sizeof( time ),
-						  duration, sizeof( duration ) );
+		                  time, sizeof( time ),
+		                  duration, sizeof( duration ) );
+		d_color = ( !b->expires ? Color::Red : Color::White );
 	}
 	else
 	{
 		*time = 0;
-		Q_strncpyz( duration, "expired", sizeof( duration ) );
-		d_color = Color::Cyan;
+		Q_strncpyz( duration, "(expired)", sizeof( duration ) );
+		d_color = Color::Green;
 	}
 
-	Com_sprintf( str, MAX_STRING_CHARS, "%s"
-	             "         %s\\__ %s%s%-*s %s%-15s ^7%-8s %s"
-	             "          %s\\__ %s:^* %s",
-	             b->name,
-	             Color::ToString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ).c_str(),
-	             Color::ToString( d_color ).c_str(),
-	             time,
-	             MAX_DURATION_LENGTH - 1,
-	             duration,
-	             Color::ToString( ( strchr( b->ip.str, '/' ) ) ? Color::Red : Color::White ).c_str(),
+	Com_sprintf( str, MAX_STRING_CHARS, 
+	             "^3------------------------------\n"
+	             "    Name:     %s\n"
+	             "    IP:       %s%s\n"
+	             "    Admin:    %s\n"
+	             "    Reason:   ^3%s\n"
+	             "    Date:     ^3%s\n"
+	             "    Details:  %s%s%s%s%s%s",
+	             b->name, 
+	             Color::ToString( ( strchr( b->ip.str, '/' ) ) ? Color::Red : Color::Yellow ).c_str(),
 	             b->ip.str,
-	             date,
 	             b->banner,
+	             b->reason,
+	             date, 
 	             Color::ToString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ).c_str(),
-	             G_ADMIN_BAN_IS_WARNING( b ) ? "WARNING" : "BAN",
-	             b->reason );
+	             G_ADMIN_BAN_IS_WARNING( b ) ? "WARNING " : "BAN ",
+	             ( ( active && b->expires ) ? "^7- expiring in " : "^7- " ),
+	             Color::ToString( d_color ).c_str(),
+	             time, duration );
 
 	return b->id;
 }
