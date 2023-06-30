@@ -829,7 +829,6 @@ struct level_locals_t
 		int              queuedBudget;
 		int              kills;
 		spawnQueue_t     spawnQueue;
-		bool             locked;
 		float            momentum;
 		int              layoutBuildPoints;
 		int              botFillTeamSize;
@@ -837,12 +836,13 @@ struct level_locals_t
 		int              lastTeamStatus;
 		int              lastTacticId;
 		int              lastTacticTime;
+		bool             locked;
 	} team[ NUM_TEAMS ];
 
 	struct {
 		int synchronous;
-		bool fixed;
 		int msec;
+		bool fixed;
 		bool accurate;
 		bool initialized;
 	} pmoveParams;
@@ -857,16 +857,13 @@ struct commands_t
 
 struct zap_t
 {
-	bool  used;
-
+	gentity_t *effectChannel;
 	gentity_t *creator;
 	gentity_t *targets[ LEVEL2_AREAZAP_MAX_TARGETS ];
-	int       numTargets;
 	float     distances[ LEVEL2_AREAZAP_MAX_TARGETS ];
-
+	int       numTargets;
 	int       timeToLive;
-
-	gentity_t *effectChannel;
+	bool  used;
 };
 
 #endif // SG_STRUCT_H_

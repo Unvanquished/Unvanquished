@@ -52,10 +52,9 @@ class ThinkingComponent: public ThinkingComponentBase {
 		};
 
 		std::vector<thinkRecord_t> thinkers;
-
-		bool iteratingThinkers;
 		std::vector<thinkRecord_t> newThinkers; /**< Used for adding thinkers during iteration over them. */
 
+		bool iteratingThinkers;
 		bool unregisterActiveThinker;
 
 		float averageFrameTime; /**< Smoothed out average frame time for predictions. */

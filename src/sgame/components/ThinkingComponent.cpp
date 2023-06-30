@@ -33,7 +33,7 @@ void ThinkingComponent::Think() {
 		int timeDelta = time - record.timestamp;
 
 		int thisFrameExecutionLateness = timeDelta - record.period;
-		int nextFrameExecutionLateness = timeDelta + averageFrameTime - record.period;
+		int nextFrameExecutionLateness = timeDelta - record.period + averageFrameTime;
 
 		switch (record.scheduler) {
 			case SCHEDULER_AFTER:
