@@ -102,15 +102,15 @@ static void G_SetBaseSkillset( Str::StringRef skillsCsv )
 	std::vector<std::pair<int, bot_skill>> skills = G_ParseSkillsetListWithLevels( skillsCsv );
 	for ( int skillLevel = 1; skillLevel <= 9; skillLevel++ )
 	{
-		skillSet_t level{};
+		skillSet_t level_{};
 		for ( auto &skill : skills )
 		{
 			if (skill.first <= skillLevel)
 			{
-				level.set( skill.second );
+				level_.set( skill.second );
 			}
 		}
-		baseSkillset[ skillLevel - 1 ] = level;
+		baseSkillset[ skillLevel - 1 ] = level_;
 	}
 
 	CheckBaseSkillset();
@@ -439,10 +439,10 @@ static void CheckBaseSkillset()
 		// Find the lowest level the skill is in and see if it has unset dependencies
 		for ( int l = 1; l <= 9; l++ )
 		{
-			const skillSet_t &level = baseSkillset[ l - 1 ];
-			if ( level[ skill.skill ] )
+			const skillSet_t &level_ = baseSkillset[ l - 1 ];
+			if ( level_[ skill.skill ] )
 			{
-				if ( skill.prerequisite.any() && ( skill.prerequisite & level ).none() )
+				if ( skill.prerequisite.any() && ( skill.prerequisite & level_ ).none() )
 				{
 					std::string deps = SkillSetToString( skill.prerequisite, " / " );
 					Log::Warn( "Base skillset for level %d includes %s, but includes none of its dependencies: %s",

@@ -48,7 +48,7 @@ class BuildableComponent: public BuildableComponentBase {
 		void Think(int timeDelta);
 
 		lifecycle_t GetState() { return state; }
-		void SetState(lifecycle_t state) { this->state = state; }
+		void SetState(lifecycle_t state_) { state = state_; }
 
 		/**
 		 * @return Whether the buildable is currently marked for deconstruction.
@@ -80,8 +80,8 @@ class BuildableComponent: public BuildableComponentBase {
 		 */
 		bool Active() const { return state == CONSTRUCTED && Powered(); }
 
-		void SetAimAngles(const glm::vec3 aimAngles) { this->aimAngles = aimAngles; }
-		glm::vec3 AimAngles() const { return this->aimAngles; }
+		void SetAimAngles(const glm::vec3 aimAngles) { m_aimAngles = aimAngles; }
+		glm::vec3 AimAngles() const { return m_aimAngles; }
 
 		/**
 		 * Protect current animation from being disrupted by selected, less important animations.
@@ -103,7 +103,7 @@ class BuildableComponent: public BuildableComponentBase {
 		bool marked;
 		int  markTime;
 
-		glm::vec3 aimAngles; /**< Aim angles relative to world. */
+		glm::vec3 m_aimAngles; /**< Aim angles relative to world. */
 
 		int protectAnimationUntil;
 

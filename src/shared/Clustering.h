@@ -258,8 +258,8 @@ namespace Clustering {
 			 * @brief Set laxity, a factor that scales the allowed deviation from the average edge
 			 *        length when splitting the minimum spanning tree into cluster spanning trees.
 			 */
-			void SetLaxity(float laxity = 1.0) {
-				this->laxity = laxity;
+			void SetLaxity(float laxity_ = 1.0) {
+				this->laxity = laxity_;
 				dirtyClusters = true;
 			}
 
