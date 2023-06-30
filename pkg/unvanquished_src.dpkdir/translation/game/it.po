@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-06-26 18:51+0000\n"
-"Last-Translator: Emily Fiorentini <emily@xewer.com>\n"
+"PO-Revision-Date: 2023-07-01 12:52+0000\n"
+"Last-Translator: Graziano Panzera <elgraz@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
 "Language: it\n"
@@ -15,12 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18.1\n"
+"X-Generator: Weblate 5.0-dev\n"
 "X-POOTLE-MTIME: 1398638831.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr "Costruzione"
+msgstr "Costruire"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
@@ -2672,62 +2672,68 @@ msgstr "%s%s ^*è stato tagliuzzato da %s%s%s; con l'aiuto di %s%s%s^*"
 #: src/cgame/cg_event.cpp:404
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*è stato freddato da %s%s%s"
 
 #: src/cgame/cg_event.cpp:404
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*è stata freddata da %s%s%s"
 
 #: src/cgame/cg_event.cpp:404
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*è stato freddato da %s%s%s"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato freddato da %s%s%s^*; con l'aiuto di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stata freddata da %s%s%s^*; con l'aiuto di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*è stato freddato da %s%s%s^*; con l'aiuto di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:409
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*è stato arrostito dalla raffica di pulse di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:409
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*è stata arrostita dalla raffica di pulse di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:409
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr ""
+msgstr "%s%s ^*è stato arrostito dalla raffica di pulse di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stato arrostito dalla raffica di pulse di %s%s%s^*;con l'aiuto di "
+"%s%s%s^*"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stata arrostita dalla raffica di pulse di %s%s%s^*;con l'aiuto di "
+"%s%s%s^*"
 
 #: src/cgame/cg_event.cpp:410
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stato arrostito dalla raffica di pulse di %s%s%s^*;con l'aiuto di "
+"%s%s%s^*"
 
 #: src/cgame/cg_event.cpp:414
 msgctxt "male"
@@ -2792,47 +2798,50 @@ msgstr ""
 #: src/cgame/cg_event.cpp:425
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr ""
+msgstr "%s%s ^*è stato grigliato dal lanciafiamme di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr ""
+msgstr "%s%s ^*è stata grigliata dal lanciafiamme di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:425
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
-msgstr ""
+msgstr "%s%s ^*è stato grigliato dal lanciafiamme di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stato grigliato dal lanciafiamme di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stata grigliata dal lanciafiamme di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:426
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è stato grigliato dal lanciafiamme di %s%s%s^*; %s%s%s^* ha aiutato"
 
 #: src/cgame/cg_event.cpp:427
 msgctxt "male"
 msgid "%s%s ^*was charred to a crisp"
-msgstr ""
+msgstr "%s%s ^*è stato carbonizzato"
 
 #: src/cgame/cg_event.cpp:427
 msgctxt "female"
 msgid "%s%s ^*was charred to a crisp"
-msgstr ""
+msgstr "%s%s ^*è stata carbonizzata"
 
 #: src/cgame/cg_event.cpp:427
 msgctxt "neuter"
 msgid "%s%s ^*was charred to a crisp"
-msgstr ""
+msgstr "%s%s ^*è stato carbonizzato"
 
 #: src/cgame/cg_event.cpp:431
 msgctxt "male"
@@ -2957,47 +2966,50 @@ msgstr ""
 #: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr ""
+msgstr "%s%s ^*è saltato in aria sulla granata di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr ""
+msgstr "%s%s ^*è saltata in aria sulla granata di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
-msgstr ""
+msgstr "%s%s ^*è saltato in aria sulla granata di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è saltato in aria sulla granata di %s%s%s^*;con l'aiuto di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è saltata in aria sulla granata di %s%s%s^*;con l'aiuto di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
+"%s%s ^*è saltato in aria sulla granata di %s%s%s^*;con l'aiuto di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "male"
 msgid "%s%s ^*was blown up"
-msgstr ""
+msgstr "%s%s ^*è esploso"
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "female"
 msgid "%s%s ^*was blown up"
-msgstr ""
+msgstr "%s%s ^*è esplosa"
 
 #: src/cgame/cg_event.cpp:450
 msgctxt "neuter"
 msgid "%s%s ^*was blown up"
-msgstr ""
+msgstr "%s%s ^*è esploso"
 
 #: src/cgame/cg_event.cpp:454
 msgctxt "male"
@@ -3723,12 +3735,12 @@ msgstr ""
 #: src/cgame/cg_players.cpp:1456
 #, c-format
 msgid "%s^* joined the %s"
-msgstr ""
+msgstr "%s^* si è unito agli %s"
 
 #: src/cgame/cg_players.cpp:1461
 #, c-format
 msgid "%s^* left the %s and joined the %s"
-msgstr ""
+msgstr "%s^* ha lasciato gli %s ed è entrato nei %s"
 
 #: src/cgame/cg_rocket_draw.cpp:2384
 msgid "You are at the front of the spawn queue"
@@ -3747,8 +3759,8 @@ msgstr "Non ci sono più punti di rigenerazione"
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "C'è %d spawn rimasto"
+msgstr[1] "Ci sono %d spawn rimasti"
 
 #: src/cgame/cg_rocket_draw.cpp:2962
 #, c-format
