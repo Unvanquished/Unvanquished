@@ -37,6 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "Default skill value bots will have when added", Cvar::NONE, 5, 1, 9 );
 static Cvar::Cvar<int> g_bot_alienAimDelay = Cvar::Cvar<int>( "g_bot_alienAimDelay", "make bots of alien team slower to aim", Cvar::NONE, 250 );
 static Cvar::Cvar<int> g_bot_humanAimDelay = Cvar::Cvar<int>( "g_bot_humanAimDelay", "make bots of human team slower to aim", Cvar::NONE, 150 );
+static Cvar::Range<Cvar::Cvar<int>> g_bot_distanceAccuracy( "g_bot_distanceAccuracy", "maximum random offset a bot can have, in weapon range%", Cvar::NONE, 0, 0, 50 );
 
 //consider bot to be stuck if it does not move farther than this in some period of time
 constexpr float BOT_STUCK_RADIUS = 150.0f;
@@ -1292,7 +1293,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target, weapon_t
 			break;
 		case WP_PAIN_SAW:
 			// Start running the saw when an alien is closeby, not literally in range
-			range = PAINSAW_RANGE + 60;
+			range = PAINSAW_RANGE;
 			secondaryRange = 0;
 			break;
 		case WP_FLAMER:
@@ -1375,6 +1376,13 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target, weapon_t
 	bool allowed = hit->s.eType != entityType_t::ET_BUILDABLE || g_bot_attackStruct.Get();
 	float dist = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
 	range = std::max( range, secondaryRange );
+
+	float blurrDist = ( SkillModifier( self->botMind->skillLevel ) * g_bot_distanceAccuracy.Get() ) / 2;
+	if ( random() <= 0.5 )
+	{
+		blurrDist = -blurrDist;
+	}
+	range = blurrDist;
 
 	return hitEnemy && allowed && dist <= range;
 }
