@@ -60,8 +60,8 @@ void IgnitableComponent::HandlePrepareNetCode() {
 	}
 }
 
-void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
-	if (!fireStarter) {
+void IgnitableComponent::HandleIgnite(gentity_t* fireStarter_) {
+	if (!fireStarter_) {
 		// TODO: Find out why this happens.
 		fireLogger.Notice("Received ignite message with no fire starter.");
 	}
@@ -75,13 +75,13 @@ void IgnitableComponent::HandleIgnite(gentity_t* fireStarter) {
 	// Start burning on initial ignition.
 	if (!onFire) {
 		onFire = true;
-		this->fireStarter = fireStarter;
+		fireStarter = fireStarter_;
 
 		fireLogger.Notice("Ignited.");
 	} else {
-		if (alwaysOnFire && !this->fireStarter) {
+		if (alwaysOnFire && !fireStarter) {
 			// HACK: Igniting an alwaysOnFire entity will initialize the fire starter.
-			this->fireStarter = fireStarter;
+			fireStarter = fireStarter_;
 
 			fireLogger.Debug("Firestarter set.");
 		} else {

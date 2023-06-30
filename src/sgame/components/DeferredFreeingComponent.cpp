@@ -28,8 +28,8 @@ DeferredFreeingComponent::DeferredFreeingComponent(Entity &entity)
 	: DeferredFreeingComponentBase(entity), freeTime(DONT_FREE)
 {}
 
-void DeferredFreeingComponent::HandleFreeAt(int freeTime) {
-	this->freeTime = freeTime;
+void DeferredFreeingComponent::HandleFreeAt(int freeTime_) {
+	freeTime = freeTime_;
 }
 
 int DeferredFreeingComponent::GetFreeTime() {

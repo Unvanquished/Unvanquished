@@ -575,15 +575,15 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 	int       i;
 	float     r, u, a;
 	vec3_t    end;
-	vec3_t    forward, right, up;
+	vec3_t    forward_, right_, up_;
 	trace_t   tr;
 	gentity_t *traceEnt;
 
 	// derive the right and up vectors from the forward vector, because
 	// the client won't have any other information
-	VectorNormalize2( origin2, forward );
-	PerpendicularVector( right, forward );
-	CrossProduct( forward, right, up );
+	VectorNormalize2( origin2, forward_ );
+	PerpendicularVector( right_, forward_ );
+	CrossProduct( forward_, right_, up_ );
 
 	// generate the "random" spread pattern
 	for ( i = 0; i < SHOTGUN_PELLETS; i++ )
@@ -594,15 +594,15 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 		u = sinf( r ) * a;
 		r = cosf( r ) * a;
 
-		VectorMA( origin, SHOTGUN_RANGE, forward, end );
-		VectorMA( end, r, right, end );
+		VectorMA( origin, SHOTGUN_RANGE, forward_, end );
+		VectorMA( end, r, right_, end );
 		VectorMA( end, u, up, end );
 
 		trap_Trace( &tr, origin, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
 		traceEnt = &g_entities[ tr.entityNum ];
 
 		traceEnt->Damage((float)SHOTGUN_DMG, self, VEC2GLM( tr.endpos ),
-		                         VEC2GLM( forward ), 0, (meansOfDeath_t)MOD_SHOTGUN);
+		                         VEC2GLM( forward_ ), 0, (meansOfDeath_t)MOD_SHOTGUN);
 	}
 }
 
@@ -890,7 +890,7 @@ BUILD GUN
 
 void G_CheckCkitRepair( gentity_t *self )
 {
-	vec3_t    viewOrigin, forward, end;
+	vec3_t    viewOrigin, forward_, end;
 	trace_t   tr;
 	gentity_t *traceEnt;
 
@@ -901,8 +901,8 @@ void G_CheckCkitRepair( gentity_t *self )
 	}
 
 	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 100, forward, end );
+	AngleVectors( self->client->ps.viewangles, forward_, nullptr, nullptr );
+	VectorMA( viewOrigin, 100, forward_, end );
 
 	trap_Trace( &tr, viewOrigin, nullptr, nullptr, end, self->s.number, MASK_PLAYERSOLID, 0 );
 	traceEnt = &g_entities[ tr.entityNum ];
@@ -1390,7 +1390,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 {
 	int    damage;
 	int    i;
-	vec3_t forward;
+	vec3_t forward_;
 
 	if ( !self->client || self->client->ps.weaponCharge <= 0 ||
 	     !( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING ) ||
@@ -1404,8 +1404,8 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 		return;
 	}
 
-	VectorSubtract( victim->s.origin, self->s.origin, forward );
-	VectorNormalize( forward );
+	VectorSubtract( victim->s.origin, self->s.origin, forward_ );
+	VectorNormalize( forward_ );
 
 	// For buildables, track the last MAX_TRAMPLE_BUILDABLES_TRACKED buildables
 	//  hit, and do not do damage if the current buildable is in that list
@@ -1427,7 +1427,7 @@ void G_ChargeAttack( gentity_t *self, gentity_t *victim )
 
 	damage = LEVEL4_TRAMPLE_DMG * self->client->ps.weaponCharge / LEVEL4_TRAMPLE_DURATION;
 
-	victim->Damage((float)damage, self, VEC2GLM( victim->s.origin ), VEC2GLM( forward ),
+	victim->Damage((float)damage, self, VEC2GLM( victim->s.origin ), VEC2GLM( forward_ ),
 	                       DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_TRAMPLE);
 
 	SendMeleeHitEvent( self, victim, nullptr );
@@ -1556,14 +1556,14 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 Set muzzle location relative to pivoting eye.
 ===============
 */
-void G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, const vec3_t, const vec3_t, vec3_t muzzlePoint )
+void G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward_, const vec3_t, const vec3_t, vec3_t muzzlePoint )
 {
 	vec3_t normal;
 
 	VectorCopy( self->client->ps.origin, muzzlePoint );
 	BG_GetClientNormal( &self->client->ps, normal );
 	VectorMA( muzzlePoint, self->client->ps.viewheight, normal, muzzlePoint );
-	VectorMA( muzzlePoint, 1, forward, muzzlePoint );
+	VectorMA( muzzlePoint, 1, forward_, muzzlePoint );
 	// snap to integer coordinates for more efficient network bandwidth usage
 	SnapVector( muzzlePoint );
 }

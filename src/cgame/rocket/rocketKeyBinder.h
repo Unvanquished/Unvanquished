@@ -203,7 +203,7 @@ protected:
 		trap_Key_SetBinding( newKey, team, cmd.c_str() );
 	}
 
-	int GetTeam( Rml::String team )
+	int GetTeam( Rml::String team_ )
 	{
 		static const struct {
 			int team;
@@ -217,13 +217,13 @@ protected:
 
 		for ( const auto& teamLabel : labels )
 		{
-			if ( team == teamLabel.label )
+			if ( team_ == teamLabel.label )
 			{
 				return teamLabel.team;
 			}
 		}
 
-		Log::Warn( "Team %s not found", team.c_str() );
+		Log::Warn( "Team %s not found", team_.c_str() );
 		return -1;
 	}
 

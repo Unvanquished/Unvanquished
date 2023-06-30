@@ -182,7 +182,7 @@ private:
 		}
 	}
 
-	void SetCvarValueAndFlags( const Rml::String& cvar, Rml::String value )
+	void SetCvarValueAndFlags( const Rml::String& cvar_, Rml::String value )
 	{
 		if ( type == "range" )
 		{
@@ -193,8 +193,8 @@ private:
 				value.erase( point ); // for compatibility with integer cvars
 			}
 		}
-		Cvar::SetValue( cvar.c_str(), value.c_str() );
-		Cvar::AddFlags( cvar.c_str(), Cvar::USER_ARCHIVE );
+		Cvar::SetValue( cvar_.c_str(), value.c_str() );
+		Cvar::AddFlags( cvar_.c_str(), Cvar::USER_ARCHIVE );
 	}
 
 	Rml::String cvar;

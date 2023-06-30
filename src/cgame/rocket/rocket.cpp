@@ -638,9 +638,9 @@ public:
         }
     }
 
-    void SetFocus(bool focus)
+    void SetFocus(bool focus_)
     {
-        this->focus = focus;
+        focus = focus_;
         Update();
     }
 

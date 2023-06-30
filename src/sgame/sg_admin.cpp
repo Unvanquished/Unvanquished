@@ -747,13 +747,13 @@ static g_admin_cmd_t *G_admin_cmd( const char *cmd )
 
 static g_admin_level_t *G_admin_level( const int l )
 {
-	g_admin_level_t *level;
+	g_admin_level_t *level_;
 
-	for ( level = g_admin_levels; level; level = level->next )
+	for ( level_ = g_admin_levels; level_; level_ = level_->next )
 	{
-		if ( level->level == l )
+		if ( level_->level == l )
 		{
-			return level;
+			return level_;
 		}
 	}
 
@@ -1205,31 +1205,31 @@ static void admin_readconfig_int( const char **cnf, int *v )
 static void admin_default_levels()
 {
 	g_admin_level_t *l;
-	int             level = 0;
+	int level_ = 0;
 
 	l = g_admin_levels = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
-	l->level = level++;
+	l->level = level_++;
 	Q_strncpyz( l->name, "^4Unknown Player", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time register",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
-	l->level = level++;
+	l->level = level_++;
 	Q_strncpyz( l->name, "^5Server Regular", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time register unregister",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
-	l->level = level++;
+	l->level = level_++;
 	Q_strncpyz( l->name, "^6Team Manager", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 register unregister bot listbots",
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
-	l->level = level++;
+	l->level = level_++;
 	Q_strncpyz( l->name, "^2Junior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute ADMINCHAT "
@@ -1237,7 +1237,7 @@ static void admin_default_levels()
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
-	l->level = level++;
+	l->level = level_++;
 	Q_strncpyz( l->name, "^3Senior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute showbans ban "
@@ -1245,7 +1245,7 @@ static void admin_default_levels()
 	            sizeof( l->flags ) );
 
 	l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
-	l->level = level++;
+	l->level = level_++;
 	Q_strncpyz( l->name, "^1Server Operator", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "ALLFLAGS -IMMUTABLE -INCOGNITO",
@@ -1256,7 +1256,7 @@ static void admin_default_levels()
 void G_admin_authlog( gentity_t *ent )
 {
 	char            aflags[ MAX_ADMIN_FLAGS * 2 ];
-	g_admin_level_t *level;
+	g_admin_level_t *level_;
 	int             levelNum = 0;
 
 	if ( !ent )
@@ -1269,11 +1269,11 @@ void G_admin_authlog( gentity_t *ent )
 		levelNum = ent->client->pers.admin->level;
 	}
 
-	level = G_admin_level( levelNum );
+	level_ = G_admin_level( levelNum );
 
 	Com_sprintf( aflags, sizeof( aflags ), "%s %s",
 	             ent->client->pers.admin->flags,
-	             ( level ) ? level->flags : "" );
+	             ( level_ ) ? level_->flags : "" );
 
 	G_LogPrintf( "AdminAuth: %i \"%s^*\" \"%s^*\" [%d] (%s): %s",
 	             ent->num(), ent->client->pers.netname,
@@ -5185,7 +5185,7 @@ bool G_admin_flaglist( gentity_t *ent )
 bool G_admin_flag( gentity_t *ent )
 {
 	g_admin_admin_t *admin = nullptr;
-	g_admin_level_t *level = nullptr;
+	g_admin_level_t *level_ = nullptr;
 	gentity_t       *vic = nullptr;
 	char            command[ MAX_ADMIN_CMD_LEN ];
 	char            name[ MAX_NAME_LENGTH ];
@@ -5220,15 +5220,15 @@ bool G_admin_flag( gentity_t *ent )
 		}
 
 		id = atoi( name + 1 );
-		level = G_admin_level( id );
+		level_ = G_admin_level( id );
 
-		if ( !level )
+		if ( !level_ )
 		{
 			ADMP( va( "%s %s %d", QQ( N_("^3$1$: admin level $2$ does not exist") ), command, id ) );
 			return false;
 		}
 
-		Com_sprintf( adminname, sizeof( adminname ), "admin level %d", level->level );
+		Com_sprintf( adminname, sizeof( adminname ), "admin level %d", level_->level );
 	}
 	else
 	{
@@ -5254,17 +5254,17 @@ bool G_admin_flag( gentity_t *ent )
 
 	if( trap_Argc() < 3 )
 	{
-		if ( !level )
+		if ( !level_ )
 		{
-			level = G_admin_level( admin->level );
+			level_ = G_admin_level( admin->level );
 			ADMP( va( "%s %s %s %s", QQ( N_("^3$1$:^* flags for $2$^* are '^3$3$^*'") ),
 			          command, Quote( admin->name ), Quote( admin->flags ) ) );
 		}
 
-		if ( level )
+		if ( level_ )
 		{
 			ADMP( va( "%s %s %d %s", QQ( N_("^3$1$:^* admin level $2$ flags are '$3$'") ),
-			          command, level->level, Quote( level->flags ) ) );
+			          command, level_->level, Quote( level_->flags ) ) );
 		}
 
 		return true;
@@ -5318,10 +5318,10 @@ bool G_admin_flag( gentity_t *ent )
 		return false;
 	}
 
-	if ( level )
+	if ( level_ )
 	{
-		flagPtr = level->flags;
-		flagSize = sizeof( level->flags );
+		flagPtr = level_->flags;
+		flagSize = sizeof( level_->flags );
 	}
 	else
 	{
@@ -5795,7 +5795,7 @@ bool G_admin_l1( gentity_t *ent )
 
 bool G_admin_register( gentity_t *ent )
 {
-	int level = 1;
+	int level_ = 1;
 
 	if ( !ent )
 	{
@@ -5804,7 +5804,7 @@ bool G_admin_register( gentity_t *ent )
 
 	if ( ent->client->pers.admin && ent->client->pers.admin->level != 0 )
 	{
-		level = ent->client->pers.admin->level;
+		level_ = ent->client->pers.admin->level;
 	}
 
 	if ( G_IsUnnamed( ent->client->pers.netname ) )
@@ -5815,7 +5815,7 @@ bool G_admin_register( gentity_t *ent )
 
 	trap_SendConsoleCommand( va( "setlevel %d %d;",
 	                         ent->num(),
-	                         level ) );
+	                         level_ ) );
 
 	AP( va( "print_tr %s %s", QQ( N_("^3register:^* $1$^* is now a protected name") ),
 	        Quote( ent->client->pers.netname ) ) );

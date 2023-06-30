@@ -31,8 +31,8 @@ void TurretComponent::HandlePrepareNetCode() {
 	VectorCopy(relativeAimAngles, entity.oldEnt->s.angles2);
 }
 
-void TurretComponent::SetRange(float range) {
-	this->range = range;
+void TurretComponent::SetRange(float range_) {
+	range = range_;
 }
 
 Entity* TurretComponent::GetTarget() {
@@ -194,14 +194,14 @@ bool TurretComponent::TargetCanBeHit() {
 	return (tr.entityNum == target->num());
 }
 
-bool TurretComponent::TargetValid(Entity& target, bool newTarget) {
-	if (!target.Get<ClientComponent>() ||
-	    target.Get<SpectatorComponent>() ||
-	    Entities::IsDead(target) ||
-	    (target.oldEnt->flags & FL_NOTARGET) ||
-	    !Entities::OnOpposingTeams(entity, target) ||
-	    G_Distance(entity.oldEnt, target.oldEnt) > range ||
-	    !trap_InPVS(entity.oldEnt->s.origin, target.oldEnt->s.origin)) {
+bool TurretComponent::TargetValid(Entity& target_, bool newTarget) {
+	if (!target_.Get<ClientComponent>() ||
+	    target_.Get<SpectatorComponent>() ||
+	    Entities::IsDead(target_) ||
+	    (target_.oldEnt->flags & FL_NOTARGET) ||
+	    !Entities::OnOpposingTeams(entity, target_) ||
+	    G_Distance(entity.oldEnt, target_.oldEnt) > range ||
+	    !trap_InPVS(entity.oldEnt->s.origin, target_.oldEnt->s.origin)) {
 
 		if (!newTarget) {
 			turretLogger.Verbose("Target lost: Out of range or eliminated.");
@@ -211,7 +211,7 @@ bool TurretComponent::TargetValid(Entity& target, bool newTarget) {
 	}
 
 	// New targets require a line of sight.
-	if (G_LineOfFire(entity.oldEnt, target.oldEnt)) {
+	if (G_LineOfFire(entity.oldEnt, target_.oldEnt)) {
 		lastLineOfSightToTarget = level.time;
 	} else if (newTarget) {
 		return false;

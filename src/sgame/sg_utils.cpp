@@ -997,14 +997,14 @@ glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward )
 	return glm::floor( muzzlePoint + 0.5f );
 }
 
-bool gentity_t::Damage( float amount, gentity_t* source,
+bool gentity_t::Damage( float amount_, gentity_t* source,
 		Util::optional<glm::vec3> location,
 		Util::optional<glm::vec3> direction,
-		int flags, meansOfDeath_t meansOfDeath )
+		int flags_, meansOfDeath_t meansOfDeath )
 {
 	if ( s.eType != entityType_t::ET_MOVER )
 	{
-		return entity->Damage( amount, source, location, direction, flags, meansOfDeath );
+		return entity->Damage( amount_, source, location, direction, flags_, meansOfDeath );
 	}
 
 	// it seems returning true allows to signal caller a change
@@ -1019,9 +1019,9 @@ bool gentity_t::Damage( float amount, gentity_t* source,
 
 	if ( pain )
 	{
-		pain( this, source, amount );
+		pain( this, source, amount_ );
 	}
-	health -= amount;
+	health -= amount_;
 	if ( health <= 0 && die )
 	{
 		die( this, nullptr, source, 0 );

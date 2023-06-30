@@ -241,13 +241,13 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	}
 }
 
-void HealthComponent::SetHealth(float health) {
-	health = Math::Clamp(health, FLT_EPSILON, maxHealth);
+void HealthComponent::SetHealth(float health_) {
+	health_ = Math::Clamp(health_, FLT_EPSILON, maxHealth);
 
-	healthLogger.Debug("Changing health: %3.1f → %3.1f.", this->health, health);
+	healthLogger.Debug("Changing health: %3.1f → %3.1f.", health, health_);
 
-	ScaleDamageAccounts(health - this->health);
-	HealthComponent::health = health;
+	ScaleDamageAccounts(health_ - health);
+	HealthComponent::health = health_;
 }
 
 void HealthComponent::SetMaxHealth(float maxHealth, bool scaleHealth) {
