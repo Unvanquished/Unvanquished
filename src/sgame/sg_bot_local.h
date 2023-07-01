@@ -179,6 +179,9 @@ public:
 	int lastNavconTime;
 	int lastNavconDistance;
 
+	void setHasOffmeshGoal( bool val ) { hasOffmeshGoal = val; }
+	bool hasOffmeshGoal;
+
 	Util::optional< glm::vec3 > userSpecifiedPosition;
 	Util::optional< int > userSpecifiedClientNum;
 private:

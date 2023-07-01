@@ -796,6 +796,31 @@ AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_SUCCESS;
 }
 
+// Check if a human bot should switch to blaster to attack an offmesh target.
+// TODO: Add different ranges for buildings vs moving targets.
+//       If the target can move, we could allow a higher range for spready guns.
+// This function has a small overlap with BotTargetInAttackRange.
+static bool TargetInOffmeshAttackRange( gentity_t *self )
+{
+	float distSquare = DistanceToGoalSquared( self );
+	switch ( BG_PrimaryWeapon( self->client->ps.stats ) )
+	{
+	case WP_HBUILD:
+	case WP_PAIN_SAW:
+		return false;
+	case WP_SHOTGUN:
+		return distSquare < Square( ( 50 * 8192 ) / SHOTGUN_SPREAD );
+	case WP_CHAINGUN:
+		return distSquare < Square( ( 100 * 8192 ) / CHAINGUN_SPREAD );
+	case WP_MACHINEGUN:
+		return distSquare < Square( ( 50 * 8192 ) / RIFLE_SPREAD );
+	case WP_FLAMER:
+		return distSquare < Square( 250 ); // determined by trial and error
+	default:
+		return true;
+	}
+}
+
 // TODO: Move decision making out of these actions and into the rest of the behavior tree
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
@@ -821,7 +846,12 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
-	if ( !mind->nav().havePath )
+	if ( !mind->nav().havePath && !mind->hasOffmeshGoal )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( mind->hasOffmeshGoal && !BotTargetIsVisible( self, self->botMind->goal, MASK_SHOT ) )
 	{
 		return STATUS_FAILURE;
 	}
@@ -869,6 +899,54 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// We have a valid visible target
+	bool couldChangeToPrimary = false;
+	if ( G_Team( self ) == TEAM_HUMANS )
+	{
+		weapon_t primaryWeapon = BG_PrimaryWeapon( self->client->ps.stats );
+		couldChangeToPrimary = BG_GetPlayerWeapon( &self->client->ps ) == WP_BLASTER && primaryWeapon != WP_HBUILD && !WeaponIsEmpty( primaryWeapon, &self->client->ps );
+	}
+
+	if ( mind->hasOffmeshGoal )
+	{
+		// The target is visible, but not on the navmesh
+		ASSERT( G_Team( self ) == TEAM_HUMANS );
+		if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_SHOT ) )
+		{
+			return STATUS_SUCCESS;
+		}
+		bool inRange = TargetInOffmeshAttackRange( self );
+		if ( !inRange && BG_GetPlayerWeapon( &self->client->ps ) != WP_BLASTER )
+		{
+			G_ForceWeaponChange( self, WP_BLASTER );
+		}
+		else if ( inRange && couldChangeToPrimary )
+		{
+			G_ForceWeaponChange( self, WP_NONE );
+		}
+
+		// check if the target has moved onto the navmesh
+		if ( mind->nav().directPathToGoal )
+		{
+			self->botMind->setHasOffmeshGoal( false );
+		}
+		else
+		{
+			BotAimAtEnemy( self );
+			BotStandStill( self );
+			BotFireWeaponAI( self );
+			return STATUS_RUNNING;
+		}
+	}
+
+	// The target is visible, and on the navmesh
+
+	// switch to primary weapon if we have the blaster selected, and the primary
+	// weapon is not empty
+	if ( couldChangeToPrimary )
+	{
+		ASSERT( G_Team( self ) == TEAM_HUMANS );
+		G_ForceWeaponChange( self, WP_NONE );
+	}
 
 	bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
 	self->botMind->enemyLastSeen = level.time;

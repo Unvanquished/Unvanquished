@@ -1178,6 +1178,8 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 	routeTarget->polyExtents[ 1 ] += self->r.maxs[ 1 ] + 10;
 }
 
+static Cvar::Cvar<bool> g_bot_offmeshAttack("g_bot_offmeshAttack", "if bots will attack offmesh enemies", Cvar::NONE, true);
+
 bool BotChangeGoal( gentity_t *self, botTarget_t target )
 {
 	if ( !target.isValid() )
@@ -1187,11 +1189,21 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 
 	if ( !FindRouteToTarget( self, target, false ) )
 	{
+		// TODO: allow adv marauder and adv goon to pick offmesh targets,
+		// if they are in zap/barb range
+		if ( G_Team( self) == TEAM_HUMANS && BotTargetIsVisible( self, target, MASK_SHOT ) && G_Team( target.getTargetedEntity() ) == TEAM_ALIENS && g_bot_offmeshAttack.Get() )
+		{
+			self->botMind->goal = target;
+			self->botMind->m_nav.directPathToGoal = false;
+			self->botMind->hasOffmeshGoal = true;
+			return true;
+		}
 		return false;
 	}
 
 	self->botMind->goal = target;
 	self->botMind->m_nav.directPathToGoal = false;
+	self->botMind->hasOffmeshGoal = false;
 	return true;
 }
 
