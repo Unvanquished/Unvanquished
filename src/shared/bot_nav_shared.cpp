@@ -157,6 +157,8 @@ static void ParseOption( Str::StringRef name, Str::StringRef value, Str::StringR
 
 // A configuration file can be placed in the VFS or in <homepath>/game/ that will
 // customize the values in NavgenConfig (the former daemonmap flags).
+// To set the default for all maps, place it at /default.navcfg
+// To set values for a specific map, place it at /maps/<mapname>.navcfg
 // For example:
 //
 // /* C or C++-style comments can be used in here since it's based on COM_Parse */
@@ -166,38 +168,41 @@ static void ParseOption( Str::StringRef name, Str::StringRef value, Str::StringR
 NavgenConfig ReadNavgenConfig( Str::StringRef mapName )
 {
 	NavgenConfig config = NavgenConfig::Default();
-	std::string path = Str::Format( "maps/%s.navcfg", mapName );
-	int f;
-	int len = BG_FOpenGameOrPakPath( path, f );
-	if ( len >= 0 )
+	for ( const std::string &path :
+			{ std::string( "default.navcfg" ), Str::Format( "maps/%s.navcfg", mapName ) } )
 	{
-		std::string buf;
-		buf.resize( len );
-		buf.resize( trap_FS_Read( &buf[ 0 ], len, f ) );
-		trap_FS_FCloseFile( f );
-		const char *p = buf.c_str();
-		while ( true )
+		int f;
+		int len = BG_FOpenGameOrPakPath( path, f );
+		if ( len >= 0 )
 		{
-			const char *token = COM_Parse( &p );
-			if ( !p )
+			std::string buf;
+			buf.resize( len );
+			buf.resize( trap_FS_Read( &buf[ 0 ], len, f ) );
+			trap_FS_FCloseFile( f );
+			const char *p = buf.c_str();
+			while ( true )
 			{
-				break;
-			}
+				const char *token = COM_Parse( &p );
+				if ( !p )
+				{
+					break;
+				}
 
-			std::string name = token;
-			const char *value = COM_ParseExt( &p, false );
+				std::string name = token;
+				const char *value = COM_ParseExt( &p, false );
 
-			if ( !*value )
-			{
-				Log::Warn( "%s: Missing value after '%s'", path, name );
-				continue;
-			}
+				if ( !*value )
+				{
+					Log::Warn( "%s: Missing value after '%s'", path, name );
+					continue;
+				}
 
-			ParseOption( name, value, path, config );
+				ParseOption( name, value, path, config );
 
-			while ( *( token = COM_ParseExt( &p, false ) ) )
-			{
-				Log::Warn( "%s: Junk at end of line starting with '%s'", path, name );
+				while ( *( token = COM_ParseExt( &p, false ) ) )
+				{
+					Log::Warn( "%s: Junk at end of line starting with '%s'", path, name );
+				}
 			}
 		}
 	}
