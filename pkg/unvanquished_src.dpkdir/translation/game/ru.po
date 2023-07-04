@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-04-19 05:42+0000\n"
-"Last-Translator: slipher <slipher@protonmail.com>\n"
+"PO-Revision-Date: 2023-07-05 15:14+0000\n"
+"Last-Translator: 777yur0k <kost19641964@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
 "Language: ru\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -76,7 +76,7 @@ msgstr ""
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "Обе команды"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
@@ -97,7 +97,7 @@ msgstr ""
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
-msgstr ""
+msgstr "Сменить карту"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
@@ -125,7 +125,7 @@ msgstr ""
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Ошибка!"
 
 #: ui/error.rml:11
 msgid "Ok"
@@ -479,7 +479,7 @@ msgstr ""
 
 #: ui/human_buy.rml:218
 msgid "Damage:"
-msgstr ""
+msgstr "Урон:"
 
 #: ui/human_buy.rml:219
 msgid "Fire Rate:"
@@ -513,7 +513,7 @@ msgstr ""
 
 #: ui/ingame_scoreboard.rml:184
 msgid "Spectators"
-msgstr ""
+msgstr "Наблюдатели"
 
 #: ui/ingame_scoreboard.rml:191 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
@@ -522,7 +522,7 @@ msgstr "Карта:"
 
 #: ui/ingame_scoreboard.rml:192
 msgid "Time:"
-msgstr ""
+msgstr "Время:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
@@ -576,7 +576,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:26 ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Команды"
 
 #: ui/menu_ingame.rml:33
 msgid "Democracy"
@@ -588,15 +588,15 @@ msgstr ""
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
-msgstr ""
+msgstr "да"
 
 #: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46 src/cgame/cg_tutorial.cpp:120
 msgid "or"
-msgstr ""
+msgstr "или"
 
 #: ui/menu_ingame.rml:40 ui/menu_ingame.rml:47
 msgid "no"
-msgstr ""
+msgstr "нет"
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
@@ -636,7 +636,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
-msgstr ""
+msgstr "Боты"
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
@@ -660,7 +660,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:87
 msgid "Main menu"
-msgstr ""
+msgstr "Главное меню"
 
 #: ui/menu_ingame.rml:89 ui/menu_main.rml:28
 msgid "Play"
@@ -688,11 +688,11 @@ msgstr "Игрок"
 
 #: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
 msgid "Graphics"
-msgstr ""
+msgstr "Графика"
 
 #: ui/menu_ingame.rml:100 ui/menu_main.rml:39 ui/options_keys.rml:7
 msgid "Key bindings"
-msgstr ""
+msgstr "Назначение клавиш"
 
 #: ui/menu_ingame.rml:101 ui/menu_main.rml:40 ui/options_mouse.rml:7
 msgid "Mouse and Aiming"
@@ -870,7 +870,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:48
 msgid "Brightness"
-msgstr ""
+msgstr "Яркость"
 
 #: ui/options_graphics.rml:51
 msgid "Gamma:"
@@ -878,15 +878,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Разрешение экрана"
 
 #: ui/options_graphics.rml:62
 msgid "Borderless window"
-msgstr ""
+msgstr "Окно без рамки"
 
 #: ui/options_graphics.rml:66
 msgid "Fullscreen"
-msgstr ""
+msgstr "Полный экран"
 
 #: ui/options_graphics.rml:71 ui/options_graphics.rml:263
 msgid "Off"
@@ -919,11 +919,11 @@ msgstr ""
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
 #: ui/options_graphics.rml:235
 msgid "Apply now"
-msgstr ""
+msgstr "Применить"
 
 #: ui/options_graphics.rml:89
 msgid "Lighting"
-msgstr ""
+msgstr "Освещение"
 
 #: ui/options_graphics.rml:91
 msgid "Lights"
@@ -1012,11 +1012,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:129
 msgid "Shadows"
-msgstr ""
+msgstr "Тени"
 
 #: ui/options_graphics.rml:136
 msgid "Textures"
-msgstr ""
+msgstr "Текстуры"
 
 #: ui/options_graphics.rml:138 ui/server_setup.rml:13
 msgid "General"
@@ -1028,7 +1028,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:145
 msgid "Texture size"
-msgstr ""
+msgstr "Размер текстур"
 
 #: ui/options_graphics.rml:146
 msgid ""
@@ -1075,7 +1075,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:177
 msgid "Materials"
-msgstr ""
+msgstr "Материалы"
 
 #: ui/options_graphics.rml:179
 msgid "Normal mapping"
@@ -1171,7 +1171,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:244
 msgid "disabled"
-msgstr ""
+msgstr "выключено"
 
 #: ui/options_graphics.rml:245
 msgid "All structures"
@@ -1306,7 +1306,7 @@ msgstr ""
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
-msgstr ""
+msgstr "Способности"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
@@ -1350,7 +1350,7 @@ msgstr "Жест:"
 
 #: ui/options_keys.rml:115
 msgid "Global chat:"
-msgstr ""
+msgstr "Глобальный чат:"
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
@@ -1542,7 +1542,7 @@ msgstr ""
 
 #: ui/options_player.rml:56
 msgid "Disable"
-msgstr ""
+msgstr "Выключить"
 
 #: ui/options_player.rml:57
 msgid "Humans only"
@@ -1570,11 +1570,11 @@ msgstr ""
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
-msgstr ""
+msgstr "Общая громкость"
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "Музыка"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
@@ -1698,7 +1698,7 @@ msgstr ""
 
 #: ui/options_welcome.rml:13
 msgid "Your name visible to others."
-msgstr ""
+msgstr "Ваше имя видят другие."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
@@ -3906,7 +3906,7 @@ msgstr "Здесь недостаточно места чтобы сменить
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
-msgstr "Вы не можете совершать покупку/продажу оружия во время строительства"
+msgstr "Вы не можете совершать покупку/продажу оружия во время строительства."
 
 #: src/cgame/cg_servercmds.cpp:641
 msgid "You can not buy or sell weapons until your build timer expires"
