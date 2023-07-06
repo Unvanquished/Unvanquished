@@ -39,6 +39,7 @@ constexpr float MAX_HUMAN_DANCE_DIST = 300.0f;
 //how far away we can be before we try to go around an alien when fighting an alien
 constexpr float MIN_HUMAN_DANCE_DIST = 100.0f;
 
+static Cvar::Cvar<int> g_bot_medistatDistance( "g_bot_medistatDistance", "Distance at which bots will detect the busyness of a medistation", Cvar::NONE, 200 );
 /*
 ======================
 g_bot_ai.c
@@ -1387,7 +1388,7 @@ static AINodeStatus_t BotActionReachHealH( gentity_t *self )
 	// (It would be nice to allow the BT to check for the failure cause.
 	//  How? That's a good question)
 	if ( medistation->target && medistation->target.get() != self
-	     && dist2 > Square( 200 ) )
+	     && dist2 > Square( g_bot_medistatDistance.Get() ) )
 	{
 		return STATUS_FAILURE;
 	}

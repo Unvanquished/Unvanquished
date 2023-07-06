@@ -245,6 +245,14 @@
 				<h3> Human bots purchase equipment </h3>
 			</row>
 			<row>
+				<input type="range" min="0" max="20000" step="100" cvar="g_bot_medistatDistance"/>
+				<h3> busy medistation detection distance</h3>
+				<p class="inline">
+					Current: <inlinecvar cvar="g_bot_medistatDistance" type="number" format="%.0f"/> Qu
+					<ilink onclick='Events.pushevent("exec reset g_bot_medistatDistance", event)'> (reset) </ilink>
+				</p>
+			</row>
+			<row>
 				<input type="range" min="0" max="2000" step="10" cvar="g_bot_humanAimDelay"/>
 				<h3> Aim speed modifier (higher is slower)</h3>
 				<p class="inline">
