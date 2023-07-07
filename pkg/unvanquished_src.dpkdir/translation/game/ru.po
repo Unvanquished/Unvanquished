@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-07-07 16:53+0000\n"
+"PO-Revision-Date: 2023-07-07 19:19+0000\n"
 "Last-Translator: Avenger Anubis <avenger.anubis@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -26,19 +26,21 @@ msgstr ""
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr "Цена:"
+msgstr "Стоимость:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Эволюционировать"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
+#, fuzzy
 msgid "morph points"
-msgstr ""
+msgstr "очки превращений"
 
 #: ui/alien_spawn.rml:43
+#, fuzzy
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Выберите свою начальную форму:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
@@ -69,10 +71,9 @@ msgstr ""
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Начать голосование"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
-#, fuzzy
 msgid "Fill with bots"
 msgstr "Заполнить ботами"
 
@@ -485,7 +486,7 @@ msgstr "Урон:"
 
 #: ui/human_buy.rml:219
 msgid "Fire Rate:"
-msgstr ""
+msgstr "Скорость стрельбы:"
 
 #: ui/human_buy.rml:224
 msgid "Upgrades"
@@ -493,21 +494,24 @@ msgstr "Обновления"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "Выберите вашу стартовую экипировку:"
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
-msgstr ""
+msgstr "SMG"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr ""
+msgstr "Набор конструктора"
 
 #: ui/human_spawn.rml:48
+#, fuzzy
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
+"SMG - скорострельное стартовое оружие, а набор конструктора строит и "
+"ремонтирует структуры людей. Все снаряжение можно обменять в арсенале."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
@@ -528,31 +532,37 @@ msgstr "Время:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "Автовыбор команды"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
+"Чужие очень мобильны и обладают широким разнообразием основанные на движении "
+"атак. Они крепки, но должны полагаться на скрытность и уклонение."
 
 #: ui/ingame_teamselect.rml:60
+#, fuzzy
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
+"Люди могут экипировать себя разнообразным оружием и экипировкой. Они гибкие "
+"и смертельноопасные на расстоянии, но уязвимы вблизи."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
+#, fuzzy
 msgid "Join Aliens"
-msgstr ""
+msgstr "Присоединиться к Чужим"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:29
 msgid "Join Humans"
-msgstr ""
+msgstr "Присоединиться к Людям"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "Также вы можете следить за игрой без участия в ней."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
 msgid "Spectate"
@@ -563,18 +573,21 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at https://bugs.unvanquished.net"
 msgstr ""
+"Это бета-версия игры Unvanquished. Пожалуйста, сообщайте о любых найденных "
+"вами ошибках в https://bugs.unvanquished.net"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
-msgstr ""
+msgstr "Меню матча"
 
 #: ui/menu_ingame.rml:23
 msgid "Leave match"
-msgstr ""
+msgstr "Покинуть матч"
 
 #: ui/menu_ingame.rml:24
+#, fuzzy
 msgid "Resume action"
-msgstr ""
+msgstr "Возобновить действие"
 
 #: ui/menu_ingame.rml:26 ui/server_setup.rml:57
 msgid "Teams"
@@ -582,11 +595,11 @@ msgstr "Команды"
 
 #: ui/menu_ingame.rml:33
 msgid "Democracy"
-msgstr ""
+msgstr "Демократия"
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
-msgstr ""
+msgstr "Глобальный голос:"
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
@@ -601,8 +614,9 @@ msgid "no"
 msgstr "нет"
 
 #: ui/menu_ingame.rml:44
+#, fuzzy
 msgid "Team vote:"
-msgstr ""
+msgstr "Командный голос:"
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
@@ -610,19 +624,21 @@ msgstr "Выгнать ботов"
 
 #: ui/menu_ingame.rml:52
 msgid "Extend timelimit"
-msgstr ""
+msgstr "Увеличить лимит времени"
 
 #: ui/menu_ingame.rml:53
+#, fuzzy
 msgid "Call a draw"
-msgstr ""
+msgstr "Объявить ничью"
 
 #: ui/menu_ingame.rml:54
 msgid "Admit defeat"
 msgstr "Признать поражение"
 
 #: ui/menu_ingame.rml:60
+#, fuzzy
 msgid "Host menu"
-msgstr ""
+msgstr "Меню хоста"
 
 #: ui/menu_ingame.rml:61
 msgid "Stop server"
@@ -634,19 +650,21 @@ msgstr "Приостановить сервер"
 
 #: ui/menu_ingame.rml:67
 msgid "Reset match"
-msgstr ""
+msgstr "Перезапустить матч"
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
 msgstr "Боты"
 
 #: ui/menu_ingame.rml:72
+#, fuzzy
 msgid "Add an alien bot"
-msgstr ""
+msgstr "Добавить бота в команду чужих"
 
 #: ui/menu_ingame.rml:73
+#, fuzzy
 msgid "Add a human bot"
-msgstr ""
+msgstr "Добавить бота в команду людей"
 
 #: ui/menu_ingame.rml:74
 msgid "Remove all bots"
@@ -669,20 +687,23 @@ msgid "Play"
 msgstr "Играть"
 
 #: ui/menu_ingame.rml:91 ui/menu_main.rml:30
+#, fuzzy
 msgid "Server listings"
-msgstr ""
+msgstr "Список серверов"
 
 #: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr ""
+msgstr "Начать локальную/LAN игру"
 
 #: ui/menu_ingame.rml:93 ui/menu_main.rml:32
+#, fuzzy
 msgid "Recorded demos"
-msgstr ""
+msgstr "Записанные демо"
 
 #: ui/menu_ingame.rml:96 ui/menu_main.rml:35
+#, fuzzy
 msgid "Options"
-msgstr "Опции"
+msgstr "Настройки"
 
 #: ui/menu_ingame.rml:98 ui/menu_main.rml:37
 msgid "Player"
@@ -698,23 +719,25 @@ msgstr "Назначение клавиш"
 
 #: ui/menu_ingame.rml:101 ui/menu_main.rml:40 ui/options_mouse.rml:7
 msgid "Mouse and Aiming"
-msgstr ""
+msgstr "Мышь и прицеливание"
 
 #: ui/menu_ingame.rml:102 ui/menu_main.rml:41 ui/options_sound.rml:7
 msgid "Sound"
 msgstr "Звук"
 
 #: ui/menu_ingame.rml:103 ui/menu_main.rml:42
+#, fuzzy
 msgid "User interface and HUD"
-msgstr ""
+msgstr "Пользовательский интерфейс и HUD"
 
 #: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr ""
+msgstr "Поле зрения"
 
 #: ui/menu_ingame.rml:105
+#, fuzzy
 msgid "Server setup"
-msgstr ""
+msgstr "Настройка сервера"
 
 #: ui/menu_ingame.rml:109 ui/menu_main.rml:46
 msgid "Help"
@@ -726,11 +749,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
-msgstr ""
+msgstr "Покинуть игру"
 
 #: ui/menu_ingame.rml:119 ui/menu_main.rml:56
 msgid "Beta"
-msgstr ""
+msgstr "Бета"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
@@ -738,42 +761,49 @@ msgstr ""
 
 #: ui/options_fov.rml:11
 msgid "FOV = “width” of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = “ширина” зрения игрока, измеряется в градусах."
 
 #: ui/options_fov.rml:12
+#, fuzzy
 msgid ""
 "Many players suffer mild “motion sickness” from playing first-person "
 "shooters. A higher FOV can help combat this."
 msgstr ""
+"Многие игроки испытывают легкое укачивание при игре в шутеры от первого "
+"лица. Повышенное поле зрения может помочь устранить это."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "градусов"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:273
 #: ui/options_mouse.rml:21 ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "сбросить"
 
 #: ui/options_fov.rml:40
+#, fuzzy
 msgid "Mantis"
-msgstr ""
+msgstr "Богомол"
 
 #: ui/options_fov.rml:48
+#, fuzzy
 msgid "Marauder"
-msgstr ""
+msgstr "Мародёр"
 
 #: ui/options_fov.rml:56
+#, fuzzy
 msgid "Dragoon"
-msgstr ""
+msgstr "Драгун"
 
 #: ui/options_fov.rml:64
+#, fuzzy
 msgid "Tyrant"
-msgstr ""
+msgstr "Тиран"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
@@ -784,8 +814,9 @@ msgid "Camera pitching"
 msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
+#, fuzzy
 msgid "Disabled"
-msgstr ""
+msgstr "Отключено"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
@@ -1356,11 +1387,12 @@ msgstr "Глобальный чат:"
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
-msgstr ""
+msgstr "Командный чат:"
 
 #: ui/options_keys.rml:123
+#, fuzzy
 msgid "Admin chat:"
-msgstr ""
+msgstr "Чат админа:"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
@@ -1371,46 +1403,56 @@ msgid "Vote No:"
 msgstr "Проголосовать Нет:"
 
 #: ui/options_keys.rml:135
+#, fuzzy
 msgid "Team vote Yes:"
-msgstr ""
+msgstr "Командный голос Да:"
 
 #: ui/options_keys.rml:139
+#, fuzzy
 msgid "Team vote No:"
-msgstr ""
+msgstr "Командный голос Нет:"
 
 #: ui/options_keys.rml:142
 msgid "Misc"
 msgstr "Разное"
 
 #: ui/options_keys.rml:146
+#, fuzzy
 msgid "Show scores:"
-msgstr ""
+msgstr "Показать очки:"
 
 #: ui/options_keys.rml:150
+#, fuzzy
 msgid "Mark structure for replacement:"
-msgstr ""
+msgstr "Отметить структуру для замены:"
 
 #: ui/options_keys.rml:152
+#, fuzzy
 msgid "Hold the key to deconstruct structure."
-msgstr ""
+msgstr "Удерживайте кнопку для деконструкции структуры."
 
 #: ui/options_keys.rml:155
+#, fuzzy
 msgid "Beacon menu:"
-msgstr ""
+msgstr "Меню маяка:"
 
 #: ui/options_keys.rml:159
+#, fuzzy
 msgid "Toggle console:"
-msgstr ""
+msgstr "Включить/выключить консоль:"
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
 msgstr "Скриншот:"
 
 #: ui/options_keys.rml:165
+#, fuzzy
 msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
 msgstr ""
+"Удерживайте SHIFT пока делаете скриншот, чтобы захватить его в PNG, иначе "
+"скриншот будет сохранён в JPEG."
 
 #: ui/options_keys.rml:167
 msgid "Quake-look"
@@ -1418,23 +1460,23 @@ msgstr ""
 
 #: ui/options_keys.rml:171
 msgid "Look up:"
-msgstr ""
+msgstr "Посмотреть наверх:"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr ""
+msgstr "Посмотреть вниз:"
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
-msgstr ""
+msgstr "Повернуться налево:"
 
 #: ui/options_keys.rml:183
 msgid "Turn right:"
-msgstr ""
+msgstr "Повернуться направо:"
 
 #: ui/options_keys.rml:187
 msgid "Mouse look:"
-msgstr ""
+msgstr "Обзор мышью:"
 
 #: ui/options_keys.rml:191
 msgid "Centerview:"
@@ -1442,51 +1484,53 @@ msgstr "Центрировать взгляд:"
 
 #: ui/options_mouse.rml:9
 msgid "Y axis"
-msgstr ""
+msgstr "Ось Y"
 
 #: ui/options_mouse.rml:11
 msgid "Normal"
-msgstr "Среднее"
+msgstr "Нормальная"
 
 #: ui/options_mouse.rml:12
 msgid "Inverted"
-msgstr ""
+msgstr "Инвертированная"
 
 #: ui/options_mouse.rml:14
+#, fuzzy
 msgid "Behavior of vertical mouse movement."
-msgstr ""
+msgstr "Поведение движения мыши по вертикали."
 
 #: ui/options_mouse.rml:17
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Чувствительность мыши"
 
 #: ui/options_mouse.rml:25
 msgid "Mouse filter"
-msgstr ""
+msgstr "Фильтр мыши"
 
 #: ui/options_mouse.rml:27
 msgid "Smooth out sudden mouse movements."
-msgstr ""
+msgstr "Сглаживать резкие движения мыши."
 
 #: ui/options_mouse.rml:30
 msgid "Free look"
-msgstr ""
+msgstr "Свободный обзор"
 
 #: ui/options_mouse.rml:32
+#, fuzzy
 msgid "Turn off only if you are a Quake junkie."
-msgstr ""
+msgstr "Выключи только если ты Quake-наркоман."
 
 #: ui/options_player.rml:7
 msgid "Player Setup"
-msgstr ""
+msgstr "Настройки игрока"
 
 #: ui/options_player.rml:9
 msgid "Personal"
-msgstr ""
+msgstr "Персональные"
 
 #: ui/options_player.rml:12 ui/options_welcome.rml:12
 msgid "Nickname"
-msgstr ""
+msgstr "Никнейм"
 
 #: ui/options_player.rml:14 ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
@@ -1497,16 +1541,17 @@ msgid "Tutorial mode"
 msgstr "Режим обучения"
 
 #: ui/options_player.rml:19
+#, fuzzy
 msgid "Display hints for key bindings on-screen."
-msgstr ""
+msgstr "Показывать подсказки по назначениям клавиш на экране."
 
 #: ui/options_player.rml:23
 msgid "Show only team chat"
-msgstr ""
+msgstr "Показывать только командный чат"
 
 #: ui/options_player.rml:26
 msgid "Movement"
-msgstr ""
+msgstr "Передвижение"
 
 #: ui/options_player.rml:28
 msgid "Wall-walking auto-pitch"
@@ -1523,8 +1568,9 @@ msgid "Wall-walking pitch-speed"
 msgstr ""
 
 #: ui/options_player.rml:40
+#, fuzzy
 msgid "How fast your view “rotates” and “twists” as you wall-walk."
-msgstr ""
+msgstr "Как быстро ваш взгляд поворачивается, когда вы идете вдоль стены."
 
 #: ui/options_player.rml:43
 msgid "Wall-walking toggles"
@@ -1548,27 +1594,27 @@ msgstr "Выключить"
 
 #: ui/options_player.rml:57
 msgid "Humans only"
-msgstr ""
+msgstr "Только у людей"
 
 #: ui/options_player.rml:58
 msgid "Humans and aliens"
-msgstr ""
+msgstr "У людей и у чужих"
 
 #: ui/options_player.rml:60
 msgid "First-person weapons"
-msgstr ""
+msgstr "Оружие от первого лица"
 
 #: ui/options_player.rml:61
 msgid "Show gun, pincer, hand and mandible models in first-person."
-msgstr ""
+msgstr "Показывать оружие, клешни, руки и модели челюстей от первого лица."
 
 #: ui/options_player.rml:64
 msgid "Left-handed mode"
-msgstr ""
+msgstr "Режим левши"
 
 #: ui/options_player.rml:66
 msgid "Mirror first-person gun models."
-msgstr ""
+msgstr "Отражает модели оружия от первого лица."
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
@@ -1584,11 +1630,12 @@ msgstr ""
 
 #: ui/options_sound.rml:23
 msgid "“Echo” effect"
-msgstr ""
+msgstr "Эффект \"эхо\""
 
 #: ui/options_sound.rml:26
+#, fuzzy
 msgid "Doppler Intensity"
-msgstr ""
+msgstr "Интенсивность эффекта Доплера"
 
 #: ui/options_sound.rml:28
 msgid "“Pitch-shift” effect when moving from or toward a sound."
@@ -1596,19 +1643,19 @@ msgstr ""
 
 #: ui/options_sound.rml:31
 msgid "OpenAL Device"
-msgstr ""
+msgstr "OpenAL Устройство"
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
-msgstr ""
+msgstr "Устройство/карта для вывода аудио"
 
 #: ui/options_ui.rml:7
 msgid "User interface"
-msgstr ""
+msgstr "Пользовательский интерфейс"
 
 #: ui/options_ui.rml:10
 msgid "Real-time clock"
-msgstr ""
+msgstr "Часы реального времени"
 
 #: ui/options_ui.rml:13
 msgid "12 Hour"
@@ -1619,20 +1666,22 @@ msgid "24 Hour"
 msgstr "24-часовой формат"
 
 #: ui/options_ui.rml:16
+#, fuzzy
 msgid "Show the time in real-life."
-msgstr ""
+msgstr "Показывает время реальной жизни."
 
 #: ui/options_ui.rml:19
 msgid "Game-time clock"
-msgstr ""
+msgstr "Часы игрового времени"
 
 #: ui/options_ui.rml:21
 msgid "Show how long a match has lasted."
-msgstr ""
+msgstr "Показывает насколько долго длиться матч."
 
 #: ui/options_ui.rml:24
+#, fuzzy
 msgid "Crosshair visiblity"
-msgstr ""
+msgstr "Видимый прицел"
 
 #: ui/options_ui.rml:26
 msgid "Never"
@@ -1640,7 +1689,7 @@ msgstr "Никогда"
 
 #: ui/options_ui.rml:27
 msgid "Ranged weapons only"
-msgstr ""
+msgstr "Только для оружия дальнего боя"
 
 #: ui/options_ui.rml:28
 msgid "Always"
@@ -1648,7 +1697,7 @@ msgstr "Всегда"
 
 #: ui/options_ui.rml:33
 msgid "Crosshair size"
-msgstr ""
+msgstr "Размер прицела"
 
 #: ui/options_ui.rml:35
 msgid "Tiny"
@@ -1659,8 +1708,9 @@ msgid "Small"
 msgstr "Маленький"
 
 #: ui/options_ui.rml:37
+#, fuzzy
 msgid "Regular"
-msgstr ""
+msgstr "Обычный"
 
 #: ui/options_ui.rml:38
 msgid "Huge"
@@ -1668,35 +1718,35 @@ msgstr "Большой"
 
 #: ui/options_ui.rml:44
 msgid "Show ping"
-msgstr ""
+msgstr "Показывать пинг"
 
 #: ui/options_ui.rml:46
 msgid "Time that information takes to get to the server and back."
-msgstr ""
+msgstr "Время, за которое информация доходит до сервера и обратно."
 
 #: ui/options_ui.rml:49
 msgid "Show movement speed"
-msgstr ""
+msgstr "Показывать скорость движения"
 
 #: ui/options_ui.rml:51
 msgid "Current, maximum and graph of movement-speed."
-msgstr ""
+msgstr "Текущая, максимальная и график скорости движения."
 
 #: ui/options_ui.rml:54
 msgid "Show FPS"
-msgstr ""
+msgstr "Показывать FPS"
 
 #: ui/options_ui.rml:56
 msgid "Frames per second."
-msgstr ""
+msgstr "Кол-во кадров в секунду."
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr ""
+msgstr "Здравствуйте!"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr ""
+msgstr "Как нам обращаться к вам?"
 
 #: ui/options_welcome.rml:13
 msgid "Your name visible to others."
@@ -1704,15 +1754,16 @@ msgstr "Ваше имя видят другие."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
-msgstr ""
+msgstr "Вы можете изменить его в любое время в настройках."
 
 #: ui/options_welcome.rml:17
+#, fuzzy
 msgid "Select Battlefield"
-msgstr ""
+msgstr "Выбрать поле битвы"
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr ""
+msgstr "Список серверов"
 
 #: ui/server_browser.rml:39
 msgid "Internet"
@@ -1724,7 +1775,7 @@ msgstr "Имя:"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
-msgstr ""
+msgstr "Игроки (Боты)"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
@@ -1732,7 +1783,7 @@ msgstr "Пинг"
 
 #: ui/server_browser.rml:50 ui/server_browser.rml:66
 msgid "Connect"
-msgstr ""
+msgstr "Присоединиться"
 
 #: ui/server_browser.rml:51 ui/server_browser.rml:67
 msgid "Refresh"
@@ -1744,59 +1795,68 @@ msgstr "LAN"
 
 #: ui/server_create.rml:39
 msgid "Hostname"
-msgstr ""
+msgstr "Название хоста"
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 #: ui/server_create.rml:49
+#, fuzzy
 msgid "Developer mode (enable cheats)"
-msgstr ""
+msgstr "Режим разработчика (включает читы)"
 
 #: ui/server_create.rml:54
+#, fuzzy
 msgid "Extra packages to load"
-msgstr ""
+msgstr "Дополнительные загружаемые пакеты"
 
 #: ui/server_create.rml:59
 msgid "Map building layout to use"
 msgstr ""
 
 #: ui/server_create.rml:67
+#, fuzzy
 msgid "Start"
-msgstr ""
+msgstr "Начать"
 
 #: ui/server_setup.rml:8
+#, fuzzy
 msgid "Server Setup"
-msgstr ""
+msgstr "Настройка сервера"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
-msgstr ""
+msgstr "Частота бесплатных средств"
 
 #: ui/server_setup.rml:17
+#, fuzzy
 msgid "Every X seconds the player is alive, they will receive free funds."
 msgstr ""
+"Каждые X секунды, когда жив игрок, он будет получать бесплатные средства."
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
+#, fuzzy
 msgid "seconds"
-msgstr ""
+msgstr "секунд"
 
 #: ui/server_setup.rml:24
+#, fuzzy
 msgid "Friendly fire damage multipliers"
-msgstr ""
+msgstr "Множитель урона от огня по своим"
 
 #: ui/server_setup.rml:25
+#, fuzzy
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
-msgstr ""
+msgstr "Множитель урона по команде (не включая постройки и себя)"
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr ""
+msgstr "Чужие:"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr ""
+msgstr "Люди:"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
@@ -1804,7 +1864,7 @@ msgstr ""
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
-msgstr ""
+msgstr "Разрешить голосования"
 
 #: ui/server_setup.rml:44
 msgid "Warmup"
@@ -1815,24 +1875,26 @@ msgid "Do warmups at every game start"
 msgstr ""
 
 #: ui/server_setup.rml:49
+#, fuzzy
 msgid "Gives players on slower computers time to join."
-msgstr ""
+msgstr "Дает игрокам со слабыми компьютерами время присоединиться."
 
 #: ui/server_setup.rml:60
+#, fuzzy
 msgid "Allow alien building"
-msgstr ""
+msgstr "Разрешить постройки чужих"
 
 #: ui/server_setup.rml:64
 msgid "Allow human building"
-msgstr ""
+msgstr "Разрешить постройки людей"
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr ""
+msgstr "Физика"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr ""
+msgstr "Гравитация"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
@@ -1859,8 +1921,9 @@ msgid "Time for momentum to decrease 50%. 0 disables this behavior."
 msgstr ""
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
+#, fuzzy
 msgid "minutes"
-msgstr ""
+msgstr "минут"
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
@@ -4457,8 +4520,9 @@ msgid "Humans win"
 msgstr ""
 
 #: src/sgame/sg_main.cpp:1988
+#, fuzzy
 msgid "Aliens win"
-msgstr ""
+msgstr "Чужие победили"
 
 #: src/sgame/sg_main.cpp:2183
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
