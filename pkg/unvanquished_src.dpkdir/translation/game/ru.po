@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-07-05 15:14+0000\n"
-"Last-Translator: 777yur0k <kost19641964@gmail.com>\n"
+"PO-Revision-Date: 2023-07-07 16:53+0000\n"
+"Last-Translator: Avenger Anubis <avenger.anubis@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
 "Language: ru\n"
@@ -26,7 +26,7 @@ msgstr ""
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr ""
+msgstr "Цена:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -55,8 +55,9 @@ msgid ""
 msgstr ""
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
+#, fuzzy
 msgid "Back to team selection"
-msgstr ""
+msgstr "Вернуться к выбору команды"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -71,8 +72,9 @@ msgid "Call vote"
 msgstr ""
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
+#, fuzzy
 msgid "Fill with bots"
-msgstr ""
+msgstr "Заполнить ботами"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
