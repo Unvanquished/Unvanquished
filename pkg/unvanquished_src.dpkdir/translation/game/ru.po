@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
 "PO-Revision-Date: 2023-07-08 00:44+0000\n"
-"Last-Translator: Avenger Anubis <avenger.anubis@gmail.com>\n"
+"Last-Translator: 777yur0k <kost19641964@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
 "Language: ru\n"
@@ -804,9 +804,8 @@ msgid "Sound"
 msgstr "Звук"
 
 #: ui/menu_ingame.rml:103 ui/menu_main.rml:42
-#, fuzzy
 msgid "User interface and HUD"
-msgstr "Пользовательский интерфейс и HUD"
+msgstr "Интерфейс и HUD"
 
 #: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
 msgid "Fields of view"
@@ -827,7 +826,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
-msgstr "Покинуть игру"
+msgstr "Выйти из игры"
 
 #: ui/menu_ingame.rml:119 ui/menu_main.rml:56
 msgid "Beta"
