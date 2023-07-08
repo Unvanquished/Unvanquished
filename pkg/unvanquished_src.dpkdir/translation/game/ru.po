@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-07-08 00:44+0000\n"
-"Last-Translator: 777yur0k <kost19641964@gmail.com>\n"
+"PO-Revision-Date: 2023-07-08 00:54+0000\n"
+"Last-Translator: Avenger Anubis <avenger.anubis@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
 "Language: ru\n"
@@ -461,10 +461,12 @@ msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
+"Защитные структуры Чужих, такие как Охотник или Колючка, работают лучше на "
+"стенах. Размещение их на потолке может защитить их от гранат."
 
 #: ui/help_gameplay.rml:148
 msgid "The advanced granger can be unlocked with momentum."
-msgstr ""
+msgstr "Продвинутый Фермер может быть разблокирован с помощью Моментума."
 
 #: ui/help_gameplay.rml:152
 msgid "Since Tremulous"
@@ -821,8 +823,9 @@ msgid "Help"
 msgstr "Помощь"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
+#, fuzzy
 msgid "Gameplay guide"
-msgstr ""
+msgstr "Геймплейный гайд"
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
@@ -833,8 +836,9 @@ msgid "Beta"
 msgstr "Бета"
 
 #: ui/options_fov.rml:10
+#, fuzzy
 msgid "Angles of view"
-msgstr ""
+msgstr "Угол обзора"
 
 #: ui/options_fov.rml:11
 msgid "FOV = “width” of player's vision, measured in degrees."
@@ -920,7 +924,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Предустановка"
 
 #: ui/options_graphics.rml:24
 msgid "Lowest"
@@ -965,7 +969,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:40
 msgid "Ultra"
-msgstr ""
+msgstr "Ультра"
 
 #: ui/options_graphics.rml:41
 msgid ""
@@ -1953,7 +1957,6 @@ msgid "Do warmups at every game start"
 msgstr ""
 
 #: ui/server_setup.rml:49
-#, fuzzy
 msgid "Gives players on slower computers time to join."
 msgstr "Дает игрокам со слабыми компьютерами время присоединиться."
 
