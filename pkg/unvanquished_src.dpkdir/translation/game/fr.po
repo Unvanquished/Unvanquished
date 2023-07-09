@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-07-01 21:27+0000\n"
-"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2023-07-09 19:18+0000\n"
+"Last-Translator: S V <zikzakfr@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -3187,58 +3187,57 @@ msgstr "%s%s ^*a été tranché par les %s de %s%s%s^* aidé par %s%s%s^*"
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr ""
+msgstr "%s%s ^*a été déchiqueté par %s%s%s^*'s %s"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr ""
+msgstr "%s%s ^*a été déchiquetée par %s%s%s^*'s %s"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr ""
+msgstr "%s%s ^*a été déchiqueté par %s%s%s^*'s %s"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été déchiqueté par%s%s%s^*'s %s^*; %s%s%s^* a assisté"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été déchiquetée par %s%s%s^*'s %s^*; %s%s%s^* a assisté"
 
 #: src/cgame/cg_event.cpp:477
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été déchiqueté par %s%s%s^*'s %s^*; %s%s%s^* a assisté"
 
 #: src/cgame/cg_event.cpp:482
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^* à été électrocuté par l'adv marauder de %s%s%s^*"
+msgstr "%s%s ^* a été électrocuté par %s%s%s^*'s %s"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^* à été électrocutée par l'adv marauder de %s%s%s^*"
+msgstr "%s%s ^* a été électrocutée par %s%s%s^*'s %s"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^* à été électrocuté par l'adv marauder de %s%s%s^*"
+msgstr "%s%s ^*a été électrocuté par %s%s%s^*'s %s"
 
 #: src/cgame/cg_event.cpp:483
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été électrocuté par %s%s%s^*'s %s^* assisté de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:483
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été électrocuté par %s%s%s^*'s %s^* assisté de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:483
 msgctxt "neuter"
@@ -3248,7 +3247,7 @@ msgstr ""
 #: src/cgame/cg_event.cpp:488
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-msgstr ""
+msgstr "%s%s ^*a été éviscéré par %s%s%s^*'s %s"
 
 #: src/cgame/cg_event.cpp:488
 msgctxt "female"
