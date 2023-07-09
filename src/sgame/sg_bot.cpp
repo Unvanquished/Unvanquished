@@ -442,6 +442,17 @@ void G_BotThink( gentity_t *self )
 	//hacky ping fix
 	self->client->ps.ping = rand() % 50 + 50;
 
+	//reset the user specified client number if the client disconnected
+	if ( self->botMind->userSpecifiedClientNum )
+	{
+		int userSpecifiedClientNum = *self->botMind->userSpecifiedClientNum;
+		gentity_t *ent = &g_entities[ userSpecifiedClientNum ];
+		if ( !ent->client || ent->client->pers.connected == CON_DISCONNECTED )
+		{
+			self->botMind->userSpecifiedClientNum = Util::nullopt;
+		}
+	}
+
 	if ( !self->botMind->behaviorTree )
 	{
 		Log::Warn( "NULL behavior tree" );
