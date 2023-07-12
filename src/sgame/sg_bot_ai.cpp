@@ -746,7 +746,7 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 	{
 		AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
 		botEntityAndDistance_t e = AIEntityToGentity( self, et );
-		if ( !BotChangeGoalEntity( self, e.ent ) )
+		if ( !BotChangeGoal( self, e.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -754,7 +754,7 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 	else if( a->nparams == 3 )
 	{
 		glm::vec3 pos = { AIUnBoxFloat(a->params[0]), AIUnBoxFloat(a->params[1]), AIUnBoxFloat(a->params[2]) };
-		if ( !BotChangeGoalPos( self, pos ) )
+		if ( !BotChangeGoal( self, pos ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -823,7 +823,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotEntityIsValidEnemyTarget( self, self->botMind->bestEnemy.ent ) || !BotChangeGoalEntity( self, self->botMind->bestEnemy.ent ) )
+		if ( !BotEntityIsValidEnemyTarget( self, self->botMind->bestEnemy.ent ) || !BotChangeGoal( self, self->botMind->bestEnemy.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -868,13 +868,11 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_OPAQUE ) )
 	{
-		botTarget_t proposedTarget;
-		proposedTarget = self->botMind->bestEnemy.ent;
+		botTarget_t proposedTarget = self->botMind->bestEnemy.ent;
 
 		//we can see another enemy (not our target) so switch to it
 		if ( self->botMind->bestEnemy.ent
-		  && ( self->botMind->goal.getTargetedEntity()
-		    != self->botMind->bestEnemy.ent )
+		  && ( self->botMind->goal != proposedTarget )
 		  && BotPathIsWalkable( self, proposedTarget ) )
 		{
 			// force the BT to evaluate again and this action to
@@ -1054,7 +1052,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 
-		if ( !BotChangeGoalPos( self, point ) )
+		if ( !BotChangeGoal( self, point ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1184,7 +1182,7 @@ AINodeStatus_t BotActionStayHere( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 
-		if ( !BotChangeGoalPos( self, point ) )
+		if ( !BotChangeGoal( self, point ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1225,7 +1223,7 @@ AINodeStatus_t BotActionFollow( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 
-		if ( !BotChangeGoalPos( self, point ) )
+		if ( !BotChangeGoal( self, point ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1265,7 +1263,7 @@ AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 
-		if ( !BotChangeGoalEntity( self, BotGetHealTarget( self ).ent ) )
+		if ( !BotChangeGoal( self, BotGetHealTarget( self ).ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1399,7 +1397,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 
 	if ( node != self->botMind->currentNode )
 	{
-		if ( !BotChangeGoalEntity( self, self->botMind->closestDamagedBuilding.ent ) )
+		if ( !BotChangeGoal( self, self->botMind->closestDamagedBuilding.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -1512,7 +1510,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_ARMOURY ].ent ) )
+		if ( !BotChangeGoal( self, self->botMind->closestBuildings[ BA_H_ARMOURY ].ent ) )
 		{
 			return STATUS_FAILURE;
 		}

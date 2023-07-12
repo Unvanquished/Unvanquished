@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtc/epsilon.hpp>
 
 static Cvar::Range<Cvar::Cvar<int>> g_bot_defaultSkill( "g_bot_defaultSkill", "Default skill value bots will have when added", Cvar::NONE, 5, 1, 9 );
 static Cvar::Cvar<int> g_bot_alienAimDelay = Cvar::Cvar<int>( "g_bot_alienAimDelay", "make bots of alien team slower to aim", Cvar::NONE, 250 );
@@ -1173,20 +1174,6 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 	self->botMind->m_nav.directPathToGoal = false;
 	self->botMind->hasOffmeshGoal = false;
 	return true;
-}
-
-bool BotChangeGoalEntity( gentity_t *self, gentity_t const *goal )
-{
-	botTarget_t target;
-	target = goal;
-	return BotChangeGoal( self, target );
-}
-
-bool BotChangeGoalPos( gentity_t *self, const glm::vec3 &goal )
-{
-	botTarget_t target;
-	target = goal;
-	return BotChangeGoal( self, target );
 }
 
 bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
@@ -2487,43 +2474,75 @@ void BotCalculateStuckTime( gentity_t *self )
 botTarget_t methods implementations
 ========================
  */
+botTarget_t::botTarget_t( void ) = default;
+botTarget_t::botTarget_t( botTarget_t const& ) = default;
+botTarget_t::botTarget_t( botTarget_t && ) = default;
+botTarget_t& botTarget_t::operator=( botTarget_t const& ) = default;
+botTarget_t& botTarget_t::operator=( botTarget_t && ) = default;
+botTarget_t::~botTarget_t( void ) = default;
 
-botTarget_t& botTarget_t::operator=(const gentity_t *newTarget) {
-	if (newTarget == nullptr) {
-		this->clear();
-		return *this;
-	}
-
-	ent = newTarget;
-	coord = glm::vec3();
-	type = targetType::ENTITY;
-
-	if (!targetsValidEntity())
+botTarget_t::botTarget_t( const gentity_t *newTarget )
+:ent( newTarget ), type( targetType::ENTITY )
+{
+	if ( newTarget == nullptr )
 	{
-		// this is sometimes legitimate, for example when attempting to
-		// heal on a medistation with g_indestructibleBuildables.
-		if (!(ent->flags & FL_NOTARGET))
-		{
-			Log::Warn( "bot: selecting invalid entity as target, %s",
-				!newTarget->inuse ? "entity isn't allocated" :
-				ent->flags & FL_NOTARGET ? "entity is FL_NOTARGET" :
-				!Entities::IsAlive(newTarget) ? "entity is dead" :
-					"for some unspecified reason" );
-		}
+		type = targetType::EMPTY;
 	}
+//	// this is sometimes legitimate, for example when attempting to
+//	// heal on a medistation with g_indestructibleBuildables.
+//	if ( !targetsValidEntity() && !( ent->flags & FL_NOTARGET ) )
+//	{
+//		Log::Warn( "bot: selecting invalid entity as target, %s",
+//				!newTarget->inuse ? "entity isn't allocated" :
+//				ent->flags & FL_NOTARGET ? "entity is FL_NOTARGET" :
+//				!Entities::IsAlive(newTarget) ? "entity is dead" :
+//				"for some unspecified reason" );
+//	}
+}
 
+botTarget_t& botTarget_t::operator=( const gentity_t *newTarget )
+{
+	botTarget_t ret( newTarget );
+	std::swap( *this, ret );
 	return *this;
+}
+
+botTarget_t::botTarget_t( glm::vec3 newTarget )
+:coord( newTarget ), type( targetType::COORDS )
+{
 }
 
 botTarget_t& botTarget_t::operator=( glm::vec3 newTarget )
 {
-	coord = newTarget;
-	ent = nullptr;
-	type = targetType::COORDS;
+	botTarget_t ret( newTarget );
+	std::swap( *this, ret );
 	return *this;
 }
 
-void botTarget_t::clear() {
+bool botTarget_t::operator==( botTarget_t const& o ) const
+{
+	const glm::vec3 EPSILON( 0.5f, 0.5f, 0.5f );
+	const glm::vec<3,bool> TRUE( true, true, true );
+	switch( type )
+	{
+		case targetType::EMPTY:
+			return o.type == targetType::EMPTY;
+		case targetType::COORDS:
+			return o.type == targetType::COORDS
+				&& TRUE == glm::epsilonEqual( coord, o.coord, EPSILON );
+		case targetType::ENTITY:
+			return o.type == targetType::ENTITY && ent == o.ent;
+	}
+	ASSERT_UNREACHABLE();
+}
+
+bool botTarget_t::operator!=( botTarget_t const& o ) const
+{
+	return !( *this == o );
+}
+
+void botTarget_t::clear()
+{
 	ent = nullptr;
 	coord = glm::vec3();
 	type = targetType::EMPTY;

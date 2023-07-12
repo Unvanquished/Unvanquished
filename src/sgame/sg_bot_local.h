@@ -56,8 +56,22 @@ struct botEntityAndDistance_t
 class botTarget_t
 {
 public:
+	botTarget_t();
+	botTarget_t(botTarget_t const&);
+	botTarget_t(botTarget_t &&);
+	botTarget_t& operator=(botTarget_t const&);
+	botTarget_t& operator=(botTarget_t &&);
+	~botTarget_t();
+
+	botTarget_t(const gentity_t *ent);
 	botTarget_t& operator=(const gentity_t *ent);
+
+	botTarget_t( glm::vec3 pos );
 	botTarget_t& operator=( glm::vec3 pos );
+
+	bool operator==( botTarget_t const& o ) const;
+	bool operator!=( botTarget_t const& o ) const;
+
 	void clear();
 	entityType_t getTargetType() const;
 	bool isValid() const;
@@ -72,9 +86,9 @@ public:
 	// have garbage as a result
 	glm::vec3 getPos() const;
 private:
-	GentityConstRef ent;
-	glm::vec3 coord;
-	enum class targetType { EMPTY, COORDS, ENTITY } type;
+	GentityConstRef ent = nullptr;
+	glm::vec3 coord = glm::vec3();
+	enum class targetType { EMPTY, COORDS, ENTITY } type = targetType::EMPTY;
 };
 
 #define MAX_ENEMY_QUEUE 32
