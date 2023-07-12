@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-07-09 19:18+0000\n"
+"PO-Revision-Date: 2023-07-12 10:53+0000\n"
 "Last-Translator: Avenger Anubis <avenger.anubis@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -826,7 +826,7 @@ msgstr "Помощь"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
 msgid "Gameplay guide"
-msgstr "Гайд по игровому процессу"
+msgstr "Гайд по геймплею"
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
@@ -1675,7 +1675,7 @@ msgstr "Переключение бега"
 
 #: ui/options_player.rml:53
 msgid "Cosmetic"
-msgstr "Декоративное"
+msgstr "Внешний вид"
 
 #: ui/options_player.rml:56
 msgid "Disable"
