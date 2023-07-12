@@ -43,16 +43,6 @@ static Cvar::Cvar<int> g_bot_humanAimDelay = Cvar::Cvar<int>( "g_bot_humanAimDel
 constexpr float BOT_STUCK_RADIUS = 150.0f;
 
 static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_NUM_UPGRADES], unsigned int (&numWeapons)[WP_NUM_WEAPONS] );
-static const int MIN_SKILL = 1;
-static const int MAX_SKILL = 9;
-static const int RANGE_SKILL = MAX_SKILL - MIN_SKILL;
-
-// computes a percent modifier out of skill level which is easier to work with
-// between 0 and 1
-static float SkillModifier( int botSkill )
-{
-       return static_cast<float>( botSkill - MIN_SKILL ) / RANGE_SKILL;
-}
 
 static float GetMaximalSpeed( gentity_t const *self );
 static float GetMaximalSpeed( class_t cl );

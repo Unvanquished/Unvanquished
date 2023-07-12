@@ -92,6 +92,17 @@ private:
 	enum class targetType { EMPTY, COORDS, ENTITY } type = targetType::EMPTY;
 };
 
+// computes a percent modifier out of skill level which is easier to work with
+// between 0 and 1
+constexpr int MIN_SKILL = 1;
+constexpr int MAX_SKILL = 9;
+inline float SkillModifier( int botSkill )
+{
+	static const int RANGE_SKILL = MAX_SKILL - MIN_SKILL;
+
+	return static_cast<float>( botSkill - MIN_SKILL ) / RANGE_SKILL;
+}
+
 struct botSkill_t
 {
 	int level;

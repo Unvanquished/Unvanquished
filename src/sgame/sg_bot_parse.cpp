@@ -337,6 +337,11 @@ static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
 	return AIBoxFloat( 0.f );
 }
 
+static AIValue_t percentSkill( gentity_t *self, const AIValue_t * )
+{
+	return AIBoxFloat( SkillModifier( self->botMind->botSkill.level ) );
+}
+
 static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( level.time - self->botMind->stuckTime );
@@ -374,6 +379,7 @@ static const struct AIConditionMap_s
 	{ "percentAmmoClip",   percentAmmoClip,   0 },
 	{ "percentClips",      percentClips,      0 },
 	{ "percentHealth",     percentHealth,     1 },
+	{ "percentSkill",      percentSkill,      0 },
 	{ "random",            randomChance,      0 },
 	{ "resupplyScore",     resupplyScore,     0 },
 	{ "skill",             botSkill,          0 },
