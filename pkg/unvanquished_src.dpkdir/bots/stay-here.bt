@@ -104,7 +104,6 @@ selector
 						{
 							sequence
 							{
-								condition alertedToEnemy
 								condition ( distanceTo( E_A_OVERMIND ) <= 100 || distanceTo( E_A_BOOSTER ) <= 100 )
 								action fight
 							}
