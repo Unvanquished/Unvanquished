@@ -33,24 +33,6 @@ selector
 					{
 						action fight
 					}
-
-					sequence
-					{
-						condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
-						condition baseRushScore < 0.75
-						selector
-						{
-							decorator return( STATUS_FAILURE )
-							{
-								action activateUpgrade( UP_MEDKIT )
-							}
-							decorator timer( 3000 )
-							{
-								action heal
-							}
-							action roamInRadius( E_H_MEDISTAT, 250 )
-						}
-					}
 				}
 			}
 

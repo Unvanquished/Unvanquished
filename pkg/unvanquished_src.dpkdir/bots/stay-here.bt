@@ -13,33 +13,6 @@ selector
 				condition alertedToEnemy
 				selector
 				{
-					decorator timer( 1000 )
-					{
-						selector
-						{
-							// defending reactor, or try to avoid being killed while healing (hence the different values)
-							// the isVisible check is here to prevent "defending" when enemies are detected by radars
-							condition ( ( distanceTo( E_H_REACTOR ) <= 300 || distanceTo( E_H_MEDISTAT ) <= 250 ) && isVisible( E_ENEMY ) )
-							{
-								action fight
-							}
-
-							sequence
-							{
-								condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
-								condition baseRushScore < 0.75
-								selector
-								{
-									decorator timer( 3000 )
-									{
-										action heal
-									}
-									action roamInRadius( E_H_MEDISTAT, 250 )
-								}
-							}
-						}
-					}
-
 					sequence
 					{
 						//if goal is a close enough enemy building or if we're gonna die
