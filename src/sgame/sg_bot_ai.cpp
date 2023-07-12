@@ -1453,8 +1453,17 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	weapon_t  weapon;
 	const size_t ARRAY_LENGTH = 4;
 	upgrade_t upgrades[ARRAY_LENGTH];
-	int numUpgrades;
-	int i;
+	int numUpgrades = 0;
+
+	if ( !g_bot_buy.Get() )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( G_Team( self ) != TEAM_HUMANS )
+	{
+		return STATUS_FAILURE;
+	}
 
 	if ( buy->nparams == 0 )
 	{
@@ -1472,10 +1481,8 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 			weapon = WP_NONE;
 		}
 
-		numUpgrades = 0;
-
 		// other parameters are always upgrades
-		for ( i = 1; i < buy->nparams; i++ )
+		for ( int i = 1; i < buy->nparams; i++ )
 		{
 			upgrades[ numUpgrades ] = ( upgrade_t ) AIUnBoxInt( buy->params[ i ] );
 
@@ -1489,22 +1496,12 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		}
 	}
 
-	if ( !g_bot_buy.Get() )
-	{
-		return STATUS_FAILURE;
-	}
-
-	if ( G_Team( self ) != TEAM_HUMANS )
-	{
-		return STATUS_FAILURE;
-	}
-
 	//check if we already have everything
 	if ( BG_InventoryContainsWeapon( weapon, self->client->ps.stats ) || weapon == WP_NONE )
 	{
 		int numContain = 0;
 
-		for ( i = 0; i < numUpgrades; i++ )
+		for ( int i = 0; i < numUpgrades; i++ )
 		{
 			if ( BG_InventoryContainsUpgrade( upgrades[i], self->client->ps.stats ) )
 			{
@@ -1543,7 +1540,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		if ( numUpgrades )
 		{
 			BotSellUpgrades( self );
-			for ( i = 0; i < numUpgrades; i++ )
+			for ( int i = 0; i < numUpgrades; i++ )
 			{
 				if ( !BotBuyUpgrade( self, upgrades[i] ) )
 				{
