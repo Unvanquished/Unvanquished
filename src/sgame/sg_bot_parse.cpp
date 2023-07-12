@@ -78,7 +78,7 @@ static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( self->botMind->bestEnemy.ent != nullptr );
+	return AIBoxInt( self->botMind->hasEnemy() );
 }
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t* )

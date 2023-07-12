@@ -165,6 +165,7 @@ public:
 
 	Util::optional< glm::vec3 > userSpecifiedPosition;
 	Util::optional< int > userSpecifiedClientNum;
+	bool hasEnemy( void ) const;
 private:
 	//avoid relying on buttons to remember what AI was doing
 	bool wantSprinting = false;

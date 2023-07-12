@@ -787,3 +787,8 @@ std::string G_BotToString( gentity_t *bot )
 			BotGoalToString( bot ),
 			bot->botMind->botSkill.level );
 }
+
+bool botMemory_t::hasEnemy( void ) const
+{
+	return bestEnemy.ent != nullptr;
+}
