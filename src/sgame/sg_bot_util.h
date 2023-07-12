@@ -62,7 +62,6 @@ bool BotEntityIsValidEnemyTarget( const gentity_t *self, const gentity_t *enemy 
 bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask );
 bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target );
 void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
-botTarget_t BotGetRoamTarget( const gentity_t *self );
 botTarget_t BotGetRetreatTarget( const gentity_t *self );
 botTarget_t BotGetRushTarget( const gentity_t *self );
 
@@ -70,7 +69,6 @@ botTarget_t BotGetRushTarget( const gentity_t *self );
 float    BotGetHealScore( gentity_t *self );
 float    BotGetResupplyScore( gentity_t *ent );
 float    BotGetBaseRushScore( gentity_t *ent );
-float    BotGetEnemyPriority( gentity_t *self, gentity_t *ent );
 
 // goal changing
 bool BotChangeGoal( gentity_t *self, botTarget_t target );

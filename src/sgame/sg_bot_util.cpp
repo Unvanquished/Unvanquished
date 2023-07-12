@@ -443,7 +443,7 @@ float BotGetHealScore( gentity_t *self )
 	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentHealth ) / sqrt( timeDist );
 }
 
-float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
+static float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 {
 	float enemyScore;
 	float distanceScore;
@@ -1034,23 +1034,6 @@ botTarget_t BotGetRetreatTarget( const gentity_t *self )
 		}
 	}
 	target = retreatTarget;
-	return target;
-}
-
-botTarget_t BotGetRoamTarget( const gentity_t *self )
-{
-	botTarget_t target;
-	glm::vec3 point;
-
-	if ( !BotFindRandomPointInRadius( self->num(), VEC2GLM( self->s.origin ), point, 2000 ) )
-	{
-		target = VEC2GLM( self->s.origin );
-	}
-	else
-	{
-		target = point;
-	}
-
 	return target;
 }
 

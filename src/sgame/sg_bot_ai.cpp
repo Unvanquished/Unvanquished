@@ -1066,6 +1066,23 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
+static botTarget_t BotGetRoamTarget( const gentity_t *self )
+{
+	botTarget_t target;
+	glm::vec3 point;
+
+	if ( !BotFindRandomPointInRadius( self->num(), VEC2GLM( self->s.origin ), point, 2000 ) )
+	{
+		target = VEC2GLM( self->s.origin );
+	}
+	else
+	{
+		target = point;
+	}
+
+	return target;
+}
+
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 {
 	// we are just starting to roam, get a target location
