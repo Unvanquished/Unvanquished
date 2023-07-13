@@ -194,6 +194,7 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
 	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_QFLT };
 	botEntityAndDistance_t              ret = nullEntity;
+	botMemory_t const* mind = self->botMind;
 
 	if ( e > E_NONE && e < E_NUM_BUILDABLES )
 	{
@@ -206,7 +207,7 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 		return ret;
 
 	case E_ENEMY:
-		return self->botMind->bestEnemy;
+		return { mind->bestEnemy.enemy.get(), mind->bestEnemy.dist };
 
 	case E_DAMAGEDBUILDING:
 		return self->botMind->closestDamagedBuilding;
@@ -823,13 +824,12 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotEntityIsValidEnemyTarget( self, self->botMind->bestEnemy.ent ) || !BotChangeGoal( self, self->botMind->bestEnemy.ent ) )
+		if ( !BotEntityIsValidEnemyTarget( self, self->botMind->bestEnemy.enemy.get() ) || !BotChangeGoal( self, self->botMind->bestEnemy.enemy.get() ) )
 		{
 			return STATUS_FAILURE;
 		}
 
 		self->botMind->currentNode = node;
-		self->botMind->enemyLastSeen = level.time;
 		return STATUS_RUNNING;
 	}
 
@@ -860,18 +860,12 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
 
-	//aliens have radar so they will always 'see' the enemy if they are in radar range
-	if ( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( g_bot_aliensenseRange.Get() ) )
-	{
-		self->botMind->enemyLastSeen = level.time;
-	}
-
 	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_OPAQUE ) )
 	{
-		botTarget_t proposedTarget = self->botMind->bestEnemy.ent;
+		botTarget_t proposedTarget = self->botMind->bestEnemy.enemy.get();
 
 		//we can see another enemy (not our target) so switch to it
-		if ( self->botMind->bestEnemy.ent
+		if ( self->botMind->bestEnemy.enemy
 		  && ( self->botMind->goal != proposedTarget )
 		  && BotPathIsWalkable( self, proposedTarget ) )
 		{
@@ -879,7 +873,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 			// retarget
 			return STATUS_SUCCESS;
 		}
-		else if ( level.time - self->botMind->enemyLastSeen >= g_bot_chasetime.Get() )
+		else if ( level.time - self->botMind->bestEnemy.lastSeen >= g_bot_chasetime.Get() )
 		{
 			return STATUS_SUCCESS;
 		}
@@ -941,7 +935,6 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	bool inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
-	self->botMind->enemyLastSeen = level.time;
 
 	if ( !( inAttackRange && myTeam == TEAM_HUMANS ) && !mind->nav().directPathToGoal )
 	{

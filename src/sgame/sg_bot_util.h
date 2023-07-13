@@ -47,7 +47,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self );
 void       BotFindClosestBuildings( gentity_t *self );
 bool   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );
-void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
+void       BotPain( gentity_t *self, gentity_t* attacker, int damage );
 botEntityAndDistance_t BotGetHealTarget( const gentity_t *self );
 
 // aiming
@@ -69,12 +69,12 @@ botTarget_t BotGetRushTarget( const gentity_t *self );
 float    BotGetHealScore( gentity_t *self );
 float    BotGetResupplyScore( gentity_t *ent );
 float    BotGetBaseRushScore( gentity_t *ent );
+float    BotGetEnemyPriority( const gentity_t *self, const GentityConstRef other, float dist );
 
 // goal changing
 bool BotChangeGoal( gentity_t *self, botTarget_t target );
 
 // fighting
-void     BotResetEnemyQueue( enemyQueue_t *queue );
 void     BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer );
 void     BotFireWeaponAI( gentity_t *self );
 void     BotClassMovement( gentity_t *self, bool inAttackRange );

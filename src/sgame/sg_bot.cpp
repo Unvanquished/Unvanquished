@@ -27,6 +27,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "Entities.h"
 
+#include <glm/geometric.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/vector_angle.hpp>
+
 Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill("g_bot_defaultFill", "fills both teams with that number of bots at start of game", Cvar::NONE, 0);
 static Cvar::Range<Cvar::Cvar<int>> generateNeededMesh(
 	"g_bot_navgen_onDemand",
@@ -224,7 +228,9 @@ bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior )
 	botMind->runningNodes.clear();
 	botMind->currentNode = nullptr;
 	botMind->clearNav();
-	BotResetEnemyQueue( &botMind->enemyQueue );
+	//this does not makes much sense, but let's keep things like
+	//this for now.
+	botMind->m_queue.clear();
 
 	botMind->behaviorTree = ReadBehaviorTree( behavior.c_str(), &treeList );
 
@@ -240,6 +246,18 @@ bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior )
 		}
 	}
 	return true;
+}
+
+void BotPain( gentity_t* self, gentity_t* attacker, int )
+{
+	if ( G_Team( attacker ) != TEAM_NONE && not G_OnSameTeam( attacker, self ) )
+	{
+		botMemory_t& mind = *self->botMind;
+		glm::vec3 origin = VEC2GLM( self->s.origin );
+		glm::vec3 eOrigin = VEC2GLM( attacker->s.origin );
+		float dist = glm::distance( origin, eOrigin );
+		mind.addEnemy( self, attacker, mind.m_queue.size(), dist, { 1, 0, 0 } );
+	}
 }
 
 bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef behavior )
@@ -524,8 +542,8 @@ void G_BotSpectatorThink( gentity_t *self )
 
 	// reset stuff
 	self->botMind->goal.clear();
-	self->botMind->bestEnemy.ent = nullptr;
-	BotResetEnemyQueue( &self->botMind->enemyQueue );
+	self->botMind->bestEnemy = botMemory_t::queue_element_t();
+	self->botMind->m_queue.clear();
 	self->botMind->currentNode = nullptr;
 	self->botMind->clearNav();
 	self->botMind->futureAimTime = 0;
@@ -788,7 +806,130 @@ std::string G_BotToString( gentity_t *bot )
 			bot->botMind->botSkill.level );
 }
 
-bool botMemory_t::hasEnemy( void ) const
+// TODO: fill m_queue with ET_BUILDABLE spotted by friends
+// TODO: fill m_queue with ET_PLAYER spotted by friends
+void BotSearchForEnemy( gentity_t * self )
 {
-	return bestEnemy.ent != nullptr;
+	team_t team = G_Team( self );
+	botMemory_t *mind = self->botMind;
+
+	// purge invalid targets or targets bot forgot about
+	// TODO: do not purge ET_BUILDABLE based on time (they don't die nor move by themselves)
+	int stubbornness = g_bot_chasetime.Get() * ( 0.5f + mind->botSkill.percent() );
+	auto it = std::remove_if( mind->m_queue.begin(), mind->m_queue.end(),
+			[&]( botMemory_t::queue_element_t const& val )
+			{
+				return level.matchTime - val.lastSeen > stubbornness
+					|| !BotEntityIsValidEnemyTarget( self, val.enemy.get() );
+			} );
+	mind->m_queue.erase( it, mind->m_queue.end() );
+
+	float detectionRange = 0.f;
+	if ( team == TEAM_ALIENS )
+	{
+		detectionRange = ALIENSENSE_RANGE;
+	}
+	else if ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) )
+	{
+		detectionRange = RADAR_RANGE;
+	}
+
+	size_t oldEnemies = mind->m_queue.size();
+	glm::vec3 origin = VEC2GLM( self->s.origin );
+	for ( gentity_t const *target = g_entities; target < &g_entities[level.num_entities]; target++ )
+	{
+		team_t eTeam = G_Team( target );
+		// only alive enemies are elligible
+		if ( eTeam == TEAM_NONE || eTeam == team )
+		{
+			continue;
+		}
+		if ( ( target->entity != nullptr && not Entities::IsAlive( target ) )
+				|| ( target->entity == nullptr && target->health == 0 ) )
+		{
+			continue;
+		}
+
+		glm::vec3 eOrigin = VEC2GLM( target->s.origin );
+		bool isVisible = BotTargetIsVisible( self, target, MASK_SHOT );
+
+		float dist = glm::distance( origin, eOrigin );
+		// only seen or detected targets are elligible
+		if ( isVisible || dist < detectionRange )
+		{
+			mind->addEnemy( self, target, oldEnemies, dist, { 0, isVisible, !isVisible } );
+		}
+	}
+
+	if ( mind->m_queue.empty() )
+	{
+		mind->bestEnemy = botMemory_t::queue_element_t();
+		return;
+	}
+
+	std::sort( mind->m_queue.begin(), mind->m_queue.end() );
+
+	// pick a target depending on 1st seen time,
+	// g_bot_reactiontime and skill (do not react immediately)
+	int reactionTime = g_bot_reactiontime.Get() * ( 1.5f - mind->botSkill.percent() );
+	auto noticed = std::find_if( mind->m_queue.rbegin(), mind->m_queue.rend(),
+			[&]( botMemory_t::queue_element_t const& enemy )
+			{
+			return level.matchTime - enemy.firstSeen > reactionTime;
+			} );
+	if ( noticed == mind->m_queue.rend() )
+	{
+		mind->bestEnemy = botMemory_t::queue_element_t();
+		return;
+	}
+
+	mind->bestEnemy = *noticed;
 }
+
+void botMemory_t::addEnemy( const gentity_t *self, const GentityConstRef &target, size_t oldEnemies, float dist, queue_element_t::detectionType_t detection )
+{
+	entityType_t type = target.get()->s.eType;
+	// only consider buildables and players
+	if ( type != entityType_t::ET_PLAYER && type != entityType_t::ET_BUILDABLE )
+	{
+		return;
+	}
+	if ( !Entities::IsAlive( target.get() ) )
+	{
+		return;
+	}
+	// only check for already existing enemies in queue, since iterating over
+	// all entities, this can save some time
+	auto pos = std::find_if( m_queue.begin(), m_queue.begin() + oldEnemies,
+			[&]( botMemory_t::queue_element_t const& el )
+			{
+				return el.enemy.get() == target.get();
+			} );
+	float priority = BotGetEnemyPriority( self, target, dist );
+	bool previousTarget = self->botMind->bestEnemy.enemy == target;
+
+	if ( pos == m_queue.end() )
+	{
+		botMemory_t::queue_element_t enemy =
+		{
+			target,
+			priority,
+			dist,
+			level.matchTime,
+			level.matchTime, //firstSeen, set once only.
+			detection,
+			previousTarget
+		};
+		m_queue.push_back( std::move( enemy ) );
+		return;
+	}
+	pos->score = priority;
+	pos->dist = dist;
+	pos->lastSeen = level.matchTime;
+	//pos->firstSeen NOT updated
+	pos->detection.pain = detection.pain || pos->detection.pain;
+	pos->detection.visible = detection.visible;
+	pos->detection.radar = detection.radar;
+	pos->previousTarget = previousTarget;
+}
+

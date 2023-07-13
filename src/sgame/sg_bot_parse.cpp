@@ -78,7 +78,7 @@ static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( self->botMind->hasEnemy() );
+	return AIBoxInt( self->botMind->bestEnemy.valid() );
 }
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t* )
@@ -209,7 +209,6 @@ static AIValue_t botSkill( gentity_t *self, const AIValue_t* )
 
 static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 {
-	botTarget_t target;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
 	botEntityAndDistance_t e = AIEntityToGentity( self ,et );
 
@@ -218,14 +217,13 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 		return AIBoxInt( false );
 	}
 
-	target = e.ent;
+	botTarget_t target = e.ent;
 
 	return AIBoxInt( BotTargetInAttackRange( self, target ) );
 }
 
 static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 {
-	botTarget_t target;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
 	botEntityAndDistance_t e = AIEntityToGentity( self, et );
 
@@ -234,18 +232,7 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 		return AIBoxInt( false );
 	}
 
-	target = e.ent;
-
-	if ( BotTargetIsVisible( self, target, MASK_OPAQUE ) )
-	{
-		if ( BotEntityIsValidTarget( e.ent ) )
-		{
-			self->botMind->enemyLastSeen = level.time;
-		}
-		return AIBoxInt( true );
-	}
-
-	return AIBoxInt( false );
+	return AIBoxInt( BotTargetIsVisible( self, e.ent, MASK_OPAQUE ) );
 }
 
 static AIValue_t matchTime( gentity_t*, const AIValue_t* )

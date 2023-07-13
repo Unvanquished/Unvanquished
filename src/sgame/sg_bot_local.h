@@ -36,6 +36,7 @@ This file contains the headers of the internal functions used by bot only.
 
 #include "sg_local.h"
 
+#include <vector>
 #include <bitset>
 
 enum class navMeshStatus_t
@@ -91,23 +92,14 @@ private:
 	enum class targetType { EMPTY, COORDS, ENTITY } type = targetType::EMPTY;
 };
 
-#define MAX_ENEMY_QUEUE 32
-struct enemyQueueElement_t
-{
-	gentity_t *ent;
-	int        timeFound;
-};
-
-struct enemyQueue_t
-{
-	enemyQueueElement_t enemys[ MAX_ENEMY_QUEUE ];
-	int front;
-	int back;
-};
-
 struct botSkill_t
 {
 	int level;
+	inline float percent( void ) const
+	{
+		float l = static_cast<float>( level );
+		return ( l - 1.f ) / ( 9.f - 1.f );
+	}
 };
 
 #define MAX_NODE_DEPTH 20
@@ -115,8 +107,63 @@ struct AIBehaviorTree_t;
 struct AIGenericNode_t;
 struct botMemory_t
 {
-	enemyQueue_t enemyQueue;
-	int enemyLastSeen;
+	struct queue_element_t
+	{
+		GentityConstRef enemy;
+		float score; // higher is more important
+		float dist;
+		int lastSeen;
+		int firstSeen;
+		//TODO: int lastHurt; //allows to not be angry at someone until they die
+		struct detectionType_t
+		{
+			unsigned pain : 1;
+			unsigned visible : 1;
+			unsigned radar : 1; // or alien sense actually
+		} detection;
+		bool previousTarget = false;
+
+		//TODO: favor targets at range
+		float balancedScore( void ) const
+		{
+			float mod = 1.f;
+			if( detection.pain )
+			{
+				mod += 5.0f;
+			}
+			if( detection.visible )
+			{
+				mod += 3.0f;
+			}
+			if( detection.radar )
+			{
+				mod += 0.0f;
+			}
+			if( previousTarget )
+			{
+				mod *= 1.1f;
+			}
+			return mod * score;
+		}
+
+		bool operator<( queue_element_t const& o ) const
+		{
+			return balancedScore() < o.balancedScore();
+		}
+
+		bool valid( void ) const
+		{
+			return false
+				|| detection.pain
+				|| detection.visible
+				|| detection.radar
+				;
+		}
+	};
+	std::vector<queue_element_t> m_queue;
+	queue_element_t bestEnemy;
+public:
+	void addEnemy( const gentity_t *self, const GentityConstRef &enemy, size_t oldEnemies, float dist, queue_element_t::detectionType_t detection );
 
 	//team the bot is on when added
 	team_t botTeam;
@@ -128,7 +175,6 @@ struct botMemory_t
 
 	botSkill_t botSkill;
 
-	botEntityAndDistance_t bestEnemy;
 	botEntityAndDistance_t closestDamagedBuilding;
 
 	// For allied buildable types: closest alive and active buildable
@@ -151,6 +197,7 @@ public:
 	void setGoal( botTarget_t target, bool direct ) { goal = target; m_nav.directPathToGoal = direct; }
 	friend void G_BotThink( gentity_t * );
 	friend bool BotChangeGoal( gentity_t *, botTarget_t );
+	friend void BotSearchForEnemy( gentity_t * );
 
 	int lastThink;
 	int stuckTime;
@@ -165,7 +212,6 @@ public:
 
 	Util::optional< glm::vec3 > userSpecifiedPosition;
 	Util::optional< int > userSpecifiedClientNum;
-	bool hasEnemy( void ) const;
 private:
 	//avoid relying on buttons to remember what AI was doing
 	bool wantSprinting = false;

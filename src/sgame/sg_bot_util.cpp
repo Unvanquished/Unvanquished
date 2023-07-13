@@ -443,11 +443,9 @@ float BotGetHealScore( gentity_t *self )
 	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentHealth ) / sqrt( timeDist );
 }
 
-static float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
+float BotGetEnemyPriority( const gentity_t *self, const GentityConstRef ent, float dist )
 {
 	float enemyScore;
-	float distanceScore;
-	distanceScore = Distance( self->s.origin, ent->s.origin );
 
 	if ( ent->client )
 	{
@@ -558,7 +556,7 @@ static float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 		}
 	}
-	return enemyScore * 1000 / distanceScore;
+	return enemyScore * 1000 / dist;
 }
 
 
@@ -872,85 +870,6 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			self->botMind->closestDamagedBuilding.distance = sqrtf( distSqr );
 			minDistSqr = distSqr;
 		}
-	}
-}
-
-static bool BotEntityIsVisible( const gentity_t *self, gentity_t *target, int mask )
-{
-	botTarget_t bt;
-	bt = target;
-	return BotTargetIsVisible( self, bt, mask );
-}
-
-static float BotAimAngle( gentity_t *self, const glm::vec3 &pos )
-{
-	glm::vec3 forward;
-
-	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
-	glm::vec3 viewPos = BG_GetClientViewOrigin( &self->client->ps );
-	glm::vec3 ideal = pos - viewPos;
-
-	return glm::degrees( glm::angle( glm::normalize( forward ), glm::normalize( ideal ) ) );
-}
-
-gentity_t* BotFindBestEnemy( gentity_t *self )
-{
-	float bestVisibleEnemyScore = 0.0f;
-	float bestInvisibleEnemyScore = 0.0f;
-	gentity_t *bestVisibleEnemy = nullptr;
-	gentity_t *bestInvisibleEnemy = nullptr;
-	gentity_t *target;
-	team_t    team = G_Team( self );
-	bool  hasRadar = ( team == TEAM_ALIENS ) ||
-	                     ( team == TEAM_HUMANS && BG_InventoryContainsUpgrade( UP_RADAR, self->client->ps.stats ) );
-
-	for ( target = g_entities; target < &g_entities[level.num_entities]; target++ )
-	{
-		float newScore;
-
-		if ( !BotEntityIsValidEnemyTarget( self, target ) )
-		{
-			continue;
-		}
-
-		if ( DistanceSquared( self->s.origin, target->s.origin ) > Square( g_bot_aliensenseRange.Get() ) )
-		{
-			continue;
-		}
-
-		glm::vec3 vorigin = VEC2GLM( target->s.origin );
-		if ( target->s.eType == entityType_t::ET_PLAYER && self->client->pers.team == TEAM_HUMANS
-		    && BotAimAngle( self, vorigin ) > g_bot_fov.Get() / 2 )
-		{
-			continue;
-		}
-
-		if ( target == self->botMind->goal.getTargetedEntity() )
-		{
-			continue;
-		}
-
-		newScore = BotGetEnemyPriority( self, target );
-
-		if ( newScore > bestVisibleEnemyScore && BotEntityIsVisible( self, target, MASK_OPAQUE ) )
-		{
-			//store the new score and the index of the entity
-			bestVisibleEnemyScore = newScore;
-			bestVisibleEnemy = target;
-		}
-		else if ( newScore > bestInvisibleEnemyScore && hasRadar )
-		{
-			bestInvisibleEnemyScore = newScore;
-			bestInvisibleEnemy = target;
-		}
-	}
-	if ( bestVisibleEnemy || !hasRadar )
-	{
-		return bestVisibleEnemy;
-	}
-	else
-	{
-		return bestInvisibleEnemy;
 	}
 }
 
@@ -1368,12 +1287,20 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	ASSERT( target.targetsValidEntity() );
 
 	trace_t trace;
-	glm::vec3  muzzle, targetPos;
-	glm::vec3  forward, right, up;
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
+	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
+	forward = glm::normalize( forward );
+	glm::vec3 targetPos = target.getPos();
 
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
-	muzzle = G_CalcMuzzlePoint( self, forward );
-	targetPos = target.getPos();
+	glm::vec3 viewPos = BG_GetClientViewOrigin( &self->client->ps );
+	glm::vec3 targetDir = glm::normalize( targetPos - viewPos );
+	float angle = glm::degrees( glm::angle( forward, targetDir ) );
+
+	if ( angle >= g_bot_fov.Get() / 2 )
+	{
+		return false;
+	}
 
 	if ( !trap_InPVS( &muzzle[0], &targetPos[0] ) )
 	{
@@ -2359,79 +2286,6 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	ASSERT( skill >= MIN_SKILL && skill <= MAX_SKILL );
 
 	self->botMind->botSkill.level = skill;
-}
-
-void BotResetEnemyQueue( enemyQueue_t *queue )
-{
-	queue->front = 0;
-	queue->back = 0;
-	memset( queue->enemys, 0, sizeof( queue->enemys ) );
-}
-
-static void BotPushEnemy( enemyQueue_t *queue, gentity_t *enemy )
-{
-	if ( enemy )
-	{
-		if ( ( queue->back + 1 ) % MAX_ENEMY_QUEUE != queue->front )
-		{
-			queue->enemys[ queue->back ].ent = enemy;
-			queue->enemys[ queue->back ].timeFound = level.time;
-			queue->back = ( queue->back + 1 ) % MAX_ENEMY_QUEUE;
-		}
-	}
-}
-
-static gentity_t *BotPopEnemy( enemyQueue_t *queue )
-{
-	// queue empty
-	if ( queue->front == queue->back )
-	{
-		return nullptr;
-	}
-
-	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.Get() )
-	{
-		gentity_t *ret = queue->enemys[ queue->front ].ent;
-		queue->front = ( queue->front + 1 ) % MAX_ENEMY_QUEUE;
-		return ret;
-	}
-
-	return nullptr;
-}
-
-void BotPain( gentity_t *self, gentity_t *attacker, int )
-{
-	if ( G_Team( attacker ) != TEAM_NONE
-		&& !G_OnSameTeam( self, attacker )
-		&& attacker->s.eType == entityType_t::ET_PLAYER
-		)
-	{
-
-		BotPushEnemy( &self->botMind->enemyQueue, attacker );
-	}
-}
-
-void BotSearchForEnemy( gentity_t *self )
-{
-	gentity_t *enemy = BotFindBestEnemy( self );
-	enemyQueue_t *queue = &self->botMind->enemyQueue;
-	BotPushEnemy( queue, enemy );
-
-	do
-	{
-		enemy = BotPopEnemy( queue );
-	} while ( enemy && !BotEntityIsValidEnemyTarget( self, enemy ) );
-
-	self->botMind->bestEnemy.ent = enemy;
-
-	if ( self->botMind->bestEnemy.ent )
-	{
-		self->botMind->bestEnemy.distance = Distance( self->s.origin, self->botMind->bestEnemy.ent->s.origin );
-	}
-	else
-	{
-		self->botMind->bestEnemy.distance = std::numeric_limits<float>::max();
-	}
 }
 
 void BotResetStuckTime( gentity_t *self )
