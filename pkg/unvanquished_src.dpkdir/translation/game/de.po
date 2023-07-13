@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-07-13 17:22+0000\n"
+"PO-Revision-Date: 2023-07-14 19:46+0000\n"
 "Last-Translator: Erarnitox <erarnitox@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/de/>\n"
@@ -808,7 +808,7 @@ msgstr "Maus und Zielen"
 
 #: ui/menu_ingame.rml:102 ui/menu_main.rml:41 ui/options_sound.rml:7
 msgid "Sound"
-msgstr "Sound"
+msgstr "Ton"
 
 #: ui/menu_ingame.rml:103 ui/menu_main.rml:42
 msgid "User interface and HUD"
@@ -828,7 +828,7 @@ msgstr "Hilfe"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
 msgid "Gameplay guide"
-msgstr ""
+msgstr "Spielanleitung"
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
@@ -851,19 +851,21 @@ msgid ""
 "Many players suffer mild “motion sickness” from playing first-person "
 "shooters. A higher FOV can help combat this."
 msgstr ""
+"Vielen Spielern wird es beim Spielen von First-Person Shootern leicht übel. "
+"Ein höheres Blickfeld kann dagegen helfen."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "Grad"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:273
 #: ui/options_mouse.rml:21 ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "Zurücksetzen"
 
 #: ui/options_fov.rml:40
 msgid "Mantis"
@@ -891,11 +893,11 @@ msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "Deaktiviert"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "Leicht"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
@@ -903,11 +905,11 @@ msgstr "Standard"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "Stark"
 
 #: ui/options_fov.rml:81
 msgid "“Up and down” movement"
-msgstr ""
+msgstr "\"hoch und runter\" Bewegung"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
@@ -915,15 +917,15 @@ msgstr ""
 
 #: ui/options_fov.rml:92
 msgid "“Twisting” movement"
-msgstr ""
+msgstr "\"dreh\" Bewegung"
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Voreinstellungen"
 
 #: ui/options_graphics.rml:24
 msgid "Lowest"
-msgstr ""
+msgstr "Niedrigste"
 
 #: ui/options_graphics.rml:25
 msgid ""
@@ -986,15 +988,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Bildschirmauflösung"
 
 #: ui/options_graphics.rml:62
 msgid "Borderless window"
-msgstr ""
+msgstr "Vollbild Fenster"
 
 #: ui/options_graphics.rml:66
 msgid "Fullscreen"
-msgstr ""
+msgstr "Vollbild"
 
 #: ui/options_graphics.rml:71 ui/options_graphics.rml:263
 msgid "Off"
@@ -1020,14 +1022,15 @@ msgid ""
 msgstr ""
 
 #: ui/options_graphics.rml:81
+#, fuzzy
 msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr ""
+msgstr "Schnelle Annäherung für anit-aliasing (FXAA)"
 
 #: ui/options_graphics.rml:85 ui/options_graphics.rml:132
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
 #: ui/options_graphics.rml:235
 msgid "Apply now"
-msgstr ""
+msgstr "Jetzt anwenden"
 
 #: ui/options_graphics.rml:89
 msgid "Lighting"
@@ -1100,7 +1103,7 @@ msgstr "Kleckse"
 
 #: ui/options_graphics.rml:122
 msgid "low"
-msgstr ""
+msgstr "niedrig"
 
 #: ui/options_graphics.rml:124
 msgid "Exponential mapping"
@@ -4006,9 +4009,8 @@ msgid "There is not enough room here to change armour."
 msgstr "Es ist hier zu eng um die Rüstung zu wechseln."
 
 #: src/cgame/cg_servercmds.cpp:635
-#, fuzzy
 msgid "Not enough room here to change armour."
-msgstr "Es ist hier zu eng um die Rüstung zu wechseln."
+msgstr "Kein Platz um die Rüstung zu wechseln."
 
 #: src/cgame/cg_servercmds.cpp:639
 msgid ""
