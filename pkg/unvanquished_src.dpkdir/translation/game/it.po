@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-07-05 15:14+0000\n"
+"PO-Revision-Date: 2023-07-16 21:05+0000\n"
 "Last-Translator: Emily Fiorentini <emily@xewer.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr "Costruire"
+msgstr "costruzione"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
@@ -211,9 +211,9 @@ msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"Gli umani comprano e vendono armi dall'armeria [armeria], fai in modo che ne "
-"sia stata costruita almeno una! Usa il kit costruzione per un'armeria se "
-"mancante."
+"Gli umani comprano e vendono armi dall'armeria [armoury], fai in modo che ne "
+"sia stata costruita almeno una! Usa il kit costruzione per creare un'armeria "
+"se mancante."
 
 #: ui/help_gameplay.rml:51
 msgid "Powering buildables"
@@ -269,7 +269,7 @@ msgid ""
 msgstr ""
 "I punti costruzione si ottengono tramite due tipi di strutture di estrazione "
 "di energia: per gli umani il drill [drill] e per gli alieni il leech [leech]"
-". Queste strutture necessitano di essere distribuiti in modo sparso per "
+". Queste strutture necessitano di essere distribuite in modo sparso per "
 "motivi di efficienza."
 
 #: ui/help_gameplay.rml:68
@@ -1066,7 +1066,7 @@ msgstr "Applica ora"
 
 #: ui/options_graphics.rml:89
 msgid "Lighting"
-msgstr "Luminosità"
+msgstr "Illuminazione"
 
 #: ui/options_graphics.rml:91
 msgid "Lights"
@@ -3506,102 +3506,102 @@ msgstr "%s%s ^*è precipitato nel vuoto"
 #: src/cgame/cg_event.cpp:535
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr ""
+msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:535
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr ""
+msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:535
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
-msgstr ""
+msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:536
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*; %s%s%s^* ha contribuito"
 
 #: src/cgame/cg_event.cpp:536
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*; %s%s%s^* ha contribuito"
 
 #: src/cgame/cg_event.cpp:536
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*; %s%s%s^* ha contribuito"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*è stato ucciso da %s%s%s"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*è stata uccisa da %s%s%s"
 
 #: src/cgame/cg_event.cpp:540
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
-msgstr ""
+msgstr "%s%s ^*è stato ucciso da %s%s%s"
 
 #: src/cgame/cg_event.cpp:541
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^*è stato ucciso da %s%s%s^* e %s%s%s"
 
 #: src/cgame/cg_event.cpp:541
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^*è stata uccisa da %s%s%s^* e %s%s%s"
 
 #: src/cgame/cg_event.cpp:541
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
-msgstr ""
+msgstr "%s%s ^*è stato ucciso da %s%s%s^* e %s%s%s"
 
 #: src/cgame/cg_event.cpp:542
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
-msgstr ""
+msgstr "%s%s ^*si è suicidato"
 
 #: src/cgame/cg_event.cpp:542
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
-msgstr ""
+msgstr "%s%s ^*si è suicidata"
 
 #: src/cgame/cg_event.cpp:542
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
-msgstr ""
+msgstr "%s%s ^*si è suicidato"
 
 #: src/cgame/cg_event.cpp:605
 msgctxt "male"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* è morto"
 
 #: src/cgame/cg_event.cpp:605
 msgctxt "female"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* è morta"
 
 #: src/cgame/cg_event.cpp:605
 msgctxt "neuter"
 msgid "%s%s^* died"
-msgstr ""
+msgstr "%s%s^* è morto"
 
 #: src/cgame/cg_consolecmds.cpp:129
 #, c-format
 msgid "Listed %2d clients"
-msgstr ""
+msgstr "Client %2d elencati"
 
 #: src/cgame/cg_event.cpp:260 src/cgame/cg_event.cpp:597
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
-msgstr ""
+msgstr "Hai ucciso ^1TEAMMATE^* %s"
 
 #: src/cgame/cg_event.cpp:1239
 msgid "The Overmind is under attack!"
@@ -3613,11 +3613,11 @@ msgstr "Il reattore è sotto attacco!"
 
 #: src/cgame/cg_event.cpp:1261
 msgid "The Overmind is dying!"
-msgstr ""
+msgstr "L'Overmind sta morendo!"
 
 #: src/cgame/cg_event.cpp:1267
 msgid "The reactor is going down!"
-msgstr ""
+msgstr "Il reattore sta andando giù!"
 
 #: src/cgame/cg_event.cpp:1286 src/cgame/cg_event.cpp:1308
 msgid "Our base is under attack!"
@@ -3626,144 +3626,144 @@ msgstr "La nostra base è sotto attacco!"
 #: src/cgame/cg_event.cpp:1299
 #, c-format
 msgid "%s Under attack – %s"
-msgstr ""
+msgstr "%s Sotto attacco – %s"
 
 #: src/cgame/cg_event.cpp:1303
 #, c-format
 msgid "%s Under attack"
-msgstr ""
+msgstr "%s Sotto attacco"
 
 #: src/cgame/cg_main.cpp:494
 msgid "Calling home…"
-msgstr ""
+msgstr "Chiamando casa…"
 
 #: src/cgame/cg_main.cpp:494
 msgid "Sending to the front…"
-msgstr ""
+msgstr "Inviando al fronte…"
 
 #: src/cgame/cg_main.cpp:499
 msgid "Tracking your movements…"
-msgstr ""
+msgstr "Si stanno tracciando i tuoi movimenti…"
 
 #: src/cgame/cg_main.cpp:499
 msgid "Letting out the magic smoke…"
-msgstr ""
+msgstr "Rilasciando fuori il fumo magico…"
 
 #: src/cgame/cg_main.cpp:503
 msgid "Collecting bees for the hives…"
-msgstr ""
+msgstr "Si stanno accumulando le api per gli alveari…"
 
 #: src/cgame/cg_main.cpp:503
 msgid "Initialising fireworks…"
-msgstr ""
+msgstr "Inizializzando il fuoco…"
 
 #: src/cgame/cg_main.cpp:503
 msgid "Causing electrical faults…"
-msgstr ""
+msgstr "Si stanno causando guasti elettrici…"
 
 #: src/cgame/cg_main.cpp:507
 msgid "Reading the manual…"
-msgstr ""
+msgstr "Leggendo il manuale…"
 
 #: src/cgame/cg_main.cpp:507
 msgid "Looking at blueprints…"
-msgstr ""
+msgstr "Guardando la planimetria…"
 
 #: src/cgame/cg_main.cpp:511
 msgid "Generating annoying noises…"
-msgstr ""
+msgstr "Generando rumori fastidiosi…"
 
 #: src/cgame/cg_main.cpp:511
 msgid "Recording granger purring…"
-msgstr ""
+msgstr "Registrando le fusa del granger…"
 
 #: src/cgame/cg_main.cpp:515
 msgid "Hello World!"
-msgstr ""
+msgstr "Ciao Mondo!"
 
 #: src/cgame/cg_main.cpp:515
 msgid "Making a scene…"
-msgstr ""
+msgstr "Creando una scena…"
 
 #: src/cgame/cg_main.cpp:519
 msgid "Taking pictures of the world…"
-msgstr ""
+msgstr "Scattando una foto del mondo…"
 
 #: src/cgame/cg_main.cpp:519
 msgid "Drawing smiley faces…"
-msgstr ""
+msgstr "Disegnando facce sorridenti…"
 
 #: src/cgame/cg_main.cpp:523
 msgid "Sharpening the aliens' claws…"
-msgstr ""
+msgstr "Si stanno affilando gli artigli degli alieni…"
 
 #: src/cgame/cg_main.cpp:523
 msgid "Overloading lucifer cannons…"
-msgstr ""
+msgstr "Sovraccaricando il lucifer cannon…"
 
 #: src/cgame/cg_main.cpp:527
 msgid "Unwrapping jetpacks…"
-msgstr ""
+msgstr "Scartando il jetpack…"
 
 #: src/cgame/cg_main.cpp:527
 msgid "Spinning silk for reticles…"
-msgstr ""
+msgstr "Filando la seta per i reticoli…"
 
 #: src/cgame/cg_main.cpp:531
 msgid "Adding turret spam…"
-msgstr ""
+msgstr "Aggiungendo spam di torrette…"
 
 #: src/cgame/cg_main.cpp:531
 msgid "Awakening the overmind…"
-msgstr ""
+msgstr "Svegliando l'overmind…"
 
 #: src/cgame/cg_main.cpp:535
 msgid "Teleporting soldiers…"
-msgstr ""
+msgstr "Teletrasportando i soldati…"
 
 #: src/cgame/cg_main.cpp:535
 msgid "Replicating alien DNA…"
-msgstr ""
+msgstr "Replicando il DNA alieno…"
 
 #: src/cgame/cg_main.cpp:539
 msgid "Customizing helmets…"
-msgstr ""
+msgstr "Personalizzando gli elmetti…"
 
 #: src/cgame/cg_main.cpp:543
 msgid "Compiling GLSL shaders (please be patient)…"
-msgstr ""
+msgstr "Compilando gli shader GLSL (attendi per favore)…"
 
 #: src/cgame/cg_main.cpp:547
 msgid "Surveying the map…"
-msgstr ""
+msgstr "Ispezionando la mappa…"
 
 #: src/cgame/cg_main.cpp:551
 msgid "Done!"
-msgstr ""
+msgstr "Fatto!"
 
 #: src/cgame/cg_main.cpp:1129
 msgid "Generating bot navigation meshes"
-msgstr ""
+msgstr "Generando le navmesh dei bot"
 
 #: src/cgame/cg_main.cpp:1171
 #, c-format
 msgid "by %s"
-msgstr ""
+msgstr "da %s"
 
 #: src/cgame/cg_main.cpp:1191
 #, c-format
 msgid "by %s and %s"
-msgstr ""
+msgstr "da %s e %s"
 
 #: src/cgame/cg_players.cpp:1444
 #, c-format
 msgid "%s^* renamed to %s"
-msgstr ""
+msgstr "%s^* rinominato come %s"
 
 #: src/cgame/cg_players.cpp:1451
 #, c-format
 msgid "%s^* left the %s"
-msgstr ""
+msgstr "%s^* ha lasciato %s"
 
 #: src/cgame/cg_players.cpp:1456
 #, c-format
@@ -3811,19 +3811,19 @@ msgstr "Attesa stato del gioco…"
 
 #: src/cgame/cg_rocket_draw.cpp:3052
 msgid "Say:"
-msgstr ""
+msgstr "Parla:"
 
 #: src/cgame/cg_rocket_draw.cpp:3053
 msgid "Team Say:"
-msgstr ""
+msgstr "Parla in Squadra:"
 
 #: src/cgame/cg_rocket_draw.cpp:3054
 msgid "Admin Say:"
-msgstr ""
+msgstr "Parla tra gli Admin:"
 
 #: src/cgame/cg_rocket_draw.cpp:3055
 msgid "Command:"
-msgstr ""
+msgstr "Comando:"
 
 #: src/cgame/cg_rocket_draw.cpp:3452
 msgid "FIGHT!"
@@ -3892,6 +3892,8 @@ msgstr "Nessun posto libero per giocatore"
 #: src/cgame/cg_servercmds.cpp:480
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
+"Devi aspettare che il tempo di riscaldamento finisca prima di unirti a una "
+"squadra."
 
 #: src/cgame/cg_servercmds.cpp:482
 msgid "You cannot join a team during warmup."
@@ -3993,11 +3995,11 @@ msgstr "La costruzione di strutture è disattivata per la tua squadra"
 
 #: src/cgame/cg_servercmds.cpp:565
 msgid "You are no longer permitted to build."
-msgstr ""
+msgstr "Non ti è piu permesso di costruire."
 
 #: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build"
-msgstr ""
+msgstr "Non ti è piu permesso di costruire"
 
 #: src/cgame/cg_servercmds.cpp:570
 msgid ""
@@ -4025,7 +4027,7 @@ msgstr "Non ci sono più risorse disponibili"
 
 #: src/cgame/cg_servercmds.cpp:582
 msgid "This buildable is not powered."
-msgstr ""
+msgstr "Le costruzioni non sono alimentate."
 
 #: src/cgame/cg_servercmds.cpp:583
 msgid "This buildable is not powered"
@@ -4036,6 +4038,8 @@ msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
 msgstr ""
+"Non c'è nessun reattore. Deve essere costruito un reattore prima di ogni "
+"altra struttura."
 
 #: src/cgame/cg_servercmds.cpp:589
 msgid "There is no reactor"
@@ -4054,7 +4058,7 @@ msgstr "Ci può essere solo un Reattore"
 
 #: src/cgame/cg_servercmds.cpp:600
 msgid "Your team cannot have any more drills"
-msgstr ""
+msgstr "La tua squadra non puo avere altri drill"
 
 #: src/cgame/cg_servercmds.cpp:604
 msgid ""
@@ -4108,10 +4112,12 @@ msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
 msgstr ""
+"Devi essere vicino a un reattore, un drill o a un'armeria alimentata per "
+"acquistare energia o munizioni."
 
 #: src/cgame/cg_servercmds.cpp:630
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
-msgstr ""
+msgstr "Devi essere vicino a un Reattore, un Drill o a un'armeria alimentata"
 
 #: src/cgame/cg_servercmds.cpp:634
 msgid "There is not enough room here to change armour."
@@ -4148,6 +4154,8 @@ msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
 msgstr ""
+"Non c'è nessun Overmind. Deve essere costruito un Overmind prima di "
+"qualsiasi altra struttura."
 
 #: src/cgame/cg_servercmds.cpp:658 src/cgame/cg_servercmds.cpp:698
 msgid "There is no Overmind"
@@ -4166,7 +4174,7 @@ msgstr "Ci può essere un solo Overmind"
 
 #: src/cgame/cg_servercmds.cpp:669
 msgid "Your team cannot have any more leeches"
-msgstr ""
+msgstr "La tua squadra non può avere altri leech"
 
 #: src/cgame/cg_servercmds.cpp:673
 msgid ""
@@ -4206,7 +4214,7 @@ msgstr "Questo locazione è troppo vicino al nemico per poter evolvere"
 
 #: src/cgame/cg_servercmds.cpp:691 src/cgame/cg_servercmds.cpp:692
 msgid "The Overmind is too far away to devolve."
-msgstr ""
+msgstr "L'Overmind è troppo lontano perche tu possa retrocedere."
 
 #: src/cgame/cg_servercmds.cpp:696
 msgid ""
@@ -4225,7 +4233,7 @@ msgstr "Non puoi evolverti fino a che il tempo da costruttore finisce"
 
 #: src/cgame/cg_servercmds.cpp:707
 msgid "Wait a second after attacking or evolving"
-msgstr ""
+msgstr "Aspetta un secondo dopo aver attaccato o evoluto"
 
 #: src/cgame/cg_servercmds.cpp:715
 #, c-format
@@ -4258,22 +4266,22 @@ msgstr "Il %s non è stato ancora sbloccato"
 #: src/cgame/cg_servercmds.cpp:743
 #, c-format
 msgid "cgame: debug: no such menu %d"
-msgstr ""
+msgstr "cgame: debug: menu inesistente %d"
 
 #: src/cgame/cg_servercmds.cpp:902
 #, c-format
 msgid "%sPrivate message from: ^7%s"
-msgstr ""
+msgstr "%sMessaggio privato da: ^7%s"
 
 #: src/cgame/cg_servercmds.cpp:910
 #, c-format
 msgid ">> to reply, say: /m %d [your message] <<"
-msgstr ""
+msgstr ">> per rispondere, scrivi: /m %d [il tuo messaggio] <<"
 
 #: src/cgame/cg_servercmds.cpp:1392
 #, c-format
 msgid "Unknown client game command: %s"
-msgstr ""
+msgstr "Comando client del gioco sconosciuto: %s"
 
 #: src/cgame/cg_tutorial.cpp:44
 msgid "Run/Walk"
@@ -4301,7 +4309,7 @@ msgstr "Attacco Secondario"
 
 #: src/cgame/cg_tutorial.cpp:50
 msgid "Tertiary Attack"
-msgstr ""
+msgstr "Attacco terziario"
 
 #: src/cgame/cg_tutorial.cpp:51
 msgid "Reload"
@@ -4321,19 +4329,19 @@ msgstr "Demolisci Struttura"
 
 #: src/cgame/cg_tutorial.cpp:55
 msgid "Previous Weapon"
-msgstr ""
+msgstr "Arma Precedente"
 
 #: src/cgame/cg_tutorial.cpp:56
 msgid "Next Weapon"
-msgstr ""
+msgstr "Arma Successiva"
 
 #: src/cgame/cg_tutorial.cpp:57
 msgid "Global chat"
-msgstr ""
+msgstr "Chat globale"
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Team chat"
-msgstr ""
+msgstr "Chat di squadra"
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
@@ -4341,19 +4349,19 @@ msgstr "Attiva/Disattiva Console"
 
 #: src/cgame/cg_tutorial.cpp:60
 msgid "Toggle Menu"
-msgstr ""
+msgstr "Menu toggle"
 
 #: src/cgame/cg_tutorial.cpp:61
 msgid "Throw a grenade"
-msgstr ""
+msgstr "Lancia una granata"
 
 #: src/cgame/cg_tutorial.cpp:106
 msgid "SHIFT-ESCAPE"
-msgstr ""
+msgstr "SHIFT-ESCAPE"
 
 #: src/cgame/cg_tutorial.cpp:113
 msgid "ESCAPE"
-msgstr ""
+msgstr "ESCAPE"
 
 #: src/cgame/cg_tutorial.cpp:126
 #, c-format
@@ -4363,274 +4371,276 @@ msgstr "\"%s\" (non assegnato)"
 #: src/cgame/cg_tutorial.cpp:178
 #, c-format
 msgid "Press %s to place the %s."
-msgstr ""
+msgstr "Premi %s per posizionare il %s."
 
 #: src/cgame/cg_tutorial.cpp:183
 #, c-format
 msgid "Press %s to cancel placing the %s."
-msgstr ""
+msgstr "Premi %s per annullare il posizionamento di %s."
 
 #: src/cgame/cg_tutorial.cpp:190
 #, c-format
 msgid "Press %s to build a structure."
-msgstr ""
+msgstr "Premi %s per costruire una struttura."
 
 #: src/cgame/cg_tutorial.cpp:202
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
-msgstr ""
+msgstr "Premi %s per deselezionare questa struttura per la sostituzione."
 
 #: src/cgame/cg_tutorial.cpp:208
 #, c-format
 msgid "Press %s to mark this structure for replacement."
-msgstr ""
+msgstr "Premi %s per selezionare questa struttura alla sostituzione."
 
 #: src/cgame/cg_tutorial.cpp:213
 #, c-format
 msgid "Hold %s to deconstruct this structure."
-msgstr ""
+msgstr "Tieni premuto %s per distruggere questa struttura."
 
 #: src/cgame/cg_tutorial.cpp:230 src/cgame/cg_tutorial.cpp:280
 #: src/cgame/cg_tutorial.cpp:357
 #, c-format
 msgid "Press %s to swipe."
-msgstr ""
+msgstr "Premi %s per colpire."
 
 #: src/cgame/cg_tutorial.cpp:238
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
 msgstr ""
+"Premi %s per sputare. Gli sputi rallentano gli umani ed estinguono il fuoco."
 
 #: src/cgame/cg_tutorial.cpp:243 src/cgame/cg_tutorial.cpp:267
 #: src/cgame/cg_tutorial.cpp:290
 #, c-format
 msgid "Press %s to walk on walls."
-msgstr ""
+msgstr "Premi %s per camminare sui muri."
 
 #: src/cgame/cg_tutorial.cpp:259
 msgid "Touch humans to damage them."
-msgstr ""
+msgstr "Tocca gli umani per ferirli."
 
 #: src/cgame/cg_tutorial.cpp:263
 msgid "Aim at their heads to cause more damage."
-msgstr ""
+msgstr "Mira alla loro testa per causare piu danni."
 
 #: src/cgame/cg_tutorial.cpp:285
 #, c-format
 msgid "Press %s to lunge."
-msgstr ""
+msgstr "Premi %s per balzare in avanti."
 
 #: src/cgame/cg_tutorial.cpp:303 src/cgame/cg_tutorial.cpp:329
 #, c-format
 msgid "Press %s to bite."
-msgstr ""
+msgstr "Premi %s per mordere."
 
 #: src/cgame/cg_tutorial.cpp:310
 #, c-format
 msgid "Press %s to invoke an electrical attack."
-msgstr ""
+msgstr "Premi %s per un attacco elettrico."
 
 #: src/cgame/cg_tutorial.cpp:316
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
-msgstr ""
+msgstr "Tieni premuto %s quindi tocca un muro per camminarci."
 
 #: src/cgame/cg_tutorial.cpp:336
 #, c-format
 msgid "Press %s to launch a barb."
-msgstr ""
+msgstr "Premi %s per sputare un proiettile."
 
 #: src/cgame/cg_tutorial.cpp:342
 #, c-format
 msgid "Hold down and release %s to pounce."
-msgstr ""
+msgstr "Tieni premuto e rilascia %s per balzare."
 
 #: src/cgame/cg_tutorial.cpp:362
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
-msgstr ""
+msgstr "Tieni premuto %s mentre ti muovi in avanti per calpestare."
 
 #: src/cgame/cg_tutorial.cpp:391
 msgid "Find an Armoury, Drill or Reactor for more ammo."
-msgstr ""
+msgstr "Trova un'Armeria, un Drill o il Reattore per più munizioni."
 
 #: src/cgame/cg_tutorial.cpp:397
 msgid "Find an Armoury for more ammo."
-msgstr ""
+msgstr "Trova un'Armeria per avere altre munizioni."
 
 #: src/cgame/cg_tutorial.cpp:413 src/cgame/cg_tutorial.cpp:421
 #: src/cgame/cg_tutorial.cpp:447
 #, c-format
 msgid "Press %s to fire the %s."
-msgstr ""
+msgstr "Premi %s per fare fuoco al %s."
 
 #: src/cgame/cg_tutorial.cpp:427
 #, c-format
 msgid "Hold %s to zoom."
-msgstr ""
+msgstr "Tieni premuto %s per ingrandire."
 
 #: src/cgame/cg_tutorial.cpp:434
 #, c-format
 msgid "Hold %s to activate the %s."
-msgstr ""
+msgstr "Tieni premuto %s per attivare il %s."
 
 #: src/cgame/cg_tutorial.cpp:442
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
-msgstr ""
+msgstr "TIeni premuto e poi rilascia %s per sparare un colpo caricato."
 
 #: src/cgame/cg_tutorial.cpp:473
 #, c-format
 msgid "Press %s to throw the %s."
-msgstr ""
+msgstr "Premi %s per lanciare il %s."
 
 #: src/cgame/cg_tutorial.cpp:485 src/cgame/cg_tutorial.cpp:522
 #, c-format
 msgid "Press %s to use the %s."
-msgstr ""
+msgstr "Premi %s per usare il %s."
 
 #: src/cgame/cg_tutorial.cpp:493
 #, c-format
 msgid "Hold %s to use the Jetpack."
-msgstr ""
+msgstr "Tieni premuto %s per usare il Jetpack."
 
 #: src/cgame/cg_tutorial.cpp:503
 #, c-format
 msgid "Press %s to use your Medkit."
-msgstr ""
+msgstr "Premi %s per usare il tuo Medkit."
 
 #: src/cgame/cg_tutorial.cpp:512
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
-msgstr ""
+msgstr "Premi %s per acquistare equipaggiamento migliore nell'armeria."
 
 #: src/cgame/cg_tutorial.cpp:530
 #, c-format
 msgid "Press %s and any direction to sprint."
-msgstr ""
+msgstr "Premi %s e qualsiasi direzione per correre veloce."
 
 #: src/cgame/cg_tutorial.cpp:535
 #, c-format
 msgid "Press %s to crouch."
-msgstr ""
+msgstr "Premi %s per abbassarti."
 
 #: src/cgame/cg_tutorial.cpp:552
 #, c-format
 msgid "Press %s to leave spawn queue."
-msgstr ""
+msgstr "Premi %s per lasciare la coda di spawn."
 
 #: src/cgame/cg_tutorial.cpp:559
 #, c-format
 msgid "Press %s to spawn."
-msgstr ""
+msgstr "Premi %s per comparire."
 
 #: src/cgame/cg_tutorial.cpp:567
 #, c-format
 msgid "Press %s to join a team."
-msgstr ""
+msgstr "Premi %s per unirti a una squadra."
 
 #: src/cgame/cg_tutorial.cpp:575
 #, c-format
 msgid "Press %s to stop following."
-msgstr ""
+msgstr "Premi %s per smettere di seguire."
 
 #: src/cgame/cg_tutorial.cpp:582
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
-msgstr ""
+msgstr "Premi %s per entrare in modalita spettatore seguendo un giocatore."
 
 #: src/cgame/cg_tutorial.cpp:589
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
-msgstr ""
+msgstr "Premi %s per ritornare come spettatore in prima persona."
 
 #: src/cgame/cg_tutorial.cpp:595
 #, c-format
 msgid "Press %s to follow the next player."
-msgstr ""
+msgstr "Premi %s per seguire il prossimo giocatore."
 
 #: src/cgame/cg_tutorial.cpp:602
 #, c-format
 msgid "Press %s to follow a player."
-msgstr ""
+msgstr "Premi %s per seguire un giocatore."
 
 #: src/cgame/cg_tutorial.cpp:685
 #, c-format
 msgid "Press %s to evolve."
-msgstr ""
+msgstr "Premi %s per evolvere."
 
 #: src/cgame/cg_tutorial.cpp:696
 #, c-format
 msgid "Press %s when ready to continue."
-msgstr ""
+msgstr "Premi %s quando sei pronto per continuare."
 
 #: src/cgame/cg_tutorial.cpp:702
 msgid "Waiting for other players to be ready."
-msgstr ""
+msgstr "Sto aspettando che alcuni giocatori siano pronti."
 
 #: src/cgame/cg_tutorial.cpp:713
 #, c-format
 msgid "Press %s to chat."
-msgstr ""
+msgstr "Premi %s per parlare."
 
 #: src/cgame/cg_tutorial.cpp:718
 #, c-format
 msgid "Press %s to chat or %s to chat to your team."
-msgstr ""
+msgstr "Premi %s per parlare oppure %s per parlare con la tua squadra."
 
 #: src/cgame/cg_tutorial.cpp:724
 #, c-format
 msgid "Press %s to open the console."
-msgstr ""
+msgstr "Premi %s per aprire la console."
 
 #: src/cgame/cg_tutorial.cpp:726
 #, c-format
 msgid "Press %s for the menu."
-msgstr ""
+msgstr "Premi %s per il menu."
 
 #: src/sgame/sg_active.cpp:735
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
-msgstr ""
+msgstr "$1$^* rimosso da $2$ come spettatore per inattività"
 
 #: src/sgame/sg_active.cpp:753
 msgid "Ten seconds until inactivity spectate!"
 msgstr ""
+"Si verra spostati come spettatori allo scadere dei 10 secondi di inattività!"
 
 #: src/sgame/sg_active.cpp:753
 msgid "Ten seconds until inactivity drop!"
-msgstr ""
+msgstr "10 secondi se inattivi!"
 
 #: src/sgame/sg_bot.cpp:68
 msgid "Alien bot names:"
-msgstr ""
+msgstr "Nomi dei bot alieni:"
 
 #: src/sgame/sg_bot.cpp:69
 msgid "Human bot names:"
-msgstr ""
+msgstr "Nomi dei bot umani:"
 
 #: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
-msgstr ""
+msgstr "$1$^* si è disconnesso"
 
 #: src/sgame/sg_bot_nav.cpp:114
 msgid "Server: generating bot navigation mesh for $1$... $2$%"
-msgstr ""
+msgstr "Server: sto generando la navmesh per il bot per $1$... $2$%"
 
 #: src/sgame/sg_bot_nav.cpp:153
 msgid "Bot navmesh generation failed!"
-msgstr ""
+msgstr "Generazione navmesh per il bot fallita!"
 
 #: src/sgame/sg_buildable.cpp:2041
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
-msgstr ""
+msgstr "$1$ ^2costruito^* da $2$^*, ^3sostituendo^* $3$"
 
 #: src/sgame/sg_buildable.cpp:2042
 msgid "$1$ ^2built^* by $2$$3$"
-msgstr ""
+msgstr "$1$ ^2costruito^* da $2$$3$"
 
 #: src/sgame/sg_client.cpp:845
 msgid "Name change spam protection (g_minNameChangePeriod = $1$)"
-msgstr ""
+msgstr "Protezione da spam cambio nome (g_minNameChangePeriod = $1$)"
 
 #: src/sgame/sg_client.cpp:853
 msgid "Maximum name changes reached (g_maxNameChanges = $1$)"
@@ -4724,7 +4734,7 @@ msgstr "Gli Umani hanno ammesso la sconfitta"
 
 #: src/sgame/sg_svcmds.cpp:443
 msgid "Evacuation ordered"
-msgstr "Ordine di evaquazione"
+msgstr "Ordine di evacuazione"
 
 #: src/sgame/sg_team.cpp:586
 msgid "Teams are imbalanced. Humans have more players."
