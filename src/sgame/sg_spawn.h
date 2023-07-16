@@ -40,7 +40,7 @@ Maryland 20850 USA.
  */
 
 /** spawn string returns a temporary reference, you must CopyString() if you want to keep it */
-bool G_SpawnString( const char *key, const char *defaultString, char **out );
+bool G_SpawnString( const char *key, const char *defaultString, const char **out );
 bool G_SpawnBoolean( const char *key, bool defaultqboolean );
 bool G_SpawnFloat( const char *key, const char *defaultString, float *out );
 bool G_SpawnInt( const char *key, const char *defaultString, int *out );

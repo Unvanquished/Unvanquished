@@ -65,7 +65,7 @@ static void gfx_particle_system_act( gentity_t *self, gentity_t*, gentity_t* )
 
 void SP_gfx_particle_system( gentity_t *self )
 {
-	char *s;
+	const char *s;
 
 	G_SetOrigin( self, VEC2GLM( self->s.origin ) );
 	VectorCopy( self->s.angles, self->s.apos.trBase );

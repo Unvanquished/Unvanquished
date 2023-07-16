@@ -77,7 +77,7 @@ static void target_speaker_act( gentity_t *self, gentity_t*, gentity_t *activato
 
 void SP_sfx_speaker( gentity_t *self )
 {
-	char *tmpString;
+	const char *tmpString;
 
 	if ( !G_SpawnString( "noise", "NOSOUND", &tmpString ) )
 	{

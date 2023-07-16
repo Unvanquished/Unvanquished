@@ -156,7 +156,7 @@ shared field spawn functions
 */
 
 void SP_ConditionFields( gentity_t *self ) {
-	char *buffer;
+	const char *buffer;
 
 	if ( G_SpawnString( "buildables", "", &buffer ) ) {
 		self->mapEntity.conditions.buildables = BG_ParseBuildableList( buffer );

@@ -98,7 +98,7 @@ static gentity_t *G_TestEntityPosition( gentity_t *ent )
 
 static bool G_SpawnVector( const char *key, const char *defaultString, glm::vec3& out )
 {
-	char     *s;
+	const char     *s;
 	bool present;
 
 	present = G_SpawnString( key, defaultString, &s );
@@ -1377,7 +1377,7 @@ so the movement delta can be calculated
 */
 static void InitMover( gentity_t *ent )
 {
-	char     *groupName;
+	const char     *groupName;
 
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
@@ -1441,7 +1441,7 @@ so the movement delta can be calculated
 */
 static void InitRotator( gentity_t *ent )
 {
-	char     *groupName;
+	const char     *groupName;
 
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
@@ -1858,7 +1858,7 @@ static void func_door_model_reset( gentity_t *self )
 
 void SP_func_door_model( gentity_t *self )
 {
-	char      *sound;
+	const char      *sound;
 	gentity_t *clipBrush;
 
 	if( !self->mapEntity.sound1to2 )
@@ -2530,9 +2530,9 @@ STATIC
 
 void SP_func_static( gentity_t *self )
 {
-	char *gradingTexture;
+	const char *gradingTexture;
 	float gradingDistance;
-	char *reverbEffect;
+	const char *reverbEffect;
 	float reverbDistance;
 	float reverbIntensity;
 

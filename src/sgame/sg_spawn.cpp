@@ -35,14 +35,13 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_spawn.h"
 
-bool G_SpawnString( const char *key, const char *defaultString, char **out )
+bool G_SpawnString( const char *key, const char *defaultString, const char **out )
 {
 	int i;
 
 	if ( !level.spawning )
 	{
-		*out = ( char * ) defaultString;
-//    Sys::Drop( "G_SpawnString() called while not spawning" );
+		*out = defaultString;
 		return false;
 	}
 
@@ -55,7 +54,7 @@ bool G_SpawnString( const char *key, const char *defaultString, char **out )
 		}
 	}
 
-	*out = ( char * ) defaultString;
+	*out = defaultString;
 	return false;
 }
 
@@ -67,7 +66,7 @@ bool G_SpawnString( const char *key, const char *defaultString, char **out )
  */
 static void G_SpawnStringIntoCVar( const char *key, Cvar::CvarProxy& cvar )
 {
-	char *str = nullptr;
+	const char *str = nullptr;
 	if ( G_SpawnString( key, nullptr, &str ) )
 	{
 		Cvar::SetValue( cvar.Name(), str );
@@ -80,7 +79,7 @@ static void G_SpawnStringIntoCVar( const char *key, Cvar::CvarProxy& cvar )
 
 bool G_SpawnBoolean( const char *key, bool defaultqboolean )
 {
-	char     *string;
+	const char     *string;
 	int     out;
 
 	if(G_SpawnString( key, "", &string ))
@@ -118,7 +117,7 @@ bool G_SpawnBoolean( const char *key, bool defaultqboolean )
 
 bool  G_SpawnFloat( const char *key, const char *defaultString, float *out )
 {
-	char     *s;
+	const char     *s;
 	bool present;
 
 	present = G_SpawnString( key, defaultString, &s );
@@ -128,7 +127,7 @@ bool  G_SpawnFloat( const char *key, const char *defaultString, float *out )
 
 bool G_SpawnInt( const char *key, const char *defaultString, int *out )
 {
-	char     *s;
+	const char     *s;
 	bool present;
 
 	present = G_SpawnString( key, defaultString, &s );
@@ -1029,7 +1028,7 @@ Every map should have exactly one.
 */
 static void SP_worldspawn()
 {
-	char *s;
+	const char *s;
 	float reverbIntensity = 1.0f;
 
 	G_SpawnString( "classname", "", &s );
