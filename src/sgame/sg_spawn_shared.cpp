@@ -62,12 +62,8 @@ Calculate origin2 so the target apogee will be hit
 */
 void think_aimAtTarget( gentity_t *self )
 {
-	gentity_t *pickedTarget;
-	vec3_t    origin;
-	float     distance;
-
-	VectorAdd( self->r.absmin, self->r.absmax, origin );
-	VectorScale( origin, 0.5f, origin );
+	glm::vec3 origin = VEC2GLM( self->r.absmin ) + VEC2GLM( self->r.absmax );
+	origin *= 0.5f;
 
 	bool hasTarget = false;
 	for ( char* target : self->mapEntity.targets )
@@ -83,7 +79,7 @@ void think_aimAtTarget( gentity_t *self )
 	{
 		return;
 	}
-	pickedTarget = G_PickRandomTargetFor( self );
+	gentity_t *pickedTarget = G_PickRandomTargetFor( self );
 
 	if ( !pickedTarget )
 	{
@@ -104,7 +100,7 @@ void think_aimAtTarget( gentity_t *self )
 	// set s.origin2 to the push velocity
 	VectorSubtract( pickedTarget->s.origin, origin, self->s.origin2 );
 	self->s.origin2[ 2 ] = 0;
-	distance = VectorNormalize( self->s.origin2 );
+	float distance = VectorNormalize( self->s.origin2 );
 
 	float forward = distance / time;
 	VectorScale( self->s.origin2, forward, self->s.origin2 );

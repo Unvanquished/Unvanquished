@@ -221,7 +221,7 @@ struct mapEntity_t
 	// "ent->s.pos.trBase = $NAME" when "moverState == moverState_t::.*_$NAME"
 	// In case $NAME is 1TO2 or 2TO1:
 	// ent->s.pos.trDelta = scale( ( last - next ), ( 1000 / ent->s.pos.trDuration ) )
-	vec3_t restingPosition, activatedPosition;
+	glm::vec3 restingPosition, activatedPosition;
 
 	// sounds played when "moverState == moverState_t::.*_$NAME"
 	int soundPos1, soundPos2;
@@ -274,7 +274,7 @@ struct mapEntity_t
 	 */
 	int count;
 
-	vec3_t       movedir;
+	glm::vec3       movedir;
 
 	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
 	void ( *blocked )( gentity_t *self, gentity_t *other );
@@ -317,8 +317,17 @@ struct mapEntity_t
 
 };
 
-void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallback );
+void G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallback );
 
+/*
+===============
+G_SetMovedir
 
-
+The editor only specifies a single value for angles (yaw),
+but we have special constants to generate an up or down direction.
+Angles will be cleared, because it is being used to represent a direction
+instead of an orientation.
+===============
+*/
+void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir );
 #endif

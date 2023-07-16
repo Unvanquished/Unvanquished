@@ -174,7 +174,6 @@ void       G_HandleActCall( gentity_t *entity, gentityCall_t *call );
 void       G_ExecuteAct( gentity_t *entity, gentityCall_t *call );
 
 //configure
-void       G_SetMovedir( glm::vec3& angles, glm::vec3& movedir );
 void       G_SetOrigin( gentity_t *ent, const glm::vec3& origin );
 
 //

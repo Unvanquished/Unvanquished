@@ -1637,6 +1637,7 @@ void     *BG_Alloc( size_t size );
 void     BG_Free( void *ptr );
 
 void     BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result );
+glm::vec3 BG_EvaluateTrajectory( const trajectory_t *tr, int atTime );
 void     BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result );
 
 void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps );

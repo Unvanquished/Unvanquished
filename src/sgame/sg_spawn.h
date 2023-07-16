@@ -44,7 +44,6 @@ bool G_SpawnString( const char *key, const char *defaultString, char **out );
 bool G_SpawnBoolean( const char *key, bool defaultqboolean );
 bool G_SpawnFloat( const char *key, const char *defaultString, float *out );
 bool G_SpawnInt( const char *key, const char *defaultString, int *out );
-bool G_SpawnVector( const char *key, const char *defaultString, float *out );
 
 
 /*

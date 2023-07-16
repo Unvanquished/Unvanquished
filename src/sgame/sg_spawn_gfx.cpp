@@ -151,7 +151,7 @@ void SP_gfx_light_flare( gentity_t *self )
 	//is used to facilitate visibility testing
 	glm::vec3 angles2 = VEC2GLM( self->s.angles2 );
 	findEmptySpot( VEC2GLM( self->s.origin ), 8.0f, angles2 );
-	VectorCopy( &angles2[0], self->s.angles2 );
+	VectorCopy( angles2, self->s.angles2 );
 
 	self->act = gfx_light_flare_toggle;
 
@@ -179,7 +179,6 @@ env_portal_*
 */
 static void gfx_portal_locateCamera( gentity_t *self )
 {
-	vec3_t    dir;
 	gentity_t *target;
 	gentity_t *owner;
 
@@ -222,21 +221,20 @@ static void gfx_portal_locateCamera( gentity_t *self )
 	// see if the portal_camera has a target
 	target = G_PickRandomTargetFor( owner );
 
+	glm::vec3 dir;
 	if ( target )
 	{
-		VectorSubtract( target->s.origin, owner->s.origin, dir );
-		VectorNormalize( dir );
+		dir = VEC2GLM( target->s.origin ) - VEC2GLM( owner->s.origin );
+		dir = glm::normalize( dir );
 	}
 	else
 	{
 		glm::vec3 angles = VEC2GLM( owner->s.angles );
-		glm::vec3 dir_ = VEC2GLM( dir );
-		G_SetMovedir( angles, dir_ );
-		VectorCopy( &angles[0], owner->s.angles );
-		VectorCopy( &dir_[0], dir );
+		G_SetMovedir( angles, dir );
+		VectorCopy( angles, owner->s.angles );
 	}
 
-	self->s.eventParm = DirToByte( dir );
+	self->s.eventParm = DirToByte( &dir[0] );
 }
 
 void SP_gfx_portal_surface( gentity_t *self )

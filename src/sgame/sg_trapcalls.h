@@ -38,6 +38,7 @@ void             trap_SetConfigstring( int num, const char *string );
 void             trap_LinkEntity( gentity_t *ent );
 void             trap_UnlinkEntity( gentity_t *ent );
 int              trap_EntitiesInBox( const vec3_t mins, const vec3_t maxs, int *list, int maxcount );
+int              trap_EntitiesInBox( const glm::vec3& mins, const glm::vec3& maxs, int *list, int maxcount );
 bool         trap_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *ent );
 void             trap_Trace( trace_t *results, const glm::vec3& start, const glm::vec3& mins, const glm::vec3& maxs, const glm::vec3& end, int passEntityNum, int contentmask , int skipmask);
 void             trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask , int skipmask);

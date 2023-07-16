@@ -974,39 +974,6 @@ gentity configuration
 */
 
 /*
-===============
-G_SetMovedir
-
-The editor only specifies a single value for angles (yaw),
-but we have special constants to generate an up or down direction.
-Angles will be cleared, because it is being used to represent a direction
-instead of an orientation.
-===============
-*/
-void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir )
-{
-	static glm::vec3 VEC_UP = { 0, -1, 0 };
-	static glm::vec3 MOVEDIR_UP = { 0, 0, 1 };
-	static glm::vec3 VEC_DOWN = { 0, -2, 0 };
-	static glm::vec3 MOVEDIR_DOWN = { 0, 0, -1 };
-
-	if ( angles == VEC_UP )
-	{
-		movedir = MOVEDIR_UP;
-	}
-	else if ( angles == VEC_DOWN )
-	{
-		movedir = MOVEDIR_DOWN;
-	}
-	else
-	{
-		AngleVectors( angles, &movedir, nullptr, nullptr );
-	}
-
-	angles = glm::vec3();
-}
-
-/*
 ================
 G_SetOrigin
 

@@ -38,13 +38,11 @@ Maryland 20850 USA.
 
 static void InitEnvAFXEntity( gentity_t *self, bool link )
 {
-	if ( !VectorCompare( self->s.angles, vec3_origin ) )
+	glm::vec3 angles = VEC2GLM( self->s.angles );
+	if ( glm::any( glm::notEqual( angles, glm::vec3( 0.f ) ) ) )
 	{
-		glm::vec3 angles = VEC2GLM( self->s.angles );
-		glm::vec3 movedir = VEC2GLM( self->mapEntity.movedir );
-		G_SetMovedir( angles, movedir );
-		VectorCopy( &angles[0], self->s.angles );
-		VectorCopy( &movedir[0], self->mapEntity.movedir );
+		G_SetMovedir( angles, self->mapEntity.movedir );
+		VectorCopy( angles, self->s.angles );
 	}
 
 	trap_SetBrushModel( self, self->mapEntity.model );

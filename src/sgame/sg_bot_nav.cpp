@@ -566,7 +566,6 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	playerMins[2] += STEPSIZE;
 	playerMaxs[2] += STEPSIZE;
 
-	//Log::Debug(vtos(self->movedir));
 	glm::vec3 origin = VEC2GLM( self->s.origin );
 	glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * dir;
 

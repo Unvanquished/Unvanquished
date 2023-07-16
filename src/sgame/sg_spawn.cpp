@@ -136,16 +136,6 @@ bool G_SpawnInt( const char *key, const char *defaultString, int *out )
 	return present;
 }
 
-bool  G_SpawnVector( const char *key, const char *defaultString, float *out )
-{
-	char     *s;
-	bool present;
-
-	present = G_SpawnString( key, defaultString, &s );
-	sscanf( s, "%f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ] );
-	return present;
-}
-
 //
 // fields are needed for spawning from the entity string
 //
@@ -1156,3 +1146,27 @@ void G_SpawnFakeEntities()
 
 	G_SetOrigin( level.fakeLocation, VEC2GLM( level.fakeLocation->s.origin ) );
 }
+
+void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir )
+{
+	static glm::vec3 VEC_UP = { 0, -1, 0 };
+	static glm::vec3 MOVEDIR_UP = { 0, 0, 1 };
+	static glm::vec3 VEC_DOWN = { 0, -2, 0 };
+	static glm::vec3 MOVEDIR_DOWN = { 0, 0, -1 };
+
+	if ( angles == VEC_UP )
+	{
+		movedir = MOVEDIR_UP;
+	}
+	else if ( angles == VEC_DOWN )
+	{
+		movedir = MOVEDIR_DOWN;
+	}
+	else
+	{
+		AngleVectors( angles, &movedir, nullptr, nullptr );
+	}
+
+	angles = glm::vec3();
+}
+

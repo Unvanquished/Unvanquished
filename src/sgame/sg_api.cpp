@@ -166,6 +166,11 @@ int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxc
 	return G_CM_AreaEntities(mins, maxs, list, maxcount);
 }
 
+int trap_EntitiesInBox( const glm::vec3& mins, const glm::vec3& maxs, int *list, int maxcount )
+{
+	return G_CM_AreaEntities(&mins[0], &maxs[0], list, maxcount);
+}
+
 bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
 {
 	return G_CM_EntityContact( mins, maxs, ent, traceType_t::TT_AABB );
