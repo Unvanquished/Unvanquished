@@ -50,7 +50,7 @@ void VM::VMInit() {
 	// Allocate entities and clients shared memory region
 	shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);
 	char* shmBase = reinterpret_cast<char*>(shmRegion.GetBase());
-	g_entities = reinterpret_cast<gentity_t*>(shmBase);
+	g_entities = new (shmBase)gentity_t[MAX_GENTITIES];
 	g_clients = reinterpret_cast<gclient_t*>(shmBase + sizeof(gentity_t) * MAX_GENTITIES);
 
 	// Load the map collision data
