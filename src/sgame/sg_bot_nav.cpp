@@ -855,11 +855,12 @@ static void BotMaybeAttackWhileClimbing( gentity_t *self )
 	BG_BoundingBox( static_cast<class_t>( ownClass ), &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
 
 	glm::vec3 origin = VEC2GLM( self->s.origin );
-	glm::vec3 dir = glm::vec3( 0.0f, 0.0f, 1.0f );
+	glm::vec3 forward, right, up;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
 	auto range = ownClass == PCL_ALIEN_LEVEL0 ? LEVEL0_BITE_RANGE : LEVEL1_CLAW_RANGE;
 
 	trace_t trace;
-	glm::vec3 end = origin + range * dir;
+	glm::vec3 end = origin + range * forward;
 	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 
 	if ( trace.fraction < 1.0f )
