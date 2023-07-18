@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-07-18 08:27+0000\n"
-"Last-Translator: bdmund <obiwanishere99@hotmail.com>\n"
+"PO-Revision-Date: 2023-07-19 05:52+0000\n"
+"Last-Translator: \"J. Vitorino\" <j.e.vitorino@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/pt/>\n"
 "Language: pt\n"
@@ -56,7 +56,7 @@ msgstr ""
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Voltar a seleção de equipa"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -117,7 +117,7 @@ msgstr "Método"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
-msgstr ""
+msgstr "Mapa"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
@@ -475,15 +475,15 @@ msgstr ""
 
 #: ui/human_buy.rml:217
 msgid "Range:"
-msgstr ""
+msgstr "Alcance:"
 
 #: ui/human_buy.rml:218
 msgid "Damage:"
-msgstr ""
+msgstr "Dano:"
 
 #: ui/human_buy.rml:219
 msgid "Fire Rate:"
-msgstr ""
+msgstr "Cadência de tiro:"
 
 #: ui/human_buy.rml:224
 msgid "Upgrades"
@@ -584,11 +584,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
-msgstr ""
+msgstr "Voto global:"
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
-msgstr ""
+msgstr "sim"
 
 #: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46 src/cgame/cg_tutorial.cpp:120
 msgid "or"
