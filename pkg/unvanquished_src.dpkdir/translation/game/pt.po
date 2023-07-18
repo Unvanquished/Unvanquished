@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-07-18 08:27+0000\n"
+"Last-Translator: bdmund <obiwanishere99@hotmail.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -24,19 +26,19 @@ msgstr ""
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr ""
+msgstr "Custo:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Evoluir"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "pontos de evolução"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Escolher forma inicial:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
@@ -62,7 +64,7 @@ msgstr ""
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "Motivo"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
@@ -78,16 +80,16 @@ msgstr ""
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
-msgstr ""
+msgstr "Alienígenas"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "Humanos"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "Equipa"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
@@ -95,7 +97,7 @@ msgstr ""
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
-msgstr ""
+msgstr "Trocar mapa"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
@@ -111,7 +113,7 @@ msgstr ""
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
@@ -123,7 +125,7 @@ msgstr ""
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Erro!"
 
 #: ui/error.rml:11
 msgid "Ok"
@@ -4038,19 +4040,19 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:51
 msgid "Reload"
-msgstr ""
+msgstr "Recarregar"
 
 #: src/cgame/cg_tutorial.cpp:52
 msgid "Use Medkit"
-msgstr ""
+msgstr "Usar Kit Médico"
 
 #: src/cgame/cg_tutorial.cpp:53
 msgid "Use Structure/Evolve"
-msgstr ""
+msgstr "Usar estrutura/evoluir"
 
 #: src/cgame/cg_tutorial.cpp:54
 msgid "Deconstruct Structure"
-msgstr ""
+msgstr "Remover estrutura"
 
 #: src/cgame/cg_tutorial.cpp:55
 msgid "Previous Weapon"
@@ -4078,7 +4080,7 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:61
 msgid "Throw a grenade"
-msgstr ""
+msgstr "Atirar granada"
 
 #: src/cgame/cg_tutorial.cpp:106
 msgid "SHIFT-ESCAPE"
@@ -4290,7 +4292,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:685
 #, c-format
 msgid "Press %s to evolve."
-msgstr ""
+msgstr "Pressionar %s para evoluir."
 
 #: src/cgame/cg_tutorial.cpp:696
 #, c-format
@@ -4453,7 +4455,7 @@ msgstr ""
 
 #: src/sgame/sg_svcmds.cpp:410
 msgid "Human team has admitted defeat"
-msgstr ""
+msgstr "A equipa humana concede derrota"
 
 #: src/sgame/sg_svcmds.cpp:443
 msgid "Evacuation ordered"
@@ -4461,32 +4463,33 @@ msgstr ""
 
 #: src/sgame/sg_team.cpp:586
 msgid "Teams are imbalanced. Humans have more players."
-msgstr ""
+msgstr "As equipas estão desequilibradas. O lado Humano possuí mais jogadores."
 
 #: src/sgame/sg_team.cpp:593
 msgid "Teams are imbalanced. Aliens have more players."
 msgstr ""
+"As equipas estão desequilibradas. O lado Alienígena possuí mais jogadores."
 
 #: src/shared/bg_misc.cpp:2485
 msgid "spectator"
-msgstr ""
+msgstr "espetador"
 
 #: src/shared/bg_misc.cpp:2490
 msgid "alien"
-msgstr ""
+msgstr "alienígena"
 
 #: src/shared/bg_misc.cpp:2495
 msgid "human"
-msgstr ""
+msgstr "humano"
 
 #: src/shared/bg_misc.cpp:2505
 msgid "spectators"
-msgstr ""
+msgstr "espetadores"
 
 #: src/shared/bg_misc.cpp:2510
 msgid "aliens"
-msgstr ""
+msgstr "alienígenas"
 
 #: src/shared/bg_misc.cpp:2515
 msgid "humans"
-msgstr ""
+msgstr "humanos"
