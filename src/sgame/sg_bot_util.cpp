@@ -246,7 +246,10 @@ botEntityAndDistance_t BotGetHealTarget( const gentity_t *self )
 		// We skip buildings on roof or walls as bots can't wallwalk.
 		// Unless it's a booster, as boosters are often put on walls
 		// and have a large area of effect.
-		if ( candidate.ent && ( glm::dot( VEC2GLM(candidate.ent->s.origin2), up ) <= MIN_WALK_NORMAL || buildable == BA_A_BOOSTER ) )
+		// TODO:
+		// - The dot product is used to simply extract z component, maybe remove it
+		// - Maybe check if the building is over the navmesh
+		if ( candidate.ent && ( glm::dot( VEC2GLM(candidate.ent->s.origin2), up ) >= MIN_WALK_NORMAL || buildable == BA_A_BOOSTER ) )
 		{
 			return candidate;
 		}
