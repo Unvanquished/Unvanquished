@@ -162,64 +162,64 @@ struct fieldDescriptor_t
 	const char  *name;
 	size_t      offset;
 	fieldType_t type;
-	int   versionState;
+	ent_version_t versionState;
 	const char  *replacement;
 };
 
 static const fieldDescriptor_t fields[] =
 {
-	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr },
-	{ "alias",               FOFS( mapEntity.names[ 2 ] ),          F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "alpha",               FOFS( mapEntity.restingPosition ),     F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
-	{ "amount",              FOFS( mapEntity.config.amount ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "angle",               FOFS( s.angles ),            F_YAW,       ENT_V_TMPNAME, "yaw"}, //radiants ui sadly strongly encourages the "angle" keyword
-	{ "angles",              FOFS( s.angles ),            F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr },
-	{ "animation",           FOFS( animation ),           F_4D_VECTOR ,ENT_V_UNCLEAR, nullptr },
-	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     ,ENT_V_UNCLEAR, nullptr },
-	{ "classname",           FOFS( classname ),           F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "delay",               FOFS( mapEntity.config.delay ),        F_TIME      ,ENT_V_UNCLEAR, nullptr },
-	{ "dmg",                 FOFS( mapEntity.config.damage ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "gravity",             FOFS( mapEntity.config.amount ),       F_INT       ,ENT_V_UNCLEAR, "amount" },
-	{ "health",              FOFS( mapEntity.config.health ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "message",             FOFS( mapEntity.message ),             F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "model",               FOFS( mapEntity.model ),               F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "model2",              FOFS( mapEntity.model2 ),              F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "name",	        	     FOFS( mapEntity.names[ 0 ] ),          F_STRING	  ,ENT_V_UNCLEAR, nullptr },
-	{ "noise",               FOFS( mapEntity.soundIndex ),          F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "onAct",               FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onDie",               FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onDisable",           FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onEnable",            FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onFree",              FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onReach",             FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onReset",             FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onSpawn",             FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onTouch",             FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onUse",               FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr },
-	{ "period",              FOFS( mapEntity.config.period ),       F_TIME      ,ENT_V_UNCLEAR, nullptr },
-	{ "radius",              FOFS( mapEntity.activatedPosition ),   F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
-	{ "random",              FOFS( mapEntity.config.wait.variance ),F_FLOAT,     ENT_V_TMPNAME, "wait" },
-	{ "replacement",         FOFS( mapEntity.shaderReplacement ),   F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "shader",              FOFS( mapEntity.shaderKey ),           F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "sound1to2",           FOFS( mapEntity.sound1to2 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "sound2to1",           FOFS( mapEntity.sound2to1 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "soundPos1",           FOFS( mapEntity.soundPos1 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "soundPos2",           FOFS( mapEntity.soundPos2 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "spawnflags",          FOFS( mapEntity.spawnflags ),          F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "speed",               FOFS( mapEntity.config.speed ),        F_FLOAT     ,ENT_V_UNCLEAR, nullptr },
-	{ "stage",               FOFS( mapEntity.conditions.stage ),    F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "target",              FOFS( mapEntity.targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr },
-	{ "target2",             FOFS( mapEntity.targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "target3",             FOFS( mapEntity.targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "target4",             FOFS( mapEntity.targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetname",          FOFS( mapEntity.names[ 1 ] ),          F_STRING,    ENT_V_TMPNAME, "name" }, //radiants ui sadly strongly encourages the "targetname" keyword
-	{ "targetname2",         FOFS( mapEntity.names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetShaderName",    FOFS( mapEntity.shaderKey ),           F_STRING,    ENT_V_RENAMED, "shader"},
-	{ "targetShaderNewName", FOFS( mapEntity.shaderReplacement ),   F_STRING,    ENT_V_RENAMED, "replacement"},
-	{ "team",                FOFS( mapEntity.conditions.team ),     F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "wait",                FOFS( mapEntity.config.wait ),         F_TIME      ,ENT_V_UNCLEAR, nullptr },
-	{ "yaw",                 FOFS( s.angles ),            F_YAW       ,ENT_V_UNCLEAR, nullptr },
+	{ "acceleration",        FOFS( acceleration )                  , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr },
+	{ "alias",               FOFS( mapEntity.names[ 2 ] )          , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "alpha",               FOFS( mapEntity.restingPosition )     , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
+	{ "amount",              FOFS( mapEntity.config.amount )       , F_INT       , ENT_V_UNCLEAR, nullptr },
+	{ "angle",               FOFS( s.angles )                      , F_YAW       , ENT_V_TMPNAME, "yaw"},
+	{ "angles",              FOFS( s.angles )                      , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr },
+	{ "animation",           FOFS( animation )                     , F_4D_VECTOR , ENT_V_UNCLEAR, nullptr },
+	{ "bounce",              FOFS( physicsBounce )                 , F_FLOAT     , ENT_V_UNCLEAR, nullptr },
+	{ "classname",           FOFS( classname )                     , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "delay",               FOFS( mapEntity.config.delay )        , F_TIME      , ENT_V_UNCLEAR, nullptr },
+	{ "dmg",                 FOFS( mapEntity.config.damage )       , F_INT       , ENT_V_UNCLEAR, nullptr },
+	{ "gravity",             FOFS( mapEntity.config.amount )       , F_INT       , ENT_V_UNCLEAR, "amount" },
+	{ "health",              FOFS( mapEntity.config.health )       , F_INT       , ENT_V_UNCLEAR, nullptr },
+	{ "message",             FOFS( mapEntity.message )             , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "model",               FOFS( mapEntity.model )               , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "model2",              FOFS( mapEntity.model2 )              , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "name",                FOFS( mapEntity.names[ 0 ] )          , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "noise",               FOFS( mapEntity.soundIndex )          , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
+	{ "onAct",               FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "onDie",               FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "onDisable",           FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "onEnable",            FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "onFree",              FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "onReach",             FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "onReset",             FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "onSpawn",             FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "onTouch",             FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "onUse",               FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
+	{ "origin",              FOFS( s.origin )                      , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr },
+	{ "period",              FOFS( mapEntity.config.period )       , F_TIME      , ENT_V_UNCLEAR, nullptr },
+	{ "radius",              FOFS( mapEntity.activatedPosition )   , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
+	{ "random",              FOFS( mapEntity.config.wait.variance ), F_FLOAT     , ENT_V_TMPNAME, "wait" },
+	{ "replacement",         FOFS( mapEntity.shaderReplacement )   , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "shader",              FOFS( mapEntity.shaderKey )           , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "sound1to2",           FOFS( mapEntity.sound1to2 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
+	{ "sound2to1",           FOFS( mapEntity.sound2to1 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
+	{ "soundPos1",           FOFS( mapEntity.soundPos1 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
+	{ "soundPos2",           FOFS( mapEntity.soundPos2 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
+	{ "spawnflags",          FOFS( mapEntity.spawnflags )          , F_INT       , ENT_V_UNCLEAR, nullptr },
+	{ "speed",               FOFS( mapEntity.config.speed )        , F_FLOAT     , ENT_V_UNCLEAR, nullptr },
+	{ "stage",               FOFS( mapEntity.conditions.stage )    , F_INT       , ENT_V_UNCLEAR, nullptr },
+	{ "target",              FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
+	{ "target2",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
+	{ "target3",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
+	{ "target4",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
+	{ "targetname",          FOFS( mapEntity.names[ 1 ] )          , F_STRING    , ENT_V_TMPNAME, "name" },
+	{ "targetname2",         FOFS( mapEntity.names[ 2 ] )          , F_STRING    , ENT_V_RENAMED, "name" },
+	{ "targetShaderName",    FOFS( mapEntity.shaderKey )           , F_STRING    , ENT_V_RENAMED, "shader"},
+	{ "targetShaderNewName", FOFS( mapEntity.shaderReplacement )   , F_STRING    , ENT_V_RENAMED, "replacement"},
+	{ "team",                FOFS( mapEntity.conditions.team )     , F_INT       , ENT_V_UNCLEAR, nullptr },
+	{ "wait",                FOFS( mapEntity.config.wait )         , F_TIME      , ENT_V_UNCLEAR, nullptr },
+	{ "yaw",                 FOFS( s.angles )                      , F_YAW       , ENT_V_UNCLEAR, nullptr },
 };
 
 enum entityChainType_t
@@ -253,7 +253,7 @@ struct entityClassDescriptor_t
 	const entityChainType_t chainType;
 
 	//optional spawn-time data
-	int	versionState;
+	ent_version_t versionState;
 	const char  *replacement;
 };
 
@@ -440,7 +440,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 
 static bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_t *entity )
 {
-	if ( spawnDescription->versionState == ENT_V_CURRENT ) // we don't need to handle anything
+	if ( spawnDescription->versionState == ENT_V_UNCLEAR ) // we don't need to handle anything
 		return true;
 
 	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
@@ -453,8 +453,8 @@ static bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, g
 
 	if ( g_debugEntities.Get() >= 0 ) //dont't warn about anything with -1 or lower
 	{
-		if( spawnDescription->versionState < ENT_V_TMPORARY
-		|| ( g_debugEntities.Get() >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
+		if( spawnDescription->versionState < ENT_V_TMPNAME
+		|| ( g_debugEntities.Get() >= 1 && spawnDescription->versionState == ENT_V_TMPNAME ) )
 		{
 			Log::Warn("Entity %s uses a deprecated classtype — use the class ^5%s^* instead", etos( entity ), spawnDescription->replacement );
 		}
@@ -872,17 +872,17 @@ static void G_SpawnGEntityFromSpawnVars()
 	}
 }
 
-bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
+bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, ent_version_t typeOfDeprecation  )
 {
-	if ( !Q_stricmp(expectedFieldname, actualFieldname) || typeOfDeprecation == ENT_V_CURRENT )
-		return false;
-
-	if ( g_debugEntities.Get() >= 0 ) //dont't warn about anything with -1 or lower
+	if ( !Q_stricmp(expectedFieldname, actualFieldname) || typeOfDeprecation == ENT_V_UNCLEAR )
 	{
-		if ( typeOfDeprecation < ENT_V_TMPORARY || g_debugEntities.Get() >= 1 )
-		{
-			Log::Warn("Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead", entity->num(), actualFieldname, expectedFieldname );
-		}
+		return false;
+	}
+
+	//dont't warn about anything with -1 or lower
+	if ( g_debugEntities.Get() >= 0 && ( typeOfDeprecation < ENT_V_TMPNAME || g_debugEntities.Get() >= 1 ) )
+	{
+		Log::Warn("Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead", entity->num(), actualFieldname, expectedFieldname );
 	}
 
 	return true;

@@ -111,22 +111,17 @@ void    SP_gfx_shader_mod( gentity_t *self );
 /*
  * everything around entity versioning and deprecation
  */
-#define ENT_V_UNCLEAR  0
-#define ENT_V_CURRENT  0
-#define ENT_V_RENAMED  1
-#define ENT_V_EXTENDED 2
-#define ENT_V_COMBINED 3
-#define ENT_V_STRIPPED 4
-#define ENT_V_SPLITUP  5
-#define ENT_V_REMOVED  8
-
-#define ENT_V_TMPORARY 32
-#define ENT_V_TMPNAME  33
+enum ent_version_t
+{
+	ENT_V_UNCLEAR  = 0,
+	ENT_V_RENAMED  = 1,
+	ENT_V_TMPNAME  = 33,
+};
 
 /**
  * @return true if a deprecated field was found, false otherwise
  */
-bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation );
+bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, ent_version_t typeOfDeprecation );
 
 /**
  * shared entity functions
