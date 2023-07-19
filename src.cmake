@@ -71,6 +71,7 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/bg_parse.cpp
     ${GAMELOGIC_DIR}/shared/bg_pmove.cpp
     ${GAMELOGIC_DIR}/shared/bg_public.h
+    ${GAMELOGIC_DIR}/shared/bg_bounded_vector.h
     ${GAMELOGIC_DIR}/shared/bg_teamprogress.cpp
     ${GAMELOGIC_DIR}/shared/bg_utilities.cpp
     ${GAMELOGIC_DIR}/shared/bg_voice.cpp

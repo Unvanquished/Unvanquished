@@ -1572,68 +1572,7 @@ meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
 void                      BG_InitAllConfigs();
 void                      BG_UnloadAllConfigs();
 
-/*
- * This class is a simpler std::vector alternative that doesn't allocate
- * and survives a memset(0) without damage, provided that you don't need to
- * call destructors in such case.
- *
- * The purpose of this is to provide something in-between std::vector, which
- * has fully dynamic and has unbounded size, and std::array that quite
- * impractical as soon as you don't use it at its full capacity (it doesn't
- * support an .append() or a clear() method, you can't use a C++11 style-loop
- * to iterate over only the defined elements, etc.)
- */
-template<typename T, size_t maximum_size_>
-class BoundedVector
-{
-private:
-	T array[maximum_size_];
-	size_t size_; // current size, should be <= capacity
-public:
-	BoundedVector() : size_(0) {}
-	BoundedVector(const BoundedVector<T, maximum_size_>& other)
-		: size_(other.size_)
-	{
-		for (size_t i = 0; i < other.size_; i++) {
-			array[i] = other.array[i];
-		}
-	}
-	BoundedVector<T, maximum_size_>& operator=(const BoundedVector<T, maximum_size_>& other) {
-		for (size_t i = 0; i < other.size_; i++) {
-			array[i] = other.array[i];
-		}
-		size_ = other.size_;
-		return *this;
-	}
-
-	T& operator[](size_t n) {
-		ASSERT_LT(n, size_);
-		return array[n];
-	}
-	bool push_back(T elem) {
-		return append(elem);
-	}
-	Util::optional<T> pop_back() {
-		if (size_ == 0)
-			return {};
-		return std::move(array[--size_]);
-	}
-	void clear() {
-		while (pop_back()) {}
-	}
-	bool append(T elem) {
-		if (size_ == maximum_size_)
-			return false;
-		array[size_++] = std::move(elem);
-		return true;
-	}
-	size_t size() const { return size_; }
-	bool empty() const { return size_ == 0; }
-	T* begin() { return array; }
-	T* end()   { return array+size_; }
-	const T* begin() const { return array; }
-	const T* end()   const { return array+size_; }
-};
+#include "bg_bounded_vector.h"
 
 // Parsers
 bool                  BG_ReadWholeFile( const char *filename, char *buffer, size_t size);
