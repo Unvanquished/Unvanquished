@@ -661,7 +661,7 @@ gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, genti
 		goto cont;
 	}
 
-	for (*calltargetIndex = 0; self->mapEntity.calltargets[*calltargetIndex].name; ++(*calltargetIndex))
+	for (*calltargetIndex = 0; self->mapEntity.calltargets[*calltargetIndex].name.size(); ++(*calltargetIndex))
 	{
 		if(self->mapEntity.calltargets[*calltargetIndex].name[0] == '$')
 		{
@@ -670,10 +670,8 @@ gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, genti
 
 		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
-			if ( !entity->inuse )
-				continue;
-
-			if ( matchesName( entity->mapEntity, self->mapEntity.calltargets[*calltargetIndex].name ) )
+			if ( entity->inuse
+					&& matchesName( entity->mapEntity, self->mapEntity.calltargets[*calltargetIndex].name ) )
 			{
 				return entity;
 			}
