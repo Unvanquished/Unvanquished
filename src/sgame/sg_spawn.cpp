@@ -37,15 +37,13 @@ Maryland 20850 USA.
 
 bool G_SpawnString( const char *key, const char *defaultString, const char **out )
 {
-	int i;
-
 	if ( !level.spawning )
 	{
 		*out = defaultString;
 		return false;
 	}
 
-	for ( i = 0; i < level.numSpawnVars; i++ )
+	for ( int i = 0; i < level.numSpawnVars; i++ )
 	{
 		if ( !Q_stricmp( key, level.spawnVars[ i ][ 0 ] ) )
 		{
@@ -79,22 +77,23 @@ static void G_SpawnStringIntoCVar( const char *key, Cvar::CvarProxy& cvar )
 
 bool G_SpawnBoolean( const char *key, bool defaultqboolean )
 {
-	const char     *string;
-	int     out;
+	const char *string;
 
-	if(G_SpawnString( key, "", &string ))
+	if ( G_SpawnString( key, "", &string ) )
 	{
-		if(Q_strtoi(string, &out))
+		char *end;
+		long val = strtol( string, &end, 10 );
+		if ( *end == '\0' )
 		{
-			if(out == 1)
+			switch( val )
 			{
-				return true;
+				case 0:
+					return false;
+				case 1:
+					return true;
+				default:
+					return defaultqboolean;
 			}
-			else if(out == 0)
-			{
-				return false;
-			}
-			return defaultqboolean;
 		}
 		else
 		{
@@ -115,24 +114,30 @@ bool G_SpawnBoolean( const char *key, bool defaultqboolean )
 	}
 }
 
-bool  G_SpawnFloat( const char *key, const char *defaultString, float *out )
+bool G_SpawnFloat( const char *key, const char *defaultString, float *out )
 {
-	const char     *s;
-	bool present;
-
-	present = G_SpawnString( key, defaultString, &s );
-	*out = atof( s );
-	return present;
+	const char *string;
+	bool present = G_SpawnString( key, defaultString, &string );
+	if ( present )
+	{
+		char *end;
+		*out = strtof( string, &end );
+		return *end == '\0';
+	}
+	return false;
 }
 
 bool G_SpawnInt( const char *key, const char *defaultString, int *out )
 {
-	const char     *s;
-	bool present;
-
-	present = G_SpawnString( key, defaultString, &s );
-	*out = atoi( s );
-	return present;
+	const char *string;
+	bool present = G_SpawnString( key, defaultString, &string );
+	if ( present )
+	{
+		char *end;
+		*out = strtol( string, &end, 10 );
+		return *end == '\0' && *out >= INT_MIN && *out <= INT_MAX;
+	}
+	return false;
 }
 
 //
@@ -637,14 +642,15 @@ G_NewTarget
 */
 static gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const char *string )
 {
-	char *stringPointer;
 	gentityCallDefinition_t newCallDefinition = { nullptr, ON_DEFAULT, nullptr, nullptr, ECA_NOP };
 
 	size_t stringLength = strlen( string ) + 1;
 	if ( stringLength == 1 )
+	{
 		return newCallDefinition;
+	}
 
-	stringPointer = (char*) BG_Alloc( stringLength );
+	char *stringPointer = (char*) BG_Alloc( stringLength );
 	newCallDefinition.name = stringPointer;
 
 	for ( size_t i = 0; i < stringLength; i++ )
@@ -702,11 +708,18 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 			break;
 
 		case F_CALLTARGET:
-			if(entity->mapEntity.callTargetCount >= MAX_ENTITY_CALLTARGETS)
-				Sys::Drop("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
-
-			( ( gentityCallDefinition_t * ) entityDataField ) [ entity->mapEntity.callTargetCount++ ] = G_NewCallDefinition( fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name, rawString );
-			break;
+			{
+				if(entity->mapEntity.callTargetCount >= MAX_ENTITY_CALLTARGETS)
+				{
+					Sys::Drop("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
+				}
+				auto def = reinterpret_cast<gentityCallDefinition_t*>( entityDataField );
+				def[ entity->mapEntity.callTargetCount++ ] =
+					G_NewCallDefinition(
+							fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name,
+							rawString );
+				break;
+			}
 
 		case F_TIME:
 			sscanf( rawString, "%f %f", &varTime.time, &varTime.variance );
@@ -759,7 +772,9 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 	}
 
 	if ( fieldDescriptor->replacement && fieldDescriptor->versionState )
+	{
 		G_WarnAboutDeprecatedEntityField(entity, fieldDescriptor->replacement, key, fieldDescriptor->versionState );
+	}
 }
 
 /*

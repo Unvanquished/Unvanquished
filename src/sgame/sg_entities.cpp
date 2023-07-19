@@ -648,12 +648,16 @@ gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self
 gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, gentity_t *self)
 {
 	if (entity)
+	{
 		goto cont;
+	}
 
 	for (*calltargetIndex = 0; self->mapEntity.calltargets[*calltargetIndex].name; ++(*calltargetIndex))
 	{
 		if(self->mapEntity.calltargets[*calltargetIndex].name[0] == '$')
+		{
 			return G_ResolveEntityKeyword( self, self->mapEntity.calltargets[*calltargetIndex].name );
+		}
 
 		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
@@ -753,7 +757,7 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
-	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != nullptr )
+	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) )
 	{
 		if( eventType && self->mapEntity.calltargets[ targetIndex ].eventType != eventType )
 		{
