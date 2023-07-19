@@ -210,6 +210,7 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_extern.h
     ${GAMELOGIC_DIR}/sgame/sg_local.h
     ${GAMELOGIC_DIR}/sgame/sg_main.cpp
+    ${GAMELOGIC_DIR}/sgame/sg_map_entity.h
     ${GAMELOGIC_DIR}/sgame/sg_maprotation.cpp
     ${GAMELOGIC_DIR}/sgame/sg_missile.cpp
     ${GAMELOGIC_DIR}/sgame/sg_momentum.cpp

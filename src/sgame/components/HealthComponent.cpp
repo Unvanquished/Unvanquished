@@ -67,8 +67,7 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	// TODO: Handle mover special casing in a dedicated component.
 	if (entity.oldEnt->s.eType == entityType_t::ET_MOVER && !(entity.oldEnt->die || entity.oldEnt->pain)) {
 		// Special case for ET_MOVER with act function in initial position.
-		if ((entity.oldEnt->moverState == MOVER_POS1 || entity.oldEnt->moverState == ROTATOR_POS1)
-		    && entity.oldEnt->act) {
+		if (entity.oldEnt->mapEntity.initialPosition() && entity.oldEnt->act) {
 			entity.oldEnt->act(entity.oldEnt, source, source);
 		}
 
