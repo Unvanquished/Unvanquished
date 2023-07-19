@@ -2130,10 +2130,18 @@ void BotFireWeaponAI( gentity_t *self )
 				}
 				else
 				{
+					if ( botTarget->client && level.time - botTarget->client->lastCombatTime < 4000 )
+					{
+						// assume we know the target's health because we heard it cry
+						targetMaxHP *= Entities::HealthFraction( botTarget );
+					}
 					float dmgRatio = targetMaxHP / LCANNON_DAMAGE;
 					float chargeMax = static_cast<float>( LCANNON_CHARGE_TIME_MAX );
 					float charge = chargeMax * std::min( dmgRatio, 0.95f );
-					if ( self->client->ps.weaponCharge < charge )
+					bool isFarAway = DistanceToGoalSquared( self ) > Square( 100 );
+					// stop charging and fire if the desired charge is reached, or if the target is very close and
+					// some minimum charge is reached (the target is most likely attacking us)
+					if ( self->client->ps.weaponCharge < charge && ( isFarAway || self->client->ps.weaponCharge < 0.4f ) )
 					{
 						BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
 					}
