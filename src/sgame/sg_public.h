@@ -286,7 +286,7 @@ void              G_UpdateTeamConfigStrings();
 bool          G_AddressParse( const char *str, addr_t *addr );
 bool          G_AddressCompare( const addr_t *a, const addr_t *b );
 int               G_ParticleSystemIndex( const char *name );
-int               G_ModelIndex( const char *name );
+int               G_ModelIndex( std::string const& name );
 int               G_SoundIndex( const char *name );
 int               G_GradingTextureIndex( const char *name );
 int               G_ReverbEffectIndex( const char *name );

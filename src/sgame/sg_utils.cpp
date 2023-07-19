@@ -99,13 +99,13 @@ int G_ParticleSystemIndex( const char *name )
 	return i;
 }
 
-int G_ModelIndex( const char *name )
+int G_ModelIndex( std::string const& name )
 {
-	int i = G_FindConfigstringIndex( name, CS_MODELS, MAX_MODELS, true );
+	int i = G_FindConfigstringIndex( name.c_str(), CS_MODELS, MAX_MODELS, true );
 
 	if ( !i )
 	{
-		Log::Warn( "Missing model: %s", name ? name : "<nullptr>" );
+		Log::Warn( "Missing model: %s", name.size() ? name : "<nullptr>" );
 	}
 
 	return i;
