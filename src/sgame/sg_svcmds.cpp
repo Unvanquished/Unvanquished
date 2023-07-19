@@ -78,8 +78,8 @@ static void Svcmd_EntityFire_f()
 
 	Log::Notice( "firing %s:%s", etos( selection ), callDefinition.action ? callDefinition.action : "default" );
 
-	if(selection->names[0])
-		callDefinition.name = selection->names[0];
+	if(selection->mapEntity.names[0])
+		callDefinition.name = selection->mapEntity.names[0];
 
 	call.definition = &callDefinition;
 	call.caller = &g_entities[ ENTITYNUM_NONE ];
@@ -93,7 +93,7 @@ static inline void PrintEntityOverviewLine( gentity_t *entity )
 {
 	Log::Notice( "%3i: %15s/^5%-24s^*%s%s",
 			entity->num(), Com_EntityTypeName( entity->s.eType ), entity->classname,
-			entity->names[0] ? entity->names[0] : "", entity->names[1] ? " …" : "");
+			entity->mapEntity.names[0] ? entity->mapEntity.names[0] : "", entity->mapEntity.names[1] ? " …" : "");
 }
 
 /*
@@ -149,7 +149,7 @@ static void Svcmd_EntityShow_f()
 			selection->reset ? " resets" : "",
 			selection->touch ? " touchable" : "",
 			selection->use ? " usable" : "");
-	if (selection->names[0])
+	if (selection->mapEntity.names[0])
 	{
 		Log::Notice( "Names: ");
 		G_PrintEntityNameList( selection );
@@ -157,12 +157,12 @@ static void Svcmd_EntityShow_f()
 
 	Log::Notice("State: %s", selection->enabled ? "enabled" : "disabled");
 
-	if (selection->groupName)
+	if (selection->mapEntity.groupName)
 	{
-		Log::Notice("Member of Group: %s%s", selection->groupName, !selection->groupMaster ? " [master]" : "");
+		Log::Notice("Member of Group: %s%s", selection->mapEntity.groupName, !selection->mapEntity.groupMaster ? " [master]" : "");
 	}
 
-	if(selection->targetCount)
+	if(selection->mapEntity.targetCount)
 	{
 		Log::Notice( "Aims at");
 
@@ -172,7 +172,7 @@ static void Svcmd_EntityShow_f()
 		}
 	}
 
-	if(selection->callTargetCount)
+	if(selection->mapEntity.callTargetCount)
 	{
 		lastTargetIndex = -1;
 		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != nullptr )
@@ -181,16 +181,16 @@ static void Svcmd_EntityShow_f()
 			if(lastTargetIndex != targetIndex)
 			{
 				Log::Notice("Calls %s \"%s:%s\"",
-						selection->calltargets[ targetIndex ].event ? selection->calltargets[ targetIndex ].event : "onUnknown",
-						selection->calltargets[ targetIndex ].name,
-						selection->calltargets[ targetIndex ].action ? selection->calltargets[ targetIndex ].action : "default");
+						selection->mapEntity.calltargets[ targetIndex ].event ? selection->mapEntity.calltargets[ targetIndex ].event : "onUnknown",
+						selection->mapEntity.calltargets[ targetIndex ].name,
+						selection->mapEntity.calltargets[ targetIndex ].action ? selection->mapEntity.calltargets[ targetIndex ].action : "default");
 				lastTargetIndex = targetIndex;
 			}
 
 			Log::Notice(" • %s", etos(possibleTarget));
-			if(possibleTarget->names[1])
+			if(possibleTarget->mapEntity.names[1])
 			{
-				Log::Notice(" using \"%s\" ∈ ", selection->calltargets[ targetIndex ].name);
+				Log::Notice(" using \"%s\" ∈ ", selection->mapEntity.calltargets[ targetIndex ].name);
 				G_PrintEntityNameList( possibleTarget );
 			}
 		}
@@ -232,9 +232,9 @@ static void  Svcmd_EntityList_f()
 
 		if(filter && !Com_Filter(filter, displayedEntity->classname, false) )
 		{
-			for (i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->names[i]; ++i)
+			for (i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->mapEntity.names[i]; ++i)
 			{
-				if( Com_Filter(filter, displayedEntity->names[i], false) )
+				if( Com_Filter(filter, displayedEntity->mapEntity.names[i], false) )
 				{
 					PrintEntityOverviewLine( displayedEntity );
 					break;
@@ -306,12 +306,12 @@ static void Svcmd_EntityLock_f()
 		return;
 	}
 
-	door->locked = !door->locked;
+	door->mapEntity.locked = !door->mapEntity.locked;
 
-	if ( door->locked )
+	if ( door->mapEntity.locked )
 	{
-		glm::vec3 mins = VEC2GLM( door->restingPosition ) + VEC2GLM( door->r.mins );
-		glm::vec3 maxs = VEC2GLM( door->restingPosition ) + VEC2GLM( door->r.maxs );
+		glm::vec3 mins = VEC2GLM( door->mapEntity.restingPosition ) + VEC2GLM( door->r.mins );
+		glm::vec3 maxs = VEC2GLM( door->mapEntity.restingPosition ) + VEC2GLM( door->r.maxs );
 		G_BotAddObstacle( mins, maxs, door->num() );
 	}
 	else
@@ -320,7 +320,7 @@ static void Svcmd_EntityLock_f()
 	}
 
 	Log::Notice( "entitylock: entity ^5%s^7#^5%d^* %s",
-	             door->classname, e, door->locked ? "locked" : "unlocked" );
+	             door->classname, e, door->mapEntity.locked ? "locked" : "unlocked" );
 }
 
 /*

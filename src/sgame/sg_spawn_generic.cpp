@@ -45,32 +45,32 @@ target_print
 */
 static void target_print_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
-	if ( self->spawnflags & 4 )
+	if ( self->mapEntity.spawnflags & 4 )
 	{
 		if ( activator && activator->client )
 		{
-			trap_SendServerCommand( activator->num(), va( "cp %s", Quote( self->message ) ) );
+			trap_SendServerCommand( activator->num(), va( "cp %s", Quote( self->mapEntity.message ) ) );
 		}
 
 		return;
 	}
 
-	if ( self->spawnflags & 3 )
+	if ( self->mapEntity.spawnflags & 3 )
 	{
-		if ( self->spawnflags & 1 )
+		if ( self->mapEntity.spawnflags & 1 )
 		{
-			G_TeamCommand( TEAM_HUMANS, va( "cp %s", Quote( self->message ) ) );
+			G_TeamCommand( TEAM_HUMANS, va( "cp %s", Quote( self->mapEntity.message ) ) );
 		}
 
-		if ( self->spawnflags & 2 )
+		if ( self->mapEntity.spawnflags & 2 )
 		{
-			G_TeamCommand( TEAM_ALIENS, va( "cp %s", Quote( self->message ) ) );
+			G_TeamCommand( TEAM_ALIENS, va( "cp %s", Quote( self->mapEntity.message ) ) );
 		}
 
 		return;
 	}
 
-	trap_SendServerCommand( -1, va( "cp %s", Quote( self->message ) ) );
+	trap_SendServerCommand( -1, va( "cp %s", Quote( self->mapEntity.message ) ) );
 }
 
 void SP_target_print( gentity_t *self )
@@ -103,9 +103,9 @@ static void target_push_act( gentity_t *self, gentity_t*, gentity_t *activator )
 
 void SP_target_push( gentity_t *self )
 {
-	if ( !self->config.speed)
+	if ( !self->mapEntity.config.speed)
 	{
-		self->config.speed = 1000;
+		self->mapEntity.config.speed = 1000;
 	}
 
 	glm::vec3 angles = VEC2GLM( self->s.angles );
@@ -114,7 +114,7 @@ void SP_target_push( gentity_t *self )
 	VectorCopy( &angles[0], self->s.angles );
 	VectorCopy( &origin2[0], self->s.origin2 );
 
-	VectorScale( self->s.origin2, self->config.speed, self->s.origin2 );
+	VectorScale( self->s.origin2, self->mapEntity.config.speed, self->s.origin2 );
 	VectorCopy( self->s.origin, self->r.absmin );
 	VectorCopy( self->s.origin, self->r.absmax );
 	self->think = think_aimAtTarget;
@@ -143,13 +143,13 @@ static void target_teleporter_act( gentity_t *self, gentity_t*, gentity_t *activ
 	if ( !dest )
 		return;
 
-	G_TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->config.speed );
+	G_TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->mapEntity.config.speed );
 }
 
 void SP_target_teleporter( gentity_t *self )
 {
-	if( !self->config.speed )
-		self->config.speed = 400;
+	if( !self->mapEntity.config.speed )
+		self->mapEntity.config.speed = 400;
 
 	self->act = target_teleporter_act;
 }
@@ -175,7 +175,7 @@ static void target_hurt_act( gentity_t *self, gentity_t*, gentity_t *activator )
 
 void SP_target_hurt( gentity_t *self )
 {
-	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 5);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 5);
 	self->act = target_hurt_act;
 }
 

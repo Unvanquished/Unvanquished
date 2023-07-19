@@ -177,10 +177,7 @@ void G_FreeEntity( gentity_t *entity )
 
 	G_BotRemoveObstacle( entity->num() );
 
-	if( entity->eclass && entity->eclass->instanceCounter > 0 )
-	{
-		entity->eclass->instanceCounter--;
-	}
+	entity->mapEntity.deinstantiate();
 
 	if ( entity->s.eType == entityType_t::ET_BEACON && entity->s.modelindex == BCT_TAG )
 	{
@@ -249,6 +246,30 @@ Convenience function for printing entities
 */
 //assuming MAX_GENTITIES to be 5 digits or less
 #define MAX_ETOS_LENGTH (MAX_NAME_LENGTH + 5 * 2 + 4 + 1 + 5)
+static bool matchesName( mapEntity_t const& ent, std::string const& name )
+{
+	for ( char const* n : ent.names )
+	{
+		if ( !Q_stricmp( name.c_str(), n ) )
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+static char const* name0( mapEntity_t const& ent )
+{
+	static std::string buffer;
+	if ( ent.names[0] == nullptr )
+	{
+		return "";
+	}
+	buffer = ent.names[0];
+	buffer += ' ';
+	return buffer.c_str();
+}
+
 const char *etos( const gentity_t *entity )
 {
 	static  int  index;
@@ -263,8 +284,8 @@ const char *etos( const gentity_t *entity )
 	index = ( index + 1 ) & 3;
 
 	Com_sprintf( resultString, MAX_ETOS_LENGTH,
-			"%s%s^7(^5%s^*|^5#%i^*)",
-			entity->names[0] ? entity->names[0] : "", entity->names[0] ? " " : "", entity->classname, entity->num()
+			"%s^7(^5%s^*|^5#%i^*)",
+			name0( entity->mapEntity ), entity->classname, entity->num()
 			);
 
 	return resultString;
@@ -272,27 +293,14 @@ const char *etos( const gentity_t *entity )
 
 void G_PrintEntityNameList(gentity_t *entity)
 {
-	int i;
-	char string[ MAX_STRING_CHARS ];
-
 	if(!entity)
 	{
 		Log::Notice("<NULL>");
 		return;
 	}
-	if(!entity->names[0])
-	{
-		return;
-	}
 
-	Q_strncpyz( string, entity->names[0], sizeof(string) );
-
-	for (i = 1; i < MAX_ENTITY_ALIASES && entity->names[i]; i++)
-	{
-		Q_strcat(string, sizeof(string), ", ");
-		Q_strcat(string, sizeof(string), entity->names[i]);
-	}
-	Log::Notice("{ %s }", string);
+	char const* names = entity->mapEntity.nameList();
+	Log::Notice("{ %s }", names);
 }
 
 /*
@@ -611,11 +619,11 @@ gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self
 	if (entity)
 		goto cont;
 
-	for (*targetIndex = 0; self->targets[*targetIndex]; ++(*targetIndex))
+	for (*targetIndex = 0; self->mapEntity.targets[*targetIndex]; ++(*targetIndex))
 	{
-		if(self->targets[*targetIndex][0] == '$')
+		if(self->mapEntity.targets[*targetIndex][0] == '$')
 		{
-			possibleTarget = G_ResolveEntityKeyword( self, self->targets[*targetIndex] );
+			possibleTarget = G_ResolveEntityKeyword( self, self->mapEntity.targets[*targetIndex] );
 			if(possibleTarget && possibleTarget->enabled)
 				return possibleTarget;
 			return nullptr;
@@ -626,8 +634,10 @@ gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self
 			if ( !entity->inuse || !entity->enabled)
 				continue;
 
-			if( G_MatchesName(entity, self->targets[*targetIndex]) )
+			if ( matchesName( entity->mapEntity, self->mapEntity.targets[*targetIndex] ) )
+			{
 				return entity;
+			}
 
 			cont: ;
 		}
@@ -640,18 +650,20 @@ gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, genti
 	if (entity)
 		goto cont;
 
-	for (*calltargetIndex = 0; self->calltargets[*calltargetIndex].name; ++(*calltargetIndex))
+	for (*calltargetIndex = 0; self->mapEntity.calltargets[*calltargetIndex].name; ++(*calltargetIndex))
 	{
-		if(self->calltargets[*calltargetIndex].name[0] == '$')
-			return G_ResolveEntityKeyword( self, self->calltargets[*calltargetIndex].name );
+		if(self->mapEntity.calltargets[*calltargetIndex].name[0] == '$')
+			return G_ResolveEntityKeyword( self, self->mapEntity.calltargets[*calltargetIndex].name );
 
 		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
 			if ( !entity->inuse )
 				continue;
 
-			if( G_MatchesName(entity, self->calltargets[*calltargetIndex].name) )
+			if ( matchesName( entity->mapEntity, self->mapEntity.calltargets[*calltargetIndex].name ) )
+			{
 				return entity;
+			}
 
 			cont: ;
 		}
@@ -707,7 +719,7 @@ void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 	while( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, entity ) ) != nullptr )
 	{
 		choices[ totalChoiceCount ].recipient = possibleTarget;
-		choices[ totalChoiceCount ].callDefinition = &entity->calltargets[targetIndex];
+		choices[ totalChoiceCount ].callDefinition = &entity->mapEntity.calltargets[targetIndex];
 		totalChoiceCount++;
 	}
 
@@ -743,13 +755,13 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 
 	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != nullptr )
 	{
-		if( eventType && self->calltargets[ targetIndex ].eventType != eventType )
+		if( eventType && self->mapEntity.calltargets[ targetIndex ].eventType != eventType )
 		{
 			continue;
 		}
 
 		call.caller = self; //reset the caller in case there have been nested calls
-		call.definition = &self->calltargets[ targetIndex ];
+		call.definition = &self->mapEntity.calltargets[ targetIndex ];
 
 		G_CallEntity(currentTarget, &call);
 
@@ -790,6 +802,41 @@ void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
 /**
  * check delayed variable and either call an entity act() directly or delay its execution
  */
+static void G_ResetTimeField( variatingTime_t *result, variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback )
+{
+	if( instanceField.time && instanceField.time > 0 )
+	{
+		*result = instanceField;
+	}
+	else if (classField.time && classField.time > 0 )
+	{
+		*result = classField;
+	}
+	else
+	{
+		*result = fallback;
+	}
+
+	if ( result->variance < 0 )
+	{
+		result->variance = 0;
+
+		if( g_debugEntities.Get() >= 0 )
+		{
+			Log::Warn( "negative variance (%f); resetting to 0", result->variance );
+		}
+	}
+	else if ( result->variance >= result->time && result->variance > 0)
+	{
+		result->variance = result->time - FRAMETIME;
+
+		if( g_debugEntities.Get() > 0 )
+		{
+			Log::Warn( "limiting variance (%f) to be smaller than time (%f)", result->variance, result->time );
+		}
+	}
+}
+
 void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
 {
 	variatingTime_t delay = {0, 0};
@@ -797,7 +844,7 @@ void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
 	ASSERT(call != nullptr);
 	entity->callIn = *call;
 
-	G_ResetTimeField(&delay, entity->config.delay, entity->eclass->config.delay, delay );
+	G_ResetTimeField(&delay, entity->mapEntity.config.delay, entity->mapEntity.eclass->config.delay, delay );
 
 	if(delay.time)
 	{
@@ -899,26 +946,6 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 	}
 
 	targetedEntity->callIn = NULL_CALL; /**< not called anymore */
-}
-
-/*
-=================================================================================
-
-gentity testing/querying
-
-=================================================================================
-*/
-
-bool G_MatchesName( gentity_t *entity, const char* name )
-{
-	int nameIndex;
-
-	for (nameIndex = 0; entity->names[nameIndex]; ++nameIndex)
-	{
-		if (!Q_stricmp(name, entity->names[nameIndex]))
-			return true;
-	}
-	return false;
 }
 
 /*

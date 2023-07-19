@@ -56,10 +56,10 @@ static void gfx_particle_system_act( gentity_t *self, gentity_t*, gentity_t* )
 {
 	gfx_particle_system_toggle( self );
 
-	if ( self->config.wait.time > 0.0f )
+	if ( self->mapEntity.config.wait.time > 0.0f )
 	{
 		self->think = gfx_particle_system_toggle;
-		self->nextthink = level.time + ( int )( self->config.wait.time * 1000 );
+		self->nextthink = level.time + ( int )( self->mapEntity.config.wait.time * 1000 );
 	}
 }
 
@@ -75,7 +75,7 @@ void SP_gfx_particle_system( gentity_t *self )
 	//add the particle system to the client precache list
 	self->s.modelindex = G_ParticleSystemIndex( s );
 
-	if ( self->spawnflags & SPF_SPAWN_DISABLED )
+	if ( self->mapEntity.spawnflags & SPF_SPAWN_DISABLED )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}
@@ -137,15 +137,15 @@ static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spo
 
 void SP_gfx_light_flare( gentity_t *self )
 {
-	if ( !self->shaderKey )
+	if ( !self->mapEntity.shaderKey )
 	{
 		Log::Warn( "Light flare entity %d at (%d, %d, %d) has no shader", self->num(), self->s.origin[0], self->s.origin[1], self->s.origin[2] );
 		return;
 	}
 
 	self->s.eType = entityType_t::ET_LIGHTFLARE;
-	self->s.modelindex = G_ShaderIndex( self->shaderKey );
-	VectorCopy( self->activatedPosition, self->s.origin2 );
+	self->s.modelindex = G_ShaderIndex( self->mapEntity.shaderKey );
+	VectorCopy( self->mapEntity.activatedPosition, self->s.origin2 );
 
 	//try to find a spot near to the flare which is empty. This
 	//is used to facilitate visibility testing
@@ -155,14 +155,14 @@ void SP_gfx_light_flare( gentity_t *self )
 
 	self->act = gfx_light_flare_toggle;
 
-	if( !self->config.speed )
-		self->config.speed = 200;
+	if( !self->mapEntity.config.speed )
+		self->mapEntity.config.speed = 200;
 
-	self->s.time = self->config.speed;
+	self->s.time = self->mapEntity.config.speed;
 
 	G_SpawnInt( "mindist", "0", &self->s.generic1 );
 
-	if ( self->spawnflags & SPF_SPAWN_DISABLED )
+	if ( self->mapEntity.spawnflags & SPF_SPAWN_DISABLED )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}
@@ -194,17 +194,17 @@ static void gfx_portal_locateCamera( gentity_t *self )
 	self->r.ownerNum = owner->num();
 
 	// frame holds the rotate speed
-	if ( owner->spawnflags & 1 )
+	if ( owner->mapEntity.spawnflags & 1 )
 	{
 		self->s.frame = 25;
 	}
-	else if ( owner->spawnflags & 2 )
+	else if ( owner->mapEntity.spawnflags & 2 )
 	{
 		self->s.frame = 75;
 	}
 
 	// swing camera ?
-	if ( owner->spawnflags & 4 )
+	if ( owner->mapEntity.spawnflags & 4 )
 	{
 		// set to 0 for no rotation at all
 		self->s.misc = 0;
@@ -248,7 +248,7 @@ void SP_gfx_portal_surface( gentity_t *self )
 	self->r.svFlags = SVF_PORTAL;
 	self->s.eType = entityType_t::ET_PORTAL;
 
-	if ( !self->targetCount )
+	if ( !self->mapEntity.targetCount )
 	{
 		VectorCopy( self->s.origin, self->s.origin2 );
 	}
@@ -281,7 +281,7 @@ env_animated_model
 */
 static void gfx_animated_model_act( gentity_t *self, gentity_t*, gentity_t* )
 {
-	if ( self->spawnflags & 1 )
+	if ( self->mapEntity.spawnflags & 1 )
 	{
 		//if spawnflag 1 is set
 		//toggle EF_NODRAW
@@ -302,17 +302,17 @@ void SP_gfx_animated_model( gentity_t *self )
 	self->s.torsoAnim = ( int ) self->animation[ 2 ];
 	self->s.legsAnim = ( int ) self->animation[ 3 ];
 
-	self->s.angles2[ 0 ] = self->activatedPosition[ 0 ];
+	self->s.angles2[ 0 ] = self->mapEntity.activatedPosition[ 0 ];
 
 	//add the model to the client precache list
-	self->s.modelindex = G_ModelIndex( self->model );
+	self->s.modelindex = G_ModelIndex( self->mapEntity.model );
 
 	self->act = gfx_animated_model_act;
 
 	self->s.eType = entityType_t::ET_ANIMMAPOBJ;
 
 	// spawn with animation stopped
-	if ( self->spawnflags & 2 )
+	if ( self->mapEntity.spawnflags & 2 )
 	{
 		self->s.eFlags |= EF_MOVER_STOP;
 	}
@@ -330,12 +330,12 @@ gfx_shader_mod
 
 static void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 {
-	if ( !self->shaderKey || !self->shaderReplacement || !self->enabled )
+	if ( !self->mapEntity.shaderKey || !self->mapEntity.shaderReplacement || !self->enabled )
 	{
 		return;
 	}
 
-	G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
+	G_SetShaderRemap( self->mapEntity.shaderKey, self->mapEntity.shaderReplacement, level.time * 0.001 );
 	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 
 	self->shaderActive = true;
@@ -343,7 +343,7 @@ static void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 
 static void gfx_shader_mod_reset( gentity_t *self )
 {
-	if ( !self->shaderKey || !self->shaderReplacement )
+	if ( !self->mapEntity.shaderKey || !self->mapEntity.shaderReplacement )
 	{
 		return;
 	}
@@ -353,7 +353,7 @@ static void gfx_shader_mod_reset( gentity_t *self )
 		return;
 	}
 
-	G_SetShaderRemap( self->shaderKey, self->shaderKey, level.time * 0.001 );
+	G_SetShaderRemap( self->mapEntity.shaderKey, self->mapEntity.shaderKey, level.time * 0.001 );
 	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 
 	self->shaderActive = false;

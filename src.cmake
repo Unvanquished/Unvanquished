@@ -230,6 +230,7 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/sg_spawn_position.cpp
     ${GAMELOGIC_DIR}/sgame/sg_spawn_sensor.cpp
     ${GAMELOGIC_DIR}/sgame/sg_spawn_shared.cpp
+    ${GAMELOGIC_DIR}/sgame/sg_map_entity.h
     ${GAMELOGIC_DIR}/sgame/sg_struct.h
     ${GAMELOGIC_DIR}/sgame/sg_svcmds.cpp
     ${GAMELOGIC_DIR}/sgame/sg_team.cpp

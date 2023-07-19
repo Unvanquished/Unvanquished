@@ -26,13 +26,9 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #define SG_STRUCT_H_
 
 #include "sg_entities.h"
-struct botMemory_t;
+#include "sg_map_entity.h"
 
-struct variatingTime_t
-{
-	float time;
-	float variance;
-};
+struct botMemory_t;
 
 #define MAX_NAMELOG_NAMES 5
 #define MAX_NAMELOG_ADDRS 5
@@ -63,65 +59,6 @@ struct namelog_t
 	team_t team;
 
 	int id;
-};
-
-/**
- * in the context of a target, this describes the conditions to create or to act within
- * while as part of trigger or most other types, it will be used as filtering condition that needs to be fulfilled to trigger, or to act directly
- */
-struct gentityConditions_t
-{
-	team_t   team;
-	int      stage;
-
-	BoundedVector<class_t,     PCL_NUM_CLASSES>   classes;
-	BoundedVector<weapon_t,    WP_NUM_WEAPONS>    weapons;
-	BoundedVector<upgrade_t,   UP_NUM_UPGRADES>   upgrades;
-	BoundedVector<buildable_t, BA_NUM_BUILDABLES> buildables;
-
-	bool negated;
-	bool isClassSensor = false;
-	bool isEquipSensor = false;
-};
-
-/**
- * struct containing the configuration data of a gentity opposed to its state data
- */
-struct gentityConfig_t
-{
-	/* amount of a context depended size for this entity */
-	int amount;
-
-	int health;
-	float speed;
-	int damage;
-
-	/**
-	 * how long to wait before fullfilling the maintask act()
-	 * (e.g. how long to delay sensing as sensor or relaying as relay)
-	 */
-	variatingTime_t delay;
-	/**
-	 * the duration of one cycle in a repeating event
-	 */
-	variatingTime_t period;
-	/**
-	 * how long to wait in a state after a statechange
-	 */
-	variatingTime_t wait;
-
-	// trigger "range"
-	int triggerRange;
-};
-
-struct entityClass_t
-{
-	int instanceCounter;
-	/**
-	 * default config
-	 * entities might fallback to their classwide config if their individual is not set
-	 */
-	gentityConfig_t config;
 };
 
 class Entity;
@@ -181,6 +118,9 @@ struct gentity_t
 	// New style entity
 	Entity* entity;
 
+	const char   *classname; //used by buildables & other spawned at start of map
+	mapEntity_t mapEntity;
+
 	gclient_t *client; // nullptr if not a client
 
 	unsigned generation; // used with GentityRef
@@ -191,19 +131,8 @@ struct gentity_t
 
 	int          flags; // FL_* variables
 
-	/*
-	 * the class of the entity
-	 * this is shared among all instances of this type
-	 */
-	entityClass_t *eclass;
-
-	const char   *classname;
-	int          spawnflags;
-
 	//entity creation time, i.e. when a building was build or a missile was fired (for diminishing missile damage)
 	int          creationTime;
-
-	char         *names[ MAX_ENTITY_ALIASES + 1 ];
 
 	// These formerly all used a field named "active" and are now split such that it gets easier
 	// to convert them to CBSE component members.
@@ -256,22 +185,10 @@ struct gentity_t
 	 */
 	float        momentumEarned;
 
-	/*
-	 * targets to aim at
-	 */
-	int          targetCount;
-	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
-
 	GentityRef   target; // target of trapper, medistation, hive, rocketpod, builder's +deconstruct
 
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
-
-	/*
-	 * gentities to call on certain events
-	 */
-	int          callTargetCount;
-	gentityCallDefinition_t calltargets[ MAX_ENTITY_CALLTARGETS + 1 ];
 
 	/**
 	 * current valid call state for a single threaded call hierarchy.
@@ -281,26 +198,6 @@ struct gentity_t
 	gentityCall_t callIn;
 	gentity_t    *activator; //FIXME: handle this as part of the current Call
 
-	/*
-	 * configuration, as supplied by the spawn string, external spawn scripts etc.
-	 * as opposed to state data as placed everywhere else
-	 */
-	gentityConfig_t config;
-
-	//conditions as trigger-filter or target-goal
-	gentityConditions_t conditions;
-
-	// entity groups
-	char         *groupName;
-	gentity_t    *groupChain; // next entity in group
-	gentity_t    *groupMaster; // master of the group
-
-	char     *model;
-	// This seems to be used by rotators, movers and doors. Quoting:
-	// > if the "model2" key is set, use a separate model
-	// > for drawing, but clip against the brushes [of the first model]
-	char     *model2;
-
 	bool physicsObject; // if true, it can be pushed by movers and fall off edges
 	// all game items are physicsObjects,
 	float    physicsBounce; // 1.0 = continuous bounce, 0.0 = no bounce
@@ -308,69 +205,7 @@ struct gentity_t
 	// when moving.  items and corpses do not collide against
 	// players, for instance
 
-	//sound index, used by movers as well as target_speaker e.g. for looping sounds
-	int          soundIndex;
-
-	// movers {
-	// Let's try to document this a bit while I'm trying to
-	// hack some bot mover support.
-	// As a foreword, know that I don't know much about all
-	// that stuff, so, infos here might be wrong, but that'll
-	// still be better than no info at all, I'd bet.
-	// TODO I have no idea how rotating stuff work or "model" are
-	//
-	// For a start, "doors", like, automatic doors (the most
-	// common ones in unv's maps), are *not* movers, but
-	// "brushes", that is, 3D "static" volumes.
-	// Movers are essentially elevators, as one would have
-	// guessed, but might be rotating stuff, like those found
-	// on the (unofficial) mission maps, or could be mechanical
-	// traps (think about the good old trap of ceiling progressively
-	// moving toward ground, crushing stuff in between) or whatever.
-
-	gentity_t *clipBrush; // clipping brush for model doors
-	// describes if the mover is in original state, ending state,
-	// or one of the 2 transitions between them, plus the type of
-	// mover: mover, rotator, model. Don't know more.
-	moverState_t moverState;
-	// "ent->s.pos.trBase = $NAME" when "moverState == moverState_t::.*_$NAME"
-	// In case $NAME is 1TO2 or 2TO1:
-	// ent->s.pos.trDelta = scale( ( last - next ), ( 1000 / ent->s.pos.trDuration ) )
-	vec3_t restingPosition, activatedPosition;
-
-	// sounds played when "moverState == moverState_t::.*_$NAME"
-	int soundPos1, soundPos2;
-	int sound1to2, sound2to1;
-
-	float rotatorAngle;
-	// }
-
-	char         *message;
-
-	/*
-	 * for toggleable shaders
-	 */
-	char         *shaderKey;
-	char         *shaderReplacement;
-
 	int          health;
-
-	bool         locked;
-
-	float        speed;
-
-	/* state of the amount of a context depended size for this entity
-	 * example: current set gravity for a gravity afx-entity
-	 */
-	int          amount;
-
-	/*
-	 * do not abuse this variable (again) for anything but actual representing a count
-	 *
-	 * add your own number with correct semantic information to gentity_t or
-	 * if you really have to use customNumber
-	 */
-	int count;
 
 	// acceleration evaluation
 	bool  evaluateAcceleration;
@@ -379,14 +214,9 @@ struct gentity_t
 	vec3_t    oldAccel;
 	vec3_t    jerk;
 
-	vec3_t       movedir;
-
 	int       nextthink;
 	void ( *think )( gentity_t *self );
-
 	void ( *reset )( gentity_t *self );
-	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
-	void ( *blocked )( gentity_t *self, gentity_t *other );
 	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
 	void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
@@ -422,7 +252,6 @@ struct gentity_t
 	namelog_t   *builtBy; // clientNum of person that built this
 
 	int         pain_debounce_time;
-	int         last_move_time;
 	int         timestamp; // body queue sinking, etc
 	int         shrunkTime; // time when a barricade shrunk or zero
 	gentity_t   *boosterUsed; // the booster an alien is using for healing

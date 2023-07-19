@@ -175,56 +175,56 @@ struct fieldDescriptor_t
 static const fieldDescriptor_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr },
-	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "alpha",               FOFS( restingPosition ),     F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
-	{ "amount",              FOFS( config.amount ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "alias",               FOFS( mapEntity.names[ 2 ] ),          F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "alpha",               FOFS( mapEntity.restingPosition ),     F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
+	{ "amount",              FOFS( mapEntity.config.amount ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
 	{ "angle",               FOFS( s.angles ),            F_YAW,       ENT_V_TMPNAME, "yaw"}, //radiants ui sadly strongly encourages the "angle" keyword
 	{ "angles",              FOFS( s.angles ),            F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr },
 	{ "animation",           FOFS( animation ),           F_4D_VECTOR ,ENT_V_UNCLEAR, nullptr },
 	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     ,ENT_V_UNCLEAR, nullptr },
 	{ "classname",           FOFS( classname ),           F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "delay",               FOFS( config.delay ),        F_TIME      ,ENT_V_UNCLEAR, nullptr },
-	{ "dmg",                 FOFS( config.damage ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "gravity",             FOFS( config.amount ),       F_INT       ,ENT_V_UNCLEAR, "amount" },
-	{ "health",              FOFS( config.health ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "message",             FOFS( message ),             F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "model",               FOFS( model ),               F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "model2",              FOFS( model2 ),              F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	  ,ENT_V_UNCLEAR, nullptr },
-	{ "noise",               FOFS( soundIndex ),          F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "onAct",               FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onDie",               FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onDisable",           FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onEnable",            FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onFree",              FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onReach",             FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onReset",             FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onSpawn",             FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onTouch",             FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
-	{ "onUse",               FOFS( calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "delay",               FOFS( mapEntity.config.delay ),        F_TIME      ,ENT_V_UNCLEAR, nullptr },
+	{ "dmg",                 FOFS( mapEntity.config.damage ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "gravity",             FOFS( mapEntity.config.amount ),       F_INT       ,ENT_V_UNCLEAR, "amount" },
+	{ "health",              FOFS( mapEntity.config.health ),       F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "message",             FOFS( mapEntity.message ),             F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "model",               FOFS( mapEntity.model ),               F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "model2",              FOFS( mapEntity.model2 ),              F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "name",	        	     FOFS( mapEntity.names[ 0 ] ),          F_STRING	  ,ENT_V_UNCLEAR, nullptr },
+	{ "noise",               FOFS( mapEntity.soundIndex ),          F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "onAct",               FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onDie",               FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onDisable",           FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onEnable",            FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onFree",              FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onReach",             FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onReset",             FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onSpawn",             FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onTouch",             FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
+	{ "onUse",               FOFS( mapEntity.calltargets ),         F_CALLTARGET,ENT_V_UNCLEAR, nullptr },
 	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr },
-	{ "period",              FOFS( config.period ),       F_TIME      ,ENT_V_UNCLEAR, nullptr },
-	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
-	{ "random",              FOFS( config.wait.variance ),F_FLOAT,     ENT_V_TMPNAME, "wait" },
-	{ "replacement",         FOFS( shaderReplacement ),   F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "shader",              FOFS( shaderKey ),           F_STRING    ,ENT_V_UNCLEAR, nullptr },
-	{ "sound1to2",           FOFS( sound1to2 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "sound2to1",           FOFS( sound2to1 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "soundPos1",           FOFS( soundPos1 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "soundPos2",           FOFS( soundPos2 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
-	{ "spawnflags",          FOFS( spawnflags ),          F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "speed",               FOFS( config.speed ),        F_FLOAT     ,ENT_V_UNCLEAR, nullptr },
-	{ "stage",               FOFS( conditions.stage ),    F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "target",              FOFS( targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr },
-	{ "target2",             FOFS( targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "target3",             FOFS( targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "target4",             FOFS( targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_TMPNAME, "name" }, //radiants ui sadly strongly encourages the "targetname" keyword
-	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING,    ENT_V_RENAMED, "shader"},
-	{ "targetShaderNewName", FOFS( shaderReplacement ),   F_STRING,    ENT_V_RENAMED, "replacement"},
-	{ "team",                FOFS( conditions.team ),     F_INT       ,ENT_V_UNCLEAR, nullptr },
-	{ "wait",                FOFS( config.wait ),         F_TIME      ,ENT_V_UNCLEAR, nullptr },
+	{ "period",              FOFS( mapEntity.config.period ),       F_TIME      ,ENT_V_UNCLEAR, nullptr },
+	{ "radius",              FOFS( mapEntity.activatedPosition ),   F_3D_VECTOR ,ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
+	{ "random",              FOFS( mapEntity.config.wait.variance ),F_FLOAT,     ENT_V_TMPNAME, "wait" },
+	{ "replacement",         FOFS( mapEntity.shaderReplacement ),   F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "shader",              FOFS( mapEntity.shaderKey ),           F_STRING    ,ENT_V_UNCLEAR, nullptr },
+	{ "sound1to2",           FOFS( mapEntity.sound1to2 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "sound2to1",           FOFS( mapEntity.sound2to1 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "soundPos1",           FOFS( mapEntity.soundPos1 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "soundPos2",           FOFS( mapEntity.soundPos2 ),           F_SOUNDINDEX,ENT_V_UNCLEAR, nullptr },
+	{ "spawnflags",          FOFS( mapEntity.spawnflags ),          F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "speed",               FOFS( mapEntity.config.speed ),        F_FLOAT     ,ENT_V_UNCLEAR, nullptr },
+	{ "stage",               FOFS( mapEntity.conditions.stage ),    F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "target",              FOFS( mapEntity.targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr },
+	{ "target2",             FOFS( mapEntity.targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "target3",             FOFS( mapEntity.targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "target4",             FOFS( mapEntity.targets ),             F_TARGET    ,ENT_V_UNCLEAR, nullptr }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "targetname",          FOFS( mapEntity.names[ 1 ] ),          F_STRING,    ENT_V_TMPNAME, "name" }, //radiants ui sadly strongly encourages the "targetname" keyword
+	{ "targetname2",         FOFS( mapEntity.names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "targetShaderName",    FOFS( mapEntity.shaderKey ),           F_STRING,    ENT_V_RENAMED, "shader"},
+	{ "targetShaderNewName", FOFS( mapEntity.shaderReplacement ),   F_STRING,    ENT_V_RENAMED, "replacement"},
+	{ "team",                FOFS( mapEntity.conditions.team ),     F_INT       ,ENT_V_UNCLEAR, nullptr },
+	{ "wait",                FOFS( mapEntity.config.wait ),         F_TIME      ,ENT_V_UNCLEAR, nullptr },
 	{ "yaw",                 FOFS( s.angles ),            F_YAW       ,ENT_V_UNCLEAR, nullptr },
 };
 
@@ -473,7 +473,7 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 {
 	switch (entityClass->chainType) {
 		case CHAIN_ACTIVE:
-			if(!entity->callTargetCount) //check target usage for backward compatibility
+			if(!entity->mapEntity.callTargetCount) //check target usage for backward compatibility
 			{
 				if( g_debugEntities.Get() > -2 )
 					Log::Warn("Entity %s needs to call or target to something — Removing it.", etos( entity ) );
@@ -482,7 +482,7 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 			break;
 		case CHAIN_TARGET:
 		case CHAIN_PASSIV:
-			if(!entity->names[0])
+			if(!entity->mapEntity.names[0])
 			{
 				if( g_debugEntities.Get() > -2 )
 					Log::Warn("Entity %s needs a name, so other entities can target it — Removing it.", etos( entity ) );
@@ -490,8 +490,8 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 			}
 			break;
 		case CHAIN_RELAY:
-			if((!entity->callTargetCount) //check target usage for backward compatibility
-					|| !entity->names[0])
+			if((!entity->mapEntity.callTargetCount) //check target usage for backward compatibility
+					|| !entity->mapEntity.names[0])
 			{
 				if( g_debugEntities.Get() > -2 )
 					Log::Warn("Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.", etos( entity ) );
@@ -560,8 +560,8 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	if ( spawnedClass )
 	{ // found it
 
-		spawnedEntity->eclass = &entityClasses[(int) (spawnedClass-entityClassDescriptions)];
-		spawnedEntity->eclass->instanceCounter++;
+		spawnedEntity->mapEntity.eclass = &entityClasses[(int) (spawnedClass-entityClassDescriptions)];
+		spawnedEntity->mapEntity.eclass->instanceCounter++;
 
 		if(!G_ValidateEntity( spawnedClass, spawnedEntity ))
 			return false; // results in freeing the entity
@@ -571,7 +571,7 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 
 		if ( g_debugEntities.Get() > 2 )
 		{
-			std::string count = spawnedEntity->eclass ? std::to_string(spawnedEntity->eclass->instanceCounter) : "??";
+			std::string count = spawnedEntity->mapEntity.eclass ? std::to_string(spawnedEntity->mapEntity.eclass->instanceCounter) : "??";
 			Log::Notice("Successfully spawned entity ^5#%i^* as ^3#%s^*th instance of ^5%s",
 			            spawnedEntity->num(), count, spawnedClass->name);
 		}
@@ -607,7 +607,7 @@ Builds a copy of the string, translating \n to real linefeeds
 so message texts can be multi-line
 =============
 */
-char *G_NewString( const char *string )
+static char *G_NewString( const char *string )
 {
 	char *newb, *new_p;
 	size_t l = strlen( string ) + 1;
@@ -706,17 +706,17 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 			break;
 
 		case F_TARGET:
-			if(entity->targetCount >= MAX_ENTITY_TARGETS)
+			if(entity->mapEntity.targetCount >= MAX_ENTITY_TARGETS)
 				Sys::Drop("Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
 
-			( ( char ** ) entityDataField ) [ entity->targetCount++ ] = G_NewString( rawString );
+			( ( char ** ) entityDataField ) [ entity->mapEntity.targetCount++ ] = G_NewString( rawString );
 			break;
 
 		case F_CALLTARGET:
-			if(entity->callTargetCount >= MAX_ENTITY_CALLTARGETS)
+			if(entity->mapEntity.callTargetCount >= MAX_ENTITY_CALLTARGETS)
 				Sys::Drop("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
 
-			( ( gentityCallDefinition_t * ) entityDataField ) [ entity->callTargetCount++ ] = G_NewCallDefinition( fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name, rawString );
+			( ( gentityCallDefinition_t * ) entityDataField ) [ entity->mapEntity.callTargetCount++ ] = G_NewCallDefinition( fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name, rawString );
 			break;
 
 		case F_TIME:
@@ -828,27 +828,27 @@ static void G_SpawnGEntityFromSpawnVars()
 	j = 0;
 	for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
 	{
-		if (spawningEntity->names[i])
-			spawningEntity->names[j++] = spawningEntity->names[i];
+		if (spawningEntity->mapEntity.names[i])
+			spawningEntity->mapEntity.names[j++] = spawningEntity->mapEntity.names[i];
 	}
-	spawningEntity->names[ j ] = nullptr;
+	spawningEntity->mapEntity.names[ j ] = nullptr;
 
 	/*
 	 * for backward compatbility, since before targets were used for calling,
 	 * we'll have to copy them over to the called-targets as well for now
 	 */
-	if(!spawningEntity->callTargetCount)
+	if(!spawningEntity->mapEntity.callTargetCount)
 	{
 		for (i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS; i++)
 		{
-			if (!spawningEntity->targets[i])
+			if (!spawningEntity->mapEntity.targets[i])
 				continue;
 
-			spawningEntity->calltargets[i].event = "target";
-			spawningEntity->calltargets[i].eventType = ON_DEFAULT;
-			spawningEntity->calltargets[i].actionType = ECA_DEFAULT;
-			spawningEntity->calltargets[i].name = spawningEntity->targets[i];
-			spawningEntity->callTargetCount++;
+			spawningEntity->mapEntity.calltargets[i].event = "target";
+			spawningEntity->mapEntity.calltargets[i].eventType = ON_DEFAULT;
+			spawningEntity->mapEntity.calltargets[i].actionType = ECA_DEFAULT;
+			spawningEntity->mapEntity.calltargets[i].name = spawningEntity->mapEntity.targets[i];
+			spawningEntity->mapEntity.callTargetCount++;
 		}
 	}
 
@@ -856,35 +856,16 @@ static void G_SpawnGEntityFromSpawnVars()
 	j = 0;
 	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
 	{
-		if (spawningEntity->targets[i])
-			spawningEntity->targets[j++] = spawningEntity->targets[i];
+		if (spawningEntity->mapEntity.targets[i])
+			spawningEntity->mapEntity.targets[j++] = spawningEntity->mapEntity.targets[i];
 	}
-	spawningEntity->targets[ j ] = nullptr;
+	spawningEntity->mapEntity.targets[ j ] = nullptr;
 
 	// if we didn't get necessary fields (like the classname), don't bother spawning anything
 	if ( !G_CallSpawnFunction( spawningEntity ) )
 	{
 		G_FreeEntity( spawningEntity );
 	}
-}
-
-void G_ReorderCallTargets( gentity_t *ent )
-{
-	int i, j;
-	// don't leave any "gaps" between multiple targets
-	j = 0;
-	for (i = 0; i < MAX_ENTITY_CALLTARGETS; ++i)
-	{
-		if (ent->calltargets[i].name) {
-			ent->calltargets[j] = ent->calltargets[i];
-			ent->calltargets[j].actionType = G_GetCallActionTypeFor(ent->calltargets[i].action);
-			j++;
-		}
-	}
-	ent->calltargets[ j ].name = nullptr;
-	ent->calltargets[ j ].action = nullptr;
-	ent->calltargets[ j ].actionType = ECA_NOP;
-	ent->callTargetCount = j;
 }
 
 bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
@@ -1164,7 +1145,7 @@ void G_SpawnFakeEntities()
 	level.fakeLocation->s.origin[ 0 ] =
 	level.fakeLocation->s.origin[ 1 ] =
 	level.fakeLocation->s.origin[ 2 ] = 1.7e19f; // well out of range
-	level.fakeLocation->message = nullptr;
+	level.fakeLocation->mapEntity.message = nullptr;
 
 	level.fakeLocation->s.eType = entityType_t::ET_LOCATION;
 	level.fakeLocation->r.svFlags = SVF_BROADCAST;

@@ -1012,7 +1012,7 @@ bool gentity_t::Damage( float amount, gentity_t* source,
 	// Since this is definitely reasonable, let's return false
 	// if the entity can not take damages.
 	// And to take damages, imply you have a health pool.
-	if ( config.health == 0 )
+	if ( mapEntity.config.health == 0 )
 	{
 		return false;
 	}

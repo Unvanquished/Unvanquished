@@ -70,7 +70,7 @@ void think_aimAtTarget( gentity_t *self )
 	VectorScale( origin, 0.5f, origin );
 
 	bool hasTarget = false;
-	for ( char* target : self->targets )
+	for ( char* target : self->mapEntity.targets )
 	{
 		if ( target && target[0] )
 		{
@@ -136,58 +136,6 @@ void G_ResetIntField( int* result, bool fallbackIfNegative, int instanceField, i
 	}
 }
 
-void G_ResetFloatField( float* result, bool fallbackIfNegative, float instanceField, float classField, float fallback )
-{
-	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
-	{
-		*result = instanceField;
-	}
-	else if (classField && (classField > 0 || !fallbackIfNegative))
-	{
-		*result = classField;
-	}
-	else
-	{
-		*result = fallback;
-	}
-}
-
-void G_ResetTimeField( variatingTime_t *result,
-		variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback )
-{
-	if( instanceField.time && instanceField.time > 0 )
-	{
-		*result = instanceField;
-	}
-	else if (classField.time && classField.time > 0 )
-	{
-		*result = classField;
-	}
-	else
-	{
-		*result = fallback;
-	}
-
-	if ( result->variance < 0 )
-	{
-		result->variance = 0;
-
-		if( g_debugEntities.Get() >= 0 )
-		{
-			Log::Warn( "negative variance (%f); resetting to 0", result->variance );
-		}
-	}
-	else if ( result->variance >= result->time && result->variance > 0)
-	{
-		result->variance = result->time - FRAMETIME;
-
-		if( g_debugEntities.Get() > 0 )
-		{
-			Log::Warn( "limiting variance (%f) to be smaller than time (%f)", result->variance, result->time );
-		}
-	}
-}
-
 /*
 =================================================================================
 
@@ -215,30 +163,30 @@ void SP_ConditionFields( gentity_t *self ) {
 	char *buffer;
 
 	if ( G_SpawnString( "buildables", "", &buffer ) ) {
-		self->conditions.buildables = BG_ParseBuildableList( buffer );
+		self->mapEntity.conditions.buildables = BG_ParseBuildableList( buffer );
 	}
 
 	if ( G_SpawnString( "classes", "", &buffer ) ) {
-		self->conditions.classes = BG_ParseClassList( buffer );
+		self->mapEntity.conditions.classes = BG_ParseClassList( buffer );
 	}
 
 	if ( G_SpawnString( "equipment", "", &buffer ) ) {
 		auto equipments = BG_ParseEquipmentList( buffer );
-		self->conditions.weapons = std::move(equipments.first);
-		self->conditions.upgrades = std::move(equipments.second);
+		self->mapEntity.conditions.weapons = std::move(equipments.first);
+		self->mapEntity.conditions.upgrades = std::move(equipments.second);
 	}
 }
 
 void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance ) {
-	if (!self->config.wait.time)
-		self->config.wait.time = defaultWait;
+	if (!self->mapEntity.config.wait.time)
+		self->mapEntity.config.wait.time = defaultWait;
 
-	if (!self->config.wait.variance)
-		self->config.wait.variance = defaultWaitVariance;
+	if (!self->mapEntity.config.wait.variance)
+		self->mapEntity.config.wait.variance = defaultWaitVariance;
 
-	if ( self->config.wait.variance >= self->config.wait.time && self->config.wait.variance > 0)
+	if ( self->mapEntity.config.wait.variance >= self->mapEntity.config.wait.time && self->mapEntity.config.wait.variance > 0)
 	{
-		self->config.wait.variance = self->config.wait.time - FRAMETIME;
+		self->mapEntity.config.wait.variance = self->mapEntity.config.wait.time - FRAMETIME;
 
 		if( g_debugEntities.Get() > -1)
 		{

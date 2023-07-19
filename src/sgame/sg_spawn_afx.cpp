@@ -41,13 +41,13 @@ static void InitEnvAFXEntity( gentity_t *self, bool link )
 	if ( !VectorCompare( self->s.angles, vec3_origin ) )
 	{
 		glm::vec3 angles = VEC2GLM( self->s.angles );
-		glm::vec3 movedir = VEC2GLM( self->movedir );
+		glm::vec3 movedir = VEC2GLM( self->mapEntity.movedir );
 		G_SetMovedir( angles, movedir );
 		VectorCopy( &angles[0], self->s.angles );
-		VectorCopy( &movedir[0], self->movedir );
+		VectorCopy( &movedir[0], self->mapEntity.movedir );
 	}
 
-	trap_SetBrushModel( self, self->model );
+	trap_SetBrushModel( self, self->mapEntity.model );
 	self->r.contents = CONTENTS_TRIGGER; // replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
 
@@ -94,7 +94,7 @@ static void env_afx_push_touch( gentity_t *self, gentity_t *activator, trace_t* 
 	{
 		return;
 	}
-	self->nextthink = VariatedLevelTime( self->config.wait );
+	self->nextthink = VariatedLevelTime( self->mapEntity.config.wait );
 
 	VectorCopy( self->s.origin2, activator->client->ps.velocity );
 }
@@ -109,7 +109,7 @@ void SP_env_afx_push( gentity_t *self )
 	self->nextthink = level.time + FRAMETIME;
 	self->act = env_afx_toggle;
 
-	InitEnvAFXEntity( self, !(self->spawnflags & SPF_SPAWN_DISABLED ) );
+	InitEnvAFXEntity( self, !(self->mapEntity.spawnflags & SPF_SPAWN_DISABLED ) );
 
 	// unlike other afx, we need to send this one to the client
 	self->r.svFlags &= ~SVF_NOCLIENT;
@@ -143,7 +143,7 @@ static void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t
 	}
 
 	// Spectators only?
-	if ( ( self->spawnflags & 1 ) &&
+	if ( ( self->mapEntity.spawnflags & 1 ) &&
 	     other->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		return;
@@ -154,7 +154,7 @@ static void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t
 	if ( !dest )
 		return;
 
-	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->config.speed );
+	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->mapEntity.config.speed );
 }
 
 static void env_afx_teleporter_act( gentity_t *ent, gentity_t*, gentity_t* )
@@ -165,11 +165,11 @@ static void env_afx_teleporter_act( gentity_t *ent, gentity_t*, gentity_t* )
 void SP_env_afx_teleport( gentity_t *self )
 {
 
-	if( !self->config.speed )
-		self->config.speed = 400;
+	if( !self->mapEntity.config.speed )
+		self->mapEntity.config.speed = 400;
 
 	// SPAWN_DISABLED
-	if ( self->spawnflags & 2 )
+	if ( self->mapEntity.spawnflags & 2 )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}
@@ -181,7 +181,7 @@ void SP_env_afx_teleport( gentity_t *self )
 	InitEnvAFXEntity( self, true );
 	// unlike other afx, we need to send this one to the client
 	// unless is a spectator trigger
-	if ( self->spawnflags & 1 )
+	if ( self->mapEntity.spawnflags & 1 )
 	{
 		self->r.svFlags |= SVF_NOCLIENT;
 	}
@@ -208,7 +208,7 @@ static void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t* )
 		return;
 	}
 
-	if ( self->spawnflags & 16 )
+	if ( self->mapEntity.spawnflags & 16 )
 	{
 		self->timestamp = level.time + 1000;
 	}
@@ -218,12 +218,12 @@ static void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t* )
 	}
 
 	// play sound
-	if ( !( self->spawnflags & 4 ) )
+	if ( !( self->mapEntity.spawnflags & 4 ) )
 	{
-		G_Sound( other, soundChannel_t::CHAN_AUTO, self->soundIndex );
+		G_Sound( other, soundChannel_t::CHAN_AUTO, self->mapEntity.soundIndex );
 	}
 
-	if ( self->spawnflags & 8 )
+	if ( self->mapEntity.spawnflags & 8 )
 	{
 		dflags = DAMAGE_NO_PROTECTION;
 	}
@@ -239,14 +239,14 @@ static void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t* )
 void SP_env_afx_hurt( gentity_t *self )
 {
 
-	self->soundIndex = G_SoundIndex( "sound/misc/electro" );
+	self->mapEntity.soundIndex = G_SoundIndex( "sound/misc/electro" );
 	self->touch = env_afx_hurt_touch;
 
-	G_ResetIntField(&self->damage, true, self->config.damage, self->eclass->config.damage, 5);
+	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 5);
 
 	self->act = env_afx_toggle;
 
-	InitEnvAFXEntity( self, !(self->spawnflags & SPF_SPAWN_DISABLED ) );
+	InitEnvAFXEntity( self, !(self->mapEntity.spawnflags & SPF_SPAWN_DISABLED ) );
 }
 
 /*
@@ -259,7 +259,7 @@ trigger_gravity
 
 static void env_afx_gravity_reset( gentity_t *self )
 {
-	G_ResetIntField(&self->amount, false, self->config.amount, self->eclass->config.amount, g_gravity.Get());
+	G_ResetIntField(&self->mapEntity.amount, false, self->mapEntity.config.amount, self->mapEntity.eclass->config.amount, g_gravity.Get());
 }
 
 static void env_afx_gravity_touch( gentity_t *ent, gentity_t *other, trace_t* )
@@ -270,7 +270,7 @@ static void env_afx_gravity_touch( gentity_t *ent, gentity_t *other, trace_t* )
 		return;
 	}
 
-	other->client->ps.gravity = ent->amount;
+	other->client->ps.gravity = ent->mapEntity.amount;
 }
 
 /*
@@ -280,7 +280,7 @@ SP_trigger_gravity
 */
 void SP_env_afx_gravity( gentity_t *self )
 {
-	int* amount = &self->config.amount;
+	int* amount = &self->mapEntity.config.amount;
 	if ( !( G_SpawnInt( "amount", "0", amount ) || G_SpawnInt( "gravity", "0", amount ) ) )
 	{
 		//TODO: it is highly possible that other situations are broken.
@@ -323,7 +323,7 @@ static void env_afx_heal_touch( gentity_t *self, gentity_t *other, trace_t* )
 		return;
 	}
 
-	if ( self->spawnflags & 2 )
+	if ( self->mapEntity.spawnflags & 2 )
 	{
 		self->timestamp = level.time + 1000;
 	}
@@ -353,7 +353,7 @@ void SP_env_afx_heal( gentity_t *self )
 	self->touch = env_afx_heal_touch;
 	self->act = env_afx_toggle;
 
-	InitEnvAFXEntity( self, !( self->spawnflags & SPF_SPAWN_DISABLED ) );
+	InitEnvAFXEntity( self, !( self->mapEntity.spawnflags & SPF_SPAWN_DISABLED ) );
 }
 
 /*
@@ -390,17 +390,17 @@ static void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t* )
 
 	weapon = BG_PrimaryWeapon( other->client->ps.stats );
 
-	if ( BG_Weapon( weapon )->usesEnergy && ( self->spawnflags & 2 ) )
+	if ( BG_Weapon( weapon )->usesEnergy && ( self->mapEntity.spawnflags & 2 ) )
 	{
 		return;
 	}
 
-	if ( !BG_Weapon( weapon )->usesEnergy && ( self->spawnflags & 4 ) )
+	if ( !BG_Weapon( weapon )->usesEnergy && ( self->mapEntity.spawnflags & 4 ) )
 	{
 		return;
 	}
 
-	if ( self->spawnflags & 1 )
+	if ( self->mapEntity.spawnflags & 1 )
 	{
 		self->timestamp = level.time + 1000;
 	}
@@ -412,7 +412,7 @@ static void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t* )
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 	maxClips = BG_Weapon( weapon )->maxClips;
 
-	if ( ( other->client->ps.ammo + self->config.amount ) > maxAmmo )
+	if ( ( other->client->ps.ammo + self->mapEntity.config.amount ) > maxAmmo )
 	{
 		if ( other->client->ps.clips < maxClips )
 		{
@@ -426,7 +426,7 @@ static void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t* )
 	}
 	else
 	{
-		other->client->ps.ammo += self->config.amount;
+		other->client->ps.ammo += self->mapEntity.config.amount;
 	}
 }
 
@@ -437,11 +437,11 @@ SP_trigger_ammo
 */
 void SP_env_afx_ammo( gentity_t *self )
 {
-	G_SpawnInt( "ammo", "1", &self->config.amount );
+	G_SpawnInt( "ammo", "1", &self->mapEntity.config.amount );
 
-	if ( self->config.amount <= 0 )
+	if ( self->mapEntity.config.amount <= 0 )
 	{
-		self->config.amount = 1;
+		self->mapEntity.config.amount = 1;
 		Log::Warn( "%s with negative or unset ammo amount key", etos(self) );
 	}
 

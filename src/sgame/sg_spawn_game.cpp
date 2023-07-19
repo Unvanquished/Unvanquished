@@ -51,20 +51,20 @@ static void game_score_act( gentity_t *self, gentity_t*, gentity_t *activator )
 		return;
 	}
 
-	G_AddCreditsToScore( activator, self->config.amount );
+	G_AddCreditsToScore( activator, self->mapEntity.config.amount );
 }
 
 void SP_game_score( gentity_t *self )
 {
-	if ( !self->config.amount )
+	if ( !self->mapEntity.config.amount )
 	{
-		if( G_SpawnInt( "count", "0", &self->config.amount) )
+		if( G_SpawnInt( "count", "0", &self->mapEntity.config.amount) )
 		{
 			G_WarnAboutDeprecatedEntityField( self, "amount", "count", ENT_V_RENAMED );
 		}
 		else
 		{
-			self->config.amount = 1;
+			self->mapEntity.config.amount = 1;
 		}
 	}
 
@@ -82,7 +82,7 @@ static void game_end_act( gentity_t *self, gentity_t*, gentity_t* )
 {
 	if ( level.unconditionalWin == TEAM_NONE ) // only if not yet triggered
 	{
-		level.unconditionalWin = self->conditions.team;
+		level.unconditionalWin = self->mapEntity.conditions.team;
 	}
 }
 
@@ -90,11 +90,11 @@ void SP_game_end( gentity_t *self )
 {
 	if(!Q_stricmp(self->classname, "target_human_win"))
 	{
-		self->conditions.team = TEAM_HUMANS;
+		self->mapEntity.conditions.team = TEAM_HUMANS;
 	}
 	else if(!Q_stricmp(self->classname, "target_alien_win"))
 	{
-		self->conditions.team = TEAM_ALIENS;
+		self->mapEntity.conditions.team = TEAM_ALIENS;
 	}
 
 	self->act = game_end_act;
@@ -115,12 +115,12 @@ static void game_funds_act( gentity_t *self, gentity_t*, gentity_t *activator )
 		return;
 	}
 
-	G_AddCreditToClient( activator->client, self->amount, true );
+	G_AddCreditToClient( activator->client, self->mapEntity.amount, true );
 }
 
 static void game_funds_reset( gentity_t *self )
 {
-	G_ResetIntField( &self->amount, false, self->config.amount, self->eclass->config.amount, 0);
+	G_ResetIntField( &self->mapEntity.amount, false, self->mapEntity.config.amount, self->mapEntity.eclass->config.amount, 0);
 }
 
 void SP_game_funds( gentity_t *self )
