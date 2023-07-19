@@ -868,6 +868,49 @@ static int WallclimbStopTime( gentity_t *self )
 	return self->botMind->lastNavconTime + self->botMind->lastNavconDistance * 4 + 500;
 }
 
+// check if a wall climbing bot is running into an attackable human entity, if so: attack it
+static void BotMaybeAttackWhileClimbing( gentity_t *self )
+{
+	ASSERT( self->botMind->lastNavconDistance > 0 );
+
+	int ownClass = self->client->ps.stats[ STAT_CLASS ];
+	glm::vec3 playerMins, playerMaxs;
+	BG_BoundingBox( static_cast<class_t>( ownClass ), &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
+
+	glm::vec3 origin = VEC2GLM( self->s.origin );
+	glm::vec3 forward, right, up;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+	auto range = ownClass == PCL_ALIEN_LEVEL0 ? LEVEL0_BITE_RANGE : LEVEL1_CLAW_RANGE;
+
+	trace_t trace;
+	glm::vec3 end = origin + range * forward;
+	trap_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
+
+	if ( trace.fraction < 1.0f )
+	{
+		gentity_t const* hit = &g_entities[ trace.entityNum ];
+		bool hitEnemy = not ( G_OnSameTeam( self, hit ) || G_Team( hit ) == TEAM_NONE );
+
+		if ( hitEnemy )
+		{
+			int distanceExtension = 30;  // roughly corresponds to 100 milliseconds
+			// upper bound for extensions, in case a bot loops on a wall:
+			int extendedDistance = std::max( self->botMind->lastNavconDistance + distanceExtension, 4000 );
+
+			if ( ownClass == PCL_ALIEN_LEVEL0 && G_DretchCanDamageEntity( self, hit ) )
+			{
+				self->botMind->lastNavconDistance = extendedDistance;
+			}
+			else if ( ownClass == PCL_ALIEN_LEVEL1 )
+			{
+				usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
+				self->botMind->lastNavconDistance = extendedDistance;
+			}
+		}
+	}
+}
+
 // could use BG_ClassHasAbility( pcl, SCA_WALLCLIMBER ) to check if calling
 // this is a good idea
 static void BotClimbToGoal( gentity_t *self )
@@ -878,6 +921,7 @@ static void BotClimbToGoal( gentity_t *self )
 	self->botMind->cmdBuffer.upmove = -127;
 	self->botMind->cmdBuffer.forwardmove = 127;
 	self->botMind->cmdBuffer.rightmove = 0;
+	BotMaybeAttackWhileClimbing( self );
 }
 
 void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
