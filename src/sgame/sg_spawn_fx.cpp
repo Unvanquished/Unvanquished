@@ -45,7 +45,7 @@ env_speaker
 
 static void target_speaker_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
-	if ( self->spawnflags & 3 )
+	if ( self->mapEntity.spawnflags & 3 )
 	{
 		// looping sound toggles
 		if ( self->s.loopSound )
@@ -54,23 +54,23 @@ static void target_speaker_act( gentity_t *self, gentity_t*, gentity_t *activato
 		}
 		else
 		{
-			self->s.loopSound = self->soundIndex; // start it
+			self->s.loopSound = self->mapEntity.soundIndex; // start it
 		}
 	}
 	else
 	{
 		// one-time sound
-		if ( (self->spawnflags & 8) && activator )
+		if ( (self->mapEntity.spawnflags & 8) && activator )
 		{
-			G_AddEvent( activator, EV_GENERAL_SOUND, self->soundIndex );
+			G_AddEvent( activator, EV_GENERAL_SOUND, self->mapEntity.soundIndex );
 		}
-		else if ( self->spawnflags & 4 )
+		else if ( self->mapEntity.spawnflags & 4 )
 		{
-			G_AddEvent( self, EV_GLOBAL_SOUND, self->soundIndex );
+			G_AddEvent( self, EV_GLOBAL_SOUND, self->mapEntity.soundIndex );
 		}
 		else
 		{
-			G_AddEvent( self, EV_GENERAL_SOUND, self->soundIndex );
+			G_AddEvent( self, EV_GENERAL_SOUND, self->mapEntity.soundIndex );
 		}
 	}
 }
@@ -88,25 +88,25 @@ void SP_sfx_speaker( gentity_t *self )
 	// play on the entity that activates the speaker
 	if ( tmpString[ 0 ] == '*' )
 	{
-		self->spawnflags |= 8;
+		self->mapEntity.spawnflags |= 8;
 	}
-	self->soundIndex = G_SoundIndex( tmpString );
+	self->mapEntity.soundIndex = G_SoundIndex( tmpString );
 
 	// a repeating speaker can be done completely client side
 	self->s.eType = entityType_t::ET_SPEAKER;
-	self->s.eventParm = self->soundIndex;
-	self->s.frame = self->config.wait.time * 10;
-	self->s.clientNum = self->config.wait.variance * 10;
+	self->s.eventParm = self->mapEntity.soundIndex;
+	self->s.frame = self->mapEntity.config.wait.time * 10;
+	self->s.clientNum = self->mapEntity.config.wait.variance * 10;
 
 	// check for prestarted looping sound
-	if ( self->spawnflags & 1 )
+	if ( self->mapEntity.spawnflags & 1 )
 	{
-		self->s.loopSound = self->soundIndex;
+		self->s.loopSound = self->mapEntity.soundIndex;
 	}
 
 	self->act = target_speaker_act;
 
-	if ( self->spawnflags & 4 )
+	if ( self->mapEntity.spawnflags & 4 )
 	{
 		self->r.svFlags |= SVF_BROADCAST;
 	}
@@ -130,9 +130,9 @@ static void fx_rumble_think( gentity_t *self )
 	int       i;
 	gentity_t *ent;
 
-	if ( self->last_move_time < level.time )
+	if ( self->mapEntity.last_move_time < level.time )
 	{
-		self->last_move_time = level.time + 0.5;
+		self->mapEntity.last_move_time = level.time + 0.5;
 	}
 
 	for ( i = 0, ent = g_entities + i; i < level.num_entities; i++, ent++ )
@@ -155,7 +155,7 @@ static void fx_rumble_think( gentity_t *self )
 		ent->client->ps.groundEntityNum = ENTITYNUM_NONE;
 		ent->client->ps.velocity[ 0 ] += crandom() * 150;
 		ent->client->ps.velocity[ 1 ] += crandom() * 150;
-		ent->client->ps.velocity[ 2 ] = self->config.speed;
+		ent->client->ps.velocity[ 2 ] = self->mapEntity.config.speed;
 	}
 
 	if ( level.time < self->timestamp )
@@ -166,17 +166,17 @@ static void fx_rumble_think( gentity_t *self )
 
 static void fx_rumble_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
-	self->timestamp = level.time + ( self->config.amount * FRAMETIME );
+	self->timestamp = level.time + ( self->mapEntity.config.amount * FRAMETIME );
 	self->nextthink = level.time + FRAMETIME;
 	self->activator = activator;
-	self->last_move_time = 0;
+	self->mapEntity.last_move_time = 0;
 }
 
 void SP_fx_rumble( gentity_t *self )
 {
-	if ( !self->config.amount )
+	if ( !self->mapEntity.config.amount )
 	{
-		if( G_SpawnInt( "count", "0", &self->config.amount) )
+		if( G_SpawnInt( "count", "0", &self->mapEntity.config.amount) )
 		{
 			G_WarnAboutDeprecatedEntityField( self, "amount", "count", ENT_V_RENAMED );
 		}
@@ -186,9 +186,9 @@ void SP_fx_rumble( gentity_t *self )
 		}
 	}
 
-	if ( !self->config.speed )
+	if ( !self->mapEntity.config.speed )
 	{
-		self->config.speed = 100;
+		self->mapEntity.config.speed = 100;
 	}
 
 	self->think = fx_rumble_think;

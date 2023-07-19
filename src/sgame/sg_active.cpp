@@ -2221,7 +2221,7 @@ static void ClientThink_real( gentity_t *self )
 
 		if ( ent && ent->use &&
 		     ( !ent->buildableTeam   || ent->buildableTeam   == client->pers.team ) &&
-		     ( !ent->conditions.team || ent->conditions.team == client->pers.team ) &&
+		     ( ent->mapEntity.triggerTeam( static_cast<team_t>( client->pers.team ) ) ) &&
 		     trace.fraction < 1.0f &&
 				 !( activableTarget && Distance( self->s.origin, ent->s.origin ) < range1 ) )
 		{

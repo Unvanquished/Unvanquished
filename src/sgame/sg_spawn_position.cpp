@@ -79,11 +79,11 @@ void SP_pos_location( gentity_t *self )
 		}
 
 		message = va( "%c%c%s^*", Color::Constants::ESCAPE, self->customNumber + '0',
-		              self->message );
+		              self->mapEntity.message );
 	}
 	else
 	{
-		message = self->message;
+		message = self->mapEntity.message;
 	}
 
 	self->nextPathSegment = level.locationHead;

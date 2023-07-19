@@ -38,7 +38,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 struct gentity_t;
 struct gclient_t;
-struct variatingTime_t;
 
 struct botClass_t
 {

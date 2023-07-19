@@ -48,31 +48,31 @@ static void target_relay_act( gentity_t *self, gentity_t*, gentity_t *activator 
 	if (!self->enabled)
 		return;
 
-	if ( ( self->spawnflags & 1 ) && activator && activator->client &&
+	if ( ( self->mapEntity.spawnflags & 1 ) && activator && activator->client &&
 	     activator->client->pers.team != TEAM_HUMANS )
 	{
 		return;
 	}
 
-	if ( ( self->spawnflags & 2 ) && activator && activator->client &&
+	if ( ( self->mapEntity.spawnflags & 2 ) && activator && activator->client &&
 	     activator->client->pers.team != TEAM_ALIENS )
 	{
 		return;
 	}
 
-	if ( self->spawnflags & 4 )
+	if ( self->mapEntity.spawnflags & 4 )
 	{
 		G_FireEntityRandomly( self, activator );
 		return;
 	}
 
-	if ( !self->config.wait.time )
+	if ( !self->mapEntity.config.wait.time )
 	{
 		G_FireEntity( self, activator );
 	}
 	else
 	{
-		self->nextthink = VariatedLevelTime( self->config.wait );
+		self->nextthink = VariatedLevelTime( self->mapEntity.config.wait );
 		self->think = think_fireDelayed;
 		self->activator = activator;
 	}
@@ -80,7 +80,7 @@ static void target_relay_act( gentity_t *self, gentity_t*, gentity_t *activator 
 
 static void ctrl_relay_reset( gentity_t *self )
 {
-	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
+	self->enabled = !(self->mapEntity.spawnflags & SPF_SPAWN_DISABLED);
 }
 
 static void ctrl_relay_act( gentity_t *self, gentity_t*, gentity_t *activator )
@@ -88,13 +88,13 @@ static void ctrl_relay_act( gentity_t *self, gentity_t*, gentity_t *activator )
 	if (!self->enabled)
 		return;
 
-	if ( !self->config.wait.time )
+	if ( !self->mapEntity.config.wait.time )
 	{
 		G_EventFireEntity( self, activator, ON_ACT );
 	}
 	else
 	{
-		self->nextthink = VariatedLevelTime( self->config.wait );
+		self->nextthink = VariatedLevelTime( self->mapEntity.config.wait );
 		self->think = think_fireOnActDelayed;
 		self->activator = activator;
 	}
@@ -104,14 +104,14 @@ void SP_ctrl_relay( gentity_t *self )
 {
 	if( Q_stricmp(self->classname, S_CTRL_RELAY ) ) //if anything but ctrl_relay
 	{
-		if ( !self->config.wait.time ) {
+		if ( !self->mapEntity.config.wait.time ) {
 			// check delay for backwards compatibility
-			G_SpawnFloat( "delay", "0", &self->config.wait.time );
+			G_SpawnFloat( "delay", "0", &self->mapEntity.config.wait.time );
 
 			//target delay had previously a default of 1 instead of 0
-			if ( !self->config.wait.time && !Q_stricmp(self->classname, "target_delay") )
+			if ( !self->mapEntity.config.wait.time && !Q_stricmp(self->classname, "target_delay") )
 			{
-				self->config.wait.time = 1;
+				self->mapEntity.config.wait.time = 1;
 			}
 		}
 		SP_WaitFields(self, 0, 0 );
@@ -139,19 +139,19 @@ static void ctrl_limited_act(gentity_t *self, gentity_t*, gentity_t *activator)
 		return;
 
 	G_FireEntity( self, activator );
-	if ( self->count <= 1 )
+	if ( self->mapEntity.count <= 1 )
 	{
 		G_FreeEntity( self );
 		return;
 	}
-	self->count--;
+	self->mapEntity.count--;
 }
 
 static void ctrl_limited_reset( gentity_t *self )
 {
-	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
+	self->enabled = !(self->mapEntity.spawnflags & SPF_SPAWN_DISABLED);
 
-	G_ResetIntField(&self->count, true, self->config.amount, self->eclass->config.amount, 1);
+	G_ResetIntField(&self->mapEntity.count, true, self->mapEntity.config.amount, self->mapEntity.eclass->config.amount, 1);
 }
 
 void SP_ctrl_limited( gentity_t *self )

@@ -325,15 +325,13 @@ All but the last will have the groupChain field set to the next one
 static void G_FindEntityGroups()
 {
 	gentity_t *masterEntity, *comparedEntity;
-	int       i, j, k;
-	int       groupCount, entityCount;
-
-	groupCount = 0;
-	entityCount = 0;
+	int groupCount = 0;
+	int entityCount = 0;
+	int i, j;
 
 	for ( i = MAX_CLIENTS, masterEntity = g_entities + i; i < level.num_entities; i++, masterEntity++ )
 	{
-		if ( !masterEntity->groupName )
+		if ( !masterEntity->mapEntity.groupName )
 		{
 			continue;
 		}
@@ -343,13 +341,13 @@ static void G_FindEntityGroups()
 			continue;
 		}
 
-		masterEntity->groupMaster = masterEntity;
+		masterEntity->mapEntity.groupMaster = masterEntity;
 		groupCount++;
 		entityCount++;
 
 		for ( j = i + 1, comparedEntity = masterEntity + 1; j < level.num_entities; j++, comparedEntity++ )
 		{
-			if ( !comparedEntity->groupName )
+			if ( !comparedEntity->mapEntity.groupName )
 			{
 				continue;
 			}
@@ -359,19 +357,19 @@ static void G_FindEntityGroups()
 				continue;
 			}
 
-			if ( !strcmp( masterEntity->groupName, comparedEntity->groupName ) )
+			if ( !strcmp( masterEntity->mapEntity.groupName, comparedEntity->mapEntity.groupName ) )
 			{
 				entityCount++;
-				comparedEntity->groupChain = masterEntity->groupChain;
-				masterEntity->groupChain = comparedEntity;
-				comparedEntity->groupMaster = masterEntity;
+				comparedEntity->mapEntity.groupChain = masterEntity->mapEntity.groupChain;
+				masterEntity->mapEntity.groupChain = comparedEntity;
+				comparedEntity->mapEntity.groupMaster = masterEntity;
 				comparedEntity->flags |= FL_GROUPSLAVE;
 
 				// make sure that targets only point at the master
-				for (k = 0; comparedEntity->names[k]; k++)
+				for (int k = 0; comparedEntity->mapEntity.names[k]; k++)
 				{
-					masterEntity->names[k] = comparedEntity->names[k];
-					comparedEntity->names[k] = nullptr;
+					masterEntity->mapEntity.names[k] = comparedEntity->mapEntity.names[k];
+					comparedEntity->mapEntity.names[k] = nullptr;
 				}
 			}
 		}
@@ -1351,7 +1349,7 @@ void FindIntermissionPoint()
 		VectorCopy( ent->s.angles, level.intermission_angle );
 
 		// if it has a target, look towards it
-		if ( ent->targetCount  )
+		if ( ent->mapEntity.targetCount  )
 		{
 			target = G_PickRandomTargetFor( ent );
 
