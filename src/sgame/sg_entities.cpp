@@ -592,24 +592,33 @@ gentityCallActionType_t G_GetCallActionTypeFor( const char* action )
 	return ECA_CUSTOM;
 }
 
-gentity_t *G_ResolveEntityKeyword( gentity_t *self, char *keyword )
+static gentity_t *G_ResolveEntityKeyword( gentity_t *self, std::string const& keyword )
 {
 	gentity_t *resolution = nullptr;
 
-	if (!Q_stricmp(keyword, "$activator"))
+	if ( !Q_stricmp( keyword.c_str(), "$activator" ) )
+	{
 		resolution = self->activator;
-	else if (!Q_stricmp(keyword, "$self"))
+	}
+	else if ( !Q_stricmp( keyword.c_str(), "$self" ) )
+	{
 		resolution = self;
-	else if (!Q_stricmp(keyword, "$parent"))
+	}
+	else if ( !Q_stricmp( keyword.c_str(), "$parent" ) )
+	{
 		resolution = self->parent;
-	else if (!Q_stricmp(keyword, "$target"))
-		resolution = self->target ? self->target.entity : nullptr;
+	}
+	else if ( !Q_stricmp( keyword.c_str(), "$target" ) && self->target )
+	{
+		resolution = self->target.entity;
+	}
 	//TODO $tracker for entities, that currently target, track or aim for this entity, is the reverse to "target"
 
-	if(!resolution || !resolution->inuse)
-		return nullptr;
-
-	return resolution;
+	if ( resolution && resolution->inuse )
+	{
+		return resolution;
+	}
+	return nullptr;
 }
 
 gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self)

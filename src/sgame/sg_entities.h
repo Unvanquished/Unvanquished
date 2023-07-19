@@ -162,7 +162,6 @@ bool   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 
 //chain
 gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
-gentity_t  *G_ResolveEntityKeyword( gentity_t *self, char *keyword );
 gentity_t  *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self);
 gentity_t  *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gentity_t *self );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
