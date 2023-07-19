@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_spawn.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 static void InitEnvAFXEntity( gentity_t *self, bool link )
 {
@@ -45,8 +46,8 @@ static void InitEnvAFXEntity( gentity_t *self, bool link )
 		VectorCopy( angles, self->s.angles );
 	}
 
-	trap_SetBrushModel( self, self->mapEntity.model );
-	self->r.contents = CONTENTS_TRIGGER; // replaces the -1 from trap_SetBrushModel
+	G_CM_SetBrushModel( self, self->mapEntity.model );
+	self->r.contents = CONTENTS_TRIGGER; // replaces the -1 from G_CM_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
 
 	if( link )

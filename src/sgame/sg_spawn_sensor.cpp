@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "sg_cm_world.h"
 
 //the same as InitTrigger
 static void InitBrushSensor( gentity_t *self )
@@ -45,8 +46,9 @@ static void InitBrushSensor( gentity_t *self )
 		VectorCopy( angles, self->s.angles );
 	}
 
-	trap_SetBrushModel( self, self->mapEntity.model );
-	self->r.contents = CONTENTS_TRIGGER; // replaces the -1 from trap_SetBrushModel
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
+	self->r.contents = CONTENTS_TRIGGER; // replaces the -1 from G_CM_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
 	trap_LinkEntity( self );
 }

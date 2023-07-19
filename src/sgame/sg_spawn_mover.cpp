@@ -36,6 +36,7 @@ Maryland 20850 USA.
 #include "sg_spawn.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 #include <glm/gtx/range.hpp>
 
@@ -1669,7 +1670,8 @@ void SP_func_door( gentity_t *self )
 	self->mapEntity.restingPosition = VEC2GLM( self->s.origin );
 
 	// calculate second position
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	glm::vec3 angles = VEC2GLM( self->s.angles );
 	G_SetMovedir( angles, self->mapEntity.movedir );
@@ -1799,7 +1801,8 @@ void SP_func_door_rotating( gentity_t *self )
 	}
 
 	self->mapEntity.restingPosition = VEC2GLM( self->s.angles );
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 	self->mapEntity.activatedPosition = self->mapEntity.restingPosition + self->mapEntity.rotatorAngle * self->mapEntity.movedir;
 
 	// if "start_open", reverse position 1 and 2
@@ -1896,7 +1899,8 @@ void SP_func_door_model( gentity_t *self )
 	//brush model
 	clipBrush = self->mapEntity.clipBrush = G_NewEntity( NO_CBSE );
 	clipBrush->mapEntity.model = self->mapEntity.model;
-	trap_SetBrushModel( clipBrush, clipBrush->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( clipBrush, clipBrush->mapEntity.model );
 	clipBrush->s.eType = entityType_t::ET_INVISIBLE;
 
 	//copy the bounds back from the clipBrush so the
@@ -2108,7 +2112,8 @@ void SP_func_plat( gentity_t *self )
 	self->mapEntity.config.wait.time *= 1000;
 
 	// create second position
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	if ( !G_SpawnFloat( "height", "0", &height ) )
 	{
@@ -2192,7 +2197,8 @@ void SP_func_button( gentity_t *self )
 	self->mapEntity.restingPosition = VEC2GLM( self->s.origin );
 
 	// calculate second position
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	float  lip;
 	G_SpawnFloat( "lip", "4", &lip );
@@ -2499,7 +2505,8 @@ void SP_func_train( gentity_t *self )
 		G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
 	}
 
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
 	reset_moverspeed( self, DEFAULT_FUNC_TRAIN_SPEED );
 
@@ -2529,7 +2536,8 @@ void SP_func_static( gentity_t *self )
 	float reverbDistance;
 	float reverbIntensity;
 
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
 	reset_moverspeed( self, 100 ); //TODO do we need this at all?
 	VectorCopy( self->s.origin, self->s.pos.trBase );
@@ -2561,7 +2569,8 @@ void SP_func_static( gentity_t *self )
 
 void SP_func_dynamic( gentity_t *self )
 {
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	InitMover( self );
 	reset_moverspeed( self, 100 ); //TODO do we need this at all?
@@ -2612,7 +2621,8 @@ void SP_func_rotating( gentity_t *self )
 
 	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
 
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
 	reset_moverspeed( self, 100 );
 
@@ -2646,7 +2656,8 @@ void SP_func_bobbing( gentity_t *self )
 
 	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
 
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
 	reset_moverspeed( self, 4 );
 
@@ -2687,7 +2698,8 @@ void SP_func_pendulum( gentity_t *self )
 
 	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
 
-	trap_SetBrushModel( self, self->mapEntity.model );
+	ASSERT( self->mapEntity.model );
+	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	// find pendulum length
 	float length = fabs( self->r.mins[ 2 ] );
@@ -2759,22 +2771,25 @@ SP_func_spawn
 */
 void SP_func_spawn( gentity_t *self )
 {
-  //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-  self->s.eType = entityType_t::ET_MOVER;
-  self->r.contents |= CONTENTS_MOVER;
-  self->mapEntity.moverState = MOVER_POS1;
-  VectorCopy( self->s.origin, self->mapEntity.restingPosition );
+	//ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	self->s.eType = entityType_t::ET_MOVER;
+	self->r.contents |= CONTENTS_MOVER;
+	self->mapEntity.moverState = MOVER_POS1;
+	VectorCopy( self->s.origin, self->mapEntity.restingPosition );
 
-  if( self->mapEntity.model[ 0 ] == '*' )
-    trap_SetBrushModel( self, self->mapEntity.model );
-  else
-  {
-    self->s.modelindex = G_ModelIndex( self->mapEntity.model );
-    VectorCopy( self->s.angles, self->s.apos.trBase );
-  }
+	ASSERT( self->mapEntity.model );
+	if ( self->mapEntity.model[ 0 ] == '*' )
+	{
+		G_CM_SetBrushModel( self, self->mapEntity.model );
+	}
+	else
+	{
+		self->s.modelindex = G_ModelIndex( self->mapEntity.model );
+		VectorCopy( self->s.angles, self->s.apos.trBase );
+	}
 
-  self->act = func_spawn_act;
-  self->reset = func_spawn_reset;
+	self->act = func_spawn_act;
+	self->reset = func_spawn_reset;
 }
 
 static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, int )
@@ -2826,37 +2841,40 @@ SP_func_destructable
 */
 void SP_func_destructable( gentity_t *self )
 {
-  SP_ConditionFields( self );
+	SP_ConditionFields( self );
 
-  G_SpawnInt( "damage", "0", &self->splashDamage );
-  G_SpawnInt( "radius", "0", &self->splashRadius );
+	G_SpawnInt( "damage", "0", &self->splashDamage );
+	G_SpawnInt( "radius", "0", &self->splashRadius );
 
 	if ( ( self->splashDamage != 0 && self->splashRadius == 0 )
-		|| ( self->splashDamage == 0 && self->splashRadius != 0 ) )
+			|| ( self->splashDamage == 0 && self->splashRadius != 0 ) )
 	{
 		Log::Warn( "Destructible entity %d have only one of: \"radius, damage\", which makes no sense.", self->num() );
 	}
 
-  //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-  self->s.eType = entityType_t::ET_MOVER;
-  self->r.contents |= CONTENTS_MOVER;
-  self->mapEntity.moverState = MOVER_POS1;
-  VectorCopy( self->s.origin, self->mapEntity.restingPosition );
+	//ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	self->s.eType = entityType_t::ET_MOVER;
+	self->r.contents |= CONTENTS_MOVER;
+	self->mapEntity.moverState = MOVER_POS1;
+	VectorCopy( self->s.origin, self->mapEntity.restingPosition );
 
-  if( self->mapEntity.model[ 0 ] == '*' )
-    trap_SetBrushModel( self, self->mapEntity.model );
-  else
-  {
-    self->s.modelindex = G_ModelIndex( self->mapEntity.model );
-    VectorCopy( self->s.angles, self->s.apos.trBase );
-  }
+	ASSERT( self->mapEntity.model );
+	if ( self->mapEntity.model[ 0 ] == '*' )
+	{
+		G_CM_SetBrushModel( self, self->mapEntity.model );
+	}
+	else
+	{
+		self->s.modelindex = G_ModelIndex( self->mapEntity.model );
+		VectorCopy( self->s.angles, self->s.apos.trBase );
+	}
 
-  self->reset = func_destructable_reset;
-  self->die = func_destructable_die;
-  self->act = func_destructable_act;
+	self->reset = func_destructable_reset;
+	self->die = func_destructable_die;
+	self->act = func_destructable_act;
 
-  if( !( self->mapEntity.spawnflags & 1 ) )
-  {
-    trap_LinkEntity( self );
-  }
+	if( !( self->mapEntity.spawnflags & 1 ) )
+	{
+		trap_LinkEntity( self );
+	}
 }

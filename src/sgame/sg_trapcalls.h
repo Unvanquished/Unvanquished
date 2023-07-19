@@ -42,7 +42,6 @@ int              trap_EntitiesInBox( const glm::vec3& mins, const glm::vec3& max
 bool         trap_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *ent );
 void             trap_Trace( trace_t *results, const glm::vec3& start, const glm::vec3& mins, const glm::vec3& maxs, const glm::vec3& end, int passEntityNum, int contentmask , int skipmask);
 void             trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask , int skipmask);
-void             trap_SetBrushModel( gentity_t *ent, const char *name );
 bool         trap_InPVS( const vec3_t p1, const vec3_t p2 );
 bool         trap_InPVSIgnorePortals( const vec3_t p1, const vec3_t p2 );
 void             trap_SetConfigstringRestrictions( int num, const clientList_t *clientList );

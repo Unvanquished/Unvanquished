@@ -71,22 +71,27 @@ G_CM_SetBrushModel
 sets mins and maxs for inline bmodels
 =================
 */
-void G_CM_SetBrushModel( gentity_t *ent, const char *name )
+void G_CM_SetBrushModel( gentity_t *ent, std::string const& name )
 {
 	clipHandle_t h;
 	vec3_t       mins, maxs;
 
-	if ( !name )
+	if ( name.empty() )
 	{
 		Sys::Drop( "G_CM_SetBrushModel: NULL for #%i", ent->num() );
 	}
-
-	if ( name[ 0 ] != '*' )
+	if ( name.size() > 1 && name[ 0 ] != '*' )
 	{
-		Sys::Drop( "G_CM_SetBrushModel: %s of #%i isn't a brush model", name, ent->num() );
+		Sys::Drop( "G_CM_SetBrushModel: %s of #%i isn't a brush model", name.c_str(), ent->num() );
 	}
 
-	ent->s.modelindex = atoi( name + 1 );
+	char* end;
+	unsigned long val = strtoul( name.c_str() + 1, &end, 10 );
+	if ( val >= INT_MAX )
+	{
+		Sys::Drop( "G_CM_SetBrushModel: invalid brush model \"%s\"", name.c_str() );
+	}
+	ent->s.modelindex = static_cast<int>( val );
 
 	h = CM_InlineModel( ent->s.modelindex );
 	CM_ModelBounds( h, mins, maxs );

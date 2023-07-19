@@ -97,6 +97,6 @@ void G_CM_AdjustAreaPortalState( gentity_t *ent, bool open );
 
 bool G_CM_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *gEnt, traceType_t type );
 
-void G_CM_SetBrushModel( gentity_t *ent, const char *name );
+void G_CM_SetBrushModel( gentity_t *ent, std::string const& name );
 
 #endif // SG_CM_WORLD_H_

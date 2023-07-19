@@ -193,11 +193,6 @@ int trap_PointContents(const vec3_t point, int passEntityNum)
 	return G_CM_PointContents( point, passEntityNum );
 }
 
-void trap_SetBrushModel(gentity_t *ent, const char *name)
-{
-	G_CM_SetBrushModel( ent, name );
-}
-
 bool trap_InPVS(const vec3_t p1, const vec3_t p2)
 {
 	return G_CM_inPVS( p1, p2 );
