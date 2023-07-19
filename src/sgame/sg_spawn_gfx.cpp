@@ -135,6 +135,18 @@ static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spo
 	spot = origin + glm::normalize( total ) * radius;
 }
 
+static int G_ShaderIndex( const char *name )
+{
+	int i = G_FindConfigstringIndex( name, CS_SHADERS, MAX_GAME_SHADERS, true );
+
+	if ( !i )
+	{
+		Log::Warn( "Missing shader: %s", name ? name : "<nullptr>" );
+	}
+
+	return i;
+}
+
 void SP_gfx_light_flare( gentity_t *self )
 {
 	if ( !self->mapEntity.shaderKey )
@@ -325,6 +337,61 @@ gfx_shader_mod
 
 =================================================================================
 */
+
+struct shaderRemap_t
+{
+	char  oldShader[ MAX_QPATH ];
+	char  newShader[ MAX_QPATH ];
+	float timeOffset;
+};
+
+#define MAX_SHADER_REMAPS 128
+
+static int remapCount = 0;
+static shaderRemap_t remappedShaders[ MAX_SHADER_REMAPS ];
+static const char *BuildShaderStateConfig()
+{
+	static char buff[ MAX_STRING_CHARS * 4 ];
+	char        out[ MAX_QPATH * 2 + 5 ];
+	int         i;
+
+	memset( buff, 0, sizeof(buff) );
+
+	for ( i = 0; i < remapCount; i++ )
+	{
+		Com_sprintf( out, sizeof( out ), "%s=%s:%5.2f@", remappedShaders[ i ].oldShader,
+		             remappedShaders[ i ].newShader, remappedShaders[ i ].timeOffset );
+		Q_strcat( buff, sizeof( buff ), out );
+	}
+
+	return buff;
+}
+
+
+static void G_SetShaderRemap( std::string const& oldShader, std::string const& newShader, float timeOffset )
+{
+	for ( int i = 0; i < remapCount; i++ )
+	{
+		if ( Q_stricmp( oldShader.c_str(), remappedShaders[ i ].oldShader ) == 0 )
+		{
+			// found it, just update this one
+			strncpy( remappedShaders[ i ].newShader, newShader.c_str(), MAX_QPATH );
+			remappedShaders[ i ].newShader[ MAX_QPATH - 1 ] = '\0';
+			remappedShaders[ i ].timeOffset = timeOffset;
+			return;
+		}
+	}
+
+	if ( remapCount < MAX_SHADER_REMAPS )
+	{
+		strncpy( remappedShaders[ remapCount ].newShader, newShader.c_str(), MAX_QPATH );
+		remappedShaders[ remapCount ].newShader[ MAX_QPATH - 1 ] = '\0';
+		strncpy( remappedShaders[ remapCount ].oldShader, oldShader.c_str(), MAX_QPATH );
+		remappedShaders[ remapCount ].oldShader[ MAX_QPATH - 1 ] = '\0';
+		remappedShaders[ remapCount ].timeOffset = timeOffset;
+		remapCount++;
+	}
+}
 
 static void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 {

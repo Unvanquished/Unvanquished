@@ -33,63 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <glm/geometric.hpp>
 
-struct shaderRemap_t
-{
-	char  oldShader[ MAX_QPATH ];
-	char  newShader[ MAX_QPATH ];
-	float timeOffset;
-};
-
-#define MAX_SHADER_REMAPS 128
-
-int           remapCount = 0;
-shaderRemap_t remappedShaders[ MAX_SHADER_REMAPS ];
-
-void G_SetShaderRemap( const char *oldShader, const char *newShader, float timeOffset )
-{
-	int i;
-
-	for ( i = 0; i < remapCount; i++ )
-	{
-		if ( Q_stricmp( oldShader, remappedShaders[ i ].oldShader ) == 0 )
-		{
-			// found it, just update this one
-			strncpy( remappedShaders[ i ].newShader, newShader, MAX_QPATH );
-			remappedShaders[ i ].newShader[ MAX_QPATH - 1 ] = '\0';
-			remappedShaders[ i ].timeOffset = timeOffset;
-			return;
-		}
-	}
-
-	if ( remapCount < MAX_SHADER_REMAPS )
-	{
-		strncpy( remappedShaders[ remapCount ].newShader, newShader, MAX_QPATH );
-		remappedShaders[ remapCount ].newShader[ MAX_QPATH - 1 ] = '\0';
-		strncpy( remappedShaders[ remapCount ].oldShader, oldShader, MAX_QPATH );
-		remappedShaders[ remapCount ].oldShader[ MAX_QPATH - 1 ] = '\0';
-		remappedShaders[ remapCount ].timeOffset = timeOffset;
-		remapCount++;
-	}
-}
-
-const char *BuildShaderStateConfig()
-{
-	static char buff[ MAX_STRING_CHARS * 4 ];
-	char        out[ MAX_QPATH * 2 + 5 ];
-	int         i;
-
-	memset( buff, 0, sizeof(buff) );
-
-	for ( i = 0; i < remapCount; i++ )
-	{
-		Com_sprintf( out, sizeof( out ), "%s=%s:%5.2f@", remappedShaders[ i ].oldShader,
-		             remappedShaders[ i ].newShader, remappedShaders[ i ].timeOffset );
-		Q_strcat( buff, sizeof( buff ), out );
-	}
-
-	return buff;
-}
-
 /*
 =========================================================================
 
@@ -104,7 +47,7 @@ G_FindConfigstringIndex
 
 ================
 */
-static int G_FindConfigstringIndex( const char *name, int start, int max, bool create )
+int G_FindConfigstringIndex( const char *name, int start, int max, bool create )
 {
 	int  i;
 	char s[ MAX_STRING_CHARS ];
@@ -151,18 +94,6 @@ int G_ParticleSystemIndex( const char *name )
 	if ( !i )
 	{
 		Log::Warn( "Missing particle system: %s", name ? name : "<nullptr>" );
-	}
-
-	return i;
-}
-
-int G_ShaderIndex( const char *name )
-{
-	int i = G_FindConfigstringIndex( name, CS_SHADERS, MAX_GAME_SHADERS, true );
-
-	if ( !i )
-	{
-		Log::Warn( "Missing shader: %s", name ? name : "<nullptr>" );
 	}
 
 	return i;
@@ -342,37 +273,6 @@ void G_KillBox( gentity_t *ent )
 
 		Entities::Kill(hit, ent, MOD_TELEFRAG);
 	}
-}
-
-/*
-====================
-G_KillBrushModel
-====================
-*/
-void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
-{
-  gentity_t *e;
-  vec3_t mins, maxs;
-  trace_t tr;
-
-  for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
-  {
-    if( !e->r.linked || !e->clipmask )
-      continue;
-
-    VectorAdd( e->r.currentOrigin, e->r.mins, mins );
-    VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
-
-    if( !trap_EntityContact( mins, maxs, ent ) )
-      continue;
-
-    trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
-                e->r.currentOrigin, e->num(), e->clipmask, 0 );
-
-	if( tr.entityNum != ENTITYNUM_NONE ) {
-	  Entities::Kill(e, activator, MOD_CRUSH);
-	}
-  }
 }
 
 //==============================================================================

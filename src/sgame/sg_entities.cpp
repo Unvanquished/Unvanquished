@@ -719,36 +719,6 @@ struct gentityTargetChoice_t
 	gentity_t *recipient;
 };
 
-void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
-{
-	int       targetIndex;
-	gentity_t *possibleTarget = nullptr;
-	int       totalChoiceCount = 0;
-	gentityCall_t call;
-	gentityTargetChoice_t choices[ MAX_GENTITIES ];
-	gentityTargetChoice_t *selectedChoice;
-
-	//collects the targets
-	while( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, entity ) ) != nullptr )
-	{
-		choices[ totalChoiceCount ].recipient = possibleTarget;
-		choices[ totalChoiceCount ].callDefinition = &entity->mapEntity.calltargets[targetIndex];
-		totalChoiceCount++;
-	}
-
-	if ( totalChoiceCount == 0 )
-		return;
-
-	//return a random one from among the choices
-	selectedChoice = &choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
-
-	call.definition = selectedChoice->callDefinition;
-	call.caller = entity;
-	call.activator = activator;
-
-	G_CallEntity( selectedChoice->recipient, &call );
-}
-
 /*
 ==============================
 G_EventFireEntity
@@ -850,7 +820,7 @@ static void G_ResetTimeField( variatingTime_t *result, variatingTime_t instanceF
 	}
 }
 
-void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
+static void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
 {
 	variatingTime_t delay = {0, 0};
 

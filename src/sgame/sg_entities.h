@@ -165,11 +165,8 @@ gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
 gentity_t  *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self);
 gentity_t  *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gentity_t *self );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
-void       G_FireEntityRandomly( gentity_t *entity, gentity_t *activator );
-void       G_FireEntity( gentity_t *ent, gentity_t *activator );
 
 void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
-void       G_HandleActCall( gentity_t *entity, gentityCall_t *call );
 void       G_ExecuteAct( gentity_t *entity, gentityCall_t *call );
 
 //configure
@@ -196,6 +193,7 @@ void G_notify_sensor_end( team_t winningTeam );
 gentityCallEvent_t      G_GetCallEventTypeFor( const char* event );
 void       G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_t eventType );
 
+int G_FindConfigstringIndex( const char *name, int start, int max, bool create );
 
 //==================================================================
 #endif /* ENTITIES_H_ */

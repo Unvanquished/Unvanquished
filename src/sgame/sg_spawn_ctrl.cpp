@@ -43,6 +43,42 @@ ctrl_relay
 =================================================================================
 */
 
+static void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
+{
+	struct gentityTargetChoice_t
+	{
+		gentityCallDefinition_t *callDefinition;
+		gentity_t *recipient;
+	};
+
+	int       targetIndex;
+	gentity_t *possibleTarget = nullptr;
+	int       totalChoiceCount = 0;
+	gentityCall_t call;
+	gentityTargetChoice_t choices[ MAX_GENTITIES ];
+	gentityTargetChoice_t *selectedChoice;
+
+	//collects the targets
+	while( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, entity ) ) != nullptr )
+	{
+		choices[ totalChoiceCount ].recipient = possibleTarget;
+		choices[ totalChoiceCount ].callDefinition = &entity->mapEntity.calltargets[targetIndex];
+		totalChoiceCount++;
+	}
+
+	if ( totalChoiceCount == 0 )
+		return;
+
+	//return a random one from among the choices
+	selectedChoice = &choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+
+	call.definition = selectedChoice->callDefinition;
+	call.caller = entity;
+	call.activator = activator;
+
+	G_CallEntity( selectedChoice->recipient, &call );
+}
+
 static void target_relay_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
 	if (!self->enabled)
