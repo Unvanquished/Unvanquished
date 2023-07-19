@@ -162,8 +162,6 @@ static void Svcmd_EntityShow_f()
 		Log::Notice("Member of Group: %s%s", selection->groupName, !selection->groupMaster ? " [master]" : "");
 	}
 
-	Log::Notice( "");
-
 	if(selection->targetCount)
 	{
 		Log::Notice( "Aims at");
@@ -172,7 +170,6 @@ static void Svcmd_EntityShow_f()
 		{
 			Log::Notice(" • %s %s", etos( possibleTarget ), vtos( possibleTarget->s.origin));
 		}
-		Log::Notice( "");
 	}
 
 	if(selection->callTargetCount)
@@ -196,10 +193,8 @@ static void Svcmd_EntityShow_f()
 				Log::Notice(" using \"%s\" ∈ ", selection->calltargets[ targetIndex ].name);
 				G_PrintEntityNameList( possibleTarget );
 			}
-			Log::Notice("");
 		}
 	}
-	Log::Notice( "" );
 }
 
 /*
