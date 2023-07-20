@@ -603,12 +603,10 @@ so message texts can be multi-line
 */
 static char *G_NewString( const char *string )
 {
-	char *newb, *new_p;
 	size_t l = strlen( string ) + 1;
 
-	newb = (char*) BG_Alloc( l );
-
-	new_p = newb;
+	char* newb = new char[l];
+	char* new_p = newb;
 
 	// turn \n into a real linefeed
 	for ( size_t i = 0; i < l; i++ )
@@ -621,7 +619,7 @@ static char *G_NewString( const char *string )
 			{
 				*new_p++ = '\n';
 			}
-			else
+			else // this is likely a bug, since any char after a '\' will be considered inexisting
 			{
 				*new_p++ = '\\';
 			}
