@@ -331,7 +331,7 @@ static void G_FindEntityGroups()
 
 	for ( i = MAX_CLIENTS, masterEntity = g_entities + i; i < level.num_entities; i++, masterEntity++ )
 	{
-		if ( !masterEntity->mapEntity.groupName )
+		if ( masterEntity->mapEntity.groupName.empty() )
 		{
 			continue;
 		}
@@ -347,7 +347,7 @@ static void G_FindEntityGroups()
 
 		for ( j = i + 1, comparedEntity = masterEntity + 1; j < level.num_entities; j++, comparedEntity++ )
 		{
-			if ( !comparedEntity->mapEntity.groupName )
+			if ( comparedEntity->mapEntity.groupName.empty() )
 			{
 				continue;
 			}
@@ -357,7 +357,7 @@ static void G_FindEntityGroups()
 				continue;
 			}
 
-			if ( !strcmp( masterEntity->mapEntity.groupName, comparedEntity->mapEntity.groupName ) )
+			if ( masterEntity->mapEntity.groupName == comparedEntity->mapEntity.groupName )
 			{
 				entityCount++;
 				comparedEntity->mapEntity.groupChain = masterEntity->mapEntity.groupChain;

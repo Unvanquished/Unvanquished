@@ -208,7 +208,7 @@ struct mapEntity_t
 	gentityConditions_t conditions;
 
 	// entity groups
-	char         *groupName;
+	std::string groupName;
 	gentity_t    *groupChain; // next entity in group
 	gentity_t    *groupMaster; // master of the group
 

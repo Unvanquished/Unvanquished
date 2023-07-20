@@ -1377,8 +1377,6 @@ so the movement delta can be calculated
 */
 static void InitMover( gentity_t *ent )
 {
-	const char     *groupName;
-
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
 	if ( ent->mapEntity.model2 )
@@ -1391,14 +1389,15 @@ static void InitMover( gentity_t *ent )
 	ent->act = BinaryMover_act;
 	ent->mapEntity.reached = BinaryMover_reached;
 
+	const char *groupName;
 	if ( G_SpawnString( "group", "", &groupName ) )
 	{
-		ent->mapEntity.groupName = BG_strdup( groupName );
+		ent->mapEntity.groupName = groupName;
 	}
 	else if ( G_SpawnString( "team", "", &groupName ) )
 	{
 		G_WarnAboutDeprecatedEntityField( ent, "group", "team", ENT_V_RENAMED );
-		ent->mapEntity.groupName = BG_strdup( groupName );
+		ent->mapEntity.groupName = groupName;
 	}
 
 	ent->mapEntity.moverState = MOVER_POS1;
@@ -1441,8 +1440,6 @@ so the movement delta can be calculated
 */
 static void InitRotator( gentity_t *ent )
 {
-	const char     *groupName;
-
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
 	if ( ent->mapEntity.model2 )
@@ -1455,14 +1452,15 @@ static void InitRotator( gentity_t *ent )
 	ent->act = BinaryMover_act;
 	ent->mapEntity.reached = BinaryMover_reached;
 
+	const char     *groupName;
 	if ( G_SpawnString( "group", "", &groupName ) )
 	{
-		ent->mapEntity.groupName = BG_strdup( groupName );
+		ent->mapEntity.groupName = groupName;
 	}
 	else if ( G_SpawnString( "team", "", &groupName ) )
 	{
 		G_WarnAboutDeprecatedEntityField( ent, "group", "team", ENT_V_RENAMED );
-		ent->mapEntity.groupName = BG_strdup( groupName );
+		ent->mapEntity.groupName = groupName;
 	}
 
 	ent->mapEntity.moverState = ROTATOR_POS1;
