@@ -395,7 +395,7 @@ static void G_SetShaderRemap( std::string const& oldShader, std::string const& n
 
 static void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 {
-	if ( self->mapEntity.shaderKey.empty() || !self->mapEntity.shaderReplacement || !self->enabled )
+	if ( self->mapEntity.shaderKey.empty() || self->mapEntity.shaderReplacement.empty() || !self->enabled )
 	{
 		return;
 	}
@@ -408,7 +408,7 @@ static void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 
 static void gfx_shader_mod_reset( gentity_t *self )
 {
-	if ( self->mapEntity.shaderKey.empty() || !self->mapEntity.shaderReplacement )
+	if ( self->mapEntity.shaderKey.empty() || self->mapEntity.shaderReplacement.empty() )
 	{
 		return;
 	}
