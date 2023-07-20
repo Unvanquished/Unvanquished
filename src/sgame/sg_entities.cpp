@@ -591,12 +591,17 @@ gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self
 
 gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, gentity_t *self)
 {
+	if ( *calltargetIndex >= self->mapEntity.calltargets.size() )
+	{
+		return nullptr;
+	}
+
 	if (entity)
 	{
 		goto cont;
 	}
 
-	for (*calltargetIndex = 0; self->mapEntity.calltargets[*calltargetIndex].name; ++(*calltargetIndex))
+	for (*calltargetIndex = 0; *calltargetIndex < self->mapEntity.calltargets.size() && self->mapEntity.calltargets[*calltargetIndex].name; ++(*calltargetIndex))
 	{
 		if(self->mapEntity.calltargets[*calltargetIndex].name[0] == '$')
 		{

@@ -469,10 +469,12 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 {
 	switch (entityClass->chainType) {
 		case CHAIN_ACTIVE:
-			if(!entity->mapEntity.callTargetCount) //check target usage for backward compatibility
+			if ( entity->mapEntity.calltargets.empty() ) //check target usage for backward compatibility
 			{
-				if( g_debugEntities.Get() > -2 )
+				if ( g_debugEntities.Get() > -2 )
+				{
 					Log::Warn("Entity %s needs to call or target to something — Removing it.", etos( entity ) );
+				}
 				return false;
 			}
 			break;
@@ -488,11 +490,13 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 			}
 			break;
 		case CHAIN_RELAY:
-			if((!entity->mapEntity.callTargetCount) //check target usage for backward compatibility
-					|| entity->mapEntity.names[0].empty() )
+			//check target usage for backward compatibility
+			if ( entity->mapEntity.calltargets.empty() || entity->mapEntity.names[0].empty() )
 			{
-				if( g_debugEntities.Get() > -2 )
+				if ( g_debugEntities.Get() > -2 )
+				{
 					Log::Warn("Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.", etos( entity ) );
+				}
 				return false;
 			}
 			break;
@@ -802,15 +806,15 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 
 		case F_CALLTARGET:
 			{
-				if(entity->mapEntity.callTargetCount >= MAX_ENTITY_CALLTARGETS)
+				if ( entity->mapEntity.calltargets.full() )
 				{
 					Sys::Drop("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
 				}
-				auto def = reinterpret_cast<gentityCallDefinition_t*>( entityDataField );
-				def[ entity->mapEntity.callTargetCount++ ] =
-					G_NewCallDefinition(
+				mapEntity_t::calltargets_t* calls = reinterpret_cast<mapEntity_t::calltargets_t*>( entityDataField );
+				calls->push_back( G_NewCallDefinition(
 							fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name,
-							rawString );
+							rawString ) );
+
 				break;
 			}
 
@@ -935,7 +939,7 @@ static void G_SpawnGEntityFromSpawnVars()
 	 * for backward compatbility, since before targets were used for calling,
 	 * we'll have to copy them over to the called-targets as well for now
 	 */
-	if(!spawningEntity->mapEntity.callTargetCount)
+	if ( spawningEntity->mapEntity.calltargets.empty() )
 	{
 		for ( size_t i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS && i < spawningEntity->mapEntity.targets.size(); i++)
 		{
@@ -944,11 +948,12 @@ static void G_SpawnGEntityFromSpawnVars()
 				continue;
 			}
 
-			spawningEntity->mapEntity.calltargets[i].event = "target";
-			spawningEntity->mapEntity.calltargets[i].eventType = ON_DEFAULT;
-			spawningEntity->mapEntity.calltargets[i].actionType = ECA_DEFAULT;
-			spawningEntity->mapEntity.calltargets[i].name = strdup( spawningEntity->mapEntity.targets[i].c_str() );
-			spawningEntity->mapEntity.callTargetCount++;
+			gentityCallDefinition_t tmp;
+			tmp.event = "target";
+			tmp.eventType = ON_DEFAULT;
+			tmp.actionType = ECA_DEFAULT;
+			tmp.name = strdup( spawningEntity->mapEntity.targets[i].c_str() );
+			spawningEntity->mapEntity.calltargets.push_back( std::move( tmp ) );
 		}
 	}
 

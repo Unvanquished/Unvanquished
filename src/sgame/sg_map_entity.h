@@ -247,8 +247,8 @@ struct mapEntity_t
 	/*
 	 * gentities to call on certain events
 	 */
-	int          callTargetCount;
-	gentityCallDefinition_t calltargets[ MAX_ENTITY_CALLTARGETS + 1 ];
+	typedef BoundedVector<gentityCallDefinition_t, MAX_ENTITY_CALLTARGETS + 1> calltargets_t;
+	calltargets_t calltargets;
 
 	//sound index, used by movers as well as target_speaker e.g. for looping sounds
 	int          soundIndex;
