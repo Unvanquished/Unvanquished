@@ -713,12 +713,6 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 }
 
-struct gentityTargetChoice_t
-{
-	gentityCallDefinition_t *callDefinition;
-	gentity_t *recipient;
-};
-
 /*
 ==============================
 G_EventFireEntity
