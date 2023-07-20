@@ -76,7 +76,7 @@ static void Svcmd_EntityFire_f()
 		callDefinition.actionType = G_GetCallActionTypeFor( callDefinition.action );
 	}
 
-	Log::Notice( "firing %s:%s", etos( selection ), callDefinition.action ? callDefinition.action : "default" );
+	Log::Notice( "firing %s:%s", etos( selection ), callDefinition.action.empty() ? "default" : callDefinition.action );
 
 	if ( selection->mapEntity.names[0].size() )
 	{
@@ -182,10 +182,10 @@ static void Svcmd_EntityShow_f()
 
 			if(lastTargetIndex != targetIndex)
 			{
-				Log::Notice("Calls %s \"%s:%s\"",
+				Log::Notice( "Calls %s \"%s:%s\"",
 						selection->mapEntity.calltargets[ targetIndex ].event ? selection->mapEntity.calltargets[ targetIndex ].event : "onUnknown",
 						selection->mapEntity.calltargets[ targetIndex ].name,
-						selection->mapEntity.calltargets[ targetIndex ].action ? selection->mapEntity.calltargets[ targetIndex ].action : "default");
+						selection->mapEntity.calltargets[ targetIndex ].action.empty() ? "default" : selection->mapEntity.calltargets[ targetIndex ].action );
 				lastTargetIndex = targetIndex;
 			}
 

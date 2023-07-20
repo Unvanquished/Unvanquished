@@ -674,6 +674,49 @@ static std::string G_NewString_tmp( const char *string )
 G_NewTarget
 =============
 */
+struct entityCallEventDescription_t
+{
+	const char *key;
+	gentityCallEvent_t eventType;
+};
+
+static const entityCallEventDescription_t gentityEventDescriptions[] =
+{
+		{ "onAct",       ON_ACT       },
+		{ "onDie",       ON_DIE       },
+		{ "onDisable",   ON_DISABLE   },
+		{ "onEnable",    ON_ENABLE    },
+		{ "onFree",      ON_FREE      },
+		{ "onReach",     ON_REACH     },
+		{ "onReset",     ON_RESET     },
+		{ "onSpawn",     ON_SPAWN     },
+		{ "onTouch",     ON_TOUCH     },
+		{ "onUse",       ON_USE       },
+		{ "target",      ON_DEFAULT   },
+};
+
+static gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
+{
+	if ( !event )
+	{
+		return ON_DEFAULT;
+	}
+
+	entityCallEventDescription_t * foundDescription = (entityCallEventDescription_t*)
+		bsearch( event,
+				gentityEventDescriptions,
+				ARRAY_LEN( gentityEventDescriptions ),
+				sizeof( entityCallEventDescription_t ),
+				cmdcmp );
+
+	if ( foundDescription && foundDescription->key )
+	{
+		return foundDescription->eventType;
+	}
+
+	return ON_CUSTOM;
+}
+
 static gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const char *string )
 {
 	gentityCallDefinition_t newCallDefinition = { nullptr, ON_DEFAULT, nullptr, nullptr, ECA_NOP };
@@ -689,7 +732,7 @@ static gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const 
 
 	for ( size_t i = 0; i < stringLength; i++ )
 	{
-		if ( string[ i ] == ':' && !newCallDefinition.action )
+		if ( string[ i ] == ':' && newCallDefinition.action.empty() )
 		{
 			*stringPointer++ = '\0';
 			newCallDefinition.action = stringPointer;
@@ -1222,3 +1265,39 @@ void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir )
 	angles = glm::vec3();
 }
 
+struct entityActionDescription_t
+{
+	const char *alias;
+	gentityCallActionType_t action;
+};
+
+static const entityActionDescription_t actionDescriptions[] =
+{
+		{ "act",       ECA_ACT       },
+		{ "disable",   ECA_DISABLE   },
+		{ "enable",    ECA_ENABLE    },
+		{ "free",      ECA_FREE      },
+		{ "nop",       ECA_NOP       },
+		{ "propagate", ECA_PROPAGATE },
+		{ "reset",     ECA_RESET     },
+		{ "toggle",    ECA_TOGGLE    },
+		{ "use",       ECA_USE       },
+};
+
+gentityCallActionType_t G_GetCallActionTypeFor( std::string const& action )
+{
+	if ( action.empty() )
+	{
+		return ECA_DEFAULT;
+	}
+
+	auto* foundDescription = static_cast<entityActionDescription_t*>( bsearch(action.c_str(), actionDescriptions, ARRAY_LEN( actionDescriptions ),
+		             sizeof( entityActionDescription_t ), cmdcmp ) );
+
+	if ( foundDescription && foundDescription->alias )
+	{
+		return foundDescription->action;
+	}
+
+	return ECA_CUSTOM;
+}

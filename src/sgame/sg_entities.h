@@ -161,7 +161,6 @@ bool   G_MatchesName( gentity_t *entity, const char* name );
 bool   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 
 //chain
-gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
 gentity_t  *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self);
 gentity_t  *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gentity_t *self );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
@@ -190,7 +189,6 @@ void G_notify_sensor_stage(team_t team, int previousStage, int newStage );
 void G_notify_sensor_start( );
 void G_notify_sensor_end( team_t winningTeam );
 
-gentityCallEvent_t      G_GetCallEventTypeFor( const char* event );
 void       G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_t eventType );
 
 int G_FindConfigstringIndex( const char *name, int start, int max, bool create );

@@ -527,78 +527,6 @@ gentity chain handling
  */
 #define NULL_CALL gentityCall_t{ nullptr, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
 
-struct entityCallEventDescription_t
-{
-	const char *key;
-	gentityCallEvent_t eventType;
-};
-
-static const entityCallEventDescription_t gentityEventDescriptions[] =
-{
-		{ "onAct",       ON_ACT       },
-		{ "onDie",       ON_DIE       },
-		{ "onDisable",   ON_DISABLE   },
-		{ "onEnable",    ON_ENABLE    },
-		{ "onFree",      ON_FREE      },
-		{ "onReach",     ON_REACH     },
-		{ "onReset",     ON_RESET     },
-		{ "onSpawn",     ON_SPAWN     },
-		{ "onTouch",     ON_TOUCH     },
-		{ "onUse",       ON_USE       },
-		{ "target",      ON_DEFAULT   },
-};
-
-gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
-{
-	entityCallEventDescription_t *foundDescription;
-
-	if(!event)
-		return ON_DEFAULT;
-
-	foundDescription = (entityCallEventDescription_t*) bsearch(event, gentityEventDescriptions, ARRAY_LEN( gentityEventDescriptions ),
-		             sizeof( entityCallEventDescription_t ), cmdcmp );
-
-	if(foundDescription && foundDescription->key)
-		return foundDescription->eventType;
-
-	return ON_CUSTOM;
-}
-
-struct entityActionDescription_t
-{
-	const char *alias;
-	gentityCallActionType_t action;
-};
-
-static const entityActionDescription_t actionDescriptions[] =
-{
-		{ "act",       ECA_ACT       },
-		{ "disable",   ECA_DISABLE   },
-		{ "enable",    ECA_ENABLE    },
-		{ "free",      ECA_FREE      },
-		{ "nop",       ECA_NOP       },
-		{ "propagate", ECA_PROPAGATE },
-		{ "reset",     ECA_RESET     },
-		{ "toggle",    ECA_TOGGLE    },
-		{ "use",       ECA_USE       },
-};
-
-gentityCallActionType_t G_GetCallActionTypeFor( const char* action )
-{
-	entityActionDescription_t *foundDescription;
-
-	if(!action)
-		return ECA_DEFAULT;
-
-	foundDescription = (entityActionDescription_t*) bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
-		             sizeof( entityActionDescription_t ), cmdcmp );
-
-	if(foundDescription && foundDescription->alias)
-		return foundDescription->action;
-
-	return ECA_CUSTOM;
-}
-
 static gentity_t *G_ResolveEntityKeyword( gentity_t *self, std::string const& keyword )
 {
 	gentity_t *resolution = nullptr;
@@ -842,12 +770,12 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 {
 	if ( g_debugEntities.Get() > 1 )
 	{
-		Log::Debug("[%s] %s calling %s %s:%s",
+		Log::Debug( "[%s] %s calling %s %s:%s",
 				etos( call->activator ),
 				etos( call->caller ),
 				call->definition ? call->definition->event : "onUnknown",
 				etos( targetedEntity ),
-				call->definition && call->definition->action ? call->definition->action : "default");
+				call->definition && call->definition->action.empty() ? "default" : call->definition->action );
 	}
 
 	targetedEntity->callIn = *call;
