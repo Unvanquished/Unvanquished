@@ -719,7 +719,9 @@ static gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
 
 static gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const char *string )
 {
-	gentityCallDefinition_t newCallDefinition = { nullptr, ON_DEFAULT, nullptr, nullptr, ECA_NOP };
+	ASSERT( string );
+
+	gentityCallDefinition_t newCallDefinition = { nullptr, nullptr, nullptr, ON_DEFAULT, ECA_NOP };
 
 	size_t stringLength = strlen( string ) + 1;
 	if ( stringLength == 1 )
@@ -727,21 +729,27 @@ static gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const 
 		return newCallDefinition;
 	}
 
-	char *stringPointer = (char*) BG_Alloc( stringLength );
-	newCallDefinition.name = stringPointer;
-
-	for ( size_t i = 0; i < stringLength; i++ )
+	std::unique_ptr<char> tmp = std::make_unique<char>( stringLength );
+	char* end = tmp.get() + stringLength;
+	char* it = std::find( tmp.get(), end, ':' );
+	if ( it == end )
 	{
-		if ( string[ i ] == ':' && newCallDefinition.action.empty() )
-		{
-			*stringPointer++ = '\0';
-			newCallDefinition.action = stringPointer;
-			continue;
-		}
-		*stringPointer++ = string[ i ];
+		Log::Warn( "invalid call definition: no key end" );
+		return newCallDefinition;
 	}
-	newCallDefinition.actionType = G_GetCallActionTypeFor( newCallDefinition.action );
+	*end = '\0';
+	ssize_t len = end - newCallDefinition.name;
+	ASSERT( len >= 0 );
+	if ( static_cast<size_t>( len ) == stringLength )
+	{
+		Log::Warn( "invalid call definition: no value" );
+		return newCallDefinition;
+	}
 
+	newCallDefinition.name = tmp.release();
+	newCallDefinition.action = end + len;
+
+	newCallDefinition.actionType = G_GetCallActionTypeFor( newCallDefinition.action );
 	newCallDefinition.event = eventKey;
 	newCallDefinition.eventType = G_GetCallEventTypeFor( newCallDefinition.event );
 	return newCallDefinition;
@@ -1284,14 +1292,14 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "use",       ECA_USE       },
 };
 
-gentityCallActionType_t G_GetCallActionTypeFor( std::string const& action )
+gentityCallActionType_t G_GetCallActionTypeFor( char const* action )
 {
-	if ( action.empty() )
+	if ( action == nullptr || action[0] == '\0' )
 	{
 		return ECA_DEFAULT;
 	}
 
-	auto* foundDescription = static_cast<entityActionDescription_t*>( bsearch(action.c_str(), actionDescriptions, ARRAY_LEN( actionDescriptions ),
+	auto* foundDescription = static_cast<entityActionDescription_t*>( bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
 		             sizeof( entityActionDescription_t ), cmdcmp ) );
 
 	if ( foundDescription && foundDescription->alias )

@@ -178,12 +178,21 @@ enum gentityCallEvent_t
 
 struct gentityCallDefinition_t
 {
-	const char *event;
+	char const* name = nullptr;// this actually contains bot name and action, for "perf reason"
+	char const* action = nullptr;
+	const char* event = nullptr;
 	gentityCallEvent_t eventType;
-
-	std::string name;
-	std::string action;
 	gentityCallActionType_t actionType;
+
+	gentityCallDefinition_t() = default;
+	gentityCallDefinition_t( gentityCallDefinition_t const& ) = delete;
+	gentityCallDefinition_t( gentityCallDefinition_t && ) = default;
+	gentityCallDefinition_t& operator=( gentityCallDefinition_t const& ) = delete;
+	gentityCallDefinition_t& operator=( gentityCallDefinition_t && ) = default;
+	~gentityCallDefinition_t()
+	{
+		delete name;
+	}
 };
 
 struct mapEntity_t
@@ -331,6 +340,6 @@ instead of an orientation.
 void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir );
 void G_FireEntity( gentity_t *ent, gentity_t *activator );
 
-gentityCallActionType_t G_GetCallActionTypeFor( std::string const& action );
+gentityCallActionType_t G_GetCallActionTypeFor( char const* action );
 
 #endif

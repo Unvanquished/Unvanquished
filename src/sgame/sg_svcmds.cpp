@@ -44,7 +44,7 @@ static void Svcmd_EntityFire_f()
 	int  entityNum;
 	gentity_t *selection;
 	gentityCall_t call;
-	gentityCallDefinition_t callDefinition = { nullptr, ON_DEFAULT, nullptr, nullptr, ECA_DEFAULT };
+	gentityCallDefinition_t callDefinition = { nullptr, nullptr, nullptr, ON_DEFAULT, ECA_DEFAULT };
 
 	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{
@@ -76,7 +76,7 @@ static void Svcmd_EntityFire_f()
 		callDefinition.actionType = G_GetCallActionTypeFor( callDefinition.action );
 	}
 
-	Log::Notice( "firing %s:%s", etos( selection ), callDefinition.action.empty() ? "default" : callDefinition.action );
+	Log::Notice( "firing %s:%s", etos( selection ), callDefinition.action ? callDefinition.action : "default" );
 
 	if ( selection->mapEntity.names[0].size() )
 	{
@@ -88,6 +88,7 @@ static void Svcmd_EntityFire_f()
 	call.activator = &g_entities[ ENTITYNUM_NONE ] ;
 
 	G_CallEntity(selection, &call);
+	callDefinition.name = nullptr; //avoid freeing memory we do not own
 }
 
 
@@ -185,7 +186,7 @@ static void Svcmd_EntityShow_f()
 				Log::Notice( "Calls %s \"%s:%s\"",
 						selection->mapEntity.calltargets[ targetIndex ].event ? selection->mapEntity.calltargets[ targetIndex ].event : "onUnknown",
 						selection->mapEntity.calltargets[ targetIndex ].name,
-						selection->mapEntity.calltargets[ targetIndex ].action.empty() ? "default" : selection->mapEntity.calltargets[ targetIndex ].action );
+						selection->mapEntity.calltargets[ targetIndex ].action ? selection->mapEntity.calltargets[ targetIndex ].action : "default" );
 				lastTargetIndex = targetIndex;
 			}
 

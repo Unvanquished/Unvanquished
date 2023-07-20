@@ -596,7 +596,7 @@ gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, genti
 		goto cont;
 	}
 
-	for (*calltargetIndex = 0; self->mapEntity.calltargets[*calltargetIndex].name.size(); ++(*calltargetIndex))
+	for (*calltargetIndex = 0; self->mapEntity.calltargets[*calltargetIndex].name; ++(*calltargetIndex))
 	{
 		if(self->mapEntity.calltargets[*calltargetIndex].name[0] == '$')
 		{
@@ -775,7 +775,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 				etos( call->caller ),
 				call->definition ? call->definition->event : "onUnknown",
 				etos( targetedEntity ),
-				call->definition && call->definition->action.empty() ? "default" : call->definition->action );
+				call->definition && call->definition->action ? call->definition->action : "default" );
 	}
 
 	targetedEntity->callIn = *call;
