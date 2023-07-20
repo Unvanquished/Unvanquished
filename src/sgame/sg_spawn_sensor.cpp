@@ -513,22 +513,24 @@ void SP_sensor_player( gentity_t *self )
 	SP_WaitFields(self, 0.5f, 0);
 	SP_ConditionFields( self );
 
-	if(!Q_stricmp(self->classname, "trigger_multiple"))
+	if ( !Q_stricmp( self->classname.c_str(), "trigger_multiple" ) )
 	{
 		self->touch = trigger_multiple_touch;
 		self->act = trigger_multiple_act;
 		self->reset = trigger_multiple_compat_reset;
-	} else {
+	}
+	else
+	{
 		self->touch = sensor_player_touch;
 		self->act = sensor_act;
 		self->reset = sensor_reset;
 	}
 
-	if(!Q_stricmp(self->classname, "trigger_class"))
+	if ( !Q_stricmp( self->classname.c_str(), "trigger_class" ) )
 	{
 		self->mapEntity.conditions.isClassSensor = true;
 	}
-	if(!Q_stricmp(self->classname, "trigger_equipment"))
+	if ( !Q_stricmp( self->classname.c_str(), "trigger_equipment" ) )
 	{
 		self->mapEntity.conditions.isEquipSensor = true;
 	}

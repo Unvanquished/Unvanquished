@@ -148,7 +148,6 @@ enum fieldType_t
   F_INT,
   F_FLOAT,
   F_STRING,
-  F_STRING_TMP, //temporary dup of F_STRING to allow std::string
   F_TARGET,
   F_CALLTARGET,
   F_TIME,
@@ -170,7 +169,7 @@ struct fieldDescriptor_t
 static const fieldDescriptor_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration )                  , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr },
-	{ "alias",               FOFS( mapEntity.names[ 2 ] )          , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
+	{ "alias",               FOFS( mapEntity.names[ 2 ] )          , F_STRING    , ENT_V_UNCLEAR, nullptr },
 	{ "alpha",               FOFS( mapEntity.restingPosition )     , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
 	{ "amount",              FOFS( mapEntity.config.amount )       , F_INT       , ENT_V_UNCLEAR, nullptr },
 	{ "angle",               FOFS( s.angles )                      , F_YAW       , ENT_V_TMPNAME, "yaw"},
@@ -182,10 +181,10 @@ static const fieldDescriptor_t fields[] =
 	{ "dmg",                 FOFS( mapEntity.config.damage )       , F_INT       , ENT_V_UNCLEAR, nullptr },
 	{ "gravity",             FOFS( mapEntity.config.amount )       , F_INT       , ENT_V_UNCLEAR, "amount" },
 	{ "health",              FOFS( mapEntity.config.health )       , F_INT       , ENT_V_UNCLEAR, nullptr },
-	{ "message",             FOFS( mapEntity.message )             , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
-	{ "model",               FOFS( mapEntity.model )               , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
-	{ "model2",              FOFS( mapEntity.model2 )              , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
-	{ "name",                FOFS( mapEntity.names[ 0 ] )          , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
+	{ "message",             FOFS( mapEntity.message )             , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "model",               FOFS( mapEntity.model )               , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "model2",              FOFS( mapEntity.model2 )              , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "name",                FOFS( mapEntity.names[ 0 ] )          , F_STRING    , ENT_V_UNCLEAR, nullptr },
 	{ "noise",               FOFS( mapEntity.soundIndex )          , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
 	{ "onAct",               FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
 	{ "onDie",               FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
@@ -201,8 +200,8 @@ static const fieldDescriptor_t fields[] =
 	{ "period",              FOFS( mapEntity.config.period )       , F_TIME      , ENT_V_UNCLEAR, nullptr },
 	{ "radius",              FOFS( mapEntity.activatedPosition )   , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( mapEntity.config.wait.variance ), F_FLOAT     , ENT_V_TMPNAME, "wait" },
-	{ "replacement",         FOFS( mapEntity.shaderReplacement )   , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
-	{ "shader",              FOFS( mapEntity.shaderKey )           , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
+	{ "replacement",         FOFS( mapEntity.shaderReplacement )   , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "shader",              FOFS( mapEntity.shaderKey )           , F_STRING    , ENT_V_UNCLEAR, nullptr },
 	{ "sound1to2",           FOFS( mapEntity.sound1to2 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
 	{ "sound2to1",           FOFS( mapEntity.sound2to1 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
 	{ "soundPos1",           FOFS( mapEntity.soundPos1 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
@@ -214,10 +213,10 @@ static const fieldDescriptor_t fields[] =
 	{ "target2",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
 	{ "target3",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
 	{ "target4",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
-	{ "targetname",          FOFS( mapEntity.names[ 1 ] )          , F_STRING_TMP, ENT_V_TMPNAME, "name" },
-	{ "targetname2",         FOFS( mapEntity.names[ 2 ] )          , F_STRING_TMP, ENT_V_RENAMED, "name" },
-	{ "targetShaderName",    FOFS( mapEntity.shaderKey )           , F_STRING_TMP, ENT_V_RENAMED, "shader"},
-	{ "targetShaderNewName", FOFS( mapEntity.shaderReplacement )   , F_STRING_TMP, ENT_V_RENAMED, "replacement"},
+	{ "targetname",          FOFS( mapEntity.names[ 1 ] )          , F_STRING    , ENT_V_TMPNAME, "name" },
+	{ "targetname2",         FOFS( mapEntity.names[ 2 ] )          , F_STRING    , ENT_V_RENAMED, "name" },
+	{ "targetShaderName",    FOFS( mapEntity.shaderKey )           , F_STRING    , ENT_V_RENAMED, "shader"},
+	{ "targetShaderNewName", FOFS( mapEntity.shaderReplacement )   , F_STRING    , ENT_V_RENAMED, "replacement"},
 	{ "team",                FOFS( mapEntity.conditions.team )     , F_INT       , ENT_V_UNCLEAR, nullptr },
 	{ "wait",                FOFS( mapEntity.config.wait )         , F_TIME      , ENT_V_UNCLEAR, nullptr },
 	{ "yaw",                 FOFS( s.angles )                      , F_YAW       , ENT_V_UNCLEAR, nullptr },
@@ -444,10 +443,12 @@ static bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, g
 	if ( spawnDescription->versionState == ENT_V_UNCLEAR ) // we don't need to handle anything
 		return true;
 
-	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
+	if ( !spawnDescription->replacement || !Q_stricmp( entity->classname.c_str(), spawnDescription->replacement ) )
 	{
 		if ( g_debugEntities.Get() > -2 )
-			Log::Warn("Class %s has been marked deprecated but no replacement has been supplied", etos( entity ) );
+		{
+			Log::Warn( "Class %s has been marked deprecated but no replacement has been supplied", etos( entity ) );
+		}
 
 		return false;
 	}
@@ -517,16 +518,18 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	entityClassDescriptor_t     *spawnedClass;
 	buildable_t buildable;
 
-	if ( !spawnedEntity->classname )
+	if ( spawnedEntity->classname.empty() )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.Get() > -2 )
-			Log::Warn("Entity ^5#%i^* is missing classname – we are unable to spawn it.", spawnedEntity->num() );
+		{
+			Log::Warn( "Entity ^5#%i^* is missing classname – we are unable to spawn it.", spawnedEntity->num() );
+		}
 		return false;
 	}
 
 	//check buildable spawn functions
-	buildable = BG_BuildableByEntityName( spawnedEntity->classname )->number;
+	buildable = BG_BuildableByEntityName( spawnedEntity->classname.c_str() )->number;
 
 	if ( buildable != BA_NONE )
 	{
@@ -551,7 +554,7 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	}
 
 	// check the spawn functions for other classes
-	spawnedClass = (entityClassDescriptor_t*) bsearch( spawnedEntity->classname, entityClassDescriptions, ARRAY_LEN( entityClassDescriptions ),
+	spawnedClass = (entityClassDescriptor_t*) bsearch( spawnedEntity->classname.c_str(), entityClassDescriptions, ARRAY_LEN( entityClassDescriptions ),
 	             sizeof( entityClassDescriptor_t ), cmdcmp );
 
 	if ( spawnedClass )
@@ -583,13 +586,13 @@ static bool G_CallSpawnFunction( gentity_t *spawnedEntity )
 	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 	if ( g_debugEntities.Get() > -2 )
 	{
-		if (!Q_stricmp(S_WORLDSPAWN, spawnedEntity->classname))
+		if ( !Q_stricmp( S_WORLDSPAWN, spawnedEntity->classname.c_str() ) )
 		{
-			Log::Warn("a ^5" S_WORLDSPAWN "^* class was misplaced into position ^5#%i^* of the spawn string – Ignoring", spawnedEntity->num() );
+			Log::Warn( "a ^5" S_WORLDSPAWN "^* class was misplaced into position ^5#%i^* of the spawn string – Ignoring", spawnedEntity->num() );
 		}
 		else
 		{
-			Log::Warn("Unknown entity class \"^5%s^*\".", spawnedEntity->classname );
+			Log::Warn( "Unknown entity class \"^5%s^*\".", spawnedEntity->classname );
 		}
 	}
 
@@ -728,9 +731,6 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 	switch ( fieldDescriptor->type )
 	{
 		case F_STRING:
-			* ( char ** ) entityDataField = G_NewString( rawString );
-			break;
-		case F_STRING_TMP:
 			{
 				std::string* ptr = reinterpret_cast<std::string*>( entityDataField );
 				*ptr = G_NewString_tmp( rawString );

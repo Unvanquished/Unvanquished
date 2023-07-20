@@ -231,7 +231,7 @@ static void  Svcmd_EntityList_f()
 		}
 		currentEntityCount++;
 
-		if(filter && !Com_Filter(filter, displayedEntity->classname, false) )
+		if ( filter && !Com_Filter( filter, displayedEntity->classname.c_str(), false ) )
 		{
 			for ( std::string const& name : displayedEntity->mapEntity.names )
 			{

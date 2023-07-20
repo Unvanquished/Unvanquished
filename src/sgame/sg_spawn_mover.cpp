@@ -566,7 +566,7 @@ bool IsDoor( const gentity_t *ent )
 
 	for ( const char* fn : funcs )
 	{
-		if ( !Q_stricmp( fn, ent->classname ) )
+		if ( !Q_stricmp( fn, ent->classname.c_str() ) )
 		{
 			return true;
 		}
@@ -1306,8 +1306,10 @@ static void G_ResetFloatField( float* result, bool fallbackIfNegative, float ins
 
 static void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 {
-	if(!fallbackSpeed)
-		Sys::Drop("No default speed was supplied to reset_moverspeed for entity #%i of type %s.", self->num(), self->classname);
+	if ( !fallbackSpeed )
+	{
+		Sys::Drop( "No default speed was supplied to reset_moverspeed for entity #%i of type %s.", self->num(), self->classname );
+	}
 
 	G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, self->mapEntity.eclass->config.speed, fallbackSpeed);
 
@@ -1412,8 +1414,10 @@ static void InitMover( gentity_t *ent )
 
 static void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 {
-	if(!fallbackSpeed)
-		Sys::Drop("No default speed was supplied to reset_rotatorspeed for entity #%i of type %s.", self->num(), self->classname);
+	if( !fallbackSpeed )
+	{
+		Sys::Drop("No default speed was supplied to reset_rotatorspeed for entity #%i of type %s.", self->num(), self->classname );
+	}
 
 	// calculate time to reach second position from speed
 	glm::vec3 move = self->mapEntity.activatedPosition - self->mapEntity.restingPosition;
@@ -2429,7 +2433,7 @@ static void Think_SetupTrainTargets( gentity_t *self )
 				return;
 			}
 		}
-		while ( strcmp( next->classname, S_PATH_CORNER ) );
+		while ( next->classname != S_PATH_CORNER );
 
 		path->nextPathSegment = next;
 	}

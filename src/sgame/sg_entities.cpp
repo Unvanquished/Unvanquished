@@ -285,7 +285,7 @@ const char *etos( const gentity_t *entity )
 
 	Com_sprintf( resultString, MAX_ETOS_LENGTH,
 			"%s^7(^5%s^*|^5#%i^*)",
-			name0( entity->mapEntity ), entity->classname, entity->num()
+			name0( entity->mapEntity ), entity->classname.c_str(), entity->num()
 			);
 
 	return resultString;
@@ -343,20 +343,27 @@ gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, bool ski
 	for ( ; entity < &g_entities[ level.num_entities ]; entity++ )
 	{
 		if ( !entity->inuse )
+		{
 			continue;
+		}
 
 		if( skipdisabled && !entity->enabled)
+		{
 			continue;
+		}
 
-
-		if ( classname && Q_stricmp( entity->classname, classname ) )
+		if ( classname && Q_stricmp( entity->classname.c_str(), classname ) )
+		{
 			continue;
+		}
 
 		if ( fieldofs && match )
 		{
 			fieldString = * ( char ** )( ( byte * ) entity + fieldofs );
 			if ( Q_stricmp( fieldString, match ) )
+			{
 				continue;
+			}
 		}
 
 		return entity;

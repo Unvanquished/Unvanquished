@@ -138,14 +138,14 @@ static void ctrl_relay_act( gentity_t *self, gentity_t*, gentity_t *activator )
 
 void SP_ctrl_relay( gentity_t *self )
 {
-	if( Q_stricmp(self->classname, S_CTRL_RELAY ) ) //if anything but ctrl_relay
+	if( Q_stricmp( self->classname.c_str(), S_CTRL_RELAY ) ) //if anything but ctrl_relay
 	{
 		if ( !self->mapEntity.config.wait.time ) {
 			// check delay for backwards compatibility
 			G_SpawnFloat( "delay", "0", &self->mapEntity.config.wait.time );
 
 			//target delay had previously a default of 1 instead of 0
-			if ( !self->mapEntity.config.wait.time && !Q_stricmp(self->classname, "target_delay") )
+			if ( !self->mapEntity.config.wait.time && !Q_stricmp( self->classname.c_str(), "target_delay" ) )
 			{
 				self->mapEntity.config.wait.time = 1;
 			}

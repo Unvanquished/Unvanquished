@@ -88,11 +88,11 @@ static void game_end_act( gentity_t *self, gentity_t*, gentity_t* )
 
 void SP_game_end( gentity_t *self )
 {
-	if(!Q_stricmp(self->classname, "target_human_win"))
+	if ( !Q_stricmp( self->classname.c_str(), "target_human_win" ) )
 	{
 		self->mapEntity.conditions.team = TEAM_HUMANS;
 	}
-	else if(!Q_stricmp(self->classname, "target_alien_win"))
+	else if ( !Q_stricmp( self->classname.c_str(), "target_alien_win" ) )
 	{
 		self->mapEntity.conditions.team = TEAM_ALIENS;
 	}
