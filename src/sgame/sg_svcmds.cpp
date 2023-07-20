@@ -78,8 +78,10 @@ static void Svcmd_EntityFire_f()
 
 	Log::Notice( "firing %s:%s", etos( selection ), callDefinition.action ? callDefinition.action : "default" );
 
-	if(selection->mapEntity.names[0])
-		callDefinition.name = selection->mapEntity.names[0];
+	if ( selection->mapEntity.names[0].size() )
+	{
+		callDefinition.name = selection->mapEntity.names[0].c_str();
+	}
 
 	call.definition = &callDefinition;
 	call.caller = &g_entities[ ENTITYNUM_NONE ];
@@ -93,7 +95,7 @@ static inline void PrintEntityOverviewLine( gentity_t *entity )
 {
 	Log::Notice( "%3i: %15s/^5%-24s^*%s%s",
 			entity->num(), Com_EntityTypeName( entity->s.eType ), entity->classname,
-			entity->mapEntity.names[0] ? entity->mapEntity.names[0] : "", entity->mapEntity.names[1] ? " …" : "");
+			entity->mapEntity.names[0].c_str(), entity->mapEntity.names[1].size() ? " …" : "");
 }
 
 /*
@@ -149,7 +151,7 @@ static void Svcmd_EntityShow_f()
 			selection->reset ? " resets" : "",
 			selection->touch ? " touchable" : "",
 			selection->use ? " usable" : "");
-	if (selection->mapEntity.names[0])
+	if ( selection->mapEntity.names[0].size() )
 	{
 		Log::Notice( "Names: ");
 		G_PrintEntityNameList( selection );
@@ -188,7 +190,7 @@ static void Svcmd_EntityShow_f()
 			}
 
 			Log::Notice(" • %s", etos(possibleTarget));
-			if(possibleTarget->mapEntity.names[1])
+			if ( possibleTarget->mapEntity.names[1].size() )
 			{
 				Log::Notice(" using \"%s\" ∈ ", selection->mapEntity.calltargets[ targetIndex ].name);
 				G_PrintEntityNameList( possibleTarget );
@@ -206,7 +208,6 @@ Svcmd_EntityList_f
 static void  Svcmd_EntityList_f()
 {
 	int       entityNum;
-	int i;
 	int currentEntityCount;
 	gentity_t *displayedEntity;
 	char* filter;
@@ -232,9 +233,14 @@ static void  Svcmd_EntityList_f()
 
 		if(filter && !Com_Filter(filter, displayedEntity->classname, false) )
 		{
-			for (i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->mapEntity.names[i]; ++i)
+			for ( std::string const& name : displayedEntity->mapEntity.names )
 			{
-				if( Com_Filter(filter, displayedEntity->mapEntity.names[i], false) )
+				if ( name.empty() )
+				{
+					break;
+				}
+
+				if( Com_Filter(filter, name.c_str(), false) )
 				{
 					PrintEntityOverviewLine( displayedEntity );
 					break;

@@ -590,9 +590,9 @@ bool IsAutomaticMover( const gentity_t *ent )
 		return false;
 	}
 
-	for ( int i = 0; i < MAX_ENTITY_ALIASES; ++i )
+	for ( std::string const& name : ent->mapEntity.names )
 	{
-		if ( ent->mapEntity.names[i] )
+		if ( name.size() )
 		{
 			return false;
 		}
@@ -1049,7 +1049,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	moverState_t groupState;
 
 	// if this is a non-client-usable door return
-	if ( ent->mapEntity.names[ 0 ] && other && other->client )
+	if ( ent->mapEntity.names[ 0 ].size() && other && other->client )
 	{
 		return;
 	}
@@ -1694,7 +1694,7 @@ void SP_func_door( gentity_t *self )
 	self->nextthink = level.time + FRAMETIME;
 	self->health = self->mapEntity.config.health;
 
-	if ( self->mapEntity.names[ 0 ] || self->mapEntity.config.health ) //FIXME wont work yet with class fallbacks
+	if ( self->mapEntity.names[ 0 ].size() || self->mapEntity.config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
 		self->think = Think_MatchGroup;
@@ -1822,7 +1822,7 @@ void SP_func_door_rotating( gentity_t *self )
 	self->nextthink = level.time + FRAMETIME;
 	self->health = self->mapEntity.config.health;
 
-	if ( self->mapEntity.names[ 0 ] || self->mapEntity.config.health ) //FIXME wont work yet with class fallbacks
+	if ( self->mapEntity.names[ 0 ].size() || self->mapEntity.config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
 		self->think = Think_MatchGroup;
@@ -1965,7 +1965,7 @@ void SP_func_door_model( gentity_t *self )
 
 	trap_LinkEntity( self );
 
-	if ( !( self->mapEntity.names[ 0 ] || self->mapEntity.config.health ) ) //FIXME wont work yet with class fallbacks
+	if ( !( self->mapEntity.names[ 0 ].size() || self->mapEntity.config.health ) ) //FIXME wont work yet with class fallbacks
 	{
 		self->nextthink = level.time + FRAMETIME;
 		self->think = Think_SpawnNewDoorTrigger;
@@ -2137,7 +2137,7 @@ void SP_func_plat( gentity_t *self )
 	self->parent = self; // so it can be treated as a door
 
 	// spawn the trigger if one hasn't been custom made
-	if ( !self->mapEntity.names [ 0 ] )
+	if ( self->mapEntity.names[ 0 ].empty() )
 	{
 		SpawnPlatSensor( self );
 	}

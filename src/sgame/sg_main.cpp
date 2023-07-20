@@ -366,10 +366,10 @@ static void G_FindEntityGroups()
 				comparedEntity->flags |= FL_GROUPSLAVE;
 
 				// make sure that targets only point at the master
-				for (int k = 0; comparedEntity->mapEntity.names[k]; k++)
+				for (int k = 0; comparedEntity->mapEntity.names[k].size(); k++)
 				{
 					masterEntity->mapEntity.names[k] = comparedEntity->mapEntity.names[k];
-					comparedEntity->mapEntity.names[k] = nullptr;
+					comparedEntity->mapEntity.names[k].clear();
 				}
 			}
 		}

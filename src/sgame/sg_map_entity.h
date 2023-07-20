@@ -196,7 +196,7 @@ struct mapEntity_t
 	entityClass_t *eclass;
 
 	int spawnflags;
-	char *names[ MAX_ENTITY_ALIASES + 1 ];
+	std::string names[ MAX_ENTITY_ALIASES + 1 ];
 
 	/*
 	 * configuration, as supplied by the spawn string, external spawn scripts etc.
@@ -306,7 +306,7 @@ struct mapEntity_t
 		buffer = names[0];
 		for ( size_t i = 1; i < MAX_ENTITY_ALIASES; ++i )
 		{
-			if ( names[i] )
+			if ( names[i].size() )
 			{
 				buffer += ", ";
 				buffer += names[i];

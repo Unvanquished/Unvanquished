@@ -248,9 +248,9 @@ Convenience function for printing entities
 #define MAX_ETOS_LENGTH (MAX_NAME_LENGTH + 5 * 2 + 4 + 1 + 5)
 static bool matchesName( mapEntity_t const& ent, std::string const& name )
 {
-	for ( char const* n : ent.names )
+	for ( std::string const& n : ent.names )
 	{
-		if ( !Q_stricmp( name.c_str(), n ) )
+		if ( !Q_stricmp( name.c_str(), n.c_str() ) )
 		{
 			return true;
 		}
@@ -261,7 +261,7 @@ static bool matchesName( mapEntity_t const& ent, std::string const& name )
 static char const* name0( mapEntity_t const& ent )
 {
 	static std::string buffer;
-	if ( ent.names[0] == nullptr )
+	if ( ent.names[0].empty() )
 	{
 		return "";
 	}

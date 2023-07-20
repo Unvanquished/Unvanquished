@@ -148,6 +148,7 @@ enum fieldType_t
   F_INT,
   F_FLOAT,
   F_STRING,
+  F_STRING_TMP, //temporary dup of F_STRING to allow std::string
   F_TARGET,
   F_CALLTARGET,
   F_TIME,
@@ -169,7 +170,7 @@ struct fieldDescriptor_t
 static const fieldDescriptor_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration )                  , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr },
-	{ "alias",               FOFS( mapEntity.names[ 2 ] )          , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "alias",               FOFS( mapEntity.names[ 2 ] )          , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
 	{ "alpha",               FOFS( mapEntity.restingPosition )     , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
 	{ "amount",              FOFS( mapEntity.config.amount )       , F_INT       , ENT_V_UNCLEAR, nullptr },
 	{ "angle",               FOFS( s.angles )                      , F_YAW       , ENT_V_TMPNAME, "yaw"},
@@ -184,7 +185,7 @@ static const fieldDescriptor_t fields[] =
 	{ "message",             FOFS( mapEntity.message )             , F_STRING    , ENT_V_UNCLEAR, nullptr },
 	{ "model",               FOFS( mapEntity.model )               , F_STRING    , ENT_V_UNCLEAR, nullptr },
 	{ "model2",              FOFS( mapEntity.model2 )              , F_STRING    , ENT_V_UNCLEAR, nullptr },
-	{ "name",                FOFS( mapEntity.names[ 0 ] )          , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "name",                FOFS( mapEntity.names[ 0 ] )          , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
 	{ "noise",               FOFS( mapEntity.soundIndex )          , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
 	{ "onAct",               FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
 	{ "onDie",               FOFS( mapEntity.calltargets )         , F_CALLTARGET, ENT_V_UNCLEAR, nullptr },
@@ -213,8 +214,8 @@ static const fieldDescriptor_t fields[] =
 	{ "target2",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
 	{ "target3",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
 	{ "target4",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
-	{ "targetname",          FOFS( mapEntity.names[ 1 ] )          , F_STRING    , ENT_V_TMPNAME, "name" },
-	{ "targetname2",         FOFS( mapEntity.names[ 2 ] )          , F_STRING    , ENT_V_RENAMED, "name" },
+	{ "targetname",          FOFS( mapEntity.names[ 1 ] )          , F_STRING_TMP, ENT_V_TMPNAME, "name" },
+	{ "targetname2",         FOFS( mapEntity.names[ 2 ] )          , F_STRING_TMP, ENT_V_RENAMED, "name" },
 	{ "targetShaderName",    FOFS( mapEntity.shaderKey )           , F_STRING    , ENT_V_RENAMED, "shader"},
 	{ "targetShaderNewName", FOFS( mapEntity.shaderReplacement )   , F_STRING    , ENT_V_RENAMED, "replacement"},
 	{ "team",                FOFS( mapEntity.conditions.team )     , F_INT       , ENT_V_UNCLEAR, nullptr },
@@ -476,16 +477,18 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 			break;
 		case CHAIN_TARGET:
 		case CHAIN_PASSIV:
-			if(!entity->mapEntity.names[0])
+			if( entity->mapEntity.names[0].empty() )
 			{
 				if( g_debugEntities.Get() > -2 )
+				{
 					Log::Warn("Entity %s needs a name, so other entities can target it — Removing it.", etos( entity ) );
+				}
 				return false;
 			}
 			break;
 		case CHAIN_RELAY:
 			if((!entity->mapEntity.callTargetCount) //check target usage for backward compatibility
-					|| !entity->mapEntity.names[0])
+					|| entity->mapEntity.names[0].empty() )
 			{
 				if( g_debugEntities.Get() > -2 )
 					Log::Warn("Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.", etos( entity ) );
@@ -633,6 +636,36 @@ static char *G_NewString( const char *string )
 	return newb;
 }
 
+static std::string G_NewString_tmp( const char *string )
+{
+	std::string ret = string;
+	std::string::iterator new_p = ret.begin();
+
+	// turn \n into a real linefeed
+	const size_t len = ret.size();
+	for ( size_t i = 0; i < len; i++ )
+	{
+		if ( string[ i ] == '\\' && i < len - 1 )
+		{
+			i++;
+
+			if ( string[ i ] == 'n' )
+			{
+				*new_p++ = '\n';
+			}
+			else // this is likely a bug, since any char after a '\' will be considered inexisting
+			{
+				*new_p++ = '\\';
+			}
+		}
+		else
+		{
+			*new_p++ = string[ i ];
+		}
+	}
+	return ret;
+}
+
 /*
 =============
 G_NewTarget
@@ -696,6 +729,12 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 	{
 		case F_STRING:
 			* ( char ** ) entityDataField = G_NewString( rawString );
+			break;
+		case F_STRING_TMP:
+			{
+				std::string* ptr = reinterpret_cast<std::string*>( entityDataField );
+				*ptr = G_NewString_tmp( rawString );
+			}
 			break;
 
 		case F_TARGET:
@@ -785,13 +824,12 @@ level.spawnVars[], then call the class specfic spawn function
 */
 static void G_SpawnGEntityFromSpawnVars()
 {
-	int       i, j;
 	gentity_t *spawningEntity;
 
 	// get the next free entity
 	spawningEntity = G_NewEntity( NO_CBSE );
 
-	for ( i = 0; i < level.numSpawnVars; i++ )
+	for ( int i = 0; i < level.numSpawnVars; i++ )
 	{
 		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], spawningEntity );
 	}
@@ -827,13 +865,15 @@ static void G_SpawnGEntityFromSpawnVars()
 	VectorCopy( spawningEntity->s.origin, spawningEntity->r.currentOrigin );
 
 	// don't leave any "gaps" between multiple names
-	j = 0;
-	for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
+	int j = 0;
+	for (int i = 0; i < MAX_ENTITY_ALIASES; ++i)
 	{
-		if (spawningEntity->mapEntity.names[i])
+		if ( spawningEntity->mapEntity.names[i].size() )
+		{
 			spawningEntity->mapEntity.names[j++] = spawningEntity->mapEntity.names[i];
+		}
 	}
-	spawningEntity->mapEntity.names[ j ] = nullptr;
+	spawningEntity->mapEntity.names[ j ].clear();
 
 	/*
 	 * for backward compatbility, since before targets were used for calling,
@@ -841,7 +881,7 @@ static void G_SpawnGEntityFromSpawnVars()
 	 */
 	if(!spawningEntity->mapEntity.callTargetCount)
 	{
-		for (i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS; i++)
+		for ( int i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS; i++)
 		{
 			if (!spawningEntity->mapEntity.targets[i])
 				continue;
@@ -856,7 +896,7 @@ static void G_SpawnGEntityFromSpawnVars()
 
 	// don't leave any "gaps" between multiple targets
 	j = 0;
-	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
+	for ( int i = 0; i < MAX_ENTITY_TARGETS; ++i)
 	{
 		if (spawningEntity->mapEntity.targets[i])
 			spawningEntity->mapEntity.targets[j++] = spawningEntity->mapEntity.targets[i];
