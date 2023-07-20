@@ -563,7 +563,7 @@ gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self
 	if (entity)
 		goto cont;
 
-	for (*targetIndex = 0; self->mapEntity.targets[*targetIndex]; ++(*targetIndex))
+	for (*targetIndex = 0; *targetIndex < self->mapEntity.targets.size() && self->mapEntity.targets[*targetIndex].size(); ++(*targetIndex))
 	{
 		if(self->mapEntity.targets[*targetIndex][0] == '$')
 		{

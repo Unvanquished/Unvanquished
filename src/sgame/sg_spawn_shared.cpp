@@ -66,9 +66,9 @@ void think_aimAtTarget( gentity_t *self )
 	origin *= 0.5f;
 
 	bool hasTarget = false;
-	for ( char* target : self->mapEntity.targets )
+	for ( std::string& target : self->mapEntity.targets )
 	{
-		if ( target && target[0] )
+		if ( target.size() )
 		{
 			hasTarget = true;
 			break;

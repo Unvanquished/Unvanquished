@@ -258,7 +258,7 @@ void SP_gfx_portal_surface( gentity_t *self )
 	self->r.svFlags = SVF_PORTAL;
 	self->s.eType = entityType_t::ET_PORTAL;
 
-	if ( !self->mapEntity.targetCount )
+	if ( self->mapEntity.targets.empty() )
 	{
 		VectorCopy( self->s.origin, self->s.origin2 );
 	}

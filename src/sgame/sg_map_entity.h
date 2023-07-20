@@ -178,9 +178,9 @@ enum gentityCallEvent_t
 
 struct gentityCallDefinition_t
 {
-	char const* name = nullptr;// this actually contains bot name and action, for "perf reason"
+	char const* name = nullptr;// this actually contains both name and action, for "perf reason"
 	char const* action = nullptr;
-	const char* event = nullptr;
+	char const* event = nullptr;
 	gentityCallEvent_t eventType;
 	gentityCallActionType_t actionType;
 
@@ -241,8 +241,8 @@ struct mapEntity_t
 	/*
 	 * targets to aim at
 	 */
-	int          targetCount;
-	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
+	typedef BoundedVector<std::string, MAX_ENTITY_TARGETS + 1> targets_t;
+	targets_t targets;
 
 	/*
 	 * gentities to call on certain events

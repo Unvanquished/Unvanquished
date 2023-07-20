@@ -165,7 +165,7 @@ static void Svcmd_EntityShow_f()
 		Log::Notice( "Member of Group: %s%s", selection->mapEntity.groupName, !selection->mapEntity.groupMaster ? " [master]" : "" );
 	}
 
-	if(selection->mapEntity.targetCount)
+	if ( selection->mapEntity.targets.size() )
 	{
 		Log::Notice( "Aims at");
 

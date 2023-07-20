@@ -2410,7 +2410,7 @@ static void Think_SetupTrainTargets( gentity_t *self )
 			start = path;
 		}
 
-		if ( !path->mapEntity.targetCount )
+		if ( path->mapEntity.targets.empty() )
 		{
 			Log::Warn( "Train corner at %s without a target",
 			          vtos( path->s.origin ) );

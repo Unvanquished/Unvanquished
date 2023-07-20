@@ -789,11 +789,16 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 			break;
 
 		case F_TARGET:
-			if(entity->mapEntity.targetCount >= MAX_ENTITY_TARGETS)
-				Sys::Drop("Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
+			{
+				if ( entity->mapEntity.targets.full() )
+				{
+					Sys::Drop("Maximal number of %i targets reached.", entity->mapEntity.targets.capacity() );
+				}
 
-			( ( char ** ) entityDataField ) [ entity->mapEntity.targetCount++ ] = G_NewString( rawString );
-			break;
+				mapEntity_t::targets_t* targets = reinterpret_cast<mapEntity_t::targets_t*>( entityDataField );
+				targets->push_back( G_NewString( rawString ) );
+				break;
+			}
 
 		case F_CALLTARGET:
 			{
@@ -932,27 +937,20 @@ static void G_SpawnGEntityFromSpawnVars()
 	 */
 	if(!spawningEntity->mapEntity.callTargetCount)
 	{
-		for ( int i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS; i++)
+		for ( size_t i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS && i < spawningEntity->mapEntity.targets.size(); i++)
 		{
-			if (!spawningEntity->mapEntity.targets[i])
+			if ( spawningEntity->mapEntity.targets[i].empty() )
+			{
 				continue;
+			}
 
 			spawningEntity->mapEntity.calltargets[i].event = "target";
 			spawningEntity->mapEntity.calltargets[i].eventType = ON_DEFAULT;
 			spawningEntity->mapEntity.calltargets[i].actionType = ECA_DEFAULT;
-			spawningEntity->mapEntity.calltargets[i].name = spawningEntity->mapEntity.targets[i];
+			spawningEntity->mapEntity.calltargets[i].name = strdup( spawningEntity->mapEntity.targets[i].c_str() );
 			spawningEntity->mapEntity.callTargetCount++;
 		}
 	}
-
-	// don't leave any "gaps" between multiple targets
-	j = 0;
-	for ( int i = 0; i < MAX_ENTITY_TARGETS; ++i)
-	{
-		if (spawningEntity->mapEntity.targets[i])
-			spawningEntity->mapEntity.targets[j++] = spawningEntity->mapEntity.targets[i];
-	}
-	spawningEntity->mapEntity.targets[ j ] = nullptr;
 
 	// if we didn't get necessary fields (like the classname), don't bother spawning anything
 	if ( !G_CallSpawnFunction( spawningEntity ) )
