@@ -245,7 +245,7 @@ struct mapEntity_t
 	//sound index, used by movers as well as target_speaker e.g. for looping sounds
 	int          soundIndex;
 
-	char         *message;
+	std::string message;
 
 	char     *model;
 	// This seems to be used by rotators, movers and doors. Quoting:

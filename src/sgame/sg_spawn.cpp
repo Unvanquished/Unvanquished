@@ -182,7 +182,7 @@ static const fieldDescriptor_t fields[] =
 	{ "dmg",                 FOFS( mapEntity.config.damage )       , F_INT       , ENT_V_UNCLEAR, nullptr },
 	{ "gravity",             FOFS( mapEntity.config.amount )       , F_INT       , ENT_V_UNCLEAR, "amount" },
 	{ "health",              FOFS( mapEntity.config.health )       , F_INT       , ENT_V_UNCLEAR, nullptr },
-	{ "message",             FOFS( mapEntity.message )             , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "message",             FOFS( mapEntity.message )             , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
 	{ "model",               FOFS( mapEntity.model )               , F_STRING    , ENT_V_UNCLEAR, nullptr },
 	{ "model2",              FOFS( mapEntity.model2 )              , F_STRING    , ENT_V_UNCLEAR, nullptr },
 	{ "name",                FOFS( mapEntity.names[ 0 ] )          , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
@@ -1187,7 +1187,7 @@ void G_SpawnFakeEntities()
 	level.fakeLocation->s.origin[ 0 ] =
 	level.fakeLocation->s.origin[ 1 ] =
 	level.fakeLocation->s.origin[ 2 ] = 1.7e19f; // well out of range
-	level.fakeLocation->mapEntity.message = nullptr;
+	level.fakeLocation->mapEntity.message.clear();
 
 	level.fakeLocation->s.eType = entityType_t::ET_LOCATION;
 	level.fakeLocation->r.svFlags = SVF_BROADCAST;

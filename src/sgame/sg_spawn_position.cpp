@@ -76,7 +76,7 @@ pos_location
 
 void SP_pos_location( gentity_t *self )
 {
-	char       *message;
+	char const *message;
 	self->s.eType = entityType_t::ET_LOCATION;
 	self->r.svFlags = SVF_BROADCAST;
 	trap_LinkEntity( self );  // make the server send them to the clients
@@ -94,11 +94,11 @@ void SP_pos_location( gentity_t *self )
 		}
 
 		message = va( "%c%c%s^*", Color::Constants::ESCAPE, self->customNumber + '0',
-		              self->mapEntity.message );
+		              self->mapEntity.message.c_str() );
 	}
 	else
 	{
-		message = self->mapEntity.message;
+		message = self->mapEntity.message.c_str();
 	}
 
 	self->nextPathSegment = level.locationHead;
