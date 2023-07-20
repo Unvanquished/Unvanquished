@@ -241,13 +241,13 @@ struct mapEntity_t
 	/*
 	 * targets to aim at
 	 */
-	typedef BoundedVector<std::string, MAX_ENTITY_TARGETS + 1> targets_t;
+	typedef BoundedVector<std::string, MAX_ENTITY_TARGETS> targets_t;
 	targets_t targets;
 
 	/*
 	 * gentities to call on certain events
 	 */
-	typedef BoundedVector<gentityCallDefinition_t, MAX_ENTITY_CALLTARGETS + 1> calltargets_t;
+	typedef BoundedVector<gentityCallDefinition_t, MAX_ENTITY_CALLTARGETS> calltargets_t;
 	calltargets_t calltargets;
 
 	//sound index, used by movers as well as target_speaker e.g. for looping sounds
