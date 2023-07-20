@@ -1668,7 +1668,6 @@ void SP_func_door( gentity_t *self )
 	self->mapEntity.restingPosition = VEC2GLM( self->s.origin );
 
 	// calculate second position
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	glm::vec3 angles = VEC2GLM( self->s.angles );
@@ -1799,7 +1798,6 @@ void SP_func_door_rotating( gentity_t *self )
 	}
 
 	self->mapEntity.restingPosition = VEC2GLM( self->s.angles );
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 	self->mapEntity.activatedPosition = self->mapEntity.restingPosition + self->mapEntity.rotatorAngle * self->mapEntity.movedir;
 
@@ -1897,7 +1895,6 @@ void SP_func_door_model( gentity_t *self )
 	//brush model
 	clipBrush = self->mapEntity.clipBrush = G_NewEntity( NO_CBSE );
 	clipBrush->mapEntity.model = self->mapEntity.model;
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( clipBrush, clipBrush->mapEntity.model );
 	clipBrush->s.eType = entityType_t::ET_INVISIBLE;
 
@@ -2110,7 +2107,6 @@ void SP_func_plat( gentity_t *self )
 	self->mapEntity.config.wait.time *= 1000;
 
 	// create second position
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	if ( !G_SpawnFloat( "height", "0", &height ) )
@@ -2195,7 +2191,6 @@ void SP_func_button( gentity_t *self )
 	self->mapEntity.restingPosition = VEC2GLM( self->s.origin );
 
 	// calculate second position
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	float  lip;
@@ -2503,7 +2498,6 @@ void SP_func_train( gentity_t *self )
 		G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
 	}
 
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
 	reset_moverspeed( self, DEFAULT_FUNC_TRAIN_SPEED );
@@ -2534,7 +2528,6 @@ void SP_func_static( gentity_t *self )
 	float reverbDistance;
 	float reverbIntensity;
 
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
 	reset_moverspeed( self, 100 ); //TODO do we need this at all?
@@ -2545,29 +2538,30 @@ void SP_func_static( gentity_t *self )
 	self->r.contents &= ~CONTENTS_MOVER;
 
 	// check if this func_static has a colorgrading texture
-	if( self->mapEntity.model[0] == '*' &&
-	    G_SpawnString( "gradingTexture", "", &gradingTexture ) ) {
+	if( self->mapEntity.model.c_str()[0] == '*'
+			&& G_SpawnString( "gradingTexture", "", &gradingTexture ) )
+	{
 		G_SpawnFloat( "gradingDistance", "250", &gradingDistance );
 
-		G_GradingTextureIndex( va( "%s %f %s", self->mapEntity.model + 1,
+		G_GradingTextureIndex( va( "%s %f %s", self->mapEntity.model.c_str() + 1,
 					   gradingDistance, gradingTexture ) );
 	}
 
 	// check if this func_static has a colorgrading texture
-	if( self->mapEntity.model[0] == '*' &&
-	    G_SpawnString( "reverbEffect", "", &reverbEffect ) ) {
+	if( self->mapEntity.model.c_str()[0] == '*'
+			&& G_SpawnString( "reverbEffect", "", &reverbEffect ) )
+	{
 		G_SpawnFloat( "reverbDistance", "250", &reverbDistance );
 		G_SpawnFloat( "reverbIntensity", "1", &reverbIntensity );
 
 		reverbIntensity = Math::Clamp( reverbIntensity, 0.0f, 2.0f );
-		G_ReverbEffectIndex( va( "%s %f %s %f", self->mapEntity.model + 1,
+		G_ReverbEffectIndex( va( "%s %f %s %f", self->mapEntity.model.c_str() + 1,
 					   reverbDistance, reverbEffect, reverbIntensity ) );
 	}
 }
 
 void SP_func_dynamic( gentity_t *self )
 {
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	InitMover( self );
@@ -2619,7 +2613,6 @@ void SP_func_rotating( gentity_t *self )
 
 	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
 
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
 	reset_moverspeed( self, 100 );
@@ -2654,7 +2647,6 @@ void SP_func_bobbing( gentity_t *self )
 
 	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
 
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
 	reset_moverspeed( self, 4 );
@@ -2696,7 +2688,6 @@ void SP_func_pendulum( gentity_t *self )
 
 	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
 
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 
 	// find pendulum length
@@ -2801,8 +2792,7 @@ void SP_func_spawn( gentity_t *self )
 	self->mapEntity.moverState = MOVER_POS1;
 	VectorCopy( self->s.origin, self->mapEntity.restingPosition );
 
-	ASSERT( self->mapEntity.model );
-	if ( self->mapEntity.model[ 0 ] == '*' )
+	if ( self->mapEntity.model.c_str()[0] == '*' )
 	{
 		G_CM_SetBrushModel( self, self->mapEntity.model );
 	}
@@ -2882,8 +2872,7 @@ void SP_func_destructable( gentity_t *self )
 	self->mapEntity.moverState = MOVER_POS1;
 	VectorCopy( self->s.origin, self->mapEntity.restingPosition );
 
-	ASSERT( self->mapEntity.model );
-	if ( self->mapEntity.model[ 0 ] == '*' )
+	if ( self->mapEntity.model.c_str()[0] == '*' )
 	{
 		G_CM_SetBrushModel( self, self->mapEntity.model );
 	}

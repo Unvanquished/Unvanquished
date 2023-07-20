@@ -183,7 +183,7 @@ static const fieldDescriptor_t fields[] =
 	{ "gravity",             FOFS( mapEntity.config.amount )       , F_INT       , ENT_V_UNCLEAR, "amount" },
 	{ "health",              FOFS( mapEntity.config.health )       , F_INT       , ENT_V_UNCLEAR, nullptr },
 	{ "message",             FOFS( mapEntity.message )             , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
-	{ "model",               FOFS( mapEntity.model )               , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "model",               FOFS( mapEntity.model )               , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
 	{ "model2",              FOFS( mapEntity.model2 )              , F_STRING    , ENT_V_UNCLEAR, nullptr },
 	{ "name",                FOFS( mapEntity.names[ 0 ] )          , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
 	{ "noise",               FOFS( mapEntity.soundIndex )          , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },

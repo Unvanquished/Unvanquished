@@ -46,7 +46,6 @@ static void InitBrushSensor( gentity_t *self )
 		VectorCopy( angles, self->s.angles );
 	}
 
-	ASSERT( self->mapEntity.model );
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 	self->r.contents = CONTENTS_TRIGGER; // replaces the -1 from G_CM_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
