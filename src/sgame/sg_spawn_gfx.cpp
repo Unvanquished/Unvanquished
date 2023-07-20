@@ -135,13 +135,13 @@ static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spo
 	spot = origin + glm::normalize( total ) * radius;
 }
 
-static int G_ShaderIndex( const char *name )
+static int G_ShaderIndex( std::string const& name )
 {
-	int i = G_FindConfigstringIndex( name, CS_SHADERS, MAX_GAME_SHADERS, true );
+	int i = G_FindConfigstringIndex( name.c_str(), CS_SHADERS, MAX_GAME_SHADERS, true );
 
 	if ( !i )
 	{
-		Log::Warn( "Missing shader: %s", name ? name : "<nullptr>" );
+		Log::Warn( "Missing shader: %s", name.size() ? name.c_str() : "<nullptr>" );
 	}
 
 	return i;
@@ -149,7 +149,7 @@ static int G_ShaderIndex( const char *name )
 
 void SP_gfx_light_flare( gentity_t *self )
 {
-	if ( !self->mapEntity.shaderKey )
+	if ( self->mapEntity.shaderKey.empty() )
 	{
 		Log::Warn( "Light flare entity %d at (%d, %d, %d) has no shader", self->num(), self->s.origin[0], self->s.origin[1], self->s.origin[2] );
 		return;
@@ -395,7 +395,7 @@ static void G_SetShaderRemap( std::string const& oldShader, std::string const& n
 
 static void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 {
-	if ( !self->mapEntity.shaderKey || !self->mapEntity.shaderReplacement || !self->enabled )
+	if ( self->mapEntity.shaderKey.empty() || !self->mapEntity.shaderReplacement || !self->enabled )
 	{
 		return;
 	}
@@ -408,7 +408,7 @@ static void gfx_shader_mod_act( gentity_t *self, gentity_t*, gentity_t* )
 
 static void gfx_shader_mod_reset( gentity_t *self )
 {
-	if ( !self->mapEntity.shaderKey || !self->mapEntity.shaderReplacement )
+	if ( self->mapEntity.shaderKey.empty() || !self->mapEntity.shaderReplacement )
 	{
 		return;
 	}

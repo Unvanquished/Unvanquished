@@ -256,7 +256,7 @@ struct mapEntity_t
 	/*
 	 * for toggleable shaders
 	 */
-	char         *shaderKey;
+	std::string shaderKey;
 	char         *shaderReplacement;
 
 	float        speed;

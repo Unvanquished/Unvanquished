@@ -202,7 +202,7 @@ static const fieldDescriptor_t fields[] =
 	{ "radius",              FOFS( mapEntity.activatedPosition )   , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( mapEntity.config.wait.variance ), F_FLOAT     , ENT_V_TMPNAME, "wait" },
 	{ "replacement",         FOFS( mapEntity.shaderReplacement )   , F_STRING    , ENT_V_UNCLEAR, nullptr },
-	{ "shader",              FOFS( mapEntity.shaderKey )           , F_STRING    , ENT_V_UNCLEAR, nullptr },
+	{ "shader",              FOFS( mapEntity.shaderKey )           , F_STRING_TMP, ENT_V_UNCLEAR, nullptr },
 	{ "sound1to2",           FOFS( mapEntity.sound1to2 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
 	{ "sound2to1",           FOFS( mapEntity.sound2to1 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
 	{ "soundPos1",           FOFS( mapEntity.soundPos1 )           , F_SOUNDINDEX, ENT_V_UNCLEAR, nullptr },
@@ -216,7 +216,7 @@ static const fieldDescriptor_t fields[] =
 	{ "target4",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
 	{ "targetname",          FOFS( mapEntity.names[ 1 ] )          , F_STRING_TMP, ENT_V_TMPNAME, "name" },
 	{ "targetname2",         FOFS( mapEntity.names[ 2 ] )          , F_STRING_TMP, ENT_V_RENAMED, "name" },
-	{ "targetShaderName",    FOFS( mapEntity.shaderKey )           , F_STRING    , ENT_V_RENAMED, "shader"},
+	{ "targetShaderName",    FOFS( mapEntity.shaderKey )           , F_STRING_TMP, ENT_V_RENAMED, "shader"},
 	{ "targetShaderNewName", FOFS( mapEntity.shaderReplacement )   , F_STRING    , ENT_V_RENAMED, "replacement"},
 	{ "team",                FOFS( mapEntity.conditions.team )     , F_INT       , ENT_V_UNCLEAR, nullptr },
 	{ "wait",                FOFS( mapEntity.config.wait )         , F_TIME      , ENT_V_UNCLEAR, nullptr },
