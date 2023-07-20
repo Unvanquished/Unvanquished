@@ -251,7 +251,7 @@ struct mapEntity_t
 	// This seems to be used by rotators, movers and doors. Quoting:
 	// > if the "model2" key is set, use a separate model
 	// > for drawing, but clip against the brushes [of the first model]
-	char     *model2;
+	std::string model2;
 
 	/*
 	 * for toggleable shaders

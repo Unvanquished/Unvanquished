@@ -1379,7 +1379,7 @@ static void InitMover( gentity_t *ent )
 {
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
-	if ( ent->mapEntity.model2 )
+	if ( ent->mapEntity.model2.size() )
 	{
 		ent->s.modelindex2 = G_ModelIndex( ent->mapEntity.model2 );
 	}
@@ -1442,7 +1442,7 @@ static void InitRotator( gentity_t *ent )
 {
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
-	if ( ent->mapEntity.model2 )
+	if ( ent->mapEntity.model2.size() )
 	{
 		ent->s.modelindex2 = G_ModelIndex( ent->mapEntity.model2 );
 	}
@@ -1914,7 +1914,7 @@ void SP_func_door_model( gentity_t *self )
 
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
-	if ( !self->mapEntity.model2 )
+	if ( !self->mapEntity.model2.size() )
 	{
 		Log::Warn("func_door_model %d spawned with no model2 key", self->num() );
 	}
