@@ -8,140 +8,147 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-07-22 00:02+0000\n"
+"Last-Translator: Linus Virtanen <linus.virtanen@protonmail.com>\n"
+"Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "Rakenne"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr ""
+msgstr "Hinta:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Kehity"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "muunnospisteet"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Valitse lähtökohtainen muotosi:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "Lemma"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "Paimio"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
+"Lemmat ovat viekkaan hyökkääväisiä, Paimiot ovat muukalaisrakenteellinen "
+"laji."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Takaisin joukkuevalikkoon"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "Pyydä tasapeliäänestystä"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "Syy"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Pyydä äänestystä"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
-msgstr ""
+msgstr "Täytä boteilla"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "Molemmat joukkueet"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
-msgstr ""
+msgstr "Avaruusolennot"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "Ihmiset"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "Joukkue"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "Määrä"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
-msgstr ""
+msgstr "Muuta karttaa"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Äänestä: vaihda seuraavaan karttaan"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Äänestä: aseta nykyinen kartta"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "Aseta nykyinen kartta (hostaa)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Käytäntö"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
-msgstr ""
+msgstr "Kartta"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Suorita toimi"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Virhe!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Selvä"
 
 #: ui/help_gameplay.rml:16 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Tervetuloa"
 
 #: ui/help_gameplay.rml:19
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"Tässä osiossa löydät yhteenvetoa merkittävistä pelin osa-alueista jotta "
+"tiedät miten tulla menestyksekkääksi pelaajaksi."
 
 #: ui/help_gameplay.rml:23
 msgid "Feel free to join us in the community and developer chats!"
 msgstr ""
+"Olet tervetullut liittymään seuraamme yhteisö- ja kehittäjäkeskusteluissa!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
