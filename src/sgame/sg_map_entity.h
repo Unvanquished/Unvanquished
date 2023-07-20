@@ -181,7 +181,7 @@ struct gentityCallDefinition_t
 	const char *event;
 	gentityCallEvent_t eventType;
 
-	char  *name;
+	const char  *name;
 
 	char  *action;
 	gentityCallActionType_t actionType;
