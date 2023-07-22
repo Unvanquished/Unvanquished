@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * @see G_SpawnGEntityFromSpawnVars()
  */
 
-#define MAX_ENTITY_ALIASES 	3
+#define MAX_ENTITY_ALIASES 	4
 
 /**
  * The maximal available targets to aim at per entity.

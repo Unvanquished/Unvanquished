@@ -215,6 +215,7 @@ static const fieldDescriptor_t fields[] =
 	{ "target4",             FOFS( mapEntity.targets )             , F_TARGET    , ENT_V_UNCLEAR, nullptr },
 	{ "targetname",          FOFS( mapEntity.names[ 1 ] )          , F_STRING    , ENT_V_TMPNAME, "name" },
 	{ "targetname2",         FOFS( mapEntity.names[ 2 ] )          , F_STRING    , ENT_V_RENAMED, "name" },
+	{ "targetname3",         FOFS( mapEntity.names[ 3 ] )          , F_STRING    , ENT_V_RENAMED, "name" },
 	{ "targetShaderName",    FOFS( mapEntity.shaderKey )           , F_STRING    , ENT_V_RENAMED, "shader"},
 	{ "targetShaderNewName", FOFS( mapEntity.shaderReplacement )   , F_STRING    , ENT_V_RENAMED, "replacement"},
 	{ "team",                FOFS( mapEntity.conditions.team )     , F_INT       , ENT_V_UNCLEAR, nullptr },
