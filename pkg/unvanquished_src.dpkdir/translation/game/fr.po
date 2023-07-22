@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-13 00:35+0200\n"
-"PO-Revision-Date: 2023-07-09 19:18+0000\n"
-"Last-Translator: S V <zikzakfr@gmail.com>\n"
+"PO-Revision-Date: 2023-07-23 15:02+0000\n"
+"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -3149,16 +3149,14 @@ msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr "%s%s ^*a été mordu par %s%s%s^* aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:470
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-msgstr "%s%s ^*a été tranché par les %s de %s%s%s^*"
+msgstr "%s%s ^*a été tranché par les %s de %s%s^*"
 
 #: src/cgame/cg_event.cpp:470
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-msgstr "%s%s ^*a été tranchée par les %s de %s%s%s^*"
+msgstr "%s%s ^*a été tranchée par les %s de %s%s^*"
 
 #: src/cgame/cg_event.cpp:470
 #, fuzzy
