@@ -2996,7 +2996,7 @@ static void Cmd_Build_f( gentity_t *ent )
 	}
 }
 
-static void Cmd_Reload_f( gentity_t *ent )
+void Cmd_Reload_f( gentity_t *ent )
 {
 	playerState_t *ps;
 	const weaponAttributes_t *wa;

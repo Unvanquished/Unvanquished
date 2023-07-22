@@ -347,4 +347,6 @@ namespace CombatFeedback
   void HitNotify(gentity_t *attacker, gentity_t *victim, Util::optional<glm::vec3> point, float damage, meansOfDeath_t mod, bool lethal);
 }
 
+void Cmd_Reload_f( gentity_t *ent );
+
 #endif // SG_PUBLIC_H_
