@@ -2682,6 +2682,17 @@ void G_BuildLogRevert( int id )
 										 ent->num(), BG_Buildable( ent->s.modelindex )->name );
 						}
 
+						Beacon::DetachTags( ent );
+						switch ( ent->s.modelindex )
+						{
+						case BA_H_SPAWN:
+						case BA_A_SPAWN:
+							level.team[G_Team( ent )].numSpawns--;
+							break;
+						default:
+							break;
+						}
+
 						// Revert resources
 						G_FreeBudget( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints, 0 );
 						momentumChange[ log->buildableTeam ] -= log->momentumEarned;
