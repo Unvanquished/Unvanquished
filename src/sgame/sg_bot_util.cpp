@@ -971,7 +971,7 @@ static void BotTargetGetBoundingBox( botTarget_t target, glm::vec3 &mins, glm::v
 	if ( isPlayer )
 	{
 		class_t class_ = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
-		BG_BoundingBox( class_, &mins, &maxs, nullptr, nullptr, nullptr );
+		BG_BoundingBox( class_, mins, maxs );
 	}
 	else if ( target.getTargetType() == entityType_t::ET_BUILDABLE )
 	{

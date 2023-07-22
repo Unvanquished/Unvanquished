@@ -1042,7 +1042,7 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	if ( config_.autojumpSecurity > 0.f )
 	{
 		glm::vec3 mins, maxs;
-		BG_BoundingBox( species, &mins, &maxs, nullptr, nullptr, nullptr );
+		BG_BoundingBox( species, mins, maxs );
 		float safety = ( maxs.z - mins.z ) * config_.autojumpSecurity;
 		//FIXME use g_gravity
 		float jump = Square( agent.jumpMagnitude ) / 1600; //( g_gravity.Get() * 2 );

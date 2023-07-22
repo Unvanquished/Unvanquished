@@ -2661,6 +2661,15 @@ void BG_BoundingBox( class_t pClass,
 	}
 }
 
+void BG_BoundingBox( class_t pClass, glm::vec3& mins, glm::vec3& maxs )
+{
+	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
+	ASSERT( classModelConfig != nullptr );
+
+	mins = VEC2GLM( classModelConfig->mins );
+	maxs = VEC2GLM( classModelConfig->maxs );
+}
+
 void BG_BoundingBox( buildable_t buildable, glm::vec3* mins, glm::vec3* maxs )
 {
 	buildableModelConfig_t *buildableModelConfig = BG_BuildableModelConfig( buildable );
