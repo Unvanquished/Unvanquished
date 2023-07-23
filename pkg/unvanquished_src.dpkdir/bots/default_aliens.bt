@@ -16,7 +16,7 @@ selector
 				{
 					sequence
 					{
-						condition ( distanceTo( E_A_OVERMIND ) <= 100 || distanceTo( E_A_BOOSTER ) <= 100 )
+						condition ( distanceTo( E_A_OVERMIND ) <= 400 || distanceTo( E_A_BOOSTER ) <= 400 )
 						action fight
 					}
 					sequence
