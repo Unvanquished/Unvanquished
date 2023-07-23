@@ -32,6 +32,13 @@ selector
 		}
 	}
 
+	// aliens should only try to do opportunistic resupply for poison, or the will end up camping too much.
+	// also, we want to be sure the distance to the booster is not too big to prevent infinite back'n forth
+	condition resupplyScore > 0.90 && distanceTo( E_A_BOOSTER ) <= 1000
+	{
+		action moveTo( E_A_BOOSTER )
+	}
+
 	selector
 	{
 		sequence
