@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-07-23 15:02+0000\n"
+"PO-Revision-Date: 2023-07-26 03:08+0000\n"
 "Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -2307,17 +2307,17 @@ msgstr "%s%s ^*a été pris dans l'acide"
 #: src/cgame/cg_event.cpp:317
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr "%s%s ^* a été abattu par une tourelle"
+msgstr "%s%s ^* n'a pas réussi à éviter les balles d'une tourelle"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr "%s%s ^* a été abattu par une tourelle"
+msgstr "%s%s ^* n'a pas réussie à éviter les balles d'une tourelle"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr "%s%s ^* a été abattu par une tourelle"
+msgstr "%s%s ^* n'a pas réussi à éviter les balles d'une tourelle"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "male"
@@ -2337,17 +2337,17 @@ msgstr "%s%s ^* a été abattu par une tourelle aidé par %s%s%s^*"
 #: src/cgame/cg_event.cpp:322
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
-msgstr "%s%s ^*s'est pris une roquette"
+msgstr "%s%s ^*a chevauché une roquette"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
-msgstr "%s%s ^*s'est prise une roquette"
+msgstr "%s%s ^*a chevauchée une roquette"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
-msgstr "%s%s ^*s'est pris une roquette"
+msgstr "%s%s ^*a chevauché une roquette"
 
 #: src/cgame/cg_event.cpp:323
 msgctxt "male"
