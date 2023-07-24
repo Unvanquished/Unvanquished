@@ -2130,7 +2130,7 @@ void BotFireWeaponAI( gentity_t *self )
 				}
 				else
 				{
-					if ( botTarget->client && level.time - botTarget->client->lastCombatTime < 4000 )
+					if ( self->botMind->skillSet[ BOT_H_LCANNON_TRICKS ] && botTarget->client && level.time - botTarget->client->lastCombatTime < 4000 )
 					{
 						// assume we know the target's health because we heard it cry
 						targetMaxHP *= Entities::HealthFraction( botTarget );

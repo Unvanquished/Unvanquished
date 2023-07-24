@@ -121,6 +121,7 @@ enum bot_skill
 	BOT_A_AIM_HEAD,
 	BOT_A_AIM_BARBS, // precisely target barbs
 	BOT_H_PREDICTIVE_AIM, // predict where to aim depending on weapon and enemy speed
+	BOT_H_LCANNON_TRICKS,
 
 	BOT_NUM_SKILLS
 };
