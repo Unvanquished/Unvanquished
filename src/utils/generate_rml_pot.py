@@ -75,6 +75,7 @@ msgstr ""
 if argv.s:
     translation_dict = dict(sorted(translation_dict.items()))
 for translatable_string, filenames in translation_dict.items():
+    translatable_string = translatable_string.replace("\"", "\\\"")
     print()
     print("#: " + " ".join(filenames))
     print("msgid \"" + r"\\n\"\n\"".join(translatable_string.split("\n")) + "\"")
