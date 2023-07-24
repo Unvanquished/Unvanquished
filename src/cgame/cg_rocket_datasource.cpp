@@ -34,6 +34,46 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
+static void StripNonPrintingCharacters( std::string& str )
+{
+	str.erase(
+		std::remove_if(
+			str.begin(),
+			str.end(),
+			[]( unsigned char c ){
+				return !std::isprint( c );
+			}),
+		str.end() );
+}
+
+static void StripSpacingCharacters( std::string& str )
+{
+	str.erase(
+		std::remove_if(
+			str.begin(),
+			str.end(),
+			[]( unsigned char c ){
+				return Str::cisspace( c );
+			}),
+		str.end() );
+}
+
+static std::string SanitizeString( std::string original, std::string fallback )
+{
+	std::string printable = original;
+	StripNonPrintingCharacters( printable );
+
+	std::string stripped = Color::StripColors( printable );
+	StripSpacingCharacters( stripped );
+
+	if ( stripped.length() == 0 )
+	{
+		return fallback;
+	}
+
+	return printable;
+}
+
 static void AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
 {
 	server_t *node;
@@ -50,14 +90,14 @@ static void AddToServerList( const char *name, const char *label, int clients, i
 
 	node = &rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverCount[ netSrc ] ];
 
-	node->name = BG_strdup( name );
-	node->clients = clients;
-	node->bots = bots;
+	node->name = BG_strdup( SanitizeString( name, addr ).c_str() );
+	node->clients = Math::Clamp( clients, 0, MAX_CLIENTS );
+	node->bots = Math::Clamp( bots, 0, MAX_CLIENTS );
 	node->ping = ping;
-	node->maxClients = maxClients;
+	node->maxClients = Math::Clamp( maxClients, 0, MAX_CLIENTS );
 	node->addr = BG_strdup( addr );
 	node->label = BG_strdup( label );
-	node->mapName = BG_strdup( mapName );
+	node->mapName = BG_strdup( SanitizeString( mapName, "???" ).c_str() );
 
 	rocketInfo.data.serverCount[ netSrc ]++;
 }
