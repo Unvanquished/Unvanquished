@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-24 05:16+0200\n"
+"POT-Creation-Date: 2023-07-24 07:29+0200\n"
 "PO-Revision-Date: 2023-07-13 11:53+0000\n"
 "Last-Translator: 777yur0k <kost19641964@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
@@ -145,31 +145,33 @@ msgstr ""
 "В этом разделе вы найдете словарь основных геймплейных элементов, которые "
 "нужно знать, чтобы стать успешным игроком."
 
-#: ui/help_gameplay.rml:23
-msgid "Feel free to join us in the community and developer chats!"
-msgstr "Не стесняйтесь присоединяться к нам в чат сообщества и разработчиков!"
+#: ui/help_gameplay.rml:22
+msgid "More can be found on our website and other community places!"
+msgstr ""
 
 #: ui/help_gameplay.rml:24
 msgid ""
-"We are chatting on IRC and Matrix in <b>#unvanquished</b> and "
-"<b>#unvanquished-dev</b> on Libera.Chat"
+"Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
+"dest=\"chat\" />"
 msgstr ""
-"Мы общаемся на IRC и Matrix в <b>#unvanquished</b> и <b>#unvanquished-dev</"
-"b> на Libera.Chat"
 
 #: ui/help_gameplay.rml:25
-msgid "Discuss news in the forum, <b>forums.unvanquished.net</b>"
-msgstr "Обсуждайте новости на форуме, <b>forums.unvanquished.net</b>"
+msgid "Discuss news in the forums: <web dest=\"forums\" />"
+msgstr ""
 
 #: ui/help_gameplay.rml:26
-msgid "Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>"
-msgstr "Открывайте новое об игре в вики, <b>wiki.unvanquished.net</b>"
+msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
+msgstr ""
 
-#: ui/help_gameplay.rml:30
+#: ui/help_gameplay.rml:28
+msgid "Please report bugs on: <web dest=\"bugs\" />"
+msgstr ""
+
+#: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
 msgstr "Доход и эволюция"
 
-#: ui/help_gameplay.rml:34
+#: ui/help_gameplay.rml:36
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
@@ -178,7 +180,7 @@ msgstr ""
 "использовать эти очки, чтобы эволюционировать в [dragoon] более продвинутые "
 "формы."
 
-#: ui/help_gameplay.rml:37
+#: ui/help_gameplay.rml:39
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
@@ -188,7 +190,7 @@ msgstr ""
 "или постройки. Они также могут откатиться в [granger] менее продвинутую "
 "форму (с потерей очков), когда они рядом со [overmind] Сверхразумом."
 
-#: ui/help_gameplay.rml:40
+#: ui/help_gameplay.rml:42
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
@@ -196,7 +198,7 @@ msgstr ""
 "Постройте Сверхразум, будучи [granger] Фермером, если он будет уничтожен, "
 "так вам вам нужен живой Сверхразум, чтобы выжить!"
 
-#: ui/help_gameplay.rml:44
+#: ui/help_gameplay.rml:46
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
@@ -207,7 +209,7 @@ msgstr ""
 "оружия, броню или [bsuit] боевой костюм, а также аксессуары, такие как радар "
 "или джетпак."
 
-#: ui/help_gameplay.rml:47
+#: ui/help_gameplay.rml:49
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
@@ -216,11 +218,11 @@ msgstr ""
 "один построен! Используйте строительный набор, чтобы построить арсенал, если "
 "он потерян."
 
-#: ui/help_gameplay.rml:51
+#: ui/help_gameplay.rml:53
 msgid "Powering buildables"
 msgstr "Энергетические постройки"
 
-#: ui/help_gameplay.rml:54
+#: ui/help_gameplay.rml:56
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -235,7 +237,7 @@ msgstr ""
 "строительства. Будьте осторожны, поскольку вы потеряете очки строительства, "
 "если добывающая структура разрушена."
 
-#: ui/help_gameplay.rml:57
+#: ui/help_gameplay.rml:59
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -248,7 +250,7 @@ msgstr ""
 "отключатся, в то время как другим все ещё будет хватать энергии, чтобы "
 "оставаться в рабочем состоянии."
 
-#: ui/help_gameplay.rml:58
+#: ui/help_gameplay.rml:60
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
@@ -258,11 +260,11 @@ msgstr ""
 "([leech] Лич и [drill] Бур) и уникальные структуры ([overmind] Сверхразум и "
 "[reactor] Реактор) НЕ подвержены влиянию отсутствия ОС."
 
-#: ui/help_gameplay.rml:62
+#: ui/help_gameplay.rml:64
 msgid "Mining structures"
 msgstr "Добывающие структуры"
 
-#: ui/help_gameplay.rml:65
+#: ui/help_gameplay.rml:67
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
@@ -272,7 +274,7 @@ msgstr ""
 "Бура команды Людей и [leech] Лича команды Чужих. Эти здания должны быть "
 "распределены для обеспечения эффективности."
 
-#: ui/help_gameplay.rml:68
+#: ui/help_gameplay.rml:70
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
@@ -280,7 +282,7 @@ msgstr ""
 "Не стройте добывающие структуры слишком близко друг к другу, иначе они будут "
 "конкурировать между собой и в конечном итоге тратить строительные ресурсы!"
 
-#: ui/help_gameplay.rml:71
+#: ui/help_gameplay.rml:73
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -294,7 +296,7 @@ msgstr ""
 "после завершения строительства добывающей структуры, и они будут вычтены "
 "обратно, если постройка будет разрушена. Не стройте незащищенные Буры!"
 
-#: ui/help_gameplay.rml:74
+#: ui/help_gameplay.rml:76
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -306,11 +308,11 @@ msgstr ""
 "уменьшается, так что становится намного сложнее отстроить разрушенную "
 "постройку в длинном матче. Это может стать внезапной смертью."
 
-#: ui/help_gameplay.rml:78
+#: ui/help_gameplay.rml:80
 msgid "Stages &amp; Momentum"
 msgstr "Стадии и Моментум"
 
-#: ui/help_gameplay.rml:81
+#: ui/help_gameplay.rml:83
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
@@ -321,7 +323,7 @@ msgstr ""
 "получите достаточно Моментума, разблокируются новые оружия, структуры или "
 "классы."
 
-#: ui/help_gameplay.rml:84
+#: ui/help_gameplay.rml:86
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
@@ -330,11 +332,11 @@ msgstr ""
 "бездействуете, ваша команда потеряет доступ к новым предметам. Существующие "
 "улучшения продолжат функционировать."
 
-#: ui/help_gameplay.rml:88
+#: ui/help_gameplay.rml:90
 msgid "Wildfire"
 msgstr "Пожар"
 
-#: ui/help_gameplay.rml:91
+#: ui/help_gameplay.rml:93
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
@@ -342,7 +344,7 @@ msgstr ""
 "Постройки Чужих могут загораться тогда, когда они атакованы с помощью "
 "[framer] огнемёта или [firebomb] огненной бомбы."
 
-#: ui/help_gameplay.rml:94
+#: ui/help_gameplay.rml:96
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
@@ -350,7 +352,7 @@ msgstr ""
 "Если структуры построены слишком близко, огонь может перепрыгнуть к "
 "неудачливым соседям."
 
-#: ui/help_gameplay.rml:97
+#: ui/help_gameplay.rml:99
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
@@ -359,7 +361,7 @@ msgstr ""
 "группа горящих структур будет держать самих себя в огне достаточно долго для "
 "большого хаоса."
 
-#: ui/help_gameplay.rml:100
+#: ui/help_gameplay.rml:102
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
@@ -367,11 +369,11 @@ msgstr ""
 "Плюющая атака [advgranger] Продвинутого Фермера может быть использована для "
 "тушения пожаров или замедления незваных гостей!"
 
-#: ui/help_gameplay.rml:104
+#: ui/help_gameplay.rml:106
 msgid "Under attack"
 msgstr "Под атакой"
 
-#: ui/help_gameplay.rml:107
+#: ui/help_gameplay.rml:109
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -383,15 +385,15 @@ msgstr ""
 "других построек будет вызывать предупреждение “под атакой” для владеющей "
 "команды."
 
-#: ui/help_gameplay.rml:111
+#: ui/help_gameplay.rml:113
 msgid "Healing"
 msgstr "Лечение"
 
-#: ui/help_gameplay.rml:114
+#: ui/help_gameplay.rml:116
 msgid "Dying feeds the ennemy, you may want to save your life!"
 msgstr "Смерть кормит врага, и вы, наверное, хотели бы сохранить вашу жизнь!"
 
-#: ui/help_gameplay.rml:118
+#: ui/help_gameplay.rml:120
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -404,7 +406,7 @@ msgstr ""
 "будет способствовать восстановлению снарядов [advdragoon] Продвинутых "
 "Драгунов."
 
-#: ui/help_gameplay.rml:122
+#: ui/help_gameplay.rml:124
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
@@ -415,14 +417,14 @@ msgstr ""
 "его как можно скорее. Усилитель также даст вам немного яда, чтобы сделать "
 "ваши атаки более смертоносными."
 
-#: ui/help_gameplay.rml:125
+#: ui/help_gameplay.rml:127
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
 
-#: ui/help_gameplay.rml:128
+#: ui/help_gameplay.rml:130
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -435,7 +437,7 @@ msgstr ""
 "как если бы вы касались постройки Чужих. Немного командной работы — отличный "
 "способ осадить врагов!"
 
-#: ui/help_gameplay.rml:132
+#: ui/help_gameplay.rml:134
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
@@ -444,11 +446,11 @@ msgstr ""
 "раз, после чего им нужно вернуться к [medstat] Медстанции, чтобы "
 "восстановить здоровье и снова заполнить их Аптечку."
 
-#: ui/help_gameplay.rml:136
+#: ui/help_gameplay.rml:138
 msgid "Wallwalking"
 msgstr "Хождение по стенам"
 
-#: ui/help_gameplay.rml:139
+#: ui/help_gameplay.rml:141
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
@@ -456,13 +458,13 @@ msgstr ""
 "Некоторые формы Чужих, такие как [dretch] Подонок, [mantis] Богомол и "
 "[advgranger] Продвинутый Фермер, могут ходить по стенам!"
 
-#: ui/help_gameplay.rml:142
+#: ui/help_gameplay.rml:144
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
 "Используйте это, чтобы достигать особые места или сокращать путь через "
 "вентиляции."
 
-#: ui/help_gameplay.rml:145
+#: ui/help_gameplay.rml:147
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
@@ -470,49 +472,49 @@ msgstr ""
 "Защитные структуры Чужих, такие как Охотник или Колючка, работают лучше на "
 "стенах. Размещение их на потолке может защитить их от гранат."
 
-#: ui/help_gameplay.rml:148
+#: ui/help_gameplay.rml:150
 msgid "The advanced granger can be unlocked with momentum."
 msgstr "Продвинутый Фермер может быть разблокирован с помощью Моментума."
 
-#: ui/help_gameplay.rml:152
+#: ui/help_gameplay.rml:154
 msgid "Since Tremulous"
 msgstr ""
 
-#: ui/help_gameplay.rml:155
+#: ui/help_gameplay.rml:157
 msgid "Since Tremulous, the stamina has been increased."
 msgstr ""
 
-#: ui/help_gameplay.rml:158
+#: ui/help_gameplay.rml:160
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
 
-#: ui/help_gameplay.rml:161
+#: ui/help_gameplay.rml:163
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
 
-#: ui/help_gameplay.rml:164
+#: ui/help_gameplay.rml:166
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
 
-#: ui/help_gameplay.rml:167
+#: ui/help_gameplay.rml:169
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
 
-#: ui/help_gameplay.rml:170
+#: ui/help_gameplay.rml:172
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
 
-#: ui/help_gameplay.rml:173
+#: ui/help_gameplay.rml:175
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -663,10 +665,8 @@ msgstr "Наблюдать"
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
-"at https://bugs.unvanquished.net"
+"at <web dest=\"bugs\" />"
 msgstr ""
-"Это бета-версия игры Unvanquished. Пожалуйста, сообщайте о любых найденных "
-"вами ошибках в https://bugs.unvanquished.net"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
@@ -859,7 +859,7 @@ msgstr "градусов"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:273
+#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:276
 #: ui/options_mouse.rml:21 ui/options_ui.rml:59 ui/server_setup.rml:73
 msgid "reset"
 msgstr "сбросить"
@@ -931,7 +931,7 @@ msgid ""
 msgstr ""
 
 #: ui/options_graphics.rml:28 ui/options_graphics.rml:141
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:265
 msgid "Low"
 msgstr "Низкое"
 
@@ -951,7 +951,7 @@ msgid ""
 "textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:36 ui/options_graphics.rml:260
+#: ui/options_graphics.rml:36 ui/options_graphics.rml:263
 msgid "High"
 msgstr "Высокое"
 
@@ -999,7 +999,7 @@ msgstr "Окно без рамки"
 msgid "Fullscreen"
 msgstr "Полный экран"
 
-#: ui/options_graphics.rml:71 ui/options_graphics.rml:263
+#: ui/options_graphics.rml:71 ui/options_graphics.rml:266
 msgid "Off"
 msgstr "Выкл"
 
@@ -1029,7 +1029,7 @@ msgstr "Быстрое приблизительное сглаживание (FX
 
 #: ui/options_graphics.rml:85 ui/options_graphics.rml:132
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
-#: ui/options_graphics.rml:235
+#: ui/options_graphics.rml:238
 msgid "Apply now"
 msgstr "Применить"
 
@@ -1098,7 +1098,7 @@ msgstr ""
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 
-#: ui/options_graphics.rml:121 ui/options_graphics.rml:244
+#: ui/options_graphics.rml:121 ui/options_graphics.rml:247
 msgid "None"
 msgstr "Нет"
 
@@ -1274,91 +1274,95 @@ msgid "Simulate dark corners."
 msgstr "Симулировать тёмные углы."
 
 #: ui/options_graphics.rml:228
-msgid "Particles"
-msgstr "Частицы"
+msgid "Marks"
+msgstr ""
 
 #: ui/options_graphics.rml:230
+msgid "Draw marks (such as bullet holes or creep) on surfaces"
+msgstr ""
+
+#: ui/options_graphics.rml:233
 msgid "Particle physics"
 msgstr "Физика частиц"
 
-#: ui/options_graphics.rml:232
+#: ui/options_graphics.rml:235
 msgid "Allow particles to bounce off surfaces."
 msgstr "Позволить частицам отскакивать от поверхностей."
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:242
 msgid "Gameplay"
 msgstr "Геймплей"
 
-#: ui/options_graphics.rml:241
+#: ui/options_graphics.rml:244
 msgid "Building markers"
 msgstr "Строительные метки"
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:247
 msgid "disabled"
 msgstr "выключено"
 
-#: ui/options_graphics.rml:245
+#: ui/options_graphics.rml:248
 msgid "All structures"
 msgstr "Все структуры"
 
-#: ui/options_graphics.rml:246
+#: ui/options_graphics.rml:249
 msgid "Support structures"
 msgstr "Структуры поддержки"
 
-#: ui/options_graphics.rml:247
+#: ui/options_graphics.rml:250
 msgid "Offensive structures"
 msgstr "Атакующие структуры"
 
-#: ui/options_graphics.rml:248
+#: ui/options_graphics.rml:251
 msgid "Alien structures"
 msgstr "Структуры Чужих"
 
-#: ui/options_graphics.rml:249
+#: ui/options_graphics.rml:252
 msgid "Human structures"
 msgstr "Структуры Людей"
 
-#: ui/options_graphics.rml:250
+#: ui/options_graphics.rml:253
 msgid "Alien support structures"
 msgstr "Структуры поддержки Чужих"
 
-#: ui/options_graphics.rml:251
+#: ui/options_graphics.rml:254
 msgid "Human support structures"
 msgstr "Структуры поддержки Людей"
 
-#: ui/options_graphics.rml:252
+#: ui/options_graphics.rml:255
 msgid "Offensive alien structures"
 msgstr "Атакующие структуры Чужих"
 
-#: ui/options_graphics.rml:253
+#: ui/options_graphics.rml:256
 msgid "Offensive human structures"
 msgstr "Атакующие структуры Людей"
 
-#: ui/options_graphics.rml:255
+#: ui/options_graphics.rml:258
 msgid "Building ranges"
 msgstr "Радиус построек"
 
-#: ui/options_graphics.rml:257
+#: ui/options_graphics.rml:260
 msgid "Motion blur"
 msgstr "Размытие движения"
 
-#: ui/options_graphics.rml:261
+#: ui/options_graphics.rml:264
 msgid "Moderate"
 msgstr "Среднее"
 
-#: ui/options_graphics.rml:265
+#: ui/options_graphics.rml:268
 msgid "Intensity"
 msgstr "Интенсивность"
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:269
 msgid "Level of motion-blur."
 msgstr "Степень размытия движения."
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:272
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr ""
 "Минимальная необходимая скорость движения для активации размытия движения"
 
-#: ui/options_graphics.rml:272 ui/options_mouse.rml:20 ui/server_setup.rml:72
+#: ui/options_graphics.rml:275 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Текущее:"
 
@@ -3754,20 +3758,20 @@ msgstr "%s^* присоединился к %s"
 msgid "%s^* left the %s and joined the %s"
 msgstr "%s^* покинул %s и присоединился к %s"
 
-#: src/cgame/cg_rocket_draw.cpp:2432
+#: src/cgame/cg_rocket_draw.cpp:2490
 msgid "You are at the front of the spawn queue"
 msgstr "Вы первые в очереди возрождения"
 
-#: src/cgame/cg_rocket_draw.cpp:2436
+#: src/cgame/cg_rocket_draw.cpp:2494
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Вы на %d-й позиции в очереди возрождения"
 
-#: src/cgame/cg_rocket_draw.cpp:2476
+#: src/cgame/cg_rocket_draw.cpp:2534
 msgid "There are no spawns remaining"
 msgstr "Не осталось мест для возрождения"
 
-#: src/cgame/cg_rocket_draw.cpp:2480
+#: src/cgame/cg_rocket_draw.cpp:2538
 #, fuzzy, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
@@ -3775,42 +3779,42 @@ msgstr[0] "Осталось %d появление"
 msgstr[1] "Осталось %d появления"
 msgstr[2] "Осталось %d появлений"
 
-#: src/cgame/cg_rocket_draw.cpp:3029
+#: src/cgame/cg_rocket_draw.cpp:3087
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Ожидание соединения…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3033
+#: src/cgame/cg_rocket_draw.cpp:3091
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Ожидание испытания…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3037
+#: src/cgame/cg_rocket_draw.cpp:3095
 msgid "Awaiting gamestate…"
 msgstr "Awaiting gamestate…"
 
-#: src/cgame/cg_rocket_draw.cpp:3119
+#: src/cgame/cg_rocket_draw.cpp:3177
 msgid "Say:"
 msgstr "Сказать:"
 
-#: src/cgame/cg_rocket_draw.cpp:3120
+#: src/cgame/cg_rocket_draw.cpp:3178
 msgid "Team Say:"
 msgstr "Сказать команде:"
 
-#: src/cgame/cg_rocket_draw.cpp:3121
+#: src/cgame/cg_rocket_draw.cpp:3179
 #, fuzzy
 msgid "Admin Say:"
 msgstr "Админ говорит:"
 
-#: src/cgame/cg_rocket_draw.cpp:3122
+#: src/cgame/cg_rocket_draw.cpp:3180
 msgid "Command:"
 msgstr "Команда:"
 
-#: src/cgame/cg_rocket_draw.cpp:3519
+#: src/cgame/cg_rocket_draw.cpp:3577
 msgid "FIGHT!"
 msgstr "БОЙ!"
 
-#: src/cgame/cg_rocket_draw.cpp:3613
+#: src/cgame/cg_rocket_draw.cpp:3671
 msgid "estimating"
 msgstr "оценка"
 
@@ -4944,6 +4948,34 @@ msgstr "пришельцы"
 #: src/shared/bg_misc.cpp:2515
 msgid "humans"
 msgstr "люди"
+
+#~ msgid "Feel free to join us in the community and developer chats!"
+#~ msgstr ""
+#~ "Не стесняйтесь присоединяться к нам в чат сообщества и разработчиков!"
+
+#~ msgid ""
+#~ "We are chatting on IRC and Matrix in <b>#unvanquished</b> and "
+#~ "<b>#unvanquished-dev</b> on Libera.Chat"
+#~ msgstr ""
+#~ "Мы общаемся на IRC и Matrix в <b>#unvanquished</b> и <b>#unvanquished-"
+#~ "dev</b> на Libera.Chat"
+
+#~ msgid "Discuss news in the forum, <b>forums.unvanquished.net</b>"
+#~ msgstr "Обсуждайте новости на форуме, <b>forums.unvanquished.net</b>"
+
+#~ msgid ""
+#~ "Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>"
+#~ msgstr "Открывайте новое об игре в вики, <b>wiki.unvanquished.net</b>"
+
+#~ msgid ""
+#~ "This is a beta version of Unvanquished. Please report any issue you may "
+#~ "find at https://bugs.unvanquished.net"
+#~ msgstr ""
+#~ "Это бета-версия игры Unvanquished. Пожалуйста, сообщайте о любых "
+#~ "найденных вами ошибках в https://bugs.unvanquished.net"
+
+#~ msgid "Particles"
+#~ msgstr "Частицы"
 
 #~ msgid "FOV = “width” of player's vision, measured in degrees."
 #~ msgstr "FOV = “ширина” зрения игрока, измеряется в градусах."
