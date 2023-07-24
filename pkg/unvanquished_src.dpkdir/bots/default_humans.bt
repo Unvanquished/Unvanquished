@@ -14,7 +14,7 @@ selector
 					action buy( WP_PULSE_RIFLE )
 				}
 			}
-			condition haveWeapon( WP_HBUILD ) && ( !buildingIsDamaged || teamateHasWeapon( WP_HBUILD ) )
+			condition haveWeapon( WP_HBUILD )
 			{
 				selector
 				{
