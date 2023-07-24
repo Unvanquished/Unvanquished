@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-24 05:16+0200\n"
+"POT-Creation-Date: 2023-07-24 07:29+0200\n"
 "PO-Revision-Date: 2023-06-19 16:52+0000\n"
 "Last-Translator: Coconut <c0c0nut@protonmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/unvanquished/"
@@ -142,65 +142,69 @@ msgid ""
 "to become a successful player."
 msgstr ""
 
-#: ui/help_gameplay.rml:23
-msgid "Feel free to join us in the community and developer chats!"
+#: ui/help_gameplay.rml:22
+msgid "More can be found on our website and other community places!"
 msgstr ""
 
 #: ui/help_gameplay.rml:24
 msgid ""
-"We are chatting on IRC and Matrix in <b>#unvanquished</b> and "
-"<b>#unvanquished-dev</b> on Libera.Chat"
+"Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
+"dest=\"chat\" />"
 msgstr ""
 
 #: ui/help_gameplay.rml:25
-msgid "Discuss news in the forum, <b>forums.unvanquished.net</b>"
+msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr ""
 
 #: ui/help_gameplay.rml:26
-msgid "Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>"
+msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr ""
 
-#: ui/help_gameplay.rml:30
+#: ui/help_gameplay.rml:28
+msgid "Please report bugs on: <web dest=\"bugs\" />"
+msgstr ""
+
+#: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
 msgstr ""
 
-#: ui/help_gameplay.rml:34
+#: ui/help_gameplay.rml:36
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
 
-#: ui/help_gameplay.rml:37
+#: ui/help_gameplay.rml:39
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
 
-#: ui/help_gameplay.rml:40
+#: ui/help_gameplay.rml:42
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
 
-#: ui/help_gameplay.rml:44
+#: ui/help_gameplay.rml:46
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
 
-#: ui/help_gameplay.rml:47
+#: ui/help_gameplay.rml:49
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
 
-#: ui/help_gameplay.rml:51
+#: ui/help_gameplay.rml:53
 msgid "Powering buildables"
 msgstr ""
 
-#: ui/help_gameplay.rml:54
+#: ui/help_gameplay.rml:56
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -209,7 +213,7 @@ msgid ""
 "loose the build points if the mining structures are destroyed."
 msgstr ""
 
-#: ui/help_gameplay.rml:57
+#: ui/help_gameplay.rml:59
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -217,31 +221,31 @@ msgid ""
 "have enough energy to remain operational."
 msgstr ""
 
-#: ui/help_gameplay.rml:58
+#: ui/help_gameplay.rml:60
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
 
-#: ui/help_gameplay.rml:62
+#: ui/help_gameplay.rml:64
 msgid "Mining structures"
 msgstr ""
 
-#: ui/help_gameplay.rml:65
+#: ui/help_gameplay.rml:67
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
 
-#: ui/help_gameplay.rml:68
+#: ui/help_gameplay.rml:70
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
 
-#: ui/help_gameplay.rml:71
+#: ui/help_gameplay.rml:73
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -250,7 +254,7 @@ msgid ""
 "building is destroyed. Don't build unprotected drills!"
 msgstr ""
 
-#: ui/help_gameplay.rml:74
+#: ui/help_gameplay.rml:76
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -258,56 +262,56 @@ msgid ""
 "This replaces sudden death."
 msgstr ""
 
-#: ui/help_gameplay.rml:78
+#: ui/help_gameplay.rml:80
 msgid "Stages &amp; Momentum"
 msgstr ""
 
-#: ui/help_gameplay.rml:81
+#: ui/help_gameplay.rml:83
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
 msgstr ""
 
-#: ui/help_gameplay.rml:84
+#: ui/help_gameplay.rml:86
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
 
-#: ui/help_gameplay.rml:88
+#: ui/help_gameplay.rml:90
 msgid "Wildfire"
 msgstr ""
 
-#: ui/help_gameplay.rml:91
+#: ui/help_gameplay.rml:93
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
 
-#: ui/help_gameplay.rml:94
+#: ui/help_gameplay.rml:96
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
 
-#: ui/help_gameplay.rml:97
+#: ui/help_gameplay.rml:99
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
 msgstr ""
 
-#: ui/help_gameplay.rml:100
+#: ui/help_gameplay.rml:102
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
 msgstr ""
 
-#: ui/help_gameplay.rml:104
+#: ui/help_gameplay.rml:106
 msgid "Under attack"
 msgstr ""
 
-#: ui/help_gameplay.rml:107
+#: ui/help_gameplay.rml:109
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -315,15 +319,15 @@ msgid ""
 "owning team."
 msgstr ""
 
-#: ui/help_gameplay.rml:111
+#: ui/help_gameplay.rml:113
 msgid "Healing"
 msgstr ""
 
-#: ui/help_gameplay.rml:114
+#: ui/help_gameplay.rml:116
 msgid "Dying feeds the ennemy, you may want to save your life!"
 msgstr ""
 
-#: ui/help_gameplay.rml:118
+#: ui/help_gameplay.rml:120
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -331,21 +335,21 @@ msgid ""
 "projectiles."
 msgstr ""
 
-#: ui/help_gameplay.rml:122
+#: ui/help_gameplay.rml:124
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
 "some poison to make your attacks more deadly."
 msgstr ""
 
-#: ui/help_gameplay.rml:125
+#: ui/help_gameplay.rml:127
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
 msgstr ""
 
-#: ui/help_gameplay.rml:128
+#: ui/help_gameplay.rml:130
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -353,75 +357,75 @@ msgid ""
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
 
-#: ui/help_gameplay.rml:132
+#: ui/help_gameplay.rml:134
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
 msgstr ""
 
-#: ui/help_gameplay.rml:136
+#: ui/help_gameplay.rml:138
 msgid "Wallwalking"
 msgstr ""
 
-#: ui/help_gameplay.rml:139
+#: ui/help_gameplay.rml:141
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
 msgstr ""
 
-#: ui/help_gameplay.rml:142
+#: ui/help_gameplay.rml:144
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
 
-#: ui/help_gameplay.rml:145
+#: ui/help_gameplay.rml:147
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
 msgstr ""
 
-#: ui/help_gameplay.rml:148
+#: ui/help_gameplay.rml:150
 msgid "The advanced granger can be unlocked with momentum."
 msgstr ""
 
-#: ui/help_gameplay.rml:152
+#: ui/help_gameplay.rml:154
 msgid "Since Tremulous"
 msgstr ""
 
-#: ui/help_gameplay.rml:155
+#: ui/help_gameplay.rml:157
 msgid "Since Tremulous, the stamina has been increased."
 msgstr ""
 
-#: ui/help_gameplay.rml:158
+#: ui/help_gameplay.rml:160
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
 msgstr ""
 
-#: ui/help_gameplay.rml:161
+#: ui/help_gameplay.rml:163
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
 
-#: ui/help_gameplay.rml:164
+#: ui/help_gameplay.rml:166
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
 msgstr ""
 
-#: ui/help_gameplay.rml:167
+#: ui/help_gameplay.rml:169
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
 msgstr ""
 
-#: ui/help_gameplay.rml:170
+#: ui/help_gameplay.rml:172
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
 
-#: ui/help_gameplay.rml:173
+#: ui/help_gameplay.rml:175
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -560,7 +564,7 @@ msgstr ""
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
-"at https://bugs.unvanquished.net"
+"at <web dest=\"bugs\" />"
 msgstr ""
 
 #: ui/menu_ingame.rml:22
@@ -753,7 +757,7 @@ msgstr ""
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:273
+#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:276
 #: ui/options_mouse.rml:21 ui/options_ui.rml:59 ui/server_setup.rml:73
 msgid "reset"
 msgstr ""
@@ -825,7 +829,7 @@ msgid ""
 msgstr ""
 
 #: ui/options_graphics.rml:28 ui/options_graphics.rml:141
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:265
 msgid "Low"
 msgstr ""
 
@@ -845,7 +849,7 @@ msgid ""
 "textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:36 ui/options_graphics.rml:260
+#: ui/options_graphics.rml:36 ui/options_graphics.rml:263
 msgid "High"
 msgstr ""
 
@@ -889,7 +893,7 @@ msgstr ""
 msgid "Fullscreen"
 msgstr ""
 
-#: ui/options_graphics.rml:71 ui/options_graphics.rml:263
+#: ui/options_graphics.rml:71 ui/options_graphics.rml:266
 msgid "Off"
 msgstr ""
 
@@ -918,7 +922,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:85 ui/options_graphics.rml:132
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
-#: ui/options_graphics.rml:235
+#: ui/options_graphics.rml:238
 msgid "Apply now"
 msgstr ""
 
@@ -983,7 +987,7 @@ msgstr ""
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 
-#: ui/options_graphics.rml:121 ui/options_graphics.rml:244
+#: ui/options_graphics.rml:121 ui/options_graphics.rml:247
 msgid "None"
 msgstr ""
 
@@ -1151,90 +1155,94 @@ msgid "Simulate dark corners."
 msgstr ""
 
 #: ui/options_graphics.rml:228
-msgid "Particles"
+msgid "Marks"
 msgstr ""
 
 #: ui/options_graphics.rml:230
+msgid "Draw marks (such as bullet holes or creep) on surfaces"
+msgstr ""
+
+#: ui/options_graphics.rml:233
 msgid "Particle physics"
 msgstr ""
 
-#: ui/options_graphics.rml:232
+#: ui/options_graphics.rml:235
 msgid "Allow particles to bounce off surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:242
 msgid "Gameplay"
 msgstr ""
 
-#: ui/options_graphics.rml:241
+#: ui/options_graphics.rml:244
 msgid "Building markers"
 msgstr ""
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:247
 msgid "disabled"
 msgstr ""
 
-#: ui/options_graphics.rml:245
+#: ui/options_graphics.rml:248
 msgid "All structures"
 msgstr ""
 
-#: ui/options_graphics.rml:246
+#: ui/options_graphics.rml:249
 msgid "Support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:247
+#: ui/options_graphics.rml:250
 msgid "Offensive structures"
 msgstr ""
 
-#: ui/options_graphics.rml:248
+#: ui/options_graphics.rml:251
 msgid "Alien structures"
 msgstr ""
 
-#: ui/options_graphics.rml:249
+#: ui/options_graphics.rml:252
 msgid "Human structures"
 msgstr ""
 
-#: ui/options_graphics.rml:250
+#: ui/options_graphics.rml:253
 msgid "Alien support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:251
+#: ui/options_graphics.rml:254
 msgid "Human support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:252
+#: ui/options_graphics.rml:255
 msgid "Offensive alien structures"
 msgstr ""
 
-#: ui/options_graphics.rml:253
+#: ui/options_graphics.rml:256
 msgid "Offensive human structures"
 msgstr ""
 
-#: ui/options_graphics.rml:255
+#: ui/options_graphics.rml:258
 msgid "Building ranges"
 msgstr ""
 
-#: ui/options_graphics.rml:257
+#: ui/options_graphics.rml:260
 msgid "Motion blur"
 msgstr ""
 
-#: ui/options_graphics.rml:261
+#: ui/options_graphics.rml:264
 msgid "Moderate"
 msgstr ""
 
-#: ui/options_graphics.rml:265
+#: ui/options_graphics.rml:268
 msgid "Intensity"
 msgstr ""
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:269
 msgid "Level of motion-blur."
 msgstr ""
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:272
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr ""
 
-#: ui/options_graphics.rml:272 ui/options_mouse.rml:20 ui/server_setup.rml:72
+#: ui/options_graphics.rml:275 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr ""
 
@@ -3571,61 +3579,61 @@ msgstr ""
 msgid "%s^* left the %s and joined the %s"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2432
+#: src/cgame/cg_rocket_draw.cpp:2490
 msgid "You are at the front of the spawn queue"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2436
+#: src/cgame/cg_rocket_draw.cpp:2494
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2476
+#: src/cgame/cg_rocket_draw.cpp:2534
 msgid "There are no spawns remaining"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2480
+#: src/cgame/cg_rocket_draw.cpp:2538
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/cgame/cg_rocket_draw.cpp:3029
+#: src/cgame/cg_rocket_draw.cpp:3087
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3033
+#: src/cgame/cg_rocket_draw.cpp:3091
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3037
+#: src/cgame/cg_rocket_draw.cpp:3095
 msgid "Awaiting gamestate…"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3119
+#: src/cgame/cg_rocket_draw.cpp:3177
 msgid "Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3120
+#: src/cgame/cg_rocket_draw.cpp:3178
 msgid "Team Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3121
+#: src/cgame/cg_rocket_draw.cpp:3179
 msgid "Admin Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3122
+#: src/cgame/cg_rocket_draw.cpp:3180
 msgid "Command:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3519
+#: src/cgame/cg_rocket_draw.cpp:3577
 msgid "FIGHT!"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3613
+#: src/cgame/cg_rocket_draw.cpp:3671
 msgid "estimating"
 msgstr ""
 

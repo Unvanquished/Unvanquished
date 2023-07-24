@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-24 05:16+0200\n"
+"POT-Creation-Date: 2023-07-24 07:29+0200\n"
 "PO-Revision-Date: 2023-07-14 19:46+0000\n"
 "Last-Translator: Erarnitox <erarnitox@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
@@ -142,31 +142,33 @@ msgid ""
 "to become a successful player."
 msgstr "Hier findest du eine Übersicht über die wichtigsten Spielmechaniken."
 
-#: ui/help_gameplay.rml:23
-msgid "Feel free to join us in the community and developer chats!"
-msgstr "Besuche uns gerne in unseren Spiel- und Entwicklungschats!"
+#: ui/help_gameplay.rml:22
+msgid "More can be found on our website and other community places!"
+msgstr ""
 
 #: ui/help_gameplay.rml:24
 msgid ""
-"We are chatting on IRC and Matrix in <b>#unvanquished</b> and "
-"<b>#unvanquished-dev</b> on Libera.Chat"
+"Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
+"dest=\"chat\" />"
 msgstr ""
-"Wir sind im IRC (Libera.Chat) und in der Matrix in <b>#unvanquished</b> und "
-"<b>#unvanquished-dev</b> zu finden"
 
 #: ui/help_gameplay.rml:25
-msgid "Discuss news in the forum, <b>forums.unvanquished.net</b>"
-msgstr "Diskutiere in unserem Forum mit: <b>forums.unvanquished.net</b>"
+msgid "Discuss news in the forums: <web dest=\"forums\" />"
+msgstr ""
 
 #: ui/help_gameplay.rml:26
-msgid "Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>"
-msgstr "Erfahre mehr über das Spiel in der Wiki: <b>wiki.unvanquished.net</b>"
+msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
+msgstr ""
 
-#: ui/help_gameplay.rml:30
+#: ui/help_gameplay.rml:28
+msgid "Please report bugs on: <web dest=\"bugs\" />"
+msgstr ""
+
+#: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
 msgstr "Einkommen"
 
-#: ui/help_gameplay.rml:34
+#: ui/help_gameplay.rml:36
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
@@ -174,7 +176,7 @@ msgstr ""
 "Außerirdische erhalten Enticklungspunkte, wenn sie Menschen erledigen. Damit "
 "können sie sich in [dragoon] stärke Klassen verwandeln."
 
-#: ui/help_gameplay.rml:37
+#: ui/help_gameplay.rml:39
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
@@ -184,7 +186,7 @@ msgstr ""
 "[overmind] Overmind können sie sich auch zu [granger] schwächeren Klassen "
 "zurückentwickeln."
 
-#: ui/help_gameplay.rml:40
+#: ui/help_gameplay.rml:42
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
@@ -192,7 +194,7 @@ msgstr ""
 "Baue das Overmind mit einem [granger] Granger wieder auf, wenn es zerstört "
 "wird. Bis dahin ist keine Verwandlung möglich!"
 
-#: ui/help_gameplay.rml:44
+#: ui/help_gameplay.rml:46
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
@@ -202,7 +204,7 @@ msgstr ""
 "sich neue [lcannon] Waffen, [bsuit] Rüstungen und weitere Ausrüstung kaufen, "
 "etwa ein Radar oder einen Raketenrucksack."
 
-#: ui/help_gameplay.rml:47
+#: ui/help_gameplay.rml:49
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
@@ -210,11 +212,11 @@ msgstr ""
 "Menschen erhalten ihre Ausrüstung am [armoury] Arsenal, es sollte daher "
 "immer eins geben! Benutze das Bauwerkzeug, wenn es fehlt."
 
-#: ui/help_gameplay.rml:51
+#: ui/help_gameplay.rml:53
 msgid "Powering buildables"
 msgstr "Stromversorgung"
 
-#: ui/help_gameplay.rml:54
+#: ui/help_gameplay.rml:56
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -227,7 +229,7 @@ msgstr ""
 "bereitgestellt. Sollten diese zerstört werden, fehlen die Baupunkte zum "
 "Unterhalt und betroffene Gebäude können sich abschalten."
 
-#: ui/help_gameplay.rml:57
+#: ui/help_gameplay.rml:59
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -239,7 +241,7 @@ msgstr ""
 "bereitgestellten Baupunkten, plus Basispunkte, und den zurzeit genutzten "
 "oder gesperrten Punkten gibt."
 
-#: ui/help_gameplay.rml:58
+#: ui/help_gameplay.rml:60
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
@@ -249,11 +251,11 @@ msgstr ""
 "und Bohrer) und Hauptebäude ([overmind] Overmind und [reactor] Reaktor) sind "
 "von Abschaltungen nicht betroffen."
 
-#: ui/help_gameplay.rml:62
+#: ui/help_gameplay.rml:64
 msgid "Mining structures"
 msgstr "Extraktoren"
 
-#: ui/help_gameplay.rml:65
+#: ui/help_gameplay.rml:67
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
@@ -263,7 +265,7 @@ msgstr ""
 "Menschen und der [leech] Egel der Außerirdischen. Diese arbeiten nur "
 "effizient, wenn sie weit voneinenader weg gebaut werden."
 
-#: ui/help_gameplay.rml:68
+#: ui/help_gameplay.rml:70
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
@@ -271,7 +273,7 @@ msgstr ""
 "Werden Extraktoren zu nah beieinander gebaut, streiten sie um die Baupunkte. "
 "Ab drei nahen Extraktoren können dadurch Baupunkte verloren gehen!"
 
-#: ui/help_gameplay.rml:71
+#: ui/help_gameplay.rml:73
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -285,7 +287,7 @@ msgstr ""
 "werden aber bei dessen Zerstörung auch unmittelbar entfernt. Schütze sie "
 "daher durch Defensivgebäude!"
 
-#: ui/help_gameplay.rml:74
+#: ui/help_gameplay.rml:76
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -297,11 +299,11 @@ msgstr ""
 "sodass ein Neubau immer schwieriger wird. Diese Mechanik ersetzt ein "
 "\"Sudden Death\"."
 
-#: ui/help_gameplay.rml:78
+#: ui/help_gameplay.rml:80
 msgid "Stages &amp; Momentum"
 msgstr "Fortschritt"
 
-#: ui/help_gameplay.rml:81
+#: ui/help_gameplay.rml:83
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
@@ -311,7 +313,7 @@ msgstr ""
 "erledigen gegnerischer Einheiten erhält dein Team Momentum. Wird genügend "
 "Momentum akquiriert, werden neue Waffen, Gebäude und Klassen freigeschaltet."
 
-#: ui/help_gameplay.rml:84
+#: ui/help_gameplay.rml:86
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
@@ -320,11 +322,11 @@ msgstr ""
 "zu freigeschalteten Verbesserungen wieder verloren gehen. Bereits erworbene "
 "Gegenstände und errichtete Gebäude bleiben jedoch erhalten."
 
-#: ui/help_gameplay.rml:88
+#: ui/help_gameplay.rml:90
 msgid "Wildfire"
 msgstr "Feuer"
 
-#: ui/help_gameplay.rml:91
+#: ui/help_gameplay.rml:93
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
@@ -332,7 +334,7 @@ msgstr ""
 "Die Gebäude der Außerirdischen können feuer fangen, wenn sie mit dem "
 "[flamer] Flammenwerfer oder der [firebomb] Brandbombe getroffen werden."
 
-#: ui/help_gameplay.rml:94
+#: ui/help_gameplay.rml:96
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
@@ -340,7 +342,7 @@ msgstr ""
 "Wurden Gebäude zu nah beieinander gebaut, kann das Feuer zwischen ihnen "
 "überspringen."
 
-#: ui/help_gameplay.rml:97
+#: ui/help_gameplay.rml:99
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
@@ -348,7 +350,7 @@ msgstr ""
 "Ein kleineres [fire] Feuer geht oft schnell wieder aus aber eine Gruppe "
 "brennender Gebäude hält sich warm genug, um großen Schaden anzurichten."
 
-#: ui/help_gameplay.rml:100
+#: ui/help_gameplay.rml:102
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
@@ -356,11 +358,11 @@ msgstr ""
 "Die Spucke des [advgranger] Großen Grangers kann Feuer löschen und Angreifer "
 "verlangsamen!"
 
-#: ui/help_gameplay.rml:104
+#: ui/help_gameplay.rml:106
 msgid "Under attack"
 msgstr "Angriffswarnug"
 
-#: ui/help_gameplay.rml:107
+#: ui/help_gameplay.rml:109
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -371,17 +373,17 @@ msgstr ""
 "Leben auf unter 75%, 50% und 25% fällt und wenn sie gerade zerstört werden. "
 "Die Zerstörung anderer Gebäude löst ebenfalls eine Warnung aus."
 
-#: ui/help_gameplay.rml:111
+#: ui/help_gameplay.rml:113
 msgid "Healing"
 msgstr "Heilung"
 
-#: ui/help_gameplay.rml:114
+#: ui/help_gameplay.rml:116
 msgid "Dying feeds the ennemy, you may want to save your life!"
 msgstr ""
 "Wer stirbt, gibt dem Gegner Ressourcen. Es lohnt sich also, am Leben zu "
 "bleiben!"
 
-#: ui/help_gameplay.rml:118
+#: ui/help_gameplay.rml:120
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -394,7 +396,7 @@ msgstr ""
 "Dragoner sich auf diese Weise heilt, dann stellen sich auch seine Projektile "
 "schneller wieder her."
 
-#: ui/help_gameplay.rml:122
+#: ui/help_gameplay.rml:124
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
@@ -405,7 +407,7 @@ msgstr ""
 "die Zähne und Klauen zudem mit einem Gift, das zusätzlichen Schaden "
 "anrichtet."
 
-#: ui/help_gameplay.rml:125
+#: ui/help_gameplay.rml:127
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
@@ -414,7 +416,7 @@ msgstr ""
 "In der Nähe des [overmind] Overmind und in der Nähe von [egg] Eiern ist die "
 "Lebensregeneration ein bisschen schneller als in der Nähe anderer Gebäude."
 
-#: ui/help_gameplay.rml:128
+#: ui/help_gameplay.rml:130
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -426,7 +428,7 @@ msgstr ""
 "der Nähe eines verbündeten Gebäudes. Mit etwas Teamwork lässt sich so die "
 "gegnerische Basis belagern!"
 
-#: ui/help_gameplay.rml:132
+#: ui/help_gameplay.rml:134
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
@@ -435,11 +437,11 @@ msgstr ""
 "können. Danach müssen sie für die Wundversorgung zur [medstat] Traumastation "
 "zurückkehren, wo ihnen auch neue Medizin ausgestellt wird."
 
-#: ui/help_gameplay.rml:136
+#: ui/help_gameplay.rml:138
 msgid "Wallwalking"
 msgstr "Wandlauf"
 
-#: ui/help_gameplay.rml:139
+#: ui/help_gameplay.rml:141
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
@@ -447,11 +449,11 @@ msgstr ""
 "Der [Dretch], die [mantis] Fangschrecke und der [advgranger] Große Granger "
 "können an den Wänden laufen!"
 
-#: ui/help_gameplay.rml:142
+#: ui/help_gameplay.rml:144
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr "Nutze dies, um entlegene Orte und Abkürzungen zu erreichen."
 
-#: ui/help_gameplay.rml:145
+#: ui/help_gameplay.rml:147
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
@@ -460,19 +462,19 @@ msgstr ""
 "besser, wenn sie an einer Wand oder der Decke gebaut werden. Dort sind sie "
 "auch vor Granaten geschützt."
 
-#: ui/help_gameplay.rml:148
+#: ui/help_gameplay.rml:150
 msgid "The advanced granger can be unlocked with momentum."
 msgstr "Der Große Granger wird mit Momentum freigeschaltet."
 
-#: ui/help_gameplay.rml:152
+#: ui/help_gameplay.rml:154
 msgid "Since Tremulous"
 msgstr "Seit Tremulous"
 
-#: ui/help_gameplay.rml:155
+#: ui/help_gameplay.rml:157
 msgid "Since Tremulous, the stamina has been increased."
 msgstr "Im Vergleich zu Tremulous, haben die Menschen mehr Ausdauer."
 
-#: ui/help_gameplay.rml:158
+#: ui/help_gameplay.rml:160
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
@@ -480,7 +482,7 @@ msgstr ""
 "Verwandlungskosten wurden skaliert; es können nun 20 statt 9 "
 "Verwandlungspunkte verwahrt werden."
 
-#: ui/help_gameplay.rml:161
+#: ui/help_gameplay.rml:163
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
@@ -488,7 +490,7 @@ msgstr ""
 "Das Momentum-System ersetzt die drei Stufen. Baupunkte werden durch "
 "Extraktoren bereitgestellt."
 
-#: ui/help_gameplay.rml:164
+#: ui/help_gameplay.rml:166
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
@@ -496,7 +498,7 @@ msgstr ""
 "Die Menschen haben keine Tesla-Türme und keinen Verteidigungscomputer mehr, "
 "dafür aber einen stationären Raketenwerfer."
 
-#: ui/help_gameplay.rml:167
+#: ui/help_gameplay.rml:169
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
@@ -504,7 +506,7 @@ msgstr ""
 "Die Außerirdischen erhalten die Distel als weiteres Defensivgebäude, die mit "
 "Stacheln auf Angreifer schießt!"
 
-#: ui/help_gameplay.rml:170
+#: ui/help_gameplay.rml:172
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
@@ -513,7 +515,7 @@ msgstr ""
 "nicht mehr festhalten, sie aber verlangsamen und sich selbst nach vorne "
 "schnellen."
 
-#: ui/help_gameplay.rml:173
+#: ui/help_gameplay.rml:175
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -665,10 +667,8 @@ msgstr "Zuschauen"
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
-"at https://bugs.unvanquished.net"
+"at <web dest=\"bugs\" />"
 msgstr ""
-"Das hier ist eine beta Version von Unvanquished. Bitte melde Fehler und "
-"Probleme auf die du stoßen solltest auf https://bugs.unvanquished.net"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
@@ -860,7 +860,7 @@ msgstr "Grad"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:273
+#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:276
 #: ui/options_mouse.rml:21 ui/options_ui.rml:59 ui/server_setup.rml:73
 msgid "reset"
 msgstr "Zurücksetzen"
@@ -932,7 +932,7 @@ msgid ""
 msgstr ""
 
 #: ui/options_graphics.rml:28 ui/options_graphics.rml:141
-#: ui/options_graphics.rml:262
+#: ui/options_graphics.rml:265
 msgid "Low"
 msgstr "Niedrig"
 
@@ -952,7 +952,7 @@ msgid ""
 "textures…"
 msgstr ""
 
-#: ui/options_graphics.rml:36 ui/options_graphics.rml:260
+#: ui/options_graphics.rml:36 ui/options_graphics.rml:263
 msgid "High"
 msgstr "Hoch"
 
@@ -996,7 +996,7 @@ msgstr "Vollbild Fenster"
 msgid "Fullscreen"
 msgstr "Vollbild"
 
-#: ui/options_graphics.rml:71 ui/options_graphics.rml:263
+#: ui/options_graphics.rml:71 ui/options_graphics.rml:266
 msgid "Off"
 msgstr "Aus"
 
@@ -1026,7 +1026,7 @@ msgstr "Schnelle Annäherung für anit-aliasing (FXAA)"
 
 #: ui/options_graphics.rml:85 ui/options_graphics.rml:132
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
-#: ui/options_graphics.rml:235
+#: ui/options_graphics.rml:238
 msgid "Apply now"
 msgstr "Jetzt anwenden"
 
@@ -1091,7 +1091,7 @@ msgstr ""
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 
-#: ui/options_graphics.rml:121 ui/options_graphics.rml:244
+#: ui/options_graphics.rml:121 ui/options_graphics.rml:247
 msgid "None"
 msgstr "kein"
 
@@ -1259,90 +1259,94 @@ msgid "Simulate dark corners."
 msgstr ""
 
 #: ui/options_graphics.rml:228
-msgid "Particles"
+msgid "Marks"
 msgstr ""
 
 #: ui/options_graphics.rml:230
+msgid "Draw marks (such as bullet holes or creep) on surfaces"
+msgstr ""
+
+#: ui/options_graphics.rml:233
 msgid "Particle physics"
 msgstr ""
 
-#: ui/options_graphics.rml:232
+#: ui/options_graphics.rml:235
 msgid "Allow particles to bounce off surfaces."
 msgstr ""
 
-#: ui/options_graphics.rml:239
+#: ui/options_graphics.rml:242
 msgid "Gameplay"
 msgstr ""
 
-#: ui/options_graphics.rml:241
+#: ui/options_graphics.rml:244
 msgid "Building markers"
 msgstr ""
 
-#: ui/options_graphics.rml:244
+#: ui/options_graphics.rml:247
 msgid "disabled"
 msgstr ""
 
-#: ui/options_graphics.rml:245
+#: ui/options_graphics.rml:248
 msgid "All structures"
 msgstr ""
 
-#: ui/options_graphics.rml:246
+#: ui/options_graphics.rml:249
 msgid "Support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:247
+#: ui/options_graphics.rml:250
 msgid "Offensive structures"
 msgstr ""
 
-#: ui/options_graphics.rml:248
+#: ui/options_graphics.rml:251
 msgid "Alien structures"
 msgstr ""
 
-#: ui/options_graphics.rml:249
+#: ui/options_graphics.rml:252
 msgid "Human structures"
 msgstr ""
 
-#: ui/options_graphics.rml:250
+#: ui/options_graphics.rml:253
 msgid "Alien support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:251
+#: ui/options_graphics.rml:254
 msgid "Human support structures"
 msgstr ""
 
-#: ui/options_graphics.rml:252
+#: ui/options_graphics.rml:255
 msgid "Offensive alien structures"
 msgstr ""
 
-#: ui/options_graphics.rml:253
+#: ui/options_graphics.rml:256
 msgid "Offensive human structures"
 msgstr ""
 
-#: ui/options_graphics.rml:255
+#: ui/options_graphics.rml:258
 msgid "Building ranges"
 msgstr ""
 
-#: ui/options_graphics.rml:257
+#: ui/options_graphics.rml:260
 msgid "Motion blur"
 msgstr ""
 
-#: ui/options_graphics.rml:261
+#: ui/options_graphics.rml:264
 msgid "Moderate"
 msgstr ""
 
-#: ui/options_graphics.rml:265
+#: ui/options_graphics.rml:268
 msgid "Intensity"
 msgstr ""
 
-#: ui/options_graphics.rml:266
+#: ui/options_graphics.rml:269
 msgid "Level of motion-blur."
 msgstr ""
 
-#: ui/options_graphics.rml:269
+#: ui/options_graphics.rml:272
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr ""
 
-#: ui/options_graphics.rml:272 ui/options_mouse.rml:20 ui/server_setup.rml:72
+#: ui/options_graphics.rml:275 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr ""
 
@@ -3679,61 +3683,61 @@ msgstr ""
 msgid "%s^* left the %s and joined the %s"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2432
+#: src/cgame/cg_rocket_draw.cpp:2490
 msgid "You are at the front of the spawn queue"
 msgstr "Du bist vorne in der Warteschlange"
 
-#: src/cgame/cg_rocket_draw.cpp:2436
+#: src/cgame/cg_rocket_draw.cpp:2494
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Du bist auf Position %d in der Warteschlange"
 
-#: src/cgame/cg_rocket_draw.cpp:2476
+#: src/cgame/cg_rocket_draw.cpp:2534
 msgid "There are no spawns remaining"
 msgstr "Es gibt keine Startpunkte mehr"
 
-#: src/cgame/cg_rocket_draw.cpp:2480
+#: src/cgame/cg_rocket_draw.cpp:2538
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/cgame/cg_rocket_draw.cpp:3029
+#: src/cgame/cg_rocket_draw.cpp:3087
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Erwarte Verbindungsaufbau ...%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3033
+#: src/cgame/cg_rocket_draw.cpp:3091
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Erwarte Herausforderung ...%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3037
+#: src/cgame/cg_rocket_draw.cpp:3095
 msgid "Awaiting gamestate…"
 msgstr "Erwarte Spielzustand..."
 
-#: src/cgame/cg_rocket_draw.cpp:3119
+#: src/cgame/cg_rocket_draw.cpp:3177
 msgid "Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3120
+#: src/cgame/cg_rocket_draw.cpp:3178
 msgid "Team Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3121
+#: src/cgame/cg_rocket_draw.cpp:3179
 msgid "Admin Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3122
+#: src/cgame/cg_rocket_draw.cpp:3180
 msgid "Command:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3519
+#: src/cgame/cg_rocket_draw.cpp:3577
 msgid "FIGHT!"
 msgstr "LOS!"
 
-#: src/cgame/cg_rocket_draw.cpp:3613
+#: src/cgame/cg_rocket_draw.cpp:3671
 msgid "estimating"
 msgstr "schätze"
 
@@ -4846,6 +4850,31 @@ msgstr "Außerirdische"
 #: src/shared/bg_misc.cpp:2515
 msgid "humans"
 msgstr "Menschen"
+
+#~ msgid "Feel free to join us in the community and developer chats!"
+#~ msgstr "Besuche uns gerne in unseren Spiel- und Entwicklungschats!"
+
+#~ msgid ""
+#~ "We are chatting on IRC and Matrix in <b>#unvanquished</b> and "
+#~ "<b>#unvanquished-dev</b> on Libera.Chat"
+#~ msgstr ""
+#~ "Wir sind im IRC (Libera.Chat) und in der Matrix in <b>#unvanquished</b> "
+#~ "und <b>#unvanquished-dev</b> zu finden"
+
+#~ msgid "Discuss news in the forum, <b>forums.unvanquished.net</b>"
+#~ msgstr "Diskutiere in unserem Forum mit: <b>forums.unvanquished.net</b>"
+
+#~ msgid ""
+#~ "Discover more about the game in the wiki, <b>wiki.unvanquished.net</b>"
+#~ msgstr ""
+#~ "Erfahre mehr über das Spiel in der Wiki: <b>wiki.unvanquished.net</b>"
+
+#~ msgid ""
+#~ "This is a beta version of Unvanquished. Please report any issue you may "
+#~ "find at https://bugs.unvanquished.net"
+#~ msgstr ""
+#~ "Das hier ist eine beta Version von Unvanquished. Bitte melde Fehler und "
+#~ "Probleme auf die du stoßen solltest auf https://bugs.unvanquished.net"
 
 #~ msgid "FOV = “width” of player's vision, measured in degrees."
 #~ msgstr ""
