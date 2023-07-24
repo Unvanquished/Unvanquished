@@ -227,8 +227,7 @@
 				<row>
 					<h3><translate>Marks</translate></h3>
 					<input cvar="cg_marks" type="checkbox" />
-					<p><translate>Draw marks (such as bullet holes or creep) on surfaces
-</translate></p>
+					<p><translate>Draw marks (such as bullet holes or creep) on surfaces</translate></p>
 				</row>
 				<row>
 					<h3><translate>Particle physics</translate></h3>
