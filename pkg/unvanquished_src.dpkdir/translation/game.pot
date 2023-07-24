@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-13 00:35+0200\n"
+"POT-Creation-Date: 2023-07-24 05:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -510,16 +510,16 @@ msgstr ""
 msgid "Beacons"
 msgstr ""
 
-#: ui/ingame_scoreboard.rml:184
+#: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
 msgstr ""
 
-#: ui/ingame_scoreboard.rml:191 ui/server_browser.rml:44
+#: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
 msgstr ""
 
-#: ui/ingame_scoreboard.rml:192
+#: ui/ingame_scoreboard.rml:191
 msgid "Time:"
 msgstr ""
 
@@ -589,7 +589,7 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
-#: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46 src/cgame/cg_tutorial.cpp:120
+#: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46
 msgid "or"
 msgstr ""
 
@@ -645,7 +645,7 @@ msgstr ""
 msgid "Add a human bot"
 msgstr ""
 
-#: ui/menu_ingame.rml:74
+#: ui/menu_ingame.rml:74 src/sgame/sg_votes.cpp:320
 msgid "Remove all bots"
 msgstr ""
 
@@ -709,7 +709,7 @@ msgstr ""
 msgid "Fields of view"
 msgstr ""
 
-#: ui/menu_ingame.rml:105
+#: ui/menu_ingame.rml:105 ui/server_setup.rml:8
 msgid "Server setup"
 msgstr ""
 
@@ -734,13 +734,13 @@ msgid "Angles of view"
 msgstr ""
 
 #: ui/options_fov.rml:11
-msgid "FOV = “width” of player's vision, measured in degrees."
+msgid "FOV = wideness of player's vision, measured in degrees."
 msgstr ""
 
 #: ui/options_fov.rml:12
 msgid ""
-"Many players suffer mild “motion sickness” from playing first-person "
-"shooters. A higher FOV can help combat this."
+"Many players suffer mild motion sickness from playing first-person shooters. "
+"A higher FOV can help combat this."
 msgstr ""
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
@@ -752,7 +752,7 @@ msgstr ""
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:273
-#: ui/options_mouse.rml:21 ui/server_setup.rml:73
+#: ui/options_mouse.rml:21 ui/options_ui.rml:59 ui/server_setup.rml:73
 msgid "reset"
 msgstr ""
 
@@ -797,7 +797,7 @@ msgid "Strong"
 msgstr ""
 
 #: ui/options_fov.rml:81
-msgid "“Up and down” movement"
+msgid "Up and down movement"
 msgstr ""
 
 #: ui/options_fov.rml:85
@@ -805,7 +805,7 @@ msgid "Camera rolling"
 msgstr ""
 
 #: ui/options_fov.rml:92
-msgid "“Twisting” movement"
+msgid "Twisting movement"
 msgstr ""
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
@@ -905,7 +905,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:76
 msgid ""
-"Vsync prevents “visual tearing” but increases input latency. Flexible Vsync "
+"Vsync prevents visual tearing but increases input latency. Flexible Vsync "
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
@@ -1511,7 +1511,7 @@ msgstr ""
 
 #: ui/options_player.rml:30
 msgid ""
-"Always “twist” and “rotate” the view when you wall-walk from one surface to "
+"Always twist and rotate the view when you wall-walk from one surface to "
 "another."
 msgstr ""
 
@@ -1520,7 +1520,7 @@ msgid "Wall-walking pitch-speed"
 msgstr ""
 
 #: ui/options_player.rml:40
-msgid "How fast your view “rotates” and “twists” as you wall-walk."
+msgid "How fast your view rotates and twists as you wall-walk."
 msgstr ""
 
 #: ui/options_player.rml:43
@@ -1528,7 +1528,7 @@ msgid "Wall-walking toggles"
 msgstr ""
 
 #: ui/options_player.rml:45 ui/options_player.rml:50
-msgid "“Tap key” instead of “hold key” to activate."
+msgid "Tap key instead of hold key to activate."
 msgstr ""
 
 #: ui/options_player.rml:48
@@ -1580,19 +1580,19 @@ msgid "Reverb intensity"
 msgstr ""
 
 #: ui/options_sound.rml:23
-msgid "“Echo” effect"
+msgid "Echo effect"
 msgstr ""
 
 #: ui/options_sound.rml:26
-msgid "Doppler Intensity"
+msgid "Doppler intensity"
 msgstr ""
 
 #: ui/options_sound.rml:28
-msgid "“Pitch-shift” effect when moving from or toward a sound."
+msgid "Pitch-shift effect when moving from or toward a sound."
 msgstr ""
 
 #: ui/options_sound.rml:31
-msgid "OpenAL Device"
+msgid "OpenAL device"
 msgstr ""
 
 #: ui/options_sound.rml:33
@@ -1687,6 +1687,26 @@ msgstr ""
 msgid "Frames per second."
 msgstr ""
 
+#: ui/options_ui.rml:59
+msgid "Console colors"
+msgstr ""
+
+#: ui/options_ui.rml:63
+msgid "Red:"
+msgstr ""
+
+#: ui/options_ui.rml:67
+msgid "Green:"
+msgstr ""
+
+#: ui/options_ui.rml:71
+msgid "Blue:"
+msgstr ""
+
+#: ui/options_ui.rml:75
+msgid "Alpha:"
+msgstr ""
+
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
 msgstr ""
@@ -1756,15 +1776,11 @@ msgid "Extra packages to load"
 msgstr ""
 
 #: ui/server_create.rml:59
-msgid "Map building layout to use"
+msgid "Building layout to use"
 msgstr ""
 
 #: ui/server_create.rml:67
 msgid "Start"
-msgstr ""
-
-#: ui/server_setup.rml:8
-msgid "Server Setup"
 msgstr ""
 
 #: ui/server_setup.rml:16
@@ -1892,7 +1908,7 @@ msgid "Momentum reward multiplier for construction"
 msgstr ""
 
 #: ui/server_setup.rml:136
-msgid "Decon penalty multiplier"
+msgid "Deconstruction penalty multiplier"
 msgstr ""
 
 #: ui/server_setup.rml:137
@@ -1900,7 +1916,7 @@ msgid "Momentum penalty multiplier for deconstruction"
 msgstr ""
 
 #: ui/server_setup.rml:144
-msgid "Building Kill reward multiplier"
+msgid "Building kill reward multiplier"
 msgstr ""
 
 #: ui/server_setup.rml:145
@@ -1987,1391 +2003,1391 @@ msgstr ""
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:276
+#: src/cgame/cg_event.cpp:281
 msgctxt "male"
 msgid "%s%s ^*fell to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:276
+#: src/cgame/cg_event.cpp:281
 msgctxt "female"
 msgid "%s%s ^*fell to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:276
+#: src/cgame/cg_event.cpp:281
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:280
+#: src/cgame/cg_event.cpp:285
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:280
+#: src/cgame/cg_event.cpp:285
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:280
+#: src/cgame/cg_event.cpp:285
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:284
+#: src/cgame/cg_event.cpp:289
 msgctxt "male"
 msgid "%s%s ^*drowned"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:284
+#: src/cgame/cg_event.cpp:289
 msgctxt "female"
 msgid "%s%s ^*drowned"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:284
+#: src/cgame/cg_event.cpp:289
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:288
+#: src/cgame/cg_event.cpp:293
 msgctxt "male"
 msgid "%s%s ^*melted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:288
+#: src/cgame/cg_event.cpp:293
 msgctxt "female"
 msgid "%s%s ^*melted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:288
+#: src/cgame/cg_event.cpp:293
 msgctxt "neuter"
 msgid "%s%s ^*melted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:292
+#: src/cgame/cg_event.cpp:297
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:292
+#: src/cgame/cg_event.cpp:297
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:292
+#: src/cgame/cg_event.cpp:297
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:296
+#: src/cgame/cg_event.cpp:301
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:296
+#: src/cgame/cg_event.cpp:301
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:296
+#: src/cgame/cg_event.cpp:301
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:307
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:307
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:307
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:306
+#: src/cgame/cg_event.cpp:311
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:306
+#: src/cgame/cg_event.cpp:311
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:306
+#: src/cgame/cg_event.cpp:311
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:317
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:317
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:317
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:313
+#: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:313
+#: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:313
+#: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:317
+#: src/cgame/cg_event.cpp:322
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:317
+#: src/cgame/cg_event.cpp:322
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:317
+#: src/cgame/cg_event.cpp:322
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:323
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:323
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:323
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:322
+#: src/cgame/cg_event.cpp:327
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:322
+#: src/cgame/cg_event.cpp:327
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:322
+#: src/cgame/cg_event.cpp:327
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:328
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:328
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:328
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:327
+#: src/cgame/cg_event.cpp:332
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:327
+#: src/cgame/cg_event.cpp:332
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:327
+#: src/cgame/cg_event.cpp:332
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:333
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:333
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:333
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:332
+#: src/cgame/cg_event.cpp:337
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:332
+#: src/cgame/cg_event.cpp:337
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:332
+#: src/cgame/cg_event.cpp:337
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:338
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:338
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:338
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:337
+#: src/cgame/cg_event.cpp:342
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:337
+#: src/cgame/cg_event.cpp:342
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:337
+#: src/cgame/cg_event.cpp:342
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:343
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:343
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:343
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:342
+#: src/cgame/cg_event.cpp:347
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:342
+#: src/cgame/cg_event.cpp:347
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:342
+#: src/cgame/cg_event.cpp:347
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:348
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:348
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:348
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:347
+#: src/cgame/cg_event.cpp:352
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:347
+#: src/cgame/cg_event.cpp:352
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:347
+#: src/cgame/cg_event.cpp:352
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:353
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:353
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:353
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:359
 msgctxt "male"
 msgid "%s%s ^*saw the light"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:359
 msgctxt "female"
 msgid "%s%s ^*saw the light"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:359
 msgctxt "neuter"
 msgid "%s%s ^*saw the light"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:355
+#: src/cgame/cg_event.cpp:360
 msgctxt "male"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:355
+#: src/cgame/cg_event.cpp:360
 msgctxt "female"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:355
+#: src/cgame/cg_event.cpp:360
 msgctxt "neuter"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:384
+#: src/cgame/cg_event.cpp:389
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:384
+#: src/cgame/cg_event.cpp:389
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:384
+#: src/cgame/cg_event.cpp:389
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:385
+#: src/cgame/cg_event.cpp:390
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:385
+#: src/cgame/cg_event.cpp:390
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:385
+#: src/cgame/cg_event.cpp:390
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:389
+#: src/cgame/cg_event.cpp:394
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:389
+#: src/cgame/cg_event.cpp:394
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:389
+#: src/cgame/cg_event.cpp:394
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:395
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:395
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:395
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:394
+#: src/cgame/cg_event.cpp:399
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:394
+#: src/cgame/cg_event.cpp:399
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:394
+#: src/cgame/cg_event.cpp:399
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:400
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:400
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:400
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:399
+#: src/cgame/cg_event.cpp:404
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:399
+#: src/cgame/cg_event.cpp:404
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:399
+#: src/cgame/cg_event.cpp:404
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:405
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:405
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:405
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:404
+#: src/cgame/cg_event.cpp:409
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:404
+#: src/cgame/cg_event.cpp:409
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:404
+#: src/cgame/cg_event.cpp:409
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:410
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:410
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:410
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:409
+#: src/cgame/cg_event.cpp:414
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:409
+#: src/cgame/cg_event.cpp:414
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:409
+#: src/cgame/cg_event.cpp:414
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:415
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:415
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:415
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:414
+#: src/cgame/cg_event.cpp:419
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:414
+#: src/cgame/cg_event.cpp:419
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:414
+#: src/cgame/cg_event.cpp:419
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:420
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:420
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:420
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:419
+#: src/cgame/cg_event.cpp:424
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:419
+#: src/cgame/cg_event.cpp:424
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:419
+#: src/cgame/cg_event.cpp:424
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:425
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:425
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:425
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:430
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:430
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:430
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:431
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:431
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:431
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:427
+#: src/cgame/cg_event.cpp:432
 msgctxt "male"
 msgid "%s%s ^*was charred to a crisp"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:427
+#: src/cgame/cg_event.cpp:432
 msgctxt "female"
 msgid "%s%s ^*was charred to a crisp"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:427
+#: src/cgame/cg_event.cpp:432
 msgctxt "neuter"
 msgid "%s%s ^*was charred to a crisp"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:436
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:436
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:436
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:437
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:437
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:437
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:438
 msgctxt "male"
 msgid "%s%s ^*was burned to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:438
 msgctxt "female"
 msgid "%s%s ^*was burned to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:438
 msgctxt "neuter"
 msgid "%s%s ^*was burned to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:442
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:442
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:442
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:443
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:443
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:443
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:442
+#: src/cgame/cg_event.cpp:447
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:442
+#: src/cgame/cg_event.cpp:447
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:442
+#: src/cgame/cg_event.cpp:447
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:444
+#: src/cgame/cg_event.cpp:449
 msgctxt "male"
 msgid "%s%s ^*was irradiated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:444
+#: src/cgame/cg_event.cpp:449
 msgctxt "female"
 msgid "%s%s ^*was irradiated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:444
+#: src/cgame/cg_event.cpp:449
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:448
+#: src/cgame/cg_event.cpp:453
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:448
+#: src/cgame/cg_event.cpp:453
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:448
+#: src/cgame/cg_event.cpp:453
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:449
+#: src/cgame/cg_event.cpp:454
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:449
+#: src/cgame/cg_event.cpp:454
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:449
+#: src/cgame/cg_event.cpp:454
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:450
+#: src/cgame/cg_event.cpp:455
 msgctxt "male"
 msgid "%s%s ^*was blown up"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:450
+#: src/cgame/cg_event.cpp:455
 msgctxt "female"
 msgid "%s%s ^*was blown up"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:450
+#: src/cgame/cg_event.cpp:455
 msgctxt "neuter"
 msgid "%s%s ^*was blown up"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:454
+#: src/cgame/cg_event.cpp:459
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:454
+#: src/cgame/cg_event.cpp:459
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:454
+#: src/cgame/cg_event.cpp:459
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:455
+#: src/cgame/cg_event.cpp:460
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:455
+#: src/cgame/cg_event.cpp:460
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:455
+#: src/cgame/cg_event.cpp:460
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:456
+#: src/cgame/cg_event.cpp:461
 msgctxt "male"
 msgid "%s%s ^*was incinerated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:456
+#: src/cgame/cg_event.cpp:461
 msgctxt "female"
 msgid "%s%s ^*was incinerated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:456
+#: src/cgame/cg_event.cpp:461
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:460
+#: src/cgame/cg_event.cpp:465
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:460
+#: src/cgame/cg_event.cpp:465
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:460
+#: src/cgame/cg_event.cpp:465
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:461
+#: src/cgame/cg_event.cpp:466
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:461
+#: src/cgame/cg_event.cpp:466
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:461
+#: src/cgame/cg_event.cpp:466
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:465
+#: src/cgame/cg_event.cpp:470
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:465
+#: src/cgame/cg_event.cpp:470
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:465
+#: src/cgame/cg_event.cpp:470
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:466
+#: src/cgame/cg_event.cpp:471
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:466
+#: src/cgame/cg_event.cpp:471
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:466
+#: src/cgame/cg_event.cpp:471
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:470
+#: src/cgame/cg_event.cpp:475
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:470
+#: src/cgame/cg_event.cpp:475
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:470
+#: src/cgame/cg_event.cpp:475
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:476
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:476
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:481
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:481
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:476
+#: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:482
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:482
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:482
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:487
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:487
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:487
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:483
+#: src/cgame/cg_event.cpp:488
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:483
+#: src/cgame/cg_event.cpp:488
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:483
+#: src/cgame/cg_event.cpp:488
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:493
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:493
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:493
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:489
+#: src/cgame/cg_event.cpp:494
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:489
+#: src/cgame/cg_event.cpp:494
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:489
+#: src/cgame/cg_event.cpp:494
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:499
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:499
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:499
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:495
+#: src/cgame/cg_event.cpp:500
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:495
+#: src/cgame/cg_event.cpp:500
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:495
+#: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:500
+#: src/cgame/cg_event.cpp:505
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:500
+#: src/cgame/cg_event.cpp:505
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:500
+#: src/cgame/cg_event.cpp:505
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:501
+#: src/cgame/cg_event.cpp:506
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:501
+#: src/cgame/cg_event.cpp:506
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:501
+#: src/cgame/cg_event.cpp:506
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:502
+#: src/cgame/cg_event.cpp:507
 msgctxt "male"
 msgid "%s%s ^*was barbed"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:502
+#: src/cgame/cg_event.cpp:507
 msgctxt "female"
 msgid "%s%s ^*was barbed"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:502
+#: src/cgame/cg_event.cpp:507
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:512
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:512
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:513
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:513
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:513
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:518
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:518
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:518
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:514
+#: src/cgame/cg_event.cpp:519
 msgctxt "male"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
 "assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:514
+#: src/cgame/cg_event.cpp:519
 msgctxt "female"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
 "assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:514
+#: src/cgame/cg_event.cpp:519
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
 "assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:520
+#: src/cgame/cg_event.cpp:525
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:520
+#: src/cgame/cg_event.cpp:525
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:520
+#: src/cgame/cg_event.cpp:525
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:521
-msgctxt "male"
-msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:521
-msgctxt "female"
-msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:521
-msgctxt "neuter"
-msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:525
-msgctxt "male"
-msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:525
-msgctxt "female"
-msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:525
-msgctxt "neuter"
-msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:526
+msgctxt "male"
+msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:526
+msgctxt "female"
+msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:526
+msgctxt "neuter"
+msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:530
+msgctxt "male"
+msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:530
+msgctxt "female"
+msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:530
+msgctxt "neuter"
+msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:531
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:531
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:531
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:530
+#: src/cgame/cg_event.cpp:535
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:530
+#: src/cgame/cg_event.cpp:535
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:530
+#: src/cgame/cg_event.cpp:535
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:536
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:536
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:536
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:535
+#: src/cgame/cg_event.cpp:540
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:535
+#: src/cgame/cg_event.cpp:540
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:535
+#: src/cgame/cg_event.cpp:540
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:541
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:541
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:541
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:545
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:545
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:545
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:546
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:546
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:546
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:542
+#: src/cgame/cg_event.cpp:547
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:542
+#: src/cgame/cg_event.cpp:547
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:542
+#: src/cgame/cg_event.cpp:547
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:605
+#: src/cgame/cg_event.cpp:610
 msgctxt "male"
 msgid "%s%s^* died"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:605
+#: src/cgame/cg_event.cpp:610
 msgctxt "female"
 msgid "%s%s^* died"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:605
+#: src/cgame/cg_event.cpp:610
 msgctxt "neuter"
 msgid "%s%s^* died"
 msgstr ""
@@ -3381,630 +3397,629 @@ msgstr ""
 msgid "Listed %2d clients"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:260 src/cgame/cg_event.cpp:597
+#: src/cgame/cg_event.cpp:265 src/cgame/cg_event.cpp:602
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1239
+#: src/cgame/cg_event.cpp:1244
 msgid "The Overmind is under attack!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1246
+#: src/cgame/cg_event.cpp:1251
 msgid "The reactor is under attack!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1261
+#: src/cgame/cg_event.cpp:1266
 msgid "The Overmind is dying!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1267
+#: src/cgame/cg_event.cpp:1272
 msgid "The reactor is going down!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1286 src/cgame/cg_event.cpp:1308
+#: src/cgame/cg_event.cpp:1291 src/cgame/cg_event.cpp:1313
 msgid "Our base is under attack!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1299
+#: src/cgame/cg_event.cpp:1304
 #, c-format
 msgid "%s Under attack – %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1303
+#: src/cgame/cg_event.cpp:1308
 #, c-format
 msgid "%s Under attack"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:494
+#: src/cgame/cg_main.cpp:451
 msgid "Calling home…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:494
+#: src/cgame/cg_main.cpp:451
 msgid "Sending to the front…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:499
+#: src/cgame/cg_main.cpp:456
 msgid "Tracking your movements…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:499
+#: src/cgame/cg_main.cpp:456
 msgid "Letting out the magic smoke…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:460
 msgid "Collecting bees for the hives…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:460
 msgid "Initialising fireworks…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:460
 msgid "Causing electrical faults…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:507
+#: src/cgame/cg_main.cpp:464
 msgid "Reading the manual…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:507
+#: src/cgame/cg_main.cpp:464
 msgid "Looking at blueprints…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:511
+#: src/cgame/cg_main.cpp:468
 msgid "Generating annoying noises…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:511
+#: src/cgame/cg_main.cpp:468
 msgid "Recording granger purring…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:515
+#: src/cgame/cg_main.cpp:472
 msgid "Hello World!"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:515
+#: src/cgame/cg_main.cpp:472
 msgid "Making a scene…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:519
+#: src/cgame/cg_main.cpp:476
 msgid "Taking pictures of the world…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:519
+#: src/cgame/cg_main.cpp:476
 msgid "Drawing smiley faces…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:523
+#: src/cgame/cg_main.cpp:480
 msgid "Sharpening the aliens' claws…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:523
+#: src/cgame/cg_main.cpp:480
 msgid "Overloading lucifer cannons…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:527
+#: src/cgame/cg_main.cpp:484
 msgid "Unwrapping jetpacks…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:527
+#: src/cgame/cg_main.cpp:484
 msgid "Spinning silk for reticles…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:531
+#: src/cgame/cg_main.cpp:488
 msgid "Adding turret spam…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:531
+#: src/cgame/cg_main.cpp:488
 msgid "Awakening the overmind…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:535
+#: src/cgame/cg_main.cpp:492
 msgid "Teleporting soldiers…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:535
+#: src/cgame/cg_main.cpp:492
 msgid "Replicating alien DNA…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:539
+#: src/cgame/cg_main.cpp:496
 msgid "Customizing helmets…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:543
+#: src/cgame/cg_main.cpp:500
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:547
+#: src/cgame/cg_main.cpp:504
 msgid "Surveying the map…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:551
+#: src/cgame/cg_main.cpp:508
 msgid "Done!"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:1129
+#: src/cgame/cg_main.cpp:1089
 msgid "Generating bot navigation meshes"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:1171
+#: src/cgame/cg_main.cpp:1147
 #, c-format
 msgid "by %s"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:1191
-#, c-format
-msgid "by %s and %s"
-msgstr ""
-
-#: src/cgame/cg_players.cpp:1444
+#: src/cgame/cg_players.cpp:1445
 #, c-format
 msgid "%s^* renamed to %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1451
+#: src/cgame/cg_players.cpp:1452
 #, c-format
 msgid "%s^* left the %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1456
+#: src/cgame/cg_players.cpp:1457
 #, c-format
 msgid "%s^* joined the %s"
 msgstr ""
 
-#: src/cgame/cg_players.cpp:1461
+#: src/cgame/cg_players.cpp:1462
 #, c-format
 msgid "%s^* left the %s and joined the %s"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2384
+#: src/cgame/cg_rocket_draw.cpp:2432
 msgid "You are at the front of the spawn queue"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2388
+#: src/cgame/cg_rocket_draw.cpp:2436
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2428
+#: src/cgame/cg_rocket_draw.cpp:2476
 msgid "There are no spawns remaining"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2432
+#: src/cgame/cg_rocket_draw.cpp:2480
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/cgame/cg_rocket_draw.cpp:2962
+#: src/cgame/cg_rocket_draw.cpp:3029
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2966
+#: src/cgame/cg_rocket_draw.cpp:3033
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2970
+#: src/cgame/cg_rocket_draw.cpp:3037
 msgid "Awaiting gamestate…"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3052
+#: src/cgame/cg_rocket_draw.cpp:3119
 msgid "Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3053
+#: src/cgame/cg_rocket_draw.cpp:3120
 msgid "Team Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3054
+#: src/cgame/cg_rocket_draw.cpp:3121
 msgid "Admin Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3055
+#: src/cgame/cg_rocket_draw.cpp:3122
 msgid "Command:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3452
+#: src/cgame/cg_rocket_draw.cpp:3519
 msgid "FIGHT!"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3546
+#: src/cgame/cg_rocket_draw.cpp:3613
 msgid "estimating"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:450
+#: src/cgame/cg_servercmds.cpp:453
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:452
+#: src/cgame/cg_servercmds.cpp:455
 msgid "The alien team has too many players"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:456
+#: src/cgame/cg_servercmds.cpp:459
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:458
+#: src/cgame/cg_servercmds.cpp:461
 msgid "The human team has too many players"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:462
+#: src/cgame/cg_servercmds.cpp:465
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:464
+#: src/cgame/cg_servercmds.cpp:467
 msgid "The alien team is locked"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:468
+#: src/cgame/cg_servercmds.cpp:471
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:470
+#: src/cgame/cg_servercmds.cpp:473
 msgid "The human team is locked"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:474
+#: src/cgame/cg_servercmds.cpp:477
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:476
+#: src/cgame/cg_servercmds.cpp:479
 msgid "No free player slots"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:480
+#: src/cgame/cg_servercmds.cpp:483
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:482
+#: src/cgame/cg_servercmds.cpp:485
 msgid "You cannot join a team during warmup."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:490
+#: src/cgame/cg_servercmds.cpp:493
 msgid "Cheats are not enabled on this server"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:494
+#: src/cgame/cg_servercmds.cpp:497
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:501
+#: src/cgame/cg_servercmds.cpp:504
 msgid "Join a team first"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:507
+#: src/cgame/cg_servercmds.cpp:510
 msgid "You can only use this command when spectating"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:512
+#: src/cgame/cg_servercmds.cpp:515
 msgid "Must be alien to use this command"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:517
+#: src/cgame/cg_servercmds.cpp:520
 msgid "Must be human to use this command"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:522
+#: src/cgame/cg_servercmds.cpp:525
 msgid "Must be alive to use this command"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:528
+#: src/cgame/cg_servercmds.cpp:531
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:530
+#: src/cgame/cg_servercmds.cpp:533
 msgid "There is no room to build here"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:534
+#: src/cgame/cg_servercmds.cpp:537
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:537
+#: src/cgame/cg_servercmds.cpp:540
 msgid "Cannot build on this surface"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:542
+#: src/cgame/cg_servercmds.cpp:545
 msgid "You cannot build that structure"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:546
+#: src/cgame/cg_servercmds.cpp:549
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:549
+#: src/cgame/cg_servercmds.cpp:552
 msgid "You may not deconstruct the last spawn"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:553
+#: src/cgame/cg_servercmds.cpp:556
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:556
+#: src/cgame/cg_servercmds.cpp:559
 msgid "You may not deconstruct this structure"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:560
+#: src/cgame/cg_servercmds.cpp:563
 msgid "Building has been disabled on the server for your team."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:561
+#: src/cgame/cg_servercmds.cpp:564
 msgid "Building has been disabled for your team"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:565
+#: src/cgame/cg_servercmds.cpp:568
 msgid "You are no longer permitted to build."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:566
+#: src/cgame/cg_servercmds.cpp:569
 msgid "You are no longer permitted to build"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:570
+#: src/cgame/cg_servercmds.cpp:573
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:572
+#: src/cgame/cg_servercmds.cpp:575
 msgid "Cannot build after admitting defeat"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:576
+#: src/cgame/cg_servercmds.cpp:579
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:578
+#: src/cgame/cg_servercmds.cpp:581
 msgid "There are no resources remaining"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:582
+#: src/cgame/cg_servercmds.cpp:585
 msgid "This buildable is not powered."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:583
+#: src/cgame/cg_servercmds.cpp:586
 msgid "This buildable is not powered"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:587
+#: src/cgame/cg_servercmds.cpp:590
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:589
+#: src/cgame/cg_servercmds.cpp:592
 msgid "There is no reactor"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:593
+#: src/cgame/cg_servercmds.cpp:596
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:595
+#: src/cgame/cg_servercmds.cpp:598
 msgid "There can only be one Reactor"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:600
+#: src/cgame/cg_servercmds.cpp:603
 msgid "Your team cannot have any more drills"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:604
+#: src/cgame/cg_servercmds.cpp:607
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:606
+#: src/cgame/cg_servercmds.cpp:609
 msgid "You have no room to carry this"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:610
+#: src/cgame/cg_servercmds.cpp:613
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:612
+#: src/cgame/cg_servercmds.cpp:615
 msgid "Insufficient funds"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:616
+#: src/cgame/cg_servercmds.cpp:619
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:618
+#: src/cgame/cg_servercmds.cpp:621
 msgid "You already hold this item"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:622
+#: src/cgame/cg_servercmds.cpp:625
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:624
+#: src/cgame/cg_servercmds.cpp:627
 msgid "You must be near a powered Armoury"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:628
+#: src/cgame/cg_servercmds.cpp:631
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:630
+#: src/cgame/cg_servercmds.cpp:633
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:634
+#: src/cgame/cg_servercmds.cpp:637
 msgid "There is not enough room here to change armour."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:635
+#: src/cgame/cg_servercmds.cpp:638
 msgid "Not enough room here to change armour."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:639
+#: src/cgame/cg_servercmds.cpp:642
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:641
+#: src/cgame/cg_servercmds.cpp:644
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:646
+#: src/cgame/cg_servercmds.cpp:649
 msgid "You must be dead to use the class command"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:650
+#: src/cgame/cg_servercmds.cpp:653
 msgid "Unknown starting item"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:656
+#: src/cgame/cg_servercmds.cpp:657
+msgid "Starting item not allowed"
+msgstr ""
+
+#: src/cgame/cg_servercmds.cpp:663
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:658 src/cgame/cg_servercmds.cpp:698
+#: src/cgame/cg_servercmds.cpp:665 src/cgame/cg_servercmds.cpp:705
 msgid "There is no Overmind"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:662
+#: src/cgame/cg_servercmds.cpp:669
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:664
+#: src/cgame/cg_servercmds.cpp:671
 msgid "There can only be one Overmind"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:669
+#: src/cgame/cg_servercmds.cpp:676
 msgid "Your team cannot have any more leeches"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:673
+#: src/cgame/cg_servercmds.cpp:680
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:675
+#: src/cgame/cg_servercmds.cpp:682
 msgid "The Overmind cannot control any more structures"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:679
+#: src/cgame/cg_servercmds.cpp:686
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:681
+#: src/cgame/cg_servercmds.cpp:688
 msgid "There is no room to evolve here"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:685
+#: src/cgame/cg_servercmds.cpp:692
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:687
+#: src/cgame/cg_servercmds.cpp:694
 msgid "This location is too close to the enemy to evolve"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:691 src/cgame/cg_servercmds.cpp:692
+#: src/cgame/cg_servercmds.cpp:698 src/cgame/cg_servercmds.cpp:699
 msgid "The Overmind is too far away to devolve."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:696
+#: src/cgame/cg_servercmds.cpp:703
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:702
+#: src/cgame/cg_servercmds.cpp:709
 msgid "You cannot evolve until your build timer has expired."
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:703
+#: src/cgame/cg_servercmds.cpp:710
 msgid "You cannot evolve until your build timer expires"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:707
+#: src/cgame/cg_servercmds.cpp:714
 msgid "Wait a second after attacking or evolving"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:715
+#: src/cgame/cg_servercmds.cpp:722
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:720
+#: src/cgame/cg_servercmds.cpp:727
 msgid "You cannot evolve while wallwalking"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:724
+#: src/cgame/cg_servercmds.cpp:731
 msgid "Unknown class"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:728
+#: src/cgame/cg_servercmds.cpp:735
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:733
+#: src/cgame/cg_servercmds.cpp:740
 #, c-format
 msgid "The %s is not allowed"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:738
+#: src/cgame/cg_servercmds.cpp:745
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:743
+#: src/cgame/cg_servercmds.cpp:750
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:902
+#: src/cgame/cg_servercmds.cpp:909
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:910
+#: src/cgame/cg_servercmds.cpp:917
 #, c-format
 msgid ">> to reply, say: /m %d [your message] <<"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:1392
+#: src/cgame/cg_servercmds.cpp:1405
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr ""
@@ -4089,248 +4104,262 @@ msgstr ""
 msgid "ESCAPE"
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:126
+#: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:338
+#, c-format
+msgid "%s or %s"
+msgstr ""
+
+#: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:342
+#, c-format
+msgid "%s, %s"
+msgstr ""
+
+#: src/cgame/cg_tutorial.cpp:134
 #, c-format
 msgid "\"%s\" (unbound)"
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:178
+#: src/cgame/cg_tutorial.cpp:186
 #, c-format
 msgid "Press %s to place the %s."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:183
+#: src/cgame/cg_tutorial.cpp:191
 #, c-format
 msgid "Press %s to cancel placing the %s."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:190
+#: src/cgame/cg_tutorial.cpp:198
 #, c-format
 msgid "Press %s to build a structure."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:202
+#: src/cgame/cg_tutorial.cpp:210
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:208
+#: src/cgame/cg_tutorial.cpp:216
 #, c-format
 msgid "Press %s to mark this structure for replacement."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:213
+#: src/cgame/cg_tutorial.cpp:221
 #, c-format
 msgid "Hold %s to deconstruct this structure."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:230 src/cgame/cg_tutorial.cpp:280
-#: src/cgame/cg_tutorial.cpp:357
+#: src/cgame/cg_tutorial.cpp:238 src/cgame/cg_tutorial.cpp:288
+#: src/cgame/cg_tutorial.cpp:365
 #, c-format
 msgid "Press %s to swipe."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:238
+#: src/cgame/cg_tutorial.cpp:246
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:243 src/cgame/cg_tutorial.cpp:267
-#: src/cgame/cg_tutorial.cpp:290
+#: src/cgame/cg_tutorial.cpp:251 src/cgame/cg_tutorial.cpp:275
+#: src/cgame/cg_tutorial.cpp:298
 #, c-format
 msgid "Press %s to walk on walls."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:259
+#: src/cgame/cg_tutorial.cpp:267
 msgid "Touch humans to damage them."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:263
+#: src/cgame/cg_tutorial.cpp:271
 msgid "Aim at their heads to cause more damage."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:285
+#: src/cgame/cg_tutorial.cpp:293
 #, c-format
 msgid "Press %s to lunge."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:303 src/cgame/cg_tutorial.cpp:329
+#: src/cgame/cg_tutorial.cpp:311 src/cgame/cg_tutorial.cpp:337
 #, c-format
 msgid "Press %s to bite."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:310
+#: src/cgame/cg_tutorial.cpp:318
 #, c-format
 msgid "Press %s to invoke an electrical attack."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:316
+#: src/cgame/cg_tutorial.cpp:324
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:336
+#: src/cgame/cg_tutorial.cpp:344
 #, c-format
 msgid "Press %s to launch a barb."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:342
+#: src/cgame/cg_tutorial.cpp:350
 #, c-format
 msgid "Hold down and release %s to pounce."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:362
+#: src/cgame/cg_tutorial.cpp:370
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:391
+#: src/cgame/cg_tutorial.cpp:399
 msgid "Find an Armoury, Drill or Reactor for more ammo."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:397
+#: src/cgame/cg_tutorial.cpp:405
 msgid "Find an Armoury for more ammo."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:413 src/cgame/cg_tutorial.cpp:421
-#: src/cgame/cg_tutorial.cpp:447
+#: src/cgame/cg_tutorial.cpp:421 src/cgame/cg_tutorial.cpp:429
+#: src/cgame/cg_tutorial.cpp:455
 #, c-format
 msgid "Press %s to fire the %s."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:427
+#: src/cgame/cg_tutorial.cpp:435
 #, c-format
 msgid "Hold %s to zoom."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:434
+#: src/cgame/cg_tutorial.cpp:442
 #, c-format
 msgid "Hold %s to activate the %s."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:442
+#: src/cgame/cg_tutorial.cpp:450
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:473
+#: src/cgame/cg_tutorial.cpp:481
 #, c-format
 msgid "Press %s to throw the %s."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:485 src/cgame/cg_tutorial.cpp:522
+#: src/cgame/cg_tutorial.cpp:493 src/cgame/cg_tutorial.cpp:530
 #, c-format
 msgid "Press %s to use the %s."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:493
+#: src/cgame/cg_tutorial.cpp:501
 #, c-format
 msgid "Hold %s to use the Jetpack."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:503
+#: src/cgame/cg_tutorial.cpp:511
 #, c-format
 msgid "Press %s to use your Medkit."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:512
+#: src/cgame/cg_tutorial.cpp:520
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:530
+#: src/cgame/cg_tutorial.cpp:538
 #, c-format
 msgid "Press %s and any direction to sprint."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:535
+#: src/cgame/cg_tutorial.cpp:543
 #, c-format
 msgid "Press %s to crouch."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:552
+#: src/cgame/cg_tutorial.cpp:560
 #, c-format
 msgid "Press %s to leave spawn queue."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:559
+#: src/cgame/cg_tutorial.cpp:567
 #, c-format
 msgid "Press %s to spawn."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:567
+#: src/cgame/cg_tutorial.cpp:575
 #, c-format
 msgid "Press %s to join a team."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:575
+#: src/cgame/cg_tutorial.cpp:583
 #, c-format
 msgid "Press %s to stop following."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:582
+#: src/cgame/cg_tutorial.cpp:590
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:589
+#: src/cgame/cg_tutorial.cpp:597
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:595
+#: src/cgame/cg_tutorial.cpp:603
 #, c-format
 msgid "Press %s to follow the next player."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:602
+#: src/cgame/cg_tutorial.cpp:610
 #, c-format
 msgid "Press %s to follow a player."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:685
+#: src/cgame/cg_tutorial.cpp:693
 #, c-format
 msgid "Press %s to evolve."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:696
+#: src/cgame/cg_tutorial.cpp:704
 #, c-format
 msgid "Press %s when ready to continue."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:702
+#: src/cgame/cg_tutorial.cpp:710
 msgid "Waiting for other players to be ready."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:713
+#: src/cgame/cg_tutorial.cpp:721
 #, c-format
 msgid "Press %s to chat."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:718
+#: src/cgame/cg_tutorial.cpp:726
 #, c-format
 msgid "Press %s to chat or %s to chat to your team."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:724
+#: src/cgame/cg_tutorial.cpp:732
 #, c-format
 msgid "Press %s to open the console."
 msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:726
+#: src/cgame/cg_tutorial.cpp:734
 #, c-format
 msgid "Press %s for the menu."
 msgstr ""
 
-#: src/sgame/sg_active.cpp:735
+#: src/cgame/rocket/rocket_keys.cpp:325
+msgid "Unbound"
+msgstr ""
+
+#: src/sgame/sg_active.cpp:737
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
 msgstr ""
 
-#: src/sgame/sg_active.cpp:753
+#: src/sgame/sg_active.cpp:755
 msgid "Ten seconds until inactivity spectate!"
 msgstr ""
 
-#: src/sgame/sg_active.cpp:753
+#: src/sgame/sg_active.cpp:755
 msgid "Ten seconds until inactivity drop!"
 msgstr ""
 
@@ -4342,15 +4371,15 @@ msgstr ""
 msgid "Human bot names:"
 msgstr ""
 
-#: src/sgame/sg_bot.cpp:368
+#: src/sgame/sg_bot.cpp:367
 msgid "$1$^* disconnected"
 msgstr ""
 
-#: src/sgame/sg_bot_nav.cpp:114
+#: src/sgame/sg_bot_nav.cpp:120
 msgid "Server: generating bot navigation mesh for $1$... $2$%"
 msgstr ""
 
-#: src/sgame/sg_bot_nav.cpp:153
+#: src/sgame/sg_bot_nav.cpp:159
 msgid "Bot navmesh generation failed!"
 msgstr ""
 
@@ -4363,30 +4392,34 @@ msgid "$1$ ^2built^* by $2$$3$"
 msgstr ""
 
 #: src/sgame/sg_client.cpp:845
-msgid "Name change spam protection (g_minNameChangePeriod = $1$)"
+msgid "Name change spam protection ($1$ = $2$)"
 msgstr ""
 
-#: src/sgame/sg_client.cpp:853
-msgid "Maximum name changes reached (g_maxNameChanges = $1$)"
+#: src/sgame/sg_client.cpp:854
+msgid "Maximum name changes reached ($1$ = $2$)"
 msgstr ""
 
-#: src/sgame/sg_client.cpp:860
+#: src/sgame/sg_client.cpp:862
 msgid "You cannot change your name while you are muted"
 msgstr ""
 
-#: src/sgame/sg_client.cpp:872
+#: src/sgame/sg_client.cpp:874
 msgid "Name is too long! Must be less than $1$ characters or color codes."
 msgstr ""
 
-#: src/sgame/sg_client.cpp:1193
+#: src/sgame/sg_client.cpp:1155
+msgid "Your GUID is not secure"
+msgstr ""
+
+#: src/sgame/sg_client.cpp:1196
 msgid "$1$^* connected"
 msgstr ""
 
-#: src/sgame/sg_client.cpp:1274
+#: src/sgame/sg_client.cpp:1277
 msgid "$1$^* is connecting…"
 msgstr ""
 
-#: src/sgame/sg_client.cpp:1340
+#: src/sgame/sg_client.cpp:1343
 msgid "$1$^* entered the game"
 msgstr ""
 
@@ -4402,61 +4435,59 @@ msgstr ""
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:1945
+#: src/sgame/sg_main.cpp:1943
 msgid "Timelimit hit"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:1974
+#: src/sgame/sg_main.cpp:1954
+msgid "$1$ minutes remaining!"
+msgstr ""
+
+#: src/sgame/sg_main.cpp:1962
+msgid "1 minute remaining!"
+msgstr ""
+
+#: src/sgame/sg_main.cpp:1975
 msgid "Humans win"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:1988
+#: src/sgame/sg_main.cpp:1989
 msgid "Aliens win"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2183
-msgid "Vote failed ($1$ of $2$; quorum not reached)"
+#: src/sgame/sg_main.cpp:2003
+msgid "Empty teams skip map time exceeded."
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2183
-msgid "Team vote failed ($1$ of $2$; quorum not reached)"
+#: src/sgame/sg_main.cpp:2167
+msgid "The game has been paused. Please wait."
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2188
-msgid "Vote passed ($1$ — $2$)"
-msgstr ""
-
-#: src/sgame/sg_main.cpp:2188
-msgid "Team vote passed ($1$ — $2$)"
-msgstr ""
-
-#: src/sgame/sg_main.cpp:2193
-#, c-format
-msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
-
-#: src/sgame/sg_main.cpp:2193
-#, c-format
-msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
-
-#: src/sgame/sg_main.cpp:2358
+#: src/sgame/sg_main.cpp:2171
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr ""
 
-#: src/sgame/sg_main.cpp:2374
-msgid "Server: The game has been unpaused automatically (2 minute max)"
+#: src/sgame/sg_main.cpp:2190
+msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr ""
 
-#: src/sgame/sg_svcmds.cpp:405
+#: src/sgame/sg_main.cpp:2193
+msgid "The game has been unpaused!"
+msgstr ""
+
+#: src/sgame/sg_spawn_mover.cpp:1066
+msgid "^1This door is locked!"
+msgstr ""
+
+#: src/sgame/sg_svcmds.cpp:464
 msgid "Alien team has admitted defeat"
 msgstr ""
 
-#: src/sgame/sg_svcmds.cpp:410
+#: src/sgame/sg_svcmds.cpp:469
 msgid "Human team has admitted defeat"
 msgstr ""
 
-#: src/sgame/sg_svcmds.cpp:443
+#: src/sgame/sg_svcmds.cpp:502
 msgid "Evacuation ordered"
 msgstr ""
 
@@ -4466,6 +4497,176 @@ msgstr ""
 
 #: src/sgame/sg_team.cpp:593
 msgid "Teams are imbalanced. Aliens have more players."
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:58
+#, c-format
+msgid "Kick player '%s'"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:70
+#, c-format
+msgid "Move player '%s' to spectators"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:81
+msgid "$1$: player is already muted"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:88
+#, c-format
+msgid "Mute player '%s'"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:100
+msgid "$1$: player is not currently muted"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:107
+#, c-format
+msgid "Unmute player '%s'"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:119
+msgid "$1$: player already lost building rights"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:137
+msgid "$1$: player already has building rights"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:196 src/sgame/sg_votes.cpp:263
+msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:233
+msgid "callvote: layout '$1$' could not be found on the server"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:254
+msgid "$1$: the next map is already set to '$2$'"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:313
+msgid "$1$: there are no active bots"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:332 src/sgame/sg_votes.cpp:354
+#: src/sgame/sg_votes.cpp:376
+msgid "$1$: number must be non-negative and smaller than $2$"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:341
+#, c-format
+msgid "Fill each team with bots to %d"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:363
+#, c-format
+msgid "Fill the human team with bots to %d"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:385
+#, c-format
+msgid "Fill the alien team with bots to %d"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:460
+msgid "$1$: voting not allowed here"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:469
+msgid "$1$: you are not permitted to call $2$ votes"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:478
+msgid "$1$: a vote is already in progress"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:499
+msgid "Invalid vote string"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:502
+msgid "Valid vote commands are: "
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:503
+msgid "Valid team-vote commands are: "
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:534
+msgid "$1$: you have already called the maximum number of votes ($2$)"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:544
+msgid "'$1$' votes have been disabled"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:565
+msgid "'$1$' votes are not allowed once $2$ minutes have passed"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:579
+msgid "'$1$' votes are not allowed until $2$ minutes have passed"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:594
+msgid "'$1$' votes are only allowed with less than $2$ minutes remaining"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:638
+msgid "$1$: no target"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:658
+msgid "$1$: player is a bot"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:666 src/sgame/sg_votes.cpp:680
+msgid "$1$: admin is immune"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:687
+msgid "$1$: player is not on your team"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:699
+msgid "$1$: You must provide a reason"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:721
+msgid "$1$^* called a vote: $2$"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:738
+msgid "$1$^* called a team vote: $2t$"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:854
+msgid "Vote failed ($1$ of $2$; quorum not reached)"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:855
+msgid "Team vote failed ($1$ of $2$; quorum not reached)"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:861
+msgid "Vote passed ($1$ — $2$)"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:862
+msgid "Team vote passed ($1$ — $2$)"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:868
+#, c-format
+msgid "Vote failed ($1$ — $2$; $3$% needed)"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:869
+#, c-format
+msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr ""
 
 #: src/shared/bg_misc.cpp:2485
