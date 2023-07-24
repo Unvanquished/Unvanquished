@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-07-16 21:05+0000\n"
+"PO-Revision-Date: 2023-07-26 03:08+0000\n"
 "Last-Translator: Emily Fiorentini <emily@xewer.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
@@ -147,24 +147,27 @@ msgstr ""
 #: ui/help_gameplay.rml:22
 msgid "More can be found on our website and other community places!"
 msgstr ""
+"Potete trovare altro nel nostro sito web e in altri posti della comunità!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Parla con i giocatori e gli sviluppatori su Libera.Chat IRC, Matrix oppure "
+"Discrod: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "Discuti delle notizie nei forum: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "Scopri altro riguardo il gioco nella wiki: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:28
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Per favore segnala i bug su: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
@@ -686,6 +689,8 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
+"Questa è una versione beta di Unvanquished. Per favore segnala qualsiasi "
+"problema che puoi riscontrare a <web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
@@ -861,13 +866,16 @@ msgstr "Angoli visivi"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = ampiezza di visione del giocatore, misurata in gradi."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
 msgstr ""
+"Molti giocatori soffrono di lieve cinetosi a giocare nei giochi sparatutto "
+"in prima persona. Un FOV piu grnade può aiutare a contrastare questo "
+"problema."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
@@ -924,7 +932,7 @@ msgstr "Forte"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr ""
+msgstr "Movimenti su e giù"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
@@ -932,7 +940,7 @@ msgstr "Basculamento camera"
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr ""
+msgstr "Movimento di torsione"
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
@@ -1045,6 +1053,10 @@ msgid ""
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
+"Il vsync previene gli strappi visivi ma aumenta la latenza dell'input. Il "
+"vsync flessibile si attiva solo quando il frame-rate va oltre la frequenza "
+"di aggiornamento del monitor, evitando ingolfamenti quando gli FPS "
+"diminuiscono drasticamente."
 
 #: ui/options_graphics.rml:81
 msgid "Fast approximate anti-aliasing (FXAA)"
@@ -1293,11 +1305,11 @@ msgstr "Simula gli angoli scuri."
 
 #: ui/options_graphics.rml:228
 msgid "Marks"
-msgstr ""
+msgstr "Segni"
 
 #: ui/options_graphics.rml:230
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
-msgstr ""
+msgstr "Mostra i segni (come buchi da proiettile o graffi) sulle superfici"
 
 #: ui/options_graphics.rml:233
 msgid "Particle physics"
@@ -1667,6 +1679,8 @@ msgid ""
 "Always twist and rotate the view when you wall-walk from one surface to "
 "another."
 msgstr ""
+"Gira sempre e ruota la visuale quando cammini sui muri da una superfice "
+"all'altra."
 
 #: ui/options_player.rml:39
 msgid "Wall-walking pitch-speed"
@@ -1675,6 +1689,7 @@ msgstr "Velocità di rotazione arrampicata sui muri"
 #: ui/options_player.rml:40
 msgid "How fast your view rotates and twists as you wall-walk."
 msgstr ""
+"Quanto la tua visuale ruota e si torce velocemente quando cammini sui muri."
 
 #: ui/options_player.rml:43
 msgid "Wall-walking toggles"
@@ -1682,7 +1697,7 @@ msgstr "Attiva / Disattiva l'arrampicata sui muri"
 
 #: ui/options_player.rml:45 ui/options_player.rml:50
 msgid "Tap key instead of hold key to activate."
-msgstr ""
+msgstr "Tocca il tasto invece di mantenerlo per attivare."
 
 #: ui/options_player.rml:48
 msgid "Sprint toggles"
@@ -1734,19 +1749,19 @@ msgstr "Intensità riverbero"
 
 #: ui/options_sound.rml:23
 msgid "Echo effect"
-msgstr ""
+msgstr "Effetto echo"
 
 #: ui/options_sound.rml:26
 msgid "Doppler intensity"
-msgstr ""
+msgstr "Intensità doppler"
 
 #: ui/options_sound.rml:28
 msgid "Pitch-shift effect when moving from or toward a sound."
-msgstr ""
+msgstr "Effetto pitch-shift quando ci si muove da o verso un suono."
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
-msgstr ""
+msgstr "Dispositivo OpenAL"
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
@@ -1843,23 +1858,23 @@ msgstr "Frame al secondo."
 
 #: ui/options_ui.rml:59
 msgid "Console colors"
-msgstr ""
+msgstr "Colori console"
 
 #: ui/options_ui.rml:63
 msgid "Red:"
-msgstr ""
+msgstr "Rosso:"
 
 #: ui/options_ui.rml:67
 msgid "Green:"
-msgstr ""
+msgstr "Verde:"
 
 #: ui/options_ui.rml:71
 msgid "Blue:"
-msgstr ""
+msgstr "Blu:"
 
 #: ui/options_ui.rml:75
 msgid "Alpha:"
-msgstr ""
+msgstr "Trasparenza:"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -1931,7 +1946,7 @@ msgstr "Pacchetti extra da caricare"
 
 #: ui/server_create.rml:59
 msgid "Building layout to use"
-msgstr ""
+msgstr "Costruendo lo schema da usare"
 
 #: ui/server_create.rml:67
 msgid "Start"
@@ -2066,7 +2081,7 @@ msgstr "Moltiplicatore di ricompensa momento per la costruzione"
 
 #: ui/server_setup.rml:136
 msgid "Deconstruction penalty multiplier"
-msgstr ""
+msgstr "Moltiplicatore di penalità da distruzione"
 
 #: ui/server_setup.rml:137
 msgid "Momentum penalty multiplier for deconstruction"
@@ -2074,7 +2089,7 @@ msgstr "Penalità moltiplicatore di momento per l'eliminazione di strutture"
 
 #: ui/server_setup.rml:144
 msgid "Building kill reward multiplier"
-msgstr ""
+msgstr "Moltiplicatore compenso per distruzione struttura"
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
@@ -4153,7 +4168,7 @@ msgstr "Oggetto iniziale sconosciuto"
 
 #: src/cgame/cg_servercmds.cpp:657
 msgid "Starting item not allowed"
-msgstr ""
+msgstr "Elemento di partenza non ammesso"
 
 #: src/cgame/cg_servercmds.cpp:663
 msgid ""
@@ -4377,7 +4392,7 @@ msgstr "%s o %s"
 #: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:342
 #, c-format
 msgid "%s, %s"
-msgstr ""
+msgstr "%s, %s"
 
 #: src/cgame/cg_tutorial.cpp:134
 #, c-format
@@ -4615,7 +4630,7 @@ msgstr "Premi %s per il menu."
 
 #: src/cgame/rocket/rocket_keys.cpp:325
 msgid "Unbound"
-msgstr ""
+msgstr "Non vincolato"
 
 #: src/sgame/sg_active.cpp:737
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
@@ -4660,11 +4675,11 @@ msgstr "$1$ ^2costruito^* da $2$$3$"
 
 #: src/sgame/sg_client.cpp:845
 msgid "Name change spam protection ($1$ = $2$)"
-msgstr ""
+msgstr "Protezione da spam cambio nome ($1$ = $2$)"
 
 #: src/sgame/sg_client.cpp:854
 msgid "Maximum name changes reached ($1$ = $2$)"
-msgstr ""
+msgstr "Raggiunto il numero massimo di cambio nome ($1$ = $2$)"
 
 #: src/sgame/sg_client.cpp:862
 msgid "You cannot change your name while you are muted"
@@ -4676,7 +4691,7 @@ msgstr "Nome troppo lungo! Deve essere meno di $1$ caratteri o codici colore."
 
 #: src/sgame/sg_client.cpp:1155
 msgid "Your GUID is not secure"
-msgstr ""
+msgstr "Il tuo GUID non è sicuro"
 
 #: src/sgame/sg_client.cpp:1196
 msgid "$1$^* connected"
@@ -4708,11 +4723,11 @@ msgstr "Limite tempo raggiunto"
 
 #: src/sgame/sg_main.cpp:1954
 msgid "$1$ minutes remaining!"
-msgstr ""
+msgstr "$1$ minuti rimanenti!"
 
 #: src/sgame/sg_main.cpp:1962
 msgid "1 minute remaining!"
-msgstr ""
+msgstr "1 minuto rimanente!"
 
 #: src/sgame/sg_main.cpp:1975
 msgid "Humans win"
@@ -4724,11 +4739,11 @@ msgstr "Vincono gli Alieni"
 
 #: src/sgame/sg_main.cpp:2003
 msgid "Empty teams skip map time exceeded."
-msgstr ""
+msgstr "Mappa saltata, tempo massimo scaduto con le squadre senza giocatori."
 
 #: src/sgame/sg_main.cpp:2167
 msgid "The game has been paused. Please wait."
-msgstr ""
+msgstr "Il gioco è stato messo in pausa. Per favore attendi."
 
 #: src/sgame/sg_main.cpp:2171
 msgid "Server: Game will auto-unpause in $1$ seconds"
@@ -4736,15 +4751,15 @@ msgstr "Server: Il gioco riprenderà tra $1$ secondi"
 
 #: src/sgame/sg_main.cpp:2190
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
-msgstr ""
+msgstr "Server: il gioco è ripartito automaticamente ($1$ minutes max)"
 
 #: src/sgame/sg_main.cpp:2193
 msgid "The game has been unpaused!"
-msgstr ""
+msgstr "Il gioco è ripartito!"
 
 #: src/sgame/sg_spawn_mover.cpp:1066
 msgid "^1This door is locked!"
-msgstr ""
+msgstr "^1Questa porta è chiusa!"
 
 #: src/sgame/sg_svcmds.cpp:464
 msgid "Alien team has admitted defeat"
@@ -4778,7 +4793,7 @@ msgstr "Giocatore '%s' spostato negli spettatori"
 
 #: src/sgame/sg_votes.cpp:81
 msgid "$1$: player is already muted"
-msgstr ""
+msgstr "$1$: il giocatore è già mutato"
 
 #: src/sgame/sg_votes.cpp:88
 #, c-format
@@ -4787,7 +4802,7 @@ msgstr "Silenzia giocatore '%s'"
 
 #: src/sgame/sg_votes.cpp:100
 msgid "$1$: player is not currently muted"
-msgstr ""
+msgstr "$1$: il giocatore non è mutato"
 
 #: src/sgame/sg_votes.cpp:107
 #, c-format
@@ -4796,63 +4811,63 @@ msgstr "Rimuovi il blocco delle comunicazioni al giocatore '%s'"
 
 #: src/sgame/sg_votes.cpp:119
 msgid "$1$: player already lost building rights"
-msgstr ""
+msgstr "$1$: il giocatore ha già perso i diritti per costruire"
 
 #: src/sgame/sg_votes.cpp:137
 msgid "$1$: player already has building rights"
-msgstr ""
+msgstr "$1$: il giocatore ha già i diritti per costruire"
 
 #: src/sgame/sg_votes.cpp:196 src/sgame/sg_votes.cpp:263
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
-msgstr ""
+msgstr "$1$: 'maps/$2$.bsp' non è presente nel server"
 
 #: src/sgame/sg_votes.cpp:233
 msgid "callvote: layout '$1$' could not be found on the server"
-msgstr ""
+msgstr "callvote: lo schema '$1$' non è presente nel server"
 
 #: src/sgame/sg_votes.cpp:254
 msgid "$1$: the next map is already set to '$2$'"
-msgstr ""
+msgstr "$1$: la prossima mappa è già impostata come '$2$'"
 
 #: src/sgame/sg_votes.cpp:313
 msgid "$1$: there are no active bots"
-msgstr ""
+msgstr "$1$: non ci sono bot attivi"
 
 #: src/sgame/sg_votes.cpp:332 src/sgame/sg_votes.cpp:354
 #: src/sgame/sg_votes.cpp:376
 msgid "$1$: number must be non-negative and smaller than $2$"
-msgstr ""
+msgstr "$1$: il numero deve essere non-negativo e minore di $2$"
 
 #: src/sgame/sg_votes.cpp:341
 #, c-format
 msgid "Fill each team with bots to %d"
-msgstr ""
+msgstr "Occupa ogni squadra con dei bot fino a %d"
 
 #: src/sgame/sg_votes.cpp:363
 #, c-format
 msgid "Fill the human team with bots to %d"
-msgstr ""
+msgstr "Occupa la squadra degli umani con bot fino a %d"
 
 #: src/sgame/sg_votes.cpp:385
 #, c-format
 msgid "Fill the alien team with bots to %d"
-msgstr ""
+msgstr "Occupa la squadra aliena con bot fino a %d"
 
 #: src/sgame/sg_votes.cpp:460
 msgid "$1$: voting not allowed here"
-msgstr ""
+msgstr "$1$: voto non permesso qui"
 
 #: src/sgame/sg_votes.cpp:469
 msgid "$1$: you are not permitted to call $2$ votes"
-msgstr ""
+msgstr "$1$: non ti è permesso richedere $2$ voti"
 
 #: src/sgame/sg_votes.cpp:478
 msgid "$1$: a vote is already in progress"
-msgstr ""
+msgstr "$1$: un voto è già in corso"
 
 #: src/sgame/sg_votes.cpp:499
 msgid "Invalid vote string"
-msgstr ""
+msgstr "Stringa voto non valida"
 
 #: src/sgame/sg_votes.cpp:502
 msgid "Valid vote commands are: "
@@ -4864,51 +4879,51 @@ msgstr "I comandi validi per la votazione di squadra sono: "
 
 #: src/sgame/sg_votes.cpp:534
 msgid "$1$: you have already called the maximum number of votes ($2$)"
-msgstr ""
+msgstr "$1$: hai già richiesto il numero massimo di voti ($2$)"
 
 #: src/sgame/sg_votes.cpp:544
 msgid "'$1$' votes have been disabled"
-msgstr ""
+msgstr "'$1$' i voti sono stati disattivati"
 
 #: src/sgame/sg_votes.cpp:565
 msgid "'$1$' votes are not allowed once $2$ minutes have passed"
-msgstr ""
+msgstr "'$1$' i voti non sono ammessi prima che passino $2$ minuti"
 
 #: src/sgame/sg_votes.cpp:579
 msgid "'$1$' votes are not allowed until $2$ minutes have passed"
-msgstr ""
+msgstr "'$1$' i voti non sono amessi fino a quando non sono passati $2$ minuti"
 
 #: src/sgame/sg_votes.cpp:594
 msgid "'$1$' votes are only allowed with less than $2$ minutes remaining"
-msgstr ""
+msgstr "'$1$' i voti non sono permessi con meno di $2$ minuti rimanenti"
 
 #: src/sgame/sg_votes.cpp:638
 msgid "$1$: no target"
-msgstr ""
+msgstr "$1$: nessun obiettivo"
 
 #: src/sgame/sg_votes.cpp:658
 msgid "$1$: player is a bot"
-msgstr ""
+msgstr "$1$: il giocatore è un bot"
 
 #: src/sgame/sg_votes.cpp:666 src/sgame/sg_votes.cpp:680
 msgid "$1$: admin is immune"
-msgstr ""
+msgstr "$1$: l'admin è immune"
 
 #: src/sgame/sg_votes.cpp:687
 msgid "$1$: player is not on your team"
-msgstr ""
+msgstr "$1$: il giocatore non è nella tua squadra"
 
 #: src/sgame/sg_votes.cpp:699
 msgid "$1$: You must provide a reason"
-msgstr ""
+msgstr "$1$: Devi fornire una ragione"
 
 #: src/sgame/sg_votes.cpp:721
 msgid "$1$^* called a vote: $2$"
-msgstr ""
+msgstr "$1$^* ha richiesto un voto: $2$"
 
 #: src/sgame/sg_votes.cpp:738
 msgid "$1$^* called a team vote: $2t$"
-msgstr ""
+msgstr "$1$^* ha richiesto un voto di squadra: $2t$"
 
 #: src/sgame/sg_votes.cpp:854
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
