@@ -87,7 +87,6 @@ enum buildFate_t
 	BF_REPLACE,
 	BF_DESTROY,
 	BF_TEAMKILL,
-	BF_UNPOWER,
 	BF_AUTO
 };
 
