@@ -48,6 +48,7 @@ bool G_IsWarnableMOD(meansOfDeath_t mod) {
 		case MOD_TRIGGER_HURT:
 		case MOD_DECONSTRUCT:
 		case MOD_REPLACE:
+		case MOD_BUILDLOG_REVERT:
 		case MOD_SUICIDE:
 			return false;
 
@@ -2672,14 +2673,20 @@ void G_BuildLogRevert( int id )
 						{
 							G_LogPrintf( "revert: remove %d %s",
 										 ent->num(), BG_Buildable( ent->s.modelindex )->name );
+
+							// HACK: set max health to refund all BP and avoid rewarding attackers
+							auto &health = *ent->entity->Get<HealthComponent>();
+							health.SetHealth( health.MaxHealth() );
+
+							G_Deconstruct( ent, nullptr, MOD_BUILDLOG_REVERT );
 						}
-
-						// Revert resources
-						G_FreeBudget( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints, 0 );
-						momentumChange[ log->buildableTeam ] -= log->momentumEarned;
-
-						// Free buildable
-						G_FreeEntity( ent );
+						else
+						{
+							// Free a pseudo-entity (see the destruction case below)
+							G_FreeBudget( log->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints, 0 );
+							momentumChange[ log->buildableTeam ] -= log->momentumEarned;
+							G_FreeEntity( ent );
+						}
 
 						break;
 					}
@@ -2689,17 +2696,15 @@ void G_BuildLogRevert( int id )
 
 		case BF_DECONSTRUCT:
 		case BF_REPLACE:
-				// Revert resources
-				G_SpendBudget( log->buildableTeam, BG_Buildable( log->modelindex )->buildPoints );
 				momentumChange[ log->buildableTeam ] += log->momentumEarned;
-
-				// Fall through to default
 				DAEMON_FALLTHROUGH;
 
-		// Destruction
+		// Destruction. TODO: try to unqueue BP if applicable
 		case BF_DESTROY:
 		case BF_TEAMKILL:
 		case BF_AUTO:
+			G_SpendBudget( log->buildableTeam, BG_Buildable( log->modelindex )->buildPoints );
+
 			// Spawn buildable
 			// HACK: Uses legacy pseudo entity. TODO: CBSE-ify.
 			buildable = G_NewEntity( NO_CBSE );
