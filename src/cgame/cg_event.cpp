@@ -100,6 +100,7 @@ static const struct {
 	{ "[overmind]",    true,  false, TEAM_ALIENS },
 	{ "",              true,  false, TEAM_NONE },   // (MOD_DECONSTRUCT)
 	{ "",              true,  false, TEAM_NONE },   // (MOD_REPLACE)
+	{ "",              true,  false, TEAM_NONE },   // (MOD_BUILDLOG_REVERT)
 };
 
 static Cvar::Cvar<bool> cg_showObituaries( "cg_showObituaries", "show obituaries in chat", Cvar::NONE, true );

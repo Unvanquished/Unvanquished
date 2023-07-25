@@ -91,7 +91,8 @@ static const char *const modNames[] =
 	"MOD_SPIKER",
 	"MOD_OVERMIND",
 	"MOD_DECONSTRUCT",
-	"MOD_REPLACE"
+	"MOD_REPLACE",
+	"MOD_BUILDLOG_REVERT",
 };
 
 /**
@@ -1010,6 +1011,10 @@ void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
 
 	switch ( mod )
 	{
+		case MOD_BUILDLOG_REVERT:
+			// let's pretend this never happened
+			return;
+
 		case MOD_DECONSTRUCT:
 			fate = BF_DECONSTRUCT;
 			break;
