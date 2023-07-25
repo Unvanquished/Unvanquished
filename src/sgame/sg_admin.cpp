@@ -5641,11 +5641,9 @@ bool G_admin_buildlog( gentity_t *ent )
 		time = ( log->time - level.startTime ) / 1000;
 		Com_sprintf( stamp, sizeof( stamp ), "%3d:%02d", time / 60, time % 60 );
 		ADMBP( va( "^2%c^7%-3d %s ^7%s^7%s%s%s %s%s%s",
-		           log->actor && log->fate != BF_REPLACE && log->fate != BF_UNPOWER ?
-		           '*' : ' ',
+		           log->actor && log->fate != BF_REPLACE ? '*' : ' ',
 		           i + MAX_CLIENTS,
-		           log->actor && ( log->fate == BF_REPLACE || log->fate == BF_UNPOWER ) ?
-		           "    \\_" : stamp,
+		           log->actor && ( log->fate == BF_REPLACE ) ? "    \\_" : stamp,
 		           BG_Buildable( log->modelindex )->humanName,
 		           log->builtBy && log->fate != BF_CONSTRUCT ? " (built by " : "",
 		           log->builtBy && log->fate != BF_CONSTRUCT ? log->builtBy->name[ log->builtBy->nameOffset ] : "",
@@ -5695,7 +5693,7 @@ bool G_admin_revert( gentity_t *ent )
 
 	log = &level.buildLog[ id % MAX_BUILDLOG ];
 
-	if ( !log->actor || log->fate == BF_REPLACE || log->fate == BF_UNPOWER )
+	if ( !log->actor || log->fate == BF_REPLACE )
 	{
 		// fixme: then why list them with an id # in build log ? - rez
 		ADMP( QQ( N_("^3revert:^* you can only revert direct player actions, "
