@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-07-19 05:52+0000\n"
-"Last-Translator: Ruben Salinas <ruben_78236@hotmail.com>\n"
+"PO-Revision-Date: 2023-07-26 03:08+0000\n"
+"Last-Translator: Alejanro Herrera Lopéz <danassoluv@adresse.biz.st>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -25,7 +25,7 @@ msgstr "Construir"
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr "Coste:"
+msgstr "Costo:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -60,9 +60,8 @@ msgid "Back to team selection"
 msgstr "Volver a la selección de equipo"
 
 #: ui/callvote_draw.rml:7
-#, fuzzy
 msgid "Call a vote for a draw"
-msgstr "Votar para empate"
+msgstr "Elegir como empate"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
@@ -103,7 +102,7 @@ msgstr "Cambiar mapa"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Votar: cambiar el siguiente mapa"
+msgstr "Votar: cambiar de mapa"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
@@ -147,25 +146,28 @@ msgstr ""
 
 #: ui/help_gameplay.rml:22
 msgid "More can be found on our website and other community places!"
-msgstr ""
+msgstr "¡Más información en nuestro sitio web y otros sitios de la comunidad!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Conversa con los jugadores y desarrolladores en los clientes IRC como "
+"Libera.Chat y Matrix, y también por Discord <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr ""
+"Consulta las noticias más recientes en los foros <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "Conoce más acerca del juego en la Wiki: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:28
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Por favor, reporta cualquier error en: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
@@ -180,23 +182,22 @@ msgstr ""
 "usarse para evolucionar hacia [dragoon] clases más poderosas."
 
 #: ui/help_gameplay.rml:39
-#, fuzzy
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
 "Los alienígenas pueden evolucionar siempre y cuando no estén a la vista de "
-"los humanos o sus estructuras. También pueden involucionar [granger] (por un "
-"precio) si se hallan alrededor de la [overmind] Mente Maestra."
+"los humanos o sus estructuras. También pueden involucionar a formas menos "
+"avanzadas (a cierto costo) cuando están cerca de la [Mente maestra]."
 
 #: ui/help_gameplay.rml:42
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Usa un [granger] granger para construir la Mente Maestra si ésta fuere "
-"destruida. ¡La necesitas viva para evolucionar!"
+"Usa un [labrador] para construir una Mente Maestra si ésta fuese destruida. ¡"
+"La necesitas viva para evolucionar!"
 
 #: ui/help_gameplay.rml:46
 msgid ""
@@ -205,25 +206,22 @@ msgid ""
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
 "Los humanos obtienen créditos cada vez que matan a un alienígena o destruyen "
-"una de sus estructuras. Con éstos, pueden comprar nuevas [lcannon] armas, "
-"[battlesuit] armaduras y otros artilugios como visores radar o mochilas a "
-"reacción."
+"una de sus estructuras. Con éstos, pueden comprar nuevas [armas], [armaduras]"
+" y otros artilugios como un radar o un jetpack."
 
 #: ui/help_gameplay.rml:49
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"Los humanos sólo pueden comprar y vender armas alrededor de la [armoury] "
-"armería. Si no hay ninguna en pie, usa el kit de construcción para "
-"reinstaurarla cuanto antes."
+"Los humanos sólo pueden comprar y vender armas en la [armería], si no hay "
+"alguna en pie. ¡Usa el kit de construcción para crear una cuanto antes!."
 
 #: ui/help_gameplay.rml:53
 msgid "Powering buildables"
 msgstr "Suministro de estructuras"
 
 #: ui/help_gameplay.rml:56
-#, fuzzy
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -231,22 +229,22 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
-"Construir estructuras requiere puntos de construcción. Tu equipo empieza con "
-"una pequeña cantidad de puntos de construcción que se pueden aumentar "
-"construyendo una [leech] estructura para minar. Los puntos de construcción "
-"se pierden si la estructura para minar se destruye."
+"Para construir una estructura se requieren los puntos de construcción. Tu "
+"equipo empieza con una pequeña cantidad de puntos de construcción, si deseas "
+"colocar más estructuras en un área. Puedes construir una minería de "
+"[Sanguíjuelas]. Ten en cuenta que los puntos de construcción se pierden si "
+"la estructura para minar se destruye."
 
 #: ui/help_gameplay.rml:59
-#, fuzzy
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
-"Cuando usas mas puntos de construcción de lo que tus estructuras para minar "
-"proveen, las construcciones se desactivaran hasta recuperar la energía "
-"necesaria para funcionar."
+"Cuando usas más [Puntos de Construcción] de lo que tus estructuras para "
+"minar disponen, las construcciones se desactivaran hasta recuperar la "
+"energía necesaria para funcionar."
 
 #: ui/help_gameplay.rml:60
 #, fuzzy
@@ -265,24 +263,22 @@ msgid "Mining structures"
 msgstr "Estructura para minar"
 
 #: ui/help_gameplay.rml:67
-#, fuzzy
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
 msgstr ""
-"Los puntos de construcción son adquiridos mediante 2 estructuras para minar: "
-"[drill] taladro para los humanos y [leech] sanguijuela para los aliens. "
-"Estas estructuras necesitan estar dispersos para maximizar la eficiencia."
+"Los puntos de construcción se adquieren a través de dos estructuras mineras: "
+"el [taladro] humano y la [sanguijuela] alienígena. Estas construcciones "
+"deben extenderse para mayor eficiencia."
 
 #: ui/help_gameplay.rml:70
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
 msgstr ""
-"No construir estructuras para minar cerca de otras estructuras para minar. "
-"Esto disminuiría la cantidad de recursos minados al tener que competir entre "
-"si."
+"No coloques estructuras para minar cerca de otras. ¡Esto disminuiría la "
+"cantidad de recursos minados al tener que competir entre si!"
 
 #: ui/help_gameplay.rml:73
 msgid ""
