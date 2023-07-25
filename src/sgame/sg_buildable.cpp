@@ -2696,7 +2696,10 @@ void G_BuildLogRevert( int id )
 				// Fall through to default
 				DAEMON_FALLTHROUGH;
 
-		default:
+		// Destruction
+		case BF_DESTROY:
+		case BF_TEAMKILL:
+		case BF_AUTO:
 			// Spawn buildable
 			// HACK: Uses legacy pseudo entity. TODO: CBSE-ify.
 			buildable = G_NewEntity( NO_CBSE );
