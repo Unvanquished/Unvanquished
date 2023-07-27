@@ -175,15 +175,14 @@ void AIDestroyValue( AIValue_t v )
 static botEntityAndDistance_t ClosestBuilding(gentity_t *self, bool alignment)
 {
 	botEntityAndDistance_t result;
-	result.distance = HUGE_QFLT;
-	result.ent = nullptr;
 	ForEntities<BuildableComponent>([&](Entity& e, BuildableComponent&) {
 		if (!e.Get<HealthComponent>()->Alive() ||
 		    (e.Get<TeamComponent>()->Team() == G_Team(self)) != alignment) {
 			return;
 		}
 		float distance = G_Distance(self, e.oldEnt);
-		if (distance < result.distance) {
+		if ( distance < result.distance )
+		{
 			result.distance = distance;
 			result.ent = e.oldEnt;
 		}
@@ -193,25 +192,23 @@ static botEntityAndDistance_t ClosestBuilding(gentity_t *self, bool alignment)
 
 botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
-	static const botEntityAndDistance_t nullEntity = { nullptr, HUGE_QFLT };
-	botEntityAndDistance_t              ret = nullEntity;
 	botMemory_t const* mind = self->botMind;
 
 	if ( e > E_NONE && e < E_NUM_BUILDABLES )
 	{
-		return self->botMind->closestBuildings[ e ];
+		return mind->closestBuildings[ e ];
 	}
 
 	switch ( e )
 	{
 	case E_NONE:
-		return ret;
+		return botEntityAndDistance_t();
 
 	case E_ENEMY:
 		return { mind->bestEnemy.enemy.get(), mind->bestEnemy.dist };
 
 	case E_DAMAGEDBUILDING:
-		return self->botMind->closestDamagedBuilding;
+		return mind->closestDamagedBuilding;
 
 	case E_FRIENDLYBUILDING:
 		return ClosestBuilding( self, true );
@@ -221,20 +218,18 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 		return ClosestBuilding( self, false );
 
 	case E_GOAL:
-		if (self->botMind->goal.targetsValidEntity()) {
-			ret.ent = self->botMind->goal.getTargetedEntity();
-			ret.distance = DistanceToGoal( self );
+		if ( mind->goal.targetsValidEntity() )
+		{
+			return { mind->goal.getTargetedEntity(), DistanceToGoal( self ) };
 		}
-		return ret;
+		return botEntityAndDistance_t();
 
 	case E_SELF:
-		ret.ent = self;
-		ret.distance = 0;
-		return ret;
+		return { self, 0.f };
 
 	default:
 		Log::Warn("Unknown AIEntity_t %d", e);
-		return ret;
+		return botEntityAndDistance_t();
 	}
 }
 
@@ -1097,14 +1092,6 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
-static botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
-{
-	botTarget_t target;
-	botEntityAndDistance_t en = AIEntityToGentity( self, e );
-	target = en.ent;
-	return target;
-}
-
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 {
 	float radius = 0;
@@ -1118,7 +1105,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 
 	if ( node != self->botMind->currentNode )
 	{
-		if ( !BotChangeGoal( self, BotGetMoveToTarget( self, ent ) ) )
+		if ( !BotChangeGoal( self, AIEntityToGentity( self, ent ).ent ) )
 		{
 			return STATUS_FAILURE;
 		}

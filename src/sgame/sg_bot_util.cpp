@@ -811,18 +811,13 @@ void BotFindClosestBuildings( gentity_t *self )
 
 void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
-	float minDistSqr;
-
-	gentity_t *target;
 	self->botMind->closestDamagedBuilding.ent = nullptr;
 	self->botMind->closestDamagedBuilding.distance = std::numeric_limits<float>::max();
 
-	minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
+	float minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
 
-	for ( target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities]; target++ )
+	for ( gentity_t const *target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities]; target++ )
 	{
-		float distSqr;
-
 		if ( !target->inuse )
 		{
 			continue;
@@ -853,7 +848,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		distSqr = DistanceSquared( self->s.origin, target->s.origin );
+		float distSqr = DistanceSquared( self->s.origin, target->s.origin );
 		if ( distSqr < minDistSqr )
 		{
 			self->botMind->closestDamagedBuilding.ent = target;

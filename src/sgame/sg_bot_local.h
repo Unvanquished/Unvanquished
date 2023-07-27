@@ -50,8 +50,8 @@ extern navMeshStatus_t navMeshLoaded;
 
 struct botEntityAndDistance_t
 {
-	gentity_t const *ent;
-	float distance;
+	gentity_t const *ent = nullptr;
+	float distance = HUGE_QFLT;
 };
 
 class botTarget_t
