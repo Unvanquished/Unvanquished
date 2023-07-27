@@ -1078,15 +1078,10 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	float height = wpa->height;
 	float secondaryRange;
 	glm::vec3 forward, right, up;
-	glm::vec3 muzzle;
-	glm::vec3 maxs, mins;
-	glm::vec3 targetPos;
-
-	trace_t trace;
 
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
-	muzzle = G_CalcMuzzlePoint( self, forward );
-	targetPos = target.getPos();
+	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
+	glm::vec3 targetPos = target.getPos();
 	switch ( self->client->ps.weapon )
 	{
 		case WP_ABUILD:
@@ -1199,9 +1194,10 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 			range = 4098 * 4; //large range for guns because guns have large ranges :)
 			secondaryRange = 0; //no secondary attack
 	}
-	maxs = {  width,  width,  width };
-	mins = { -width, -width, -height };
+	glm::vec3 maxs = {  width,  width,  height };
+	glm::vec3 mins = { -width, -width, -height };
 
+	trace_t trace;
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->num(), MASK_SHOT, 0 );
 
 	gentity_t const* hit = &g_entities[trace.entityNum];
