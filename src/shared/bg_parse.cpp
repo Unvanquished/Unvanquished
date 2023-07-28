@@ -1525,6 +1525,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		HEIGHT = 1 << 10,
 		DAMAGE = 1 << 11,
 		SPREAD = 1 << 12,
+		KNOCKBACK = 1 << 13,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1729,6 +1730,11 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 			PARSE( text, token );
 			wa->spread = atoi( token );
 			defined |= SPREAD;
+		}
+		else if ( !Q_stricmp( token, "doKnockback" ) )
+		{
+			wa->doKnockback = true;
+			defined |= KNOCKBACK;
 		}
 		else
 		{

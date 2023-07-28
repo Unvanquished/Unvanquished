@@ -500,8 +500,9 @@ MACHINEGUN
 ======================================================================
 */
 
-static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeath_t mod, int other )
+static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeath_t mod )
 {
+	int other = 0;
 	if ( self->client )
 	{
 		weapon_t wp = BG_PrimaryWeapon( self->client->ps.stats );
@@ -515,6 +516,7 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 		{
 			damage = wpa->damage;
 		}
+		other |= wpa->doKnockback ? DAMAGE_KNOCKBACK : 0;
 	}
 	ASSERT( damage > 0 );
 
@@ -1650,7 +1652,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MACHINEGUN:
-					FireBullet( self, -1.f, -1.f, MOD_MACHINEGUN, false );
+					FireBullet( self, -1.f, -1.f, MOD_MACHINEGUN );
 					break;
 
 				case WP_SHOTGUN:
@@ -1658,7 +1660,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_CHAINGUN:
-					FireBullet( self, -1.f, -1.f, MOD_CHAINGUN, false );
+					FireBullet( self, -1.f, -1.f, MOD_CHAINGUN );
 					break;
 
 				case WP_FLAMER:
@@ -1670,7 +1672,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MASS_DRIVER:
-					FireBullet( self, 0.f, -1, MOD_MDRIVER, DAMAGE_KNOCKBACK );
+					FireBullet( self, 0.f, -1, MOD_MDRIVER );
 					break;
 
 				case WP_LUCIFER_CANNON:
@@ -1678,7 +1680,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_LAS_GUN:
-					FireBullet( self, 0.f, -1, MOD_LASGUN, 0 );
+					FireBullet( self, 0.f, -1, MOD_LASGUN );
 					break;
 
 				case WP_PAIN_SAW:
@@ -1698,7 +1700,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MGTURRET:
-					FireBullet( self, MGTURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET, false );
+					FireBullet( self, MGTURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET );
 					break;
 
 				case WP_ABUILD:

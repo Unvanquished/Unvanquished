@@ -1394,6 +1394,8 @@ struct weaponAttributes_t : public itemAttributes_t
 	int       spread;
 
 	bool     longRanged;
+
+	bool doKnockback = false;
 };
 
 struct upgradeAttributes_t : public itemAttributes_t
