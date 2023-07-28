@@ -450,7 +450,7 @@ static void SendMeleeHitEvent( gentity_t *attacker, gentity_t *target, trace_t *
 	SendHitEvent( attacker, target, VEC2GLM( origin ), VEC2GLM( normal ), EV_WEAPON_HIT_ENTITY );
 }
 
-static gentity_t *FireMelee( gentity_t *self, meansOfDeath_t mod )
+static gentity_t *FireMelee( gentity_t *self )
 {
 	weapon_t wp = BG_PrimaryWeapon( self->client->ps.stats );
 	weaponAttributes_t const* wpa = BG_Weapon( wp );
@@ -469,7 +469,7 @@ static gentity_t *FireMelee( gentity_t *self, meansOfDeath_t mod )
 		return nullptr;
 	}
 
-	traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, mod );
+	traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, wpa->meansOfDeath );
 
 	// for painsaw. This makes really little sense to me, but this is refactoring, not bugsquashing.
 	if ( wp == WP_PAIN_SAW )
@@ -516,9 +516,10 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 		{
 			damage = wpa->damage;
 		}
+		mod = wpa->meansOfDeath;
 		other |= wpa->doKnockback ? DAMAGE_KNOCKBACK : 0;
 	}
-	ASSERT( damage > 0 );
+	ASSERT( damage > 0 && mod != MOD_UNKNOWN );
 
 	trace_t   tr;
 	vec3_t    end;
@@ -636,7 +637,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *
 		trap_Trace( &tr, origin, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
 		traceEnt = &g_entities[ tr.entityNum ];
 
-		traceEnt->entity->Damage( wpa->damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, static_cast<meansOfDeath_t>( MOD_SHOTGUN ) );
+		traceEnt->entity->Damage( wpa->damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, wpa->meansOfDeath );
 	}
 }
 
@@ -975,7 +976,7 @@ static void CancelBuild( gentity_t *self )
 	if ( self->client->ps.weapon == WP_ABUILD ||
 	     self->client->ps.weapon == WP_ABUILD2 )
 	{
-		FireMelee( self, MOD_ABUILDER_CLAW );
+		FireMelee( self );
 	}
 }
 
@@ -1126,7 +1127,7 @@ bool G_CheckDretchAttack( gentity_t *self )
 		return false;
 	}
 
-	traceEnt->entity->Damage( wpa->damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, static_cast<meansOfDeath_t>( MOD_LEVEL0_BITE ) );
+	traceEnt->entity->Damage( wpa->damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, wpa->meansOfDeath );
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
 
@@ -1624,27 +1625,13 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			switch ( weapon )
 			{
 				case WP_ALEVEL1:
-					FireMelee( self, MOD_LEVEL1_CLAW );
-					break;
-
-				case WP_ALEVEL3:
-					FireMelee( self, MOD_LEVEL3_CLAW );
-					break;
-
-				case WP_ALEVEL3_UPG:
-					FireMelee( self, MOD_LEVEL3_CLAW );
-					break;
-
 				case WP_ALEVEL2:
-					FireMelee( self, MOD_LEVEL2_CLAW );
-					break;
-
 				case WP_ALEVEL2_UPG:
-					FireMelee( self, MOD_LEVEL2_CLAW );
-					break;
-
+				case WP_ALEVEL3:
+				case WP_ALEVEL3_UPG:
 				case WP_ALEVEL4:
-					FireMelee( self, MOD_LEVEL4_CLAW );
+				case WP_PAIN_SAW:
+					FireMelee( self );
 					break;
 
 				case WP_BLASTER:
@@ -1652,7 +1639,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MACHINEGUN:
-					FireBullet( self, -1.f, -1.f, MOD_MACHINEGUN );
+					FireBullet( self, -1.f, -1.f, MOD_UNKNOWN );
 					break;
 
 				case WP_SHOTGUN:
@@ -1660,7 +1647,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_CHAINGUN:
-					FireBullet( self, -1.f, -1.f, MOD_CHAINGUN );
+					FireBullet( self, -1.f, -1.f, MOD_UNKNOWN );
 					break;
 
 				case WP_FLAMER:
@@ -1672,7 +1659,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_MASS_DRIVER:
-					FireBullet( self, 0.f, -1, MOD_MDRIVER );
+					FireBullet( self, 0.f, -1, MOD_UNKNOWN );
 					break;
 
 				case WP_LUCIFER_CANNON:
@@ -1680,11 +1667,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_LAS_GUN:
-					FireBullet( self, 0.f, -1, MOD_LASGUN );
-					break;
-
-				case WP_PAIN_SAW:
-					FireMelee( self, MOD_PAINSAW );
+					FireBullet( self, 0.f, -1, MOD_UNKNOWN );
 					break;
 
 				case WP_LOCKBLOB_LAUNCHER:

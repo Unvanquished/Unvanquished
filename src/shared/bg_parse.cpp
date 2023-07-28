@@ -1607,6 +1607,8 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		DAMAGE = 1 << 11,
 		SPREAD = 1 << 12,
 		KNOCKBACK = 1 << 13,
+		MEANS_OF_DEATH  = 1 << 14,
+		MEANS_OF_DEATH2 = 1 << 15,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -1816,6 +1818,18 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 		{
 			wa->doKnockback = true;
 			defined |= KNOCKBACK;
+		}
+		else if ( !Q_stricmp( token, "meansOfDeath" ) )
+		{
+			PARSE( text, token );
+			wa->meansOfDeath = BG_MeansOfDeathByName( token );
+			defined |= MEANS_OF_DEATH;
+		}
+		else if ( !Q_stricmp( token, "meansOfDeath2" ) )
+		{
+			PARSE( text, token );
+			wa->meansOfDeath2 = BG_MeansOfDeathByName( token );
+			defined |= MEANS_OF_DEATH2;
 		}
 		else
 		{

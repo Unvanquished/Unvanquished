@@ -1396,6 +1396,9 @@ struct weaponAttributes_t : public itemAttributes_t
 	bool     longRanged;
 
 	bool doKnockback = false;
+
+	meansOfDeath_t meansOfDeath;
+	meansOfDeath_t meansOfDeath2;
 };
 
 struct upgradeAttributes_t : public itemAttributes_t
