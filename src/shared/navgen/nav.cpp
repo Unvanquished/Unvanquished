@@ -771,9 +771,9 @@ static void rcFilterGaps( rcContext *ctx, int walkableRadius, int walkableClimb,
 							continue;
 						}
 
-						//keep going the direction for walkableRadius * 2 - 1 spans
+						//keep going the direction for walkableRadius * 2 spans
 						//because we can walk as long as at least part of our bbox is on a solid surface
-						for ( int i = 1; i < walkableRadius * 2; i++ ) {
+						for ( int i = 1; i <= walkableRadius * 2; i++ ) {
 							dx = dx + dirx;
 							dy = dy + diry;
 							if ( dx < 0 || dy < 0 || dx >= w || dy >= h ) {
