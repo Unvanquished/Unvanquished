@@ -1528,8 +1528,6 @@ void BG_MissileBounds( const missileAttributes_t *ma, vec3_t mins, vec3_t maxs )
 const beaconAttributes_t  *BG_BeaconByName( const char *name );
 const beaconAttributes_t  *BG_Beacon( int index );
 
-meansOfDeath_t            BG_MeansOfDeathByName( const char *name );
-
 void                      BG_InitAllConfigs();
 void                      BG_UnloadAllConfigs();
 
