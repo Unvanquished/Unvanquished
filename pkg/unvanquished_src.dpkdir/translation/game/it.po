@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-07-26 03:08+0000\n"
+"PO-Revision-Date: 2023-07-30 15:06+0000\n"
 "Last-Translator: Emily Fiorentini <emily@xewer.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/it/>\n"
@@ -1321,7 +1321,7 @@ msgstr "Permette alle particelle di rimbalzare via dalle superfici."
 
 #: ui/options_graphics.rml:242
 msgid "Gameplay"
-msgstr "Gioco"
+msgstr "Partita"
 
 #: ui/options_graphics.rml:244
 msgid "Building markers"
@@ -3623,7 +3623,7 @@ msgstr "Client %2d elencati"
 #: src/cgame/cg_event.cpp:265 src/cgame/cg_event.cpp:602
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
-msgstr "Hai ucciso ^1TEAMMATE^* %s"
+msgstr "Hai ucciso il ^1COMPAGNO DI SQUADRA^* %s"
 
 #: src/cgame/cg_event.cpp:1244
 msgid "The Overmind is under attack!"
@@ -3855,44 +3855,44 @@ msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
 msgstr ""
-"Il team alieno ha troppi giocatori. Prego attendere fino a quando un posto "
-"diventa disponibile oppure entra nel team umano."
+"La squadra aliena ha troppi giocatori. Prego attendere fino a quando un "
+"posto diventa disponibile oppure entra nel team umano."
 
 #: src/cgame/cg_servercmds.cpp:455
 msgid "The alien team has too many players"
-msgstr "Il team alieno ha troppi giocatori"
+msgstr "La squadra aliena ha troppi giocatori"
 
 #: src/cgame/cg_servercmds.cpp:459
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
 msgstr ""
-"Il team umano ha troppo giocatori. Prego attendere fino a quando un posto "
+"La squadra umana ha troppi giocatori. Prego attendere fino a quando un posto "
 "diventa disponibile oppure entra nel team alieno."
 
 #: src/cgame/cg_servercmds.cpp:461
 msgid "The human team has too many players"
-msgstr "Il team umano ha troppo giocatori"
+msgstr "La squadra umana ha troppi giocatori"
 
 #: src/cgame/cg_servercmds.cpp:465
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
-"Il team alieno è bloccato. In questo momento non puoi arruolarti con gli "
+"La squadra aliena è bloccata. In questo momento non puoi arruolarti con gli "
 "alieni."
 
 #: src/cgame/cg_servercmds.cpp:467
 msgid "The alien team is locked"
-msgstr "Il team alieno è bloccato"
+msgstr "La squadra aliena è bloccata"
 
 #: src/cgame/cg_servercmds.cpp:471
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
-"Il team umano è bloccato. In questo momento non puoi arruolarti con gli "
+"La squadra umana è bloccata. In questo momento non puoi arruolarti con gli "
 "umani."
 
 #: src/cgame/cg_servercmds.cpp:473
 msgid "The human team is locked"
-msgstr "Il team umano è bloccato"
+msgstr "La squadra umana è bloccata"
 
 #: src/cgame/cg_servercmds.cpp:477
 msgid ""
