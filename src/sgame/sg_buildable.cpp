@@ -353,7 +353,7 @@ static void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 
 static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 {
-	gentity_t *target = self->target.entity;
+	gentity_t *target = self->target.get();
 	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
 	float     distanceToTarget = LOCKBLOB_RANGE;
@@ -418,7 +418,7 @@ static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range 
 		return false;
 	}
 
-	if ( target.entity == self ) // is the target us?
+	if ( target.get() == self ) // is the target us?
 	{
 		return false;
 	}
@@ -443,7 +443,7 @@ static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range 
 		return false;
 	}
 
-	if ( Entities::IsDead( target.entity ) ) // is the target still alive?
+	if ( Entities::IsDead( target.get() ) ) // is the target still alive?
 	{
 		return false;
 	}
@@ -609,11 +609,12 @@ static void HMedistat_Think( gentity_t *self )
 		player = &g_entities[ entityList[ playerNum ] ];
 		client = player->client;
 
-		if ( self->target.entity == player && PM_Live( client->ps.pm_type ) &&
-			 ( !player->entity->Get<HealthComponent>()->FullHealth() ||
-		       client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
+		if ( self->target.get() == player && PM_Live( client->ps.pm_type )
+		     && ( !player->entity->Get<HealthComponent>()->FullHealth()
+		           || client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
 		{
 			occupied = true;
+			break;
 		}
 	}
 
@@ -673,7 +674,7 @@ static void HMedistat_Think( gentity_t *self )
 	// if we have a target, heal it
 	if ( self->target && self->target->client )
 	{
-		player = self->target.entity;
+		player = self->target.get();
 		client = player->client;
 		client->ps.stats[ STAT_STATE ] |= SS_HEALING_2X;
 

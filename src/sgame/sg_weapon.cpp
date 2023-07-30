@@ -983,7 +983,7 @@ static void FireForceDeconstruct( gentity_t *self )
 	{
 		return;
 	}
-	gentity_t* target = self->target.entity;
+	gentity_t* target = self->target.get();
 	vec3_t viewOrigin;
 	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
 	// The builder must still be in a range such that G_GetDeconstructibleBuildable could return
@@ -997,11 +997,11 @@ static void FireForceDeconstruct( gentity_t *self )
 		return;
 	}
 
-	if ( G_DeconstructDead( self->target.entity ) )
+	if ( G_DeconstructDead( self->target.get() ) )
 	{
 		return;
 	}
-	G_DeconstructUnprotected( self->target.entity, self );
+	G_DeconstructUnprotected( self->target.get(), self );
 }
 
 static void FireBuild( gentity_t *self, dynMenu_t menu )
@@ -1670,11 +1670,11 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_HIVE:
-					FireMissile( self, MIS_HIVE, self->target.entity, HiveMissileThink, HIVE_DIR_CHANGE_PERIOD, HIVE_LIFETIME, true );
+					FireMissile( self, MIS_HIVE, self->target.get(), HiveMissileThink, HIVE_DIR_CHANGE_PERIOD, HIVE_LIFETIME, true );
 					break;
 
 				case WP_ROCKETPOD:
-					FireMissile( self, MIS_ROCKET, self->target.entity, RocketThink, ROCKET_TURN_PERIOD, ROCKET_LIFETIME, false );
+					FireMissile( self, MIS_ROCKET, self->target.get(), RocketThink, ROCKET_TURN_PERIOD, ROCKET_LIFETIME, false );
 					break;
 
 				case WP_MGTURRET:

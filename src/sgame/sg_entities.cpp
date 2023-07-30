@@ -545,7 +545,7 @@ static gentity_t *G_ResolveEntityKeyword( gentity_t *self, std::string const& ke
 	}
 	else if ( !Q_stricmp( keyword.c_str(), "$target" ) && self->target )
 	{
-		resolution = self->target.entity;
+		resolution = self->target.get();
 	}
 	//TODO $tracker for entities, that currently target, track or aim for this entity, is the reverse to "target"
 
