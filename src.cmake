@@ -255,6 +255,11 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/botlib/bot_navdraw.h
     ${GAMELOGIC_DIR}/sgame/botlib/bot_types.h
 
+    ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.cpp
+    ${GAMELOGIC_DIR}/sgame/backend/CBSEBackend.h
+    ${GAMELOGIC_DIR}/sgame/backend/CBSEComponents.h
+    ${GAMELOGIC_DIR}/sgame/backend/CBSEEntities.h
+
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/AcidTubeComponent.h
     ${GAMELOGIC_DIR}/sgame/components/AlienBuildableComponent.cpp

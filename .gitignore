@@ -34,9 +34,6 @@ nacl_loader*
 *.pk3
 *.dpk
 
-# CBSE
-src/sgame/backend
-
 #ignore editor temporary files
 .*.swp
 .#*
