@@ -45,6 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "sg_votes.h"
 #include "shared/navgen/navgen.h"
+#include "sg_cm_world.h"
 
 struct g_admin_cmd_t
 {
@@ -5407,8 +5408,8 @@ bool G_admin_builder( gentity_t *ent )
 
 	glm::vec3 end = start + 1000.f * forward;
 
-	//TODO there are many occurrences of trap_Trace without mins/maxs, a specialized API is likely needed
-	trap_Trace( &tr, &start[0], nullptr, nullptr, &end[0], ent->s.number, MASK_PLAYERSOLID, 0 );
+	//TODO there are many occurrences of G_CM_Trace without mins/maxs, a specialized API is likely needed
+	G_CM_Trace( &tr, start, glm::vec3(), glm::vec3(), end, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == entityType_t::ET_BUILDABLE ) )

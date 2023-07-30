@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "Entities.h"
 
+#include "sg_cm_world.h"
+
 /*
 ================
 G_TeamFromString
@@ -102,7 +104,7 @@ void G_AreaTeamCommand( const gentity_t *ent, const char *cmd )
 	glm::vec3 maxs = VEC2GLM( ent->s.origin ) + range;
 	glm::vec3 mins = VEC2GLM( ent->s.origin ) - range;
 
-	num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
+	num = G_CM_AreaEntities( mins, maxs, entityList, MAX_GENTITIES );
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -355,7 +357,7 @@ gentity_t *GetCloseLocationEntity( gentity_t *ent )
 			continue;
 		}
 
-		if ( !trap_InPVS( ent->r.currentOrigin, eloc->r.currentOrigin ) )
+		if ( !G_CM_inPVS( VEC2GLM( ent->r.currentOrigin ), VEC2GLM( eloc->r.currentOrigin ) ) )
 		{
 			continue;
 		}

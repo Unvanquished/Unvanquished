@@ -485,7 +485,7 @@ void  G_TouchTriggers( gentity_t *ent )
 	VectorSubtract( mins, range, mins );
 	VectorAdd( maxs, range, maxs );
 
-	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), touch, MAX_GENTITIES );
 
 	// can't use ent->absmin, because that has a one unit pad
 	VectorAdd( ent->client->ps.origin, ent->r.mins, mins );
@@ -516,7 +516,7 @@ void  G_TouchTriggers( gentity_t *ent )
 			continue;
 		}
 
-		if ( !trap_EntityContact( mins, maxs, hit ) )
+		if ( !G_CM_EntityContact( VEC2GLM( mins ), VEC2GLM( maxs ), hit, traceType_t::TT_AABB ) )
 		{
 			continue;
 		}
@@ -674,7 +674,7 @@ static void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		pm.pmext = &client->pmext;
 		pm.cmd = *ucmd;
 		pm.tracemask = MASK_DEADSOLID; // spectators can fly through bodies
-		pm.trace = trap_Trace;
+		pm.trace = G_CM_Trace;
 		pm.pointcontents = G_CM_PointContents;
 
 		// Perform a pmove
@@ -878,7 +878,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 		      BG_InventoryContainsUpgrade( UP_RADAR, client->ps.stats ) &&
 		      Distance( self->s.origin, target->s.origin ) < RADAR_RANGE &&
 		      Beacon::EntityTaggable( target->s.number, team, false ) &&
-		      trap_InPVSIgnorePortals( self->s.origin, target->s.origin ) &&
+		      G_CM_inPVSIgnorePortals( VEC2GLM( self->s.origin ), VEC2GLM( target->s.origin ) ) &&
 		      ( target->s.eType != entityType_t::ET_BUILDABLE ||
 		        G_LineOfSight( self, target, MASK_SOLID, false ) ) ) )
 		{
@@ -1637,8 +1637,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 
 	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
 
-	trap_Trace( &tr, ent->client->oldOrigin, ent->r.mins, ent->r.maxs,
-	            ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( ent->client->oldOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
 	{
@@ -2118,7 +2117,7 @@ static void ClientThink_real( gentity_t *self )
 		pm.tracemask = MASK_PLAYERSOLID;
 	}
 
-	pm.trace          = trap_Trace;
+	pm.trace          = G_CM_Trace;
 	pm.pointcontents  = G_CM_PointContents;
 	pm.debugLevel     = g_debugMove.Get();
 	pm.noFootsteps    = 0;
@@ -2267,7 +2266,7 @@ static void ClientThink_real( gentity_t *self )
 
 		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
 		VectorMA( viewpoint, range1, view, point );
-		trap_Trace( &trace, &viewpoint[0], nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
+		G_CM_Trace( &trace, viewpoint, glm::vec3(), glm::vec3(), VEC2GLM( point ), self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 		ent = &g_entities[ trace.entityNum ];
 		bool activableTarget = ent->s.eType == entityType_t::ET_BUILDABLE || ent->s.eType == entityType_t::ET_MOVER;

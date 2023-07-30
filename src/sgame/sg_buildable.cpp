@@ -168,7 +168,7 @@ bool G_InsideBase(gentity_t *self) {
 		return false;
 	}
 
-	return trap_InPVSIgnorePortals(self->s.origin, mainBuilding->s.origin);
+	return G_CM_inPVSIgnorePortals( VEC2GLM( self->s.origin ), VEC2GLM( mainBuilding->s.origin ) );
 }
 
 bool G_DretchCanDamageEntity( const gentity_t *self, const gentity_t *ent )
@@ -262,8 +262,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		trace_t tr;
 		int     anim;
 
-		trap_Trace( &tr, self->s.origin, self->r.mins, self->r.maxs,
-		            self->s.origin, self->num(), MASK_PLAYERSOLID, 0 );
+		G_CM_Trace( &tr, VEC2GLM( self->s.origin ), VEC2GLM( self->r.mins ), VEC2GLM( self->r.maxs ), VEC2GLM( self->s.origin ), self->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		if ( tr.startsolid || tr.fraction < 1.0f )
 		{
@@ -499,8 +498,7 @@ static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range 
 		return false;
 	}
 
-	trap_Trace( &trace, self->s.pos.trBase, nullptr, nullptr, target->s.pos.trBase, self->num(),
-	            MASK_SHOT, 0 );
+	G_CM_Trace( &trace, VEC2GLM( self->s.pos.trBase ), glm::vec3(), glm::vec3(), VEC2GLM( target->s.pos.trBase ), self->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	if ( trace.contents & CONTENTS_SOLID ) // can we see the target?
 	{
@@ -631,7 +629,7 @@ static void HMedistat_Think( gentity_t *self )
 	mins[ 2 ] += ( self->r.mins[ 2 ] + self->r.maxs[ 2 ] );
 	maxs[ 2 ] += 32; // continue to heal jumping players but don't heal jetpack campers
 
-	numPlayers = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	numPlayers = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
 	occupied = false;
 
 	// mark occupied if still healing a player
@@ -890,7 +888,7 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 	VectorSubtract( mins, range, mins );
 	VectorAdd( maxs, range, maxs );
 
-	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), touch, MAX_GENTITIES );
 
 	VectorAdd( ent->s.origin, bmins, mins );
 	VectorAdd( ent->s.origin, bmaxs, maxs );
@@ -920,7 +918,7 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 			continue;
 		}
 
-		if ( !trap_EntityContact( mins, maxs, hit ) )
+		if ( !G_CM_EntityContact( VEC2GLM( mins ), VEC2GLM( maxs ), hit, traceType_t::TT_AABB ) )
 		{
 			continue;
 		}
@@ -1118,7 +1116,7 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, BUILDER_DECONSTRUCT_RANGE, forward, end );
-	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, ent->num(), MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &trace, VEC2GLM( viewOrigin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	buildable = &g_entities[ trace.entityNum ];
 
 	// Check if target is valid.
@@ -1589,9 +1587,9 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 
 	BG_BuildableBoundingBox( buildable, mins, maxs );
 
-	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, trap_Trace, entity_origin, angles, &tr1 );
-	trap_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0 );
-	trap_Trace( &tr3, ps->origin, nullptr, nullptr, entity_origin, ent->num(), MASK_PLAYERSOLID, 0 );
+	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, &G_CM_Trace, entity_origin, angles, &tr1 );
+	G_CM_Trace( &tr2, VEC2GLM( entity_origin ), VEC2GLM( mins ), VEC2GLM( maxs ), VEC2GLM( entity_origin ), ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr3, VEC2GLM( ps->origin ), glm::vec3(), glm::vec3(), VEC2GLM( entity_origin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	VectorCopy( entity_origin, origin );
 	*groundEntNum = tr1.entityNum;
@@ -1610,7 +1608,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		reason = IBE_NORMAL;
 	}
 
-	contents = G_CM_PointContents( entity_origin, -1 );
+	contents = G_CM_PointContents( VEC2GLM( entity_origin ), -1 );
 
 	// Prepare replacement of other buildables.
 	itemBuildError_t replacementError;
@@ -2216,8 +2214,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	VectorScale( built->s.origin2, -4096.0f, dest );
 	VectorAdd( dest, built->s.origin, dest );
 
-	trap_Trace( &tr, built->s.origin, built->r.mins, built->r.maxs, dest, built->num(),
-	            built->clipmask, 0 );
+	G_CM_Trace( &tr, VEC2GLM( built->s.origin ), VEC2GLM( built->r.mins ), VEC2GLM( built->r.maxs ), VEC2GLM( dest ), built->num(), built->clipmask, 0, traceType_t::TT_AABB );
 
 	if ( tr.startsolid && !force )
 	{
@@ -2629,7 +2626,7 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 		BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
 		VectorAdd( ent->s.pos.trBase, mins, mins );
 		VectorAdd( ent->s.pos.trBase, maxs, maxs );
-		num = trap_EntitiesInBox( mins, maxs, blockers, MAX_GENTITIES );
+		num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), blockers, MAX_GENTITIES );
 
 		for ( i = 0; i < num; i++ )
 		{

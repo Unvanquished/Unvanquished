@@ -28,6 +28,8 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 #include "sg_local.h"
 #include "Entities.h"
 
+#include "sg_cm_world.h"
+
 // entityState_t   | cbeacon_t    | description
 // ----------------+--------------+-------------
 // eType           | n/a          | always ET_BEACON
@@ -300,7 +302,7 @@ namespace Beacon //this should eventually become a class
 		for ( i = 0; i < numvecs; i++ )
 		{
 			VectorMA( origin, 500, vecs[ i ], end );
-			trap_Trace( &tr, origin, nullptr, nullptr, end, 0, MASK_SOLID, 0 );
+			G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), 0, MASK_SOLID, 0, traceType_t::TT_AABB );
 			VectorAdd( accumulator, tr.endpos, accumulator );
 		}
 
@@ -349,7 +351,7 @@ namespace Beacon //this should eventually become a class
 				if ( Distance( ent->s.origin, origin ) > radius )
 					continue;
 
-				if ( !trap_InPVS( ent->s.origin, origin ) )
+				if ( !G_CM_inPVS( VEC2GLM( ent->s.origin ), VEC2GLM( origin ) ) )
 					continue;
 			}
 
@@ -643,7 +645,7 @@ namespace Beacon //this should eventually become a class
 		// Do a trace for bounding boxes under the reticle first, they are prefered
 		{
 			trace_t tr;
-			trap_Trace( &tr, begin, nullptr, nullptr, end, skip, mask, 0 );
+			G_CM_Trace( &tr, VEC2GLM( begin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), skip, mask, 0, traceType_t::TT_AABB );
 			if ( EntityTaggable( tr.entityNum, team, true ) )
 			{
 				reticleEnt = g_entities + tr.entityNum;
@@ -671,13 +673,13 @@ namespace Beacon //this should eventually become a class
 			if( dot < 0.9 )
 				continue;
 
-			if( !trap_InPVS( ent->r.currentOrigin, begin ) )
+			if( !G_CM_inPVS( VEC2GLM( ent->r.currentOrigin ), VEC2GLM( begin ) ) )
 				continue;
 
 			// LOS
 			{
 				trace_t tr;
-				trap_Trace( &tr, begin, nullptr, nullptr, ent->r.currentOrigin, skip, mask, 0 );
+				G_CM_Trace( &tr, VEC2GLM( begin ), glm::vec3(), glm::vec3(), VEC2GLM( ent->r.currentOrigin ), skip, mask, 0, traceType_t::TT_AABB );
 				if( tr.entityNum != i )
 					continue;
 			}

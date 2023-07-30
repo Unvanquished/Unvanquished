@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "shared/bg_local.h" // MIN_WALK_NORMAL
 #include "Entities.h"
+#include "sg_cm_world.h"
 
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
@@ -1022,8 +1023,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		glm::vec3 invNormal = { 0, 0, -1 };
 		glm::vec3 targetPos = target.getPos();
 		glm::vec3 end = targetPos + 600.f * invNormal;
-		trap_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->num(),
-		            CONTENTS_SOLID | CONTENTS_PLAYERCLIP, MASK_ENTITY );
+		G_CM_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->num(), CONTENTS_SOLID | CONTENTS_PLAYERCLIP, MASK_ENTITY, traceType_t::TT_AABB );
 		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
 
@@ -1193,7 +1193,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	glm::vec3 mins = { -width, -width, -height };
 
 	trace_t trace;
-	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->num(), MASK_SHOT, 0 );
+	G_CM_Trace( &trace, muzzle, mins, maxs, targetPos, self->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	gentity_t const* hit = &g_entities[trace.entityNum];
 	bool hitEnemy = not ( G_OnSameTeam( self, hit ) || G_Team( hit ) == TEAM_NONE );
@@ -1267,12 +1267,12 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	if ( !trap_InPVS( &muzzle[0], &targetPos[0] ) )
+	if ( !G_CM_inPVS( muzzle, targetPos ) )
 	{
 		return false;
 	}
 
-	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], self->num(), mask, 0 );
+	G_CM_Trace( &trace, muzzle, glm::vec3(), glm::vec3(), targetPos, self->num(), mask, 0, traceType_t::TT_AABB );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -1803,7 +1803,7 @@ void BotFireWeaponAI( gentity_t *self )
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 
-	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], ENTITYNUM_NONE, MASK_SHOT, 0 );
+	G_CM_Trace( &trace, muzzle, glm::vec3(), glm::vec3(), targetPos, ENTITYNUM_NONE, MASK_SHOT, 0, traceType_t::TT_AABB );
 	distance = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
 	bool readyFire = ps.IsWeaponReady();
 	glm::vec3 target = self->botMind->goal.getPos();

@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "sg_cm_world.h"
 
 #include <glm/geometric.hpp>
 /*
@@ -120,11 +121,11 @@ static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spo
 				glm::vec3 test = origin + delta;
 
 				trace_t trace;
-				trap_Trace( &trace, &test[0], nullptr, nullptr, &test[0], ENTITYNUM_NONE, MASK_SOLID, 0 );
+				G_CM_Trace( &trace, test, glm::vec3(), glm::vec3(), test, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 				if ( !trace.allsolid )
 				{
-					trap_Trace( &trace, &test[0], nullptr, nullptr, &origin[0], ENTITYNUM_NONE, MASK_SOLID, 0 );
+					G_CM_Trace( &trace, test, glm::vec3(), glm::vec3(), origin, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 					delta *= trace.fraction;
 					total += delta;
 				}

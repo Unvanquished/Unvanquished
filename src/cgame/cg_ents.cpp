@@ -1026,8 +1026,7 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 
 		BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, lastOrigin );
 
-		CG_Trace( &tr, lastOrigin, vec3_origin, vec3_origin, cent->lerpOrigin,
-		          cent->currentState.number, MASK_SHOT, 0 );
+		CG_Trace( &tr, lastOrigin, vec3_origin, vec3_origin, cent->lerpOrigin, cent->currentState.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 		// don't let the projectile go through the floor
 		if ( tr.fraction < 1.0f )

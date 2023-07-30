@@ -37,7 +37,17 @@ Maryland 20850 USA.
 #ifndef SG_CM_WORLD_H_
 #define SG_CM_WORLD_H_
 
-#include "common/cm/cm_public.h"
+#include <glm/vec3.hpp>
+
+// daemon structs
+#include "engine/qcommon/q_shared.h"
+typedef int clipHandle_t;
+
+struct trace_t;
+
+// unvanquished structs
+struct gentity_t;
+struct sharedEntity_t;
 
 void G_CM_ClearWorld();
 
@@ -60,7 +70,7 @@ clipHandle_t G_CM_ClipHandleForEntity( const sharedEntity_t *ent );
 
 void         G_CM_SectorList_f();
 
-int          G_CM_AreaEntities( const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount );
+int          G_CM_AreaEntities( glm::vec3 const& mins, glm::vec3 const& maxs, int *entityList, int maxcount );
 
 // fills in a table of entity numbers with entities that have bounding boxes
 // that intersect the given area.  It is possible for a non-axial bmodel
@@ -69,12 +79,12 @@ int          G_CM_AreaEntities( const vec3_t mins, const vec3_t maxs, int *entit
 // returns the number of pointers filled in
 // The world entity is never returned in this list.
 
-int G_CM_PointContents( const vec3_t p, int passEntityNum );
+int G_CM_PointContents( glm::vec3 const& p, int passEntityNum );
 
 // returns the CONTENTS_* value from the world and all entities at the given point.
 
-void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-                 const vec3_t end, int passEntityNum, int contentmask, int skipmask,
+void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins, glm::vec3 const& maxs,
+                 glm::vec3 const& end, int passEntityNum, int contentmask, int skipmask,
                  traceType_t type );
 
 // mins and maxs are relative
@@ -87,16 +97,17 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
 
 // passEntityNum, if isn't ENTITYNUM_NONE, will be explicitly excluded from clipping checks
 
-void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, traceType_t type );
+void G_CM_ClipToEntity( trace_t *trace, glm::vec3 const& start, glm::vec3 const& mins, glm::vec3 const& maxs, glm::vec3 const& end, int entityNum, int contentmask, traceType_t type );
 
-bool G_CM_inPVS( const vec3_t p1, const vec3_t p2 );
+bool G_CM_inPVS( glm::vec3 const& p1, glm::vec3 const& p2 );
 
-bool G_CM_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 );
+bool G_CM_inPVSIgnorePortals( glm::vec3 const& p1, glm::vec3 const& p2 );
 
 void G_CM_AdjustAreaPortalState( gentity_t *ent, bool open );
 
-bool G_CM_EntityContact( const vec3_t mins, const vec3_t maxs, const gentity_t *gEnt, traceType_t type );
+bool G_CM_EntityContact( glm::vec3 const& mins, glm::vec3 const& maxs, const gentity_t *gEnt, traceType_t type );
 
 void G_CM_SetBrushModel( gentity_t *ent, std::string const& name );
 
+int G_CM_AreaEntities( glm::vec3 const& mins, glm::vec3 const& maxs, int *entityList, int maxcount );
 #endif // SG_CM_WORLD_H_

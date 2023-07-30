@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "sg_cm_world.h"
 
 Cvar::Cvar<float> g_rewardDestruction( "g_rewardDestruction", "Reward players when they destroy a building by momentum * g_rewardDestruction", Cvar::NONE, 10.f );
 // damage region data
@@ -820,7 +821,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorScale( midpoint, 0.5, midpoint );
 
 	VectorCopy( midpoint, dest );
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0  || tr.entityNum == targ->num() )
 	{
@@ -832,7 +833,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	dest[ 0 ] += 15.0;
 	dest[ 1 ] += 15.0;
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -842,7 +843,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	dest[ 0 ] += 15.0;
 	dest[ 1 ] -= 15.0;
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -852,7 +853,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	dest[ 0 ] -= 15.0;
 	dest[ 1 ] += 15.0;
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -862,7 +863,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	VectorCopy( midpoint, dest );
 	dest[ 0 ] -= 15.0;
 	dest[ 1 ] -= 15.0;
-	trap_Trace( &tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -894,7 +895,7 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		maxs[ i ] = origin[ i ] + radius;
 	}
 
-	numListedEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	numListedEntities = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
 
 	for ( e = 0; e < numListedEntities; e++ )
 	{
@@ -954,7 +955,7 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		maxs[ i ] = origin[ i ] + radius;
 	}
 
-	numListedEntities = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	numListedEntities = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
 
 	for ( e = 0; e < numListedEntities; e++ )
 	{

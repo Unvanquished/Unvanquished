@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 
+#include "sg_cm_world.h"
+
 // -----------
 // definitions
 // -----------
@@ -512,8 +514,7 @@ void G_RunMissile( gentity_t *ent )
 	passent = ent->r.ownerNum;
 
 	// general trace to see if we hit anything at all
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
-	            origin, passent, ent->clipmask, 0 );
+	G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( origin ), passent, ent->clipmask, 0, traceType_t::TT_AABB );
 
 	if ( tr.startsolid || tr.allsolid )
 	{
@@ -530,8 +531,7 @@ void G_RunMissile( gentity_t *ent )
 		}
 		else
 		{
-			trap_Trace( &tr, ent->r.currentOrigin, nullptr, nullptr, origin,
-			            passent, ent->clipmask, 0 );
+			G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), glm::vec3(), glm::vec3(), VEC2GLM( origin ), passent, ent->clipmask, 0, traceType_t::TT_AABB );
 
 			if ( tr.fraction < 1.0f )
 			{
@@ -547,8 +547,7 @@ void G_RunMissile( gentity_t *ent )
 				}
 				else
 				{
-					trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
-					            origin, passent, CONTENTS_BODY, 0 );
+					G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( origin ), passent, CONTENTS_BODY, 0, traceType_t::TT_AABB );
 
 					if ( tr.fraction < 1.0f )
 					{

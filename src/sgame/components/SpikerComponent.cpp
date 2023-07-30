@@ -2,6 +2,8 @@
 
 #include <glm/geometric.hpp>
 
+#include "../sg_cm_world.h"
+
 static Log::Logger logger("sgame.spiker");
 
 /** Delay between shots. */
@@ -156,14 +158,13 @@ bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 	const missileAttributes_t* ma = BG_Missile(MIS_SPIKER);
 	float missileSize = (float)ma->size;
 	trace_t trace;
-	vec3_t mins, maxs;
 	glm::vec3 end = VEC2GLM( entity.oldEnt->s.origin ) + (SPIKE_RANGE * direction);
 
 	// Test once with normal and once with inflated missile bounding box.
 	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_INFLATION}) {
-		mins[0] = mins[1] = mins[2] = -traceSize;
-		maxs[0] = maxs[1] = maxs[2] =  traceSize;
-		trap_Trace( &trace, entity.oldEnt->s.origin, mins, maxs, &end[0], entity.oldEnt->num(), ma->clipmask, 0 );
+		glm::vec3 mins = { -traceSize, -traceSize, -traceSize };
+		glm::vec3 maxs = {  traceSize,  traceSize,  traceSize };
+		G_CM_Trace( &trace, VEC2GLM( entity.oldEnt->s.origin ), mins, maxs, end, entity.oldEnt->num(), ma->clipmask, 0, traceType_t::TT_AABB );
 		gentity_t* hit = &g_entities[trace.entityNum];
 
 		if (hit && G_OnSameTeam(entity.oldEnt, hit)) {

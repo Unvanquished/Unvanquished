@@ -95,7 +95,7 @@ bool SpotWouldTelefrag( gentity_t *spot )
 
 	VectorAdd( spot->s.origin, playerMins, mins );
 	VectorAdd( spot->s.origin, playerMaxs, maxs );
-	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), touch, MAX_GENTITIES );
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -422,7 +422,7 @@ static void SpawnCorpse( gentity_t *ent )
 	trap_UnlinkEntity( ent );
 
 	// if client is in a nodrop area, don't leave the body
-	contents = G_CM_PointContents( origin, -1 );
+	contents = G_CM_PointContents( VEC2GLM( origin ), -1 );
 
 	if ( contents & CONTENTS_NODROP )
 	{

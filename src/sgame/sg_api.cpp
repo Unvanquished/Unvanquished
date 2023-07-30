@@ -39,6 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "shared/VMMain.h"
 #include "shared/CommonProxies.h"
 #include "shared/server/sg_api.h"
+#include "common/cm/cm_public.h"
 
 #include <glm/vec3.hpp>
 
@@ -163,48 +164,6 @@ void trap_LinkEntity(gentity_t *ent)
 void trap_UnlinkEntity(gentity_t *ent)
 {
 	G_CM_UnlinkEntity(ent);
-}
-
-int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int *list, int maxcount)
-{
-	return G_CM_AreaEntities(mins, maxs, list, maxcount);
-}
-
-int trap_EntitiesInBox( const glm::vec3& mins, const glm::vec3& maxs, int *list, int maxcount )
-{
-	return G_CM_AreaEntities(&mins[0], &maxs[0], list, maxcount);
-}
-
-bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *ent)
-{
-	return G_CM_EntityContact( mins, maxs, ent, traceType_t::TT_AABB );
-}
-
-void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-                 const vec3_t end, int passEntityNum, int contentmask, int skipmask )
-{
-	G_CM_Trace(results, start, mins, maxs, end, passEntityNum, contentmask, skipmask, traceType_t::TT_AABB);
-}
-
-void trap_Trace( trace_t *results, const glm::vec3& start, const glm::vec3& mins, const glm::vec3& maxs,
-                 const glm::vec3& end, int passEntityNum, int contentmask , int skipmask)
-{
-	trap_Trace( results, &start[0], &mins[0], &maxs[0], &end[0], passEntityNum, contentmask, skipmask );
-}
-
-int trap_PointContents(const vec3_t point, int passEntityNum)
-{
-	return G_CM_PointContents( point, passEntityNum );
-}
-
-bool trap_InPVS(const vec3_t p1, const vec3_t p2)
-{
-	return G_CM_inPVS( p1, p2 );
-}
-
-bool trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
-{
-	return G_CM_inPVSIgnorePortals( p1, p2 );
 }
 
 void trap_AdjustAreaPortalState(gentity_t *ent, bool open)

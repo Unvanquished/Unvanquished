@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <memory>
 #include <vector>
 
+#include <glm/vec3.hpp>
+
 #include "common/Common.h"
 #include "common/KeyIdentification.h"
 #include "engine/qcommon/q_shared.h"
@@ -2032,9 +2034,11 @@ void CG_ModelDoor( centity_t *cent );
 //
 
 void CG_BuildSolidList();
+int  CG_PointContents( glm::vec3 const& point, int passEntityNum );
 int  CG_PointContents( const vec3_t point, int passEntityNum );
-void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-               const vec3_t end, int skipNumber, int mask, int skipmask );
+void CG_Trace( trace_t *result, glm::vec3 const& start, glm::vec3 const& mins, glm::vec3 const& maxs, glm::vec3 const& end,
+		int skipNumber, int mask, int skipmask, traceType_t type );
+void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int skipNumber, int mask, int skipmask, traceType_t type );
 void CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                   const vec3_t end, int skipNumber, int mask, int skipmask );
 void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,

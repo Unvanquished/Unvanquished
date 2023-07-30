@@ -219,15 +219,27 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 CG_Trace
 ================
 */
+// placeholder function only waiting to be removed
 void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-               const vec3_t end, int skipNumber, int mask, int skipmask )
+               const vec3_t end, int skipNumber, int mask, int skipmask, traceType_t type )
+{
+	glm::vec3 start2 = start ? VEC2GLM( start ) : glm::vec3( 0.f, 0.f, 0.f );
+	glm::vec3 mins2  = mins  ? VEC2GLM( mins )  : glm::vec3( 0.f, 0.f, 0.f );
+	glm::vec3 maxs2  = maxs  ? VEC2GLM( maxs )  : glm::vec3( 0.f, 0.f, 0.f );
+	glm::vec3 end2   = end   ? VEC2GLM( end )   : glm::vec3( 0.f, 0.f, 0.f );
+
+	CG_Trace( result, start2, mins2, maxs2, end2, skipNumber, mask, skipmask, type );
+}
+
+void CG_Trace( trace_t *result, glm::vec3 const& start, glm::vec3 const& mins, glm::vec3 const& maxs, glm::vec3 const& end,
+		int skipNumber, int mask, int skipmask, traceType_t type )
 {
 	trace_t t;
 
-	CM_BoxTrace( &t, start, end, mins, maxs, 0, mask, skipmask, traceType_t::TT_AABB );
+	CM_BoxTrace( &t, &start[0], &end[0], &mins[0], &maxs[0], 0, mask, skipmask, type );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_AABB );
+	CG_ClipMoveToEntities( &start[0], &mins[0], &maxs[0], &end[0], skipNumber, mask, skipmask, &t, type );
 
 	*result = t;
 }
@@ -278,6 +290,11 @@ void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
 CG_PointContents
 ================
 */
+int   CG_PointContents( glm::vec3 const& point, int passEntityNum )
+{
+	return CG_PointContents( &point[0], passEntityNum );
+}
+
 int   CG_PointContents( const vec3_t point, int passEntityNum )
 {
 	clipHandle_t  cmodel;

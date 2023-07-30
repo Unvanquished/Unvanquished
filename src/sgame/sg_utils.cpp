@@ -259,7 +259,7 @@ void G_KillBox( gentity_t *ent )
 
 	VectorAdd( ent->r.currentOrigin, ent->r.mins, mins );
 	VectorAdd( ent->r.currentOrigin, ent->r.maxs, maxs );
-	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), touch, MAX_GENTITIES );
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -759,8 +759,7 @@ bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool u
 		return false;
 	}
 
-	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, nullptr, nullptr, to->s.origin,
-	            from->num(), mask, 0 );
+	G_CM_Trace( &trace, VEC2GLM( useTrajBase ? from->s.pos.trBase : from->s.origin ), glm::vec3(), glm::vec3(), VEC2GLM( to->s.origin ), from->num(), mask, 0, traceType_t::TT_AABB );
 
 	// Also check for fraction in case the mask is chosen so that the trace skips the target entity
 	return ( trace.entityNum == to->num() || trace.fraction == 1.0f );
@@ -791,7 +790,7 @@ bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
 {
 	trace_t trace;
 
-	trap_Trace( &trace, point1, nullptr, nullptr, point2, ENTITYNUM_NONE, MASK_SOLID, 0 );
+	G_CM_Trace( &trace, VEC2GLM( point1 ), glm::vec3(), glm::vec3(), VEC2GLM( point2 ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }

@@ -2,6 +2,7 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/io.hpp>
 #include "../Entities.h"
+#include "../sg_cm_world.h"
 
 static Log::Logger turretLogger("sgame.turrets");
 
@@ -188,22 +189,25 @@ bool TurretComponent::TargetCanBeHit() {
 	glm::vec3 traceEnd     = traceStart + range * aimDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->num(),
-	           MASK_SHOT, 0);
+	G_CM_Trace(&tr, VEC2GLM( traceStart ), glm::vec3(), glm::vec3(), VEC2GLM( traceEnd ), entity.oldEnt->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	return (tr.entityNum == target->num());
 }
 
-bool TurretComponent::TargetValid(Entity& target, bool newTarget) {
-	if (!target.Get<ClientComponent>() ||
-	    target.Get<SpectatorComponent>() ||
-	    Entities::IsDead(target) ||
-	    (target.oldEnt->flags & FL_NOTARGET) ||
-	    !Entities::OnOpposingTeams(entity, target) ||
-	    G_Distance(entity.oldEnt, target.oldEnt) > range ||
-	    !trap_InPVS(entity.oldEnt->s.origin, target.oldEnt->s.origin)) {
+bool TurretComponent::TargetValid(Entity& target, bool newTarget)
+{
+	if ( !target.Get<ClientComponent>()
+			|| target.Get<SpectatorComponent>()
+			|| Entities::IsDead(target)
+			|| ( target.oldEnt->flags & FL_NOTARGET )
+			|| !Entities::OnOpposingTeams(entity, target)
+			|| G_Distance( entity.oldEnt, target.oldEnt ) > range
+			|| !G_CM_inPVS( VEC2GLM( entity.oldEnt->s.origin ), VEC2GLM( target.oldEnt->s.origin ) )
+			)
+	{
 
-		if (!newTarget) {
+		if ( !newTarget )
+		{
 			turretLogger.Verbose("Target lost: Out of range or eliminated.");
 		}
 
@@ -238,8 +242,7 @@ void TurretComponent::SetBaseDirection() {
 	glm::vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->num(),
-	           MASK_SHOT, 0);
+	G_CM_Trace(&tr, traceStart, glm::vec3(), glm::vec3(), traceEnd, entity.oldEnt->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.
 	if (tr.entityNum == ENTITYNUM_WORLD ||

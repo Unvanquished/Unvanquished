@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 #include "sg_votes.h"
+#include "sg_cm_world.h"
 
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
@@ -1268,7 +1269,7 @@ static void Cmd_SayArea_f( gentity_t *ent )
 	VectorAdd( ent->s.origin, range, maxs );
 	VectorSubtract( ent->s.origin, range, mins );
 
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -1313,7 +1314,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 	VectorAdd( ent->s.origin, range, maxs );
 	VectorSubtract( ent->s.origin, range, mins );
 
-	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -1749,15 +1750,15 @@ static bool FindRoomForClassChangeVertically(
 	// before starting the real trace
 	VectorCopy( newOrigin, temp );
 	temp[ 2 ] += nudgeHeight;
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->num(), MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( newOrigin ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( temp ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	temp[ 2 ] = newOrigin[2] + nudgeHeight * tr.fraction;
 
 	// trace down to the ground so that we can evolve on slopes
-	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( temp ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( newOrigin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	VectorCopy( tr.endpos, newOrigin );
 
 	// make REALLY sure
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( newOrigin ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( newOrigin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	return !tr.startsolid && tr.fraction == 1.0f;
 }
 
@@ -1793,16 +1794,12 @@ static bool FindRoomForClassChangeLaterally(
 		trace_t trace;
 		vec3_t start_point;
 		VectorMA( origin, distance, delta, start_point );
-		trap_Trace( &trace, start_point, toMins, toMaxs,
-				origin, ent->num(),
-				MASK_PLAYERSOLID, 0 );
+		G_CM_Trace( &trace, VEC2GLM( start_point ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( origin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		vec3_t first_trace_end;
 		VectorCopy(trace.endpos, first_trace_end);
 		// make REALLY sure
-		trap_Trace( &trace, first_trace_end, toMins, toMaxs,
-				first_trace_end, ent->num(),
-				MASK_PLAYERSOLID, 0 );
+		G_CM_Trace( &trace, VEC2GLM( first_trace_end ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( first_trace_end ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		if ( trace.startsolid || trace.fraction < 1.0f )
 			continue; // collision
@@ -1935,7 +1932,7 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 	glm::vec3 mins = VEC2GLM( ent->client->ps.origin ) - range;
 
 	int entityList[ MAX_GENTITIES ];
-	int num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
+	int num = G_CM_AreaEntities( mins, maxs, entityList, MAX_GENTITIES );
 
 	int alienBuildingsInRange = 0;
 	int humansInRange = 0;
@@ -2243,7 +2240,7 @@ static void Cmd_Ignite_f( gentity_t *player )
 	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
 	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 1000, forward, end );
-	trap_Trace( &trace, viewOrigin, nullptr, nullptr, end, player->num(), MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &trace, VEC2GLM( viewOrigin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), player->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	if ( trace.entityNum == ENTITYNUM_WORLD ) {
 		G_SpawnFire( trace.endpos, trace.plane.normal, player );
@@ -4070,7 +4067,7 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	VectorMA( origin, 65536, forward, end );
 
 	G_UnlaggedOn( ent, origin, 65536 );
-	trap_Trace( &tr, origin, nullptr, nullptr, end, ent->num(), MASK_PLAYERSOLID, 0 );
+	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	G_UnlaggedOff( );
 
 	// Evaluate flood limit.

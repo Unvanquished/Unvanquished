@@ -285,6 +285,9 @@ struct pmoveExt_t
 	bool cancelDeconstructCharge;
 };
 
+typedef void ( *trace_cb_t )( trace_t *, glm::vec3 const&, glm::vec3 const&, glm::vec3 const&, glm::vec3 const&, int, int, int, traceType_t );
+typedef int ( *point_cb_t )( glm::vec3 const& point, int passEntityNum );
+
 #define MAXTOUCH 32
 struct pmove_t
 {
@@ -321,10 +324,8 @@ struct pmove_t
 	// callbacks to test the world
 	// these will be different functions during game and cgame
 	/*void    (*trace)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );*/
-	void ( *trace )( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-	                 const vec3_t end, int passEntityNum, int contentMask, int skipmask );
-
-	int ( *pointcontents )( const vec3_t point, int passEntityNum );
+	trace_cb_t trace;
+	point_cb_t pointcontents;
 };
 
 // if a full pmove isn't done on the client, you can just update the angles
@@ -1479,10 +1480,9 @@ bool BG_RotateAxis( vec3_t surfNormal, vec3_t inAxis[ 3 ],
                         vec3_t outAxis[ 3 ], bool inverse, bool ceiling );
 void     BG_GetClientNormal( const playerState_t *ps, vec3_t normal );
 void     BG_GetClientViewOrigin( const playerState_t *ps, vec3_t viewOrigin );
+
 void     BG_PositionBuildableRelativeToPlayer( playerState_t *ps, const vec3_t mins, const vec3_t maxs,
-                                               void ( *trace )( trace_t *, const vec3_t, const vec3_t,
-                                               const vec3_t, const vec3_t, int, int, int ),
-                                               vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
+                                               trace_cb_t trace, vec3_t outOrigin, vec3_t outAngles, trace_t *tr );
 int BG_GetPlayerPrice( playerState_t &ps );
 int BG_GetPlayerValue( playerState_t &ps );
 

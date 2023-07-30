@@ -79,13 +79,11 @@ static gentity_t *G_TestEntityPosition( gentity_t *ent )
 
 	if ( ent->client )
 	{
-		trap_Trace( &tr, ent->client->ps.origin, ent->r.mins, ent->r.maxs, ent->client->ps.origin,
-		            ent->num(), ent->clipmask, 0 );
+		G_CM_Trace( &tr, VEC2GLM( ent->client->ps.origin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
 	}
 	else
 	{
-		trap_Trace( &tr, ent->s.pos.trBase, ent->r.mins, ent->r.maxs, ent->s.pos.trBase,
-		            ent->num(), ent->clipmask, 0 );
+		G_CM_Trace( &tr, VEC2GLM( ent->s.pos.trBase ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->s.pos.trBase ), ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
 	}
 
 	if ( tr.startsolid )
@@ -331,7 +329,7 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 	// unlink the pusher so we don't get it in the entityList
 	trap_UnlinkEntity( pusher );
 
-	listedEntities = trap_EntitiesInBox( &totalMins[0], &totalMaxs[0], entityList, MAX_GENTITIES );
+	listedEntities = G_CM_AreaEntities( totalMins, totalMaxs, entityList, MAX_GENTITIES );
 
 	// move the pusher to its final position
 	VectorAdd( pusher->r.currentOrigin, move, pusher->r.currentOrigin );
@@ -854,7 +852,7 @@ static void Think_CloseModelDoor( gentity_t *ent )
 	gentity_t *check;
 	bool  canClose = true;
 
-	numEntities = trap_EntitiesInBox( clipBrush->r.absmin, clipBrush->r.absmax, entityList, MAX_GENTITIES );
+	numEntities = G_CM_AreaEntities( VEC2GLM( clipBrush->r.absmin ), VEC2GLM( clipBrush->r.absmax ), entityList, MAX_GENTITIES );
 
 	//set brush solid
 	trap_LinkEntity( ent->mapEntity.clipBrush );
@@ -2719,28 +2717,27 @@ void SP_func_pendulum( gentity_t *self )
 
 static void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
 {
-  gentity_t *e;
-  vec3_t mins, maxs;
-  trace_t tr;
+	gentity_t *e;
+	vec3_t mins, maxs;
+	trace_t tr;
 
-  for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
-  {
-    if( !e->r.linked || !e->clipmask )
-      continue;
+	for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
+	{
+		if( !e->r.linked || !e->clipmask )
+			continue;
 
-    VectorAdd( e->r.currentOrigin, e->r.mins, mins );
-    VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
+		VectorAdd( e->r.currentOrigin, e->r.mins, mins );
+		VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
 
-    if( !trap_EntityContact( mins, maxs, ent ) )
-      continue;
+		if( !G_CM_EntityContact( VEC2GLM( mins ), VEC2GLM( maxs ), ent, traceType_t::TT_AABB ) )
+			continue;
 
-    trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
-                e->r.currentOrigin, e->num(), e->clipmask, 0 );
+		G_CM_Trace( &tr, VEC2GLM( e->r.currentOrigin ), VEC2GLM( e->r.mins ), VEC2GLM( e->r.maxs ), VEC2GLM( e->r.currentOrigin ), e->num(), e->clipmask, 0, traceType_t::TT_AABB );
 
-	if( tr.entityNum != ENTITYNUM_NONE ) {
-	  Entities::Kill(e, activator, MOD_CRUSH);
+		if( tr.entityNum != ENTITYNUM_NONE ) {
+			Entities::Kill(e, activator, MOD_CRUSH);
+		}
 	}
-  }
 }
 
 /*

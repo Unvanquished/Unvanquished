@@ -3,6 +3,8 @@
 
 #include <glm/geometric.hpp>
 
+#include "../sg_cm_world.h"
+
 constexpr int   SHUTTER_OPEN_TIME    = 1000;
 constexpr int   TARGET_SEARCH_PERIOD = 500;
 constexpr int   LOCKON_TIME          = 500;
@@ -209,7 +211,7 @@ bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin,
 	glm::vec3 end  = origin + ROCKETPOD_RANGE * direction;
 
 	trace_t trace;
-	trap_Trace( &trace, &origin[0], &mins[0], &maxs[0], &end[0], passEntityNumber, MASK_SHOT, 0 );
+	G_CM_Trace( &trace, origin, mins, maxs, end, passEntityNumber, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	// TODO: Refactor area damage (testing) helpers.
 	return !G_RadiusDamage(
