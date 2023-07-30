@@ -53,7 +53,7 @@ void G_InitGentityMinimal( gentity_t *entity )
 {
 	EmptyEntity::Params params;
 	params.oldEnt = entity;
-	entity->entity = new EmptyEntity( params );
+	entity->entity.reset( new EmptyEntity( params ) );
 }
 
 void G_InitGentity( gentity_t *entity )
@@ -186,7 +186,7 @@ void G_FreeEntity( gentity_t *entity )
 		BaseClustering::Remove(entity);
 	}
 
-	delete entity->entity;
+	entity->entity.reset();
 
 	unsigned generation = entity->generation;
 

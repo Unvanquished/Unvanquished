@@ -1763,7 +1763,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	BUILDABLE_ENTITY_SET_PARAMS(params);
 
 #define BUILDABLE_ENTITY_END(entityType)\
-	ent->entity = new entityType(params);
+	ent->entity.reset( new entityType(params) );
 
 /** Creates basic buildable entity of specific type. */
 #define BUILDABLE_ENTITY_CREATE(entityType)\

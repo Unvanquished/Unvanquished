@@ -710,7 +710,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire->s.eType   = entityType_t::ET_FIRE;
 	fire->clipmask  = 0;
 
-	fire->entity = new FireEntity(FireEntity::Params{fire});
+	fire->entity.reset( new FireEntity(FireEntity::Params{fire}) );
 	fire->entity->Ignite(fireStarter);
 
 	// attacker

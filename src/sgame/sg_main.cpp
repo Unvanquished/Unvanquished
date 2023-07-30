@@ -735,7 +735,7 @@ void G_ShutdownGame( int /* restart */ )
 	 * delete cbse entities attached to gentities
 	 */
 	for (int i = 0; i < level.num_entities; i++) {
-		delete level.gentities[i].entity;
+		level.gentities[i].entity.reset();
 	}
 
 	Parse_FreeGlobalDefines();

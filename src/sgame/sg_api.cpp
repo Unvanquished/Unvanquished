@@ -32,9 +32,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-#include "sg_local.h"
 #include "sg_cm_world.h"
 #include "botlib/bot_api.h"
+#include "backend/CBSEBackend.h"
+
 #include "engine/server/sg_msgdef.h"
 #include "shared/VMMain.h"
 #include "shared/CommonProxies.h"
@@ -43,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <glm/vec3.hpp>
 
+struct gentity_t;
 // Symbols required by the shared VMMain code
 
 int VM::VM_API_VERSION = GAME_API_VERSION;

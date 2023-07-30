@@ -37,7 +37,7 @@ void TurretComponent::SetRange(float range) {
 }
 
 Entity* TurretComponent::GetTarget() {
-	return target ? target->entity : nullptr;
+	return target ? target->entity.get() : nullptr;
 }
 
 void TurretComponent::RemoveTarget() {
@@ -77,7 +77,7 @@ Entity* TurretComponent::FindEntityTarget(std::function<bool(Entity&, Entity&)> 
 		turretLogger.Verbose("Target acquired.");
 	}
 
-	return target ? target->entity : nullptr;
+	return target ? target->entity.get() : nullptr;
 }
 
 bool TurretComponent::MoveHeadToTarget(int timeDelta) {

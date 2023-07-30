@@ -1316,7 +1316,7 @@ void ClientBegin( int clientNum )
 	G_InitGentity( ent );
 
 	// Create a basic client entity, will be replaced by a more specific one later.
-	ent->entity = new ClientEntity({ent, client});
+	ent->entity.reset( new ClientEntity( {ent, client} ) );
 
 	ent->touch = 0;
 	ent->pain = 0;
@@ -1377,23 +1377,26 @@ void ClientBegin( int clientNum )
 
 /** Creates basic client entity of specific type, copying state from an old instance. */
 template <typename entityType>
-void ClientEntityCreate( gentity_t* ent, Entity *oldEntity, gclient_t *client, class_t pcl, bool evolving )
+void ClientEntityCreate( gentity_t* ent, bool evolving )
 {
 	typename entityType::Params params;
 	params.oldEnt = ent;
-	params.Client_clientData = client;
+	params.Client_clientData = ent->entity->Get<ClientComponent>()->GetClientData();
+	class_t pcl = params.Client_clientData->pers.classSelection;
 	params.Health_maxHealth = BG_Class(pcl)->health;
-	ent->entity = new entityType(params);
+	Entity *oldEntity = ent->entity.release();
+	ent->entity.reset( new entityType( params ) );
 	if (evolving) {
 		*ent->entity->Get<HealthComponent>() = *oldEntity->Get<HealthComponent>();
 	}
+	delete oldEntity;
 }
 
 /**
  * @brief Handles re-spawning of clients and creation of appropriate entities.
  */
 static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
-	Entity *oldEntity = ent->entity;
+	Entity *oldEntity = ent->entity.get();
 	gclient_t *client = oldEntity->Get<ClientComponent>()->GetClientData();
 	class_t pcl = client->pers.classSelection;
 
@@ -1407,66 +1410,64 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 			SpectatorEntity::Params params;
 			params.oldEnt = ent;
 			params.Client_clientData = client;
-			ent->entity = new SpectatorEntity(params);
+			ent->entity.reset( new SpectatorEntity(params) );
 			break;
 
 		case PCL_ALIEN_BUILDER0:
-			ClientEntityCreate<GrangerEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<GrangerEntity>( ent, evolving );
 			break;
 
 		case PCL_ALIEN_BUILDER0_UPG:
-			ClientEntityCreate<AdvGrangerEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<AdvGrangerEntity>( ent, evolving );
 			break;
 
 		case PCL_ALIEN_LEVEL0:
-			ClientEntityCreate<DretchEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<DretchEntity>( ent, evolving );
 			break;
 
 		case PCL_ALIEN_LEVEL1:
-			ClientEntityCreate<MantisEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<MantisEntity>( ent, evolving );
 			break;
 
 		case PCL_ALIEN_LEVEL2:
-			ClientEntityCreate<MarauderEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<MarauderEntity>( ent, evolving );
 			break;
 
 		case PCL_ALIEN_LEVEL2_UPG:
-			ClientEntityCreate<AdvMarauderEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<AdvMarauderEntity>( ent, evolving );
 			break;
 
 		case PCL_ALIEN_LEVEL3:
-			ClientEntityCreate<DragoonEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<DragoonEntity>( ent, evolving );
 			break;
 
 		case PCL_ALIEN_LEVEL3_UPG:
-			ClientEntityCreate<AdvDragoonEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<AdvDragoonEntity>( ent, evolving );
 			break;
 
 		case PCL_ALIEN_LEVEL4:
-			ClientEntityCreate<TyrantEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<TyrantEntity>( ent, evolving );
 			break;
 
 		case PCL_HUMAN_NAKED:
-			ClientEntityCreate<NakedHumanEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<NakedHumanEntity>( ent, evolving );
 			break;
 
 		case PCL_HUMAN_LIGHT:
-			ClientEntityCreate<LightHumanEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<LightHumanEntity>( ent, evolving );
 			break;
 
 		case PCL_HUMAN_MEDIUM:
-			ClientEntityCreate<MediumHumanEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<MediumHumanEntity>( ent, evolving );
 			break;
 
 		case PCL_HUMAN_BSUIT:
-			ClientEntityCreate<HeavyHumanEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<HeavyHumanEntity>( ent, evolving );
 			break;
 
 		default:
 			ASSERT_UNREACHABLE();
 	}
-
-	delete oldEntity;
 }
 
 /*

@@ -133,7 +133,7 @@ struct gentity_t
 	//================================
 
 	// New style entity
-	Entity* entity;
+	std::unique_ptr<Entity> entity;
 
 	std::string classname; //used by buildables & other spawned at start of map
 	mapEntity_t mapEntity;

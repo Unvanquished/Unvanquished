@@ -75,7 +75,7 @@ void Entities::Kill(gentity_t *ent, gentity_t *source, meansOfDeath_t meansOfDea
 	if (!source) {
 		Entities::Kill(ent, meansOfDeath);
 	} else {
-		if (ent) Entities::Kill(*ent->entity, source->entity, meansOfDeath);
+		if (ent) Entities::Kill(*ent->entity, source->entity.get(), meansOfDeath);
 	}
 }
 
