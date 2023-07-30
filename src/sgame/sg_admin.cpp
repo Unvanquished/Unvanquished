@@ -4028,7 +4028,7 @@ bool G_admin_listplayers( gentity_t *ent )
 	char            t; // color and team letter
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
-	char            bot, muted, denied;
+	char            muted, denied;
 	int             authed;
 	char            namecleaned[ MAX_NAME_LENGTH ];
 	char            name2cleaned[ MAX_NAME_LENGTH ];
@@ -4046,6 +4046,10 @@ bool G_admin_listplayers( gentity_t *ent )
 	{
 		p = &level.clients[ i ];
 
+		if ( level.gentities[ i ].r.svFlags & SVF_BOT )
+		{
+			continue;
+		}
 		if ( p->pers.connected == CON_DISCONNECTED )
 		{
 			continue;
@@ -4074,7 +4078,6 @@ bool G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
-		bot = ( level.gentities[ i ].r.svFlags & SVF_BOT ) ? 'R' : ' ';
 		muted = ( p->pers.namelog->muted
 		          || G_admin_permission( p->ent(), ADMF_NO_GLOBALCHAT )
 		          || G_admin_permission( p->ent(), ADMF_NO_TEAMCHAT ) ) ? 'M' : ' ';
@@ -4122,7 +4125,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		int colorlen = Color::StrlenNocolor( lname );
 		int namelen  = strlen( lname );
 
-		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^* ^5%c^1%c%c%s^7 %s^* %s%s%s %s",
+		ADMBP( va( "%2i %s%c^7 %-2i^2%c^7 %*s^* ^5%c^1%c%s^7 %s^* %s%s%s %s",
 		           i,
 		           Color::ToString( color ).c_str(),
 		           t,
@@ -4130,7 +4133,6 @@ bool G_admin_listplayers( gentity_t *ent )
 		           ( canset && hint ) ? '*' : ' ',
 		           namelen + ( admin_level_maxname - colorlen ),
 		           lname,
-		           bot,
 		           muted,
 		           denied,
 		           canseeWarn ? ( p->pers.hasWarnings ? "^3W" : " " ) : "",
@@ -4147,7 +4149,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		ADMBP( va( "^2*^* = you may set this player's admin level." ) );
 	}
 
-	ADMBP( va( "^5R^* = this player is a bot.       ^1M^* = this player is muted." ) );
+	ADMBP( va( "^1M^* = this player is muted." ) );
 	ADMBP( va( "^1B^* = this player may not build.  %s", ( canseeWarn ? "^3W^* = this player has been warned." : "" ) ) );
 
 	ADMBP_end();
