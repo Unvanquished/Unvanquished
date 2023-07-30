@@ -35,19 +35,34 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_spawn.h"
 
+#define MAX_SPAWN_VARS       64
+#define MAX_SPAWN_VARS_CHARS 4096
+
+// spawn variables
+static bool l_spawning; // the G_Spawn*() functions are valid
+int      l_numSpawnVars;
+char     *l_spawnVars[ MAX_SPAWN_VARS ][ 2 ]; // key / value pairs
+int      l_numSpawnVarChars;
+char     l_spawnVarChars[ MAX_SPAWN_VARS_CHARS ];
+
+void G_Spawned()
+{
+	l_spawning = false;
+}
+
 bool G_SpawnString( const char *key, const char *defaultString, const char **out )
 {
-	if ( !level.spawning )
+	if ( !l_spawning )
 	{
 		*out = defaultString;
 		return false;
 	}
 
-	for ( int i = 0; i < level.numSpawnVars; i++ )
+	for ( int i = 0; i < l_numSpawnVars; i++ )
 	{
-		if ( !Q_stricmp( key, level.spawnVars[ i ][ 0 ] ) )
+		if ( !Q_stricmp( key, l_spawnVars[ i ][ 0 ] ) )
 		{
-			*out = level.spawnVars[ i ][ 1 ];
+			*out = l_spawnVars[ i ][ 1 ];
 			return true;
 		}
 	}
@@ -880,7 +895,7 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 G_SpawnGEntityFromSpawnVars
 
 Spawn an entity and fill in all of the level fields from
-level.spawnVars[], then call the class specfic spawn function
+l_spawnVars[], then call the class specfic spawn function
 ===================
 */
 static void G_SpawnGEntityFromSpawnVars()
@@ -890,9 +905,9 @@ static void G_SpawnGEntityFromSpawnVars()
 	// get the next free entity
 	spawningEntity = G_NewEntity( NO_CBSE );
 
-	for ( int i = 0; i < level.numSpawnVars; i++ )
+	for ( int i = 0; i < l_numSpawnVars; i++ )
 	{
-		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], spawningEntity );
+		G_ParseField( l_spawnVars[ i ][ 0 ], l_spawnVars[ i ][ 1 ], spawningEntity );
 	}
 
 	if(G_SpawnBoolean( "nop", false ) || G_SpawnBoolean( "notunv", false ))
@@ -907,11 +922,11 @@ static void G_SpawnGEntityFromSpawnVars()
 	 * in the server, where we dont know as much anymore about it,
 	 * so we fail rather here, so mappers have a chance to remove it
 	 */
-	if( level.numSpawnVars <= 1 )
+	if( l_numSpawnVars <= 1 )
 	{
-		if ( level.numSpawnVars == 1 )
+		if ( l_numSpawnVars == 1 )
 		{
-			Log::Warn("encountered ghost-entity #%i with only one field: %s = %s", spawningEntity->num(), level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+			Log::Warn("encountered ghost-entity #%i with only one field: %s = %s", spawningEntity->num(), l_spawnVars[ 0 ][ 0 ], l_spawnVars[ 0 ][ 1 ] );
 		}
 		else
 		{
@@ -988,20 +1003,17 @@ G_AddSpawnVarToken
 */
 static char *G_AddSpawnVarToken( const char *string )
 {
-	int  l;
-	char *dest;
+	size_t l = strlen( string );
 
-	l = strlen( string );
-
-	if ( level.numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
+	if ( l_numSpawnVarChars + l + 1 > MAX_SPAWN_VARS_CHARS )
 	{
 		Sys::Drop( "G_AddSpawnVarToken: MAX_SPAWN_VARS_CHARS" );
 	}
 
-	dest = level.spawnVarChars + level.numSpawnVarChars;
+	char *dest = l_spawnVarChars + l_numSpawnVarChars;
 	memcpy( dest, string, l + 1 );
 
-	level.numSpawnVarChars += l + 1;
+	l_numSpawnVarChars += l + 1;
 
 	return dest;
 }
@@ -1011,7 +1023,7 @@ static char *G_AddSpawnVarToken( const char *string )
 G_ParseSpawnVars
 
 Parses a brace bounded set of key / value pairs out of the
-level's entity strings into level.spawnVars[]
+level's entity strings into l_spawnVars[]
 
 This does not actually spawn an entity.
 ====================
@@ -1021,8 +1033,8 @@ static bool G_ParseSpawnVars()
 	char keyname[ MAX_TOKEN_CHARS ];
 	char com_token[ MAX_TOKEN_CHARS ];
 
-	level.numSpawnVars = 0;
-	level.numSpawnVarChars = 0;
+	l_numSpawnVars = 0;
+	l_numSpawnVarChars = 0;
 
 	// parse the opening brace
 	if ( !trap_GetEntityToken( com_token, sizeof( com_token ) ) )
@@ -1061,14 +1073,14 @@ static bool G_ParseSpawnVars()
 			Sys::Drop( "G_ParseSpawnVars: closing brace without data" );
 		}
 
-		if ( level.numSpawnVars == MAX_SPAWN_VARS )
+		if ( l_numSpawnVars == MAX_SPAWN_VARS )
 		{
 			Sys::Drop( "G_ParseSpawnVars: MAX_SPAWN_VARS" );
 		}
 
-		level.spawnVars[ level.numSpawnVars ][ 0 ] = G_AddSpawnVarToken( keyname );
-		level.spawnVars[ level.numSpawnVars ][ 1 ] = G_AddSpawnVarToken( com_token );
-		level.numSpawnVars++;
+		l_spawnVars[ l_numSpawnVars ][ 0 ] = G_AddSpawnVarToken( keyname );
+		l_spawnVars[ l_numSpawnVars ][ 1 ] = G_AddSpawnVarToken( com_token );
+		l_numSpawnVars++;
 	}
 
 	return true;
@@ -1217,8 +1229,7 @@ Parses textual entity definitions out of an entstring and spawns gentities.
 */
 void G_SpawnEntitiesFromString()
 {
-	level.numSpawnVars = 0;
-
+	l_spawning = true;
 	// the worldspawn is not an actual entity, but it still
 	// has a "spawn" function to perform any global setup
 	// needed by a level (setting configstrings or cvars, etc)

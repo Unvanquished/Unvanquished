@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "botlib/bot_api.h"
 #include "common/FileSystem.h"
 
+#include "sg_map_entity.h"
+
 #define INTERMISSION_DELAY_TIME 1000
 
 level_locals_t level;
@@ -582,8 +584,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 		std::string layout = Cvar::GetValue( "layout" );
 		G_MapConfigs( map, layout );
 	}
-
-	level.spawning = true;
 
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString();
@@ -2203,7 +2203,7 @@ void G_RunFrame( int levelTime )
 	G_admin_pubkey();
 
 	// now we are done spawning
-	level.spawning = false;
+	G_Spawned();
 
 	G_CheckPmoveParamChanges();
 

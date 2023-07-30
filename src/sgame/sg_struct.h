@@ -550,8 +550,6 @@ struct buildLog_t
 	vec3_t      angles2;
 };
 
-#define MAX_SPAWN_VARS       64
-#define MAX_SPAWN_VARS_CHARS 4096
 #define MAX_BUILDLOG         1024
 
 struct level_locals_t
@@ -593,13 +591,6 @@ struct level_locals_t
 	int      sortedClients[ MAX_CLIENTS ]; // sorted by score
 
 	int      snd_fry; // sound index for standing in lava
-
-	// spawn variables
-	bool spawning; // the G_Spawn*() functions are valid
-	int      numSpawnVars;
-	char     *spawnVars[ MAX_SPAWN_VARS ][ 2 ]; // key / value pairs
-	int      numSpawnVarChars;
-	char     spawnVarChars[ MAX_SPAWN_VARS_CHARS ];
 
 	// intermission state
 	int intermissionQueued; // intermission was qualified, but

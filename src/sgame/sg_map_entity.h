@@ -341,5 +341,6 @@ void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir );
 void G_FireEntity( gentity_t *ent, gentity_t *activator );
 
 gentityCallActionType_t G_GetCallActionTypeFor( char const* action );
+void G_Spawned();
 
 #endif
