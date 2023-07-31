@@ -265,7 +265,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		trace_t tr;
 		int     anim;
 
-		G_CM_Trace( &tr, VEC2GLM( self->s.origin ), VEC2GLM( self->r.mins ), VEC2GLM( self->r.maxs ), VEC2GLM( self->s.origin ), self->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+		G_CM_Trace( &tr, VEC2GLM( self->s.origin ), mins, maxs, VEC2GLM( self->s.origin ), self->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		if ( tr.startsolid || tr.fraction < 1.0f )
 		{
@@ -869,10 +869,7 @@ void G_UpdateBuildablePowerStates()
  */
 void G_BuildableTouchTriggers( gentity_t *ent )
 {
-	int              i, num;
 	int              touch[ MAX_GENTITIES ];
-	gentity_t        *hit;
-	trace_t          trace;
 	constexpr glm::vec3 range = { 10.f, 10.f, 10.f };
 
 	// dead buildables don't activate triggers
@@ -886,14 +883,13 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 	glm::vec3 mins = VEC2GLM( ent->s.origin ) + bmins - range;
 	glm::vec3 maxs = VEC2GLM( ent->s.origin ) + bmaxs + range;
 
-	num = G_CM_AreaEntities( mins, maxs, touch, MAX_GENTITIES );
+	int num = G_CM_AreaEntities( mins, maxs, touch, MAX_GENTITIES );
+	mins = bmins + VEC2GLM( ent->s.origin );
+	maxs = bmaxs + VEC2GLM( ent->s.origin );
 
-	mins = VEC2GLM( ent->s.origin ) + bmins;
-	maxs = VEC2GLM( ent->s.origin ) + bmaxs;
-
-	for ( i = 0; i < num; i++ )
+	for ( int i = 0; i < num; i++ )
 	{
-		hit = &g_entities[ touch[ i ] ];
+		gentity_t* hit = &g_entities[ touch[ i ] ];
 
 		if ( !hit->touch )
 		{
@@ -916,15 +912,14 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 			continue;
 		}
 
-		if ( !G_CM_EntityContact( VEC2GLM( mins ), VEC2GLM( maxs ), hit, traceType_t::TT_AABB ) )
+		if ( !G_CM_EntityContact( mins, maxs, hit, traceType_t::TT_AABB ) )
 		{
 			continue;
 		}
 
-		memset( &trace, 0, sizeof( trace ) );
-
 		if ( hit->touch )
 		{
+			trace_t trace;
 			hit->touch( hit, ent, &trace );
 		}
 	}
@@ -933,11 +928,11 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 /**
  * @return Whether origin is within a distance of radius of a buildable of the given type.
  */
-bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
+bool G_BuildableInRange( glm::vec3 const& origin, float radius, buildable_t buildable )
 {
 	gentity_t *neighbor = nullptr;
 
-	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, VEC2GLM( origin ), radius ) ) )
+	while ( ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, radius ) ) )
 	{
 		if ( neighbor->s.eType != entityType_t::ET_BUILDABLE || !neighbor->spawned || Entities::IsDead( neighbor ) ||
 		     ( neighbor->buildableTeam == TEAM_HUMANS && !neighbor->powered ) )
@@ -957,27 +952,26 @@ bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 /**
  * @return Whether two buildables built at the given locations would intersect.
  */
-static bool BuildablesIntersect( buildable_t a, vec3_t originA,
-                                     buildable_t b, vec3_t originB )
+static bool BuildablesIntersect( buildable_t a, glm::vec3 const& originA, buildable_t b, glm::vec3 const& originB )
 {
 	glm::vec3 minsA, maxsA;
 	glm::vec3 minsB, maxsB;
 
 	BG_BoundingBox( a, minsA, maxsA );
-	minsA += VEC2GLM( originA );
-	maxsA += VEC2GLM( originA );
+	minsA += originA;
+	maxsA += originA;
 
 	BG_BoundingBox( b, minsB, maxsB );
-	minsB += VEC2GLM( originB );
-	maxsB += VEC2GLM( originB );
+	minsB += originB;
+	maxsB += originB;
 
 	return BoundsIntersect( &minsA[0], &maxsA[0], &minsB[0], &maxsB[0] );
 }
 
-static buildable_t cmpBuildable;
-static vec3_t      cmpOrigin;
 static int CompareBuildablesForRemoval( const void *a, const void *b )
 {
+	static buildable_t cmpBuildable;
+	static glm::vec3   cmpOrigin;
 	int precedence[] =
 	{
 		BA_NONE,
@@ -998,18 +992,17 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 		BA_H_REACTOR
 	};
 
-	gentity_t *buildableA, *buildableB;
 	int       aPrecedence = 0, bPrecedence = 0;
 	bool  aMatches = false, bMatches = false;
 
-	buildableA = * ( gentity_t ** ) a;
-	buildableB = * ( gentity_t ** ) b;
+	gentity_t const* buildableA = * ( gentity_t ** ) a;
+	gentity_t const* buildableB = * ( gentity_t ** ) b;
 
 	// Prefer the one that collides with the thing we're building
 	aMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                (buildable_t) buildableA->s.modelindex, buildableA->s.origin );
+	                                static_cast<buildable_t>( buildableA->s.modelindex ), VEC2GLM( buildableA->s.origin ) );
 	bMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                (buildable_t) buildableB->s.modelindex, buildableB->s.origin );
+	                                static_cast<buildable_t>( buildableB->s.modelindex ), VEC2GLM( buildableB->s.origin ) );
 
 	if ( aMatches && !bMatches )
 	{
@@ -1049,7 +1042,7 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	// If both are unpowered, prefer the closer buildable
 	if ( !buildableA->powered && !buildableB->powered )
 	{
-		if ( Distance( cmpOrigin, buildableA->s.origin ) < Distance( cmpOrigin, buildableB->s.origin ) )
+		if ( DistanceSquared( &cmpOrigin[0], buildableA->s.origin ) < DistanceSquared( &cmpOrigin[0], buildableB->s.origin ) )
 		{
 			return -1;
 		}
@@ -1341,7 +1334,7 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
  *
  * Sets level.markedBuildables and level.numBuildablesForRemoval.
  */
-static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3_t origin )
+static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, glm::vec3 const& origin )
 {
 	int              entNum, listLen;
 	gentity_t        *ent, *list[ MAX_GENTITIES ];
@@ -1404,7 +1397,8 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		buildable_t otherBuildable = (buildable_t)entity.oldEnt->s.modelindex;
 		team_t      otherTeam      = entity.oldEnt->buildableTeam;
 
-		if (BuildablesIntersect(buildable, origin, otherBuildable, entity.oldEnt->s.origin)) {
+		if ( BuildablesIntersect( buildable, origin, otherBuildable, VEC2GLM( entity.oldEnt->s.origin ) ) )
+		{
 			if (otherTeam != attr->team) {
 				collisionError = IBE_NOROOM;
 				return;
@@ -1567,7 +1561,7 @@ static void SetBuildableMarkedLinkState( bool link )
 }
 
 itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distance*/, //TODO
-                             vec3_t origin, vec3_t normal, int *groundEntNum )
+                             glm::vec3& origin, glm::vec3& normal, int *groundEntNum )
 {
 	vec3_t           angles;
 	vec3_t           entity_origin;
@@ -1859,7 +1853,7 @@ static void BuildableSpawnCBSE(gentity_t *ent, buildable_t buildable) {
 }
 
 static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, const glm::vec3 &origin,
-                         const vec3_t normal, const vec3_t angles, int groundEntNum )
+                         glm::vec3 const& normal, glm::vec3 const& angles, int groundEntNum )
 {
 	gentity_t  *built;
 	char       readable[ MAX_STRING_CHARS ];
@@ -1887,11 +1881,11 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	built->classname = attr->entityName;
 	built->s.modelindex = buildable;
 	built->s.modelindex2 = attr->team;
-	built->buildableTeam = (team_t) built->s.modelindex2;
+	built->buildableTeam = static_cast<team_t>( built->s.modelindex2 );
 	glm::vec3 mins, maxs;
 	BG_BoundingBox( buildable, mins, maxs );
-	VectorCopy( maxs, built->r.maxs );
 	VectorCopy( mins, built->r.mins );
+	VectorCopy( maxs, built->r.maxs );
 
 	built->splashDamage = attr->splashDamage;
 	built->splashRadius = attr->splashRadius;
@@ -2101,21 +2095,20 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 
 bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 {
-	float  dist;
-	vec3_t origin, normal;
+	glm::vec3 origin;
 	int    groundEntNum;
 	vec3_t forward, aimDir;
 
-	BG_GetClientNormal( &ent->client->ps, normal);
+	glm::vec3 normal = BG_GetClientNormal( &ent->client->ps );
 	AngleVectors( ent->client->ps.viewangles, aimDir, nullptr, nullptr );
-	ProjectPointOnPlane( forward, aimDir, normal );
+	ProjectPointOnPlane( forward, aimDir, &normal[0] );
 	VectorNormalize( forward );
-	dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+	float dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			SpawnBuildable( ent, buildable, VEC2GLM(origin), normal, ent->s.apos.trBase, groundEntNum );
+			SpawnBuildable( ent, buildable, origin, normal, VEC2GLM( ent->s.apos.trBase ), groundEntNum );
 			G_SpendBudget( BG_Buildable( buildable )->team, BG_Buildable( buildable )->buildPoints );
 			return true;
 
@@ -2184,25 +2177,23 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 {
-	trace_t     tr;
-	vec3_t      normal, dest;
-	gentity_t   *built;
-	buildable_t buildable = (buildable_t) ent->s.modelindex;
+	glm::vec3   normal, dest;
+	buildable_t buildable = static_cast<buildable_t>( ent->s.modelindex );
 
 	if ( ent->s.origin2[ 0 ] || ent->s.origin2[ 1 ] || ent->s.origin2[ 2 ] )
 	{
-		VectorCopy( ent->s.origin2, normal );
+		normal = VEC2GLM( ent->s.origin2 );
 	}
 	else if ( BG_Buildable( buildable )->traj == trType_t::TR_BUOYANCY )
 	{
-		VectorSet( normal, 0.0f, 0.0f, -1.0f );
+		normal = { 0.0f, 0.0f, -1.0f };
 	}
 	else
 	{
-		VectorSet( normal, 0.0f, 0.0f, 1.0f );
+		normal = { 0.0f, 0.0f, 1.0f };
 	}
 
-	built = SpawnBuildable( ent, buildable, VEC2GLM( ent->s.pos.trBase ), normal, ent->s.angles, ENTITYNUM_NONE );
+	gentity_t* built = SpawnBuildable( ent, buildable, VEC2GLM( ent->s.pos.trBase ), normal, VEC2GLM( ent->s.angles ), ENTITYNUM_NONE );
 
 	// This particular function is used by buildables that skip construction.
 	built->entity->Get<BuildableComponent>()->SetState(BuildableComponent::CONSTRUCTED);
@@ -2215,6 +2206,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	VectorScale( built->s.origin2, -4096.0f, dest );
 	VectorAdd( dest, built->s.origin, dest );
 
+	trace_t     tr;
 	G_CM_Trace( &tr, VEC2GLM( built->s.origin ), VEC2GLM( built->r.mins ), VEC2GLM( built->r.maxs ), VEC2GLM( dest ), built->num(), built->clipmask, 0, traceType_t::TT_AABB );
 
 	if ( tr.startsolid && !force )

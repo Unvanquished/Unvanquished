@@ -2501,7 +2501,7 @@ static bool Cmd_Sell_internal( gentity_t *ent, const char *s )
 	weapon_t  weapon;
 
 	//no armoury nearby
-	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( VEC2GLM( ent->client->ps.origin ), ENTITY_USE_RANGE, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		return false;
@@ -2656,7 +2656,7 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 	upgrade_t upgrade = static_cast<upgrade_t>( BG_UpgradeByName( s )->number );
 
 	// check if armoury is in reach
-	if ( !G_BuildableInRange( ent->client->ps.origin, ENTITY_USE_RANGE, BA_H_ARMOURY ) )
+	if ( !G_BuildableInRange( VEC2GLM( ent->client->ps.origin ), ENTITY_USE_RANGE, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 
@@ -2911,7 +2911,7 @@ static void Cmd_Build_f( gentity_t *ent )
 {
 	char        s[ MAX_TOKEN_CHARS ];
 	float       dist;
-	vec3_t      origin, normal;
+	glm::vec3      origin;
 	int         groundEntNum;
 
 	if ( ent->client->pers.namelog->denyBuild || G_admin_permission( ent, ADMF_NO_BUILD ) )
@@ -2938,9 +2938,9 @@ static void Cmd_Build_f( gentity_t *ent )
 		vec3_t forward, aimDir;
 		itemBuildError_t reason;
 
-		BG_GetClientNormal( &ent->client->ps, normal );
+		glm::vec3 normal = BG_GetClientNormal( &ent->client->ps );
 		AngleVectors( ent->client->ps.viewangles, aimDir, nullptr, nullptr );
-		ProjectPointOnPlane( forward, aimDir, normal);
+		ProjectPointOnPlane( forward, aimDir, &normal[0] );
 		VectorNormalize( forward );
 
 		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );

@@ -952,7 +952,7 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 				if ( buildable > BA_NONE )
 				{
 					vec3_t forward, aimDir, normal;
-					vec3_t dummy, dummy2;
+					glm::vec3 dummy, dummy2;
 					int dummy3;
 					int dist;
 
@@ -968,7 +968,7 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 
 					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 					{
-						float deltaEff = G_RGSPredictEfficiencyDelta(dummy, team);
+						float deltaEff = G_RGSPredictEfficiencyDelta( &dummy[0], team );
 						int   deltaBP  = (int)(level.team[team].totalBudget + deltaEff *
 						                       g_buildPointBudgetPerMiner.Get()) -
 						                 (int)(level.team[team].totalBudget);
