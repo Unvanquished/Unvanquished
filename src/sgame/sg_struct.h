@@ -237,7 +237,7 @@ struct gentity_t
 	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
 	void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
-	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
+	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, meansOfDeath_t mod );
 
 	int       flightSplashDamage; // quad will increase this without increasing radius
 	int       flightSplashRadius;

@@ -923,7 +923,7 @@ bool gentity_t::Damage( float amount, gentity_t* source,
 	health -= amount;
 	if ( health <= 0 && die )
 	{
-		die( this, nullptr, source, 0 );
+		die( this, nullptr, source, MOD_UNKNOWN );
 	}
 	return true;
 }

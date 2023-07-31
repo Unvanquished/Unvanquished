@@ -320,7 +320,7 @@ void G_RewardAttackers( gentity_t *self )
 	G_AddMomentumEnd();
 }
 
-void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int meansOfDeath )
+void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, meansOfDeath_t meansOfDeath )
 {
 	gentity_t *ent;
 	int       anim;
@@ -376,10 +376,10 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, in
 		}
 	}
 
-	if ( meansOfDeath < 0 || meansOfDeath >= (int) ARRAY_LEN( modNames ) )
+	if ( meansOfDeath >= ARRAY_LEN( modNames ) )
 	{
 		// fall back on the number
-		obit = va( "%d", meansOfDeath );
+		obit = va( "%u", meansOfDeath );
 	}
 	else
 	{

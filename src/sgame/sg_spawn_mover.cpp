@@ -1601,7 +1601,7 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 	}
 }
 
-static void Think_MoverDeath( gentity_t *self, gentity_t*, gentity_t* attacker, int )
+static void Think_MoverDeath( gentity_t *self, gentity_t*, gentity_t* attacker, meansOfDeath_t )
 {
 	if ( self->mapEntity.moverState == MOVER_POS1 || self->mapEntity.moverState == ROTATOR_POS1 )
 	{
@@ -2807,7 +2807,7 @@ void SP_func_spawn( gentity_t *self )
 	self->reset = func_spawn_reset;
 }
 
-static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, int )
+static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attacker, meansOfDeath_t )
 {
 	G_FireEntity( self, attacker );
 	G_BotRemoveObstacle( self->num() );
