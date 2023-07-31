@@ -441,43 +441,6 @@ gentity_t *G_IterateEntitiesWithinRadius( gentity_t *entity, const glm::vec3& or
 	return nullptr;
 }
 
-/*
-===============
-G_FindClosestEntity
-
-Test a list of entities for the closest to a particular point
-===============
-*/
-gentity_t *G_FindClosestEntity( glm::vec3 origin, gentity_t **entities, int numEntities )
-{
-	int       i;
-	float     nd, d;
-	gentity_t *closestEnt;
-
-	if ( numEntities <= 0 )
-	{
-		return nullptr;
-	}
-
-	closestEnt = entities[ 0 ];
-	d = glm::distance2( origin, VEC2GLM( closestEnt->s.origin ) );
-
-	for ( i = 1; i < numEntities; i++ )
-	{
-		gentity_t *ent = entities[ i ];
-
-		nd = glm::distance2( origin, VEC2GLM( ent->s.origin ) );
-
-		if ( nd < d )
-		{
-			d = nd;
-			closestEnt = ent;
-		}
-	}
-
-	return closestEnt;
-}
-
 gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const char *match )
 {
 	gentity_t *foundEntity = nullptr;
