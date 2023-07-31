@@ -968,7 +968,7 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 
 					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 					{
-						float deltaEff = G_RGSPredictEfficiencyDelta( &dummy[0], team );
+						float deltaEff = G_RGSPredictEfficiencyDelta( dummy, team );
 						int   deltaBP  = (int)(level.team[team].totalBudget + deltaEff *
 						                       g_buildPointBudgetPerMiner.Get()) -
 						                 (int)(level.team[team].totalBudget);

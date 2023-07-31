@@ -31,8 +31,9 @@ static Log::Logger buildpointLogger("sgame.buildpoints");
  * @brief Predict the efficiency loss of an existing miner if another one is constructed closeby.
  * @return Efficiency loss as negative value.
  */
-static float RGSPredictEfficiencyLoss(Entity& miner, vec3_t newMinerOrigin) {
-	float distance               = Distance(miner.oldEnt->s.origin, newMinerOrigin);
+static float RGSPredictEfficiencyLoss( Entity& miner, glm::vec3 const& newMinerOrigin )
+{
+	float distance               = glm::distance( VEC2GLM( miner.oldEnt->s.origin ), newMinerOrigin );
 	float oldPredictedEfficiency = miner.Get<MiningComponent>()->Efficiency(true);
 	float newPredictedEfficiency = oldPredictedEfficiency * MiningComponent::InterferenceMod(distance);
 	float efficiencyLoss         = newPredictedEfficiency - oldPredictedEfficiency;
@@ -48,15 +49,16 @@ static float RGSPredictEfficiencyLoss(Entity& miner, vec3_t newMinerOrigin) {
  * @return Predicted efficiency delta in percent points.
  * @todo Consider RGS set for deconstruction.
  */
-float G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team) {
-	float delta = MiningComponent::FindEfficiencies(team, VEC2GLM(origin), nullptr).predicted;
+float G_RGSPredictEfficiencyDelta( glm::vec3 const& origin, team_t team )
+{
+	float delta = MiningComponent::FindEfficiencies( team, origin, nullptr ).predicted;
 
 	buildpointLogger.Debug("Predicted efficiency of new miner itself: %f.", delta);
 
 	ForEntities<MiningComponent>([&] (Entity& miner, MiningComponent&) {
 		if (G_Team(miner.oldEnt) != team) return;
 
-		delta += RGSPredictEfficiencyLoss(miner, origin);
+		delta += RGSPredictEfficiencyLoss( miner, origin );
 	});
 
 	buildpointLogger.Debug("Predicted efficiency delta: %f. Build point delta: %f.", delta,

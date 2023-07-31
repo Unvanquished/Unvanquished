@@ -105,7 +105,7 @@ void              G_BuildableTouchTriggers( gentity_t *ent );
 void ABarricade_Shrink( gentity_t *self, bool shrink );
 
 // sg_buildpoints
-float             G_RGSPredictEfficiencyDelta(vec3_t origin, team_t team);
+float             G_RGSPredictEfficiencyDelta( glm::vec3 const& origin, team_t team );
 void              G_UpdateBuildPointBudgets();
 void              G_RecoverBuildPoints();
 int               G_GetFreeBudget(team_t team);
