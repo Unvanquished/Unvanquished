@@ -866,7 +866,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 	VectorMA( viewOrigin, 65536, forward, end );
 
 	G_UnlaggedOn( self, VEC2GLM( viewOrigin ), 65536 );
-	traceEnt = Beacon::TagTrace( viewOrigin, end, self->s.number, MASK_SHOT, team, true );
+	traceEnt = Beacon::TagTrace( VEC2GLM( viewOrigin ), VEC2GLM( end ), self->s.number, MASK_SHOT, team, true );
 	G_UnlaggedOff( );
 
 	for ( target = nullptr; ( target = G_IterateEntities( target ) ); )

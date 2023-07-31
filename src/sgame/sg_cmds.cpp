@@ -4075,9 +4075,11 @@ static void Cmd_Beacon_f( gentity_t *ent )
 		return;
 
 	if ( !( flags & BCF_PRECISE ) )
-		Beacon::MoveTowardsRoom( tr.endpos );
+	{
+		VectorCopy( Beacon::MoveTowardsRoom( VEC2GLM( tr.endpos ) ), tr.endpos );
+	}
 
-	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->num(), BCH_REMOVE ) );
+	Beacon::Propagate( Beacon::New( VEC2GLM( tr.endpos ), type, 0, team, ent->num(), BCH_REMOVE ) );
 	return;
 }
 

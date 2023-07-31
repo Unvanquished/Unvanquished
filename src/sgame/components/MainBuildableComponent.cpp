@@ -21,7 +21,7 @@ void MainBuildableComponent::HandleDamage(float /*amount*/, gentity_t* /*source*
 
 			// TODO: Use TeamComponent/LocationComponent.
 			G_BroadcastEvent(EV_MAIN_UNDER_ATTACK, warnLevel, entity.oldEnt->buildableTeam);
-			Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, entity.oldEnt->buildableTeam);
+			Beacon::NewArea(BCT_DEFEND, VEC2GLM( entity.oldEnt->s.origin ), entity.oldEnt->buildableTeam);
 		}
 	}
 }
