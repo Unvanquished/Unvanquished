@@ -15,12 +15,12 @@ bool EggComponent::CheckSpawnPoint(
 	int spawnerNumber, const glm::vec3 spawnerOrigin, const glm::vec3 spawnerNormal, Entity*& blocker,
 	glm::vec3& spawnPoint
 ){
-	vec3_t spawnerMins, spawnerMaxs, clientMins, clientMaxs;
+	glm::vec3 spawnerMins, spawnerMaxs, clientMins, clientMaxs;
 
-	BG_BuildableBoundingBox(BA_A_SPAWN, spawnerMins, spawnerMaxs);
+	BG_BoundingBox( BA_A_SPAWN, spawnerMins, spawnerMaxs );
 
 	// HACK: Assumes this class is the greatest that can spawn.
-	BG_ClassBoundingBox(PCL_ALIEN_BUILDER0_UPG, clientMins, clientMaxs, nullptr, nullptr, nullptr);
+	BG_BoundingBox( PCL_ALIEN_BUILDER0_UPG, clientMins, clientMaxs );
 
 	// TODO: Merge both methods below.
 	float displacement;
@@ -44,7 +44,7 @@ bool EggComponent::CheckSpawnPoint(
 			minDistance = -spawnerMins[2] + clientMaxs[2];
 
 			// Worst case: Bounding boxes meet at their corners.
-			maxDistance = VectorLength(spawnerMins) + VectorLength(clientMaxs);
+			maxDistance = glm::length( spawnerMins ) + glm::length( clientMaxs );
 
 			// The fraction of the angle seperating best (0°) and worst case (45°).
 			frac = acosf(-spawnerNormal[2]) / M_PI_4;
@@ -53,7 +53,7 @@ bool EggComponent::CheckSpawnPoint(
 			minDistance = spawnerMaxs[2] - clientMins[2];
 
 			// Worst case: Bounding boxes meet at their corners.
-			maxDistance = VectorLength(spawnerMaxs) + VectorLength(clientMins);
+			maxDistance = glm::length( spawnerMaxs ) + glm::length( clientMins );
 
 			// The fraction of the angle seperating best (0°) and worst case (45°).
 			frac = acosf(spawnerNormal[2]) / M_PI_4;

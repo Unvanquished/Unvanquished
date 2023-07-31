@@ -1498,7 +1498,6 @@ const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
 const buildableAttributes_t *BG_Buildable( int buildable );
 
 buildableModelConfig_t      *BG_BuildableModelConfig( int buildable );
-void                        BG_BuildableBoundingBox( int buildable, vec3_t mins, vec3_t maxs );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 
@@ -1508,8 +1507,6 @@ classModelConfig_t          *BG_ClassModelConfigByName( const char * );
 
 classModelConfig_t          *BG_ClassModelConfig( int pClass );
 
-void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
-                                                 vec3_t dmins, vec3_t dmaxs );
 team_t                      BG_ClassTeam( int pClass );
 bool                    BG_ClassHasAbility( int pClass, int ability );
 
@@ -1743,7 +1740,9 @@ glm::vec3 BG_GetClientViewOrigin( const playerState_t *ps );
 
 void BG_BoundingBox( class_t cl, glm::vec3* mins, glm::vec3* maxs, glm::vec3* cmaxs, glm::vec3* dmins, glm::vec3* dmaxs );
 void BG_BoundingBox( class_t cl, glm::vec3& mins, glm::vec3& maxs );
-void BG_BoundingBox( buildable_t buildablel, glm::vec3* mins, glm::vec3* maxs );
+void BG_BoundingBox( buildable_t buildablel, glm::vec3& mins, glm::vec3& maxs );
+void BG_DeadBoundingBox( class_t cl, glm::vec3& mins, glm::vec3& maxs );
+glm::vec3 BG_CrouchMax( class_t cl );
 
 int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
 

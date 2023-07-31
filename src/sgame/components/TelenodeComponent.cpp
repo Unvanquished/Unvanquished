@@ -17,10 +17,10 @@ bool TelenodeComponent::CheckSpawnPoint(
 ){
 	glm::vec3 spawnerMins, spawnerMaxs, clientMins, clientMaxs;
 
-	BG_BuildableBoundingBox(BA_H_SPAWN, &spawnerMins[0], &spawnerMaxs[0]);
+	BG_BoundingBox( BA_H_SPAWN, spawnerMins, spawnerMaxs );
 
 	// HACK: Assumes this class is the greatest that can spawn.
-	BG_ClassBoundingBox(PCL_HUMAN_NAKED, &clientMins[0], &clientMaxs[0], nullptr, nullptr, nullptr);
+	BG_BoundingBox( PCL_HUMAN_NAKED, clientMins, clientMaxs );
 
 	// TODO: Does this work if the Telenode is at an angle?
 	float displacement = spawnerMaxs[2] - clientMins[2] + 1.0f;

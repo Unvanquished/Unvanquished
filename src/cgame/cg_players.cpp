@@ -2586,13 +2586,14 @@ Returns the Z component of the surface being shadowed
 #define SHADOW_DISTANCE 128
 static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 {
-	vec3_t        end, mins, maxs;
+	vec3_t        end;
 	trace_t       trace;
 	float         alpha;
 	entityState_t *es = &cent->currentState;
 	vec3_t        surfNormal = { 0.0f, 0.0f, 1.0f };
 
-	BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( class_, mins, maxs );
 	mins[ 2 ] = 0.0f;
 	maxs[ 2 ] = 2.0f;
 
@@ -2617,7 +2618,7 @@ static bool CG_PlayerShadow( centity_t *cent, class_t class_ )
 	VectorCopy( cent->lerpOrigin, end );
 	VectorMA( cent->lerpOrigin, -SHADOW_DISTANCE, surfNormal, end );
 
-	CM_BoxTrace( &trace, cent->lerpOrigin, end, mins, maxs, 0, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	CM_BoxTrace( &trace, cent->lerpOrigin, end, &mins[0], &maxs[0], 0, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	// no shadow if too high
 	if ( trace.fraction == 1.0 || trace.startsolid || trace.allsolid )
@@ -2671,7 +2672,6 @@ Draw a mark at the water surface
 static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 {
 	vec3_t  start, end;
-	vec3_t  mins, maxs;
 	trace_t trace;
 	int     contents;
 
@@ -2680,7 +2680,8 @@ static void CG_PlayerSplash( centity_t *cent, class_t class_ )
 		return;
 	}
 
-	BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( class_, mins, maxs );
 
 	VectorCopy( cent->lerpOrigin, end );
 	end[ 2 ] += mins[ 2 ];
@@ -2788,10 +2789,9 @@ void CG_Player( centity_t *cent )
 
 	if ( cg_drawBBOX.Get() && cg.renderingThirdPerson )
 	{
-		vec3_t mins, maxs;
-
-		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
-		CG_DrawBoundingBox( cg_drawBBOX.Get(), cent->lerpOrigin, mins, maxs );
+		glm::vec3 mins, maxs;
+		BG_BoundingBox( class_, mins, maxs );
+		CG_DrawBoundingBox( cg_drawBBOX.Get(), cent->lerpOrigin, &mins[0], &maxs[0] );
 	}
 
 	// NOTE: legs is used for nonsegmented and skeletal models
@@ -2821,7 +2821,7 @@ void CG_Player( centity_t *cent )
 	if ( ci->skeletal )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-		vec3_t playerOrigin, mins, maxs;
+		vec3_t playerOrigin;
 
 		// TODO: Don't use GENDER to differentiate between aliens and humans
 		if ( ci->gender != GENDER_NEUTER )
@@ -2890,7 +2890,8 @@ void CG_Player( centity_t *cent )
 
 		legs.renderfx = renderfx;
 
-		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
+		glm::vec3 mins, maxs;
+		BG_BoundingBox( class_, mins, maxs );
 
 		// move the origin closer into the wall with a CapTrace
 		if ( es->eFlags & EF_WALLCLIMB && !( es->eFlags & EF_DEAD ) && !( cg.intermissionStarted ) )
@@ -3073,7 +3074,7 @@ void CG_Player( centity_t *cent )
 	//move the origin closer into the wall with a CapTrace
 	if ( es->eFlags & EF_WALLCLIMB && !( es->eFlags & EF_DEAD ) && !( cg.intermissionStarted ) )
 	{
-		vec3_t  start, end, mins, maxs;
+		vec3_t  start, end;
 		trace_t tr;
 
 		if ( es->eFlags & EF_WALLCLIMBCEILING )
@@ -3085,11 +3086,12 @@ void CG_Player( centity_t *cent )
 			VectorCopy( es->angles2, surfNormal );
 		}
 
-		BG_ClassBoundingBox( class_, mins, maxs, nullptr, nullptr, nullptr );
+		glm::vec3 mins, maxs;
+		BG_BoundingBox( class_, mins, maxs );
 
 		VectorMA( legs.origin, -TRACE_DEPTH, surfNormal, end );
 		VectorMA( legs.origin, 1.0f, surfNormal, start );
-		CG_CapTrace( &tr, start, mins, maxs, end, es->number, MASK_PLAYERSOLID, 0 );
+		CG_CapTrace( &tr, start, &mins[0], &maxs[0], end, es->number, MASK_PLAYERSOLID, 0 );
 
 		//if the trace misses completely then just use legs.origin
 		//apparently capsule traces are "smaller" than box traces
@@ -3233,7 +3235,7 @@ void CG_Corpse( centity_t *cent )
 	clientInfo_t  *ci;
 	entityState_t *es = &cent->currentState;
 	int           renderfx;
-	vec3_t        origin, liveZ, deadZ, deadMax;
+	vec3_t        origin;
 	float         scale;
 
 	ci = GetCorpseInfo( (class_t) es->clientNum );
@@ -3247,7 +3249,10 @@ void CG_Corpse( centity_t *cent )
 	refEntity_t legs{}, torso{}, head{};
 
 	VectorCopy( cent->lerpOrigin, origin );
-	BG_ClassBoundingBox( es->clientNum, liveZ, nullptr, nullptr, deadZ, deadMax );
+	class_t cl = static_cast<class_t>( es->clientNum );
+	glm::vec3 unused, liveZ, deadZ, deadMax;
+	BG_BoundingBox( cl, liveZ, unused );
+	BG_DeadBoundingBox( cl, deadZ, deadMax );
 	origin[ 2 ] -= ( liveZ[ 2 ] - deadZ[ 2 ] );
 
 	if( ci->skeletal )

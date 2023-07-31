@@ -1700,9 +1700,9 @@ static void Cmd_SetViewpos_f( gentity_t *ent )
 
 static bool FindRoomForClassChangeVertically(
 		const gentity_t *ent,
-		const vec3_t fromMins, const vec3_t fromMaxs,
-		const vec3_t toMins, const vec3_t toMaxs,
-		vec3_t newOrigin)
+		glm::vec3 const& fromMins, glm::vec3 const& fromMaxs,
+		glm::vec3 const& toMins,   glm::vec3 const& toMaxs,
+		vec3_t newOrigin )
 {
 	vec3_t  temp;
 	trace_t tr;
@@ -1764,8 +1764,8 @@ static bool FindRoomForClassChangeVertically(
 
 static bool FindRoomForClassChangeLaterally(
 		const gentity_t *ent,
-		const vec3_t fromMins, const vec3_t fromMaxs,
-		const vec3_t toMins, const vec3_t toMaxs,
+		glm::vec3 const& fromMins, glm::vec3 const& fromMaxs,
+		glm::vec3 const& toMins,   glm::vec3 const& toMaxs,
 		vec3_t newOrigin)
 {
 	float max_x = fabs( (toMaxs[0]-toMins[0])
@@ -1818,18 +1818,20 @@ static bool FindRoomForClassChangeLaterally(
 
 bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 {
-	vec3_t  fromMins, fromMaxs;
-	vec3_t  toMins, toMaxs;
-	class_t oldClass = (class_t) ent->client->ps.stats[ STAT_CLASS ];
+	glm::vec3 fromMins, fromMaxs;
+	glm::vec3 toMins, toMaxs;
+	class_t oldClass = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
 
-	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, nullptr, nullptr, nullptr );
-	BG_ClassBoundingBox( pcl, toMins, toMaxs, nullptr, nullptr, nullptr );
+	BG_BoundingBox( oldClass, fromMins, fromMaxs );
+	BG_BoundingBox( pcl, toMins, toMaxs );
 
 	VectorCopy( ent->client->ps.origin, newOrigin ); // default
 
-	if (FindRoomForClassChangeVertically( ent, fromMins, fromMaxs,
-			toMins, toMaxs, newOrigin ))
+	if( FindRoomForClassChangeVertically( ent, fromMins, fromMaxs,
+			toMins, toMaxs, newOrigin ) )
+	{
 		return true;
+	}
 
 	return FindRoomForClassChangeLaterally( ent, fromMins, fromMaxs,
 			toMins, toMaxs, newOrigin );

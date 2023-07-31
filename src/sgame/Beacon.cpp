@@ -479,7 +479,7 @@ namespace Beacon //this should eventually become a class
 		}
 		else if ( parent->s.eType == entityType_t::ET_BUILDABLE )
 		{
-			BG_BoundingBox( static_cast<buildable_t>( parent->s.modelindex ), &mins, &maxs );
+			BG_BoundingBox( static_cast<buildable_t>( parent->s.modelindex ), mins, maxs );
 			BG_MoveOriginToBBOXCenter( center, mins, maxs );
 		}
 
@@ -723,7 +723,7 @@ namespace Beacon //this should eventually become a class
 				data       = ent->s.modelindex;
 				dead       = Entities::IsDead( ent );
 				player     = false;
-				BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), &mins, &maxs );
+				BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), mins, maxs );
 				break;
 
 			case entityType_t::ET_PLAYER:

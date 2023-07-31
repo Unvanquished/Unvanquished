@@ -243,7 +243,10 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		return;
 	}
 
-	BG_BuildableBoundingBox( BA_A_BARRICADE, self->r.mins, self->r.maxs );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( BA_A_BARRICADE, mins, maxs );
+	VectorCopy( mins, self->r.mins );
+	VectorCopy( maxs, self->r.maxs );
 
 	if ( shrink )
 	{
@@ -870,9 +873,7 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 	int              touch[ MAX_GENTITIES ];
 	gentity_t        *hit;
 	trace_t          trace;
-	vec3_t           mins, maxs;
-	vec3_t           bmins, bmaxs;
-	static    vec3_t range = { 10, 10, 10 };
+	constexpr glm::vec3 range = { 10.f, 10.f, 10.f };
 
 	// dead buildables don't activate triggers
 	if ( Entities::IsDead( ent ) )
@@ -880,18 +881,15 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 		return;
 	}
 
-	BG_BuildableBoundingBox( ent->s.modelindex, bmins, bmaxs );
+	glm::vec3 bmins, bmaxs;
+	BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), bmins, bmaxs );
+	glm::vec3 mins = VEC2GLM( ent->s.origin ) + bmins - range;
+	glm::vec3 maxs = VEC2GLM( ent->s.origin ) + bmaxs + range;
 
-	VectorAdd( ent->s.origin, bmins, mins );
-	VectorAdd( ent->s.origin, bmaxs, maxs );
+	num = G_CM_AreaEntities( mins, maxs, touch, MAX_GENTITIES );
 
-	VectorSubtract( mins, range, mins );
-	VectorAdd( maxs, range, maxs );
-
-	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), touch, MAX_GENTITIES );
-
-	VectorAdd( ent->s.origin, bmins, mins );
-	VectorAdd( ent->s.origin, bmaxs, maxs );
+	mins = VEC2GLM( ent->s.origin ) + bmins;
+	maxs = VEC2GLM( ent->s.origin ) + bmaxs;
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -962,18 +960,18 @@ bool G_BuildableInRange( vec3_t origin, float radius, buildable_t buildable )
 static bool BuildablesIntersect( buildable_t a, vec3_t originA,
                                      buildable_t b, vec3_t originB )
 {
-	vec3_t minsA, maxsA;
-	vec3_t minsB, maxsB;
+	glm::vec3 minsA, maxsA;
+	glm::vec3 minsB, maxsB;
 
-	BG_BuildableBoundingBox( a, minsA, maxsA );
-	VectorAdd( minsA, originA, minsA );
-	VectorAdd( maxsA, originA, maxsA );
+	BG_BoundingBox( a, minsA, maxsA );
+	minsA += VEC2GLM( originA );
+	maxsA += VEC2GLM( originA );
 
-	BG_BuildableBoundingBox( b, minsB, maxsB );
-	VectorAdd( minsB, originB, minsB );
-	VectorAdd( maxsB, originB, maxsB );
+	BG_BoundingBox( b, minsB, maxsB );
+	minsB += VEC2GLM( originB );
+	maxsB += VEC2GLM( originB );
 
-	return BoundsIntersect( minsA, maxsA, minsB, maxsB );
+	return BoundsIntersect( &minsA[0], &maxsA[0], &minsB[0], &maxsB[0] );
 }
 
 static buildable_t cmpBuildable;
@@ -1573,7 +1571,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 {
 	vec3_t           angles;
 	vec3_t           entity_origin;
-	vec3_t           mins, maxs;
 	trace_t          tr1, tr2, tr3;
 	itemBuildError_t reason = IBE_NONE;
 	gentity_t        *tempent;
@@ -1585,10 +1582,11 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	// Stop all buildables from interacting with traces
 	SetBuildableLinkState( false );
 
-	BG_BuildableBoundingBox( buildable, mins, maxs );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( buildable, mins, maxs );
 
-	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, &G_CM_Trace, entity_origin, angles, &tr1 );
-	G_CM_Trace( &tr2, VEC2GLM( entity_origin ), VEC2GLM( mins ), VEC2GLM( maxs ), VEC2GLM( entity_origin ), ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	BG_PositionBuildableRelativeToPlayer( ps, &mins[0], &maxs[0], &G_CM_Trace, entity_origin, angles, &tr1 );
+	G_CM_Trace( &tr2, VEC2GLM( entity_origin ), mins, maxs, VEC2GLM( entity_origin ), ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	G_CM_Trace( &tr3, VEC2GLM( ps->origin ), glm::vec3(), glm::vec3(), VEC2GLM( entity_origin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	VectorCopy( entity_origin, origin );
@@ -1890,7 +1888,10 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	built->s.modelindex = buildable;
 	built->s.modelindex2 = attr->team;
 	built->buildableTeam = (team_t) built->s.modelindex2;
-	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( buildable, mins, maxs );
+	VectorCopy( maxs, built->r.maxs );
+	VectorCopy( mins, built->r.mins );
 
 	built->splashDamage = attr->splashDamage;
 	built->splashRadius = attr->splashRadius;
@@ -2615,7 +2616,6 @@ void G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate )
 static void G_BuildLogRevertThink( gentity_t *ent )
 {
 	gentity_t *built;
-	vec3_t    mins, maxs;
 	int       blockers[ MAX_GENTITIES ];
 	int       num;
 	int       victims = 0;
@@ -2623,10 +2623,11 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 
 	if ( ent->suicideTime > 0 )
 	{
-		BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
-		VectorAdd( ent->s.pos.trBase, mins, mins );
-		VectorAdd( ent->s.pos.trBase, maxs, maxs );
-		num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), blockers, MAX_GENTITIES );
+		glm::vec3 mins, maxs;
+		BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), mins, maxs );
+		mins += VEC2GLM( ent->s.pos.trBase );
+		maxs += VEC2GLM( ent->s.pos.trBase );
+		num = G_CM_AreaEntities( mins, maxs, blockers, MAX_GENTITIES );
 
 		for ( i = 0; i < num; i++ )
 		{

@@ -415,7 +415,7 @@ static void SpawnCorpse( gentity_t *ent )
 {
 	gentity_t *body;
 	int       contents;
-	vec3_t    origin, mins;
+	vec3_t    origin;
 
 	VectorCopy( ent->r.currentOrigin, origin );
 
@@ -458,7 +458,12 @@ static void SpawnCorpse( gentity_t *ent )
 	body->s.torsoAnim = body->s.legsAnim = ent->s.legsAnim;
 
 	//change body dimensions
-	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ], mins, nullptr, nullptr, body->r.mins, body->r.maxs );
+	glm::vec3 mins, unused, dmins, dmaxs;
+	class_t cl = static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] );
+	BG_BoundingBox( cl, mins, unused );
+	BG_DeadBoundingBox( cl, dmins, dmaxs );
+	VectorCopy( dmins, body->r.mins );
+	VectorCopy( dmaxs, body->r.maxs );
 
 	//drop down to match the *model* origins of ent and body
 	// FIXME: find some way to handle when DEATH2 and DEATH3 need a different min
@@ -1653,7 +1658,10 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.eFlags = flags;
 	client->ps.clientNum = index;
 
-	BG_ClassBoundingBox( ent->client->pers.classSelection, ent->r.mins, ent->r.maxs, nullptr, nullptr, nullptr );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( static_cast<class_t>( ent->client->pers.classSelection ), mins, maxs );
+	VectorCopy( mins, ent->r.mins );
+	VectorCopy( maxs, ent->r.maxs );
 
 	// clear entity values
 	if ( ent->client->pers.classSelection == PCL_HUMAN_NAKED )

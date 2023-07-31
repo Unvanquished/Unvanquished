@@ -1103,7 +1103,6 @@ void CG_GhostBuildable( int buildableInfo )
 {
 	playerState_t *ps;
 	vec3_t        angles, entity_origin;
-	vec3_t        mins, maxs;
 	trace_t       tr;
 	float         scale;
 	buildable_t   buildable = static_cast<buildable_t>( buildableInfo & SB_BUILDABLE_MASK );
@@ -1114,9 +1113,10 @@ void CG_GhostBuildable( int buildableInfo )
 
 	refEntity_t ent{};
 
-	BG_BuildableBoundingBox( buildable, mins, maxs );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( buildable, mins, maxs );
 
-	BG_PositionBuildableRelativeToPlayer( ps, mins, maxs, CG_Trace, entity_origin, angles, &tr );
+	BG_PositionBuildableRelativeToPlayer( ps, &mins[0], &maxs[0], CG_Trace, entity_origin, angles, &tr );
 
 	if ( cg_rangeMarkerForBlueprint.Get() && tr.entityNum != ENTITYNUM_NONE )
 	{
@@ -1124,7 +1124,7 @@ void CG_GhostBuildable( int buildableInfo )
 	}
 
 	CG_PositionAndOrientateBuildable( angles, entity_origin, tr.plane.normal, ps->clientNum,
-	                                  mins, maxs, ent.axis, ent.origin );
+	                                  &mins[0], &maxs[0], ent.axis, ent.origin );
 
 	//offset on the Z axis if required
 	VectorMA( ent.origin, bmc->zOffset, tr.plane.normal, ent.origin );
@@ -1508,7 +1508,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	vec3_t        trOrigin;
 	vec3_t        right;
 	bool          visible = false;
-	vec3_t        mins, maxs;
 	vec3_t        cullMins, cullMaxs;
 	entityState_t *hit;
 	int           anim;
@@ -1538,7 +1537,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	Color::Color color = bs->foreColor;
 
 	// trace for center point
-	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( static_cast<buildable_t>( es->modelindex ), mins, maxs );
 
 	// cull buildings outside the view frustum
 	VectorAdd(cent->lerpOrigin, mins, cullMins);
@@ -1965,7 +1965,7 @@ CG_Buildable
 void CG_Buildable( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
-	vec3_t        surfNormal, xNormal, mins, maxs;
+	vec3_t        surfNormal, xNormal;
 	vec3_t        refNormal = { 0.0f, 0.0f, 1.0f };
 	float         scale;
 	int           health = CG_Health(cent);
@@ -2000,7 +2000,8 @@ void CG_Buildable( centity_t *cent )
 
 	VectorCopy( es->origin2, surfNormal );
 
-	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
+	glm::vec3 mins, maxs;
+	BG_BoundingBox( static_cast<buildable_t>( es->modelindex ), mins, maxs );
 
 	if ( es->pos.trType == trType_t::TR_STATIONARY )
 	{
@@ -2019,7 +2020,7 @@ void CG_Buildable( centity_t *cent )
 		else
 		{
 			CG_PositionAndOrientateBuildable( es->angles, cent->lerpOrigin, surfNormal,
-			                                  es->number, mins, maxs, ent.axis,
+			                                  es->number, &mins[0], &maxs[0], ent.axis,
 			                                  ent.origin );
 			VectorCopy( ent.axis[ 0 ], cent->buildableCache.axis[ 0 ] );
 			VectorCopy( ent.axis[ 1 ], cent->buildableCache.axis[ 1 ] );
@@ -2039,7 +2040,7 @@ void CG_Buildable( centity_t *cent )
 
 	if( cg_drawBBOX.Get() > 0 )
 	{
-		CG_DrawBoundingBox( cg_drawBBOX.Get(), cent->lerpOrigin, mins, maxs );
+		CG_DrawBoundingBox( cg_drawBBOX.Get(), cent->lerpOrigin, &mins[0], &maxs[0] );
 	}
 
 	//offset on the Z axis if required
@@ -2109,7 +2110,7 @@ void CG_Buildable( centity_t *cent )
 	// add inverse shadow map
 	if ( cg_shadows > shadowingMode_t::SHADOWING_BLOB && cg_buildableShadows.Get() )
 	{
-		CG_StartShadowCaster( ent.lightingOrigin, mins, maxs );
+		CG_StartShadowCaster( ent.lightingOrigin, &mins[0], &maxs[0] );
 	}
 
 	if ( CG_PlayerIsBuilder( (buildable_t) es->modelindex ) && CG_BuildableRemovalPending( es->number ) )

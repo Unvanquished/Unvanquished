@@ -601,7 +601,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 			&& G_OnSameTeam( self, blocker ) )
 	{
 		glm::vec3 mins, maxs;
-		BG_BoundingBox( static_cast<buildable_t>( blocker->s.modelindex ), &mins, &maxs );
+		BG_BoundingBox( static_cast<buildable_t>( blocker->s.modelindex ), mins, maxs );
 		maxs.z *= BARRICADE_SHRINKPROP;
 		glm::vec3 pos = VEC2GLM( blocker->s.origin );
 		BG_BoundingBox( pClass, playerMins, playerMaxs );

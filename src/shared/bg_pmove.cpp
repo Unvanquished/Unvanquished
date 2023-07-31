@@ -3044,8 +3044,8 @@ static void PM_SetWaterLevel()
 	pm->waterlevel = 0;
 	pm->watertype = 0;
 
-	vec3_t mins;
-	BG_ClassBoundingBox( pm->ps->stats[ STAT_CLASS ], mins, nullptr, nullptr, nullptr, nullptr );
+	glm::vec3 mins, unused;
+	BG_BoundingBox( static_cast<class_t>( pm->ps->stats[ STAT_CLASS ] ), mins, unused );
 
 	point[ 0 ] = pm->ps->origin[ 0 ];
 	point[ 1 ] = pm->ps->origin[ 1 ];
@@ -3097,10 +3097,13 @@ Sets mins and maxs, and calls PM_SetViewheight
 static void PM_CheckDuck()
 {
 	trace_t trace;
-	vec3_t  PCmaxs, PCcmaxs;
 	playerState_t *ps = pm->ps;
 
-	BG_ClassBoundingBox( ps->stats[ STAT_CLASS ], pm->mins, PCmaxs, PCcmaxs, nullptr, nullptr );
+	class_t cl = static_cast<class_t>( ps->stats[ STAT_CLASS ] );
+	glm::vec3 mins, PCmaxs;
+	BG_BoundingBox( cl, mins, PCmaxs );
+	glm::vec3 PCcmaxs = BG_CrouchMax( cl );
+	VectorCopy( mins, pm->mins );
 
 	pm->maxs[ 0 ] = PCmaxs[ 0 ];
 	pm->maxs[ 1 ] = PCmaxs[ 1 ];
@@ -3113,7 +3116,7 @@ static void PM_CheckDuck()
 	}
 
 	// If the standing and crouching bboxes are the same the class can't crouch
-	if ( pm->cmd.upmove < 0 && !VectorCompare( PCmaxs, PCcmaxs ) )
+	if ( pm->cmd.upmove < 0 && !VectorCompare( &PCmaxs[0], &PCcmaxs[0] ) )
 	{
 		// duck
 		ps->pm_flags |= PMF_DUCKED;

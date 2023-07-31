@@ -455,8 +455,6 @@ void  G_TouchTriggers( gentity_t *ent )
 	int              touch[ MAX_GENTITIES ];
 	gentity_t        *hit;
 	trace_t          trace;
-	vec3_t           mins, maxs;
-	vec3_t           pmins, pmaxs;
 	static const     vec3_t range = { 10, 10, 10 };
 
 	if ( !ent->client )
@@ -476,9 +474,10 @@ void  G_TouchTriggers( gentity_t *ent )
 		return;
 	}
 
-	BG_ClassBoundingBox( ent->client->ps.stats[ STAT_CLASS ],
-	                     pmins, pmaxs, nullptr, nullptr, nullptr );
+	glm::vec3 pmins, pmaxs;
+	BG_BoundingBox( static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] ), pmins, pmaxs );
 
+	vec3_t           mins, maxs;
 	VectorAdd( ent->client->ps.origin, pmins, mins );
 	VectorAdd( ent->client->ps.origin, pmaxs, maxs );
 
@@ -1153,7 +1152,7 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence )
 	gclient_t *client;
 	int       damage;
 	vec3_t    dir;
-	vec3_t    point, mins;
+	vec3_t    point;
 	float     fallDistance;
 	class_t   pcl;
 
@@ -1194,7 +1193,8 @@ static void ClientEvents( gentity_t *ent, int oldEventSequence )
 				                  BG_Class( pcl )->fallDamage * fallDistance );
 
 				VectorSet( dir, 0, 0, 1 );
-				BG_ClassBoundingBox( pcl, mins, nullptr, nullptr, nullptr, nullptr );
+				glm::vec3 mins, unused;
+				BG_BoundingBox( pcl, mins, unused );
 				mins[ 0 ] = mins[ 1 ] = 0.0f;
 				VectorAdd( client->ps.origin, mins, point );
 

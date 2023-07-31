@@ -971,7 +971,7 @@ static void BotTargetGetBoundingBox( botTarget_t target, glm::vec3 &mins, glm::v
 	}
 	else if ( target.getTargetType() == entityType_t::ET_BUILDABLE )
 	{
-		BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), &mins, &maxs );
+		BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), mins, maxs );
 	}
 	else
 	{

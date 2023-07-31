@@ -100,7 +100,6 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	trace_t       trace;
 	clipHandle_t  cmodel;
 	vec3_t        tmins, tmaxs;
-	vec3_t        bmins, bmaxs;
 	vec3_t        origin, angles;
 
 	// calculate bounding box of the trace
@@ -140,9 +139,10 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		}
 		else
 		{
+			glm::vec3 bmins, bmaxs;
 			if ( ent->eType == entityType_t::ET_BUILDABLE )
 			{
-				BG_BuildableBoundingBox( ent->modelindex, bmins, bmaxs );
+				BG_BoundingBox( static_cast<buildable_t>( ent->modelindex ), bmins, bmaxs );
 			}
 			else
 			{
@@ -160,12 +160,12 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			VectorAdd( cent->lerpOrigin, bmins, bmins );
 			VectorAdd( cent->lerpOrigin, bmaxs, bmaxs );
 
-			if( !BoundsIntersect( bmins, bmaxs, tmins, tmaxs ) )
+			if( !BoundsIntersect( &bmins[0], &bmaxs[0], tmins, tmaxs ) )
 			{
 				continue;
 			}
 
-			cmodel = CM_TempBoxModel( bmins, bmaxs, /* capsule = */ false );
+			cmodel = CM_TempBoxModel( &bmins[0], &bmaxs[0], /* capsule = */ false );
 			VectorCopy( vec3_origin, angles );
 			VectorCopy( vec3_origin, origin );
 		}
