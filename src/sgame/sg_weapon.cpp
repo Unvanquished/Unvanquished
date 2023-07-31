@@ -341,7 +341,7 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
 	VectorNegate( maxs, mins );
 	halfDiagonal = VectorLength( maxs );
 
-	G_UnlaggedOn( ent, muzzle, range + halfDiagonal );
+	G_UnlaggedOn( ent, VEC2GLM( muzzle ), range + halfDiagonal );
 
 	// Trace box against entities
 	VectorMA( muzzle, range, forward, end );
@@ -539,7 +539,7 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 	// don't use unlagged if this is not a client (e.g. turret)
 	if ( self->client )
 	{
-		G_UnlaggedOn( self, muzzle, 8192 * 16 );
+		G_UnlaggedOn( self, VEC2GLM( muzzle ), 8192 * 16 );
 		G_CM_Trace( &tr, VEC2GLM( muzzle ), glm::vec3(), glm::vec3(), VEC2GLM( end ), self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 		G_UnlaggedOff();
 	}
@@ -656,7 +656,7 @@ static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 	tent->s.otherEntityNum = self->s.number;
 
 	// calculate the pattern and do the damage
-	G_UnlaggedOn( self, muzzle, wpa->range );
+	G_UnlaggedOn( self, VEC2GLM( muzzle ), wpa->range );
 	ShotgunPattern( tent->s.pos.trBase, tent->s.origin2, tent->s.eventParm, self );
 	G_UnlaggedOff();
 }

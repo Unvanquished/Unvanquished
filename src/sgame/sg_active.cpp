@@ -865,7 +865,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( viewOrigin, 65536, forward, end );
 
-	G_UnlaggedOn( self, viewOrigin, 65536 );
+	G_UnlaggedOn( self, VEC2GLM( viewOrigin ), 65536 );
 	traceEnt = Beacon::TagTrace( viewOrigin, end, self->s.number, MASK_SHOT, team, true );
 	G_UnlaggedOff( );
 
@@ -1513,7 +1513,7 @@ void G_UnlaggedOff()
 ==============
 */
 
-void G_UnlaggedOn( gentity_t *attacker, vec3_t muzzle, float range )
+void G_UnlaggedOn( gentity_t *attacker, glm::vec3 const&  muzzle, float range )
 {
 	int        i = 0;
 	gentity_t  *ent;
@@ -1554,16 +1554,13 @@ void G_UnlaggedOn( gentity_t *attacker, vec3_t muzzle, float range )
 			continue;
 		}
 
-		if ( muzzle )
-		{
-			float r1 = Distance( calc->origin, calc->maxs );
-			float r2 = Distance( calc->origin, calc->mins );
-			float maxRadius = ( r1 > r2 ) ? r1 : r2;
+		float r1 = Distance( calc->origin, calc->maxs );
+		float r2 = Distance( calc->origin, calc->mins );
+		float maxRadius = ( r1 > r2 ) ? r1 : r2;
 
-			if ( Distance( muzzle, calc->origin ) > range + maxRadius )
-			{
-				continue;
-			}
+		if ( Distance( &muzzle[0], calc->origin ) > range + maxRadius )
+		{
+			continue;
 		}
 
 		// create a backup of the real positions
@@ -1635,7 +1632,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	r2 = Distance( calc->origin, calc->maxs );
 	range += ( r1 > r2 ) ? r1 : r2;
 
-	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
+	G_UnlaggedOn( ent, VEC2GLM( ent->client->oldOrigin ), range );
 
 	G_CM_Trace( &tr, VEC2GLM( ent->client->oldOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 

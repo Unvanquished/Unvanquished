@@ -29,7 +29,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 void              G_UnlaggedStore();
 void              G_UnlaggedClear( gentity_t *ent );
 void              G_UnlaggedCalc( int time, gentity_t *skipEnt );
-void              G_UnlaggedOn( gentity_t *attacker, vec3_t muzzle, float range );
+void              G_UnlaggedOn( gentity_t *attacker, glm::vec3 const& muzzle, float range );
 void              G_UnlaggedOff();
 void              ClientThink( int clientNum );
 void              ClientEndFrame( gentity_t *ent );

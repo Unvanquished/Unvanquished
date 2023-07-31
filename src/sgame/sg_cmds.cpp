@@ -4066,7 +4066,7 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
 	VectorMA( origin, 65536, forward, end );
 
-	G_UnlaggedOn( ent, origin, 65536 );
+	G_UnlaggedOn( ent, VEC2GLM( origin ), 65536 );
 	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	G_UnlaggedOff( );
 
