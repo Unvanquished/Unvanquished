@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-07-19 05:52+0000\n"
-"Last-Translator: \"J. Vitorino\" <j.e.vitorino@gmail.com>\n"
+"PO-Revision-Date: 2023-08-03 23:29+0000\n"
+"Last-Translator: Matheus49 <Matheus49@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/pt/>\n"
 "Language: pt\n"
@@ -68,11 +68,11 @@ msgstr "Motivo"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Iniciar votação"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
-msgstr ""
+msgstr "Preencher com bots"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
@@ -93,7 +93,7 @@ msgstr "Equipa"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "Quantidade"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
@@ -101,15 +101,15 @@ msgstr "Trocar mapa"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Votação: mudar próximo mapa"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Votação: mudar mapa atual"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "Mudar mapa atual (host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
@@ -129,39 +129,45 @@ msgstr "Erro!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: ui/help_gameplay.rml:16 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Bem-Vindo(a)"
 
 #: ui/help_gameplay.rml:19
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"Nessa seção você encontrará um resumo dos principais elementos do jogo que "
+"você precisa saber para se tornar um bom jogador."
 
 #: ui/help_gameplay.rml:22
 msgid "More can be found on our website and other community places!"
 msgstr ""
+"Mais informações podem ser encontradas em nosso site e em outros locais da "
+"comunidade!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Converse com jogadores e desenvolvedores no Libera.Chat IRC, Matrix ou "
+"Discord: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "Discuta as novidades nos fóruns: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "Descubra mais sobre o jogo na wiki: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:28
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Por favor, reporte bugs em: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
@@ -172,13 +178,21 @@ msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"Alienígenas podem ganhar pontos de evolução ao matar humanos. Eles podem "
+"então usar esses pontos de evolução para se transformar em [dragoon] formas "
+"mais avançadas ."
 
 #: ui/help_gameplay.rml:39
+#, fuzzy
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"Alienígenas podem evoluir de qualquer lugar se não estiverem à vista de um "
+"jogador humano ou de uma construção. Alienígenas podem também involuir para "
+"[granger] formas menos avançadas (com um custo), quando estiverem próximos "
+"do [overmind] overmind."
 
 #: ui/help_gameplay.rml:42
 msgid ""
@@ -198,6 +212,9 @@ msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
+"Os humanos compram e vendem armas na [armoury] Loja de Armas, então "
+"certifique-se de construir uma! Use o kit de construção para construir uma "
+"Loja de Armas se ela estiver faltando."
 
 #: ui/help_gameplay.rml:53
 msgid "Powering buildables"
@@ -229,7 +246,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:64
 msgid "Mining structures"
-msgstr ""
+msgstr "Estruturas de mineração"
 
 #: ui/help_gameplay.rml:67
 msgid ""
@@ -287,12 +304,16 @@ msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
 msgstr ""
+"As construções alienígenas podem pegar fogo quando são atingidas pelo "
+"[flamer] lança-chamas ou pela [firebomb] bomba incendiária."
 
 #: ui/help_gameplay.rml:96
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
 msgstr ""
+"Se as estruturas forem construídas muito próximas, o fogo pode saltar para "
+"os infelizes vizinhos."
 
 #: ui/help_gameplay.rml:99
 msgid ""
@@ -320,11 +341,12 @@ msgstr ""
 
 #: ui/help_gameplay.rml:113
 msgid "Healing"
-msgstr ""
+msgstr "Curando"
 
 #: ui/help_gameplay.rml:116
+#, fuzzy
 msgid "Dying feeds the ennemy, you may want to save your life!"
-msgstr ""
+msgstr "Morrer dá recursos ao inimigo, é melhor poupar sua vida!"
 
 #: ui/help_gameplay.rml:120
 msgid ""
@@ -388,11 +410,11 @@ msgstr ""
 
 #: ui/help_gameplay.rml:154
 msgid "Since Tremulous"
-msgstr ""
+msgstr "Desde Tremulous"
 
 #: ui/help_gameplay.rml:157
 msgid "Since Tremulous, the stamina has been increased."
-msgstr ""
+msgstr "Desde Tremulous, a stamina foi aumentada."
 
 #: ui/help_gameplay.rml:160
 msgid ""
@@ -447,15 +469,15 @@ msgstr ""
 
 #: ui/hud_basics.rml:192
 msgid "Game"
-msgstr ""
+msgstr "Tempo de Jogo"
 
 #: ui/hud_basics.rml:195
 msgid "Life"
-msgstr ""
+msgstr "Vida"
 
 #: ui/hud_basics.rml:199
 msgid "fps"
-msgstr ""
+msgstr "fps"
 
 #: ui/hud_basics.rml:202
 msgid "ms"
@@ -463,19 +485,19 @@ msgstr ""
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr ""
+msgstr "pontos de construção"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr ""
+msgstr "Créditos"
 
 #: ui/human_buy.rml:208
 msgid "Weapons"
-msgstr ""
+msgstr "Armas"
 
 #: ui/human_buy.rml:209 ui/human_buy.rml:225
 msgid "TAB"
-msgstr ""
+msgstr "TAB"
 
 #: ui/human_buy.rml:217
 msgid "Range:"
@@ -491,52 +513,59 @@ msgstr "Cadência de tiro:"
 
 #: ui/human_buy.rml:224
 msgid "Upgrades"
-msgstr ""
+msgstr "Melhorias"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "Escolha seu equipamento inicial:"
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
-msgstr ""
+msgstr "SMG"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr ""
+msgstr "Kit de Construção"
 
 #: ui/human_spawn.rml:48
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
+"A SMG é uma arma inicial de tiro rápido, e o kit de construção constrói e "
+"repara estruturas humanas. Todos os equipamentos podem ser trocados na Loja "
+"de Armas."
 
 #: ui/ingame_beaconmenu.rml:78
+#, fuzzy
 msgid "Beacons"
-msgstr ""
+msgstr "Sinalizadores"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr ""
+msgstr "Espectadores"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "Mapa:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "Tempo:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "Entrar em um time aleatório"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
+"Alienígenas são altamente móveis e possuem uma ampla variedade de ataques "
+"baseados em movimento. Eles são robustos, mas devem contar com furtividade e "
+"evasão."
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
@@ -554,11 +583,11 @@ msgstr ""
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "Alternativamente, você pode assistir a partida sem jogar."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
 msgid "Spectate"
-msgstr ""
+msgstr "Assistir"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
@@ -568,11 +597,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
-msgstr ""
+msgstr "Menu da Partida"
 
 #: ui/menu_ingame.rml:23
 msgid "Leave match"
-msgstr ""
+msgstr "Sair da partida"
 
 #: ui/menu_ingame.rml:24
 msgid "Resume action"
@@ -580,11 +609,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:26 ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Times"
 
 #: ui/menu_ingame.rml:33
 msgid "Democracy"
-msgstr ""
+msgstr "Democracia"
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
@@ -596,11 +625,11 @@ msgstr "sim"
 
 #: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46
 msgid "or"
-msgstr ""
+msgstr "ou"
 
 #: ui/menu_ingame.rml:40 ui/menu_ingame.rml:47
 msgid "no"
-msgstr ""
+msgstr "não"
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
@@ -608,11 +637,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
-msgstr ""
+msgstr "Expulsar bots"
 
 #: ui/menu_ingame.rml:52
 msgid "Extend timelimit"
-msgstr ""
+msgstr "Estender limite de tempo"
 
 #: ui/menu_ingame.rml:53
 msgid "Call a draw"
@@ -624,23 +653,23 @@ msgstr ""
 
 #: ui/menu_ingame.rml:60
 msgid "Host menu"
-msgstr ""
+msgstr "Menu do Host"
 
 #: ui/menu_ingame.rml:61
 msgid "Stop server"
-msgstr ""
+msgstr "Parar servidor"
 
 #: ui/menu_ingame.rml:62
 msgid "Pause server"
-msgstr ""
+msgstr "Pausar servidor"
 
 #: ui/menu_ingame.rml:67
 msgid "Reset match"
-msgstr ""
+msgstr "Resetar Partida"
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
-msgstr ""
+msgstr "Bots"
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
@@ -656,7 +685,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:78
 msgid "Players"
-msgstr ""
+msgstr "Jogadores"
 
 #: ui/menu_ingame.rml:80
 msgid "Disclipline: kick/ban/mute/nobuild"
@@ -664,15 +693,15 @@ msgstr ""
 
 #: ui/menu_ingame.rml:87
 msgid "Main menu"
-msgstr ""
+msgstr "Menu principal"
 
 #: ui/menu_ingame.rml:89 ui/menu_main.rml:28
 msgid "Play"
-msgstr ""
+msgstr "Jogar"
 
 #: ui/menu_ingame.rml:91 ui/menu_main.rml:30
 msgid "Server listings"
-msgstr ""
+msgstr "Lista de Servidores"
 
 #: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
 msgid "Start local/LAN game"
@@ -684,11 +713,11 @@ msgstr ""
 
 #: ui/menu_ingame.rml:96 ui/menu_main.rml:35
 msgid "Options"
-msgstr ""
+msgstr "Opções"
 
 #: ui/menu_ingame.rml:98 ui/menu_main.rml:37
 msgid "Player"
-msgstr ""
+msgstr "Jogador"
 
 #: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
 msgid "Graphics"
@@ -720,7 +749,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:109 ui/menu_main.rml:46
 msgid "Help"
-msgstr ""
+msgstr "Ajuda"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
 msgid "Gameplay guide"
@@ -728,7 +757,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
-msgstr ""
+msgstr "Sair do jogo"
 
 #: ui/menu_ingame.rml:119 ui/menu_main.rml:56
 msgid "Beta"
@@ -759,7 +788,7 @@ msgstr ""
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:276
 #: ui/options_mouse.rml:21 ui/options_ui.rml:59 ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "resetar"
 
 #: ui/options_fov.rml:40
 msgid "Mantis"
@@ -787,7 +816,7 @@ msgstr ""
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "Desativado"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
@@ -923,7 +952,7 @@ msgstr ""
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
 #: ui/options_graphics.rml:238
 msgid "Apply now"
-msgstr ""
+msgstr "Aplicar"
 
 #: ui/options_graphics.rml:89
 msgid "Lighting"
@@ -1016,15 +1045,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:129
 msgid "Shadows"
-msgstr ""
+msgstr "Sombras"
 
 #: ui/options_graphics.rml:136
 msgid "Textures"
-msgstr ""
+msgstr "Texturas"
 
 #: ui/options_graphics.rml:138 ui/server_setup.rml:13
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #: ui/options_graphics.rml:143
 msgid "Full"
@@ -1051,7 +1080,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:153 ui/options_ui.rml:12
 msgid "No"
-msgstr ""
+msgstr "Não"
 
 #: ui/options_graphics.rml:159
 msgid "Anisotropic mip-mapping"
@@ -1183,39 +1212,39 @@ msgstr ""
 
 #: ui/options_graphics.rml:248
 msgid "All structures"
-msgstr ""
+msgstr "Todas as estruturas"
 
 #: ui/options_graphics.rml:249
 msgid "Support structures"
-msgstr ""
+msgstr "Estruturas de suporte"
 
 #: ui/options_graphics.rml:250
 msgid "Offensive structures"
-msgstr ""
+msgstr "Estruturas ofensivas"
 
 #: ui/options_graphics.rml:251
 msgid "Alien structures"
-msgstr ""
+msgstr "Estruturas alienígenas"
 
 #: ui/options_graphics.rml:252
 msgid "Human structures"
-msgstr ""
+msgstr "Estruturas humanas"
 
 #: ui/options_graphics.rml:253
 msgid "Alien support structures"
-msgstr ""
+msgstr "Estruturas de suporte alienígenas"
 
 #: ui/options_graphics.rml:254
 msgid "Human support structures"
-msgstr ""
+msgstr "Estruturas de suporte humanas"
 
 #: ui/options_graphics.rml:255
 msgid "Offensive alien structures"
-msgstr ""
+msgstr "Estruturas ofensivas alienígenas"
 
 #: ui/options_graphics.rml:256
 msgid "Offensive human structures"
-msgstr ""
+msgstr "Estruturas ofensivas humanas"
 
 #: ui/options_graphics.rml:258
 msgid "Building ranges"
@@ -1227,7 +1256,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:264
 msgid "Moderate"
-msgstr ""
+msgstr "Moderado"
 
 #: ui/options_graphics.rml:268
 msgid "Intensity"
@@ -1338,7 +1367,7 @@ msgstr ""
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr ""
+msgstr "Use kit médico:"
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
@@ -1370,11 +1399,11 @@ msgstr ""
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr ""
+msgstr "Votar Sim:"
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr ""
+msgstr "Votar Não:"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
@@ -1582,7 +1611,7 @@ msgstr ""
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "Música"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
@@ -1642,7 +1671,7 @@ msgstr ""
 
 #: ui/options_ui.rml:26
 msgid "Never"
-msgstr ""
+msgstr "Nunca"
 
 #: ui/options_ui.rml:27
 msgid "Ranged weapons only"
@@ -1674,7 +1703,7 @@ msgstr ""
 
 #: ui/options_ui.rml:44
 msgid "Show ping"
-msgstr ""
+msgstr "Mostrar ping"
 
 #: ui/options_ui.rml:46
 msgid "Time that information takes to get to the server and back."
@@ -1690,7 +1719,7 @@ msgstr ""
 
 #: ui/options_ui.rml:54
 msgid "Show FPS"
-msgstr ""
+msgstr "Mostrar FPS"
 
 #: ui/options_ui.rml:56
 msgid "Frames per second."
@@ -1738,7 +1767,7 @@ msgstr ""
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr ""
+msgstr "Lista de Servidores"
 
 #: ui/server_browser.rml:39
 msgid "Internet"
@@ -3908,7 +3937,7 @@ msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:657
 msgid "Starting item not allowed"
-msgstr ""
+msgstr "Item inicial não permitido"
 
 #: src/cgame/cg_servercmds.cpp:663
 msgid ""
@@ -3949,20 +3978,24 @@ msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
 msgstr ""
+"Não tem espaço para construir aqui. Saia de perto de paredes ou outros "
+"objetos por perto e tente novamente."
 
 #: src/cgame/cg_servercmds.cpp:688
 msgid "There is no room to evolve here"
-msgstr ""
+msgstr "Não tem espaço para evoluir aqui"
 
 #: src/cgame/cg_servercmds.cpp:692
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
 msgstr ""
+"Este local é muito perto do inimigo para evoluir. Afaste-se da presença do "
+"inimigo e tente novamente."
 
 #: src/cgame/cg_servercmds.cpp:694
 msgid "This location is too close to the enemy to evolve"
-msgstr ""
+msgstr "Este local é muito perto do inimigo para evoluir"
 
 #: src/cgame/cg_servercmds.cpp:698 src/cgame/cg_servercmds.cpp:699
 msgid "The Overmind is too far away to devolve."
@@ -3975,20 +4008,20 @@ msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:709
 msgid "You cannot evolve until your build timer has expired."
-msgstr ""
+msgstr "Você não pode evoluir até seu tempo de construção estiver expirado."
 
 #: src/cgame/cg_servercmds.cpp:710
 msgid "You cannot evolve until your build timer expires"
-msgstr ""
+msgstr "Você não pode evoluir até seu tempo de construção expirar"
 
 #: src/cgame/cg_servercmds.cpp:714
 msgid "Wait a second after attacking or evolving"
-msgstr ""
+msgstr "Espere um segundo depois de atacar ou evoluir"
 
 #: src/cgame/cg_servercmds.cpp:722
 #, c-format
 msgid "You cannot evolve into a %s"
-msgstr ""
+msgstr "Você não pode evoluir para %s"
 
 #: src/cgame/cg_servercmds.cpp:727
 msgid "You cannot evolve while wallwalking"
@@ -4006,12 +4039,12 @@ msgstr ""
 #: src/cgame/cg_servercmds.cpp:740
 #, c-format
 msgid "The %s is not allowed"
-msgstr ""
+msgstr "O %s não é permitido"
 
 #: src/cgame/cg_servercmds.cpp:745
 #, c-format
 msgid "The %s has not been unlocked yet"
-msgstr ""
+msgstr "O %s não foi desbloqueado ainda"
 
 #: src/cgame/cg_servercmds.cpp:750
 #, c-format
@@ -4051,15 +4084,15 @@ msgstr ""
 
 #: src/cgame/cg_tutorial.cpp:48
 msgid "Primary Attack"
-msgstr ""
+msgstr "Ataque Primário"
 
 #: src/cgame/cg_tutorial.cpp:49
 msgid "Secondary Attack"
-msgstr ""
+msgstr "Ataque Secundário"
 
 #: src/cgame/cg_tutorial.cpp:50
 msgid "Tertiary Attack"
-msgstr ""
+msgstr "Ataque Terciário"
 
 #: src/cgame/cg_tutorial.cpp:51
 msgid "Reload"
@@ -4079,11 +4112,11 @@ msgstr "Remover estrutura"
 
 #: src/cgame/cg_tutorial.cpp:55
 msgid "Previous Weapon"
-msgstr ""
+msgstr "Arma Anterior"
 
 #: src/cgame/cg_tutorial.cpp:56
 msgid "Next Weapon"
-msgstr ""
+msgstr "Próxima Arma"
 
 #: src/cgame/cg_tutorial.cpp:57
 msgid "Global chat"
@@ -4107,7 +4140,7 @@ msgstr "Atirar granada"
 
 #: src/cgame/cg_tutorial.cpp:106
 msgid "SHIFT-ESCAPE"
-msgstr ""
+msgstr "SHIFT-ESC"
 
 #: src/cgame/cg_tutorial.cpp:113
 msgid "ESCAPE"
@@ -4116,12 +4149,12 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:124 src/cgame/rocket/rocket_keys.cpp:338
 #, c-format
 msgid "%s or %s"
-msgstr ""
+msgstr "%s ou %s"
 
 #: src/cgame/cg_tutorial.cpp:128 src/cgame/rocket/rocket_keys.cpp:342
 #, c-format
 msgid "%s, %s"
-msgstr ""
+msgstr "%s, %s"
 
 #: src/cgame/cg_tutorial.cpp:134
 #, c-format
@@ -4230,7 +4263,7 @@ msgstr ""
 #: src/cgame/cg_tutorial.cpp:455
 #, c-format
 msgid "Press %s to fire the %s."
-msgstr ""
+msgstr "Aperte %s para atirar o %s."
 
 #: src/cgame/cg_tutorial.cpp:435
 #, c-format
