@@ -536,18 +536,18 @@ struct spawnQueue_t
  */
 struct buildLog_t
 {
-	int         time;
-	buildFate_t fate;
+	glm::vec3 origin;
+	glm::vec3 angles;
+	glm::vec3 origin2;
+	glm::vec3 angles2;
 	namelog_t   *actor;
 	namelog_t   *builtBy;
+	int         time;
+	buildFate_t fate;
 	team_t      buildableTeam;
 	buildable_t modelindex;
 	float       momentumEarned;
 	bool        markedForDeconstruction;
-	vec3_t      origin;
-	vec3_t      angles;
-	vec3_t      origin2;
-	vec3_t      angles2;
 };
 
 #define MAX_BUILDLOG         1024
