@@ -1817,8 +1817,8 @@ void SP_func_door_model( gentity_t *self )
 	self->s.apos.trDuration = 0;
 	VectorClear( self->s.apos.trDelta );
 
-	self->s.misc = static_cast<int>( self->animation[ 0 ] ); //first frame
-	self->s.weapon = abs( static_cast<int>( self->animation[ 1 ] ) );  //number of frames
+	self->s.misc = static_cast<int>( self->mapEntity.animation[ 0 ] ); //first frame
+	self->s.weapon = abs( static_cast<int>( self->mapEntity.animation[ 1 ] ) );  //number of frames
 
 	//must be at least one frame -- mapper has forgotten animation key
 	if ( self->s.weapon == 0 )

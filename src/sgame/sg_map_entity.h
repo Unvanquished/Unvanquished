@@ -197,6 +197,8 @@ struct gentityCallDefinition_t
 
 struct mapEntity_t
 {
+	glm::vec4 animation; // animated map objects
+
 	/*
 	 * the class of the entity
 	 * this is shared among all instances of this type

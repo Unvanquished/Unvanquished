@@ -189,7 +189,7 @@ static const fieldDescriptor_t fields[] =
 	{ "amount",              FOFS( mapEntity.config.amount )       , F_INT       , ENT_V_UNCLEAR, nullptr },
 	{ "angle",               FOFS( s.angles )                      , F_YAW       , ENT_V_TMPNAME, "yaw"},
 	{ "angles",              FOFS( s.angles )                      , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr },
-	{ "animation",           FOFS( animation )                     , F_4D_VECTOR , ENT_V_UNCLEAR, nullptr },
+	{ "animation",           FOFS( mapEntity.animation )           , F_4D_VECTOR , ENT_V_UNCLEAR, nullptr },
 	{ "bounce",              FOFS( physicsBounce )                 , F_FLOAT     , ENT_V_UNCLEAR, nullptr },
 	{ "classname",           FOFS( classname )                     , F_STRING    , ENT_V_UNCLEAR, nullptr },
 	{ "delay",               FOFS( mapEntity.config.delay )        , F_TIME      , ENT_V_UNCLEAR, nullptr },

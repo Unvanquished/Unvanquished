@@ -308,10 +308,10 @@ static void gfx_animated_model_act( gentity_t *self, gentity_t*, gentity_t* )
 
 void SP_gfx_animated_model( gentity_t *self )
 {
-	self->s.misc = ( int ) self->animation[ 0 ];
-	self->s.weapon = ( int ) self->animation[ 1 ];
-	self->s.torsoAnim = ( int ) self->animation[ 2 ];
-	self->s.legsAnim = ( int ) self->animation[ 3 ];
+	self->s.misc = self->mapEntity.animation[ 0 ];
+	self->s.weapon = self->mapEntity.animation[ 1 ];
+	self->s.torsoAnim = self->mapEntity.animation[ 2 ];
+	self->s.legsAnim = self->mapEntity.animation[ 3 ];
 
 	self->s.angles2[ 0 ] = self->mapEntity.activatedPosition[ 0 ];
 
