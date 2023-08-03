@@ -2621,7 +2621,6 @@ bool G_admin_slap( gentity_t *ent )
 	double         damage = 0.0f; // in case no damage is specified
 	char           name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
 	gentity_t      *vic;
-	vec3_t         dir;
 
 	if ( level.intermissiontime )
 	{
@@ -2674,17 +2673,14 @@ bool G_admin_slap( gentity_t *ent )
 		}
 	}
 
-	dir[0] = crandom();
-	dir[1] = crandom();
-	dir[2] = random();
+	glm::vec3 dir = { crandom(), crandom(), random() };
 
 	// from G_Knockback ...
 	// this code is duplicated from KnockbackComponent because
 	// using knockback in ent->Damage() won't throw the victim
 	// about if the damage caused to them is 0.
-	vec3_t kvel;
+	glm::vec3 kvel = dir * static_cast<float>( accel );
 
-	VectorScale( dir, static_cast<float> (accel), kvel );
 	VectorAdd( vic->client->ps.velocity, kvel, vic->client->ps.velocity );
 
 	// set the timer so that the other client can't cancel
