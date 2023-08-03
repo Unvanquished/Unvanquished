@@ -604,16 +604,11 @@ G_CM_AreaEntities_r
 */
 static void G_CM_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 {
-	worldEntity_t     *check, *next;
-	gentity_t *gcheck;
-//	int             count;
-
-//	count = 0;
-
-	for ( check = node->entities; check; check = next )
+	worldEntity_t *next;
+	for ( worldEntity_t* check = node->entities; check; check = next )
 	{
 		next = check->nextEntityInWorldSector;
-		gcheck = &g_entities[ check - wentities ];
+		gentity_t *gcheck = &g_entities[ check - wentities ];
 
 		if ( !gcheck->r.linked )
 		{
