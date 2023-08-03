@@ -38,6 +38,9 @@ Maryland 20850 USA.
 #include "CBSE.h"
 #include "sg_cm_world.h"
 
+#include <string>
+
+#include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/range.hpp>
 
 #define DEFAULT_FUNC_TRAIN_SPEED 100
@@ -2395,7 +2398,7 @@ static void Think_SetupTrainTargets( gentity_t *self )
 	if ( !self->nextPathSegment )
 	{
 		Log::Warn( "func_train at %s with an unfound target",
-		          vtos( self->r.absmin ) );
+		          glm::to_string( VEC2GLM( self->r.absmin ) ).c_str() );
 		return;
 	}
 
@@ -2411,7 +2414,7 @@ static void Think_SetupTrainTargets( gentity_t *self )
 		if ( path->mapEntity.targets.empty() )
 		{
 			Log::Warn( "Train corner at %s without a target",
-			          vtos( path->s.origin ) );
+			          glm::to_string( VEC2GLM( path->s.origin ) ).c_str() );
 			return;
 		}
 
@@ -2427,7 +2430,7 @@ static void Think_SetupTrainTargets( gentity_t *self )
 			if ( !next )
 			{
 				Log::Warn( "Train corner at %s without a referenced " S_PATH_CORNER,
-				          vtos( path->s.origin ) );
+				          glm::to_string( VEC2GLM( path->s.origin ) ).c_str() );
 				return;
 			}
 		}

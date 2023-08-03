@@ -167,34 +167,11 @@ int G_LocationIndex( const char *name )
 
 /*
 =============
-VectorToString
-
-This is just a convenience function
-for printing vectors
-=============
-*/
-char *vtos( const vec3_t v )
-{
-	static  int  index;
-	static  char str[ 8 ][ 32 ];
-	char         *s;
-
-	// use an array so that multiple vtos won't collide
-	s = str[ index ];
-	index = ( index + 1 ) & 7;
-
-	Com_sprintf( s, 32, "(%i %i %i)", ( int ) v[ 0 ], ( int ) v[ 1 ], ( int ) v[ 2 ] );
-
-	return s;
-}
-
-/*
-=============
 G_TeleportPlayer
 teleports the player to another location
 =============
 */
-void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed )
+void G_TeleportPlayer( gentity_t *player, glm::vec3 const& origin, glm::vec3 const& angles, float speed )
 {
 	// unlink to make sure it can't possibly interfere with G_KillBox
 	trap_UnlinkEntity( player );
@@ -202,8 +179,10 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 	VectorCopy( origin, player->client->ps.origin );
 	player->client->ps.groundEntityNum = ENTITYNUM_NONE;
 
-	AngleVectors( angles, player->client->ps.velocity, nullptr, nullptr );
-	VectorScale( player->client->ps.velocity, speed, player->client->ps.velocity );
+	glm::vec3 tmp;
+	AngleVectors( angles, &tmp, nullptr, nullptr );
+	tmp *= speed;
+	VectorCopy( tmp, player->client->ps.velocity );
 	player->client->ps.pm_time = 0.4f * std::abs( speed ); // duration of loss of control
 	if ( player->client->ps.pm_time > 160 )
 		player->client->ps.pm_time = 160;
@@ -252,18 +231,15 @@ Kills all entities overlapping with `ent`.
 */
 void G_KillBox( gentity_t *ent )
 {
-	int       i, num;
 	int       touch[ MAX_GENTITIES ];
-	gentity_t *hit;
-	vec3_t    mins, maxs;
 
-	VectorAdd( ent->r.currentOrigin, ent->r.mins, mins );
-	VectorAdd( ent->r.currentOrigin, ent->r.maxs, maxs );
-	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), touch, MAX_GENTITIES );
+	glm::vec3 mins = VEC2GLM( ent->r.currentOrigin ) + VEC2GLM( ent->r.mins );
+	glm::vec3 maxs = VEC2GLM( ent->r.currentOrigin ) + VEC2GLM( ent->r.maxs );
+	int num = G_CM_AreaEntities( mins, maxs, touch, MAX_GENTITIES );
 
-	for ( i = 0; i < num; i++ )
+	for ( int i = 0; i < num; i++ )
 	{
-		hit = &g_entities[ touch[ i ] ];
+		gentity_t *hit = &g_entities[ touch[ i ] ];
 
 		// impossible to telefrag self
 		if ( ent == hit )
@@ -786,11 +762,11 @@ bool G_LineOfFire( const gentity_t *from, const gentity_t *to )
  * @brief This version of line of sight only considers map geometry, including movers.
  * @return Whether a line from one point to the other would intersect the world.
  */
-bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
+bool G_LineOfSight( glm::vec3 const& point1, glm::vec3 const& point2 )
 {
 	trace_t trace;
 
-	G_CM_Trace( &trace, VEC2GLM( point1 ), glm::vec3(), glm::vec3(), VEC2GLM( point2 ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &trace, point1, glm::vec3(), glm::vec3(), point2, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }
@@ -858,7 +834,7 @@ float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
 	return Distance(ent1->s.origin, ent2->s.origin);
 }
 
-float G_DistanceToBBox( const vec3_t origin, gentity_t* ent )
+float G_DistanceToBBox( glm::vec3 const& origin, gentity_t const* ent )
 {
 	float distanceSquared = 0.0f;
 	for ( int i = 0; i < 3; i++ )

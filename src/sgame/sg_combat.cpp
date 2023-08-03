@@ -891,7 +891,7 @@ bool G_SelectiveRadiusDamage( glm::vec3 const& origin, gentity_t *attacker, floa
 		}
 
 		// find the distance from the edge of the bounding box
-		float dist = G_DistanceToBBox( &origin[0], ent );
+		float dist = G_DistanceToBBox( origin, ent );
 
 		if ( dist >= radius )
 		{
@@ -937,7 +937,7 @@ bool G_RadiusDamage( glm::vec3 const& origin, gentity_t *attacker, float damage,
 		}
 
 		// find the distance from the edge of the bounding box
-		float dist = G_DistanceToBBox( &origin[0], ent );
+		float dist = G_DistanceToBBox( origin, ent );
 
 		if ( dist >= radius )
 		{

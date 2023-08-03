@@ -36,6 +36,9 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 
+#include <string>
+#include <glm/gtx/string_cast.hpp>
+
 #define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
 
 static void Svcmd_EntityFire_f()
@@ -140,7 +143,7 @@ static void Svcmd_EntityShow_f()
 	Log::Notice( "^5#%3i^*: %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
 	if (IS_NON_NULL_VEC3(selection->s.origin))
 	{
-		Log::Notice("%26s", vtos( selection->s.origin ) );
+		Log::Notice("%26s", glm::to_string( VEC2GLM( selection->s.origin ) ).c_str() );
 	}
 	Log::Notice( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
 	Log::Notice( "Classname: ^5%s^*", selection->classname );
@@ -171,7 +174,7 @@ static void Svcmd_EntityShow_f()
 
 		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != nullptr )
 		{
-			Log::Notice(" • %s %s", etos( possibleTarget ), vtos( possibleTarget->s.origin));
+			Log::Notice(" • %s %s", etos( possibleTarget ), glm::to_string( VEC2GLM( possibleTarget->s.origin ) ) );
 		}
 	}
 

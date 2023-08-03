@@ -27,6 +27,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_bot_util.h"
 #include "Entities.h"
 
+#include <string>
+
+#include <glm/gtx/string_cast.hpp>
 #include <glm/geometric.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -786,7 +789,7 @@ static std::string BotGoalToString( gentity_t *bot )
 	}
 	else if ( target.targetsCoordinates() )
 	{
-		return vtos( &target.getPos()[0] );
+		return glm::to_string( target.getPos() ).c_str();
 	}
 
 	return "<unknown goal>";

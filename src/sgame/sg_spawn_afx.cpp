@@ -153,7 +153,7 @@ static void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t
 	if ( !dest )
 		return;
 
-	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->mapEntity.config.speed );
+	G_TeleportPlayer( other, VEC2GLM( dest->s.origin ), VEC2GLM( dest->s.angles ), self->mapEntity.config.speed );
 }
 
 static void env_afx_teleporter_act( gentity_t *ent, gentity_t*, gentity_t* )

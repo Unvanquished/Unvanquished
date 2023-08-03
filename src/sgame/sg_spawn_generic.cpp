@@ -143,7 +143,7 @@ static void target_teleporter_act( gentity_t *self, gentity_t*, gentity_t *activ
 	if ( !dest )
 		return;
 
-	G_TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->mapEntity.config.speed );
+	G_TeleportPlayer( activator, VEC2GLM( dest->s.origin ), VEC2GLM( dest->s.angles ), self->mapEntity.config.speed );
 }
 
 void SP_target_teleporter( gentity_t *self )

@@ -1020,8 +1020,7 @@ static void FireForceDeconstruct( gentity_t *self )
 		return;
 	}
 	gentity_t* target = self->target.get();
-	vec3_t viewOrigin;
-	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
 	// The builder must still be in a range such that G_GetDeconstructibleBuildable could return
 	// the buildable (but with 10% extra distance allowed).
 	// However it is not necessary to be aiming at the target.

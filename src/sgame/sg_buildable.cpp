@@ -31,6 +31,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "sg_cm_world.h"
 
+#include <string>
+
+#include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/norm.hpp>
 
 static Cvar::Cvar<bool> g_indestructibleBuildables(
@@ -2205,7 +2208,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	if ( tr.startsolid && !force )
 	{
 		Log::Debug( "^3G_FinishSpawningBuildable: %s startsolid at %s",
-		          built->classname, vtos( built->s.origin ) );
+		          built->classname, glm::to_string( VEC2GLM( built->s.origin ) ).c_str() );
 		G_FreeEntity( built );
 		return nullptr;
 	}
