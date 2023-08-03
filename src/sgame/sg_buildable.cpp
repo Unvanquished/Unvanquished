@@ -399,7 +399,7 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	                                  ( distanceToTarget * BG_Class( target->client->ps.stats[ STAT_CLASS ] )->speed ) ) /
 	                                ( LOCKBLOB_SPEED * LOCKBLOB_SPEED ) ) * 1000.0f );
 
-	glm::vec3 halfAcceleration = VEC2GLM( target->acceleration ) / 2.f;
+	glm::vec3 halfAcceleration = target->acceleration / 2.f;
 	glm::vec3 thirdJerk = target->jerk * 3.f;
 	glm::vec3 dirToTarget;
 	// highMsec and lowMsec can only move toward
@@ -1683,8 +1683,8 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	// Check there is enough room to spawn from, if trying to build a spawner.
 	if ( reason == IBE_NONE )
 	{
-		glm::vec3 originV = VEC2GLM( origin );
-		glm::vec3 normalV = VEC2GLM( normal );
+		glm::vec3 originV = origin;
+		glm::vec3 normalV = normal;
 		Entity* blocker;
 		glm::vec3 spawnPoint;
 
@@ -2203,7 +2203,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	dest += VEC2GLM( built->s.origin );
 
 	trace_t     tr;
-	G_CM_Trace( &tr, VEC2GLM( built->s.origin ), VEC2GLM( built->r.mins ), VEC2GLM( built->r.maxs ), VEC2GLM( dest ), built->num(), built->clipmask, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr, VEC2GLM( built->s.origin ), VEC2GLM( built->r.mins ), VEC2GLM( built->r.maxs ), dest, built->num(), built->clipmask, 0, traceType_t::TT_AABB );
 
 	if ( tr.startsolid && !force )
 	{
@@ -2681,7 +2681,7 @@ void G_BuildLogRevert( int id )
 					   ( ent->s.eType == entityType_t::ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
 					 ent->s.modelindex == log->modelindex )
 				{
-					glm::vec3 dist = VEC2GLM( ent->s.pos.trBase ) - VEC2GLM( log->origin );
+					glm::vec3 dist = VEC2GLM( ent->s.pos.trBase ) - log->origin;
 
 					if ( glm::length2( dist ) <= 2.0f )
 					{

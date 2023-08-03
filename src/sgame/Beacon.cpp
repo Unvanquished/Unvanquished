@@ -633,7 +633,7 @@ namespace Beacon //this should eventually become a class
 		// Do a trace for bounding boxes under the reticle first, they are prefered
 		{
 			trace_t tr;
-			G_CM_Trace( &tr, VEC2GLM( begin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), skip, mask, 0, traceType_t::TT_AABB );
+			G_CM_Trace( &tr, begin, glm::vec3(), glm::vec3(), end, skip, mask, 0, traceType_t::TT_AABB );
 			if ( EntityTaggable( tr.entityNum, team, true ) )
 			{
 				reticleEnt = g_entities + tr.entityNum;
@@ -662,13 +662,13 @@ namespace Beacon //this should eventually become a class
 			if( dot < 0.9 )
 				continue;
 
-			if( !G_CM_inPVS( VEC2GLM( ent->r.currentOrigin ), VEC2GLM( begin ) ) )
+			if( !G_CM_inPVS( VEC2GLM( ent->r.currentOrigin ), begin ) )
 				continue;
 
 			// LOS
 			{
 				trace_t tr;
-				G_CM_Trace( &tr, VEC2GLM( begin ), glm::vec3(), glm::vec3(), VEC2GLM( ent->r.currentOrigin ), skip, mask, 0, traceType_t::TT_AABB );
+				G_CM_Trace( &tr, begin, glm::vec3(), glm::vec3(), VEC2GLM( ent->r.currentOrigin ), skip, mask, 0, traceType_t::TT_AABB );
 				if( tr.entityNum != i )
 					continue;
 			}

@@ -189,7 +189,7 @@ bool TurretComponent::TargetCanBeHit() {
 	glm::vec3 traceEnd     = traceStart + range * aimDirection;
 
 	trace_t tr;
-	G_CM_Trace(&tr, VEC2GLM( traceStart ), glm::vec3(), glm::vec3(), VEC2GLM( traceEnd ), entity.oldEnt->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
+	G_CM_Trace(&tr, traceStart, glm::vec3(), glm::vec3(), traceEnd, entity.oldEnt->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	return (tr.entityNum == target->num());
 }

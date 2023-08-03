@@ -1741,7 +1741,7 @@ static bool FindRoomForClassChangeVertically(
 	newOrigin = VEC2GLM( tr.endpos );
 
 	// make REALLY sure
-	G_CM_Trace( &tr, VEC2GLM( newOrigin ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( newOrigin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	return !tr.startsolid && tr.fraction == 1.0f;
 }
 
@@ -3251,7 +3251,7 @@ void G_StopFollowing( gentity_t *ent )
 			G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
 		}
 
-		G_SetOrigin( ent, VEC2GLM( spawn_origin ) );
+		G_SetOrigin( ent, spawn_origin );
 		VectorCopy( spawn_origin, ent->client->ps.origin );
 		G_SetClientViewAngle( ent, spawn_angles );
 	}

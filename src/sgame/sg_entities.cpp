@@ -222,7 +222,7 @@ gentity_t *G_NewTempEntity( glm::vec3 origin, int event )
 	newEntity->freeAfterEvent = true;
 
 	SnapVector( &origin[0] );  // save network bandwidth
-	G_SetOrigin( newEntity, VEC2GLM( &origin[0] ) );
+	G_SetOrigin( newEntity, origin );
 
 	// find cluster for PVS
 	G_CM_LinkEntity( newEntity );

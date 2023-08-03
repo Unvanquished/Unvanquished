@@ -229,10 +229,10 @@ bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result )
 		return false;
 	}
 	dtPolyRef firstPoly = bot->corridor.getFirstPoly();
-	float corner[ 3 ] = { 0 };
-	bot->nav->query->closestPointOnPolyBoundary( firstPoly, ent->s.origin, corner );
+	glm::vec3 corner;
+	bot->nav->query->closestPointOnPolyBoundary( firstPoly, ent->s.origin, &corner[0] );
 	std::swap( corner[ 1 ], corner[ 2 ] );  // recast and daemon have these swapped
-	result = VEC2GLM( corner );
+	result = corner;
 	return true;
 }
 

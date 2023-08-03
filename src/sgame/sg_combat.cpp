@@ -874,7 +874,7 @@ bool G_SelectiveRadiusDamage( glm::vec3 const& origin, gentity_t *attacker, floa
 	glm::vec3 mins = origin - radius;
 	glm::vec3 maxs = origin + radius;
 
-	int numListedEntities = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
+	int numListedEntities = G_CM_AreaEntities( mins, maxs, entityList, MAX_GENTITIES );
 
 	for ( int e = 0; e < numListedEntities; e++ )
 	{

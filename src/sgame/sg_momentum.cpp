@@ -258,7 +258,7 @@ static float AddMomentum( momentum_t type, team_t team, float amount,
 		}
 		else
 		{
-			event = G_NewTempEntity( VEC2GLM( vec3_origin ), EV_MOMENTUM );
+			event = G_NewTempEntity( glm::vec3(), EV_MOMENTUM );
 			event->r.svFlags = ( SVF_BROADCAST | SVF_CLIENTMASK );
 			G_TeamToClientmask( team, &( event->r.loMask ), &( event->r.hiMask ) );
 		}

@@ -79,7 +79,7 @@ Util::optional<glm::vec3> /*direction*/, int flags, meansOfDeath_t /*meansOfDeat
 	glm::vec3 origin;
 	if ( g_unlagged.Get() && entity.oldEnt->client->unlaggedCalc.used )
 	{
-		origin = VEC2GLM( entity.oldEnt->client->unlaggedCalc.origin );
+		origin = entity.oldEnt->client->unlaggedCalc.origin;
 	}
 	else
 	{

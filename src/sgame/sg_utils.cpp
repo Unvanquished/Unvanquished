@@ -197,7 +197,7 @@ void G_TeleportPlayer( gentity_t *player, glm::vec3 const& origin, glm::vec3 con
 	G_ClearPlayerZapEffects( player );
 
 	// set angles
-	G_SetClientViewAngle( player, VEC2GLM( angles ) );
+	G_SetClientViewAngle( player, angles );
 
 	// save results of pmove
 	BG_PlayerStateToEntityState( &player->client->ps, &player->s );
@@ -325,7 +325,7 @@ void G_BroadcastEvent( int event, int eventParm, team_t team )
 {
 	gentity_t *ent;
 
-	ent = G_NewTempEntity( VEC2GLM( vec3_origin ), event );
+	ent = G_NewTempEntity( glm::vec3(), event );
 	ent->s.eventParm = eventParm;
 
 	if ( team )

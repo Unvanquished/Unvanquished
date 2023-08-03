@@ -396,11 +396,6 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 {
 	worldSector_t *node;
 	int           leafs[ MAX_TOTAL_ENT_LEAFS ];
-	int           cluster;
-	int           num_leafs;
-	int           area;
-	int           lastLeaf;
-	float         *origin, *angles;
 
 	worldEntity_t* went = G_CM_WorldEntityForGentity( gEnt );
 
@@ -436,13 +431,13 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	}
 
 	// get the position
-	origin = gEnt->r.currentOrigin;
-	angles = gEnt->r.currentAngles;
+	glm::vec3 origin = VEC2GLM( gEnt->r.currentOrigin );
+	glm::vec3 angles = VEC2GLM( gEnt->r.currentAngles );
 
 	// set the abs box
 	if ( gEnt->r.bmodel && ( angles[ 0 ] || angles[ 1 ] || angles[ 2 ] ) )
 	{
-		glm::mat3 matrix = RotationMatrix( VEC2GLM( angles ) );
+		glm::mat3 matrix = RotationMatrix( angles );
 
 		const glm::vec3 corners[ 8 ] = {
 			{ gEnt->r.mins[ 0 ], gEnt->r.mins[ 1 ], gEnt->r.mins[ 2 ] },
@@ -468,8 +463,8 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 			}
 		}
 
-		glm::vec3 absmin = mins + VEC2GLM( origin );
-		glm::vec3 absmax = maxs + VEC2GLM( origin );
+		glm::vec3 absmin = mins + origin;
+		glm::vec3 absmax = maxs + origin;
 
 		VectorCopy(absmin, gEnt->r.absmin);
 		VectorCopy(absmax, gEnt->r.absmax);
@@ -496,7 +491,8 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	gEnt->r.areanum2 = -1;
 
 	//get all leafs, including solids
-	num_leafs = CM_BoxLeafnums( gEnt->r.absmin, gEnt->r.absmax, leafs, MAX_TOTAL_ENT_LEAFS, &lastLeaf );
+	int lastLeaf;
+	int num_leafs = CM_BoxLeafnums( gEnt->r.absmin, gEnt->r.absmax, leafs, MAX_TOTAL_ENT_LEAFS, &lastLeaf );
 
 	// if none of the leafs were inside the map, the
 	// entity is outside the world and can be considered unlinked
@@ -508,7 +504,7 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 	// set areas, even from clusters that don't fit in the entity array
 	for ( int i = 0; i < num_leafs; i++ )
 	{
-		area = CM_LeafArea( leafs[ i ] );
+		int area = CM_LeafArea( leafs[ i ] );
 
 		if ( area != -1 )
 		{
@@ -530,7 +526,7 @@ void G_CM_LinkEntity( gentity_t *gEnt )
 
 	for ( int i = 0; i < num_leafs; i++ )
 	{
-		cluster = CM_LeafCluster( leafs[ i ] );
+		int cluster = CM_LeafCluster( leafs[ i ] );
 
 		if ( cluster != -1 )
 		{

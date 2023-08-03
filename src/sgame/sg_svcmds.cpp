@@ -320,8 +320,8 @@ static void Svcmd_EntityLock_f()
 
 	if ( door->mapEntity.locked )
 	{
-		glm::vec3 mins = VEC2GLM( door->mapEntity.restingPosition ) + VEC2GLM( door->r.mins );
-		glm::vec3 maxs = VEC2GLM( door->mapEntity.restingPosition ) + VEC2GLM( door->r.maxs );
+		glm::vec3 mins = door->mapEntity.restingPosition + VEC2GLM( door->r.mins );
+		glm::vec3 maxs = door->mapEntity.restingPosition + VEC2GLM( door->r.maxs );
 		G_BotAddObstacle( mins, maxs, door->num() );
 	}
 	else

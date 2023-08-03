@@ -5429,7 +5429,7 @@ bool G_admin_builder( gentity_t *ent )
 
 				if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex )
 				{
-					glm::vec3 dist = VEC2GLM( traceEnt->s.pos.trBase ) - VEC2GLM( log->origin );
+					glm::vec3 dist = VEC2GLM( traceEnt->s.pos.trBase ) - log->origin;
 
 					if ( glm::length2( dist ) < 2.0f )
 					{

@@ -465,7 +465,7 @@ static gentity_t *FireMelee( gentity_t *self )
 		return nullptr;
 	}
 
-	traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, wpa->meansOfDeath );
+	traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), forward, 0, wpa->meansOfDeath );
 
 	// for painsaw. This makes really little sense to me, but this is refactoring, not bugsquashing.
 	if ( wp == WP_PAIN_SAW )
@@ -547,7 +547,7 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 
 	gentity_t *target = &g_entities[ tr.entityNum ];
 	SendRangedHitEvent( self, target, &tr );
-	target->Damage(damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), other, mod);
+	target->Damage(damage, self, VEC2GLM( tr.endpos ), forward, other, mod);
 }
 
 // spawns a missile at parent's muzzle going in forward dir
@@ -628,14 +628,14 @@ static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 	gentity_t *tent;
 
 	// instead of an EV_WEAPON_HIT_* event, send this so client can generate the same spread pattern
-	tent = G_NewTempEntity( VEC2GLM( muzzle ), EV_SHOTGUN );
+	tent = G_NewTempEntity( muzzle, EV_SHOTGUN );
 	VectorScale( forward, 4096, tent->s.origin2 );
 	SnapVector( tent->s.origin2 );
 	tent->s.eventParm = rand() / ( RAND_MAX / 0x100 + 1 ); // seed for spread pattern
 	tent->s.otherEntityNum = self->s.number;
 
 	// calculate the pattern and do the damage
-	G_UnlaggedOn( self, VEC2GLM( muzzle ), wpa->range );
+	G_UnlaggedOn( self, muzzle, wpa->range );
 	ShotgunPattern( VEC2GLM( tent->s.pos.trBase ), VEC2GLM( tent->s.origin2 ), tent->s.eventParm, self );
 	G_UnlaggedOff();
 }
@@ -1087,7 +1087,7 @@ bool G_CheckDretchAttack( gentity_t *self )
 		return false;
 	}
 
-	traceEnt->entity->Damage( wpa->damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, wpa->meansOfDeath );
+	traceEnt->entity->Damage( wpa->damage, self, VEC2GLM( tr.endpos ), forward, 0, wpa->meansOfDeath );
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
 
@@ -1117,7 +1117,7 @@ static void FindZapChainTargets( zap_t *zap )
 	glm::vec3 maxs = origin + range;
 	glm::vec3 mins = origin - range;
 
-	int num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
+	int num = G_CM_AreaEntities( mins, maxs, entityList, MAX_GENTITIES );
 
 	for ( int i = 0; i < num; i++ )
 	{
@@ -1173,7 +1173,7 @@ static void UpdateZapEffect( zap_t *zap )
 	                      entityNums, zap->numTargets + 1 );
 
 
-	G_SetOrigin( zap->effectChannel, VEC2GLM( muzzle ) );
+	G_SetOrigin( zap->effectChannel, muzzle );
 	G_CM_LinkEntity( zap->effectChannel );
 }
 
@@ -1200,7 +1200,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 
 		// Zap chains only originate from alive entities.
 		if (target->Damage((float)LEVEL2_AREAZAP_DMG, creator, VEC2GLM( target->s.origin ),
-		                           VEC2GLM( forward ), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP)) {
+		                           forward, DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP)) {
 			FindZapChainTargets( zap );
 
 			for ( i = 1; i < zap->numTargets; i++ )
@@ -1209,7 +1209,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 				               LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1;
 
 				zap->targets[i]->Damage(damage, zap->creator, VEC2GLM( zap->targets[i]->s.origin ),
-				                       VEC2GLM( forward ), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP);
+				                       forward, DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP);
 			}
 		}
 
@@ -1358,7 +1358,7 @@ bool G_CheckPounceAttack( gentity_t *self )
 
 	self->client->pmext.pouncePayload = 0;
 
-	traceEnt->Damage((float)damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ),
+	traceEnt->Damage((float)damage, self, VEC2GLM( tr.endpos ), forward,
 	                         DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE);
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
