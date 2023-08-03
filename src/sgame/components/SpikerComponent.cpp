@@ -245,7 +245,7 @@ bool SpikerComponent::Fire() {
 			}
 
 			G_SpawnMissile(
-				MIS_SPIKER, self, self->s.origin, dir, nullptr, G_FreeEntity,
+				MIS_SPIKER, self, VEC2GLM( self->s.origin ), VEC2GLM( dir ), nullptr, G_FreeEntity,
 				level.time + (int)(1000.0f * SPIKE_RANGE / (float)BG_Missile(MIS_SPIKER)->speed));
 		}
 	}

@@ -584,7 +584,7 @@ static void FireMissile( gentity_t* self, missile_t missile, gentity_t* target, 
 		VectorCopy( muzzle, origin );
 	}
 
-	gentity_t *m = G_SpawnMissile( missile, self, origin, forward, target , think, level.time + thinkDelta );
+	gentity_t *m = G_SpawnMissile( missile, self, VEC2GLM( origin ), VEC2GLM( forward ), target , think, level.time + thinkDelta );
 	if ( lifetime )
 	{
 		m->timestamp = level.time + lifetime;
@@ -822,7 +822,7 @@ static void FirebombMissileThink( gentity_t *self )
 	}
 
 	// set floor below on fire (assumes the firebomb lays on the floor!)
-	G_SpawnFire( self->s.origin, upwards, self->parent );
+	G_SpawnFire( VEC2GLM( self->s.origin ), VEC2GLM( upwards ), self->parent );
 
 	// spam fire
 	for ( subMissileNum = 0; subMissileNum < FIREBOMB_SUBMISSILE_COUNT; subMissileNum++ )
@@ -834,7 +834,7 @@ static void FirebombMissileThink( gentity_t *self )
 		VectorNormalize( dir );
 
 		// the submissile's parent is the attacker
-		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self->parent, self->s.origin, dir, nullptr, G_FreeEntity, level.time + 10000 );
+		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self->parent, VEC2GLM( self->s.origin ), VEC2GLM( dir ), nullptr, G_FreeEntity, level.time + 10000 );
 
 		// randomize missile speed
 		VectorScale( m->s.pos.trDelta, ( rand() / ( float )RAND_MAX ) + 0.5f, m->s.pos.trDelta );
@@ -873,7 +873,7 @@ static gentity_t *FireLcannonHelper( gentity_t *self, vec3_t start, vec3_t dir,
 
 	if ( self->s.generic1 == WPM_PRIMARY )
 	{
-		m = G_SpawnMissile( MIS_LCANNON, self, start, dir, nullptr, G_ExplodeMissile, nextthink );
+		m = G_SpawnMissile( MIS_LCANNON, self, VEC2GLM( start ), VEC2GLM( dir ), nullptr, G_ExplodeMissile, nextthink );
 
 		// some values are set in the code
 		m->damage       = damage;
@@ -894,7 +894,7 @@ static gentity_t *FireLcannonHelper( gentity_t *self, vec3_t start, vec3_t dir,
 	}
 	else
 	{
-		m = G_SpawnMissile( MIS_LCANNON2, self, start, dir, nullptr, G_ExplodeMissile, nextthink );
+		m = G_SpawnMissile( MIS_LCANNON2, self, VEC2GLM( start ), VEC2GLM( dir ), nullptr, G_ExplodeMissile, nextthink );
 	}
 
 	return m;

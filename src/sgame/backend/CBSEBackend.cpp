@@ -43,8 +43,9 @@ bool Entity::FreeAt(int freeTime) {
 	return SendMessage(EntityMessage::FreeAt, &data);
 }
 
-bool Entity::Ignite(gentity_t* fireStarter) {
-	std::tuple<gentity_t*> data(fireStarter);
+bool Entity::Ignite( gentity_t const* fireStarter )
+{
+	std::tuple<gentity_t const*> data( fireStarter );
 	return SendMessage(EntityMessage::Ignite, &data);
 }
 

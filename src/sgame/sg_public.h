@@ -237,8 +237,8 @@ bool          G_MapExists( const char *name );
 // sg_missile.c
 void              G_ExplodeMissile( gentity_t *ent );
 void              G_RunMissile( gentity_t *ent );
-gentity_t         *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t start, const vec3_t dir, gentity_t *target, void ( *think )( gentity_t *self ), int nextthink );
-gentity_t         *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
+gentity_t         *G_SpawnMissile( missile_t missile, gentity_t *parent, glm::vec3 const& start, glm::vec3 const& dir, gentity_t *target, void ( *think )( gentity_t *self ), int nextthink );
+gentity_t         *G_SpawnFire( glm::vec3 const& origin, glm::vec3 const& normal, gentity_t const* fireStarter );
 
 // sg_namelog.c
 void              G_namelog_connect( gclient_t *client );

@@ -249,7 +249,7 @@ class Entity {
 
 		bool PrepareNetCode(); /**< Sends the PrepareNetCode message to all interested components. */
 		bool FreeAt(int freeTime); /**< Sends the FreeAt message to all interested components. */
-		bool Ignite(gentity_t* fireStarter); /**< Sends the Ignite message to all interested components. */
+		bool Ignite( gentity_t const* fireStarter); /**< Sends the Ignite message to all interested components. */
 		bool Extinguish(int immunityTime); /**< Sends the Extinguish message to all interested components. */
 		bool Heal(float amount, gentity_t* source); /**< Sends the Heal message to all interested components. */
 		bool Damage(float amount, gentity_t* source, Util::optional<glm::vec3> location, Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath); /**< Sends the Damage message to all interested components. */

@@ -2227,7 +2227,7 @@ static void Cmd_Ignite_f( gentity_t *player )
 
 	if ( trace.entityNum == ENTITYNUM_WORLD )
 	{
-		G_SpawnFire( trace.endpos, trace.plane.normal, player );
+		G_SpawnFire( VEC2GLM( trace.endpos ), VEC2GLM( trace.plane.normal ), player );
 	} else
 	{
 		g_entities[ trace.entityNum ].entity->Ignite( player );

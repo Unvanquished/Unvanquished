@@ -61,15 +61,13 @@ enum missileTimePowerMod_t {
 
 static void BounceMissile( gentity_t *ent, trace_t *trace )
 {
-	vec3_t velocity;
-	float  dot;
-	int    hitTime;
+	glm::vec3 velocity;
 
 	// reflect the velocity on the trace plane
-	hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
-	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, velocity );
-	dot = DotProduct( velocity, trace->plane.normal );
-	VectorMA( velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta );
+	int hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
+	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, &velocity[0] );
+	float dot = glm::dot( velocity, VEC2GLM( trace->plane.normal ) );
+	velocity = velocity - 2.f * dot * VEC2GLM( trace->plane.normal );
 
 	if ( ent->s.eFlags & EF_BOUNCE_HALF )
 	{
@@ -214,7 +212,7 @@ static int ImpactFlamer( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	{
 		if ( random() < FLAMER_LEAVE_FIRE_CHANCE )
 		{
-			G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
+			G_SpawnFire( VEC2GLM( trace->endpos ), VEC2GLM( trace->plane.normal ), ent->parent );
 		}
 	}
 
@@ -229,7 +227,7 @@ static int ImpactFirebombSub( gentity_t *ent, trace_t *trace, gentity_t *hitEnt 
 	// set the environment on fire
 	if ( hitEnt->num() == ENTITYNUM_WORLD )
 	{
-		G_SpawnFire( trace->endpos, trace->plane.normal, ent->parent );
+		G_SpawnFire( VEC2GLM( trace->endpos ), VEC2GLM( trace->plane.normal ), ent->parent );
 	}
 
 	return MIB_IMPACT;
@@ -237,14 +235,13 @@ static int ImpactFirebombSub( gentity_t *ent, trace_t *trace, gentity_t *hitEnt 
 
 static int ImpactLockblock( gentity_t*, trace_t*, gentity_t *hitEnt )
 {
-	vec3_t dir;
-
 	if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
 	{
 		hitEnt->client->ps.stats[ STAT_STATE ] |= SS_BLOBLOCKED;
 		hitEnt->client->lastLockTime = level.time;
-		AngleVectors( hitEnt->client->ps.viewangles, dir, nullptr, nullptr );
-		hitEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
+		glm::vec3 dir;
+		AngleVectors( VEC2GLM( hitEnt->client->ps.viewangles ), &dir, nullptr, nullptr );
+		hitEnt->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( &dir[0] );
 	}
 
 	return MIB_IMPACT;
@@ -383,11 +380,12 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	{
 		if ( ent->damage && ( Entities::IsAlive( hitEnt ) || ( hitEnt && hitEnt->s.eType == entityType_t::ET_MOVER ) ) )
 		{
-			vec3_t dir;
+			glm::vec3 dir;
+			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, &dir[0] );
 
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, dir );
-
-			if ( VectorNormalize( dir ) == 0 )
+			float length = glm::length( dir );
+			dir = glm::normalize( dir );
+			if ( length == 0 )
 			{
 				dir[ 2 ] = 1; // stepped on a grenade
 			}
@@ -396,9 +394,9 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			if ( !ma->doLocationalDamage ) dflags |= DAMAGE_NO_LOCDAMAGE;
 			if ( ma->doKnockback )         dflags |= DAMAGE_KNOCKBACK;
 
-			hitEnt->Damage(ent->damage * MissileTimeDmgMod(ent), attacker,
-			                       VEC2GLM( trace->endpos ), VEC2GLM( dir ), dflags,
-			                       (meansOfDeath_t)ent->methodOfDeath);
+			hitEnt->Damage( ent->damage * MissileTimeDmgMod(ent), attacker,
+			                       VEC2GLM( trace->endpos ), dir, dflags,
+			                       ent->methodOfDeath );
 		}
 
 		// splash damage (doesn't apply to person directly hit)
@@ -417,10 +415,10 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		// Use either the trajectory direction or the surface normal for the hit event.
 		if ( ma->impactFlightDirection )
 		{
-			vec3_t trajDir;
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, trajDir );
-			VectorNormalize( trajDir );
-			dirAsByte = DirToByte( trajDir );
+			glm::vec3 trajDir;
+			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, &trajDir[0] );
+			trajDir = glm::normalize( trajDir );
+			dirAsByte = DirToByte( &trajDir[0] );
 		}
 		else
 		{
@@ -471,22 +469,20 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 
 void G_ExplodeMissile( gentity_t *ent )
 {
-	vec3_t dir;
-	vec3_t origin;
 	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
 
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
-	SnapVector( origin );
-	G_SetOrigin( ent, VEC2GLM( origin ) );
+	glm::vec3 origin;
+	BG_EvaluateTrajectory( &ent->s.pos, level.time, &origin[0] );
+	SnapVector( &origin[0] );
+	G_SetOrigin( ent, origin );
 
 	// we don't have a valid direction, so just point straight up
-	dir[ 0 ] = dir[ 1 ] = 0;
-	dir[ 2 ] = 1;
+	glm::vec3 dir = { 0.f, 0.f, 1.f };
 
 	// turn the missile into an event carrier
 	ent->s.eType = entityType_t::ET_INVISIBLE;
 	ent->freeAfterEvent = true;
-	G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
+	G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( &dir[0] ) );
 
 	// splash damage
 	if ( ent->splashDamage )
@@ -502,19 +498,19 @@ void G_ExplodeMissile( gentity_t *ent )
 
 void G_RunMissile( gentity_t *ent )
 {
-	vec3_t   origin;
 	trace_t  tr;
 	int      passent;
 	bool impact = false;
 
 	// get current position
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
+	glm::vec3 origin;
+	BG_EvaluateTrajectory( &ent->s.pos, level.time, &origin[0] );
 
 	// ignore interactions with the missile owner
 	passent = ent->r.ownerNum;
 
 	// general trace to see if we hit anything at all
-	G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( origin ), passent, ent->clipmask, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, passent, ent->clipmask, 0, traceType_t::TT_AABB );
 
 	if ( tr.startsolid || tr.allsolid )
 	{
@@ -531,7 +527,7 @@ void G_RunMissile( gentity_t *ent )
 		}
 		else
 		{
-			G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), glm::vec3(), glm::vec3(), VEC2GLM( origin ), passent, ent->clipmask, 0, traceType_t::TT_AABB );
+			G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), glm::vec3(), glm::vec3(), origin, passent, ent->clipmask, 0, traceType_t::TT_AABB );
 
 			if ( tr.fraction < 1.0f )
 			{
@@ -547,7 +543,7 @@ void G_RunMissile( gentity_t *ent )
 				}
 				else
 				{
-					G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( origin ), passent, CONTENTS_BODY, 0, traceType_t::TT_AABB );
+					G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, passent, CONTENTS_BODY, 0, traceType_t::TT_AABB );
 
 					if ( tr.fraction < 1.0f )
 					{
@@ -601,12 +597,11 @@ void G_RunMissile( gentity_t *ent )
 	G_RunThink( ent );
 }
 
-gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t start, const vec3_t dir,
+gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, glm::vec3 const& start, glm::vec3 const& dir,
                            gentity_t *target, void ( *think )( gentity_t *self ), int nextthink )
 {
 	gentity_t                 *m;
 	const missileAttributes_t *ma;
-	vec3_t                    velocity;
 
 	if ( !parent )
 	{
@@ -656,12 +651,12 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 		VectorCopy( start, m->r.currentOrigin );
 
 		// set speed
-		VectorScale( dir, ma->speed, velocity );
+		glm::vec3 velocity = dir * static_cast<float>( ma->speed );
 
 		// add lag
 		if ( ma->lag && parent->client )
 		{
-			VectorMA( velocity, ma->lag, parent->client->ps.velocity, velocity );
+			velocity += ma->lag * VEC2GLM( parent->client->ps.velocity );
 		}
 
 		// copy velocity
@@ -679,23 +674,20 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 G_SpawnFire
 ===============
 */
-gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
+gentity_t *G_SpawnFire( glm::vec3 const& origin, glm::vec3 const& normal, gentity_t const* fireStarter )
 {
-	gentity_t *fire;
-	vec3_t    snapHelper, floorNormal;
-
-	VectorSet( floorNormal, 0.0f, 0.0f, 1.0f );
+	glm::vec3 floorNormal = { 0.f, 0.f, 1.f };
 
 	// don't spawn fire on walls and ceiling since we can't display it properly yet
 	// TODO: Add fire effects for floor and ceiling
-	if ( DotProduct( normal, floorNormal ) < 0.71f ) // 0.71 ~= cos(45°)
+	if ( glm::dot( normal, floorNormal ) < 0.71f ) // 0.71 ~= cos(45°)
 	{
 		return nullptr;
 	}
 
 	// don't spawn a fire inside another fire
-	fire = nullptr;
-	while ( ( fire = G_IterateEntitiesWithinRadius( fire, VEC2GLM( origin ), FIRE_MIN_DISTANCE ) ) )
+	gentity_t *fire = nullptr;
+	while ( ( fire = G_IterateEntitiesWithinRadius( fire, origin, FIRE_MIN_DISTANCE ) ) )
 	{
 		if ( fire->s.eType == entityType_t::ET_FIRE )
 		{
@@ -711,19 +703,19 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire->clipmask  = 0;
 
 	fire->entity.reset( new FireEntity(FireEntity::Params{fire}) );
-	fire->entity->Ignite(fireStarter);
+	fire->entity->Ignite( fireStarter );
 
 	// attacker
 	fire->r.ownerNum = fireStarter->num();
 
 	// normal
-	VectorNormalize( normal ); // make sure normal is a direction
-	VectorCopy( normal, fire->s.origin2 );
+	glm::vec3 tmp = glm::normalize( normal ); // make sure normal is a direction
+	VectorCopy( tmp, fire->s.origin2 );
 
 	// origin
 	VectorCopy( origin, fire->s.origin );
-	VectorAdd( origin, normal, snapHelper );
-	G_SnapVectorTowards( fire->s.origin, snapHelper ); // save net bandwidth
+	glm::vec3 snapHelper = origin + tmp;
+	G_SnapVectorTowards( fire->s.origin, &snapHelper[0] ); // save net bandwidth
 	VectorCopy( fire->s.origin, fire->r.currentOrigin );
 
 	// send to client
