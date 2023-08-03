@@ -385,7 +385,7 @@ struct clientPersistant_t
 	int      floodDemerits;
 	int      floodTime;
 
-	vec3_t   lastDeathLocation;
+	glm::vec3 lastDeathLocation;
 	char     guid[ 33 ];
 	addr_t   ip;
 	char     voice[ MAX_VOICE_NAME_LEN ];

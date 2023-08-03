@@ -1066,7 +1066,7 @@ static void G_SpawnClients( team_t team )
 		clientNum = G_PeekSpawnQueue( sq );
 		ent = &g_entities[ clientNum ];
 
-		if ( ( spawn = G_SelectUnvanquishedSpawnPoint( team, VEC2GLM( ent->client->pers.lastDeathLocation ), spawn_origin, spawn_angles ) ) )
+		if ( ( spawn = G_SelectUnvanquishedSpawnPoint( team, ent->client->pers.lastDeathLocation, spawn_origin, spawn_angles ) ) )
 		{
 			clientNum = G_PopSpawnQueue( sq );
 

@@ -492,7 +492,7 @@ void G_PlayerDie( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, me
 		}
 	}
 
-	VectorCopy( self->s.origin, self->client->pers.lastDeathLocation );
+	self->client->pers.lastDeathLocation = VEC2GLM( self->s.origin );
 
 	self->s.weapon = WP_NONE;
 	if ( self->client->noclip )
