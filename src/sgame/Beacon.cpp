@@ -359,8 +359,6 @@ namespace Beacon //this should eventually become a class
 		glm::vec3 accumulator;
 		trace_t tr;
 
-		VectorClear( accumulator );
-
 		for ( glm::vec3 const& v : vecs )
 		{
 			glm::vec3 end = origin + 500.f * v;
@@ -631,10 +629,6 @@ namespace Beacon //this should eventually become a class
 		tagtrace_ent_t list[ MAX_GENTITIES ];
 		int i, count = 0;
 		gentity_t *ent, *reticleEnt = nullptr;
-		vec3_t seg, delta;
-		float dot;
-
-		VectorSubtract( end, begin, seg );
 
 		// Do a trace for bounding boxes under the reticle first, they are prefered
 		{
@@ -661,8 +655,9 @@ namespace Beacon //this should eventually become a class
 			if( !EntityTaggable( i, team, true ) )
 				continue;
 
-			VectorSubtract( ent->r.currentOrigin, begin, delta );
-			dot = DotProduct( seg, delta ) / VectorLength( seg ) / VectorLength( delta );
+			glm::vec3 delta = VEC2GLM( ent->r.currentOrigin ) - begin;
+			glm::vec3 seg = end - begin;
+			float dot = glm::dot( seg, delta ) / glm::length( seg ) / glm::length( delta );
 
 			if( dot < 0.9 )
 				continue;
