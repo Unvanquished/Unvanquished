@@ -237,7 +237,7 @@ bool          G_MapExists( const char *name );
 // sg_missile.c
 void              G_ExplodeMissile( gentity_t *ent );
 void              G_RunMissile( gentity_t *ent );
-gentity_t         *G_SpawnMissile( missile_t missile, gentity_t *parent, glm::vec3 const& start, glm::vec3 const& dir, gentity_t *target, void ( *think )( gentity_t *self ), int nextthink );
+gentity_t         *G_SpawnMissile( missile_t missile, gentity_t* parent, glm::vec3 const& start, glm::vec3 const& dir, gentity_t *target, void ( *think )( gentity_t *self ), int nextthink );
 gentity_t         *G_SpawnFire( glm::vec3 const& origin, glm::vec3 const& normal, gentity_t const* fireStarter );
 
 // sg_namelog.c
@@ -317,9 +317,8 @@ bool          G_RefillAmmo( gentity_t *self, bool triggerEvent );
 bool          G_RefillFuel( gentity_t *self, bool triggerEvent );
 bool          G_FindAmmo( gentity_t *self );
 bool          G_FindFuel( gentity_t *self );
-void              G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, const vec3_t right, const vec3_t up, vec3_t muzzlePoint );
-glm::vec3         G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward );
-void              G_SnapVectorTowards( vec3_t v, vec3_t to );
+glm::vec3 G_CalcMuzzlePoint( const gentity_t *self, const glm::vec3 &forward );
+void G_SnapVectorTowards( glm::vec3& v, glm::vec3 const& to );
 bool              G_CheckDretchAttack( gentity_t *self );
 bool              G_CheckPounceAttack( gentity_t *self );
 void              G_CheckCkitRepair( gentity_t *self );

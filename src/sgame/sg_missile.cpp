@@ -450,9 +450,9 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		ent->s.modelindex = 0;
 
 		// Save net bandwidth.
-		G_SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
-
-		G_SetOrigin( ent, VEC2GLM( trace->endpos ) );
+		glm::vec3 pos = VEC2GLM( trace->endpos );
+		G_SnapVectorTowards( pos, VEC2GLM( ent->s.pos.trBase ) );
+		G_SetOrigin( ent, pos );
 
 		trap_LinkEntity( ent );
 	}
@@ -597,7 +597,7 @@ void G_RunMissile( gentity_t *ent )
 	G_RunThink( ent );
 }
 
-gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, glm::vec3 const& start, glm::vec3 const& dir,
+gentity_t *G_SpawnMissile( missile_t missile, gentity_t* parent, glm::vec3 const& start, glm::vec3 const& dir,
                            gentity_t *target, void ( *think )( gentity_t *self ), int nextthink )
 {
 	gentity_t                 *m;
@@ -713,10 +713,12 @@ gentity_t *G_SpawnFire( glm::vec3 const& origin, glm::vec3 const& normal, gentit
 	VectorCopy( tmp, fire->s.origin2 );
 
 	// origin
-	VectorCopy( origin, fire->s.origin );
 	glm::vec3 snapHelper = origin + tmp;
-	G_SnapVectorTowards( fire->s.origin, &snapHelper[0] ); // save net bandwidth
-	VectorCopy( fire->s.origin, fire->r.currentOrigin );
+	glm::vec3 netOrigin = origin;
+	G_SnapVectorTowards( netOrigin, snapHelper ); // save net bandwidth
+
+	VectorCopy( netOrigin, fire->s.origin );
+	VectorCopy( netOrigin, fire->r.currentOrigin );
 
 	// send to client
 	trap_LinkEntity( fire );

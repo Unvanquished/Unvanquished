@@ -186,7 +186,7 @@ struct gentity_t
 	 * this can e.g. be indicated by an animation
 	 */
 	bool     spawned;
-	gentity_t    *parent; // the gentity that spawned this one
+	gentity_t* parent; // the gentity that spawned this one
 
 	/**
 	 * is the buildable getting support by reactor or overmind?
