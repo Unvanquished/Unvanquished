@@ -839,7 +839,7 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 	glm::vec3 end = viewOrigin + 65536.f * forward;
 
-	G_UnlaggedOn( self, VEC2GLM( viewOrigin ), 65536 );
+	G_UnlaggedOn( self, viewOrigin, 65536 );
 	gentity_t* traceEnt = Beacon::TagTrace( viewOrigin, end, self->s.number, MASK_SHOT, team, true );
 	G_UnlaggedOff( );
 
@@ -1512,16 +1512,16 @@ void G_UnlaggedOn( gentity_t *attacker, glm::vec3 const&  muzzle, float range )
 			continue;
 		}
 
-		if ( VectorCompare( ent->r.currentOrigin, calc->origin ) )
+		if ( VEC2GLM( ent->r.currentOrigin ) == calc->origin )
 		{
 			continue;
 		}
 
-		float r1 = Distance( calc->origin, calc->maxs );
-		float r2 = Distance( calc->origin, calc->mins );
+		float r1 = glm::distance( calc->origin, calc->maxs );
+		float r2 = glm::distance( calc->origin, calc->mins );
 		float maxRadius = ( r1 > r2 ) ? r1 : r2;
 
-		if ( Distance( &muzzle[0], calc->origin ) > range + maxRadius )
+		if ( glm::distance( muzzle, calc->origin ) > range + maxRadius )
 		{
 			continue;
 		}
@@ -1586,8 +1586,8 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 
 	// increase the range by the player's largest possible radius since it's
 	// the players bounding box that collides, not their origin
-	float r1 = Distance( calc->origin, calc->mins );
-	float r2 = Distance( calc->origin, calc->maxs );
+	float r1 = glm::distance( calc->origin, calc->mins );
+	float r2 = glm::distance( calc->origin, calc->maxs );
 	range += ( r1 > r2 ) ? r1 : r2;
 
 	G_UnlaggedOn( ent, VEC2GLM( ent->client->oldOrigin ), range );

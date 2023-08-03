@@ -404,9 +404,9 @@ struct clientPersistant_t
 
 struct unlagged_t
 {
-	vec3_t   origin;
-	vec3_t   mins;
-	vec3_t   maxs;
+	glm::vec3 origin;
+	glm::vec3 mins;
+	glm::vec3 maxs;
 	bool used;
 };
 
