@@ -5657,12 +5657,21 @@ bool G_admin_buildlog( gentity_t *ent )
 
 	ADMBP_end();
 
-	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog:^* showing $1$ build logs $2$–$3$ of $4$–$5$.  $6$") ),
+	std::string more;
+	if ( i < level.buildId )
+	{
+		std::string idArg;
+		if ( id >= 0 )
+		{
+			idArg = ' ' + std::string( search );
+		}
+		more = Str::Format( "  run 'buildlog%s %d' to see more", idArg, i + MAX_CLIENTS );
+	}
+	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog:^* showing $1$ build logs $2$–$3$ of $4$–$5$.$6$") ),
 	           printed, start + MAX_CLIENTS, i + MAX_CLIENTS - 1,
 	           level.buildId + MAX_CLIENTS - level.numBuildLogs,
 	           level.buildId + MAX_CLIENTS - 1,
-	           i < level.buildId ? va( "run 'buildlog %s%s%d' to see more",
-	                                   search, search[ 0 ] ? " " : "", i + MAX_CLIENTS ) : "" ) );
+	           Quote( more ) ) );
 	return true;
 }
 
