@@ -1245,10 +1245,6 @@ Cmd_SayArea_f
 static void Cmd_SayArea_f( gentity_t *ent )
 {
 	int    entityList[ MAX_GENTITIES ];
-	int    num, i;
-	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
-	vec3_t mins, maxs;
-	char   *msg;
 
 	if ( trap_Argc() < 2 )
 	{
@@ -1256,28 +1252,25 @@ static void Cmd_SayArea_f( gentity_t *ent )
 		return;
 	}
 
-	msg = ConcatArgs( 1 );
+	char* msg = ConcatArgs( 1 );
 
-	for ( i = 0; i < 3; i++ )
-	{
-		range[ i ] = g_sayAreaRange.Get();
-	}
+	glm::vec3 range = glm::vec3( g_sayAreaRange.Get(), g_sayAreaRange.Get(), g_sayAreaRange.Get() );
 
 	G_LogPrintf( "SayArea: %d \"%s^*\": ^4%s",
 	             ent->num(), ent->client->pers.netname, msg );
 
-	VectorAdd( ent->s.origin, range, maxs );
-	VectorSubtract( ent->s.origin, range, mins );
+	glm::vec3 mins = VEC2GLM( ent->s.origin ) - range;
+	glm::vec3 maxs = VEC2GLM( ent->s.origin ) + range;
 
-	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
+	int num = G_CM_AreaEntities( mins, maxs, entityList, MAX_GENTITIES );
 
-	for ( i = 0; i < num; i++ )
+	for ( int i = 0; i < num; i++ )
 	{
 		G_SayTo( ent, &g_entities[ entityList[ i ] ], SAY_AREA, msg );
 	}
 
 	//Send to ADMF_SPEC_ALLCHAT candidates
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
 		if ( g_clients[ i ].pers.team == TEAM_NONE &&
 		     G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
@@ -1290,10 +1283,6 @@ static void Cmd_SayArea_f( gentity_t *ent )
 static void Cmd_SayAreaTeam_f( gentity_t *ent )
 {
 	int    entityList[ MAX_GENTITIES ];
-	int    num, i;
-	vec3_t range = { 1000.0f, 1000.0f, 1000.0f };
-	vec3_t mins, maxs;
-	char   *msg;
 
 	if ( trap_Argc() < 2 )
 	{
@@ -1301,22 +1290,19 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 		return;
 	}
 
-	msg = ConcatArgs( 1 );
+	char* msg = ConcatArgs( 1 );
 
-	for ( i = 0; i < 3; i++ )
-	{
-		range[ i ] = g_sayAreaRange.Get();
-	}
+	glm::vec3 range = glm::vec3( g_sayAreaRange.Get(), g_sayAreaRange.Get(), g_sayAreaRange.Get() );
 
 	G_LogPrintf( "SayAreaTeam: %d \"%s^*\": ^4%s",
 	             ent->num(), ent->client->pers.netname, msg );
 
-	VectorAdd( ent->s.origin, range, maxs );
-	VectorSubtract( ent->s.origin, range, mins );
+	glm::vec3 mins = VEC2GLM( ent->s.origin ) - range;
+	glm::vec3 maxs = VEC2GLM( ent->s.origin ) + range;
 
-	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
+	int num = G_CM_AreaEntities( mins, maxs, entityList, MAX_GENTITIES );
 
-	for ( i = 0; i < num; i++ )
+	for ( int i = 0; i < num; i++ )
 	{
 		if ( g_entities[ entityList[ i ] ].client &&
 			ent->client->pers.team == g_entities[ entityList[ i ] ].client->pers.team )
@@ -1326,7 +1312,7 @@ static void Cmd_SayAreaTeam_f( gentity_t *ent )
 	}
 
 	//Send to ADMF_SPEC_ALLCHAT candidates
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
 		if ( g_entities[ i ].client->pers.team == TEAM_NONE &&
 		     G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) )
@@ -1639,10 +1625,7 @@ Cmd_SetViewpos_f
 */
 static void Cmd_SetViewpos_f( gentity_t *ent )
 {
-	vec3_t origin, angles;
 	char   buffer[ MAX_TOKEN_CHARS ];
-	int    i, entityId;
-	gentity_t* selection;
 
 	if ( trap_Argc() < 4 && trap_Argc() != 2 )
 	{
@@ -1650,35 +1633,36 @@ static void Cmd_SetViewpos_f( gentity_t *ent )
 		return;
 	}
 
+	glm::vec3 origin, angles;
 	if(trap_Argc() == 2)
 	{
 		trap_Argv( 1, buffer, sizeof( buffer ) );
-		entityId = atoi( buffer );
+		int entityId = atoi( buffer );
 
 		if (entityId >= level.num_entities || entityId < MAX_CLIENTS)
 		{
 			Log::Warn("entityId %d is out of range", entityId);
 			return;
 		}
-		selection = &g_entities[entityId];
+		gentity_t* selection = &g_entities[entityId];
 		if (!selection->inuse)
 		{
 			Log::Warn("entity slot %d is not in use", entityId);
 			return;
 		}
 
-		VectorCopy( selection->s.origin, origin );
-		VectorCopy( selection->s.angles, angles );
+		origin = VEC2GLM( selection->s.origin );
+		angles = VEC2GLM( selection->s.angles );
 	}
 	else
 	{
-		for ( i = 0; i < 3; i++ )
+		for ( int i = 0; i < 3; i++ )
 		{
 			trap_Argv( i + 1, buffer, sizeof( buffer ) );
 			origin[ i ] = atof( buffer );
 		}
 		origin[ 2 ] -= ent->client->ps.viewheight;
-		VectorCopy( ent->client->ps.viewangles, angles );
+		angles = VEC2GLM( ent->client->ps.viewangles );
 		angles[ ROLL ] = 0;
 
 		if ( trap_Argc() >= 5 )
@@ -1693,7 +1677,7 @@ static void Cmd_SetViewpos_f( gentity_t *ent )
 		}
 	}
 
-	G_TeleportPlayer( ent, origin, angles, 0.0f );
+	G_TeleportPlayer( ent, &origin[0], &angles[0], 0.0f );
 }
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
@@ -1702,9 +1686,8 @@ static bool FindRoomForClassChangeVertically(
 		const gentity_t *ent,
 		glm::vec3 const& fromMins, glm::vec3 const& fromMaxs,
 		glm::vec3 const& toMins,   glm::vec3 const& toMaxs,
-		vec3_t newOrigin )
+		glm::vec3 newOrigin )
 {
-	vec3_t  temp;
 	trace_t tr;
 	float   nudgeHeight;
 	float   maxHorizGrowth;
@@ -1748,14 +1731,14 @@ static bool FindRoomForClassChangeVertically(
 
 	// compute a place up in the air, but still under the roof
 	// before starting the real trace
-	VectorCopy( newOrigin, temp );
+	glm::vec3 temp = newOrigin;
 	temp[ 2 ] += nudgeHeight;
-	G_CM_Trace( &tr, VEC2GLM( newOrigin ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( temp ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	temp[ 2 ] = newOrigin[2] + nudgeHeight * tr.fraction;
 
 	// trace down to the ground so that we can evolve on slopes
-	G_CM_Trace( &tr, VEC2GLM( temp ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( newOrigin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
-	VectorCopy( tr.endpos, newOrigin );
+	G_CM_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	newOrigin = VEC2GLM( tr.endpos );
 
 	// make REALLY sure
 	G_CM_Trace( &tr, VEC2GLM( newOrigin ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( newOrigin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
@@ -1766,7 +1749,7 @@ static bool FindRoomForClassChangeLaterally(
 		const gentity_t *ent,
 		glm::vec3 const& fromMins, glm::vec3 const& fromMaxs,
 		glm::vec3 const& toMins,   glm::vec3 const& toMaxs,
-		vec3_t newOrigin)
+		glm::vec3& newOrigin)
 {
 	float max_x = fabs( (toMaxs[0]-toMins[0])
 	                  - (fromMaxs[0]-fromMins[0]) ) / 2.0f;
@@ -1780,43 +1763,39 @@ static bool FindRoomForClassChangeLaterally(
 	// origin on x and y.
 	float distance = std::min(max_x, max_y);
 
-	vec3_t origin;
-	origin[0] = ent->client->ps.origin[0];
-	origin[1] = ent->client->ps.origin[1];
-	origin[2] = ent->client->ps.origin[2] + fromMins[2] - toMins[2] + 1.0f;
+	glm::vec3 origin = VEC2GLM( ent->client->ps.origin );
+	origin.z += fromMins.z - toMins.z + 1.f;
 
 	float best_distance = 1e37f;
 	bool found = false;
-	vec3_t deltas[] = { { 1, 0, 0 }, { 0, 1, 0 }, { -1, 0, 0 }, { 0, -1, 0 },
+	constexpr glm::vec3 deltas[] = { { 1, 0, 0 }, { 0, 1, 0 }, { -1, 0, 0 }, { 0, -1, 0 },
 	                    { 1, 1, 0 }, { -1, 1, 0 }, { -1, -1, 0 }, { 1, -1, 0 } };
-	for ( const vec3_t &delta : deltas )
+	for ( glm::vec3 const& delta : deltas )
 	{
 		trace_t trace;
-		vec3_t start_point;
-		VectorMA( origin, distance, delta, start_point );
-		G_CM_Trace( &trace, VEC2GLM( start_point ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( origin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+		glm::vec3 start_point = origin + distance * delta;
+		G_CM_Trace( &trace, start_point, toMins, toMaxs, origin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
-		vec3_t first_trace_end;
-		VectorCopy(trace.endpos, first_trace_end);
+		glm::vec3 first_trace_end = VEC2GLM( trace.endpos );
 		// make REALLY sure
-		G_CM_Trace( &trace, VEC2GLM( first_trace_end ), VEC2GLM( toMins ), VEC2GLM( toMaxs ), VEC2GLM( first_trace_end ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+		G_CM_Trace( &trace, first_trace_end, toMins, toMaxs, first_trace_end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		if ( trace.startsolid || trace.fraction < 1.0f )
 			continue; // collision
 
-		float new_distance = Distance(trace.endpos, origin);
+		float new_distance = glm::distance( VEC2GLM( trace.endpos ), origin );
 		if ( new_distance > best_distance )
 			continue; // not interesting
 
 		// new best!
 		found = true;
 		best_distance = new_distance;
-		VectorCopy( trace.endpos, newOrigin );
+		newOrigin = VEC2GLM( trace.endpos );
 	}
 	return found;
 }
 
-bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
+bool G_RoomForClassChange( gentity_t *ent, class_t pcl, glm::vec3& newOrigin )
 {
 	glm::vec3 fromMins, fromMaxs;
 	glm::vec3 toMins, toMaxs;
@@ -1825,7 +1804,7 @@ bool G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin )
 	BG_BoundingBox( oldClass, fromMins, fromMaxs );
 	BG_BoundingBox( pcl, toMins, toMaxs );
 
-	VectorCopy( ent->client->ps.origin, newOrigin ); // default
+	newOrigin = VEC2GLM( ent->client->ps.origin ); // default
 
 	if( FindRoomForClassChangeVertically( ent, fromMins, fromMaxs,
 			toMins, toMaxs, newOrigin ) )
@@ -1856,10 +1835,9 @@ bool G_ScheduleSpawn( gclient_t *client, class_t class_, weapon_t humanItem )
 
 // This is called by G_AlienEvolve once everything has been checked to actually
 // make the client evolve.
-static void G_AlienEvolve_evolve( gentity_t *ent, class_t newClass, const vec3_t &infestOrigin, short cost )
+static void G_AlienEvolve_evolve( gentity_t *ent, class_t newClass, glm::vec3 const& infestOrigin, short cost )
 {
 	int    oldBoostTime = -1;
-	vec3_t oldVel;
 
 	ent->client->pers.evolveHealthFraction =
 	       ent->entity->Get<HealthComponent>()->HealthFraction();
@@ -1878,7 +1856,7 @@ static void G_AlienEvolve_evolve( gentity_t *ent, class_t newClass, const vec3_t
 	ent->client->pers.classSelection = newClass;
 	ClientUserinfoChanged( ent->client->ps.clientNum, false );
 	VectorCopy( infestOrigin, ent->s.pos.trBase );
-	VectorCopy( ent->client->ps.velocity, oldVel );
+	glm::vec3 oldVel = VEC2GLM( ent->client->ps.velocity );
 
 	if ( ent->client->ps.stats[ STAT_STATE ] & SS_BOOSTED )
 	{
@@ -1908,7 +1886,6 @@ static void G_AlienEvolve_evolve( gentity_t *ent, class_t newClass, const vec3_t
 bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 {
 	int       clientNum = ent->num();
-	vec3_t    infestOrigin;
 	class_t   currentClass = ent->client->pers.classSelection;
 
 	if ( newClass <= PCL_NONE || newClass >= PCL_NUM_CLASSES )
@@ -2002,6 +1979,7 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 		return false;
 	}
 
+	glm::vec3 infestOrigin;
 	if ( !G_RoomForClassChange( ent, newClass, infestOrigin ) )
 	{
 		if ( report )
@@ -2238,17 +2216,20 @@ Cmd_Ignite_f
 */
 static void Cmd_Ignite_f( gentity_t *player )
 {
-	vec3_t    viewOrigin, forward, end;
 	trace_t   trace;
 
-	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
-	AngleVectors( player->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 1000, forward, end );
-	G_CM_Trace( &trace, VEC2GLM( viewOrigin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), player->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &player->client->ps );
+	glm::vec3 viewangles = VEC2GLM( player->client->ps.viewangles );
+	glm::vec3 forward;
+	AngleVectors( viewangles, &forward, nullptr, nullptr );
+	glm::vec3 end = viewOrigin + 1000.f * forward;
+	G_CM_Trace( &trace, viewOrigin, glm::vec3(), glm::vec3(), end, player->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
-	if ( trace.entityNum == ENTITYNUM_WORLD ) {
+	if ( trace.entityNum == ENTITYNUM_WORLD )
+	{
 		G_SpawnFire( trace.endpos, trace.plane.normal, player );
-	} else {
+	} else
+	{
 		g_entities[ trace.entityNum ].entity->Ignite( player );
 	}
 
@@ -2453,7 +2434,7 @@ static bool Cmd_Sell_upgradeItem( gentity_t *ent, upgrade_t item )
 	// shouldn't really need to test for this, but just to be safe
 	if ( item == UP_LIGHTARMOUR || item == UP_MEDIUMARMOUR || item == UP_BATTLESUIT )
 	{
-		vec3_t newOrigin;
+		glm::vec3 newOrigin;
 
 		if ( !G_RoomForClassChange( ent, PCL_HUMAN_NAKED, newOrigin ) )
 		{
@@ -2652,7 +2633,6 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 {
 #define Maybe_TriggerMenu(num, reason) do { if ( !quiet ) G_TriggerMenu( (num), (reason) ); } while ( 0 )
 	weapon_t  weapon;
-	vec3_t    newOrigin;
 
 	weapon = BG_WeaponNumberByName( s );
 	upgrade_t upgrade = static_cast<upgrade_t>( BG_UpgradeByName( s )->number );
@@ -2800,44 +2780,33 @@ static bool Cmd_Buy_internal( gentity_t *ent, const char *s, bool sellConflictin
 			break; // okay, can buy this
 		}
 
-		if ( upgrade == UP_LIGHTARMOUR )
+		struct
 		{
-			if ( !G_RoomForClassChange( ent, PCL_HUMAN_LIGHT, newOrigin ) )
-			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-				return false;
-			}
-
-			VectorCopy( newOrigin, ent->client->ps.origin );
-			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_LIGHT;
-			ent->client->pers.classSelection = PCL_HUMAN_LIGHT;
-			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-		}
-		else if ( upgrade == UP_MEDIUMARMOUR )
+			upgrade_t up;
+			class_t cl;
+		} convert[] =
 		{
-			if ( !G_RoomForClassChange( ent, PCL_HUMAN_MEDIUM, newOrigin ) )
-			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-				return false;
-			}
-
-			VectorCopy( newOrigin, ent->client->ps.origin );
-			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_MEDIUM;
-			ent->client->pers.classSelection = PCL_HUMAN_MEDIUM;
-			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-		}
-		else if ( upgrade == UP_BATTLESUIT )
+			{ UP_LIGHTARMOUR, PCL_HUMAN_LIGHT },
+			{ UP_MEDIUMARMOUR, PCL_HUMAN_MEDIUM },
+			{ UP_BATTLESUIT, PCL_HUMAN_BSUIT },
+		};
+		for ( auto const& pair : convert )
 		{
-			if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
+			if ( upgrade == pair.up )
 			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
-				return false;
-			}
+				glm::vec3 newOrigin;
+				if ( !G_RoomForClassChange( ent, pair.cl, newOrigin ) )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMARMOURCHANGE );
+					return false;
+				}
 
-			VectorCopy( newOrigin, ent->client->ps.origin );
-			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
-			ent->client->pers.classSelection = PCL_HUMAN_BSUIT;
-			ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+				VectorCopy( newOrigin, ent->client->ps.origin );
+				ent->client->ps.stats[ STAT_CLASS ] = pair.cl;
+				ent->client->pers.classSelection = pair.cl;
+				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+				break;
+			}
 		}
 
 		//add to inventory
@@ -2911,10 +2880,6 @@ Cmd_Build_f
 */
 static void Cmd_Build_f( gentity_t *ent )
 {
-	char        s[ MAX_TOKEN_CHARS ];
-	float       dist;
-	glm::vec3      origin;
-	int         groundEntNum;
 
 	if ( ent->client->pers.namelog->denyBuild || G_admin_permission( ent, ADMF_NO_BUILD ) )
 	{
@@ -2928,6 +2893,7 @@ static void Cmd_Build_f( gentity_t *ent )
 		return;
 	}
 
+	char s[ MAX_TOKEN_CHARS ];
 	trap_Argv( 1, s, sizeof( s ) );
 
 	buildable_t buildable = static_cast<buildable_t>( BG_BuildableByName( s )->number );
@@ -2937,16 +2903,18 @@ static void Cmd_Build_f( gentity_t *ent )
 	     !BG_BuildableDisabled( buildable ) && BG_BuildableUnlocked( buildable ) )
 	{
 		dynMenu_t err;
-		vec3_t forward, aimDir;
+		glm::vec3 forward, aimDir;
 		itemBuildError_t reason;
 
 		glm::vec3 normal = BG_GetClientNormal( &ent->client->ps );
-		AngleVectors( ent->client->ps.viewangles, aimDir, nullptr, nullptr );
-		ProjectPointOnPlane( forward, aimDir, &normal[0] );
-		VectorNormalize( forward );
+		AngleVectors( VEC2GLM( ent->client->ps.viewangles ), &aimDir, nullptr, nullptr );
+		ProjectPointOnPlane( &forward[0], &aimDir[0], &normal[0] );
+		forward = glm::normalize( forward );
 
-		dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+		float dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * glm::dot( forward, aimDir );
 
+		glm::vec3 origin;
+		int groundEntNum;
 		reason = G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum );
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE | SB_BUILDABLE_FROM_IBE( reason );
 
@@ -3299,12 +3267,10 @@ void G_StopFollowing( gentity_t *ent )
 
 	if ( ent->client->pers.team == TEAM_NONE )
 	{
-		vec3_t viewOrigin, angles;
-
-		BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
-		VectorCopy( ent->client->ps.viewangles, angles );
+		glm::vec3 viewOrigin = BG_GetClientViewOrigin( &ent->client->ps );
+		glm::vec3 angles = VEC2GLM( ent->client->ps.viewangles );
 		angles[ ROLL ] = 0;
-		G_TeleportPlayer( ent, viewOrigin, angles, false );
+		G_TeleportPlayer( ent, &viewOrigin[0], &angles[0], false );
 	}
 
 	CalculateRanks();
@@ -4006,8 +3972,7 @@ static void Cmd_Damage_f( gentity_t *ent )
 		nonloc = false;
 	}
 
-	glm::vec3 point;
-	VectorCopy( ent->s.origin, point );
+	glm::vec3 point = VEC2GLM( ent->s.origin );
 	point[ 0 ] += dx;
 	point[ 1 ] += dy;
 	point[ 2 ] += dz;
@@ -4027,7 +3992,6 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	beaconType_t type;
 	team_t       team;
 	int          flags;
-	vec3_t       origin, end, forward;
 	trace_t      tr;
 	const beaconAttributes_t *battr;
 
@@ -4058,12 +4022,13 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	team  = (team_t)ent->client->pers.team;
 
 	// Trace in view direction.
-	BG_GetClientViewOrigin( &ent->client->ps, origin );
-	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( origin, 65536, forward, end );
+	glm::vec3 origin = BG_GetClientViewOrigin( &ent->client->ps );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( ent->client->ps.viewangles ), &forward, nullptr, nullptr );
+	glm::vec3 end = origin + 65536.f * forward;
 
-	G_UnlaggedOn( ent, VEC2GLM( origin ), 65536 );
-	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	G_UnlaggedOn( ent, origin, 65536 );
+	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	G_UnlaggedOff( );
 
 	// Evaluate flood limit.

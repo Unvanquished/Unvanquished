@@ -1971,7 +1971,7 @@ void BotFireWeaponAI( gentity_t *self )
 static bool BotChangeClass( gentity_t *self, class_t newClass )
 {
 	glm::vec3 newOrigin;
-	if ( !G_RoomForClassChange( self, newClass, &newOrigin[0] ) )
+	if ( !G_RoomForClassChange( self, newClass, newOrigin ) )
 	{
 		return false;
 	}
@@ -2229,9 +2229,9 @@ void BotSellUpgrades( gentity_t *self )
 			// shouldn't really need to test for this, but just to be safe
 			if ( i == UP_LIGHTARMOUR || i == UP_MEDIUMARMOUR || i == UP_BATTLESUIT )
 			{
-				glm::vec3 newOrigin = {};
+				glm::vec3 newOrigin;
 
-				if ( !G_RoomForClassChange( self, PCL_HUMAN_NAKED, &newOrigin[0] ) )
+				if ( !G_RoomForClassChange( self, PCL_HUMAN_NAKED, newOrigin ) )
 				{
 					continue;
 				}

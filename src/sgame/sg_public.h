@@ -159,7 +159,7 @@ void              Cmd_PrivateMessage_f( gentity_t *ent );
 void              Cmd_AdminMessage_f( gentity_t *ent );
 int               G_FloodLimited( gentity_t *ent );
 bool          G_CheckStopVote( team_t );
-bool          G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin );
+bool          G_RoomForClassChange( gentity_t *ent, class_t pcl, glm::vec3& newOrigin );
 bool          G_ScheduleSpawn( gclient_t *client, class_t class_, weapon_t humanItem = WP_NONE );
 bool          G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun );
 void              ScoreboardMessage( gentity_t *client );
