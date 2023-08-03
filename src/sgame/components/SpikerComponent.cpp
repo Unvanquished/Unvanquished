@@ -1,6 +1,7 @@
 #include "SpikerComponent.h"
 
 #include <glm/geometric.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "../sg_cm_world.h"
 
@@ -204,12 +205,11 @@ bool SpikerComponent::Fire() {
 		totalPerimeter += rowPerimeter;
 	}
 
-	// TODO: Use new vector library.
-	vec3_t dir, zenith, rotAxis;
+	glm::vec3 dir, rotAxis;
 
 	// As rotation axis for setting the altitude, any vector perpendicular to the zenith works.
-	VectorCopy(self->s.origin2, zenith);
-	PerpendicularVector(rotAxis, zenith);
+	glm::vec3 zenith = VEC2GLM( self->s.origin2 );
+	PerpendicularVector( &rotAxis[0], &zenith[0] );
 
 	// Distribute and launch missiles.
 	for (int row = 0; row < MISSILEROWS; row++) {
@@ -226,26 +226,26 @@ bool SpikerComponent::Fire() {
 			float spikeAzimuth = 2.0f * M_PI * (((float)spike + 0.5f * crandom()) / (float)spikes);
 
 			// Set launch direction altitude.
-			RotatePointAroundVector(dir, rotAxis, zenith, RAD2DEG(M_PI_2 - spikeAltitude));
+			RotatePointAroundVector(&dir[0], &rotAxis[0], &zenith[0], RAD2DEG(M_PI_2 - spikeAltitude));
 
 			// Set launch direction azimuth.
-			RotatePointAroundVector(dir, zenith, dir, RAD2DEG(spikeAzimuth));
+			RotatePointAroundVector(&dir[0], &zenith[0], &dir[0], RAD2DEG(spikeAzimuth));
 
 			// Trace in the shooting direction and do not shoot spikes that are likely to harm
 			// friendly entities.
-			bool fire = SafeToShoot(VEC2GLM( dir ));
+			bool fire = SafeToShoot( dir );
 
 			logger.Debug("Spiker #%d %s: Row %d/%d: Spike %2d/%2d: "
-				"( Alt %2.0f°, Az %3.0f° → %.2f, %.2f, %.2f )", self->num(),
+				"( Alt %2.0f°, Az %3.0f° → %s )", self->num(),
 				fire ? "fires" : "skips", row + 1, MISSILEROWS, spike + 1, spikes,
-				RAD2DEG(spikeAltitude), RAD2DEG(spikeAzimuth), dir[0], dir[1], dir[2]);
+				RAD2DEG(spikeAltitude), RAD2DEG(spikeAzimuth), glm::to_string( dir ) );
 
 			if (!fire) {
 				continue;
 			}
 
 			G_SpawnMissile(
-				MIS_SPIKER, self, VEC2GLM( self->s.origin ), VEC2GLM( dir ), nullptr, G_FreeEntity,
+				MIS_SPIKER, self, VEC2GLM( self->s.origin ), dir, nullptr, G_FreeEntity,
 				level.time + (int)(1000.0f * SPIKE_RANGE / (float)BG_Missile(MIS_SPIKER)->speed));
 		}
 	}

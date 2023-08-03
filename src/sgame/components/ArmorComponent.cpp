@@ -62,38 +62,42 @@ float ArmorComponent::GetLocationalDamageMod(float angle, float height) {
 
 // TODO: Use new vector math library for all calculations.
 void ArmorComponent::HandleApplyDamageModifier(float& damage, Util::optional<glm::vec3> location,
-Util::optional<glm::vec3> /*direction*/, int flags, meansOfDeath_t /*meansOfDeath*/) {
-	vec3_t origin, bulletPath, bulletAngle, locationRelativeToFloor, floor, normal;
-
+Util::optional<glm::vec3> /*direction*/, int flags, meansOfDeath_t /*meansOfDeath*/)
+{
 	// TODO: Remove dependency on client.
 	ASSERT(entity.oldEnt->client != nullptr);
 
 	// Use non-regional damage where appropriate.
-	if (flags & DAMAGE_NO_LOCDAMAGE || !location) {
+	if (flags & DAMAGE_NO_LOCDAMAGE || !location)
+	{
 		// TODO: Move G_GetNonLocDamageMod to ArmorComponent.
 		damage *= GetNonLocationalDamageMod();
 		return;
 	}
 
 	// Get hit location relative to the floor beneath.
-	if (g_unlagged.Get() && entity.oldEnt->client->unlaggedCalc.used) {
-		VectorCopy(entity.oldEnt->client->unlaggedCalc.origin, origin);
-	} else {
-		VectorCopy(entity.oldEnt->r.currentOrigin, origin);
+	glm::vec3 origin;
+	if ( g_unlagged.Get() && entity.oldEnt->client->unlaggedCalc.used )
+	{
+		origin = VEC2GLM( entity.oldEnt->client->unlaggedCalc.origin );
 	}
-	BG_GetClientNormal(&entity.oldEnt->client->ps, normal);
-	VectorMA(origin, entity.oldEnt->r.mins[2], normal, floor);
-	VectorSubtract(location.value(), floor, locationRelativeToFloor);
+	else
+	{
+		origin = VEC2GLM( entity.oldEnt->r.currentOrigin );
+	}
+	glm::vec3 normal = BG_GetClientNormal(&entity.oldEnt->client->ps );
+	glm::vec3 floor = origin + entity.oldEnt->r.mins[2] * normal;
+	glm::vec3 locationRelativeToFloor = location.value() - floor;
 
 	// Get fraction of height where the hit landed.
 	float height = entity.oldEnt->r.maxs[2] - entity.oldEnt->r.mins[2];
 	if (!height) height = 1.0f;
-	float hitRatio = Math::Clamp(DotProduct(normal, locationRelativeToFloor) / VectorLength(normal),
-	                             0.0f, height) / height;
+	float hitRatio = Math::Clamp( glm::dot( normal, locationRelativeToFloor) / glm::length( normal ), 0.0f, height ) / height;
 
 	// Get the yaw of the attack relative to the target's view yaw
-	VectorSubtract(location.value(), origin, bulletPath);
-	vectoangles(bulletPath, bulletAngle);
+	glm::vec3 bulletPath = location.value() - origin;
+	glm::vec3 bulletAngle;
+	vectoangles( &bulletPath[0], &bulletAngle[0] );
 	int hitRotation = AngleNormalize360(entity.oldEnt->client->ps.viewangles[YAW] - bulletAngle[YAW]);
 
 	// Use regional modifier.

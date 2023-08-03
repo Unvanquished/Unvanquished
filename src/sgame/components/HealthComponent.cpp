@@ -94,11 +94,9 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 			// TODO: Add a message for pushing.
 			if (g_dretchPunt.Get() && client && client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0)
 			{
-				vec3_t dir, push;
-
-				VectorSubtract(entity.oldEnt->r.currentOrigin, source->r.currentOrigin, dir);
-				VectorNormalizeFast(dir);
-				VectorScale(dir, (amount * 10.0f), push);
+				glm::vec3 dir = VEC2GLM( entity.oldEnt->r.currentOrigin ) - VEC2GLM( source->r.currentOrigin );
+				dir = glm::normalize( dir );
+				glm::vec3 push = dir * amount * 10.f;
 				push[ 2 ] = 64.0f;
 
 				VectorAdd( client->ps.velocity, push, client->ps.velocity );

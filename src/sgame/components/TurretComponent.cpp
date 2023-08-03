@@ -233,11 +233,12 @@ bool TurretComponent::TargetValid(Entity& target, bool newTarget)
 	return true;
 }
 
-void TurretComponent::SetBaseDirection() {
-	vec3_t torsoDirectionOldVec;
-	AngleVectors(entity.oldEnt->s.angles, torsoDirectionOldVec, nullptr, nullptr);
+void TurretComponent::SetBaseDirection()
+{
+	glm::vec3 torsoDirectionOldVec;
+	AngleVectors( VEC2GLM( entity.oldEnt->s.angles ), &torsoDirectionOldVec, nullptr, nullptr);
 
-	glm::vec3 torsoDirection = glm::normalize(VEC2GLM(torsoDirectionOldVec));
+	glm::vec3 torsoDirection = glm::normalize( torsoDirectionOldVec );
 	glm::vec3 traceStart     = VEC2GLM(entity.oldEnt->s.pos.trBase);
 	glm::vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
@@ -266,7 +267,6 @@ glm::vec3 TurretComponent::RelativeAnglesToAbsoluteAngles(const glm::vec3 relati
 	quat_t torsoRotation;
 	quat_t relativeRotation;
 	quat_t absoluteRotation;
-	vec3_t absoluteAngles;
 
 	AnglesToQuat(&TorsoAngles()[0], torsoRotation);
 	AnglesToQuat(&relativeAngles[0], relativeRotation);
@@ -277,15 +277,15 @@ glm::vec3 TurretComponent::RelativeAnglesToAbsoluteAngles(const glm::vec3 relati
 	// the left hand side and the relative rotation in world space on the right hand side.
 	QuatMultiply(torsoRotation, relativeRotation, absoluteRotation);
 
-	QuatToAngles(absoluteRotation, absoluteAngles);
-	return VEC2GLM(absoluteAngles);
+	glm::vec3 absoluteAngles;
+	QuatToAngles( absoluteRotation, &absoluteAngles[0] );
+	return absoluteAngles;
 }
 
 glm::vec3 TurretComponent::AbsoluteAnglesToRelativeAngles(const glm::vec3 absoluteAngles) const {
 	quat_t torsoRotation;
 	quat_t absoluteRotation;
 	quat_t relativeRotation;
-	vec3_t relativeAngles;
 
 	AnglesToQuat(&TorsoAngles()[0], torsoRotation);
 	AnglesToQuat(&absoluteAngles[0], absoluteRotation);
@@ -296,24 +296,25 @@ glm::vec3 TurretComponent::AbsoluteAnglesToRelativeAngles(const glm::vec3 absolu
 	QuatInverse(inverseTorsoOrientation);
 	QuatMultiply(inverseTorsoOrientation, absoluteRotation, relativeRotation);
 
-	QuatToAngles(relativeRotation, relativeAngles);
-	return VEC2GLM(relativeAngles);
+	glm::vec3 relativeAngles;
+	QuatToAngles( relativeRotation, &relativeAngles[0] );
+	return relativeAngles;
 }
 
 glm::vec3 TurretComponent::DirectionToAbsoluteAngles(const glm::vec3 direction) const {
-	vec3_t absoluteAngles;
-	vectoangles(&direction[0], absoluteAngles);
-	return VEC2GLM(absoluteAngles);
+	glm::vec3 absoluteAngles;
+	vectoangles( &direction[0], &absoluteAngles[0] );
+	return absoluteAngles;
 }
 
 glm::vec3 TurretComponent::DirectionToRelativeAngles(const glm::vec3 direction) const {
-	return AbsoluteAnglesToRelativeAngles(DirectionToAbsoluteAngles(direction));
+	return AbsoluteAnglesToRelativeAngles( DirectionToAbsoluteAngles( direction ) );
 }
 
 glm::vec3 TurretComponent::AbsoluteAnglesToDirection(const glm::vec3 absoluteAngles) const {
-	vec3_t direction;
-	AngleVectors(&absoluteAngles[0], direction, nullptr, nullptr);
-	return VEC2GLM(direction);
+	glm::vec3 direction;
+	AngleVectors( absoluteAngles, &direction, nullptr, nullptr);
+	return direction;
 }
 
 glm::vec3 TurretComponent::RelativeAnglesToDirection(const glm::vec3 relativeAngles) const {
