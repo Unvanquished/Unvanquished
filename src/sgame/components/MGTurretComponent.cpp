@@ -109,7 +109,7 @@ bool MGTurretComponent::CompareTargets(Entity& a, Entity& b) {
 	// Prefer target that can be aimed at more quickly.
 	// This makes the turret spend less time tracking enemies.
 	glm::vec3 aimDirectionOldVec;
-	AngleVectors( VEC2GLM( entity.oldEnt->buildableAim ), &aimDirectionOldVec, nullptr, nullptr);
+	AngleVectors( entity.oldEnt->buildableAim, &aimDirectionOldVec, nullptr, nullptr);
 	glm::vec3 aimDirection = aimDirectionOldVec;
 
 	glm::vec3 directionToA = glm::normalize( VEC2GLM( a.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );

@@ -1561,7 +1561,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 	}
 	else
 	{
-		AngleVectors( VEC2GLM( self->buildableAim ), &forward, nullptr, nullptr );
+		AngleVectors( self->buildableAim, &forward, nullptr, nullptr );
 		muzzle = VEC2GLM( self->s.pos.trBase );
 	}
 

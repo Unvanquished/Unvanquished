@@ -226,10 +226,10 @@ struct gentity_t
 
 	// acceleration evaluation
 	bool  evaluateAcceleration;
-	vec3_t    oldVelocity;
-	vec3_t    acceleration;
-	vec3_t    oldAccel;
-	vec3_t    jerk;
+	glm::vec3 oldVelocity;
+	glm::vec3 acceleration;
+	glm::vec3 oldAccel;
+	glm::vec3 jerk;
 
 	int       nextthink;
 	void ( *think )( gentity_t *self );
@@ -291,7 +291,7 @@ struct gentity_t
 
 	int         killedBy; // clientNum of killer
 
-	vec3_t      buildableAim; // aim vector for buildables
+	glm::vec3 buildableAim; // aim vector for buildables
 
 	// turret
 	float       turretCurrentDamage;

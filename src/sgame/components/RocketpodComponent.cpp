@@ -196,7 +196,7 @@ bool RocketpodComponent::CompareTargets(Entity &a, Entity &b) {
 
 bool RocketpodComponent::SafeShot() {
 	glm::vec3 aimDirection;
-	AngleVectors( entity.oldEnt->buildableAim, &aimDirection[0], nullptr, nullptr );
+	AngleVectors( entity.oldEnt->buildableAim, &aimDirection, nullptr, nullptr );
 
 	return SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), aimDirection );
 }

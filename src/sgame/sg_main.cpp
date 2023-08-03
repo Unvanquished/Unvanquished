@@ -2101,16 +2101,16 @@ Calculates the acceleration for an entity
 */
 static void G_EvaluateAcceleration( gentity_t *ent, int msec )
 {
-	glm::vec3 deltaVelocity = VEC2GLM( ent->s.pos.trDelta ) - VEC2GLM( ent->oldVelocity );
+	glm::vec3 deltaVelocity = VEC2GLM( ent->s.pos.trDelta ) - ent->oldVelocity;
 	deltaVelocity /= static_cast<float>( msec );
 	VectorCopy( deltaVelocity, ent->acceleration );
 
-	glm::vec3 deltaAccel = deltaVelocity - VEC2GLM( ent->oldAccel );
+	glm::vec3 deltaAccel = deltaVelocity - ent->oldAccel;
 	deltaAccel /= static_cast<float>( msec );
-	VectorCopy( deltaAccel, ent->jerk );
+	ent->jerk = deltaAccel;
 
-	VectorCopy( ent->s.pos.trDelta, ent->oldVelocity );
-	VectorCopy( ent->acceleration, ent->oldAccel );
+	ent->oldVelocity = VEC2GLM( ent->s.pos.trDelta );
+	ent->oldAccel = ent->acceleration;
 }
 
 /*

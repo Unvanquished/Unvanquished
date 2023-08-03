@@ -400,7 +400,7 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	                                ( LOCKBLOB_SPEED * LOCKBLOB_SPEED ) ) * 1000.0f );
 
 	glm::vec3 halfAcceleration = VEC2GLM( target->acceleration ) / 2.f;
-	glm::vec3 thirdJerk = VEC2GLM( target->jerk ) * 3.f;
+	glm::vec3 thirdJerk = target->jerk * 3.f;
 	glm::vec3 dirToTarget;
 	// highMsec and lowMsec can only move toward
 	// one another, so the loop must terminate
@@ -431,7 +431,7 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	}
 
 	dirToTarget = glm::normalize( dirToTarget );
-	vectoangles( &dirToTarget[0], self->buildableAim );
+	vectoangles( &dirToTarget[0], &self->buildableAim[0] );
 
 	//fire at target
 	G_FireWeapon( self, WP_LOCKBLOB_LAUNCHER, WPM_PRIMARY );
