@@ -243,8 +243,8 @@ struct gentity_t
 	int       flightSplashRadius;
 	int       splashDamage; // quad will increase this without increasing radius
 	int       splashRadius;
-	int       methodOfDeath;
-	int       splashMethodOfDeath;
+	meansOfDeath_t methodOfDeath;
+	meansOfDeath_t splashMethodOfDeath;
 
 	int       watertype;
 	// from -inf to 3, apparently.

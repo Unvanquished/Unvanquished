@@ -404,7 +404,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		// splash damage (doesn't apply to person directly hit)
 		if ( ent->splashDamage )
 		{
-			G_RadiusDamage( trace->endpos, ent->parent,
+			G_RadiusDamage( VEC2GLM( trace->endpos ), ent->parent,
 			                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
 			                ent->splashRadius, hitEnt, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
 			                ent->splashMethodOfDeath );
@@ -491,7 +491,7 @@ void G_ExplodeMissile( gentity_t *ent )
 	// splash damage
 	if ( ent->splashDamage )
 	{
-		G_RadiusDamage( ent->r.currentOrigin, ent->parent,
+		G_RadiusDamage( VEC2GLM( ent->r.currentOrigin ), ent->parent,
 		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
 		                ent->splashRadius, ent, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
 		                ent->splashMethodOfDeath );
@@ -593,7 +593,7 @@ void G_RunMissile( gentity_t *ent )
 
 	if ( ent->flightSplashDamage )
 	{
-		G_RadiusDamage( tr.endpos, ent->parent, ent->flightSplashDamage, ent->flightSplashRadius,
+		G_RadiusDamage( VEC2GLM( tr.endpos ), ent->parent, ent->flightSplashDamage, ent->flightSplashRadius,
 		                ent->parent, 0, ent->splashMethodOfDeath );
 	}
 

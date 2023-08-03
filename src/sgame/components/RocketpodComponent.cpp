@@ -201,7 +201,8 @@ bool RocketpodComponent::SafeShot() {
 	return SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), aimDirection );
 }
 
-bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin, const glm::vec3& direction) {
+bool RocketpodComponent::SafeShot( int passEntityNumber, const glm::vec3& origin, const glm::vec3& direction )
+{
 	const missileAttributes_t* missileAttributes = BG_Missile(MIS_ROCKET);
 
 	float missileSize = missileAttributes->size;
@@ -215,7 +216,7 @@ bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin,
 
 	// TODO: Refactor area damage (testing) helpers.
 	return !G_RadiusDamage(
-		trace.endpos, nullptr, missileAttributes->splashDamage, missileAttributes->splashRadius,
+		VEC2GLM( trace.endpos ), nullptr, missileAttributes->splashDamage, missileAttributes->splashRadius,
 		nullptr, 0, MOD_ROCKETPOD, TEAM_HUMANS
 	);
 }

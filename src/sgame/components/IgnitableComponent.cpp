@@ -134,13 +134,18 @@ void IgnitableComponent::DamageSelf(int timeDelta) {
 	}
 }
 
-void IgnitableComponent::DamageArea(int timeDelta) {
-	if (!onFire) return;
+void IgnitableComponent::DamageArea( int timeDelta )
+{
+	if( !onFire )
+	{
+		return;
+	}
 
 	float damage = SPLASH_DAMAGE * timeDelta * 0.001f;
 
-	if (G_SelectiveRadiusDamage(entity.oldEnt->s.origin, fireStarter, damage, FIRE_DAMAGE_RADIUS,
-			entity.oldEnt, MOD_BURN, TEAM_NONE)) {
+	if( G_SelectiveRadiusDamage( VEC2GLM( entity.oldEnt->s.origin ), fireStarter, damage, FIRE_DAMAGE_RADIUS,
+			entity.oldEnt, MOD_BURN, TEAM_NONE ) )
+	{
 		fireLogger.Debug("Area burn damage of %.1f (%.1f/s) was dealt.", damage, SPLASH_DAMAGE);
 	}
 }

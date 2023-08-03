@@ -2813,7 +2813,7 @@ static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attac
 	G_BotRemoveObstacle( self->num() );
 	trap_UnlinkEntity( self );
 
-	G_RadiusDamage( &self->mapEntity.restingPosition[0], attacker, self->splashDamage, self->splashRadius, self,
+	G_RadiusDamage( self->mapEntity.restingPosition, attacker, self->splashDamage, self->splashRadius, self,
 	                DAMAGE_KNOCKBACK, MOD_TRIGGER_HURT );
 }
 

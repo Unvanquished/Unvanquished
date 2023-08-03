@@ -792,36 +792,23 @@ void G_InitDamageLocations()
 	}
 }
 
-// TODO: Move to HealthComponent.
-void G_SelectiveDamage( gentity_t *targ, gentity_t * /*inflictor*/, gentity_t *attacker,
-                        vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team )
-{
-	if ( targ->client && ( team != targ->client->pers.team ) )
-	{
-		targ->Damage((float)damage, attacker, VEC2GLM( point ), VEC2GLM( dir ), dflags,
-		                     (meansOfDeath_t)mod);
-	}
-}
-
 /**
  * @brief Used for explosions and melee attacks.
  * @param targ
  * @param origin
  * @return true if the inflictor can directly damage the target.
  */
-bool G_CanDamage( gentity_t *targ, vec3_t origin )
+bool G_CanDamage( gentity_t *targ, glm::vec3 const& origin )
 {
-	vec3_t  dest;
 	trace_t tr;
-	vec3_t  midpoint;
 
 	// use the midpoint of the bounds instead of the origin, because
 	// bmodels may have their origin is 0,0,0
-	VectorAdd( targ->r.absmin, targ->r.absmax, midpoint );
-	VectorScale( midpoint, 0.5, midpoint );
+	glm::vec3 midpoint = VEC2GLM( targ->r.absmin ) + VEC2GLM( targ->r.absmax );
+	midpoint *= 0.5f;
 
-	VectorCopy( midpoint, dest );
-	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	glm::vec3 dest = midpoint;
+	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0  || tr.entityNum == targ->num() )
 	{
@@ -830,40 +817,40 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 
 	// this should probably check in the plane of projection,
 	// rather than in world coordinate, and also include Z
-	VectorCopy( midpoint, dest );
+	dest = midpoint;
 	dest[ 0 ] += 15.0;
 	dest[ 1 ] += 15.0;
-	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
 		return true;
 	}
 
-	VectorCopy( midpoint, dest );
+	dest = midpoint;
 	dest[ 0 ] += 15.0;
 	dest[ 1 ] -= 15.0;
-	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
 		return true;
 	}
 
-	VectorCopy( midpoint, dest );
+	dest = midpoint;
 	dest[ 0 ] -= 15.0;
 	dest[ 1 ] += 15.0;
-	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
 		return true;
 	}
 
-	VectorCopy( midpoint, dest );
+	dest = midpoint;
 	dest[ 0 ] -= 15.0;
 	dest[ 1 ] -= 15.0;
-	G_CM_Trace( &tr, VEC2GLM( origin ), glm::vec3(), glm::vec3(), VEC2GLM( dest ), ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -873,15 +860,10 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	return false;
 }
 
-bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
-                                  float radius, gentity_t *ignore, int mod, int ignoreTeam )
+bool G_SelectiveRadiusDamage( glm::vec3 const& origin, gentity_t *attacker, float damage,
+                                  float radius, gentity_t *ignore, meansOfDeath_t mod, int ignoreTeam )
 {
-	float     points, dist;
-	gentity_t *ent;
 	int       entityList[ MAX_GENTITIES ];
-	int       numListedEntities;
-	vec3_t    mins, maxs;
-	int       i, e;
 	bool  hitClient = false;
 
 	if ( radius < 1 )
@@ -889,17 +871,14 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		radius = 1;
 	}
 
-	for ( i = 0; i < 3; i++ )
-	{
-		mins[ i ] = origin[ i ] - radius;
-		maxs[ i ] = origin[ i ] + radius;
-	}
+	glm::vec3 mins = origin - radius;
+	glm::vec3 maxs = origin + radius;
 
-	numListedEntities = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
+	int numListedEntities = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
 
-	for ( e = 0; e < numListedEntities; e++ )
+	for ( int e = 0; e < numListedEntities; e++ )
 	{
-		ent = &g_entities[ entityList[ e ] ];
+		gentity_t *ent = &g_entities[ entityList[ e ] ];
 
 		if ( ent == ignore )
 		{
@@ -912,36 +891,30 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		}
 
 		// find the distance from the edge of the bounding box
-		dist = G_DistanceToBBox( origin, ent );
+		float dist = G_DistanceToBBox( &origin[0], ent );
 
 		if ( dist >= radius )
 		{
 			continue;
 		}
 
-		points = damage * ( 1.0 - dist / radius );
+		float points = damage * ( 1.0 - dist / radius );
 
 		if ( G_CanDamage( ent, origin ) && ent->client &&
 		     ent->client->pers.team != ignoreTeam )
 		{
-			hitClient = ent->Damage(points, attacker, VEC2GLM( origin ), Util::nullopt,
-			                                DAMAGE_NO_LOCDAMAGE, (meansOfDeath_t)mod);
+			hitClient = ent->Damage(points, attacker, origin, Util::nullopt,
+			                                DAMAGE_NO_LOCDAMAGE, mod);
 		}
 	}
 
 	return hitClient;
 }
 
-bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
-                         float radius, gentity_t *ignore, int dflags, int mod, team_t testHit )
+bool G_RadiusDamage( glm::vec3 const& origin, gentity_t *attacker, float damage,
+                         float radius, gentity_t *ignore, int dflags, meansOfDeath_t mod, team_t testHit )
 {
-	float     points, dist;
-	gentity_t *ent;
 	int       entityList[ MAX_GENTITIES ];
-	int       numListedEntities;
-	vec3_t    mins, maxs;
-	vec3_t    dir;
-	int       i, e;
 	bool  hitSomething = false;
 
 	if ( radius < 1 )
@@ -949,17 +922,14 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		radius = 1;
 	}
 
-	for ( i = 0; i < 3; i++ )
-	{
-		mins[ i ] = origin[ i ] - radius;
-		maxs[ i ] = origin[ i ] + radius;
-	}
+	glm::vec3 mins = origin - radius;
+	glm::vec3 maxs = origin + radius;
 
-	numListedEntities = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
+	int numListedEntities = G_CM_AreaEntities( mins, maxs, entityList, MAX_GENTITIES );
 
-	for ( e = 0; e < numListedEntities; e++ )
+	for ( int e = 0; e < numListedEntities; e++ )
 	{
-		ent = &g_entities[ entityList[ e ] ];
+		gentity_t *ent = &g_entities[ entityList[ e ] ];
 
 		if ( ent == ignore )
 		{
@@ -967,27 +937,27 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 		}
 
 		// find the distance from the edge of the bounding box
-		dist = G_DistanceToBBox( origin, ent );
+		float dist = G_DistanceToBBox( &origin[0], ent );
 
 		if ( dist >= radius )
 		{
 			continue;
 		}
 
-		points = damage * ( 1.0 - dist / radius );
+		float points = damage * ( 1.0 - dist / radius );
 
 		if ( G_CanDamage( ent, origin ) )
 		{
 			if ( testHit == TEAM_NONE )
 			{
-				VectorSubtract( ent->r.currentOrigin, origin, dir );
+				glm::vec3 dir = VEC2GLM( ent->r.currentOrigin ) - origin;
 				// push the center of mass higher than the origin so players
 				// get knocked into the air more
 				dir[ 2 ] += 24;
-				VectorNormalize( dir );
+				dir = glm::normalize( dir );
 
-				hitSomething = ent->Damage(points, attacker, VEC2GLM( origin ), VEC2GLM( dir ),
-				                                   (DAMAGE_NO_LOCDAMAGE | dflags), (meansOfDeath_t)mod);
+				hitSomething = ent->Damage(points, attacker, origin, dir,
+				                                   (DAMAGE_NO_LOCDAMAGE | dflags), mod);
 			}
 			else if ( G_Team( ent ) == testHit && Entities::IsAlive( ent ) )
 			{
@@ -1005,7 +975,7 @@ bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
  * @param actor
  * @param mod
  */
-void G_LogDestruction( gentity_t *self, gentity_t *actor, int mod )
+void G_LogDestruction( gentity_t *self, gentity_t *actor, meansOfDeath_t mod )
 {
 	buildFate_t fate;
 
