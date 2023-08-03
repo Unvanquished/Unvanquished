@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "sg_cm_world.h"
 
+#include <glm/gtx/norm.hpp>
+
 static Cvar::Cvar<bool> g_indestructibleBuildables(
 		"g_indestructibleBuildables",
 		"make buildables impossible to destroy (Note: this only applies only to buildings built after the variable is set, This also means it must be set before map load for the default buildables to be protected)", Cvar::NONE, false);
@@ -387,8 +389,6 @@ static void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
 static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 {
 	gentity_t *target = self->target.get();
-	vec3_t    dirToTarget;
-	vec3_t    halfAcceleration, thirdJerk;
 	float     distanceToTarget = LOCKBLOB_RANGE;
 	int       lowMsec = 0;
 	int       highMsec = ( int )( (
@@ -396,22 +396,22 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	                                  ( distanceToTarget * BG_Class( target->client->ps.stats[ STAT_CLASS ] )->speed ) ) /
 	                                ( LOCKBLOB_SPEED * LOCKBLOB_SPEED ) ) * 1000.0f );
 
-	VectorScale( target->acceleration, 1.0f / 2.0f, halfAcceleration );
-	VectorScale( target->jerk, 1.0f / 3.0f, thirdJerk );
-
+	glm::vec3 halfAcceleration = VEC2GLM( target->acceleration ) / 2.f;
+	glm::vec3 thirdJerk = VEC2GLM( target->jerk ) * 3.f;
+	glm::vec3 dirToTarget;
 	// highMsec and lowMsec can only move toward
 	// one another, so the loop must terminate
 	while ( highMsec - lowMsec > TRAPPER_ACCURACY )
 	{
 		int   partitionMsec = ( highMsec + lowMsec ) / 2;
-		float time = ( float ) partitionMsec / 1000.0f;
+		float time = static_cast<float>( partitionMsec ) / 1000.0f;
 		float projectileDistance = LOCKBLOB_SPEED * ( time + MISSILE_PRESTEP_TIME / 1000.0f );
 
-		VectorMA( target->s.pos.trBase, time, target->s.pos.trDelta, dirToTarget );
-		VectorMA( dirToTarget, time * time, halfAcceleration, dirToTarget );
-		VectorMA( dirToTarget, time * time * time, thirdJerk, dirToTarget );
-		VectorSubtract( dirToTarget, self->s.pos.trBase, dirToTarget );
-		distanceToTarget = VectorLength( dirToTarget );
+		dirToTarget = VEC2GLM( target->s.pos.trBase ) + time * VEC2GLM( target->s.pos.trDelta );
+		dirToTarget += time * time * halfAcceleration;
+		dirToTarget += time * time * time * thirdJerk;
+		dirToTarget -= VEC2GLM( self->s.pos.trBase );
+		distanceToTarget = glm::length( dirToTarget );
 
 		if ( projectileDistance < distanceToTarget )
 		{
@@ -427,8 +427,8 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 		}
 	}
 
-	VectorNormalize( dirToTarget );
-	vectoangles( dirToTarget, self->buildableAim );
+	dirToTarget = glm::normalize( dirToTarget );
+	vectoangles( &dirToTarget[0], self->buildableAim );
 
 	//fire at target
 	G_FireWeapon( self, WP_LOCKBLOB_LAUNCHER, WPM_PRIMARY );
@@ -438,7 +438,6 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 
 static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range )
 {
-	vec3_t  distance;
 	trace_t trace;
 
 	if ( !target ) // Do we have a target?
@@ -486,17 +485,17 @@ static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range 
 		return false;
 	}
 
-	VectorSubtract( target->r.currentOrigin, self->r.currentOrigin, distance );
+	glm::vec3 distance = VEC2GLM( target->r.currentOrigin ) - VEC2GLM( self->r.currentOrigin );
 
-	if ( VectorLength( distance ) > range )  // is the target within range?
+	if ( glm::length( distance ) > range )  // is the target within range?
 	{
 		return false;
 	}
 
 	//only allow a narrow field of "vision"
-	VectorNormalize( distance );  //is now direction of target
+	distance = glm::normalize( distance );  //is now direction of target
 
-	if ( DotProduct( distance, self->s.origin2 ) < LOCKBLOB_DOT )
+	if ( glm::dot( distance, VEC2GLM( self->s.origin2 ) ) < LOCKBLOB_DOT )
 	{
 		return false;
 	}
@@ -591,7 +590,6 @@ static void HArmoury_Use( gentity_t *self, gentity_t*, gentity_t *activator )
 static void HMedistat_Think( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
-	vec3_t    mins, maxs;
 	int       playerNum, numPlayers;
 	gentity_t *player;
 	gclient_t *client;
@@ -626,13 +624,13 @@ static void HMedistat_Think( gentity_t *self )
 	}
 
 	// get entities standing on top
-	VectorAdd( self->s.origin, self->r.maxs, maxs );
-	VectorAdd( self->s.origin, self->r.mins, mins );
+	glm::vec3 maxs = VEC2GLM( self->s.origin ) + VEC2GLM( self->r.maxs );
+	glm::vec3 mins = VEC2GLM( self->s.origin ) + VEC2GLM( self->r.mins );
 
 	mins[ 2 ] += ( self->r.mins[ 2 ] + self->r.maxs[ 2 ] );
 	maxs[ 2 ] += 32; // continue to heal jumping players but don't heal jetpack campers
 
-	numPlayers = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), entityList, MAX_GENTITIES );
+	numPlayers = G_CM_AreaEntities( mins, maxs, entityList, MAX_GENTITIES );
 	occupied = false;
 
 	// mark occupied if still healing a player
@@ -1092,7 +1090,6 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 {
-	vec3_t viewOrigin, forward, end;
 	trace_t trace;
 	gentity_t *buildable;
 
@@ -1104,10 +1101,11 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	}
 
 	// Trace for target.
-	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
-	AngleVectors( ent->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, BUILDER_DECONSTRUCT_RANGE, forward, end );
-	G_CM_Trace( &trace, VEC2GLM( viewOrigin ), glm::vec3(), glm::vec3(), VEC2GLM( end ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &ent->client->ps );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( ent->client->ps.viewangles ), &forward, nullptr, nullptr );
+	glm::vec3 end = viewOrigin + BUILDER_DECONSTRUCT_RANGE * forward;
+	G_CM_Trace( &trace, viewOrigin, glm::vec3(), glm::vec3(), end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	buildable = &g_entities[ trace.entityNum ];
 
 	// Check if target is valid.
@@ -1563,14 +1561,9 @@ static void SetBuildableMarkedLinkState( bool link )
 itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distance*/, //TODO
                              glm::vec3& origin, glm::vec3& normal, int *groundEntNum )
 {
-	vec3_t           angles;
-	vec3_t           entity_origin;
+	glm::vec3 angles, entity_origin;
 	trace_t          tr1, tr2, tr3;
 	itemBuildError_t reason = IBE_NONE;
-	gentity_t        *tempent;
-	float            minNormal;
-	bool         invert;
-	int              contents;
 	playerState_t    *ps = &ent->client->ps;
 
 	// Stop all buildables from interacting with traces
@@ -1579,15 +1572,15 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	glm::vec3 mins, maxs;
 	BG_BoundingBox( buildable, mins, maxs );
 
-	BG_PositionBuildableRelativeToPlayer( ps, &mins[0], &maxs[0], &G_CM_Trace, entity_origin, angles, &tr1 );
-	G_CM_Trace( &tr2, VEC2GLM( entity_origin ), mins, maxs, VEC2GLM( entity_origin ), ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
-	G_CM_Trace( &tr3, VEC2GLM( ps->origin ), glm::vec3(), glm::vec3(), VEC2GLM( entity_origin ), ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	BG_PositionBuildableRelativeToPlayer( ps, &mins[0], &maxs[0], &G_CM_Trace, &entity_origin[0], &angles[0], &tr1 );
+	G_CM_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr3, VEC2GLM( ps->origin ), glm::vec3(), glm::vec3(), entity_origin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
-	VectorCopy( entity_origin, origin );
+	origin = entity_origin;
 	*groundEntNum = tr1.entityNum;
-	VectorCopy( tr1.plane.normal, normal );
-	minNormal = BG_Buildable( buildable )->minNormal;
-	invert = BG_Buildable( buildable )->invertNormal;
+	normal = VEC2GLM( tr1.plane.normal );
+	float minNormal = BG_Buildable( buildable )->minNormal;
+	bool invert = BG_Buildable( buildable )->invertNormal;
 
 	// Can we build at this angle?
 	if ( !( normal[ 2 ] >= minNormal || ( invert && normal[ 2 ] <= -minNormal ) ) )
@@ -1600,7 +1593,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 		reason = IBE_NORMAL;
 	}
 
-	contents = G_CM_PointContents( VEC2GLM( entity_origin ), -1 );
+	int contents = G_CM_PointContents( entity_origin, -1 );
 
 	// Prepare replacement of other buildables.
 	itemBuildError_t replacementError;
@@ -1660,7 +1653,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	// Can we only have one of these?
 	if ( BG_Buildable( buildable )->uniqueTest )
 	{
-		tempent = FindBuildable( buildable );
+		gentity_t* tempent = FindBuildable( buildable );
 
 		if ( tempent && !tempent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 		{
@@ -2097,13 +2090,13 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 {
 	glm::vec3 origin;
 	int    groundEntNum;
-	vec3_t forward, aimDir;
+	glm::vec3 forward, aimDir;
 
 	glm::vec3 normal = BG_GetClientNormal( &ent->client->ps );
-	AngleVectors( ent->client->ps.viewangles, aimDir, nullptr, nullptr );
-	ProjectPointOnPlane( forward, aimDir, &normal[0] );
-	VectorNormalize( forward );
-	float dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+	AngleVectors( VEC2GLM( ent->client->ps.viewangles ), &aimDir, nullptr, nullptr );
+	ProjectPointOnPlane( &forward[0], &aimDir[0], &normal[0] );
+	forward = glm::normalize( forward );
+	float dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * glm::dot( forward, aimDir );
 
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
@@ -2177,7 +2170,7 @@ bool G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 {
-	glm::vec3   normal, dest;
+	glm::vec3   normal;
 	buildable_t buildable = static_cast<buildable_t>( ent->s.modelindex );
 
 	if ( ent->s.origin2[ 0 ] || ent->s.origin2[ 1 ] || ent->s.origin2[ 2 ] )
@@ -2203,8 +2196,8 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	built->s.eFlags |= EF_B_SPAWNED;*/
 
 	// drop towards normal surface
-	VectorScale( built->s.origin2, -4096.0f, dest );
-	VectorAdd( dest, built->s.origin, dest );
+	glm::vec3 dest = VEC2GLM( built->s.origin2 ) * -4096.f;
+	dest += VEC2GLM( built->s.origin );
 
 	trace_t     tr;
 	G_CM_Trace( &tr, VEC2GLM( built->s.origin ), VEC2GLM( built->r.mins ), VEC2GLM( built->r.maxs ), VEC2GLM( dest ), built->num(), built->clipmask, 0, traceType_t::TT_AABB );
@@ -2458,8 +2451,8 @@ void G_LayoutSelect()
 	trap_Cvar_Set( "layout", level.layout );
 }
 
-static void LayoutBuildItem( buildable_t buildable, vec3_t origin,
-                             vec3_t angles, vec3_t origin2, vec3_t angles2 )
+static void LayoutBuildItem( buildable_t buildable, glm::vec3 const& origin,
+                             glm::vec3 const& angles, glm::vec3 const& origin2, glm::vec3 const& angles2 )
 {
 	gentity_t *builder;
 
@@ -2479,10 +2472,6 @@ void G_LayoutLoad()
 	char         map[ MAX_QPATH ];
 	char         buildName[ MAX_TOKEN_CHARS ];
 	int          buildable;
-	vec3_t       origin = { 0.0f, 0.0f, 0.0f };
-	vec3_t       angles = { 0.0f, 0.0f, 0.0f };
-	vec3_t       origin2 = { 0.0f, 0.0f, 0.0f };
-	vec3_t       angles2 = { 0.0f, 0.0f, 0.0f };
 	char         line[ MAX_STRING_CHARS ];
 	int          i = 0;
 	const buildableAttributes_t *attr;
@@ -2520,6 +2509,10 @@ void G_LayoutLoad()
 
 		if ( *layout == '\n' )
 		{
+			glm::vec3 origin = { 0.0f, 0.0f, 0.0f };
+			glm::vec3 angles = { 0.0f, 0.0f, 0.0f };
+			glm::vec3 origin2 = { 0.0f, 0.0f, 0.0f };
+			glm::vec3 angles2 = { 0.0f, 0.0f, 0.0f };
 			i = 0;
 			sscanf( line, "%1023s %f %f %f %f %f %f %f %f %f %f %f %f\n",
 			        buildName,
@@ -2607,11 +2600,8 @@ void G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate )
 
 static void G_BuildLogRevertThink( gentity_t *ent )
 {
-	gentity_t *built;
 	int       blockers[ MAX_GENTITIES ];
-	int       num;
 	int       victims = 0;
-	int       i;
 
 	if ( ent->suicideTime > 0 )
 	{
@@ -2619,20 +2609,17 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 		BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), mins, maxs );
 		mins += VEC2GLM( ent->s.pos.trBase );
 		maxs += VEC2GLM( ent->s.pos.trBase );
-		num = G_CM_AreaEntities( mins, maxs, blockers, MAX_GENTITIES );
+		int num = G_CM_AreaEntities( mins, maxs, blockers, MAX_GENTITIES );
 
-		for ( i = 0; i < num; i++ )
+		for ( int i = 0; i < num; i++ )
 		{
-			gentity_t *targ;
-			vec3_t    push;
-
-			targ = g_entities + blockers[ i ];
+			gentity_t *targ = g_entities + blockers[ i ];
 
 			if ( targ->client )
 			{
 				float val = ( targ->client->ps.eFlags & EF_WALLCLIMB ) ? 300.0 : 150.0;
 
-				VectorSet( push, crandom() * val, crandom() * val, random() * val );
+				glm::vec3 push = { crandom() * val, crandom() * val, random() * val };
 				VectorAdd( targ->client->ps.velocity, push, targ->client->ps.velocity );
 				victims++;
 			}
@@ -2648,7 +2635,7 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 		}
 	}
 
-	built = FinishSpawningBuildable( ent, true );
+	gentity_t *built = FinishSpawningBuildable( ent, true );
 
 	// TODO: CBSE-ify. Currently ent is a pseudo entity that doesn't have a buildable component, so
 	//       we can't get rid of gentity_t.deconstruct yet.
@@ -2669,9 +2656,6 @@ static void G_BuildLogRevertThink( gentity_t *ent )
 
 void G_BuildLogRevert( int id )
 {
-	buildLog_t *log;
-	gentity_t  *ent;
-	vec3_t     dist;
 	gentity_t  *buildable;
 	float      momentumChange[ NUM_TEAMS ] = { 0 };
 
@@ -2681,22 +2665,22 @@ void G_BuildLogRevert( int id )
 
 	while ( level.buildId > id )
 	{
-		log = &level.buildLog[ --level.buildId % MAX_BUILDLOG ];
+		buildLog_t *log = &level.buildLog[ --level.buildId % MAX_BUILDLOG ];
 
 		switch ( log->fate )
 		{
 		case BF_CONSTRUCT:
 			for ( int entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
 			{
-				ent = &g_entities[ entityNum ];
+				gentity_t* ent = &g_entities[ entityNum ];
 
 				if ( ( ( ent->s.eType == entityType_t::ET_BUILDABLE && Entities::IsAlive( ent ) ) ||
 					   ( ent->s.eType == entityType_t::ET_GENERAL && ent->think == G_BuildLogRevertThink ) ) &&
 					 ent->s.modelindex == log->modelindex )
 				{
-					VectorSubtract( ent->s.pos.trBase, log->origin, dist );
+					glm::vec3 dist = VEC2GLM( ent->s.pos.trBase ) - VEC2GLM( log->origin );
 
-					if ( VectorLengthSquared( dist ) <= 2.0f )
+					if ( glm::length2( dist ) <= 2.0f )
 					{
 						if ( ent->s.eType == entityType_t::ET_BUILDABLE )
 						{
