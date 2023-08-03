@@ -1326,11 +1326,8 @@ This is also used for spectator spawns
 */
 void FindIntermissionPoint()
 {
-	gentity_t *ent, *target;
-	vec3_t    dir;
-
 	// find the intermission spot
-	ent = G_PickRandomEntityOfClass( S_POS_PLAYER_INTERMISSION );
+	gentity_t* ent = G_PickRandomEntityOfClass( S_POS_PLAYER_INTERMISSION );
 
 	if ( !ent )
 	{
@@ -1345,12 +1342,12 @@ void FindIntermissionPoint()
 		// if it has a target, look towards it
 		if ( ent->mapEntity.targets.size() )
 		{
-			target = G_PickRandomTargetFor( ent );
+			gentity_t* target = G_PickRandomTargetFor( ent );
 
 			if ( target )
 			{
-				VectorSubtract( target->s.origin, level.intermission_origin, dir );
-				vectoangles( dir, &level.intermission_angle[0] );
+				glm::vec3 dir = VEC2GLM( target->s.origin ) - level.intermission_origin;
+				vectoangles( &dir[0], &level.intermission_angle[0] );
 			}
 		}
 	}
@@ -2104,14 +2101,13 @@ Calculates the acceleration for an entity
 */
 static void G_EvaluateAcceleration( gentity_t *ent, int msec )
 {
-	vec3_t deltaVelocity;
-	vec3_t deltaAccel;
+	glm::vec3 deltaVelocity = VEC2GLM( ent->s.pos.trDelta ) - VEC2GLM( ent->oldVelocity );
+	deltaVelocity /= static_cast<float>( msec );
+	VectorCopy( deltaVelocity, ent->acceleration );
 
-	VectorSubtract( ent->s.pos.trDelta, ent->oldVelocity, deltaVelocity );
-	VectorScale( deltaVelocity, 1.0f / ( float ) msec, ent->acceleration );
-
-	VectorSubtract( ent->acceleration, ent->oldAccel, deltaAccel );
-	VectorScale( deltaAccel, 1.0f / ( float ) msec, ent->jerk );
+	glm::vec3 deltaAccel = deltaVelocity - VEC2GLM( ent->oldAccel );
+	deltaAccel /= static_cast<float>( msec );
+	VectorCopy( deltaAccel, ent->jerk );
 
 	VectorCopy( ent->s.pos.trDelta, ent->oldVelocity );
 	VectorCopy( ent->acceleration, ent->oldAccel );
