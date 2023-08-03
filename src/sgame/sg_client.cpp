@@ -1684,8 +1684,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm
 		if ( evolving )
 		{
 			//evolution particle system
-			vec3_t up = { 0.0f, 0.0f, 1.0f };
-			G_AddPredictableEvent( ent, EV_ALIEN_EVOLVE, DirToByte( up ) );
+			glm::vec3 up = { 0.0f, 0.0f, 1.0f };
+			G_AddPredictableEvent( ent, EV_ALIEN_EVOLVE, DirToByte( &up[0] ) );
 		}
 		else
 		{
