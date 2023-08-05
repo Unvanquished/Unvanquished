@@ -97,8 +97,6 @@ void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins
 
 // passEntityNum, if isn't ENTITYNUM_NONE, will be explicitly excluded from clipping checks
 
-void G_CM_ClipToEntity( trace_t *trace, glm::vec3 const& start, glm::vec3 const& mins, glm::vec3 const& maxs, glm::vec3 const& end, int entityNum, int contentmask, traceType_t type );
-
 bool G_CM_inPVS( glm::vec3 const& p1, glm::vec3 const& p2 );
 
 bool G_CM_inPVSIgnorePortals( glm::vec3 const& p1, glm::vec3 const& p2 );
