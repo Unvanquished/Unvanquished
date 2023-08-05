@@ -125,8 +125,6 @@ struct trace2_t
 trace2_t G_Trace2( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 		int passEntityNum, int contentmask, int skipmask, traceType_t type = traceType_t::TT_AABB );
 
-void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, traceType_t type );
-
 bool G_CM_inPVS( const vec3_t p1, const vec3_t p2 );
 
 bool G_CM_inPVSIgnorePortals( const vec3_t p1, const vec3_t p2 );

@@ -696,51 +696,6 @@ struct moveclip_t
 	traceType_t collisionType;
 };
 
-/*
-====================
-G_CM_ClipToEntity
-
-====================
-*/
-void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs,
-                        const vec3_t end, int entityNum, int contentmask, traceType_t type )
-{
-	gentity_t *touch;
-	clipHandle_t clipHandle;
-
-	touch = &g_entities[ entityNum ];
-
-	memset( trace, 0, sizeof( trace_t ) );
-
-	// if it doesn't have any brushes of a type we
-	// are looking for, ignore it
-	if ( !( contentmask & touch->r.contents ) )
-	{
-		trace->fraction = 1.0;
-		return;
-	}
-
-	// might intersect, so do an exact clip
-	clipHandle = G_CM_ClipHandleForEntity( touch );
-
-	const float *origin = touch->r.currentOrigin;
-	const float *angles = touch->r.currentAngles;
-
-	if ( !touch->r.bmodel )
-	{
-		angles = vec3_origin; // boxes don't rotate
-	}
-
-	CM_TransformedBoxTrace( trace, start, end, mins,
-	                        maxs, clipHandle, contentmask,
-				0, origin, angles, type );
-
-	if ( trace->fraction < 1 )
-	{
-		trace->entityNum = touch->num();
-	}
-}
-
 // FIXME: Copied from cm_local.h
 #define BOX_MODEL_HANDLE ( MAX_SUBMODELS + 1 )
 
