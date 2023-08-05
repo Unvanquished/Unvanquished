@@ -58,14 +58,6 @@ static worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
 	return &wentities[ gEnt->num() ];
 }
 
-static gentity_t *G_CM_GEntityForWorldEntity( worldEntity_t *ent )
-{
-	int num;
-
-	num = ent - wentities;
-	return &g_entities[ num ];
-}
-
 /*
 =================
 G_CM_SetBrushModel
@@ -621,8 +613,7 @@ static void G_CM_AreaEntities_r( worldSector_t *node, areaParms_t *ap )
 	for ( check = node->entities; check; check = next )
 	{
 		next = check->nextEntityInWorldSector;
-
-		gcheck = G_CM_GEntityForWorldEntity( check );
+		gcheck = &g_entities[ check - wentities ];
 
 		if ( !gcheck->r.linked )
 		{
