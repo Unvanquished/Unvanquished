@@ -49,7 +49,7 @@ static void InitBrushSensor( gentity_t *self )
 	G_CM_SetBrushModel( self, self->mapEntity.model );
 	self->r.contents = CONTENTS_TRIGGER; // replaces the -1 from G_CM_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
-	trap_LinkEntity( self );
+	G_CM_LinkEntity( self );
 }
 
 static void sensor_act(gentity_t *self, gentity_t*, gentity_t*)

@@ -158,16 +158,6 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 	}
 }
 
-void trap_LinkEntity(gentity_t *ent)
-{
-	G_CM_LinkEntity(ent);
-}
-
-void trap_UnlinkEntity(gentity_t *ent)
-{
-	G_CM_UnlinkEntity(ent);
-}
-
 void trap_AdjustAreaPortalState(gentity_t *ent, bool open)
 {
 	VM::SendMsg<AdjustAreaPortalStateMsg>(ent->num(), open);

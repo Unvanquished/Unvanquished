@@ -155,7 +155,7 @@ void G_Physics( gentity_t *ent )
 		tr.fraction = 0;
 	}
 
-	trap_LinkEntity( ent );  // FIXME: avoid this for stationary?
+	G_CM_LinkEntity( ent );  // FIXME: avoid this for stationary?
 
 	// check think function
 	G_RunThink( ent );

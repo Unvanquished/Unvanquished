@@ -454,7 +454,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		G_SnapVectorTowards( pos, VEC2GLM( ent->s.pos.trBase ) );
 		G_SetOrigin( ent, pos );
 
-		trap_LinkEntity( ent );
+		G_CM_LinkEntity( ent );
 	}
 	// If no impact happened, check if we should continue or free ourselves.
 	else if ( !( impactFlags & MIF_NO_FREE ) )
@@ -493,7 +493,7 @@ void G_ExplodeMissile( gentity_t *ent )
 		                ent->splashMethodOfDeath );
 	}
 
-	trap_LinkEntity( ent );
+	G_CM_LinkEntity( ent );
 }
 
 void G_RunMissile( gentity_t *ent )
@@ -583,8 +583,8 @@ void G_RunMissile( gentity_t *ent )
 		}
 	}
 
-	ent->r.contents = CONTENTS_SOLID; //trick trap_LinkEntity into...
-	trap_LinkEntity( ent );
+	ent->r.contents = CONTENTS_SOLID; //trick G_CM_LinkEntity into...
+	G_CM_LinkEntity( ent );
 	ent->r.contents = 0; //...encoding bbox information
 
 	if ( ent->flightSplashDamage )
@@ -721,7 +721,7 @@ gentity_t *G_SpawnFire( glm::vec3 const& origin, glm::vec3 const& normal, gentit
 	VectorCopy( netOrigin, fire->r.currentOrigin );
 
 	// send to client
-	trap_LinkEntity( fire );
+	G_CM_LinkEntity( fire );
 
 	if ( g_debugFire.Get() )
 	{

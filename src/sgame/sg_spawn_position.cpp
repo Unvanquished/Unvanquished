@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "sg_cm_world.h"
 
 void SP_pos_player_spawn( gentity_t *self )
 {
@@ -79,7 +80,7 @@ void SP_pos_location( gentity_t *self )
 	char const *message;
 	self->s.eType = entityType_t::ET_LOCATION;
 	self->r.svFlags = SVF_BROADCAST;
-	trap_LinkEntity( self );  // make the server send them to the clients
+	G_CM_LinkEntity( self );  // make the server send them to the clients
 
 	if ( G_SpawnInt( "count", "", &self->customNumber) )
 	{

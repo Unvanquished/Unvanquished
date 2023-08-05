@@ -22,6 +22,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sg_local.h"
+#include "sg_cm_world.h"
 
 namespace CombatFeedback {
 
@@ -91,7 +92,7 @@ void HitNotify(gentity_t *attacker, gentity_t *victim,
 	G_SetOrigin( event, point );
 
 	// FIXME: is this necessary with SVF_BROADCAST?
-	trap_LinkEntity(event);
+	G_CM_LinkEntity(event);
 }
 
 } // namespace CombatFeedback

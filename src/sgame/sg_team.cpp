@@ -260,7 +260,7 @@ void G_LeaveTeam( gentity_t *self )
 		}
 	}
 
-	trap_UnlinkEntity( self );
+	G_CM_UnlinkEntity( self );
 
 	// cut all relevant zap beams
 	G_ClearPlayerZapEffects( self );

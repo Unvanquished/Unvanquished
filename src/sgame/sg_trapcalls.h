@@ -35,8 +35,6 @@ void             trap_LocateGameData( int numGEntities, int sizeofGEntity_t, int
 void             trap_DropClient( int clientNum, const char *reason );
 void             trap_SendServerCommand( int clientNum, const char *text );
 void             trap_SetConfigstring( int num, const char *string );
-void             trap_LinkEntity( gentity_t *ent );
-void             trap_UnlinkEntity( gentity_t *ent );
 void             trap_SetConfigstringRestrictions( int num, const clientList_t *clientList );
 void             trap_GetConfigstring( int num, char *buffer, int bufferSize );
 void             trap_SetUserinfo( int num, const char *buffer );

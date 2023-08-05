@@ -399,7 +399,7 @@ just like the existing corpse to leave behind.
 */
 static void SpawnCorpse( gentity_t *ent )
 {
-	trap_UnlinkEntity( ent );
+	G_CM_UnlinkEntity( ent );
 
 	// if client is in a nodrop area, don't leave the body
 	glm::vec3 origin = VEC2GLM( ent->r.currentOrigin );
@@ -455,7 +455,7 @@ static void SpawnCorpse( gentity_t *ent )
 	body->s.pos.trTime = level.time;
 	VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
 
-	trap_LinkEntity( body );
+	G_CM_LinkEntity( body );
 }
 
 //======================================================================
@@ -1290,7 +1290,7 @@ void ClientBegin( int clientNum )
 
 	if ( ent->r.linked )
 	{
-		trap_UnlinkEntity( ent );
+		G_CM_UnlinkEntity( ent );
 	}
 
 	G_InitGentity( ent );
@@ -1719,7 +1719,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm
 
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		trap_LinkEntity( ent );
+		G_CM_LinkEntity( ent );
 
 		// force the base weapon up
 		if ( client->pers.team == TEAM_HUMANS )
@@ -1790,7 +1790,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm
 	{
 		BG_PlayerStateToEntityState( &client->ps, &ent->s );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
-		trap_LinkEntity( ent );
+		G_CM_LinkEntity( ent );
 	}
 
 	// must do this here so the number of active clients is calculated

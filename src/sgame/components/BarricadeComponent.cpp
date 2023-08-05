@@ -1,5 +1,7 @@
 #include "BarricadeComponent.h"
 
+#include "../sg_cm_world.h"
+
 BarricadeComponent::BarricadeComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent)
 	: BarricadeComponentBase(entity, r_AlienBuildableComponent)
 {}
@@ -20,7 +22,7 @@ void BarricadeComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*means
 		G_SetIdleBuildableAnim(entity.oldEnt, BANIM_DESTROYED);
 
 		entity.oldEnt->r.maxs[2] = (int)(entity.oldEnt->r.maxs[2] * BARRICADE_SHRINKPROP);
-		trap_LinkEntity(entity.oldEnt);
+		G_CM_LinkEntity(entity.oldEnt);
 	} else {
 		// The barricade is already shrunken, use a death aniation that doesn't change its size.
 		G_SetBuildableAnim(entity.oldEnt, BANIM_DESTROY_UNPOWERED, true);

@@ -293,7 +293,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 	// a change in size requires a relink
 	if ( self->spawned )
 	{
-		trap_LinkEntity( self );
+		G_CM_LinkEntity( self );
 	}
 }
 
@@ -1532,11 +1532,11 @@ static void SetBuildableLinkState( bool link )
 
 		if ( link )
 		{
-			trap_LinkEntity( ent );
+			G_CM_LinkEntity( ent );
 		}
 		else
 		{
-			trap_UnlinkEntity( ent );
+			G_CM_UnlinkEntity( ent );
 		}
 	}
 }
@@ -1552,11 +1552,11 @@ static void SetBuildableMarkedLinkState( bool link )
 
 		if ( link )
 		{
-			trap_LinkEntity( ent );
+			G_CM_LinkEntity( ent );
 		}
 		else
 		{
-			trap_UnlinkEntity( ent );
+			G_CM_UnlinkEntity( ent );
 		}
 	}
 }
@@ -2052,7 +2052,7 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	G_SetIdleBuildableAnim( built, BANIM_IDLE1 );
 	G_SetBuildableAnim( built, BANIM_CONSTRUCT, true );
 
-	trap_LinkEntity( built );
+	G_CM_LinkEntity( built );
 
 	if ( builder->client )
 	{
@@ -2221,7 +2221,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 
 	G_SetOrigin( built, VEC2GLM( tr.endpos ) );
 
-	trap_LinkEntity( built );
+	G_CM_LinkEntity( built );
 
 	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, true );
 

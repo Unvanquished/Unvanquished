@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "sg_cm_world.h"
 
 /*
 =================================================================================
@@ -115,7 +116,7 @@ void SP_sfx_speaker( gentity_t *self )
 
 	// must link the entity so we get areas and clusters so
 	// the server can determine who to send updates to
-	trap_LinkEntity( self );
+	G_CM_LinkEntity( self );
 }
 
 /*

@@ -174,7 +174,7 @@ teleports the player to another location
 void G_TeleportPlayer( gentity_t *player, glm::vec3 const& origin, glm::vec3 const& angles, float speed )
 {
 	// unlink to make sure it can't possibly interfere with G_KillBox
-	trap_UnlinkEntity( player );
+	G_CM_UnlinkEntity( player );
 
 	VectorCopy( origin, player->client->ps.origin );
 	player->client->ps.groundEntityNum = ENTITYNUM_NONE;
@@ -210,7 +210,7 @@ void G_TeleportPlayer( gentity_t *player, glm::vec3 const& origin, glm::vec3 con
 		// kill anything at the destination
 		G_KillBox( player );
 
-		trap_LinkEntity( player );
+		G_CM_LinkEntity( player );
 	}
 }
 

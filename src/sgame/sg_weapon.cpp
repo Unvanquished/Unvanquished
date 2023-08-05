@@ -1174,7 +1174,7 @@ static void UpdateZapEffect( zap_t *zap )
 
 
 	G_SetOrigin( zap->effectChannel, VEC2GLM( muzzle ) );
-	trap_LinkEntity( zap->effectChannel );
+	G_CM_LinkEntity( zap->effectChannel );
 }
 
 static void CreateNewZap( gentity_t *creator, gentity_t *target )

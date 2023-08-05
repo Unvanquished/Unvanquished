@@ -849,7 +849,7 @@ static void Cmd_Noclip_f( gentity_t *ent )
 
 	if ( ent->r.linked )
 	{
-		trap_LinkEntity( ent );
+		G_CM_LinkEntity( ent );
 	}
 
 	trap_SendServerCommand( ent->num(), va( "print_tr %s", msg ) );

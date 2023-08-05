@@ -244,7 +244,7 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 c
 			VectorCopy( check->s.pos.trBase, check->r.currentOrigin );
 		}
 
-		trap_LinkEntity( check );
+		G_CM_LinkEntity( check );
 		return true;
 	}
 
@@ -330,14 +330,14 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 	}
 
 	// unlink the pusher so we don't get it in the entityList
-	trap_UnlinkEntity( pusher );
+	G_CM_UnlinkEntity( pusher );
 
 	listedEntities = G_CM_AreaEntities( totalMins, totalMaxs, entityList, MAX_GENTITIES );
 
 	// move the pusher to its final position
 	VectorAdd( pusher->r.currentOrigin, move, pusher->r.currentOrigin );
 	VectorAdd( pusher->r.currentAngles, amove, pusher->r.currentAngles );
-	trap_LinkEntity( pusher );
+	G_CM_LinkEntity( pusher );
 
 	// see if any solid entities are inside the final position
 	for ( e = 0; e < listedEntities; e++ )
@@ -406,7 +406,7 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 				VectorCopy( p->origin, p->ent->client->ps.origin );
 			}
 
-			trap_LinkEntity( p->ent );
+			G_CM_LinkEntity( p->ent );
 		}
 
 		return false;
@@ -466,7 +466,7 @@ static void G_MoverGroup( gentity_t *ent )
 			part->s.apos.trTime += level.time - level.previousTime;
 			BG_EvaluateTrajectory( &part->s.pos, level.time, part->r.currentOrigin );
 			BG_EvaluateTrajectory( &part->s.apos, level.time, part->r.currentAngles );
-			trap_LinkEntity( part );
+			G_CM_LinkEntity( part );
 		}
 
 		// if the pusher has a "blocked" function, call it
@@ -730,7 +730,7 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 		BG_EvaluateTrajectory( &ent->s.apos, level.time, ent->r.currentAngles );
 	}
 
-	trap_LinkEntity( ent );
+	G_CM_LinkEntity( ent );
 
 	BotHandleDoor( ent, moverState );
 }
@@ -858,7 +858,7 @@ static void Think_CloseModelDoor( gentity_t *ent )
 	numEntities = G_CM_AreaEntities( VEC2GLM( clipBrush->r.absmin ), VEC2GLM( clipBrush->r.absmax ), entityList, MAX_GENTITIES );
 
 	//set brush solid
-	trap_LinkEntity( ent->mapEntity.clipBrush );
+	G_CM_LinkEntity( ent->mapEntity.clipBrush );
 
 	//see if any solid entities are inside the door
 	for ( i = 0; i < numEntities; i++ )
@@ -884,7 +884,7 @@ static void Think_CloseModelDoor( gentity_t *ent )
 	if ( !canClose )
 	{
 		//set brush non-solid
-		trap_UnlinkEntity( ent->mapEntity.clipBrush );
+		G_CM_UnlinkEntity( ent->mapEntity.clipBrush );
 
 		ent->nextthink = level.time + ent->mapEntity.config.wait.time;
 		return;
@@ -913,7 +913,7 @@ Think_OpenModelDoor
 static void Think_OpenModelDoor( gentity_t *ent )
 {
 	//set brush non-solid
-	trap_UnlinkEntity( ent->mapEntity.clipBrush );
+	G_CM_UnlinkEntity( ent->mapEntity.clipBrush );
 
 	// stop the looping sound
 	ent->s.loopSound = 0;
@@ -1407,7 +1407,7 @@ static void InitMover( gentity_t *ent )
 	ent->s.eType = entityType_t::ET_MOVER;
 	ent->r.contents |= CONTENTS_MOVER;
 	VectorCopy( ent->mapEntity.restingPosition, ent->r.currentOrigin );
-	trap_LinkEntity( ent );
+	G_CM_LinkEntity( ent );
 
 	ent->s.pos.trType = trType_t::TR_STATIONARY;
 	VectorCopy( ent->mapEntity.restingPosition, ent->s.pos.trBase );
@@ -1472,7 +1472,7 @@ static void InitRotator( gentity_t *ent )
 	ent->s.eType = entityType_t::ET_MOVER;
 	ent->r.contents |= CONTENTS_MOVER;
 	VectorCopy( ent->mapEntity.restingPosition, ent->r.currentAngles );
-	trap_LinkEntity( ent );
+	G_CM_LinkEntity( ent );
 
 	ent->s.apos.trType = trType_t::TR_STATIONARY;
 	VectorCopy( ent->mapEntity.restingPosition, ent->s.apos.trBase );
@@ -1596,7 +1596,7 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 	other->touch = door_trigger_touch;
 	// remember the thinnest axis
 	other->customNumber = best;
-	trap_LinkEntity( other );
+	G_CM_LinkEntity( other );
 
 	if ( self->mapEntity.moverState < MODEL_POS1 )
 	{
@@ -1963,7 +1963,7 @@ void SP_func_door_model( gentity_t *self )
 
 	self->s.torsoAnim = 1; // stub value to avoid sigfpe
 
-	trap_LinkEntity( self );
+	G_CM_LinkEntity( self );
 
 	if ( !( self->mapEntity.names[ 0 ].size() || self->mapEntity.config.health ) ) //FIXME wont work yet with class fallbacks
 	{
@@ -2076,7 +2076,7 @@ static void SpawnPlatSensor( gentity_t *self )
 	VectorCopy( tmin, sensor->r.mins );
 	VectorCopy( tmax, sensor->r.maxs );
 
-	trap_LinkEntity( sensor );
+	G_CM_LinkEntity( sensor );
 }
 
 void SP_func_plat( gentity_t *self )
@@ -2574,8 +2574,8 @@ void SP_func_dynamic( gentity_t *self )
 
 	self->flags |= FL_GROUPSLAVE;
 
-	trap_UnlinkEntity( self );  // was linked in InitMover
-	trap_LinkEntity( self );
+	G_CM_UnlinkEntity( self );  // was linked in InitMover
+	G_CM_LinkEntity( self );
 }
 
 /*
@@ -2753,14 +2753,14 @@ static void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 	if( self->r.linked )
 	{
 		G_BotRemoveObstacle( self->num() );
-		trap_UnlinkEntity( self );
+		G_CM_UnlinkEntity( self );
 	}
 	else
 	{
 		glm::vec3 mins = self->mapEntity.restingPosition + VEC2GLM( self->r.mins );
 		glm::vec3 maxs = self->mapEntity.restingPosition + VEC2GLM( self->r.maxs );
 		G_BotAddObstacle( mins, maxs, self->num() );
-		trap_LinkEntity( self );
+		G_CM_LinkEntity( self );
 		if( !( self->mapEntity.spawnflags & 2 ) )
 		{
 			G_KillBrushModel( self, activator );
@@ -2775,12 +2775,12 @@ static void func_spawn_reset( gentity_t *self )
 		glm::vec3 mins = self->mapEntity.restingPosition + VEC2GLM( self->r.mins );
 		glm::vec3 maxs = self->mapEntity.restingPosition + VEC2GLM( self->r.maxs );
 		G_BotAddObstacle( mins, maxs, self->num() );
-		trap_LinkEntity( self );
+		G_CM_LinkEntity( self );
 	}
 	else
 	{
 		G_BotRemoveObstacle( self->num() );
-		trap_UnlinkEntity( self );
+		G_CM_UnlinkEntity( self );
 	}
 }
 /*
@@ -2814,7 +2814,7 @@ static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attac
 {
 	G_FireEntity( self, attacker );
 	G_BotRemoveObstacle( self->num() );
-	trap_UnlinkEntity( self );
+	G_CM_UnlinkEntity( self );
 
 	G_RadiusDamage( self->mapEntity.restingPosition, attacker, self->splashDamage, self->splashRadius, self,
 	                DAMAGE_KNOCKBACK, MOD_TRIGGER_HURT );
@@ -2838,7 +2838,7 @@ static void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t
 {
   if( self->r.linked )
   {
-    trap_UnlinkEntity( self );
+    G_CM_UnlinkEntity( self );
     if( self->health <= 0 )
     {
     	func_destructable_die( self, caller, activator, MOD_UNKNOWN );
@@ -2846,7 +2846,7 @@ static void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t
   }
   else
   {
-    trap_LinkEntity( self );
+    G_CM_LinkEntity( self );
     G_KillBrushModel( self, activator );
 		func_destructable_reset ( self );
   }
@@ -2892,6 +2892,6 @@ void SP_func_destructable( gentity_t *self )
 
 	if( !( self->mapEntity.spawnflags & 1 ) )
 	{
-		trap_LinkEntity( self );
+		G_CM_LinkEntity( self );
 	}
 }

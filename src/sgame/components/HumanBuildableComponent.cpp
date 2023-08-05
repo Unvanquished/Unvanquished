@@ -1,6 +1,8 @@
 #include "HumanBuildableComponent.h"
 #include "../Entities.h"
 
+#include "../sg_cm_world.h"
+
 static Log::Logger humanBuildableLogger("sgame.humanbuildings");
 
 HumanBuildableComponent::HumanBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent,
@@ -60,7 +62,7 @@ void HumanBuildableComponent::Blast(int /*timeDelta*/) {
 
 	// Stop collisions, add blast event and update buildable state.
 	entity.oldEnt->r.contents = 0;
-	trap_LinkEntity(entity.oldEnt);
+	G_CM_LinkEntity(entity.oldEnt);
 	glm::vec3 blastDirection( 0.0f, 0.0f, 1.0f );
 	G_AddEvent( entity.oldEnt, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte( &blastDirection[0] ) );
 	GetBuildableComponent().SetState(BuildableComponent::POST_BLAST); // Makes entity invisible.

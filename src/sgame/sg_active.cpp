@@ -683,7 +683,7 @@ static void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		VectorCopy( client->ps.origin, ent->s.origin );
 
 		G_TouchTriggers( ent );
-		trap_UnlinkEntity( ent );
+		G_CM_UnlinkEntity( ent );
 
 		// Set the queue position and spawn count for the client side
 		if ( client->ps.pm_flags & PMF_QUEUED )
@@ -1495,7 +1495,7 @@ void G_UnlaggedOff()
 		VectorCopy( ent->client->unlaggedBackup.maxs, ent->r.maxs );
 		VectorCopy( ent->client->unlaggedBackup.origin, ent->r.currentOrigin );
 		ent->client->unlaggedBackup.used = false;
-		trap_LinkEntity( ent );
+		G_CM_LinkEntity( ent );
 	}
 }
 
@@ -1509,7 +1509,7 @@ void G_UnlaggedOff()
 
  As an optimization, all clients that have an unlagged position that is
  not touchable at "range" from "muzzle" will be ignored.  This is required
- to prevent a huge amount of trap_LinkEntity() calls per user cmd.
+ to prevent a huge amount of G_CM_LinkEntity() calls per user cmd.
 ==============
 */
 
@@ -1573,7 +1573,7 @@ void G_UnlaggedOn( gentity_t *attacker, glm::vec3 const&  muzzle, float range )
 		VectorCopy( calc->mins, ent->r.mins );
 		VectorCopy( calc->maxs, ent->r.maxs );
 		VectorCopy( calc->origin, ent->r.currentOrigin );
-		trap_LinkEntity( ent );
+		G_CM_LinkEntity( ent );
 	}
 }
 
@@ -2218,7 +2218,7 @@ static void ClientThink_real( gentity_t *self )
 	ClientEvents( self, oldEventSequence );
 
 	// link entity now, after any personal teleporters have been used
-	trap_LinkEntity( self );
+	G_CM_LinkEntity( self );
 
 	// NOTE: now copy the exact origin over otherwise clients can be snapped into solid
 	VectorCopy( client->ps.origin, self->r.currentOrigin );

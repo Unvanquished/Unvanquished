@@ -417,7 +417,7 @@ namespace Beacon //this should eventually become a class
 			ent->r.hiMask &= ~hiMask;
 		}
 
-		trap_LinkEntity( ent );
+		G_CM_LinkEntity( ent );
 	}
 
 	/**

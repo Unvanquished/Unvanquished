@@ -52,7 +52,7 @@ static void InitEnvAFXEntity( gentity_t *self, bool link )
 
 	if( link )
 	{
-		trap_LinkEntity( self );
+		G_CM_LinkEntity( self );
 	}
 }
 
@@ -60,11 +60,11 @@ static void env_afx_toggle( gentity_t *self, gentity_t*, gentity_t* )
 {
 	if ( self->r.linked )
 	{
-		trap_UnlinkEntity( self );
+		G_CM_UnlinkEntity( self );
 	}
 	else
 	{
-		trap_LinkEntity( self );
+		G_CM_LinkEntity( self );
 	}
 }
 

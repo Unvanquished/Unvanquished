@@ -83,7 +83,7 @@ void SP_gfx_particle_system( gentity_t *self )
 
 	self->act = gfx_particle_system_act;
 	self->s.eType = entityType_t::ET_PARTICLE_SYSTEM;
-	trap_LinkEntity( self );
+	G_CM_LinkEntity( self );
 }
 
 /*
@@ -180,7 +180,7 @@ void SP_gfx_light_flare( gentity_t *self )
 		self->s.eFlags |= EF_NODRAW;
 	}
 
-	trap_LinkEntity( self );
+	G_CM_LinkEntity( self );
 }
 
 /*
@@ -254,7 +254,7 @@ void SP_gfx_portal_surface( gentity_t *self )
 {
 	VectorClear( self->r.mins );
 	VectorClear( self->r.maxs );
-	trap_LinkEntity( self );
+	G_CM_LinkEntity( self );
 
 	self->r.svFlags = SVF_PORTAL;
 	self->s.eType = entityType_t::ET_PORTAL;
@@ -276,7 +276,7 @@ void SP_gfx_portal_camera( gentity_t *self )
 
 	VectorClear( self->r.mins );
 	VectorClear( self->r.maxs );
-	trap_LinkEntity( self );
+	G_CM_LinkEntity( self );
 
 	G_SpawnFloat( "roll", "0", &roll );
 
@@ -328,7 +328,7 @@ void SP_gfx_animated_model( gentity_t *self )
 		self->s.eFlags |= EF_MOVER_STOP;
 	}
 
-	trap_LinkEntity( self );
+	G_CM_LinkEntity( self );
 }
 
 /*

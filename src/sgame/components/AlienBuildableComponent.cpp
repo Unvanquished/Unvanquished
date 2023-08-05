@@ -1,5 +1,8 @@
 #include "AlienBuildableComponent.h"
 #include "../Entities.h"
+
+#include "../sg_cm_world.h"
+
 #include <random>
 
 static Log::Logger alienBuildableLogger("sgame.alienbuildings");
@@ -67,7 +70,8 @@ void AlienBuildableComponent::Blast(int /*timeDelta*/) {
 	G_RewardAttackers(entity.oldEnt);
 
 	// Stop collisions, add blast event and update buildable state.
-	entity.oldEnt->r.contents = 0; trap_LinkEntity(entity.oldEnt);
+	entity.oldEnt->r.contents = 0;
+	G_CM_LinkEntity(entity.oldEnt);
 	G_AddEvent(entity.oldEnt, EV_ALIEN_BUILDABLE_EXPLOSION, DirToByte(entity.oldEnt->s.origin2));
 	GetBuildableComponent().SetState(BuildableComponent::POST_BLAST); // Makes entity invisible.
 

@@ -169,7 +169,7 @@ Marks the entity as free
 */
 void G_FreeEntity( gentity_t *entity )
 {
-	trap_UnlinkEntity( entity );  // unlink from world
+	G_CM_UnlinkEntity( entity );  // unlink from world
 
 	if ( g_debugEntities.Get() > 2 )
 	{
@@ -225,7 +225,7 @@ gentity_t *G_NewTempEntity( glm::vec3 origin, int event )
 	G_SetOrigin( newEntity, VEC2GLM( &origin[0] ) );
 
 	// find cluster for PVS
-	trap_LinkEntity( newEntity );
+	G_CM_LinkEntity( newEntity );
 
 	return newEntity;
 }
