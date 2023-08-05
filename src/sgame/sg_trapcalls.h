@@ -39,7 +39,6 @@ void             trap_LinkEntity( gentity_t *ent );
 void             trap_UnlinkEntity( gentity_t *ent );
 void             trap_SetConfigstringRestrictions( int num, const clientList_t *clientList );
 void             trap_GetConfigstring( int num, char *buffer, int bufferSize );
-void             trap_SetConfigstringRestrictions( int num, const clientList_t *clientList );
 void             trap_SetUserinfo( int num, const char *buffer );
 void             trap_GetUserinfo( int num, char *buffer, int bufferSize );
 void             trap_GetServerinfo( char *buffer, int bufferSize );
