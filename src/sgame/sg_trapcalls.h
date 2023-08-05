@@ -46,7 +46,6 @@ bool         trap_InPVS( const vec3_t p1, const vec3_t p2 );
 bool         trap_InPVSIgnorePortals( const vec3_t p1, const vec3_t p2 );
 void             trap_SetConfigstringRestrictions( int num, const clientList_t *clientList );
 void             trap_GetConfigstring( int num, char *buffer, int bufferSize );
-void             trap_SetConfigstringRestrictions( int num, const clientList_t *clientList );
 void             trap_SetUserinfo( int num, const char *buffer );
 void             trap_GetUserinfo( int num, char *buffer, int bufferSize );
 void             trap_GetServerinfo( char *buffer, int bufferSize );
