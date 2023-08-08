@@ -103,7 +103,7 @@ static void P_DamageFeedback( gentity_t *player )
 	else
 	{
 		glm::vec3 angles;
-		vectoangles( client->damage_from, &angles[0] );
+		vectoangles( &client->damage_from[0], &angles[0] );
 		client->ps.damagePitch = angles[ PITCH ] / 360.0 * 256;
 		client->ps.damageYaw = angles[ YAW ] / 360.0 * 256;
 	}
@@ -1577,12 +1577,12 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	unlagged_t* calc = &ent->client->unlaggedCalc;
 
 	// if the client isn't moving, this is not necessary
-	if ( VectorCompare( ent->client->oldOrigin, ent->client->ps.origin ) )
+	if ( ent->client->oldOrigin == VEC2GLM( ent->client->ps.origin ) )
 	{
 		return;
 	}
 
-	float range = Distance( ent->client->oldOrigin, ent->client->ps.origin );
+	float range = glm::distance( ent->client->oldOrigin, VEC2GLM( ent->client->ps.origin ) );
 
 	// increase the range by the player's largest possible radius since it's
 	// the players bounding box that collides, not their origin
@@ -1590,10 +1590,10 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	float r2 = glm::distance( calc->origin, calc->maxs );
 	range += ( r1 > r2 ) ? r1 : r2;
 
-	G_UnlaggedOn( ent, VEC2GLM( ent->client->oldOrigin ), range );
+	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
 
 	trace_t tr;
-	G_CM_Trace( &tr, VEC2GLM( ent->client->oldOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	G_CM_Trace( &tr, ent->client->oldOrigin, VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
 	{
@@ -2081,7 +2081,7 @@ static void ClientThink_real( gentity_t *self )
 	pm.pmove_msec     = level.pmoveParams.msec;
 	pm.pmove_accurate = level.pmoveParams.accurate;
 
-	VectorCopy( client->ps.origin, client->oldOrigin );
+	client->oldOrigin = VEC2GLM( client->ps.origin );
 
 	// moved from after Pmove -- potentially the cause of future triggering bugs
 	G_TouchTriggers( self );

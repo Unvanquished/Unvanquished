@@ -429,9 +429,6 @@ struct gclient_t
 	clientPersistant_t pers;
 	clientSession_t    sess;
 
-	bool           readyToExit; // wishes to leave the intermission
-
-	bool           noclip;
 	int                cliprcontents; // the backup layer of ent->r.contents for when noclipping
 
 	int                lastCmdTime; // level.time of last usercmd_t, for EF_CONNECTION
@@ -441,17 +438,15 @@ struct gclient_t
 	byte   oldbuttons[ USERCMD_BUTTONS / 8 ];
 	byte   latched_buttons[ USERCMD_BUTTONS / 8 ];
 
-	vec3_t oldOrigin;
+	glm::vec3 oldOrigin;
 
 	// sum up damage over an entire frame, so shotgun blasts give a single big kick
+	glm::vec3 damage_from;      // last damage direction
 	int      damage_received;  // damage received this frame
-	vec3_t   damage_from;      // last damage direction
-	bool damage_fromWorld; // if true, don't use the damage_from vector
 
 	// timers
 	int        respawnTime; // can respawn when time > this
 	int        inactivityTime; // kick players when time > this
-	bool   inactivityWarning; // true if the five second warning has been given
 	int        boostedTime; // last time we touched a booster
 
 	int        lowOxygenDamage; // the damage we will take when we run out of oxygen
@@ -490,6 +485,10 @@ struct gclient_t
 
 	int        lastLevel1SlowTime;
 
+	bool inactivityWarning; // true if the five second warning has been given
+	bool damage_fromWorld; // if true, don't use the damage_from vector
+	bool readyToExit; // wishes to leave the intermission
+	bool noclip;
 	// gives the entityNum
 	int num() const {
 		ASSERT(this - g_clients >= 0);
