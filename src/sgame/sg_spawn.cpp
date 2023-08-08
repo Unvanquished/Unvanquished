@@ -787,7 +787,6 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 {
 	fieldDescriptor_t *fieldDescriptor;
 	byte    *entityDataField;
-	vec4_t  tmpFloatData;
 	variatingTime_t varTime = {0, 0};
 
 	fieldDescriptor = (fieldDescriptor_t*) bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
@@ -840,20 +839,21 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 			break;
 
 		case F_3D_VECTOR:
-			sscanf( rawString, "%f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ] );
+			{
+				glm::vec3 tmp;
+				sscanf( rawString, "%f %f %f", &tmp[ 0 ], &tmp[ 1 ], &tmp[ 2 ] );
 
-			( ( float * ) entityDataField ) [ 0 ] = tmpFloatData[ 0 ];
-			( ( float * ) entityDataField ) [ 1 ] = tmpFloatData[ 1 ];
-			( ( float * ) entityDataField ) [ 2 ] = tmpFloatData[ 2 ];
+				*reinterpret_cast<glm::vec3*>( entityDataField ) = tmp;
+			}
 			break;
 
 		case F_4D_VECTOR:
-			sscanf( rawString, "%f %f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ], &tmpFloatData[ 3 ] );
+			{
+				glm::vec4 tmp;
+				sscanf( rawString, "%f %f %f %f", &tmp[ 0 ], &tmp[ 1 ], &tmp[ 2 ], &tmp[ 3 ] );
 
-			( ( float * ) entityDataField ) [ 0 ] = tmpFloatData[ 0 ];
-			( ( float * ) entityDataField ) [ 1 ] = tmpFloatData[ 1 ];
-			( ( float * ) entityDataField ) [ 2 ] = tmpFloatData[ 2 ];
-			( ( float * ) entityDataField ) [ 3 ] = tmpFloatData[ 3 ];
+				*reinterpret_cast<glm::vec4*>( entityDataField ) = tmp;
+			}
 			break;
 
 		case F_INT:
