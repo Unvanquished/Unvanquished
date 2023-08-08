@@ -150,11 +150,14 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		client->damage_received += (int)(amount + 0.5f);
 
 		// Save damage direction.
-		if (direction) {
-			VectorCopy(direction.value(), client->damage_from);
+		if ( direction )
+		{
+			client->damage_from = direction.value();
 			client->damage_fromWorld = false;
-		} else {
-			VectorCopy(entity.oldEnt->r.currentOrigin, client->damage_from);
+		}
+		else
+		{
+			client->damage_from = VEC2GLM( entity.oldEnt->r.currentOrigin );
 			client->damage_fromWorld = true;
 		}
 
