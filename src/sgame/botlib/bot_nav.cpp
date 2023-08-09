@@ -35,6 +35,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "bot_api.h"
 #include "sgame/sg_local.h"
 
+// for glm::distance2
+#include <glm/gtx/norm.hpp>
+
 Bot_t agents[ MAX_CLIENTS ];
 
 /*
@@ -233,6 +236,27 @@ bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result )
 	bot->nav->query->closestPointOnPolyBoundary( firstPoly, ent->s.origin, corner );
 	std::swap( corner[ 1 ], corner[ 2 ] );  // recast and daemon have these swapped
 	result = VEC2GLM( corner );
+	return true;
+}
+
+static Cvar::Cvar<int> g_bot_cornerNearDistance("g_bot_cornerNearDistance", "maximal distance to a bot's next navigation corner to be considered near.", Cvar::NONE, 100);
+
+bool G_BotCloseToPathCorner( int botClientNum )
+{
+	Bot_t *bot = &agents[ botClientNum ];
+	if ( bot->numCorners <= 1 )
+	{
+		return false;
+	}
+	gentity_t *self = &g_entities[ botClientNum ];
+	glm::vec3 ownPos = VEC2GLM( self->s.origin );
+	glm::vec3 nextCorner = VEC2GLM( &bot->cornerVerts[ 0 ] );
+	std::swap( nextCorner.y, nextCorner.z );
+	float distanceSquared = glm::distance2( ownPos, nextCorner );
+	if ( distanceSquared > Square( g_bot_cornerNearDistance.Get() ) )
+	{
+		return false;
+	}
 	return true;
 }
 

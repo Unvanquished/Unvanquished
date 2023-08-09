@@ -400,6 +400,8 @@ Bot Thinks
 =======================
 */
 
+static Cvar::Cvar<bool> g_bot_jumpOverFire("g_bot_jumpOverFire", "if bots should jump over ground flames", Cvar::NONE, true);
+
 void G_BotThink( gentity_t *self )
 {
 	char buf[MAX_STRING_CHARS];
@@ -469,6 +471,13 @@ void G_BotThink( gentity_t *self )
 
 	self->botMind->willSprint( false ); //let the BT decide that
 	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
+
+	// jump if damaged by ground flames, and if not close to a corner that will
+	// make us turn (we might miss it and thus go back)
+	if ( g_bot_jumpOverFire.Get() && level.time - self->client->lastGroundFlameDamageTime < 200 && !G_BotCloseToPathCorner( self->num() ) )
+	{
+		BotJump( self );
+	}
 
 	// if we were nudged...
 	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );

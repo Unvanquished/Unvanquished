@@ -146,6 +146,10 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	// TODO: Add a message to update combat timers.
 	if (client && source->client && entity.oldEnt != source) {
 		client->lastCombatTime = entity.oldEnt->client->lastCombatTime = level.time;
+		if ( meansOfDeath == MOD_BURN )
+		{
+			client->lastGroundFlameDamageTime = entity.oldEnt->client->lastGroundFlameDamageTime = level.time;
+		}
 	}
 
 	if (client) {
