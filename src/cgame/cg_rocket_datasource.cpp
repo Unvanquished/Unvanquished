@@ -352,16 +352,13 @@ static int ServerListCmpByPing( const void *one, const void *two )
 
 static int ServerListCmpByName( const void* one, const void* two )
 {
-	static char cleanName1[ MAX_STRING_CHARS ] = { 0 };
-	static char cleanName2[ MAX_STRING_CHARS ] = { 0 };
+	char cleanName1[ MAX_INFO_VALUE ];
+	char cleanName2[ MAX_INFO_VALUE ];
 	server_t* a = ( server_t* ) one;
 	server_t* b = ( server_t* ) two;
 
-	Q_strncpyz( cleanName1, a->name, sizeof( cleanName1 ) );
-	Q_strncpyz( cleanName2, b->name, sizeof( cleanName2 ) );
-
-	Color::StripColors( cleanName1 );
-	Color::StripColors( cleanName2 );
+	Color::StripColors( a->name, cleanName1, sizeof( cleanName1 ) );
+	Color::StripColors( b->name, cleanName2, sizeof( cleanName2 ) );
 
 	return Q_stricmp( cleanName1, cleanName2 );
 }
@@ -467,10 +464,9 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 	{
 		char name[ MAX_INFO_VALUE ];
+		Color::StripColors( rocketInfo.data.servers[ netSrc ][ i ].name, name, sizeof( name ) );
 
-		Q_strncpyz( name, rocketInfo.data.servers[ netSrc ][ i ].name, sizeof( name ) );
-
-		if ( Q_stristr( Color::StripColors( name ), filter ) )
+		if ( Q_stristr( name, filter ) )
 		{
 			char data[ MAX_INFO_STRING ] = { 0 };
 

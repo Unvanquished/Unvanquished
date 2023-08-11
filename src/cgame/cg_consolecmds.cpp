@@ -253,14 +253,14 @@ static void CG_CompleteName()
 	{
 		char name[ MAX_NAME_LENGTH ];
 		ci = &cgs.clientinfo[ i ];
-		Q_strncpyz( name, ci->name, sizeof name );
 
 		if ( !ci->infoValid )
 		{
 			continue;
 		}
 
-		trap_CompleteCallback( Color::StripColors( name ) );
+		Color::StripColors( ci->name, name, sizeof( name ) );
+		trap_CompleteCallback( name );
 	}
 }
 
