@@ -522,7 +522,6 @@ void BotWalk( gentity_t *self, bool enable )
 // search for obstacle forward, and return pointer on it if any
 static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir )
 {
-	glm::vec3 playerMins, playerMaxs;
 	trace_t trace;
 
 	if ( !( self && self->client ) )
@@ -530,6 +529,7 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 		return nullptr;
 	}
 
+	glm::vec3 playerMins, playerMaxs;
 	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
 	BG_BoundingBox( pClass, playerMins, playerMaxs );
 
@@ -655,7 +655,6 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 	glm::vec3 playerMins, playerMaxs;
 	float yaw1, yaw2;
 	trace_t trace1, trace2;
-	int i;
 	glm::vec3 angles;
 
 	if ( !( self && self->client ) )
@@ -685,7 +684,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 	//find an unobstructed position
 	//we check the full 180 degrees in front of us
 	glm::vec3 origin = VEC2GLM( self->s.origin );
-	for ( i = 0; i < 5; i++, yaw1 -= 15 , yaw2 += 15 )
+	for ( int i = 0; i < 5; i++, yaw1 -= 15 , yaw2 += 15 )
 	{
 		//compute forward for right
 		forward[0] = cosf( DEG2RAD( yaw1 ) );

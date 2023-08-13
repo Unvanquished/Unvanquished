@@ -162,7 +162,8 @@ bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 	glm::vec3 end = VEC2GLM( entity.oldEnt->s.origin ) + (SPIKE_RANGE * direction);
 
 	// Test once with normal and once with inflated missile bounding box.
-	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_INFLATION}) {
+	for ( float traceSize : { missileSize, missileSize * SAFETY_TRACE_INFLATION } )
+	{
 		glm::vec3 mins = { -traceSize, -traceSize, -traceSize };
 		glm::vec3 maxs = {  traceSize,  traceSize,  traceSize };
 		G_CM_Trace( &trace, VEC2GLM( entity.oldEnt->s.origin ), mins, maxs, end, entity.oldEnt->num(), ma->clipmask, 0, traceType_t::TT_AABB );

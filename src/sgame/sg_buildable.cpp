@@ -268,7 +268,6 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 	else
 	{
 		trace_t tr;
-		int     anim;
 
 		G_CM_Trace( &tr, VEC2GLM( self->s.origin ), mins, maxs, VEC2GLM( self->s.origin ), self->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
@@ -281,7 +280,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 		self->shrunkTime = 0;
 
 		// unshrink animation
-		anim = self->s.legsAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
+		int anim = self->s.legsAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
 		if ( self->spawned && Entities::IsAlive( self ) && anim != BANIM_CONSTRUCT && anim != BANIM_POWERUP )
 		{
@@ -1094,8 +1093,6 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 {
 	trace_t trace;
-	gentity_t *buildable;
-
 	// Check for revoked building rights.
 	if ( ent->client->pers.namelog->denyBuild || G_admin_permission( ent, ADMF_NO_BUILD ) )
 	{
@@ -1109,7 +1106,7 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	AngleVectors( VEC2GLM( ent->client->ps.viewangles ), &forward, nullptr, nullptr );
 	glm::vec3 end = viewOrigin + BUILDER_DECONSTRUCT_RANGE * forward;
 	G_CM_Trace( &trace, viewOrigin, glm::vec3(), glm::vec3(), end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
-	buildable = &g_entities[ trace.entityNum ];
+	gentity_t *buildable = &g_entities[ trace.entityNum ];
 
 	// Check if target is valid.
 	if ( trace.fraction >= 1.0f ||

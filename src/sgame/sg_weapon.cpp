@@ -656,10 +656,6 @@ Target tracking for the hive missile.
 static void HiveMissileThink( gentity_t *self )
 {
 	trace_t   tr;
-	gentity_t *ent;
-	int       i;
-	float     d, nearest;
-
 	if ( level.time > self->timestamp ) // swarm lifetime exceeded
 	{
 		VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
@@ -672,16 +668,17 @@ static void HiveMissileThink( gentity_t *self )
 		return;
 	}
 
-	nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
+	float nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
 
 	//find the closest human
-	for ( i = 0; i < MAX_CLIENTS; i++ )
+	for ( int i = 0; i < MAX_CLIENTS; i++ )
 	{
-		ent = &g_entities[ i ];
+		gentity_t *ent = &g_entities[ i ];
 
 		if ( !ent->inuse ) continue;
 		if ( ent->flags & FL_NOTARGET ) continue;
 
+		float d;
 		if ( ent->client && Entities::IsAlive( ent ) && G_Team( ent ) == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{

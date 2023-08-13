@@ -67,9 +67,6 @@ sets mins and maxs for inline bmodels
 */
 void G_CM_SetBrushModel( gentity_t *ent, std::string const& name )
 {
-	clipHandle_t h;
-	vec3_t       mins, maxs;
-
 	if ( name.empty() )
 	{
 		Sys::Drop( "G_CM_SetBrushModel: NULL for #%i", ent->num() );
@@ -87,10 +84,8 @@ void G_CM_SetBrushModel( gentity_t *ent, std::string const& name )
 	}
 	ent->s.modelindex = static_cast<int>( val );
 
-	h = CM_InlineModel( ent->s.modelindex );
-	CM_ModelBounds( h, mins, maxs );
-	VectorCopy( mins, ent->r.mins );
-	VectorCopy( maxs, ent->r.maxs );
+	clipHandle_t h = CM_InlineModel( ent->s.modelindex );
+	CM_ModelBounds( h, ent->r.mins, ent->r.maxs );
 	ent->r.bmodel = true;
 
 	ent->r.contents = -1; // we don't know exactly what is in the brushes
@@ -122,35 +117,25 @@ static clipHandle_t G_CM_ClipHandleForEntity( const gentity_t *ent )
 G_CM_inPVS
 
 Also checks portalareas so that doors block sight
+Return false if a door blocks sight
 =================
 */
 bool G_CM_inPVS( glm::vec3 const& p1, glm::vec3 const& p2 )
 {
-	int  leafnum;
-	int  cluster;
-	int  area1, area2;
-	byte *mask;
-
-	leafnum = CM_PointLeafnum( &p1[0] );
-	cluster = CM_LeafCluster( leafnum );
-	area1 = CM_LeafArea( leafnum );
-	mask = CM_ClusterPVS( cluster );
+	int leafnum = CM_PointLeafnum( &p1[0] );
+	int cluster = CM_LeafCluster( leafnum );
+	int area1 = CM_LeafArea( leafnum );
+	byte* mask = CM_ClusterPVS( cluster );
 
 	leafnum = CM_PointLeafnum( &p2[0] );
 	cluster = CM_LeafCluster( leafnum );
-	area2 = CM_LeafArea( leafnum );
+	int area2 = CM_LeafArea( leafnum );
 
 	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
 	{
 		return false;
 	}
-
-	if ( !CM_AreasConnected( area1, area2 ) )
-	{
-		return false; // a door blocks sight
-	}
-
-	return true;
+	return CM_AreasConnected( area1, area2 );
 }
 
 /*
@@ -162,26 +147,18 @@ Does NOT check portalareas
 */
 bool G_CM_inPVSIgnorePortals( glm::vec3 const& p1, glm::vec3 const& p2 )
 {
-	int  leafnum;
-	int  cluster;
 //	int             area1, area2; //unused
-	byte *mask;
 
-	leafnum = CM_PointLeafnum( &p1[0] );
-	cluster = CM_LeafCluster( leafnum );
+	int leafnum = CM_PointLeafnum( &p1[0] );
+	int cluster = CM_LeafCluster( leafnum );
 //	area1 = CM_LeafArea(leafnum); //Doesn't modify anything.
 
-	mask = CM_ClusterPVS( cluster );
+	byte* mask = CM_ClusterPVS( cluster );
 	leafnum = CM_PointLeafnum( &p2[0] );
 	cluster = CM_LeafCluster( leafnum );
 //	area2 = CM_LeafArea(leafnum); //Doesn't modify anything.
 
-	if ( mask && ( !( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) ) ) )
-	{
-		return false;
-	}
-
-	return true;
+	return mask == nullptr || ( mask[ cluster >> 3 ] & ( 1 << ( cluster & 7 ) ) );
 }
 
 /*
@@ -206,15 +183,13 @@ G_CM_EntityContact
 */
 bool G_CM_EntityContact( glm::vec3 const& mins, glm::vec3 const& maxs, const gentity_t *gEnt, traceType_t type )
 {
-	const float  *origin, *angles;
-	clipHandle_t ch;
 	trace_t      trace;
 
 	// check for exact collision
-	origin = gEnt->r.currentOrigin;
-	angles = gEnt->r.currentAngles;
+	const float* origin = gEnt->r.currentOrigin;
+	const float* angles = gEnt->r.currentAngles;
 
-	ch = G_CM_ClipHandleForEntity( gEnt );
+	clipHandle_t ch = G_CM_ClipHandleForEntity( gEnt );
 	CM_TransformedBoxTrace( &trace, vec3_origin, vec3_origin, &mins[0], &maxs[0], ch, MASK_ALL, 0, origin, angles, type );
 
 	return trace.startsolid;
@@ -254,17 +229,12 @@ G_CM_SectorList_f
 */
 void G_CM_SectorList_f()
 {
-	int           i, c;
-	worldSector_t *sec;
-	worldEntity_t    *ent;
-
-	for ( i = 0; i < AREA_NODES; i++ )
+	for ( int i = 0; i < AREA_NODES; i++ )
 	{
-		sec = &sv_worldSectors[ i ];
+		worldSector_t* sec = &sv_worldSectors[ i ];
 
-		c = 0;
-
-		for ( ent = sec->entities; ent; ent = ent->nextEntityInWorldSector )
+		int c = 0;
+		for ( worldEntity_t* ent = sec->entities; ent; ent = ent->nextEntityInWorldSector )
 		{
 			c++;
 		}
@@ -280,14 +250,10 @@ G_CM_CreateworldSector
 Builds a uniformly subdivided tree for the given world size
 ===============
 */
-static worldSector_t *G_CM_CreateworldSector( int depth, vec3_t mins,
-		vec3_t maxs )
+static worldSector_t *G_CM_CreateworldSector( int depth, glm::vec3 const& mins, glm::vec3 const& maxs )
 {
-	worldSector_t *anode;
-	vec3_t        size;
-	vec3_t        mins1, maxs1, mins2, maxs2;
+	worldSector_t *anode = &sv_worldSectors[ sv_numworldSectors ];
 
-	anode = &sv_worldSectors[ sv_numworldSectors ];
 	sv_numworldSectors++;
 
 	if ( depth == AREA_DEPTH )
@@ -297,7 +263,7 @@ static worldSector_t *G_CM_CreateworldSector( int depth, vec3_t mins,
 		return anode;
 	}
 
-	VectorSubtract( maxs, mins, size );
+	glm::vec3 size = maxs - mins;
 
 	if ( size[ 0 ] > size[ 1 ] )
 	{
@@ -309,10 +275,10 @@ static worldSector_t *G_CM_CreateworldSector( int depth, vec3_t mins,
 	}
 
 	anode->dist = 0.5 * ( maxs[ anode->axis ] + mins[ anode->axis ] );
-	VectorCopy( mins, mins1 );
-	VectorCopy( mins, mins2 );
-	VectorCopy( maxs, maxs1 );
-	VectorCopy( maxs, maxs2 );
+	glm::vec3 mins1 = mins;
+	glm::vec3 mins2 = mins;
+	glm::vec3 maxs1 = maxs;
+	glm::vec3 maxs2 = maxs;
 
 	maxs1[ anode->axis ] = mins2[ anode->axis ] = anode->dist;
 
@@ -330,16 +296,14 @@ G_CM_ClearWorld
 */
 void G_CM_ClearWorld()
 {
-	clipHandle_t h;
-	vec3_t       mins, maxs;
-
 	memset( sv_worldSectors, 0, sizeof( sv_worldSectors ) );
 	memset( wentities, 0, sizeof( wentities ) );
 	sv_numworldSectors = 0;
 
 	// get world map bounds
-	h = CM_InlineModel( 0 );
-	CM_ModelBounds( h, mins, maxs );
+	clipHandle_t h = CM_InlineModel( 0 );
+	glm::vec3 mins, maxs;
+	CM_ModelBounds( h, &mins[0], &maxs[0] );
 	G_CM_CreateworldSector( 0, mins, maxs );
 }
 
@@ -351,14 +315,11 @@ G_CM_UnlinkEntity
 */
 void G_CM_UnlinkEntity( gentity_t *gEnt )
 {
-	worldEntity_t* scan;
-	worldSector_t* ws;
-
 	worldEntity_t* went = G_CM_WorldEntityForGentity( gEnt );
 
 	gEnt->r.linked = false;
 
-	ws = went->worldSector;
+	worldSector_t* ws = went->worldSector;
 
 	if ( !ws )
 	{
@@ -373,7 +334,7 @@ void G_CM_UnlinkEntity( gentity_t *gEnt )
 		return;
 	}
 
-	for ( scan = ws->entities; scan; scan = scan->nextEntityInWorldSector )
+	for ( worldEntity_t* scan = ws->entities; scan; scan = scan->nextEntityInWorldSector )
 	{
 		if ( scan->nextEntityInWorldSector == went )
 		{
@@ -672,11 +633,11 @@ int G_CM_AreaEntities( glm::vec3 const& mins, glm::vec3 const& maxs, int *entity
 
 struct moveclip_t
 {
-	vec3_t      boxmins, boxmaxs; // enclose the test object along entire move
+	glm::vec3   boxmins, boxmaxs; // enclose the test object along entire move
 	const float *mins;
 	const float *maxs; // size of the moving object
 	const float *start;
-	vec3_t      end;
+	const float *end;
 	trace_t     trace;
 	int         passEntityNum;
 	int         contentmask;
@@ -692,20 +653,18 @@ struct moveclip_t
 G_CM_ClipMoveToEntities
 ====================
 */
-static void G_CM_ClipMoveToEntities( moveclip_t *clip )
+static void G_CM_ClipMoveToEntities( moveclip_t& clip )
 {
-	int            i, num;
 	int            touchlist[ MAX_GENTITIES ];
-	gentity_t *touch;
 	int            passOwnerNum;
 	trace_t        trace;
 	clipHandle_t   clipHandle;
 
-	num = G_CM_AreaEntities( VEC2GLM( clip->boxmins ), VEC2GLM( clip->boxmaxs ), touchlist, MAX_GENTITIES );
+	int num = G_CM_AreaEntities( clip.boxmins, clip.boxmaxs, touchlist, MAX_GENTITIES );
 
-	if ( clip->passEntityNum != ENTITYNUM_NONE )
+	if ( clip.passEntityNum != ENTITYNUM_NONE )
 	{
-		passOwnerNum = g_entities[ clip->passEntityNum ].r.ownerNum;
+		passOwnerNum = g_entities[ clip.passEntityNum ].r.ownerNum;
 
 		if ( passOwnerNum == ENTITYNUM_NONE )
 		{
@@ -717,24 +676,24 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 		passOwnerNum = -1;
 	}
 
-	for ( i = 0; i < num; i++ )
+	for ( int i = 0; i < num; i++ )
 	{
-		if ( clip->trace.allsolid )
+		if ( clip.trace.allsolid )
 		{
 			return;
 		}
 
-		touch = &g_entities[ touchlist[ i ] ];
+		gentity_t *touch = &g_entities[ touchlist[ i ] ];
 
 		// see if we should ignore this entity
-		if ( clip->passEntityNum != ENTITYNUM_NONE )
+		if ( clip.passEntityNum != ENTITYNUM_NONE )
 		{
-			if ( touchlist[ i ] == clip->passEntityNum )
+			if ( touchlist[ i ] == clip.passEntityNum )
 			{
 				continue; // don't clip against the pass entity
 			}
 
-			if ( touch->r.ownerNum == clip->passEntityNum )
+			if ( touch->r.ownerNum == clip.passEntityNum )
 			{
 				continue; // don't clip against own missiles
 			}
@@ -747,12 +706,12 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 
 		// if it doesn't have any brushes of a type we
 		// are looking for, ignore it
-		if ( !( clip->contentmask & touch->r.contents ) )
+		if ( !( clip.contentmask & touch->r.contents ) )
 		{
 			continue;
 		}
 
-		if ( clip->skipmask & touch->r.contents )
+		if ( clip.skipmask & touch->r.contents )
 		{
 			continue;
 		}
@@ -768,30 +727,30 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 			angles = vec3_origin; // boxes don't rotate
 		}
 
-		CM_TransformedBoxTrace( &trace, clip->start, clip->end, clip->mins, clip->maxs, clipHandle,
-		                        clip->contentmask, 0, origin, angles, clip->collisionType );
+		CM_TransformedBoxTrace( &trace, clip.start, clip.end, clip.mins, clip.maxs, clipHandle,
+		                        clip.contentmask, 0, origin, angles, clip.collisionType );
 
 		if ( trace.allsolid )
 		{
-			clip->trace.allsolid = true;
+			clip.trace.allsolid = true;
 			trace.entityNum = touch->num();
 		}
 		else if ( trace.startsolid )
 		{
-			clip->trace.startsolid = true;
+			clip.trace.startsolid = true;
 			trace.entityNum = touch->num();
 		}
 
-		if ( trace.fraction < clip->trace.fraction )
+		if ( trace.fraction < clip.trace.fraction )
 		{
 			bool oldStart;
 
 			// make sure we keep a startsolid from a previous trace
-			oldStart = clip->trace.startsolid;
+			oldStart = clip.trace.startsolid;
 
 			trace.entityNum = touch->num();
-			clip->trace = trace;
-			clip->trace.startsolid |= oldStart;
+			clip.trace = trace;
+			clip.trace.startsolid |= oldStart;
 		}
 	}
 }
@@ -809,7 +768,6 @@ void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins
                  traceType_t type )
 {
 	moveclip_t clip;
-	int        i;
 
 	vec3_t mins, maxs;
 	VectorCopy(mins2, mins);
@@ -836,7 +794,7 @@ void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins
 	clip.skipmask = skipmask;
 	clip.start = &start[0];
 //  VectorCopy( clip.trace.endpos, clip.end );
-	VectorCopy( end, clip.end );
+	clip.end = &end[0]; //FIXME: useless copy, but just refactoring for now
 	clip.mins = mins;
 	clip.maxs = maxs;
 	clip.passEntityNum = passEntityNum;
@@ -846,7 +804,7 @@ void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins
 	// we can limit it to the part of the move not
 	// already clipped off by the world, which can be
 	// a significant savings for line of sight and shot traces
-	for ( i = 0; i < 3; i++ )
+	for ( int i = 0; i < 3; i++ )
 	{
 		if ( end[ i ] > start[ i ] )
 		{
@@ -861,7 +819,7 @@ void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins
 	}
 
 	// clip to other solid entities
-	G_CM_ClipMoveToEntities( &clip );
+	G_CM_ClipMoveToEntities( clip );
 
 	*results = clip.trace;
 }
@@ -874,28 +832,24 @@ G_CM_PointContents
 int G_CM_PointContents( glm::vec3 const& p, int passEntityNum )
 {
 	int            touch[ MAX_GENTITIES ];
-	gentity_t *hit;
-	int            i, num;
-	int            contents, c2;
-	clipHandle_t   clipHandle;
 //	float          *angles;
 
 	// get base contents from world
-	contents = CM_PointContents( &p[0], 0 );
+	int contents = CM_PointContents( &p[0], 0 );
 
 	// or in contents from all the other entities
-	num = G_CM_AreaEntities( p, p, touch, MAX_GENTITIES );
+	int num = G_CM_AreaEntities( p, p, touch, MAX_GENTITIES );
 
-	for ( i = 0; i < num; i++ )
+	for ( int i = 0; i < num; i++ )
 	{
 		if ( touch[ i ] == passEntityNum )
 		{
 			continue;
 		}
 
-		hit = &g_entities[ touch[ i ] ];
+		gentity_t* hit = &g_entities[ touch[ i ] ];
 		// might intersect, so do an exact clip
-		clipHandle = G_CM_ClipHandleForEntity( hit );
+		clipHandle_t clipHandle = G_CM_ClipHandleForEntity( hit );
 
 		// ydnar: non-worldspawn entities must not use world as clip model!
 		if ( clipHandle == 0 )
@@ -912,7 +866,7 @@ int G_CM_PointContents( glm::vec3 const& p, int passEntityNum )
 		                }
 		*/
 
-		c2 = CM_TransformedPointContents( &p[0], clipHandle, hit->r.currentOrigin, hit->r.currentAngles );
+		int c2 = CM_TransformedPointContents( &p[0], clipHandle, hit->r.currentOrigin, hit->r.currentAngles );
 
 		contents |= c2;
 	}
