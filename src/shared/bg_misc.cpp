@@ -1692,7 +1692,7 @@ void BG_PositionBuildableRelativeToPlayer( playerState_t *ps,
 	VectorMA( targetOrigin, -128, playerNormal, targetOrigin );
 
 	// The mask is MASK_DEADSOLID on purpose to avoid collisions with other entities
-	( *trace )( tr, VEC2GLM( entityOrigin ), VEC2GLM( mins ), VEC2GLM( maxs ), VEC2GLM( targetOrigin ), ps->clientNum, MASK_DEADSOLID, 0, traceType_t::TT_AABB );
+	*tr = ( *trace )( VEC2GLM( entityOrigin ), VEC2GLM( mins ), VEC2GLM( maxs ), VEC2GLM( targetOrigin ), ps->clientNum, MASK_DEADSOLID, 0, traceType_t::TT_AABB );
 	VectorCopy( tr->endpos, outOrigin );
 	vectoangles( forward, outAngles );
 }

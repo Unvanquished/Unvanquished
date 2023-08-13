@@ -285,7 +285,7 @@ struct pmoveExt_t
 	bool cancelDeconstructCharge;
 };
 
-typedef void ( *trace_cb_t )( trace_t *, glm::vec3 const&, glm::vec3 const&, glm::vec3 const&, glm::vec3 const&, int, int, int, traceType_t );
+typedef trace_t ( *trace_cb_t )( glm::vec3 const&, glm::vec3 const&, glm::vec3 const&, glm::vec3 const&, int, int, int, traceType_t );
 typedef int ( *point_cb_t )( glm::vec3 const& point, int passEntityNum );
 
 #define MAXTOUCH 32
