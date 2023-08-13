@@ -522,8 +522,6 @@ void BotWalk( gentity_t *self, bool enable )
 // search for obstacle forward, and return pointer on it if any
 static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir )
 {
-	trace_t trace;
-
 	if ( !( self && self->client ) )
 	{
 		return nullptr;
@@ -540,7 +538,7 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 	glm::vec3 origin = VEC2GLM( self->s.origin );
 	glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * dir;
 
-	G_CM_Trace( &trace, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	if ( ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < MIN_WALK_NORMAL ) || g_entities[ trace.entityNum ].s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return &g_entities[trace.entityNum];
@@ -558,7 +556,6 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	glm::vec3 playerMins;
 	glm::vec3 playerMaxs;
 	float jumpMagnitude;
-	trace_t tr1, tr2;
 
 	//already normalized
 
@@ -572,7 +569,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	glm::vec3 end = origin + BOT_OBSTACLE_AVOID_RANGE * dir;
 
 	//make sure we are moving into a block
-	G_CM_Trace( &tr1, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t tr1 = G_CM_Trace( origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	if ( tr1.fraction >= 1.0f || blocker != &g_entities[tr1.entityNum] )
 	{
 		return false;
@@ -588,7 +585,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	playerMaxs[2] += jumpMagnitude;
 
 	//check if jumping will clear us of entity
-	G_CM_Trace( &tr2, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t tr2 = G_CM_Trace( origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	classAttributes_t const* pcl = BG_Class( pClass );
 	bool ladder = ( pcl->abilities & SCA_CANUSELADDERS )
@@ -654,7 +651,6 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 	glm::vec3 testPoint1, testPoint2;
 	glm::vec3 playerMins, playerMaxs;
 	float yaw1, yaw2;
-	trace_t trace1, trace2;
 	glm::vec3 angles;
 
 	if ( !( self && self->client ) )
@@ -694,7 +690,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 		testPoint1 = origin + BOT_OBSTACLE_AVOID_RANGE * forward;
 
 		//test it
-		G_CM_Trace( &trace1, origin, playerMins, playerMaxs, testPoint1, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+		trace_t trace1 = G_CM_Trace( origin, playerMins, playerMaxs, testPoint1, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		//check if unobstructed
 		if ( trace1.fraction >= 1.0f )
@@ -711,7 +707,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 		testPoint2 = origin + BOT_OBSTACLE_AVOID_RANGE * forward;
 
 		//test it
-		G_CM_Trace( &trace2, origin, playerMins, playerMaxs, testPoint2, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+		trace_t trace2 = G_CM_Trace( origin, playerMins, playerMaxs, testPoint2, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		//check if unobstructed
 		if ( trace2.fraction >= 1.0f )

@@ -357,12 +357,11 @@ namespace Beacon //this should eventually become a class
 		};
 		const int numvecs = sizeof( vecs ) / sizeof( vecs[ 0 ] );
 		glm::vec3 accumulator;
-		trace_t tr;
 
 		for ( glm::vec3 const& v : vecs )
 		{
 			glm::vec3 end = origin + 500.f * v;
-			G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), end, 0, MASK_SOLID, 0, traceType_t::TT_AABB );
+			trace_t tr = G_CM_Trace( origin, glm::vec3(), glm::vec3(), end, 0, MASK_SOLID, 0, traceType_t::TT_AABB );
 			accumulator += VEC2GLM( tr.endpos );
 		}
 
@@ -632,8 +631,7 @@ namespace Beacon //this should eventually become a class
 
 		// Do a trace for bounding boxes under the reticle first, they are prefered
 		{
-			trace_t tr;
-			G_CM_Trace( &tr, begin, glm::vec3(), glm::vec3(), end, skip, mask, 0, traceType_t::TT_AABB );
+			trace_t tr = G_CM_Trace( begin, glm::vec3(), glm::vec3(), end, skip, mask, 0, traceType_t::TT_AABB );
 			if ( EntityTaggable( tr.entityNum, team, true ) )
 			{
 				reticleEnt = g_entities + tr.entityNum;
@@ -667,8 +665,7 @@ namespace Beacon //this should eventually become a class
 
 			// LOS
 			{
-				trace_t tr;
-				G_CM_Trace( &tr, begin, glm::vec3(), glm::vec3(), VEC2GLM( ent->r.currentOrigin ), skip, mask, 0, traceType_t::TT_AABB );
+				trace_t tr = G_CM_Trace( begin, glm::vec3(), glm::vec3(), VEC2GLM( ent->r.currentOrigin ), skip, mask, 0, traceType_t::TT_AABB );
 				if( tr.entityNum != i )
 					continue;
 			}

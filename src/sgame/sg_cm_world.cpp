@@ -183,13 +183,12 @@ G_CM_EntityContact
 */
 bool G_CM_EntityContact( glm::vec3 const& mins, glm::vec3 const& maxs, const gentity_t *gEnt, traceType_t type )
 {
-	trace_t      trace;
-
 	// check for exact collision
 	const float* origin = gEnt->r.currentOrigin;
 	const float* angles = gEnt->r.currentAngles;
 
 	clipHandle_t ch = G_CM_ClipHandleForEntity( gEnt );
+	trace_t trace;
 	CM_TransformedBoxTrace( &trace, vec3_origin, vec3_origin, &mins[0], &maxs[0], ch, MASK_ALL, 0, origin, angles, type );
 
 	return trace.startsolid;
@@ -727,7 +726,7 @@ static void G_CM_ClipMoveToEntities( moveclip_t& clip )
 			angles = vec3_origin; // boxes don't rotate
 		}
 
-		CM_TransformedBoxTrace( &trace, clip.start, clip.end, clip.mins, clip.maxs, clipHandle,
+		CM_TransformedBoxTrace( &trace, &clip.start[0], &clip.end[0], &clip.mins[0], &clip.maxs[0], clipHandle,
 		                        clip.contentmask, 0, origin, angles, clip.collisionType );
 
 		if ( trace.allsolid )
@@ -763,6 +762,63 @@ Moves the given mins/maxs volume through the world from start to end.
 passEntityNum and entities owned by passEntityNum are explicitly not checked.
 ==================
 */
+trace_t G_CM_Trace( glm::vec3 const& start, glm::vec3 const& mins, glm::vec3 const& maxs,
+                 glm::vec3 const& end, int passEntityNum, int contentmask, int skipmask,
+                 traceType_t type )
+{
+	// clip to world
+	// -------------
+
+	trace_t trace;
+	CM_BoxTrace( &trace, &start[0], &end[0], &mins[0], &maxs[0], 0, contentmask, skipmask, type );
+
+	trace.entityNum = ENTITYNUM_WORLD;
+	if ( trace.fraction == 0.f )
+	{
+		return trace;
+	}
+	if ( trace.fraction == 1.f )
+	{
+		trace.entityNum = ENTITYNUM_NONE;
+	}
+
+	moveclip_t clip;
+	clip.trace = trace;
+	// clip to entities
+	// ----------------
+
+	clip.contentmask = contentmask;
+	clip.skipmask = skipmask;
+	clip.start = &start[0];
+	clip.end = &end[0];
+	clip.mins = &mins[0];
+	clip.maxs = &maxs[0];
+	clip.passEntityNum = passEntityNum;
+	clip.collisionType = type;
+
+	// create the bounding box of the entire move
+	// we can limit it to the part of the move not
+	// already clipped off by the world, which can be
+	// a significant savings for line of sight and shot traces
+	for ( int i = 0; i < 3; i++ )
+	{
+		if ( end[ i ] > start[ i ] )
+		{
+			clip.boxmins[ i ] = clip.start[ i ] + clip.mins[ i ] - 1;
+			clip.boxmaxs[ i ] = clip.end[ i ] + clip.maxs[ i ] + 1;
+		}
+		else
+		{
+			clip.boxmins[ i ] = clip.end[ i ] + clip.mins[ i ] - 1;
+			clip.boxmaxs[ i ] = clip.start[ i ] + clip.maxs[ i ] + 1;
+		}
+	}
+
+	// clip to other solid entities
+	G_CM_ClipMoveToEntities( clip );
+	return clip.trace;
+}
+
 void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins2, glm::vec3 const& maxs2,
                  glm::vec3 const& end, int passEntityNum, int contentmask, int skipmask,
                  traceType_t type )
@@ -777,7 +833,7 @@ void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins
 	CM_BoxTrace( &clip.trace, &start[0], &end[0], &mins2[0], &maxs2[0], 0, contentmask, skipmask, type );
 	clip.trace.entityNum = clip.trace.fraction == 1.0 ? ENTITYNUM_NONE : ENTITYNUM_WORLD;
 
-	if ( clip.trace.fraction == 0 )
+	if ( clip.trace.fraction == 0.f )
 	{
 		*results = clip.trace;
 		return; // blocked immediately by the world

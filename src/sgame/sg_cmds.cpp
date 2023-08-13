@@ -1688,7 +1688,6 @@ static bool FindRoomForClassChangeVertically(
 		glm::vec3 const& toMins,   glm::vec3 const& toMaxs,
 		glm::vec3 newOrigin )
 {
-	trace_t tr;
 	float   nudgeHeight;
 	float   maxHorizGrowth;
 
@@ -1733,15 +1732,16 @@ static bool FindRoomForClassChangeVertically(
 	// before starting the real trace
 	glm::vec3 temp = newOrigin;
 	temp[ 2 ] += nudgeHeight;
-	G_CM_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t tr;
+	tr = G_CM_Trace( newOrigin, toMins, toMaxs, temp, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	temp[ 2 ] = newOrigin[2] + nudgeHeight * tr.fraction;
 
 	// trace down to the ground so that we can evolve on slopes
-	G_CM_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( temp, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	newOrigin = VEC2GLM( tr.endpos );
 
 	// make REALLY sure
-	G_CM_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( newOrigin, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	return !tr.startsolid && tr.fraction == 1.0f;
 }
 
@@ -1772,13 +1772,13 @@ static bool FindRoomForClassChangeLaterally(
 	                    { 1, 1, 0 }, { -1, 1, 0 }, { -1, -1, 0 }, { 1, -1, 0 } };
 	for ( glm::vec3 const& delta : deltas )
 	{
-		trace_t trace;
 		glm::vec3 start_point = origin + distance * delta;
-		G_CM_Trace( &trace, start_point, toMins, toMaxs, origin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+		trace_t trace;
+		trace = G_CM_Trace( start_point, toMins, toMaxs, origin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		glm::vec3 first_trace_end = VEC2GLM( trace.endpos );
 		// make REALLY sure
-		G_CM_Trace( &trace, first_trace_end, toMins, toMaxs, first_trace_end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+		trace = G_CM_Trace( first_trace_end, toMins, toMaxs, first_trace_end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		if ( trace.startsolid || trace.fraction < 1.0f )
 			continue; // collision
@@ -2216,14 +2216,12 @@ Cmd_Ignite_f
 */
 static void Cmd_Ignite_f( gentity_t *player )
 {
-	trace_t   trace;
-
 	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &player->client->ps );
 	glm::vec3 viewangles = VEC2GLM( player->client->ps.viewangles );
 	glm::vec3 forward;
 	AngleVectors( viewangles, &forward, nullptr, nullptr );
 	glm::vec3 end = viewOrigin + 1000.f * forward;
-	G_CM_Trace( &trace, viewOrigin, glm::vec3(), glm::vec3(), end, player->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( viewOrigin, glm::vec3(), glm::vec3(), end, player->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	if ( trace.entityNum == ENTITYNUM_WORLD )
 	{
@@ -3992,7 +3990,6 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	beaconType_t type;
 	team_t       team;
 	int          flags;
-	trace_t      tr;
 	const beaconAttributes_t *battr;
 
 	// Check usage.
@@ -4028,7 +4025,7 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	glm::vec3 end = origin + 65536.f * forward;
 
 	G_UnlaggedOn( ent, origin, 65536 );
-	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t tr = G_CM_Trace( origin, glm::vec3(), glm::vec3(), end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	G_UnlaggedOff( );
 
 	// Evaluate flood limit.

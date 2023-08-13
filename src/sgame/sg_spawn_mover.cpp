@@ -83,11 +83,11 @@ static gentity_t *G_TestEntityPosition( gentity_t const *ent )
 
 	if ( ent->client )
 	{
-		G_CM_Trace( &tr, VEC2GLM( ent->client->ps.origin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
+		tr = G_CM_Trace( VEC2GLM( ent->client->ps.origin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
 	}
 	else
 	{
-		G_CM_Trace( &tr, VEC2GLM( ent->s.pos.trBase ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->s.pos.trBase ), ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
+		tr = G_CM_Trace( VEC2GLM( ent->s.pos.trBase ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->s.pos.trBase ), ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
 	}
 
 	return tr.startsolid ? &g_entities[ tr.entityNum ] : nullptr;
@@ -2598,9 +2598,7 @@ static void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
 			continue;
 		}
 
-		trace_t tr;
-		G_CM_Trace( &tr, eOrigin, eMins, eMaxs, eOrigin, e->num(), e->clipmask, 0, traceType_t::TT_AABB );
-
+		trace_t tr = G_CM_Trace( eOrigin, eMins, eMaxs, eOrigin, e->num(), e->clipmask, 0, traceType_t::TT_AABB );
 		if( tr.entityNum != ENTITYNUM_NONE )
 		{
 			Entities::Kill(e, activator, MOD_CRUSH);

@@ -120,8 +120,7 @@ void G_Physics( gentity_t *ent )
 			origin = VEC2GLM( ent->r.currentOrigin );
 			origin -= 2.f * VEC2GLM( ent->s.origin2 );
 
-			G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
-
+			tr = G_CM_Trace( VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
 			if ( tr.fraction == 1.0f )
 			{
 				ent->s.groundEntityNum = ENTITYNUM_NONE;
@@ -138,7 +137,7 @@ void G_Physics( gentity_t *ent )
 	// get current position
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, &origin[0] );
 
-	G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
 
 	VectorCopy( tr.endpos, ent->r.currentOrigin );
 

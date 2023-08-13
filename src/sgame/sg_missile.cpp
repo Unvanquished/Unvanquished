@@ -510,7 +510,7 @@ void G_RunMissile( gentity_t *ent )
 	passent = ent->r.ownerNum;
 
 	// general trace to see if we hit anything at all
-	G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, passent, ent->clipmask, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, passent, ent->clipmask, 0, traceType_t::TT_AABB );
 
 	if ( tr.startsolid || tr.allsolid )
 	{
@@ -527,7 +527,7 @@ void G_RunMissile( gentity_t *ent )
 		}
 		else
 		{
-			G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), glm::vec3(), glm::vec3(), origin, passent, ent->clipmask, 0, traceType_t::TT_AABB );
+			tr = G_CM_Trace( VEC2GLM( ent->r.currentOrigin ), glm::vec3(), glm::vec3(), origin, passent, ent->clipmask, 0, traceType_t::TT_AABB );
 
 			if ( tr.fraction < 1.0f )
 			{
@@ -543,7 +543,7 @@ void G_RunMissile( gentity_t *ent )
 				}
 				else
 				{
-					G_CM_Trace( &tr, VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, passent, CONTENTS_BODY, 0, traceType_t::TT_AABB );
+					tr = G_CM_Trace( VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, passent, CONTENTS_BODY, 0, traceType_t::TT_AABB );
 
 					if ( tr.fraction < 1.0f )
 					{

@@ -1013,8 +1013,6 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 			( entType == entityType_t::ET_BUILDABLE
 			  && target.getTargetedEntity()->s.origin2[ 2 ] < MIN_WALK_NORMAL ) )
 	{
-		trace_t trace;
-
 		routeTarget->polyExtents[ 0 ] += 25;
 		routeTarget->polyExtents[ 1 ] += 25;
 		routeTarget->polyExtents[ 2 ] += 300;
@@ -1023,7 +1021,7 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 		glm::vec3 invNormal = { 0, 0, -1 };
 		glm::vec3 targetPos = target.getPos();
 		glm::vec3 end = targetPos + 600.f * invNormal;
-		G_CM_Trace( &trace, targetPos, mins, maxs, end, target.getTargetedEntity()->num(), CONTENTS_SOLID | CONTENTS_PLAYERCLIP, MASK_ENTITY, traceType_t::TT_AABB );
+		trace_t trace = G_CM_Trace( targetPos, mins, maxs, end, target.getTargetedEntity()->num(), CONTENTS_SOLID | CONTENTS_PLAYERCLIP, MASK_ENTITY, traceType_t::TT_AABB );
 		routeTarget->setPos( VEC2GLM( trace.endpos ) );
 	}
 
@@ -1196,8 +1194,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 	glm::vec3 maxs = {  width,  width,  height };
 	glm::vec3 mins = { -width, -width, -height };
 
-	trace_t trace;
-	G_CM_Trace( &trace, muzzle, mins, maxs, targetPos, self->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( muzzle, mins, maxs, targetPos, self->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	gentity_t const* hit = &g_entities[trace.entityNum];
 	bool hitEnemy = not ( G_OnSameTeam( self, hit ) || G_Team( hit ) == TEAM_NONE );
@@ -1255,7 +1252,6 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 {
 	ASSERT( target.targetsValidEntity() );
 
-	trace_t trace;
 	glm::vec3 forward;
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
@@ -1276,7 +1272,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	G_CM_Trace( &trace, muzzle, glm::vec3(), glm::vec3(), targetPos, self->num(), mask, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( muzzle, glm::vec3(), glm::vec3(), targetPos, self->num(), mask, 0, traceType_t::TT_AABB );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -1798,7 +1794,6 @@ void BotFireWeaponAI( gentity_t *self )
 	float distance;
 	glm::vec3 forward, right, up;
 	glm::vec3 muzzle;
-	trace_t trace;
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	playerState_t const& ps = self->client->ps;
 
@@ -1807,7 +1802,7 @@ void BotFireWeaponAI( gentity_t *self )
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 
-	G_CM_Trace( &trace, muzzle, glm::vec3(), glm::vec3(), targetPos, ENTITYNUM_NONE, MASK_SHOT, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( muzzle, glm::vec3(), glm::vec3(), targetPos, ENTITYNUM_NONE, MASK_SHOT, 0, traceType_t::TT_AABB );
 	distance = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
 	bool readyFire = ps.IsWeaponReady();
 	glm::vec3 target = self->botMind->goal.getPos();

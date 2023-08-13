@@ -130,10 +130,8 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 	int spawnerNumber, const glm::vec3 spawnerOrigin, const glm::vec3 spawnPoint, const glm::vec3 clientMins,
 	const glm::vec3 clientMaxs
 ){
-	trace_t tr;
-
 	// Check for a clear line towards the spawn location.
-	G_CM_Trace( &tr, spawnerOrigin, glm::vec3(), glm::vec3(), spawnPoint, spawnerNumber, MASK_SHOT, 0, traceType_t::TT_AABB );
+	trace_t tr = G_CM_Trace( spawnerOrigin, glm::vec3(), glm::vec3(), spawnPoint, spawnerNumber, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	if ( tr.entityNum != ENTITYNUM_NONE )
 	{
@@ -142,13 +140,8 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 	else
 	{
 		// Check whether a spawned client has space.
-		G_CM_Trace( &tr, spawnPoint, clientMins, clientMaxs, spawnPoint, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+		tr = G_CM_Trace( spawnPoint, clientMins, clientMaxs, spawnPoint, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
-		if ( tr.entityNum != ENTITYNUM_NONE )
-		{
-			return g_entities[tr.entityNum].entity.get();
-		}
-
-		return nullptr;
+		return ( tr.entityNum != ENTITYNUM_NONE ) ? g_entities[tr.entityNum].entity.get() : nullptr;
 	}
 }

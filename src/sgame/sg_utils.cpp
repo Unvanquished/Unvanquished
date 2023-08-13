@@ -728,14 +728,12 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 
 bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase )
 {
-	trace_t trace;
-
 	if ( !from || !to )
 	{
 		return false;
 	}
 
-	G_CM_Trace( &trace, VEC2GLM( useTrajBase ? from->s.pos.trBase : from->s.origin ), glm::vec3(), glm::vec3(), VEC2GLM( to->s.origin ), from->num(), mask, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( VEC2GLM( useTrajBase ? from->s.pos.trBase : from->s.origin ), glm::vec3(), glm::vec3(), VEC2GLM( to->s.origin ), from->num(), mask, 0, traceType_t::TT_AABB );
 
 	// Also check for fraction in case the mask is chosen so that the trace skips the target entity
 	return ( trace.entityNum == to->num() || trace.fraction == 1.0f );
@@ -764,9 +762,7 @@ bool G_LineOfFire( const gentity_t *from, const gentity_t *to )
  */
 bool G_LineOfSight( glm::vec3 const& point1, glm::vec3 const& point2 )
 {
-	trace_t trace;
-
-	G_CM_Trace( &trace, point1, glm::vec3(), glm::vec3(), point2, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( point1, glm::vec3(), glm::vec3(), point2, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	return ( trace.entityNum != ENTITYNUM_WORLD );
 }

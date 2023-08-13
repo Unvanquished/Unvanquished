@@ -1592,8 +1592,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 
 	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
 
-	trace_t tr;
-	G_CM_Trace( &tr, ent->client->oldOrigin, VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t tr = G_CM_Trace( ent->client->oldOrigin, VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
 	{
@@ -2219,8 +2218,7 @@ static void ClientThink_real( gentity_t *self )
 		glm::vec3 view;
 		AngleVectors( VEC2GLM( client->ps.viewangles ), &view, nullptr, nullptr );
 		glm::vec3 point = viewpoint + range1 * view;
-		trace_t trace;
-		G_CM_Trace( &trace, viewpoint, glm::vec3(), glm::vec3(), point, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
+		trace_t trace = G_CM_Trace( viewpoint, glm::vec3(), glm::vec3(), point, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 		gentity_t *ent = &g_entities[ trace.entityNum ];
 		bool activableTarget = ent->s.eType == entityType_t::ET_BUILDABLE || ent->s.eType == entityType_t::ET_MOVER;

@@ -211,8 +211,7 @@ bool RocketpodComponent::SafeShot( int passEntityNumber, const glm::vec3& origin
 	glm::vec3 maxs = { missileSize,  missileSize,  missileSize};
 	glm::vec3 end  = origin + ROCKETPOD_RANGE * direction;
 
-	trace_t trace;
-	G_CM_Trace( &trace, origin, mins, maxs, end, passEntityNumber, MASK_SHOT, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( origin, mins, maxs, end, passEntityNumber, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	// TODO: Refactor area damage (testing) helpers.
 	return !G_RadiusDamage(

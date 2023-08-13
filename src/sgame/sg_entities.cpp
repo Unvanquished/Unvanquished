@@ -836,9 +836,7 @@ Test for a LOS between two entities
 */
 bool G_IsVisible( gentity_t *start, gentity_t *end, int contents )
 {
-	trace_t trace;
-
-	G_CM_Trace( &trace, VEC2GLM( start->s.pos.trBase ), glm::vec3(), glm::vec3(), VEC2GLM( end->s.pos.trBase ), start->num(), contents, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( VEC2GLM( start->s.pos.trBase ), glm::vec3(), glm::vec3(), VEC2GLM( end->s.pos.trBase ), start->num(), contents, 0, traceType_t::TT_AABB );
 
 	return trace.fraction >= 1.0f || trace.entityNum == end->num();
 }

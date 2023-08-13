@@ -808,7 +808,7 @@ bool G_CanDamage( gentity_t *targ, glm::vec3 const& origin )
 	midpoint *= 0.5f;
 
 	glm::vec3 dest = midpoint;
-	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0  || tr.entityNum == targ->num() )
 	{
@@ -820,7 +820,7 @@ bool G_CanDamage( gentity_t *targ, glm::vec3 const& origin )
 	dest = midpoint;
 	dest[ 0 ] += 15.0;
 	dest[ 1 ] += 15.0;
-	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -830,7 +830,7 @@ bool G_CanDamage( gentity_t *targ, glm::vec3 const& origin )
 	dest = midpoint;
 	dest[ 0 ] += 15.0;
 	dest[ 1 ] -= 15.0;
-	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -840,7 +840,7 @@ bool G_CanDamage( gentity_t *targ, glm::vec3 const& origin )
 	dest = midpoint;
 	dest[ 0 ] -= 15.0;
 	dest[ 1 ] += 15.0;
-	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{
@@ -850,7 +850,7 @@ bool G_CanDamage( gentity_t *targ, glm::vec3 const& origin )
 	dest = midpoint;
 	dest[ 0 ] -= 15.0;
 	dest[ 1 ] -= 15.0;
-	G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( origin, glm::vec3(), glm::vec3(), dest, ENTITYNUM_NONE, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.fraction == 1.0 )
 	{

@@ -343,7 +343,7 @@ static trace_t G_WideTrace( gentity_t *ent, float range,
 
 	// Trace box against entities
 	glm::vec3 end = muzzle + range * forward;
-	G_CM_Trace( &tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY, 0, traceType_t::TT_AABB );
 
 	if ( tr.entityNum != ENTITYNUM_NONE )
 	{
@@ -354,7 +354,7 @@ static trace_t G_WideTrace( gentity_t *ent, float range,
 	// The range is reduced according to the former trace so we don't hit something behind the
 	// current target.
 	end = muzzle + ( glm::distance( muzzle, VEC2GLM( tr.endpos ) ) + halfDiagonal ) * forward;
-	G_CM_Trace( &tr, muzzle, glm::vec3(), glm::vec3(), end, ent->s.number, CONTENTS_SOLID, 0, traceType_t::TT_AABB );
+	tr = G_CM_Trace( muzzle, glm::vec3(), glm::vec3(), end, ent->s.number, CONTENTS_SOLID, 0, traceType_t::TT_AABB );
 
 	// In case we hit a different target, which can happen if two potential targets are close,
 	// switch to it, so we will end up with the target we were looking at.
@@ -532,12 +532,12 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 	if ( self->client )
 	{
 		G_UnlaggedOn( self, muzzle, 8192 * 16 );
-		G_CM_Trace( &tr, muzzle, glm::vec3(), glm::vec3(), end, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
+		tr = G_CM_Trace( muzzle, glm::vec3(), glm::vec3(), end, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 		G_UnlaggedOff();
 	}
 	else
 	{
-		G_CM_Trace( &tr, muzzle, glm::vec3(), glm::vec3(), end, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
+		tr = G_CM_Trace( muzzle, glm::vec3(), glm::vec3(), end, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 	}
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -615,8 +615,7 @@ static void ShotgunPattern( glm::vec3 const& origin, glm::vec3 const& origin2, i
 		end += r * right;
 		end += u * up;
 
-		trace_t tr;
-		G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), end, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
+		trace_t tr = G_CM_Trace( origin, glm::vec3(), glm::vec3(), end, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 		g_entities[ tr.entityNum ].entity->Damage( wpa->damage, self, VEC2GLM( tr.endpos ), forward, 0, wpa->meansOfDeath );
 	}
 }
@@ -655,7 +654,6 @@ Target tracking for the hive missile.
 */
 static void HiveMissileThink( gentity_t *self )
 {
-	trace_t   tr;
 	if ( level.time > self->timestamp ) // swarm lifetime exceeded
 	{
 		VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
@@ -682,7 +680,7 @@ static void HiveMissileThink( gentity_t *self )
 		if ( ent->client && Entities::IsAlive( ent ) && G_Team( ent ) == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{
-			G_CM_Trace( &tr, VEC2GLM( self->r.currentOrigin ), VEC2GLM( self->r.mins ), VEC2GLM( self->r.maxs ), VEC2GLM( ent->r.currentOrigin ), self->r.ownerNum, self->clipmask, 0, traceType_t::TT_AABB );
+			trace_t tr = G_CM_Trace( VEC2GLM( self->r.currentOrigin ), VEC2GLM( self->r.mins ), VEC2GLM( self->r.maxs ), VEC2GLM( ent->r.currentOrigin ), self->r.ownerNum, self->clipmask, 0, traceType_t::TT_AABB );
 
 			if ( tr.entityNum != ENTITYNUM_WORLD )
 			{
@@ -903,8 +901,7 @@ void G_CheckCkitRepair( gentity_t *self )
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 	glm::vec3 end = viewOrigin + 100.f * forward;
 
-	trace_t tr;
-	G_CM_Trace( &tr, viewOrigin, glm::vec3(), glm::vec3(), end, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t tr = G_CM_Trace( viewOrigin, glm::vec3(), glm::vec3(), end, self->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	gentity_t *traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->s.eType == entityType_t::ET_BUILDABLE &&
@@ -1135,8 +1132,7 @@ static void FindZapChainTargets( zap_t *zap )
 				&& distance <= LEVEL2_AREAZAP_CHAIN_RANGE )
 		{
 			// world-LOS check: trace against the world, ignoring other BODY entities
-			trace_t tr;
-			G_CM_Trace( &tr, origin, glm::vec3(), glm::vec3(), VEC2GLM( enemy->s.origin ), ent->s.number, CONTENTS_SOLID, 0, traceType_t::TT_AABB );
+			trace_t tr = G_CM_Trace( origin, glm::vec3(), glm::vec3(), VEC2GLM( enemy->s.origin ), ent->s.number, CONTENTS_SOLID, 0, traceType_t::TT_AABB );
 
 			if ( tr.entityNum == ENTITYNUM_NONE )
 			{

@@ -86,6 +86,9 @@ int G_CM_PointContents( glm::vec3 const& p, int passEntityNum );
 void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins, glm::vec3 const& maxs,
                  glm::vec3 const& end, int passEntityNum, int contentmask, int skipmask,
                  traceType_t type );
+trace_t G_CM_Trace( glm::vec3 const& start, glm::vec3 const& mins, glm::vec3 const& maxs,
+                 glm::vec3 const& end, int passEntityNum, int contentmask, int skipmask,
+                 traceType_t type );
 
 // mins and maxs are relative
 

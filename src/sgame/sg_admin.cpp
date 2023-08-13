@@ -5374,7 +5374,6 @@ bool G_admin_builder( gentity_t *ent )
 {
 	glm::vec3 forward;
 	glm::vec3 start;
-	trace_t    tr;
 	gentity_t  *traceEnt;
 	buildLog_t *log;
 	int        i = 0;
@@ -5405,7 +5404,7 @@ bool G_admin_builder( gentity_t *ent )
 	glm::vec3 end = start + 1000.f * forward;
 
 	//TODO there are many occurrences of G_CM_Trace without mins/maxs, a specialized API is likely needed
-	G_CM_Trace( &tr, start, glm::vec3(), glm::vec3(), end, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t tr = G_CM_Trace( start, glm::vec3(), glm::vec3(), end, ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	traceEnt = &g_entities[ tr.entityNum ];
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == entityType_t::ET_BUILDABLE ) )

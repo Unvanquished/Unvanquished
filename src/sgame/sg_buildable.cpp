@@ -267,9 +267,7 @@ void ABarricade_Shrink( gentity_t *self, bool shrink )
 	}
 	else
 	{
-		trace_t tr;
-
-		G_CM_Trace( &tr, VEC2GLM( self->s.origin ), mins, maxs, VEC2GLM( self->s.origin ), self->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+		trace_t tr = G_CM_Trace( VEC2GLM( self->s.origin ), mins, maxs, VEC2GLM( self->s.origin ), self->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 		if ( tr.startsolid || tr.fraction < 1.0f )
 		{
@@ -440,8 +438,6 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 
 static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range )
 {
-	trace_t trace;
-
 	if ( !target ) // Do we have a target?
 	{
 		return false;
@@ -502,7 +498,7 @@ static bool ATrapper_CheckTarget( gentity_t *self, GentityRef target, int range 
 		return false;
 	}
 
-	G_CM_Trace( &trace, VEC2GLM( self->s.pos.trBase ), glm::vec3(), glm::vec3(), VEC2GLM( target->s.pos.trBase ), self->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( VEC2GLM( self->s.pos.trBase ), glm::vec3(), glm::vec3(), VEC2GLM( target->s.pos.trBase ), self->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	if ( trace.contents & CONTENTS_SOLID ) // can we see the target?
 	{
@@ -1092,7 +1088,6 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 
 gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 {
-	trace_t trace;
 	// Check for revoked building rights.
 	if ( ent->client->pers.namelog->denyBuild || G_admin_permission( ent, ADMF_NO_BUILD ) )
 	{
@@ -1105,7 +1100,7 @@ gentity_t *G_GetDeconstructibleBuildable( gentity_t *ent )
 	glm::vec3 forward;
 	AngleVectors( VEC2GLM( ent->client->ps.viewangles ), &forward, nullptr, nullptr );
 	glm::vec3 end = viewOrigin + BUILDER_DECONSTRUCT_RANGE * forward;
-	G_CM_Trace( &trace, viewOrigin, glm::vec3(), glm::vec3(), end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t trace = G_CM_Trace( viewOrigin, glm::vec3(), glm::vec3(), end, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 	gentity_t *buildable = &g_entities[ trace.entityNum ];
 
 	// Check if target is valid.
@@ -1562,7 +1557,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
                              glm::vec3& origin, glm::vec3& normal, int *groundEntNum )
 {
 	glm::vec3 angles, entity_origin;
-	trace_t          tr1, tr2, tr3;
+	trace_t          tr1;
 	itemBuildError_t reason = IBE_NONE;
 	playerState_t    *ps = &ent->client->ps;
 
@@ -1573,8 +1568,8 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	BG_BoundingBox( buildable, mins, maxs );
 
 	BG_PositionBuildableRelativeToPlayer( ps, &mins[0], &maxs[0], &G_CM_Trace, &entity_origin[0], &angles[0], &tr1 );
-	G_CM_Trace( &tr2, entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
-	G_CM_Trace( &tr3, VEC2GLM( ps->origin ), glm::vec3(), glm::vec3(), entity_origin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t tr2 = G_CM_Trace( entity_origin, mins, maxs, entity_origin, ENTITYNUM_NONE, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
+	trace_t tr3 = G_CM_Trace( VEC2GLM( ps->origin ), glm::vec3(), glm::vec3(), entity_origin, ent->num(), MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	origin = entity_origin;
 	*groundEntNum = tr1.entityNum;
@@ -2199,8 +2194,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	glm::vec3 dest = VEC2GLM( built->s.origin2 ) * -4096.f;
 	dest += VEC2GLM( built->s.origin );
 
-	trace_t     tr;
-	G_CM_Trace( &tr, VEC2GLM( built->s.origin ), VEC2GLM( built->r.mins ), VEC2GLM( built->r.maxs ), dest, built->num(), built->clipmask, 0, traceType_t::TT_AABB );
+	trace_t tr = G_CM_Trace( VEC2GLM( built->s.origin ), VEC2GLM( built->r.mins ), VEC2GLM( built->r.maxs ), dest, built->num(), built->clipmask, 0, traceType_t::TT_AABB );
 
 	if ( tr.startsolid && !force )
 	{

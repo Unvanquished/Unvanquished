@@ -188,8 +188,7 @@ bool TurretComponent::TargetCanBeHit() {
 	glm::vec3 traceStart   = VEC2GLM(entity.oldEnt->s.pos.trBase);
 	glm::vec3 traceEnd     = traceStart + range * aimDirection;
 
-	trace_t tr;
-	G_CM_Trace(&tr, traceStart, glm::vec3(), glm::vec3(), traceEnd, entity.oldEnt->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
+	trace_t tr = G_CM_Trace( traceStart, glm::vec3(), glm::vec3(), traceEnd, entity.oldEnt->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	return (tr.entityNum == target->num());
 }
@@ -242,8 +241,7 @@ void TurretComponent::SetBaseDirection()
 	glm::vec3 traceStart     = VEC2GLM(entity.oldEnt->s.pos.trBase);
 	glm::vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
-	trace_t tr;
-	G_CM_Trace(&tr, traceStart, glm::vec3(), glm::vec3(), traceEnd, entity.oldEnt->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
+	trace_t tr = G_CM_Trace( traceStart, glm::vec3(), glm::vec3(), traceEnd, entity.oldEnt->num(), MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.
 	if (tr.entityNum == ENTITYNUM_WORLD ||
