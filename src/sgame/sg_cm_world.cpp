@@ -769,16 +769,12 @@ void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins
 {
 	moveclip_t clip;
 
-	vec3_t mins, maxs;
-	VectorCopy(mins2, mins);
-	VectorCopy(maxs2, maxs);
-
 	memset( &clip, 0, sizeof( moveclip_t ) );
 
 	// clip to world
 	// -------------
 
-	CM_BoxTrace( &clip.trace, &start[0], &end[0], mins, maxs, 0, contentmask, skipmask, type );
+	CM_BoxTrace( &clip.trace, &start[0], &end[0], &mins2[0], &maxs2[0], 0, contentmask, skipmask, type );
 	clip.trace.entityNum = clip.trace.fraction == 1.0 ? ENTITYNUM_NONE : ENTITYNUM_WORLD;
 
 	if ( clip.trace.fraction == 0 )
@@ -793,10 +789,9 @@ void G_CM_Trace( trace_t *results, glm::vec3 const& start, glm::vec3 const& mins
 	clip.contentmask = contentmask;
 	clip.skipmask = skipmask;
 	clip.start = &start[0];
-//  VectorCopy( clip.trace.endpos, clip.end );
 	clip.end = &end[0]; //FIXME: useless copy, but just refactoring for now
-	clip.mins = mins;
-	clip.maxs = maxs;
+	clip.mins = &mins2[0];
+	clip.maxs = &maxs2[0];
 	clip.passEntityNum = passEntityNum;
 	clip.collisionType = type;
 
