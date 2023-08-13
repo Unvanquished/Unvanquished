@@ -266,7 +266,6 @@ void CG_OffsetThirdPersonView()
 	int           i;
 	vec3_t        forward, right, up;
 	vec3_t        view;
-	trace_t       trace;
 	static vec3_t mins = { -8, -8, -8 };
 	static vec3_t maxs = { 8, 8, 8 };
 	vec3_t        focusPoint;
@@ -424,7 +423,7 @@ void CG_OffsetThirdPersonView()
 	{
 		// Trace a ray from the origin to the viewpoint to make sure the view isn't
 		// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
-		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID, 0, traceType_t::TT_AABB );
+		trace_t trace = CG_Trace( cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 		if ( trace.fraction != 1.0f )
 		{
@@ -432,7 +431,7 @@ void CG_OffsetThirdPersonView()
 			view[ 2 ] += ( 1.0f - trace.fraction ) * 32;
 			// Try another trace to this position, because a tunnel may have the ceiling
 			// close enough that this is poking out.
-			CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID, 0, traceType_t::TT_AABB );
+			trace = CG_Trace( cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID, 0, traceType_t::TT_AABB );
 			VectorCopy( trace.endpos, view );
 		}
 	}
@@ -1059,14 +1058,13 @@ the surface player is looking at
 */
 static void CG_DrawSurfNormal()
 {
-	trace_t    tr;
 	vec3_t     end, temp;
 	polyVert_t normal[ 4 ];
 	vec4_t     color = { 0.0f, 255.0f, 0.0f, 128.0f };
 
 	VectorMA( cg.refdef.vieworg, 8192, cg.refdef.viewaxis[ 0 ], end );
 
-	CG_Trace( &tr, cg.refdef.vieworg, nullptr, nullptr, end, cg.predictedPlayerState.clientNum, MASK_SOLID, 0, traceType_t::TT_AABB );
+	trace_t tr = CG_Trace( cg.refdef.vieworg, nullptr, nullptr, end, cg.predictedPlayerState.clientNum, MASK_SOLID, 0, traceType_t::TT_AABB );
 
 	VectorCopy( tr.endpos, normal[ 0 ].xyz );
 	normal[ 0 ].st[ 0 ] = 0;
@@ -1582,7 +1580,6 @@ following models.
 void CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs ) {
 	vec3_t ambientLight, directedLight, lightDir;
 	vec3_t lightPos;
-	trace_t tr;
 	vec3_t traceMins = { -3.0f, -3.0f, -3.0f };
 	vec3_t traceMaxs = {  3.0f,  3.0f,  3.0f };
 	float maxLightDist = Distance( maxs, mins );
@@ -1592,7 +1589,7 @@ void CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs ) {
 	trap_R_LightForPoint( origin, ambientLight, directedLight, lightDir );
 	VectorMA( origin, 3.0f * maxLightDist, lightDir, lightPos );
 
-	CG_Trace( &tr, origin, traceMins, traceMaxs, lightPos, 0, MASK_OPAQUE, 0, traceType_t::TT_AABB );
+	trace_t tr = CG_Trace( origin, traceMins, traceMaxs, lightPos, 0, MASK_OPAQUE, 0, traceType_t::TT_AABB );
 
 	if( !tr.startsolid ) {
 		VectorCopy( tr.endpos, lightPos );

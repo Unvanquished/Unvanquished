@@ -2344,7 +2344,6 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 	float   r, u, a;
 	vec3_t  end;
 	vec3_t  forward, right, up;
-	trace_t tr;
 	entityState_t dummy;
 
 	// derive the right and up vectors from the forward vector, because
@@ -2366,7 +2365,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );
 
-		CG_Trace( &tr, origin, nullptr, nullptr, end, attackerNum, MASK_SHOT, 0, traceType_t::TT_AABB );
+		trace_t tr = CG_Trace( origin, nullptr, nullptr, end, attackerNum, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 		if ( !( tr.surfaceFlags & SURF_NOIMPACT ) )
 		{

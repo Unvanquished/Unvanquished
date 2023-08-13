@@ -1160,11 +1160,10 @@ public:
 	void DoOnUpdate() override
 	{
 		vec3_t        view, point;
-		trace_t       trace;
 
 		AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
 		VectorMA( cg.refdef.vieworg, ENTITY_USE_RANGE, view, point );
-		CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr, point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0, traceType_t::TT_AABB );
+		trace_t trace = CG_Trace( cg.refdef.vieworg, nullptr, nullptr, point, cg.predictedPlayerState.clientNum, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 		const entityState_t &es = cg_entities[ trace.entityNum ].currentState;
 
@@ -1606,7 +1605,6 @@ CG_ScanForCrosshairEntity
 */
 static void CG_ScanForCrosshairEntity()
 {
-	trace_t       trace;
 	vec3_t        start, end;
 
 	if ( cg.snap == nullptr )
@@ -1620,7 +1618,7 @@ static void CG_ScanForCrosshairEntity()
 	VectorCopy( cg.refdef.vieworg, start );
 	VectorMA( start, 131072, cg.refdef.viewaxis[ 0 ], end );
 
-	CG_Trace( &trace, start, vec3_origin, vec3_origin, end, cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY, 0, traceType_t::TT_AABB );
+	trace_t trace = CG_Trace( start, vec3_origin, vec3_origin, end, cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY, 0, traceType_t::TT_AABB );
 
 	// ignore special entities
 	if ( trace.entityNum > ENTITYNUM_MAX_NORMAL )

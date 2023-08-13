@@ -151,11 +151,10 @@ CG_BuildableInRange
 static entityState_t *CG_BuildableInRange( playerState_t *ps )
 {
 	vec3_t        view, point;
-	trace_t       trace;
 
 	AngleVectors( cg.refdefViewAngles, view, nullptr, nullptr );
 	VectorMA( cg.refdef.vieworg, ENTITY_USE_RANGE - 0.2f, view, point );
-	CG_Trace( &trace, cg.refdef.vieworg, nullptr, nullptr, point, ps->clientNum, MASK_SHOT, 0, traceType_t::TT_AABB );
+	trace_t trace = CG_Trace( cg.refdef.vieworg, nullptr, nullptr, point, ps->clientNum, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 	entityState_t &es = cg_entities[ trace.entityNum ].currentState;
 
