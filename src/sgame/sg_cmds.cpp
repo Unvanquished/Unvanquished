@@ -2048,6 +2048,7 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 {
 	int clientNum = ent->num();
 	team_t team = G_Team( ent );
+	weapon_t weapon = WP_NONE;
 	class_t newClass = static_cast<class_t>( BG_ClassByName( s )->number );
 
 	if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
@@ -2057,44 +2058,43 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 
 	if ( team == TEAM_ALIENS )
 	{
-		if ( newClass != PCL_ALIEN_BUILDER0 &&
-		     newClass != PCL_ALIEN_BUILDER0_UPG &&
-		     newClass != PCL_ALIEN_LEVEL0 )
+		if ( !g_cheats )
 		{
-			if ( report )
+			if ( newClass != PCL_ALIEN_BUILDER0 &&
+					newClass != PCL_ALIEN_BUILDER0_UPG &&
+					newClass != PCL_ALIEN_LEVEL0 )
 			{
-				G_TriggerMenuArgs( clientNum, MN_A_CLASSNOTSPAWN, newClass );
+				if ( report )
+				{
+					G_TriggerMenuArgs( clientNum, MN_A_CLASSNOTSPAWN, newClass );
+				}
+				return false;
 			}
-			return false;
-		}
 
-		if ( BG_ClassDisabled( newClass ) )
-		{
-			if ( report )
+			if ( BG_ClassDisabled( newClass ) )
 			{
-				G_TriggerMenuArgs( clientNum, MN_A_CLASSNOTALLOWED, newClass );
+				if ( report )
+				{
+					G_TriggerMenuArgs( clientNum, MN_A_CLASSNOTALLOWED, newClass );
+				}
+				return false;
 			}
-			return false;
-		}
 
-		if ( !BG_ClassUnlocked( newClass ) )
-		{
-			if ( report )
+			if ( !BG_ClassUnlocked( newClass ) )
 			{
-				G_TriggerMenuArgs( clientNum, MN_A_CLASSLOCKED, newClass );
+				if ( report )
+				{
+					G_TriggerMenuArgs( clientNum, MN_A_CLASSLOCKED, newClass );
+				}
+				return false;
 			}
-			return false;
-		}
-
-		// spawn from an egg
-		if ( G_ScheduleSpawn( ent->client, newClass ) )
-		{
-			return true;
 		}
 	}
-	else if ( team == TEAM_HUMANS )
+
+	if ( team == TEAM_HUMANS )
 	{
-		weapon_t weapon = BG_WeaponNumberByName( s );
+		weapon = BG_WeaponNumberByName( s );
+		newClass = PCL_HUMAN_NAKED;
 		if ( weapon == WP_NONE )
 		{
 			if ( report )
@@ -2104,26 +2104,21 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 			return false;
 		}
 
-		weapon_t birthWeapons[] = { WP_HBUILD, WP_MACHINEGUN };
-		auto end = std::end( birthWeapons );
-		if ( BG_WeaponDisabled( weapon ) || end == std::find( std::begin( birthWeapons ), end, weapon ) )
+		if ( !g_cheats )
 		{
-			if ( report )
+			weapon_t birthWeapons[] = { WP_HBUILD, WP_MACHINEGUN };
+			auto end = std::end( birthWeapons );
+			if ( BG_WeaponDisabled( weapon ) || end == std::find( std::begin( birthWeapons ), end, weapon ) )
 			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_SPAWNITEMNOTALLOWED );
+				if ( report )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_SPAWNITEMNOTALLOWED );
+				}
+				return false;
 			}
-			return false;
-		}
-
-		// spawn from a telenode
-		newClass = PCL_HUMAN_NAKED;
-		if ( G_ScheduleSpawn( ent->client, newClass, weapon ) )
-		{
-			return true;
 		}
 	}
-
-	return false;
+	return G_ScheduleSpawn( ent->client, newClass, weapon );
 }
 
 static bool Cmd_Class_internal( gentity_t *ent, const char *s, bool report )
