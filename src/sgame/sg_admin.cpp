@@ -5939,8 +5939,8 @@ static inline void G_admin_buffer_print_raw( gentity_t *ent, Str::StringRef m, b
 		}
 	}
 
-	// Ensure we don't overflow client buffers. Allow for surrounding quotes and each needed escaping backslash
-	if ( g_bfb.size() + m.size() + bfbNaughtyCharacters + additionalNaughtyCharacters + 2 >= MAX_MESSAGE_SIZE )
+	// Ensure we don't overflow client buffers. Allow for 'print' command, surrounding quotes and each needed escaping backslash
+	if ( strlen("print ") + g_bfb.size() + m.size() + bfbNaughtyCharacters + additionalNaughtyCharacters + 2 >= MAX_MESSAGE_SIZE)
 	{
 		G_admin_buffer_end( ent );
 		G_admin_buffer_begin();
