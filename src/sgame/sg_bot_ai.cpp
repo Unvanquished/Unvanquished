@@ -886,8 +886,11 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	BotAimAtEnemy( self );
 	BotMoveInDir( self, MOVE_FORWARD );
 
-	if ( inAttackRange || self->client->ps.weapon == WP_PAIN_SAW )
+	if ( inAttackRange || ( self->client->ps.weapon == WP_PAIN_SAW &&
+	                        self->botMind->goal.getTargetedEntity()->client &&
+	                        goalDist < Square( PAINSAW_RANGE + 60 ) ) )
 	{
+		// If we have the saw and are near an enemy player target, fire even if not in range
 		BotFireWeaponAI( self );
 	}
 
