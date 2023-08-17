@@ -168,9 +168,9 @@ static configVar_t bg_configVars[] =
 	{"u_medkit_startupSpeed", INTEGER, false, &MEDKIT_STARTUP_SPEED},
 	{"u_medkit_startupTime", INTEGER, false, &MEDKIT_STARTUP_TIME},
 
-	{"w_abuild_blobSlowTime", INTEGER, false, &ABUILDER_BLOB_TIME},
-	{"w_abuild_blobSpeed", FLOAT, false, &ABUILDER_BLOB_SPEED},
-	{"w_abuild_blobSpeedMod", FLOAT, false, &ABUILDER_BLOB_SPEED_MOD},
+	{"w_abuildupg_blobSlowTime", INTEGER, false, &ABUILDER_BLOB_TIME},
+	{"w_abuildupg_blobSpeed", FLOAT, false, &ABUILDER_BLOB_SPEED},
+	{"w_abuildupg_blobSpeedMod", FLOAT, false, &ABUILDER_BLOB_SPEED_MOD},
 	{"w_abuild_clawDmg", INTEGER, false, &ABUILDER_CLAW_DMG},
 	{"w_abuild_clawWidth", FLOAT, false, &ABUILDER_CLAW_WIDTH},
 
