@@ -5925,6 +5925,11 @@ void G_admin_buffer_begin()
 
 void G_admin_buffer_end( gentity_t *ent )
 {
+	if ( !g_bfb.empty() && g_bfb.back() == '\n' )
+	{
+		g_bfb.pop_back();
+	}
+
 	G_admin_print_raw( ent, G_EscapeServerCommandArg( g_bfb ) );
 }
 
