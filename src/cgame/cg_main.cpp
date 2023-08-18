@@ -66,7 +66,6 @@ Cvar::Cvar<float> cg_errorDecay("cg_errordecay", "recovery time after prediction
 Cvar::Cvar<bool> cg_nopredict("cg_nopredict", "disable client-side prediction", Cvar::NONE, false);
 Cvar::Cvar<int> cg_debugMove("cg_debugMove", "cgame pmove debug level", Cvar::NONE, 0);
 Cvar::Cvar<bool> cg_noPlayerAnims("cg_noplayeranims", "disable player animations", Cvar::CHEAT, false);
-Cvar::Cvar<bool> cg_showmiss("cg_showmiss", "log prediction errors", Cvar::NONE, false);
 Cvar::Cvar<bool> cg_footsteps("cg_footsteps", "make footstep sounds", Cvar::CHEAT, true);
 Cvar::Cvar<bool> cg_addMarks("cg_marks", "enable marks (e.g. bullet holes)", Cvar::NONE, true);
 Cvar::Cvar<int> cg_viewsize("cg_viewsize", "size of rectangle the world is drawn in", Cvar::NONE, 100);

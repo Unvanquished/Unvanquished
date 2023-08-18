@@ -235,10 +235,7 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps )
 
 				cg.predictableEvents[ i & ( MAX_PREDICTED_EVENTS - 1 ) ] = event;
 
-				if ( cg_showmiss.Get() )
-				{
-					Log::Debug( "changed predicted event" );
-				}
+				predictionLog.Debug( "changed predicted event" );
 			}
 		}
 	}

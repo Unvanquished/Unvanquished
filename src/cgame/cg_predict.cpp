@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
+Log::Logger predictionLog("cgame.prediction", "[client-side prediction]", Log::Level::WARNING);
+
 static  pmove_t   cg_pmove;
 
 static BoundedVector<centity_t *, MAX_GENTITIES> cg_solidEntities;
@@ -488,11 +490,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 
 	if ( VectorLengthSquared( delta ) > 0.1f * 0.1f )
 	{
-		if ( cg_showmiss.Get() )
-		{
-			Log::Debug( "origin delta: %.2f  ", VectorLength( delta ) );
-		}
-
+		predictionLog.Debug( "origin delta: %.2f", VectorLength( delta ) );
 		return 2;
 	}
 
@@ -500,11 +498,7 @@ static int CG_IsUnacceptableError( playerState_t *ps, playerState_t *pps )
 
 	if ( VectorLengthSquared( delta ) > 0.1f * 0.1f )
 	{
-		if ( cg_showmiss.Get() )
-		{
-			Log::Debug( "velocity delta: %.2f  ", VectorLength( delta ) );
-		}
-
+		predictionLog.Debug( "velocity delta: %.2f", VectorLength( delta ) );
 		return 3;
 	}
 
@@ -716,10 +710,7 @@ void CG_PredictPlayerState()
 	     oldestCmd.serverTime < cg.time )
 	{
 		// special check for map_restart
-		if ( cg_showmiss.Get() )
-		{
-			Log::Debug( "exceeded PACKET_BACKUP on commands" );
-		}
+		predictionLog.Debug( "exceeded PACKET_BACKUP on commands" );
 
 		return;
 	}
@@ -804,11 +795,7 @@ void CG_PredictPlayerState()
 
 				if ( errorcode )
 				{
-					if ( cg_showmiss.Get() )
-					{
-						Log::Debug( "error code %d at %d", errorcode, cg.time );
-					}
-
+					predictionLog.Debug( "error code %d at %d", errorcode, cg.time );
 					break;
 				}
 
@@ -878,10 +865,7 @@ void CG_PredictPlayerState()
 				// a teleport will not cause an error decay
 				VectorClear( cg.predictedError );
 
-				if ( cg_showmiss.Get() )
-				{
-					Log::Debug( "PredictionTeleport" );
-				}
+				predictionLog.Debug( "PredictionTeleport" );
 
 				cg.thisFrameTeleport = false;
 			}
@@ -896,10 +880,7 @@ void CG_PredictPlayerState()
 
 				if ( len > 0.1 )
 				{
-					if ( cg_showmiss.Get() )
-					{
-						Log::Debug( "Prediction miss: %f", len );
-					}
+					predictionLog.Debug( "Prediction miss: %f", len );
 
 					if ( cg_errorDecay.Get() > 0 )
 					{
@@ -914,9 +895,9 @@ void CG_PredictPlayerState()
 							f = 0;
 						}
 
-						if ( f > 0 && cg_showmiss.Get() )
+						if ( f > 0 )
 						{
-							Log::Debug( "Double prediction decay: %f", f );
+							predictionLog.Debug( "Double prediction decay: %f", f );
 						}
 
 						VectorScale( cg.predictedError, f, cg.predictedError );

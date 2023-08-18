@@ -380,10 +380,7 @@ require a reload of all the media
 */
 static void CG_MapRestart()
 {
-	if ( cg_showmiss.Get() )
-	{
-		Log::Debug( "CG_MapRestart" );
-	}
+	predictionLog.Debug( "CG_MapRestart" );
 
 	CG_InitMarkPolys();
 
