@@ -240,7 +240,7 @@ bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior )
 	if ( !botMind->behaviorTree )
 	{
 		Log::Warn( "Problem when loading behavior tree %s, trying default", behavior );
-		botMind->behaviorTree = ReadBehaviorTree( "default", &treeList );
+		botMind->behaviorTree = ReadBehaviorTree( BOT_DEFAULT_BEHAVIOR, &treeList );
 
 		if ( !botMind->behaviorTree )
 		{
