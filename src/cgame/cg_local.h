@@ -1809,7 +1809,7 @@ extern Cvar::Cvar<float> cg_errorDecay;
 extern Cvar::Cvar<bool> cg_nopredict;
 extern Cvar::Cvar<int> cg_debugMove;
 extern Cvar::Cvar<bool> cg_noPlayerAnims;
-extern Cvar::Cvar<bool> cg_showmiss;
+extern Log::Logger predictionLog;
 extern Cvar::Cvar<bool> cg_footsteps;
 extern Cvar::Cvar<bool> cg_addMarks;
 extern Cvar::Cvar<int> cg_viewsize;
