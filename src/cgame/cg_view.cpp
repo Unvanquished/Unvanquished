@@ -1942,11 +1942,7 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	memcpy( cg.refdef.areamask, cg.snap->areamask, sizeof( cg.refdef.areamask ) );
 
 	// update audio positions
-	if (cg_thirdPerson.Get()) {
-		trap_S_Respatialize( -1, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );
-	} else {
-		trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );
-	}
+	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );
 
 	cg.frametime = cg.time - cg.oldTime;
 
