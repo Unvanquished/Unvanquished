@@ -1330,7 +1330,8 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, glm::vec3 const& origin )
 {
 	int              entNum, listLen;
-	gentity_t        *ent, *list[ MAX_GENTITIES ];
+	gentity_t        *ent = nullptr;
+	gentity_t        *list[ MAX_GENTITIES ];
 	const buildableAttributes_t *attr;
 
 	// resource related
@@ -1344,36 +1345,27 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, glm:
 	// main buildables
 	// ---------------
 
+	itemBuildError_t ret;
 	if ( buildable == BA_H_REACTOR )
 	{
 		ent = G_Reactor();
-
-		if ( ent )
-		{
-			if ( ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
-			{
-				level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
-			}
-			else
-			{
-				return IBE_ONEREACTOR;
-			}
-		}
+		ret = IBE_ONEREACTOR;
 	}
 	else if ( buildable == BA_A_OVERMIND )
 	{
 		ent = G_Overmind();
+		ret = IBE_ONEOVERMIND;
+	}
 
-		if ( ent )
+	if ( ent && ent->entity->Get<HealthComponent>()->Alive() )
+	{
+		if ( ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 		{
-			if ( ent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
-			{
-				level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
-			}
-			else
-			{
-				return IBE_ONEOVERMIND;
-			}
+			level.markedBuildables[ level.numBuildablesForRemoval++ ] = ent;
+		}
+		else
+		{
+			return ret;
 		}
 	}
 
@@ -1650,7 +1642,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int /*distan
 	{
 		gentity_t* tempent = FindBuildable( buildable );
 
-		if ( tempent && !tempent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
+		if ( tempent && tempent->entity->Get<HealthComponent>()->Alive() > 0 && !tempent->entity->Get<BuildableComponent>()->MarkedForDeconstruction() )
 		{
 			switch ( buildable )
 			{
