@@ -2213,7 +2213,7 @@ static void ClientThink_real( gentity_t *self )
 		// should take target's radius instead, but let's try with that for now
 		glm::vec3 mins, maxs;
 		BG_BoundingBox( static_cast<class_t>( client->ps.stats[STAT_CLASS] ), mins, maxs );
-		auto range1 = ENTITY_USE_RANGE + RadiusFromBounds( &mins[0], &maxs[0] );
+		float range1 = ENTITY_USE_RANGE + RadiusFromBounds( &mins[0], &maxs[0] );
 
 		glm::vec3 view;
 		AngleVectors( VEC2GLM( client->ps.viewangles ), &view, nullptr, nullptr );
@@ -2223,11 +2223,10 @@ static void ClientThink_real( gentity_t *self )
 		gentity_t *ent = &g_entities[ trace.entityNum ];
 		bool activableTarget = ent->s.eType == entityType_t::ET_BUILDABLE || ent->s.eType == entityType_t::ET_MOVER;
 
-		if ( ent && ent->use &&
-		     ( !ent->buildableTeam   || ent->buildableTeam   == client->pers.team ) &&
-		     ( ent->mapEntity.triggerTeam( static_cast<team_t>( client->pers.team ) ) ) &&
-		     trace.fraction < 1.0f &&
-				 !( activableTarget && Distance( self->s.origin, ent->s.origin ) < range1 ) )
+		if ( ent && ent->use && activableTarget
+				&& ( ent->buildableTeam == TEAM_ALL || ent->buildableTeam == TEAM_NONE || ent->buildableTeam == client->pers.team )
+				&& ( ent->mapEntity.triggerTeam( static_cast<team_t>( client->pers.team ) ) )
+				&& trace.fraction < 1.0f )
 		{
 			if ( g_debugEntities.Get() > 1 )
 			{
