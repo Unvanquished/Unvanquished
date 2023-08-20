@@ -1194,7 +1194,9 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 	{
 		// TODO: allow adv marauder and adv goon to pick offmesh targets,
 		// if they are in zap/barb range
-		if ( G_Team( self) == TEAM_HUMANS && BotTargetIsVisible( self, target, MASK_SHOT ) && G_Team( target.getTargetedEntity() ) == TEAM_ALIENS && g_bot_offmeshAttack.Get() )
+		if ( g_bot_offmeshAttack.Get() && G_Team( self ) == TEAM_HUMANS
+		     && G_Team( target.getTargetedEntity() ) == TEAM_ALIENS
+		     && BotTargetIsVisible( self, target, MASK_SHOT ) )
 		{
 			self->botMind->goal = target;
 			self->botMind->m_nav.directPathToGoal = false;
