@@ -239,7 +239,7 @@ bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result )
 	return true;
 }
 
-static Cvar::Cvar<int> g_bot_cornerNearDistance("g_bot_cornerNearDistance", "maximal distance to a bot's next navigation corner to be considered near.", Cvar::NONE, 100);
+static Cvar::Cvar<int> g_bot_cornerNearDistance("g_bot_cornerNearDistance", "maximal distance to a bot's next navigation corner to be considered near", Cvar::NONE, 100);
 
 bool G_BotCloseToPathCorner( int botClientNum )
 {
@@ -252,6 +252,7 @@ bool G_BotCloseToPathCorner( int botClientNum )
 	glm::vec3 ownPos = VEC2GLM( self->s.origin );
 	glm::vec3 nextCorner = VEC2GLM( &bot->cornerVerts[ 0 ] );
 	std::swap( nextCorner.y, nextCorner.z );
+	recast2quake( &nextCorner[ 0 ] );
 	float distanceSquared = glm::distance2( ownPos, nextCorner );
 	if ( distanceSquared > Square( g_bot_cornerNearDistance.Get() ) )
 	{

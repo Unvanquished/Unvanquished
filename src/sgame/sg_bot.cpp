@@ -400,7 +400,7 @@ Bot Thinks
 =======================
 */
 
-static Cvar::Cvar<bool> g_bot_jumpOverFire("g_bot_jumpOverFire", "if bots should jump over ground flames", Cvar::NONE, true);
+static Cvar::Cvar<bool> g_bot_jumpOverFire("g_bot_jumpOverFire", "whether bots should jump over ground flames", Cvar::NONE, true);
 
 void G_BotThink( gentity_t *self )
 {
