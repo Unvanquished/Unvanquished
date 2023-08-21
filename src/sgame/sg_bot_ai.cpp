@@ -958,8 +958,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_RUNNING;
 	}
 
-	// We have a visible target for which we haven't got a
-	// direct navmesh path and we are not at at weapon range (if human)
+	// We have a visible target which is either within the range of our
+	// human weapon or has a direct navmesh path
 
 	BotAimAtEnemy( self );
 	BotMoveInDir( self, MOVE_FORWARD );
