@@ -193,8 +193,6 @@ enum gentityCallEvent_t
 	ON_ENABLE,
 	ON_DISABLE,
 
-	ON_SPAWN
-
 };
 
 enum initEntityStyle_t
