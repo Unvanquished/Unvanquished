@@ -828,11 +828,14 @@ AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_FAILURE;
 }
 
+// syntax: action say( "message"[, SAY_xxx] )
 AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *action = ( AIActionNode_t * ) node;
 	const char *str = AIUnBoxString( action->params[ 0 ] );
-	saymode_t   say = ( saymode_t ) AIUnBoxInt( action->params[ 1 ] );
+	saymode_t say = action->nparams > 1
+		? static_cast<saymode_t>( AIUnBoxInt( action->params[ 1 ] ) )
+		: SAY_ALL;
 	G_Say( self, say, str );
 	return STATUS_SUCCESS;
 }
