@@ -1782,27 +1782,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		MoveClientToIntermission( ent );
 	}
-	else
-	{
-		// fire the targets of the spawn point
-		if ( !spawn && spawnPoint )
-		{
-			G_EventFireEntity( spawnPoint, ent, ON_SPAWN );
-		}
-
-		// select the highest weapon number available, after any
-		// spawn given items have fired
-		client->ps.weapon = 1;
-
-		for ( i = WP_NUM_WEAPONS - 1; i > WP_NONE; i-- )
-		{
-			if ( BG_InventoryContainsWeapon( i, client->ps.stats ) )
-			{
-				client->ps.weapon = i;
-				break;
-			}
-		}
-	}
 
 	// run a client frame to drop exactly to the floor,
 	// initialize animations and other things
