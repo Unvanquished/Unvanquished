@@ -1190,6 +1190,21 @@ bool BotChangeGoal( gentity_t *self, botTarget_t target )
 		return false;
 	}
 
+	if ( g_bot_resupply.Get()
+		 && G_Team( self ) == TEAM_HUMANS
+		 && G_Team( target.getTargetedEntity() ) == TEAM_ALIENS
+		 && WeaponIsEmpty( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) )
+	{
+		botTarget_t closestArmoury;
+		closestArmoury = self->botMind->closestBuildings[ BA_H_ARMOURY ].ent;
+		if ( FindRouteToTarget( self, closestArmoury, false) )
+		{
+			// human bot has no ammo and can get it at the armoury: do not pick
+			// enemies as targets
+			return false;
+		}
+	}
+
 	if ( !FindRouteToTarget( self, target, false ) )
 	{
 		// TODO: allow adv marauder and adv goon to pick offmesh targets,

@@ -1510,7 +1510,8 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		}
 
 		//we have every upgrade we want to buy
-		if ( numContain == numUpgrades )
+		if ( numContain == numUpgrades
+			 && ( !WeaponIsEmpty( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) || !g_bot_resupply.Get() ) )
 		{
 			return STATUS_FAILURE;
 		}
