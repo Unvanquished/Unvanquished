@@ -74,7 +74,16 @@ void DebugDrawQuake::depthMask(bool state)
 void DebugDrawQuake::begin(duDebugDrawPrimitives prim, float s)
 {
 	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::BEGIN);
-	commands.Write<debugDrawMode_t>(static_cast<debugDrawMode_t>(prim));
+	if (prim == DU_DRAW_QUADS)
+	{
+		commands.Write<debugDrawMode_t>(debugDrawMode_t::D_DRAW_TRIS);
+		quadCounter = 0;
+	}
+	else
+	{
+		commands.Write<debugDrawMode_t>(static_cast<debugDrawMode_t>(prim));
+		quadCounter = -1;
+	}
 	commands.Write<float>(s);
 }
 
@@ -90,6 +99,30 @@ void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigne
 	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX);
 	commands.Write<glm::vec3>(vert);
 	commands.Write<unsigned int>(color);
+	
+	// When drawing quads convert v0 v1 v2 v3 -> v0 v1 v2 v2 v3 v0
+	if (quadCounter < 0)
+		return;
+
+	if (quadCounter == 0)
+	{
+		quadFirstVertex = vert;
+		quadFirstColor = color;
+	}
+	else if (quadCounter == 2)
+	{
+		commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX);
+		commands.Write<glm::vec3>(vert);
+		commands.Write<unsigned int>(color);
+	}
+	else if (quadCounter == 3)
+	{
+		commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX);
+		commands.Write<glm::vec3>(quadFirstVertex);
+		commands.Write<unsigned int>(quadFirstColor);
+	}
+
+	quadCounter = (quadCounter + 1) & 3;
 }
 
 void DebugDrawQuake::vertex(const float *pos, unsigned int color, const float* uv)
