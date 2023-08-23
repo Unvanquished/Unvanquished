@@ -41,6 +41,12 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 class DebugDrawQuake : public duDebugDraw
 {
 	Util::Writer commands;
+
+	// Machinery for converting quads to triangles
+	int quadCounter;
+	glm::vec3 quadFirstVertex;
+	unsigned int quadFirstColor;
+
 public:
 	void init();
 	void sendCommands();
