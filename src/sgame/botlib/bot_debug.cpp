@@ -49,6 +49,11 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 
+void DebugDrawQuake::texture(bool)
+{
+	Log::Warn("DebugDrawQuake::texture does nothing");
+}
+
 void DebugDrawQuake::init()
 {
 	commands = {};
@@ -94,13 +99,8 @@ void DebugDrawQuake::vertex(const float *pos, unsigned int color, const float* u
 
 void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v)
 {
-	glm::vec3 vert{ x, y, z };
-	glm::vec2 uv{ u, v };
-	recast2quake( &vert[0] );
-	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX_UV);
-	commands.Write<glm::vec3>(vert);
-	commands.Write<unsigned int>(color);
-	commands.Write<glm::vec2>(uv);
+	Log::Warn("DebugDrawQuake: texture coordinates have no effect");
+	vertex(x, y, z, color);
 }
 
 void DebugDrawQuake::end()
