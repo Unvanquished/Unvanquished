@@ -95,7 +95,6 @@ void       BotSellUpgrades( gentity_t *self );
 int        BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], size_t upgradesSize );
 
 // alien bots
-#define AS_OVER_RT3         ((ALIENSENSE_RANGE*0.5f)/M_ROOT3)
 float CalcAimPitch( gentity_t *self, glm::vec3& pos, float launchSpeed );
 float CalcPounceAimPitch( gentity_t *self, glm::vec3 &pos );
 float CalcBarbAimPitch( gentity_t *self, glm::vec3 & pos );

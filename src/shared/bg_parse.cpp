@@ -1913,7 +1913,6 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 BG_ParseMissileAttributeFile
 
 Parses a configuration file describing the attributes of a missile.
-Can be the same as the display configuration file.
 ======================
 */
 void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma )
@@ -2074,7 +2073,6 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 BG_ParseMissileDisplayFile
 
 Parses a configuration file describing the looks of a missile and its impact.
-Can be the same as the attribute configuration file.
 ======================
 */
 void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
