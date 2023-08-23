@@ -1695,8 +1695,6 @@ static void Cmd_SetViewpos_f( gentity_t *ent )
 	G_TeleportPlayer( ent, origin, angles, 0.0f );
 }
 
-#define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
-
 static bool FindRoomForClassChangeVertically(
 		const gentity_t *ent,
 		const vec3_t fromMins, const vec3_t fromMaxs,
@@ -1930,6 +1928,7 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 	}
 
 	// check there are no humans nearby
+	const float AS_OVER_RT3 = ( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3;
 	glm::vec3 range = { AS_OVER_RT3, AS_OVER_RT3, AS_OVER_RT3 };
 	glm::vec3 maxs = VEC2GLM( ent->client->ps.origin ) + range;
 	glm::vec3 mins = VEC2GLM( ent->client->ps.origin ) - range;
