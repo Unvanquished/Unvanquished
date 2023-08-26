@@ -2048,12 +2048,6 @@ static void ClientThink_real( gentity_t *self )
 
 	memset( &pm, 0, sizeof( pm ) );
 
-	if ( self->flags & FL_FORCE_GESTURE )
-	{
-		self->flags &= ~FL_FORCE_GESTURE;
-		usercmdPressButton( client->pers.cmd.buttons, BTN_GESTURE );
-	}
-
 	// clear fall impact velocity before every pmove
 	VectorSet( client->pmext.fallImpactVelocity, 0.0f, 0.0f, 0.0f );
 
