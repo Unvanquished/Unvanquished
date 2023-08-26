@@ -118,6 +118,11 @@ int Entity::pairs( lua_State* L )
 	return 2;
 }
 
+/// Create a new entity. It's classname is hardcoded to "lua".
+// @function new
+// @treturn EntityProxy Returns an EntityProxy.
+// @usage local ent = sgame.entity.new() -- make a new entity
+// @within entity
 int Entity::New( lua_State* L )
 {
 	gentity_t* ent = G_NewEntity(initEntityStyle_t::NO_CBSE);
@@ -128,6 +133,11 @@ int Entity::New( lua_State* L )
 	return 1;
 }
 
+/// Remove an entity created using `new()`. Cannot be used to remove any other entity.
+// @function delete
+// @usage local ent = sgame.entity.new() -- make a new entity
+// @usage local ent = sgame.entity.new(); sgame.entity.delete(ent) -- make a new entity, then delete.
+// @within entity
 int Entity::Delete( lua_State* L )
 {
 	EntityProxy* proxy = LuaLib<EntityProxy>::check(L, 1);
