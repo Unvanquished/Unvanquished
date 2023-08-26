@@ -241,10 +241,14 @@ struct gentity_t
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, meansOfDeath_t mod );
 
-	int       splashDamage; // quad will increase this without increasing radius
+	// Parameters for G_RadiusDamage. Mostly used for missiles.
+	// splashDamage is the maximum damage which can be done by a splash hit.
+	// The damage decrease linearly with distance, from splashDamage at distance 0, to 0 at distance
+	// splashRadius, where distance is defined as the distance from the splash origin to the
+	// targeted entity's bounding box.
+	// An entity directly hit by a missile is exempt from splash damage.
+	int       splashDamage;
 	int       splashRadius;
-	meansOfDeath_t methodOfDeath;
-	meansOfDeath_t splashMethodOfDeath;
 
 	int       watertype;
 	// from -inf to 3, apparently.
