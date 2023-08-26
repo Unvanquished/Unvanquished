@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "lua/Interpreter.h"
 
 bool G_SpawnString( const char *key, const char *defaultString, char **out )
 {
@@ -1089,6 +1090,16 @@ static void SP_worldspawn()
 	G_SpawnStringIntoCVar( "BPInitialBudgetAliens", g_BPInitialBudgetAliens );
 	G_SpawnStringIntoCVar( "BPBudgetPerMiner", g_buildPointBudgetPerMiner );
 	G_SpawnStringIntoCVar( "BPRecoveryRateHalfLife", g_buildPointRecoveryRateHalfLife );
+
+	G_SpawnString( "luaScript", "", &s );
+	if ( s && *s )
+	{
+		namespace Lua = Unv::SGame::Lua;
+		if ( !Lua::LoadScript( s ) || !Lua::RunCode() )
+		{
+			Log::Warn("error loading Lua spawnString: luaScript: '%s'", s);
+		}
+	}
 
 	InitDisabledItemCvars();
 	InitTacticBehaviorsCvar();
