@@ -29,7 +29,6 @@
 #define LUAUTILS_H_
 #include "shared/bg_lua.h"
 #include "shared/bg_public.h"
-#include "shared/bg_local.h"
 
 namespace Unv {
 namespace Shared {

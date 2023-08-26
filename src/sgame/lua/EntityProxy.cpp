@@ -82,23 +82,10 @@ GET_FUNC2(origin, Shared::Lua::PushVec3(L, proxy->ent->s.origin))
 // @tfield string class_name Read only.
 // @within EntityProxy
 GET_FUNC2(class_name, lua_pushstring(L, proxy->ent->classname))
-/// Entity name. Probably unused and only useful in a narrow set of usecases. Probably not what you want.
-// @tfield string name Read only.
+/// Entity ID. A manually unique ID specifically for this entity.
+// @tfield string id Read/Write.
 // @within EntityProxy
-GET_FUNC2(name, lua_pushstring(L, proxy->ent->names[0]))
-/// Entity alias. Probably unused and only useful in a narrow set of usecases. Probably not what you want.
-// @tfield string alias Read only.
-// @within EntityProxy
-GET_FUNC2(alias, lua_pushstring(L, proxy->ent->names[2]))
-/// Target name. Probably unused and only useful in a narrow set of usecases. Probably not what you want.
-// @tfield string target_name Read only.
-// @within EntityProxy
-GET_FUNC2(target_name, lua_pushstring(L, proxy->ent->names[1]))
-/// Target name2. Probably unused and only useful in a narrow set of usecases. Probably not what you want.
-// @tfield string target_name2 Read only.
-// Intentionally the same index as alias. Check sg_spawn.cpp for why.
-// @within EntityProxy
-GET_FUNC2(target_name2, lua_pushstring(L, proxy->ent->names[2]))
+GET_FUNC2(id, lua_pushstring(L, proxy->ent->id))
 /// Entity angles. Controls orientation of the entity. Array of floats starting at index 1.
 // @tfield array angles Read/Write.
 // @within EntityProxy
@@ -140,7 +127,7 @@ static int Getteam(lua_State* L)
 			break;
 
 		default:
-			team = proxy->ent->conditions.team;
+			team = proxy->ent->mapEntity.conditions.team;
 			break;
 	}
 	lua_pushstring(L, BG_TeamName(team));
@@ -262,6 +249,22 @@ static int Setmaxs(lua_State* L)
 		vec3_t maxs;
 		Shared::Lua::CheckVec3(L, 2, maxs);
 		VectorCopy(maxs, proxy->ent->r.maxs);
+	}
+	return 0;
+}
+
+static int Setid(lua_State* L)
+{
+	if (lua_istable(L, 2))
+	{
+		EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+		const char* luaid = luaL_checkstring( L, 1 );
+		if ( proxy->ent->id )
+		{
+			BG_Free( proxy->ent->id );
+		}
+		proxy->ent->id = BG_strdup( luaid );
+
 	}
 	return 0;
 }
@@ -395,19 +398,6 @@ ExecFunc(think, THINK, (gentity_t* self), 1, self)
 // @within EntityProxy
 // @see think
 ExecFunc(reset, RESET, (gentity_t* self), 1, self)
-/// The Lua reached function. Will be called every time a mover reaches its destination.
-// @tfield function|bool reset function(EntityProxy self)
-// @tparam EntityProxy self The current entity.
-// @within EntityProxy
-// @see think
-ExecFunc(reached, REACHED, (gentity_t* self), 1, self)
-/// The Lua blocked function. Will be called every time a mover is blocked.
-// @tfield function|bool blocked function(EntityProxy self, EntityProxy blocker)
-// @tparam EntityProxy self The current entity (the mover).
-// @tparam EntityProxy blocker The blocking entity.
-// @within EntityProxy
-// @see think
-ExecFunc(blocked, BLOCKED, (gentity_t* self, gentity_t* other), 2, self, other)
 /// The Lua touch function. Will be called every time a collidable entity is touched.
 // @tfield function|bool touch function(EntityProxy self, EntityProxy toucher)
 // @tparam EntityProxy self The current entity.
@@ -448,11 +438,8 @@ RegType<EntityProxy> EntityProxyMethods[] =
 luaL_Reg EntityProxyGetters[] =
 {
 	GETTER(origin),
+	GETTER(id),
 	GETTER(class_name),
-	GETTER(name),
-	GETTER(alias),
-	GETTER(target_name),
-	GETTER(target_name2),
 	GETTER(angles),
 	GETTER(team),
 	GETTER(nextthink),
@@ -462,8 +449,6 @@ luaL_Reg EntityProxyGetters[] =
 	// Getters for functions just return bool if the function is set.
 	GETTER(think),
 	GETTER(reset),
-	GETTER(reached),
-	GETTER(blocked),
 	GETTER(touch),
 	GETTER(use),
 	GETTER(pain),
@@ -486,12 +471,11 @@ luaL_Reg EntityProxySetters[] =
 	// existing callback.
 	SETTER(think),
 	SETTER(reset),
-	SETTER(reached),
-	SETTER(blocked),
 	SETTER(touch),
 	SETTER(use),
 	SETTER(pain),
 	SETTER(die),
+	SETTER(id),
 
 	{ nullptr, nullptr }
 };

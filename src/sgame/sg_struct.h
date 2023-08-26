@@ -146,6 +146,8 @@ struct gentity_t
 
 	int          flags; // FL_* variables
 
+	char         *id;
+
 	//entity creation time, i.e. when a building was build or a missile was fired (for diminishing missile damage)
 	int          creationTime;
 

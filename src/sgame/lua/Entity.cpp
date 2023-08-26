@@ -58,26 +58,6 @@ EntityProxy* Entity::CreateProxy( gentity_t* ent, lua_State* L )
 	return proxies[entNum];
 }
 
-/// Find an entity based on their name. This function is probably useless since most entities don't have a name.
-// @function find
-// @tparam string name The entity name.
-// @treturn EntityProxy|nil Returns EntityProxy if it finds a match or nil.
-// @within entity
-int Entity::Find( lua_State* L )
-{
-	const char* name = luaL_checkstring(L, 1);
-	gentity_t* ent = nullptr;
-	while ((ent = G_IterateEntities(ent))) {
-		if (G_MatchesName(ent, name)) {
-			EntityProxy* proxy = CreateProxy(ent, L);
-			LuaLib<EntityProxy>::push(L, proxy, false);
-			return 1;
-		}
-	}
-
-	return 0;
-}
-
 /// Allows iterating over a group of entities given a class name.
 // @function iterate_classname
 // @tparam string class_name The class name to search for.
@@ -186,8 +166,6 @@ LUASGAMETYPEDEFINE(Entity, false)
 template<>
 void ExtraInit<Unv::SGame::Lua::Entity>(lua_State* L, int metatable_index)
 {
-	lua_pushcfunction( L, Unv::SGame::Lua::Entity::Find);
-	lua_setfield( L, metatable_index - 1, "find" );
 	lua_pushcfunction( L, Unv::SGame::Lua::Entity::IterateByClassName);
 	lua_setfield( L, metatable_index - 1, "iterate_classname" );
 	lua_pushcfunction( L, Unv::SGame::Lua::Entity::New );
