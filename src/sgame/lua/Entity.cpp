@@ -58,6 +58,26 @@ EntityProxy* Entity::CreateProxy( gentity_t* ent, lua_State* L )
 	return proxies[entNum];
 }
 
+/// FindById an entity based on their id. This id must be set manually prior.
+// @function find_by_id
+// @tparam string id The entity id.
+// @treturn EntityProxy|nil Returns EntityProxy if it finds a match or nil.
+// @within entity
+int Entity::FindById( lua_State* L )
+{
+	const char* id = luaL_checkstring(L, 1);
+	gentity_t* ent = nullptr;
+	while ((ent = G_IterateEntities(ent))) {
+		if (ent->id && !strncmp( id, ent->id, strlen(ent->id))) {
+			EntityProxy* proxy = CreateProxy(ent, L);
+			LuaLib<EntityProxy>::push(L, proxy, false);
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 /// Allows iterating over a group of entities given a class name.
 // @function iterate_classname
 // @tparam string class_name The class name to search for.
@@ -176,6 +196,8 @@ LUASGAMETYPEDEFINE(Entity, false)
 template<>
 void ExtraInit<Unv::SGame::Lua::Entity>(lua_State* L, int metatable_index)
 {
+	lua_pushcfunction( L, Unv::SGame::Lua::Entity::FindById);
+	lua_setfield( L, metatable_index - 1, "find_by_id" );
 	lua_pushcfunction( L, Unv::SGame::Lua::Entity::IterateByClassName);
 	lua_setfield( L, metatable_index - 1, "iterate_classname" );
 	lua_pushcfunction( L, Unv::SGame::Lua::Entity::New );
