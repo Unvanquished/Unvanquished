@@ -1342,7 +1342,7 @@ struct buildableAttributes_t
 	int         splashRadius;
 
 	weapon_t    weapon; // used to look up weaponInfo_t for clientside effects
-	int         meansOfDeath;
+	meansOfDeath_t meansOfDeath;
 
 	team_t      team;
 	weapon_t    buildWeapon;

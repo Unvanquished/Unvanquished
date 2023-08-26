@@ -1863,10 +1863,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	built->buildableTeam = (team_t) built->s.modelindex2;
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
-	built->splashDamage = attr->splashDamage;
-	built->splashRadius = attr->splashRadius;
-	built->splashMethodOfDeath = attr->meansOfDeath;
-
 	built->nextthink = level.time;
 	built->enabled = false;
 	built->spawned = false;
