@@ -41,8 +41,6 @@ Maryland 20850 USA.
 #define FL_NOTARGET                0x00000020
 #define FL_GROUPSLAVE              0x00000400 // not the first on the group
 #define FL_NO_KNOCKBACK            0x00000800
-#define FL_NO_BOTS                 0x00002000 // spawn point not for bot use
-#define FL_NO_HUMANS               0x00004000 // spawn point just for bots
 #define FL_FORCE_GESTURE           0x00008000
 
 /*

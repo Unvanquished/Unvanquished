@@ -37,21 +37,6 @@ Maryland 20850 USA.
 
 void SP_pos_player_spawn( gentity_t *self )
 {
-	int i;
-
-	G_SpawnInt( "nobots", "0", &i );
-
-	if ( i )
-	{
-		self->flags |= FL_NO_BOTS;
-	}
-
-	G_SpawnInt( "nohumans", "0", &i );
-
-	if ( i )
-	{
-		self->flags |= FL_NO_HUMANS;
-	}
 }
 
 /*
