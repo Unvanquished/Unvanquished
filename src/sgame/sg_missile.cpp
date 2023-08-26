@@ -396,7 +396,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 
 			hitEnt->Damage(ent->damage * MissileTimeDmgMod(ent), attacker,
 			                       VEC2GLM( trace->endpos ), VEC2GLM( dir ), dflags,
-			                       (meansOfDeath_t)ent->methodOfDeath);
+			                       ma->meansOfDeath);
 		}
 
 		// splash damage (doesn't apply to person directly hit)
@@ -405,7 +405,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 			G_RadiusDamage( trace->endpos, ent->parent,
 			                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
 			                ent->splashRadius, hitEnt, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
-			                ent->splashMethodOfDeath );
+			                ma->splashMeansOfDeath );
 		}
 	}
 
@@ -492,7 +492,7 @@ void G_ExplodeMissile( gentity_t *ent )
 		G_RadiusDamage( ent->r.currentOrigin, ent->parent,
 		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
 		                ent->splashRadius, ent, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
-		                ent->splashMethodOfDeath );
+		                ma->splashMeansOfDeath );
 	}
 
 	trap_LinkEntity( ent );
@@ -626,10 +626,8 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 	m->classname           = ma->name;
 	m->pointAgainstWorld   = ma->pointAgainstWorld;
 	m->damage              = ma->damage;
-	m->methodOfDeath       = ma->meansOfDeath;
 	m->splashDamage        = ma->splashDamage;
 	m->splashRadius        = ma->splashRadius;
-	m->splashMethodOfDeath = ma->splashMeansOfDeath;
 	m->clipmask            = ma->clipmask;
 	BG_MissileBounds( ma, m->r.mins, m->r.maxs );
 	m->s.eFlags            = ma->flags;
