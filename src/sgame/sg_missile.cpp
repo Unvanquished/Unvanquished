@@ -592,12 +592,6 @@ void G_RunMissile( gentity_t *ent )
 	trap_LinkEntity( ent );
 	ent->r.contents = 0; //...encoding bbox information
 
-	if ( ent->flightSplashDamage )
-	{
-		G_RadiusDamage( tr.endpos, ent->parent, ent->flightSplashDamage, ent->flightSplashRadius,
-		                ent->parent, 0, ent->splashMethodOfDeath );
-	}
-
 	// check think function after bouncing
 	G_RunThink( ent );
 }
@@ -639,10 +633,6 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 	m->clipmask            = ma->clipmask;
 	BG_MissileBounds( ma, m->r.mins, m->r.maxs );
 	m->s.eFlags            = ma->flags;
-
-	// not yet implemented / deprecated
-	m->flightSplashDamage  = 0;
-	m->flightSplashRadius  = 0;
 
 	// trajectory
 	{
