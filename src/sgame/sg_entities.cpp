@@ -197,6 +197,12 @@ void G_FreeEntity( gentity_t *entity )
 	entity->classname = "freent";
 	entity->freetime = level.time;
 	entity->inuse = false;
+
+	if ( entity->id )
+	{
+		BG_Free( entity->id );
+		entity->id = nullptr;
+	}
 }
 
 
