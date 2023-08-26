@@ -1868,10 +1868,6 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 	VectorCopy( mins, built->r.mins );
 	VectorCopy( maxs, built->r.maxs );
 
-	built->splashDamage = attr->splashDamage;
-	built->splashRadius = attr->splashRadius;
-	built->splashMethodOfDeath = attr->meansOfDeath;
-
 	built->nextthink = level.time;
 	built->enabled = false;
 	built->spawned = false;

@@ -59,12 +59,9 @@ void AlienBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*
 }
 
 void AlienBuildableComponent::Blast(int /*timeDelta*/) {
-	float          splashDamage = (float)entity.oldEnt->splashDamage;
-	float          splashRadius = (float)entity.oldEnt->splashRadius;
-	meansOfDeath_t splashMOD    = (meansOfDeath_t)entity.oldEnt->splashMethodOfDeath;
-
 	// Damage close humans.
-	Entities::AntiHumanRadiusDamage(entity, splashDamage, splashRadius, splashMOD);
+	const buildableAttributes_t* ba = BG_Buildable(entity.oldEnt->s.modelindex);
+	Entities::AntiHumanRadiusDamage(entity, ba->splashDamage, ba->splashRadius, ba->meansOfDeath);
 
 	// Reward attackers.
 	G_RewardAttackers(entity.oldEnt);

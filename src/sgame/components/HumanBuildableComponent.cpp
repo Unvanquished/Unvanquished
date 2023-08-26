@@ -48,14 +48,11 @@ void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*
 }
 
 void HumanBuildableComponent::Blast(int /*timeDelta*/) {
-	float          splashDamage = (float)entity.oldEnt->splashDamage;
-	float          splashRadius = (float)entity.oldEnt->splashRadius;
-	meansOfDeath_t splashMOD    = (meansOfDeath_t)entity.oldEnt->splashMethodOfDeath;
-
 	humanBuildableLogger.Notice("Human buildable is exploding.");
 
 	// Damage close entity.
-	Entities::KnockbackRadiusDamage(entity, splashDamage, splashRadius, splashMOD);
+	const buildableAttributes_t* ba = BG_Buildable(entity.oldEnt->s.modelindex);
+	Entities::KnockbackRadiusDamage(entity, ba->splashDamage, ba->splashRadius, ba->meansOfDeath);
 
 	// Reward attackers.
 	G_RewardAttackers(entity.oldEnt);
