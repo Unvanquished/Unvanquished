@@ -6,30 +6,31 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2013-07-29 07:10+0000\n"
-"Last-Translator: VVerTT <VVert-001@wp.pl>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2023-08-28 23:38+0000\n"
+"Last-Translator: Cristobal Andrada <1ot2z3plz@mozmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Pootle 2.5.0-beta1\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 "X-POOTLE-MTIME: 1375081810.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "Buduj"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr ""
+msgstr "Cena:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Ewoluuj"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
@@ -37,25 +38,25 @@ msgstr ""
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Wybierz formę startową:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "Drecz"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr ""
+msgstr "Drecz to cicha forma bojowa a granger to forma budownicza."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Powrót do wyboru drużyny"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
@@ -63,19 +64,19 @@ msgstr ""
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "Powód"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Ogłoś głosowanie"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
-msgstr ""
+msgstr "Uzupełnij botami"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "Obie drużyny"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
@@ -92,27 +93,27 @@ msgstr "Drużyna"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "Ilość"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
-msgstr ""
+msgstr "Zmień mapę"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Głosowanie: zmień następną mapę"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Głosowanie: ustaw aktualną mapę"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "Ustaw aktualną mapę (host)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Metoda"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
@@ -120,19 +121,19 @@ msgstr "Mapa"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Wykonaj akcję"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Błąd!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: ui/help_gameplay.rml:16 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Witaj"
 
 #: ui/help_gameplay.rml:19
 msgid ""
@@ -164,13 +165,15 @@ msgstr ""
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "Dochód i ewolucja"
 
 #: ui/help_gameplay.rml:36
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"Obcy zdobywają punkty ewolucyjne zabijając ludzi. Mogą użyć tych punktów aby "
+"ewoluować w bardziej zaawansowanie formy."
 
 #: ui/help_gameplay.rml:39
 msgid ""
