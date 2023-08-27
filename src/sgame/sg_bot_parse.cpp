@@ -164,10 +164,13 @@ static AIValue_t Ratio( int current, int max, bool infiniteAmmo )
 static AIValue_t percentAmmoClip( gentity_t *self, const AIValue_t* )
 {
 	ASSERT( self && self->client );
-	ASSERT( wpa->maxAmmo > 0 );
 	playerState_t const& ps = self->client->ps;
 	weaponAttributes_t const* wpa = BG_Weapon( BG_PrimaryWeapon( ps.stats ) );
 
+	if ( wpa->maxAmmo == 0 )
+	{
+		return AIBoxFloat( 1.f );
+	}
 	return Ratio( ps.ammo, wpa->maxAmmo, wpa->infiniteAmmo );
 }
 
