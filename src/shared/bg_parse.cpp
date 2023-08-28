@@ -2182,7 +2182,6 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		RENDERFX         = 1 <<  5,
 		SPRITE           = 1 <<  6,
 		SPRITE_SIZE      = 1 <<  7,
-		SPRITE_CHARGE    = 1 <<  8,
 		PARTICLE_SYSTEM  = 1 <<  9,
 		TRAIL_SYSTEM     = 1 << 10,
 		ROTATES          = 1 << 11,
@@ -2292,13 +2291,6 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			PARSE( text, token );
 			ma->spriteSize = atoi( token );
 			defined |= SPRITE_SIZE;
-			ma->usesSprite = true;
-		}
-		else if ( !Q_stricmp( token, "spriteCharge" ) )
-		{
-			PARSE( text, token );
-			ma->spriteCharge = atof( token );
-			defined |= SPRITE_CHARGE;
 			ma->usesSprite = true;
 		}
 		else if ( !Q_stricmp( token, "particleSystem" ) )

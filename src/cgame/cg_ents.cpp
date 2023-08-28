@@ -429,7 +429,7 @@ static void CG_Missile( centity_t *cent )
 	if ( ma->usesSprite )
 	{
 		ent.reType = refEntityType_t::RT_SPRITE;
-		ent.radius = ma->spriteSize + ma->spriteCharge * es->torsoAnim;
+		ent.radius = ma->spriteSize;
 		ent.rotation = 0;
 		ent.customShader = ma->sprite;
 		ent.shaderRGBA = Color::White;
