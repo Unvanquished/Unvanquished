@@ -1360,7 +1360,6 @@ struct missileAttributes_t : public elementAttributes_t
 	bool           animLooping;
 	bool           alwaysImpact;
 	qhandle_t      impactParticleSystem;
-	bool           impactFlightDirection;
 	bool           usesImpactMark;
 	qhandle_t      impactMark;
 	qhandle_t      impactMarkSize;
