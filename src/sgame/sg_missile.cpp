@@ -412,18 +412,8 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	// Play hit effects and remove the missile.
 	if ( !( impactFlags & MIF_NO_EFFECT ) )
 	{
-		// Use either the trajectory direction or the surface normal for the hit event.
-		if ( ma->impactFlightDirection )
-		{
-			vec3_t trajDir;
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, trajDir );
-			VectorNormalize( trajDir );
-			dirAsByte = DirToByte( trajDir );
-		}
-		else
-		{
-			dirAsByte = DirToByte( trace->plane.normal );
-		}
+		// Use the surface normal for the hit event.
+		dirAsByte = DirToByte( trace->plane.normal );
 
 		// Add hit event.
 		if ( HasComponents<HealthComponent>(*hitEnt->entity) )

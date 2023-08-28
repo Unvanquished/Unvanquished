@@ -1478,7 +1478,6 @@ struct missileAttributes_t
 	// impact
 	bool       alwaysImpact;
 	qhandle_t      impactParticleSystem;
-	bool       impactFlightDirection;
 	bool       usesImpactMark;
 	qhandle_t      impactMark;
 	qhandle_t      impactMarkSize;
