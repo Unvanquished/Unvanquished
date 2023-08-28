@@ -2179,7 +2179,6 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		DLIGHT           = 1 <<  2,
 		DLIGHT_INTENSITY = 1 <<  3,
 		DLIGHT_COLOR     = 1 <<  4,
-		RENDERFX         = 1 <<  5,
 		SPRITE           = 1 <<  6,
 		SPRITE_SIZE      = 1 <<  7,
 		PARTICLE_SYSTEM  = 1 <<  9,
@@ -2269,12 +2268,6 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			ma->dlightColor[ 2 ] = atof( token );
 			defined |= DLIGHT_COLOR;
 			ma->usesDlight = true;
-		}
-		else if ( !Q_stricmp( token, "renderfx" ) )
-		{
-			PARSE( text, token );
-			ma->renderfx = atoi( token );
-			defined |= RENDERFX;
 		}
 		else if ( !Q_stricmp( token, "sprite" ) )
 		{
