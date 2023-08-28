@@ -474,12 +474,6 @@ static void CG_Missile( centity_t *cent )
 			MatrixToVectorsFRU( axisMat, ent.axis[ 0 ], ent.axis[ 1 ], ent.axis[ 2 ] );
 		}
 
-		// spin as it moves
-		if ( es->pos.trType != trType_t::TR_STATIONARY && ma->rotates )
-		{
-			RotateAroundDirection( ent.axis, cg.time / 4 );
-		}
-
 		// apply scale from config
 		if ( ma->modelScale != 1.0f )
 		{

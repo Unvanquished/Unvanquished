@@ -2184,7 +2184,6 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 		SPRITE_SIZE      = 1 <<  7,
 		PARTICLE_SYSTEM  = 1 <<  9,
 		TRAIL_SYSTEM     = 1 << 10,
-		ROTATES          = 1 << 11,
 		ANIM_START_FRAME = 1 << 12,
 		ANIM_NUM_FRAMES  = 1 << 13,
 		ANIM_FRAME_RATE  = 1 << 14,
@@ -2308,11 +2307,6 @@ void BG_ParseMissileDisplayFile( const char *filename, missileAttributes_t *ma )
 			ma->trailSystem = CG_RegisterTrailSystem( token );
 #endif
 			defined |= TRAIL_SYSTEM;
-		}
-		else if ( !Q_stricmp( token, "rotates" ) )
-		{
-			ma->rotates = true;
-			defined |= ROTATES;
 		}
 		else if ( !Q_stricmp( token, "animStartFrame" ) )
 		{
