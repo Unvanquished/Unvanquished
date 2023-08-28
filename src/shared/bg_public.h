@@ -1466,7 +1466,6 @@ struct missileAttributes_t
 	bool       usesSprite;
 	qhandle_t      sprite;
 	int            spriteSize;
-	float          spriteCharge;
 	qhandle_t      particleSystem;
 	qhandle_t      trailSystem;
 	bool       rotates;
