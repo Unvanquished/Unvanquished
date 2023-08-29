@@ -406,8 +406,8 @@ static std::unordered_map<std::string, VoteDefinition> voteInfo = {
 	{"poll",              { false, V_ANY,    T_NONE,     false,  false, qtrinary::qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO, nullptr,             nullptr,                   &HandlePollVote } },
 	{"kickbots",          { true,  V_PUBLIC, T_NONE,     false,  false, qtrinary::qno,    &g_kickVotesPercent,        VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleKickbotsVote } },
 	{"fillbots",          { true,  V_PUBLIC, T_OTHER,    false,  true,  qtrinary::qno,    &g_fillBotsVotesPercent,    VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleFillBotsVote } },
-	{"fillbots_humans",   { true,  V_PUBLIC, T_OTHER,    false,  true,  qtrinary::qno,    &g_fillBotsVotesPercent,    VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleFillBotsHumanVote } },
-	{"fillbots_aliens",   { true,  V_PUBLIC, T_OTHER,    false,  true,  qtrinary::qno,    &g_fillBotsVotesPercent,    VOTE_ALWAYS,  nullptr,             nullptr,                   &HandleFillBotsAliensVote } },
+	{"fillbots_humans",   { true,  V_PUBLIC, T_OTHER,    false,  true,  qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr,             nullptr,                   &HandleFillBotsHumanVote } },
+	{"fillbots_aliens",   { true,  V_PUBLIC, T_OTHER,    false,  true,  qtrinary::qno,    &g_fillBotsTeamVotesPercent, VOTE_ALWAYS, nullptr,             nullptr,                   &HandleFillBotsAliensVote } },
 };
 
 // clang-format on
