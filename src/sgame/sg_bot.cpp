@@ -687,6 +687,9 @@ static void G_BotCheckDefaultFill()
 	}
 }
 
+static Cvar::Cvar<bool> g_bot_fillEvenHumans("g_bot_fillEvenHumans", "whether the human team is filled beyond the chosen number of bots if the alien team has more players than that", Cvar::NONE, false);
+static Cvar::Cvar<bool> g_bot_fillEvenAliens("g_bot_fillEvenAliens", "whether the alien team is filled beyond the chosen number of bots if the human team has more players than that", Cvar::NONE, false);
+
 void G_BotFill(bool immediately)
 {
 	static int nextCheck = 0;
@@ -715,8 +718,15 @@ void G_BotFill(bool immediately)
 	{
 		std::vector<int> current; // list of filler bots
 		int target; // if <0, too many bots, if >0, not enough
+		int actualFill;
 	} fillers[ NUM_TEAMS ] = {};
 	int missingFillers = 0;
+
+	// by default, fill according to level.team[ team ].botFillTeamSize
+	for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
+	{
+		fillers[ team ].actualFill = level.team[ team ].botFillTeamSize;
+	}
 
 	for (int client = 0; client < MAX_CLIENTS; client++)
 	{
@@ -727,10 +737,35 @@ void G_BotFill(bool immediately)
 		}
 	}
 
+	int biggerTeamSize = -1;
+	for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
+	{
+		if ( level.team[ team ].numClients <= level.team[ team ].botFillTeamSize || !fillers[ team ].current.empty() )
+		{
+			continue;
+		}
+		// the team has more members than its botFillTeamSize, and none of them is a filler
+		if ( level.team[ team ].numClients > biggerTeamSize )
+		{
+			biggerTeamSize = level.team[ team ].numClients;
+		}
+	}
+	if ( biggerTeamSize >= 0 )
+	{
+		if ( g_bot_fillEvenAliens.Get() && level.team[ TEAM_ALIENS ].botFillTeamSize > 0 )
+		{
+			fillers[ TEAM_ALIENS ].actualFill = std::max( biggerTeamSize, level.team[ TEAM_ALIENS ].botFillTeamSize );
+		}
+		if ( g_bot_fillEvenHumans.Get() && level.team[ TEAM_HUMANS ].botFillTeamSize > 0 )
+		{
+			fillers[ TEAM_HUMANS ].actualFill = std::max( biggerTeamSize, level.team[ TEAM_HUMANS ].botFillTeamSize );
+		}
+	}
+
 	for ( team_t team : {TEAM_ALIENS, TEAM_HUMANS} )
 	{
 		auto& fill = fillers[team];
-		fill.target = level.team[team].botFillTeamSize - level.team[team].numClients;
+		fill.target = fill.actualFill - level.team[team].numClients;
 		// remove excedent
 		while ( fill.target < 0 && fill.current.size() > 0 )
 		{
