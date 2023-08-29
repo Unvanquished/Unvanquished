@@ -671,8 +671,15 @@ void G_BotFill(bool immediately)
 	{
 		std::vector<int> current; // list of filler bots
 		int target; // if <0, too many bots, if >0, not enough
+		int actualFill;
 	} fillers[ NUM_TEAMS ] = {};
 	int missingFillers = 0;
+
+	// by default, fill according to level.team[ team ].botFillTeamSize
+	for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
+	{
+		fillers[ team ].actualFill = level.team[ team ].botFillTeamSize;
+	}
 
 	for (int client = 0; client < MAX_CLIENTS; client++)
 	{
@@ -683,10 +690,36 @@ void G_BotFill(bool immediately)
 		}
 	}
 
+	// If both teams have the same botFillTeamSize, and one team has more
+	// members than this number: fill the other team to the same number, for balance.
+	if ( level.team[ TEAM_ALIENS ].botFillTeamSize == level.team[ TEAM_HUMANS ].botFillTeamSize )
+	{
+		int biggerTeamSize = -1;
+		for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
+		{
+			if ( level.team[ team ].numClients <= level.team[ team ].botFillTeamSize || !fillers[ team ].current.empty() )
+			{
+				continue;
+			}
+			// the team has more members than its botFillTeamSize, and none of them is a filler
+			if ( level.team[ team ].numClients > biggerTeamSize )
+			{
+				biggerTeamSize = level.team[ team ].numClients;
+			}
+		}
+		if ( biggerTeamSize >= 0 )
+		{
+			for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
+			{
+				fillers[ team ].actualFill = biggerTeamSize;
+			}
+		}
+	}
+
 	for ( team_t team : {TEAM_ALIENS, TEAM_HUMANS} )
 	{
 		auto& fill = fillers[team];
-		fill.target = level.team[team].botFillTeamSize - level.team[team].numClients;
+		fill.target = fill.actualFill - level.team[team].numClients;
 		// remove excedent
 		while ( fill.target < 0 && fill.current.size() > 0 )
 		{
