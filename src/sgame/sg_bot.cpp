@@ -692,7 +692,8 @@ void G_BotFill(bool immediately)
 
 	// If both teams have the same botFillTeamSize, and one team has more
 	// members than this number: fill the other team to the same number, for balance.
-	if ( level.team[ TEAM_ALIENS ].botFillTeamSize == level.team[ TEAM_HUMANS ].botFillTeamSize )
+	if ( level.team[ TEAM_ALIENS ].botFillTeamSize == level.team[ TEAM_HUMANS ].botFillTeamSize
+		 && level.team[ TEAM_ALIENS ].botFillTeamSize > 0 )
 	{
 		int biggerTeamSize = -1;
 		for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
