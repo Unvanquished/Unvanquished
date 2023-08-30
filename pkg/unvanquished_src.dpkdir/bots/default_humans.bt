@@ -5,68 +5,71 @@ selector
 	sequence
 	{
 		condition alertedToEnemy
-		selector
+		condition percentAmmoClip > 0 || percentClips > 0
 		{
-			decorator timer ( 1000 )
+			selector
 			{
-				condition haveWeapon( WP_LUCIFER_CANNON ) && ( distanceTo( E_H_REACTOR ) <= 400 || distanceTo( E_H_ARMOURY ) <= 400 )
+				decorator timer ( 1000 )
 				{
-					action buy( WP_PULSE_RIFLE )
-				}
-			}
-			condition haveWeapon( WP_HBUILD ) && ( !buildingIsDamaged || teamateHasWeapon( WP_HBUILD ) )
-			{
-				selector
-				{
-					action equip
-					action flee
-				}
-			}
-
-			decorator timer( 1000 )
-			{
-				selector
-				{
-					// defending reactor, or try to avoid being killed while healing (hence the different values)
-					// the isVisible check is here to prevent "defending" when enemies are detected by radars
-					condition ( ( distanceTo( E_H_REACTOR ) <= 300 || distanceTo( E_H_MEDISTAT ) <= 250 ) && isVisible( E_ENEMY ) )
+					condition haveWeapon( WP_LUCIFER_CANNON ) && ( distanceTo( E_H_REACTOR ) <= 400 || distanceTo( E_H_ARMOURY ) <= 400 )
 					{
-						action fight
+						action buy( WP_PULSE_RIFLE )
 					}
-
-					sequence
+				}
+				condition haveWeapon( WP_HBUILD ) && ( !buildingIsDamaged || teamateHasWeapon( WP_HBUILD ) )
+				{
+					selector
 					{
-						condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
-						condition baseRushScore < 0.75
-						selector
+						action equip
+						action flee
+					}
+				}
+
+				decorator timer( 1000 )
+				{
+					selector
+					{
+						// defending reactor, or try to avoid being killed while healing (hence the different values)
+						// the isVisible check is here to prevent "defending" when enemies are detected by radars
+						condition ( ( distanceTo( E_H_REACTOR ) <= 300 || distanceTo( E_H_MEDISTAT ) <= 250 ) && isVisible( E_ENEMY ) )
 						{
-							decorator return( STATUS_FAILURE )
+							action fight
+						}
+
+						sequence
+						{
+							condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
+							condition baseRushScore < 0.75
+							selector
 							{
-								action activateUpgrade( UP_MEDKIT )
+								decorator return( STATUS_FAILURE )
+								{
+									action activateUpgrade( UP_MEDKIT )
+								}
+								decorator timer( 3000 )
+								{
+									action heal
+								}
+								action roamInRadius( E_H_MEDISTAT, 250 )
 							}
-							decorator timer( 3000 )
-							{
-								action heal
-							}
-							action roamInRadius( E_H_MEDISTAT, 250 )
 						}
 					}
 				}
-			}
 
-			sequence
-			{
-				//if goal is a close enough enemy building or if we're gonna die
-				condition ( percentHealth( E_SELF ) < 0.3 || ( distanceTo( E_GOAL ) < 400 && goalType == ET_BUILDABLE ) )
-				condition ( distanceTo( E_FRIENDLYBUILDING ) > 400 )
-				selector
+				sequence
 				{
-					// no need to check the upgrade is in inventory, since action would fail
-					action activateUpgrade( UP_FIREBOMB )
-					action activateUpgrade( UP_GRENADE )
+					//if goal is a close enough enemy building or if we're gonna die
+					condition ( percentHealth( E_SELF ) < 0.3 || ( distanceTo( E_GOAL ) < 400 && goalType == ET_BUILDABLE ) )
+					condition ( distanceTo( E_FRIENDLYBUILDING ) > 400 )
+					selector
+					{
+						// no need to check the upgrade is in inventory, since action would fail
+						action activateUpgrade( UP_FIREBOMB )
+						action activateUpgrade( UP_GRENADE )
+					}
 				}
+				action fight
 			}
-			action fight
 		}
 	}
 
@@ -119,6 +122,25 @@ selector
 	}
 
 	action equip
+
+	selector
+	{
+		condition percentAmmoClip == 0 && percentClips == 0
+		{
+			// refill at a suitable building
+			// TODO: reload energy weapons at reactor etc
+			action moveTo( E_H_ARMOURY )
+			// TODO: wait until clip weapon is reloaded
+			// or even better: make the game refill everything at once
+		}
+	}
+
+	sequence
+	{
+		// the bot cannot refill or equip, it must fight with the blaster
+		condition alertedToEnemy
+		action fight
+	}
 
 	condition baseRushScore > 0.5
 	{
