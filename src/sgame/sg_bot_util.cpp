@@ -1145,7 +1145,7 @@ bool BotTargetInAttackRange( const gentity_t *self, botTarget_t target )
 				t.trTime = level.time - 50;
 
 				// find projectile's final position
-				glm::vec3 npos = BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME );
+				glm::vec3 npos = BG_EvaluateTrajectory( &t, level.time + BG_Missile( WP_FLAMER )->lifetime );
 
 				// find distance traveled by projectile along fire line
 				glm::vec3 proj = ProjectPointOntoVector( npos, muzzle, targetPos );

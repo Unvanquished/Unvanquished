@@ -16,7 +16,8 @@ constexpr float DAMAGE_THRESHOLD = 60.0f;
 constexpr int   MISSILES = 26;
 /** Number of rows from which to launch spikes. */
 constexpr int   MISSILEROWS = 4;
-/** An estimate on how far away spikes are still relevant, used to upper bound computations. */
+/** An estimate on how far away spikes are still relevant, used to upper bound computations.
+    Satisfies SPIKE_RANGE * attrs->speed = attrs->lifetime (if you use correct units) */
 constexpr float SPIKE_RANGE = 500.0f;
 /** Bounding box scaling factor Used to improve friendly fire prevention. */
 constexpr float SAFETY_TRACE_INFLATION = 3.0f;
@@ -246,7 +247,7 @@ bool SpikerComponent::Fire() {
 
 			G_SpawnMissile(
 				MIS_SPIKER, self, VEC2GLM( self->s.origin ), dir, nullptr, G_FreeEntity,
-				level.time + (int)(1000.0f * SPIKE_RANGE / (float)BG_Missile(MIS_SPIKER)->speed));
+				level.time + BG_Missile(MIS_SPIKER)->lifetime);
 		}
 	}
 

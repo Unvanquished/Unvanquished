@@ -1336,8 +1336,11 @@ struct missileAttributes_t : public elementAttributes_t
 	int            speed;
 	float          lag;
 	int            flags;
+	int            lifetime;
 	bool           doKnockback;
 	bool           doLocationalDamage;
+
+	// display
 	qhandle_t      model;
 	float          modelScale;
 	vec3_t         modelRotation;

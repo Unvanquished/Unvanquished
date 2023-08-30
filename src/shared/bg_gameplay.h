@@ -81,7 +81,6 @@ extern const float SPIKER_SENSE_RANGE; // an enemy needs to be this close to con
 extern const float TRAPPER_RANGE;
 
 extern const float HIVE_SENSE_RANGE;
-extern const int   HIVE_LIFETIME;
 extern const float HIVE_SPEED;
 extern const int   HIVE_DIR_CHANGE_PERIOD;
 
@@ -146,7 +145,6 @@ extern const int   ROCKETPOD_ATTACK_PERIOD;
 
 extern const int   ROCKET_TURN_PERIOD;
 extern const float ROCKET_TURN_ANGLE;
-extern const int   ROCKET_LIFETIME;
 
 /*
  * HUMAN misc
@@ -320,7 +318,6 @@ extern int   BLASTER_SPEED;
 extern int   SHOTGUN_PELLETS;
 
 extern int   FLAMER_SIZE;
-extern float FLAMER_LIFETIME;
 extern float FLAMER_SPEED;
 extern float FLAMER_LAG;
 extern float FLAMER_IGNITE_RADIUS;

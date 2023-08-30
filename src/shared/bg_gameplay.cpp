@@ -107,7 +107,6 @@ const float SPIKER_SENSE_RANGE = 250.0f;
 const float TRAPPER_RANGE = 400.0f;
 
 const float HIVE_SENSE_RANGE = 500.0f;
-const int   HIVE_LIFETIME = 3000;
 const float HIVE_SPEED = 320.0f;
 const int   HIVE_DIR_CHANGE_PERIOD = 500;
 
@@ -183,7 +182,6 @@ const int   ROCKETPOD_ATTACK_PERIOD = 1000;
 
 const int   ROCKET_TURN_PERIOD = 50;
 const float ROCKET_TURN_ANGLE = 8.0f;
-const int   ROCKET_LIFETIME = 3000;
 
 /*
  * HUMAN misc
