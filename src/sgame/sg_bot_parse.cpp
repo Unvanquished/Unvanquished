@@ -153,7 +153,7 @@ static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 // Only used to reduce duplicated code.
 static AIValue_t Ratio( int current, int max, bool infiniteAmmo )
 {
-	if ( max == 0 || infiniteAmmo )
+	if ( infiniteAmmo )
 	{
 		return AIBoxFloat( 1.f );
 	}
@@ -167,6 +167,10 @@ static AIValue_t percentAmmoClip( gentity_t *self, const AIValue_t* )
 	playerState_t const& ps = self->client->ps;
 	weaponAttributes_t const* wpa = BG_Weapon( BG_PrimaryWeapon( ps.stats ) );
 
+	if ( wpa->maxAmmo == 0 )
+	{
+		return AIBoxFloat( 1.f );
+	}
 	return Ratio( ps.ammo, wpa->maxAmmo, wpa->infiniteAmmo );
 }
 
@@ -177,6 +181,10 @@ static AIValue_t percentClips( gentity_t *self, const AIValue_t* )
 	playerState_t const& ps = self->client->ps;
 	weaponAttributes_t const* wpa = BG_Weapon( BG_PrimaryWeapon( ps.stats ) );
 
+	if ( wpa->maxClips == 0 )
+	{
+		return AIBoxFloat( 0.f );
+	}
 	return Ratio( ps.clips, wpa->maxClips, wpa->infiniteAmmo );
 }
 
