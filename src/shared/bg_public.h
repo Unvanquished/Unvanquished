@@ -1449,6 +1449,7 @@ struct missileAttributes_t
 	int            speed;
 	float          lag;
 	int            flags;
+	int            lifetime;
 	bool       doKnockback;
 	bool       doLocationalDamage;
 

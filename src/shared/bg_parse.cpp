@@ -150,7 +150,6 @@ int   CHAINGUN_SPREAD;
 int   CHAINGUN_DMG;
 
 int   FLAMER_SIZE;
-float FLAMER_LIFETIME;
 float FLAMER_SPEED;
 float FLAMER_LAG;
 float FLAMER_IGNITE_RADIUS;
@@ -193,7 +192,6 @@ static configVar_t bg_configVars[] =
 	{"w_flamer_igniteRadius", FLOAT, false, &FLAMER_IGNITE_RADIUS },
 	{"w_flamer_igniteSplChance", FLOAT, false, &FLAMER_IGNITE_SPLCHANCE },
 	{"w_flamer_lag", FLOAT, false, &FLAMER_LAG },
-	{"w_flamer_lifeTime", FLOAT, false, &FLAMER_LIFETIME },
 	{"w_flamer_size", INTEGER, false, &FLAMER_SIZE },
 	{"w_flamer_speed", FLOAT, false, &FLAMER_SPEED },
 
@@ -1940,7 +1938,8 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		BOUNCE_HALF           = 1 << 12,
 		BOUNCE_NO_SOUND       = 1 << 13,
 		KNOCKBACK             = 1 << 14,
-		LOCATIONAL_DAMAGE     = 1 << 15
+		LOCATIONAL_DAMAGE     = 1 << 15,
+		LIFETIME              = 1 << 16,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -2019,6 +2018,12 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 			ma->lag = atof( token );
 			defined |= LAG;
 		}
+		else if ( !Q_stricmp( token, "lifetime" ) )
+		{
+			PARSE( text, token );
+			ma->lifetime = atoi( token );
+			defined |= LIFETIME;
+		}
 		else if ( !Q_stricmp( token, "bounceFull" ) )
 		{
 			ma->flags |= EF_BOUNCE;
@@ -2060,6 +2065,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 	else if ( !( defined & SIZE ) )           { token = "size"; }
 	else if ( !( defined & TRAJECTORY ) )     { token = "trajectory"; }
 	else if ( !( defined & SPEED ) )          { token = "speed"; }
+	else if ( !( defined & LIFETIME ) )       { token = "lifetime"; }
 	else                                      { token = ""; }
 
 	if ( *token )
