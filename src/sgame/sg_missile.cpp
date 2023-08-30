@@ -134,7 +134,7 @@ static float MissileTimeDmgMod( gentity_t *self )
 	{
 		case MIS_FLAMER:
 			return MissileTimePowerMod( self, MTPR_LINEAR_DECREASE, 1.0f, FLAMER_DAMAGE_MAXDST_MOD,
-			                            0, FLAMER_LIFETIME );
+			                            0, BG_Missile( MIS_FLAMER )->lifetime );
 
 		case MIS_LCANNON:
 			return MissileTimePowerMod( self, MTPR_EXPONENTIAL_DECREASE, 1.0f, 0.0f,
@@ -154,7 +154,7 @@ static float MissileTimeSplashDmgMod( gentity_t *self )
 	{
 		case MIS_FLAMER:
 			return MissileTimePowerMod( self, MTPR_LINEAR_INCREASE, FLAMER_SPLASH_MINDST_MOD, 1.0f,
-										0, FLAMER_LIFETIME );
+										0, BG_Missile( MIS_FLAMER )->lifetime );
 	}
 
 	return 1.0f;
