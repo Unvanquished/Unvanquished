@@ -643,6 +643,8 @@ static void G_BotCheckDefaultFill()
 	}
 }
 
+static Cvar::Cvar<bool> g_bot_fillBeyond("g_bot_fillBeyond", "whether teams are filled beyond the chosen number of bots if one team has more players than that", Cvar::NONE, false);
+
 void G_BotFill(bool immediately)
 {
 	static int nextCheck = 0;
@@ -692,7 +694,8 @@ void G_BotFill(bool immediately)
 
 	// If both teams have the same botFillTeamSize, and one team has more
 	// members than this number: fill the other team to the same number, for balance.
-	if ( level.team[ TEAM_ALIENS ].botFillTeamSize == level.team[ TEAM_HUMANS ].botFillTeamSize
+	if ( g_bot_fillBeyond.Get()
+		 && level.team[ TEAM_ALIENS ].botFillTeamSize == level.team[ TEAM_HUMANS ].botFillTeamSize
 		 && level.team[ TEAM_ALIENS ].botFillTeamSize > 0 )
 	{
 		int biggerTeamSize = -1;
