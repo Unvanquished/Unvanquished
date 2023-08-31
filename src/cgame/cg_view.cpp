@@ -264,7 +264,7 @@ CG_OffsetThirdPersonView
 void CG_OffsetThirdPersonView()
 {
 	int           i;
-	vec3_t        forward, right, up;
+	vec3_t        forward;
 	vec3_t        view;
 	trace_t       trace;
 	static vec3_t mins = { -8, -8, -8 };
@@ -413,7 +413,7 @@ void CG_OffsetThirdPersonView()
 	rotationAngles[ YAW ] -= cg_thirdPersonAngle.Get();
 
 	// Move the camera range distance back.
-	AngleVectors( rotationAngles, forward, right, up );
+	AngleVectors( rotationAngles, forward, nullptr, nullptr );
 	VectorCopy( cg.refdef.vieworg, view );
 	VectorMA( view, -range, forward, view );
 

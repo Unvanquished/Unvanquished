@@ -854,8 +854,8 @@ static void BotMaybeAttackWhileClimbing( gentity_t *self )
 	BG_BoundingBox( static_cast<class_t>( ownClass ), &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
 
 	glm::vec3 origin = VEC2GLM( self->s.origin );
-	glm::vec3 forward, right, up;
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 	auto range = ownClass == PCL_ALIEN_LEVEL0 ? LEVEL0_BITE_RANGE : LEVEL1_CLAW_RANGE;
 
 	trace_t trace;
