@@ -99,6 +99,7 @@ bool HiveComponent::CompareTargets(Entity& a, Entity& b) const {
 	return rand() % 2 ? true : false;
 }
 
+void HiveMissileThink(gentity_t*);
 void HiveComponent::Fire(Entity& target) {
 	insectsReady       = false;
 	insectsActiveSince = level.time;
@@ -106,11 +107,13 @@ void HiveComponent::Fire(Entity& target) {
 	glm::vec3 muzzle      = VEC2GLM( entity.oldEnt->s.pos.trBase );
 	glm::vec3 targetPoint = VEC2GLM( target.oldEnt->s.origin );
 	glm::vec3 dirToTarget = glm::normalize( targetPoint - muzzle );
+	glm::vec3 origin = muzzle + entity.oldEnt->r.maxs[2] * VEC2GLM(entity.oldEnt->s.origin2);
 
-	vectoangles( &dirToTarget[0], entity.oldEnt->buildableAim );
 	entity.oldEnt->target = target.oldEnt;
 
-	G_FireWeapon(entity.oldEnt, WP_HIVE, WPM_PRIMARY);
+	gentity_t* m = G_SpawnMissile(MIS_HIVE, entity.oldEnt, &origin[0], &dirToTarget[0], target.oldEnt,
+	                              HiveMissileThink, level.time + HIVE_DIR_CHANGE_PERIOD);
+	m->timestamp = level.time + BG_Missile(MIS_HIVE)->lifetime;
 
 	G_SetBuildableAnim(entity.oldEnt, BANIM_ATTACK1, false);
 }
