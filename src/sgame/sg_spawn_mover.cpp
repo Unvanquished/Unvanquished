@@ -412,8 +412,13 @@ static void G_MoverGroup( gentity_t *ent )
 
 			part->s.pos.trTime += level.time - level.previousTime;
 			part->s.apos.trTime += level.time - level.previousTime;
-			BG_EvaluateTrajectory( &part->s.pos, level.time, part->r.currentOrigin );
-			BG_EvaluateTrajectory( &part->s.apos, level.time, part->r.currentAngles );
+			glm::vec3 tmp;
+			tmp = BG_EvaluateTrajectory( &part->s.pos, level.time );
+			VectorCopy( tmp, part->r.currentOrigin );
+
+			tmp = BG_EvaluateTrajectory( &part->s.apos, level.time );
+			VectorCopy( tmp, part->r.currentAngles );
+
 			G_CM_LinkEntity( part );
 		}
 
@@ -623,14 +628,17 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 			break;
 	}
 
+	glm::vec3 tmp;
 	if ( moverState >= MOVER_POS1 && moverState <= MOVER_2TO1 )
 	{
-		BG_EvaluateTrajectory( &ent->s.pos, level.time, ent->r.currentOrigin );
+		tmp = BG_EvaluateTrajectory( &ent->s.pos, level.time );
+		VectorCopy( tmp, ent->r.currentOrigin );
 	}
 
 	if ( moverState >= ROTATOR_POS1 && moverState <= ROTATOR_2TO1 )
 	{
-		BG_EvaluateTrajectory( &ent->s.apos, level.time, ent->r.currentAngles );
+		tmp = BG_EvaluateTrajectory( &ent->s.apos, level.time );
+		VectorCopy( tmp, ent->r.currentAngles );
 	}
 
 	G_CM_LinkEntity( ent );

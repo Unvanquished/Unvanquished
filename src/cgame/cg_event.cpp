@@ -1473,7 +1473,9 @@ void CG_CheckEvents( centity_t *cent )
 	}
 
 	// calculate the position at exactly the frame time
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime, cent->lerpOrigin );
+	glm::vec3 tmp;
+	tmp = BG_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime );
+	VectorCopy( tmp, cent->lerpOrigin );
 	CG_SetEntitySoundPosition( cent );
 
 	CG_EntityEvent( cent, cent->lerpOrigin );

@@ -40,8 +40,7 @@ static void G_Bounce( gentity_t *ent, trace_t *trace )
 
 	// reflect the velocity on the trace plane
 	int hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
-	glm::vec3 velocity;
-	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, &velocity[0] );
+	glm::vec3 velocity = BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime );
 	float dot = glm::dot( velocity, VEC2GLM( trace->plane.normal ) );
 	velocity -= 2.f * dot * VEC2GLM( trace->plane.normal );
 	VectorCopy( velocity, ent->s.pos.trDelta );
@@ -135,7 +134,7 @@ void G_Physics( gentity_t *ent )
 	// trace a line from the previous position to the current position
 
 	// get current position
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, &origin[0] );
+	origin = BG_EvaluateTrajectory( &ent->s.pos, level.time );
 
 	tr = G_CM_Trace( VEC2GLM( ent->r.currentOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), origin, ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
 

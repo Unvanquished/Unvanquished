@@ -3443,8 +3443,11 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ],
 	                   &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton );
 
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, cent->lerpOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, cg.time, cent->lerpAngles );
+	glm::vec3 tmp;
+	tmp = BG_EvaluateTrajectory( &cent->currentState.pos, cg.time );
+	VectorCopy( tmp, cent->lerpOrigin );
+	tmp = BG_EvaluateTrajectory( &cent->currentState.apos, cg.time );
+	VectorCopy( tmp, cent->lerpAngles );
 
 	VectorCopy( cent->lerpOrigin, cent->rawOrigin );
 	VectorCopy( cent->lerpAngles, cent->rawAngles );

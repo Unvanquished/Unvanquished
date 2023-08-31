@@ -65,7 +65,7 @@ static void BounceMissile( gentity_t *ent, trace_t *trace )
 
 	// reflect the velocity on the trace plane
 	int hitTime = level.previousTime + ( level.time - level.previousTime ) * trace->fraction;
-	BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime, &velocity[0] );
+	velocity = BG_EvaluateTrajectoryDelta( &ent->s.pos, hitTime );
 	float dot = glm::dot( velocity, VEC2GLM( trace->plane.normal ) );
 	velocity = velocity - 2.f * dot * VEC2GLM( trace->plane.normal );
 
@@ -380,8 +380,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	{
 		if ( ent->damage && ( Entities::IsAlive( hitEnt ) || ( hitEnt && hitEnt->s.eType == entityType_t::ET_MOVER ) ) )
 		{
-			glm::vec3 dir;
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, &dir[0] );
+			glm::vec3 dir = BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time );
 
 			float length = glm::length( dir );
 			dir = glm::normalize( dir );
@@ -415,8 +414,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		// Use either the trajectory direction or the surface normal for the hit event.
 		if ( ma->impactFlightDirection )
 		{
-			glm::vec3 trajDir;
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, &trajDir[0] );
+			glm::vec3 trajDir = BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time );
 			trajDir = glm::normalize( trajDir );
 			dirAsByte = DirToByte( &trajDir[0] );
 		}
@@ -471,8 +469,7 @@ void G_ExplodeMissile( gentity_t *ent )
 {
 	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
 
-	glm::vec3 origin;
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, &origin[0] );
+	glm::vec3 origin = BG_EvaluateTrajectory( &ent->s.pos, level.time );
 	SnapVector( &origin[0] );
 	G_SetOrigin( ent, origin );
 
@@ -503,8 +500,7 @@ void G_RunMissile( gentity_t *ent )
 	bool impact = false;
 
 	// get current position
-	glm::vec3 origin;
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, &origin[0] );
+	glm::vec3 origin = BG_EvaluateTrajectory( &ent->s.pos, level.time );
 
 	// ignore interactions with the missile owner
 	passent = ent->r.ownerNum;

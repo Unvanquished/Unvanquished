@@ -416,11 +416,9 @@ static void CG_Missile( centity_t *cent )
 	// add missile sound
 	if ( ma->sound )
 	{
-		vec3_t velocity;
+		glm::vec3 velocity = BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time );
 
-		BG_EvaluateTrajectoryDelta( &cent->currentState.pos, cg.time, velocity );
-
-		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, velocity, ma->sound );
+		trap_S_AddLoopingSound( cent->currentState.number, cent->lerpOrigin, &velocity[0], ma->sound );
 	}
 
 	// create the render entity
@@ -438,22 +436,22 @@ static void CG_Missile( centity_t *cent )
 	}
 	else if ( ma->model )
 	{
-		vec3_t velocity;
+		glm::vec3 velocity;
 
 		ent.hModel = ma->model;
 		ent.renderfx = ma->renderfx | RF_NOSHADOW;
 
 		if( es->weapon == MIS_GRENADE || es->weapon == MIS_FIREBOMB )
 		{
-			VectorCopy( es->pos.trDelta, velocity );
+			velocity = VEC2GLM( es->pos.trDelta );
 		}
 		else
 		{
-			BG_EvaluateTrajectoryDelta( &es->pos, cg.time, velocity );
+			velocity = BG_EvaluateTrajectoryDelta( &es->pos, cg.time );
 		}
 
 		// convert direction of travel into axis
-		if ( VectorNormalize2( velocity, ent.axis[ 0 ] ) == 0 )
+		if ( VectorNormalize2( &velocity[0], ent.axis[ 0 ] ) == 0 )
 		{
 			ent.axis[ 0 ][ 2 ] = 1.0f;
 		}
@@ -897,10 +895,6 @@ Also called by client movement prediction code
 */
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out, vec3_t angles_in, vec3_t angles_out )
 {
-	centity_t *cent;
-	vec3_t    oldOrigin, origin, deltaOrigin;
-	vec3_t    oldAngles, angles, deltaAngles;
-
 	if ( moverNum <= 0 || moverNum >= ENTITYNUM_MAX_NORMAL )
 	{
 		VectorCopy( in, out );
@@ -908,7 +902,7 @@ void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int
 		return;
 	}
 
-	cent = &cg_entities[ moverNum ];
+	centity_t *cent = &cg_entities[ moverNum ];
 
 	if ( cent->currentState.eType != entityType_t::ET_MOVER )
 	{
@@ -917,14 +911,14 @@ void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int
 		return;
 	}
 
-	BG_EvaluateTrajectory( &cent->currentState.pos, fromTime, oldOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, fromTime, oldAngles );
+	glm::vec3 oldOrigin = BG_EvaluateTrajectory( &cent->currentState.pos, fromTime );
+	glm::vec3 oldAngles = BG_EvaluateTrajectory( &cent->currentState.apos, fromTime );
 
-	BG_EvaluateTrajectory( &cent->currentState.pos, toTime, origin );
-	BG_EvaluateTrajectory( &cent->currentState.apos, toTime, angles );
+	glm::vec3 origin = BG_EvaluateTrajectory( &cent->currentState.pos, toTime );
+	glm::vec3 angles = BG_EvaluateTrajectory( &cent->currentState.apos, toTime );
 
-	VectorSubtract( origin, oldOrigin, deltaOrigin );
-	VectorSubtract( angles, oldAngles, deltaAngles );
+	glm::vec3 deltaOrigin = origin - oldOrigin;
+	glm::vec3 deltaAngles = angles - oldAngles;
 
 	VectorAdd( in, deltaOrigin, out );
 	VectorAdd( angles_in, deltaAngles, angles_out );
@@ -939,9 +933,6 @@ CG_InterpolateEntityPosition
 */
 static void CG_InterpolateEntityPosition( centity_t *cent )
 {
-	vec3_t current, next;
-	float  f;
-
 	// it would be an internal error to find an entity that interpolates without
 	// a snapshot ahead of the current one
 	if ( cg.nextSnap == nullptr )
@@ -949,19 +940,19 @@ static void CG_InterpolateEntityPosition( centity_t *cent )
 		Sys::Drop( "CG_InterpolateEntityPosition: cg.nextSnap == NULL" );
 	}
 
-	f = cg.frameInterpolation;
+	float  f = cg.frameInterpolation;
 
 	// this will linearize a sine or parabolic curve, but it is important
 	// to not extrapolate player positions if more recent data is available
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime, current );
-	BG_EvaluateTrajectory( &cent->nextState.pos, cg.nextSnap->serverTime, next );
+	glm::vec3 current = BG_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime );
+	glm::vec3 next = BG_EvaluateTrajectory( &cent->nextState.pos, cg.nextSnap->serverTime );
 
 	cent->lerpOrigin[ 0 ] = current[ 0 ] + f * ( next[ 0 ] - current[ 0 ] );
 	cent->lerpOrigin[ 1 ] = current[ 1 ] + f * ( next[ 1 ] - current[ 1 ] );
 	cent->lerpOrigin[ 2 ] = current[ 2 ] + f * ( next[ 2 ] - current[ 2 ] );
 
-	BG_EvaluateTrajectory( &cent->currentState.apos, cg.snap->serverTime, current );
-	BG_EvaluateTrajectory( &cent->nextState.apos, cg.nextSnap->serverTime, next );
+	current = BG_EvaluateTrajectory( &cent->currentState.apos, cg.snap->serverTime );
+	next = BG_EvaluateTrajectory( &cent->nextState.apos, cg.nextSnap->serverTime );
 
 	cent->lerpAngles[ 0 ] = LerpAngle( current[ 0 ], next[ 0 ], f );
 	cent->lerpAngles[ 1 ] = LerpAngle( current[ 1 ], next[ 1 ], f );
@@ -1014,18 +1005,17 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 	}
 
 	// just use the current frame and evaluate as best we can
-	BG_EvaluateTrajectory( &cent->currentState.pos,
-	                       ( cg.time + timeshift ), cent->lerpOrigin );
-	BG_EvaluateTrajectory( &cent->currentState.apos,
-	                       ( cg.time + timeshift ), cent->lerpAngles );
+	glm::vec3 tmp;
+	tmp = BG_EvaluateTrajectory( &cent->currentState.pos, ( cg.time + timeshift ) );
+	VectorCopy( tmp, cent->lerpOrigin );
+	tmp = BG_EvaluateTrajectory( &cent->currentState.apos, ( cg.time + timeshift ) );
+	VectorCopy( tmp, cent->lerpAngles );
 
 	if ( timeshift )
 	{
-		vec3_t  lastOrigin;
+		glm::vec3 lastOrigin = BG_EvaluateTrajectory( &cent->currentState.pos, cg.time );
 
-		BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, lastOrigin );
-
-		trace_t tr = CG_Trace( lastOrigin, vec3_origin, vec3_origin, cent->lerpOrigin, cent->currentState.number, MASK_SHOT, 0, traceType_t::TT_AABB );
+		trace_t tr = CG_Trace( lastOrigin, glm::vec3(), glm::vec3(), VEC2GLM( cent->lerpOrigin ), cent->currentState.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 
 		// don't let the projectile go through the floor
 		if ( tr.fraction < 1.0f )

@@ -100,7 +100,8 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 	trace_t       trace;
 	clipHandle_t  cmodel;
 	vec3_t        tmins, tmaxs;
-	vec3_t        origin, angles;
+	vec3_t        angles;
+	glm::vec3 origin = glm::vec3();
 
 	// calculate bounding box of the trace
 	ClearBounds( tmins, tmaxs );
@@ -135,7 +136,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			// special value for bmodel
 			cmodel = CM_InlineModel( ent->modelindex );
 			VectorCopy( cent->lerpAngles, angles );
-			BG_EvaluateTrajectory( &cent->currentState.pos, cg.physicsTime, origin );
+			origin = BG_EvaluateTrajectory( &cent->currentState.pos, cg.physicsTime );
 		}
 		else
 		{
@@ -167,19 +168,17 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 
 			cmodel = CM_TempBoxModel( &bmins[0], &bmaxs[0], /* capsule = */ false );
 			VectorCopy( vec3_origin, angles );
-			VectorCopy( vec3_origin, origin );
 		}
 
 		switch ( collisionType )
 		{
 		case traceType_t::TT_CAPSULE:
 		case traceType_t::TT_AABB:
-			CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask, origin, angles, collisionType );
+			CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask, &origin[0], angles, collisionType );
 			break;
 
 		case traceType_t::TT_BISPHERE:
-			CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
-			                                  mask, skipmask, origin );
+			CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel, mask, skipmask, &origin[0] );
 			break;
 
 		default: // Shouldn't Happen

@@ -1032,50 +1032,44 @@ BG_EvaluateTrajectoryDelta
 For determining velocity at a given time
 ================
 */
-void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result )
+glm::vec3 BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime )
 {
-	float deltaTime;
+	float deltaTime = atTime - tr->trTime;
 	float phase;
+	glm::vec3 trDelta = VEC2GLM( tr->trDelta );
 
 	switch ( tr->trType )
 	{
 		case trType_t::TR_STATIONARY:
 		case trType_t::TR_INTERPOLATE:
-			VectorClear( result );
-			break;
+			return glm::vec3();
 
 		case trType_t::TR_LINEAR:
-			VectorCopy( tr->trDelta, result );
-			break;
+			return trDelta;
 
 		case trType_t::TR_SINE:
-			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
+			deltaTime /= static_cast<float>( tr->trDuration );
 			phase = cosf( deltaTime * M_PI * 2 );  // derivative of sin = cos
 			phase *= 2 * M_PI * 1000 / tr->trDuration;
-			VectorScale( tr->trDelta, phase, result );
-			break;
+			return trDelta * phase;
 
 		case trType_t::TR_LINEAR_STOP:
 			if ( atTime > tr->trTime + tr->trDuration || atTime < tr->trTime )
 			{
-				VectorClear( result );
-				return;
+				return glm::vec3();
 			}
 
-			VectorCopy( tr->trDelta, result );
-			break;
+			return trDelta;
 
 		case trType_t::TR_GRAVITY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
-			VectorCopy( tr->trDelta, result );
-			result[ 2 ] -= DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
-			break;
+			deltaTime *= 0.001f; // milliseconds to seconds
+			trDelta.z -= DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
+			return trDelta;
 
 		case trType_t::TR_BUOYANCY:
-			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
-			VectorCopy( tr->trDelta, result );
-			result[ 2 ] += DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
-			break;
+			deltaTime *= 0.001f; // milliseconds to seconds
+			trDelta.z += DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
+			return trDelta;
 
 		default:
 			Sys::Drop( "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
