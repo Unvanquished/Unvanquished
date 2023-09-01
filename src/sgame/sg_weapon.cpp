@@ -1649,10 +1649,6 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					FireMelee( self, PAINSAW_RANGE, PAINSAW_WIDTH, PAINSAW_HEIGHT, PAINSAW_DAMAGE, MOD_PAINSAW, true );
 					break;
 
-				case WP_LOCKBLOB_LAUNCHER:
-					FireMissile( self, MIS_LOCKBLOB, nullptr, G_ExplodeMissile, BG_Missile( MIS_LOCKBLOB )->lifetime );
-					break;
-
 				case WP_MGTURRET:
 					FireBullet( self, MGTURRET_SPREAD, self->turretCurrentDamage, MOD_MGTURRET, false );
 					break;
