@@ -32,6 +32,8 @@ static Cvar::Range<Cvar::Cvar<int>> generateNeededMesh(
 	"g_bot_navgen_onDemand",
 	"automatically generate navmeshes when a bot is added (1 = in background, -1 = blocking)",
 	Cvar::NONE, 1, -1, 1);
+static Cvar::Cvar<int> traceClient(
+	"g_bot_traceClient", "show running BT node for this client num", Cvar::NONE, -1);
 
 static botMemory_t g_botMind[MAX_CLIENTS];
 static AITreeList_t treeList;
@@ -394,6 +396,35 @@ void G_BotDelAllBots()
 	}
 }
 
+static void ShowRunningNode( gentity_t *self, AINodeStatus_t status )
+{
+	const char *name = self->client->pers.netname;
+	switch ( status )
+	{
+	case STATUS_FAILURE:
+		Log::defaultLogger.WithoutSuppression().Notice( "%s^* root tree exited with STATUS_FAILURE", name );
+		break;
+	case STATUS_SUCCESS:
+		Log::defaultLogger.WithoutSuppression().Notice( "%s^* root tree exited with STATUS_SUCCESS", name );
+		break;
+	case STATUS_RUNNING:
+		ASSERT( !self->botMind->runningNodes.empty() );
+		ASSERT_EQ( self->botMind->runningNodes[ 0 ]->type, AINode_t::ACTION_NODE );
+		int line = reinterpret_cast<AIActionNode_t *>( self->botMind->runningNodes[ 0 ] )->lineNum;
+		const char *tree = "<unknown>";
+		for ( const AIGenericNode_t *node : self->botMind->runningNodes )
+		{
+			if ( node->type == AINode_t::BEHAVIOR_NODE )
+			{
+				tree = reinterpret_cast<const AIBehaviorTree_t *>( node )->name;
+				break;
+			}
+		}
+		Log::defaultLogger.WithoutSuppression().Notice( "%s^* running at %s.bt:%d", name, tree, line );
+		break;
+	}
+}
+
 /*
 =======================
 Bot Thinks
@@ -468,7 +499,12 @@ void G_BotThink( gentity_t *self )
 	}
 
 	self->botMind->willSprint( false ); //let the BT decide that
-	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
+	AINodeStatus_t status =
+		self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
+	if ( traceClient.Get() == self->num() )
+	{
+		ShowRunningNode( self, status );
+	}
 
 	// if we were nudged...
 	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );
