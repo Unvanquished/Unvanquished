@@ -51,7 +51,7 @@ class MGTurretComponent: public MGTurretComponentBase {
 
 		void Think(int timeDelta);
 
-		bool CompareTargets(Entity& a, Entity& b);
+		bool CompareTargets(const glm::vec3& aimDirection, Entity& a, Entity& b);
 
 		void Shoot();
 

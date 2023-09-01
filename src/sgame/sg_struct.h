@@ -449,8 +449,6 @@ struct gentity_t
 
 	int         killedBy; // clientNum of killer
 
-	vec3_t      buildableAim; // aim vector for buildables
-
 	// turret
 	float       turretCurrentDamage;
 

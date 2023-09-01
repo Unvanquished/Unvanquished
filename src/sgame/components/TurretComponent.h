@@ -26,6 +26,11 @@ class TurretComponent: public TurretComponentBase {
 		*/
 		void HandlePrepareNetCode();
 
+		/**
+		 * Returns the absolute angles to where the turret is currently pointing.
+		 */
+		glm::vec3 GetAimAngles() const;
+
 		// ///////////////////// //
 
 		~TurretComponent();

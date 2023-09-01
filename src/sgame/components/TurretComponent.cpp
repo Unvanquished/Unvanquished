@@ -134,11 +134,11 @@ bool TurretComponent::MoveHeadToTarget(int timeDelta) {
 		);
 	}
 
-	// TODO: Move gentity_t.buildableAim to BuildableComponent.
-	glm::vec3 absoluteAimAngles = RelativeAnglesToAbsoluteAngles(relativeAimAngles);
-	VectorCopy(absoluteAimAngles, entity.oldEnt->buildableAim);
-
 	return targetReached;
+}
+
+glm::vec3 TurretComponent::GetAimAngles() const {
+	return RelativeAnglesToAbsoluteAngles(relativeAimAngles);
 }
 
 void TurretComponent::TrackEntityTarget() {
