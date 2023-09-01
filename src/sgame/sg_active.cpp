@@ -1121,60 +1121,52 @@ but any server game effects are handled here
 */
 static void ClientEvents( gentity_t *ent, int oldEventSequence )
 {
-	int       i;
-	int       event;
-	gclient_t *client;
-	int       damage;
-	vec3_t    dir;
-	vec3_t    point;
-	float     fallDistance;
-	class_t   pcl;
-
-	client = ent->client;
-	pcl = (class_t) client->ps.stats[ STAT_CLASS ];
+	gclient_t *client = ent->client;
+	class_t pcl = (class_t) client->ps.stats[ STAT_CLASS ];
 
 	if ( oldEventSequence < client->ps.eventSequence - MAX_EVENTS )
 	{
 		oldEventSequence = client->ps.eventSequence - MAX_EVENTS;
 	}
 
-	for ( i = oldEventSequence; i < client->ps.eventSequence; i++ )
+	for ( int i = oldEventSequence; i < client->ps.eventSequence; i++ )
 	{
-		event = client->ps.events[ i & ( MAX_EVENTS - 1 ) ];
+		int event = client->ps.events[ i & ( MAX_EVENTS - 1 ) ];
 
 		switch ( event )
 		{
 			case EV_FALL_MEDIUM:
 			case EV_FALL_FAR:
-				if ( ent->s.eType != entityType_t::ET_PLAYER )
 				{
-					break; // not in the player model
+					if ( ent->s.eType != entityType_t::ET_PLAYER )
+					{
+						break; // not in the player model
+					}
+
+					float fallDistance = ( ( float ) client->ps.stats[ STAT_FALLDIST ] - MIN_FALL_DISTANCE ) /
+						( MAX_FALL_DISTANCE - MIN_FALL_DISTANCE );
+
+					if ( fallDistance < 0.0f )
+					{
+						fallDistance = 0.0f;
+					}
+					else if ( fallDistance > 1.0f )
+					{
+						fallDistance = 1.0f;
+					}
+
+					int damage = ( int )( ( float ) BG_Class( pcl )->health *
+							BG_Class( pcl )->fallDamage * fallDistance );
+
+					glm::vec3 dir = { 0.f, 0.f, 1.f };
+					glm::vec3 mins, unused;
+					BG_BoundingBox( pcl, mins, unused );
+					mins[ 0 ] = mins[ 1 ] = 0.0f;
+					glm::vec3 point = VEC2GLM( client->ps.origin ) + mins;
+
+					ent->pain_debounce_time = level.time + 200; // no general pain sound
+					ent->Damage((float)damage, nullptr, point, dir, DAMAGE_NO_LOCDAMAGE, MOD_FALLING);
 				}
-
-				fallDistance = ( ( float ) client->ps.stats[ STAT_FALLDIST ] - MIN_FALL_DISTANCE ) /
-				               ( MAX_FALL_DISTANCE - MIN_FALL_DISTANCE );
-
-				if ( fallDistance < 0.0f )
-				{
-					fallDistance = 0.0f;
-				}
-				else if ( fallDistance > 1.0f )
-				{
-					fallDistance = 1.0f;
-				}
-
-				damage = ( int )( ( float ) BG_Class( pcl )->health *
-				                  BG_Class( pcl )->fallDamage * fallDistance );
-
-				VectorSet( dir, 0, 0, 1 );
-				glm::vec3 mins, unused;
-				BG_BoundingBox( pcl, mins, unused );
-				mins[ 0 ] = mins[ 1 ] = 0.0f;
-				VectorAdd( client->ps.origin, mins, point );
-
-				ent->pain_debounce_time = level.time + 200; // no general pain sound
-				ent->Damage((float)damage, nullptr, VEC2GLM( point ), VEC2GLM( dir ),
-				                    DAMAGE_NO_LOCDAMAGE, MOD_FALLING);
 				break;
 
 			case EV_FIRE_WEAPON:
