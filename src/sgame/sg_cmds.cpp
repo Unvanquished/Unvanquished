@@ -539,8 +539,6 @@ Change team and spawn as builder at the current position
 */
 static void Cmd_Devteam_f( gentity_t *ent )
 {
-	gentity_t *spawn;
-
 	if ( trap_Argc() < 2 )
 	{
 		ADMP( "\"" N_("usage: devteam [a|h]") "\"" );
@@ -571,7 +569,7 @@ static void Cmd_Devteam_f( gentity_t *ent )
 	ent->client->pers.teamInfo = level.startTime - 1;
 	ent->client->sess.spectatorState = SPECTATOR_NOT;
 
-	spawn = G_NewEntity( NO_CBSE );
+	gentity_t *spawn = G_NewEntity( NO_CBSE );
 	VectorCopy( ent->s.pos.trBase, spawn->s.pos.trBase );
 	VectorCopy( ent->s.angles, spawn->s.angles );
 	VectorCopy( ent->s.origin, spawn->s.origin );
@@ -579,7 +577,9 @@ static void Cmd_Devteam_f( gentity_t *ent )
 
 	G_UpdateTeamConfigStrings();
 	ClientUserinfoChanged( ent->client->ps.clientNum, false );
-	ClientSpawn( ent, spawn, ent->s.origin, ent->s.angles );
+	glm::vec3 origin = VEC2GLM( ent->s.origin );
+	glm::vec3 angles = VEC2GLM( ent->s.angles );
+	ClientSpawn( ent, spawn, &origin, &angles );
 	G_FreeEntity( spawn );
 }
 
@@ -1885,7 +1885,9 @@ static void G_AlienEvolve_evolve( gentity_t *ent, class_t newClass, const vec3_t
 		oldBoostTime = ent->client->boostedTime;
 	}
 
-	ClientSpawn( ent, ent, ent->s.pos.trBase, ent->s.apos.trBase );
+	glm::vec3 pos = VEC2GLM( ent->s.pos.trBase );
+	glm::vec3 ang = VEC2GLM( ent->s.apos.trBase );
+	ClientSpawn( ent, ent, &pos, &ang );
 
 	VectorCopy( oldVel, ent->client->ps.velocity );
 
@@ -3266,18 +3268,15 @@ void G_StopFollowing( gentity_t *ent )
 	}
 	else
 	{
-		vec3_t spawn_origin, spawn_angles;
+		glm::vec3 spawn_origin, spawn_angles;
 
 		ent->client->sess.spectatorState = SPECTATOR_LOCKED;
 		ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_LOCKED;
 
-		if ( ent->client->pers.team == TEAM_ALIENS )
+		team_t team = static_cast<team_t>( ent->client->pers.team );
+		if ( G_IsPlayableTeam( team ) )
 		{
-			G_SelectAlienLockSpawnPoint( spawn_origin, spawn_angles );
-		}
-		else if ( ent->client->pers.team == TEAM_HUMANS )
-		{
-			G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
+			G_SelectLockSpawnPoint( spawn_origin, spawn_angles, team );
 		}
 		else
 		{
@@ -3321,10 +3320,7 @@ mode and cannot be followed for the moment
 */
 void G_FollowLockView( gentity_t *ent )
 {
-	vec3_t spawn_origin, spawn_angles;
-	int    clientNum;
-
-	clientNum = ent->client->sess.spectatorClient;
+	int clientNum = ent->client->sess.spectatorClient;
 	ent->client->sess.spectatorState = SPECTATOR_FOLLOW;
 	ent->client->ps.persistant[ PERS_SPECSTATE ] = SPECTATOR_FOLLOW;
 	ent->client->ps.clientNum = clientNum;
@@ -3337,20 +3333,18 @@ void G_FollowLockView( gentity_t *ent )
 	ent->client->ps.viewangles[ PITCH ] = 0.0f;
 
 	// Put the view at the team spectator lock position
-	if ( level.clients[ clientNum ].pers.team == TEAM_ALIENS )
+	glm::vec3 spawn_origin, spawn_angles;
+	team_t team = static_cast<team_t>( level.clients[ clientNum ].pers.team );
+	if ( G_IsPlayableTeam( team ) )
 	{
-		G_SelectAlienLockSpawnPoint( spawn_origin, spawn_angles );
-	}
-	else if ( level.clients[ clientNum ].pers.team == TEAM_HUMANS )
-	{
-		G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
+		G_SelectLockSpawnPoint( spawn_origin, spawn_angles, team );
 	}
 	else
 	{
 		G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
 	}
 
-	G_SetOrigin( ent, VEC2GLM( spawn_origin ) );
+	G_SetOrigin( ent, spawn_origin );
 	VectorCopy( spawn_origin, ent->client->ps.origin );
 	G_SetClientViewAngle( ent, spawn_angles );
 }

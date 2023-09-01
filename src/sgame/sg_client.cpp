@@ -30,10 +30,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "sg_cm_world.h"
 
-// sg_client.c -- client functions that don't happen every frame
+#include <glm/gtx/norm.hpp>
 
-static const vec3_t playerMins = { -15, -15, -24 };
-static const vec3_t playerMaxs = { 15, 15, 32 };
+// sg_client.c -- client functions that don't happen every frame
 
 /*
 ===============
@@ -86,20 +85,21 @@ SpotWouldTelefrag
 
 ================
 */
-bool SpotWouldTelefrag( gentity_t *spot )
+static bool SpotWouldTelefrag( gentity_t *spot )
 {
-	int       i, num;
+	//FIXME: in unvanquished, not all classes have the same size, so this is buggy.
+	constexpr glm::vec3 playerMins = { -15, -15, -24 };
+	constexpr glm::vec3 playerMaxs = { 15, 15, 32 };
+
 	int       touch[ MAX_GENTITIES ];
-	gentity_t *hit;
-	vec3_t    mins, maxs;
+	glm::vec3 mins = VEC2GLM( spot->s.origin ) + playerMins;
+	glm::vec3 maxs = VEC2GLM( spot->s.origin ) + playerMaxs;
 
-	VectorAdd( spot->s.origin, playerMins, mins );
-	VectorAdd( spot->s.origin, playerMaxs, maxs );
-	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), touch, MAX_GENTITIES );
+	int num = G_CM_AreaEntities( mins, maxs, touch, MAX_GENTITIES );
 
-	for ( i = 0; i < num; i++ )
+	for ( int i = 0; i < num; i++ )
 	{
-		hit = &g_entities[ touch[ i ] ];
+		gentity_t *hit = &g_entities[ touch[ i ] ];
 
 		//if ( hit->client && hit->client->ps.stats[STAT_HEALTH] > 0 ) {
 		if ( hit->client )
@@ -118,16 +118,13 @@ G_SelectRandomFurthestSpawnPoint
 Chooses a player start, deathmatch start, etc
 ============
 */
-gentity_t *G_SelectRandomFurthestSpawnPoint( const vec3_t avoidPoint, vec3_t origin, vec3_t angles )
+gentity_t *G_SelectRandomFurthestSpawnPoint( glm::vec3 const& avoidPoint, glm::vec3& origin, glm::vec3& angles )
 {
 	gentity_t *spot = nullptr;
-	vec3_t    delta;
-	float     dist;
 	float     list_dist[ 64 ];
 	gentity_t *list_spot[ 64 ];
-	int       numSpots, rnd, i, j;
 
-	numSpots = 0;
+	int numSpots = 0;
 
 	while ( ( spot = G_IterateEntitiesOfClass( spot, S_POS_PLAYER_SPAWN ) ) != nullptr )
 	{
@@ -136,9 +133,10 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( const vec3_t avoidPoint, vec3_t ori
 			continue;
 		}
 
-		VectorSubtract( spot->s.origin, avoidPoint, delta );
-		dist = VectorLength( delta );
+		glm::vec3 delta = VEC2GLM( spot->s.origin ) - avoidPoint;
+		float dist = glm::length( delta );
 
+		int i;
 		for ( i = 0; i < numSpots; i++ )
 		{
 			if ( dist > list_dist[ i ] )
@@ -148,7 +146,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( const vec3_t avoidPoint, vec3_t ori
 					numSpots = 64 - 1;
 				}
 
-				for ( j = numSpots; j > i; j-- )
+				for ( int j = numSpots; j > i; j-- )
 				{
 					list_dist[ j ] = list_dist[ j - 1 ];
 					list_spot[ j ] = list_spot[ j - 1 ];
@@ -184,18 +182,18 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( const vec3_t avoidPoint, vec3_t ori
 			Sys::Drop( "Couldn't find a spawn point" );
 		}
 
-		VectorCopy( spot->s.origin, origin );
+		origin = VEC2GLM( spot->s.origin );
 		origin[ 2 ] += 9;
-		VectorCopy( spot->s.angles, angles );
+		angles = VEC2GLM( spot->s.angles );
 		return spot;
 	}
 
 	// select a random spot from the spawn points furthest away
-	rnd = random() * ( numSpots / 2 );
+	int rnd = random() * ( numSpots / 2 );
 
-	VectorCopy( list_spot[ rnd ]->s.origin, origin );
+	origin = VEC2GLM( list_spot[ rnd ]->s.origin );
 	origin[ 2 ] += 9;
-	VectorCopy( list_spot[ rnd ]->s.angles, angles );
+	angles = VEC2GLM( list_spot[ rnd ]->s.angles );
 
 	return list_spot[ rnd ];
 }
@@ -208,7 +206,7 @@ find the nearest buildable of the right type that is
 spawned/healthy/unblocked etc.
 ================
 */
-static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildable )
+static gentity_t *G_SelectSpawnBuildable( glm::vec3 const& preference, buildable_t buildable )
 {
 	gentity_t *search = nullptr;
 	gentity_t *spot = nullptr;
@@ -245,8 +243,8 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 			continue;
 		}
 
-		if ( !spot || DistanceSquared( preference, search->s.origin ) <
-		     DistanceSquared( preference, spot->s.origin ) )
+		if ( !spot || glm::distance2( preference, VEC2GLM( search->s.origin ) ) <
+		     glm::distance2( preference, VEC2GLM( spot->s.origin ) ) )
 		{
 			spot = search;
 		}
@@ -262,7 +260,7 @@ G_SelectUnvanquishedSpawnPoint
 Chooses a player start, deathmatch start, etc
 ============
 */
-gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles )
+gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, glm::vec3 const& preference, glm::vec3& origin, glm::vec3& angles )
 {
 	gentity_t *spot = nullptr;
 
@@ -289,13 +287,11 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 
 	// Get spawn point for selected spawner.
 	Entity* blocker = nullptr;
-	glm::vec3 spawnPoint;
 
-	spot->entity->CheckSpawnPoint(blocker, spawnPoint);
+	spot->entity->CheckSpawnPoint(blocker, origin);
 	ASSERT_EQ(blocker, nullptr); // TODO: CheckSpawnPoint is already called in G_SelectSpawnBuildable
-	VectorCopy( spawnPoint, origin );
 
-	VectorCopy( spot->s.angles, angles );
+	angles = VEC2GLM( spot->s.angles );
 	angles[ ROLL ] = 0;
 
 	return spot;
@@ -307,38 +303,12 @@ G_SelectSpectatorSpawnPoint
 
 ============
 */
-gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
+void G_SelectSpectatorSpawnPoint( glm::vec3& origin, glm::vec3& angles )
 {
 	FindIntermissionPoint();
 
-	VectorCopy( level.intermission_origin, origin );
-	VectorCopy( level.intermission_angle, angles );
-
-	return nullptr;
-}
-
-/*
-===========
-G_SelectAlienLockSpawnPoint
-
-Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
-===========
-*/
-gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
-{
-	return G_SelectLockSpawnPoint(origin, angles, S_POS_ALIEN_INTERMISSION );
-}
-
-/*
-===========
-G_SelectHumanLockSpawnPoint
-
-Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
-===========
-*/
-gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
-{
-	return G_SelectLockSpawnPoint(origin, angles, S_POS_HUMAN_INTERMISSION );
+	origin = level.intermission_origin;
+	angles = level.intermission_angle;
 }
 
 /*
@@ -349,19 +319,35 @@ Try to find a spawn point for a team intermission otherwise
 use spectator intermission spawn.
 ============
 */
-gentity_t *G_SelectLockSpawnPoint( vec3_t origin, vec3_t angles , char const* intermission )
+gentity_t *G_SelectLockSpawnPoint( glm::vec3& origin, glm::vec3& angles, team_t team )
 {
-	gentity_t *spot;
-
-	spot = G_PickRandomEntityOfClass( intermission );
+	char const* intermission = nullptr;
+	switch( team )
+	{
+		case TEAM_ALIENS:
+			intermission = S_POS_ALIEN_INTERMISSION;
+			break;
+		case TEAM_HUMANS:
+			intermission = S_POS_HUMAN_INTERMISSION;
+			break;
+		case TEAM_ALL:
+		case TEAM_NONE:
+			intermission = S_POS_PLAYER_INTERMISSION;
+			break;
+		case NUM_TEAMS:
+			break;
+	}
+	ASSERT( intermission != nullptr );
+	gentity_t *spot = G_PickRandomEntityOfClass( intermission );
 
 	if ( !spot )
 	{
-		return G_SelectSpectatorSpawnPoint( origin, angles );
+		G_SelectSpectatorSpawnPoint( origin, angles );
+		return nullptr;
 	}
 
-	VectorCopy( spot->s.origin, origin );
-	VectorCopy( spot->s.angles, angles );
+	origin = VEC2GLM( spot->s.origin );
+	angles = VEC2GLM( spot->s.angles );
 
 	return spot;
 }
@@ -413,23 +399,18 @@ just like the existing corpse to leave behind.
 */
 static void SpawnCorpse( gentity_t *ent )
 {
-	gentity_t *body;
-	int       contents;
-	vec3_t    origin;
-
-	VectorCopy( ent->r.currentOrigin, origin );
-
 	trap_UnlinkEntity( ent );
 
 	// if client is in a nodrop area, don't leave the body
-	contents = G_CM_PointContents( VEC2GLM( origin ), -1 );
+	glm::vec3 origin = VEC2GLM( ent->r.currentOrigin );
+	int contents = G_CM_PointContents( VEC2GLM( origin ), -1 );
 
 	if ( contents & CONTENTS_NODROP )
 	{
 		return;
 	}
 
-	body = G_NewEntity( NO_CBSE );
+	gentity_t* body = G_NewEntity( NO_CBSE );
 
 	VectorCopy( ent->s.apos.trBase, body->s.angles );
 	body->s.eFlags = EF_DEAD;
@@ -485,18 +466,12 @@ G_SetClientViewAngle
 
 ==================
 */
-void G_SetClientViewAngle( gentity_t *ent, const vec3_t angle )
+void G_SetClientViewAngle( gentity_t *ent, glm::vec3 const& angle )
 {
-	int i;
-
 	// set the delta angle
-	for ( i = 0; i < 3; i++ )
-	{
-		int cmdAngle;
-
-		cmdAngle = ANGLE2SHORT( angle[ i ] );
-		ent->client->ps.delta_angles[ i ] = cmdAngle - ent->client->pers.cmd.angles[ i ];
-	}
+	ent->client->ps.delta_angles[ 0 ] = ANGLE2SHORT( angle[ 0 ] ) - ent->client->pers.cmd.angles[ 0 ];
+	ent->client->ps.delta_angles[ 1 ] = ANGLE2SHORT( angle[ 1 ] ) - ent->client->pers.cmd.angles[ 1 ];
+	ent->client->ps.delta_angles[ 2 ] = ANGLE2SHORT( angle[ 2 ] ) - ent->client->pers.cmd.angles[ 2 ];
 
 	VectorCopy( angle, ent->s.angles );
 	VectorCopy( ent->s.angles, ent->client->ps.viewangles );
@@ -1484,10 +1459,9 @@ after the first ClientBegin, and after each respawn and evolve
 Initializes all non-persistent parts of playerState
 ============
 */
-void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles )
+void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm::vec3 const* angles )
 {
 	int                index;
-	vec3_t             spawn_origin, spawn_angles;
 	gclient_t          *client;
 	int                i;
 	clientPersistant_t saved;
@@ -1497,10 +1471,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	gentity_t          *spawnPoint = nullptr;
 	int                flags;
 	int                savedPing;
-	int                teamLocal;
 	int                eventSequence;
 	char               userinfo[ MAX_INFO_STRING ];
-	vec3_t             up = { 0.0f, 0.0f, 1.0f };
 	int                maxAmmo, maxClips;
 	weapon_t           weapon;
 
@@ -1510,7 +1482,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	index = ent->num();
 	client = ent->client;
 
-	teamLocal = client->pers.team;
+	team_t teamLocal = static_cast<team_t>( client->pers.team );
 
 	//if client is dead and following teammate, stop following before spawning
 	if ( client->sess.spectatorClient != -1 )
@@ -1535,14 +1507,15 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		G_StopFollowing( ent );
 	}
 
+	glm::vec3 spawn_origin = {}, spawn_angles = {};
 	if ( origin != nullptr )
 	{
-		VectorCopy( origin, spawn_origin );
+		spawn_origin = *origin;
 	}
 
 	if ( angles != nullptr )
 	{
-		VectorCopy( angles, spawn_angles );
+		spawn_angles = *angles;
 	}
 
 	// find a spawn point
@@ -1552,15 +1525,12 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	{
 		if ( teamLocal == TEAM_NONE )
 		{
-			spawnPoint = G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
+			spawnPoint = nullptr;
+			G_SelectSpectatorSpawnPoint( spawn_origin, spawn_angles );
 		}
-		else if ( teamLocal == TEAM_ALIENS )
+		else
 		{
-			spawnPoint = G_SelectAlienLockSpawnPoint( spawn_origin, spawn_angles );
-		}
-		else if ( teamLocal == TEAM_HUMANS )
-		{
-			spawnPoint = G_SelectHumanLockSpawnPoint( spawn_origin, spawn_angles );
+			spawnPoint = G_SelectLockSpawnPoint( spawn_origin, spawn_angles, teamLocal );
 		}
 	}
 	else
@@ -1714,6 +1684,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		if ( evolving )
 		{
 			//evolution particle system
+			vec3_t up = { 0.0f, 0.0f, 1.0f };
 			G_AddPredictableEvent( ent, EV_ALIEN_EVOLVE, DirToByte( up ) );
 		}
 		else
@@ -1723,13 +1694,11 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 			if ( spawnPoint->s.origin2[ 2 ] > 0.0f )
 			{
-				vec3_t forward, dir;
-
-				AngleVectors( spawn_angles, forward, nullptr, nullptr );
-				VectorAdd( spawnPoint->s.origin2, forward, dir );
-				VectorNormalize( dir );
-				VectorScale( dir, BG_Class( ent->client->pers.classSelection )->jumpMagnitude,
-				             client->ps.velocity );
+				glm::vec3 forward;
+				AngleVectors( spawn_angles, &forward, nullptr, nullptr );
+				glm::vec3 dir = glm::normalize( VEC2GLM( spawnPoint->s.origin2 ) + forward );
+				dir *= BG_Class( ent->client->pers.classSelection )->jumpMagnitude;
+				VectorCopy( dir, client->ps.velocity );
 			}
 
 			G_AddPredictableEvent( ent, EV_PLAYER_RESPAWN, 0 );

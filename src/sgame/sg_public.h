@@ -118,16 +118,13 @@ void              G_GetTotalBuildableValues(int *buildableValuesByTeam);
 
 // sg_client.c
 void              G_AddCreditToClient( gclient_t *client, short credit, bool cap );
-void              G_SetClientViewAngle( gentity_t *ent, const vec3_t angle );
-gentity_t         *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles );
-gentity_t         *G_SelectRandomFurthestSpawnPoint( const vec3_t avoidPoint, vec3_t origin, vec3_t angles );
-gentity_t         *G_SelectLockSpawnPoint( vec3_t origin, vec3_t angles , char const* intermission );
-gentity_t         *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles );
-gentity_t         *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles );
-gentity_t         *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles );
+void              G_SetClientViewAngle( gentity_t *ent, glm::vec3 const& angle );
+gentity_t         *G_SelectUnvanquishedSpawnPoint( team_t team, glm::vec3 const& preference, glm::vec3& origin, glm::vec3& angles );
+gentity_t         *G_SelectRandomFurthestSpawnPoint( glm::vec3 const& avoidPoint, glm::vec3& origin, glm::vec3& angles );
+gentity_t         *G_SelectLockSpawnPoint( glm::vec3& origin, glm::vec3& angles , team_t team );
+void G_SelectSpectatorSpawnPoint( glm::vec3& origin, glm::vec3& angles );
 void              respawn( gentity_t *ent );
-void              ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles );
-bool          SpotWouldTelefrag( gentity_t *spot );
+void              ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm::vec3 const* angles );
 bool          G_IsUnnamed( const char *name );
 const char        *ClientConnect( int clientNum, bool firstTime );
 const char        *ClientBotConnect( int clientNum, bool firstTime, team_t team );

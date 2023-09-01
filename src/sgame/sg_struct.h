@@ -602,8 +602,8 @@ struct level_locals_t
 	char             *changemap;
 	bool         readyToExit; // at least one client wants to exit
 	int              exitTime;
-	vec3_t           intermission_origin; // also used for spectator spawns
-	vec3_t           intermission_angle;
+	glm::vec3 intermission_origin; // also used for spectator spawns
+	glm::vec3 intermission_angle;
 
 	gentity_t        *locationHead; // head of the location list
 	gentity_t        *fakeLocation; // fake location for anything which might need one

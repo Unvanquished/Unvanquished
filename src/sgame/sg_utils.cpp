@@ -218,7 +218,7 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 	G_ClearPlayerZapEffects( player );
 
 	// set angles
-	G_SetClientViewAngle( player, angles );
+	G_SetClientViewAngle( player, VEC2GLM( angles ) );
 
 	// save results of pmove
 	BG_PlayerStateToEntityState( &player->client->ps, &player->s );

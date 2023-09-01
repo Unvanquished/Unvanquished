@@ -1052,7 +1052,7 @@ static void G_SpawnClients( team_t team )
 {
 	int          clientNum;
 	gentity_t    *ent, *spawn;
-	vec3_t       spawn_origin, spawn_angles;
+	glm::vec3 spawn_origin, spawn_angles;
 	spawnQueue_t *sq = nullptr;
 	int          numSpawns = 0;
 
@@ -1066,9 +1066,7 @@ static void G_SpawnClients( team_t team )
 		clientNum = G_PeekSpawnQueue( sq );
 		ent = &g_entities[ clientNum ];
 
-		if ( ( spawn = G_SelectUnvanquishedSpawnPoint( team,
-		               ent->client->pers.lastDeathLocation,
-		               spawn_origin, spawn_angles ) ) )
+		if ( ( spawn = G_SelectUnvanquishedSpawnPoint( team, VEC2GLM( ent->client->pers.lastDeathLocation ), spawn_origin, spawn_angles ) ) )
 		{
 			clientNum = G_PopSpawnQueue( sq );
 
@@ -1081,7 +1079,7 @@ static void G_SpawnClients( team_t team )
 
 			ent->client->sess.spectatorState = SPECTATOR_NOT;
 			ClientUserinfoChanged( clientNum, false );
-			ClientSpawn( ent, spawn, spawn_origin, spawn_angles );
+			ClientSpawn( ent, spawn, &spawn_origin, &spawn_angles );
 		}
 	}
 }
@@ -1337,12 +1335,12 @@ void FindIntermissionPoint()
 	if ( !ent )
 	{
 		// the map creator forgot to put in an intermission point...
-		G_SelectRandomFurthestSpawnPoint( vec3_origin, level.intermission_origin, level.intermission_angle );
+		G_SelectRandomFurthestSpawnPoint( glm::vec3(), level.intermission_origin, level.intermission_angle );
 	}
 	else
 	{
-		VectorCopy( ent->s.origin, level.intermission_origin );
-		VectorCopy( ent->s.angles, level.intermission_angle );
+		level.intermission_origin = VEC2GLM( ent->s.origin );
+		level.intermission_angle  = VEC2GLM( ent->s.angles );
 
 		// if it has a target, look towards it
 		if ( ent->mapEntity.targets.size() )
@@ -1352,7 +1350,7 @@ void FindIntermissionPoint()
 			if ( target )
 			{
 				VectorSubtract( target->s.origin, level.intermission_origin, dir );
-				vectoangles( dir, level.intermission_angle );
+				vectoangles( dir, &level.intermission_angle[0] );
 			}
 		}
 	}
