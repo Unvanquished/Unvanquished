@@ -274,10 +274,6 @@ ClientShove
 */
 static void ClientShove( gentity_t *ent, gentity_t *victim )
 {
-	vec3_t dir, push;
-	float  force;
-	int    entMass, vicMass;
-
 	// Don't push if the entity is not trying to move
 	if ( !ent->client->pers.cmd.rightmove && !ent->client->pers.cmd.forwardmove &&
 	     !ent->client->pers.cmd.upmove )
@@ -293,30 +289,22 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 	}
 
 	// Shove force is scaled by relative mass
-	entMass = GetClientMass( ent );
-	vicMass = GetClientMass( victim );
+	int entMass = GetClientMass( ent );
+	int vicMass = GetClientMass( victim );
 
 	if ( vicMass <= 0 || entMass <= 0 )
 	{
 		return;
 	}
 
-	force = g_shove.Get() * entMass / vicMass;
+	float force = g_shove.Get() * entMass / vicMass;
 
-	if ( force < 0 )
-	{
-		force = 0;
-	}
-
-	if ( force > 150 )
-	{
-		force = 150;
-	}
+	force = Math::Clamp( force, 0.f, 150.f );
 
 	// Give the victim some shove velocity
-	VectorSubtract( victim->r.currentOrigin, ent->r.currentOrigin, dir );
-	VectorNormalizeFast( dir );
-	VectorScale( dir, force, push );
+	glm::vec3 dir = VEC2GLM( victim->r.currentOrigin ) - VEC2GLM( ent->r.currentOrigin );
+	dir = glm::normalize( dir );
+	glm::vec3 push = dir * force;
 	VectorAdd( victim->client->ps.velocity, push, victim->client->ps.velocity );
 
 	// Set the pmove timer so that the other client can't cancel
