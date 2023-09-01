@@ -434,11 +434,8 @@ Spectators will only interact with teleporters.
 */
 void  G_TouchTriggers( gentity_t *ent )
 {
-	int              i, num;
 	int              touch[ MAX_GENTITIES ];
-	gentity_t        *hit;
-	trace_t          trace;
-	static const     vec3_t range = { 10, 10, 10 };
+	constexpr glm::vec3 range = { 10, 10, 10 };
 
 	if ( !ent->client )
 	{
@@ -460,22 +457,18 @@ void  G_TouchTriggers( gentity_t *ent )
 	glm::vec3 pmins, pmaxs;
 	BG_BoundingBox( static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] ), pmins, pmaxs );
 
-	vec3_t           mins, maxs;
-	VectorAdd( ent->client->ps.origin, pmins, mins );
-	VectorAdd( ent->client->ps.origin, pmaxs, maxs );
+	glm::vec3 mins = VEC2GLM( ent->client->ps.origin ) + pmins - range;
+	glm::vec3 maxs = VEC2GLM( ent->client->ps.origin ) + pmaxs + range;
 
-	VectorSubtract( mins, range, mins );
-	VectorAdd( maxs, range, maxs );
-
-	num = G_CM_AreaEntities( VEC2GLM( mins ), VEC2GLM( maxs ), touch, MAX_GENTITIES );
+	int num = G_CM_AreaEntities( mins, maxs, touch, MAX_GENTITIES );
 
 	// can't use ent->absmin, because that has a one unit pad
 	VectorAdd( ent->client->ps.origin, ent->r.mins, mins );
 	VectorAdd( ent->client->ps.origin, ent->r.maxs, maxs );
 
-	for ( i = 0; i < num; i++ )
+	for ( int i = 0; i < num; i++ )
 	{
-		hit = &g_entities[ touch[ i ] ];
+		gentity_t* hit = &g_entities[ touch[ i ] ];
 
 		if ( !hit->touch && !ent->touch )
 		{
@@ -498,15 +491,14 @@ void  G_TouchTriggers( gentity_t *ent )
 			continue;
 		}
 
-		if ( !G_CM_EntityContact( VEC2GLM( mins ), VEC2GLM( maxs ), hit, traceType_t::TT_AABB ) )
+		if ( !G_CM_EntityContact( mins, maxs, hit, traceType_t::TT_AABB ) )
 		{
 			continue;
 		}
 
-		memset( &trace, 0, sizeof( trace ) );
-
 		if ( hit->touch )
 		{
+			trace_t trace;
 			hit->touch( hit, ent, &trace );
 		}
 	}
