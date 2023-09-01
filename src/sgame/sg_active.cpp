@@ -1440,17 +1440,14 @@ void G_UnlaggedCalc( int time, gentity_t *rewindEnt )
 */
 void G_UnlaggedOff()
 {
-	int       i = 0;
-	gentity_t *ent;
-
 	if ( !g_unlagged.Get() )
 	{
 		return;
 	}
 
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( int i = 0; i < level.maxclients; i++ )
 	{
-		ent = &g_entities[ i ];
+		gentity_t* ent = &g_entities[ i ];
 
 		if ( !ent->client->unlaggedBackup.used )
 		{
