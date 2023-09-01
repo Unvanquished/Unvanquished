@@ -1153,7 +1153,8 @@ static void FindZapChainTargets( zap_t *zap )
 	}
 }
 
-static void UpdateZapEffect( zap_t *zap )
+// origin is just used for PVS determinations
+static void UpdateZapEffect( zap_t *zap, const glm::vec3 &origin )
 {
 	int i;
 	int entityNums[ LEVEL2_AREAZAP_MAX_TARGETS + 1 ];
@@ -1170,8 +1171,7 @@ static void UpdateZapEffect( zap_t *zap )
 	BG_PackEntityNumbers( &zap->effectChannel->s,
 	                      entityNums, zap->numTargets + 1 );
 
-
-	G_SetOrigin( zap->effectChannel, muzzle );
+	G_SetOrigin( zap->effectChannel, origin );
 	G_CM_LinkEntity( zap->effectChannel );
 }
 
@@ -1214,7 +1214,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 		zap->effectChannel = G_NewEntity( NO_CBSE );
 		zap->effectChannel->s.eType = entityType_t::ET_LEV2_ZAP_CHAIN;
 		zap->effectChannel->classname = "lev2zapchain";
-		UpdateZapEffect( zap );
+		UpdateZapEffect( zap, VEC2GLM( muzzle ) );
 
 		return;
 	}
@@ -1255,7 +1255,11 @@ void G_UpdateZaps( int msec )
 			}
 		}
 
-		UpdateZapEffect( zap );
+		glm::vec3 attackerForward;
+		AngleVectors( VEC2GLM( zap->creator->client->ps.viewangles ), &attackerForward, nullptr, nullptr );
+		glm::vec3 attackerMuzzle = G_CalcMuzzlePoint( zap->creator, attackerForward );
+
+		UpdateZapEffect( zap, attackerMuzzle );
 	}
 }
 
