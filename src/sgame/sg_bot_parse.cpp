@@ -1029,12 +1029,12 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	AIActionNode_t        node = {};
 	struct AIActionMap_s  *action = nullptr;
 
+	node.lineNum = current->token.line;
+
 	if ( !expectToken( "action", &current, true ) )
 	{
 		return nullptr;
 	}
-
-	node.lineNum = current->token.line;
 
 	if ( !current )
 	{

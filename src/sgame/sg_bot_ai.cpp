@@ -1541,31 +1541,29 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 	if ( GoalInRange( self, ENTITY_USE_RANGE ) )
 	{
-		if ( numUpgrades )
-		{
-			BotSellUpgrades( self );
-			for ( i = 0; i < numUpgrades; i++ )
-			{
-				if ( !BotBuyUpgrade( self, upgrades[i] ) )
-				{
-					return STATUS_FAILURE;
-				}
-			}
-		}
+		BotSellUpgrades( self );
+		BotSellWeapons( self );
 
-		if ( weapon != WP_NONE )
+		for ( i = 0; i < numUpgrades; i++ )
 		{
-			BotSellWeapons( self );
-			if ( !BotBuyWeapon( self, weapon ) )
+			if ( !BotBuyUpgrade( self, upgrades[i] ) )
 			{
 				return STATUS_FAILURE;
 			}
 		}
 
-		// make sure that we're not using the blaster
 		if ( weapon != WP_NONE )
 		{
-			G_ForceWeaponChange( self, weapon );
+			if ( !BotBuyWeapon( self, weapon ) )
+			{
+				return STATUS_FAILURE;
+			}
+
+			// make sure that we're not using the blaster
+			if ( weapon != WP_NONE )
+			{
+				G_ForceWeaponChange( self, weapon );
+			}
 		}
 
 		return STATUS_SUCCESS;
