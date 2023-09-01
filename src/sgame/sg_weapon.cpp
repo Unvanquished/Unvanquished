@@ -531,19 +531,14 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 // target: if not nullptr, missile will automatically aim at target
 // think: callback giving missile's behavior
 // thinkDelta: number of ms between each call to think()
-// lifetime: how long missile will be active
 //
 // This function uses those additional variables:
 // * muzzle
 // * forward
 // * level.time
-static void FireMissile( gentity_t* self, missile_t missile, gentity_t* target, void (*think)( gentity_t* ), int thinkDelta, int lifetime )
+static void FireMissile( gentity_t* self, missile_t missile, gentity_t* target, void (*think)( gentity_t* ), int thinkDelta )
 {
-	gentity_t *m = G_SpawnMissile( missile, self, muzzle, forward, target , think, level.time + thinkDelta );
-	if ( lifetime )
-	{
-		m->timestamp = level.time + lifetime;
-	}
+	G_SpawnMissile( missile, self, muzzle, forward, target, think, level.time + thinkDelta );
 }
 
 /*
@@ -689,7 +684,7 @@ ROCKET POD
 ======================================================================
 */
 
-static void RocketThink( gentity_t *self )
+void RocketThink( gentity_t *self )
 {
 	vec3_t currentDir, targetDir, newDir, rotAxis;
 	float  rotAngle;
@@ -1615,7 +1610,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_BLASTER:
-					FireMissile( self, MIS_BLASTER, nullptr, G_ExplodeMissile, BG_Missile( MIS_BLASTER )->lifetime, 0 );
+					FireMissile( self, MIS_BLASTER, nullptr, G_ExplodeMissile, BG_Missile( MIS_BLASTER )->lifetime );
 					break;
 
 				case WP_MACHINEGUN:
@@ -1631,11 +1626,11 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_FLAMER:
-					FireMissile( self, MIS_FLAMER, nullptr, G_FreeEntity, BG_Missile( MIS_FLAMER )->lifetime, 0 );
+					FireMissile( self, MIS_FLAMER, nullptr, G_FreeEntity, BG_Missile( MIS_FLAMER )->lifetime );
 					break;
 
 				case WP_PULSE_RIFLE:
-					FireMissile( self, MIS_PRIFLE, nullptr, G_ExplodeMissile, BG_Missile( MIS_PRIFLE )->lifetime, 0 );
+					FireMissile( self, MIS_PRIFLE, nullptr, G_ExplodeMissile, BG_Missile( MIS_PRIFLE )->lifetime );
 					break;
 
 				case WP_MASS_DRIVER:
@@ -1655,11 +1650,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_LOCKBLOB_LAUNCHER:
-					FireMissile( self, MIS_LOCKBLOB, nullptr, G_ExplodeMissile, BG_Missile( MIS_LOCKBLOB )->lifetime, 0 );
-					break;
-
-				case WP_ROCKETPOD:
-					FireMissile( self, MIS_ROCKET, self->target.entity, RocketThink, ROCKET_TURN_PERIOD, BG_Missile( MIS_ROCKET )->lifetime );
+					FireMissile( self, MIS_LOCKBLOB, nullptr, G_ExplodeMissile, BG_Missile( MIS_LOCKBLOB )->lifetime );
 					break;
 
 				case WP_MGTURRET:
@@ -1708,11 +1699,11 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			switch ( weapon )
 			{
 				case WP_ALEVEL3_UPG:
-					FireMissile( self, MIS_BOUNCEBALL, nullptr, G_ExplodeMissile, BG_Missile( MIS_BOUNCEBALL )->lifetime, 0 );
+					FireMissile( self, MIS_BOUNCEBALL, nullptr, G_ExplodeMissile, BG_Missile( MIS_BOUNCEBALL )->lifetime );
 					break;
 
 				case WP_ABUILD2:
-					FireMissile( self, MIS_SLOWBLOB, nullptr, G_ExplodeMissile, BG_Missile( MIS_SLOWBLOB )->lifetime, 0 );
+					FireMissile( self, MIS_SLOWBLOB, nullptr, G_ExplodeMissile, BG_Missile( MIS_SLOWBLOB )->lifetime );
 					break;
 
 				default:
@@ -1793,10 +1784,10 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 	switch ( upgrade )
 	{
 		case UP_GRENADE:
-			FireMissile( self, MIS_GRENADE, nullptr, G_ExplodeMissile, BG_Missile( MIS_GRENADE )->lifetime, 0 );
+			FireMissile( self, MIS_GRENADE, nullptr, G_ExplodeMissile, BG_Missile( MIS_GRENADE )->lifetime );
 			break;
 		case UP_FIREBOMB:
-			FireMissile( self, MIS_FIREBOMB, nullptr, FirebombMissileThink, BG_Missile( MIS_FIREBOMB )->lifetime, 0 );
+			FireMissile( self, MIS_FIREBOMB, nullptr, FirebombMissileThink, BG_Missile( MIS_FIREBOMB )->lifetime );
 			break;
 		default:
 			break;
