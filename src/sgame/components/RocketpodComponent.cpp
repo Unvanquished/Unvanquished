@@ -257,6 +257,7 @@ bool RocketpodComponent::EnemyClose() {
 	return enemyClose;
 }
 
+void RocketThink(gentity_t*);
 void RocketpodComponent::Shoot() {
 	Entity* target = GetTurretComponent().GetTarget();
 
@@ -264,7 +265,13 @@ void RocketpodComponent::Shoot() {
 
 	entity.oldEnt->target = target->oldEnt;
 	G_AddEvent(entity.oldEnt, EV_FIRE_WEAPON, 0);
-	G_FireWeapon(entity.oldEnt, WP_ROCKETPOD, WPM_PRIMARY);
+
+	vec3_t forward;
+	AngleVectors(entity.oldEnt->buildableAim, forward, nullptr, nullptr);
+
+	gentity_t* missile = G_SpawnMissile(MIS_ROCKET, entity.oldEnt, entity.oldEnt->s.pos.trBase, forward,
+	                                    target->oldEnt, RocketThink, level.time + ROCKET_TURN_PERIOD);
+	missile->timestamp = level.time + BG_Missile(MIS_ROCKET)->lifetime;
 
 	lastShot = level.time;
 }
