@@ -1030,13 +1030,15 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	pc_token_list *current = *tokenlist;
 	pc_token_list *parenBegin;
 	AIActionNode_t        *ret = nullptr;
-	AIActionNode_t        node;
+	AIActionNode_t        node = {};
 	struct AIActionMap_s  *action = nullptr;
 
 	if ( !expectToken( "action", &current, true ) )
 	{
 		return nullptr;
 	}
+
+	node.lineNum = current->token.line;
 
 	if ( !current )
 	{
@@ -1055,7 +1057,6 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	parenBegin = current->next;
 
-	memset( &node, 0, sizeof( node ) );
 
 	BotInitNode( ACTION_NODE, action->run, &node );
 
