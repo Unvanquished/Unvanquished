@@ -69,11 +69,7 @@ global pain sound events for all clients.
 */
 static void P_DamageFeedback( gentity_t *player )
 {
-	gclient_t *client;
-	float     count;
-	vec3_t    angles;
-
-	client = player->client;
+	gclient_t *client = player->client;
 
 	if ( !PM_Live( client->ps.pm_type ) )
 	{
@@ -81,7 +77,7 @@ static void P_DamageFeedback( gentity_t *player )
 	}
 
 	// total points of damage shot at the player this frame
-	count = client->damage_received;
+	float count = client->damage_received;
 
 	if ( count == 0 )
 	{
@@ -106,7 +102,8 @@ static void P_DamageFeedback( gentity_t *player )
 	}
 	else
 	{
-		vectoangles( client->damage_from, angles );
+		glm::vec3 angles;
+		vectoangles( client->damage_from, &angles[0] );
 		client->ps.damagePitch = angles[ PITCH ] / 360.0 * 256;
 		client->ps.damageYaw = angles[ YAW ] / 360.0 * 256;
 	}
