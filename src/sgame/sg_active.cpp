@@ -1564,11 +1564,6 @@ void G_UnlaggedOn( gentity_t *attacker, glm::vec3 const&  muzzle, float range )
 */
 static void G_UnlaggedDetectCollisions( gentity_t *ent )
 {
-	unlagged_t *calc;
-	trace_t    tr;
-	float      r1, r2;
-	float      range;
-
 	if ( !g_unlagged.Get() )
 	{
 		return;
@@ -1579,7 +1574,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 		return;
 	}
 
-	calc = &ent->client->unlaggedCalc;
+	unlagged_t* calc = &ent->client->unlaggedCalc;
 
 	// if the client isn't moving, this is not necessary
 	if ( VectorCompare( ent->client->oldOrigin, ent->client->ps.origin ) )
@@ -1587,16 +1582,17 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 		return;
 	}
 
-	range = Distance( ent->client->oldOrigin, ent->client->ps.origin );
+	float range = Distance( ent->client->oldOrigin, ent->client->ps.origin );
 
 	// increase the range by the player's largest possible radius since it's
 	// the players bounding box that collides, not their origin
-	r1 = Distance( calc->origin, calc->mins );
-	r2 = Distance( calc->origin, calc->maxs );
+	float r1 = Distance( calc->origin, calc->mins );
+	float r2 = Distance( calc->origin, calc->maxs );
 	range += ( r1 > r2 ) ? r1 : r2;
 
 	G_UnlaggedOn( ent, VEC2GLM( ent->client->oldOrigin ), range );
 
+	trace_t tr;
 	G_CM_Trace( &tr, VEC2GLM( ent->client->oldOrigin ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->client->ps.origin ), ent->s.number, MASK_PLAYERSOLID, 0, traceType_t::TT_AABB );
 
 	if ( tr.entityNum >= 0 && tr.entityNum < MAX_CLIENTS )
