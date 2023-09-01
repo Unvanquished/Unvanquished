@@ -823,38 +823,39 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 
 static void BeaconAutoTag( gentity_t *self, int timePassed )
 {
-	gentity_t *traceEnt, *target;
-	gclient_t *client;
-	team_t    team;
-	vec3_t viewOrigin, forward, end;
-
-	if ( !( client = self->client ) ) return;
+	if ( self->client == nullptr )
+	{
+		return;
+	}
+	gclient_t* client = self->client;
 
 	// You can use noclip to inspect a team's tag beacons without changing them
 	if ( client->noclip ) return;
 
-	team = (team_t)client->pers.team;
+	team_t team = static_cast<team_t>( client->pers.team );
 
-	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
-	AngleVectors( self->client->ps.viewangles, forward, nullptr, nullptr );
-	VectorMA( viewOrigin, 65536, forward, end );
+	glm::vec3 viewOrigin = BG_GetClientViewOrigin( &self->client->ps );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
+	glm::vec3 end = viewOrigin + 65536.f * forward;
 
 	G_UnlaggedOn( self, VEC2GLM( viewOrigin ), 65536 );
-	traceEnt = Beacon::TagTrace( VEC2GLM( viewOrigin ), VEC2GLM( end ), self->s.number, MASK_SHOT, team, true );
+	gentity_t* traceEnt = Beacon::TagTrace( viewOrigin, end, self->s.number, MASK_SHOT, team, true );
 	G_UnlaggedOff( );
 
-	for ( target = nullptr; ( target = G_IterateEntities( target ) ); )
+	glm::vec3 sOrigin = VEC2GLM( self->s.origin );
+	for ( gentity_t* target = nullptr; ( target = G_IterateEntities( target ) ); )
 	{
+		glm::vec3 tOrigin = VEC2GLM( target->s.origin );
 		// Tag entity directly hit and entities in human radar range, make sure the latter are also
 		// in vis and, for buildables, are in a line of sight.
 		if( ( target == traceEnt ) ||
-		    ( team == TEAM_HUMANS &&
-		      BG_InventoryContainsUpgrade( UP_RADAR, client->ps.stats ) &&
-		      Distance( self->s.origin, target->s.origin ) < RADAR_RANGE &&
-		      Beacon::EntityTaggable( target->s.number, team, false ) &&
-		      G_CM_inPVSIgnorePortals( VEC2GLM( self->s.origin ), VEC2GLM( target->s.origin ) ) &&
-		      ( target->s.eType != entityType_t::ET_BUILDABLE ||
-		        G_LineOfSight( self, target, MASK_SOLID, false ) ) ) )
+		    ( BG_InventoryContainsUpgrade( UP_RADAR, client->ps.stats )
+					&& glm::distance( sOrigin, tOrigin ) < RADAR_RANGE
+					&& Beacon::EntityTaggable( target->s.number, team, false )
+					&& G_CM_inPVSIgnorePortals( sOrigin, tOrigin )
+					&& ( target->s.eType != entityType_t::ET_BUILDABLE
+						|| G_LineOfSight( self, target, MASK_SOLID, false ) ) ) )
 		{
 			target->tagScore     += timePassed;
 			target->tagScoreTime  = level.time;
