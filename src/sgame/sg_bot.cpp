@@ -233,16 +233,24 @@ bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior )
 	botMind->runningNodes.clear();
 	botMind->currentNode = nullptr;
 	botMind->clearNav();
+	botMind->lastBehaviorChangeTime = level.time;
 	//this does not makes much sense, but let's keep things like
 	//this for now.
 	botMind->m_queue.clear();
 
 	botMind->behaviorTree = ReadBehaviorTree( behavior.c_str(), &treeList );
 
+	botMind->isBuilder = false;
+	if ( strcmp( behavior.c_str(), "builder" ) == 0 )
+	{
+		botMind->isBuilder = true;
+	}
+
 	if ( !botMind->behaviorTree )
 	{
 		Log::Warn( "Problem when loading behavior tree %s, trying default", behavior );
 		botMind->behaviorTree = ReadBehaviorTree( BOT_DEFAULT_BEHAVIOR, &treeList );
+		botMind->isBuilder = false;
 
 		if ( !botMind->behaviorTree )
 		{
@@ -611,12 +619,18 @@ void G_BotSpectatorThink( gentity_t *self )
 				weapon = WP_HBUILD;
 			}
 
+			if ( g_bot_ckit.Get() && self->botMind->isBuilder )
+			{
+				weapon = WP_HBUILD;
+			}
+
 			G_ScheduleSpawn( self->client, PCL_HUMAN_NAKED, weapon );
 			BotSetNavmesh( self, PCL_HUMAN_NAKED );
 		}
 		else if ( teamnum == TEAM_ALIENS )
 		{
-			G_ScheduleSpawn( self->client, PCL_ALIEN_LEVEL0 );
+			class_t builderClass = BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ? PCL_ALIEN_BUILDER0_UPG : PCL_ALIEN_BUILDER0;
+			G_ScheduleSpawn( self->client, self->botMind->isBuilder ? builderClass : PCL_ALIEN_LEVEL0 );
 			BotSetNavmesh( self, PCL_ALIEN_LEVEL0 );
 		}
 	}
@@ -773,6 +787,164 @@ void G_BotFill(bool immediately)
 					return;
 				}
 				--missingFillers;
+			}
+		}
+	}
+}
+
+static Cvar::Cvar<bool> g_bot_buildAliens("g_bot_buildAliens", "whether alien bots build", Cvar::NONE, true);
+static Cvar::Cvar<bool> g_bot_buildHumans("g_bot_buildHumans", "whether human bots build", Cvar::NONE, true);
+static Cvar::Cvar<int> g_bot_timeUntilBuild("g_bot_timeUntilBuild", "how long bots should wait for users to join until they start to build (milliseconds)", Cvar::NONE, 1000);
+
+void G_BotSetAutomaticBehaviors()
+{
+	static int nextCheck = g_bot_timeUntilBuild.Get();
+	if (level.time < nextCheck) {
+		return;
+	}
+	nextCheck = level.time + 2000;
+
+	struct
+	{
+		int numBots;
+		std::vector<int> builders;
+		std::vector<int> nonBuilders;
+	} teams[ NUM_TEAMS ] = {};
+
+	for (int id = 0; id < MAX_CLIENTS; id++)
+	{
+		auto& pers = level.clients[ id ].pers;
+		team_t team = G_Team( &g_entities[ id ] );
+		if ( pers.connected == CON_CONNECTED && g_entities[ id ].r.svFlags & SVF_BOT )
+		{
+			if ( team == TEAM_HUMANS || team == TEAM_ALIENS )
+			{
+				teams[ team ].numBots++;
+				if ( g_entities[ id ].botMind->isBuilder )
+				{
+					teams[ team ].builders.push_back( id );
+				}
+				else
+				{
+					teams[ team ].nonBuilders.push_back( id );
+				}
+			}
+		}
+	}
+	for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
+	{
+		// TODO: take into account that these cvars can be changed while a game
+		// is running
+		if ( team == TEAM_ALIENS && ( !g_bot_buildAliens.Get() || !g_bot_builder.Get() || !g_bot_builderupg.Get() ) )
+		{
+			// HACK: do not build if any granger is disabled
+			continue;
+		}
+		else if ( team == TEAM_HUMANS && ( !g_bot_buildHumans.Get() || !g_bot_ckit.Get() ) )
+		{
+			continue;
+		}
+		if ( teams[ team ].numBots == 0 )
+		{
+			continue;
+		}
+		int numUsers = level.team[ team ].numClients - teams[ team ].numBots;
+		if ( numUsers == 0 )
+		{
+			ASSERT( teams[ team ].numBots > 0 );
+			int someBotId = teams[ team ].builders.empty() ? teams[ team ].nonBuilders[ 0 ] : teams[ team ].builders[ 0 ];
+			auto haveBuilding = [&] ( buildable_t buildable )
+			{
+				return g_entities[ someBotId ].botMind->closestBuildings[ buildable ].ent != nullptr;
+			};
+			bool canBuild = false;
+			// TODO: use BP cost as specified in BG_Buildable( buildable )->buildPoints
+			switch ( team )
+			{
+			case TEAM_ALIENS:
+				if ( !haveBuilding( BA_A_OVERMIND ) )
+				{
+					canBuild = true;
+				}
+				else if ( !haveBuilding( BA_A_LEECH ) )
+				{
+					canBuild = true;
+				}
+				else if ( BG_BuildableUnlocked( BA_A_BOOSTER ) && !haveBuilding( BA_H_ARMOURY ) && G_GetFreeBudget( team ) >= 12 )
+				{
+					canBuild = true;
+				}
+				else if ( BG_BuildableUnlocked( BA_A_BOOSTER ) && G_GetFreeBudget( team ) >= 10 )
+				{
+					canBuild = true;
+				}
+				else if ( G_GetFreeBudget( team ) >= 22 )
+				{
+					canBuild = true;
+				}
+				break;
+			case TEAM_HUMANS:
+				if ( !haveBuilding( BA_H_REACTOR ) )
+				{
+					canBuild = true;
+				}
+				else if ( !haveBuilding( BA_H_DRILL ) )
+				{
+					canBuild = true;
+				}
+				else if ( !haveBuilding( BA_H_ARMOURY ) && G_GetFreeBudget( team ) >= 8 )
+				{
+					canBuild = true;
+				}
+				else if ( !haveBuilding( BA_H_MEDISTAT ) && G_GetFreeBudget( team ) >= 8 )
+				{
+					canBuild = true;
+				}
+				else if ( G_GetFreeBudget( team ) >= 10 )
+				{
+					canBuild = true;
+				}
+				break;
+			default:
+				break;
+			}
+			if ( G_IsSuddenDeath() )
+			{
+				switch ( team )
+				{
+				case TEAM_ALIENS:
+					if ( haveBuilding( BA_A_OVERMIND ) && haveBuilding( BA_A_LEECH ) && haveBuilding( BA_A_BOOSTER ) )
+					{
+						canBuild = false;
+					}
+					break;
+				case TEAM_HUMANS:
+					if ( haveBuilding( BA_H_REACTOR ) && haveBuilding( BA_H_DRILL ) && haveBuilding( BA_H_ARMOURY ) && haveBuilding( BA_H_MEDISTAT ) )
+					{
+						canBuild = false;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+			if ( canBuild && teams[ team ].builders.empty() )
+			{
+				G_BotChangeBehavior( teams[ team ].nonBuilders[ 0 ], "builder" );
+			}
+			else if ( !canBuild )
+			{
+				for ( auto id : teams[ team ].builders )
+				{
+					G_BotChangeBehavior( id, "default" );
+				}
+			}
+		}
+		else
+		{
+			for ( auto id : teams[ team ].builders )
+			{
+				G_BotChangeBehavior( id, "default" );
 			}
 		}
 	}

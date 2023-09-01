@@ -609,14 +609,41 @@ AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t* )
 	{
 		evolveInfo_t info = BG_ClassEvolveInfoFromTo( currentClass, cl.item );
 
-		if ( info.evolveCost > 0 // no devolving or evolving to the same
-				&& BotEvolveToClass( self, cl.item ) )
+		bool isBuilder = currentClass == PCL_ALIEN_BUILDER0 || currentClass == PCL_ALIEN_BUILDER0_UPG;
+		if ( ( info.evolveCost > 0     // no devolving or evolving to the same
+			   || ( isBuilder && cl.item == PCL_ALIEN_LEVEL0 )
+			   || ( currentClass == PCL_ALIEN_BUILDER0 && cl.item == PCL_ALIEN_BUILDER0_UPG ) )
+			 && BotEvolveToClass( self, cl.item ) )
 		{
 			return STATUS_SUCCESS;
 		}
 	}
 
 	return STATUS_FAILURE;
+}
+
+AINodeStatus_t BotActionDevolveToBuilder( gentity_t *self, AIGenericNode_t* )
+{
+	class_t targetClass = BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ? PCL_ALIEN_BUILDER0_UPG : PCL_ALIEN_BUILDER0;
+
+	if ( !self->botMind->closestBuildings[ BA_A_OVERMIND ].ent )
+	{
+		return STATUS_FAILURE;
+	}
+
+	glm::vec3 ownPos = VEC2GLM( self->s.origin );
+	glm::vec3 overmindPos = VEC2GLM( self->botMind->closestBuildings[ BA_A_OVERMIND ].ent->s.origin );
+	if ( glm::distance2( ownPos, overmindPos ) > Square( 200 ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( !BotEvolveToClass( self, targetClass ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	return STATUS_SUCCESS;
 }
 
 // Allow human bots to decide what to buy

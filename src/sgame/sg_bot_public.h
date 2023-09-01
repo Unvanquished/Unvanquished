@@ -73,6 +73,7 @@ void G_BotCleanup();
 void G_BotFill( bool immediately );
 void G_BotRemoveObstacle( qhandle_t handle );
 void G_BotUpdateObstacles();
+void G_BotSetAutomaticBehaviors();
 std::string G_BotToString( gentity_t *bot );
 
 const char BOT_DEFAULT_BEHAVIOR[] = "default";

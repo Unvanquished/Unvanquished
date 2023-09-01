@@ -217,12 +217,14 @@ public:
 	int spawnTime;
 	int lastNavconTime;
 	int lastNavconDistance;
+	int lastBehaviorChangeTime;
 
 	void setHasOffmeshGoal( bool val ) { hasOffmeshGoal = val; }
 	bool hasOffmeshGoal;
 
 	Util::optional< glm::vec3 > userSpecifiedPosition;
 	Util::optional< int > userSpecifiedClientNum;
+	bool isBuilder;
 private:
 	//avoid relying on buttons to remember what AI was doing
 	bool wantSprinting = false;

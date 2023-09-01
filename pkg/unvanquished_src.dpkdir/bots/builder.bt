@@ -1,0 +1,58 @@
+selector
+{
+	condition ( team == TEAM_HUMANS )
+	{
+		selector
+		{
+			behavior unstick
+			behavior use_medkit
+
+			sequence
+			{
+				condition !haveWeapon( WP_HBUILD )
+				selector
+				{
+					action buy( WP_HBUILD )
+					action suicide
+				}
+			}
+
+			action buildMain
+			action buildInRadius( E_H_REACTOR, 700 )
+			action build
+
+			// if all other actions fail: stand still
+		}
+	}
+	condition ( team == TEAM_ALIENS )
+	{
+		selector
+		{
+			behavior unstick
+
+			sequence
+			{
+				condition class != PCL_ALIEN_BUILDER0 && class != PCL_ALIEN_BUILDER0_UPG
+				selector
+				{
+					sequence
+					{
+						action moveTo( E_A_OVERMIND )
+						selector
+						{
+							action evolveTo( PCL_ALIEN_BUILDER0_UPG )
+							action evolveTo( PCL_ALIEN_BUILDER0 )
+						}
+					}
+					action suicide
+				}
+			}
+
+			action buildMain
+			action buildInRadius( E_A_OVERMIND, 700 )
+			action build
+
+			// if all other actions fail: stand still
+		}
+	}
+}
