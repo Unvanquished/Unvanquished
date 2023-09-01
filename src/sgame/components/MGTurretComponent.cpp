@@ -58,8 +58,11 @@ void MGTurretComponent::Think(int timeDelta) {
 	if (lastTargetSearch + TARGET_SEARCH_PERIOD <= level.time &&
 	    !GetTurretComponent().TargetValid()) {
 
+		glm::vec3 aimDirection;
+		AngleVectors(GetTurretComponent().GetAimAngles(), &aimDirection, nullptr, nullptr);
+
 		GetTurretComponent().FindEntityTarget(
-			[this](Entity& a, Entity& b)->bool{ return this->CompareTargets(a, b); }
+			[this, aimDirection](Entity& a, Entity& b)->bool{ return this->CompareTargets(aimDirection, a, b); }
 		);
 
 		lastTargetSearch = level.time;
@@ -90,7 +93,7 @@ void MGTurretComponent::Think(int timeDelta) {
 	}
 }
 
-bool MGTurretComponent::CompareTargets(Entity& a, Entity& b) {
+bool MGTurretComponent::CompareTargets(const glm::vec3& aimDirection, Entity& a, Entity& b) {
 	// TODO: Prefer target that isn't yet targeted.
 	// This makes group attacks more and dretch spam less efficient.
 
@@ -106,15 +109,11 @@ bool MGTurretComponent::CompareTargets(Entity& a, Entity& b) {
 		return false;
 	}
 
-	// Prefer target that can be aimed at more quickly.
-	// This makes the turret spend less time tracking enemies.
-	vec3_t aimDirectionOldVec;
-	AngleVectors(entity.oldEnt->buildableAim, aimDirectionOldVec, nullptr, nullptr);
-	glm::vec3 aimDirection = VEC2GLM( aimDirectionOldVec );
-
 	glm::vec3 directionToA = glm::normalize( VEC2GLM( a.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
 	glm::vec3 directionToB = glm::normalize( VEC2GLM( b.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.pos.trBase ) );
 
+	// Prefer target that can be aimed at more quickly.
+	// This makes the turret spend less time tracking enemies.
 	return glm::dot( directionToA, aimDirection ) > glm::dot( directionToB, aimDirection );
 }
 

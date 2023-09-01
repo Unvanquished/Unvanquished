@@ -122,7 +122,9 @@ void RocketpodComponent::Think(int timeDelta) {
 				GetTurretComponent().MoveHeadToTarget(timeDelta);
 			}
 
-			bool safeShot = SafeShot();
+			glm::vec3 aimDirection;
+			AngleVectors(GetTurretComponent().GetAimAngles(), &aimDirection, nullptr, nullptr);
+			bool safeShot = SafeShot(aimDirection);
 
 			// Lock onto the target and shoot if lock was held long enough and it's safe to do so.
 			if (lockingOn && safeShot && lockingOnSince + LOCKON_TIME <= level.time) {
@@ -130,7 +132,7 @@ void RocketpodComponent::Think(int timeDelta) {
 				firing = true;
 
 				if (lastShot + ROCKETPOD_ATTACK_PERIOD <= level.time) {
-					Shoot();
+					Shoot(aimDirection);
 				}
 			} else if (!lockingOn) {
 				// Start lockon when the target can be hit, even if it's not safe to shoot yet.
@@ -192,11 +194,8 @@ bool RocketpodComponent::CompareTargets(Entity &a, Entity &b) {
 	return (distanceToA > distanceToB);
 }
 
-bool RocketpodComponent::SafeShot() {
-	glm::vec3 aimDirection;
-	AngleVectors( entity.oldEnt->buildableAim, &aimDirection[0], nullptr, nullptr );
-
-	return SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), aimDirection );
+bool RocketpodComponent::SafeShot(const glm::vec3& direction) {
+	return SafeShot( entity.oldEnt->num(), VEC2GLM( entity.oldEnt->s.pos.trBase ), direction );
 }
 
 bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin, const glm::vec3& direction) {
@@ -258,7 +257,7 @@ bool RocketpodComponent::EnemyClose() {
 }
 
 void RocketThink(gentity_t*);
-void RocketpodComponent::Shoot() {
+void RocketpodComponent::Shoot(const glm::vec3& direction) {
 	Entity* target = GetTurretComponent().GetTarget();
 
 	ASSERT(target);
@@ -266,10 +265,7 @@ void RocketpodComponent::Shoot() {
 	entity.oldEnt->target = target->oldEnt;
 	G_AddEvent(entity.oldEnt, EV_FIRE_WEAPON, 0);
 
-	vec3_t forward;
-	AngleVectors(entity.oldEnt->buildableAim, forward, nullptr, nullptr);
-
-	gentity_t* missile = G_SpawnMissile(MIS_ROCKET, entity.oldEnt, entity.oldEnt->s.pos.trBase, forward,
+	gentity_t* missile = G_SpawnMissile(MIS_ROCKET, entity.oldEnt, entity.oldEnt->s.pos.trBase, &direction[0],
 	                                    target->oldEnt, RocketThink, level.time + ROCKET_TURN_PERIOD);
 	missile->timestamp = level.time + BG_Missile(MIS_ROCKET)->lifetime;
 

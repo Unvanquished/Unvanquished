@@ -1555,15 +1555,15 @@ void G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, const vec3_
 void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 {
 	// calculate muzzle
-	if ( self->client )
+	if ( weapon == WP_MGTURRET )
 	{
-		AngleVectors( self->client->ps.viewangles, forward, right, up );
-		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+		AngleVectors( &self->entity->Get<TurretComponent>()->GetAimAngles()[0], forward, right, up );
+		VectorCopy( self->s.pos.trBase, muzzle );
 	}
 	else
 	{
-		AngleVectors( self->buildableAim, forward, right, up );
-		VectorCopy( self->s.pos.trBase, muzzle );
+		AngleVectors( self->client->ps.viewangles, forward, right, up );
+		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 	}
 
 	switch ( weaponMode )

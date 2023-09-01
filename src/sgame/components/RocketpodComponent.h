@@ -64,9 +64,9 @@ class RocketpodComponent: public RocketpodComponentBase {
 		/**
 		 * @return Whether an unguided rocket shot would hit friendly targets.
 		 */
-		bool SafeShot();
+		bool SafeShot(const glm::vec3& direction);
 
-		void Shoot();
+		void Shoot(const glm::vec3& direction);
 
 		/**
 		 * @brief In safe mode, the shutters are closed and the rocketpod does not act.
