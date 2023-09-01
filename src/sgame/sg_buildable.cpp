@@ -396,10 +396,10 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	}
 
 	VectorNormalize( dirToTarget );
-	vectoangles( dirToTarget, self->buildableAim );
 
 	//fire at target
-	G_FireWeapon( self, WP_LOCKBLOB_LAUNCHER, WPM_PRIMARY );
+	G_SpawnMissile( MIS_LOCKBLOB, self, self->s.pos.trBase, dirToTarget, nullptr,
+	                G_ExplodeMissile, level.time + BG_Missile( MIS_LOCKBLOB )->lifetime );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, false );
 	self->customNumber = level.time + firespeed;
 }
