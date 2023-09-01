@@ -1512,7 +1512,7 @@ void G_UnlaggedOff()
 ==============
 */
 
-void G_UnlaggedOn( gentity_t *attacker, vec3_t muzzle, float range )
+void G_UnlaggedOn( gentity_t *attacker, const vec3_t muzzle, float range )
 {
 	int        i = 0;
 	gentity_t  *ent;

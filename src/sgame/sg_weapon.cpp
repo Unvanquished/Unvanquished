@@ -31,9 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 
-static vec3_t forward, right, up;
-static vec3_t muzzle;
-
 static void SendHitEvent( gentity_t *attacker, gentity_t *target, glm::vec3 const& origin, glm::vec3 const&  normal, entity_event_t evType );
 
 static bool TakesDamages( gentity_t const* ent )
@@ -322,8 +319,9 @@ Trace a bounding box against entities, but not the world
 Also check there is a line of sight between the start and end point
 ================
 */
-static void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
-                         const float width, const float height, gentity_t **target )
+static void G_WideTrace(
+		trace_t *tr, gentity_t *ent, const glm::vec3& muzzle, const glm::vec3& forward,
+		const float range, const float width, const float height, gentity_t **target )
 {
 	vec3_t mins, maxs, end;
 	float  halfDiagonal;
@@ -340,11 +338,11 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
 	VectorNegate( maxs, mins );
 	halfDiagonal = VectorLength( maxs );
 
-	G_UnlaggedOn( ent, muzzle, range + halfDiagonal );
+	G_UnlaggedOn( ent, &muzzle[ 0 ], range + halfDiagonal );
 
 	// Trace box against entities
 	VectorMA( muzzle, range, forward, end );
-	trap_Trace( tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY, 0 );
+	trap_Trace( tr, &muzzle[ 0 ], mins, maxs, end, ent->s.number, CONTENTS_BODY, 0 );
 
 	if ( tr->entityNum != ENTITYNUM_NONE )
 	{
@@ -354,8 +352,8 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, const float range,
 	// Line trace against the world, so we never hit through obstacles.
 	// The range is reduced according to the former trace so we don't hit something behind the
 	// current target.
-	VectorMA( muzzle, Distance( muzzle, tr->endpos ) + halfDiagonal, forward, end );
-	trap_Trace( tr, muzzle, nullptr, nullptr, end, ent->s.number, CONTENTS_SOLID, 0 );
+	VectorMA( muzzle, Distance( &muzzle[ 0 ], tr->endpos ) + halfDiagonal, forward, end );
+	trap_Trace( tr, &muzzle[ 0 ], nullptr, nullptr, end, ent->s.number, CONTENTS_SOLID, 0 );
 
 	// In case we hit a different target, which can happen if two potential targets are close,
 	// switch to it, so we will end up with the target we were looking at.
@@ -375,7 +373,7 @@ rather than blindly truncating.  This prevents it from truncating
 into a wall.
 ======================
 */
-void G_SnapVectorTowards( vec3_t v, vec3_t to )
+void G_SnapVectorTowards( vec3_t v, const vec3_t to )
 {
 	int i;
 
@@ -392,10 +390,10 @@ void G_SnapVectorTowards( vec3_t v, vec3_t to )
 	}
 }
 
-static void SendRangedHitEvent( gentity_t *attacker, gentity_t *target, trace_t *tr )
+static void SendRangedHitEvent( gentity_t *attacker, const glm::vec3 &muzzle, gentity_t *target, trace_t *tr )
 {
 	// snap the endpos to integers, but nudged towards the line
-	G_SnapVectorTowards( tr->endpos, muzzle );
+	G_SnapVectorTowards( tr->endpos, &muzzle[ 0 ] );
 
 	entity_event_t evType = HasComponents<HealthComponent>(*target->entity) ? EV_WEAPON_HIT_ENTITY : EV_WEAPON_HIT_ENVIRONMENT;
 	SendHitEvent( attacker, target, VEC2GLM( tr->endpos ), VEC2GLM( tr->plane.normal ), evType );
@@ -456,19 +454,23 @@ static gentity_t *FireMelee( gentity_t *self, float range, float width, float he
 	trace_t   tr;
 	gentity_t *traceEnt;
 
-	G_WideTrace( &tr, self, range, width, height, &traceEnt );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr);
+	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
+
+	G_WideTrace( &tr, self, muzzle, forward, range, width, height, &traceEnt );
 
 	if ( not TakesDamages( traceEnt ) )
 	{
 		return nullptr;
 	}
 
-	traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), 0, mod );
+	traceEnt->Damage( damage, self, VEC2GLM( tr.endpos ), forward, 0, mod );
 
 	// for painsaw. This makes really little sense to me, but this is refactoring, not bugsquashing.
 	if ( falseRanged )
 	{
-		SendRangedHitEvent( self, traceEnt, &tr );
+		SendRangedHitEvent( self, muzzle, traceEnt, &tr );
 	}
 	else
 	{
@@ -492,6 +494,18 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 	vec3_t    end;
 	gentity_t *target;
 
+	glm::vec3 forward, right, up, muzzle;
+	if ( mod == MOD_MGTURRET )
+	{
+		AngleVectors( self->entity->Get<TurretComponent>()->GetAimAngles(), &forward, &right, &up );
+		VectorCopy( self->s.pos.trBase, muzzle );
+	}
+	else
+	{
+		AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+		muzzle = G_CalcMuzzlePoint( self, forward );
+	}
+
 	VectorMA( muzzle, 8192 * 16, forward, end );
 	if ( spread > 0.f )
 	{
@@ -505,13 +519,13 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 	// don't use unlagged if this is not a client (e.g. turret)
 	if ( self->client )
 	{
-		G_UnlaggedOn( self, muzzle, 8192 * 16 );
-		trap_Trace( &tr, muzzle, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
+		G_UnlaggedOn( self, &muzzle[ 0 ], 8192 * 16 );
+		trap_Trace( &tr, &muzzle[ 0 ], nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
 		G_UnlaggedOff();
 	}
 	else
 	{
-		trap_Trace( &tr, muzzle, nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
+		trap_Trace( &tr, &muzzle[ 0 ], nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
 	}
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -521,9 +535,9 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 
 	target = &g_entities[ tr.entityNum ];
 
-	SendRangedHitEvent( self, target, &tr );
+	SendRangedHitEvent( self, muzzle, target, &tr );
 
-	target->Damage(damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ), other, mod);
+	target->Damage(damage, self, VEC2GLM( tr.endpos ), forward, other, mod);
 }
 
 // spawns a missile at parent's muzzle going in forward dir
@@ -531,14 +545,12 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 // target: if not nullptr, missile will automatically aim at target
 // think: callback giving missile's behavior
 // thinkDelta: number of ms between each call to think()
-//
-// This function uses those additional variables:
-// * muzzle
-// * forward
-// * level.time
 static void FireMissile( gentity_t* self, missile_t missile, gentity_t* target, void (*think)( gentity_t* ), int thinkDelta )
 {
-	G_SpawnMissile( missile, self, muzzle, forward, target, think, level.time + thinkDelta );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr);
+	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
+	G_SpawnMissile( missile, self, &muzzle[ 0 ], &forward[ 0 ], target, think, level.time + thinkDelta );
 }
 
 /*
@@ -594,15 +606,19 @@ static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 {
 	gentity_t *tent;
 
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr);
+	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
+
 	// instead of an EV_WEAPON_HIT_* event, send this so client can generate the same spread pattern
-	tent = G_NewTempEntity( VEC2GLM( muzzle ), EV_SHOTGUN );
+	tent = G_NewTempEntity( muzzle, EV_SHOTGUN );
 	VectorScale( forward, 4096, tent->s.origin2 );
 	SnapVector( tent->s.origin2 );
 	tent->s.eventParm = rand() / ( RAND_MAX / 0x100 + 1 ); // seed for spread pattern
 	tent->s.otherEntityNum = self->s.number;
 
 	// calculate the pattern and do the damage
-	G_UnlaggedOn( self, muzzle, SHOTGUN_RANGE );
+	G_UnlaggedOn( self, &muzzle[ 0 ], SHOTGUN_RANGE );
 	ShotgunPattern( tent->s.pos.trBase, tent->s.origin2, tent->s.eventParm, self );
 	G_UnlaggedOff();
 }
@@ -798,13 +814,17 @@ LUCIFER CANNON
 ======================================================================
 */
 
-static gentity_t *FireLcannonHelper( gentity_t *self, vec3_t start, vec3_t dir,
+static gentity_t *FireLcannonHelper( gentity_t *self,
                                      int damage, int radius, int speed )
 {
 	// TODO: Tidy up this and lcannonFire
 
 	gentity_t *m;
 	float     charge;
+
+	vec3_t start, dir;
+	AngleVectors( self->client->ps.viewangles, dir, nullptr, nullptr );
+	G_CalcMuzzlePoint( self, dir, start );
 
 	if ( self->s.generic1 == WPM_PRIMARY )
 	{
@@ -851,12 +871,12 @@ static void FireLcannon( gentity_t *self, bool secondary )
 {
 	if ( secondary && self->client->ps.weaponCharge <= 0 )
 	{
-		FireLcannonHelper( self, muzzle, forward, LCANNON_SECONDARY_DAMAGE,
+		FireLcannonHelper( self, LCANNON_SECONDARY_DAMAGE,
 		                   LCANNON_SECONDARY_RADIUS, LCANNON_SECONDARY_SPEED );
 	}
 	else
 	{
-		FireLcannonHelper( self, muzzle, forward,
+		FireLcannonHelper( self,
 		                   self->client->ps.weaponCharge * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX,
 		                   LCANNON_RADIUS, LCANNON_SPEED );
 	}
@@ -1060,10 +1080,11 @@ bool G_CheckDretchAttack( gentity_t *self )
 	}
 
 	// Calculate muzzle point
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr);
+	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
 
-	G_WideTrace( &tr, self, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
+	G_WideTrace( &tr, self, muzzle, forward, LEVEL0_BITE_RANGE, LEVEL0_BITE_WIDTH, LEVEL0_BITE_WIDTH, &traceEnt );
 
 	//this is ugly, but so is all that mess in any case. I'm just trying to fix shit here, so go complain to whoever broke the game, not to me.
 
@@ -1075,7 +1096,7 @@ bool G_CheckDretchAttack( gentity_t *self )
 	}
 
 	traceEnt->Damage((float)LEVEL0_BITE_DMG, self, VEC2GLM( tr.endpos ),
-	                         VEC2GLM( forward ), 0, (meansOfDeath_t)MOD_LEVEL0_BITE);
+	                         forward, 0, (meansOfDeath_t)MOD_LEVEL0_BITE);
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
 
@@ -1171,7 +1192,8 @@ static void UpdateZapEffect( zap_t *zap, const glm::vec3 &origin )
 	trap_LinkEntity( zap->effectChannel );
 }
 
-static void CreateNewZap( gentity_t *creator, gentity_t *target )
+static void CreateNewZap( gentity_t *creator, const glm::vec3 &muzzle,
+                          const glm::vec3 &forward, gentity_t *target )
 {
 	int   i;
 	zap_t *zap;
@@ -1194,7 +1216,7 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 
 		// Zap chains only originate from alive entities.
 		if (target->Damage((float)LEVEL2_AREAZAP_DMG, creator, VEC2GLM( target->s.origin ),
-		                           VEC2GLM( forward ), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP)) {
+		                           forward, DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP)) {
 			FindZapChainTargets( zap );
 
 			for ( i = 1; i < zap->numTargets; i++ )
@@ -1203,14 +1225,14 @@ static void CreateNewZap( gentity_t *creator, gentity_t *target )
 				               LEVEL2_AREAZAP_CHAIN_RANGE ), LEVEL2_AREAZAP_CHAIN_FALLOFF ) ) + 1;
 
 				zap->targets[i]->Damage(damage, zap->creator, VEC2GLM( zap->targets[i]->s.origin ),
-				                       VEC2GLM( forward ), DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP);
+				                       forward, DAMAGE_NO_LOCDAMAGE, MOD_LEVEL2_ZAP);
 			}
 		}
 
 		zap->effectChannel = G_NewEntity( NO_CBSE );
 		zap->effectChannel->s.eType = entityType_t::ET_LEV2_ZAP_CHAIN;
 		zap->effectChannel->classname = "lev2zapchain";
-		UpdateZapEffect( zap, VEC2GLM( muzzle ) );
+		UpdateZapEffect( zap, muzzle );
 
 		return;
 	}
@@ -1302,12 +1324,16 @@ static void FireAreaZap( gentity_t *ent )
 	trace_t   tr;
 	gentity_t *traceEnt;
 
-	G_WideTrace( &tr, ent, LEVEL2_AREAZAP_RANGE, LEVEL2_AREAZAP_WIDTH, LEVEL2_AREAZAP_WIDTH, &traceEnt );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( ent->client->ps.viewangles ), &forward, nullptr, nullptr);
+	glm::vec3 muzzle = G_CalcMuzzlePoint( ent, forward );
+
+	G_WideTrace( &tr, ent, muzzle, forward, LEVEL2_AREAZAP_RANGE, LEVEL2_AREAZAP_WIDTH, LEVEL2_AREAZAP_WIDTH, &traceEnt );
 
 	if ( G_Team( traceEnt ) == TEAM_HUMANS &&
 			( traceEnt->client || traceEnt->s.eType == entityType_t::ET_BUILDABLE ) )
 	{
-		CreateNewZap( ent, traceEnt );
+		CreateNewZap( ent, muzzle, forward, traceEnt );
 	}
 }
 
@@ -1339,13 +1365,14 @@ bool G_CheckPounceAttack( gentity_t *self )
 	}
 
 	// Calculate muzzle point
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr);
+	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
 
 	// Trace from muzzle to see what we hit
 	pounceRange = self->client->ps.weapon == WP_ALEVEL3 ? LEVEL3_POUNCE_RANGE :
 	              LEVEL3_POUNCE_UPG_RANGE;
-	G_WideTrace( &tr, self, pounceRange, LEVEL3_POUNCE_WIDTH,
+	G_WideTrace( &tr, self, muzzle, forward, pounceRange, LEVEL3_POUNCE_WIDTH,
 	             LEVEL3_POUNCE_WIDTH, &traceEnt );
 
 	if ( not TakesDamages( traceEnt ) )
@@ -1358,7 +1385,7 @@ bool G_CheckPounceAttack( gentity_t *self )
 
 	self->client->pmext.pouncePayload = 0;
 
-	traceEnt->Damage((float)damage, self, VEC2GLM( tr.endpos ), VEC2GLM( forward ),
+	traceEnt->Damage((float)damage, self, VEC2GLM( tr.endpos ), forward,
 	                         DAMAGE_NO_LOCDAMAGE, MOD_LEVEL3_POUNCE);
 
 	SendMeleeHitEvent( self, traceEnt, &tr );
@@ -1544,7 +1571,7 @@ void G_WeightAttack( gentity_t *self, gentity_t *victim )
 Set muzzle location relative to pivoting eye.
 ===============
 */
-void G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, const vec3_t, const vec3_t, vec3_t muzzlePoint )
+void G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, vec3_t muzzlePoint )
 {
 	vec3_t normal;
 
@@ -1558,18 +1585,6 @@ void G_CalcMuzzlePoint( const gentity_t *self, const vec3_t forward, const vec3_
 
 void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 {
-	// calculate muzzle
-	if ( weapon == WP_MGTURRET )
-	{
-		AngleVectors( &self->entity->Get<TurretComponent>()->GetAimAngles()[0], forward, right, up );
-		VectorCopy( self->s.pos.trBase, muzzle );
-	}
-	else
-	{
-		AngleVectors( self->client->ps.viewangles, forward, right, up );
-		G_CalcMuzzlePoint( self, forward, right, up, muzzle );
-	}
-
 	switch ( weaponMode )
 	{
 		case WPM_PRIMARY:
@@ -1777,9 +1792,6 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 		Log::Warn( "G_FireUpgrade: Called with unknown upgrade." );
 		return;
 	}
-
-	AngleVectors( self->client->ps.viewangles, forward, right, up );
-	G_CalcMuzzlePoint( self, forward, right, up, muzzle );
 
 	switch ( upgrade )
 	{
