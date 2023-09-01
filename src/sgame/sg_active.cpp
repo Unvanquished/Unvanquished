@@ -2207,10 +2207,6 @@ static void ClientThink_real( gentity_t *self )
 	     !usercmdButtonPressed( client->oldbuttons, BTN_ACTIVATE ) &&
 	     Entities::IsAlive( self ) )
 	{
-		trace_t   trace;
-		vec3_t    view, point;
-		gentity_t *ent;
-
 		// look for object infront of player
 
 		glm::vec3 viewpoint = VEC2GLM( client->ps.origin );
@@ -2220,11 +2216,13 @@ static void ClientThink_real( gentity_t *self )
 		BG_BoundingBox( static_cast<class_t>( client->ps.stats[STAT_CLASS] ), mins, maxs );
 		auto range1 = ENTITY_USE_RANGE + RadiusFromBounds( &mins[0], &maxs[0] );
 
-		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
-		VectorMA( viewpoint, range1, view, point );
-		G_CM_Trace( &trace, viewpoint, glm::vec3(), glm::vec3(), VEC2GLM( point ), self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
+		glm::vec3 view;
+		AngleVectors( VEC2GLM( client->ps.viewangles ), &view, nullptr, nullptr );
+		glm::vec3 point = viewpoint + range1 * view;
+		trace_t trace;
+		G_CM_Trace( &trace, viewpoint, glm::vec3(), glm::vec3(), point, self->s.number, MASK_SHOT, 0, traceType_t::TT_AABB );
 
-		ent = &g_entities[ trace.entityNum ];
+		gentity_t *ent = &g_entities[ trace.entityNum ];
 		bool activableTarget = ent->s.eType == entityType_t::ET_BUILDABLE || ent->s.eType == entityType_t::ET_MOVER;
 
 		if ( ent && ent->use &&
