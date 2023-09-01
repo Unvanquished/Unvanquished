@@ -331,19 +331,17 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 }
 static void PushBot(gentity_t * ent, gentity_t * other)
 {
-	vec3_t dir, ang, f, r;
-	float oldspeed;
-
-	oldspeed = VectorLength(other->client->ps.velocity);
+	float oldspeed = glm::length( VEC2GLM( other->client->ps.velocity ) );
 	if(oldspeed < 200)
 	{
 		oldspeed = 200;
 	}
 
-	VectorSubtract(other->r.currentOrigin, ent->r.currentOrigin, dir);
-	VectorNormalize(dir);
-	vectoangles(dir, ang);
-	AngleVectors(ang, f, r, nullptr);
+	glm::vec3 ang, f, r;
+	glm::vec3 dir = VEC2GLM( other->r.currentOrigin ) - VEC2GLM( ent->r.currentOrigin );
+	dir = glm::normalize( dir );
+	vectoangles( &dir[0], &ang[0] );
+	AngleVectors( ang, &f, &r, nullptr );
 	f[2] = 0;
 	r[2] = 0;
 
