@@ -927,17 +927,16 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 				// Set validity bit on buildable
 				if ( buildable > BA_NONE )
 				{
-					vec3_t forward, aimDir, normal;
 					glm::vec3 dummy, dummy2;
 					int dummy3;
-					int dist;
 
-					BG_GetClientNormal( &client->ps,normal );
-					AngleVectors( client->ps.viewangles, aimDir, nullptr, nullptr );
-					ProjectPointOnPlane( forward, aimDir, normal );
-					VectorNormalize( forward );
+					glm::vec3 aimDir, forward;
+					glm::vec3 normal = BG_GetClientNormal( &client->ps );
+					AngleVectors( VEC2GLM( client->ps.viewangles ), &aimDir, nullptr, nullptr );
+					ProjectPointOnPlane( &forward[0], &aimDir[0], &normal[0] );
+					forward = glm::normalize( forward );
 
-					dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
+					int dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * glm::dot( forward, aimDir );
 
 					client->ps.stats[ STAT_BUILDABLE ] &= ~SB_BUILDABLE_STATE_MASK;
 					client->ps.stats[ STAT_BUILDABLE ] |= SB_BUILDABLE_FROM_IBE( G_CanBuild( ent, buildable, dist, dummy, dummy2, &dummy3 ) );
@@ -945,9 +944,8 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
 					{
 						float deltaEff = G_RGSPredictEfficiencyDelta( dummy, team );
-						int   deltaBP  = (int)(level.team[team].totalBudget + deltaEff *
-						                       g_buildPointBudgetPerMiner.Get()) -
-						                 (int)(level.team[team].totalBudget);
+						int   deltaBP  = static_cast<int>( level.team[team].totalBudget + deltaEff * g_buildPointBudgetPerMiner.Get() )
+							- static_cast<int>( level.team[team].totalBudget );
 
 						signed char deltaEffNetwork = (signed char)((float)0x7f * deltaEff);
 						signed char deltaBPNetwork  = (signed char)deltaBP;
