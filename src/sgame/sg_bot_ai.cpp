@@ -196,6 +196,17 @@ botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 
 	if ( e > E_NONE && e < E_NUM_BUILDABLES )
 	{
+		if ( BG_Buildable( e )->team == G_Team( self ) )
+		{
+			auto const& list = level.team[G_Team( self )].knownBuildings;
+			auto it = std::find_if( list.begin(), list.end(), [&]( building_ref_t const& other )
+					{ return other.type == static_cast<buildable_t>( e ); } );
+			if ( it == list.end() )
+			{
+				return botEntityAndDistance_t();
+			}
+			return { &g_entities[it->id], glm::distance( VEC2GLM( self->s.origin ), it->coords ) };
+		}
 		return mind->closestBuildings[ e ];
 	}
 
