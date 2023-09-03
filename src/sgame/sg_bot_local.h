@@ -64,6 +64,9 @@ public:
 	botTarget_t& operator=(botTarget_t &&);
 	~botTarget_t();
 
+	botTarget_t(const gentity_t &ent);
+	botTarget_t& operator=(const gentity_t &ent);
+
 	botTarget_t(const gentity_t *ent);
 	botTarget_t& operator=(const gentity_t *ent);
 

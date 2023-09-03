@@ -2298,6 +2298,18 @@ botTarget_t& botTarget_t::operator=( botTarget_t const& ) = default;
 botTarget_t& botTarget_t::operator=( botTarget_t && ) = default;
 botTarget_t::~botTarget_t( void ) = default;
 
+botTarget_t::botTarget_t( const gentity_t &newTarget )
+:ent( &newTarget ), type( targetType::ENTITY )
+{
+}
+
+botTarget_t& botTarget_t::operator=( const gentity_t& newTarget )
+{
+	botTarget_t ret( newTarget );
+	std::swap( *this, ret );
+	return *this;
+}
+
 botTarget_t::botTarget_t( const gentity_t *newTarget )
 :ent( newTarget ), type( targetType::ENTITY )
 {
