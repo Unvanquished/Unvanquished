@@ -2049,6 +2049,12 @@ static gentity_t *SpawnBuildable( gentity_t *builder, buildable_t buildable, con
 		maxs += origin;
 		G_BotAddObstacle( mins, maxs, built->num() );
 	}
+	building_ref_t bref;
+	bref.coords = origin;
+	bref.type = buildable;
+	bref.id = built - g_entities;
+	team_t ally = BG_Buildable( buildable )->team;
+	level.team[ally].knownBuildings.push_back( std::move( bref ) );
 
 	G_AddEvent( built, EV_BUILD_CONSTRUCT, 0 );
 

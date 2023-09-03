@@ -111,7 +111,7 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes );
 // global navigation
 void         G_BotNavInit( int generateNeeded );
 void         G_BotNavCleanup();
-bool     FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial );
+bool FindRouteToTarget( gentity_t const *self, botTarget_t const& target, bool allowPartial );
 bool         BotMoveToGoal( gentity_t *self );
 void         BotSetNavmesh( gentity_t  *ent, class_t newClass );
 void         BotMoveUpward( gentity_t *self, glm::vec3 target );

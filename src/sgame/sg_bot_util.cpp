@@ -223,32 +223,59 @@ Scoring functions for logic
 
 botEntityAndDistance_t BotGetHealTarget( const gentity_t *self )
 {
-	if ( G_Team( self ) == TEAM_HUMANS )
-	{
-		// may be null with near infinite distance
-		return self->botMind->closestBuildings[BA_H_MEDISTAT];
-	}
-
 	static constexpr glm::vec3 up( 0.0f, 0.0f, 1.0f );
 
-	for ( buildable_t buildable : { BA_A_BOOSTER, BA_A_OVERMIND, BA_A_SPAWN, BA_A_LEECH })
+	team_t team = G_Team( self );
+	struct candidate_t
 	{
-		botEntityAndDistance_t candidate =
-			self->botMind->closestBuildings[ buildable ];
+		building_ref_t ref;
+		float score; //lower is better
+	};
+	static std::vector<candidate_t> candidates;
+	candidates.reserve( level.team[team].knownBuildings.size() );
+	candidates.clear();
+	bool boosterPresent = false;
+	glm::vec3 const pos = VEC2GLM( self->s.origin );
+	for ( building_ref_t const& ref : level.team[team].knownBuildings )
+	{
+		if ( ref.id < 0 || team != BG_Buildable( ref.type )->team )
+		{
+			continue;
+		}
 
+		for ( buildable_t buildable : { BA_H_MEDISTAT, BA_A_BOOSTER, BA_A_OVERMIND, BA_A_SPAWN, BA_A_LEECH } )
+		{
+			if ( ref.type != buildable ) //TODO should also check if powered I guess
+			{
+				continue;
+			}
+
+			float dist = glm::distance( pos, ref.coords );
+			candidates.push_back( { ref, dist } );
+			boosterPresent = boosterPresent || buildable == BA_A_BOOSTER;
+		}
+	}
+	std::sort( candidates.begin(), candidates.end(),
+			[]( candidate_t const& a, candidate_t const& b )
+			{ return ( a.ref.type == BA_A_BOOSTER && b.ref.type != BA_A_BOOSTER ) || a.score < b.score; } );
+
+	for ( auto const& candidate : candidates )
+	{
 		// We skip buildings on roof or walls as bots can't wallwalk.
 		// Unless it's a booster, as boosters are often put on walls
 		// and have a large area of effect.
 		// TODO:
 		// - The dot product is used to simply extract z component, maybe remove it
-		// - Maybe check if the building is over the navmesh
-		if ( candidate.ent && ( glm::dot( VEC2GLM(candidate.ent->s.origin2), up ) >= MIN_WALK_NORMAL || buildable == BA_A_BOOSTER ) )
+		gentity_t const& ent = g_entities[candidate.ref.id];
+		glm::vec3 orientation = VEC2GLM( ent.s.origin2 );
+		if ( ( glm::dot( orientation, up ) >= MIN_WALK_NORMAL || candidate.ref.type == BA_A_BOOSTER )
+				&& FindRouteToTarget( self, ent, false ) )
 		{
-			return candidate;
+			return { &ent, candidate.score };
 		}
 	}
 	// ent will be null, but that makes it a valid default value
-	return self->botMind->closestBuildings[ BA_A_OVERMIND ];
+	return botEntityAndDistance_t();
 }
 
 // computes the maximum credits this bot could spend in
@@ -437,7 +464,7 @@ float BotGetHealScore( gentity_t *self )
 		return 0.0f;
 	}
 
-	float distToHealer = BotGetHealTarget( self ).distance;
+	float distToHealer = BotGetHealTarget( self ).distance; //TODO: check for validity.
 	float timeDist = distToHealer / GetMaximalSpeed( self );
 
 	return ( 1 + 5 * self->botMind->botSkill.percent() ) * ( 1 - percentHealth ) / sqrt( timeDist );

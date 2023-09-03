@@ -553,6 +553,13 @@ struct buildLog_t
 
 #define MAX_BUILDLOG         1024
 
+struct building_ref_t
+{
+	glm::vec3 coords;
+	buildable_t type;
+	int id; //-1 if building no longer exists, but still: prefer using coordinates!
+};
+
 struct level_locals_t
 {
 	gclient_t *clients; // [maxclients]
@@ -678,6 +685,7 @@ struct level_locals_t
 		int              lastTeamStatus;
 		int              lastTacticId;
 		int              lastTacticTime;
+		std::vector<building_ref_t> knownBuildings;
 	} team[ NUM_TEAMS ];
 
 	struct {

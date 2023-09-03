@@ -1119,7 +1119,7 @@ bool BotMoveToGoal( gentity_t *self )
 	return true;
 }
 
-bool FindRouteToTarget( gentity_t *self, botTarget_t target, bool allowPartial )
+bool FindRouteToTarget( gentity_t const *self, botTarget_t const& target, bool allowPartial )
 {
 	botRouteTarget_t routeTarget;
 	BotTargetToRouteTarget( self, target, &routeTarget );

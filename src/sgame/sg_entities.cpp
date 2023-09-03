@@ -176,7 +176,35 @@ void G_FreeEntity( gentity_t *entity )
 		Log::Debug("Freeing Entity %s", etos(entity));
 	}
 
-	G_BotRemoveObstacle( entity->num() );
+	if ( entity->s.eType == entityType_t::ET_BUILDABLE )
+	{
+		for ( int team = TEAM_ALL; team < NUM_TEAMS; ++team )
+		{
+			if ( not G_IsPlayableTeam( team ) )
+			{
+				continue;
+			}
+			auto start = level.team[team].knownBuildings.begin();
+			auto end   = level.team[team].knownBuildings.end();
+			auto it = std::find_if( start, end, [&]( building_ref_t& other )
+					{
+					return other.id == ( entity - g_entities );
+					} );
+			if ( it == end )
+			{
+				continue;
+			}
+			if ( team != G_Team( entity ) ) // for enemies, we simply set the ID to something invalid
+			{
+				it->id = -1;
+			}
+			else // allies just remove the data
+			{
+				level.team[team].knownBuildings.erase( it );
+			}
+		}
+		G_BotRemoveObstacle( entity->num() );
+	}
 
 	entity->mapEntity.deinstantiate();
 
