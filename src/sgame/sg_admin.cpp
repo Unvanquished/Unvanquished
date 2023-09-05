@@ -1441,7 +1441,6 @@ static bool admin_match( void *admin, const void *match )
 static int admin_out( void *admin, char *str )
 {
 	g_admin_admin_t *a = ( g_admin_admin_t * ) admin;
-	g_admin_level_t *l;
 	char            lastSeen[64] = "          ";
 
 	if ( !str )
@@ -1449,10 +1448,14 @@ static int admin_out( void *admin, char *str )
 		return 0;
 	}
 
-	l = G_admin_level( a->level );
+	g_admin_level_t *l = G_admin_level( a->level );
+	if ( l == nullptr )
+	{
+		Sys::Drop( "a->level is nullptr" );
+	}
 
 	int lncol = Color::StrlenNocolor( l->name );
-	int namelen  = strlen( l->name );
+	int namelen = strlen( l->name );
 
 	if ( a->lastSeen.tm_mday )
 	{
@@ -1461,7 +1464,7 @@ static int admin_out( void *admin, char *str )
 
 	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s ^*%s %s",
 	             a->level, namelen + ( admin_level_maxname - lncol ),
-	             l ? l->name : "(null)",
+	             l->name,
 	             lastSeen, a->name );
 
 	return 0;
@@ -4029,8 +4032,6 @@ bool G_admin_listplayers( gentity_t *ent )
 	int             authed;
 	char            namecleaned[ MAX_NAME_LENGTH ];
 	char            name2cleaned[ MAX_NAME_LENGTH ];
-	g_admin_level_t *l;
-	g_admin_level_t *d = G_admin_level( 0 );
 	bool        hint;
 	bool        canset = G_admin_permission( ent, "setlevel" );
 	bool	canseeWarn = G_admin_permission( ent, "warn" ) || G_admin_permission( ent, "ban" );
@@ -4081,7 +4082,7 @@ bool G_admin_listplayers( gentity_t *ent )
 		denied = ( p->pers.namelog->denyBuild
 		           || G_admin_permission( p->ent(), ADMF_NO_BUILD ) ) ? 'B' : ' ';
 
-		l = d;
+		g_admin_level_t *l = G_admin_level( 0 );
 		registeredname = nullptr;
 		hint = canset;
 
