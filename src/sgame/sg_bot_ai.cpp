@@ -567,7 +567,16 @@ This should always be used instead of the node->run function pointer
 */
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 {
-	AINodeStatus_t status = node->run( self, node );
+	AINodeStatus_t status;
+	if ( node->type == AINode_t::ACTION_NODE && !Entities::IsAlive( self ) )
+	{
+		// don't allow actions while dead
+		status = STATUS_FAILURE;
+	}
+	else
+	{
+		status = node->run( self, node );
+	}
 
 	// reset the current node if it finishes
 	// we do this so we can re-pathfind on the next entrance
