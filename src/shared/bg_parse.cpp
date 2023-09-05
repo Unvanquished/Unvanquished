@@ -474,14 +474,16 @@ static trType_t ParseTrajectoryType( const char *token )
 
 static int configVarComparator(const void* a, const void* b)
 {
-	const configVar_t *ca = (const configVar_t*) a;
-	const configVar_t *cb = (const configVar_t*) b;
+	const configVar_t *ca = static_cast<const configVar_t*>( a );
+	const configVar_t *cb = static_cast<const configVar_t*>( b );
 	return Q_stricmp(ca->name, cb->name);
 }
 
 static configVar_t* BG_FindConfigVar(const char *varName)
 {
-	return (configVar_t*) bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
+	configVar_t tmp = {};
+	tmp.name = varName;
+	return static_cast<configVar_t*>( bsearch(&tmp, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator) );
 }
 
 static bool BG_ParseConfigVar(configVar_t *var, const char **text, const char *filename)
