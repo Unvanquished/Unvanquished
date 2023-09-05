@@ -47,7 +47,9 @@ static void Svcmd_EntityFire_f()
 	int  entityNum;
 	gentity_t *selection;
 	gentityCall_t call;
-	gentityCallDefinition_t callDefinition = { nullptr, nullptr, nullptr, ON_DEFAULT, ECA_DEFAULT };
+	gentityCallDefinition_t callDefinition;
+	callDefinition.eventType = ON_DEFAULT;
+	callDefinition.actionType = ECA_DEFAULT;
 
 	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{

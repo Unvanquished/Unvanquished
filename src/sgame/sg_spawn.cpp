@@ -739,35 +739,36 @@ static gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
 
 static gentityCallDefinition_t G_NewCallDefinition( const char *eventKey, const char *string )
 {
-	ASSERT( string );
+	ASSERT( string && string[0] );
 
-	gentityCallDefinition_t newCallDefinition = { nullptr, nullptr, nullptr, ON_DEFAULT, ECA_NOP };
+	gentityCallDefinition_t newCallDefinition;
+	newCallDefinition.eventType = ON_DEFAULT;
+	newCallDefinition.actionType = ECA_NOP;
 
-	size_t stringLength = strlen( string ) + 1;
-	if ( stringLength == 1 )
+	size_t stringLength = strlen( string );
+	if ( stringLength == 0 )
 	{
+		Log::Warn( "invalid call definition: empty name and action" );
 		return newCallDefinition;
 	}
 
-	std::unique_ptr<char> tmp = std::make_unique<char>( stringLength );
-	char* end = tmp.get() + stringLength;
-	char* it = std::find( tmp.get(), end, ':' );
-	if ( it == end )
+	char* tmp = static_cast<char*>( malloc( stringLength + 1 ) );
+	tmp[ stringLength ] = '\0';
+	char const* stringEnd = string + stringLength;
+	char const* actionPtr = std::find( string, stringEnd, ':' );
+	if ( actionPtr < stringEnd )
 	{
-		Log::Warn( "invalid call definition: no key end" );
-		return newCallDefinition;
+		++actionPtr;
+		auto junk = std::find( actionPtr, stringEnd, ':' );
+		if ( junk != stringEnd )
+		{
+			Log::Warn( "unused data in call definition: %s (%s)", string, junk );
+		}
+		actionPtr = actionPtr < stringEnd ? tmp + ( actionPtr - string ) : nullptr;
 	}
-	*end = '\0';
-	ssize_t len = end - newCallDefinition.name;
-	ASSERT( len >= 0 );
-	if ( static_cast<size_t>( len ) == stringLength )
-	{
-		Log::Warn( "invalid call definition: no value" );
-		return newCallDefinition;
-	}
-
-	newCallDefinition.name = tmp.release();
-	newCallDefinition.action = end + len;
+	std::replace_copy( string, stringEnd, tmp, ':', '\0' );
+	newCallDefinition.name = tmp;
+	newCallDefinition.action = actionPtr;
 
 	newCallDefinition.actionType = G_GetCallActionTypeFor( newCallDefinition.action );
 	newCallDefinition.event = eventKey;

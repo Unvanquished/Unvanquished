@@ -186,12 +186,30 @@ struct gentityCallDefinition_t
 
 	gentityCallDefinition_t() = default;
 	gentityCallDefinition_t( gentityCallDefinition_t const& ) = delete;
-	gentityCallDefinition_t( gentityCallDefinition_t && ) = default;
 	gentityCallDefinition_t& operator=( gentityCallDefinition_t const& ) = delete;
-	gentityCallDefinition_t& operator=( gentityCallDefinition_t && ) = default;
+
+	gentityCallDefinition_t( gentityCallDefinition_t && o )
+	:name( o.name ), action( o.action ), event( o.event )
+	{
+		o.name = nullptr;
+		o.action = nullptr;
+		o.event = nullptr;
+	}
+
+	gentityCallDefinition_t& operator=( gentityCallDefinition_t && o )
+	{
+		std::swap( name, o.name );
+		std::swap( action, o.action );
+		std::swap( event, o.event );
+		std::swap( eventType, o.eventType );
+		std::swap( actionType, o.actionType );
+
+		return *this;
+	}
+
 	~gentityCallDefinition_t()
 	{
-		delete name;
+		free( const_cast<char*>( name ) );
 	}
 };
 
