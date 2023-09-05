@@ -564,8 +564,7 @@ static void BG_InitWeaponAttributes()
 	{
 		wd = &bg_weaponsData[i];
 		wa = &bg_weapons[i];
-
-		memset( wa, 0, sizeof( weaponAttributes_t ) );
+		*wa = {};
 
 		wa->number = wd->number;
 		wa->name   = wd->name;
@@ -653,8 +652,7 @@ static void BG_InitUpgradeAttributes()
 		ud = &bg_upgradesData[i];
 		ua = &bg_upgrades[i];
 
-		//Initialise default values for buildables
-		memset( ua, 0, sizeof( upgradeAttributes_t ) );
+		*ua = {};
 
 		ua->number = ud->number;
 		ua->name = ud->name;
