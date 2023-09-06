@@ -221,6 +221,12 @@ struct LinearAllocator : public dtTileCacheAlloc
 	size_t top = 0;
 	size_t high = 0;
 
+	LinearAllocator() = default;
+	LinearAllocator( LinearAllocator const& ) = default;
+	LinearAllocator& operator=( LinearAllocator const& ) = default;
+	LinearAllocator( LinearAllocator && ) = default;
+	LinearAllocator& operator=( LinearAllocator && ) = default;
+
 	LinearAllocator( const size_t cap )
 	{
 		resize(cap);
