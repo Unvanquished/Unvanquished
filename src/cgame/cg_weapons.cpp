@@ -1562,8 +1562,6 @@ Add the weapon, and flash for the player's view
 ==============
 */
 
-#define WEAPON_CLICK_REPEAT 500
-
 void CG_AddViewWeapon( playerState_t *ps )
 {
 	centity_t    *cent;
@@ -1765,8 +1763,6 @@ static bool CG_UpgradeSelectable( upgrade_t upgrade )
 
 	return BG_Upgrade( upgrade )->usable;
 }
-
-#define ICON_BORDER 4
 
 /*
 ===================
