@@ -696,9 +696,6 @@ struct moveclip_t
 	traceType_t collisionType;
 };
 
-// FIXME: Copied from cm_local.h
-#define BOX_MODEL_HANDLE ( MAX_SUBMODELS + 1 )
-
 /*
 ====================
 G_CM_ClipMoveToEntities

@@ -3694,7 +3694,6 @@ List all maps on the server
 =================
 */
 
-#define MAX_MAPLIST_MAPS 256
 #define MAX_MAPLIST_ROWS 9
 #define MAX_MAPLIST_COLS 3
 

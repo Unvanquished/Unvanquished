@@ -671,10 +671,6 @@ static void CG_Fire( centity_t *cent )
 	}
 }
 
-#define SETBOUNDS(v1,v2,r) (( v1 )[ 0 ] = ( -r / 2 ),( v1 )[ 1 ] = ( -r / 2 ),( v1 )[ 2 ] = ( -r / 2 ), \
-                            ( v2 )[ 0 ] = ( r / 2 ),( v2 )[ 1 ] = ( r / 2 ),( v2 )[ 2 ] = ( r / 2 ))
-#define RADIUSSTEP     0.5f
-
 #define FLARE_OFF      0
 #define FLARE_NOFADE   1
 #define FLARE_TIMEFADE 2
