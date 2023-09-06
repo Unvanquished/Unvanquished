@@ -183,7 +183,7 @@ static void Svcmd_EntityShow_f()
 	if ( selection->mapEntity.calltargets.size() )
 	{
 		lastTargetIndex = -1;
-		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != nullptr )
+		while ( nullptr != ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, selection ) ) )
 		{
 
 			if(lastTargetIndex != targetIndex)
