@@ -550,7 +550,7 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 		{
 			Str::StringView text = token.PlainText();
 			char c = text[ 0 ];
-			const emoticonData_t *emoticon;
+			const emoticonData_t *emoticon = nullptr; //init to silence warning
 			if ( c == '<' )
 			{
 				if ( span && !spanHasContent )
@@ -591,7 +591,10 @@ Rml::String Rocket_QuakeToRML( const char *in, int parseFlags = 0 )
 					spanHasContent = true;
 					out.append( spanstr );
 				}
-				out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				if ( nullptr != emoticon )
+				{
+					out.append( va( "<img class='emoticon' src='/%s' />", emoticon->imageFile.c_str() ) );
+				}
 				while ( iter != parser.end() && *iter->RawToken().begin() != ']' )
 				{
 					++iter;

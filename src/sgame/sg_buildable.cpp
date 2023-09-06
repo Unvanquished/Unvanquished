@@ -1346,7 +1346,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, glm:
 	// main buildables
 	// ---------------
 
-	itemBuildError_t ret;
+	itemBuildError_t ret = IBE_NONE;
 	if ( buildable == BA_H_REACTOR )
 	{
 		ent = G_Reactor();
