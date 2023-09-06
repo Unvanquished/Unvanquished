@@ -608,6 +608,14 @@ void G_BotIntermissionThink( gclient_t *client )
 	client->readyToExit = true;
 }
 
+void G_BotSelectSpawnClass( gentity_t *self )
+{
+	if ( self->botMind->behaviorTree && self->botMind->behaviorTree->classSelectionTree )
+	{
+		BotEvaluateNode( self, self->botMind->behaviorTree->classSelectionTree );
+	}
+}
+
 // Initialization happens whenever someone first tries to add a bot.
 // Assuming the meshes already exist, this incurs some delay (a few tenths of a second), but on
 // servers bots are normally added at the beginning of the round so it shouldn't be noticeable.

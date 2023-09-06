@@ -2038,6 +2038,57 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 	return true;
 }
 
+bool G_AlienCheckSpawnClass( class_t newClass, int reportToClientNum )
+{
+	if ( newClass != PCL_ALIEN_BUILDER0 &&
+	     newClass != PCL_ALIEN_BUILDER0_UPG &&
+	     newClass != PCL_ALIEN_LEVEL0 )
+	{
+		if ( reportToClientNum >= 0 )
+		{
+			G_TriggerMenuArgs( reportToClientNum, MN_A_CLASSNOTSPAWN, newClass );
+		}
+		return false;
+	}
+
+	if ( BG_ClassDisabled( newClass ) )
+	{
+		if ( reportToClientNum >= 0 )
+		{
+			G_TriggerMenuArgs( reportToClientNum, MN_A_CLASSNOTALLOWED, newClass );
+		}
+		return false;
+	}
+
+	if ( !BG_ClassUnlocked( newClass ) )
+	{
+		if ( reportToClientNum >= 0 )
+		{
+			G_TriggerMenuArgs( reportToClientNum, MN_A_CLASSLOCKED, newClass );
+		}
+		return false;
+	}
+
+	return true;
+}
+
+bool G_HumanCheckSpawnWeapon( weapon_t weapon, int reportToClientNum )
+{
+	weapon_t birthWeapons[] = { WP_HBUILD, WP_MACHINEGUN };
+	auto end = std::end( birthWeapons );
+
+	if ( BG_WeaponDisabled( weapon ) || end == std::find( std::begin( birthWeapons ), end, weapon ) )
+	{
+		if ( reportToClientNum >= 0 )
+		{
+			G_TriggerMenu( reportToClientNum, MN_H_SPAWNITEMNOTALLOWED );
+		}
+		return false;
+	}
+
+	return true;
+}
+
 /*
 =================
 Cmd_Class_f
@@ -2056,32 +2107,8 @@ static bool Cmd_Class_spawn_internal( gentity_t *ent, const char *s, bool report
 
 	if ( team == TEAM_ALIENS )
 	{
-		if ( newClass != PCL_ALIEN_BUILDER0 &&
-		     newClass != PCL_ALIEN_BUILDER0_UPG &&
-		     newClass != PCL_ALIEN_LEVEL0 )
+		if ( !G_AlienCheckSpawnClass( newClass, report ? clientNum : -1 ) )
 		{
-			if ( report )
-			{
-				G_TriggerMenuArgs( clientNum, MN_A_CLASSNOTSPAWN, newClass );
-			}
-			return false;
-		}
-
-		if ( BG_ClassDisabled( newClass ) )
-		{
-			if ( report )
-			{
-				G_TriggerMenuArgs( clientNum, MN_A_CLASSNOTALLOWED, newClass );
-			}
-			return false;
-		}
-
-		if ( !BG_ClassUnlocked( newClass ) )
-		{
-			if ( report )
-			{
-				G_TriggerMenuArgs( clientNum, MN_A_CLASSLOCKED, newClass );
-			}
 			return false;
 		}
 
