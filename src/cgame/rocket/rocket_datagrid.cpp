@@ -42,6 +42,7 @@ Maryland 20850 USA.
 // tabulated information nicely
 
 using StringGridMap_t = std::map<std::string, RocketDataGrid*>;
+extern StringGridMap_t dataSourceMap;
 StringGridMap_t dataSourceMap;
 
 void Rocket_RegisterDataSource( const char *name )

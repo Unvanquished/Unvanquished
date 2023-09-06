@@ -55,7 +55,7 @@ struct pml_t
 };
 
 pmove_t *pm;
-pml_t   pml;
+static pml_t   pml;
 
 static int c_pmove = 0;
 

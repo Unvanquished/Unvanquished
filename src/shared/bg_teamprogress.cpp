@@ -52,13 +52,13 @@ struct unlockable_t
 // data
 // ----
 
-bool         unlockablesDataAvailable;
-team_t           unlockablesTeamKnowledge;
+static bool   unlockablesDataAvailable;
+static team_t unlockablesTeamKnowledge;
 
-unlockable_t     unlockables[ NUM_UNLOCKABLES ];
-int              unlockablesMask[ NUM_TEAMS ];
+static unlockable_t unlockables[ NUM_UNLOCKABLES ];
+static int          unlockablesMask[ NUM_TEAMS ];
 
-int              unlockablesTypeOffset[ UNLT_NUM_UNLOCKABLETYPES ];
+static int          unlockablesTypeOffset[ UNLT_NUM_UNLOCKABLETYPES ];
 
 // -------------
 // local methods

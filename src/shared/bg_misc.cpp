@@ -843,7 +843,7 @@ BG_InitAllConfigs
 ================
 */
 
-bool config_loaded = false;
+static bool config_loaded = false;
 
 void BG_InitAllConfigs()
 {
@@ -960,7 +960,7 @@ BG_EvaluateTrajectory
 
 ================
 */
-void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
+static void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
 {
 	float deltaTime;
 	float phase;
@@ -2012,7 +2012,7 @@ static struct gameElements_t
 
 static std::set<std::string> bg_tacticBehaviors;
 
-std::set<std::string> BG_ParseTacticBehaviorsList( const std::string &behaviorsCsv )
+static std::set<std::string> BG_ParseTacticBehaviorsList( const std::string &behaviorsCsv )
 {
 	std::set<std::string> behaviors;
 

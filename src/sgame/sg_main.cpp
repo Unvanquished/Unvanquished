@@ -64,13 +64,13 @@ Cvar::Cvar<bool> g_debugFire("g_debugFire", "debug ground fire spawning", Cvar::
 Cvar::Cvar<std::string> g_motd("g_motd", "message of the day", Cvar::NONE, "");
 // g_synchronousClients stays as an int for now instead of a bool
 // because there is a place in cl_main.cpp that tries to parse it
-Cvar::Range<Cvar::Cvar<int>> g_synchronousClients("g_synchronousClients", "calculate player movement once per server frame", Cvar::NONE, 0, 0, 1);
+static Cvar::Range<Cvar::Cvar<int>> g_synchronousClients("g_synchronousClients", "calculate player movement once per server frame", Cvar::NONE, 0, 0, 1);
 Cvar::Cvar<int> g_warmup("g_warmup", "seconds after game start before players can join", Cvar::NONE, 10);
 Cvar::Cvar<bool> g_doWarmup("g_doWarmup", "whether to enable warmup period (g_warmup)", Cvar::NONE, false);
 Cvar::Cvar<bool> g_lockTeamsAtStart("g_lockTeamsAtStart", "(internal use) lock teams at start of match", Cvar::NONE, false);
-Cvar::Cvar<std::string> g_logFile("g_logFile", "sgame log file, relative to <homepath>/game/", Cvar::NONE, "games.log");
-Cvar::Cvar<int> g_logGameplayStatsFrequency("g_logGameplayStatsFrequency", "log gameplay stats every x seconds", Cvar::NONE, 10);
-Cvar::Cvar<bool> g_logFileSync("g_logFileSync", "flush g_logFile on every write", Cvar::NONE, false);
+static Cvar::Cvar<std::string> g_logFile("g_logFile", "sgame log file, relative to <homepath>/game/", Cvar::NONE, "games.log");
+static Cvar::Cvar<int> g_logGameplayStatsFrequency("g_logGameplayStatsFrequency", "log gameplay stats every x seconds", Cvar::NONE, 10);
+static Cvar::Cvar<bool> g_logFileSync("g_logFileSync", "flush g_logFile on every write", Cvar::NONE, false);
 Cvar::Cvar<bool> g_allowVote("g_allowVote", "whether votes of any kind are allowed", Cvar::NONE, true);
 Cvar::Cvar<int> g_voteLimit("g_voteLimit", "max votes per player per round", Cvar::NONE, 5);
 Cvar::Cvar<int> g_extendVotesPercent("g_extendVotesPercent", "percentage required for extend timelimit vote", Cvar::NONE, 74);
@@ -94,9 +94,9 @@ Cvar::Cvar<int> g_customVotesPercent( "g_customVotesPercent",
 
 Cvar::Range<Cvar::Cvar<int>> g_teamForceBalance("g_teamForceBalance", "disallow joining a team with more players (1 = always, 2 = allow N vs. 0)", Cvar::NONE, 0, 0, 2);
 Cvar::Cvar<bool> g_smoothClients("g_smoothClients", "something about player movement extrapolation", Cvar::NONE, true);
-Cvar::Cvar<bool> pmove_fixed("pmove_fixed", "use pmove_msec instead of 66", Cvar::NONE, false);
-Cvar::Range<Cvar::Cvar<int>> pmove_msec("pmove_msec", "max sgame pmove period in milliseconds", Cvar::NONE, 8, 8, 33);
-Cvar::Cvar<bool> pmove_accurate("pmove_accurate", "don't round player velocity to integer", Cvar::NONE, true);
+static Cvar::Cvar<bool> pmove_fixed("pmove_fixed", "use pmove_msec instead of 66", Cvar::NONE, false);
+static Cvar::Range<Cvar::Cvar<int>> pmove_msec("pmove_msec", "max sgame pmove period in milliseconds", Cvar::NONE, 8, 8, 33);
+static Cvar::Cvar<bool> pmove_accurate("pmove_accurate", "don't round player velocity to integer", Cvar::NONE, true);
 Cvar::Cvar<float> g_minNameChangePeriod("g_minNameChangePeriod", "player must wait x seconds to change name", Cvar::NONE, 5);
 Cvar::Cvar<int> g_maxNameChanges("g_maxNameChanges", "max name changes per game", Cvar::NONE, 5);
 
@@ -238,14 +238,14 @@ Cvar::Range<Cvar::Cvar<int>> g_debugEntities("g_debugEntities", "entity debug le
 Cvar::Cvar<bool> g_instantBuilding("g_instantBuilding", "cheat mode for building", Cvar::NONE, false);
 Cvar::Cvar<bool> g_ignoreNobuild("g_ignoreNobuild", "ignore nobuild area", Cvar::NONE, false);
 
-Cvar::Cvar<int> g_emptyTeamsSkipMapTime("g_emptyTeamsSkipMapTime", "end game over x minutes if no real players", Cvar::NONE, 0);
+static Cvar::Cvar<int> g_emptyTeamsSkipMapTime("g_emptyTeamsSkipMapTime", "end game over x minutes if no real players", Cvar::NONE, 0);
 
-Cvar::Cvar<bool>   g_neverEnd("g_neverEnd", "cheat to never end a game, helpful to load a map without spawn for testing purpose", Cvar::NONE, false);
+static Cvar::Cvar<bool>   g_neverEnd("g_neverEnd", "cheat to never end a game, helpful to load a map without spawn for testing purpose", Cvar::NONE, false);
 
 Cvar::Cvar<float>  g_evolveAroundHumans("g_evolveAroundHumans", "Ratio of alien buildings to human entities that always allow evolution", Cvar::NONE, 1.5f);
 Cvar::Cvar<float>  g_devolveMaxBaseDistance("g_devolveMaxBaseDistance", "Max Overmind distance to allow devolving", Cvar::SERVERINFO, 1000.0f);
 
-Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, false);
+static Cvar::Cvar<bool>   g_autoPause("g_autoPause", "pause empty server", Cvar::NONE, false);
 
 Cvar::Cvar<int> g_maxMiners("g_maxMiners", "set maximum number of miners per team. -1 = disabled.", Cvar::NONE, -1);
 

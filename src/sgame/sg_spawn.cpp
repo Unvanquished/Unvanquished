@@ -40,10 +40,10 @@ Maryland 20850 USA.
 
 // spawn variables
 static bool l_spawning; // the G_Spawn*() functions are valid
-int      l_numSpawnVars;
-char     *l_spawnVars[ MAX_SPAWN_VARS ][ 2 ]; // key / value pairs
-int      l_numSpawnVarChars;
-char     l_spawnVarChars[ MAX_SPAWN_VARS_CHARS ];
+static int      l_numSpawnVars;
+static char     *l_spawnVars[ MAX_SPAWN_VARS ][ 2 ]; // key / value pairs
+static int      l_numSpawnVarChars;
+static char     l_spawnVarChars[ MAX_SPAWN_VARS_CHARS ];
 
 void G_Spawned()
 {

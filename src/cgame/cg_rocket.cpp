@@ -37,8 +37,8 @@ Maryland 20850 USA.
 
 rocketInfo_t rocketInfo = {};
 
-Cvar::Cvar<std::string> rocket_menuFile("rocket_menuFile", "VFS path of config file for menus", Cvar::CHEAT, "ui/rocket.txt");
-Cvar::Cvar<std::string> rocket_hudFile("rocket_hudFile", "VFS path of config file for HUD", Cvar::CHEAT, "ui/rockethud.txt");
+static Cvar::Cvar<std::string> rocket_menuFile("rocket_menuFile", "VFS path of config file for menus", Cvar::CHEAT, "ui/rocket.txt");
+static Cvar::Cvar<std::string> rocket_hudFile("rocket_hudFile", "VFS path of config file for HUD", Cvar::CHEAT, "ui/rockethud.txt");
 
 static connstate_t oldConnState;
 

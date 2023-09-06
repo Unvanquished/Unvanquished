@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #include "../cg_local.h"
 #include "rocket.h"
 
-Rml::Element *activeElement = nullptr;
+extern Rml::Element *activeElement;
 
 class RocketElement : public Rml::Element
 {

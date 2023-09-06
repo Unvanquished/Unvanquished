@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "sg_cm_world.h"
 
-Cvar::Cvar<float> g_rewardDestruction( "g_rewardDestruction", "Reward players when they destroy a building by momentum * g_rewardDestruction", Cvar::NONE, 10.f );
+static Cvar::Cvar<float> g_rewardDestruction( "g_rewardDestruction", "Reward players when they destroy a building by momentum * g_rewardDestruction", Cvar::NONE, 10.f );
 // damage region data
 damageRegion_t g_damageRegions[ PCL_NUM_CLASSES ][ MAX_DAMAGE_REGIONS ];
 int            g_numDamageRegions[ PCL_NUM_CLASSES ];

@@ -47,8 +47,8 @@ struct HudUnit
 };
 
 using RocketHud = std::list<HudUnit>;
-RocketHud *activeHud = nullptr;
-std::vector<RocketHud> huds;
+static RocketHud *activeHud = nullptr;
+static std::vector<RocketHud> huds;
 
 
 // Initialized to WP_NUM_WEAPONS, which may be different based on different mods

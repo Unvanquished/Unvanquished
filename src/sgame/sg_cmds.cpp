@@ -43,7 +43,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CMD_ALIVE        0x0080
 #define CMD_INTERMISSION 0x0100 // valid during intermission
 
-Cvar::Range<Cvar::Cvar<int>> g_killDelay(
+static Cvar::Range<Cvar::Cvar<int>> g_killDelay(
 		"g_killDelay",
 		"how many seconds a player needs to wait before the suicide (/kill) command take effect",
 		Cvar::NONE,
@@ -3099,7 +3099,7 @@ static void Cmd_Tactic_f( gentity_t * ent )
 	}
 }
 
-void Cmd_TeamStatus_f( gentity_t * ent )
+static void Cmd_TeamStatus_f( gentity_t * ent )
 {
 	int builders = 0;
 	gentity_t *tmp;

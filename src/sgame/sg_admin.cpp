@@ -506,12 +506,12 @@ static const g_admin_flag_t g_admin_flags[] = {
 #define adminNumFlags ARRAY_LEN( g_admin_flags )
 
 static int        admin_level_maxname = 0;
-g_admin_level_t   *g_admin_levels = nullptr;
-g_admin_admin_t   *g_admin_admins = nullptr;
-g_admin_ban_t     *g_admin_bans = nullptr;
-g_admin_spec_t    *g_admin_specs = nullptr;
-g_admin_command_t *g_admin_commands = nullptr;
-std::vector<g_admin_vote_t> g_admin_votes;
+static g_admin_level_t   *g_admin_levels = nullptr;
+static g_admin_admin_t   *g_admin_admins = nullptr;
+static g_admin_ban_t     *g_admin_bans = nullptr;
+static g_admin_spec_t    *g_admin_specs = nullptr;
+static g_admin_command_t *g_admin_commands = nullptr;
+static std::vector<g_admin_vote_t> g_admin_votes;
 
 /* ent must be non-nullptr */
 #define G_ADMIN_NAME( ent ) ( ent->client->pers.admin ? ent->client->pers.admin->name : ent->client->pers.netname )
@@ -5894,7 +5894,7 @@ This function is used to print raw/untranslated things to the clients.
  The supplied string is assumed to be quoted as needed.
 ================
 */
-void G_admin_print_raw( gentity_t *ent, Str::StringRef m )
+static void G_admin_print_raw( gentity_t *ent, Str::StringRef m )
 {
 	if ( ent )
 	{

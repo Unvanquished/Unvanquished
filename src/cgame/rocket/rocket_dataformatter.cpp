@@ -39,6 +39,7 @@ Maryland 20850 USA.
 
 // Code to format datagrid fields
 
+extern std::vector<RocketDataFormatter*> dataFormatterList;
 std::vector<RocketDataFormatter*> dataFormatterList;
 
 void Rocket_RegisterDataFormatter( const char *name )

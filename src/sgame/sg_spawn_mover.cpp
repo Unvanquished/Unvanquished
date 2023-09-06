@@ -69,7 +69,7 @@ struct pushed_t
 	float     deltayaw;
 };
 
-pushed_t pushed[ MAX_GENTITIES ], *pushed_p;
+static pushed_t pushed[ MAX_GENTITIES ], *pushed_p;
 
 /*
 ============

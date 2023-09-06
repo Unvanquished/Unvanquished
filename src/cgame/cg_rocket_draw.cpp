@@ -41,7 +41,7 @@ Maryland 20850 USA.
 #include <RmlUi/Core/Factory.h>
 #include <RmlUi/Core/ElementText.h>
 
-Cvar::Cvar<bool> cg_drawPosition("cg_drawPosition", "show position. Requires cg_drawSpeed to be enabled.", Cvar::NONE, false);
+static Cvar::Cvar<bool> cg_drawPosition("cg_drawPosition", "show position. Requires cg_drawSpeed to be enabled.", Cvar::NONE, false);
 
 static void CG_GetRocketElementColor( Color::Color& color )
 {
@@ -779,12 +779,12 @@ private:
 #define SPEEDOMETER_DRAW_TEXT   0x1
 #define SPEEDOMETER_DRAW_GRAPH  0x2
 #define SPEEDOMETER_IGNORE_Z    0x4
-float speedSamples[ SPEEDOMETER_NUM_SAMPLES ];
-int speedSampleTimes[ SPEEDOMETER_NUM_SAMPLES ];
+static float speedSamples[ SPEEDOMETER_NUM_SAMPLES ];
+static int speedSampleTimes[ SPEEDOMETER_NUM_SAMPLES ];
 // array indices
-int   oldestSpeedSample = 0;
-int   maxSpeedSample = 0;
-int   maxSpeedSampleInWindow = 0;
+static int   oldestSpeedSample = 0;
+static int   maxSpeedSample = 0;
+static int   maxSpeedSampleInWindow = 0;
 
 /*
 ===================
@@ -1345,7 +1345,7 @@ struct lagometer_t
 	int snapshotCount;
 };
 
-lagometer_t lagometer;
+static lagometer_t lagometer;
 
 /*
 ==============

@@ -39,7 +39,7 @@ Maryland 20850 USA.
 #include "rocketConsoleTextElement.h"
 #include "../cg_local.h"
 
-extern Rml::Element *activeElement;
+Rml::Element *activeElement;
 
 Rml::String Rocket_QuakeToRML( const char *in );
 

@@ -170,7 +170,7 @@ int equipment_t<weapon_t>::slots( void ) const
 /// } end of sillyness
 
 // manually sorted by preference, hopefully a future patch will have a much smarter way
-equipment_t<class_t> classes[] =
+static equipment_t<class_t> classes[] =
 {
 	{ g_bot_level4    , PCL_ALIEN_LEVEL4       },
 	{ g_bot_level3upg , PCL_ALIEN_LEVEL3_UPG   },
@@ -184,14 +184,14 @@ equipment_t<class_t> classes[] =
 };
 
 // manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
-equipment_t<upgrade_t> armors[] =
+static equipment_t<upgrade_t> armors[] =
 {
 	{ g_bot_battlesuit  , UP_BATTLESUIT },
 	{ g_bot_mediumarmour, UP_MEDIUMARMOUR },
 	{ g_bot_lightarmour , UP_LIGHTARMOUR },
 };
 // not merged because they are not armors
-equipment_t<upgrade_t> others[] =
+static equipment_t<upgrade_t> others[] =
 {
 	{ g_bot_radar   , UP_RADAR },
 	{ g_bot_grenade , UP_GRENADE },
@@ -199,7 +199,7 @@ equipment_t<upgrade_t> others[] =
 };
 
 // manually sorted by preference, hopefully a future patch will have a much smarter way to select weapon
-equipment_t<weapon_t> weapons[] =
+static equipment_t<weapon_t> weapons[] =
 {
 	{ g_bot_lcannon , WP_LUCIFER_CANNON },
 	{ g_bot_flamer  , WP_FLAMER },

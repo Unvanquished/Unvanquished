@@ -26,8 +26,6 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace CombatFeedback {
 
-Log::Logger logger("sgame.cf");
-
 /**
  * @brief Notify a client of a hit
  */

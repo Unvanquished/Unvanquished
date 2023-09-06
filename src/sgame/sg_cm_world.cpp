@@ -46,7 +46,7 @@ struct worldEntity_t
 	worldEntity_t *nextEntityInWorldSector;
 };
 
-worldEntity_t wentities[ MAX_GENTITIES ];
+static worldEntity_t wentities[ MAX_GENTITIES ];
 
 static worldEntity_t *G_CM_WorldEntityForGentity( gentity_t *gEnt )
 {
@@ -218,8 +218,8 @@ struct worldSector_t
 #define AREA_DEPTH 4
 #define AREA_NODES 64
 
-worldSector_t sv_worldSectors[ AREA_NODES ];
-int           sv_numworldSectors;
+static worldSector_t sv_worldSectors[ AREA_NODES ];
+static int           sv_numworldSectors;
 
 /*
 ===============

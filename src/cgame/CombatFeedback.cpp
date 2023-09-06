@@ -33,17 +33,17 @@ const float DAMAGE_INDICATOR_ASPECT_RATIO = 982.0f / 2048.0f;
 const float DAMAGE_INDICATOR_BASE_SCALE = 0.7f;
 const float DAMAGE_INDICATOR_DISTANCE_EXPONENT = -0.5f;
 
-Cvar::Cvar<bool> damageIndicators_enable(
+static Cvar::Cvar<bool> damageIndicators_enable(
 	"cgame.damageIndicators.enable",
 	"enable/disable damage indicators",
 	Cvar::NONE, true);
 
-Cvar::Cvar<float> damageIndicators_scale(
+static Cvar::Cvar<float> damageIndicators_scale(
 	"cgame.damageIndicators.scale",
 	"scale of damage indicators",
 	Cvar::NONE, 1.0f);
 
-Cvar::Cvar<bool> killSounds_enable(
+static Cvar::Cvar<bool> killSounds_enable(
 	"cgame.killSounds.enable",
 	"enable/disable kill sounds",
 	Cvar::NONE, true);
@@ -57,7 +57,7 @@ enum damageIndicatorLayer_t {
 	DAMAGE_INDICATOR_LAYERS
 };
 
-Color::Color damageIndicatorColors[DAMAGE_INDICATOR_LAYERS] = {
+static Color::Color damageIndicatorColors[DAMAGE_INDICATOR_LAYERS] = {
 	{1, 1, 1},  // enemy
 	{1, 0.5, 0}, // friendly
 	{0.54, 1, 0.68}, // alien building

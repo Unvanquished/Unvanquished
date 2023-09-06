@@ -38,7 +38,7 @@ Maryland 20850 USA.
 namespace Rml {
 namespace Lua {
 
-Timer timer;
+static Timer timer;
 
 template<> void ExtraInit<Lua::Timer>(lua_State* L, int metatable_index)
 {

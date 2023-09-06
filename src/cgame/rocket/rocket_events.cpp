@@ -38,9 +38,9 @@ Maryland 20850 USA.
 #include "rocket.h"
 #include <RmlUi/Core.h>
 #include "../cg_local.h"
+#include "cgame/rocket/rocketElement.h"
 
 std::queue< RocketEvent_t* > eventQueue;
-extern Rml::Element *activeElement;
 
 void Rocket_ProcessEvent( Rml::Event& event, Rml::String& value );
 
