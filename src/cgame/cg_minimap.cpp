@@ -27,13 +27,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MINIMAP_MAP_DISPLAY_SIZE 1024.0f
 #define MINIMAP_PLAYER_DISPLAY_SIZE 50.0f
-#define MINIMAP_TEAMMATE_DISPLAY_SIZE 50.0f
 
 //How big a region we want to show
 #define MINIMAP_DEFAULT_SIZE 600.0f
-
-//It is multiplied by msecs
-#define MINIMAP_FADE_TIME (2.0f / 1000.0f)
 
 //The minimap parser
 
@@ -465,6 +461,9 @@ fading it back in.
 ================
 */
 /*
+//It is multiplied by msecs
+#define MINIMAP_FADE_TIME (2.0f / 1000.0f)
+
 static void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
 {
     playerEntity_t* state = &mate->pe;
@@ -511,6 +510,7 @@ CG_MinimapDrawTeammates
 ================
 */
 /*
+#define MINIMAP_TEAMMATE_DISPLAY_SIZE 50.0f
 static void CG_MinimapDrawTeammates( const minimap_t* m )
 {
     int ownTeam = CG_MyTeam();

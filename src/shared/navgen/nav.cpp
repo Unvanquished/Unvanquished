@@ -199,7 +199,7 @@ void NavmeshGenerator::LoadBSP()
 			if (lump == LUMP_SHADERS && i % sizeof(dshader_t) < offsetof(dshader_t, surfaceFlags))
 				continue;
 			// There is one more exception to 4-byte fields, byte color[4] in drawVert_t, but we don't use it
-#define color DO_NOT_USE_BYTE_SWAPPED
+//#define color DO_NOT_USE_BYTE_SWAPPED
 
 			int* p = reinterpret_cast<int*>(base + i);
 			*p = LittleLong(*p);

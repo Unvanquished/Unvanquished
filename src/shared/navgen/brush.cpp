@@ -28,11 +28,6 @@
 
 
 
-/* marker */
-#define BRUSH_C
-
-
-
 /* dependencies */
 #include <math.h>
 #include "engine/qcommon/qcommon.h"

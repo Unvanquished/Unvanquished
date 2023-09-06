@@ -144,7 +144,6 @@ static bool PC_Expression_Parse( int handle, float *f )
   }
 
 #define PEEK_STACK_OP( a )  ( a.l[ a.b ].u.op )
-#define PEEK_STACK_VAL( a ) ( a.l[ a.b ].u.val )
 
 #define POP_FIFO( a ) \
   { \
@@ -311,7 +310,6 @@ static bool PC_Expression_Parse( int handle, float *f )
 #undef PUSH_OP
 #undef POP_STACK
 #undef PEEK_STACK_OP
-#undef PEEK_STACK_VAL
 #undef POP_FIFO
 }
 

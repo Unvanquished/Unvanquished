@@ -147,8 +147,6 @@ else if( !Q_stricmp( token.string, #x ) ) \
 	Parse_FreeSourceHandle( fd  );
 }
 
-#define Distance2(a,b) sqrtf(Square((a)[0]-(b)[0])+Square((a)[1]-(b)[1]))
-
 static glm::vec3 EntityCenter( entityState_t const* es, centity_t const* ce )
 {
 	class_t pClass = static_cast<class_t>( ( es->misc >> 8 ) & 0xFF );
