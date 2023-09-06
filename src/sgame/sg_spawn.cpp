@@ -181,6 +181,7 @@ struct fieldDescriptor_t
 	const char  *replacement;
 };
 
+#define FOFS(x) ( offsetof( gentity_t, x ) )
 static const fieldDescriptor_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration )                  , F_3D_VECTOR , ENT_V_UNCLEAR, nullptr },

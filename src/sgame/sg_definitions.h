@@ -57,8 +57,6 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 
 #define MAX_NAME_CHARACTERS 32
 
-#define FOFS(x) ((size_t)&(((gentity_t *)0 )->x ))
-
 
 // ----------
 // enum types
