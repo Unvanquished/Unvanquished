@@ -2319,7 +2319,7 @@ static void CG_JetpackAnimation( centity_t *cent, int *old, int *now, float *bac
 
 		lf->animationNumber = cent->jetpackAnim;
 
-		if( cent->jetpackAnim < 0 || cent->jetpackAnim >= MAX_JETPACK_ANIMATIONS )
+		if( cent->jetpackAnim >= MAX_JETPACK_ANIMATIONS )
 			Sys::Drop( "Bad animation number: %i", cent->jetpackAnim );
 
 
