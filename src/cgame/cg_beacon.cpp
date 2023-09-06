@@ -544,7 +544,7 @@ static void DrawBeacon( cbeacon_t *b )
 	// CG_WorldToScreen flips the result if behind so correct it
 	if( !front )
 	{
-		b->pos[ 0 ] = 640.0 - b->pos[ 0 ],
+		b->pos[ 0 ] = 640.0 - b->pos[ 0 ];
 		b->pos[ 1 ] = 480.0 - b->pos[ 1 ];
 	}
 

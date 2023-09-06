@@ -3196,9 +3196,8 @@ bool G_admin_unban( gentity_t *ent )
 
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) )
 	{
-		int maximum;
-		if ( ban->expires == 0 ||
-		     ( maximum = G_admin_parse_time( g_adminMaxBan.Get().c_str() ), ban->expires - time > std::max( 1, maximum ) ) )
+		int maximum = G_admin_parse_time( g_adminMaxBan.Get().c_str() );
+		if ( ban->expires == 0 || ban->expires - time > std::max( 1, maximum ) )
 		{
 			ADMP( QQ( N_("^3unban:^* you cannot remove permanent bans") ) );
 			return false;
