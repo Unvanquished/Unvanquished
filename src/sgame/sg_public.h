@@ -168,6 +168,8 @@ bool          G_CheckStopVote( team_t );
 bool          G_RoomForClassChange( gentity_t *ent, class_t pcl, vec3_t newOrigin );
 bool          G_ScheduleSpawn( gclient_t *client, class_t class_, weapon_t humanItem = WP_NONE );
 bool          G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun );
+bool G_AlienCheckSpawnClass( class_t newClass, int reportToClientNum = -1 );
+bool G_HumanCheckSpawnWeapon( weapon_t weapon, int reportToClientNum = -1 );
 void              ScoreboardMessage( gentity_t *client );
 void              ClientCommand( int clientNum );
 void              G_ClearRotationStack();

@@ -1106,6 +1106,29 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) ret;
 }
 
+static AIGenericNode_t *ReadSpawnNode( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+
+	ASSERT( Str::IsIEqual( current->token.string, "spawnAs" ) );
+	current = current->next;
+
+	if ( !current || current->token.type != tokenType_t::TT_NUMBER )
+	{
+		Log::Warn( "Invalid token following spawnAs on line %d", (*tokenlist)->token.line );
+		return nullptr;
+	}
+
+	AISpawnNode_t *ret = allocNode( AISpawnNode_t );
+	BotInitNode( SPAWN_NODE, BotSpawnNode, ret );
+	ret->selection = current->token.intvalue;
+	current = current->next;
+
+	*tokenlist = current;
+	return ( AIGenericNode_t * ) ret;
+
+}
+
 static AIGenericNode_t *ReadFallback( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
@@ -1171,6 +1194,54 @@ static AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
 		return nullptr;
 	}
 	BotInitNode( SELECTOR_NODE, BotConcurrentNode, node );
+	return node;
+}
+
+// A selectClass block at the beginning of a behavior tree file can be used to instruct the bot
+// which class to spawn as. For example:
+/*
+// Spawn as builder if there is no main structure
+selectClass {
+	selector {
+		condition team == TEAM_ALIENS && numOurBuildings(E_A_OVERMIND) == 0 {
+			spawnAs PCL_ALIEN_BUILDER0
+		}
+		condition team == TEAM_HUMANS && numOurBuildings(E_H_REACTOR) == 0 {
+			spawnAs WP_HBUILD
+		}
+	}
+}
+*/
+// It is evaluated immediately before spawning. You might argue that this is a form of cheating
+// because normal players must decide their class when joining the spawn queue, but since bots
+// automatically go to the back of the queue when a real person joins it, their behavior here
+// is something the bots could have legitimately accomplished by leaving and rejoining the queue.
+static AIGenericNode_t *ReadSelectClass( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	ASSERT( Str::IsIEqual( current->token.string, "selectClass" ) );
+	current = current->next;
+
+	if ( !expectToken( "{", &current, true ) )
+	{
+		return nullptr;
+	}
+
+	AIGenericNode_t *node = ReadNode( &current );
+	*tokenlist = current;
+
+	if ( !node )
+	{
+		return nullptr;
+	}
+
+	if ( !expectToken( "}", &current, true ) )
+	{
+		FreeNode( node );
+		return nullptr;
+	}
+
+	*tokenlist = current;
 	return node;
 }
 
@@ -1321,6 +1392,10 @@ static AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	{
 		node = ReadBehaviorTreeInclude( &current );
 	}
+	else if ( !Q_stricmp( current->token.string, "spawnAs" ) )
+	{
+		node = ReadSpawnNode( &current );
+	}
 	else
 	{
 		Log::Warn( "Invalid token on line %d found: %s", current->token.line, current->token.string );
@@ -1434,6 +1509,7 @@ static void SetBehaviorTreeDefines()
 ReadBehaviorTree
 
 Load a behavior tree of the given name from a file
+TODO: don't crash if there is an unexpected EOF anywhere in the tree
 ======================
 */
 
@@ -1443,7 +1519,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	int handle;
 	pc_token_list *tokenlist;
 	pc_token_list *current;
-	AIGenericNode_t *node;
+	AIGenericNode_t *node = nullptr;
 
 	currentList = list;
 
@@ -1481,7 +1557,19 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 
 	current = tokenlist;
 
-	node = ReadNode( &current );
+	if ( Str::IsIEqual( current->token.string, "selectClass" ) )
+	{
+		if ( AIGenericNode_t *selectClass = ReadSelectClass( &current ) )
+		{
+			tree->classSelectionTree = selectClass;
+			node = ReadNode( &current );
+		}
+	}
+	else
+	{
+		node = ReadNode( &current );
+	}
+
 	if ( node )
 	{
 		tree->root = node;
@@ -1692,6 +1780,9 @@ void FreeNode( AIGenericNode_t *node )
 		case DECORATOR_NODE:
 			FreeDecoratorNode( ( AIDecoratorNode_t * ) node );
 			break;
+		case SPAWN_NODE:
+			BG_Free( node );
+			break;
 		case BEHAVIOR_NODE:
 			// this is a pointer into the tree list
 			break;
@@ -1703,7 +1794,7 @@ void FreeBehaviorTree( AIBehaviorTree_t *tree )
 	if ( tree )
 	{
 		FreeNode(tree->root);
-
+		FreeNode( tree->classSelectionTree );
 		BG_Free( tree );
 	}
 	else

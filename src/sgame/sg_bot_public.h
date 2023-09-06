@@ -53,6 +53,7 @@ void G_BotDelAllBots();
 void G_BotThink( gentity_t *self );
 void G_BotSpectatorThink( gentity_t *self );
 void G_BotIntermissionThink( gclient_t *client );
+void G_BotSelectSpawnClass( gentity_t *self );
 void G_BotListNames( gentity_t *ent );
 bool G_BotClearNames();
 int  G_BotAddNames(team_t team, int arg, int last);

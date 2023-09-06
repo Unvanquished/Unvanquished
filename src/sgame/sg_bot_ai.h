@@ -72,6 +72,7 @@ enum AINodeStatus_t
 // behavior tree node types
 enum AINode_t
 {
+	SPAWN_NODE,
 	SELECTOR_NODE,
 	ACTION_NODE,
 	CONDITION_NODE,
@@ -104,6 +105,7 @@ struct AIBehaviorTree_t
 	AINodeRunner run;
 	char name[ MAX_QPATH ];
 	AIGenericNode_t *root;
+	AIGenericNode_t *classSelectionTree; // extra BT for deciding the starting class with spawnAs
 };
 
 // operations used in condition nodes
@@ -181,6 +183,13 @@ struct AIUnaryOp_t
 	AIExpType_t expType;
 	AIOpType_t  opType;
 	AIExpType_t *exp;
+};
+
+struct AISpawnNode_t
+{
+	AINode_t type;
+	AINodeRunner run;
+	int selection; // class_t or weapon_t depending on team
 };
 
 struct AIConditionNode_t
@@ -272,5 +281,8 @@ AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* );
 AINodeStatus_t BotActionStayHere( gentity_t *self, AIGenericNode_t* );
 AINodeStatus_t BotActionFollow( gentity_t *self, AIGenericNode_t* );
+
+// class selection node "spawnAs"
+AINodeStatus_t BotSpawnNode( gentity_t *self, AIGenericNode_t *node );
 
 #endif

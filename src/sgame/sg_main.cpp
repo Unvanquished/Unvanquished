@@ -1068,21 +1068,23 @@ static void G_SpawnClients( team_t team )
 	if ( G_GetSpawnQueueLength( sq ) > 0 && numSpawns > 0 )
 	{
 		clientNum = G_PeekSpawnQueue( sq );
+		if ( clientNum < 0 )
+		{
+			return;
+		}
+
 		ent = &g_entities[ clientNum ];
 
 		if ( ( spawn = G_SelectUnvanquishedSpawnPoint( team,
 		               ent->client->pers.lastDeathLocation,
 		               spawn_origin, spawn_angles ) ) )
 		{
-			clientNum = G_PopSpawnQueue( sq );
-
-			if ( clientNum < 0 )
+			if ( ent->r.svFlags & SVF_BOT )
 			{
-				return;
+				G_BotSelectSpawnClass( ent );
 			}
 
-			ent = &g_entities[ clientNum ];
-
+			G_PopSpawnQueue( sq );
 			ent->client->sess.spectatorState = SPECTATOR_NOT;
 			ClientUserinfoChanged( clientNum, false );
 			ClientSpawn( ent, spawn, spawn_origin, spawn_angles );

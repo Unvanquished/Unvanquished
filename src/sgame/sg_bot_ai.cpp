@@ -502,6 +502,38 @@ static bool EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 	return false;
 }
 
+AINodeStatus_t BotSpawnNode( gentity_t *self, AIGenericNode_t *node )
+{
+	if ( !( self->client->ps.pm_flags & PMF_QUEUED ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	const AISpawnNode_t *spawn = reinterpret_cast<AISpawnNode_t *>( node );
+
+	switch ( G_Team( self ) )
+	{
+	case TEAM_ALIENS:
+		if ( G_AlienCheckSpawnClass( static_cast<class_t>( spawn->selection) ) )
+		{
+			self->client->pers.classSelection = static_cast<class_t>( spawn->selection );
+			return STATUS_SUCCESS;
+		}
+		break;
+	case TEAM_HUMANS:
+		if ( G_HumanCheckSpawnWeapon( static_cast<weapon_t>( spawn->selection ) ) )
+		{
+			self->client->pers.humanItemSelection = static_cast<weapon_t>( spawn->selection );
+			return STATUS_SUCCESS;
+		}
+		break;
+	default:
+		break;
+	}
+
+	return STATUS_FAILURE;
+}
+
 /*
 ======================
 BotConditionNode
