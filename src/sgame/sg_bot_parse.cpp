@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "shared/parse.h"
 #include "sg_bot_parse.h"
 #include "sg_bot_util.h"
+#include "CBSE.h"
 #include "Entities.h"
 
 static bool expectToken( const char *s, pc_token_list **list, bool next )
@@ -307,6 +308,30 @@ static AIValue_t momentum( gentity_t* self, const AIValue_t *params )
 	return AIBoxInt( level.team[ requestedTeam ].momentum );
 }
 
+// Number of alive (not necessarily active) friendly buildables of a given type
+static AIValue_t numOurBuildings( gentity_t* self, const AIValue_t *params )
+{
+	int type = AIUnBoxInt( params[ 0 ] );
+	if ( type <= E_NONE || type >= E_NUM_BUILDABLES )
+	{
+		Log::Warn( "invalid argument %d to 'numOurBuildings' in behavior tree", type );
+		return AIBoxInt( 0 );
+	}
+
+	team_t team = G_Team( self );
+	int count = 0;
+	ForEntities<BuildableComponent>( [&]( Entity &ent, BuildableComponent & ) {
+		if ( ent.oldEnt->s.modelindex == type
+		     && G_Team( ent.oldEnt ) == team
+		     && Entities::IsAlive( ent ) )
+		{
+			++count;
+		}
+	});
+
+	return AIBoxInt( count );
+}
+
 static AIValue_t aliveTime( gentity_t*self, const AIValue_t* )
 {
 	return AIBoxInt( level.time - self->botMind->spawnTime );
@@ -398,6 +423,7 @@ static const struct AIConditionMap_s
 	{ "isVisible",         isVisible,         1 },
 	{ "matchTime",         matchTime,         0 },
 	{ "momentum",          momentum,          1 },
+	{ "numOurBuildings",   numOurBuildings,   1 },
 	{ "percentAmmoClip",   percentAmmoClip,   0 },
 	{ "percentClips",      percentClips,      0 },
 	{ "percentHealth",     percentHealth,     1 },
