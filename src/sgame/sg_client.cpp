@@ -1753,6 +1753,10 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		{
 			G_ForceWeaponChange( ent, weapon );
 		}
+		else
+		{
+			client->ps.weapon = weapon;
+		}
 
 		client->ps.weaponstate = WEAPON_READY;
 	}
