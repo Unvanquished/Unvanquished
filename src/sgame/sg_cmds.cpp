@@ -397,6 +397,10 @@ void ScoreboardMessage( gentity_t *ent )
 			{
 				upgrade = UP_RADAR;
 			}
+			else if ( BG_InventoryContainsUpgrade( UP_BIOKIT, cl->ps.stats ) )
+			{
+				upgrade = UP_BIOKIT;
+			}
 			else if ( BG_InventoryContainsUpgrade( UP_MEDIUMARMOUR, cl->ps.stats ) )
 			{
 				upgrade = UP_MEDIUMARMOUR;

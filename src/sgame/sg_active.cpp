@@ -46,7 +46,7 @@ static Cvar::Range<Cvar::Cvar<int>> g_poisonDamage(
 	"g_poisonDamage",
 	"Damage per second dealt to a poisoned individual",
 	Cvar::NONE,
-	5,
+	10,
 	0,
 	500);
 static Cvar::Range<Cvar::Cvar<int>> g_poisonDuration(
@@ -739,6 +739,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 {
 	gclient_t *client;
 	int       remainingStartupTime;
+	int	      count, interval;
 
 	if ( !self )
 	{
@@ -818,6 +819,18 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 				client->medKitIncrementTime += 100;
 			}
 		}
+	}
+
+	if ( BG_InventoryContainsUpgrade( UP_BIOKIT, client->ps.stats ) 
+	     && self->nextRegenTime < level.time )
+	{
+		interval = ( int )( BIOKIT_INTERVAL );
+
+		count = 1;
+
+		self->entity->Heal((float)count, nullptr);
+
+		self->nextRegenTime = level.time + count * interval;
 	}
 }
 
@@ -1029,6 +1042,12 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 		{
 			int flags = g_poisonIgnoreArmor.Get() ? DAMAGE_PURE : DAMAGE_NO_LOCDAMAGE;
 			int dmg = g_poisonDamage.Get();
+
+			if ( BG_InventoryContainsUpgrade( UP_BIOKIT, client->ps.stats ) )
+			{
+				dmg = dmg * BIOKIT_MODIFIER;
+			}
+			
 			ent->Damage(dmg, client->lastPoisonClient, Util::nullopt,
 			                    Util::nullopt, flags, MOD_POISON);
 		}

@@ -345,4 +345,7 @@ extern int   MEDKIT_POISON_IMMUNITY_TIME;
 extern int   MEDKIT_STARTUP_TIME;
 extern int   MEDKIT_STARTUP_SPEED;
 
+extern int   BIOKIT_INTERVAL;
+extern float BIOKIT_MODIFIER;
+
 #endif // G_GAMEPLAY_H_

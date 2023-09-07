@@ -562,6 +562,8 @@ enum upgrade_t
   UP_RADAR,
   UP_JETPACK,
 
+  UP_BIOKIT,
+
   UP_GRENADE,
   UP_FIREBOMB,
 
@@ -602,6 +604,7 @@ enum missile_t
 #define SLOT_WEAPON   BIT(5)
 #define SLOT_SIDEARM  BIT(6)
 #define SLOT_GRENADE  BIT(7)
+#define SLOT_BELT     BIT(8)
 
 // NOTE: manually update AIEntity_t if you edit this enum (TODO: get rid of this task)
 enum buildable_t

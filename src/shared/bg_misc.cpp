@@ -596,6 +596,8 @@ static const upgradeData_t bg_upgradesData[] =
 	{ UP_RADAR,       "radar"    },
 	{ UP_JETPACK,     "jetpack"  },
 
+	{ UP_BIOKIT,      "biokit"  },
+
 	{ UP_GRENADE,     "gren"     },
 	{ UP_FIREBOMB,    "firebomb" },
 

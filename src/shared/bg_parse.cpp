@@ -182,6 +182,9 @@ int   MEDKIT_POISON_IMMUNITY_TIME;
 int   MEDKIT_STARTUP_TIME;
 int   MEDKIT_STARTUP_SPEED;
 
+int   BIOKIT_INTERVAL;
+float BIOKIT_MODIFIER;
+
 // Human Weapons
 
 int   BLASTER_SPEED;
@@ -211,6 +214,9 @@ int   LCANNON_CHARGE_AMMO;
 // MUST BE ALPHABETICALLY SORTED!
 static configVar_t bg_configVars[] =
 {
+	{"u_biokit_interval", INTEGER, false, &BIOKIT_INTERVAL},
+	{"u_biokit_modifier", FLOAT, false, &BIOKIT_MODIFIER},
+
 	{"u_medkit_poisonImmunityTime", INTEGER, false, &MEDKIT_POISON_IMMUNITY_TIME},
 	{"u_medkit_startupSpeed", INTEGER, false, &MEDKIT_STARTUP_SPEED},
 	{"u_medkit_startupTime", INTEGER, false, &MEDKIT_STARTUP_TIME},
@@ -386,6 +392,10 @@ static int ParseSlotList(const char** text)
 		else if ( !Q_stricmp( token, "grenade" ) )
 		{
 			slots |= SLOT_GRENADE;
+		}
+		else if ( !Q_stricmp( token, "belt" ) )
+		{
+			slots |= SLOT_BELT;
 		}
 		else
 		{
