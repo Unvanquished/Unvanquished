@@ -2045,9 +2045,6 @@ trace_t CG_Trace( glm::vec3 const& start, glm::vec3 const& mins, glm::vec3 const
 trace_t CG_Trace( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int skipNumber, int mask, int skipmask, traceType_t type );
 void CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                   const vec3_t end, int skipNumber, int mask, int skipmask );
-void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
-                       const float startRadius, const float endRadius, int skipNumber, int mask,
-                       int skipmask );
 void CG_PredictPlayerState();
 
 //
