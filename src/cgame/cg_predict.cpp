@@ -177,11 +177,6 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			CM_TransformedBoxTrace( &trace, start, end, mins, maxs, cmodel, mask, skipmask, origin, angles, collisionType );
 			break;
 
-		case traceType_t::TT_BISPHERE:
-			CM_TransformedBiSphereTrace( &trace, start, end, mins[ 0 ], maxs[ 0 ], cmodel,
-			                                  mask, skipmask, origin );
-			break;
-
 		default: // Shouldn't Happen
 			ASSERT_UNREACHABLE();
 		}
@@ -189,17 +184,7 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		if ( trace.allsolid || trace.fraction < tr->fraction )
 		{
 			trace.entityNum = ent->number;
-
-			if ( tr->lateralFraction < trace.lateralFraction )
-			{
-				float oldLateralFraction = tr->lateralFraction;
-				*tr = trace;
-				tr->lateralFraction = oldLateralFraction;
-			}
-			else
-			{
-				*tr = trace;
-			}
+			*tr = trace;
 		}
 		else if ( trace.startsolid )
 		{
@@ -246,29 +231,6 @@ void  CG_CapTrace( trace_t *result, const vec3_t start, const vec3_t mins, const
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 	// check all other solid models
 	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_CAPSULE );
-
-	*result = t;
-}
-
-/*
-================
-CG_BiSphereTrace
-================
-*/
-void CG_BiSphereTrace( trace_t *result, const vec3_t start, const vec3_t end,
-                       const float startRadius, const float endRadius, int skipNumber, int mask,
-                       int skipmask )
-{
-	trace_t t;
-	vec3_t  mins = { 0 }, maxs = { 0 };
-
-	mins[ 0 ] = startRadius;
-	maxs[ 0 ] = endRadius;
-
-	CM_BiSphereTrace( &t, start, end, startRadius, endRadius, 0, mask, skipmask );
-	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
-	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_BISPHERE );
 
 	*result = t;
 }
