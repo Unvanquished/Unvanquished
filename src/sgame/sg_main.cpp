@@ -275,6 +275,7 @@ Cvar::Cvar<int> g_bot_radarRatio("g_bot_radarRatio", "bots target x% of team own
 Cvar::Cvar<bool> g_bot_jetpack("g_bot_jetpack", "whether bots buy the Jetpack", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_grenade("g_bot_grenade", "whether bots buy the Grenade", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_firebomb("g_bot_firebomb", "whether bots buy the Firebomb", Cvar::NONE, false);
+Cvar::Cvar<bool> g_bot_biokit("g_bot_biokit", "whether bots buy the Biokit", Cvar::NONE, true);
 
 // bot evolution cvars
 Cvar::Cvar<bool> g_bot_evolve("g_bot_evolve", "whether bots can evolve", Cvar::NONE, true);

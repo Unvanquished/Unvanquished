@@ -197,6 +197,7 @@ extern Cvar::Cvar<bool> g_bot_radar;
 extern Cvar::Cvar<bool> g_bot_jetpack; //can't be really used, yet
 extern Cvar::Cvar<bool> g_bot_grenade;
 extern Cvar::Cvar<bool> g_bot_firebomb;
+extern Cvar::Cvar<bool> g_bot_biokit;
 
 // bot evolution cvars
 extern Cvar::Cvar<bool> g_bot_evolve;

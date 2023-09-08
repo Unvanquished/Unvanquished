@@ -194,6 +194,7 @@ static equipment_t<upgrade_t> armors[] =
 static equipment_t<upgrade_t> others[] =
 {
 	{ g_bot_radar   , UP_RADAR },
+	{ g_bot_biokit  , UP_BIOKIT },
 	{ g_bot_grenade , UP_GRENADE },
 	{ g_bot_firebomb, UP_FIREBOMB },
 };
@@ -293,6 +294,11 @@ static int GetMaxEquipmentCost( gentity_t const* self )
 					max_item_val += BG_Upgrade( UP_RADAR )->price;
 				}
 				max_value += max_item_val;
+
+				if( g_bot_biokit.Get() && BG_UpgradeUnlocked( UP_BIOKIT ) )
+				{
+					max_value += BG_Upgrade( UP_BIOKIT )->price;
+				}
 
 				max_item_val = 0;
 				for ( auto const& wp : weapons )
@@ -720,6 +726,12 @@ int BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrades[], s
 		{
 			continue;
 		}
+
+		if ( tool.item == UP_BIOKIT && usableCapital < 400 )
+		{
+			continue;
+		}
+
 		if ( tool.canBuyNow() && usableCapital >= tool.price()
 				&& ( usedSlots & tool.slots() ) == 0
 				&& numUpgrades < upgradesSize )
