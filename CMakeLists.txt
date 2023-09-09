@@ -39,9 +39,7 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "Building in the source directory is not supported, try building in a 'build' directory. You may have to delete the CMakeCache.txt file and CMakeFiles directory that are next to the CMakeLists.txt.")
 endif()
 
-set(SUBMODULE_LIST
-  "libs/RmlUi"
-  "pkg/unvanquished_src.dpkdir")
+set(SUBMODULE_LIST "libs/RmlUi")
 
 set(DAEMON_DIR_STRING "Path to the Daemon Engine source.")
 if(NOT DAEMON_DIR)
