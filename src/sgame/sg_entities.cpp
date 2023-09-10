@@ -245,8 +245,6 @@ EntityToString
 Convenience function for printing entities
 =============
 */
-//assuming MAX_GENTITIES to be 5 digits or less
-#define MAX_ETOS_LENGTH (MAX_NAME_LENGTH + 5 * 2 + 4 + 1 + 5)
 static bool matchesName( mapEntity_t const& ent, std::string const& name )
 {
 	for ( std::string const& n : ent.names )
@@ -273,6 +271,8 @@ static char const* name0( mapEntity_t const& ent )
 
 const char *etos( const gentity_t *entity )
 {
+	//assuming MAX_GENTITIES to be 5 digits or less
+	size_t const MAX_ETOS_LENGTH = (MAX_NAME_LENGTH + 5 * 2 + 4 + 1 + 5);
 	static  int  index;
 	static  char str[ 4 ][ MAX_ETOS_LENGTH ];
 	char         *resultString;
@@ -284,7 +284,7 @@ const char *etos( const gentity_t *entity )
 	resultString = str[ index ];
 	index = ( index + 1 ) & 3;
 
-	Com_sprintf( resultString, MAX_ETOS_LENGTH,
+	snprintf( resultString, MAX_ETOS_LENGTH,
 			"%s^7(^5%s^*|^5#%i^*)",
 			name0( entity->mapEntity ), entity->classname.c_str(), entity->num()
 			);
@@ -491,23 +491,23 @@ gentity chain handling
  */
 #define NULL_CALL gentityCall_t{ nullptr, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] }
 
-static gentity_t *G_ResolveEntityKeyword( gentity_t *self, std::string const& keyword )
+static gentity_t *G_ResolveEntityKeyword( gentity_t *self, char const* keyword )
 {
 	gentity_t *resolution = nullptr;
 
-	if ( !Q_stricmp( keyword.c_str(), "$activator" ) )
+	if ( !Q_stricmp( keyword, "$activator" ) )
 	{
 		resolution = self->activator;
 	}
-	else if ( !Q_stricmp( keyword.c_str(), "$self" ) )
+	else if ( !Q_stricmp( keyword, "$self" ) )
 	{
 		resolution = self;
 	}
-	else if ( !Q_stricmp( keyword.c_str(), "$parent" ) )
+	else if ( !Q_stricmp( keyword, "$parent" ) )
 	{
 		resolution = self->parent;
 	}
-	else if ( !Q_stricmp( keyword.c_str(), "$target" ) && self->target )
+	else if ( !Q_stricmp( keyword, "$target" ) && self->target )
 	{
 		resolution = self->target.get();
 	}
@@ -531,7 +531,7 @@ gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self
 	{
 		if(self->mapEntity.targets[*targetIndex][0] == '$')
 		{
-			possibleTarget = G_ResolveEntityKeyword( self, self->mapEntity.targets[*targetIndex] );
+			possibleTarget = G_ResolveEntityKeyword( self, self->mapEntity.targets[*targetIndex].c_str() );
 			if(possibleTarget && possibleTarget->enabled)
 				return possibleTarget;
 			return nullptr;
