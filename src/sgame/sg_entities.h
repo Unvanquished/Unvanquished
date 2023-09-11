@@ -160,7 +160,7 @@ bool   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 
 //chain
 gentity_t  *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self);
-gentity_t  *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gentity_t *self );
+gentity_t  *G_IterateCallEndpoints( gentity_t *entity, size_t &calltargetIndex, gentity_t *self );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 
 void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);

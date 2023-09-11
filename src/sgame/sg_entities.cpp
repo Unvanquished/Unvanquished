@@ -553,9 +553,9 @@ gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self
 	return nullptr;
 }
 
-gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, gentity_t *self)
+gentity_t *G_IterateCallEndpoints(gentity_t *entity, size_t &calltargetIndex, gentity_t *self)
 {
-	if ( *calltargetIndex >= self->mapEntity.calltargets.size() )
+	if ( calltargetIndex >= self->mapEntity.calltargets.size() )
 	{
 		return nullptr;
 	}
@@ -565,17 +565,17 @@ gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, genti
 		goto cont;
 	}
 
-	for (*calltargetIndex = 0; *calltargetIndex < self->mapEntity.calltargets.size() && self->mapEntity.calltargets[*calltargetIndex].name; ++(*calltargetIndex))
+	for ( calltargetIndex = 0; calltargetIndex < self->mapEntity.calltargets.size() && self->mapEntity.calltargets[calltargetIndex].name; ++calltargetIndex )
 	{
-		if(self->mapEntity.calltargets[*calltargetIndex].name[0] == '$')
+		if(self->mapEntity.calltargets[calltargetIndex].name[0] == '$')
 		{
-			return G_ResolveEntityKeyword( self, self->mapEntity.calltargets[*calltargetIndex].name );
+			return G_ResolveEntityKeyword( self, self->mapEntity.calltargets[calltargetIndex].name );
 		}
 
 		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
 			if ( entity->inuse
-					&& matchesName( entity->mapEntity, self->mapEntity.calltargets[*calltargetIndex].name ) )
+					&& matchesName( entity->mapEntity, self->mapEntity.calltargets[calltargetIndex].name ) )
 			{
 				return entity;
 			}
@@ -628,11 +628,11 @@ ent.targets[j] for any (i,j) pairs, call the t.use function.
 void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_t eventType )
 {
 	gentity_t *currentTarget = nullptr;
-	int targetIndex;
 	gentityCall_t call;
 	call.activator = activator;
 
-	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) )
+	size_t targetIndex;
+	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, targetIndex, self ) ) )
 	{
 		if( eventType && self->mapEntity.calltargets[ targetIndex ].eventType != eventType )
 		{

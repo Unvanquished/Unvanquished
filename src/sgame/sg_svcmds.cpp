@@ -112,7 +112,6 @@ Svcmd_EntityShow_f
 static void Svcmd_EntityShow_f()
 {
 	int       entityNum;
-	int       lastTargetIndex, targetIndex;
 	gentity_t *selection;
 	gentity_t *possibleTarget = nullptr;
 	char argument[ 6 ];
@@ -174,6 +173,7 @@ static void Svcmd_EntityShow_f()
 	{
 		Log::Notice( "Aims at");
 
+		int targetIndex;
 		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != nullptr )
 		{
 			Log::Notice(" • %s %s", etos( possibleTarget ), glm::to_string( VEC2GLM( possibleTarget->s.origin ) ) );
@@ -182,8 +182,9 @@ static void Svcmd_EntityShow_f()
 
 	if ( selection->mapEntity.calltargets.size() )
 	{
-		lastTargetIndex = -1;
-		while ( nullptr != ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, selection ) ) )
+		size_t lastTargetIndex = SIZE_MAX;
+		size_t targetIndex;
+		while ( nullptr != ( possibleTarget = G_IterateCallEndpoints( possibleTarget, targetIndex, selection ) ) )
 		{
 
 			if(lastTargetIndex != targetIndex)

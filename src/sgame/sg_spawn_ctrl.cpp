@@ -51,7 +51,6 @@ static void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 		gentity_t *recipient;
 	};
 
-	int       targetIndex;
 	gentity_t *possibleTarget = nullptr;
 	int       totalChoiceCount = 0;
 	gentityCall_t call;
@@ -59,7 +58,8 @@ static void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 	gentityTargetChoice_t *selectedChoice;
 
 	//collects the targets
-	while( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, entity ) ) != nullptr )
+	size_t targetIndex;
+	while( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, targetIndex, entity ) ) != nullptr )
 	{
 		choices[ totalChoiceCount ].recipient = possibleTarget;
 		choices[ totalChoiceCount ].callDefinition = &entity->mapEntity.calltargets[targetIndex];
