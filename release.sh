@@ -26,7 +26,7 @@ do
 	cp pkg/unvanquished_src.dpkdir/"$file" "$DEST/$file"
 done
 
-git log --oneline $START..HEAD | grep '^[0-9a-f]* [A-Z]*:' > $DEST/changelog
+git log --oneline $START..HEAD | sed -n '/^[0-9a-f]* [A-Z]*:/ s!^[^ ]*\(.*\)!•<li>\1<br/></li>! p' >> $DEST/changelog
 git format-patch -o $DEST/patches $START..HEAD
 find $DEST -name '.*' -exec rm -r {} \+
 rm release.dpk

@@ -19,6 +19,12 @@
 				<translate>Welcome to Unvanquished</translate>
 				<br />
 				<br />
+				This mod is based on commit aa0df65ca110b69e073acb167d57886de3dbc398, dated from 2023-06-19.<br/>
+				Here is a list of (some) noticeable changes:<br/><br/>
+				<ul>
+					<include src="changelog"/>
+				</ul>
+				<br/><br/>
 				<translate>Close this menu and click anywhere to join a team and begin playing!</translate>
 			</panel>
 		</tabset>

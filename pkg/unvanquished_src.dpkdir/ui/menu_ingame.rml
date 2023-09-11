@@ -112,6 +112,11 @@
 							<blocklink onclick='Events.pushevent("show help_textentry", event)'><translate>Colour codes and symbols</translate></blocklink>
 						</indent>
 
+						<h2><translate>Welcome</translate></h2>
+						<indent>
+							<blocklink onclick='Events.pushevent("show welcome", event)'><translate>Change log</translate></blocklink>
+						</indent>
+
 						<br />
 
 						<blocklink class="rightfloat" onclick='Events.pushevent("exec quit", event)'><translate>Quit game</translate></blocklink>
