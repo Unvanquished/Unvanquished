@@ -48,8 +48,8 @@ static Cvar::Range<Cvar::Cvar<int>> maxNavNodes(
 int numNavData = 0;
 NavData_t BotNavData[ MAX_NAV_DATA ];
 
-LinearAllocator alloc( 1024 * 1024 * 16 );
-FastLZCompressor comp;
+static LinearAllocator alloc( 1024 * 1024 * 16 );
+static FastLZCompressor comp;
 
 // Recast uses NDEBUG to determine whether assertions are enabled.
 // Make sure this is in sync with DEBUG_BUILD
@@ -58,7 +58,7 @@ FastLZCompressor comp;
 #endif
 
 #ifdef DEBUG_BUILD
-static void FailAssertion(const char* expression, const char* file, int line)
+[[noreturn]] static void FailAssertion(const char* expression, const char* file, int line)
 {
 	DAEMON_ASSERT_CALLSITE_HELPER(
 		file, "Detour assert", line, , , false, Str::Format("\"%s\" is false", expression));
@@ -390,7 +390,7 @@ static navMeshStatus_t BotLoadNavMesh( int f, const NavgenConfig &config, const 
 
 		trap_FS_Read( data, tileHeader.dataSize, f );
 
-		if ( LittleLong( 1 ) != 1 )
+		if ( LittleLong( 1 ) != ( 1 ) )
 		{
 			dtTileCacheHeaderSwapEndian( data, tileHeader.dataSize );
 		}

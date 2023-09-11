@@ -1111,9 +1111,9 @@ Str::StringRef G_VoteTypeString( VoteType type )
 		case V_PUBLIC:
 			return "V_PUBLIC";
 		case V_ANY:
-		default:
 			return "V_ANY";
 	}
+	ASSERT_UNREACHABLE();
 }
 
 bool G_ParseVoteTarget( Str::StringRef s, VoteTarget* type )
@@ -1141,9 +1141,9 @@ Str::StringRef G_VoteTargetString( VoteTarget type )
 		case T_OTHER:
 			return "T_OTHER";
 		case T_NONE:
-		default:
 			return "T_NONE";
 	}
+	ASSERT_UNREACHABLE();
 }
 
 bool G_ParseVoteOptions( Str::StringRef s, VoteOptions* type )
@@ -1177,9 +1177,9 @@ Str::StringRef G_VoteOptionsString( VoteOptions type )
 		case VOTE_NO_AUTO:
 			return "VOTE_NO_AUTO";
 		case VOTE_ALWAYS:
-		default:
 			return "VOTE_ALWAYS";
 	}
+	ASSERT_UNREACHABLE();
 }
 
 bool G_ParseReasonNeeded( Str::StringRef s, qtrinary* tri )
@@ -1207,7 +1207,7 @@ Str::StringRef G_ReasonNeededString( qtrinary tri )
 		case qtrinary::qmaybe:
 			return "maybe";
 		case qtrinary::qno:
-		default:
 			return "no";
 	}
+	ASSERT_UNREACHABLE();
 }

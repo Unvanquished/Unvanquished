@@ -2497,8 +2497,7 @@ bool G_admin_time( gentity_t *ent )
 			}
 			return true;
 		}
-		// fallthrough
-
+		DAEMON_FALLTHROUGH;
 	default:
 		ADMP( QQ( N_("^3time:^* usage: time [minutes]") ) );
 		return false;

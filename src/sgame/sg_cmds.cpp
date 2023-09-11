@@ -1224,8 +1224,16 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 			}
 
 			G_LogPrintf( "Chat: -1 \"console\": %s", chatText );
-
-		default:
+			break;
+		case SAY_PRIVMSG:
+		case SAY_TPRIVMSG:
+		case SAY_AREA:
+		case SAY_AREA_TEAM:
+		case SAY_ADMINS:
+		case SAY_ADMINS_PUBLIC:
+		case SAY_ALL_ME:
+		case SAY_TEAM_ME:
+		case SAY_DEFAULT:
 			break;
 	}
 

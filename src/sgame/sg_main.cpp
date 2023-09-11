@@ -300,7 +300,6 @@ Cvar::Cvar<int> g_bot_aliensenseRange("g_bot_aliensenseRange", "custom aliensens
 //</bot stuff>
 
 static Cvar::Cvar<std::string> gamename("gamename", "game/mod identifier", Cvar::SERVERINFO | Cvar::ROM, GAME_VERSION);
-static Cvar::Cvar<std::string> gamedate("gamedate", "date the sgame was compiled", Cvar::ROM, __DATE__);
 
 void               CheckExitRules();
 static void        G_LogGameplayStats( int state );
@@ -447,7 +446,6 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	Log::Notice( "------- Game Initialization -------" );
 	Log::Notice( "gamename: %s", GAME_VERSION );
-	Log::Notice( "gamedate: %s", __DATE__ );
 
 	// set some level globals
 	level.~level_locals_t();

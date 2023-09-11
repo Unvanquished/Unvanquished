@@ -970,18 +970,18 @@ static void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t re
 		case trType_t::TR_STATIONARY:
 		case trType_t::TR_INTERPOLATE:
 			VectorCopy( tr->trBase, result );
-			break;
+			return;
 
 		case trType_t::TR_LINEAR:
 			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-			break;
+			return;
 
 		case trType_t::TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
 			phase = sinf( deltaTime * M_PI * 2 );
 			VectorMA( tr->trBase, phase, tr->trDelta, result );
-			break;
+			return;
 
 		case trType_t::TR_LINEAR_STOP:
 			if ( atTime > tr->trTime + tr->trDuration )
@@ -997,23 +997,21 @@ static void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t re
 			}
 
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-			break;
+			return;
 
 		case trType_t::TR_GRAVITY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			result[ 2 ] -= 0.5f * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
-			break;
+			return;
 
 		case trType_t::TR_BUOYANCY:
 			deltaTime = ( atTime - tr->trTime ) * 0.001f; // milliseconds to seconds
 			VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 			result[ 2 ] += 0.5f * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
-			break;
-
-		default:
-			Sys::Drop( "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
+			return;
 	}
+	Sys::Drop( "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
 }
 
 glm::vec3 BG_EvaluateTrajectory( const trajectory_t *tr, int atTime )
@@ -1068,10 +1066,8 @@ glm::vec3 BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime )
 			deltaTime *= 0.001f; // milliseconds to seconds
 			trDelta.z += DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 			return trDelta;
-
-		default:
-			Sys::Drop( "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
 	}
+	Sys::Drop( "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
 }
 
 static constexpr const char *const eventnames[] =
@@ -2446,17 +2442,12 @@ const char *Trans_GenderContext( gender_t gender )
 	{
 		case GENDER_MALE:
 			return "male";
-			break;
 		case GENDER_FEMALE:
 			return "female";
-			break;
 		case GENDER_NEUTER:
 			return "neuter";
-			break;
-		default:
-			return "unknown";
-			break;
 	}
+	return "unknown";
 }
 
 // using the stringizing operator to save typing...

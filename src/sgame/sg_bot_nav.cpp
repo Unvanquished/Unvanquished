@@ -747,19 +747,7 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeome
 	}
 
 	// ignore some stuff like geometry, movers...
-	switch( blocker->s.eType )
-	{
-		case entityType_t::ET_GENERAL:
-		case entityType_t::ET_MOVER:
-			if ( ignoreGeometry )
-			{
-				return false;
-			}
-		default:
-			break;
-	}
-
-	return true;
+	return not ( ( blocker->s.eType == entityType_t::ET_GENERAL || blocker->s.eType == entityType_t::ET_MOVER ) && ignoreGeometry );
 }
 
 // `dir` does not need to be normalized

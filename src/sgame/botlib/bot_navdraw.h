@@ -45,14 +45,14 @@ public:
 	void init();
 	void sendCommands();
 
-	void depthMask(bool state);
-	void texture(bool) {};
-	void begin(duDebugDrawPrimitives prim, float size = 1.0f);
-	void vertex(const float* pos, unsigned int color);
-	void vertex(const float x, const float y, const float z, unsigned int color);
-	void vertex(const float* pos, unsigned int color, const float* uv);
-	void vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v);
-	void end();
+	void depthMask(bool state) override;
+	inline void texture(bool) override {};
+	void begin(duDebugDrawPrimitives prim, float size = 1.0f) override;
+	void vertex(const float* pos, unsigned int color) override;
+	void vertex(const float x, const float y, const float z, unsigned int color) override;
+	void vertex(const float* pos, unsigned int color, const float* uv) override;
+	void vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v) override;
+	void end() override;
 };
 
 #endif

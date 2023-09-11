@@ -142,11 +142,9 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 
 		case GAME_SNAPSHOT_CALLBACK:
 			Sys::Drop("GAME_SNAPSHOT_CALLBACK not implemented");
-			break;
 
 		case BOTAI_START_FRAME:
 			Sys::Drop("BOTAI_START_FRAME not implemented");
-			break;
 
 		default:
 			Sys::Drop("VMMain(): unknown game command %i", minor);

@@ -140,9 +140,8 @@ const char *AIUnBoxString( AIValue_t v )
 			return va( "%d", v.l.intValue );
 		case VALUE_STRING:
 			return v.l.stringValue;
-		default:
-			return empty;
 	}
+	return empty;
 }
 
 double AIUnBoxDouble( AIValue_t v )
@@ -153,20 +152,22 @@ double AIUnBoxDouble( AIValue_t v )
 			return ( double ) v.l.floatValue;
 		case VALUE_INT:
 			return ( double ) v.l.intValue;
-		default:
+		case VALUE_STRING:
 			return 0.0;
 	}
+	return 0.0;
 }
 
 void AIDestroyValue( AIValue_t v )
 {
 	switch ( v.valType )
 	{
-		case VALUE_STRING:
-			BG_Free( v.l.stringValue );
+		case VALUE_FLOAT:
+		case VALUE_INT:
 			break;
 
-		default:
+		case VALUE_STRING:
+			BG_Free( v.l.stringValue );
 			break;
 	}
 }
