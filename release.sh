@@ -11,7 +11,7 @@ DEST=relpkg
 
 test -d relbuild || die "relbuild dir not found"
 cd relbuild
-make
+make --quiet || die "unable to compile"
 cd -
 rm -r $DEST
 mkdir $DEST
