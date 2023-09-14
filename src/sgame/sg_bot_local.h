@@ -179,9 +179,6 @@ struct botMemory_t
 public:
 	void addEnemy( const gentity_t *self, const GentityConstRef &enemy, size_t oldEnemies, float dist, queue_element_t::detectionType_t detection );
 
-	//team the bot is on when added
-	team_t botTeam;
-
 	botTarget_t goal;
 	void willSprint( bool enable );
 	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );

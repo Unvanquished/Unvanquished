@@ -269,7 +269,6 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef beh
 	gentity_t *self = &g_entities[ clientNum ];
 	botMind = self->botMind = &g_botMind[clientNum];
 
-	botMind->botTeam = team;
 	BotSetNavmesh( self, (class_t) self->client->ps.stats[ STAT_CLASS ] );
 
 	if ( !G_BotSetBehavior( botMind, behavior ) )
@@ -278,7 +277,6 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef beh
 	}
 
 	self->r.svFlags |= SVF_BOT;
-
 	if ( team != TEAM_NONE )
 	{
 		self->client->sess.restartTeam = team;
