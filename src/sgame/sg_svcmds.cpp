@@ -38,6 +38,44 @@ Maryland 20850 USA.
 
 #define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
 
+class TraceCmd : public Cmd::StaticCmd
+{
+public:
+	TraceCmd() : StaticCmd( "trace", 0, "perform collision-testing trace (for debugging)" ) {}
+	void Run( const Cmd::Args& args ) const override
+	{
+		glm::vec3 start, end;
+		glm::vec3 mins{}, maxs{};
+		int contents = MASK_ALL;
+		int skipmask = 0;
+		int passEntityNum = ENTITYNUM_NONE;
+
+		switch ( args.Argc() )
+		{
+		case 13:
+			if ( !Str::ToFloat( args.Argv( 7 ), mins.x ) || !Str::ToFloat( args.Argv( 8 ), mins.y ) || !Str::ToFloat( args.Argv( 9 ), mins.z ) ||
+					!Str::ToFloat( args.Argv( 10 ), maxs.x ) || !Str::ToFloat( args.Argv( 11 ), maxs.y ) || !Str::ToFloat( args.Argv( 12 ), maxs.z ) )
+				break;
+			DAEMON_FALLTHROUGH;
+		case 7:
+			if ( !Str::ToFloat( args.Argv( 1 ), start.x ) || !Str::ToFloat( args.Argv( 2 ), start.y ) || !Str::ToFloat( args.Argv( 3 ), start.z ) ||
+					!Str::ToFloat( args.Argv( 4 ), end.x ) || !Str::ToFloat( args.Argv( 5 ), end.y ) || !Str::ToFloat( args.Argv( 6 ), end.z ) )
+				break;
+			trace_t trace;
+			trap_Trace( &trace, start, mins, maxs, end, passEntityNum, contents, skipmask );
+			Print( "startsolid=%s allsolid=%s fraction=%f\nendpos=(%.1f %.1f %.1f)\nplane=(%f %f %f) %.1f\ncontents=0x%08x entityNum=%d",
+				trace.startsolid, trace.allsolid, trace.fraction,
+				trace.endpos[ 0 ], trace.endpos[ 1 ], trace.endpos[ 2 ],
+				trace.plane.normal[ 0 ], trace.plane.normal[ 1 ], trace.plane.normal[ 2 ], trace.plane.dist,
+				trace.contents, trace.entityNum );
+			return;
+		}
+
+		Print( "Usage: trace <x0> <y0> <z0> <x1> <y1> <z1> (<mins.x> <mins.y> <mins.z> <maxs.x> <maxs.y> <maxs.z>)" );
+	}
+};
+static TraceCmd traceRegistration;
+
 static void Svcmd_EntityFire_f()
 {
 	char argument[ MAX_STRING_CHARS ];
