@@ -754,25 +754,10 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 	int            i, num;
 	int            touchlist[ MAX_GENTITIES ];
 	gentity_t *touch;
-	int            passOwnerNum;
 	trace_t        trace;
 	clipHandle_t   clipHandle;
 
 	num = G_CM_AreaEntities( clip->boxmins, clip->boxmaxs, touchlist, MAX_GENTITIES );
-
-	if ( clip->passEntityNum != ENTITYNUM_NONE )
-	{
-		passOwnerNum = g_entities[ clip->passEntityNum ].r.ownerNum;
-
-		if ( passOwnerNum == ENTITYNUM_NONE )
-		{
-			passOwnerNum = -1;
-		}
-	}
-	else
-	{
-		passOwnerNum = -1;
-	}
 
 	for ( i = 0; i < num; i++ )
 	{
@@ -794,11 +779,6 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 			if ( touch->r.ownerNum == clip->passEntityNum )
 			{
 				continue; // don't clip against own missiles
-			}
-
-			if ( touch->r.ownerNum == passOwnerNum )
-			{
-				continue; // don't clip against other missiles from our owner
 			}
 		}
 
