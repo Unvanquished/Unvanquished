@@ -869,7 +869,7 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const
 	CM_BoxTrace( &clip.trace, start, end, mins, maxs, 0, contentmask, skipmask, type );
 	clip.trace.entityNum = clip.trace.fraction == 1.0 ? ENTITYNUM_NONE : ENTITYNUM_WORLD;
 
-	if ( clip.trace.fraction == 0 )
+	if ( clip.trace.allsolid )
 	{
 		*results = clip.trace;
 		return; // blocked immediately by the world
