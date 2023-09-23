@@ -1748,7 +1748,13 @@ static bool FindRoomForClassChangeVertically(
 	VectorCopy( newOrigin, temp );
 	temp[ 2 ] += nudgeHeight;
 	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->num(), MASK_PLAYERSOLID, 0 );
-	temp[ 2 ] = newOrigin[2] + nudgeHeight * tr.fraction;
+
+	if ( tr.fraction == 0.0f )
+	{
+		// it's not helping, we are probably too close to something horizontally
+		return false;
+	}
+	temp[ 2 ] = tr.endpos[ 2 ];
 
 	// trace down to the ground so that we can evolve on slopes
 	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0 );
@@ -1756,7 +1762,7 @@ static bool FindRoomForClassChangeVertically(
 
 	// make REALLY sure
 	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin, ent->num(), MASK_PLAYERSOLID, 0 );
-	return !tr.startsolid && tr.fraction == 1.0f;
+	return tr.fraction == 1.0f;
 }
 
 static bool FindRoomForClassChangeLaterally(
@@ -1794,20 +1800,25 @@ static bool FindRoomForClassChangeLaterally(
 		trap_Trace( &trace, start_point, toMins, toMaxs,
 				origin, ent->num(),
 				MASK_PLAYERSOLID, 0 );
+		if ( trace.fraction == 0.0f )
+		{
+			continue;
+		}
+
+		float new_distance = Distance( trace.endpos, origin );
+		if ( new_distance >= best_distance )
+			continue; // not interesting
 
 		vec3_t first_trace_end;
 		VectorCopy(trace.endpos, first_trace_end);
-		// make REALLY sure
+		// verify that the endpoint is unblocked - it might be blocked if the first trace
+		// has startsolid
 		trap_Trace( &trace, first_trace_end, toMins, toMaxs,
 				first_trace_end, ent->num(),
 				MASK_PLAYERSOLID, 0 );
 
-		if ( trace.startsolid || trace.fraction < 1.0f )
+		if ( trace.fraction < 1.0f )
 			continue; // collision
-
-		float new_distance = Distance(trace.endpos, origin);
-		if ( new_distance > best_distance )
-			continue; // not interesting
 
 		// new best!
 		found = true;
