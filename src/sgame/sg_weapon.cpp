@@ -308,6 +308,11 @@ bool G_FindFuel( gentity_t *self )
 ================
 Trace a bounding box against entities, but not the world
 Also check there is a line of sight between the start and end point
+FIXME: does not work correctly if width or height is big enough that the trace box
+is not contained inside the attacking player's bounding box. The trace protrudes in the +z
+direction for painsaw and all primary attacks of marauder and larger aliens. This means
+if an enemy is standing on your head with these weapons the trace does not hit although
+it should be in range.
 ================
 */
 static void G_WideTrace(

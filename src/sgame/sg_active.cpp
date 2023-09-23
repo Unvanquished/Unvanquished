@@ -1636,6 +1636,7 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 
 	G_UnlaggedOn( ent, ent->client->oldOrigin, range );
 
+	// FIXME: uses wonky entityNum behavior (see trap_Trace comment)
 	trap_Trace( &tr, ent->client->oldOrigin, ent->r.mins, ent->r.maxs,
 	            ent->client->ps.origin, ent->s.number, MASK_PLAYERSOLID, 0 );
 
