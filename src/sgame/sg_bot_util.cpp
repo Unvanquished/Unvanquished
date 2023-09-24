@@ -1989,7 +1989,7 @@ void BotFireWeaponAI( gentity_t *self )
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 
-	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], ENTITYNUM_NONE, MASK_SHOT, 0 );
+	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], self->num(), MASK_SHOT, 0 );
 	distance = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
 	bool readyFire = self->client->ps.IsWeaponReady();
 	glm::vec3 target = self->botMind->goal.getPos();
