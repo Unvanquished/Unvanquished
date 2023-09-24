@@ -211,8 +211,12 @@ void CG_Trace( trace_t *result, const vec3_t start, const vec3_t mins, const vec
 
 	CM_BoxTrace( &t, start, end, mins, maxs, 0, mask, skipmask, traceType_t::TT_AABB );
 	t.entityNum = t.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
-	// check all other solid models
-	CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_AABB );
+
+	if ( !t.allsolid )
+	{
+		// check all other solid models
+		CG_ClipMoveToEntities( start, mins, maxs, end, skipNumber, mask, skipmask, &t, traceType_t::TT_AABB );
+	}
 
 	*result = t;
 }
