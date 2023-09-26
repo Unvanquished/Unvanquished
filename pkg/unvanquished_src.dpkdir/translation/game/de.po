@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: Unv Game DE r2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-07-14 19:46+0000\n"
-"Last-Translator: Erarnitox <erarnitox@gmail.com>\n"
+"PO-Revision-Date: 2023-09-27 14:59+0000\n"
+"Last-Translator: chris <hardedge@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/de/>\n"
 "Language: de\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 "X-POOTLE-MTIME: 1398345746.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -48,12 +48,13 @@ msgid "Granger"
 msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
+#, fuzzy
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
-"Dretches sind die kleinste Kampfeinheit, Granger die Konstrukteure der "
-"Aliens."
+"Dretches sind schnelle hinterhältige Kampfeinheiten, Granger die "
+"Konstrukteure der Aliens."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
@@ -97,8 +98,9 @@ msgid "Amount"
 msgstr "Anzahl"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
+#, fuzzy
 msgid "Change map"
-msgstr "Karte ändern"
+msgstr "Karte wechseln"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
@@ -137,32 +139,40 @@ msgid "Welcome"
 msgstr "Willkommen"
 
 #: ui/help_gameplay.rml:19
+#, fuzzy
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
-msgstr "Hier findest du eine Übersicht über die wichtigsten Spielmechaniken."
+msgstr ""
+"Hier findest du eine Übersicht über die wichtigsten Spielmechaniken um ein "
+"erfolgreicher Spieler zu werden."
 
 #: ui/help_gameplay.rml:22
 msgid "More can be found on our website and other community places!"
 msgstr ""
+"Für weitere Informationen besuchen Sie bitte unsere Website oder anderen "
+"Community-Foren!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Chatte mit anderen Spielern und den Entwicklern auf Libera.Chat IRC, Matrix "
+"oder Discord: <web dest=\"chat\"/>"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "Diskutiere die Neuigkeiten in den Foren: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr ""
 
 #: ui/help_gameplay.rml:28
+#, fuzzy
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Bitte melde Fehler auf: <web dest=\"bugs\"/>"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
@@ -844,7 +854,7 @@ msgstr "Blickwinkel"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = Blickwinkelweite des Spielers, gemessen in Grad."
 
 #: ui/options_fov.rml:12
 msgid ""
@@ -964,7 +974,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:40
 msgid "Ultra"
-msgstr ""
+msgstr "Ultra"
 
 #: ui/options_graphics.rml:41
 msgid ""
@@ -974,15 +984,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:44 ui/options_graphics.rml:46
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: ui/options_graphics.rml:48
 msgid "Brightness"
-msgstr ""
+msgstr "Helligkeit"
 
 #: ui/options_graphics.rml:51
 msgid "Gamma:"
-msgstr ""
+msgstr "Gamma:"
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
@@ -1010,7 +1020,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:75
 msgid "Vsync"
-msgstr ""
+msgstr "Vsync"
 
 #: ui/options_graphics.rml:76
 msgid ""
@@ -1032,11 +1042,11 @@ msgstr "Jetzt anwenden"
 
 #: ui/options_graphics.rml:89
 msgid "Lighting"
-msgstr ""
+msgstr "Beleuchtung"
 
 #: ui/options_graphics.rml:91
 msgid "Lights"
-msgstr ""
+msgstr "Lichter"
 
 #: ui/options_graphics.rml:94
 msgid "Light mapping"
@@ -1044,7 +1054,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:94
 msgid "normal"
-msgstr ""
+msgstr "Normal"
 
 #: ui/options_graphics.rml:95
 msgid "Grid lighting"
@@ -1052,7 +1062,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:95
 msgid "low, ugly"
-msgstr ""
+msgstr "niedrig, unschön"
 
 #: ui/options_graphics.rml:97
 msgid "Lighting system"
@@ -1117,15 +1127,15 @@ msgstr ""
 
 #: ui/options_graphics.rml:126
 msgid "high"
-msgstr ""
+msgstr "Hoch"
 
 #: ui/options_graphics.rml:129
 msgid "Shadows"
-msgstr ""
+msgstr "Schatten"
 
 #: ui/options_graphics.rml:136
 msgid "Textures"
-msgstr ""
+msgstr "Texturen"
 
 #: ui/options_graphics.rml:138 ui/server_setup.rml:13
 msgid "General"
@@ -1133,16 +1143,18 @@ msgstr "Allgemeines"
 
 #: ui/options_graphics.rml:143
 msgid "Full"
-msgstr ""
+msgstr "Voll"
 
 #: ui/options_graphics.rml:145
 msgid "Texture size"
-msgstr ""
+msgstr "Texturgröße"
 
 #: ui/options_graphics.rml:146
 msgid ""
 "Lower texture size is useful for cards with limited video memory (VRAM)."
 msgstr ""
+"geringere Texturgröße ist sinnvoll für Grafikkarten mit begrenztem "
+"Videospeicher (VRAM)."
 
 #: ui/options_graphics.rml:149
 msgid "Mip-mapping"
@@ -1176,7 +1188,7 @@ msgstr "Trilinear"
 
 #: ui/options_graphics.rml:165
 msgid "better"
-msgstr ""
+msgstr "besser"
 
 #: ui/options_graphics.rml:167
 msgid "Texture scaling filter"
@@ -1212,7 +1224,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:191 ui/options_graphics.rml:225
 msgid "Experimental."
-msgstr ""
+msgstr "Experimentell."
 
 #: ui/options_graphics.rml:194
 msgid "Specular mapping"
@@ -1240,7 +1252,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:215
 msgid "Makes bright areas on your screen glow."
-msgstr ""
+msgstr "lässt Helle Bereiche am Bildschirm leuchten."
 
 #: ui/options_graphics.rml:218
 msgid "Heat-haze"
@@ -1256,7 +1268,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:225
 msgid "Simulate dark corners."
-msgstr ""
+msgstr "Dunkle Ecken simulieren."
 
 #: ui/options_graphics.rml:228
 msgid "Marks"
@@ -1265,6 +1277,7 @@ msgstr ""
 #: ui/options_graphics.rml:230
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
+"Zeichne Markierungen (wie Einschusslöcher oder Kriecher) auf Oberflächen"
 
 #: ui/options_graphics.rml:233
 msgid "Particle physics"
@@ -1284,11 +1297,11 @@ msgstr ""
 
 #: ui/options_graphics.rml:247
 msgid "disabled"
-msgstr ""
+msgstr "ausgeschaltet"
 
 #: ui/options_graphics.rml:248
 msgid "All structures"
-msgstr ""
+msgstr "alle Strukturen"
 
 #: ui/options_graphics.rml:249
 msgid "Support structures"
@@ -1296,7 +1309,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:250
 msgid "Offensive structures"
-msgstr ""
+msgstr "Offensive Strukturen"
 
 #: ui/options_graphics.rml:251
 msgid "Alien structures"
@@ -1328,7 +1341,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:260
 msgid "Motion blur"
-msgstr ""
+msgstr "Bewegungsunschärfe"
 
 #: ui/options_graphics.rml:264
 msgid "Moderate"
@@ -1336,19 +1349,19 @@ msgstr ""
 
 #: ui/options_graphics.rml:268
 msgid "Intensity"
-msgstr ""
+msgstr "Intensität"
 
 #: ui/options_graphics.rml:269
 msgid "Level of motion-blur."
-msgstr ""
+msgstr "Stärke der Bewegungsunschärfe."
 
 #: ui/options_graphics.rml:272
 msgid "Minimum movement speed for motion-blur to activate"
-msgstr ""
+msgstr "Minimale Bewegungsgeschwindigkeit um Bewegungsunschärfe zu aktivieren"
 
 #: ui/options_graphics.rml:275 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr ""
+msgstr "Aktuell:"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
@@ -1399,11 +1412,11 @@ msgstr "Rückwärts:"
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr ""
+msgstr "Bewegung nach links:"
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr ""
+msgstr "Bewegung nach rechts:"
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
@@ -1419,15 +1432,15 @@ msgstr ""
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
-msgstr ""
+msgstr "Fähigkeiten"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr ""
+msgstr "Primärangriff:"
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr ""
+msgstr "Sekundärangriff:"
 
 #: ui/options_keys.rml:84
 msgid "Shoot barb:"
@@ -1435,7 +1448,7 @@ msgstr ""
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
-msgstr ""
+msgstr "Granate werfen:"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
@@ -1455,7 +1468,7 @@ msgstr ""
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
-msgstr ""
+msgstr "Chat/Abstimmen"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
@@ -1463,7 +1476,7 @@ msgstr "Gestik:"
 
 #: ui/options_keys.rml:115
 msgid "Global chat:"
-msgstr ""
+msgstr "Globaler Chat:"
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
@@ -1503,7 +1516,7 @@ msgstr ""
 
 #: ui/options_keys.rml:152
 msgid "Hold the key to deconstruct structure."
-msgstr ""
+msgstr "Halte die Taste gedrückt um die Struktur abzubauen."
 
 #: ui/options_keys.rml:155
 msgid "Beacon menu:"
@@ -1529,19 +1542,19 @@ msgstr ""
 
 #: ui/options_keys.rml:171
 msgid "Look up:"
-msgstr ""
+msgstr "Nach oben schauen:"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr ""
+msgstr "nach unten schauen:"
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
-msgstr ""
+msgstr "nach links drehen:"
 
 #: ui/options_keys.rml:183
 msgid "Turn right:"
-msgstr ""
+msgstr "nach rechts drehen:"
 
 #: ui/options_keys.rml:187
 msgid "Mouse look:"
@@ -1553,7 +1566,7 @@ msgstr "Sicht zentrieren:"
 
 #: ui/options_mouse.rml:9
 msgid "Y axis"
-msgstr ""
+msgstr "Y Achse"
 
 #: ui/options_mouse.rml:11
 msgid "Normal"
@@ -1561,7 +1574,7 @@ msgstr "Normal"
 
 #: ui/options_mouse.rml:12
 msgid "Inverted"
-msgstr ""
+msgstr "Invertiert"
 
 #: ui/options_mouse.rml:14
 msgid "Behavior of vertical mouse movement."
@@ -1593,7 +1606,7 @@ msgstr ""
 
 #: ui/options_player.rml:9
 msgid "Personal"
-msgstr ""
+msgstr "Persönlich"
 
 #: ui/options_player.rml:12 ui/options_welcome.rml:12
 msgid "Nickname"
@@ -1601,7 +1614,7 @@ msgstr ""
 
 #: ui/options_player.rml:14 ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr ""
+msgstr "Farben und Symbole können genutzt werden."
 
 #: ui/options_player.rml:17
 msgid "Tutorial mode"
@@ -1617,7 +1630,7 @@ msgstr ""
 
 #: ui/options_player.rml:26
 msgid "Movement"
-msgstr ""
+msgstr "Bewegung"
 
 #: ui/options_player.rml:28
 msgid "Wall-walking auto-pitch"
@@ -1659,7 +1672,7 @@ msgstr ""
 
 #: ui/options_player.rml:57
 msgid "Humans only"
-msgstr ""
+msgstr "nur Menschen"
 
 #: ui/options_player.rml:58
 msgid "Humans and aliens"
@@ -1675,7 +1688,7 @@ msgstr ""
 
 #: ui/options_player.rml:64
 msgid "Left-handed mode"
-msgstr ""
+msgstr "Linkshänder Modus"
 
 #: ui/options_player.rml:66
 msgid "Mirror first-person gun models."
@@ -1687,7 +1700,7 @@ msgstr ""
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "Musik"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
@@ -1711,15 +1724,15 @@ msgstr ""
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
-msgstr ""
+msgstr "Audio Ausgabegerät/Karte"
 
 #: ui/options_ui.rml:7
 msgid "User interface"
-msgstr ""
+msgstr "Nutzerinterface"
 
 #: ui/options_ui.rml:10
 msgid "Real-time clock"
-msgstr ""
+msgstr "Echtzeituhr"
 
 #: ui/options_ui.rml:13
 msgid "12 Hour"
@@ -1735,15 +1748,15 @@ msgstr ""
 
 #: ui/options_ui.rml:19
 msgid "Game-time clock"
-msgstr ""
+msgstr "Spielzeituhr"
 
 #: ui/options_ui.rml:21
 msgid "Show how long a match has lasted."
-msgstr ""
+msgstr "Zeige wie lang die Runde war."
 
 #: ui/options_ui.rml:24
 msgid "Crosshair visiblity"
-msgstr ""
+msgstr "Sichtbarkeit Fadenkreuz"
 
 #: ui/options_ui.rml:26
 msgid "Never"
@@ -1751,7 +1764,7 @@ msgstr "Niemals"
 
 #: ui/options_ui.rml:27
 msgid "Ranged weapons only"
-msgstr ""
+msgstr "Nur Fernkampfwaffen"
 
 #: ui/options_ui.rml:28
 msgid "Always"
@@ -1759,7 +1772,7 @@ msgstr "Immer"
 
 #: ui/options_ui.rml:33
 msgid "Crosshair size"
-msgstr ""
+msgstr "Größe Fadenkreuz"
 
 #: ui/options_ui.rml:35
 msgid "Tiny"
@@ -1771,7 +1784,7 @@ msgstr "klein"
 
 #: ui/options_ui.rml:37
 msgid "Regular"
-msgstr ""
+msgstr "Regulär"
 
 #: ui/options_ui.rml:38
 msgid "Huge"
@@ -1779,7 +1792,7 @@ msgstr "riesig"
 
 #: ui/options_ui.rml:44
 msgid "Show ping"
-msgstr ""
+msgstr "Zeige Ping"
 
 #: ui/options_ui.rml:46
 msgid "Time that information takes to get to the server and back."
@@ -1787,7 +1800,7 @@ msgstr ""
 
 #: ui/options_ui.rml:49
 msgid "Show movement speed"
-msgstr ""
+msgstr "Zeige Bewegungsgeschwindigkeit"
 
 #: ui/options_ui.rml:51
 msgid "Current, maximum and graph of movement-speed."
@@ -1795,27 +1808,27 @@ msgstr ""
 
 #: ui/options_ui.rml:54
 msgid "Show FPS"
-msgstr ""
+msgstr "Zeige FPS"
 
 #: ui/options_ui.rml:56
 msgid "Frames per second."
-msgstr ""
+msgstr "Bilder pro Sekunde."
 
 #: ui/options_ui.rml:59
 msgid "Console colors"
-msgstr ""
+msgstr "Konsolenfarben"
 
 #: ui/options_ui.rml:63
 msgid "Red:"
-msgstr ""
+msgstr "Rot:"
 
 #: ui/options_ui.rml:67
 msgid "Green:"
-msgstr ""
+msgstr "Grün:"
 
 #: ui/options_ui.rml:71
 msgid "Blue:"
-msgstr ""
+msgstr "Blau:"
 
 #: ui/options_ui.rml:75
 msgid "Alpha:"
@@ -1823,23 +1836,23 @@ msgstr ""
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr ""
+msgstr "Hallo!"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr ""
+msgstr "Wie sollen wir dich nennen?"
 
 #: ui/options_welcome.rml:13
 msgid "Your name visible to others."
-msgstr ""
+msgstr "Dein Name ist für andere sichtbar."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
-msgstr ""
+msgstr "Du kannst das jederzeit in den Optionen ändern."
 
 #: ui/options_welcome.rml:17
 msgid "Select Battlefield"
-msgstr ""
+msgstr "Wähle Schlachtfeld"
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
@@ -1855,7 +1868,7 @@ msgstr "Name:"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
-msgstr ""
+msgstr "Spieler (Bots)"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
@@ -1879,15 +1892,15 @@ msgstr ""
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr ""
+msgstr "Passwort"
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
-msgstr ""
+msgstr "Entwicklermodus (ermögliche Cheats )"
 
 #: ui/server_create.rml:54
 msgid "Extra packages to load"
-msgstr ""
+msgstr "Zu ladende Extra Pakete"
 
 #: ui/server_create.rml:59
 msgid "Building layout to use"
@@ -1907,7 +1920,7 @@ msgstr ""
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
-msgstr ""
+msgstr "sekunden"
 
 #: ui/server_setup.rml:24
 msgid "Friendly fire damage multipliers"
@@ -1931,7 +1944,7 @@ msgstr ""
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
-msgstr ""
+msgstr "Erlaube Abstimmungen"
 
 #: ui/server_setup.rml:44
 msgid "Warmup"
@@ -1955,11 +1968,11 @@ msgstr ""
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr ""
+msgstr "Physik"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr ""
+msgstr "Gravitation"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
@@ -1979,7 +1992,7 @@ msgstr ""
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
-msgstr ""
+msgstr "Halbwertszeit"
 
 #: ui/server_setup.rml:97
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
@@ -1987,7 +2000,7 @@ msgstr ""
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
-msgstr ""
+msgstr "Minuten"
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
@@ -2039,7 +2052,7 @@ msgstr ""
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
-msgstr ""
+msgstr "Startwert"
 
 #: ui/server_setup.rml:157
 msgid "Initial build points count"
@@ -2075,7 +2088,7 @@ msgstr ""
 
 #: ui/server_setup.rml:193
 msgid "Fill teams until they have enough players"
-msgstr ""
+msgstr "Teams auffüllen bis sie genug Spieler haben"
 
 #: ui/server_setup.rml:196
 msgid "bots"
@@ -2087,7 +2100,7 @@ msgstr ""
 
 #: ui/server_setup.rml:201
 msgid "Only works for new bots."
-msgstr ""
+msgstr "Funktioniert nur für neue Bots."
 
 #: ui/transition_downloading.rml:55
 msgid "Additional files are required. Please be patient while they download."
@@ -2103,7 +2116,7 @@ msgstr ""
 
 #: ui/transition_downloading.rml:58
 msgid "Size:"
-msgstr ""
+msgstr "Größe:"
 
 #: ui/transition_loading.rml:109
 msgid "Loading"
@@ -2111,26 +2124,28 @@ msgstr "laden"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
-msgstr ""
+msgstr "Willkommen bei Unvanquished"
 
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
+"Schließe dieses Menü und klicke irgendwo um einem Team beizutreten und zu "
+"spielen!"
 
 #: src/cgame/cg_event.cpp:281
 msgctxt "male"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*stürzte in den Tod"
 
 #: src/cgame/cg_event.cpp:281
 msgctxt "female"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*stürzte in den Tod"
 
 #: src/cgame/cg_event.cpp:281
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
-msgstr ""
+msgstr "%s%s ^*stürzte in den Tod"
 
 #: src/cgame/cg_event.cpp:285
 msgctxt "male"
@@ -2150,17 +2165,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:289
 msgctxt "male"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*ist ertrunken"
 
 #: src/cgame/cg_event.cpp:289
 msgctxt "female"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*ist ertrunken"
 
 #: src/cgame/cg_event.cpp:289
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
-msgstr ""
+msgstr "%s%s ^*ist ertrunken"
 
 #: src/cgame/cg_event.cpp:293
 msgctxt "male"
@@ -2195,17 +2210,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:301
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*war am falschen Ort"
 
 #: src/cgame/cg_event.cpp:301
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*war am falschen Ort"
 
 #: src/cgame/cg_event.cpp:301
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
-msgstr ""
+msgstr "%s%s ^*war am falschen Ort"
 
 #: src/cgame/cg_event.cpp:307
 msgctxt "male"
@@ -2240,17 +2255,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:317
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*wurde von einem turret niedergemäht"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*wurde von einem turret niedergemäht"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr ""
+msgstr "%s%s ^*wurde von einem turret niedergemäht"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "male"
@@ -2390,17 +2405,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:342
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*wurde vom Reaktor gegrillt"
 
 #: src/cgame/cg_event.cpp:342
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*wurde vom Reaktor gegrillt"
 
 #: src/cgame/cg_event.cpp:342
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
-msgstr ""
+msgstr "%s%s ^*wurde vom Reaktor gegrillt"
 
 #: src/cgame/cg_event.cpp:343
 msgctxt "male"
@@ -4567,7 +4582,7 @@ msgstr ""
 
 #: src/sgame/sg_client.cpp:1155
 msgid "Your GUID is not secure"
-msgstr ""
+msgstr "Deine GUID ist nicht sicher"
 
 #: src/sgame/sg_client.cpp:1196
 msgid "$1$^* connected"
@@ -4619,7 +4634,7 @@ msgstr ""
 
 #: src/sgame/sg_main.cpp:2167
 msgid "The game has been paused. Please wait."
-msgstr ""
+msgstr "Das Spiel wurde pausiert. Bitte warten."
 
 #: src/sgame/sg_main.cpp:2171
 msgid "Server: Game will auto-unpause in $1$ seconds"
@@ -4635,7 +4650,7 @@ msgstr ""
 
 #: src/sgame/sg_spawn_mover.cpp:1066
 msgid "^1This door is locked!"
-msgstr ""
+msgstr "^1Diese Tür ist verschlossen!"
 
 #: src/sgame/sg_svcmds.cpp:464
 msgid "Alien team has admitted defeat"
@@ -4674,7 +4689,7 @@ msgstr ""
 #: src/sgame/sg_votes.cpp:88
 #, c-format
 msgid "Mute player '%s'"
-msgstr "Spieler »%s« das Rederecht entziehen"
+msgstr "Spieler »%s« Stummschalten"
 
 #: src/sgame/sg_votes.cpp:100
 msgid "$1$: player is not currently muted"
@@ -4739,7 +4754,7 @@ msgstr ""
 
 #: src/sgame/sg_votes.cpp:478
 msgid "$1$: a vote is already in progress"
-msgstr ""
+msgstr "$1$: Es läuft bereits eine Abstimmung"
 
 #: src/sgame/sg_votes.cpp:499
 msgid "Invalid vote string"
@@ -4783,7 +4798,7 @@ msgstr ""
 
 #: src/sgame/sg_votes.cpp:666 src/sgame/sg_votes.cpp:680
 msgid "$1$: admin is immune"
-msgstr ""
+msgstr "$1$: Admin ist Immun"
 
 #: src/sgame/sg_votes.cpp:687
 msgid "$1$: player is not on your team"
@@ -4791,7 +4806,7 @@ msgstr ""
 
 #: src/sgame/sg_votes.cpp:699
 msgid "$1$: You must provide a reason"
-msgstr ""
+msgstr "$1$: Du musst einen Grund angeben"
 
 #: src/sgame/sg_votes.cpp:721
 msgid "$1$^* called a vote: $2$"
