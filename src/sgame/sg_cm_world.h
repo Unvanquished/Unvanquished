@@ -87,6 +87,44 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
 
 // passEntityNum, if isn't ENTITYNUM_NONE, will be explicitly excluded from clipping checks
 
+
+// G_Trace2: an alternative to trap_Trace (a.k.a. G_CM_Trace) with different startsolid semantics
+// In a standard trace, if there is a brush/entity/facet that overlaps the starting point but not
+// the ending point, it makes the startsolid flag get set but is otherwise ignored.
+// With G_Trace2, a thing overlapping the starting point is counted as a collision and makes the
+// trace terminate at the starting point.
+// More of the missing fields from trace_t such as `contents` could be added to
+// trace2_t if there is a need.
+//
+// * If there is no collision:
+//   - startsolid = false
+//   - fraction = 1
+//   - plane and surfaceFlags are not valid
+//   - entityNum = ENTITYNUM_NONE
+// * If there is a collision at the starting point:
+//   - startsolid = true
+//   - fraction = 0
+//   - plane and surfaceFlags are not valid
+//   - entityNum is a normal entity or ENTITYNUM_WORLD
+// * If there is a collision after the starting point:
+//   - startsolid = false
+//   - 0 <= fraction < 1
+//   - plane and surfaceFlags are valid
+//   - entityNum is a normal entity or ENTITYNUM_WORLD
+struct trace2_t
+{
+	bool startsolid; // if true, the initial point was in a solid area (counts as a collision)
+	float fraction; // portion of line traversed 0-1. 1.0 = didn't hit anything
+	vec3_t endpos; // final position
+	struct {
+		vec3_t normal; // surface normal at impact, transformed to world space
+	} plane; // valid if !startsolid && fraction < 1
+	int surfaceFlags; // valid if !startsolid && fraction < 1
+	int entityNum; // entity the contacted surface is a part of, or ENTITYNUM_NONE
+};
+trace2_t G_Trace2( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+		int passEntityNum, int contentmask, int skipmask, traceType_t type = traceType_t::TT_AABB );
+
 void G_CM_ClipToEntity( trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, traceType_t type );
 
 bool G_CM_inPVS( const vec3_t p1, const vec3_t p2 );

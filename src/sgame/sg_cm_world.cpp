@@ -912,6 +912,136 @@ void G_CM_Trace( trace_t *results, const vec3_t start, const vec3_t mins2, const
 	*results = clip.trace;
 }
 
+static trace2_t ConvertTrace( const trace_t &tr, const vec3_t start, int entityNum )
+{
+	trace2_t result;
+	result.startsolid = tr.startsolid;
+	if ( tr.startsolid )
+	{
+		result.fraction = 0.0f;
+		result.surfaceFlags = 0;
+		result.entityNum = entityNum;
+		VectorCopy( start, result.endpos );
+		VectorClear( result.plane.normal );
+	}
+	else
+	{
+		result.fraction = tr.fraction;
+		result.surfaceFlags = tr.surfaceFlags;
+		result.entityNum = result.fraction < 1.0f ? entityNum : ENTITYNUM_NONE;
+		VectorCopy( tr.endpos, result.endpos );
+		VectorCopy( tr.plane.normal, result.plane.normal );
+	}
+	return result;
+}
+
+trace2_t G_Trace2( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+		int passEntityNum, int contentmask, int skipmask, traceType_t type )
+{
+	// clip to world
+	// -------------
+
+	trace_t trace;
+	CM_BoxTrace( &trace, start, end, mins, maxs, 0, contentmask, skipmask, type );
+
+	trace2_t best = ConvertTrace( trace, start, ENTITYNUM_WORLD );
+
+	if ( best.startsolid )
+	{
+		return best; // blocked immediately by the world
+	}
+
+	if ( !mins )
+	{
+		mins = vec3_origin;
+	}
+	if ( !maxs )
+	{
+		maxs = vec3_origin;
+	}
+
+	// clip to entities
+	// ----------------
+
+	// create the bounding box of the entire move
+	// we can limit it to the part of the move not
+	// already clipped off by the world, which can be
+	// a significant savings for line of sight and shot traces
+	vec3_t boxmins, boxmaxs;
+	int touchlist[ MAX_GENTITIES ];
+	for ( int i = 0; i < 3; i++ )
+	{
+		if ( best.endpos[ i ] > start[ i ] )
+		{
+			boxmins[ i ] = start[ i ] + mins[ i ] - 1;
+			boxmaxs[ i ] = best.endpos[ i ] + maxs[ i ] + 1;
+		}
+		else
+		{
+			boxmins[ i ] = best.endpos[ i ] + mins[ i ] - 1;
+			boxmaxs[ i ] = start[ i ] + maxs[ i ] + 1;
+		}
+	}
+
+	int num = G_CM_AreaEntities( boxmins, boxmaxs, touchlist, MAX_GENTITIES );
+
+	for ( int i = 0; i < num; i++ )
+	{
+		gentity_t *touch = &g_entities[ touchlist[ i ] ];
+
+		// see if we should ignore this entity
+		if ( passEntityNum != ENTITYNUM_NONE )
+		{
+			if ( touchlist[ i ] == passEntityNum )
+			{
+				continue; // don't clip against the pass entity
+			}
+
+			if ( touch->r.ownerNum == passEntityNum )
+			{
+				continue; // don't clip against own missiles
+			}
+		}
+
+		// if it doesn't have any brushes of a type we
+		// are looking for, ignore it
+		if ( !( contentmask & touch->r.contents ) )
+		{
+			continue;
+		}
+
+		if ( skipmask & touch->r.contents )
+		{
+			continue;
+		}
+
+		// might intersect, so do an exact clip
+		clipHandle_t clipHandle = G_CM_ClipHandleForEntity( touch );
+
+		const float *origin = touch->r.currentOrigin;
+		const float *angles = touch->r.currentAngles;
+
+		if ( !touch->r.bmodel )
+		{
+			angles = vec3_origin; // boxes don't rotate
+		}
+
+		CM_TransformedBoxTrace( &trace, start, end, mins, maxs, clipHandle,
+		                        contentmask, 0, origin, angles, type );
+
+		if ( trace.startsolid )
+		{
+			return ConvertTrace( trace, start, touchlist[ i ] );
+		}
+		else if ( trace.fraction < best.fraction )
+		{
+			best = ConvertTrace( trace, start, touchlist[ i ] );
+		}
+	}
+
+	return best;
+}
+
 /*
 =============
 G_CM_PointContents
