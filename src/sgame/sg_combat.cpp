@@ -794,7 +794,7 @@ void G_InitDamageLocations()
 
 // TODO: Move to HealthComponent.
 void G_SelectiveDamage( gentity_t *targ, gentity_t * /*inflictor*/, gentity_t *attacker,
-                        vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team )
+                        const vec3_t dir, const vec3_t point, int damage, int dflags, int mod, int team )
 {
 	if ( targ->client && ( team != targ->client->pers.team ) )
 	{
@@ -809,7 +809,7 @@ void G_SelectiveDamage( gentity_t *targ, gentity_t * /*inflictor*/, gentity_t *a
  * @param origin
  * @return true if the inflictor can directly damage the target.
  */
-bool G_CanDamage( gentity_t *targ, vec3_t origin )
+bool G_CanDamage( gentity_t *targ, const vec3_t origin )
 {
 	vec3_t  dest;
 	trace_t tr;
@@ -873,7 +873,7 @@ bool G_CanDamage( gentity_t *targ, vec3_t origin )
 	return false;
 }
 
-bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
+bool G_SelectiveRadiusDamage( const vec3_t origin, gentity_t *attacker, float damage,
                                   float radius, gentity_t *ignore, int mod, int ignoreTeam )
 {
 	float     points, dist;
@@ -932,7 +932,7 @@ bool G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 	return hitClient;
 }
 
-bool G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
+bool G_RadiusDamage( const vec3_t origin, gentity_t *attacker, float damage,
                          float radius, gentity_t *ignore, int dflags, int mod, team_t testHit )
 {
 	float     points, dist;
