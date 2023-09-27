@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "sg_local.h"
+#include "sg_cm_world.h"
 #include "Entities.h"
 #include "CBSE.h"
 
@@ -57,7 +58,7 @@ enum missileTimePowerMod_t {
 // local methods
 // -------------
 
-static void BounceMissile( gentity_t *ent, trace_t *trace )
+static void BounceMissile( gentity_t *ent, const trace2_t *trace )
 {
 	vec3_t velocity;
 	float  dot;
@@ -170,7 +171,7 @@ static float MissileTimeSplashDmgMod( gentity_t *self )
 #define MIB_FREE        ( MIF_NO_DAMAGE | MIF_NO_EFFECT ) // Quietly remove the missile.
 #define MIB_BOUNCE      ( MIF_NO_DAMAGE | MIF_NO_EFFECT | MIF_NO_FREE ) // Continue flight.
 
-static int ImpactGrenade( gentity_t *ent, trace_t *trace, gentity_t* )
+static int ImpactGrenade( gentity_t *ent, const trace2_t *trace, gentity_t *hitEnt )
 {
 	BounceMissile( ent, trace );
 
@@ -182,7 +183,7 @@ static int ImpactGrenade( gentity_t *ent, trace_t *trace, gentity_t* )
 	return MIB_BOUNCE;
 }
 
-static int ImpactFlamer( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
+static int ImpactFlamer( gentity_t *ent, const trace2_t *trace, gentity_t *hitEnt )
 {
 	gentity_t *neighbor = nullptr;
 
@@ -219,7 +220,7 @@ static int ImpactFlamer( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	return MIB_IMPACT;
 }
 
-static int ImpactFirebombSub( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
+static int ImpactFirebombSub( gentity_t *ent, const trace2_t *trace, gentity_t *hitEnt )
 {
 	// ignite on direct hit
 	hitEnt->entity->Ignite( ent->parent );
@@ -233,7 +234,7 @@ static int ImpactFirebombSub( gentity_t *ent, trace_t *trace, gentity_t *hitEnt 
 	return MIB_IMPACT;
 }
 
-static int ImpactLockblock( gentity_t*, trace_t*, gentity_t *hitEnt )
+static int ImpactLockblock( gentity_t*, const trace2_t*, gentity_t *hitEnt )
 {
 	vec3_t dir;
 
@@ -248,7 +249,7 @@ static int ImpactLockblock( gentity_t*, trace_t*, gentity_t *hitEnt )
 	return MIB_IMPACT;
 }
 
-static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
+static int ImpactSlowblob( gentity_t *ent, const trace2_t *trace, gentity_t *hitEnt )
 {
 	int       impactFlags = MIB_IMPACT;
 	gentity_t *attacker = &g_entities[ ent->r.ownerNum ];
@@ -297,7 +298,7 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 	return impactFlags;
 }
 
-static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
+static int ImpactHive( gentity_t *ent, const trace2_t*, gentity_t *hitEnt )
 {
 	if ( hitEnt->s.eType == entityType_t::ET_BUILDABLE && hitEnt->s.modelindex == BA_A_HIVE )
 	{
@@ -332,12 +333,12 @@ static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 	}
 }
 
-static int DefaultImpactFunc( gentity_t*, trace_t*, gentity_t* )
+static int DefaultImpactFunc( gentity_t*, const trace2_t*, gentity_t* )
 {
 	return MIB_IMPACT;
 }
 
-static void MissileImpact( gentity_t *ent, trace_t *trace )
+static void MissileImpact( gentity_t *ent, const trace2_t *trace )
 {
 	int       dirAsByte, impactFlags;
 	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
@@ -345,7 +346,7 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 	gentity_t *attacker = &g_entities[ ent->r.ownerNum ];
 
 	// Returns whether damage and hit effects should be done and played.
-	std::function<int(gentity_t*, trace_t*, gentity_t*)> impactFunc;
+	int (*impactFunc)( gentity_t *, const trace2_t *, gentity_t * );
 
 	// Check for bounce.
 	if ( ent->s.eFlags & ( EF_BOUNCE | EF_BOUNCE_HALF ) &&
@@ -440,9 +441,9 @@ static void MissileImpact( gentity_t *ent, trace_t *trace )
 		ent->s.modelindex = 0;
 
 		// Save net bandwidth.
-		G_SnapVectorTowards( trace->endpos, ent->s.pos.trBase );
-
-		G_SetOrigin( ent, VEC2GLM( trace->endpos ) );
+		glm::vec3 snappedPosition = VEC2GLM( trace->endpos );
+		G_SnapVectorTowards( &snappedPosition[ 0 ], ent->s.pos.trBase );
+		G_SetOrigin( ent, snappedPosition );
 
 		trap_LinkEntity( ent );
 	}
@@ -488,70 +489,62 @@ void G_ExplodeMissile( gentity_t *ent )
 	trap_LinkEntity( ent );
 }
 
-void G_RunMissile( gentity_t *ent )
+static trace2_t MissileTrace( gentity_t *ent )
 {
-	vec3_t   origin;
-	trace_t  tr;
-	int      passent;
-	bool impact = false;
-
 	// get current position
+	vec3_t origin;
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
 
 	// ignore interactions with the missile owner
-	passent = ent->r.ownerNum;
+	int passent = ent->r.ownerNum;
 
-	// general trace to see if we hit anything at all
-	trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
-	            origin, passent, ent->clipmask, 0 );
+	trace2_t result;
 
-	if ( tr.startsolid || tr.allsolid )
+	if ( ent->pointAgainstWorld )
 	{
-		tr.fraction = 0.0f;
-		VectorCopy( ent->r.currentOrigin, tr.endpos );
+		ASSERT( ent->clipmask & CONTENTS_BODY );
+		trace2_t trWorld = G_Trace2( ent->r.currentOrigin, nullptr, nullptr, origin,
+		                             passent, ent->clipmask & ~CONTENTS_BODY, 0 );
+
+		if ( trWorld.startsolid )
+		{
+			return trWorld;
+		}
+
+		trace2_t trBody = G_Trace2( ent->r.currentOrigin, ent->r.mins, ent->r.maxs, trWorld.endpos,
+		                            passent, CONTENTS_BODY, 0 );
+
+		result = trWorld.fraction < trBody.fraction ? trWorld : trBody;
+	}
+	else
+	{
+		result = G_Trace2( ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
+		                   passent, ent->clipmask, 0 );
 	}
 
-	if ( tr.fraction < 1.0f )
+	if ( result.startsolid )
 	{
-		if ( !ent->pointAgainstWorld || (tr.contents & CONTENTS_BODY) )
+		// In this case we have a collision, and so we want a normal vector, but there isn't one
+		// Try to use the missile's direction of travel
+		glm::vec3 dir = VEC2GLM( origin ) - VEC2GLM( ent->r.currentOrigin );
+		if ( VectorNormalize( &dir[ 0 ] ) )
 		{
-			// We hit an entity or we don't care
-			impact = true;
+			VectorCopy( dir, result.plane.normal );
 		}
 		else
 		{
-			trap_Trace( &tr, ent->r.currentOrigin, nullptr, nullptr, origin,
-			            passent, ent->clipmask, 0 );
-
-			if ( tr.fraction < 1.0f )
-			{
-				// Hit the world with point trace
-				impact = true;
-			}
-			else
-			{
-				if ( tr.contents & CONTENTS_BODY )
-				{
-					// Hit an entity
-					impact = true;
-				}
-				else
-				{
-					trap_Trace( &tr, ent->r.currentOrigin, ent->r.mins, ent->r.maxs,
-					            origin, passent, CONTENTS_BODY, 0 );
-
-					if ( tr.fraction < 1.0f )
-					{
-						impact = true;
-					}
-				}
-			}
+			VectorSet( result.plane.normal, 1, 0, 0 );
 		}
 	}
+	return result;
+}
 
+void G_RunMissile( gentity_t *ent )
+{
+	trace2_t tr = MissileTrace( ent );
 	VectorCopy( tr.endpos, ent->r.currentOrigin );
 
-	if ( impact )
+	if ( tr.fraction < 1.0f )
 	{
 		// Never explode or bounce when hitting the sky.
 		if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -696,7 +689,7 @@ gentity_t *G_SpawnFire( const vec3_t origin, const vec3_t normal, gentity_t *fir
 	fire->r.ownerNum = fireStarter->num();
 
 	// normal
-	//ASSERT( VectorLength( normal ) > 0.999f && VectorLength( normal ) < 1.001f );
+	ASSERT( VectorLength( normal ) > 0.999f && VectorLength( normal ) < 1.001f );
 	VectorCopy( normal, fire->s.origin2 );
 
 	// origin
