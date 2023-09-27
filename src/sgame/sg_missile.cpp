@@ -636,7 +636,7 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 G_SpawnFire
 ===============
 */
-gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
+gentity_t *G_SpawnFire( const vec3_t origin, const vec3_t normal, gentity_t *fireStarter )
 {
 	gentity_t *fire;
 	vec3_t    snapHelper, floorNormal;
@@ -674,7 +674,7 @@ gentity_t *G_SpawnFire( vec3_t origin, vec3_t normal, gentity_t *fireStarter )
 	fire->r.ownerNum = fireStarter->num();
 
 	// normal
-	VectorNormalize( normal ); // make sure normal is a direction
+	//ASSERT( VectorLength( normal ) > 0.999f && VectorLength( normal ) < 1.001f );
 	VectorCopy( normal, fire->s.origin2 );
 
 	// origin

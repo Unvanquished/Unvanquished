@@ -178,10 +178,10 @@ void              G_MapLog_Result( char result );
 void              Cmd_MapLog_f( gentity_t *ent );
 
 // sg_combat.c
-bool          G_CanDamage( gentity_t *targ, vec3_t origin );
-void              G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t dir, vec3_t point, int damage, int dflags, int mod, int team );
-bool          G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int dflags, int mod, team_t testHit = TEAM_NONE );
-bool          G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod, int ignoreTeam );
+bool          G_CanDamage( gentity_t *targ, const vec3_t origin );
+void              G_SelectiveDamage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, const vec3_t dir, const vec3_t point, int damage, int dflags, int mod, int team );
+bool          G_RadiusDamage( const vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int dflags, int mod, team_t testHit = TEAM_NONE );
+bool          G_SelectiveRadiusDamage( const vec3_t origin, gentity_t *attacker, float damage, float radius, gentity_t *ignore, int mod, int ignoreTeam );
 void              G_RewardAttackers( gentity_t *self );
 void              G_AddCreditsToScore( gentity_t *self, int credits );
 void              G_AddMomentumToScore( gentity_t *self, float momentum );
@@ -247,7 +247,7 @@ bool          G_MapExists( const char *name );
 void              G_ExplodeMissile( gentity_t *ent );
 void              G_RunMissile( gentity_t *ent );
 gentity_t         *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t start, const vec3_t dir, gentity_t *target, void ( *think )( gentity_t *self ), int nextthink );
-gentity_t         *G_SpawnFire(vec3_t origin, vec3_t normal, gentity_t *fireStarter );
+gentity_t         *G_SpawnFire( const vec3_t origin, const vec3_t normal, gentity_t *fireStarter );
 
 // sg_namelog.c
 void              G_namelog_connect( gclient_t *client );
