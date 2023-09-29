@@ -818,17 +818,7 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 
 	if ( self->s.generic1 == WPM_PRIMARY )
 	{
-		int nextthink;
-
-		// explode in front of player when overcharged
-		if ( damage == LCANNON_DAMAGE )
-		{
-			nextthink = level.time;
-		}
-		else
-		{
-			nextthink = level.time + BG_Missile( MIS_LCANNON )->lifetime;
-		}
+		int nextthink = level.time + BG_Missile( MIS_LCANNON )->lifetime;
 
 		m = G_SpawnMissile( MIS_LCANNON, self, start, dir, nullptr, G_ExplodeMissile, nextthink );
 
@@ -847,6 +837,12 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 		if ( m->s.torsoAnim < 0 )
 		{
 			m->s.torsoAnim = 0;
+		}
+
+		// explode in front of player when overcharged
+		if ( damage == LCANNON_DAMAGE )
+		{
+			G_ExplodeMissile( m );
 		}
 	}
 	else
