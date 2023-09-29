@@ -316,7 +316,8 @@ static int DefaultImpactFunc( gentity_t*, const trace2_t*, gentity_t* )
 	return MIB_IMPACT;
 }
 
-static void MissileImpact( gentity_t *ent, const trace2_t *trace )
+// Returns true if the missile has ceased to exist
+static bool MissileImpact( gentity_t *ent, const trace2_t *trace )
 {
 	int       dirAsByte, impactFlags;
 	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
@@ -337,7 +338,7 @@ static void MissileImpact( gentity_t *ent, const trace2_t *trace )
 			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
 		}
 
-		return;
+		return false;
 	}
 
 	// Call missile specific impact functions.
@@ -424,11 +425,17 @@ static void MissileImpact( gentity_t *ent, const trace2_t *trace )
 		G_SetOrigin( ent, snappedPosition );
 
 		trap_LinkEntity( ent );
+		return true;
 	}
 	// If no impact happened, check if we should continue or free ourselves.
 	else if ( !( impactFlags & MIF_NO_FREE ) )
 	{
 		G_FreeEntity( ent );
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -532,17 +539,7 @@ void G_RunMissile( gentity_t *ent )
 		}
 
 		// Check for impact damage and effects.
-		MissileImpact( ent, &tr );
-
-		// Check if the entity was freed during impact.
-		if ( !ent->inuse )
-		{
-			return;
-		}
-
-		// HACK: The missile has turned into an explosion and will free itself later.
-		//       See MissileImpact for more.
-		if ( ent->s.eType != entityType_t::ET_MISSILE )
+		if ( MissileImpact( ent, &tr ) )
 		{
 			return;
 		}
