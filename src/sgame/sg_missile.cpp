@@ -439,12 +439,11 @@ static void MissileImpact( gentity_t *ent, const trace2_t *trace )
 void G_ExplodeMissile( gentity_t *ent )
 {
 	vec3_t dir;
-	vec3_t origin;
 	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
 
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
+	glm::vec3 origin = VEC2GLM( ent->r.currentOrigin );
 	SnapVector( origin );
-	G_SetOrigin( ent, VEC2GLM( origin ) );
+	G_SetOrigin( ent, origin );
 
 	// we don't have a valid direction, so just point straight up
 	dir[ 0 ] = dir[ 1 ] = 0;
