@@ -281,6 +281,9 @@ AINodeStatus_t BotActionResetStuckTime( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotActionGesture( gentity_t *self, AIGenericNode_t* );
 AINodeStatus_t BotActionStayHere( gentity_t *self, AIGenericNode_t* );
 AINodeStatus_t BotActionFollow( gentity_t *self, AIGenericNode_t* );
+AINodeStatus_t BotActionBuild( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionBuildInRadius( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionBuildMain( gentity_t *self, AIGenericNode_t *node );
 
 // class selection node "spawnAs"
 AINodeStatus_t BotSpawnNode( gentity_t *self, AIGenericNode_t *node );

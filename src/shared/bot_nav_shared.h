@@ -273,6 +273,7 @@ struct LinearAllocator : public dtTileCacheAlloc
 inline std::vector<class_t> RequiredNavmeshes()
 {
 	return {
+		PCL_ALIEN_BUILDER0,
 		PCL_ALIEN_LEVEL0,
 		PCL_ALIEN_LEVEL1,
 		PCL_ALIEN_LEVEL2,

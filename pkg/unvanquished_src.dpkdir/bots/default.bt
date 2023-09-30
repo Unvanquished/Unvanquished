@@ -1,3 +1,18 @@
+selectClass
+{
+	selector
+	{
+		condition team == TEAM_ALIENS
+		{
+			spawnAs PCL_ALIEN_LEVEL0
+		}
+		condition team == TEAM_HUMANS
+		{
+			spawnAs WP_MACHINEGUN
+		}
+	}
+}
+
 selector
 {
 	behavior unstick

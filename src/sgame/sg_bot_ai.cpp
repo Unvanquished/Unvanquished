@@ -1188,6 +1188,227 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
+static Cvar::Cvar<int> g_bot_buildNumEggs("g_bot_buildNumEggs", "how many eggs bots should build", Cvar::NONE, 6);
+static Cvar::Cvar<int> g_bot_buildNumTelenodes("g_bot_buildNumTelenodes", "how many telenodes bots should build", Cvar::NONE, 3);
+static Cvar::Cvar<float> g_bot_buildProbRocketPod("g_bot_buildProbRocketPod", "probability of a bot building a rocket pod instead of a machine gun turret", Cvar::NONE, 0.2);
+
+static bool isBuilder( gentity_t *self )
+{
+	team_t team = G_Team( self );
+	auto cl = self->client->ps.stats[ STAT_CLASS ];
+	return ( team == TEAM_HUMANS && BG_InventoryContainsWeapon( WP_HBUILD, self->client->ps.stats ) )
+		|| ( team == TEAM_ALIENS && ( cl == PCL_ALIEN_BUILDER0 || cl == PCL_ALIEN_BUILDER0_UPG ) );
+}
+
+static buildable_t chooseBuildableToBuild( gentity_t *self )
+{
+	buildable_t toBuild = BA_NONE;
+	if ( G_Team( self ) == TEAM_HUMANS )
+	{
+		if ( !self->botMind->closestBuildings[ BA_H_DRILL ].ent )
+		{
+			toBuild = BA_H_DRILL;
+		}
+		else if ( level.team[ G_Team( self ) ].numSpawns < g_bot_buildNumTelenodes.Get() )
+		{
+			toBuild = BA_H_SPAWN;
+		}
+		else if ( !self->botMind->closestBuildings[ BA_H_ARMOURY ].ent )
+		{
+			toBuild = BA_H_ARMOURY;
+		}
+		else if ( !self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent )
+		{
+			toBuild = BA_H_MEDISTAT;
+		}
+		else
+		{
+			toBuild = BA_H_MGTURRET;
+			if ( BG_BuildableUnlocked( BA_H_ROCKETPOD ) && rand() < RAND_MAX * g_bot_buildProbRocketPod.Get() )
+			{
+				toBuild = BA_H_ROCKETPOD;
+			}
+		}
+	}
+	else if ( G_Team( self ) == TEAM_ALIENS )
+	{
+		if ( !self->botMind->closestBuildings[ BA_A_LEECH ].ent )
+		{
+			toBuild = BA_A_LEECH;
+		}
+		else if ( level.team[ G_Team( self ) ].numSpawns < g_bot_buildNumEggs.Get() / 2 )
+		{
+			toBuild = BA_A_SPAWN;
+		}
+		else if ( BG_BuildableUnlocked( BA_A_BOOSTER ) && !self->botMind->closestBuildings[ BA_A_BOOSTER ].ent )
+		{
+			toBuild = BA_A_BOOSTER;
+		}
+		else if ( level.team[ G_Team( self ) ].numSpawns < g_bot_buildNumEggs.Get() )
+		{
+			toBuild = BA_A_SPAWN;
+		}
+		else
+		{
+			toBuild = BA_A_ACIDTUBE;
+		}
+	}
+	return toBuild;
+}
+
+static bool build( gentity_t *self, buildable_t toBuild )
+{
+	if ( toBuild == BA_NONE )
+	{
+		return false;
+	}
+
+	if ( G_GetFreeBudget( G_Team( self ) ) < BG_Buildable( toBuild )->buildPoints )
+	{
+		return false;
+	}
+
+	if ( G_Team( self ) == TEAM_HUMANS
+		 && BG_GetPlayerWeapon( &self->client->ps ) != WP_HBUILD )
+	{
+		G_ForceWeaponChange( self, WP_HBUILD );
+	}
+
+	self->client->ps.stats[ STAT_BUILDABLE ] = toBuild;
+	BotFireWeapon( WPM_PRIMARY, &self->botMind->cmdBuffer );
+	return true;
+}
+
+static Cvar::Cvar<bool> g_bot_buildInRadiusEnabled("g_bot_buildInRadiusEnabled", "wheter bot action buildInRadius is enabled", Cvar::NONE, true);
+
+AINodeStatus_t BotActionBuildInRadius( gentity_t *self, AIGenericNode_t *node )
+{
+	if ( !g_bot_buildInRadiusEnabled.Get() )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( !isBuilder( self ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
+	float radius = AIUnBoxFloat( a->params[ 1 ] );
+	botEntityAndDistance_t ent = AIEntityToGentity( self, e );
+
+	if ( node != self->botMind->currentNode )
+	{
+		glm::vec3 point;
+
+		if ( !ent.ent )
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !BotFindRandomPointInRadius( self->s.number, VEC2GLM( ent.ent->s.origin ), point, radius ) )
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !BotChangeGoalPos( self, point ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	// on our way to the target position, we might be more than `radius` away from `ent`
+	if ( glm::distance2( VEC2GLM( self->s.origin ), VEC2GLM( ent.ent->s.origin ) ) <= Square ( radius ) )
+	{
+		if ( !build( self, chooseBuildableToBuild( self ) ) )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+
+	if ( GoalInRange( self, BotGetGoalRadius( self ) ) )
+	{
+		return STATUS_SUCCESS;
+	}
+	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
+}
+
+AINodeStatus_t BotActionBuild( gentity_t *self, AIGenericNode_t *node )
+{
+	if ( !isBuilder( self ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( node != self->botMind->currentNode )
+	{
+		botTarget_t target = BotGetRoamTarget( self );
+		if ( !BotChangeGoal( self, target ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	if ( !build( self, chooseBuildableToBuild( self ) ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( GoalInRange( self, BotGetGoalRadius( self ) ) )
+	{
+		return STATUS_SUCCESS;
+	}
+	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
+}
+
+AINodeStatus_t BotActionBuildMain( gentity_t *self, AIGenericNode_t *node )
+{
+	if ( !isBuilder( self ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( node != self->botMind->currentNode )
+	{
+		if ( G_Team( self ) == TEAM_HUMANS && self->botMind->closestBuildings[ BA_H_REACTOR ].ent )
+		{
+			return STATUS_FAILURE;
+		}
+		else if ( G_Team( self ) == TEAM_ALIENS && self->botMind->closestBuildings[ BA_A_OVERMIND ].ent )
+		{
+			return STATUS_FAILURE;
+		}
+
+		botTarget_t target = BotGetRoamTarget( self );
+		if ( !BotChangeGoal( self, target ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	buildable_t toBuild = BA_NONE;
+	if ( G_Team( self ) == TEAM_HUMANS )
+	{
+		toBuild = BA_H_REACTOR;
+	}
+	else if ( G_Team( self ) == TEAM_ALIENS )
+	{
+		toBuild = BA_A_OVERMIND;
+	}
+
+	build( self, toBuild );
+
+	if ( GoalInRange( self, BotGetGoalRadius( self ) ) )
+	{
+		return STATUS_SUCCESS;
+	}
+	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
+}
+
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 {
 	if ( self->botMind->currentNode != node )
