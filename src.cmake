@@ -300,6 +300,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/MGTurretComponent.h
     ${GAMELOGIC_DIR}/sgame/components/MiningComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/MiningComponent.h
+    ${GAMELOGIC_DIR}/sgame/components/MissileComponent.cpp
+    ${GAMELOGIC_DIR}/sgame/components/MissileComponent.h
     ${GAMELOGIC_DIR}/sgame/components/OvermindComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/OvermindComponent.h
     ${GAMELOGIC_DIR}/sgame/components/ReactorComponent.cpp

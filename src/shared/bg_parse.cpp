@@ -1940,6 +1940,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		KNOCKBACK             = 1 << 14,
 		LOCATIONAL_DAMAGE     = 1 << 15,
 		LIFETIME              = 1 << 16,
+		LIFE_END_EXPLODE      = 1 << 17,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -2024,6 +2025,14 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 			ma->lifetime = atoi( token );
 			defined |= LIFETIME;
 		}
+		else if ( !Q_stricmp( token, "lifeEndExplode" ) )
+		{
+			PARSE( text, token );
+			if ( Cvar::ParseCvarValue( token, ma->lifeEndExplode ) )
+			{
+				defined |= LIFE_END_EXPLODE;
+			}
+		}
 		else if ( !Q_stricmp( token, "bounceFull" ) )
 		{
 			ma->flags |= EF_BOUNCE;
@@ -2066,6 +2075,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 	else if ( !( defined & TRAJECTORY ) )     { token = "trajectory"; }
 	else if ( !( defined & SPEED ) )          { token = "speed"; }
 	else if ( !( defined & LIFETIME ) )       { token = "lifetime"; }
+	else if ( !( defined & LIFE_END_EXPLODE ) ) { token = "lifeEndExplode"; }
 	else                                      { token = ""; }
 
 	if ( *token )

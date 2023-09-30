@@ -2252,7 +2252,14 @@ void G_RunFrame( int levelTime )
 		switch ( ent->s.eType )
 		{
 			case entityType_t::ET_MISSILE:
-				G_RunMissile( ent );
+				if ( !HasComponents<ThinkingComponent>( *ent->entity ) ) // rockets and bees
+				{
+					if ( G_MoveMissile( ent ) )
+					{
+						continue;
+					}
+				}
+				G_RunThink( ent );
 				continue;
 
 			case entityType_t::ET_BUILDABLE:

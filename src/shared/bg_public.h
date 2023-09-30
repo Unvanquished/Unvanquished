@@ -1447,6 +1447,7 @@ struct missileAttributes_t
 	float          lag;
 	int            flags;
 	int            lifetime;
+	bool           lifeEndExplode; // explode vs. disappear when lifetime expires
 	bool       doKnockback;
 	bool       doLocationalDamage;
 
