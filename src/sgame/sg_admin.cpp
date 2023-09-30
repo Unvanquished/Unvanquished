@@ -6099,11 +6099,27 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 	{
 		ADMP( QQ( N_( "Can't add a bot" ) ) );
 	}
+	else
+	{
+		if ( ent )
+		{
+			G_admin_action( QQ( N_("^3bot:^* $1$^* added a bot to the $2$ team with behavior ^3$3$$4$") ),
+			                "%s %s %s %s", 
+			                ent, 
+			                Quote( va( "%s%s^*", 
+			                           ( team == TEAM_ALIENS ? "^i" : "^d" ), 
+			                           BG_TeamName( team ) ) ), 
+			                Quote( behavior ),
+			                ( skill ) ? Quote( va( "^* and skill ^3%d^*", skill ) ) : QQ( "" ) );
+		}
+	}
 	return result;
 }
 
 static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 {
+	team_t team = TEAM_NONE;
+
 	if (args.Argc() < 3 || args.Argc() > 5)
 	{
 		BotUsage( ent );
@@ -6119,7 +6135,7 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 	std::vector<team_t> teams;
 	if ( args.Argc() >= 4 && args[3] != "*" )
 	{
-		team_t team = BG_PlayableTeamFromString(args[3].data());
+		team = BG_PlayableTeamFromString(args[3].data());
 		if (team == team_t::TEAM_NONE)
 		{
 			BotUsage( ent );
@@ -6153,30 +6169,27 @@ static bool BotFillCmd( gentity_t *ent, const Cmd::Args& args )
 		return false;
 	}
 
-	for (team_t team : teams)
+	for (team_t t : teams)
 	{
-		level.team[team].botFillTeamSize = count;
-		level.team[team].botFillSkillLevel = skill;
+		level.team[t].botFillTeamSize = count;
+		level.team[t].botFillSkillLevel = skill;
 	}
 
-	char team_str[16] = "nothing";
-	if ( teams.size() >= NUM_TEAMS - 1 )
+	std::string nameStr = "^3both teams^*";
+
+	if ( team != TEAM_NONE )
 	{
-		strcpy( team_str, "both teams" );
-	}
-	else if ( teams.at(0) == team_t::TEAM_ALIENS )
-	{
-		strcpy( team_str, "aliens" );
-	}
-	else if ( teams.at(0) == team_t::TEAM_HUMANS )
-	{
-		strcpy( team_str, "humans" );
+		nameStr = va( "the %s%s^* team", ( team == TEAM_ALIENS ? "^i" : "^d" ), BG_TeamName( team ) );
 	}
 
-	G_admin_action( QQ( N_("^3bot:^* $1$^* decided to auto-fill $2$ with $3$ bots") ),
-	                "%s %s %d", ent, Quote( team_str ), count );
+	G_BotFill( true );
 
-	G_BotFill(true);
+	if ( ent )
+	{
+		G_admin_action( QQ( N_("^3bot:^* $1$^* decided to auto-fill $2$ with ^3$3$^* bots$4$") ),
+		                    "%s %s %d %s", ent, Quote( nameStr ), count,
+		                    ( skill > 0 ) ? Quote( va( " with skill ^3%d", skill ) ) : QQ( "" ) );
+	}
 	return true;
 }
 
@@ -6271,6 +6284,10 @@ bool G_admin_bot( gentity_t *ent )
 		if ( !Q_stricmp( name, "all" ) )
 		{
 			G_BotDelAllBots();
+			if ( ent )
+			{
+				G_admin_action( QQ( N_("^3bot:^* $1$^* removed all bots from the game") ), "%s", ent );
+			}
 		}
 		else
 		{
@@ -6279,6 +6296,12 @@ bool G_admin_bot( gentity_t *ent )
 			{
 				ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "bot", Quote( err ) ) );
 				return false;
+			}
+
+			if ( ent )
+			{
+				G_admin_action( QQ( N_("^3bot:^* $1$^* removed bot $2$^* from the game") ), "%s %s", 
+				                ent, G_quoted_user_name( &g_entities[ clientNum ], "a bot" ) );
 			}
 			G_BotDel( clientNum ); //delete the bot
 		}
@@ -6325,6 +6348,12 @@ bool G_admin_bot( gentity_t *ent )
 		}
 		const char *behavior = args[3].data();
 		G_BotChangeBehavior( clientNum, behavior );
+		if ( ent )
+		{
+			G_admin_action( QQ( N_("^3bot:^* $1$^* changed behavior of bot $2$^* to ^3$3$$4$") ),
+			                    "%s %s %s %s", ent, G_quoted_user_name( &g_entities[ clientNum ], "a bot" ), Quote( behavior ),
+			                    ( args.Argc() > 4 ) ? Quote( va( "^* with arguments: ^3%s", ConcatArgs( 4 ) ) ) : QQ( "" ) );
+		}
 
 	}
 	else if ( !Q_stricmp( arg1, "names" ) && args.Argc() >= 3 )
@@ -6394,6 +6423,20 @@ bool G_admin_bot( gentity_t *ent )
 			}
 			// Will ignore non-bots, unfortunately you can't change human skill with a command
 			G_BotSetSkill( i, skill );
+		}
+		if ( ent )
+		{
+			std::string nameStr = "^3both teams^*";
+
+			if ( team != TEAM_NONE )
+			{
+				nameStr = va( "the %s%s^* team", ( team == TEAM_ALIENS ? "^i" : "^d" ), BG_TeamName( team ) );
+			}
+
+			G_admin_action( QQ( N_("^3bot:^* $1$^* set bot skill for $2$ to ^3$3$") ),
+			                    "%s %s %d", ent, 
+			                    Quote( nameStr ),
+			                    skill );
 		}
 	}
 	else
