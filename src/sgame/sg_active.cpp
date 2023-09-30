@@ -46,7 +46,7 @@ static Cvar::Range<Cvar::Cvar<int>> g_poisonDamage(
 	"g_poisonDamage",
 	"Damage per second dealt to a poisoned individual",
 	Cvar::NONE,
-	10,
+	8,
 	0,
 	500);
 static Cvar::Range<Cvar::Cvar<int>> g_poisonDuration(
