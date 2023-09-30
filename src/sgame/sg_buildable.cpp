@@ -398,8 +398,7 @@ static void ATrapper_FireOnEnemy( gentity_t *self, int firespeed )
 	VectorNormalize( dirToTarget );
 
 	//fire at target
-	G_SpawnMissile( MIS_LOCKBLOB, self, self->s.pos.trBase, dirToTarget, nullptr,
-	                G_ExplodeMissile, level.time + BG_Missile( MIS_LOCKBLOB )->lifetime );
+	G_SpawnDumbMissile( MIS_LOCKBLOB, self, VEC2GLM( self->s.pos.trBase ), VEC2GLM( dirToTarget ) );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, false );
 	self->customNumber = level.time + firespeed;
 }

@@ -245,9 +245,7 @@ bool SpikerComponent::Fire() {
 				continue;
 			}
 
-			G_SpawnMissile(
-				MIS_SPIKER, self, self->s.origin, dir, nullptr, G_FreeEntity,
-				level.time + BG_Missile(MIS_SPIKER)->lifetime);
+			G_SpawnDumbMissile( MIS_SPIKER, self, VEC2GLM( self->s.origin ), VEC2GLM( dir ) );
 		}
 	}
 

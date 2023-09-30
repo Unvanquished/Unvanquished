@@ -100,6 +100,12 @@ components:
         requires:
             Thinking:
 
+    Missile:
+        parameters:
+            attributes: const missileAttributes_t*
+        requires:
+            Thinking:
+
     Health:
         parameters:
             maxHealth: float
@@ -503,5 +509,8 @@ entities:
         components:
             Ignitable:
                 alwaysOnFire: true
+    DumbMissile:
+        components:
+            Missile:
 
 # vi:ts=4:et:ai

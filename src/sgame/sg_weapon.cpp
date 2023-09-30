@@ -538,15 +538,12 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 
 // spawns a missile at parent's muzzle going in forward dir
 // missile: missile type
-// target: if not nullptr, missile will automatically aim at target
-// think: callback giving missile's behavior
-// thinkDelta: number of ms between each call to think()
-static void FireMissile( gentity_t* self, missile_t missile, gentity_t* target, void (*think)( gentity_t* ), int thinkDelta )
+static void FireMissile( gentity_t* self, missile_t missile )
 {
 	glm::vec3 forward;
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr);
 	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
-	G_SpawnMissile( missile, self, &muzzle[ 0 ], &forward[ 0 ], target, think, level.time + thinkDelta );
+	G_SpawnDumbMissile( missile, self, muzzle, forward );
 }
 
 /*
@@ -756,7 +753,7 @@ FIREBOMB
 #define FIREBOMB_SUBMISSILE_COUNT 15
 #define FIREBOMB_IGNITE_RANGE     192
 
-static void FirebombMissileThink( gentity_t *self )
+void G_FirebombMissileIgnite( gentity_t *self )
 {
 	gentity_t *neighbor, *m;
 	int       subMissileNum;
@@ -786,14 +783,11 @@ static void FirebombMissileThink( gentity_t *self )
 		VectorNormalize( dir );
 
 		// the submissile's parent is the attacker
-		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self->parent, self->s.origin, dir, nullptr, G_FreeEntity, level.time + BG_Missile( MIS_FIREBOMB_SUB )->lifetime );
+		m = G_SpawnDumbMissile( MIS_FIREBOMB_SUB, self->parent, VEC2GLM( self->s.origin ), VEC2GLM( dir ) );
 
 		// randomize missile speed
 		VectorScale( m->s.pos.trDelta, ( rand() / ( float )RAND_MAX ) + 0.5f, m->s.pos.trDelta );
 	}
-
-	// explode
-	G_ExplodeMissile( self );
 }
 
 /*
@@ -812,15 +806,13 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 	gentity_t *m;
 	float     charge;
 
-	vec3_t start, dir;
-	AngleVectors( self->client->ps.viewangles, dir, nullptr, nullptr );
-	G_CalcMuzzlePoint( self, dir, start );
+	glm::vec3 dir;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &dir, nullptr, nullptr );
+	glm::vec3 start = G_CalcMuzzlePoint( self, dir );
 
 	if ( self->s.generic1 == WPM_PRIMARY )
 	{
-		int nextthink = level.time + BG_Missile( MIS_LCANNON )->lifetime;
-
-		m = G_SpawnMissile( MIS_LCANNON, self, start, dir, nullptr, G_ExplodeMissile, nextthink );
+		m = G_SpawnDumbMissile( MIS_LCANNON, self, start, dir );
 
 		// some values are set in the code
 		m->damage       = damage;
@@ -847,7 +839,7 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 	}
 	else
 	{
-		m = G_SpawnMissile( MIS_LCANNON2, self, start, dir, nullptr, G_ExplodeMissile, level.time + BG_Missile( MIS_LCANNON2 )->lifetime );
+		m = G_SpawnDumbMissile( MIS_LCANNON2, self, start, dir );
 	}
 
 	return m;
@@ -1615,7 +1607,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_BLASTER:
-					FireMissile( self, MIS_BLASTER, nullptr, G_ExplodeMissile, BG_Missile( MIS_BLASTER )->lifetime );
+					FireMissile( self, MIS_BLASTER );
 					break;
 
 				case WP_MACHINEGUN:
@@ -1631,11 +1623,11 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_FLAMER:
-					FireMissile( self, MIS_FLAMER, nullptr, G_FreeEntity, BG_Missile( MIS_FLAMER )->lifetime );
+					FireMissile( self, MIS_FLAMER );
 					break;
 
 				case WP_PULSE_RIFLE:
-					FireMissile( self, MIS_PRIFLE, nullptr, G_ExplodeMissile, BG_Missile( MIS_PRIFLE )->lifetime );
+					FireMissile( self, MIS_PRIFLE );
 					break;
 
 				case WP_MASS_DRIVER:
@@ -1700,11 +1692,11 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			switch ( weapon )
 			{
 				case WP_ALEVEL3_UPG:
-					FireMissile( self, MIS_BOUNCEBALL, nullptr, G_ExplodeMissile, BG_Missile( MIS_BOUNCEBALL )->lifetime );
+					FireMissile( self, MIS_BOUNCEBALL );
 					break;
 
 				case WP_ABUILD2:
-					FireMissile( self, MIS_SLOWBLOB, nullptr, G_ExplodeMissile, BG_Missile( MIS_SLOWBLOB )->lifetime );
+					FireMissile( self, MIS_SLOWBLOB );
 					break;
 
 				default:
@@ -1782,10 +1774,10 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 	switch ( upgrade )
 	{
 		case UP_GRENADE:
-			FireMissile( self, MIS_GRENADE, nullptr, G_ExplodeMissile, BG_Missile( MIS_GRENADE )->lifetime );
+			FireMissile( self, MIS_GRENADE );
 			break;
 		case UP_FIREBOMB:
-			FireMissile( self, MIS_FIREBOMB, nullptr, FirebombMissileThink, BG_Missile( MIS_FIREBOMB )->lifetime );
+			FireMissile( self, MIS_FIREBOMB );
 			break;
 		default:
 			break;
