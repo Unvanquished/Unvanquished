@@ -1279,15 +1279,8 @@ static bool build( gentity_t *self, buildable_t toBuild )
 	return true;
 }
 
-static Cvar::Cvar<bool> g_bot_buildInRadiusEnabled("g_bot_buildInRadiusEnabled", "wheter bot action buildInRadius is enabled", Cvar::NONE, true);
-
 AINodeStatus_t BotActionBuildInRadius( gentity_t *self, AIGenericNode_t *node )
 {
-	if ( !g_bot_buildInRadiusEnabled.Get() )
-	{
-		return STATUS_FAILURE;
-	}
-
 	if ( !isBuilder( self ) )
 	{
 		return STATUS_FAILURE;
