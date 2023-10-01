@@ -1276,7 +1276,10 @@ static bool build( gentity_t *self, buildable_t toBuild )
 	}
 
 	self->client->ps.stats[ STAT_BUILDABLE ] = toBuild;
-	BotFireWeapon( WPM_PRIMARY, &self->botMind->cmdBuffer );
+	if ( self->client->ps.stats[ STAT_MISC ] == 0 )
+	{
+		BotFireWeapon( WPM_PRIMARY, &self->botMind->cmdBuffer );
+	}
 	return true;
 }
 
