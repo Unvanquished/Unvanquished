@@ -1463,7 +1463,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm
 {
 	int                index;
 	gclient_t          *client;
-	int                i;
 	clientPersistant_t saved;
 	clientSession_t    savedSess;
 	bool           savedNoclip, savedCliprcontents;
@@ -1574,7 +1573,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm
 	savedNoclip = client->noclip;
 	savedCliprcontents = client->cliprcontents;
 
-	for ( i = 0; i < MAX_PERSISTANT; i++ )
+	for ( int i = 0; i < MAX_PERSISTANT; i++ )
 	{
 		persistant[ i ] = client->ps.persistant[ i ];
 	}
@@ -1596,7 +1595,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm
 	client->noclip = savedNoclip;
 	client->cliprcontents = savedCliprcontents;
 
-	for ( i = 0; i < MAX_PERSISTANT; i++ )
+	for ( int i = 0; i < MAX_PERSISTANT; i++ )
 	{
 		client->ps.persistant[ i ] = persistant[ i ];
 	}
@@ -1672,7 +1671,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm
 
 	//clear the credits array
 	// TODO: Handle in HealthComponent or ClientComponent.
-	for ( i = 0; i < MAX_CLIENTS; i++ )
+	for ( int i = 0; i < MAX_CLIENTS; i++ )
 	{
 		ent->credits[ i ].value = 0.0f;
 		ent->credits[ i ].time = 0;
@@ -1770,9 +1769,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, glm::vec3 const* origin, glm
 
 		// select the highest weapon number available, after any
 		// spawn given items have fired
-		client->ps.weapon = 1;
+		client->ps.weapon = 0;
 
-		for ( i = WP_NUM_WEAPONS - 1; i > WP_NONE; i-- )
+		for ( int i = WP_NUM_WEAPONS - 1; i > WP_NONE; i-- )
 		{
 			if ( BG_InventoryContainsWeapon( i, client->ps.stats ) )
 			{
