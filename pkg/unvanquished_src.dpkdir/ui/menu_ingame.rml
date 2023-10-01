@@ -4,13 +4,32 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 		<link type="text/rcss" href="menu.rcss" />
 		<script src="lua/util.lua"></script>
+		<script>
+			function onMenuShow(event, document)
+				local team = Cvar.get("p_team")
+				if team == "0" then
+				   document:GetElementById("bot_tactic_menu"):SetAttribute("style", "display: none")
+				else
+				   document:GetElementById("bot_tactic_menu"):SetAttribute("style", "display: block")
+				end
+			end
+		</script>
 	</head>
 
-	<body id="menu_ingame" class="ingame" onkeydown="detectEscape(event, document)" >
+	<body id="menu_ingame" class="ingame" onkeydown="detectEscape(event, document)" onshow="onMenuShow(event, document)">
 		<img class="gradient black" src="/ui/assets/background/black" />
 		<img class="circles" src="/ui/assets/background/circles1" />
 		<img class="circles" src="/ui/assets/background/circles2" />
 		<img class="black2" src="/ui/assets/background/black2" />
+
+		<div style="position: absolute; margin: auto; top: 0; bottom: 0; left: 0; right: 0; padding: 1em; width: 33em; height: 5em; background-color: rgba( 10%,10%,10%, 95%); color: #999999; border: .17em rgba( 0%, 0%, 0%, 35%);" id="bot_tactic_menu">
+			<h1>Bot Tactic</h1>
+			<input type="button" onclick='Events.pushevent("execForm \"tactic stay-here\"; hide", event)'><button>Stay Here</button></input>
+			<input type="button" onclick='Events.pushevent("execForm \"tactic follow\"; hide", event)'><button>Follow</button></input>
+			<input type="button" onclick='Events.pushevent("execForm \"tactic attack\"; hide", event)'><button>Attack</button></input>
+			<input type="button" onclick='Events.pushevent("execForm \"tactic defend\"; hide", event)'><button>Defend</button></input>
+			<input type="button" onclick='Events.pushevent("execForm \"tactic default\"; hide", event)'><button>Default</button></input>
+		</div>
 
 		<div class="devmsg"><translate>This is a beta version of Unvanquished. Please report any issue you may find at <web dest="bugs" /></translate></div>
 
