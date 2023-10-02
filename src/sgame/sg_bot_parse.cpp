@@ -1005,7 +1005,7 @@ static const struct AIActionMap_s
 	{ "aimAtGoal",         BotActionAimAtGoal,         0, 0 },
 	{ "alternateStrafe",   BotActionAlternateStrafe,   0, 0 },
 	{ "build",             BotActionBuild,             0, 0 },
-	{ "buildInRadius",     BotActionBuildInRadius,     1, 4 },
+	{ "buildInRadius",     BotActionBuildInRadius,     2, 2 },
 	{ "buildMain",         BotActionBuildMain,         0, 0 },
 	{ "buy",               BotActionBuy,               1, 4 },
 	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
