@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-08-03 23:29+0000\n"
-"Last-Translator: Grise3 <Grise3@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2023-10-05 17:48+0000\n"
+"Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -147,24 +147,29 @@ msgstr ""
 #: ui/help_gameplay.rml:22
 msgid "More can be found on our website and other community places!"
 msgstr ""
+"Vous pouvez en trouver plus sur notre site Web et dans d'autres lieux "
+"communautaires !"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Discutez avec les joueurs et les développeurs sur Libera.Chat IRC, Matrix ou "
+"Discord: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "Discutez des nouvelles dans sur le forum : <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr ""
+"Découvrez plus de choses sur le jeu dans le wiki : <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:28
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Merci de signaler les bugs sur : <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
@@ -691,6 +696,8 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
+"Il s'agit d'une version bêta de Unvanquished. Veuillez signaler tout "
+"problème que vous pourriez trouver ici : <web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
@@ -866,13 +873,16 @@ msgstr "Angles de vue"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = largeur de vision du joueur, mesurée en degrés."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
 msgstr ""
+"De nombreux joueurs souffrent d'un léger mal des transports en jouant à des "
+"jeux de tir à la première personne. Un champ de vision plus élevé peut aider "
+"à lutter contre cela."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
@@ -929,15 +939,16 @@ msgstr "Fort"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr ""
+msgstr "Mouvement de haut en bas"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
 msgstr "Roulement de caméra"
 
 #: ui/options_fov.rml:92
+#, fuzzy
 msgid "Twisting movement"
-msgstr ""
+msgstr "Mouvement de torsion"
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
@@ -1015,7 +1026,7 @@ msgstr "Luminosité"
 
 #: ui/options_graphics.rml:51
 msgid "Gamma:"
-msgstr "Gamma :"
+msgstr "Gamma :"
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
@@ -1052,6 +1063,10 @@ msgid ""
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
+"La synchronisation verticale (vsync) aide à réduire le tearing visuel mais "
+"augmente la latence des entrées. La vsync flexible n'active la vsync que "
+"lorsque la taux de rafraîchissement de l'image est supérieur à celui de "
+"l'écran, ce qui permet d'éviter les saccades lors des chutes de FPS."
 
 #: ui/options_graphics.rml:81
 msgid "Fast approximate anti-aliasing (FXAA)"
@@ -1304,11 +1319,13 @@ msgstr "Simule des coins sombres."
 
 #: ui/options_graphics.rml:228
 msgid "Marks"
-msgstr ""
+msgstr "Marques"
 
 #: ui/options_graphics.rml:230
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
 msgstr ""
+"Dessiner des marques (telles que des trous de balles ou des fluages) sur les "
+"surfaces"
 
 #: ui/options_graphics.rml:233
 msgid "Particle physics"
@@ -1676,18 +1693,24 @@ msgid "Wall-walking auto-pitch"
 msgstr "Tangage automatique de marche murale"
 
 #: ui/options_player.rml:30
+#, fuzzy
 msgid ""
 "Always twist and rotate the view when you wall-walk from one surface to "
 "another."
 msgstr ""
+"Toujours tourner et faire pivoter la vue lorsque vous marchez d'une surface "
+"à l'autre."
 
 #: ui/options_player.rml:39
 msgid "Wall-walking pitch-speed"
 msgstr "Vitesse de tangage de marche murale"
 
 #: ui/options_player.rml:40
+#, fuzzy
 msgid "How fast your view rotates and twists as you wall-walk."
 msgstr ""
+"La vitesse à laquelle votre vue tourne et se tord lorsque vous marchez sur "
+"le mur."
 
 #: ui/options_player.rml:43
 msgid "Wall-walking toggles"
@@ -1695,7 +1718,7 @@ msgstr "Alterner la marche murale"
 
 #: ui/options_player.rml:45 ui/options_player.rml:50
 msgid "Tap key instead of hold key to activate."
-msgstr ""
+msgstr "Appuyez la touche sans la maintenir pour activer."
 
 #: ui/options_player.rml:48
 msgid "Sprint toggles"
@@ -1749,15 +1772,17 @@ msgstr "Intensité de la réverbération"
 
 #: ui/options_sound.rml:23
 msgid "Echo effect"
-msgstr ""
+msgstr "Effet d'écho"
 
 #: ui/options_sound.rml:26
+#, fuzzy
 msgid "Doppler intensity"
-msgstr ""
+msgstr "Intensité Doppler"
 
 #: ui/options_sound.rml:28
+#, fuzzy
 msgid "Pitch-shift effect when moving from or toward a sound."
-msgstr ""
+msgstr "Effet de décalage de hauteur lors du déplacement vers un son."
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
