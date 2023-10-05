@@ -508,16 +508,19 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 			}
 			break;
 		case CHAIN_RELAY:
-			//check target usage for backward compatibility
-			if ( entity->mapEntity.calltargets.empty() || entity->mapEntity.names[0].empty() )
 			{
-				if ( g_debugEntities.Get() > -2 )
+				auto const& mapEnt = entity->mapEntity;
+				//check target usage for backward compatibility
+				if ( mapEnt.names[0].empty() || ( mapEnt.calltargets.empty() && ( mapEnt.shaderKey.empty() || mapEnt.shaderReplacement.empty() ) ) )
 				{
-					Log::Warn("Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.", etos( entity ) );
+					if ( g_debugEntities.Get() > -2 )
+					{
+						Log::Warn("Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.", etos( entity ) );
+					}
+					return false;
 				}
-				return false;
+				break;
 			}
-			break;
 		default:
 			break;
 	}

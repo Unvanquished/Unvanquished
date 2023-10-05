@@ -349,7 +349,7 @@ struct shaderRemap_t
 
 static int remapCount = 0;
 static shaderRemap_t remappedShaders[ MAX_SHADER_REMAPS ];
-static const char *BuildShaderStateConfig()
+const char *BuildShaderStateConfig()
 {
 	static char buff[ MAX_STRING_CHARS * 4 ];
 	char        out[ MAX_QPATH * 2 + 5 ];
@@ -368,7 +368,7 @@ static const char *BuildShaderStateConfig()
 }
 
 
-static void G_SetShaderRemap( std::string const& oldShader, std::string const& newShader, float timeOffset )
+void G_SetShaderRemap( std::string const& oldShader, std::string const& newShader, float timeOffset )
 {
 	for ( int i = 0; i < remapCount; i++ )
 	{

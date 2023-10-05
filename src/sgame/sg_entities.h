@@ -191,5 +191,7 @@ void       G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCall
 
 int G_FindConfigstringIndex( const char *name, int start, int max, bool create );
 
+void G_SetShaderRemap( std::string const& oldShader, std::string const& newShader, float timeOffset );
+const char *BuildShaderStateConfig();
 //==================================================================
 #endif /* ENTITIES_H_ */

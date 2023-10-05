@@ -631,6 +631,12 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
+	if ( self->mapEntity.shaderKey.size() && self->mapEntity.shaderReplacement.size() )
+	{
+		G_SetShaderRemap( self->mapEntity.shaderKey, self->mapEntity.shaderReplacement, level.time * 0.001 );
+		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
+	}
+
 	size_t targetIndex;
 	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, targetIndex, self ) ) )
 	{
