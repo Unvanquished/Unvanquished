@@ -14,8 +14,9 @@
 			<p><ilink onclick='Events.pushevent("show help_textentry", event)'><translate>Colours and symbols can be used.</translate></ilink></p>
 		</row>
 		<p><translate>You can change this at any time in the options.</translate></p>
+        <!-- Keep in sync with language menu in options_ui.rml -->
         <h2><translate>What language do you want to use?</translate></h2>
-        <p> <translate> Some languages are not fully translated.</translate> </p>
+        <p> <translate>Some languages are not fully translated.</translate> </p>
 		<select cvar="language">
 			<option value="fr_FR">Français</option>
 			<option value="ru_RU">Русский</option>
