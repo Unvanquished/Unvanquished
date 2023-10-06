@@ -740,6 +740,13 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
+	// Shader replacement. Example usage: map "habitat" elevator activation, red to green light replacement
+	if ( self->shaderKey && self->shaderReplacement )
+	{
+		G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
+		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
+	}
+
 	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != nullptr )
 	{
 		if( eventType && self->calltargets[ targetIndex ].eventType != eventType )
