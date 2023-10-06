@@ -130,32 +130,15 @@ static bool CanUseAmmoRefill( gentity_t *self )
 	}
 
 	ps = &self->client->ps;
-	wa = BG_Weapon( ps->stats[ STAT_WEAPON ] );
+	// This is the *currently equipped* weapon, so you don't get refill while wielding blaster
+	wa = BG_Weapon( ps->weapon );
 
 	if ( wa->infiniteAmmo )
 	{
 		return false;
 	}
 
-	if ( ps->weapon == WP_BLASTER )
-	{
-		return false; // don't allow refill if they have the blaster equipped
-	}
-
-	if ( wa->maxClips == 0 )
-	{
-		// clipless weapons can be refilled whenever they lack ammo
-		return ( ps->ammo != wa->maxAmmo );
-	}
-	else if ( ps->clips != wa->maxClips || ps->ammo != wa->maxAmmo )
-	{
-		// clip weapons can be refilled whenever they lack ammo or clips
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return ps->clips != wa->maxClips || ps->ammo != wa->maxAmmo;
 }
 
 /**
