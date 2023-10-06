@@ -187,7 +187,7 @@ bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
 		}
 	}
 
-	G_ForceWeaponChange( self, (weapon_t) self->client->ps.weapon );
+	G_ForceWeaponChange( self, (weapon_t) self->client->ps.stats[ STAT_WEAPON ] );
 
 	return true;
 }
