@@ -1324,7 +1324,6 @@ static constexpr const char *const eventnames[] =
   "EV_MGTURRET_SPINUP", // turret spinup sound should play
 
   "EV_AMMO_REFILL",     // ammo for clipless weapon has been refilled
-  "EV_CLIPS_REFILL",    // weapon clips have been refilled
   "EV_FUEL_REFILL",     // jetpack fuel has been refilled
 
   "EV_HIT", // notify client of a hit

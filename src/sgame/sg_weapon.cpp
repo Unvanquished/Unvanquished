@@ -178,7 +178,6 @@ bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
 
 		if ( triggerEvent )
 		{
-			G_AddEvent( self, EV_CLIPS_REFILL, 0 );
 			G_AddEvent( self, EV_AMMO_REFILL, 0 );
 		}
 	}
