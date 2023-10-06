@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-10-05 17:48+0000\n"
+"PO-Revision-Date: 2023-10-08 04:03+0000\n"
 "Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -145,22 +145,23 @@ msgstr ""
 "gameplay pour savoir comment devenir un bon joueur."
 
 #: ui/help_gameplay.rml:22
+#, fuzzy
 msgid "More can be found on our website and other community places!"
-msgstr ""
-"Vous pouvez en trouver plus sur notre site Web et dans d'autres lieux "
-"communautaires !"
+msgstr "Plus d'information sur notre site Web et dans la communautée !"
 
 #: ui/help_gameplay.rml:24
+#, fuzzy
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
-"Discutez avec les joueurs et les développeurs sur Libera.Chat IRC, Matrix ou "
-"Discord: <web dest=\"chat\" />"
+"Discutez avec la communautée sur les serveurs IRC, Matrix ou Discord "
+"Libera.Chat  : <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr "Discutez des nouvelles dans sur le forum : <web dest=\"forums\" />"
+msgstr ""
+"Discutez des dernières nouveautées sur le forum : <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
@@ -1786,7 +1787,7 @@ msgstr "Effet de décalage de hauteur lors du déplacement vers un son."
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
-msgstr ""
+msgstr "Périphérique OpenAL"
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
@@ -1883,23 +1884,23 @@ msgstr "Images par seconde."
 
 #: ui/options_ui.rml:59
 msgid "Console colors"
-msgstr ""
+msgstr "Couleurs de la console"
 
 #: ui/options_ui.rml:63
 msgid "Red:"
-msgstr ""
+msgstr "Rouge :"
 
 #: ui/options_ui.rml:67
 msgid "Green:"
-msgstr ""
+msgstr "Vert :"
 
 #: ui/options_ui.rml:71
 msgid "Blue:"
-msgstr ""
+msgstr "Bleu :"
 
 #: ui/options_ui.rml:75
 msgid "Alpha:"
-msgstr ""
+msgstr "Alpha :"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
