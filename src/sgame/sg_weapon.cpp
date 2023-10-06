@@ -137,6 +137,11 @@ static bool CanUseAmmoRefill( gentity_t *self )
 		return false;
 	}
 
+	if ( ps->weapon == WP_BLASTER )
+	{
+		return false; // don't allow refill if they have the blaster equipped
+	}
+
 	if ( wa->maxClips == 0 )
 	{
 		// clipless weapons can be refilled whenever they lack ammo
@@ -187,7 +192,7 @@ bool G_RefillAmmo( gentity_t *self, bool triggerEvent )
 		}
 	}
 
-	G_ForceWeaponChange( self, (weapon_t) self->client->ps.stats[ STAT_WEAPON ] );
+	G_ForceWeaponChange( self, (weapon_t) self->client->ps.weapon );
 
 	return true;
 }
