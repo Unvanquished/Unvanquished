@@ -299,36 +299,14 @@ static int ImpactSlowblob( gentity_t *ent, trace_t *trace, gentity_t *hitEnt )
 
 static int ImpactHive( gentity_t *ent, trace_t*, gentity_t *hitEnt )
 {
-	if ( hitEnt->s.eType == entityType_t::ET_BUILDABLE && hitEnt->s.modelindex == BA_A_HIVE )
+	// Damage only humans and do so quietly.
+	if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
 	{
-		if ( !ent->parent )
-		{
-			Log::Warn("Hive missile returned to hive that is not its parent." );
-		}
-		else
-		{
-			ent->parent->hiveInsectsActive = false;
-		}
-
-		return MIB_FREE;
+		return MIF_NO_EFFECT;
 	}
 	else
 	{
-		// Prevent a collision with the client when returning.
-		ent->r.ownerNum = hitEnt->num();
-
-		ent->think = G_ExplodeMissile;
-		ent->nextthink = level.time + FRAMETIME;
-
-		// Damage only humans and do so quietly.
-		if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )
-		{
-			return MIF_NO_EFFECT;
-		}
-		else
-		{
-			return MIB_FREE;
-		}
+		return MIB_FREE;
 	}
 }
 

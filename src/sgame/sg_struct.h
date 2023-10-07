@@ -209,7 +209,6 @@ struct gentity_t
 
 	// These formerly all used a field named "active" and are now split such that it gets easier
 	// to convert them to CBSE component members.
-	bool hiveInsectsActive;
 	bool medistationIsHealing;
 	bool bodyStartedSinking;
 	bool shaderActive;
