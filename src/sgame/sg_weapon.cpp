@@ -642,12 +642,7 @@ void HiveMissileThink( gentity_t *self )
 
 	if ( level.time > self->timestamp ) // swarm lifetime exceeded
 	{
-		VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
-		self->s.pos.trType = trType_t::TR_STATIONARY;
-		self->s.pos.trTime = level.time;
-
-		self->think = G_ExplodeMissile;
-		self->nextthink = level.time + 50;
+		G_FreeEntity( self );
 		return;
 	}
 
