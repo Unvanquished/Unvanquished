@@ -4,8 +4,22 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
 	<body id="options_ui" template="window" style="width: 32em; margin: 1em;">
-		<h1><translate>User interface</translate></h1>
-
+		<row>
+			<h1><translate>User interface</translate></h1>
+			<!-- Keep in sync with language menu in options_welcome.rml -->
+			<h3><translate>Language</translate> </h3>
+			<p> <translate>Some languages are not fully translated.</translate> </p>
+			<p> <translate>The language will be updated after a game restart.</translate> </p>
+			<select cvar="language">
+				<option value="fr_FR">Français</option>
+				<option value="ru_RU">Русский</option>
+				<option value="en_EN">English</option>
+				<option value="de_DE">Deutsch</option>
+				<option value="it_IT">Italiano</option>
+				<option value="es_ES">Español</option>
+			</select>
+				<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Events.pushevent("exec language", event);Events.pushevent("exec updatelanguage", event)'><translate>Change language</translate></button>
+		</row>
 		<row>
 			<h3><translate>Real-time clock</translate></h3>
 			<select name="cg_drawClock" cvar="cg_drawClock">
