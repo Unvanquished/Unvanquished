@@ -1029,9 +1029,6 @@ struct animation_t
 #define ANIM_FORCEBIT             BIT(6)
 #define ANIM_TOGGLEBIT            BIT(7)
 
-// Time between location updates
-#define TEAM_LOCATION_UPDATE_TIME 500
-
 // player classes
 enum class_t
 {

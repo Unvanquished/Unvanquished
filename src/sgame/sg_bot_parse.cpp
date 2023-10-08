@@ -1008,6 +1008,7 @@ static const struct AIActionMap_s
 	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
 	{ "classDodge",        BotActionClassDodge,        0, 0 },
 	{ "deactivateUpgrade", BotActionDeactivateUpgrade, 1, 1 },
+	{ "debugColor",        BotActionDebugColor,        3, 4 },
 	{ "equip",             BotActionBuy,               0, 0 },
 	{ "evolve",            BotActionEvolve,            0, 0 },
 	{ "evolveTo",          BotActionEvolveTo,          1, 1 },

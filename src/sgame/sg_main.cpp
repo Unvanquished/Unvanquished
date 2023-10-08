@@ -547,7 +547,10 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	{
 		ASSERT_UNREACHABLE();
 	}
-	memset( g_clients, 0, MAX_CLIENTS * sizeof( g_clients[ 0 ] ) );
+	for ( int i = 0; i < MAX_CLIENTS; i++ )
+	{
+		g_clients[i] = {};
+	}
 	level.clients = g_clients;
 
 	// set client fields on player ents
@@ -2129,7 +2132,7 @@ static void G_EvaluateAcceleration( gentity_t *ent, int msec )
 ================
 G_RunFrame
 
-Advances the non-player objects in the world
+Advances the objects in the world
 ================
 */
 void G_RunFrame( int levelTime )
@@ -2212,6 +2215,14 @@ void G_RunFrame( int levelTime )
 	level.spawning = false;
 
 	G_CheckPmoveParamChanges();
+
+	// reset client's debug colors
+	gclient_t *cl;
+	for ( i = 0, cl = &g_clients[ 0 ]; i < MAX_CLIENTS; i++, cl++ )
+	{
+		// reset the debug color at the (almost) beginning of the frame logic
+		cl->debugColor = Color::Color32Bit(0, 0, 0, 0);
+	}
 
 	// go through all allocated objects
 	ent = &g_entities[ 0 ];

@@ -263,6 +263,7 @@ AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionTeleport( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionDebugColor( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node );

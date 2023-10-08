@@ -875,6 +875,7 @@ struct clientInfo_t
 	int      upgrade;
 	int      curWeaponClass; // sends current weapon for H, current class for A
 	int      credit;
+	Color::Color32Bit debugColor;
 
 	// when clientinfo is changed, the loading of models/skins/sounds
 	// can be deferred until you are dead, to prevent hitches in

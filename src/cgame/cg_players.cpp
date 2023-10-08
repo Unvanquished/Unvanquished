@@ -2555,6 +2555,18 @@ static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader )
 	trap_R_AddRefEntityToScene( &ent );
 }
 
+static void CG_PlayerFloatDebugBubble( centity_t *cent )
+{
+	vec3_t origin;
+	VectorCopy( cent->lerpOrigin, origin );
+	origin[ 2 ] += 48;
+
+	Color::Color32Bit &color = cgs.clientinfo[ cent->currentState.clientNum ].debugColor;
+
+	constexpr float radius = 3.2;
+	CG_DrawSphere( origin, radius, cgs.media.plainColorShader, color );
+}
+
 /*
 ===============
 CG_PlayerSprites
@@ -2572,6 +2584,8 @@ static void CG_PlayerSprites( centity_t *cent )
 	{
 		CG_PlayerFloatSprite( cent, cgs.media.balloonShader );
 	}
+
+	CG_PlayerFloatDebugBubble( cent );
 }
 
 /*

@@ -27,6 +27,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "sg_local.h"
 #include "Entities.h"
 
+// Time between location updates
+static Cvar::Range<Cvar::Cvar<int>> g_teamLocationUpdateTime("g_teamLocationUpdateTime", "How often team status information will be sent", Cvar::NONE, 500, 10, 5000);
+
+
 /*
 ================
 G_TeamFromString
@@ -369,6 +373,17 @@ gentity_t *GetCloseLocationEntity( gentity_t *ent )
 
 /*---------------------------------------------------------------------------*/
 
+
+static int ColorToInt(Color::Color32Bit color)
+{
+	int value = 0;
+	value += color.Red()   << 24;
+	value += color.Green() << 16;
+	value += color.Blue()  << 8;
+	value += color.Alpha() << 0;
+	return value;
+}
+
 /*
 ==================
 TeamplayInfoMessage
@@ -380,7 +395,7 @@ Format:
 */
 void TeamplayInfoMessage( gentity_t *ent )
 {
-	char      entry[ 24 ];
+	char      entry[ 27 ];
 	char      string[ ( MAX_CLIENTS - 1 ) * ( sizeof( entry ) - 1 ) + 1 ];
 	int       i, j;
 	int       team, stringlength;
@@ -476,16 +491,18 @@ void TeamplayInfoMessage( gentity_t *ent )
 
 		if( team == TEAM_ALIENS ) // aliens don't have upgrades
 		{
-			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i", i,
+			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i %i", i,
 						 cl->pers.location,
+			             ColorToInt( cl->debugColor ),
 			             health,
 						 curWeaponClass,
 						 cl->pers.credit );
 		}
 		else
 		{
-			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i %i", i,
+			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i %i %i", i,
 			             cl->pers.location,
+			             ColorToInt( cl->debugColor ),
 			             health,
 			             curWeaponClass,
 			             cl->pers.credit,
@@ -523,7 +540,7 @@ void CheckTeamStatus()
 	int       i;
 	gentity_t *loc, *ent;
 
-	if ( level.time - level.lastTeamLocationTime > TEAM_LOCATION_UPDATE_TIME )
+	if ( level.time - level.lastTeamLocationTime > g_teamLocationUpdateTime.Get() )
 	{
 		level.lastTeamLocationTime = level.time;
 
