@@ -62,13 +62,13 @@ Entity* TurretComponent::FindEntityTarget(std::function<bool(Entity&, Entity&)> 
 
 	// Search best target.
 	// TODO: Iterate over all valid targets, do not assume they have to be clients.
-	ForEntities<ClientComponent>([&](Entity& candidate, ClientComponent&) {
+	for (Entity& candidate : Entities::Having<ClientComponent>()) {
 		if (TargetValid(candidate, true)) {
 			if (!target || CompareTargets(candidate, *target->entity)) {
 				target = candidate.oldEnt;
 			}
 		}
-	});
+	}
 
 	if (target) {
 		// TODO: Increase tracked-by counter for a new target.

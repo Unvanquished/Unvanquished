@@ -1743,11 +1743,11 @@ static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_N
 	ASSERT( self );
 	const team_t team = static_cast<team_t>( self->client->pers.team );
 
-	ForEntities<HumanClassComponent>([&](Entity& ent, HumanClassComponent&) {
+	for (Entity& ent : Entities::Having<HumanClassComponent>()) {
 		gentity_t* ally = ent.oldEnt;
 		if ( ally == self || ally->client->pers.team != team )
 		{
-			return;
+			continue;
 		}
 		++numWeapons[ally->client->ps.stats[STAT_WEAPON]];
 
@@ -1763,7 +1763,7 @@ static void ListTeamEquipment( gentity_t *self, unsigned int (&numUpgrades)[UP_N
 				++numUpgrades[up];
 			}
 		}
-	});
+	}
 }
 
 bool BotTeamateHasWeapon( gentity_t *self, int weapon )

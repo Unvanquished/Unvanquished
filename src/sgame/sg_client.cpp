@@ -1396,6 +1396,7 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 	Entity *oldEntity = ent->entity;
 	gclient_t *client = oldEntity->Get<ClientComponent>()->GetClientData();
 	class_t pcl = client->pers.classSelection;
+	delete oldEntity;
 
 	switch (pcl) {
 		// Each entry does the following:
@@ -1465,8 +1466,6 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 		default:
 			ASSERT_UNREACHABLE();
 	}
-
-	delete oldEntity;
 }
 
 /*

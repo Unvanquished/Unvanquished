@@ -4,14 +4,33 @@
 #ifndef CBSE_H_
 #define CBSE_H_
 
+#include "sg_local.h"
+
+template<typename T> constexpr int ComponentPriority(); // forward declaring from CBSEBackend.h
+
+// Component creating/destruction callbacks. These are used to enable iterating
+// over all entities with a given component.
+void RegisterComponentCreate(int entityNum, int componentNum);
+void RegisterComponentDestroy(int entityNum, int componentNum);
+
+template<typename T>
+void OnComponentCreate(T* component)
+{
+	RegisterComponentCreate(component->entity.oldEnt - g_entities, ComponentPriority<T>());
+}
+
+template<typename T>
+void OnComponentDestroy(T* component)
+{
+	RegisterComponentDestroy(component->entity.oldEnt - g_entities, ComponentPriority<T>());
+}
+
 // Add here any definitions, forward declarations and includes that provide all
 // the types used in the entities definition file (and thus the CBSE backend).
 // Make sure none of the includes in this file includes any header that is part
 // of the CBSE system.
 // You can also define helper macros for use in all components here.
 // ----------------
-
-#include "sg_local.h"
 
 /** A helper to register component thinkers. */
 #define REGISTER_THINKER(METHOD, SCHEDULER, PERIOD) \

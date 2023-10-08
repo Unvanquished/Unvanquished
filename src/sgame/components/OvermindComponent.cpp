@@ -50,24 +50,24 @@ void OvermindComponent::Think(int timeDelta) {
 Entity* OvermindComponent::FindTarget() {
 	Entity* target = nullptr;
 
-	ForEntities<ClientComponent>([&](Entity& candidate, ClientComponent&) {
+	for (Entity& candidate : Entities::Having<ClientComponent>()) {
 		// Do not target spectators.
-		if (candidate.Get<SpectatorComponent>()) return;
+		if (candidate.Get<SpectatorComponent>()) continue;
 
 		// Do not target dead entities.
-		if (Entities::IsDead(candidate)) return;
+		if (Entities::IsDead(candidate)) continue;
 
 		// Respect the no-target flag.
-		if ((candidate.oldEnt->flags & FL_NOTARGET)) return;
+		if ((candidate.oldEnt->flags & FL_NOTARGET)) continue;
 
 		// Check for line of sight.
-		if (!G_LineOfSight(entity.oldEnt, candidate.oldEnt, MASK_SOLID, false)) return;
+		if (!G_LineOfSight(entity.oldEnt, candidate.oldEnt, MASK_SOLID, false)) continue;
 
 		// Check if better target.
 		if (!target || CompareTargets(candidate, *target)) {
 			target = &candidate;
 		}
-	});
+	}
 
 	return target;
 }
