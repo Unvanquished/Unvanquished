@@ -1083,9 +1083,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_AMMO_REFILL:
-		case EV_CLIPS_REFILL:
 		case EV_FUEL_REFILL:
-			// TODO: Add different sounds for EV_AMMO_REFILL, EV_CLIPS_REFILL, EV_FUEL_REFILL
+			// TODO: Add different sounds for EV_AMMO_REFILL, EV_FUEL_REFILL
 			trap_S_StartSound( nullptr, es->number, soundChannel_t::CHAN_AUTO, cgs.media.itemFillSound );
 			break;
 
