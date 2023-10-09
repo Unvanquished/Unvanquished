@@ -1437,6 +1437,7 @@ struct missileAttributes_t
 	int            speed;
 	float          lag;
 	int            flags;
+	int            steeringPeriod;
 	int            lifetime;
 	bool           lifeEndExplode; // explode vs. disappear when lifetime expires
 	bool       doKnockback;

@@ -31,47 +31,13 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#include "MissileComponent.h"
+#include "RocketMissileComponent.h"
 
-MissileComponent::MissileComponent(Entity& entity, const missileAttributes_t* attributes, ThinkingComponent& r_ThinkingComponent)
-	: MissileComponentBase(entity, attributes, r_ThinkingComponent),
-	ma_(attributes),
-	dead_(false)
-{
-	REGISTER_THINKER(Move, ThinkingComponent::SCHEDULER_BEFORE, 0); // every frame
-	REGISTER_THINKER(Expire, ThinkingComponent::SCHEDULER_AFTER, ma_->lifetime);
-	if (ma_->steeringPeriod) {
-		REGISTER_THINKER(Steer, ThinkingComponent::SCHEDULER_AVERAGE, ma_->steeringPeriod);
-	}
-}
+RocketMissileComponent::RocketMissileComponent(Entity& entity, MissileComponent& r_MissileComponent)
+	: RocketMissileComponentBase(entity, r_MissileComponent)
+{}
 
-void MissileComponent::Expire(int)
-{
-	if (dead_) return;
-
-	dead_ = true;
-
-	if (ma_->lifeEndExplode) {
-		// turns the entity into an event and frees it later
-		// FIXME: things that aren't grenades probably shouldn't have this enabled (though it rarely happens anyway)
-		G_ExplodeMissile(entity.oldEnt);
-	} else {
-		entity.FreeAt(DeferredFreeingComponent::FREE_AFTER_THINKING);
-	}
-}
-
-void MissileComponent::Move(int)
-{
-	if (dead_) return;
-
-	dead_ = G_MoveMissile(entity.oldEnt);
-}
-
-void MissileComponent::Steer(int)
-{
-	if (dead_) return;
-
-	if (!entity.MissileSteer()) {
-		Log::Warn("Missile can't steer");
-	}
+void RocketThink(gentity_t*);
+void RocketMissileComponent::HandleMissileSteer() {
+	RocketThink(entity.oldEnt);
 }
