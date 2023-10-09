@@ -2019,6 +2019,11 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 			ma->lag = atof( token );
 			defined |= LAG;
 		}
+		else if ( !Q_stricmp( token, "steeringPeriod" ) )
+		{
+			PARSE( text, token );
+			ma->steeringPeriod = atoi( token );
+		}
 		else if ( !Q_stricmp( token, "lifetime" ) )
 		{
 			PARSE( text, token );

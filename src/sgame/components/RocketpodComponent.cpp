@@ -1,5 +1,6 @@
 #include "RocketpodComponent.h"
 #include "../Entities.h"
+#include "../CBSE.h"
 
 #include <glm/geometric.hpp>
 
@@ -256,7 +257,6 @@ bool RocketpodComponent::EnemyClose() {
 	return enemyClose;
 }
 
-void RocketThink(gentity_t*);
 void RocketpodComponent::Shoot(const glm::vec3& direction) {
 	Entity* target = GetTurretComponent().GetTarget();
 
@@ -265,9 +265,13 @@ void RocketpodComponent::Shoot(const glm::vec3& direction) {
 	entity.oldEnt->target = target->oldEnt;
 	G_AddEvent(entity.oldEnt, EV_FIRE_WEAPON, 0);
 
-	gentity_t* missile = G_SpawnMissile(MIS_ROCKET, entity.oldEnt, entity.oldEnt->s.pos.trBase, &direction[0],
-	                                    target->oldEnt, RocketThink, level.time + ROCKET_TURN_PERIOD);
-	missile->timestamp = level.time + BG_Missile(MIS_ROCKET)->lifetime;
+	gentity_t* m = G_NewEntity(HAS_CBSE);
+	RocketMissileEntity::Params params;
+	params.oldEnt = m;
+	params.Missile_attributes = BG_Missile(MIS_ROCKET);
+	m->entity = new RocketMissileEntity{ params };
+	G_SetUpMissile(m, MIS_ROCKET, entity.oldEnt, entity.oldEnt->s.pos.trBase, &direction[0]);
+	m->target = target->oldEnt;
 
 	lastShot = level.time;
 }
