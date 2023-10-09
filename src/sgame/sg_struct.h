@@ -460,8 +460,6 @@ struct gentity_t
 	int         lastDamageTime;
 	int         nextRegenTime;
 
-	bool    pointAgainstWorld; // don't use the bbox for map collisions
-
 	botMemory_t *botMind;
 
 	gentity_t   *alienTag, *humanTag;

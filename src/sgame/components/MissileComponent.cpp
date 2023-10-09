@@ -63,7 +63,7 @@ void MissileComponent::Expire(int)
 	}
 }
 
-static trace2_t MissileTrace(gentity_t* ent)
+static trace2_t MissileTrace(const missileAttributes_t& ma, gentity_t* ent)
 {
 	// get current position
 	vec3_t origin;
@@ -74,7 +74,7 @@ static trace2_t MissileTrace(gentity_t* ent)
 
 	trace2_t result;
 
-	if (ent->pointAgainstWorld)
+	if (ma.pointAgainstWorld)
 	{
 		ASSERT(ent->clipmask & CONTENTS_BODY);
 		trace2_t trWorld = G_Trace2(ent->r.currentOrigin, nullptr, nullptr, origin,
@@ -115,9 +115,9 @@ static trace2_t MissileTrace(gentity_t* ent)
 
 // Move missile along its trajectory and detect collisions.
 // Returns true if the missile has ceased to exist
-static bool MoveMissile(gentity_t* ent)
+static bool MoveMissile(const missileAttributes_t& ma, gentity_t* ent)
 {
-	trace2_t tr = MissileTrace(ent);
+	trace2_t tr = MissileTrace(ma, ent);
 	VectorCopy(tr.endpos, ent->r.currentOrigin);
 
 	if (tr.fraction < 1.0f)
@@ -148,7 +148,7 @@ void MissileComponent::Move(int)
 {
 	if (dead_) return;
 
-	dead_ = MoveMissile(entity.oldEnt);
+	dead_ = MoveMissile(*ma_, entity.oldEnt);
 }
 
 void MissileComponent::Steer(int)

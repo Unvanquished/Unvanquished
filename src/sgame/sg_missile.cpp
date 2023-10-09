@@ -455,7 +455,6 @@ void G_SetUpMissile( gentity_t *m, missile_t missile, gentity_t *parent, const v
 	// from attribute config file
 	m->s.weapon            = ma->number;
 	m->classname           = ma->name;
-	m->pointAgainstWorld   = ma->pointAgainstWorld;
 	m->damage              = ma->damage;
 	m->splashDamage        = ma->splashDamage;
 	m->splashRadius        = ma->splashRadius;
