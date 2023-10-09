@@ -753,6 +753,10 @@ void G_HandleVote( gentity_t* ent )
 		trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_( "$1$^* called a vote: $2$" ) ),
 		                                Quote( ent->client->pers.netname ),
 		                                Quote( level.team[ team ].voteDisplayString ) ) );
+
+		trap_SendServerCommand( -1, va( "cp_tr %s %s %s", QQ( N_( "$1$^7 called a vote:\n^7$2$" ) ),
+		                                Quote( ent->client->pers.netname ),
+		                                Quote( level.team[ team ].voteDisplayString ) ) );
 	}
 	else
 	{
@@ -767,14 +771,19 @@ void G_HandleVote( gentity_t* ent )
 				       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 				{
 					trap_SendServerCommand(
-						i, va( "print_tr %s %s %s", QQ( N_( "$1$^* called a team vote: $2t$" ) ),
+					    i, va( "print_tr %s %s %s", QQ( N_( "$1$^* called a team vote: $2t$" ) ),
+					           Quote( ent->client->pers.netname ),
+					           Quote( level.team[ team ].voteDisplayString ) ) );
+				
+					trap_SendServerCommand(
+					    i, va( "cp_tr %s %s %s", QQ( N_( "$1$^7 called a team vote:\n^7$2t$" ) ),
 					           Quote( ent->client->pers.netname ),
 					           Quote( level.team[ team ].voteDisplayString ) ) );
 				}
 				else if ( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
 				{
 					trap_SendServerCommand(
-						i, va( "chat -1 %d ^3%s\"^3 called a team vote (%ss): \"%s", SAY_ADMINS,
+					    i, va( "chat -1 %d ^3%s\"^3 called a team vote (%ss): \"%s", SAY_ADMINS,
 					           Quote( ent->client->pers.netname ), BG_TeamName( team ),
 					           Quote( level.team[ team ].voteDisplayString ) ) );
 				}
@@ -782,13 +791,10 @@ void G_HandleVote( gentity_t* ent )
 		}
 	}
 
-	std::string caller = ent->client->pers.netname;
-	caller = Color::StripColors( caller );
-
 	level.team[ team ].voteTime = level.time;
 	trap_SetConfigstring( CS_VOTE_TIME + team, va( "%d", level.team[ team ].voteTime ) );
 	trap_SetConfigstring( CS_VOTE_STRING + team, level.team[ team ].voteDisplayString );
-	trap_SetConfigstring( CS_VOTE_CALLER + team, caller.c_str() );
+	trap_SetConfigstring( CS_VOTE_CALLER + team, ent->client->pers.netname );
 
 	if ( vi.special != VOTE_NO_AUTO )
 	{
