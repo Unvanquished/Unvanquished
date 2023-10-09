@@ -1425,7 +1425,7 @@ struct missileAttributes_t
 	// attributes
 	missile_t      number;
 	const char     *name;
-	bool       pointAgainstWorld;
+	bool       pointAgainstWorld; // don't use the bbox for map collisions
 	int            damage;
 	meansOfDeath_t meansOfDeath;
 	int            splashDamage;
