@@ -3530,15 +3530,18 @@ static void CG_Rocket_DrawVote_internal( team_t team )
 	std::string yeskey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
 	std::string nokey = CG_EscapeHTMLText( CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), bindTeam ) );
 	std::string voteString = CG_EscapeHTMLText( cgs.voteString[ team ] );
-	Rml::String caller = Rocket_QuakeToRML( cgs.voteCaller[ team ], RP_EMOTICONS ); // colors are stripped by the server
-	// The byte sequences are U+E8DC/U+E8DB - thumbs up/down in our icon font
-	std::string s = Str::Format( "%sVOTE(%i): %s\n"
-			"    Called by: \"%s\"\n"
-			"    [%s][<span class='material-icon'>\xee\xa3\x9c</span>]:%i [%s][<span class='material-icon'>\xee\xa3\x9b</span>]:%i\n",
-			team == TEAM_NONE ? "" : "TEAM", sec, voteString,
-			caller.c_str(), yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ] );
+	int timerColor = ( sec > 10 ? 7 : 1 );
+	int timerColor2 = ( sec > 10 ? 3 : 7 );
 
-	Rocket_SetInnerRMLRaw( s.c_str() );
+	std::string s = Str::Format( "^3%sVOTE: ^7%s\n"
+			"^7Called by: %s\n"
+			"^7[^2%s^7] [check]: %i [^1%s^7] [cross]: %i\n"
+			"^%iEnds in ^%i%i ^%iseconds\n",
+			team == TEAM_NONE ? "" : "TEAM", voteString,
+			cgs.voteCaller[ team ], yeskey, cgs.voteYes[ team ], nokey, cgs.voteNo[ team ], 
+			timerColor, timerColor2, sec, timerColor );
+
+	Rocket_SetInnerRML( s.c_str(), RP_EMOTICONS );
 }
 
 static void CG_Rocket_DrawVersion()
