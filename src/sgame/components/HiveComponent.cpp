@@ -1,5 +1,6 @@
 #include "HiveComponent.h"
 #include "../Entities.h"
+#include "../CBSE.h"
 
 #include <glm/geometric.hpp>
 constexpr int   ATTACK_PERIOD = 3000;
@@ -99,7 +100,6 @@ bool HiveComponent::CompareTargets(Entity& a, Entity& b) const {
 	return rand() % 2 ? true : false;
 }
 
-void HiveMissileThink(gentity_t*);
 void HiveComponent::Fire(Entity& target) {
 	insectsReady       = false;
 	insectsActiveSince = level.time;
@@ -111,9 +111,13 @@ void HiveComponent::Fire(Entity& target) {
 
 	entity.oldEnt->target = target.oldEnt;
 
-	gentity_t* m = G_SpawnMissile(MIS_HIVE, entity.oldEnt, &origin[0], &dirToTarget[0], target.oldEnt,
-	                              HiveMissileThink, level.time + HIVE_DIR_CHANGE_PERIOD);
-	m->timestamp = level.time + BG_Missile(MIS_HIVE)->lifetime;
+	gentity_t* m = G_NewEntity(HAS_CBSE);
+	HiveMissileEntity::Params params;
+	params.oldEnt = m;
+	params.Missile_attributes = BG_Missile(MIS_HIVE);
+	m->entity = new HiveMissileEntity{ params };
+	G_SetUpMissile(m, MIS_HIVE, entity.oldEnt, &origin[0], &dirToTarget[0]);
+	m->target = target.oldEnt;
 
 	G_SetBuildableAnim(entity.oldEnt, BANIM_ATTACK1, false);
 }

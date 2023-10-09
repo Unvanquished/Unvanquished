@@ -637,12 +637,6 @@ void HiveMissileThink( gentity_t *self )
 	int       i;
 	float     d, nearest;
 
-	if ( level.time > self->timestamp ) // swarm lifetime exceeded
-	{
-		G_FreeEntity( self );
-		return;
-	}
-
 	nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
 
 	//find the closest human
@@ -675,8 +669,6 @@ void HiveMissileThink( gentity_t *self )
 	SnapVector( self->s.pos.trDelta );  // save net bandwidth
 	VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
 	self->s.pos.trTime = level.time;
-
-	self->nextthink = level.time + HIVE_DIR_CHANGE_PERIOD;
 }
 
 /*
@@ -691,16 +683,6 @@ void RocketThink( gentity_t *self )
 {
 	vec3_t currentDir, targetDir, newDir, rotAxis;
 	float  rotAngle;
-
-	if ( level.time > self->timestamp )
-	{
-		self->think     = G_ExplodeMissile;
-		self->nextthink = level.time;
-
-		return;
-	}
-
-	self->nextthink = level.time + ROCKET_TURN_PERIOD;
 
 	// Don't turn anymore if the target is dead or gone
 	if ( !self->target )

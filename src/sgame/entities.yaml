@@ -68,6 +68,8 @@ messages:
         - name: spawnPoint
           type: glm::vec3&
 
+    MissileSteer:
+
 components:
     #####################
     # Common Components #
@@ -105,6 +107,18 @@ components:
             attributes: const missileAttributes_t*
         requires:
             Thinking:
+
+    RocketMissile:
+        requires:
+            Missile:
+        messages:
+            - MissileSteer
+
+    HiveMissile:
+        requires:
+            Missile:
+        messages:
+            - MissileSteer
 
     Health:
         parameters:
@@ -512,5 +526,13 @@ entities:
     DumbMissile:
         components:
             Missile:
+
+    HiveMissile:
+        components:
+            HiveMissile:
+
+    RocketMissile:
+        components:
+            RocketMissile:
 
 # vi:ts=4:et:ai

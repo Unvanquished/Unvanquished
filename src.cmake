@@ -281,6 +281,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/HealthComponent.h
     ${GAMELOGIC_DIR}/sgame/components/HiveComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/HiveComponent.h
+    ${GAMELOGIC_DIR}/sgame/components/HiveMissileComponent.cpp
+    ${GAMELOGIC_DIR}/sgame/components/HiveMissileComponent.h
     ${GAMELOGIC_DIR}/sgame/components/HumanBuildableComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/HumanBuildableComponent.h
     ${GAMELOGIC_DIR}/sgame/components/HumanClassComponent.cpp
@@ -305,6 +307,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/OvermindComponent.h
     ${GAMELOGIC_DIR}/sgame/components/ReactorComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/ReactorComponent.h
+    ${GAMELOGIC_DIR}/sgame/components/RocketMissileComponent.cpp
+    ${GAMELOGIC_DIR}/sgame/components/RocketMissileComponent.h
     ${GAMELOGIC_DIR}/sgame/components/RocketpodComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/RocketpodComponent.h
     ${GAMELOGIC_DIR}/sgame/components/SpawnerComponent.cpp

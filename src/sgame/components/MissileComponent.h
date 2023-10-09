@@ -57,6 +57,7 @@ class MissileComponent: public MissileComponentBase {
 	private:
 		void Move(int timeDelta);
 		void Expire(int timeDelta);
+		void Steer(int timeDelta);
 
 		const missileAttributes_t* ma_;
 		bool dead_;
