@@ -2,7 +2,7 @@
 ===========================================================================
 
 Unvanquished GPL Source Code
-Copyright (C) 2023 Unvanquished Developers
+Copyright (C) 2014-2023 Unvanquished Developers
 
 This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
@@ -37,7 +37,46 @@ RocketMissileComponent::RocketMissileComponent(Entity& entity, MissileComponent&
 	: RocketMissileComponentBase(entity, r_MissileComponent)
 {}
 
-void RocketThink(gentity_t*);
 void RocketMissileComponent::HandleMissileSteer() {
-	RocketThink(entity.oldEnt);
+	vec3_t currentDir, targetDir, newDir, rotAxis;
+	float  rotAngle;
+	gentity_t* self = entity.oldEnt;
+
+	// Don't turn anymore if the target is dead or gone
+	if (!self->target)
+	{
+		return;
+	}
+
+	// Calculate current and target direction.
+	VectorNormalize2(self->s.pos.trDelta, currentDir);
+	VectorSubtract(self->target->r.currentOrigin, self->r.currentOrigin, targetDir);
+	VectorNormalize(targetDir);
+
+	// Don't turn anymore after the target was passed.
+	if (DotProduct(currentDir, targetDir) < 0)
+	{
+		return;
+	}
+
+	// Calculate new direction. Use a fixed turning angle.
+	CrossProduct(currentDir, targetDir, rotAxis);
+	rotAngle = RAD2DEG(acosf(DotProduct(currentDir, targetDir)));
+	RotatePointAroundVector(newDir, rotAxis, currentDir,
+		Math::Clamp(rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE));
+
+	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
+	if (!RocketpodComponent::SafeShot(
+		ENTITYNUM_NONE, VEC2GLM(self->r.currentOrigin), VEC2GLM(newDir)
+	) && RocketpodComponent::SafeShot(
+		ENTITYNUM_NONE, VEC2GLM(self->r.currentOrigin), VEC2GLM(currentDir)
+	)) {
+		return;
+	}
+
+	// Update trajectory.
+	VectorScale(newDir, BG_Missile(self->s.modelindex)->speed, self->s.pos.trDelta);
+	SnapVector(self->s.pos.trDelta);
+	VectorCopy(self->r.currentOrigin, self->s.pos.trBase); // TODO: Snap this, too?
+	self->s.pos.trTime = level.time;
 }

@@ -149,7 +149,7 @@ static float MissileTimeDmgMod( gentity_t *self )
 	return 1.0f;
 }
 
-static float MissileTimeSplashDmgMod( gentity_t *self )
+float G_MissileTimeSplashDmgMod( gentity_t *self )
 {
 	switch ( self->s.weapon )
 	{
@@ -317,7 +317,7 @@ static int DefaultImpactFunc( gentity_t*, const trace2_t*, gentity_t* )
 }
 
 // Returns true if the missile has ceased to exist
-static bool MissileImpact( gentity_t *ent, const trace2_t *trace )
+bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 {
 	int       dirAsByte, impactFlags;
 	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
@@ -383,7 +383,7 @@ static bool MissileImpact( gentity_t *ent, const trace2_t *trace )
 		if ( ent->splashDamage )
 		{
 			G_RadiusDamage( trace->endpos, ent->parent,
-			                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
+			                ent->splashDamage * G_MissileTimeSplashDmgMod( ent ),
 			                ent->splashRadius, hitEnt, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
 			                ma->splashMeansOfDeath );
 		}
@@ -437,126 +437,6 @@ static bool MissileImpact( gentity_t *ent, const trace2_t *trace )
 	{
 		return false;
 	}
-}
-
-// ------------
-// GAME methods
-// ------------
-
-void G_ExplodeMissile( gentity_t *ent )
-{
-	if ( ent->s.modelindex == MIS_FIREBOMB )
-	{
-		G_FirebombMissileIgnite( ent );
-	}
-
-	vec3_t dir;
-	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
-
-	glm::vec3 origin = VEC2GLM( ent->r.currentOrigin );
-	SnapVector( origin );
-	G_SetOrigin( ent, origin );
-
-	// we don't have a valid direction, so just point straight up
-	dir[ 0 ] = dir[ 1 ] = 0;
-	dir[ 2 ] = 1;
-
-	// turn the missile into an event carrier
-	ent->s.eType = entityType_t::ET_INVISIBLE;
-	ent->freeAfterEvent = true;
-	G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
-
-	// splash damage
-	if ( ent->splashDamage )
-	{
-		G_RadiusDamage( ent->r.currentOrigin, ent->parent,
-		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
-		                ent->splashRadius, ent, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
-		                ma->splashMeansOfDeath );
-	}
-
-	trap_LinkEntity( ent );
-}
-
-static trace2_t MissileTrace( gentity_t *ent )
-{
-	// get current position
-	vec3_t origin;
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
-
-	// ignore interactions with the missile owner
-	int passent = ent->r.ownerNum;
-
-	trace2_t result;
-
-	if ( ent->pointAgainstWorld )
-	{
-		ASSERT( ent->clipmask & CONTENTS_BODY );
-		trace2_t trWorld = G_Trace2( ent->r.currentOrigin, nullptr, nullptr, origin,
-		                             passent, ent->clipmask & ~CONTENTS_BODY, 0 );
-
-		if ( trWorld.startsolid )
-		{
-			return trWorld;
-		}
-
-		trace2_t trBody = G_Trace2( ent->r.currentOrigin, ent->r.mins, ent->r.maxs, trWorld.endpos,
-		                            passent, CONTENTS_BODY, 0 );
-
-		result = trWorld.fraction < trBody.fraction ? trWorld : trBody;
-	}
-	else
-	{
-		result = G_Trace2( ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
-		                   passent, ent->clipmask, 0 );
-	}
-
-	if ( result.startsolid )
-	{
-		// In this case we have a collision, and so we want a normal vector, but there isn't one
-		// Try to use the missile's direction of travel
-		glm::vec3 dir = VEC2GLM( origin ) - VEC2GLM( ent->r.currentOrigin );
-		if ( VectorNormalize( &dir[ 0 ] ) )
-		{
-			VectorCopy( dir, result.plane.normal );
-		}
-		else
-		{
-			VectorSet( result.plane.normal, 1, 0, 0 );
-		}
-	}
-	return result;
-}
-
-// Move missile along its trajectory and detect collisions.
-// Returns true if the missile has ceased to exist
-bool G_MoveMissile( gentity_t *ent )
-{
-	trace2_t tr = MissileTrace( ent );
-	VectorCopy( tr.endpos, ent->r.currentOrigin );
-
-	if ( tr.fraction < 1.0f )
-	{
-		// Never explode or bounce when hitting the sky.
-		if ( tr.surfaceFlags & SURF_NOIMPACT )
-		{
-			ent->entity->FreeAt( DeferredFreeingComponent::FREE_AFTER_THINKING );
-
-			return true;
-		}
-
-		// Check for impact damage and effects.
-		if ( MissileImpact( ent, &tr ) )
-		{
-			return true;
-		}
-	}
-
-	ent->r.contents = CONTENTS_SOLID; //trick trap_LinkEntity into...
-	trap_LinkEntity( ent );
-	ent->r.contents = 0; //...encoding bbox information
-
-	return false;
 }
 
 void G_SetUpMissile( gentity_t *m, missile_t missile, gentity_t *parent, const vec3_t start, const vec3_t dir )

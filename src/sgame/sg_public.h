@@ -25,6 +25,8 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 #ifndef SG_PUBLIC_H_
 #define SG_PUBLIC_H_
 
+struct trace2_t;
+
 // sg_active.c
 void              G_UnlaggedStore();
 void              G_UnlaggedClear( gentity_t *ent );
@@ -245,8 +247,8 @@ void              G_ShutdownMapRotations();
 bool          G_MapExists( const char *name );
 
 // sg_missile.c
-void              G_ExplodeMissile( gentity_t *ent );
-bool              G_MoveMissile( gentity_t *ent );
+float G_MissileTimeSplashDmgMod( gentity_t *self );
+bool G_MissileImpact( gentity_t *ent, const trace2_t *trace );
 void G_SetUpMissile( gentity_t *m, missile_t missile, gentity_t *parent, const vec3_t start, const vec3_t dir );
 gentity_t *G_SpawnDumbMissile( missile_t missile, gentity_t *parent, const glm::vec3 &start, const glm::vec3 &dir );
 gentity_t         *G_SpawnFire( const vec3_t origin, const vec3_t normal, gentity_t *fireStarter );

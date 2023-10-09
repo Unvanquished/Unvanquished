@@ -54,6 +54,8 @@ class MissileComponent: public MissileComponentBase {
 
 		// ///////////////////// //
 
+		void Explode();
+
 	private:
 		void Move(int timeDelta);
 		void Expire(int timeDelta);

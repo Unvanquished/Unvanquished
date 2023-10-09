@@ -619,114 +619,6 @@ static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 /*
 ======================================================================
 
-HIVE
-
-======================================================================
-*/
-
-/*
-================
-Target tracking for the hive missile.
-================
-*/
-void HiveMissileThink( gentity_t *self )
-{
-	vec3_t    dir;
-	trace_t   tr;
-	gentity_t *ent;
-	int       i;
-	float     d, nearest;
-
-	nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
-
-	//find the closest human
-	for ( i = 0; i < MAX_CLIENTS; i++ )
-	{
-		ent = &g_entities[ i ];
-
-		if ( !ent->inuse ) continue;
-		if ( ent->flags & FL_NOTARGET ) continue;
-
-		if ( ent->client && Entities::IsAlive( ent ) && G_Team( ent ) == TEAM_HUMANS &&
-		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
-		{
-			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
-			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask, 0 );
-
-			if ( tr.entityNum != ENTITYNUM_WORLD )
-			{
-				nearest = d;
-				self->target = ent;
-			}
-		}
-	}
-
-	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, dir );
-	VectorNormalize( dir );
-
-	//change direction towards the player
-	VectorScale( dir, HIVE_SPEED, self->s.pos.trDelta );
-	SnapVector( self->s.pos.trDelta );  // save net bandwidth
-	VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
-	self->s.pos.trTime = level.time;
-}
-
-/*
-======================================================================
-
-ROCKET POD
-
-======================================================================
-*/
-
-void RocketThink( gentity_t *self )
-{
-	vec3_t currentDir, targetDir, newDir, rotAxis;
-	float  rotAngle;
-
-	// Don't turn anymore if the target is dead or gone
-	if ( !self->target )
-	{
-		return;
-	}
-
-	// Calculate current and target direction.
-	VectorNormalize2( self->s.pos.trDelta, currentDir );
-	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, targetDir );
-	VectorNormalize( targetDir );
-
-	// Don't turn anymore after the target was passed.
-	if ( DotProduct( currentDir, targetDir ) < 0 )
-	{
-		return;
-	}
-
-	// Calculate new direction. Use a fixed turning angle.
-	CrossProduct( currentDir, targetDir, rotAxis );
-	rotAngle = RAD2DEG( acosf( DotProduct( currentDir, targetDir ) ) );
-	RotatePointAroundVector( newDir, rotAxis, currentDir,
-	                         Math::Clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
-
-	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
-	if ( !RocketpodComponent::SafeShot(
-			ENTITYNUM_NONE, VEC2GLM( self->r.currentOrigin ), VEC2GLM( newDir )
-		) && RocketpodComponent::SafeShot(
-			ENTITYNUM_NONE, VEC2GLM( self->r.currentOrigin ), VEC2GLM( currentDir )
-		)
-	) {
-		return;
-	}
-
-	// Update trajectory.
-	VectorScale( newDir, BG_Missile( self->s.modelindex )->speed, self->s.pos.trDelta );
-	SnapVector( self->s.pos.trDelta );
-	VectorCopy( self->r.currentOrigin, self->s.pos.trBase ); // TODO: Snap this, too?
-	self->s.pos.trTime = level.time;
-}
-
-/*
-======================================================================
-
 FIREBOMB
 
 ======================================================================
@@ -816,7 +708,7 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 		// explode in front of player when overcharged
 		if ( damage == LCANNON_DAMAGE )
 		{
-			G_ExplodeMissile( m );
+			m->entity->Get<MissileComponent>()->Explode();
 		}
 	}
 	else
