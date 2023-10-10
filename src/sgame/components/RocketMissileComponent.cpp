@@ -75,7 +75,7 @@ void RocketMissileComponent::HandleMissileSteer() {
 	}
 
 	// Update trajectory.
-	VectorScale(newDir, BG_Missile(self->s.modelindex)->speed, self->s.pos.trDelta);
+	VectorScale(newDir, GetMissileComponent().Attributes().speed, self->s.pos.trDelta);
 	SnapVector(self->s.pos.trDelta);
 	VectorCopy(self->r.currentOrigin, self->s.pos.trBase); // TODO: Snap this, too?
 	self->s.pos.trTime = level.time;
