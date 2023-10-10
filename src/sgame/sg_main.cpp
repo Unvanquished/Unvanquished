@@ -61,7 +61,12 @@ bool g_cheats;
 Cvar::Cvar<std::string> g_inactivity("g_inactivity", "seconds of inactivity before a player is removed. append 's' to spec instead of kick", Cvar::NONE, "0");
 Cvar::Cvar<int> g_debugMove("g_debugMove", "sgame pmove debug level", Cvar::NONE, 0);
 Cvar::Cvar<bool> g_debugFire("g_debugFire", "debug ground fire spawning", Cvar::NONE, false);
-Cvar::Cvar<std::string> g_motd("g_motd", "message of the day", Cvar::NONE, "");
+
+Cvar::Callback<Cvar::Cvar<std::string>> g_motd("g_motd", "message of the day", Cvar::NONE, "", 
+                                               [](std::string) {
+                                                	trap_SetConfigstring( CS_MOTD, g_motd.Get().c_str() );  // message of the day
+                                               });
+
 // g_synchronousClients stays as an int for now instead of a bool
 // because there is a place in cl_main.cpp that tries to parse it
 static Cvar::Range<Cvar::Cvar<int>> g_synchronousClients("g_synchronousClients", "calculate player movement once per server frame", Cvar::NONE, 0, 0, 1);

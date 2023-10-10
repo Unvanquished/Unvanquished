@@ -59,7 +59,7 @@ extern Cvar::Cvar<float> g_speed;
 extern Cvar::Cvar<std::string> g_inactivity;
 extern Cvar::Cvar<int> g_debugMove;
 extern Cvar::Cvar<bool> g_debugFire;
-extern Cvar::Cvar<std::string> g_motd;
+extern Cvar::Callback<Cvar::Cvar<std::string>> g_motd;
 extern Cvar::Cvar<int> g_warmup;
 extern Cvar::Cvar<bool> g_doWarmup;
 extern Cvar::Cvar<bool> g_allowVote;
