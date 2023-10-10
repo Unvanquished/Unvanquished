@@ -1521,7 +1521,8 @@ glm::vec3 BotGetIdealAimLocation( gentity_t *self, const botTarget_t &target, in
 				weapon_speed = PRIFLE_SPEED;
 				break;
 			case WP_LUCIFER_CANNON:
-				weapon_speed = LCANNON_SPEED;
+				// FIXME: assumes primary attack (which is slower)
+				weapon_speed = BG_Missile( MIS_LCANNON )->speed;
 				break;
 			}
 			if( weapon_speed )
@@ -2125,7 +2126,7 @@ void BotFireWeaponAI( gentity_t *self )
 					targetMaxHP = static_cast<float>( targetAttr->health );
 				}
 				// TODO: use charging is there are more than one enemies around
-				if ( targetMaxHP <= LCANNON_SECONDARY_DAMAGE || selfHP <= CRITICAL_HEALTH )
+				if ( targetMaxHP <= BG_Missile( MIS_LCANNON2 )->damage || selfHP <= CRITICAL_HEALTH )
 				{
 					BotFireWeapon( WPM_SECONDARY, botCmdBuffer );
 				}

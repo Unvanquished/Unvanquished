@@ -672,8 +672,7 @@ LUCIFER CANNON
 ======================================================================
 */
 
-static gentity_t *FireLcannonHelper( gentity_t *self,
-                                     int damage, int radius, int speed )
+static void FireLcannonPrimary( gentity_t *self, int damage )
 {
 	// TODO: Tidy up this and lcannonFire
 
@@ -684,14 +683,11 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &dir, nullptr, nullptr );
 	glm::vec3 start = G_CalcMuzzlePoint( self, dir );
 
-	if ( self->s.generic1 == WPM_PRIMARY )
 	{
 		missileAttributes_t attr = *BG_Missile( MIS_LCANNON );
 		// some values are set in the code
 		attr.damage = damage;
 		attr.splashDamage = damage / 2;
-		attr.splashRadius = radius;
-		attr.speed = speed;
 
 		m = G_NewEntity( HAS_CBSE );
 		DumbMissileEntity::Params params;
@@ -701,7 +697,7 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 		G_SetUpMissile( m, self, &start[ 0 ], &dir[ 0 ] );
 
 		// pass the missile charge through
-		charge = ( float )( damage - LCANNON_SECONDARY_DAMAGE ) / LCANNON_DAMAGE;
+		charge = ( float )( damage - BG_Missile( MIS_LCANNON2 )->damage ) / LCANNON_DAMAGE;
 
 		m->s.torsoAnim = charge * 255;
 
@@ -716,26 +712,17 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 			m->entity->Get<MissileComponent>()->Explode();
 		}
 	}
-	else
-	{
-		m = G_SpawnDumbMissile( MIS_LCANNON2, self, start, dir );
-	}
-
-	return m;
 }
 
 static void FireLcannon( gentity_t *self, bool secondary )
 {
 	if ( secondary && self->client->ps.weaponCharge <= 0 )
 	{
-		FireLcannonHelper( self, LCANNON_SECONDARY_DAMAGE,
-		                   LCANNON_SECONDARY_RADIUS, LCANNON_SECONDARY_SPEED );
+		FireMissile( self, MIS_LCANNON2 );
 	}
 	else
 	{
-		FireLcannonHelper( self,
-		                   self->client->ps.weaponCharge * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX,
-		                   LCANNON_RADIUS, LCANNON_SPEED );
+		FireLcannonPrimary( self, self->client->ps.weaponCharge * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX );
 	}
 
 	self->client->ps.weaponCharge = 0;
