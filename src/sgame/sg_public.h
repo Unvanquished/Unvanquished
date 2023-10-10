@@ -249,7 +249,7 @@ bool          G_MapExists( const char *name );
 // sg_missile.c
 float G_MissileTimeSplashDmgMod( gentity_t *self );
 bool G_MissileImpact( gentity_t *ent, const trace2_t *trace );
-void G_SetUpMissile( gentity_t *m, missile_t missile, gentity_t *parent, const vec3_t start, const vec3_t dir );
+void G_SetUpMissile( gentity_t *m, gentity_t *parent, const vec3_t start, const vec3_t dir );
 gentity_t *G_SpawnDumbMissile( missile_t missile, gentity_t *parent, const glm::vec3 &start, const glm::vec3 &dir );
 gentity_t         *G_SpawnFire( const vec3_t origin, const vec3_t normal, gentity_t *fireStarter );
 

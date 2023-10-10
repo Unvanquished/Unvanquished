@@ -320,7 +320,7 @@ static int DefaultImpactFunc( gentity_t*, const trace2_t*, gentity_t* )
 bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 {
 	int       dirAsByte, impactFlags;
-	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
+	const missileAttributes_t *ma = &ent->entity->Get<MissileComponent>()->Attributes();
 	gentity_t *hitEnt   = &g_entities[ trace->entityNum ];
 	gentity_t *attacker = &g_entities[ ent->r.ownerNum ];
 
@@ -359,7 +359,7 @@ bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 	// Deal impact damage.
 	if ( !( impactFlags & MIF_NO_DAMAGE ) )
 	{
-		if ( ent->damage && ( Entities::IsAlive( hitEnt ) || ( hitEnt && hitEnt->s.eType == entityType_t::ET_MOVER ) ) )
+		if ( ma->damage && ( Entities::IsAlive( hitEnt ) || ( hitEnt && hitEnt->s.eType == entityType_t::ET_MOVER ) ) )
 		{
 			vec3_t dir;
 
@@ -374,17 +374,17 @@ bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 			if ( !ma->doLocationalDamage ) dflags |= DAMAGE_NO_LOCDAMAGE;
 			if ( ma->doKnockback )         dflags |= DAMAGE_KNOCKBACK;
 
-			hitEnt->Damage(ent->damage * MissileTimeDmgMod(ent), attacker,
+			hitEnt->Damage(ma->damage * MissileTimeDmgMod(ent), attacker,
 			                       VEC2GLM( trace->endpos ), VEC2GLM( dir ), dflags,
 			                       ma->meansOfDeath);
 		}
 
 		// splash damage (doesn't apply to person directly hit)
-		if ( ent->splashDamage )
+		if ( ma->splashDamage )
 		{
 			G_RadiusDamage( trace->endpos, ent->parent,
-			                ent->splashDamage * G_MissileTimeSplashDmgMod( ent ),
-			                ent->splashRadius, hitEnt, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
+			                ma->splashDamage * G_MissileTimeSplashDmgMod( ent ),
+			                ma->splashRadius, hitEnt, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
 			                ma->splashMeansOfDeath );
 		}
 	}
@@ -439,25 +439,20 @@ bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 	}
 }
 
-void G_SetUpMissile( gentity_t *m, missile_t missile, gentity_t *parent, const vec3_t start, const vec3_t dir )
+void G_SetUpMissile( gentity_t *m, gentity_t *parent, const vec3_t start, const vec3_t dir )
 {
-	const missileAttributes_t *ma;
 	vec3_t                    velocity;
-
-	ma = BG_Missile( missile );
+	const missileAttributes_t *ma = &m->entity->Get<MissileComponent>()->Attributes();
 
 	// generic
 	m->s.eType             = entityType_t::ET_MISSILE;
-	m->s.modelindex        = missile;
+	m->s.modelindex        = ma->number;
 	m->r.ownerNum          = parent->num();
 	m->parent              = parent;
 
 	// from attribute config file
 	m->s.weapon            = ma->number;
 	m->classname           = ma->name;
-	m->damage              = ma->damage;
-	m->splashDamage        = ma->splashDamage;
-	m->splashRadius        = ma->splashRadius;
 	m->clipmask            = ma->clipmask;
 	BG_MissileBounds( ma, m->r.mins, m->r.maxs );
 	m->s.eFlags            = ma->flags;
@@ -499,7 +494,7 @@ gentity_t *G_SpawnDumbMissile( missile_t missile, gentity_t *parent, const glm::
 	params.oldEnt = m;
 	params.Missile_attributes = BG_Missile( missile );
 	m->entity = new DumbMissileEntity{ params };
-	G_SetUpMissile( m, missile, parent, &start[ 0 ], &dir[ 0 ] );
+	G_SetUpMissile( m, parent, &start[ 0 ], &dir[ 0 ] );
 	return m;
 }
 

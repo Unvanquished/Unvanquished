@@ -686,14 +686,19 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 
 	if ( self->s.generic1 == WPM_PRIMARY )
 	{
-		m = G_SpawnDumbMissile( MIS_LCANNON, self, start, dir );
-
+		missileAttributes_t attr = *BG_Missile( MIS_LCANNON );
 		// some values are set in the code
-		m->damage       = damage;
-		m->splashDamage = damage / 2;
-		m->splashRadius = radius;
-		VectorScale( dir, speed, m->s.pos.trDelta );
-		SnapVector( m->s.pos.trDelta ); // save net bandwidth
+		attr.damage = damage;
+		attr.splashDamage = damage / 2;
+		attr.splashRadius = radius;
+		attr.speed = speed;
+
+		m = G_NewEntity( HAS_CBSE );
+		DumbMissileEntity::Params params;
+		params.oldEnt = m;
+		params.Missile_attributes = &attr;
+		m->entity = new DumbMissileEntity{ params };
+		G_SetUpMissile( m, self, &start[ 0 ], &dir[ 0 ] );
 
 		// pass the missile charge through
 		charge = ( float )( damage - LCANNON_SECONDARY_DAMAGE ) / LCANNON_DAMAGE;

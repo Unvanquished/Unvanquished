@@ -1429,6 +1429,8 @@ struct upgradeAttributes_t
 };
 
 // missile record
+// MIS_LCANNON overrides some values at runtime, so you can't assume BG_Missile(MIS_LCANNON)
+// is accurate for it
 struct missileAttributes_t
 {
 	// attributes

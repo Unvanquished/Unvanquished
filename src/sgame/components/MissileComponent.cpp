@@ -38,13 +38,13 @@ Maryland 20850 USA.
 
 MissileComponent::MissileComponent(Entity& entity, const missileAttributes_t* attributes, ThinkingComponent& r_ThinkingComponent)
 	: MissileComponentBase(entity, attributes, r_ThinkingComponent),
-	ma_(attributes),
+	ma_(*attributes),
 	dead_(false)
 {
 	REGISTER_THINKER(Move, ThinkingComponent::SCHEDULER_BEFORE, 0); // every frame
-	REGISTER_THINKER(Expire, ThinkingComponent::SCHEDULER_AFTER, ma_->lifetime);
-	if (ma_->steeringPeriod) {
-		REGISTER_THINKER(Steer, ThinkingComponent::SCHEDULER_AVERAGE, ma_->steeringPeriod);
+	REGISTER_THINKER(Expire, ThinkingComponent::SCHEDULER_AFTER, ma_.lifetime);
+	if (ma_.steeringPeriod) {
+		REGISTER_THINKER(Steer, ThinkingComponent::SCHEDULER_AVERAGE, ma_.steeringPeriod);
 	}
 }
 
@@ -54,7 +54,7 @@ void MissileComponent::Expire(int)
 
 	dead_ = true;
 
-	if (ma_->lifeEndExplode) {
+	if (ma_.lifeEndExplode) {
 		// turns the entity into an event and frees it later
 		// FIXME: things that aren't grenades probably shouldn't have this enabled (though it rarely happens anyway)
 		Explode();
@@ -63,7 +63,7 @@ void MissileComponent::Expire(int)
 	}
 }
 
-static trace2_t MissileTrace(const missileAttributes_t& ma, gentity_t* ent)
+static trace2_t MissileTrace(gentity_t* ent)
 {
 	// get current position
 	vec3_t origin;
@@ -72,6 +72,7 @@ static trace2_t MissileTrace(const missileAttributes_t& ma, gentity_t* ent)
 	// ignore interactions with the missile owner
 	int passent = ent->r.ownerNum;
 
+	const missileAttributes_t& ma = ent->entity->Get<MissileComponent>()->Attributes();
 	trace2_t result;
 
 	if (ma.pointAgainstWorld)
@@ -115,9 +116,9 @@ static trace2_t MissileTrace(const missileAttributes_t& ma, gentity_t* ent)
 
 // Move missile along its trajectory and detect collisions.
 // Returns true if the missile has ceased to exist
-static bool MoveMissile(const missileAttributes_t& ma, gentity_t* ent)
+static bool MoveMissile(gentity_t* ent)
 {
-	trace2_t tr = MissileTrace(ma, ent);
+	trace2_t tr = MissileTrace(ent);
 	VectorCopy(tr.endpos, ent->r.currentOrigin);
 
 	if (tr.fraction < 1.0f)
@@ -148,7 +149,7 @@ void MissileComponent::Move(int)
 {
 	if (dead_) return;
 
-	dead_ = MoveMissile(*ma_, entity.oldEnt);
+	dead_ = MoveMissile(entity.oldEnt);
 }
 
 void MissileComponent::Steer(int)
@@ -170,7 +171,6 @@ void MissileComponent::Explode()
 	}
 
 	vec3_t dir;
-	const missileAttributes_t* ma = BG_Missile(ent->s.modelindex);
 
 	glm::vec3 origin = VEC2GLM(ent->r.currentOrigin);
 	SnapVector(origin);
@@ -186,12 +186,12 @@ void MissileComponent::Explode()
 	G_AddEvent(ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte(dir));
 
 	// splash damage
-	if (ent->splashDamage)
+	if (ma_.splashDamage)
 	{
 		G_RadiusDamage(ent->r.currentOrigin, ent->parent,
-			ent->splashDamage * G_MissileTimeSplashDmgMod(ent),
-			ent->splashRadius, ent, (ma->doKnockback ? DAMAGE_KNOCKBACK : 0),
-			ma->splashMeansOfDeath);
+			ma_.splashDamage * G_MissileTimeSplashDmgMod(ent),
+			ma_.splashRadius, ent, (ma_.doKnockback ? DAMAGE_KNOCKBACK : 0),
+			ma_.splashMeansOfDeath);
 	}
 
 	trap_LinkEntity(ent);
