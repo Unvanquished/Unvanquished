@@ -367,11 +367,6 @@ extern float FLAMER_IGNITE_SPLCHANCE;
 extern int   PRIFLE_SPEED;
 
 extern int   LCANNON_DAMAGE;
-extern int   LCANNON_RADIUS;
-extern int   LCANNON_SECONDARY_DAMAGE;
-extern int   LCANNON_SECONDARY_RADIUS;
-extern int   LCANNON_SECONDARY_SPEED;
-extern int   LCANNON_SPEED;
 extern int   LCANNON_CHARGE_TIME_MAX;
 extern int   LCANNON_CHARGE_TIME_MIN;
 extern int   LCANNON_CHARGE_TIME_WARN;

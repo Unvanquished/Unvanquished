@@ -159,11 +159,6 @@ float FLAMER_IGNITE_SPLCHANCE;
 int   PRIFLE_SPEED;
 
 int   LCANNON_DAMAGE;
-int   LCANNON_RADIUS;
-int   LCANNON_SECONDARY_DAMAGE;
-int   LCANNON_SECONDARY_RADIUS;
-int   LCANNON_SECONDARY_SPEED;
-int   LCANNON_SPEED;
 int   LCANNON_CHARGE_TIME_MAX;
 int   LCANNON_CHARGE_TIME_MIN;
 int   LCANNON_CHARGE_TIME_WARN;
@@ -200,11 +195,6 @@ static configVar_t bg_configVars[] =
 	{"w_lcannon_chargeTimeMin", INTEGER, false, &LCANNON_CHARGE_TIME_MIN },
 	{"w_lcannon_chargeTimeWarn", INTEGER, false, &LCANNON_CHARGE_TIME_WARN },
 	{"w_lcannon_damage", INTEGER, false, &LCANNON_DAMAGE },
-	{"w_lcannon_radius", INTEGER, false, &LCANNON_RADIUS },
-	{"w_lcannon_secondaryDamage", INTEGER, false, &LCANNON_SECONDARY_DAMAGE },
-	{"w_lcannon_secondaryRadius", INTEGER, false, &LCANNON_SECONDARY_RADIUS },
-	{"w_lcannon_secondarySpeed", INTEGER, false, &LCANNON_SECONDARY_SPEED },
-	{"w_lcannon_speed", INTEGER, false, &LCANNON_SPEED },
 
 	{"w_level0_biteDmg", INTEGER, false, &LEVEL0_BITE_DMG},
 	{"w_level0_biteRange", FLOAT, false, &LEVEL0_BITE_RANGE},
