@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_spawn.h"
 
+#include <glm/gtx/string_cast.hpp>
+
 #define MAX_SPAWN_VARS       64
 #define MAX_SPAWN_VARS_CHARS 4096
 
@@ -483,9 +485,16 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 			{
 				if ( g_debugEntities.Get() > -2 )
 				{
-					Log::Warn("Entity %s needs to call or target to something — Removing it.", etos( entity ) );
+					glm::vec3 mins = VEC2GLM( entity->r.mins );
+					glm::vec3 maxs = VEC2GLM( entity->r.maxs );
+					glm::vec3 pos  = VEC2GLM( entity->s.origin );
+					Log::Warn("Entity %s needs to call or target to something — Removing it. Ent at: %s, mins=%s, maxs=%s", etos( entity )
+							, glm::to_string( pos )
+							, glm::to_string( mins )
+							, glm::to_string( maxs )
+							);
 				}
-				return false;
+				return true;
 			}
 			break;
 		case CHAIN_TARGET:

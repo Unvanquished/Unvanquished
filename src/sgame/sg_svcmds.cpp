@@ -142,10 +142,17 @@ static void Svcmd_EntityShow_f()
 
 	Log::Notice( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
 	Log::Notice( "^5#%3i^*: %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
+	//FIXME: this likely does not works. At all.
 	if (IS_NON_NULL_VEC3(selection->s.origin))
 	{
-		Log::Notice("%26s", glm::to_string( VEC2GLM( selection->s.origin ) ).c_str() );
+		Log::Notice("%26s", glm::to_string( VEC2GLM( selection->s.origin ) ) );
 	}
+	glm::vec3 mins = VEC2GLM( selection->r.mins );
+	glm::vec3 maxs = VEC2GLM( selection->r.maxs );
+	Log::Notice("%26s", glm::to_string( mins ) );
+	Log::Notice("%26s", glm::to_string( maxs ) );
+	Log::Notice("%26s", glm::to_string( ( mins + maxs ) / 2.f ) );
+
 	Log::Notice( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼" );
 	Log::Notice( "Classname: ^5%s^*", selection->classname );
 	Log::Notice( "Capabilities:%s%s%s%s%s%s%s",
