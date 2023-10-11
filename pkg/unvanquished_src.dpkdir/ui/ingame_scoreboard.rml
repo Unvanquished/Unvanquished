@@ -6,7 +6,7 @@
 		body {
 			/* TODO: Use a relative system, once tables are implemented */
 			width: 50em;
-			height: 40em;
+			height: 43.2em;
 			margin: auto;
 			font-size: 13.2dp;
 
@@ -17,13 +17,13 @@
 			display: block;
 			width: 100%;
 			position: absolute;
-			top: 0.7em;
+			top: 1.8em;
 			text-align: center;
-			font-size: 1.3em;
+			font-size: 1.75em;
+			color: #FFFFFF;
 		}
 
 		half {
-			margin-top: 1.5em;
 			display: block;
 			width: 50%;
 			float: left;
@@ -61,7 +61,6 @@
 			font-family: Dejavu Sans;
 			font-weight: bold;
 			text-align: center;
-			color: #666666;
 			padding-top: 0.5em;
 			clear: both;
 		}
@@ -69,13 +68,16 @@
 		infoarea {
 			display: block;
 			margin: 1em;
-			width: 100%;
 			padding: 0.5em;
 		}
 
 		infopiece {
 			display: block;
 			float: left;
+		}
+
+		hostname {
+			font-size: 1.4em;
 		}
 
 		datagridrow {
@@ -152,10 +154,12 @@
 </head>
 
 <body  id="scoreboard">
+	<infopiece style="text-align:center; width: 100%; padding-top: 1em;"><hostname/></infopiece>
+
 	<inlinecvar cvar="ui_winner" class="winner" />
 
 	<half>
-		<teamname><translate>Aliens</translate> (<playerCount team="aliens"/>)</teamname>
+		<teamname><span style="color: #FF0033"><translate>Aliens</translate></span> (<playerCount team="aliens"/>)</teamname>
 		<teambox class="alien">
 			<datagrid source="playerList.aliens" id="aliens">
 				<col fields="num" formatter="GearOrReady"></col>
@@ -168,7 +172,7 @@
 	</half>
 
 	<half>
-		<teamname><translate>Humans</translate> (<playerCount team="humans"/>)</teamname>
+		<teamname><span style="color: #007FFF"><translate>Humans</translate></span> (<playerCount team="humans"/>)</teamname>
 		<teambox class="human">
 			<datagrid source="playerList.humans" id="humans">
 				<col fields="num" formatter="GearOrReady"></col>
@@ -186,9 +190,9 @@
 	</teambox>
 
 	<infoarea>
-		<infopiece style="text-align: left; width: 25em;"><hostname/></infopiece>
-		<infopiece style="text-align: center; width: 15em;"><translate>Map:</translate>&nbsp;<levelname/></infopiece>
-		<infopiece style="text-align: right; width: 7em;"><translate>Time:</translate>&nbsp;<timer/></infopiece>
+		<infopiece style="float: left; text-align: left; width: auto; margin-left: 5px;"><translate>Map:</translate>&nbsp;<levelname/></infopiece>
+		<infopiece style="float: right; text-align: right; width: auto; margin-right: 5px;"><translate>Game time:</translate>&nbsp;<timer/></infopiece>
+		<infopiece style="text-align: center; width: 100%; padding-top: 0.5em;"><motd/></infopiece>
 	</infoarea>
 
 </body>
