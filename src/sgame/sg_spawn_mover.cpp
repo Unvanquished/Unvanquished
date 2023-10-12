@@ -132,13 +132,13 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 c
 	}
 
 	pushed_p->ent = check;
-	VectorCopy( check->s.pos.trBase, pushed_p->origin );
-	VectorCopy( check->s.apos.trBase, pushed_p->angles );
+	pushed_p->origin = VEC2GLM( check->s.pos.trBase );
+	pushed_p->angles = VEC2GLM( check->s.apos.trBase );
 
 	if ( check->client )
 	{
 		pushed_p->deltayaw = check->client->ps.delta_angles[ YAW ];
-		VectorCopy( check->client->ps.origin, pushed_p->origin );
+		pushed_p->origin = VEC2GLM( check->client->ps.origin );
 	}
 
 	pushed_p++;
@@ -188,15 +188,8 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 c
 	if ( !block )
 	{
 		// pushed ok
-		if ( check->client )
-		{
-			VectorCopy( check->client->ps.origin, check->r.currentOrigin );
-		}
-		else
-		{
-			VectorCopy( check->s.pos.trBase, check->r.currentOrigin );
-		}
-
+		float* src = check->client ? check->client->ps.origin : check->s.pos.trBase;
+		VectorCopy( src, check->r.currentOrigin );
 		G_CM_LinkEntity( check );
 		return true;
 	}
@@ -2700,7 +2693,7 @@ void SP_func_spawn( gentity_t *self )
 	self->s.eType = entityType_t::ET_MOVER;
 	self->r.contents |= CONTENTS_MOVER;
 	self->mapEntity.moverState = MOVER_POS1;
-	VectorCopy( self->s.origin, self->mapEntity.restingPosition );
+	self->mapEntity.restingPosition = VEC2GLM( self->s.origin );
 
 	if ( self->mapEntity.model.c_str()[0] == '*' )
 	{
@@ -2781,7 +2774,7 @@ void SP_func_destructable( gentity_t *self )
 	self->s.eType = entityType_t::ET_MOVER;
 	self->r.contents |= CONTENTS_MOVER;
 	self->mapEntity.moverState = MOVER_POS1;
-	VectorCopy( self->s.origin, self->mapEntity.restingPosition );
+	self->mapEntity.restingPosition = VEC2GLM( self->s.origin );
 
 	if ( self->mapEntity.model[0] == '*' )
 	{
