@@ -471,9 +471,11 @@ static bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, g
 
 static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 {
+	bool hasTarget = entity->callTargetCount || ( entity->shaderKey && entity->shaderReplacement );
+
 	switch (entityClass->chainType) {
 		case CHAIN_ACTIVE:
-			if(!entity->callTargetCount) //check target usage for backward compatibility
+			if ( !hasTarget ) //check target usage for backward compatibility
 			{
 				if( g_debugEntities.Get() > -2 )
 					Log::Warn("Entity %s needs to call or target to something — Removing it.", etos( entity ) );
@@ -490,8 +492,8 @@ static bool G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *e
 			}
 			break;
 		case CHAIN_RELAY:
-			if((!entity->callTargetCount) //check target usage for backward compatibility
-					|| !entity->names[0])
+			if ( !hasTarget //check target usage for backward compatibility
+					|| !entity->names[0] )
 			{
 				if( g_debugEntities.Get() > -2 )
 					Log::Warn("Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.", etos( entity ) );
