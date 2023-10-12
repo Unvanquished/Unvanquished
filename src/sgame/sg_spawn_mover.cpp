@@ -76,7 +76,7 @@ G_TestEntityPosition
 
 ============
 */
-static gentity_t *G_TestEntityPosition( gentity_t *ent )
+static gentity_t *G_TestEntityPosition( gentity_t const *ent )
 {
 	trace_t tr;
 
@@ -89,20 +89,13 @@ static gentity_t *G_TestEntityPosition( gentity_t *ent )
 		G_CM_Trace( &tr, VEC2GLM( ent->s.pos.trBase ), VEC2GLM( ent->r.mins ), VEC2GLM( ent->r.maxs ), VEC2GLM( ent->s.pos.trBase ), ent->num(), ent->clipmask, 0, traceType_t::TT_AABB );
 	}
 
-	if ( tr.startsolid )
-	{
-		return &g_entities[ tr.entityNum ];
-	}
-
-	return nullptr;
+	return tr.startsolid ? &g_entities[ tr.entityNum ] : nullptr;
 }
 
 static bool G_SpawnVector( const char *key, const char *defaultString, glm::vec3& out )
 {
 	const char     *s;
-	bool present;
-
-	present = G_SpawnString( key, defaultString, &s );
+	bool present = G_SpawnString( key, defaultString, &s );
 	sscanf( s, "%f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ] );
 	return present;
 }
@@ -159,7 +152,6 @@ Returns false if the move is blocked
 static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 const& move, glm::vec3 const& amove )
 {
 	vec3_t    matrix[ 3 ], transpose[ 3 ];
-	gentity_t *block;
 
 	// EF_MOVER_STOP will just stop when contacting another entity
 	// instead of pushing it, but entities can still ride on top of it
@@ -230,7 +222,7 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 c
 		check->s.groundEntityNum = ENTITYNUM_NONE;
 	}
 
-	block = G_TestEntityPosition( check );
+	gentity_t* block = G_TestEntityPosition( check );
 
 	if ( !block )
 	{
@@ -283,11 +275,7 @@ If false is returned, *obstacle will be the blocking entity
 */
 static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 const& amove, gentity_t **obstacle )
 {
-	int       i, e;
-	gentity_t *check;
-	pushed_t  *p;
 	int       entityList[ MAX_GENTITIES ];
-	int       listedEntities;
 	glm::vec3 mins, maxs;
 	glm::vec3 totalMins, totalMaxs;
 
@@ -316,7 +304,7 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 		totalMins = VEC2GLM( pusher->r.absmin );
 		totalMaxs = VEC2GLM( pusher->r.absmax );
 
-		for ( i = 0; i < 3; i++ )
+		for ( int i = 0; i < 3; i++ )
 		{
 			if ( move[ i ] > 0 )
 			{
@@ -332,7 +320,7 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 	// unlink the pusher so we don't get it in the entityList
 	G_CM_UnlinkEntity( pusher );
 
-	listedEntities = G_CM_AreaEntities( totalMins, totalMaxs, entityList, MAX_GENTITIES );
+	int listedEntities = G_CM_AreaEntities( totalMins, totalMaxs, entityList, MAX_GENTITIES );
 
 	// move the pusher to its final position
 	VectorAdd( pusher->r.currentOrigin, move, pusher->r.currentOrigin );
@@ -340,9 +328,9 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 	G_CM_LinkEntity( pusher );
 
 	// see if any solid entities are inside the final position
-	for ( e = 0; e < listedEntities; e++ )
+	for ( int e = 0; e < listedEntities; e++ )
 	{
-		check = &g_entities[ entityList[ e ] ];
+		gentity_t *check = &g_entities[ entityList[ e ] ];
 
 		// only push items and players
 		if ( check->s.eType != entityType_t::ET_ITEM && check->s.eType != entityType_t::ET_BUILDABLE &&
@@ -395,7 +383,7 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 		// move back any entities we already moved
 		// go backwards, so if the same entity was pushed
 		// twice, it goes back to the original position
-		for ( p = pushed_p - 1; p >= pushed; p-- )
+		for ( pushed_t* p = pushed_p - 1; p >= pushed; p-- )
 		{
 			VectorCopy( p->origin, p->ent->s.pos.trBase );
 			VectorCopy( p->angles, p->ent->s.apos.trBase );
@@ -422,16 +410,15 @@ G_MoverGroup
 */
 static void G_MoverGroup( gentity_t *ent )
 {
-	gentity_t *part, *obstacle;
-
-	obstacle = nullptr;
+	gentity_t *obstacle = nullptr;
 
 	// make sure all group slaves can move before commiting
 	// any moves or calling any think functions
 	// if the move is blocked, all moved objects will be backed out
 	pushed_p = pushed;
 
-	for ( part = ent; part; part = part->mapEntity.groupChain )
+	gentity_t* part = ent;
+	for ( ; part; part = part->mapEntity.groupChain )
 	{
 		if ( part->s.pos.trType == trType_t::TR_STATIONARY &&
 		     part->s.apos.trType == trType_t::TR_STATIONARY )
@@ -543,36 +530,9 @@ SetMoverState
 ===============
 */
 
-// most elevators are *not* func_door, so that broken.
-// Some (one on forlorn) is a func_door, with a "targetname",
-// and I suspect this is what makes it different from doors.
-// That distinction means that, doors with a targetname will
-// break for bots.
-// Also, for now, doors without targetname work because bots
-// just walk to kiss (or worse!) them, until they open wide
-// for them to enter.
-// The correct solution here would be to generate navcons
-// for all movers, with labels indicating the bot how to
-// handle the situation correctly (including waiting patiently
-// that elevator reached desired navmesh).
-// Also, this code is currently seemlingly inverted.
-bool IsDoor( const gentity_t *ent )
+static bool IsDoor( const gentity_t *ent )
 {
-	const char * funcs[] =
-	{
-		"func_door",
-		"func_door_model",
-		"func_door_rotating",
-	};
-
-	for ( const char* fn : funcs )
-	{
-		if ( !Q_stricmp( fn, ent->classname.c_str() ) )
-		{
-			return true;
-		}
-	}
-	return false;
+	return 0 == Q_strnicmp( "func_door", ent->classname.c_str(), strlen( "func_door" ) );
 }
 
 // a mover is automatic if:
@@ -584,31 +544,19 @@ bool IsDoor( const gentity_t *ent )
 // TODO: sometimes targetName or aliases are abused by
 // mappers, especially the "name" alias. This break bots
 // for now, but not sure how this should be handled.
-bool IsAutomaticMover( const gentity_t *ent )
+static bool IsAutomaticMover( const gentity_t *ent )
 {
-	if ( ent->mapEntity.config.health )
-	{
-		return false;
-	}
-
-	for ( std::string const& name : ent->mapEntity.names )
-	{
-		if ( name.size() )
-		{
-			return false;
-		}
-	}
-
-	if ( ent->flags & FL_GROUPSLAVE )
-	{
-		return IsAutomaticMover( ent->mapEntity.groupMaster );
-	}
-	return true;
+	return true
+		&& ent->mapEntity.config.health == 0
+		&& ent->mapEntity.names[0].empty()
+		// is group master or group master is auto
+		&& ( ( ent->flags & FL_GROUPSLAVE ) == 0 || IsAutomaticMover( ent->mapEntity.groupMaster ) )
+		;
 }
 
 // This function adds obstacles for doors that the bot can't open,
 // that is doors that are not automatic, or doors that are already opened.
-void BotHandleDoor( gentity_t *ent, moverState_t moverState )
+static void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 {
 	if ( !IsDoor( ent ) || IsAutomaticMover( ent ) )
 	{
@@ -616,6 +564,7 @@ void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 	}
 	glm::vec3 mins = VEC2GLM( ent->r.absmin );
 	glm::vec3 maxs = VEC2GLM( ent->r.absmax );
+	float smallObstacle = g_bot_ignoreSmallObstacles.Get();
 	// this is a hack that allows to ignore "irrelevant" doors,
 	// implemented for nova's electric fence support
 	switch ( moverState )
@@ -624,13 +573,13 @@ void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 		case MOVER_POS2:
 		case ROTATOR_POS1:
 		case ROTATOR_POS2:
-			if ( std::abs( ent->mapEntity.activatedPosition[0] - ent->mapEntity.restingPosition[0] ) > g_bot_ignoreSmallObstacles.Get()
-					|| std::abs( ent->mapEntity.activatedPosition[1] - ent->mapEntity.restingPosition[1] ) > g_bot_ignoreSmallObstacles.Get()
-					|| std::abs( ent->mapEntity.activatedPosition[2] - ent->mapEntity.restingPosition[2] ) > g_bot_ignoreSmallObstacles.Get()
-					)
 			{
-				G_BotRemoveObstacle( ent->num() );
-				G_BotAddObstacle( mins, maxs, ent->num() );
+				glm::vec3 absdiff = glm::abs( ent->mapEntity.activatedPosition - ent->mapEntity.restingPosition );
+				if ( glm::any( glm::greaterThan( absdiff, glm::vec3( smallObstacle ) ) ) )
+				{
+					G_BotRemoveObstacle( ent->num() );
+					G_BotAddObstacle( mins, maxs, ent->num() );
+				}
 			}
 			break;
 
@@ -744,9 +693,7 @@ All entities in a mover group will move from pos1 to pos2
 */
 static void MatchGroup( gentity_t *groupLeader, int moverState, int time )
 {
-	gentity_t *slave;
-
-	for ( slave = groupLeader; slave; slave = slave->mapEntity.groupChain )
+	for ( gentity_t* slave = groupLeader; slave; slave = slave->mapEntity.groupChain )
 	{
 		SetMoverState( slave, (moverState_t) moverState, time );
 	}
@@ -759,14 +706,7 @@ MasterOf
 */
 static gentity_t *MasterOf( gentity_t *ent )
 {
-	if ( ent->mapEntity.groupMaster )
-	{
-		return ent->mapEntity.groupMaster;
-	}
-	else
-	{
-		return ent;
-	}
+	return ent->mapEntity.groupMaster ? ent->mapEntity.groupMaster : ent;
 }
 
 /*
@@ -850,20 +790,17 @@ Think_CloseModelDoor
 static void Think_CloseModelDoor( gentity_t *ent )
 {
 	int       entityList[ MAX_GENTITIES ];
-	int       numEntities, i;
 	gentity_t *clipBrush = ent->mapEntity.clipBrush;
-	gentity_t *check;
-	bool  canClose = true;
 
-	numEntities = G_CM_AreaEntities( VEC2GLM( clipBrush->r.absmin ), VEC2GLM( clipBrush->r.absmax ), entityList, MAX_GENTITIES );
+	int numEntities = G_CM_AreaEntities( VEC2GLM( clipBrush->r.absmin ), VEC2GLM( clipBrush->r.absmax ), entityList, MAX_GENTITIES );
 
 	//set brush solid
 	G_CM_LinkEntity( ent->mapEntity.clipBrush );
 
 	//see if any solid entities are inside the door
-	for ( i = 0; i < numEntities; i++ )
+	for ( int i = 0; i < numEntities; i++ )
 	{
-		check = &g_entities[ entityList[ i ] ];
+		gentity_t *check = &g_entities[ entityList[ i ] ];
 
 		//only test items and players
 		if ( check->s.eType != entityType_t::ET_ITEM && check->s.eType != entityType_t::ET_BUILDABLE &&
@@ -876,18 +813,13 @@ static void Think_CloseModelDoor( gentity_t *ent )
 		//test is this entity collides with this door
 		if ( G_TestEntityPosition( check ) )
 		{
-			canClose = false;
+			//something is blocking this door
+			//set brush non-solid
+			G_CM_UnlinkEntity( ent->mapEntity.clipBrush );
+
+			ent->nextthink = level.time + ent->mapEntity.config.wait.time;
+			return;
 		}
-	}
-
-	//something is blocking this door
-	if ( !canClose )
-	{
-		//set brush non-solid
-		G_CM_UnlinkEntity( ent->mapEntity.clipBrush );
-
-		ent->nextthink = level.time + ent->mapEntity.config.wait.time;
-		return;
 	}
 
 	//toggle door state
@@ -1004,7 +936,7 @@ static void BinaryMover_reached( gentity_t *ent )
 
 		// return to apos1 after a delay
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
+		master->nextthink = std::max( master->nextthink, level.time + static_cast<int>( ent->mapEntity.config.wait.time ) );
 
 		// fire targets
 		if ( !ent->activator )
@@ -1343,24 +1275,9 @@ static void SP_ConstantLightField( gentity_t *self )
 	if ( lightSet || colorSet )
 	{
 		glm::ivec3 rgb( color * 255.f );
-
-		if ( rgb.r > 255 )
-		{
-			rgb.r = 255;
-		}
-
-		if ( rgb.g > 255 )
-		{
-			rgb.g = 255;
-		}
-
-		if ( rgb.b > 255 )
-		{
-			rgb.b = 255;
-		}
+		rgb = glm::clamp( rgb, 0, 255 );
 
 		int i = light / 4;
-
 		if ( i > 255 )
 		{
 			i = 255;
@@ -1505,7 +1422,7 @@ static void func_door_block( gentity_t *self, gentity_t *other )
 
 	if ( self->damage )
 	{
-		other->Damage((float)self->damage, self, Util::nullopt, Util::nullopt, 0, MOD_CRUSH);
+		other->Damage( static_cast<float>( self->damage ), self, Util::nullopt, Util::nullopt, 0, MOD_CRUSH);
 	}
 
 	if ( self->mapEntity.spawnflags & 4 )
@@ -1524,15 +1441,13 @@ Touch_DoorTrigger
 */
 static void door_trigger_touch( gentity_t *self, gentity_t *other, trace_t* )
 {
-	moverState_t groupState;
-
 	//buildables don't trigger movers
 	if ( other->s.eType == entityType_t::ET_BUILDABLE )
 	{
 		return;
 	}
 
-	groupState = GetMoverGroupState( self->parent );
+	moverState_t groupState = GetMoverGroupState( self->parent );
 
 	if ( groupState != MOVER_1TO2 )
 	{
@@ -1797,7 +1712,7 @@ void SP_func_door_rotating( gentity_t *self )
 
 	G_SpawnFloat( "rotatorAngle", "0", &self->mapEntity.rotatorAngle );
 
-	if ( !self->mapEntity.rotatorAngle )
+	if ( self->mapEntity.rotatorAngle == 0.f )
 	{
 		self->mapEntity.rotatorAngle = 90.0;
 	}
@@ -1859,9 +1774,6 @@ static void func_door_model_reset( gentity_t *self )
 
 void SP_func_door_model( gentity_t *self )
 {
-	const char      *sound;
-	gentity_t *clipBrush;
-
 	if( !self->mapEntity.sound1to2 )
 	{
 		self->mapEntity.sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt" );
@@ -1898,7 +1810,7 @@ void SP_func_door_model( gentity_t *self )
 	}
 
 	//brush model
-	clipBrush = self->mapEntity.clipBrush = G_NewEntity( NO_CBSE );
+	gentity_t* clipBrush = self->mapEntity.clipBrush = G_NewEntity( NO_CBSE );
 	clipBrush->mapEntity.model = self->mapEntity.model;
 	G_CM_SetBrushModel( clipBrush, clipBrush->mapEntity.model );
 	clipBrush->s.eType = entityType_t::ET_INVISIBLE;
@@ -1929,6 +1841,7 @@ void SP_func_door_model( gentity_t *self )
 	}
 
 	// if the "noise" key is set, use a constant looping sound when moving
+	const char* sound;
 	if ( G_SpawnString( "noise", "", &sound ) )
 	{
 		self->mapEntity.soundIndex = G_SoundIndex( sound );
@@ -1952,8 +1865,8 @@ void SP_func_door_model( gentity_t *self )
 	self->s.apos.trDuration = 0;
 	VectorClear( self->s.apos.trDelta );
 
-	self->s.misc = ( int ) self->animation[ 0 ]; //first frame
-	self->s.weapon = abs( ( int ) self->animation[ 1 ] );  //number of frames
+	self->s.misc = static_cast<int>( self->animation[ 0 ] ); //first frame
+	self->s.weapon = abs( static_cast<int>( self->animation[ 1 ] ) );  //number of frames
 
 	//must be at least one frame -- mapper has forgotten animation key
 	if ( self->s.weapon == 0 )
@@ -2045,11 +1958,9 @@ not just sit on top of it.
 */
 static void SpawnPlatSensor( gentity_t *self )
 {
-	gentity_t *sensor;
-
 	// the middle trigger will be a thin trigger just
 	// above the starting position
-	sensor = G_NewEntity( NO_CBSE );
+	gentity_t *sensor = G_NewEntity( NO_CBSE );
 	sensor->classname = S_PLAT_SENSOR;
 	sensor->touch = Touch_PlatCenterTrigger;
 	sensor->r.contents = CONTENTS_TRIGGER;
@@ -2263,10 +2174,8 @@ Reached_Train
 
 static void func_train_reached( gentity_t *self )
 {
-	gentity_t *next;
-
 	// copy the appropriate values
-	next = self->nextPathSegment;
+	gentity_t *next = self->nextPathSegment;
 
 	if ( !next || !next->nextPathSegment )
 	{
@@ -2390,7 +2299,6 @@ Link all the corners together
 */
 static void Think_SetupTrainTargets( gentity_t *self )
 {
-	gentity_t *path, *next, *start;
 	int targetIndex;
 
 	self->nextPathSegment = G_IterateTargets( nullptr, &targetIndex, self );
@@ -2402,9 +2310,8 @@ static void Think_SetupTrainTargets( gentity_t *self )
 		return;
 	}
 
-	start = nullptr;
-
-	for ( path = self->nextPathSegment; path != start; path = next )
+	gentity_t *next, *start = nullptr;
+	for ( gentity_t* path = self->nextPathSegment; path != start; path = next )
 	{
 		if ( !start )
 		{
@@ -2414,7 +2321,7 @@ static void Think_SetupTrainTargets( gentity_t *self )
 		if ( path->mapEntity.targets.empty() )
 		{
 			Log::Warn( "Train corner at %s without a target",
-			          glm::to_string( VEC2GLM( path->s.origin ) ).c_str() );
+			          glm::to_string( VEC2GLM( path->s.origin ) ) );
 			return;
 		}
 
@@ -2430,7 +2337,7 @@ static void Think_SetupTrainTargets( gentity_t *self )
 			if ( !next )
 			{
 				Log::Warn( "Train corner at %s without a referenced " S_PATH_CORNER,
-				          glm::to_string( VEC2GLM( path->s.origin ) ).c_str() );
+				          glm::to_string( VEC2GLM( path->s.origin ) ) );
 				return;
 			}
 		}
@@ -2876,7 +2783,7 @@ void SP_func_destructable( gentity_t *self )
 	self->mapEntity.moverState = MOVER_POS1;
 	VectorCopy( self->s.origin, self->mapEntity.restingPosition );
 
-	if ( self->mapEntity.model.c_str()[0] == '*' )
+	if ( self->mapEntity.model[0] == '*' )
 	{
 		G_CM_SetBrushModel( self, self->mapEntity.model );
 	}
