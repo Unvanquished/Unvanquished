@@ -469,25 +469,18 @@ static void G_MoverGroup( gentity_t *ent )
 	for ( part = ent; part; part = part->mapEntity.groupChain )
 	{
 		// call the reached function if time is at or past end point
-		if ( part->s.pos.trType == trType_t::TR_LINEAR_STOP )
+		if ( part->mapEntity.reached )
 		{
-			if ( level.time >= part->s.pos.trTime + part->s.pos.trDuration )
+			if ( part->s.pos.trType == trType_t::TR_LINEAR_STOP
+					&& level.time >= part->s.pos.trTime + part->s.pos.trDuration )
 			{
-				if ( part->mapEntity.reached )
-				{
-					part->mapEntity.reached( part );
-				}
+				part->mapEntity.reached( part );
 			}
-		}
 
-		if ( part->s.apos.trType == trType_t::TR_LINEAR_STOP )
-		{
-			if ( level.time >= part->s.apos.trTime + part->s.apos.trDuration )
+			if ( part->s.apos.trType == trType_t::TR_LINEAR_STOP
+					&& level.time >= part->s.apos.trTime + part->s.apos.trDuration )
 			{
-				if ( part->mapEntity.reached )
-				{
-					part->mapEntity.reached( part );
-				}
+				part->mapEntity.reached( part );
 			}
 		}
 	}
