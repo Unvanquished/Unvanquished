@@ -40,6 +40,7 @@ Maryland 20850 USA.
 
 #include <string>
 
+#include <glm/matrix.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/range.hpp>
 
@@ -101,48 +102,6 @@ static bool G_SpawnVector( const char *key, const char *defaultString, glm::vec3
 }
 
 /*
-================
-G_CreateRotationMatrix
-================
-*/
-static void G_CreateRotationMatrix( glm::vec3 const& angles, vec3_t matrix[ 3 ] )
-{
-	AngleVectors( &angles[0], matrix[ 0 ], matrix[ 1 ], matrix[ 2 ] );
-	VectorInverse( matrix[ 1 ] );
-}
-
-/*
-================
-G_TransposeMatrix
-================
-*/
-static void G_TransposeMatrix( vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
-{
-	int i, j;
-
-	for ( i = 0; i < 3; i++ )
-	{
-		for ( j = 0; j < 3; j++ )
-		{
-			transpose[ i ][ j ] = matrix[ j ][ i ];
-		}
-	}
-}
-
-/*
-================
-G_RotatePoint
-================
-*/
-static void G_RotatePoint( glm::vec3 & point, vec3_t matrix[ 3 ] )
-{
-	glm::vec3 tvec = point;
-	point[ 0 ] = glm::dot( VEC2GLM( matrix[ 0 ] ), tvec );
-	point[ 1 ] = glm::dot( VEC2GLM( matrix[ 1 ] ), tvec );
-	point[ 2 ] = glm::dot( VEC2GLM( matrix[ 2 ] ), tvec );
-}
-
-/*
 ==================
 G_TryPushingEntity
 
@@ -151,8 +110,6 @@ Returns false if the move is blocked
 */
 static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 const& move, glm::vec3 const& amove )
 {
-	vec3_t    matrix[ 3 ], transpose[ 3 ];
-
 	// EF_MOVER_STOP will just stop when contacting another entity
 	// instead of pushing it, but entities can still ride on top of it
 	if ( ( pusher->s.eFlags & EF_MOVER_STOP ) &&
@@ -188,10 +145,12 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 c
 
 	// try moving the contacted entity
 	// figure movement due to the pusher's amove
-	G_CreateRotationMatrix( amove, transpose );
-	G_TransposeMatrix( transpose, matrix );
+	glm::mat3 transpose;
+	AngleVectors( amove, &transpose[0], &transpose[1], &transpose[2] );
+	transpose[1] = -transpose[1];
+	glm::mat3 matrix = glm::transpose( transpose );
 
-	glm::vec3 org, org2, move2;
+	glm::vec3 org;
 	if ( check->client )
 	{
 		org = VEC2GLM( check->client->ps.origin ) - VEC2GLM( pusher->r.currentOrigin );
@@ -201,9 +160,11 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 c
 		org = VEC2GLM( check->s.pos.trBase ) - VEC2GLM( pusher->r.currentOrigin );
 	}
 
-	org2 = org;
-	G_RotatePoint( org2, matrix );
-	move2 = org2 - org;
+	glm::vec3 org2 = org;
+	org2[ 0 ] = glm::dot( matrix[ 0 ], org );
+	org2[ 1 ] = glm::dot( matrix[ 1 ], org );
+	org2[ 2 ] = glm::dot( matrix[ 2 ], org );
+	glm::vec3 move2 = org2 - org;
 	// add movement
 	VectorAdd( check->s.pos.trBase, move, check->s.pos.trBase );
 	VectorAdd( check->s.pos.trBase, move2, check->s.pos.trBase );
