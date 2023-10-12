@@ -971,8 +971,6 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	int total;
 	int partial;
-	gentity_t *master;
-	moverState_t groupState;
 
 	// if this is a non-client-usable door return
 	if ( ent->mapEntity.names[ 0 ].size() && other && other->client )
@@ -1000,217 +998,217 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 	ent->activator = activator;
 
-	master = MasterOf( ent );
-	groupState = GetMoverGroupState( ent );
+	gentity_t *master = MasterOf( ent );
+	moverState_t groupState = GetMoverGroupState( ent );
 
 	for ( ent = master; ent; ent = ent->mapEntity.groupChain )
 	{
-	//ind
-	if ( ent->mapEntity.moverState == MOVER_POS1 )
-	{
-		// start moving 50 msec later, because if this was player-
-		// triggered, level.time hasn't been advanced yet
-		SetMoverState( ent, MOVER_1TO2, level.time + 50 );
-
-		// starting sound
-		if ( ent->mapEntity.sound1to2 )
+		//ind
+		if ( ent->mapEntity.moverState == MOVER_POS1 )
 		{
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
+			// start moving 50 msec later, because if this was player-
+			// triggered, level.time hasn't been advanced yet
+			SetMoverState( ent, MOVER_1TO2, level.time + 50 );
+
+			// starting sound
+			if ( ent->mapEntity.sound1to2 )
+			{
+				G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
+			}
+
+			// looping sound
+			ent->s.loopSound = ent->mapEntity.soundIndex;
+
+			// open areaportal
+			if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
+			{
+				trap_AdjustAreaPortalState( ent, true );
+			}
 		}
-
-		// looping sound
-		ent->s.loopSound = ent->mapEntity.soundIndex;
-
-		// open areaportal
-		if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
+		else if ( ent->mapEntity.moverState == MOVER_POS2 &&
+				!( groupState == MOVER_1TO2 || other == master ) )
 		{
-			trap_AdjustAreaPortalState( ent, true );
+			// if all the way up, just delay before coming down
+			master->think = ReturnToPos1orApos1;
+			master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
 		}
-	}
-	else if ( ent->mapEntity.moverState == MOVER_POS2 &&
-	          !( groupState == MOVER_1TO2 || other == master ) )
-	{
-		// if all the way up, just delay before coming down
-		master->think = ReturnToPos1orApos1;
-		master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
-	}
-	else if ( ent->mapEntity.moverState == MOVER_POS2 &&
-	          ( groupState == MOVER_1TO2 || other == master ) )
-	{
-		// start moving 50 msec later, because if this was player-
-		// triggered, level.time hasn't been advanced yet
-		SetMoverState( ent, MOVER_2TO1, level.time + 50 );
-
-		// starting sound
-		if ( ent->mapEntity.sound2to1 )
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound2to1 );
-
-		// looping sound
-		ent->s.loopSound = ent->mapEntity.soundIndex;
-
-		// open areaportal
-		if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
-			trap_AdjustAreaPortalState( ent, true );
-
-		//HACK: this is really ugly, should have specialise code,
-		//but I'm both lazy, buzy to fix old mess, and annoyed by
-		//said years-old mess
-		ent->health = ent->mapEntity.config.health;
-	}
-	else if ( ent->mapEntity.moverState == MOVER_2TO1 )
-	{
-		// only partway down before reversing
-		total = ent->s.pos.trDuration;
-		partial = level.time - ent->s.pos.trTime;
-
-		if ( partial > total )
+		else if ( ent->mapEntity.moverState == MOVER_POS2 &&
+				( groupState == MOVER_1TO2 || other == master ) )
 		{
-			partial = total;
+			// start moving 50 msec later, because if this was player-
+			// triggered, level.time hasn't been advanced yet
+			SetMoverState( ent, MOVER_2TO1, level.time + 50 );
+
+			// starting sound
+			if ( ent->mapEntity.sound2to1 )
+				G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound2to1 );
+
+			// looping sound
+			ent->s.loopSound = ent->mapEntity.soundIndex;
+
+			// open areaportal
+			if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
+				trap_AdjustAreaPortalState( ent, true );
+
+			//HACK: this is really ugly, should have specialise code,
+			//but I'm both lazy, buzy to fix old mess, and annoyed by
+			//said years-old mess
+			ent->health = ent->mapEntity.config.health;
 		}
-
-		SetMoverState( ent, MOVER_1TO2, level.time - ( total - partial ) );
-
-		if ( ent->mapEntity.sound1to2 )
+		else if ( ent->mapEntity.moverState == MOVER_2TO1 )
 		{
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
-		}
-	}
-	else if ( ent->mapEntity.moverState == MOVER_1TO2 )
-	{
-		// only partway up before reversing
-		total = ent->s.pos.trDuration;
-		partial = level.time - ent->s.pos.trTime;
+			// only partway down before reversing
+			total = ent->s.pos.trDuration;
+			partial = level.time - ent->s.pos.trTime;
 
-		if ( partial > total )
+			if ( partial > total )
+			{
+				partial = total;
+			}
+
+			SetMoverState( ent, MOVER_1TO2, level.time - ( total - partial ) );
+
+			if ( ent->mapEntity.sound1to2 )
+			{
+				G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
+			}
+		}
+		else if ( ent->mapEntity.moverState == MOVER_1TO2 )
 		{
-			partial = total;
+			// only partway up before reversing
+			total = ent->s.pos.trDuration;
+			partial = level.time - ent->s.pos.trTime;
+
+			if ( partial > total )
+			{
+				partial = total;
+			}
+
+			SetMoverState( ent, MOVER_2TO1, level.time - ( total - partial ) );
+
+			if ( ent->mapEntity.sound2to1 )
+			{
+				G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound2to1 );
+			}
 		}
-
-		SetMoverState( ent, MOVER_2TO1, level.time - ( total - partial ) );
-
-		if ( ent->mapEntity.sound2to1 )
+		else if ( ent->mapEntity.moverState == ROTATOR_POS1 )
 		{
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound2to1 );
-		}
-	}
-	else if ( ent->mapEntity.moverState == ROTATOR_POS1 )
-	{
-		// start moving 50 msec later, because if this was player-
-		// triggered, level.time hasn't been advanced yet
-		SetMoverState( ent, ROTATOR_1TO2, level.time + 50 );
+			// start moving 50 msec later, because if this was player-
+			// triggered, level.time hasn't been advanced yet
+			SetMoverState( ent, ROTATOR_1TO2, level.time + 50 );
 
-		// starting sound
-		if ( ent->mapEntity.sound1to2 )
+			// starting sound
+			if ( ent->mapEntity.sound1to2 )
+			{
+				G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
+			}
+
+			// looping sound
+			ent->s.loopSound = ent->mapEntity.soundIndex;
+
+			// open areaportal
+			if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
+			{
+				trap_AdjustAreaPortalState( ent, true );
+			}
+		}
+		else if ( ent->mapEntity.moverState == ROTATOR_POS2 &&
+				!( groupState == MOVER_1TO2 || other == master ) )
 		{
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
+			// if all the way up, just delay before coming down
+			master->think = ReturnToPos1orApos1;
+			master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
 		}
-
-		// looping sound
-		ent->s.loopSound = ent->mapEntity.soundIndex;
-
-		// open areaportal
-		if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
+		else if ( ent->mapEntity.moverState == ROTATOR_POS2 &&
+				( groupState == MOVER_1TO2 || other == master ) )
 		{
-			trap_AdjustAreaPortalState( ent, true );
+			// start moving 50 msec later, because if this was player-
+			// triggered, level.time hasn't been advanced yet
+			SetMoverState( ent, ROTATOR_2TO1, level.time + 50 );
+
+			// starting sound
+			if ( ent->mapEntity.sound2to1 )
+				G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound2to1 );
+
+			// looping sound
+			ent->s.loopSound = ent->mapEntity.soundIndex;
+
+			// open areaportal
+			if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
+				trap_AdjustAreaPortalState( ent, true );
+
+			//HACK: this is really ugly, should have specialise code,
+			//but I'm both lazy, buzy to fix old mess, and annoyed by
+			//said years-old mess
+			ent->health = ent->mapEntity.config.health;
 		}
-	}
-	else if ( ent->mapEntity.moverState == ROTATOR_POS2 &&
-	          !( groupState == MOVER_1TO2 || other == master ) )
-	{
-		// if all the way up, just delay before coming down
-		master->think = ReturnToPos1orApos1;
-		master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
-	}
-	else if ( ent->mapEntity.moverState == ROTATOR_POS2 &&
-	          ( groupState == MOVER_1TO2 || other == master ) )
-	{
-		// start moving 50 msec later, because if this was player-
-		// triggered, level.time hasn't been advanced yet
-		SetMoverState( ent, ROTATOR_2TO1, level.time + 50 );
-
-		// starting sound
-		if ( ent->mapEntity.sound2to1 )
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound2to1 );
-
-		// looping sound
-		ent->s.loopSound = ent->mapEntity.soundIndex;
-
-		// open areaportal
-		if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
-			trap_AdjustAreaPortalState( ent, true );
-
-		//HACK: this is really ugly, should have specialise code,
-		//but I'm both lazy, buzy to fix old mess, and annoyed by
-		//said years-old mess
-		ent->health = ent->mapEntity.config.health;
-	}
-	else if ( ent->mapEntity.moverState == ROTATOR_2TO1 )
-	{
-		// only partway down before reversing
-		total = ent->s.apos.trDuration;
-		partial = level.time - ent->s.apos.trTime;
-
-		if ( partial > total )
+		else if ( ent->mapEntity.moverState == ROTATOR_2TO1 )
 		{
-			partial = total;
+			// only partway down before reversing
+			total = ent->s.apos.trDuration;
+			partial = level.time - ent->s.apos.trTime;
+
+			if ( partial > total )
+			{
+				partial = total;
+			}
+
+			SetMoverState( ent, ROTATOR_1TO2, level.time - ( total - partial ) );
+
+			if ( ent->mapEntity.sound1to2 )
+			{
+				G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
+			}
 		}
-
-		SetMoverState( ent, ROTATOR_1TO2, level.time - ( total - partial ) );
-
-		if ( ent->mapEntity.sound1to2 )
+		else if ( ent->mapEntity.moverState == ROTATOR_1TO2 )
 		{
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
-		}
-	}
-	else if ( ent->mapEntity.moverState == ROTATOR_1TO2 )
-	{
-		// only partway up before reversing
-		total = ent->s.apos.trDuration;
-		partial = level.time - ent->s.apos.trTime;
+			// only partway up before reversing
+			total = ent->s.apos.trDuration;
+			partial = level.time - ent->s.apos.trTime;
 
-		if ( partial > total )
+			if ( partial > total )
+			{
+				partial = total;
+			}
+
+			SetMoverState( ent, ROTATOR_2TO1, level.time - ( total - partial ) );
+
+			if ( ent->mapEntity.sound2to1 )
+			{
+				G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound2to1 );
+			}
+		}
+		else if ( ent->mapEntity.moverState == MODEL_POS1 )
 		{
-			partial = total;
+			//toggle door state
+			ent->s.legsAnim = true;
+
+			ent->think = Think_OpenModelDoor;
+			ent->nextthink = level.time + ent->mapEntity.config.speed;
+
+			// starting sound
+			if ( ent->mapEntity.sound1to2 )
+			{
+				G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
+			}
+
+			// looping sound
+			ent->s.loopSound = ent->mapEntity.soundIndex;
+
+			// open areaportal
+			if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
+			{
+				trap_AdjustAreaPortalState( ent, true );
+			}
+
+			ent->mapEntity.moverState = MODEL_1TO2;
 		}
-
-		SetMoverState( ent, ROTATOR_2TO1, level.time - ( total - partial ) );
-
-		if ( ent->mapEntity.sound2to1 )
+		else if ( ent->mapEntity.moverState == MODEL_POS2 )
 		{
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound2to1 );
+			// if all the way up, just delay before coming down
+			ent->nextthink = level.time + ent->mapEntity.config.wait.time;
 		}
-	}
-	else if ( ent->mapEntity.moverState == MODEL_POS1 )
-	{
-		//toggle door state
-		ent->s.legsAnim = true;
-
-		ent->think = Think_OpenModelDoor;
-		ent->nextthink = level.time + ent->mapEntity.config.speed;
-
-		// starting sound
-		if ( ent->mapEntity.sound1to2 )
-		{
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->mapEntity.sound1to2 );
-		}
-
-		// looping sound
-		ent->s.loopSound = ent->mapEntity.soundIndex;
-
-		// open areaportal
-		if ( ent->mapEntity.groupMaster == ent || !ent->mapEntity.groupMaster )
-		{
-			trap_AdjustAreaPortalState( ent, true );
-		}
-
-		ent->mapEntity.moverState = MODEL_1TO2;
-	}
-	else if ( ent->mapEntity.moverState == MODEL_POS2 )
-	{
-		// if all the way up, just delay before coming down
-		ent->nextthink = level.time + ent->mapEntity.config.wait.time;
-	}
-	//outd
+		//outd
 	}
 }
 
@@ -1803,7 +1801,7 @@ void SP_func_door_model( gentity_t *self )
 	}
 
 	//brush model
-	gentity_t* clipBrush = self->mapEntity.clipBrush = G_NewEntity( NO_CBSE );
+	gentity_t *clipBrush = self->mapEntity.clipBrush = G_NewEntity( NO_CBSE );
 	clipBrush->mapEntity.model = self->mapEntity.model;
 	G_CM_SetBrushModel( clipBrush, clipBrush->mapEntity.model );
 	clipBrush->s.eType = entityType_t::ET_INVISIBLE;
@@ -2620,24 +2618,30 @@ void SP_func_pendulum( gentity_t *self )
 
 static void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
 {
-	gentity_t *e;
-	vec3_t mins, maxs;
-	trace_t tr;
-
-	for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
+	for( gentity_t *e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
 	{
 		if( !e->r.linked || !e->clipmask )
+		{
 			continue;
+		}
 
-		VectorAdd( e->r.currentOrigin, e->r.mins, mins );
-		VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
+		glm::vec3 eOrigin = VEC2GLM( e->r.currentOrigin );
+		glm::vec3 eMins = VEC2GLM( e->r.mins );
+		glm::vec3 eMaxs = VEC2GLM( e->r.maxs );
 
-		if( !G_CM_EntityContact( VEC2GLM( mins ), VEC2GLM( maxs ), ent, traceType_t::TT_AABB ) )
+		glm::vec3 mins = eOrigin + eMins;
+		glm::vec3 maxs = eOrigin + eMaxs;
+
+		if( !G_CM_EntityContact( mins, maxs, ent, traceType_t::TT_AABB ) )
+		{
 			continue;
+		}
 
-		G_CM_Trace( &tr, VEC2GLM( e->r.currentOrigin ), VEC2GLM( e->r.mins ), VEC2GLM( e->r.maxs ), VEC2GLM( e->r.currentOrigin ), e->num(), e->clipmask, 0, traceType_t::TT_AABB );
+		trace_t tr;
+		G_CM_Trace( &tr, eOrigin, eMins, eMaxs, eOrigin, e->num(), e->clipmask, 0, traceType_t::TT_AABB );
 
-		if( tr.entityNum != ENTITYNUM_NONE ) {
+		if( tr.entityNum != ENTITYNUM_NONE )
+		{
 			Entities::Kill(e, activator, MOD_CRUSH);
 		}
 	}
