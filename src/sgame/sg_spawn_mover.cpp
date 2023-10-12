@@ -225,6 +225,45 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 c
 	return false;
 }
 
+static bool IsPushableType( entityType_t type )
+{
+	switch( type )
+	{
+		case entityType_t::ET_PLAYER:
+		case entityType_t::ET_CORPSE:
+		case entityType_t::ET_ITEM:
+		case entityType_t::ET_BUILDABLE:
+			return true;
+
+		case entityType_t::ET_GENERAL:
+		case entityType_t::ET_LOCATION:
+		case entityType_t::ET_MISSILE:
+		case entityType_t::ET_MOVER:
+		case entityType_t::ET_UNUSED:
+		case entityType_t::ET_PORTAL:
+		case entityType_t::ET_SPEAKER:
+		case entityType_t::ET_PUSHER:
+		case entityType_t::ET_TELEPORTER:
+		case entityType_t::ET_INVISIBLE:
+		case entityType_t::ET_FIRE:
+		case entityType_t::ET_PARTICLE_SYSTEM:
+		case entityType_t::ET_ANIMMAPOBJ:
+		case entityType_t::ET_MODELDOOR:
+		case entityType_t::ET_LIGHTFLARE:
+		case entityType_t::ET_LEV2_ZAP_CHAIN:
+		case entityType_t::ET_BEACON:
+		case entityType_t::ET_EVENTS:
+			// not returning here because ET_EVENTS only marks the
+			// start of ET_EVENTS types, so either the compiler
+			// would warn that all members of enum are handled if
+			// using a default clause, or compiler would warn about
+			// unreachable code if return false outside of the switch.
+			// Or, the code would crash when this is called on an event.
+			break;
+	}
+	return false;
+}
+
 /*
 ============
 G_MoverPush
@@ -236,7 +275,6 @@ If false is returned, *obstacle will be the blocking entity
 */
 static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 const& amove, gentity_t **obstacle )
 {
-	int       entityList[ MAX_GENTITIES ];
 	glm::vec3 mins, maxs;
 	glm::vec3 totalMins, totalMaxs;
 
@@ -281,6 +319,7 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 	// unlink the pusher so we don't get it in the entityList
 	G_CM_UnlinkEntity( pusher );
 
+	int entityList[ MAX_GENTITIES ];
 	int listedEntities = G_CM_AreaEntities( totalMins, totalMaxs, entityList, MAX_GENTITIES );
 
 	// move the pusher to its final position
@@ -294,9 +333,7 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 		gentity_t *check = &g_entities[ entityList[ e ] ];
 
 		// only push items and players
-		if ( check->s.eType != entityType_t::ET_ITEM && check->s.eType != entityType_t::ET_BUILDABLE &&
-		     check->s.eType != entityType_t::ET_CORPSE && check->s.eType != entityType_t::ET_PLAYER &&
-		     !check->physicsObject )
+		if ( !IsPushableType( check->s.eType ) && !check->physicsObject )
 		{
 			continue;
 		}
@@ -765,9 +802,7 @@ static void Think_CloseModelDoor( gentity_t *ent )
 		gentity_t *check = &g_entities[ entityList[ i ] ];
 
 		//only test items and players
-		if ( check->s.eType != entityType_t::ET_ITEM && check->s.eType != entityType_t::ET_BUILDABLE &&
-		     check->s.eType != entityType_t::ET_CORPSE && check->s.eType != entityType_t::ET_PLAYER &&
-		     !check->physicsObject )
+		if ( !IsPushableType( check->s.eType ) && !check->physicsObject )
 		{
 			continue;
 		}
