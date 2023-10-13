@@ -334,13 +334,11 @@ static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 con
 		// if the entity is standing on the pusher, it will definitely be moved
 		if ( check->s.groundEntityNum != pusher->num() )
 		{
+			glm::vec3 absmin = VEC2GLM( check->r.absmin );
+			glm::vec3 absmax = VEC2GLM( check->r.absmax );
 			// see if the ent needs to be tested
-			if ( check->r.absmin[ 0 ] >= maxs[ 0 ]
-			     || check->r.absmin[ 1 ] >= maxs[ 1 ]
-			     || check->r.absmin[ 2 ] >= maxs[ 2 ]
-			     || check->r.absmax[ 0 ] <= mins[ 0 ]
-			     || check->r.absmax[ 1 ] <= mins[ 1 ]
-			     || check->r.absmax[ 2 ] <= mins[ 2 ] )
+			if ( glm::any( glm::greaterThanEqual( absmin, maxs ) )
+					|| glm::any( glm::lessThanEqual( absmax, mins ) ) )
 			{
 				continue;
 			}
@@ -1475,15 +1473,15 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 	}
 
 	// find the thinnest axis, which will be the one we expand
-	int best = 0;
-
 	glm::vec3 diff = maxs - mins;
-	for ( int i = 1; i < 3; i++ )
+	int best = 0;
+	if ( diff[ 1 ] < diff[ best ] )
 	{
-		if ( diff[ i ] < diff[ best ] )
-		{
-			best = i;
-		}
+		best = 1;
+	}
+	if ( diff[ 2 ] < diff[ best ] )
+	{
+		best = 2;
 	}
 
 	maxs[ best ] += self->mapEntity.config.triggerRange;
