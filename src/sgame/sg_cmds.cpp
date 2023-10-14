@@ -594,7 +594,7 @@ static void Cmd_Give_printUsage( gentity_t *ent )
 {
 	ADMP( QQ( N_( "usage: give [what]" ) ) );
 	ADMP( QQ( N_( "usage: valid choices are: all, health [amount], funds [amount], "
-	              "bp [amount], momentum [amount] [team], stamina, poison, fuel, ammo" ) ) );
+	              "bp [amount], momentum [amount] [team], stamina, staminaDrain, poison, fuel, ammo" ) ) );
 }
 static void Cmd_Give_f( gentity_t *ent )
 {
@@ -746,6 +746,16 @@ static void Cmd_Give_f( gentity_t *ent )
 		{
 			ent->client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
 			ent->client->boostedTime = level.time;
+		}
+	}
+
+	if ( team != TEAM_NONE && ( Q_stricmp( name, "staminaDrain" ) == 0 ) )
+	{
+		valid = true;
+		if ( ent->client->pers.team == TEAM_HUMANS )
+		{
+			ent->client->ps.stats[ STAT_STATE2 ] |= SS2_LEVEL1SLOW;
+			ent->client->lastLevel1SlowTime = level.time;
 		}
 	}
 
