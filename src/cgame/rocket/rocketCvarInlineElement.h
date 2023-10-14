@@ -99,6 +99,26 @@ public:
 				}
 			}
 
+			if ( type != NUMBER )
+			{
+				int flags = 0;
+
+				if ( HasAttribute( "quake" ) )
+				{
+					flags |= RP_QUAKE;
+				}
+
+				if ( HasAttribute( "emoticons" ) )
+				{
+					flags |= RP_EMOTICONS;
+				}
+
+				if ( flags )
+				{
+					value = Rocket_QuakeToRML( value.c_str(), flags );
+				}
+			}
+
 			SetInnerRML( value );
 			dirty_value = false;
 		}
