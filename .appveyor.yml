@@ -53,7 +53,7 @@ before_build:
     --print
   - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   - python --version
-  - pip install -r src/utils/cbse/requirements.txt --upgrade
+  - pip install -r tools/cbse/requirements.txt --upgrade
 
 build_script:
   - cmd: cmake --version

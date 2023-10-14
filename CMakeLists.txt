@@ -41,8 +41,7 @@ endif()
 
 set(SUBMODULE_LIST
   "libs/RmlUi"
-  "src/utils/cbse"
-  "pkg/unvanquished_src.dpkdir")
+)
 
 set(DAEMON_DIR_STRING "Path to the Daemon Engine source.")
 if(NOT DAEMON_DIR)
@@ -161,7 +160,7 @@ try_flag(WARNINGS           "-Wno-maybe-uninitialized")
 try_flag(WARNINGS "/wd26812") # "The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'"
 
 if (BUILD_SGAME)
-    include(DaemonCBSE)
+    include(tools/cbse/CBSE.cmake)
     CBSE("sgame"
          "${GAMELOGIC_DIR}/sgame/entities.yaml"
          "${GAMELOGIC_DIR}/sgame/")

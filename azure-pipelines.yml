@@ -41,7 +41,7 @@ strategy:
       BUILDER_OPTIONS: '-j$(nproc) -k 10'
     Mac:
       VM_IMAGE: 'macOS-11'
-      INSTALL_DEPS: 'python3 -m pip install -r src/utils/cbse/requirements.txt'
+      INSTALL_DEPS: 'python3 -m pip install -r tools/cbse/requirements.txt'
       CMAKE_OPTIONS: '-DDAEMON_CBSE_PYTHON_PATH=$(which python3) -DBUILD_GAME_NATIVE_DLL=1 -DBUILD_GAME_NATIVE_EXE=0 -DBUILD_GAME_NACL=0'
       BUILDER_OPTIONS: '-j$(sysctl -n hw.logicalcpu)'
 
