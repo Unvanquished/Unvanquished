@@ -1694,7 +1694,7 @@ static void G_admin_ban_message(
 		                  sizeof( duration ) );
 		// part of this might get cut off on the connect screen
 		Com_sprintf( creason, clen,
-					"You have been banned by %s^* duration: %s%s reason: %s",
+					"^7You have been banned by %s\n^7Duration: ^3%s%s\n^7Reason: ^3%s",
 					ban->banner,
 					time, duration,
 					ban->reason );
