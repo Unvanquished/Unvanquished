@@ -27,6 +27,7 @@ do
 done
 
 git log --oneline $START..HEAD | sed -n '/^[0-9a-f]* [A-Z]*:/ s!^[^ ]*\(.*\)!•<li>\1<br/></li>! p' >> $DEST/changelog
+cp $DEST/changelog pkg/unvanquished_src.dpkdir/ui/
 git format-patch --quiet -o $DEST/patches $START..HEAD
 tar -c -f $DEST/patches.tar $DEST/patches
 rm -r $DEST/patches
