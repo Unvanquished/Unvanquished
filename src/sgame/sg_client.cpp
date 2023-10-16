@@ -654,7 +654,7 @@ static const char *G_UnnamedClientName( gclient_t *client )
 G_ClientCleanName
 ============
 */
-static void G_ClientCleanName( const char *in, char *out, size_t outSize, gclient_t *client )
+void G_ClientCleanName( const char *in, char *out, size_t outSize, gclient_t *client )
 {
 	ASSERT_GE(outSize, 1U);
 	--outSize;
