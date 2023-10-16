@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-07-22 00:02+0000\n"
-"Last-Translator: Linus Virtanen <linus.virtanen@protonmail.com>\n"
+"PO-Revision-Date: 2023-10-16 17:28+0000\n"
+"Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
 "Language: fi\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr "Rakenne"
+msgstr "Rakenna"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
@@ -38,31 +38,31 @@ msgstr "muunnospisteet"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr "Valitse lähtökohtainen muotosi:"
+msgstr "Valitse aloitusmuotosi:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr "Lemma"
+msgstr "Dretch"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr "Paimio"
+msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
-"Lemmat ovat viekkaan hyökkääväisiä, Paimiot ovat muukalaisrakenteellinen "
-"laji."
+"Dretchit ovat huomaamaton hyökkääjämuoto, ja grangerit ovat alienien "
+"rakentajamuoto."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr "Takaisin joukkuevalikkoon"
+msgstr "Palaa joukkuevalintaan"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr "Pyydä tasapeliäänestystä"
+msgstr "Ehdota tasapeliä"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
@@ -70,7 +70,7 @@ msgstr "Syy"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr "Pyydä äänestystä"
+msgstr "Aloita äänestys"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
@@ -82,7 +82,7 @@ msgstr "Molemmat joukkueet"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
-msgstr "Avaruusolennot"
+msgstr "Alienit"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
@@ -99,27 +99,27 @@ msgstr "Määrä"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
-msgstr "Muuta karttaa"
+msgstr "Vaihda kenttää"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Äänestä: vaihda seuraavaan karttaan"
+msgstr "Äänestys: Valitse seuraava kenttä"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr "Äänestä: aseta nykyinen kartta"
+msgstr "Äänestys: Siirry kenttään"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr "Aseta nykyinen kartta (hostaa)"
+msgstr "Vaihda kenttä (isäntä)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr "Käytäntö"
+msgstr "Toimenpide"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
-msgstr "Kartta"
+msgstr "Kenttä"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
@@ -142,34 +142,36 @@ msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
-"Tässä osiossa löydät yhteenvetoa merkittävistä pelin osa-alueista jotta "
+"Tässä osiossa löydät yhteenvedon merkittävistä pelin osa-alueista jotta "
 "tiedät miten tulla menestyksekkääksi pelaajaksi."
 
 #: ui/help_gameplay.rml:22
 msgid "More can be found on our website and other community places!"
-msgstr ""
+msgstr "Lisää löytyy meidän verkkosivulta ja toisilta yhteisöpaikoilta!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Keskustele pelaajien ja kehittäjien kanssa Libera.Chat IRC:ssä, Matrixissa "
+"tai Discordissa: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "Keskustele uutisista foorumeilla: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "Löydä lisää tietoa pelistä wikissä: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:28
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Ilmoitathan virheistä tänne: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "Ansiot ja kehittyminen"
 
 #: ui/help_gameplay.rml:36
 msgid ""
@@ -205,7 +207,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:53
 msgid "Powering buildables"
-msgstr ""
+msgstr "Rakennelmien käynnistäminen"
 
 #: ui/help_gameplay.rml:56
 msgid ""
@@ -233,7 +235,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:64
 msgid "Mining structures"
-msgstr ""
+msgstr "Louhintarakennelmat"
 
 #: ui/help_gameplay.rml:67
 msgid ""
@@ -267,7 +269,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:80
 msgid "Stages &amp; Momentum"
-msgstr ""
+msgstr "Tasot ja vauhti"
 
 #: ui/help_gameplay.rml:83
 msgid ""
@@ -284,7 +286,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:90
 msgid "Wildfire"
-msgstr ""
+msgstr "Tulipalot"
 
 #: ui/help_gameplay.rml:93
 msgid ""
@@ -312,7 +314,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:106
 msgid "Under attack"
-msgstr ""
+msgstr "Hyökättynä"
 
 #: ui/help_gameplay.rml:109
 msgid ""
@@ -324,7 +326,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:113
 msgid "Healing"
-msgstr ""
+msgstr "Parantuminen"
 
 #: ui/help_gameplay.rml:116
 msgid "Dying feeds the ennemy, you may want to save your life!"
@@ -368,7 +370,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:138
 msgid "Wallwalking"
-msgstr ""
+msgstr "Seinilläkävely"
 
 #: ui/help_gameplay.rml:141
 msgid ""
@@ -392,7 +394,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:154
 msgid "Since Tremulous"
-msgstr ""
+msgstr "Tremulousin jälkeen"
 
 #: ui/help_gameplay.rml:157
 msgid "Since Tremulous, the stamina has been increased."
@@ -436,7 +438,7 @@ msgstr ""
 
 #: ui/help_textentry.rml:19 ui/menu_ingame.rml:112 ui/menu_main.rml:49
 msgid "Colour codes and symbols"
-msgstr ""
+msgstr "Värikoodit ja symbolit"
 
 #: ui/help_textentry.rml:22
 msgid ""
@@ -444,125 +446,135 @@ msgid ""
 "symbol. Colour can be reset again to normal using ^*, or an actual caret can "
 "be typed using ^^."
 msgstr ""
+"Värejä käytetään kirjoittamalla niiden sirkumfleksilla (^) alkava "
+"erikoiskoodi. Väri nollautuu kirjoittamalla ^*, tai varsinaisen "
+"sirkumfleksin voi tehdä kirjoittamalla ^^."
 
 #: ui/help_textentry.rml:61
 msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
-msgstr ""
+msgstr "Esimerkki: ^^3Fred^^1Baggins muuttuu ^3Fred^1Baggins"
 
 #: ui/hud_basics.rml:192
 msgid "Game"
-msgstr ""
+msgstr "Erä"
 
 #: ui/hud_basics.rml:195
 msgid "Life"
-msgstr ""
+msgstr "Kello"
 
 #: ui/hud_basics.rml:199
 msgid "fps"
-msgstr ""
+msgstr "fps"
 
 #: ui/hud_basics.rml:202
 msgid "ms"
-msgstr ""
+msgstr "ms"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
-msgstr ""
+msgstr "rakennuspistettä"
 
 #: ui/hud_human.rml:268
 msgid "Credits"
-msgstr ""
+msgstr "Krediittiä"
 
 #: ui/human_buy.rml:208
 msgid "Weapons"
-msgstr ""
+msgstr "Aseet"
 
 #: ui/human_buy.rml:209 ui/human_buy.rml:225
 msgid "TAB"
-msgstr ""
+msgstr "SARKAIN"
 
 #: ui/human_buy.rml:217
 msgid "Range:"
-msgstr ""
+msgstr "Etäisyys:"
 
 #: ui/human_buy.rml:218
 msgid "Damage:"
-msgstr ""
+msgstr "Vahinko:"
 
 #: ui/human_buy.rml:219
 msgid "Fire Rate:"
-msgstr ""
+msgstr "Tulinopeus:"
 
 #: ui/human_buy.rml:224
 msgid "Upgrades"
-msgstr ""
+msgstr "Päivitykset"
 
 #: ui/human_spawn.rml:43
 msgid "Choose your starting equipment:"
-msgstr ""
+msgstr "Valitse aloitusvälineesi:"
 
 #: ui/human_spawn.rml:45
 msgid "SMG"
-msgstr ""
+msgstr "Konepistooli"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr ""
+msgstr "Rakennussarja"
 
 #: ui/human_spawn.rml:48
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
+"Konepistooli on sarjatulialoitusase, ja rakennussarja tekee ja korjaa "
+"ihmisten rakennelmia. Kaikki välineet voi vaihtaa asevarikolla."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr ""
+msgstr "Majakat"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr ""
+msgstr "Katsojat"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "Kenttä:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "Aika:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "Valitse automaattisesti"
 
 #: ui/ingame_teamselect.rml:59
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
+"Alienit ovat erittäin liikkumakykyisiä ja omaavat laajan kirjon "
+"liikehdintään perustuvia hyökkäyksiä. Ne ovat lujia, mutta niiden täytyy "
+"luottaa huomaamattomuuteensa ja väistelyyn."
 
 #: ui/ingame_teamselect.rml:60
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
+"Ihmiset voivat varustaa itsensä ase‐ ja tarvikevalikoimalla. He ovat "
+"sopeutuvaisia, ja kuolettavia kaukaa, mutta hauraita."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
 msgid "Join Aliens"
-msgstr ""
+msgstr "Liity alieneihin"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:29
 msgid "Join Humans"
-msgstr ""
+msgstr "Liity ihmisiin"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "Vaihtoehtoisesti voit seurata peliä osallistumatta peliin."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
 msgid "Spectate"
-msgstr ""
+msgstr "Katsele"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
 msgid ""
