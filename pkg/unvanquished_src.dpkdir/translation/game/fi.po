@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-10-16 17:28+0000\n"
+"PO-Revision-Date: 2023-10-17 12:43+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -581,348 +581,362 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
+"Tämä on Unvanquished‐beetaversio. Ilmoitathan löytämäsi ongelmat osoitteessa "
+"<web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
-msgstr ""
+msgstr "Erävalikko"
 
 #: ui/menu_ingame.rml:23
 msgid "Leave match"
-msgstr ""
+msgstr "Poistu erästä"
 
 #: ui/menu_ingame.rml:24
 msgid "Resume action"
-msgstr ""
+msgstr "Palaa peliin"
 
 #: ui/menu_ingame.rml:26 ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Joukkueet"
 
 #: ui/menu_ingame.rml:33
 msgid "Democracy"
-msgstr ""
+msgstr "Äänestys"
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
-msgstr ""
+msgstr "Yleisäänestys:"
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
-msgstr ""
+msgstr "kyllä"
 
 #: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46
 msgid "or"
-msgstr ""
+msgstr "tai"
 
 #: ui/menu_ingame.rml:40 ui/menu_ingame.rml:47
 msgid "no"
-msgstr ""
+msgstr "ei"
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
-msgstr ""
+msgstr "Joukkueäänestys:"
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
-msgstr ""
+msgstr "Potki botit ulos"
 
 #: ui/menu_ingame.rml:52
 msgid "Extend timelimit"
-msgstr ""
+msgstr "Jatka aikarajaa"
 
 #: ui/menu_ingame.rml:53
 msgid "Call a draw"
-msgstr ""
+msgstr "Ehdota tasapeliä"
 
 #: ui/menu_ingame.rml:54
 msgid "Admit defeat"
-msgstr ""
+msgstr "Myönnä tappio"
 
 #: ui/menu_ingame.rml:60
 msgid "Host menu"
-msgstr ""
+msgstr "Isäntävalikko"
 
 #: ui/menu_ingame.rml:61
 msgid "Stop server"
-msgstr ""
+msgstr "Pysäytä palvelin"
 
 #: ui/menu_ingame.rml:62
 msgid "Pause server"
-msgstr ""
+msgstr "Keskeytä palvelin"
 
 #: ui/menu_ingame.rml:67
 msgid "Reset match"
-msgstr ""
+msgstr "Aloita erä uudelleen"
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
-msgstr ""
+msgstr "Botit"
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
-msgstr ""
+msgstr "Lisää alienbotti"
 
 #: ui/menu_ingame.rml:73
 msgid "Add a human bot"
-msgstr ""
+msgstr "Lisää ihmisbotti"
 
 #: ui/menu_ingame.rml:74 src/sgame/sg_votes.cpp:320
 msgid "Remove all bots"
-msgstr ""
+msgstr "Poista kaikki botit"
 
 #: ui/menu_ingame.rml:78
 msgid "Players"
-msgstr ""
+msgstr "Pelaajat"
 
 #: ui/menu_ingame.rml:80
 msgid "Disclipline: kick/ban/mute/nobuild"
-msgstr ""
+msgstr "Kurinpito: potki/estä/vaimenna/kiellä rakentaminen"
 
 #: ui/menu_ingame.rml:87
 msgid "Main menu"
-msgstr ""
+msgstr "Päävalikko"
 
 #: ui/menu_ingame.rml:89 ui/menu_main.rml:28
 msgid "Play"
-msgstr ""
+msgstr "Pelaa"
 
 #: ui/menu_ingame.rml:91 ui/menu_main.rml:30
 msgid "Server listings"
-msgstr ""
+msgstr "Palvelinluettelo"
 
 #: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr ""
+msgstr "Aloita paikallis‐ tai lähiverkkopeli"
 
 #: ui/menu_ingame.rml:93 ui/menu_main.rml:32
 msgid "Recorded demos"
-msgstr ""
+msgstr "Tallennetut demot"
 
 #: ui/menu_ingame.rml:96 ui/menu_main.rml:35
 msgid "Options"
-msgstr ""
+msgstr "Asetukset"
 
 #: ui/menu_ingame.rml:98 ui/menu_main.rml:37
 msgid "Player"
-msgstr ""
+msgstr "Pelaaja"
 
 #: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
 msgid "Graphics"
-msgstr ""
+msgstr "Grafiikka"
 
 #: ui/menu_ingame.rml:100 ui/menu_main.rml:39 ui/options_keys.rml:7
 msgid "Key bindings"
-msgstr ""
+msgstr "Näppäinasetukset"
 
 #: ui/menu_ingame.rml:101 ui/menu_main.rml:40 ui/options_mouse.rml:7
 msgid "Mouse and Aiming"
-msgstr ""
+msgstr "Hiiri ja tähtääminen"
 
 #: ui/menu_ingame.rml:102 ui/menu_main.rml:41 ui/options_sound.rml:7
 msgid "Sound"
-msgstr ""
+msgstr "Ääni"
 
 #: ui/menu_ingame.rml:103 ui/menu_main.rml:42
 msgid "User interface and HUD"
-msgstr ""
+msgstr "Käyttöliittymä"
 
 #: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr ""
+msgstr "Näkökenttä"
 
 #: ui/menu_ingame.rml:105 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr ""
+msgstr "Palvelimen asetukset"
 
 #: ui/menu_ingame.rml:109 ui/menu_main.rml:46
 msgid "Help"
-msgstr ""
+msgstr "Apua"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
 msgid "Gameplay guide"
-msgstr ""
+msgstr "Peliopas"
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
-msgstr ""
+msgstr "Sulje peli"
 
 #: ui/menu_ingame.rml:119 ui/menu_main.rml:56
 msgid "Beta"
-msgstr ""
+msgstr "Beta"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr ""
+msgstr "Katselukulmat"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = pelaajan näkökentän laajuus, asteissa mitattuna."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
 msgstr ""
+"Monet pelaajat kärsivät lievästä matkapahoinvoinninsta pelatessaan "
+"ensimmäisen persoonan räiskintöjä. Korkeampi FOV voi auttaa tätä vastaan."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "astetta"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:276
 #: ui/options_mouse.rml:21 ui/options_ui.rml:59 ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "palauta oletusarvo"
 
 #: ui/options_fov.rml:40
 msgid "Mantis"
-msgstr ""
+msgstr "Mantis"
 
 #: ui/options_fov.rml:48
 msgid "Marauder"
-msgstr ""
+msgstr "Marauder"
 
 #: ui/options_fov.rml:56
 msgid "Dragoon"
-msgstr ""
+msgstr "Dragoon"
 
 #: ui/options_fov.rml:64
 msgid "Tyrant"
-msgstr ""
+msgstr "Tyrant"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
-msgstr ""
+msgstr "Näkymän pomputus"
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
-msgstr ""
+msgstr "Kameran kallistus"
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "Pois käytöstä"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "Kevyt"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
-msgstr ""
+msgstr "Normaali"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "Voimakas"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr ""
+msgstr "Ylös ja alas liikkuminen"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
-msgstr ""
+msgstr "Kameran kierto"
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr ""
+msgstr "Kiertävä liikkuminen"
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
-msgstr ""
+msgstr "Esiasetukset"
 
 #: ui/options_graphics.rml:24
 msgid "Lowest"
-msgstr ""
+msgstr "Alhaisin"
 
 #: ui/options_graphics.rml:25
 msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel "
 "textures…"
 msgstr ""
+"Pienet alijaot, ei taivasta, ei varjoa, ei kimpoavia partikkeleita, 64-"
+"pikseliset tekstuurit…"
 
 #: ui/options_graphics.rml:28 ui/options_graphics.rml:141
 #: ui/options_graphics.rml:265
 msgid "Low"
-msgstr ""
+msgstr "Matala"
 
 #: ui/options_graphics.rml:29
 msgid ""
 "Multisampling, anisotropic mip-mapping, shadows, bouncing particles, 256-"
 "pixel textures…"
 msgstr ""
+"Moninäytteistys, anisotrooppinen mip-kartoitus, varjot, kimpoavat "
+"partikkelit, 256-pikseliset tekstuurit…"
 
 #: ui/options_graphics.rml:32 ui/options_graphics.rml:142
 msgid "Medium"
-msgstr ""
+msgstr "Keskiverto"
 
 #: ui/options_graphics.rml:33
 msgid ""
 "Normal, specular and physical mapping, bloom, trilinear filtering, 512-pixel "
 "textures…"
 msgstr ""
+"Normaali‐, peili‐ ja fyysinen kartoitus, hohka, trilineaarinen suodatus, 512-"
+"pikseliset tekstuurit…"
 
 #: ui/options_graphics.rml:36 ui/options_graphics.rml:263
 msgid "High"
-msgstr ""
+msgstr "Korkea"
 
 #: ui/options_graphics.rml:37
 msgid ""
 "Dynamic lights, heat haze, motion blur, better multisampling, up to 2048-"
 "pixel textures…"
 msgstr ""
+"Dynaaminen valaistus, kuumuuden väreily, vauhtisokeus, parempi "
+"moninäytteistys, enintään 2048-pikseliset tekstuurit…"
 
 #: ui/options_graphics.rml:40
 msgid "Ultra"
-msgstr ""
+msgstr "Ultra"
 
 #: ui/options_graphics.rml:41
 msgid ""
 "Relief mapping and other features and effects enabled, up to 4096-pixel "
 "textures…"
 msgstr ""
+"Kohokartoitus ja muut ominaisuudet ja tehosteet käytössä, enintään 4096-"
+"pikseliset tekstuurit…"
 
 #: ui/options_graphics.rml:44 ui/options_graphics.rml:46
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: ui/options_graphics.rml:48
 msgid "Brightness"
-msgstr ""
+msgstr "Kirkkaus"
 
 #: ui/options_graphics.rml:51
 msgid "Gamma:"
-msgstr ""
+msgstr "Gamma:"
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
-msgstr ""
+msgstr "Kuvaruudun resoluutio"
 
 #: ui/options_graphics.rml:62
 msgid "Borderless window"
-msgstr ""
+msgstr "Reunaton ikkuna"
 
 #: ui/options_graphics.rml:66
 msgid "Fullscreen"
-msgstr ""
+msgstr "Kokonäyttötila"
 
 #: ui/options_graphics.rml:71 ui/options_graphics.rml:266
 msgid "Off"
-msgstr ""
+msgstr "Pois"
 
 #: ui/options_graphics.rml:72
 msgid "Flexible Vsync"
-msgstr ""
+msgstr "Valikoiva Vsync"
 
 #: ui/options_graphics.rml:73
 msgid "Full Vsync"
-msgstr ""
+msgstr "Täysi Vsync"
 
 #: ui/options_graphics.rml:75
 msgid "Vsync"
-msgstr ""
+msgstr "Vsync"
 
 #: ui/options_graphics.rml:76
 msgid ""
@@ -930,727 +944,747 @@ msgid ""
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
+"Vsync ehkäisee kuvan repeilyä, mutta lisää syöttöviivettä. Valikoiva Vsync "
+"aktivoituu ainoastaan ruutunopeuden ylittäessä näytön virkistystaajuuden, "
+"välttäen nykimistä FPS:n pudotessa."
 
 #: ui/options_graphics.rml:81
 msgid "Fast approximate anti-aliasing (FXAA)"
-msgstr ""
+msgstr "Nopea likiarvoinen antialiasointi (FXAA)"
 
 #: ui/options_graphics.rml:85 ui/options_graphics.rml:132
 #: ui/options_graphics.rml:171 ui/options_graphics.rml:205
 #: ui/options_graphics.rml:238
 msgid "Apply now"
-msgstr ""
+msgstr "Käytä heti"
 
 #: ui/options_graphics.rml:89
 msgid "Lighting"
-msgstr ""
+msgstr "Valaistus"
 
 #: ui/options_graphics.rml:91
 msgid "Lights"
-msgstr ""
+msgstr "Valot"
 
 #: ui/options_graphics.rml:94
 msgid "Light mapping"
-msgstr ""
+msgstr "Valokartoitus"
 
 #: ui/options_graphics.rml:94
 msgid "normal"
-msgstr ""
+msgstr "normaali"
 
 #: ui/options_graphics.rml:95
 msgid "Grid lighting"
-msgstr ""
+msgstr "Ruudukkovalaistus"
 
 #: ui/options_graphics.rml:95
 msgid "low, ugly"
-msgstr ""
+msgstr "alhainen, ruma"
 
 #: ui/options_graphics.rml:97
 msgid "Lighting system"
-msgstr ""
+msgstr "Valaistusjärjestelmä"
 
 #: ui/options_graphics.rml:100
 msgid "Light styles"
-msgstr ""
+msgstr "Valotyylit"
 
 #: ui/options_graphics.rml:102
 msgid "Precomputed dynamic lights emitted by static map objects."
 msgstr ""
+"Liikkumattomien kenttäobjektien erittämät esilaskelmoidut dynaamiset valot."
 
 #: ui/options_graphics.rml:105
 msgid "Dynamic lights"
-msgstr ""
+msgstr "Dynaamiset valot"
 
 #: ui/options_graphics.rml:107
 msgid ""
 "Realtime dynamic lights emitted by moving objects like weapons and buildings."
 msgstr ""
+"Liikkuvien objektien, kuten aseiden ja rakennelmien, erittämät "
+"reaaliaikaiset dynaamiset valot."
 
 #: ui/options_graphics.rml:110
 msgid "Rim lighting"
-msgstr ""
+msgstr "Reunusvalaistus"
 
 #: ui/options_graphics.rml:112
 msgid "Light the edges of models from behind."
-msgstr ""
+msgstr "Valaise kohteiden reunat takaapäin."
 
 #: ui/options_graphics.rml:115
 msgid "Half Lambert lighting"
-msgstr ""
+msgstr "Half Lambert ‐valaistus"
 
 #: ui/options_graphics.rml:117
 msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
+"Ei‐fyysinen valaistustekniikka, jolla tehdään kohteista vähemmän hämäriä."
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:247
 msgid "None"
-msgstr ""
+msgstr "Ei mikään"
 
 #: ui/options_graphics.rml:122
 msgid "Blobs"
-msgstr ""
+msgstr "Möykyt"
 
 #: ui/options_graphics.rml:122
 msgid "low"
-msgstr ""
+msgstr "alhainen"
 
 #: ui/options_graphics.rml:124
 msgid "Exponential mapping"
-msgstr ""
+msgstr "Eksponentiaalinen kartoitus"
 
 #: ui/options_graphics.rml:125
 msgid "Variance mapping"
-msgstr ""
+msgstr "Varianssikartoitus"
 
 #: ui/options_graphics.rml:126
 msgid "Exponential + variance"
-msgstr ""
+msgstr "Eksponentiaalinen + varianssi"
 
 #: ui/options_graphics.rml:126
 msgid "high"
-msgstr ""
+msgstr "korkea"
 
 #: ui/options_graphics.rml:129
 msgid "Shadows"
-msgstr ""
+msgstr "Varjot"
 
 #: ui/options_graphics.rml:136
 msgid "Textures"
-msgstr ""
+msgstr "Tekstuurit"
 
 #: ui/options_graphics.rml:138 ui/server_setup.rml:13
 msgid "General"
-msgstr ""
+msgstr "Yleinen"
 
 #: ui/options_graphics.rml:143
 msgid "Full"
-msgstr ""
+msgstr "Täysi"
 
 #: ui/options_graphics.rml:145
 msgid "Texture size"
-msgstr ""
+msgstr "Tekstuurikoko"
 
 #: ui/options_graphics.rml:146
 msgid ""
 "Lower texture size is useful for cards with limited video memory (VRAM)."
 msgstr ""
+"Pienempi tekstuurikoko on hyödyllinen grafiikkayksiköille, joissa on pieni "
+"videomuisti (VRAM)."
 
 #: ui/options_graphics.rml:149
 msgid "Mip-mapping"
-msgstr ""
+msgstr "Mip‐kartoitus"
 
 #: ui/options_graphics.rml:150
 msgid ""
 "Mip-mapping makes distant surfaces look better by using lower-resolution "
 "textures on them. This generally does not affect performance."
 msgstr ""
+"Mip-kartoitus saa kaukaiset pinnat näyttämään paremmalta käyttämällä "
+"matalempiresoluutioisia tekstuureja niissä. Tämä yleensä ei vaikuta "
+"suorituskykyyn."
 
 #: ui/options_graphics.rml:153 ui/options_ui.rml:12
 msgid "No"
-msgstr ""
+msgstr "Ei"
 
 #: ui/options_graphics.rml:159
 msgid "Anisotropic mip-mapping"
-msgstr ""
+msgstr "Anisotrooppinen mip-kartoitus"
 
 #: ui/options_graphics.rml:160
 msgid "Better interpretation of mip-maps on angled surfaces."
-msgstr ""
+msgstr "Parempi mip-karttojen tulkinta kaltevilla pinnoilla."
 
 #: ui/options_graphics.rml:164
 msgid "Bilinear"
-msgstr ""
+msgstr "Bilineaarinen"
 
 #: ui/options_graphics.rml:165
 msgid "Trilinear"
-msgstr ""
+msgstr "Trilineaarinen"
 
 #: ui/options_graphics.rml:165
 msgid "better"
-msgstr ""
+msgstr "parempi"
 
 #: ui/options_graphics.rml:167
 msgid "Texture scaling filter"
-msgstr ""
+msgstr "Tekstuurien skaalaussuodatin"
 
 #: ui/options_graphics.rml:177
 msgid "Materials"
-msgstr ""
+msgstr "Materiaalit"
 
 #: ui/options_graphics.rml:179
 msgid "Normal mapping"
-msgstr ""
+msgstr "Normaalikartoitus"
 
 #: ui/options_graphics.rml:181
 msgid "Simulates extra lighting detail on flat surfaces."
-msgstr ""
+msgstr "Simuloi ylimääräistä valaistusdetaljia tasaisilla pinnoilla."
 
 #: ui/options_graphics.rml:184
 msgid "Deluxe mapping"
-msgstr ""
+msgstr "Deluxe‐kartoitus"
 
 #: ui/options_graphics.rml:186
 msgid "Light direction based on baked textures."
-msgstr ""
+msgstr "Valon suuntaus perustuen valmisteltuihin tekstuureihin."
 
 #: ui/options_graphics.rml:189
 msgid "Relief mapping"
-msgstr ""
+msgstr "Kohokartoitus"
 
 #: ui/options_graphics.rml:191
 msgid "Adds bumps on supported surfaces."
-msgstr ""
+msgstr "Lisää kohoumia yhteensopiviin pintoihin."
 
 #: ui/options_graphics.rml:191 ui/options_graphics.rml:225
 msgid "Experimental."
-msgstr ""
+msgstr "Kokeellinen."
 
 #: ui/options_graphics.rml:194
 msgid "Specular mapping"
-msgstr ""
+msgstr "Peilikartoitus"
 
 #: ui/options_graphics.rml:196
 msgid "Simulate light specularity."
-msgstr ""
+msgstr "Simuloi valon heijastumista."
 
 #: ui/options_graphics.rml:199
 msgid "Physical mapping"
-msgstr ""
+msgstr "Fyysinen kartoitus"
 
 #: ui/options_graphics.rml:201
 msgid "Material appearance based on physical approximations."
-msgstr ""
+msgstr "Materiaalinen ulkonäkö perustuen fyysisiin arviointeihin."
 
 #: ui/options_graphics.rml:211 ui/options_sound.rml:13
 msgid "Effects"
-msgstr ""
+msgstr "Tehosteet"
 
 #: ui/options_graphics.rml:213
 msgid "Bloom"
-msgstr ""
+msgstr "Hohka"
 
 #: ui/options_graphics.rml:215
 msgid "Makes bright areas on your screen glow."
-msgstr ""
+msgstr "Saa kirkkaat alueet ruudullasi loistamaan."
 
 #: ui/options_graphics.rml:218
 msgid "Heat-haze"
-msgstr ""
+msgstr "Kuumuuden väreily"
 
 #: ui/options_graphics.rml:220
 msgid "Simulate air refraction in severe heat."
-msgstr ""
+msgstr "Simuloi ilman laajenemista kuumuuden äärellä."
 
 #: ui/options_graphics.rml:223
 msgid "Screen space ambient occlusion (SSAO)"
-msgstr ""
+msgstr "Screen space ambient occlusion (SSAO)"
 
 #: ui/options_graphics.rml:225
 msgid "Simulate dark corners."
-msgstr ""
+msgstr "Simuloi pimeitä kulmia."
 
 #: ui/options_graphics.rml:228
 msgid "Marks"
-msgstr ""
+msgstr "Jäljet"
 
 #: ui/options_graphics.rml:230
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
-msgstr ""
+msgstr "Tee jälkiä (kuten luodinreikiä tai rihmastoa) pintoihin"
 
 #: ui/options_graphics.rml:233
 msgid "Particle physics"
-msgstr ""
+msgstr "Partikkelifysiikka"
 
 #: ui/options_graphics.rml:235
 msgid "Allow particles to bounce off surfaces."
-msgstr ""
+msgstr "Anna partikkelien kimmota pinnoista."
 
 #: ui/options_graphics.rml:242
 msgid "Gameplay"
-msgstr ""
+msgstr "Pelaaminen"
 
 #: ui/options_graphics.rml:244
 msgid "Building markers"
-msgstr ""
+msgstr "Rakennelmien merkinnät"
 
 #: ui/options_graphics.rml:247
 msgid "disabled"
-msgstr ""
+msgstr "pois käytöstä"
 
 #: ui/options_graphics.rml:248
 msgid "All structures"
-msgstr ""
+msgstr "Kaikki rakennelmat"
 
 #: ui/options_graphics.rml:249
 msgid "Support structures"
-msgstr ""
+msgstr "Tukirakennelmat"
 
 #: ui/options_graphics.rml:250
 msgid "Offensive structures"
-msgstr ""
+msgstr "Hyökkäysrakennelmat"
 
 #: ui/options_graphics.rml:251
 msgid "Alien structures"
-msgstr ""
+msgstr "Alienien rakennelmat"
 
 #: ui/options_graphics.rml:252
 msgid "Human structures"
-msgstr ""
+msgstr "Ihmisten rakennelmat"
 
 #: ui/options_graphics.rml:253
 msgid "Alien support structures"
-msgstr ""
+msgstr "Alienien tukirakennelmat"
 
 #: ui/options_graphics.rml:254
 msgid "Human support structures"
-msgstr ""
+msgstr "Ihmisten tukirakennelmat"
 
 #: ui/options_graphics.rml:255
 msgid "Offensive alien structures"
-msgstr ""
+msgstr "Alienien hyökkäysrakennelmat"
 
 #: ui/options_graphics.rml:256
 msgid "Offensive human structures"
-msgstr ""
+msgstr "Ihmisten hyökkäysrakennelmat"
 
 #: ui/options_graphics.rml:258
 msgid "Building ranges"
-msgstr ""
+msgstr "Rakennelmien vaikutusetäisyydet"
 
 #: ui/options_graphics.rml:260
 msgid "Motion blur"
-msgstr ""
+msgstr "Vauhtisokeus"
 
 #: ui/options_graphics.rml:264
 msgid "Moderate"
-msgstr ""
+msgstr "Kohtalainen"
 
 #: ui/options_graphics.rml:268
 msgid "Intensity"
-msgstr ""
+msgstr "Vahvuus"
 
 #: ui/options_graphics.rml:269
 msgid "Level of motion-blur."
-msgstr ""
+msgstr "Vauhtisokeuden taso."
 
 #: ui/options_graphics.rml:272
 msgid "Minimum movement speed for motion-blur to activate"
-msgstr ""
+msgstr "Pienin liikkumisnopeus vauhtisokeuden aktivoitumiselle"
 
 #: ui/options_graphics.rml:275 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
-msgstr ""
+msgstr "Nykyinen:"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
-msgstr ""
+msgstr "Paina ESC peruuttaaksesi näppäimen valinnan."
 
 #: ui/options_keys.rml:16
 msgid ""
 "Classic First Person Shooter binds,<br />keys will be adjusted to your "
 "layout."
 msgstr ""
+"Perinteiset ensimmäisen persoonan räiskinnän näppäimet,<br />näppäimet "
+"valikoituvat näppäimistöasetelmasi mukaan."
 
 #: ui/options_keys.rml:20
 msgid ""
 "One column shifted to the right,<br />keys will be adjusted to your layout."
 msgstr ""
+"Näppäimet pystyrivin verran oikeammalla,<br />näppäimet valikoituvat "
+"näppäimistöasetelmasi mukaan."
 
 #: ui/options_keys.rml:24
 msgid "Special binds for left-handed,<br />touchpad users."
-msgstr ""
+msgstr "Erikoisnäppäimet vasenkätisille<br />kosketuslevyn käyttäjille."
 
 #: ui/options_keys.rml:28
 msgid "Gamepad"
-msgstr ""
+msgstr "Peliohjain"
 
 #: ui/options_keys.rml:29
 msgid "Does not work in menus yet,<br />&nbsp;Experimental."
-msgstr ""
+msgstr "Ei toimi valikoiden kanssa vielä,<br />&nbsp;Kokeellinen."
 
 #: ui/options_keys.rml:33
 msgid "Move"
-msgstr ""
+msgstr "Liikkuminen"
 
 #: ui/options_keys.rml:37
 msgid "Run / Walk:"
-msgstr ""
+msgstr "Juokse / Kävele:"
 
 #: ui/options_keys.rml:41
 msgid "Sprint:"
-msgstr ""
+msgstr "Sprinttaa:"
 
 #: ui/options_keys.rml:45
 msgid "Forward:"
-msgstr ""
+msgstr "Eteenpäin:"
 
 #: ui/options_keys.rml:49
 msgid "Backpedal:"
-msgstr ""
+msgstr "Taaksepäin:"
 
 #: ui/options_keys.rml:53
 msgid "Move left:"
-msgstr ""
+msgstr "Liiku vasemmalle:"
 
 #: ui/options_keys.rml:57
 msgid "Move right:"
-msgstr ""
+msgstr "Liiku oikealle:"
 
 #: ui/options_keys.rml:61
 msgid "Jump:"
-msgstr ""
+msgstr "Hyppää:"
 
 #: ui/options_keys.rml:65
 msgid "Crouch:"
-msgstr ""
+msgstr "Kyykisty:"
 
 #: ui/options_keys.rml:69
 msgid "Wallwalk:"
-msgstr ""
+msgstr "Seinilläkävely:"
 
 #: ui/options_keys.rml:72
 msgid "Abilities"
-msgstr ""
+msgstr "Kyvyt"
 
 #: ui/options_keys.rml:76
 msgid "Primary attack:"
-msgstr ""
+msgstr "Ensisijainen hyökkäys:"
 
 #: ui/options_keys.rml:80
 msgid "Secondary attack:"
-msgstr ""
+msgstr "Toissijainen hyökkäys:"
 
 #: ui/options_keys.rml:84
 msgid "Shoot barb:"
-msgstr ""
+msgstr "Ammu piikkipallo:"
 
 #: ui/options_keys.rml:88
 msgid "Throw grenade:"
-msgstr ""
+msgstr "Heitä kranaatti:"
 
 #: ui/options_keys.rml:92
 msgid "Reload:"
-msgstr ""
+msgstr "Lippaanvaihto:"
 
 #: ui/options_keys.rml:96
 msgid "Use medkit:"
-msgstr ""
+msgstr "Käytä lääkintäpaketti:"
 
 #: ui/options_keys.rml:100
 msgid "Use structure:"
-msgstr ""
+msgstr "Käytä rakennelmaa:"
 
 #: ui/options_keys.rml:104
 msgid "Evolve:"
-msgstr ""
+msgstr "Kehity:"
 
 #: ui/options_keys.rml:107
 msgid "Chat/Vote"
-msgstr ""
+msgstr "Juttelu/Äänestys"
 
 #: ui/options_keys.rml:111
 msgid "Gesture:"
-msgstr ""
+msgstr "Elehdi:"
 
 #: ui/options_keys.rml:115
 msgid "Global chat:"
-msgstr ""
+msgstr "Yleisjuttelu:"
 
 #: ui/options_keys.rml:119
 msgid "Team chat:"
-msgstr ""
+msgstr "Joukkuekeskustelu:"
 
 #: ui/options_keys.rml:123
 msgid "Admin chat:"
-msgstr ""
+msgstr "Ylläpitäjäin keskustelu:"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
-msgstr ""
+msgstr "Äänestä Kyllä:"
 
 #: ui/options_keys.rml:131
 msgid "Vote No:"
-msgstr ""
+msgstr "Äänestä Ei:"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
-msgstr ""
+msgstr "Joukkueäänestä Kyllä:"
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
-msgstr ""
+msgstr "Joukkueäänestä Ei:"
 
 #: ui/options_keys.rml:142
 msgid "Misc"
-msgstr ""
+msgstr "Muut"
 
 #: ui/options_keys.rml:146
 msgid "Show scores:"
-msgstr ""
+msgstr "Näytä pistetilanne:"
 
 #: ui/options_keys.rml:150
 msgid "Mark structure for replacement:"
-msgstr ""
+msgstr "Merkitse rakennelma korvattavaksi:"
 
 #: ui/options_keys.rml:152
 msgid "Hold the key to deconstruct structure."
-msgstr ""
+msgstr "Paina näppäintä pohjassa purkaaksesi rakennelman."
 
 #: ui/options_keys.rml:155
 msgid "Beacon menu:"
-msgstr ""
+msgstr "Majakkavalikko:"
 
 #: ui/options_keys.rml:159
 msgid "Toggle console:"
-msgstr ""
+msgstr "Avaa/sulje konsoli:"
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
-msgstr ""
+msgstr "Kuvakaappaus:"
 
 #: ui/options_keys.rml:165
 msgid ""
 "Hold SHIFT when taking a screenshot to capture a PNG, otherwise shots are "
 "taken in JPEG."
 msgstr ""
+"Paina VAIHTO (SHIFT)‐näppäintä pohjassa tehdäksesi PNG‐muotoisen "
+"kuvakaappauksen. Muussa tapauksessa kuvakaappaus on JPEG‐muodossa."
 
 #: ui/options_keys.rml:167
 msgid "Quake-look"
-msgstr ""
+msgstr "Quake‐katselu"
 
 #: ui/options_keys.rml:171
 msgid "Look up:"
-msgstr ""
+msgstr "Katso ylös:"
 
 #: ui/options_keys.rml:175
 msgid "Look down:"
-msgstr ""
+msgstr "Katso alas:"
 
 #: ui/options_keys.rml:179
 msgid "Turn left:"
-msgstr ""
+msgstr "Käänny vasemmalle:"
 
 #: ui/options_keys.rml:183
 msgid "Turn right:"
-msgstr ""
+msgstr "Käänny oikealle:"
 
 #: ui/options_keys.rml:187
 msgid "Mouse look:"
-msgstr ""
+msgstr "Hiirellä katselu:"
 
 #: ui/options_keys.rml:191
 msgid "Centerview:"
-msgstr ""
+msgstr "Keskitä näkymä:"
 
 #: ui/options_mouse.rml:9
 msgid "Y axis"
-msgstr ""
+msgstr "Y‐akseli"
 
 #: ui/options_mouse.rml:11
 msgid "Normal"
-msgstr ""
+msgstr "Tavallinen"
 
 #: ui/options_mouse.rml:12
 msgid "Inverted"
-msgstr ""
+msgstr "Käänteinen"
 
 #: ui/options_mouse.rml:14
 msgid "Behavior of vertical mouse movement."
-msgstr ""
+msgstr "Pystysuuntaisen hiiren liikkeen käyttäytyminen."
 
 #: ui/options_mouse.rml:17
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Hiiren tarkkuus"
 
 #: ui/options_mouse.rml:25
 msgid "Mouse filter"
-msgstr ""
+msgstr "Hiiren suodatus"
 
 #: ui/options_mouse.rml:27
 msgid "Smooth out sudden mouse movements."
-msgstr ""
+msgstr "Pehmentää hiiren äkillisiä liikahduksia."
 
 #: ui/options_mouse.rml:30
 msgid "Free look"
-msgstr ""
+msgstr "Vapaakatselu"
 
 #: ui/options_mouse.rml:32
 msgid "Turn off only if you are a Quake junkie."
-msgstr ""
+msgstr "Poista käytöstä vain, jos olet koukussa Quakeen."
 
 #: ui/options_player.rml:7
 msgid "Player Setup"
-msgstr ""
+msgstr "Pelaajan asetukset"
 
 #: ui/options_player.rml:9
 msgid "Personal"
-msgstr ""
+msgstr "Omat valinnat"
 
 #: ui/options_player.rml:12 ui/options_welcome.rml:12
 msgid "Nickname"
-msgstr ""
+msgstr "Nimi"
 
 #: ui/options_player.rml:14 ui/options_welcome.rml:14
 msgid "Colours and symbols can be used."
-msgstr ""
+msgstr "Värejä ja symboleita voi käyttää."
 
 #: ui/options_player.rml:17
 msgid "Tutorial mode"
-msgstr ""
+msgstr "Neuvoja‐tila"
 
 #: ui/options_player.rml:19
 msgid "Display hints for key bindings on-screen."
-msgstr ""
+msgstr "Näyttää ruudulla muistutuksia näppäimistä."
 
 #: ui/options_player.rml:23
 msgid "Show only team chat"
-msgstr ""
+msgstr "Näytä ainoastaan joukkuekeskustelu"
 
 #: ui/options_player.rml:26
 msgid "Movement"
-msgstr ""
+msgstr "Liikkuminen"
 
 #: ui/options_player.rml:28
 msgid "Wall-walking auto-pitch"
-msgstr ""
+msgstr "Seinilläkävelyn automaattinen kallistus"
 
 #: ui/options_player.rml:30
 msgid ""
 "Always twist and rotate the view when you wall-walk from one surface to "
 "another."
-msgstr ""
+msgstr "Kierrä ja käännä näkymää aina, kun seinilläkävelet pinnalta toiselle."
 
 #: ui/options_player.rml:39
 msgid "Wall-walking pitch-speed"
-msgstr ""
+msgstr "Seinilläkävelyn kallistusnopeus"
 
 #: ui/options_player.rml:40
 msgid "How fast your view rotates and twists as you wall-walk."
-msgstr ""
+msgstr "Kuinka nopeasti näkymäsi kääntyy ja kiertyy seinilläkävellessäsi."
 
 #: ui/options_player.rml:43
 msgid "Wall-walking toggles"
-msgstr ""
+msgstr "Seinilläkävelyn vaihtonäppäin"
 
 #: ui/options_player.rml:45 ui/options_player.rml:50
 msgid "Tap key instead of hold key to activate."
 msgstr ""
+"Aktivoi painamalla näppäintä sen sijaan, että pitäisit näppäintä pohjassa."
 
 #: ui/options_player.rml:48
 msgid "Sprint toggles"
-msgstr ""
+msgstr "Sprintin vaihtonäppäin"
 
 #: ui/options_player.rml:53
 msgid "Cosmetic"
-msgstr ""
+msgstr "Ulkonäkö"
 
 #: ui/options_player.rml:56
 msgid "Disable"
-msgstr ""
+msgstr "Poista käytöstä"
 
 #: ui/options_player.rml:57
 msgid "Humans only"
-msgstr ""
+msgstr "Vain ihmisillä"
 
 #: ui/options_player.rml:58
 msgid "Humans and aliens"
-msgstr ""
+msgstr "Ihmisillä ja alieneilla"
 
 #: ui/options_player.rml:60
 msgid "First-person weapons"
-msgstr ""
+msgstr "Ensimmäisen persoonan aseet"
 
 #: ui/options_player.rml:61
 msgid "Show gun, pincer, hand and mandible models in first-person."
-msgstr ""
+msgstr "Näytä aseet ja raajat ensimmäisessä persoonassa."
 
 #: ui/options_player.rml:64
 msgid "Left-handed mode"
-msgstr ""
+msgstr "Vasenkätinen tila"
 
 #: ui/options_player.rml:66
 msgid "Mirror first-person gun models."
-msgstr ""
+msgstr "Peilaa ensimmäisen persoonan aseet."
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
-msgstr ""
+msgstr "Yleinen äänenvoimakkuus"
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "Musiikki"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
-msgstr ""
+msgstr "Luolaefektin tehokkuus"
 
 #: ui/options_sound.rml:23
 msgid "Echo effect"
-msgstr ""
+msgstr "Kaikuefekti"
 
 #: ui/options_sound.rml:26
 msgid "Doppler intensity"
-msgstr ""
+msgstr "Doppler‐efektin tehokkuus"
 
 #: ui/options_sound.rml:28
 msgid "Pitch-shift effect when moving from or toward a sound."
 msgstr ""
+"Tee äänestä kimeämpää lähestyessä ääntä tai matalempaa etääntyessä äänestä."
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
-msgstr ""
+msgstr "OpenAL -äänilaite"
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
-msgstr ""
+msgstr "Äänilähdön laite"
 
 #: ui/options_ui.rml:7
 msgid "User interface"
-msgstr ""
+msgstr "Käyttöliittymä"
 
 #: ui/options_ui.rml:10
 msgid "Real-time clock"
-msgstr ""
+msgstr "Kellonaika"
 
 #: ui/options_ui.rml:13
 msgid "12 Hour"
-msgstr ""
+msgstr "12-tuntinen"
 
 #: ui/options_ui.rml:14
 msgid "24 Hour"
-msgstr ""
+msgstr "24-tuntinen"
 
 #: ui/options_ui.rml:16
 msgid "Show the time in real-life."
-msgstr ""
+msgstr "Näytä tietokoneen kellonaika."
 
 #: ui/options_ui.rml:19
 msgid "Game-time clock"
-msgstr ""
+msgstr "Eräaika"
 
 #: ui/options_ui.rml:21
 msgid "Show how long a match has lasted."
-msgstr ""
+msgstr "Näytä meneilläolevan erän kesto."
 
 #: ui/options_ui.rml:24
 msgid "Crosshair visiblity"
