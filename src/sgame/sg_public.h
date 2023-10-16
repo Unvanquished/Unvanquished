@@ -132,6 +132,7 @@ void              respawn( gentity_t *ent );
 void              ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles );
 bool          SpotWouldTelefrag( gentity_t *spot );
 bool          G_IsUnnamed( const char *name );
+void              G_ClientCleanName( const char *in, char *out, size_t outSize, gclient_t *client );
 const char        *ClientConnect( int clientNum, bool firstTime );
 const char        *ClientBotConnect( int clientNum, bool firstTime, team_t team );
 const char        *ClientUserinfoChanged( int clientNum, bool forceName );

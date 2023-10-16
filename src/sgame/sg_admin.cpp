@@ -1686,6 +1686,9 @@ static void G_admin_ban_message(
   char          *areason,
   int           alen )
 {
+	char userinfo[ MAX_INFO_STRING ];
+	char name[ MAX_NAME_LENGTH ];
+
 	if ( creason )
 	{
 		char  duration[ MAX_DURATION_LENGTH ];
@@ -1702,9 +1705,17 @@ static void G_admin_ban_message(
 
 	if ( areason && ent )
 	{
+		trap_GetUserinfo( ent->num(), userinfo, sizeof( userinfo ) );
+
+		const char *s = Info_ValueForKey( userinfo, "name" );
+
+		G_ClientCleanName( s, name, sizeof( name ), nullptr );
+
 		Com_sprintf( areason, alen,
-		             "^3Banned player %s^3 tried to connect from %s (ban #%d)",
-		             G_user_name( ent, ban->name ),
+		             "^3Banned player ^*%s^3 tried to connect from %s (ban #%d)",
+		             ( !Q_stricmp( name, ban->name ) 
+		               ? ban->name 
+		               : va( "%s ^3(a.k.a. ^*%s^3)", name, ban->name ) ),
 		             ent->client->pers.ip.str,
 		             ban->id );
 	}
