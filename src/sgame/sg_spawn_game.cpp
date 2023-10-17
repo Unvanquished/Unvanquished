@@ -80,6 +80,11 @@ game_end
 */
 static void game_end_act( gentity_t *self, gentity_t*, gentity_t* )
 {
+	if ( g_cheats && g_neverEnd.Get() )
+	{
+		Log::Warn( "g_neverEnd is set" );
+		return;
+	}
 	if ( level.unconditionalWin == TEAM_NONE ) // only if not yet triggered
 	{
 		level.unconditionalWin = self->mapEntity.conditions.team;

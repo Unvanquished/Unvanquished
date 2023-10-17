@@ -175,6 +175,7 @@ extern Cvar::Range<Cvar::Cvar<int>> g_debugEntities;
 
 extern Cvar::Cvar<bool> g_instantBuilding;
 extern Cvar::Cvar<bool> g_ignoreNobuild;
+extern Cvar::Cvar<bool> g_neverEnd;
 
 extern  Cvar::Cvar<float> g_evolveAroundHumans;
 extern  Cvar::Cvar<float> g_devolveMaxBaseDistance;
