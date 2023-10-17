@@ -76,29 +76,6 @@ void Rocket_UpdateLanguage()
 	updateLanguage = false;
 }
 
-// Standard HTML
-
-class LiElement : public Rml::Element
-{
-public:
-	LiElement(const Rml::String& tag) : Rml::Element(tag) {}
-
-private:
-	void OnUpdate() override
-	{
-		if ( !done )
-		{
-			SetInnerRML( va( "<li-bullet>• </li-bullet><li-content>%s</li-content>",
-				GetInnerRML().c_str() ) );
-			done = true;
-		}
-	}
-
-	bool done = false;
-};
-
-// Game-specific RML
-
 class WebElement : public Rml::Element
 {
 public:
@@ -3986,10 +3963,6 @@ void CG_Rocket_RegisterElements()
 		Rocket_RegisterElement( elementRenderCmdList[ i ].name );
 	}
 
-	// Standard HTML
-	RegisterElement<LiElement>( "li" );
-
-	// Game-specific RML
 	RegisterElement<AmmoHudElement>( "ammo" );
 	RegisterElement<ClipsHudElement>( "clips" );
 	RegisterElement<FpsHudElement>( "fps" );
