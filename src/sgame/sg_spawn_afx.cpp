@@ -345,8 +345,8 @@ void SP_env_afx_heal( gentity_t *self )
 
 	if ( self->damage <= 0 )
 	{
+		Log::Warn( "trigger_heal with negative damage key (%d)", self->damage );
 		self->damage = 1;
-		Log::Warn( "trigger_heal with negative damage key" );
 	}
 
 	self->touch = env_afx_heal_touch;
