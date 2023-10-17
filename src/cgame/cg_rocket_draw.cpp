@@ -1661,13 +1661,18 @@ private:
 CG_ScanForCrosshairEntity
 =================
 */
-static void CG_ScanForCrosshairEntity()
+// returns:
+// 0 if special entity/snap/whatever problem
+// 1 if foggy
+// 2 otherwise
+static int CG_ScanForCrosshairEntity()
 {
+	int ret = 0;
 	vec3_t        start, end;
 
 	if ( cg.snap == nullptr )
 	{
-		return;
+		return 0;
 	}
 
 	cg.crosshairFriend = false;
@@ -1681,13 +1686,13 @@ static void CG_ScanForCrosshairEntity()
 	// ignore special entities
 	if ( trace.entityNum > ENTITYNUM_MAX_NORMAL )
 	{
-		return;
+		return ret;
 	}
 
 	// ignore targets in fog
 	if ( CM_PointContents( trace.endpos, 0 ) & CONTENTS_FOG )
 	{
-		return;
+		ret = 1;
 	}
 
 	entityState_t &targetState = cg_entities[ trace.entityNum ].currentState;
@@ -1725,7 +1730,7 @@ static void CG_ScanForCrosshairEntity()
 	{
 		// only react to living clients
 		if ( !CG_IsAlive(targetState) )
-			return;
+			return ret;
 
 		// set friend/foe
 		if ( targetTeam == ownTeam && ownTeam != TEAM_NONE )
@@ -1749,6 +1754,7 @@ static void CG_ScanForCrosshairEntity()
 			}
 		}
 	}
+	return 2;
 }
 
 class CrosshairNamesElement : public HudElement
@@ -1769,7 +1775,7 @@ public:
 		}
 
 		// scan the known entities to see if the crosshair is sighted on one
-		CG_ScanForCrosshairEntity();
+		int scan = CG_ScanForCrosshairEntity();
 
 		// draw the name of the player being looked at
 		alpha = CG_FadeAlpha( cg.crosshairEntityTime, CROSSHAIR_CLIENT_TIMEOUT );
