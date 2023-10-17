@@ -471,14 +471,6 @@ static bool G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, g
 		return false;
 	}
 
-	if ( g_debugEntities.Get() >= 0 ) //dont't warn about anything with -1 or lower
-	{
-		if( spawnDescription->versionState < ENT_V_TMPNAME
-		|| ( g_debugEntities.Get() >= 1 && spawnDescription->versionState == ENT_V_TMPNAME ) )
-		{
-			Log::Warn("Entity %s uses a deprecated classtype — use the class ^5%s^* instead", etos( entity ), spawnDescription->replacement );
-		}
-	}
 	entity->classname = spawnDescription->replacement;
 	return true;
 }
@@ -990,12 +982,6 @@ bool G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFi
 	if ( !Q_stricmp(expectedFieldname, actualFieldname) || typeOfDeprecation == ENT_V_UNCLEAR )
 	{
 		return false;
-	}
-
-	//dont't warn about anything with -1 or lower
-	if ( g_debugEntities.Get() >= 0 && ( typeOfDeprecation < ENT_V_TMPNAME || g_debugEntities.Get() >= 1 ) )
-	{
-		Log::Warn("Entity ^5#%i^* contains deprecated field ^5%s^* — use ^5%s^* instead", entity->num(), actualFieldname, expectedFieldname );
 	}
 
 	return true;
