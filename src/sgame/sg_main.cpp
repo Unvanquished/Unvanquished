@@ -227,7 +227,7 @@ Cvar::Cvar<int> g_floodMaxDemerits("g_floodMaxDemerits", "client message rate co
 Cvar::Cvar<int> g_floodMinTime("g_floodMinTime", "mute period after flooding, in milliseconds", Cvar::NONE, 2000);
 Cvar::Cvar<int> g_teamStatus("g_teamStatus", "allow /teamstatus command. 0 = disabled, otherwise you can only /teamstatus every <g_teamStatus> seconds.", Cvar::NONE, 5);
 
-Cvar::Cvar<int> g_tacticMilliseconds("g_tacticMilliseconds", "clients can only /tactic every <g_tacticMilliseconds> milliseconds, -1 = disabled.", Cvar::NONE, 1000);
+Cvar::Cvar<int> g_tacticMilliseconds("g_tacticMilliseconds", "clients can only /tactic every <g_tacticMilliseconds> milliseconds, -1 = disabled.", Cvar::NONE, 3000);
 
 Cvar::Cvar<std::string> g_defaultLayouts("g_defaultLayouts", "layouts to pick randomly from each map", Cvar::NONE, "");
 Cvar::Cvar<std::string> g_layouts("g_layouts", "layouts for next map (cleared after use)", Cvar::NONE, "");
@@ -296,13 +296,13 @@ Cvar::Cvar<bool> g_bot_radar("g_bot_radar", "whether bots buy the Radar", Cvar::
 Cvar::Cvar<int> g_bot_radarRatio("g_bot_radarRatio", "bots target x% of team owning radar", Cvar::NONE, 75);
 Cvar::Cvar<bool> g_bot_jetpack("g_bot_jetpack", "whether bots buy the Jetpack", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_grenade("g_bot_grenade", "whether bots buy the Grenade", Cvar::NONE, false);
-Cvar::Cvar<bool> g_bot_firebomb("g_bot_firebomb", "whether bots buy the Firebomb", Cvar::NONE, false);
+Cvar::Cvar<bool> g_bot_firebomb("g_bot_firebomb", "whether bots buy the Firebomb", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_biokit("g_bot_biokit", "whether bots buy the Biokit", Cvar::NONE, true);
 
 // bot evolution cvars
 Cvar::Cvar<bool> g_bot_evolve("g_bot_evolve", "whether bots can evolve", Cvar::NONE, true);
-Cvar::Cvar<bool> g_bot_builder("g_bot_builder", "whether bots use non-advanced Granger", Cvar::NONE, false);
-Cvar::Cvar<bool> g_bot_builderupg("g_bot_builderupg", "whether bots use Advanced Granger", Cvar::NONE, false);
+Cvar::Cvar<bool> g_bot_builder("g_bot_builder", "whether bots use non-advanced Granger", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_builderupg("g_bot_builderupg", "whether bots use Advanced Granger", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_level0("g_bot_level0", "whether bots use Dretch", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_level1("g_bot_level1", "whether bots use Mantis", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_level2("g_bot_level2", "whether bots use non-advanced Marauder", Cvar::NONE, true);

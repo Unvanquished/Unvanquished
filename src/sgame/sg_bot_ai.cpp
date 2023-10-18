@@ -39,7 +39,7 @@ constexpr float MAX_HUMAN_DANCE_DIST = 300.0f;
 //how far away we can be before we try to go around an alien when fighting an alien
 constexpr float MIN_HUMAN_DANCE_DIST = 100.0f;
 
-static Cvar::Cvar<int> g_bot_medistatDistance( "g_bot_medistatDistance", "Distance at which bots will detect the busyness of a medistation", Cvar::NONE, 200 );
+static Cvar::Cvar<int> g_bot_medistatDistance( "g_bot_medistatDistance", "Distance at which bots will detect the busyness of a medistation", Cvar::NONE, 640 );
 /*
 ======================
 g_bot_ai.c

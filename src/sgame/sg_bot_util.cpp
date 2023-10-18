@@ -1661,7 +1661,7 @@ void BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer )
 	}
 }
 
-static Cvar::Cvar<int> g_bot_upwardAttackMinHeight("g_bot_upwardAttackMinHeight", "minimal height difference for bots to attack upwards.", Cvar::NONE, 9999);
+static Cvar::Cvar<int> g_bot_upwardAttackMinHeight("g_bot_upwardAttackMinHeight", "minimal height difference for bots to attack upwards.", Cvar::NONE, 200);
 
 // return true if an upward attack is started or in progress, false otherwise
 static bool BotAttackUpward( gentity_t *self )
