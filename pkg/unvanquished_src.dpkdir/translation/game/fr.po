@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-10-13 04:04+0000\n"
+"PO-Revision-Date: 2023-10-21 04:12+0000\n"
 "Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.1-dev\n"
+"X-Generator: Weblate 5.1\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -69,7 +69,7 @@ msgstr "Motif"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr "Faire un vote"
+msgstr "Poser un vote"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
@@ -102,7 +102,7 @@ msgstr "Changer de carte"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Vote : changer la carte suivante"
+msgstr "Vote : changer la carte suivante"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
@@ -945,7 +945,6 @@ msgid "Camera rolling"
 msgstr "Roulement de caméra"
 
 #: ui/options_fov.rml:92
-#, fuzzy
 msgid "Twisting movement"
 msgstr "Mouvement de torsion"
 
@@ -1691,7 +1690,6 @@ msgid "Wall-walking auto-pitch"
 msgstr "Tangage automatique de marche murale"
 
 #: ui/options_player.rml:30
-#, fuzzy
 msgid ""
 "Always twist and rotate the view when you wall-walk from one surface to "
 "another."
@@ -1704,7 +1702,6 @@ msgid "Wall-walking pitch-speed"
 msgstr "Vitesse de tangage de marche murale"
 
 #: ui/options_player.rml:40
-#, fuzzy
 msgid "How fast your view rotates and twists as you wall-walk."
 msgstr ""
 "La vitesse à laquelle votre vue tourne et se tord lorsque vous marchez sur "
@@ -1773,12 +1770,10 @@ msgid "Echo effect"
 msgstr "Effet d'écho"
 
 #: ui/options_sound.rml:26
-#, fuzzy
 msgid "Doppler intensity"
 msgstr "Intensité Doppler"
 
 #: ui/options_sound.rml:28
-#, fuzzy
 msgid "Pitch-shift effect when moving from or toward a sound."
 msgstr "Effet de décalage de hauteur lors du déplacement vers un son."
 
@@ -1968,7 +1963,6 @@ msgid "Extra packages to load"
 msgstr "Paquets supplémentaires à charger"
 
 #: ui/server_create.rml:59
-#, fuzzy
 msgid "Building layout to use"
 msgstr "Layout de construction à utiliser"
 
@@ -2146,9 +2140,8 @@ msgid "The initial speed at which BP will be recovered (in BP per minute)"
 msgstr "Vitesse initiale de récupération de points de construction par minute"
 
 #: ui/server_setup.rml:180
-#, fuzzy
 msgid "Half regeneration time"
-msgstr "Temps de demi-régénération"
+msgstr "Temps de régénération à moitié"
 
 #: ui/server_setup.rml:181
 msgid "The duration one will wait before BP recovery gets twice as slow"
@@ -3186,28 +3179,24 @@ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
 msgstr "%s%s ^*a été tranchée par les %s de %s%s^*"
 
 #: src/cgame/cg_event.cpp:475
-#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-msgstr "%s%s ^*a été tranché par les %s de %s%s%s^*"
+msgstr "%s%s ^*a été tranché par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:476
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*a été tranché par les %s de %s%s%s^* aidé par %s%s%s^*"
+msgstr "%s%s ^*a été tranché par le %s de %s%s%s^* aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:476
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*a été tranchée par les %s de %s%s%s^* aidé par %s%s%s^*"
+msgstr "%s%s ^*a été tranchée par le %s de %s%s%s^* aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:476
-#, fuzzy
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*a été tranché par les %s de %s%s%s^* aidé par %s%s%s^*"
+msgstr "%s%s ^*a été tranché par le %s de %s%s%s^* aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
@@ -3345,18 +3334,16 @@ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
 msgstr "%s%s ^*à été tué par le crachat du %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
-"%s%s ^*a été sauvagement piqué par le gragoon de %s%s%s^*, aidé par %s%s%s^*"
+"%s%s ^*a été sauvagement piqué par le %s^* de %s%s%s^*, aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
 msgstr ""
-"%s%s ^*a été sauvagement piquée par le gragoon de %s%s%s^*, aidé par %s%s%s^*"
+"%s%s ^*a été sauvagement piquée par le %s^* de %s%s%s^*, aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "neuter"
@@ -3484,7 +3471,6 @@ msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*aurait dû utiliser un kit médical contre le poison de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:530
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*aurait dû utiliser un kit médical contre le poison de %s%s%s^*"
@@ -3503,7 +3489,6 @@ msgstr ""
 "par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:531
-#, fuzzy
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -3520,13 +3505,11 @@ msgstr ""
 "par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:535
-#, fuzzy
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*tenté d'envahir l'espace personnel de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:535
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*tentée d'envahir l'espace personnel de %s%s%s^*"
@@ -3542,7 +3525,6 @@ msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*a fini dans le vide"
 
 #: src/cgame/cg_event.cpp:536
-#, fuzzy
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*a finie dans le vide"
@@ -3683,24 +3665,20 @@ msgid "%s Under attack"
 msgstr "%s est attaqué"
 
 #: src/cgame/cg_main.cpp:451
-#, fuzzy
 msgid "Calling home…"
-msgstr "Appel à la maison…"
+msgstr "Nous appelons chez vous…"
 
 #: src/cgame/cg_main.cpp:451
-#, fuzzy
 msgid "Sending to the front…"
-msgstr "Envoi au front…"
+msgstr "Nous vous envoyons au front…"
 
 #: src/cgame/cg_main.cpp:456
-#, fuzzy
 msgid "Tracking your movements…"
-msgstr "Suivi de vos déplacements…"
+msgstr "Nous suivons vos déplacements…"
 
 #: src/cgame/cg_main.cpp:456
-#, fuzzy
 msgid "Letting out the magic smoke…"
-msgstr "Laissant échapper la fumée magique…"
+msgstr "Laissons échapper la fumée magique…"
 
 #: src/cgame/cg_main.cpp:460
 msgid "Collecting bees for the hives…"
@@ -3711,26 +3689,22 @@ msgid "Initialising fireworks…"
 msgstr "Initialisation des feux d'artifice…"
 
 #: src/cgame/cg_main.cpp:460
-#, fuzzy
 msgid "Causing electrical faults…"
-msgstr "Causer des pannes électriques…"
+msgstr "faisons des pannes électriques…"
 
 #: src/cgame/cg_main.cpp:464
 msgid "Reading the manual…"
 msgstr "Lecture du manuel…"
 
 #: src/cgame/cg_main.cpp:464
-#, fuzzy
 msgid "Looking at blueprints…"
-msgstr "regarde les plans…"
+msgstr "regarder les plans…"
 
 #: src/cgame/cg_main.cpp:468
-#, fuzzy
 msgid "Generating annoying noises…"
 msgstr "Génération de bruits gênants…"
 
 #: src/cgame/cg_main.cpp:468
-#, fuzzy
 msgid "Recording granger purring…"
 msgstr "Enregistrement du ronronnement de Granger…"
 
@@ -3739,22 +3713,18 @@ msgid "Hello World!"
 msgstr "Bonjour tout le monde !"
 
 #: src/cgame/cg_main.cpp:472
-#, fuzzy
 msgid "Making a scene…"
-msgstr "Création de scène…"
+msgstr "Création de la scène…"
 
 #: src/cgame/cg_main.cpp:476
-#, fuzzy
 msgid "Taking pictures of the world…"
-msgstr "Prise de photos du monde…"
+msgstr "Prendre des photos du monde…"
 
 #: src/cgame/cg_main.cpp:476
-#, fuzzy
 msgid "Drawing smiley faces…"
 msgstr "Dessiner des smileys…"
 
 #: src/cgame/cg_main.cpp:480
-#, fuzzy
 msgid "Sharpening the aliens' claws…"
 msgstr "Aiguiser les griffes des extraterrestres…"
 
@@ -3767,14 +3737,12 @@ msgid "Unwrapping jetpacks…"
 msgstr "Déballage des jetpacks…"
 
 #: src/cgame/cg_main.cpp:484
-#, fuzzy
 msgid "Spinning silk for reticles…"
-msgstr "Filature de soie pour réticules…"
+msgstr "File la soie pour les réticules…"
 
 #: src/cgame/cg_main.cpp:488
-#, fuzzy
 msgid "Adding turret spam…"
-msgstr "Ajout de spam de tourelle…"
+msgstr "Ajout de tourelles…"
 
 #: src/cgame/cg_main.cpp:488
 msgid "Awakening the overmind…"
@@ -3805,7 +3773,6 @@ msgid "Done!"
 msgstr "Terminé !"
 
 #: src/cgame/cg_main.cpp:1089
-#, fuzzy
 msgid "Generating bot navigation meshes"
 msgstr "Génération du maillages de navigation des Robots"
 
@@ -3820,9 +3787,9 @@ msgid "%s^* renamed to %s"
 msgstr "%s^* s'est renommé en %s"
 
 #: src/cgame/cg_players.cpp:1452
-#, fuzzy, c-format
+#, c-format
 msgid "%s^* left the %s"
-msgstr "%s^* a quitté le %s"
+msgstr "%s^* a quitté les %s"
 
 #: src/cgame/cg_players.cpp:1457
 #, c-format
@@ -3950,10 +3917,9 @@ msgid "No free player slots"
 msgstr "Aucune place de libre"
 
 #: src/cgame/cg_servercmds.cpp:483
-#, fuzzy
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
-"Vous devez attendre la fin du temps d'échauffement avant de rejoindre une "
+"Vous devez attendre que le délais soit écoulé pour pouvoir rejoindre une "
 "équipe."
 
 #: src/cgame/cg_servercmds.cpp:485
@@ -4087,9 +4053,8 @@ msgstr ""
 "des constructions existances pour une démolition."
 
 #: src/cgame/cg_servercmds.cpp:581
-#, fuzzy
 msgid "There are no resources remaining"
-msgstr "Il ne reste aucun point de réapparition"
+msgstr "Il ne reste plus de rescources"
 
 #: src/cgame/cg_servercmds.cpp:585
 msgid "This buildable is not powered."
@@ -4220,7 +4185,6 @@ msgid "Unknown starting item"
 msgstr "Objet de départ inconnu"
 
 #: src/cgame/cg_servercmds.cpp:657
-#, fuzzy
 msgid "Starting item not allowed"
 msgstr "Élément de départ non autorisé"
 
@@ -4345,7 +4309,7 @@ msgid "The %s has not been unlocked yet"
 msgstr "Le %s n'est pas encore déverrouillé"
 
 #: src/cgame/cg_servercmds.cpp:750
-#, fuzzy, c-format
+#, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "cgame : débogage : aucun menu de ce type %d"
 
@@ -4389,7 +4353,6 @@ msgid "Secondary Attack"
 msgstr "Attaque secondaire"
 
 #: src/cgame/cg_tutorial.cpp:50
-#, fuzzy
 msgid "Tertiary Attack"
 msgstr "Attaque tertiaire"
 
@@ -4430,21 +4393,18 @@ msgid "Toggle Console"
 msgstr "Ouvrir / fermer la console"
 
 #: src/cgame/cg_tutorial.cpp:60
-#, fuzzy
 msgid "Toggle Menu"
-msgstr "Basculer le menu"
+msgstr "afficher le menu"
 
 #: src/cgame/cg_tutorial.cpp:61
 msgid "Throw a grenade"
 msgstr "Lancer une grenade"
 
 #: src/cgame/cg_tutorial.cpp:106
-#, fuzzy
 msgid "SHIFT-ESCAPE"
 msgstr "SHIFT-ECHAP"
 
 #: src/cgame/cg_tutorial.cpp:113
-#, fuzzy
 msgid "ESCAPE"
 msgstr "ECHAP"
 
@@ -4464,7 +4424,7 @@ msgid "\"%s\" (unbound)"
 msgstr "« %s » (non affecté)"
 
 #: src/cgame/cg_tutorial.cpp:186
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to place the %s."
 msgstr "Appuyez sur %s pour placer l'élément \" %s \"."
 
@@ -4479,14 +4439,14 @@ msgid "Press %s to build a structure."
 msgstr "Appuyez sur %s pour construire une structure."
 
 #: src/cgame/cg_tutorial.cpp:210
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to unmark this structure for replacement."
-msgstr "Appuyez sur %s pour décocher cette structure pour la remplacer."
+msgstr "Appuyez sur %s pour décocher cette structure pour le remplacement."
 
 #: src/cgame/cg_tutorial.cpp:216
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to mark this structure for replacement."
-msgstr "Appuyez sur %s pour marquer cette structure pour la remplacer."
+msgstr "Appuyez sur %s pour marquer cette structure pour le remplacement."
 
 #: src/cgame/cg_tutorial.cpp:221
 #, c-format
@@ -4495,9 +4455,9 @@ msgstr "Maintenez %s pour déconstruire cette structure."
 
 #: src/cgame/cg_tutorial.cpp:238 src/cgame/cg_tutorial.cpp:288
 #: src/cgame/cg_tutorial.cpp:365
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to swipe."
-msgstr "Appuyez sur %s pour balayer."
+msgstr "Appuyez sur %s pour glisser."
 
 #: src/cgame/cg_tutorial.cpp:246
 #, c-format
@@ -4521,24 +4481,24 @@ msgid "Aim at their heads to cause more damage."
 msgstr "Visez leur tête pour causer plus de dégâts."
 
 #: src/cgame/cg_tutorial.cpp:293
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to lunge."
-msgstr "Appuyez sur %s pour vous fendre."
+msgstr "Appuyez sur %s pour courir."
 
 #: src/cgame/cg_tutorial.cpp:311 src/cgame/cg_tutorial.cpp:337
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to bite."
 msgstr "Appuyez sur %s pour mordre."
 
 #: src/cgame/cg_tutorial.cpp:318
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to invoke an electrical attack."
-msgstr "Appuyez sur %s pour invoquer une attaque électrique."
+msgstr "Appuyez sur %s pour faire une attaque électrique."
 
 #: src/cgame/cg_tutorial.cpp:324
-#, c-format, fuzzy
+#, c-format
 msgid "Hold down %s then touch a wall to wall jump."
-msgstr "Maintenez %s enfoncé, puis touchez un mur pour faire un saut de mur"
+msgstr "Maintenez %s enfoncé, puis touchez un mur pour faire un saut de mur."
 
 #: src/cgame/cg_tutorial.cpp:344
 #, c-format
@@ -4546,9 +4506,9 @@ msgid "Press %s to launch a barb."
 msgstr "Appuyez sur %s pour cracher."
 
 #: src/cgame/cg_tutorial.cpp:350
-#, fuzzy, c-format
+#, c-format
 msgid "Hold down and release %s to pounce."
-msgstr "Maintenez enfoncé et relâchez %s pour bondir."
+msgstr "Maintenez enfoncé %s et relâchez pour bondir."
 
 #: src/cgame/cg_tutorial.cpp:370
 #, c-format
@@ -4565,7 +4525,7 @@ msgstr "Trouvez une armurerie pour plus de munitions."
 
 #: src/cgame/cg_tutorial.cpp:421 src/cgame/cg_tutorial.cpp:429
 #: src/cgame/cg_tutorial.cpp:455
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to fire the %s."
 msgstr "Appuie sur %s pour tirer le %s."
 
@@ -4575,19 +4535,19 @@ msgid "Hold %s to zoom."
 msgstr "Maintenez %s pour zoomer."
 
 #: src/cgame/cg_tutorial.cpp:442
-#, fuzzy, c-format
+#, c-format
 msgid "Hold %s to activate the %s."
 msgstr "Maintenez %s pour activer le %s."
 
 #: src/cgame/cg_tutorial.cpp:450
-#, fuzzy, c-format
+#, c-format
 msgid "Hold and release %s to fire a charged shot."
-msgstr "Maintenez et relâchez %s pour tirer un coup chargé."
+msgstr "Maintenez %s et relâchez pour tirer un coup chargé."
 
 #: src/cgame/cg_tutorial.cpp:481
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to throw the %s."
-msgstr "Appuyez sur %s pour lancer le %s."
+msgstr "Appuyez sur %s pour lancer la %s."
 
 #: src/cgame/cg_tutorial.cpp:493 src/cgame/cg_tutorial.cpp:530
 #, c-format
@@ -4641,9 +4601,9 @@ msgid "Press %s to stop following."
 msgstr "Appuyez sur %s pour arrêter de suivre."
 
 #: src/cgame/cg_tutorial.cpp:590
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
-msgstr "Appuyez sur %s pour passer en mode spectateur poursuite-cam."
+msgstr "Appuyez sur %s pour passer en mode spectateur."
 
 #: src/cgame/cg_tutorial.cpp:597
 #, c-format
@@ -4691,12 +4651,11 @@ msgid "Press %s to open the console."
 msgstr "Appuyez sur %s pour ouvrir la console."
 
 #: src/cgame/cg_tutorial.cpp:734
-#, fuzzy, c-format
+#, c-format
 msgid "Press %s for the menu."
-msgstr "Appuyez sur %s pour le menu."
+msgstr "Appuyez sur %s pour voir le menu."
 
 #: src/cgame/rocket/rocket_keys.cpp:325
-#, fuzzy
 msgid "Unbound"
 msgstr "délier"
 
@@ -4744,7 +4703,6 @@ msgid "$1$ ^2built^* by $2$$3$"
 msgstr "$1$ ^2construit^* par $2$$3$"
 
 #: src/sgame/sg_client.cpp:845
-#, fuzzy
 msgid "Name change spam protection ($1$ = $2$)"
 msgstr "Protection anti-spam de changement de nom ($1$ = $2$)"
 
@@ -4811,7 +4769,6 @@ msgid "Aliens win"
 msgstr "Victoire des extraterrestres"
 
 #: src/sgame/sg_main.cpp:2003
-#, fuzzy
 msgid "Empty teams skip map time exceeded."
 msgstr "Les équipes vides sautent le temps de carte dépassé."
 
@@ -4824,12 +4781,10 @@ msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Serveur : le jeu se réactivera automatiquement dans $1$ secondes"
 
 #: src/sgame/sg_main.cpp:2190
-#, fuzzy
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Serveur : La pause à été automatiquement anulée ($1$ minutes max)"
 
 #: src/sgame/sg_main.cpp:2193
-#, fuzzy
 msgid "The game has been unpaused!"
 msgstr "Le jeu reprends !"
 
@@ -4899,7 +4854,6 @@ msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
 msgstr "$1$ : 'maps/$2$.bsp' est introuvable sur le serveur"
 
 #: src/sgame/sg_votes.cpp:233
-#, fuzzy
 msgid "callvote: layout '$1$' could not be found on the server"
 msgstr "vote : le layout '$1$' est introuvable sur le serveur"
 
@@ -4917,27 +4871,25 @@ msgid "$1$: number must be non-negative and smaller than $2$"
 msgstr "$1$ : le nombre doit ne dois pas être négatif et inférieur à $2$"
 
 #: src/sgame/sg_votes.cpp:341
-#, c-format, fuzzy
+#, c-format
 msgid "Fill each team with bots to %d"
 msgstr "définir le nombre de robots par équipe à %d"
 
 #: src/sgame/sg_votes.cpp:363
-#, c-format, fuzzy
+#, c-format
 msgid "Fill the human team with bots to %d"
 msgstr "définir le nombre de robots humains à %d"
 
 #: src/sgame/sg_votes.cpp:385
-#, c-format, fuzzy
+#, c-format
 msgid "Fill the alien team with bots to %d"
 msgstr "définir le nombre de robots alien à %d"
 
 #: src/sgame/sg_votes.cpp:460
-#, fuzzy
 msgid "$1$: voting not allowed here"
 msgstr "$1$ : voter n'est pas autorisé ici"
 
 #: src/sgame/sg_votes.cpp:469
-#, fuzzy
 msgid "$1$: you are not permitted to call $2$ votes"
 msgstr "$1$ : vous n'avez pas le droit de mettre le vote \" $2$ \""
 
@@ -4946,7 +4898,6 @@ msgid "$1$: a vote is already in progress"
 msgstr "$1$ : un vote est déjà en cours"
 
 #: src/sgame/sg_votes.cpp:499
-#, fuzzy
 msgid "Invalid vote string"
 msgstr "vote invalide"
 
@@ -5004,14 +4955,12 @@ msgid "$1$: You must provide a reason"
 msgstr "$1$ : vous devez fournir une raison"
 
 #: src/sgame/sg_votes.cpp:721
-#, fuzzy
 msgid "$1$^* called a vote: $2$"
 msgstr "$1$^* a mis un vote : $2$"
 
 #: src/sgame/sg_votes.cpp:738
-#, fuzzy
 msgid "$1$^* called a team vote: $2t$"
-msgstr "$1$^* a mis un vote d'équipe : $2t$"
+msgstr "$1$^* a posé un vote d'équipe : $2t$"
 
 #: src/sgame/sg_votes.cpp:854
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
