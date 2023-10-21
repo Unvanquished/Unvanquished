@@ -161,28 +161,8 @@ Cvar::Cvar<float> g_momentumDeconMod("g_momentumDeconMod", "momentum penalty mul
 Cvar::Cvar<float> g_momentumDestroyMod("g_momentumDestroyMod", "momentum reward multiplier for killing buildables", Cvar::NONE, DEFAULT_MOMENTUM_DESTROY_MOD);
 
 
-Cvar::Cvar<bool> g_humanAllowBuilding(
-		"g_humanAllowBuilding",
-		"can human build",
-		Cvar::NONE,
-		true);
-
-Cvar::Cvar<bool> g_alienAllowBuilding(
-		"g_alienAllowBuilding",
-		"can aliens build",
-		Cvar::NONE,
-		true);
-
-// sudden death
-Cvar::Callback<Cvar::Cvar<int>> g_suddenDeathTime(
-	"g_SuddenDeathTime", 
-	"Sudden Death begins after this time (in minutes). 0 = disabled. (configure with g_suddenDeathMode)", 
-	Cvar::NONE, 
-	0,
-	[](int) {
-		G_UpdateSuddenDeathTime( 0 );
-	});
-
+Cvar::Cvar<bool> g_humanAllowBuilding( "g_humanAllowBuilding", "can human build", Cvar::NONE, true);
+Cvar::Cvar<bool> g_alienAllowBuilding( "g_alienAllowBuilding", "can aliens build", Cvar::NONE, true);
 
 // sudden death {
 Cvar::Callback<Cvar::Cvar<int>> g_suddenDeathTime( "g_SuddenDeathTime", "Sudden Death begins after this time (in minutes). 0 = disabled. (configure with g_suddenDeathMode)", Cvar::NONE, 30, [](int) { G_UpdateSuddenDeathTime( 0 ); });
