@@ -184,10 +184,13 @@ Cvar::Callback<Cvar::Cvar<int>> g_suddenDeathTime(
 	});
 
 
-Cvar::Cvar<int> g_suddenDeathMode("g_suddenDeathMode", "Sudden Death mode. After g_suddenDeathTime, either: 0) SD disabled. OR 1) allow arm, medi, boost & main building rebuild. OR 2) allow no rebuilding.", Cvar::NONE, 0);
+// sudden death {
+Cvar::Callback<Cvar::Cvar<int>> g_suddenDeathTime( "g_SuddenDeathTime", "Sudden Death begins after this time (in minutes). 0 = disabled. (configure with g_suddenDeathMode)", Cvar::NONE, 30, [](int) { G_UpdateSuddenDeathTime( 0 ); });
+Cvar::Cvar<int> g_suddenDeathMode("g_suddenDeathMode", "Sudden Death mode. After g_suddenDeathTime, either: 0) SD disabled. OR 1) allow arm, medi, boost & main building rebuild. OR 2) allow no rebuilding.", Cvar::NONE, 1);
 // humans are more vulnerable than aliens at SD and rely on their buildings more, so we may allow a certain number of drills to be rebuilt after SD.
 Cvar::Range<Cvar::Cvar<int>> g_suddenDeathDrillCount("g_suddenDeathDrillCount", "Humans may be permitted to rebuild this many drills after Sudden Death.", Cvar::SERVERINFO, 1, -1, 64); 
 Cvar::Range<Cvar::Cvar<int>> g_suddenDeathLeechCount("g_suddenDeathLeechCount", "Aliens may be permitted to rebuild this many leeches after Sudden Death.", Cvar::SERVERINFO, 1, -1, 64); 
+// }
 
 Cvar::Cvar<float> g_alienOffCreepRegenHalfLife("g_alienOffCreepRegenHalfLife", "half-life in seconds for decay of creep's healing bonus", Cvar::NONE, 0);
 
