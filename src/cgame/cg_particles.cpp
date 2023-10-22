@@ -288,8 +288,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 				case PMT_NORMAL:
 					if ( !ps->normalValid )
 					{
-						logger.Warn("a particle with velocityType "
-						           "normal has no normal" );
+						logger.Warn("a particle with velocityType normal has no normal (%s)", bp->class_->name );
 						return nullptr;
 					}
 
@@ -508,7 +507,7 @@ particleSystem_t *CG_SpawnNewParticleSystem( qhandle_t psHandle )
 
 	if ( !bps->registered )
 	{
-		logger.Warn("a particle system has not been registered yet" );
+		logger.Warn("a particle system has not been registered yet (%s)", bps->name );
 		return nullptr;
 	}
 
