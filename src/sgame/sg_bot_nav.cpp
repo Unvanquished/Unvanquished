@@ -1053,6 +1053,7 @@ bool BotMoveToGoal( gentity_t *self )
 	{
 		return true;
 	}
+	int dist = 0;
 	switch ( ps.stats [ STAT_CLASS ] )
 	{
 		case PCL_HUMAN_NAKED:
@@ -1060,7 +1061,7 @@ bool BotMoveToGoal( gentity_t *self )
 		case PCL_HUMAN_MEDIUM:
 		case PCL_HUMAN_BSUIT:
 			BotSprint( self, true );
-			break;
+			return true;
 		//those classes do not really have capabilities allowing them to be
 		//significantly faster while fleeing (except jumps, but that also
 		//makes them easier to hit I'd say)
@@ -1073,17 +1074,20 @@ bool BotMoveToGoal( gentity_t *self )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL1_POUNCE_DISTANCE;
+				dist = LEVEL1_POUNCE_DISTANCE;
 			}
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
 			BotJump( self );
+			dist = BG_Class( static_cast<class_t>( ps.stats[ STAT_CLASS ] ) )->jumpMagnitude;
 			break;
 		case PCL_ALIEN_LEVEL3:
 			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG;
+				dist = LEVEL3_POUNCE_JUMP_MAG;
 			}
 		break;
 		case PCL_ALIEN_LEVEL3_UPG:
@@ -1091,13 +1095,18 @@ bool BotMoveToGoal( gentity_t *self )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG_UPG;
+				dist = LEVEL3_POUNCE_JUMP_MAG;
 			}
 			break;
 		case PCL_ALIEN_LEVEL4:
 			wpm = WPM_SECONDARY;
 		break;
 	}
-	if ( wpm != WPM_NONE )
+	glm::vec3 nextCorner;
+	glm::vec3 origin = VEC2GLM( self->s.origin );
+	G_BotPathNextCorner( self->client->num(), nextCorner );
+	// multiply dist by 2 to have some safety
+	if ( wpm != WPM_NONE && Square( 2 * dist ) > glm::distance2( nextCorner, origin ) )
 	{
 		usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
 		if ( magnitude )
