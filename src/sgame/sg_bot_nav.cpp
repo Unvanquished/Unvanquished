@@ -1041,12 +1041,7 @@ bool BotMoveToGoal( gentity_t *self )
 
 	// if target is friendly, let's go there quickly (heal, poison) by using trick moves
 	// when available (still need to implement wall walking, but that will be more complex)
-	if ( G_Team( self ) != targetTeam )
-	{
-		BotTryMoveUpward( self );
-		return true;
-	}
-	else if ( BotTryMoveUpward( self ) )
+	if ( G_Team( self ) != targetTeam || BotTryMoveUpward( self ) )
 	{
 		return true;
 	}
