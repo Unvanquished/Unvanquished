@@ -303,7 +303,6 @@ struct baseParticle_t
 
 	float         bounceFrac;
 	float         bounceFracRandFrac;
-	bool      bounceCull;
 
 	char          bounceMarkName[ MAX_QPATH ];
 	qhandle_t     bounceMark;
@@ -322,14 +321,11 @@ struct baseParticle_t
 	pLerpValues_t alpha;
 	pLerpValues_t rotation;
 
-	bool      dynamicLight;
 	pLerpValues_t dLightRadius;
 	byte          dLightColor[ 3 ];
 
 	int           colorDelay;
 	float         colorDelayRandFrac;
-	byte          initialColor[ 3 ];
-	byte          finalColor[ 3 ];
 
 	char          childSystemName[ MAX_QPATH ];
 	qhandle_t     childSystemHandle;
@@ -351,11 +347,16 @@ struct baseParticle_t
 	int         numModels;
 	animation_t modelAnimation;
 
+	float       scaleWithCharge;
+
+	byte          initialColor[ 3 ];
+	byte          finalColor[ 3 ];
+
+	bool      bounceCull;
+	bool      dynamicLight;
 	bool    overdrawProtection;
 	bool    realLight;
 	bool    cullOnStartSolid;
-
-	float       scaleWithCharge;
 };
 
 //ejector template
