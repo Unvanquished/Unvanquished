@@ -86,7 +86,7 @@ selector
 	{
 		condition !teamateHasWeapon( WP_HBUILD )
 		condition buildingIsDamaged
-		decorator timer( 50000 )
+		decorator timer( 15000 )
 		{
 			selector
 			{
