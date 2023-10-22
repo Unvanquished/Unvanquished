@@ -10,25 +10,18 @@ selector
 		condition alertedToEnemy
 		selector
 		{
-			decorator timer( 1000 )
+			sequence
 			{
-				selector
-				{
-					sequence
-					{
-						// we are attacked at a healing place or target is engaged
-						condition ( distanceTo( E_A_OVERMIND ) <= 400 || distanceTo( E_A_BOOSTER ) <= 400 )
-						action fight
-					}
-					sequence
-					{
-						// flee if was not rushing and we're loosing the fight
-						condition ( percentHealth( E_SELF ) < 0.5 && healScore > 0.6 )
-						condition ( percentHealth( E_GOAL ) > 0.3 )
-						condition baseRushScore < 0.75
-						action heal
-					}
-				}
+				// we are attacked at a healing place or target is engaged
+				condition ( distanceTo( E_A_OVERMIND ) <= 400 || distanceTo( E_A_BOOSTER ) <= 400 )
+				action fight
+			}
+			sequence
+			{
+				// flee if was not rushing and we're loosing the fight
+				condition ( percentHealth( E_SELF ) < 0.5 && healScore > 0.6 )
+				condition ( percentHealth( E_GOAL ) > 0.3 )
+				condition baseRushScore < 0.75
 			}
 
 			action fight
