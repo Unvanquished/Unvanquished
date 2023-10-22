@@ -288,7 +288,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 				case PMT_NORMAL:
 					if ( !ps->normalValid )
 					{
-						logger.Warn("a particle with velocityType normal has no normal (%s)", bp->class_->name );
+						logger.Warn("a particle with velocityType normal has no normal" );
 						return nullptr;
 					}
 
