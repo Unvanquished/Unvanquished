@@ -388,17 +388,20 @@ struct particleSystem_t
 
 	attachment_t attachment;
 
+	//for PMT_NORMAL
+	vec3_t   normal;
+	//for PMT_LAST_NORMAL and PMT_OPPORTUNISTIC_NORMAL
+	vec3_t   lastNormal;
+
+	int      charge;
+
 	bool     valid;
 	bool     lazyRemove; //mark this system for later removal
 
 	//for PMT_NORMAL
 	bool normalValid;
-	vec3_t   normal;
 	//for PMT_LAST_NORMAL and PMT_OPPORTUNISTIC_NORMAL
 	bool lastNormalIsCurrent;
-	vec3_t   lastNormal;
-
-	int      charge;
 };
 
 struct particleEjector_t
@@ -430,7 +433,6 @@ struct particle_t
 	float             bounceMarkRadius;
 	int               bounceMarkCount;
 	int               bounceSoundCount;
-	bool          atRest;
 
 	vec3_t            origin;
 	vec3_t            velocity;
@@ -452,10 +454,11 @@ struct particle_t
 	lerpFrame_t       lf;
 	vec3_t            lastAxis[ 3 ];
 
-	bool          valid;
 	int               frameWhenInvalidated;
 
 	int               sortKey;
+	bool          valid;
+	bool          atRest;
 };
 
 //======================================================================
