@@ -25,7 +25,7 @@ msgstr "Construire"
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr "Prix :"
+msgstr "Prix :"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
@@ -102,7 +102,7 @@ msgstr "Changer de carte"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Vote : changer la carte suivante"
+msgstr "Vote : changer la carte suivante"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
@@ -146,7 +146,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:22
 msgid "More can be found on our website and other community places!"
-msgstr "Plus d'information sur notre site Web et dans la communauté !"
+msgstr "Plus d'information sur notre site Web et dans la communauté !"
 
 #: ui/help_gameplay.rml:24
 msgid ""
@@ -168,7 +168,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:28
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr "Merci de signaler les bugs sur : <web dest=\"bugs\" />"
+msgstr "Merci de signaler les bugs sur : <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
@@ -565,7 +565,7 @@ msgstr ""
 
 #: ui/help_textentry.rml:61
 msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
-msgstr "Exemple : ^^3Fred^^1Baggins deviens ^3Fred^1Baggins"
+msgstr "Exemple : ^^3Fred^^1Baggins deviens ^3Fred^1Baggins"
 
 #: ui/hud_basics.rml:192
 msgid "Game"
@@ -1024,7 +1024,7 @@ msgstr "Luminosité"
 
 #: ui/options_graphics.rml:51
 msgid "Gamma:"
-msgstr "Gamma :"
+msgstr "Gamma :"
 
 #: ui/options_graphics.rml:58
 msgid "Screen Resolution"
@@ -1551,7 +1551,7 @@ msgstr "Vote d'équipe Oui :"
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
-msgstr "Vote d'équipe Non :"
+msgstr "Vote d'équipe Non :"
 
 #: ui/options_keys.rml:142
 msgid "Misc"
@@ -1880,19 +1880,19 @@ msgstr "Couleurs de la console"
 
 #: ui/options_ui.rml:63
 msgid "Red:"
-msgstr "Rouge :"
+msgstr "Rouge :"
 
 #: ui/options_ui.rml:67
 msgid "Green:"
-msgstr "Vert :"
+msgstr "Vert :"
 
 #: ui/options_ui.rml:71
 msgid "Blue:"
-msgstr "Bleu :"
+msgstr "Bleu :"
 
 #: ui/options_ui.rml:75
 msgid "Alpha:"
-msgstr "Alpha :"
+msgstr "Alpha :"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -2000,7 +2000,7 @@ msgstr "Extraterrestres :"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr "Humains :"
+msgstr "Humains :"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
@@ -3636,7 +3636,7 @@ msgstr "Vous avez tué votre^1COÉQUIPIER^* %s"
 
 #: src/cgame/cg_event.cpp:1244
 msgid "The Overmind is under attack!"
-msgstr "L’Overmind est attaqué !"
+msgstr "L’Overmind est attaqué !"
 
 #: src/cgame/cg_event.cpp:1251
 msgid "The reactor is under attack!"
@@ -4311,7 +4311,7 @@ msgstr "Le %s n'est pas encore déverrouillé"
 #: src/cgame/cg_servercmds.cpp:750
 #, c-format
 msgid "cgame: debug: no such menu %d"
-msgstr "cgame : débogage : aucun menu de ce type %d"
+msgstr "cgame : débogage : aucun menu de ce type %d"
 
 #: src/cgame/cg_servercmds.cpp:909
 #, c-format
@@ -4708,7 +4708,7 @@ msgstr "Protection anti-spam de changement de nom ($1$ = $2$)"
 
 #: src/sgame/sg_client.cpp:854
 msgid "Maximum name changes reached ($1$ = $2$)"
-msgstr "Nombre maximal de changements de nom atteint : ($1$ = $2$)"
+msgstr "Nombre maximal de changements de nom atteint : ($1$ = $2$)"
 
 #: src/sgame/sg_client.cpp:862
 msgid "You cannot change your name while you are muted"
@@ -4754,11 +4754,11 @@ msgstr "Temps dépassé"
 
 #: src/sgame/sg_main.cpp:1954
 msgid "$1$ minutes remaining!"
-msgstr "il reste $1$ minutes !"
+msgstr "il reste $1$ minutes !"
 
 #: src/sgame/sg_main.cpp:1962
 msgid "1 minute remaining!"
-msgstr "il ne reste plus qu'une minute !"
+msgstr "il ne reste plus qu'une minute !"
 
 #: src/sgame/sg_main.cpp:1975
 msgid "Humans win"
@@ -4782,15 +4782,15 @@ msgstr "Serveur : le jeu se réactivera automatiquement dans $1$ secondes"
 
 #: src/sgame/sg_main.cpp:2190
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
-msgstr "Serveur : La pause à été automatiquement anulée ($1$ minutes max)"
+msgstr "Serveur : La pause à été automatiquement anulée ($1$ minutes max)"
 
 #: src/sgame/sg_main.cpp:2193
 msgid "The game has been unpaused!"
-msgstr "Le jeu reprends !"
+msgstr "Le jeu reprends !"
 
 #: src/sgame/sg_spawn_mover.cpp:1066
 msgid "^1This door is locked!"
-msgstr "^1 Cette porte est bloquée !"
+msgstr "^1 Cette porte est bloquée !"
 
 #: src/sgame/sg_svcmds.cpp:464
 msgid "Alien team has admitted defeat"
@@ -4825,7 +4825,7 @@ msgstr "Renvoie du joueur « %s » en spectateur"
 
 #: src/sgame/sg_votes.cpp:81
 msgid "$1$: player is already muted"
-msgstr "$1$ : ce joueur est déjà muté"
+msgstr "$1$ : ce joueur est déjà muté"
 
 #: src/sgame/sg_votes.cpp:88
 #, c-format
@@ -4834,7 +4834,7 @@ msgstr "Le joueur '%s' est muté"
 
 #: src/sgame/sg_votes.cpp:100
 msgid "$1$: player is not currently muted"
-msgstr "$1$ : le joueur n'est pas muté"
+msgstr "$1$ : le joueur n'est pas muté"
 
 #: src/sgame/sg_votes.cpp:107
 #, c-format
@@ -4843,32 +4843,32 @@ msgstr "Le joueur '%s' à été démuté"
 
 #: src/sgame/sg_votes.cpp:119
 msgid "$1$: player already lost building rights"
-msgstr "$1$ : ce joueur à déjà perdu ses droits de construction"
+msgstr "$1$ : ce joueur à déjà perdu ses droits de construction"
 
 #: src/sgame/sg_votes.cpp:137
 msgid "$1$: player already has building rights"
-msgstr "$1$ : ce joueur à déjà ses droits de construction"
+msgstr "$1$ : ce joueur à déjà ses droits de construction"
 
 #: src/sgame/sg_votes.cpp:196 src/sgame/sg_votes.cpp:263
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
-msgstr "$1$ : 'maps/$2$.bsp' est introuvable sur le serveur"
+msgstr "$1$ : 'maps/$2$.bsp' est introuvable sur le serveur"
 
 #: src/sgame/sg_votes.cpp:233
 msgid "callvote: layout '$1$' could not be found on the server"
-msgstr "vote : le layout '$1$' est introuvable sur le serveur"
+msgstr "vote : le layout '$1$' est introuvable sur le serveur"
 
 #: src/sgame/sg_votes.cpp:254
 msgid "$1$: the next map is already set to '$2$'"
-msgstr "$1$ : la prochaine carte est déjà définie sur '$2$'"
+msgstr "$1$ : la prochaine carte est déjà définie sur '$2$'"
 
 #: src/sgame/sg_votes.cpp:313
 msgid "$1$: there are no active bots"
-msgstr "$1$ : il n'y a aucun robot actif"
+msgstr "$1$ : il n'y a aucun robot actif"
 
 #: src/sgame/sg_votes.cpp:332 src/sgame/sg_votes.cpp:354
 #: src/sgame/sg_votes.cpp:376
 msgid "$1$: number must be non-negative and smaller than $2$"
-msgstr "$1$ : le nombre doit ne dois pas être négatif et inférieur à $2$"
+msgstr "$1$ : le nombre doit ne dois pas être négatif et inférieur à $2$"
 
 #: src/sgame/sg_votes.cpp:341
 #, c-format
@@ -4887,15 +4887,15 @@ msgstr "définir le nombre de robots alien à %d"
 
 #: src/sgame/sg_votes.cpp:460
 msgid "$1$: voting not allowed here"
-msgstr "$1$ : voter n'est pas autorisé ici"
+msgstr "$1$ : voter n'est pas autorisé ici"
 
 #: src/sgame/sg_votes.cpp:469
 msgid "$1$: you are not permitted to call $2$ votes"
-msgstr "$1$ : vous n'avez pas le droit de mettre le vote \" $2$ \""
+msgstr "$1$ : vous n'avez pas le droit de mettre le vote \" $2$ \""
 
 #: src/sgame/sg_votes.cpp:478
 msgid "$1$: a vote is already in progress"
-msgstr "$1$ : un vote est déjà en cours"
+msgstr "$1$ : un vote est déjà en cours"
 
 #: src/sgame/sg_votes.cpp:499
 msgid "Invalid vote string"
@@ -4903,15 +4903,15 @@ msgstr "vote invalide"
 
 #: src/sgame/sg_votes.cpp:502
 msgid "Valid vote commands are: "
-msgstr "Commandes de vote possibles : "
+msgstr "Commandes de vote possibles : "
 
 #: src/sgame/sg_votes.cpp:503
 msgid "Valid team-vote commands are: "
-msgstr "Commandes de vote d’équipe possibles : "
+msgstr "Commandes de vote d’équipe possibles : "
 
 #: src/sgame/sg_votes.cpp:534
 msgid "$1$: you have already called the maximum number of votes ($2$)"
-msgstr "$1$ : vous avez déjà posé le nombre maximal de votes ($2$)"
+msgstr "$1$ : vous avez déjà posé le nombre maximal de votes ($2$)"
 
 #: src/sgame/sg_votes.cpp:544
 msgid "'$1$' votes have been disabled"
@@ -4936,39 +4936,39 @@ msgstr ""
 
 #: src/sgame/sg_votes.cpp:638
 msgid "$1$: no target"
-msgstr "$1$ : pas de cible"
+msgstr "$1$ : pas de cible"
 
 #: src/sgame/sg_votes.cpp:658
 msgid "$1$: player is a bot"
-msgstr "$1$ : ce joueur est un robot"
+msgstr "$1$ : ce joueur est un robot"
 
 #: src/sgame/sg_votes.cpp:666 src/sgame/sg_votes.cpp:680
 msgid "$1$: admin is immune"
-msgstr "$1$ : l'administrateur est immunisé"
+msgstr "$1$ : l'administrateur est immunisé"
 
 #: src/sgame/sg_votes.cpp:687
 msgid "$1$: player is not on your team"
-msgstr "le joueur : $1$ n'est pas dans votre équipe"
+msgstr "le joueur : $1$ n'est pas dans votre équipe"
 
 #: src/sgame/sg_votes.cpp:699
 msgid "$1$: You must provide a reason"
-msgstr "$1$ : vous devez fournir une raison"
+msgstr "$1$ : vous devez fournir une raison"
 
 #: src/sgame/sg_votes.cpp:721
 msgid "$1$^* called a vote: $2$"
-msgstr "$1$^* a mis un vote : $2$"
+msgstr "$1$^* a mis un vote : $2$"
 
 #: src/sgame/sg_votes.cpp:738
 msgid "$1$^* called a team vote: $2t$"
-msgstr "$1$^* a posé un vote d'équipe : $2t$"
+msgstr "$1$^* a posé un vote d'équipe : $2t$"
 
 #: src/sgame/sg_votes.cpp:854
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
-msgstr "Échec du vote ($1$ sur $2$ ; quorum non atteint)"
+msgstr "Échec du vote ($1$ sur $2$ ; quorum non atteint)"
 
 #: src/sgame/sg_votes.cpp:855
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
-msgstr "Échec du vote d’équipe ($1$ sur $2$ ; quorum non atteint)"
+msgstr "Échec du vote d’équipe ($1$ sur $2$ ; quorum non atteint)"
 
 #: src/sgame/sg_votes.cpp:861
 msgid "Vote passed ($1$ — $2$)"
