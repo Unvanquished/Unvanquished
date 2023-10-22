@@ -342,8 +342,7 @@ static AIValue_t cvar( gentity_t*, const AIValue_t *params )
 		return AIBoxFloat( floating );
 	}
 
-	Log::Warn("Bot: could not read cvar '%s' as"
-			" a number or a boolean", cvar);
+	Log::Warn("Bot: could not read cvar '%s' as a number or a boolean", cvar);
 	return AIBoxInt( 0 );
 }
 

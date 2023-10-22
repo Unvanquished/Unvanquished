@@ -16,12 +16,15 @@ selector
 				{
 					sequence
 					{
+						// we are attacked at a healing place or target is engaged
 						condition ( distanceTo( E_A_OVERMIND ) <= 400 || distanceTo( E_A_BOOSTER ) <= 400 )
 						action fight
 					}
 					sequence
 					{
-						condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3 )
+						// flee if was not rushing and we're loosing the fight
+						condition ( percentHealth( E_SELF ) < 0.5 && healScore > 0.6 )
+						condition ( percentHealth( E_GOAL ) > 0.3 )
 						condition baseRushScore < 0.75
 						action heal
 					}
@@ -34,7 +37,8 @@ selector
 
 	// aliens should only try to do opportunistic resupply for poison, or the will end up camping too much.
 	// also, we want to be sure the distance to the booster is not too big to prevent infinite back'n forth
-	condition resupplyScore > 0.90 && distanceTo( E_A_BOOSTER ) <= 1000
+	// 520 = REGEN_BOOSTER_RANGE + 320 (aka 10m)
+	condition resupplyScore > 0.90 && distanceTo( E_A_BOOSTER ) <= 520
 	{
 		action moveTo( E_A_BOOSTER )
 	}
