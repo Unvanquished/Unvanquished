@@ -394,7 +394,7 @@ float BotGetResupplyScore( gentity_t *self )
 float BotGetBaseRushScore( gentity_t *ent )
 {
 	ASSERT( ent && ent->botMind && ent->client );
-	const float skill_modifier = 1 - 2 * SkillModifier( ent->botMind->botSkill.level );
+	const float skill_modifier = 1 - 2 * ent->botMind->botSkill.percent();
 	// if nothing allowed from current stage have a cost,
 	// return average value on which other parameters can weight
 	float rush_score = 0.5;
@@ -440,7 +440,7 @@ float BotGetHealScore( gentity_t *self )
 	float distToHealer = BotGetHealTarget( self ).distance;
 	float timeDist = distToHealer / GetMaximalSpeed( self );
 
-	return ( 1 + 5 * SkillModifier( self->botMind->botSkill.level ) ) * ( 1 - percentHealth ) / sqrt( timeDist );
+	return ( 1 + 5 * self->botMind->botSkill.percent() ) * ( 1 - percentHealth ) / sqrt( timeDist );
 }
 
 float BotGetEnemyPriority( const gentity_t *self, const GentityConstRef ent, float dist )
@@ -2302,8 +2302,6 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	if ( skill == 0 ) {
 		skill = g_bot_defaultSkill.Get();
 	}
-	ASSERT( skill >= MIN_SKILL && skill <= MAX_SKILL );
-
 	self->botMind->botSkill.level = skill;
 }
 

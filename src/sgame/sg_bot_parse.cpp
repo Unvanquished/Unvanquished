@@ -362,7 +362,7 @@ static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t percentSkill( gentity_t *self, const AIValue_t * )
 {
-	return AIBoxFloat( SkillModifier( self->botMind->botSkill.level ) );
+	return AIBoxFloat( self->botMind->botSkill.percent() );
 }
 
 static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
