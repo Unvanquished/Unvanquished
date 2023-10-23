@@ -688,6 +688,15 @@ static void FireLcannonPrimary( gentity_t *self, int damage )
 		// some values are set in the code
 		attr.damage = damage;
 		attr.splashDamage = damage / 2;
+		if ( damage == LCANNON_DAMAGE )
+		{
+			// Explode immediately when overcharged.
+			// But beware glitchy and framerate-dependent behavior: despite exploding
+			// "instantly" (in the next frame), it "travels" for a distance
+			// (MISSILE_PRESTEP_TIME + length of 1 frame) × attr.speed
+			// and can score direct hits against other entities
+			attr.lifetime = 0;
+		}
 
 		m = G_NewEntity( HAS_CBSE );
 		DumbMissileEntity::Params params;
@@ -704,12 +713,6 @@ static void FireLcannonPrimary( gentity_t *self, int damage )
 		if ( m->s.torsoAnim < 0 )
 		{
 			m->s.torsoAnim = 0;
-		}
-
-		// explode in front of player when overcharged
-		if ( damage == LCANNON_DAMAGE )
-		{
-			m->entity->Get<MissileComponent>()->Explode();
 		}
 	}
 }
