@@ -270,6 +270,7 @@
 				</row>
 				<row>
 					<h3><translate>Minimum movement speed for motion-blur to activate</translate></h3>
+					<br/>
 					<input type="range" min="10" max="1500" step="10" cvar="cg_motionblurMinSpeed"/>
 					<p class="inline">
 						<translate>Current:</translate>&nbsp;<inlinecvar cvar="cg_motionblurMinSpeed" type="number" format="%.0f"/>
