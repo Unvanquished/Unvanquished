@@ -59,8 +59,8 @@ centerbar {
 	position: absolute;
 	width: 20%;
 	height: 24.7em;
-	left: 40em;
 	top: 19.5em;
+	left: 40em;
 }
 
 /* Section under a H1 heading */
