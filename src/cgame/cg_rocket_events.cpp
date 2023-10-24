@@ -87,7 +87,9 @@ static void CG_Rocket_InitServers()
 		trap_SendConsoleCommand( "localservers\n" );
 	}
 
-	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( src ) );
+	// Hack to avoid calling UpdateVisiblePings in the same frame that /globalservers
+	// is sent, which would ping the old server list (see CG_Rocket_BuildServerList)
+	rocketInfo.serversLastRefresh = rocketInfo.realtime;
 }
 
 static void CG_Rocket_BuildDS()
