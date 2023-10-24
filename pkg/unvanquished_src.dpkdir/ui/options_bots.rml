@@ -1,0 +1,17 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/rcss" href="menu.rcss" />
+	</head>
+	<body id="options_bots"  template="window" style="width: 20em; margin: 1em;">
+		<h1><translate>Bots</translate></h1>
+		<indent>
+		<button-menu style="width:100%"  onclick='Events.pushevent("exec bot add * aliens", event)'><translate>Add an alien bot</translate></button-menu>
+		<br/>
+		<button-menu style="width:100%"  onclick='Events.pushevent("exec bot add * humans", event)'><translate>Add a human bot</translate></button-menu>
+		<br/>
+		<button-menu style="width:100%"  onclick='Events.pushevent("exec bot del all", event)'><translate>Remove all bots</translate></button-menu>
+		</indent>
+	</body>
+</rml>
