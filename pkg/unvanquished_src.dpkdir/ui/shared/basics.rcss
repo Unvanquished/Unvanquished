@@ -142,6 +142,11 @@ img.emoticon {
 	width: auto;
 }
 
+img.emoticon-presentation {
+	height: 1.5em;
+	width: auto;
+}
+
 progress {
 	display: block;
 	z-index: -1;
