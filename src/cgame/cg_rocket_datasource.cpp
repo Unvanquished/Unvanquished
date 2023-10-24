@@ -248,6 +248,24 @@ void CG_Rocket_BuildServerList()
 	int netSrc = rocketInfo.currentNetSrc;
 	const char *srcName = CG_NetSourceToString( netSrc );
 
+	// Hack to avoid calling UpdateVisiblePings in the same frame that /globalservers
+	// is sent, which would ping the old server list
+	if ( rocketInfo.realtime == rocketInfo.serversLastRefresh )
+	{
+		return;
+	}
+
+	int numServers = trap_LAN_GetServerCount( netSrc );
+
+	// Still waiting for a response...
+	// HACK: assume not done if there are 0 servers, although it could be true
+	if ( numServers <= 0 )
+	{
+		return;
+	}
+
+	trap_LAN_MarkServerVisible( netSrc, -1, true );
+
 	// Only refresh once every 200 ms
 	if ( rocketInfo.realtime < 200 + rocketInfo.serversLastRefresh )
 	{
@@ -256,19 +274,6 @@ void CG_Rocket_BuildServerList()
 	}
 
 	rocketInfo.serversLastRefresh = rocketInfo.realtime;
-
-	int numServers;
-
-	trap_LAN_MarkServerVisible( netSrc, -1, true );
-
-	numServers = trap_LAN_GetServerCount( netSrc );
-
-	// Still waiting for a response...
-	// HACK: assume not done if there are 0 servers, although it could be true
-	if ( numServers <= 0 )
-	{
-		return;
-	}
 
 	rocketInfo.data.haveServerInfo[ netSrc ].resize( numServers );
 
@@ -299,7 +304,6 @@ void CG_Rocket_BuildServerList()
 
 		ping = trap_LAN_GetServerPing( netSrc, i );
 
-		// FIXME how do we get serverinfos with 0 ping?
 		if ( ping > 0 )
 		{
 			char addr[ 50 ]; // long enough for IPv6 literal plus port no.
