@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-10-21 04:12+0000\n"
+"PO-Revision-Date: 2023-10-25 09:03+0000\n"
 "Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.1.1-dev\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -219,7 +219,7 @@ msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"Les humains achètent et vendent des armes à l’[armurerie] armurerie, assurez-"
+"Les humains achètent et vendent des armes à l’[armoury] armurerie, assurez-"
 "vous qu’il y en a une ! Utilisez le kit de construction pour construire une "
 "armurerie s’il en manque."
 
@@ -720,7 +720,7 @@ msgstr "Démocratie"
 
 #: ui/menu_ingame.rml:37
 msgid "Global vote:"
-msgstr "Vote global :"
+msgstr "Vote global :"
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
@@ -736,7 +736,7 @@ msgstr "non"
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
-msgstr "Vote d’équipe :"
+msgstr "Vote d’équipe :"
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
@@ -1547,11 +1547,11 @@ msgstr "Voter Non :"
 
 #: ui/options_keys.rml:135
 msgid "Team vote Yes:"
-msgstr "Vote d'équipe Oui :"
+msgstr "Vote d'équipe Oui :"
 
 #: ui/options_keys.rml:139
 msgid "Team vote No:"
-msgstr "Vote d'équipe Non :"
+msgstr "Vote d'équipe Non :"
 
 #: ui/options_keys.rml:142
 msgid "Misc"
