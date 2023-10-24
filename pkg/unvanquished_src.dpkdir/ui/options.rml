@@ -5,6 +5,7 @@
 		<link type="text/rcss" href="menu.rcss" />
 	</head>
 	<body template="window" id="options" style="width: 20em; margin: 1em;">
+	<!-- I've removed the FOV menu. It was in comment, but, It's been two years since he was in commentary -->
 		<h1><translate>Options</translate></h1>
 		<indent>
 			<button-menu style="width:100%" onclick='Events.pushevent("show options_player", event)'><translate>Player</translate></button-menu>
