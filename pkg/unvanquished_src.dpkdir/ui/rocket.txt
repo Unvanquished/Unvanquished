@@ -35,6 +35,8 @@
 	misc
 	{
 		// ######## Custom section.  Add and remove freely ########
+		ui/options.rml
+		ui/options_mouvements_cosmetic.rml
 		ui/options_player.rml
 		ui/options_fov.rml
 		ui/options_graphics.rml
@@ -44,7 +46,6 @@
 		ui/options_ui.rml
 		ui/options_welcome.rml
 
-		ui/help_textentry.rml
 		ui/help_gameplay.rml
 
 		ui/server_browser.rml
