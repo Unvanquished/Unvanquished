@@ -241,3 +241,31 @@ button {
 button:hover {
 	background-color: #178079; /* MED cyan */
 }
+
+/* main menu button */
+
+button-menu {
+	color: white;
+	display: block;
+	float: right;
+	width: 5em;
+	background-color: #3d3d3d; /* Dark grey */
+	text-align: center;
+	border-radius: 5px;
+	border: 2px;
+	border-color: #19acb4; /* light cyan */
+	padding: 0.3em;
+	margin: 0.5em;
+}
+.presets span {
+	display: block;
+}
+.presets button-menu {
+	float: left;
+	margin: 0.2em 0.4em 0.4em 0em;
+}
+button-menu:hover {
+	color: #dfff00; /* yellow */
+	border-color: #0edfeb; /* lighter cyan */
+	background-color: #4d4d4d; /* grey */
+}
