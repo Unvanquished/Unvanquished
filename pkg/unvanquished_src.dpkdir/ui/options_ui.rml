@@ -9,7 +9,6 @@
 			<!-- Keep in sync with language menu in options_welcome.rml -->
 			<h3><translate>Language</translate> </h3>
 			<p> <translate>Some languages are not fully translated.</translate> </p>
-			<p> <translate>The language will be updated after a game restart.</translate> </p>
 			<select cvar="language">
 				<option value="fr_FR">Français</option>
 				<option value="ru_RU">Русский</option>
