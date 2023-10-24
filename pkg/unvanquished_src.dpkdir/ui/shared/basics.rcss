@@ -96,6 +96,15 @@ ilink:hover {
 	color: #00f8ff; /* Bright cyan */
 }
 
+/* Inline options*/
+ilink-options {
+	color: #0edfeb; /* Dark cyan */
+	tab-index: auto;
+}
+ilink-options:hover {
+	color: #dfff00;
+}
+
 /* ##### Scroll-bars #### */
 scrollbarvertical {
 	width: 0.8em;
