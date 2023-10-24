@@ -11,8 +11,192 @@
 			<colorinput type="text" cvar="name" style="overflow: hidden; white-space: pre;"/>
 			<h3><translate>Nickname</translate></h3>
 			<p>Your name visible to others.</p>
-			<p><ilink onclick='Events.pushevent("show help_textentry", event)'><translate>Colours and symbols can be used.</translate></ilink></p>
+			<br/>
+		<h3><translate>Colour codes and symbols</translate></h3>
+
+		<p>
+			<translate>Colours are used by typing their escape code starting with a caret (^) symbol. Colour can be reset again to normal using ^*, or an actual caret can be typed using ^^.</translate>
+		</p>
+
+		<p>
+			<color style="color: #333333;">^0</color>
+			<color style="color: #FF0000;">^1</color>
+			<color style="color: #00FF00;">^2</color>
+			<color style="color: #FFFF00;">^3</color>
+			<color style="color: #0000FF;">^4</color>
+			<color style="color: #00FFFF;">^5</color>
+			<color style="color: #FF00FF;">^6</color>
+			<color style="color: #FFFFFF;">^7</color>
+			<color style="color: #FF7F00;">^8</color>
+			<color style="color: #7F7F7F;">^9</color>
+			<color style="color: #BFBFBF;">^:</color>
+			<color style="color: #BFBFBF;">^;</color>
+			<color style="color: #007F00;">^&lt;</color>
+			<color style="color: #7F7F00;">^=</color>
+			<color style="color: #00007F;">^&gt;</color>
+			<color style="color: #7F0000;">^?</color>
+			<color style="color: #7F3F00;">^@</color>
+			<color style="color: #FF9919;">^A</color>
+			<color style="color: #007F7F;">^B</color>
+			<color style="color: #7F007F;">^C</color>
+			<color style="color: #007FFF;">^D</color>
+			<color style="color: #7F00FF;">^E</color>
+			<color style="color: #3399CC;">^F</color>
+			<color style="color: #CCFFCC;">^G</color>
+			<color style="color: #006633;">^H</color>
+			<color style="color: #FF0033;">^I</color>
+			<color style="color: #B21919;">^J</color>
+			<color style="color: #993300;">^K</color>
+			<color style="color: #CC9933;">^L</color>
+			<color style="color: #999933;">^M</color>
+			<color style="color: #FFFFBF;">^N</color>
+			<color style="color: #FFFF7F;">^O</color>
+		</p>
 		</row>
+		<h3><translate>Emoticons</translate></h3>
+		<p> you can put emoticons in your nickname too.</p>
+		<p style="clear: both;">
+			<translate quake emoticons> Example: ^^3Fred^^1Baggins[gren^*ade] becomes  ^3Fred^1Baggins[grenade]</translate>
+		</p>
+<!-- do NOT reduct the height! If it is reducted, some parts will be skiped because of the scrollbar -->
+		<window id="innersidebar"  style="height:25%">
+			<sidesection>
+				<h3> <translate>Here is the list of the available emoticons:</translate> </h3>
+				<br/>
+				<h3> <translate>Weapons</translate> </h3>
+				<p>
+					<div>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/lasgun" />
+						[lasgun]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/firebomb" />
+						[firebomb]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/grenade" />
+						[grenade]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/prifle" />
+						[prifle]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/flamer" />
+						[flamer]
+						<br/>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/chaingun" />
+						[chaingun]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/mdriver" />
+						[mdriver]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/blaster" />
+						[blaster]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/rifle" />
+						[rifle]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/painsaw" />
+						[painsaw]
+						<br/>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/shotgun" />
+						[shotgun]
+					</div>
+				<br/>
+				</p>
+				<h3> <translate>aliens</translate> </h3>
+					<p>
+					<div>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/advdragoon" />
+						[advdragoon]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/dragoon" />
+						[dragoon]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/advmarauder" />
+						[advmarauder]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/marauder" />
+						[marauder]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/granger" />
+						[granger]
+						<br/>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/advbasilisk" />
+						[advbasilisk]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/basilisk" />
+						[basilisk]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/tyrant" />
+						[tyrant]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/dretch" />
+						[dretch]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/advgranger" />
+						[advgranger]
+					</div>
+				</p>
+				<br/>
+				<h3> <translate>human buildable</translate> </h3>
+				<p>
+					<div>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/defcomp" />
+						[defcomp]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/repeater" />
+						[repeater]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/drill" />
+						[drill]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/tesla" />
+						[tesla]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/reactor" />
+						[reactor]
+						<br/>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/turret" />
+						[turret]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/medstat" />
+						[medstat]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/armoury" />
+						[armoury]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/telenode" />
+						[telenode]
+						<br/>
+
+					</div>
+				</p>
+				<br/>
+				<h3> <translate>alien buildable</translate> </h3>
+				<p>
+					<div>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/hovel" />
+						[hovel]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/leech" />
+						[leech]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/barricade" />
+						[barricade]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/trapper" />
+						[trapper]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/booster" />
+						[booster]
+						<br/>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/hive" />
+						[hive]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/acidtube" />
+						[acidtube]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/overmind" />
+						[overmind]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/egg" />
+						[egg]
+					</div>
+				</p>
+				<br/>
+				<h3> <translate>other</translate> </h3>
+				<p>
+					<div>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/human" />
+						[human]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/bsuit" />
+						[bsuit]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/featured" />
+						[featured]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/dev" />
+						[dev]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/cross" />
+						[cross]
+						<br/>
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/check" />
+						[check]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/bot" />
+						[bot]
+						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/official" />
+						[official]
+					</div>
+					<br/>
+				</p>
+			</sidesection>
+		</window>
 		<row>
 			<h3><translate>Tutorial mode</translate></h3>
 			<input cvar="cg_tutorial" type="checkbox" />
@@ -21,49 +205,6 @@
 		<row>
 			<input cvar="cg_teamChatsOnly" type="checkbox" />
 			<h3><translate>Show only team chat</translate></h3>
-		</row>
-
-		<h2><translate>Movement</translate></h2>
-		<row>
-			<h3><translate>Wall-walking auto-pitch</translate></h3>
-			<input cvar="cg_wwFollow" type="checkbox" />
-			<p><translate>Always twist and rotate the view when you wall-walk from one surface to another.</translate></p>
-		</row>
-		<row>
-			<select cvar="cg_wwSmoothTime">
-				<option value="0">Instant</option>
-				<option value="150">Fast</option>
-				<option value="300">Medium</option>
-				<option value="600">Slow</option>
-			</select>
-			<h3><translate>Wall-walking pitch-speed</translate></h3>
-			<p><translate>How fast your view rotates and twists as you wall-walk.</translate></p>
-		</row>
-		<row>
-			<h3><translate>Wall-walking toggles</translate></h3>
-			<input cvar="cg_wwToggle" type="checkbox" />
-			<p><translate>Tap key instead of hold key to activate.</translate></p>
-		</row>
-		<row>
-			<h3><translate>Sprint toggles</translate></h3>
-			<input cvar="cg_sprintToggle" type="checkbox" />
-			<p><translate>Tap key instead of hold key to activate.</translate></p>
-		</row>
-
-		<h2><translate>Cosmetic</translate></h2>
-		<row>
-			<select cvar="cg_drawgun">
-				<option value="0"><translate>Disable</translate></option>
-				<option value="1"><translate>Humans only</translate></option>
-				<option value="2"><translate>Humans and aliens</translate></option>
-			</select>
-			<h3><translate>First-person weapons</translate></h3>
-			<p><translate>Show gun, pincer, hand and mandible models in first-person.</translate></p>
-		</row>
-		<row>
-			<h3><translate>Left-handed mode</translate></h3>
-			<input cvar="cg_mirrorgun" type="checkbox" />
-			<p><translate>Mirror first-person gun models.</translate></p>
 		</row>
 	</body>
 </rml>
