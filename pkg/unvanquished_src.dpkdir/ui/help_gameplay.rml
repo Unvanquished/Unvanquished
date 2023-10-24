@@ -11,6 +11,7 @@
 	<body template="window" id="help_gameplay" style="width:45em; margin: 1em;">
 		<h1>Gameplay Guide</h1>
 		<tabset>
+			<!-- the "margin-right" is used to put a scace wetween the emoticon and the text-->
 			<tab>
 				<img class="emoticon" style="margin-right:0.2em;" src="/emoticons/official" />
 				<translate>Welcome</translate>
