@@ -1,0 +1,25 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/rcss" href="menu.rcss" />
+	</head>
+	<body template="window" id="options" style="width: 20em; margin: 1em;">
+		<h1><translate>Options</translate></h1>
+		<indent>
+			<button-menu style="width:100%" onclick='Events.pushevent("show options_player", event)'><translate>Player</translate></button-menu>
+			<br/>
+			<button-menu style="width:100%" onclick='Events.pushevent("show options_mouvements_cosmetic", event)'><translate>Movement</translate> & <translate> Cosmetic </translate></button-menu>
+			<br/>
+			<button-menu style="width:100%" onclick='Events.pushevent("show options_graphics", event)'><translate>Graphics</translate></button-menu>
+			<br/>
+			<button-menu style="width:100%" onclick='Events.pushevent("show options_keys", event)'><translate>Key bindings</translate></button-menu>
+			<br/>
+			<button-menu style="width:100%" onclick='Events.pushevent("show options_mouse", event)'><translate>Mouse and Aiming</translate></button-menu>
+			<br/>
+			<button-menu style="width:100%" onclick='Events.pushevent("show options_sound", event)'><translate>Sound</translate></button-menu>
+			<br/>
+			<button-menu style="width:100%" onclick='Events.pushevent("show options_ui", event)'><translate>User interface and HUD</translate></button-menu>
+		</indent>
+	</body>
+</rml>
