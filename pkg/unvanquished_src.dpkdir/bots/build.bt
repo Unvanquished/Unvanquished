@@ -32,7 +32,8 @@ selector
 				}
 			}
 
-			decorator return ( STATUS_FAILURE )
+			// make the bot stand still if this fails
+			decorator invert()
 			{
 				action buildNowChosenBuildable
 			}
@@ -65,7 +66,8 @@ selector
 				}
 			}
 
-			decorator return ( STATUS_FAILURE )
+			// make the bot stand still if this fails
+			decorator invert()
 			{
 				action buildNowChosenBuildable
 			}
