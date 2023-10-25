@@ -32,25 +32,14 @@ selector
 				}
 			}
 
-			action buildMain
-
-			selector
+			decorator return ( STATUS_FAILURE )
 			{
-				decorator return ( STATUS_FAILURE )
-				{
-					action buildNowChosenBuildable
-				}
-				action roamInRadius( E_H_REACTOR, 700 )
+				action buildNowChosenBuildable
 			}
 
-			selector
-			{
-				decorator return ( STATUS_FAILURE )
-				{
-					action buildNowChosenBuildable
-				}
-				action roam
-			}
+			action roamInRadius( E_H_REACTOR, 700 )
+			action roam
+
 		}
 	}
 	condition ( team == TEAM_ALIENS )
@@ -77,25 +66,13 @@ selector
 				}
 			}
 
-			action buildMain
-			
-			selector
+			decorator return ( STATUS_FAILURE )
 			{
-				decorator return ( STATUS_FAILURE )
-				{
-					action buildNowChosenBuildable
-				}
-				action roamInRadius( E_H_REACTOR, 700 )
+				action buildNowChosenBuildable
 			}
 
-			selector
-			{
-				decorator return ( STATUS_FAILURE )
-				{
-					action buildNowChosenBuildable
-				}
-				action roam
-			}
+			action roamInRadius( E_A_OVERMIND, 700 )
+			action roam
 		}
 	}
 }

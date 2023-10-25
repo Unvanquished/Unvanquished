@@ -1205,7 +1205,11 @@ static buildable_t chooseBuildableToBuild( gentity_t *self )
 	buildable_t toBuild = BA_NONE;
 	if ( G_Team( self ) == TEAM_HUMANS )
 	{
-		if ( !self->botMind->closestBuildings[ BA_H_DRILL ].ent )
+		if ( !self->botMind->closestBuildings[ BA_H_REACTOR ].ent )
+		{
+			toBuild = BA_H_REACTOR;
+		}
+		else if ( !self->botMind->closestBuildings[ BA_H_DRILL ].ent )
 		{
 			toBuild = BA_H_DRILL;
 		}
@@ -1232,7 +1236,11 @@ static buildable_t chooseBuildableToBuild( gentity_t *self )
 	}
 	else if ( G_Team( self ) == TEAM_ALIENS )
 	{
-		if ( !self->botMind->closestBuildings[ BA_A_LEECH ].ent )
+		if ( !self->botMind->closestBuildings[ BA_A_OVERMIND ].ent )
+		{
+			toBuild = BA_A_OVERMIND;
+		}
+		else if ( !self->botMind->closestBuildings[ BA_A_LEECH ].ent )
 		{
 			toBuild = BA_A_LEECH;
 		}
