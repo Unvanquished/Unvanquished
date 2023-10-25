@@ -1283,6 +1283,11 @@ static bool build( gentity_t *self, buildable_t toBuild )
 	return true;
 }
 
+AINodeStatus_t BotActionBuildNowChosenBuildable( gentity_t *self, AIGenericNode_t *node )
+{
+	return build( self, chooseBuildableToBuild( self ) ) ? STATUS_SUCCESS : STATUS_FAILURE;
+}
+
 AINodeStatus_t BotActionBuildInRadius( gentity_t *self, AIGenericNode_t *node )
 {
 	if ( !isBuilder( self ) )

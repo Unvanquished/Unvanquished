@@ -1007,6 +1007,7 @@ static const struct AIActionMap_s
 	{ "build",             BotActionBuild,             0, 0 },
 	{ "buildInRadius",     BotActionBuildInRadius,     2, 2 },
 	{ "buildMain",         BotActionBuildMain,         0, 0 },
+	{ "buildNowChosenBuildable", BotActionBuildNowChosenBuildable, 0, 0 },
 	{ "buy",               BotActionBuy,               1, 4 },
 	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
 	{ "classDodge",        BotActionClassDodge,        0, 0 },

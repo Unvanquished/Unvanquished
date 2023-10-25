@@ -33,10 +33,24 @@ selector
 			}
 
 			action buildMain
-			action buildInRadius( E_H_REACTOR, 700 )
-			action build
 
-			// if all other actions fail: stand still
+			selector
+			{
+				decorator return ( STATUS_FAILURE )
+				{
+					action buildNowChosenBuildable
+				}
+				action roamInRadius( E_H_REACTOR, 700 )
+			}
+
+			selector
+			{
+				decorator return ( STATUS_FAILURE )
+				{
+					action buildNowChosenBuildable
+				}
+				action roam
+			}
 		}
 	}
 	condition ( team == TEAM_ALIENS )
@@ -64,10 +78,24 @@ selector
 			}
 
 			action buildMain
-			action buildInRadius( E_A_OVERMIND, 700 )
-			action build
+			
+			selector
+			{
+				decorator return ( STATUS_FAILURE )
+				{
+					action buildNowChosenBuildable
+				}
+				action roamInRadius( E_H_REACTOR, 700 )
+			}
 
-			// if all other actions fail: stand still
+			selector
+			{
+				decorator return ( STATUS_FAILURE )
+				{
+					action buildNowChosenBuildable
+				}
+				action roam
+			}
 		}
 	}
 }
