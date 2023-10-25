@@ -1295,14 +1295,14 @@ AINodeStatus_t BotActionBuildInRadius( gentity_t *self, AIGenericNode_t *node )
 	float radius = AIUnBoxFloat( a->params[ 1 ] );
 	botEntityAndDistance_t ent = AIEntityToGentity( self, e );
 
+	if ( !ent.ent )
+	{
+		return STATUS_FAILURE;
+	}
+
 	if ( node != self->botMind->currentNode )
 	{
 		glm::vec3 point;
-
-		if ( !ent.ent )
-		{
-			return STATUS_FAILURE;
-		}
 
 		if ( !BotFindRandomPointInRadius( self->s.number, VEC2GLM( ent.ent->s.origin ), point, radius ) )
 		{
