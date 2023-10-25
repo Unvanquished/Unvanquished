@@ -39,7 +39,6 @@ selector
 
 			action roamInRadius( E_H_REACTOR, 700 )
 			action roam
-
 		}
 	}
 	condition ( team == TEAM_ALIENS )
