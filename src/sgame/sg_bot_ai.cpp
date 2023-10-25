@@ -1285,6 +1285,11 @@ static bool build( gentity_t *self, buildable_t toBuild )
 
 AINodeStatus_t BotActionBuildNowChosenBuildable( gentity_t *self, AIGenericNode_t *node )
 {
+	if ( !isBuilder( self ) )
+	{
+		return STATUS_FAILURE;
+	}
+
 	return build( self, chooseBuildableToBuild( self ) ) ? STATUS_SUCCESS : STATUS_FAILURE;
 }
 
