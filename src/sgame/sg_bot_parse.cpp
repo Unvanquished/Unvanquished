@@ -1004,6 +1004,7 @@ static const struct AIActionMap_s
 	{ "activateUpgrade",   BotActionActivateUpgrade,   1, 1 },
 	{ "aimAtGoal",         BotActionAimAtGoal,         0, 0 },
 	{ "alternateStrafe",   BotActionAlternateStrafe,   0, 0 },
+	{ "buildNowChosenBuildable", BotActionBuildNowChosenBuildable, 0, 0 },
 	{ "buy",               BotActionBuy,               1, 4 },
 	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
 	{ "classDodge",        BotActionClassDodge,        0, 0 },
