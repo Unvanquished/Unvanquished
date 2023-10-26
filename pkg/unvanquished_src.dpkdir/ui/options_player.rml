@@ -67,7 +67,7 @@
 		<h3><translate>Emoticons</translate></h3>
 		<p> you can put emoticons in your nickname too.</p>
 		<p style="clear: both;">
-			<translate quake emoticons> Example: ^^3Fred^^1Baggins[gren^*ade] becomes  ^3Fred^1Baggins[grenade]</translate>
+			<translate quake emoticons>Example: ^^3Fred^^1Baggins[gren^*ade] becomes  ^3Fred^1Baggins[grenade]</translate>
 		</p>
 <!-- do NOT reduct the height! If it is reducted, some parts will be skiped because of the scrollbar -->
 		<window id="innersidebar"  style="height:25%">
