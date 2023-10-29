@@ -426,6 +426,11 @@ static AIValue_t numUsersInTeam( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.team[ G_Team( self ) ].numPlayers );
 }
 
+static AIValue_t timeSinceMyTimerUpdate( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( level.time - self->botMind->myTimer );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -468,6 +473,7 @@ static const struct AIConditionMap_s
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
 	{ "teamateIsClass",    teamateIsClass,    1 },
+	{ "timeSinceMyTimerUpdate", timeSinceMyTimerUpdate, 0 },
 	{ "usableBuildPoints", usableBuildPoints, 0 },
 	{ "weapon",            currentWeapon,     0 }
 };
@@ -1068,6 +1074,7 @@ static const struct AIActionMap_s
 	{ "strafeDodge",       BotActionStrafeDodge,       0, 0 },
 	{ "suicide",           BotActionSuicide,           0, 0 },
 	{ "teleport",          BotActionTeleport,          3, 3 },
+	{ "updateMyTimer",     BotActionUpdateMyTimer,     0, 0 },
 };
 
 /*

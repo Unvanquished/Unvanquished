@@ -7,36 +7,39 @@ selector
 		condition !teamateIsClass( PCL_ALIEN_BUILDER0 ) && !teamateIsClass( PCL_ALIEN_BUILDER0_UPG )
 		selector
 		{
-			condition class != PCL_ALIEN_BUILDER0 && class != PCL_ALIEN_BUILDER0_UPG
+			sequence
 			{
+				condition class != PCL_ALIEN_BUILDER0 && class != PCL_ALIEN_BUILDER0_UPG
 				selector
 				{
-					sequence
+					condition timeSinceMyTimerUpdate >= 20000
 					{
-						action moveTo( E_A_OVERMIND )
-						selector
-						{
-							action evolveTo( PCL_ALIEN_BUILDER0_UPG )
-							action evolveTo( PCL_ALIEN_BUILDER0 )
-						}
+						action suicide
 					}
-					action suicide
-				}
-			}
-
-			condition class == PCL_ALIEN_BUILDER0 || class == PCL_ALIEN_BUILDER0_UPG
-			{
-				selector
-				{
-					decorator return( STATUS_FAILURE )
+					action evolveTo( PCL_ALIEN_BUILDER0_UPG )
+					action evolveTo( PCL_ALIEN_BUILDER0 )
+					action roamInRadius( E_A_OVERMIND, 500 )
+					condition alertedToEnemy
 					{
-						action buildNowChosenBuildable
+						action fight
 					}
-					action roamInRadius( E_A_OVERMIND, 700 )
+					action rush
 					action roam
 				}
 			}
+
+			decorator return( STATUS_FAILURE )
+			{
+				action buildNowChosenBuildable
+			}
+			action roamInRadius( E_A_OVERMIND, 700 )
+			action roam
 		}
+	}
+
+	decorator return ( STATUS_FAILURE )
+	{
+		action updateMyTimer
 	}
 
 	condition ( aliveTime > 1500 && healScore < 0.5 )

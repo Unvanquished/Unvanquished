@@ -9,10 +9,15 @@ selector
 		condition !teamateHasWeapon( WP_HBUILD )
 		selector
 		{
-			condition !haveWeapon( WP_HBUILD )
+			sequence
 			{
+				condition !haveWeapon( WP_HBUILD )
 				selector
 				{
+					condition timeSinceMyTimerUpdate >= 20000
+					{
+						action suicide
+					}
 					sequence
 					{
 						decorator return( STATUS_SUCCESS )
@@ -21,23 +26,23 @@ selector
 						}
 						action buy( WP_HBUILD )
 					}
-					action suicide
-				}
-			}
-
-			condition haveWeapon( WP_HBUILD )
-			{
-				selector
-				{
-					decorator return( STATUS_FAILURE )
-					{
-						action buildNowChosenBuildable
-					}
-					action roamInRadius( E_H_REACTOR, 700 )
+					action rush
 					action roam
 				}
 			}
+
+			decorator return( STATUS_FAILURE )
+			{
+				action buildNowChosenBuildable
+			}
+			action roamInRadius( E_H_REACTOR, 700 )
+			action roam
 		}
+	}
+
+	decorator return ( STATUS_FAILURE )
+	{
+		action updateMyTimer
 	}
 
 	sequence
