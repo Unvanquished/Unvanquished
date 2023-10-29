@@ -47,6 +47,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
 void       BotFindClosestBuildings( gentity_t *self );
 bool   BotTeamateHasWeapon( gentity_t *self, int weapon );
+bool   BotTeamateIsClass( gentity_t *self, class_t cl );
 void       BotSearchForEnemy( gentity_t *self );
 void       BotPain( gentity_t *self, gentity_t *attacker, int damage );
 botEntityAndDistance_t BotGetHealTarget( const gentity_t *self );

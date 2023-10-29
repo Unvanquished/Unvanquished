@@ -4,6 +4,43 @@ selector
 
 	sequence
 	{
+		condition buildPoints >= chosenBuildableCost
+		condition !teamateHasWeapon( WP_HBUILD )
+		selector
+		{
+			condition !haveWeapon( WP_HBUILD )
+			{
+				selector
+				{
+					sequence
+					{
+						decorator return( STATUS_SUCCESS )
+						{
+							action equip
+						}
+						action buy( WP_HBUILD )
+					}
+					action suicide
+				}
+			}
+
+			condition haveWeapon( WP_HBUILD )
+			{
+				selector
+				{
+					decorator return( STATUS_FAILURE )
+					{
+						action buildNowChosenBuildable
+					}
+					action roamInRadius( E_H_REACTOR, 700 )
+					action roam
+				}
+			}
+		}
+	}
+
+	sequence
+	{
 		condition alertedToEnemy
 		condition percentAmmoClip > 0 || percentClips > 0
 		{

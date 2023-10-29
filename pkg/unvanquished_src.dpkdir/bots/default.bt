@@ -4,11 +4,25 @@ selectClass
 	{
 		condition team == TEAM_ALIENS
 		{
-			spawnAs PCL_ALIEN_LEVEL0
+			selector
+			{
+				condition buildPoints >= chosenBuildableCost && !teamateIsClass( PCL_ALIEN_BUILDER0 ) && !teamateIsClass( PCL_ALIEN_BUILDER0_UPG )
+				{
+					spawnAs PCL_ALIEN_BUILDER0
+				}
+				spawnAs PCL_ALIEN_LEVEL0
+			}
 		}
 		condition team == TEAM_HUMANS
 		{
-			spawnAs WP_MACHINEGUN
+			selector
+			{
+				condition buildPoints >= chosenBuildableCost && !teamateHasWeapon( WP_HBUILD )
+				{
+					spawnAs WP_HBUILD
+				}
+				spawnAs WP_MACHINEGUN
+			}
 		}
 	}
 }

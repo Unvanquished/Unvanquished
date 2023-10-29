@@ -286,4 +286,6 @@ AINodeStatus_t BotActionBuildNowChosenBuildable( gentity_t *self, AIGenericNode_
 // class selection node "spawnAs"
 AINodeStatus_t BotSpawnNode( gentity_t *self, AIGenericNode_t *node );
 
+buildable_t BotChooseBuildableToBuild( gentity_t *self );
+
 #endif

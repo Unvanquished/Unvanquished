@@ -194,6 +194,11 @@ static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( BotTeamateHasWeapon( self, AIUnBoxInt( params[ 0 ] ) ) );
 }
 
+static AIValue_t teamateIsClass( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( BotTeamateIsClass( self, static_cast< class_t >( AIUnBoxInt( params[ 0 ] ) ) ) );
+}
+
 static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
@@ -394,6 +399,23 @@ static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.time - self->botMind->stuckTime );
 }
 
+static AIValue_t buildPoints( gentity_t *self, const AIValue_t* )
+{
+	team_t team = G_Team( self );
+	int buildPoints = G_GetFreeBudget( team );
+	return AIBoxInt( buildPoints );
+}
+
+static AIValue_t chosenBuildableCost( gentity_t *self, const AIValue_t* )
+{
+	buildable_t toBuild = BotChooseBuildableToBuild( self );
+	if ( toBuild == BA_NONE )
+	{
+		return AIBoxInt( 32767 );  // return an "infinite" cost
+	}
+	return AIBoxInt( BG_Buildable( toBuild )->buildPoints );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -407,7 +429,9 @@ static const struct AIConditionMap_s
 	{ "aliveTime",         aliveTime,         0 },
 	{ "baseRushScore",     baseRushScore,     0 },
 	{ "buildingIsDamaged", buildingIsDamaged, 0 },
+	{ "buildPoints",       buildPoints,       0 },
 	{ "canEvolveTo",       botCanEvolveTo,    1 },
+	{ "chosenBuildableCost", chosenBuildableCost, 0 },
 	{ "class",             botClass,          0 },
 	{ "cvar",              cvar,              1 },
 	{ "directPathTo",      directPathTo,      1 },
@@ -433,6 +457,7 @@ static const struct AIConditionMap_s
 	{ "stuckTime",         stuckTime,         0 },
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
+	{ "teamateIsClass",    teamateIsClass,    1 },
 	{ "weapon",            currentWeapon,     0 }
 };
 

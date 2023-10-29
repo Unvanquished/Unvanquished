@@ -1203,7 +1203,7 @@ static bool isBuilder( gentity_t *self )
 		|| ( team == TEAM_ALIENS && ( cl == PCL_ALIEN_BUILDER0 || cl == PCL_ALIEN_BUILDER0_UPG ) );
 }
 
-static buildable_t chooseBuildableToBuild( gentity_t *self )
+buildable_t BotChooseBuildableToBuild( gentity_t *self )
 {
 	buildable_t toBuild = BA_NONE;
 	if ( G_Team( self ) == TEAM_HUMANS )
@@ -1302,7 +1302,7 @@ AINodeStatus_t BotActionBuildNowChosenBuildable( gentity_t *self, AIGenericNode_
 		return STATUS_FAILURE;
 	}
 
-	return build( self, chooseBuildableToBuild( self ) ) ? STATUS_SUCCESS : STATUS_FAILURE;
+	return build( self, BotChooseBuildableToBuild( self ) ) ? STATUS_SUCCESS : STATUS_FAILURE;
 }
 
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
