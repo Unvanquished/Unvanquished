@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-07-30 15:06+0000\n"
-"Last-Translator: Pierre Wani Alan Morvan <per.morvan.bzh29@gmail.com>\n"
+"PO-Revision-Date: 2023-10-29 16:27+0000\n"
+"Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Breton <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/br/>\n"
 "Language: br\n"
@@ -21,7 +21,7 @@ msgstr ""
 "&& n % 100 != 92) ? 1 : ((((n % 10 == 3 || n % 10 == 4) || n % 10 == 9) && ("
 "n % 100 < 10 || n % 100 > 19) && (n % 100 < 70 || n % 100 > 79) && (n % 100 "
 "< 90 || n % 100 > 99)) ? 2 : ((n != 0 && n % 1000000 == 0) ? 3 : 4)));\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -34,148 +34,160 @@ msgstr "Priz :"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "Emdreiñ"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "poentoù emdreiñ"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "Dibabit ho stumm loc'hañ :"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "Dretch"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "Granger"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
+"An Dretch a zo ur stumm argad distruj hag ar granger a zo stumm savadurioù "
+"aliened."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "Distreiñ da ziuz ar skipailh"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "Kinnig n'eus gounid ebet"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "Abeg"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "Lakaat ur vot"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
-msgstr ""
+msgstr "Leuniañ gant robotoù"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "An holl skipailhoù"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 msgid "Aliens"
-msgstr ""
+msgstr "Aliened"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "Mab-den"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "Skipailh"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "Priz"
 
 #: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
 msgid "Change map"
-msgstr ""
+msgstr "Cheñch gartenn"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Votadenn : cheñch ar gartenn war-lerc'h"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Votadenn : termenañ ar gartenn red"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "termenañ ar gartenn red (ostiz)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Hentenn"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
-msgstr ""
+msgstr "Gartenn"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Ober un dra"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Gudenn !"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: ui/help_gameplay.rml:16 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Degemer mat !"
 
 #: ui/help_gameplay.rml:19
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"Er rann-mañ e kavoc'h un diverrañ eus an darn vrasañ eus elfennoù ar "
+"c'hoariusted evit gouzout penaos dont da vezañ ur c'hoarier mat."
 
 #: ui/help_gameplay.rml:22
 msgid "More can be found on our website and other community places!"
-msgstr ""
+msgstr "Muioc'h a ditouroù war hol lec'hienn Web hag er gumuniezh !"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Kaozit gant ar gumuniezh war ar servijerioù IRC, Matrix pe Discord "
+"Libera.Chat : <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr ""
+"Komzit diwar-benn an nevezentioù diwezhañ er forom : <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr ""
+"Grit anaoudegezh gant muioc'h a draoù diwar-benn ar c'hoari er Wiki : <web "
+"dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:28
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Mar plij, kemennit ar bugoù war : <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "gounidigezh &amp; pazennadur"
 
 #: ui/help_gameplay.rml:36
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"Gallout a ra an aliened gounit poentoù emdreiñ en ur lazhañ tud. Goude-se e "
+"c’hallont implijout ar poentoù emdreiñ-se evit mont war-zu [dragoon] stummoù "
+"araokaetoc’h."
 
 #: ui/help_gameplay.rml:39
 msgid ""
@@ -183,16 +195,18 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
-"an aliened a c'hell emdreiñ e pep lerc'h met ket e legerenn-gweled un den pe "
-"un savadur. Galloud a ra an aliened dilezel evit kemer da skouer a [granger] "
-"(met koust a ra poentoù metamorfoziñ ) pa in tost diouzh an Overmind "
-"[overmind]"
+"Gallout a ra an anliened emdreiñ eus forzh pelec’h, nemet e linenn evezh ur "
+"c’hoarier mab-den pe ur savadur. An aliened a c’hell ivez tremen e stummoù n’"
+"int ket ken araokaet [granger] (gant ur c’houst bennak) pa vezont tost "
+"diouzh an Overmind."
 
 #: ui/help_gameplay.rml:42
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
+"Savit un overmind gant ur [granger] granger ma vez distrujet, ezhomm ho peus "
+"eus un overmind bev evit emdreiñ !"
 
 #: ui/help_gameplay.rml:46
 msgid ""
@@ -200,12 +214,18 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
+"Gallout a ra mab-den gounit arc'hant en ur lazhañ aliened hag en ur "
+"zistrujañ savadurioù aliened, ha goude-se e c'hallent implijout an arc’hant-"
+"se evit prenañ armoù nevez [lcannon], harnez pe un ezrelegenn [bsuit] hag "
+"ostilhoù evel un radar pe ur jetpack"
 
 #: ui/help_gameplay.rml:49
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
+"Prenañ ha gwerzhañ a ra an dud armoù er [armoury] armerezh, red eo e vefe "
+"unan ! Implijit ar c’hit sevel evit sevel ur paramanterezh ma vank."
 
 #: ui/help_gameplay.rml:53
 msgid "Powering buildables"
