@@ -399,10 +399,15 @@ static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.time - self->botMind->stuckTime );
 }
 
-static AIValue_t buildPointsNonneg( gentity_t *self, const AIValue_t* )
+static AIValue_t usableBuildPoints( gentity_t *self, const AIValue_t* )
 {
 	team_t team = G_Team( self );
 	int buildPoints = G_GetFreeBudget( team );
+	if ( team == TEAM_ALIENS && !BG_BuildableUnlocked( BA_A_BOOSTER ) )
+	{
+		// save build points to build a booster as soon as unlocked
+		buildPoints -= BG_Buildable( BA_A_BOOSTER )->buildPoints;
+	}
 	return AIBoxInt( buildPoints < 0 ? 0 : buildPoints );
 }
 
@@ -434,7 +439,6 @@ static const struct AIConditionMap_s
 	{ "aliveTime",         aliveTime,         0 },
 	{ "baseRushScore",     baseRushScore,     0 },
 	{ "buildingIsDamaged", buildingIsDamaged, 0 },
-	{ "buildPointsNonneg", buildPointsNonneg, 0 },
 	{ "canEvolveTo",       botCanEvolveTo,    1 },
 	{ "chosenBuildableCost", chosenBuildableCost, 0 },
 	{ "class",             botClass,          0 },
@@ -464,6 +468,7 @@ static const struct AIConditionMap_s
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
 	{ "teamateIsClass",    teamateIsClass,    1 },
+	{ "usableBuildPoints", usableBuildPoints, 0 },
 	{ "weapon",            currentWeapon,     0 }
 };
 

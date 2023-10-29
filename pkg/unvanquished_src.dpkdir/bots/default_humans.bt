@@ -5,7 +5,7 @@ selector
 	sequence
 	{
 		condition numUsersInTeam == 0
-		condition buildPointsNonneg >= chosenBuildableCost
+		condition usableBuildPoints >= chosenBuildableCost
 		condition !teamateHasWeapon( WP_HBUILD )
 		selector
 		{
