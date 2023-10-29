@@ -2,6 +2,7 @@ selector
 {
 	sequence
 	{
+		condition numUsersInTeam == 0
 		condition buildPointsNonneg >= chosenBuildableCost
 		condition !teamateIsClass( PCL_ALIEN_BUILDER0 ) && !teamateIsClass( PCL_ALIEN_BUILDER0_UPG )
 		selector

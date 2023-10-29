@@ -416,6 +416,11 @@ static AIValue_t chosenBuildableCost( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( BG_Buildable( toBuild )->buildPoints );
 }
 
+static AIValue_t numUsersInTeam( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( level.team[ G_Team( self ) ].numPlayers );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -448,6 +453,7 @@ static const struct AIConditionMap_s
 	{ "matchTime",         matchTime,         0 },
 	{ "momentum",          momentum,          1 },
 	{ "numOurBuildings",   numOurBuildings,   1 },
+	{ "numUsersInTeam",    numUsersInTeam,    0 },
 	{ "percentAmmoClip",   percentAmmoClip,   0 },
 	{ "percentClips",      percentClips,      0 },
 	{ "percentHealth",     percentHealth,     1 },
