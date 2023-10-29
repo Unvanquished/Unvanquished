@@ -399,11 +399,11 @@ static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.time - self->botMind->stuckTime );
 }
 
-static AIValue_t buildPoints( gentity_t *self, const AIValue_t* )
+static AIValue_t buildPointsNonneg( gentity_t *self, const AIValue_t* )
 {
 	team_t team = G_Team( self );
 	int buildPoints = G_GetFreeBudget( team );
-	return AIBoxInt( buildPoints );
+	return AIBoxInt( buildPoints < 0 ? 0 : buildPoints );
 }
 
 static AIValue_t chosenBuildableCost( gentity_t *self, const AIValue_t* )
@@ -429,7 +429,7 @@ static const struct AIConditionMap_s
 	{ "aliveTime",         aliveTime,         0 },
 	{ "baseRushScore",     baseRushScore,     0 },
 	{ "buildingIsDamaged", buildingIsDamaged, 0 },
-	{ "buildPoints",       buildPoints,       0 },
+	{ "buildPointsNonneg", buildPointsNonneg, 0 },
 	{ "canEvolveTo",       botCanEvolveTo,    1 },
 	{ "chosenBuildableCost", chosenBuildableCost, 0 },
 	{ "class",             botClass,          0 },
