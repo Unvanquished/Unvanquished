@@ -323,6 +323,16 @@ static AIValue_t numOurBuildings( gentity_t* self, const AIValue_t *params )
 		return AIBoxInt( 0 );
 	}
 
+	// fast track when counting spawns
+	if ( type == BA_H_SPAWN )
+	{
+		return AIBoxInt( level.team[ TEAM_HUMANS ].numSpawns );
+	}
+	else if ( type == BA_A_SPAWN )
+	{
+		return AIBoxInt( level.team[ TEAM_ALIENS ].numSpawns );
+	}
+
 	team_t team = G_Team( self );
 	int count = 0;
 	ForEntities<BuildableComponent>( [&]( Entity &ent, BuildableComponent & ) {

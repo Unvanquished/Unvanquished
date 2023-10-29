@@ -3,7 +3,7 @@ selector
 	sequence
 	{
 		condition levelTime >= 60000
-		condition numUsersInTeam == 0
+		condition numUsersInTeam == 0 || numOurBuildings( E_A_SPAWN ) < 2
 		condition usableBuildPoints >= chosenBuildableCost
 		condition !teamateIsClass( PCL_ALIEN_BUILDER0 ) && !teamateIsClass( PCL_ALIEN_BUILDER0_UPG )
 		selector
