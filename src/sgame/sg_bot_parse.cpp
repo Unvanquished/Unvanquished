@@ -323,16 +323,6 @@ static AIValue_t numOurBuildings( gentity_t* self, const AIValue_t *params )
 		return AIBoxInt( 0 );
 	}
 
-	// fast track when counting spawns
-	if ( type == BA_H_SPAWN )
-	{
-		return AIBoxInt( level.team[ TEAM_HUMANS ].numSpawns );
-	}
-	else if ( type == BA_A_SPAWN )
-	{
-		return AIBoxInt( level.team[ TEAM_ALIENS ].numSpawns );
-	}
-
 	team_t team = G_Team( self );
 	int count = 0;
 	ForEntities<BuildableComponent>( [&]( Entity &ent, BuildableComponent & ) {
@@ -345,6 +335,11 @@ static AIValue_t numOurBuildings( gentity_t* self, const AIValue_t *params )
 	});
 
 	return AIBoxInt( count );
+}
+
+static AIValue_t numOurSpawns( gentity_t* self, const AIValue_t* )
+{
+	return AIBoxInt( level.team[ G_Team( self ) ].numSpawns );
 }
 
 static AIValue_t aliveTime( gentity_t*self, const AIValue_t* )
@@ -478,6 +473,7 @@ static const struct AIConditionMap_s
 	{ "matchTime",         matchTime,         0 },
 	{ "momentum",          momentum,          1 },
 	{ "numOurBuildings",   numOurBuildings,   1 },
+	{ "numOurSpawns",      numOurSpawns,      0 },
 	{ "numUsersInTeam",    numUsersInTeam,    0 },
 	{ "percentAmmoClip",   percentAmmoClip,   0 },
 	{ "percentClips",      percentClips,      0 },
