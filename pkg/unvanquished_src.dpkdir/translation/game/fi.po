@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-10-21 04:13+0000\n"
+"PO-Revision-Date: 2023-10-29 16:27+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.1\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -1508,7 +1508,7 @@ msgstr "Joukkuekeskustelu:"
 
 #: ui/options_keys.rml:123
 msgid "Admin chat:"
-msgstr "Ylläpitäjäin keskustelu:"
+msgstr "Valvojakeskustelu:"
 
 #: ui/options_keys.rml:127
 msgid "Vote Yes:"
@@ -3783,7 +3783,7 @@ msgstr "Kerro joukkueelle:"
 
 #: src/cgame/cg_rocket_draw.cpp:3179
 msgid "Admin Say:"
-msgstr "Kerro ylläpitäjille:"
+msgstr "Kerro valvojille:"
 
 #: src/cgame/cg_rocket_draw.cpp:3180
 msgid "Command:"
