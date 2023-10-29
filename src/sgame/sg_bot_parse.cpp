@@ -431,6 +431,11 @@ static AIValue_t timeSinceMyTimerUpdate( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.time - self->botMind->myTimer );
 }
 
+static AIValue_t levelTime( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( level.time );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -459,6 +464,7 @@ static const struct AIConditionMap_s
 	{ "healScore",         healScore,         0 },
 	{ "inAttackRange",     inAttackRange,     1 },
 	{ "isVisible",         isVisible,         1 },
+	{ "levelTime",         levelTime,         0 },
 	{ "matchTime",         matchTime,         0 },
 	{ "momentum",          momentum,          1 },
 	{ "numOurBuildings",   numOurBuildings,   1 },

@@ -6,7 +6,7 @@ selectClass
 		{
 			selector
 			{
-				condition numUsersInTeam == 0 && usableBuildPoints >= chosenBuildableCost && !teamateIsClass( PCL_ALIEN_BUILDER0 ) && !teamateIsClass( PCL_ALIEN_BUILDER0_UPG )
+				condition levelTime >= 60000 && numUsersInTeam == 0 && usableBuildPoints >= chosenBuildableCost && !teamateIsClass( PCL_ALIEN_BUILDER0 ) && !teamateIsClass( PCL_ALIEN_BUILDER0_UPG )
 				{
 					spawnAs PCL_ALIEN_BUILDER0
 				}
@@ -17,7 +17,7 @@ selectClass
 		{
 			selector
 			{
-				condition numUsersInTeam == 0 && usableBuildPoints >= chosenBuildableCost && !teamateHasWeapon( WP_HBUILD )
+				condition levelTime >= 60000 && numUsersInTeam == 0 && usableBuildPoints >= chosenBuildableCost && !teamateHasWeapon( WP_HBUILD )
 				{
 					spawnAs WP_HBUILD
 				}
