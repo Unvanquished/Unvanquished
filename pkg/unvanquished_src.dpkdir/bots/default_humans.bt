@@ -4,11 +4,7 @@ selector
 
 	sequence
 	{
-		condition levelTime >= 60000
-		condition numUsersInTeam == 0 || numOurBuildings( E_H_SPAWN ) < 2
-		condition usableBuildPoints >= chosenBuildableCost
-		condition !teamateHasWeapon( WP_HBUILD )
-		condition blackboardNumTransient( 1 ) < 1
+		condition levelTime >= 60000 && ( numUsersInTeam == 0 || numOurBuildings( E_H_SPAWN ) < 2 ) && usableBuildPoints >= chosenBuildableCost && !teamateHasWeapon( WP_HBUILD ) && blackboardNumTransient( 1 ) < 1
 		selector
 		{
 			decorator return ( STATUS_FAILURE )
