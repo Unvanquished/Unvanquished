@@ -194,11 +194,6 @@ static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( BotTeamateHasWeapon( self, AIUnBoxInt( params[ 0 ] ) ) );
 }
 
-static AIValue_t teamateIsClass( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxInt( BotTeamateIsClass( self, static_cast< class_t >( AIUnBoxInt( params[ 0 ] ) ) ) );
-}
-
 static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
@@ -508,7 +503,6 @@ static const struct AIConditionMap_s
 	{ "stuckTime",         stuckTime,         0 },
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
-	{ "teamateIsClass",    teamateIsClass,    1 },
 	{ "timeSinceMyTimerUpdate", timeSinceMyTimerUpdate, 0 },
 	{ "usableBuildPoints", usableBuildPoints, 0 },
 	{ "weapon",            currentWeapon,     0 }
@@ -1519,6 +1513,8 @@ static void SetBehaviorTreeDefines()
 	D( WP_PULSE_RIFLE );
 	D( WP_LUCIFER_CANNON );
 	D( WP_HBUILD );
+	D( WP_ABUILD );
+	D( WP_ABUILD2 );
 
 	// add teams
 	D( TEAM_ALIENS );

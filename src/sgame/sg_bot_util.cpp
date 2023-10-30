@@ -1787,23 +1787,6 @@ bool BotTeamateHasWeapon( gentity_t *self, int weapon )
 	return false;
 }
 
-bool BotTeamateIsClass( gentity_t *self, class_t cl )
-{
-	for ( int i = 0; i < MAX_CLIENTS; i++ )
-	{
-		gentity_t *ent = &g_entities[ i ];
-		if ( !( ent->r.svFlags & SVF_BOT ) || !G_OnSameTeam( ent, self ) || ent == self )
-		{
-			continue;
-		}
-		if ( cl == BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->number )
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
 /*
 ========================
 Misc Bot Stuff
