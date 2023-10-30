@@ -8,6 +8,7 @@ selector
 			&& ( numUsersInTeam == 0
 				 || ( numOurBuildings( E_A_SPAWN ) < 2
 					  && numOurBuildings( E_A_SPAWN ) < cvar( "g_bot_buildNumEggs" ) ) )
+			&& cvar( "g_bot_buildAliens" )
 			&& usableBuildPoints >= chosenBuildableCost
 			&& !teamateHasWeapon( WP_ABUILD )
 			&& !teamateHasWeapon( WP_ABUILD2 )

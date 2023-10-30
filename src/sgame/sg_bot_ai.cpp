@@ -1191,6 +1191,8 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
+static Cvar::Cvar<bool> g_bot_buildAliens("g_bot_buildAliens", "whether alien bots should build", Cvar::NONE, true);
+static Cvar::Cvar<bool> g_bot_buildHumans("g_bot_buildHumans", "whether human bots should build", Cvar::NONE, true);
 static Cvar::Cvar<int> g_bot_buildNumEggs("g_bot_buildNumEggs", "how many eggs bots should build", Cvar::NONE, 6);
 static Cvar::Cvar<int> g_bot_buildNumTelenodes("g_bot_buildNumTelenodes", "how many telenodes bots should build", Cvar::NONE, 3);
 static Cvar::Cvar<float> g_bot_buildProbRocketPod("g_bot_buildProbRocketPod", "probability of a bot building a rocket pod instead of a machine gun turret", Cvar::NONE, 0.2);

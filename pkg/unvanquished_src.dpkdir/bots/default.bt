@@ -10,6 +10,7 @@ selectClass
 					&& ( numUsersInTeam == 0
 						 || ( numOurBuildings( E_A_SPAWN ) < 2
 							  && numOurBuildings( E_A_SPAWN ) < cvar( "g_bot_buildNumEggs" ) ) )
+					&& cvar( "g_bot_buildAliens" )
 					&& usableBuildPoints >= chosenBuildableCost
 					&& !teamateHasWeapon( WP_ABUILD )
 					&& !teamateHasWeapon( WP_ABUILD2 )
@@ -27,9 +28,9 @@ selectClass
 					&& ( numUsersInTeam == 0
 						 || ( numOurBuildings( E_H_SPAWN ) < 2
 							  && numOurBuildings( E_H_SPAWN ) < cvar( "g_bot_buildNumTelenodes" ) ) )
+					&& cvar( "g_bot_buildHumans" )
 					&& usableBuildPoints >= chosenBuildableCost
 					&& !teamateHasWeapon( WP_HBUILD )
-					&& blackboardNumTransient( WANTS_TO_BUILD ) < 1
 				{
 					spawnAs WP_HBUILD
 				}
