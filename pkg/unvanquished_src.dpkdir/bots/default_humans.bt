@@ -29,6 +29,10 @@ selector
 						}
 						action buy( WP_HBUILD )
 					}
+					condition alertedToEnemy
+					{
+						action fight
+					}
 					action rush
 					action roam
 				}
