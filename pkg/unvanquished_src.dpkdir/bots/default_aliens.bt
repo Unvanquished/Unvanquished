@@ -1,14 +1,21 @@
+#define WANTS_TO_BUILD 1
+
 selector
 {
 	sequence
 	{
-		condition levelTime >= 60000 && ( numUsersInTeam == 0 || numOurBuildings( E_A_SPAWN ) < 2 ) && usableBuildPoints >= chosenBuildableCost && !teamateHasWeapon( WP_ABUILD ) && !teamateHasWeapon( WP_ABUILD2 ) && blackboardNumTransient( 1 ) < 1
+		condition levelTime >= 60000
+			&& ( numUsersInTeam == 0 || numOurBuildings( E_A_SPAWN ) < 2 )
+			&& usableBuildPoints >= chosenBuildableCost
+			&& !teamateHasWeapon( WP_ABUILD )
+			&& !teamateHasWeapon( WP_ABUILD2 )
+			&& blackboardNumTransient( WANTS_TO_BUILD ) < 1
 		selector
 		{
 			decorator return ( STATUS_FAILURE )
 			{
 				// this will be reset to 0 before the next execution
-				action blackboardNoteTransient( 1 )
+				action blackboardNoteTransient( WANTS_TO_BUILD )
 			}
 
 			sequence
