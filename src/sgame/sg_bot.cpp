@@ -643,7 +643,8 @@ static void G_BotCheckDefaultFill()
 	}
 }
 
-static Cvar::Cvar<bool> g_bot_fillBeyond("g_bot_fillBeyond", "whether teams are filled beyond the chosen number of bots if one team has more players than that", Cvar::NONE, false);
+static Cvar::Cvar<bool> g_bot_fillEvenHumans("g_bot_fillEvenHumans", "whether the human team is filled beyond the chosen number of bots if the alien team has more players than that", Cvar::NONE, false);
+static Cvar::Cvar<bool> g_bot_fillEvenAliens("g_bot_fillEvenAliens", "whether the alien team is filled beyond the chosen number of bots if the human team has more players than that", Cvar::NONE, false);
 
 void G_BotFill(bool immediately)
 {
@@ -692,31 +693,28 @@ void G_BotFill(bool immediately)
 		}
 	}
 
-	// If both teams have the same botFillTeamSize, and one team has more
-	// members than this number: fill the other team to the same number, for balance.
-	if ( g_bot_fillBeyond.Get()
-		 && level.team[ TEAM_ALIENS ].botFillTeamSize == level.team[ TEAM_HUMANS ].botFillTeamSize
-		 && level.team[ TEAM_ALIENS ].botFillTeamSize > 0 )
+	int biggerTeamSize = -1;
+	for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
 	{
-		int biggerTeamSize = -1;
-		for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
+		if ( level.team[ team ].numClients <= level.team[ team ].botFillTeamSize || !fillers[ team ].current.empty() )
 		{
-			if ( level.team[ team ].numClients <= level.team[ team ].botFillTeamSize || !fillers[ team ].current.empty() )
-			{
-				continue;
-			}
-			// the team has more members than its botFillTeamSize, and none of them is a filler
-			if ( level.team[ team ].numClients > biggerTeamSize )
-			{
-				biggerTeamSize = level.team[ team ].numClients;
-			}
+			continue;
 		}
-		if ( biggerTeamSize >= 0 )
+		// the team has more members than its botFillTeamSize, and none of them is a filler
+		if ( level.team[ team ].numClients > biggerTeamSize )
 		{
-			for ( team_t team : { TEAM_ALIENS, TEAM_HUMANS } )
-			{
-				fillers[ team ].actualFill = biggerTeamSize;
-			}
+			biggerTeamSize = level.team[ team ].numClients;
+		}
+	}
+	if ( biggerTeamSize >= 0 )
+	{
+		if ( g_bot_fillEvenAliens.Get() )
+		{
+			fillers[ TEAM_ALIENS ].actualFill = biggerTeamSize;
+		}
+		if ( g_bot_fillEvenHumans.Get() )
+		{
+			fillers[ TEAM_HUMANS ].actualFill = biggerTeamSize;
 		}
 	}
 
