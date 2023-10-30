@@ -438,7 +438,7 @@ static AIValue_t myTimer( gentity_t *self, const AIValue_t* )
 
 static AIValue_t levelTime( gentity_t *self, const AIValue_t* )
 {
-	return AIBoxInt( level.time );
+	return AIBoxInt( level.matchTime );
 }
 
 static AIValue_t blackboardNumTransient( gentity_t *self, const AIValue_t *params )
