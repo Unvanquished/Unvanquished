@@ -1305,7 +1305,7 @@ AINodeStatus_t BotActionBuildNowChosenBuildable( gentity_t *self, AIGenericNode_
 	return build( self, BotChooseBuildableToBuild( self ) ) ? STATUS_SUCCESS : STATUS_FAILURE;
 }
 
-AINodeStatus_t BotActionUpdateMyTimer( gentity_t *self, AIGenericNode_t * )
+AINodeStatus_t BotActionResetMyTimer( gentity_t *self, AIGenericNode_t * )
 {
 	self->botMind->myTimer = level.time;
 	return STATUS_SUCCESS;

@@ -19,7 +19,7 @@ selector
 				condition class != PCL_ALIEN_BUILDER0 && class != PCL_ALIEN_BUILDER0_UPG
 				selector
 				{
-					condition timeSinceMyTimerUpdate >= 20000
+					condition myTimer >= 20000
 					{
 						action suicide
 					}
@@ -46,7 +46,7 @@ selector
 
 	decorator return ( STATUS_FAILURE )
 	{
-		action updateMyTimer
+		action resetMyTimer
 	}
 
 	condition ( aliveTime > 1500 && healScore < 0.5 )

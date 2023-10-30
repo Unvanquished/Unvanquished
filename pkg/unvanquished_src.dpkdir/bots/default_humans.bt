@@ -21,7 +21,7 @@ selector
 				condition !haveWeapon( WP_HBUILD )
 				selector
 				{
-					condition timeSinceMyTimerUpdate >= 20000
+					condition myTimer >= 20000
 					{
 						action suicide
 					}
@@ -49,7 +49,7 @@ selector
 
 	decorator return ( STATUS_FAILURE )
 	{
-		action updateMyTimer
+		action resetMyTimer
 	}
 
 	sequence

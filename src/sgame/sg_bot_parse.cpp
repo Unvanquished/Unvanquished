@@ -431,7 +431,7 @@ static AIValue_t numUsersInTeam( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.team[ G_Team( self ) ].numPlayers );
 }
 
-static AIValue_t timeSinceMyTimerUpdate( gentity_t *self, const AIValue_t* )
+static AIValue_t myTimer( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( level.time - self->botMind->myTimer );
 }
@@ -492,6 +492,7 @@ static const struct AIConditionMap_s
 	{ "levelTime",         levelTime,         0 },
 	{ "matchTime",         matchTime,         0 },
 	{ "momentum",          momentum,          1 },
+	{ "myTimer",           myTimer,           0 },
 	{ "numOurBuildings",   numOurBuildings,   1 },
 	{ "numUsersInTeam",    numUsersInTeam,    0 },
 	{ "percentAmmoClip",   percentAmmoClip,   0 },
@@ -503,7 +504,6 @@ static const struct AIConditionMap_s
 	{ "stuckTime",         stuckTime,         0 },
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
-	{ "timeSinceMyTimerUpdate", timeSinceMyTimerUpdate, 0 },
 	{ "usableBuildPoints", usableBuildPoints, 0 },
 	{ "weapon",            currentWeapon,     0 }
 };
@@ -1096,6 +1096,7 @@ static const struct AIActionMap_s
 	{ "moveTo",            BotActionMoveTo,            1, 2 },
 	{ "moveToGoal",        BotActionMoveToGoal,        0, 0 },
 	{ "repair",            BotActionRepair,            0, 0 },
+	{ "resetMyTimer",      BotActionResetMyTimer,      0, 0 },
 	{ "resetStuckTime",    BotActionResetStuckTime,    0, 0 },
 	{ "roam",              BotActionRoam,              0, 0 },
 	{ "roamInRadius",      BotActionRoamInRadius,      2, 2 },
@@ -1105,7 +1106,6 @@ static const struct AIActionMap_s
 	{ "strafeDodge",       BotActionStrafeDodge,       0, 0 },
 	{ "suicide",           BotActionSuicide,           0, 0 },
 	{ "teleport",          BotActionTeleport,          3, 3 },
-	{ "updateMyTimer",     BotActionUpdateMyTimer,     0, 0 },
 };
 
 /*
