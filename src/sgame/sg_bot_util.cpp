@@ -611,13 +611,14 @@ AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t* )
 
 	for ( auto const& cl : classes )
 	{
+		if ( cl.item == currentClass )
+		{
+			break;  // no smaller classes left to try
+		}
+
 		evolveInfo_t info = BG_ClassEvolveInfoFromTo( currentClass, cl.item );
 
-		bool isBuilder = currentClass == PCL_ALIEN_BUILDER0 || currentClass == PCL_ALIEN_BUILDER0_UPG;
-		if ( ( info.evolveCost > 0     // no devolving or evolving to the same
-			   || ( isBuilder && cl.item == PCL_ALIEN_LEVEL0 )
-			   || ( currentClass == PCL_ALIEN_BUILDER0 && cl.item == PCL_ALIEN_BUILDER0_UPG ) )
-			 && BotEvolveToClass( self, cl.item ) )
+		if ( !info.isDevolving && BotEvolveToClass( self, cl.item ) )
 		{
 			return STATUS_SUCCESS;
 		}
