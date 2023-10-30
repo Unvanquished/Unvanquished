@@ -5,7 +5,7 @@ selector
 	sequence
 	{
 		condition levelTime >= 60000
-		condition numUsersInTeam == 0 || numOurSpawns < 2
+		condition numUsersInTeam == 0 || numOurBuildings( E_H_SPAWN ) < 2
 		condition usableBuildPoints >= chosenBuildableCost
 		condition !teamateHasWeapon( WP_HBUILD )
 		condition blackboardNumTransient( 1 ) < 1
