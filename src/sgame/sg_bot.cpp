@@ -484,6 +484,8 @@ void G_BotThink( gentity_t *self )
 		}
 	}
 
+	self->botMind->blackboardTransient = 0;
+
 	if ( !self->botMind->behaviorTree )
 	{
 		Log::Warn( "NULL behavior tree" );

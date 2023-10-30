@@ -184,6 +184,7 @@ public:
 	bool hasOffmeshGoal;
 
 	int myTimer;
+	int blackboardTransient;
 
 	Util::optional< glm::vec3 > userSpecifiedPosition;
 	Util::optional< int > userSpecifiedClientNum;

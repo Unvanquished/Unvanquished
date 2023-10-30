@@ -6,8 +6,14 @@ selector
 		condition numUsersInTeam == 0 || numOurSpawns < 2
 		condition usableBuildPoints >= chosenBuildableCost
 		condition !teamateIsClass( PCL_ALIEN_BUILDER0 ) && !teamateIsClass( PCL_ALIEN_BUILDER0_UPG )
+		condition blackboardNumTransient( 1 ) < 1
 		selector
 		{
+			decorator return ( STATUS_FAILURE )
+			{
+				action blackboardNoteTransient( 1 )
+			}
+
 			sequence
 			{
 				condition class != PCL_ALIEN_BUILDER0 && class != PCL_ALIEN_BUILDER0_UPG

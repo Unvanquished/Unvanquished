@@ -441,6 +441,25 @@ static AIValue_t levelTime( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.time );
 }
 
+static AIValue_t blackboardNumTransient( gentity_t *self, const AIValue_t *params )
+{
+	int val = AIUnBoxInt( params[ 0 ] );
+	int counter = 0;
+	for ( int i = 0; i < MAX_CLIENTS; i++ )
+	{
+		gentity_t *ent = &g_entities[ i ];
+		if ( !( ent->r.svFlags & SVF_BOT ) || !G_OnSameTeam( ent, self ) )
+		{
+			continue;
+		}
+		if ( ent->botMind->blackboardTransient == val )
+		{
+			counter++;
+		}
+	}
+	return AIBoxInt( counter );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -453,6 +472,7 @@ static const struct AIConditionMap_s
 	{ "alertedToEnemy",    alertedToEnemy,    0 },
 	{ "aliveTime",         aliveTime,         0 },
 	{ "baseRushScore",     baseRushScore,     0 },
+	{ "blackboardNumTransient", blackboardNumTransient, 1 },
 	{ "buildingIsDamaged", buildingIsDamaged, 0 },
 	{ "canEvolveTo",       botCanEvolveTo,    1 },
 	{ "chosenBuildableCost", chosenBuildableCost, 0 },
@@ -1058,6 +1078,7 @@ static const struct AIActionMap_s
 	{ "activateUpgrade",   BotActionActivateUpgrade,   1, 1 },
 	{ "aimAtGoal",         BotActionAimAtGoal,         0, 0 },
 	{ "alternateStrafe",   BotActionAlternateStrafe,   0, 0 },
+	{ "blackboardNoteTransient", BotActionBlackboardNoteTransient, 1, 1 },
 	{ "buildNowChosenBuildable", BotActionBuildNowChosenBuildable, 0, 0 },
 	{ "buy",               BotActionBuy,               1, 4 },
 	{ "changeGoal",        BotActionChangeGoal,        1, 3 },

@@ -8,8 +8,14 @@ selector
 		condition numUsersInTeam == 0 || numOurSpawns < 2
 		condition usableBuildPoints >= chosenBuildableCost
 		condition !teamateHasWeapon( WP_HBUILD )
+		condition blackboardNumTransient( 1 ) < 1
 		selector
 		{
+			decorator return ( STATUS_FAILURE )
+			{
+				action blackboardNoteTransient( 1 )
+			}
+
 			sequence
 			{
 				condition !haveWeapon( WP_HBUILD )
