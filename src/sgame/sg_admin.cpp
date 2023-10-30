@@ -4047,8 +4047,10 @@ bool G_admin_listplayers( gentity_t *ent )
 	bool        canset = G_admin_permission( ent, "setlevel" );
 	bool	canseeWarn = G_admin_permission( ent, "warn" ) || G_admin_permission( ent, "ban" );
 
-	ADMP( va( "%s %d", QQ( N_("^3listplayers:^* $1$ players connected:") ),
-	           level.numConnectedClients ) );
+	ADMP( va( "%s %d %s", QQ( N_("^3listplayers:^* $1$ players$2$ connected:") ),
+	           level.numConnectedPlayers,
+	           ( level.numPlayingBots > 0 ? Quote( va( ", %d bots (%d)", level.numPlayingBots, level.numConnectedClients ) )
+	                                      : QQ( "" ) ) ) );
 	ADMBP_begin();
 
 	for ( i = 0; i < level.maxclients; i++ )
