@@ -9,6 +9,7 @@ selector
 		{
 			decorator return ( STATUS_FAILURE )
 			{
+				// this will be reset to 0 before the next execution
 				action blackboardNoteTransient( 1 )
 			}
 
