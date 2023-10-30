@@ -6,7 +6,13 @@ selectClass
 		{
 			selector
 			{
-				condition levelTime >= 60000 && ( numUsersInTeam == 0 || numOurBuildings( E_A_SPAWN ) < 2 ) && usableBuildPoints >= chosenBuildableCost && !teamateHasWeapon( WP_ABUILD ) && !teamateHasWeapon( WP_ABUILD2 )
+				condition levelTime >= 60000
+					&& ( numUsersInTeam == 0
+						 || ( numOurBuildings( E_A_SPAWN ) < 2
+							  && numOurBuildings( E_A_SPAWN ) < cvar( "g_bot_buildNumEggs" ) ) )
+					&& usableBuildPoints >= chosenBuildableCost
+					&& !teamateHasWeapon( WP_ABUILD )
+					&& !teamateHasWeapon( WP_ABUILD2 )
 				{
 					spawnAs PCL_ALIEN_BUILDER0
 				}
@@ -17,7 +23,13 @@ selectClass
 		{
 			selector
 			{
-				condition levelTime >= 60000 && ( numUsersInTeam == 0 || numOurBuildings( E_H_SPAWN ) < 2 ) && usableBuildPoints >= chosenBuildableCost && !teamateHasWeapon( WP_HBUILD )
+				condition levelTime >= 60000
+					&& ( numUsersInTeam == 0
+						 || ( numOurBuildings( E_H_SPAWN ) < 2
+							  && numOurBuildings( E_H_SPAWN ) < cvar( "g_bot_buildNumTelenodes" ) ) )
+					&& usableBuildPoints >= chosenBuildableCost
+					&& !teamateHasWeapon( WP_HBUILD )
+					&& blackboardNumTransient( WANTS_TO_BUILD ) < 1
 				{
 					spawnAs WP_HBUILD
 				}

@@ -7,7 +7,9 @@ selector
 	sequence
 	{
 		condition levelTime >= 60000
-			&& ( numUsersInTeam == 0 || numOurBuildings( E_H_SPAWN ) < 2 )
+			&& ( numUsersInTeam == 0
+				 || ( numOurBuildings( E_H_SPAWN ) < 2
+					  && numOurBuildings( E_H_SPAWN ) < cvar( "g_bot_buildNumTelenodes" ) ) )
 			&& usableBuildPoints >= chosenBuildableCost
 			&& !teamateHasWeapon( WP_HBUILD )
 			&& blackboardNumTransient( WANTS_TO_BUILD ) < 1

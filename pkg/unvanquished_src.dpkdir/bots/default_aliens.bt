@@ -5,7 +5,9 @@ selector
 	sequence
 	{
 		condition levelTime >= 60000
-			&& ( numUsersInTeam == 0 || numOurBuildings( E_A_SPAWN ) < 2 )
+			&& ( numUsersInTeam == 0
+				 || ( numOurBuildings( E_A_SPAWN ) < 2
+					  && numOurBuildings( E_A_SPAWN ) < cvar( "g_bot_buildNumEggs" ) ) )
 			&& usableBuildPoints >= chosenBuildableCost
 			&& !teamateHasWeapon( WP_ABUILD )
 			&& !teamateHasWeapon( WP_ABUILD2 )
