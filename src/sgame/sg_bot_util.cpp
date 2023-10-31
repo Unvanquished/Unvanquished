@@ -611,14 +611,9 @@ AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t* )
 
 	for ( auto const& cl : classes )
 	{
-		if ( cl.item == currentClass )
-		{
-			break;  // no bigger classes left to try
-		}
-
 		evolveInfo_t info = BG_ClassEvolveInfoFromTo( currentClass, cl.item );
 
-		if ( !info.isDevolving && BotEvolveToClass( self, cl.item ) )
+		if ( !info.isDevolving && cl.item != currentClass && BotEvolveToClass( self, cl.item ) )
 		{
 			return STATUS_SUCCESS;
 		}
