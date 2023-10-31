@@ -161,7 +161,7 @@ bool SpikerComponent::SafeToShoot(glm::vec3 direction) {
 	glm::vec3 end = VEC2GLM( entity.oldEnt->s.origin ) + (SPIKE_RANGE * direction);
 
 	// Test once with normal and once with inflated missile bounding box.
-	// FIXME: relies on wonky entityNum behavior (see trap_Trace comment)
+	// TODO: Consider using G_Trace2 - entities overlapping the trace at the start are sometimes ignored
 	for (float traceSize : {missileSize, missileSize * SAFETY_TRACE_INFLATION}) {
 		mins[0] = mins[1] = mins[2] = -traceSize;
 		maxs[0] = maxs[1] = maxs[2] =  traceSize;

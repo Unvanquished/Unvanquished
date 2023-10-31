@@ -183,14 +183,8 @@ bool trap_EntityContact(const vec3_t mins, const vec3_t maxs, const gentity_t *e
 //     passEntityNum: if not ENTITYNUM_NONE, ignore the entity of this number and any entities owned by it
 //
 // `results` is populated according to the trace_t documentation, except there is one additional
-// field, entityNum. entityNum can be either one of two things:
-//   * an entity hit by the trace
-//   * an entity other than ENTITYNUM_WORLD that caused the startsolid flag to be set
-// If a trace both starts overlapping a non-world entity, and hits a different entity,
-// then entityNum may correspond to either one at random (higher entity numbers would overwrite
-// lower ones). TODO: fix wonky entityNum behavior by making it always correspond to the hit entity
-// (thus ignoring collisions that set startsolid but not allsolid). Some callers must be fixed that
-// rely on this behavior; create a new API if necessary.
+// field, entityNum. If fraction < 1.0, entityNum is the number of the hit entity (ENTITYNUM_WORLD
+// if it hits the level geometry). If fraction == 1.0f, entityNum is ENTITYNUM_NONE.
 void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs,
                  const vec3_t end, int passEntityNum, int contentmask, int skipmask )
 {
