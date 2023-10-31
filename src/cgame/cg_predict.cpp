@@ -189,6 +189,8 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 		else if ( trace.startsolid )
 		{
 			tr->startsolid = true;
+			// FIXME: the trace didn't hit anything so the entityNum shouldn't get set.
+			// The behavior here is different from sgame's trap_Trace.
 			tr->entityNum = ent->number;
 		}
 

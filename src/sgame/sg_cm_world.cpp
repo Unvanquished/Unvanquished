@@ -763,7 +763,7 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 		if ( trace.allsolid )
 		{
 			clip->trace = trace;
-			trace.entityNum = touch->num();
+			clip->trace.entityNum = touch->num();
 		}
 		else if ( trace.fraction < clip->trace.fraction )
 		{
@@ -776,10 +776,9 @@ static void G_CM_ClipMoveToEntities( moveclip_t *clip )
 			clip->trace = trace;
 			clip->trace.startsolid |= oldStart;
 		}
-		else if ( trace.startsolid )
+		else
 		{
-			clip->trace.startsolid = true;
-			trace.entityNum = touch->num();
+			clip->trace.startsolid |= trace.startsolid;
 		}
 	}
 }
