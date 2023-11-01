@@ -613,8 +613,7 @@ AINodeStatus_t BotActionEvolve( gentity_t *self, AIGenericNode_t* )
 	{
 		evolveInfo_t info = BG_ClassEvolveInfoFromTo( currentClass, cl.item );
 
-		if ( info.evolveCost > 0 // no devolving or evolving to the same
-				&& BotEvolveToClass( self, cl.item ) )
+		if ( !info.isDevolving && cl.item != currentClass && BotEvolveToClass( self, cl.item ) )
 		{
 			return STATUS_SUCCESS;
 		}
