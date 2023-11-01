@@ -24,6 +24,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+// sg_cmds.cpp: commands which can be used by connected clients and don't require
+// authentication (mostly gameplay actions or cheats)
+// For commands which can only be performed by the server console, see sg_svcmds.cpp.
+// For administrator commands (requiring authentication), see sg_admin.cpp.
+
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
 #include "botlib/bot_api.h"

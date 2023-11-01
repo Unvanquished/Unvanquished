@@ -33,6 +33,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+// sg_admin.cpp: admin system and admin commands.
+// Admin commands may be performed from the server console or by network clients and (usually) require authentication.
+// For commands that can only be used by the server console, see sg_svcmds.cpp.
+// For gameplay commands/commands that can be done by any network client, see sg_cmds.cpp.
+
 #include "sg_local.h"
 
 #include <glm/gtx/norm.hpp>
