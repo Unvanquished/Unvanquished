@@ -147,9 +147,9 @@ static std::string       g_bfb;
 static int bfbNaughtyCharacters;
 #define MAX_MESSAGE_SIZE static_cast<size_t>(1022)
 
-static bool G_admin_maprestarted( gentity_t * );
-
-static Cvar::Cvar<std::string> g_mapRestarted("g_mapRestarted", "informs whether the map was restarted (y), whether teams are kept together (k) and whether sides are swapped (s)", Cvar::NONE, "0");
+static Cvar::Cvar<std::string> g_mapRestarted(
+	"g_mapRestarted", "when used in a map config, informs whether the map was restarted (y),"
+	" whether teams are kept together (k) and whether sides are swapped (s)", Cvar::NONE, "");
 
 // note: list ordered alphabetically
 static const g_admin_cmd_t     g_admin_cmds[] =
@@ -307,12 +307,6 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"lock",         G_admin_lock,        false, "lock",
 		N_("lock a team to prevent anyone from joining it"),
 		"[^3a|h^7]"
-	},
-
-	{
-		"maprestarted", G_admin_maprestarted, false, "",
-		nullptr,
-		nullptr
 	},
 
 	{
@@ -6474,16 +6468,6 @@ bool G_admin_listbots( gentity_t *ent )
 		ADMBP( va( "%i %s", i, G_BotToString( &g_entities[ i ] ).c_str() ) );
 	}
 	ADMBP_end();
-	return true;
-}
-
-static bool G_admin_maprestarted( gentity_t *ent )
-{
-	if ( !ent )
-	{
-		g_mapRestarted.Set("");
-	}
-
 	return true;
 }
 
