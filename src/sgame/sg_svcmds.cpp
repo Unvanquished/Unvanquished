@@ -33,6 +33,9 @@ Maryland 20850 USA.
 */
 
 // this file holds commands that can be executed by the server console, but not remote clients
+// For commands that can be performed by any remote client, see sv_cmds.cpp.
+// For administrator commands (performed by console *or* remote clients), see sg_admin.cpp.
+// TODO: Convert all these commands to Cmd::StaticCmd (which works for these, but not networked commands)
 
 #include "sg_local.h"
 
