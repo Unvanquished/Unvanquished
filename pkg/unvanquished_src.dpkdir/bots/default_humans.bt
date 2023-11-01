@@ -1,6 +1,66 @@
+#define WANTS_TO_BUILD 1
+
 selector
 {
 	behavior use_medkit
+
+	sequence
+	{
+		condition levelTime >= 60000
+			&& ( numUsersInTeam == 0
+				 || ( numOurBuildings( E_H_SPAWN ) < 2
+					  && numOurBuildings( E_H_SPAWN ) < cvar( "g_bot_buildNumTelenodes" ) ) )
+			&& cvar( "g_bot_buildHumans" )
+			&& usableBuildPoints >= chosenBuildableCost
+			&& !teamateHasWeapon( WP_HBUILD )
+			&& blackboardNumTransient( WANTS_TO_BUILD ) < 1
+		selector
+		{
+			decorator return ( STATUS_FAILURE )
+			{
+				// this will be reset to 0 before the next execution
+				action blackboardNoteTransient( WANTS_TO_BUILD )
+			}
+
+			sequence
+			{
+				condition !haveWeapon( WP_HBUILD )
+				selector
+				{
+					condition myTimer >= 20000
+					{
+						action suicide
+					}
+					sequence
+					{
+						decorator return( STATUS_SUCCESS )
+						{
+							action equip
+						}
+						action buy( WP_HBUILD )
+					}
+					condition alertedToEnemy
+					{
+						action fight
+					}
+					action rush
+					action roam
+				}
+			}
+
+			decorator return( STATUS_FAILURE )
+			{
+				action buildNowChosenBuildable
+			}
+			action roamInRadius( E_H_REACTOR, 700 )
+			action roam
+		}
+	}
+
+	decorator return ( STATUS_FAILURE )
+	{
+		action resetMyTimer
+	}
 
 	sequence
 	{

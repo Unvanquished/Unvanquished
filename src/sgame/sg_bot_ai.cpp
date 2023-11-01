@@ -1191,6 +1191,8 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 	return BotMoveToGoal( self ) ? STATUS_RUNNING : STATUS_FAILURE;
 }
 
+static Cvar::Cvar<bool> g_bot_buildAliens("g_bot_buildAliens", "whether alien bots should build", Cvar::NONE, true);
+static Cvar::Cvar<bool> g_bot_buildHumans("g_bot_buildHumans", "whether human bots should build", Cvar::NONE, true);
 static Cvar::Cvar<int> g_bot_buildNumEggs("g_bot_buildNumEggs", "how many eggs bots should build", Cvar::NONE, 6);
 static Cvar::Cvar<int> g_bot_buildNumTelenodes("g_bot_buildNumTelenodes", "how many telenodes bots should build", Cvar::NONE, 3);
 static Cvar::Cvar<float> g_bot_buildProbRocketPod("g_bot_buildProbRocketPod", "probability of a bot building a rocket pod instead of a machine gun turret", Cvar::NONE, 0.2);
@@ -1203,7 +1205,7 @@ static bool isBuilder( gentity_t *self )
 		|| ( team == TEAM_ALIENS && ( cl == PCL_ALIEN_BUILDER0 || cl == PCL_ALIEN_BUILDER0_UPG ) );
 }
 
-static buildable_t chooseBuildableToBuild( gentity_t *self )
+buildable_t BotChooseBuildableToBuild( gentity_t *self )
 {
 	buildable_t toBuild = BA_NONE;
 	if ( G_Team( self ) == TEAM_HUMANS )
@@ -1302,7 +1304,21 @@ AINodeStatus_t BotActionBuildNowChosenBuildable( gentity_t *self, AIGenericNode_
 		return STATUS_FAILURE;
 	}
 
-	return build( self, chooseBuildableToBuild( self ) ) ? STATUS_SUCCESS : STATUS_FAILURE;
+	return build( self, BotChooseBuildableToBuild( self ) ) ? STATUS_SUCCESS : STATUS_FAILURE;
+}
+
+AINodeStatus_t BotActionResetMyTimer( gentity_t *self, AIGenericNode_t * )
+{
+	self->botMind->myTimer = level.time;
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionBlackboardNoteTransient( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	int val = AIUnBoxInt( a->params[ 0 ] );
+	self->botMind->blackboardTransient = val;
+	return STATUS_SUCCESS;
 }
 
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )

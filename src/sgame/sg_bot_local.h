@@ -183,6 +183,9 @@ public:
 	void setHasOffmeshGoal( bool val ) { hasOffmeshGoal = val; }
 	bool hasOffmeshGoal;
 
+	int myTimer;
+	int blackboardTransient;
+
 	Util::optional< glm::vec3 > userSpecifiedPosition;
 	Util::optional< int > userSpecifiedClientNum;
 private:

@@ -1,5 +1,61 @@
+#define WANTS_TO_BUILD 1
+
 selector
 {
+	sequence
+	{
+		condition levelTime >= 60000
+			&& ( numUsersInTeam == 0
+				 || ( numOurBuildings( E_A_SPAWN ) < 2
+					  && numOurBuildings( E_A_SPAWN ) < cvar( "g_bot_buildNumEggs" ) ) )
+			&& cvar( "g_bot_buildAliens" )
+			&& usableBuildPoints >= chosenBuildableCost
+			&& !teamateHasWeapon( WP_ABUILD )
+			&& !teamateHasWeapon( WP_ABUILD2 )
+			&& blackboardNumTransient( WANTS_TO_BUILD ) < 1
+		selector
+		{
+			decorator return ( STATUS_FAILURE )
+			{
+				// this will be reset to 0 before the next execution
+				action blackboardNoteTransient( WANTS_TO_BUILD )
+			}
+
+			sequence
+			{
+				condition class != PCL_ALIEN_BUILDER0 && class != PCL_ALIEN_BUILDER0_UPG
+				selector
+				{
+					condition myTimer >= 20000
+					{
+						action suicide
+					}
+					action evolveTo( PCL_ALIEN_BUILDER0_UPG )
+					action evolveTo( PCL_ALIEN_BUILDER0 )
+					action roamInRadius( E_A_OVERMIND, 500 )
+					condition alertedToEnemy
+					{
+						action fight
+					}
+					action rush
+					action roam
+				}
+			}
+
+			decorator return( STATUS_FAILURE )
+			{
+				action buildNowChosenBuildable
+			}
+			action roamInRadius( E_A_OVERMIND, 700 )
+			action roam
+		}
+	}
+
+	decorator return ( STATUS_FAILURE )
+	{
+		action resetMyTimer
+	}
+
 	condition ( aliveTime > 1500 && healScore < 0.5 )
 	{
 		action evolve

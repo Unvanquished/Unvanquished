@@ -318,6 +318,16 @@ static AIValue_t numOurBuildings( gentity_t* self, const AIValue_t *params )
 		return AIBoxInt( 0 );
 	}
 
+	// fast track when counting spawns
+	if ( type == BA_H_SPAWN )
+	{
+		return AIBoxInt( level.team[ TEAM_HUMANS ].numSpawns );
+	}
+	else if ( type == BA_A_SPAWN )
+	{
+		return AIBoxInt( level.team[ TEAM_ALIENS ].numSpawns );
+	}
+
 	team_t team = G_Team( self );
 	int count = 0;
 	ForEntities<BuildableComponent>( [&]( Entity &ent, BuildableComponent & ) {
@@ -394,6 +404,62 @@ static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.time - self->botMind->stuckTime );
 }
 
+static AIValue_t usableBuildPoints( gentity_t *self, const AIValue_t* )
+{
+	team_t team = G_Team( self );
+	int buildPoints = G_GetFreeBudget( team );
+	if ( team == TEAM_ALIENS && !BG_BuildableUnlocked( BA_A_BOOSTER ) )
+	{
+		// save build points to build a booster as soon as unlocked
+		buildPoints -= BG_Buildable( BA_A_BOOSTER )->buildPoints;
+	}
+	return AIBoxInt( buildPoints < 0 ? 0 : buildPoints );
+}
+
+static AIValue_t chosenBuildableCost( gentity_t *self, const AIValue_t* )
+{
+	buildable_t toBuild = BotChooseBuildableToBuild( self );
+	if ( toBuild == BA_NONE )
+	{
+		return AIBoxInt( 32767 );  // return an "infinite" cost
+	}
+	return AIBoxInt( BG_Buildable( toBuild )->buildPoints );
+}
+
+static AIValue_t numUsersInTeam( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( level.team[ G_Team( self ) ].numPlayers );
+}
+
+static AIValue_t myTimer( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( level.time - self->botMind->myTimer );
+}
+
+static AIValue_t levelTime( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( level.matchTime );
+}
+
+static AIValue_t blackboardNumTransient( gentity_t *self, const AIValue_t *params )
+{
+	int val = AIUnBoxInt( params[ 0 ] );
+	int counter = 0;
+	for ( int i = 0; i < MAX_CLIENTS; i++ )
+	{
+		gentity_t *ent = &g_entities[ i ];
+		if ( !( ent->r.svFlags & SVF_BOT ) || !G_OnSameTeam( ent, self ) )
+		{
+			continue;
+		}
+		if ( ent->botMind->blackboardTransient == val )
+		{
+			counter++;
+		}
+	}
+	return AIBoxInt( counter );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -406,8 +472,10 @@ static const struct AIConditionMap_s
 	{ "alertedToEnemy",    alertedToEnemy,    0 },
 	{ "aliveTime",         aliveTime,         0 },
 	{ "baseRushScore",     baseRushScore,     0 },
+	{ "blackboardNumTransient", blackboardNumTransient, 1 },
 	{ "buildingIsDamaged", buildingIsDamaged, 0 },
 	{ "canEvolveTo",       botCanEvolveTo,    1 },
+	{ "chosenBuildableCost", chosenBuildableCost, 0 },
 	{ "class",             botClass,          0 },
 	{ "cvar",              cvar,              1 },
 	{ "directPathTo",      directPathTo,      1 },
@@ -421,9 +489,12 @@ static const struct AIConditionMap_s
 	{ "healScore",         healScore,         0 },
 	{ "inAttackRange",     inAttackRange,     1 },
 	{ "isVisible",         isVisible,         1 },
+	{ "levelTime",         levelTime,         0 },
 	{ "matchTime",         matchTime,         0 },
 	{ "momentum",          momentum,          1 },
+	{ "myTimer",           myTimer,           0 },
 	{ "numOurBuildings",   numOurBuildings,   1 },
+	{ "numUsersInTeam",    numUsersInTeam,    0 },
 	{ "percentAmmoClip",   percentAmmoClip,   0 },
 	{ "percentClips",      percentClips,      0 },
 	{ "percentHealth",     percentHealth,     1 },
@@ -433,6 +504,7 @@ static const struct AIConditionMap_s
 	{ "stuckTime",         stuckTime,         0 },
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
+	{ "usableBuildPoints", usableBuildPoints, 0 },
 	{ "weapon",            currentWeapon,     0 }
 };
 
@@ -1004,6 +1076,7 @@ static const struct AIActionMap_s
 	{ "activateUpgrade",   BotActionActivateUpgrade,   1, 1 },
 	{ "aimAtGoal",         BotActionAimAtGoal,         0, 0 },
 	{ "alternateStrafe",   BotActionAlternateStrafe,   0, 0 },
+	{ "blackboardNoteTransient", BotActionBlackboardNoteTransient, 1, 1 },
 	{ "buildNowChosenBuildable", BotActionBuildNowChosenBuildable, 0, 0 },
 	{ "buy",               BotActionBuy,               1, 4 },
 	{ "changeGoal",        BotActionChangeGoal,        1, 3 },
@@ -1023,6 +1096,7 @@ static const struct AIActionMap_s
 	{ "moveTo",            BotActionMoveTo,            1, 2 },
 	{ "moveToGoal",        BotActionMoveToGoal,        0, 0 },
 	{ "repair",            BotActionRepair,            0, 0 },
+	{ "resetMyTimer",      BotActionResetMyTimer,      0, 0 },
 	{ "resetStuckTime",    BotActionResetStuckTime,    0, 0 },
 	{ "roam",              BotActionRoam,              0, 0 },
 	{ "roamInRadius",      BotActionRoamInRadius,      2, 2 },
@@ -1439,6 +1513,8 @@ static void SetBehaviorTreeDefines()
 	D( WP_PULSE_RIFLE );
 	D( WP_LUCIFER_CANNON );
 	D( WP_HBUILD );
+	D( WP_ABUILD );
+	D( WP_ABUILD2 );
 
 	// add teams
 	D( TEAM_ALIENS );
