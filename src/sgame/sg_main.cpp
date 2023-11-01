@@ -406,8 +406,10 @@ void G_MapConfigs( Str::StringRef mapname, Str::StringRef layout )
 {
 	if ( g_mapConfigs.Get().empty() )
 	{
+		Cvar::SetValue( "g_mapRestarted", "" );
 		return;
 	}
+
 	std::string resolvedLayout = layout.empty() ? "builtin" : layout;
 	Log::Notice( "Loading map configs for map: %s layout: %s", mapname, resolvedLayout );
 
@@ -430,7 +432,8 @@ void G_MapConfigs( Str::StringRef mapname, Str::StringRef layout )
 		trap_SendConsoleCommand( ("exec -f " + Cmd::Escape( script )).c_str() );
 	}
 
-	trap_SendConsoleCommand( "maprestarted" );
+	// Reset immediately after map configs finish
+	trap_SendConsoleCommand( "set g_mapRestarted \"\"" );
 }
 
 /*
