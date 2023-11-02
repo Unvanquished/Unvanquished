@@ -241,267 +241,276 @@ void BotDebugDrawMesh()
 	dd.sendCommands();
 }
 
-static bool CheckHost( gentity_t *ent )
+class NaveditCmd : public Cmd::StaticCmd
 {
-	if ( level.inClient && ent->num() == 0 )
+public:
+	NaveditCmd() : StaticCmd( "navedit", "view and edit bot navmeshes" ) {}
+
+	void Run( const Cmd::Args &args ) const override
 	{
-		// It's ok for further messages from commands to use Log::Notice since we have established
-		// that the client console is the server console
-		return true;
-	}
+		const char *arg = nullptr;
+		const char usage[] = "Usage: navedit enable/disable/save <navmesh>";
 
-	trap_SendServerCommand(
-		ent->num(),
-		"print_tr " QQ( "you must be the host of a local devmap to use this command" ) );
-	return false;
-}
-
-void Cmd_NavEdit( gentity_t *ent )
-{
-	if ( !CheckHost( ent ) ) return;
-	const Cmd::Args& args = trap_Args();
-	const char *arg = nullptr;
-	const char usage[] = "Usage: navedit enable/disable/save <navmesh>";
-
-	if ( args.Argc() < 2 )
-	{
-		Log::Notice( usage );
-		return;
-	}
-
-	arg = args.Argv( 1 ).c_str();
-
-	if ( !Q_stricmp( arg, "enable" ) )
-	{
-		int i;
-		if ( args.Argc() < 3 )
+		if ( args.Argc() < 2 )
 		{
-			Log::Notice( usage );
+			Print( usage );
 			return;
 		}
 
-		G_BotNavInit( 0 );
-		if ( navMeshLoaded != navMeshStatus_t::LOADED )
-		{
-			Log::Warn( "Couldn't load navmeshes" );
-			return;
-		}
+		arg = args.Argv( 1 ).c_str();
 
-		arg = args.Argv( 2 ).c_str();
-		for ( i = 0; i < numNavData; i++ )
+		if ( !Q_stricmp( arg, "enable" ) )
 		{
-			if ( !Q_stricmp( BotNavData[ i ].name, arg ) )
+			int i;
+			if ( args.Argc() < 3 )
 			{
-				cmd.nav = &BotNavData[ i ];
-				break;
+				Print( usage );
+				return;
+			}
+
+			G_BotNavInit( 0 );
+			if ( navMeshLoaded != navMeshStatus_t::LOADED )
+			{
+				Log::Warn( "Couldn't load navmeshes" );
+				return;
+			}
+
+			arg = args.Argv( 2 ).c_str();
+			for ( i = 0; i < numNavData; i++ )
+			{
+				if ( !Q_stricmp( BotNavData[ i ].name, arg ) )
+				{
+					cmd.nav = &BotNavData[ i ];
+					break;
+				}
+			}
+
+			if ( i == numNavData )
+			{
+				Print( "\'%s\' is not a valid navmesh name", arg );
+				return;
+			}
+
+			if ( cmd.nav && cmd.nav->mesh && cmd.nav->cache && cmd.nav->query )
+			{
+				cmd.enabled = true;
+				Cvar::SetValue( "r_debugSurface", "1" );
 			}
 		}
-
-		if ( i == numNavData )
+		else if ( !Q_stricmp( arg, "disable" ) )
 		{
-			Log::Notice( "\'%s\' is not a valid navmesh name", arg );
-			return;
+			cmd.enabled = false;
+			Cvar::SetValue( "r_debugSurface", "0" );
 		}
-
-		if ( cmd.nav && cmd.nav->mesh && cmd.nav->cache && cmd.nav->query )
+		else if ( !Q_stricmp( arg, "save" ) )
 		{
-			cmd.enabled = true;
-			Cvar::SetValue( "r_debugSurface", "1" );
-		}
-	}
-	else if ( !Q_stricmp( arg, "disable" ) )
-	{
-		cmd.enabled = false;
-		Cvar::SetValue( "r_debugSurface", "0" );
-	}
-	else if ( !Q_stricmp( arg, "save" ) )
-	{
-		if ( !cmd.enabled )
-		{
-			return;
-		}
+			if ( !cmd.enabled )
+			{
+				return;
+			}
 
-		BotSaveOffMeshConnections( cmd.nav );
-	}
-	else
-	{
-		Log::Notice( usage );
-	}
-}
-
-void Cmd_AddConnection( gentity_t *ent )
-{
-	if ( !CheckHost( ent ) ) return;
-	const char usage[] = "Usage: addcon start <dir> (radius)\n"
-	                     " addcon end";
-	const char *arg = nullptr;
-	const Cmd::Args& args = trap_Args();
-
-	if ( args.Argc() < 2 )
-	{
-		Log::Notice( usage );
-		return;
-	}
-
-	arg = args.Argv( 1 ).c_str();
-
-	if ( !Q_stricmp( arg, "start" ) )
-	{
-		if ( !cmd.enabled )
-		{
-			return;
-		}
-
-		if ( args.Argc() < 3 )
-		{
-			Log::Notice( usage );
-			return;
-		}
-
-		arg = args.Argv( 2 ).c_str();
-
-		if ( !Q_stricmp( arg, "oneway" ) )
-		{
-			cmd.pc.dir = 0;
-		}
-		else if ( !Q_stricmp( arg, "twoway" ) )
-		{
-			cmd.pc.dir = 1;
+			BotSaveOffMeshConnections( cmd.nav );
 		}
 		else
 		{
-			Log::Notice( "Invalid argument for direction, specify oneway or twoway" );
+			Print( usage );
+		}
+	}
+};
+
+class AddconCmd: public Cmd::StaticCmd
+{
+public:
+	AddconCmd() : StaticCmd( "addcon", "add navcon connection (during navedit)" ) {}
+
+	void Run( const Cmd::Args &args ) const override
+	{
+		const char usage[] = "Usage: addcon start <dir> (radius)\n"
+		                     " addcon end";
+		const char *arg = nullptr;
+
+		if ( args.Argc() < 2 )
+		{
+			Print( usage );
 			return;
 		}
 
-		if ( GetPointPointedTo( cmd.nav, cmd.pc.start ) )
-		{
-			cmd.pc.area = DT_TILECACHE_WALKABLE_AREA;
-			cmd.pc.flag = POLYFLAGS_WALK;
-			cmd.pc.userid = 0;
+		arg = args.Argv( 1 ).c_str();
 
-			if ( args.Argc() == 4 )
+		if ( !Q_stricmp( arg, "start" ) )
+		{
+			if ( !cmd.enabled )
 			{
-				cmd.pc.radius = std::max( atoi( args.Argv( 3 ).c_str() ), 10 );
+				return;
+			}
+
+			if ( args.Argc() < 3 )
+			{
+				Print( usage );
+				return;
+			}
+
+			arg = args.Argv( 2 ).c_str();
+
+			if ( !Q_stricmp( arg, "oneway" ) )
+			{
+				cmd.pc.dir = 0;
+			}
+			else if ( !Q_stricmp( arg, "twoway" ) )
+			{
+				cmd.pc.dir = 1;
 			}
 			else
 			{
-				cmd.pc.radius = DEFAULT_CONNECTION_SIZE;
+				Print( "Invalid argument for direction, specify oneway or twoway" );
+				return;
 			}
-			cmd.offBegin = true;
-		}
-	}
-	else if ( !Q_stricmp( arg, "end" ) )
-	{
-		if ( !cmd.enabled )
-		{
-			return;
-		}
 
-		if ( !cmd.offBegin )
-		{
-			return;
-		}
-
-		if ( GetPointPointedTo( cmd.nav, cmd.pc.end ) )
-		{
-			cmd.nav->process.con.addConnection( cmd.pc );
-
-			rBounds box;
-			box.addPoint( cmd.pc.start );
-			box.addPoint( cmd.pc.end );
-
-			box.mins[ 1 ] -= 10;
-			box.maxs[ 1 ] += 10;
-
-			// rebuild affected tiles
-			dtCompressedTileRef refs[ 32 ];
-			int tc = 0;
-			cmd.nav->cache->queryTiles( box.mins, box.maxs, refs, &tc, 32 );
-
-			for ( int k = 0; k < tc; k++ )
+			if ( GetPointPointedTo( cmd.nav, cmd.pc.start ) )
 			{
-				cmd.nav->cache->buildNavMeshTile( refs[ k ], cmd.nav->mesh );
+				cmd.pc.area = DT_TILECACHE_WALKABLE_AREA;
+				cmd.pc.flag = POLYFLAGS_WALK;
+				cmd.pc.userid = 0;
+
+				if ( args.Argc() == 4 )
+				{
+					cmd.pc.radius = std::max( atoi( args.Argv( 3 ).c_str() ), 10 );
+				}
+				else
+				{
+					cmd.pc.radius = DEFAULT_CONNECTION_SIZE;
+				}
+				cmd.offBegin = true;
+			}
+		}
+		else if ( !Q_stricmp( arg, "end" ) )
+		{
+			if ( !cmd.enabled )
+			{
+				return;
 			}
 
-			cmd.offBegin = false;
-		}
-	}
-	else
-	{
-		Log::Notice( usage );
-	}
-}
+			if ( !cmd.offBegin )
+			{
+				return;
+			}
 
-void Cmd_NavTest( gentity_t *ent )
-{
-	if ( !CheckHost( ent ) ) return;
-	const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath";
-	const Cmd::Args& args = trap_Args();
+			if ( GetPointPointedTo( cmd.nav, cmd.pc.end ) )
+			{
+				cmd.nav->process.con.addConnection( cmd.pc );
 
-	if ( !cmd.enabled )
-	{
-		Log::Notice( "Can't test navmesh without enabling navedit" );
-		return;
-	}
+				rBounds box;
+				box.addPoint( cmd.pc.start );
+				box.addPoint( cmd.pc.end );
 
-	if ( args.Argc() < 2 )
-	{
-		Log::Notice( usage );
-		return;
-	}
+				box.mins[ 1 ] -= 10;
+				box.maxs[ 1 ] += 10;
 
-	const char* arg = args.Argv( 1 ).c_str();
+				// rebuild affected tiles
+				dtCompressedTileRef refs[ 32 ];
+				int tc = 0;
+				cmd.nav->cache->queryTiles( box.mins, box.maxs, refs, &tc, 32 );
 
-	if ( !Q_stricmp( arg, "shownodes" ) )
-	{
-		cmd.shownodes = true;
-	}
-	else if ( !Q_stricmp( arg, "hidenodes" ) )
-	{
-		cmd.shownodes = false;
-	}
-	else if ( !Q_stricmp( arg, "showportals" ) )
-	{
-		cmd.showportals = true;
-	}
-	else if ( !Q_stricmp( arg, "hideportals" ) )
-	{
-		cmd.showportals = false;
-	}
-	else if ( !Q_stricmp( arg, "startpath" ) )
-	{
-		if ( GetPointPointedTo( cmd.nav, cmd.start ) )
-		{
-			cmd.validPathStart = true;
+				for ( int k = 0; k < tc; k++ )
+				{
+					cmd.nav->cache->buildNavMeshTile( refs[ k ], cmd.nav->mesh );
+				}
+
+				cmd.offBegin = false;
+			}
 		}
 		else
 		{
-			cmd.validPathStart = false;
+			Print( usage );
 		}
 	}
-	else if ( !Q_stricmp( arg, "endpath" ) )
+};
+
+class NavtestCmd : public Cmd::StaticCmd
+{
+public:
+	NavtestCmd() : StaticCmd( "navtest", "does something during navedit" ) {}
+
+	void Run( const Cmd::Args &args ) const override
 	{
-		rVec end;
-		if ( GetPointPointedTo( cmd.nav, end ) && cmd.validPathStart )
+		const char usage[] = "Usage: navtest shownodes/hidenodes/showportals/hideportals/startpath/endpath";
+
+		if ( !cmd.enabled )
 		{
-			dtPolyRef startRef;
-			dtPolyRef endRef;
-			const int maxPath = 512;
-			int npath;
-			dtPolyRef path[ maxPath ];
-			rVec nearPoint;
-			rVec extents( 300, 300, 300 );
+			Print( "Can't test navmesh without enabling navedit" );
+			return;
+		}
 
-			cmd.nav->query->findNearestPoly( cmd.start, extents, &cmd.nav->filter, &startRef, nearPoint );
-			cmd.nav->query->findNearestPoly( end, extents, &cmd.nav->filter, &endRef, nearPoint );
+		if ( args.Argc() < 2 )
+		{
+			Print( usage );
+			return;
+		}
 
-			cmd.nav->query->findPath( startRef, endRef, cmd.start, end, &cmd.nav->filter, path, &npath, maxPath );
+		const char* arg = args.Argv( 1 ).c_str();
+
+		if ( !Q_stricmp( arg, "shownodes" ) )
+		{
+			cmd.shownodes = true;
+		}
+		else if ( !Q_stricmp( arg, "hidenodes" ) )
+		{
+			cmd.shownodes = false;
+		}
+		else if ( !Q_stricmp( arg, "showportals" ) )
+		{
+			cmd.showportals = true;
+		}
+		else if ( !Q_stricmp( arg, "hideportals" ) )
+		{
+			cmd.showportals = false;
+		}
+		else if ( !Q_stricmp( arg, "startpath" ) )
+		{
+			if ( GetPointPointedTo( cmd.nav, cmd.start ) )
+			{
+				cmd.validPathStart = true;
+			}
+			else
+			{
+				cmd.validPathStart = false;
+			}
+		}
+		else if ( !Q_stricmp( arg, "endpath" ) )
+		{
+			rVec end;
+			if ( GetPointPointedTo( cmd.nav, end ) && cmd.validPathStart )
+			{
+				dtPolyRef startRef;
+				dtPolyRef endRef;
+				const int maxPath = 512;
+				int npath;
+				dtPolyRef path[ maxPath ];
+				rVec nearPoint;
+				rVec extents( 300, 300, 300 );
+
+				cmd.nav->query->findNearestPoly( cmd.start, extents, &cmd.nav->filter, &startRef, nearPoint );
+				cmd.nav->query->findNearestPoly( end, extents, &cmd.nav->filter, &endRef, nearPoint );
+
+				cmd.nav->query->findPath( startRef, endRef, cmd.start, end, &cmd.nav->filter, path, &npath, maxPath );
+			}
+		}
+		else
+		{
+			Print( usage );
 		}
 	}
-	else
+};
+
+void BotRegisterNavEdit()
+{
+	if ( level.inClient )
 	{
-		Log::Notice( usage );
+		static struct {
+			NaveditCmd navedit;
+			AddconCmd addcon;
+			NavtestCmd navtest;
+		} commandRegistration;
 	}
 }
 

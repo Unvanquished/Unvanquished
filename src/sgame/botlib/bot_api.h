@@ -39,8 +39,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 void BotAssertionInit();
 void BotDebugDrawMesh();
-void Cmd_NavEdit( gentity_t *ent );
-void Cmd_AddConnection( gentity_t *ent );
-void Cmd_NavTest( gentity_t *ent );
+void BotRegisterNavEdit();
 
 #endif

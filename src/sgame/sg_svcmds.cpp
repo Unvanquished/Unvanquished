@@ -38,6 +38,7 @@ Maryland 20850 USA.
 // TODO: Convert all these commands to Cmd::StaticCmd (which works for these, but not networked commands)
 
 #include "sg_local.h"
+#include "botlib/bot_api.h"
 
 #define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
 
@@ -868,6 +869,7 @@ void G_RegisterCommands()
 	}
 
 	G_admin_register_cmds();
+	BotRegisterNavEdit();
 }
 
 void G_UnregisterCommands()
