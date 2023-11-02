@@ -2544,6 +2544,17 @@ void BotCalculateStuckTime( gentity_t *self )
 	self->botMind->lastThink = level.time;
 }
 
+bool BotWalkIfStaminaLow( gentity_t *self )
+{
+	if ( self->client->ps.stats[ STAT_STAMINA ] < BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost
+		 && level.time - self->client->lastCombatTime > 3000 )  // do not walk for 3s after combat
+	{
+		BotWalk( self, true );
+		return true;
+	}
+	return false;
+}
+
 /*
 ========================
 botTarget_t methods implementations
