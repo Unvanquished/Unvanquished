@@ -2545,12 +2545,10 @@ void BotCalculateStuckTime( gentity_t *self )
 	self->botMind->lastThink = level.time;
 }
 
-static Cvar::Cvar<int> g_bot_walkAfterCombat( "g_bot_walkAfterCombat", "how many milliseconds must pass after combat until human bots are allowed to walk when low on stamina", Cvar::NONE, 3000 );
-
 bool BotWalkIfStaminaLow( gentity_t *self )
 {
 	if ( self->client->ps.stats[ STAT_STAMINA ] < BG_Class( self->client->ps.stats[ STAT_CLASS ] )->staminaJumpCost
-		 && level.time - self->client->lastCombatTime > g_bot_walkAfterCombat.Get() )
+		 && level.time - self->client->lastCombatTime > 3000 )  // do not walk for 3s after combat
 	{
 		BotWalk( self, true );
 		return true;
