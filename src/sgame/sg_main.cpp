@@ -2211,7 +2211,7 @@ void G_RunFrame( int levelTime )
 
 	G_CheckPmoveParamChanges();
 
-	int numBuildables[ BA_NUM_BUILDABLES ] = { 0 };
+	int numBuildables[ BA_NUM_BUILDABLES ] = {};
 
 	// go through all allocated objects
 	ent = &g_entities[ 0 ];
