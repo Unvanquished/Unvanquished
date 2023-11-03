@@ -5518,8 +5518,7 @@ static const char *const fates[] =
 	N_("^7replaced^*"),
 	N_("^5destroyed^*"),
 	N_("^1TEAMKILLED^*"),
-	N_("^7unpowered^*"),
-	N_("removed")
+	N_("^aremoved^*")
 };
 bool G_admin_buildlog( gentity_t *ent )
 {
