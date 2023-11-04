@@ -617,18 +617,6 @@ namespace Beacon //this should eventually become a class
 		}
 	}
 
-	//TODO: clean this mess
-	struct tagtrace_ent_t
-	{
-		gentity_t *ent;
-		float dot;
-	};
-
-	static int TagTrace_EntCmp( const void *a, const void *b )
-	{
-		return ( ( (const tagtrace_ent_t*)a )->dot < ( (const tagtrace_ent_t*)b )->dot );
-	}
-
 	/**
 	 * @brief Perform an approximate trace to find a taggable entity.
 	 * @param team           Team the caller belongs to.
@@ -636,13 +624,8 @@ namespace Beacon //this should eventually become a class
 	 */
 	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, bool refreshTagged )
 	{
-		tagtrace_ent_t list[ MAX_GENTITIES ];
-		int i, count = 0;
-		gentity_t *ent, *reticleEnt = nullptr;
-		vec3_t seg, delta;
-		float dot;
-
-		VectorSubtract( end, begin, seg );
+		gentity_t *reticleEnt = nullptr;
+		glm::vec3 dir = glm::normalize( VEC2GLM( end ) - VEC2GLM( begin ) );
 
 		// Do a trace for bounding boxes under the reticle first, they are prefered
 		{
@@ -656,9 +639,12 @@ namespace Beacon //this should eventually become a class
 			}
 		}
 
-		for( i = 0; i < level.num_entities; i++ )
+		float bestDot = 0.9;
+		gentity_t *bestEnt = nullptr;
+
+		for( int i = 0; i < level.num_entities; i++ )
 		{
-			ent = g_entities + i;
+			gentity_t *ent = g_entities + i;
 
 			if( ent == reticleEnt )
 				continue;
@@ -669,10 +655,10 @@ namespace Beacon //this should eventually become a class
 			if( !EntityTaggable( i, team, true ) )
 				continue;
 
-			VectorSubtract( ent->r.currentOrigin, begin, delta );
-			dot = DotProduct( seg, delta ) / VectorLength( seg ) / VectorLength( delta );
+			glm::vec3 delta = VEC2GLM( ent->r.currentOrigin ) - VEC2GLM( begin );
+			float dot = glm::dot( dir, delta ) / glm::length( delta );
 
-			if( dot < 0.9 )
+			if( dot <= bestDot )
 				continue;
 
 			if( !trap_InPVS( ent->r.currentOrigin, begin ) )
@@ -689,16 +675,11 @@ namespace Beacon //this should eventually become a class
 			if( refreshTagged && CheckRefreshTag( ent, team ) )
 				continue;
 
-			list[ count ].ent = ent;
-			list[ count++ ].dot = dot;
+			bestDot = dot;
+			bestEnt = ent;
 		}
 
-		if( !count )
-			return nullptr;
-
-		qsort( list, count, sizeof( tagtrace_ent_t ), TagTrace_EntCmp );
-
-		return list[ 0 ].ent;
+		return bestEnt;
 	}
 
 	/**
