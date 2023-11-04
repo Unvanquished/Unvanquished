@@ -52,6 +52,10 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 static Cvar::Cvar<bool> g_mainBuildableStartingBeacons(
 	"g_mainBuildableStartingBeacons", "get beacon for enemy's main structure at match start",
 	Cvar::NONE, true);
+static Cvar::Cvar<int> g_tagDelay(
+	"g_tagDelay", "duration in ms one has to stare at an enemy to place a beacon",
+	Cvar::NONE, 500);
+
 
 namespace Beacon //this should eventually become a class
 {
@@ -777,5 +781,17 @@ namespace Beacon //this should eventually become a class
 		if ( ent->s.eType == entityType_t::ET_BUILDABLE ) BaseClustering::Update( beacon );
 
 		Propagate( beacon );
+	}
+
+	// Increases the tag score and tags it if the threshold is hit
+	void Tag( gentity_t *ent, team_t team, bool permanent, int scoreDelta )
+	{
+		ent->tagScore += scoreDelta;
+		ent->tagScoreTime = level.time;
+
+		if ( ent->tagScore > g_tagDelay.Get() )
+		{
+			Tag( ent, team, permanent );
+		}
 	}
 }

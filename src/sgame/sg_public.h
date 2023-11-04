@@ -64,6 +64,7 @@ namespace Beacon
 	bool EntityTaggable( int num, team_t team, bool trace );
 	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, bool refreshTagged );
 	void Tag( gentity_t *ent, team_t team, bool permanent );
+	void Tag( gentity_t *ent, team_t team, bool permanent, int scoreDelta );
 	void UpdateTags( gentity_t *ent );
 	void DetachTags( gentity_t *ent );
 	void DeleteTags( gentity_t *ent );
