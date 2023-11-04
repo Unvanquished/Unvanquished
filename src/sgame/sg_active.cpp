@@ -847,7 +847,7 @@ static void G_ReplenishHumanHealth( gentity_t *self )
 
 static void BeaconAutoTag( gentity_t *self, int timePassed )
 {
-	gentity_t *traceEnt, *target;
+	gentity_t *traceEnt;
 	gclient_t *client;
 	team_t    team;
 	vec3_t viewOrigin, forward, end;
@@ -867,21 +867,31 @@ static void BeaconAutoTag( gentity_t *self, int timePassed )
 	traceEnt = Beacon::TagTrace( viewOrigin, end, self->s.number, MASK_SHOT, team, true );
 	G_UnlaggedOff( );
 
-	for ( target = nullptr; ( target = G_IterateEntities( target ) ); )
+	if ( traceEnt )
 	{
-		// Tag entity directly hit and entities in human radar range, make sure the latter are also
-		// in vis and, for buildables, are in a line of sight.
-		if( ( target == traceEnt ) ||
-		    ( team == TEAM_HUMANS &&
-		      BG_InventoryContainsUpgrade( UP_RADAR, client->ps.stats ) &&
-		      Distance( self->s.origin, target->s.origin ) < RADAR_RANGE &&
-		      Beacon::EntityTaggable( target->s.number, team, false ) &&
-		      trap_InPVSIgnorePortals( self->s.origin, target->s.origin ) &&
-		      ( target->s.eType != entityType_t::ET_BUILDABLE ||
-		        G_LineOfSight( self, target, MASK_SOLID, false ) ) ) )
+		Beacon::Tag( traceEnt, team, ( traceEnt->s.eType == entityType_t::ET_BUILDABLE ), timePassed );
+	}
+
+	if ( BG_InventoryContainsUpgrade( UP_RADAR, client->ps.stats ) )
+	{
+		// Tag entities in human radar range, making sure they are also
+		// in vis and, for buildables, are in line of sight.
+		float rangeSquared = Square( RADAR_RANGE );
+
+		for ( int i = 0; i < level.num_entities; i++ ) // TODO TaggableComponent?
 		{
-			Beacon::Tag(
-				target, team, ( target->s.eType == entityType_t::ET_BUILDABLE ), timePassed );
+			gentity_t *target = g_entities + i;
+			if ( target->inuse &&
+			     Beacon::EntityTaggable( i, team, false ) &&
+			     target != traceEnt &&
+			     DistanceSquared( self->s.origin, target->s.origin ) < rangeSquared &&
+			     trap_InPVSIgnorePortals( self->s.origin, target->s.origin ) &&
+			     ( target->s.eType != entityType_t::ET_BUILDABLE
+			       || G_LineOfSight( self, target, MASK_SOLID, false ) ) )
+			{
+				Beacon::Tag(
+					target, team, ( target->s.eType == entityType_t::ET_BUILDABLE ), timePassed );
+			}
 		}
 	}
 }
