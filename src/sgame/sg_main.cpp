@@ -2214,6 +2214,8 @@ void G_RunFrame( int levelTime )
 
 	G_CheckPmoveParamChanges();
 
+	int numBuildables[ BA_NUM_BUILDABLES ] = {};
+
 	// go through all allocated objects
 	ent = &g_entities[ 0 ];
 	for ( i = 0; i < level.num_entities; i++, ent++ )
@@ -2260,6 +2262,7 @@ void G_RunFrame( int levelTime )
 				// TODO: Do buildables make any use of G_Physics' functionality apart from the call
 				//       to G_RunThink?
 				G_Physics( ent );
+				numBuildables[ ent->s.modelindex ]++;
 				continue;
 
 			case entityType_t::ET_CORPSE:
@@ -2357,6 +2360,8 @@ void G_RunFrame( int levelTime )
 
 	BotDebugDrawMesh();
 	G_BotUpdateObstacles();
+
+	memcpy( level.numBuildablesEstimate, numBuildables, sizeof( level.numBuildablesEstimate ) );
 }
 
 void G_PrepareEntityNetCode() {

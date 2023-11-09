@@ -1213,11 +1213,11 @@ buildable_t BotChooseBuildableToBuild( gentity_t *self )
 	buildable_t toBuild = BA_NONE;
 	if ( G_Team( self ) == TEAM_HUMANS )
 	{
-		if ( !self->botMind->closestBuildings[ BA_H_REACTOR ].ent )
+		if ( level.numBuildablesEstimate[ BA_H_REACTOR ] == 0 )
 		{
 			toBuild = BA_H_REACTOR;
 		}
-		else if ( !self->botMind->closestBuildings[ BA_H_DRILL ].ent )
+		else if ( level.numBuildablesEstimate[ BA_H_DRILL ] == 0 )
 		{
 			toBuild = BA_H_DRILL;
 		}
@@ -1225,11 +1225,11 @@ buildable_t BotChooseBuildableToBuild( gentity_t *self )
 		{
 			toBuild = BA_H_SPAWN;
 		}
-		else if ( !self->botMind->closestBuildings[ BA_H_ARMOURY ].ent )
+		else if ( level.numBuildablesEstimate[ BA_H_ARMOURY ] == 0 )
 		{
 			toBuild = BA_H_ARMOURY;
 		}
-		else if ( !self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent )
+		else if ( level.numBuildablesEstimate[ BA_H_MEDISTAT ] == 0 )
 		{
 			toBuild = BA_H_MEDISTAT;
 		}
@@ -1245,11 +1245,11 @@ buildable_t BotChooseBuildableToBuild( gentity_t *self )
 	}
 	else if ( G_Team( self ) == TEAM_ALIENS )
 	{
-		if ( !self->botMind->closestBuildings[ BA_A_OVERMIND ].ent )
+		if ( level.numBuildablesEstimate[ BA_A_OVERMIND ] == 0 )
 		{
 			toBuild = BA_A_OVERMIND;
 		}
-		else if ( !self->botMind->closestBuildings[ BA_A_LEECH ].ent )
+		else if ( level.numBuildablesEstimate[ BA_A_LEECH ] == 0 )
 		{
 			toBuild = BA_A_LEECH;
 		}
@@ -1257,7 +1257,7 @@ buildable_t BotChooseBuildableToBuild( gentity_t *self )
 		{
 			toBuild = BA_A_SPAWN;
 		}
-		else if ( BG_BuildableUnlocked( BA_A_BOOSTER ) && !self->botMind->closestBuildings[ BA_A_BOOSTER ].ent )
+		else if ( BG_BuildableUnlocked( BA_A_BOOSTER ) && level.numBuildablesEstimate[ BA_A_BOOSTER ] == 0 )
 		{
 			toBuild = BA_A_BOOSTER;
 		}

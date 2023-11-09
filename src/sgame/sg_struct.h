@@ -629,6 +629,12 @@ struct level_locals_t
 	int              buildId;
 	int              numBuildLogs;
 
+	// this is an estimate of the number of each buildable type
+	// the buildables are counted efficiently in the server's main entity loop,
+	// these numbers might be slightly outdated
+	// however, the numbers will not be more than two frames behind
+	int numBuildablesEstimate[ BA_NUM_BUILDABLES ];
+
 	struct
 	{
 		// voting state
