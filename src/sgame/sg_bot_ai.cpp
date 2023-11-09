@@ -1289,13 +1289,7 @@ static bool build( gentity_t *self, buildable_t toBuild )
 		G_ForceWeaponChange( self, WP_HBUILD );
 	}
 
-	if ( SB_BUILDABLE_TO_IBE( self->client->ps.stats[ STAT_BUILDABLE ] ) != IBE_NONE )
-	{
-		return false;
-	}
-
-	self->client->ps.stats[ STAT_BUILDABLE ] &= ~SB_BUILDABLE_MASK;
-	self->client->ps.stats[ STAT_BUILDABLE ] |= toBuild;
+	self->client->ps.stats[ STAT_BUILDABLE ] = toBuild;
 	if ( self->client->ps.stats[ STAT_MISC ] == 0 )
 	{
 		BotFireWeapon( WPM_PRIMARY, &self->botMind->cmdBuffer );
