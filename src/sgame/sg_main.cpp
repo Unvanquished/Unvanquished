@@ -2212,8 +2212,6 @@ void G_RunFrame( int levelTime )
 	G_CheckPmoveParamChanges();
 
 	int numBuildables[ BA_NUM_BUILDABLES ] = {};
-	level.team[ TEAM_ALIENS ].botBuildingInThisFrame = false;
-	level.team[ TEAM_HUMANS ].botBuildingInThisFrame = false;
 
 	// go through all allocated objects
 	ent = &g_entities[ 0 ];

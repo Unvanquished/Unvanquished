@@ -673,7 +673,6 @@ struct level_locals_t
 		int              lastTeamStatus;
 		int              lastTacticId;
 		int              lastTacticTime;
-		bool             botBuildingInThisFrame;
 	} team[ NUM_TEAMS ];
 
 	struct {

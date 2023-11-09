@@ -1294,18 +1294,12 @@ static bool build( gentity_t *self, buildable_t toBuild )
 		return false;
 	}
 
-	if ( level.team[ G_Team( self ) ].botBuildingInThisFrame )
-	{
-		return false;
-	}
-
 	self->client->ps.stats[ STAT_BUILDABLE ] &= ~SB_BUILDABLE_MASK;
 	self->client->ps.stats[ STAT_BUILDABLE ] |= toBuild;
 	if ( self->client->ps.stats[ STAT_MISC ] == 0 )
 	{
 		BotFireWeapon( WPM_PRIMARY, &self->botMind->cmdBuffer );
 	}
-	level.team[ G_Team( self ) ].botBuildingInThisFrame = true;
 	return true;
 }
 
