@@ -15,7 +15,11 @@ selectClass
 					&& !teamateHasWeapon( WP_ABUILD )
 					&& !teamateHasWeapon( WP_ABUILD2 )
 				{
-					spawnAs PCL_ALIEN_BUILDER0
+					selector
+					{
+						spawnAs PCL_ALIEN_BUILDER0_UPG
+						spawnAs PCL_ALIEN_BUILDER0
+					}
 				}
 				spawnAs PCL_ALIEN_LEVEL0
 			}
