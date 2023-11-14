@@ -231,7 +231,8 @@ bool RocketpodComponent::EnemyClose() {
 
 		float distance = G_Distance(entity.oldEnt, other.oldEnt);
 
-		classModelConfig_t* cmc = BG_ClassModelConfig(other.oldEnt->client->pers.classSelection);
+		const classModelConfig_t* cmc =
+			BG_ClassModelConfig(other.oldEnt->client->pers.classSelection);
 
 		glm::vec3 turretMins, turretMaxs;
 		BG_BuildableBoundingBox( BA_H_ROCKETPOD, &turretMins[0], &turretMaxs[0] );

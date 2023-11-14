@@ -1332,11 +1332,9 @@ GetCorpseInfo
 static clientInfo_t *GetCorpseInfo( class_t class_ )
 {
 	clientInfo_t *match;
-	char         *modelName;
-	char         *skinName;
 
-	modelName = BG_ClassModelConfig( class_ )->modelName;
-	skinName = BG_ClassModelConfig( class_ )->skinName;
+	const char *modelName = BG_ClassModelConfig( class_ )->modelName;
+	const char *skinName = BG_ClassModelConfig( class_ )->skinName;
 
 	match = &cgs.corpseinfo[ class_ ];
 
