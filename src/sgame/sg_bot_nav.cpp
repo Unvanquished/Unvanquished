@@ -190,9 +190,7 @@ void G_BotNavInit( int generateNeeded )
 
 	for ( class_t i : RequiredNavmeshes() )
 	{
-		classModelConfig_t *model;
-
-		model = BG_ClassModelConfig( i );
+		const classModelConfig_t *model = BG_ClassModelConfig( i );
 		ASSERT_EQ( model->navMeshClass, PCL_NONE ); // shouldn't load this if we are going to use another class's mesh
 
 		switch ( G_BotSetupNav( config, i ) )

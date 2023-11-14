@@ -1533,9 +1533,9 @@ const classAttributes_t     *BG_ClassByName( const char *name );
 
 const classAttributes_t     *BG_Class( int pClass );
 
-classModelConfig_t          *BG_ClassModelConfigByName( const char * );
+const classModelConfig_t *BG_ClassModelConfigByName( const char * );
 
-classModelConfig_t          *BG_ClassModelConfig( int pClass );
+const classModelConfig_t *BG_ClassModelConfig( int pClass );
 
 void                        BG_ClassBoundingBox( int pClass, vec3_t mins, vec3_t maxs, vec3_t cmaxs,
                                                  vec3_t dmins, vec3_t dmaxs );

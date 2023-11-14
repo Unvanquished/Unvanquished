@@ -214,7 +214,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 
 			while ( foundToken )
 			{
-				classModelConfig_t *model;
+				const classModelConfig_t *model;
 				int                modelno = -1;
 
 				if ( voiceTrack->pClass < 0 )

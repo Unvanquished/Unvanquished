@@ -3114,7 +3114,7 @@ PM_SetViewheight
 */
 static void PM_SetViewheight()
 {
-	classModelConfig_t *cfg = BG_ClassModelConfig( pm->ps->stats[ STAT_CLASS ] );
+	const classModelConfig_t *cfg = BG_ClassModelConfig( pm->ps->stats[ STAT_CLASS ] );
 	pm->ps->viewheight = ( pm->ps->pm_flags & PMF_DUCKED ) ? cfg->crouchViewheight : cfg->viewheight;
 }
 

@@ -336,7 +336,7 @@ static classModelConfig_t bg_classModelConfigList[ PCL_NUM_CLASSES ];
 BG_ClassModelConfigByName
 ==============
 */
-classModelConfig_t *BG_ClassModelConfigByName( const char *name )
+const classModelConfig_t *BG_ClassModelConfigByName( const char *name )
 {
 	if ( name )
 	{
@@ -357,7 +357,7 @@ classModelConfig_t *BG_ClassModelConfigByName( const char *name )
 BG_ClassModelConfig
 ==============
 */
-classModelConfig_t *BG_ClassModelConfig( int pClass )
+const classModelConfig_t *BG_ClassModelConfig( int pClass )
 {
 	return &bg_classModelConfigList[ pClass ];
 }
@@ -371,7 +371,7 @@ void BG_ClassBoundingBox( int pClass,
                           vec3_t mins, vec3_t maxs,
                           vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs )
 {
-	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
+	const classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
 
 	if ( mins != nullptr )
 	{
@@ -518,7 +518,7 @@ static void BG_InitClassModelConfigs()
 {
 	for ( int i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
 	{
-		classModelConfig_t *cc = BG_ClassModelConfig( i );
+		classModelConfig_t *cc = &bg_classModelConfigList[ i ];
 
 		BG_ParseClassModelFile( va( "configs/classes/%s.model.cfg",
 		                       BG_Class( i )->name ), cc );
@@ -2704,7 +2704,7 @@ void BG_BoundingBox( class_t pClass,
                      glm::vec3* mins,  glm::vec3* maxs,
                      glm::vec3* cmaxs, glm::vec3* dmins, glm::vec3* dmaxs )
 {
-	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
+	const classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
 	ASSERT( classModelConfig != nullptr );
 
 	if ( mins != nullptr )

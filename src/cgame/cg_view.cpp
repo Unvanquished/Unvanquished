@@ -466,7 +466,7 @@ void CG_OffsetShoulderView()
 	float        deltaMousePitch;
 	static float mousePitch;
 	vec3_t       forward, right, up;
-	classModelConfig_t *classModelConfig;
+	const classModelConfig_t *classModelConfig;
 
 	// Ignore following pitch; it's too jerky otherwise.
 	if ( !cg_thirdPersonPitchFollow.Get() )
