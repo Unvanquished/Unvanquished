@@ -75,12 +75,12 @@ void BotAssertionInit()
 
 void BotSaveOffMeshConnections( NavData_t *nav )
 {
-	char filePath[ MAX_QPATH ];
 	fileHandle_t f = 0;
 
 	std::string mapname = Cvar::GetValue( "mapname" );
-	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname.c_str(), nav->name );
-	trap_FS_FOpenFile( filePath, &f, fsMode_t::FS_WRITE );
+	std::string filePath =
+		Str::Format( "maps/%s-%s.navcon", mapname, BG_Class( nav->species )->name );
+	trap_FS_FOpenFile( filePath.c_str(), &f, fsMode_t::FS_WRITE);
 
 	if ( !f )
 	{
@@ -122,11 +122,10 @@ static void BotLoadOffMeshConnections( const char *species, OffMeshConnections &
 {
 	con.offMeshConCount = 0;
 
-	char filePath[ MAX_QPATH ];
 	fileHandle_t f = 0;
 
 	std::string mapname = Cvar::GetValue("mapname");
-	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname.c_str(), species );
+	std::string filePath = Str::Format( "maps/%s-%s.navcon", mapname, species );
 	int len = BG_FOpenGameOrPakPath( filePath, f );
 
 	if ( !f )
@@ -445,14 +444,14 @@ void G_BotShutdownNav()
 		}
 
 		nav->process.con.reset();
-		memset( nav->name, 0, sizeof( nav->name ) );
+		nav->species = PCL_NONE;
 	}
 
 	NavEditShutdown();
 	numNavData = 0;
 }
 
-navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, const botClass_t *botClass, qhandle_t *navHandle )
+navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, class_t species )
 {
 	if ( numNavData == MAX_NAV_DATA )
 	{
@@ -461,7 +460,6 @@ navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, const botClass_t *bot
 	}
 
 	NavData_t *nav = &BotNavData[ numNavData ];
-	const char *species = botClass->name;
 
 	int f;
 	std::string mapname = Cvar::GetValue( "mapname" );
@@ -475,30 +473,31 @@ navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, const botClass_t *bot
 
 	Log::Notice( " loading navigation mesh file '%s'...", filePath );
 
-	navMeshStatus_t loadStatus =  BotLoadNavMesh( f, config, species, *nav );
+	const char *speciesName = BG_Class( species )->name;
+	navMeshStatus_t loadStatus = BotLoadNavMesh( f, config, speciesName, *nav );
 	if ( loadStatus != navMeshStatus_t::LOADED )
 	{
 		return loadStatus;
 	}
 
-	Q_strncpyz( nav->name, botClass->name, sizeof( nav->name ) );
+	nav->species = species;
 	nav->query = dtAllocNavMeshQuery();
 
 	if ( !nav->query )
 	{
-		Log::Notice( "Could not allocate Detour Navigation Mesh Query for navmesh %s", species );
+		Log::Notice(
+			"Could not allocate Detour Navigation Mesh Query for navmesh %s", speciesName );
 		return navMeshStatus_t::LOAD_FAILED;
 	}
 
 	if ( dtStatusFailed( nav->query->init( nav->mesh, maxNavNodes.Get() ) ) )
 	{
-		Log::Notice( "Could not init Detour Navigation Mesh Query for navmesh %s", species );
+		Log::Notice( "Could not init Detour Navigation Mesh Query for navmesh %s", speciesName );
 		return navMeshStatus_t::LOAD_FAILED;
 	}
 
-	nav->filter.setIncludeFlags( botClass->polyFlagsInclude );
-	nav->filter.setExcludeFlags( botClass->polyFlagsExclude );
-	*navHandle = numNavData;
+	nav->filter.setIncludeFlags( POLYFLAGS_WALK );
+	nav->filter.setExcludeFlags( POLYFLAGS_DISABLED );
 	numNavData++;
 	return navMeshStatus_t::LOADED;
 }

@@ -195,9 +195,9 @@ private:
 };
 
 struct NavgenConfig;
-navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, const botClass_t *botClass, qhandle_t *navHandle );
+navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, class_t species );
 void G_BotShutdownNav();
-void G_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
+void G_BotSetNavMesh( int botClientNum, class_t newClass );
 bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial );
 bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result );
 void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );

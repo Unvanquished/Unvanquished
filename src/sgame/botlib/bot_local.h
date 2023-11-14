@@ -171,7 +171,7 @@ struct NavData_t
 	dtNavMeshQuery   *query;
 	dtQueryFilter    filter;
 	NavconMeshProcess process;
-	char             name[ 64 ];
+	class_t species;
 };
 
 struct Bot_t

@@ -39,13 +39,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 struct gentity_t;
 struct gclient_t;
 
-struct botClass_t
-{
-	char name[ 64 ];
-	unsigned short polyFlagsInclude;
-	unsigned short polyFlagsExclude;
-};
-
 struct botTrace_t
 {
 	float frac;

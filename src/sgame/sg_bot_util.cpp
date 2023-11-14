@@ -2163,7 +2163,7 @@ static bool BotChangeClass( gentity_t *self, class_t newClass )
 	VectorCopy( newOrigin, self->client->ps.origin );
 	self->client->ps.stats[ STAT_CLASS ] = newClass;
 	self->client->pers.classSelection = newClass;
-	BotSetNavmesh( self, newClass );
+	G_BotSetNavMesh( self->num(), newClass);
 	self->client->ps.eFlags ^= EF_TELEPORT_BIT;
 	return true;
 }
@@ -2190,7 +2190,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 
 	if ( G_AlienEvolve( ent, newClass, false, false ) )
 	{
-		BotSetNavmesh( ent, newClass );
+		G_BotSetNavMesh( ent->num(), newClass);
 		return true;
 	}
 
@@ -2424,7 +2424,7 @@ void BotSellUpgrades( gentity_t *self )
 				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
 				self->client->pers.classSelection = PCL_HUMAN_NAKED;
 				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
-				BotSetNavmesh( self, PCL_HUMAN_NAKED );
+				G_BotSetNavMesh( self->num(), PCL_HUMAN_NAKED);
 			}
 
 			//remove from inventory

@@ -1310,7 +1310,6 @@ struct classModelConfig_t
 	bool segmented;
 
 	class_t navMeshClass; // if not PCL_NONE, which model's navmesh to use
-	int     navHandle;
 };
 
 #define MAX_BUILDABLE_MODELS 3
