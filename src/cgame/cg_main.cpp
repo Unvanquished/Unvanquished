@@ -1065,7 +1065,7 @@ static void GenerateNavmeshes()
 	for ( class_t species : RequiredNavmeshes() )
 	{
 		fileHandle_t f;
-		std::string filename = NavmeshFilename( mapName, BG_Class( species )->name );
+		std::string filename = NavmeshFilename( mapName, species );
 		if ( BG_FOpenGameOrPakPath( filename, f ) < 0 )
 		{
 			missing.push_back( species );

@@ -112,11 +112,34 @@ void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm:
 	BotSetPolyFlags( &origin[0], &mins[0], &maxs[0], POLYFLAGS_WALK );
 }
 
-void G_BotSetNavMesh( int botClientNum, qhandle_t nav )
+void G_BotSetNavMesh( int botClientNum, class_t newClass )
 {
-	if ( nav < 0 || nav >= numNavData )
+	if ( newClass == PCL_NONE )
 	{
-		Log::Warn( "Navigation handle out of bounds" );
+		return;
+	}
+
+	const classModelConfig_t *model = BG_ClassModelConfig( newClass );
+	if ( model->navMeshClass )
+	{
+		newClass = model->navMeshClass;
+		ASSERT_EQ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass, PCL_NONE );
+	}
+
+	NavData_t *nav = nullptr;
+
+	for ( int i = 0; i < numNavData; i++ )
+	{
+		if ( BotNavData[ i ].species == newClass )
+		{
+			nav = &BotNavData[ i ];
+			break;
+		}
+	}
+
+	if ( !nav )
+	{
+		Log::Warn( "G_BotSetNavMesh: no navmesh for %s", BG_Class( newClass )->name );
 		return;
 	}
 
@@ -131,7 +154,7 @@ void G_BotSetNavMesh( int botClientNum, qhandle_t nav )
 		}
 	}
 
-	bot.nav = &BotNavData[ nav ];
+	bot.nav = nav;
 	float clearVec[3]{};
 	bot.corridor.reset( 0, clearVec );
 	bot.clientNum = botClientNum;

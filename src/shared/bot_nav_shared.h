@@ -283,9 +283,9 @@ inline std::vector<class_t> RequiredNavmeshes()
 	};
 }
 
-inline std::string NavmeshFilename(Str::StringRef mapName, Str::StringRef species)
+inline std::string NavmeshFilename(Str::StringRef mapName, class_t species)
 {
-	return Str::Format("maps/%s-%s.navMesh", mapName, species);
+	return Str::Format("maps/%s-%s.navMesh", mapName, BG_Class(species)->name);
 }
 
 #endif // SHARED_BOT_NAV_SHARED_H_

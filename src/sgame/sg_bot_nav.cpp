@@ -191,16 +191,11 @@ void G_BotNavInit( int generateNeeded )
 	for ( class_t i : RequiredNavmeshes() )
 	{
 		classModelConfig_t *model;
-		botClass_t bot;
-		bot.polyFlagsInclude = POLYFLAGS_WALK;
-		bot.polyFlagsExclude = POLYFLAGS_DISABLED;
 
 		model = BG_ClassModelConfig( i );
 		ASSERT_EQ( model->navMeshClass, PCL_NONE ); // shouldn't load this if we are going to use another class's mesh
 
-		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
-
-		switch ( G_BotSetupNav( config, &bot, &model->navHandle ) )
+		switch ( G_BotSetupNav( config, i ) )
 		{
 		case navMeshStatus_t::UNINITIALIZED:
 			if ( generateNeeded )
@@ -254,30 +249,6 @@ void G_BotNavCleanup()
 	G_BotShutdownNav();
 	G_BotBackgroundNavgenShutdown();
 	navMeshLoaded = navMeshStatus_t::UNINITIALIZED;
-}
-
-void BotSetNavmesh( gentity_t  *self, class_t newClass )
-{
-	int navHandle;
-	const classModelConfig_t *model;
-
-	if ( newClass == PCL_NONE )
-	{
-		return;
-	}
-
-	model = BG_ClassModelConfig( newClass );
-	if ( model->navMeshClass )
-	{
-		ASSERT_EQ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass, PCL_NONE );
-		navHandle = BG_ClassModelConfig( model->navMeshClass )->navHandle;
-	}
-	else
-	{
-		navHandle = model->navHandle;
-	}
-
-	G_BotSetNavMesh( self->s.number, navHandle );
 }
 
 /*

@@ -278,7 +278,7 @@ public:
 			arg = args.Argv( 2 ).c_str();
 			for ( i = 0; i < numNavData; i++ )
 			{
-				if ( !Q_stricmp( BotNavData[ i ].name, arg ) )
+				if ( !Q_stricmp( BG_Class( BotNavData[ i ].species )->name, arg ) )
 				{
 					cmd.nav = &BotNavData[ i ];
 					break;
