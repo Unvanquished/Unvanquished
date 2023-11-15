@@ -136,13 +136,20 @@ void G_BotSetNavMesh( int botClientNum, class_t newClass )
 		}
 	}
 
+	Bot_t &bot = agents[ botClientNum ];
+
 	if ( !nav )
 	{
 		Log::Warn( "G_BotSetNavMesh: no navmesh for %s", BG_Class( newClass )->name );
+
+		if ( bot.nav == nullptr )
+		{
+			// Drop to prevent the imminent crash
+			Sys::Drop( "bot spawned as %s without a navmesh", BG_Class( newClass )->name );
+		}
+
 		return;
 	}
-
-	Bot_t &bot = agents[ botClientNum ];
 
 	// should only init the corridor once
 	if ( !bot.corridor.getPath() )
