@@ -123,7 +123,11 @@ void G_BotSetNavMesh( int botClientNum, class_t newClass )
 	if ( model->navMeshClass )
 	{
 		newClass = model->navMeshClass;
-		ASSERT_EQ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass, PCL_NONE );
+		if ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass != PCL_NONE )
+		{
+			Log::Warn( "useNavMesh must not chain (%s -> %s -> ...)",
+			           model->humanName, BG_ClassModelConfig( model->navMeshClass )->humanName );
+		}
 	}
 
 	NavData_t *nav = nullptr;
