@@ -114,11 +114,6 @@ void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm:
 
 void G_BotSetNavMesh( int botClientNum, class_t newClass )
 {
-	if ( newClass == PCL_NONE )
-	{
-		return;
-	}
-
 	const classModelConfig_t *model = BG_ClassModelConfig( newClass );
 	if ( model->navMeshClass )
 	{

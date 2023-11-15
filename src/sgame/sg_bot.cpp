@@ -251,7 +251,6 @@ bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef beh
 	botMind = self->botMind = &g_botMind[clientNum];
 
 	botMind->botTeam = team;
-	G_BotSetNavMesh( self->num(), (class_t)self->client->ps.stats[ STAT_CLASS ] );
 
 	if ( !G_BotSetBehavior( botMind, behavior ) )
 	{
@@ -595,12 +594,10 @@ void G_BotSpectatorThink( gentity_t *self )
 			}
 
 			G_ScheduleSpawn( self->client, PCL_HUMAN_NAKED, weapon );
-			G_BotSetNavMesh( self->num(), PCL_HUMAN_NAKED);
 		}
 		else if ( teamnum == TEAM_ALIENS )
 		{
 			G_ScheduleSpawn( self->client, PCL_ALIEN_LEVEL0 );
-			G_BotSetNavMesh( self->num(), PCL_ALIEN_LEVEL0);
 		}
 	}
 }
@@ -616,6 +613,8 @@ void G_BotSelectSpawnClass( gentity_t *self )
 	{
 		BotEvaluateNode( self, self->botMind->behaviorTree->classSelectionTree );
 	}
+
+	G_BotSetNavMesh( self->num(), self->client->pers.classSelection );
 }
 
 // Initialization happens whenever someone first tries to add a bot.
