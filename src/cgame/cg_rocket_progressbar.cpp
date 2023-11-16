@@ -36,17 +36,17 @@ Maryland 20850 USA.
 
 static float CG_Rocket_GetLoadProgress()
 {
-	if ( cg.loadingNavmesh )
+	if ( cg.loadingStep )
 	{
-		return cg.navmeshLoadingFraction;
+		return (
+			cg.loadingFraction
+			+ cg.mediaLoadingFraction
+			+ cg.buildableLoadingFraction
+			+ cg.characterLoadingFraction
+			) / 4.0;
 	}
 
-	return (
-		cg.loadingFraction
-		+ cg.mediaLoadingFraction
-		+ cg.buildableLoadingFraction
-		+ cg.characterLoadingFraction
-		) / 4.0;
+	return cg.loadingFraction;
 }
 
 static float CG_Rocket_GetBuildTimerProgress()

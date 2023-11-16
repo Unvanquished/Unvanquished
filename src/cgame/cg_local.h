@@ -1251,8 +1251,7 @@ struct cg_t
 	float                   mediaLoadingFraction;
 	float                   buildableLoadingFraction;
 	float                   characterLoadingFraction;
-	float navmeshLoadingFraction;
-	bool loadingNavmesh;
+	bool loadingStep;
 
 	int                     lastBuildAttempt;
 	int                     lastEvolveAttempt;
