@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
 "PO-Revision-Date: 2023-11-17 16:41+0000\n"
-"Last-Translator: Ruben Salinas <ruben_78236@hotmail.com>\n"
+"Last-Translator: gaming <parbrow@outlook.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -171,7 +171,7 @@ msgstr "Por favor, reporta cualquier error en: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "Ingreso &amp; evolución"
 
 #: ui/help_gameplay.rml:36
 msgid ""
@@ -247,20 +247,18 @@ msgstr ""
 "energía necesaria para funcionar."
 
 #: ui/help_gameplay.rml:60
-#, fuzzy
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
 "Los puntos de generación ([egg] huevos y [telenode] telenodos), estructura "
-"para minar ([leech] [drill]) y estructuras unicas ([overmind] overmind y "
-"[reactor] reactor) no son afectados por la falta de puntos de construcción"
+"para minar ([leech] [drill]) y estructuras unicas ([overmind] mente suprema "
+"y [reactor] reactor) no son afectados por la falta de puntos de construcción."
 
 #: ui/help_gameplay.rml:64
-#, fuzzy
 msgid "Mining structures"
-msgstr "Estructura para minar"
+msgstr "Estructuras para minar"
 
 #: ui/help_gameplay.rml:67
 msgid ""
@@ -269,8 +267,8 @@ msgid ""
 "efficiency."
 msgstr ""
 "Los puntos de construcción se adquieren a través de dos estructuras mineras: "
-"el [taladro] humano y la [sanguijuela] alienígena. Estas construcciones "
-"deben extenderse para mayor eficiencia."
+"el [drill] humano y la [leech] alienígena. Estas construcciones deben "
+"extenderse para mayor eficiencia."
 
 #: ui/help_gameplay.rml:70
 msgid ""
