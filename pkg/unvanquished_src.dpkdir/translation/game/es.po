@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
 "PO-Revision-Date: 2023-11-17 16:41+0000\n"
-"Last-Translator: gaming <parbrow@outlook.com>\n"
+"Last-Translator: v0lt4g3 <fotovoltio@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -3664,7 +3664,7 @@ msgstr "Comando:"
 
 #: src/cgame/cg_rocket_draw.cpp:3577
 msgid "FIGHT!"
-msgstr "A luchar!"
+msgstr "A LUCHAR!"
 
 #: src/cgame/cg_rocket_draw.cpp:3671
 msgid "estimating"
