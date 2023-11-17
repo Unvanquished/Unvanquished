@@ -1552,8 +1552,11 @@ struct cgMedia_t
 	sfxHandle_t alienOvermindDying;
 	sfxHandle_t alienOvermindSpawns;
 
+	sfxHandle_t alienBuildableDying1;
+	sfxHandle_t alienBuildableDying2;
 	sfxHandle_t alienBuildableExplosion;
 	sfxHandle_t alienBuildablePrebuild;
+	sfxHandle_t humanBuildableDyingLarge;
 	sfxHandle_t humanBuildableDying;
 	sfxHandle_t humanBuildableExplosion;
 	sfxHandle_t humanBuildablePrebuild;
@@ -2007,6 +2010,7 @@ void     CG_DrawBuildableStatus();
 void     CG_InitBuildables();
 void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
 void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
+void     CG_AlienBuildableDying( buildable_t buildable, vec3_t origin );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
 const centity_t *CG_LookupMainBuildable();
 float    CG_DistanceToBase();

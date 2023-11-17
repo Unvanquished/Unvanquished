@@ -589,10 +589,13 @@ static void CG_RegisterSounds()
 
 	cgs.media.alienEvolveSound = trap_S_RegisterSound( "sound/player/alienevolve", false );
 
+	cgs.media.alienBuildableDying1 = trap_S_RegisterSound( "sound/buildables/alien/construct1", false );
+	cgs.media.alienBuildableDying2 = trap_S_RegisterSound( "sound/buildables/alien/construct2", false );
 	cgs.media.alienBuildableExplosion = trap_S_RegisterSound( "sound/buildables/alien/explosion", false );
 	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild", false );
 
-	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying", false );
+	cgs.media.humanBuildableDyingLarge = trap_S_RegisterSound( "sound/buildables/human/dying", false );
+	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/destroyed", false );
 	cgs.media.humanBuildableExplosion = trap_S_RegisterSound( "sound/buildables/human/explosion", false );
 	cgs.media.humanBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/human/prebuild", false );
 

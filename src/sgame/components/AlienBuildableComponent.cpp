@@ -48,6 +48,8 @@ void AlienBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*
 		blastDelay += GetBlastDelay();
 	}
 
+	G_AddEvent(entity.oldEnt, EV_ALIEN_BUILDABLE_DYING, 0);
+
 	alienBuildableLogger.Debug("Alien buildable dies, will blast in %i ms.", blastDelay);
 
 	GetBuildableComponent().SetState(BuildableComponent::PRE_BLAST);

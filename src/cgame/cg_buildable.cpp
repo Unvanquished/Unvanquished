@@ -174,6 +174,19 @@ static refSkeleton_t bSkeleton;
 static refSkeleton_t oldbSkeleton;
 
 /*
+=================
+CG_AlienBuildableDying
+
+Called for alien buildables that are about to blow up
+=================
+*/
+void CG_AlienBuildableDying( buildable_t buildable, vec3_t origin )
+{
+	trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, 
+	                   ( rand() % 2 ? cgs.media.alienBuildableDying1 : cgs.media.alienBuildableDying2 ) );
+}
+
+/*
 ===================
 CG_AlienBuildableExplosion
 
@@ -209,9 +222,10 @@ void CG_HumanBuildableDying( buildable_t buildable, vec3_t origin )
 	switch ( buildable )
 	{
 		case BA_H_REACTOR:
-			trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.humanBuildableDying );
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.humanBuildableDyingLarge );
+			DAEMON_FALLTHROUGH;
 		default:
-			return;
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, cgs.media.humanBuildableDying );
 	}
 }
 

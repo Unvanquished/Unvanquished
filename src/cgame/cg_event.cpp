@@ -1130,6 +1130,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			CG_HumanBuildableExplosion( (buildable_t) es->modelindex, position, dir );
 			break;
 
+		case EV_ALIEN_BUILDABLE_DYING:
+			CG_AlienBuildableDying( (buildable_t) es->modelindex, position );
+			break;
+
 		case EV_ALIEN_BUILDABLE_EXPLOSION:
 			ByteToDir( es->eventParm, dir );
 			CG_AlienBuildableExplosion( position, dir );
