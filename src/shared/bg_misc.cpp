@@ -1301,6 +1301,7 @@ static constexpr const char *const eventnames[] =
   "EV_BUILD_REPAIRED", // buildable has full health
   "EV_HUMAN_BUILDABLE_DYING",
   "EV_HUMAN_BUILDABLE_EXPLOSION",
+  "EV_ALIEN_BUILDABLE_DYING",
   "EV_ALIEN_BUILDABLE_EXPLOSION",
   "EV_ALIEN_ACIDTUBE",
   "EV_ALIEN_BOOSTER",

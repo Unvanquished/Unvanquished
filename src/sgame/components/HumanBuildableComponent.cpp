@@ -17,8 +17,6 @@ void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*
 			// TODO: Move to ReactorComponent if possible.
 			switch (entity.oldEnt->s.modelindex) {
 				case BA_H_REACTOR:
-					G_AddEvent(entity.oldEnt, EV_HUMAN_BUILDABLE_DYING, 0);
-
 					GetBuildableComponent().REGISTER_THINKER(
 						Blast, ThinkingComponent::SCHEDULER_BEFORE, HUMAN_DETONATION_DELAY
 					);
@@ -30,6 +28,7 @@ void HumanBuildableComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*
 					);
 			}
 			GetBuildableComponent().SetState(BuildableComponent::PRE_BLAST);
+			G_AddEvent(entity.oldEnt, EV_HUMAN_BUILDABLE_DYING, 0);
 			humanBuildableLogger.Notice("Human buildable is going to blow up.");
 			break;
 
