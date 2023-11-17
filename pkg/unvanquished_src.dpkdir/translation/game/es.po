@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-07-26 03:08+0000\n"
-"Last-Translator: Alejanro Herrera Lopéz <danassoluv@adresse.biz.st>\n"
+"PO-Revision-Date: 2023-11-17 16:41+0000\n"
+"Last-Translator: Ruben Salinas <ruben_78236@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.2\n"
 "X-POOTLE-MTIME: 1362811388.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -33,7 +33,7 @@ msgstr "Evolucionar"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr "puntos de morfosis"
+msgstr "puntos de evolucion"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
@@ -52,8 +52,8 @@ msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
 msgstr ""
-"Los Dretches son combatientes altamente furtivos; los Grangers construyen "
-"estructuras alienígenas."
+"Los Dretches son combatientes sigilosos; los Grangers construyen estructuras "
+"alienígenas."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
