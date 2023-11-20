@@ -247,8 +247,6 @@ struct gentity_t
 	 * but prefer them over semantically abusing other variables if you are into that sort of thing
 	 */
 	int       damage;
-	int       customNumber;
-
 
 	team_t      buildableTeam; // buildable item team
 	namelog_t   *builtBy; // clientNum of person that built this

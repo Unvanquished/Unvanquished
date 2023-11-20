@@ -274,6 +274,8 @@ struct mapEntity_t
 	 */
 	int count;
 
+	int customNumber;
+
 	vec3_t       movedir;
 
 	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
