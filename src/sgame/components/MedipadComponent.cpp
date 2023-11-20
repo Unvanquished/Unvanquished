@@ -45,7 +45,7 @@ gentity_t* MedipadComponent::GetTarget() const
 	return target_.get();
 }
 
-void MedipadComponent::Think(int)
+void MedipadComponent::Think(int timeDelta)
 {
 	int       entityList[MAX_GENTITIES];
 	vec3_t    mins, maxs;
@@ -155,7 +155,7 @@ void MedipadComponent::Think(int)
 		}
 
 		// restore health
-		newTarget->entity->Heal(1.0f, nullptr);
+		newTarget->entity->Heal(timeDelta * 0.01f, nullptr);
 
 		// check if fully healed
 		if (newTarget->entity->Get<HealthComponent>()->FullHealth())
