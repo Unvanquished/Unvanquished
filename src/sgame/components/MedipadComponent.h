@@ -29,7 +29,7 @@ class MedipadComponent: public MedipadComponentBase {
 		// ///////////////////// //
 
 	private:
-
+		void Think(int timeDelta);
 };
 
 #endif // MEDIPAD_COMPONENT_H_
