@@ -35,11 +35,14 @@ TrapperComponent::TrapperComponent(Entity& entity, AlienBuildableComponent& r_Al
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 }
 
-static void ATrapper_FireOnEnemy(gentity_t* self, gentity_t* target, int firespeed)
+void TrapperComponent::FireOnEnemy()
 {
 	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
 	float     distanceToTarget = LOCKBLOB_RANGE;
+	gentity_t* self = entity.oldEnt;
+	gentity_t* target = target_.get();
+
 	int       lowMsec = 0;
 	int       highMsec = (int)((
 		((distanceToTarget * LOCKBLOB_SPEED) +
@@ -82,10 +85,10 @@ static void ATrapper_FireOnEnemy(gentity_t* self, gentity_t* target, int firespe
 	//fire at target
 	G_SpawnDumbMissile( MIS_LOCKBLOB, self, VEC2GLM( self->s.pos.trBase ), VEC2GLM( dirToTarget ) );
 	G_SetBuildableAnim(self, BANIM_ATTACK1, false);
-	self->customNumber = level.time + firespeed;
+	self->customNumber = level.time + LOCKBLOB_REPEAT;
 }
 
-static bool ATrapper_CheckTarget(gentity_t* self, gentity_t* target, int range)
+static bool ATrapper_CheckTarget(gentity_t* self, gentity_t* target)
 {
 	vec3_t  distance;
 	trace_t trace;
@@ -119,7 +122,7 @@ static bool ATrapper_CheckTarget(gentity_t* self, gentity_t* target, int range)
 
 	VectorSubtract(target->r.currentOrigin, self->r.currentOrigin, distance);
 
-	if (VectorLength(distance) > range)  // is the target within range?
+	if (VectorLength(distance) > LOCKBLOB_RANGE)  // is the target within range?
 	{
 		return false;
 	}
@@ -143,7 +146,7 @@ static bool ATrapper_CheckTarget(gentity_t* self, gentity_t* target, int range)
 	return true;
 }
 
-static gentity_t* ATrapper_FindEnemy(gentity_t* ent, int range)
+static gentity_t* ATrapper_FindEnemy(gentity_t* ent)
 {
 	int       i;
 	int       start;
@@ -156,7 +159,7 @@ static gentity_t* ATrapper_FindEnemy(gentity_t* ent, int range)
 		gentity_t* target = g_entities + (i % MAX_CLIENTS);
 
 		//if target is not valid keep searching
-		if (!target->inuse || !ATrapper_CheckTarget(ent, target, range))
+		if (!target->inuse || !ATrapper_CheckTarget(ent, target))
 		{
 			continue;
 		}
@@ -179,9 +182,9 @@ void TrapperComponent::Think(int)
 	}
 
 	//if the current target is not valid find a new one
-	if (!target_ || !ATrapper_CheckTarget(self, target_.get(), LOCKBLOB_RANGE))
+	if (!target_ || !ATrapper_CheckTarget(self, target_.get()))
 	{
-		target_ = ATrapper_FindEnemy(self, LOCKBLOB_RANGE);
+		target_ = ATrapper_FindEnemy(self);
 	}
 
 	//if a new target cannot be found don't do anything
@@ -193,6 +196,6 @@ void TrapperComponent::Think(int)
 	//if we are pointing at our target and we can fire shoot it
 	if (self->customNumber < level.time)
 	{
-		ATrapper_FireOnEnemy(self, target_.get(), LOCKBLOB_REPEAT);
+		FireOnEnemy();
 	}
 }
