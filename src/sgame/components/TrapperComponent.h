@@ -22,6 +22,8 @@ class TrapperComponent: public TrapperComponentBase {
 
 	private:
 		void Think(int timeDelta);
+
+		GentityRef target_ = nullptr;
 };
 
 #endif // TRAPPER_COMPONENT_H_

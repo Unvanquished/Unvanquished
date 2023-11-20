@@ -185,7 +185,7 @@ struct gentity_t
 	 */
 	float        momentumEarned;
 
-	GentityRef   target; // target of trapper, hive, rocketpod, builder's +deconstruct
+	GentityRef   target; // target of hive, rocketpod, builder's +deconstruct
 
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
