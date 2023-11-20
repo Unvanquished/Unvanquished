@@ -65,10 +65,14 @@ void MedipadComponent::Think(int timeDelta)
 	// clear target on power loss
 	if (!self->powered || Entities::IsDead(self))
 	{
-		self->medistationIsHealing = false;
 		target_ = nullptr;
 		return;
 	}
+
+	// The target is assigned on every think, so we can see if it was healing during
+	// the last think by checking whether it was assigned something non-null
+	// (ignoring reference invalidation).
+	bool medistationWasHealing = target_.entity != nullptr;
 
 	// get entities standing on top
 	VectorAdd(self->s.origin, self->r.maxs, maxs);
@@ -136,10 +140,8 @@ void MedipadComponent::Think(int timeDelta)
 		client->ps.stats[STAT_STATE] |= SS_HEALING_2X;
 
 		// start healing animation
-		if (!self->medistationIsHealing)
+		if (!medistationWasHealing)
 		{
-			self->medistationIsHealing = true;
-
 			G_SetBuildableAnim(self, BANIM_ATTACK1, false);
 			G_SetIdleBuildableAnim(self, BANIM_IDLE2);
 		}
@@ -168,10 +170,8 @@ void MedipadComponent::Think(int timeDelta)
 		}
 	}
 	// we lost our target
-	else if (self->medistationIsHealing)
+	else if (medistationWasHealing)
 	{
-		self->medistationIsHealing = false;
-
 		// stop healing animation
 		G_SetBuildableAnim(self, BANIM_ATTACK2, true);
 		G_SetIdleBuildableAnim(self, BANIM_IDLE1);
