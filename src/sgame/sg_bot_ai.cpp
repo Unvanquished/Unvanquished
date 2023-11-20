@@ -1555,7 +1555,13 @@ static AINodeStatus_t BotActionReachHealH( gentity_t *self )
 	}
 
 	auto const& goal = self->botMind->goal;
-	const gentity_t * medistation = goal.getTargetedEntity();
+	const auto *medistation = goal.getTargetedEntity()->entity->Get<MedipadComponent>();
+
+	if ( !medistation )
+	{
+		Log::Warn( "bad human bot heal target" );
+		return STATUS_FAILURE;
+	}
 
 	glm::vec3 targetPos = goal.getPos();
 	glm::vec3 myPos = VEC2GLM( self->s.origin );
@@ -1567,7 +1573,8 @@ static AINodeStatus_t BotActionReachHealH( gentity_t *self )
 	// See https://github.com/Unvanquished/Unvanquished/pull/1598
 	// (It would be nice to allow the BT to check for the failure cause.
 	//  How? That's a good question)
-	if ( medistation->target && medistation->target.get() != self
+	gentity_t *mediTarget = medistation->GetTarget();
+	if ( mediTarget != nullptr && mediTarget != self
 	     && dist2 > Square( 200 ) )
 	{
 		return STATUS_FAILURE;

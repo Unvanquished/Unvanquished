@@ -35,9 +35,14 @@ MedipadComponent::MedipadComponent(Entity& entity, HumanBuildableComponent& r_Hu
 void MedipadComponent::HandleDie(gentity_t* /*killer*/, meansOfDeath_t /*meansOfDeath*/) {
 	// Clear target's healing flag.
 	// TODO: This will fail if multiple sources try to control the flag.
-	if (entity.oldEnt->target && entity.oldEnt->target->client) {
-		entity.oldEnt->target->client->ps.stats[STAT_STATE] &= ~SS_HEALING_2X;
+	if (target_) {
+		target_->client->ps.stats[STAT_STATE] &= ~SS_HEALING_2X;
 	}
+}
+
+gentity_t* MedipadComponent::GetTarget() const
+{
+	return target_.get();
 }
 
 void MedipadComponent::Think(int)
@@ -52,20 +57,16 @@ void MedipadComponent::Think(int)
 	}
 
 	// clear target's healing flag for now
-	if (self->target && self->target->client)
+	if (target_)
 	{
-		self->target->client->ps.stats[STAT_STATE] &= ~SS_HEALING_2X;
-	}
-	else
-	{
-		self->target = nullptr;
+		target_->client->ps.stats[STAT_STATE] &= ~SS_HEALING_2X;
 	}
 
 	// clear target on power loss
 	if (!self->powered || Entities::IsDead(self))
 	{
 		self->medistationIsHealing = false;
-		self->target = nullptr;
+		target_ = nullptr;
 		return;
 	}
 
@@ -77,7 +78,7 @@ void MedipadComponent::Think(int)
 	maxs[2] += 32; // continue to heal jumping players but don't heal jetpack campers
 
 	int numPlayers = trap_EntitiesInBox(mins, maxs, entityList, MAX_GENTITIES);
-	gentity_t* oldTarget = self->target.get();
+	gentity_t* oldTarget = target_.get();
 	gentity_t* newTarget = nullptr;
 
 	// clear poison, distribute medikits, find a new target if necessary
@@ -126,13 +127,12 @@ void MedipadComponent::Think(int)
 		}
 	}
 
-	self->target = newTarget;
+	target_ = newTarget;
 
 	// if we have a target, heal it
-	if (self->target && self->target->client)
+	if (newTarget)
 	{
-		gentity_t* player = self->target.entity;
-		gclient_t* client = player->client;
+		gclient_t* client = newTarget->client;
 		client->ps.stats[STAT_STATE] |= SS_HEALING_2X;
 
 		// start healing animation
@@ -155,10 +155,10 @@ void MedipadComponent::Think(int)
 		}
 
 		// restore health
-		player->entity->Heal(1.0f, nullptr);
+		newTarget->entity->Heal(1.0f, nullptr);
 
 		// check if fully healed
-		if (player->entity->Get<HealthComponent>()->FullHealth())
+		if (newTarget->entity->Get<HealthComponent>()->FullHealth())
 		{
 			// give medikit
 			if (!BG_InventoryContainsUpgrade(UP_MEDKIT, client->ps.stats))
