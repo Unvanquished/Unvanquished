@@ -21,7 +21,7 @@ class TrapperComponent: public TrapperComponentBase {
 		// ///////////////////// //
 
 	private:
-
+		void Think(int timeDelta);
 };
 
 #endif // TRAPPER_COMPONENT_H_
