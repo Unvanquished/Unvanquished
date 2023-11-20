@@ -85,7 +85,7 @@ void TrapperComponent::FireOnEnemy()
 	G_SpawnMissile(MIS_LOCKBLOB, self, self->s.pos.trBase, dirToTarget, nullptr,
 		G_ExplodeMissile, level.time + BG_Missile(MIS_LOCKBLOB)->lifetime);
 	G_SetBuildableAnim(self, BANIM_ATTACK1, false);
-	self->customNumber = level.time + LOCKBLOB_REPEAT;
+	nextFireTime_ = level.time + LOCKBLOB_REPEAT;
 }
 
 static bool ATrapper_CheckTarget(gentity_t* self, gentity_t* target)
@@ -194,7 +194,7 @@ void TrapperComponent::Think(int)
 	}
 
 	//if we are pointing at our target and we can fire shoot it
-	if (self->customNumber < level.time)
+	if (nextFireTime_ < level.time)
 	{
 		FireOnEnemy();
 	}

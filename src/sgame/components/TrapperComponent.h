@@ -25,6 +25,7 @@ class TrapperComponent: public TrapperComponentBase {
 		void FireOnEnemy();
 
 		GentityRef target_ = nullptr;
+		int nextFireTime_ = -1;
 };
 
 #endif // TRAPPER_COMPONENT_H_
