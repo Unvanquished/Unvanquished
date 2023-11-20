@@ -35,9 +35,8 @@ TrapperComponent::TrapperComponent(Entity& entity, AlienBuildableComponent& r_Al
 	REGISTER_THINKER(Think, ThinkingComponent::SCHEDULER_AVERAGE, 100);
 }
 
-static void ATrapper_FireOnEnemy(gentity_t* self, int firespeed)
+static void ATrapper_FireOnEnemy(gentity_t* self, gentity_t* target, int firespeed)
 {
-	gentity_t* target = self->target.entity;
 	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
 	float     distanceToTarget = LOCKBLOB_RANGE;
@@ -86,30 +85,12 @@ static void ATrapper_FireOnEnemy(gentity_t* self, int firespeed)
 	self->customNumber = level.time + firespeed;
 }
 
-static bool ATrapper_CheckTarget(gentity_t* self, GentityRef target, int range)
+static bool ATrapper_CheckTarget(gentity_t* self, gentity_t* target, int range)
 {
 	vec3_t  distance;
 	trace_t trace;
 
-	if (!target) // Do we have a target?
-	{
-		return false;
-	}
-
-	if (!target->inuse) // Does the target still exist?
-	{
-		return false;
-	}
-
-	if (target.entity == self) // is the target us?
-	{
-		return false;
-	}
-
-	if (!target->client) // is the target a bot or player?
-	{
-		return false;
-	}
+	ASSERT(target->client);
 
 	if (target->flags & FL_NOTARGET) // is the target cheating?
 	{
@@ -126,7 +107,7 @@ static bool ATrapper_CheckTarget(gentity_t* self, GentityRef target, int range)
 		return false;
 	}
 
-	if (Entities::IsDead(target.entity)) // is the target still alive?
+	if (Entities::IsDead(target)) // is the target still alive?
 	{
 		return false;
 	}
@@ -162,9 +143,8 @@ static bool ATrapper_CheckTarget(gentity_t* self, GentityRef target, int range)
 	return true;
 }
 
-static void ATrapper_FindEnemy(gentity_t* ent, int range)
+static gentity_t* ATrapper_FindEnemy(gentity_t* ent, int range)
 {
-	GentityRef target;
 	int       i;
 	int       start;
 
@@ -173,21 +153,20 @@ static void ATrapper_FindEnemy(gentity_t* ent, int range)
 
 	for (i = start; i < MAX_CLIENTS + start; i++)
 	{
-		target = g_entities + (i % MAX_CLIENTS);
+		gentity_t* target = g_entities + (i % MAX_CLIENTS);
 
 		//if target is not valid keep searching
-		if (!ATrapper_CheckTarget(ent, target, range))
+		if (!target->inuse || !ATrapper_CheckTarget(ent, target, range))
 		{
 			continue;
 		}
 
 		//we found a target
-		ent->target = target;
-		return;
+		return target;
 	}
 
 	//couldn't find a target
-	ent->target = nullptr;
+	return nullptr;
 }
 
 void TrapperComponent::Think(int)
@@ -200,13 +179,13 @@ void TrapperComponent::Think(int)
 	}
 
 	//if the current target is not valid find a new one
-	if (!ATrapper_CheckTarget(self, self->target, LOCKBLOB_RANGE))
+	if (!target_ || !ATrapper_CheckTarget(self, target_.get(), LOCKBLOB_RANGE))
 	{
-		ATrapper_FindEnemy(self, LOCKBLOB_RANGE);
+		target_ = ATrapper_FindEnemy(self, LOCKBLOB_RANGE);
 	}
 
 	//if a new target cannot be found don't do anything
-	if (!self->target)
+	if (!target_)
 	{
 		return;
 	}
@@ -214,6 +193,6 @@ void TrapperComponent::Think(int)
 	//if we are pointing at our target and we can fire shoot it
 	if (self->customNumber < level.time)
 	{
-		ATrapper_FireOnEnemy(self, LOCKBLOB_REPEAT);
+		ATrapper_FireOnEnemy(self, target_.get(), LOCKBLOB_REPEAT);
 	}
 }
