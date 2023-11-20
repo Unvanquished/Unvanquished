@@ -44,10 +44,6 @@ void MedipadComponent::Think(int)
 {
 	int       entityList[MAX_GENTITIES];
 	vec3_t    mins, maxs;
-	int       playerNum, numPlayers;
-	gentity_t* player;
-	gclient_t* client;
-	bool  occupied;
 	gentity_t* self = entity.oldEnt;
 
 	if (!self->spawned)
@@ -80,33 +76,15 @@ void MedipadComponent::Think(int)
 	mins[2] += (self->r.mins[2] + self->r.maxs[2]);
 	maxs[2] += 32; // continue to heal jumping players but don't heal jetpack campers
 
-	numPlayers = trap_EntitiesInBox(mins, maxs, entityList, MAX_GENTITIES);
-	occupied = false;
-
-	// mark occupied if still healing a player
-	for (playerNum = 0; playerNum < numPlayers; playerNum++)
-	{
-		player = &g_entities[entityList[playerNum]];
-		client = player->client;
-
-		if (self->target.entity == player && PM_Live(client->ps.pm_type) &&
-			(!player->entity->Get<HealthComponent>()->FullHealth() ||
-				client->ps.stats[STAT_STAMINA] < STAMINA_MAX))
-		{
-			occupied = true;
-		}
-	}
-
-	if (!occupied)
-	{
-		self->target = nullptr;
-	}
+	int numPlayers = trap_EntitiesInBox(mins, maxs, entityList, MAX_GENTITIES);
+	gentity_t* oldTarget = self->target.get();
+	gentity_t* newTarget = nullptr;
 
 	// clear poison, distribute medikits, find a new target if necessary
-	for (playerNum = 0; playerNum < numPlayers; playerNum++)
+	for (int playerNum = 0; playerNum < numPlayers; playerNum++)
 	{
-		player = &g_entities[entityList[playerNum]];
-		client = player->client;
+		gentity_t* player = &g_entities[entityList[playerNum]];
+		gclient_t* client = player->client;
 
 		// only react to humans
 		if (!client || client->pers.team != TEAM_HUMANS)
@@ -126,10 +104,10 @@ void MedipadComponent::Think(int)
 			client->ps.stats[STAT_STATE] &= ~SS_POISONED;
 		}
 
-		HealthComponent* healthComponent = player->entity->Get<HealthComponent>();
+		bool fullHealth = player->entity->Get<HealthComponent>()->FullHealth();
 
 		// give medikit to players with full health
-		if (healthComponent->FullHealth())
+		if (fullHealth)
 		{
 			if (!BG_InventoryContainsUpgrade(UP_MEDKIT, player->client->ps.stats))
 			{
@@ -138,23 +116,23 @@ void MedipadComponent::Think(int)
 		}
 
 		// if not already occupied, check if someone needs healing
-		if (!occupied)
+		if (!newTarget || player == oldTarget)
 		{
 			if (PM_Live(client->ps.pm_type) &&
-				(!healthComponent->FullHealth() ||
-					client->ps.stats[STAT_STAMINA] < STAMINA_MAX))
+				(!fullHealth || client->ps.stats[STAT_STAMINA] < STAMINA_MAX))
 			{
-				self->target = player;
-				occupied = true;
+				newTarget = player;
 			}
 		}
 	}
 
+	self->target = newTarget;
+
 	// if we have a target, heal it
 	if (self->target && self->target->client)
 	{
-		player = self->target.entity;
-		client = player->client;
+		gentity_t* player = self->target.entity;
+		gclient_t* client = player->client;
 		client->ps.stats[STAT_STATE] |= SS_HEALING_2X;
 
 		// start healing animation
