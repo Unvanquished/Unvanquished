@@ -45,7 +45,9 @@ static Cvar::Range<Cvar::Cvar<int>> g_bot_ignoreSmallObstacles(
 		"0 is disabled. Should only be enabled on maps with known problem."
 		"Maximum is 18, which is bots' stepsize.", Cvar::NONE, 0, 0, 18 );
 
-constexpr int ACTIVATE = 0x80; // spawnflags with this bit can be triggered by `+activate`
+constexpr int ACTIVATE = 1 << 7; // spawnflags with this bit can be triggered by `+activate`
+constexpr int TOGGLE   = 1 << 8; // those doors and buttons will ignore the "wait" value and will not automatically return in position
+
 /*
 ===============================================================================
 
@@ -966,7 +968,11 @@ static void BinaryMover_reached( gentity_t *ent )
 
 		// return to pos1 after a delay
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
+		if ( not ( TOGGLE & master->mapEntity.spawnflags ) )
+		{
+			master->nextthink = std::max( master->nextthink, level.time + static_cast<int>( ent->mapEntity.config.wait.time ) );
+		}
+
 
 		// fire targets
 		if ( !ent->activator )
@@ -1006,6 +1012,11 @@ static void BinaryMover_reached( gentity_t *ent )
 
 		// return to apos1 after a delay
 		master->think = ReturnToPos1orApos1;
+		if ( not ( TOGGLE & master->mapEntity.spawnflags ) )
+		{
+			master->nextthink = std::max( master->nextthink, level.time + static_cast<int>( ent->mapEntity.config.wait.time ) );
+		}
+
 		master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
 
 		// fire targets
@@ -1104,15 +1115,15 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			trap_AdjustAreaPortalState( ent, true );
 		}
 	}
-	else if ( ent->mapEntity.moverState == MOVER_POS2 &&
-	          !( groupState == MOVER_1TO2 || other == master ) )
+	else if ( ent->mapEntity.moverState == MOVER_POS2
+			&& !( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
 		master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
 	}
-	else if ( ent->mapEntity.moverState == MOVER_POS2 &&
-	          ( groupState == MOVER_1TO2 || other == master ) )
+	else if ( ent->mapEntity.moverState == MOVER_POS2
+			&& ( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// start moving 50 msec later, because if this was player-
 		// triggered, level.time hasn't been advanced yet
@@ -1191,15 +1202,15 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			trap_AdjustAreaPortalState( ent, true );
 		}
 	}
-	else if ( ent->mapEntity.moverState == ROTATOR_POS2 &&
-	          !( groupState == MOVER_1TO2 || other == master ) )
+	else if ( ent->mapEntity.moverState == ROTATOR_POS2
+			&& !( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
 		master->nextthink = std::max( master->nextthink, level.time + (int) ent->mapEntity.config.wait.time );
 	}
-	else if ( ent->mapEntity.moverState == ROTATOR_POS2 &&
-	          ( groupState == MOVER_1TO2 || other == master ) )
+	else if ( ent->mapEntity.moverState == ROTATOR_POS2
+			&& ( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// start moving 50 msec later, because if this was player-
 		// triggered, level.time hasn't been advanced yet
@@ -1720,6 +1731,11 @@ void SP_func_door( gentity_t *self )
 	self->nextthink = level.time + FRAMETIME;
 	self->health = self->mapEntity.config.health;
 
+	if ( TOGGLE & self->mapEntity.spawnflags )
+	{
+		self->mapEntity.config.wait.time = 0;
+	}
+
 	if ( self->mapEntity.names[ 0 ] || self->mapEntity.config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
@@ -1730,7 +1746,7 @@ void SP_func_door( gentity_t *self )
 			self->die = Think_MoverDeath;
 		}
 	}
-	else
+	else if ( not ( TOGGLE & self->mapEntity.spawnflags ) )
 	{
 		self->think = Think_SpawnNewDoorTrigger;
 	}
@@ -1850,6 +1866,11 @@ void SP_func_door_rotating( gentity_t *self )
 	self->nextthink = level.time + FRAMETIME;
 	self->health = self->mapEntity.config.health;
 
+	if ( TOGGLE & self->mapEntity.spawnflags )
+	{
+		self->mapEntity.config.wait.time = 0;
+	}
+
 	if ( self->mapEntity.names[ 0 ] || self->mapEntity.config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
@@ -1859,7 +1880,7 @@ void SP_func_door_rotating( gentity_t *self )
 			self->die = Think_MoverDeath;
 		}
 	}
-	else
+	else if ( not ( TOGGLE & self->mapEntity.spawnflags ) )
 	{
 		self->think = Think_SpawnNewDoorTrigger;
 	}
@@ -1992,7 +2013,10 @@ void SP_func_door_model( gentity_t *self )
 	if ( !( self->mapEntity.names[ 0 ] || self->mapEntity.config.health ) ) //FIXME wont work yet with class fallbacks
 	{
 		self->nextthink = level.time + FRAMETIME;
-		self->think = Think_SpawnNewDoorTrigger;
+		if ( not ( TOGGLE & self->mapEntity.spawnflags ) )
+		{
+			self->think = Think_SpawnNewDoorTrigger;
+		}
 	}
 
 	if ( self->mapEntity.spawnflags & ACTIVATE )
