@@ -219,9 +219,6 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	if (health <= 0) {
 		healthLogger.Notice("Dying with %.1f health.", health);
 
-		// Disable knockback.
-		if (client) entity.oldEnt->flags |= FL_NO_KNOCKBACK;
-
 		// Call legacy die function.
 		if (entity.oldEnt->die) entity.oldEnt->die(entity.oldEnt, source, source, meansOfDeath);
 
