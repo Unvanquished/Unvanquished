@@ -130,15 +130,17 @@ cd Unvanquished/
 Produced files will be stored in a new directory named `build`.
 
 ```sh
-cmake -H. -Bbuild
-cmake --build build -- -j4
+mkdir build; cd build
+cmake ..
+make -j4
 ```
 
 ### MSYS2
 
 ```sh
-cmake -H. -Bbuild -G "MSYS Makefiles"
-cmake --build build -- -j4
+mkdir build; cd build
+cmake .. -G "MSYS Makefiles"
+make -j4
 ```
 
 ### Linux cross-compile to Windows
@@ -146,8 +148,9 @@ cmake --build build -- -j4
 💡️ For a 32-bit build use the `cross-toolchain-mingw32.cmake` toolchain file instead.
 
 ```sh
-cmake -H. -Bbuild -DCMAKE_TOOLCHAIN_FILE=cmake/cross-toolchain-mingw64.cmake
-cmake --build build -- -j4
+mkdir build-win64; cd build-win64
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../daemon/cmake/cross-toolchain-mingw64.cmake
+make -j4
 ```
 
 ## Running the game
