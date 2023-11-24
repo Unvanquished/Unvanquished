@@ -192,7 +192,10 @@ You may want to copy and extend some [configuration samples](dist/configs), they
 
 ## Running a modified game as a developer
 
-ℹ️ This is not a tutorial to distribute a modified game usable by players, [see below](#making-a-simple-mod) for a quick mod build and packaging tutorial).
+ℹ️ This is not a tutorial to distribute a modified game usable by players. See the wiki for mod
+[building](https://wiki.unvanquished.net/wiki/Making_an_awesome_mod)
+and [hosting](https://wiki.unvanquished.net/wiki/Hosting_one%27s_own_awesome_mod)
+tutorials.
 
 ℹ️ This is not needed to run the released game or a server.
 
@@ -207,63 +210,6 @@ Assuming you already have a release `pkg/` folder, you can do it this way:
 Note that only the basic `unvanquished_src.dpkdir` asset package is provided that way, and running Unvanquished only with that package will bring you some warnings about other missing packages and you will miss soundtrack and stuff like that.
 
 ℹ️ If you are looking for the sources of the whole assets, have a look at the [UnvanquishedAssets](https://github.com/UnvanquishedAssets/UnvanquishedAssets) repository. Beware that unlike the `unvanquished_src.dpkdir` package most of them can't be loaded correctly by the engine without being built first.
-
-## Making a simple mod
-
-To make a mod, you need to create a dpk archive containing the files for your mod, including the custom game logic binaries if you produce some.
-
-If your mod requires custom game logic binaries, you need to build the game as system-independent `nexe` binaries:
-
-```sh
-# In the Unvanquished/ directory
-cmake -H. -Bbuild -D'BUILD_GAME_NACL'=ON
-cmake --build build -- -j4
-```
-
-You have to put all your custom files in a dpkdir. For example we will name the mod “_mod-custom_” so the dpkdir will be stored as `pkg/mod-custom_src.dpkdir`. Copy to this directory all your custom files to be shipped with the mod.
-
-```sh
-cd build
-mkdir -p pkg/mod-custom_src.dpkdir
-```
-
-If you built custom game logic binaries, copy the `.nexe` files in that folder.
-
-```sh
-cp [cs]game-*[46].nexe pkg/mod-custom_src.dpkdir
-```
-
-Assuming the Unvanquished released assets are stored in a `pkg/` folder next to the `daemon` binary, you can then test your mod this way (loading it as `nexe` binary), here with the _plat23_ map as an example:
-
-```sh
-./daemon -set fs_extrapaks mod-custom +map plat23
-```
-
-You can use `-pakpath` to load base assets from a `pkg/` folder stored somewhere else (see above).
-
-For debugging purpose, you can run your mod as a shared library:
-
-```sh
-./daemon -set fs_extrapaks mod-custom \
-			-set vm.sgame.type 3 -set vm.cgame.type 3 \
-			+map plat23
-```
-
-Once you've successfully tested your code as `nexe` binary, you create a dpk archive, this is a classic zip archive with a `.dpk` file extension. The zip should not contain the dpkdir directory but the content of it:
-
-```sh
-( cd pkg/mod-custom_src.dpkdir ; zip ../mod-custom_0.1.dpk . )
-```
-
-The dpk file is named this way: `<BASENAME>_<VERSION>.dpk`. Here the basename is `mod-custom` and the version is `0.1`. The version string for dpk packages better start with a number, see the [packaging version guidelines](https://wiki.unvanquished.net/wiki/Packaging_version_guidelines) and the [dpk format](https://wiki.unvanquished.net/wiki/Formats/DPK) wiki pages for details.
-
-You then start a game server with your custom mod this way:
-
-```sh
-./daemonded -set fs_extrapaks mod-custom +map plat23
-```
-
-See [above instructions](#configuring-the-server) about configuring the server and the wiki page for [running a server](https://wiki.unvanquished.net/wiki/Server/Running) providing more details, including ways to provide fast HTTP download for your mod.
 
 ## Dealing with submodules
 
