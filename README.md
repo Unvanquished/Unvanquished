@@ -97,7 +97,8 @@ git submodule update --init --recursive
 
 ## Downloading the game's assets
 
-If you don't have the assets, you can download them first. You can download an universal zip from the [download page](https://unvanquished.net/download/), here is the [link to the latest version](https://unvanquished.net/download/zip). The `pkg/` folder would have to be stored next to your `daemon` binary.
+If you don't have the assets, you can download them first. You can download an universal zip from the [download page](https://unvanquished.net/download/), here is the [link to the latest version](https://unvanquished.net/download/zip).
+The `pkg/` folder can be stored in the [homepath](https://wiki.unvanquished.net/wiki/Homepath).
 
 Otherwise you can use the package downloader script. This script can use `aria2c`, `curl` or `wget`.`aria2c` is recommended.
 
@@ -106,6 +107,12 @@ You can do `./download-paks --help` for more options.
 ```sh
 ./download-paks build/pkg
 ```
+
+The above snippet places the `pkg` directory in the
+[libpath](https://wiki.unvanquished.net/wiki/Libpath) of the Daemon engine that you are building,
+so it will only be automatically found from this build directory. If you prefer the paks to be
+found by from all installations/build directories, consider downloading to the `pkg/` subdirectory
+of the [homepath](https://wiki.unvanquished.net/wiki/Homepath).
 
 ## Building the game binaries
 
