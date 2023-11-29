@@ -21,7 +21,7 @@
 		<row>
 			<colorinput type="text" cvar="name" style="overflow: hidden; white-space: pre;"/>
 			<h3><translate>Nickname</translate></h3>
-			<p>Your name visible to others.</p>
+			<translate>Your name visible to others.</translate>
 			<br/>
 		<h3><translate>Colour codes and symbols</translate></h3>
 
