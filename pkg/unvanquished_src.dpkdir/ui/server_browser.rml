@@ -39,7 +39,7 @@
 			<tab><translate>Internet</translate></tab>
 			<panel>
 				<datagrid id="iServers" source="server_browser.internet">
-					<col fields="label" width="3%" class="label" formatter="ServerLabel"></col>
+					<col fields="label" width="3%" class="label"></col>
 					<col fields="name" width="50%" class="name"><ilink style="text-align:left;" onclick='Events.pushevent("sortDS server_browser internet name", event)'><translate>Name:</translate></ilink></col>
 					<col fields="map" width="18%" class="map"><ilink onclick='Events.pushevent("sortDS server_browser internet map", event)'><translate>Map:</translate></ilink></col>
 					<col fields="players,bots,maxClients" width="18%" formatter="ServerPlayers" class="players"><ilink onclick='Events.pushevent("sortDS server_browser internet players", event)'><translate>Players (Bots)</translate></ilink></col>
