@@ -31,7 +31,7 @@
 		</script>
 
 	</head>
-	<body template="window" id="createserver" onshow='Events.pushevent("buildDS mapList", event)' style="width: 40em; margin: 1em;">
+	<body template="window" id="createserver" onshow='Events.pushevent("buildDS mapList", event)' style="width: 40em; margin: 15% auto auto auto;">
 		<h1><translate>Start local/LAN game</translate></h1>
 		<form onsubmit='Events.pushevent(MapMode(document), event)'>
 			<row>

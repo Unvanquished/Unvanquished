@@ -3,7 +3,7 @@
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
-	<body id="options_ui" template="window" style="width: 32em; margin: 1em;">
+	<body id="options_ui" template="window" class="window-options" style="margin-top: 10%; width: 32em;">
 		<row>
 			<h1><translate>User interface</translate></h1>
 			<!-- Keep in sync with language menu in options_welcome.rml -->

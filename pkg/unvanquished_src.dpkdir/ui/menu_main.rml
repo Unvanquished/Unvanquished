@@ -17,9 +17,7 @@
 
 		<div class="devmsg"><translate>This is a beta version of Unvanquished. Please report any issue you may find at <web dest="bugs" /></translate></div>
 
-		<sidebar>
-			<!-- HACK: Add some extra spacing atop the main menu -->
-			<hackyspacer/>
+		<sidebar style="top: 30%;">
 
 			<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
 			<window id="innersidebar" class="innersidebar">

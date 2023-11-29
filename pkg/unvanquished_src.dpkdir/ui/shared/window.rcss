@@ -93,3 +93,7 @@ handle {
 	width: 100%;
 	height: 4em;
 }
+
+body.window-options {
+	margin: 25% auto auto auto;
+}

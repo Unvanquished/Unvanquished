@@ -3,7 +3,7 @@
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
-	<body id="options_mouse" template="window" style="width: 32em; margin: 1em;">
+	<body id="options_mouse" template="window" class="window-options" style="width: 32em;">
 		<h1><translate>Mouse and Aiming</translate></h1>
 		<row>
 			<h3><translate>Y axis</translate></h3>

@@ -4,7 +4,7 @@
 		<link type="text/rcss" href="/ui/shared/tooltip.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
-	<body id="server_setup" template="window" style="width: 46em; margin: 1em;">
+	<body id="server_setup" template="window" style="width: 46em; margin: 5% auto auto auto;">
 		<h1><translate>Server setup</translate></h1>
 
 		<tabset>

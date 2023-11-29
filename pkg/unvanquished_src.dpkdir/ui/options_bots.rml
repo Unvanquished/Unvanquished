@@ -4,7 +4,7 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 		<link type="text/rcss" href="menu.rcss" />
 	</head>
-	<body id="options_bots"  template="window" style="width: 20em; margin: 1em;">
+	<body id="options_bots" template="window" class="window-options" style="width: 20em;">
 		<h1><translate>Bots</translate></h1>
 		<indent>
 		<button-menu style="width:100%"  onclick='Events.pushevent("exec bot add * aliens", event)'><translate>Add an alien bot</translate></button-menu>

@@ -3,7 +3,7 @@
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
-	<body id="options_sound" template="window" style="width: 32em; margin: 1em;" onload='Events.pushevent("buildDS alOutputs", event)'>
+	<body id="options_sound" template="window" class="window-options" style="width: 32em;" onload='Events.pushevent("buildDS alOutputs", event)'>
 		<h1><translate>Sound</translate></h1>
 		<row>
 			<h3><translate>Global volume</translate></h3>

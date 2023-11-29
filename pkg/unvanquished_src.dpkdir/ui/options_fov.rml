@@ -4,7 +4,7 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 
 	</head>
-	<body id="options_fov" template="window" style="width: 30em; margin: 1em;">
+	<body id="options_fov" template="window" class="window-options" style="width: 30em">
 		<h1><translate>Fields of view</translate></h1>
 
 		<h2><translate>Angles of view</translate></h2>

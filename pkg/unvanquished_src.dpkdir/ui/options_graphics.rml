@@ -13,7 +13,7 @@
 			}
 		</style>
 	</head>
-	<body id="options_graphics" template="window" style="width: 46em; margin: 1em;" onload='Events.pushevent("buildDS resolutions", event)'>
+	<body id="options_graphics" template="window" class="window-options" style="margin-top: 30%; width: 46em;" onload='Events.pushevent("buildDS resolutions", event)'>
 		<h1><translate>Graphics</translate></h1>
 
 		<tabset>

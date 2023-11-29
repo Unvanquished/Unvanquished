@@ -48,6 +48,7 @@ window.innersidebar {
 sidebar {
 	display: block;
 	position: absolute;
+	top: 4%;
 	right: 4%;
 	width: 21em;
 	height: 100%;

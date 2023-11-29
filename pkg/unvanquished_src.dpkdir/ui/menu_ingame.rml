@@ -14,7 +14,7 @@
 
 		<div class="devmsg"><translate>This is a beta version of Unvanquished. Please report any issue you may find at <web dest="bugs" /></translate></div>
 
-		<sidebar>
+		<sidebar style="top: 10%;">
 			<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
 			<window id="innersidebar" class="innersidebar" >
 

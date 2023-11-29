@@ -4,7 +4,7 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 		<link type="text/rcss" href="menu.rcss" />
 	</head>
-	<body id="options_democracy"  template="window" style="width: 20em; margin: 1em;">
+	<body id="options_democracy" template="window" class="window-options" style="width: 20em;">
 		<h1><translate>Democracy</translate></h1>
 		<indent>
 			<br/>

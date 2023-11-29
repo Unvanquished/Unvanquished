@@ -14,7 +14,7 @@
 			}
 		</style>
 	</head>
-	<body id="options_player"  template="window" style="width: 45em; margin: 1em;">
+	<body id="options_player" template="window" class="window-options" style="margin-top: 10%; width: 45em;">
 		<h1><translate>Player Setup</translate></h1>
 
 		<h2><translate>Personal</translate></h2>
