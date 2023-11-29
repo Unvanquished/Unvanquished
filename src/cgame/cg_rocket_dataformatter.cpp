@@ -136,12 +136,6 @@ static void CG_Rocket_DFClassName( int handle, const char *data )
 	Rocket_DataFormatterFormattedData( handle, BG_Class( atoi( Info_ValueForKey( data, "1" ) ) )->name, true );
 }
 
-static void CG_Rocket_DFServerLabel( int handle, const char *data )
-{
-	const char *str = Info_ValueForKey( data, "1" );
-	Rocket_DataFormatterFormattedData( handle, *data ? ++str : "&nbsp;", false );
-}
-
 static void CG_Rocket_DFGWeaponDamage( int handle, const char *data )
 {
 	weapon_t weapon = (weapon_t) atoi( Info_ValueForKey( data, "1" ) );
@@ -280,7 +274,6 @@ static const dataFormatterCmd_t dataFormatterCmdList[] =
 	{ "LevelShot", &CG_Rocket_DFLevelShot },
 	{ "PlayerName", &CG_Rocket_DFPlayerName },
 	{ "Resolution", &CG_Rocket_DFResolution },
-	{ "ServerLabel", &CG_Rocket_DFServerLabel },
 	{ "ServerPing", &CG_Rocket_DFServerPing },
 	{ "ServerPlayers", &CG_Rocket_DFServerPlayers },
 	{ "UpgradeName", &CG_Rocket_DFUpgradeName },
