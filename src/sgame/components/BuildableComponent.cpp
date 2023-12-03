@@ -77,7 +77,7 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 		if (level.time > location->mapEntity.warnTimer[team]) {
 			bool inBase = G_InsideBase(entity.oldEnt);
 
-			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? 0 : location->num(), team);
+			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? MAX_LOCATIONS : location->s.generic1, team);
 			Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, team);
 			location->mapEntity.warnTimer[team] = level.time + ATTACKWARN_NEARBY_PERIOD;
 		}
