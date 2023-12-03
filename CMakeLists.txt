@@ -106,11 +106,11 @@ endif()
 if (BUILD_SGAME OR BUILD_CGAME)
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
-    set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
 
     # Detour
     add_library(srclibs-detour EXCLUDE_FROM_ALL ${DETOURLIST})
-    set_target_properties(srclibs-detour PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set_target_properties(srclibs-detour PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
     include_directories(${LIB_DIR}/recastnavigation/Detour/Include
                         ${LIB_DIR}/recastnavigation/DetourTileCache/Include
                         ${LIB_DIR}/recastnavigation/DebugUtils/Include
@@ -128,21 +128,21 @@ if (BUILD_SGAME OR BUILD_CGAME)
     add_definitions(-DRC_MAX_NEIS_DEF=${RC_MAX_NEIS})
 
     add_library(srclibs-recast EXCLUDE_FROM_ALL ${RECASTLIST})
-    set_target_properties(srclibs-recast PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set_target_properties(srclibs-recast PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
     include_directories(
         ${LIB_DIR}/recastnavigation/Recast/Include
         ${LIB_DIR}/recastnavigation/RecastDemo/Include)
 
     # GLM
     include_directories(${LIB_DIR}/glm)
+
+    add_definitions( -DGLM_FORCE_EXPLICIT_CTOR )
+
+    add_library(srclibs-tinygettext EXCLUDE_FROM_ALL ${TINYGETTEXTLIST})
+    set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
+    target_include_directories(srclibs-tinygettext PUBLIC ${LIB_DIR}/tinygettext/include)
+    target_compile_definitions(srclibs-tinygettext PUBLIC TINYGETTEXT_UTF8_ONLY)
 endif()
-
-add_definitions( -DGLM_FORCE_EXPLICIT_CTOR )
-
-add_library(srclibs-tinygettext EXCLUDE_FROM_ALL ${TINYGETTEXTLIST})
-set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-target_include_directories(srclibs-tinygettext PUBLIC ${LIB_DIR}/tinygettext/include)
-target_compile_definitions(srclibs-tinygettext PUBLIC TINYGETTEXT_UTF8_ONLY)
 
 # Warning options
 # keep
