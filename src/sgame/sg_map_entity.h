@@ -281,6 +281,9 @@ struct mapEntity_t
 	int         last_move_time;
 	bool         locked;
 
+	// for a location entity, timer set when nearby buildings attacked (EV_WARN_ATTACK)
+	int warnTimer[ NUM_TEAMS ];
+
 // functions
 	inline bool triggerTeam( team_t other ) const
 	{

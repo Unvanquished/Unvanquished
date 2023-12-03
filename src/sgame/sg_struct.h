@@ -264,7 +264,6 @@ struct gentity_t
 	float       barbRegeneration; // goon barb regeneration is complete if this value is >= 1
 
 	bool        deconMarkHack; // TODO: Remove.
-	int         warnTimer; // nearby building(s) being attacked
 	int         nextPhysicsTime; // buildables don't need to check what they're sitting on
 	// every single frame.. so only do it periodically
 	int         clientSpawnTime; // the time until this spawn can spawn a client
