@@ -131,11 +131,11 @@ set(NACL_VM_INHERITED_OPTIONS ${NACL_VM_INHERITED_OPTIONS} RC_MAX_LAYERS RC_MAX_
 if (BUILDING_ANY_GAMELOGIC)
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
-    set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
 
     # Detour
     add_library(srclibs-detour EXCLUDE_FROM_ALL ${DETOURLIST})
-    set_target_properties(srclibs-detour PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set_target_properties(srclibs-detour PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
     include_directories(${LIB_DIR}/recastnavigation/Detour/Include
                         ${LIB_DIR}/recastnavigation/DetourTileCache/Include
                         ${LIB_DIR}/recastnavigation/DebugUtils/Include
@@ -150,7 +150,7 @@ if (BUILDING_ANY_GAMELOGIC)
     add_definitions(-DRC_MAX_NEIS_DEF=${RC_MAX_NEIS})
 
     add_library(srclibs-recast EXCLUDE_FROM_ALL ${RECASTLIST})
-    set_target_properties(srclibs-recast PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set_target_properties(srclibs-recast PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
     include_directories(
         ${LIB_DIR}/recastnavigation/Recast/Include
         ${LIB_DIR}/recastnavigation/RecastDemo/Include)
@@ -161,7 +161,7 @@ if (BUILDING_ANY_GAMELOGIC)
 
     # tinygettext
     add_library(srclibs-tinygettext EXCLUDE_FROM_ALL ${TINYGETTEXTLIST})
-    set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE ${GAME_PIE} FOLDER "libs")
     target_include_directories(srclibs-tinygettext PUBLIC ${LIB_DIR}/tinygettext/include)
     target_compile_definitions(srclibs-tinygettext PUBLIC TINYGETTEXT_UTF8_ONLY)
 endif()
@@ -232,10 +232,12 @@ if (BUILD_SGAME)
 
     if (BUILD_GAME_NACL AND NOT (FORK EQUAL 2))
         include(ExternalProject)
-        ExternalProject_Add_Step(nacl-vms cbse-trigger
-                                 COMMENT "Finished CBSE generation, ready to build NaCl"
-                                 DEPENDS ${sgame_GENERATED_CBSE}
-                                 DEPENDERS build)
+        foreach(NACL_VMS_PROJECT ${NACL_VMS_PROJECTS})
+            ExternalProject_Add_Step(${NACL_VMS_PROJECT} cbse-trigger
+                COMMENT "Finished CBSE generation, ready to build NaCl ${NACL_VMS_PROJECT}"
+                DEPENDS ${sgame_GENERATED_CBSE}
+                DEPENDERS build)
+        endforeach()
     endif()
 endif()
 
