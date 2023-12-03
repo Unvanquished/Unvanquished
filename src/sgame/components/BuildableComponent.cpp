@@ -74,12 +74,12 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 		if (!location) location = level.fakeLocation;
 
 		// Warn if there was no warning for this location recently.
-		if (level.time > location->warnTimer) {
+		if (level.time > location->mapEntity.warnTimer[team]) {
 			bool inBase = G_InsideBase(entity.oldEnt);
 
 			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? 0 : location->num(), team);
 			Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, team);
-			location->warnTimer = level.time + ATTACKWARN_NEARBY_PERIOD;
+			location->mapEntity.warnTimer[team] = level.time + ATTACKWARN_NEARBY_PERIOD;
 		}
 	}
 
