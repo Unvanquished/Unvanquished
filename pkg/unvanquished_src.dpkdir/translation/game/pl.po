@@ -6,8 +6,9 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-10-31 23:44+0000\n"
-"Last-Translator: Kris Kozlovsky <k.kozlowsky@gmail.com>\n"
+"PO-Revision-Date: 2023-12-06 15:05+0000\n"
+"Last-Translator: Aleksander Łagowiec <mineolek10@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/pl/>\n"
 "Language: pl\n"
@@ -16,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.3-dev\n"
 "X-POOTLE-MTIME: 1375081810.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -606,168 +607,184 @@ msgstr "SMG"
 
 #: ui/human_spawn.rml:46
 msgid "Construction Kit"
-msgstr "Construction Kit"
+msgstr "Zestaw Konstrukcyjny"
 
 #: ui/human_spawn.rml:48
+#, fuzzy
 msgid ""
 "The SMG is a rapid-fire starting weapon, and the construction kit builds and "
 "repairs human structures. All equipment can be traded at the armoury."
 msgstr ""
+"Pistolet maszynowy to szybkostrzelna broń startowa, a zestaw konstrukcyjny "
+"umożliwia budowanie i naprawianie ludzkich konstrukcji. Całym wyposażeniem "
+"można handlować w zbrojowni."
 
 #: ui/ingame_beaconmenu.rml:78
 msgid "Beacons"
-msgstr ""
+msgstr "Latarnie"
 
 #: ui/ingame_scoreboard.rml:183
 msgid "Spectators"
-msgstr ""
+msgstr "Obserwatorzy"
 
 #: ui/ingame_scoreboard.rml:190 ui/server_browser.rml:44
 #: ui/server_browser.rml:60
 msgid "Map:"
-msgstr ""
+msgstr "Mapa:"
 
 #: ui/ingame_scoreboard.rml:191
 msgid "Time:"
-msgstr ""
+msgstr "Czas:"
 
 #: ui/ingame_teamselect.rml:56
 msgid "Auto-select a team"
-msgstr ""
+msgstr "Auto-wybieranie zespołu"
 
 #: ui/ingame_teamselect.rml:59
+#, fuzzy
 msgid ""
 "Aliens are highly mobile and possess a wide variety of movement-based "
 "attacks. They are sturdy, but must rely on stealth and evasion."
 msgstr ""
+"Obcy są bardzo mobilni i posiadają szeroką gamę ataków opartych na ruchu. Są "
+"wytrzymali, ale muszą polegać na skradaniu się i unikaniu."
 
 #: ui/ingame_teamselect.rml:60
+#, fuzzy
 msgid ""
 "Humans can equip themselves with an assortment of weapons and equipment. "
 "They are flexible and lethal at a distance, but fragile."
 msgstr ""
+"Ludzie mogą wyposażyć się w szeroką gamę broni i sprzętu. Są oni elastyczni "
+"i zabójczy na odległość, ale delikatni."
 
 #: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
 msgid "Join Aliens"
-msgstr ""
+msgstr "Dołącz do Kosmitów"
 
 #: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:29
 msgid "Join Humans"
-msgstr ""
+msgstr "Dołącz do Ludzi"
 
 #: ui/ingame_teamselect.rml:65
 msgid "Alternatively you can watch the game without playing."
-msgstr ""
+msgstr "A jak nie chcesz grać. Możesz oglądać grę bez grania."
 
 #: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
 msgid "Spectate"
 msgstr "Obserwuj"
 
 #: ui/menu_ingame.rml:15 ui/menu_main.rml:18
+#, fuzzy
 msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
+"To jest wersja beta gry Unvanquished. Prosimy o zgłaszanie napotkanych "
+"błędów na <web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
+#, fuzzy
 msgid "Match menu"
-msgstr ""
+msgstr "Menu meczu"
 
 #: ui/menu_ingame.rml:23
 msgid "Leave match"
-msgstr ""
+msgstr "Wyjdź z meczu"
 
 #: ui/menu_ingame.rml:24
 msgid "Resume action"
-msgstr ""
+msgstr "Kontynuuj akcję"
 
 #: ui/menu_ingame.rml:26 ui/server_setup.rml:57
 msgid "Teams"
-msgstr ""
+msgstr "Drużyny"
 
 #: ui/menu_ingame.rml:33
 msgid "Democracy"
-msgstr ""
+msgstr "Demokracja"
 
 #: ui/menu_ingame.rml:37
+#, fuzzy
 msgid "Global vote:"
-msgstr ""
+msgstr "Globalne głosowanie:"
 
 #: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
 msgid "yes"
-msgstr ""
+msgstr "tak"
 
 #: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46
 msgid "or"
-msgstr ""
+msgstr "lub"
 
 #: ui/menu_ingame.rml:40 ui/menu_ingame.rml:47
 msgid "no"
-msgstr ""
+msgstr "nie"
 
 #: ui/menu_ingame.rml:44
 msgid "Team vote:"
-msgstr ""
+msgstr "Głos zespołu:"
 
 #: ui/menu_ingame.rml:49
 msgid "Kick bots"
-msgstr ""
+msgstr "Wyrzuć boty"
 
 #: ui/menu_ingame.rml:52
 msgid "Extend timelimit"
-msgstr ""
+msgstr "Rozszerz limit czasowy"
 
 #: ui/menu_ingame.rml:53
+#, fuzzy
 msgid "Call a draw"
-msgstr ""
+msgstr "Zremisuj"
 
 #: ui/menu_ingame.rml:54
 msgid "Admit defeat"
-msgstr ""
+msgstr "Przyznaj się do porażki"
 
 #: ui/menu_ingame.rml:60
 msgid "Host menu"
-msgstr ""
+msgstr "Menu gospodarza (host-a)"
 
 #: ui/menu_ingame.rml:61
 msgid "Stop server"
-msgstr ""
+msgstr "Zatrzymaj serwer (Stop)"
 
 #: ui/menu_ingame.rml:62
 msgid "Pause server"
-msgstr ""
+msgstr "Zatrzymaj serwer (Pauza)"
 
 #: ui/menu_ingame.rml:67
 msgid "Reset match"
-msgstr ""
+msgstr "Zresetuj mecz"
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
-msgstr ""
+msgstr "Boty"
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
-msgstr ""
+msgstr "Dodaj bota Kosmitę"
 
 #: ui/menu_ingame.rml:73
 msgid "Add a human bot"
-msgstr ""
+msgstr "Dodaj bota Człowieka"
 
 #: ui/menu_ingame.rml:74 src/sgame/sg_votes.cpp:320
 msgid "Remove all bots"
-msgstr ""
+msgstr "Usuń wszystkie boty"
 
 #: ui/menu_ingame.rml:78
 msgid "Players"
-msgstr "Graczy"
+msgstr "Gracze / Graczy"
 
 #: ui/menu_ingame.rml:80
 msgid "Disclipline: kick/ban/mute/nobuild"
-msgstr ""
+msgstr "Dyscyplinuj: Wyrzuć/Zbanuj/Wycisz/Wyłącz budowanie"
 
 #: ui/menu_ingame.rml:87
 msgid "Main menu"
-msgstr ""
+msgstr "Menu Główne"
 
 #: ui/menu_ingame.rml:89 ui/menu_main.rml:28
 msgid "Play"
@@ -775,15 +792,15 @@ msgstr "Graj"
 
 #: ui/menu_ingame.rml:91 ui/menu_main.rml:30
 msgid "Server listings"
-msgstr ""
+msgstr "Listy Serwerów"
 
 #: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
 msgid "Start local/LAN game"
-msgstr ""
+msgstr "Rozpocznij Lokalne/Gra LAN"
 
 #: ui/menu_ingame.rml:93 ui/menu_main.rml:32
 msgid "Recorded demos"
-msgstr ""
+msgstr "Nagrane Dema"
 
 #: ui/menu_ingame.rml:96 ui/menu_main.rml:35
 msgid "Options"
@@ -795,15 +812,15 @@ msgstr "Gracz"
 
 #: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
 msgid "Graphics"
-msgstr ""
+msgstr "Grafika"
 
 #: ui/menu_ingame.rml:100 ui/menu_main.rml:39 ui/options_keys.rml:7
 msgid "Key bindings"
-msgstr ""
+msgstr "Klawisze"
 
 #: ui/menu_ingame.rml:101 ui/menu_main.rml:40 ui/options_mouse.rml:7
 msgid "Mouse and Aiming"
-msgstr ""
+msgstr "Mysz i Celowanie"
 
 #: ui/menu_ingame.rml:102 ui/menu_main.rml:41 ui/options_sound.rml:7
 msgid "Sound"
@@ -811,15 +828,15 @@ msgstr "Dźwięk"
 
 #: ui/menu_ingame.rml:103 ui/menu_main.rml:42
 msgid "User interface and HUD"
-msgstr ""
+msgstr "Interfejs i HUD"
 
 #: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
 msgid "Fields of view"
-msgstr ""
+msgstr "Pole widzenia"
 
 #: ui/menu_ingame.rml:105 ui/server_setup.rml:8
 msgid "Server setup"
-msgstr ""
+msgstr "Ustaw Serwer"
 
 #: ui/menu_ingame.rml:109 ui/menu_main.rml:46
 msgid "Help"
@@ -827,70 +844,78 @@ msgstr "Pomoc"
 
 #: ui/menu_ingame.rml:111 ui/menu_main.rml:48
 msgid "Gameplay guide"
-msgstr ""
+msgstr "Przewodnik po grze"
 
 #: ui/menu_ingame.rml:117 ui/menu_main.rml:54
 msgid "Quit game"
-msgstr ""
+msgstr "Wyjdź z gry"
 
 #: ui/menu_ingame.rml:119 ui/menu_main.rml:56
 msgid "Beta"
-msgstr ""
+msgstr "Beta"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
-msgstr ""
+msgstr "Kąty widzenia"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = szerokość pola widzenia gracza, mierzona w stopniach."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
 msgstr ""
+"Wielu graczy cierpi na łagodną chorobę lokomocyjną podczas grania w "
+"strzelanki FPS. Wyższy FOV może pomóc w walce z tym problemem."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
 #: ui/options_fov.rml:66
 msgid "degrees"
-msgstr ""
+msgstr "kąty"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:276
 #: ui/options_mouse.rml:21 ui/options_ui.rml:59 ui/server_setup.rml:73
 msgid "reset"
-msgstr ""
+msgstr "reset"
 
 #: ui/options_fov.rml:40
+#, fuzzy
 msgid "Mantis"
-msgstr ""
+msgstr "Modliszka"
 
 #: ui/options_fov.rml:48
+#, fuzzy
 msgid "Marauder"
-msgstr ""
+msgstr "Maruder"
 
 #: ui/options_fov.rml:56
+#, fuzzy
 msgid "Dragoon"
-msgstr ""
+msgstr "Smok (Dragon)"
 
 #: ui/options_fov.rml:64
+#, fuzzy
 msgid "Tyrant"
-msgstr ""
+msgstr "Tyran"
 
 #: ui/options_fov.rml:71
+#, fuzzy
 msgid "View bobbing"
-msgstr ""
+msgstr "Zobacz podskakiwanie"
 
 #: ui/options_fov.rml:74
+#, fuzzy
 msgid "Camera pitching"
-msgstr ""
+msgstr "Rzucanie kamerą"
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr ""
+msgstr "Wyłączone"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
@@ -1282,7 +1307,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:247
 msgid "disabled"
-msgstr ""
+msgstr "wyłączone"
 
 #: ui/options_graphics.rml:248
 msgid "All structures"
