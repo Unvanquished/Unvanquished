@@ -55,7 +55,7 @@ DEFAULT_IFS="${IFS}"
 xdgHomeDir="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
 xdgCacheDir="${XDG_DATA_HOME:-${HOME}/.cache}/unvanquished/download-paks"
 
-current_unvanquished_version='0.54.0'
+current_unvanquished_version='0.54.1'
 version="${current_unvanquished_version}"
 
 sum_file_name='md5sums'
