@@ -3206,7 +3206,7 @@ static void CG_Rocket_DrawTutorial()
 		return;
 	}
 
-	Rocket_SetInnerRML( CG_TutorialText(), RP_EMOTICONS | RP_QUAKE );
+	Rocket_SetInnerRML( CG_TutorialText().c_str(), RP_EMOTICONS | RP_QUAKE );
 }
 
 static void CG_Rocket_DrawChatType()

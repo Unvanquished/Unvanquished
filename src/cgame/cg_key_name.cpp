@@ -59,7 +59,7 @@ static int bindTeam;
 void CG_SetBindTeam(team_t team) {
     switch (team) {
     case TEAM_NONE:
-        bindTeam = 3; // BIND_TEAM_SPECTATORS
+        bindTeam = NUM_TEAMS; // BIND_TEAM_SPECTATORS
         break;
     case TEAM_HUMANS:
     case TEAM_ALIENS:
