@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-10-29 16:27+0000\n"
-"Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
+"PO-Revision-Date: 2023-12-13 10:51+0000\n"
+"Last-Translator: Jonas <jonasdcdm@mailbox.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.3-rc\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -69,7 +69,7 @@ msgstr "Motif"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr "Poser un vote"
+msgstr "Appeler au vote"
 
 #: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
 msgid "Fill with bots"
@@ -102,7 +102,7 @@ msgstr "Changer de carte"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr "Vote : changer la carte suivante"
+msgstr "Vote : passer à la carte suivante"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
@@ -163,8 +163,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
-"Découvrez plus de choses sur le jeu dans le wiki : <web dest=\"wiki\" />"
+msgstr "Découvrez le jeu sur le wiki : <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:28
 msgid "Please report bugs on: <web dest=\"bugs\" />"
@@ -442,12 +441,12 @@ msgid ""
 "teammates, you will heal as fast as you would by touching an alien "
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
-"Les extraterrestres ont un troisième bonus de guérison: la proximité avec "
+"Les extraterrestres ont un troisième bonus de guérison : la proximité avec "
 "d'autres extraterrestres. Si vous êtes à proximité d'un extraterrestre "
 "amical, vous guérirez légèrement plus rapidement, et avec deux coéquipiers, "
 "vous guérirez aussi vite que vous le feriez en touchant une construction "
 "extraterrestre. Avec un peu de travail d'équipe, c'est un excellent moyen "
-"d'assiéger les ennemis !"
+"d'assiéger les ennemis !"
 
 #: ui/help_gameplay.rml:134
 msgid ""
@@ -695,8 +694,8 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
-"Il s'agit d'une version bêta de Unvanquished. Veuillez signaler tout "
-"problème que vous pourriez trouver ici : <web dest=\"bugs\" />"
+"Ceci est une version Beta de Unvanquished. Veuillez signaler tout problème "
+"que vous pourriez trouver ici : <web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
 msgid "Match menu"
@@ -772,7 +771,7 @@ msgstr "Réinitialiser la partie"
 
 #: ui/menu_ingame.rml:70
 msgid "Bots"
-msgstr "Robots"
+msgstr "Bots"
 
 #: ui/menu_ingame.rml:72
 msgid "Add an alien bot"
@@ -872,16 +871,15 @@ msgstr "Angles de vue"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr "FOV = largeur de vision du joueur, mesurée en degrés."
+msgstr "FOV = champ de vision du joueur, exprimé en degrés."
 
 #: ui/options_fov.rml:12
 msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
 msgstr ""
-"De nombreux joueurs souffrent d'un léger mal des transports en jouant à des "
-"jeux de tir à la première personne. Un champ de vision plus élevé peut aider "
-"à lutter contre cela."
+"Certains joueurs peuvent souffrir d'un étourdissement léger en jouant à des "
+"FPS. Augmenter le FOV peut aider à réduire l'inconfort."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
@@ -922,7 +920,7 @@ msgstr "Présentation de la caméra"
 
 #: ui/options_fov.rml:76 ui/options_fov.rml:87
 msgid "Disabled"
-msgstr "Désactiver"
+msgstr "Désactivé"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
@@ -938,7 +936,7 @@ msgstr "Fort"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr "Mouvement de haut en bas"
+msgstr "Mouvement haut et bas"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
@@ -1126,7 +1124,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:110
 msgid "Rim lighting"
-msgstr "Éclairage des rebords"
+msgstr "Éclairage des contours"
 
 #: ui/options_graphics.rml:112
 msgid "Light the edges of models from behind."
@@ -1143,7 +1141,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:247
 msgid "None"
-msgstr "Non"
+msgstr "Aucun"
 
 # Pour les "Blob shadows"
 #: ui/options_graphics.rml:122
@@ -1717,7 +1715,7 @@ msgstr "Appuyez la touche sans la maintenir pour activer."
 
 #: ui/options_player.rml:48
 msgid "Sprint toggles"
-msgstr "Alterner le sprint"
+msgstr "Maintien du sprint"
 
 #: ui/options_player.rml:53
 msgid "Cosmetic"
@@ -2004,7 +2002,7 @@ msgstr "Humains :"
 
 #: ui/server_setup.rml:35
 msgid "Friendly buildable fire"
-msgstr "Feu ami de construction"
+msgstr "Tir ami sur les constructions"
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
@@ -2041,7 +2039,7 @@ msgstr "La gravité"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
-msgstr "Dégagement de dretch"
+msgstr "Attaque de dretch"
 
 #: ui/server_setup.rml:80
 msgid "Dretches can be pushed out of the way by attacking them."
@@ -2097,7 +2095,7 @@ msgstr "Multiplicateur de récompense de construction"
 
 #: ui/server_setup.rml:129
 msgid "Momentum reward multiplier for construction"
-msgstr "Multiplicateur de récompense de construction"
+msgstr "Inertie du multiplicateur de récompense de construction"
 
 #: ui/server_setup.rml:136
 msgid "Deconstruction penalty multiplier"
@@ -2105,7 +2103,7 @@ msgstr "Facteur de pénalité de déconstruction"
 
 #: ui/server_setup.rml:137
 msgid "Momentum penalty multiplier for deconstruction"
-msgstr "Multiplicateur de pénalité de construction"
+msgstr "Inertie du multiplicateur de pénalité de déconstruction"
 
 #: ui/server_setup.rml:144
 msgid "Building kill reward multiplier"
@@ -2113,7 +2111,7 @@ msgstr "Facteur de récompense pour frag de construction"
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
-msgstr "Multiplicateur de récompense Momentum pour détruire des constructions"
+msgstr "Inertie du multiplicateur de récompense pour détruire des constructions"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
@@ -2121,7 +2119,7 @@ msgstr "Valeur de départ"
 
 #: ui/server_setup.rml:157
 msgid "Initial build points count"
-msgstr "Nombre initial de points de construction"
+msgstr "Points de construction de départ"
 
 #: ui/server_setup.rml:164
 msgid "Miner bonus"
@@ -2159,7 +2157,7 @@ msgstr "Remplir les équipes jusqu'à ce qu'elles aient suffisamment de joueurs"
 
 #: ui/server_setup.rml:196
 msgid "bots"
-msgstr "Robots"
+msgstr "bots"
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
@@ -3206,7 +3204,7 @@ msgstr "%s%s ^*a été déchiqueté par %s%s%s^*'s %s"
 #: src/cgame/cg_event.cpp:481
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr "%s%s ^*a été déchiquetée par %s%s%s^*'s %s"
+msgstr "%s%s ^*a été déchiquetée par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
@@ -3216,42 +3214,42 @@ msgstr "%s%s ^*a été déchiqueté par %s%s%s^*'s %s"
 #: src/cgame/cg_event.cpp:482
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*a été déchiqueté par%s%s%s^*'s %s^*; %s%s%s^* a assisté"
+msgstr "%s%s ^*a été déchiqueté par %s%s%s^*'s %s^* aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*a été déchiquetée par %s%s%s^*'s %s^*; %s%s%s^* a assisté"
+msgstr "%s%s ^*a été déchiquetée par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:482
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*a été déchiqueté par %s%s%s^*'s %s^*; %s%s%s^* a assisté"
+msgstr "%s%s ^*a été déchiqueté par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^* a été électrocuté par %s%s%s^*'s %s"
+msgstr "%s%s ^* a été électrocuté par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^* a été électrocutée par %s%s%s^*'s %s"
+msgstr "%s%s ^* a été électrocutée par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:487
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^*a été électrocuté par %s%s%s^*'s %s"
+msgstr "%s%s ^*a été électrocuté par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:488
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*a été électrocuté par %s%s%s^*'s %s^* assisté de %s%s%s^*"
+msgstr "%s%s ^*a été électrocuté par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:488
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*a été électrocuté par %s%s%s^*'s %s^* assisté de %s%s%s^*"
+msgstr "%s%s ^*a été électrocutée par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:488
 msgctxt "neuter"
@@ -3301,55 +3299,52 @@ msgstr "%s%s ^* à été attaquée par le %s de %s%s%s^*"
 #: src/cgame/cg_event.cpp:499
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-msgstr "%s%s ^* à été attaqué par le %s de %s%s%s^*"
+msgstr "%s%s ^*a été assailli par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* à été attaqué par le %s de %s%s%s^* aidé par %s%s%s^*"
+msgstr "%s%s ^*a été assailli par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* à été attaquée par le %s de %s%s%s^* aidé par %s%s%s^*"
+msgstr "%s%s ^* a été assaillie par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* à été attaqué par le %s de %s%s%s^* aidé par %s%s%s^*"
+msgstr "%s%s ^* a été assailli par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:505
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr "%s%s ^*à été tué par le crachat du %s de %s%s%s^*"
+msgstr "%s%s ^*a été planté par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:505
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr "%s%s ^*à été tuée par le crachat du %s de %s%s%s^*"
+msgstr "%s%s ^*a été plantée par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:505
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr "%s%s ^*à été tué par le crachat du %s de %s%s%s^*"
+msgstr "%s%s ^*a été planté par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
-"%s%s ^*a été sauvagement piqué par le %s^* de %s%s%s^*, aidé par %s%s%s^*"
+msgstr "%s%s ^*a été planté par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
-"%s%s ^*a été sauvagement piquée par le %s^* de %s%s%s^*, aidé par %s%s%s^*"
+msgstr "%s%s ^*a été plantée par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
-"%s%s ^*a été sauvagement piquée par le gragoon de %s%s%s^*, aidé par %s%s%s^*"
+msgstr "%s%s ^*a été planté par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "male"
@@ -3369,47 +3364,50 @@ msgstr "%s%s ^*a été planté"
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-msgstr "%s%s ^* à été mutilé par le %s de %s%s%s^*"
+msgstr "%s%s ^* a été mis en pièces par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-msgstr "%s%s ^* à été mutilée par le %s de %s%s%s^*"
+msgstr "%s%s ^* a été mise en pièces par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-msgstr "%s%s ^* à été mutilé par le %s de %s%s%s^*"
+msgstr "%s%s ^* a été mis en pièces par le %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* à été mutilé par le %s de %s%s%s^* aidé par %s%s%s^*"
+msgstr ""
+"%s%s ^* a été mis en pièces par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* à été mutilé par le %s de %s%s%s^* aidée par %s%s%s^*"
+msgstr ""
+"%s%s ^* a été mise en pièces par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:513
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^* à été mutilé par le %s de %s%s%s^* aidé par %s%s%s^*"
+msgstr ""
+"%s%s ^* a été mis en pièces par le %s de %s%s%s^* avec l'aide de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-msgstr "%s%s ^* aurait dû se mettre à l'écart du %s de %s%s%s^*"
+msgstr "%s%s ^*aurait dû s'écarter du chemin du %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-msgstr "%s%s ^* aurait dû se mettre à l'écart du %s de %s%s%s^*"
+msgstr "%s%s ^*aurait dû s'écarter du chemin du %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:518
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-msgstr "%s%s ^* aurait dû se mettre à l'écart du %s de %s%s%s^*"
+msgstr "%s%s ^*aurait dû s'écarter du chemin du %s de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "male"
@@ -3417,7 +3415,7 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
 "assisted"
 msgstr ""
-"%s%s ^* aurait dû se mettre à l'écart du %s de %s%s%s^* aidé par %s%s%s^*"
+"%s%s ^*aurait dû s'écarter du chemin du %s de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "female"
@@ -3425,7 +3423,7 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
 "assisted"
 msgstr ""
-"%s%s ^* aurait dû se mettre à l'écart du %s de %s%s%s^* aidé par %s%s%s^*"
+"%s%s ^*aurait dû s'écarter du chemin du %s de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:519
 msgctxt "neuter"
@@ -3433,7 +3431,7 @@ msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
 "assisted"
 msgstr ""
-"%s%s ^* aurait dû se mettre à l'écart du %s de %s%s%s^* aidé par %s%s%s^*"
+"%s%s ^*aurait dû s'écarter du chemin du %s de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:525
 msgctxt "male"
@@ -3657,7 +3655,7 @@ msgstr "Notre base est attaquée !"
 #: src/cgame/cg_event.cpp:1304
 #, c-format
 msgid "%s Under attack – %s"
-msgstr "%s est attaqué %s"
+msgstr "%s Est attaqué – %s"
 
 #: src/cgame/cg_event.cpp:1308
 #, c-format
@@ -3698,7 +3696,7 @@ msgstr "Lecture du manuel…"
 
 #: src/cgame/cg_main.cpp:464
 msgid "Looking at blueprints…"
-msgstr "regarder les plans…"
+msgstr "Regarde les plans…"
 
 #: src/cgame/cg_main.cpp:468
 msgid "Generating annoying noises…"
@@ -4382,11 +4380,11 @@ msgstr "arme suivante"
 
 #: src/cgame/cg_tutorial.cpp:57
 msgid "Global chat"
-msgstr "Discussion générale"
+msgstr "Tchat global"
 
 #: src/cgame/cg_tutorial.cpp:58
 msgid "Team chat"
-msgstr "Discussion d’équipe"
+msgstr "Tchat d'équipe"
 
 #: src/cgame/cg_tutorial.cpp:59
 msgid "Toggle Console"
@@ -4498,12 +4496,12 @@ msgstr "Appuyez sur %s pour faire une attaque électrique."
 #: src/cgame/cg_tutorial.cpp:324
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
-msgstr "Maintenez %s enfoncé, puis touchez un mur pour faire un saut de mur."
+msgstr "Maintenez %s enfoncé, puis touchez un mur pour faire un saut mural."
 
 #: src/cgame/cg_tutorial.cpp:344
 #, c-format
 msgid "Press %s to launch a barb."
-msgstr "Appuyez sur %s pour cracher."
+msgstr "Appuyez sur %s pour lancer un pique."
 
 #: src/cgame/cg_tutorial.cpp:350
 #, c-format
@@ -4960,7 +4958,7 @@ msgstr "$1$^* a mis un vote : $2$"
 
 #: src/sgame/sg_votes.cpp:738
 msgid "$1$^* called a team vote: $2t$"
-msgstr "$1$^* a posé un vote d'équipe : $2t$"
+msgstr "$1$^* a demandé un vote d'équipe : $2t$"
 
 #: src/sgame/sg_votes.cpp:854
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
