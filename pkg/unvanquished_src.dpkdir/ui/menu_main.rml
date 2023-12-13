@@ -31,7 +31,7 @@
 
 						<button-menu style="width:87%" onclick='Events.pushevent("show createserver", event)'><translate>Start local/LAN game</translate></button-menu>
 
-						<button-menu style="width:100%" onclick='Events.pushevent("show options", event)'><translate>Options</translate></button-menu>
+						<button-menu style="width:87%" onclick='Events.pushevent("show options", event)'><translate>Options</translate></button-menu>
 						<!--<blocklink onclick='Events.pushevent("show options_fov", event)'><translate>Fields of view</translate></blocklink>-->
 
 						<button-menu style="width:87%" onclick='Events.pushevent("show help_gameplay", event)'><translate>Gameplay guide</translate></button-menu>
