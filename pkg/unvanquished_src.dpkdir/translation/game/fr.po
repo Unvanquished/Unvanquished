@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-12-13 10:51+0000\n"
+"PO-Revision-Date: 2023-12-14 13:10+0000\n"
 "Last-Translator: Jonas <jonasdcdm@mailbox.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.3-rc\n"
+"X-Generator: Weblate 5.3\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -2095,7 +2095,7 @@ msgstr "Multiplicateur de récompense de construction"
 
 #: ui/server_setup.rml:129
 msgid "Momentum reward multiplier for construction"
-msgstr "Inertie du multiplicateur de récompense de construction"
+msgstr "Multiplicateur de bonus du momentum pour la construction"
 
 #: ui/server_setup.rml:136
 msgid "Deconstruction penalty multiplier"
@@ -2103,7 +2103,7 @@ msgstr "Facteur de pénalité de déconstruction"
 
 #: ui/server_setup.rml:137
 msgid "Momentum penalty multiplier for deconstruction"
-msgstr "Inertie du multiplicateur de pénalité de déconstruction"
+msgstr "Multiplicateur de malus du momentum pour la déconstruction"
 
 #: ui/server_setup.rml:144
 msgid "Building kill reward multiplier"
@@ -2111,7 +2111,7 @@ msgstr "Facteur de récompense pour frag de construction"
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
-msgstr "Inertie du multiplicateur de récompense pour détruire des constructions"
+msgstr "Multiplicateur de bonus du momentum pour la destruction de structures"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
