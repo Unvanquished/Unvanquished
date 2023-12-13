@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-12-13 10:53+0000\n"
+"PO-Revision-Date: 2023-12-13 11:00+0000\n"
 "Last-Translator: memespider <crucisdeus@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
@@ -3977,7 +3977,7 @@ msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:649
 msgid "You must be dead to use the class command"
-msgstr "Debes estar muerto para usar el comando de clase"
+msgstr "Debes estar muerto para usar el comando «class»"
 
 #: src/cgame/cg_servercmds.cpp:653
 msgid "Unknown starting item"
@@ -4029,8 +4029,8 @@ msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
 msgstr ""
-"Aquí no hay espacio para evolucionar. Muévete lejos de las paredes u otros "
-"objetos cercanos y vuelve a intentarlo."
+"No tienes espacio suficiente para evolucionar. Aléjate de cualquier pared u "
+"objeto cercano y vuelve a intentarlo."
 
 #: src/cgame/cg_servercmds.cpp:688
 msgid "There is no room to evolve here"
@@ -4041,12 +4041,12 @@ msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
 msgstr ""
-"Esta ubicación está muy cercana al enemigo para evolucionar. Muévete fuera "
-"de la presencia del enemigo y vuelve a intentarlo."
+"Estás demasiado cerca del enemigo para evolucionar. Aléjate de su presencia "
+"e inténtalo de nuevo."
 
 #: src/cgame/cg_servercmds.cpp:694
 msgid "This location is too close to the enemy to evolve"
-msgstr "Esta ubicación está muy cercana al enemigo para evolucionar"
+msgstr "Estás demasiado cerca del enemigo para evolucionar"
 
 #: src/cgame/cg_servercmds.cpp:698 src/cgame/cg_servercmds.cpp:699
 msgid "The Overmind is too far away to devolve."
