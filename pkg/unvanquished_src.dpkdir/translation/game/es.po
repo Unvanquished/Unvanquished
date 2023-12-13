@@ -7,7 +7,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
 "PO-Revision-Date: 2023-12-13 11:00+0000\n"
-"Last-Translator: memespider <crucisdeus@gmail.com>\n"
+"Last-Translator: Jonas <jonasdcdm@mailbox.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -189,15 +189,15 @@ msgid ""
 msgstr ""
 "Los alienígenas pueden evolucionar siempre y cuando no estén a la vista de "
 "los humanos o sus estructuras. También pueden involucionar a formas menos "
-"avanzadas (a cierto costo) cuando están cerca de la [Mente maestra]."
+"avanzadas (a cierto costo) cuando están cerca del [overmind] overmind."
 
 #: ui/help_gameplay.rml:42
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
-"Usa un [labrador] para construir una Mente Maestra si ésta fuese destruida. ¡"
-"La necesitas viva para evolucionar!"
+"Usa un [labrador] para construir un Overmind si éste fuese destruido. ¡Lo "
+"necesitas vivo para evolucionar!"
 
 #: ui/help_gameplay.rml:46
 msgid ""
@@ -253,8 +253,8 @@ msgid ""
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
 "Los puntos de generación ([egg] huevos y [telenode] telenodos), estructura "
-"para minar ([leech] [drill]) y estructuras unicas ([overmind] mente suprema "
-"y [reactor] reactor) no son afectados por la falta de puntos de construcción."
+"para minar ([leech] [drill]) y estructuras únicas ([overmind] overmind y "
+"[reactor] reactor) no son afectados por la falta de puntos de construcción."
 
 #: ui/help_gameplay.rml:64
 msgid "Mining structures"
@@ -3447,7 +3447,7 @@ msgstr ""
 
 #: src/cgame/cg_event.cpp:1244
 msgid "The Overmind is under attack!"
-msgstr "¡La Mente Maestra está siendo atacada!"
+msgstr "¡El Overmind está siendo atacado!"
 
 #: src/cgame/cg_event.cpp:1251
 msgid "The reactor is under attack!"
@@ -3903,8 +3903,8 @@ msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
 msgstr ""
-"No tienes espacio para llevar esto. Debes vender cualquier objeto "
-"incompatible con este ítem para poder comprarlo."
+"No tienes espacio para llevar esto. Por favor vende cualquier objeto "
+"incompatible para poder comprar este ítem."
 
 #: src/cgame/cg_servercmds.cpp:609
 msgid "You have no room to carry this"
@@ -3995,18 +3995,17 @@ msgstr ""
 
 #: src/cgame/cg_servercmds.cpp:665 src/cgame/cg_servercmds.cpp:705
 msgid "There is no Overmind"
-msgstr "No hay una Mente Maestra"
+msgstr "No hay un Overmind"
 
 #: src/cgame/cg_servercmds.cpp:669
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
-msgstr ""
-"Sólo puede haber una Mente Maestra. Demuele la existente si quieres moverla."
+msgstr "Sólo puede haber un Overmind. Destruye el existente si quieres moverlo."
 
 #: src/cgame/cg_servercmds.cpp:671
 msgid "There can only be one Overmind"
-msgstr "Sólo puede haber una Mente Maestra"
+msgstr "Sólo puede haber un Overmind"
 
 #: src/cgame/cg_servercmds.cpp:676
 msgid "Your team cannot have any more leeches"
@@ -4017,12 +4016,12 @@ msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
 msgstr ""
-"La Mente Maestra no puede controlar mas estructuras. Demuele las estructuras "
+"El Overmind no puede controlar más estructuras. Destruye las estructuras "
 "existentes para construir más."
 
 #: src/cgame/cg_servercmds.cpp:682
 msgid "The Overmind cannot control any more structures"
-msgstr "La Mente Maestra no puede controlar más estructuras"
+msgstr "El Overmind no puede controlar más estructuras"
 
 #: src/cgame/cg_servercmds.cpp:686
 msgid ""
@@ -4056,8 +4055,7 @@ msgstr ""
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
-"No existe Mente Maestra. Se debe construir una Mente Maestra para permitirte "
-"mejorar."
+"No existe Overmind. Se debe construir un Overmind para poder evolucionar."
 
 #: src/cgame/cg_servercmds.cpp:709
 msgid "You cannot evolve until your build timer has expired."
