@@ -44,8 +44,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Symbols required by the shared VMMain code
 
-int VM::VM_API_VERSION = GAME_API_VERSION;
-
 void VM::VMInit() {
 	// Allocate entities and clients shared memory region
 	shmRegion = IPC::SharedMemory::Create(sizeof(gentity_t) * MAX_GENTITIES + sizeof(gclient_t) * MAX_CLIENTS);

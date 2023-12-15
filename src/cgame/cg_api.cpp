@@ -42,8 +42,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Symbols required by the shared VMMain code
 
-int VM::VM_API_VERSION = CGAME_API_VERSION;
-
 void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
     int major = id >> 16;
     int minor = id & 0xffff;
