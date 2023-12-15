@@ -6,7 +6,6 @@ Compatible with Python 2 or 3.
 
 
 # (Filename relative to Unvanquished/, regex pattern to match, replacement)
-# More than one replacement in the same file is not supported
 REPLACEMENTS = [
     (
         "daemon/src/common/Defs.h",
@@ -33,29 +32,28 @@ import re
 
 
 def update_version(version, dry_run):
-    changes = {} # filename -> new contents or diff
+    changes = {} # filename -> [original content, new content]
     root = os.path.dirname(__file__)
 
     for filename, pattern, replacement in REPLACEMENTS:
         filename = os.path.join(root, filename)
-        assert filename not in changes
-        original_content = open(filename).read()
-        if not re.search(pattern, original_content):
+        if filename not in changes:
+            with open(filename) as f:
+                content = f.read()
+            changes[filename] = [content, content]
+        if not re.search(pattern, changes[filename][1]):
             raise Exception("Replacement for %s matched nothing" % filename)
-        new_content = re.sub(pattern, replacement.format(version=version), original_content)
-        if dry_run:
-            changes[filename] = difflib.unified_diff(
-                original_content.splitlines(), new_content.splitlines(),
-                filename, filename, lineterm="")
-        else:
-            changes[filename] = new_content
+        changes[filename][1] = re.sub(
+            pattern, replacement.format(version=version), changes[filename][1])
 
     if dry_run:
-        for diff in changes.values():
+        for filename, (old, new) in changes.items():
+            diff = difflib.unified_diff(
+                old.splitlines(), new.splitlines(), filename, filename, lineterm="")
             for line in diff:
                 print(line)
     else:
-        for filename, contents in changes.items():
+        for filename, (_, contents) in changes.items():
             with open(filename, "w") as f:
                 f.write(contents)
 
