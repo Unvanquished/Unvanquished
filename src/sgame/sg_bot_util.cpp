@@ -1589,6 +1589,7 @@ void BotAimAtEnemy( gentity_t *self )
 //   - BotAimAtLocationAbsolute  (for locations in the global frame of reference)
 // alternatively, provide a linear map and its inverse, to transform between
 // the two frames of reference.
+// maybe the current behavior is not needed at all, though.
 void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 {
 	glm::vec3 aimVec, aimAngles, viewBase;
