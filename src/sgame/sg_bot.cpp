@@ -708,11 +708,11 @@ void G_BotFill(bool immediately)
 	}
 	if ( biggerTeamSize >= 0 )
 	{
-		if ( g_bot_fillEvenAliens.Get() )
+		if ( g_bot_fillEvenAliens.Get() && level.team[ TEAM_ALIENS ].botFillTeamSize > 0 )
 		{
 			fillers[ TEAM_ALIENS ].actualFill = biggerTeamSize;
 		}
-		if ( g_bot_fillEvenHumans.Get() )
+		if ( g_bot_fillEvenHumans.Get() && level.team[ TEAM_HUMANS ].botFillTeamSize > 0 )
 		{
 			fillers[ TEAM_HUMANS ].actualFill = biggerTeamSize;
 		}
