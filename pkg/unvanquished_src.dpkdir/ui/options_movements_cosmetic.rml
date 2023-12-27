@@ -4,7 +4,7 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
 	<body id="options_movements_cosmetic"  template="window" style="width: 45em; margin: 1em;">
-	<div><h1><translate>Movement</translate> & <translate>Cosmetic</translate></h1></div>
+	<div><h1><translate>Movement and Cosmetic</translate></h1></div>
 		<h2><translate>Movement</translate></h2>
 		<row>
 			<h3><translate>Wall-walking auto-pitch</translate></h3>

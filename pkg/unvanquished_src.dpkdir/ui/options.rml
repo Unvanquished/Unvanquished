@@ -10,7 +10,7 @@
 		<indent>
 			<button-menu style="width:100%" onclick='Events.pushevent("show options_player", event)'><translate>Player</translate></button-menu>
 			<br/>
-			<button-menu style="width:100%" onclick='Events.pushevent("show options_movements_cosmetic", event)'><translate>Movement</translate> & <translate> Cosmetic </translate></button-menu>
+			<button-menu style="width:100%" onclick='Events.pushevent("show options_movements_cosmetic", event)'><translate>Movement and Cosmetic</translate></button-menu>
 			<br/>
 			<button-menu style="width:100%" onclick='Events.pushevent("show options_graphics", event)'><translate>Graphics</translate></button-menu>
 			<br/>
