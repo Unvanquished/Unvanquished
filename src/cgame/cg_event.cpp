@@ -1296,11 +1296,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 				if ( location && *location )
 				{
-					Log::Notice( _( "%s Under attack – %s" ), emoticon, location );
+					Log::Notice( _( "%s under attack – %s" ), emoticon, location );
 				}
 				else
 				{
-					Log::Notice( _( "%s Under attack" ), emoticon );
+					Log::Notice( _( "%s under attack" ), emoticon );
 				}
 			}
 			else // this is for aliens, and the overmind is in range
