@@ -65,16 +65,16 @@
 		</p>
 		</row>
 		<h3><translate>Emoticons</translate></h3>
-		<p> you can put emoticons in your nickname too.</p>
+		<p><translate>You can put emoticons in your nickname too.</translate></p>
 		<p style="clear: both;">
 			<translate quake emoticons>Example: ^^3Fred^^1Baggins[gren^*ade] becomes  ^3Fred^1Baggins[grenade]</translate>
 		</p>
 <!-- do NOT reduct the height! If it is reducted, some parts will be skiped because of the scrollbar -->
 		<window id="innersidebar"  style="height:25%">
 			<sidesection>
-				<h3> <translate>Here is the list of the available emoticons:</translate> </h3>
+				<h3><translate>Here is the list of the available emoticons:</translate></h3>
 				<br/>
-				<h3> <translate>Weapons</translate> </h3>
+				<h3><translate>Weapons</translate></h3>
 				<p>
 					<div>
 						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/lasgun" />
@@ -104,7 +104,7 @@
 					</div>
 				<br/>
 				</p>
-				<h3> <translate>aliens</translate> </h3>
+				<h3><translate>Aliens</translate></h3>
 					<p>
 					<div>
 						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/advdragoon" />
@@ -131,7 +131,7 @@
 					</div>
 				</p>
 				<br/>
-				<h3> <translate>human buildable</translate> </h3>
+				<h3><translate>Human buildables</translate></h3>
 				<p>
 					<div>
 						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/defcomp" />
@@ -158,7 +158,7 @@
 					</div>
 				</p>
 				<br/>
-				<h3> <translate>alien buildable</translate> </h3>
+				<h3><translate>Alien buildables</translate></h3>
 				<p>
 					<div>
 						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/hovel" />
@@ -183,7 +183,7 @@
 					</div>
 				</p>
 				<br/>
-				<h3> <translate>other</translate> </h3>
+				<h3><translate>Others</translate></h3>
 				<p>
 					<div>
 						<img class="emoticon-presentation" style="margin-right:0.2em;" src="/emoticons/human" />
