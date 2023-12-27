@@ -473,51 +473,51 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_LEVEL1_CLAW:
-				message = G_( "%s%s ^*was sliced by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was sliced by %s%1$s%s^*'s %2$s" );
+				messageAssisted = G_( "%s%s ^*was sliced by %s%1$s%s^*'s %2$s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL1;
 				break;
 
 			case MOD_LEVEL2_CLAW:
-				message = G_( "%s%s ^*was shredded by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was shredded by %s%1$s%s^*'s %2$s" );
+				messageAssisted = G_( "%s%s ^*was shredded by %s%1$s%s^*'s %2$s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL2;
 				break;
 
 			case MOD_LEVEL2_ZAP:
-				message = G_( "%s%s ^*was electrocuted by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was electrocuted by %s%1$s%s^*'s %2$s" );
+				messageAssisted = G_( "%s%s ^*was electrocuted by %s%1$s%s^*'s %2$s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL2;
 				break;
 
 			case MOD_LEVEL3_CLAW:
-				message = G_( "%s%s ^*was eviscerated by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was eviscerated by %s%1$s%s^*'s %2$s" );
+				messageAssisted = G_( "%s%s ^*was eviscerated by %s%1$s%s^*'s %2$s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL3_POUNCE:
-				message = G_( "%s%s ^*was pounced upon by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was pounced upon by %s%1$s%s^*'s %2$s" );
+				messageAssisted = G_( "%s%s ^*was pounced upon by %s%1$s%s^*'s %2$s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL3_BOUNCEBALL:
-				message = G_( "%s%s ^*was barbed by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was barbed by %s%1$s%s^*'s %2$s" );
+				messageAssisted = G_( "%s%s ^*was barbed by %s%1$s%s^*'s %2$s^*; %s%s%s^* assisted" );
 				messageSuicide = G_( "%s%s ^*was barbed" );
 				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL4_CLAW:
-				message = G_( "%s%s ^*was mauled by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was mauled by %s%1$s%s^*'s %2$s" );
+				messageAssisted = G_( "%s%s ^*was mauled by %s%1$s%s^*'s %2$s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL4;
 				break;
 
 			case MOD_LEVEL4_TRAMPLE:
-				message = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*should have gotten out of the way of %s%1$s%s^*'s %2$s" );
+				messageAssisted = G_( "%s%s ^*should have gotten out of the way of %s%1$s%s^*'s %2$s^*; %s%s%s^* assisted" );
 				attackerClass = PCL_ALIEN_LEVEL4;
 				break;
 
