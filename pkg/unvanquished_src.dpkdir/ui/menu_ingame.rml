@@ -49,6 +49,7 @@
 						<button-menu style="width:87%" onclick='Events.pushevent("show serverbrowser", event)'><translate>Server listings</translate></button-menu>
 						<button-menu style="width:87%" onclick='Events.pushevent("show createserver", event)'><translate>Start local/LAN game</translate></button-menu>
 						<button-menu style="width:87%" onclick='Events.pushevent("show options", event)'><translate>Options</translate></button-menu>
+						<button-menu style="width:87%" onclick='Events.pushevent("show server_setup", event)'><translate>Server setup</translate></button-menu>
 						<button-menu style="width:87%" onclick='Events.pushevent("show help_gameplay", event)'><translate>Gameplay guide</translate></button-menu>
 					</indent>
 					<br/>
