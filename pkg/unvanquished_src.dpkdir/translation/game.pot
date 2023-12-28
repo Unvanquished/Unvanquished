@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-27 07:22+0100\n"
+"POT-Creation-Date: 2023-12-28 07:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3454,12 +3454,12 @@ msgstr ""
 
 #: src/cgame/cg_event.cpp:1299
 #, c-format
-msgid "%s Under attack – %s"
+msgid "%s under attack – %s"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:1303
 #, c-format
-msgid "%s Under attack"
+msgid "%s under attack"
 msgstr ""
 
 #: src/cgame/cg_main.cpp:450
