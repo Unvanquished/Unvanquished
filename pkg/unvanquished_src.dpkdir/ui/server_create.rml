@@ -5,7 +5,9 @@
 		<style>
 			/* TODO: find out why this is a subclass */
 			.levelshot {
-				width: 100%;
+				/* Force 16:9 ratio. */
+				width: 100%; /* 36.6em; */
+				height: 20.59em;
 			}
 			/* select and selectbox elements are implicit, but their styles must be explicitely written */
 			row#maplist dataselect,

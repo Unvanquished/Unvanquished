@@ -6,15 +6,9 @@
 		<style>
 			/* TODO: find out why this is a subclass */
 			.levelshot {
-				width: 100%;
-			}
-
-			levelshotbox {
-				display: block;
-
-				/* Approx measurements.  Are all mapshots in 4:3? */
-				width: 38em;
-				height: 30em;
+				/* Force 16:9 ratio */
+				width: 100%; /* 36.6em */
+				height: 20.59em;
 			}
 
 			button {
@@ -34,6 +28,7 @@
 				</select>
 				<h3><translate>Method</translate></h3>
 			</row>
+
 			<row>
 				<dataselect source="mapList.default" fields="mapName" valuefield="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
 				<h3><translate>Map</translate></h3>
