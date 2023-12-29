@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-12-14 13:09+0000\n"
-"Last-Translator: Jonas <jonasdcdm@mailbox.org>\n"
+"PO-Revision-Date: 2023-12-31 12:54+0000\n"
+"Last-Translator: roggrt <roggrt@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.3\n"
+"X-Generator: Weblate 5.4-dev\n"
 "X-POOTLE-MTIME: 1362811388.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -61,7 +61,7 @@ msgstr "Volver a la selección de equipo"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr "Elegir como empate"
+msgstr "Llamar a votación por empate"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
@@ -4783,53 +4783,53 @@ msgstr ""
 
 #: src/sgame/sg_votes.cpp:658
 msgid "$1$: player is a bot"
-msgstr ""
+msgstr "$1$: jugador es un bot"
 
 #: src/sgame/sg_votes.cpp:666 src/sgame/sg_votes.cpp:680
 msgid "$1$: admin is immune"
-msgstr ""
+msgstr "$1$: admin es immune"
 
 #: src/sgame/sg_votes.cpp:687
 msgid "$1$: player is not on your team"
-msgstr ""
+msgstr "$1$: jugador no esta en tu equipo"
 
 #: src/sgame/sg_votes.cpp:699
 msgid "$1$: You must provide a reason"
-msgstr ""
+msgstr "$1$: Debes proporcionar una razón"
 
 #: src/sgame/sg_votes.cpp:721
 msgid "$1$^* called a vote: $2$"
-msgstr ""
+msgstr "$1$^* llamó a votación: $2$"
 
 #: src/sgame/sg_votes.cpp:738
 msgid "$1$^* called a team vote: $2t$"
-msgstr ""
+msgstr "$1$^* llamó a votación de equipo: $2t$"
 
 #: src/sgame/sg_votes.cpp:854
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
-msgstr ""
+msgstr "Error de votación ($1$ de $2$; no se alcanzó el quórum)"
 
 #: src/sgame/sg_votes.cpp:855
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
-msgstr ""
+msgstr "Error de votación del equipo ($1$ de $2$; no se alcanzó el quórum)"
 
 #: src/sgame/sg_votes.cpp:861
 msgid "Vote passed ($1$ — $2$)"
-msgstr ""
+msgstr "Votación aprobada ($1$ — $2$)"
 
 #: src/sgame/sg_votes.cpp:862
 msgid "Team vote passed ($1$ — $2$)"
-msgstr ""
+msgstr "Votación del equipo aprobada ($1$ — $2$)"
 
 #: src/sgame/sg_votes.cpp:868
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
+msgstr "Votación fallida ($1$ — $2$; se necesitaba %$3$)"
 
 #: src/sgame/sg_votes.cpp:869
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
-msgstr ""
+msgstr "Votación fallida ($1$ — $2$; $3$% se necesitaba)"
 
 #: src/shared/bg_misc.cpp:2485
 msgid "spectator"
