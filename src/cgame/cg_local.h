@@ -1094,6 +1094,9 @@ struct cg_t
 
 	int      clientNum;
 
+	userCmdArray_t userCmdArray;
+	int currentCmd;
+
 	bool demoPlayback;
 	bool loading; // don't defer players at initial startup
 	bool intermissionStarted;

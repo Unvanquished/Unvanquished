@@ -334,11 +334,7 @@ static void CG_InterpolatePlayerState( bool grabAngles )
 	// if we are still allowing local input, short circuit the view angles
 	if ( grabAngles )
 	{
-		usercmd_t cmd;
-		int       cmdNum;
-
-		cmdNum = trap_GetCurrentCmdNumber();
-		trap_GetUserCmd( cmdNum, &cmd );
+		usercmd_t cmd = cg.userCmdArray[ 0 ];
 
 		PM_UpdateViewAngles( out, &cmd );
 	}
@@ -610,10 +606,7 @@ to ease the jerk.
 */
 void CG_PredictPlayerState()
 {
-	int           cmdNum, current;
 	playerState_t oldPlayerState;
-	usercmd_t     oldestCmd;
-	usercmd_t     latestCmd;
 	int           stateIndex = 0, predictCmd = 0;
 
 	cg.hyperspace = false; // will be set if touching a trigger_teleport
@@ -667,13 +660,11 @@ void CG_PredictPlayerState()
 	// save the state before the pmove so we can detect transitions
 	oldPlayerState = cg.predictedPlayerState;
 
-	current = trap_GetCurrentCmdNumber();
-
 	// if we don't have the commands right after the snapshot, we
 	// can't accurately predict a current position, so just freeze at
 	// the last good position we had
-	cmdNum = current - CMD_BACKUP + 1;
-	trap_GetUserCmd( cmdNum, &oldestCmd );
+
+	usercmd_t oldestCmd = cg.userCmdArray[ CMD_OLDEST ];
 
 	if ( oldestCmd.serverTime > cg.snap->ps.commandTime &&
 	     oldestCmd.serverTime < cg.time )
@@ -688,7 +679,7 @@ void CG_PredictPlayerState()
 	}
 
 	// get the latest command so we can know which commands are from previous map_restarts
-	trap_GetUserCmd( current, &latestCmd );
+	usercmd_t latestCmd = cg.userCmdArray[ 0 ];
 
 	// get the most recent information we have, even if
 	// the server time is beyond our current cg.time,
@@ -734,7 +725,7 @@ void CG_PredictPlayerState()
 			// do a full predict
 			cg.lastPredictedCommand = 0;
 			cg.stateTail = cg.stateHead;
-			predictCmd = current - CMD_BACKUP + 1;
+			predictCmd = cg.currentCmd - CMD_BACKUP + 1;
 		}
 		// cg.physicsTime is the current snapshot's serverTime if it's the same
 		// as the last one
@@ -794,7 +785,7 @@ void CG_PredictPlayerState()
 				// do a full predict
 				cg.lastPredictedCommand = 0;
 				cg.stateTail = cg.stateHead;
-				predictCmd = current - CMD_BACKUP + 1;
+				predictCmd = cg.currentCmd - CMD_BACKUP + 1;
 			}
 		}
 
@@ -804,10 +795,12 @@ void CG_PredictPlayerState()
 		stateIndex = cg.stateHead;
 	}
 
-	for ( cmdNum = current - CMD_BACKUP + 1; cmdNum <= current; cmdNum++ )
+	for ( int n = CMD_OLDEST; n >= 0; n-- )
 	{
 		// get the command
-		trap_GetUserCmd( cmdNum, &cg_pmove.cmd );
+		cg_pmove.cmd = cg.userCmdArray[ n ];
+
+		int cmdNum = cg.currentCmd - n;
 
 		if ( cg_pmove.pmove_fixed )
 		{
