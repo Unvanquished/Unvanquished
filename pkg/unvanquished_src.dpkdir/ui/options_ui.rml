@@ -48,10 +48,10 @@
 		<row>
 		<h3><translate>Crosshair size</translate></h3>
 			<select name="wwspeed" cvar="cg_crosshairSize">
-				<option value="0.5"><translate>Tiny</translate></option>
-				<option value="0.75"><translate>Small</translate></option>
-				<option value="1"><translate>Regular</translate></option>
-				<option value="1.5"><translate>Huge</translate></option>
+				<option value="0.4"><translate>Tiny</translate></option>
+				<option value="0.5"><translate>Small</translate></option>
+				<option value="0.6"><translate>Regular</translate></option>
+				<option value="0.8"><translate>Huge</translate></option>
 			</select>
 			<p></p>
 		</row>
