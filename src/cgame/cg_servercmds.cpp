@@ -844,6 +844,11 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 					location = va( " (%s^*)", s );
 				}
 			}
+
+			if ( CG_MyTeam() != TEAM_NONE && !CG_IsAlive( &cg_entities[ clientNum ] ) )
+			{
+				location = va( " %s", _( "^1*DEAD*^*" ) );
+			}
 		}
 	}
 	else if ( name )
