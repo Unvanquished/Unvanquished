@@ -41,6 +41,7 @@ function detectEscape(event, document)
 				v:Hide()
 			end
 		end
+		event:StopPropagation()
 	end
 end
 
@@ -101,6 +102,7 @@ function CirclemenuHandleKey(event, document, num_handler)
 		return
 	end
 	num_handler(index, event)
+	event:StopPropagation()
 end
 
 function welcome(event, document)

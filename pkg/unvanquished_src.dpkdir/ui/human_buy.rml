@@ -193,6 +193,7 @@
 				local tabset = Element.As.ElementTabSet(document:GetElementById("tabset"))
 				if event.parameters.key_identifier == rmlui.key_identifier.TAB then
 					tabset.active_tab = tabset.active_tab + 1 <= tabset.num_tabs and tabset.active_tab + 1 or 1
+					event:StopPropagation()
 				else
 					local handler = ({[1]=WeaponClick, [2]=UpgradeClick})[tabset.active_tab]
 					CirclemenuHandleKey(event, document, handler)
