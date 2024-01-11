@@ -120,12 +120,6 @@ void CG_MousePosEvent( int x, int y )
 	{
 		Rocket_MouseMove( x, y );
 	}
-	else if ( ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
-	       cg.predictedPlayerState.pm_type == PM_SPECTATOR ) &&
-	     !cg.showScores )
-	{
-		CG_SetKeyCatcher( 0 );
-	}
 }
 
 void CG_KeyEvent( Keyboard::Key key, bool down )
@@ -133,12 +127,6 @@ void CG_KeyEvent( Keyboard::Key key, bool down )
 	if ( rocketInfo.keyCatcher & KEYCATCH_UI )
 	{
 		Rocket_ProcessKeyInput( key, down );
-	}
-	else if ( cg.predictedPlayerState.pm_type == PM_NORMAL ||
-	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&
-	       !cg.showScores ) )
-	{
-		CG_SetKeyCatcher( 0 );
 	}
 }
 
