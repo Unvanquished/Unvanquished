@@ -652,7 +652,7 @@ Called on upgrade change
 void CG_Rocket_UpdateArmouryMenu()
 {
 	// Rebuild weapon lists if UI is in focus.
-	if ( rocketInfo.keyCatcher & KEYCATCH_UI && CG_MyTeam() == TEAM_HUMANS )
+	if ( menuContext && rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id )
 	{
 		Rml::ElementDocument* document = menuContext->GetDocument( rocketInfo.menu[ ROCKETMENU_ARMOURYBUY ].id );
 		if ( document->IsVisible() )
