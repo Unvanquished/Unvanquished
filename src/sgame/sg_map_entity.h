@@ -305,6 +305,11 @@ struct mapEntity_t
 
 	char const* nameList() const
 	{
+		if ( names[0] == nullptr )
+		{
+			return "";
+		}
+
 		static std::string buffer;
 		buffer = names[0];
 		for ( size_t i = 1; i < MAX_ENTITY_ALIASES; ++i )
