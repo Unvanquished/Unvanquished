@@ -144,7 +144,6 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/rocketDataSource.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketDataSourceSingle.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketElement.h
-    ${GAMELOGIC_DIR}/cgame/rocket/rocketElementDocument.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketEventInstancer.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketFocusManager.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketFormControlInput.h
