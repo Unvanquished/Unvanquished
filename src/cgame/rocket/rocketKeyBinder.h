@@ -50,7 +50,7 @@ constexpr int KEY_BINDING_REFRESH_INTERVAL_MS = 500;
 class RocketKeyBinder : public Rml::Element, public Rml::EventListener
 {
 public:
-	RocketKeyBinder( const Rml::String &tag ) : Rml::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), mouse_x( 0 ), mouse_y( 0 ), context( nullptr )
+	RocketKeyBinder( const Rml::String &tag ) : Rml::Element( tag ), nextKeyUpdateTime( 0 ), waitingForKeypress( false ), team( 0 ), cmd( "" ), context( nullptr )
 	{
 	}
 
@@ -78,7 +78,6 @@ public:
 		if ( child == this )
 		{
 			context = GetContext();
-			context->AddEventListener( "mousemove", this );
 			context->AddEventListener( "keydown", this );
 			context->AddEventListener( BINDABLE_KEY_EVENT, this );
 		}
@@ -89,7 +88,6 @@ public:
 		Element::OnChildRemove( child );
 		if ( child == this )
 		{
-			context->RemoveEventListener( "mousemove", this );
 			context->RemoveEventListener( "keydown", this );
 			context->RemoveEventListener( BINDABLE_KEY_EVENT, this );
 			context = nullptr;
@@ -99,7 +97,12 @@ public:
 	void OnUpdate() override
 	{
 		Element::OnUpdate();
-		if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.empty() && !waitingForKeypress )
+
+		if ( waitingForKeypress )
+		{
+			rocketInfo.cursorFreezeTime = rocketInfo.realtime;
+		}
+		else if ( rocketInfo.realtime >= nextKeyUpdateTime && team >= 0 && !cmd.empty() )
 		{
 			nextKeyUpdateTime = rocketInfo.realtime + KEY_BINDING_REFRESH_INTERVAL_MS;
 			SetInnerRML( CG_EscapeHTMLText( CG_KeyBinding( cmd.c_str(), team ) ).c_str() );
@@ -120,8 +123,9 @@ public:
 			SetInnerRML( "Enter desired key..." );
 
 			// fix mouse position inside the widget
-			mouse_x = event.GetParameter<int>( "mouse_x", 0 );
-			mouse_y = event.GetParameter<int>( "mouse_y", 0 );
+			rocketInfo.cursorFreezeTime = rocketInfo.realtime;
+			rocketInfo.cursorFreezeX = event.GetParameter<int>( "mouse_x", 0 );
+			rocketInfo.cursorFreezeY = event.GetParameter<int>( "mouse_y", 0 );
 		}
 
 		else if ( waitingForKeypress && event == "keydown" )
@@ -130,7 +134,7 @@ public:
 
 			if ( keyIdentifier == Rml::Input::KeyIdentifier::KI_ESCAPE )
 			{
-				CancelSelection();
+				StopWaitingForKeypress();
 			}
 
 			event.StopPropagation();
@@ -148,13 +152,6 @@ public:
 			return;
 		}
 
-		else if ( waitingForKeypress && event == "mousemove" )
-		{
-			context->ProcessMouseMove( mouse_x, mouse_y, 0 );
-			event.StopPropagation();
-			return;
-		}
-
 		else if ( waitingForKeypress && event == BINDABLE_KEY_EVENT )
 		{
 			auto key = Keyboard::Key::UnpackFromInt( event.GetParameter<int>( BINDABLE_KEY_KEY, 0 ) );
@@ -164,9 +161,10 @@ public:
 	}
 
 protected:
-	void CancelSelection() {
+	void StopWaitingForKeypress() {
 		waitingForKeypress = false;
 		nextKeyUpdateTime = rocketInfo.realtime;
+		rocketInfo.cursorFreezeTime = -1;
 	}
 
 	void BindKey( Keyboard::Key newKey )
@@ -177,8 +175,7 @@ protected:
 			return;
 		}
 
-		nextKeyUpdateTime = rocketInfo.realtime;
-		waitingForKeypress = false;
+		StopWaitingForKeypress();
 
 		if (cmd == TOGGLE_CONSOLE_COMMAND.c_str()) {
 			trap_Key_SetConsoleKeys({newKey});
@@ -233,8 +230,6 @@ private:
 	int team;
 
 	Rml::String cmd;
-	int mouse_x;
-	int mouse_y;
 	Rml::Context* context;
 };
 
