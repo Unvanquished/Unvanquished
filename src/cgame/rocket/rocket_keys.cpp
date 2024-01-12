@@ -299,7 +299,7 @@ void Rocket_ProcessTextInput( int c )
 
 void Rocket_MouseMove( int x, int y )
 {
-	if ( !menuContext || ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) )
+	if ( !menuContext || ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) || rocketInfo.cursorFreezeTime == rocketInfo.realtime )
 	{
 		return;
 	}
