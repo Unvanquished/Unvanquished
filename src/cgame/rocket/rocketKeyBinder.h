@@ -78,7 +78,7 @@ public:
 		if ( child == this )
 		{
 			context = GetContext();
-			context->AddEventListener( "keydown", this );
+			context->AddEventListener( "keydown", this, true ); // use capture phase so we can grab it before <body>'s escape handler
 			context->AddEventListener( BINDABLE_KEY_EVENT, this );
 		}
 	}
@@ -88,7 +88,7 @@ public:
 		Element::OnChildRemove( child );
 		if ( child == this )
 		{
-			context->RemoveEventListener( "keydown", this );
+			context->RemoveEventListener( "keydown", this, true );
 			context->RemoveEventListener( BINDABLE_KEY_EVENT, this );
 			context = nullptr;
 		}
