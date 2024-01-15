@@ -453,7 +453,10 @@ void Rocket_Shutdown()
 	trap_RemoveCommand( "rocketDebug" );
 }
 
-static bool drawMenu;
+static bool ShouldDrawMenu()
+{
+	return trap_Key_GetCatcher() & KEYCATCH_UI_MOUSE;
+}
 
 void Rocket_Render()
 {
@@ -464,7 +467,7 @@ void Rocket_Render()
 	}
 
 	// Render menus on top of the HUD
-	if ( drawMenu && menuContext )
+	if ( ShouldDrawMenu() && menuContext )
 	{
 		menuContext->Render();
 	}
@@ -473,7 +476,7 @@ void Rocket_Render()
 
 void Rocket_Update()
 {
-	if ( drawMenu && menuContext )
+	if ( ShouldDrawMenu() )
 	{
 		menuContext->Update();
 	}
@@ -679,8 +682,7 @@ static EngineCursor engineCursor;
 
 void Rocket_SetActiveContext( int catcher )
 {
-	drawMenu = catcher & KEYCATCH_UI;
-	engineCursor.Show( catcher & ( KEYCATCH_UI | KEYCATCH_CONSOLE ) );
+	engineCursor.Show( catcher );
 }
 
 void CG_FocusEvent( bool has_focus )
