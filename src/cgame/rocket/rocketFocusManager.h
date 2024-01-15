@@ -45,30 +45,60 @@ public:
 	RocketFocusManager() { }
 	void ProcessEvent( Rml::Event &evt )
 	{
-		bool anyVisible = false;
-		Rml::Context* context = evt.GetTargetElement() ? evt.GetTargetElement()->GetContext() : nullptr;
+		// 0 = ignore all input
+		// 1 = capture mouse; optionally consume keys while passing on to binds if not consumed
+		// 2 = capture everything
+		int catchLevel;
 
-		if ( context )
+		if ( rocketInfo.cstate.connState < connstate_t::CA_PRIMED )
 		{
-			for ( int i = 0; i < context->GetNumDocuments(); ++i )
+			catchLevel = 2;
+		}
+		else
+		{
+			catchLevel = 0;
+
+			for ( const rocketMenu_t &menu : rocketInfo.menu )
 			{
-				if ( context->GetDocument( i )->IsVisible() )
+				if ( !menu.id )
 				{
-					anyVisible = true;
-					break;
+					continue;
+				}
+
+				auto *document = menuContext->GetDocument( menu.id );
+				if ( document && document->IsVisible() )
+				{
+					if ( !menu.passthrough )
+					{
+						catchLevel = 2;
+						break;
+					}
+
+					catchLevel = 1;
 				}
 			}
 		}
 
-		if ( anyVisible && ! ( rocketInfo.keyCatcher & KEYCATCH_UI ) )
+		switch ( catchLevel )
 		{
-			trap_Key_ClearCmdButtons();
-			trap_Key_ClearStates();
-			CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
-		}
-		else if ( !anyVisible && rocketInfo.keyCatcher && rocketInfo.cstate.connState >= connstate_t::CA_PRIMED )
-		{
-			CG_SetKeyCatcher( rocketInfo.keyCatcher & ~KEYCATCH_UI );
+		case 0:
+			CG_SetKeyCatcher( rocketInfo.keyCatcher & ~KEYCATCH_UI_MOUSE & ~KEYCATCH_UI_KEY );
+			break;
+
+		case 1:
+			CG_SetKeyCatcher( ( rocketInfo.keyCatcher | KEYCATCH_UI_MOUSE ) & ~KEYCATCH_UI_KEY );
+			break;
+
+		case 2:
+			if ( !( rocketInfo.keyCatcher & KEYCATCH_UI_KEY ) )
+			{
+				trap_Key_ClearCmdButtons();
+				trap_Key_ClearStates();
+			}
+
+			CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI_MOUSE | KEYCATCH_UI_KEY );
+			break;
+
 		}
 	}
 
