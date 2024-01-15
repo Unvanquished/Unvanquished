@@ -116,18 +116,24 @@ void CG_MousePosEvent( int x, int y )
 {
 	rocketInfo.cursor_pos.x = x;
 	rocketInfo.cursor_pos.y = y;
-	if ( rocketInfo.keyCatcher & KEYCATCH_UI)
+	if ( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE )
 	{
 		Rocket_MouseMove( x, y );
 	}
 }
 
-void CG_KeyEvent( Keyboard::Key key, bool down )
+bool CG_KeyEvent( Keyboard::Key key, bool down )
 {
-	if ( rocketInfo.keyCatcher & KEYCATCH_UI )
+	if ( down && key == Keyboard::Key(K_ESCAPE) &&
+		!( rocketInfo.keyCatcher & ( KEYCATCH_UI_KEY | KEYCATCH_UI_MOUSE ) ) )
 	{
-		Rocket_ProcessKeyInput( key, down );
+		// Open the main menu if no menus are open
+		trap_SendConsoleCommand( "toggleMenu" );
+
+		return true;
 	}
+
+	return Rocket_ProcessKeyInput( key, down );
 }
 
 void CG_RunMenuScript( char **args )
