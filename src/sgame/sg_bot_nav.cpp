@@ -860,6 +860,7 @@ static int WallclimbStopTime( gentity_t *self )
 	// unit, add 500 milliseconds as safety margin
 	// if the bot is moving downwards from the navcon start, lastNavconDistance
 	// will be negative
+	// TODO: take the different speeds of the classes into account
 	return self->botMind->lastNavconTime + self->botMind->lastNavconDistance * 4 + 500;
 }
 
@@ -926,6 +927,7 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 	int magnitude = 0;
 	switch ( ps.stats [ STAT_CLASS ] )
 	{
+	case PCL_ALIEN_BUILDER0_UPG:
 	case PCL_ALIEN_LEVEL0:
 		BotClimbToGoal( self );
 		break;
@@ -989,6 +991,7 @@ static bool BotTryMoveUpward( gentity_t *self )
 	{
 		switch ( self->client->ps.stats [ STAT_CLASS ] )
 		{
+		case PCL_ALIEN_BUILDER0_UPG:
 		case PCL_ALIEN_LEVEL0:
 		case PCL_ALIEN_LEVEL1:
 			if ( level.time > WallclimbStopTime( self ) )
