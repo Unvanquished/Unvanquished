@@ -106,6 +106,8 @@
 		if data[1] == "available" then
 			Cmd.exec("class " .. data[2])
 			Events.pushcmd("hide alien_evo")
+		else
+			event:StopPropagation()
 		end
 	end
 	function EvolutionHover(document, idx)
@@ -136,7 +138,7 @@
 	end
 </script>
 </head>
-<body id="alien_evo" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, EvolutionClick)" onshow="BuildEvolveMenu(document)">
+<body id="alien_evo" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, EvolutionClick)" onshow="BuildEvolveMenu(document)" onclick="document:Hide()">
 <tabset class="circlemenu">
 <tab><translate>Evolve</translate></tab>
 <panel>

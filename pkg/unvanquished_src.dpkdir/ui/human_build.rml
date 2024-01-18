@@ -99,6 +99,8 @@
 		if data[1] == "available" then
 			Cmd.exec("build " .. data[2])
 			Events.pushcmd("hide human_build")
+		else
+			event:StopPropagation()
 		end
 	end
 	function HumanBuildableHover(document, idx)
@@ -122,7 +124,7 @@
 	end
 </script>
 </head>
-<body id="human_build" class="circlemenu human" onkeydown="CirclemenuHandleKey(event, document, HumanBuildableClick)" onshow="BuildHumanBuildMenu(document)">
+<body id="human_build" class="circlemenu human" onkeydown="CirclemenuHandleKey(event, document, HumanBuildableClick)" onshow="BuildHumanBuildMenu(document)" onclick="document:Hide()">
 <tabset class="circlemenu">
 <tab><translate>Build</translate></tab>
 <panel>

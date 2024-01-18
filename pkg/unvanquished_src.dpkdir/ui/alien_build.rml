@@ -98,6 +98,8 @@
 		if data[1] == "available" then
 			Cmd.exec("build " .. data[2])
 			Events.pushcmd("hide alien_build")
+		else
+			event:StopPropagation()
 		end
 	end
 	function AlienBuildableHover(document, idx)
@@ -121,7 +123,7 @@
 	end
 </script>
 </head>
-<body id="alien_build" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, AlienBuildableClick)" onshow="BuildAlienBuildMenu(document)">
+<body id="alien_build" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, AlienBuildableClick)" onshow="BuildAlienBuildMenu(document)" onclick="document:Hide()">
 <tabset class="circlemenu">
 <tab><translate>Build</translate></tab>
 <panel>
