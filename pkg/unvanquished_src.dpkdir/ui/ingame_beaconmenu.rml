@@ -10,7 +10,7 @@
 				background: #00000066;
 				text-align: center;
 			}
-
+			
 			.circlemenu icon {
 				display: inline-block;
 				position: absolute;
@@ -18,29 +18,61 @@
 				right: 0.75em;
 				font-size: 1.7em;
 			}
-
+			
 			.circlemenu button {
 				position: relative;
-			}
-
-			.circlemenu button.active {
-				decorator: image(/ui/assets/circle-hover);
 				image-color: rgb(100, 100, 100);
 			}
-			.circlemenu button.active:hover {
-				decorator: image(/ui/assets/circle-hover);
+			
+			.circlemenu button:focus,
+			.circlemenu button:hover {
 				image-color: rgb(255, 255, 255);
-			}
-			.circlemenu button.active icon {
-				color: #9affbd;
 			}
 
 			.circlemenu button img {
 				color: rgb(230, 230, 230);
 			}
+
+			#beaconMenuBackdrop {
+				display: block;
+				width: 32em;
+				height: 32em;
+				text-align: center;
+				position: absolute;
+				left: 0;
+				top: 0;
+				margin-top: -16em;
+				margin-left: -16em;
+				border-radius: 16em;
+				background-color: rgba(0, 0, 0, 30);
+			}
 		</style>
 		<script src="lua/util.lua" />
 		<script>
+			function custom(document, event)
+				local myHandler = dofile("mymodule.lua")
+				myHandler(document, event)
+			end
+			function backdropClick(document, event)
+				local r_y = -event.parameters.mouse_y/document.client_height + 0.5
+				local r_x = event.parameters.mouse_x/document.client_width - 0.5
+				local tau = (math.atan2(r_y, r_x) + 2*math.pi)%(2*math.pi)
+
+				local index = indexSelect(tau, 5)
+				local menu = document:GetElementById("beaconMenu")
+				-- Cancel button is first
+				menu.child_nodes[index+1].first_child:Click()
+			end
+			function backdropCapture(document, event)
+				local r_y = -event.parameters.mouse_y/document.client_height + 0.5
+				local r_x = event.parameters.mouse_x/document.client_width - 0.5
+				local tau = (math.atan2(r_y, r_x) + 2*math.pi)%(2*math.pi)
+
+				local index = indexSelect(tau, 5)
+				local menu = document:GetElementById("beaconMenu")
+				-- Cancel button is first
+				menu.child_nodes[index+1].first_child:Focus()
+			end
 			function BeaconClick(idx, event)
 				if idx > #beacons then return end
 				Cmd.exec("beacon " .. beacons[idx][2])
@@ -79,6 +111,7 @@
 			<panel>
 				<div class="circlemenu-circle" id="keyboardHints"/>
 				<div class="circlemenu-circle" id="beaconMenu"/>
+				<div id="beaconMenuBackdrop" onmousemove="backdropCapture(document, event)" onmouseup="backdropClick(document, event)"/>
 				<div style="position: absolute; left: 0; width: 40%;">
 					<div class="infobox">
 						<h2 id="beaconName"></h2>

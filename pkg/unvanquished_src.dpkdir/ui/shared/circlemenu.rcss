@@ -73,11 +73,12 @@ div.circlemenu-circle {
 
 .circlemenu button.cancelButton {
 	position: absolute;
-	width: 9em;
-	height: 9em;
-	left: -4.5em;
-	top: -4.5em;
-	line-height: 9em;
+	width: 2.5em;
+	height: 2.5em;
+	line-height: 2.5em;
+	left: -1.25em;
+	top: -1.25em;
+	text-align: center;
 }
 .circlemenu button.cancelButton > * {
 	color: #eeec;
