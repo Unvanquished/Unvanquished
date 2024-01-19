@@ -64,7 +64,7 @@ function AvailabilityIcon(availability)
 end
 
 function CirclemenuSkeleton(num_items)
-	local rml = '<button class="cancelButton" onclick="document:Hide()"><span>Cancel</span></button>'
+	local rml = '<button class="cancelButton" onclick="document:Hide()"><span>X</span></button>'
 	local radius_em = 10
 	for i = 0, num_items-1 do
 		local angle = 2 * math.pi / num_items * i
@@ -110,4 +110,20 @@ function welcome()
 		Cvar.set("cg_welcome", "1")
 		Cvar.archive("cg_welcome")
 	end
+end
+
+function round(x)
+	local x_i, x_f
+	x_i, x_f= math.modf(x)
+	if x_f < 0.5 then
+		return x_i
+	end
+	return x_i+1
+end
+
+function indexSelect(angle, num)
+	local start = math.pi / 2;
+	local t = 2 * math.pi / num
+	angle = (-angle + start + 6 * math.pi) % (2 * math.pi)
+	return round(angle / t) % num + 1
 end
