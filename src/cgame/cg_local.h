@@ -1459,6 +1459,8 @@ struct rocketInfo_t
 	rocketDataSource_t data;
 	bool renderCursor;
 	qhandle_t cursor;
+	int cursorFreezeTime = -1;
+	int cursorFreezeX, cursorFreezeY;
 	rectDef_t cursor_pos;
 };
 
