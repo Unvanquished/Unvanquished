@@ -90,6 +90,9 @@
 	tabs {
 		display: none;
 	}
+	#evolutionBackdrop {
+		background-color: rgba(50, 0, 0, 26);
+	}
 </style>
 <script src="lua/util.lua"></script>
 <script>
@@ -98,17 +101,28 @@
 		document:GetElementById("e_price").inner_rml = ""
 		document:GetElementById("e_desc").inner_rml = ""
 	end
-	function EvolutionClick(idx, event)
-		idx = button_to_index[idx]
-		if idx == nil then return end
+	function EvolutionClick(evo_id, event)
+		if evo_id == nil then return end
 		CDataSource.Build("alienEvolveList", "default")
-		local data = CDataSource.Read("alienEvolveList", "default", "availability,cmdName")[idx]
+		local data = CDataSource.Read("alienEvolveList", "default", "availability,cmdName")[evo_id]
 		if data[1] == "available" then
 			Cmd.exec("class " .. data[2])
 			Events.pushcmd("hide alien_evo")
 		else
 			event:StopPropagation()
 		end
+	end
+	function EvolutionBackdropClick(document, event)
+		local index = CirclemenuMouseToIndex(document, event, #evolutions)
+		local menu = document:GetElementById("evolveMenu")
+		-- Cancel button is first
+		menu.child_nodes[index+1].first_child:Click()
+	end
+	function EvolutionBackdropCapture(document, event)
+		local index = CirclemenuMouseToIndex(document, event, #evolutions)
+		local menu = document:GetElementById("evolveMenu")
+		-- Cancel button is first
+		menu.child_nodes[index+1].first_child:Focus()
 	end
 	function EvolutionHover(document, idx)
 		local evolution = evolutions[idx]
@@ -119,22 +133,23 @@
 	function BuildEvolveMenu(document)
 		ClearEvolveInfo(document)
 		CDataSource.Build("alienEvolveList", "default")
-		evolutions = CDataSource.Read("alienEvolveList", "default", "icon,name,description,availability,price,visible")
-		button_to_index = {}
-		for i = 1,#evolutions do
-			if evolutions[i][6] == "true" then
-				table.insert(button_to_index, i)
+		evolutions = CDataSource.Read("alienEvolveList", "default", "icon,name,description,availability,price,visible,num")
+		local i = 1
+		while i <= #evolutions do
+			if evolutions[i][6] ~= "true" then
+				table.remove(evolutions, i)
+			else
+				i = i + 1
 			end
 		end
 		local circlemenu = document:GetElementById("evolveMenu")
-		circlemenu.inner_rml = CirclemenuSkeleton(#button_to_index)
-		for b = 1,#button_to_index do
-			i = button_to_index[b]
-			circlemenu.child_nodes[b+1].inner_rml = string.format(
-				'<button class=%s onclick="EvolutionClick(%d,event)" onmouseover="EvolutionHover(document,%d)">%s<img src="/%s"/></button>',
-				evolutions[i][4], b, i, AvailabilityIcon(evolutions[i][4]), evolutions[i][1])
+		circlemenu.inner_rml = CirclemenuSkeleton(#evolutions)
+		for i = 1,#evolutions do
+			circlemenu.child_nodes[i+1].inner_rml = string.format(
+				'<button class="%s" onclick="EvolutionClick(%d,event)" onmouseover="EvolutionHover(document,%d)">%s<img src="/%s"/></button>',
+				evolutions[i][4], evolutions[i][7], i, AvailabilityIcon(evolutions[i][4]), evolutions[i][1])
 		end
-		document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#button_to_index)
+		document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#evolutions)
 	end
 </script>
 </head>
@@ -144,6 +159,7 @@
 <panel>
 <div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="evolveMenu"/>
+<div class="backdrop" id="evolutionBackdrop" onmousemove="EvolutionBackdropCapture(document, event)" onmouseup="EvolutionBackdropClick(document, event)"/>
 <div class="infobox">
 <h2 id="e_name"></h2>
 <p class="text">
