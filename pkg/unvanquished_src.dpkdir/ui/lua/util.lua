@@ -109,5 +109,7 @@ function welcome(event, document)
 		Events.pushevent("show options_welcome", event)
 		Cvar.set("cg_welcome", "1")
 		Cvar.archive("cg_welcome")
+	else
+		Events.pushevent("show serverbrowser", event)
 	end
 end
