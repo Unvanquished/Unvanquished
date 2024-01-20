@@ -121,9 +121,17 @@ function round(x)
 	return x_i+1
 end
 
-function indexSelect(angle, num)
+function CirclemenuIndexSelect(angle, num)
 	local start = math.pi / 2;
 	local t = 2 * math.pi / num
 	angle = (-angle + start + 6 * math.pi) % (2 * math.pi)
 	return round(angle / t) % num + 1
+end
+
+function CirclemenuMouseToIndex(document, event, num)
+	local r_y = -event.parameters.mouse_y/document.client_height + 0.5
+	local r_x = event.parameters.mouse_x/document.client_width - 0.5
+	local tau = (math.atan2(r_y, r_x) + 2*math.pi)%(2*math.pi)
+
+	return CirclemenuIndexSelect(tau, num)
 end

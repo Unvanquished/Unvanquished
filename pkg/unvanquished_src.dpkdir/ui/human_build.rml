@@ -84,6 +84,9 @@
 	tabs {
 		display: none;
 	}
+	#buildBackdrop {
+		background-color: rgba(0, 200, 200, 26);
+	}
 </style>
 <script src="lua/util.lua" />
 <script>

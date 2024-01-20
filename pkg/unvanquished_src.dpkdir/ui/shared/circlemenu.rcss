@@ -102,3 +102,16 @@ div.circlemenu-circle {
 	height: 1.4em;
 	text-align: center;
 }
+
+.circlemenu .backdrop{
+	display: block;
+	width: 20em;
+	height: 20em;
+	margin-top: -10em;
+	margin-left: -10em;
+	border-radius: 10em;
+	position: absolute;
+	left: 0;
+	top: 0;
+	text-align: center;
+}
