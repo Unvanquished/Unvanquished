@@ -111,6 +111,10 @@
 			tab:selected {
 				top: 0;
 			}
+			#upgradeBackdrop,
+			#weaponBackdrop {
+				background-color: rgba(0, 200, 200, 26);
+			}
 		</style>
 		<script>
 			function WeaponClick(idx, event)
@@ -124,6 +128,19 @@
 					Cmd.exec("sell " .. data[2])
 				end
 				event:StopPropagation()
+			end
+			function WeaponBackdropClick(document, event)
+				local index = CirclemenuMouseToIndex(document, event, #weapons)
+				local menu = document:GetElementById("weapons")
+				event:StopPropagation()
+				-- Cancel button is first
+				menu.child_nodes[index+1].first_child:Click()
+			end
+			function WeaponBackdropCapture(document, event)
+				local index = CirclemenuMouseToIndex(document, event, #weapons)
+				local menu = document:GetElementById("weapons")
+				-- Cancel button is first
+				menu.child_nodes[index+1].first_child:Focus()
 			end
 			function WeaponClear(document)
 				document:GetElementById("w_name").inner_rml = ""
@@ -166,6 +183,19 @@
 					Cmd.exec("sell " .. data[2])
 				end
 				event:StopPropagation()
+			end
+			function UpgradeBackdropClick(document, event)
+				local index = CirclemenuMouseToIndex(document, event, #upgrades)
+				local menu = document:GetElementById("upgrades")
+				event:StopPropagation()
+				-- Cancel button is first
+				menu.child_nodes[index+1].first_child:Click()
+			end
+			function UpgradeBackdropCapture(document, event)
+				local index = CirclemenuMouseToIndex(document, event, #upgrades)
+				local menu = document:GetElementById("upgrades")
+				-- Cancel button is first
+				menu.child_nodes[index+1].first_child:Focus()
 			end
 			function UpgradeClear(document)
 				document:GetElementById("u_name").inner_rml = ""
@@ -213,6 +243,7 @@
 		<panel>
 		<div class="circlemenu-circle" id="weaponKeyboardHints"/>
 		<div class="circlemenu-circle" id="weapons"/>
+		<div class="backdrop" id="weaponBackdrop" onmousemove="WeaponBackdropCapture(document, event)" onmouseup="WeaponBackdropClick(document, event)" onclick="event:StopPropagation()"/>
 			<div class="infobox">
 			<h2 id="w_name"></h2>
 			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="w_price"></div></div></p>
@@ -229,6 +260,7 @@
 		<panel>
 		<div class="circlemenu-circle" id="upgradeKeyboardHints"/>
 		<div class="circlemenu-circle" id="upgrades"/>
+		<div class="backdrop" id="upgradeBackdrop" onmousemove="UpgradeBackdropCapture(document, event)" onmouseup="UpgradeBackdropClick(document, event)" onclick="event:StopPropagation()"/>
 			<div class="infobox">
 			<h2 id="u_name"></h2>
 			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="u_price"></div></div></p>
