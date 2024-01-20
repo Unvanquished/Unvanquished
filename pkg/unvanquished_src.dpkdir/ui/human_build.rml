@@ -84,7 +84,7 @@
 	tabs {
 		display: none;
 	}
-	#buildBackdrop {
+	#humanBuildBackdrop {
 		background-color: rgba(0, 200, 200, 26);
 	}
 </style>
@@ -106,6 +106,18 @@
 			event:StopPropagation()
 		end
 	end
+	function HBuildBackdropClick(document, event)
+		local index = CirclemenuMouseToIndex(document, event, #human_buildables)
+		local menu = document:GetElementById("humanBuildMenu")
+		-- Cancel button is first
+		menu.child_nodes[index+1].first_child:Click()
+	end
+	function HBuildBackdropCapture(document, event)
+		local index = CirclemenuMouseToIndex(document, event, #human_buildables)
+		local menu = document:GetElementById("humanBuildMenu")
+		-- Cancel button is first
+		menu.child_nodes[index+1].first_child:Focus()
+	end
 	function HumanBuildableHover(document, idx)
 		local buildable = human_buildables[idx]
 		document:GetElementById("b_name").inner_rml = buildable[2]
@@ -120,7 +132,7 @@
 		circlemenu.inner_rml = CirclemenuSkeleton(#human_buildables)
 		for i = 1,#human_buildables do
 			circlemenu.child_nodes[i+1].inner_rml = string.format(
-				'<button class=%s onclick="HumanBuildableClick(%d,event)" onmouseover="HumanBuildableHover(document,%d)">%s<img src="/%s"/></button>',
+				'<button class="%s" onclick="HumanBuildableClick(%d,event)" onmouseover="HumanBuildableHover(document,%d)">%s<img src="/%s"/></button>',
 				human_buildables[i][5], i, i, AvailabilityIcon(human_buildables[i][5]), human_buildables[i][1])
 		end
 		document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#human_buildables)
@@ -133,6 +145,7 @@
 <panel>
 <div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="humanBuildMenu"/>
+<div class="backdrop" id="humanBuildBackdrop" onmousemove="HBuildBackdropCapture(document, event)" onmouseup="HBuildBackdropClick(document, event)"/>
 <div class="infobox">
 <h2 id="b_name"></h2>
 <p class="text"><translate>Price:</translate>&nbsp;<span id="b_price" /><br/>

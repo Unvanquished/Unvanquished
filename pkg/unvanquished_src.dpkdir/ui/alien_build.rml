@@ -83,6 +83,9 @@
 	tabs {
 		display: none;
 	}
+	#alienBuildBackdrop {
+		background-color: rgba(50, 0, 0, 26);
+	}
 </style>
 <script src="lua/util.lua" />
 <script>
@@ -101,6 +104,18 @@
 		else
 			event:StopPropagation()
 		end
+	end
+	function ABuildBackdropClick(document, event)
+		local index = CirclemenuMouseToIndex(document, event, #alien_buildables)
+		local menu = document:GetElementById("alienBuildMenu")
+		-- Cancel button is first
+		menu.child_nodes[index+1].first_child:Click()
+	end
+	function ABuildBackdropCapture(document, event)
+		local index = CirclemenuMouseToIndex(document, event, #alien_buildables)
+		local menu = document:GetElementById("alienBuildMenu")
+		-- Cancel button is first
+		menu.child_nodes[index+1].first_child:Focus()
 	end
 	function AlienBuildableHover(document, idx)
 		buildable = alien_buildables[idx]
@@ -129,6 +144,7 @@
 <panel>
 <div class="circlemenu-circle" id="keyboardHints"/>
 <div class="circlemenu-circle" id="alienBuildMenu"/>
+<div class="backdrop" id="alienBuildBackdrop" onmousemove="ABuildBackdropCapture(document, event)" onmouseup="ABuildBackdropClick(document, event)"/>
 <div class="infobox">
 <h2 id="b_name"></h2>
 <p class="text">
