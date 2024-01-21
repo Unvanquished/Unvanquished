@@ -1201,6 +1201,8 @@ Will perform callbacks to make the loading info screen update.
 
 void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const GameStateCSs& gameState)
 {
+	Log::Notice("CGame " PLATFORM_STRING " " XSTRING(ARCH_STRING) " " XSTRING(DAEMON_CXX_COMPILER_STRING) " " __DATE__);
+
 	const char *s;
 
 	bool fullscreen;
