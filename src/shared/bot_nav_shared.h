@@ -268,20 +268,41 @@ struct LinearAllocator : public dtTileCacheAlloc
 	size_t getHighSize() { return high; }
 };
 
+// Maybe use another alien form's navmesh instead of generating one for this class
+inline class_t NavmeshForClass( class_t species )
+{
+	switch ( species )
+	{
+	case PCL_HUMAN_LIGHT:
+	case PCL_HUMAN_MEDIUM:
+		return PCL_HUMAN_NAKED;
+
+	case PCL_ALIEN_BUILDER0_UPG:
+		return PCL_ALIEN_BUILDER0;
+
+	default:
+		return species;
+	}
+}
+
 inline std::vector<class_t> RequiredNavmeshes()
 {
-	return {
-		PCL_ALIEN_BUILDER0,
-		PCL_ALIEN_LEVEL0,
-		PCL_ALIEN_LEVEL1,
-		PCL_ALIEN_LEVEL2,
-		PCL_ALIEN_LEVEL2_UPG,
-		PCL_ALIEN_LEVEL3,
-		PCL_ALIEN_LEVEL3_UPG,
-		PCL_ALIEN_LEVEL4,
-		PCL_HUMAN_NAKED,
-		PCL_HUMAN_BSUIT,
-	};
+	std::vector<class_t> required;
+	for ( int c = PCL_NONE; ++c < PCL_NUM_CLASSES; )
+	{
+		auto useMesh = NavmeshForClass( static_cast<class_t>( c ) );
+
+		if ( useMesh == c )
+		{
+			required.push_back( useMesh );
+		}
+		else
+		{
+			ASSERT_EQ( NavmeshForClass( useMesh ), useMesh ); // chaining not allowed
+		}
+	}
+
+	return required;
 }
 
 inline std::string NavmeshFilename(Str::StringRef mapName, class_t species)

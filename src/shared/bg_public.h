@@ -1309,8 +1309,6 @@ struct classModelConfig_t
 	float  zOffset;
 	vec3_t shoulderOffsets;
 	bool segmented;
-
-	class_t navMeshClass; // if not PCL_NONE, which model's navmesh to use
 };
 
 #define MAX_BUILDABLE_MODELS 3
