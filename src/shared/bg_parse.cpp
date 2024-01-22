@@ -1532,22 +1532,9 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 
 			defined |= SHOULDEROFFSETS;
 		}
-		else if ( !Q_stricmp( token, "useNavMesh" ) )
+		else if ( !Q_stricmp( token, "useNavMesh" ) ) // TODO(0.55): remove
 		{
-			const classModelConfig_t *model;
-
 			PARSE(text, token);
-
-			model = BG_ClassModelConfigByName( token );
-
-			if ( model && *model->modelName )
-			{
-				cc->navMeshClass = (class_t) ( model - BG_ClassModelConfig( PCL_NONE ) );
-			}
-			else
-			{
-				Log::Warn( "%s: unknown or yet-unloaded player model '%s'", filename, token );
-			}
 		}
 		else
 		{

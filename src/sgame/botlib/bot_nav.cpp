@@ -114,16 +114,7 @@ void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm:
 
 void G_BotSetNavMesh( int botClientNum, class_t newClass )
 {
-	const classModelConfig_t *model = BG_ClassModelConfig( newClass );
-	if ( model->navMeshClass )
-	{
-		newClass = model->navMeshClass;
-		if ( BG_ClassModelConfig( model->navMeshClass )->navMeshClass != PCL_NONE )
-		{
-			Log::Warn( "useNavMesh must not chain (%s -> %s -> ...)",
-			           model->humanName, BG_ClassModelConfig( model->navMeshClass )->humanName );
-		}
-	}
+	newClass = NavmeshForClass( newClass );
 
 	NavData_t *nav = nullptr;
 

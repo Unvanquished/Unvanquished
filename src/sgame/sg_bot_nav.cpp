@@ -190,13 +190,6 @@ void G_BotNavInit( int generateNeeded )
 
 	for ( class_t i : RequiredNavmeshes() )
 	{
-		const classModelConfig_t *model = BG_ClassModelConfig( i );
-		if ( model->navMeshClass != PCL_NONE )
-		{
-			Log::Warn( "%s shouldn't be in the required navmesh list as it uses another class's navmesh",
-			           model->humanName );
-		}
-
 		switch ( G_BotSetupNav( config, i ) )
 		{
 		case navMeshStatus_t::UNINITIALIZED:
