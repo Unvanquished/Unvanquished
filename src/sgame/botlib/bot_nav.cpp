@@ -114,7 +114,7 @@ void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm:
 
 void G_BotSetNavMesh( int botClientNum, class_t newClass )
 {
-	newClass = NavmeshForClass( newClass );
+	newClass = NavmeshForClass( newClass, g_bot_navmeshReduceTypes.Get() );
 
 	NavData_t *nav = nullptr;
 

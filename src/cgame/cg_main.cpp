@@ -1065,7 +1065,13 @@ static void GenerateNavmeshes()
 	std::string mapName = Cvar::GetValue( "mapname" );
 	std::vector<class_t> missing;
 	NavgenConfig config = ReadNavgenConfig( mapName );
-	for ( class_t species : RequiredNavmeshes() )
+	bool reduceTypes;
+	if ( !Cvar::ParseCvarValue( Cvar::GetValue( "g_bot_navmeshReduceTypes" ), reduceTypes ) )
+	{
+		ASSERT_UNREACHABLE(); // sgame should have been loaded and this cvar initialized
+	}
+
+	for ( class_t species : RequiredNavmeshes( reduceTypes ) )
 	{
 		fileHandle_t f;
 		std::string filename = NavmeshFilename( mapName, species );

@@ -219,5 +219,6 @@ extern Cvar::Cvar<bool> g_bot_infiniteFunds;
 extern Cvar::Cvar<bool> g_bot_infiniteMomentum;
 extern Cvar::Cvar<int> g_bot_aliensenseRange;
 extern Cvar::Modified<Cvar::Cvar<int>> g_bot_defaultFill;
+extern Cvar::Cvar<bool> g_bot_navmeshReduceTypes;
 
 #endif // SG_EXTERN_H_

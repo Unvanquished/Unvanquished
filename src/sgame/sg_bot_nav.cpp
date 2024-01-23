@@ -73,6 +73,11 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 	}
 }
 
+// TODO: Latch(), when supported in gamelogic
+Cvar::Cvar<bool> g_bot_navmeshReduceTypes(
+	"g_bot_navmeshReduceTypes", "generate/use fewer navmeshes by sharing meshes between similar species",
+	Cvar::NONE, false);
+
 static Cvar::Range<Cvar::Cvar<int>> msecPerFrame(
 	"g_bot_navgen_msecPerFrame", "time budget per frame for navmesh generation",
 	Cvar::NONE, 20, 1, 1500 );
@@ -184,11 +189,16 @@ void G_BotNavInit( int generateNeeded )
 	}
 
 	Log::Notice( "==== Bot Navigation Initialization ====" );
+	if ( g_bot_navmeshReduceTypes.Get() )
+	{
+		Log::Notice( "Using approximate navmesh substitutions for similar classes to reduce number"
+		             " of navmeshes needed (g_bot_navmeshReduceTypes)" );
+	}
 
 	std::bitset<PCL_NUM_CLASSES> missing;
 	NavgenConfig config = ReadNavgenConfig( Cvar::GetValue( "mapname" ) );
 
-	for ( class_t i : RequiredNavmeshes() )
+	for ( class_t i : RequiredNavmeshes( g_bot_navmeshReduceTypes.Get() ) )
 	{
 		switch ( G_BotSetupNav( config, i ) )
 		{
