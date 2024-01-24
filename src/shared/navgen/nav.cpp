@@ -1031,7 +1031,7 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	//height of agent (BBox maxs[2] - BBox mins[2])
 	float height = ( config_.crouchSupport ? dimensions->crouchMaxs[2] : dimensions->maxs[2] ) - dimensions->mins[2];
 
-	const float cellSize = radius / 4.0f;
+	const float cellSize = radius * config_.cellSizeFactor;
 
 	rcCalcGridSize( bmin, bmax, cellSize, &gw, &gh );
 
