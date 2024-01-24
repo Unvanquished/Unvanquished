@@ -12,13 +12,13 @@
 
 			<!-- NOTE: it's a bad idea to put languages translated at less than 50% in the list, right? -->
 			<select cvar="language">
-				<option value="en_EN">English</option>
-				<option value="fr_FR">Français</option>
-				<option value="ru_RU">Русский</option>
-				<option value="de_DE">Deutsch</option> <!--only translated at 39% -->
-				<option value="it_IT">Italiano</option>
-				<option value="es_ES">Español</option> <!--translated at 19%-->
-				<option value="fi_FI">Suomi</option>
+				<option value="fr">Français</option>
+				<option value="ru">Русский</option>
+				<option value="en">English</option>
+				<option value="de">Deutsch</option>
+				<option value="it">Italiano</option>
+				<option value="es">Español</option>
+				<option value="fi">Suomi</option>
 			</select>
 			<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Events.pushevent("exec language", event);Events.pushevent("exec updatelanguage", event)'><translate>Change language</translate></button>
 		</row>

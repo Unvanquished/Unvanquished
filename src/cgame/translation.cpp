@@ -241,7 +241,7 @@ static void Trans_SetLanguage( const char* lang )
 	}
 
 	// language not found, display warning
-	if( bestScore == 0 )
+	if ( bestScore == 0 && !Str::IsIEqual( lang, "C" ) )
 	{
 		LOG.Warn( "Language \"%s\" (%s) not found. Default to \"English\" (en)",
 					requestLang.get_name().empty() ? "Unknown Language" : requestLang.get_name().c_str(),
