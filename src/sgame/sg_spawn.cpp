@@ -690,7 +690,7 @@ static void G_ParseField( const char *key, const char *rawString, gentity_t *ent
 {
 	fieldDescriptor_t *fieldDescriptor;
 	byte    *entityDataField;
-	vec4_t  tmpFloatData;
+	vec4_t tmpFloatData = {};
 	variatingTime_t varTime = {0, 0};
 
 	fieldDescriptor = (fieldDescriptor_t*) bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
