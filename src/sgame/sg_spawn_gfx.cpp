@@ -179,7 +179,6 @@ env_portal_*
 */
 static void gfx_portal_locateCamera( gentity_t *self )
 {
-	vec3_t    dir;
 	gentity_t *target;
 	gentity_t *owner;
 
@@ -224,19 +223,29 @@ static void gfx_portal_locateCamera( gentity_t *self )
 
 	if ( target )
 	{
-		VectorSubtract( target->s.origin, owner->s.origin, dir );
-		VectorNormalize( dir );
+		axis_t cameraAxis;
+		VectorSubtract( target->s.origin, owner->s.origin, cameraAxis[0] );
+		CrossProduct( cameraAxis[0], axisDefault[2], cameraAxis[1] );
+		VectorInverse( cameraAxis[1] );
+		CrossProduct( cameraAxis[0], cameraAxis[1], cameraAxis[2] );
+		AxisToAngles( cameraAxis, self->s.angles2 );
+
+		// Legacy: Old behaviour used roll to workaround incorrect code
+		// Legacy: But use roll if no rotation and speed flags are not set
+		if ( owner->mapEntity.spawnflags & 8 || ( !( owner->mapEntity.spawnflags & 8 ) && self->s.misc && !self->s.frame ) ) {
+			self->s.angles2[2] = owner->s.angles[2];
+		}
 	}
 	else
 	{
-		glm::vec3 angles = VEC2GLM( owner->s.angles );
-		glm::vec3 dir_ = VEC2GLM( dir );
-		G_SetMovedir( angles, dir_ );
-		VectorCopy( &angles[0], owner->s.angles );
-		VectorCopy( &dir_[0], dir );
-	}
+		VectorCopy( owner->s.angles, self->s.angles2 );
 
-	self->s.eventParm = DirToByte( dir );
+		// Legacy: Old behaviour used roll to workaround incorrect code
+		// Legacy: But use roll if no rotation and speed flags are not set
+		if ( !( owner->mapEntity.spawnflags & 8 ) && !( self->s.misc && !self->s.frame ) ) {
+			self->s.angles2[2] = 0.0;
+		}
+	}
 }
 
 void SP_gfx_portal_surface( gentity_t *self )
@@ -261,15 +270,11 @@ void SP_gfx_portal_surface( gentity_t *self )
 
 void SP_gfx_portal_camera( gentity_t *self )
 {
-	float roll;
-
 	VectorClear( self->r.mins );
 	VectorClear( self->r.maxs );
 	trap_LinkEntity( self );
 
-	G_SpawnFloat( "roll", "0", &roll );
-
-	self->s.clientNum = roll / 360.0f * 256;
+	G_SpawnFloat( "roll", va( "%f", self->s.angles[2] ), &self->s.angles[2] );
 }
 
 /*
