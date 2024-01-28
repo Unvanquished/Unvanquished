@@ -1456,6 +1456,14 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 			continue;
 		}
 
+		// fix https://github.com/Unvanquished/Unvanquished/issues/2907
+		// the case of a collision requiring removal of the leech/drill is handled elsewhere
+		buildable_t otherBuildable = static_cast< buildable_t >( ent->s.modelindex );
+		if ( otherBuildable == BA_A_LEECH || otherBuildable == BA_H_DRILL )
+		{
+			continue;
+		}
+
 		// add to list
 		list[ listLen++ ] = ent;
 	}
