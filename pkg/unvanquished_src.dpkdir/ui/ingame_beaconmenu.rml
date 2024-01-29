@@ -10,7 +10,7 @@
 				background: #00000066;
 				text-align: center;
 			}
-			
+
 			.circlemenu icon {
 				display: inline-block;
 				position: absolute;
@@ -18,12 +18,12 @@
 				right: 0.75em;
 				font-size: 1.7em;
 			}
-			
+
 			.circlemenu button {
 				position: relative;
 				image-color: rgb(100, 100, 100);
 			}
-			
+
 			.circlemenu button:focus,
 			.circlemenu button:hover {
 				image-color: rgb(255, 255, 255);
@@ -38,62 +38,45 @@
 			}
 		</style>
 		<script src="lua/util.lua" />
+		<script src="lua/circle_menu.lua" />
 		<script>
-			function custom(document, event)
-				local myHandler = dofile("mymodule.lua")
-				myHandler(document, event)
+			BeaconMenu = CircleMenu:New('BeaconMenu', 'beacon')
+
+			function BeaconMenu:PopulateItems()
+				CDataSource.Build("beaconList", "default")
+				self.items = CDataSource.Read("beaconList", "default", "icon,name,desc")
 			end
-			function BeaconBackdropClick(document, event)
-				local index = CirclemenuMouseToIndex(document, event, #beacons)
-				local menu = document:GetElementById("beaconMenu")
-				-- Cancel button is first
-				menu.child_nodes[index+1].first_child:Click()
-			end
-			function BeaconBackdropCapture(document, event)
-				local index = CirclemenuMouseToIndex(document, event, #beacons)
-				local menu = document:GetElementById("beaconMenu")
-				-- Cancel button is first
-				menu.child_nodes[index+1].first_child:Focus()
-			end
-			function BeaconClick(idx, event)
-				if idx > #beacons then return end
-				Cmd.exec("beacon " .. beacons[idx][2])
+			function BeaconMenu:Select(index)
+				if index > #self.items then return end
+				Cmd.exec("beacon " .. self.items[index][2])
 				Events.pushcmd("hide ingame_beaconmenu")
 			end
-			function BeaconHover(document, idx)
-				ClearBeaconInfo(document)
-				local beacon = beacons[idx]
-				document:GetElementById("beaconName"):AppendChild(document:CreateTextNode(beacon[2]))
-				document:GetElementById("beaconDesc"):AppendChild(document:CreateTextNode(beacon[3]))
-			end
-			function ClearBeaconInfo(document)
-				document:GetElementById("beaconName").inner_rml = ""
-				document:GetElementById("beaconDesc").inner_rml = ""
-			end
-			function BuildBeaconMenu(document)
-				ClearBeaconInfo(document)
-				if beacons == nil then
-					CDataSource.Build("beaconList", "default")
-					beacons = CDataSource.Read("beaconList", "default", "icon,name,desc")
+			function BeaconMenu:Highlight(index)
+				local nameElement = self.document:GetElementById("beaconName")
+				local descElement = self.document:GetElementById("beaconDesc")
+				nameElement.inner_rml = ""
+				descElement.inner_rml = ""
+
+				if index == nil or index <= 0 then
+					return
 				end
-				local circlemenu = document:GetElementById("beaconMenu")
-				circlemenu.inner_rml = CirclemenuSkeleton(#beacons)
-				for i=1,#beacons do
-					circlemenu.child_nodes[i+1].inner_rml = string.format(
-						'<button onclick="BeaconClick(%d, event)" onmouseover="BeaconHover(document,%d)"><img src="/%s"/></button>',
-						i, i, beacons[i][1])
-				end
-				document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#beacons)
+				local beacon = self.items[index]
+				nameElement:AppendChild(self.document:CreateTextNode(beacon[2]))
+				descElement:AppendChild(self.document:CreateTextNode(beacon[3]))
+			end
+			function BeaconMenu:RMLButton(index)
+				return string.format( '<button onclick="%s:Click(%d, event)" onmouseover="%s:Hover(%d)"><img src="/%s"/></button>',
+					self.handle, index, self.handle, index, self.items[index][1])
 			end
 		</script>
 	</head>
-	<body id="ingame_beaconmenu" class="circlemenu" onkeydown="CirclemenuHandleKey(event, document, BeaconClick)" onshow="BuildBeaconMenu(document)" onclick="document:Hide()">
+	<body id="ingame_beaconmenu" class="circlemenu" onkeydown="BeaconMenu:HandleKey(event)" onshow="BeaconMenu:Build(document)" onclick="document:Hide()">
 		<tabset class="circlemenu">
 			<tab><translate>Beacons</translate></tab>
 			<panel>
-				<div class="circlemenu-circle" id="keyboardHints"/>
+				<div class="circlemenu-circle" id="beaconKeyboardHints"/>
 				<div class="circlemenu-circle" id="beaconMenu"/>
-				<div class="backdrop" id="beaconBackdrop" onmousemove="BeaconBackdropCapture(document, event)" onmouseup="BeaconBackdropClick(document, event)"/>
+				<div class="backdrop" id="beaconBackdrop" onmousemove="BeaconMenu:BackdropCapture(event)" onmouseup="BeaconMenu:BackdropClick(event)"/>
 				<div style="position: absolute; left: 0; width: 40%;">
 					<div class="infobox">
 						<h2 id="beaconName"></h2>

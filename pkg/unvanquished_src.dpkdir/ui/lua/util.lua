@@ -112,20 +112,11 @@ function welcome()
 	end
 end
 
-function round(x)
-	local x_i, x_f
-	x_i, x_f= math.modf(x)
-	if x_f < 0.5 then
-		return x_i
-	end
-	return x_i+1
-end
-
 function CirclemenuIndexSelect(angle, num)
 	local start = math.pi / 2;
 	local t = 2 * math.pi / num
 	angle = (-angle + start + 6 * math.pi) % (2 * math.pi)
-	return round(angle / t) % num + 1
+	return math.floor(0.5 + angle / t) % num + 1
 end
 
 function CirclemenuMouseToIndex(document, event, num)
@@ -134,4 +125,8 @@ function CirclemenuMouseToIndex(document, event, num)
 	local tau = (math.atan2(r_y, r_x) + 2*math.pi)%(2*math.pi)
 
 	return CirclemenuIndexSelect(tau, num)
+end
+
+function NormalCartesian(angle)
+	return math.sin(angle), -math.cos(angle)
 end

@@ -94,46 +94,13 @@
 		background-color: rgba(50, 0, 0, 26);
 	}
 </style>
-<script src="lua/util.lua"></script>
+<script src="lua/util.lua" />
+<script src="lua/circle_menu.lua" />
 <script>
-	function ClearEvolveInfo(document)
-		document:GetElementById("e_name").inner_rml = ""
-		document:GetElementById("e_price").inner_rml = ""
-		document:GetElementById("e_desc").inner_rml = ""
-	end
-	function EvolutionClick(evo_id, event)
-		if evo_id == nil then return end
+	EvoMenu = CircleMenu:New('EvoMenu', 'evolve')
+	function EvoMenu:PopulateItems()
 		CDataSource.Build("alienEvolveList", "default")
-		local data = CDataSource.Read("alienEvolveList", "default", "availability,cmdName")[evo_id]
-		if data[1] == "available" then
-			Cmd.exec("class " .. data[2])
-			Events.pushcmd("hide alien_evo")
-		else
-			event:StopPropagation()
-		end
-	end
-	function EvolutionBackdropClick(document, event)
-		local index = CirclemenuMouseToIndex(document, event, #evolutions)
-		local menu = document:GetElementById("evolveMenu")
-		-- Cancel button is first
-		menu.child_nodes[index+1].first_child:Click()
-	end
-	function EvolutionBackdropCapture(document, event)
-		local index = CirclemenuMouseToIndex(document, event, #evolutions)
-		local menu = document:GetElementById("evolveMenu")
-		-- Cancel button is first
-		menu.child_nodes[index+1].first_child:Focus()
-	end
-	function EvolutionHover(document, idx)
-		local evolution = evolutions[idx]
-		document:GetElementById("e_name").inner_rml = evolution[2]
-		document:GetElementById("e_price").inner_rml = evolution[5]
-		document:GetElementById("e_desc").inner_rml = evolution[3]
-	end
-	function BuildEvolveMenu(document)
-		ClearEvolveInfo(document)
-		CDataSource.Build("alienEvolveList", "default")
-		evolutions = CDataSource.Read("alienEvolveList", "default", "icon,name,description,availability,price,visible,num")
+		local evolutions = CDataSource.Read("alienEvolveList", "default", "icon,name,description,availability,price,visible,num")
 		local i = 1
 		while i <= #evolutions do
 			if evolutions[i][6] ~= "true" then
@@ -142,24 +109,47 @@
 				i = i + 1
 			end
 		end
-		local circlemenu = document:GetElementById("evolveMenu")
-		circlemenu.inner_rml = CirclemenuSkeleton(#evolutions)
-		for i = 1,#evolutions do
-			circlemenu.child_nodes[i+1].inner_rml = string.format(
-				'<button class="%s" onclick="EvolutionClick(%d,event)" onmouseover="EvolutionHover(document,%d)">%s<img src="/%s"/></button>',
-				evolutions[i][4], evolutions[i][7], i, AvailabilityIcon(evolutions[i][4]), evolutions[i][1])
+		self.items = evolutions
+	end
+	function EvoMenu:RMLButton(index)
+		return string.format(
+			'<button class="%s" onclick="%s:Click(%d, event)" onmouseover="%s:Hover(%d)">%s<img src="/%s"/></button>',
+			self.items[index][4], -- availabilty
+			self.handle, index,
+			self.handle, index,
+			AvailabilityIcon(self.items[index][4]), -- character
+			self.items[index][1] -- image
+		)
+	end
+	function EvoMenu:Select(index)
+		local evo_id = tonumber(self.items[index][7])
+		CDataSource.Build("alienEvolveList", "default")
+		local data = CDataSource.Read("alienEvolveList", "default", "availability,cmdName")[evo_id]
+		if data[1] == "available" then
+			Cmd.exec("class " .. data[2])
+			Events.pushcmd("hide alien_evo")
 		end
-		document:GetElementById("keyboardHints").inner_rml = CirclemenuKeyboardHints(#evolutions)
+	end
+	function EvoMenu:Highlight(index)
+		if index == nil or index <= 0 then
+			self.document:GetElementById("e_name").inner_rml = ""
+			self.document:GetElementById("e_price").inner_rml = ""
+			self.document:GetElementById("e_desc").inner_rml = ""
+		else
+			self.document:GetElementById("e_name").inner_rml = self.items[index][2]
+			self.document:GetElementById("e_price").inner_rml = self.items[index][5]
+			self.document:GetElementById("e_desc").inner_rml = self.items[index][3]
+		end
 	end
 </script>
 </head>
-<body id="alien_evo" class="circlemenu alien" onkeydown="CirclemenuHandleKey(event, document, EvolutionClick)" onshow="BuildEvolveMenu(document)" onclick="document:Hide()">
+<body id="alien_evo" class="circlemenu alien" onkeydown="EvoMenu:HandleKey(event)" onshow="EvoMenu:Build(document)" onclick="document:Hide()">
 <tabset class="circlemenu">
 <tab><translate>Evolve</translate></tab>
 <panel>
-<div class="circlemenu-circle" id="keyboardHints"/>
+<div class="circlemenu-circle" id="evolveKeyboardHints"/>
 <div class="circlemenu-circle" id="evolveMenu"/>
-<div class="backdrop" id="evolutionBackdrop" onmousemove="EvolutionBackdropCapture(document, event)" onmouseup="EvolutionBackdropClick(document, event)"/>
+<div class="backdrop" id="evolveBackdrop" onmousemove="EvoMenu:BackdropCapture(event)" onmouseup="EvoMenu:BackdropClick(event)"/>
 <div class="infobox">
 <h2 id="e_name"></h2>
 <p class="text">
