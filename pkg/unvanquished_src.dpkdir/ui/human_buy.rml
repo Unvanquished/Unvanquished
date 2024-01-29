@@ -117,133 +117,101 @@
 			}
 		</style>
 		<script>
-			function WeaponClick(idx, event)
-				if idx > #weapons then return end
+			WeaponMenu = CircleMenu:New('WeaponMenu', 'weapon')
+			function WeaponMenu:PopulateItems()
+				CDataSource.Build("armouryBuyList", "weapons")
+				self.items = CDataSource.Read("armouryBuyList", "weapons", "icon,name,description,price,availability,rate,range,damage")
+			end
+			function WeaponMenu:RMLButton(index)
+				return string.format(
+					'<button class="%s" onclick="%s:Click(%d,event)" onmouseover="%s:Hover(%d)">%s<img src="/%s"/></button>',
+					self.items[index][5], self.handle, index, self.handle, index, AvailabilityIcon(self.items[index][5]), self.items[index][1]
+				)
+			end
+			function WeaponMenu:Select(index)
 				-- Query again in case credits/momentum changed
 				CDataSource.Build("armouryBuyList", "weapons")
-				local data = CDataSource.Read("armouryBuyList", "weapons", "availability,cmdName")[idx]
+				local data = CDataSource.Read("armouryBuyList", "weapons", "availability,cmdName")[index]
 				if data[1] == "available" then
 					Cmd.exec("buy +" .. data[2])
 				elseif data[1] == "active" then
 					Cmd.exec("sell " .. data[2])
 				end
-				event:StopPropagation()
 			end
-			function WeaponBackdropClick(document, event)
-				local index = CirclemenuMouseToIndex(document, event, #weapons)
-				local menu = document:GetElementById("weapons")
-				event:StopPropagation()
-				-- Cancel button is first
-				menu.child_nodes[index+1].first_child:Click()
-			end
-			function WeaponBackdropCapture(document, event)
-				local index = CirclemenuMouseToIndex(document, event, #weapons)
-				local menu = document:GetElementById("weapons")
-				-- Cancel button is first
-				menu.child_nodes[index+1].first_child:Focus()
-			end
-			function WeaponClear(document)
-				document:GetElementById("w_name").inner_rml = ""
-				document:GetElementById("w_price").inner_rml = ""
-				document:GetElementById("w_rate").style.width = "0"
-				document:GetElementById("w_range").style.width = "0"
-				document:GetElementById("w_damage").style.width = "0"
-				document:GetElementById("w_description").inner_rml = ""
-			end
-			function WeaponHover(document, idx)
-				WeaponClear(document)
-				local data = weapons[idx]
-				document:GetElementById("w_name").inner_rml = data[2]
-				document:GetElementById("w_price").inner_rml = data[4]
-				document:GetElementById("w_rate").style.width = data[6] .. '%'
-				document:GetElementById("w_range").style.width = data[7] .. '%'
-				document:GetElementById("w_damage").style.width = data[8] .. '%'
-				document:GetElementById("w_description").inner_rml = data[3]
-			end
-			function BuildWeaponMenu(document)
-				CDataSource.Build("armouryBuyList", "weapons")
-				weapons = CDataSource.Read("armouryBuyList", "weapons", "icon,name,description,price,availability,rate,range,damage")
-				local circlemenu = document:GetElementById("weapons")
-				circlemenu.inner_rml = CirclemenuSkeleton(#weapons)
-				for i=1,#weapons do
-					circlemenu.child_nodes[i+1].inner_rml = string.format(
-						'<button class="%s" onclick="WeaponClick(%d,event)" onmouseover="WeaponHover(document,%d)">%s<img src="/%s"/></button>',
-						weapons[i][5], i, i, AvailabilityIcon(weapons[i][5]), weapons[i][1])
+			function WeaponMenu:Highlight(index)
+				if index == nil or index <= 0 then
+					self.document:GetElementById("w_name").inner_rml = ""
+					self.document:GetElementById("w_price").inner_rml = ""
+					self.document:GetElementById("w_rate").style.width = "0"
+					self.document:GetElementById("w_range").style.width = "0"
+					self.document:GetElementById("w_damage").style.width = "0"
+					self.document:GetElementById("w_description").inner_rml = ""
+				else
+					local data = self.items[index]
+					self.document:GetElementById("w_name").inner_rml = data[2]
+					self.document:GetElementById("w_price").inner_rml = data[4]
+					self.document:GetElementById("w_rate").style.width = data[6] .. '%'
+					self.document:GetElementById("w_range").style.width = data[7] .. '%'
+					self.document:GetElementById("w_damage").style.width = data[8] .. '%'
+					self.document:GetElementById("w_description").inner_rml = data[3]
 				end
-				document:GetElementById("weaponKeyboardHints").inner_rml = CirclemenuKeyboardHints(#weapons)
 			end
-			function UpgradeClick(idx, event)
-				if idx > #upgrades then return end
+			UpgradeMenu = CircleMenu:New('UpgradeMenu', 'upgrade')
+			function UpgradeMenu:PopulateItems()
+				CDataSource.Build("armouryBuyList", "upgrades")
+				self.items = CDataSource.Read("armouryBuyList", "upgrades", "icon,name,description,price,availability")
+			end
+			function UpgradeMenu:RMLButton(index)
+				return string.format(
+				'<button class="%s" onclick="%s:Click(%d,event)" onmouseover="%s:Hover(%d)">%s<img src="/%s"/></button>',
+				self.items[index][5], self.handle, index, self.handle, index, AvailabilityIcon(self.items[index][5]), self.items[index][1]
+				)
+			end
+			function UpgradeMenu:Select(index)
 				-- Query again in case credits/momentum changed
 				CDataSource.Build("armouryBuyList", "upgrades")
-				local data = CDataSource.Read("armouryBuyList", "upgrades", "availability,cmdName")[idx]
+				local data = CDataSource.Read("armouryBuyList", "upgrades", "availability,cmdName")[index]
 				if data[1] == "available" then
 					Cmd.exec("buy +" .. data[2])
 				elseif data[1] == "active" then
 					Cmd.exec("sell " .. data[2])
 				end
-				event:StopPropagation()
 			end
-			function UpgradeBackdropClick(document, event)
-				local index = CirclemenuMouseToIndex(document, event, #upgrades)
-				local menu = document:GetElementById("upgrades")
-				event:StopPropagation()
-				-- Cancel button is first
-				menu.child_nodes[index+1].first_child:Click()
-			end
-			function UpgradeBackdropCapture(document, event)
-				local index = CirclemenuMouseToIndex(document, event, #upgrades)
-				local menu = document:GetElementById("upgrades")
-				-- Cancel button is first
-				menu.child_nodes[index+1].first_child:Focus()
-			end
-			function UpgradeClear(document)
-				document:GetElementById("u_name").inner_rml = ""
-				document:GetElementById("u_price").inner_rml = ""
-				document:GetElementById("u_description").inner_rml = ""
-			end
-			function UpgradeHover(document, idx)
-				UpgradeClear(document)
-				local data = upgrades[idx]
-				document:GetElementById("u_name").inner_rml = data[2]
-				document:GetElementById("u_price").inner_rml = data[4]
-				document:GetElementById("u_description").inner_rml = data[3]
-			end
-			function BuildUpgradeMenu(document)
-				CDataSource.Build("armouryBuyList", "upgrades")
-				upgrades = CDataSource.Read("armouryBuyList", "upgrades", "icon,name,description,price,availability")
-				local circlemenu = document:GetElementById("upgrades")
-				circlemenu.inner_rml = CirclemenuSkeleton(#upgrades)
-				for i=1,#upgrades do
-					circlemenu.child_nodes[i+1].inner_rml = string.format(
-						'<button class="%s" onclick="UpgradeClick(%d,event)" onmouseover="UpgradeHover(document,%d)">%s<img src="/%s"/></button>',
-						upgrades[i][5], i, i, AvailabilityIcon(upgrades[i][5]), upgrades[i][1])
+			function UpgradeMenu:Highlight(index)
+				if index == nil or index <= 0 then
+					self.document:GetElementById("u_name").inner_rml = ""
+					self.document:GetElementById("u_price").inner_rml = ""
+					self.document:GetElementById("u_description").inner_rml = ""
+				else
+					local data = self.items[index]
+					self.document:GetElementById("u_name").inner_rml = data[2]
+					self.document:GetElementById("u_price").inner_rml = data[4]
+					self.document:GetElementById("u_description").inner_rml = data[3]
 				end
-				document:GetElementById("upgradeKeyboardHints").inner_rml = CirclemenuKeyboardHints(#upgrades)
 			end
 			function HumanBuyHandleKey(event, document)
 				local tabset = Element.As.ElementTabSet(document:GetElementById("tabset"))
 				if event.parameters.key_identifier == rmlui.key_identifier.TAB then
 					tabset.active_tab = tabset.active_tab + 1 <= tabset.num_tabs and tabset.active_tab + 1 or 1
 				else
-					local handler = ({[1]=WeaponClick, [2]=UpgradeClick})[tabset.active_tab]
-					CirclemenuHandleKey(event, document, handler)
+					local menu = ({[1]=WeaponMenu, [2]=UpgradeMenu})[tabset.active_tab]
+					menu:HandleKey(event)
 				end
 			end
 		</script>
 	</head>
 	<body id="human_buy" class="circlemenu human" onkeydown="HumanBuyHandleKey(event, document)" onclick="document:Hide()"
-	 onshow="WeaponClear(document) UpgradeClear(document) BuildWeaponMenu(document) BuildUpgradeMenu(document)"
-	 onrefreshdata="BuildWeaponMenu(document) BuildUpgradeMenu(document)">
+	 onshow="WeaponMenu:Build(document) UpgradeMenu:Build(document)"
+	 onrefreshdata="WeaponMenu:Build(document) UpgradeMenu:Build(document)">
 	<tabset class="circlemenu" id="tabset">
-		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">
+		<tab onclick="WeaponMenu:Build(document)">
 			<span><translate>Weapons</translate></span>
 			<div class="tabkey"><translate>TAB</translate></div>
 		</tab>
 		<panel>
 		<div class="circlemenu-circle" id="weaponKeyboardHints"/>
-		<div class="circlemenu-circle" id="weapons"/>
-		<div class="backdrop" id="weaponBackdrop" onmousemove="WeaponBackdropCapture(document, event)" onmouseup="WeaponBackdropClick(document, event)" onclick="event:StopPropagation()"/>
+		<div class="circlemenu-circle" id="weaponMenu"/>
+		<div class="backdrop" id="weaponBackdrop" onmousemove="WeaponMenu:BackdropCapture(event)" onmouseup="WeaponMenu:BackdropClick(event)" onclick="event:StopPropagation()"/>
 			<div class="infobox">
 			<h2 id="w_name"></h2>
 			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="w_price"></div></div></p>
@@ -253,14 +221,14 @@
 			<p class="text" id="w_description"></p>
 			</div>
 		</panel>
-		<tab onclick="UpgradeClear(document) BuildUpgradeMenu(document)">
+		<tab onclick="UpgradeMenu:Build(document)">
 			<span><translate>Upgrades</translate></span>
 			<div class="tabkey"><translate>TAB</translate></div>
 		</tab>
 		<panel>
 		<div class="circlemenu-circle" id="upgradeKeyboardHints"/>
-		<div class="circlemenu-circle" id="upgrades"/>
-		<div class="backdrop" id="upgradeBackdrop" onmousemove="UpgradeBackdropCapture(document, event)" onmouseup="UpgradeBackdropClick(document, event)" onclick="event:StopPropagation()"/>
+		<div class="circlemenu-circle" id="upgradeMenu"/>
+		<div class="backdrop" id="upgradeBackdrop" onmousemove="UpgradeMenu:BackdropCapture(event)" onmouseup="UpgradeMenu:BackdropClick(event)" onclick="event:StopPropagation()"/>
 			<div class="infobox">
 			<h2 id="u_name"></h2>
 			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="u_price"></div></div></p>
