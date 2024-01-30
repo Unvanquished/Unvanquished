@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-12-31 12:54+0000\n"
-"Last-Translator: roggrt <roggrt@gmail.com>\n"
+"PO-Revision-Date: 2024-01-30 22:04+0000\n"
+"Last-Translator: _vrs <vrs@ax8ftn.maskmy.id>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -258,7 +258,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:64
 msgid "Mining structures"
-msgstr "Estructuras para minar"
+msgstr "Estructuras de minería"
 
 #: ui/help_gameplay.rml:67
 msgid ""
@@ -1657,67 +1657,68 @@ msgstr ""
 
 #: ui/options_player.rml:57
 msgid "Humans only"
-msgstr ""
+msgstr "Solo humanos"
 
 #: ui/options_player.rml:58
 msgid "Humans and aliens"
-msgstr ""
+msgstr "Humanos y aliens"
 
 #: ui/options_player.rml:60
 msgid "First-person weapons"
-msgstr ""
+msgstr "Armas primera persona"
 
 #: ui/options_player.rml:61
 msgid "Show gun, pincer, hand and mandible models in first-person."
 msgstr ""
+"Mostrar modelos de pistola, tenaza, mano y mandíbula en primera persona."
 
 #: ui/options_player.rml:64
 msgid "Left-handed mode"
-msgstr ""
+msgstr "Modo zurdo"
 
 #: ui/options_player.rml:66
 msgid "Mirror first-person gun models."
-msgstr ""
+msgstr "Refleja modelos de armas en primera persona."
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
-msgstr ""
+msgstr "Volumen global"
 
 #: ui/options_sound.rml:17
 msgid "Music"
-msgstr ""
+msgstr "Música"
 
 #: ui/options_sound.rml:21
 msgid "Reverb intensity"
-msgstr ""
+msgstr "Intensidad de la reverberación"
 
 #: ui/options_sound.rml:23
 msgid "Echo effect"
-msgstr ""
+msgstr "Efecto de eco"
 
 #: ui/options_sound.rml:26
 msgid "Doppler intensity"
-msgstr ""
+msgstr "Intensidad del efecto Doppler"
 
 #: ui/options_sound.rml:28
 msgid "Pitch-shift effect when moving from or toward a sound."
-msgstr ""
+msgstr "Efecto de cambio de tono al moverse desde o hacia un sonido."
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
-msgstr ""
+msgstr "Dispositivo OpenAL"
 
 #: ui/options_sound.rml:33
 msgid "Audio output device/card"
-msgstr ""
+msgstr "Dispositivo o tarjeta de salida de audio"
 
 #: ui/options_ui.rml:7
 msgid "User interface"
-msgstr ""
+msgstr "Interface de usuario"
 
 #: ui/options_ui.rml:10
 msgid "Real-time clock"
-msgstr ""
+msgstr "Reloj en tiempo real"
 
 #: ui/options_ui.rml:13
 msgid "12 Hour"
@@ -1729,19 +1730,19 @@ msgstr "Formato 24 horas"
 
 #: ui/options_ui.rml:16
 msgid "Show the time in real-life."
-msgstr ""
+msgstr "Muestra el tiempo en el mundo real."
 
 #: ui/options_ui.rml:19
 msgid "Game-time clock"
-msgstr ""
+msgstr "Reloj del juego"
 
 #: ui/options_ui.rml:21
 msgid "Show how long a match has lasted."
-msgstr ""
+msgstr "Muestra la duración de la partida."
 
 #: ui/options_ui.rml:24
 msgid "Crosshair visiblity"
-msgstr ""
+msgstr "Visibilidad de la mira"
 
 #: ui/options_ui.rml:26
 msgid "Never"
@@ -1749,7 +1750,7 @@ msgstr "Nunca"
 
 #: ui/options_ui.rml:27
 msgid "Ranged weapons only"
-msgstr ""
+msgstr "Armas de largo alcance solamente"
 
 #: ui/options_ui.rml:28
 msgid "Always"
@@ -1757,7 +1758,7 @@ msgstr "Siempre"
 
 #: ui/options_ui.rml:33
 msgid "Crosshair size"
-msgstr ""
+msgstr "Tamaño de la mira"
 
 #: ui/options_ui.rml:35
 msgid "Tiny"
@@ -1769,7 +1770,7 @@ msgstr "Pequeño"
 
 #: ui/options_ui.rml:37
 msgid "Regular"
-msgstr ""
+msgstr "Regular"
 
 #: ui/options_ui.rml:38
 msgid "Huge"
@@ -1777,71 +1778,71 @@ msgstr "Enorme"
 
 #: ui/options_ui.rml:44
 msgid "Show ping"
-msgstr ""
+msgstr "Muestra el ping"
 
 #: ui/options_ui.rml:46
 msgid "Time that information takes to get to the server and back."
-msgstr ""
+msgstr "Tiempo que tarda la información en ir y regresar del servidor."
 
 #: ui/options_ui.rml:49
 msgid "Show movement speed"
-msgstr ""
+msgstr "Muestra la velocidad del movimiento"
 
 #: ui/options_ui.rml:51
 msgid "Current, maximum and graph of movement-speed."
-msgstr ""
+msgstr "Velocidad actual, máximo y gráfico movimiento-velocidad."
 
 #: ui/options_ui.rml:54
 msgid "Show FPS"
-msgstr ""
+msgstr "Muestra cuadros por segundo(FPS)"
 
 #: ui/options_ui.rml:56
 msgid "Frames per second."
-msgstr ""
+msgstr "Cuadros por segundo."
 
 #: ui/options_ui.rml:59
 msgid "Console colors"
-msgstr ""
+msgstr "Colores de consola"
 
 #: ui/options_ui.rml:63
 msgid "Red:"
-msgstr ""
+msgstr "Rojo:"
 
 #: ui/options_ui.rml:67
 msgid "Green:"
-msgstr ""
+msgstr "Verde:"
 
 #: ui/options_ui.rml:71
 msgid "Blue:"
-msgstr ""
+msgstr "Azul:"
 
 #: ui/options_ui.rml:75
 msgid "Alpha:"
-msgstr ""
+msgstr "Alfa:"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
-msgstr ""
+msgstr "Hola!"
 
 #: ui/options_welcome.rml:9
 msgid "How should we call you?"
-msgstr ""
+msgstr "¿Como debería llamarte?"
 
 #: ui/options_welcome.rml:13
 msgid "Your name visible to others."
-msgstr ""
+msgstr "Tu nombre es visible para otros."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
-msgstr ""
+msgstr "Puedes cambiar esto en cualquier momento en las opciones."
 
 #: ui/options_welcome.rml:17
 msgid "Select Battlefield"
-msgstr ""
+msgstr "Selecciona campo de batalla"
 
 #: ui/server_browser.rml:37
 msgid "Server Listings"
-msgstr ""
+msgstr "Listado de servidores"
 
 #: ui/server_browser.rml:39
 msgid "Internet"
@@ -1853,7 +1854,7 @@ msgstr "Nombre:"
 
 #: ui/server_browser.rml:45 ui/server_browser.rml:61
 msgid "Players (Bots)"
-msgstr ""
+msgstr "Jugadores(Bots)"
 
 #: ui/server_browser.rml:46 ui/server_browser.rml:62
 msgid "Ping"
@@ -1873,91 +1874,93 @@ msgstr "LAN"
 
 #: ui/server_create.rml:39
 msgid "Hostname"
-msgstr ""
+msgstr "Nombre del Host"
 
 #: ui/server_create.rml:44
 msgid "Password"
-msgstr ""
+msgstr "Contraseña"
 
 #: ui/server_create.rml:49
 msgid "Developer mode (enable cheats)"
-msgstr ""
+msgstr "Modo para desarrolladores (trucos habilitados)"
 
 #: ui/server_create.rml:54
 msgid "Extra packages to load"
-msgstr ""
+msgstr "Paquetes adicionales a cargar"
 
 #: ui/server_create.rml:59
 msgid "Building layout to use"
-msgstr ""
+msgstr "Creando la estructura a utilizar"
 
 #: ui/server_create.rml:67
 msgid "Start"
-msgstr ""
+msgstr "Iniciar"
 
 #: ui/server_setup.rml:16
 msgid "Free funds frequency"
-msgstr ""
+msgstr "Frecuencia de fondos gratis"
 
 #: ui/server_setup.rml:17
 msgid "Every X seconds the player is alive, they will receive free funds."
-msgstr ""
+msgstr "Cada X segundos que el jugador está vivo, recibirá fondos gratis."
 
 #: ui/server_setup.rml:20 ui/server_setup.rml:53
 msgid "seconds"
-msgstr ""
+msgstr "segundos"
 
 #: ui/server_setup.rml:24
 msgid "Friendly fire damage multipliers"
-msgstr ""
+msgstr "Multiplicador de daños por fuego amistoso"
 
 #: ui/server_setup.rml:25
 msgid "Damage multiplier for team damage (doesn't include buildings, or self)"
 msgstr ""
+"Multiplicador de daños por daño de equipo (no incluye edificios o a si mismo)"
 
 #: ui/server_setup.rml:28
 msgid "Alien:"
-msgstr ""
+msgstr "Alien:"
 
 #: ui/server_setup.rml:30
 msgid "Human:"
-msgstr ""
+msgstr "Humano:"
 
 #: ui/server_setup.rml:35
+#, fuzzy
 msgid "Friendly buildable fire"
-msgstr ""
+msgstr "Fuego construible amigable"
 
 #: ui/server_setup.rml:41
 msgid "Allow voting"
-msgstr ""
+msgstr "Permitir votos"
 
 #: ui/server_setup.rml:44
 msgid "Warmup"
-msgstr ""
+msgstr "Calentamiento"
 
 #: ui/server_setup.rml:48
 msgid "Do warmups at every game start"
-msgstr ""
+msgstr "Hacer calentamientos al inicio de cada partida"
 
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
-msgstr ""
+msgstr "Dar tiempo a jugadores en computadoras mas lentas tiempo para unirse."
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
-msgstr ""
+msgstr "Permitir construcciones alienígenas"
 
 #: ui/server_setup.rml:64
 msgid "Allow human building"
-msgstr ""
+msgstr "Permitir construcciones humanas"
 
 #: ui/server_setup.rml:67
 msgid "Physics"
-msgstr ""
+msgstr "Físicas"
 
 #: ui/server_setup.rml:70
 msgid "Gravity"
-msgstr ""
+msgstr "Gravedad"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
