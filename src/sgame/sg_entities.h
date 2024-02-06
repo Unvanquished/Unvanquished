@@ -42,7 +42,6 @@ Maryland 20850 USA.
 #define FL_GODMODE                 0x00000010
 #define FL_NOTARGET                0x00000020
 #define FL_GROUPSLAVE              0x00000400 // not the first on the group
-#define FL_NO_KNOCKBACK            0x00000800
 
 /*
  *  common entity spawn flags

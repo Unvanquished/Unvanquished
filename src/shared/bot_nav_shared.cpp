@@ -146,6 +146,18 @@ static void ParseOption( Str::StringRef name, Str::StringRef value, Str::StringR
 			return;
 		}
 	}
+	else if ( Str::IsIEqual( name, "cellSizeFactor" ) )
+	{
+		if ( floatValue < 0.1f || 10.f < floatValue )
+		{
+			Log::Warn( "%s: incorrect value for cellSizeFactor '%f': must be between 0.1 and 10", file, floatValue );
+		}
+		else if ( floatValue > 0.0f )
+		{
+			config.cellSizeFactor = floatValue;
+			return;
+		}
+	}
 	else if ( Str::IsIEqual( name, "crouch" ) )
 	{
 		if ( !( boolValue & ~1 ) )

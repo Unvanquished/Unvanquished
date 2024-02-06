@@ -141,10 +141,9 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 		return;
 	}
 
-	// Update combat timers.
-	// TODO: Add a message to update combat timers.
-	if (client && source->client && entity.oldEnt != source) {
-		client->lastCombatTime = entity.oldEnt->client->lastCombatTime = level.time;
+	// Update combat timers if this is a client being damaged by another client.
+	if (client && source->client && client != source->client) {
+		client->lastCombatTime = level.time;
 	}
 
 	if (client) {
@@ -218,9 +217,6 @@ Util::optional<glm::vec3> direction, int flags, meansOfDeath_t meansOfDeath) {
 	// TODO: Send a Die/Pain message and handle details where appropriate.
 	if (health <= 0) {
 		healthLogger.Notice("Dying with %.1f health.", health);
-
-		// Disable knockback.
-		if (client) entity.oldEnt->flags |= FL_NO_KNOCKBACK;
 
 		// Call legacy die function.
 		if (entity.oldEnt->die) entity.oldEnt->die(entity.oldEnt, source, source, meansOfDeath);

@@ -73,6 +73,11 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 	}
 }
 
+// TODO: Latch(), when supported in gamelogic
+Cvar::Cvar<bool> g_bot_navmeshReduceTypes(
+	"g_bot_navmeshReduceTypes", "generate/use fewer navmeshes by sharing meshes between similar species",
+	Cvar::NONE, false);
+
 static Cvar::Range<Cvar::Cvar<int>> msecPerFrame(
 	"g_bot_navgen_msecPerFrame", "time budget per frame for navmesh generation",
 	Cvar::NONE, 20, 1, 1500 );
@@ -184,19 +189,17 @@ void G_BotNavInit( int generateNeeded )
 	}
 
 	Log::Notice( "==== Bot Navigation Initialization ====" );
+	if ( g_bot_navmeshReduceTypes.Get() )
+	{
+		Log::Notice( "Using approximate navmesh substitutions for similar classes to reduce number"
+		             " of navmeshes needed (g_bot_navmeshReduceTypes)" );
+	}
 
 	std::bitset<PCL_NUM_CLASSES> missing;
 	NavgenConfig config = ReadNavgenConfig( Cvar::GetValue( "mapname" ) );
 
-	for ( class_t i : RequiredNavmeshes() )
+	for ( class_t i : RequiredNavmeshes( g_bot_navmeshReduceTypes.Get() ) )
 	{
-		const classModelConfig_t *model = BG_ClassModelConfig( i );
-		if ( model->navMeshClass != PCL_NONE )
-		{
-			Log::Warn( "%s shouldn't be in the required navmesh list as it uses another class's navmesh",
-			           model->humanName );
-		}
-
 		switch ( G_BotSetupNav( config, i ) )
 		{
 		case navMeshStatus_t::UNINITIALIZED:
@@ -851,8 +854,8 @@ static void BotMaybeAttackWhileClimbing( gentity_t *self )
 	BG_BoundingBox( static_cast<class_t>( ownClass ), &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
 
 	glm::vec3 origin = VEC2GLM( self->s.origin );
-	glm::vec3 forward, right, up;
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 	auto range = ownClass == PCL_ALIEN_LEVEL0 ? LEVEL0_BITE_RANGE : LEVEL1_CLAW_RANGE;
 
 	trace_t trace;

@@ -1443,9 +1443,9 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 
 	trace_t trace;
 	glm::vec3  muzzle, targetPos;
-	glm::vec3  forward, right, up;
+	glm::vec3  forward;
 
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	targetPos = target.getPos();
 
@@ -1978,13 +1978,13 @@ float CalcBarbAimPitch( gentity_t *self, glm::vec3 &targetPos )
 void BotFireWeaponAI( gentity_t *self )
 {
 	float distance;
-	glm::vec3 forward, right, up;
+	glm::vec3 forward;
 	glm::vec3 muzzle;
 	trace_t trace;
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
 	BotResetStuckTime( self );
-	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, &right, &up );
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 

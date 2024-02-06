@@ -6222,7 +6222,7 @@ bool G_admin_navgen( gentity_t* ent )
 	{
 		if ( Str::IsIEqual( args.Argv( i ), "all" ) )
 		{
-			for ( class_t species : RequiredNavmeshes() )
+			for ( class_t species : RequiredNavmeshes( g_bot_navmeshReduceTypes.Get() ) )
 			{
 				targets[ species ] = true;
 			}
@@ -6230,7 +6230,7 @@ bool G_admin_navgen( gentity_t* ent )
 		else if ( Str::IsIEqual ( args.Argv( i ), "missing" ) )
 		{
 			NavgenConfig config = ReadNavgenConfig( mapName );
-			for (class_t species : RequiredNavmeshes())
+			for (class_t species : RequiredNavmeshes( g_bot_navmeshReduceTypes.Get() ))
 			{
 				fileHandle_t f;
 				std::string filename = Str::Format(
