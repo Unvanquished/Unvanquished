@@ -2045,6 +2045,14 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 		return false;
 	}
 
+	if ( newClass == currentClass )
+	{
+		// prevent recharging adv dragoon barbs instantly by the overmind, for example.
+		// also, fail silently - we don't need to tell the
+		// player they cannot evolve to their current class.
+		return false;
+	}
+
 	// all the checks passed
 	if ( !dryRun )
 	{
