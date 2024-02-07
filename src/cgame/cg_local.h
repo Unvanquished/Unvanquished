@@ -972,6 +972,7 @@ struct weaponInfo_t
 	qhandle_t        crossHair;
 	qhandle_t        crossHairIndicator;
 	int              crossHairSize;
+	float            crossHairSizeNoBorder; // For crosshair outlines
 
 	sfxHandle_t      readySound;
 
@@ -1804,6 +1805,7 @@ extern Cvar::Cvar<float> cg_crosshairColorBlue;
 extern Cvar::Cvar<float> cg_crosshairColorAlpha;
 extern Cvar::Range<Cvar::Cvar<int>> cg_crosshairOutlineStyle;
 extern Cvar::Cvar<float> cg_crosshairOutlineScale;
+extern Cvar::Cvar<float> cg_crosshairOutlineOffset;
 extern Cvar::Cvar<float> cg_crosshairOutlineColorRed;
 extern Cvar::Cvar<float> cg_crosshairOutlineColorGreen;
 extern Cvar::Cvar<float> cg_crosshairOutlineColorBlue;
