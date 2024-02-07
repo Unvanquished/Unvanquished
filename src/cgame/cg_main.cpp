@@ -59,7 +59,8 @@ Cvar::Cvar<float> cg_crosshairColorGreen( "cg_crosshairColorGreen", "crosshair c
 Cvar::Cvar<float> cg_crosshairColorBlue( "cg_crosshairColorBlue", "crosshair colour blue", Cvar::NONE, 1.0 );
 Cvar::Cvar<float> cg_crosshairColorAlpha( "cg_crosshairColorAlpha", "crosshair colour alpha", Cvar::NONE, 1.0 );
 Cvar::Range<Cvar::Cvar<int>> cg_crosshairOutlineStyle( "cg_crosshairOutlineStyle", "crosshair outline style (0 = none, 1 = auto colour, 2 = custom colour)", Cvar::NONE, 0, 0, 2 );
-Cvar::Cvar<float> cg_crosshairOutlineScale( "cg_crosshairOutlineScale", "crosshair outline scale", Cvar::NONE, 2.0 );
+Cvar::Cvar<float> cg_crosshairOutlineScale( "cg_crosshairOutlineScale", "crosshair outline scale", Cvar::NONE, 1.05 );
+Cvar::Cvar<float> cg_crosshairOutlineOffset( "cg_crosshairOutlineOffset", "crosshair outline offset", Cvar::NONE, 2.0 );
 Cvar::Cvar<float> cg_crosshairOutlineColorRed( "cg_crosshairOutlineColorRed", "crosshair colour green", Cvar::NONE, 0.5 );
 Cvar::Cvar<float> cg_crosshairOutlineColorGreen( "cg_crosshairOutlineColorGreen", "crosshair colour green", Cvar::NONE, 0.5 );
 Cvar::Cvar<float> cg_crosshairOutlineColorBlue( "cg_crosshairOutlineColorBlue", "crosshair colour blue", Cvar::NONE, 0.5 );

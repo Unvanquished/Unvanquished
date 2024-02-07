@@ -183,6 +183,10 @@
 							<input type="range" min="-5" max="5" step="0.05" cvar="cg_crosshairOutlineScale"/>
 							<translate>Scale:</translate>&nbsp;<inlinecvar cvar="cg_crosshairOutlineScale" type="number" format="%0.2f"/>
 						</row>
+						<row>
+							<input type="range" min="-5" max="5" step="0.05" cvar="cg_crosshairOutlineOffset"/>
+							<translate>Offset:</translate>&nbsp;<inlinecvar cvar="cg_crosshairOutlineOffset" type="number" format="%0.2f"/>
+						</row>
 					</p>
 				</row>
 				<row>
