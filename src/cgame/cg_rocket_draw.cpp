@@ -763,8 +763,53 @@ public:
 
 		if ( crosshair )
 		{
-			CG_GetRocketElementColor( color_ );
-			trap_R_SetColor( color_ );
+			Color::Color crosshairColor;
+
+			if ( cg_crosshairStyle.Get() == CROSSHAIR_STYLE_CUSTOM ) {
+				crosshairColor.SetRed( cg_crosshairColorRed.Get() );
+				crosshairColor.SetGreen( cg_crosshairColorGreen.Get() );
+				crosshairColor.SetBlue( cg_crosshairColorBlue.Get() );
+				crosshairColor.SetAlpha( cg_crosshairColorAlpha.Get() );
+			} else {
+				CG_GetRocketElementColor( crosshairColor );
+			}
+
+			if ( cg_crosshairOutlineStyle.Get() != CROSSHAIR_OUTLINE_STYLE_NONE ) {
+				Color::Color outlineColor(crosshairColor);
+
+				if ( cg_crosshairOutlineStyle.Get() == CROSSHAIR_OUTLINE_STYLE_AUTO ) {
+					/* Approximation of sRGB to linear conversion without using gamma expansion?
+					   Luma grayscale formula: Y' = 0.299R' + 0.587G' + 0.114B'
+					   This might be wrong w. r. t. linear/sRGB colorspace */
+					float grayScale = outlineColor.Red() * 0.299f + outlineColor.Green() * 0.587f + outlineColor.Blue() * 0.114f;
+					if ( fabsf( 0.5f - grayScale ) < 0.25f ) {
+						grayScale += 0.5f * ( grayScale < 0.5f ? 1.0f : -1.0f );
+					} else {
+						grayScale = 1.0f - grayScale;
+					}
+
+					outlineColor.SetRed( grayScale );
+					outlineColor.SetGreen( grayScale );
+					outlineColor.SetBlue( grayScale );
+					outlineColor.SetAlpha( 1.0f );
+				} else {
+					outlineColor.SetRed( cg_crosshairOutlineColorRed.Get() );
+					outlineColor.SetGreen( cg_crosshairOutlineColorGreen.Get() );
+					outlineColor.SetBlue( cg_crosshairOutlineColorBlue.Get() );
+					outlineColor.SetAlpha( cg_crosshairOutlineColorAlpha.Get() );
+				}
+
+				const float scale = cg_crosshairOutlineScale.Get();
+				const float outlineWidth = w + scale * cgs.aspectScale;
+				const float outlineHeight = h + scale;
+				const float outlineX = rect.x + ( rect.w / 2 ) - ( outlineWidth / 2 );
+				const float outlineY = rect.y + ( rect.h / 2 ) - ( outlineHeight / 2 );
+
+				trap_R_SetColor( outlineColor );
+				CG_DrawPic( outlineX, outlineY, outlineWidth, outlineHeight, crosshair );
+			}
+
+			trap_R_SetColor( crosshairColor );
 			CG_DrawPic( x, y, w, h, crosshair );
 			trap_R_ClearColor();
 		}

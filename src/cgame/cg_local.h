@@ -1799,6 +1799,17 @@ extern Cvar::Range<Cvar::Cvar<int>> cg_drawClock;
 extern Cvar::Cvar<bool> cg_drawFPS;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshair;
 extern Cvar::Cvar<bool> cg_drawCrosshairHit;
+extern Cvar::Range<Cvar::Cvar<int>> cg_crosshairStyle;
+extern Cvar::Cvar<float> cg_crosshairColorRed;
+extern Cvar::Cvar<float> cg_crosshairColorGreen;
+extern Cvar::Cvar<float> cg_crosshairColorBlue;
+extern Cvar::Cvar<float> cg_crosshairColorAlpha;
+extern Cvar::Range<Cvar::Cvar<int>> cg_crosshairOutlineStyle;
+extern Cvar::Cvar<float> cg_crosshairOutlineScale;
+extern Cvar::Cvar<float> cg_crosshairOutlineColorRed;
+extern Cvar::Cvar<float> cg_crosshairOutlineColorGreen;
+extern Cvar::Cvar<float> cg_crosshairOutlineColorBlue;
+extern Cvar::Cvar<float> cg_crosshairOutlineColorAlpha;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshairFriendFoe;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshairNames;
 extern Cvar::Cvar<bool> cg_drawBuildableHealth;
@@ -2262,6 +2273,19 @@ enum
   CROSSHAIR_ALWAYSOFF,
   CROSSHAIR_RANGEDONLY,
   CROSSHAIR_ALWAYSON
+};
+
+// cg_crosshairStyle* settings
+enum {
+	CROSSHAIR_STYLE_DEFAULT,
+	CROSSHAIR_STYLE_CUSTOM
+};
+
+// cg_crosshairOutlineStyle* settings
+enum {
+	CROSSHAIR_OUTLINE_STYLE_NONE,
+	CROSSHAIR_OUTLINE_STYLE_AUTO,
+	CROSSHAIR_OUTLINE_STYLE_CUSTOM
 };
 
 //
