@@ -53,6 +53,17 @@ Cvar::Range<Cvar::Cvar<int>> cg_drawClock("cg_drawClock", "draw clock (1 = 12-ho
 Cvar::Cvar<bool> cg_drawFPS("cg_drawFPS", "show client's frames per second", Cvar::NONE, true);
 Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshair("cg_drawCrosshair", "draw crosshair (1 = ranged weapons, 2 = always)", Cvar::NONE, 2, 0, 2);
 Cvar::Cvar<bool> cg_drawCrosshairHit("cg_drawCrosshairHit", "show damage indicator", Cvar::NONE, true);
+Cvar::Range<Cvar::Cvar<int>> cg_crosshairStyle( "cg_crosshairStyle", "crosshair colour style (0 = image colour, 1 = custom colour)", Cvar::NONE, 0, 0, 1 );
+Cvar::Cvar<float> cg_crosshairColorRed( "cg_crosshairColorRed", "crosshair colour red", Cvar::NONE, 1.0 );
+Cvar::Cvar<float> cg_crosshairColorGreen( "cg_crosshairColorGreen", "crosshair colour green", Cvar::NONE, 1.0 );
+Cvar::Cvar<float> cg_crosshairColorBlue( "cg_crosshairColorBlue", "crosshair colour blue", Cvar::NONE, 1.0 );
+Cvar::Cvar<float> cg_crosshairColorAlpha( "cg_crosshairColorAlpha", "crosshair colour alpha", Cvar::NONE, 1.0 );
+Cvar::Range<Cvar::Cvar<int>> cg_crosshairOutlineStyle( "cg_crosshairOutlineStyle", "crosshair outline style (0 = none, 1 = auto colour, 2 = custom colour)", Cvar::NONE, 0, 0, 2 );
+Cvar::Cvar<float> cg_crosshairOutlineScale( "cg_crosshairOutlineScale", "crosshair outline scale", Cvar::NONE, 2.0 );
+Cvar::Cvar<float> cg_crosshairOutlineColorRed( "cg_crosshairOutlineColorRed", "crosshair colour green", Cvar::NONE, 0.5 );
+Cvar::Cvar<float> cg_crosshairOutlineColorGreen( "cg_crosshairOutlineColorGreen", "crosshair colour green", Cvar::NONE, 0.5 );
+Cvar::Cvar<float> cg_crosshairOutlineColorBlue( "cg_crosshairOutlineColorBlue", "crosshair colour blue", Cvar::NONE, 0.5 );
+Cvar::Cvar<float> cg_crosshairOutlineColorAlpha( "cg_crosshairOutlineColorAlpha", "crosshair colour alpha", Cvar::NONE, 1.0 );
 Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshairFriendFoe("cg_drawCrosshairFriendFoe", "change crosshair color over players (1 = ranged weapons 2 = all)", Cvar::NONE, 0, 0, 2);
 Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshairNames("cg_drawCrosshairNames", "draw name of player under crosshair (2 = also client num)", Cvar::NONE, 1, 0, 2);
 Cvar::Cvar<bool> cg_drawBuildableHealth("cg_drawBuildableHealth", "show buildable health bar when builder", Cvar::NONE, true);
