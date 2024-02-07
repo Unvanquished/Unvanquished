@@ -1414,6 +1414,12 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			CG_TransformSkeleton( &gun.skeleton, weapon->scale );
 		}
 
+		if ( cg_drawGun.Get() >= 3 && ps ) {
+			gun.shaderRGBA = Color::White;
+			gun.shaderRGBA.SetAlpha( 32 );
+			gun.customShader = cgs.media.plainColorShader;
+		}
+
 		trap_R_AddRefEntityToScene( &gun );
 
 		if ( !ps )
@@ -1428,6 +1434,12 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		else
 		{
 			barrel.hModel = weapon->barrelModel;
+
+			if ( cg_drawGun.Get() >= 3 ) {
+				barrel.shaderRGBA = Color::White;
+				barrel.shaderRGBA.SetAlpha( 32 );
+				barrel.customShader = cgs.media.plainColorShader;
+			}
 		}
 
 		// add the spinning barrel
@@ -1585,10 +1597,12 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	wi = &cg_weapons[ weapon ];
 
-	/* cg_drawGun has 3 values:
+	/* cg_drawGun has 5 values:
 	- 0 : draw no gun at all
 	- 1 : draw gun for humans
-	- 2 : draw gun for humans and aliens */
+	- 2 : draw gun for humans and aliens
+	- 3 : draw translucent gun for humans
+	- 4 : draw translucent gun for humans and aliens */
 	switch ( cg_drawGun.Get() )
 	{
 		case 0: // none
@@ -1608,6 +1622,12 @@ void CG_AddViewWeapon( playerState_t *ps )
 			drawGun = true;
 			break;
 		*/
+
+		case 3: // humans only
+			if ( BG_Weapon( weapon )->team == TEAM_ALIENS ) {
+				drawGun = false;
+			}
+			break;
 	}
 
 	if ( !wi->registered )
