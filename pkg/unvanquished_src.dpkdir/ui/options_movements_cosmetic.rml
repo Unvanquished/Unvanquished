@@ -38,6 +38,8 @@
 				<option value="0"><translate>Disable</translate></option>
 				<option value="1"><translate>Humans only</translate></option>
 				<option value="2"><translate>Humans and aliens</translate></option>
+				<option value="3"><translate>Humans (translucent)</translate></option>
+				<option value="4"><translate>Humans and aliens (translucent)</translate></option>
 			</select>
 			<h3><translate>First-person weapons</translate></h3>
 			<p><translate>Show gun, pincer, hand and mandible models in first-person.</translate></p>
