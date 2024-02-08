@@ -2254,10 +2254,6 @@ void G_RunFrame( int levelTime )
 		// think/run entity by type
 		switch ( ent->s.eType )
 		{
-			case entityType_t::ET_MISSILE:
-				G_RunMissile( ent );
-				continue;
-
 			case entityType_t::ET_BUILDABLE:
 				// TODO: Do buildables make any use of G_Physics' functionality apart from the call
 				//       to G_RunThink?

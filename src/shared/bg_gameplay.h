@@ -82,7 +82,6 @@ extern const float TRAPPER_RANGE;
 
 extern const float HIVE_SENSE_RANGE;
 extern const float HIVE_SPEED;
-extern const int   HIVE_DIR_CHANGE_PERIOD;
 
 extern const int   LOCKBLOB_REPEAT;
 extern const float LOCKBLOB_RANGE;
@@ -143,7 +142,6 @@ extern const int   MGTURRET_SPREAD;
 extern const float ROCKETPOD_RANGE;
 extern const int   ROCKETPOD_ATTACK_PERIOD;
 
-extern const int   ROCKET_TURN_PERIOD;
 extern const float ROCKET_TURN_ANGLE;
 
 /*
@@ -369,11 +367,6 @@ extern float FLAMER_IGNITE_SPLCHANCE;
 extern int   PRIFLE_SPEED;
 
 extern int   LCANNON_DAMAGE;
-extern int   LCANNON_RADIUS;
-extern int   LCANNON_SECONDARY_DAMAGE;
-extern int   LCANNON_SECONDARY_RADIUS;
-extern int   LCANNON_SECONDARY_SPEED;
-extern int   LCANNON_SPEED;
 extern int   LCANNON_CHARGE_TIME_MAX;
 extern int   LCANNON_CHARGE_TIME_MIN;
 extern int   LCANNON_CHARGE_TIME_WARN;
