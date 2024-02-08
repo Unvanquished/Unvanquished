@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-09-01 06:35+0000\n"
-"Last-Translator: Andrii Murha <flat.assembly@gmail.com>\n"
+"PO-Revision-Date: 2024-02-09 01:19+0000\n"
+"Last-Translator: Mykhailo Muzyka <mykhailo.muzyka535@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/uk/>\n"
 "Language: uk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.4-dev\n"
 "X-POOTLE-MTIME: 1377273168.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -104,19 +104,19 @@ msgstr "Змінити карту"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "Голосування: наступна карта"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "Голосування: встановити поточну карту"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "Встановити поточну карту (хост)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "Метод"
 
 #: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
 msgid "Map"
@@ -124,57 +124,68 @@ msgstr "Мапа"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Виконати дію"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Помилка!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Гаразд"
 
 #: ui/help_gameplay.rml:16 ui/welcome.rml:16
 msgid "Welcome"
-msgstr ""
+msgstr "Ласкаво просимо"
 
 #: ui/help_gameplay.rml:19
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"У цьому розділі ви знайдете огляд основних елементів ігрового процесу, які "
+"вам потрібно знати, щоб стати успішним гравцем."
 
 #: ui/help_gameplay.rml:22
 msgid "More can be found on our website and other community places!"
 msgstr ""
+"Більше інформації можна знайти на нашому вебсайті та інших ресурсах "
+"спільноти!"
 
 #: ui/help_gameplay.rml:24
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Спілкуйтеся з гравцями та розробниками на каналах Libera.Chat IRC, Matrix "
+"або Discord: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:25
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "Обговорюйте новини на форумах: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "Дізнайтеся більше про гру у вікіпедії: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:28
 msgid "Please report bugs on: <web dest=\"bugs\" />"
 msgstr ""
+"Будь ласка, повідомляйте про помилки та баги за адресою: <web dest=\"bugs\" "
+"/>"
 
 #: ui/help_gameplay.rml:32
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "Дохід і Еволюція"
 
 #: ui/help_gameplay.rml:36
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"Інші можуть заробляти бали еволюції, вбиваючи людей. Після цього вони можуть "
+"використовувати ці бали, щоб еволюціонувати в [dragoon] більш розвинуті "
+"форми."
 
 #: ui/help_gameplay.rml:39
 msgid ""
@@ -182,12 +193,17 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"Чужі можуть еволюціонувати будь-де поза зоною прямої видимості людини або "
+"будівлі. Вони також можуть повернутися до [granger], менш просунуту форму (з "
+"втратою балів еволюції), коли вони поряд із [overmind] Над розумом."
 
 #: ui/help_gameplay.rml:42
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
 msgstr ""
+"Побудуйте над розум, будучи [granger] Фермером, якщо він буде знищений, так "
+"вам потрібен живий над розум, щоб вижити!"
 
 #: ui/help_gameplay.rml:46
 msgid ""
@@ -195,6 +211,10 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
+"Люди можуть заробляти кредити, вбиваючи Чужих і знищуючи їх споруди, потім "
+"вони можуть використовувати свої кредити, щоб купувати нові [lcannon] зброї, "
+"броню або [bsuit] бойовий костюм, а також аксесуари, такі як радар чи "
+"джетпак."
 
 #: ui/help_gameplay.rml:49
 msgid ""
@@ -991,7 +1011,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:247
 msgid "None"
-msgstr "Ні"
+msgstr "Нічого"
 
 #: ui/options_graphics.rml:122
 msgid "Blobs"
