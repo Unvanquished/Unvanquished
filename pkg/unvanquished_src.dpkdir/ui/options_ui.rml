@@ -4,93 +4,170 @@
 		<link type="text/template" href="/ui/shared/window.rml" />
 	</head>
 	<body id="options_ui" template="window" class="window-options" style="margin-top: 10%; width: 32em;">
-		<row>
-			<h1><translate>User interface</translate></h1>
-			<!-- Keep in sync with language menu in options_welcome.rml -->
-			<h3><translate>Language</translate> </h3>
-			<p> <translate>Some languages are not fully translated.</translate> </p>
-
-			<!-- NOTE: it's a bad idea to put languages translated at less than 50% in the list, right? -->
-			<select cvar="language">
-				<option value="fr">Français</option>
-				<option value="ru">Русский</option>
-				<option value="en">English</option>
-				<option value="de">Deutsch</option>
-				<option value="it">Italiano</option>
-				<option value="es">Español</option>
-				<option value="fi">Suomi</option>
-			</select>
-			<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Events.pushevent("exec language", event);Events.pushevent("exec updatelanguage", event)'><translate>Change language</translate></button>
-		</row>
-		<row>
-			<h3><translate>Real-time clock</translate></h3>
-			<select name="cg_drawClock" cvar="cg_drawClock">
-				<option value="0"><translate>No</translate></option>
-				<option value="1"><translate>12 Hour</translate></option>
-				<option value="2"><translate>24 Hour</translate></option>
-			</select>
-			<p><translate>Show the time in real-life.</translate></p>
-		</row>
-		<row>
-			<h3><translate>Game-time clock</translate></h3>
-			<input cvar="cg_drawTimer" type="checkbox" />
-			<p><translate>Show how long a match has lasted.</translate></p>
-		</row>
-		<row>
-			<h3><translate>Crosshair visiblity</translate></h3>
-			<select name="drawcrosshair" cvar="cg_drawCrosshair">
-				<option value="0"><translate>Never</translate></option>
-				<option value="1"><translate>Ranged weapons only</translate></option>
-				<option value="2"><translate>Always</translate></option>
-			</select>
-			<p></p>
-		</row>
-		<row>
-		<h3><translate>Crosshair size</translate></h3>
-			<select name="wwspeed" cvar="cg_crosshairSize">
-				<option value="0.5"><translate>Tiny</translate></option>
-				<option value="0.75"><translate>Small</translate></option>
-				<option value="1"><translate>Regular</translate></option>
-				<option value="1.5"><translate>Huge</translate></option>
-			</select>
-			<p></p>
-		</row>
-		<row>
-			<!-- BUG: This should be a lag-o-meter, not a ping control -->
-			<h3><translate>Show ping</translate></h3>
-			<input cvar="cg_lagometer" type="checkbox" />
-			<p><translate>Time that information takes to get to the server and back.</translate></p>
-		</row>
-		<row>
-			<h3><translate>Show movement speed</translate></h3>
-			<input cvar="cg_drawSpeed" type="checkbox" />
-			<p><translate>Current, maximum and graph of movement-speed.</translate></p>
-		</row>
-		<row>
-			<h3><translate>Show FPS</translate></h3>
-			<input cvar="cg_drawFPS" type="checkbox" />
-			<p><translate>Frames per second.</translate></p>
-		</row>
-		<row>
-			<h3><translate>Console colors</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset con_colorRed con_colorGreen con_colorBlue con_colorAlpha", event)'>(<translate>reset</translate>)</ilink></h3>
-			<p>
+		<h1><translate>User interface</translate></h1>
+		<tabset>
+			<tab><translate>Main</translate></tab>
+			<panel class="main">
 				<row>
-					<input type="range" min="0" max="1" step="0.05" cvar="con_colorRed"/>
-					<translate>Red:</translate>&nbsp;<inlinecvar cvar="con_colorRed" type="number" format="%0.2f"/>
+					<!-- Keep in sync with language menu in options_welcome.rml -->
+					<h3><translate>Language</translate> </h3>
+					<p> <translate>Some languages are not fully translated.</translate> </p>
+		
+					<!-- NOTE: it's a bad idea to put languages translated at less than 50% in the list, right? -->
+					<select cvar="language">
+						<option value="fr">Français</option>
+						<option value="ru">Русский</option>
+						<option value="en">English</option>
+						<option value="de">Deutsch</option>
+						<option value="it">Italiano</option>
+						<option value="es">Español</option>
+						<option value="fi">Suomi</option>
+					</select>
+					<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Events.pushevent("exec language", event);Events.pushevent("exec updatelanguage", event)'><translate>Change language</translate></button>
 				</row>
 				<row>
-					<input type="range" min="0" max="1" step="0.05" cvar="con_colorGreen"/>
-					<translate>Green:</translate>&nbsp;<inlinecvar cvar="con_colorGreen" type="number" format="%0.2f"/>
+					<h3><translate>Real-time clock</translate></h3>
+					<select name="cg_drawClock" cvar="cg_drawClock">
+						<option value="0"><translate>No</translate></option>
+						<option value="1"><translate>12 Hour</translate></option>
+						<option value="2"><translate>24 Hour</translate></option>
+					</select>
+					<p><translate>Show the time in real-life.</translate></p>
 				</row>
 				<row>
-					<input type="range" min="0" max="1" step="0.05" cvar="con_colorBlue"/>
-					<translate>Blue:</translate>&nbsp;<inlinecvar cvar="con_colorBlue" type="number" format="%0.2f"/>
+					<h3><translate>Game-time clock</translate></h3>
+					<input cvar="cg_drawTimer" type="checkbox" />
+					<p><translate>Show how long a match has lasted.</translate></p>
 				</row>
 				<row>
-					<input type="range" min="0" max="1" step="0.05" cvar="con_colorAlpha"/>
-					<translate>Alpha:</translate>&nbsp;<inlinecvar cvar="con_colorAlpha" type="number" format="%0.2f"/>
+					<!-- BUG: This should be a lag-o-meter, not a ping control -->
+					<h3><translate>Show ping</translate></h3>
+					<input cvar="cg_lagometer" type="checkbox" />
+					<p><translate>Time that information takes to get to the server and back.</translate></p>
 				</row>
-			</p>
-		</row>
+				<row>
+					<h3><translate>Show movement speed</translate></h3>
+					<input cvar="cg_drawSpeed" type="checkbox" />
+					<p><translate>Current, maximum and graph of movement-speed.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Show FPS</translate></h3>
+					<input cvar="cg_drawFPS" type="checkbox" />
+					<p><translate>Frames per second.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Console colors</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset con_colorRed con_colorGreen con_colorBlue con_colorAlpha", event)'>(<translate>reset</translate>)</ilink></h3>
+					<p>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="con_colorRed"/>
+							<translate>Red:</translate>&nbsp;<inlinecvar cvar="con_colorRed" type="number" format="%0.2f"/>
+						</row>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="con_colorGreen"/>
+							<translate>Green:</translate>&nbsp;<inlinecvar cvar="con_colorGreen" type="number" format="%0.2f"/>
+						</row>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="con_colorBlue"/>
+							<translate>Blue:</translate>&nbsp;<inlinecvar cvar="con_colorBlue" type="number" format="%0.2f"/>
+						</row>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="con_colorAlpha"/>
+							<translate>Alpha:</translate>&nbsp;<inlinecvar cvar="con_colorAlpha" type="number" format="%0.2f"/>
+						</row>
+					</p>
+				</row>
+			</panel>
+			<tab><translate>Crosshair</translate></tab>
+			<panel class="crosshair">
+				<row>
+					<h3><translate>Crosshair visiblity</translate></h3>
+					<select name="drawcrosshair" cvar="cg_drawCrosshair">
+						<option value="0"><translate>Never</translate></option>
+						<option value="1"><translate>Ranged weapons only</translate></option>
+						<option value="2"><translate>Always</translate></option>
+					</select>
+					<p></p>
+				</row>
+				<row>
+				<h3><translate>Crosshair size</translate></h3>
+					<select name="wwspeed" cvar="cg_crosshairSize">
+						<option value="0.5"><translate>Tiny</translate></option>
+						<option value="0.75"><translate>Small</translate></option>
+						<option value="1"><translate>Regular</translate></option>
+						<option value="1.5"><translate>Huge</translate></option>
+					</select>
+					<p></p>
+				</row>
+				<row>
+					<h3><translate>Crosshair colour</translate></h3>
+					<select name="crosshairstyle" cvar="cg_crosshairStyle">
+						<option value="0"><translate>Image colour</translate></option>
+						<option value="1"><translate>Custom colour</translate></option>
+					</select>
+					<p></p>
+				</row>
+				<row>
+					<h3><translate>Crosshair colours</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset cg_crosshairColorRed cg_crosshairColorGreen cg_crosshairColorBlue cg_crosshairColorAlpha", event)'>(<translate>reset</translate>)</ilink></h3>
+					<p>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairColorRed"/>
+							<translate>Red:</translate>&nbsp;<inlinecvar cvar="cg_crosshairColorRed" type="number" format="%0.2f"/>
+						</row>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairColorGreen"/>
+							<translate>Green:</translate>&nbsp;<inlinecvar cvar="cg_crosshairColorGreen" type="number" format="%0.2f"/>
+						</row>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairColorBlue"/>
+							<translate>Blue:</translate>&nbsp;<inlinecvar cvar="cg_crosshairColorBlue" type="number" format="%0.2f"/>
+						</row>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairColorAlpha"/>
+							<translate>Alpha:</translate>&nbsp;<inlinecvar cvar="cg_crosshairColorAlpha" type="number" format="%0.2f"/>
+						</row>
+					</p>
+				</row>
+				<row>
+					<h3><translate>Crosshair outline colour</translate></h3>
+					<select name="crosshairoutlinestyle" cvar="cg_crosshairOutlineStyle">
+						<option value="0"><translate>None</translate></option>
+						<option value="1"><translate>Auto colour</translate></option>
+						<option value="2"><translate>Custom colour</translate></option>
+					</select>
+					<p></p>
+				</row>
+				<row>
+					<h3><translate>Crosshair outline scale</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset cg_crosshairOutlineScale", event)'>(<translate>reset</translate>)</ilink></h3>
+					<p>
+						<p><translate>Negative values will change the outline to be inside the crosshair.</translate></p>
+						<row>
+							<input type="range" min="-5" max="5" step="0.05" cvar="cg_crosshairOutlineScale"/>
+							<translate>Scale:</translate>&nbsp;<inlinecvar cvar="cg_crosshairOutlineScale" type="number" format="%0.2f"/>
+						</row>
+					</p>
+				</row>
+				<row>
+					<h3><translate>Crosshair outline colours</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset cg_crosshairOutlineColorRed cg_crosshairOutlineColorGreen cg_crosshairOutlineColorBlue cg_crosshairOutlineColorAlpha", event)'>(<translate>reset</translate>)</ilink></h3>
+					<p>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairOutlineColorRed"/>
+							<translate>Red:</translate>&nbsp;<inlinecvar cvar="cg_crosshairOutlineColorRed" type="number" format="%0.2f"/>
+						</row>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairOutlineColorGreen"/>
+							<translate>Green:</translate>&nbsp;<inlinecvar cvar="cg_crosshairOutlineColorGreen" type="number" format="%0.2f"/>
+						</row>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairOutlineColorBlue"/>
+							<translate>Blue:</translate>&nbsp;<inlinecvar cvar="cg_crosshairOutlineColorBlue" type="number" format="%0.2f"/>
+						</row>
+						<row>
+							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairOutlineColorAlpha"/>
+							<translate>Alpha:</translate>&nbsp;<inlinecvar cvar="cg_crosshairOutlineColorAlpha" type="number" format="%0.2f"/>
+						</row>
+					</p>
+				</row>
+			</panel>
+		</tabset>
 	</body>
 </rml>
