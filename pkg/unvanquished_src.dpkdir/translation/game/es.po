@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2024-01-30 22:04+0000\n"
+"PO-Revision-Date: 2024-02-09 01:19+0000\n"
 "Last-Translator: Jonas <jonasdcdm@mailbox.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
@@ -2002,99 +2002,99 @@ msgstr "Gravedad"
 
 #: ui/server_setup.rml:79
 msgid "Dretch punt"
-msgstr ""
+msgstr "Ataque de dretch"
 
 #: ui/server_setup.rml:80
 msgid "Dretches can be pushed out of the way by attacking them."
-msgstr ""
+msgstr "Los dretch pueden ser empujados atacándolos."
 
 #: ui/server_setup.rml:86
 msgid "Anti spawn-block"
-msgstr ""
+msgstr "Anti bloqueo del punto de spawn"
 
 #: ui/server_setup.rml:87
 msgid "Push slow people away from spawns."
-msgstr ""
+msgstr "Aleja las personas lentas de los spawns."
 
 #: ui/server_setup.rml:96
 msgid "Half life time"
-msgstr ""
+msgstr "Tiempo de media vida"
 
 #: ui/server_setup.rml:97
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
-msgstr ""
+msgstr "Tiempo para que el momento disminuya un 50%. 0 deshabilita esta opción."
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
-msgstr ""
+msgstr "minutos"
 
 #: ui/server_setup.rml:104
 msgid "Double reward delay"
-msgstr ""
+msgstr "Intervalo de doble recompensa"
 
 #: ui/server_setup.rml:105
 msgid "Time after which some momentum rewards double"
-msgstr ""
+msgstr "Tiempo tras el cual el momento duplica la recompensa"
 
 #: ui/server_setup.rml:112
 msgid "Base Multiplier"
-msgstr ""
+msgstr "Multiplicador base"
 
 #: ui/server_setup.rml:113
 msgid "Generic momentum reward multiplier"
-msgstr ""
+msgstr "Multiplicador de recompensa de momento genérico"
 
 #: ui/server_setup.rml:120
 msgid "Kills reward multiplier"
-msgstr ""
+msgstr "Mata el multiplicador de recompensa"
 
 #: ui/server_setup.rml:121
 msgid "Momentum reward multiplier for kills"
-msgstr ""
+msgstr "Multiplicador de recompensa para cada eliminación"
 
 #: ui/server_setup.rml:128
 msgid "Building reward multiplier"
-msgstr ""
+msgstr "Multiplicador de recompensa de construcción"
 
 #: ui/server_setup.rml:129
 msgid "Momentum reward multiplier for construction"
-msgstr ""
+msgstr "Multiplicador de bonus de momento por construcción"
 
 #: ui/server_setup.rml:136
 msgid "Deconstruction penalty multiplier"
-msgstr ""
+msgstr "Penalización del multiplicador por deconstrucción"
 
 #: ui/server_setup.rml:137
 msgid "Momentum penalty multiplier for deconstruction"
-msgstr ""
+msgstr "Multiplicador de penalización por deconstrucción"
 
 #: ui/server_setup.rml:144
 msgid "Building kill reward multiplier"
-msgstr ""
+msgstr "Multiplicador de recompensa por eliminación por construcción"
 
 #: ui/server_setup.rml:145
 msgid "Momentum reward multiplier for killing buildables"
-msgstr ""
+msgstr "Multiplicador de recompensa de momento por destrucción de estructuras"
 
 #: ui/server_setup.rml:156
 msgid "Starting value"
-msgstr ""
+msgstr "Valor inicial"
 
 #: ui/server_setup.rml:157
 msgid "Initial build points count"
-msgstr ""
+msgstr "Puntos de construcción iniciales"
 
 #: ui/server_setup.rml:164
 msgid "Miner bonus"
-msgstr ""
+msgstr "Bonus de minería"
 
 #: ui/server_setup.rml:165
 msgid "Build point budget per miner"
-msgstr ""
+msgstr "Puntos de construcción por minero"
 
 #: ui/server_setup.rml:172
 msgid "Initial regeneration speed"
-msgstr ""
+msgstr "Velocidad de regeneración inicial"
 
 #: ui/server_setup.rml:173
 msgid "The initial speed at which BP will be recovered (in BP per minute)"
