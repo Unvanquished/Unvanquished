@@ -2100,6 +2100,10 @@ void BotFireWeaponAI( gentity_t *self )
 			}
 			else
 			{
+				if ( self->client->ps.stats[ STAT_STATE ] & SS_CHARGING )
+				{
+					self->client->ps.weaponCharge = 0;
+				}
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );    //rant swipe
 			}
 			break;
