@@ -1112,7 +1112,13 @@ static void GenerateNavmeshes()
 	trap_UpdateScreen();
 
 	NavmeshGenerator navgen;
-	navgen.Init( mapName );
+	NavgenStatus status = navgen.Init( mapName );
+	if ( !status.ok() )
+	{
+		Log::Warn( "Failed to load map data while generating navmesh: %s", status.String() );
+		return;
+	}
+
 	float classesCompleted = 0.3; // Assume that Init() is 0.3 times as much work as generating 1 species
 	// and assume that each species takes the same amount of time, which is actually completely wrong:
 	// smaller ones take much longer
@@ -1124,7 +1130,13 @@ static void GenerateNavmeshes()
 		cg.loadingFraction = classesCompleted / classesTotal;
 		trap_UpdateScreen();
 
-		navgen.StartGeneration( species );
+		status = navgen.StartGeneration( species );
+		if ( !status.ok() )
+		{
+			Log::Warn( "Failed to initialize navmesh generation for %s: %s", BG_Class( species )->name, status.String() );
+			return;
+		}
+
 		do
 		{
 			float fraction = ( classesCompleted + navgen.SpeciesFractionCompleted() ) / classesTotal;
@@ -1133,7 +1145,13 @@ static void GenerateNavmeshes()
 				cg.navmeshLoadingFraction = fraction;
 				trap_UpdateScreen();
 			}
-		} while ( !navgen.Step() );
+			status = navgen.Step();
+		} while ( status.IsIncomplete() );
+		if ( !status.ok() )
+		{
+			// Limp on, maybe other navmeshes will succeed.
+			Log::Warn( "Failed to generate navmesh for %s: %s", BG_Class( species )->name, status.String() );
+		}
 		++classesCompleted;
 	}
 	cg.loadingNavmesh = false;

@@ -54,6 +54,12 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 {
 	std::string mapName = Cvar::GetValue( "mapname" );
 	NavmeshGenerator navgen;
+	NavgenStatus status = navgen.Init( mapName );
+	if ( !status.ok() )
+	{
+		Log::Warn( "Failed to load map data while generating navmesh: %s", status.String() );
+		return;
+	}
 
 	for ( int i = PCL_NONE; ++i < PCL_NUM_CLASSES; )
 	{
@@ -62,13 +68,25 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 			continue;
 		}
 
-		navgen.Init( mapName );
-		navgen.StartGeneration( Util::enum_cast<class_t>( i ) );
-
-		while ( !navgen.Step() )
+		status = navgen.StartGeneration( Util::enum_cast<class_t>( i ) );
+		if ( !status.ok() )
 		{
+			Log::Warn( "Failed to initialize navmesh generation for %s: %s", BG_Class( i )->name, status.String() );
+			continue;
+		}
+
+		do
+		{
+			status = navgen.Step();
+
 			// ping the engine with a useless message so that it does not think the sgame VM has hung
 			Cvar::GetValue( "x" );
+		} while ( status.IsIncomplete() );
+
+		if ( !status.ok() )
+		{
+			Log::Warn( "Failed to generate navmesh for %s: %s", BG_Class( i )->name, status.String() );
+			continue;
 		}
 	}
 }
@@ -115,7 +133,12 @@ void G_BotBackgroundNavgen()
 	{
 		class_t next = navgenQueue.back();
 		generatingNow = next;
-		navgen.StartGeneration( next );
+		NavgenStatus status = navgen.StartGeneration( generatingNow );
+		if ( !status.ok() )
+		{
+			Log::Warn( "Failed to initialize navmesh generation for %s: %s", BG_Class( generatingNow )->name, status.String() );
+			return;
+		}
 	}
 
 	if ( level.time > nextLogTime )
@@ -143,8 +166,13 @@ void G_BotBackgroundNavgen()
 
 	while ( Sys::Milliseconds() < stopTime )
 	{
-		if ( navgen.Step() )
+		NavgenStatus status = navgen.Step();
+		if ( !status.IsIncomplete() )
 		{
+			if ( !status.ok() )
+			{
+				Log::Warn( "error generating navmesh for %s: %s", BG_Class( generatingNow ), status.String() );
+			}
 			ASSERT_EQ( generatingNow, navgenQueue.back() );
 			navgenQueue.pop_back();
 			generatingNow = PCL_NONE;

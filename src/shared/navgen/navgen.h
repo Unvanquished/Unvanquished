@@ -121,9 +121,15 @@ struct NavgenStatus
 		OK,
 		TRANSIENT_FAILURE, // e.g. memory allocation failure
 		PERMANENT_FAILURE,
+		NOT_COMPLETE,
 	};
 	Code code;
 	std::string message;
+
+	bool ok() const { return code == Code::OK; }
+	bool IsIncomplete() const { return code == Code::NOT_COMPLETE; }
+
+	std::string String() const { return Str::Format("Code %d: %s", code, message); }
 };
 
 // Public interface to navgen. Rest of this file is internal details
@@ -141,7 +147,10 @@ private:
 		int th;
 		int x = 0;
 		int y = 0;
-		NavgenStatus status;
+
+		bool IsDone() const {
+			return y >= th;
+		}
 	};
 
 	UnvContext recastContext_;
@@ -152,24 +161,24 @@ private:
 	std::string mapName_;
 	std::string mapData_;
 	Geometry geo_;
-	NavgenStatus initStatus_;
 	// Data for generating current class
 	std::unique_ptr<PerClassData> d_;
 
 	void LoadBSP();
-	void LoadGeometry();
-	void LoadTris(std::vector<float>& verts, std::vector<int>& tris);
-	void WriteFile();
+	NavgenStatus LoadGeometry();
+	NavgenStatus LoadTris(std::vector<float>& verts, std::vector<int>& tris);
 
 public:
 	// load the BSP if it has not been loaded already
 	// in principle mapName could be different from the current map, if the necessary pak is loaded
-	void Init(Str::StringRef mapName);
+	NavgenStatus Init(Str::StringRef mapName);
 
-	void StartGeneration(class_t species);
+	NavgenStatus StartGeneration(class_t species);
 
 	float SpeciesFractionCompleted() const;
 
 	// Returns true when finished
-	bool Step();
+	NavgenStatus Step();
+	NavgenStatus WriteFile();
+	NavgenStatus WriteError(const NavgenStatus& status);
 };
