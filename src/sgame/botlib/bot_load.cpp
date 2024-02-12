@@ -399,7 +399,7 @@ static navMeshStatus_t BotLoadNavMesh( int f, const NavgenConfig &config, const 
 
 		if ( dtStatusFailed( status ) )
 		{
-			Log::Warn("Failed to add tile to navmesh" );
+			Log::Warn( "Failed to add tile to navmesh" );
 			dtFree( data );
 			dtFreeTileCache( nav.cache );
 			dtFreeNavMesh( nav.mesh );

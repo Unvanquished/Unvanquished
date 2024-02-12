@@ -68,27 +68,16 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 			continue;
 		}
 
-		status = navgen.StartGeneration( Util::enum_cast<class_t>( i ) );
-		if ( !status.ok() )
-		{
-			Log::Warn( "Failed to initialize navmesh generation for %s: %s", BG_Class( i )->name, status.String() );
-			continue;
-		}
-
-		do
-		{
-			status = navgen.Step();
-
-			// ping the engine with a useless message so that it does not think the sgame VM has hung
-			Cvar::GetValue( "x" );
-		} while ( status.IsIncomplete() );
-
-		if ( !status.ok() )
-		{
-			Log::Warn( "Failed to generate navmesh for %s: %s", BG_Class( i )->name, status.String() );
-			continue;
-		}
+		navgen.StartGeneration( Util::enum_cast<class_t>( i ) );
 	}
+	float progress = 0.0f;
+	do
+	{
+		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+		progress = navgen.Progress();
+		navgen.RunTasks();
+		Log::Notice( "Navmesh generation progress: %.2f%%", progress * 100 );
+	} while ( navgen.Progress() < 0.9f );
 }
 
 // TODO: Latch(), when supported in gamelogic
@@ -104,87 +93,42 @@ static Cvar::Cvar<int> frameToggle("g_bot_navgen_frame", "FOR INTERNAL USE", Cva
 static Cvar::Cvar<bool> g_bot_autocrouch("g_bot_autocrouch", "whether bots should crouch when they detect an obstacle", Cvar::NONE, true);
 
 static NavmeshGenerator navgen;
-static std::vector<class_t> navgenQueue;
-static class_t generatingNow;
+static bool generationEnabled = false;
 static int nextLogTime;
 
 static void G_BotBackgroundNavgenShutdown()
 {
 	navgen.~NavmeshGenerator();
 	new (&navgen) NavmeshGenerator();
-	navgenQueue.clear();
-	generatingNow = PCL_NONE;
 }
 
 void G_BotBackgroundNavgen()
 {
-	if ( navgenQueue.empty() )
+	if ( !generationEnabled )
 	{
 		return;
 	}
 
 	ASSERT_EQ( navMeshLoaded, navMeshStatus_t::GENERATING );
 
-	int stopTime = Sys::Milliseconds() + msecPerFrame.Get();
-
-	navgen.Init( Cvar::GetValue( "mapname" ) );
-
-	if ( generatingNow == PCL_NONE )
-	{
-		class_t next = navgenQueue.back();
-		generatingNow = next;
-		NavgenStatus status = navgen.StartGeneration( generatingNow );
-		if ( !status.ok() )
-		{
-			Log::Warn( "Failed to initialize navmesh generation for %s: %s", BG_Class( generatingNow )->name, status.String() );
-			return;
-		}
-	}
-
+	float progress = navgen.Progress();
 	if ( level.time > nextLogTime )
 	{
-		std::string percent = std::to_string( int(navgen.SpeciesFractionCompleted() * 100) );
-		trap_SendServerCommand( -1, va( "print_tr %s %s %s",
-			QQ( N_( "Server: generating bot navigation mesh for $1$... $2$%" ) ),
-			BG_Class( generatingNow )->name, percent.c_str() ) );
+		std::string percent = std::to_string( int(progress * 100) );
+		trap_SendServerCommand( -1, va( "print_tr %s %s",
+			QQ( N_( "Server: generating bot navigation mesh... $1$%" ) ),
+			percent.c_str() ) );
 		nextLogTime = level.time + 10000;
 	}
 
-	// HACK: if the game simulation time gets behind the real time, the server runs a bunch of
-	// game frames within one server frame to catch up. If we do a lot of navgen then it can't
-	// catch up which may lead to a cascade of very long server frames. What we want to do is
-	// one navgen slice per *server frame*, not per game frame. There doesn't seem to be any API
-	// for the server frame count, so put a command in the command buffer and check for the
-	// next server frame by seeing whether it has executed.
-	static int lastToggle = -12345;
-	if ( lastToggle == frameToggle.Get() )
-	{
-		return;
-	}
-	lastToggle = frameToggle.Get();
-	trap_SendConsoleCommand( "toggle g_bot_navgen_frame" );
+	navgen.RunTasks();
 
-	while ( Sys::Milliseconds() < stopTime )
-	{
-		NavgenStatus status = navgen.Step();
-		if ( !status.IsIncomplete() )
-		{
-			if ( !status.ok() )
-			{
-				Log::Warn( "error generating navmesh for %s: %s", BG_Class( generatingNow ), status.String() );
-			}
-			ASSERT_EQ( generatingNow, navgenQueue.back() );
-			navgenQueue.pop_back();
-			generatingNow = PCL_NONE;
-			break;
-		}
-	}
-
-	if ( navgenQueue.empty() ) // finished?
+	if ( progress >= 0.9f ) // finished?
 	{
 		G_BotBackgroundNavgenShutdown();
 
 		navMeshLoaded = navMeshStatus_t::UNINITIALIZED; // HACK: make G_BotNavInit not return at the start
+		generationEnabled = false;
 		G_BotNavInit( 0 );
 
 		if ( navMeshLoaded == navMeshStatus_t::LOAD_FAILED )
@@ -260,15 +204,23 @@ void G_BotNavInit( int generateNeeded )
 		}
 		else
 		{
-			ASSERT( navgenQueue.empty() );
+			NavgenStatus status = navgen.Init( Cvar::GetValue( "mapname" ) );
+			if ( !status.ok() )
+			{
+				Log::Warn( "navgen init failed: %s", status.String() );
+				generationEnabled = false;
+				navMeshLoaded = navMeshStatus_t::LOAD_FAILED;
+			}
+
 			for ( int i = PCL_NUM_CLASSES; --i > PCL_NONE; )
 			{
 				if ( missing[ i ] )
 				{
-					navgenQueue.push_back( Util::enum_cast<class_t>( i ) );
+					navgen.StartGeneration( Util::enum_cast<class_t>( i ) );
 				}
 			}
 			navMeshLoaded = navMeshStatus_t::GENERATING;
+			generationEnabled = true;
 			return;
 		}
 	}

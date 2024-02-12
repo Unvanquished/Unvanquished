@@ -21,6 +21,8 @@
  */
 
 #include <memory>
+#include <thread>
+#include <mutex>
 #include "Recast.h"
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
@@ -110,11 +112,6 @@ int                    getNumVerts() { return nverts; }
 const rcChunkyTriMesh *getChunkyMesh() { return &mesh; }
 };
 
-class UnvContext : public rcContext
-{
-	void doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/) override;
-};
-
 struct NavgenStatus
 {
 	enum Code {
@@ -133,7 +130,7 @@ struct NavgenStatus
 };
 
 // Public interface to navgen. Rest of this file is internal details
-class NavmeshGenerator {
+class NavmeshGenerator : public rcContext {
 private:
 	struct PerClassData {
 		class_t species;
@@ -148,12 +145,19 @@ private:
 		int x = 0;
 		int y = 0;
 
+		std::unique_ptr<std::thread> thread;
+
 		bool IsDone() const {
 			return y >= th;
 		}
+
+		float Progress() const {
+			if (tw == 0 || th == 0) return 0.0f;
+			// Assume that writing the file at the end is 10%
+			return 0.9f * float(y * tw + x) / float(tw * th);
+		}
 	};
 
-	UnvContext recastContext_;
 	NavgenConfig config_;
 	// Custom computed config for the map
 	float cellHeight_;
@@ -161,24 +165,43 @@ private:
 	std::string mapName_;
 	std::string mapData_;
 	Geometry geo_;
-	// Data for generating current class
-	std::unique_ptr<PerClassData> d_;
+
+	std::mutex mu_;
+	std::unordered_map<class_t, NavgenStatus> statuses_;
+	std::unordered_map<class_t, PerClassData> tasks_;
+
+	std::mutex trap_mu_;
+	std::vector<std::function<void()>> funcs_;
+
+	void doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/) override;
 
 	void LoadBSP();
 	NavgenStatus LoadGeometry();
 	NavgenStatus LoadTris(std::vector<float>& verts, std::vector<int>& tris);
 
+	NavgenStatus InitPerClassData(class_t species, PerClassData *data);
+	NavgenStatus Step(PerClassData *data);
+	NavgenStatus WriteFile(const PerClassData& data);
+	NavgenStatus WriteError(const PerClassData& data, const NavgenStatus& status);
+
+	void UpdateStatus(class_t species, NavgenStatus status);
+
+	void Generate(class_t species);
+
+	void AsyncRunOnMainThread(std::function<void()> func);
+
+
 public:
+	virtual ~NavmeshGenerator();
 	// load the BSP if it has not been loaded already
 	// in principle mapName could be different from the current map, if the necessary pak is loaded
 	NavgenStatus Init(Str::StringRef mapName);
 
-	NavgenStatus StartGeneration(class_t species);
+	void RunTasks();
 
-	float SpeciesFractionCompleted() const;
+	void StartGeneration(class_t species);
+
+	float Progress();
 
 	// Returns true when finished
-	NavgenStatus Step();
-	NavgenStatus WriteFile();
-	NavgenStatus WriteError(const NavgenStatus& status);
 };

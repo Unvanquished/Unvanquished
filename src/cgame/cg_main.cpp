@@ -1091,7 +1091,7 @@ static void GenerateNavmeshes()
 			missing.push_back( species );
 			continue;
 		}
-		NavMeshSetHeader header;
+		NavMeshSetHeader header = {};
 		std::string error = GetNavmeshHeader( f, config, header, mapName );
 		if ( !error.empty() )
 		{
@@ -1111,6 +1111,7 @@ static void GenerateNavmeshes()
 	cg.loadingText = message;
 	trap_UpdateScreen();
 
+	auto now = trap_Milliseconds();
 	NavmeshGenerator navgen;
 	NavgenStatus status = navgen.Init( mapName );
 	if ( !status.ok() )
@@ -1119,41 +1120,22 @@ static void GenerateNavmeshes()
 		return;
 	}
 
-	float classesCompleted = 0.3; // Assume that Init() is 0.3 times as much work as generating 1 species
-	// and assume that each species takes the same amount of time, which is actually completely wrong:
-	// smaller ones take much longer
-	float classesTotal = classesCompleted + missing.size();
 	for ( class_t species : missing )
 	{
-		cg.loadingText =
-			Str::Format( "%s — %s", message, BG_ClassModelConfig( species )->humanName );
-		cg.loadingFraction = classesCompleted / classesTotal;
-		trap_UpdateScreen();
-
-		status = navgen.StartGeneration( species );
-		if ( !status.ok() )
-		{
-			Log::Warn( "Failed to initialize navmesh generation for %s: %s", BG_Class( species )->name, status.String() );
-			return;
-		}
-
-		do
-		{
-			float fraction = ( classesCompleted + navgen.SpeciesFractionCompleted() ) / classesTotal;
-			if ( fraction - cg.navmeshLoadingFraction > 0.01 )
-			{
-				cg.navmeshLoadingFraction = fraction;
-				trap_UpdateScreen();
-			}
-			status = navgen.Step();
-		} while ( status.IsIncomplete() );
-		if ( !status.ok() )
-		{
-			// Limp on, maybe other navmeshes will succeed.
-			Log::Warn( "Failed to generate navmesh for %s: %s", BG_Class( species )->name, status.String() );
-		}
-		++classesCompleted;
+		navgen.StartGeneration( species );
 	}
+
+	float progress = 0.0f;
+	do
+	{
+		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+		progress = navgen.Progress();
+		cg.loadingFraction = progress;
+		navgen.RunTasks();
+		trap_UpdateScreen();
+		Log::Notice( "Navmesh generation progress: %.0f%%", progress * 100 );
+	} while ( progress < 0.9f );
+	Log::Notice( "TOOK %d ms to gen navmeshes", (trap_Milliseconds() - now));
 	cg.loadingNavmesh = false;
 }
 
