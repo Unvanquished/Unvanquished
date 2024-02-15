@@ -2493,6 +2493,17 @@ static gentity_t *BotPopEnemy( enemyQueue_t *queue )
 
 void BotPain( gentity_t *self, gentity_t *attacker, int )
 {
+	// alien bots should not chase human players when attacked by turrets
+	if ( G_Team( self ) == TEAM_ALIENS
+		 && G_Team( attacker ) != TEAM_NONE
+		 && attacker->s.modelindex == BA_H_MGTURRET
+		 && self->botMind->goal.targetsValidEntity()
+		 && self->botMind->goal.getTargetedEntity()->s.eType == entityType_t::ET_PLAYER )
+	{
+		BotChangeGoalEntity( self, self );  // reset goal
+		return;
+	}
+
 	if ( G_Team( attacker ) != TEAM_NONE
 		&& !G_OnSameTeam( self, attacker )
 		&& attacker->s.eType == entityType_t::ET_PLAYER
