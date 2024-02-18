@@ -128,7 +128,7 @@
 					self.items[index][5], self.handle, index, self.handle, index, AvailabilityIcon(self.items[index][5]), self.items[index][1]
 				)
 			end
-			function WeaponMenu:Select(index)
+			function WeaponMenu:Select(index, event)
 				-- Query again in case credits/momentum changed
 				CDataSource.Build("armouryBuyList", "weapons")
 				local data = CDataSource.Read("armouryBuyList", "weapons", "availability,cmdName")[index]
@@ -137,6 +137,7 @@
 				elseif data[1] == "active" then
 					Cmd.exec("sell " .. data[2])
 				end
+				event:StopPropagation()
 			end
 			function WeaponMenu:Highlight(index)
 				if index == nil or index <= 0 then
@@ -167,7 +168,7 @@
 				self.items[index][5], self.handle, index, self.handle, index, AvailabilityIcon(self.items[index][5]), self.items[index][1]
 				)
 			end
-			function UpgradeMenu:Select(index)
+			function UpgradeMenu:Select(index, event)
 				-- Query again in case credits/momentum changed
 				CDataSource.Build("armouryBuyList", "upgrades")
 				local data = CDataSource.Read("armouryBuyList", "upgrades", "availability,cmdName")[index]
@@ -176,6 +177,7 @@
 				elseif data[1] == "active" then
 					Cmd.exec("sell " .. data[2])
 				end
+				event:StopPropagation()
 			end
 			function UpgradeMenu:Highlight(index)
 				if index == nil or index <= 0 then
@@ -189,6 +191,17 @@
 					self.document:GetElementById("u_description").inner_rml = data[3]
 				end
 			end
+			ignoreEvent = nil
+			function UpgradeMenu:SwitchTo(document, event)
+				-- WeaponMenu.ignoreEvent = event
+				ignoreEvent = event
+				UpgradeMenu:Build(document)
+			end
+			function WeaponMenu:SwitchTo(document, event)
+				-- UpgradeMenu.ignoreEvent = event
+				ignoreEvent = event
+				WeaponMenu:Build(document)
+			end
 			function HumanBuyHandleKey(event, document)
 				local tabset = Element.As.ElementTabSet(document:GetElementById("tabset"))
 				if event.parameters.key_identifier == rmlui.key_identifier.TAB then
@@ -198,20 +211,33 @@
 					menu:HandleKey(event)
 				end
 			end
+			function buyQuit(event, document)
+				if ignoreEvent == event then
+					return
+				end
+				if WeaponMenu then
+					WeaponMenu:Quit(event)
+					return
+				end
+				if UpgradeMenu then
+					UpgradeMenu:Quit(event)
+					return
+				end
+			end
 		</script>
 	</head>
-	<body id="human_buy" class="circlemenu human" onkeydown="HumanBuyHandleKey(event, document)" onclick="document:Hide()"
+	<body id="human_buy" class="circlemenu human" onkeydown="HumanBuyHandleKey(event, document)" onclick="buyQuit(event, document)"
 	 onshow="WeaponMenu:Build(document) UpgradeMenu:Build(document)"
 	 onrefreshdata="WeaponMenu:Build(document) UpgradeMenu:Build(document)">
 	<tabset class="circlemenu" id="tabset">
-		<tab onclick="WeaponMenu:Build(document)">
+		<tab onclick="WeaponMenu:SwitchTo(document, event)">
 			<span><translate>Weapons</translate></span>
 			<div class="tabkey"><translate>TAB</translate></div>
 		</tab>
 		<panel>
 		<div class="circlemenu-circle" id="weaponKeyboardHints"/>
 		<div class="circlemenu-circle" id="weaponMenu"/>
-		<div class="backdrop" id="weaponBackdrop" onmousemove="WeaponMenu:BackdropCapture(event)" onmouseup="WeaponMenu:BackdropClick(event)" onclick="event:StopPropagation()"/>
+		<div class="backdrop" id="weaponBackdrop" onmousemove="WeaponMenu:BackdropCapture(event)" onclick="event:StopPropagation()" onmouseup="WeaponMenu:BackdropClick(event)"/>
 			<div class="infobox">
 			<h2 id="w_name"></h2>
 			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="w_price"></div></div></p>
@@ -221,14 +247,14 @@
 			<p class="text" id="w_description"></p>
 			</div>
 		</panel>
-		<tab onclick="UpgradeMenu:Build(document)">
+		<tab onclick="UpgradeMenu:SwitchTo(document, event)">
 			<span><translate>Upgrades</translate></span>
 			<div class="tabkey"><translate>TAB</translate></div>
 		</tab>
 		<panel>
 		<div class="circlemenu-circle" id="upgradeKeyboardHints"/>
 		<div class="circlemenu-circle" id="upgradeMenu"/>
-		<div class="backdrop" id="upgradeBackdrop" onmousemove="UpgradeMenu:BackdropCapture(event)" onmouseup="UpgradeMenu:BackdropClick(event)" onclick="event:StopPropagation()"/>
+		<div class="backdrop" id="upgradeBackdrop" onmousemove="UpgradeMenu:BackdropCapture(event)" onclick="event:StopPropagation()" onmouseup="UpgradeMenu:BackdropClick(event)"/>
 			<div class="infobox">
 			<h2 id="u_name"></h2>
 			<p><div class="attr"><translate>Price:</translate></div><div class="bar"><div id="u_price"></div></div></p>
