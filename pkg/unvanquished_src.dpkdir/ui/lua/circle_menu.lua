@@ -14,7 +14,7 @@ CircleMenu = {
 CircleMenu.__index = CircleMenu
 
 function CircleMenu:New(handle, idPrefix) 
-	local instance = { rt = {} }
+	local instance = {}
 	setmetatable(instance, self)
 	instance.idPrefix = idPrefix
 	instance.handle = handle
