@@ -121,13 +121,15 @@
 			self.items[index][1] -- image
 		)
 	end
-	function EvoMenu:Select(index)
+	function EvoMenu:Select(index, event)
 		local evo_id = tonumber(self.items[index][7])
 		CDataSource.Build("alienEvolveList", "default")
 		local data = CDataSource.Read("alienEvolveList", "default", "availability,cmdName")[evo_id]
 		if data[1] == "available" then
 			Cmd.exec("class " .. data[2])
-			Events.pushcmd("hide alien_evo")
+			self:Quit(event)
+		else
+			event:StopPropagation()
 		end
 	end
 	function EvoMenu:Highlight(index)
@@ -141,15 +143,20 @@
 			self.document:GetElementById("e_desc").inner_rml = self.items[index][3]
 		end
 	end
+	function evoQuit(event)
+		if EvoMenu then
+			EvoMenu:Quit(event)
+		end
+	end
 </script>
 </head>
-<body id="alien_evo" class="circlemenu alien" onkeydown="EvoMenu:HandleKey(event)" onshow="EvoMenu:Build(document)" onclick="document:Hide()">
+<body id="alien_evo" class="circlemenu alien" onkeydown="EvoMenu:HandleKey(event)" onshow="EvoMenu:Build(document)" onclick="evoQuit(event)">
 <tabset class="circlemenu">
 <tab><translate>Evolve</translate></tab>
 <panel>
 <div class="circlemenu-circle" id="evolveKeyboardHints"/>
 <div class="circlemenu-circle" id="evolveMenu"/>
-<div class="backdrop" id="evolveBackdrop" onmousemove="EvoMenu:BackdropCapture(event)" onmouseup="EvoMenu:BackdropClick(event)"/>
+<div class="backdrop" id="evolveBackdrop" onmousemove="EvoMenu:BackdropCapture(event)" onclick="event:StopPropagation()" onmouseup="EvoMenu:BackdropClick(event)"/>
 <div class="infobox">
 <h2 id="e_name"></h2>
 <p class="text">

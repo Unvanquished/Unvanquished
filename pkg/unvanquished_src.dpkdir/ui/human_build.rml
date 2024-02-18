@@ -103,13 +103,15 @@
 			self.items[index][5], self.handle, index, self.handle, index, AvailabilityIcon(self.items[index][5]), self.items[index][1]
 		)
 	end
-	function HBuildMenu:Select(index)
+	function HBuildMenu:Select(index, event)
 		if index > #self.items then return end
 		CDataSource.Build("humanBuildList", "default")
 		local data = CDataSource.Read("humanBuildList", "default", "availability,cmdName")[index]
 		if data[1] == "available" then
 			Cmd.exec("build " .. data[2])
-			Events.pushcmd("hide human_build")
+			self:Quit(event)
+		else
+			event:StopPropagation()
 		end
 	end
 	function HBuildMenu:Highlight(index)
@@ -123,15 +125,20 @@
 			self.document:GetElementById("b_desc").inner_rml = self.items[index][3]
 		end
 	end
+	function hBuildQuit(event)
+		if HBuildMenu then
+			HBuildMenu:Quit(event)
+		end
+	end
 </script>
 </head>
-<body id="human_build" class="circlemenu human" onkeydown="HBuildMenu:HandleKey(event)" onshow="HBuildMenu:Build(document)" onclick="document:Hide()">
+<body id="human_build" class="circlemenu human" onkeydown="HBuildMenu:HandleKey(event)" onshow="HBuildMenu:Build(document)" onclick="hBuildQuit(event)">
 <tabset class="circlemenu">
 <tab><translate>Build</translate></tab>
 <panel>
 <div class="circlemenu-circle" id="humanBuildKeyboardHints"/>
 <div class="circlemenu-circle" id="humanBuildMenu"/>
-<div class="backdrop" id="humanBuildBackdrop" onmousemove="HBuildMenu:BackdropCapture(event)" onmouseup="HBuildMenu:BackdropClick(event)"/>
+<div class="backdrop" id="humanBuildBackdrop" onmousemove="HBuildMenu:BackdropCapture(event)" onclick="event:StopPropagation()" onmouseup="HBuildMenu:BackdropClick(event)"/>
 <div class="infobox">
 <h2 id="b_name"></h2>
 <p class="text"><translate>Price:</translate>&nbsp;<span id="b_price" /><br/>

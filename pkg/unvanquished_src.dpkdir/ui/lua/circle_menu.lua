@@ -1,3 +1,10 @@
+function EvntStr(event)
+	if event == nil then
+		return "nil"
+	end
+	return string.format("%s[%s] from %s, current: %s", tostring(event), event.type, event.target_element.tag_name, event.current_element.tag_name)
+end
+
 CircleMenu = {
 	-- Default values
 	menuRadiusEm = 10,	-- radius on which buttons are placed
@@ -25,8 +32,8 @@ end
 function CircleMenu:BuildMenu()
 	local menu_rml, hints_rml
 	menu_rml= string.format(
-		'<button class="cancelButton" onmouseover="%s:Highlight(0)" onclick="document:Hide()"><span>X</span></button>', 
-		self.handle)
+		'<button class="cancelButton" onmouseover="%s:Highlight(0)" onclick="%s:Quit(event)"><span>X</span></button>', 
+		self.handle, self.handle)
 	hints_rml = ''
 	local tau = 2 * math.pi / #self.items
 	for i=1,#self.items do
@@ -49,6 +56,7 @@ function CircleMenu:Build(document)
 	self:PopulateItems()
 	self:Highlight(nil) -- clear info
 	self:BuildMenu()
+	self.quitting = false
 end
 
 
@@ -58,7 +66,7 @@ function CircleMenu:Hover(index)
 end
 
 function CircleMenu:Click(index, event)
-	self:Select(index)
+	self:Select(index, event)
 end
 
 function CircleMenu:BackdropCapture(event)
@@ -70,8 +78,7 @@ end
 
 function CircleMenu:BackdropClick(event)
 	local index = CirclemenuMouseToIndex(self.document, event, #self.items)
-	-- Cancel button is first
-	self.menuElement.child_nodes[index+1].first_child:Click()
+	self:Select(index, event)
 end
 
 function CircleMenu:HandleKey(event)
@@ -86,9 +93,29 @@ function CircleMenu:HandleKey(event)
 		return
 	end
 	if index <= #self.items then
-		-- event:StopImmediatePropagation()
 		event:StopPropagation()
 		self.menuElement.child_nodes[index+1].first_child:Click()
+	end
+end
+
+function CircleMenu:Quit(event)
+	-- Hacky workaround to event:StopPropagation() not stopping the propagation half the time
+	-- NOTE: Hiding already hidden menus may cause crashes!
+	if self.document == nil then
+		-- Nothing to do
+		return
+	end
+	if self.quitting then
+		-- Already quiting
+		return
+	end
+	self.quitting = true
+
+	if event == nil then
+		-- Fallback option
+		self.document:Hide()
+	else
+		Events.pushevent(string.format("hide %s", self.document.attributes.id), event)
 	end
 end
 
@@ -103,7 +130,7 @@ function CircleMenu:RMLButton(index)
 	-- Placeholder method for buidling RML of a button
 end
 
-function CircleMenu:Select(index)
+function CircleMenu:Select(index, event)
 	-- Placeholder method for picking an option
 end
 

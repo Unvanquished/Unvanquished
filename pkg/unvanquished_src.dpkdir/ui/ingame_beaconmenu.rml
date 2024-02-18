@@ -41,15 +41,16 @@
 		<script src="lua/circle_menu.lua" />
 		<script>
 			BeaconMenu = CircleMenu:New('BeaconMenu', 'beacon')
+			BeaconMenu.quitting = false
 
 			function BeaconMenu:PopulateItems()
 				CDataSource.Build("beaconList", "default")
 				self.items = CDataSource.Read("beaconList", "default", "icon,name,desc")
 			end
-			function BeaconMenu:Select(index)
+			function BeaconMenu:Select(index, event)
 				if index > #self.items then return end
 				Cmd.exec("beacon " .. self.items[index][2])
-				Events.pushcmd("hide ingame_beaconmenu")
+				self:Quit(event)
 			end
 			function BeaconMenu:Highlight(index)
 				local nameElement = self.document:GetElementById("beaconName")
@@ -68,15 +69,21 @@
 				return string.format( '<button onclick="%s:Click(%d, event)" onmouseover="%s:Hover(%d)"><img src="/%s"/></button>',
 					self.handle, index, self.handle, index, self.items[index][1])
 			end
+
+			function beaconQuit(event, document)
+				if BeaconMenu then
+					BeaconMenu:Quit(event)
+				end
+			end
 		</script>
 	</head>
-	<body id="ingame_beaconmenu" class="circlemenu" onkeydown="BeaconMenu:HandleKey(event)" onshow="BeaconMenu:Build(document)" onclick="document:Hide()">
+	<body id="ingame_beaconmenu" class="circlemenu" onkeydown="BeaconMenu:HandleKey(event)" onshow="BeaconMenu:Build(document)" onclick="beaconQuit(event, document)">
 		<tabset class="circlemenu">
 			<tab><translate>Beacons</translate></tab>
 			<panel>
 				<div class="circlemenu-circle" id="beaconKeyboardHints"/>
 				<div class="circlemenu-circle" id="beaconMenu"/>
-				<div class="backdrop" id="beaconBackdrop" onmousemove="BeaconMenu:BackdropCapture(event)" onmouseup="BeaconMenu:BackdropClick(event)"/>
+				<div class="backdrop" id="beaconBackdrop" onmousemove="BeaconMenu:BackdropCapture(event)" onclick="event:StopPropagation()" onmouseup="BeaconMenu:BackdropClick(event)"/>
 				<div style="position: absolute; left: 0; width: 40%;">
 					<div class="infobox">
 						<h2 id="beaconName"></h2>

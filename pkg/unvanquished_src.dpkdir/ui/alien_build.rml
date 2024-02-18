@@ -108,13 +108,15 @@
 		)
 	end
 
-	function ABuildMenu:Select(index)
+	function ABuildMenu:Select(index, event)
 		if index > #self.items then return end
 		CDataSource.Build("alienBuildList", "default")
 		local data = CDataSource.Read("alienBuildList", "default", "availability,cmdName")[index]
 		if data[1] == "available" then
 			Cmd.exec("build " .. data[2])
-			Events.pushcmd("hide alien_build")
+			self:Quit(event)
+		else
+			event:StopPropagation()
 		end
 	end
 
@@ -129,15 +131,20 @@
 			self.document:GetElementById("b_desc").inner_rml = self.items[index][3]
 		end
 	end
+	function aBuildQuit(event)
+		if ABuildMenu then
+			ABuildMenu:Quit(event)
+		end
+	end
 </script>
 </head>
-<body id="alien_build" class="circlemenu alien" onkeydown="ABuildMenu:HandleKey(event)" onshow="ABuildMenu:Build(document)" onclick="document:Hide()">
+<body id="alien_build" class="circlemenu alien" onkeydown="ABuildMenu:HandleKey(event)" onshow="ABuildMenu:Build(document)" onclick="aBuildQuit(event)">
 <tabset class="circlemenu">
 <tab><translate>Build</translate></tab>
 <panel>
 <div class="circlemenu-circle" id="alienBuildKeyboardHints"/>
 <div class="circlemenu-circle" id="alienBuildMenu"/>
-<div class="backdrop" id="alienBuildBackdrop" onmousemove="ABuildMenu:BackdropCapture(event)" onmouseup="ABuildMenu:BackdropClick(event)"/>
+<div class="backdrop" id="alienBuildBackdrop" onmousemove="ABuildMenu:BackdropCapture(event)" onclick="event:StopPropagation()" onmouseup="ABuildMenu:BackdropClick(event)"/>
 <div class="infobox">
 <h2 id="b_name"></h2>
 <p class="text">
