@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2024-02-19 22:17+0000\n"
-"Last-Translator: roggrt <roggrt@gmail.com>\n"
+"PO-Revision-Date: 2024-02-20 23:02+0000\n"
+"Last-Translator: Chueco <alejandrojmelo@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -2118,7 +2118,7 @@ msgstr ""
 
 #: ui/server_setup.rml:196
 msgid "bots"
-msgstr ""
+msgstr "bots"
 
 #: ui/server_setup.rml:200
 msgid "Default skill level"
@@ -2131,6 +2131,8 @@ msgstr ""
 #: ui/transition_downloading.rml:55
 msgid "Additional files are required. Please be patient while they download."
 msgstr ""
+"Se necesitan archivos adicionales. Por favor, ten paciencia mientras se "
+"descargan."
 
 #: ui/transition_downloading.rml:56
 msgid "Time left:"
