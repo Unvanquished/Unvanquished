@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2024-02-09 01:19+0000\n"
-"Last-Translator: Jonas <jonasdcdm@mailbox.org>\n"
+"PO-Revision-Date: 2024-02-19 22:17+0000\n"
+"Last-Translator: Chueco <alejandrojmelo@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-POOTLE-MTIME: 1362811388.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -2134,27 +2134,29 @@ msgstr ""
 
 #: ui/transition_downloading.rml:56
 msgid "Time left:"
-msgstr ""
+msgstr "Tiempo restante:"
 
 #: ui/transition_downloading.rml:57
 msgid "Download rate:"
-msgstr ""
+msgstr "Tasa de descarga:"
 
 #: ui/transition_downloading.rml:58
 msgid "Size:"
-msgstr ""
+msgstr "Tamaño:"
 
 #: ui/transition_loading.rml:109
 msgid "Loading"
-msgstr ""
+msgstr "Cargando"
 
 #: ui/welcome.rml:19
 msgid "Welcome to Unvanquished"
-msgstr ""
+msgstr "Bienvenido a Unvanquished"
 
 #: ui/welcome.rml:22
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
+"Cierra este menú y haz clic en cualquier lugar para unirte a un equipo y "
+"empezar a jugar!"
 
 #: src/cgame/cg_event.cpp:281
 msgctxt "male"
