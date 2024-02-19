@@ -12,7 +12,7 @@
 					<!-- Keep in sync with language menu in options_welcome.rml -->
 					<h3><translate>Language</translate> </h3>
 					<p> <translate>Some languages are not fully translated.</translate> </p>
-		
+
 					<!-- NOTE: it's a bad idea to put languages translated at less than 50% in the list, right? -->
 					<select cvar="language">
 						<option value="fr">Français</option>
@@ -79,6 +79,29 @@
 			</panel>
 			<tab><translate>Crosshair</translate></tab>
 			<panel class="crosshair">
+				<row>
+					<h3><translate>Weapon</translate></h3>
+					<select name="crosshair_weapon" value="rifle" onchange='document:GetElementById("crosshair"):SetAttribute("weapon", event.current_element.attributes["value"])'>
+						<option value="level0"><translate>Aliens</translate></option>
+						<option value="blaster"><translate>Blaster</translate></option>
+						<option value="rifle"><translate>Rifle</translate></option>
+						<option value="psaw"><translate>Pain Saw</translate></option>
+						<option value="shotgun"><translate>Shotgun</translate></option>
+						<option value="lgun"><translate>Lasgun</translate></option>
+						<option value="mdriver"><translate>Mass Driver</translate></option>
+						<option value="chaingun"><translate>Chaingun</translate></option>
+						<option value="flamer"><translate>Flamer</translate></option>
+						<option value="prifle"><translate>Pulse Rifle</translate></option>
+						<option value="lcannon"><translate>Lucifer Cannon</translate></option>
+					</select>
+
+					<p/>
+				</row>
+				<row>
+					<div style="height: 4em; padding-left: 6em; padding-top: 4em;">
+						<crosshair id="crosshair"/>
+					</div>
+				</row>
 				<row>
 					<h3><translate>Crosshair visiblity</translate></h3>
 					<select name="drawcrosshair" cvar="cg_drawCrosshair">
