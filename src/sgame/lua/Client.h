@@ -45,7 +45,7 @@ namespace Lua {
 struct Client
 {
     Client(gentity_t* ent) : ent(ent) {}
-    GentityRef ent;
+    gentity_t *ent;
 };
 
 

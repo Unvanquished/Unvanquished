@@ -106,7 +106,7 @@ GET_FUNC2(maxs, Shared::Lua::PushVec3(L, proxy->ent->r.maxs))
 /// The entity number. Also the entity's index in g_entities.
 // @tfield integer number Read only.
 // @within EntityProxy
-GET_FUNC2(number, lua_pushinteger(L, proxy->ent.get() - g_entities))
+GET_FUNC2(number, lua_pushinteger(L, proxy->ent->num()))
 
 /// The entity team.
 // @tfield string team Read only.
@@ -145,7 +145,7 @@ static int Getclient(lua_State* L)
 	if (!proxy || !proxy->ent || !proxy->ent->client) return 0;
 	if (!proxy->client || proxy->client->ent != proxy->ent)
 	{
-		proxy->client.reset(new Client(proxy->ent.get()));
+		proxy->client.reset(new Client(proxy->ent));
 	}
 	LuaLib<Client>::push(L, proxy->client.get(), false);
 	return 1;
@@ -163,9 +163,9 @@ static int Getbuildable(lua_State* L)
 		proxy->buildable.reset();
 		return 0;
 	}
-	if (!proxy->buildable || proxy->buildable->ent != proxy->ent)
+	if (!proxy->buildable || !proxy->buildable->ent || proxy->buildable->ent.get() != proxy->ent)
 	{
-		proxy->buildable.reset(new Buildable(proxy->ent.get()));
+		proxy->buildable.reset(new Buildable(proxy->ent));
 	}
 	LuaLib<Buildable>::push(L, proxy->buildable.get(), false);
 	return 1;
@@ -185,7 +185,7 @@ static int Getbot(lua_State* L)
 	}
 	if (!proxy->bot || proxy->bot->ent != proxy->ent)
 	{
-		proxy->bot.reset(new Bot(proxy->ent.get()));
+		proxy->bot.reset(new Bot(proxy->ent));
 	}
 	LuaLib<Bot>::push(L, proxy->bot.get(), false);
 	return 1;
@@ -304,7 +304,7 @@ void PushArgs(lua_State* L, T arg, Args... args)
 #define ExecFunc(method, upper, def, numArgs, ...) \
 	static void Exec##method def \
 	{ \
-		int entityNum = self - g_entities; \
+		int entityNum = self->num(); \
 		EntityProxy* proxy = Entity::proxies[entityNum]; \
 		if (!proxy) \
 		{ \

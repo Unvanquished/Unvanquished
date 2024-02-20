@@ -45,7 +45,7 @@ namespace Lua {
 struct Bot
 {
     Bot(gentity_t* ent) : ent(ent) {}
-    GentityRef ent;
+    gentity_t *ent;
 };
 
 

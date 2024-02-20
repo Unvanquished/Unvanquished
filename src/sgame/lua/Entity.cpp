@@ -51,8 +51,8 @@ std::vector<EntityProxy*> Entity::proxies( MAX_GENTITIES );
 
 EntityProxy* Entity::CreateProxy( gentity_t* ent, lua_State* L )
 {
-	int entNum = ent - g_entities;
-	if (!proxies[entNum]) {
+	int entNum = ent->num();
+	if (!proxies[entNum] || !proxies[entNum]->ent) {
 		proxies[entNum] = new EntityProxy(ent, L);
 	}
 	return proxies[entNum];
@@ -167,7 +167,7 @@ int Entity::Delete( lua_State* L )
 		Log::Warn("Lua code only allowed to delete entities created by lua.");
 		return 0;
 	}
-	G_FreeEntity(proxy->ent.get());
+	G_FreeEntity(proxy->ent);
 	return 0;
 }
 
