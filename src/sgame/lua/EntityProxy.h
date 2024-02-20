@@ -50,7 +50,7 @@ namespace Lua {
 struct EntityProxy
 {
 	EntityProxy(gentity_t* ent, lua_State* L);
-	GentityRef ent;
+	gentity_t *ent;
 
 	enum FunctionType
 	{
