@@ -558,7 +558,7 @@ class CrosshairIndicatorHudElement : public HudElement
 {
 public:
 	CrosshairIndicatorHudElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_BOTH, true ),
+			HudElement( tag, ELEMENT_GAME, true ),
 			color_( Color::White ) {}
 
 	void OnPropertyChange( const Rml::PropertyIdSet& changed_properties ) override
@@ -666,7 +666,7 @@ private:
 class CrosshairHudElement : public HudElement {
 public:
 	CrosshairHudElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_ALL, true ),
+			HudElement( tag, ELEMENT_GAME, true ),
 			// Use as a sentinel value to denote that no weapon is
 			// explicitly set.
 			weapon_( WP_NUM_WEAPONS ) {
@@ -675,6 +675,11 @@ public:
 	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
 		HudElement::OnAttributeChange( changed_attributes );
+		// If we are not in game, then don't bother looking up weapon info, since it's not loaded.
+		if ( rocketInfo.cstate.connState != connstate_t::CA_ACTIVE )
+		{
+			return;
+		}
 		// If we have a weapon attribute, then *always* display the crosshair for that weapon, regardless
 		// of team or spectator state.
 		auto it = changed_attributes.find( "weapon" );
@@ -682,7 +687,7 @@ public:
 		{
 			auto weaponName = it->second.Get<std::string>();
 			auto wa = BG_WeaponByName( weaponName.c_str() );
-			if ( wa == nullptr )
+			if ( wa == nullptr || wa->number == WP_NONE )
 			{
 				Log::Warn( "Invalid forced crosshair weapon: %s", weaponName );
 			}
