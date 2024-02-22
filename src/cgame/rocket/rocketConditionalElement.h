@@ -64,15 +64,11 @@ public:
 		it = changed_attributes.find( "value" );
 		if ( it != changed_attributes.end() )
 		{
-			char *end = nullptr;
-			const char *val = it->second.Get<std::string>().c_str();
-			// Check if float
-			float floatVal = strtof( val, &end );
-
-			// Is either an integer or float
-			if ( end && end != val )
+			std::string val = it->second.Get<std::string>();
+			try
 			{
-				// is integer
+				float floatVal = std::stof( val );
+				// Is either an integer or float
 				if ( static_cast< int >( floatVal ) == floatVal )
 				{
 					value = static_cast< int >( floatVal );
@@ -82,9 +78,8 @@ public:
 					value = floatVal;
 				}
 			}
-
-			// Is a string
-			else
+			// Failed conversion means it's a string.
+			catch ( const std::invalid_argument& )
 			{
 				value = it->second.Get<std::string>();
 			}
