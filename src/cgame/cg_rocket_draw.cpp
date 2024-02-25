@@ -3633,7 +3633,7 @@ static void CG_Rocket_DrawProgressValue()
 
 static void CG_Rocket_DrawLoadingText()
 {
-	Rocket_SetInnerRML( cg.loadingText, 0 );
+	Rocket_SetInnerRML( cg.loadingText.c_str(), 0 );
 }
 
 static void CG_Rocket_DrawLevelAuthors()
