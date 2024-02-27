@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-10-29 16:27+0000\n"
+"PO-Revision-Date: 2024-02-27 18:55+0000\n"
 "Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Breton <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/br/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "&& n % 100 != 92) ? 1 : ((((n % 10 == 3 || n % 10 == 4) || n % 10 == 9) && ("
 "n % 100 < 10 || n % 100 > 19) && (n % 100 < 70 || n % 100 > 79) && (n % 100 "
 "< 90 || n % 100 > 99)) ? 2 : ((n != 0 && n % 1000000 == 0) ? 3 : 4)));\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -229,7 +229,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:53
 msgid "Powering buildables"
-msgstr ""
+msgstr "Steudañ ar frammoù"
 
 #: ui/help_gameplay.rml:56
 msgid ""
