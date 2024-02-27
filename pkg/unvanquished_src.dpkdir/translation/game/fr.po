@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-07-24 07:29+0200\n"
-"PO-Revision-Date: 2023-12-14 13:10+0000\n"
-"Last-Translator: Jonas <jonasdcdm@mailbox.org>\n"
+"PO-Revision-Date: 2024-02-27 18:55+0000\n"
+"Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.3\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -209,7 +209,7 @@ msgid ""
 msgstr ""
 "Les humains peuvent gagner des crédits en tuant des extraterrestres et en "
 "détruisant des constructions extraterrestres, puis ils peuvent utiliser ces "
-"crédits pour acheter de nouvelles armes [lcannon], des armures ou une "
+"crédits pour acheter de nouvelles armes [lcannon], des armures, une "
 "combinaison de combat [bsuit] et des accessoires comme un radar ou un "
 "jetpack."
 
@@ -218,7 +218,7 @@ msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
-"Les humains achètent et vendent des armes à l’[armoury] armurerie, assurez-"
+"Les humains achètent et vendent des armes à [armoury] l’armurerie, assurez-"
 "vous qu’il y en a une ! Utilisez le kit de construction pour construire une "
 "armurerie s’il en manque."
 
@@ -249,9 +249,9 @@ msgid ""
 "have enough energy to remain operational."
 msgstr ""
 "Lorsque vous utilisez plus de points de construction que les structures "
-"minières ([leech] Leech, [drill] Drill) ne sont capables de fournir (pts de "
-"construction actuels + pts de construction que vous récupérerez au fil du "
-"temps), les constructions s’éteindront jusqu'à ce que les autres "
+"minières ([leech] Leech, [drill] Drill) ne sont capables de fournir (points "
+"de construction actuels + points de construction que vous récupérerez au fil "
+"du temps), les constructions s’éteindront jusqu'à ce que les autres "
 "constructions aient assez d'énergie pour rester opérationnel."
 
 #: ui/help_gameplay.rml:60
@@ -260,9 +260,9 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"Les structures de ponte (œufs [egg] et télénodes [télénode]), les structures "
-"minières (sangsue et forage) et les structures uniques ([overmind] overmind "
-"et [reactor] réacteur) ne sont PAS affectées par le manque de points de "
+"Les structures de ponte (œufs [egg] et telenodes [telenode]), les structures "
+"minières (leech et drill) et les structures uniques ([overmind] overmind et "
+"[reactor] réacteur) ne sont PAS affectées par le manque de points de "
 "construction."
 
 #: ui/help_gameplay.rml:64
@@ -326,8 +326,8 @@ msgid ""
 "weapons, structures or classes will be unlocked."
 msgstr ""
 "Construire et détruire des structures ainsi que tuer des ennemis rapporte à "
-"votre équipe une nouvelle ressource appelée élan. Si vous gagnez "
-"suffisamment d'élan, de nouvelles armes, structures ou classes seront "
+"votre équipe une nouvelle ressource appelée momentum. Si vous gagnez "
+"suffisamment de momentum, de nouvelles armes, structures ou classes seront "
 "déverrouillées."
 
 #: ui/help_gameplay.rml:86
@@ -335,9 +335,9 @@ msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
 msgstr ""
-"L'élan diminue de façon exponentielle avec le temps, donc si vous restez "
-"inactif, votre équipe perdra l'accès aux nouveaux éléments. Les mises à "
-"niveau existantes resteront fonctionnelles."
+"Le momentum diminue de façon exponentielle avec le temps, donc si vous "
+"restez inactif, votre équipe perdra l'accès aux nouveaux éléments. Les mises "
+"à niveau existantes resteront fonctionnelles."
 
 #: ui/help_gameplay.rml:90
 msgid "Wildfire"
@@ -486,7 +486,7 @@ msgstr ""
 
 #: ui/help_gameplay.rml:150
 msgid "The advanced granger can be unlocked with momentum."
-msgstr "Le granger avancé peut être débloqué avec de l'élan."
+msgstr "Le granger avancé peut être débloqué avec du momentum."
 
 #: ui/help_gameplay.rml:154
 msgid "Since Tremulous"
@@ -510,7 +510,7 @@ msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
 msgstr ""
-"Les étapes ont été remplacées par de l'élan et les points de construction "
+"Les étapes ont été remplacées par du momentum et les points de construction "
 "dépendent directement du nombre de drill(es)."
 
 #: ui/help_gameplay.rml:166
@@ -2059,7 +2059,7 @@ msgstr "Temps de demi-vie"
 
 #: ui/server_setup.rml:97
 msgid "Time for momentum to decrease 50%. 0 disables this behavior."
-msgstr "Il est temps que l'élan diminue de 50 %. 0 désactive ce comportement."
+msgstr "Temps que le momentum diminue de 50 %. 0 désactive ce comportement."
 
 #: ui/server_setup.rml:100 ui/server_setup.rml:108 ui/server_setup.rml:184
 msgid "minutes"
@@ -2079,7 +2079,7 @@ msgstr "Multiplicateur de base"
 
 #: ui/server_setup.rml:113
 msgid "Generic momentum reward multiplier"
-msgstr "Multiplicateur de récompense d'élan générique"
+msgstr "Multiplicateur de récompense de momentum générique"
 
 #: ui/server_setup.rml:120
 msgid "Kills reward multiplier"
