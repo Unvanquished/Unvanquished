@@ -2146,10 +2146,24 @@ void G_RunFrame( int levelTime )
 		return;
 	}
 
+	int matchTime = levelTime - level.startTime;
+
+	/* Don't process frame at matchTime 0 as delay will be zero and
+	some computation will divide by zero in G_EvaluateAcceleration.
+
+	At map start matchTime == 0 and levelTime == 0.
+	After a map restart matchTime == 0 but levelTime != 0.
+
+	Testing matchTime is enough, we don't need to test levelTime. */
+	if ( !matchTime )
+	{
+		return;
+	}
+
 	if ( !level.numConnectedPlayers && g_autoPause.Get() && level.matchTime > 1000)
 	{
 		level.time = levelTime;
-		level.matchTime = levelTime - level.startTime;
+		level.matchTime = matchTime;
 
 		CheckExitRules();
 
@@ -2202,7 +2216,7 @@ void G_RunFrame( int levelTime )
 
 	level.previousTime = level.time;
 	level.time = levelTime;
-	level.matchTime = levelTime - level.startTime;
+	level.matchTime = matchTime;
 
 	msec = level.time - level.previousTime;
 
