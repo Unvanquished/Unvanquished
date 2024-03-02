@@ -281,6 +281,9 @@ static const LanguageSpec languages[] = {
   { "zh", "CN", nullptr, "Chinese (simplified)"        },
   { "zh", "HK", nullptr, "Chinese (Hong Kong)"         },
   { "zh", "TW", nullptr, "Chinese (traditional)"       },
+  { "zh", "Hans",     nullptr, "Chinese (simplified)"        },
+  { "zh", "Hant_HK",  nullptr, "Chinese (Hong Kong)"         },
+  { "zh", "Hant",     nullptr, "Chinese (traditional)"       },
   { "zu", nullptr,    nullptr, "Zulu"                        },
   { nullptr, nullptr,    nullptr, nullptr                          }
 };
@@ -463,10 +466,19 @@ Language::Language()
 {
 }
 
+static std::string asciitolower(const std::string& str) {
+  std::string s = str;
+  for (char& c : s)
+  {
+    c = tolower(c);
+  }
+  return s;
+}
+
 int
 Language::match(const Language& lhs, const Language& rhs)
 {
-  if (lhs.get_language() != rhs.get_language())
+  if (asciitolower(lhs.get_language()) != asciitolower(rhs.get_language()))
   {
     return 0;
   }
@@ -480,7 +492,7 @@ Language::match(const Language& lhs, const Language& rhs)
     };
 
     int c;
-    if (lhs.get_country() == rhs.get_country())
+    if (asciitolower(lhs.get_country()) == asciitolower(rhs.get_country()))
       c = 0;
     else if (lhs.get_country().empty() || rhs.get_country().empty())
       c = 1;
@@ -488,7 +500,7 @@ Language::match(const Language& lhs, const Language& rhs)
       c = 2;
 
     int m;
-    if (lhs.get_modifier() == rhs.get_modifier())
+    if (asciitolower(lhs.get_modifier()) == asciitolower(rhs.get_modifier()))
       m = 0;
     else if (lhs.get_modifier().empty() || rhs.get_modifier().empty())
       m = 1;

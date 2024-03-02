@@ -250,7 +250,7 @@ static void Trans_SetLanguage( const char* lang )
 
 	trans_manager.set_language( bestLang );
 
-	LOG.Notice( "Set language to %s" , bestLang.get_name().c_str() );
+	LOG.Notice( "Set language to %s_%s (%s)" , bestLang.get_language().c_str() , bestLang.get_country().c_str() , bestLang.get_name().c_str() );
 }
 
 // TODO: update automatically on modification instead of having this stupid command
