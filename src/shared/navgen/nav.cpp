@@ -1125,7 +1125,10 @@ NavgenStatus NavmeshGenerator::InitPerClassData( class_t species, PerClassData *
 			{
 				LOG.Warn( "Error writing error for %s: %s", BG_Class( species )->name, error.String() );
 			}
+
 		});
+		// Mark this as complete.
+		data->y = data->th;
 		return ret;
 	}
 
@@ -1161,6 +1164,8 @@ NavgenStatus NavmeshGenerator::Step(PerClassData *data)
 				LOG.Warn( "Error writing error for %s: %s", BG_Class( data->species )->name, error.String() );
 			}
 		});
+		// Mark this as complete.
+		data->y = data->th;
 		return status;
 	}
 
