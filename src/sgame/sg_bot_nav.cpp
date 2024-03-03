@@ -77,7 +77,7 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 		progress = navgen.Progress();
 		navgen.RunTasks();
 		Log::Notice( "Navmesh generation progress: %.2f%%", progress * 100 );
-	} while ( navgen.Progress() < 0.9f );
+	} while ( navgen.Progress() < 1.0f );
 }
 
 // TODO: Latch(), when supported in gamelogic

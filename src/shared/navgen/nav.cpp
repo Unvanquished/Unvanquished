@@ -142,7 +142,9 @@ NavgenStatus NavmeshGenerator::WriteFile( const PerClassData& data ) {
 	header.numTiles = numTiles;
 	header.cacheParams = *data.tileCache->getParams();
 	header.params = params;
+
 	SwapNavMeshSetHeader( header );
+
 
 	qhandle_t file;
 	trap_FS_FOpenFile( filename.c_str(), &file, fsMode_t::FS_WRITE );
@@ -1261,6 +1263,11 @@ void NavmeshGenerator::Generate( class_t species )
 void NavmeshGenerator::StartGeneration( class_t species )
 {
 	const std::lock_guard<std::mutex> lock(mu_);
+	if ( tasks_.find( species ) != tasks_.end() )
+	{
+		LOG.Warn( "Already started generation for %s.", BG_Class( species )->name );
+		return;
+	}
 	auto it = tasks_.insert({species, PerClassData()});
 	it.first->second.thread.reset(new std::thread(&NavmeshGenerator::Generate, this, species));
 }
@@ -1302,7 +1309,6 @@ void NavmeshGenerator::doLog( const rcLogCategory category, const char* msg, con
 	}
 }
 
-
 NavmeshGenerator::~NavmeshGenerator()
 {
 	for ( auto& t : tasks_ )
@@ -1310,5 +1316,12 @@ NavmeshGenerator::~NavmeshGenerator()
 		if ( !t.second.thread ) continue;
 		t.second.thread->join();
 	}
+	RunTasks();
 	tasks_.clear();
+	const std::lock_guard<std::mutex> lock(mu_);
+	for ( const auto& status : statuses_ )
+	{
+		if ( status.second.ok() ) continue;
+		LOG.Warn( "%s: %s", BG_Class( status.first )->name, status.second.String() );
+	}
 }

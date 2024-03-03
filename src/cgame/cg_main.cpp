@@ -1091,6 +1091,7 @@ static void GenerateNavmeshes()
 			missing.push_back( species );
 			continue;
 		}
+
 		NavMeshSetHeader header = {};
 		std::string error = GetNavmeshHeader( f, config, header, mapName );
 		if ( !error.empty() )
@@ -1112,30 +1113,32 @@ static void GenerateNavmeshes()
 	trap_UpdateScreen();
 
 	auto now = trap_Milliseconds();
-	NavmeshGenerator navgen;
-	NavgenStatus status = navgen.Init( mapName );
-	if ( !status.ok() )
 	{
-		Log::Warn( "Failed to load map data while generating navmesh: %s", status.String() );
-		return;
-	}
+		NavmeshGenerator navgen;
+		NavgenStatus status = navgen.Init( mapName );
+		if ( !status.ok() )
+		{
+			Log::Warn( "Failed to load map data while generating navmesh: %s", status.String() );
+			return;
+		}
 
-	for ( class_t species : missing )
-	{
-		navgen.StartGeneration( species );
-	}
+		for ( class_t species : missing )
+		{
+			navgen.StartGeneration( species );
+		}
 
-	float progress = 0.0f;
-	do
-	{
-		std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
-		progress = navgen.Progress();
-		cg.loadingFraction = progress;
-		navgen.RunTasks();
-		trap_UpdateScreen();
-		Log::Notice( "Navmesh generation progress: %.0f%%", progress * 100 );
-	} while ( progress < 0.9f );
-	Log::Notice( "TOOK %d ms to gen navmeshes", (trap_Milliseconds() - now));
+		float progress = 0.0f;
+		do
+		{
+			std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+			progress = navgen.Progress();
+			cg.loadingFraction = progress;
+			navgen.RunTasks();
+			trap_UpdateScreen();
+			Log::Notice( "Navmesh generation progress: %.0f%%", progress * 100 );
+		} while ( progress < 1.0f );
+	}
+	Log::Notice( "Took %d ms to generate navmeshes", (trap_Milliseconds() - now));
 	cg.loadingNavmesh = false;
 }
 

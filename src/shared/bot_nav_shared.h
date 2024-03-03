@@ -116,6 +116,8 @@ struct NavMeshSetHeader
 	NavgenConfig config;
 	dtNavMeshParams params;
 	dtTileCacheParams cacheParams;
+
+	std::string ToString() const;
 };
 
 NavgenMapIdentification GetNavgenMapId( Str::StringRef mapName );

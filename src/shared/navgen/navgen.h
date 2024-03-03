@@ -129,7 +129,11 @@ struct NavgenStatus
 	std::string String() const { return Str::Format("Code %d: %s", code, message); }
 };
 
-// Public interface to navgen. Rest of this file is internal details
+// Public interface to navgen. Rest of this file is internal details.
+// NOTE: This class is multithreaded, even though the rest of the engine is not.
+// This can have odd effects especially around trap functions. If a function is called
+// in a thread, take care to not call trap functions.
+// All of the public methods should only be called from the main thread.
 class NavmeshGenerator : public rcContext {
 private:
 	struct PerClassData {
@@ -154,7 +158,7 @@ private:
 		float Progress() const {
 			if (tw == 0 || th == 0) return 0.0f;
 			// Assume that writing the file at the end is 10%
-			return 0.9f * float(y * tw + x) / float(tw * th);
+			return float(y * tw + x) / float(tw * th);
 		}
 	};
 
@@ -167,41 +171,46 @@ private:
 	Geometry geo_;
 
 	std::mutex mu_;
-	std::unordered_map<class_t, NavgenStatus> statuses_;
-	std::unordered_map<class_t, PerClassData> tasks_;
+	std::unordered_map<class_t, NavgenStatus> statuses_;  // guarded by mu_
+	std::unordered_map<class_t, PerClassData> tasks_;  // guarded by mu_
 
 	std::mutex trap_mu_;
-	std::vector<std::function<void()>> funcs_;
+	std::vector<std::function<void()>> funcs_;  // guarded by trap_mu_
 
+	// Implement logging for detour/recast code. Also used by our code to log from threads.
 	void doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/) override;
 
+	// These functions should only be called from the main thread.
 	void LoadBSP();
 	NavgenStatus LoadGeometry();
 	NavgenStatus LoadTris(std::vector<float>& verts, std::vector<int>& tris);
 
+	// These functions are called from a dedicated thread, and thus must not use trap functions.
 	NavgenStatus InitPerClassData(class_t species, PerClassData *data);
 	NavgenStatus Step(PerClassData *data);
 	NavgenStatus WriteFile(const PerClassData& data);
 	NavgenStatus WriteError(const PerClassData& data, const NavgenStatus& status);
-
 	void UpdateStatus(class_t species, NavgenStatus status);
-
 	void Generate(class_t species);
 
+	// Internal function used to work around the fact that we can't call trap functions from threads.
+	// Instead this function allows us to queue trap functions to be run on the main thread when a user
+	// calls "RunTasks()". These are async, as in there is no guarantee when these functions will be run.
 	void AsyncRunOnMainThread(std::function<void()> func);
 
-
 public:
+	// Will join all the threads and run all remaining async threads.
 	virtual ~NavmeshGenerator();
 	// load the BSP if it has not been loaded already
 	// in principle mapName could be different from the current map, if the necessary pak is loaded
 	NavgenStatus Init(Str::StringRef mapName);
 
+	// Run queued tasks from the threads that use trap calls (logging, writing files, etc).
 	void RunTasks();
 
+	// Start generating navmeshes for a particular class.
 	void StartGeneration(class_t species);
 
+	// Return progress of all tasks from 0 to 1.0.
 	float Progress();
-
-	// Returns true when finished
 };

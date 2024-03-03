@@ -35,6 +35,33 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "shared/CommonProxies.h"
 #include "bot_nav_shared.h"
 
+
+std::string NavMeshSetHeader::ToString() const
+{
+	Str::StringRef mvm = "";
+	int verificationValue = 0;
+	switch ( this->mapId.method )
+	{
+		case NavgenMapIdentification::MapVerificationMethod::PAK_CHECKSUM:
+			mvm = "PAK_CHECKSUM";
+			verificationValue = this->mapId.pakChecksum;
+			break;
+		case NavgenMapIdentification::MapVerificationMethod::BSP_SIZE:
+			mvm = "BSP_SIZE";
+			verificationValue = this->mapId.bspSize;
+			break;
+	}
+	return Str::Format( "{ magic=%d version=%d versionHash=%d headerSize=%d Verification { method=%s value=%d } numTiles=%d }",
+		this->magic,
+		this->version,
+		this->productVersionHash,
+		this->headerSize,
+		mvm,
+		verificationValue,
+		this->numTiles
+	);
+}
+
 NavgenMapIdentification GetNavgenMapId( Str::StringRef mapName )
 {
 	std::string bspPath = "maps/" + mapName + ".bsp";
@@ -236,6 +263,7 @@ std::string GetNavmeshHeader( fileHandle_t f, const NavgenConfig& config, NavMes
 	{
 		return "File too small";
 	}
+
 	SwapNavMeshSetHeader( header );
 
 	if ( header.magic != NAVMESHSET_MAGIC )
@@ -245,11 +273,20 @@ std::string GetNavmeshHeader( fileHandle_t f, const NavgenConfig& config, NavMes
 
 	// In principle we only need NAVMESHSET_VERSION, but people probably won't remember to change it
 	// so add some extra checks
-	if ( header.version != NAVMESHSET_VERSION ||
-	     header.productVersionHash != ProductVersionHash() ||
-	     header.headerSize != sizeof(header) )
+	if ( header.version != NAVMESHSET_VERSION )
 	{
-		return "File is wrong version";
+		return Str::Format( "header is %d but want %d", header.version, NAVMESHSET_VERSION );
+	}
+
+	auto wantHash = ProductVersionHash();
+	if ( header.productVersionHash != wantHash )
+	{
+		return Str::Format( "product version hash is %d but want %d", header.productVersionHash, wantHash );
+	}
+
+	if ( header.headerSize != sizeof(header) )
+	{
+		return Str::Format( "header size is %d but want %d", header.headerSize, sizeof( header ) );
 	}
 
 	NavgenMapIdentification mapId = GetNavgenMapId( mapName );
