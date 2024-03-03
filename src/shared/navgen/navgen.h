@@ -213,4 +213,7 @@ public:
 
 	// Return progress of all tasks from 0 to 1.0.
 	float Progress();
+
+	// Return the number of active generation tasks.
+	int ActiveTasks();
 };

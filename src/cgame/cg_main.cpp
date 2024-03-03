@@ -157,6 +157,9 @@ Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed 
 Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "desaturate world view when dead or spawning", Cvar::NONE, true);
 
 static Cvar::Cvar<bool> cg_navgenOnLoad("cg_navgenOnLoad", "generate navmeshes when starting a local game", Cvar::NONE, true);
+static Cvar::Cvar<int> cg_navgen_maxThreads(
+	"cg_navgen_maxThreads", "Maximum number of threads to use when generating navmeshes. A value of zero or below means unlimited.",
+	Cvar::NONE, 0);
 
 // search 'fovCvar' to find usage of these (names come from config files)
 // 0 means use global FOV setting
@@ -1107,10 +1110,13 @@ static void GenerateNavmeshes()
 	}
 
 	const std::string message = _("Generating bot navigation meshes");
+	const int maxThreads = cg_navgen_maxThreads.Get();
 	cg.navmeshLoadingFraction = 0;
 	cg.loadingNavmesh = true;
 	cg.loadingText = message;
 	trap_UpdateScreen();
+
+	Log::Notice( "Generating navmeshes using %s threads.", maxThreads > 0 ? Str::Format("%d", maxThreads) : "unlimited" );
 
 	auto now = trap_Milliseconds();
 	{
@@ -1122,9 +1128,11 @@ static void GenerateNavmeshes()
 			return;
 		}
 
-		for ( class_t species : missing )
+		while ( !missing.empty() )
 		{
-			navgen.StartGeneration( species );
+			if ( maxThreads > 0 && navgen.ActiveTasks() >= maxThreads ) break;
+			navgen.StartGeneration( missing.back() );
+			missing.pop_back();
 		}
 
 		float progress = 0.0f;
@@ -1132,11 +1140,16 @@ static void GenerateNavmeshes()
 		{
 			std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
 			progress = navgen.Progress();
-			cg.loadingFraction = progress;
+			cg.navmeshLoadingFraction = progress;
 			navgen.RunTasks();
 			trap_UpdateScreen();
 			Log::Notice( "Navmesh generation progress: %.0f%%", progress * 100 );
-		} while ( progress < 1.0f );
+			while ( maxThreads > 0 && !missing.empty() && navgen.ActiveTasks() < maxThreads )
+			{
+				navgen.StartGeneration( missing.back() );
+				missing.pop_back();
+			}
+		} while ( navgen.ActiveTasks() > 0 );
 	}
 	Log::Notice( "Took %d ms to generate navmeshes", (trap_Milliseconds() - now));
 	cg.loadingNavmesh = false;

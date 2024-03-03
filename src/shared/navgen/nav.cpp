@@ -1237,6 +1237,12 @@ float NavmeshGenerator::Progress()
 	return p / tasks_.size();
 }
 
+int NavmeshGenerator::ActiveTasks()
+{
+	const std::lock_guard<std::mutex> lock(mu_);
+	return tasks_.size() - statuses_.size();
+}
+
 void NavmeshGenerator::UpdateStatus( class_t species, NavgenStatus status )
 {
 	const std::lock_guard<std::mutex> lock(mu_);
