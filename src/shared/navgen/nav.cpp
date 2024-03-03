@@ -91,7 +91,7 @@ NavgenStatus NavmeshGenerator::WriteError(const PerClassData& data, const Navgen
 	trap_FS_FOpenFile( filename.c_str(), &file, fsMode_t::FS_WRITE );
 
 	if ( !file ) {
-		log( RC_LOG_ERROR, "failed to open file %s", filename );
+		log( RC_LOG_ERROR, "failed to open file %s", filename.c_str() );
 		return { NavgenStatus::PERMANENT_FAILURE, Str::Format( "failed to open file %s", filename ) };
 	}
 
@@ -150,7 +150,7 @@ NavgenStatus NavmeshGenerator::WriteFile( const PerClassData& data ) {
 	trap_FS_FOpenFile( filename.c_str(), &file, fsMode_t::FS_WRITE );
 
 	if ( !file ) {
-		log( RC_LOG_ERROR, "failed to open file %s", filename );
+		log( RC_LOG_ERROR, "failed to open file %s", filename.c_str() );
 		return { NavgenStatus::PERMANENT_FAILURE, Str::Format( "failed to open file %s", filename ) };
 	}
 
