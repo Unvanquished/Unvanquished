@@ -879,6 +879,24 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 			wi->crossHairSize = size;
 
 			continue;
+		} else if ( !Q_stricmp( token, "crosshairSizeNoBorder" ) ) {
+			float size;
+
+			token = COM_Parse( &text_p );
+
+			if ( !token ) {
+				break;
+			}
+
+			size = atof( token );
+
+			if ( size < 0.0f ) {
+				size = 0.0f;
+			}
+
+			wi->crossHairSizeNoBorder = size;
+
+			continue;
 		}
 		else if ( !Q_stricmp( token, "disableIn3rdPerson" ) )
 		{
@@ -939,6 +957,11 @@ static bool CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *
 
 		Log::Warn( "unknown token '%s'", token );
 		return false;
+	}
+
+	if ( wi->crossHairSizeNoBorder == 0.0f && wi->crossHair ) {
+		Log::Warn( "weapon %s crossHairSizeNoBorder not set or is 0, setting to crossHairSize", filename );
+		wi->crossHairSizeNoBorder = wi->crossHairSize;
 	}
 
 	return true;

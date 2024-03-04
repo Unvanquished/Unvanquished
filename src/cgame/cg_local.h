@@ -67,8 +67,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CGAME_CHAR_WIDTH               32
 #define CGAME_CHAR_HEIGHT              48
 
-#define MAX_LOADING_TEXT_LENGTH        64
-
 #define MAX_MINIMAP_ZONES              32
 
 enum footstep_t
@@ -974,6 +972,7 @@ struct weaponInfo_t
 	qhandle_t        crossHair;
 	qhandle_t        crossHairIndicator;
 	int              crossHairSize;
+	float            crossHairSizeNoBorder; // For crosshair outlines
 
 	sfxHandle_t      readySound;
 
@@ -1246,7 +1245,7 @@ struct cg_t
 	/* loading */
 	std::string mapLongName;
 	std::string mapAuthors;
-	char                    loadingText[ MAX_LOADING_TEXT_LENGTH ];
+	std::string loadingText;
 	float                   loadingFraction; // loading percentages
 	float                   mediaLoadingFraction;
 	float                   buildableLoadingFraction;
@@ -1806,6 +1805,7 @@ extern Cvar::Cvar<float> cg_crosshairColorBlue;
 extern Cvar::Cvar<float> cg_crosshairColorAlpha;
 extern Cvar::Range<Cvar::Cvar<int>> cg_crosshairOutlineStyle;
 extern Cvar::Cvar<float> cg_crosshairOutlineScale;
+extern Cvar::Cvar<float> cg_crosshairOutlineOffset;
 extern Cvar::Cvar<float> cg_crosshairOutlineColorRed;
 extern Cvar::Cvar<float> cg_crosshairOutlineColorGreen;
 extern Cvar::Cvar<float> cg_crosshairOutlineColorBlue;

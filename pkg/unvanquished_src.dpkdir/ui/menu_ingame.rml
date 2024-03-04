@@ -31,16 +31,19 @@
 						<button-menu style="width:87%"  onclick='Events.pushevent("exec team human; hide ingame_menu", event)'><translate>Join Humans</translate></button-menu>
 						<br/>
 						<button-menu style="width:87%"  onclick='Events.pushevent("exec team spec; hide ingame_menu", event)'><translate>Spectate</translate></button-menu>
-						<button-menu style="width:87%" onclick='Events.pushevent("show options_bots", event)'><translate>Bots</translate></button-menu>
 						<button-menu style="width:87%" onclick='Events.pushevent("show options_democracy", event)'><translate>Democracy</translate></button-menu>
 					</indent>
 
 					<if cvar="sv_running" condition="==" value="1">
 						<h1><translate>Host menu</translate></h1>
 						<indent>
+                                                        <button-menu style="width:87%" onclick='Events.pushevent("show server_setup", event)'><translate>Server setup</translate></button-menu>
+                                                        <br/>
 							<button-menu style="width:87%"  class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'><translate>Stop server</translate></button-menu>
 							<br/>
 							<button-menu style="width:87%"  class="leftalign" onclick='Events.pushevent("exec pause", event)'><translate>Pause server</translate></button-menu>
+                                                        <br/>
+					                <button-menu style="width:87%" onclick='Events.pushevent("show options_bots", event)'><translate>Bots</translate></button-menu>
 						</indent>
 					</if>
 
@@ -49,7 +52,6 @@
 						<button-menu style="width:87%" onclick='Events.pushevent("show serverbrowser", event)'><translate>Server listings</translate></button-menu>
 						<button-menu style="width:87%" onclick='Events.pushevent("show createserver", event)'><translate>Start local/LAN game</translate></button-menu>
 						<button-menu style="width:87%" onclick='Events.pushevent("show options", event)'><translate>Options</translate></button-menu>
-						<button-menu style="width:87%" onclick='Events.pushevent("show server_setup", event)'><translate>Server setup</translate></button-menu>
 						<button-menu style="width:87%" onclick='Events.pushevent("show help_gameplay", event)'><translate>Gameplay guide</translate></button-menu>
 					</indent>
 					<br/>

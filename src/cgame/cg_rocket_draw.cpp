@@ -517,71 +517,39 @@ private:
 	int clips_;
 };
 
-
-static const int FPS_FRAMES = 20;
-
 class FpsHudElement : public TextHudElement
 {
 public:
 	FpsHudElement( const Rml::String& tag )
 			: TextHudElement( tag, ELEMENT_ALL ),
-			  shouldShowFps_( true ),
-			  index_(0),
-			  previous_(0) {}
+			  showingFps_( false ),
+			  lastFrame_( 0 ),
+			  fps_( 0 ) {}
 
 	void DoOnUpdate() override
 	{
-		int        i, total;
-		int        fps;
-		int        t, frameTime;
-
-		if ( !cg_drawFPS.Get() && shouldShowFps_ )
-		{
-			shouldShowFps_ = false;
-			SetText( "" );
-			return;
-		} else if ( !shouldShowFps_ )
-		{
-			shouldShowFps_ = true;
-		}
-
 		// don't use serverTime, because that will be drifting to
 		// correct for Internet lag changes, timescales, timedemos, etc.
-		t = trap_Milliseconds();
-		frameTime = t - previous_;
-		previous_ = t;
+		int t = trap_Milliseconds();
+		Util::UpdateFPSCounter( 1.0f, t - lastFrame_, fps_ );
+		lastFrame_ = t;
 
-		previousTimes_[ index_ % FPS_FRAMES ] = frameTime;
-		index_++;
-
-		if ( index_ > FPS_FRAMES )
+		if ( cg_drawFPS.Get() )
 		{
-			// average multiple frames together to smooth changes out a bit
-			total = 0;
-
-			for ( i = 0; i < FPS_FRAMES; i++ )
-			{
-				total += previousTimes_[ i ];
-			}
-
-			if ( !total )
-			{
-				total = 1;
-			}
-
-			fps = 1000 * FPS_FRAMES / total;
+			SetText( Str::Format("%.0f", fps_) );
+			showingFps_ = true;
 		}
-
-		else
-			fps = 0;
-
-		SetText( va( "%d", fps ) );
+		else if ( showingFps_ )
+		{
+			SetText( "" );
+			showingFps_ = false;
+		}
 	}
+
 private:
-	bool shouldShowFps_;
-	int previousTimes_[ FPS_FRAMES ];
-	int index_;
-	int previous_;
+	bool showingFps_;
+	int lastFrame_;
+	float fps_;
 };
 
 #define CROSSHAIR_INDICATOR_HITFADE 500
@@ -590,7 +558,7 @@ class CrosshairIndicatorHudElement : public HudElement
 {
 public:
 	CrosshairIndicatorHudElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_BOTH, true ),
+			HudElement( tag, ELEMENT_GAME, true ),
 			color_( Color::White ) {}
 
 	void OnPropertyChange( const Rml::PropertyIdSet& changed_properties ) override
@@ -698,7 +666,7 @@ private:
 class CrosshairHudElement : public HudElement {
 public:
 	CrosshairHudElement( const Rml::String& tag ) :
-			HudElement( tag, ELEMENT_ALL, true ),
+			HudElement( tag, ELEMENT_GAME, true ),
 			// Use as a sentinel value to denote that no weapon is
 			// explicitly set.
 			weapon_( WP_NUM_WEAPONS ) {
@@ -707,6 +675,11 @@ public:
 	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
 		HudElement::OnAttributeChange( changed_attributes );
+		// If we are not in game, then don't bother looking up weapon info, since it's not loaded.
+		if ( rocketInfo.cstate.connState != connstate_t::CA_ACTIVE )
+		{
+			return;
+		}
 		// If we have a weapon attribute, then *always* display the crosshair for that weapon, regardless
 		// of team or spectator state.
 		auto it = changed_attributes.find( "weapon" );
@@ -714,7 +687,7 @@ public:
 		{
 			auto weaponName = it->second.Get<std::string>();
 			auto wa = BG_WeaponByName( weaponName.c_str() );
-			if ( wa == nullptr )
+			if ( wa == nullptr || wa->number == WP_NONE )
 			{
 				Log::Warn( "Invalid forced crosshair weapon: %s", weaponName );
 			}
@@ -824,8 +797,9 @@ public:
 				}
 
 				const float scale = cg_crosshairOutlineScale.Get();
-				const float outlineWidth = w + scale * cgs.aspectScale;
-				const float outlineHeight = h + scale;
+				const float outlineHeight = ( wi->crossHairSizeNoBorder * scale + cg_crosshairOutlineOffset.Get() )
+										    * ( wi->crossHairSize / wi->crossHairSizeNoBorder ) * cg_crosshairSize.Get();
+				const float outlineWidth = outlineHeight * cgs.aspectScale;
 				const float outlineX = rect.x + ( rect.w / 2 ) - ( outlineWidth / 2 );
 				const float outlineY = rect.y + ( rect.h / 2 ) - ( outlineHeight / 2 );
 
@@ -3660,7 +3634,7 @@ static void CG_Rocket_DrawProgressValue()
 
 static void CG_Rocket_DrawLoadingText()
 {
-	Rocket_SetInnerRML( cg.loadingText, 0 );
+	Rocket_SetInnerRML( cg.loadingText.c_str(), 0 );
 }
 
 static void CG_Rocket_DrawLevelAuthors()

@@ -28,8 +28,12 @@ class MedipadComponent: public MedipadComponentBase {
 
 		// ///////////////////// //
 
-	private:
+		gentity_t* GetTarget() const;
 
+	private:
+		void Think(int timeDelta);
+
+		GentityRef target_ = nullptr;
 };
 
 #endif // MEDIPAD_COMPONENT_H_

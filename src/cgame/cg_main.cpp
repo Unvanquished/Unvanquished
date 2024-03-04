@@ -59,7 +59,8 @@ Cvar::Cvar<float> cg_crosshairColorGreen( "cg_crosshairColorGreen", "crosshair c
 Cvar::Cvar<float> cg_crosshairColorBlue( "cg_crosshairColorBlue", "crosshair colour blue", Cvar::NONE, 1.0 );
 Cvar::Cvar<float> cg_crosshairColorAlpha( "cg_crosshairColorAlpha", "crosshair colour alpha", Cvar::NONE, 1.0 );
 Cvar::Range<Cvar::Cvar<int>> cg_crosshairOutlineStyle( "cg_crosshairOutlineStyle", "crosshair outline style (0 = none, 1 = auto colour, 2 = custom colour)", Cvar::NONE, 0, 0, 2 );
-Cvar::Cvar<float> cg_crosshairOutlineScale( "cg_crosshairOutlineScale", "crosshair outline scale", Cvar::NONE, 2.0 );
+Cvar::Cvar<float> cg_crosshairOutlineScale( "cg_crosshairOutlineScale", "crosshair outline scale", Cvar::NONE, 1.05 );
+Cvar::Cvar<float> cg_crosshairOutlineOffset( "cg_crosshairOutlineOffset", "crosshair outline offset", Cvar::NONE, 2.0 );
 Cvar::Cvar<float> cg_crosshairOutlineColorRed( "cg_crosshairOutlineColorRed", "crosshair colour green", Cvar::NONE, 0.5 );
 Cvar::Cvar<float> cg_crosshairOutlineColorGreen( "cg_crosshairOutlineColorGreen", "crosshair colour green", Cvar::NONE, 0.5 );
 Cvar::Cvar<float> cg_crosshairOutlineColorBlue( "cg_crosshairOutlineColorBlue", "crosshair colour blue", Cvar::NONE, 0.5 );
@@ -442,7 +443,7 @@ static void CG_UpdateLoadingProgress( int step, const char *label, const char* l
 {
 	cg.loadingFraction = ( 1.0f * step ) / LOAD_DONE;
 
-	Q_strncpyz( cg.loadingText, loadingText, sizeof( cg.loadingText ) );
+	cg.loadingText = loadingText;
 
 	Log::Debug( "CG_Init: %d%% %s.", static_cast<int>( 100 * cg.loadingFraction ), label );
 
@@ -1108,7 +1109,7 @@ static void GenerateNavmeshes()
 	const std::string message = _("Generating bot navigation meshes");
 	cg.navmeshLoadingFraction = 0;
 	cg.loadingNavmesh = true;
-	Q_strncpyz( cg.loadingText, message.c_str(), sizeof(cg.loadingText) );
+	cg.loadingText = message;
 	trap_UpdateScreen();
 
 	NavmeshGenerator navgen;
@@ -1119,8 +1120,8 @@ static void GenerateNavmeshes()
 	float classesTotal = classesCompleted + missing.size();
 	for ( class_t species : missing )
 	{
-		std::string message2 = Str::Format( "%s — %s", message, BG_ClassModelConfig( species )->humanName );
-		Q_strncpyz( cg.loadingText, message2.c_str(), sizeof(cg.loadingText) );
+		cg.loadingText =
+			Str::Format( "%s — %s", message, BG_ClassModelConfig( species )->humanName );
 		cg.loadingFraction = classesCompleted / classesTotal;
 		trap_UpdateScreen();
 
