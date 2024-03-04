@@ -278,12 +278,12 @@ static const LanguageSpec languages[] = {
   { "yi", nullptr,    nullptr, "Yiddish"                     },
   { "yo", nullptr,    nullptr, "Yoruba"                      },
   { "zh", nullptr,    nullptr, "Chinese"                     },
-  { "zh", "CN", nullptr, "Chinese (simplified)"        },
-  { "zh", "HK", nullptr, "Chinese (Hong Kong)"         },
-  { "zh", "TW", nullptr, "Chinese (traditional)"       },
-  { "zh", "Hans",     nullptr, "Chinese (simplified)"        },
-  { "zh", "Hant_HK",  nullptr, "Chinese (Hong Kong)"         },
-  { "zh", "Hant",     nullptr, "Chinese (traditional)"       },
+  { "zh", "CN", nullptr, "Chinese (China)"     },
+  { "zh", "HK", nullptr, "Chinese (Hong Kong)" },
+  { "zh", "TW", nullptr, "Chinese (Taiwan)"    },
+  { "zh", "Hans",     nullptr, "Chinese (simplified)"             },
+  { "zh", "Hant_HK",  nullptr, "Chinese (traditional, Hong Kong)" },
+  { "zh", "Hant",     nullptr, "Chinese (traditional)"            },
   { "zu", nullptr,    nullptr, "Zulu"                        },
   { nullptr, nullptr,    nullptr, nullptr                          }
 };
