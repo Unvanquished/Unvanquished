@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-28 07:59+0100\n"
+"POT-Creation-Date: 2024-03-04 17:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -78,7 +78,7 @@ msgid "Both teams"
 msgstr ""
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
-#: ui/options_player.rml:107
+#: ui/options_player.rml:107 ui/options_ui.rml:101
 msgid "Aliens"
 msgstr ""
 
@@ -563,55 +563,55 @@ msgstr ""
 msgid "Resume action"
 msgstr ""
 
-#: ui/menu_ingame.rml:34 ui/options_bots.rml:8
-msgid "Bots"
-msgstr ""
-
-#: ui/menu_ingame.rml:35 ui/options_democracy.rml:8
+#: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
 msgstr ""
 
-#: ui/menu_ingame.rml:39
+#: ui/menu_ingame.rml:38
 msgid "Host menu"
 msgstr ""
 
-#: ui/menu_ingame.rml:41
-msgid "Stop server"
-msgstr ""
-
-#: ui/menu_ingame.rml:43
-msgid "Pause server"
-msgstr ""
-
-#: ui/menu_ingame.rml:47 ui/menu_main.rml:27
-msgid "Main menu"
-msgstr ""
-
-#: ui/menu_ingame.rml:49 ui/menu_main.rml:28
-msgid "Server listings"
-msgstr ""
-
-#: ui/menu_ingame.rml:50 ui/menu_main.rml:30 ui/server_create.rml:35
-msgid "Start local/LAN game"
-msgstr ""
-
-#: ui/menu_ingame.rml:51 ui/menu_main.rml:32 ui/options.rml:9
-msgid "Options"
-msgstr ""
-
-#: ui/menu_ingame.rml:52 ui/server_setup.rml:8
+#: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
 msgstr ""
 
-#: ui/menu_ingame.rml:53 ui/menu_main.rml:35
+#: ui/menu_ingame.rml:42
+msgid "Stop server"
+msgstr ""
+
+#: ui/menu_ingame.rml:44
+msgid "Pause server"
+msgstr ""
+
+#: ui/menu_ingame.rml:46 ui/options_bots.rml:8
+msgid "Bots"
+msgstr ""
+
+#: ui/menu_ingame.rml:50 ui/menu_main.rml:27
+msgid "Main menu"
+msgstr ""
+
+#: ui/menu_ingame.rml:52 ui/menu_main.rml:28
+msgid "Server listings"
+msgstr ""
+
+#: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
+msgid "Start local/LAN game"
+msgstr ""
+
+#: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
+msgid "Options"
+msgstr ""
+
+#: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
 msgstr ""
 
-#: ui/menu_ingame.rml:56 ui/menu_main.rml:37
+#: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
 msgstr ""
 
-#: ui/menu_ingame.rml:58 ui/menu_main.rml:41
+#: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
 msgstr ""
 
@@ -690,7 +690,8 @@ msgstr ""
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:277
-#: ui/options_mouse.rml:21 ui/options_ui.rml:75 ui/server_setup.rml:73
+#: ui/options_mouse.rml:21 ui/options_ui.rml:70 ui/options_ui.rml:149
+#: ui/options_ui.rml:179 ui/options_ui.rml:193 ui/server_setup.rml:73
 msgid "reset"
 msgstr ""
 
@@ -924,6 +925,7 @@ msgid "Non-physical lighting technique to make models less dark."
 msgstr ""
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:247
+#: ui/options_ui.rml:172
 msgid "None"
 msgstr ""
 
@@ -986,7 +988,7 @@ msgid ""
 "textures on them. This generally does not affect performance."
 msgstr ""
 
-#: ui/options_graphics.rml:153 ui/options_ui.rml:28
+#: ui/options_graphics.rml:153 ui/options_ui.rml:42
 msgid "No"
 msgstr ""
 
@@ -1481,19 +1483,27 @@ msgstr ""
 msgid "Humans and aliens"
 msgstr ""
 
+#: ui/options_movements_cosmetic.rml:41
+msgid "Humans (translucent)"
+msgstr ""
+
 #: ui/options_movements_cosmetic.rml:42
+msgid "Humans and aliens (translucent)"
+msgstr ""
+
+#: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
 msgstr ""
 
-#: ui/options_movements_cosmetic.rml:43
+#: ui/options_movements_cosmetic.rml:45
 msgid "Show gun, pincer, hand and mandible models in first-person."
 msgstr ""
 
-#: ui/options_movements_cosmetic.rml:46
+#: ui/options_movements_cosmetic.rml:48
 msgid "Left-handed mode"
 msgstr ""
 
-#: ui/options_movements_cosmetic.rml:48
+#: ui/options_movements_cosmetic.rml:50
 msgid "Mirror first-person gun models."
 msgstr ""
 
@@ -1609,124 +1619,224 @@ msgstr ""
 msgid "Audio output device/card"
 msgstr ""
 
-#: ui/options_ui.rml:8
+#: ui/options_ui.rml:18
 msgid "User interface"
 msgstr ""
 
-#: ui/options_ui.rml:10
+#: ui/options_ui.rml:20
+msgid "Main"
+msgstr ""
+
+#: ui/options_ui.rml:24
 msgid "Language"
 msgstr ""
 
-#: ui/options_ui.rml:11 ui/options_welcome.rml:19
+#: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
 msgstr ""
 
-#: ui/options_ui.rml:23 ui/options_welcome.rml:31
+#: ui/options_ui.rml:37 ui/options_welcome.rml:31
 msgid "Change language"
 msgstr ""
 
-#: ui/options_ui.rml:26
+#: ui/options_ui.rml:40
 msgid "Real-time clock"
 msgstr ""
 
-#: ui/options_ui.rml:29
+#: ui/options_ui.rml:43
 msgid "12 Hour"
 msgstr ""
 
-#: ui/options_ui.rml:30
+#: ui/options_ui.rml:44
 msgid "24 Hour"
 msgstr ""
 
-#: ui/options_ui.rml:32
+#: ui/options_ui.rml:46
 msgid "Show the time in real-life."
 msgstr ""
 
-#: ui/options_ui.rml:35
+#: ui/options_ui.rml:49
 msgid "Game-time clock"
 msgstr ""
 
-#: ui/options_ui.rml:37
+#: ui/options_ui.rml:51
 msgid "Show how long a match has lasted."
 msgstr ""
 
-#: ui/options_ui.rml:40
-msgid "Crosshair visiblity"
-msgstr ""
-
-#: ui/options_ui.rml:42
-msgid "Never"
-msgstr ""
-
-#: ui/options_ui.rml:43
-msgid "Ranged weapons only"
-msgstr ""
-
-#: ui/options_ui.rml:44
-msgid "Always"
-msgstr ""
-
-#: ui/options_ui.rml:49
-msgid "Crosshair size"
-msgstr ""
-
-#: ui/options_ui.rml:51
-msgid "Tiny"
-msgstr ""
-
-#: ui/options_ui.rml:52
-msgid "Small"
-msgstr ""
-
-#: ui/options_ui.rml:53
-msgid "Regular"
-msgstr ""
-
-#: ui/options_ui.rml:54
-msgid "Huge"
-msgstr ""
-
-#: ui/options_ui.rml:60
+#: ui/options_ui.rml:55
 msgid "Show ping"
 msgstr ""
 
-#: ui/options_ui.rml:62
+#: ui/options_ui.rml:57
 msgid "Time that information takes to get to the server and back."
 msgstr ""
 
-#: ui/options_ui.rml:65
+#: ui/options_ui.rml:60
 msgid "Show movement speed"
 msgstr ""
 
-#: ui/options_ui.rml:67
+#: ui/options_ui.rml:62
 msgid "Current, maximum and graph of movement-speed."
 msgstr ""
 
-#: ui/options_ui.rml:70
+#: ui/options_ui.rml:65
 msgid "Show FPS"
 msgstr ""
 
-#: ui/options_ui.rml:72
+#: ui/options_ui.rml:67
 msgid "Frames per second."
 msgstr ""
 
-#: ui/options_ui.rml:75
+#: ui/options_ui.rml:70
 msgid "Console colors"
 msgstr ""
 
-#: ui/options_ui.rml:79
+#: ui/options_ui.rml:74 ui/options_ui.rml:153 ui/options_ui.rml:197
 msgid "Red:"
 msgstr ""
 
-#: ui/options_ui.rml:83
+#: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
 msgid "Green:"
 msgstr ""
 
-#: ui/options_ui.rml:87
+#: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
 msgid "Blue:"
 msgstr ""
 
-#: ui/options_ui.rml:91
+#: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
 msgid "Alpha:"
+msgstr ""
+
+#: ui/options_ui.rml:91
+msgid "Crosshair"
+msgstr ""
+
+#: ui/options_ui.rml:95
+msgid "WARN: Preview only works in game."
+msgstr ""
+
+#: ui/options_ui.rml:99
+msgid "Weapon"
+msgstr ""
+
+#: ui/options_ui.rml:102
+msgid "Blaster"
+msgstr ""
+
+#: ui/options_ui.rml:103
+msgid "Rifle"
+msgstr ""
+
+#: ui/options_ui.rml:104
+msgid "Pain Saw"
+msgstr ""
+
+#: ui/options_ui.rml:105
+msgid "Shotgun"
+msgstr ""
+
+#: ui/options_ui.rml:106
+msgid "Lasgun"
+msgstr ""
+
+#: ui/options_ui.rml:107
+msgid "Mass Driver"
+msgstr ""
+
+#: ui/options_ui.rml:108
+msgid "Chaingun"
+msgstr ""
+
+#: ui/options_ui.rml:109
+msgid "Flamer"
+msgstr ""
+
+#: ui/options_ui.rml:110
+msgid "Pulse Rifle"
+msgstr ""
+
+#: ui/options_ui.rml:111
+msgid "Lucifer Cannon"
+msgstr ""
+
+#: ui/options_ui.rml:122
+msgid "Crosshair visiblity"
+msgstr ""
+
+#: ui/options_ui.rml:124
+msgid "Never"
+msgstr ""
+
+#: ui/options_ui.rml:125
+msgid "Ranged weapons only"
+msgstr ""
+
+#: ui/options_ui.rml:126
+msgid "Always"
+msgstr ""
+
+#: ui/options_ui.rml:131
+msgid "Crosshair size"
+msgstr ""
+
+#: ui/options_ui.rml:133
+msgid "Tiny"
+msgstr ""
+
+#: ui/options_ui.rml:134
+msgid "Small"
+msgstr ""
+
+#: ui/options_ui.rml:135
+msgid "Regular"
+msgstr ""
+
+#: ui/options_ui.rml:136
+msgid "Huge"
+msgstr ""
+
+#: ui/options_ui.rml:141
+msgid "Crosshair colour"
+msgstr ""
+
+#: ui/options_ui.rml:143
+msgid "Image colour"
+msgstr ""
+
+#: ui/options_ui.rml:144 ui/options_ui.rml:174
+msgid "Custom colour"
+msgstr ""
+
+#: ui/options_ui.rml:149
+msgid "Crosshair colours"
+msgstr ""
+
+#: ui/options_ui.rml:170
+msgid "Crosshair outline colour"
+msgstr ""
+
+#: ui/options_ui.rml:173
+msgid "Auto colour"
+msgstr ""
+
+#: ui/options_ui.rml:179
+msgid "Crosshair outline scale"
+msgstr ""
+
+#: ui/options_ui.rml:181
+msgid "Negative values will change the outline to be inside the crosshair."
+msgstr ""
+
+#: ui/options_ui.rml:184
+msgid "Scale:"
+msgstr ""
+
+#: ui/options_ui.rml:188
+msgid "Offset:"
+msgstr ""
+
+#: ui/options_ui.rml:193
+msgid "Crosshair outline colours"
 msgstr ""
 
 #: ui/options_welcome.rml:7
@@ -3462,119 +3572,119 @@ msgstr ""
 msgid "%s under attack"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:450
+#: src/cgame/cg_main.cpp:462
 msgid "Calling home…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:450
+#: src/cgame/cg_main.cpp:462
 msgid "Sending to the front…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:455
+#: src/cgame/cg_main.cpp:467
 msgid "Tracking your movements…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:455
+#: src/cgame/cg_main.cpp:467
 msgid "Letting out the magic smoke…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:459
+#: src/cgame/cg_main.cpp:471
 msgid "Collecting bees for the hives…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:459
+#: src/cgame/cg_main.cpp:471
 msgid "Initialising fireworks…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:459
+#: src/cgame/cg_main.cpp:471
 msgid "Causing electrical faults…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:463
+#: src/cgame/cg_main.cpp:475
 msgid "Reading the manual…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:463
+#: src/cgame/cg_main.cpp:475
 msgid "Looking at blueprints…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:467
+#: src/cgame/cg_main.cpp:479
 msgid "Generating annoying noises…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:467
+#: src/cgame/cg_main.cpp:479
 msgid "Recording granger purring…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:483
 msgid "Hello World!"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:483
 msgid "Making a scene…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:475
+#: src/cgame/cg_main.cpp:487
 msgid "Taking pictures of the world…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:475
+#: src/cgame/cg_main.cpp:487
 msgid "Drawing smiley faces…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:479
+#: src/cgame/cg_main.cpp:491
 msgid "Sharpening the aliens' claws…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:479
+#: src/cgame/cg_main.cpp:491
 msgid "Overloading lucifer cannons…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:483
+#: src/cgame/cg_main.cpp:495
 msgid "Unwrapping jetpacks…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:483
+#: src/cgame/cg_main.cpp:495
 msgid "Spinning silk for reticles…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:487
+#: src/cgame/cg_main.cpp:499
 msgid "Adding turret spam…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:487
+#: src/cgame/cg_main.cpp:499
 msgid "Awakening the overmind…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:491
+#: src/cgame/cg_main.cpp:503
 msgid "Teleporting soldiers…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:491
+#: src/cgame/cg_main.cpp:503
 msgid "Replicating alien DNA…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:495
+#: src/cgame/cg_main.cpp:507
 msgid "Customizing helmets…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:499
+#: src/cgame/cg_main.cpp:511
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:515
 msgid "Surveying the map…"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:507
+#: src/cgame/cg_main.cpp:519
 msgid "Done!"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:1091
+#: src/cgame/cg_main.cpp:1109
 msgid "Generating bot navigation meshes"
 msgstr ""
 
-#: src/cgame/cg_main.cpp:1149
+#: src/cgame/cg_main.cpp:1167
 #, c-format
 msgid "by %s"
 msgstr ""
@@ -3599,61 +3709,61 @@ msgstr ""
 msgid "%s^* left the %s and joined the %s"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2490
+#: src/cgame/cg_rocket_draw.cpp:2532
 msgid "You are at the front of the spawn queue"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2494
+#: src/cgame/cg_rocket_draw.cpp:2536
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2534
+#: src/cgame/cg_rocket_draw.cpp:2576
 msgid "There are no spawns remaining"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:2538
+#: src/cgame/cg_rocket_draw.cpp:2580
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/cgame/cg_rocket_draw.cpp:3087
+#: src/cgame/cg_rocket_draw.cpp:3129
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3091
+#: src/cgame/cg_rocket_draw.cpp:3133
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3095
+#: src/cgame/cg_rocket_draw.cpp:3137
 msgid "Awaiting gamestate…"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3177
+#: src/cgame/cg_rocket_draw.cpp:3219
 msgid "Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3178
+#: src/cgame/cg_rocket_draw.cpp:3220
 msgid "Team Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3179
+#: src/cgame/cg_rocket_draw.cpp:3221
 msgid "Admin Say:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3180
+#: src/cgame/cg_rocket_draw.cpp:3222
 msgid "Command:"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3577
+#: src/cgame/cg_rocket_draw.cpp:3622
 msgid "FIGHT!"
 msgstr ""
 
-#: src/cgame/cg_rocket_draw.cpp:3671
+#: src/cgame/cg_rocket_draw.cpp:3716
 msgid "estimating"
 msgstr ""
 
@@ -4039,17 +4149,21 @@ msgstr ""
 msgid "cgame: debug: no such menu %d"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:906
+#: src/cgame/cg_servercmds.cpp:850
+msgid "^1*DEAD*^*"
+msgstr ""
+
+#: src/cgame/cg_servercmds.cpp:911
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:914
+#: src/cgame/cg_servercmds.cpp:919
 #, c-format
 msgid ">> to reply, say: /m %d [your message] <<"
 msgstr ""
 
-#: src/cgame/cg_servercmds.cpp:1402
+#: src/cgame/cg_servercmds.cpp:1407
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr ""
@@ -4405,19 +4519,19 @@ msgstr ""
 msgid "$1$^* disconnected"
 msgstr ""
 
-#: src/sgame/sg_bot_nav.cpp:120
+#: src/sgame/sg_bot_nav.cpp:125
 msgid "Server: generating bot navigation mesh for $1$... $2$%"
 msgstr ""
 
-#: src/sgame/sg_bot_nav.cpp:159
+#: src/sgame/sg_bot_nav.cpp:164
 msgid "^1Bot navmesh generation failed!"
 msgstr ""
 
-#: src/sgame/sg_buildable.cpp:2038
+#: src/sgame/sg_buildable.cpp:1881
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
 msgstr ""
 
-#: src/sgame/sg_buildable.cpp:2039
+#: src/sgame/sg_buildable.cpp:1882
 msgid "$1$ ^2built^* by $2$$3$"
 msgstr ""
 
@@ -4669,32 +4783,44 @@ msgstr ""
 msgid "$1$^* called a vote: $2$"
 msgstr ""
 
-#: src/sgame/sg_votes.cpp:738
+#: src/sgame/sg_votes.cpp:725
+msgid ""
+"$1$^7 called a vote:\n"
+"^7$2$"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:742
 msgid "$1$^* called a team vote: $2t$"
 msgstr ""
 
-#: src/sgame/sg_votes.cpp:854
+#: src/sgame/sg_votes.cpp:747
+msgid ""
+"$1$^7 called a team vote:\n"
+"^7$2t$"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:860
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
 msgstr ""
 
-#: src/sgame/sg_votes.cpp:855
+#: src/sgame/sg_votes.cpp:861
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
 msgstr ""
 
-#: src/sgame/sg_votes.cpp:861
+#: src/sgame/sg_votes.cpp:867
 msgid "Vote passed ($1$ — $2$)"
 msgstr ""
 
-#: src/sgame/sg_votes.cpp:862
+#: src/sgame/sg_votes.cpp:868
 msgid "Team vote passed ($1$ — $2$)"
 msgstr ""
 
-#: src/sgame/sg_votes.cpp:868
+#: src/sgame/sg_votes.cpp:874
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
 msgstr ""
 
-#: src/sgame/sg_votes.cpp:869
+#: src/sgame/sg_votes.cpp:875
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr ""
