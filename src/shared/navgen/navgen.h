@@ -34,7 +34,7 @@
 #include "shared/bg_public.h"
 
 static const int MAX_LAYERS = 32;
-static const int EXPECTED_LAYERS_PER_TILE = 4;
+static const int EXPECTED_LAYERS_PER_TILE = 12;
 
 struct ladder_t
 {
