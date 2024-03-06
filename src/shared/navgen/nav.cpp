@@ -1279,7 +1279,7 @@ void NavmeshGenerator::StartGeneration( class_t species )
 		LOG.Warn( "Already started generation for %s.", BG_Class( species )->name );
 		return;
 	}
-	auto it = tasks_.insert({species, PerClassData()});
+	auto it = tasks_.emplace(std::pair<class_t, PerClassData>({species, PerClassData()}));
 	it.first->second.thread.reset(new std::thread(&NavmeshGenerator::Generate, this, species));
 }
 
