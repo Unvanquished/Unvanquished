@@ -472,44 +472,44 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_LEVEL1_CLAW:
-				message = G_( "%s%s ^*was sliced by %s%s%s^*'s claws" );
-				messageAssisted = G_( "%s%s ^*was sliced by %s%s%s^*'s claws; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was sliced by %s%s%s^*'s mantis" );
+				messageAssisted = G_( "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL2_CLAW:
-				message = G_( "%s%s ^*was shredded by %s%s%s^*'s claws" );
-				messageAssisted = G_( "%s%s ^*was shredded by %s%s%s^*'s claws; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was shredded by %s%s%s^*'s marauder" );
+				messageAssisted = G_( "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL2_ZAP:
-				message = G_( "%s%s ^*was electrocuted by %s%s%s^*'s zap" );
-				messageAssisted = G_( "%s%s ^*was electrocuted by %s%s%s^*'s zap; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was electrocuted by %s%s%s^*'s marauder" );
+				messageAssisted = G_( "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL3_CLAW:
-				message = G_( "%s%s ^*was eviscerated by %s%s%s^*'s claws" );
-				messageAssisted = G_( "%s%s ^*was eviscerated by %s%s%s^*'s claws; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was eviscerated by %s%s%s^*'s dragoon" );
+				messageAssisted = G_( "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL3_POUNCE:
-				message = G_( "%s%s ^*was pounced upon by %s%s%s^*'s pounce" );
-				messageAssisted = G_( "%s%s ^*was pounced upon by %s%s%s^*'s pounce; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was pounced upon by %s%s%s^*'s dragoon" );
+				messageAssisted = G_( "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL3_BOUNCEBALL:
-				message = G_( "%s%s ^*was barbed by %s%s%s^*'s barb" );
-				messageAssisted = G_( "%s%s ^*was barbed by %s%s%s^*'s barb; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was barbed by %s%s%s^*'s dragoon" );
+				messageAssisted = G_( "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted" );
 				messageSuicide = G_( "%s%s ^*was barbed" );
 				break;
 
 			case MOD_LEVEL4_CLAW:
-				message = G_( "%s%s ^*was mauled by %s%s%s^*'s claws" );
-				messageAssisted = G_( "%s%s ^*was mauled by %s%s%s^*'s claws; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was mauled by %s%s%s^*'s tyrant" );
+				messageAssisted = G_( "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL4_TRAMPLE:
-				message = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s trample" );
-				messageAssisted = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s trample; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant" );
+				messageAssisted = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* assisted" );
 				break;
 
 			case MOD_WEIGHT_H:
