@@ -85,8 +85,9 @@ struct NavgenConfig {
 	float autojumpSecurity; // percentage - allow to use part of jump magnitude (with default gravity of 800) as stepsize. The result can not excess the agent's height, except if STEPSIZE is already doing it (then STEPSIZE will be used)
 	int crouchSupport; // boolean - use crouchMaxs.z value instead of maxs.z to compute paths
 	float cellSizeFactor;
+	float walkableRadiusFactor;
 
-	static NavgenConfig Default() { return { 2.0f, STEPSIZE, 1, 1, 1, 1, 0.5f, false, 0.25f }; }
+	static NavgenConfig Default() { return { 2.0f, STEPSIZE, 1, 1, 1, 1, 0.5f, false, 0.25f, 1.0f }; }
 };
 
 struct NavgenMapIdentification
