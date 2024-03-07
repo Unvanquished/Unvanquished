@@ -2150,12 +2150,15 @@ void CG_DrawMinimap( const rectDef_t *rect, const Color::Color& color );
 //
 void CG_InitMarkPolys();
 void CG_AddMarks();
-void CG_ImpactMark( qhandle_t markShader,
+void CG_RegisterImpactMark( qhandle_t markShader,
                     const vec3_t origin, const vec3_t dir,
                     float orientation,
                     float r, float g, float b, float a,
                     bool alphaFade,
                     float radius, bool temporary );
+
+void CG_ResetImpactMarks();
+void CG_ProcessImpactMarks();
 
 //
 // cg_snapshot.c
