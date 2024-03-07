@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-24 07:29+0200\n"
+"POT-Creation-Date: 2024-03-07 03:06+0100\n"
 "PO-Revision-Date: 2023-10-29 16:27+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
@@ -72,7 +72,7 @@ msgstr "Syy"
 msgid "Call vote"
 msgstr "Aloita äänestys"
 
-#: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
+#: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
 msgstr "Täytä boteilla"
 
@@ -81,6 +81,7 @@ msgid "Both teams"
 msgstr "Molemmat joukkueet"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
+#: ui/options_player.rml:107 ui/options_ui.rml:101
 msgid "Aliens"
 msgstr "Alienit"
 
@@ -97,7 +98,7 @@ msgstr "Joukkue"
 msgid "Amount"
 msgstr "Määrä"
 
-#: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
+#: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
 msgstr "Vaihda kenttää"
 
@@ -117,7 +118,7 @@ msgstr "Vaihda kenttä (isäntä)"
 msgid "Method"
 msgstr "Toimenpide"
 
-#: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:64
 msgid "Map"
 msgstr "Kenttä"
 
@@ -133,11 +134,11 @@ msgstr "Virhe!"
 msgid "Ok"
 msgstr "Selvä"
 
-#: ui/help_gameplay.rml:16 ui/welcome.rml:16
+#: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
 msgstr "Tervetuloa"
 
-#: ui/help_gameplay.rml:19
+#: ui/help_gameplay.rml:20
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
@@ -145,11 +146,11 @@ msgstr ""
 "Tässä osiossa löydät yhteenvedon merkittävistä pelin osa-alueista jotta "
 "tiedät miten tulla menestyksekkääksi pelaajaksi."
 
-#: ui/help_gameplay.rml:22
+#: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
 msgstr "Lisää löytyy meidän verkkosivulta ja toisilta yhteisöpaikoilta!"
 
-#: ui/help_gameplay.rml:24
+#: ui/help_gameplay.rml:25
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
@@ -157,23 +158,23 @@ msgstr ""
 "Keskustele pelaajien ja kehittäjien kanssa Libera.Chat IRC:ssä, Matrixissa "
 "tai Discordissa: <web dest=\"chat\" />"
 
-#: ui/help_gameplay.rml:25
+#: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr "Keskustele uutisista foorumeilla: <web dest=\"forums\" />"
 
-#: ui/help_gameplay.rml:26
+#: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr "Löydä lisää tietoa pelistä wikissä: <web dest=\"wiki\" />"
 
-#: ui/help_gameplay.rml:28
+#: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
 msgstr "Ilmoitathan virheistä tänne: <web dest=\"bugs\" />"
 
-#: ui/help_gameplay.rml:32
+#: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
 msgstr "Ansiot ja kehittyminen"
 
-#: ui/help_gameplay.rml:36
+#: ui/help_gameplay.rml:37
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
@@ -181,7 +182,7 @@ msgstr ""
 "Alienit voivat ansaita kehittymispisteitä tappamalla ihmisiä. He voivat "
 "sitten käyttää niitä pisteitä kehittyäkseen [dragoon] parempiin muotoihin."
 
-#: ui/help_gameplay.rml:39
+#: ui/help_gameplay.rml:40
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
@@ -192,7 +193,7 @@ msgstr ""
 "alkeellisempiin muotoihin (pienestä hinnasta) ollessaan [overmind] "
 "ylihallitsijan läheisyydessä."
 
-#: ui/help_gameplay.rml:42
+#: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
@@ -200,7 +201,7 @@ msgstr ""
 "Rakenna ylihallitsija [granger] grangerilla jos se tuhotaan, tarvitset "
 "elävän ylihallitsijan kehittyäksesi!"
 
-#: ui/help_gameplay.rml:46
+#: ui/help_gameplay.rml:47
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
@@ -211,7 +212,7 @@ msgstr ""
 "aseita, panssareita tai [bsuit] taistelupuvun, sekä lisävarusteita kuten "
 "tutkan tai rakettirepun."
 
-#: ui/help_gameplay.rml:49
+#: ui/help_gameplay.rml:50
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
@@ -220,11 +221,11 @@ msgstr ""
 "rakennatte yhden! Käytä rakennuspakkia rakentaaksesi asevarikon jos se "
 "puuttuu."
 
-#: ui/help_gameplay.rml:53
+#: ui/help_gameplay.rml:54
 msgid "Powering buildables"
 msgstr "Rakennelmien käynnistäminen"
 
-#: ui/help_gameplay.rml:56
+#: ui/help_gameplay.rml:57
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -238,7 +239,7 @@ msgstr ""
 "saatavaa voimaa ja tuodaksesi lisää rakennuspisteitä. Huomioi kuitenkin, "
 "että menetät rakennuspisteet jos louhintarakennelmat tuhotaan."
 
-#: ui/help_gameplay.rml:59
+#: ui/help_gameplay.rml:60
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -250,7 +251,7 @@ msgstr ""
 "palautuvat ajan myötä), rakennelmat simahtavat kunnes muilla rakennelmilla "
 "on riittävästi energiaa pysyäkseen toiminnassa."
 
-#: ui/help_gameplay.rml:60
+#: ui/help_gameplay.rml:61
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
@@ -260,11 +261,11 @@ msgstr ""
 "telepisteet), louhintarakennelmiin (loinen ja pora) ja uniikkeihin "
 "rakennelmiin ([overmind] ylihallitsija ja [reactor] reaktori)."
 
-#: ui/help_gameplay.rml:64
+#: ui/help_gameplay.rml:65
 msgid "Mining structures"
 msgstr "Louhintarakennelmat"
 
-#: ui/help_gameplay.rml:67
+#: ui/help_gameplay.rml:68
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
@@ -274,7 +275,7 @@ msgstr ""
 "poralla ja alienien [leech] loisella. Nämä rakennelmat täytyy sijoittaa "
 "erilleen toisistaan tehokkuuden vuoksi."
 
-#: ui/help_gameplay.rml:70
+#: ui/help_gameplay.rml:71
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
@@ -282,7 +283,7 @@ msgstr ""
 "Älä laita louhintarakennelmia liian lähelle yhteen, tai ne kilpailevat "
 "keskenään ja päätyvät lisätaakaksi maksaen rakenteluresursseja!"
 
-#: ui/help_gameplay.rml:73
+#: ui/help_gameplay.rml:74
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -296,7 +297,7 @@ msgstr ""
 "louhintarakennelma on valmis ja pisteet lähtevät, jos rakennelma tuhoutuu. "
 "Älä rakenna puolustuksettomia poria!"
 
-#: ui/help_gameplay.rml:76
+#: ui/help_gameplay.rml:77
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -307,11 +308,11 @@ msgstr ""
 "Louhinnan palautustahti vähenee erän edetessä tehden uudelleenrakentamisesta "
 "vaikeampaa pitkissä erissä. Tämä korvaa äkkikuoleman."
 
-#: ui/help_gameplay.rml:80
+#: ui/help_gameplay.rml:81
 msgid "Stages &amp; Momentum"
 msgstr "Tasot ja vauhti"
 
-#: ui/help_gameplay.rml:83
+#: ui/help_gameplay.rml:84
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
@@ -321,7 +322,7 @@ msgstr ""
 "joukkueellesi uutta resurssia nimeltä vauhti. Jos kerrytät tarpeeksi "
 "vauhtia, uusia aseita, rakennelmia tai muotoja avautuu käytettäväksi."
 
-#: ui/help_gameplay.rml:86
+#: ui/help_gameplay.rml:87
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
@@ -330,11 +331,11 @@ msgstr ""
 "lepäämällä joukkueesi menettää pääsyn uusiin ominaisuuksiin. Hankitut "
 "päivitykset pysyvät toiminnassa."
 
-#: ui/help_gameplay.rml:90
+#: ui/help_gameplay.rml:91
 msgid "Wildfire"
 msgstr "Tulipalot"
 
-#: ui/help_gameplay.rml:93
+#: ui/help_gameplay.rml:94
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
@@ -342,7 +343,7 @@ msgstr ""
 "Alienien rakennelmat voivat syttyä tuleen, kun niihin osutaan [flamer] "
 "liekinheittimellä tai [firebomb] palopommilla."
 
-#: ui/help_gameplay.rml:96
+#: ui/help_gameplay.rml:97
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
@@ -350,7 +351,7 @@ msgstr ""
 "Jos rakennelmat ovat rakennettu liian lähelle, tulipalo voi levitä huono-"
 "onnisiin naapureihin."
 
-#: ui/help_gameplay.rml:99
+#: ui/help_gameplay.rml:100
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
@@ -359,7 +360,7 @@ msgstr ""
 "päästä, mutta rykelmä palavia rakennelmia pysyy riittävän kuumana saadakseen "
 "enemmän tuhoa osakseen."
 
-#: ui/help_gameplay.rml:102
+#: ui/help_gameplay.rml:103
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
@@ -367,11 +368,11 @@ msgstr ""
 "[advgranger] Kehittynyt granger voi sylkihyökkäyksellään sammuttaa "
 "tulipaloja tai hidastaa tunkeilijoita!"
 
-#: ui/help_gameplay.rml:106
+#: ui/help_gameplay.rml:107
 msgid "Under attack"
 msgstr "Hyökättynä"
 
-#: ui/help_gameplay.rml:109
+#: ui/help_gameplay.rml:110
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -383,15 +384,15 @@ msgstr ""
 "tuhoutumisesta. Muiden rakennelmien tuhoamisesta tulee hyökkäysvaroituksia "
 "rakennelman omistavalle joukkueelle."
 
-#: ui/help_gameplay.rml:113
+#: ui/help_gameplay.rml:114
 msgid "Healing"
 msgstr "Parantuminen"
 
-#: ui/help_gameplay.rml:116
+#: ui/help_gameplay.rml:117
 msgid "Dying feeds the ennemy, you may want to save your life!"
 msgstr "Kuoleminen ruokkii vihollista, saatat haluta pelastautua!"
 
-#: ui/help_gameplay.rml:120
+#: ui/help_gameplay.rml:121
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -403,7 +404,7 @@ msgstr ""
 "ratkaisevaa! Millä tahansa tavalla paraneminen vaikuttaa myös [advdragoon] "
 "kehittyneen dragoonin ammusten palautumiseen."
 
-#: ui/help_gameplay.rml:124
+#: ui/help_gameplay.rml:125
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
@@ -413,7 +414,7 @@ msgstr ""
 "kuin voit, pyri avaamaan se käytettäväksi niin varhain, kuin mahdollista. "
 "Tehostin antaa myös myrkkyä, joka tekee hyökkäyksistäsi kuolettavampia."
 
-#: ui/help_gameplay.rml:127
+#: ui/help_gameplay.rml:128
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
@@ -423,7 +424,7 @@ msgstr ""
 "pientä lisänopeutta parantumiseen, vaikkakin vähemmän, kuin mitä rihmasto. "
 "Tämä voi auttaa puolustamaan tukikohtia."
 
-#: ui/help_gameplay.rml:130
+#: ui/help_gameplay.rml:131
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -436,7 +437,7 @@ msgstr ""
 "kyljessä kiinni. Pienellä yhteistyöllä tämä on mainio tapa saartaa "
 "vihollisia!"
 
-#: ui/help_gameplay.rml:134
+#: ui/help_gameplay.rml:135
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
@@ -445,11 +446,11 @@ msgstr ""
 "jälkeen heidän täytyy palata [medstat] ensiapuasemalle paranemaan ja "
 "täyttämään lääkepakkinsa."
 
-#: ui/help_gameplay.rml:138
+#: ui/help_gameplay.rml:139
 msgid "Wallwalking"
 msgstr "Seinilläkävely"
 
-#: ui/help_gameplay.rml:141
+#: ui/help_gameplay.rml:142
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
@@ -457,13 +458,13 @@ msgstr ""
 "Jotkin alienien muodot, kuten [dretch] dretch, [mantis] mantis ja "
 "[advgranger] kehittynyt granger, voivat kävellä seinillä!"
 
-#: ui/help_gameplay.rml:144
+#: ui/help_gameplay.rml:145
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
 "Käytä tätä päästäksesi erityisiin paikkoihin tai käyttääksesi oikoreittejä "
 "ilmanvaihtokanavien läpi."
 
-#: ui/help_gameplay.rml:147
+#: ui/help_gameplay.rml:148
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
@@ -471,19 +472,19 @@ msgstr ""
 "Alienien puolustusrakennelmat kuten ansoitin ja piikitin toimivat paremmin "
 "seinillä, niiden rakentaminen katolle suojaa niitä kranaateilta."
 
-#: ui/help_gameplay.rml:150
+#: ui/help_gameplay.rml:151
 msgid "The advanced granger can be unlocked with momentum."
 msgstr "Edistynyt granger avautuu käytettäväksi vauhdin kertyessä."
 
-#: ui/help_gameplay.rml:154
+#: ui/help_gameplay.rml:155
 msgid "Since Tremulous"
 msgstr "Tremulousin jälkeen"
 
-#: ui/help_gameplay.rml:157
+#: ui/help_gameplay.rml:158
 msgid "Since Tremulous, the stamina has been increased."
 msgstr "Tremulousista eteenpäin, staminaa on lisätty."
 
-#: ui/help_gameplay.rml:160
+#: ui/help_gameplay.rml:161
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
@@ -491,7 +492,7 @@ msgstr ""
 "Kaikki alienien kehittymiskulut ja hyödyt ovat tuplattu. Uusi "
 "kehittymispisteiden maksimi, jonka alieni voi varata on 20 (aiemmin 9)."
 
-#: ui/help_gameplay.rml:163
+#: ui/help_gameplay.rml:164
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
@@ -499,7 +500,7 @@ msgstr ""
 "Tasot ovat korvattu vauhdilla, ja rakennuspisteet riippuvat suoraan "
 "louhintarakennelmien määrästä."
 
-#: ui/help_gameplay.rml:166
+#: ui/help_gameplay.rml:167
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
@@ -507,7 +508,7 @@ msgstr ""
 "Ihmisillä ei enää ole Tesla-puolustustornia eikä puolustustietokonetta, "
 "mutta he voivat rakentaa ohjuspattereita."
 
-#: ui/help_gameplay.rml:169
+#: ui/help_gameplay.rml:170
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
@@ -515,7 +516,7 @@ msgstr ""
 "Alienit saivat piikitinrakennelman, joka voi syvästi haavoittaa varomattomia "
 "ihmisiä, mutta se on hyvin suojaton rakennelma, älä laita sitä näkösälle!"
 
-#: ui/help_gameplay.rml:172
+#: ui/help_gameplay.rml:173
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
@@ -523,7 +524,7 @@ msgstr ""
 "Basiliskin korvasi mantis, se ei voi tarttua kiinni toisista, mutta sen "
 "purema hidastaa uhrejaan, ja se voi loikata tehdäkseen nopeita lähestymisiä."
 
-#: ui/help_gameplay.rml:175
+#: ui/help_gameplay.rml:176
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -531,24 +532,6 @@ msgstr ""
 "Alienit voivat alkeellistua ylihallitsijan lähellä, ja kehittyneen grangerin "
 "sylki voi tehdä mielenkiintoisia asioita, kokeile sitä tulipaloihin tai "
 "ihmisiin!"
-
-#: ui/help_textentry.rml:19 ui/menu_ingame.rml:112 ui/menu_main.rml:49
-msgid "Colour codes and symbols"
-msgstr "Värikoodit ja symbolit"
-
-#: ui/help_textentry.rml:22
-msgid ""
-"Colours are used by typing their escape code starting with a caret (^) "
-"symbol. Colour can be reset again to normal using ^*, or an actual caret can "
-"be typed using ^^."
-msgstr ""
-"Värejä käytetään kirjoittamalla niiden sirkumfleksilla (^) alkava "
-"erikoiskoodi. Väri nollautuu kirjoittamalla ^*, tai varsinaisen "
-"sirkumfleksin voi tehdä kirjoittamalla ^^."
-
-#: ui/help_textentry.rml:61
-msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
-msgstr "Esimerkki: ^^3Fred^^1Baggins muuttuu ^3Fred^1Baggins"
 
 #: ui/hud_basics.rml:192
 msgid "Game"
@@ -574,7 +557,7 @@ msgstr "rakennuspistettä"
 msgid "Credits"
 msgstr "Krediittiä"
 
-#: ui/human_buy.rml:208
+#: ui/human_buy.rml:208 ui/options_player.rml:77
 msgid "Weapons"
 msgstr "Aseet"
 
@@ -656,11 +639,11 @@ msgstr ""
 "Ihmiset voivat varustaa itsensä ase‐ ja tarvikevalikoimalla. He ovat "
 "sopeutuvaisia, ja kuolettavia kaukaa, mutta hauraita."
 
-#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
+#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
 msgstr "Liity alieneihin"
 
-#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:29
+#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
 msgstr "Liity ihmisiin"
 
@@ -668,7 +651,7 @@ msgstr "Liity ihmisiin"
 msgid "Alternatively you can watch the game without playing."
 msgstr "Vaihtoehtoisesti voit seurata peliä osallistumatta peliin."
 
-#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
+#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
 msgstr "Katsele"
 
@@ -681,172 +664,120 @@ msgstr ""
 "<web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
-msgid "Match menu"
-msgstr "Erävalikko"
+msgid "Match"
+msgstr ""
 
-#: ui/menu_ingame.rml:23
+#: ui/menu_ingame.rml:25
 msgid "Leave match"
 msgstr "Poistu erästä"
 
-#: ui/menu_ingame.rml:24
+#: ui/menu_ingame.rml:26
 msgid "Resume action"
 msgstr "Palaa peliin"
 
-#: ui/menu_ingame.rml:26 ui/server_setup.rml:57
-msgid "Teams"
-msgstr "Joukkueet"
-
-#: ui/menu_ingame.rml:33
+#: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
 msgstr "Äänestys"
 
-#: ui/menu_ingame.rml:37
-msgid "Global vote:"
-msgstr "Yleisäänestys:"
-
-#: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
-msgid "yes"
-msgstr "kyllä"
-
-#: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46
-msgid "or"
-msgstr "tai"
-
-#: ui/menu_ingame.rml:40 ui/menu_ingame.rml:47
-msgid "no"
-msgstr "ei"
-
-#: ui/menu_ingame.rml:44
-msgid "Team vote:"
-msgstr "Joukkueäänestys:"
-
-#: ui/menu_ingame.rml:49
-msgid "Kick bots"
-msgstr "Potki botit ulos"
-
-#: ui/menu_ingame.rml:52
-msgid "Extend timelimit"
-msgstr "Jatka aikarajaa"
-
-#: ui/menu_ingame.rml:53
-msgid "Call a draw"
-msgstr "Ehdota tasapeliä"
-
-#: ui/menu_ingame.rml:54
-msgid "Admit defeat"
-msgstr "Myönnä tappio"
-
-#: ui/menu_ingame.rml:60
+#: ui/menu_ingame.rml:38
 msgid "Host menu"
 msgstr "Isäntävalikko"
 
-#: ui/menu_ingame.rml:61
-msgid "Stop server"
-msgstr "Pysäytä palvelin"
-
-#: ui/menu_ingame.rml:62
-msgid "Pause server"
-msgstr "Keskeytä palvelin"
-
-#: ui/menu_ingame.rml:67
-msgid "Reset match"
-msgstr "Aloita erä uudelleen"
-
-#: ui/menu_ingame.rml:70
-msgid "Bots"
-msgstr "Botit"
-
-#: ui/menu_ingame.rml:72
-msgid "Add an alien bot"
-msgstr "Lisää alienbotti"
-
-#: ui/menu_ingame.rml:73
-msgid "Add a human bot"
-msgstr "Lisää ihmisbotti"
-
-#: ui/menu_ingame.rml:74 src/sgame/sg_votes.cpp:320
-msgid "Remove all bots"
-msgstr "Poista kaikki botit"
-
-#: ui/menu_ingame.rml:78
-msgid "Players"
-msgstr "Pelaajat"
-
-#: ui/menu_ingame.rml:80
-msgid "Disclipline: kick/ban/mute/nobuild"
-msgstr "Kurinpito: potki/estä/vaimenna/kiellä rakentaminen"
-
-#: ui/menu_ingame.rml:87
-msgid "Main menu"
-msgstr "Päävalikko"
-
-#: ui/menu_ingame.rml:89 ui/menu_main.rml:28
-msgid "Play"
-msgstr "Pelaa"
-
-#: ui/menu_ingame.rml:91 ui/menu_main.rml:30
-msgid "Server listings"
-msgstr "Palvelinluettelo"
-
-#: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
-msgid "Start local/LAN game"
-msgstr "Aloita paikallis‐ tai lähiverkkopeli"
-
-#: ui/menu_ingame.rml:93 ui/menu_main.rml:32
-msgid "Recorded demos"
-msgstr "Tallennetut demot"
-
-#: ui/menu_ingame.rml:96 ui/menu_main.rml:35
-msgid "Options"
-msgstr "Asetukset"
-
-#: ui/menu_ingame.rml:98 ui/menu_main.rml:37
-msgid "Player"
-msgstr "Pelaaja"
-
-#: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
-msgid "Graphics"
-msgstr "Grafiikka"
-
-#: ui/menu_ingame.rml:100 ui/menu_main.rml:39 ui/options_keys.rml:7
-msgid "Key bindings"
-msgstr "Näppäinasetukset"
-
-#: ui/menu_ingame.rml:101 ui/menu_main.rml:40 ui/options_mouse.rml:7
-msgid "Mouse and Aiming"
-msgstr "Hiiri ja tähtääminen"
-
-#: ui/menu_ingame.rml:102 ui/menu_main.rml:41 ui/options_sound.rml:7
-msgid "Sound"
-msgstr "Ääni"
-
-#: ui/menu_ingame.rml:103 ui/menu_main.rml:42
-msgid "User interface and HUD"
-msgstr "Käyttöliittymä ja HUD"
-
-#: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
-msgid "Fields of view"
-msgstr "Näkökenttä"
-
-#: ui/menu_ingame.rml:105 ui/server_setup.rml:8
+#: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
 msgstr "Palvelimen asetukset"
 
-#: ui/menu_ingame.rml:109 ui/menu_main.rml:46
-msgid "Help"
-msgstr "Apua"
+#: ui/menu_ingame.rml:42
+msgid "Stop server"
+msgstr "Pysäytä palvelin"
 
-#: ui/menu_ingame.rml:111 ui/menu_main.rml:48
+#: ui/menu_ingame.rml:44
+msgid "Pause server"
+msgstr "Keskeytä palvelin"
+
+#: ui/menu_ingame.rml:46 ui/options_bots.rml:8
+msgid "Bots"
+msgstr "Botit"
+
+#: ui/menu_ingame.rml:50 ui/menu_main.rml:27
+msgid "Main menu"
+msgstr "Päävalikko"
+
+#: ui/menu_ingame.rml:52 ui/menu_main.rml:28
+msgid "Server listings"
+msgstr "Palvelinluettelo"
+
+#: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
+msgid "Start local/LAN game"
+msgstr "Aloita paikallis‐ tai lähiverkkopeli"
+
+#: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
+msgid "Options"
+msgstr "Asetukset"
+
+#: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
 msgstr "Peliopas"
 
-#: ui/menu_ingame.rml:117 ui/menu_main.rml:54
+#: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
 msgstr "Sulje peli"
 
-#: ui/menu_ingame.rml:119 ui/menu_main.rml:56
+#: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
 msgstr "Beta"
+
+#: ui/menu_main.rml:33 ui/options_fov.rml:8
+msgid "Fields of view"
+msgstr "Näkökenttä"
+
+#: ui/options_bots.rml:10
+msgid "Add an alien bot"
+msgstr "Lisää alienbotti"
+
+#: ui/options_bots.rml:12
+msgid "Add a human bot"
+msgstr "Lisää ihmisbotti"
+
+#: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:320
+msgid "Remove all bots"
+msgstr "Poista kaikki botit"
+
+#: ui/options_democracy.rml:13
+msgid "Global vote:"
+msgstr "Yleisäänestys:"
+
+#: ui/options_democracy.rml:15 ui/options_democracy.rml:24
+msgid "yes"
+msgstr "kyllä"
+
+#: ui/options_democracy.rml:16 ui/options_democracy.rml:25
+msgid "or"
+msgstr "tai"
+
+#: ui/options_democracy.rml:18 ui/options_democracy.rml:27
+msgid "no"
+msgstr "ei"
+
+#: ui/options_democracy.rml:22
+msgid "Team vote:"
+msgstr "Joukkueäänestys:"
+
+#: ui/options_democracy.rml:30
+msgid "Kick bots"
+msgstr "Potki botit ulos"
+
+#: ui/options_democracy.rml:33
+msgid "Extend timelimit"
+msgstr "Jatka aikarajaa"
+
+#: ui/options_democracy.rml:34
+msgid "Call a draw"
+msgstr "Ehdota tasapeliä"
+
+#: ui/options_democracy.rml:35
+msgid "Admit defeat"
+msgstr "Myönnä tappio"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
@@ -872,8 +803,9 @@ msgstr "astetta"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:276
-#: ui/options_mouse.rml:21 ui/options_ui.rml:59 ui/server_setup.rml:73
+#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:277
+#: ui/options_mouse.rml:21 ui/options_ui.rml:70 ui/options_ui.rml:149
+#: ui/options_ui.rml:179 ui/options_ui.rml:193 ui/server_setup.rml:73
 msgid "reset"
 msgstr "palauta oletusarvo"
 
@@ -928,6 +860,10 @@ msgstr "Kameran kierto"
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
 msgstr "Kiertävä liikkuminen"
+
+#: ui/options_graphics.rml:17 ui/options.rml:15
+msgid "Graphics"
+msgstr "Grafiikka"
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
@@ -1120,6 +1056,7 @@ msgstr ""
 "Ei‐fyysinen valaistustekniikka, jolla tehdään kohteista vähemmän hämäriä."
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:247
+#: ui/options_ui.rml:172
 msgid "None"
 msgstr "Ei mikään"
 
@@ -1187,7 +1124,7 @@ msgstr ""
 "matalempiresoluutioisia tekstuureja niissä. Tämä yleensä ei vaikuta "
 "suorituskykyyn."
 
-#: ui/options_graphics.rml:153 ui/options_ui.rml:12
+#: ui/options_graphics.rml:153 ui/options_ui.rml:42
 msgid "No"
 msgstr "Ei"
 
@@ -1379,9 +1316,13 @@ msgstr "Vauhtisokeuden taso."
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Pienin liikkumisnopeus vauhtisokeuden aktivoitumiselle"
 
-#: ui/options_graphics.rml:275 ui/options_mouse.rml:20 ui/server_setup.rml:72
+#: ui/options_graphics.rml:276 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Nykyinen:"
+
+#: ui/options_keys.rml:7 ui/options.rml:17
+msgid "Key bindings"
+msgstr "Näppäinasetukset"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
@@ -1590,6 +1531,10 @@ msgstr "Hiirellä katselu:"
 msgid "Centerview:"
 msgstr "Keskitä näkymä:"
 
+#: ui/options_mouse.rml:7 ui/options.rml:19
+msgid "Mouse and Aiming"
+msgstr "Hiiri ja tähtääminen"
+
 #: ui/options_mouse.rml:9
 msgid "Y axis"
 msgstr "Y‐akseli"
@@ -1626,100 +1571,167 @@ msgstr "Vapaakatselu"
 msgid "Turn off only if you are a Quake junkie."
 msgstr "Poista käytöstä vain, jos olet koukussa Quakeen."
 
-#: ui/options_player.rml:7
-msgid "Player Setup"
-msgstr "Pelaajan asetukset"
+#: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
+msgid "Movement and Cosmetic"
+msgstr ""
 
-#: ui/options_player.rml:9
-msgid "Personal"
-msgstr "Omat valinnat"
-
-#: ui/options_player.rml:12 ui/options_welcome.rml:12
-msgid "Nickname"
-msgstr "Nimi"
-
-#: ui/options_player.rml:14 ui/options_welcome.rml:14
-msgid "Colours and symbols can be used."
-msgstr "Värejä ja symboleita voi käyttää."
-
-#: ui/options_player.rml:17
-msgid "Tutorial mode"
-msgstr "Neuvoja‐tila"
-
-#: ui/options_player.rml:19
-msgid "Display hints for key bindings on-screen."
-msgstr "Näyttää ruudulla muistutuksia näppäimistä."
-
-#: ui/options_player.rml:23
-msgid "Show only team chat"
-msgstr "Näytä ainoastaan joukkuekeskustelu"
-
-#: ui/options_player.rml:26
+#: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
 msgstr "Liikkuminen"
 
-#: ui/options_player.rml:28
+#: ui/options_movements_cosmetic.rml:10
 msgid "Wall-walking auto-pitch"
 msgstr "Seinilläkävelyn automaattinen kallistus"
 
-#: ui/options_player.rml:30
+#: ui/options_movements_cosmetic.rml:12
 msgid ""
 "Always twist and rotate the view when you wall-walk from one surface to "
 "another."
 msgstr "Kierrä ja käännä näkymää aina, kun seinilläkävelet pinnalta toiselle."
 
-#: ui/options_player.rml:39
+#: ui/options_movements_cosmetic.rml:21
 msgid "Wall-walking pitch-speed"
 msgstr "Seinilläkävelyn kallistusnopeus"
 
-#: ui/options_player.rml:40
+#: ui/options_movements_cosmetic.rml:22
 msgid "How fast your view rotates and twists as you wall-walk."
 msgstr "Kuinka nopeasti näkymäsi kääntyy ja kiertyy seinilläkävellessäsi."
 
-#: ui/options_player.rml:43
+#: ui/options_movements_cosmetic.rml:25
 msgid "Wall-walking toggles"
 msgstr "Seinilläkävelyn vaihtonäppäin"
 
-#: ui/options_player.rml:45 ui/options_player.rml:50
+#: ui/options_movements_cosmetic.rml:27 ui/options_movements_cosmetic.rml:32
 msgid "Tap key instead of hold key to activate."
 msgstr ""
 "Aktivoi painamalla näppäintä sen sijaan, että pitäisit näppäintä pohjassa."
 
-#: ui/options_player.rml:48
+#: ui/options_movements_cosmetic.rml:30
 msgid "Sprint toggles"
 msgstr "Sprintin vaihtonäppäin"
 
-#: ui/options_player.rml:53
+#: ui/options_movements_cosmetic.rml:35
 msgid "Cosmetic"
 msgstr "Ulkonäkö"
 
-#: ui/options_player.rml:56
+#: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
 msgstr "Poista käytöstä"
 
-#: ui/options_player.rml:57
+#: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
 msgstr "Vain ihmisillä"
 
-#: ui/options_player.rml:58
+#: ui/options_movements_cosmetic.rml:40
 msgid "Humans and aliens"
 msgstr "Ihmisillä ja alieneilla"
 
-#: ui/options_player.rml:60
+#: ui/options_movements_cosmetic.rml:41
+msgid "Humans (translucent)"
+msgstr ""
+
+#: ui/options_movements_cosmetic.rml:42
+msgid "Humans and aliens (translucent)"
+msgstr ""
+
+#: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
 msgstr "Ensimmäisen persoonan aseet"
 
-#: ui/options_player.rml:61
+#: ui/options_movements_cosmetic.rml:45
 msgid "Show gun, pincer, hand and mandible models in first-person."
 msgstr "Näytä aseet ja raajat ensimmäisessä persoonassa."
 
-#: ui/options_player.rml:64
+#: ui/options_movements_cosmetic.rml:48
 msgid "Left-handed mode"
 msgstr "Vasenkätinen tila"
 
-#: ui/options_player.rml:66
+#: ui/options_movements_cosmetic.rml:50
 msgid "Mirror first-person gun models."
 msgstr "Peilaa ensimmäisen persoonan aseet."
+
+#: ui/options_player.rml:18
+msgid "Player Setup"
+msgstr "Pelaajan asetukset"
+
+#: ui/options_player.rml:20
+msgid "Personal"
+msgstr "Omat valinnat"
+
+#: ui/options_player.rml:23 ui/options_welcome.rml:12
+msgid "Nickname"
+msgstr "Nimi"
+
+#: ui/options_player.rml:24 ui/options_welcome.rml:13
+msgid "Your name visible to others."
+msgstr "Muille näkyvä nimesi."
+
+#: ui/options_player.rml:26
+msgid "Colour codes and symbols"
+msgstr "Värikoodit ja symbolit"
+
+#: ui/options_player.rml:29
+msgid ""
+"Colours are used by typing their escape code starting with a caret (^) "
+"symbol. Colour can be reset again to normal using ^*, or an actual caret can "
+"be typed using ^^."
+msgstr ""
+"Värejä käytetään kirjoittamalla niiden sirkumfleksilla (^) alkava "
+"erikoiskoodi. Väri nollautuu kirjoittamalla ^*, tai varsinaisen "
+"sirkumfleksin voi tehdä kirjoittamalla ^^."
+
+#: ui/options_player.rml:67
+msgid "Emoticons"
+msgstr ""
+
+#: ui/options_player.rml:68
+msgid "You can put emoticons in your nickname too."
+msgstr ""
+
+#: ui/options_player.rml:70
+msgid ""
+"Example: ^7^^3Fred^^1Baggins[^7grenade]^* becomes ^3Fred^1Baggins[grenade]"
+msgstr ""
+
+#: ui/options_player.rml:75
+msgid "Here is the list of the available emoticons:"
+msgstr ""
+
+#: ui/options_player.rml:134
+msgid "Human buildables"
+msgstr ""
+
+#: ui/options_player.rml:161
+msgid "Alien buildables"
+msgstr ""
+
+#: ui/options_player.rml:186
+msgid "Others"
+msgstr ""
+
+#: ui/options_player.rml:214
+msgid "Tutorial mode"
+msgstr "Neuvoja‐tila"
+
+#: ui/options_player.rml:216
+msgid "Display hints for key bindings on-screen."
+msgstr "Näyttää ruudulla muistutuksia näppäimistä."
+
+#: ui/options_player.rml:220
+msgid "Show only team chat"
+msgstr "Näytä ainoastaan joukkuekeskustelu"
+
+#: ui/options.rml:11
+msgid "Player"
+msgstr "Pelaaja"
+
+#: ui/options.rml:21 ui/options_sound.rml:7
+msgid "Sound"
+msgstr "Ääni"
+
+#: ui/options.rml:23
+msgid "User interface and HUD"
+msgstr "Käyttöliittymä ja HUD"
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
@@ -1754,113 +1766,225 @@ msgstr "OpenAL -äänilaite"
 msgid "Audio output device/card"
 msgstr "Äänilähdön laite"
 
-#: ui/options_ui.rml:7
+#: ui/options_ui.rml:18
 msgid "User interface"
 msgstr "Käyttöliittymä"
 
-#: ui/options_ui.rml:10
+#: ui/options_ui.rml:20
+msgid "Main"
+msgstr ""
+
+#: ui/options_ui.rml:24
+msgid "Language"
+msgstr ""
+
+#: ui/options_ui.rml:25 ui/options_welcome.rml:19
+msgid "Some languages are not fully translated."
+msgstr ""
+
+#: ui/options_ui.rml:37 ui/options_welcome.rml:31
+msgid "Change language"
+msgstr ""
+
+#: ui/options_ui.rml:40
 msgid "Real-time clock"
 msgstr "Kellonaika"
 
-#: ui/options_ui.rml:13
+#: ui/options_ui.rml:43
 msgid "12 Hour"
 msgstr "12-tuntinen"
 
-#: ui/options_ui.rml:14
+#: ui/options_ui.rml:44
 msgid "24 Hour"
 msgstr "24-tuntinen"
 
-#: ui/options_ui.rml:16
+#: ui/options_ui.rml:46
 msgid "Show the time in real-life."
 msgstr "Näytä tietokoneen kellonaika."
 
-#: ui/options_ui.rml:19
+#: ui/options_ui.rml:49
 msgid "Game-time clock"
 msgstr "Eräaika"
 
-#: ui/options_ui.rml:21
+#: ui/options_ui.rml:51
 msgid "Show how long a match has lasted."
 msgstr "Näytä meneilläolevan erän kesto."
 
-#: ui/options_ui.rml:24
-msgid "Crosshair visiblity"
-msgstr "Tähtäimen näkyminen"
-
-#: ui/options_ui.rml:26
-msgid "Never"
-msgstr "Ei koskaan"
-
-#: ui/options_ui.rml:27
-msgid "Ranged weapons only"
-msgstr "Vain pitkän kantaman aseilla"
-
-#: ui/options_ui.rml:28
-msgid "Always"
-msgstr "Aina"
-
-#: ui/options_ui.rml:33
-msgid "Crosshair size"
-msgstr "Tähtäimen koko"
-
-#: ui/options_ui.rml:35
-msgid "Tiny"
-msgstr "Pikkiriikkinen"
-
-#: ui/options_ui.rml:36
-msgid "Small"
-msgstr "Pieni"
-
-#: ui/options_ui.rml:37
-msgid "Regular"
-msgstr "Keskikokoinen"
-
-#: ui/options_ui.rml:38
-msgid "Huge"
-msgstr "Suuri"
-
-#: ui/options_ui.rml:44
+#: ui/options_ui.rml:55
 msgid "Show ping"
 msgstr "Näytä ping-viive"
 
-#: ui/options_ui.rml:46
+#: ui/options_ui.rml:57
 msgid "Time that information takes to get to the server and back."
 msgstr "Aika, joka tiedolla kestää kulkea palvelimelle ja takaisin."
 
-#: ui/options_ui.rml:49
+#: ui/options_ui.rml:60
 msgid "Show movement speed"
 msgstr "Näytä liikkumisnopeus"
 
-#: ui/options_ui.rml:51
+#: ui/options_ui.rml:62
 msgid "Current, maximum and graph of movement-speed."
 msgstr "Liikkumisnopeuden nykyinen arvo, maksimi ja graafi."
 
-#: ui/options_ui.rml:54
+#: ui/options_ui.rml:65
 msgid "Show FPS"
 msgstr "Näytä FPS"
 
-#: ui/options_ui.rml:56
+#: ui/options_ui.rml:67
 msgid "Frames per second."
 msgstr "Ruudunpäivitysnopeus; Ruutua/sekunti."
 
-#: ui/options_ui.rml:59
+#: ui/options_ui.rml:70
 msgid "Console colors"
 msgstr "Konsolin värit"
 
-#: ui/options_ui.rml:63
+#: ui/options_ui.rml:74 ui/options_ui.rml:153 ui/options_ui.rml:197
 msgid "Red:"
 msgstr "Punainen:"
 
-#: ui/options_ui.rml:67
+#: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
 msgid "Green:"
 msgstr "Vihreä:"
 
-#: ui/options_ui.rml:71
+#: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
 msgid "Blue:"
 msgstr "Sininen:"
 
-#: ui/options_ui.rml:75
+#: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
 msgid "Alpha:"
 msgstr "Läpinäkyvyys:"
+
+#: ui/options_ui.rml:91
+msgid "Crosshair"
+msgstr ""
+
+#: ui/options_ui.rml:95
+msgid "WARN: Preview only works in game."
+msgstr ""
+
+#: ui/options_ui.rml:99
+msgid "Weapon"
+msgstr ""
+
+#: ui/options_ui.rml:102
+msgid "Blaster"
+msgstr ""
+
+#: ui/options_ui.rml:103
+msgid "Rifle"
+msgstr ""
+
+#: ui/options_ui.rml:104
+msgid "Pain Saw"
+msgstr ""
+
+#: ui/options_ui.rml:105
+msgid "Shotgun"
+msgstr ""
+
+#: ui/options_ui.rml:106
+msgid "Lasgun"
+msgstr ""
+
+#: ui/options_ui.rml:107
+msgid "Mass Driver"
+msgstr ""
+
+#: ui/options_ui.rml:108
+msgid "Chaingun"
+msgstr ""
+
+#: ui/options_ui.rml:109
+msgid "Flamer"
+msgstr ""
+
+#: ui/options_ui.rml:110
+msgid "Pulse Rifle"
+msgstr ""
+
+#: ui/options_ui.rml:111
+msgid "Lucifer Cannon"
+msgstr ""
+
+#: ui/options_ui.rml:122
+msgid "Crosshair visiblity"
+msgstr "Tähtäimen näkyminen"
+
+#: ui/options_ui.rml:124
+msgid "Never"
+msgstr "Ei koskaan"
+
+#: ui/options_ui.rml:125
+msgid "Ranged weapons only"
+msgstr "Vain pitkän kantaman aseilla"
+
+#: ui/options_ui.rml:126
+msgid "Always"
+msgstr "Aina"
+
+#: ui/options_ui.rml:131
+msgid "Crosshair size"
+msgstr "Tähtäimen koko"
+
+#: ui/options_ui.rml:133
+msgid "Tiny"
+msgstr "Pikkiriikkinen"
+
+#: ui/options_ui.rml:134
+msgid "Small"
+msgstr "Pieni"
+
+#: ui/options_ui.rml:135
+msgid "Regular"
+msgstr "Keskikokoinen"
+
+#: ui/options_ui.rml:136
+msgid "Huge"
+msgstr "Suuri"
+
+#: ui/options_ui.rml:141
+msgid "Crosshair colour"
+msgstr ""
+
+#: ui/options_ui.rml:143
+msgid "Image colour"
+msgstr ""
+
+#: ui/options_ui.rml:144 ui/options_ui.rml:174
+msgid "Custom colour"
+msgstr ""
+
+#: ui/options_ui.rml:149
+msgid "Crosshair colours"
+msgstr ""
+
+#: ui/options_ui.rml:170
+msgid "Crosshair outline colour"
+msgstr ""
+
+#: ui/options_ui.rml:173
+msgid "Auto colour"
+msgstr ""
+
+#: ui/options_ui.rml:179
+msgid "Crosshair outline scale"
+msgstr ""
+
+#: ui/options_ui.rml:181
+msgid "Negative values will change the outline to be inside the crosshair."
+msgstr ""
+
+#: ui/options_ui.rml:184
+msgid "Scale:"
+msgstr ""
+
+#: ui/options_ui.rml:188
+msgid "Offset:"
+msgstr ""
+
+#: ui/options_ui.rml:193
+msgid "Crosshair outline colours"
+msgstr ""
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -1870,15 +1994,19 @@ msgstr "Tervehdys!"
 msgid "How should we call you?"
 msgstr "Millä nimellä kutsumme sinua?"
 
-#: ui/options_welcome.rml:13
-msgid "Your name visible to others."
-msgstr "Muille näkyvä nimesi."
+#: ui/options_welcome.rml:14
+msgid "Colours and symbols can be used."
+msgstr "Värejä ja symboleita voi käyttää."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
 msgstr "Voit vaihtaa tätä koska tahansa asetuksissa."
 
-#: ui/options_welcome.rml:17
+#: ui/options_welcome.rml:18
+msgid "What language do you want to use?"
+msgstr ""
+
+#: ui/options_welcome.rml:32
 msgid "Select Battlefield"
 msgstr "Valitse taistelutanner"
 
@@ -1989,6 +2117,10 @@ msgstr "Pidä lämmittelyt erien alussa"
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
 msgstr "Antaa hitaammilla tietokoneilla pelaaville aikaa liittyä."
+
+#: ui/server_setup.rml:57
+msgid "Teams"
+msgstr "Joukkueet"
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
@@ -3114,311 +3246,311 @@ msgstr "%s%s ^*joutui %s%s%s^*:n puremaksi; %s%s%s^* avusti"
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "male"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "female"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "neuter"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:480
+msgctxt "male"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:480
+msgctxt "female"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:480
+msgctxt "neuter"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "female"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:485
 msgctxt "male"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:485
 msgctxt "female"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:485
 msgctxt "neuter"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:486
 msgctxt "male"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:486
 msgctxt "female"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:486
 msgctxt "neuter"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:490
 msgctxt "male"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:490
 msgctxt "female"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:490
 msgctxt "neuter"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:493
+#: src/cgame/cg_event.cpp:491
 msgctxt "male"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:493
+#: src/cgame/cg_event.cpp:491
 msgctxt "female"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:493
+#: src/cgame/cg_event.cpp:491
 msgctxt "neuter"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:495
 msgctxt "male"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:495
 msgctxt "female"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:495
 msgctxt "neuter"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi; %s%s%s^* avusti"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:499
+#: src/cgame/cg_event.cpp:496
 msgctxt "male"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:499
+#: src/cgame/cg_event.cpp:496
 msgctxt "female"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:499
+#: src/cgame/cg_event.cpp:496
 msgctxt "neuter"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "male"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn; %s%s%s^* avusti"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "female"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn; %s%s%s^* avusti"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn; %s%s%s^* avusti"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:505
+#: src/cgame/cg_event.cpp:501
 msgctxt "male"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:505
+#: src/cgame/cg_event.cpp:501
 msgctxt "female"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:505
+#: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:506
-msgctxt "male"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:506
-msgctxt "female"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:506
-msgctxt "neuter"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:502
 msgctxt "male"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*sai piikkipallosta"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:502
 msgctxt "female"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*sai piikkipallosta"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:502
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*sai piikkipallosta"
 
+#: src/cgame/cg_event.cpp:506
+msgctxt "male"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:506
+msgctxt "female"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:506
+msgctxt "neuter"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:507
+msgctxt "male"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:507
+msgctxt "female"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:507
+msgctxt "neuter"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:511
+msgctxt "male"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:511
+msgctxt "female"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:511
+msgctxt "neuter"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
+msgstr ""
+
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi"
+msgid ""
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
+"assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "female"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi"
+msgid ""
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
+"assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi"
-
-#: src/cgame/cg_event.cpp:513
-msgctxt "male"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:513
-msgctxt "female"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:513
-msgctxt "neuter"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:518
-msgctxt "male"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle"
-
-#: src/cgame/cg_event.cpp:518
-msgctxt "female"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle"
-
-#: src/cgame/cg_event.cpp:518
-msgctxt "neuter"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle"
-
-#: src/cgame/cg_event.cpp:519
-msgctxt "male"
 msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle; %s%s%s^* avusti"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:519
-msgctxt "female"
-msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
-"assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:519
-msgctxt "neuter"
-msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
-"assisted"
-msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle; %s%s%s^* avusti"
-
-#: src/cgame/cg_event.cpp:525
+#: src/cgame/cg_event.cpp:517
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta"
 
-#: src/cgame/cg_event.cpp:525
+#: src/cgame/cg_event.cpp:517
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta"
 
-#: src/cgame/cg_event.cpp:525
+#: src/cgame/cg_event.cpp:517
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta"
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:518
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:518
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:518
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr "%s%s ^*murskaantui %s%s%s^*:n painosta; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:530
+#: src/cgame/cg_event.cpp:522
 msgctxt "male"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan"
 
-#: src/cgame/cg_event.cpp:530
+#: src/cgame/cg_event.cpp:522
 msgctxt "female"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan"
 
-#: src/cgame/cg_event.cpp:530
+#: src/cgame/cg_event.cpp:522
 msgctxt "neuter"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan"
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:523
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -3426,7 +3558,7 @@ msgstr ""
 "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan; %s%s%s^* "
 "avusti"
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:523
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -3434,7 +3566,7 @@ msgstr ""
 "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan; %s%s%s^* "
 "avusti"
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:523
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -3442,122 +3574,122 @@ msgstr ""
 "%s%s ^*jätti käyttämättä lääkepakkia %s%s%s^*:n myrkkyä vastaan; %s%s%s^* "
 "avusti"
 
-#: src/cgame/cg_event.cpp:535
+#: src/cgame/cg_event.cpp:527
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*yritti tunkeutua %s%s%s^*:n henkilökohtaiseen tilaan"
 
-#: src/cgame/cg_event.cpp:535
+#: src/cgame/cg_event.cpp:527
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*yritti tunkeutua %s%s%s^*:n henkilökohtaiseen tilaan"
 
-#: src/cgame/cg_event.cpp:535
+#: src/cgame/cg_event.cpp:527
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*yritti tunkeutua %s%s%s^*:n henkilökohtaiseen tilaan"
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:528
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*päätyi tyhjyyteen"
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:528
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*päätyi tyhjyyteen"
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:528
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*päätyi tyhjyyteen"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:532
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:532
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:532
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin"
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:533
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:533
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:533
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*tunsi %s%s%s^*:n auktoriteetin; %s%s%s^* avusti"
 
-#: src/cgame/cg_event.cpp:545
+#: src/cgame/cg_event.cpp:537
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:545
+#: src/cgame/cg_event.cpp:537
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:545
+#: src/cgame/cg_event.cpp:537
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:546
+#: src/cgame/cg_event.cpp:538
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n ja %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:546
+#: src/cgame/cg_event.cpp:538
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n ja %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:546
+#: src/cgame/cg_event.cpp:538
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*joutui %s%s%s^*:n ja %s%s%s^*:n tappamaksi"
 
-#: src/cgame/cg_event.cpp:547
+#: src/cgame/cg_event.cpp:539
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*teki itsemurhan"
 
-#: src/cgame/cg_event.cpp:547
+#: src/cgame/cg_event.cpp:539
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*teki itsemurhan"
 
-#: src/cgame/cg_event.cpp:547
+#: src/cgame/cg_event.cpp:539
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*teki itsemurhan"
 
-#: src/cgame/cg_event.cpp:610
+#: src/cgame/cg_event.cpp:578
 msgctxt "male"
 msgid "%s%s^* died"
 msgstr "%s%s^* kuoli"
 
-#: src/cgame/cg_event.cpp:610
+#: src/cgame/cg_event.cpp:578
 msgctxt "female"
 msgid "%s%s^* died"
 msgstr "%s%s^* kuoli"
 
-#: src/cgame/cg_event.cpp:610
+#: src/cgame/cg_event.cpp:578
 msgctxt "neuter"
 msgid "%s%s^* died"
 msgstr "%s%s^* kuoli"
@@ -3567,237 +3699,237 @@ msgstr "%s%s^* kuoli"
 msgid "Listed %2d clients"
 msgstr "Luetteloitu %2d käyttäjää"
 
-#: src/cgame/cg_event.cpp:265 src/cgame/cg_event.cpp:602
+#: src/cgame/cg_event.cpp:265 src/cgame/cg_event.cpp:570
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
 msgstr "Tapoit ^1JOUKKUETOVERIN^* %s"
 
-#: src/cgame/cg_event.cpp:1244
+#: src/cgame/cg_event.cpp:1215
 msgid "The Overmind is under attack!"
 msgstr "Ylihallitsijaa vastaan hyökätään!"
 
-#: src/cgame/cg_event.cpp:1251
+#: src/cgame/cg_event.cpp:1222
 msgid "The reactor is under attack!"
 msgstr "Reaktoriin hyökätään!"
 
-#: src/cgame/cg_event.cpp:1266
+#: src/cgame/cg_event.cpp:1237
 msgid "The Overmind is dying!"
 msgstr "Ylihallitsija tekee kuolemaa!"
 
-#: src/cgame/cg_event.cpp:1272
+#: src/cgame/cg_event.cpp:1243
 msgid "The reactor is going down!"
 msgstr "Reaktori sammuu!"
 
-#: src/cgame/cg_event.cpp:1291 src/cgame/cg_event.cpp:1313
+#: src/cgame/cg_event.cpp:1260 src/cgame/cg_event.cpp:1276
 msgid "Our base is under attack!"
 msgstr "Tukikohtaamme hyökätään!"
 
-#: src/cgame/cg_event.cpp:1304
+#: src/cgame/cg_event.cpp:1266
 #, c-format
-msgid "%s Under attack – %s"
-msgstr "%s Hyökkäyksessä – %s"
+msgid "%s under attack – %s"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:1308
+#: src/cgame/cg_event.cpp:1270
 #, c-format
-msgid "%s Under attack"
-msgstr "%s Hyökkäyksessä"
+msgid "%s under attack"
+msgstr ""
 
-#: src/cgame/cg_main.cpp:451
+#: src/cgame/cg_main.cpp:462
 msgid "Calling home…"
 msgstr "Soitetaan kotiin…"
 
-#: src/cgame/cg_main.cpp:451
+#: src/cgame/cg_main.cpp:462
 msgid "Sending to the front…"
 msgstr "Lähetetään eteen…"
 
-#: src/cgame/cg_main.cpp:456
+#: src/cgame/cg_main.cpp:467
 msgid "Tracking your movements…"
 msgstr "Seurataan liikkeitäsi…"
 
-#: src/cgame/cg_main.cpp:456
+#: src/cgame/cg_main.cpp:467
 msgid "Letting out the magic smoke…"
 msgstr "Päästetään taikasavut ulos…"
 
-#: src/cgame/cg_main.cpp:460
+#: src/cgame/cg_main.cpp:471
 msgid "Collecting bees for the hives…"
 msgstr "Kerätään mehiläisiä kekoihin…"
 
-#: src/cgame/cg_main.cpp:460
+#: src/cgame/cg_main.cpp:471
 msgid "Initialising fireworks…"
 msgstr "Aloitetaan ilotulitukset…"
 
-#: src/cgame/cg_main.cpp:460
+#: src/cgame/cg_main.cpp:471
 msgid "Causing electrical faults…"
 msgstr "Aiheutetaan sähkövikoja…"
 
-#: src/cgame/cg_main.cpp:464
+#: src/cgame/cg_main.cpp:475
 msgid "Reading the manual…"
 msgstr "Luetaan käyttöohjetta…"
 
-#: src/cgame/cg_main.cpp:464
+#: src/cgame/cg_main.cpp:475
 msgid "Looking at blueprints…"
 msgstr "Katsellaan pohjapiirrustuksia…"
 
-#: src/cgame/cg_main.cpp:468
+#: src/cgame/cg_main.cpp:479
 msgid "Generating annoying noises…"
 msgstr "Tuotetaan ärsyttäviä ääniä…"
 
-#: src/cgame/cg_main.cpp:468
+#: src/cgame/cg_main.cpp:479
 msgid "Recording granger purring…"
 msgstr "Äänitetään grangerin kehräämistä…"
 
-#: src/cgame/cg_main.cpp:472
+#: src/cgame/cg_main.cpp:483
 msgid "Hello World!"
 msgstr "Terve, maailma!"
 
-#: src/cgame/cg_main.cpp:472
+#: src/cgame/cg_main.cpp:483
 msgid "Making a scene…"
 msgstr "Tehdään kohtaus…"
 
-#: src/cgame/cg_main.cpp:476
+#: src/cgame/cg_main.cpp:487
 msgid "Taking pictures of the world…"
 msgstr "Otetaan kuvia maailmasta…"
 
-#: src/cgame/cg_main.cpp:476
+#: src/cgame/cg_main.cpp:487
 msgid "Drawing smiley faces…"
 msgstr "Piirretään hymynaamoja…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:491
 msgid "Sharpening the aliens' claws…"
 msgstr "Teroitetaan alienien kynsiä…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:491
 msgid "Overloading lucifer cannons…"
 msgstr "Ylikuormitetaan Lucifer-tykkejä…"
 
-#: src/cgame/cg_main.cpp:484
+#: src/cgame/cg_main.cpp:495
 msgid "Unwrapping jetpacks…"
 msgstr "Puretaan rakettireppuja…"
 
-#: src/cgame/cg_main.cpp:484
+#: src/cgame/cg_main.cpp:495
 msgid "Spinning silk for reticles…"
 msgstr "Kudotaan silkkiä ristikoihin…"
 
-#: src/cgame/cg_main.cpp:488
+#: src/cgame/cg_main.cpp:499
 msgid "Adding turret spam…"
 msgstr "Lisätään torjunta-asespammia…"
 
-#: src/cgame/cg_main.cpp:488
+#: src/cgame/cg_main.cpp:499
 msgid "Awakening the overmind…"
 msgstr "Herätetään ylihallitsija…"
 
-#: src/cgame/cg_main.cpp:492
+#: src/cgame/cg_main.cpp:503
 msgid "Teleporting soldiers…"
 msgstr "Teleportataan sotilaita…"
 
-#: src/cgame/cg_main.cpp:492
+#: src/cgame/cg_main.cpp:503
 msgid "Replicating alien DNA…"
 msgstr "Replikoidaan alienienien DNA:ta…"
 
-#: src/cgame/cg_main.cpp:496
+#: src/cgame/cg_main.cpp:507
 msgid "Customizing helmets…"
 msgstr "Kustomisoidaan kypäriä…"
 
-#: src/cgame/cg_main.cpp:500
+#: src/cgame/cg_main.cpp:511
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr "Kootaan GLSL-sävyttimiä (odotathan kärsivällisesti)…"
 
-#: src/cgame/cg_main.cpp:504
+#: src/cgame/cg_main.cpp:515
 msgid "Surveying the map…"
 msgstr "Tähyillään kenttää…"
 
-#: src/cgame/cg_main.cpp:508
+#: src/cgame/cg_main.cpp:519
 msgid "Done!"
 msgstr "Valmis!"
 
-#: src/cgame/cg_main.cpp:1089
+#: src/cgame/cg_main.cpp:1109
 msgid "Generating bot navigation meshes"
 msgstr "Generoidaan bottien navigaatiokaaviot"
 
-#: src/cgame/cg_main.cpp:1147
+#: src/cgame/cg_main.cpp:1167
 #, c-format
 msgid "by %s"
 msgstr "%s:lta / -ltä"
 
-#: src/cgame/cg_players.cpp:1445
+#: src/cgame/cg_players.cpp:1443
 #, c-format
 msgid "%s^* renamed to %s"
 msgstr "Pelaajan %s^* nimeksi vaihdettu %s"
 
-#: src/cgame/cg_players.cpp:1452
+#: src/cgame/cg_players.cpp:1450
 #, c-format
 msgid "%s^* left the %s"
 msgstr "%s^* poistui joukkueesta %s"
 
-#: src/cgame/cg_players.cpp:1457
+#: src/cgame/cg_players.cpp:1455
 #, c-format
 msgid "%s^* joined the %s"
 msgstr "%s^* liittyi joukkueeseen %s"
 
-#: src/cgame/cg_players.cpp:1462
+#: src/cgame/cg_players.cpp:1460
 #, c-format
 msgid "%s^* left the %s and joined the %s"
 msgstr "%s^* poistui joukkueesta %s ja siirtyi joukkueeseen %s"
 
-#: src/cgame/cg_rocket_draw.cpp:2490
+#: src/cgame/cg_rocket_draw.cpp:2532
 msgid "You are at the front of the spawn queue"
 msgstr "Olet tukijoukkojonon kärjessä"
 
-#: src/cgame/cg_rocket_draw.cpp:2494
+#: src/cgame/cg_rocket_draw.cpp:2536
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Olet sijalla %d tukijoukkojonossa"
 
-#: src/cgame/cg_rocket_draw.cpp:2534
+#: src/cgame/cg_rocket_draw.cpp:2576
 msgid "There are no spawns remaining"
 msgstr "Tukijoukkorakennelmia ei ole"
 
-#: src/cgame/cg_rocket_draw.cpp:2538
+#: src/cgame/cg_rocket_draw.cpp:2580
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "Tukijoukkorakennelmia on %d kappale"
 msgstr[1] "Tukijoukkorakennelmia on %d kappaletta"
 
-#: src/cgame/cg_rocket_draw.cpp:3087
+#: src/cgame/cg_rocket_draw.cpp:3129
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Odotetaan yhteyttä…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3091
+#: src/cgame/cg_rocket_draw.cpp:3133
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Odotetaan varmistusta…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3095
+#: src/cgame/cg_rocket_draw.cpp:3137
 msgid "Awaiting gamestate…"
 msgstr "Odotetaan pelitilannetta…"
 
-#: src/cgame/cg_rocket_draw.cpp:3177
+#: src/cgame/cg_rocket_draw.cpp:3219
 msgid "Say:"
 msgstr "Sano:"
 
-#: src/cgame/cg_rocket_draw.cpp:3178
+#: src/cgame/cg_rocket_draw.cpp:3220
 msgid "Team Say:"
 msgstr "Kerro joukkueelle:"
 
-#: src/cgame/cg_rocket_draw.cpp:3179
+#: src/cgame/cg_rocket_draw.cpp:3221
 msgid "Admin Say:"
 msgstr "Kerro valvojille:"
 
-#: src/cgame/cg_rocket_draw.cpp:3180
+#: src/cgame/cg_rocket_draw.cpp:3222
 msgid "Command:"
 msgstr "Komento:"
 
-#: src/cgame/cg_rocket_draw.cpp:3577
+#: src/cgame/cg_rocket_draw.cpp:3622
 msgid "FIGHT!"
 msgstr "TAISTELE!"
 
-#: src/cgame/cg_rocket_draw.cpp:3671
+#: src/cgame/cg_rocket_draw.cpp:3716
 msgid "estimating"
 msgstr "arvioidaan"
 
-#: src/cgame/cg_servercmds.cpp:453
+#: src/cgame/cg_servercmds.cpp:450
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -3805,11 +3937,11 @@ msgstr ""
 "Alienien joukkueessa on liikaa pelaajia. Odotathan kunnes paikkoja vapautuu "
 "tai liity ihmisten joukkueeseen."
 
-#: src/cgame/cg_servercmds.cpp:455
+#: src/cgame/cg_servercmds.cpp:452
 msgid "The alien team has too many players"
 msgstr "Alienien joukkueessa on liikaa pelaajia"
 
-#: src/cgame/cg_servercmds.cpp:459
+#: src/cgame/cg_servercmds.cpp:456
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -3817,52 +3949,52 @@ msgstr ""
 "Ihmisten joukkueessa on liikaa pelaajia. Odotathan kunnes paikkoja vapautuu "
 "tai liity alienien joukkueeseen."
 
-#: src/cgame/cg_servercmds.cpp:461
+#: src/cgame/cg_servercmds.cpp:458
 msgid "The human team has too many players"
 msgstr "Ihmisten joukkueessa on liikaa pelaajia"
 
-#: src/cgame/cg_servercmds.cpp:465
+#: src/cgame/cg_servercmds.cpp:462
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr "Alienien joukkue on lukittu. Et voi liittyä alieneihin juuri nyt."
 
-#: src/cgame/cg_servercmds.cpp:467
+#: src/cgame/cg_servercmds.cpp:464
 msgid "The alien team is locked"
 msgstr "Alienien joukkue on lukittu"
 
-#: src/cgame/cg_servercmds.cpp:471
+#: src/cgame/cg_servercmds.cpp:468
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr "Ihmisten joukkue on lukittu. Et voi liittyä ihmisiin juuri nyt."
 
-#: src/cgame/cg_servercmds.cpp:473
+#: src/cgame/cg_servercmds.cpp:470
 msgid "The human team is locked"
 msgstr "Ihmisten joukkue on lukittu"
 
-#: src/cgame/cg_servercmds.cpp:477
+#: src/cgame/cg_servercmds.cpp:474
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
 msgstr ""
 "Pelaajapaikkojen maksimimäärä on täynnä. Odotathan paikkojen vapautumista."
 
-#: src/cgame/cg_servercmds.cpp:479
+#: src/cgame/cg_servercmds.cpp:476
 msgid "No free player slots"
 msgstr "Ei vapaita pelaajapaikkoja"
 
-#: src/cgame/cg_servercmds.cpp:483
+#: src/cgame/cg_servercmds.cpp:480
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
 "Sinun täytyy odottaa, että lämmittelyaika päättyy ennen joukkueeseen "
 "liittymistä."
 
-#: src/cgame/cg_servercmds.cpp:485
+#: src/cgame/cg_servercmds.cpp:482
 msgid "You cannot join a team during warmup."
 msgstr "Et voi liittyä joukkueeseen lämmittelyajalla."
 
-#: src/cgame/cg_servercmds.cpp:493
+#: src/cgame/cg_servercmds.cpp:490
 msgid "Cheats are not enabled on this server"
 msgstr "Huijaustoiminnot eivät ole käytössä tällä palvelimella"
 
-#: src/cgame/cg_servercmds.cpp:497
+#: src/cgame/cg_servercmds.cpp:494
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -3870,27 +4002,27 @@ msgstr ""
 "Huijaustoiminnot eivät ole käytössä tällä palvelimella, joten et voi käyttää "
 "tätä komentoa, kun olet joukkueessa"
 
-#: src/cgame/cg_servercmds.cpp:504
+#: src/cgame/cg_servercmds.cpp:501
 msgid "Join a team first"
 msgstr "Liity ensin joukkueeseen"
 
-#: src/cgame/cg_servercmds.cpp:510
+#: src/cgame/cg_servercmds.cpp:507
 msgid "You can only use this command when spectating"
 msgstr "Voit käyttää tätä komentoa vain katsojana"
 
-#: src/cgame/cg_servercmds.cpp:515
+#: src/cgame/cg_servercmds.cpp:512
 msgid "Must be alien to use this command"
 msgstr "Täytyy kuulua alieneihin käyttääkseen tätä komentoa"
 
-#: src/cgame/cg_servercmds.cpp:520
+#: src/cgame/cg_servercmds.cpp:517
 msgid "Must be human to use this command"
 msgstr "Täytyy kuulua ihmisiin käyttääkseen tätä komentoa"
 
-#: src/cgame/cg_servercmds.cpp:525
+#: src/cgame/cg_servercmds.cpp:522
 msgid "Must be alive to use this command"
 msgstr "Täytyy olla elossa käyttääkseen tätä komentoa"
 
-#: src/cgame/cg_servercmds.cpp:531
+#: src/cgame/cg_servercmds.cpp:528
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -3898,11 +4030,11 @@ msgstr ""
 "Tässä ei ole tilaa rakennelmalle. Liiku, kunnes kuvajainen muuttuu vihreäksi "
 "merkiten sopivaa rakennuspaikkaa."
 
-#: src/cgame/cg_servercmds.cpp:533
+#: src/cgame/cg_servercmds.cpp:530
 msgid "There is no room to build here"
 msgstr "Tässä ei ole tilaa rakennelmalle"
 
-#: src/cgame/cg_servercmds.cpp:537
+#: src/cgame/cg_servercmds.cpp:534
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -3910,15 +4042,15 @@ msgstr ""
 "Ei voi rakentaa tälle pinnalle. Pinta on liian jyrkkä taikka sopimaton "
 "rakennelmille. Valitse toinen paikka rakennelmalle."
 
-#: src/cgame/cg_servercmds.cpp:540
+#: src/cgame/cg_servercmds.cpp:537
 msgid "Cannot build on this surface"
 msgstr "Ei voi rakentaa tälle pinnalle"
 
-#: src/cgame/cg_servercmds.cpp:545
+#: src/cgame/cg_servercmds.cpp:542
 msgid "You cannot build that structure"
 msgstr "Et voi tehdä tuota rakennelmaa"
 
-#: src/cgame/cg_servercmds.cpp:549
+#: src/cgame/cg_servercmds.cpp:546
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -3926,11 +4058,11 @@ msgstr ""
 "Tämä toimi poistaisi joukkueesi viimeisen tukijoukkopisteen, joka usein "
 "nopeasti johtaa häviöön. Yritä tehdä enemmän tukijoukkorakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:552
+#: src/cgame/cg_servercmds.cpp:549
 msgid "You may not deconstruct the last spawn"
 msgstr "Et voi purkaa viimeistä tukijoukkorakennelmaa"
 
-#: src/cgame/cg_servercmds.cpp:556
+#: src/cgame/cg_servercmds.cpp:553
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
@@ -3938,27 +4070,27 @@ msgstr ""
 "Päärakennelma on suojattu välittömältä poistamiselta. Sitä voi siirtää ensin "
 "merkkaamalla, sitten rakentamalla sen toiseen paikkaan."
 
-#: src/cgame/cg_servercmds.cpp:559
+#: src/cgame/cg_servercmds.cpp:556
 msgid "You may not deconstruct this structure"
 msgstr "Et voi purkaa tätä rakennelmaa"
 
-#: src/cgame/cg_servercmds.cpp:563
+#: src/cgame/cg_servercmds.cpp:560
 msgid "Building has been disabled on the server for your team."
 msgstr "Rakentaminen joukkueessasi on poistettu käytöstä palvelimen kautta."
 
-#: src/cgame/cg_servercmds.cpp:564
+#: src/cgame/cg_servercmds.cpp:561
 msgid "Building has been disabled for your team"
 msgstr "Rakentaminen joukkueessasi on poistettu käytöstä"
 
-#: src/cgame/cg_servercmds.cpp:568
+#: src/cgame/cg_servercmds.cpp:565
 msgid "You are no longer permitted to build."
 msgstr "Sinulla ei enää ole lupaa rakentaa."
 
-#: src/cgame/cg_servercmds.cpp:569
+#: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build"
 msgstr "Sinulla ei enää ole lupaa rakentaa"
 
-#: src/cgame/cg_servercmds.cpp:573
+#: src/cgame/cg_servercmds.cpp:570
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
@@ -3966,11 +4098,11 @@ msgstr ""
 "Joukkueesi on päättänyt myöntää tappion ja luovuttaa pelin; Rakentelusta ei "
 "ole hyötyä tässä vaiheessa."
 
-#: src/cgame/cg_servercmds.cpp:575
+#: src/cgame/cg_servercmds.cpp:572
 msgid "Cannot build after admitting defeat"
 msgstr "Ei voi rakentaa tappion myöntämisen jälkeen"
 
-#: src/cgame/cg_servercmds.cpp:579
+#: src/cgame/cg_servercmds.cpp:576
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
@@ -3978,19 +4110,19 @@ msgstr ""
 "Resursseja ei ole jäjellä. Vapauta resursseja merkkaamalla nykyisiä "
 "rakennelmia korvattaviksi."
 
-#: src/cgame/cg_servercmds.cpp:581
+#: src/cgame/cg_servercmds.cpp:578
 msgid "There are no resources remaining"
 msgstr "Resursseja ei ole jäljellä"
 
-#: src/cgame/cg_servercmds.cpp:585
+#: src/cgame/cg_servercmds.cpp:582
 msgid "This buildable is not powered."
 msgstr "Tähän rakennelmaan ei tule voimaa."
 
-#: src/cgame/cg_servercmds.cpp:586
+#: src/cgame/cg_servercmds.cpp:583
 msgid "This buildable is not powered"
 msgstr "Tähän rakennelmaan ei tule voimaa"
 
-#: src/cgame/cg_servercmds.cpp:590
+#: src/cgame/cg_servercmds.cpp:587
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
@@ -3998,26 +4130,26 @@ msgstr ""
 "Reaktoria ei ole. Reaktori täytyy rakentaa ennen kuin voit asettaa mitään "
 "muita rakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:592
+#: src/cgame/cg_servercmds.cpp:589
 msgid "There is no reactor"
 msgstr "Reaktoria ei ole"
 
-#: src/cgame/cg_servercmds.cpp:596
+#: src/cgame/cg_servercmds.cpp:593
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "Reaktoreita voi olla vain yksi. Merkkaa nykyinen reaktori jos aiot siirtää "
 "sitä."
 
-#: src/cgame/cg_servercmds.cpp:598
+#: src/cgame/cg_servercmds.cpp:595
 msgid "There can only be one Reactor"
 msgstr "Reaktoreita voi olla vain yksi"
 
-#: src/cgame/cg_servercmds.cpp:603
+#: src/cgame/cg_servercmds.cpp:600
 msgid "Your team cannot have any more drills"
 msgstr "Joukkueellasi ei voi olla enempää poria"
 
-#: src/cgame/cg_servercmds.cpp:607
+#: src/cgame/cg_servercmds.cpp:604
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -4025,32 +4157,32 @@ msgstr ""
 "Sinulla ei ole tilaa tämän kantamiseen. Myythän ristiriitaiset päivitykset "
 "ennen tämän ostamista."
 
-#: src/cgame/cg_servercmds.cpp:609
+#: src/cgame/cg_servercmds.cpp:606
 msgid "You have no room to carry this"
 msgstr "Sinulla ei ole tilaa tämän kantamiseen"
 
-#: src/cgame/cg_servercmds.cpp:613
+#: src/cgame/cg_servercmds.cpp:610
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr ""
 "Riittämättömät varat. Sinulla ei ole tarpeeksi krediittejä suorittaaksesi "
 "tätä toimenpidettä."
 
-#: src/cgame/cg_servercmds.cpp:615
+#: src/cgame/cg_servercmds.cpp:612
 msgid "Insufficient funds"
 msgstr "Riittämättömät varat"
 
-#: src/cgame/cg_servercmds.cpp:619
+#: src/cgame/cg_servercmds.cpp:616
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
 msgstr "Sinulla on jo tämä esine. Et voi kantaa useampaa samanlaista esinettä."
 
-#: src/cgame/cg_servercmds.cpp:621
+#: src/cgame/cg_servercmds.cpp:618
 msgid "You already hold this item"
 msgstr "Sinulla on jo tämä esine"
 
-#: src/cgame/cg_servercmds.cpp:625
+#: src/cgame/cg_servercmds.cpp:622
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -4058,11 +4190,11 @@ msgstr ""
 "Sinun täytyy olla käynnissäolevalla asevarikolla ostaaksesi aseita, "
 "päivityksiä tai ammuksia."
 
-#: src/cgame/cg_servercmds.cpp:627
+#: src/cgame/cg_servercmds.cpp:624
 msgid "You must be near a powered Armoury"
 msgstr "Sinun täytyy olla käynnissäolevalla asevarikolla"
 
-#: src/cgame/cg_servercmds.cpp:631
+#: src/cgame/cg_servercmds.cpp:628
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
@@ -4070,43 +4202,43 @@ msgstr ""
 "Sinun täytyy olla reaktorilla, poralla tai käynnissäolevalla asevarikolla "
 "ostaaksesi energia-ammuksia."
 
-#: src/cgame/cg_servercmds.cpp:633
+#: src/cgame/cg_servercmds.cpp:630
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr ""
 "Sinun täytyy olla reaktorilla, poralla tai käynnissäolevalla asevarikolla"
 
-#: src/cgame/cg_servercmds.cpp:637
+#: src/cgame/cg_servercmds.cpp:634
 msgid "There is not enough room here to change armour."
 msgstr "Panssaripuvun vaihtamiseen ei ole täällä tilaa."
 
-#: src/cgame/cg_servercmds.cpp:638
+#: src/cgame/cg_servercmds.cpp:635
 msgid "Not enough room here to change armour."
 msgstr "Ei riittävästi tilaa täällä panssaripuvun vaihtoon."
 
-#: src/cgame/cg_servercmds.cpp:642
+#: src/cgame/cg_servercmds.cpp:639
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
 msgstr ""
 "Et saa ostaa tai myydä aseita ennen kuin rakennusajastimesi on nollilla."
 
-#: src/cgame/cg_servercmds.cpp:644
+#: src/cgame/cg_servercmds.cpp:641
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr "Et voi ostaa tai myydä aseita ennen kuin rakennusajastimesi nollaantuu"
 
-#: src/cgame/cg_servercmds.cpp:649
+#: src/cgame/cg_servercmds.cpp:646
 msgid "You must be dead to use the class command"
 msgstr "Sinun täytyy olla kuollut käyttääksesi luokkakomentoa"
 
-#: src/cgame/cg_servercmds.cpp:653
+#: src/cgame/cg_servercmds.cpp:650
 msgid "Unknown starting item"
 msgstr "Tuntematon aloitusesine"
 
-#: src/cgame/cg_servercmds.cpp:657
+#: src/cgame/cg_servercmds.cpp:654
 msgid "Starting item not allowed"
 msgstr "Aloitusesine ei sallittu"
 
-#: src/cgame/cg_servercmds.cpp:663
+#: src/cgame/cg_servercmds.cpp:660
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
@@ -4114,11 +4246,11 @@ msgstr ""
 "Ylihallitsijaa ei ole. Ylihallitsija täytyy rakentaa ennen kuin voit asettaa "
 "mitään muita rakennelmia."
 
-#: src/cgame/cg_servercmds.cpp:665 src/cgame/cg_servercmds.cpp:705
+#: src/cgame/cg_servercmds.cpp:662 src/cgame/cg_servercmds.cpp:702
 msgid "There is no Overmind"
 msgstr "Ylihallitsijaa ei ole"
 
-#: src/cgame/cg_servercmds.cpp:669
+#: src/cgame/cg_servercmds.cpp:666
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
@@ -4126,15 +4258,15 @@ msgstr ""
 "Ylihallitsijoita voi olla vain yksi. Merkkaa nykyinen ylihallitsija jos aiot "
 "siirtää sitä."
 
-#: src/cgame/cg_servercmds.cpp:671
+#: src/cgame/cg_servercmds.cpp:668
 msgid "There can only be one Overmind"
 msgstr "Ylihallitsijoita voi olla vain yksi"
 
-#: src/cgame/cg_servercmds.cpp:676
+#: src/cgame/cg_servercmds.cpp:673
 msgid "Your team cannot have any more leeches"
 msgstr "Joukkueellasi ei voi olla enempää loisia"
 
-#: src/cgame/cg_servercmds.cpp:680
+#: src/cgame/cg_servercmds.cpp:677
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -4142,11 +4274,11 @@ msgstr ""
 "Ylihallitsija ei voi hallita enempää rakennelmia. Merkkaa nykyisiä "
 "rakennelmia korvattavaksi rakentaaksesi uusia."
 
-#: src/cgame/cg_servercmds.cpp:682
+#: src/cgame/cg_servercmds.cpp:679
 msgid "The Overmind cannot control any more structures"
 msgstr "Ylihallitsija ei voi hallita enempää rakennelmia"
 
-#: src/cgame/cg_servercmds.cpp:686
+#: src/cgame/cg_servercmds.cpp:683
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -4154,11 +4286,11 @@ msgstr ""
 "Täällä ei ole tilaa kehittyä. Siirry kauemmaksi seinistä tai läheisistä "
 "esineistä ja yritä uudelleen."
 
-#: src/cgame/cg_servercmds.cpp:688
+#: src/cgame/cg_servercmds.cpp:685
 msgid "There is no room to evolve here"
 msgstr "Täällä ei ole tilaa kehittyä"
 
-#: src/cgame/cg_servercmds.cpp:692
+#: src/cgame/cg_servercmds.cpp:689
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -4166,76 +4298,80 @@ msgstr ""
 "Tämä paikka on liian lähellä vihollista kehittymiseen. Siirry kauemmas "
 "vihollisista ja yritä uudelleen."
 
-#: src/cgame/cg_servercmds.cpp:694
+#: src/cgame/cg_servercmds.cpp:691
 msgid "This location is too close to the enemy to evolve"
 msgstr "Tämä paikka on liian lähellä vihollista kehittymiseen"
 
-#: src/cgame/cg_servercmds.cpp:698 src/cgame/cg_servercmds.cpp:699
+#: src/cgame/cg_servercmds.cpp:695 src/cgame/cg_servercmds.cpp:696
 msgid "The Overmind is too far away to devolve."
 msgstr "Ylihallitsija on liian kaukana alkeellistumiseen."
 
-#: src/cgame/cg_servercmds.cpp:703
+#: src/cgame/cg_servercmds.cpp:700
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 "Ylihallitsijaa ei ole. Ylihallitsija täytyy rakentaa jotta voit päivittyä."
 
-#: src/cgame/cg_servercmds.cpp:709
+#: src/cgame/cg_servercmds.cpp:706
 msgid "You cannot evolve until your build timer has expired."
 msgstr "Et voi kehittyä ennen kuin rakennusajastimesi on nollilla."
 
-#: src/cgame/cg_servercmds.cpp:710
+#: src/cgame/cg_servercmds.cpp:707
 msgid "You cannot evolve until your build timer expires"
 msgstr "Et voi kehittyä ennen kuin rakennusajastimesi nollaantuu"
 
-#: src/cgame/cg_servercmds.cpp:714
+#: src/cgame/cg_servercmds.cpp:711
 msgid "Wait a second after attacking or evolving"
 msgstr "Odota sekunti hyökkäämisen tai kehittymisen jälkeen"
 
-#: src/cgame/cg_servercmds.cpp:722
+#: src/cgame/cg_servercmds.cpp:719
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "Et voi kehittyä %siksi"
 
-#: src/cgame/cg_servercmds.cpp:727
+#: src/cgame/cg_servercmds.cpp:724
 msgid "You cannot evolve while wallwalking"
 msgstr "Et voi kehittyä seinilläkävellessäsi"
 
-#: src/cgame/cg_servercmds.cpp:731
+#: src/cgame/cg_servercmds.cpp:728
 msgid "Unknown class"
 msgstr "Tuntematon luokka"
 
-#: src/cgame/cg_servercmds.cpp:735
+#: src/cgame/cg_servercmds.cpp:732
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "Et voi aloittaa %sina"
 
-#: src/cgame/cg_servercmds.cpp:740
+#: src/cgame/cg_servercmds.cpp:737
 #, c-format
 msgid "The %s is not allowed"
 msgstr "%s ei ole sallittu"
 
-#: src/cgame/cg_servercmds.cpp:745
+#: src/cgame/cg_servercmds.cpp:742
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr "%s ei ole vielä avautunut käyttöön"
 
-#: src/cgame/cg_servercmds.cpp:750
+#: src/cgame/cg_servercmds.cpp:747
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "cgame: debug: ei valikkoa %d"
 
-#: src/cgame/cg_servercmds.cpp:909
+#: src/cgame/cg_servercmds.cpp:850
+msgid "^1*DEAD*^*"
+msgstr ""
+
+#: src/cgame/cg_servercmds.cpp:911
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr "%sYksityisviesti pelaajalta ^7%s"
 
-#: src/cgame/cg_servercmds.cpp:917
+#: src/cgame/cg_servercmds.cpp:919
 #, c-format
 msgid ">> to reply, say: /m %d [your message] <<"
 msgstr ">> vastaaksesi, sano: /m %d [viestisi] <<"
 
-#: src/cgame/cg_servercmds.cpp:1405
+#: src/cgame/cg_servercmds.cpp:1407
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "Tuntematon pelaajan pelikomento: %s"
@@ -4567,43 +4703,43 @@ msgstr "Paina %s avataksesi valikon."
 msgid "Unbound"
 msgstr "Asettamaton"
 
-#: src/sgame/sg_active.cpp:737
+#: src/sgame/sg_active.cpp:736
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
 msgstr "$1$^* siirretty joukkueesta $2$ katsojiin epäaktiivisuuden vuoksi"
 
-#: src/sgame/sg_active.cpp:755
+#: src/sgame/sg_active.cpp:754
 msgid "Ten seconds until inactivity spectate!"
 msgstr "Kymmenen sekuntia epäaktiivisuudesta katsojiin!"
 
-#: src/sgame/sg_active.cpp:755
+#: src/sgame/sg_active.cpp:754
 msgid "Ten seconds until inactivity drop!"
 msgstr "Kymmenen sekuntia epäaktiivisuudesta poistatukseen!"
 
-#: src/sgame/sg_bot.cpp:68
-msgid "Alien bot names:"
-msgstr "Alienien bottien nimet:"
+#: src/sgame/sg_bot.cpp:70
+msgid "^3Alien bot names:"
+msgstr ""
 
-#: src/sgame/sg_bot.cpp:69
-msgid "Human bot names:"
-msgstr "Ihmisten bottien nimet:"
+#: src/sgame/sg_bot.cpp:71
+msgid "^3Human bot names:"
+msgstr ""
 
-#: src/sgame/sg_bot.cpp:367
+#: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
 msgstr "$1$^* katkaisi yhteytensä"
 
-#: src/sgame/sg_bot_nav.cpp:120
+#: src/sgame/sg_bot_nav.cpp:125
 msgid "Server: generating bot navigation mesh for $1$... $2$%"
 msgstr "Palvelin: luodaan botin navigaatioruudukkoa yksikölle $1$... $2$%"
 
-#: src/sgame/sg_bot_nav.cpp:159
-msgid "Bot navmesh generation failed!"
-msgstr "Botin navigaatioruudukon luominen epäonnistui!"
+#: src/sgame/sg_bot_nav.cpp:164
+msgid "^1Bot navmesh generation failed!"
+msgstr ""
 
-#: src/sgame/sg_buildable.cpp:2041
+#: src/sgame/sg_buildable.cpp:1881
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
 msgstr "$2$ ^2teki rakennelman^* $1$, ^3korvaten^* $3$"
 
-#: src/sgame/sg_buildable.cpp:2042
+#: src/sgame/sg_buildable.cpp:1882
 msgid "$1$ ^2built^* by $2$$3$"
 msgstr "$2$$3$ ^2teki rakennelman^* $1$"
 
@@ -4621,7 +4757,8 @@ msgstr "Et voi vaihtaa nimeäsi kun sinut on mykistetty"
 
 #: src/sgame/sg_client.cpp:874
 msgid "Name is too long! Must be less than $1$ characters or color codes."
-msgstr "Liian pitkä nimi! Täytyy olla vähemmän kuin $1$ merkkiä tai värikoodia."
+msgstr ""
+"Liian pitkä nimi! Täytyy olla vähemmän kuin $1$ merkkiä tai värikoodia."
 
 #: src/sgame/sg_client.cpp:1155
 msgid "Your GUID is not secure"
@@ -4639,73 +4776,73 @@ msgstr "$1$^* on yhdistämässä…"
 msgid "$1$^* entered the game"
 msgstr "$1$^* saapui peliin"
 
-#: src/sgame/sg_combat.cpp:450
+#: src/sgame/sg_combat.cpp:451
 msgid "Your killer, $1$^*, had $2$ HP."
 msgstr "Tappajallasi, $1$^*, oli $2$ HP."
 
-#: src/sgame/sg_combat.cpp:1055
+#: src/sgame/sg_combat.cpp:1060
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
 msgstr "$2$ ^3PURKI RAKENNELMAN^* $1$"
 
-#: src/sgame/sg_combat.cpp:1056
+#: src/sgame/sg_combat.cpp:1061
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$2$ ^3TUHOSI RAKENNELMAN^* $1$"
 
-#: src/sgame/sg_main.cpp:1943
+#: src/sgame/sg_main.cpp:1946
 msgid "Timelimit hit"
 msgstr "Aikaraja tullut vastaan"
 
-#: src/sgame/sg_main.cpp:1954
+#: src/sgame/sg_main.cpp:1957
 msgid "$1$ minutes remaining!"
 msgstr "$1$ minuuttia jäljellä!"
 
-#: src/sgame/sg_main.cpp:1962
+#: src/sgame/sg_main.cpp:1965
 msgid "1 minute remaining!"
 msgstr "1 minuutti jäljellä!"
 
-#: src/sgame/sg_main.cpp:1975
+#: src/sgame/sg_main.cpp:1978
 msgid "Humans win"
 msgstr "Ihmiset voitti"
 
-#: src/sgame/sg_main.cpp:1989
+#: src/sgame/sg_main.cpp:1992
 msgid "Aliens win"
 msgstr "Alienit voitti"
 
-#: src/sgame/sg_main.cpp:2003
+#: src/sgame/sg_main.cpp:2006
 msgid "Empty teams skip map time exceeded."
 msgstr "Kentän ohitus tyhjillä joukkueilla -aikaraja ylitetty."
 
-#: src/sgame/sg_main.cpp:2167
+#: src/sgame/sg_main.cpp:2170
 msgid "The game has been paused. Please wait."
 msgstr "Erä on keskeytetty. Ole hyvä ja odota."
 
-#: src/sgame/sg_main.cpp:2171
+#: src/sgame/sg_main.cpp:2174
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Palvelin: Erä jatkuu automaattisesti $1$ sekunnin kuluttua"
 
-#: src/sgame/sg_main.cpp:2190
+#: src/sgame/sg_main.cpp:2193
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr ""
 "Palvelin: Erä on laitettu jatkumaan automaattisesti ($1$ minuutin "
 "taukorajoitus)"
 
-#: src/sgame/sg_main.cpp:2193
+#: src/sgame/sg_main.cpp:2196
 msgid "The game has been unpaused!"
 msgstr "Erä jatkuu!"
 
-#: src/sgame/sg_spawn_mover.cpp:1066
+#: src/sgame/sg_spawn_mover.cpp:1077
 msgid "^1This door is locked!"
 msgstr "^1Tämä ovi on lukossa!"
 
-#: src/sgame/sg_svcmds.cpp:464
+#: src/sgame/sg_svcmds.cpp:501
 msgid "Alien team has admitted defeat"
 msgstr "Alienien joukkue myönsi tappion"
 
-#: src/sgame/sg_svcmds.cpp:469
+#: src/sgame/sg_svcmds.cpp:506
 msgid "Human team has admitted defeat"
 msgstr "Ihmisten joukkue myönsi tappion"
 
-#: src/sgame/sg_svcmds.cpp:502
+#: src/sgame/sg_svcmds.cpp:539
 msgid "Evacuation ordered"
 msgstr "Evakuaatio käsketty"
 
@@ -4859,59 +4996,313 @@ msgstr "$1$: Sinun täytyy antaa syy"
 msgid "$1$^* called a vote: $2$"
 msgstr "$1$^* aloitti äänestyksen: $2$"
 
-#: src/sgame/sg_votes.cpp:738
+#: src/sgame/sg_votes.cpp:725
+msgid ""
+"$1$^7 called a vote:\n"
+"^7$2$"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:742
 msgid "$1$^* called a team vote: $2t$"
 msgstr "$1$^* aloitti joukkueäänestyksen: $2t$"
 
-#: src/sgame/sg_votes.cpp:854
+#: src/sgame/sg_votes.cpp:747
+msgid ""
+"$1$^7 called a team vote:\n"
+"^7$2t$"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:860
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
 msgstr "Äänestys hylätty ($1$/$2$; päätösvaltaisuutta ei saavutettu)"
 
-#: src/sgame/sg_votes.cpp:855
+#: src/sgame/sg_votes.cpp:861
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
 msgstr "Joukkueäänestys hylätty ($1$/$2$; päätösvaltaisuutta ei saavutettu)"
 
-#: src/sgame/sg_votes.cpp:861
+#: src/sgame/sg_votes.cpp:867
 msgid "Vote passed ($1$ — $2$)"
 msgstr "Äänestys hyväksytty ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:862
+#: src/sgame/sg_votes.cpp:868
 msgid "Team vote passed ($1$ — $2$)"
 msgstr "Joukkueäänestys hyväksytty ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:868
+#: src/sgame/sg_votes.cpp:874
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Äänestys hylätty ($1$ — $2$; $3$% tarvitaan)"
 
-#: src/sgame/sg_votes.cpp:869
+#: src/sgame/sg_votes.cpp:875
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Joukkueäänestys hylätty ($1$ — $2$; $3$% tarvitaan)"
 
-#: src/shared/bg_misc.cpp:2485
+#: src/shared/bg_misc.cpp:2484
 msgid "spectator"
 msgstr "katsoja"
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2489
 msgid "alien"
 msgstr "alieni"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2494
 msgid "human"
 msgstr "ihminen"
 
-#: src/shared/bg_misc.cpp:2505
+#: src/shared/bg_misc.cpp:2504
 msgid "spectators"
 msgstr "katsojat"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2509
 msgid "aliens"
 msgstr "alienit"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2514
 msgid "humans"
 msgstr "ihmiset"
+
+#~ msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
+#~ msgstr "Esimerkki: ^^3Fred^^1Baggins muuttuu ^3Fred^1Baggins"
+
+#~ msgid "Match menu"
+#~ msgstr "Erävalikko"
+
+#~ msgid "Reset match"
+#~ msgstr "Aloita erä uudelleen"
+
+#~ msgid "Players"
+#~ msgstr "Pelaajat"
+
+#~ msgid "Disclipline: kick/ban/mute/nobuild"
+#~ msgstr "Kurinpito: potki/estä/vaimenna/kiellä rakentaminen"
+
+#~ msgid "Play"
+#~ msgstr "Pelaa"
+
+#~ msgid "Recorded demos"
+#~ msgstr "Tallennetut demot"
+
+#~ msgid "Help"
+#~ msgstr "Apua"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi; %s%s%s^* avusti"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi; %s%s%s^* avusti"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in pilkkomaksi; %s%s%s^* avusti"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in raastamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in sähköteloittamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in suolistamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn; %s%s%s^* avusti"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn; %s%s%s^* avusti"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in syöksyyn; %s%s%s^* avusti"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*joutui %s%s%s^*:n %s^*in piikkipallottamaksi; %s%s%s^* avusti"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi; %s%s%s^* avusti"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi; %s%s%s^* avusti"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*joutui %s%s%s^*:n %s^*in mukiloimaksi; %s%s%s^* avusti"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle"
+
+#~ msgctxt "male"
+#~ msgid ""
+#~ "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+#~ "assisted"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle; %s%s%s^* avusti"
+
+#~ msgctxt "female"
+#~ msgid ""
+#~ "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+#~ "assisted"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle; %s%s%s^* avusti"
+
+#~ msgctxt "neuter"
+#~ msgid ""
+#~ "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+#~ "assisted"
+#~ msgstr "%s%s ^*jäi %s%s%s^*:n %s^*in tielle; %s%s%s^* avusti"
+
+#, c-format
+#~ msgid "%s Under attack – %s"
+#~ msgstr "%s Hyökkäyksessä – %s"
+
+#, c-format
+#~ msgid "%s Under attack"
+#~ msgstr "%s Hyökkäyksessä"
+
+#~ msgid "Alien bot names:"
+#~ msgstr "Alienien bottien nimet:"
+
+#~ msgid "Human bot names:"
+#~ msgstr "Ihmisten bottien nimet:"
+
+#~ msgid "Bot navmesh generation failed!"
+#~ msgstr "Botin navigaatioruudukon luominen epäonnistui!"
 
 #~ msgid "Feel free to join us in the community and developer chats!"
 #~ msgstr ""

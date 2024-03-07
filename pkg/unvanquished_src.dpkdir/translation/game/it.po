@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-24 07:29+0200\n"
+"POT-Creation-Date: 2024-03-07 03:06+0100\n"
 "PO-Revision-Date: 2023-08-31 05:13+0000\n"
 "Last-Translator: Emily Fiorentini <emily@xewer.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/unvanquished/"
@@ -71,7 +71,7 @@ msgstr "Motivo"
 msgid "Call vote"
 msgstr "Crea una votazione"
 
-#: ui/callvote_fillbots.rml:7 ui/menu_ingame.rml:50
+#: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
 msgstr "Riempi con dei bot"
 
@@ -80,6 +80,7 @@ msgid "Both teams"
 msgstr "Entrambe le squadre"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
+#: ui/options_player.rml:107 ui/options_ui.rml:101
 msgid "Aliens"
 msgstr "Alieni"
 
@@ -96,7 +97,7 @@ msgstr "Squadra"
 msgid "Amount"
 msgstr "Quantità"
 
-#: ui/callvote_map.rml:26 ui/menu_ingame.rml:51 ui/menu_ingame.rml:66
+#: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
 msgstr "Cambia mappa"
 
@@ -116,7 +117,7 @@ msgstr "Imposta la mappa corrente (host)"
 msgid "Method"
 msgstr "Metodo"
 
-#: ui/callvote_map.rml:39 ui/menu_ingame.rml:64 ui/server_create.rml:64
+#: ui/callvote_map.rml:39 ui/server_create.rml:64
 msgid "Map"
 msgstr "Mappa"
 
@@ -132,11 +133,11 @@ msgstr "Errore!"
 msgid "Ok"
 msgstr "Va bene"
 
-#: ui/help_gameplay.rml:16 ui/welcome.rml:16
+#: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
 msgstr "Benvenuto"
 
-#: ui/help_gameplay.rml:19
+#: ui/help_gameplay.rml:20
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
@@ -144,12 +145,12 @@ msgstr ""
 "In questa sezione troverai un riassunto della maggior parte degli elementi "
 "di gioco per diventare un bravo giocatore."
 
-#: ui/help_gameplay.rml:22
+#: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
 msgstr ""
 "Potete trovare altro nel nostro sito web e in altri posti della comunità!"
 
-#: ui/help_gameplay.rml:24
+#: ui/help_gameplay.rml:25
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
@@ -157,23 +158,23 @@ msgstr ""
 "Parla con i giocatori e gli sviluppatori su Libera.Chat IRC, Matrix oppure "
 "Discrod: <web dest=\"chat\" />"
 
-#: ui/help_gameplay.rml:25
+#: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
 msgstr "Discuti delle notizie nei forum: <web dest=\"forums\" />"
 
-#: ui/help_gameplay.rml:26
+#: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
 msgstr "Scopri altro riguardo il gioco nella wiki: <web dest=\"wiki\" />"
 
-#: ui/help_gameplay.rml:28
+#: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
 msgstr "Per favore segnala i bug su: <web dest=\"bugs\" />"
 
-#: ui/help_gameplay.rml:32
+#: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
 msgstr "Entrate &amp; evoluzione"
 
-#: ui/help_gameplay.rml:36
+#: ui/help_gameplay.rml:37
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
@@ -181,7 +182,7 @@ msgstr ""
 "Gli alieni possono ottenere punti di evoluzione uccidendo gli umani. Possono "
 "quindi usare questi punti per evolvere in forme più avanzate come [dragoon]."
 
-#: ui/help_gameplay.rml:39
+#: ui/help_gameplay.rml:40
 msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
@@ -191,7 +192,7 @@ msgstr ""
 "a una costruzione stessa. Possono retrocedere a forme meno avanzate come "
 "[granger] se vicini all'[overmind]."
 
-#: ui/help_gameplay.rml:42
+#: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
@@ -199,7 +200,7 @@ msgstr ""
 "Costruisci un overmind con un [granger] se viene distrutto, hai bisogno di "
 "un overmind vivente per evolvere!"
 
-#: ui/help_gameplay.rml:46
+#: ui/help_gameplay.rml:47
 msgid ""
 "Humans can earn credits by killing aliens and destroying alien buildables, "
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
@@ -210,7 +211,7 @@ msgstr ""
 "[lcannon], armature da combattimento [bsuit] e accessori come radar o "
 "jetpack."
 
-#: ui/help_gameplay.rml:49
+#: ui/help_gameplay.rml:50
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
@@ -219,11 +220,11 @@ msgstr ""
 "sia stata costruita almeno una! Usa il kit costruzione per creare un'armeria "
 "se mancante."
 
-#: ui/help_gameplay.rml:53
+#: ui/help_gameplay.rml:54
 msgid "Powering buildables"
 msgstr "Costruzioni che danno energia"
 
-#: ui/help_gameplay.rml:56
+#: ui/help_gameplay.rml:57
 msgid ""
 "Building a structure requires build points. Your team will start with a "
 "small pool of build points but if you want to place a greater number of "
@@ -238,7 +239,7 @@ msgstr ""
 "più punti costruzione. Tieni presente che perderai punti costruzione se le "
 "strutture di estrazione verranno distrutte."
 
-#: ui/help_gameplay.rml:59
+#: ui/help_gameplay.rml:60
 msgid ""
 "When you are using more BP (Build Point) than the mining structures ([leech] "
 "Leech, [drill] Drill) are capable of providing (current BPs + BPs you will "
@@ -251,7 +252,7 @@ msgstr ""
 "funzionare fino a quando atre strutture avranno abbastanza energie per "
 "rimanere in funzione."
 
-#: ui/help_gameplay.rml:60
+#: ui/help_gameplay.rml:61
 msgid ""
 "Spawn structures ([egg] eggs and [telenode] telenodes), mining structures "
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
@@ -261,11 +262,11 @@ msgstr ""
 "(leech e drill) e strutture uniche (overmind e reattore) non vengono "
 "coinvolte dalla mancanza di punti costruzione."
 
-#: ui/help_gameplay.rml:64
+#: ui/help_gameplay.rml:65
 msgid "Mining structures"
 msgstr "Strutture di estrazione di energia"
 
-#: ui/help_gameplay.rml:67
+#: ui/help_gameplay.rml:68
 msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
@@ -276,7 +277,7 @@ msgstr ""
 "[leech]. Queste strutture necessitano di essere distribuite in modo sparso "
 "per motivi di efficienza."
 
-#: ui/help_gameplay.rml:70
+#: ui/help_gameplay.rml:71
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
@@ -285,7 +286,7 @@ msgstr ""
 "altrimenti tenderanno a competere tra di loro col risultato di diventare un "
 "costo in termini di risorse per la costruzione!"
 
-#: ui/help_gameplay.rml:73
+#: ui/help_gameplay.rml:74
 msgid ""
 "Builders will see another bar above the health bar of a resource generator "
 "which represents its efficiency. A prediction will be shown when you "
@@ -301,7 +302,7 @@ msgstr ""
 "sottratta se la costruzione viene distrutta. Non costruire drill senza "
 "protezione!"
 
-#: ui/help_gameplay.rml:76
+#: ui/help_gameplay.rml:77
 msgid ""
 "When a building is destroyed, the miners will recover its build points "
 "slowly. The mine recovery rate decreases over time, so that it gets "
@@ -314,11 +315,11 @@ msgstr ""
 "ricostruire strutture distrutte in una partita che dura molto tempo. Questo "
 "meccanismo sostituisce il sudden death."
 
-#: ui/help_gameplay.rml:80
+#: ui/help_gameplay.rml:81
 msgid "Stages &amp; Momentum"
 msgstr "Fasi &amp; Momento"
 
-#: ui/help_gameplay.rml:83
+#: ui/help_gameplay.rml:84
 msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
@@ -328,7 +329,7 @@ msgstr ""
 "tua squadra una risorsa chiamata momento. Se guadagni sufficiente momento "
 "verrà sbloccato l'accesso a nuove armi, strutture o classi."
 
-#: ui/help_gameplay.rml:86
+#: ui/help_gameplay.rml:87
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
@@ -337,11 +338,11 @@ msgstr ""
 "la tua squadra, questa perderà l'accesso ai nuovi elementi. Gli "
 "aggiornamenti esistenti rimarranno in funzione."
 
-#: ui/help_gameplay.rml:90
+#: ui/help_gameplay.rml:91
 msgid "Wildfire"
 msgstr "Incendio"
 
-#: ui/help_gameplay.rml:93
+#: ui/help_gameplay.rml:94
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
@@ -349,7 +350,7 @@ msgstr ""
 "Le strutture aliene possono prendere fuoco quando vengono colpite con il "
 "lanciafiamme [flamer] oppure con una bomba incendiaria [firebomb]."
 
-#: ui/help_gameplay.rml:96
+#: ui/help_gameplay.rml:97
 msgid ""
 "If structures are built too close, the fire can jump over to the unfortunate "
 "neighbors."
@@ -357,7 +358,7 @@ msgstr ""
 "Se le strutture sono costruite troppo vicine, il fuoco può passare sugli "
 "sfortunati vicini."
 
-#: ui/help_gameplay.rml:99
+#: ui/help_gameplay.rml:100
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
@@ -366,7 +367,7 @@ msgstr ""
 "ma un gruppo di strutture che brucia si manterrà abbastanza caldo da creare "
 "caos maggiore."
 
-#: ui/help_gameplay.rml:102
+#: ui/help_gameplay.rml:103
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
@@ -374,11 +375,11 @@ msgstr ""
 "Lo sputo del granger avanzato [advgranger] può essere usato per estinguere "
 "gli incendi oppure per rallentare gli intrusi!"
 
-#: ui/help_gameplay.rml:106
+#: ui/help_gameplay.rml:107
 msgid "Under attack"
 msgstr "Sotto attacco"
 
-#: ui/help_gameplay.rml:109
+#: ui/help_gameplay.rml:110
 msgid ""
 "The [reactor] reactor and the [overmind] overmind will issue warnings to the "
 "team when at 75% health, at 50% health, at 25% health and when destroyed."
@@ -390,16 +391,16 @@ msgstr ""
 "distruzione di altre costruzioni lancerà l'avvertimento di \"sotto attacco\" "
 "per la squadra."
 
-#: ui/help_gameplay.rml:113
+#: ui/help_gameplay.rml:114
 msgid "Healing"
 msgstr "Ripristino salute"
 
-#: ui/help_gameplay.rml:116
+#: ui/help_gameplay.rml:117
 msgid "Dying feeds the ennemy, you may want to save your life!"
 msgstr ""
 "Morire comporta il regalare punti al nemico, devi fare in modo di non morire!"
 
-#: ui/help_gameplay.rml:120
+#: ui/help_gameplay.rml:121
 msgid ""
 "Aliens heal slowly wherever they are, but they heal faster in groups and "
 "near alien buildables. Building forward ones can be decisive! Healing in any "
@@ -411,7 +412,7 @@ msgstr ""
 "essere decisivo! Ripristinare la salute contribuirà a ripristinare i "
 "proiettili del dragone avanzato [advdragoon]."
 
-#: ui/help_gameplay.rml:124
+#: ui/help_gameplay.rml:125
 msgid ""
 "The booster gives rapid healing for nearby aliens, build one as soon as you "
 "can, try to unlock it the soonest possible. The booster will also gives you "
@@ -422,7 +423,7 @@ msgstr ""
 "l'accesso il prima possibile. Il booster fornirà anche del veleno per "
 "rendere gli attacchi piu mortali."
 
-#: ui/help_gameplay.rml:127
+#: ui/help_gameplay.rml:128
 msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
@@ -432,7 +433,7 @@ msgstr ""
 "ripristinerà la salute un po', comunque meno rispetto allo starci attaccato. "
 "Questo può aiutare nella difesa delle basi."
 
-#: ui/help_gameplay.rml:130
+#: ui/help_gameplay.rml:131
 msgid ""
 "Aliens have a third healing boost: proximity with other aliens. If you are "
 "near a friendly fellow alien, you will heal slightly faster, and with two "
@@ -446,7 +447,7 @@ msgstr ""
 "un po di gioco di squadra, questa può essere una buona strategia per "
 "assediare l'avversario!"
 
-#: ui/help_gameplay.rml:134
+#: ui/help_gameplay.rml:135
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
@@ -455,11 +456,11 @@ msgstr ""
 "dovranno ritornare al medistation [medstat] per curarsi e riottenere il loro "
 "kit medico."
 
-#: ui/help_gameplay.rml:138
+#: ui/help_gameplay.rml:139
 msgid "Wallwalking"
 msgstr "Camminare sui muri"
 
-#: ui/help_gameplay.rml:141
+#: ui/help_gameplay.rml:142
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
@@ -467,13 +468,13 @@ msgstr ""
 "Alcune forme aliene come i dretch [dretch], la mantide [mantis] e il granger "
 "avanzato [advgranger] possono camminare sui muri!"
 
-#: ui/help_gameplay.rml:144
+#: ui/help_gameplay.rml:145
 msgid "Use this to reach special places or use shortcuts through vents."
 msgstr ""
 "Usa questo per raggiungere posti speciali o usa delle scorciatoie attraverso "
 "le prese d'aria."
 
-#: ui/help_gameplay.rml:147
+#: ui/help_gameplay.rml:148
 msgid ""
 "Alien defensive structures like trapper and spiker work better on walls, "
 "building them on ceiling will protect them from grenades."
@@ -481,19 +482,19 @@ msgstr ""
 "Le strutture difensive aliene come il trapper e lo spiker funzionano meglio "
 "sui muri, costruendoli sul soffitto li proteggerà dalle granate."
 
-#: ui/help_gameplay.rml:150
+#: ui/help_gameplay.rml:151
 msgid "The advanced granger can be unlocked with momentum."
 msgstr "Il granger avanzato può essere sbloccato con il momento."
 
-#: ui/help_gameplay.rml:154
+#: ui/help_gameplay.rml:155
 msgid "Since Tremulous"
 msgstr "Dai tempi di Tremulous"
 
-#: ui/help_gameplay.rml:157
+#: ui/help_gameplay.rml:158
 msgid "Since Tremulous, the stamina has been increased."
 msgstr "Rispetto a Tremulous, la resistenza è stata aumentata."
 
-#: ui/help_gameplay.rml:160
+#: ui/help_gameplay.rml:161
 msgid ""
 "All alien evolution costs and gains have been doubled. The new maximum of "
 "evos an alien can store is 20 (formerly 9)."
@@ -501,7 +502,7 @@ msgstr ""
 "Tutti i costi delle evoluzioni aliene e i guadagni, sono stati raddoppiati. "
 "Il nuovo massimo di evo che un alieno può avere è 20 (precedentemente 9)."
 
-#: ui/help_gameplay.rml:163
+#: ui/help_gameplay.rml:164
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
@@ -509,7 +510,7 @@ msgstr ""
 "Gli stage sono stati sostituiti con il momento e i punti costruzione "
 "dipendono direttamente dal numero di drill."
 
-#: ui/help_gameplay.rml:166
+#: ui/help_gameplay.rml:167
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
@@ -517,7 +518,7 @@ msgstr ""
 "Gli umani non hanno più la torre di difesa di Tesla e nemmeno il computer di "
 "difesa, ma possono costruire i moduli lanciarazzi."
 
-#: ui/help_gameplay.rml:169
+#: ui/help_gameplay.rml:170
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
@@ -526,7 +527,7 @@ msgstr ""
 "profondamente gli umani, ma è una struttura molto vulnerabile, non metterlo "
 "in piena vista!"
 
-#: ui/help_gameplay.rml:172
+#: ui/help_gameplay.rml:173
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
@@ -534,7 +535,7 @@ msgstr ""
 "Il basilisco è stato sostituito dalla mantide, non può più immobilizzare ma "
 "il suo morso rallenta le sue vittime, e può saltare in modo molto veloce."
 
-#: ui/help_gameplay.rml:175
+#: ui/help_gameplay.rml:176
 msgid ""
 "Aliens can devolve near the overmind, and the advanced granger spit can do "
 "interesting things, try it on fire or humans!"
@@ -542,24 +543,6 @@ msgstr ""
 "Gli alieni possono regredire di evoluzione vicino all'overmind, e lo sputo "
 "del granger avanzato può fare cose interessanti, provalo sul fuoco oppure "
 "sugli umani!"
-
-#: ui/help_textentry.rml:19 ui/menu_ingame.rml:112 ui/menu_main.rml:49
-msgid "Colour codes and symbols"
-msgstr "Codici colore e simboli"
-
-#: ui/help_textentry.rml:22
-msgid ""
-"Colours are used by typing their escape code starting with a caret (^) "
-"symbol. Colour can be reset again to normal using ^*, or an actual caret can "
-"be typed using ^^."
-msgstr ""
-"I colori vengono usati inserendo il loro codice escape che inizia con il "
-"simbolo del cappelletto (^). I colori possono essere resettati usando ^*, il "
-"simbolo cappelletto vero e proprio si scrivere con ^^."
-
-#: ui/help_textentry.rml:61
-msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
-msgstr "Esempio: ^^3Fred^^1Baggins diventa ^3Fred^1Baggins"
 
 #: ui/hud_basics.rml:192
 msgid "Game"
@@ -585,7 +568,7 @@ msgstr "punti costruzione"
 msgid "Credits"
 msgstr "Crediti"
 
-#: ui/human_buy.rml:208
+#: ui/human_buy.rml:208 ui/options_player.rml:77
 msgid "Weapons"
 msgstr "Armi"
 
@@ -668,11 +651,11 @@ msgstr ""
 "Gli umani possono equipaggiarsi con un buon assortimento di armi e "
 "strumenti. Sono flessibili e letali ad una certa distanza, ma fragili."
 
-#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:28
+#: ui/ingame_teamselect.rml:62 ui/menu_ingame.rml:29
 msgid "Join Aliens"
 msgstr "Unisciti agli Alieni"
 
-#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:29
+#: ui/ingame_teamselect.rml:63 ui/menu_ingame.rml:31
 msgid "Join Humans"
 msgstr "Unisciti agli Umani"
 
@@ -680,7 +663,7 @@ msgstr "Unisciti agli Umani"
 msgid "Alternatively you can watch the game without playing."
 msgstr "Altrimenti puoi vedere senza giocare."
 
-#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:30
+#: ui/ingame_teamselect.rml:67 ui/menu_ingame.rml:33
 msgid "Spectate"
 msgstr "Fa da Spettatore"
 
@@ -693,172 +676,120 @@ msgstr ""
 "problema che puoi riscontrare su <web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
-msgid "Match menu"
-msgstr "Menu partita"
+msgid "Match"
+msgstr ""
 
-#: ui/menu_ingame.rml:23
+#: ui/menu_ingame.rml:25
 msgid "Leave match"
 msgstr "Lascia partita"
 
-#: ui/menu_ingame.rml:24
+#: ui/menu_ingame.rml:26
 msgid "Resume action"
 msgstr "Ripristina azione"
 
-#: ui/menu_ingame.rml:26 ui/server_setup.rml:57
-msgid "Teams"
-msgstr "Squadre"
-
-#: ui/menu_ingame.rml:33
+#: ui/menu_ingame.rml:34 ui/options_democracy.rml:8
 msgid "Democracy"
 msgstr "Democrazia"
 
-#: ui/menu_ingame.rml:37
-msgid "Global vote:"
-msgstr "Voto globale:"
-
-#: ui/menu_ingame.rml:38 ui/menu_ingame.rml:45
-msgid "yes"
-msgstr "si"
-
-#: ui/menu_ingame.rml:39 ui/menu_ingame.rml:46
-msgid "or"
-msgstr "oppure"
-
-#: ui/menu_ingame.rml:40 ui/menu_ingame.rml:47
-msgid "no"
-msgstr "no"
-
-#: ui/menu_ingame.rml:44
-msgid "Team vote:"
-msgstr "Voto di squadra:"
-
-#: ui/menu_ingame.rml:49
-msgid "Kick bots"
-msgstr "Espelli i bot"
-
-#: ui/menu_ingame.rml:52
-msgid "Extend timelimit"
-msgstr "Estendi il tempo limite"
-
-#: ui/menu_ingame.rml:53
-msgid "Call a draw"
-msgstr "Richiedi un pari"
-
-#: ui/menu_ingame.rml:54
-msgid "Admit defeat"
-msgstr "Ammetti la sconfitta"
-
-#: ui/menu_ingame.rml:60
+#: ui/menu_ingame.rml:38
 msgid "Host menu"
 msgstr "Host menu"
 
-#: ui/menu_ingame.rml:61
-msgid "Stop server"
-msgstr "Ferma il server"
-
-#: ui/menu_ingame.rml:62
-msgid "Pause server"
-msgstr "Metti in pausa il server"
-
-#: ui/menu_ingame.rml:67
-msgid "Reset match"
-msgstr "Resetta la partita"
-
-#: ui/menu_ingame.rml:70
-msgid "Bots"
-msgstr "Bot"
-
-#: ui/menu_ingame.rml:72
-msgid "Add an alien bot"
-msgstr "Aggiungi un bot alieno"
-
-#: ui/menu_ingame.rml:73
-msgid "Add a human bot"
-msgstr "Aggiungi un bot umano"
-
-#: ui/menu_ingame.rml:74 src/sgame/sg_votes.cpp:320
-msgid "Remove all bots"
-msgstr "Rimuovi tutti i bot"
-
-#: ui/menu_ingame.rml:78
-msgid "Players"
-msgstr "Giocatori"
-
-#: ui/menu_ingame.rml:80
-msgid "Disclipline: kick/ban/mute/nobuild"
-msgstr "Azione disciplinare: espelli/banna/muta/no costruzione"
-
-#: ui/menu_ingame.rml:87
-msgid "Main menu"
-msgstr "Menu Principale"
-
-#: ui/menu_ingame.rml:89 ui/menu_main.rml:28
-msgid "Play"
-msgstr "Gioca"
-
-#: ui/menu_ingame.rml:91 ui/menu_main.rml:30
-msgid "Server listings"
-msgstr "Lista dei Server"
-
-#: ui/menu_ingame.rml:92 ui/menu_main.rml:31 ui/server_create.rml:35
-msgid "Start local/LAN game"
-msgstr "Crea una partita locale/LAN"
-
-#: ui/menu_ingame.rml:93 ui/menu_main.rml:32
-msgid "Recorded demos"
-msgstr "Demo registrate"
-
-#: ui/menu_ingame.rml:96 ui/menu_main.rml:35
-msgid "Options"
-msgstr "Opzioni"
-
-#: ui/menu_ingame.rml:98 ui/menu_main.rml:37
-msgid "Player"
-msgstr "Giocatore"
-
-#: ui/menu_ingame.rml:99 ui/menu_main.rml:38 ui/options_graphics.rml:17
-msgid "Graphics"
-msgstr "Grafica"
-
-#: ui/menu_ingame.rml:100 ui/menu_main.rml:39 ui/options_keys.rml:7
-msgid "Key bindings"
-msgstr "Impostazione tasti"
-
-#: ui/menu_ingame.rml:101 ui/menu_main.rml:40 ui/options_mouse.rml:7
-msgid "Mouse and Aiming"
-msgstr "Mouse e Mira"
-
-#: ui/menu_ingame.rml:102 ui/menu_main.rml:41 ui/options_sound.rml:7
-msgid "Sound"
-msgstr "Audio"
-
-#: ui/menu_ingame.rml:103 ui/menu_main.rml:42
-msgid "User interface and HUD"
-msgstr "Interfaccia utente e HUD"
-
-#: ui/menu_ingame.rml:104 ui/menu_main.rml:43 ui/options_fov.rml:8
-msgid "Fields of view"
-msgstr "Campi visivi"
-
-#: ui/menu_ingame.rml:105 ui/server_setup.rml:8
+#: ui/menu_ingame.rml:40 ui/server_setup.rml:8
 msgid "Server setup"
 msgstr "Impostazioni server"
 
-#: ui/menu_ingame.rml:109 ui/menu_main.rml:46
-msgid "Help"
-msgstr "Aiuto"
+#: ui/menu_ingame.rml:42
+msgid "Stop server"
+msgstr "Ferma il server"
 
-#: ui/menu_ingame.rml:111 ui/menu_main.rml:48
+#: ui/menu_ingame.rml:44
+msgid "Pause server"
+msgstr "Metti in pausa il server"
+
+#: ui/menu_ingame.rml:46 ui/options_bots.rml:8
+msgid "Bots"
+msgstr "Bot"
+
+#: ui/menu_ingame.rml:50 ui/menu_main.rml:27
+msgid "Main menu"
+msgstr "Menu Principale"
+
+#: ui/menu_ingame.rml:52 ui/menu_main.rml:28
+msgid "Server listings"
+msgstr "Lista dei Server"
+
+#: ui/menu_ingame.rml:53 ui/menu_main.rml:30 ui/server_create.rml:35
+msgid "Start local/LAN game"
+msgstr "Crea una partita locale/LAN"
+
+#: ui/menu_ingame.rml:54 ui/menu_main.rml:32 ui/options.rml:9
+msgid "Options"
+msgstr "Opzioni"
+
+#: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
 msgstr "Guida gioco"
 
-#: ui/menu_ingame.rml:117 ui/menu_main.rml:54
+#: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
 msgstr "Lascia gioco"
 
-#: ui/menu_ingame.rml:119 ui/menu_main.rml:56
+#: ui/menu_ingame.rml:60 ui/menu_main.rml:41
 msgid "Beta"
 msgstr "Beta"
+
+#: ui/menu_main.rml:33 ui/options_fov.rml:8
+msgid "Fields of view"
+msgstr "Campi visivi"
+
+#: ui/options_bots.rml:10
+msgid "Add an alien bot"
+msgstr "Aggiungi un bot alieno"
+
+#: ui/options_bots.rml:12
+msgid "Add a human bot"
+msgstr "Aggiungi un bot umano"
+
+#: ui/options_bots.rml:14 src/sgame/sg_votes.cpp:320
+msgid "Remove all bots"
+msgstr "Rimuovi tutti i bot"
+
+#: ui/options_democracy.rml:13
+msgid "Global vote:"
+msgstr "Voto globale:"
+
+#: ui/options_democracy.rml:15 ui/options_democracy.rml:24
+msgid "yes"
+msgstr "si"
+
+#: ui/options_democracy.rml:16 ui/options_democracy.rml:25
+msgid "or"
+msgstr "oppure"
+
+#: ui/options_democracy.rml:18 ui/options_democracy.rml:27
+msgid "no"
+msgstr "no"
+
+#: ui/options_democracy.rml:22
+msgid "Team vote:"
+msgstr "Voto di squadra:"
+
+#: ui/options_democracy.rml:30
+msgid "Kick bots"
+msgstr "Espelli i bot"
+
+#: ui/options_democracy.rml:33
+msgid "Extend timelimit"
+msgstr "Estendi il tempo limite"
+
+#: ui/options_democracy.rml:34
+msgid "Call a draw"
+msgstr "Richiedi un pari"
+
+#: ui/options_democracy.rml:35
+msgid "Admit defeat"
+msgstr "Ammetti la sconfitta"
 
 #: ui/options_fov.rml:10
 msgid "Angles of view"
@@ -885,8 +816,9 @@ msgstr "gradi"
 
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
-#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:276
-#: ui/options_mouse.rml:21 ui/options_ui.rml:59 ui/server_setup.rml:73
+#: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:277
+#: ui/options_mouse.rml:21 ui/options_ui.rml:70 ui/options_ui.rml:149
+#: ui/options_ui.rml:179 ui/options_ui.rml:193 ui/server_setup.rml:73
 msgid "reset"
 msgstr "resetta"
 
@@ -941,6 +873,10 @@ msgstr "Basculamento camera"
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
 msgstr "Movimento di torsione"
+
+#: ui/options_graphics.rml:17 ui/options.rml:15
+msgid "Graphics"
+msgstr "Grafica"
 
 #: ui/options_graphics.rml:20 ui/options_graphics.rml:22 ui/options_keys.rml:12
 msgid "Presets"
@@ -1132,6 +1068,7 @@ msgid "Non-physical lighting technique to make models less dark."
 msgstr "Tecnica di illuminazione non-fisica per rendere i modelli meno scuri."
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:247
+#: ui/options_ui.rml:172
 msgid "None"
 msgstr "Nessuno"
 
@@ -1199,7 +1136,7 @@ msgstr ""
 "migliore utilizzando texture di risoluzione piu bassa. Questo in generale "
 "non creai problemi di prestazioni."
 
-#: ui/options_graphics.rml:153 ui/options_ui.rml:12
+#: ui/options_graphics.rml:153 ui/options_ui.rml:42
 msgid "No"
 msgstr "No"
 
@@ -1391,9 +1328,13 @@ msgstr "Livello di sfocatura movimento."
 msgid "Minimum movement speed for motion-blur to activate"
 msgstr "Velocità minima di movimento per attivare la sfocatura"
 
-#: ui/options_graphics.rml:275 ui/options_mouse.rml:20 ui/server_setup.rml:72
+#: ui/options_graphics.rml:276 ui/options_mouse.rml:20 ui/server_setup.rml:72
 msgid "Current:"
 msgstr "Corrente:"
+
+#: ui/options_keys.rml:7 ui/options.rml:17
+msgid "Key bindings"
+msgstr "Impostazione tasti"
 
 #: ui/options_keys.rml:9
 msgid "Press Escape to cancel changing a key binding."
@@ -1602,6 +1543,10 @@ msgstr "Visuale mouse:"
 msgid "Centerview:"
 msgstr "Visuale in centro:"
 
+#: ui/options_mouse.rml:7 ui/options.rml:19
+msgid "Mouse and Aiming"
+msgstr "Mouse e Mira"
+
 #: ui/options_mouse.rml:9
 msgid "Y axis"
 msgstr "Asse Y"
@@ -1638,43 +1583,19 @@ msgstr "Visuale libera"
 msgid "Turn off only if you are a Quake junkie."
 msgstr "Disattiva solo se sei un vecchio giocatore di Quake."
 
-#: ui/options_player.rml:7
-msgid "Player Setup"
-msgstr "Impostazioni Giocatore"
+#: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
+msgid "Movement and Cosmetic"
+msgstr ""
 
-#: ui/options_player.rml:9
-msgid "Personal"
-msgstr "Personale"
-
-#: ui/options_player.rml:12 ui/options_welcome.rml:12
-msgid "Nickname"
-msgstr "Nome"
-
-#: ui/options_player.rml:14 ui/options_welcome.rml:14
-msgid "Colours and symbols can be used."
-msgstr "Possono essere usati sia colori che simboli."
-
-#: ui/options_player.rml:17
-msgid "Tutorial mode"
-msgstr "Modalità tutorial"
-
-#: ui/options_player.rml:19
-msgid "Display hints for key bindings on-screen."
-msgstr "Mostra suggerimenti per le configurazioni dei tasti sullo schermo."
-
-#: ui/options_player.rml:23
-msgid "Show only team chat"
-msgstr "Mostra solo chat di squadra"
-
-#: ui/options_player.rml:26
+#: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
 msgstr "Movimento"
 
-#: ui/options_player.rml:28
+#: ui/options_movements_cosmetic.rml:10
 msgid "Wall-walking auto-pitch"
 msgstr "Rotazione verticale automatica mentre ci si arrampica sui muri"
 
-#: ui/options_player.rml:30
+#: ui/options_movements_cosmetic.rml:12
 msgid ""
 "Always twist and rotate the view when you wall-walk from one surface to "
 "another."
@@ -1682,58 +1603,149 @@ msgstr ""
 "Gira sempre e ruota la visuale quando cammini sui muri da una superfice "
 "all'altra."
 
-#: ui/options_player.rml:39
+#: ui/options_movements_cosmetic.rml:21
 msgid "Wall-walking pitch-speed"
 msgstr "Velocità di rotazione arrampicata sui muri"
 
-#: ui/options_player.rml:40
+#: ui/options_movements_cosmetic.rml:22
 msgid "How fast your view rotates and twists as you wall-walk."
 msgstr ""
 "Quanto la tua visuale ruota e si torce velocemente quando cammini sui muri."
 
-#: ui/options_player.rml:43
+#: ui/options_movements_cosmetic.rml:25
 msgid "Wall-walking toggles"
 msgstr "Attiva / Disattiva l'arrampicata sui muri"
 
-#: ui/options_player.rml:45 ui/options_player.rml:50
+#: ui/options_movements_cosmetic.rml:27 ui/options_movements_cosmetic.rml:32
 msgid "Tap key instead of hold key to activate."
 msgstr "Tocca il tasto invece di mantenerlo per attivare."
 
-#: ui/options_player.rml:48
+#: ui/options_movements_cosmetic.rml:30
 msgid "Sprint toggles"
 msgstr "Attiva / Disattiva la corsa"
 
-#: ui/options_player.rml:53
+#: ui/options_movements_cosmetic.rml:35
 msgid "Cosmetic"
 msgstr "Aspetto"
 
-#: ui/options_player.rml:56
+#: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
 msgstr "Disabilita"
 
-#: ui/options_player.rml:57
+#: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
 msgstr "Solo per umani"
 
-#: ui/options_player.rml:58
+#: ui/options_movements_cosmetic.rml:40
 msgid "Humans and aliens"
 msgstr "Umani e alieni"
 
-#: ui/options_player.rml:60
+#: ui/options_movements_cosmetic.rml:41
+msgid "Humans (translucent)"
+msgstr ""
+
+#: ui/options_movements_cosmetic.rml:42
+msgid "Humans and aliens (translucent)"
+msgstr ""
+
+#: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
 msgstr "Armi in prima persona"
 
-#: ui/options_player.rml:61
+#: ui/options_movements_cosmetic.rml:45
 msgid "Show gun, pincer, hand and mandible models in first-person."
 msgstr "Mostra modelli arma, tenaglie, mano oppure mandibola in prima persona."
 
-#: ui/options_player.rml:64
+#: ui/options_movements_cosmetic.rml:48
 msgid "Left-handed mode"
 msgstr "Modalità mancini"
 
-#: ui/options_player.rml:66
+#: ui/options_movements_cosmetic.rml:50
 msgid "Mirror first-person gun models."
 msgstr "Rispecchia i modelli di armi in prima persona."
+
+#: ui/options_player.rml:18
+msgid "Player Setup"
+msgstr "Impostazioni Giocatore"
+
+#: ui/options_player.rml:20
+msgid "Personal"
+msgstr "Personale"
+
+#: ui/options_player.rml:23 ui/options_welcome.rml:12
+msgid "Nickname"
+msgstr "Nome"
+
+#: ui/options_player.rml:24 ui/options_welcome.rml:13
+msgid "Your name visible to others."
+msgstr "Il tuo nome visibile a tutti."
+
+#: ui/options_player.rml:26
+msgid "Colour codes and symbols"
+msgstr "Codici colore e simboli"
+
+#: ui/options_player.rml:29
+msgid ""
+"Colours are used by typing their escape code starting with a caret (^) "
+"symbol. Colour can be reset again to normal using ^*, or an actual caret can "
+"be typed using ^^."
+msgstr ""
+"I colori vengono usati inserendo il loro codice escape che inizia con il "
+"simbolo del cappelletto (^). I colori possono essere resettati usando ^*, il "
+"simbolo cappelletto vero e proprio si scrivere con ^^."
+
+#: ui/options_player.rml:67
+msgid "Emoticons"
+msgstr ""
+
+#: ui/options_player.rml:68
+msgid "You can put emoticons in your nickname too."
+msgstr ""
+
+#: ui/options_player.rml:70
+msgid ""
+"Example: ^7^^3Fred^^1Baggins[^7grenade]^* becomes ^3Fred^1Baggins[grenade]"
+msgstr ""
+
+#: ui/options_player.rml:75
+msgid "Here is the list of the available emoticons:"
+msgstr ""
+
+#: ui/options_player.rml:134
+msgid "Human buildables"
+msgstr ""
+
+#: ui/options_player.rml:161
+msgid "Alien buildables"
+msgstr ""
+
+#: ui/options_player.rml:186
+msgid "Others"
+msgstr ""
+
+#: ui/options_player.rml:214
+msgid "Tutorial mode"
+msgstr "Modalità tutorial"
+
+#: ui/options_player.rml:216
+msgid "Display hints for key bindings on-screen."
+msgstr "Mostra suggerimenti per le configurazioni dei tasti sullo schermo."
+
+#: ui/options_player.rml:220
+msgid "Show only team chat"
+msgstr "Mostra solo chat di squadra"
+
+#: ui/options.rml:11
+msgid "Player"
+msgstr "Giocatore"
+
+#: ui/options.rml:21 ui/options_sound.rml:7
+msgid "Sound"
+msgstr "Audio"
+
+#: ui/options.rml:23
+msgid "User interface and HUD"
+msgstr "Interfaccia utente e HUD"
 
 #: ui/options_sound.rml:9
 msgid "Global volume"
@@ -1767,114 +1779,226 @@ msgstr "Dispositivo OpenAL"
 msgid "Audio output device/card"
 msgstr "Output audio dispositivo/scheda"
 
-#: ui/options_ui.rml:7
+#: ui/options_ui.rml:18
 msgid "User interface"
 msgstr "Interfaccia utente"
 
-#: ui/options_ui.rml:10
+#: ui/options_ui.rml:20
+msgid "Main"
+msgstr ""
+
+#: ui/options_ui.rml:24
+msgid "Language"
+msgstr ""
+
+#: ui/options_ui.rml:25 ui/options_welcome.rml:19
+msgid "Some languages are not fully translated."
+msgstr ""
+
+#: ui/options_ui.rml:37 ui/options_welcome.rml:31
+msgid "Change language"
+msgstr ""
+
+#: ui/options_ui.rml:40
 msgid "Real-time clock"
 msgstr "Orologio in tempo reale"
 
-#: ui/options_ui.rml:13
+#: ui/options_ui.rml:43
 msgid "12 Hour"
 msgstr "12 Ore"
 
-#: ui/options_ui.rml:14
+#: ui/options_ui.rml:44
 msgid "24 Hour"
 msgstr "24 Ore"
 
-#: ui/options_ui.rml:16
+#: ui/options_ui.rml:46
 msgid "Show the time in real-life."
 msgstr "Mostra il tempo nella vita reale."
 
-#: ui/options_ui.rml:19
+#: ui/options_ui.rml:49
 msgid "Game-time clock"
 msgstr "Tempo di gioco"
 
-#: ui/options_ui.rml:21
+#: ui/options_ui.rml:51
 msgid "Show how long a match has lasted."
 msgstr "Mostra quanto tempo è durata una partita."
 
-#: ui/options_ui.rml:24
-msgid "Crosshair visiblity"
-msgstr "Visibilità mirino"
-
-#: ui/options_ui.rml:26
-msgid "Never"
-msgstr "Mai"
-
-#: ui/options_ui.rml:27
-msgid "Ranged weapons only"
-msgstr "Solo armi da distanza"
-
-#: ui/options_ui.rml:28
-msgid "Always"
-msgstr "Sempre"
-
-#: ui/options_ui.rml:33
-msgid "Crosshair size"
-msgstr "Dimensione mirino"
-
-#: ui/options_ui.rml:35
-msgid "Tiny"
-msgstr "Minuscolo"
-
-#: ui/options_ui.rml:36
-msgid "Small"
-msgstr "Piccolo"
-
-#: ui/options_ui.rml:37
-msgid "Regular"
-msgstr "Regolare"
-
-#: ui/options_ui.rml:38
-msgid "Huge"
-msgstr "Enorme"
-
-#: ui/options_ui.rml:44
+#: ui/options_ui.rml:55
 msgid "Show ping"
 msgstr "Mostra ping"
 
-#: ui/options_ui.rml:46
+#: ui/options_ui.rml:57
 msgid "Time that information takes to get to the server and back."
 msgstr ""
 "Tempo che passa quando un informazione va verso il server e ritorna indietro."
 
-#: ui/options_ui.rml:49
+#: ui/options_ui.rml:60
 msgid "Show movement speed"
 msgstr "Mostra velocità di movimento"
 
-#: ui/options_ui.rml:51
+#: ui/options_ui.rml:62
 msgid "Current, maximum and graph of movement-speed."
 msgstr "Corrente, massimo e grafico della velocità di movimento."
 
-#: ui/options_ui.rml:54
+#: ui/options_ui.rml:65
 msgid "Show FPS"
 msgstr "Mostra FPS"
 
-#: ui/options_ui.rml:56
+#: ui/options_ui.rml:67
 msgid "Frames per second."
 msgstr "Frame al secondo."
 
-#: ui/options_ui.rml:59
+#: ui/options_ui.rml:70
 msgid "Console colors"
 msgstr "Colori console"
 
-#: ui/options_ui.rml:63
+#: ui/options_ui.rml:74 ui/options_ui.rml:153 ui/options_ui.rml:197
 msgid "Red:"
 msgstr "Rosso:"
 
-#: ui/options_ui.rml:67
+#: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
 msgid "Green:"
 msgstr "Verde:"
 
-#: ui/options_ui.rml:71
+#: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
 msgid "Blue:"
 msgstr "Blu:"
 
-#: ui/options_ui.rml:75
+#: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
 msgid "Alpha:"
 msgstr "Trasparenza:"
+
+#: ui/options_ui.rml:91
+msgid "Crosshair"
+msgstr ""
+
+#: ui/options_ui.rml:95
+msgid "WARN: Preview only works in game."
+msgstr ""
+
+#: ui/options_ui.rml:99
+msgid "Weapon"
+msgstr ""
+
+#: ui/options_ui.rml:102
+msgid "Blaster"
+msgstr ""
+
+#: ui/options_ui.rml:103
+msgid "Rifle"
+msgstr ""
+
+#: ui/options_ui.rml:104
+msgid "Pain Saw"
+msgstr ""
+
+#: ui/options_ui.rml:105
+msgid "Shotgun"
+msgstr ""
+
+#: ui/options_ui.rml:106
+msgid "Lasgun"
+msgstr ""
+
+#: ui/options_ui.rml:107
+msgid "Mass Driver"
+msgstr ""
+
+#: ui/options_ui.rml:108
+msgid "Chaingun"
+msgstr ""
+
+#: ui/options_ui.rml:109
+msgid "Flamer"
+msgstr ""
+
+#: ui/options_ui.rml:110
+msgid "Pulse Rifle"
+msgstr ""
+
+#: ui/options_ui.rml:111
+msgid "Lucifer Cannon"
+msgstr ""
+
+#: ui/options_ui.rml:122
+msgid "Crosshair visiblity"
+msgstr "Visibilità mirino"
+
+#: ui/options_ui.rml:124
+msgid "Never"
+msgstr "Mai"
+
+#: ui/options_ui.rml:125
+msgid "Ranged weapons only"
+msgstr "Solo armi da distanza"
+
+#: ui/options_ui.rml:126
+msgid "Always"
+msgstr "Sempre"
+
+#: ui/options_ui.rml:131
+msgid "Crosshair size"
+msgstr "Dimensione mirino"
+
+#: ui/options_ui.rml:133
+msgid "Tiny"
+msgstr "Minuscolo"
+
+#: ui/options_ui.rml:134
+msgid "Small"
+msgstr "Piccolo"
+
+#: ui/options_ui.rml:135
+msgid "Regular"
+msgstr "Regolare"
+
+#: ui/options_ui.rml:136
+msgid "Huge"
+msgstr "Enorme"
+
+#: ui/options_ui.rml:141
+msgid "Crosshair colour"
+msgstr ""
+
+#: ui/options_ui.rml:143
+msgid "Image colour"
+msgstr ""
+
+#: ui/options_ui.rml:144 ui/options_ui.rml:174
+msgid "Custom colour"
+msgstr ""
+
+#: ui/options_ui.rml:149
+msgid "Crosshair colours"
+msgstr ""
+
+#: ui/options_ui.rml:170
+msgid "Crosshair outline colour"
+msgstr ""
+
+#: ui/options_ui.rml:173
+msgid "Auto colour"
+msgstr ""
+
+#: ui/options_ui.rml:179
+msgid "Crosshair outline scale"
+msgstr ""
+
+#: ui/options_ui.rml:181
+msgid "Negative values will change the outline to be inside the crosshair."
+msgstr ""
+
+#: ui/options_ui.rml:184
+msgid "Scale:"
+msgstr ""
+
+#: ui/options_ui.rml:188
+msgid "Offset:"
+msgstr ""
+
+#: ui/options_ui.rml:193
+msgid "Crosshair outline colours"
+msgstr ""
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -1884,15 +2008,19 @@ msgstr "Ciao!"
 msgid "How should we call you?"
 msgstr "Come dovremmo chiamarti?"
 
-#: ui/options_welcome.rml:13
-msgid "Your name visible to others."
-msgstr "Il tuo nome visibile a tutti."
+#: ui/options_welcome.rml:14
+msgid "Colours and symbols can be used."
+msgstr "Possono essere usati sia colori che simboli."
 
 #: ui/options_welcome.rml:16
 msgid "You can change this at any time in the options."
 msgstr "Puoi cambiarlo in qualsiasi momento nelle opzioni."
 
-#: ui/options_welcome.rml:17
+#: ui/options_welcome.rml:18
+msgid "What language do you want to use?"
+msgstr ""
+
+#: ui/options_welcome.rml:32
 msgid "Select Battlefield"
 msgstr "Seleziona Campo di Battaglia"
 
@@ -2001,6 +2129,10 @@ msgstr "Attiva il riscaldamento per ogni inizio partita"
 #: ui/server_setup.rml:49
 msgid "Gives players on slower computers time to join."
 msgstr "Da tempo per unirsi ai giocatori con computer più lenti."
+
+#: ui/server_setup.rml:57
+msgid "Teams"
+msgstr "Squadre"
 
 #: ui/server_setup.rml:60
 msgid "Allow alien building"
@@ -3158,320 +3290,314 @@ msgstr "%s%s ^*è stato morso da %s%s%s^*; %s%s%s^* ha contribuito"
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "male"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato affettato dal %s di %s%s%s^*"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "female"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stata affettata dal %s di %s%s%s^*"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "neuter"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato affettato dal %s di %s%s%s^*"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato affettato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stata affettata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato affettato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:480
+msgctxt "male"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:480
+msgctxt "female"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:480
+msgctxt "neuter"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato triturato dal %s di %s%s%s^*"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "female"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stata triturata dal %s di %s%s%s^*"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato triturato dal %s di %s%s%s^*"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:485
 msgctxt "male"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato triturato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:485
 msgctxt "female"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stata triturata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:485
 msgctxt "neuter"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato triturato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:486
 msgctxt "male"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato fulminato dal %s di %s%s%s^*"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:486
 msgctxt "female"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stata fulminata dal %s di %s%s%s^*"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:487
+#: src/cgame/cg_event.cpp:486
 msgctxt "neuter"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato fulminato dal %s di %s%s%s^*"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:490
 msgctxt "male"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato fulminato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:490
 msgctxt "female"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stata fulminata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:490
 msgctxt "neuter"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato fulminato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:493
+#: src/cgame/cg_event.cpp:491
 msgctxt "male"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato sventrato dal %s di %s%s%s^*"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:493
+#: src/cgame/cg_event.cpp:491
 msgctxt "female"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stata sventrata dal %s di %s%s%s^*"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:493
+#: src/cgame/cg_event.cpp:491
 msgctxt "neuter"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato sventrato dal %s di %s%s%s^*"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:495
 msgctxt "male"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato sventrato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:495
 msgctxt "female"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stata sventrata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:495
 msgctxt "neuter"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato sventrato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:499
+#: src/cgame/cg_event.cpp:496
 msgctxt "male"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato aggredito dal %s di %s%s%s^*"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:499
+#: src/cgame/cg_event.cpp:496
 msgctxt "female"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stata aggredita dal %s di %s%s%s^*"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:499
+#: src/cgame/cg_event.cpp:496
 msgctxt "neuter"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato aggredito dal %s di %s%s%s^*"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "male"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato aggredito dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "female"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stata aggredita dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato aggredito dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:505
+#: src/cgame/cg_event.cpp:501
 msgctxt "male"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato riempito di spine dal %s di %s%s%s^*"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:505
+#: src/cgame/cg_event.cpp:501
 msgctxt "female"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stata riempita di spine dal %s di %s%s%s^*"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:505
+#: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato riempito di spine dal %s di %s%s%s^*"
-
-#: src/cgame/cg_event.cpp:506
-msgctxt "male"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
-"%s%s ^*è stato riempito di spine dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
 
-#: src/cgame/cg_event.cpp:506
-msgctxt "female"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
-"%s%s ^*è stata riempita di spine dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
-
-#: src/cgame/cg_event.cpp:506
-msgctxt "neuter"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
-"%s%s ^*è stato riempito di spine dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
-
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:502
 msgctxt "male"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*è stato riempito di spine"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:502
 msgctxt "female"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*è stata riempita di spine"
 
-#: src/cgame/cg_event.cpp:507
+#: src/cgame/cg_event.cpp:502
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
 msgstr "%s%s ^*è stato riempito di spine"
 
+#: src/cgame/cg_event.cpp:506
+msgctxt "male"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:506
+msgctxt "female"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:506
+msgctxt "neuter"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:507
+msgctxt "male"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:507
+msgctxt "female"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:507
+msgctxt "neuter"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:511
+msgctxt "male"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:511
+msgctxt "female"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:511
+msgctxt "neuter"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
+msgstr ""
+
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato sbranato dal %s di %s%s%s^*"
+msgid ""
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
+"assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "female"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stata sbranata dal %s di %s%s%s^*"
+msgid ""
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
+"assisted"
+msgstr ""
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
-msgstr "%s%s ^*è stato sbranato dal %s di %s%s%s^*"
-
-#: src/cgame/cg_event.cpp:513
-msgctxt "male"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato sbranato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
-
-#: src/cgame/cg_event.cpp:513
-msgctxt "female"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stata sbranata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
-
-#: src/cgame/cg_event.cpp:513
-msgctxt "neuter"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*è stato sbranato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
-
-#: src/cgame/cg_event.cpp:518
-msgctxt "male"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-msgstr "%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*"
-
-#: src/cgame/cg_event.cpp:518
-msgctxt "female"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-msgstr "%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*"
-
-#: src/cgame/cg_event.cpp:518
-msgctxt "neuter"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
-msgstr "%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*"
-
-#: src/cgame/cg_event.cpp:519
-msgctxt "male"
 msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
-"%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*; %s%s%s^* ha contribuito"
 
-#: src/cgame/cg_event.cpp:519
-msgctxt "female"
-msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
-"assisted"
-msgstr ""
-"%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*; %s%s%s^* ha contribuito"
-
-#: src/cgame/cg_event.cpp:519
-msgctxt "neuter"
-msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
-"assisted"
-msgstr ""
-"%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*; %s%s%s^* ha contribuito"
-
-#: src/cgame/cg_event.cpp:525
+#: src/cgame/cg_event.cpp:517
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*è stato schiacciato sotto il peso di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:525
+#: src/cgame/cg_event.cpp:517
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*è stata schiacciata sotto il peso di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:525
+#: src/cgame/cg_event.cpp:517
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr "%s%s ^*è stato schiacciato sotto il peso di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:518
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*è stato schiacciato sotto il peso di %s%s%s^*; %s%s%s^* ha contribuito"
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:518
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*è stata schiacciata sotto il peso di %s%s%s^*; %s%s%s^* ha contribuito"
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:518
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr ""
 "%s%s ^*è stato schiacciato sotto il peso di %s%s%s^*; %s%s%s^* ha contribuito"
 
-#: src/cgame/cg_event.cpp:530
+#: src/cgame/cg_event.cpp:522
 msgctxt "male"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*avrebbe dovuto usare il medkit contro il veleno di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:530
+#: src/cgame/cg_event.cpp:522
 msgctxt "female"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*avrebbe dovuto usare il medkit contro il veleno di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:530
+#: src/cgame/cg_event.cpp:522
 msgctxt "neuter"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr "%s%s ^*avrebbe dovuto usare il medkit contro il veleno di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:523
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -3479,7 +3605,7 @@ msgstr ""
 "%s%s ^*avrebbe dovuto usare il medkit contro il veleno di %s%s%s^*; %s%s%s^* "
 "ha contribuito"
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:523
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -3487,7 +3613,7 @@ msgstr ""
 "%s%s ^*avrebbe dovuto usare il medkit contro il veleno di %s%s%s^*; %s%s%s^* "
 "ha contribuito"
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:523
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
@@ -3495,122 +3621,122 @@ msgstr ""
 "%s%s ^*avrebbe dovuto usare il medkit contro il veleno di %s%s%s^*; %s%s%s^* "
 "ha contribuito"
 
-#: src/cgame/cg_event.cpp:535
+#: src/cgame/cg_event.cpp:527
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*ha provato a invadere lo spazio personale di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:535
+#: src/cgame/cg_event.cpp:527
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*ha provato a invadere lo spazio personale di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:535
+#: src/cgame/cg_event.cpp:527
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr "%s%s ^*ha provato a invadere lo spazio personale di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:528
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*è precipitato nel vuoto"
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:528
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*è precipitata nel vuoto"
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:528
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
 msgstr "%s%s ^*è precipitato nel vuoto"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:532
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:532
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:540
+#: src/cgame/cg_event.cpp:532
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*"
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:533
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*; %s%s%s^* ha contribuito"
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:533
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*; %s%s%s^* ha contribuito"
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:533
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr "%s%s ^*ha sentito l'autorità di %s%s%s^*; %s%s%s^* ha contribuito"
 
-#: src/cgame/cg_event.cpp:545
+#: src/cgame/cg_event.cpp:537
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*è stato ucciso da %s%s%s"
 
-#: src/cgame/cg_event.cpp:545
+#: src/cgame/cg_event.cpp:537
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*è stata uccisa da %s%s%s"
 
-#: src/cgame/cg_event.cpp:545
+#: src/cgame/cg_event.cpp:537
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr "%s%s ^*è stato ucciso da %s%s%s"
 
-#: src/cgame/cg_event.cpp:546
+#: src/cgame/cg_event.cpp:538
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*è stato ucciso da %s%s%s^* e %s%s%s"
 
-#: src/cgame/cg_event.cpp:546
+#: src/cgame/cg_event.cpp:538
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*è stata uccisa da %s%s%s^* e %s%s%s"
 
-#: src/cgame/cg_event.cpp:546
+#: src/cgame/cg_event.cpp:538
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr "%s%s ^*è stato ucciso da %s%s%s^* e %s%s%s"
 
-#: src/cgame/cg_event.cpp:547
+#: src/cgame/cg_event.cpp:539
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*si è suicidato"
 
-#: src/cgame/cg_event.cpp:547
+#: src/cgame/cg_event.cpp:539
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*si è suicidata"
 
-#: src/cgame/cg_event.cpp:547
+#: src/cgame/cg_event.cpp:539
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
 msgstr "%s%s ^*si è suicidato"
 
-#: src/cgame/cg_event.cpp:610
+#: src/cgame/cg_event.cpp:578
 msgctxt "male"
 msgid "%s%s^* died"
 msgstr "%s%s^* è morto"
 
-#: src/cgame/cg_event.cpp:610
+#: src/cgame/cg_event.cpp:578
 msgctxt "female"
 msgid "%s%s^* died"
 msgstr "%s%s^* è morta"
 
-#: src/cgame/cg_event.cpp:610
+#: src/cgame/cg_event.cpp:578
 msgctxt "neuter"
 msgid "%s%s^* died"
 msgstr "%s%s^* è morto"
@@ -3620,237 +3746,237 @@ msgstr "%s%s^* è morto"
 msgid "Listed %2d clients"
 msgstr "Client %2d elencati"
 
-#: src/cgame/cg_event.cpp:265 src/cgame/cg_event.cpp:602
+#: src/cgame/cg_event.cpp:265 src/cgame/cg_event.cpp:570
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
 msgstr "Hai ucciso il ^1COMPAGNO DI SQUADRA^* %s"
 
-#: src/cgame/cg_event.cpp:1244
+#: src/cgame/cg_event.cpp:1215
 msgid "The Overmind is under attack!"
 msgstr "L'Overmind è sotto attacco!"
 
-#: src/cgame/cg_event.cpp:1251
+#: src/cgame/cg_event.cpp:1222
 msgid "The reactor is under attack!"
 msgstr "Il reattore è sotto attacco!"
 
-#: src/cgame/cg_event.cpp:1266
+#: src/cgame/cg_event.cpp:1237
 msgid "The Overmind is dying!"
 msgstr "L'Overmind sta morendo!"
 
-#: src/cgame/cg_event.cpp:1272
+#: src/cgame/cg_event.cpp:1243
 msgid "The reactor is going down!"
 msgstr "Il reattore sta andando giù!"
 
-#: src/cgame/cg_event.cpp:1291 src/cgame/cg_event.cpp:1313
+#: src/cgame/cg_event.cpp:1260 src/cgame/cg_event.cpp:1276
 msgid "Our base is under attack!"
 msgstr "La nostra base è sotto attacco!"
 
-#: src/cgame/cg_event.cpp:1304
+#: src/cgame/cg_event.cpp:1266
 #, c-format
-msgid "%s Under attack – %s"
-msgstr "%s Sotto attacco – %s"
+msgid "%s under attack – %s"
+msgstr ""
 
-#: src/cgame/cg_event.cpp:1308
+#: src/cgame/cg_event.cpp:1270
 #, c-format
-msgid "%s Under attack"
-msgstr "%s Sotto attacco"
+msgid "%s under attack"
+msgstr ""
 
-#: src/cgame/cg_main.cpp:451
+#: src/cgame/cg_main.cpp:462
 msgid "Calling home…"
 msgstr "Chiamando casa…"
 
-#: src/cgame/cg_main.cpp:451
+#: src/cgame/cg_main.cpp:462
 msgid "Sending to the front…"
 msgstr "Inviando al fronte…"
 
-#: src/cgame/cg_main.cpp:456
+#: src/cgame/cg_main.cpp:467
 msgid "Tracking your movements…"
 msgstr "Si stanno tracciando i tuoi movimenti…"
 
-#: src/cgame/cg_main.cpp:456
+#: src/cgame/cg_main.cpp:467
 msgid "Letting out the magic smoke…"
 msgstr "Rilasciando fuori il fumo magico…"
 
-#: src/cgame/cg_main.cpp:460
+#: src/cgame/cg_main.cpp:471
 msgid "Collecting bees for the hives…"
 msgstr "Si stanno accumulando le api per gli alveari…"
 
-#: src/cgame/cg_main.cpp:460
+#: src/cgame/cg_main.cpp:471
 msgid "Initialising fireworks…"
 msgstr "Inizializzando il fuoco…"
 
-#: src/cgame/cg_main.cpp:460
+#: src/cgame/cg_main.cpp:471
 msgid "Causing electrical faults…"
 msgstr "Si stanno causando guasti elettrici…"
 
-#: src/cgame/cg_main.cpp:464
+#: src/cgame/cg_main.cpp:475
 msgid "Reading the manual…"
 msgstr "Leggendo il manuale…"
 
-#: src/cgame/cg_main.cpp:464
+#: src/cgame/cg_main.cpp:475
 msgid "Looking at blueprints…"
 msgstr "Guardando la planimetria…"
 
-#: src/cgame/cg_main.cpp:468
+#: src/cgame/cg_main.cpp:479
 msgid "Generating annoying noises…"
 msgstr "Generando rumori fastidiosi…"
 
-#: src/cgame/cg_main.cpp:468
+#: src/cgame/cg_main.cpp:479
 msgid "Recording granger purring…"
 msgstr "Registrando le fusa del granger…"
 
-#: src/cgame/cg_main.cpp:472
+#: src/cgame/cg_main.cpp:483
 msgid "Hello World!"
 msgstr "Ciao Mondo!"
 
-#: src/cgame/cg_main.cpp:472
+#: src/cgame/cg_main.cpp:483
 msgid "Making a scene…"
 msgstr "Creando una scena…"
 
-#: src/cgame/cg_main.cpp:476
+#: src/cgame/cg_main.cpp:487
 msgid "Taking pictures of the world…"
 msgstr "Scattando una foto del mondo…"
 
-#: src/cgame/cg_main.cpp:476
+#: src/cgame/cg_main.cpp:487
 msgid "Drawing smiley faces…"
 msgstr "Disegnando facce sorridenti…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:491
 msgid "Sharpening the aliens' claws…"
 msgstr "Si stanno affilando gli artigli degli alieni…"
 
-#: src/cgame/cg_main.cpp:480
+#: src/cgame/cg_main.cpp:491
 msgid "Overloading lucifer cannons…"
 msgstr "Sovraccaricando il lucifer cannon…"
 
-#: src/cgame/cg_main.cpp:484
+#: src/cgame/cg_main.cpp:495
 msgid "Unwrapping jetpacks…"
 msgstr "Scartando il jetpack…"
 
-#: src/cgame/cg_main.cpp:484
+#: src/cgame/cg_main.cpp:495
 msgid "Spinning silk for reticles…"
 msgstr "Filando la seta per i reticoli…"
 
-#: src/cgame/cg_main.cpp:488
+#: src/cgame/cg_main.cpp:499
 msgid "Adding turret spam…"
 msgstr "Aggiungendo spam di torrette…"
 
-#: src/cgame/cg_main.cpp:488
+#: src/cgame/cg_main.cpp:499
 msgid "Awakening the overmind…"
 msgstr "Svegliando l'overmind…"
 
-#: src/cgame/cg_main.cpp:492
+#: src/cgame/cg_main.cpp:503
 msgid "Teleporting soldiers…"
 msgstr "Teletrasportando i soldati…"
 
-#: src/cgame/cg_main.cpp:492
+#: src/cgame/cg_main.cpp:503
 msgid "Replicating alien DNA…"
 msgstr "Replicando il DNA alieno…"
 
-#: src/cgame/cg_main.cpp:496
+#: src/cgame/cg_main.cpp:507
 msgid "Customizing helmets…"
 msgstr "Personalizzando gli elmetti…"
 
-#: src/cgame/cg_main.cpp:500
+#: src/cgame/cg_main.cpp:511
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr "Compilando gli shader GLSL (attendi per favore)…"
 
-#: src/cgame/cg_main.cpp:504
+#: src/cgame/cg_main.cpp:515
 msgid "Surveying the map…"
 msgstr "Ispezionando la mappa…"
 
-#: src/cgame/cg_main.cpp:508
+#: src/cgame/cg_main.cpp:519
 msgid "Done!"
 msgstr "Fatto!"
 
-#: src/cgame/cg_main.cpp:1089
+#: src/cgame/cg_main.cpp:1109
 msgid "Generating bot navigation meshes"
 msgstr "Generando le navmesh dei bot"
 
-#: src/cgame/cg_main.cpp:1147
+#: src/cgame/cg_main.cpp:1167
 #, c-format
 msgid "by %s"
 msgstr "da %s"
 
-#: src/cgame/cg_players.cpp:1445
+#: src/cgame/cg_players.cpp:1443
 #, c-format
 msgid "%s^* renamed to %s"
 msgstr "%s^* rinominato come %s"
 
-#: src/cgame/cg_players.cpp:1452
+#: src/cgame/cg_players.cpp:1450
 #, c-format
 msgid "%s^* left the %s"
 msgstr "%s^* ha lasciato %s"
 
-#: src/cgame/cg_players.cpp:1457
+#: src/cgame/cg_players.cpp:1455
 #, c-format
 msgid "%s^* joined the %s"
 msgstr "%s^* si è unito agli %s"
 
-#: src/cgame/cg_players.cpp:1462
+#: src/cgame/cg_players.cpp:1460
 #, c-format
 msgid "%s^* left the %s and joined the %s"
 msgstr "%s^* ha lasciato gli %s ed è entrato nei %s"
 
-#: src/cgame/cg_rocket_draw.cpp:2490
+#: src/cgame/cg_rocket_draw.cpp:2532
 msgid "You are at the front of the spawn queue"
 msgstr "Sei in testa alla coda di uscita"
 
-#: src/cgame/cg_rocket_draw.cpp:2494
+#: src/cgame/cg_rocket_draw.cpp:2536
 #, c-format
 msgid "You are at position %d in the spawn queue"
 msgstr "Sei alla posizione %d nella coda di uscita"
 
-#: src/cgame/cg_rocket_draw.cpp:2534
+#: src/cgame/cg_rocket_draw.cpp:2576
 msgid "There are no spawns remaining"
 msgstr "Non ci sono più punti di rigenerazione"
 
-#: src/cgame/cg_rocket_draw.cpp:2538
+#: src/cgame/cg_rocket_draw.cpp:2580
 #, c-format
 msgid "There is %d spawn remaining"
 msgid_plural "There are %d spawns remaining"
 msgstr[0] "C'è %d spawn rimasto"
 msgstr[1] "Ci sono %d spawn rimasti"
 
-#: src/cgame/cg_rocket_draw.cpp:3087
+#: src/cgame/cg_rocket_draw.cpp:3129
 #, c-format
 msgid "Awaiting connection…%i"
 msgstr "Attesa connessione…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3091
+#: src/cgame/cg_rocket_draw.cpp:3133
 #, c-format
 msgid "Awaiting challenge…%i"
 msgstr "Attesa sfida…%i"
 
-#: src/cgame/cg_rocket_draw.cpp:3095
+#: src/cgame/cg_rocket_draw.cpp:3137
 msgid "Awaiting gamestate…"
 msgstr "Attesa stato del gioco…"
 
-#: src/cgame/cg_rocket_draw.cpp:3177
+#: src/cgame/cg_rocket_draw.cpp:3219
 msgid "Say:"
 msgstr "Parla:"
 
-#: src/cgame/cg_rocket_draw.cpp:3178
+#: src/cgame/cg_rocket_draw.cpp:3220
 msgid "Team Say:"
 msgstr "Parla in Squadra:"
 
-#: src/cgame/cg_rocket_draw.cpp:3179
+#: src/cgame/cg_rocket_draw.cpp:3221
 msgid "Admin Say:"
 msgstr "Parla tra gli Admin:"
 
-#: src/cgame/cg_rocket_draw.cpp:3180
+#: src/cgame/cg_rocket_draw.cpp:3222
 msgid "Command:"
 msgstr "Comando:"
 
-#: src/cgame/cg_rocket_draw.cpp:3577
+#: src/cgame/cg_rocket_draw.cpp:3622
 msgid "FIGHT!"
 msgstr "COMBATTI!"
 
-#: src/cgame/cg_rocket_draw.cpp:3671
+#: src/cgame/cg_rocket_draw.cpp:3716
 msgid "estimating"
 msgstr "stima"
 
-#: src/cgame/cg_servercmds.cpp:453
+#: src/cgame/cg_servercmds.cpp:450
 msgid ""
 "The alien team has too many players. Please wait until slots become "
 "available or join the human team."
@@ -3858,11 +3984,11 @@ msgstr ""
 "La squadra aliena ha troppi giocatori. Prego attendere fino a quando un "
 "posto diventa disponibile oppure entra nel team umano."
 
-#: src/cgame/cg_servercmds.cpp:455
+#: src/cgame/cg_servercmds.cpp:452
 msgid "The alien team has too many players"
 msgstr "La squadra aliena ha troppi giocatori"
 
-#: src/cgame/cg_servercmds.cpp:459
+#: src/cgame/cg_servercmds.cpp:456
 msgid ""
 "The human team has too many players. Please wait until slots become "
 "available or join the alien team."
@@ -3870,31 +3996,31 @@ msgstr ""
 "La squadra umana ha troppi giocatori. Prego attendere fino a quando un posto "
 "diventa disponibile oppure entra nel team alieno."
 
-#: src/cgame/cg_servercmds.cpp:461
+#: src/cgame/cg_servercmds.cpp:458
 msgid "The human team has too many players"
 msgstr "La squadra umana ha troppi giocatori"
 
-#: src/cgame/cg_servercmds.cpp:465
+#: src/cgame/cg_servercmds.cpp:462
 msgid "The alien team is locked. You cannot join the aliens at this time."
 msgstr ""
 "La squadra aliena è bloccata. In questo momento non puoi arruolarti con gli "
 "alieni."
 
-#: src/cgame/cg_servercmds.cpp:467
+#: src/cgame/cg_servercmds.cpp:464
 msgid "The alien team is locked"
 msgstr "La squadra aliena è bloccata"
 
-#: src/cgame/cg_servercmds.cpp:471
+#: src/cgame/cg_servercmds.cpp:468
 msgid "The human team is locked. You cannot join the humans at this time."
 msgstr ""
 "La squadra umana è bloccata. In questo momento non puoi arruolarti con gli "
 "umani."
 
-#: src/cgame/cg_servercmds.cpp:473
+#: src/cgame/cg_servercmds.cpp:470
 msgid "The human team is locked"
 msgstr "La squadra umana è bloccata"
 
-#: src/cgame/cg_servercmds.cpp:477
+#: src/cgame/cg_servercmds.cpp:474
 msgid ""
 "The maximum number of playing clients has been reached. Please wait until "
 "slots become available."
@@ -3902,25 +4028,25 @@ msgstr ""
 "Il numero massimo di giocatori è stato raggiunto. Per favore aspetta fino a "
 "che non si libera un posto."
 
-#: src/cgame/cg_servercmds.cpp:479
+#: src/cgame/cg_servercmds.cpp:476
 msgid "No free player slots"
 msgstr "Nessun posto libero per giocatore"
 
-#: src/cgame/cg_servercmds.cpp:483
+#: src/cgame/cg_servercmds.cpp:480
 msgid "You must wait until the warmup time is finished before joining a team."
 msgstr ""
 "Devi aspettare che il tempo di riscaldamento finisca prima di unirti a una "
 "squadra."
 
-#: src/cgame/cg_servercmds.cpp:485
+#: src/cgame/cg_servercmds.cpp:482
 msgid "You cannot join a team during warmup."
 msgstr "Non puoi entrare in un team durante il warmup."
 
-#: src/cgame/cg_servercmds.cpp:493
+#: src/cgame/cg_servercmds.cpp:490
 msgid "Cheats are not enabled on this server"
 msgstr "I cheats non sono abilitati su questo server"
 
-#: src/cgame/cg_servercmds.cpp:497
+#: src/cgame/cg_servercmds.cpp:494
 msgid ""
 "Cheats are not enabled on this server, so you may not use this command while "
 "on a team"
@@ -3928,27 +4054,27 @@ msgstr ""
 "I cheats non sono abilitati su questo server, così non puoi utilizzare "
 "questo comando mentre sei in un team"
 
-#: src/cgame/cg_servercmds.cpp:504
+#: src/cgame/cg_servercmds.cpp:501
 msgid "Join a team first"
 msgstr "Entra prima in un team"
 
-#: src/cgame/cg_servercmds.cpp:510
+#: src/cgame/cg_servercmds.cpp:507
 msgid "You can only use this command when spectating"
 msgstr "Puoi usare questo comando solo quando sei spettatore"
 
-#: src/cgame/cg_servercmds.cpp:515
+#: src/cgame/cg_servercmds.cpp:512
 msgid "Must be alien to use this command"
 msgstr "Devi essere un alieno per usare questo comando"
 
-#: src/cgame/cg_servercmds.cpp:520
+#: src/cgame/cg_servercmds.cpp:517
 msgid "Must be human to use this command"
 msgstr "Devi essere un umano per usare questo comando"
 
-#: src/cgame/cg_servercmds.cpp:525
+#: src/cgame/cg_servercmds.cpp:522
 msgid "Must be alive to use this command"
 msgstr "Devi essere vivo per usare questo comando"
 
-#: src/cgame/cg_servercmds.cpp:531
+#: src/cgame/cg_servercmds.cpp:528
 msgid ""
 "There is no room to build here. Move until the structure turns translucent "
 "green, indicating a valid build location."
@@ -3956,11 +4082,11 @@ msgstr ""
 "Non c'è spazio qui per costruire. Spostati finché la struttura non diventa "
 "verde traslucido, quello indica un luogo valido per costruire."
 
-#: src/cgame/cg_servercmds.cpp:533
+#: src/cgame/cg_servercmds.cpp:530
 msgid "There is no room to build here"
 msgstr "Non c'è spazio per costruire qui"
 
-#: src/cgame/cg_servercmds.cpp:537
+#: src/cgame/cg_servercmds.cpp:534
 msgid ""
 "Cannot build on this surface. The surface is too steep or unsuitable for "
 "building. Please choose another site for this structure."
@@ -3969,15 +4095,15 @@ msgstr ""
 "inadeguato per costruire. Per favore scegli un nuovo sito per questa "
 "struttura."
 
-#: src/cgame/cg_servercmds.cpp:540
+#: src/cgame/cg_servercmds.cpp:537
 msgid "Cannot build on this surface"
 msgstr "Non si può costruire su questa superficie"
 
-#: src/cgame/cg_servercmds.cpp:545
+#: src/cgame/cg_servercmds.cpp:542
 msgid "You cannot build that structure"
 msgstr "Tu non puoi costruire quella struttura"
 
-#: src/cgame/cg_servercmds.cpp:549
+#: src/cgame/cg_servercmds.cpp:546
 msgid ""
 "This action would remove your team's last spawn point, which often quickly "
 "results in a loss. Try building more spawns."
@@ -3986,11 +4112,11 @@ msgstr ""
 "spesso porta come risultato ad una veloce sconfitta. Prova a costruire "
 "ulteriori punti di rigenerazione."
 
-#: src/cgame/cg_servercmds.cpp:552
+#: src/cgame/cg_servercmds.cpp:549
 msgid "You may not deconstruct the last spawn"
 msgstr "Non puoi demolire il tuo ultimo punto di rigenerazione"
 
-#: src/cgame/cg_servercmds.cpp:556
+#: src/cgame/cg_servercmds.cpp:553
 msgid ""
 "The main structure is protected against instant removal. When it is marked, "
 "you can move it to another place by building it there."
@@ -3998,27 +4124,27 @@ msgstr ""
 "La struttura principale è protetta dalla rimozione istantanea. Quando è "
 "selezionata. la puoi muovere in un altro posto costruendola lì."
 
-#: src/cgame/cg_servercmds.cpp:559
+#: src/cgame/cg_servercmds.cpp:556
 msgid "You may not deconstruct this structure"
 msgstr "Non puoi demolire questa struttura"
 
-#: src/cgame/cg_servercmds.cpp:563
+#: src/cgame/cg_servercmds.cpp:560
 msgid "Building has been disabled on the server for your team."
 msgstr "Le funzioni di costruzione sono state disabilitate per la tua squadra."
 
-#: src/cgame/cg_servercmds.cpp:564
+#: src/cgame/cg_servercmds.cpp:561
 msgid "Building has been disabled for your team"
 msgstr "La costruzione di strutture è disattivata per la tua squadra"
 
-#: src/cgame/cg_servercmds.cpp:568
+#: src/cgame/cg_servercmds.cpp:565
 msgid "You are no longer permitted to build."
 msgstr "Non ti è piu permesso di costruire."
 
-#: src/cgame/cg_servercmds.cpp:569
+#: src/cgame/cg_servercmds.cpp:566
 msgid "You are no longer permitted to build"
 msgstr "Non ti è piu permesso di costruire"
 
-#: src/cgame/cg_servercmds.cpp:573
+#: src/cgame/cg_servercmds.cpp:570
 msgid ""
 "Your team has decided to admit defeat and concede the game: There's no point "
 "in building anything anymore."
@@ -4026,11 +4152,11 @@ msgstr ""
 "La tua squadra ha deciso di arrendersi: Non c'è alcun motivo per continuare "
 "a costruire."
 
-#: src/cgame/cg_servercmds.cpp:575
+#: src/cgame/cg_servercmds.cpp:572
 msgid "Cannot build after admitting defeat"
 msgstr "Non è possibile costruire dopo che la squadra si è arresa"
 
-#: src/cgame/cg_servercmds.cpp:579
+#: src/cgame/cg_servercmds.cpp:576
 msgid ""
 "There are no resources remaining. Free up resources by marking existing "
 "buildables for deconstruction."
@@ -4038,19 +4164,19 @@ msgstr ""
 "Non ci sono più risorse disponibili. Libera risorse marcando per la "
 "demolizione le strutture esistenti."
 
-#: src/cgame/cg_servercmds.cpp:581
+#: src/cgame/cg_servercmds.cpp:578
 msgid "There are no resources remaining"
 msgstr "Non ci sono più risorse disponibili"
 
-#: src/cgame/cg_servercmds.cpp:585
+#: src/cgame/cg_servercmds.cpp:582
 msgid "This buildable is not powered."
 msgstr "Le costruzioni non sono alimentate."
 
-#: src/cgame/cg_servercmds.cpp:586
+#: src/cgame/cg_servercmds.cpp:583
 msgid "This buildable is not powered"
 msgstr "Questa costruzione è priva di energia"
 
-#: src/cgame/cg_servercmds.cpp:590
+#: src/cgame/cg_servercmds.cpp:587
 msgid ""
 "There is no reactor. A reactor must be built before any other structure can "
 "be placed."
@@ -4058,26 +4184,26 @@ msgstr ""
 "Non c'è nessun reattore. Deve essere costruito un reattore prima di ogni "
 "altra struttura."
 
-#: src/cgame/cg_servercmds.cpp:592
+#: src/cgame/cg_servercmds.cpp:589
 msgid "There is no reactor"
 msgstr "Non c'è il reattore"
 
-#: src/cgame/cg_servercmds.cpp:596
+#: src/cgame/cg_servercmds.cpp:593
 msgid ""
 "There can only be one Reactor. Mark the existing one if you wish to move it."
 msgstr ""
 "Ci può essere un solo Reattore. Seleziona quello già esistente se desideri "
 "spostarlo."
 
-#: src/cgame/cg_servercmds.cpp:598
+#: src/cgame/cg_servercmds.cpp:595
 msgid "There can only be one Reactor"
 msgstr "Ci può essere solo un Reattore"
 
-#: src/cgame/cg_servercmds.cpp:603
+#: src/cgame/cg_servercmds.cpp:600
 msgid "Your team cannot have any more drills"
 msgstr "La tua squadra non puo avere altri drill"
 
-#: src/cgame/cg_servercmds.cpp:607
+#: src/cgame/cg_servercmds.cpp:604
 msgid ""
 "You have no room to carry this. Please sell any conflicting upgrades before "
 "purchasing this item."
@@ -4085,22 +4211,22 @@ msgstr ""
 "Non hai spazio per caricare questo. Per favore vendi qualsiasi "
 "equipaggiamento in conflitto prima di prendere questo oggetto."
 
-#: src/cgame/cg_servercmds.cpp:609
+#: src/cgame/cg_servercmds.cpp:606
 msgid "You have no room to carry this"
 msgstr "Non hai spazio per prendere questo"
 
-#: src/cgame/cg_servercmds.cpp:613
+#: src/cgame/cg_servercmds.cpp:610
 msgid ""
 "Insufficient funds. You do not have enough credits to perform this action."
 msgstr ""
 "Fondi insufficienti. Non hai abbastanza crediti per intraprendere questa "
 "azione."
 
-#: src/cgame/cg_servercmds.cpp:615
+#: src/cgame/cg_servercmds.cpp:612
 msgid "Insufficient funds"
 msgstr "Fondi insufficienti"
 
-#: src/cgame/cg_servercmds.cpp:619
+#: src/cgame/cg_servercmds.cpp:616
 msgid ""
 "You already hold this item. It is not possible to carry multiple items of "
 "the same type."
@@ -4108,11 +4234,11 @@ msgstr ""
 "Hai già questo oggetto. Non è possibile caricare più oggetti dello stesso "
 "tipo."
 
-#: src/cgame/cg_servercmds.cpp:621
+#: src/cgame/cg_servercmds.cpp:618
 msgid "You already hold this item"
 msgstr "Hai già questo oggetto"
 
-#: src/cgame/cg_servercmds.cpp:625
+#: src/cgame/cg_servercmds.cpp:622
 msgid ""
 "You must be near a powered Armoury in order to purchase weapons, upgrades or "
 "ammunition."
@@ -4120,11 +4246,11 @@ msgstr ""
 "Devi essere vicino ad un'Armeria collegata all'energia per poter acquistare "
 "armi, miglioramenti o munizioni."
 
-#: src/cgame/cg_servercmds.cpp:627
+#: src/cgame/cg_servercmds.cpp:624
 msgid "You must be near a powered Armoury"
 msgstr "Devi essere vicino ad un'Armeria collegata all'energia"
 
-#: src/cgame/cg_servercmds.cpp:631
+#: src/cgame/cg_servercmds.cpp:628
 msgid ""
 "You must be near a Reactor, a Drill or a powered Armoury in order to "
 "purchase energy ammunition."
@@ -4132,19 +4258,19 @@ msgstr ""
 "Devi essere vicino a un reattore, un drill o a un'armeria alimentata per "
 "acquistare energia o munizioni."
 
-#: src/cgame/cg_servercmds.cpp:633
+#: src/cgame/cg_servercmds.cpp:630
 msgid "You must be near a Reactor, a Drill or a powered Armoury"
 msgstr "Devi essere vicino a un Reattore, un Drill o a un'armeria alimentata"
 
-#: src/cgame/cg_servercmds.cpp:637
+#: src/cgame/cg_servercmds.cpp:634
 msgid "There is not enough room here to change armour."
 msgstr "Non c'è abbastanza spazio per cambiarsi l'armatura."
 
-#: src/cgame/cg_servercmds.cpp:638
+#: src/cgame/cg_servercmds.cpp:635
 msgid "Not enough room here to change armour."
 msgstr "Non hai abbastanza spazio per cambiarti l'armatura."
 
-#: src/cgame/cg_servercmds.cpp:642
+#: src/cgame/cg_servercmds.cpp:639
 msgid ""
 "You are not allowed to buy or sell weapons until your build timer has "
 "expired."
@@ -4152,25 +4278,25 @@ msgstr ""
 "Non hai il permesso di acquistare o vendere armi fino a che il tuo tempo da "
 "costruttore è cessato."
 
-#: src/cgame/cg_servercmds.cpp:644
+#: src/cgame/cg_servercmds.cpp:641
 msgid "You can not buy or sell weapons until your build timer expires"
 msgstr ""
 "Non puoi acquistare o vendere armi fino a che il tuo tempo da costruttore "
 "finisce"
 
-#: src/cgame/cg_servercmds.cpp:649
+#: src/cgame/cg_servercmds.cpp:646
 msgid "You must be dead to use the class command"
 msgstr "Devi essere morto per usare i class command"
 
-#: src/cgame/cg_servercmds.cpp:653
+#: src/cgame/cg_servercmds.cpp:650
 msgid "Unknown starting item"
 msgstr "Oggetto iniziale sconosciuto"
 
-#: src/cgame/cg_servercmds.cpp:657
+#: src/cgame/cg_servercmds.cpp:654
 msgid "Starting item not allowed"
 msgstr "Elemento di partenza non ammesso"
 
-#: src/cgame/cg_servercmds.cpp:663
+#: src/cgame/cg_servercmds.cpp:660
 msgid ""
 "There is no Overmind. An Overmind must be built before any other structure "
 "can be placed."
@@ -4178,26 +4304,26 @@ msgstr ""
 "Non c'è nessun Overmind. Deve essere costruito un Overmind prima di "
 "qualsiasi altra struttura."
 
-#: src/cgame/cg_servercmds.cpp:665 src/cgame/cg_servercmds.cpp:705
+#: src/cgame/cg_servercmds.cpp:662 src/cgame/cg_servercmds.cpp:702
 msgid "There is no Overmind"
 msgstr "Non c'è nessun Overmind"
 
-#: src/cgame/cg_servercmds.cpp:669
+#: src/cgame/cg_servercmds.cpp:666
 msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr ""
 "Ci può essere solo Overmind. Demolisci l'esistente se desideri spostarlo."
 
-#: src/cgame/cg_servercmds.cpp:671
+#: src/cgame/cg_servercmds.cpp:668
 msgid "There can only be one Overmind"
 msgstr "Ci può essere un solo Overmind"
 
-#: src/cgame/cg_servercmds.cpp:676
+#: src/cgame/cg_servercmds.cpp:673
 msgid "Your team cannot have any more leeches"
 msgstr "La tua squadra non può avere altri leech"
 
-#: src/cgame/cg_servercmds.cpp:680
+#: src/cgame/cg_servercmds.cpp:677
 msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
@@ -4205,11 +4331,11 @@ msgstr ""
 "L'Overmind non può controllare altre strutture. Demolisci quelle esistenti "
 "per costruirne altre."
 
-#: src/cgame/cg_servercmds.cpp:682
+#: src/cgame/cg_servercmds.cpp:679
 msgid "The Overmind cannot control any more structures"
 msgstr "L'Overmind non può controllare altre strutture"
 
-#: src/cgame/cg_servercmds.cpp:686
+#: src/cgame/cg_servercmds.cpp:683
 msgid ""
 "There is no room to evolve here. Move away from walls or other nearby "
 "objects and try again."
@@ -4217,11 +4343,11 @@ msgstr ""
 "Non c'è spazio sufficiente per evolvere qui. Spostati lontano da muri o "
 "altri oggetti vicini e prova ancora."
 
-#: src/cgame/cg_servercmds.cpp:688
+#: src/cgame/cg_servercmds.cpp:685
 msgid "There is no room to evolve here"
 msgstr "Non c'è spazio per evolvere qui"
 
-#: src/cgame/cg_servercmds.cpp:692
+#: src/cgame/cg_servercmds.cpp:689
 msgid ""
 "This location is too close to the enemy to evolve. Move away from the "
 "enemy's presence and try again."
@@ -4229,77 +4355,81 @@ msgstr ""
 "Questo locazione è troppo vicino al nemico per poter evolvere. Spostala "
 "lontano dai presidi nemici e prova di nuovo."
 
-#: src/cgame/cg_servercmds.cpp:694
+#: src/cgame/cg_servercmds.cpp:691
 msgid "This location is too close to the enemy to evolve"
 msgstr "Questo locazione è troppo vicino al nemico per poter evolvere"
 
-#: src/cgame/cg_servercmds.cpp:698 src/cgame/cg_servercmds.cpp:699
+#: src/cgame/cg_servercmds.cpp:695 src/cgame/cg_servercmds.cpp:696
 msgid "The Overmind is too far away to devolve."
 msgstr "L'Overmind è troppo lontano perche tu possa retrocedere."
 
-#: src/cgame/cg_servercmds.cpp:703
+#: src/cgame/cg_servercmds.cpp:700
 msgid ""
 "There is no Overmind. An Overmind must be built to allow you to upgrade."
 msgstr ""
 "Non hai un Overmind. Devi costruire un Overmind per poter accedere ai "
 "miglioramenti."
 
-#: src/cgame/cg_servercmds.cpp:709
+#: src/cgame/cg_servercmds.cpp:706
 msgid "You cannot evolve until your build timer has expired."
 msgstr "Non puoi evolverti fino a che il tempo da costruttore non è cessato."
 
-#: src/cgame/cg_servercmds.cpp:710
+#: src/cgame/cg_servercmds.cpp:707
 msgid "You cannot evolve until your build timer expires"
 msgstr "Non puoi evolverti fino a che il tempo da costruttore finisce"
 
-#: src/cgame/cg_servercmds.cpp:714
+#: src/cgame/cg_servercmds.cpp:711
 msgid "Wait a second after attacking or evolving"
 msgstr "Aspetta un secondo dopo aver attaccato o evoluto"
 
-#: src/cgame/cg_servercmds.cpp:722
+#: src/cgame/cg_servercmds.cpp:719
 #, c-format
 msgid "You cannot evolve into a %s"
 msgstr "Non puoi evolverti in %s"
 
-#: src/cgame/cg_servercmds.cpp:727
+#: src/cgame/cg_servercmds.cpp:724
 msgid "You cannot evolve while wallwalking"
 msgstr "Non puoi evolverti mentre cammini sui muri"
 
-#: src/cgame/cg_servercmds.cpp:731
+#: src/cgame/cg_servercmds.cpp:728
 msgid "Unknown class"
 msgstr "Classe sconosciuta"
 
-#: src/cgame/cg_servercmds.cpp:735
+#: src/cgame/cg_servercmds.cpp:732
 #, c-format
 msgid "You cannot spawn as a %s"
 msgstr "Non puoi rigenerarti come un %s"
 
-#: src/cgame/cg_servercmds.cpp:740
+#: src/cgame/cg_servercmds.cpp:737
 #, c-format
 msgid "The %s is not allowed"
 msgstr "Il/la %s non è ammessa/o"
 
-#: src/cgame/cg_servercmds.cpp:745
+#: src/cgame/cg_servercmds.cpp:742
 #, c-format
 msgid "The %s has not been unlocked yet"
 msgstr "Il %s non è stato ancora sbloccato"
 
-#: src/cgame/cg_servercmds.cpp:750
+#: src/cgame/cg_servercmds.cpp:747
 #, c-format
 msgid "cgame: debug: no such menu %d"
 msgstr "cgame: debug: menu inesistente %d"
 
-#: src/cgame/cg_servercmds.cpp:909
+#: src/cgame/cg_servercmds.cpp:850
+msgid "^1*DEAD*^*"
+msgstr ""
+
+#: src/cgame/cg_servercmds.cpp:911
 #, c-format
 msgid "%sPrivate message from: ^7%s"
 msgstr "%sMessaggio privato da: ^7%s"
 
-#: src/cgame/cg_servercmds.cpp:917
+#: src/cgame/cg_servercmds.cpp:919
 #, c-format
 msgid ">> to reply, say: /m %d [your message] <<"
 msgstr ">> per rispondere, scrivi: /m %d [il tuo messaggio] <<"
 
-#: src/cgame/cg_servercmds.cpp:1405
+#: src/cgame/cg_servercmds.cpp:1407
 #, c-format
 msgid "Unknown client game command: %s"
 msgstr "Comando client del gioco sconosciuto: %s"
@@ -4632,44 +4762,44 @@ msgstr "Premi %s per il menu."
 msgid "Unbound"
 msgstr "Non vincolato"
 
-#: src/sgame/sg_active.cpp:737
+#: src/sgame/sg_active.cpp:736
 msgid "$1$^* moved from $2$ to spectators due to inactivity"
 msgstr "$1$^* rimosso da $2$ come spettatore per inattività"
 
-#: src/sgame/sg_active.cpp:755
+#: src/sgame/sg_active.cpp:754
 msgid "Ten seconds until inactivity spectate!"
 msgstr ""
 "Si verra spostati come spettatori allo scadere dei 10 secondi di inattività!"
 
-#: src/sgame/sg_active.cpp:755
+#: src/sgame/sg_active.cpp:754
 msgid "Ten seconds until inactivity drop!"
 msgstr "10 secondi se inattivi!"
 
-#: src/sgame/sg_bot.cpp:68
-msgid "Alien bot names:"
-msgstr "Nomi dei bot alieni:"
+#: src/sgame/sg_bot.cpp:70
+msgid "^3Alien bot names:"
+msgstr ""
 
-#: src/sgame/sg_bot.cpp:69
-msgid "Human bot names:"
-msgstr "Nomi dei bot umani:"
+#: src/sgame/sg_bot.cpp:71
+msgid "^3Human bot names:"
+msgstr ""
 
-#: src/sgame/sg_bot.cpp:367
+#: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
 msgstr "$1$^* si è disconnesso"
 
-#: src/sgame/sg_bot_nav.cpp:120
+#: src/sgame/sg_bot_nav.cpp:125
 msgid "Server: generating bot navigation mesh for $1$... $2$%"
 msgstr "Server: sto generando la navmesh per il bot per $1$... $2$%"
 
-#: src/sgame/sg_bot_nav.cpp:159
-msgid "Bot navmesh generation failed!"
-msgstr "Generazione navmesh per il bot fallita!"
+#: src/sgame/sg_bot_nav.cpp:164
+msgid "^1Bot navmesh generation failed!"
+msgstr ""
 
-#: src/sgame/sg_buildable.cpp:2041
+#: src/sgame/sg_buildable.cpp:1881
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
 msgstr "$1$ ^2costruito^* da $2$^*, ^3sostituendo^* $3$"
 
-#: src/sgame/sg_buildable.cpp:2042
+#: src/sgame/sg_buildable.cpp:1882
 msgid "$1$ ^2built^* by $2$$3$"
 msgstr "$1$ ^2costruito^* da $2$$3$"
 
@@ -4705,71 +4835,71 @@ msgstr "$1$^* si sta connettendo…"
 msgid "$1$^* entered the game"
 msgstr "$1$^* è entrato nel gioco"
 
-#: src/sgame/sg_combat.cpp:450
+#: src/sgame/sg_combat.cpp:451
 msgid "Your killer, $1$^*, had $2$ HP."
 msgstr "Il tuo assasino, $1$^*, aveva $2$ HP."
 
-#: src/sgame/sg_combat.cpp:1055
+#: src/sgame/sg_combat.cpp:1060
 msgid "$1$ ^3DECONSTRUCTED^* by $2$"
 msgstr "$1$ ^3SMANTELLATO^* by $2$"
 
-#: src/sgame/sg_combat.cpp:1056
+#: src/sgame/sg_combat.cpp:1061
 msgid "$1$ ^3DESTROYED^* by $2$"
 msgstr "$1$ ^3DISTRUTTO^* by $2$"
 
-#: src/sgame/sg_main.cpp:1943
+#: src/sgame/sg_main.cpp:1946
 msgid "Timelimit hit"
 msgstr "Limite tempo raggiunto"
 
-#: src/sgame/sg_main.cpp:1954
+#: src/sgame/sg_main.cpp:1957
 msgid "$1$ minutes remaining!"
 msgstr "$1$ minuti rimanenti!"
 
-#: src/sgame/sg_main.cpp:1962
+#: src/sgame/sg_main.cpp:1965
 msgid "1 minute remaining!"
 msgstr "1 minuto rimanente!"
 
-#: src/sgame/sg_main.cpp:1975
+#: src/sgame/sg_main.cpp:1978
 msgid "Humans win"
 msgstr "Vincono gli Umani"
 
-#: src/sgame/sg_main.cpp:1989
+#: src/sgame/sg_main.cpp:1992
 msgid "Aliens win"
 msgstr "Vincono gli Alieni"
 
-#: src/sgame/sg_main.cpp:2003
+#: src/sgame/sg_main.cpp:2006
 msgid "Empty teams skip map time exceeded."
 msgstr "Mappa saltata, tempo massimo scaduto con le squadre senza giocatori."
 
-#: src/sgame/sg_main.cpp:2167
+#: src/sgame/sg_main.cpp:2170
 msgid "The game has been paused. Please wait."
 msgstr "Il gioco è stato messo in pausa. Per favore attendi."
 
-#: src/sgame/sg_main.cpp:2171
+#: src/sgame/sg_main.cpp:2174
 msgid "Server: Game will auto-unpause in $1$ seconds"
 msgstr "Server: Il gioco riprenderà tra $1$ secondi"
 
-#: src/sgame/sg_main.cpp:2190
+#: src/sgame/sg_main.cpp:2193
 msgid "Server: The game has been unpaused automatically ($1$ minutes max)"
 msgstr "Server: il gioco è ripartito automaticamente ($1$ minutes max)"
 
-#: src/sgame/sg_main.cpp:2193
+#: src/sgame/sg_main.cpp:2196
 msgid "The game has been unpaused!"
 msgstr "Il gioco è ripartito!"
 
-#: src/sgame/sg_spawn_mover.cpp:1066
+#: src/sgame/sg_spawn_mover.cpp:1077
 msgid "^1This door is locked!"
 msgstr "^1Questa porta è chiusa!"
 
-#: src/sgame/sg_svcmds.cpp:464
+#: src/sgame/sg_svcmds.cpp:501
 msgid "Alien team has admitted defeat"
 msgstr "Gli Alieni hanno ammesso la sconfitta"
 
-#: src/sgame/sg_svcmds.cpp:469
+#: src/sgame/sg_svcmds.cpp:506
 msgid "Human team has admitted defeat"
 msgstr "Gli Umani hanno ammesso la sconfitta"
 
-#: src/sgame/sg_svcmds.cpp:502
+#: src/sgame/sg_svcmds.cpp:539
 msgid "Evacuation ordered"
 msgstr "Ordine di evacuazione"
 
@@ -4921,59 +5051,334 @@ msgstr "$1$: Devi fornire una ragione"
 msgid "$1$^* called a vote: $2$"
 msgstr "$1$^* ha richiesto un voto: $2$"
 
-#: src/sgame/sg_votes.cpp:738
+#: src/sgame/sg_votes.cpp:725
+msgid ""
+"$1$^7 called a vote:\n"
+"^7$2$"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:742
 msgid "$1$^* called a team vote: $2t$"
 msgstr "$1$^* ha richiesto un voto di squadra: $2t$"
 
-#: src/sgame/sg_votes.cpp:854
+#: src/sgame/sg_votes.cpp:747
+msgid ""
+"$1$^7 called a team vote:\n"
+"^7$2t$"
+msgstr ""
+
+#: src/sgame/sg_votes.cpp:860
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
 msgstr "Voto fallito ($1$ of $2$; quorum non raggiunto)"
 
-#: src/sgame/sg_votes.cpp:855
+#: src/sgame/sg_votes.cpp:861
 msgid "Team vote failed ($1$ of $2$; quorum not reached)"
 msgstr "Team vote fallito ($1$ of $2$; quorum non raggiunto)"
 
-#: src/sgame/sg_votes.cpp:861
+#: src/sgame/sg_votes.cpp:867
 msgid "Vote passed ($1$ — $2$)"
 msgstr "Voto passato ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:862
+#: src/sgame/sg_votes.cpp:868
 msgid "Team vote passed ($1$ — $2$)"
 msgstr "Team vote passato ($1$ — $2$)"
 
-#: src/sgame/sg_votes.cpp:868
+#: src/sgame/sg_votes.cpp:874
 #, c-format
 msgid "Vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Voto fallito ($1$ — $2$; $3$% necessario)"
 
-#: src/sgame/sg_votes.cpp:869
+#: src/sgame/sg_votes.cpp:875
 #, c-format
 msgid "Team vote failed ($1$ — $2$; $3$% needed)"
 msgstr "Team vote fallito ($1$ — $2$; $3$% necessario)"
 
-#: src/shared/bg_misc.cpp:2485
+#: src/shared/bg_misc.cpp:2484
 msgid "spectator"
 msgstr "spettatore"
 
-#: src/shared/bg_misc.cpp:2490
+#: src/shared/bg_misc.cpp:2489
 msgid "alien"
 msgstr "alieno"
 
-#: src/shared/bg_misc.cpp:2495
+#: src/shared/bg_misc.cpp:2494
 msgid "human"
 msgstr "umano"
 
-#: src/shared/bg_misc.cpp:2505
+#: src/shared/bg_misc.cpp:2504
 msgid "spectators"
 msgstr "spettatori"
 
-#: src/shared/bg_misc.cpp:2510
+#: src/shared/bg_misc.cpp:2509
 msgid "aliens"
 msgstr "alieni"
 
-#: src/shared/bg_misc.cpp:2515
+#: src/shared/bg_misc.cpp:2514
 msgid "humans"
 msgstr "umani"
+
+#~ msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
+#~ msgstr "Esempio: ^^3Fred^^1Baggins diventa ^3Fred^1Baggins"
+
+#~ msgid "Match menu"
+#~ msgstr "Menu partita"
+
+#~ msgid "Reset match"
+#~ msgstr "Resetta la partita"
+
+#~ msgid "Players"
+#~ msgstr "Giocatori"
+
+#~ msgid "Disclipline: kick/ban/mute/nobuild"
+#~ msgstr "Azione disciplinare: espelli/banna/muta/no costruzione"
+
+#~ msgid "Play"
+#~ msgstr "Gioca"
+
+#~ msgid "Recorded demos"
+#~ msgstr "Demo registrate"
+
+#~ msgid "Help"
+#~ msgstr "Aiuto"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato affettato dal %s di %s%s%s^*"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stata affettata dal %s di %s%s%s^*"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato affettato dal %s di %s%s%s^*"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato affettato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stata affettata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato affettato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato triturato dal %s di %s%s%s^*"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stata triturata dal %s di %s%s%s^*"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato triturato dal %s di %s%s%s^*"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato triturato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stata triturata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato triturato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato fulminato dal %s di %s%s%s^*"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stata fulminata dal %s di %s%s%s^*"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato fulminato dal %s di %s%s%s^*"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato fulminato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stata fulminata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato fulminato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato sventrato dal %s di %s%s%s^*"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stata sventrata dal %s di %s%s%s^*"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato sventrato dal %s di %s%s%s^*"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato sventrato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stata sventrata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato sventrato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato aggredito dal %s di %s%s%s^*"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stata aggredita dal %s di %s%s%s^*"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato aggredito dal %s di %s%s%s^*"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato aggredito dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stata aggredita dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato aggredito dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato riempito di spine dal %s di %s%s%s^*"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stata riempita di spine dal %s di %s%s%s^*"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato riempito di spine dal %s di %s%s%s^*"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato riempito di spine dal %s di %s%s%s^*; %s%s%s^* ha "
+#~ "contribuito"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stata riempita di spine dal %s di %s%s%s^*; %s%s%s^* ha "
+#~ "contribuito"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr ""
+#~ "%s%s ^*è stato riempito di spine dal %s di %s%s%s^*; %s%s%s^* ha "
+#~ "contribuito"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato sbranato dal %s di %s%s%s^*"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stata sbranata dal %s di %s%s%s^*"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*è stato sbranato dal %s di %s%s%s^*"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*è stato sbranato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*è stata sbranata dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+#~ msgstr "%s%s ^*è stato sbranato dal %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "male"
+#~ msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*"
+
+#~ msgctxt "female"
+#~ msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*"
+
+#~ msgctxt "neuter"
+#~ msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
+#~ msgstr "%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*"
+
+#~ msgctxt "male"
+#~ msgid ""
+#~ "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+#~ "assisted"
+#~ msgstr ""
+#~ "%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "female"
+#~ msgid ""
+#~ "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+#~ "assisted"
+#~ msgstr ""
+#~ "%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#~ msgctxt "neuter"
+#~ msgid ""
+#~ "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+#~ "assisted"
+#~ msgstr ""
+#~ "%s%s ^*avrebbe dovuto evitare il %s di %s%s%s^*; %s%s%s^* ha contribuito"
+
+#, c-format
+#~ msgid "%s Under attack – %s"
+#~ msgstr "%s Sotto attacco – %s"
+
+#, c-format
+#~ msgid "%s Under attack"
+#~ msgstr "%s Sotto attacco"
+
+#~ msgid "Alien bot names:"
+#~ msgstr "Nomi dei bot alieni:"
+
+#~ msgid "Human bot names:"
+#~ msgstr "Nomi dei bot umani:"
+
+#~ msgid "Bot navmesh generation failed!"
+#~ msgstr "Generazione navmesh per il bot fallita!"
 
 #~ msgid "Feel free to join us in the community and developer chats!"
 #~ msgstr ""
