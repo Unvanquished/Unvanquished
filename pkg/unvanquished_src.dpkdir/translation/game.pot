@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-04 17:30+0100\n"
+"POT-Creation-Date: 2024-03-07 03:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2143,1391 +2143,1391 @@ msgstr ""
 msgid "Close this menu and click anywhere to join a team and begin playing!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:281
 msgctxt "male"
 msgid "%s%s ^*fell to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:281
 msgctxt "female"
 msgid "%s%s ^*fell to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:282
+#: src/cgame/cg_event.cpp:281
 msgctxt "neuter"
 msgid "%s%s ^*fell to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:285
 msgctxt "male"
 msgid "%s%s ^*was crushed to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:285
 msgctxt "female"
 msgid "%s%s ^*was crushed to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:286
+#: src/cgame/cg_event.cpp:285
 msgctxt "neuter"
 msgid "%s%s ^*was crushed to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:289
 msgctxt "male"
 msgid "%s%s ^*drowned"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:289
 msgctxt "female"
 msgid "%s%s ^*drowned"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:290
+#: src/cgame/cg_event.cpp:289
 msgctxt "neuter"
 msgid "%s%s ^*drowned"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:293
 msgctxt "male"
 msgid "%s%s ^*melted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:293
 msgctxt "female"
 msgid "%s%s ^*melted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:294
+#: src/cgame/cg_event.cpp:293
 msgctxt "neuter"
 msgid "%s%s ^*melted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:297
 msgctxt "male"
 msgid "%s%s ^*took a dip in some lava"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:297
 msgctxt "female"
 msgid "%s%s ^*took a dip in some lava"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:298
+#: src/cgame/cg_event.cpp:297
 msgctxt "neuter"
 msgid "%s%s ^*took a dip in some lava"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:301
 msgctxt "male"
 msgid "%s%s ^*was in the wrong place"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:301
 msgctxt "female"
 msgid "%s%s ^*was in the wrong place"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:302
+#: src/cgame/cg_event.cpp:301
 msgctxt "neuter"
 msgid "%s%s ^*was in the wrong place"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:307
 msgctxt "male"
 msgid "%s%s ^*was caught in the explosion"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:307
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:308
+#: src/cgame/cg_event.cpp:307
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the explosion"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:311
 msgctxt "male"
 msgid "%s%s ^*was caught in the acid"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:311
 msgctxt "female"
 msgid "%s%s ^*was caught in the acid"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:312
+#: src/cgame/cg_event.cpp:311
 msgctxt "neuter"
 msgid "%s%s ^*was caught in the acid"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:317
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:317
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:318
+#: src/cgame/cg_event.cpp:317
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:318
 msgctxt "male"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:319
+#: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:322
 msgctxt "male"
 msgid "%s%s ^*caught a rocket"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:322
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:323
+#: src/cgame/cg_event.cpp:322
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:323
 msgctxt "male"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:323
 msgctxt "female"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:324
+#: src/cgame/cg_event.cpp:323
 msgctxt "neuter"
 msgid "%s%s ^*caught a rocket; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:327
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:327
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:328
+#: src/cgame/cg_event.cpp:327
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:328
 msgctxt "male"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:328
 msgctxt "female"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:329
+#: src/cgame/cg_event.cpp:328
 msgctxt "neuter"
 msgid "%s%s ^*was melted by an acid tube; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:332
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:332
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:333
+#: src/cgame/cg_event.cpp:332
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:333
 msgctxt "male"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:333
 msgctxt "female"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:334
+#: src/cgame/cg_event.cpp:333
 msgctxt "neuter"
 msgid "%s%s ^*was flechetted by a spiker; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:337
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:337
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:338
+#: src/cgame/cg_event.cpp:337
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:338
 msgctxt "male"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:338
 msgctxt "female"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:339
+#: src/cgame/cg_event.cpp:338
 msgctxt "neuter"
 msgid "%s%s ^*was whipped by the overmind; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:342
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:342
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:343
+#: src/cgame/cg_event.cpp:342
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:343
 msgctxt "male"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:343
 msgctxt "female"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:344
+#: src/cgame/cg_event.cpp:343
 msgctxt "neuter"
 msgid "%s%s ^*was fried by the reactor; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:347
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:347
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:348
+#: src/cgame/cg_event.cpp:347
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:348
 msgctxt "male"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:348
 msgctxt "female"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:349
+#: src/cgame/cg_event.cpp:348
 msgctxt "neuter"
 msgid "%s%s ^*couldn't avoid the granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:352
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:352
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:353
+#: src/cgame/cg_event.cpp:352
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:353
 msgctxt "male"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:353
 msgctxt "female"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:354
+#: src/cgame/cg_event.cpp:353
 msgctxt "neuter"
 msgid "%s%s ^*was consumed by the swarm; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:359
 msgctxt "male"
 msgid "%s%s ^*saw the light"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:359
 msgctxt "female"
 msgid "%s%s ^*saw the light"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:360
+#: src/cgame/cg_event.cpp:359
 msgctxt "neuter"
 msgid "%s%s ^*saw the light"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:360
 msgctxt "male"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:360
 msgctxt "female"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:361
+#: src/cgame/cg_event.cpp:360
 msgctxt "neuter"
 msgid "%s%s ^*saw the light; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:389
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:389
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:390
+#: src/cgame/cg_event.cpp:389
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:390
 msgctxt "male"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:390
 msgctxt "female"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:391
+#: src/cgame/cg_event.cpp:390
 msgctxt "neuter"
 msgid "%s%s ^*was sawn by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:394
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:394
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:395
+#: src/cgame/cg_event.cpp:394
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:395
 msgctxt "male"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:395
 msgctxt "female"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:396
+#: src/cgame/cg_event.cpp:395
 msgctxt "neuter"
 msgid "%s%s ^*was blasted by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:399
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:399
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:400
+#: src/cgame/cg_event.cpp:399
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:400
 msgctxt "male"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:400
 msgctxt "female"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:401
+#: src/cgame/cg_event.cpp:400
 msgctxt "neuter"
 msgid "%s%s ^*was machinegunned by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:404
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:404
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:405
+#: src/cgame/cg_event.cpp:404
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:405
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:405
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:406
+#: src/cgame/cg_event.cpp:405
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:409
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:409
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:410
+#: src/cgame/cg_event.cpp:409
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:410
 msgctxt "male"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:410
 msgctxt "female"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:411
+#: src/cgame/cg_event.cpp:410
 msgctxt "neuter"
 msgid "%s%s ^*was gunned down by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:414
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:414
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:415
+#: src/cgame/cg_event.cpp:414
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:415
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:415
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:416
+#: src/cgame/cg_event.cpp:415
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:419
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:419
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:420
+#: src/cgame/cg_event.cpp:419
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:420
 msgctxt "male"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:420
 msgctxt "female"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:421
+#: src/cgame/cg_event.cpp:420
 msgctxt "neuter"
 msgid "%s%s ^*was sniped by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:424
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:424
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:425
+#: src/cgame/cg_event.cpp:424
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:425
 msgctxt "male"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:425
 msgctxt "female"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:426
+#: src/cgame/cg_event.cpp:425
 msgctxt "neuter"
 msgid "%s%s ^*was lasered by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:430
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:430
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:431
+#: src/cgame/cg_event.cpp:430
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:431
 msgctxt "male"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:431
 msgctxt "female"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:432
+#: src/cgame/cg_event.cpp:431
 msgctxt "neuter"
 msgid "%s%s ^*was grilled by %s%s%s^*'s flame; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:432
 msgctxt "male"
 msgid "%s%s ^*was charred to a crisp"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:432
 msgctxt "female"
 msgid "%s%s ^*was charred to a crisp"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:433
+#: src/cgame/cg_event.cpp:432
 msgctxt "neuter"
 msgid "%s%s ^*was charred to a crisp"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:436
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:436
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:437
+#: src/cgame/cg_event.cpp:436
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:437
 msgctxt "male"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:437
 msgctxt "female"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:438
+#: src/cgame/cg_event.cpp:437
 msgctxt "neuter"
 msgid "%s%s ^*was burned by %s%s%s^*'s fire; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:439
+#: src/cgame/cg_event.cpp:438
 msgctxt "male"
 msgid "%s%s ^*was burned to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:439
+#: src/cgame/cg_event.cpp:438
 msgctxt "female"
 msgid "%s%s ^*was burned to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:439
+#: src/cgame/cg_event.cpp:438
 msgctxt "neuter"
 msgid "%s%s ^*was burned to death"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:442
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:442
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:443
+#: src/cgame/cg_event.cpp:442
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:444
+#: src/cgame/cg_event.cpp:443
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:444
+#: src/cgame/cg_event.cpp:443
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:444
+#: src/cgame/cg_event.cpp:443
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:448
+#: src/cgame/cg_event.cpp:447
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:448
+#: src/cgame/cg_event.cpp:447
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:448
+#: src/cgame/cg_event.cpp:447
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:449
+#: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:449
+#: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:449
+#: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:450
+#: src/cgame/cg_event.cpp:449
 msgctxt "male"
 msgid "%s%s ^*was irradiated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:450
+#: src/cgame/cg_event.cpp:449
 msgctxt "female"
 msgid "%s%s ^*was irradiated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:450
+#: src/cgame/cg_event.cpp:449
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:454
+#: src/cgame/cg_event.cpp:453
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:454
+#: src/cgame/cg_event.cpp:453
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:454
+#: src/cgame/cg_event.cpp:453
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:455
+#: src/cgame/cg_event.cpp:454
 msgctxt "male"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:455
+#: src/cgame/cg_event.cpp:454
 msgctxt "female"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:455
+#: src/cgame/cg_event.cpp:454
 msgctxt "neuter"
 msgid "%s%s ^*was blown up by %s%s%s^*'s grenade; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:456
+#: src/cgame/cg_event.cpp:455
 msgctxt "male"
 msgid "%s%s ^*was blown up"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:456
+#: src/cgame/cg_event.cpp:455
 msgctxt "female"
 msgid "%s%s ^*was blown up"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:456
+#: src/cgame/cg_event.cpp:455
 msgctxt "neuter"
 msgid "%s%s ^*was blown up"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:460
+#: src/cgame/cg_event.cpp:459
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:460
+#: src/cgame/cg_event.cpp:459
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:460
+#: src/cgame/cg_event.cpp:459
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:461
+#: src/cgame/cg_event.cpp:460
 msgctxt "male"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:461
+#: src/cgame/cg_event.cpp:460
 msgctxt "female"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:461
+#: src/cgame/cg_event.cpp:460
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated by %s%s%s^*'s firebomb; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:462
+#: src/cgame/cg_event.cpp:461
 msgctxt "male"
 msgid "%s%s ^*was incinerated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:462
+#: src/cgame/cg_event.cpp:461
 msgctxt "female"
 msgid "%s%s ^*was incinerated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:462
+#: src/cgame/cg_event.cpp:461
 msgctxt "neuter"
 msgid "%s%s ^*was incinerated"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:466
+#: src/cgame/cg_event.cpp:465
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:466
+#: src/cgame/cg_event.cpp:465
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:466
+#: src/cgame/cg_event.cpp:465
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:467
+#: src/cgame/cg_event.cpp:466
 msgctxt "male"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:467
+#: src/cgame/cg_event.cpp:466
 msgctxt "female"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:467
+#: src/cgame/cg_event.cpp:466
 msgctxt "neuter"
 msgid "%s%s ^*was gently nibbled by %s%s%s^*'s granger; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:470
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:470
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:471
+#: src/cgame/cg_event.cpp:470
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:471
 msgctxt "male"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:471
 msgctxt "female"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:472
+#: src/cgame/cg_event.cpp:471
 msgctxt "neuter"
 msgid "%s%s ^*was bitten by %s%s%s^*; %s%s%s^* assisted"
 msgstr ""
 
+#: src/cgame/cg_event.cpp:475
+msgctxt "male"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:475
+msgctxt "female"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:475
+msgctxt "neuter"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
+msgstr ""
+
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
+msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:480
 msgctxt "male"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:480
 msgctxt "female"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:477
+#: src/cgame/cg_event.cpp:480
 msgctxt "neuter"
-msgid "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:481
 msgctxt "male"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:481
 msgctxt "female"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:482
+#: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s"
+msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:483
+#: src/cgame/cg_event.cpp:485
 msgctxt "male"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:483
+#: src/cgame/cg_event.cpp:485
 msgctxt "female"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:483
+#: src/cgame/cg_event.cpp:485
 msgctxt "neuter"
-msgid "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:486
 msgctxt "male"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:486
 msgctxt "female"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:488
+#: src/cgame/cg_event.cpp:486
 msgctxt "neuter"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s"
+msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:489
+#: src/cgame/cg_event.cpp:490
 msgctxt "male"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:489
+#: src/cgame/cg_event.cpp:490
 msgctxt "female"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:489
+#: src/cgame/cg_event.cpp:490
 msgctxt "neuter"
-msgid "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:491
 msgctxt "male"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:491
 msgctxt "female"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:494
+#: src/cgame/cg_event.cpp:491
 msgctxt "neuter"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s"
+msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:495
 msgctxt "male"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:495
 msgctxt "female"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:495
 msgctxt "neuter"
-msgid "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:496
+msgctxt "male"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:496
+msgctxt "female"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
+msgstr ""
+
+#: src/cgame/cg_event.cpp:496
+msgctxt "neuter"
+msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "male"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "female"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "male"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "female"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
-msgid "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:506
-msgctxt "male"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:506
-msgctxt "female"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:506
-msgctxt "neuter"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:507
-msgctxt "male"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:507
-msgctxt "female"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:507
-msgctxt "neuter"
-msgid "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted"
-msgstr ""
-
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:502
 msgctxt "male"
 msgid "%s%s ^*was barbed"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:502
 msgctxt "female"
 msgid "%s%s ^*was barbed"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:508
+#: src/cgame/cg_event.cpp:502
 msgctxt "neuter"
 msgid "%s%s ^*was barbed"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:506
 msgctxt "male"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:506
 msgctxt "female"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:513
+#: src/cgame/cg_event.cpp:506
 msgctxt "neuter"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:514
+#: src/cgame/cg_event.cpp:507
 msgctxt "male"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:514
+#: src/cgame/cg_event.cpp:507
 msgctxt "female"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:514
+#: src/cgame/cg_event.cpp:507
 msgctxt "neuter"
-msgid "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted"
+msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:519
+#: src/cgame/cg_event.cpp:511
 msgctxt "male"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:519
+#: src/cgame/cg_event.cpp:511
 msgctxt "female"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:519
+#: src/cgame/cg_event.cpp:511
 msgctxt "neuter"
-msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s"
+msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:520
+#: src/cgame/cg_event.cpp:512
 msgctxt "male"
 msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:520
+#: src/cgame/cg_event.cpp:512
 msgctxt "female"
 msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:520
+#: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
 msgid ""
-"%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* "
+"%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:517
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:517
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:526
+#: src/cgame/cg_event.cpp:517
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:527
+#: src/cgame/cg_event.cpp:518
 msgctxt "male"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:527
+#: src/cgame/cg_event.cpp:518
 msgctxt "female"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:527
+#: src/cgame/cg_event.cpp:518
 msgctxt "neuter"
 msgid "%s%s ^*was crushed under %s%s%s^*'s weight; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:522
 msgctxt "male"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:522
 msgctxt "female"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:531
+#: src/cgame/cg_event.cpp:522
 msgctxt "neuter"
 msgid "%s%s ^*should have used a medkit against %s%s%s^*'s poison"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:532
+#: src/cgame/cg_event.cpp:523
 msgctxt "male"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:532
+#: src/cgame/cg_event.cpp:523
 msgctxt "female"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:532
+#: src/cgame/cg_event.cpp:523
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have used a medkit against %s%s%s^*'s poison; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:527
 msgctxt "male"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:527
 msgctxt "female"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:536
+#: src/cgame/cg_event.cpp:527
 msgctxt "neuter"
 msgid "%s%s ^*tried to invade %s%s%s^*'s personal space"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:537
+#: src/cgame/cg_event.cpp:528
 msgctxt "male"
 msgid "%s%s ^*ended up in the void"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:537
+#: src/cgame/cg_event.cpp:528
 msgctxt "female"
 msgid "%s%s ^*ended up in the void"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:537
+#: src/cgame/cg_event.cpp:528
 msgctxt "neuter"
 msgid "%s%s ^*ended up in the void"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:532
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:532
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:541
+#: src/cgame/cg_event.cpp:532
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:542
+#: src/cgame/cg_event.cpp:533
 msgctxt "male"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:542
+#: src/cgame/cg_event.cpp:533
 msgctxt "female"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:542
+#: src/cgame/cg_event.cpp:533
 msgctxt "neuter"
 msgid "%s%s ^*felt %s%s%s^*'s authority; %s%s%s^* assisted"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:546
+#: src/cgame/cg_event.cpp:537
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:546
+#: src/cgame/cg_event.cpp:537
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:546
+#: src/cgame/cg_event.cpp:537
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:547
+#: src/cgame/cg_event.cpp:538
 msgctxt "male"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:547
+#: src/cgame/cg_event.cpp:538
 msgctxt "female"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:547
+#: src/cgame/cg_event.cpp:538
 msgctxt "neuter"
 msgid "%s%s ^*was killed by %s%s%s^* and %s%s%s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:548
+#: src/cgame/cg_event.cpp:539
 msgctxt "male"
 msgid "%s%s ^*committed suicide"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:548
+#: src/cgame/cg_event.cpp:539
 msgctxt "female"
 msgid "%s%s ^*committed suicide"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:548
+#: src/cgame/cg_event.cpp:539
 msgctxt "neuter"
 msgid "%s%s ^*committed suicide"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:611
+#: src/cgame/cg_event.cpp:578
 msgctxt "male"
 msgid "%s%s^* died"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:611
+#: src/cgame/cg_event.cpp:578
 msgctxt "female"
 msgid "%s%s^* died"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:611
+#: src/cgame/cg_event.cpp:578
 msgctxt "neuter"
 msgid "%s%s^* died"
 msgstr ""
@@ -3537,37 +3537,37 @@ msgstr ""
 msgid "Listed %2d clients"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:266 src/cgame/cg_event.cpp:603
+#: src/cgame/cg_event.cpp:265 src/cgame/cg_event.cpp:570
 #, c-format
 msgid "You killed ^1TEAMMATE^* %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1248
+#: src/cgame/cg_event.cpp:1215
 msgid "The Overmind is under attack!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1255
+#: src/cgame/cg_event.cpp:1222
 msgid "The reactor is under attack!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1270
+#: src/cgame/cg_event.cpp:1237
 msgid "The Overmind is dying!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1276
+#: src/cgame/cg_event.cpp:1243
 msgid "The reactor is going down!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1293 src/cgame/cg_event.cpp:1309
+#: src/cgame/cg_event.cpp:1260 src/cgame/cg_event.cpp:1276
 msgid "Our base is under attack!"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1299
+#: src/cgame/cg_event.cpp:1266
 #, c-format
 msgid "%s under attack – %s"
 msgstr ""
 
-#: src/cgame/cg_event.cpp:1303
+#: src/cgame/cg_event.cpp:1270
 #, c-format
 msgid "%s under attack"
 msgstr ""
