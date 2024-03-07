@@ -42,13 +42,8 @@
 
 static Log::Logger LOG( VM_STRING_PREFIX "navgen", "", Log::Level::NOTICE );
 
-void UnvContext::doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/)
-{
-	if ( m_logEnabled )
-	{
-		LOG.Notice(msg);
-	}
-}
+const NavgenStatus OK = {};
+const NavgenStatus NOT_COMPLETE = {.code = NavgenStatus::NOT_COMPLETE, .message = ""};
 
 static NavgenStatus::Code CodeForFailedDtStatus(dtStatus status)
 {
@@ -61,58 +56,34 @@ static NavgenStatus::Code CodeForFailedDtStatus(dtStatus status)
 
 static int tileSize = 64;
 
-void NavmeshGenerator::WriteFile() {
-	if ( d_->status.code == NavgenStatus::TRANSIENT_FAILURE )
-	{
-		return; // Don't write anything
-	}
-
-	// there are 22 bits to store a tile and its polys
-	int tileBits = rcMin( ( int ) dtIlog2( dtNextPow2( d_->tcparams.maxTiles ) ), 14 );
-	int polyBits = 22 - tileBits;
-
-	dtNavMeshParams params;
-	dtVcopy( params.orig, d_->tcparams.orig );
-	params.tileHeight = d_->tcparams.height * d_->cfg.cs;
-	params.tileWidth = d_->tcparams.width * d_->cfg.cs;
-	params.maxTiles = 1 << tileBits;
-	params.maxPolys = 1 << polyBits;
-
-	std::string filename = NavmeshFilename( mapName_, d_->species );
-
+NavMeshSetHeader InitNavMeshHeader( Str::StringRef mapName, const NavgenConfig& config ) {
 	NavMeshSetHeader header;
-	int maxTiles;
-
-	if ( d_->status.code == NavgenStatus::OK )
-	{
-		maxTiles = d_->tileCache->getTileCount();
-		int numTiles = 0;
-
-		for ( int i = 0; i < maxTiles; i++ )
-		{
-			const dtCompressedTile *tile = d_->tileCache->getTile( i );
-			if ( !tile || !tile->header || !tile->dataSize ) {
-				continue;
-			}
-			numTiles++;
-		}
-		header.numTiles = numTiles;
-		header.cacheParams = *d_->tileCache->getParams();
-		header.params = params;
-	}
-	else
-	{
-		header.params = {};
-		header.cacheParams = {};
-		header.numTiles = -1;
-	}
-
 	header.magic = NAVMESHSET_MAGIC;
 	header.version = NAVMESHSET_VERSION;
 	header.productVersionHash = ProductVersionHash();
 	header.headerSize = sizeof(header);
-	header.mapId = GetNavgenMapId( mapName_ );
-	header.config = config_;
+	header.mapId = GetNavgenMapId( mapName );
+	header.config = config;
+	return header;
+}
+
+NavgenStatus WriteData( qhandle_t file, Str::StringRef filename, const void* data, size_t len ) {
+		size_t n = static_cast<size_t>( trap_FS_Write( data, len, file ) );
+		if ( len != n )
+		{
+			trap_FS_FCloseFile( file );
+			return { NavgenStatus::PERMANENT_FAILURE, Str::Format( "Failed to write full data to %s. Write size %d, Written: %d", filename, len, n ) };
+		}
+		return OK;
+}
+
+NavgenStatus NavmeshGenerator::WriteError(const PerClassData& data, const NavgenStatus& error) {
+	std::string filename = NavmeshFilename( mapName_, data.species );
+
+	NavMeshSetHeader header = InitNavMeshHeader( mapName_, config_ );
+	header.params = {};
+	header.cacheParams = {};
+	header.numTiles = -1;
 
 	SwapNavMeshSetHeader( header );
 
@@ -120,47 +91,91 @@ void NavmeshGenerator::WriteFile() {
 	trap_FS_FOpenFile( filename.c_str(), &file, fsMode_t::FS_WRITE );
 
 	if ( !file ) {
-		LOG.Warn( "Error opening %s", filename );
-		return;
+		log( RC_LOG_ERROR, "failed to open file %s", filename.c_str() );
+		return { NavgenStatus::PERMANENT_FAILURE, Str::Format( "failed to open file %s", filename ) };
 	}
 
-	auto Write = [file, &filename](const void* data, size_t len) -> bool {
-		if (len != static_cast<size_t>(trap_FS_Write(data, len, file)))
-		{
-			LOG.Warn( "Error writing navmesh file %s", filename );
-			trap_FS_FCloseFile( file );
-			std::error_code err;
-			FS::HomePath::DeleteFile( filename, err );
-			return false;
-		}
-		return true;
-	};
-
-	if ( !Write( &header, sizeof( header ) ) ) return;
-
-	if ( d_->status.code == NavgenStatus::PERMANENT_FAILURE )
+	NavgenStatus status = WriteData( file, filename, &header, sizeof( header ) );
+	if ( !status.ok() )
 	{
-		// rest of file is the error message
-		if ( !Write( d_->status.message.data(), d_->status.message.size() ) ) return;
-		trap_FS_FCloseFile( file );
-		return;
+		return status;
 	}
-	ASSERT_EQ(d_->status.code, NavgenStatus::OK);
+
+	// rest of file is the error message
+	status = WriteData( file, filename, error.message.data(), error.message.size() );
+	if ( !status.ok() )
+	{
+		return status;
+	}
+	trap_FS_FCloseFile( file );
+	return OK;
+}
+
+NavgenStatus NavmeshGenerator::WriteFile( const PerClassData& data ) {
+	// there are 22 bits to store a tile and its polys
+	int tileBits = rcMin( ( int ) dtIlog2( dtNextPow2( data.tcparams.maxTiles ) ), 14 );
+	int polyBits = 22 - tileBits;
+
+	dtNavMeshParams params;
+	dtVcopy( params.orig, data.tcparams.orig );
+	params.tileHeight = data.tcparams.height * data.cfg.cs;
+	params.tileWidth = data.tcparams.width * data.cfg.cs;
+	params.maxTiles = 1 << tileBits;
+	params.maxPolys = 1 << polyBits;
+
+	std::string filename = NavmeshFilename( mapName_, data.species );
+
+	NavMeshSetHeader header = InitNavMeshHeader( mapName_, config_ );
+	int maxTiles;
+
+	maxTiles = data.tileCache->getTileCount();
+	int numTiles = 0;
 
 	for ( int i = 0; i < maxTiles; i++ )
 	{
-		const dtCompressedTile *tile = d_->tileCache->getTile( i );
+		const dtCompressedTile *tile = data.tileCache->getTile( i );
+		if ( !tile || !tile->header || !tile->dataSize ) {
+			continue;
+		}
+		numTiles++;
+	}
+	header.numTiles = numTiles;
+	header.cacheParams = *data.tileCache->getParams();
+	header.params = params;
+
+	SwapNavMeshSetHeader( header );
+
+
+	qhandle_t file;
+	trap_FS_FOpenFile( filename.c_str(), &file, fsMode_t::FS_WRITE );
+
+	if ( !file ) {
+		log( RC_LOG_ERROR, "failed to open file %s", filename.c_str() );
+		return { NavgenStatus::PERMANENT_FAILURE, Str::Format( "failed to open file %s", filename ) };
+	}
+
+	NavgenStatus status = WriteData( file, filename, &header, sizeof( header ) );
+	if ( !status.ok() )
+	{
+		return status;
+	}
+
+	for ( int i = 0; i < maxTiles; i++ )
+	{
+		const dtCompressedTile *tile = data.tileCache->getTile( i );
 
 		if ( !tile || !tile->header || !tile->dataSize ) {
 			continue;
 		}
 
 		NavMeshTileHeader tileHeader;
-		tileHeader.tileRef = d_->tileCache->getTileRef( tile );
+		tileHeader.tileRef = data.tileCache->getTileRef( tile );
 		tileHeader.dataSize = tile->dataSize;
 
 		SwapNavMeshTileHeader( tileHeader );
-		if ( !Write( &tileHeader, sizeof( tileHeader ) ) ) return;
+
+		status = WriteData( file, filename, &tileHeader, sizeof( tileHeader ) );
+		if ( !status.ok() ) return status;
 
 		std::unique_ptr<unsigned char[]> data( new unsigned char[tile->dataSize] );
 
@@ -169,16 +184,23 @@ void NavmeshGenerator::WriteFile() {
 			dtTileCacheHeaderSwapEndian( data.get(), tile->dataSize );
 		}
 
-		if ( !Write( data.get(), tile->dataSize ) ) return;
+		status = WriteData( file, filename, data.get(), tile->dataSize );
+		if ( !status.ok() )
+		{
+			return status;
+		}
 	}
 	trap_FS_FCloseFile( file );
+	return OK;
 }
 
 void NavmeshGenerator::LoadBSP()
 {
 	// copied from beginning of CM_LoadMap
 	std::string mapFile = "maps/" + mapName_ + ".bsp";
-	mapData_ = FS::PakPath::ReadFile(mapFile);
+	{
+		mapData_ = FS::PakPath::ReadFile(mapFile);
+	}
 	dheader_t* header = reinterpret_cast<dheader_t*>(&mapData_[0]);
 
 	// hacky byte swapping for lumps of interest
@@ -256,7 +278,7 @@ static bool SkipSurface( const NavgenConfig *config, const dshader_t *shader ) {
 
 // TODO: Can this stuff be done using the already-loaded CM data structures
 // (e.g. cbrush_t instead of dbrush_t) instead of reopening the BSP?
-void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tris ) {
+NavgenStatus NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tris ) {
 	std::map<size_t,std::unordered_set<glm::vec3>> laddersVerts;
 
 	const byte* const cmod_base = reinterpret_cast<const byte*>(mapData_.data());
@@ -271,8 +293,7 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 
 	/* get model, index 0 is worldspawn entity */
 	if ( modelsLump.filelen / sizeof(dmodel_t) <= 0 ) {
-		initStatus_ = { NavgenStatus::PERMANENT_FAILURE, "No brushes found" };
-		return;
+		return { NavgenStatus::PERMANENT_FAILURE, "No brushes found" };
 	}
 	auto* model = reinterpret_cast<const dmodel_t*>(cmod_base + modelsLump.fileofs);
 	auto* bspBrushes = reinterpret_cast<const dbrush_t*>(cmod_base + brushesLump.fileofs);
@@ -397,15 +418,16 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 		//sg_ladders.emplace_back( std::move( tmp ) );
 
 		//TODO: use a non-hardcoded radius
-		Log::Notice( "Ladder: %d %d %d %d %d %d 30 1 63 0", tmp.bottom.x, tmp.bottom.z, tmp.bottom.y, tmp.up.x, tmp.up.z, tmp.up.y );
+		log( RC_LOG_PROGRESS, "Ladder: %d %d %d %d %d %d 30 1 63 0", tmp.bottom.x, tmp.bottom.z, tmp.bottom.y, tmp.up.x, tmp.up.z, tmp.up.y );
 	}
 	if ( !config_.generatePatchTris )
 	{
-		return;
+		return OK;
 	}
-	LOG.Debug( "Generated %d brush tris", tris.size() / 3 );
-	LOG.Debug( "Generated %d brush verts", verts.size() / 3 );
-
+	LOG.DoDebugCode([this, &tris, &verts]() {
+		log( RC_LOG_PROGRESS, "Generated %d brush tris", tris.size() / 3 );
+		log( RC_LOG_PROGRESS, "Generated %d brush verts", verts.size() / 3 );
+	});
 	/*
 	 * Load patch tris
 	 */
@@ -518,34 +540,44 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 			}
 		}
 	}
+
+	return OK;
 }
 
-void NavmeshGenerator::LoadGeometry()
+NavgenStatus NavmeshGenerator::LoadGeometry()
 {
 	std::vector<float> verts;
 	std::vector<int> tris;
 
-	LOG.Debug( "loading geometry..." );
+	LOG.DoDebugCode([this]() {
+		log( RC_LOG_PROGRESS, "loading geometry..." );
+	});
+
 	int numVerts, numTris;
 
 	//count surfaces
-	LoadTris( verts, tris );
-	if ( initStatus_.code != NavgenStatus::OK ) return;
+	NavgenStatus status = LoadTris( verts, tris );
+	if ( !status.ok() ) return status;
 
 	numTris = tris.size() / 3;
 	numVerts = verts.size() / 3;
 
-	LOG.Debug( "Using %d triangles", numTris );
-	LOG.Debug( "Using %d vertices", numVerts );
-
+	LOG.DoDebugCode([this, numTris, numVerts]() {
+		log( RC_LOG_PROGRESS, "Using %d triangles", numTris );
+		log( RC_LOG_PROGRESS, "Using %d vertices", numVerts );
+	});
 	geo_.init( &verts[ 0 ], numVerts, &tris[ 0 ], numTris );
 
 	const float *mins = geo_.getMins();
 	const float *maxs = geo_.getMaxs();
 
-	LOG.Debug( "set recast world bounds to" );
-	LOG.Debug( "min: %f %f %f", mins[0], mins[1], mins[2] );
-	LOG.Debug( "max: %f %f %f", maxs[0], maxs[1], maxs[2] );
+	LOG.DoDebugCode([this, mins, maxs]() {
+		log( RC_LOG_PROGRESS, "set recast world bounds to" );
+		log( RC_LOG_PROGRESS, "min: %f %f %f", mins[0], mins[1], mins[2] );
+		log( RC_LOG_PROGRESS, "max: %f %f %f", maxs[0], maxs[1], maxs[2] );
+	});
+
+	return OK;
 }
 
 // Modified version of Recast's rcErodeWalkableArea that uses an AABB instead of a cylindrical radius
@@ -1009,17 +1041,11 @@ static NavgenStatus rasterizeTileLayers( Geometry& geo, rcContext &context, int 
 	return {};
 }
 
-void NavmeshGenerator::StartGeneration( class_t species )
+NavgenStatus NavmeshGenerator::InitPerClassData( class_t species, PerClassData *data )
 {
 	classAttributes_t const& agent = *BG_Class( species );
-	LOG.Notice( "Generating navmesh for %s", agent.name );
-	d_.reset( new PerClassData );
-	d_->species = species;
-	d_->status = initStatus_;
-	if ( d_->status.code != NavgenStatus::OK )
-	{
-		return;
-	}
+	log( RC_LOG_PROGRESS, "Generating navmesh for %s", agent.name );
+	data->species = species;
 
 	const float *bmin = geo_.getMins();
 	const float *bmax = geo_.getMaxs();
@@ -1036,8 +1062,8 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	rcCalcGridSize( bmin, bmax, cellSize, &gw, &gh );
 
 	const int ts = tileSize;
-	d_->tw = ( gw + ts - 1 ) / ts;
-	d_->th = ( gh + ts - 1 ) / ts;
+	data->tw = ( gw + ts - 1 ) / ts;
+	data->th = ( gh + ts - 1 ) / ts;
 
 	float climb = config_.stepSize;
 	if ( config_.autojumpSecurity > 0.f )
@@ -1053,82 +1079,100 @@ void NavmeshGenerator::StartGeneration( class_t species )
 		// keep the STEPSIZE as minimum, just in case
 		climb = std::max( config_.stepSize, climb );
 	}
+	log( RC_LOG_PROGRESS, "generating agent %s with stepsize of %f", agent.name, climb );
+	data->cfg.cs = cellSize;
+	data->cfg.ch = cellHeight_;
+	data->cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
+	data->cfg.walkableHeight = ( int ) ceilf( height / data->cfg.ch );
+	data->cfg.walkableClimb = ( int ) floorf( climb / data->cfg.ch );
+	data->cfg.walkableRadius = ( int ) ceilf( radius / data->cfg.cs );
+	data->cfg.maxEdgeLen = 0;
+	data->cfg.maxSimplificationError = 1.3f;
+	data->cfg.minRegionArea = rcSqr( 25 );
+	data->cfg.mergeRegionArea = rcSqr( 50 );
+	data->cfg.maxVertsPerPoly = 6;
+	data->cfg.tileSize = ts;
+	data->cfg.borderSize = data->cfg.walkableRadius * 2;
+	data->cfg.width = data->cfg.tileSize + data->cfg.borderSize * 2;
+	data->cfg.height = data->cfg.tileSize + data->cfg.borderSize * 2;
+	data->cfg.detailSampleDist = data->cfg.cs * 6.0f;
+	data->cfg.detailSampleMaxError = data->cfg.ch * 1.0f;
 
-	LOG.Notice( "generating agent %s with stepsize of %d", agent.name, climb );
-	d_->cfg.cs = cellSize;
-	d_->cfg.ch = cellHeight_;
-	d_->cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
-	d_->cfg.walkableHeight = ( int ) ceilf( height / d_->cfg.ch );
-	d_->cfg.walkableClimb = ( int ) floorf( climb / d_->cfg.ch );
-	d_->cfg.walkableRadius = ( int ) ceilf( radius / d_->cfg.cs );
-	d_->cfg.maxEdgeLen = 0;
-	d_->cfg.maxSimplificationError = 1.3f;
-	d_->cfg.minRegionArea = rcSqr( 25 );
-	d_->cfg.mergeRegionArea = rcSqr( 50 );
-	d_->cfg.maxVertsPerPoly = 6;
-	d_->cfg.tileSize = ts;
-	d_->cfg.borderSize = d_->cfg.walkableRadius * 2;
-	d_->cfg.width = d_->cfg.tileSize + d_->cfg.borderSize * 2;
-	d_->cfg.height = d_->cfg.tileSize + d_->cfg.borderSize * 2;
-	d_->cfg.detailSampleDist = d_->cfg.cs * 6.0f;
-	d_->cfg.detailSampleMaxError = d_->cfg.ch * 1.0f;
+	rcVcopy( data->cfg.bmin, bmin );
+	rcVcopy( data->cfg.bmax, bmax );
 
-	rcVcopy( d_->cfg.bmin, bmin );
-	rcVcopy( d_->cfg.bmax, bmax );
+	rcVcopy( data->tcparams.orig, bmin );
+	data->tcparams.cs = cellSize;
+	data->tcparams.ch = cellHeight_;
+	data->tcparams.width = ts;
+	data->tcparams.height = ts;
+	data->tcparams.walkableHeight = height;
+	data->tcparams.walkableRadius = radius;
+	data->tcparams.walkableClimb = climb;
+	data->tcparams.maxSimplificationError = 1.3;
+	data->tcparams.maxTiles = data->tw * data->th * EXPECTED_LAYERS_PER_TILE;
+	data->tcparams.maxObstacles = 256;
 
-	rcVcopy( d_->tcparams.orig, bmin );
-	d_->tcparams.cs = cellSize;
-	d_->tcparams.ch = cellHeight_;
-	d_->tcparams.width = ts;
-	d_->tcparams.height = ts;
-	d_->tcparams.walkableHeight = height;
-	d_->tcparams.walkableRadius = radius;
-	d_->tcparams.walkableClimb = climb;
-	d_->tcparams.maxSimplificationError = 1.3;
-	d_->tcparams.maxTiles = d_->tw * d_->th * EXPECTED_LAYERS_PER_TILE;
-	d_->tcparams.maxObstacles = 256;
-
-	d_->tileCache.reset(new dtTileCache);
-	dtStatus status = d_->tileCache->init( &d_->tcparams, &d_->alloc, &d_->comp, &d_->proc );
+	data->tileCache.reset(new dtTileCache);
+	dtStatus status = data->tileCache->init( &data->tcparams, &data->alloc, &data->comp, &data->proc );
 
 	if ( dtStatusFailed( status ) ) {
 		std::string message = dtStatusDetail( status, DT_INVALID_PARAM ) ? "Could not init tile cache: Invalid parameter" : "Could not init tile cache";
-		d_->status = { CodeForFailedDtStatus( status ), message };
+		NavgenStatus ret = { CodeForFailedDtStatus( status ), message };
+		AsyncRunOnMainThread([this, data, ret, species]() {
+			NavgenStatus error = WriteError( *data, ret );
+			if ( !error.ok() )
+			{
+				LOG.Warn( "Error writing error for %s: %s", BG_Class( species )->name, error.String() );
+			}
+
+		});
+		// Mark this as complete.
+		data->y = data->th;
+		return ret;
 	}
+
+	return OK;
 }
 
-bool NavmeshGenerator::Step()
+NavgenStatus NavmeshGenerator::Step(PerClassData *data)
 {
-	if ( d_->status.code != NavgenStatus::OK || d_->y >= d_->th || d_->tw == 0 )
+	ASSERT( data );
+	if ( data->IsDone() )
 	{
-		if ( d_->status.code == NavgenStatus::OK )
-		{
-			LOG.Verbose( "Finished generating navmesh for %s", BG_ClassModelConfig( d_->species )->humanName );
-		}
-		else
-		{
-			LOG.Warn( "Navmesh generation for %s failed: %s", BG_ClassModelConfig( d_->species )->humanName, d_->status.message );
-		}
-		WriteFile();
-		d_.reset();
-		return true;
+		AsyncRunOnMainThread([this, data]() {
+			NavgenStatus status = WriteFile( *data );
+			if ( !status.ok() )
+			{
+				LOG.Warn( "Error writing navmesh file for %s: %s", BG_Class( data->species )->name, status.String() );
+			}
+		});
+		return OK;
 	}
 
 	TileCacheData tiles[ MAX_LAYERS ];
 	memset( tiles, 0, sizeof( tiles ) );
 
 	int ntiles;
-	NavgenStatus status = rasterizeTileLayers(geo_, recastContext_, d_->x, d_->y, d_->cfg, tiles, MAX_LAYERS, !!config_.filterGaps, &ntiles);
-	if ( status.code != NavgenStatus::OK )
+	NavgenStatus status = rasterizeTileLayers(geo_, *this, data->x, data->y, data->cfg, tiles, MAX_LAYERS, !!config_.filterGaps, &ntiles);
+	if ( !status.ok() )
 	{
-		d_->status = status;
-		return false;
+		AsyncRunOnMainThread([this, data, status]() {
+			NavgenStatus error = WriteError( *data, status );
+			if ( !error.ok() )
+			{
+				LOG.Warn( "Error writing error for %s: %s", BG_Class( data->species )->name, error.String() );
+			}
+		});
+		// Mark this as complete.
+		data->y = data->th;
+		return status;
 	}
 
 	for ( int i = 0; i < ntiles; i++ )
 	{
 		TileCacheData *tile = &tiles[ i ];
-		dtStatus tileStatus = d_->tileCache->addTile( tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0 );
+		dtStatus tileStatus = data->tileCache->addTile( tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0 );
 		if ( dtStatusFailed( tileStatus ) ) {
 			dtFree( tile->data );
 			tile->data = 0;
@@ -1137,42 +1181,158 @@ bool NavmeshGenerator::Step()
 	}
 
 	//iterate over all tiles (number is determined by rcCalcGridSize)
-	if ( ++d_->x == d_->tw )
+	if ( ++data->x == data->tw )
 	{
-		d_->x = 0;
-		++d_->y;
+		data->x = 0;
+		++data->y;
 	}
-	return false;
+
+	return NOT_COMPLETE;
 }
 
-void NavmeshGenerator::Init(Str::StringRef mapName)
+NavgenStatus NavmeshGenerator::Init(Str::StringRef mapName)
 {
-	if (mapName == mapName_) return;
+	// Already ran init
+	if (mapName == mapName_) return OK;
 
 	config_ = ReadNavgenConfig( mapName );
 	mapName_ = mapName;
-	recastContext_.enableLog(true);
-	initStatus_ = {};
+	enableLog(true);
 	LoadBSP();
-	LoadGeometry();
-	if ( initStatus_.code != NavgenStatus::OK ) return;
+	NavgenStatus status = LoadGeometry();
+	if ( !status.ok() ) return status;
 
 	cellHeight_ = config_.requestedCellHeight;
 	float height = rcAbs( geo_.getMaxs()[1] ) + rcAbs( geo_.getMins()[1] );
 	if ( height / cellHeight_ > RC_SPAN_MAX_HEIGHT )
 	{
-		Log::Warn("Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.");
+		log( RC_LOG_WARNING, "Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.");
 		cellHeight_ = height / RC_SPAN_MAX_HEIGHT;
 	}
 
 	if ( cellHeight_ > config_.stepSize )
 	{
-		initStatus_ = { NavgenStatus::PERMANENT_FAILURE, "Map is too tall to generate a navigation mesh, cell height can't be greater than the step size" };
+		return { NavgenStatus::PERMANENT_FAILURE, "Map is too tall to generate a navigation mesh, cell height can't be greater than the step size" };
+	}
+
+	return OK;
+}
+
+float NavmeshGenerator::Progress()
+{
+	const std::lock_guard<std::mutex> lock(mu_);
+	if ( tasks_.empty() ) return 0.0f;
+	float p = 0.0f;
+	for (const auto& t: tasks_)
+	{
+		if ( !t.second.thread ) continue;
+		// If its not joinable, then its already been joined
+		if ( t.second.IsDone() )
+		{
+			p += 1.0f;
+			continue;
+		}
+		p += t.second.Progress();
+	}
+	return p / tasks_.size();
+}
+
+int NavmeshGenerator::ActiveTasks()
+{
+	const std::lock_guard<std::mutex> lock(mu_);
+	return tasks_.size() - statuses_.size();
+}
+
+void NavmeshGenerator::UpdateStatus( class_t species, NavgenStatus status )
+{
+	const std::lock_guard<std::mutex> lock(mu_);
+	statuses_[ species ] = std::move(status);
+}
+
+void NavmeshGenerator::Generate( class_t species )
+{
+	PerClassData *data = nullptr;
+	{
+		const std::lock_guard<std::mutex> lock(mu_);
+		data = &tasks_[ species ];
+	}
+	ASSERT( data );
+	NavgenStatus status = InitPerClassData( species, data );
+	if ( !status.ok() )
+	{
+		UpdateStatus( species, status );
+		return;
+	}
+
+	do {
+		status = Step( data );
+	} while ( status.IsIncomplete() );
+
+	UpdateStatus( species, std::move( status ) );
+}
+
+void NavmeshGenerator::StartGeneration( class_t species )
+{
+	const std::lock_guard<std::mutex> lock(mu_);
+	if ( tasks_.find( species ) != tasks_.end() )
+	{
+		LOG.Warn( "Already started generation for %s.", BG_Class( species )->name );
+		return;
+	}
+	auto it = tasks_.emplace(std::pair<class_t, PerClassData>({species, PerClassData()}));
+	it.first->second.thread.reset(new std::thread(&NavmeshGenerator::Generate, this, species));
+}
+
+void NavmeshGenerator::AsyncRunOnMainThread(std::function<void()> func)
+{
+	const std::lock_guard<std::mutex> lock(trap_mu_);
+	funcs_.push_back(func);
+}
+
+void NavmeshGenerator::RunTasks()
+{
+	const std::lock_guard<std::mutex> lock(trap_mu_);
+	for (const auto& f : funcs_)
+	{
+		if ( f ) f();
+	}
+	funcs_.clear();
+}
+
+void NavmeshGenerator::doLog( const rcLogCategory category, const char* msg, const int len )
+{
+	if ( m_logEnabled )
+	{
+		std::string line = std::string( msg, len );
+		AsyncRunOnMainThread([line, category]() {
+			switch ( category )
+			{
+				case RC_LOG_WARNING:
+				case RC_LOG_ERROR:
+					LOG.Warn(line);
+					break;
+				case RC_LOG_PROGRESS:
+				default:
+					LOG.Notice(line);
+					break;
+			}
+		});
 	}
 }
 
-float NavmeshGenerator::SpeciesFractionCompleted() const
+NavmeshGenerator::~NavmeshGenerator()
 {
-	// Assume that writing the file at the end is 10%
-	return 0.9f * float(d_->y * d_->tw + d_->x) / float(d_->tw * d_->th);
+	for ( auto& t : tasks_ )
+	{
+		if ( !t.second.thread ) continue;
+		t.second.thread->join();
+	}
+	RunTasks();
+	tasks_.clear();
+	const std::lock_guard<std::mutex> lock(mu_);
+	for ( const auto& status : statuses_ )
+	{
+		if ( status.second.ok() ) continue;
+		LOG.Warn( "%s: %s", BG_Class( status.first )->name, status.second.String() );
+	}
 }
