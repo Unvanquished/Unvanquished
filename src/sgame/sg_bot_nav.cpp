@@ -523,12 +523,19 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 	return nullptr;
 }
 
+typedef enum
+{
+	OBSTACLE_NONE,
+	OBSTACLE_JUMPABLE,
+	OBSTACLE_LADDER
+} obstacle_t;
+
 // checks if jumping would get rid of blocker
 // return true if yes
 //
 // This currently doesn't handle jumping over map geometry, but that could be
 // nice some day.
-static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm::vec3 &dir )
+static obstacle_t BotDetectObstacle( gentity_t *self, const gentity_t *blocker, const glm::vec3 &dir )
 {
 	glm::vec3 playerMins;
 	glm::vec3 playerMaxs;
@@ -551,7 +558,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	trap_Trace( &tr1, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 	if ( tr1.fraction >= 1.0f || blocker != &g_entities[tr1.entityNum] )
 	{
-		return false;
+		return OBSTACLE_NONE;
 	}
 
 	jumpMagnitude = BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->jumpMagnitude;
@@ -572,6 +579,11 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 		|| ( tr2.entityNum == ENTITYNUM_WORLD && tr2.surfaceFlags & SURF_LADDER ) )
 		;
 
+	if ( ladder )
+	{
+		return OBSTACLE_LADDER;
+	}
+
 	if ( blocker->s.eType == entityType_t::ET_BUILDABLE
 			&& blocker->s.modelindex == BA_A_BARRICADE
 			&& G_OnSameTeam( self, blocker ) )
@@ -583,12 +595,12 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 		BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
 		if ( origin.z + playerMins.z >= pos.z + maxs.z )
 		{
-			return true;
+			return OBSTACLE_JUMPABLE;
 		}
 	}
 
 	//if we can jump over it, then jump
-	return tr2.fraction == 1.0f || ladder;
+	return tr2.fraction == 1.0f ? OBSTACLE_JUMPABLE : OBSTACLE_NONE;
 }
 
 // Determine a new direction, which may be unchanged (forward) or sideway. It
@@ -740,9 +752,15 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeome
 		}
 	}
 
-	if ( BotShouldJump( self, blocker, dir ) )
+	obstacle_t obst = BotDetectObstacle( self, blocker, dir );
+	if ( obst == OBSTACLE_JUMPABLE )
 	{
 		BotJump( self );
+		return false;
+	}
+	else if ( obst == OBSTACLE_LADDER )
+	{
+		dir.z += 200;
 		return false;
 	}
 
