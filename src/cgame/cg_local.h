@@ -2252,7 +2252,7 @@ void          CG_DestroyTestTS_f();
 //
 // cg_tutorial.c
 //
-const char *CG_TutorialText();
+const std::string& CG_TutorialText();
 
 //
 // cg_beacon.c

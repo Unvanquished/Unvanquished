@@ -112,7 +112,6 @@ static void CG_Obituary( entityState_t *ent )
 	}
 	int          mod;
 	int          target, attacker, assistant;
-	int          attackerClass = -1;
 	const char   *message;
 	const char   *messageAssisted = nullptr;
 	const char   *messageSuicide = nullptr;
@@ -473,52 +472,44 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_LEVEL1_CLAW:
-				message = G_( "%s%s ^*was sliced by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was sliced by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
-				attackerClass = PCL_ALIEN_LEVEL1;
+				message = G_( "%s%s ^*was sliced by %s%s%s^*'s mantis" );
+				messageAssisted = G_( "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL2_CLAW:
-				message = G_( "%s%s ^*was shredded by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was shredded by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
-				attackerClass = PCL_ALIEN_LEVEL2;
+				message = G_( "%s%s ^*was shredded by %s%s%s^*'s marauder" );
+				messageAssisted = G_( "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL2_ZAP:
-				message = G_( "%s%s ^*was electrocuted by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was electrocuted by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
-				attackerClass = PCL_ALIEN_LEVEL2;
+				message = G_( "%s%s ^*was electrocuted by %s%s%s^*'s marauder" );
+				messageAssisted = G_( "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL3_CLAW:
-				message = G_( "%s%s ^*was eviscerated by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was eviscerated by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
-				attackerClass = PCL_ALIEN_LEVEL3;
+				message = G_( "%s%s ^*was eviscerated by %s%s%s^*'s dragoon" );
+				messageAssisted = G_( "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL3_POUNCE:
-				message = G_( "%s%s ^*was pounced upon by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was pounced upon by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
-				attackerClass = PCL_ALIEN_LEVEL3;
+				message = G_( "%s%s ^*was pounced upon by %s%s%s^*'s dragoon" );
+				messageAssisted = G_( "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL3_BOUNCEBALL:
-				message = G_( "%s%s ^*was barbed by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was barbed by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
+				message = G_( "%s%s ^*was barbed by %s%s%s^*'s dragoon" );
+				messageAssisted = G_( "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted" );
 				messageSuicide = G_( "%s%s ^*was barbed" );
-				attackerClass = PCL_ALIEN_LEVEL3;
 				break;
 
 			case MOD_LEVEL4_CLAW:
-				message = G_( "%s%s ^*was mauled by %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*was mauled by %s%s%s^*'s %s^*; %s%s%s^* assisted" );
-				attackerClass = PCL_ALIEN_LEVEL4;
+				message = G_( "%s%s ^*was mauled by %s%s%s^*'s tyrant" );
+				messageAssisted = G_( "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted" );
 				break;
 
 			case MOD_LEVEL4_TRAMPLE:
-				message = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s" );
-				messageAssisted = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s %s^*; %s%s%s^* assisted" );
-				attackerClass = PCL_ALIEN_LEVEL4;
+				message = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant" );
+				messageAssisted = G_( "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* assisted" );
 				break;
 
 			case MOD_WEIGHT_H:
@@ -559,43 +550,19 @@ static void CG_Obituary( entityState_t *ent )
 			}
 			else if ( messageAssisted && assistantInfo )
 			{
-				if ( attackerClass != -1 )
-				{
-					Log::Notice( messageAssisted,
-					             teamTag[ ci->team ], targetName,
-					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-					             teamTag[ attackerTeam ], attackerName,
-					             BG_ClassModelConfig( attackerClass )->humanName,
-					             ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
-					             teamTag[ assistantTeam ], assistantName );
-				}
-				else
-				{
-					Log::Notice( messageAssisted,
-					             teamTag[ ci->team ], targetName,
-					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-					             teamTag[ attackerTeam ], attackerName,
-					             ( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
-					             teamTag[ assistantTeam ], assistantName );
-				}
+				Log::Notice( messageAssisted,
+					teamTag[ ci->team ], targetName,
+					( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+					teamTag[ attackerTeam ], attackerName,
+					( assistantTeam == ci->team ? "^aTEAMMATE " : "" ),
+					teamTag[ assistantTeam ], assistantName );
 			}
 			else
 			{
-				if ( attackerClass != -1 )
-				{
-					Log::Notice( message,
-					             teamTag[ ci->team ], targetName,
-					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-					             teamTag[ attackerTeam ], attackerName,
-					             BG_ClassModelConfig( attackerClass )->humanName );
-				}
-				else
-				{
-					Log::Notice( message,
-					             teamTag[ ci->team ], targetName,
-					             ( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
-					             teamTag[ attackerTeam ], attackerName );
-				}
+				Log::Notice( message,
+					teamTag[ ci->team ], targetName,
+					( attackerTeam == ci->team ? "^1TEAMMATE " : "" ),
+					teamTag[ attackerTeam ], attackerName );
 			}
 
 			if ( attackerTeam == ci->team && attacker == cg.clientNum && attacker != target )

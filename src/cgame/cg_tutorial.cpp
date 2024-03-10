@@ -72,8 +72,9 @@ static void CG_RefreshBindings()
 {
 	std::vector<std::string> binds;
 
-	for (unsigned i = 0; i < numBindings; i++) {
-		binds.push_back(bindings[i].command);
+	for (bind_t const& bind : bindings )
+	{
+		binds.push_back(bind.command);
 	}
 
 	std::vector<std::vector<Keyboard::Key>> keys = trap_Key_GetKeysForBinds(CG_CurrentBindTeam(), binds);
@@ -90,58 +91,50 @@ CG_KeyNameForCommand
 */
 static const char *CG_KeyNameForCommand( const char *command )
 {
-	static char buffer[ 2 ][ MAX_STRING_CHARS ];
-	static int  which = 1;
+	static std::string buffer;
 
-	which ^= 1;
-
-	for ( const auto& binding : bindings )
+	bind_t const* it = std::find_if( std::begin( bindings ), std::end( bindings ),
+			[&]( bind_t const& o ){ return 0 == Q_stricmp( command, o.command ); } );
+	if ( it == std::end( bindings ) )
 	{
-		if ( !Q_stricmp( command, binding.command ) )
+		return "(⚠ BUG)"; // shouldn't happen: if it does, BUG
+	}
+	std::string keyNames;
+	if ( it->command == OPEN_CONSOLE_CMD )
+	{
+		// Hard-coded console toggle key binding
+		keyNames = _( "SHIFT-ESCAPE" );
+		// cl_consoleKeys is yet another source of keys for toggling the console,
+		// but it is omitted out of laziness.
+	}
+	else if ( it->command == OPEN_MENU_CMD )
+	{
+		// Hard-coded menu toggle key binding
+		keyNames = _( "ESCAPE" );
+	}
+
+	for ( Keyboard::Key key : it->keys )
+	{
+		if ( keyNames.empty() )
 		{
-			std::string keyNames;
-			if ( binding.command == OPEN_CONSOLE_CMD )
-			{
-				// Hard-coded console toggle key binding
-				keyNames = _( "SHIFT-ESCAPE" );
-				// cl_consoleKeys is yet another source of keys for toggling the console,
-				// but it is omitted out of laziness.
-			}
-			else if ( binding.command == OPEN_MENU_CMD )
-			{
-				// Hard-coded menu toggle key binding
-				keyNames = _( "ESCAPE" );
-			}
-
-			for ( Keyboard::Key key : binding.keys )
-			{
-				if ( keyNames.empty() )
-				{
-					keyNames = CG_KeyDisplayName( key );
-				}
-				else if ( key == binding.keys.back() )
-				{
-					keyNames = Str::Format( _("%s or %s"), keyNames, CG_KeyDisplayName( key ) );
-				}
-				else
-				{
-					keyNames = Str::Format( _("%s, %s"), keyNames, CG_KeyDisplayName( key ) );
-				}
-			}
-
-			if ( keyNames.empty() )
-			{
-				keyNames = Str::Format( _( "\"%s\" (unbound)" ), _( binding.humanName ) );
-			}
-			Q_strncpyz( buffer[ which ], keyNames.c_str(), sizeof( buffer[ which ] ) );
-			return buffer[ which ];
+			keyNames = CG_KeyDisplayName( key );
+		}
+		else if ( key == it->keys.back() )
+		{
+			keyNames = Str::Format( _("%s or %s"), keyNames, CG_KeyDisplayName( key ) );
+		}
+		else
+		{
+			keyNames = Str::Format( _("%s, %s"), keyNames, CG_KeyDisplayName( key ) );
 		}
 	}
 
-	return "(⚠ BUG)"; // shouldn't happen: if it does, BUG
+	if ( keyNames.empty() )
+	{
+		keyNames = Str::Format( _( "\"%s\" (unbound)" ), _( it->humanName ) );
+	}
+	return ( buffer = keyNames ).c_str();
 }
-
-#define MAX_TUTORIAL_TEXT 4096
 
 /*
 ===============
@@ -174,7 +167,7 @@ static entityState_t *CG_BuildableInRange( playerState_t *ps )
 CG_BuilderText
 ===============
 */
-static void CG_BuilderText( char *text, playerState_t *ps )
+static void CG_BuilderText( std::string& text, playerState_t *ps )
 {
 	buildable_t   buildable = (buildable_t) ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK );
 	entityState_t *es;
@@ -182,22 +175,16 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 	if ( buildable > BA_NONE )
 	{
 		const char *item = _( BG_Buildable( buildable )->humanName );
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to place the %s."),
-		              CG_KeyNameForCommand( "+attack" ), item ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to place the %s."), CG_KeyNameForCommand( "+attack" ), item );
+		text += '\n';
 
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to cancel placing the %s." ),
-		              CG_KeyNameForCommand( "+attack2" ), item ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to cancel placing the %s." ), CG_KeyNameForCommand( "+attack2" ), item );
+		text += '\n';
 	}
 	else
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to build a structure." ),
-		              CG_KeyNameForCommand( "+attack" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to build a structure." ), CG_KeyNameForCommand( "+attack" ) );
+		text += '\n';
 	}
 
 	if ( ( es = CG_BuildableInRange( ps ) ) )
@@ -206,20 +193,17 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 
 		if ( es->eFlags & EF_B_MARKED )
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-					  va( _( "Press %s to unmark this structure for replacement." ), key ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += va( _( "Press %s to unmark this structure for replacement." ), key );
+			text += '\n';
 		}
 		else
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-					  va( _( "Press %s to mark this structure for replacement." ), key ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += va( _( "Press %s to mark this structure for replacement." ), key );
+			text += '\n';
 		}
 
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-				  va( _( "Hold %s to deconstruct this structure." ), key ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Hold %s to deconstruct this structure." ), key );
+		text += '\n';
 	}
 }
 
@@ -228,29 +212,23 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 CG_AlienBuilderText
 ===============
 */
-static void CG_AlienBuilderText( char *text, playerState_t *ps )
+static void CG_AlienBuilderText( std::string& text, playerState_t *ps )
 {
 	CG_BuilderText( text, ps );
 
 	if ( ( ps->stats[ STAT_BUILDABLE ] & SB_BUILDABLE_MASK ) == BA_NONE )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to swipe." ),
-		              CG_KeyNameForCommand( "+attack2" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to swipe." ), CG_KeyNameForCommand( "+attack2" ) );
+		text += '\n';
 	}
 
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_BUILDER0_UPG )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to spit. Spit can slow humans and remove fire." ),
-		              CG_KeyNameForCommand( "+attack3" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to spit. Spit can slow humans and remove fire." ), CG_KeyNameForCommand( "+attack3" ) );
+		text += '\n';
 
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to walk on walls." ),
-		              CG_KeyNameForCommand( "+movedown" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to walk on walls." ), CG_KeyNameForCommand( "+movedown" ) );
+		text += '\n';
 	}
 }
 
@@ -259,22 +237,18 @@ static void CG_AlienBuilderText( char *text, playerState_t *ps )
 CG_AlienLevel0Text
 ===============
 */
-static void CG_AlienLevel0Text( char *text, playerState_t *ps )
+static void CG_AlienLevel0Text( std::string& text, playerState_t *ps )
 {
 	Q_UNUSED(ps);
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          _( "Touch humans to damage them." ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += _( "Touch humans to damage them." );
+	text += '\n';
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          _( "Aim at their heads to cause more damage." ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += _( "Aim at their heads to cause more damage." );
+	text += '\n';
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s to walk on walls." ),
-	              CG_KeyNameForCommand( "+movedown" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Press %s to walk on walls." ), CG_KeyNameForCommand( "+movedown" ) );
+	text += '\n';
 }
 
 /*
@@ -282,22 +256,16 @@ static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 CG_AlienLevel1Text
 ===============
 */
-static void CG_AlienLevel1Text( char *text )
+static void CG_AlienLevel1Text( std::string& text )
 {
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s to swipe." ),
-	              CG_KeyNameForCommand( "+attack" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Press %s to swipe." ), CG_KeyNameForCommand( "+attack" ) );
+	text += '\n';
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s to lunge." ),
-	              CG_KeyNameForCommand( "+attack2" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Press %s to lunge." ), CG_KeyNameForCommand( "+attack2" ) );
+	text += '\n';
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s to walk on walls." ),
-	              CG_KeyNameForCommand( "+movedown" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Press %s to walk on walls." ), CG_KeyNameForCommand( "+movedown" ) );
+	text += '\n';
 }
 
 /*
@@ -305,25 +273,19 @@ static void CG_AlienLevel1Text( char *text )
 CG_AlienLevel2Text
 ===============
 */
-static void CG_AlienLevel2Text( char *text, playerState_t *ps )
+static void CG_AlienLevel2Text( std::string& text, playerState_t *ps )
 {
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s to bite." ),
-	              CG_KeyNameForCommand( "+attack" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Press %s to bite." ), CG_KeyNameForCommand( "+attack" ) );
+	text += '\n';
 
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL2_UPG )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to invoke an electrical attack." ),
-		              CG_KeyNameForCommand( "+attack2" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to invoke an electrical attack." ), CG_KeyNameForCommand( "+attack2" ) );
+		text += '\n';
 	}
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Hold down %s then touch a wall to wall jump." ),
-	              CG_KeyNameForCommand( "+moveup" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Hold down %s then touch a wall to wall jump." ), CG_KeyNameForCommand( "+moveup" ) );
+	text += '\n';
 }
 
 /*
@@ -331,25 +293,19 @@ static void CG_AlienLevel2Text( char *text, playerState_t *ps )
 CG_AlienLevel3Text
 ===============
 */
-static void CG_AlienLevel3Text( char *text, playerState_t *ps )
+static void CG_AlienLevel3Text( std::string& text, playerState_t *ps )
 {
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s to bite." ),
-	              CG_KeyNameForCommand( "+attack" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Press %s to bite." ), CG_KeyNameForCommand( "+attack" ) );
+	text += '\n';
 
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL3_UPG )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to launch a barb." ),
-		              CG_KeyNameForCommand( "+attack3" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to launch a barb." ), CG_KeyNameForCommand( "+attack3" ) );
+		text += '\n';
 	}
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Hold down and release %s to pounce." ),
-	              CG_KeyNameForCommand( "+attack2" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Hold down and release %s to pounce." ), CG_KeyNameForCommand( "+attack2" ) );
+	text += '\n';
 }
 
 /*
@@ -357,19 +313,15 @@ static void CG_AlienLevel3Text( char *text, playerState_t *ps )
 CG_AlienLevel4Text
 ===============
 */
-static void CG_AlienLevel4Text( char *text, playerState_t *ps )
+static void CG_AlienLevel4Text( std::string& text, playerState_t *ps )
 {
 	Q_UNUSED(ps);
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s to swipe." ),
-	              CG_KeyNameForCommand( "+attack" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Press %s to swipe." ), CG_KeyNameForCommand( "+attack" ) );
+	text += '\n';
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Hold down %s while moving forwards to trample." ),
-	              CG_KeyNameForCommand( "+attack2" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Hold down %s while moving forwards to trample." ), CG_KeyNameForCommand( "+attack2" ) );
+	text += '\n';
 }
 
 /*
@@ -377,7 +329,7 @@ static void CG_AlienLevel4Text( char *text, playerState_t *ps )
 CG_HumanCkitText
 ===============
 */
-static void CG_HumanCkitText( char *text, playerState_t *ps )
+static void CG_HumanCkitText( std::string& text, playerState_t *ps )
 {
 	CG_BuilderText( text, ps );
 }
@@ -387,23 +339,21 @@ static void CG_HumanCkitText( char *text, playerState_t *ps )
 CG_HumanText
 ===============
 */
-static void CG_HumanText( char *text, playerState_t *ps )
+static void CG_HumanText( std::string& text, playerState_t *ps )
 {
 	if ( !ps->ammo && !ps->clips && !BG_Weapon( ps->weapon )->infiniteAmmo )
 	{
 		// Need to resupply ammo
-		Q_strcat( text, MAX_TUTORIAL_TEXT, COLOR_ALARM );
+		text += COLOR_ALARM;
 		if ( BG_Weapon( ps->weapon )->usesEnergy )
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-				  _( "Find an Armoury, Drill or Reactor for more ammo." ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += _( "Find an Armoury, Drill or Reactor for more ammo." );
+			text += '\n';
 		}
 		else
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-				  _( "Find an Armoury for more ammo." ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += _( "Find an Armoury for more ammo." );
+			text += '\n';
 		}
 	}
 	else
@@ -417,45 +367,29 @@ static void CG_HumanText( char *text, playerState_t *ps )
 			case WP_CHAINGUN:
 			case WP_PULSE_RIFLE:
 			case WP_FLAMER:
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Press %s to fire the %s." ),
-				              CG_KeyNameForCommand( "+attack" ),
-				              _( BG_Weapon( ps->weapon )->humanName ) ) );
-					Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+				text += va( _( "Press %s to fire the %s." ), CG_KeyNameForCommand( "+attack" ), _( BG_Weapon( ps->weapon )->humanName ) );
+				text += '\n';
 				break;
 
 			case WP_MASS_DRIVER:
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Press %s to fire the %s." ),
-				              CG_KeyNameForCommand( "+attack" ),
-				              _( BG_Weapon( ps->weapon )->humanName ) ) );
-				Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+				text += va( _( "Press %s to fire the %s." ), CG_KeyNameForCommand( "+attack" ), _( BG_Weapon( ps->weapon )->humanName ) );
+				text += '\n';
 
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Hold %s to zoom." ),
-				              CG_KeyNameForCommand( "+attack2" ) ) );
-				Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+				text += va( _( "Hold %s to zoom." ), CG_KeyNameForCommand( "+attack2" ) );
+				text += '\n';
 				break;
 
 			case WP_PAIN_SAW:
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Hold %s to activate the %s." ),
-				              CG_KeyNameForCommand( "+attack" ),
-				              _( BG_Weapon( ps->weapon )->humanName ) ) );
-				Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+				text += va( _( "Hold %s to activate the %s." ), CG_KeyNameForCommand( "+attack" ), _( BG_Weapon( ps->weapon )->humanName ) );
+				text += '\n';
 				break;
 
 			case WP_LUCIFER_CANNON:
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Hold and release %s to fire a charged shot." ),
-				              CG_KeyNameForCommand( "+attack" ) ) );
-				Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+				text += va( _( "Hold and release %s to fire a charged shot." ), CG_KeyNameForCommand( "+attack" ) );
+				text += '\n';
 
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Press %s to fire the %s." ),
-				              CG_KeyNameForCommand( "+attack2" ),
-				              _( BG_Weapon( ps->weapon )->humanName ) ) );
-				Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+				text += va( _( "Press %s to fire the %s." ), CG_KeyNameForCommand( "+attack2" ), _( BG_Weapon( ps->weapon )->humanName ) );
+				text += '\n';
 				break;
 
 			case WP_HBUILD:
@@ -478,10 +412,8 @@ static void CG_HumanText( char *text, playerState_t *ps )
 
 	if ( upgrade != UP_NONE )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to throw the %s." ),
-			CG_KeyNameForCommand( "itemact grenade" ),
-			_( BG_Upgrade( upgrade )->humanName ) ));
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to throw the %s." ), CG_KeyNameForCommand( "itemact grenade" ), _( BG_Upgrade( upgrade )->humanName ) );
+		text += '\n';
 	}
 
 	// Find next weapon in inventory.
@@ -489,60 +421,45 @@ static void CG_HumanText( char *text, playerState_t *ps )
 
 	if ( nextWeapon != WP_NONE )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to use the %s." ),
-		              CG_KeyNameForCommand( "weapnext" ),
-		              _( BG_Weapon( nextWeapon )->humanName ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to use the %s." ), CG_KeyNameForCommand( "weapnext" ), _( BG_Weapon( nextWeapon )->humanName ) );
+		text += '\n';
 	}
 
 	if ( BG_InventoryContainsUpgrade( UP_JETPACK, ps->stats ) )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Hold %s to use the Jetpack." ),
-			CG_KeyNameForCommand( "+moveup" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Hold %s to use the Jetpack." ), CG_KeyNameForCommand( "+moveup" ) );
+		text += '\n';
 	}
 
 	if ( ps->stats[ STAT_HEALTH ] <= 35 &&
 	     BG_InventoryContainsUpgrade( UP_MEDKIT, ps->stats ) )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT, COLOR_ALARM );
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to use your Medkit." ),
-		              CG_KeyNameForCommand( "itemact medkit" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += COLOR_ALARM;
+		text += va( _( "Press %s to use your Medkit." ), CG_KeyNameForCommand( "itemact medkit" ) );
+		text += '\n';
 	}
 
 	switch ( cg.nearUsableBuildable )
 	{
 		case BA_H_ARMOURY:
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to buy equipment upgrades at the Armoury." ),
-			              CG_KeyNameForCommand( "+activate" ) ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += va( _( "Press %s to buy equipment upgrades at the Armoury." ), CG_KeyNameForCommand( "+activate" ) );
+			text += '\n';
 			break;
 
 		case BA_NONE:
 			break;
 
 		default:
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to use the %s." ),
-			              CG_KeyNameForCommand( "+activate" ),
-			              _( BG_Buildable( cg.nearUsableBuildable )->humanName ) ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += va( _( "Press %s to use the %s." ), CG_KeyNameForCommand( "+activate" ), _( BG_Buildable( cg.nearUsableBuildable )->humanName ) );
+			text += '\n';
 			break;
 	}
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s and any direction to sprint." ),
-	              CG_KeyNameForCommand( "+sprint" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Press %s and any direction to sprint." ), CG_KeyNameForCommand( "+sprint" ) );
+	text += '\n';
 
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s to crouch." ),
-	              CG_KeyNameForCommand( "+movedown" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+	text += va( _( "Press %s to crouch." ), CG_KeyNameForCommand( "+movedown" ) );
+	text += '\n';
 }
 
 /*
@@ -550,66 +467,50 @@ static void CG_HumanText( char *text, playerState_t *ps )
 CG_SpectatorText
 ===============
 */
-static void CG_SpectatorText( char *text, playerState_t *ps )
+static void CG_SpectatorText( std::string& text, playerState_t *ps )
 {
 	if ( cgs.clientinfo[ cg.clientNum ].team != TEAM_NONE )
 	{
 		if ( ps->pm_flags & PMF_QUEUED )
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to leave spawn queue." ),
-			              CG_KeyNameForCommand( "+attack" ) ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += va( _( "Press %s to leave spawn queue." ), CG_KeyNameForCommand( "+attack" ) );
+			text += '\n';
 		}
 		else
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to spawn." ),
-			              CG_KeyNameForCommand( "+attack" ) ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += va( _( "Press %s to spawn." ), CG_KeyNameForCommand( "+attack" ) );
+			text += '\n';
 		}
 	}
 	else
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to join a team." ),
-		              CG_KeyNameForCommand( "+attack" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to join a team." ), CG_KeyNameForCommand( "+attack" ) );
+		text += '\n';
 	}
 
 	if ( ps->pm_flags & PMF_FOLLOW )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to stop following." ),
-		              CG_KeyNameForCommand( "+attack2" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to stop following." ), CG_KeyNameForCommand( "+attack2" ) );
+		text += '\n';
 
 		if ( !cg.chaseFollow )
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to switch to chase-cam spectator mode." ),
-			              CG_KeyNameForCommand( "+attack3" ) ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += va( _( "Press %s to switch to chase-cam spectator mode." ), CG_KeyNameForCommand( "+attack3" ) );
+			text += '\n';
 		}
 		else
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s to return to first-person spectator mode." ),
-			              CG_KeyNameForCommand( "+attack3" ) ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += va( _( "Press %s to return to first-person spectator mode." ), CG_KeyNameForCommand( "+attack3" ) );
+			text += '\n';
 		}
 
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to follow the next player." ),
-		              CG_KeyNameForCommand( "weapnext" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to follow the next player." ), CG_KeyNameForCommand( "weapnext" ) );
+		text += '\n';
 	}
 	else
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to follow a player." ),
-		              CG_KeyNameForCommand( "+attack2" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+		text += va( _( "Press %s to follow a player." ), CG_KeyNameForCommand( "+attack2" ) );
+		text += '\n';
 	}
 }
 
@@ -622,13 +523,13 @@ CG_TutorialText
 Returns context help for the current class/weapon
 ===============
 */
-const char *CG_TutorialText()
+const std::string& CG_TutorialText()
 {
 	playerState_t *ps;
-	static char   text[ MAX_TUTORIAL_TEXT ];
+	static std::string text;
 	static int    refreshBindings = 0;
 
-	text[ 0 ] = '\0';
+	text.clear();
 	ps = &cg.snap->ps;
 
 	if ( refreshBindings == 0 )
@@ -689,10 +590,8 @@ const char *CG_TutorialText()
 
 			if ( ps->persistant[ PERS_TEAM ] == TEAM_ALIENS )
 			{
-				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( _( "Press %s to evolve." ),
-				              CG_KeyNameForCommand( "+activate" ) ) );
-				Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+				text += va( _( "Press %s to evolve." ), CG_KeyNameForCommand( "+activate" ) );
+				text += '\n';
 			}
 		}
 	}
@@ -700,39 +599,25 @@ const char *CG_TutorialText()
 	{
 		if ( !CG_ClientIsReady( ps->clientNum ) )
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( _( "Press %s when ready to continue." ),
-			              CG_KeyNameForCommand( "+attack" ) ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += va( _( "Press %s when ready to continue." ), CG_KeyNameForCommand( "+attack" ) );
 		}
 		else
 		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT, _( "Waiting for other players to be ready." ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
+			text += _( "Waiting for other players to be ready." );
 		}
+		text += '\n';
 	}
 
 	if ( !cg.demoPlayback )
 	{
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
-
-		if ( cgs.clientinfo[ cg.clientNum ].team == TEAM_NONE )
-		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to chat." ), CG_KeyNameForCommand( "message_public" ) ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
-		}
-		else
-		{
-			Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to chat or %s to chat to your team." ), CG_KeyNameForCommand( "message_public" ),  CG_KeyNameForCommand( "message_team" ) ) );
-			Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
-		}
-
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
-
-		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to open the console." ), CG_KeyNameForCommand( "toggleConsole" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, "\n" );
-		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s for the menu." ),
-			CG_KeyNameForCommand( "toggleMenu" ) ) );
+		text += '\n';
+		text += va( _( "Press %s to chat with all players." ), CG_KeyNameForCommand( "message_public" ) );
+		text += '\n';
+		text += va( _( "Press %s to chat with your team." ), CG_KeyNameForCommand( "message_team" ) );
+		text += '\n';
+		text += va( _( "Press %s to open the console." ), CG_KeyNameForCommand( "toggleConsole" ) );
+		text += '\n';
+		text += va( _( "Press %s for the menu." ), CG_KeyNameForCommand( "toggleMenu" ) );
 	}
 
 	return text;
