@@ -1608,6 +1608,14 @@ void BotAimAtEnemy( gentity_t *self )
 	}
 }
 
+// the argument 'target' is somehow related to the bot's frame of reference.
+// that is, it only works with the usual absolute coordinates if the bot's
+// current normal vector (x, y, z) is (0, 0, 1), as given by:
+//   vec3_t normalVector;
+//   BG_GetClientNormal( &self->client->ps, normalVector );
+// this is not the case if an alien bot activates the wall climb, and is on
+// a non-horizontal surface.
+// TODO: fix this
 void BotAimAtLocation( gentity_t *self, const glm::vec3 &target )
 {
 	glm::vec3 aimVec, aimAngles, viewBase;
