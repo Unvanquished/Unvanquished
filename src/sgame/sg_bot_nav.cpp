@@ -63,9 +63,9 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 		}
 
 		navgen.Init( mapName );
-		navgen.StartGeneration( Util::enum_cast<class_t>( i ) );
+		std::unique_ptr<NavgenTask> task = navgen.StartGeneration( Util::enum_cast<class_t>( i ) );
 
-		while ( !navgen.Step() )
+		while ( !navgen.Step( *task ) )
 		{
 			// ping the engine with a useless message so that it does not think the sgame VM has hung
 			Cvar::GetValue( "x" );
@@ -87,7 +87,7 @@ static Cvar::Cvar<bool> g_bot_autocrouch("g_bot_autocrouch", "whether bots shoul
 
 static NavmeshGenerator navgen;
 static std::vector<class_t> navgenQueue;
-static class_t generatingNow;
+static std::unique_ptr<NavgenTask> generatingNow;
 static int nextLogTime;
 
 static void G_BotBackgroundNavgenShutdown()
@@ -95,7 +95,7 @@ static void G_BotBackgroundNavgenShutdown()
 	navgen.~NavmeshGenerator();
 	new (&navgen) NavmeshGenerator();
 	navgenQueue.clear();
-	generatingNow = PCL_NONE;
+	generatingNow.reset();
 }
 
 void G_BotBackgroundNavgen()
@@ -111,19 +111,18 @@ void G_BotBackgroundNavgen()
 
 	navgen.Init( Cvar::GetValue( "mapname" ) );
 
-	if ( generatingNow == PCL_NONE )
+	if ( !generatingNow )
 	{
 		class_t next = navgenQueue.back();
-		generatingNow = next;
-		navgen.StartGeneration( next );
+		generatingNow = navgen.StartGeneration( next );
 	}
 
 	if ( level.time > nextLogTime )
 	{
-		std::string percent = std::to_string( int(navgen.SpeciesFractionCompleted() * 100) );
+		std::string percent = std::to_string( int(generatingNow->FractionCompleted() * 100) );
 		trap_SendServerCommand( -1, va( "print_tr %s %s %s",
 			QQ( N_( "Server: generating bot navigation mesh for $1$... $2$%" ) ),
-			BG_Class( generatingNow )->name, percent.c_str() ) );
+			BG_Class( generatingNow->species )->name, percent.c_str() ) );
 		nextLogTime = level.time + 10000;
 	}
 
@@ -143,11 +142,11 @@ void G_BotBackgroundNavgen()
 
 	while ( Sys::Milliseconds() < stopTime )
 	{
-		if ( navgen.Step() )
+		if ( navgen.Step( *generatingNow ) )
 		{
-			ASSERT_EQ( generatingNow, navgenQueue.back() );
+			ASSERT_EQ( generatingNow->species, navgenQueue.back() );
 			navgenQueue.pop_back();
-			generatingNow = PCL_NONE;
+			generatingNow.reset();
 			break;
 		}
 	}

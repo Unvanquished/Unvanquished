@@ -69,43 +69,43 @@ static NavgenStatus::Code CodeForFailedDtStatus(dtStatus status)
 
 static int tileSize = 64;
 
-void NavmeshGenerator::WriteFile() {
-	if ( d_->status.code == NavgenStatus::TRANSIENT_FAILURE )
+void NavmeshGenerator::WriteFile( const NavgenTask &t ) {
+	if ( t.status.code == NavgenStatus::TRANSIENT_FAILURE )
 	{
 		return; // Don't write anything
 	}
 
 	// there are 22 bits to store a tile and its polys
-	int tileBits = rcMin( ( int ) dtIlog2( dtNextPow2( d_->tcparams.maxTiles ) ), 14 );
+	int tileBits = rcMin( ( int ) dtIlog2( dtNextPow2( t.tcparams.maxTiles ) ), 14 );
 	int polyBits = 22 - tileBits;
 
 	dtNavMeshParams params;
-	dtVcopy( params.orig, d_->tcparams.orig );
-	params.tileHeight = d_->tcparams.height * d_->cfg.cs;
-	params.tileWidth = d_->tcparams.width * d_->cfg.cs;
+	dtVcopy( params.orig, t.tcparams.orig );
+	params.tileHeight = t.tcparams.height * t.cfg.cs;
+	params.tileWidth = t.tcparams.width * t.cfg.cs;
 	params.maxTiles = 1 << tileBits;
 	params.maxPolys = 1 << polyBits;
 
-	std::string filename = NavmeshFilename( mapName_, d_->species );
+	std::string filename = NavmeshFilename( mapName_, t.species );
 
 	NavMeshSetHeader header;
 	int maxTiles;
 
-	if ( d_->status.code == NavgenStatus::OK )
+	if ( t.status.code == NavgenStatus::OK )
 	{
-		maxTiles = d_->tileCache->getTileCount();
+		maxTiles = t.tileCache->getTileCount();
 		int numTiles = 0;
 
 		for ( int i = 0; i < maxTiles; i++ )
 		{
-			const dtCompressedTile *tile = d_->tileCache->getTile( i );
+			const dtCompressedTile *tile = t.tileCache->getTile( i );
 			if ( !tile || !tile->header || !tile->dataSize ) {
 				continue;
 			}
 			numTiles++;
 		}
 		header.numTiles = numTiles;
-		header.cacheParams = *d_->tileCache->getParams();
+		header.cacheParams = *t.tileCache->getParams();
 		header.params = params;
 	}
 	else
@@ -146,25 +146,25 @@ void NavmeshGenerator::WriteFile() {
 
 	if ( !Write( &header, sizeof( header ) ) ) return;
 
-	if ( d_->status.code == NavgenStatus::PERMANENT_FAILURE )
+	if ( t.status.code == NavgenStatus::PERMANENT_FAILURE )
 	{
 		// rest of file is the error message
-		if ( !Write( d_->status.message.data(), d_->status.message.size() ) ) return;
+		if ( !Write( t.status.message.data(), t.status.message.size() ) ) return;
 		trap_FS_FCloseFile( file );
 		return;
 	}
-	ASSERT_EQ(d_->status.code, NavgenStatus::OK);
+	ASSERT_EQ(t.status.code, NavgenStatus::OK);
 
 	for ( int i = 0; i < maxTiles; i++ )
 	{
-		const dtCompressedTile *tile = d_->tileCache->getTile( i );
+		const dtCompressedTile *tile = t.tileCache->getTile( i );
 
 		if ( !tile || !tile->header || !tile->dataSize ) {
 			continue;
 		}
 
 		NavMeshTileHeader tileHeader;
-		tileHeader.tileRef = d_->tileCache->getTileRef( tile );
+		tileHeader.tileRef = t.tileCache->getTileRef( tile );
 		tileHeader.dataSize = tile->dataSize;
 
 		SwapNavMeshTileHeader( tileHeader );
@@ -1014,16 +1014,16 @@ static NavgenStatus rasterizeTileLayers( Geometry& geo, rcContext &context, int 
 	return {};
 }
 
-void NavmeshGenerator::StartGeneration( class_t species )
+std::unique_ptr<NavgenTask> NavmeshGenerator::StartGeneration( class_t species )
 {
 	classAttributes_t const& agent = *BG_Class( species );
 	LOG.Notice( "Generating navmesh for %s", agent.name );
-	d_.reset( new PerClassData );
-	d_->species = species;
-	d_->status = initStatus_;
-	if ( d_->status.code != NavgenStatus::OK )
+	auto t = Util::make_unique<NavgenTask>();
+	t->species = species;
+	t->status = initStatus_;
+	if ( t->status.code != NavgenStatus::OK )
 	{
-		return;
+		return t;
 	}
 
 	const float *bmin = geo_.getMins();
@@ -1041,8 +1041,8 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	rcCalcGridSize( bmin, bmax, cellSize, &gw, &gh );
 
 	const int ts = tileSize;
-	d_->tw = ( gw + ts - 1 ) / ts;
-	d_->th = ( gh + ts - 1 ) / ts;
+	t->tw = ( gw + ts - 1 ) / ts;
+	t->th = ( gh + ts - 1 ) / ts;
 
 	float climb = config_.stepSize;
 	if ( config_.autojumpSecurity > 0.f )
@@ -1060,62 +1060,63 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	}
 
 	LOG.Notice( "generating agent %s with stepsize of %d", agent.name, climb );
-	d_->cfg.cs = cellSize;
-	d_->cfg.ch = cellHeight_;
-	d_->cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
-	d_->cfg.walkableHeight = ( int ) ceilf( height / d_->cfg.ch );
-	d_->cfg.walkableClimb = ( int ) floorf( climb / d_->cfg.ch );
-	d_->cfg.walkableRadius = ( int ) ceilf( radius / d_->cfg.cs );
-	d_->cfg.maxEdgeLen = 0;
-	d_->cfg.maxSimplificationError = 1.3f;
-	d_->cfg.minRegionArea = rcSqr( 25 );
-	d_->cfg.mergeRegionArea = rcSqr( 50 );
-	d_->cfg.maxVertsPerPoly = 6;
-	d_->cfg.tileSize = ts;
-	d_->cfg.borderSize = d_->cfg.walkableRadius * 2;
-	d_->cfg.width = d_->cfg.tileSize + d_->cfg.borderSize * 2;
-	d_->cfg.height = d_->cfg.tileSize + d_->cfg.borderSize * 2;
-	d_->cfg.detailSampleDist = d_->cfg.cs * 6.0f;
-	d_->cfg.detailSampleMaxError = d_->cfg.ch * 1.0f;
+	t->cfg.cs = cellSize;
+	t->cfg.ch = cellHeight_;
+	t->cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
+	t->cfg.walkableHeight = ( int ) ceilf( height / t->cfg.ch );
+	t->cfg.walkableClimb = ( int ) floorf( climb / t->cfg.ch );
+	t->cfg.walkableRadius = ( int ) ceilf( radius / t->cfg.cs );
+	t->cfg.maxEdgeLen = 0;
+	t->cfg.maxSimplificationError = 1.3f;
+	t->cfg.minRegionArea = rcSqr( 25 );
+	t->cfg.mergeRegionArea = rcSqr( 50 );
+	t->cfg.maxVertsPerPoly = 6;
+	t->cfg.tileSize = ts;
+	t->cfg.borderSize = t->cfg.walkableRadius * 2;
+	t->cfg.width = t->cfg.tileSize + t->cfg.borderSize * 2;
+	t->cfg.height = t->cfg.tileSize + t->cfg.borderSize * 2;
+	t->cfg.detailSampleDist = t->cfg.cs * 6.0f;
+	t->cfg.detailSampleMaxError = t->cfg.ch * 1.0f;
 
-	rcVcopy( d_->cfg.bmin, bmin );
-	rcVcopy( d_->cfg.bmax, bmax );
+	rcVcopy( t->cfg.bmin, bmin );
+	rcVcopy( t->cfg.bmax, bmax );
 
-	rcVcopy( d_->tcparams.orig, bmin );
-	d_->tcparams.cs = cellSize;
-	d_->tcparams.ch = cellHeight_;
-	d_->tcparams.width = ts;
-	d_->tcparams.height = ts;
-	d_->tcparams.walkableHeight = height;
-	d_->tcparams.walkableRadius = radius;
-	d_->tcparams.walkableClimb = climb;
-	d_->tcparams.maxSimplificationError = 1.3;
-	d_->tcparams.maxTiles = d_->tw * d_->th * EXPECTED_LAYERS_PER_TILE;
-	d_->tcparams.maxObstacles = 256;
+	rcVcopy( t->tcparams.orig, bmin );
+	t->tcparams.cs = cellSize;
+	t->tcparams.ch = cellHeight_;
+	t->tcparams.width = ts;
+	t->tcparams.height = ts;
+	t->tcparams.walkableHeight = height;
+	t->tcparams.walkableRadius = radius;
+	t->tcparams.walkableClimb = climb;
+	t->tcparams.maxSimplificationError = 1.3;
+	t->tcparams.maxTiles = t->tw * t->th * EXPECTED_LAYERS_PER_TILE;
+	t->tcparams.maxObstacles = 256;
 
-	d_->tileCache.reset(new dtTileCache);
-	dtStatus status = d_->tileCache->init( &d_->tcparams, &d_->alloc, &d_->comp, &d_->proc );
+	t->tileCache.reset(new dtTileCache);
+	dtStatus status = t->tileCache->init( &t->tcparams, &t->alloc, &t->comp, &t->proc );
 
 	if ( dtStatusFailed( status ) ) {
 		std::string message = dtStatusDetail( status, DT_INVALID_PARAM ) ? "Could not init tile cache: Invalid parameter" : "Could not init tile cache";
-		d_->status = { CodeForFailedDtStatus( status ), message };
+		t->status = { CodeForFailedDtStatus( status ), message };
 	}
+
+	return t;
 }
 
-bool NavmeshGenerator::Step()
+bool NavmeshGenerator::Step( NavgenTask &t )
 {
-	if ( d_->status.code != NavgenStatus::OK || d_->y >= d_->th || d_->tw == 0 )
+	if ( t.status.code != NavgenStatus::OK || t.y >= t.th || t.tw == 0 )
 	{
-		if ( d_->status.code == NavgenStatus::OK )
+		if ( t.status.code == NavgenStatus::OK )
 		{
-			LOG.Verbose( "Finished generating navmesh for %s", BG_ClassModelConfig( d_->species )->humanName );
+			LOG.Verbose( "Finished generating navmesh for %s", BG_ClassModelConfig( t.species )->humanName );
 		}
 		else
 		{
-			LOG.Warn( "Navmesh generation for %s failed: %s", BG_ClassModelConfig( d_->species )->humanName, d_->status.message );
+			LOG.Warn( "Navmesh generation for %s failed: %s", BG_ClassModelConfig( t.species )->humanName, t.status.message );
 		}
-		WriteFile();
-		d_.reset();
+		WriteFile( t );
 		return true;
 	}
 
@@ -1123,17 +1124,17 @@ bool NavmeshGenerator::Step()
 	memset( tiles, 0, sizeof( tiles ) );
 
 	int ntiles;
-	NavgenStatus status = rasterizeTileLayers(geo_, recastContext_, d_->x, d_->y, d_->cfg, tiles, MAX_LAYERS, !!config_.filterGaps, &ntiles);
+	NavgenStatus status = rasterizeTileLayers(geo_, recastContext_, t.x, t.y, t.cfg, tiles, MAX_LAYERS, !!config_.filterGaps, &ntiles);
 	if ( status.code != NavgenStatus::OK )
 	{
-		d_->status = status;
+		t.status = status;
 		return false;
 	}
 
 	for ( int i = 0; i < ntiles; i++ )
 	{
 		TileCacheData *tile = &tiles[ i ];
-		dtStatus tileStatus = d_->tileCache->addTile( tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0 );
+		dtStatus tileStatus = t.tileCache->addTile( tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0 );
 		if ( dtStatusFailed( tileStatus ) ) {
 			dtFree( tile->data );
 			tile->data = 0;
@@ -1142,10 +1143,10 @@ bool NavmeshGenerator::Step()
 	}
 
 	//iterate over all tiles (number is determined by rcCalcGridSize)
-	if ( ++d_->x == d_->tw )
+	if ( ++t.x == t.tw )
 	{
-		d_->x = 0;
-		++d_->y;
+		t.x = 0;
+		++t.y;
 	}
 	return false;
 }
@@ -1176,8 +1177,8 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 	}
 }
 
-float NavmeshGenerator::SpeciesFractionCompleted() const
+float NavgenTask::FractionCompleted() const
 {
 	// Assume that writing the file at the end is 10%
-	return 0.9f * float(d_->y * d_->tw + d_->x) / float(d_->tw * d_->th);
+	return 0.9f * float(y * tw + x) / float(tw * th);
 }

@@ -126,24 +126,27 @@ struct NavgenStatus
 	std::string message;
 };
 
+// for one class_t
+struct NavgenTask {
+	class_t species;
+	rcConfig cfg = {};
+	dtTileCacheParams tcparams = {};
+	std::unique_ptr<dtTileCache> tileCache;
+	LinearAllocator alloc = LinearAllocator(32000);
+	FastLZCompressor comp;
+	BasicMeshProcess proc;
+	int tw;
+	int th;
+	int x = 0;
+	int y = 0;
+	NavgenStatus status;
+
+	float FractionCompleted() const;
+};
+
 // Public interface to navgen. Rest of this file is internal details
 class NavmeshGenerator {
 private:
-	struct PerClassData {
-		class_t species;
-		rcConfig cfg = {};
-		dtTileCacheParams tcparams = {};
-		std::unique_ptr<dtTileCache> tileCache;
-		LinearAllocator alloc = LinearAllocator(32000);
-		FastLZCompressor comp;
-		BasicMeshProcess proc;
-		int tw;
-		int th;
-		int x = 0;
-		int y = 0;
-		NavgenStatus status;
-	};
-
 	UnvContext recastContext_;
 	NavgenConfig config_;
 	// Custom computed config for the map
@@ -153,23 +156,21 @@ private:
 	std::string mapData_;
 	Geometry geo_;
 	NavgenStatus initStatus_;
-	// Data for generating current class
-	std::unique_ptr<PerClassData> d_;
 
+	// Map geometry loading
 	void LoadBSP();
 	void LoadGeometry();
 	void LoadTris(std::vector<float>& verts, std::vector<int>& tris);
-	void WriteFile();
+
+	void WriteFile(const NavgenTask& t);
 
 public:
 	// load the BSP if it has not been loaded already
 	// in principle mapName could be different from the current map, if the necessary pak is loaded
 	void Init(Str::StringRef mapName);
 
-	void StartGeneration(class_t species);
-
-	float SpeciesFractionCompleted() const;
+	std::unique_ptr<NavgenTask> StartGeneration(class_t species);
 
 	// Returns true when finished
-	bool Step();
+	bool Step(NavgenTask& t);
 };
