@@ -1125,16 +1125,16 @@ static void GenerateNavmeshes()
 		cg.navmeshLoadingFraction = classesCompleted / classesTotal;
 		trap_UpdateScreen();
 
-		navgen.StartGeneration( species );
+		std::unique_ptr<NavgenTask> task = navgen.StartGeneration( species );
 		do
 		{
-			float fraction = ( classesCompleted + navgen.SpeciesFractionCompleted() ) / classesTotal;
+			float fraction = ( classesCompleted + task->FractionCompleted() ) / classesTotal;
 			if ( fraction - cg.navmeshLoadingFraction > 0.01 )
 			{
 				cg.navmeshLoadingFraction = fraction;
 				trap_UpdateScreen();
 			}
-		} while ( !navgen.Step() );
+		} while ( !navgen.Step( *task ) );
 		++classesCompleted;
 	}
 	cg.loadingNavmesh = false;
