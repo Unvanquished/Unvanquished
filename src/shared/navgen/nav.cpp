@@ -42,11 +42,19 @@
 
 static Log::Logger LOG( VM_STRING_PREFIX "navgen", "", Log::Level::NOTICE );
 
-void UnvContext::doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/)
+void UnvContext::doLog(rcLogCategory category, const char* msg, int len)
 {
-	if ( m_logEnabled )
+	std::string line(msg, len);
+	switch ( category )
 	{
-		LOG.Notice(msg);
+		case RC_LOG_WARNING:
+		case RC_LOG_ERROR:
+			LOG.Warn( line );
+			break;
+		case RC_LOG_PROGRESS:
+		default:
+			LOG.Notice( line );
+			break;
 	}
 }
 
@@ -404,7 +412,6 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 		return;
 	}
 	LOG.Debug( "Generated %d brush tris", tris.size() / 3 );
-	LOG.Debug( "Generated %d brush verts", verts.size() / 3 );
 
 	/*
 	 * Load patch tris
@@ -536,16 +543,14 @@ void NavmeshGenerator::LoadGeometry()
 	numVerts = verts.size() / 3;
 
 	LOG.Debug( "Using %d triangles", numTris );
-	LOG.Debug( "Using %d vertices", numVerts );
 
 	geo_.init( &verts[ 0 ], numVerts, &tris[ 0 ], numTris );
 
 	const float *mins = geo_.getMins();
 	const float *maxs = geo_.getMaxs();
 
-	LOG.Debug( "set recast world bounds to" );
-	LOG.Debug( "min: %f %f %f", mins[0], mins[1], mins[2] );
-	LOG.Debug( "max: %f %f %f", maxs[0], maxs[1], maxs[2] );
+	LOG.Debug( "Recast world bounds: min (%.0f %.0f %.0f) max (%.0f %.0f %.0f)",
+	           mins[0], mins[1], mins[2], maxs[0], maxs[1], maxs[2] );
 }
 
 // Modified version of Recast's rcErodeWalkableArea that uses an AABB instead of a cylindrical radius
@@ -1161,7 +1166,7 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 	float height = rcAbs( geo_.getMaxs()[1] ) + rcAbs( geo_.getMins()[1] );
 	if ( height / cellHeight_ > RC_SPAN_MAX_HEIGHT )
 	{
-		Log::Warn("Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.");
+		LOG.Warn("Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.");
 		cellHeight_ = height / RC_SPAN_MAX_HEIGHT;
 	}
 

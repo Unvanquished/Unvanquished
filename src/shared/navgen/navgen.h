@@ -112,7 +112,7 @@ const rcChunkyTriMesh *getChunkyMesh() { return &mesh; }
 
 class UnvContext : public rcContext
 {
-	void doLog(const rcLogCategory /*category*/, const char* msg, const int /*len*/) override;
+	void doLog(rcLogCategory category, const char* msg, int len) override;
 };
 
 struct NavgenStatus
