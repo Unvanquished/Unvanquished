@@ -49,28 +49,18 @@ Navigation Mesh Generation
 ===========================
 */
 
+static Cvar::Cvar<int> g_bot_navgen_maxThreads(
+	"g_bot_navgen_maxThreads", "Number of background threads to use when generating navmeshes. 0 for main thread",
+	Cvar::NONE, 1);
+
 // blocks the main thread!
 void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 {
 	std::string mapName = Cvar::GetValue( "mapname" );
 	NavmeshGenerator navgen;
-
-	for ( int i = PCL_NONE; ++i < PCL_NUM_CLASSES; )
-	{
-		if ( !classes[ i ] )
-		{
-			continue;
-		}
-
-		navgen.Init( mapName );
-		std::unique_ptr<NavgenTask> task = navgen.StartGeneration( Util::enum_cast<class_t>( i ) );
-
-		while ( !navgen.Step( *task ) )
-		{
-			// ping the engine with a useless message so that it does not think the sgame VM has hung
-			Cvar::GetValue( "x" );
-		}
-	}
+	navgen.EnqueueTasks( mapName, classes );
+	navgen.StartBackgroundThreads( g_bot_navgen_maxThreads.Get() );
+	navgen.WaitInMainThread( []( float ) {} );
 }
 
 // TODO: Latch(), when supported in gamelogic
@@ -86,44 +76,29 @@ static Cvar::Cvar<int> frameToggle("g_bot_navgen_frame", "FOR INTERNAL USE", Cva
 static Cvar::Cvar<bool> g_bot_autocrouch("g_bot_autocrouch", "whether bots should crouch when they detect an obstacle", Cvar::NONE, true);
 
 static NavmeshGenerator navgen;
-static std::vector<class_t> navgenQueue;
-static std::unique_ptr<NavgenTask> generatingNow;
+bool usingBackgroundThreads;
+static std::unique_ptr<NavgenTask> generatingNow; // used if generating on the main thread
 static int nextLogTime;
 
 static void G_BotBackgroundNavgenShutdown()
 {
 	navgen.~NavmeshGenerator();
 	new (&navgen) NavmeshGenerator();
-	navgenQueue.clear();
 	generatingNow.reset();
 }
 
-void G_BotBackgroundNavgen()
+// Returns true if done
+static bool MainThreadBackgroundNavgen()
 {
-	if ( navgenQueue.empty() )
-	{
-		return;
-	}
-
-	ASSERT_EQ( navMeshLoaded, navMeshStatus_t::GENERATING );
-
 	int stopTime = Sys::Milliseconds() + msecPerFrame.Get();
-
-	navgen.Init( Cvar::GetValue( "mapname" ) );
 
 	if ( !generatingNow )
 	{
-		class_t next = navgenQueue.back();
-		generatingNow = navgen.StartGeneration( next );
-	}
-
-	if ( level.time > nextLogTime )
-	{
-		std::string percent = std::to_string( int(generatingNow->FractionCompleted() * 100) );
-		trap_SendServerCommand( -1, va( "print_tr %s %s %s",
-			QQ( N_( "Server: generating bot navigation mesh for $1$... $2$%" ) ),
-			BG_Class( generatingNow->species )->name, percent.c_str() ) );
-		nextLogTime = level.time + 10000;
+		generatingNow = navgen.PopTask();
+		if ( !generatingNow )
+		{
+			return true;
+		}
 	}
 
 	// HACK: if the game simulation time gets behind the real time, the server runs a bunch of
@@ -135,7 +110,7 @@ void G_BotBackgroundNavgen()
 	static int lastToggle = -12345;
 	if ( lastToggle == frameToggle.Get() )
 	{
-		return;
+		return false;
 	}
 	lastToggle = frameToggle.Get();
 	trap_SendConsoleCommand( "toggle g_bot_navgen_frame" );
@@ -144,14 +119,35 @@ void G_BotBackgroundNavgen()
 	{
 		if ( navgen.Step( *generatingNow ) )
 		{
-			ASSERT_EQ( generatingNow->species, navgenQueue.back() );
-			navgenQueue.pop_back();
+			generatingNow->context.DoMainThreadTasks();
 			generatingNow.reset();
 			break;
 		}
 	}
 
-	if ( navgenQueue.empty() ) // finished?
+	return false;
+}
+
+void G_BotBackgroundNavgen()
+{
+	if ( navMeshLoaded != navMeshStatus_t::GENERATING )
+	{
+		return;
+	}
+
+	bool done;
+
+	if ( usingBackgroundThreads )
+	{
+		done = navgen.ThreadsDone();
+		navgen.HandleFinishedTasks();
+	}
+	else
+	{
+		done = MainThreadBackgroundNavgen();
+	}
+
+	if ( done )
 	{
 		G_BotBackgroundNavgenShutdown();
 
@@ -168,6 +164,13 @@ void G_BotBackgroundNavgen()
 			ASSERT_EQ( navMeshLoaded, navMeshStatus_t::LOADED );
 			// Bots on spectate will now join in their think function
 		}
+	}
+	else if ( level.time > nextLogTime )
+	{
+		std::string percent = std::to_string( int(navgen.FractionComplete() * 100) );
+		trap_SendServerCommand( -1, va( "print_tr %s %s",
+			QQ( N_( "Server: generating bot navigation meshes... $1$%" ) ), percent.c_str() ) );
+		nextLogTime = level.time + 10000;
 	}
 }
 
@@ -195,7 +198,8 @@ void G_BotNavInit( int generateNeeded )
 	}
 
 	std::bitset<PCL_NUM_CLASSES> missing;
-	NavgenConfig config = ReadNavgenConfig( Cvar::GetValue( "mapname" ) );
+	std::string mapName = Cvar::GetValue( "mapname" );
+	NavgenConfig config = ReadNavgenConfig( mapName );
 
 	for ( class_t i : RequiredNavmeshes( g_bot_navmeshReduceTypes.Get() ) )
 	{
@@ -231,14 +235,15 @@ void G_BotNavInit( int generateNeeded )
 		}
 		else
 		{
-			ASSERT( navgenQueue.empty() );
-			for ( int i = PCL_NUM_CLASSES; --i > PCL_NONE; )
+			ASSERT( !generatingNow );
+			navgen.EnqueueTasks( mapName, missing );
+			usingBackgroundThreads = g_bot_navgen_maxThreads.Get() > 0;
+
+			if ( usingBackgroundThreads )
 			{
-				if ( missing[ i ] )
-				{
-					navgenQueue.push_back( Util::enum_cast<class_t>( i ) );
-				}
+				navgen.StartBackgroundThreads( g_bot_navgen_maxThreads.Get() );
 			}
+
 			navMeshLoaded = navMeshStatus_t::GENERATING;
 			return;
 		}

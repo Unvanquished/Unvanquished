@@ -40,7 +40,8 @@
 #include "shared/bg_gameplay.h"
 #include "navgen.h"
 
-static Log::Logger LOG( VM_STRING_PREFIX "navgen", "", Log::Level::NOTICE );
+// disable suppression in case multiple threads finishing together lead to a burst of output
+static auto LOG = Log::Logger( VM_STRING_PREFIX "navgen", "", Log::Level::NOTICE ).WithoutSuppression();
 
 void UnvContext::doLog(rcLogCategory category, const char* msg, int len)
 {
@@ -49,12 +50,25 @@ void UnvContext::doLog(rcLogCategory category, const char* msg, int len)
 	{
 		case RC_LOG_WARNING:
 		case RC_LOG_ERROR:
-			LOG.Warn( line );
+			RunOnMainThread( [line] { LOG.Warn( line ); } );
 			break;
 		case RC_LOG_PROGRESS:
 		default:
-			LOG.Notice( line );
+			RunOnMainThread( [line] { LOG.Notice( line ); } );
 			break;
+	}
+}
+
+void UnvContext::RunOnMainThread( std::function<void()> f )
+{
+	mainThreadTasks_.push_back( std::move( f ) );
+}
+
+void UnvContext::DoMainThreadTasks()
+{
+	for ( auto &f : mainThreadTasks_ )
+	{
+		f();
 	}
 }
 
@@ -70,6 +84,15 @@ static NavgenStatus::Code CodeForFailedDtStatus(dtStatus status)
 static int tileSize = 64;
 
 void NavmeshGenerator::WriteFile( const NavgenTask &t ) {
+	if ( t.status.code == NavgenStatus::OK )
+	{
+		LOG.Notice( "Finished generating navmesh for %s", BG_ClassModelConfig( t.species )->humanName );
+	}
+	else
+	{
+		LOG.Warn( "Navmesh generation for %s failed: %s", BG_ClassModelConfig( t.species )->humanName, t.status.message );
+	}
+
 	if ( t.status.code == NavgenStatus::TRANSIENT_FAILURE )
 	{
 		return; // Don't write anything
@@ -1014,10 +1037,43 @@ static NavgenStatus rasterizeTileLayers( Geometry& geo, rcContext &context, int 
 	return {};
 }
 
+void NavmeshGenerator::EnqueueTasks( Str::StringRef mapName, std::bitset<PCL_NUM_CLASSES> classes )
+{
+	// The NavmeshGenerator object is not designed to be used more than once
+	ASSERT( mapName_.empty() );
+
+	// never divide by 0
+	// This fails to include map loading time but we don't update progress during that anyway
+	int amountOfWork = 1;
+
+	std::string names;
+
+	for ( int i = PCL_NUM_CLASSES; --i != PCL_NONE; )
+	{
+		if ( !classes[ i ] )
+		{
+			continue;
+		}
+
+		Init( mapName );
+		taskQueue_.push_back( StartGeneration( Util::enum_cast<class_t>( i ) ) );
+
+		const NavgenTask& task = *taskQueue_.back();
+		if ( task.status.code == NavgenStatus::OK )
+		{
+			amountOfWork += task.tw * task.th; // This correlates pretty well with how long it takes
+		}
+
+		names = ' ' + ( BG_Class(i)->name + names );
+	}
+
+	fractionCompleteDenominator_ = amountOfWork;
+	LOG.Notice( "Navgen requested for:%s", names );
+}
+
 std::unique_ptr<NavgenTask> NavmeshGenerator::StartGeneration( class_t species )
 {
 	classAttributes_t const& agent = *BG_Class( species );
-	LOG.Notice( "Generating navmesh for %s", agent.name );
 	auto t = Util::make_unique<NavgenTask>();
 	t->species = species;
 	t->status = initStatus_;
@@ -1059,7 +1115,11 @@ std::unique_ptr<NavgenTask> NavmeshGenerator::StartGeneration( class_t species )
 		climb = std::max( config_.stepSize, climb );
 	}
 
-	LOG.Notice( "generating agent %s with stepsize of %d", agent.name, climb );
+	// We are actually still running on the main thread, but put the message in there
+	// so that it will be grouped with other messages about the same class
+	std::string msg = Str::Format( "generating agent %s with stepsize of %d, grid %dx%d", agent.name, climb, t->tw, t->th );
+	t->context.RunOnMainThread( [msg] { LOG.Verbose( msg ); } );
+
 	t->cfg.cs = cellSize;
 	t->cfg.ch = cellHeight_;
 	t->cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
@@ -1104,19 +1164,28 @@ std::unique_ptr<NavgenTask> NavmeshGenerator::StartGeneration( class_t species )
 	return t;
 }
 
+std::unique_ptr<NavgenTask> NavmeshGenerator::PopTask()
+{
+	if ( taskQueue_.empty() )
+	{
+		return nullptr;
+	}
+
+	auto ret = std::move( taskQueue_.back() );
+	taskQueue_.pop_back();
+	return ret;
+}
+
+float NavmeshGenerator::FractionComplete() const
+{
+	return float(fractionCompleteNumerator_) / float(fractionCompleteDenominator_);
+}
+
 bool NavmeshGenerator::Step( NavgenTask &t )
 {
 	if ( t.status.code != NavgenStatus::OK || t.y >= t.th || t.tw == 0 )
 	{
-		if ( t.status.code == NavgenStatus::OK )
-		{
-			LOG.Verbose( "Finished generating navmesh for %s", BG_ClassModelConfig( t.species )->humanName );
-		}
-		else
-		{
-			LOG.Warn( "Navmesh generation for %s failed: %s", BG_ClassModelConfig( t.species )->humanName, t.status.message );
-		}
-		WriteFile( t );
+		t.context.RunOnMainThread( [this, &t] { WriteFile( t ); } );
 		return true;
 	}
 
@@ -1124,7 +1193,7 @@ bool NavmeshGenerator::Step( NavgenTask &t )
 	memset( tiles, 0, sizeof( tiles ) );
 
 	int ntiles;
-	NavgenStatus status = rasterizeTileLayers(geo_, recastContext_, t.x, t.y, t.cfg, tiles, MAX_LAYERS, !!config_.filterGaps, &ntiles);
+	NavgenStatus status = rasterizeTileLayers(geo_, t.context, t.x, t.y, t.cfg, tiles, MAX_LAYERS, !!config_.filterGaps, &ntiles);
 	if ( status.code != NavgenStatus::OK )
 	{
 		t.status = status;
@@ -1148,6 +1217,8 @@ bool NavmeshGenerator::Step( NavgenTask &t )
 		t.x = 0;
 		++t.y;
 	}
+
+	++fractionCompleteNumerator_;
 	return false;
 }
 
@@ -1157,7 +1228,6 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 
 	config_ = ReadNavgenConfig( mapName );
 	mapName_ = mapName;
-	recastContext_.enableLog(true);
 	initStatus_ = {};
 	LoadBSP();
 	LoadGeometry();
@@ -1177,8 +1247,100 @@ void NavmeshGenerator::Init(Str::StringRef mapName)
 	}
 }
 
-float NavgenTask::FractionCompleted() const
+void NavmeshGenerator::StartBackgroundThreads( int numBackgroundThreads )
 {
-	// Assume that writing the file at the end is 10%
-	return 0.9f * float(y * tw + x) / float(tw * th);
+	numBackgroundThreads = std::max( numBackgroundThreads, 1 );
+	numBackgroundThreads = std::min( numBackgroundThreads, static_cast<int>( taskQueue_.size() ) );
+	LOG.Notice( "Using %d worker thread(s) for navmesh generation", numBackgroundThreads );
+	numActiveThreads_ = numBackgroundThreads;
+
+	for ( ; numBackgroundThreads > 0; numBackgroundThreads-- )
+	{
+		threads_.emplace_back( &NavmeshGenerator::BackgroundThreadMain, this );
+	}
+}
+
+void NavmeshGenerator::BackgroundThreadMain()
+{
+	std::unique_lock<std::mutex> lock(taskQueueMutex_);
+
+	while ( true )
+	{
+		std::unique_ptr<NavgenTask> task;
+		task = PopTask();
+
+		if ( !task )
+		{
+			--numActiveThreads_;
+			return;
+		}
+
+		lock.unlock();
+		int start = Sys::Milliseconds();
+
+		do
+		{
+			if ( canceled_ )
+			{
+				return;
+			}
+		}
+		while ( !Step( *task ) );
+
+		std::string msg = Str::Format( "Navgen for %s took %d ms",
+			BG_Class( task->species )->name, Sys::Milliseconds() - start );
+		task->context.RunOnMainThread( [msg] { LOG.Verbose( msg ); } );
+		lock.lock();
+		finishedTasks_.push_back( std::move( task ) );
+	}
+
+	--numActiveThreads_;
+}
+
+void NavmeshGenerator::WaitInMainThread( std::function<void(float)> progressCallback )
+{
+	while ( !ThreadsDone() )
+	{
+		bool somethingFinished = HandleFinishedTasks();
+		progressCallback( FractionComplete() );
+		if ( !somethingFinished )
+		{
+			Cvar::GetValue( "x" ); // prevent being killed by engine after 2 seconds of idleness
+			Sys::SleepFor( std::chrono::milliseconds( 300 ) ); // TODO std::condition_variable?
+		}
+	}
+
+	HandleFinishedTasks();
+}
+
+bool NavmeshGenerator::ThreadsDone()
+{
+	std::lock_guard<std::mutex> lock(taskQueueMutex_);
+	return numActiveThreads_ == 0;
+}
+
+// returns true if there were any finished
+bool NavmeshGenerator::HandleFinishedTasks()
+{
+	std::vector<std::unique_ptr<NavgenTask>> finished;
+	{
+		std::lock_guard<std::mutex> lock(taskQueueMutex_);
+		std::swap( finished, finishedTasks_ );
+	}
+
+	for ( auto &task : finished )
+	{
+		task->context.DoMainThreadTasks();
+	}
+
+	return !finished.empty();
+}
+
+NavmeshGenerator::~NavmeshGenerator()
+{
+	canceled_ = true;
+	for ( std::thread &thread : threads_ )
+	{
+		thread.join();
+	}
 }

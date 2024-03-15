@@ -158,6 +158,9 @@ Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed 
 Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "desaturate world view when dead or spawning", Cvar::NONE, true);
 
 static Cvar::Cvar<bool> cg_navgenOnLoad("cg_navgenOnLoad", "generate navmeshes when starting a local game", Cvar::NONE, true);
+static Cvar::Cvar<int> cg_navgenMaxThreads(
+	"cg_navgenMaxThreads", "Maximum number of threads to use when generating navmeshes",
+	Cvar::NONE, 2);
 
 // search 'fovCvar' to find usage of these (names come from config files)
 // 0 means use global FOV setting
@@ -1075,7 +1078,7 @@ bool CG_ClientIsReady( int clientNum )
 static void GenerateNavmeshes()
 {
 	std::string mapName = Cvar::GetValue( "mapname" );
-	std::vector<class_t> missing;
+	std::bitset<PCL_NUM_CLASSES> missing;
 	NavgenConfig config = ReadNavgenConfig( mapName );
 	bool reduceTypes;
 	if ( !Cvar::ParseCvarValue( Cvar::GetValue( "g_bot_navmeshReduceTypes" ), reduceTypes ) )
@@ -1089,7 +1092,7 @@ static void GenerateNavmeshes()
 		std::string filename = NavmeshFilename( mapName, species );
 		if ( BG_FOpenGameOrPakPath( filename, f ) < 0 )
 		{
-			missing.push_back( species );
+			missing.set(species);
 			continue;
 		}
 		NavMeshSetHeader header;
@@ -1097,11 +1100,11 @@ static void GenerateNavmeshes()
 		if ( !error.empty() )
 		{
 			Log::Notice( "Existing navmesh file %s can't be used: %s", filename, error );
-			missing.push_back( species );
+			missing.set(species);
 		}
 		trap_FS_FCloseFile( f );
 	}
-	if ( missing.empty() )
+	if ( !missing.any() )
 	{
 		return;
 	}
@@ -1113,30 +1116,16 @@ static void GenerateNavmeshes()
 	trap_UpdateScreen();
 
 	NavmeshGenerator navgen;
-	navgen.Init( mapName );
-	float classesCompleted = 0.3; // Assume that Init() is 0.3 times as much work as generating 1 species
-	// and assume that each species takes the same amount of time, which is actually completely wrong:
-	// smaller ones take much longer
-	float classesTotal = classesCompleted + missing.size();
-	for ( class_t species : missing )
-	{
-		cg.loadingText =
-			Str::Format( "%s — %s", message, BG_ClassModelConfig( species )->humanName );
-		cg.navmeshLoadingFraction = classesCompleted / classesTotal;
-		trap_UpdateScreen();
-
-		std::unique_ptr<NavgenTask> task = navgen.StartGeneration( species );
-		do
+	navgen.EnqueueTasks( mapName, missing );
+	navgen.StartBackgroundThreads( cg_navgenMaxThreads.Get() );
+	navgen.WaitInMainThread( []( float progress ) {
+		if ( progress >= cg.navmeshLoadingFraction + 0.01f )
 		{
-			float fraction = ( classesCompleted + task->FractionCompleted() ) / classesTotal;
-			if ( fraction - cg.navmeshLoadingFraction > 0.01 )
-			{
-				cg.navmeshLoadingFraction = fraction;
-				trap_UpdateScreen();
-			}
-		} while ( !navgen.Step( *task ) );
-		++classesCompleted;
-	}
+			cg.navmeshLoadingFraction = progress;
+			trap_UpdateScreen();
+		}
+	} );
+
 	cg.loadingNavmesh = false;
 }
 
