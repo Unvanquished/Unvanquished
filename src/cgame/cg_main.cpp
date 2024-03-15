@@ -1122,7 +1122,7 @@ static void GenerateNavmeshes()
 	{
 		cg.loadingText =
 			Str::Format( "%s — %s", message, BG_ClassModelConfig( species )->humanName );
-		cg.loadingFraction = classesCompleted / classesTotal;
+		cg.navmeshLoadingFraction = classesCompleted / classesTotal;
 		trap_UpdateScreen();
 
 		navgen.StartGeneration( species );
@@ -1349,7 +1349,6 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 	CG_Rocket_LoadHuds();
 	CG_LoadBeaconsConfig();
 
-	CG_UpdateLoadingStep( LOAD_GLSL );
 	trap_S_EndRegistration();
 
 	if ( cg_navgenOnLoad.Get() && Cvar::GetValue( "sv_running" ) == "1" )
