@@ -20,6 +20,7 @@
    ===========================================================================
  */
 
+#include <bitset>
 #include <memory>
 #include "Recast.h"
 #include "RecastAlloc.h"
@@ -112,7 +113,15 @@ const rcChunkyTriMesh *getChunkyMesh() { return &mesh; }
 
 class UnvContext : public rcContext
 {
+	std::vector<std::function<void()>> mainThreadTasks_;
+
+public:
 	void doLog(rcLogCategory category, const char* msg, int len) override;
+
+	void RunOnMainThread(std::function<void()> f);
+
+	// Do this once at the end so that logs from the same class_t are together
+	void DoMainThreadTasks();
 };
 
 struct NavgenStatus
@@ -140,14 +149,19 @@ struct NavgenTask {
 	int x = 0;
 	int y = 0;
 	NavgenStatus status;
-
-	float FractionCompleted() const;
+	UnvContext context;
 };
+
+
+// There are 3 threading modes of navmesh generation:
+// - Main thread does a little bit work once per frame (sgame background  generation with threads disabled)
+// - Background threads work on navgen while main thread does other things (sgame background with threads enabled)
+// - Main thread blocks while background threads run until navgen completed (/navgen and cgame)
+// NavgenPool is used for the 2nd and 3rd cases.
 
 // Public interface to navgen. Rest of this file is internal details
 class NavmeshGenerator {
 private:
-	UnvContext recastContext_;
 	NavgenConfig config_;
 	// Custom computed config for the map
 	float cellHeight_;
@@ -157,6 +171,11 @@ private:
 	Geometry geo_;
 	NavgenStatus initStatus_;
 
+	std::vector<std::unique_ptr<NavgenTask>> taskQueue_;
+
+	std::atomic<int> fractionCompleteNumerator_{0};
+	int fractionCompleteDenominator_ = 0;
+
 	// Map geometry loading
 	void LoadBSP();
 	void LoadGeometry();
@@ -164,13 +183,46 @@ private:
 
 	void WriteFile(const NavgenTask& t);
 
-public:
 	// load the BSP if it has not been loaded already
 	// in principle mapName could be different from the current map, if the necessary pak is loaded
 	void Init(Str::StringRef mapName);
 
+public:
+	~NavmeshGenerator();
+
 	std::unique_ptr<NavgenTask> StartGeneration(class_t species);
 
+	void EnqueueTasks(Str::StringRef mapName, std::bitset<PCL_NUM_CLASSES> classes);
+
+	// Only intended to be meaningful if no tasks have failed
+	float FractionComplete() const;
+
+	/*
+	 * Optional multi-threading functionality
+	 */
+private:
+	std::vector<std::thread> threads_;
+	int numActiveThreads_;
+	std::atomic<bool> canceled_;
+	std::vector<std::unique_ptr<NavgenTask>> finishedTasks_;
+
+	// guards taskQueue_, finishedTasks_, numActiveThreads_ during multithreading
+	std::mutex taskQueueMutex_;
+
+public:
+	void StartBackgroundThreads(int numBackgroundThreads);
+	void WaitInMainThread(std::function<void(float)> progressCallback);
+	bool ThreadsDone();
+	bool HandleFinishedTasks();
+
+	/*
+	 * METHODS THAT MAY BE CALLED FROM A NON-MAIN THREAD
+	 * Must not use any trap calls, that includes logging!!!
+	 */
+public:
+	std::unique_ptr<NavgenTask> PopTask(); // caller must hold mutex if applicable
 	// Returns true when finished
 	bool Step(NavgenTask& t);
+private:
+	void BackgroundThreadMain();
 };
