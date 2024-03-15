@@ -6215,6 +6215,12 @@ bool G_admin_navgen( gentity_t* ent )
 		return false;
 	}
 
+	if ( navMeshLoaded == navMeshStatus_t::GENERATING )
+	{
+		ADMP( QQ( "^3navgen:^* navmesh generation is already running" ) );
+		return false;
+	}
+
 	std::string mapName = Cvar::GetValue( "mapname" );
 	std::bitset<PCL_NUM_CLASSES> targets;
 
