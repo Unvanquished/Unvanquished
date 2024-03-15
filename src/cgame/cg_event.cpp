@@ -45,7 +45,7 @@ static const struct {
 	team_t   team;
 } meansOfDeath[] = {
 	// Icon            Envkill Assist? (Team)
-	{ "☠",             false, false, TEAM_NONE   }, // unknown
+	{ "[crossbones]",  false, false, TEAM_NONE   }, // unknown
 	{ "[shotgun]",     false, true,  TEAM_HUMANS },
 	{ "[blaster]",     false, true,  TEAM_HUMANS },
 	{ "[painsaw]",     false, true,  TEAM_HUMANS },
@@ -69,7 +69,7 @@ static const struct {
 	{ "[telenode]",    false, false, TEAM_NONE   }, // telefrag
 	{ "[cross]",       false, false, TEAM_NONE   }, // Admin Authority™ (/slap command)
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // falling
-	{ "☠",             false, false, TEAM_NONE   }, // suicide
+	{ "[crossbones]",  false, false, TEAM_NONE   }, // suicide
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // target laser - shouldn't happen
 	{ LONGFORM,        true,  false, TEAM_NONE   }, // trigger hurt
 
