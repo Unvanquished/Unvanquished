@@ -58,7 +58,7 @@ void G_BlockingGenerateNavmesh( std::bitset<PCL_NUM_CLASSES> classes )
 {
 	std::string mapName = Cvar::GetValue( "mapname" );
 	NavmeshGenerator navgen;
-	navgen.EnqueueTasks( mapName, classes );
+	navgen.LoadMapAndEnqueueTasks( mapName, classes );
 	navgen.StartBackgroundThreads( g_bot_navgen_maxThreads.Get() );
 	navgen.WaitInMainThread( []( float ) {} );
 }
@@ -236,7 +236,7 @@ void G_BotNavInit( int generateNeeded )
 		else
 		{
 			ASSERT( !generatingNow );
-			navgen.EnqueueTasks( mapName, missing );
+			navgen.LoadMapAndEnqueueTasks( mapName, missing );
 			usingBackgroundThreads = g_bot_navgen_maxThreads.Get() > 0;
 
 			if ( usingBackgroundThreads )

@@ -174,25 +174,23 @@ private:
 	std::vector<std::unique_ptr<NavgenTask>> taskQueue_;
 
 	std::atomic<int> fractionCompleteNumerator_{0};
-	int fractionCompleteDenominator_ = 0;
+	int fractionCompleteDenominator_;
 
 	// Map geometry loading
 	void LoadBSP();
 	void LoadGeometry();
 	void LoadTris(std::vector<float>& verts, std::vector<int>& tris);
+	// in principle mapName could be different from the current map, if the necessary pak is loaded
+	void LoadMap(Str::StringRef mapName);
 
 	void WriteFile(const NavgenTask& t);
-
-	// load the BSP if it has not been loaded already
-	// in principle mapName could be different from the current map, if the necessary pak is loaded
-	void Init(Str::StringRef mapName);
 
 public:
 	~NavmeshGenerator();
 
 	std::unique_ptr<NavgenTask> StartGeneration(class_t species);
 
-	void EnqueueTasks(Str::StringRef mapName, std::bitset<PCL_NUM_CLASSES> classes);
+	void LoadMapAndEnqueueTasks(Str::StringRef mapName, std::bitset<PCL_NUM_CLASSES> classes);
 
 	// Only intended to be meaningful if no tasks have failed
 	float FractionComplete() const;
