@@ -1039,7 +1039,8 @@ static NavgenStatus rasterizeTileLayers( Geometry& geo, rcContext &context, int 
 	return {};
 }
 
-void NavmeshGenerator::EnqueueTasks( Str::StringRef mapName, std::bitset<PCL_NUM_CLASSES> classes )
+void NavmeshGenerator::LoadMapAndEnqueueTasks(
+	Str::StringRef mapName, std::bitset<PCL_NUM_CLASSES> classes )
 {
 	// The NavmeshGenerator object is not designed to be used more than once
 	ASSERT( mapName_.empty() );
@@ -1048,29 +1049,34 @@ void NavmeshGenerator::EnqueueTasks( Str::StringRef mapName, std::bitset<PCL_NUM
 	// This fails to include map loading time but we don't update progress during that anyway
 	int amountOfWork = 1;
 
-	std::string names;
-
-	for ( int i = PCL_NUM_CLASSES; --i != PCL_NONE; )
+	if ( classes.any() )
 	{
-		if ( !classes[ i ] )
+		LoadMap( mapName );
+		std::string names;
+		for ( int i = PCL_NUM_CLASSES; --i != PCL_NONE; )
 		{
-			continue;
+			if ( !classes[ i ] )
+			{
+				continue;
+			}
+
+			taskQueue_.push_back( StartGeneration( Util::enum_cast<class_t>( i ) ) );
+			const NavgenTask& task = *taskQueue_.back();
+			if ( task.status.code == NavgenStatus::OK )
+			{
+				amountOfWork += task.tw * task.th; // This correlates pretty well with how long it takes
+			}
+
+			names = ' ' + ( BG_Class(i)->name + names );
 		}
-
-		Init( mapName );
-		taskQueue_.push_back( StartGeneration( Util::enum_cast<class_t>( i ) ) );
-
-		const NavgenTask& task = *taskQueue_.back();
-		if ( task.status.code == NavgenStatus::OK )
-		{
-			amountOfWork += task.tw * task.th; // This correlates pretty well with how long it takes
-		}
-
-		names = ' ' + ( BG_Class(i)->name + names );
+		LOG.Notice("Navgen requested for:%s", names);
+	}
+	else
+	{
+		LOG.Notice( "Nothing requested for navgen" );
 	}
 
 	fractionCompleteDenominator_ = amountOfWork;
-	LOG.Notice( "Navgen requested for:%s", names );
 }
 
 std::unique_ptr<NavgenTask> NavmeshGenerator::StartGeneration( class_t species )
@@ -1226,10 +1232,8 @@ bool NavmeshGenerator::Step( NavgenTask &t )
 	return false;
 }
 
-void NavmeshGenerator::Init(Str::StringRef mapName)
+void NavmeshGenerator::LoadMap(Str::StringRef mapName)
 {
-	if (mapName == mapName_) return;
-
 	config_ = ReadNavgenConfig( mapName );
 	mapName_ = mapName;
 	initStatus_ = {};
