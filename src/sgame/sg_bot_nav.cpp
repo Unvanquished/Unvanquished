@@ -69,7 +69,7 @@ Cvar::Cvar<bool> g_bot_navmeshReduceTypes(
 	Cvar::NONE, false);
 
 static Cvar::Range<Cvar::Cvar<int>> msecPerFrame(
-	"g_bot_navgen_msecPerFrame", "time budget per frame for navmesh generation",
+	"g_bot_navgen_msecPerFrame", "time budget per frame for single-threaded navmesh generation",
 	Cvar::NONE, 20, 1, 1500 );
 
 static Cvar::Cvar<int> frameToggle("g_bot_navgen_frame", "FOR INTERNAL USE", Cvar::NONE, 0);

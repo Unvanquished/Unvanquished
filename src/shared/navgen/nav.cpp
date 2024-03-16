@@ -70,6 +70,8 @@ void UnvContext::DoMainThreadTasks()
 	{
 		f();
 	}
+
+	mainThreadTasks_.clear();
 }
 
 static NavgenStatus::Code CodeForFailedDtStatus(dtStatus status)
@@ -1103,6 +1105,7 @@ std::unique_ptr<NavgenTask> NavmeshGenerator::StartGeneration( class_t species )
 	return t;
 }
 
+// May be called from a worker thread, thus must not use trap calls.
 std::unique_ptr<NavgenTask> NavmeshGenerator::PopTask()
 {
 	if ( taskQueue_.empty() )
@@ -1120,6 +1123,7 @@ float NavmeshGenerator::FractionComplete() const
 	return float(fractionCompleteNumerator_) / float(fractionCompleteDenominator_);
 }
 
+// May be called from a worker thread, thus must not use trap calls.
 bool NavmeshGenerator::Step( NavgenTask &t )
 {
 	if ( t.status.code != NavgenStatus::OK || t.y >= t.th || t.tw == 0 )

@@ -158,9 +158,10 @@ Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed 
 Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "desaturate world view when dead or spawning", Cvar::NONE, true);
 
 static Cvar::Cvar<bool> cg_navgenOnLoad("cg_navgenOnLoad", "generate navmeshes when starting a local game", Cvar::NONE, true);
+// hardware_concurrency() miraculously works in NaCl.
 static Cvar::Cvar<int> cg_navgenMaxThreads(
 	"cg_navgenMaxThreads", "Maximum number of threads to use when generating navmeshes",
-	Cvar::NONE, 2);
+	Cvar::NONE, std::max(1, int(std::thread::hardware_concurrency()) - 1));
 
 // search 'fovCvar' to find usage of these (names come from config files)
 // 0 means use global FOV setting
