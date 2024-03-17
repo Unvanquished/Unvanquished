@@ -760,7 +760,8 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeome
 	}
 	else if ( obst == OBSTACLE_LADDER )
 	{
-		dir.z += 200;
+		// look up to climb the ladder
+		dir.z += 200.f;
 		return false;
 	}
 
