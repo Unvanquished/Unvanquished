@@ -33,6 +33,9 @@
 						<option value="it">Italiano</option>
 						<option value="es">Español</option>
 						<option value="fi">Suomi</option>
+						<option value="zh_Hans">中文（简体）</option>
+						<option value="zh_Hant_HK">中文（香港）</option>
+						<option value="zh_Hant">中文（正體）</option>
 					</select>
 					<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Events.pushevent("exec language", event);Events.pushevent("exec updatelanguage", event)'><translate>Change language</translate></button>
 				</row>
