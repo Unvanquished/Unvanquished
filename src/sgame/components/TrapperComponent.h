@@ -21,7 +21,11 @@ class TrapperComponent: public TrapperComponentBase {
 		// ///////////////////// //
 
 	private:
+		void Think(int timeDelta);
+		void FireOnEnemy();
 
+		GentityRef target_ = nullptr;
+		int nextFireTime_ = -1;
 };
 
 #endif // TRAPPER_COMPONENT_H_
