@@ -26,6 +26,7 @@
 			<option value="de">Deutsch</option>
 			<option value="it">Italiano</option>
 			<option value="es">Español</option>
+			<option value="pt_BR">Português (Brasil)</option>
 			<option value="fi">Suomi</option>
 		</select>
 		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Events.pushevent("exec language", event);Events.pushevent("exec updatelanguage", event)'><translate>Change language</translate></button>

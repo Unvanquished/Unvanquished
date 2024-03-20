@@ -32,6 +32,7 @@
 						<option value="de">Deutsch</option>
 						<option value="it">Italiano</option>
 						<option value="es">Español</option>
+						<option value="pt_BR">Português (Brasil)</option>
 						<option value="fi">Suomi</option>
 						<option value="zh_Hans">中文（简体）</option>
 						<option value="zh_Hant_HK">中文（香港）</option>
