@@ -857,6 +857,7 @@ void BotFindClosestBuildings( gentity_t *self )
 void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
 	float minDistSqr;
+	team_t team = G_Team( self );
 
 	gentity_t *target;
 	self->botMind->closestDamagedBuilding.ent = nullptr;
@@ -883,7 +884,12 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( Entities::HasFullHealth(target) )
+		if ( team == TEAM_HUMANS && Entities::HasFullHealth(target) )
+		{
+			continue;
+		}
+
+		if ( team == TEAM_ALIENS && !G_IsOnFire( target ) )
 		{
 			continue;
 		}

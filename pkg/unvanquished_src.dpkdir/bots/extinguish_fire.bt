@@ -1,0 +1,38 @@
+#define WANTS_TO_EXTINGUISH 2
+
+sequence
+{
+	condition momentum( TEAM_ALIENS ) > 100
+		&& buildingIsBurning
+		&& cvar( "g_bot_extinguishFire" )
+		&& distanceTo( E_A_OVERMIND ) < 1500
+		&& !teamateHasWeapon( WP_ABUILD2 )
+		&& blackboardNumTransient( WANTS_TO_EXTINGUISH ) < 1
+	decorator timer( 50000 )
+	{
+		selector
+		{
+			decorator return ( STATUS_FAILURE )
+			{
+				// this will be reset to 0 before the next execution
+				action blackboardNoteTransient( WANTS_TO_EXTINGUISH )
+			}
+
+			selector
+			{
+				sequence
+				{
+					condition class != PCL_ALIEN_BUILDER0_UPG
+					selector
+					{
+						action evolveTo( PCL_ALIEN_BUILDER0_UPG )
+						action roamInRadius( E_A_OVERMIND, 500 )
+					}
+				}
+
+				action extinguishFire
+			}
+		}
+	}
+}
+
