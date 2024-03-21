@@ -854,6 +854,8 @@ void BotFindClosestBuildings( gentity_t *self )
 	}
 }
 
+// humans: find the closest damaged buildable
+// aliens: find the closest burning buildable on the floor
 void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
 	float minDistSqr;
@@ -889,7 +891,7 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( team == TEAM_ALIENS && !G_IsOnFire( target ) )
+		if ( team == TEAM_ALIENS && ( !G_IsOnFire( target ) || target->s.origin2[ 2 ] < MIN_WALK_NORMAL ) )
 		{
 			continue;
 		}

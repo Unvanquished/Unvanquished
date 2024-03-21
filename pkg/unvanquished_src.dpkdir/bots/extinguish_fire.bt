@@ -8,7 +8,11 @@ sequence
 		&& distanceTo( E_A_OVERMIND ) < 1500
 		&& !teamateHasWeapon( WP_ABUILD2 )
 		&& blackboardNumTransient( WANTS_TO_EXTINGUISH ) < 1
-	decorator timer( 50000 )
+
+	// after having devolved to advanced granger, the bot might find that
+	// it cannot reach the burning buildable
+	// in this case: block this behavior for some time
+	decorator timer( 30000 )
 	{
 		selector
 		{
