@@ -1060,7 +1060,7 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	d_->cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
 	d_->cfg.walkableHeight = ( int ) ceilf( height / d_->cfg.ch );
 	d_->cfg.walkableClimb = ( int ) floorf( climb / d_->cfg.ch );
-	d_->cfg.walkableRadius = ( int ) ceilf( radius / d_->cfg.cs );
+	d_->cfg.walkableRadius = ( int ) ceilf( radius * config_.walkableRadiusFactor / d_->cfg.cs );
 	d_->cfg.maxEdgeLen = 0;
 	d_->cfg.maxSimplificationError = 1.3f;
 	d_->cfg.minRegionArea = rcSqr( 25 );
@@ -1082,7 +1082,7 @@ void NavmeshGenerator::StartGeneration( class_t species )
 	d_->tcparams.width = ts;
 	d_->tcparams.height = ts;
 	d_->tcparams.walkableHeight = height;
-	d_->tcparams.walkableRadius = radius;
+	d_->tcparams.walkableRadius = radius * config_.walkableRadiusFactor;
 	d_->tcparams.walkableClimb = climb;
 	d_->tcparams.maxSimplificationError = 1.3;
 	d_->tcparams.maxTiles = d_->tw * d_->th * EXPECTED_LAYERS_PER_TILE;
