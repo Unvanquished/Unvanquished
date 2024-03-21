@@ -32,6 +32,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glm/vec3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "engine/qcommon/q_shared.h"
+
+//Unvanquished balance header
+#include "bg_gameplay.h"
+
 // TODO remove this function when it will no longer be useful
 // This function is a compatibility layer
 template<typename T>
@@ -42,11 +47,6 @@ inline glm::vec3 VEC2GLM( const T& v ) {
 DEPRECATED inline glm::vec3 VEC2GLM( glm::vec3 v ) {
 	return v;
 }
-
-#include "engine/qcommon/q_shared.h"
-
-//Unvanquished balance header
-#include "bg_gameplay.h"
 
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
