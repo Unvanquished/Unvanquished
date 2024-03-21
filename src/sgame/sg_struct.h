@@ -85,6 +85,19 @@ struct GentityRef_impl
 		return *this;
 	}
 
+	bool operator==(const GentityRef_impl<T>& other) const {
+		if (!this->entity || !other->entity) {
+			return false;
+		}
+		if (this->entity != other->entity) {
+			return false;
+		}
+		if (this->generation != other->generation) {
+			return false;
+		}
+		return true;
+	}
+
 	operator bool() const {
 		return entity != nullptr && entity->generation == generation;
 	}
@@ -132,6 +145,8 @@ struct gentity_t
 	bool     freeAfterEvent;
 
 	int          flags; // FL_* variables
+
+	char         *id;
 
 	//entity creation time, i.e. when a building was build or a missile was fired (for diminishing missile damage)
 	int          creationTime;

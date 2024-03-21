@@ -92,6 +92,9 @@ bool              G_BuildIfValid( gentity_t *ent, buildable_t buildable );
 void              G_SetBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation, bool force);
 void              G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation);
 void              G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
+// Immediately spawn buildable instead of waiting a few frames. Also return the newly built buildable.
+// Assumes that ent is a placeholder entity that will be freed automatically by this function.
+gentity_t*        G_SpawnBuildableImmediately(gentity_t *ent, buildable_t buildable);
 void              G_LayoutSave( const char *name );
 int               G_LayoutList( const char *map, char *list, int len );
 bool G_LayoutExists( Str::StringRef map, Str::StringRef layout );

@@ -31,6 +31,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "backend/CBSEBackend.h"
 #include "botlib/bot_api.h"
 #include "common/FileSystem.h"
+#include "lua/Interpreter.h"
+#include "shared/lua/Timer.h"
+#include "sgame/lua/Hooks.h"
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -299,6 +302,9 @@ Cvar::Cvar<int> g_bot_aliensenseRange("g_bot_aliensenseRange", "custom aliensens
 
 static Cvar::Cvar<std::string> gamename("gamename", "game/mod identifier", Cvar::SERVERINFO | Cvar::ROM, GAME_VERSION);
 static Cvar::Cvar<std::string> gamedate("gamedate", "date the sgame was compiled", Cvar::ROM, __DATE__);
+
+// Lua cvars
+Cvar::Cvar<std::string> g_luaScript("g_luaScript", "Lua script to load on map load. Will only take effect when a map loads.", Cvar::NONE, "");
 
 void               CheckExitRules();
 static void        G_LogGameplayStats( int state );
@@ -646,6 +652,18 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// Initialize build point counts for the intial layout.
 	G_UpdateBuildPointBudgets();
+
+	// Initialize Lua.
+	Unv::SGame::Lua::Initialize();
+
+	if (!g_luaScript.Get().empty())
+	{
+		namespace Lua = Unv::SGame::Lua;
+		if (!Lua::LoadScript(g_luaScript.Get()) || !Lua::RunCode())
+		{
+			Log::Warn("error loading g_luaScript: '%s'", g_luaScript.Get());
+		}
+	}
 }
 
 /*
@@ -731,6 +749,8 @@ void G_ShutdownGame( int /* restart */ )
 
 	G_ShutdownMapRotations();
 	BG_UnloadAllConfigs();
+
+	Unv::SGame::Lua::Shutdown();
 
 	level.restarted = false;
 	level.surrenderTeam = TEAM_NONE;
@@ -1919,6 +1939,8 @@ void CheckExitRules()
 		return;
 	}
 
+	team_t team;
+
 	// if at the intermission, wait for all non-bots to
 	// signal ready, then go to next level
 	if ( level.intermissiontime )
@@ -1994,6 +2016,20 @@ void CheckExitRules()
 		G_notify_sensor_end( TEAM_ALIENS );
 		LogExit( "Aliens win." );
 		G_MapLog_Result( 'a' );
+	}
+	else if ( ( team = Unv::SGame::Lua::ExecGameEndHooks() ) != TEAM_NONE )
+	{
+		// Lua decided game is over.
+		level.lastWin = team;
+		const char* teamName = BG_TeamNamePlural( team );
+		G_MapLog_Result( *teamName );
+		std::string message = va( "%s Win", teamName );
+		message[0] = toupper(message[0]);
+		trap_SendServerCommand( -1, va( "print_tr \"%s\"", message.c_str() ) );
+		trap_SetConfigstring( CS_WINNER, message.c_str() );
+		G_notify_sensor_end( team );
+		LogExit( va( "%s.", message.c_str() ) );
+
 	}
 	else if ( g_emptyTeamsSkipMapTime.Get() &&
 		( level.time - level.startTime ) / 60000 >=
@@ -2282,6 +2318,7 @@ void G_RunFrame( int levelTime )
 				else if ( i < MAX_CLIENTS )
 				{
 					G_RunClient( ent );
+					G_RunThink( ent );
 					continue;
 				}
 				else
@@ -2337,6 +2374,9 @@ void G_RunFrame( int levelTime )
 	G_SpawnClients( TEAM_HUMANS );
 	G_UpdateZaps( msec );
 	Beacon::Frame( );
+
+	// Run Lua timers, if any...
+	Unv::Shared::Lua::Timer::Update( levelTime );
 
 	G_PrepareEntityNetCode();
 

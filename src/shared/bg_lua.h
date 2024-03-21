@@ -1,27 +1,27 @@
 /*
 ===========================================================================
 
-Unvanquished GPL Source Code
+Daemon GPL Source Code
 Copyright (C) 2012 Unvanquished Developers
 
-This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
-Unvanquished Source Code is free software: you can redistribute it and/or modify
+Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Unvanquished Source Code is distributed in the hope that it will be useful,
+Daemon Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Unvanquished Source Code is also subject to certain additional terms.
+In addition, the Daemon Source Code is also subject to certain additional terms.
 You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Unvanquished
+terms and conditions of the GNU General Public License which accompanied the Daemon
 Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
@@ -31,28 +31,14 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-
-#ifndef LUACMD_H
-#define LUACMD_H
-
-#include "../rocket.h"
-#include <RmlUi/Core/Core.h>
-#include <RmlUi/Lua/LuaType.h>
-
-namespace Rml {
-namespace Lua {
-// Dummy class for Cmds
-class Cmd
+#ifndef BG_LUA_H_
+#define BG_LUA_H_
+extern "C"
 {
+	#include <lua.h>
+	#include <lauxlib.h>
+	#include <lualib.h>
+}
 
-};
-
-template<> void ExtraInit<Cmd>(lua_State* L, int metatable_index);
-int Cmdexec(lua_State* L);
-
-extern RegType<Cmd> CmdMethods[];
-extern luaL_Reg CmdGetters[];
-extern luaL_Reg CmdSetters[];
-}  // namespace Lua
-}  // namespace Rml
+void BG_InitializeLuaConstants(lua_State* L);
 #endif
