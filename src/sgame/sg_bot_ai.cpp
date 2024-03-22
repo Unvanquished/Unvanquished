@@ -1547,14 +1547,15 @@ static AINodeStatus_t BotActionReachHealA( gentity_t *self )
 
 AINodeStatus_t BotActionExtinguishFire( gentity_t *self, AIGenericNode_t *node )
 {
+	if ( self->client->ps.stats[ STAT_CLASS ] != PCL_ALIEN_BUILDER0_UPG )
+	{
+		return STATUS_FAILURE;
+	}
+
 	botMemory_t const* mind = self->botMind;
 
 	if ( node != self->botMind->currentNode )
 	{
-		if ( !isBuilder( self ) )
-		{
-			return STATUS_FAILURE;
-		}
 		if ( !BotChangeGoalEntity( self, self->botMind->closestDamagedBuilding.ent ) )
 		{
 			return STATUS_FAILURE;
