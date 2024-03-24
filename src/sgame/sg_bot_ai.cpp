@@ -1588,7 +1588,11 @@ AINodeStatus_t BotActionExtinguishFire( gentity_t *self, AIGenericNode_t *node )
 	glm::vec3 targetPos = mind->goal.getPos();
 	BotSlowAim( self, targetPos, 0.5 );
 	BotAimAtLocation( self, targetPos );
-	BotFireWeapon( WPM_TERTIARY, &self->botMind->cmdBuffer );
+
+	if ( Alignment2D(targetPos - VEC2GLM( self->s.origin ), forward) > 0.997f )
+	{
+		BotFireWeapon( WPM_TERTIARY, &self->botMind->cmdBuffer );
+	}
 
 	return STATUS_RUNNING;
 }
