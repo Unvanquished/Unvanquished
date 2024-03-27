@@ -854,9 +854,12 @@ void BotFindClosestBuildings( gentity_t *self )
 	}
 }
 
+// humans: find the closest damaged buildable
+// aliens: find the closest burning buildable on the floor
 void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
 	float minDistSqr;
+	team_t team = G_Team( self );
 
 	gentity_t *target;
 	self->botMind->closestDamagedBuilding.ent = nullptr;
@@ -883,7 +886,12 @@ void BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 
-		if ( Entities::HasFullHealth(target) )
+		if ( team == TEAM_HUMANS && Entities::HasFullHealth(target) )
+		{
+			continue;
+		}
+
+		if ( team == TEAM_ALIENS && ( !G_IsOnFire( target ) || target->s.origin2[ 2 ] < MIN_WALK_NORMAL ) )
 		{
 			continue;
 		}

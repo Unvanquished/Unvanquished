@@ -1196,6 +1196,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 
 static Cvar::Cvar<bool> g_bot_buildAliens("g_bot_buildAliens", "whether alien bots should build", Cvar::NONE, true);
 static Cvar::Cvar<bool> g_bot_buildHumans("g_bot_buildHumans", "whether human bots should build", Cvar::NONE, true);
+static Cvar::Cvar<bool> g_bot_extinguishFire("g_bot_extinguishFire", "whether alien bots should extinguish buildables on fire", Cvar::NONE, true);
 static Cvar::Cvar<int> g_bot_buildNumEggs("g_bot_buildNumEggs", "how many eggs bots should build", Cvar::NONE, 6);
 static Cvar::Cvar<int> g_bot_buildNumTelenodes("g_bot_buildNumTelenodes", "how many telenodes bots should build", Cvar::NONE, 3);
 static Cvar::Cvar<float> g_bot_buildProbRocketPod("g_bot_buildProbRocketPod", "probability of a bot building a rocket pod instead of a machine gun turret", Cvar::NONE, 0.2);
@@ -1541,6 +1542,58 @@ static AINodeStatus_t BotActionReachHealA( gentity_t *self )
 	{
 		BotMoveToGoal( self );
 	}
+	return STATUS_RUNNING;
+}
+
+AINodeStatus_t BotActionExtinguishFire( gentity_t *self, AIGenericNode_t *node )
+{
+	if ( self->client->ps.stats[ STAT_CLASS ] != PCL_ALIEN_BUILDER0_UPG )
+	{
+		return STATUS_FAILURE;
+	}
+
+	botMemory_t const* mind = self->botMind;
+
+	if ( node != self->botMind->currentNode )
+	{
+		if ( !BotChangeGoalEntity( self, self->botMind->closestDamagedBuilding.ent ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	if ( !self->botMind->goal.targetsValidEntity() )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( !G_IsOnFire( self->botMind->goal.getTargetedEntity() ) )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
+
+	// move to the burning building until we are in range
+	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_SHOT ) || DistanceToGoalSquared( self ) > Square( 200 ) )
+	{
+		BotMoveToGoal( self );
+		return STATUS_RUNNING;
+	}
+
+	// aim at the building and fire the blob
+	// TODO: this assumes linear blob trajectory, use the actual trajectory instead
+	glm::vec3 targetPos = mind->goal.getPos();
+	BotSlowAim( self, targetPos, 0.5 );
+	BotAimAtLocation( self, targetPos );
+
+	if ( Alignment2D(targetPos - VEC2GLM( self->s.origin ), forward) > 0.997f )
+	{
+		BotFireWeapon( WPM_TERTIARY, &self->botMind->cmdBuffer );
+	}
+
 	return STATUS_RUNNING;
 }
 

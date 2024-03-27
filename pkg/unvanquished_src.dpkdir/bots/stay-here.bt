@@ -88,6 +88,8 @@ selector
 	{
 		selector
 		{
+			behavior extinguish_fire
+
 			condition ( aliveTime > 1500 && healScore < 0.5 )
 			{
 				action evolve
