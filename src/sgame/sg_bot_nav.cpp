@@ -944,6 +944,9 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 	case PCL_ALIEN_LEVEL2:
 	case PCL_ALIEN_LEVEL2_UPG:
 		{
+			self->botMind->cmdBuffer.forwardmove = 127;
+			self->botMind->cmdBuffer.rightmove = 0;
+			self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( -60.f );
 			BotJump( self );
 			break;
 		}
@@ -1007,6 +1010,8 @@ static bool BotTryMoveUpward( gentity_t *self )
 	{
 	case PCL_ALIEN_LEVEL0:
 	case PCL_ALIEN_LEVEL1:
+	case PCL_ALIEN_LEVEL2:
+	case PCL_ALIEN_LEVEL2_UPG:
 		if ( level.time > WallclimbStopTime( self ) )
 		{
 			return false;
