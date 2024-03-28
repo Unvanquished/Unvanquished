@@ -1,13 +1,8 @@
 <rml>
 	<head>
 		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/rcss" href="loading.rcss" />
 		<style>
-			body {
-				width: 100%;
-				height: 100%;
-				z-index: 20; /* Stay ontop of all windows */
-			}
-
 			div.levelshot,
 			div.levelshot img {
 				/* HACK: Pretend to be the background */
