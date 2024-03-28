@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 #include "shared/CommonProxies.h"
+#include "rocket/rocket.h"
 
 static void CG_Rocket_EventOpen()
 {
@@ -70,6 +71,24 @@ static void CG_Rocket_EventHide()
 	Rocket_DocumentAction( CG_Argv( 1 ), "hide" );
 }
 
+// Used to enforce only one passthrough menu at a time because if you have two open and close one,
+// the other doesn't grab focus so you can't send inputs. Also the circle menus are
+// transparent so it doesn't look very good to stack them.
+static void HideOtherPassthrough()
+{
+	std::string skip = CG_Argv( 1 );
+
+	for ( const rocketMenu_t &menu : rocketInfo.menu )
+	{
+		if ( menu.passthrough && menu.id && skip != menu.id )
+		{
+			if ( Rml::ElementDocument *document = menuContext->GetDocument( menu.id ) )
+			{
+				document->Hide();
+			}
+		}
+	}
+}
 
 static void CG_Rocket_InitServers()
 {
@@ -315,6 +334,7 @@ static const eventCmd_t eventCmdList[] =
 	{ "filterDS", &CG_Rocket_FilterDS },
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "hide", &CG_Rocket_EventHide },
+	{ "hideOtherPassthrough", &HideOtherPassthrough },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
 	{ "play", &CG_Rocket_EventPlay },

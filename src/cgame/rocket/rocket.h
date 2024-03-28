@@ -49,6 +49,8 @@ Maryland 20850 USA.
 extern Rml::Context *menuContext;
 extern Rml::Context *hudContext;
 
+extern Cvar::Cvar<bool> cg_circleMenusCaptureMouse;
+
 class RocketEvent_t
 {
 public:
@@ -78,6 +80,8 @@ std::string CG_KeyBinding( const char *bind, int team );
 
 void Rocket_AddEvent( RocketEvent_t *event );
 void Rocket_SetDocumentScale( Rml::ElementDocument& document );
+
+bool CG_AnyMenuOpen();
 
 struct UnvPropertyId {
 	static Rml::PropertyId Orientation;

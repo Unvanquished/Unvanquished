@@ -135,6 +135,22 @@ void CG_Rocket_Init( glconfig_t gl )
 				}
 
 				rocketInfo.menu[ i ].id = BG_strdup( token );
+
+				token = COM_ParseExt2( &text_p, false );
+
+				if ( !*token )
+				{
+					rocketInfo.menu[ i ].passthrough = false;
+				}
+				else if ( Str::IsIEqual( token, "passthrough" ) )
+				{
+					rocketInfo.menu[ i ].passthrough = true;
+				}
+				else
+				{
+					Sys::Drop( "Error parsing %s. Unexpected token '%s', expected 'passthrough' or end of line",
+						rocket_menuFile.Get(), token );
+				}
 			}
 
 			token = COM_Parse2( &text_p );
@@ -237,7 +253,7 @@ void CG_Rocket_Init( glconfig_t gl )
 		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ERROR ].id, "open" );
 	}
 
-	CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
+	CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI_KEY | KEYCATCH_UI_MOUSE );
 }
 
 void CG_Rocket_LoadHuds()

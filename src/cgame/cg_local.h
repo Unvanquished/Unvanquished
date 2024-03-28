@@ -1342,6 +1342,7 @@ struct rocketMenu_t
 {
 	const char *path;
 	const char *id;
+	bool passthrough; // whether binds can be used while the menu is open
 };
 
 #define MAX_SERVERS 2048
@@ -1920,7 +1921,7 @@ void       CG_NotifyHooks();
 void       CG_UpdateCvars();
 
 int        CG_CrosshairPlayer();
-void       CG_KeyEvent( Keyboard::Key key, bool down );
+bool       CG_KeyEvent( Keyboard::Key key, bool down );
 void       CG_MouseEvent( int dx, int dy );
 void       CG_MousePosEvent( int x, int y );
 void       CG_FocusEvent( bool focus );
@@ -2399,7 +2400,7 @@ void Rocket_AddUnitToHud( int weapon, const char *id );
 void Rocket_ShowHud( int weapon );
 void Rocket_ClearHud( unsigned weapon );
 void Rocket_InitKeys();
-void Rocket_ProcessKeyInput( Keyboard::Key key, bool down );
+bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down );
 void Rocket_ProcessTextInput( int c );
 void Rocket_MouseMove( int x, int y );
 void Rocket_RegisterProperty( const char *name, const char *defaultValue, bool inherited, bool force_layout, const char *parseAs );
