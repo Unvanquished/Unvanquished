@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-07 03:06+0100\n"
-"PO-Revision-Date: 2024-03-04 16:19+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2024-03-26 16:01+0000\n"
+"Last-Translator: ZobBillZeButt <joelekiffeur@yahoo.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -61,7 +61,7 @@ msgstr "Retour à la sélection de l’équipe"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr "Proposer un match nul"
+msgstr "Proposer le match nul"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
@@ -191,8 +191,8 @@ msgid ""
 msgstr ""
 "Les extraterrestres peuvent évoluer de partout si ce n’est dans la ligne de "
 "mire d'un joueur humain ou d'une construction. Les extraterrestres peuvent "
-"également passer à des formes moins avancées de [granger] (à un certain "
-"coût) lorsqu’ils sont proches de l'Overmind [overmind]."
+"également passer à des formes moins avancées de [granger] (à un certain coût)"
+" lorsqu’ils sont proches du Grand Esprit [overmind]."
 
 #: ui/help_gameplay.rml:43
 msgid ""
@@ -261,10 +261,10 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"Les structures de ponte (œufs [egg] et telenodes [telenode]), les structures "
-"minières (leech et drill) et les structures uniques ([overmind] overmind et "
-"[reactor] réacteur) ne sont PAS affectées par le manque de points de "
-"construction."
+"Les structures de ponte (œufs [egg] et nœuds de téléportation [telenode]), "
+"les structures minières (sangsue et extracteur énergétique) et les "
+"structures uniques ([overmind] overmind et [reactor] réacteur) ne sont PAS "
+"affectées par le manque de points de construction."
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
@@ -443,11 +443,11 @@ msgid ""
 "buildable. With some teamwork, this is a great way to besiege enemies!"
 msgstr ""
 "Les extraterrestres ont un troisième bonus de guérison : la proximité avec "
-"d'autres extraterrestres. Si vous êtes à proximité d'un extraterrestre "
-"amical, vous guérirez légèrement plus rapidement, et avec deux coéquipiers, "
-"vous guérirez aussi vite que vous le feriez en touchant une construction "
-"extraterrestre. Avec un peu de travail d'équipe, c'est un excellent moyen "
-"d'assiéger les ennemis !"
+"d'autres extraterrestres. Si vous êtes à proximité d'un coéquipier "
+"extraterrestre, vous guérirez légèrement plus rapidement, et avec deux "
+"coéquipiers, vous guérirez aussi vite que vous le feriez en touchant une "
+"construction extraterrestre. Avec un peu de travail d'équipe, c'est un "
+"excellent moyen d'assiéger les ennemis !"
 
 #: ui/help_gameplay.rml:135
 msgid ""
@@ -520,7 +520,7 @@ msgid ""
 "they can build rocket pods."
 msgstr ""
 "Les humains n'ont plus la tour de défense Tesla ni l'ordinateur de défense, "
-"mais ils peuvent construire des lances roquettes."
+"mais ils peuvent construire des lance-roquettes."
 
 #: ui/help_gameplay.rml:170
 msgid ""
@@ -677,12 +677,12 @@ msgid ""
 "This is a beta version of Unvanquished. Please report any issue you may find "
 "at <web dest=\"bugs\" />"
 msgstr ""
-"Ceci est une version Beta de Unvanquished. Veuillez signaler tout problème "
+"Ceci est une version Bêta d’Unvanquished. Veuillez signaler tout problème "
 "que vous pourriez trouver ici : <web dest=\"bugs\" />"
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "Match"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
@@ -1068,7 +1068,7 @@ msgstr "Éclairez les bords des modèles par derrière."
 
 #: ui/options_graphics.rml:115
 msgid "Half Lambert lighting"
-msgstr "Éclairage Half-Lambert"
+msgstr "Éclairage Half Lambert"
 
 #: ui/options_graphics.rml:117
 msgid "Non-physical lighting technique to make models less dark."
@@ -1598,7 +1598,7 @@ msgstr "Désactivez-le uniquement si vous êtes un accro de Quake."
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
-msgstr ""
+msgstr "Déplacements et sensations kinétiques"
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
@@ -1656,11 +1656,11 @@ msgstr "Humains et extraterrestres"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr ""
+msgstr "Humains (transparent)"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr ""
+msgstr "Humains et extraterrestres (transparent)"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
@@ -1712,32 +1712,33 @@ msgstr ""
 
 #: ui/options_player.rml:67
 msgid "Emoticons"
-msgstr ""
+msgstr "Émoticônes"
 
 #: ui/options_player.rml:68
 msgid "You can put emoticons in your nickname too."
-msgstr ""
+msgstr "Vous pouvez aussi placer des émoticônes dans votre pseudonyme."
 
 #: ui/options_player.rml:70
 msgid ""
 "Example: ^7^^3Fred^^1Baggins[^7grenade]^* becomes ^3Fred^1Baggins[grenade]"
 msgstr ""
+"Exemple : ^7^^3Fred^^1Baggins[^7grenade]^* devient ^3Fred^1Baggins[grenade]"
 
 #: ui/options_player.rml:75
 msgid "Here is the list of the available emoticons:"
-msgstr ""
+msgstr "Voici la liste des émoticônes disponibles :"
 
 #: ui/options_player.rml:134
 msgid "Human buildables"
-msgstr ""
+msgstr "Constructions humaines"
 
 #: ui/options_player.rml:161
 msgid "Alien buildables"
-msgstr ""
+msgstr "Constructions extraterrestres"
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr ""
+msgstr "Autres"
 
 #: ui/options_player.rml:214
 msgid "Tutorial mode"
@@ -1801,19 +1802,19 @@ msgstr "Interface utilisateur"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "Principal"
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "Langue"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
-msgstr ""
+msgstr "Certaines langues ne sont pas complètement traduites."
 
 #: ui/options_ui.rml:37 ui/options_welcome.rml:31
 msgid "Change language"
-msgstr ""
+msgstr "Changer de langue"
 
 #: ui/options_ui.rml:40
 msgid "Real-time clock"
@@ -1885,15 +1886,15 @@ msgstr "Alpha :"
 
 #: ui/options_ui.rml:91
 msgid "Crosshair"
-msgstr ""
+msgstr "Réticule"
 
 #: ui/options_ui.rml:95
 msgid "WARN: Preview only works in game."
-msgstr ""
+msgstr "ATT : La prévisualisation fonctionne seulement en jeu."
 
 #: ui/options_ui.rml:99
 msgid "Weapon"
-msgstr ""
+msgstr "Arme"
 
 #: ui/options_ui.rml:102
 msgid "Blaster"
@@ -1913,7 +1914,7 @@ msgstr "Fusil à pompe"
 
 #: ui/options_ui.rml:106
 msgid "Lasgun"
-msgstr ""
+msgstr "Fusil laser"
 
 #: ui/options_ui.rml:107
 msgid "Mass Driver"
@@ -1921,11 +1922,11 @@ msgstr "Fusil électromagnétique"
 
 #: ui/options_ui.rml:108
 msgid "Chaingun"
-msgstr "Chaingun"
+msgstr "Mitrailleuse"
 
 #: ui/options_ui.rml:109
 msgid "Flamer"
-msgstr ""
+msgstr "Lance-flammes"
 
 #: ui/options_ui.rml:110
 msgid "Pulse Rifle"
@@ -1974,47 +1975,49 @@ msgstr "Énorme"
 
 #: ui/options_ui.rml:141
 msgid "Crosshair colour"
-msgstr ""
+msgstr "Couleur de réticule"
 
 #: ui/options_ui.rml:143
 msgid "Image colour"
-msgstr ""
+msgstr "Couleur de l’image"
 
 #: ui/options_ui.rml:144 ui/options_ui.rml:174
 msgid "Custom colour"
-msgstr ""
+msgstr "Couleur personnalisée"
 
 #: ui/options_ui.rml:149
 msgid "Crosshair colours"
-msgstr ""
+msgstr "Couleurs de réticule"
 
 #: ui/options_ui.rml:170
 msgid "Crosshair outline colour"
-msgstr ""
+msgstr "Couleur de bordure de réticule"
 
 #: ui/options_ui.rml:173
 msgid "Auto colour"
-msgstr ""
+msgstr "Couleur automatique"
 
 #: ui/options_ui.rml:179
 msgid "Crosshair outline scale"
-msgstr ""
+msgstr "Échelle de la bordure de réticule"
 
 #: ui/options_ui.rml:181
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr ""
+"Des valeurs négatives modifieront la bordure pour être à l’intérieur du "
+"réticule."
 
 #: ui/options_ui.rml:184
 msgid "Scale:"
-msgstr ""
+msgstr "Échelle :"
 
 #: ui/options_ui.rml:188
 msgid "Offset:"
-msgstr ""
+msgstr "Déplacement :"
 
 #: ui/options_ui.rml:193
 msgid "Crosshair outline colours"
-msgstr ""
+msgstr "Couleurs de bordure de réticule"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -2034,7 +2037,7 @@ msgstr "Vous pouvez le modifier à tout moment dans les options."
 
 #: ui/options_welcome.rml:18
 msgid "What language do you want to use?"
-msgstr ""
+msgstr "Quelle langue souhaitez-vous employer ?"
 
 #: ui/options_welcome.rml:32
 msgid "Select Battlefield"
@@ -2251,7 +2254,7 @@ msgstr "Valeur de départ"
 
 #: ui/server_setup.rml:157
 msgid "Initial build points count"
-msgstr "Points de construction de départ"
+msgstr "Points de construction initiaux"
 
 #: ui/server_setup.rml:164
 msgid "Miner bonus"
@@ -2429,7 +2432,7 @@ msgstr "%s%s ^*a été pris dans l'explosion"
 #: src/cgame/cg_event.cpp:307
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
-msgstr "%s%s ^*a été pris dans l'explosion"
+msgstr "%s%s ^*a été prise dans l'explosion"
 
 #: src/cgame/cg_event.cpp:307
 msgctxt "neuter"
@@ -2459,7 +2462,7 @@ msgstr "%s%s ^* n'a pas réussi à éviter les balles d'une tourelle"
 #: src/cgame/cg_event.cpp:317
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr "%s%s ^* n'a pas réussie à éviter les balles d'une tourelle"
+msgstr "%s%s ^* n'a pas réussi à éviter les balles d'une tourelle"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "neuter"
@@ -2474,7 +2477,7 @@ msgstr "%s%s ^* a été abattu par une tourelle aidé par %s%s%s^*"
 #: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr "%s%s ^* a été abattu par une tourelle aidé par %s%s%s^*"
+msgstr "%s%s ^* a été abattue par une tourelle aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
@@ -2489,7 +2492,7 @@ msgstr "%s%s ^*a chevauché une roquette"
 #: src/cgame/cg_event.cpp:322
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
-msgstr "%s%s ^*a chevauchée une roquette"
+msgstr "%s%s ^*a chevauché une roquette"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "neuter"
@@ -3301,17 +3304,17 @@ msgstr "%s%s ^*a été mordu par %s%s%s^* aidé par %s%s%s^*"
 #: src/cgame/cg_event.cpp:475
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*a été découpé par le mantis de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*a été découpée par le mantis de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*a été découpé par le mantis de %s%s%s^*'"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
@@ -3331,17 +3334,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:480
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été déchiqueté par le marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:480
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été déchiquetée par la marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:480
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été déchiqueté par le marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
@@ -3366,12 +3369,12 @@ msgstr ""
 #: src/cgame/cg_event.cpp:485
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été électrocutée par le marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:485
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été électrocuté par le marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "male"
@@ -3391,17 +3394,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:490
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*a été éviscéré par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:490
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*a été éviscérée par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:490
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*a été éviscéré par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "male"
@@ -3496,12 +3499,12 @@ msgstr "%s%s ^*a été planté"
 #: src/cgame/cg_event.cpp:506
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*a été massacré par le tyrant de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*a été massacrée par le tyrant de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "neuter"
@@ -3526,17 +3529,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:511
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*aurait dû s'écarter du chemin du tyrant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:511
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*aurait dû s'écarter du chemin du tyrant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:511
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*aurait dû s'écarter du chemin du tyrant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
@@ -3781,12 +3784,12 @@ msgstr "Notre base est attaquée !"
 #: src/cgame/cg_event.cpp:1266
 #, c-format
 msgid "%s under attack – %s"
-msgstr ""
+msgstr "%s attaqué– %s"
 
 #: src/cgame/cg_event.cpp:1270
 #, c-format
 msgid "%s under attack"
-msgstr ""
+msgstr "%s attaqué"
 
 #: src/cgame/cg_main.cpp:462
 msgid "Calling home…"
@@ -4439,7 +4442,7 @@ msgstr "cgame : débogage : aucun menu de ce type %d"
 
 #: src/cgame/cg_servercmds.cpp:850
 msgid "^1*DEAD*^*"
-msgstr ""
+msgstr "^1*MORT*^*"
 
 #: src/cgame/cg_servercmds.cpp:911
 #, c-format
@@ -4626,12 +4629,12 @@ msgstr "Appuyez sur %s pour faire une attaque électrique."
 #: src/cgame/cg_tutorial.cpp:324
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
-msgstr "Maintenez %s enfoncé, puis touchez un mur pour faire un saut mural."
+msgstr "Maintenez %s enfoncé puis touchez un mur pour faire un saut mural."
 
 #: src/cgame/cg_tutorial.cpp:344
 #, c-format
 msgid "Press %s to launch a barb."
-msgstr "Appuyez sur %s pour lancer un pique."
+msgstr "Appuyez sur %s pour lancer une pique."
 
 #: src/cgame/cg_tutorial.cpp:350
 #, c-format
@@ -4803,11 +4806,11 @@ msgstr "Dix secondes jusqu’à ce que l'inactivité baisse !"
 
 #: src/sgame/sg_bot.cpp:70
 msgid "^3Alien bot names:"
-msgstr ""
+msgstr "^3Noms des extraterrestres :"
 
 #: src/sgame/sg_bot.cpp:71
 msgid "^3Human bot names:"
-msgstr ""
+msgstr "^3Nom des bots humains :"
 
 #: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
@@ -5091,6 +5094,8 @@ msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
 msgstr ""
+"$1$^7 a appelé à un vote :\n"
+"^7$2$"
 
 #: src/sgame/sg_votes.cpp:742
 msgid "$1$^* called a team vote: $2t$"
@@ -5101,6 +5106,8 @@ msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
 msgstr ""
+"$1$^7 a appélé à un vote d'équipe :\n"
+"^7$2t$"
 
 #: src/sgame/sg_votes.cpp:860
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
