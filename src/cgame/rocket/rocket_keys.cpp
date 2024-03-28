@@ -230,7 +230,7 @@ static void Rocket_ProcessMouseClick( int button, bool down )
 #define MOUSEWHEEL_DELTA 5
 bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 {
-	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) )
+	if ( !menuContext || rocketInfo.keyCatcher & KEYCATCH_CONSOLE || !CG_AnyMenuOpen() )
 	{
 		return false;
 	}
@@ -239,6 +239,11 @@ bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 	// Our input system sends mouse events as key presses.
 	if ( ( keynum >= K_MOUSE1 && keynum <= K_MOUSE5 ) || ( keynum >= K_AUX1 && keynum <= K_AUX16 ) )
 	{
+		if ( !( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) )
+		{
+			return false;
+		}
+
 		Rocket_ProcessMouseClick( keynum, down );
 		// TODO detect whether mouse click is consumed?
 		// Well it would probably be weird and bad if MOUSE1 were not consumed by the menu,
@@ -248,6 +253,11 @@ bool Rocket_ProcessKeyInput( Keyboard::Key key, bool down )
 
 	if ( ( keynum == K_MWHEELDOWN || keynum == K_MWHEELUP ) )
 	{
+		if ( !( rocketInfo.keyCatcher & KEYCATCH_UI_MOUSE ) )
+		{
+			return false;
+		}
+
 		// Our input system sends an up event right after a down event
 		// We only want to catch one of these.
 		if ( !down )
