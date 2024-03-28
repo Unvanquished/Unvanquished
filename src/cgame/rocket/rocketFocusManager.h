@@ -39,24 +39,38 @@ Maryland 20850 USA.
 #include "rocket.h"
 #include <RmlUi/Core.h>
 
+// input capturing is based on this
+enum class VisibleMenusState
+{
+	// menus ignore all input
+	NONE,
+	// menus capture mouse (if cg_circleMenusCaptureMouse set), and any keystrokes consumed
+	// by the menu, while other keystrokes are passed through to binds
+	ONLY_PASSTHROUGH,
+	// menus capture everything
+	NON_PASSTHROUGH,
+};
+
 class RocketFocusManager : public Rml::EventListener
 {
+	VisibleMenusState state_ = VisibleMenusState::NON_PASSTHROUGH;
+
 public:
 	RocketFocusManager() { }
+
+	VisibleMenusState GetState() { return state_; }
+
 	void ProcessEvent( Rml::Event &evt )
 	{
-		// 0 = ignore all input
-		// 1 = capture mouse; optionally consume keys while passing on to binds if not consumed
-		// 2 = capture everything
-		int catchLevel;
+		VisibleMenusState catchLevel;
 
 		if ( rocketInfo.cstate.connState < connstate_t::CA_PRIMED )
 		{
-			catchLevel = 2;
+			catchLevel = VisibleMenusState::NON_PASSTHROUGH;
 		}
 		else
 		{
-			catchLevel = 0;
+			catchLevel = VisibleMenusState::NONE;
 
 			for ( const rocketMenu_t &menu : rocketInfo.menu )
 			{
@@ -70,26 +84,35 @@ public:
 				{
 					if ( !menu.passthrough )
 					{
-						catchLevel = 2;
+						catchLevel = VisibleMenusState::NON_PASSTHROUGH;
 						break;
 					}
-
-					catchLevel = 1;
+					else
+					{
+						catchLevel = VisibleMenusState::ONLY_PASSTHROUGH;
+					}
 				}
 			}
 		}
 
+		state_ = catchLevel;
+
+		if ( catchLevel == VisibleMenusState::ONLY_PASSTHROUGH && !cg_circleMenusCaptureMouse.Get() )
+		{
+			catchLevel = VisibleMenusState::NONE;
+		}
+
 		switch ( catchLevel )
 		{
-		case 0:
+		case VisibleMenusState::NONE:
 			CG_SetKeyCatcher( rocketInfo.keyCatcher & ~KEYCATCH_UI_MOUSE & ~KEYCATCH_UI_KEY );
 			break;
 
-		case 1:
+		case VisibleMenusState::ONLY_PASSTHROUGH:
 			CG_SetKeyCatcher( ( rocketInfo.keyCatcher | KEYCATCH_UI_MOUSE ) & ~KEYCATCH_UI_KEY );
 			break;
 
-		case 2:
+		case VisibleMenusState::NON_PASSTHROUGH:
 			if ( !( rocketInfo.keyCatcher & KEYCATCH_UI_KEY ) )
 			{
 				trap_Key_ClearCmdButtons();
