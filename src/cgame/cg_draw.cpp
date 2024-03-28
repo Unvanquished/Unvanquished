@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // active (after loading) gameplay
 
 #include "cg_local.h"
+#include "rocket/rocket.h"
 
 /*
 ==============
@@ -124,8 +125,7 @@ void CG_MousePosEvent( int x, int y )
 
 bool CG_KeyEvent( Keyboard::Key key, bool down )
 {
-	if ( down && key == Keyboard::Key(K_ESCAPE) &&
-		!( rocketInfo.keyCatcher & ( KEYCATCH_UI_KEY | KEYCATCH_UI_MOUSE ) ) )
+	if ( down && key == Keyboard::Key(K_ESCAPE) && !CG_AnyMenuOpen() )
 	{
 		// Open the main menu if no menus are open
 		trap_SendConsoleCommand( "toggleMenu" );

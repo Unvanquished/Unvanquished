@@ -321,6 +321,10 @@ static RocketFocusManager fm;
 Rml::Context *menuContext = nullptr;
 Rml::Context *hudContext = nullptr;
 
+Cvar::Cvar<bool> cg_circleMenusCaptureMouse(
+	"cg_circleMenusCaptureMouse", "circlemenus (except armoury) take mouse inputs",
+	Cvar::NONE, true);
+
 Rml::PropertyId UnvPropertyId::Orientation;
 
 // TODO
@@ -453,9 +457,9 @@ void Rocket_Shutdown()
 	trap_RemoveCommand( "rocketDebug" );
 }
 
-static bool ShouldDrawMenu()
+bool CG_AnyMenuOpen()
 {
-	return trap_Key_GetCatcher() & KEYCATCH_UI_MOUSE;
+	return fm.GetState() != VisibleMenusState::NONE;
 }
 
 void Rocket_Render()
@@ -467,7 +471,7 @@ void Rocket_Render()
 	}
 
 	// Render menus on top of the HUD
-	if ( ShouldDrawMenu() && menuContext )
+	if ( CG_AnyMenuOpen() && menuContext )
 	{
 		menuContext->Render();
 	}
@@ -476,7 +480,7 @@ void Rocket_Render()
 
 void Rocket_Update()
 {
-	if ( ShouldDrawMenu() )
+	if ( CG_AnyMenuOpen() )
 	{
 		menuContext->Update();
 	}
