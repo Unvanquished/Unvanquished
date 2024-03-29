@@ -288,6 +288,8 @@ inline class_t NavmeshForClass( class_t species, bool reduceTypes )
 	// Mantis is the same size as dretch but can jump higher
 	case PCL_ALIEN_LEVEL1:
 		return reduceTypes ? PCL_ALIEN_LEVEL0 : PCL_ALIEN_LEVEL1;
+	case PCL_ALIEN_LEVEL1_UPG:
+		return reduceTypes ? PCL_ALIEN_LEVEL0 : PCL_ALIEN_LEVEL1_UPG;
 
 	// Marauder is slightly smaller than Advanced Marauder, otherwise the same
 	case PCL_ALIEN_LEVEL2:

@@ -897,7 +897,7 @@ static void BotMaybeAttackWhileClimbing( gentity_t *self )
 			{
 				self->botMind->lastNavconDistance = extendedDistance;
 			}
-			else if ( ownClass == PCL_ALIEN_LEVEL1 )
+			else if ( ownClass == PCL_ALIEN_LEVEL1 || ownClass == PCL_ALIEN_LEVEL1_UPG )
 			{
 				usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer );
@@ -932,6 +932,7 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 		BotClimbToGoal( self );
 		break;
 	case PCL_ALIEN_LEVEL1:
+	case PCL_ALIEN_LEVEL1_UPG:
 		if ( level.time < WallclimbStopTime( self ) )
 		{
 			BotClimbToGoal( self );
@@ -997,6 +998,7 @@ static bool BotTryMoveUpward( gentity_t *self )
 		case PCL_ALIEN_BUILDER0_UPG:
 		case PCL_ALIEN_LEVEL0:
 		case PCL_ALIEN_LEVEL1:
+		case PCL_ALIEN_LEVEL1_UPG:
 			if ( level.time > WallclimbStopTime( self ) )
 			{
 				return false;
@@ -1013,6 +1015,7 @@ static bool BotTryMoveUpward( gentity_t *self )
 	{
 	case PCL_ALIEN_LEVEL0:
 	case PCL_ALIEN_LEVEL1:
+	case PCL_ALIEN_LEVEL1_UPG:
 	case PCL_ALIEN_LEVEL2:
 	case PCL_ALIEN_LEVEL2_UPG:
 		if ( level.time > WallclimbStopTime( self ) )
@@ -1125,6 +1128,7 @@ bool BotMoveToGoal( gentity_t *self )
 		case PCL_ALIEN_LEVEL0:
 			break;
 		case PCL_ALIEN_LEVEL1:
+		case PCL_ALIEN_LEVEL1_UPG:
 			if ( ps.weaponCharge <= 50 ) // I don't remember why 50
 			{
 				wpm = WPM_SECONDARY;

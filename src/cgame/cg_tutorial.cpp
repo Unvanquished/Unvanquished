@@ -258,7 +258,7 @@ CG_AlienLevel1Text
 */
 static void CG_AlienLevel1Text( std::string& text )
 {
-	text += va( _( "Press %s to swipe." ), CG_KeyNameForCommand( "+attack" ) );
+	text += va( _( "Press %s to swipe. Swiping buildings corrodes them." ), CG_KeyNameForCommand( "+attack" ) );
 	text += '\n';
 
 	text += va( _( "Press %s to lunge." ), CG_KeyNameForCommand( "+attack2" ) );
@@ -560,6 +560,7 @@ const std::string& CG_TutorialText()
 					break;
 
 				case PCL_ALIEN_LEVEL1:
+				case PCL_ALIEN_LEVEL1_UPG:
 					CG_AlienLevel1Text( text );
 					break;
 

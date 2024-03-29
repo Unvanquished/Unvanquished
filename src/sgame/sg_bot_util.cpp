@@ -2063,6 +2063,7 @@ void BotFireWeaponAI( gentity_t *self )
 		case WP_ALEVEL0:
 			break; //auto hit
 		case WP_ALEVEL1:
+		case WP_ALEVEL1_UPG:
 			if ( distance < LEVEL1_CLAW_RANGE && readyFire )
 			{
 				BotFireWeapon( WPM_PRIMARY, botCmdBuffer ); //mantis swipe
