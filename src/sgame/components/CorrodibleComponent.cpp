@@ -39,5 +39,5 @@ void CorrodibleComponent::Damage(int timeDelta) {
 		HandleCorrode(nullptr, false);
 		return;
 	}
-	entity.Damage(CORRODE_DAMAGE, actor_.get(), Util::nullopt, Util::nullopt, 0, MOD_CORRODE);
+	entity.Damage(CORRODE_DAMAGE, actor_, Util::nullopt, Util::nullopt, 0, MOD_CORRODE);
 }

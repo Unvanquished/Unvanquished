@@ -46,7 +46,7 @@ class CorrodibleComponent: public CorrodibleComponentBase {
 
 		bool corrode_;
 		int corrodeEndTime_;
-		GentityRef actor_;
+		gentity_t* actor_;
 
 };
 
