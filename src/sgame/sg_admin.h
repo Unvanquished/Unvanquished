@@ -161,6 +161,7 @@ bool        G_admin_listinactive( gentity_t *ent );
 bool        G_admin_listlayouts( gentity_t *ent );
 bool        G_admin_listplayers( gentity_t *ent );
 bool        G_admin_changemap( gentity_t *ent );
+bool        G_admin_changedevmap( gentity_t *ent );
 bool        G_admin_warn( gentity_t *ent );
 bool        G_admin_mute( gentity_t *ent );
 bool        G_admin_denybuild( gentity_t *ent );
