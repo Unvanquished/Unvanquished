@@ -242,6 +242,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"changedevmap",    G_admin_changedevmap,   false, "changedevmap",
+		N_("load a map with cheats (and optionally force layout)"),
+		N_("[^3mapname^7] (^5layout^7)")
+	},
+
+	{
 		"denybuild",    G_admin_denybuild,   false, "denybuild",
 		N_("take away a player's ability to build"),
 		N_("[^3name|slot#^7]")
@@ -3673,6 +3679,56 @@ bool G_admin_changemap( gentity_t *ent )
 	level.restarted = true;
 	G_MapLog_Result( 'M' );
 	G_admin_action( QQ( N_("^3changemap:^* map '$2$' started by $1$^* $3t$$4$$5$") ),
+	                "%s %s %s %s %s", ent, Quote( map ),
+	                ( layout[ 0 ] ) ? QQ( N_( "(forcing layout '") ) : QQ( "" ),
+	                ( layout[ 0 ] ) ? Quote( layout ) : QQ( "" ),
+	                ( layout[ 0 ] ) ? QQ( "')" ) : QQ( "" ) );
+	return true;
+}
+
+bool G_admin_changedevmap( gentity_t *ent )
+{
+	char map[ MAX_QPATH ];
+	char layout[ MAX_QPATH ] = { "" };
+
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( QQ( N_("^3changedevmap:^* usage: changedevmap [map] (layout)") ) );
+		return false;
+	}
+
+	trap_Argv( 1, map, sizeof( map ) );
+
+	if ( !G_MapExists( map ) )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3changedevmap:^* invalid map name '$1$'") ), map ) );
+		return false;
+	}
+
+	if ( trap_Argc() > 2 )
+	{
+		trap_Argv( 2, layout, sizeof( layout ) );
+
+		if ( !Q_stricmp( layout, S_BUILTIN_LAYOUT ) ||
+		     G_LayoutExists( map, layout ) )
+		{
+			// nothing to do
+		}
+		else
+		{
+			ADMP( va( "%s %s", QQ( N_("^3changedevmap:^* invalid layout name '$1$'") ), layout ) );
+			return false;
+		}
+	}
+
+	admin_log( map );
+	admin_log( layout );
+
+	trap_SendConsoleCommand( Str::Format( "devmap %s %s", Cmd::Escape( map ), Cmd::Escape( layout ) ).c_str() );
+
+	level.restarted = true;
+	G_MapLog_Result( 'M' );
+	G_admin_action( QQ( N_("^3changedevmap:^* map '$2$' started by $1$^* $3t$$4$$5$ (with Cheats enabled)") ),
 	                "%s %s %s %s %s", ent, Quote( map ),
 	                ( layout[ 0 ] ) ? QQ( N_( "(forcing layout '") ) : QQ( "" ),
 	                ( layout[ 0 ] ) ? Quote( layout ) : QQ( "" ),
