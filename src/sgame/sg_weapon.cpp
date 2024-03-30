@@ -916,6 +916,7 @@ void G_CheckCkitRepair( gentity_t *self )
 			}
 
 			self->client->ps.weaponTime += BG_Weapon( self->client->ps.weapon )->repeatRate1;
+			traceEnt->entity->Corrode( self, false );
 		}
 	}
 }
