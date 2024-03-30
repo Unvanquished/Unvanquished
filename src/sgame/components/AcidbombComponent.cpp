@@ -17,7 +17,7 @@ void AcidbombComponent::Explode() {
 	G_SpawnMissile(MIS_ACIDBOMB, entity.oldEnt, entity.oldEnt->s.origin, zero, nullptr, G_ExplodeMissile, level.time);
 	ForEntities<CorrodibleComponent>([&](Entity& other, CorrodibleComponent&) {
 		if (G_Distance(entity.oldEnt, other.oldEnt) < ACIDBOMB_RANGE) {
-			other.Corrode(true);
+			other.Corrode(entity.oldEnt, true);
 		}
 	});
 }

@@ -1606,7 +1606,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 						}
 						else if ( target->s.eType == entityType_t::ET_BUILDABLE )
 						{
-							target->entity->Corrode(true);
+							target->entity->Corrode(self, true);
 						}
 					}
 				}

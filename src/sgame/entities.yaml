@@ -69,6 +69,8 @@ messages:
           type: glm::vec3&
 
     Corrode:
+        - name: actor
+          type: gentity_t*
         - name: corrode
           type: bool
 

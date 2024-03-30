@@ -19,10 +19,11 @@ void CorrodibleComponent::HandlePrepareNetCode() {
 	}
 }
 
-void CorrodibleComponent::HandleCorrode(bool c) {
+void CorrodibleComponent::HandleCorrode(gentity_t* actor, bool c) {
 	corrode_ = c;
 	if (c) {
 		corrodeEndTime_ = level.time + CORRODE_TIME;
+		actor_ = actor;
 	}
 }
 
@@ -35,8 +36,8 @@ void CorrodibleComponent::HandleHeal(float amount, gentity_t* source) {
 void CorrodibleComponent::Damage(int timeDelta) {
 	if (!corrode_) return;
 	if (corrodeEndTime_ < level.time) {
-		HandleCorrode(false);
+		HandleCorrode(nullptr, false);
 		return;
 	}
-	entity.Damage(CORRODE_DAMAGE, nullptr, Util::nullopt, Util::nullopt, 0, MOD_CORRODE);
+	entity.Damage(CORRODE_DAMAGE, actor_.get(), Util::nullopt, Util::nullopt, 0, MOD_CORRODE);
 }
