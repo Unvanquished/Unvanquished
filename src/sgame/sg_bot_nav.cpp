@@ -720,7 +720,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 // This function tries to detect obstacles and to find a way
 // around them. It always sets dir as the output value.
 // Returns true on error
-static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeometry )
+static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeometry, obstacle_t &obst )
 {
 	dir = self->botMind->nav().glm_dir();
 	gentity_t const *blocker = BotGetPathBlocker( self, dir );
@@ -752,7 +752,7 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeome
 		}
 	}
 
-	obstacle_t obst = BotDetectObstacle( self, blocker, dir );
+	obst = BotDetectObstacle( self, blocker, dir );
 	if ( obst == OBSTACLE_JUMPABLE )
 	{
 		BotJump( self );
@@ -1062,7 +1062,8 @@ bool BotMoveToGoal( gentity_t *self )
 	//    be satisfying.
 
 	bool ignoreGeometry = stuckTime < ignoreGeometryThreshold;
-	if ( BotAvoidObstacles( self, dir, ignoreGeometry ) )
+	obstacle_t obstacle = OBSTACLE_NONE;
+	if ( BotAvoidObstacles( self, dir, ignoreGeometry, obstacle ) )
 	{
 		if ( BotTryMoveUpward( self ) )
 		{
@@ -1146,14 +1147,22 @@ bool BotMoveToGoal( gentity_t *self )
 			break;
 		}
 		case PCL_ALIEN_LEVEL3:
-			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			// flee by repeatedly charging and releasing the pounce
+			// however, charging the pounce prevents jumping
+			// if we are facing an obstacle we can jump over:
+			// stop charging (or do not start charging) until we have
+			// jumped over the obstacle
+			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME
+				 && obstacle != OBSTACLE_JUMPABLE )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG;
 			}
 		break;
 		case PCL_ALIEN_LEVEL3_UPG:
-			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			// see the comment at case PCL_ALIEN_LEVEL3
+			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG
+				 && obstacle != OBSTACLE_JUMPABLE )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG_UPG;
