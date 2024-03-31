@@ -1147,6 +1147,11 @@ bool BotMoveToGoal( gentity_t *self )
 			break;
 		}
 		case PCL_ALIEN_LEVEL3:
+			// flee by repeatedly charging and releasing the pounce
+			// however, charging the pounce prevents jumping
+			// if we are facing an obstacle we can jump over:
+			// stop charging (or do not start charging) until we have
+			// jumped over the obstacle
 			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME
 				 && obstacle != OBSTACLE_JUMPABLE )
 			{
@@ -1155,6 +1160,7 @@ bool BotMoveToGoal( gentity_t *self )
 			}
 		break;
 		case PCL_ALIEN_LEVEL3_UPG:
+			// see the comment at case PCL_ALIEN_LEVEL3
 			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG
 				 && obstacle != OBSTACLE_JUMPABLE )
 			{
