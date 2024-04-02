@@ -100,8 +100,9 @@ static void CG_Rocket_BuildDS()
 	CG_Rocket_BuildDataSource( CG_Argv( 1 ), table );
 }
 
-
-
+// Cmd.exec should be preferred. Note that there is not really any difference between executing
+// "immediately" with Cmd.exec versus using the "event" queue, because the engine buffers commands
+// and executes them later anyway.
 static void CG_Rocket_EventExec()
 {
 	const char *args = CG_Args();
