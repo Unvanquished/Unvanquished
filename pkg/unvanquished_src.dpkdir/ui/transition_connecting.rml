@@ -19,7 +19,7 @@
 		</style>
 	</head>
 	<body id="connecting"
-	onkeydown="if event.parameters['key_identifier'] == rmlui.key_identifier.ESCAPE then Events.pushevent('exec disconnect', event) end"
+	onkeydown="if event.parameters['key_identifier'] == rmlui.key_identifier.ESCAPE then Cmd.exec('disconnect') end"
 	nohide>
 		<button-menu class="disconnect" onclick='Events.pushevent("exec disconnect", event)'><translate>Disconnect</translate></button-menu>
 		<div>

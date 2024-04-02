@@ -11,28 +11,28 @@
 			<blocklink class="fake">
 				<!-- note &nbsp; + line break means there are two spaces, but IMO it looks prettier, so well -->
 				<translate>Global vote:</translate>
-				<ilink-options onclick='Events.pushevent("exec vote yes", event)'>&nbsp;
+				<ilink-options onclick='Cmd.exec("vote yes")'>&nbsp;
 				<translate>yes</translate></ilink-options>&nbsp;
 				<translate>or</translate>
-				<ilink-options onclick='Events.pushevent("exec vote no", event)'>&nbsp;
+				<ilink-options onclick='Cmd.exec("vote no")'>&nbsp;
 				<translate>no</translate></ilink-options>
 			</blocklink>
 			<blocklink class="fake">
 				<!-- note &nbsp; + line break means there are two spaces, but IMO it looks prettier, so well -->
 				<translate>Team vote:</translate>
-				<ilink-options onclick='Events.pushevent("exec teamvote yes", event)'>&nbsp;
+				<ilink-options onclick='Cmd.exec("teamvote yes")'>&nbsp;
 				<translate>yes</translate></ilink-options>&nbsp;
 				<translate>or</translate>
-				<ilink-options onclick='Events.pushevent("exec teamvote no", event)'>&nbsp;
+				<ilink-options onclick='Cmd.exec("teamvote no")'>&nbsp;
 				<translate>no</translate></ilink-options>
 			</blocklink>
 			<br/>
-			<button-menu style="width:100%" onclick='Events.pushevent("exec callvote kickbots", event)'><translate>Kick bots</translate></button-menu>
+			<button-menu style="width:100%" onclick='Cmd.exec("callvote kickbots")'><translate>Kick bots</translate></button-menu>
 			<button-menu style="width:100%" onclick='Events.pushevent("show callvote_fillbots", event)'><translate>Fill with bots</translate></button-menu>
 			<button-menu style="width:100%" onclick='Events.pushevent("show callvote_map", event)'><translate>Change map</translate></button-menu>
-			<button-menu style="width:100%" onclick='Events.pushevent("exec callvote extend", event)'><translate>Extend timelimit</translate></button-menu>
+			<button-menu style="width:100%" onclick='Cmd.exec("callvote extend")'><translate>Extend timelimit</translate></button-menu>
 			<button-menu style="width:100%" onclick='Events.pushevent("show callvote_draw", event)'><translate>Call a draw</translate></button-menu>
-			<button-menu style="width:100%" onclick='Events.pushevent("exec callteamvote admitdefeat", event)'><translate>Admit defeat</translate></button-menu>
+			<button-menu style="width:100%" onclick='Cmd.exec("callteamvote admitdefeat")'><translate>Admit defeat</translate></button-menu>
 		</indent>
 	</body>
 </rml>

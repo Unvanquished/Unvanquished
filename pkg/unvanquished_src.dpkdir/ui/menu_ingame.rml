@@ -22,7 +22,7 @@
 					<h1> <translate>Match</translate> </h1>
 					<div style="display:flex;align-items: stretch;">
 						<!--Don't put  ' class="rightfloat ' on the first button because this is allready defined in the "button-menu"-->
-						<button-menu style="width:39%;" onclick='Events.pushevent("exec disconnect", event)'><translate>Leave match</translate></button-menu>
+						<button-menu style="width:39%;" onclick='Cmd.exec("disconnect")'><translate>Leave match</translate></button-menu>
 						<button-menu class="leftalign" style="width:39%;" onclick='Events.pushevent("blurall", event)'><translate>Resume action</translate></button-menu>
 					</div>
 					<indent>
@@ -39,9 +39,9 @@
 						<indent>
                                                         <button-menu style="width:87%" onclick='Events.pushevent("show server_setup", event)'><translate>Server setup</translate></button-menu>
                                                         <br/>
-							<button-menu style="width:87%"  class="rightfloat" onclick='Events.pushevent("exec disconnect", event)'><translate>Stop server</translate></button-menu>
+							<button-menu style="width:87%"  class="rightfloat" onclick='Cmd.exec("disconnect")'><translate>Stop server</translate></button-menu>
 							<br/>
-							<button-menu style="width:87%"  class="leftalign" onclick='Events.pushevent("exec pause", event)'><translate>Pause server</translate></button-menu>
+							<button-menu style="width:87%"  class="leftalign" onclick='Cmd.exec("pause")'><translate>Pause server</translate></button-menu>
                                                         <br/>
 					                <button-menu style="width:87%" onclick='Events.pushevent("show options_bots", event)'><translate>Bots</translate></button-menu>
 						</indent>
@@ -55,7 +55,7 @@
 						<button-menu style="width:87%" onclick='Events.pushevent("show help_gameplay", event)'><translate>Gameplay guide</translate></button-menu>
 					</indent>
 					<br/>
-					<button-menu style="width:50%" class="rightfloat" onclick='Events.pushevent("exec quit", event)'><translate>Quit game</translate></button-menu>
+					<button-menu style="width:50%" class="rightfloat" onclick='Cmd.exec("quit")'><translate>Quit game</translate></button-menu>
 					<blocklink class="leftalign fake" style="color: #ffffff;">
 						<translate>Beta</translate>&nbsp;<version/>
 					</blocklink>

@@ -15,7 +15,7 @@
 			<h3><translate>Humans</translate></h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_human" type="number" format="%.0f"/>&nsbsp;<translate>degrees</translate>
-				<ilink onclick='Events.pushevent("exec reset cg_fov_human", event)'>(<translate>reset</translate>)</ilink>
+				<ilink onclick='Cmd.exec("reset cg_fov_human")'>(<translate>reset</translate>)</ilink>
 			</p>
 		</row>
 		<row>
@@ -23,7 +23,7 @@
 			<h3><translate>Granger</translate></h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_builder" type="number" format="%.0f"/>&nsbsp;<translate>degrees</translate>
-				<ilink onclick='Events.pushevent("exec reset cg_fov_builder", event)'>(<translate>reset</translate>)</ilink>
+				<ilink onclick='Cmd.exec("reset cg_fov_builder")'>(<translate>reset</translate>)</ilink>
 			</p>
 		</row>
 		<row>
@@ -31,7 +31,7 @@
 			<h3><translate>Dretch</translate></h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level0" type="number" format="%.0f"/>&nsbsp;<translate>degrees</translate>
-				<ilink onclick='Events.pushevent("exec reset cg_fov_level0", event)'>(<translate>reset</translate>)</ilink>
+				<ilink onclick='Cmd.exec("reset cg_fov_level0")'>(<translate>reset</translate>)</ilink>
 			</p>
 
 		</row>
@@ -40,7 +40,7 @@
 			<h3><translate>Mantis</translate></h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level1" type="number" format="%.0f"/>&nsbsp;<translate>degrees</translate>
-				<ilink onclick='Events.pushevent("exec reset cg_fov_level1", event)'>(<translate>reset</translate>)</ilink>
+				<ilink onclick='Cmd.exec("reset cg_fov_level1")'>(<translate>reset</translate>)</ilink>
 			</p>
 		</row>
 		<row>
@@ -48,7 +48,7 @@
 			<h3><translate>Marauder</translate></h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level2" type="number" format="%.0f"/>&nsbsp;<translate>degrees</translate>
-				<ilink onclick='Events.pushevent("exec reset cg_fov_level2", event)'>(<translate>reset</translate>)</ilink>
+				<ilink onclick='Cmd.exec("reset cg_fov_level2")'>(<translate>reset</translate>)</ilink>
 			</p>
 		</row>
 		<row>
@@ -56,7 +56,7 @@
 			<h3><translate>Dragoon</translate></h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level3" type="number" format="%.0f"/>&nsbsp;<translate>degrees</translate>
-				<ilink onclick='Events.pushevent("exec reset cg_fov_level3", event)'>(<translate>reset</translate>)</ilink>
+				<ilink onclick='Cmd.exec("reset cg_fov_level3")'>(<translate>reset</translate>)</ilink>
 			</p>
 		</row>
 		<row>
@@ -64,7 +64,7 @@
 			<h3><translate>Tyrant</translate></h3>
 			<p class="inline">
 				<inlinecvar cvar="cg_fov_level4" type="number" format="%.0f"/>&nsbsp;<translate>degrees</translate>
-				<ilink onclick='Events.pushevent("exec reset cg_fov_level4", event)'>(<translate>reset</translate>)</ilink>
+				<ilink onclick='Cmd.exec("reset cg_fov_level4")'>(<translate>reset</translate>)</ilink>
 			</p>
 		</row>
 
