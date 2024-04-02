@@ -32,10 +32,10 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "CDataSource.h"
 #include "cgame/rocket/rocket.h"
 #include <RmlUi/Core.h>
 #include <RmlUi/Core/Elements/DataSource.h>
+#include "register_lua_extensions.h"
 #include "cgame/cg_local.h"
 
 // Lua function to request the datasource be (re)built, e.g.

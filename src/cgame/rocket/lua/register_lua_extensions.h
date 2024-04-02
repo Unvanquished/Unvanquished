@@ -2,7 +2,7 @@
 ===========================================================================
 
 Unvanquished GPL Source Code
-Copyright (C) 2012 Unvanquished Developers
+Copyright (C) 2024 Unvanquished Developers
 
 This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
@@ -32,30 +32,14 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef LUACVAR_H
-#define LUACVAR_H
+#ifndef REGISTER_LUA_EXTENSIONS_H_
+#define REGISTER_LUA_EXTENSIONS_H_
 
-#include "../rocket.h"
-#include <RmlUi/Core.h>
-#include <RmlUi/Lua/LuaType.h>
+#include <RmlUi/Lua/IncludeLua.h>
 
-namespace Rml {
-namespace Lua {
-// Dummy class for cvars
-class Cvar
-{
+void CG_Rocket_RegisterLuaCDataSource(lua_State* L);
+void CG_Rocket_RegisterLuaCmd(lua_State* L);
+void CG_Rocket_RegisterLuaCvar(lua_State* L);
+void CG_Rocket_RegisterLuaEvents(lua_State* L);
 
-};
-
-template<> void ExtraInit<Cvar>(lua_State* L, int metatable_index);
-int Cvarget(lua_State* L);
-int Cvarset(lua_State* L);
-int Cvararchive(lua_State* L);
-
-extern RegType<Cvar> CvarMethods[];
-extern luaL_Reg CvarGetters[];
-extern luaL_Reg CvarSetters[];
-
-}  // namespace Lua
-}  // namespace Rml
 #endif

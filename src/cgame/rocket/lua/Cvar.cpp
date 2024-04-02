@@ -32,68 +32,39 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "Cvar.h"
-#include "../../cg_local.h"
+#include "common/Common.h"
+#include "register_lua_extensions.h"
 
-namespace Rml {
-namespace Lua {
-
-template<> void ExtraInit<Lua::Cvar>(lua_State* L, int metatable_index)
-{
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
-
-	lua_pushcfunction(L, Cvarget);
-	lua_setfield(L, method_index, "get");
-
-	lua_pushcfunction(L, Cvarset);
-	lua_setfield(L, method_index, "set");
-
-	lua_pushcfunction(L, Cvararchive);
-	lua_setfield(L, method_index, "archive");
-
-	return;
-}
-
-int Cvarget(lua_State* L)
+static int Cvar_get(lua_State* L)
 {
 	const char *cvar = luaL_checkstring(L, 1);
-	lua_pushstring(L, ::Cvar::GetValue(cvar).c_str());
+	lua_pushstring(L, Cvar::GetValue(cvar).c_str());
 	return 1;
 }
 
-int Cvarset(lua_State* L)
+static int Cvar_set(lua_State* L)
 {
 	const char *cvar = luaL_checkstring(L, 1);
 	const char *value = luaL_checkstring(L, 2);
-	::Cvar::SetValue(cvar, value);
+	Cvar::SetValue(cvar, value);
 	return 0;
 }
 
-int Cvararchive(lua_State* L)
+static int Cvar_archive(lua_State* L)
 {
 	const char *cvar  = luaL_checkstring(L, 1);
-	::Cvar::AddFlags(cvar, ::Cvar::USER_ARCHIVE);
+	Cvar::AddFlags(cvar, Cvar::USER_ARCHIVE);
 	return 0;
 }
 
-RegType<Cvar> CvarMethods[] =
+void CG_Rocket_RegisterLuaCvar(lua_State* L)
 {
-	{ NULL, NULL },
-};
-
-luaL_Reg CvarGetters[] =
-{
-	{ NULL, NULL },
-};
-
-luaL_Reg CvarSetters[] =
-{
-	{ NULL, NULL },
-};
-
-RMLUI_LUATYPE_DEFINE(Cvar)
-
-}  // namespace Lua
-}  // namespace Rml
+	lua_newtable(L);
+	lua_pushcfunction(L, Cvar_get);
+	lua_setfield(L, -2, "get");
+	lua_pushcfunction(L, Cvar_set);
+	lua_setfield(L, -2, "set");
+	lua_pushcfunction(L, Cvar_archive);
+	lua_setfield(L, -2, "archive");
+	lua_setglobal(L, "Cvar");
+}

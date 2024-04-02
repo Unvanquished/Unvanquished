@@ -32,49 +32,20 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "Cmd.h"
 #include "../../cg_local.h"
+#include "register_lua_extensions.h"
 
-namespace Rml {
-namespace Lua {
-
-template<> void ExtraInit<Lua::Cmd>(lua_State* L, int metatable_index)
-{
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
-
-	lua_pushcfunction(L, Cmdexec);
-	lua_setfield(L, method_index, "exec");
-
-
-	return;
-}
-
-int Cmdexec(lua_State* L)
+static int Cmd_exec(lua_State* L)
 {
 	const char *cmd = luaL_checkstring(L, 1);
 	trap_SendConsoleCommand(cmd);
 	return 0;
 }
 
-
-RegType<Cmd> CmdMethods[] =
+void CG_Rocket_RegisterLuaCmd(lua_State* L)
 {
-	{ NULL, NULL },
-};
-
-luaL_Reg CmdGetters[] =
-{
-	{ NULL, NULL },
-};
-
-luaL_Reg CmdSetters[] =
-{
-	{ NULL, NULL },
-};
-
-RMLUI_LUATYPE_DEFINE(Cmd)
-
-}  // namespace Lua
-}  // namespace Rml
+	lua_newtable(L);
+	lua_pushcfunction(L, Cmd_exec);
+	lua_setfield(L, -2, "exec");
+	lua_setglobal(L, "Cmd");
+}
