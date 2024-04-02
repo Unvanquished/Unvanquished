@@ -404,6 +404,11 @@ static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.time - self->botMind->stuckTime );
 }
 
+static AIValue_t timeSinceLastCombat( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( level.time - self->client->lastCombatTime );
+}
+
 static AIValue_t usableBuildPoints( gentity_t *self, const AIValue_t* )
 {
 	team_t team = G_Team( self );
@@ -505,6 +510,7 @@ static const struct AIConditionMap_s
 	{ "stuckTime",         stuckTime,         0 },
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
+	{ "timeSinceLastCombat", timeSinceLastCombat, 0 },
 	{ "usableBuildPoints", usableBuildPoints, 0 },
 	{ "weapon",            currentWeapon,     0 }
 };
