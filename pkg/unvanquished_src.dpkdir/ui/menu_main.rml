@@ -34,7 +34,7 @@
 
 						<button-menu style="width:87%" onclick='Events.pushevent("show help_gameplay", event)'><translate>Gameplay guide</translate></button-menu>
 
-						<button-menu style="width:87%" onclick='Events.pushevent("exec quit", event);Events.pushevent("exec updatelanguage", event)'><translate>Quit game</translate></button-menu>
+						<button-menu style="width:87%" onclick='Events.pushevent("exec quit", event)'><translate>Quit game</translate></button-menu>
 					</indent>
 
 					<blocklink class="leftalign fake" style="color: #ffffff;">
