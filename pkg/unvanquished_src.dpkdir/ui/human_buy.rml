@@ -202,7 +202,7 @@
 		</script>
 	</head>
 	<body id="human_buy" class="circlemenu human" onkeydown="HumanBuyHandleKey(event, document)"
-	 onshow="WeaponClear(document) UpgradeClear(document) BuildWeaponMenu(document) BuildUpgradeMenu(document)"
+	 onshow="CloseOtherCirclemenus(event) WeaponClear(document) UpgradeClear(document) BuildWeaponMenu(document) BuildUpgradeMenu(document)"
 	 onrefreshdata="BuildWeaponMenu(document) BuildUpgradeMenu(document)">
 	<tabset class="circlemenu" id="tabset">
 		<tab onclick="WeaponClear(document) BuildWeaponMenu(document)">
