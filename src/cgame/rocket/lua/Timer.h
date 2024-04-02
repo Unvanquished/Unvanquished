@@ -41,8 +41,6 @@ Maryland 20850 USA.
 #include <RmlUi/Core.h>
 #include <RmlUi/Lua/LuaType.h>
 
-namespace Rml {
-namespace Lua {
 class Timer
 {
 public:
@@ -60,13 +58,7 @@ private:
 	int lastTime;
 	std::list<TimerEvent> events;
 };
-template<> void ExtraInit<Timer>(lua_State* L, int metatable_index);
-int Timeradd(lua_State* L);
 
-extern RegType<Timer> TimerMethods[];
-extern luaL_Reg TimerGetters[];
-extern luaL_Reg TimerSetters[];
+void CG_Rocket_RegisterLuaTimer(lua_State* L);
 
-}  // namespace Lua
-}  // namespace Rml
 #endif

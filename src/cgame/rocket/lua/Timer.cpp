@@ -32,23 +32,10 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "Timer.h"
 #include "../../cg_local.h"
+#include "Timer.h"
 
-namespace Rml {
-namespace Lua {
-
-Timer timer;
-
-template<> void ExtraInit<Lua::Timer>(lua_State* L, int metatable_index)
-{
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
-
-	lua_pushcfunction(L, Timeradd);
-	lua_setfield(L, method_index, "add");
-}
+static Timer timer;
 
 void Timer::Add( int delayMs, int callbackRef, lua_State* L )
 {
@@ -69,7 +56,7 @@ void Timer::RunUpdate(int time)
 			lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
 			luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
 			if (lua_pcall(it->L, 0, 0, 0) != 0)
-				::Log::Warn( "Could not run lua timer callback: %s",
+				Log::Warn( "Could not run lua timer callback: %s",
 							lua_tostring(it->L, -1));
 			it = events.erase(it);
 		}
@@ -85,7 +72,7 @@ void Timer::Update( int time )
 	timer.RunUpdate(time);
 }
 
-int Timeradd( lua_State* L )
+static int Timer_add( lua_State* L )
 {
 	int delayMs = luaL_checkinteger(L, 1);
 	int ref = luaL_ref(L, LUA_REGISTRYINDEX);
@@ -93,22 +80,10 @@ int Timeradd( lua_State* L )
 	return 0;
 }
 
-
-RegType<Timer> TimerMethods[] =
+void CG_Rocket_RegisterLuaTimer(lua_State* L)
 {
-	{ nullptr, nullptr },
-};
-
-luaL_Reg TimerGetters[] =
-{
-	{ nullptr, nullptr },
-};
-
-luaL_Reg TimerSetters[] =
-{
-	{ nullptr, nullptr },
-};
-RMLUI_LUATYPE_DEFINE(Timer)
-
-}  // namespace Lua
-}  // namespace Rml
+	lua_newtable(L);
+	lua_pushcfunction(L, Timer_add);
+	lua_setfield(L, -2, "add");
+	lua_setglobal(L, "Timer");
+}

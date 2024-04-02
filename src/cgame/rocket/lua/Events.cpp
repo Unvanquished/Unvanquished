@@ -32,30 +32,11 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "Events.h"
+#include "cgame/rocket/rocket.h"
+#include <RmlUi/Lua/LuaType.h>
+#include "register_lua_extensions.h"
 
-namespace Rml {
-namespace Lua {
-
-template<> void ExtraInit<Lua::Events>(lua_State* L, int metatable_index)
-{
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
-
-	lua_pushcfunction(L, Eventspushcmd);
-	lua_setfield(L, method_index, "pushcmd");
-
-	lua_pushcfunction(L, Eventspushelement);
-	lua_setfield(L, method_index, "pushelement");
-
-	lua_pushcfunction(L, Eventspushevent);
-	lua_setfield(L, method_index, "pushevent");
-
-	return;
-}
-
-int Eventspushcmd(lua_State* L)
+static int Events_pushcmd(lua_State* L)
 {
 	Rml::StringList list;
 	const char *cmds = luaL_checkstring(L, 1);
@@ -69,11 +50,11 @@ int Eventspushcmd(lua_State* L)
 	return 0;
 }
 
-int Eventspushevent(lua_State* L)
+static int Events_pushevent(lua_State* L)
 {
 	Rml::StringList list;
 	const char *cmds = luaL_checkstring(L, 1);
-	Rml::Event *event = LuaType<Rml::Event>::check(L, 2);
+	Rml::Event *event = Rml::Lua::LuaType<Rml::Event>::check(L, 2);
 
 	if (event == NULL)
 	{
@@ -89,11 +70,11 @@ int Eventspushevent(lua_State* L)
 	return 0;
 }
 
-int Eventspushelement(lua_State* L)
+static int Events_pushelement(lua_State* L)
 {
 	Rml::StringList list;
 	const char *cmds = luaL_checkstring(L, 1);
-	Rml::Element *element = LuaType<Rml::Element>::check(L, 2);
+	Rml::Element *element = Rml::Lua::LuaType<Rml::Element>::check(L, 2);
 
 	if (element == NULL)
 	{
@@ -109,22 +90,14 @@ int Eventspushelement(lua_State* L)
 	return 0;
 }
 
-RegType<Events> EventsMethods[] =
+void CG_Rocket_RegisterLuaEvents(lua_State* L)
 {
-	{ NULL, NULL },
-};
-
-luaL_Reg EventsGetters[] =
-{
-	{ NULL, NULL },
-};
-
-luaL_Reg EventsSetters[] =
-{
-	{ NULL, NULL },
-};
-
-RMLUI_LUATYPE_DEFINE(Events)
-
-}  // namespace Lua
-}  // namespace Rml
+	lua_newtable(L);
+	lua_pushcfunction(L, Events_pushcmd);
+	lua_setfield(L, -2, "pushcmd");
+	lua_pushcfunction(L, Events_pushelement);
+	lua_setfield(L, -2, "pushelement");
+	lua_pushcfunction(L, Events_pushevent);
+	lua_setfield(L, -2, "pushevent");
+	lua_setglobal(L, "Events");
+}
