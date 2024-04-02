@@ -13,42 +13,7 @@ selector
 				action evolve
 			}
 
-			sequence
-			{
-				condition alertedToEnemy
-				selector
-				{
-					decorator timer( 1000 )
-					{
-						selector
-						{
-							sequence
-							{
-								condition alertedToEnemy
-								condition ( distanceTo( E_A_OVERMIND ) <= 100 || distanceTo( E_A_BOOSTER ) <= 100 )
-								action fight
-							}
-							sequence
-							{
-								condition ( healScore > 0.5 && percentHealth( E_GOAL ) > 0.3  && random > 0.3 )
-								condition baseRushScore < 0.75
-								action heal
-							}
-						}
-					}
-
-					action fight
-				}
-			}
-
-			selector
-			{
-				sequence
-				{
-					condition healScore > 0.25
-					action heal
-				}
-			}
+			behavior fight_or_flight_aliens
 
 			fallback
 			{

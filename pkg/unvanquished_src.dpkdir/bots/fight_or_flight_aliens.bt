@@ -1,0 +1,120 @@
+// how alien bots decide whether to attack a nearby enemy or heal
+// this is arguably the most important aspect of their behavior
+// test any change to this file carefully
+
+selector
+{
+	// what an alien bot does when it can sense an enemy
+	// usually, it will fight the enemy
+	// in some cases, however, it will decide to retreat to overmind/booster
+	// and heal instead
+	sequence
+	{
+		condition alertedToEnemy
+		selector
+		{
+			// how a bot decides to heal while it can sense an enemy
+			// after leaving this block, do not enter it again for 5 seconds,
+			// in case a bot chose to abort its healing before reaching the desired health
+			decorator timer( 5000 )
+			{
+				// check if a bot should stop to fight, and retreat to heal instead
+				// do not use healScore (which depends on distance to base), as human bots do
+				// reason: alien bots will use their special moves to reach overmind/booster
+				// that will usually make them outrun the chasing humans
+				// therefore, distance to travel is not important
+				// use percentHealth instead
+				sequence
+				{
+					// do not check this condition again once the healing action is running
+					// because otherwise, the bot would stop to heal at 40% health
+					condition percentHealth( E_SELF ) < 0.4
+						&& percentHealth( E_GOAL ) > 0.3
+						&& baseRushScore < 1.0
+					// if the bot is currently healing near overmind/booster:
+					// choose whether to stop healing before reaching full health, to defend base
+					// there are two cases when we stop:
+					//   - bot can sense an enemy, and has over 80% health
+					//   - bot is attacked by an enemy
+					// check this condition at every execution to maybe stop a running heal action
+					condition !( alertedToEnemy
+								 && ( percentHealth( E_SELF ) > 0.80
+									  || timeSinceLastCombat < 2000	) // enough time to get away from overmind/booster
+								 && ( distanceTo( E_A_OVERMIND ) <= 200
+									  || distanceTo( E_A_BOOSTER ) <= 200 ) )
+					{
+						action heal
+					}
+				}
+			}
+			action fight
+		}
+	}
+
+	// alien bot cannot sense an enemy, but wants to heal
+	// a few reasons why this can happen:
+	//   - bot killed the lone enemy
+	//   - bot was damaged by the map
+	//   - action fight above failed
+	sequence
+	{
+		// check this once
+		condition percentHealth( E_SELF ) < 0.4
+		// same condition as above, check this at every execution
+		condition !( alertedToEnemy
+					 && ( percentHealth( E_SELF ) > 0.80
+						  || timeSinceLastCombat < 2000	)
+					 && ( distanceTo( E_A_OVERMIND ) <= 200
+						  || distanceTo( E_A_BOOSTER ) <= 200 ) )
+		{
+			action heal
+		}
+	}
+}
+
+// notice that "action fight" above will run until it exits (succeeds or fails)
+// that means that a bot will not choose to heal immediately during a fight,
+// but rather wait until the action fight completes
+//
+// experiments reveal that our current action fight exits regularly,
+// and that these exit times are strategically good times to retreat
+//
+// in case we change how often action fight exits, we might have to abort its execution
+// here is an example of how to abort it as soon as the heal conditions are met:
+//
+// selector
+// {
+// 	sequence
+// 	{
+// 		condition alertedToEnemy
+// 		condition goalBuildingType != E_A_OVERMIND && goalBuildingType != E_A_BOOSTER
+// 		condition !( percentHealth( E_SELF ) < 0.4
+// 					 && percentHealth( E_GOAL ) > 0.3
+// 					 && baseRushScore < 1.0 )
+// 		{
+// 			action fight
+// 		}
+// 	}
+// 	decorator timer( 5000 )
+// 	{
+// 		sequence
+// 		{
+// 			condition percentHealth( E_SELF ) < 0.4
+// 				&& percentHealth( E_GOAL ) > 0.3
+// 				&& baseRushScore < 1.0
+// 			condition !( alertedToEnemy
+// 						 && ( percentHealth( E_SELF ) > 0.75
+// 							  || timeSinceLastCombat < 2000	)
+// 						 && ( distanceTo( E_A_OVERMIND ) <= 200 || distanceTo( E_A_BOOSTER ) <= 200 ) )
+// 			{
+// 				action heal
+// 			}
+// 		}
+// 	}
+// 	sequence
+// 	{
+// 		condition alertedToEnemy
+// 		action fight
+// 	}
+// }
+
