@@ -8,6 +8,6 @@
 <p class="inline">
 <inlinecvar quake cvar="ui_errorMessage"/>
 </p>
-<button onclick='Events.pushevent("hide error", event)'><translate>Ok</translate></button>
+<button onclick='Events.pushcmd("hide error")'><translate>Ok</translate></button>
 </body>
 </rml>

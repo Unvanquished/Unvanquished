@@ -28,10 +28,10 @@
 			</blocklink>
 			<br/>
 			<button-menu style="width:100%" onclick='Cmd.exec("callvote kickbots")'><translate>Kick bots</translate></button-menu>
-			<button-menu style="width:100%" onclick='Events.pushevent("show callvote_fillbots", event)'><translate>Fill with bots</translate></button-menu>
-			<button-menu style="width:100%" onclick='Events.pushevent("show callvote_map", event)'><translate>Change map</translate></button-menu>
+			<button-menu style="width:100%" onclick='Events.pushcmd("show callvote_fillbots")'><translate>Fill with bots</translate></button-menu>
+			<button-menu style="width:100%" onclick='Events.pushcmd("show callvote_map")'><translate>Change map</translate></button-menu>
 			<button-menu style="width:100%" onclick='Cmd.exec("callvote extend")'><translate>Extend timelimit</translate></button-menu>
-			<button-menu style="width:100%" onclick='Events.pushevent("show callvote_draw", event)'><translate>Call a draw</translate></button-menu>
+			<button-menu style="width:100%" onclick='Events.pushcmd("show callvote_draw")'><translate>Call a draw</translate></button-menu>
 			<button-menu style="width:100%" onclick='Cmd.exec("callteamvote admitdefeat")'><translate>Admit defeat</translate></button-menu>
 		</indent>
 	</body>

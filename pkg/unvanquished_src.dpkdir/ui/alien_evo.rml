@@ -105,7 +105,7 @@
 		local data = CDataSource.Read("alienEvolveList", "default", "availability,cmdName")[idx]
 		if data[1] == "available" then
 			Cmd.exec("class " .. data[2])
-			Events.pushevent("hide alien_evo", event)
+			Events.pushcmd("hide alien_evo")
 		end
 	end
 	function EvolutionHover(document, idx)

@@ -11,7 +11,7 @@
 			<colorinput type="text" cvar="name" style="overflow: hidden; white-space: pre;"/>
 			<h3><translate>Nickname</translate></h3>
 			<p><translate>Your name visible to others.</translate></p>
-			<p><ilink onclick='Events.pushevent("show help_textentry", event)'><translate>Colours and symbols can be used.</translate></ilink></p>
+			<p><ilink onclick='Events.pushcmd("show help_textentry")'><translate>Colours and symbols can be used.</translate></ilink></p>
 		</row>
 		<p><translate>You can change this at any time in the options.</translate></p>
 	        <!-- Keep in sync with language menu in options_ui.rml -->
@@ -33,6 +33,6 @@
 			<option value="zh_Hant">中文（正體）</option>
 		</select>
 		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Cmd.exec("updatelanguage")'><translate>Change language</translate></button>
-		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='document:Hide() Events.pushevent("show serverbrowser", event)'><translate>Select Battlefield</translate></button>
+		<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='document:Hide() Events.pushcmd("show serverbrowser")'><translate>Select Battlefield</translate></button>
 	</body>
 </rml>
