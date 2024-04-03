@@ -338,6 +338,10 @@ void CG_Rocket_ProcessEvents()
 		{
 			cmd->exec();
 		}
+		else
+		{
+			Log::Warn( "Bad event command from Lua: '%s'", CG_Argv( 0 ) );
+		}
 		Cmd::PopArgs();
 		Rocket_DeleteEvent();
 	}

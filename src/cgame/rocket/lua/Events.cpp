@@ -56,8 +56,9 @@ static int Events_pushevent(lua_State* L)
 	const char *cmds = luaL_checkstring(L, 1);
 	Rml::Event *event = Rml::Lua::LuaType<Rml::Event>::check(L, 2);
 
-	if (event == NULL)
+	if (event == nullptr)
 	{
+		Log::Warn("pushevent: invalid event argument");
 		return 0;
 	}
 
