@@ -144,17 +144,6 @@ static void CG_Rocket_SetDS()
 	CG_Rocket_SetDataSourceIndex( datasrc, datatbl, atoi( CG_Argv( 3 ) ) );
 }
 
-static void CG_Rocket_SetAttribute()
-{
-	char attribute[ 100 ], value[ MAX_STRING_CHARS ];
-
-	Q_strncpyz( attribute, CG_Argv( 1 ), sizeof( attribute ) );
-	Q_strncpyz( value, CG_Argv( 2 ), sizeof( value ) );
-
-	Rocket_SetAttribute( "", "", attribute, value );
-
-}
-
 static void CG_Rocket_FilterDS()
 {
 	char src[ 100 ];
@@ -197,7 +186,7 @@ static void CG_Rocket_SetChatCommand()
 
 	if ( cmd )
 	{
-		Rocket_SetAttribute( "", "", "exec", cmd );
+		Rocket_SetAttribute( "exec", cmd );
 	}
 }
 
@@ -320,7 +309,6 @@ static const eventCmd_t eventCmdList[] =
 	{ "open", &CG_Rocket_EventOpen },
 	{ "play", &CG_Rocket_EventPlay },
 	{ "resetPings", &CG_Rocket_ResetPings },
-	{ "setAttribute", &CG_Rocket_SetAttribute },
 	{ "setChatCommand", &CG_Rocket_SetChatCommand },
 	{ "setDataSelectValue", &CG_Rocket_SetDataSelectValue },
 	{ "setDS", &CG_Rocket_SetDS },
