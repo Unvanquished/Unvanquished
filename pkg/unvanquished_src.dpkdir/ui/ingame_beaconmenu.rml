@@ -44,7 +44,7 @@
 			function BeaconClick(idx, event)
 				if idx > #beacons then return end
 				Cmd.exec("beacon " .. beacons[idx][2])
-				Events.pushevent("hide ingame_beaconmenu", event)
+				Events.pushcmd("hide ingame_beaconmenu")
 			end
 			function BeaconHover(document, idx)
 				ClearBeaconInfo(document)
