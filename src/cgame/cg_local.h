@@ -1435,10 +1435,6 @@ struct rocketDataSource_t
 	std::vector<mapInfo_t> mapList;
 	int mapIndex;
 
-	int selectedTeamIndex;
-
-	int selectedSpawnOptions[ NUM_TEAMS ];
-
 	int armouryBuyList[2][ ( WP_LUCIFER_CANNON - WP_BLASTER ) + UP_NUM_UPGRADES + 1 ];
 	int selectedArmouryBuyItem[2];
 	int armouryBuyListCount[2];

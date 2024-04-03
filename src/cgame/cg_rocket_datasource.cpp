@@ -1152,141 +1152,6 @@ static void CG_Rocket_SetPlayerListPlayer( const char*, int )
 {
 }
 
-static void CG_Rocket_BuildTeamList( const char* )
-{
-	static const char *data[] =
-	{
-		"\\name\\Aliens\\description\\The Alien Team\n\n"
-		"The Aliens' strengths are in movement and the ability to "
-		"quickly construct new bases quickly. They possess a range "
-		"of abilities including basic melee attacks, movement-"
-		"crippling poisons and more.\\"
-		,
-		"\\name\\Humans\\description\\The Human Team\n\n"
-		"The humans are the masters of technology. Although their "
-		"bases take long to construct, their automated defense "
-		"ensures they stay built. A wide range of upgrades and "
-		"weapons are available to the humans, each contributing "
-		"to eradicate the alien threat.\\"
-		,
-		"\\name\\Spectate\\description\\Watch the game without playing.\\"
-		,
-		"\\name\\Auto Select\\description\\Join the team with the least players.\\"
-		,
-		nullptr
-	};
-
-	int i = 0;
-
-	Rocket_DSClearTable( "teamList", "default" );
-
-	while ( data[ i ] )
-	{
-		Rocket_DSAddRow( "teamList", "default", data[ i++ ] );
-	}
-}
-
-static void CG_Rocket_SetTeamList( const char*, int index )
-{
-	rocketInfo.data.selectedTeamIndex = index;
-}
-
-static void CG_Rocket_ExecTeamList( const char* )
-{
-	const char *cmd = nullptr;
-
-	switch ( rocketInfo.data.selectedTeamIndex )
-	{
-		case 0:
-			cmd = "team aliens";
-			break;
-
-		case 1:
-			cmd = "team humans";
-			break;
-
-		case 2:
-			cmd = "team spectate";
-			break;
-
-		case 3:
-			cmd = "team auto";
-			break;
-	}
-
-	if ( cmd )
-	{
-		trap_SendConsoleCommand( cmd );
-		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_TEAMSELECT ].id, "hide" );
-	}
-}
-
-static void CG_Rocket_CleanUpTeamList( const char* )
-{
-	rocketInfo.data.selectedTeamIndex = -1;
-}
-
-static void AddHumanSpawnItem( weapon_t weapon )
-{
-	static char data[ MAX_STRING_CHARS ];
-
-	if ( !BG_WeaponUnlocked( weapon ) )
-	{
-		return;
-	}
-
-	data[ 0 ] = '\0';
-	Info_SetValueForKey( data, "name", BG_Weapon( weapon )->humanName, false );
-	Info_SetValueForKey( data, "description", BG_Weapon( weapon )->info, false );
-
-	Rocket_DSAddRow( "humanSpawnItems", "default", data );
-}
-
-static void CG_Rocket_BuildHumanSpawnItems( const char* )
-{
-	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
-	{
-		return;
-	}
-
-	Rocket_DSClearTable( "humanSpawnItems", "default" );
-	AddHumanSpawnItem( WP_MACHINEGUN );
-	AddHumanSpawnItem( WP_HBUILD );
-}
-
-static void CG_Rocket_SetHumanSpawnItems( const char*, int index )
-{
-	rocketInfo.data.selectedSpawnOptions[ TEAM_HUMANS ] = index;
-}
-
-static void CG_Rocket_ExecHumanSpawnItems( const char* )
-{
-	const char *cmd = nullptr;
-
-	switch ( rocketInfo.data.selectedSpawnOptions[ TEAM_HUMANS ] )
-	{
-		case 0:
-			cmd = "class rifle";
-			break;
-
-		case 1:
-			cmd = "class ckit";
-			break;
-	}
-
-	if ( cmd )
-	{
-		trap_SendConsoleCommand( cmd );
-		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_HUMANSPAWN ].id, "hide" );
-	}
-}
-
-static void CG_Rocket_CleanUpHumanSpawnItems( const char* )
-{
-	rocketInfo.data.selectedSpawnOptions[ TEAM_HUMANS ] = -1;
-}
-
-
 enum
 {
 	ROCKETDS_WEAPONS,
@@ -1679,80 +1544,6 @@ static void CG_Rocket_BuildAlienBuildList( const char *table )
 	CG_Rocket_BuildGenericBuildList( table, TEAM_ALIENS, "alienBuildList" );
 }
 
-static void AddAlienSpawnClass( class_t _class )
-{
-	static char data[ MAX_STRING_CHARS ];
-
-	if ( !BG_ClassUnlocked( _class ) )
-	{
-		return;
-	}
-
-	data[ 0 ] = '\0';
-	Info_SetValueForKey( data, "name", BG_ClassModelConfig( _class )->humanName, false );
-	Info_SetValueForKey( data, "description", BG_Class( _class )->info, false );
-
-	Rocket_DSAddRow( "alienSpawnClass", "default", data );
-}
-
-static void CG_Rocket_BuildAlienSpawnList( const char *table )
-{
-	if ( rocketInfo.cstate.connState < connstate_t::CA_ACTIVE )
-	{
-		return;
-	}
-
-	if ( !Q_stricmp( table, "default" ) )
-
-		Rocket_DSClearTable( "alienSpawnClass", "default" );
-
-	{
-		AddAlienSpawnClass( PCL_ALIEN_LEVEL0 );
-
-		if ( BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) )
-		{
-			AddAlienSpawnClass( PCL_ALIEN_BUILDER0_UPG );
-		}
-
-		else
-		{
-			AddAlienSpawnClass( PCL_ALIEN_BUILDER0 );
-		}
-	}
-}
-
-static void CG_Rocket_CleanUpAlienSpawnList( const char* )
-{
-	rocketInfo.data.selectedSpawnOptions[ TEAM_ALIENS ] = -1;
-}
-
-static void CG_Rocket_SetAlienSpawnList( const char*, int index )
-{
-	rocketInfo.data.selectedSpawnOptions[ TEAM_ALIENS ] = index;
-}
-
-static void CG_Rocket_ExecAlienSpawnList( const char* )
-{
-	const char *_class = nullptr;
-
-	switch ( rocketInfo.data.selectedSpawnOptions[ TEAM_ALIENS ] )
-	{
-		case 0:
-			_class = "level0";
-			break;
-
-		case 1:
-			_class = BG_ClassUnlocked( PCL_ALIEN_BUILDER0_UPG ) ? "builderupg" : "builder";
-			break;
-	}
-
-	if ( _class )
-	{
-		trap_SendClientCommand( va( "class %s", _class ) );
-		Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_ALIENSPAWN ].id, "hide" );
-	}
-}
-
 //////// beacon shit
 
 
@@ -1833,20 +1624,17 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 {
 	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "alienSpawnClass", &CG_Rocket_BuildAlienSpawnList, &nullSortFunc, &CG_Rocket_CleanUpAlienSpawnList, &CG_Rocket_SetAlienSpawnList, &nullFilterFunc, &CG_Rocket_ExecAlienSpawnList, &nullGetFunc },
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
 	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "humanSpawnItems", &CG_Rocket_BuildHumanSpawnItems, &nullSortFunc, CG_Rocket_CleanUpHumanSpawnItems, &CG_Rocket_SetHumanSpawnItems, &nullFilterFunc, &CG_Rocket_ExecHumanSpawnItems, &nullGetFunc },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetLanguageListIndex },
 	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "playerList", &CG_Rocket_BuildPlayerList, &CG_Rocket_SortPlayerList, &CG_Rocket_CleanUpPlayerList, &CG_Rocket_SetPlayerListPlayer, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &nullSortFunc, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetResolutionListIndex},
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_FilterServerList, &CG_Rocket_ExecServerList, &nullGetFunc },
-	{ "teamList", &CG_Rocket_BuildTeamList, &nullSortFunc, &CG_Rocket_CleanUpTeamList, &CG_Rocket_SetTeamList, &nullFilterFunc, &CG_Rocket_ExecTeamList, &nullGetFunc },
 };
 
 static const size_t dataSourceCmdListCount = ARRAY_LEN( dataSourceCmdList );
