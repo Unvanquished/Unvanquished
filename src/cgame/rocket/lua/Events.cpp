@@ -70,33 +70,11 @@ static int Events_pushevent(lua_State* L)
 	return 0;
 }
 
-static int Events_pushelement(lua_State* L)
-{
-	Rml::StringList list;
-	const char *cmds = luaL_checkstring(L, 1);
-	Rml::Element *element = Rml::Lua::LuaType<Rml::Element>::check(L, 2);
-
-	if (element == NULL)
-	{
-		return 0;
-	}
-
-	Rml::StringUtilities::ExpandString( list, cmds, ';' );
-	for ( size_t i = 0; i < list.size(); ++i )
-	{
-		Rocket_AddEvent( new RocketEvent_t( element, list[ i ] ) );
-	}
-
-	return 0;
-}
-
 void CG_Rocket_RegisterLuaEvents(lua_State* L)
 {
 	lua_newtable(L);
 	lua_pushcfunction(L, Events_pushcmd);
 	lua_setfield(L, -2, "pushcmd");
-	lua_pushcfunction(L, Events_pushelement);
-	lua_setfield(L, -2, "pushelement");
 	lua_pushcfunction(L, Events_pushevent);
 	lua_setfield(L, -2, "pushevent");
 	lua_setglobal(L, "Events");
