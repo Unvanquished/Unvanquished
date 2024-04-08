@@ -27,7 +27,7 @@ selector
 				sequence
 				{
 					// do not check this condition again once the healing action is running
-					// because otherwise, the bot would stop to heal at 40% health
+					// because otherwise, the bot would stop healing at 40% health
 					condition percentHealth( E_SELF ) < 0.4
 						&& percentHealth( E_GOAL ) > 0.3
 						&& baseRushScore < 1.0
