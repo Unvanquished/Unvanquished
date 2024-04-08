@@ -136,9 +136,6 @@ struct botMemory_t
 	enemyQueue_t enemyQueue;
 	int enemyLastSeen;
 
-	//team the bot is on when added
-	team_t botTeam;
-
 	botTarget_t goal;
 	void willSprint( bool enable );
 	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );
@@ -158,7 +155,6 @@ struct botMemory_t
 	AIBehaviorTree_t *behaviorTree;
 	AIGenericNode_t  *currentNode;
 	BoundedVector<AIGenericNode_t*, MAX_NODE_DEPTH> runningNodes;
-	int              numRunningNodes;
 
 	int         futureAimTime;
 	int         futureAimTimeInterval;
