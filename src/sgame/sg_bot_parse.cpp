@@ -404,6 +404,11 @@ static AIValue_t stuckTime( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.time - self->botMind->stuckTime );
 }
 
+static AIValue_t timeSinceLastCombat( gentity_t *self, const AIValue_t* )
+{
+	return AIBoxInt( level.time - self->client->lastCombatTime );
+}
+
 static AIValue_t usableBuildPoints( gentity_t *self, const AIValue_t* )
 {
 	team_t team = G_Team( self );
@@ -473,6 +478,7 @@ static const struct AIConditionMap_s
 	{ "aliveTime",         aliveTime,         0 },
 	{ "baseRushScore",     baseRushScore,     0 },
 	{ "blackboardNumTransient", blackboardNumTransient, 1 },
+	{ "buildingIsBurning", buildingIsDamaged, 0 },
 	{ "buildingIsDamaged", buildingIsDamaged, 0 },
 	{ "canEvolveTo",       botCanEvolveTo,    1 },
 	{ "chosenBuildableCost", chosenBuildableCost, 0 },
@@ -504,6 +510,7 @@ static const struct AIConditionMap_s
 	{ "stuckTime",         stuckTime,         0 },
 	{ "team",              botTeam,           0 },
 	{ "teamateHasWeapon",  teamateHasWeapon,  1 },
+	{ "timeSinceLastCombat", timeSinceLastCombat, 0 },
 	{ "usableBuildPoints", usableBuildPoints, 0 },
 	{ "weapon",            currentWeapon,     0 }
 };
@@ -1085,6 +1092,7 @@ static const struct AIActionMap_s
 	{ "equip",             BotActionBuy,               0, 0 },
 	{ "evolve",            BotActionEvolve,            0, 0 },
 	{ "evolveTo",          BotActionEvolveTo,          1, 1 },
+	{ "extinguishFire",    BotActionExtinguishFire,    0, 0 },
 	{ "fight",             BotActionFight,             0, 0 },
 	{ "fireWeapon",        BotActionFireWeapon,        0, 0 },
 	{ "flee",              BotActionFlee,              0, 0 },

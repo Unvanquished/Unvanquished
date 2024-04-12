@@ -523,12 +523,19 @@ static const gentity_t* BotGetPathBlocker( gentity_t *self, const glm::vec3 &dir
 	return nullptr;
 }
 
+typedef enum
+{
+	OBSTACLE_NONE,
+	OBSTACLE_JUMPABLE,
+	OBSTACLE_LADDER
+} obstacle_t;
+
 // checks if jumping would get rid of blocker
 // return true if yes
 //
 // This currently doesn't handle jumping over map geometry, but that could be
 // nice some day.
-static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm::vec3 &dir )
+static obstacle_t BotDetectObstacle( gentity_t *self, const gentity_t *blocker, const glm::vec3 &dir )
 {
 	glm::vec3 playerMins;
 	glm::vec3 playerMaxs;
@@ -551,7 +558,7 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 	trap_Trace( &tr1, origin, playerMins, playerMaxs, end, self->s.number, MASK_PLAYERSOLID, 0 );
 	if ( tr1.fraction >= 1.0f || blocker != &g_entities[tr1.entityNum] )
 	{
-		return false;
+		return OBSTACLE_NONE;
 	}
 
 	jumpMagnitude = BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->jumpMagnitude;
@@ -572,6 +579,11 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 		|| ( tr2.entityNum == ENTITYNUM_WORLD && tr2.surfaceFlags & SURF_LADDER ) )
 		;
 
+	if ( ladder )
+	{
+		return OBSTACLE_LADDER;
+	}
+
 	if ( blocker->s.eType == entityType_t::ET_BUILDABLE
 			&& blocker->s.modelindex == BA_A_BARRICADE
 			&& G_OnSameTeam( self, blocker ) )
@@ -583,12 +595,12 @@ static bool BotShouldJump( gentity_t *self, const gentity_t *blocker, const glm:
 		BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
 		if ( origin.z + playerMins.z >= pos.z + maxs.z )
 		{
-			return true;
+			return OBSTACLE_JUMPABLE;
 		}
 	}
 
 	//if we can jump over it, then jump
-	return tr2.fraction == 1.0f || ladder;
+	return tr2.fraction == 1.0f ? OBSTACLE_JUMPABLE : OBSTACLE_NONE;
 }
 
 // Determine a new direction, which may be unchanged (forward) or sideway. It
@@ -708,7 +720,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 // This function tries to detect obstacles and to find a way
 // around them. It always sets dir as the output value.
 // Returns true on error
-static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeometry )
+static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeometry, obstacle_t &obst )
 {
 	dir = self->botMind->nav().glm_dir();
 	gentity_t const *blocker = BotGetPathBlocker( self, dir );
@@ -740,9 +752,16 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeome
 		}
 	}
 
-	if ( BotShouldJump( self, blocker, dir ) )
+	obst = BotDetectObstacle( self, blocker, dir );
+	if ( obst == OBSTACLE_JUMPABLE )
 	{
 		BotJump( self );
+		return false;
+	}
+	else if ( obst == OBSTACLE_LADDER )
+	{
+		// look up to climb the ladder
+		dir.z += 200.f;
 		return false;
 	}
 
@@ -841,6 +860,7 @@ static int WallclimbStopTime( gentity_t *self )
 	// unit, add 500 milliseconds as safety margin
 	// if the bot is moving downwards from the navcon start, lastNavconDistance
 	// will be negative
+	// TODO: take the different speeds of the classes into account
 	return self->botMind->lastNavconTime + self->botMind->lastNavconDistance * 4 + 500;
 }
 
@@ -907,6 +927,7 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 	int magnitude = 0;
 	switch ( ps.stats [ STAT_CLASS ] )
 	{
+	case PCL_ALIEN_BUILDER0_UPG:
 	case PCL_ALIEN_LEVEL0:
 		BotClimbToGoal( self );
 		break;
@@ -925,6 +946,9 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 	case PCL_ALIEN_LEVEL2:
 	case PCL_ALIEN_LEVEL2_UPG:
 		{
+			self->botMind->cmdBuffer.forwardmove = 127;
+			self->botMind->cmdBuffer.rightmove = 0;
+			self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( -60.f );
 			BotJump( self );
 			break;
 		}
@@ -970,6 +994,7 @@ static bool BotTryMoveUpward( gentity_t *self )
 	{
 		switch ( self->client->ps.stats [ STAT_CLASS ] )
 		{
+		case PCL_ALIEN_BUILDER0_UPG:
 		case PCL_ALIEN_LEVEL0:
 		case PCL_ALIEN_LEVEL1:
 			if ( level.time > WallclimbStopTime( self ) )
@@ -988,6 +1013,8 @@ static bool BotTryMoveUpward( gentity_t *self )
 	{
 	case PCL_ALIEN_LEVEL0:
 	case PCL_ALIEN_LEVEL1:
+	case PCL_ALIEN_LEVEL2:
+	case PCL_ALIEN_LEVEL2_UPG:
 		if ( level.time > WallclimbStopTime( self ) )
 		{
 			return false;
@@ -1035,7 +1062,8 @@ bool BotMoveToGoal( gentity_t *self )
 	//    be satisfying.
 
 	bool ignoreGeometry = stuckTime < ignoreGeometryThreshold;
-	if ( BotAvoidObstacles( self, dir, ignoreGeometry ) )
+	obstacle_t obstacle = OBSTACLE_NONE;
+	if ( BotAvoidObstacles( self, dir, ignoreGeometry, obstacle ) )
 	{
 		if ( BotTryMoveUpward( self ) )
 		{
@@ -1119,14 +1147,22 @@ bool BotMoveToGoal( gentity_t *self )
 			break;
 		}
 		case PCL_ALIEN_LEVEL3:
-			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME )
+			// flee by repeatedly charging and releasing the pounce
+			// however, charging the pounce prevents jumping
+			// if we are facing an obstacle we can jump over:
+			// stop charging (or do not start charging) until we have
+			// jumped over the obstacle
+			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME
+				 && obstacle != OBSTACLE_JUMPABLE )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG;
 			}
 		break;
 		case PCL_ALIEN_LEVEL3_UPG:
-			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG )
+			// see the comment at case PCL_ALIEN_LEVEL3
+			if ( ps.weaponCharge < LEVEL3_POUNCE_TIME_UPG
+				 && obstacle != OBSTACLE_JUMPABLE )
 			{
 				wpm = WPM_SECONDARY;
 				magnitude = LEVEL3_POUNCE_JUMP_MAG_UPG;

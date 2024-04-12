@@ -289,7 +289,7 @@ Cvar::Cvar<bool> g_bot_level4("g_bot_level4", "whether bots use Tyrant", Cvar::N
 // misc bot cvars
 Cvar::Cvar<bool> g_bot_attackStruct("g_bot_attackStruct", "whether bots target buildables", Cvar::NONE, true);
 Cvar::Cvar<float> g_bot_fov("g_bot_fov", "bots' \"field of view\"", Cvar::NONE, 125);
-Cvar::Cvar<int> g_bot_chasetime("g_bot_chasetime", "bots stop chasing after x ms out of sight", Cvar::NONE, 5000);
+Cvar::Cvar<int> g_bot_chasetime("g_bot_chasetime", "bots stop chasing after x ms out of sight", Cvar::NONE, 2000);
 Cvar::Cvar<int> g_bot_reactiontime("g_bot_reactiontime", "bots' reaction time to enemies (milliseconds)", Cvar::NONE, 500);
 Cvar::Cvar<bool> g_bot_infiniteFunds("g_bot_infiniteFunds", "give bots unlimited funds", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_infiniteMomentum("g_bot_infiniteMomentum", "allow bots to ignore momentum, but not other restrictions", Cvar::NONE, false);

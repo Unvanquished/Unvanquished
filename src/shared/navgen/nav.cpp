@@ -35,7 +35,7 @@
 #include "engine/qcommon/qcommon.h"
 #include "shared/CommonProxies.h"
 #include "common/cm/cm_patch.h"
-#include "common/cm/cm_polylib.h"
+#include "common/cm/cm_local.h"
 #include "common/FileSystem.h"
 #include "shared/bg_gameplay.h"
 #include "navgen.h"
@@ -257,8 +257,6 @@ static bool SkipSurface( const NavgenConfig *config, const dshader_t *shader ) {
 // TODO: Can this stuff be done using the already-loaded CM data structures
 // (e.g. cbrush_t instead of dbrush_t) instead of reopening the BSP?
 void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tris ) {
-	std::map<size_t,std::unordered_set<glm::vec3>> laddersVerts;
-
 	const byte* const cmod_base = reinterpret_cast<const byte*>(mapData_.data());
 	auto& header = *reinterpret_cast<const dheader_t*>(mapData_.data());
 
@@ -333,72 +331,13 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 			if ( w ) {
 				for ( int j = 2; j < w->numpoints; j++ ) {
 					AddTri( verts, tris, w->p[0], w->p[j - 1], w->p[j] );
-					if ( brushShader->surfaceFlags & SURF_LADDER )
-					{
-						glm::vec3 tmp;
-						tmp = VEC2GLM( w->p[ 0 ] );
-						laddersVerts[i].emplace( tmp );
-						tmp = VEC2GLM( w->p[ j - 1 ] );
-						laddersVerts[i].emplace( tmp );
-						tmp = VEC2GLM( w->p[ j ] );
-						laddersVerts[i].emplace( tmp );
-					}
 				}
+
 				FreeWinding( w );
 			}
 		}
 	}
 
-
-	//sg_ladders.reserve( laddersVerts.size() );
-	for( auto const& ladder : laddersVerts )
-	{
-		ladder_t tmp;
-		std::string coords;
-		std::vector<glm::vec3> horizontalFaces[2];
-		glm::vec3 ref;
-		bool hasRef = false;
-		for( auto const& point : ladder.second )
-		{
-			if( !hasRef )
-			{
-				ref = point;
-				horizontalFaces[0].push_back( point );
-				hasRef = true;
-			}
-			else
-			{
-				horizontalFaces[ ( static_cast<int>( point.z ) == static_cast<int>( ref.z ) ) ? 0 : 1 ].push_back( point );
-			}
-			coords += glm::to_string( point );
-			coords += " ";
-		}
-		glm::vec3 centers[2];
-		for( size_t i = 0; i < 2; ++i )
-		{
-			centers[i] = std::accumulate( horizontalFaces[i].begin(), horizontalFaces[i].end(), glm::vec3() );
-		}
-		for( size_t i = 0; i < 2; ++i )
-		{
-			centers[i] =
-			{
-				centers[i].x / horizontalFaces[i].size(),
-				centers[i].y / horizontalFaces[i].size(),
-				centers[i].z / horizontalFaces[i].size(),
-			};
-		}
-		tmp.up = centers[0];
-		tmp.bottom = centers[1];
-		if ( centers[0].z < centers[1].z )
-		{
-			std::swap( tmp.up, tmp.bottom );
-		}
-		tmp.radius = 10; //TODO use real ladder radii here
-		//sg_ladders.emplace_back( std::move( tmp ) );
-
-		//TODO: use a non-hardcoded radius
-		Log::Notice( "Ladder: %d %d %d %d %d %d 30 1 63 0", tmp.bottom.x, tmp.bottom.z, tmp.bottom.y, tmp.up.x, tmp.up.z, tmp.up.y );
-	}
 	if ( !config_.generatePatchTris )
 	{
 		return;
@@ -1176,3 +1115,112 @@ float NavmeshGenerator::SpeciesFractionCompleted() const
 	// Assume that writing the file at the end is 10%
 	return 0.9f * float(d_->y * d_->tw + d_->x) / float(d_->tw * d_->th);
 }
+
+#ifdef BUILD_SGAME // TODO move this somewhere else?
+class LadderCmd : public Cmd::StaticCmd
+{
+public:
+	LadderCmd() : StaticCmd("printLadders", "print coordinates of ladders in navcon format") {}
+
+	void Run( const Cmd::Args& args ) const override
+	{
+		// This iterates all brushes included ones attached to movers (e.g. the ladder that
+		// goes down when a button is pressed on Chasm)
+		for ( int b = 0; b < cm.numBrushes; b++ )
+		{
+			const cbrush_t &brush = cm.brushes[ b ];
+			std::vector<glm::vec3> ladderVerts;
+
+			for ( int s = 0; s < brush.numsides; s++ )
+			{
+				if ( !( brush.sides[ s ].surfaceFlags & SURF_LADDER ) )
+				{
+					continue;
+				}
+
+				winding_t *w = GetWinding( brush, s );
+
+				if ( w )
+				{
+					for ( int i = 0; i < w->numpoints; i++ )
+					{
+						ladderVerts.push_back( VEC2GLM( w->p[ i ] ) );
+					}
+
+					FreeWinding( w );
+				}
+			}
+
+			if ( !ladderVerts.empty() )
+			{
+				EmitLadder( ladderVerts );
+			}
+		}
+	}
+
+private:
+	static winding_t *GetWinding( const cbrush_t &brush, int s )
+	{
+		const cplane_t &plane = *brush.sides[ s ].plane;
+		winding_t *w = BaseWindingForPlane( plane.normal, plane.dist );
+		for ( int s2 = 0; s2 < brush.numsides && w != nullptr; s2++ )
+		{
+			if ( s2 == s )
+			{
+				continue;
+			}
+
+
+			cplane_t chopPlane = *brush.sides[ s2 ].plane;
+			VectorNegate( chopPlane.normal, chopPlane.normal );
+			chopPlane.dist = -chopPlane.dist;
+
+			ChopWindingInPlace( &w, chopPlane.normal, chopPlane.dist, 0 );
+
+			/* ydnar: fix broken windings that would generate trifans */
+			FixWinding( w );
+		}
+
+		return w;
+	}
+
+	void EmitLadder( const std::vector<glm::vec3> &verts ) const
+	{
+		float zMin = verts[ 0 ].z, zMax = verts[ 0 ].z;
+		for ( const glm::vec3 &vert : verts ) {
+			zMin = std::min( zMin, vert.z );
+			zMax = std::max( zMax, vert.z );
+		}
+		constexpr float MIN_HEIGHT = 10;
+		constexpr float END_TOLERANCE = 4;
+
+		if ( zMax - zMin < MIN_HEIGHT )
+		{
+			Log::Debug( "ladder too short" );
+			return;
+		}
+
+		glm::vec3 bottom{}, top{};
+		int nBottom = 0, nTop = 0;
+		for ( const glm::vec3 &vert : verts )
+		{
+			if ( vert.z < zMin + END_TOLERANCE )
+			{
+				nBottom++;
+				bottom += vert;
+			}
+			else if ( vert.z > zMax - END_TOLERANCE )
+			{
+				nTop++;
+				top += vert;
+			}
+		}
+		bottom /= nBottom;
+		top /= nTop;
+
+		//TODO: use a non-hardcoded radius
+		Print("%.1f %.1f %.1f %.1f %.1f %.1f 30 1 63 0", bottom.x, bottom.z, bottom.y, top.x, top.z, top.y);
+	}
+};
+static LadderCmd ladderCmdRegistration;
+#endif // BUILD_SGAME
