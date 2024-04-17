@@ -71,26 +71,13 @@ bool AnimDelta::ParseConfiguration(clientInfo_t* ci, const char* token2, const c
 
 bool AnimDelta::LoadData(clientInfo_t* ci)
 {
-	char newModelName[ MAX_QPATH ];
-	// special handling for human_(naked|light|medium)
-	if ( !Q_stricmp( ci->modelName, "human_naked"   ) ||
-		!Q_stricmp( ci->modelName, "human_light"   ) ||
-		!Q_stricmp( ci->modelName, "human_medium" ) )
-	{
-		Q_strncpyz( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
-	}
-	else
-	{
-		Q_strncpyz( newModelName, ci->modelName, sizeof( newModelName ) );
-	}
-
 	refSkeleton_t base;
 	refSkeleton_t delta;
 	for ( int i = WP_NONE + 1; i < WP_NUM_WEAPONS; ++i )
 	{
-		int handle = LoadDeltaAnimation( static_cast<weapon_t>( i ), newModelName, ci->iqm );
+		int handle = LoadDeltaAnimation( static_cast<weapon_t>( i ), ci->modelName, ci->iqm );
 		if ( !handle ) continue;
-		Log::Debug("Loaded delta for %s %s", newModelName, BG_Weapon( i )->humanName);
+		Log::Debug("Loaded delta for %s %s", ci->modelName, BG_Weapon( i )->humanName);
 		trap_R_BuildSkeleton( &delta, handle, 1, 1, 0, false );
 		// Derive the delta from the base stand animation.
 		trap_R_BuildSkeleton( &base, ci->animations[ TORSO_STAND ].handle, 1, 1, 0, false );
