@@ -296,17 +296,7 @@ static bool CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelName,
 	char filename[ MAX_QPATH ], newModelName[ MAX_QPATH ];
 	int  frameRate;
 
-	// special handling for human_(naked|light|medium)
-	if ( !Q_stricmp( modelName, "human_naked"   ) ||
-	     !Q_stricmp( modelName, "human_light"   ) ||
-	     !Q_stricmp( modelName, "human_medium" ) )
-	{
-		Q_strncpyz( newModelName, "human_nobsuit_common", sizeof( newModelName ) );
-	}
-	else
-	{
-		Q_strncpyz( newModelName, modelName, sizeof( newModelName ) );
-	}
+	Q_strncpyz( newModelName, modelName, sizeof( newModelName ) );
 
 	if ( ci->iqm )
 	{
