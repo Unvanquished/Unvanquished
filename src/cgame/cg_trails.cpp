@@ -302,7 +302,12 @@ static void CG_RenderBeam( trailBeam_t *tb )
 	}
 	while ( i );
 
-	trap_R_AddPolysToScene( tb->class_->shader, 4, &verts[ 0 ], numVerts / 4 );
+	numVerts /= 4;
+
+	if ( numVerts )
+	{
+		trap_R_AddPolysToScene( tb->class_->shader, 4, &verts[ 0 ], numVerts );
+	}
 }
 
 /*
