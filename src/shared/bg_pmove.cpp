@@ -4240,7 +4240,7 @@ static void PM_Animate()
 		{
 			int wpAnim = TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER );
 			//and now I know why build stuff must be last in the weapon list...
-			PM_StartTorsoAnim( wpAnim > WP_LUCIFER_CANNON ?  TORSO_GESTURE_CKIT : wpAnim );
+			PM_StartTorsoAnim( wpAnim > TORSO_GESTURE_LUCI ?  TORSO_GESTURE_CKIT : wpAnim );
 			doit = true;
 		}
 		// This code could likely be purged, really (but double
