@@ -42,8 +42,8 @@ To fetch and build Unvanquished, you'll need:
 `python-yaml`,
 `python-jinja`,
 and a C++14 compiler. The following are actively supported:
-`gcc` ≥ 8,
-`clang` ≥ 3.5,
+`gcc` ≥ 9,
+`clang` ≥ 11,
 Visual Studio/MSVC (at least Visual Studio 2019).
 
 ## Dependencies
