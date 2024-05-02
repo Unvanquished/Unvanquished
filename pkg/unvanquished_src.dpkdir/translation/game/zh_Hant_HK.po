@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-07 03:06+0100\n"
-"PO-Revision-Date: 2024-03-05 16:06+0000\n"
+"PO-Revision-Date: 2024-03-10 11:01+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Traditional, Hong Kong) <https://hosted.weblate.org/"
 "projects/unvanquished/unvanquished/zh_Hant_HK/>\n"
@@ -182,16 +182,15 @@ msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
-msgstr ""
-"當異形不在人類視野或建築範圍內時，可以開始進化。當在 [overmind] 主腦旁時，也"
-"可以退化為 [granger] 低級一些的形態。"
+msgstr "當異形不在人類視野或建築範圍內時，可以開始進化。當在 [overmind]〔主腦〕旁時，"
+"也可以退化為 [granger] 低級一些的形態。"
 
 #: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
-msgstr ""
-"若主腦被摧毀，可以讓 [granger] 守衞者再構造一隻。只有主腦存在時才可以進化！"
+msgstr "若主腦被摧毀，可以讓 "
+"[granger]〔守衞者〕再構造一隻。只有主腦存在時才可以進化！"
 
 #: ui/help_gameplay.rml:47
 msgid ""
@@ -206,9 +205,8 @@ msgstr ""
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
-msgstr ""
-"人類在 [armoury] 武器中心購買或賣出武器。確保武器中心存在！如果沒有了武器中"
-"心，可以使用建造器再次建造。"
+msgstr "人類在 [armoury]〔武器中心〕購買或賣出武器。確保武器中心存在！如果沒有了武器"
+"中心，可以使用建造器再次建造。"
 
 #: ui/help_gameplay.rml:54
 msgid "Powering buildables"
@@ -222,9 +220,9 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
-"建造設施需要建築點。你的陣營開局有一些建築點，不過若你需要新建很多設施，可以"
-"先建造 [leech] 採掘設施，增加供能、獲得更多建築點。請留意，在採掘設備被摧毀"
-"後，建築點會丟失。"
+"建造設施需要建築點。你的陣營開局有一些建築點，不過若你需要新建很多設施，"
+"可以先建造 [leech]〔採掘設施〕，增加供能、獲得更多建築點。請留意，在採掘設備"
+"被摧毀後，建築點會丟失。"
 
 #: ui/help_gameplay.rml:60
 msgid ""
@@ -233,8 +231,8 @@ msgid ""
 "recover over time), buildables will power down until the other buildables "
 "have enough energy to remain operational."
 msgstr ""
-"當現有的建築點（[leech] 蛭或 [drill] 鑽井提供的 + 緩慢恢復的）不能滿足新的建"
-"築需求時，建築會斷電，且當其他建築供能充足時才會恢復。"
+"建造點由 [leech]〔蛭〕或 [drill]〔鑽井〕提供，同時可緩慢恢復。當現有的建築點"
+"不能滿足新的建築需求時，建築會斷電，且當其他建築供能充足時才會恢復。"
 
 #: ui/help_gameplay.rml:61
 msgid ""
@@ -242,8 +240,9 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"重生設施（[egg] 卵和[telenode] 傳送點）、採掘設施（蛭和鑽井）以及特殊設施"
-"（[overmind] 主腦和 [reactor] 反應器）【不受】建築點缺失影響。"
+"以下設施【不受】建築點缺失影響：重生設施 — "
+"[egg]〔卵〕、[telenode]〔傳送點〕；採掘設施 — 蛭、鑽井；特殊設施 — "
+"[overmind]〔主腦〕、[reactor]〔反應機〕。"
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
@@ -254,13 +253,13 @@ msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
-msgstr "建築點由兩種採掘設施供給：人類的 [drill] 鑽井和異形的 [leech] 蛭。"
+msgstr "建築點由兩種採掘設施供給：人類的 [drill]〔鑽井〕和異形的 [leech]〔蛭〕。"
 
 #: ui/help_gameplay.rml:71
 msgid ""
 "Don't build mining structures too close together or they will compete with "
 "each other and ultimately cost build resources!"
-msgstr "請勿讓採掘設施挨得太近，否則它們會爭奪資源、消耗構建資源！"
+msgstr "請勿讓採掘設施挨得太近，否則它們的效率會下降、甚至消耗建造點！"
 
 #: ui/help_gameplay.rml:74
 msgid ""
@@ -281,8 +280,8 @@ msgid ""
 "increasingly harder to rebuild destroyed buildings in a long lasting match. "
 "This replaces sudden death."
 msgstr ""
-"當設施被摧毀時，採掘設施會緩慢地恢復設施的建築點。恢復的速度在一場遊戲中會逐"
-"漸減少，這樣隨着遊戲進程的發展，重建設施會越來越難。這樣的特性替代了常見的“決"
+"當設施被摧毀時，採掘設施會緩慢地恢復損失的建築點。恢復的速度在一場遊戲中會逐"
+"漸降低，這樣隨着遊戲進程的發展，重建設施會越來越難。這樣的特性替代了常見的“決"
 "勝時刻”。"
 
 #: ui/help_gameplay.rml:81
@@ -294,17 +293,15 @@ msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
-msgstr ""
-"建造或摧毀設施、擊殺敵人可以為你的陣營增強勢力。當你得到充分的勢力時，會解鎖"
-"新的武器、設施或職業。"
+msgstr "建造或摧毀設施、擊殺敵人可以為你的陣營增強“勢力”。當你得到充分的勢力時，會解"
+"鎖新的武器、設施或職業。"
 
 #: ui/help_gameplay.rml:87
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
-msgstr ""
-"勢力會逐漸指數下降。如果你的陣營不活動，升級能力會被重新鎖定。現有的高級物品"
-"仍然可用。"
+msgstr "勢力會隨時間指數下降。如果你的陣營不活動，升級得到的能力會被重新鎖定。現有的"
+"高級物品仍然可用。"
 
 #: ui/help_gameplay.rml:91
 msgid "Wildfire"
@@ -314,7 +311,7 @@ msgstr "火焰"
 msgid ""
 "Alien buildables can catch fire when they are hit with the [flamer] "
 "flamethrower or the [firebomb] firebomb."
-msgstr "異形的設施會被 [flamer] 噴火器或 [firebomb] 烈焰彈引燃。"
+msgstr "異形的設施會被 [flamer]〔噴火器〕或 [firebomb]〔烈焰彈〕引燃。"
 
 #: ui/help_gameplay.rml:97
 msgid ""
@@ -326,15 +323,14 @@ msgstr "若設施挨得太近，火焰會傳播到臨近的設施。"
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
-msgstr ""
-"小範圍的 [fire] 火焰在過一會後能熄滅，而一組設施燃燒起來並不會輕易熄滅，導致"
-"更糟糕的情況。"
+msgstr "小範圍的 [fire]〔火焰〕在過一會後能熄滅，而一組設施燃燒起來並不會輕易熄滅，導"
+"致更糟糕的情況。"
 
 #: ui/help_gameplay.rml:103
 msgid ""
 "The [advgranger] advanced granger's spit attack can be used to put out fires "
 "or slow down intruders!"
-msgstr "[advgranger] 高級守衞者的唾液攻擊可以撲滅火焰、拖慢進犯者的移動！"
+msgstr "[advgranger]〔高級守衞者〕的唾液攻擊可以撲滅火焰、拖慢進犯者的移動！"
 
 #: ui/help_gameplay.rml:107
 msgid "Under attack"
@@ -347,8 +343,8 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
-"[reactor] 反應機和 [overmind] 主腦會在剩餘 75%、50%、25% 生命值以及被摧毀時分"
-"別發出警告。其他設施被摧毀時會提示己方陣營正“遭受攻擊”。"
+"[reactor]〔反應機〕和 [overmind]〔主腦〕會在剩餘 75%、50%、25% "
+"生命值以及被摧毀時分別發出警告。其他設施被摧毀時會提示己方陣營正“遭受攻擊”。"
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
@@ -366,8 +362,8 @@ msgid ""
 "projectiles."
 msgstr ""
 "異形會一直緩慢恢復生命，而當異形扎堆或位於異形設施旁時會更快地恢復生命。將設"
-"施建在前線，會有好處的！任何形式的恢復生命都會促使 [advdragoon] 高級 Dragoon "
-"的射彈恢復。"
+"施建在前線，會有好處的！任何形式的恢復生命都會促使 "
+"[advdragoon]〔高級守衞者〕的射彈恢復。"
 
 #: ui/help_gameplay.rml:125
 msgid ""
@@ -383,9 +379,8 @@ msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
-msgstr ""
-"在 [overmind] 主腦或 [egg] 卵附近時會得到稍快的生命恢復效果，在“爬蟲”旁的恢復"
-"效果更佳。這樣的特性有利於保護基地。"
+msgstr "在 [overmind]〔主腦〕或 [egg]〔卵〕附近時會得到稍快的生命恢復效果，在“爬蟲”旁"
+"的恢復效果更佳。這樣的特性有利於保護基地。"
 
 #: ui/help_gameplay.rml:131
 msgid ""
@@ -401,9 +396,8 @@ msgstr ""
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
-msgstr ""
-"人類會攜帶一個醫療包，用於即時治療。在使用過一次醫療包後，再次治療需要返回 "
-"[medstat] 醫療中心恢復生命，同時拿取醫療包。"
+msgstr "人類會攜帶一個醫療包，用於即時治療。在使用過一次醫療包後，再次治療需要返回 "
+"[medstat]〔醫療中心〕恢復生命，同時拿取醫療包。"
 
 #: ui/help_gameplay.rml:139
 msgid "Wallwalking"
@@ -413,13 +407,12 @@ msgstr "爬牆"
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
-msgstr ""
-"諸如 [dretch] 潛伏者、[mantis] 螳螂 和 [advgranger] 高級守衞者等形式的異形可"
-"以在牆上行走！"
+msgstr "諸如 [dretch]〔潛伏者〕、[mantis]〔螳螂〕和 "
+"[advgranger]〔高級守衞者〕等形式的異形可以在牆上行走！"
 
 #: ui/help_gameplay.rml:145
 msgid "Use this to reach special places or use shortcuts through vents."
-msgstr "利用這一點可以潛伏在特別的地方，或者走一些捷徑。"
+msgstr "利用這一點可以潛伏在特別的地方，或者走捷徑。"
 
 #: ui/help_gameplay.rml:148
 msgid ""
@@ -439,7 +432,7 @@ msgstr "Tremulous 的發展"
 
 #: ui/help_gameplay.rml:158
 msgid "Since Tremulous, the stamina has been increased."
-msgstr "與 Tremulous 相比，人類和異形的體力得到提升。"
+msgstr "與 Tremulous 中相比，人類和異形的體力得到提升。"
 
 #: ui/help_gameplay.rml:161
 msgid ""
@@ -451,29 +444,27 @@ msgstr "異形的進化成本與效力翻倍。異形可持有的最大進化點
 msgid ""
 "Stages were replace with momentum, and build points depend directly on the "
 "number of drills."
-msgstr "階段的概念由勢力取代。建造點現在直接依賴於鑽井。"
+msgstr "“階段”的概念由“勢力”取代。建造點的多少現在直接依賴於建造的鑽井數。"
 
 #: ui/help_gameplay.rml:167
 msgid ""
 "Humans no longer have the Tesla defense tower nor the defense computer but "
 "they can build rocket pods."
-msgstr "人類不再有特斯拉防禦塔和防禦電腦，但可以建造火箭發射器。"
+msgstr "人類沒有了特斯拉防禦塔和防禦電腦，但可以建造“火箭發射器”。"
 
 #: ui/help_gameplay.rml:170
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
-msgstr ""
-"異形可以建造刺頭，重傷無所防備的人類。但注意刺頭非常容易被摧毀，不要放在輕易"
-"能看見的地方！"
+msgstr "異形可以建造“刺頭”，重傷無所防備的人類。但注意刺頭非常容易被摧毀，不要放在輕"
+"易能看見的地方！"
 
 #: ui/help_gameplay.rml:173
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
-msgstr ""
-"Basilisk 由螳螂取代。螳螂不能抓東西，但它的咬嗜可減緩敵人行動速度，它的撲擊也"
-"使行動更迅捷。"
+msgstr "Basilisk 由“螳螂”取代。螳螂不能抓東西，但螳螂咬嗜可減緩敵人行動速度，螳螂撲擊"
+"也更加迅捷。"
 
 #: ui/help_gameplay.rml:176
 msgid ""
@@ -1081,7 +1072,7 @@ msgstr "材質縮放過濾"
 
 #: ui/options_graphics.rml:177
 msgid "Materials"
-msgstr "材料"
+msgstr "材質"
 
 #: ui/options_graphics.rml:179
 msgid "Normal mapping"
@@ -1470,7 +1461,7 @@ msgstr "反轉"
 
 #: ui/options_mouse.rml:14
 msgid "Behavior of vertical mouse movement."
-msgstr "垂直鼠標移動的行為。"
+msgstr "垂直移動鼠標的行為。"
 
 #: ui/options_mouse.rml:17
 msgid "Mouse sensitivity"
@@ -1548,11 +1539,11 @@ msgstr "人類與異形"
 
 #: ui/options_movements_cosmetic.rml:41
 msgid "Humans (translucent)"
-msgstr ""
+msgstr "人類（半透明）"
 
 #: ui/options_movements_cosmetic.rml:42
 msgid "Humans and aliens (translucent)"
-msgstr ""
+msgstr "人類與異形（半透明）"
 
 #: ui/options_movements_cosmetic.rml:44
 msgid "First-person weapons"
@@ -1690,7 +1681,7 @@ msgstr "用户界面"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "主要"
 
 #: ui/options_ui.rml:24
 msgid "Language"
@@ -1698,7 +1689,7 @@ msgstr "語言"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
-msgstr "一些語言尚未完整翻譯。"
+msgstr "一些語言的翻譯尚未完成。"
 
 #: ui/options_ui.rml:37 ui/options_welcome.rml:31
 msgid "Change language"
@@ -1706,7 +1697,7 @@ msgstr "更改語言"
 
 #: ui/options_ui.rml:40
 msgid "Real-time clock"
-msgstr "實時時間"
+msgstr "時鐘"
 
 #: ui/options_ui.rml:43
 msgid "12 Hour"
@@ -1774,55 +1765,55 @@ msgstr "透明："
 
 #: ui/options_ui.rml:91
 msgid "Crosshair"
-msgstr ""
+msgstr "準星"
 
 #: ui/options_ui.rml:95
 msgid "WARN: Preview only works in game."
-msgstr ""
+msgstr "注意：預覽效果在遊戲中途可見。"
 
 #: ui/options_ui.rml:99
 msgid "Weapon"
-msgstr ""
+msgstr "武器"
 
 #: ui/options_ui.rml:102
 msgid "Blaster"
-msgstr ""
+msgstr "衝擊槍"
 
 #: ui/options_ui.rml:103
 msgid "Rifle"
-msgstr ""
+msgstr "步槍"
 
 #: ui/options_ui.rml:104
 msgid "Pain Saw"
-msgstr ""
+msgstr "痛苦電鋸"
 
 #: ui/options_ui.rml:105
 msgid "Shotgun"
-msgstr ""
+msgstr "霰彈槍"
 
 #: ui/options_ui.rml:106
 msgid "Lasgun"
-msgstr ""
+msgstr "激光槍"
 
 #: ui/options_ui.rml:107
 msgid "Mass Driver"
-msgstr ""
+msgstr "質量驅動器"
 
 #: ui/options_ui.rml:108
 msgid "Chaingun"
-msgstr ""
+msgstr "鏈式機槍"
 
 #: ui/options_ui.rml:109
 msgid "Flamer"
-msgstr ""
+msgstr "噴火器"
 
 #: ui/options_ui.rml:110
 msgid "Pulse Rifle"
-msgstr ""
+msgstr "脈衝步槍"
 
 #: ui/options_ui.rml:111
 msgid "Lucifer Cannon"
-msgstr ""
+msgstr "星神炮"
 
 #: ui/options_ui.rml:122
 msgid "Crosshair visiblity"
@@ -1862,47 +1853,47 @@ msgstr "大"
 
 #: ui/options_ui.rml:141
 msgid "Crosshair colour"
-msgstr ""
+msgstr "準星顏色"
 
 #: ui/options_ui.rml:143
 msgid "Image colour"
-msgstr ""
+msgstr "預設顏色"
 
 #: ui/options_ui.rml:144 ui/options_ui.rml:174
 msgid "Custom colour"
-msgstr ""
+msgstr "自定義顏色"
 
 #: ui/options_ui.rml:149
 msgid "Crosshair colours"
-msgstr ""
+msgstr "準星顏色"
 
 #: ui/options_ui.rml:170
 msgid "Crosshair outline colour"
-msgstr ""
+msgstr "準星輪廓顏色"
 
 #: ui/options_ui.rml:173
 msgid "Auto colour"
-msgstr ""
+msgstr "自動"
 
 #: ui/options_ui.rml:179
 msgid "Crosshair outline scale"
-msgstr ""
+msgstr "準星輪廓大小"
 
 #: ui/options_ui.rml:181
 msgid "Negative values will change the outline to be inside the crosshair."
-msgstr ""
+msgstr "負值會使輪廓位於準星內部。"
 
 #: ui/options_ui.rml:184
 msgid "Scale:"
-msgstr ""
+msgstr "大小："
 
 #: ui/options_ui.rml:188
 msgid "Offset:"
-msgstr ""
+msgstr "偏移："
 
 #: ui/options_ui.rml:193
 msgid "Crosshair outline colours"
-msgstr ""
+msgstr "準星輪廓顏色"
 
 #: ui/options_welcome.rml:7
 msgid "Hello there!"
@@ -2691,32 +2682,32 @@ msgstr "%s%s ^*被 %s%s%s^* 用衝鋒槍掃射；%s%s%s^* 支援"
 #: src/cgame/cg_event.cpp:404
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 碾壓"
+msgstr "%s%s ^*被 %s%s%s^* 打倒"
 
 #: src/cgame/cg_event.cpp:404
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 碾壓"
+msgstr "%s%s ^*被 %s%s%s^* 打倒"
 
 #: src/cgame/cg_event.cpp:404
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s"
-msgstr "%s%s ^*被 %s%s%s^* 碾壓"
+msgstr "%s%s ^*被 %s%s%s^* 打倒"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "male"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 碾壓；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 打倒；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "female"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 碾壓；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 打倒；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:405
 msgctxt "neuter"
 msgid "%s%s ^*was mowed down by %s%s%s^*; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 碾壓；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 打倒；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:409
 msgctxt "male"
@@ -2751,32 +2742,32 @@ msgstr "%s%s ^*被 %s%s%s^* 擊殺；%s%s%s^* 支援"
 #: src/cgame/cg_event.cpp:414
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr "%s%s ^*被 %s%s%s^* 的脈衝震盪波烤熟"
+msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟"
 
 #: src/cgame/cg_event.cpp:414
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr "%s%s ^*被 %s%s%s^* 的脈衝震盪波烤熟"
+msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟"
 
 #: src/cgame/cg_event.cpp:414
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast"
-msgstr "%s%s ^*被 %s%s%s^* 的脈衝震盪波烤熟"
+msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "male"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的脈衝震盪波烤熟；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "female"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的脈衝震盪波烤熟；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:415
 msgctxt "neuter"
 msgid "%s%s ^*was seared by %s%s%s^*'s pulse blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的脈衝震盪波烤熟；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 的脈衝波烤熟；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:419
 msgctxt "male"
@@ -2931,62 +2922,62 @@ msgstr "%s%s ^*被點燃了"
 #: src/cgame/cg_event.cpp:442
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波消滅"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅"
 
 #: src/cgame/cg_event.cpp:442
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波消滅"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅"
 
 #: src/cgame/cg_event.cpp:442
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波消滅"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "male"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波消滅；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "female"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波消滅；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:443
 msgctxt "neuter"
 msgid "%s%s ^*was annihilated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波消滅；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波消滅；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:447
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波照射"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射"
 
 #: src/cgame/cg_event.cpp:447
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波照射"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射"
 
 #: src/cgame/cg_event.cpp:447
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波照射"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "male"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波照射；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "female"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波照射；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:448
 msgctxt "neuter"
 msgid "%s%s ^*was irradiated by %s%s%s^*'s plasma blast; %s%s%s^* assisted"
-msgstr "%s%s ^*被 %s%s%s^* 的等離子震盪波照射；%s%s%s^* 支援"
+msgstr "%s%s ^*被 %s%s%s^* 的等離子波照射；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:449
 msgctxt "male"
@@ -3156,182 +3147,182 @@ msgstr "%s%s ^* 被 %s%s%s^* 咬了；%s%s%s^* 支援"
 #: src/cgame/cg_event.cpp:475
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開"
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開"
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔螳螂〕%s%s%s^* 切開；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:480
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎"
 
 #: src/cgame/cg_event.cpp:480
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎"
 
 #: src/cgame/cg_event.cpp:480
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 撕碎；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:485
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊"
 
 #: src/cgame/cg_event.cpp:485
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊"
 
 #: src/cgame/cg_event.cpp:485
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔狩獵者〕%s%s%s^* 電擊；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:490
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖"
 
 #: src/cgame/cg_event.cpp:490
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖"
 
 #: src/cgame/cg_event.cpp:490
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 解剖；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:495
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺"
 
 #: src/cgame/cg_event.cpp:495
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺"
 
 #: src/cgame/cg_event.cpp:495
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 撲殺；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插"
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插"
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔龍騎士〕%s%s%s^* 穿插；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "male"
@@ -3351,68 +3342,68 @@ msgstr "%s%s ^*被刺穿了"
 #: src/cgame/cg_event.cpp:506
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*被〔暴君〕%s%s%s^* 襲擊；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:511
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*"
 
 #: src/cgame/cg_event.cpp:511
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*"
 
 #: src/cgame/cg_event.cpp:511
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr ""
+msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "female"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr ""
+msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr ""
+msgstr "%s%s ^*本應躲過〔暴君〕%s%s%s^*；%s%s%s^* 支援"
 
 #: src/cgame/cg_event.cpp:517
 msgctxt "male"
@@ -3703,7 +3694,7 @@ msgstr "異形磨爪……"
 
 #: src/cgame/cg_main.cpp:491
 msgid "Overloading lucifer cannons…"
-msgstr "裝載路西法炮……"
+msgstr "重載星神炮……"
 
 #: src/cgame/cg_main.cpp:495
 msgid "Unwrapping jetpacks…"
@@ -3715,7 +3706,7 @@ msgstr "紡織絲綢細節……"
 
 #: src/cgame/cg_main.cpp:499
 msgid "Adding turret spam…"
-msgstr "添加炮台彈藥……"
+msgstr "裝載炮台彈藥……"
 
 #: src/cgame/cg_main.cpp:499
 msgid "Awakening the overmind…"
@@ -4215,7 +4206,7 @@ msgstr "客户端遊戲 (cgame): 調試: 此菜單不存在: %d"
 
 #: src/cgame/cg_servercmds.cpp:850
 msgid "^1*DEAD*^*"
-msgstr ""
+msgstr "^1*死亡*^*"
 
 #: src/cgame/cg_servercmds.cpp:911
 #, c-format
@@ -4852,6 +4843,8 @@ msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
 msgstr ""
+"$1$^7 發起投票：\n"
+"^7$2$"
 
 #: src/sgame/sg_votes.cpp:742
 msgid "$1$^* called a team vote: $2t$"
@@ -4862,6 +4855,8 @@ msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
 msgstr ""
+"$1$^7 發起團隊投票：\n"
+"^7$2$"
 
 #: src/sgame/sg_votes.cpp:860
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
