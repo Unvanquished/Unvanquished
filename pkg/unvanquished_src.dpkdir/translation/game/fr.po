@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-07 03:06+0100\n"
-"PO-Revision-Date: 2024-03-08 15:01+0000\n"
-"Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
+"PO-Revision-Date: 2024-03-26 16:01+0000\n"
+"Last-Translator: ZobBillZeButt <joelekiffeur@yahoo.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -191,8 +191,8 @@ msgid ""
 msgstr ""
 "Les extraterrestres peuvent évoluer de partout si ce n’est dans la ligne de "
 "mire d'un joueur humain ou d'une construction. Les extraterrestres peuvent "
-"également passer à des formes moins avancées de [granger] (à un certain "
-"coût) lorsqu’ils sont proches de l'Overmind [overmind]."
+"également passer à des formes moins avancées de [granger] (à un certain coût)"
+" lorsqu’ils sont proches du Grand Esprit [overmind]."
 
 #: ui/help_gameplay.rml:43
 msgid ""
@@ -261,10 +261,10 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"Les structures de ponte (œufs [egg] et telenodes [telenode]), les structures "
-"minières (leech et drill) et les structures uniques ([overmind] overmind et "
-"[reactor] réacteur) ne sont PAS affectées par le manque de points de "
-"construction."
+"Les structures de ponte (œufs [egg] et nœuds de téléportation [telenode]), "
+"les structures minières (sangsue et extracteur énergétique) et les "
+"structures uniques ([overmind] overmind et [reactor] réacteur) ne sont PAS "
+"affectées par le manque de points de construction."
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
@@ -520,7 +520,7 @@ msgid ""
 "they can build rocket pods."
 msgstr ""
 "Les humains n'ont plus la tour de défense Tesla ni l'ordinateur de défense, "
-"mais ils peuvent construire des lances roquettes."
+"mais ils peuvent construire des lance-roquettes."
 
 #: ui/help_gameplay.rml:170
 msgid ""
@@ -1598,7 +1598,7 @@ msgstr "Désactivez-le uniquement si vous êtes un accro de Quake."
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
-msgstr ""
+msgstr "Déplacements et sensations kinétiques"
 
 #: ui/options_movements_cosmetic.rml:8
 msgid "Movement"
@@ -1802,7 +1802,7 @@ msgstr "Interface utilisateur"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "Principal"
 
 #: ui/options_ui.rml:24
 msgid "Language"
@@ -1914,7 +1914,7 @@ msgstr "Fusil à pompe"
 
 #: ui/options_ui.rml:106
 msgid "Lasgun"
-msgstr ""
+msgstr "Fusil laser"
 
 #: ui/options_ui.rml:107
 msgid "Mass Driver"
@@ -1922,11 +1922,11 @@ msgstr "Fusil électromagnétique"
 
 #: ui/options_ui.rml:108
 msgid "Chaingun"
-msgstr "Chaingun"
+msgstr "Mitrailleuse"
 
 #: ui/options_ui.rml:109
 msgid "Flamer"
-msgstr ""
+msgstr "Lance-flammes"
 
 #: ui/options_ui.rml:110
 msgid "Pulse Rifle"
@@ -2432,7 +2432,7 @@ msgstr "%s%s ^*a été pris dans l'explosion"
 #: src/cgame/cg_event.cpp:307
 msgctxt "female"
 msgid "%s%s ^*was caught in the explosion"
-msgstr "%s%s ^*a été pris dans l'explosion"
+msgstr "%s%s ^*a été prise dans l'explosion"
 
 #: src/cgame/cg_event.cpp:307
 msgctxt "neuter"
@@ -2462,7 +2462,7 @@ msgstr "%s%s ^* n'a pas réussi à éviter les balles d'une tourelle"
 #: src/cgame/cg_event.cpp:317
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret"
-msgstr "%s%s ^* n'a pas réussie à éviter les balles d'une tourelle"
+msgstr "%s%s ^* n'a pas réussi à éviter les balles d'une tourelle"
 
 #: src/cgame/cg_event.cpp:317
 msgctxt "neuter"
@@ -2477,7 +2477,7 @@ msgstr "%s%s ^* a été abattu par une tourelle aidé par %s%s%s^*"
 #: src/cgame/cg_event.cpp:318
 msgctxt "female"
 msgid "%s%s ^*was gunned down by a turret; %s%s%s^* assisted"
-msgstr "%s%s ^* a été abattu par une tourelle aidé par %s%s%s^*"
+msgstr "%s%s ^* a été abattue par une tourelle aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:318
 msgctxt "neuter"
@@ -2492,7 +2492,7 @@ msgstr "%s%s ^*a chevauché une roquette"
 #: src/cgame/cg_event.cpp:322
 msgctxt "female"
 msgid "%s%s ^*caught a rocket"
-msgstr "%s%s ^*a chevauchée une roquette"
+msgstr "%s%s ^*a chevauché une roquette"
 
 #: src/cgame/cg_event.cpp:322
 msgctxt "neuter"
@@ -3304,17 +3304,17 @@ msgstr "%s%s ^*a été mordu par %s%s%s^* aidé par %s%s%s^*"
 #: src/cgame/cg_event.cpp:475
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*a été découpé par le mantis de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*a été découpée par le mantis de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:475
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis"
-msgstr ""
+msgstr "%s%s ^*a été découpé par le mantis de %s%s%s^*'"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
@@ -3334,17 +3334,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:480
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été déchiqueté par le marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:480
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été déchiquetée par la marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:480
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été déchiqueté par le marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
@@ -3369,12 +3369,12 @@ msgstr ""
 #: src/cgame/cg_event.cpp:485
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été électrocutée par le marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:485
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*a été électrocuté par le marauder de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "male"
@@ -3394,17 +3394,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:490
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*a été éviscéré par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:490
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*a été éviscérée par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:490
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s ^*a été éviscéré par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "male"
@@ -3499,12 +3499,12 @@ msgstr "%s%s ^*a été planté"
 #: src/cgame/cg_event.cpp:506
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*a été massacré par le tyrant de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*a été massacrée par le tyrant de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:506
 msgctxt "neuter"
@@ -3529,17 +3529,17 @@ msgstr ""
 #: src/cgame/cg_event.cpp:511
 msgctxt "male"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*aurait dû s'écarter du chemin du tyrant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:511
 msgctxt "female"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*aurait dû s'écarter du chemin du tyrant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:511
 msgctxt "neuter"
 msgid "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s ^*aurait dû s'écarter du chemin du tyrant %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "male"
@@ -3784,12 +3784,12 @@ msgstr "Notre base est attaquée !"
 #: src/cgame/cg_event.cpp:1266
 #, c-format
 msgid "%s under attack – %s"
-msgstr ""
+msgstr "%s attaqué– %s"
 
 #: src/cgame/cg_event.cpp:1270
 #, c-format
 msgid "%s under attack"
-msgstr ""
+msgstr "%s attaqué"
 
 #: src/cgame/cg_main.cpp:462
 msgid "Calling home…"
@@ -4634,7 +4634,7 @@ msgstr "Maintenez %s enfoncé puis touchez un mur pour faire un saut mural."
 #: src/cgame/cg_tutorial.cpp:344
 #, c-format
 msgid "Press %s to launch a barb."
-msgstr "Appuyez sur %s pour lancer un pique."
+msgstr "Appuyez sur %s pour lancer une pique."
 
 #: src/cgame/cg_tutorial.cpp:350
 #, c-format
@@ -4806,11 +4806,11 @@ msgstr "Dix secondes jusqu’à ce que l'inactivité baisse !"
 
 #: src/sgame/sg_bot.cpp:70
 msgid "^3Alien bot names:"
-msgstr ""
+msgstr "^3Noms des extraterrestres :"
 
 #: src/sgame/sg_bot.cpp:71
 msgid "^3Human bot names:"
-msgstr ""
+msgstr "^3Nom des bots humains :"
 
 #: src/sgame/sg_bot.cpp:368
 msgid "$1$^* disconnected"
@@ -5094,6 +5094,8 @@ msgid ""
 "$1$^7 called a vote:\n"
 "^7$2$"
 msgstr ""
+"$1$^7 a appelé à un vote :\n"
+"^7$2$"
 
 #: src/sgame/sg_votes.cpp:742
 msgid "$1$^* called a team vote: $2t$"
@@ -5104,6 +5106,8 @@ msgid ""
 "$1$^7 called a team vote:\n"
 "^7$2t$"
 msgstr ""
+"$1$^7 a appélé à un vote d'équipe :\n"
+"^7$2t$"
 
 #: src/sgame/sg_votes.cpp:860
 msgid "Vote failed ($1$ of $2$; quorum not reached)"
