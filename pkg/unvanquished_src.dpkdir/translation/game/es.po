@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-07 03:06+0100\n"
-"PO-Revision-Date: 2024-02-20 23:02+0000\n"
-"Last-Translator: Chueco <alejandrojmelo@gmail.com>\n"
+"PO-Revision-Date: 2024-05-02 22:15+0000\n"
+"Last-Translator: hunkillerx <josediaz4297@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/es/>\n"
 "Language: es\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.5.3-dev\n"
 "X-POOTLE-MTIME: 1362811388.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -33,7 +33,7 @@ msgstr "Evolucionar"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr "puntos de evolucion"
+msgstr "puntos de evolución"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
