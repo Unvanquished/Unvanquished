@@ -235,6 +235,18 @@
 				<input cvar="g_bot_infiniteMomentum" type="checkbox" />
 				<h3> Ignore momentum </h3>
 			</row>
+			<h2>Navmesh generation</h2>
+			<row>
+				<input cvar="cg_navgenOnLoad" type="checkbox" />
+				<h3>Generate navmeshes at load time</h3>
+			</row>
+			<row>
+				<input type="range" min="1" max="16" step="1" cvar="cg_navgenMaxThreads"/>
+				<h3>Number of worker threads</h3>
+				<p class="inline">
+					Current: <inlinecvar cvar="cg_navgenMaxThreads" type="number" format="%.0f"/>
+				</p>
+			</row>
 		</panel>
 
 		<!-- HUMANS BOT CONFIG -->
