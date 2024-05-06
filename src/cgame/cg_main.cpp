@@ -197,7 +197,7 @@ Set some player cvars usable in scripts
 these should refer only to playerstates that belong to the client, not the followed player, ui cvars will do that already
 ===============
 */
-static void CG_SetPVars()
+void CG_SetPVars()
 {
 	playerState_t *ps;
 
@@ -326,6 +326,7 @@ void CG_NotifyHooks()
 			trap_notify_onTeamChange( ps->persistant[ PERS_TEAM ] );
 
 			CG_SetBindTeam( static_cast<team_t>( ps->persistant[ PERS_TEAM ] ) );
+			CG_SetPVars();
 
 			/* execute team-specific config files */
 			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->persistant[ PERS_TEAM ] ) ), config, sizeof( config ) );
@@ -346,7 +347,6 @@ CG_UpdateCvars
 */
 void CG_UpdateCvars()
 {
-	CG_SetPVars();
 	CG_UpdateBuildableRangeMarkerMask();
 }
 

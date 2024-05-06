@@ -1914,6 +1914,7 @@ void       CG_StartMusic();
 
 void       CG_NotifyHooks();
 void       CG_UpdateCvars();
+void CG_SetPVars();
 
 int        CG_CrosshairPlayer();
 void       CG_KeyEvent( Keyboard::Key key, bool down );
