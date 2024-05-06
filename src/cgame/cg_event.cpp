@@ -632,6 +632,8 @@ Called on weapon change
 */
 void CG_OnPlayerWeaponChange()
 {
+	CG_SetPVars();
+
 	// Change the HUD to match the weapon. Close the old hud first
 	Rocket_ShowHud( cg.snap->ps.weapon );
 
