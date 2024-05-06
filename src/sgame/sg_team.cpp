@@ -36,24 +36,27 @@ Return the team referenced by a string
 See also BG_PlayableTeamFromString
 ================
 */
-team_t G_TeamFromString( const char *str )
+bool G_TeamFromString( const char *str, team_t &team )
 {
 	switch ( Str::ctolower( *str ) )
 	{
 		case '0':
 		case 's':
-			return TEAM_NONE;
+			team = TEAM_NONE;
+			return true;
 
 		case '1':
 		case 'a':
-			return TEAM_ALIENS;
+			team = TEAM_ALIENS;
+			return true;
 
 		case '2':
 		case 'h':
-			return TEAM_HUMANS;
+			team = TEAM_HUMANS;
+			return true;
 
 		default:
-			return NUM_TEAMS;
+			return false;
 	}
 }
 
