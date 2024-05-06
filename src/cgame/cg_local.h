@@ -1031,7 +1031,6 @@ struct minimapZone_t
 
 struct minimap_t
 {
-    bool     active;
     bool     defined;
     int          lastZone;
     int          nZones;
