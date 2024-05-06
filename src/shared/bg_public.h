@@ -1872,7 +1872,7 @@ const emoticonData_t* BG_EmoticonAt( const char *s );
 const char *BG_TeamName( int team );
 const char *BG_TeamNamePlural( int team );
 
-team_t BG_PlayableTeamFromString( const char* s );
+team_t BG_PlayableTeamFromString( Str::StringRef s );
 
 struct dummyCmd_t
 {

@@ -531,20 +531,19 @@ static void Svcmd_AdmitDefeat_f()
 	}
 
 	trap_Argv( 1, teamNum, sizeof( teamNum ) );
-	team = G_TeamFromString( teamNum );
+	team = BG_PlayableTeamFromString( teamNum );
 
-	if ( team == TEAM_ALIENS )
+	switch ( team )
 	{
+	case TEAM_ALIENS:
 		G_TeamCommand( TEAM_ALIENS, "cp \"Hivemind Link Broken\" 1" );
 		trap_SendServerCommand( -1, "print_tr " QQ( N_("Alien team has admitted defeat") ) );
-	}
-	else if ( team == TEAM_HUMANS )
-	{
+		break;
+	case TEAM_HUMANS:
 		G_TeamCommand( TEAM_HUMANS, "cp \"Life Support Terminated\" 1" );
 		trap_SendServerCommand( -1, "print_tr " QQ( N_("Human team has admitted defeat") ) );
-	}
-	else
-	{
+		break;
+	case TEAM_NONE:
 		Log::Notice( "admitdefeat: invalid team" );
 		return;
 	}
@@ -557,18 +556,18 @@ static void Svcmd_TeamWin_f()
 {
 	// this is largely made redundant by admitdefeat <team>
 	char cmd[ 6 ];
-	team_t team;
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	team = G_TeamFromString( cmd );
-
-	if ( TEAM_ALIENS == team )
+	switch ( BG_PlayableTeamFromString( cmd ) )
 	{
+	case TEAM_ALIENS:
 		G_BaseSelfDestruct( TEAM_HUMANS );
-	}
-	if ( TEAM_HUMANS == team )
-	{
+		break;
+	case TEAM_HUMANS:
 		G_BaseSelfDestruct( TEAM_ALIENS );
+		break;
+	case TEAM_NONE:
+		break;
 	}
 }
 
@@ -765,7 +764,7 @@ static void Svcmd_PrintQueue_f()
 
 	trap_Argv( 1, teamName, sizeof( teamName ) );
 
-	team = G_TeamFromString(teamName);
+	team = BG_PlayableTeamFromString(teamName);
 	if ( G_IsPlayableTeam( team ) )
 	{
 		G_PrintSpawnQueue( &level.team[ team ].spawnQueue );

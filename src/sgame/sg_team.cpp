@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 G_TeamFromString
 
 Return the team referenced by a string
+See also BG_PlayableTeamFromString
 ================
 */
 team_t G_TeamFromString( const char *str )

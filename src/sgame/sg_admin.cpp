@@ -5089,7 +5089,7 @@ bool G_admin_lock( gentity_t *ent )
 
 	lock = !Q_stricmp( command, "lock" );
 	trap_Argv( 1, teamName, sizeof( teamName ) );
-	team = G_TeamFromString( teamName );
+	team = BG_PlayableTeamFromString( teamName );
 
 	if ( G_IsPlayableTeam( team ) )
 	{
