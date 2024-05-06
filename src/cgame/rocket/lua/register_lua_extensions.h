@@ -41,5 +41,8 @@ void CG_Rocket_RegisterLuaCDataSource(lua_State* L);
 void CG_Rocket_RegisterLuaCmd(lua_State* L);
 void CG_Rocket_RegisterLuaCvar(lua_State* L);
 void CG_Rocket_RegisterLuaEvents(lua_State* L);
+void CG_Rocket_RegisterLuaTimer(lua_State* L);
+
+void CG_Rocket_UpdateLuaTimers(int time);
 
 #endif

@@ -59,7 +59,6 @@ Maryland 20850 USA.
 #include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
 #include <RmlUi/Debugger.h>
-#include "lua/Timer.h"
 #include "lua/register_lua_extensions.h"
 #include "../cg_local.h"
 
@@ -479,7 +478,7 @@ void Rocket_Update()
 	{
 		hudContext->Update();
 	}
-	Timer::Update(rocketInfo.realtime);
+	CG_Rocket_UpdateLuaTimers(rocketInfo.realtime);
 }
 
 std::string CG_EscapeHTMLText( Str::StringRef text )
