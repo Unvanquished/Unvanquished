@@ -549,7 +549,7 @@ static void Cmd_Devteam_f( gentity_t *ent )
 		return;
 	}
 
-	switch ( G_TeamFromString( ConcatArgs( 1 ) ) )
+	switch ( BG_PlayableTeamFromString( ConcatArgs( 1 ) ) )
 	{
 		case TEAM_ALIENS:
 			G_LeaveTeam( ent );
