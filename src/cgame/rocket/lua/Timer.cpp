@@ -33,44 +33,55 @@ Maryland 20850 USA.
 */
 
 #include "../../cg_local.h"
-#include "Timer.h"
+#include "register_lua_extensions.h"
 
-static Timer timer;
-
-void Timer::Add( int delayMs, int callbackRef, lua_State* L )
+namespace {
+class Timer
 {
-	events.push_back({delayMs, callbackRef, L});
-}
-
-void Timer::RunUpdate(int time)
-{
-	int dtMs = time - lastTime;
-	lastTime = time;
-
-	auto it = events.begin();
-	while (it != events.end())
+public:
+	void Add(int delayMs, int callbackRef, lua_State* L)
 	{
-		it->delayMs -= dtMs;
-		if (it->delayMs <= 0)
+		events.push_back({delayMs, callbackRef, L});
+	}
+
+	void RunUpdate( int time )
+	{
+		int dtMs = time - lastTime;
+		lastTime = time;
+
+		auto it = events.begin();
+		while (it != events.end())
 		{
-			lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-			luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-			if (lua_pcall(it->L, 0, 0, 0) != 0)
-				Log::Warn( "Could not run lua timer callback: %s",
-							lua_tostring(it->L, -1));
-			it = events.erase(it);
-		}
-		else
-		{
-			++it;
+			it->delayMs -= dtMs;
+			if (it->delayMs <= 0)
+			{
+				lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
+				luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
+				if (lua_pcall(it->L, 0, 0, 0) != 0)
+					Log::Warn( "Could not run lua timer callback: %s",
+						lua_tostring(it->L, -1));
+				it = events.erase(it);
+			}
+			else
+			{
+				++it;
+			}
 		}
 	}
-}
 
-void Timer::Update( int time )
-{
-	timer.RunUpdate(time);
-}
+private:
+	struct TimerEvent
+	{
+		int delayMs;
+		int callbackRef;
+		lua_State* L;
+	};
+	int lastTime;
+	std::list<TimerEvent> events;
+};
+} //namespace
+
+static Timer timer;
 
 static int Timer_add( lua_State* L )
 {
@@ -86,4 +97,9 @@ void CG_Rocket_RegisterLuaTimer(lua_State* L)
 	lua_pushcfunction(L, Timer_add);
 	lua_setfield(L, -2, "add");
 	lua_setglobal(L, "Timer");
+}
+
+void CG_Rocket_UpdateLuaTimers(int time)
+{
+	timer.RunUpdate(time);
 }
