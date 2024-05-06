@@ -3061,7 +3061,7 @@ static void CG_DrawPlayerClipsStack()
 
 static void CG_Rocket_DrawMinimap()
 {
-	if ( cg.minimap.defined )
+	if ( cg.minimap.defined && cg_drawMinimap.Get() )
 	{
 		Color::Color foreColor;
 		rectDef_t    rect;

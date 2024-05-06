@@ -84,19 +84,19 @@
 			display: block;
 			width: 12em;
 			height: 12em;
-
-			float: right;
-
 			background-color: black;
 		}
 
-		statsbox {
+		div#minimapbox {
+			float: right;
+		}
+
+		div#statsbox {
 			display: block;
 			width: 25em;
 			height: 12em;
-			padding: 0.5em;
-
 			float: right;
+			padding: 0.5em;
 		}
 
 		stat {
@@ -181,11 +181,15 @@
 </head>
 <body id="hud_basics">
 	<region class="topright">
-		<if cvar="cg_minimapActive" condition="==" value="1">
-			<minimap />
-		</if>
+		<div id="minimapbox">
+			<if cvar="cg_minimapActive" condition="==" value="1">
+				<if cvar="cg_drawMinimap" condition="==" value="1">
+					<minimap />
+				</if>
+			</if>
+		</div>
 
-		<statsbox>
+		<div id="statsbox">
 			<location />
 
 			<if cvar="cg_drawTimer" condition="==" value="1">
@@ -203,7 +207,7 @@
 			<if cvar="cg_lagometer" condition="==" value="1">
 				<stat><lagometer /></stat>
 			</if>
-		</statsbox>
+		</div>
 	</region>
 
 	<region class="votes">
