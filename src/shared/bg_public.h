@@ -229,13 +229,11 @@ struct evolveInfo_t {
 // player teams
 enum team_t
 {
-  TEAM_ALL = -1,
   TEAM_NONE,
   TEAM_ALIENS,
   TEAM_HUMANS,
-
-  NUM_TEAMS
 };
+#define NUM_TEAMS 3
 
 //
 // config strings are a general means of communicating variable length strings

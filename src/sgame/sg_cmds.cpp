@@ -564,7 +564,7 @@ static void Cmd_Devteam_f( gentity_t *ent )
 			ent->client->pers.classSelection = PCL_HUMAN_NAKED;
 			ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_NAKED;
 			break;
-		default:
+		case TEAM_NONE:
 			ADMP( "\"" N_("usage: devteam [a|h]") "\"" );
 			return;
 	}
