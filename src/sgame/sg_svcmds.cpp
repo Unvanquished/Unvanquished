@@ -431,9 +431,8 @@ static void Svcmd_ForceTeam_f()
 	}
 
 	trap_Argv( 2, str, sizeof( str ) );
-	team = G_TeamFromString( str );
 
-	if ( team == NUM_TEAMS )
+	if ( !G_TeamFromString( str, team ) )
 	{
 		Log::Notice( "forceteam: invalid team \"%s\"", str );
 		return;
@@ -614,9 +613,7 @@ static void Svcmd_TeamMessage_f()
 	}
 
 	trap_Argv( 1, teamNum, sizeof( teamNum ) );
-	team = G_TeamFromString( teamNum );
-
-	if ( team == NUM_TEAMS )
+	if ( !G_TeamFromString( teamNum, team ) )
 	{
 		Log::Notice( "say_team: invalid team \"%s\"", teamNum );
 		return;
