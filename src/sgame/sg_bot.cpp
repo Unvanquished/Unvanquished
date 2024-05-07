@@ -228,7 +228,7 @@ bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior )
 	if ( !botMind->behaviorTree )
 	{
 		Log::Warn( "Problem when loading behavior tree %s, trying default", behavior );
-		botMind->behaviorTree = ReadBehaviorTree( BOT_DEFAULT_BEHAVIOR, &treeList );
+		botMind->behaviorTree = ReadBehaviorTree( g_bot_defaultBehavior.Get().c_str(), &treeList );
 
 		if ( !botMind->behaviorTree )
 		{
@@ -752,7 +752,7 @@ void G_BotFill(bool immediately)
 			if ( fillers[ team ].target > 0 )
 			{
 				fillers[ team ].target--;
-				if ( !G_BotAdd( BOT_NAME_FROM_LIST, team, level.team[team].botFillSkillLevel, BOT_DEFAULT_BEHAVIOR, true ) )
+				if ( !G_BotAdd( BOT_NAME_FROM_LIST, team, level.team[team].botFillSkillLevel, g_bot_defaultBehavior.Get().c_str(), true ) )
 				{
 					//TODO modify the "/bot fill" number so that further warnings will be ignored.
 					//     Note that this means players disconnecting would possibly not be replaced by bot
