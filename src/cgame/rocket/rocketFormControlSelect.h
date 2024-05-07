@@ -118,7 +118,7 @@ public:
 
 	void UpdateValue()
 	{
-		Rml::String cvarValue = Cvar::GetValue( cvar.c_str() );
+		Rml::String cvarValue = CG_Rocket_GetCvarValue( cvar );
 		for ( int i = 0; i < GetNumOptions(); ++i )
 		{
 			Rml::Element* e = GetOption(i);

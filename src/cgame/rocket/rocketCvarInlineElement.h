@@ -83,19 +83,19 @@ public:
 
 	virtual void OnUpdate()
 	{
-		if ( dirty_value || ( !cvar.empty() && cvar_value.c_str() != Cvar::GetValue( cvar.c_str() ) ) )
+		if ( dirty_value || ( !cvar.empty() && cvar_value != CG_Rocket_GetCvarValue( cvar ) ) )
 		{
-			Rml::String value = cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
+			Rml::String value = cvar_value = CG_Rocket_GetCvarValue( cvar ).c_str();
 
 			if (!format.empty())
 			{
 				if (type == NUMBER)
 				{
-					value = va( format.c_str(), atof( Cvar::GetValue( cvar.c_str() ).c_str() ) );
+					value = va( format.c_str(), atof( CG_Rocket_GetCvarValue( cvar ).c_str() ) );
 				}
 				else
 				{
-					value = va( format.c_str(), Cvar::GetValue(cvar.c_str()).c_str() );
+					value = va( format.c_str(), CG_Rocket_GetCvarValue( cvar ) );
 				}
 			}
 

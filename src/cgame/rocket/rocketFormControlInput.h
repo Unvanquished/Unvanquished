@@ -147,7 +147,7 @@ private:
 			if ( type == "checkbox" )
 			{
 				bool result;
-				std::string stringValue = Cvar::GetValue( cvar.c_str() );
+				std::string stringValue = CG_Rocket_GetCvarValue( cvar );
 				if ( !Cvar::ParseCvarValue( stringValue, result ) )
 				{
 					// ParseCvarValue<bool> will only work correctly for a Cvar<bool>
@@ -167,7 +167,7 @@ private:
 
 			else if ( type == "radio" )
 			{
-				if ( GetValue() == Cvar::GetValue( cvar.c_str() ).c_str() )
+				if ( GetValue() == CG_Rocket_GetCvarValue( cvar ) )
 				{
 					SetAttribute( "checked", "" );
 				}
@@ -175,7 +175,7 @@ private:
 
 			else
 			{
-				SetValue( Cvar::GetValue( cvar.c_str() ).c_str() );
+				SetValue( CG_Rocket_GetCvarValue( cvar ) );
 			}
 
 			ignoreChangeEvent = false;

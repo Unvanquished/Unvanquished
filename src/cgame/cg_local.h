@@ -2298,6 +2298,7 @@ void CG_SetKeyCatcher( int catcher );
 //
 
 void CG_Rocket_Init( glconfig_t gl );
+std::string CG_Rocket_GetCvarValue( std::string );
 void CG_Rocket_LoadHuds();
 void CG_Rocket_Frame( cgClientState_t state );
 const char *CG_Rocket_GetTag();

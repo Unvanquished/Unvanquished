@@ -240,6 +240,194 @@ void CG_Rocket_Init( glconfig_t gl )
 	CG_SetKeyCatcher( rocketInfo.keyCatcher | KEYCATCH_UI );
 }
 
+// Cvars set in cgame and made public
+#define CGAME_CVAR( cvar ) if ( name == #cvar ) { return std::to_string( cvar.Get() ); }
+#define CGAME_CVAR2( cvar, obj ) if ( name == #cvar ) { return std::to_string( obj.Get() ); }
+// Cvars set in cgame but not made public
+#define PRIVATE_CVAR( cvar ) if ( name == #cvar ) { return Cvar::GetValue( #cvar ); }
+// Cvars set in cgame using trap_Cvar_Set()
+#define DIRECT_CVAR PRIVATE_CVAR
+// Cvars set in RML
+#define RML_CVAR PRIVATE_CVAR
+// Cvars set in sgame
+#define SGAME_CVAR PRIVATE_CVAR
+// Cvars set in engine
+#define ENGINE_CVAR PRIVATE_CVAR
+
+// Set to 1 to catch cvars that are used by the UI but unknown yet.
+#define REPORT_UNKNOWN_CVARS 0
+
+// HACK: Use local cvar access for known ones when possible.
+std::string CG_Rocket_GetCvarValue( std::string name )
+{
+	/* HUD cvars used on every frame,
+	using direct access is critical for performance. */
+	CGAME_CVAR( cg_drawClock );
+	CGAME_CVAR( cg_drawFPS );
+	CGAME_CVAR( cg_drawMinimap );
+	CGAME_CVAR( cg_drawSpeed );
+	CGAME_CVAR( cg_drawTimer );
+	CGAME_CVAR( cg_lagometer );
+	CGAME_CVAR( cg_minimapActive );
+
+	// Menus
+	CGAME_CVAR( cg_bounceParticles );
+	CGAME_CVAR( cg_crosshairColorAlpha );
+	CGAME_CVAR( cg_crosshairColorBlue );
+	CGAME_CVAR( cg_crosshairColorGreen );
+	CGAME_CVAR( cg_crosshairColorRed );
+	CGAME_CVAR( cg_crosshairOutlineColorAlpha );
+	CGAME_CVAR( cg_crosshairOutlineColorBlue );
+	CGAME_CVAR( cg_crosshairOutlineColorGreen );
+	CGAME_CVAR( cg_crosshairOutlineColorRed );
+	CGAME_CVAR( cg_crosshairOutlineOffset );
+	CGAME_CVAR( cg_crosshairOutlineScale );
+	CGAME_CVAR( cg_crosshairOutlineStyle );
+	CGAME_CVAR( cg_crosshairSize );
+	CGAME_CVAR( cg_crosshairStyle );
+	CGAME_CVAR( cg_drawCrosshair );
+	CGAME_CVAR( cg_mirrorgun );
+	CGAME_CVAR( cg_motionblur );
+	CGAME_CVAR( cg_motionblurMinSpeed );
+	CGAME_CVAR( cg_sprintToggle );
+	CGAME_CVAR( cg_teamChatsOnly );
+	CGAME_CVAR( cg_tutorial );
+	CGAME_CVAR( cg_wwSmoothTime );
+
+	CGAME_CVAR2( cg_drawgun, cg_drawGun );
+	CGAME_CVAR2( cg_marks, cg_addMarks );
+
+#if REPORT_UNKNOWN_CVARS
+	// Not private but there is no to_string() for this one:
+	PRIVATE_CVAR( cg_rangeMarkerBuildableTypes );
+
+	// Silence the Debug log for every remaining known ones.
+	PRIVATE_CVAR( cg_fov_builder );
+	PRIVATE_CVAR( cg_fov_human );
+	PRIVATE_CVAR( cg_fov_level0 );
+	PRIVATE_CVAR( cg_fov_level1 );
+	PRIVATE_CVAR( cg_fov_level2 );
+	PRIVATE_CVAR( cg_fov_level3 );
+	PRIVATE_CVAR( cg_fov_level4 );
+	PRIVATE_CVAR( cg_navgenMaxThreads );
+	PRIVATE_CVAR( cg_navgenOnLoad );
+	PRIVATE_CVAR( cg_welcome );
+	PRIVATE_CVAR( cg_wwFollow );
+	PRIVATE_CVAR( cg_wwToggle );
+
+	DIRECT_CVAR( p_classname );
+	DIRECT_CVAR( ui_errorMessage );
+	DIRECT_CVAR( ui_winner );
+
+	RML_CVAR( ui_dialogCvar1 );
+	RML_CVAR( ui_dialogCvar2 );
+	RML_CVAR( m_pitch );
+	RML_CVAR( m_filter );
+
+	SGAME_CVAR( g_bot_alienAimDelay );
+	SGAME_CVAR( g_bot_defaultFill );
+	SGAME_CVAR( g_bot_defaultSkill );
+	SGAME_CVAR( g_bot_fov );
+	SGAME_CVAR( g_bot_humanAimDelay );
+	SGAME_CVAR( g_bot_reactiontime );
+	SGAME_CVAR( g_BPBudgetPerMiner );
+	SGAME_CVAR( g_BPInitialBudget );
+	SGAME_CVAR( g_BPRecoveryInitialRate );
+	SGAME_CVAR( g_BPRecoveryRateHalfLife );
+	SGAME_CVAR( g_doWarmup );
+	SGAME_CVAR( g_freeFundPeriod );
+	SGAME_CVAR( g_friendlyFireAlienMultiplier );
+	SGAME_CVAR( g_friendlyFireHumanMultiplier );
+	SGAME_CVAR( g_gravity );
+	SGAME_CVAR( g_momentumBaseMod );
+	SGAME_CVAR( g_momentumBuildMod );
+	SGAME_CVAR( g_momentumDeconMod );
+	SGAME_CVAR( g_momentumDestroyMod );
+	SGAME_CVAR( g_momentumHalfLife );
+	SGAME_CVAR( g_momentumKillMod );
+	SGAME_CVAR( g_momentumRewardDoubleTime );
+	SGAME_CVAR( g_warmup );
+	SGAME_CVAR( sv_running );
+	SGAME_CVAR( g_friendlyBuildableFire );
+	SGAME_CVAR( g_allowVote );
+	SGAME_CVAR( g_alienAllowBuilding );
+	SGAME_CVAR( g_humanAllowBuilding );
+	SGAME_CVAR( g_dretchpunt );
+	SGAME_CVAR( g_antiSpawnBlock );
+	SGAME_CVAR( g_bot_attackStruct );
+	SGAME_CVAR( g_bot_infiniteFunds );
+	SGAME_CVAR( g_bot_infiniteMomentum );
+	SGAME_CVAR( g_bot_buy );
+	SGAME_CVAR( g_bot_ckit );
+	SGAME_CVAR( g_bot_rifle );
+	SGAME_CVAR( g_bot_painsaw );
+	SGAME_CVAR( g_bot_shotgun );
+	SGAME_CVAR( g_bot_lasgun );
+	SGAME_CVAR( g_bot_mdriver );
+	SGAME_CVAR( g_bot_chain );
+	SGAME_CVAR( g_bot_flamer );
+	SGAME_CVAR( g_bot_prifle );
+	SGAME_CVAR( g_bot_lcannon );
+	SGAME_CVAR( g_bot_lightarmour );
+	SGAME_CVAR( g_bot_mediumarmour );
+	SGAME_CVAR( g_bot_battlesuit );
+	SGAME_CVAR( g_bot_firebomb );
+	SGAME_CVAR( g_bot_grenade );
+	SGAME_CVAR( g_bot_radar );
+	SGAME_CVAR( g_bot_evolve );
+	SGAME_CVAR( g_bot_level1 );
+	SGAME_CVAR( g_bot_level2 );
+	SGAME_CVAR( g_bot_level2upg );
+	SGAME_CVAR( g_bot_level3 );
+	SGAME_CVAR( g_bot_level3upg );
+	SGAME_CVAR( g_bot_level4 );
+	SGAME_CVAR( sv_hostname );
+	SGAME_CVAR( g_password );
+
+	ENGINE_CVAR( audio.dopplerExaggeration );
+	ENGINE_CVAR( audio.reverbIntensity );
+	ENGINE_CVAR( audio.volume.effects );
+	ENGINE_CVAR( audio.volume.master );
+	ENGINE_CVAR( audio.volume.music );
+	ENGINE_CVAR( cg_shadows );
+	ENGINE_CVAR( cl_freelook );
+	ENGINE_CVAR( con_colorAlpha );
+	ENGINE_CVAR( con_colorBlue );
+	ENGINE_CVAR( con_colorGreen );
+	ENGINE_CVAR( con_colorRed );
+	ENGINE_CVAR( fs_extrapaks );
+	ENGINE_CVAR( in_joystick );
+	ENGINE_CVAR( language );
+	ENGINE_CVAR( name );
+	ENGINE_CVAR( r_bloom );
+	ENGINE_CVAR( r_deluxeMapping );
+	ENGINE_CVAR( r_dynamicLight );
+	ENGINE_CVAR( r_ext_texture_filter_anisotropic );
+	ENGINE_CVAR( r_fullscreen );
+	ENGINE_CVAR( r_FXAA );
+	ENGINE_CVAR( r_gamma );
+	ENGINE_CVAR( r_halfLambertLighting );
+	ENGINE_CVAR( r_heatHaze );
+	ENGINE_CVAR( r_lightStyles );
+	ENGINE_CVAR( r_noBorder );
+	ENGINE_CVAR( r_normalMapping );
+	ENGINE_CVAR( r_physicalMapping );
+	ENGINE_CVAR( r_picmip );
+	ENGINE_CVAR( r_reliefMapping );
+	ENGINE_CVAR( r_rimLighting );
+	ENGINE_CVAR( r_specularMapping );
+	ENGINE_CVAR( r_ssao );
+	ENGINE_CVAR( r_swapinterval );
+	ENGINE_CVAR( r_textureMode );
+	ENGINE_CVAR( r_vertexLighting );
+	ENGINE_CVAR( sensitivity );
+
+	Log::Warn( "Cvar used in UI without optimized call: %s", name );
+#endif
+
+	return Cvar::GetValue( name.c_str() );
+}
+
 void CG_Rocket_LoadHuds()
 {
 	int i;

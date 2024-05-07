@@ -33,12 +33,13 @@ Maryland 20850 USA.
 */
 
 #include "common/Common.h"
+#include "cgame/cg_local.h"
 #include "register_lua_extensions.h"
 
 static int Cvar_get(lua_State* L)
 {
 	const char *cvar = luaL_checkstring(L, 1);
-	lua_pushstring(L, Cvar::GetValue(cvar).c_str());
+	lua_pushstring(L, CG_Rocket_GetCvarValue( cvar ).c_str());
 	return 1;
 }
 

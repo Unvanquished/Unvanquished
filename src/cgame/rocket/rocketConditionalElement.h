@@ -51,7 +51,7 @@ public:
 		if ( it != changed_attributes.end() )
 		{
 			cvar = it->second.Get<std::string>();
-			cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
+			cvar_value = CG_Rocket_GetCvarValue( cvar );
 			dirty_value = true;
 		}
 
@@ -90,7 +90,7 @@ public:
 
 	virtual void OnUpdate()
 	{
-		if ( dirty_value || ( !cvar.empty() && cvar_value != Cvar::GetValue( cvar.c_str() ).c_str() ) )
+		if ( dirty_value || ( !cvar.empty() && cvar_value != CG_Rocket_GetCvarValue( cvar ) ) )
 		{
 			if ( IsConditionValid() )
 			{
@@ -107,7 +107,7 @@ public:
 				}
 			}
 
-			cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
+			cvar_value = CG_Rocket_GetCvarValue( cvar );
 
 			if ( dirty_value )
 			{
@@ -166,7 +166,7 @@ private:
 
 	bool IsConditionValid()
 	{
-		std::string str = Cvar::GetValue( cvar.c_str() );
+		std::string str = CG_Rocket_GetCvarValue( cvar );
 		switch ( value.GetType() )
 		{
 			case Rml::Variant::INT:
