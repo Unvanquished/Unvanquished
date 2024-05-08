@@ -185,6 +185,8 @@ Cvar::Cvar<std::string> cg_sayCommand("cg_sayCommand", "instead of talking, chat
 // TODO: only works for player models. Buildings and weapons are also relevant
 Cvar::Cvar<bool> cg_lazyLoadModels("cg_lazyLoadModels", "load models only when needed", Cvar::CHEAT, false);
 
+Cvar::Cvar<bool> cg_lowQualityModels("cg_lowQualityModels", "load low quality models when available", Cvar::NONE, false);
+
 // USERINFO cvars - transmitted to the server
 static Cvar::Range<Cvar::Cvar<int>> cg_disableBlueprintErrors("cg_disableBlueprintErrors", "allow placement of some currently non-buildable structures", Cvar::USERINFO, 0, 0, 1);
 static Cvar::Cvar<int> cg_flySpeed("cg_flySpeed", "spectator movement speed", Cvar::USERINFO, 800);

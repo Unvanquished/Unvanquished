@@ -527,7 +527,7 @@ static bool CG_ParseBuildableSoundFile( const char *filename, buildable_t builda
 	return true;
 }
 
-static bool CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *modelName, int anim, const char *animName,
+static bool CG_RegisterBuildableAnimation( buildableInfo_t *ci, Str::StringRef fileBase, int anim, const char *animName,
 		bool loop, bool reversed, bool clearOrigin, bool iqm )
 {
 	char filename[ MAX_QPATH ];
@@ -535,15 +535,14 @@ static bool CG_RegisterBuildableAnimation( buildableInfo_t *ci, const char *mode
 
 	if ( iqm )
 	{
-		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.iqm:%s", modelName, modelName, animName );
-		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+		Com_sprintf( filename, sizeof( filename ), "%s.iqm:%s", fileBase.c_str(), animName );
 	}
-
 	else
 	{
-		Com_sprintf( filename, sizeof( filename ), "models/buildables/%s/%s.md5anim", modelName, animName );
-		ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
+		Com_sprintf( filename, sizeof( filename ), "%s_%s.md5anim", fileBase.c_str(), animName );
 	}
+
+	ci->animations[ anim ].handle = trap_R_RegisterAnimation( filename );
 
 	if ( !ci->animations[ anim ].handle )
 	{
@@ -609,6 +608,16 @@ void CG_InitBuildables()
 		defaultHumanSounds[ j ] = trap_S_RegisterSound( filename, false );
 	}
 
+	std::vector<std::string> suffixes;
+	suffixes.reserve(2);
+	
+	if ( cg_lowQualityModels.Get() )
+	{
+		suffixes.push_back( "_low" );
+	}
+
+	suffixes.push_back( "" );
+
 	for ( buildable = (buildable_t)( BA_NONE + 1 ); buildable < BA_NUM_BUILDABLES;
 	      buildable = (buildable_t)( buildable + 1 ) )
 	{
@@ -616,25 +625,36 @@ void CG_InitBuildables()
 		bool         iqm = false;
 
 		buildableName = BG_Buildable( buildable )->name;
+
+		// FIXME: md5 means it's a skeletal model, it can also be in iqm format.
+		bi->md5 = false;
+
 		//Load models
-		//Prefer md5 models over md3
+		//Prefer iqm or md5 skeletal models over md3
 
-		if ( FS::PakPath::FileExists( va( "models/buildables/%s/%s.iqm", buildableName, buildableName ) ) &&
-		     ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.iqm",
-		                                                   buildableName, buildableName ) ) ) )
-		{
-			bi->md5 = true;
-			iqm     = true;
-		}
-		else if ( ( bi->models[ 0 ] = trap_R_RegisterModel( va( "models/buildables/%s/%s.md5mesh",
-		                                                        buildableName, buildableName ) ) ) )
-		{
-			bi->md5 = true;
-		}
-		else
-		{
-			bi->md5 = false;
+		std::string fileBase;
 
+		for ( const auto& suffix : suffixes )
+		{
+			fileBase = va( "models/buildables/%s/%s%s", buildableName, buildableName, suffix.c_str() );
+
+			if ( FS::PakPath::FileExists( va( "%s.iqm", fileBase.c_str() ) ) &&
+				 ( bi->models[ 0 ] = trap_R_RegisterModel( va( "%s.iqm", fileBase.c_str() ) ) ) )
+			{
+				bi->md5 = true;
+				iqm = true;
+				break;
+			}
+			else if ( ( bi->models[ 0 ] = trap_R_RegisterModel( va( "%s.md5mesh", fileBase.c_str() ) ) ) )
+			{
+				bi->md5 = true;
+				break;
+			}
+		}
+
+		// If no skeletal model found, register an md3 model instead.
+		if ( !bi->md5 )
+		{
 			for ( j = 0; j < MAX_BUILDABLE_MODELS; j++ )
 			{
 				modelFile = BG_BuildableModelConfig( buildable )->models[ j ];
@@ -646,7 +666,7 @@ void CG_InitBuildables()
 			}
 		}
 
-		// If an md5mesh is found, register md5anims
+		// If a skeletal model is found, register its animations.
 		if ( bi->md5 )
 		{
 			for ( anim = (buildableAnimNumber_t)( BANIM_NONE + 1 ); anim < MAX_BUILDABLE_ANIMATIONS;
@@ -660,7 +680,7 @@ void CG_InitBuildables()
 					continue;
 				}
 
-				if ( !CG_RegisterBuildableAnimation( bi, buildableName, anim, animName,
+				if ( !CG_RegisterBuildableAnimation( bi, fileBase, anim, animName,
 				                                     IsLooped( buildable, anim ),
 				                                     IsReversed( buildable, anim ), false, iqm ) )
 				{
