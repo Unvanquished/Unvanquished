@@ -67,6 +67,7 @@ void VM::VMHandleSyscall(uint32_t id, Util::Reader reader) {
 		switch (minor) {
 		case GAME_STATIC_INIT:
 			IPC::HandleMsg<GameStaticInitMsg>(VM::rootChannel, std::move(reader), [] (int milliseconds) {
+				Log::Notice("SGame " PLATFORM_STRING " " XSTRING(ARCH_STRING) " (" XSTRING(DAEMON_CXX_COMPILER_STRING) ") " __DATE__);
 				VM::InitializeProxies(milliseconds);
 				FS::Initialize();
 				VM::VMInit();
