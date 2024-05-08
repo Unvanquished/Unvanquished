@@ -2726,7 +2726,7 @@ void CG_Player( centity_t *cent )
 	int           renderfx;
 	entityState_t *es = &cent->currentState;
 	class_t       class_ = (class_t) ( ( es->misc >> 8 ) & 0xFF );
-	float         scale;
+	const classModelConfig_t *cmc = BG_ClassModelConfig( class_ );
 	vec3_t        tempAxis[ 3 ], tempAxis2[ 3 ];
 	vec3_t        angles;
 	int           held = es->modelindex;
@@ -2932,7 +2932,35 @@ void CG_Player( centity_t *cent )
 			legs.origin[ 0 ] -= ci->headOffset[ 0 ];
 			legs.origin[ 1 ] -= ci->headOffset[ 1 ];
 			legs.origin[ 2 ] -= 22 + ci->headOffset[ 2 ];
-			VectorMA( legs.origin, BG_ClassModelConfig( class_ )->zOffset, surfNormal, legs.origin );
+
+			// Apply rotation from config.
+			{
+				matrix_t axisMat;
+				quat_t axisQuat, rotQuat;
+
+				QuatFromAngles( rotQuat,
+					cmc->modelRotation[ PITCH ],
+					cmc->modelRotation[ YAW ],
+					cmc->modelRotation[ ROLL ] );
+
+				MatrixFromVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+				QuatFromMatrix( axisQuat, axisMat );
+				QuatMultiply2( axisQuat, rotQuat );
+				MatrixFromQuat( axisMat, axisQuat );
+				MatrixToVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+			}
+
+			// Apply scale from config.
+			if ( cmc->modelScale != 1.0f )
+			{
+				VectorScale( legs.axis[ 0 ], cmc->modelScale, legs.axis[ 0 ] );
+				VectorScale( legs.axis[ 1 ], cmc->modelScale, legs.axis[ 1 ] );
+				VectorScale( legs.axis[ 2 ], cmc->modelScale, legs.axis[ 2 ] );
+
+				legs.nonNormalizedAxes = true;
+			}
+
+			VectorMA( legs.origin, cmc->zOffset, surfNormal, legs.origin );
 		}
 
 		VectorCopy( legs.origin, legs.lightingOrigin );
@@ -3095,20 +3123,35 @@ void CG_Player( centity_t *cent )
 		VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 	}
 
-	//rescale the model
-	scale = BG_ClassModelConfig( class_ )->modelScale;
-
-	if ( scale != 1.0f )
+	// Apply rotation from config.
 	{
-		VectorScale( legs.axis[ 0 ], scale, legs.axis[ 0 ] );
-		VectorScale( legs.axis[ 1 ], scale, legs.axis[ 1 ] );
-		VectorScale( legs.axis[ 2 ], scale, legs.axis[ 2 ] );
+		matrix_t axisMat;
+		quat_t axisQuat, rotQuat;
+
+		QuatFromAngles( rotQuat,
+			cmc->modelRotation[ PITCH ],
+			cmc->modelRotation[ YAW ],
+			cmc->modelRotation[ ROLL ] );
+
+		MatrixFromVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+		QuatFromMatrix( axisQuat, axisMat );
+		QuatMultiply2( axisQuat, rotQuat );
+		MatrixFromQuat( axisMat, axisQuat );
+		MatrixToVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+	}
+
+	// Apply scale from config.
+	if ( cmc->modelScale != 1.0f )
+	{
+		VectorScale( legs.axis[ 0 ], cmc->modelScale, legs.axis[ 0 ] );
+		VectorScale( legs.axis[ 1 ], cmc->modelScale, legs.axis[ 1 ] );
+		VectorScale( legs.axis[ 2 ], cmc->modelScale, legs.axis[ 2 ] );
 
 		legs.nonNormalizedAxes = true;
 	}
 
 	//offset on the Z axis if required
-	VectorMA( legs.origin, BG_ClassModelConfig( class_ )->zOffset, surfNormal, legs.origin );
+	VectorMA( legs.origin, cmc->zOffset, surfNormal, legs.origin );
 	VectorCopy( legs.origin, legs.lightingOrigin );
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
@@ -3227,7 +3270,7 @@ void CG_Corpse( centity_t *cent )
 	entityState_t *es = &cent->currentState;
 	int           renderfx;
 	vec3_t        origin, liveZ, deadZ, deadMax;
-	float         scale;
+	const classModelConfig_t *cmc = BG_ClassModelConfig( es->clientNum );
 
 	ci = GetCorpseInfo( (class_t) es->clientNum );
 
@@ -3342,14 +3385,30 @@ void CG_Corpse( centity_t *cent )
 	legs.origin[ 2 ] += BG_ClassModelConfig( es->clientNum )->zOffset;
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
-	//rescale the model
-	scale = BG_ClassModelConfig( es->clientNum )->modelScale;
-
-	if ( scale != 1.0f && !ci->skeletal )
+	// Apply rotation from config.
+	if ( !ci->skeletal )
 	{
-		VectorScale( legs.axis[ 0 ], scale, legs.axis[ 0 ] );
-		VectorScale( legs.axis[ 1 ], scale, legs.axis[ 1 ] );
-		VectorScale( legs.axis[ 2 ], scale, legs.axis[ 2 ] );
+		matrix_t axisMat;
+		quat_t axisQuat, rotQuat;
+
+		QuatFromAngles( rotQuat,
+			cmc->modelRotation[ PITCH ],
+			cmc->modelRotation[ YAW ],
+			cmc->modelRotation[ ROLL ] );
+
+		MatrixFromVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+		QuatFromMatrix( axisQuat, axisMat );
+		QuatMultiply2( axisQuat, rotQuat );
+		MatrixFromQuat( axisMat, axisQuat );
+		MatrixToVectorsFLU( axisMat, legs.axis[ 0 ], legs.axis[ 1 ], legs.axis[ 2 ] );
+	}
+
+	// Apply scale from config.
+	if ( !ci->skeletal && cmc->modelScale != 1.0f )
+	{
+		VectorScale( legs.axis[ 0 ], cmc->modelScale, legs.axis[ 0 ] );
+		VectorScale( legs.axis[ 1 ], cmc->modelScale, legs.axis[ 1 ] );
+		VectorScale( legs.axis[ 2 ], cmc->modelScale, legs.axis[ 2 ] );
 
 		legs.nonNormalizedAxes = true;
 	}
