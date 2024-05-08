@@ -1287,6 +1287,7 @@ struct classModelConfig_t
 {
 	char   modelName[ MAX_QPATH ];
 	float  modelScale;
+	vec3_t modelRotation;
 	char   skinName[ MAX_QPATH ];
 	float  shadowScale;
 	char   hudName[ MAX_QPATH ];
