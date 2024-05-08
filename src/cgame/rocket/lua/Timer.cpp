@@ -32,60 +32,58 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "Timer.h"
 #include "../../cg_local.h"
+#include "register_lua_extensions.h"
 
-namespace Rml {
-namespace Lua {
-
-Timer timer;
-
-template<> void ExtraInit<Lua::Timer>(lua_State* L, int metatable_index)
+namespace {
+class Timer
 {
-	//due to they way that LuaType::Register is made, we know that the method table is at the index
-	//directly below the metatable
-	int method_index = metatable_index - 1;
-
-	lua_pushcfunction(L, Timeradd);
-	lua_setfield(L, method_index, "add");
-}
-
-void Timer::Add( int delayMs, int callbackRef, lua_State* L )
-{
-	events.push_back({delayMs, callbackRef, L});
-}
-
-void Timer::RunUpdate(int time)
-{
-	int dtMs = time - lastTime;
-	lastTime = time;
-
-	auto it = events.begin();
-	while (it != events.end())
+public:
+	void Add(int delayMs, int callbackRef, lua_State* L)
 	{
-		it->delayMs -= dtMs;
-		if (it->delayMs <= 0)
+		events.push_back({delayMs, callbackRef, L});
+	}
+
+	void RunUpdate( int time )
+	{
+		int dtMs = time - lastTime;
+		lastTime = time;
+
+		auto it = events.begin();
+		while (it != events.end())
 		{
-			lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-			luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-			if (lua_pcall(it->L, 0, 0, 0) != 0)
-				::Log::Warn( "Could not run lua timer callback: %s",
-							lua_tostring(it->L, -1));
-			it = events.erase(it);
-		}
-		else
-		{
-			++it;
+			it->delayMs -= dtMs;
+			if (it->delayMs <= 0)
+			{
+				lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
+				luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
+				if (lua_pcall(it->L, 0, 0, 0) != 0)
+					Log::Warn( "Could not run lua timer callback: %s",
+						lua_tostring(it->L, -1));
+				it = events.erase(it);
+			}
+			else
+			{
+				++it;
+			}
 		}
 	}
-}
 
-void Timer::Update( int time )
-{
-	timer.RunUpdate(time);
-}
+private:
+	struct TimerEvent
+	{
+		int delayMs;
+		int callbackRef;
+		lua_State* L;
+	};
+	int lastTime;
+	std::list<TimerEvent> events;
+};
+} //namespace
 
-int Timeradd( lua_State* L )
+static Timer timer;
+
+static int Timer_add( lua_State* L )
 {
 	int delayMs = luaL_checkinteger(L, 1);
 	int ref = luaL_ref(L, LUA_REGISTRYINDEX);
@@ -93,22 +91,15 @@ int Timeradd( lua_State* L )
 	return 0;
 }
 
-
-RegType<Timer> TimerMethods[] =
+void CG_Rocket_RegisterLuaTimer(lua_State* L)
 {
-	{ nullptr, nullptr },
-};
+	lua_newtable(L);
+	lua_pushcfunction(L, Timer_add);
+	lua_setfield(L, -2, "add");
+	lua_setglobal(L, "Timer");
+}
 
-luaL_Reg TimerGetters[] =
+void CG_Rocket_UpdateLuaTimers(int time)
 {
-	{ nullptr, nullptr },
-};
-
-luaL_Reg TimerSetters[] =
-{
-	{ nullptr, nullptr },
-};
-RMLUI_LUATYPE_DEFINE(Timer)
-
-}  // namespace Lua
-}  // namespace Rml
+	timer.RunUpdate(time);
+}

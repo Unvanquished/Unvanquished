@@ -1031,7 +1031,6 @@ struct minimapZone_t
 
 struct minimap_t
 {
-    bool     active;
     bool     defined;
     int          lastZone;
     int          nZones;
@@ -1435,10 +1434,6 @@ struct rocketDataSource_t
 
 	std::vector<mapInfo_t> mapList;
 	int mapIndex;
-
-	int selectedTeamIndex;
-
-	int selectedSpawnOptions[ NUM_TEAMS ];
 
 	int armouryBuyList[2][ ( WP_LUCIFER_CANNON - WP_BLASTER ) + UP_NUM_UPGRADES + 1 ];
 	int selectedArmouryBuyItem[2];
@@ -2385,7 +2380,7 @@ void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *
 void Rocket_DataFormatterFormattedData( int handle, const char *data, bool parseQuake );
 void Rocket_GetElementTag( char *tag, int length );
 void Rocket_RegisterElement( const char *tag );
-void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
+void Rocket_SetAttribute( const char *attribute, const char *value );
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
 void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
 void Rocket_GetElementAbsoluteOffset( float *x, float *y );

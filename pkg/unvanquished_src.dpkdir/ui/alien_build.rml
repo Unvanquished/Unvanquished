@@ -97,7 +97,7 @@
 		local data = CDataSource.Read("alienBuildList", "default", "availability,cmdName")[idx]
 		if data[1] == "available" then
 			Cmd.exec("build " .. data[2])
-			Events.pushevent("hide alien_build", event)
+			Events.pushcmd("hide alien_build")
 		end
 	end
 	function AlienBuildableHover(document, idx)

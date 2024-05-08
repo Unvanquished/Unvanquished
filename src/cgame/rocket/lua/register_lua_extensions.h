@@ -2,7 +2,7 @@
 ===========================================================================
 
 Unvanquished GPL Source Code
-Copyright (C) 2012 Unvanquished Developers
+Copyright (C) 2024 Unvanquished Developers
 
 This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
@@ -32,41 +32,17 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef LUATIMER_H
-#define LUATIMER_H
+#ifndef REGISTER_LUA_EXTENSIONS_H_
+#define REGISTER_LUA_EXTENSIONS_H_
 
-#include <list>
+#include <RmlUi/Lua/IncludeLua.h>
 
-#include "../rocket.h"
-#include <RmlUi/Core.h>
-#include <RmlUi/Lua/LuaType.h>
+void CG_Rocket_RegisterLuaCDataSource(lua_State* L);
+void CG_Rocket_RegisterLuaCmd(lua_State* L);
+void CG_Rocket_RegisterLuaCvar(lua_State* L);
+void CG_Rocket_RegisterLuaEvents(lua_State* L);
+void CG_Rocket_RegisterLuaTimer(lua_State* L);
 
-namespace Rml {
-namespace Lua {
-class Timer
-{
-public:
-	void Add(int delayMs, int callbackRef, lua_State* L);
-	void RunUpdate( int time );
-	static void Update(int time);
+void CG_Rocket_UpdateLuaTimers(int time);
 
-private:
-	struct TimerEvent
-	{
-		int delayMs;
-		int callbackRef;
-		lua_State* L;
-	};
-	int lastTime;
-	std::list<TimerEvent> events;
-};
-template<> void ExtraInit<Timer>(lua_State* L, int metatable_index);
-int Timeradd(lua_State* L);
-
-extern RegType<Timer> TimerMethods[];
-extern luaL_Reg TimerGetters[];
-extern luaL_Reg TimerSetters[];
-
-}  // namespace Lua
-}  // namespace Rml
 #endif

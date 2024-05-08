@@ -3,11 +3,11 @@
 <link type="text/rcss" href="/ui/shared/basics.rcss" />
 <link type="text/template" href="/ui/shared/window.rml" />
 </head>
-<body id="error" onhide='Events.pushevent("exec set com_errorMessage", event)' template="window" style="width: 32em; margin: 30%;">
+<body id="error" onhide='Cmd.exec("set com_errorMessage")' template="window" style="width: 32em; margin: 30%;">
 <h1><translate>Error!</translate></h1>
 <p class="inline">
 <inlinecvar quake cvar="ui_errorMessage"/>
 </p>
-<button onclick='Events.pushevent("hide error", event)'><translate>Ok</translate></button>
+<button onclick='Events.pushcmd("hide error")'><translate>Ok</translate></button>
 </body>
 </rml>

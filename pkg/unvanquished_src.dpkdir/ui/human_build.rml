@@ -98,7 +98,7 @@
 		local data = CDataSource.Read("humanBuildList", "default", "availability,cmdName")[idx]
 		if data[1] == "available" then
 			Cmd.exec("build " .. data[2])
-			Events.pushevent("hide human_build", event)
+			Events.pushcmd("hide human_build")
 		end
 	end
 	function HumanBuildableHover(document, idx)

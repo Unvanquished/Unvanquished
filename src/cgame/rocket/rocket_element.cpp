@@ -148,26 +148,11 @@ void Rocket_GetAttribute( const char *name, const char *id, const char *attribut
 	}
 }
 
-void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
+void Rocket_SetAttribute( const char *attribute, const char *value )
 {
-	if ( ( !*name && !*id ) && activeElement )
+	if ( activeElement )
 	{
 		activeElement->SetAttribute( attribute, value );
-	}
-
-	else
-	{
-		Rml::ElementDocument *document = name[0] ? menuContext->GetDocument( name ) : menuContext->GetFocusElement()->GetOwnerDocument();
-
-		if ( document )
-		{
-			Rml::Element *element = document->GetElementById( id );
-
-			if ( element )
-			{
-				element->SetAttribute( attribute, value );
-			}
-		}
 	}
 }
 

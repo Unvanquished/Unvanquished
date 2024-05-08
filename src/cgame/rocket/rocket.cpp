@@ -58,12 +58,8 @@ Maryland 20850 USA.
 #include "rocketColorInput.h"
 #include "rocketIncludeElement.h"
 #include "rocketCvarInlineElement.h"
-#include "lua/CDataSource.h"
 #include <RmlUi/Debugger.h>
-#include "lua/Cvar.h"
-#include "lua/Cmd.h"
-#include "lua/Events.h"
-#include "lua/Timer.h"
+#include "lua/register_lua_extensions.h"
 #include "../cg_local.h"
 
 class DaemonFileInterface : public Rml::FileInterface
@@ -345,11 +341,11 @@ void Rocket_Init()
 	// Initialize Lua
 	Rml::Lua::Initialise();
 	Rml::Lua::Interpreter::DoString("math.randomseed(os.time())");
-	Rml::Lua::LuaType<Rml::Lua::Cvar>::Register(Rml::Lua::Interpreter::GetLuaState());
-	Rml::Lua::LuaType<Rml::Lua::Cmd>::Register(Rml::Lua::Interpreter::GetLuaState());
-	Rml::Lua::LuaType<Rml::Lua::Events>::Register(Rml::Lua::Interpreter::GetLuaState());
-	Rml::Lua::LuaType<Rml::Lua::Timer>::Register(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaCDataSource(Rml::Lua::Interpreter::GetLuaState());
+	CG_Rocket_RegisterLuaCmd(Rml::Lua::Interpreter::GetLuaState());
+	CG_Rocket_RegisterLuaCvar(Rml::Lua::Interpreter::GetLuaState());
+	CG_Rocket_RegisterLuaEvents(Rml::Lua::Interpreter::GetLuaState());
+	CG_Rocket_RegisterLuaTimer(Rml::Lua::Interpreter::GetLuaState());
 
 	// Register custom properties.
 	UnvPropertyId::Orientation = Rml::StyleSheetSpecification::RegisterProperty("orientation", "left", false, true)
@@ -489,7 +485,7 @@ void Rocket_Update()
 	{
 		hudContext->Update();
 	}
-	Rml::Lua::Timer::Update(rocketInfo.realtime);
+	CG_Rocket_UpdateLuaTimers(rocketInfo.realtime);
 }
 
 std::string CG_EscapeHTMLText( Str::StringRef text )

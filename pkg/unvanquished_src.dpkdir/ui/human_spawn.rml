@@ -42,11 +42,11 @@
 <body id="human_spawn" template="window_unmovable">
 	<p><translate>Choose your starting equipment:</translate></p>
 
-	<button class="rifle" onclick='Events.pushevent("hide human_spawn; exec class rifle", event)'><translate>SMG</translate></button>
-	<button class="ckit" onclick='Events.pushevent("hide human_spawn; exec class ckit", event)'><translate>Construction Kit</translate></button>
+	<button class="rifle" onclick='Events.pushcmd("hide human_spawn; exec class rifle")'><translate>SMG</translate></button>
+	<button class="ckit" onclick='Events.pushcmd("hide human_spawn; exec class ckit")'><translate>Construction Kit</translate></button>
 
 	<p><translate>The SMG is a rapid-fire starting weapon, and the construction kit builds and repairs human structures. All equipment can be traded at the armoury.</translate></p>
 
-	<button class="teamselect" onclick='Events.pushevent("hide human_spawn; show ingame_teamselect", event)'><translate>Back to team selection</translate></button>
+	<button class="teamselect" onclick='Events.pushcmd("hide human_spawn; show ingame_teamselect")'><translate>Back to team selection</translate></button>
 </body>
 </rml>

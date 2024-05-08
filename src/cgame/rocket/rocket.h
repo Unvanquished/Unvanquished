@@ -66,8 +66,8 @@ public:
 	{
 	}
 	~RocketEvent_t() { }
-	Rml::Element *targetElement;
-	Rml::Dictionary Parameters;
+	Rml::Element *targetElement; // only used by "execForm" and "setChatCommand"
+	Rml::Dictionary Parameters; // only used by "execForm"
 	Rml::String cmd;
 };
 

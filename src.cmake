@@ -160,15 +160,11 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_hud.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_keys.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Cmd.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Cmd.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Cvar.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Cvar.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.h
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.h
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/register_lua_extensions.h
 
     ${ENGINE_DIR}/client/cg_api.h
     ${ENGINE_DIR}/client/cg_msgdef.h

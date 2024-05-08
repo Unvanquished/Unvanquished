@@ -12,20 +12,20 @@
 			<tab><translate>Presets</translate></tab>
 			<panel class="presets">
 				<row>
-					<button onclick='Events.pushevent("exec preset presets/input/wasd.cfg", event)'>WASD</button>
+					<button onclick='Cmd.exec("preset presets/input/wasd.cfg")'>WASD</button>
 					<span><translate>Classic First Person Shooter binds,<br />keys will be adjusted to your layout.</translate></span>
 				</row>
 				<row>
-					<button onclick='Events.pushevent("exec preset presets/input/esdf.cfg", event)'>ESDF</button>
+					<button onclick='Cmd.exec("preset presets/input/esdf.cfg")'>ESDF</button>
 					<span><translate>One column shifted to the right,<br />keys will be adjusted to your layout.</translate></span>
 				</row>
 				<row>
-					<button onclick='Events.pushevent("exec preset presets/input/ltouchpad.cfg", event)'>LTouchpad</button>
+					<button onclick='Cmd.exec("preset presets/input/ltouchpad.cfg")'>LTouchpad</button>
 					<span><translate>Special binds for left-handed,<br />touchpad users.</translate></span>
 				</row>
 				<if cvar="in_joystick" condition="==" value="1">
 				<row>
-					<button onclick='Events.pushevent("exec preset presets/input/gamepad.cfg", event)'><translate>Gamepad</translate></button>
+					<button onclick='Cmd.exec("preset presets/input/gamepad.cfg")'><translate>Gamepad</translate></button>
 					<span><translate>Does not work in menus yet,<br />&nbsp;Experimental.</translate></span>
 				</row>
 				</if>

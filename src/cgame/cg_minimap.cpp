@@ -373,20 +373,6 @@ static void CG_DrawMinimapObject( const qhandle_t image, const vec3_t pos3d, con
     trap_R_DrawRotatedPic( x, y, wh, wh, 0.0, 0.0, 1.0, 1.0, image, realAngle );
 }
 
-/*
-================
-CG_UpdateMinimapActive
-================
-*/
-static void CG_UpdateMinimapActive(minimap_t* m)
-{
-    bool active = m->defined && cg_drawMinimap.Get();
-
-    m->active = active;
-
-    cg_minimapActive.Set(+active);
-}
-
 //Other logical minimap functions
 
 /*
@@ -651,7 +637,7 @@ void CG_InitMinimap()
     m->gfx.playerArrow = trap_R_RegisterShader( "gfx/feedback/minimap/player-arrow", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
     m->gfx.teamArrow = trap_R_RegisterShader( "gfx/feedback/minimap/team-arrow", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
 
-    CG_UpdateMinimapActive( m );
+    cg_minimapActive.Set( m->defined );
 }
 
 /*
@@ -664,13 +650,6 @@ void CG_DrawMinimap( const rectDef_t* rect640, const Color::Color& teamColor )
     minimap_t* m = &cg.minimap;
     minimapZone_t *z = nullptr;
     rectDef_t rect = *rect640;
-
-    CG_UpdateMinimapActive( m );
-
-    if( !m->active )
-    {
-        return;
-    }
 
     z = CG_ChooseMinimapZone( m );
 

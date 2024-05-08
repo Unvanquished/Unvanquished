@@ -38,7 +38,7 @@
 						<option value="zh_Hant_HK">中文（香港）</option>
 						<option value="zh_Hant">中文（正體）</option>
 					</select>
-					<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Events.pushevent("exec language", event);Events.pushevent("exec updatelanguage", event)'><translate>Change language</translate></button>
+					<button style="width:50%; margin:auto; margin-top:1.5em;" onclick='Cmd.exec("updatelanguage")'><translate>Change language</translate></button>
 				</row>
 				<row>
 					<h3><translate>Real-time clock</translate></h3>
@@ -71,7 +71,7 @@
 					<p><translate>Frames per second.</translate></p>
 				</row>
 				<row>
-					<h3><translate>Console colors</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset con_colorRed con_colorGreen con_colorBlue con_colorAlpha", event)'>(<translate>reset</translate>)</ilink></h3>
+					<h3><translate>Console colors</translate>&nbsp;<ilink onclick='Cmd.exec("reset con_colorRed con_colorGreen con_colorBlue con_colorAlpha")'>(<translate>reset</translate>)</ilink></h3>
 					<p>
 						<row>
 							<input type="range" min="0" max="1" step="0.05" cvar="con_colorRed"/>
@@ -150,7 +150,7 @@
 					<p></p>
 				</row>
 				<row>
-					<h3><translate>Crosshair colours</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset cg_crosshairColorRed cg_crosshairColorGreen cg_crosshairColorBlue cg_crosshairColorAlpha", event)'>(<translate>reset</translate>)</ilink></h3>
+					<h3><translate>Crosshair colours</translate>&nbsp;<ilink onclick='Cmd.exec("reset cg_crosshairColorRed cg_crosshairColorGreen cg_crosshairColorBlue cg_crosshairColorAlpha")'>(<translate>reset</translate>)</ilink></h3>
 					<p>
 						<row>
 							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairColorRed"/>
@@ -180,7 +180,7 @@
 					<p></p>
 				</row>
 				<row>
-					<h3><translate>Crosshair outline scale</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset cg_crosshairOutlineScale", event)'>(<translate>reset</translate>)</ilink></h3>
+					<h3><translate>Crosshair outline scale</translate>&nbsp;<ilink onclick='Cmd.exec("reset cg_crosshairOutlineScale")'>(<translate>reset</translate>)</ilink></h3>
 					<p>
 						<p><translate>Negative values will change the outline to be inside the crosshair.</translate></p>
 						<row>
@@ -194,7 +194,7 @@
 					</p>
 				</row>
 				<row>
-					<h3><translate>Crosshair outline colours</translate>&nbsp;<ilink onclick='Events.pushevent("exec reset cg_crosshairOutlineColorRed cg_crosshairOutlineColorGreen cg_crosshairOutlineColorBlue cg_crosshairOutlineColorAlpha", event)'>(<translate>reset</translate>)</ilink></h3>
+					<h3><translate>Crosshair outline colours</translate>&nbsp;<ilink onclick='Cmd.exec("reset cg_crosshairOutlineColorRed cg_crosshairOutlineColorGreen cg_crosshairOutlineColorBlue cg_crosshairOutlineColorAlpha")'>(<translate>reset</translate>)</ilink></h3>
 					<p>
 						<row>
 							<input type="range" min="0" max="1" step="0.05" cvar="cg_crosshairOutlineColorRed"/>

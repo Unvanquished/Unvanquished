@@ -100,8 +100,9 @@ static void CG_Rocket_BuildDS()
 	CG_Rocket_BuildDataSource( CG_Argv( 1 ), table );
 }
 
-
-
+// Cmd.exec should be preferred. Note that there is not really any difference between executing
+// "immediately" with Cmd.exec versus using the "event" queue, because the engine buffers commands
+// and executes them later anyway.
 static void CG_Rocket_EventExec()
 {
 	const char *args = CG_Args();
@@ -141,17 +142,6 @@ static void CG_Rocket_SetDS()
 	Q_strncpyz( datasrc, CG_Argv( 1 ), sizeof( datasrc ) );
 	Q_strncpyz( datatbl, CG_Argv( 2 ), sizeof( datatbl ) );
 	CG_Rocket_SetDataSourceIndex( datasrc, datatbl, atoi( CG_Argv( 3 ) ) );
-}
-
-static void CG_Rocket_SetAttribute()
-{
-	char attribute[ 100 ], value[ MAX_STRING_CHARS ];
-
-	Q_strncpyz( attribute, CG_Argv( 1 ), sizeof( attribute ) );
-	Q_strncpyz( value, CG_Argv( 2 ), sizeof( value ) );
-
-	Rocket_SetAttribute( "", "", attribute, value );
-
 }
 
 static void CG_Rocket_FilterDS()
@@ -196,7 +186,7 @@ static void CG_Rocket_SetChatCommand()
 
 	if ( cmd )
 	{
-		Rocket_SetAttribute( "", "", "exec", cmd );
+		Rocket_SetAttribute( "exec", cmd );
 	}
 }
 
@@ -319,7 +309,6 @@ static const eventCmd_t eventCmdList[] =
 	{ "open", &CG_Rocket_EventOpen },
 	{ "play", &CG_Rocket_EventPlay },
 	{ "resetPings", &CG_Rocket_ResetPings },
-	{ "setAttribute", &CG_Rocket_SetAttribute },
 	{ "setChatCommand", &CG_Rocket_SetChatCommand },
 	{ "setDataSelectValue", &CG_Rocket_SetDataSelectValue },
 	{ "setDS", &CG_Rocket_SetDS },
@@ -348,6 +337,10 @@ void CG_Rocket_ProcessEvents()
 		if ( cmd )
 		{
 			cmd->exec();
+		}
+		else
+		{
+			Log::Warn( "Bad event command from Lua: '%s'", CG_Argv( 0 ) );
 		}
 		Cmd::PopArgs();
 		Rocket_DeleteEvent();
