@@ -3488,7 +3488,7 @@ void CG_PlayerDisconnect( vec3_t org )
 	}
 }
 
-centity_t *CG_GetLocation( vec3_t origin )
+centity_t *CG_GetPlayerLocation()
 {
 	std::vector<int> validEntities;
 	std::vector<std::array<float, 3>> posEntities;
@@ -3507,6 +3507,8 @@ centity_t *CG_GetLocation( vec3_t origin )
 		posEntities.push_back( posEntity );
 		validEntities.push_back( num );
 	}
+
+	const vec3_t& origin = cg.predictedPlayerState.origin;
 
 	std::vector<bool> inPVS = trap_R_BatchInPVS( origin, posEntities );
 
@@ -3535,14 +3537,6 @@ centity_t *CG_GetLocation( vec3_t origin )
 	}
 
 	return best;
-}
-
-centity_t *CG_GetPlayerLocation()
-{
-	vec3_t    origin;
-
-	VectorCopy( cg.predictedPlayerState.origin, origin );
-	return CG_GetLocation( origin );
 }
 
 void CG_InitClasses()
