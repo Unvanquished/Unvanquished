@@ -2392,10 +2392,10 @@ bool G_admin_readconfig( gentity_t *ent )
 
 	BG_Free( cnf2 );
 	ADMP( va(
-		"%s %d %d %d %d %zi",
+		"%s %d %d %d %d %d",
 		QQ( N_(
 			"^3readconfig:^* loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands, $5$ votes" ) ),
-		lc, ac, bc, cc, g_admin_votes.size() ) );
+		lc, ac, bc, cc, static_cast<int>( g_admin_votes.size() ) ) );
 
 	if ( lc == 0 )
 	{
