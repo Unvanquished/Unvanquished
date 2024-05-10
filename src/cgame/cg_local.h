@@ -1772,6 +1772,9 @@ enum altShader_t
 extern  cgs_t               cgs;
 extern  cg_t                cg;
 extern  centity_t           cg_entities[ MAX_GENTITIES ];
+
+/* entityState_t.number is int and is checked to not be
+negative in daemon/src/engine/qcommon/msg.cpp */
 extern int cg_highestActiveEntity;
 
 extern  weaponInfo_t        cg_weapons[ 32 ];
