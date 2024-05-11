@@ -4,7 +4,7 @@ trigger:
   branches:
     include:
       - master
-      - '*.*.*/sync' # Next-release branch
+      - 'for-*.*.*/sync' # Next-release branch
 
 pr:
   branches:
@@ -20,7 +20,8 @@ pr:
       - .gitmodules
       - CMakeLists.txt
       - '*.cmake'
-      - macosx
+      - macosx/
+      - tools/cbse/
 
 strategy:
   matrix:
