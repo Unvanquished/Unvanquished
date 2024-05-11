@@ -90,7 +90,22 @@ public:
 
 	virtual void OnUpdate()
 	{
-		if ( dirty_value || ( !cvar.empty() && cvar_value != Cvar::GetValue( cvar.c_str() ).c_str() ) )
+		Rml::String value;
+		bool modified = false;
+
+		if ( dirty_value )
+		{
+			value = Cvar::GetValue( cvar );
+			modified = true;
+		}
+		else if ( !cvar.empty() )
+		{
+			value = Cvar::GetValue( cvar );
+
+			modified = cvar_value != value;
+		}
+
+		if ( modified )
 		{
 			if ( IsConditionValid() )
 			{
@@ -107,7 +122,7 @@ public:
 				}
 			}
 
-			cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
+			cvar_value = value;
 
 			if ( dirty_value )
 			{
