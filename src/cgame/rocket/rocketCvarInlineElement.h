@@ -83,19 +83,34 @@ public:
 
 	virtual void OnUpdate()
 	{
-		if ( dirty_value || ( !cvar.empty() && cvar_value.c_str() != Cvar::GetValue( cvar.c_str() ) ) )
-		{
-			Rml::String value = cvar_value = Cvar::GetValue( cvar.c_str() ).c_str();
+		Rml::String value;
+		bool modified = false;
 
-			if (!format.empty())
+		if ( dirty_value )
+		{
+			value = Cvar::GetValue( cvar );
+			modified = true;
+		}
+		else if ( !cvar.empty() )
+		{
+			value = Cvar::GetValue( cvar );
+
+			modified = cvar_value != value;
+		}
+
+		if ( modified )
+		{
+			cvar_value = value;
+
+			if ( !format.empty() )
 			{
 				if (type == NUMBER)
 				{
-					value = va( format.c_str(), atof( Cvar::GetValue( cvar.c_str() ).c_str() ) );
+					value = va( format.c_str(), atof( cvar_value.c_str() ) );
 				}
 				else
 				{
-					value = va( format.c_str(), Cvar::GetValue(cvar.c_str()).c_str() );
+					value = va( format.c_str(), cvar_value.c_str() );
 				}
 			}
 
