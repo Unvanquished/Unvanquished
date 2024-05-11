@@ -11,7 +11,8 @@ only_commits:
     - .gitmodules
     - CMakeLists.txt
     - '*.cmake'
-    - macosx
+    - macosx/
+    - tools/cbse/
 
 image: Visual Studio 2019
 
