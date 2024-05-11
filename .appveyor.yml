@@ -3,7 +3,6 @@
 only_commits:
   files:
     - .appveyor.yml
-    - appveyor/
     # The rest of this list should stay in sync with azure-pipelines.yml
     - daemon/
     - libs/
@@ -11,7 +10,8 @@ only_commits:
     - .gitmodules
     - CMakeLists.txt
     - '*.cmake'
-    - macosx
+    - macosx/
+    - tools/cbse/
 
 image: Visual Studio 2019
 
