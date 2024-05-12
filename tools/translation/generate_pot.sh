@@ -2,7 +2,7 @@
 
 # ===========================================================================
 #
-# Copyright (c) 2017-2020 Unvanquished Developers
+# Copyright (c) 2017-2024 Unvanquished Developers
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,49 +24,64 @@
 #
 # ===========================================================================
 
-set -e # exit if a command fails
+set -u -e -o pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 repo_dir="$(realpath "${script_dir}/../..")"
 dpk_dir="${repo_dir}/pkg/unvanquished_src.dpkdir"
 pot_dir="${dpk_dir}/translation"
-main_pot_file="${pot_dir}/game.pot"
-commands_pot_file="${pot_dir}/commands.pot"
 
-temp_pot_file="$(mktemp)"
+. "${script_dir}/translation.conf"
 
-touch "${temp_pot_file}"
+generate_game_pot () (
+	(
+		cd "${dpk_dir}"
 
-cd "${dpk_dir}"
-find -type f -name '*.rml' \
-| sort \
-| xargs -I'{}' "${script_dir}/generate_rml_pot.py" '{}' \
-	>> "${temp_pot_file}"
+		find -type f -name '*.rml' \
+		| sort \
+		| xargs -I'{}' \
+			"${script_dir}/generate_rml_pot.py" '{}' \
+			>> "${temp_pot_file}"
+	)
+
+	"${script_dir}/generate_gender_pot.pl" \
+		'src/cgame/cg_event.cpp' \
+		>> "${temp_pot_file}"
+
+	find 'src/cgame' 'src/sgame' 'src/shared' \
+		-name '*.cpp' \
+		-a ! -name sg_admin.cpp \
+		-a ! -name sg_cmds.cpp \
+		-a ! -name sg_maprotation.cpp \
+	| sort \
+	| xgettext --from-code=UTF-8 \
+		-j -o "${temp_pot_file}" \
+		-k_ -kN_ -kP_:1,2 -k -f -
+)
+
+generate_commands_pot () (
+	xgettext --from-code=UTF-8 \
+		-o "${temp_pot_file}" \
+		-k_ -kN_ -kP_:1,2 -k \
+		src/sgame/sg_admin.cpp \
+		src/sgame/sg_cmds.cpp \
+		src/sgame/sg_maprotation.cpp
+)
 
 cd "${repo_dir}"
-"${script_dir}/generate_gender_pot.pl" \
-	'src/cgame/cg_event.cpp' \
-	>> "${temp_pot_file}"
 
-find 'src/cgame' 'src/sgame' 'src/shared' \
-	-name '*.cpp' \
-	-a ! -name sg_admin.cpp \
-	-a ! -name sg_cmds.cpp \
-	-a ! -name sg_maprotation.cpp \
-| sort \
-| xgettext --from-code=UTF-8 \
-	-j -o "${temp_pot_file}" \
-	-k_ -kN_ -kP_:1,2 -k -f -
+for name in 'game' 'commands'
+do
+	if eval "\${${name}}"
+	then
+		temp_pot_file="$(mktemp)"
 
-mkdir -p "${pot_dir}"
-mv "${temp_pot_file}" "${main_pot_file}"
+		"generate_${name}_pot"
 
-temp_pot_file="$(mktemp)"
-xgettext --from-code=UTF-8 \
-	-o "${temp_pot_file}" \
-	-k_ -kN_ -kP_:1,2 -k \
-	src/sgame/sg_admin.cpp \
-	src/sgame/sg_cmds.cpp \
-	src/sgame/sg_maprotation.cpp
+		pot_file="${pot_dir}/${name}.pot"
 
-mv "${temp_pot_file}" "${commands_pot_file}"
+		mkdir -p "${pot_dir}"
+
+		mv "${temp_pot_file}" "${pot_file}"
+	fi
+done
