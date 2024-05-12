@@ -1897,6 +1897,7 @@ extern Cvar::Cvar<float> cg_animBlend;
 extern Cvar::Cvar<float> cg_motionblur;
 extern Cvar::Cvar<float> cg_motionblurMinSpeed;
 extern Cvar::Cvar<bool> ui_chatPromptColors;
+extern Cvar::Cvar<std::string> ui_winner;
 extern Cvar::Cvar<bool> cg_spawnEffects;
 extern Cvar::Cvar<std::string> cg_sayCommand;
 
