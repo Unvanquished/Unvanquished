@@ -8,171 +8,178 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-12 14:47+0200\n"
-"PO-Revision-Date: 2023-05-31 09:42+0000\n"
-"Last-Translator: v0lt4g3 <fotovoltio@gmail.com>\n"
-"Language-Team: Esperanto <https://hosted.weblate.org/projects/unvanquished/"
-"unvanquished/eo/>\n"
-"Language: eo\n"
+"PO-Revision-Date: 2024-04-26 13:07+0000\n"
+"Last-Translator: Mr Abdusalam <abdusalamalshehri2010@gmail.com>\n"
+"Language-Team: Arabic <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/ar/>\n"
+"Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+"X-Generator: Weblate 5.5.1\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
-msgstr ""
+msgstr "بناء"
 
 #: ui/alien_build.rml:133 ui/human_build.rml:133 ui/human_buy.rml:216
 #: ui/human_buy.rml:232
 msgid "Price:"
-msgstr ""
+msgstr "السعر:"
 
 #: ui/alien_evo.rml:141
 msgid "Evolve"
-msgstr ""
+msgstr "تطور"
 
 #: ui/alien_evo.rml:150 ui/hud_alien.rml:235
 msgid "morph points"
-msgstr ""
+msgstr "نقط التحول"
 
 #: ui/alien_spawn.rml:43
 msgid "Choose your starting form:"
-msgstr ""
+msgstr "اختر شكل البداية الخاص بك:"
 
 #: ui/alien_spawn.rml:45 ui/options_fov.rml:31
 msgid "Dretch"
-msgstr ""
+msgstr "دريتش"
 
 #: ui/alien_spawn.rml:47 ui/options_fov.rml:23
 msgid "Granger"
-msgstr ""
+msgstr "جرانجر"
 
 #: ui/alien_spawn.rml:49
 msgid ""
 "Dretches are a stealthy attack form, and grangers are the alien construction "
 "form."
-msgstr ""
+msgstr "الدريتش نوع قتال صامت اما الجرانجرس نوع البناة الفضائي."
 
 #: ui/alien_spawn.rml:51 ui/human_spawn.rml:50
 msgid "Back to team selection"
-msgstr ""
+msgstr "العودة لأختيار الفرق"
 
 #: ui/callvote_draw.rml:7
 msgid "Call a vote for a draw"
-msgstr ""
+msgstr "ضع تصويت للتعادل"
 
 #: ui/callvote_draw.rml:12
 msgid "Reason"
-msgstr ""
+msgstr "السبب"
 
 #: ui/callvote_draw.rml:15 ui/callvote_fillbots.rml:23
 msgid "Call vote"
-msgstr ""
+msgstr "ضع تصويت"
 
 #: ui/callvote_fillbots.rml:7 ui/options_democracy.rml:31
 msgid "Fill with bots"
-msgstr ""
+msgstr "املأ بلاعبين روبوتات"
 
 #: ui/callvote_fillbots.rml:13
 msgid "Both teams"
-msgstr ""
+msgstr "الفريقين"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
 #: ui/options_player.rml:107 ui/options_ui.rml:105
 msgid "Aliens"
-msgstr ""
+msgstr "الفضائين"
 
 #: ui/callvote_fillbots.rml:15 ui/ingame_scoreboard.rml:171
 #: ui/options_fov.rml:15
 msgid "Humans"
-msgstr ""
+msgstr "الناس"
 
 #: ui/callvote_fillbots.rml:17
 msgid "Team"
-msgstr ""
+msgstr "فريق"
 
 #: ui/callvote_fillbots.rml:21
 msgid "Amount"
-msgstr ""
+msgstr "كمية"
 
 #: ui/callvote_map.rml:26 ui/options_democracy.rml:32
 msgid "Change map"
-msgstr ""
+msgstr "تغيير الملعب"
 
 #: ui/callvote_map.rml:31
 msgid "Vote: change nextmap"
-msgstr ""
+msgstr "صوت: تغيير الملعب التالي"
 
 #: ui/callvote_map.rml:32
 msgid "Vote: set current map"
-msgstr ""
+msgstr "صوت: حدد الملعب الحالي"
 
 #: ui/callvote_map.rml:33
 msgid "Set current map (host)"
-msgstr ""
+msgstr "حدد الملعب الحالي (المضيف)"
 
 #: ui/callvote_map.rml:35
 msgid "Method"
-msgstr ""
+msgstr "الطريقة"
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:64
 msgid "Map"
-msgstr ""
+msgstr "الخريطة"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "نفذ حدث"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "خطأ!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "حسنا"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
-msgstr "Bonvenon"
+msgstr "مرحبا"
 
 #: ui/help_gameplay.rml:20
 msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
+"في هذا القسم ستجد ملخصًا لعناصر اللعب الرئيسية التي يجب أن تعرفها لتصبح لاعبًا "
+"محترفا."
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
-msgstr ""
+msgstr "يمكن العثور على المزيد في موقعنا و مواقع المجنمع الأخرى!"
 
 #: ui/help_gameplay.rml:25
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"تحدث مع اللاعبين و المطورين على دردشة ليبيرا او شات اي ار سي او ماتريكس او "
+"ديسكورد: <web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "تحدث عن اخبار انفانكويشيد في منتديات اللعبة: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "اكتشف المزيد عن انفانكويشيد في الويكي: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "الرجاء بلغ الأخطاء على: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
-msgstr ""
+msgstr "الدخل ;amp& التطور"
 
 #: ui/help_gameplay.rml:37
 msgid ""
 "Aliens can earn evolution points by killing humans. They can then use those "
 "evolution points to evolve into [dragoon] more advanced forms."
 msgstr ""
+"الفضائين بأمكانهم الحصول على نقاط تطور لقتل الناس. الفضائين يستطيعون استخدام "
+"نقاط التطور للتطور ل [dragoon] انواع متطورة اكثر."
 
 #: ui/help_gameplay.rml:40
 msgid ""
@@ -180,12 +187,15 @@ msgid ""
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
 msgstr ""
+"الفضائيين يستطيعون ان يتطورو في اي مكان لا طالما ليسو في مرمى بصر انسان او "
+"مبنى. الضائين يستطيعون ايضا يتحولو الى [granger] لشكال اقل تطورا (بتكلفة "
+"معينة) عندما يكونو قريبين من [overmind] العقل المتحكم."
 
 #: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
-msgstr ""
+msgstr "ابني عقل متحكم ب[granger]جرانجر اذا تدمرت, تحتاج عقل متحكم حي للتطور!"
 
 #: ui/help_gameplay.rml:47
 msgid ""
@@ -3766,7 +3776,7 @@ msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3622
 msgid "FIGHT!"
-msgstr "BATALU!"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3716
 msgid "estimating"

@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-12 14:47+0200\n"
-"PO-Revision-Date: 2023-05-31 09:42+0000\n"
-"Last-Translator: v0lt4g3 <fotovoltio@gmail.com>\n"
-"Language-Team: Esperanto <https://hosted.weblate.org/projects/unvanquished/"
-"unvanquished/eo/>\n"
-"Language: eo\n"
+"PO-Revision-Date: 2024-03-19 07:28+0000\n"
+"Last-Translator: Software In Interlingua <softinterlingua@gmail.com>\n"
+"Language-Team: Interlingua <https://hosted.weblate.org/projects/unvanquished/"
+"unvanquished/ia/>\n"
+"Language: ia\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.5-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -118,23 +118,23 @@ msgstr ""
 
 #: ui/callvote_map.rml:39 ui/server_create.rml:64
 msgid "Map"
-msgstr ""
+msgstr "Mappa"
 
 #: ui/callvote_map.rml:42
 msgid "Perform action"
-msgstr ""
+msgstr "Facer un action"
 
 #: ui/error.rml:7
 msgid "Error!"
-msgstr ""
+msgstr "Error!"
 
 #: ui/error.rml:11
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: ui/help_gameplay.rml:17 ui/welcome.rml:16
 msgid "Welcome"
-msgstr "Bonvenon"
+msgstr "Benvenite"
 
 #: ui/help_gameplay.rml:20
 msgid ""
@@ -145,6 +145,8 @@ msgstr ""
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
 msgstr ""
+"Plus de information pote esser trovate in nostre sito web e in altere sitos "
+"del communitate!"
 
 #: ui/help_gameplay.rml:25
 msgid ""
@@ -158,11 +160,11 @@ msgstr ""
 
 #: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "Discoperi plus sur le joco in le wiki: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Per favor signala defectos sur: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
@@ -3766,7 +3768,7 @@ msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3622
 msgid "FIGHT!"
-msgstr "BATALU!"
+msgstr ""
 
 #: src/cgame/cg_rocket_draw.cpp:3716
 msgid "estimating"
