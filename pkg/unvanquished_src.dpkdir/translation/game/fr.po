@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-07 03:06+0100\n"
+"POT-Creation-Date: 2024-05-12 14:47+0200\n"
 "PO-Revision-Date: 2024-03-26 16:01+0000\n"
 "Last-Translator: ZobBillZeButt <joelekiffeur@yahoo.fr>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
@@ -80,7 +80,7 @@ msgid "Both teams"
 msgstr "Toutes les équipes"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
-#: ui/options_player.rml:107 ui/options_ui.rml:101
+#: ui/options_player.rml:107 ui/options_ui.rml:105
 msgid "Aliens"
 msgstr "Extraterrestres"
 
@@ -191,8 +191,8 @@ msgid ""
 msgstr ""
 "Les extraterrestres peuvent évoluer de partout si ce n’est dans la ligne de "
 "mire d'un joueur humain ou d'une construction. Les extraterrestres peuvent "
-"également passer à des formes moins avancées de [granger] (à un certain coût)"
-" lorsqu’ils sont proches du Grand Esprit [overmind]."
+"également passer à des formes moins avancées de [granger] (à un certain "
+"coût) lorsqu’ils sont proches du Grand Esprit [overmind]."
 
 #: ui/help_gameplay.rml:43
 msgid ""
@@ -549,19 +549,19 @@ msgstr ""
 "granger avancé peut faire des choses intéressantes, essayez-le sur le feu ou "
 "les humains !"
 
-#: ui/hud_basics.rml:192
+#: ui/hud_basics.rml:196
 msgid "Game"
 msgstr "Jeu"
 
-#: ui/hud_basics.rml:195
+#: ui/hud_basics.rml:199
 msgid "Life"
 msgstr "Vie"
 
-#: ui/hud_basics.rml:199
+#: ui/hud_basics.rml:203
 msgid "fps"
 msgstr "fps"
 
-#: ui/hud_basics.rml:202
+#: ui/hud_basics.rml:206
 msgid "ms"
 msgstr "ms"
 
@@ -821,8 +821,8 @@ msgstr "degrés"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:277
-#: ui/options_mouse.rml:21 ui/options_ui.rml:70 ui/options_ui.rml:149
-#: ui/options_ui.rml:179 ui/options_ui.rml:193 ui/server_setup.rml:73
+#: ui/options_mouse.rml:21 ui/options_ui.rml:74 ui/options_ui.rml:153
+#: ui/options_ui.rml:183 ui/options_ui.rml:197 ui/server_setup.rml:73
 msgid "reset"
 msgstr "réinitialiser"
 
@@ -1076,7 +1076,7 @@ msgstr ""
 "Technique d'éclairage non physique pour rendre les modèles moins sombres."
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:247
-#: ui/options_ui.rml:172
+#: ui/options_ui.rml:176
 msgid "None"
 msgstr "Aucun"
 
@@ -1145,7 +1145,7 @@ msgstr ""
 "textures de résolution inférieure. Cela n'affecte généralement pas les "
 "performances."
 
-#: ui/options_graphics.rml:153 ui/options_ui.rml:42
+#: ui/options_graphics.rml:153 ui/options_ui.rml:46
 msgid "No"
 msgstr "Non"
 
@@ -1812,210 +1812,210 @@ msgstr "Langue"
 msgid "Some languages are not fully translated."
 msgstr "Certaines langues ne sont pas complètement traduites."
 
-#: ui/options_ui.rml:37 ui/options_welcome.rml:31
+#: ui/options_ui.rml:41 ui/options_welcome.rml:35
 msgid "Change language"
 msgstr "Changer de langue"
 
-#: ui/options_ui.rml:40
+#: ui/options_ui.rml:44
 msgid "Real-time clock"
 msgstr "Horloge en temps réel"
 
-#: ui/options_ui.rml:43
+#: ui/options_ui.rml:47
 msgid "12 Hour"
 msgstr "12 heures"
 
-#: ui/options_ui.rml:44
+#: ui/options_ui.rml:48
 msgid "24 Hour"
 msgstr "24 heures"
 
-#: ui/options_ui.rml:46
+#: ui/options_ui.rml:50
 msgid "Show the time in real-life."
 msgstr "Afficher l'heure dans la vraie vie."
 
-#: ui/options_ui.rml:49
+#: ui/options_ui.rml:53
 msgid "Game-time clock"
 msgstr "Horloge de temps de jeu"
 
-#: ui/options_ui.rml:51
+#: ui/options_ui.rml:55
 msgid "Show how long a match has lasted."
 msgstr "Afficher la durée d'un match."
 
-#: ui/options_ui.rml:55
+#: ui/options_ui.rml:59
 msgid "Show ping"
 msgstr "Montrer le ping"
 
-#: ui/options_ui.rml:57
+#: ui/options_ui.rml:61
 msgid "Time that information takes to get to the server and back."
 msgstr "Temps que l’information met à aller au serveur et à en revenir."
 
-#: ui/options_ui.rml:60
+#: ui/options_ui.rml:64
 msgid "Show movement speed"
 msgstr "Afficher la vitesse de déplacement"
 
-#: ui/options_ui.rml:62
+#: ui/options_ui.rml:66
 msgid "Current, maximum and graph of movement-speed."
 msgstr "Vitesse de déplacement actuelle et maximum avec graphique."
 
-#: ui/options_ui.rml:65
+#: ui/options_ui.rml:69
 msgid "Show FPS"
 msgstr "Afficher les IPS"
 
-#: ui/options_ui.rml:67
+#: ui/options_ui.rml:71
 msgid "Frames per second."
 msgstr "Images par seconde."
 
-#: ui/options_ui.rml:70
+#: ui/options_ui.rml:74
 msgid "Console colors"
 msgstr "Couleurs de la console"
 
-#: ui/options_ui.rml:74 ui/options_ui.rml:153 ui/options_ui.rml:197
+#: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
 msgid "Red:"
 msgstr "Rouge :"
 
-#: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
+#: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
 msgid "Green:"
 msgstr "Vert :"
 
-#: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
+#: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
 msgid "Blue:"
 msgstr "Bleu :"
 
-#: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
+#: ui/options_ui.rml:90 ui/options_ui.rml:169 ui/options_ui.rml:213
 msgid "Alpha:"
 msgstr "Alpha :"
 
-#: ui/options_ui.rml:91
+#: ui/options_ui.rml:95
 msgid "Crosshair"
 msgstr "Réticule"
 
-#: ui/options_ui.rml:95
+#: ui/options_ui.rml:99
 msgid "WARN: Preview only works in game."
 msgstr "ATT : La prévisualisation fonctionne seulement en jeu."
 
-#: ui/options_ui.rml:99
+#: ui/options_ui.rml:103
 msgid "Weapon"
 msgstr "Arme"
 
-#: ui/options_ui.rml:102
+#: ui/options_ui.rml:106
 msgid "Blaster"
 msgstr "Pistolaser"
 
-#: ui/options_ui.rml:103
+#: ui/options_ui.rml:107
 msgid "Rifle"
 msgstr "Mitraillette"
 
-#: ui/options_ui.rml:104
+#: ui/options_ui.rml:108
 msgid "Pain Saw"
 msgstr "Scie endolorissante"
 
-#: ui/options_ui.rml:105
+#: ui/options_ui.rml:109
 msgid "Shotgun"
 msgstr "Fusil à pompe"
 
-#: ui/options_ui.rml:106
+#: ui/options_ui.rml:110
 msgid "Lasgun"
 msgstr "Fusil laser"
 
-#: ui/options_ui.rml:107
+#: ui/options_ui.rml:111
 msgid "Mass Driver"
 msgstr "Fusil électromagnétique"
 
-#: ui/options_ui.rml:108
+#: ui/options_ui.rml:112
 msgid "Chaingun"
 msgstr "Mitrailleuse"
 
-#: ui/options_ui.rml:109
+#: ui/options_ui.rml:113
 msgid "Flamer"
 msgstr "Lance-flammes"
 
-#: ui/options_ui.rml:110
+#: ui/options_ui.rml:114
 msgid "Pulse Rifle"
 msgstr "Fusil à impulsions"
 
-#: ui/options_ui.rml:111
+#: ui/options_ui.rml:115
 msgid "Lucifer Cannon"
 msgstr "Canon démoniaque"
 
-#: ui/options_ui.rml:122
+#: ui/options_ui.rml:126
 msgid "Crosshair visiblity"
 msgstr "Visibilité du viseur"
 
-#: ui/options_ui.rml:124
+#: ui/options_ui.rml:128
 msgid "Never"
 msgstr "Jamais"
 
-#: ui/options_ui.rml:125
+#: ui/options_ui.rml:129
 msgid "Ranged weapons only"
 msgstr "Armes à distance uniquement"
 
-#: ui/options_ui.rml:126
+#: ui/options_ui.rml:130
 msgid "Always"
 msgstr "Toujours"
 
-#: ui/options_ui.rml:131
+#: ui/options_ui.rml:135
 msgid "Crosshair size"
 msgstr "Taille du viseur"
 
-#: ui/options_ui.rml:133
+#: ui/options_ui.rml:137
 msgid "Tiny"
 msgstr "Miniscule"
 
 # Cette traduction est incorrecte en contexte car non accordée
-#: ui/options_ui.rml:134
+#: ui/options_ui.rml:138
 msgid "Small"
 msgstr "Petite"
 
-#: ui/options_ui.rml:135
+#: ui/options_ui.rml:139
 msgid "Regular"
 msgstr "Ordinaire"
 
-#: ui/options_ui.rml:136
+#: ui/options_ui.rml:140
 msgid "Huge"
 msgstr "Énorme"
 
-#: ui/options_ui.rml:141
+#: ui/options_ui.rml:145
 msgid "Crosshair colour"
 msgstr "Couleur de réticule"
 
-#: ui/options_ui.rml:143
+#: ui/options_ui.rml:147
 msgid "Image colour"
 msgstr "Couleur de l’image"
 
-#: ui/options_ui.rml:144 ui/options_ui.rml:174
+#: ui/options_ui.rml:148 ui/options_ui.rml:178
 msgid "Custom colour"
 msgstr "Couleur personnalisée"
 
-#: ui/options_ui.rml:149
+#: ui/options_ui.rml:153
 msgid "Crosshair colours"
 msgstr "Couleurs de réticule"
 
-#: ui/options_ui.rml:170
+#: ui/options_ui.rml:174
 msgid "Crosshair outline colour"
 msgstr "Couleur de bordure de réticule"
 
-#: ui/options_ui.rml:173
+#: ui/options_ui.rml:177
 msgid "Auto colour"
 msgstr "Couleur automatique"
 
-#: ui/options_ui.rml:179
+#: ui/options_ui.rml:183
 msgid "Crosshair outline scale"
 msgstr "Échelle de la bordure de réticule"
 
-#: ui/options_ui.rml:181
+#: ui/options_ui.rml:185
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr ""
 "Des valeurs négatives modifieront la bordure pour être à l’intérieur du "
 "réticule."
 
-#: ui/options_ui.rml:184
+#: ui/options_ui.rml:188
 msgid "Scale:"
 msgstr "Échelle :"
 
-#: ui/options_ui.rml:188
+#: ui/options_ui.rml:192
 msgid "Offset:"
 msgstr "Déplacement :"
 
-#: ui/options_ui.rml:193
+#: ui/options_ui.rml:197
 msgid "Crosshair outline colours"
 msgstr "Couleurs de bordure de réticule"
 
@@ -2039,7 +2039,7 @@ msgstr "Vous pouvez le modifier à tout moment dans les options."
 msgid "What language do you want to use?"
 msgstr "Quelle langue souhaitez-vous employer ?"
 
-#: ui/options_welcome.rml:32
+#: ui/options_welcome.rml:36
 msgid "Select Battlefield"
 msgstr "Choisir le champs de bataille"
 
@@ -2302,25 +2302,29 @@ msgstr "Niveau de difficulté par défaut"
 msgid "Only works for new bots."
 msgstr "Ne fonctionne que pour les nouveaux bots."
 
-#: ui/transition_downloading.rml:55
+#: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
+msgid "Disconnect"
+msgstr "Déconnecter"
+
+#: ui/transition_downloading.rml:57
 msgid "Additional files are required. Please be patient while they download."
 msgstr ""
 "Des fichiers supplémentaires sont nécessaires. Veuillez patienter pendant le "
 "téléchargement."
 
-#: ui/transition_downloading.rml:56
+#: ui/transition_downloading.rml:58
 msgid "Time left:"
 msgstr "Temps restant :"
 
-#: ui/transition_downloading.rml:57
+#: ui/transition_downloading.rml:59
 msgid "Download rate:"
 msgstr "Taux de téléchargement :"
 
-#: ui/transition_downloading.rml:58
+#: ui/transition_downloading.rml:60
 msgid "Size:"
 msgstr "Taille :"
 
-#: ui/transition_loading.rml:109
+#: ui/transition_loading.rml:104
 msgid "Loading"
 msgstr "Chargement"
 
@@ -3761,149 +3765,149 @@ msgstr "%2d clients répertoriés"
 msgid "You killed ^1TEAMMATE^* %s"
 msgstr "Vous avez tué votre^1COÉQUIPIER^* %s"
 
-#: src/cgame/cg_event.cpp:1215
+#: src/cgame/cg_event.cpp:1217
 msgid "The Overmind is under attack!"
 msgstr "L’Overmind est attaqué !"
 
-#: src/cgame/cg_event.cpp:1222
+#: src/cgame/cg_event.cpp:1224
 msgid "The reactor is under attack!"
 msgstr "Le réacteur est attaqué !"
 
-#: src/cgame/cg_event.cpp:1237
+#: src/cgame/cg_event.cpp:1239
 msgid "The Overmind is dying!"
 msgstr "L'Overmind agonise !"
 
-#: src/cgame/cg_event.cpp:1243
+#: src/cgame/cg_event.cpp:1245
 msgid "The reactor is going down!"
 msgstr "Le réacteur est détruit !"
 
-#: src/cgame/cg_event.cpp:1260 src/cgame/cg_event.cpp:1276
+#: src/cgame/cg_event.cpp:1262 src/cgame/cg_event.cpp:1278
 msgid "Our base is under attack!"
 msgstr "Notre base est attaquée !"
 
-#: src/cgame/cg_event.cpp:1266
+#: src/cgame/cg_event.cpp:1268
 #, c-format
 msgid "%s under attack – %s"
 msgstr "%s attaqué– %s"
 
-#: src/cgame/cg_event.cpp:1270
+#: src/cgame/cg_event.cpp:1272
 #, c-format
 msgid "%s under attack"
 msgstr "%s attaqué"
 
-#: src/cgame/cg_main.cpp:462
+#: src/cgame/cg_main.cpp:466
 msgid "Calling home…"
 msgstr "Nous appelons chez vous…"
 
-#: src/cgame/cg_main.cpp:462
+#: src/cgame/cg_main.cpp:466
 msgid "Sending to the front…"
 msgstr "Nous vous envoyons au front…"
 
-#: src/cgame/cg_main.cpp:467
+#: src/cgame/cg_main.cpp:471
 msgid "Tracking your movements…"
 msgstr "Nous suivons vos déplacements…"
 
-#: src/cgame/cg_main.cpp:467
+#: src/cgame/cg_main.cpp:471
 msgid "Letting out the magic smoke…"
 msgstr "Laissons échapper la fumée magique…"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:475
 msgid "Collecting bees for the hives…"
 msgstr "Collecte des abeilles pour les ruches…"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:475
 msgid "Initialising fireworks…"
 msgstr "Initialisation des feux d'artifice…"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:475
 msgid "Causing electrical faults…"
 msgstr "faisons des pannes électriques…"
 
-#: src/cgame/cg_main.cpp:475
+#: src/cgame/cg_main.cpp:479
 msgid "Reading the manual…"
 msgstr "Lecture du manuel…"
 
-#: src/cgame/cg_main.cpp:475
+#: src/cgame/cg_main.cpp:479
 msgid "Looking at blueprints…"
 msgstr "Regarde les plans…"
 
-#: src/cgame/cg_main.cpp:479
+#: src/cgame/cg_main.cpp:483
 msgid "Generating annoying noises…"
 msgstr "Génération de bruits gênants…"
 
-#: src/cgame/cg_main.cpp:479
+#: src/cgame/cg_main.cpp:483
 msgid "Recording granger purring…"
 msgstr "Enregistrement du ronronnement de Granger…"
 
-#: src/cgame/cg_main.cpp:483
+#: src/cgame/cg_main.cpp:487
 msgid "Hello World!"
 msgstr "Bonjour tout le monde !"
 
-#: src/cgame/cg_main.cpp:483
+#: src/cgame/cg_main.cpp:487
 msgid "Making a scene…"
 msgstr "Création de la scène…"
 
-#: src/cgame/cg_main.cpp:487
+#: src/cgame/cg_main.cpp:491
 msgid "Taking pictures of the world…"
 msgstr "Prendre des photos du monde…"
 
-#: src/cgame/cg_main.cpp:487
+#: src/cgame/cg_main.cpp:491
 msgid "Drawing smiley faces…"
 msgstr "Dessiner des smileys…"
 
-#: src/cgame/cg_main.cpp:491
+#: src/cgame/cg_main.cpp:495
 msgid "Sharpening the aliens' claws…"
 msgstr "Aiguiser les griffes des extraterrestres…"
 
-#: src/cgame/cg_main.cpp:491
+#: src/cgame/cg_main.cpp:495
 msgid "Overloading lucifer cannons…"
 msgstr "Surcharge des canons lucifer…"
 
-#: src/cgame/cg_main.cpp:495
+#: src/cgame/cg_main.cpp:499
 msgid "Unwrapping jetpacks…"
 msgstr "Déballage des jetpacks…"
 
-#: src/cgame/cg_main.cpp:495
+#: src/cgame/cg_main.cpp:499
 msgid "Spinning silk for reticles…"
 msgstr "File la soie pour les réticules…"
 
-#: src/cgame/cg_main.cpp:499
+#: src/cgame/cg_main.cpp:503
 msgid "Adding turret spam…"
 msgstr "Ajout de tourelles…"
 
-#: src/cgame/cg_main.cpp:499
+#: src/cgame/cg_main.cpp:503
 msgid "Awakening the overmind…"
 msgstr "Eveiller l'Overmind…"
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:507
 msgid "Teleporting soldiers…"
 msgstr "Téléporter des soldats…"
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:507
 msgid "Replicating alien DNA…"
 msgstr "Réplication de l'ADN extraterrestre…"
 
-#: src/cgame/cg_main.cpp:507
+#: src/cgame/cg_main.cpp:511
 msgid "Customizing helmets…"
 msgstr "Personnalisation des casques…"
 
-#: src/cgame/cg_main.cpp:511
+#: src/cgame/cg_main.cpp:515
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr "Compilation des nuanceurs GLSL (veuillez patienter)…"
 
-#: src/cgame/cg_main.cpp:515
+#: src/cgame/cg_main.cpp:519
 msgid "Surveying the map…"
 msgstr "Arpenter la carte…"
 
-#: src/cgame/cg_main.cpp:519
+#: src/cgame/cg_main.cpp:523
 msgid "Done!"
 msgstr "Terminé !"
 
-#: src/cgame/cg_main.cpp:1109
+#: src/cgame/cg_main.cpp:1113
 msgid "Generating bot navigation meshes"
 msgstr "Génération du maillages de navigation des Robots"
 
-#: src/cgame/cg_main.cpp:1167
+#: src/cgame/cg_main.cpp:1157
 #, c-format
 msgid "by %s"
 msgstr "par %s"
@@ -4554,234 +4558,233 @@ msgstr "%s, %s"
 msgid "\"%s\" (unbound)"
 msgstr "« %s » (non affecté)"
 
-#: src/cgame/cg_tutorial.cpp:186
+#: src/cgame/cg_tutorial.cpp:178
 #, c-format
 msgid "Press %s to place the %s."
 msgstr "Appuyez sur %s pour placer l'élément \" %s \"."
 
-#: src/cgame/cg_tutorial.cpp:191
+#: src/cgame/cg_tutorial.cpp:181
 #, c-format
 msgid "Press %s to cancel placing the %s."
 msgstr "Appuyez sur %s pour annuler le placement de l'élément \" %s \"."
 
-#: src/cgame/cg_tutorial.cpp:198
+#: src/cgame/cg_tutorial.cpp:186
 #, c-format
 msgid "Press %s to build a structure."
 msgstr "Appuyez sur %s pour construire une structure."
 
-#: src/cgame/cg_tutorial.cpp:210
+#: src/cgame/cg_tutorial.cpp:196
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
 msgstr "Appuyez sur %s pour décocher cette structure pour le remplacement."
 
-#: src/cgame/cg_tutorial.cpp:216
+#: src/cgame/cg_tutorial.cpp:201
 #, c-format
 msgid "Press %s to mark this structure for replacement."
 msgstr "Appuyez sur %s pour marquer cette structure pour le remplacement."
 
-#: src/cgame/cg_tutorial.cpp:221
+#: src/cgame/cg_tutorial.cpp:205
 #, c-format
 msgid "Hold %s to deconstruct this structure."
 msgstr "Maintenez %s pour déconstruire cette structure."
 
-#: src/cgame/cg_tutorial.cpp:238 src/cgame/cg_tutorial.cpp:288
-#: src/cgame/cg_tutorial.cpp:365
+#: src/cgame/cg_tutorial.cpp:221 src/cgame/cg_tutorial.cpp:261
+#: src/cgame/cg_tutorial.cpp:320
 #, c-format
 msgid "Press %s to swipe."
 msgstr "Appuyez sur %s pour glisser."
 
-#: src/cgame/cg_tutorial.cpp:246
+#: src/cgame/cg_tutorial.cpp:227
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
 msgstr ""
 "Appuyez sur %s pour cracher. Le crachat peut ralentir les humains et "
 "éliminer le feu."
 
-#: src/cgame/cg_tutorial.cpp:251 src/cgame/cg_tutorial.cpp:275
-#: src/cgame/cg_tutorial.cpp:298
+#: src/cgame/cg_tutorial.cpp:230 src/cgame/cg_tutorial.cpp:250
+#: src/cgame/cg_tutorial.cpp:267
 #, c-format
 msgid "Press %s to walk on walls."
 msgstr "Appuyez sur %s pour marcher sur les murs."
 
-#: src/cgame/cg_tutorial.cpp:267
+#: src/cgame/cg_tutorial.cpp:244
 msgid "Touch humans to damage them."
 msgstr "Touchez les humains pour les blesser."
 
-#: src/cgame/cg_tutorial.cpp:271
+#: src/cgame/cg_tutorial.cpp:247
 msgid "Aim at their heads to cause more damage."
 msgstr "Visez leur tête pour causer plus de dégâts."
 
-#: src/cgame/cg_tutorial.cpp:293
+#: src/cgame/cg_tutorial.cpp:264
 #, c-format
 msgid "Press %s to lunge."
 msgstr "Appuyez sur %s pour courir."
 
-#: src/cgame/cg_tutorial.cpp:311 src/cgame/cg_tutorial.cpp:337
+#: src/cgame/cg_tutorial.cpp:278 src/cgame/cg_tutorial.cpp:298
 #, c-format
 msgid "Press %s to bite."
 msgstr "Appuyez sur %s pour mordre."
 
-#: src/cgame/cg_tutorial.cpp:318
+#: src/cgame/cg_tutorial.cpp:283
 #, c-format
 msgid "Press %s to invoke an electrical attack."
 msgstr "Appuyez sur %s pour faire une attaque électrique."
 
-#: src/cgame/cg_tutorial.cpp:324
+#: src/cgame/cg_tutorial.cpp:287
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
 msgstr "Maintenez %s enfoncé puis touchez un mur pour faire un saut mural."
 
-#: src/cgame/cg_tutorial.cpp:344
+#: src/cgame/cg_tutorial.cpp:303
 #, c-format
 msgid "Press %s to launch a barb."
 msgstr "Appuyez sur %s pour lancer une pique."
 
-#: src/cgame/cg_tutorial.cpp:350
+#: src/cgame/cg_tutorial.cpp:307
 #, c-format
 msgid "Hold down and release %s to pounce."
 msgstr "Maintenez enfoncé %s et relâchez pour bondir."
 
-#: src/cgame/cg_tutorial.cpp:370
+#: src/cgame/cg_tutorial.cpp:323
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
 msgstr "Maintenez %s enfoncé tout en avançant pour piétiner."
 
-#: src/cgame/cg_tutorial.cpp:399
+#: src/cgame/cg_tutorial.cpp:350
 msgid "Find an Armoury, Drill or Reactor for more ammo."
 msgstr "Trouvez une armurerie, un drill ou un réacteur pour plus de munitions."
 
-#: src/cgame/cg_tutorial.cpp:405
+#: src/cgame/cg_tutorial.cpp:355
 msgid "Find an Armoury for more ammo."
 msgstr "Trouvez une armurerie pour plus de munitions."
 
-#: src/cgame/cg_tutorial.cpp:421 src/cgame/cg_tutorial.cpp:429
-#: src/cgame/cg_tutorial.cpp:455
+#: src/cgame/cg_tutorial.cpp:370 src/cgame/cg_tutorial.cpp:375
+#: src/cgame/cg_tutorial.cpp:391
 #, c-format
 msgid "Press %s to fire the %s."
 msgstr "Appuie sur %s pour tirer le %s."
 
-#: src/cgame/cg_tutorial.cpp:435
+#: src/cgame/cg_tutorial.cpp:378
 #, c-format
 msgid "Hold %s to zoom."
 msgstr "Maintenez %s pour zoomer."
 
-#: src/cgame/cg_tutorial.cpp:442
+#: src/cgame/cg_tutorial.cpp:383
 #, c-format
 msgid "Hold %s to activate the %s."
 msgstr "Maintenez %s pour activer le %s."
 
-#: src/cgame/cg_tutorial.cpp:450
+#: src/cgame/cg_tutorial.cpp:388
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
 msgstr "Maintenez %s et relâchez pour tirer un coup chargé."
 
-#: src/cgame/cg_tutorial.cpp:481
+#: src/cgame/cg_tutorial.cpp:415
 #, c-format
 msgid "Press %s to throw the %s."
 msgstr "Appuyez sur %s pour lancer la %s."
 
-#: src/cgame/cg_tutorial.cpp:493 src/cgame/cg_tutorial.cpp:530
+#: src/cgame/cg_tutorial.cpp:424 src/cgame/cg_tutorial.cpp:453
 #, c-format
 msgid "Press %s to use the %s."
 msgstr "Appuyez sur %s pour utiliser %s."
 
-#: src/cgame/cg_tutorial.cpp:501
+#: src/cgame/cg_tutorial.cpp:430
 #, c-format
 msgid "Hold %s to use the Jetpack."
 msgstr "Maintenez %s pour utiliser le Jetpack."
 
-#: src/cgame/cg_tutorial.cpp:511
+#: src/cgame/cg_tutorial.cpp:438
 #, c-format
 msgid "Press %s to use your Medkit."
 msgstr "Appuyez sur %s pour utiliser votre Medkit."
 
-#: src/cgame/cg_tutorial.cpp:520
+#: src/cgame/cg_tutorial.cpp:445
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
 msgstr ""
 "Appuyez sur %s pour acheter des améliorations d'équipement à l'Armurerie."
 
-#: src/cgame/cg_tutorial.cpp:538
+#: src/cgame/cg_tutorial.cpp:458
 #, c-format
 msgid "Press %s and any direction to sprint."
 msgstr "Appuyez sur %s et dans n'importe quelle direction pour sprinter."
 
-#: src/cgame/cg_tutorial.cpp:543
+#: src/cgame/cg_tutorial.cpp:461
 #, c-format
 msgid "Press %s to crouch."
 msgstr "Appuyez sur %s pour vous accroupir."
 
-#: src/cgame/cg_tutorial.cpp:560
+#: src/cgame/cg_tutorial.cpp:476
 #, c-format
 msgid "Press %s to leave spawn queue."
 msgstr "Appuyez sur %s pour quitter la file d'attente d'apparition."
 
-#: src/cgame/cg_tutorial.cpp:567
+#: src/cgame/cg_tutorial.cpp:481
 #, c-format
 msgid "Press %s to spawn."
 msgstr "Appuyez sur %s pour apparaître."
 
-#: src/cgame/cg_tutorial.cpp:575
+#: src/cgame/cg_tutorial.cpp:487
 #, c-format
 msgid "Press %s to join a team."
 msgstr "Appuyez sur %s pour rejoindre une équipe."
 
-#: src/cgame/cg_tutorial.cpp:583
+#: src/cgame/cg_tutorial.cpp:493
 #, c-format
 msgid "Press %s to stop following."
 msgstr "Appuyez sur %s pour arrêter de suivre."
 
-#: src/cgame/cg_tutorial.cpp:590
+#: src/cgame/cg_tutorial.cpp:498
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
 msgstr "Appuyez sur %s pour passer en mode spectateur."
 
-#: src/cgame/cg_tutorial.cpp:597
+#: src/cgame/cg_tutorial.cpp:503
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
 msgstr "Appuyez sur %s pour revenir au mode spectateur à la première personne."
 
-#: src/cgame/cg_tutorial.cpp:603
+#: src/cgame/cg_tutorial.cpp:507
 #, c-format
 msgid "Press %s to follow the next player."
 msgstr "Appuyez sur %s pour suivre le joueur suivant."
 
-#: src/cgame/cg_tutorial.cpp:610
+#: src/cgame/cg_tutorial.cpp:512
 #, c-format
 msgid "Press %s to follow a player."
 msgstr "Appuyez sur %s pour suivre un joueur."
 
-#: src/cgame/cg_tutorial.cpp:693
+#: src/cgame/cg_tutorial.cpp:593
 #, c-format
 msgid "Press %s to evolve."
 msgstr "Appuyez sur %s pour évoluer."
 
-#: src/cgame/cg_tutorial.cpp:704
+#: src/cgame/cg_tutorial.cpp:602
 #, c-format
 msgid "Press %s when ready to continue."
 msgstr "Appuyez sur %s lorsque vous êtes prêt à continuer."
 
-#: src/cgame/cg_tutorial.cpp:710
+#: src/cgame/cg_tutorial.cpp:606
 msgid "Waiting for other players to be ready."
 msgstr "Attendre que les autres joueurs soient prêts."
 
-#: src/cgame/cg_tutorial.cpp:721
+#: src/cgame/cg_tutorial.cpp:614
 #, c-format
-msgid "Press %s to chat."
-msgstr "Appuyez sur %s pour discuter."
-
-#: src/cgame/cg_tutorial.cpp:726
-#, c-format
-msgid "Press %s to chat or %s to chat to your team."
+msgid "Press %s to chat with all players."
 msgstr ""
-"Appuyez sur %s pour discuter ou sur %s pour discuter avec votre équipe."
 
-#: src/cgame/cg_tutorial.cpp:732
+#: src/cgame/cg_tutorial.cpp:616
+#, c-format
+msgid "Press %s to chat with your team."
+msgstr ""
+
+#: src/cgame/cg_tutorial.cpp:618
 #, c-format
 msgid "Press %s to open the console."
 msgstr "Appuyez sur %s pour ouvrir la console."
 
-#: src/cgame/cg_tutorial.cpp:734
+#: src/cgame/cg_tutorial.cpp:620
 #, c-format
 msgid "Press %s for the menu."
 msgstr "Appuyez sur %s pour voir le menu."
@@ -4816,13 +4819,12 @@ msgstr "^3Nom des bots humains :"
 msgid "$1$^* disconnected"
 msgstr "$1$ ^* s'est déconnecté"
 
-#: src/sgame/sg_bot_nav.cpp:125
-msgid "Server: generating bot navigation mesh for $1$... $2$%"
-msgstr ""
-"Serveur : génération du maillage de navigation des bot pour $1$... $2$%"
-
-#: src/sgame/sg_bot_nav.cpp:164
+#: src/sgame/sg_bot_nav.cpp:159
 msgid "^1Bot navmesh generation failed!"
+msgstr ""
+
+#: src/sgame/sg_bot_nav.cpp:172
+msgid "Server: generating bot navigation meshes... $1$%"
 msgstr ""
 
 #: src/sgame/sg_buildable.cpp:1881
@@ -5158,6 +5160,19 @@ msgstr "extraterrestres"
 #: src/shared/bg_misc.cpp:2514
 msgid "humans"
 msgstr "humains"
+
+#, c-format
+#~ msgid "Press %s to chat."
+#~ msgstr "Appuyez sur %s pour discuter."
+
+#, c-format
+#~ msgid "Press %s to chat or %s to chat to your team."
+#~ msgstr ""
+#~ "Appuyez sur %s pour discuter ou sur %s pour discuter avec votre équipe."
+
+#~ msgid "Server: generating bot navigation mesh for $1$... $2$%"
+#~ msgstr ""
+#~ "Serveur : génération du maillage de navigation des bot pour $1$... $2$%"
 
 #~ msgid "Example: ^^3Fred^^1Baggins becomes ^3Fred^1Baggins"
 #~ msgstr "Exemple : ^^3Fred^^1Baggins deviens ^3Fred^1Baggins"
@@ -5557,9 +5572,6 @@ msgstr "humains"
 
 #~ msgid "Ignore"
 #~ msgstr "Ignorer"
-
-#~ msgid "Disconnect"
-#~ msgstr "Déconnecter"
 
 #~ msgid "Disconnected"
 #~ msgstr "Déconnecté"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-07 03:06+0100\n"
+"POT-Creation-Date: 2024-05-12 14:47+0200\n"
 "PO-Revision-Date: 2024-03-10 11:01+0000\n"
 "Last-Translator: NaitLee <naitli@foxmail.com>\n"
 "Language-Team: Chinese (Traditional, Hong Kong) <https://hosted.weblate.org/"
@@ -79,7 +79,7 @@ msgid "Both teams"
 msgstr "雙方"
 
 #: ui/callvote_fillbots.rml:14 ui/ingame_scoreboard.rml:158
-#: ui/options_player.rml:107 ui/options_ui.rml:101
+#: ui/options_player.rml:107 ui/options_ui.rml:105
 msgid "Aliens"
 msgstr "異形"
 
@@ -182,15 +182,17 @@ msgid ""
 "Aliens can evolve from everywhere if not in line of sight of an human player "
 "or buildable. Aliens can also devolve to [granger] less advanced forms (at "
 "some cost) when being near the [overmind] overmind."
-msgstr "當異形不在人類視野或建築範圍內時，可以開始進化。當在 [overmind]〔主腦〕旁時，"
+msgstr ""
+"當異形不在人類視野或建築範圍內時，可以開始進化。當在 [overmind]〔主腦〕旁時，"
 "也可以退化為 [granger] 低級一些的形態。"
 
 #: ui/help_gameplay.rml:43
 msgid ""
 "Build an overmind with a [granger] granger if it gets destroyed, you need a "
 "live overmind to evolve!"
-msgstr "若主腦被摧毀，可以讓 "
-"[granger]〔守衞者〕再構造一隻。只有主腦存在時才可以進化！"
+msgstr ""
+"若主腦被摧毀，可以讓 [granger]〔守衞者〕再構造一隻。只有主腦存在時才可以進"
+"化！"
 
 #: ui/help_gameplay.rml:47
 msgid ""
@@ -205,7 +207,8 @@ msgstr ""
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
-msgstr "人類在 [armoury]〔武器中心〕購買或賣出武器。確保武器中心存在！如果沒有了武器"
+msgstr ""
+"人類在 [armoury]〔武器中心〕購買或賣出武器。確保武器中心存在！如果沒有了武器"
 "中心，可以使用建造器再次建造。"
 
 #: ui/help_gameplay.rml:54
@@ -220,9 +223,9 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
-"建造設施需要建築點。你的陣營開局有一些建築點，不過若你需要新建很多設施，"
-"可以先建造 [leech]〔採掘設施〕，增加供能、獲得更多建築點。請留意，在採掘設備"
-"被摧毀後，建築點會丟失。"
+"建造設施需要建築點。你的陣營開局有一些建築點，不過若你需要新建很多設施，可以"
+"先建造 [leech]〔採掘設施〕，增加供能、獲得更多建築點。請留意，在採掘設備被摧"
+"毀後，建築點會丟失。"
 
 #: ui/help_gameplay.rml:60
 msgid ""
@@ -240,9 +243,9 @@ msgid ""
 "(leech and drill) and unique structures ([overmind] overmind and [reactor] "
 "reactor) are NOT affected by the lack of BPs."
 msgstr ""
-"以下設施【不受】建築點缺失影響：重生設施 — "
-"[egg]〔卵〕、[telenode]〔傳送點〕；採掘設施 — 蛭、鑽井；特殊設施 — "
-"[overmind]〔主腦〕、[reactor]〔反應機〕。"
+"以下設施【不受】建築點缺失影響：重生設施 — [egg]〔卵〕、[telenode]〔傳送"
+"點〕；採掘設施 — 蛭、鑽井；特殊設施 — [overmind]〔主腦〕、[reactor]〔反應"
+"機〕。"
 
 #: ui/help_gameplay.rml:65
 msgid "Mining structures"
@@ -253,7 +256,8 @@ msgid ""
 "Build points are acquired via two mining structures: the human [drill] drill "
 "and the alien [leech] leech. These buildings need to be spread out for "
 "efficiency."
-msgstr "建築點由兩種採掘設施供給：人類的 [drill]〔鑽井〕和異形的 [leech]〔蛭〕。"
+msgstr ""
+"建築點由兩種採掘設施供給：人類的 [drill]〔鑽井〕和異形的 [leech]〔蛭〕。"
 
 #: ui/help_gameplay.rml:71
 msgid ""
@@ -293,14 +297,16 @@ msgid ""
 "Building and destroying structures as well as killing enemies earns your "
 "team a new resource called momentum. If you gain enough momentum new "
 "weapons, structures or classes will be unlocked."
-msgstr "建造或摧毀設施、擊殺敵人可以為你的陣營增強“勢力”。當你得到充分的勢力時，會解"
+msgstr ""
+"建造或摧毀設施、擊殺敵人可以為你的陣營增強“勢力”。當你得到充分的勢力時，會解"
 "鎖新的武器、設施或職業。"
 
 #: ui/help_gameplay.rml:87
 msgid ""
 "Momentum decreases exponentially over time so if you idle your team will "
 "lose access to new items. Existing upgrades will remain functional."
-msgstr "勢力會隨時間指數下降。如果你的陣營不活動，升級得到的能力會被重新鎖定。現有的"
+msgstr ""
+"勢力會隨時間指數下降。如果你的陣營不活動，升級得到的能力會被重新鎖定。現有的"
 "高級物品仍然可用。"
 
 #: ui/help_gameplay.rml:91
@@ -323,7 +329,8 @@ msgstr "若設施挨得太近，火焰會傳播到臨近的設施。"
 msgid ""
 "A small [fire] fire has a good chance to go out after a while but a group of "
 "burning structures will keep itself hot enough for greater mayhem."
-msgstr "小範圍的 [fire]〔火焰〕在過一會後能熄滅，而一組設施燃燒起來並不會輕易熄滅，導"
+msgstr ""
+"小範圍的 [fire]〔火焰〕在過一會後能熄滅，而一組設施燃燒起來並不會輕易熄滅，導"
 "致更糟糕的情況。"
 
 #: ui/help_gameplay.rml:103
@@ -343,8 +350,8 @@ msgid ""
 "Destroying other buildings will trigger “under attack” warnings for the "
 "owning team."
 msgstr ""
-"[reactor]〔反應機〕和 [overmind]〔主腦〕會在剩餘 75%、50%、25% "
-"生命值以及被摧毀時分別發出警告。其他設施被摧毀時會提示己方陣營正“遭受攻擊”。"
+"[reactor]〔反應機〕和 [overmind]〔主腦〕會在剩餘 75%、50%、25% 生命值以及被摧"
+"毀時分別發出警告。其他設施被摧毀時會提示己方陣營正“遭受攻擊”。"
 
 #: ui/help_gameplay.rml:114
 msgid "Healing"
@@ -362,8 +369,8 @@ msgid ""
 "projectiles."
 msgstr ""
 "異形會一直緩慢恢復生命，而當異形扎堆或位於異形設施旁時會更快地恢復生命。將設"
-"施建在前線，會有好處的！任何形式的恢復生命都會促使 "
-"[advdragoon]〔高級守衞者〕的射彈恢復。"
+"施建在前線，會有好處的！任何形式的恢復生命都會促使 [advdragoon]〔高級守衞者〕"
+"的射彈恢復。"
 
 #: ui/help_gameplay.rml:125
 msgid ""
@@ -379,7 +386,8 @@ msgid ""
 "Staying at an intermediate distance of the [overmind] overmind or [egg] eggs "
 "will give you some slightly improved healing too, although lower than creep. "
 "This can help defending bases."
-msgstr "在 [overmind]〔主腦〕或 [egg]〔卵〕附近時會得到稍快的生命恢復效果，在“爬蟲”旁"
+msgstr ""
+"在 [overmind]〔主腦〕或 [egg]〔卵〕附近時會得到稍快的生命恢復效果，在“爬蟲”旁"
 "的恢復效果更佳。這樣的特性有利於保護基地。"
 
 #: ui/help_gameplay.rml:131
@@ -396,7 +404,8 @@ msgstr ""
 msgid ""
 "Humans carry with them a medkit they can use to heal once, after that they "
 "have to return to the [medstat] medistation to heal and refill their medkit."
-msgstr "人類會攜帶一個醫療包，用於即時治療。在使用過一次醫療包後，再次治療需要返回 "
+msgstr ""
+"人類會攜帶一個醫療包，用於即時治療。在使用過一次醫療包後，再次治療需要返回 "
 "[medstat]〔醫療中心〕恢復生命，同時拿取醫療包。"
 
 #: ui/help_gameplay.rml:139
@@ -407,8 +416,9 @@ msgstr "爬牆"
 msgid ""
 "Some alien forms like the [dretch] dretch, the [mantis] mantis and the "
 "[advgranger] advanced granger can walk on walls!"
-msgstr "諸如 [dretch]〔潛伏者〕、[mantis]〔螳螂〕和 "
-"[advgranger]〔高級守衞者〕等形式的異形可以在牆上行走！"
+msgstr ""
+"諸如 [dretch]〔潛伏者〕、[mantis]〔螳螂〕和 [advgranger]〔高級守衞者〕等形式"
+"的異形可以在牆上行走！"
 
 #: ui/help_gameplay.rml:145
 msgid "Use this to reach special places or use shortcuts through vents."
@@ -456,14 +466,16 @@ msgstr "人類沒有了特斯拉防禦塔和防禦電腦，但可以建造“火
 msgid ""
 "Aliens got the spiker buildable that can deeply hurt imprudent humans, but "
 "that's a very vulnerable structure, don't put it in plain sight!"
-msgstr "異形可以建造“刺頭”，重傷無所防備的人類。但注意刺頭非常容易被摧毀，不要放在輕"
+msgstr ""
+"異形可以建造“刺頭”，重傷無所防備的人類。但注意刺頭非常容易被摧毀，不要放在輕"
 "易能看見的地方！"
 
 #: ui/help_gameplay.rml:173
 msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
-msgstr "Basilisk 由“螳螂”取代。螳螂不能抓東西，但螳螂咬嗜可減緩敵人行動速度，螳螂撲擊"
+msgstr ""
+"Basilisk 由“螳螂”取代。螳螂不能抓東西，但螳螂咬嗜可減緩敵人行動速度，螳螂撲擊"
 "也更加迅捷。"
 
 #: ui/help_gameplay.rml:176
@@ -472,19 +484,19 @@ msgid ""
 "interesting things, try it on fire or humans!"
 msgstr "異形可以在主腦旁退化。高級守衞者的唾液有奇效，可以試着對付火焰或人類！"
 
-#: ui/hud_basics.rml:192
+#: ui/hud_basics.rml:196
 msgid "Game"
 msgstr "遊戲時長"
 
-#: ui/hud_basics.rml:195
+#: ui/hud_basics.rml:199
 msgid "Life"
 msgstr "生命"
 
-#: ui/hud_basics.rml:199
+#: ui/hud_basics.rml:203
 msgid "fps"
 msgstr "fps"
 
-#: ui/hud_basics.rml:202
+#: ui/hud_basics.rml:206
 msgid "ms"
 msgstr "ms"
 
@@ -740,8 +752,8 @@ msgstr "度"
 #: ui/options_fov.rml:18 ui/options_fov.rml:26 ui/options_fov.rml:34
 #: ui/options_fov.rml:43 ui/options_fov.rml:51 ui/options_fov.rml:59
 #: ui/options_fov.rml:67 ui/options_graphics.rml:52 ui/options_graphics.rml:277
-#: ui/options_mouse.rml:21 ui/options_ui.rml:70 ui/options_ui.rml:149
-#: ui/options_ui.rml:179 ui/options_ui.rml:193 ui/server_setup.rml:73
+#: ui/options_mouse.rml:21 ui/options_ui.rml:74 ui/options_ui.rml:153
+#: ui/options_ui.rml:183 ui/options_ui.rml:197 ui/server_setup.rml:73
 msgid "reset"
 msgstr "重置"
 
@@ -977,7 +989,7 @@ msgid "Non-physical lighting technique to make models less dark."
 msgstr "非物理的光照方式，使模型不會過暗。"
 
 #: ui/options_graphics.rml:121 ui/options_graphics.rml:247
-#: ui/options_ui.rml:172
+#: ui/options_ui.rml:176
 msgid "None"
 msgstr "無"
 
@@ -1042,7 +1054,7 @@ msgstr ""
 "Mip-map 通過為遠處的平面使用低分辨率材質以取得更好的視覺效果。這通常不影響性"
 "能。"
 
-#: ui/options_graphics.rml:153 ui/options_ui.rml:42
+#: ui/options_graphics.rml:153 ui/options_ui.rml:46
 msgid "No"
 msgstr "無"
 
@@ -1691,207 +1703,207 @@ msgstr "語言"
 msgid "Some languages are not fully translated."
 msgstr "一些語言的翻譯尚未完成。"
 
-#: ui/options_ui.rml:37 ui/options_welcome.rml:31
+#: ui/options_ui.rml:41 ui/options_welcome.rml:35
 msgid "Change language"
 msgstr "更改語言"
 
-#: ui/options_ui.rml:40
+#: ui/options_ui.rml:44
 msgid "Real-time clock"
 msgstr "時鐘"
 
-#: ui/options_ui.rml:43
+#: ui/options_ui.rml:47
 msgid "12 Hour"
 msgstr "12 小時制"
 
-#: ui/options_ui.rml:44
+#: ui/options_ui.rml:48
 msgid "24 Hour"
 msgstr "24 小時制"
 
-#: ui/options_ui.rml:46
+#: ui/options_ui.rml:50
 msgid "Show the time in real-life."
 msgstr "顯示現實時間。"
 
-#: ui/options_ui.rml:49
+#: ui/options_ui.rml:53
 msgid "Game-time clock"
 msgstr "遊戲時間"
 
-#: ui/options_ui.rml:51
+#: ui/options_ui.rml:55
 msgid "Show how long a match has lasted."
 msgstr "顯示遊戲耗時。"
 
-#: ui/options_ui.rml:55
+#: ui/options_ui.rml:59
 msgid "Show ping"
 msgstr "顯示網絡延遲"
 
-#: ui/options_ui.rml:57
+#: ui/options_ui.rml:61
 msgid "Time that information takes to get to the server and back."
 msgstr "信息傳輸到服務器再返回所需要的時間。"
 
-#: ui/options_ui.rml:60
+#: ui/options_ui.rml:64
 msgid "Show movement speed"
 msgstr "顯示移動速度"
 
-#: ui/options_ui.rml:62
+#: ui/options_ui.rml:66
 msgid "Current, maximum and graph of movement-speed."
 msgstr "目前有最大速度和速度圖表。"
 
-#: ui/options_ui.rml:65
+#: ui/options_ui.rml:69
 msgid "Show FPS"
 msgstr "顯示 FPS"
 
-#: ui/options_ui.rml:67
+#: ui/options_ui.rml:71
 msgid "Frames per second."
 msgstr "每秒幀數。"
 
-#: ui/options_ui.rml:70
+#: ui/options_ui.rml:74
 msgid "Console colors"
 msgstr "控制枱顏色"
 
-#: ui/options_ui.rml:74 ui/options_ui.rml:153 ui/options_ui.rml:197
+#: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
 msgid "Red:"
 msgstr "紅："
 
-#: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
+#: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
 msgid "Green:"
 msgstr "綠："
 
-#: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
+#: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
 msgid "Blue:"
 msgstr "藍："
 
-#: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
+#: ui/options_ui.rml:90 ui/options_ui.rml:169 ui/options_ui.rml:213
 msgid "Alpha:"
 msgstr "透明："
 
-#: ui/options_ui.rml:91
+#: ui/options_ui.rml:95
 msgid "Crosshair"
 msgstr "準星"
 
-#: ui/options_ui.rml:95
+#: ui/options_ui.rml:99
 msgid "WARN: Preview only works in game."
 msgstr "注意：預覽效果在遊戲中途可見。"
 
-#: ui/options_ui.rml:99
+#: ui/options_ui.rml:103
 msgid "Weapon"
 msgstr "武器"
 
-#: ui/options_ui.rml:102
+#: ui/options_ui.rml:106
 msgid "Blaster"
 msgstr "衝擊槍"
 
-#: ui/options_ui.rml:103
+#: ui/options_ui.rml:107
 msgid "Rifle"
 msgstr "步槍"
 
-#: ui/options_ui.rml:104
+#: ui/options_ui.rml:108
 msgid "Pain Saw"
 msgstr "痛苦電鋸"
 
-#: ui/options_ui.rml:105
+#: ui/options_ui.rml:109
 msgid "Shotgun"
 msgstr "霰彈槍"
 
-#: ui/options_ui.rml:106
+#: ui/options_ui.rml:110
 msgid "Lasgun"
 msgstr "激光槍"
 
-#: ui/options_ui.rml:107
+#: ui/options_ui.rml:111
 msgid "Mass Driver"
 msgstr "質量驅動器"
 
-#: ui/options_ui.rml:108
+#: ui/options_ui.rml:112
 msgid "Chaingun"
 msgstr "鏈式機槍"
 
-#: ui/options_ui.rml:109
+#: ui/options_ui.rml:113
 msgid "Flamer"
 msgstr "噴火器"
 
-#: ui/options_ui.rml:110
+#: ui/options_ui.rml:114
 msgid "Pulse Rifle"
 msgstr "脈衝步槍"
 
-#: ui/options_ui.rml:111
+#: ui/options_ui.rml:115
 msgid "Lucifer Cannon"
 msgstr "星神炮"
 
-#: ui/options_ui.rml:122
+#: ui/options_ui.rml:126
 msgid "Crosshair visiblity"
 msgstr "準星可見性"
 
-#: ui/options_ui.rml:124
+#: ui/options_ui.rml:128
 msgid "Never"
 msgstr "無準星"
 
-#: ui/options_ui.rml:125
+#: ui/options_ui.rml:129
 msgid "Ranged weapons only"
 msgstr "僅遠程武器"
 
-#: ui/options_ui.rml:126
+#: ui/options_ui.rml:130
 msgid "Always"
 msgstr "總是顯示"
 
-#: ui/options_ui.rml:131
+#: ui/options_ui.rml:135
 msgid "Crosshair size"
 msgstr "準星大小"
 
-#: ui/options_ui.rml:133
+#: ui/options_ui.rml:137
 msgid "Tiny"
 msgstr "很小"
 
-#: ui/options_ui.rml:134
+#: ui/options_ui.rml:138
 msgid "Small"
 msgstr "小"
 
-#: ui/options_ui.rml:135
+#: ui/options_ui.rml:139
 msgid "Regular"
 msgstr "中"
 
-#: ui/options_ui.rml:136
+#: ui/options_ui.rml:140
 msgid "Huge"
 msgstr "大"
 
-#: ui/options_ui.rml:141
+#: ui/options_ui.rml:145
 msgid "Crosshair colour"
 msgstr "準星顏色"
 
-#: ui/options_ui.rml:143
+#: ui/options_ui.rml:147
 msgid "Image colour"
 msgstr "預設顏色"
 
-#: ui/options_ui.rml:144 ui/options_ui.rml:174
+#: ui/options_ui.rml:148 ui/options_ui.rml:178
 msgid "Custom colour"
 msgstr "自定義顏色"
 
-#: ui/options_ui.rml:149
+#: ui/options_ui.rml:153
 msgid "Crosshair colours"
 msgstr "準星顏色"
 
-#: ui/options_ui.rml:170
+#: ui/options_ui.rml:174
 msgid "Crosshair outline colour"
 msgstr "準星輪廓顏色"
 
-#: ui/options_ui.rml:173
+#: ui/options_ui.rml:177
 msgid "Auto colour"
 msgstr "自動"
 
-#: ui/options_ui.rml:179
+#: ui/options_ui.rml:183
 msgid "Crosshair outline scale"
 msgstr "準星輪廓大小"
 
-#: ui/options_ui.rml:181
+#: ui/options_ui.rml:185
 msgid "Negative values will change the outline to be inside the crosshair."
 msgstr "負值會使輪廓位於準星內部。"
 
-#: ui/options_ui.rml:184
+#: ui/options_ui.rml:188
 msgid "Scale:"
 msgstr "大小："
 
-#: ui/options_ui.rml:188
+#: ui/options_ui.rml:192
 msgid "Offset:"
 msgstr "偏移："
 
-#: ui/options_ui.rml:193
+#: ui/options_ui.rml:197
 msgid "Crosshair outline colours"
 msgstr "準星輪廓顏色"
 
@@ -1915,7 +1927,7 @@ msgstr "你可以在選項中隨時更改名稱。"
 msgid "What language do you want to use?"
 msgstr "你想使用哪種語言？"
 
-#: ui/options_welcome.rml:32
+#: ui/options_welcome.rml:36
 msgid "Select Battlefield"
 msgstr "選擇戰場"
 
@@ -2171,23 +2183,27 @@ msgstr "默認水平"
 msgid "Only works for new bots."
 msgstr "只對新加入的人機有效。"
 
-#: ui/transition_downloading.rml:55
+#: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
+msgid "Disconnect"
+msgstr ""
+
+#: ui/transition_downloading.rml:57
 msgid "Additional files are required. Please be patient while they download."
 msgstr "遊戲需要額外的文件。正在下載，請耐心等待。"
 
-#: ui/transition_downloading.rml:56
+#: ui/transition_downloading.rml:58
 msgid "Time left:"
 msgstr "剩餘時間："
 
-#: ui/transition_downloading.rml:57
+#: ui/transition_downloading.rml:59
 msgid "Download rate:"
 msgstr "下載速度："
 
-#: ui/transition_downloading.rml:58
+#: ui/transition_downloading.rml:60
 msgid "Size:"
 msgstr "大小："
 
-#: ui/transition_loading.rml:109
+#: ui/transition_loading.rml:104
 msgid "Loading"
 msgstr "加載中"
 
@@ -3598,149 +3614,149 @@ msgstr "列出了 %2d 個客户端"
 msgid "You killed ^1TEAMMATE^* %s"
 msgstr "你殺死了^1隊友^* %s"
 
-#: src/cgame/cg_event.cpp:1215
+#: src/cgame/cg_event.cpp:1217
 msgid "The Overmind is under attack!"
 msgstr "主腦正遭受攻擊！"
 
-#: src/cgame/cg_event.cpp:1222
+#: src/cgame/cg_event.cpp:1224
 msgid "The reactor is under attack!"
 msgstr "反應機整遭受攻擊！"
 
-#: src/cgame/cg_event.cpp:1237
+#: src/cgame/cg_event.cpp:1239
 msgid "The Overmind is dying!"
 msgstr "主腦即將死亡！"
 
-#: src/cgame/cg_event.cpp:1243
+#: src/cgame/cg_event.cpp:1245
 msgid "The reactor is going down!"
 msgstr "反應機即將損壞！"
 
-#: src/cgame/cg_event.cpp:1260 src/cgame/cg_event.cpp:1276
+#: src/cgame/cg_event.cpp:1262 src/cgame/cg_event.cpp:1278
 msgid "Our base is under attack!"
 msgstr "我方基地遭受攻擊！"
 
-#: src/cgame/cg_event.cpp:1266
+#: src/cgame/cg_event.cpp:1268
 #, c-format
 msgid "%s under attack – %s"
 msgstr "%s 遭受攻擊——%s"
 
-#: src/cgame/cg_event.cpp:1270
+#: src/cgame/cg_event.cpp:1272
 #, c-format
 msgid "%s under attack"
 msgstr "%s 遭受攻擊"
 
-#: src/cgame/cg_main.cpp:462
+#: src/cgame/cg_main.cpp:466
 msgid "Calling home…"
 msgstr "告別故鄉……"
 
-#: src/cgame/cg_main.cpp:462
+#: src/cgame/cg_main.cpp:466
 msgid "Sending to the front…"
 msgstr "分配到前線……"
 
-#: src/cgame/cg_main.cpp:467
+#: src/cgame/cg_main.cpp:471
 msgid "Tracking your movements…"
 msgstr "追蹤移動軌跡……"
 
-#: src/cgame/cg_main.cpp:467
+#: src/cgame/cg_main.cpp:471
 msgid "Letting out the magic smoke…"
 msgstr "釋放魔法雲煙……"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:475
 msgid "Collecting bees for the hives…"
 msgstr "為蜂窩收集蜜蜂……"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:475
 msgid "Initialising fireworks…"
 msgstr "初始化煙花……"
 
-#: src/cgame/cg_main.cpp:471
+#: src/cgame/cg_main.cpp:475
 msgid "Causing electrical faults…"
 msgstr "使電子產品失靈……"
 
-#: src/cgame/cg_main.cpp:475
+#: src/cgame/cg_main.cpp:479
 msgid "Reading the manual…"
 msgstr "閲讀文檔……"
 
-#: src/cgame/cg_main.cpp:475
+#: src/cgame/cg_main.cpp:479
 msgid "Looking at blueprints…"
 msgstr "觀察藍圖……"
 
-#: src/cgame/cg_main.cpp:479
+#: src/cgame/cg_main.cpp:483
 msgid "Generating annoying noises…"
 msgstr "生成煩人的噪音……"
 
-#: src/cgame/cg_main.cpp:479
+#: src/cgame/cg_main.cpp:483
 msgid "Recording granger purring…"
 msgstr "錄製守衞者叫聲……"
 
-#: src/cgame/cg_main.cpp:483
+#: src/cgame/cg_main.cpp:487
 msgid "Hello World!"
 msgstr "你好，世界！"
 
-#: src/cgame/cg_main.cpp:483
+#: src/cgame/cg_main.cpp:487
 msgid "Making a scene…"
 msgstr "製作場景……"
 
-#: src/cgame/cg_main.cpp:487
+#: src/cgame/cg_main.cpp:491
 msgid "Taking pictures of the world…"
 msgstr "給世界拍照……"
 
-#: src/cgame/cg_main.cpp:487
+#: src/cgame/cg_main.cpp:491
 msgid "Drawing smiley faces…"
 msgstr "畫笑臉……"
 
-#: src/cgame/cg_main.cpp:491
+#: src/cgame/cg_main.cpp:495
 msgid "Sharpening the aliens' claws…"
 msgstr "異形磨爪……"
 
-#: src/cgame/cg_main.cpp:491
+#: src/cgame/cg_main.cpp:495
 msgid "Overloading lucifer cannons…"
 msgstr "重載星神炮……"
 
-#: src/cgame/cg_main.cpp:495
+#: src/cgame/cg_main.cpp:499
 msgid "Unwrapping jetpacks…"
 msgstr "解開噴氣揹包……"
 
-#: src/cgame/cg_main.cpp:495
+#: src/cgame/cg_main.cpp:499
 msgid "Spinning silk for reticles…"
 msgstr "紡織絲綢細節……"
 
-#: src/cgame/cg_main.cpp:499
+#: src/cgame/cg_main.cpp:503
 msgid "Adding turret spam…"
 msgstr "裝載炮台彈藥……"
 
-#: src/cgame/cg_main.cpp:499
+#: src/cgame/cg_main.cpp:503
 msgid "Awakening the overmind…"
 msgstr "喚醒主腦……"
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:507
 msgid "Teleporting soldiers…"
 msgstr "傳送士兵……"
 
-#: src/cgame/cg_main.cpp:503
+#: src/cgame/cg_main.cpp:507
 msgid "Replicating alien DNA…"
 msgstr "複製異形 DNA……"
 
-#: src/cgame/cg_main.cpp:507
+#: src/cgame/cg_main.cpp:511
 msgid "Customizing helmets…"
 msgstr "定製頭盔……"
 
-#: src/cgame/cg_main.cpp:511
+#: src/cgame/cg_main.cpp:515
 msgid "Compiling GLSL shaders (please be patient)…"
 msgstr "編譯 GLSL 着色器（請耐心等待）……"
 
-#: src/cgame/cg_main.cpp:515
+#: src/cgame/cg_main.cpp:519
 msgid "Surveying the map…"
 msgstr "探訪地圖……"
 
-#: src/cgame/cg_main.cpp:519
+#: src/cgame/cg_main.cpp:523
 msgid "Done!"
 msgstr "完成！"
 
-#: src/cgame/cg_main.cpp:1109
+#: src/cgame/cg_main.cpp:1113
 msgid "Generating bot navigation meshes"
 msgstr "生成人機尋路網"
 
-#: src/cgame/cg_main.cpp:1167
+#: src/cgame/cg_main.cpp:1157
 #, c-format
 msgid "by %s"
 msgstr "作者: %s"
@@ -4318,230 +4334,230 @@ msgstr "%s, %s"
 msgid "\"%s\" (unbound)"
 msgstr "\"%s\" (未綁定)"
 
-#: src/cgame/cg_tutorial.cpp:186
+#: src/cgame/cg_tutorial.cpp:178
 #, c-format
 msgid "Press %s to place the %s."
 msgstr "按 %s 放置%s。"
 
-#: src/cgame/cg_tutorial.cpp:191
+#: src/cgame/cg_tutorial.cpp:181
 #, c-format
 msgid "Press %s to cancel placing the %s."
 msgstr "按 %s 取消放置%s。"
 
-#: src/cgame/cg_tutorial.cpp:198
+#: src/cgame/cg_tutorial.cpp:186
 #, c-format
 msgid "Press %s to build a structure."
 msgstr "按 %s 建造設施。"
 
-#: src/cgame/cg_tutorial.cpp:210
+#: src/cgame/cg_tutorial.cpp:196
 #, c-format
 msgid "Press %s to unmark this structure for replacement."
 msgstr "按 %s 取消標記設施為轉移。"
 
-#: src/cgame/cg_tutorial.cpp:216
+#: src/cgame/cg_tutorial.cpp:201
 #, c-format
 msgid "Press %s to mark this structure for replacement."
 msgstr "按 %s 將設施標記為轉移。"
 
-#: src/cgame/cg_tutorial.cpp:221
+#: src/cgame/cg_tutorial.cpp:205
 #, c-format
 msgid "Hold %s to deconstruct this structure."
 msgstr "按住 %s 拆除此設施。"
 
-#: src/cgame/cg_tutorial.cpp:238 src/cgame/cg_tutorial.cpp:288
-#: src/cgame/cg_tutorial.cpp:365
+#: src/cgame/cg_tutorial.cpp:221 src/cgame/cg_tutorial.cpp:261
+#: src/cgame/cg_tutorial.cpp:320
 #, c-format
 msgid "Press %s to swipe."
 msgstr "按 %s 切擊。"
 
-#: src/cgame/cg_tutorial.cpp:246
+#: src/cgame/cg_tutorial.cpp:227
 #, c-format
 msgid "Press %s to spit. Spit can slow humans and remove fire."
 msgstr "按 %s 吐出唾液。唾液可以拖住人類、撲滅火焰。"
 
-#: src/cgame/cg_tutorial.cpp:251 src/cgame/cg_tutorial.cpp:275
-#: src/cgame/cg_tutorial.cpp:298
+#: src/cgame/cg_tutorial.cpp:230 src/cgame/cg_tutorial.cpp:250
+#: src/cgame/cg_tutorial.cpp:267
 #, c-format
 msgid "Press %s to walk on walls."
 msgstr "按 %s 爬牆。"
 
-#: src/cgame/cg_tutorial.cpp:267
+#: src/cgame/cg_tutorial.cpp:244
 msgid "Touch humans to damage them."
 msgstr "觸摸人類來攻擊他們。"
 
-#: src/cgame/cg_tutorial.cpp:271
+#: src/cgame/cg_tutorial.cpp:247
 msgid "Aim at their heads to cause more damage."
 msgstr "瞄準他們的頭以造成更多傷害。"
 
-#: src/cgame/cg_tutorial.cpp:293
+#: src/cgame/cg_tutorial.cpp:264
 #, c-format
 msgid "Press %s to lunge."
 msgstr "按 %s 穿刺。"
 
-#: src/cgame/cg_tutorial.cpp:311 src/cgame/cg_tutorial.cpp:337
+#: src/cgame/cg_tutorial.cpp:278 src/cgame/cg_tutorial.cpp:298
 #, c-format
 msgid "Press %s to bite."
 msgstr "按 %s 咬嗜。"
 
-#: src/cgame/cg_tutorial.cpp:318
+#: src/cgame/cg_tutorial.cpp:283
 #, c-format
 msgid "Press %s to invoke an electrical attack."
 msgstr "按 %s 觸發電子攻擊。"
 
-#: src/cgame/cg_tutorial.cpp:324
+#: src/cgame/cg_tutorial.cpp:287
 #, c-format
 msgid "Hold down %s then touch a wall to wall jump."
 msgstr "按住 %s 並走到牆上以爬牆。"
 
-#: src/cgame/cg_tutorial.cpp:344
+#: src/cgame/cg_tutorial.cpp:303
 #, c-format
 msgid "Press %s to launch a barb."
 msgstr "按 %s 發射鈎爪。"
 
-#: src/cgame/cg_tutorial.cpp:350
+#: src/cgame/cg_tutorial.cpp:307
 #, c-format
 msgid "Hold down and release %s to pounce."
 msgstr "按 %s 猛撲。"
 
-#: src/cgame/cg_tutorial.cpp:370
+#: src/cgame/cg_tutorial.cpp:323
 #, c-format
 msgid "Hold down %s while moving forwards to trample."
 msgstr "按住 %s 並前行以踩踏。"
 
-#: src/cgame/cg_tutorial.cpp:399
+#: src/cgame/cg_tutorial.cpp:350
 msgid "Find an Armoury, Drill or Reactor for more ammo."
 msgstr "在武器中心、鑽井或反應機拿取彈藥。"
 
-#: src/cgame/cg_tutorial.cpp:405
+#: src/cgame/cg_tutorial.cpp:355
 msgid "Find an Armoury for more ammo."
 msgstr "回到武器中心拿取彈藥。"
 
-#: src/cgame/cg_tutorial.cpp:421 src/cgame/cg_tutorial.cpp:429
-#: src/cgame/cg_tutorial.cpp:455
+#: src/cgame/cg_tutorial.cpp:370 src/cgame/cg_tutorial.cpp:375
+#: src/cgame/cg_tutorial.cpp:391
 #, c-format
 msgid "Press %s to fire the %s."
 msgstr "按 %s 使用%s。"
 
-#: src/cgame/cg_tutorial.cpp:435
+#: src/cgame/cg_tutorial.cpp:378
 #, c-format
 msgid "Hold %s to zoom."
 msgstr "按住 %s 瞄準。"
 
-#: src/cgame/cg_tutorial.cpp:442
+#: src/cgame/cg_tutorial.cpp:383
 #, c-format
 msgid "Hold %s to activate the %s."
 msgstr "按住 %s 激活%s。"
 
-#: src/cgame/cg_tutorial.cpp:450
+#: src/cgame/cg_tutorial.cpp:388
 #, c-format
 msgid "Hold and release %s to fire a charged shot."
 msgstr "按住 %s 蓄力發射充能子彈。"
 
-#: src/cgame/cg_tutorial.cpp:481
+#: src/cgame/cg_tutorial.cpp:415
 #, c-format
 msgid "Press %s to throw the %s."
 msgstr "按 %s 投擲%s。"
 
-#: src/cgame/cg_tutorial.cpp:493 src/cgame/cg_tutorial.cpp:530
+#: src/cgame/cg_tutorial.cpp:424 src/cgame/cg_tutorial.cpp:453
 #, c-format
 msgid "Press %s to use the %s."
 msgstr "按 %s 使用%s。"
 
-#: src/cgame/cg_tutorial.cpp:501
+#: src/cgame/cg_tutorial.cpp:430
 #, c-format
 msgid "Hold %s to use the Jetpack."
 msgstr "按住 %s 使用噴氣揹包。"
 
-#: src/cgame/cg_tutorial.cpp:511
+#: src/cgame/cg_tutorial.cpp:438
 #, c-format
 msgid "Press %s to use your Medkit."
 msgstr "按 %s 使用醫療包。"
 
-#: src/cgame/cg_tutorial.cpp:520
+#: src/cgame/cg_tutorial.cpp:445
 #, c-format
 msgid "Press %s to buy equipment upgrades at the Armoury."
 msgstr "在武器中心可按 %s 購買裝備升級。"
 
-#: src/cgame/cg_tutorial.cpp:538
+#: src/cgame/cg_tutorial.cpp:458
 #, c-format
 msgid "Press %s and any direction to sprint."
 msgstr "按 %s 和任意方向鍵以衝刺。"
 
-#: src/cgame/cg_tutorial.cpp:543
+#: src/cgame/cg_tutorial.cpp:461
 #, c-format
 msgid "Press %s to crouch."
 msgstr "按 %s 蹲下。"
 
-#: src/cgame/cg_tutorial.cpp:560
+#: src/cgame/cg_tutorial.cpp:476
 #, c-format
 msgid "Press %s to leave spawn queue."
 msgstr "按 %s 離開重生隊列。"
 
-#: src/cgame/cg_tutorial.cpp:567
+#: src/cgame/cg_tutorial.cpp:481
 #, c-format
 msgid "Press %s to spawn."
 msgstr "按 %s 重生。"
 
-#: src/cgame/cg_tutorial.cpp:575
+#: src/cgame/cg_tutorial.cpp:487
 #, c-format
 msgid "Press %s to join a team."
 msgstr "按 %s 加入陣營。"
 
-#: src/cgame/cg_tutorial.cpp:583
+#: src/cgame/cg_tutorial.cpp:493
 #, c-format
 msgid "Press %s to stop following."
 msgstr "按 %s 停止跟隨。"
 
-#: src/cgame/cg_tutorial.cpp:590
+#: src/cgame/cg_tutorial.cpp:498
 #, c-format
 msgid "Press %s to switch to chase-cam spectator mode."
 msgstr "按 %s 切換到跟隨觀察模式。"
 
-#: src/cgame/cg_tutorial.cpp:597
+#: src/cgame/cg_tutorial.cpp:503
 #, c-format
 msgid "Press %s to return to first-person spectator mode."
 msgstr "按 %s 切換到第一人稱觀察模式。"
 
-#: src/cgame/cg_tutorial.cpp:603
+#: src/cgame/cg_tutorial.cpp:507
 #, c-format
 msgid "Press %s to follow the next player."
 msgstr "按 %s 切換到下一位玩家。"
 
-#: src/cgame/cg_tutorial.cpp:610
+#: src/cgame/cg_tutorial.cpp:512
 #, c-format
 msgid "Press %s to follow a player."
 msgstr "按 %s 跟隨一位玩家。"
 
-#: src/cgame/cg_tutorial.cpp:693
+#: src/cgame/cg_tutorial.cpp:593
 #, c-format
 msgid "Press %s to evolve."
 msgstr "按 %s 進化。"
 
-#: src/cgame/cg_tutorial.cpp:704
+#: src/cgame/cg_tutorial.cpp:602
 #, c-format
 msgid "Press %s when ready to continue."
 msgstr "當準備就緒後請按 %s。"
 
-#: src/cgame/cg_tutorial.cpp:710
+#: src/cgame/cg_tutorial.cpp:606
 msgid "Waiting for other players to be ready."
 msgstr "等待其他玩家準備就緒。"
 
-#: src/cgame/cg_tutorial.cpp:721
+#: src/cgame/cg_tutorial.cpp:614
 #, c-format
-msgid "Press %s to chat."
-msgstr "按 %s 聊天。"
+msgid "Press %s to chat with all players."
+msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:726
+#: src/cgame/cg_tutorial.cpp:616
 #, c-format
-msgid "Press %s to chat or %s to chat to your team."
-msgstr "按 %s 聊天，或 %s 與團隊聊天。"
+msgid "Press %s to chat with your team."
+msgstr ""
 
-#: src/cgame/cg_tutorial.cpp:732
+#: src/cgame/cg_tutorial.cpp:618
 #, c-format
 msgid "Press %s to open the console."
 msgstr "按 %s 打開控制枱。"
 
-#: src/cgame/cg_tutorial.cpp:734
+#: src/cgame/cg_tutorial.cpp:620
 #, c-format
 msgid "Press %s for the menu."
 msgstr "按 %s 打開菜單。"
@@ -4574,13 +4590,13 @@ msgstr "^3人類人機名稱："
 msgid "$1$^* disconnected"
 msgstr "$1$^* 已下線"
 
-#: src/sgame/sg_bot_nav.cpp:125
-msgid "Server: generating bot navigation mesh for $1$... $2$%"
-msgstr "服務器：為$1$生成電腦尋路網…… $2$%"
-
-#: src/sgame/sg_bot_nav.cpp:164
+#: src/sgame/sg_bot_nav.cpp:159
 msgid "^1Bot navmesh generation failed!"
 msgstr "^1電腦尋路網生成失敗！"
+
+#: src/sgame/sg_bot_nav.cpp:172
+msgid "Server: generating bot navigation meshes... $1$%"
+msgstr ""
 
 #: src/sgame/sg_buildable.cpp:1881
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
@@ -4907,6 +4923,17 @@ msgstr "異形"
 #: src/shared/bg_misc.cpp:2514
 msgid "humans"
 msgstr "人類"
+
+#, c-format
+#~ msgid "Press %s to chat."
+#~ msgstr "按 %s 聊天。"
+
+#, c-format
+#~ msgid "Press %s to chat or %s to chat to your team."
+#~ msgstr "按 %s 聊天，或 %s 與團隊聊天。"
+
+#~ msgid "Server: generating bot navigation mesh for $1$... $2$%"
+#~ msgstr "服務器：為$1$生成電腦尋路網…… $2$%"
 
 #~ msgctxt "male"
 #~ msgid "%s%s ^*was sliced by %s%s%s^*'s %s"
