@@ -174,6 +174,7 @@ static Cvar::Cvar<float> cg_fov_level4("cg_fov_level4", "field of view (degrees)
 static Cvar::Cvar<float> cg_fov_human("cg_fov_human", "field of view (degrees) for humans", Cvar::NONE, 0);
 
 Cvar::Cvar<bool> ui_chatPromptColors("ui_chatPromptColors", "chat prompts (e.g. 'Say:') are color-coded", Cvar::NONE, true);
+Cvar::Cvar<std::string> ui_winner("ui_winner", "FOR INTERNAL USE", Cvar::NONE, "");
 Cvar::Cvar<std::string> cg_sayCommand("cg_sayCommand", "instead of talking, chat field does this command?", Cvar::NONE, "");
 
 // CHEAT because it could be abused to join the game faster and e.g. get on your preferred team
@@ -1362,7 +1363,7 @@ void CG_Init( int serverMessageNum, int clientNum, const glconfig_t& gl, const G
 
 	CG_ShaderStateChanged();
 
-	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
+	ui_winner.Set( "" ); // Clear the previous round's winner.
 
 	// Request server to resend pmoveParams.
 	trap_SendClientCommand( "client_ready" );

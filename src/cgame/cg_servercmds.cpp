@@ -359,7 +359,7 @@ static void CG_ConfigStringModified()
 	}
 	else if ( num == CS_WINNER )
 	{
-		trap_Cvar_Set( "ui_winner", str );
+		ui_winner.Set( str );
 	}
 	else if ( num == CS_SHADERSTATE )
 	{
