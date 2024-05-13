@@ -759,24 +759,24 @@ static void CG_RegisterGraphics()
 
 	for ( i = 0; i < 11; i++ )
 	{
-		cgs.media.numberShaders[ i ] = trap_R_RegisterShader(sb_nums[i], (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+		cgs.media.numberShaders[ i ] = trap_R_RegisterShader(sb_nums[i], (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 	}
 
-	cgs.media.viewBloodShader = trap_R_RegisterShader("gfx/feedback/painblend", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.viewBloodShader = trap_R_RegisterShader("gfx/feedback/painblend", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
-	cgs.media.connectionShader = trap_R_RegisterShader("gfx/feedback/net", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.connectionShader = trap_R_RegisterShader("gfx/feedback/net", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
 	cgs.media.creepShader = trap_R_RegisterShader("gfx/buildables/creep/creep", RSF_DEFAULT );
 
-	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/feedback/scanner/blip", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.scannerBlipShader = trap_R_RegisterShader("gfx/feedback/scanner/blip", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
-	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/feedback/scanner/blip_bldg", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.scannerBlipBldgShader = trap_R_RegisterShader("gfx/feedback/scanner/blip_bldg", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
-	cgs.media.scannerLineShader = trap_R_RegisterShader("gfx/feedback/scanner/stalk", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.scannerLineShader = trap_R_RegisterShader("gfx/feedback/scanner/stalk", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
-	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer", RSF_NOMIP);
+	cgs.media.tracerShader = trap_R_RegisterShader("gfx/weapons/tracer/tracer", RSF_2D | RSF_FITSCREEN);
 
-	cgs.media.backTileShader = trap_R_RegisterShader("gfx/colors/backtile", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.backTileShader = trap_R_RegisterShader("gfx/colors/backtile", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
 	// building shaders
 	cgs.media.greenBuildShader = trap_R_RegisterShader("gfx/buildables/common/greenbuild", RSF_DEFAULT );
@@ -786,30 +786,30 @@ static void CG_RegisterGraphics()
 
 	for ( i = 0; i < 8; i++ )
 	{
-		cgs.media.buildWeaponTimerPie[ i ] = trap_R_RegisterShader(buildWeaponTimerPieShaders[i], RSF_NOMIP);
+		cgs.media.buildWeaponTimerPie[ i ] = trap_R_RegisterShader(buildWeaponTimerPieShaders[i], RSF_2D | RSF_FITSCREEN);
 	}
 
 	// player health cross shaders
-	cgs.media.healthCross = trap_R_RegisterShader("ui/assets/neutral/cross", RSF_NOMIP);
-	cgs.media.healthCross2X = trap_R_RegisterShader("ui/assets/neutral/cross2", RSF_NOMIP);
-	cgs.media.healthCross3X = trap_R_RegisterShader("ui/assets/neutral/cross3", RSF_NOMIP);
-	cgs.media.healthCross4X = trap_R_RegisterShader("ui/assets/neutral/cross4", RSF_NOMIP);
-	cgs.media.healthCrossMedkit = trap_R_RegisterShader("ui/assets/neutral/cross_medkit", RSF_NOMIP);
-	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison", RSF_NOMIP);
+	cgs.media.healthCross = trap_R_RegisterShader("ui/assets/neutral/cross", RSF_2D | RSF_FITSCREEN);
+	cgs.media.healthCross2X = trap_R_RegisterShader("ui/assets/neutral/cross2", RSF_2D | RSF_FITSCREEN);
+	cgs.media.healthCross3X = trap_R_RegisterShader("ui/assets/neutral/cross3", RSF_2D | RSF_FITSCREEN);
+	cgs.media.healthCross4X = trap_R_RegisterShader("ui/assets/neutral/cross4", RSF_2D | RSF_FITSCREEN);
+	cgs.media.healthCrossMedkit = trap_R_RegisterShader("ui/assets/neutral/cross_medkit", RSF_2D | RSF_FITSCREEN);
+	cgs.media.healthCrossPoisoned = trap_R_RegisterShader("ui/assets/neutral/cross_poison", RSF_2D | RSF_FITSCREEN);
 
 	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.media.neutralCgrade = trap_R_RegisterShader("gfx/cgrading/neutral", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only", (RegisterShaderFlags_t) ( RSF_NOMIP | RSF_NOLIGHTSCALE ) );
 
-	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.balloonShader = trap_R_RegisterShader("gfx/feedback/chatballoon", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "particles/feedback/disconnect" );
 
 	cgs.media.sniperScopeShader =
-		trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t)( RSF_NOMIP ) );
+		trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t)( RSF_2D | RSF_FITSCREEN ) );
 	cgs.media.lgunScopeShader =
-		trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t)( RSF_NOMIP ) );
+		trap_R_RegisterShader( "gfx/weapons/scope", (RegisterShaderFlags_t)( RSF_2D | RSF_FITSCREEN ) );
 
 	CG_UpdateMediaFraction( 0.2f );
 
@@ -860,11 +860,11 @@ static void CG_RegisterGraphics()
 	CG_BuildableStatusParse( "ui/assets/human/buildstat.cfg", &cgs.humanBuildStat );
 	CG_BuildableStatusParse( "ui/assets/alien/buildstat.cfg", &cgs.alienBuildStat );
 
-	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/feedback/beacons/arrow", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
-	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/feedback/beacons/no-target", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
-	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/feedback/beacons/tagscore", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.beaconIconArrow = trap_R_RegisterShader( "gfx/feedback/beacons/arrow", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	cgs.media.beaconNoTarget = trap_R_RegisterShader( "gfx/feedback/beacons/no-target", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
+	cgs.media.beaconTagScore = trap_R_RegisterShader( "gfx/feedback/beacons/tagscore", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
-	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/feedback/damage/font", (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+	cgs.media.damageIndicatorFont = trap_R_RegisterShader( "gfx/feedback/damage/font", (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 
 	// register the inline models
 	cgs.numInlineModels = CM_NumInlineModels();

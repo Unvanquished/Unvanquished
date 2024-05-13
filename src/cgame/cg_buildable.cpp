@@ -735,7 +735,7 @@ void CG_InitBuildables()
 		//icon
 		if ( ( buildableIcon = BG_Buildable( buildable )->icon ) )
 		{
-			cg_buildables[ buildable ].buildableIcon = trap_R_RegisterShader( buildableIcon, (RegisterShaderFlags_t) ( RSF_NOMIP ) );
+			cg_buildables[ buildable ].buildableIcon = trap_R_RegisterShader( buildableIcon, (RegisterShaderFlags_t) ( RSF_2D | RSF_FITSCREEN ) );
 		}
 
 		cg.buildableLoadingFraction = ( float ) buildable / ( float )( BA_NUM_BUILDABLES - 1 );
@@ -1293,7 +1293,7 @@ static bool CG_RegisterShaderFromConf( int handle, qhandle_t& qhandle )
 		return false;
 	}
 
-	qhandle = trap_R_RegisterShader( token.string, static_cast<RegisterShaderFlags_t>( RSF_NOMIP ) );
+	qhandle = trap_R_RegisterShader( token.string, static_cast<RegisterShaderFlags_t>( RSF_2D | RSF_FITSCREEN ) );
 	return true;
 }
 

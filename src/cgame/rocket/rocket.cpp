@@ -234,7 +234,7 @@ public:
 
 	bool LoadTexture( Rml::TextureHandle& textureHandle, Rml::Vector2i& textureDimensions, const Rml::String& source ) override
 	{
-		qhandle_t shaderHandle = trap_R_RegisterShader( source.c_str(), RSF_NOMIP );
+		qhandle_t shaderHandle = trap_R_RegisterShader( source.c_str(), RSF_2D | RSF_FITSCREEN );
 
 		if ( shaderHandle <= 0 )
 		{
