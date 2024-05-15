@@ -8,14 +8,6 @@ on:
   schedule:
     - cron: '43 14 * * 2'
 
-paths:
-  - .github/workflows/
-  # To keep in sync with other CI configurations (but macosx/), only directories.
-  - daemon/
-  - libs/
-  - src/
-  - tools/cbse/
-
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
