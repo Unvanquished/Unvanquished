@@ -189,6 +189,14 @@ static bool HandleMapRestart( gentity_t* ent, team_t team, std::string& cmd, std
 static bool HandleMapVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
                            std::string& reason, std::string& name, int clientNum, int id )
 {
+	if ( arg.empty() )
+	{
+		trap_SendServerCommand(
+			ent->num(), va( "print_tr %s %s",
+		                    QQ( N_( "$1$: map name not specified" ) ),
+		                    cmd.c_str() ) );
+		return false;
+	}
 	if ( !G_MapExists( arg.c_str() ) )
 	{
 		trap_SendServerCommand(
@@ -247,6 +255,14 @@ static bool HandleLayoutVote( gentity_t* ent, team_t team, std::string& cmd, std
 static bool HandleNextMapVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
                                std::string& reason, std::string& name, int clientNum, int id )
 {
+	if ( arg.empty() )
+	{
+		trap_SendServerCommand(
+			ent->num(), va( "print_tr %s %s",
+		                    QQ( N_( "$1$: map name not specified" ) ),
+		                    cmd.c_str() ) );
+		return false;
+	}
 	if ( G_MapExists( g_nextMap.Get().c_str() ) )
 	{
 		trap_SendServerCommand(
@@ -742,7 +758,7 @@ void G_HandleVote( gentity_t* ent )
 					    i, va( "print_tr %s %s %s", QQ( N_( "$1$^* called a team vote: $2t$" ) ),
 					           Quote( ent->client->pers.netname ),
 					           Quote( level.team[ team ].voteDisplayString ) ) );
-				
+
 					trap_SendServerCommand(
 					    i, va( "cp_tr %s %s %s", QQ( N_( "$1$^7 called a team vote:\n^7$2t$" ) ),
 					           Quote( ent->client->pers.netname ),
