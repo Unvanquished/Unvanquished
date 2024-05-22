@@ -1197,15 +1197,15 @@ const char *ClientConnect( int clientNum, bool firstTime )
 		                                Quote( client->pers.netname ) ) );
 	}
 
-	// count current clients and rank for scoreboard
-	CalculateRanks();
-
 	// if this is after !restart keepteams or !restart switchteams, apply said selection
 	if ( client->sess.restartTeam != TEAM_NONE )
 	{
 		G_ChangeTeam( ent, client->sess.restartTeam );
 		client->sess.restartTeam = TEAM_NONE;
 	}
+
+	// count current clients and rank for scoreboard
+	CalculateRanks();
 
 	return nullptr;
 }

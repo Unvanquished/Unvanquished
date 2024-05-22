@@ -284,6 +284,25 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 		return;
 	}
 
+	if ( ent->client->pers.connected != CON_CONNECTED )
+	{
+		// This can happen with /restart ktl (or admin putteam maybe?).
+		// We shouldn't call ClientSpawn if it hasn't entered the game.
+
+		ent->client->pers.team = newTeam;
+
+		// userinfo configstrings
+		ClientUserinfoChanged( ent->client->ps.clientNum, false );
+
+		// configstring restrictions
+		G_UpdateTeamConfigStrings();
+
+		// Prevent the team from getting stomped on by G_namelog_restore later
+		G_namelog_update_score( ent->client );
+
+		return;
+	}
+
 	G_LeaveTeam( ent );
 	ent->client->pers.teamChangeTime = level.time;
 	ent->client->pers.team = newTeam;
