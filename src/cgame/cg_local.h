@@ -1810,6 +1810,7 @@ extern Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshairNames;
 extern Cvar::Cvar<bool> cg_drawBuildableHealth;
 extern Cvar::Cvar<bool> cg_drawMinimap;
 extern Cvar::Cvar<int> cg_minimapActive;
+extern Cvar::Cvar<bool> cg_minimapRotate;
 extern Cvar::Cvar<float> cg_crosshairSize;
 extern Cvar::Range<Cvar::Cvar<int>> cg_teamOverlayUserinfo;
 extern Cvar::Cvar<bool> cg_draw2D;
