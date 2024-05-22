@@ -48,19 +48,12 @@ static void G_WriteClientSessionData( int clientNum )
 	const char *s;
 	const char *var;
 	gclient_t  *client = &level.clients[ clientNum ];
-	const char *behavior = G_BotGetBehavior( clientNum );
-	if ( behavior == nullptr )
-	{
-		behavior = "default";
-	}
 
-	s = va( "%i %i %i %i %i %s %s",
+	s = va( "%i %i %i %i %s",
 		client->sess.spectatorState,
 		client->sess.spectatorClient,
 		client->sess.restartTeam,
 		client->sess.seenWelcome,
-		G_BotGetSkill( clientNum ),
-		behavior,
 		Com_ClientListString( &client->sess.ignoreList )
 	);
 
@@ -82,27 +75,21 @@ void G_ReadSessionData( gclient_t *client )
 	const char *var;
 	int        spectatorState;
 	int        restartTeam;
-	int        botSkill;
-	char       botTree[ MAX_QPATH ];
 	char       ignorelist[ 17 ];
 
 	var = va( "session%i", client->num() );
 	trap_Cvar_VariableStringBuffer( var, s, sizeof( s ) );
 
-	sscanf( s, "%i %i %i %i %i %63s %16s",
+	sscanf( s, "%i %i %i %i %16s",
 	        &spectatorState,
 	        &client->sess.spectatorClient,
 	        &restartTeam,
 	        &client->sess.seenWelcome,
-	        &botSkill,
-	        botTree,
 	        ignorelist
 	      );
 
 	client->sess.spectatorState = ( spectatorState_t ) spectatorState;
 	client->sess.restartTeam = ( team_t ) restartTeam;
-	client->sess.botSkill = botSkill;
-	Q_strncpyz( client->sess.botTree, botTree, sizeof( client->sess.botTree ) );
 	Com_ClientListParse( &client->sess.ignoreList, ignorelist );
 }
 
@@ -120,8 +107,6 @@ void G_InitSessionData( gclient_t *client, const char *userinfo )
 	sess->restartTeam = TEAM_NONE;
 	sess->spectatorState = SPECTATOR_FREE;
 	sess->spectatorClient = -1;
-	sess->botSkill = 0;
-	sess->botTree[ 0 ] = '\0';
 
 	memset( &sess->ignoreList, 0, sizeof( sess->ignoreList ) );
 	sess->seenWelcome = 0;
@@ -146,6 +131,7 @@ void G_WriteSessionData()
 	{
 		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
 		{
+			ASSERT( !( g_entities[ i ].r.svFlags & SVF_BOT ) );
 			G_WriteClientSessionData( i );
 		}
 	}
