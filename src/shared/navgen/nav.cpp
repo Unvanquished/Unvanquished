@@ -1298,7 +1298,7 @@ class LadderCmd : public Cmd::StaticCmd
 public:
 	LadderCmd() : StaticCmd("printLadders", "print coordinates of ladders in navcon format") {}
 
-	void Run( const Cmd::Args& args ) const override
+	void Run( const Cmd::Args& ) const override
 	{
 		// This iterates all brushes included ones attached to movers (e.g. the ladder that
 		// goes down when a button is pressed on Chasm)

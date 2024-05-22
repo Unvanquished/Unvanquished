@@ -1301,7 +1301,7 @@ static bool build( gentity_t *self, buildable_t toBuild )
 	return true;
 }
 
-AINodeStatus_t BotActionBuildNowChosenBuildable( gentity_t *self, AIGenericNode_t *node )
+AINodeStatus_t BotActionBuildNowChosenBuildable( gentity_t *self, AIGenericNode_t * )
 {
 	if ( !isBuilder( self ) )
 	{

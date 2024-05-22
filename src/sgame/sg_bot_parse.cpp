@@ -292,12 +292,12 @@ static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
 {
 	class_t c = ( class_t ) AIUnBoxInt( params[ 0 ] );
 
-	return AIBoxInt( BotCanEvolveToClass( self, c ) &&
+	return AIBoxInt( BotIsClassAvailable( c ) &&
 		G_AlienEvolve( self, c, false, /* dryRun = */ true ) );
 }
 
 // Returns a team's momentum for use in behavior trees.
-static AIValue_t momentum( gentity_t* self, const AIValue_t *params )
+static AIValue_t momentum( gentity_t *, const AIValue_t *params )
 {
 	int requestedTeam = AIUnBoxInt( params[ 0 ] ); //is really a team_t
 	if( !G_IsPlayableTeam( requestedTeam ) )
@@ -441,7 +441,7 @@ static AIValue_t myTimer( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.time - self->botMind->myTimer );
 }
 
-static AIValue_t levelTime( gentity_t *self, const AIValue_t* )
+static AIValue_t levelTime( gentity_t *, const AIValue_t* )
 {
 	return AIBoxInt( level.matchTime );
 }

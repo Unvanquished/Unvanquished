@@ -130,7 +130,7 @@ void DebugDrawQuake::vertex(const float *pos, unsigned int color, const float* u
 	vertex(pos[0], pos[1], pos[2], color, uv[0], uv[1]);
 }
 
-void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v)
+void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color, const float, const float)
 {
 	Log::Warn("DebugDrawQuake: texture coordinates have no effect");
 	vertex(x, y, z, color);
