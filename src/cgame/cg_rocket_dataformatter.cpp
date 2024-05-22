@@ -48,7 +48,7 @@ static int GCD( int a, int b )
 	return a;
 }
 
-static const char *DisplayAspectString( int w, int h )
+static std::string DisplayAspectString( int w, int h )
 {
 	int gcd = GCD( w, h );
 
@@ -62,7 +62,7 @@ static const char *DisplayAspectString( int w, int h )
 		h = 10;
 	}
 
-	return va( "%d:%d", w, h );
+	return Str::Format( "%d:%d", w, h );
 }
 
 static void CG_Rocket_DFResolution( int handle, const char *data )
@@ -75,9 +75,8 @@ static void CG_Rocket_DFResolution( int handle, const char *data )
 		Rocket_DataFormatterFormattedData( handle, "Custom", false );
 		return;
 	}
-	char *aspectRatio = BG_strdup( DisplayAspectString( w, h ) );
-	Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio ), false );
-	BG_Free( aspectRatio );
+	std::string aspectRatio = DisplayAspectString( w, h );
+	Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio.c_str() ), false );
 }
 
 static void CG_Rocket_DFServerPing( int handle, const char *data )
