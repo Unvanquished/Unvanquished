@@ -1218,8 +1218,14 @@ Cut-down version of ClientConnect.
 Doesn't do things not relevant to bots (which are local GUIDless clients).
 ============
 */
-const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
+const char *ClientBotConnect( int clientNum, bool firstTime )
 {
+	if ( !firstTime )
+	{
+		Log::Warn( "Bot clients are not expected to carry over after restarts!" );
+		return "bot can't persist over sgame restart";
+	}
+
 	const char      *userInfoError;
 	gclient_t       *client;
 	char            userinfo[ MAX_INFO_STRING ];
@@ -1241,14 +1247,6 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	client->pers.pubkey_authenticated = true;
 	client->pers.connected = CON_CONNECTING;
 
-	// read or initialize the session data
-	if ( firstTime )
-	{
-		G_InitSessionData( client, userinfo );
-	}
-
-	G_ReadSessionData( client );
-
 	// get and distribute relevant parameters
 	G_namelog_connect( client );
 	userInfoError = ClientUserinfoChanged( clientNum, false );
@@ -1259,12 +1257,6 @@ const char *ClientBotConnect( int clientNum, bool firstTime, team_t team )
 	}
 
 	ent->r.svFlags |= SVF_BOT;
-
-	// can happen during reconnection
-	if ( !ent->botMind )
-	{
-		G_BotSetDefaults( clientNum, team, client->sess.botSkill, client->sess.botTree );
-	}
 
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^*\" \"%s^*\" [BOT]",
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,

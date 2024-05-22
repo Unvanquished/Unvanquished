@@ -244,7 +244,7 @@ bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior )
 	return true;
 }
 
-bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef behavior )
+bool G_BotSetDefaults( int clientNum, team_t team, Str::StringRef behavior )
 {
 	botMemory_t *botMind;
 	gentity_t *self = &g_entities[ clientNum ];
@@ -297,7 +297,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	}
 
 	//default bot data
-	bool okay = G_BotSetDefaults( clientNum, team, skill, behavior );
+	bool okay = G_BotSetDefaults( clientNum, team, behavior );
 
 	// register user information
 	userinfo[0] = '\0';
@@ -319,7 +319,7 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	trap_SetUserinfo( clientNum, userinfo );
 
 	// have it connect to the game as a normal client
-	if ( ( s = ClientBotConnect( clientNum, true, team ) ) )
+	if ( ( s = ClientBotConnect( clientNum, true ) ) )
 	{
 		// won't let us join
 		Log::Warn( s );

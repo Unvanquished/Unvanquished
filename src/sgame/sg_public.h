@@ -135,7 +135,7 @@ bool          SpotWouldTelefrag( gentity_t *spot );
 bool          G_IsUnnamed( const char *name );
 void              G_ClientCleanName( const char *in, char *out, size_t outSize, gclient_t *client );
 const char        *ClientConnect( int clientNum, bool firstTime );
-const char        *ClientBotConnect( int clientNum, bool firstTime, team_t team );
+const char        *ClientBotConnect( int clientNum, bool firstTime );
 const char        *ClientUserinfoChanged( int clientNum, bool forceName );
 void              ClientDisconnect( int clientNum );
 void              ClientBegin( int clientNum );

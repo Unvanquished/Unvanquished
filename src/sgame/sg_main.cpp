@@ -720,11 +720,12 @@ void G_ShutdownGame( int /* restart */ )
 		level.logGameplayFile = 0;
 	}
 
-	// write all the client session data so we can get it back
+	G_BotCleanup();
+
+	// write all the non-bot client session data so we can get it back
 	G_WriteSessionData();
 
 	G_admin_cleanup();
-	G_BotCleanup();
 	G_namelog_cleanup();
 
 	G_UnregisterCommands();
