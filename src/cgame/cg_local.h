@@ -1344,7 +1344,6 @@ struct rocketMenu_t
 };
 
 #define MAX_SERVERS 2048
-#define MAX_RESOLUTIONS 32
 #define MAX_LANGUAGES 64
 #define MAX_OUTPUTS 16
 #define MAX_MODS 64
@@ -1407,8 +1406,7 @@ struct rocketDataSource_t
 	bool buildingServerInfo;
 	bool retrievingServers;
 
-	resolution_t resolutions[ MAX_RESOLUTIONS ];
-	int resolutionCount;
+	std::vector<resolution_t> resolutions;
 	int resolutionIndex;
 
 	language_t languages[ MAX_LANGUAGES ];
