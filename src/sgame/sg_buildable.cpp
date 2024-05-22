@@ -143,7 +143,7 @@ bool G_InsideBase(gentity_t *self) {
 	return trap_InPVSIgnorePortals(self->s.origin, mainBuilding->s.origin);
 }
 
-bool G_DretchCanDamageEntity( const gentity_t *self, const gentity_t *ent )
+bool G_DretchCanDamageEntity( const gentity_t *ent )
 {
 	switch (ent->s.eType)
 	{

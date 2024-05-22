@@ -1080,7 +1080,7 @@ bool G_CheckDretchAttack( gentity_t *self )
 
 	if ( not TakesDamages( traceEnt )
 				|| G_OnSameTeam( self, traceEnt )
-				|| !G_DretchCanDamageEntity( self, traceEnt ) )
+				|| !G_DretchCanDamageEntity( traceEnt ) )
 	{
 		return false;
 	}

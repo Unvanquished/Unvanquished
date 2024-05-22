@@ -154,7 +154,6 @@ try_flag(WARNINGS           "-Woverloaded-virtual")
 try_flag(WARNINGS           "-Wstrict-null-sentinel")
 
 # remove
-try_flag(WARNINGS           "-W${WARNMODE}unused-parameter")
 try_flag(WARNINGS           "-Wno-maybe-uninitialized")
 
 try_flag(WARNINGS "/wd26812") # "The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'"

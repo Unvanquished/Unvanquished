@@ -897,7 +897,7 @@ static void BotMaybeAttackWhileClimbing( gentity_t *self )
 			// upper bound for extensions, in case a bot loops on a wall:
 			int extendedDistance = std::max( self->botMind->lastNavconDistance + distanceExtension, 4000 );
 
-			if ( ownClass == PCL_ALIEN_LEVEL0 && G_DretchCanDamageEntity( self, hit ) )
+			if ( ownClass == PCL_ALIEN_LEVEL0 && G_DretchCanDamageEntity( hit ) )
 			{
 				self->botMind->lastNavconDistance = extendedDistance;
 			}

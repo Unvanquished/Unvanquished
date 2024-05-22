@@ -228,7 +228,7 @@ class TranslateNodeHandler : public Rml::XMLNodeHandler
 		return true;
 	}
 
-	bool ElementEnd(Rml::XMLParser*, const Rml::String& data) override { return true; }
+	bool ElementEnd(Rml::XMLParser*, const Rml::String&) override { return true; }
 };
 
 class HudElement : public Rml::Element

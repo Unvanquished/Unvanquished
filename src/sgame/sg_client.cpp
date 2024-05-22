@@ -1169,7 +1169,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	// read or initialize the session data
 	if ( firstTime )
 	{
-		G_InitSessionData( client, userinfo );
+		G_InitSessionData( client );
 	}
 
 	G_ReadSessionData( client );
@@ -1228,7 +1228,6 @@ const char *ClientBotConnect( int clientNum, bool firstTime )
 
 	const char      *userInfoError;
 	gclient_t       *client;
-	char            userinfo[ MAX_INFO_STRING ];
 	gentity_t       *ent;
 
 	ent = &g_entities[ clientNum ];
@@ -1236,8 +1235,6 @@ const char *ClientBotConnect( int clientNum, bool firstTime )
 
 	ent->client = client;
 	memset( client, 0, sizeof( *client ) );
-
-	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
 	client->pers.localClient = true;
 	G_AddressParse( "localhost", &client->pers.ip );

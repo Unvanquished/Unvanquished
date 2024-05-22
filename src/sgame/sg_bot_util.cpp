@@ -566,7 +566,7 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 
 // This will only check if the bot is allowed to do so. To check if it *can*,
 // use G_AlienEvolve with dryRun = true, or just try to evolve.
-bool BotCanEvolveToClass( const gentity_t *self, class_t newClass )
+bool BotIsClassAvailable( class_t newClass )
 {
 	equipment_t<class_t>* cl = std::find( std::begin( classes ), std::end( classes ), newClass );
 
@@ -1469,7 +1469,7 @@ bool BotEntityIsValidEnemyTarget( const gentity_t *self, const gentity_t *enemy 
 	}
 
 	// dretch limitations
-	if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && !G_DretchCanDamageEntity( self, enemy ) )
+	if ( self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 && !G_DretchCanDamageEntity( enemy ) )
 	{
 		return false;
 	}
@@ -2221,7 +2221,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 		return true;
 	}
 
-	if ( !BotCanEvolveToClass( ent, newClass ) )
+	if ( !BotIsClassAvailable( newClass ) )
 	{
 		return false;
 	}
