@@ -543,8 +543,6 @@ Change team and spawn as builder at the current position
 */
 static void Cmd_Devteam_f( gentity_t *ent )
 {
-	gentity_t *spawn;
-
 	if ( trap_Argc() < 2 )
 	{
 		ADMP( "\"" N_("usage: devteam [a|h]") "\"" );
@@ -575,16 +573,14 @@ static void Cmd_Devteam_f( gentity_t *ent )
 	ent->client->pers.teamInfo = level.startTime - 1;
 	ent->client->sess.spectatorState = SPECTATOR_NOT;
 
-	spawn = G_NewEntity( NO_CBSE );
-	VectorCopy( ent->s.pos.trBase, spawn->s.pos.trBase );
-	VectorCopy( ent->s.angles, spawn->s.angles );
-	VectorCopy( ent->s.origin, spawn->s.origin );
-	VectorCopy( ent->s.angles2, spawn->s.angles2 );
+	glm::vec3 origin = VEC2GLM( ent->s.origin );
+	glm::vec3 angles = VEC2GLM( ent->client->ps.viewangles );
+	angles[ YAW ] -= 180.0f; // ClientSpawn randomly adds 180
+	ClientSpawn( ent, &g_entities[ ENTITYNUM_WORLD ], &origin[ 0 ], &angles[ 0 ] );
 
+	// bookkeeping stuff from G_ChangeTeam
 	G_UpdateTeamConfigStrings();
 	ClientUserinfoChanged( ent->client->ps.clientNum, false );
-	ClientSpawn( ent, spawn, ent->s.origin, ent->s.angles );
-	G_FreeEntity( spawn );
 }
 
 /*
