@@ -1447,19 +1447,10 @@ static void ClientSpawnCBSE(gentity_t *ent, bool evolving) {
 			break;
 
 		case PCL_HUMAN_NAKED:
-			ClientEntityCreate<NakedHumanEntity>( ent, oldEntity, client, pcl, evolving );
-			break;
-
 		case PCL_HUMAN_LIGHT:
-			ClientEntityCreate<LightHumanEntity>( ent, oldEntity, client, pcl, evolving );
-			break;
-
 		case PCL_HUMAN_MEDIUM:
-			ClientEntityCreate<MediumHumanEntity>( ent, oldEntity, client, pcl, evolving );
-			break;
-
 		case PCL_HUMAN_BSUIT:
-			ClientEntityCreate<HeavyHumanEntity>( ent, oldEntity, client, pcl, evolving );
+			ClientEntityCreate<HumanEntity>( ent, oldEntity, client, pcl, evolving );
 			break;
 
 		default:
