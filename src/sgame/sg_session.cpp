@@ -71,22 +71,24 @@ Called on a reconnect
 */
 void G_ReadSessionData( gclient_t *client )
 {
-	char       s[ MAX_STRING_CHARS ];
-	const char *var;
 	int        spectatorState;
 	int        restartTeam;
 	char       ignorelist[ 17 ];
 
-	var = va( "session%i", client->num() );
-	trap_Cvar_VariableStringBuffer( var, s, sizeof( s ) );
+	std::string var = Str::Format( "session%i", client->num() );
+	std::string data = Cvar::GetValue( var );
 
-	sscanf( s, "%i %i %i %i %16s",
+	if ( sscanf( data.c_str(), "%i %i %i %i %16s %*c",
 	        &spectatorState,
 	        &client->sess.spectatorClient,
 	        &restartTeam,
 	        &client->sess.seenWelcome,
 	        ignorelist
-	      );
+	     ) != 5 )
+	{
+		Log::Warn( "bad data in cvar %s", var );
+		return;
+	}
 
 	client->sess.spectatorState = ( spectatorState_t ) spectatorState;
 	client->sess.restartTeam = ( team_t ) restartTeam;
