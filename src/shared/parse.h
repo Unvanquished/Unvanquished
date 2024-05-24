@@ -78,20 +78,21 @@ The const char * it returns for each element (operator*) are not valid once
 the destructor is called.
 ===============
 */
-// We could have a template here to specify the delimiter.
-// But compilation times are large enough as is.
 class Parse_WordListSplitter {
 public:
-	Parse_WordListSplitter(std::string str);
+	Parse_WordListSplitter(std::string str, const char* delims = " ,");
 
 	const char *operator*() const;
 
+	// The `delims` pointer must remain valid when this is called (it's expected
+	// that string constants will be used)
 	Parse_WordListSplitter& operator++(); // only ++i is implemented. there is no i++.
 
 private:
 	std::string _string; // the string
 	size_t _start; // start of this chunk
 	size_t _stop;  // stop of this chunk
+	const char* _delims;
 };
 
 #endif // SHARED_PARSE_H_

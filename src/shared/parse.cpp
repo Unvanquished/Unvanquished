@@ -4308,10 +4308,8 @@ see the header file for the documentation
 ===============
 */
 
-static constexpr char csv_delimiters[] = ", ";
-
-Parse_WordListSplitter::Parse_WordListSplitter(std::string str)
-	: _string(std::move(str)), _stop(0)
+Parse_WordListSplitter::Parse_WordListSplitter(std::string str, const char* delims)
+	: _string(std::move(str)), _stop(0), _delims(delims)
 {
 	++*this;
 }
@@ -4326,8 +4324,8 @@ const char * Parse_WordListSplitter::operator*() const
 
 Parse_WordListSplitter& Parse_WordListSplitter::operator++()
 {
-	_start = _string.find_first_not_of(csv_delimiters, _stop);
-	_stop  = _string.find_first_of(csv_delimiters, _start);
+	_start = _string.find_first_not_of(_delims, _stop);
+	_stop  = _string.find_first_of(_delims, _start);
 	if (_stop != _string.npos) {
 		_string[_stop] = '\0';
 		++_stop;
