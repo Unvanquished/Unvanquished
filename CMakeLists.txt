@@ -144,9 +144,8 @@ set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE 1
 target_include_directories(srclibs-tinygettext PUBLIC ${LIB_DIR}/tinygettext/include)
 target_compile_definitions(srclibs-tinygettext PUBLIC TINYGETTEXT_UTF8_ONLY)
 
-# Warning options
+# Warning options for Unvanquished source code
 # keep
-try_flag(WARNINGS           "/wd4068")
 try_flag(WARNINGS           "-Wno-pragmas")
 try_flag(WARNINGS           "-Wno-unknown-pragmas")
 try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
@@ -155,8 +154,11 @@ try_flag(WARNINGS           "-Wstrict-null-sentinel")
 
 # remove
 try_flag(WARNINGS           "-Wno-maybe-uninitialized")
-
-try_flag(WARNINGS "/wd26812") # "The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'"
+try_flag(WARNINGS "/wd4127")  # conditional expression is constant
+try_flag(WARNINGS "/wd4458")  # declaration of 'XXX' hides class member
+try_flag(WARNINGS "/wd4459")  # declaration of 'XXX' hides global declaration
+try_flag(WARNINGS "/wd4701")  # potentially uninitialized local variable 'XXX' used
+try_flag(WARNINGS "/wd26812") # The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'
 
 if (BUILD_SGAME)
     include(tools/cbse/CBSE.cmake)
