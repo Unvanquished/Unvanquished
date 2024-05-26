@@ -2602,6 +2602,7 @@ static void PM_GroundClimbTrace()
 
 			// calculate angle between surf and trace
 			traceDOTsurf = DotProduct( trace.plane.normal, surfNormal );
+			traceDOTsurf = Math::Clamp( traceDOTsurf, -1.f, +1.f );
 			traceANGsurf = RAD2DEG( acosf( traceDOTsurf ) );
 
 			if ( traceANGsurf > 180.0f )
