@@ -47,7 +47,7 @@ void G_BotSetSkill( int clientNum, int skill );
 const char *G_BotGetBehavior( int clientNum );
 void G_BotChangeBehavior( int clientNum, Str::StringRef behavior );
 bool G_BotSetBehavior( botMemory_t *botMind, Str::StringRef behavior );
-bool G_BotSetDefaults( int clientNum, team_t team, int skill, Str::StringRef behavior );
+bool G_BotSetDefaults( int clientNum, team_t team, Str::StringRef behavior );
 void G_BotDel( int clientNum );
 void G_BotDelAllBots();
 void G_BotThink( gentity_t *self );

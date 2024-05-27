@@ -401,19 +401,7 @@ entities:
     # Human Classes |
     #---------------+
 
-    NakedHuman:
-        components:
-            HumanClass:
-
-    LightHuman:
-        components:
-            HumanClass:
-
-    MediumHuman:
-        components:
-            HumanClass:
-
-    HeavyHuman:
+    Human:
         components:
             HumanClass:
 

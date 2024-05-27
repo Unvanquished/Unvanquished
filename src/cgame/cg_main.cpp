@@ -70,6 +70,7 @@ Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshairNames("cg_drawCrosshairNames", "dra
 Cvar::Cvar<bool> cg_drawBuildableHealth("cg_drawBuildableHealth", "show buildable health bar when builder", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_drawMinimap("cg_drawMinimap", "show minimap", Cvar::NONE, true);
 Cvar::Cvar<int> cg_minimapActive("cg_minimapActive", "FOR INTERNAL USE", Cvar::NONE, 0);
+Cvar::Cvar<bool> cg_minimapRotate("cg_minimapRotate", "whether to rotate the minimap with the player's view", Cvar::NONE, true);
 Cvar::Cvar<float> cg_crosshairSize("cg_crosshairSize", "crosshair scale factor", Cvar::NONE, 1);
 Cvar::Cvar<bool> cg_draw2D("cg_draw2D", "show HUD", Cvar::NONE, true);
 Cvar::Cvar<bool> cg_debugAnim("cg_debuganim", "show animation debug logs", Cvar::CHEAT, false);
