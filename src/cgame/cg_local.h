@@ -1363,6 +1363,8 @@ struct server_t
 
 
 
+// 2 positive numbers is a resolution from the r_availableModes list
+// 2 negative numbers - their absolute values are a resolution not in that list
 struct resolution_t
 {
 	int width;

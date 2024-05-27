@@ -498,8 +498,9 @@ static void CG_Rocket_SetResolutionListResolution( const char*, int index )
 {
 	if ( static_cast<size_t>( index ) < rocketInfo.data.resolutions.size() )
 	{
-		Cvar::SetValue( "r_customwidth", std::to_string( rocketInfo.data.resolutions[ index ].width ) );
-		Cvar::SetValue( "r_customheight", std::to_string( rocketInfo.data.resolutions[ index ].height ) );
+		resolution_t res = rocketInfo.data.resolutions[ index ];
+		Cvar::SetValue( "r_customwidth", std::to_string( std::abs( res.width ) ) );
+		Cvar::SetValue( "r_customheight", std::to_string( std::abs( res.height ) ) );
 		Cvar::SetValue( "r_mode", "-1" );
 		rocketInfo.data.resolutionIndex = index;
 	}
@@ -523,8 +524,8 @@ static void SelectCurrentResolution()
 		}
 	}
 
-	rocketInfo.data.resolutionIndex = int(rocketInfo.data.resolutions.size());
-	rocketInfo.data.resolutions.push_back( {-1, -1} );
+	rocketInfo.data.resolutionIndex = 0;
+	rocketInfo.data.resolutions.insert( rocketInfo.data.resolutions.begin(), {-width, -height} );
 }
 
 static void CG_Rocket_BuildResolutionList( const char* )
