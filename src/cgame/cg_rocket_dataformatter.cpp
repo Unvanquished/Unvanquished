@@ -65,18 +65,22 @@ static std::string DisplayAspectString( int w, int h )
 	return Str::Format( "%d:%d", w, h );
 }
 
+// see resolution_t
 static void CG_Rocket_DFResolution( int handle, const char *data )
 {
 	int w = atoi( Info_ValueForKey(data, "1" ) );
 	int h = atoi( Info_ValueForKey(data, "2" ) );
 
-	if ( w == -1 || h == -1 )
+	if ( w < 0 )
 	{
-		Rocket_DataFormatterFormattedData( handle, "Custom", false );
-		return;
+		std::string displayString = Str::Format( _( "Custom: %dx%d" ), -w, -h );
+		Rocket_DataFormatterFormattedData( handle, displayString.c_str(), false);
 	}
-	std::string aspectRatio = DisplayAspectString( w, h );
-	Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio.c_str() ), false );
+	else
+	{
+		std::string aspectRatio = DisplayAspectString( w, h );
+		Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio.c_str() ), false );
+	}
 }
 
 static void CG_Rocket_DFServerPing( int handle, const char *data )
