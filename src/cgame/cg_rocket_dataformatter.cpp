@@ -76,6 +76,12 @@ static void CG_Rocket_DFResolution( int handle, const char *data )
 		std::string displayString = Str::Format( _( "Custom: %dx%d" ), -w, -h );
 		Rocket_DataFormatterFormattedData( handle, displayString.c_str(), false);
 	}
+	else if ( w == 0 )
+	{
+		// TODO(0.55): show dimensions of screen
+		std::string displayString = _( "Same as screen" );
+		Rocket_DataFormatterFormattedData( handle, displayString.c_str(), false);
+	}
 	else
 	{
 		std::string aspectRatio = DisplayAspectString( w, h );

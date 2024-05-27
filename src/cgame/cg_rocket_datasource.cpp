@@ -499,20 +499,35 @@ static void CG_Rocket_SetResolutionListResolution( const char*, int index )
 	if ( static_cast<size_t>( index ) < rocketInfo.data.resolutions.size() )
 	{
 		resolution_t res = rocketInfo.data.resolutions[ index ];
-		Cvar::SetValue( "r_customwidth", std::to_string( std::abs( res.width ) ) );
-		Cvar::SetValue( "r_customheight", std::to_string( std::abs( res.height ) ) );
-		Cvar::SetValue( "r_mode", "-1" );
+
+		if ( res.width == 0 )
+		{
+			Cvar::SetValue( "r_mode", "-2" );
+		} else {
+			Cvar::SetValue( "r_customwidth", std::to_string( std::abs( res.width ) ) );
+			Cvar::SetValue( "r_customheight", std::to_string( std::abs( res.height ) ) );
+			Cvar::SetValue( "r_mode", "-1" );
+		}
+
 		rocketInfo.data.resolutionIndex = index;
 	}
 }
 
 static void SelectCurrentResolution()
 {
-	int width, height;
-	if ( !Str::ParseInt( width, Cvar::GetValue( "r_customwidth" ) ) ||
-	     !Str::ParseInt( height, Cvar::GetValue( "r_customheight" ) ) )
+	int mode;
+	if ( !Str::ParseInt( mode, Cvar::GetValue( "r_mode" ) ) )
 	{
 		return;
+	}
+
+	int width = cgs.glconfig.vidWidth;
+	int height = cgs.glconfig.vidHeight;
+
+	// TODO(0.55): verify that current size equals display size
+	if ( mode == -2 /* && width == cgs.glconfig.displayWidth && height == cgs.glconfig.displayHeight */ )
+	{
+		width = height = 0; // see resolution_t comment
 	}
 
 	for ( const resolution_t &res : rocketInfo.data.resolutions )
@@ -533,6 +548,9 @@ static void CG_Rocket_BuildResolutionList( const char* )
 	rocketInfo.data.resolutions.clear();
 	rocketInfo.data.resolutionIndex = -1;
 
+	// Add "Same as screen" option
+	rocketInfo.data.resolutions.push_back( {0, 0} );
+
 	for ( Parse_WordListSplitter parse(Cvar::GetValue( "r_availableModes" )); *parse; ++parse )
 	{
 		resolution_t resolution;
@@ -543,7 +561,7 @@ static void CG_Rocket_BuildResolutionList( const char* )
 	}
 
 	// Sort resolutions by size by default (larger first).
-	std::sort( rocketInfo.data.resolutions.begin(), rocketInfo.data.resolutions.end(),
+	std::sort( rocketInfo.data.resolutions.begin() + 1, rocketInfo.data.resolutions.end(),
 	           [](const resolution_t& a, const resolution_t& b) { return a.width * a.height > b.width * b.height; });
 
 	SelectCurrentResolution();
