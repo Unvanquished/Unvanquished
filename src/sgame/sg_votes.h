@@ -55,12 +55,12 @@ enum VoteOptions
 //   cmd: callvote or callteamvote
 //   arg: vote argument if VoteTarget is not T_NONE. Will be empty if VoteTarget is T_NONE
 //   reason: reason if reasonNeeded is qyes or qmaybe. Will be empty if qno and maybe empty if qmaybe.
-//   name: Sanitized target name if VoteTarget is T_PLAYER. nullptr otherwise.
+//   name: Sanitized target name if VoteTarget is T_PLAYER. Empty otherwise.
 //   clientNum: Vote target is VoteTarget is T_PLAYER. -1 otherwise.
 //   id: Namelog id if VoteTarget is T_PLAYER. -1 otherwise.
 using VoteHandler =
-	std::function<bool( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                        std::string& reason, std::string& name, int clientNum, int id )>;
+	std::function<bool( gentity_t* ent, team_t team, const std::string& cmd, const std::string& arg,
+                        std::string& reason, const std::string& name, int clientNum, int id )>;
 
 struct VoteDefinition
 {

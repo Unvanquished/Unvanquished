@@ -180,7 +180,7 @@ CG_AlienBuildableDying
 Called for alien buildables that are about to blow up
 =================
 */
-void CG_AlienBuildableDying( buildable_t buildable, vec3_t origin )
+void CG_AlienBuildableDying( buildable_t, vec3_t origin )
 {
 	trap_S_StartSound( origin, ENTITYNUM_WORLD, soundChannel_t::CHAN_AUTO, 
 	                   ( rand() % 2 ? cgs.media.alienBuildableDying1 : cgs.media.alienBuildableDying2 ) );

@@ -98,7 +98,7 @@ int        BotGetDesiredBuy( gentity_t *self, weapon_t &weapon, upgrade_t upgrad
 float CalcAimPitch( gentity_t *self, glm::vec3& pos, float launchSpeed );
 float CalcPounceAimPitch( gentity_t *self, glm::vec3 &pos );
 float CalcBarbAimPitch( gentity_t *self, glm::vec3 & pos );
-bool BotCanEvolveToClass( const gentity_t *self, class_t newClass );
+bool BotIsClassAvailable( class_t newClass );
 bool BotEvolveToClass( gentity_t *ent, class_t newClass );
 
 //g_bot_nav.c

@@ -171,7 +171,7 @@ static float MissileTimeSplashDmgMod( gentity_t *self )
 #define MIB_FREE        ( MIF_NO_DAMAGE | MIF_NO_EFFECT ) // Quietly remove the missile.
 #define MIB_BOUNCE      ( MIF_NO_DAMAGE | MIF_NO_EFFECT | MIF_NO_FREE ) // Continue flight.
 
-static int ImpactGrenade( gentity_t *ent, const trace2_t *trace, gentity_t *hitEnt )
+static int ImpactGrenade( gentity_t *ent, const trace2_t *trace, gentity_t * )
 {
 	BounceMissile( ent, trace );
 
@@ -298,7 +298,7 @@ static int ImpactSlowblob( gentity_t *ent, const trace2_t *trace, gentity_t *hit
 	return impactFlags;
 }
 
-static int ImpactHive( gentity_t *ent, const trace2_t*, gentity_t *hitEnt )
+static int ImpactHive( gentity_t *, const trace2_t*, gentity_t *hitEnt )
 {
 	// Damage only humans and do so quietly.
 	if ( hitEnt->client && hitEnt->client->pers.team == TEAM_HUMANS )

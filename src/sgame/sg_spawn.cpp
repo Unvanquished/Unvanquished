@@ -136,14 +136,26 @@ bool G_SpawnInt( const char *key, const char *defaultString, int *out )
 	return present;
 }
 
-bool  G_SpawnVector( const char *key, const char *defaultString, float *out )
+bool G_SpawnVector( const char *key, const char *defaultString, vec3_t out )
 {
 	char     *s;
-	bool present;
 
-	present = G_SpawnString( key, defaultString, &s );
-	sscanf( s, "%f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ] );
-	return present;
+	if ( G_SpawnString( key, defaultString, &s ) )
+	{
+		if ( 3 == sscanf( s, "%f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ] ) )
+		{
+			return true;
+		}
+
+		Log::Warn( "G_SpawnVector: invalid string '%s'", s );
+	}
+
+	if ( 3 != sscanf( defaultString, "%f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ] ) )
+	{
+		ASSERT_UNREACHABLE();
+	}
+
+	return false;
 }
 
 //
@@ -1043,7 +1055,6 @@ Every map should have exactly one.
 static void SP_worldspawn()
 {
 	char *s;
-	float reverbIntensity = 1.0f;
 
 	G_SpawnString( "classname", "", &s );
 
@@ -1072,10 +1083,13 @@ static void SP_worldspawn()
 		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", -1, 0.0f, s ) );
 	}
 
-	if(G_SpawnString( "reverbIntensity", "", &s ))
-		sscanf( s, "%f", &reverbIntensity );
-	if(G_SpawnString( "reverbEffect", "", &s ))
-		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s %f", 0, 0.0f, s, Math::Clamp( reverbIntensity, 0.0f, 2.0f ) ) );
+	if ( G_SpawnString( "reverbEffect", "", &s ) ) {
+		float reverbIntensity;
+		G_SpawnFloat( "reverbIntensity", "1", &reverbIntensity );
+		reverbIntensity = Math::Clamp( reverbIntensity, 0.0f, 2.0f );
+		
+		trap_SetConfigstring( CS_REVERB_EFFECTS, va( "%i %f %s %f", 0, 0.0f, s, reverbIntensity ) );
+	}
 
 	trap_SetConfigstring( CS_MOTD, g_motd.Get().c_str() );  // message of the day
 

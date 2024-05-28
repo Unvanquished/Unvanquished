@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "sg_local.h"
 #include "sg_spawn.h"
 
-void SP_pos_player_spawn( gentity_t *self )
+void SP_pos_player_spawn( gentity_t * )
 {
 }
 

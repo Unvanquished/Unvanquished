@@ -47,8 +47,8 @@ static bool botFillVoteParseArg( int& argnum, Str::StringRef arg )
 	}
 }
 
-static bool HandleKickVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                            std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleKickVote( gentity_t* ent, team_t team, const std::string&, const std::string&,
+                            std::string& reason, const std::string& name, int clientNum, int )
 {
 	Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 	             "ban %s 1s%s %s^* called vote kick (%s^*)", level.clients[ clientNum ].pers.ip.str,
@@ -60,8 +60,8 @@ static bool HandleKickVote( gentity_t* ent, team_t team, std::string& cmd, std::
 	return true;
 }
 
-static bool HandleSpectateVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                                std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleSpectateVote( gentity_t*, team_t team, const std::string&, const std::string&,
+                                std::string&, const std::string& name, int clientNum, int )
 {
 	Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 	             "speclock %d 1s%s", clientNum, Cmd::Escape( g_adminTempBan.Get() ).c_str() );
@@ -71,8 +71,8 @@ static bool HandleSpectateVote( gentity_t* ent, team_t team, std::string& cmd, s
 	return true;
 }
 
-static bool HandleMuteVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                            std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleMuteVote( gentity_t* ent, team_t team, const std::string& cmd, const std::string&,
+                            std::string&, const std::string& name, int clientNum, int id )
 {
 	if ( level.clients[ clientNum ].pers.namelog->muted )
 	{
@@ -90,8 +90,8 @@ static bool HandleMuteVote( gentity_t* ent, team_t team, std::string& cmd, std::
 	return true;
 }
 
-static bool HandleUnmuteVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                              std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleUnmuteVote( gentity_t* ent, team_t team, const std::string& cmd, const std::string&,
+                              std::string&, const std::string& name, int clientNum, int id )
 {
 	if ( !level.clients[ clientNum ].pers.namelog->muted )
 	{
@@ -109,8 +109,8 @@ static bool HandleUnmuteVote( gentity_t* ent, team_t team, std::string& cmd, std
 	return true;
 }
 
-static bool HandleDenybuildVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                                 std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleDenybuildVote( gentity_t* ent, team_t team, const std::string& cmd, const std::string&,
+                                 std::string&, const std::string& name, int clientNum, int id )
 {
 	if ( level.clients[ clientNum ].pers.namelog->denyBuild )
 	{
@@ -128,8 +128,8 @@ static bool HandleDenybuildVote( gentity_t* ent, team_t team, std::string& cmd, 
 	return true;
 }
 
-static bool HandleAllowbuildVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                                  std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleAllowbuildVote( gentity_t* ent, team_t team, const std::string& cmd, const std::string&,
+                                  std::string&, const std::string& name, int clientNum, int id )
 {
 	if ( !level.clients[ clientNum ].pers.namelog->denyBuild )
 	{
@@ -147,8 +147,8 @@ static bool HandleAllowbuildVote( gentity_t* ent, team_t team, std::string& cmd,
 	return true;
 }
 
-static bool HandleExtendVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                              std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleExtendVote( gentity_t*, team_t team, const std::string&, const std::string&,
+                              std::string&, const std::string&, int, int )
 {
 	Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "time %i",
 	             level.timelimit + g_extendVotesTime.Get() );
@@ -158,8 +158,8 @@ static bool HandleExtendVote( gentity_t* ent, team_t team, std::string& cmd, std
 	return true;
 }
 
-static bool HandleAdmitDefeatVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                                   std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleAdmitDefeatVote( gentity_t*, team_t team, const std::string&, const std::string&,
+                                   std::string&, const std::string&, int, int )
 {
 	level.team[ team ].voteDelay = 3000;
 	Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
@@ -168,8 +168,8 @@ static bool HandleAdmitDefeatVote( gentity_t* ent, team_t team, std::string& cmd
 	return true;
 }
 
-static bool HandleDrawVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                            std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleDrawVote( gentity_t*, team_t team, const std::string&, const std::string&,
+                            std::string&, const std::string&, int, int )
 {
 	level.team[ team ].voteDelay = 3000;
 	strcpy( level.team[ team ].voteString, "evacuation" );
@@ -177,8 +177,8 @@ static bool HandleDrawVote( gentity_t* ent, team_t team, std::string& cmd, std::
 	return true;
 }
 
-static bool HandleMapRestart( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                              std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleMapRestart( gentity_t*, team_t team, const std::string&, const std::string&,
+                              std::string&, const std::string&, int, int )
 {
 	strcpy( level.team[ team ].voteString, "map_restart" );
 	strcpy( level.team[ team ].voteDisplayString, "Restart current map" );
@@ -186,8 +186,8 @@ static bool HandleMapRestart( gentity_t* ent, team_t team, std::string& cmd, std
 	return true;
 }
 
-static bool HandleMapVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                           std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleMapVote( gentity_t* ent, team_t team, const std::string& cmd, const std::string& arg,
+                           std::string& reason, const std::string&, int, int )
 {
 	if ( arg.empty() )
 	{
@@ -230,8 +230,8 @@ static bool HandleMapVote( gentity_t* ent, team_t team, std::string& cmd, std::s
 	return true;
 }
 
-static bool HandleLayoutVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                              std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleLayoutVote( gentity_t* ent, team_t team, const std::string&, const std::string& arg,
+                              std::string&, const std::string&, int, int )
 {
 	if ( Q_stricmp( arg.c_str(), S_BUILTIN_LAYOUT ) &&
 	     !G_LayoutExists( Cvar::GetValue( "mapname" ), arg ) )
@@ -252,8 +252,8 @@ static bool HandleLayoutVote( gentity_t* ent, team_t team, std::string& cmd, std
 	return true;
 }
 
-static bool HandleNextMapVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                               std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleNextMapVote( gentity_t* ent, team_t team, const std::string& cmd, const std::string& arg,
+                               std::string& reason, const std::string&, int, int )
 {
 	if ( arg.empty() )
 	{
@@ -303,8 +303,8 @@ static bool HandleNextMapVote( gentity_t* ent, team_t team, std::string& cmd, st
 	return true;
 }
 
-static bool HandlePollVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                            std::string& reason, std::string& name, int clientNum, int id )
+static bool HandlePollVote( gentity_t*, team_t team, const std::string&, const std::string&,
+                            std::string& reason, const std::string&, int, int )
 {
 	level.team[ team ].voteString[ 0 ] = '\0';
 	Com_sprintf( level.team[ team ].voteDisplayString,
@@ -313,8 +313,8 @@ static bool HandlePollVote( gentity_t* ent, team_t team, std::string& cmd, std::
 	return true;
 }
 
-static bool HandleKickbotsVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                                std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleKickbotsVote( gentity_t* ent, team_t team, const std::string& cmd, const std::string&,
+                                std::string&, const std::string&, int, int )
 {
 	int numBots = 0;
 	for ( const auto& t : level.team )
@@ -337,8 +337,8 @@ static bool HandleKickbotsVote( gentity_t* ent, team_t team, std::string& cmd, s
 	return true;
 }
 
-static bool HandleFillBotsVote( gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-                                std::string& reason, std::string& name, int clientNum, int id )
+static bool HandleFillBotsVote( gentity_t* ent, team_t team, const std::string& cmd, const std::string& arg,
+                                std::string&, const std::string&, int, int  )
 {
 	int num = 0;
 	if ( !botFillVoteParseArg( num, arg ) )
@@ -358,9 +358,9 @@ static bool HandleFillBotsVote( gentity_t* ent, team_t team, std::string& cmd, s
 	return true;
 }
 
-static bool HandleFillBotsHumanVote( gentity_t* ent, team_t team, std::string& cmd,
-                                     std::string& arg, std::string& reason, std::string& name,
-                                     int clientNum, int id )
+static bool HandleFillBotsHumanVote( gentity_t* ent, team_t team, const std::string& cmd,
+                                     const std::string& arg, std::string&, const std::string&,
+                                     int, int )
 {
 	int num = 0;
 	if ( !botFillVoteParseArg( num, arg ) )
@@ -380,9 +380,9 @@ static bool HandleFillBotsHumanVote( gentity_t* ent, team_t team, std::string& c
 	return true;
 }
 
-static bool HandleFillBotsAliensVote( gentity_t* ent, team_t team, std::string& cmd,
-                                      std::string& arg, std::string& reason, std::string& name,
-                                      int clientNum, int id )
+static bool HandleFillBotsAliensVote( gentity_t* ent, team_t team, const std::string& cmd,
+                                      const std::string& arg, std::string&, const std::string&,
+                                      int, int )
 {
 	int num = 0;
 	if ( !botFillVoteParseArg( num, arg ) )
@@ -1017,8 +1017,8 @@ static std::string VoteEscape( Str::StringRef s )
 // We only want to escape for commands that are executed. For display only, there is no injection
 // concern, so don't escape those.
 static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, team_t team,
-                                         std::string& cmd, std::string& arg, std::string& reason,
-                                         std::string& name, int clientNum, int id, bool escape )
+                                         const std::string&, const std::string& arg, std::string& reason,
+                                         const std::string& name, int clientNum, int id, bool escape )
 {
 	std::unordered_map<std::string, std::string> params = {
 		{ "team", BG_TeamNamePlural( team ) },
@@ -1076,8 +1076,8 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 	}
 	it = voteInfo.emplace( std::move( vote ), std::move( def ) ).first;
 	auto handler = [ vt = std::move( voteTemplate ), dt = std::move( displayTemplate ) ](
-					   gentity_t* ent, team_t team, std::string& cmd, std::string& arg,
-					   std::string& reason, std::string& name, int clientNum, int id )
+					   gentity_t* ent, team_t team, const std::string& cmd, const std::string& arg,
+					   std::string& reason, const std::string& name, int clientNum, int id )
 	{
 		std::string voteCmd =
 			G_HandleVoteTemplate( vt, ent, team, cmd, arg, reason, name, clientNum, id, true );

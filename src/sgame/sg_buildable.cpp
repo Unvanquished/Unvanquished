@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "common/FileSystem.h"
 #include "shared/bg_gameplay.h"
+#include "shared/parse.h"
 #include "sg_local.h"
 #include "CustomSurfaceFlags.h"
 #include "Entities.h"
@@ -142,7 +143,7 @@ bool G_InsideBase(gentity_t *self) {
 	return trap_InPVSIgnorePortals(self->s.origin, mainBuilding->s.origin);
 }
 
-bool G_DretchCanDamageEntity( const gentity_t *self, const gentity_t *ent )
+bool G_DretchCanDamageEntity( const gentity_t *ent )
 {
 	switch (ent->s.eType)
 	{
@@ -2291,80 +2292,61 @@ static void LayoutBuildItem( buildable_t buildable, vec3_t origin,
 
 void G_LayoutLoad()
 {
-	fileHandle_t f;
-	int          len;
-	char         *layout, *layoutHead;
-	char         map[ MAX_QPATH ];
-	char         buildName[ MAX_TOKEN_CHARS ];
-	int          buildable;
-	vec3_t       origin = { 0.0f, 0.0f, 0.0f };
-	vec3_t       angles = { 0.0f, 0.0f, 0.0f };
-	vec3_t       origin2 = { 0.0f, 0.0f, 0.0f };
-	vec3_t       angles2 = { 0.0f, 0.0f, 0.0f };
-	char         line[ MAX_STRING_CHARS ];
-	int          i = 0;
-	const buildableAttributes_t *attr;
-
 	if ( !level.layout[ 0 ] || !Q_stricmp( level.layout, S_BUILTIN_LAYOUT ) )
 	{
 		return;
 	}
 
-	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-	len = BG_FOpenGameOrPakPath( va( "layouts/%s/%s.dat", map, level.layout ), f );
-
+	int f;
+	std::string path = Str::Format( "layouts/%s/%s.dat" , Cvar::GetValue( "mapname" ), level.layout );
+	int len = BG_FOpenGameOrPakPath( path, f );
 	if ( len < 0 )
 	{
 		Log::Warn( "layout %s could not be opened", level.layout );
 		return;
 	}
 
-	layoutHead = layout = (char*) BG_Alloc( len + 1 );
-	trap_FS_Read( layout, len, f );
-	layout[ len ] = '\0';
+	std::string data;
+	data.resize( len );
+	trap_FS_Read( &data[ 0 ], len, f );
 	trap_FS_FCloseFile( f );
 
-	while ( *layout )
+	for ( Parse_WordListSplitter parse{std::move( data ), "\n"}; *parse; ++parse )
 	{
-		if ( i >= (int) sizeof( line ) - 1 )
+		char         buildName[ 128 ];
+		vec3_t       origin;
+		vec3_t       angles;
+		vec3_t       origin2;
+		vec3_t       angles2;
+
+		int n = sscanf( *parse, "%127s %f %f %f %f %f %f %f %f %f %f %f %f",
+		                buildName,
+		                &origin[ 0 ], &origin[ 1 ], &origin[ 2 ],
+		                &angles[ 0 ], &angles[ 1 ], &angles[ 2 ],
+		                &origin2[ 0 ], &origin2[ 1 ], &origin2[ 2 ],
+		                &angles2[ 0 ], &angles2[ 1 ], &angles2[ 2 ] );
+
+		if ( n != 13 )
 		{
-			Log::Warn( "line overflow in %s before \"%s\"",
-			          va( "layouts/%s/%s.dat", map, level.layout ), line );
-			break;
+			if ( n > 0 )
+			{
+				Log::Warn( "bad line in layout %s: '%s'", path, *parse );
+			}
+
+			continue;
 		}
 
-		line[ i++ ] = *layout;
-		line[ i ] = '\0';
+		const buildableAttributes_t *attr = BG_BuildableByName( buildName );
 
-		if ( *layout == '\n' )
+		if ( attr->number == BA_NONE )
 		{
-			i = 0;
-			sscanf( line, "%1023s %f %f %f %f %f %f %f %f %f %f %f %f\n",
-			        buildName,
-			        &origin[ 0 ], &origin[ 1 ], &origin[ 2 ],
-			        &angles[ 0 ], &angles[ 1 ], &angles[ 2 ],
-			        &origin2[ 0 ], &origin2[ 1 ], &origin2[ 2 ],
-			        &angles2[ 0 ], &angles2[ 1 ], &angles2[ 2 ] );
-
-			attr = BG_BuildableByName( buildName );
-			buildable = attr->number;
-
-			if ( buildable <= BA_NONE || buildable >= BA_NUM_BUILDABLES )
-			{
-				Log::Warn( "bad buildable name (%s) in layout."
-				          " skipping", buildName );
-			}
-			else
-			{
-				LayoutBuildItem( (buildable_t) buildable, origin, angles, origin2, angles2 );
-				level.team[ attr->team ].layoutBuildPoints += attr->buildPoints;
-			}
+			Log::Warn( "bad buildable name (%s) in layout. skipping", buildName );
+			continue;
 		}
 
-		layout++;
+		LayoutBuildItem( attr->number, origin, angles, origin2, angles2 );
+		level.team[ attr->team ].layoutBuildPoints += attr->buildPoints;
 	}
-
-	BG_Free( layoutHead );
 }
 
 void G_BaseSelfDestruct( team_t team )
