@@ -2612,6 +2612,7 @@ static void PM_GroundClimbTrace()
 
 			// calculate angle between trace and ref
 			traceDOTref = DotProduct( trace.plane.normal, refNormal );
+			traceDOTref = Math::Clamp( traceDOTref, -1.f, +1.f );
 			traceANGref = RAD2DEG( acosf( traceDOTref ) );
 
 			if ( traceANGref > 180.0f )
@@ -2621,6 +2622,7 @@ static void PM_GroundClimbTrace()
 
 			// calculate angle between surf and ref
 			surfDOTref = DotProduct( surfNormal, refNormal );
+			surfDOTref = Math::Clamp( surfDOTref, -1.f, +1.f );
 			surfANGref = RAD2DEG( acosf( surfDOTref ) );
 
 			if ( surfANGref > 180.0f )
@@ -2649,6 +2651,7 @@ static void PM_GroundClimbTrace()
 
 					//calculate angle between refTOtrace and refTOsurfTOtrace
 					rTtDOTrTsTt = DotProduct( refTOtrace, refTOsurfTOtrace );
+					rTtDOTrTsTt = Math::Clamp( rTtDOTrTsTt, -1.f, +1.f );
 					rTtANGrTsTt = ANGLE2SHORT( RAD2DEG( acosf( rTtDOTrTsTt ) ) );
 
 					if ( rTtANGrTsTt > 32768 )
