@@ -95,7 +95,7 @@ Geometry() : verts( 0 ), nverts( 0 ) {}
 
 void init( const float *v, int nv, const int *tris, int ntris ){
 	verts = new float[ nv * 3 ];
-	memcpy( verts, v, sizeof( float ) * nv * 3 );
+	std::copy_n( v, nv * 3, verts );
 
 	nverts = nv;
 
