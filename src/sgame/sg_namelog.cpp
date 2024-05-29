@@ -100,7 +100,7 @@ void G_namelog_connect( gclient_t *client )
 		i--;
 	}
 
-	memcpy( &n->ip[ i ], &client->pers.ip, sizeof( n->ip[ i ] ) );
+	n->ip[ i ] = client->pers.ip;
 }
 
 void G_namelog_disconnect( gclient_t *client )

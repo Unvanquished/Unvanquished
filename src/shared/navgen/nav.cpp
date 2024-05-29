@@ -825,7 +825,7 @@ static NavgenStatus rasterizeTileLayers( Geometry& geo, rcContext &context, int 
 
 	const float tcs = mcfg.tileSize * mcfg.cs;
 
-	memcpy( &cfg, &mcfg, sizeof( cfg ) );
+	cfg = mcfg;
 
 	// find tile bounds
 	// easy optimisation here: avoid recalculating things Y * X times
