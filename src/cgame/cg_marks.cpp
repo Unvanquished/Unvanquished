@@ -243,7 +243,7 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 		mark->color[ 1 ] = green;
 		mark->color[ 2 ] = blue;
 		mark->color[ 3 ] = alpha;
-		memcpy( mark->verts, verts, mf->numPoints * sizeof( verts[ 0 ] ) );
+		std::copy_n( verts, mf->numPoints, mark->verts );
 		markTotal++;
 	}
 }

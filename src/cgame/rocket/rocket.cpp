@@ -184,7 +184,7 @@ public:
 		this->verts = createVertexArray( verticies, numVerticies );
 
 		this->indices = new int[ _numIndicies ];
-		memcpy( indices, _indices, _numIndicies * sizeof( int ) );
+		std::copy_n( _indices, _numIndicies, this->indices );
 
 		this->shader = shader;
 	}
