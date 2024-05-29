@@ -75,6 +75,10 @@ jobs:
         sudo apt-get update
         sudo apt-get -y -q --no-install-recommends install libfreetype6-dev liblua5.2-dev python3-yaml python3-jinja2 ninja-build
         git submodule update --init --recursive
+
+        curl -sS https://gitlab.com/illwieckz/git-checkout-modules/raw/master/git-checkout-modules -o ~/git-checkout-modules
+        bash ~/git-checkout-modules --update --sub-ref="${GITHUB_HEAD_REF}:has=/sync$" --print
+
         export CMAKE_BUILD_PARALLEL_LEVEL="$(nproc)"
         cmake -S. -Bbuild -GNinja -DBUILD_CLIENT=OFF -DBUILD_TTY_CLIENT=OFF -DBUILD_SERVER=OFF -DBUILD_GAME_NATIVE_DLL=ON -DBUILD_GAME_NATIVE_EXE=ON -DBUILD_GAME_NACL=OFF
         cmake --build build
