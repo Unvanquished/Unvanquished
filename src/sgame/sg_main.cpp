@@ -2216,7 +2216,7 @@ void G_RunFrame( int levelTime )
 
 	G_CheckPmoveParamChanges();
 
-	int numBuildables[ BA_NUM_BUILDABLES ] = {};
+	std::array<int, BA_NUM_BUILDABLES> numBuildables = {};
 
 	// go through all allocated objects
 	ent = &g_entities[ 0 ];
@@ -2363,7 +2363,7 @@ void G_RunFrame( int levelTime )
 	BotDebugDrawMesh();
 	G_BotUpdateObstacles();
 
-	memcpy( level.numBuildablesEstimate, numBuildables, sizeof( level.numBuildablesEstimate ) );
+	level.numBuildablesEstimate = numBuildables;
 }
 
 void G_PrepareEntityNetCode() {

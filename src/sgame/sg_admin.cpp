@@ -2804,7 +2804,7 @@ static g_admin_ban_t *admin_create_ban_entry( gentity_t *ent, char *netname, cha
 	b->id = id;
 	Q_strncpyz( b->name, netname, sizeof( b->name ) );
 	Q_strncpyz( b->guid, guid, sizeof( b->guid ) );
-	memcpy( &b->ip, ip, sizeof( b->ip ) );
+	b->ip = *ip;
 
 	Com_sprintf( b->made, sizeof( b->made ), "%04i-%02i-%02i %02i:%02i:%02i",
 	             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
