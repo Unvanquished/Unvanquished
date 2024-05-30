@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // gameinfo.c
 //
 
+#include "common/Common.h"
 #include "common/FileSystem.h"
 #include "cg_local.h"
 

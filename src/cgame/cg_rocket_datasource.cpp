@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 static bool AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )

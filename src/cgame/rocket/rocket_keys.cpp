@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "rocket.h"
 #include "rocketKeyBinder.h"
 #include "../cg_key_name.h"

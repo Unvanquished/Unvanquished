@@ -25,6 +25,7 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
 // cg_beacon.c
 // beacon code shared by HUD and minimap
 
+#include "common/Common.h"
 #include "shared/parse.h"
 #include "cg_local.h"
 

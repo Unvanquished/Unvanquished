@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "cg_segmented_skeleton.h"
 
 static int BoneLookup(const clientInfo_t* ci, const char* name)

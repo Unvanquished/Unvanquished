@@ -23,8 +23,8 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 */
 
 
+#include "common/Common.h"
 #include "bg_gameplay.h"
-#include "engine/qcommon/q_shared.h"
 
 /*
  * This file contains gameplay constants.

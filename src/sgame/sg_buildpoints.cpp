@@ -22,6 +22,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "sg_local.h"
 #include "CBSE.h"
 

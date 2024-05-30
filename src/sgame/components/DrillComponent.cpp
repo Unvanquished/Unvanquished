@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "DrillComponent.h"
 
 DrillComponent::DrillComponent(Entity& entity, HumanBuildableComponent& r_HumanBuildableComponent, MiningComponent& r_MiningComponent)

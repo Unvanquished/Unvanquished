@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "../../cg_local.h"
 #include "register_lua_extensions.h"
 

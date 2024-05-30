@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "ArmouryComponent.h"
 
 ArmouryComponent::ArmouryComponent(Entity& entity, HumanBuildableComponent& r_HumanBuildableComponent)

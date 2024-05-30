@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // these are processed at snapshot transition time, so there will definitely
 // be a valid snapshot this frame
 
+#include "common/Common.h"
 #include "cg_local.h"
 #include "shared/CommonProxies.h"
 

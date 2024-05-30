@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "MainBuildableComponent.h"
 
 MainBuildableComponent::MainBuildableComponent(Entity& entity, BuildableComponent& r_BuildableComponent)

@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "SpawnerComponent.h"
 #include "../Entities.h"
 #include "common/Util.h"

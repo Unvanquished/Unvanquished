@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 static float CG_Rocket_GetLoadProgress()

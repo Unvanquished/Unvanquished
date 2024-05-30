@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "SpikerComponent.h"
 
 #include <glm/geometric.hpp>

@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // For commands that can only be used by the server console, see sg_svcmds.cpp.
 // For gameplay commands/commands that can be done by any network client, see sg_cmds.cpp.
 
+#include "common/Common.h"
 #include "sg_local.h"
 
 #include <glm/gtx/norm.hpp>

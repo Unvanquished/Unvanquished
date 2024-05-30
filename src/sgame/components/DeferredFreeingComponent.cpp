@@ -22,6 +22,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "DeferredFreeingComponent.h"
 
 DeferredFreeingComponent::DeferredFreeingComponent(Entity &entity)

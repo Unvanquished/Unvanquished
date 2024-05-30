@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // For commands which can only be performed by the server console, see sg_svcmds.cpp.
 // For administrator commands (requiring authentication), see sg_admin.cpp.
 
+#include "common/Common.h"
 #include "sg_local.h"
 #include "engine/qcommon/q_unicode.h"
 #include "botlib/bot_api.h"
