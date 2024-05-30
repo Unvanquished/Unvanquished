@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "shared/parse.h"
 #ifdef BUILD_CGAME
 #include "cgame/cg_local.h"

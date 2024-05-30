@@ -26,8 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // bg_voice.c -- both games voice functions
+#include "common/Common.h"
 #include "common/FileSystem.h"
-#include "engine/qcommon/q_shared.h"
 #include "shared/parse.h"
 #include "bg_public.h"
 

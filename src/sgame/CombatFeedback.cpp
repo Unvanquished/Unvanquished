@@ -21,6 +21,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "sg_local.h"
 
 namespace CombatFeedback {

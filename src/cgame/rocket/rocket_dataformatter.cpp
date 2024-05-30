@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "rocket.h"
 #include <RmlUi/Core.h>
 #include "../cg_local.h"

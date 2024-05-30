@@ -31,6 +31,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "engine/server/sg_msgdef.h"
 #include "shared/VMMain.h"
 #include "DetourDebugDraw.h"

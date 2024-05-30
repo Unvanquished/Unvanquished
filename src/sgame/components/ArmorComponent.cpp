@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "ArmorComponent.h"
 
 static Log::Logger armorLogger("sgame.armor");

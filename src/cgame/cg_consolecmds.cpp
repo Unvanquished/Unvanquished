@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cg_consolecmds.c -- text commands typed in at the local console, or
 // executed by a key binding
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 /*

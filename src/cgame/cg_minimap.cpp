@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 #define MINIMAP_MAP_DISPLAY_SIZE 1024.0f

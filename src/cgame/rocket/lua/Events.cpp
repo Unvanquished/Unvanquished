@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "cgame/rocket/rocket.h"
 #include <RmlUi/Lua/LuaType.h>
 #include "register_lua_extensions.h"

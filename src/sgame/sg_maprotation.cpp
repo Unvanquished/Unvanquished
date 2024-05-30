@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // See https://wiki.unvanquished.net/wiki/Server/Map_rotation for user documentation
 
+#include "common/Common.h"
 #include "sg_local.h"
 #include "common/FileSystem.h"
 

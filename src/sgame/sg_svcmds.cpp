@@ -37,6 +37,7 @@ Maryland 20850 USA.
 // For administrator commands (performed by console *or* remote clients), see sg_admin.cpp.
 // TODO: Convert all these commands to Cmd::StaticCmd (which works for these, but not networked commands)
 
+#include "common/Common.h"
 #include "sg_local.h"
 #include "botlib/bot_api.h"
 

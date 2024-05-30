@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 // Code for generating custom events for libRocket
 
-#include <queue>
+#include "common/Common.h"
 #include "rocket.h"
 #include <RmlUi/Core.h>
 #include "../cg_local.h"

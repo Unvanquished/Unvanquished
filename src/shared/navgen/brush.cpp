@@ -29,7 +29,7 @@
 
 
 /* dependencies */
-#include <math.h>
+#include "common/Common.h"
 #include "engine/qcommon/qcommon.h"
 #include "common/cm/cm_polylib.h"
 

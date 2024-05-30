@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 // sg_cm_world.c -- world query functions
 
+#include "common/Common.h"
 #include "sg_local.h"
 #include "sg_cm_world.h"
 

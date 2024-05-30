@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "AlienBuildableComponent.h"
 #include "../Entities.h"
 #include <random>

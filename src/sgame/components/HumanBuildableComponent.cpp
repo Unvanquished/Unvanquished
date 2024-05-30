@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "HumanBuildableComponent.h"
 #include "../Entities.h"
 

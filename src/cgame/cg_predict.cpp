@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // ahead the client's movement.
 // It also handles local physics interaction, like fragments bouncing off walls
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 Log::Logger predictionLog("cgame.prediction", "[client-side prediction]", Log::Level::WARNING);

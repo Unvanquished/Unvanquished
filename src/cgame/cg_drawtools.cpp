@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // cg_drawtools.c -- helper functions called by cg_draw, cg_scoreboard, cg_info, etc
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 /*

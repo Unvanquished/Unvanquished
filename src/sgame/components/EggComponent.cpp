@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "EggComponent.h"
 
 EggComponent::EggComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent, SpawnerComponent& r_SpawnerComponent)

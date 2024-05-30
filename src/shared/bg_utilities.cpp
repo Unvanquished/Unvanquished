@@ -22,7 +22,7 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
-#include "engine/qcommon/q_shared.h"
+#include "common/Common.h"
 #include "bg_public.h"
 
 /**

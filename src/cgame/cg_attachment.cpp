@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // cg_attachment.c -- an abstract attachment system
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 /*

@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "BarricadeComponent.h"
 
 BarricadeComponent::BarricadeComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent)
