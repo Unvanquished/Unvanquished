@@ -368,6 +368,47 @@ Local Bot Navigation
 ========================
 */
 
+bool BotTraceForFloor( gentity_t *self, uint32_t dir )
+{
+	// this is using a daemon trace to a solid surface
+	// another feasible method might be to do a recast navmesh trace
+	trace_t trace;
+	glm::vec3 dirVec;
+	glm::vec3 viewangles = VEC2GLM( self->client->ps.viewangles );
+	viewangles.x = 0;
+	AngleVectors( viewangles, &dirVec, nullptr, nullptr );
+	// we only handle a subset of the possible values of the bitfield `dir`
+	if ( dir == MOVE_BACKWARD )
+	{
+		dirVec.x = -dirVec.x;
+		dirVec.y = -dirVec.y;
+	}
+	else if ( dir == MOVE_LEFT )
+	{
+		std::swap( dirVec.x, dirVec.y );
+		dirVec.x = -dirVec.x;
+	}
+	else if ( dir == MOVE_RIGHT )
+	{
+		std::swap( dirVec.x, dirVec.y );
+		dirVec.y = -dirVec.y;
+	}
+	else
+	{
+		return false;
+	}
+	glm::vec3 playerMins, playerMaxs;
+	class_t pClass = static_cast<class_t>( self->client->ps.stats[STAT_CLASS] );
+	BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
+	float radius = playerMaxs.x - playerMins.x;
+	float height = playerMaxs.z - playerMins.z;
+	glm::vec3 start = VEC2GLM( self->s.origin ) + dirVec * ( 2.f * radius );
+	glm::vec3 end = start;
+	end.z -= height;
+	trap_Trace( &trace, &start[ 0 ], nullptr, nullptr, &end[ 0 ], self->num(), MASK_SOLID, 0 );
+	return trace.fraction < 1.f;
+}
+
 static signed char BotGetMaxMoveSpeed( gentity_t *self )
 {
 	if ( usercmdButtonPressed( self->botMind->cmdBuffer.buttons, BTN_WALKING ) )
@@ -382,19 +423,28 @@ void BotStrafeDodge( gentity_t *self )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	signed char speed = BotGetMaxMoveSpeed( self );
+	bool floorRight = BotTraceForFloor( self, MOVE_RIGHT );
+	bool floorLeft = BotTraceForFloor( self, MOVE_LEFT );
 
-	if ( self->client->time1000 >= 500 )
+	if ( self->client->time1000 >= 500 && floorRight )
 	{
 		botCmdBuffer->rightmove = speed;
 	}
-	else
+	else if ( floorLeft )
 	{
 		botCmdBuffer->rightmove = -speed;
+	}
+	else if ( floorRight )
+	{
+		botCmdBuffer->rightmove = speed;
 	}
 
 	if ( ( self->client->time10000 % 2000 ) < 1000 )
 	{
-		botCmdBuffer->rightmove *= -1;
+		if ( ( botCmdBuffer->rightmove < 0.f && floorRight ) || ( botCmdBuffer->rightmove > 0.f && floorLeft ) )
+		{
+			botCmdBuffer->rightmove *= -1;
+		}
 	}
 
 	if ( ( self->client->time1000 % 300 ) >= 100 && ( self->client->time10000 % 3000 ) > 2000 )
@@ -431,14 +481,20 @@ void BotAlternateStrafe( gentity_t *self )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	signed char speed = BotGetMaxMoveSpeed( self );
+	bool floorRight = BotTraceForFloor( self, MOVE_RIGHT );
+	bool floorLeft = BotTraceForFloor( self, MOVE_LEFT );
 
-	if ( level.time % 8000 < 4000 )
+	if ( level.time % 8000 < 4000 && floorRight )
 	{
 		botCmdBuffer->rightmove = speed;
 	}
-	else
+	else if ( floorLeft )
 	{
 		botCmdBuffer->rightmove = -speed;
+	}
+	else if ( floorRight )
+	{
+		botCmdBuffer->rightmove = speed;
 	}
 }
 
