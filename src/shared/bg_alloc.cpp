@@ -27,12 +27,37 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/Common.h"
 #include "bg_public.h"
 
-void *BG_Alloc( size_t size )
-{
-	return calloc( size, 1 );
-}
-
 void BG_Free( void *ptr )
 {
 	free( ptr );
+}
+
+// Allocations uncategorized as to whether they really need zeroing
+void *BG_Alloc( size_t size )
+{
+  void* p = calloc( size, 1 );
+  if ( !p && size ) Sys::Error( "BG_Alloc: Out of memory" );
+  return p;
+}
+// Allocates unitialized memory like malloc
+void *BG_Malloc( size_t size )
+{
+    void* p = malloc( size );
+    if ( !p && size ) Sys::Error( "BG_Malloc: Out of memory" );
+    return p;
+}
+// Allocates zeroed memory like calloc
+void *BG_Calloc( size_t size )
+{
+    void* p = calloc( size, 1 );
+    if ( !p && size ) Sys::Error( "BG_Calloc: Out of memory" );
+    return p;
+}
+
+char *BG_strdup( const char *string )
+{
+	size_t length = strlen(string) + 1;
+	char *copy = static_cast<char*>( BG_Malloc(length) );
+	memcpy( copy, string, length );
+	return copy;
 }

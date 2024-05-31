@@ -2554,31 +2554,6 @@ char *Substring( const char *in, int start, int count )
 
 /*
 =================
-BG_strdup
-=================
-*/
-
-char *BG_strdup( const char *string )
-{
-	size_t length;
-	char *copy;
-
-	length = strlen(string) + 1;
-	copy = (char *)malloc(length);
-
-	if ( copy == nullptr )
-	{
-		return nullptr;
-	}
-
-	memcpy( copy, string, length );
-	return copy;
-}
-
-
-
-/*
-=================
 Trans_GenderContext
 =================
 */

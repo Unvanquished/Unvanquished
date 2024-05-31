@@ -634,7 +634,7 @@ static AIValue_t *newValueLiteral( pc_token_list **list )
 	pc_token_list *current = *list;
 	pc_token_stripped_t *token = &current->token;
 
-	ret = ( AIValue_t * ) BG_Alloc( sizeof( *ret ) );
+	ret = ( AIValue_t * ) BG_Malloc( sizeof( *ret ) );
 
 	*ret = AIBoxToken( token );
 

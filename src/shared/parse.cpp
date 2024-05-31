@@ -329,7 +329,7 @@ static void Parse_CreatePunctuationTable( script_t *script, punctuation_t *punct
 	if ( !script->punctuationtable )
 	{
 		script->punctuationtable = ( punctuation_t ** )
-		                           BG_Alloc( 256 * sizeof( punctuation_t * ) );
+		                           BG_Malloc( 256 * sizeof( punctuation_t * ) );
 	}
 
 	memset( script->punctuationtable, 0, 256 * sizeof( punctuation_t * ) );
@@ -1207,14 +1207,12 @@ static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char
 	void     *buffer;
 	script_t *script;
 
-	buffer = BG_Alloc( sizeof( script_t ) + length + 1 );
-	memset( buffer, 0, sizeof( script_t ) + length + 1 );
+	buffer = BG_Malloc( sizeof( script_t ) + length + 1 );
 
 	script = ( script_t * ) buffer;
 	memset( script, 0, sizeof( script_t ) );
 	Q_strncpyz( script->filename, name, sizeof( script->filename ) );
 	script->buffer = ( char * ) buffer + sizeof( script_t );
-	script->buffer[ length ] = 0;
 	script->length = length;
 	//pointer in script buffer
 	script->script_p = script->buffer;
@@ -1229,6 +1227,7 @@ static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char
 	Parse_SetScriptPunctuations( script, nullptr );
 	//
 	memcpy( script->buffer, ptr, length );
+	script->buffer[ length ] = '\0';
 	//
 	return script;
 }
@@ -1353,14 +1352,9 @@ static token_t *Parse_CopyToken( const token_t *token )
 {
 	token_t *t;
 
-//  t = (token_t *) malloc(sizeof(token_t));
-	t = ( token_t * ) BG_Alloc( sizeof( token_t ) );
+	t = ( token_t * ) BG_Malloc( sizeof( token_t ) );
 
 //  t = freetokens;
-	if ( !t )
-	{
-		Sys::Error( "out of token space" );
-	}
 
 //  freetokens = freetokens->next;
 	*t = *token;
@@ -3899,8 +3893,7 @@ static define_t *Parse_DefineFromString( const char *string )
 	Q_strncpyz( src.filename, "*extern", MAX_QPATH );
 	//src.openFunc is null, as a define can't contain an include
 	src.scriptstack = script;
-	src.definehash = (define_t**) BG_Alloc( DEFINEHASHSIZE * sizeof( define_t * ) );
-	memset( src.definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
+	src.definehash = (define_t**) BG_Calloc( DEFINEHASHSIZE * sizeof( define_t * ) );
 	//create a define from the source
 	res = Parse_Directive_define( &src );
 
@@ -4100,8 +4093,7 @@ static source_t *Parse_LoadSourceFile( const char *filename, int (*openFunc)(Str
 
 	script->next = nullptr;
 
-	source = ( source_t * ) BG_Alloc( sizeof( source_t ) );
-	memset( source, 0, sizeof( source_t ) );
+	source = ( source_t * ) BG_Calloc( sizeof( source_t ) );
 
 	Q_strncpyz( source->filename, filename, MAX_QPATH );
 	source->openFunc = openFunc;
@@ -4111,8 +4103,7 @@ static source_t *Parse_LoadSourceFile( const char *filename, int (*openFunc)(Str
 	source->indentstack = nullptr;
 	source->skip = 0;
 
-	source->definehash = (define_t**) BG_Alloc( DEFINEHASHSIZE * sizeof( define_t * ) );
-	memset( source->definehash, 0, DEFINEHASHSIZE * sizeof( define_t * ) );
+	source->definehash = (define_t**) BG_Calloc( DEFINEHASHSIZE * sizeof( define_t * ) );
 	Parse_AddGlobalDefinesToSource( source );
 	return source;
 }
