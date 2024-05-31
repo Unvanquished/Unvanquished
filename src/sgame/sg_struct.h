@@ -217,7 +217,7 @@ struct gentity_t
 	int       nextthink;
 	void ( *think )( gentity_t *self );
 	void ( *reset )( gentity_t *self );
-	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
+	void ( *touch )( gentity_t *self, gentity_t *other );
 	void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );

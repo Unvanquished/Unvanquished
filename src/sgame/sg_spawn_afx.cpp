@@ -78,7 +78,7 @@ trigger_push
 ==============================================================================
 */
 
-static void env_afx_push_touch( gentity_t *self, gentity_t *activator, trace_t* )
+static void env_afx_push_touch( gentity_t *self, gentity_t *activator )
 {
 	//only triggered by clients
 	if ( !activator || !activator->client )
@@ -124,7 +124,7 @@ trigger_teleport
 ==============================================================================
 */
 
-static void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t* )
+static void env_afx_teleporter_touch( gentity_t *self, gentity_t *other )
 {
 	gentity_t *dest;
 
@@ -200,7 +200,7 @@ trigger_hurt
 ==============================================================================
 */
 
-static void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t* )
+static void env_afx_hurt_touch( gentity_t *self, gentity_t *other )
 {
 	int dflags;
 
@@ -263,7 +263,7 @@ static void env_afx_gravity_reset( gentity_t *self )
 	G_ResetIntField(&self->mapEntity.amount, false, self->mapEntity.config.amount, self->mapEntity.eclass->config.amount, g_gravity.Get());
 }
 
-static void env_afx_gravity_touch( gentity_t *ent, gentity_t *other, trace_t* )
+static void env_afx_gravity_touch( gentity_t *ent, gentity_t *other )
 {
 	//only triggered by clients
 	if ( !other->client )
@@ -312,7 +312,7 @@ trigger_heal
 =================================================================================
 */
 
-static void env_afx_heal_touch( gentity_t *self, gentity_t *other, trace_t* )
+static void env_afx_heal_touch( gentity_t *self, gentity_t *other )
 {
 	if ( !other->client )
 	{
@@ -364,7 +364,7 @@ trigger_ammo
 
 =================================================================================
 */
-static void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t* )
+static void env_afx_ammo_touch( gentity_t *self, gentity_t *other )
 {
 	int      maxClips, maxAmmo;
 	weapon_t weapon;

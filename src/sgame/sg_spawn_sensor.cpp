@@ -127,7 +127,7 @@ static void trigger_multiple_act( gentity_t *self, gentity_t*,
 	trigger_checkWaitForReactivation( self );
 }
 
-static void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t* )
+static void trigger_multiple_touch( gentity_t *self, gentity_t *other )
 {
 	trigger_multiple_act( self, other, other );
 }
@@ -345,7 +345,7 @@ static bool sensor_buildable_match( gentity_t *self, gentity_t *activator )
 	return false;
 }
 
-static void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t* )
+static void sensor_buildable_touch( gentity_t *self, gentity_t *activator )
 {
 	//sanity check
 	if ( !activator || activator->s.eType != entityType_t::ET_BUILDABLE )
@@ -459,7 +459,7 @@ static bool sensor_equipment_match( gentity_t *self, gentity_t *activator )
 	return false;
 }
 
-static void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t* )
+static void sensor_player_touch( gentity_t *self, gentity_t *activator )
 {
 	bool shouldFire;
 
