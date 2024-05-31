@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "sg_local.h"
 #include "sg_spawn.h"
+#include "lua/Interpreter.h"
 
 bool G_SpawnString( const char *key, const char *defaultString, char **out )
 {
@@ -199,6 +200,7 @@ static const fieldDescriptor_t fields[] =
 	{ "dmg",                 FOFS( mapEntity.config.damage ),        F_INT,        ENT_V_UNCLEAR, nullptr },
 	{ "gravity",             FOFS( mapEntity.config.amount ),        F_INT,        ENT_V_UNCLEAR, "amount" },
 	{ "health",              FOFS( mapEntity.config.health ),        F_INT,        ENT_V_UNCLEAR, nullptr },
+	{ "id",                  FOFS( id ),                             F_STRING,     ENT_V_UNCLEAR, nullptr },
 	{ "message",             FOFS( mapEntity.message ),              F_STRING,     ENT_V_UNCLEAR, nullptr },
 	{ "model",               FOFS( mapEntity.model ),                F_STRING,     ENT_V_UNCLEAR, nullptr },
 	{ "model2",              FOFS( mapEntity.model2 ),               F_STRING,     ENT_V_UNCLEAR, nullptr },
@@ -1103,6 +1105,16 @@ static void SP_worldspawn()
 	G_SpawnStringIntoCVar( "BPInitialBudgetAliens", g_BPInitialBudgetAliens );
 	G_SpawnStringIntoCVar( "BPBudgetPerMiner", g_buildPointBudgetPerMiner );
 	G_SpawnStringIntoCVar( "BPRecoveryRateHalfLife", g_buildPointRecoveryRateHalfLife );
+
+	G_SpawnString( "luaScript", "", &s );
+	if ( s && *s )
+	{
+		namespace Lua = Unv::SGame::Lua;
+		if ( !Lua::LoadScript( s ) || !Lua::RunCode() )
+		{
+			Log::Warn("error loading Lua spawnString: luaScript: '%s'", s);
+		}
+	}
 
 	InitDisabledItemCvars();
 	InitTacticBehaviorsCvar();

@@ -1,27 +1,27 @@
 /*
 ===========================================================================
 
-Unvanquished GPL Source Code
-Copyright (C) 2024 Unvanquished Developers
+Daemon GPL Source Code
+Copyright (C) 2012 Unv Developers
 
-This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
-Unvanquished Source Code is free software: you can redistribute it and/or modify
+Daemon Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Unvanquished Source Code is distributed in the hope that it will be useful,
+Daemon Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Unvanquished Source Code is also subject to certain additional terms.
+In addition, the Daemon Source Code is also subject to certain additional terms.
 You should have received a copy of these additional terms immediately following the
-terms and conditions of the GNU General Public License which accompanied the Unvanquished
+terms and conditions of the GNU General Public License which accompanied the Daemon
 Source Code.  If not, please request a copy in writing from id Software at the address
 below.
 
@@ -31,21 +31,29 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef REGISTER_LUA_EXTENSIONS_H_
-#define REGISTER_LUA_EXTENSIONS_H_
+
+#ifndef LUALEVEL_H_
+#define LUALEVEL_H_
 
 #include "shared/bg_lua.h"
+#include "sgame/sg_local.h"
 
 namespace Unv {
-namespace CGame {
+namespace SGame {
 namespace Lua {
 
-void RegisterCDataSource(lua_State* L);
-void RegisterEvents(lua_State* L);
+struct TeamProxy
+{
+    team_t team;
+};
+
+struct Level
+{
+};
 
 
-}  // namespace Lua
-}  // namespace CGame
-}  // namespace Unv
+} // namespace Lua
+} // namespace SGame
+} // namespace Unv
 
-#endif
+#endif // LUALEVEL_H_

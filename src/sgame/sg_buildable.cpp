@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "Entities.h"
 #include "CBSE.h"
 #include "sg_cm_world.h"
+#include "sgame/lua/Hooks.h"
 
 static Cvar::Cvar<bool> g_indestructibleBuildables(
 		"g_indestructibleBuildables",
@@ -1007,7 +1008,7 @@ bool G_CheckDeconProtectionAndWarn( gentity_t *buildable, gentity_t *player )
 
 void G_DeconstructUnprotected( gentity_t *buildable, gentity_t *ent )
 {
-	if ( !g_instantBuilding.Get() )
+	if ( !g_instantBuilding.Get() && ent )
 	{
 		// Check if the buildable is protected from instant deconstruction.
 		G_CheckDeconProtectionAndWarn( buildable, ent );
@@ -2048,6 +2049,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 
 	Beacon::Tag( built, (team_t)BG_Buildable( buildable )->team, true );
 
+	Unv::SGame::Lua::ExecBuildableSpawnedHooks( built );
 	return built;
 }
 
@@ -2065,6 +2067,16 @@ void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 	// spawns until the third frame so they can ride trains
 	ent->nextthink = level.time + FRAMETIME * 2;
 	ent->think = SpawnBuildableThink;
+}
+
+// Immediately spawn buildable instead of waiting a few frames. Also return the newly built buildable.
+// Assumes that ent is a placeholder entity that will be freed automatically by this function.
+gentity_t* G_SpawnBuildableImmediately( gentity_t *ent, buildable_t buildable )
+{
+	ent->s.modelindex = buildable;
+	gentity_t* ret = FinishSpawningBuildable( ent, false );
+	G_FreeEntity( ent );
+	return ret;
 }
 
 void G_LayoutSave( const char *name )

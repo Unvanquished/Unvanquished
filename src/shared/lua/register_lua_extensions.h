@@ -2,7 +2,7 @@
 ===========================================================================
 
 Unvanquished GPL Source Code
-Copyright (C) 2012 Unvanquished Developers
+Copyright (C) 2024 Unvanquished Developers
 
 This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
@@ -31,75 +31,24 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
+#ifndef SHARED_REGISTER_LUA_EXTENSIONS_H_
+#define SHARED_REGISTER_LUA_EXTENSIONS_H_
 
-#include "../../cg_local.h"
-#include "register_lua_extensions.h"
+#include "shared/bg_lua.h"
 
-namespace {
-class Timer
-{
-public:
-	void Add(int delayMs, int callbackRef, lua_State* L)
-	{
-		events.push_back({delayMs, callbackRef, L});
-	}
+namespace Unv {
+namespace Shared {
+namespace Lua {
 
-	void RunUpdate( int time )
-	{
-		int dtMs = time - lastTime;
-		lastTime = time;
+void RegisterCmd(lua_State* L);
+void RegisterCvar(lua_State* L);
+void RegisterTimer(lua_State* L);
 
-		auto it = events.begin();
-		while (it != events.end())
-		{
-			it->delayMs -= dtMs;
-			if (it->delayMs <= 0)
-			{
-				lua_rawgeti(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-				luaL_unref(it->L, LUA_REGISTRYINDEX, it->callbackRef);
-				if (lua_pcall(it->L, 0, 0, 0) != 0)
-					Log::Warn( "Could not run lua timer callback: %s",
-						lua_tostring(it->L, -1));
-				it = events.erase(it);
-			}
-			else
-			{
-				++it;
-			}
-		}
-	}
+void UpdateTimers(int time);
 
-private:
-	struct TimerEvent
-	{
-		int delayMs;
-		int callbackRef;
-		lua_State* L;
-	};
-	int lastTime;
-	std::list<TimerEvent> events;
-};
-} //namespace
 
-static Timer timer;
+}  // namespace Lua
+}  // namespace Shared
+}  // namespace Unv
 
-static int Timer_add( lua_State* L )
-{
-	int delayMs = luaL_checkinteger(L, 1);
-	int ref = luaL_ref(L, LUA_REGISTRYINDEX);
-	timer.Add(delayMs, ref, L);
-	return 0;
-}
-
-void CG_Rocket_RegisterLuaTimer(lua_State* L)
-{
-	lua_newtable(L);
-	lua_pushcfunction(L, Timer_add);
-	lua_setfield(L, -2, "add");
-	lua_setglobal(L, "Timer");
-}
-
-void CG_Rocket_UpdateLuaTimers(int time)
-{
-	timer.RunUpdate(time);
-}
+#endif

@@ -32,66 +32,51 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "shared/bg_lua.h"
-#include "cgame/rocket/rocket.h"
+#include "common/Common.h"
 #include "register_lua_extensions.h"
 
-#include <RmlUi/Lua.h>
-
-
 namespace Unv {
-namespace CGame {
+namespace Shared {
 namespace Lua {
 
 namespace {
 
-int Events_pushcmd(lua_State* L)
+int Cvar_get(lua_State* L)
 {
-	Rml::StringList list;
-	const char *cmds = luaL_checkstring(L, 1);
+	const char *cvar = luaL_checkstring(L, 1);
+	lua_pushstring(L, Cvar::GetValue(cvar).c_str());
+	return 1;
+}
 
-	Rml::StringUtilities::ExpandString( list, cmds, ';' );
-	for ( size_t i = 0; i < list.size(); ++i )
-	{
-		Rocket_AddEvent( new RocketEvent_t( list[ i ] ) );
-	}
-
+int Cvar_set(lua_State* L)
+{
+	const char *cvar = luaL_checkstring(L, 1);
+	const char *value = luaL_checkstring(L, 2);
+	Cvar::SetValue(cvar, value);
 	return 0;
 }
 
-int Events_pushevent(lua_State* L)
+int Cvar_archive(lua_State* L)
 {
-	Rml::StringList list;
-	const char *cmds = luaL_checkstring(L, 1);
-	Rml::Event *event = ::Rml::Lua::LuaType<Rml::Event>::check(L, 2);
-
-	if (event == nullptr)
-	{
-		Log::Warn("pushevent: invalid event argument");
-		return 0;
-	}
-
-	Rml::StringUtilities::ExpandString( list, cmds, ';' );
-	for ( size_t i = 0; i < list.size(); ++i )
-	{
-		Rocket_AddEvent( new RocketEvent_t( *event, list[ i ] ) );
-	}
-
+	const char *cvar  = luaL_checkstring(L, 1);
+	Cvar::AddFlags(cvar, Cvar::USER_ARCHIVE);
 	return 0;
 }
 
 }  // namespace
 
-void RegisterEvents(lua_State* L)
+void RegisterCvar(lua_State* L)
 {
 	lua_newtable(L);
-	lua_pushcfunction(L, Events_pushcmd);
-	lua_setfield(L, -2, "pushcmd");
-	lua_pushcfunction(L, Events_pushevent);
-	lua_setfield(L, -2, "pushevent");
-	lua_setglobal(L, "Events");
+	lua_pushcfunction(L, Cvar_get);
+	lua_setfield(L, -2, "get");
+	lua_pushcfunction(L, Cvar_set);
+	lua_setfield(L, -2, "set");
+	lua_pushcfunction(L, Cvar_archive);
+	lua_setfield(L, -2, "archive");
+	lua_setglobal(L, "Cvar");
 }
 
 }  // namespace Lua
-}  // namespace CGame
+}  // namespace Shared
 }  // namespace Unv
