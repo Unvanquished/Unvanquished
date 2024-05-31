@@ -1379,12 +1379,12 @@ void CG_AddPacketEntities()
 	//make an attempt at drawing bounding boxes of selected entity types
 	if ( cg_drawBBOX.Get() > 0 )
 	{
-		for ( unsigned num = 0; num < cg.snap->entities.size(); num++ )
+		for ( const auto &ent : cg.snap->entities )
 		{
 			vec3_t        mins, maxs;
 			entityState_t *es;
 
-			centity_t *cent = &cg_entities[ cg.snap->entities[ num ].number ];
+			centity_t *cent = &cg_entities[ ent.number ];
 			es = &cent->currentState;
 
 			switch ( es->eType )
