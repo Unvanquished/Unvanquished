@@ -215,57 +215,38 @@ struct BasicMeshProcess : public dtTileCacheMeshProcess
 
 struct LinearAllocator : public dtTileCacheAlloc
 {
-	unsigned char* buffer = nullptr;
-	size_t capacity = 0;
-	size_t top = 0;
-	size_t high = 0;
+	char* buffer;
+	size_t capacity;
+	size_t top;
 
-	LinearAllocator( const size_t cap )
-	{
-		resize(cap);
-	}
+	LinearAllocator( const size_t cap ) :
+		buffer( static_cast<char *>( BG_Malloc( cap ) ) ),
+		capacity(cap), top(0)
+	{}
 
 	~LinearAllocator() override
 	{
-		free( buffer );
-	}
-
-	void resize( const size_t cap )
-	{
-		auto * tmp_buffer = static_cast<unsigned char*>( realloc( buffer, cap ) );
-		if ( !tmp_buffer )
-		{
-			Sys::Drop( "Failed to reallocate LinearAllocator" );
-		}
-		buffer = tmp_buffer;
-		capacity = cap;
+		BG_Free( buffer );
 	}
 
 	void reset() override
 	{
-		high = dtMax( high, top );
 		top = 0;
 	}
 
 	void* alloc( const size_t size ) override
 	{
-		if ( !buffer )
-		{
-			return nullptr;
-		}
-
 		if ( top + size > capacity )
 		{
 			return nullptr;
 		}
 
-		unsigned char* mem = &buffer[ top ];
+		char* mem = &buffer[ top ];
 		top += size;
 		return mem;
 	}
 
 	void free( void* /*ptr*/ ) override { }
-	size_t getHighSize() { return high; }
 };
 
 // Maybe use another alien form's navmesh instead of generating one for this class
