@@ -167,7 +167,7 @@ private:
 	botNavCmd_t m_nav;
 public:
 	botNavCmd_t const& nav() const { return m_nav; };
-	void clearNav() { memset( &m_nav, 0, sizeof( m_nav ) ); }
+	void clearNav() { m_nav = {}; }
 	void setGoal( botTarget_t target, bool direct ) { goal = target; m_nav.directPathToGoal = direct; }
 	friend void G_BotThink( gentity_t * );
 	friend bool BotChangeGoal( gentity_t *, botTarget_t );

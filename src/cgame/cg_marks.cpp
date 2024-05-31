@@ -113,7 +113,7 @@ static markPoly_t *CG_AllocMark()
 	le = cg_freeMarkPolys;
 	cg_freeMarkPolys = cg_freeMarkPolys->nextMark;
 
-	memset( le, 0, sizeof( *le ) );
+	*le = {};
 
 	// link into the active list
 	le->nextMark = cg_activeMarkPolys.nextMark;

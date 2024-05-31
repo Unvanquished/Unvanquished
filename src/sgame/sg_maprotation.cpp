@@ -1741,5 +1741,5 @@ void G_ShutdownMapRotations()
 		}
 	}
 
-	memset( &mapRotations, 0, sizeof( mapRotations ) );
+	mapRotations = {};
 }

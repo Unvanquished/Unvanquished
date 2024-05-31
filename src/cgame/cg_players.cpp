@@ -3279,7 +3279,7 @@ void CG_Corpse( centity_t *cent )
 	{
 		if ( ci->gender == GENDER_NEUTER )
 		{
-			memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
+			cent->pe.nonseg = {};
 			CG_RunCorpseLerpFrame( ci, &cent->pe.nonseg, es->legsAnim );
 			legs.oldframe = cent->pe.nonseg.oldFrame;
 			legs.frame = cent->pe.nonseg.frame;
@@ -3287,7 +3287,7 @@ void CG_Corpse( centity_t *cent )
 		}
 		else
 		{
-			memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
+			cent->pe.legs = {};
 			CG_RunCorpseLerpFrame( ci, &cent->pe.legs, es->legsAnim );
 			legs.oldframe = cent->pe.legs.oldFrame;
 			legs.frame = cent->pe.legs.frame;
@@ -3296,13 +3296,13 @@ void CG_Corpse( centity_t *cent )
 	}
 	else if ( !ci->nonsegmented )
 	{
-		memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
+		cent->pe.legs = {};
 		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, es->legsAnim, nullptr );
 		legs.oldframe = cent->pe.legs.oldFrame;
 		legs.frame = cent->pe.legs.frame;
 		legs.backlerp = cent->pe.legs.backlerp;
 
-		memset( &cent->pe.torso, 0, sizeof( lerpFrame_t ) );
+		cent->pe.torso = {};
 		CG_RunPlayerLerpFrame( ci, &cent->pe.torso, es->torsoAnim, nullptr );
 		torso.oldframe = cent->pe.torso.oldFrame;
 		torso.frame = cent->pe.torso.frame;
@@ -3310,7 +3310,7 @@ void CG_Corpse( centity_t *cent )
 	}
 	else
 	{
-		memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
+		cent->pe.nonseg = {};
 		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, es->legsAnim, nullptr );
 		legs.oldframe = cent->pe.nonseg.oldFrame;
 		legs.frame = cent->pe.nonseg.frame;
@@ -3447,19 +3447,19 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	VectorCopy( cent->lerpOrigin, cent->rawOrigin );
 	VectorCopy( cent->lerpAngles, cent->rawAngles );
 
-	memset( &cent->pe.legs, 0, sizeof( cent->pe.legs ) );
+	cent->pe.legs = {};
 	cent->pe.legs.yawAngle = cent->rawAngles[ YAW ];
 	cent->pe.legs.yawing = false;
 	cent->pe.legs.pitchAngle = 0;
 	cent->pe.legs.pitching = false;
 
-	memset( &cent->pe.torso, 0, sizeof( cent->pe.torso ) );
+	cent->pe.torso = {};
 	cent->pe.torso.yawAngle = cent->rawAngles[ YAW ];
 	cent->pe.torso.yawing = false;
 	cent->pe.torso.pitchAngle = cent->rawAngles[ PITCH ];
 	cent->pe.torso.pitching = false;
 
-	memset( &cent->pe.nonseg, 0, sizeof( cent->pe.nonseg ) );
+	cent->pe.nonseg = {};
 	cent->pe.nonseg.yawAngle = cent->rawAngles[ YAW ];
 	cent->pe.nonseg.yawing = false;
 	cent->pe.nonseg.pitchAngle = cent->rawAngles[ PITCH ];

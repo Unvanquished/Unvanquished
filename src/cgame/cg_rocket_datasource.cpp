@@ -242,7 +242,6 @@ static void CG_Rocket_BuildServerList( const char *args )
 
 void CG_Rocket_BuildServerList()
 {
-	char data[ MAX_INFO_STRING ] = { 0 };
 	int i;
 
 	rocketInfo.data.retrievingServers = true;
@@ -297,8 +296,6 @@ void CG_Rocket_BuildServerList()
 		char info[ MAX_STRING_CHARS ];
 		int ping, bots, clients, maxClients;
 
-		memset( &data, 0, sizeof( data ) );
-
 		if ( !trap_LAN_ServerIsVisible( netSrc, i ) )
 		{
 			continue;
@@ -328,6 +325,9 @@ void CG_Rocket_BuildServerList()
 		{
 			continue;
 		}
+
+		char data[ MAX_INFO_STRING ];
+		data[ 0 ] = '\0';
 
 		Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, false );
 		Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), false );
