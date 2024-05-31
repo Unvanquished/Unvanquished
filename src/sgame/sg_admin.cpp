@@ -2115,14 +2115,13 @@ bool G_admin_readconfig( gentity_t *ent )
 		{
 			if ( l )
 			{
-				l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
+				l = l->next = (g_admin_level_t*) BG_Calloc( sizeof( g_admin_level_t ) );
 			}
 			else
 			{
-				l = g_admin_levels = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
+				l = g_admin_levels = (g_admin_level_t*) BG_Calloc( sizeof( g_admin_level_t ) );
 			}
 
-			memset( l, 0, sizeof( *l ) );
 			level_open = true;
 			admin_open = ban_open = command_open = vote_open = false;
 			lc++;
@@ -2131,14 +2130,13 @@ bool G_admin_readconfig( gentity_t *ent )
 		{
 			if ( a )
 			{
-				a = a->next = (g_admin_admin_t*) BG_Alloc( sizeof( g_admin_admin_t ) );
+				a = a->next = (g_admin_admin_t*) BG_Calloc( sizeof( g_admin_admin_t ) );
 			}
 			else
 			{
-				a = g_admin_admins = (g_admin_admin_t*) BG_Alloc( sizeof( g_admin_admin_t ) );
+				a = g_admin_admins = (g_admin_admin_t*) BG_Calloc( sizeof( g_admin_admin_t ) );
 			}
 
-			memset( a, 0, sizeof( *a ) );
 			admin_open = true;
 			level_open = ban_open = command_open = vote_open = false;
 			ac++;

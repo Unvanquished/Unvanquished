@@ -309,8 +309,7 @@ static bool BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 				                                token.string ) );
 			}
 
-			voiceTrack->text = ( char * ) BG_Alloc( tokenLen + 1 );
-			Q_strncpyz( voiceTrack->text, token.string, tokenLen + 1 );
+			voiceTrack->text = BG_strdup( token.string );
 			foundToken = Parse_ReadTokenHandle( handle, &token );
 			continue;
 		}
