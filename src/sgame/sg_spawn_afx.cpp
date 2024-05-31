@@ -44,8 +44,8 @@ static void InitEnvAFXEntity( gentity_t *self, bool link )
 		glm::vec3 angles = VEC2GLM( self->s.angles );
 		glm::vec3 movedir = VEC2GLM( self->mapEntity.movedir );
 		G_SetMovedir( angles, movedir );
-		VectorCopy( &angles[0], self->s.angles );
-		VectorCopy( &movedir[0], self->mapEntity.movedir );
+		VectorCopy( angles, self->s.angles );
+		VectorCopy( movedir, self->mapEntity.movedir );
 	}
 
 	trap_SetBrushModel( self, self->mapEntity.model );

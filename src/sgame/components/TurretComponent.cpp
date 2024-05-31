@@ -189,8 +189,7 @@ bool TurretComponent::TargetCanBeHit() {
 	glm::vec3 traceEnd     = traceStart + range * aimDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->num(),
-	           MASK_SHOT, 0);
+	trap_Trace(&tr, traceStart, {}, {}, traceEnd, entity.oldEnt->num(), MASK_SHOT, 0);
 
 	return (tr.entityNum == target->num());
 }
@@ -239,8 +238,7 @@ void TurretComponent::SetBaseDirection() {
 	glm::vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->num(),
-	           MASK_SHOT, 0);
+	trap_Trace(&tr, traceStart, {}, {}, traceEnd, entity.oldEnt->num(), MASK_SHOT, 0);
 
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.
 	if (tr.entityNum == ENTITYNUM_WORLD ||
@@ -309,9 +307,9 @@ glm::vec3 TurretComponent::DirectionToRelativeAngles(const glm::vec3 direction) 
 }
 
 glm::vec3 TurretComponent::AbsoluteAnglesToDirection(const glm::vec3 absoluteAngles) const {
-	vec3_t direction;
-	AngleVectors(&absoluteAngles[0], direction, nullptr, nullptr);
-	return VEC2GLM(direction);
+	glm::vec3 direction;
+	AngleVectors(absoluteAngles, &direction, nullptr, nullptr);
+	return direction;
 }
 
 glm::vec3 TurretComponent::RelativeAnglesToDirection(const glm::vec3 relativeAngles) const {

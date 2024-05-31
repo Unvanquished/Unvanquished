@@ -1647,7 +1647,7 @@ static bool PM_CheckJump()
 		pm->ps->velocity[ 2 ] = 0.0f;
 	}
 
-	VectorMA( pm->ps->velocity, magnitude, &normal[0], pm->ps->velocity );
+	VectorMA( pm->ps->velocity, magnitude, normal, pm->ps->velocity );
 
 	PM_AddEvent( EV_JUMP );
 	PM_PlayJumpingAnimation();

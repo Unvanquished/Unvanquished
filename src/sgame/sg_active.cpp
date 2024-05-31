@@ -2208,7 +2208,7 @@ static void ClientThink_real( gentity_t *self )
 	     Entities::IsAlive( self ) )
 	{
 		trace_t   trace;
-		vec3_t    view, point;
+		vec3_t    view;
 		gentity_t *ent;
 
 		// look for object infront of player
@@ -2221,8 +2221,9 @@ static void ClientThink_real( gentity_t *self )
 		auto range1 = ENTITY_USE_RANGE + RadiusFromBounds( &mins[0], &maxs[0] );
 
 		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
+		glm::vec3 point;
 		VectorMA( viewpoint, range1, view, point );
-		trap_Trace( &trace, &viewpoint[0], nullptr, nullptr, point, self->s.number, MASK_SHOT, 0 );
+		trap_Trace( &trace, viewpoint, {}, {}, point, self->s.number, MASK_SHOT, 0 );
 
 		ent = &g_entities[ trace.entityNum ];
 		bool activableTarget = ent->s.eType == entityType_t::ET_BUILDABLE || ent->s.eType == entityType_t::ET_MOVER;

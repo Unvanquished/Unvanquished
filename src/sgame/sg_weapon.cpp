@@ -320,7 +320,6 @@ static void G_WideTrace(
 		trace_t *tr, gentity_t *ent, const glm::vec3& muzzle, const glm::vec3& forward,
 		const float range, const float width, const float height, gentity_t **target )
 {
-	vec3_t mins, maxs, end;
 	float  halfDiagonal;
 
 	*target = nullptr;
@@ -331,15 +330,16 @@ static void G_WideTrace(
 	}
 
 	// Calculate box to use for trace
-	VectorSet( maxs, width, width, height );
-	VectorNegate( maxs, mins );
-	halfDiagonal = VectorLength( maxs );
+	glm::vec3 maxs{ width, width, height };
+	glm::vec3 mins = -maxs;
+	halfDiagonal = glm::length( maxs );
 
 	G_UnlaggedOn( ent, &muzzle[ 0 ], range + halfDiagonal );
 
 	// Trace box against entities
+	glm::vec3 end;
 	VectorMA( muzzle, range, forward, end );
-	trap_Trace( tr, &muzzle[ 0 ], mins, maxs, end, ent->s.number, CONTENTS_BODY, 0 );
+	trap_Trace( tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY, 0 );
 
 	if ( tr->entityNum != ENTITYNUM_NONE )
 	{
@@ -349,8 +349,9 @@ static void G_WideTrace(
 	// Line trace against the world, so we never hit through obstacles.
 	// The range is reduced according to the former trace so we don't hit something behind the
 	// current target.
-	VectorMA( muzzle, Distance( &muzzle[ 0 ], tr->endpos ) + halfDiagonal, forward, end );
-	trap_Trace( tr, &muzzle[ 0 ], nullptr, nullptr, end, ent->s.number, CONTENTS_SOLID, 0 );
+	float scale = glm::distance( muzzle, VEC2GLM( tr->endpos ) ) + halfDiagonal;
+	VectorMA( muzzle, scale, forward, end );
+	trap_Trace( tr, muzzle, {}, {}, end, ent->s.number, CONTENTS_SOLID, 0 );
 
 	// In case we hit a different target, which can happen if two potential targets are close,
 	// switch to it, so we will end up with the target we were looking at.
@@ -488,7 +489,7 @@ MACHINEGUN
 static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeath_t mod, int other )
 {
 	trace_t   tr;
-	vec3_t    end;
+	glm::vec3 end;
 	gentity_t *target;
 
 	glm::vec3 forward, right, up, muzzle;
@@ -517,12 +518,12 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 	if ( self->client )
 	{
 		G_UnlaggedOn( self, &muzzle[ 0 ], 8192 * 16 );
-		trap_Trace( &tr, &muzzle[ 0 ], nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
+		trap_Trace( &tr, muzzle, {}, {}, end, self->s.number, MASK_SHOT, 0 );
 		G_UnlaggedOff();
 	}
 	else
 	{
-		trap_Trace( &tr, &muzzle[ 0 ], nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
+		trap_Trace( &tr, muzzle, {}, {}, end, self->s.number, MASK_SHOT, 0 );
 	}
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
