@@ -1547,7 +1547,7 @@ static void func_door_block( gentity_t *self, gentity_t *other )
 Touch_DoorTrigger
 ================
 */
-static void door_trigger_touch( gentity_t *self, gentity_t *other, trace_t* )
+static void door_trigger_touch( gentity_t *self, gentity_t *other )
 {
 	moverState_t groupState;
 
@@ -2043,7 +2043,7 @@ Touch_Plat
 Don't allow to descend if a live player is on it
 ===============
 */
-static void Touch_Plat( gentity_t *ent, gentity_t *other, trace_t* )
+static void Touch_Plat( gentity_t *ent, gentity_t *other )
 {
 	// DONT_WAIT
 	if ( ent->mapEntity.spawnflags & 1 )
@@ -2070,7 +2070,7 @@ Touch_PlatCenterTrigger
 If the plat is at the bottom position, start it going up
 ===============
 */
-static void Touch_PlatCenterTrigger( gentity_t *ent, gentity_t *other, trace_t* )
+static void Touch_PlatCenterTrigger( gentity_t *ent, gentity_t *other )
 {
 	if ( !other->client )
 	{
@@ -2202,7 +2202,7 @@ BUTTON
 ===============================================================================
 */
 
-static void Touch_Button( gentity_t *ent, gentity_t *other, trace_t* )
+static void Touch_Button( gentity_t *ent, gentity_t *other )
 {
 	if ( !other->client )
 	{

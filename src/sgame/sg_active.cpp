@@ -379,16 +379,12 @@ ClientImpacts
 static void ClientImpacts( gentity_t *ent, pmove_t *pm )
 {
 	int       i;
-	trace_t   trace;
 	gentity_t *other;
 
 	if( !ent || !ent->client )
 	{
 		return;
 	}
-
-	// clear a fake trace struct for touch function
-	memset( &trace, 0, sizeof( trace ) );
 
 	for ( i = 0; i < pm->numtouch; i++ )
 	{
@@ -435,7 +431,7 @@ static void ClientImpacts( gentity_t *ent, pmove_t *pm )
 		// touch triggers
 		if ( other->touch )
 		{
-			other->touch( other, ent, &trace );
+			other->touch( other, ent );
 		}
 	}
 }
@@ -453,7 +449,6 @@ void  G_TouchTriggers( gentity_t *ent )
 	int              i, num;
 	int              touch[ MAX_GENTITIES ];
 	gentity_t        *hit;
-	trace_t          trace;
 	vec3_t           mins, maxs;
 	vec3_t           pmins, pmaxs;
 	static const     vec3_t range = { 10, 10, 10 };
@@ -520,11 +515,9 @@ void  G_TouchTriggers( gentity_t *ent )
 			continue;
 		}
 
-		memset( &trace, 0, sizeof( trace ) );
-
 		if ( hit->touch )
 		{
-			hit->touch( hit, ent, &trace );
+			hit->touch( hit, ent );
 		}
 	}
 }
