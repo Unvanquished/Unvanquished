@@ -60,7 +60,7 @@ public:
 
 	VisibleMenusState GetState() { return state_; }
 
-	void ProcessEvent( Rml::Event &evt )
+	void ProcessEvent( Rml::Event& )
 	{
 		VisibleMenusState catchLevel;
 
