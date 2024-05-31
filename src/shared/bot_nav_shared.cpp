@@ -31,6 +31,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "common/FileSystem.h"
 #include "shared/CommonProxies.h"
 #include "bot_nav_shared.h"

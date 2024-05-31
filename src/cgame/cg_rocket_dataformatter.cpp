@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 static int GCD( int a, int b )
@@ -48,7 +49,7 @@ static int GCD( int a, int b )
 	return a;
 }
 
-static const char *DisplayAspectString( int w, int h )
+static std::string DisplayAspectString( int w, int h )
 {
 	int gcd = GCD( w, h );
 
@@ -62,22 +63,31 @@ static const char *DisplayAspectString( int w, int h )
 		h = 10;
 	}
 
-	return va( "%d:%d", w, h );
+	return Str::Format( "%d:%d", w, h );
 }
 
+// see resolution_t
 static void CG_Rocket_DFResolution( int handle, const char *data )
 {
 	int w = atoi( Info_ValueForKey(data, "1" ) );
 	int h = atoi( Info_ValueForKey(data, "2" ) );
 
-	if ( w == -1 || h == -1 )
+	if ( w < 0 )
 	{
-		Rocket_DataFormatterFormattedData( handle, "Custom", false );
-		return;
+		std::string displayString = Str::Format( _( "Custom: %dx%d" ), -w, -h );
+		Rocket_DataFormatterFormattedData( handle, displayString.c_str(), false);
 	}
-	char *aspectRatio = BG_strdup( DisplayAspectString( w, h ) );
-	Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio ), false );
-	BG_Free( aspectRatio );
+	else if ( w == 0 )
+	{
+		// TODO(0.55): show dimensions of screen
+		std::string displayString = _( "Same as screen" );
+		Rocket_DataFormatterFormattedData( handle, displayString.c_str(), false);
+	}
+	else
+	{
+		std::string aspectRatio = DisplayAspectString( w, h );
+		Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio.c_str() ), false );
+	}
 }
 
 static void CG_Rocket_DFServerPing( int handle, const char *data )

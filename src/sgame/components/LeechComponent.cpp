@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "LeechComponent.h"
 
 LeechComponent::LeechComponent(Entity& entity, AlienBuildableComponent& r_AlienBuildableComponent, MiningComponent& r_MiningComponent)

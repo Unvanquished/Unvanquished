@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // cg_ents.c -- present snapshot entities, happens every single frame
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 /* It is dynamically adjusted in CG_AddPacketEntities() to avoid looping

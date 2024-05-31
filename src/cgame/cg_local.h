@@ -1345,7 +1345,6 @@ struct rocketMenu_t
 };
 
 #define MAX_SERVERS 2048
-#define MAX_RESOLUTIONS 32
 #define MAX_LANGUAGES 64
 #define MAX_OUTPUTS 16
 #define MAX_MODS 64
@@ -1365,6 +1364,9 @@ struct server_t
 
 
 
+// 2 positive numbers is a resolution from the r_availableModes list
+// 2 negative numbers - their absolute values are a resolution not in that list
+// 0, 0 - the size of the display via r_mode -2
 struct resolution_t
 {
 	int width;
@@ -1408,8 +1410,7 @@ struct rocketDataSource_t
 	bool buildingServerInfo;
 	bool retrievingServers;
 
-	resolution_t resolutions[ MAX_RESOLUTIONS ];
-	int resolutionCount;
+	std::vector<resolution_t> resolutions;
 	int resolutionIndex;
 
 	language_t languages[ MAX_LANGUAGES ];

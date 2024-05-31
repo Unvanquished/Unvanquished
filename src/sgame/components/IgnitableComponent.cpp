@@ -22,6 +22,7 @@ along with Unvanquished Source Code.  If not, see <http://www.gnu.org/licenses/>
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "IgnitableComponent.h"
 
 static Log::Logger fireLogger("sgame.fire");

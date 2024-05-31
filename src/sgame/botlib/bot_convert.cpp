@@ -31,6 +31,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "bot_convert.h"
 
 rVec::rVec( float x, float y, float z )

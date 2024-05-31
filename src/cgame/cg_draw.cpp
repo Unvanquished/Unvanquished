@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cg_draw.c -- draw all of the graphical elements during
 // active (after loading) gameplay
 
+#include "common/Common.h"
 #include "cg_local.h"
 #include "rocket/rocket.h"
 

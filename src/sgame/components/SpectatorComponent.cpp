@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "SpectatorComponent.h"
 
 SpectatorComponent::SpectatorComponent(Entity& entity, ClientComponent& r_ClientComponent)

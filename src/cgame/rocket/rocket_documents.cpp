@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 // Code to deal with libRocket's loading and handling of documents and elements
 
+#include "common/Common.h"
 #include "rocket.h"
 #include "../cg_local.h"
 

@@ -31,6 +31,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "common/cm/cm_public.h"
 #include "sgame/sg_local.h"
 #include "sgame/sg_bot_util.h"

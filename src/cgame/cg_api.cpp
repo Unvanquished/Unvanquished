@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "cg_local.h"
 #include "engine/client/cg_msgdef.h"
 

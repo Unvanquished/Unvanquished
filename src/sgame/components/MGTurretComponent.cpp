@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "MGTurretComponent.h"
 
 #include <glm/geometric.hpp>

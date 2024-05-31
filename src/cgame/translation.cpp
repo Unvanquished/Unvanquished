@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "engine/qcommon/q_shared.h"
+#include "common/Common.h"
 #include "engine/qcommon/qcommon.h"
 #include "engine/client/cg_api.h"
 

@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "BuildableComponent.h"
 
 BuildableComponent::BuildableComponent(Entity& entity, HealthComponent& r_HealthComponent,

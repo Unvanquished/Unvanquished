@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "KnockbackComponent.h"
 
 #include <glm/geometric.hpp>

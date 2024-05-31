@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "ReactorComponent.h"
 
 const float ReactorComponent::ATTACK_RANGE  = 200.0f;

@@ -32,7 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include "common/Common.h"
 #include "cg_local.h"
+#include "shared/parse.h"
 
 static bool AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
 {
@@ -493,101 +495,92 @@ static void CG_Rocket_ExecServerList( const char *table )
 	trap_SendConsoleCommand( va( "connect %s", rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverIndex[ netSrc ] ].addr ) );
 }
 
-static bool Parse( const char **p, char **out )
-{
-	const char *token = COM_ParseExt( p, false );
-
-	if ( token && token[ 0 ] != 0 )
-	{
-		* ( out ) = BG_strdup( token );
-		return true;
-	}
-
-	return false;
-}
-
-static void AddToResolutionList( int w, int h )
-{
-	resolution_t *node;
-
-	if ( rocketInfo.data.resolutionCount == MAX_RESOLUTIONS )
-	{
-		return;
-	}
-
-	node = &rocketInfo.data.resolutions[ rocketInfo.data.resolutionCount ];
-
-	node->width = w;
-	node->height = h;
-	rocketInfo.data.resolutionCount++;
-}
-
 static void CG_Rocket_SetResolutionListResolution( const char*, int index )
 {
-	if ( index < rocketInfo.data.resolutionCount && index >= 0 )
+	if ( static_cast<size_t>( index ) < rocketInfo.data.resolutions.size() )
 	{
-		trap_Cvar_Set("r_customwidth", va( "%d", rocketInfo.data.resolutions[ index ].width ) );
-		trap_Cvar_Set("r_customheight", va( "%d", rocketInfo.data.resolutions[ index ].height ) );
-		trap_Cvar_Set("r_mode", "-1" );
+		resolution_t res = rocketInfo.data.resolutions[ index ];
+
+		if ( res.width == 0 )
+		{
+			Cvar::SetValue( "r_mode", "-2" );
+		} else {
+			Cvar::SetValue( "r_customwidth", std::to_string( std::abs( res.width ) ) );
+			Cvar::SetValue( "r_customheight", std::to_string( std::abs( res.height ) ) );
+			Cvar::SetValue( "r_mode", "-1" );
+		}
+
 		rocketInfo.data.resolutionIndex = index;
 	}
 }
 
+static void SelectCurrentResolution()
+{
+	int mode;
+	if ( !Str::ParseInt( mode, Cvar::GetValue( "r_mode" ) ) )
+	{
+		return;
+	}
+
+	int width = cgs.glconfig.vidWidth;
+	int height = cgs.glconfig.vidHeight;
+
+	// TODO(0.55): verify that current size equals display size
+	if ( mode == -2 /* && width == cgs.glconfig.displayWidth && height == cgs.glconfig.displayHeight */ )
+	{
+		width = height = 0; // see resolution_t comment
+	}
+
+	for ( const resolution_t &res : rocketInfo.data.resolutions )
+	{
+		if ( res.width == width && res.height == height )
+		{
+			rocketInfo.data.resolutionIndex = int(&res - &rocketInfo.data.resolutions[ 0 ]);
+			return;
+		}
+	}
+
+	rocketInfo.data.resolutionIndex = 0;
+	rocketInfo.data.resolutions.insert( rocketInfo.data.resolutions.begin(), {-width, -height} );
+}
+
 static void CG_Rocket_BuildResolutionList( const char* )
 {
-	char        buf[ MAX_STRING_CHARS ];
-	int         w, h, currentW, currentH;
-	const char        *p;
-	char        *out;
-	int          i;
-
-	currentW = trap_Cvar_VariableIntegerValue( "r_customwidth" );
-	currentH = trap_Cvar_VariableIntegerValue( "r_customheight" );
-	trap_Cvar_VariableStringBuffer( "r_availableModes", buf, sizeof( buf ) );
-	p = buf;
-	rocketInfo.data.resolutionCount = 0;
+	rocketInfo.data.resolutions.clear();
 	rocketInfo.data.resolutionIndex = -1;
 
-	while ( Parse( &p, &out ) )
+	// Add "Same as screen" option
+	rocketInfo.data.resolutions.push_back( {0, 0} );
+
+	for ( Parse_WordListSplitter parse(Cvar::GetValue( "r_availableModes" )); *parse; ++parse )
 	{
-
-		sscanf( out, "%dx%d", &w, &h );
-		AddToResolutionList( w, h );
-		BG_Free( out );
+		resolution_t resolution;
+		if ( 2 == sscanf( *parse, "%dx%d", &resolution.width, &resolution.height ) )
+		{
+			rocketInfo.data.resolutions.push_back( resolution );
+		}
 	}
-
-	buf[ 0 ] = '\0';
 
 	// Sort resolutions by size by default (larger first).
-	std::sort(rocketInfo.data.resolutions,rocketInfo.data.resolutions+rocketInfo.data.resolutionCount,[](const resolution_t&a, const resolution_t& b){return a.width*a.height > b.width*b.height;});
+	std::sort( rocketInfo.data.resolutions.begin() + 1, rocketInfo.data.resolutions.end(),
+	           [](const resolution_t& a, const resolution_t& b) { return a.width * a.height > b.width * b.height; });
+
+	SelectCurrentResolution();
 
 	Rocket_DSClearTable( "resolutions", "default" );
-
-	for ( i = 0; i < rocketInfo.data.resolutionCount; ++i )
+	for ( const resolution_t &res : rocketInfo.data.resolutions )
 	{
-		w = rocketInfo.data.resolutions[ i ].width;
-		h = rocketInfo.data.resolutions[ i ].height;
-		if ( w == currentW && h == currentH )
-		{
-			rocketInfo.data.resolutionIndex = i;
-		}
-		Info_SetValueForKey( buf, "width", va( "%d", w ), false );
-		Info_SetValueForKey( buf, "height", va( "%d", h ), false );
+		char buf[ MAX_INFO_STRING ];
+		buf[ 0 ] = '\0';
+		Info_SetValueForKey( buf, "width", va( "%d", res.width ), false );
+		Info_SetValueForKey( buf, "height", va( "%d", res.height ), false );
 		Rocket_DSAddRow( "resolutions", "default", buf );
-	}
-
-	if ( rocketInfo.data.resolutionIndex == -1 )
-	{
-		Info_SetValueForKey( buf, "width", va( "%d", -1 ), false );
-		Info_SetValueForKey( buf, "height", va( "%d", -1 ), false );
-		Rocket_DSAddRow( "resolutions", "default", buf );
-		rocketInfo.data.resolutionIndex = rocketInfo.data.resolutionCount;
 	}
 }
 
 static int CG_Rocket_GetResolutionListIndex( const char* )
 {
-	if ( !rocketInfo.data.resolutionCount)
+	if ( rocketInfo.data.resolutions.empty() )
 	{
 		CG_Rocket_BuildResolutionList( nullptr );
 	}
@@ -596,7 +589,7 @@ static int CG_Rocket_GetResolutionListIndex( const char* )
 
 static void CG_Rocket_CleanUpResolutionList( const char* )
 {
-	rocketInfo.data.resolutionCount = 0;
+	rocketInfo.data.resolutions.clear();
 }
 
 static void AddToLanguageList( char *name, char *lang )

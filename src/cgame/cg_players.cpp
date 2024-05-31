@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // cg_players.c -- handle the media and animation for player entities
 
+#include "common/Common.h"
 #include "common/FileSystem.h"
 #include "cg_local.h"
 #include "cg_animdelta.h"

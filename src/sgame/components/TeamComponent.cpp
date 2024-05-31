@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "TeamComponent.h"
 
 TeamComponent::TeamComponent(Entity& entity, team_t team)

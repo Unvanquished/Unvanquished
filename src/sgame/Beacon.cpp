@@ -25,6 +25,7 @@ along with Daemon.  If not, see <http://www.gnu.org/licenses/>.
 // Beacon.cpp
 // handle the server-side beacon-related stuff
 
+#include "common/Common.h"
 #include "sg_local.h"
 #include "Entities.h"
 

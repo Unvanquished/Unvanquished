@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "MiningComponent.h"
 #include "../Entities.h"
 

@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "ThinkingComponent.h"
 
 static Log::Logger thinkLogger("sgame.thinking");

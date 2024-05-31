@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bg_pmove.c -- both games player movement code
 // takes a playerstate and a usercmd as input and returns a modified playerstate
 
-#include "engine/qcommon/q_shared.h"
+#include "common/Common.h"
 #include "bg_public.h"
 #include "bg_gameplay.h"
 
@@ -2602,6 +2602,7 @@ static void PM_GroundClimbTrace()
 
 			// calculate angle between surf and trace
 			traceDOTsurf = DotProduct( trace.plane.normal, surfNormal );
+			traceDOTsurf = Math::Clamp( traceDOTsurf, -1.f, +1.f );
 			traceANGsurf = RAD2DEG( acosf( traceDOTsurf ) );
 
 			if ( traceANGsurf > 180.0f )
@@ -2611,6 +2612,7 @@ static void PM_GroundClimbTrace()
 
 			// calculate angle between trace and ref
 			traceDOTref = DotProduct( trace.plane.normal, refNormal );
+			traceDOTref = Math::Clamp( traceDOTref, -1.f, +1.f );
 			traceANGref = RAD2DEG( acosf( traceDOTref ) );
 
 			if ( traceANGref > 180.0f )
@@ -2620,6 +2622,7 @@ static void PM_GroundClimbTrace()
 
 			// calculate angle between surf and ref
 			surfDOTref = DotProduct( surfNormal, refNormal );
+			surfDOTref = Math::Clamp( surfDOTref, -1.f, +1.f );
 			surfANGref = RAD2DEG( acosf( surfDOTref ) );
 
 			if ( surfANGref > 180.0f )
@@ -2648,6 +2651,7 @@ static void PM_GroundClimbTrace()
 
 					//calculate angle between refTOtrace and refTOsurfTOtrace
 					rTtDOTrTsTt = DotProduct( refTOtrace, refTOsurfTOtrace );
+					rTtDOTrTsTt = Math::Clamp( rTtDOTrTsTt, -1.f, +1.f );
 					rTtANGrTsTt = ANGLE2SHORT( RAD2DEG( acosf( rTtDOTrTsTt ) ) );
 
 					if ( rTtANGrTsTt > 32768 )

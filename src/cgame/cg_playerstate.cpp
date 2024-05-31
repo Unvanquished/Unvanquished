@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // when following another player or playing back a demo,
 // changes will be checked when the snapshot transitions
 
+#include "common/Common.h"
 #include "cg_local.h"
 
 /*

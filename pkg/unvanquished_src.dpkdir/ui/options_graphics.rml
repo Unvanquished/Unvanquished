@@ -11,6 +11,9 @@
 				float: left;
 				width: 45%;
 			}
+			dataselect.resolutions {
+				width: 16em;
+			}
 		</style>
 	</head>
 	<body id="options_graphics" template="window" class="window-options" style="margin-top: 30%; width: 46em;" onload='Events.pushcmd("buildDS resolutions")'>
@@ -54,7 +57,7 @@
 				</row>
 
 				<row>
-					<dataselect source="resolutions.default" fields="width,height" formatter="Resolution" />
+					<dataselect class="resolutions" source="resolutions.default" fields="width,height" formatter="Resolution" />
 					<h3><translate>Screen Resolution</translate></h3>
 				</row>
 				<row>
@@ -82,7 +85,7 @@
 				</row>
 
 				<buttonbar>
-					<button onclick='Cmd.exec("r_mode -1; vid_restart")'><translate>Apply now</translate></button>
+					<button onclick='Cmd.exec("vid_restart")'><translate>Apply now</translate></button>
 				</buttonbar>
 			</panel>
 

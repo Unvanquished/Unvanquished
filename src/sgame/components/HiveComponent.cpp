@@ -1,3 +1,4 @@
+#include "common/Common.h"
 #include "HiveComponent.h"
 #include "../Entities.h"
 
