@@ -1819,7 +1819,6 @@ static void CheckIntermissionExit()
 	int          ready, notReady;
 	int          i;
 	gclient_t    *cl;
-	clientList_t readyMasks;
 	bool     voting = G_VotesRunning();
 
 	//if no clients are connected, just exit
@@ -1832,7 +1831,7 @@ static void CheckIntermissionExit()
 	// see which players are ready
 	ready = 0;
 	notReady = 0;
-	memset( &readyMasks, 0, sizeof( readyMasks ) );
+	clientList_t readyMasks{};
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{

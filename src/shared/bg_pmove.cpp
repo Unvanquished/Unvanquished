@@ -4573,7 +4573,7 @@ static void PmoveSingle( pmove_t *pmove )
 	}
 
 	// clear all pmove local vars
-	memset( &pml, 0, sizeof( pml ) );
+	pml = {};
 
 	// determine the time
 	pml.msec = pmove->cmd.serverTime - pm->ps->commandTime;

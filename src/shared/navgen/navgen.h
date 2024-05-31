@@ -63,9 +63,9 @@ struct RasterizationContext
 		triareas( 0 ),
 		lset( 0 ),
 		chf( 0 ),
-		ntiles( 0 ){
-		memset( tiles, 0, sizeof( TileCacheData ) * MAX_LAYERS );
-	}
+		tiles{},
+		ntiles( 0 )
+	{}
 
 	~RasterizationContext(){
 		rcFreeHeightField( solid );

@@ -2500,9 +2500,7 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 
 void BotResetEnemyQueue( enemyQueue_t *queue )
 {
-	queue->front = 0;
-	queue->back = 0;
-	memset( queue->enemys, 0, sizeof( queue->enemys ) );
+	*queue = {};
 }
 
 static void BotPushEnemy( enemyQueue_t *queue, gentity_t *enemy )

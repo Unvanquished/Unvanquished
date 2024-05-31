@@ -522,5 +522,5 @@ void NavEditShutdown()
 		Cvar::SetValue( "r_debugSurface", "0" );
 	}
 
-	memset( &cmd, 0, sizeof( cmd ) );
+	cmd = {};
 }

@@ -668,7 +668,7 @@ static void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		client->ps.weaponCharge = 0;
 
 		// Set up for pmove
-		memset( &pm, 0, sizeof( pm ) );
+		pm = {};
 		pm.ps = &client->ps;
 		pm.pmext = &client->pmext;
 		pm.cmd = *ucmd;
@@ -2055,7 +2055,7 @@ static void ClientThink_real( gentity_t *self )
 	// set up for pmove
 	oldEventSequence = client->ps.eventSequence;
 
-	memset( &pm, 0, sizeof( pm ) );
+	pm = {};
 
 	// clear fall impact velocity before every pmove
 	VectorSet( client->pmext.fallImpactVelocity, 0.0f, 0.0f, 0.0f );

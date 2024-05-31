@@ -1060,7 +1060,7 @@ static int Parse_ReadScriptToken( script_t *script, token_t *token )
 	//save line counter
 	script->lastline = script->line;
 	//clear the token stuff
-	memset( token, 0, sizeof( token_t ) );
+	*token = {};
 	//start of the white space
 	script->whitespace_p = script->script_p;
 	token->whitespace_p = script->script_p;
@@ -1173,7 +1173,6 @@ static script_t *Parse_LoadScriptFile( const char *filename, int (*openFunc)(Str
 	memset( buffer, 0, sizeof( script_t ) + length + 1 );
 
 	script = ( script_t * ) buffer;
-	memset( script, 0, sizeof( script_t ) );
 	Q_strncpyz( script->filename, filename, sizeof( script->filename ) );
 	script->buffer = ( char * ) buffer + sizeof( script_t );
 	script->buffer[ length ] = 0;
@@ -1210,7 +1209,7 @@ static script_t *Parse_LoadScriptMemory( const char *ptr, int length, const char
 	buffer = BG_Malloc( sizeof( script_t ) + length + 1 );
 
 	script = ( script_t * ) buffer;
-	memset( script, 0, sizeof( script_t ) );
+	*script = {};
 	Q_strncpyz( script->filename, name, sizeof( script->filename ) );
 	script->buffer = ( char * ) buffer + sizeof( script_t );
 	script->length = length;
@@ -3882,14 +3881,13 @@ Parse_DefineFromString
 static define_t *Parse_DefineFromString( const char *string )
 {
 	script_t *script;
-	source_t src;
 	token_t  *t;
 	int      res, i;
 	define_t *def;
 
 	script = Parse_LoadScriptMemory( string, strlen( string ), "*extern" );
 	//create a new source
-	memset( &src, 0, sizeof( source_t ) );
+	source_t src{};
 	Q_strncpyz( src.filename, "*extern", MAX_QPATH );
 	//src.openFunc is null, as a define can't contain an include
 	src.scriptstack = script;

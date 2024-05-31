@@ -1138,8 +1138,7 @@ bool NavmeshGenerator::Step( NavgenTask &t )
 		return true;
 	}
 
-	TileCacheData tiles[ MAX_LAYERS ];
-	memset( tiles, 0, sizeof( tiles ) );
+	TileCacheData tiles[ MAX_LAYERS ]{};
 
 	int ntiles;
 	NavgenStatus status = rasterizeTileLayers(geo_, t.context, t.x, t.y, t.cfg, tiles, MAX_LAYERS, !!config_.filterGaps, &ntiles);

@@ -1630,7 +1630,7 @@ static int CG_CalcViewValues()
 {
 	playerState_t *ps;
 
-	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
+	cg.refdef = {};
 
 	// calculate size of 3D view
 	CG_CalcVrect();
