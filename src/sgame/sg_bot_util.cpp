@@ -928,7 +928,7 @@ static float BotAimAngle( gentity_t *self, const glm::vec3 &pos )
 {
 	glm::vec3 forward;
 
-	AngleVectors( self->client->ps.viewangles, &forward[0], nullptr, nullptr );
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr );
 	glm::vec3 viewPos = BG_GetClientViewOrigin( &self->client->ps );
 	glm::vec3 ideal = pos - viewPos;
 
@@ -1495,7 +1495,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 		return false;
 	}
 
-	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], self->num(), mask, 0 );
+	trap_Trace( &trace, muzzle, {}, {}, targetPos, self->num(), mask, 0 );
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -2030,7 +2030,7 @@ void BotFireWeaponAI( gentity_t *self )
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	glm::vec3 targetPos = BotGetIdealAimLocation( self, self->botMind->goal, 0 );
 
-	trap_Trace( &trace, &muzzle[0], nullptr, nullptr, &targetPos[0], self->num(), MASK_SHOT, 0 );
+	trap_Trace( &trace, muzzle, {}, {}, targetPos, self->num(), MASK_SHOT, 0 );
 	distance = glm::distance( muzzle, VEC2GLM( trace.endpos ) );
 	bool readyFire = self->client->ps.IsWeaponReady();
 	glm::vec3 target = self->botMind->goal.getPos();

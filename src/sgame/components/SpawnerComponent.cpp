@@ -131,7 +131,7 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 
 	// Check for a clear line towards the spawn location.
 	trap_Trace(
-		&tr, &spawnerOrigin[0], nullptr, nullptr, &spawnPoint[0], spawnerNumber, MASK_SHOT, 0
+		&tr, spawnerOrigin, {}, {}, spawnPoint, spawnerNumber, MASK_SHOT, 0
 	);
 
 	if (tr.entityNum != ENTITYNUM_NONE) {
@@ -139,7 +139,7 @@ Entity* SpawnerComponent::CheckSpawnPointHelper(
 	} else {
 		// Check whether a spawned client has space.
 		trap_Trace(
-			&tr, &spawnPoint[0], &clientMins[0], &clientMaxs[0], &spawnPoint[0],
+			&tr, spawnPoint, clientMins, clientMaxs, spawnPoint,
 			ENTITYNUM_NONE, MASK_PLAYERSOLID, 0
 		);
 
