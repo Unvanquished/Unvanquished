@@ -1184,6 +1184,9 @@ void BotTargetToRouteTarget( const gentity_t *self, botTarget_t target, botRoute
 	routeTarget->setPos( target.getPos() );
 	BotTargetGetBoundingBox( target, mins, maxs, routeTarget );
 
+	// FIXME: shouldn't we find the true center instead?
+	// (Doesn't matter much since x/y bounds are usually symmetrical and z bounds
+	// almost ignored by bot pathfinding)
 	routeTarget->polyExtents[ 0 ] = std::max( Q_fabs( mins[ 0 ] ), maxs[ 0 ] );
 	routeTarget->polyExtents[ 1 ] = std::max( Q_fabs( mins[ 1 ] ), maxs[ 1 ] );
 	routeTarget->polyExtents[ 2 ] = std::max( Q_fabs( mins[ 2 ] ), maxs[ 2 ] );

@@ -103,7 +103,7 @@ bool PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents )
 	}
 
 	// use the bot's bbox as an epsilon because the navmesh is always at least that far from a boundary
-	float maxRad = std::max( extents[ 0 ], extents[ 1 ] ) + 1;
+	float maxRad = std::max( extents[ 0 ], extents[ 2 ] ) + 1;
 
 	if ( fabsf( point[ 0 ] - closest[ 0 ] ) > maxRad )
 	{
@@ -122,7 +122,7 @@ bool PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point )
 {
 	gentity_t *ent = g_entities + bot->clientNum;
 
-	return PointInPolyExtents( bot, ref, point, ent->r.maxs );
+	return PointInPolyExtents( bot, ref, point, qVec( ent->r.maxs ) );
 }
 
 bool BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint )
