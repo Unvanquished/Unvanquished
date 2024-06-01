@@ -495,7 +495,7 @@ gentity_t *G_SpawnDumbMissile( missile_t missile, gentity_t *parent, const glm::
 	params.oldEnt = m;
 	params.Missile_attributes = BG_Missile( missile );
 	m->entity = new DumbMissileEntity{ params };
-	G_SetUpMissile( m, parent, &start[ 0 ], &dir[ 0 ] );
+	G_SetUpMissile( m, parent, GLM4READ( start ), GLM4READ( dir ) );
 	return m;
 }
 

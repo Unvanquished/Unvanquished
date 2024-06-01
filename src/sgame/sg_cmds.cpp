@@ -577,7 +577,7 @@ static void Cmd_Devteam_f( gentity_t *ent )
 	glm::vec3 origin = VEC2GLM( ent->s.origin );
 	glm::vec3 angles = VEC2GLM( ent->client->ps.viewangles );
 	angles[ YAW ] -= 180.0f; // ClientSpawn randomly adds 180
-	ClientSpawn( ent, &g_entities[ ENTITYNUM_WORLD ], &origin[ 0 ], &angles[ 0 ] );
+	ClientSpawn( ent, &g_entities[ ENTITYNUM_WORLD ], GLM4READ( origin ), GLM4READ( angles ) );
 
 	// bookkeeping stuff from G_ChangeTeam
 	G_UpdateTeamConfigStrings();
@@ -1947,7 +1947,7 @@ bool G_AlienEvolve( gentity_t *ent, class_t newClass, bool report, bool dryRun )
 	glm::vec3 mins = VEC2GLM( ent->client->ps.origin ) - range;
 
 	int entityList[ MAX_GENTITIES ];
-	int num = trap_EntitiesInBox( &mins[0], &maxs[0], entityList, MAX_GENTITIES );
+	int num = trap_EntitiesInBox( GLM4READ( mins ), GLM4READ( maxs ), entityList, MAX_GENTITIES );
 
 	int alienBuildingsInRange = 0;
 	int humansInRange = 0;

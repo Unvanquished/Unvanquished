@@ -59,7 +59,7 @@ void HumanBuildableComponent::Blast(int /*timeDelta*/) {
 	entity.oldEnt->r.contents = 0;
 	trap_LinkEntity(entity.oldEnt);
 	glm::vec3 blastDirection( 0.0f, 0.0f, 1.0f );
-	G_AddEvent( entity.oldEnt, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte( &blastDirection[0] ) );
+	G_AddEvent( entity.oldEnt, EV_HUMAN_BUILDABLE_EXPLOSION, DirToByte( GLM4READ(blastDirection) ) );
 	GetBuildableComponent().SetState(BuildableComponent::POST_BLAST); // Makes entity invisible.
 
 	// Remove after the explosion event expires.

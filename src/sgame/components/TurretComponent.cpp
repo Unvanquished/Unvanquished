@@ -264,8 +264,8 @@ glm::vec3 TurretComponent::RelativeAnglesToAbsoluteAngles(const glm::vec3 relati
 	quat_t absoluteRotation;
 	vec3_t absoluteAngles;
 
-	AnglesToQuat(&TorsoAngles()[0], torsoRotation);
-	AnglesToQuat(&relativeAngles[0], relativeRotation);
+	AnglesToQuat(GLM4READ(TorsoAngles()), torsoRotation);
+	AnglesToQuat(GLM4READ(relativeAngles), relativeRotation);
 
 	// Rotate by torso rotation in world space, then by relative orientation in torso space.
 	// This is equivalent to rotating by relative orientation in world space, then by torso rotation
@@ -283,8 +283,8 @@ glm::vec3 TurretComponent::AbsoluteAnglesToRelativeAngles(const glm::vec3 absolu
 	quat_t relativeRotation;
 	vec3_t relativeAngles;
 
-	AnglesToQuat(&TorsoAngles()[0], torsoRotation);
-	AnglesToQuat(&absoluteAngles[0], absoluteRotation);
+	AnglesToQuat(GLM4READ(TorsoAngles()), torsoRotation);
+	AnglesToQuat(GLM4READ(absoluteAngles), absoluteRotation);
 
 	// This is the inverse of RelativeAnglesToAbsoluteAngles. See the comment there for details.
 	quat_t inverseTorsoOrientation;
@@ -298,7 +298,7 @@ glm::vec3 TurretComponent::AbsoluteAnglesToRelativeAngles(const glm::vec3 absolu
 
 glm::vec3 TurretComponent::DirectionToAbsoluteAngles(const glm::vec3 direction) const {
 	vec3_t absoluteAngles;
-	vectoangles(&direction[0], absoluteAngles);
+	vectoangles( GLM4READ( direction ), absoluteAngles);
 	return VEC2GLM(absoluteAngles);
 }
 

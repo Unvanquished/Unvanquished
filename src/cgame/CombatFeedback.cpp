@@ -263,7 +263,7 @@ static bool EvaluateDamageIndicator(DamageIndicator *di, bool *draw)
 	di->velocity += glm::vec3(0, 0, -400) * dt;
 	di->origin += di->velocity * dt;
 
-	if ( !CG_WorldToScreen( &di->origin[0], tmp, tmp + 1 ) )
+	if ( !CG_WorldToScreen( GLM4READ( di->origin ), tmp, tmp + 1 ) )
 	{
 		*draw = false;
 		return true;
