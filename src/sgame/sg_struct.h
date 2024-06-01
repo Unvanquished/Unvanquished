@@ -629,7 +629,7 @@ struct level_locals_t
 	// the buildables are counted efficiently in the server's main entity loop,
 	// these numbers might be slightly outdated
 	// however, the numbers will not be more than two frames behind
-	int numBuildablesEstimate[ BA_NUM_BUILDABLES ];
+	std::array<int, BA_NUM_BUILDABLES> numBuildablesEstimate;
 
 	struct
 	{

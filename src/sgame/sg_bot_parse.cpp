@@ -759,7 +759,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	if ( v.nparams == 0 && parenBegin->token.string[ 0 ] != '(' )
 	{
 		ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
-		memcpy( ret, &v, sizeof( *ret ) );
+		*ret = v;
 
 		*list = current->next;
 		return ret;
@@ -776,7 +776,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
 
 	// copy the members
-	memcpy( ret, &v, sizeof( *ret ) );
+	*ret = v;
 
 	return ret;
 }
@@ -1031,7 +1031,7 @@ static AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 	if ( dec->minparams == 0 && parenBegin->token.string[0] != '(' )
 	{
 		ret = allocNode( AIDecoratorNode_t );
-		memcpy( ret, &node, sizeof( node ) );
+		*ret = node;
 		*list = parenBegin;
 		return ( AIGenericNode_t * ) ret;
 	}
@@ -1067,7 +1067,7 @@ static AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 
 	// create the decorator node
 	ret = allocNode( AIDecoratorNode_t );
-	memcpy( ret, &node, sizeof( *ret ) );
+	*ret = node;
 
 	*list = current;
 	return ( AIGenericNode_t * ) ret;
@@ -1170,7 +1170,7 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	if ( action->minparams == 0 && parenBegin->token.string[0] != '(' )
 	{
 		ret = allocNode( AIActionNode_t );
-		memcpy( ret, &node, sizeof( node ) );
+		*ret = node;
 		*tokenlist = parenBegin;
 		return ( AIGenericNode_t * ) ret;
 	}
@@ -1184,7 +1184,7 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	// create the action node
 	ret = allocNode( AIActionNode_t );
-	memcpy( ret, &node, sizeof( *ret ) );
+	*ret = node;
 
 	*tokenlist = current;
 	return ( AIGenericNode_t * ) ret;
