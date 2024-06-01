@@ -102,7 +102,7 @@ static trace2_t MissileTrace(gentity_t* ent)
 		// In this case we have a collision, and so we want a normal vector, but there isn't one
 		// Try to use the missile's direction of travel
 		glm::vec3 dir = VEC2GLM(origin) - VEC2GLM(ent->r.currentOrigin);
-		if (VectorNormalize(&dir[0]))
+		if (VectorNormalize(GLM4RW(dir)))
 		{
 			VectorCopy(dir, result.plane.normal);
 		}

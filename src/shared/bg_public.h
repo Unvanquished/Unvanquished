@@ -47,7 +47,27 @@ DEPRECATED inline glm::vec3 VEC2GLM( glm::vec3 v ) {
 // Useful when calling functions with a `const vec3_t` argument.
 #define GLM4READ( v ) ( glm4read_impl( v ).data() )
 
+// Consructs a read/write capable proxy object which can be used when calling a function
+// with a mutable vec3_t argument.
+#define GLM4RW( v ) ( glm4rw_impl( v ).data )
+
+
 inline std::array<const vec_t, 3> glm4read_impl( const glm::vec3 &v ) { return { v.x, v.y, v.z }; }
+
+struct glm4rw_impl
+{
+	glm::vec3 &sink;
+	vec3_t data;
+	glm4rw_impl( glm::vec3 &v ) : sink(v)
+	{
+		memcpy( data, &sink, sizeof(data) );
+	}
+
+	~glm4rw_impl()
+	{
+		memcpy( &sink, data, sizeof(data) );
+	}
+};
 
 #include "engine/qcommon/q_shared.h"
 
