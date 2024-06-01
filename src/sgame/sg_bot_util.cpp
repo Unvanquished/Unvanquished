@@ -1490,7 +1490,7 @@ bool BotTargetIsVisible( const gentity_t *self, botTarget_t target, int mask )
 	muzzle = G_CalcMuzzlePoint( self, forward );
 	targetPos = target.getPos();
 
-	if ( !trap_InPVS( &muzzle[0], &targetPos[0] ) )
+	if ( !trap_InPVS( GLM4READ( muzzle ), GLM4READ( targetPos ) ) )
 	{
 		return false;
 	}

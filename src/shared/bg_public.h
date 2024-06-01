@@ -43,6 +43,12 @@ DEPRECATED inline glm::vec3 VEC2GLM( glm::vec3 v ) {
 	return v;
 }
 
+// Costructs a TEMPORARY, READ-ONLY float array from a GLM vector.
+// Useful when calling functions with a `const vec3_t` argument.
+#define GLM4READ( v ) ( glm4read_impl( v ).data() )
+
+inline std::array<const vec_t, 3> glm4read_impl( const glm::vec3 &v ) { return { v.x, v.y, v.z }; }
+
 #include "engine/qcommon/q_shared.h"
 
 //Unvanquished balance header

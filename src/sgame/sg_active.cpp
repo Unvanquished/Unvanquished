@@ -2218,7 +2218,7 @@ static void ClientThink_real( gentity_t *self )
 		// should take target's radius instead, but let's try with that for now
 		glm::vec3 mins, maxs;
 		BG_BoundingBox( static_cast<class_t>( client->ps.stats[STAT_CLASS] ), &mins, &maxs, nullptr, nullptr, nullptr );
-		auto range1 = ENTITY_USE_RANGE + RadiusFromBounds( &mins[0], &maxs[0] );
+		auto range1 = ENTITY_USE_RANGE + RadiusFromBounds( GLM4READ( mins ), GLM4READ( maxs ) );
 
 		AngleVectors( client->ps.viewangles, view, nullptr, nullptr );
 		glm::vec3 point;

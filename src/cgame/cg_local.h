@@ -1973,7 +1973,7 @@ void     CG_TileClear();
 void     CG_DrawRect( float x, float y, float width, float height, float size, const Color::Color& color );
 void     CG_DrawSides( float x, float y, float w, float h, float size );
 void     CG_DrawTopBottom( float x, float y, float w, float h, float size );
-bool CG_WorldToScreen( vec3_t point, float *x, float *y );
+bool CG_WorldToScreen( const vec3_t point, float *x, float *y );
 char     CG_GetColorCharForHealth( int clientnum );
 void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const Color::Color& shaderRGBA );
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
