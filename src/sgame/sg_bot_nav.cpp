@@ -665,7 +665,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 	playerMaxs[2] += STEPSIZE;
 
 	//get the yaw (left/right) we dont care about up/down
-	vectoangles( &dir[0], &angles[0] );
+	vectoangles( GLM4READ( dir ), GLM4RW( angles ) );
 	yaw1 = yaw2 = angles[ YAW ];
 
 	//directly infront of us is blocked, so dont test it
