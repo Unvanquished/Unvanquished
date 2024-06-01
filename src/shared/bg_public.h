@@ -43,6 +43,10 @@ DEPRECATED inline glm::vec3 VEC2GLM( glm::vec3 v ) {
 	return v;
 }
 
+// Don't allow mistaken conversion without coordinate transformation (use .ToQuake() instead)
+class rVec;
+glm::vec3 VEC2GLM( const rVec& ) = delete;
+
 // Costructs a TEMPORARY, READ-ONLY float array from a GLM vector.
 // Useful when calling functions with a `const vec3_t` argument.
 #define GLM4READ( v ) ( glm4read_impl( v ).data() )

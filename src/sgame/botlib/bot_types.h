@@ -42,7 +42,6 @@ struct gclient_t;
 struct botTrace_t
 {
 	float frac;
-	float normal[ 3 ];
 };
 
 // parameters outputted by navigation

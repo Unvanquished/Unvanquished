@@ -54,8 +54,8 @@ void BotCalcSteerDir( Bot_t *bot, rVec &dir )
 	//old code follow, for reference, because I'm not sure at all that the fix is valid.
 	//const int ip1 = std::min( 1, bot->numCorners - 1 );
 	const int ip1 = std::min( 1, bot->numCorners );
-	const float* p0 = &bot->cornerVerts[ ip0 * 3 ];
-	const float* p1 = &bot->cornerVerts[ ip1 * 3 ];
+	const rVec p0 = rVec::Load( bot->cornerVerts + ip0 * 3 );
+	const rVec p1 = rVec::Load( bot->cornerVerts + ip1 * 3 );
 	rVec dir0, dir1;
 	float len0, len1;
 	rVec spos;
@@ -122,7 +122,7 @@ bool PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point )
 {
 	gentity_t *ent = g_entities + bot->clientNum;
 
-	return PointInPolyExtents( bot, ref, point, qVec( ent->r.maxs ) );
+	return PointInPolyExtents( bot, ref, point, rVec( VEC2GLM( ent->r.maxs ) ) );
 }
 
 bool BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint )

@@ -51,10 +51,7 @@ static const int DEFAULT_CONNECTION_SIZE = 50;
 
 static bool GetPointPointedTo( NavData_t *nav, rVec &p )
 {
-	qVec forward;
-	qVec end;
 	rVec extents;
-	rVec pos;
 	trace_t trace;
 	dtPolyRef nearRef;
 
@@ -63,13 +60,15 @@ static bool GetPointPointedTo( NavData_t *nav, rVec &p )
 	// Nav edit commands are only allowed in a local game, where the host is guaranteed to be in slot 0
 	const playerState_t *ps = &g_clients[ 0 ].ps;
 
-	AngleVectors( ps->viewangles, forward, nullptr, nullptr );
-	VectorMA( ps->origin, 8096, forward, end );
+	glm::vec3 forward;
+	AngleVectors( VEC2GLM( ps->viewangles ), &forward, nullptr, nullptr );
 
-	CM_BoxTrace( &trace, ps->origin, end, nullptr, nullptr, 0,
+	glm::vec3 end = VEC2GLM( ps->origin ) + 8096.0f * forward;
+
+	CM_BoxTrace( &trace, ps->origin, GLM4READ( end ), nullptr, nullptr, 0,
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP, 0, traceType_t::TT_AABB );
 
-	pos = qVec( trace.endpos );
+	rVec pos(VEC2GLM( trace.endpos ));
 	if ( dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) ) )
 	{
 		return false;
@@ -136,11 +135,10 @@ static void DrawPath( Bot_t *bot, DebugDrawQuake &dd )
 // that it is impossible to go there, are actually helpful because more lines
 // means it will be more likely that one line will be displayed right
 // (see https://github.com/Unvanquished/Unvanquished/issues/2337 for the bug)
-static void BotDebugDrawObstacle( DebugDrawQuake &dd, const glm::vec3 mins_, const glm::vec3 &maxs_ )
+static void BotDebugDrawObstacle( DebugDrawQuake &dd, const glm::vec3 qmins, const glm::vec3 qmaxs )
 {
-	qVec quake_mins( &mins_[0] );
-	qVec quake_maxs( &maxs_[0] );
-	rBounds box( quake_mins, quake_maxs );
+	rVec rmins(qmins);
+	rVec rmaxs(qmaxs);
 
 	dd.depthMask(false);
 	const unsigned int color = duRGBA(255,128,128,255);
@@ -148,14 +146,14 @@ static void BotDebugDrawObstacle( DebugDrawQuake &dd, const glm::vec3 mins_, con
 
 	// The 8 edges that the cube has
 	rVec corners[] = {
-		{ box.mins[0], box.mins[1], box.mins[2] },
-		{ box.maxs[0], box.mins[1], box.mins[2] },
-		{ box.mins[0], box.maxs[1], box.mins[2] },
-		{ box.maxs[0], box.maxs[1], box.mins[2] },
-		{ box.mins[0], box.mins[1], box.maxs[2] },
-		{ box.maxs[0], box.mins[1], box.maxs[2] },
-		{ box.mins[0], box.maxs[1], box.maxs[2] },
-		{ box.maxs[0], box.maxs[1], box.maxs[2] },
+		{ rmins[0], rmins[1], rmins[2] },
+		{ rmaxs[0], rmins[1], rmins[2] },
+		{ rmins[0], rmaxs[1], rmins[2] },
+		{ rmaxs[0], rmaxs[1], rmins[2] },
+		{ rmins[0], rmins[1], rmaxs[2] },
+		{ rmaxs[0], rmins[1], rmaxs[2] },
+		{ rmins[0], rmaxs[1], rmaxs[2] },
+		{ rmaxs[0], rmaxs[1], rmaxs[2] },
 	};
 
 	// The indices of the edges that makes up the cube's 6 faces.
@@ -400,17 +398,19 @@ public:
 			{
 				cmd.nav->process.con.addConnection( cmd.pc );
 
-				rBounds box;
-				box.addPoint( cmd.pc.start );
-				box.addPoint( cmd.pc.end );
+				rVec boxMins, boxMaxs;
+				for ( int i = 0; i < 3; i++ )
+				{
+					std::tie( boxMins[ i ], boxMaxs[ i ] ) = std::minmax( cmd.pc.start[ i ], cmd.pc.end[ i ] );
+				}
 
-				box.mins[ 1 ] -= 10;
-				box.maxs[ 1 ] += 10;
+				boxMins[ 1 ] -= 10;
+				boxMaxs[ 1 ] += 10;
 
 				// rebuild affected tiles
 				dtCompressedTileRef refs[ 32 ];
 				int tc = 0;
-				cmd.nav->cache->queryTiles( box.mins, box.maxs, refs, &tc, 32 );
+				cmd.nav->cache->queryTiles( boxMins, boxMaxs, refs, &tc, 32 );
 
 				for ( int k = 0; k < tc; k++ )
 				{
