@@ -138,6 +138,7 @@ botRouteTargetInternal::botRouteTargetInternal( const botRouteTarget_t &target )
 {
 	for ( int i = 0; i < 3; i++ )
 	{
+		// FIXME: WTF?
 		polyExtents[ i ] = ( polyExtents[ i ] < 0 ) ? -polyExtents[ i ] : polyExtents[ i ];
 	}
 }

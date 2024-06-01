@@ -71,8 +71,8 @@ enum class botRouteTargetType_t
 struct botRouteTarget_t
 {
 	botRouteTargetType_t type;
-	float pos[ 3 ];
-	float polyExtents[ 3 ];
+	float pos[ 3 ]; // quake coordinates
+	float polyExtents[ 3 ]; // quake coordinates
 	void setPos( glm::vec3 const& p ){ pos[0] = p[0]; pos[1] = p[1]; pos[2] = p[2]; }
 };
 
