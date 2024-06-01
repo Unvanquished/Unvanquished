@@ -95,8 +95,7 @@ void DebugDrawQuake::vertex(const float* pos, unsigned int c)
 
 void DebugDrawQuake::vertex(const float x, const float y, const float z, unsigned int color)
 {
-	glm::vec3 vert{ x, y, z };
-	recast2quake( &vert[0] );
+	glm::vec3 vert{ x, z, y };
 	commands.Write<debugDrawCommand_t>(debugDrawCommand_t::VERTEX);
 	commands.Write<glm::vec3>(vert);
 	commands.Write<unsigned int>(color);

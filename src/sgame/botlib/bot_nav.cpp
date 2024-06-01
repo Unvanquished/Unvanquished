@@ -46,39 +46,21 @@ All vectors used as inputs and outputs to functions here use the engine's coordi
 ====================
 */
 
-static void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
+static void BotSetPolyFlags(
+	const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs, unsigned short flags )
 {
-	qVec qExtents;
-	qVec realMin, realMax;
-	qVec qCenter;
-
 	if ( !numNavData )
 	{
 		return;
 	}
 
-	// support abs min/max by recalculating the origin and min/max
-	VectorAdd( mins, origin, realMin );
-	VectorAdd( maxs, origin, realMax );
-	VectorAdd( realMin, realMax, qCenter );
-	VectorScale( qCenter, 0.5, qCenter );
-	VectorSubtract( realMax, qCenter, realMax );
-	VectorSubtract( realMin, qCenter, realMin );
-
-	// find extents
-	for ( int j = 0; j < 3; j++ )
-	{
-		qExtents[ j ] = std::max( fabsf( realMin[ j ] ), fabsf( realMax[ j ] ) );
-	}
+	// convert possibly lopsided extents to centered ones
+	glm::vec3 qCenter = origin + 0.5f * ( mins + maxs );
+	glm::vec3 qExtents = 0.5f * ( maxs - mins );
 
 	// convert to recast coordinates
-	rVec center = qCenter;
-	rVec extents = qExtents;
-
-	// quake2recast conversion makes some components negative
-	extents[ 0 ] = fabsf( extents[ 0 ] );
-	extents[ 1 ] = fabsf( extents[ 1 ] );
-	extents[ 2 ] = fabsf( extents[ 2 ] );
+	rVec center(qCenter);
+	rVec extents(qExtents);
 
 	// setup a filter so our queries include disabled polygons
 	dtQueryFilter filter;
@@ -105,12 +87,12 @@ static void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short f
 
 void G_BotDisableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
 {
-	BotSetPolyFlags( &origin[0], &mins[0], &maxs[0], POLYFLAGS_DISABLED );
+	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_DISABLED );
 }
 
 void G_BotEnableArea( const glm::vec3 &origin, const glm::vec3 &mins, const glm::vec3 &maxs )
 {
-	BotSetPolyFlags( &origin[0], &mins[0], &maxs[0], POLYFLAGS_WALK );
+	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
 }
 
 void G_BotSetNavMesh( int botClientNum, class_t newClass )
@@ -164,12 +146,7 @@ void G_BotSetNavMesh( int botClientNum, class_t newClass )
 
 static void GetEntPosition( int num, rVec &pos )
 {
-	pos = qVec( g_entities[ num ].s.origin );
-}
-
-static void GetEntPosition( int num, qVec &pos )
-{
-	pos = g_entities[ num ].s.origin;
+	pos = rVec( VEC2GLM( g_entities[ num ].s.origin ) );
 }
 
 bool G_BotFindRoute( int botClientNum, const botRouteTarget_t *target, bool allowPartial )
@@ -208,7 +185,8 @@ static bool overOffMeshConnectionStart( const Bot_t *bot, rVec pos )
 
 	if ( offMeshConnection )
 	{
-		return withinRadiusOfOffMeshConnection( bot, pos, &bot->cornerVerts[ corner * 3 ], bot->cornerPolys[ corner ] );
+		return withinRadiusOfOffMeshConnection(
+			bot, pos, rVec::Load( bot->cornerVerts + corner * 3 ), bot->cornerPolys[ corner ] );
 	}
 	return false;
 }
@@ -363,15 +341,15 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 
 	if ( bot->offMesh )
 	{
-		qVec pos, proj;
-		qVec start = bot->offMeshStart;
-		qVec end = bot->offMeshEnd;
+		glm::vec3 start = bot->offMeshStart.ToQuake();
+		glm::vec3 end = bot->offMeshEnd.ToQuake();
 
-		GetEntPosition( botClientNum, pos );
+		glm::vec3 pos = VEC2GLM( g_entities[ botClientNum ].s.origin );
 		start[ 2 ] = pos[ 2 ];
 		end[ 2 ] = pos[ 2 ];
 
-		ProjectPointOntoVectorBounded( pos, start, end, proj );
+		glm::vec3 proj;
+		ProjectPointOntoVectorBounded( GLM4READ( pos ), GLM4READ( start ), GLM4READ( end ), GLM4RW( proj ) );
 
 		VectorCopy( proj, cmd->pos );
 		cmd->directPathToGoal = false;
@@ -402,7 +380,7 @@ static float frand()
 
 bool BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm::vec3 &point, float radius )
 {
-	rVec rorigin = qVec( &origin[0] );
+	rVec rorigin(origin);
 	rVec nearPoint;
 	dtPolyRef nearPoly;
 
@@ -423,19 +401,17 @@ bool BotFindRandomPointInRadius( int botClientNum, const glm::vec3 &origin, glm:
 		return false;
 	}
 
-	point = recast2quake( const_cast<rVec const&>( nearPoint ) );
+	point = nearPoint.ToQuake();
 	return true;
 }
 
-bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start_, const glm::vec3& end_ )
+bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start, const glm::vec3& end )
 {
-	vec3_t start = { start_[0], start_[1], start_[2] };
-	vec3_t end = { end_[0], end_[1], end_[2] };
 	dtPolyRef startRef;
 	dtStatus status;
 	rVec extents( 75, 96, 75 );
-	rVec spos = qVec( start );
-	rVec epos = qVec( end );
+	rVec spos(start);
+	rVec epos(end);
 
 	memset( trace, 0, sizeof( *trace ) );
 
@@ -453,26 +429,17 @@ bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start_
 		}
 	}
 
-	status = bot->nav->query->raycast( startRef, spos, epos, &bot->nav->filter, &trace->frac, trace->normal, nullptr, nullptr, 0 );
-	if ( dtStatusFailed( status ) )
-	{
-		return false;
-	}
-
-	recast2quake( trace->normal );
-	return true;
+	rVec unusedNormal;
+	status = bot->nav->query->raycast( startRef, spos, epos, &bot->nav->filter, &trace->frac, unusedNormal, nullptr, nullptr, 0 );
+	return !dtStatusFailed( status );
 }
 
 std::map<int, saved_obstacle_t> savedObstacles;
 std::map<int, std::array<dtObstacleRef, MAX_NAV_DATA>> obstacleHandles; // handles of detour's obstacles, if any
 
-void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacleNum )
+void G_BotAddObstacle( const glm::vec3 &qmins, const glm::vec3 &qmaxs, int obstacleNum )
 {
-	qVec min = &mins[0];
-	qVec max = &maxs[0];
-	rBounds box( min, max );
-
-	savedObstacles[obstacleNum] = { navMeshLoaded == navMeshStatus_t::LOADED, { mins, maxs } };
+	savedObstacles[obstacleNum] = { navMeshLoaded == navMeshStatus_t::LOADED, { qmins, qmaxs } };
 	if ( navMeshLoaded != navMeshStatus_t::LOADED )
 	{
 		return;
@@ -487,19 +454,21 @@ void G_BotAddObstacle( const glm::vec3 &mins, const glm::vec3 &maxs, int obstacl
 		const dtTileCacheParams *params = nav->cache->getParams();
 		float offset = params->walkableRadius;
 
-		rBounds tempBox = box;
+		rVec rmins(qmins);
+		rVec rmaxs(qmaxs);
 
 		// offset bbox by agent radius like the navigation mesh was originally made
-		tempBox.mins[ 0 ] -= offset;
-		tempBox.mins[ 2 ] -= offset;
+		rmins[ 0 ] -= offset;
+		rmins[ 2 ] -= offset;
 
-		tempBox.maxs[ 0 ] += offset;
-		tempBox.maxs[ 2 ] += offset;
+		rmaxs[ 0 ] += offset;
+		rmaxs[ 2 ] += offset;
 
 		// offset mins down by agent height so obstacles placed on ledges are handled correctly
-		tempBox.mins[ 1 ] -= params->walkableHeight;
+		rmins[ 1 ] -= params->walkableHeight;
 
-		nav->cache->addBoxObstacle( tempBox.mins, tempBox.maxs, &handles[i] );
+		// FIXME: check error of addBoxObstacle
+		nav->cache->addBoxObstacle( rmins, rmaxs, &handles[i] );
 	}
 	auto result = obstacleHandles.insert({obstacleNum, std::move(handles)});
 	if ( !result.second )

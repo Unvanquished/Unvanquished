@@ -37,12 +37,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 #include "bot_types.h"
 
 //coordinate conversion
-static inline void quake2recast( float vec[ 3 ] )
-{
-	float temp = vec[1];
-	vec[1] = vec[2];
-	vec[2] = temp;
-}
 
 static inline void recast2quake( float vec[ 3 ] )
 {
@@ -51,46 +45,27 @@ static inline void recast2quake( float vec[ 3 ] )
 	vec[2] = temp;
 }
 
-static inline glm::vec3 recast2quake( float const vec[ 3 ] )
-{
-	return glm::vec3( vec[0], vec[2], vec[1] );
-}
-
-class rVec;
-class qVec
-{
-	float v[ 3 ];
-
-public:
-	qVec( ) = default;
-	qVec( float x, float y, float z );
-	qVec( const float vec[ 3 ] );
-	qVec( rVec vec );
-
-	inline float &operator[]( int i )
-	{
-		return v[ i ];
-	}
-
-	inline operator const float*() const
-	{
-		return v;
-	}
-
-	inline operator float*()
-	{
-		return v;
-	}
-};
-
+// Conventions:
+// - Always use rVec for a vector using the Recast coordinate system.
+// - A glm::vec3 is assumed to use the Quake coordinate system.
 class rVec
 {
 	float v[ 3 ];
+
 public:
+	// uninitialized, but you can do rVec() or rVec{} to init with zeroes
 	rVec() = default;
-	rVec( float x, float y, float z );
-	rVec( const float vec[ 3 ] );
-	rVec( qVec vec );
+
+	// uses recast convention for arguments (x z y from quake perspective)
+	rVec( float x, float y, float z ) : v{ x, y, z } {}
+
+	// uses quake convention for argument
+	explicit rVec( const glm::vec3 &qvec ) : v{ qvec.x, qvec.z, qvec.y } {}
+
+	static rVec Load( const float *p )
+	{
+		return { p[ 0 ], p[ 1 ], p[ 2 ] };
+	}
 
 	inline float &operator[]( int i )
 	{
@@ -106,29 +81,11 @@ public:
 	{
 		return v;
 	}
-};
 
-class rBounds
-{
-public:
-	rVec mins, maxs;
-
-	rBounds()
+	glm::vec3 ToQuake() const
 	{
-		clear();
+		return { v[0], v[2], v[1] };
 	}
-
-	rBounds( const rBounds &b )
-	{
-		mins = b.mins;
-		maxs = b.maxs;
-	}
-
-	rBounds( qVec min, qVec max );
-	rBounds( const float min[ 3 ], const float max[ 3 ] );
-
-	void addPoint( rVec p );
-	void clear();
 };
 
 struct botRouteTargetInternal
