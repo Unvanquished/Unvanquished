@@ -755,7 +755,6 @@ static int ParseDmgScript( damageRegion_t *regions, const char *buf )
 
 void G_InitDamageLocations()
 {
-	const char   *modelName;
 	char         filename[ MAX_QPATH ];
 	int          i;
 	int          len;
@@ -764,8 +763,8 @@ void G_InitDamageLocations()
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		modelName = BG_ClassModelConfig( i )->modelName;
-		Com_sprintf( filename, sizeof( filename ), "configs/classes/%s.locdamage.cfg", modelName );
+
+		Com_sprintf( filename, sizeof( filename ), "configs/classes/%s.locdamage.cfg", BG_Class( i )->name );
 
 		len = BG_FOpenGameOrPakPath( filename, fileHandle );
 
