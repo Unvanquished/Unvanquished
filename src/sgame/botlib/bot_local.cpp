@@ -42,8 +42,8 @@ bot_local.cpp
 All vectors used as inputs and outputs to functions here are assumed to
 use detour/recast's coordinate system
 
-Callers should use recast2quake() and quake2recast() where appropriate to
-make sure the vectors use the same coordinate system
+The rVec( const glm::vec3 & ) constructor can be used to convert vector
+from the Quake to the Recast coordinate system
 ====================
 */
 

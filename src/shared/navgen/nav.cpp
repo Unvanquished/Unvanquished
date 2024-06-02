@@ -38,6 +38,7 @@
 #include "common/cm/cm_local.h"
 #include "common/FileSystem.h"
 #include "shared/bg_gameplay.h"
+#include "sgame/botlib/bot_convert.h"
 #include "navgen.h"
 
 // disable suppression in case multiple threads finishing together lead to a burst of output
@@ -245,9 +246,7 @@ void NavmeshGenerator::LoadBSP()
 bool FixWinding( winding_t* w );
 
 static void AddVert( std::vector<float> &verts, std::vector<int> &tris, vec3_t vert ) {
-	vec3_t recastVert;
-	VectorCopy( vert, recastVert );
-	std::swap( recastVert[1], recastVert[2] ); // convert Quake to Recast coordinates
+	rVec recastVert(VEC2GLM( vert ));
 	int index = 0;
 	for ( int i = 0; i < 3; i++ ) {
 		verts.push_back( recastVert[i] );
@@ -395,12 +394,12 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 	 */
 
 	// calculate bounds of all verts
-	vec3_t mins, maxs;
-	rcCalcBounds( &verts[ 0 ], verts.size() / 3, mins, maxs );
+	rVec rmins, rmaxs;
+	rcCalcBounds( &verts[ 0 ], verts.size() / 3, rmins, rmaxs );
 
 	// convert from recast to quake3 coordinates
-	std::swap( mins[ 1 ], mins[ 2 ] );
-	std::swap( maxs[ 1 ], maxs[ 2 ] );
+	glm::vec3 mins = rmins.ToQuake();
+	glm::vec3 maxs = rmaxs.ToQuake();
 
 	for ( int k = model->firstSurface, n = 0; n < model->numSurfaces; k++, n++ )
 	{
@@ -448,7 +447,7 @@ void NavmeshGenerator::LoadTris( std::vector<float> &verts, std::vector<int> &tr
 			}
 		}
 
-		if ( !BoundsIntersect( tmin, tmax, mins, maxs ) ) {
+		if ( !BoundsIntersect( tmin, tmax, GLM4READ( mins ), GLM4READ( maxs ) ) ) {
 			// we can safely ignore this patch surface
 			continue;
 		}
@@ -510,8 +509,8 @@ void NavmeshGenerator::LoadGeometry()
 
 	geo_.init( &verts[ 0 ], numVerts, &tris[ 0 ], numTris );
 
-	const float *mins = geo_.getMins();
-	const float *maxs = geo_.getMaxs();
+	rVec mins = rVec::Load( geo_.getMins() );
+	rVec maxs = rVec::Load( geo_.getMaxs() );
 
 	LOG.Debug( "Recast world bounds: min (%.0f %.0f %.0f) max (%.0f %.0f %.0f)",
 	           mins[0], mins[1], mins[2], maxs[0], maxs[1], maxs[2] );
