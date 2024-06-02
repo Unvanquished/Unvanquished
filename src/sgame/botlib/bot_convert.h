@@ -38,13 +38,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
 //coordinate conversion
 
-static inline void recast2quake( float vec[ 3 ] )
-{
-	float temp = vec[1];
-	vec[1] = vec[2];
-	vec[2] = temp;
-}
-
 // Conventions:
 // - Always use rVec for a vector using the Recast coordinate system.
 // - A glm::vec3 is assumed to use the Quake coordinate system.

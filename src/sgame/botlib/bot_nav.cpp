@@ -228,13 +228,10 @@ bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result )
 		return false;
 	}
 	dtPolyRef firstPoly = bot->corridor.getFirstPoly();
-	float corner[ 3 ] = { 0 };
-	vec3_t ownPos;
-	VectorCopy( ent->s.origin, ownPos );
-	std::swap( ownPos[ 1 ], ownPos[ 2 ] );
-	bot->nav->query->closestPointOnPolyBoundary( firstPoly, ownPos, corner );
-	std::swap( corner[ 1 ], corner[ 2 ] );  // recast and daemon have these swapped
-	result = VEC2GLM( corner );
+	rVec corner{};
+	rVec ownPos( VEC2GLM( ent->s.origin ) );
+	bot->nav->query->closestPointOnPolyBoundary( firstPoly, ownPos, corner ); // FIXME: check error
+	result = corner.ToQuake();
 	return true;
 }
 
@@ -310,32 +307,29 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 
 		rVec rdir;
 		BotCalcSteerDir( bot, rdir );
-
-		VectorCopy( rdir, cmd->dir );
-		recast2quake( cmd->dir );
+		cmd->dir = rdir.ToQuake();
 
 		cmd->directPathToGoal = bot->numCorners <= 1;
 
-		VectorCopy( bot->corridor.getPos(), cmd->pos );
-		recast2quake( cmd->pos );
+		cmd->pos = rVec::Load( bot->corridor.getPos() ).ToQuake();
 
 		// if there are no corners, we have reached the goal
 		// FIXME: this must be done because of a weird bug where the target is not reachable even if
 		// the path was checked for a partial path beforehand
 		if ( bot->numCorners == 0 )
 		{
-			VectorCopy( cmd->pos, cmd->tpos );
+			cmd->tpos = cmd->pos;
 		}
 		else
 		{
-			VectorCopy( bot->corridor.getTarget(), cmd->tpos );
+			rVec tpos = rVec::Load( bot->corridor.getTarget() );
 
 			float height;
-			if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), cmd->tpos, &height ) ) )
+			if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), tpos, &height ) ) )
 			{
-				cmd->tpos[ 1 ] = height;
+				tpos[ 1 ] = height;
 			}
-			recast2quake( cmd->tpos );
+			cmd->tpos = tpos.ToQuake();
 		}
 	}
 
@@ -348,21 +342,19 @@ void G_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCm
 		start[ 2 ] = pos[ 2 ];
 		end[ 2 ] = pos[ 2 ];
 
-		glm::vec3 proj;
-		ProjectPointOntoVectorBounded( GLM4READ( pos ), GLM4READ( start ), GLM4READ( end ), GLM4RW( proj ) );
+		ProjectPointOntoVectorBounded( GLM4READ( pos ), GLM4READ( start ), GLM4READ( end ), GLM4RW( cmd->pos ) );
 
-		VectorCopy( proj, cmd->pos );
 		cmd->directPathToGoal = false;
-		VectorSubtract( end, pos, cmd->dir );
-		VectorNormalize( cmd->dir );
+		cmd->dir = end - pos;
+		VectorNormalize( GLM4RW( cmd->dir ) );
 
-		VectorCopy( bot->corridor.getTarget(), cmd->tpos );
+		rVec tpos = rVec::Load( bot->corridor.getTarget() );
 		float height;
-		if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), cmd->tpos, &height ) ) )
+		if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), tpos, &height ) ) )
 		{
-			cmd->tpos[ 1 ] = height;
+			tpos[ 1 ] = height;
 		}
-		recast2quake( cmd->tpos );
+		cmd->tpos = tpos.ToQuake();
 
 		cmd->havePath = true;
 

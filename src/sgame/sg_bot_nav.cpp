@@ -310,7 +310,7 @@ bool GoalInRange( const gentity_t *self, float r )
 		// to still count standing over a turret on the
 		// target point or sitting next to a buildable
 		// counts as a "we have reached our destination".
-		glm::vec3 deltaPos = VEC2GLM( self->s.origin ) - self->botMind->nav().glm_tpos();
+		glm::vec3 deltaPos = VEC2GLM( self->s.origin ) - self->botMind->nav().tpos;
 		return Length2D( deltaPos ) < r
 				&& fabsf( deltaPos.z ) <= 90;
 	}
@@ -727,7 +727,7 @@ static bool BotFindSteerTarget( gentity_t *self, glm::vec3 &dir )
 // Returns true on error
 static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeometry, obstacle_t &obst )
 {
-	dir = self->botMind->nav().glm_dir();
+	dir = self->botMind->nav().dir;
 	gentity_t const *blocker = BotGetPathBlocker( self, dir );
 
 	if ( !blocker )
@@ -917,7 +917,7 @@ static void BotMaybeAttackWhileClimbing( gentity_t *self )
 static void BotClimbToGoal( gentity_t *self )
 {
 	glm::vec3 ownPos = VEC2GLM( self->s.origin );
-	glm::vec3 dir = self->botMind->nav().glm_dir();
+	glm::vec3 dir = self->botMind->nav().dir;
 	BotAimAtLocation( self, ownPos + 100.f * dir );
 	self->botMind->cmdBuffer.upmove = -127;
 	self->botMind->cmdBuffer.forwardmove = 127;
@@ -991,7 +991,7 @@ static bool BotTryMoveUpward( gentity_t *self )
 
 	if ( !hasNextCorner )
 	{
-		nextCorner = self->botMind->nav().glm_tpos();
+		nextCorner = self->botMind->nav().tpos;
 	}
 
 	// if not trying to move upward
@@ -1182,7 +1182,7 @@ bool BotMoveToGoal( gentity_t *self )
 		usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
 		if ( magnitude )
 		{
-			glm::vec3 target = self->botMind->nav().glm_tpos();
+			glm::vec3 target = self->botMind->nav().tpos;
 			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, target, magnitude ) / 3 );
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
