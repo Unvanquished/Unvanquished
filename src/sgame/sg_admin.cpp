@@ -6399,8 +6399,15 @@ bool G_admin_bot( gentity_t *ent )
 			ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "bot", Quote( err ) ) );
 			return false;
 		}
-		g_entities[ clientNum ].botMind->userSpecifiedPosition = Util::nullopt;
-		g_entities[ clientNum ].botMind->userSpecifiedClientNum = Util::nullopt;
+
+		if ( !( g_entities[ clientNum ].r.svFlags & SVF_BOT ) )
+		{
+			ADMP( QQ( "^3bot:^* client is not a bot" ) );
+			return false;
+		}
+
+		Util::optional<int> specifiedClientNum;
+		Util::optional<glm::vec3> specifiedPosition;
 
 		if ( args.Argc() == 5 )
 		{
@@ -6411,7 +6418,8 @@ bool G_admin_bot( gentity_t *ent )
 				ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "bot", Quote( err ) ) );
 				return false;
 			}
-			g_entities[ clientNum ].botMind->userSpecifiedClientNum = followPid;
+
+			specifiedClientNum = followPid;
 		}
 		else if ( args.Argc() == 7 )
 		{
@@ -6425,8 +6433,11 @@ bool G_admin_bot( gentity_t *ent )
 					return false;
 				}
 			}
-			g_entities[ clientNum ].botMind->userSpecifiedPosition = glm::vec3( coords[0], coords[1], coords[2] );
+			specifiedPosition = glm::vec3( coords[0], coords[1], coords[2] );
 		}
+
+		g_entities[ clientNum ].botMind->userSpecifiedClientNum = specifiedClientNum;
+		g_entities[ clientNum ].botMind->userSpecifiedPosition = specifiedPosition;
 		const char *behavior = args[3].data();
 		G_BotChangeBehavior( clientNum, behavior );
 		if ( ent )

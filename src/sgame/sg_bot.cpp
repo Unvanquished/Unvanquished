@@ -212,12 +212,7 @@ const char * G_BotGetBehavior( int clientNum )
 void G_BotChangeBehavior( int clientNum, Str::StringRef behavior )
 {
 	gentity_t *bot = &g_entities[clientNum];
-
-	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
-	{
-		Log::Warn( "'^7%s^*' is not a bot", bot->client->pers.netname );
-		return;
-	}
+	ASSERT( ( bot->r.svFlags & SVF_BOT ) && bot->botMind );
 
 	G_BotSetBehavior( bot->botMind, behavior );
 }
