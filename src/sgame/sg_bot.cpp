@@ -175,7 +175,7 @@ void G_BotSetSkill( int clientNum, int skill )
 {
 	gentity_t *bot = &g_entities[clientNum];
 
-	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
+	if ( !bot->botMind )
 	{
 		return;
 	}
@@ -186,7 +186,7 @@ void G_BotSetSkill( int clientNum, int skill )
 void G_BotChangeBehavior( int clientNum, Str::StringRef behavior )
 {
 	gentity_t *bot = &g_entities[clientNum];
-	ASSERT( ( bot->r.svFlags & SVF_BOT ) && bot->botMind );
+	ASSERT( bot->client->pers.isBot && bot->botMind );
 
 	G_BotSetBehavior( bot->botMind, behavior );
 }
@@ -227,8 +227,6 @@ bool G_BotSetDefaults( int clientNum, team_t team, Str::StringRef behavior )
 		return false;
 	}
 
-	self->r.svFlags |= SVF_BOT;
-
 	if ( team != TEAM_NONE )
 	{
 		self->client->sess.restartTeam = team;
@@ -256,7 +254,6 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 		return false;
 	}
 	gentity_t *bot = &g_entities[ clientNum ];
-	bot->r.svFlags |= SVF_BOT;
 
 	if ( !Q_stricmp( name, BOT_NAME_FROM_LIST ) )
 	{
@@ -319,7 +316,7 @@ void G_BotDel( int clientNum )
 	char userinfo[MAX_INFO_STRING];
 	const char *autoname;
 
-	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
+	if ( !g_clients[ clientNum ].pers.isBot || !bot->botMind )
 	{
 		Log::Warn( "'^7%s^*' is not a bot", bot->client->pers.netname );
 		return;
@@ -342,7 +339,7 @@ void G_BotDelAllBots()
 {
 	for ( int i = 0; i < MAX_CLIENTS; i++ )
 	{
-		if ( g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED )
+		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED && level.clients[ i ].pers.isBot )
 		{
 			G_BotDel( i );
 		}
@@ -622,7 +619,7 @@ void G_BotCleanup()
 {
 	for ( int i = 0; i < MAX_CLIENTS; ++i )
 	{
-		if ( g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED )
+		if ( level.clients[i].pers.connected != CON_DISCONNECTED && level.clients[i].pers.isBot )
 		{
 			G_BotDel( i );
 		}
@@ -789,10 +786,8 @@ static std::string BotGoalToString( gentity_t *bot )
 
 std::string G_BotToString( gentity_t *bot )
 {
-	if ( !( bot->r.svFlags & SVF_BOT ) )
-	{
-		return "";
-	}
+	ASSERT( bot->inuse && bot->client->pers.isBot );
+
 	return Str::Format( "^*%s^*: %s [b=%s g=%s s=%d ss=\"%s\"]",
 			bot->client->pers.netname,
 			BG_TeamName( G_Team( bot ) ),
