@@ -415,13 +415,13 @@ static void ClientImpacts( gentity_t *ent, pmove_t *pm )
 			ClientShove( ent, other );
 
 			//bot should get pushed out the way
-			if( (other->r.svFlags & SVF_BOT) && ent->client->pers.team == other->client->pers.team)
+			if( other->client->pers.isBot && ent->client->pers.team == other->client->pers.team)
 			{
 				PushBot(ent, other);
 			}
 
 			// if we are standing on their head, then we should be pushed also
-			if( (ent->r.svFlags & SVF_BOT) && ent->s.groundEntityNum == other->s.number &&
+			if( ent->client->pers.isBot && ent->s.groundEntityNum == other->s.number &&
 			    other->client && ent->client->pers.team == other->client->pers.team)
 			{
 				PushBot(other, ent);
@@ -547,7 +547,7 @@ static void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		  usercmdButtonPressed( client->oldbuttons, BTN_ATTACK );
 
 	//if bot
-	if( ent->r.svFlags & SVF_BOT ) {
+	if( ent->client->pers.isBot ) {
 		G_BotSpectatorThink( ent );
 		return;
 	}
@@ -915,7 +915,7 @@ static void ClientTimerActions( gentity_t *ent, int msec )
 	client->time1000  += msec;
 	client->time10000 += msec;
 
-	if( ent->r.svFlags & SVF_BOT )
+	if( ent->client->pers.isBot )
 	{
 		G_BotThink( ent );
 	}
@@ -1906,7 +1906,7 @@ static void ClientThink_real( gentity_t *self )
 	//
 	if ( level.intermissiontime )
 	{
-		if( self->r.svFlags & SVF_BOT )
+		if( self->client->pers.isBot )
 			G_BotIntermissionThink( client );
 		else
 			ClientIntermissionThink( client );
@@ -2287,7 +2287,7 @@ void ClientThink( int clientNum )
 
 	ent = g_entities + clientNum;
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
-	if ( ent->client->pers.cmd.flags & UF_TYPING && !( ent->r.svFlags & SVF_BOT ) && Entities::IsAlive( ent ) )
+	if ( ent->client->pers.cmd.flags & UF_TYPING && !ent->client->pers.isBot && Entities::IsAlive( ent ) )
 	{
 		ent->client->ps.eFlags |= EF_TYPING;
 	}
@@ -2299,7 +2299,7 @@ void ClientThink( int clientNum )
 	// mark the time we got info, so we can display the phone jack if we don't get any for a while
 	ent->client->lastCmdTime = level.time;
 
-	if(!( ent->r.svFlags & SVF_BOT ) && !level.pmoveParams.synchronous )
+	if(!ent->client->pers.isBot && !level.pmoveParams.synchronous )
 	{
 		ClientThink_real( ent );
 	}
@@ -2307,7 +2307,7 @@ void ClientThink( int clientNum )
 
 void G_RunClient( gentity_t *ent )
 {
-	if(!( ent->r.svFlags & SVF_BOT ) && !level.pmoveParams.synchronous )
+	if(!ent->client->pers.isBot && !level.pmoveParams.synchronous )
 	{
 		return;
 	}
@@ -2348,7 +2348,7 @@ void ClientEndFrame( gentity_t *ent )
 	P_DamageFeedback( ent );
 
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
-	if ( level.time - ent->client->lastCmdTime > 1000 && !( ent->r.svFlags & SVF_BOT ) )
+	if ( level.time - ent->client->lastCmdTime > 1000 && !ent->client->pers.isBot )
 	{
 		ent->client->ps.eFlags |= EF_CONNECTION;
 	}

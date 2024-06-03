@@ -1129,7 +1129,7 @@ static void G_SpawnClients( team_t team )
 		               ent->client->pers.lastDeathLocation,
 		               spawn_origin, spawn_angles ) ) )
 		{
-			if ( ent->r.svFlags & SVF_BOT )
+			if ( ent->client->pers.isBot )
 			{
 				G_BotSelectSpawnClass( ent );
 			}
@@ -1230,7 +1230,7 @@ void CalculateRanks()
 
 		if ( level.clients[ clientNum ].pers.connected != CON_DISCONNECTED )
 		{
-			bool bot = level.gentities[ clientNum ].r.svFlags & SVF_BOT;
+			bool bot = level.clients[ clientNum ].pers.isBot;
 
 			level.sortedClients[ level.numConnectedClients ] = clientNum;
 
@@ -1335,8 +1335,7 @@ void SendScoreboardMessageToAllClients()
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
-		if ( level.clients[ i ].pers.connected == CON_CONNECTED &&
-		     !( g_entities[ i ].r.svFlags & SVF_BOT ) )
+		if ( level.clients[ i ].pers.connected == CON_CONNECTED && !level.clients[ i ].pers.isBot )
 		{
 			ScoreboardMessage( g_entities + i );
 		}
