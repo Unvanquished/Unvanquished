@@ -176,18 +176,6 @@ static void G_BotNameUsed( team_t team, const char *name, bool inUse )
 	}
 }
 
-int G_BotGetSkill( int clientNum )
-{
-	gentity_t *bot = &g_entities[clientNum];
-
-	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind )
-	{
-		return 0;
-	}
-
-	return bot->botMind->skillLevel;
-}
-
 void G_BotSetSkill( int clientNum, int skill )
 {
 	gentity_t *bot = &g_entities[clientNum];
@@ -198,20 +186,6 @@ void G_BotSetSkill( int clientNum, int skill )
 	}
 
 	BotSetSkillLevel( bot, skill );
-}
-
-
-const char * G_BotGetBehavior( int clientNum )
-{
-	gentity_t *bot = &g_entities[clientNum];
-
-	if ( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind
-			|| !bot->botMind->behaviorTree )
-	{
-		return nullptr;
-	}
-
-	return bot->botMind->behaviorTree->name;
 }
 
 void G_BotChangeBehavior( int clientNum, Str::StringRef behavior )
@@ -287,8 +261,6 @@ bool G_BotAdd( const char *name, team_t team, int skill, const char *behavior, b
 	}
 	gentity_t *bot = &g_entities[ clientNum ];
 	bot->r.svFlags |= SVF_BOT;
-
-	// TODO: probably this should do more of the same stuff as ClientBegin?
 
 	if ( !Q_stricmp( name, BOT_NAME_FROM_LIST ) )
 	{

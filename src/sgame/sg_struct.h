@@ -323,8 +323,7 @@ struct clientSession_t
 };
 
 /**
- * client data that stays across multiple respawns, but is cleared
- * on each level change or team change at ClientBegin()
+ * client data that stays across multiple respawns, cleared only upon a new connection (ClientConnect)
  */
 struct clientPersistant_t
 {
