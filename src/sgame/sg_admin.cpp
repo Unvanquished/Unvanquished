@@ -4624,6 +4624,8 @@ bool G_admin_spec999( gentity_t *ent )
 
 	RETURN_IF_INTERMISSION;
 
+	std::vector<int> pings = trap_GetPings();
+
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		vic = &g_entities[ i ];
@@ -4643,7 +4645,7 @@ bool G_admin_spec999( gentity_t *ent )
 			continue;
 		}
 
-		if ( vic->client->ps.ping == 999 )
+		if ( pings[ i ] == 999 )
 		{
 			G_ChangeTeam( vic, TEAM_NONE );
 			G_admin_action( QQ( N_("^3spec999:^* $1$^* moved $2$^* to spectators") ),

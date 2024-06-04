@@ -1469,7 +1469,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	bool savedNoclip;
 	int                persistant[ MAX_PERSISTANT ];
 	int                flags;
-	int                savedPing;
 	int                teamLocal;
 	int                eventSequence;
 	char               userinfo[ MAX_INFO_STRING ];
@@ -1568,7 +1567,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	saved = client->pers;
 	savedSess = client->sess;
-	savedPing = client->ps.ping;
 	savedNoclip = client->noclip;
 
 	for ( i = 0; i < MAX_PERSISTANT; i++ )
@@ -1581,7 +1579,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	client->pers = saved;
 	client->sess = savedSess;
-	client->ps.ping = savedPing;
 	if (evolving)
 	{
 		client->ps.weaponTime = 500;
