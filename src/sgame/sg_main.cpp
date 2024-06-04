@@ -1811,6 +1811,8 @@ void LogExit( const char *string )
 		numSorted = 32;
 	}
 
+	std::vector<int> pings = trap_GetPings();
+
 	for ( i = 0; i < numSorted; i++ )
 	{
 		int ping;
@@ -1827,7 +1829,7 @@ void LogExit( const char *string )
 			continue;
 		}
 
-		ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
+		ping = pings[ level.sortedClients[ i ] ];
 
 		G_LogPrintf( "score: %i  ping: %i  client: %i %s",
 		             cl->ps.persistant[ PERS_SCORE ], ping, level.sortedClients[ i ],

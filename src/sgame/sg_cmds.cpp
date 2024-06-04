@@ -367,6 +367,7 @@ void ScoreboardMessage( gentity_t *ent )
 	string[ 0 ] = 0;
 	stringlength = 0;
 
+	std::vector<int> pings = trap_GetPings();
 	numSorted = level.numConnectedClients;
 
 	for ( i = 0; i < numSorted; i++ )
@@ -381,7 +382,7 @@ void ScoreboardMessage( gentity_t *ent )
 		}
 		else
 		{
-			ping = cl->ps.ping < 999 ? cl->ps.ping : 999;
+			ping = pings[ level.sortedClients[ i ] ];
 		}
 
 		if ( cl->sess.spectatorState == SPECTATOR_NOT &&
