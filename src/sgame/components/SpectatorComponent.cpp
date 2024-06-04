@@ -18,14 +18,12 @@ void SpectatorComponent::HandlePrepareNetCode() {
 
 	// Save
 	int score = cl->ps.persistant[PERS_SCORE];
-	int ping = cl->ps.ping;
 
 	// Copy
 	cl->ps = level.clients[cl->sess.spectatorClient].ps;
 
 	// Restore
 	cl->ps.persistant[PERS_SCORE] = score;
-	cl->ps.ping = ping;
 
 	cl->ps.pm_flags |= PMF_FOLLOW;
 	cl->ps.pm_flags &= ~PMF_QUEUED;

@@ -475,9 +475,6 @@ void G_BotThink( gentity_t *self )
 		G_AddCreditToClient( self->client, HUMAN_MAX_CREDITS, true );
 	}
 
-	//hacky ping fix
-	self->client->ps.ping = rand() % 50 + 50;
-
 	//reset the user specified client number if the client disconnected
 	if ( self->botMind->userSpecifiedClientNum )
 	{
@@ -553,8 +550,6 @@ void G_BotThink( gentity_t *self )
 void G_BotSpectatorThink( gentity_t *self )
 {
 	char buf[MAX_STRING_CHARS];
-	//hacky ping fix
-	self->client->ps.ping = rand() % 50 + 50;
 
 	//acknowledge recieved console messages
 	//MUST be done
