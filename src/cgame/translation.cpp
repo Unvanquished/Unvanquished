@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "common/Common.h"
 #include "engine/qcommon/qcommon.h"
-#include "engine/client/cg_api.h"
+#include "shared/client/cg_api.h"
 
 #include "tinygettext/log.hpp"
 #include "tinygettext/tinygettext.hpp"
