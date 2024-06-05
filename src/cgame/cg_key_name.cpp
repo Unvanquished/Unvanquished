@@ -23,7 +23,7 @@ along with Unvanquished. If not, see <http://www.gnu.org/licenses/>.
 
 #include "common/Common.h"
 #include "cg_key_name.h"
-#include "engine/client/cg_api.h"
+#include "shared/client/cg_api.h"
 
 using Keyboard::Key;
 
