@@ -1420,12 +1420,14 @@ struct upgradeAttributes_t
 };
 
 // missile record
+// MIS_LCANNON overrides some values at runtime, so you can't assume BG_Missile(MIS_LCANNON)
+// is accurate for it
 struct missileAttributes_t
 {
 	// attributes
 	missile_t      number;
 	const char     *name;
-	bool       pointAgainstWorld;
+	bool       pointAgainstWorld; // don't use the bbox for map collisions
 	int            damage;
 	meansOfDeath_t meansOfDeath;
 	int            splashDamage;
@@ -1437,7 +1439,9 @@ struct missileAttributes_t
 	int            speed;
 	float          lag;
 	int            flags;
+	int            steeringPeriod;
 	int            lifetime;
+	bool           lifeEndExplode; // explode vs. disappear when lifetime expires
 	bool       doKnockback;
 	bool       doLocationalDamage;
 

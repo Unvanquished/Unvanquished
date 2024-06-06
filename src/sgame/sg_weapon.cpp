@@ -539,15 +539,12 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 
 // spawns a missile at parent's muzzle going in forward dir
 // missile: missile type
-// target: if not nullptr, missile will automatically aim at target
-// think: callback giving missile's behavior
-// thinkDelta: number of ms between each call to think()
-static void FireMissile( gentity_t* self, missile_t missile, gentity_t* target, void (*think)( gentity_t* ), int thinkDelta )
+static void FireMissile( gentity_t* self, missile_t missile )
 {
 	glm::vec3 forward;
 	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &forward, nullptr, nullptr);
 	glm::vec3 muzzle = G_CalcMuzzlePoint( self, forward );
-	G_SpawnMissile( missile, self, &muzzle[ 0 ], &forward[ 0 ], target, think, level.time + thinkDelta );
+	G_SpawnDumbMissile( missile, self, muzzle, forward );
 }
 
 /*
@@ -623,132 +620,6 @@ static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 /*
 ======================================================================
 
-HIVE
-
-======================================================================
-*/
-
-/*
-================
-Target tracking for the hive missile.
-================
-*/
-void HiveMissileThink( gentity_t *self )
-{
-	vec3_t    dir;
-	trace_t   tr;
-	gentity_t *ent;
-	int       i;
-	float     d, nearest;
-
-	if ( level.time > self->timestamp ) // swarm lifetime exceeded
-	{
-		G_FreeEntity( self );
-		return;
-	}
-
-	nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
-
-	//find the closest human
-	for ( i = 0; i < MAX_CLIENTS; i++ )
-	{
-		ent = &g_entities[ i ];
-
-		if ( !ent->inuse ) continue;
-		if ( ent->flags & FL_NOTARGET ) continue;
-
-		if ( ent->client && Entities::IsAlive( ent ) && G_Team( ent ) == TEAM_HUMANS &&
-		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
-		{
-			trap_Trace( &tr, self->r.currentOrigin, self->r.mins, self->r.maxs,
-			            ent->r.currentOrigin, self->r.ownerNum, self->clipmask, 0 );
-
-			if ( tr.entityNum != ENTITYNUM_WORLD )
-			{
-				nearest = d;
-				self->target = ent;
-			}
-		}
-	}
-
-	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, dir );
-	VectorNormalize( dir );
-
-	//change direction towards the player
-	VectorScale( dir, HIVE_SPEED, self->s.pos.trDelta );
-	SnapVector( self->s.pos.trDelta );  // save net bandwidth
-	VectorCopy( self->r.currentOrigin, self->s.pos.trBase );
-	self->s.pos.trTime = level.time;
-
-	self->nextthink = level.time + HIVE_DIR_CHANGE_PERIOD;
-}
-
-/*
-======================================================================
-
-ROCKET POD
-
-======================================================================
-*/
-
-void RocketThink( gentity_t *self )
-{
-	vec3_t currentDir, targetDir, newDir, rotAxis;
-	float  rotAngle;
-
-	if ( level.time > self->timestamp )
-	{
-		self->think     = G_ExplodeMissile;
-		self->nextthink = level.time;
-
-		return;
-	}
-
-	self->nextthink = level.time + ROCKET_TURN_PERIOD;
-
-	// Don't turn anymore if the target is dead or gone
-	if ( !self->target )
-	{
-		return;
-	}
-
-	// Calculate current and target direction.
-	VectorNormalize2( self->s.pos.trDelta, currentDir );
-	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, targetDir );
-	VectorNormalize( targetDir );
-
-	// Don't turn anymore after the target was passed.
-	if ( DotProduct( currentDir, targetDir ) < 0 )
-	{
-		return;
-	}
-
-	// Calculate new direction. Use a fixed turning angle.
-	CrossProduct( currentDir, targetDir, rotAxis );
-	rotAngle = RAD2DEG( acosf( DotProduct( currentDir, targetDir ) ) );
-	RotatePointAroundVector( newDir, rotAxis, currentDir,
-	                         Math::Clamp( rotAngle, -ROCKET_TURN_ANGLE, ROCKET_TURN_ANGLE ) );
-
-	// Check if new direction is safe. Turn anyway if old direction is unsafe, too.
-	if ( !RocketpodComponent::SafeShot(
-			ENTITYNUM_NONE, VEC2GLM( self->r.currentOrigin ), VEC2GLM( newDir )
-		) && RocketpodComponent::SafeShot(
-			ENTITYNUM_NONE, VEC2GLM( self->r.currentOrigin ), VEC2GLM( currentDir )
-		)
-	) {
-		return;
-	}
-
-	// Update trajectory.
-	VectorScale( newDir, BG_Missile( self->s.modelindex )->speed, self->s.pos.trDelta );
-	SnapVector( self->s.pos.trDelta );
-	VectorCopy( self->r.currentOrigin, self->s.pos.trBase ); // TODO: Snap this, too?
-	self->s.pos.trTime = level.time;
-}
-
-/*
-======================================================================
-
 FIREBOMB
 
 ======================================================================
@@ -757,7 +628,7 @@ FIREBOMB
 #define FIREBOMB_SUBMISSILE_COUNT 15
 #define FIREBOMB_IGNITE_RANGE     192
 
-static void FirebombMissileThink( gentity_t *self )
+void G_FirebombMissileIgnite( gentity_t *self )
 {
 	gentity_t *neighbor, *m;
 	int       subMissileNum;
@@ -787,14 +658,11 @@ static void FirebombMissileThink( gentity_t *self )
 		VectorNormalize( dir );
 
 		// the submissile's parent is the attacker
-		m = G_SpawnMissile( MIS_FIREBOMB_SUB, self->parent, self->s.origin, dir, nullptr, G_FreeEntity, level.time + BG_Missile( MIS_FIREBOMB_SUB )->lifetime );
+		m = G_SpawnDumbMissile( MIS_FIREBOMB_SUB, self->parent, VEC2GLM( self->s.origin ), VEC2GLM( dir ) );
 
 		// randomize missile speed
 		VectorScale( m->s.pos.trDelta, ( rand() / ( float )RAND_MAX ) + 0.5f, m->s.pos.trDelta );
 	}
-
-	// explode
-	G_ExplodeMissile( self );
 }
 
 /*
@@ -805,43 +673,41 @@ LUCIFER CANNON
 ======================================================================
 */
 
-static gentity_t *FireLcannonHelper( gentity_t *self,
-                                     int damage, int radius, int speed )
+static void FireLcannonPrimary( gentity_t *self, int damage )
 {
 	// TODO: Tidy up this and lcannonFire
 
 	gentity_t *m;
 	float     charge;
 
-	vec3_t start, dir;
-	AngleVectors( self->client->ps.viewangles, dir, nullptr, nullptr );
-	G_CalcMuzzlePoint( self, dir, start );
+	glm::vec3 dir;
+	AngleVectors( VEC2GLM( self->client->ps.viewangles ), &dir, nullptr, nullptr );
+	glm::vec3 start = G_CalcMuzzlePoint( self, dir );
 
-	if ( self->s.generic1 == WPM_PRIMARY )
 	{
-		int nextthink;
-
-		// explode in front of player when overcharged
+		missileAttributes_t attr = *BG_Missile( MIS_LCANNON );
+		// some values are set in the code
+		attr.damage = damage;
+		attr.splashDamage = damage / 2;
 		if ( damage == LCANNON_DAMAGE )
 		{
-			nextthink = level.time;
-		}
-		else
-		{
-			nextthink = level.time + BG_Missile( MIS_LCANNON )->lifetime;
+			// Explode immediately when overcharged.
+			// But beware glitchy and framerate-dependent behavior: despite exploding
+			// "instantly" (in the next frame), it "travels" for a distance
+			// (MISSILE_PRESTEP_TIME + length of 1 frame) × attr.speed
+			// and can score direct hits against other entities
+			attr.lifetime = 0;
 		}
 
-		m = G_SpawnMissile( MIS_LCANNON, self, start, dir, nullptr, G_ExplodeMissile, nextthink );
-
-		// some values are set in the code
-		m->damage       = damage;
-		m->splashDamage = damage / 2;
-		m->splashRadius = radius;
-		VectorScale( dir, speed, m->s.pos.trDelta );
-		SnapVector( m->s.pos.trDelta ); // save net bandwidth
+		m = G_NewEntity( HAS_CBSE );
+		DumbMissileEntity::Params params;
+		params.oldEnt = m;
+		params.Missile_attributes = &attr;
+		m->entity = new DumbMissileEntity{ params };
+		G_SetUpMissile( m, self, &start[ 0 ], &dir[ 0 ] );
 
 		// pass the missile charge through
-		charge = ( float )( damage - LCANNON_SECONDARY_DAMAGE ) / LCANNON_DAMAGE;
+		charge = ( float )( damage - BG_Missile( MIS_LCANNON2 )->damage ) / LCANNON_DAMAGE;
 
 		m->s.torsoAnim = charge * 255;
 
@@ -850,26 +716,17 @@ static gentity_t *FireLcannonHelper( gentity_t *self,
 			m->s.torsoAnim = 0;
 		}
 	}
-	else
-	{
-		m = G_SpawnMissile( MIS_LCANNON2, self, start, dir, nullptr, G_ExplodeMissile, level.time + BG_Missile( MIS_LCANNON2 )->lifetime );
-	}
-
-	return m;
 }
 
 static void FireLcannon( gentity_t *self, bool secondary )
 {
 	if ( secondary && self->client->ps.weaponCharge <= 0 )
 	{
-		FireLcannonHelper( self, LCANNON_SECONDARY_DAMAGE,
-		                   LCANNON_SECONDARY_RADIUS, LCANNON_SECONDARY_SPEED );
+		FireMissile( self, MIS_LCANNON2 );
 	}
 	else
 	{
-		FireLcannonHelper( self,
-		                   self->client->ps.weaponCharge * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX,
-		                   LCANNON_RADIUS, LCANNON_SPEED );
+		FireLcannonPrimary( self, self->client->ps.weaponCharge * LCANNON_DAMAGE / LCANNON_CHARGE_TIME_MAX );
 	}
 
 	self->client->ps.weaponCharge = 0;
@@ -1620,7 +1477,7 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_BLASTER:
-					FireMissile( self, MIS_BLASTER, nullptr, G_ExplodeMissile, BG_Missile( MIS_BLASTER )->lifetime );
+					FireMissile( self, MIS_BLASTER );
 					break;
 
 				case WP_MACHINEGUN:
@@ -1636,11 +1493,11 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 					break;
 
 				case WP_FLAMER:
-					FireMissile( self, MIS_FLAMER, nullptr, G_FreeEntity, BG_Missile( MIS_FLAMER )->lifetime );
+					FireMissile( self, MIS_FLAMER );
 					break;
 
 				case WP_PULSE_RIFLE:
-					FireMissile( self, MIS_PRIFLE, nullptr, G_ExplodeMissile, BG_Missile( MIS_PRIFLE )->lifetime );
+					FireMissile( self, MIS_PRIFLE );
 					break;
 
 				case WP_MASS_DRIVER:
@@ -1705,11 +1562,11 @@ void G_FireWeapon( gentity_t *self, weapon_t weapon, weaponMode_t weaponMode )
 			switch ( weapon )
 			{
 				case WP_ALEVEL3_UPG:
-					FireMissile( self, MIS_BOUNCEBALL, nullptr, G_ExplodeMissile, BG_Missile( MIS_BOUNCEBALL )->lifetime );
+					FireMissile( self, MIS_BOUNCEBALL );
 					break;
 
 				case WP_ABUILD2:
-					FireMissile( self, MIS_SLOWBLOB, nullptr, G_ExplodeMissile, BG_Missile( MIS_SLOWBLOB )->lifetime );
+					FireMissile( self, MIS_SLOWBLOB );
 					break;
 
 				default:
@@ -1787,10 +1644,10 @@ void G_FireUpgrade( gentity_t *self, upgrade_t upgrade )
 	switch ( upgrade )
 	{
 		case UP_GRENADE:
-			FireMissile( self, MIS_GRENADE, nullptr, G_ExplodeMissile, BG_Missile( MIS_GRENADE )->lifetime );
+			FireMissile( self, MIS_GRENADE );
 			break;
 		case UP_FIREBOMB:
-			FireMissile( self, MIS_FIREBOMB, nullptr, FirebombMissileThink, BG_Missile( MIS_FIREBOMB )->lifetime );
+			FireMissile( self, MIS_FIREBOMB );
 			break;
 		default:
 			break;

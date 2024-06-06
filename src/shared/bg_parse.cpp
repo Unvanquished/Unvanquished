@@ -159,11 +159,6 @@ float FLAMER_IGNITE_SPLCHANCE;
 int   PRIFLE_SPEED;
 
 int   LCANNON_DAMAGE;
-int   LCANNON_RADIUS;
-int   LCANNON_SECONDARY_DAMAGE;
-int   LCANNON_SECONDARY_RADIUS;
-int   LCANNON_SECONDARY_SPEED;
-int   LCANNON_SPEED;
 int   LCANNON_CHARGE_TIME_MAX;
 int   LCANNON_CHARGE_TIME_MIN;
 int   LCANNON_CHARGE_TIME_WARN;
@@ -200,11 +195,6 @@ static configVar_t bg_configVars[] =
 	{"w_lcannon_chargeTimeMin", INTEGER, false, &LCANNON_CHARGE_TIME_MIN },
 	{"w_lcannon_chargeTimeWarn", INTEGER, false, &LCANNON_CHARGE_TIME_WARN },
 	{"w_lcannon_damage", INTEGER, false, &LCANNON_DAMAGE },
-	{"w_lcannon_radius", INTEGER, false, &LCANNON_RADIUS },
-	{"w_lcannon_secondaryDamage", INTEGER, false, &LCANNON_SECONDARY_DAMAGE },
-	{"w_lcannon_secondaryRadius", INTEGER, false, &LCANNON_SECONDARY_RADIUS },
-	{"w_lcannon_secondarySpeed", INTEGER, false, &LCANNON_SECONDARY_SPEED },
-	{"w_lcannon_speed", INTEGER, false, &LCANNON_SPEED },
 
 	{"w_level0_biteDmg", INTEGER, false, &LEVEL0_BITE_DMG},
 	{"w_level0_biteRange", FLOAT, false, &LEVEL0_BITE_RANGE},
@@ -1927,6 +1917,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 		KNOCKBACK             = 1 << 14,
 		LOCATIONAL_DAMAGE     = 1 << 15,
 		LIFETIME              = 1 << 16,
+		LIFE_END_EXPLODE      = 1 << 17,
 	};
 
 	if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -2005,11 +1996,24 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 			ma->lag = atof( token );
 			defined |= LAG;
 		}
+		else if ( !Q_stricmp( token, "steeringPeriod" ) )
+		{
+			PARSE( text, token );
+			ma->steeringPeriod = atoi( token );
+		}
 		else if ( !Q_stricmp( token, "lifetime" ) )
 		{
 			PARSE( text, token );
 			ma->lifetime = atoi( token );
 			defined |= LIFETIME;
+		}
+		else if ( !Q_stricmp( token, "lifeEndExplode" ) )
+		{
+			PARSE( text, token );
+			if ( Cvar::ParseCvarValue( token, ma->lifeEndExplode ) )
+			{
+				defined |= LIFE_END_EXPLODE;
+			}
 		}
 		else if ( !Q_stricmp( token, "bounceFull" ) )
 		{
@@ -2053,6 +2057,7 @@ void BG_ParseMissileAttributeFile( const char *filename, missileAttributes_t *ma
 	else if ( !( defined & TRAJECTORY ) )     { token = "trajectory"; }
 	else if ( !( defined & SPEED ) )          { token = "speed"; }
 	else if ( !( defined & LIFETIME ) )       { token = "lifetime"; }
+	else if ( !( defined & LIFE_END_EXPLODE ) ) { token = "lifeEndExplode"; }
 	else                                      { token = ""; }
 
 	if ( *token )

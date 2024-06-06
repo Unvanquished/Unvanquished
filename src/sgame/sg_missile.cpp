@@ -150,7 +150,7 @@ static float MissileTimeDmgMod( gentity_t *self )
 	return 1.0f;
 }
 
-static float MissileTimeSplashDmgMod( gentity_t *self )
+float G_MissileTimeSplashDmgMod( gentity_t *self )
 {
 	switch ( self->s.weapon )
 	{
@@ -317,10 +317,11 @@ static int DefaultImpactFunc( gentity_t*, const trace2_t*, gentity_t* )
 	return MIB_IMPACT;
 }
 
-static void MissileImpact( gentity_t *ent, const trace2_t *trace )
+// Returns true if the missile has ceased to exist
+bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 {
 	int       dirAsByte, impactFlags;
-	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
+	const missileAttributes_t *ma = &ent->entity->Get<MissileComponent>()->Attributes();
 	gentity_t *hitEnt   = &g_entities[ trace->entityNum ];
 	gentity_t *attacker = &g_entities[ ent->r.ownerNum ];
 
@@ -338,7 +339,7 @@ static void MissileImpact( gentity_t *ent, const trace2_t *trace )
 			G_AddEvent( ent, EV_GRENADE_BOUNCE, 0 );
 		}
 
-		return;
+		return false;
 	}
 
 	// Call missile specific impact functions.
@@ -359,7 +360,7 @@ static void MissileImpact( gentity_t *ent, const trace2_t *trace )
 	// Deal impact damage.
 	if ( !( impactFlags & MIF_NO_DAMAGE ) )
 	{
-		if ( ent->damage && ( Entities::IsAlive( hitEnt ) || ( hitEnt && hitEnt->s.eType == entityType_t::ET_MOVER ) ) )
+		if ( ma->damage && ( Entities::IsAlive( hitEnt ) || ( hitEnt && hitEnt->s.eType == entityType_t::ET_MOVER ) ) )
 		{
 			vec3_t dir;
 
@@ -374,17 +375,17 @@ static void MissileImpact( gentity_t *ent, const trace2_t *trace )
 			if ( !ma->doLocationalDamage ) dflags |= DAMAGE_NO_LOCDAMAGE;
 			if ( ma->doKnockback )         dflags |= DAMAGE_KNOCKBACK;
 
-			hitEnt->Damage(ent->damage * MissileTimeDmgMod(ent), attacker,
+			hitEnt->Damage(ma->damage * MissileTimeDmgMod(ent), attacker,
 			                       VEC2GLM( trace->endpos ), VEC2GLM( dir ), dflags,
 			                       ma->meansOfDeath);
 		}
 
 		// splash damage (doesn't apply to person directly hit)
-		if ( ent->splashDamage )
+		if ( ma->splashDamage )
 		{
 			G_RadiusDamage( trace->endpos, ent->parent,
-			                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
-			                ent->splashRadius, hitEnt, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
+			                ma->splashDamage * G_MissileTimeSplashDmgMod( ent ),
+			                ma->splashRadius, hitEnt, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
 			                ma->splashMeansOfDeath );
 		}
 	}
@@ -425,171 +426,34 @@ static void MissileImpact( gentity_t *ent, const trace2_t *trace )
 		G_SetOrigin( ent, snappedPosition );
 
 		trap_LinkEntity( ent );
+		return true;
 	}
 	// If no impact happened, check if we should continue or free ourselves.
 	else if ( !( impactFlags & MIF_NO_FREE ) )
 	{
-		G_FreeEntity( ent );
-	}
-}
-
-// ------------
-// GAME methods
-// ------------
-
-void G_ExplodeMissile( gentity_t *ent )
-{
-	vec3_t dir;
-	vec3_t origin;
-	const missileAttributes_t *ma = BG_Missile( ent->s.modelindex );
-
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
-	SnapVector( origin );
-	G_SetOrigin( ent, VEC2GLM( origin ) );
-
-	// we don't have a valid direction, so just point straight up
-	dir[ 0 ] = dir[ 1 ] = 0;
-	dir[ 2 ] = 1;
-
-	// turn the missile into an event carrier
-	ent->s.eType = entityType_t::ET_INVISIBLE;
-	ent->freeAfterEvent = true;
-	G_AddEvent( ent, EV_MISSILE_HIT_ENVIRONMENT, DirToByte( dir ) );
-
-	// splash damage
-	if ( ent->splashDamage )
-	{
-		G_RadiusDamage( ent->r.currentOrigin, ent->parent,
-		                ent->splashDamage * MissileTimeSplashDmgMod( ent ),
-		                ent->splashRadius, ent, ( ma->doKnockback ? DAMAGE_KNOCKBACK : 0 ),
-		                ma->splashMeansOfDeath );
-	}
-
-	trap_LinkEntity( ent );
-}
-
-static trace2_t MissileTrace( gentity_t *ent )
-{
-	// get current position
-	vec3_t origin;
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
-
-	// ignore interactions with the missile owner
-	int passent = ent->r.ownerNum;
-
-	trace2_t result;
-
-	if ( ent->pointAgainstWorld )
-	{
-		ASSERT( ent->clipmask & CONTENTS_BODY );
-		trace2_t trWorld = G_Trace2( ent->r.currentOrigin, nullptr, nullptr, origin,
-		                             passent, ent->clipmask & ~CONTENTS_BODY, 0 );
-
-		if ( trWorld.startsolid )
-		{
-			return trWorld;
-		}
-
-		trace2_t trBody = G_Trace2( ent->r.currentOrigin, ent->r.mins, ent->r.maxs, trWorld.endpos,
-		                            passent, CONTENTS_BODY, 0 );
-
-		result = trWorld.fraction < trBody.fraction ? trWorld : trBody;
+		ent->entity->FreeAt( DeferredFreeingComponent::FREE_AFTER_THINKING );
+		return true;
 	}
 	else
 	{
-		result = G_Trace2( ent->r.currentOrigin, ent->r.mins, ent->r.maxs, origin,
-		                   passent, ent->clipmask, 0 );
+		return false;
 	}
-
-	if ( result.startsolid )
-	{
-		// In this case we have a collision, and so we want a normal vector, but there isn't one
-		// Try to use the missile's direction of travel
-		glm::vec3 dir = VEC2GLM( origin ) - VEC2GLM( ent->r.currentOrigin );
-		if ( VectorNormalize( &dir[ 0 ] ) )
-		{
-			VectorCopy( dir, result.plane.normal );
-		}
-		else
-		{
-			VectorSet( result.plane.normal, 1, 0, 0 );
-		}
-	}
-	return result;
 }
 
-void G_RunMissile( gentity_t *ent )
+void G_SetUpMissile( gentity_t *m, gentity_t *parent, const vec3_t start, const vec3_t dir )
 {
-	trace2_t tr = MissileTrace( ent );
-	VectorCopy( tr.endpos, ent->r.currentOrigin );
-
-	if ( tr.fraction < 1.0f )
-	{
-		// Never explode or bounce when hitting the sky.
-		if ( tr.surfaceFlags & SURF_NOIMPACT )
-		{
-			G_FreeEntity( ent );
-
-			return;
-		}
-
-		// Check for impact damage and effects.
-		MissileImpact( ent, &tr );
-
-		// Check if the entity was freed during impact.
-		if ( !ent->inuse )
-		{
-			return;
-		}
-
-		// HACK: The missile has turned into an explosion and will free itself later.
-		//       See MissileImpact for more.
-		if ( ent->s.eType != entityType_t::ET_MISSILE )
-		{
-			return;
-		}
-	}
-
-	ent->r.contents = CONTENTS_SOLID; //trick trap_LinkEntity into...
-	trap_LinkEntity( ent );
-	ent->r.contents = 0; //...encoding bbox information
-
-	// check think function after bouncing
-	G_RunThink( ent );
-}
-
-gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t start, const vec3_t dir,
-                           gentity_t *target, void ( *think )( gentity_t *self ), int nextthink )
-{
-	gentity_t                 *m;
-	const missileAttributes_t *ma;
 	vec3_t                    velocity;
-
-	if ( !parent )
-	{
-		return nullptr;
-	}
-
-	ma = BG_Missile( missile );
-
-	m = G_NewEntity( NO_CBSE );
+	const missileAttributes_t *ma = &m->entity->Get<MissileComponent>()->Attributes();
 
 	// generic
 	m->s.eType             = entityType_t::ET_MISSILE;
-	m->s.modelindex        = missile;
+	m->s.modelindex        = ma->number;
 	m->r.ownerNum          = parent->num();
 	m->parent              = parent;
-	m->target              = target;
-	m->think               = think;
-	m->nextthink           = nextthink;
 
 	// from attribute config file
 	m->s.weapon            = ma->number;
 	m->classname           = ma->name;
-	m->pointAgainstWorld   = ma->pointAgainstWorld;
-	m->damage              = ma->damage;
-	m->splashDamage        = ma->splashDamage;
-	m->splashRadius        = ma->splashRadius;
 	m->clipmask            = ma->clipmask;
 	BG_MissileBounds( ma, m->r.mins, m->r.maxs );
 	m->s.eFlags            = ma->flags;
@@ -621,7 +485,17 @@ gentity_t *G_SpawnMissile( missile_t missile, gentity_t *parent, const vec3_t st
 		// save net bandwidth
 		SnapVector( m->s.pos.trDelta );
 	}
+}
 
+// a non-guided missile
+gentity_t *G_SpawnDumbMissile( missile_t missile, gentity_t *parent, const glm::vec3 &start, const glm::vec3 &dir )
+{
+	gentity_t *m = G_NewEntity( HAS_CBSE );
+	DumbMissileEntity::Params params;
+	params.oldEnt = m;
+	params.Missile_attributes = BG_Missile( missile );
+	m->entity = new DumbMissileEntity{ params };
+	G_SetUpMissile( m, parent, &start[ 0 ], &dir[ 0 ] );
 	return m;
 }
 
