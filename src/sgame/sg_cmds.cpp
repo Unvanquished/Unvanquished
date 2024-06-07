@@ -4139,10 +4139,12 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	if( G_FloodLimited( ent ) )
 		return;
 
-	if ( !( flags & BCF_PRECISE ) )
-		Beacon::MoveTowardsRoom( tr.endpos );
+	glm::vec3 position = VEC2GLM( tr.endpos );
 
-	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->num(), BCH_REMOVE ) );
+	if ( !( flags & BCF_PRECISE ) )
+		position = Beacon::MoveTowardsRoom( position );
+
+	Beacon::Propagate( Beacon::New( position, type, 0, team, ent->num(), BCH_REMOVE));
 	return;
 }
 
