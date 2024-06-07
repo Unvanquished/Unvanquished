@@ -1694,7 +1694,7 @@ static void Cmd_SetViewpos_f( gentity_t *ent )
 		}
 	}
 
-	G_TeleportPlayer( ent, origin, angles, 0.0f );
+	G_TeleportPlayer( ent, VEC2GLM( origin ), VEC2GLM( angles ), 0.0f );
 }
 
 static bool FindRoomForClassChangeVertically(
@@ -3369,7 +3369,7 @@ void G_StopFollowing( gentity_t *ent )
 		BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 		VectorCopy( ent->client->ps.viewangles, angles );
 		angles[ ROLL ] = 0;
-		G_TeleportPlayer( ent, viewOrigin, angles, false );
+		G_TeleportPlayer( ent, VEC2GLM( viewOrigin ), VEC2GLM( angles ), false );
 	}
 
 	CalculateRanks();
