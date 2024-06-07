@@ -314,7 +314,6 @@ void              G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to );
 bool          G_LineOfFire( const gentity_t *from, const gentity_t *to );
-bool          G_LineOfSight( const vec3_t point1, const vec3_t point2 );
 bool              G_IsPlayableTeam( team_t team );
 bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );

@@ -884,19 +884,6 @@ bool G_LineOfFire( const gentity_t *from, const gentity_t *to )
 	return G_LineOfSight( from, to, MASK_SHOT, true );
 }
 
-/**
- * @brief This version of line of sight only considers map geometry, including movers.
- * @return Whether a line from one point to the other would intersect the world.
- */
-bool G_LineOfSight( const vec3_t point1, const vec3_t point2 )
-{
-	trace_t trace;
-
-	trap_Trace( &trace, point1, nullptr, nullptr, point2, ENTITYNUM_NONE, MASK_SOLID, 0 );
-
-	return ( trace.entityNum != ENTITYNUM_WORLD );
-}
-
 bool G_IsPlayableTeam( team_t team )
 {
 	return ( team > TEAM_NONE && team < NUM_TEAMS );
