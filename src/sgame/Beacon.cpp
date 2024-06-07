@@ -60,6 +60,9 @@ static Cvar::Cvar<int> g_tagDelay(
 
 namespace Beacon //this should eventually become a class
 {
+	static int RemoveSimilar( glm::vec3 const& origin, beaconType_t type, int data, int team, int owner,
+	                          int radius = 128.0f, int eFlags = 0, int eFlagsRelevant = 0 );
+
 	/**
 	 * @brief A meaningless think function for beacons (everything is now handled in Beacon::Frame).
 	 */
@@ -133,7 +136,7 @@ namespace Beacon //this should eventually become a class
 	/**
 	 * @brief Move a beacon to a specified point in space.
 	 */
-	void Move( gentity_t *ent, const vec3_t origin )
+	void Move( gentity_t *ent, glm::vec3 const& origin )
 	{
 		VectorCopy( origin, ent->s.pos.trBase );
 		VectorCopy( origin, ent->r.currentOrigin );
@@ -145,7 +148,7 @@ namespace Beacon //this should eventually become a class
 	 * @param conflictHandler How to handle existing similar beacons.
 	 * @return A pointer to the new entity.
 	 */
-	gentity_t *New( const vec3_t origin, beaconType_t type, int data,
+	gentity_t *New( glm::vec3 const& origin, beaconType_t type, int data,
 	                team_t team, int owner, beaconConflictHandler_t conflictHandler )
 	{
 		gentity_t *ent;
@@ -190,14 +193,10 @@ namespace Beacon //this should eventually become a class
 	 * @brief Create and set up an area beacon (i.e. "Defend").
 	 * @return A pointer to the new beacon entity.
 	 */
-	gentity_t *NewArea( beaconType_t type, const vec3_t point, team_t team )
+	gentity_t *NewArea( beaconType_t type, glm::vec3 const& point, team_t team )
 	{
-		vec3_t origin;
-		gentity_t *beacon;
-
-		VectorCopy( point, origin );
-		MoveTowardsRoom( origin );
-		beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE, BCH_REMOVE );
+		glm::vec3 origin = MoveTowardsRoom( point );
+		gentity_t *beacon = Beacon::New( origin, type, 0, team, ENTITYNUM_NONE, BCH_REMOVE );
 		Beacon::Propagate( beacon );
 
 		return beacon;
@@ -236,9 +235,9 @@ namespace Beacon //this should eventually become a class
 	 * @brief Move a point towards empty space (away from map geometry).
 	 * @param normal Optional direction to move towards.
 	 */
-	void MoveTowardsRoom( vec3_t origin )
+	glm::vec3 MoveTowardsRoom( glm::vec3 const& origin )
 	{
-		static const vec3_t vecs[ 162 ] =
+		static const glm::vec3 vecs[ 162 ] =
 		{
 			{0.000000, 0.000000, -1.000000}, {0.723607, -0.525725, -0.447220}, {-0.276388, -0.850649, -0.447220},
 			{-0.894426, 0.000000, -0.447216}, {-0.276388, 0.850649, -0.447220}, {0.723607, 0.525725, -0.447220},
@@ -296,29 +295,26 @@ namespace Beacon //this should eventually become a class
 			{0.361800, 0.262863, 0.894429}, {0.638194, 0.262864, 0.723610}, {0.447209, 0.525728, 0.723612}
 		};
 		const int numvecs = sizeof( vecs ) / sizeof( vecs[ 0 ] );
-		int i;
-		vec3_t accumulator, end;
-		trace_t tr;
+		glm::vec3 accumulator{};
 
-		VectorClear( accumulator );
-
-		for ( i = 0; i < numvecs; i++ )
+		for ( glm::vec3 const& v : vecs )
 		{
-			VectorMA( origin, 500, vecs[ i ], end );
-			trap_Trace( &tr, origin, nullptr, nullptr, end, 0, MASK_SOLID, 0 );
-			VectorAdd( accumulator, tr.endpos, accumulator );
+			glm::vec3 end = origin + 500.f * v;
+			trace_t tr;
+			trap_Trace( &tr, origin, glm::vec3(), glm::vec3(), end, 0, MASK_SOLID, 0 );
+			accumulator += VEC2GLM( tr.endpos );
 		}
 
-		VectorScale( accumulator, 1.0 / numvecs, accumulator );
-		VectorCopy( accumulator, origin );
+		accumulator *= 1.f / numvecs;
+		return accumulator;
 	}
 
 	/**
 	 * @brief Find a beacon matching a pattern.
 	 * @return An ET_BEACON entity or nullptr.
 	 */
-	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
-	                        float radius, int eFlags, int eFlagsRelevant )
+	static gentity_t *FindSimilar( glm::vec3 const& origin, beaconType_t type, int data, int team, int owner,
+	                               float radius, int eFlags, int eFlagsRelevant )
 	{
 		int flags = BG_Beacon( type )->flags;
 
@@ -351,10 +347,10 @@ namespace Beacon //this should eventually become a class
 			}
 			else
 			{
-				if ( Distance( ent->s.origin, origin ) > radius )
+				if ( glm::distance( VEC2GLM( ent->s.origin ), origin ) > radius )
 					continue;
 
-				if ( !trap_InPVS( ent->s.origin, origin ) )
+				if ( !trap_InPVS( ent->s.origin, GLM4READ( origin ) ) )
 					continue;
 			}
 
@@ -368,8 +364,8 @@ namespace Beacon //this should eventually become a class
 	 * @brief Remove all beacons matching a pattern.
 	 * @return Number of beacons removed.
 	 */
-	int RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
-	                   float radius, int eFlags, int eFlagsRelevant )
+	static int RemoveSimilar( glm::vec3 const& origin, beaconType_t type, int data, int team, int owner,
+	                          int radius, int eFlags, int eFlagsRelevant )
 	{
 		gentity_t *ent;
 		int numRemoved = 0;
@@ -385,7 +381,7 @@ namespace Beacon //this should eventually become a class
 	 * @brief Move a single beacon matching a pattern.
 	 * @return The moved beacon or nullptr.
 	 */
-	gentity_t *MoveSimilar( const vec3_t from, const vec3_t to, beaconType_t type, int data,
+	gentity_t *MoveSimilar( glm::vec3 const& from, glm::vec3 const& to, beaconType_t type, int data,
 	                        int team, int owner, float radius, int eFlags, int eFlagsRelevant )
 	{
 		gentity_t *ent;
@@ -469,15 +465,13 @@ namespace Beacon //this should eventually become a class
 	 */
 	static void UpdateTagLocation( gentity_t *ent, gentity_t *parent )
 	{
-		vec3_t mins, maxs, center;
-
 		if ( !parent ) return;
 
-		VectorCopy( parent->s.origin, center );
-
+		glm::vec3 center = VEC2GLM( parent->s.origin );
+		glm::vec3 mins, maxs;
 		if ( parent->client )
 		{
-			BG_ClassBoundingBox( parent->client->ps.stats[ STAT_CLASS ], mins, maxs, nullptr, nullptr, nullptr );
+			BG_BoundingBox( static_cast<class_t>( parent->client->ps.stats[ STAT_CLASS ] ), &mins, &maxs, nullptr, nullptr, nullptr );
 			BG_MoveOriginToBBOXCenter( center, mins, maxs );
 
 			// Also update weapon for humans.
@@ -488,7 +482,7 @@ namespace Beacon //this should eventually become a class
 		}
 		else if ( parent->s.eType == entityType_t::ET_BUILDABLE )
 		{
-			BG_BuildableBoundingBox( parent->s.modelindex, mins, maxs );
+			BG_BoundingBox( static_cast<buildable_t>( parent->s.modelindex ), &mins, &maxs );
 			BG_MoveOriginToBBOXCenter( center, mins, maxs );
 		}
 
@@ -623,15 +617,15 @@ namespace Beacon //this should eventually become a class
 	 * @param team           Team the caller belongs to.
 	 * @param refreshTagged  Refresh all already tagged entities's tags and exclude these entities from further consideration.
 	 */
-	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, bool refreshTagged )
+	gentity_t *TagTrace( glm::vec3 const& begin, glm::vec3 const& end, int skip, int mask, team_t team, bool refreshTagged )
 	{
 		gentity_t *reticleEnt = nullptr;
-		glm::vec3 dir = glm::normalize( VEC2GLM( end ) - VEC2GLM( begin ) );
+		glm::vec3 dir = glm::normalize( end - begin );
 
 		// Do a trace for bounding boxes under the reticle first, they are prefered
 		{
 			trace_t tr;
-			trap_Trace( &tr, begin, nullptr, nullptr, end, skip, mask, 0 );
+			trap_Trace( &tr, begin, {}, {}, end, skip, mask, 0 );
 			if ( EntityTaggable( tr.entityNum, team, true ) )
 			{
 				reticleEnt = g_entities + tr.entityNum;
@@ -656,19 +650,19 @@ namespace Beacon //this should eventually become a class
 			if( !EntityTaggable( i, team, true ) )
 				continue;
 
-			glm::vec3 delta = VEC2GLM( ent->r.currentOrigin ) - VEC2GLM( begin );
+			glm::vec3 delta = VEC2GLM( ent->r.currentOrigin ) - begin;
 			float dot = glm::dot( dir, delta ) / glm::length( delta );
 
 			if( dot <= bestDot )
 				continue;
 
-			if( !trap_InPVS( ent->r.currentOrigin, begin ) )
+			if( !trap_InPVS( ent->r.currentOrigin, GLM4READ( begin ) ) )
 				continue;
 
 			// LOS
 			{
 				trace_t tr;
-				trap_Trace( &tr, begin, nullptr, nullptr, ent->r.currentOrigin, skip, mask, 0 );
+				trap_Trace( &tr, begin, {}, {}, VEC2GLM( ent->r.currentOrigin ), skip, mask, 0 );
 				if( tr.entityNum != i )
 					continue;
 			}
@@ -689,7 +683,7 @@ namespace Beacon //this should eventually become a class
 	void Tag( gentity_t *ent, team_t team, bool permanent )
 	{
 		int data;
-		vec3_t origin, mins, maxs;
+		glm::vec3 mins, maxs;
 		bool dead, player;
 		gentity_t *beacon, **attachment;
 		team_t targetTeam;
@@ -713,14 +707,14 @@ namespace Beacon //this should eventually become a class
 				data       = ent->s.modelindex;
 				dead       = Entities::IsDead( ent );
 				player     = false;
-				BG_BuildableBoundingBox( ent->s.modelindex, mins, maxs );
+				BG_BoundingBox( static_cast<buildable_t>( ent->s.modelindex ), &mins, &maxs );
 				break;
 
 			case entityType_t::ET_PLAYER:
 				targetTeam = (team_t)ent->client->pers.team;
 				dead       = Entities::IsDead( ent );
 				player     = true;
-				BG_ClassBoundingBox( ent->client->pers.classSelection, mins, maxs, nullptr, nullptr, nullptr );
+				BG_BoundingBox( static_cast<class_t>( ent->client->pers.classSelection ), &mins, &maxs, nullptr, nullptr, nullptr );
 
 				// Set beacon data to class (aliens) or weapon (humans).
 				switch( targetTeam ) {
@@ -739,7 +733,7 @@ namespace Beacon //this should eventually become a class
 		if ( dead ) return;
 
 		// Set beacon origin to center of target bounding box.
-		VectorCopy( ent->s.origin, origin );
+		glm::vec3 origin = VEC2GLM( ent->s.origin );
 		BG_MoveOriginToBBOXCenter( origin, mins, maxs );
 
 		// Create new beacon and attach it.
