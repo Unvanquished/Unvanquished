@@ -913,7 +913,7 @@ bool G_SelectiveRadiusDamage( const vec3_t origin, gentity_t *attacker, float da
 		}
 
 		// find the distance from the edge of the bounding box
-		dist = G_DistanceToBBox( origin, ent );
+		dist = G_DistanceToBBox( VEC2GLM( origin ), ent );
 
 		if ( dist >= radius )
 		{
@@ -968,7 +968,7 @@ bool G_RadiusDamage( const vec3_t origin, gentity_t *attacker, float damage,
 		}
 
 		// find the distance from the edge of the bounding box
-		dist = G_DistanceToBBox( origin, ent );
+		dist = G_DistanceToBBox( VEC2GLM( origin ), ent );
 
 		if ( dist >= radius )
 		{

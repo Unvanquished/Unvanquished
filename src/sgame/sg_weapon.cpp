@@ -831,7 +831,7 @@ static void FireForceDeconstruct( gentity_t *self )
 	// The builder must still be in a range such that G_GetDeconstructibleBuildable could return
 	// the buildable (but with 10% extra distance allowed).
 	// However it is not necessary to be aiming at the target.
-	if ( G_DistanceToBBox( GLM4READ( viewOrigin ), target ) > BUILDER_DECONSTRUCT_RANGE * 1.1f )
+	if ( G_DistanceToBBox( viewOrigin, target ) > BUILDER_DECONSTRUCT_RANGE * 1.1f )
 	{
 		// Target is too far away.
 		// TODO: Continuously check that target is valid (in range and still exists), rather

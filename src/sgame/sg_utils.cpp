@@ -264,7 +264,7 @@ G_TeleportPlayer
 teleports the player to another location
 =============
 */
-void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed )
+void G_TeleportPlayer( gentity_t *player, glm::vec3 const& origin, glm::vec3 const& angles, float speed )
 {
 	// unlink to make sure it can't possibly interfere with G_KillBox
 	trap_UnlinkEntity( player );
@@ -272,8 +272,10 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 	VectorCopy( origin, player->client->ps.origin );
 	player->client->ps.groundEntityNum = ENTITYNUM_NONE;
 
-	AngleVectors( angles, player->client->ps.velocity, nullptr, nullptr );
-	VectorScale( player->client->ps.velocity, speed, player->client->ps.velocity );
+	glm::vec3 tmp;
+	AngleVectors( angles, &tmp, nullptr, nullptr );
+	tmp *= speed;
+	VectorCopy( tmp, player->client->ps.velocity );
 	player->client->ps.pm_time = 0.4f * std::abs( speed ); // duration of loss of control
 	if ( player->client->ps.pm_time > 160 )
 		player->client->ps.pm_time = 160;
@@ -288,7 +290,7 @@ void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float sp
 	G_ClearPlayerZapEffects( player );
 
 	// set angles
-	G_SetClientViewAngle( player, angles );
+	G_SetClientViewAngle( player, GLM4READ( angles ) );
 
 	// save results of pmove
 	BG_PlayerStateToEntityState( &player->client->ps, &player->s, true );
@@ -322,18 +324,15 @@ Kills all entities overlapping with `ent`.
 */
 void G_KillBox( gentity_t *ent )
 {
-	int       i, num;
 	int       touch[ MAX_GENTITIES ];
-	gentity_t *hit;
-	vec3_t    mins, maxs;
 
-	VectorAdd( ent->r.currentOrigin, ent->r.mins, mins );
-	VectorAdd( ent->r.currentOrigin, ent->r.maxs, maxs );
-	num = trap_EntitiesInBox( mins, maxs, touch, MAX_GENTITIES );
+	glm::vec3 mins = VEC2GLM( ent->r.currentOrigin ) + VEC2GLM( ent->r.mins );
+	glm::vec3 maxs = VEC2GLM( ent->r.currentOrigin ) + VEC2GLM( ent->r.maxs );
+	int num = trap_EntitiesInBox( GLM4READ( mins ), GLM4READ( maxs ), touch, MAX_GENTITIES );
 
-	for ( i = 0; i < num; i++ )
+	for ( int i = 0; i < num; i++ )
 	{
-		hit = &g_entities[ touch[ i ] ];
+		gentity_t *hit = &g_entities[ touch[ i ] ];
 
 		// impossible to telefrag self
 		if ( ent == hit )
@@ -853,15 +852,14 @@ void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
 
 bool G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase )
 {
-	trace_t trace;
-
 	if ( !from || !to )
 	{
 		return false;
 	}
 
-	trap_Trace( &trace, useTrajBase ? from->s.pos.trBase : from->s.origin, nullptr, nullptr, to->s.origin,
-	            from->num(), mask, 0 );
+	trace_t trace;
+	trap_Trace( &trace, VEC2GLM( useTrajBase ? from->s.pos.trBase : from->s.origin ),
+	            glm::vec3(), glm::vec3(), VEC2GLM( to->s.origin ), from->num(), mask, 0 );
 
 	// Also check for fraction in case the mask is chosen so that the trace skips the target entity
 	return ( trace.entityNum == to->num() || trace.fraction == 1.0f );
@@ -947,7 +945,7 @@ float G_Distance( gentity_t *ent1, gentity_t *ent2 ) {
 	return Distance(ent1->s.origin, ent2->s.origin);
 }
 
-float G_DistanceToBBox( const vec3_t origin, gentity_t* ent )
+float G_DistanceToBBox( glm::vec3 const& origin, gentity_t *ent )
 {
 	float distanceSquared = 0.0f;
 	for ( int i = 0; i < 3; i++ )

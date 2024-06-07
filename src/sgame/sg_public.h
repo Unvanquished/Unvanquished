@@ -297,7 +297,7 @@ int               G_ReverbEffectIndex( const char *name );
 int               G_LocationIndex( const char *name );
 void              G_KillBox( gentity_t *ent );
 void              G_KillBrushModel( gentity_t *ent, gentity_t *activator );
-void              G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
+void              G_TeleportPlayer( gentity_t *player, const glm::vec3 &origin, const glm::vec3 &angles, float speed );
 void              G_Sound( gentity_t *ent, soundChannel_t channel, int soundIndex );
 char              *vtos( const vec3_t v );
 void              G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
@@ -320,7 +320,7 @@ team_t            G_IterateTeams( team_t team );
 std::string G_EscapeServerCommandArg( Str::StringRef str );
 char *Quote( Str::StringRef str );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
-float G_DistanceToBBox( const vec3_t origin, gentity_t* ent );
+float G_DistanceToBBox( const glm::vec3 &origin, gentity_t* ent );
 int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
 bool G_IsOnFire( const gentity_t *ent );
 
