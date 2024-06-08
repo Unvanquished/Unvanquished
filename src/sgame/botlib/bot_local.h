@@ -180,6 +180,7 @@ struct Bot_t
 	dtPathCorridor    corridor;
 	int               clientNum;
 	bool              needReplan;
+	// should be rVec cornerVerts[ MAX_CORNERS ]
 	float             cornerVerts[ MAX_CORNERS * 3 ];
 	unsigned char     cornerFlags[ MAX_CORNERS ];
 	dtPolyRef         cornerPolys[ MAX_CORNERS ];

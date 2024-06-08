@@ -210,7 +210,7 @@ bool RocketpodComponent::SafeShot(int passEntityNumber, const glm::vec3& origin,
 	glm::vec3 end  = origin + ROCKETPOD_RANGE * direction;
 
 	trace_t trace;
-	trap_Trace( &trace, &origin[0], &mins[0], &maxs[0], &end[0], passEntityNumber, MASK_SHOT, 0 );
+	trap_Trace( &trace, origin, mins, maxs, end, passEntityNumber, MASK_SHOT, 0 );
 
 	// TODO: Refactor area damage (testing) helpers.
 	return !G_RadiusDamage(
@@ -237,7 +237,7 @@ bool RocketpodComponent::EnemyClose() {
 			BG_ClassModelConfig(other.oldEnt->client->pers.classSelection);
 
 		glm::vec3 turretMins, turretMaxs;
-		BG_BuildableBoundingBox( BA_H_ROCKETPOD, &turretMins[0], &turretMaxs[0] );
+		BG_BoundingBox( BA_H_ROCKETPOD, &turretMins, &turretMaxs );
 
 		float enemyRadius   = std::max( glm::length( VEC2GLM( cmc->mins ) ), glm::length( VEC2GLM( cmc->maxs ) ) );
 		float turretRadius  = std::max( glm::length( turretMins ), glm::length( turretMaxs ) );
@@ -272,7 +272,7 @@ void RocketpodComponent::Shoot(const glm::vec3& direction) {
 	params.oldEnt = m;
 	params.Missile_attributes = BG_Missile(MIS_ROCKET);
 	m->entity = new RocketMissileEntity{ params };
-	G_SetUpMissile(m, entity.oldEnt, entity.oldEnt->s.pos.trBase, &direction[0]);
+	G_SetUpMissile(m, entity.oldEnt, entity.oldEnt->s.pos.trBase, GLM4READ(direction));
 	m->target = target->oldEnt;
 
 	lastShot = level.time;

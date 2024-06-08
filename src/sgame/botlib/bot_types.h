@@ -42,21 +42,17 @@ struct gclient_t;
 struct botTrace_t
 {
 	float frac;
-	float normal[ 3 ];
 };
 
 // parameters outputted by navigation
 // if they are followed exactly, the bot will not go off the nav mesh
 struct botNavCmd_t
 {
-	float    pos[ 3 ]; // self position (with a height diff though)
-	float    tpos[ 3 ]; // position of the target (as for pos, with a height diff I guess)
-	float    dir[ 3 ]; // normalized direction of the target
+	glm::vec3 pos; // self position (with a height diff though)
+	glm::vec3 tpos; // position of the target (as for pos, with a height diff I guess)
+	glm::vec3 dir; // normalized direction of the target
 	int      directPathToGoal;
 	int      havePath;
-	glm::vec3 glm_dir()  const { return glm::vec3( dir[0] , dir[1] , dir[2] ); };
-	glm::vec3 glm_pos()  const { return glm::vec3( pos[0] , pos[1] , pos[2] ); };
-	glm::vec3 glm_tpos() const { return glm::vec3( tpos[0], tpos[1], tpos[2] ); };
 };
 
 enum class botRouteTargetType_t
@@ -71,8 +67,8 @@ enum class botRouteTargetType_t
 struct botRouteTarget_t
 {
 	botRouteTargetType_t type;
-	float pos[ 3 ];
-	float polyExtents[ 3 ];
+	float pos[ 3 ]; // quake coordinates
+	float polyExtents[ 3 ]; // quake coordinates
 	void setPos( glm::vec3 const& p ){ pos[0] = p[0]; pos[1] = p[1]; pos[2] = p[2]; }
 };
 

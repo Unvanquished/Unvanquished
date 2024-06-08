@@ -98,7 +98,8 @@ bool TurretComponent::MoveHeadToTarget(int timeDelta) {
 
 	// Compute difference between angles to target and current angles.
 	glm::vec3 deltaAngles;
-	AnglesSubtract(&relativeAnglesToTarget[0], &relativeAimAngles[0], &deltaAngles[0]);
+	// FIXME: first two args should be const
+	AnglesSubtract(GLM4RW(relativeAnglesToTarget), GLM4RW(relativeAimAngles), GLM4RW(deltaAngles));
 
 	// Stop if there is nothing to do.
 	if (glm::length(deltaAngles) < 0.1f) {
@@ -189,8 +190,7 @@ bool TurretComponent::TargetCanBeHit() {
 	glm::vec3 traceEnd     = traceStart + range * aimDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->num(),
-	           MASK_SHOT, 0);
+	trap_Trace(&tr, traceStart, {}, {}, traceEnd, entity.oldEnt->num(), MASK_SHOT, 0);
 
 	return (tr.entityNum == target->num());
 }
@@ -239,8 +239,7 @@ void TurretComponent::SetBaseDirection() {
 	glm::vec3 traceEnd       = traceStart + MINIMUM_CLEARANCE * torsoDirection;
 
 	trace_t tr;
-	trap_Trace(&tr, &traceStart[0], nullptr, nullptr, &traceEnd[0], entity.oldEnt->num(),
-	           MASK_SHOT, 0);
+	trap_Trace(&tr, traceStart, {}, {}, traceEnd, entity.oldEnt->num(), MASK_SHOT, 0);
 
 	// TODO: Check the presence of a PhysicsComponent to decide whether the obstacle is permanent.
 	if (tr.entityNum == ENTITYNUM_WORLD ||
@@ -266,8 +265,8 @@ glm::vec3 TurretComponent::RelativeAnglesToAbsoluteAngles(const glm::vec3 relati
 	quat_t absoluteRotation;
 	vec3_t absoluteAngles;
 
-	AnglesToQuat(&TorsoAngles()[0], torsoRotation);
-	AnglesToQuat(&relativeAngles[0], relativeRotation);
+	AnglesToQuat(GLM4READ(TorsoAngles()), torsoRotation);
+	AnglesToQuat(GLM4READ(relativeAngles), relativeRotation);
 
 	// Rotate by torso rotation in world space, then by relative orientation in torso space.
 	// This is equivalent to rotating by relative orientation in world space, then by torso rotation
@@ -285,8 +284,8 @@ glm::vec3 TurretComponent::AbsoluteAnglesToRelativeAngles(const glm::vec3 absolu
 	quat_t relativeRotation;
 	vec3_t relativeAngles;
 
-	AnglesToQuat(&TorsoAngles()[0], torsoRotation);
-	AnglesToQuat(&absoluteAngles[0], absoluteRotation);
+	AnglesToQuat(GLM4READ(TorsoAngles()), torsoRotation);
+	AnglesToQuat(GLM4READ(absoluteAngles), absoluteRotation);
 
 	// This is the inverse of RelativeAnglesToAbsoluteAngles. See the comment there for details.
 	quat_t inverseTorsoOrientation;
@@ -300,7 +299,7 @@ glm::vec3 TurretComponent::AbsoluteAnglesToRelativeAngles(const glm::vec3 absolu
 
 glm::vec3 TurretComponent::DirectionToAbsoluteAngles(const glm::vec3 direction) const {
 	vec3_t absoluteAngles;
-	vectoangles(&direction[0], absoluteAngles);
+	vectoangles( GLM4READ( direction ), absoluteAngles);
 	return VEC2GLM(absoluteAngles);
 }
 
@@ -309,9 +308,9 @@ glm::vec3 TurretComponent::DirectionToRelativeAngles(const glm::vec3 direction) 
 }
 
 glm::vec3 TurretComponent::AbsoluteAnglesToDirection(const glm::vec3 absoluteAngles) const {
-	vec3_t direction;
-	AngleVectors(&absoluteAngles[0], direction, nullptr, nullptr);
-	return VEC2GLM(direction);
+	glm::vec3 direction;
+	AngleVectors(absoluteAngles, &direction, nullptr, nullptr);
+	return direction;
 }
 
 glm::vec3 TurretComponent::RelativeAnglesToDirection(const glm::vec3 relativeAngles) const {

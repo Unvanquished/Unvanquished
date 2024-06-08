@@ -320,7 +320,6 @@ static void G_WideTrace(
 		trace_t *tr, gentity_t *ent, const glm::vec3& muzzle, const glm::vec3& forward,
 		const float range, const float width, const float height, gentity_t **target )
 {
-	vec3_t mins, maxs, end;
 	float  halfDiagonal;
 
 	*target = nullptr;
@@ -331,15 +330,16 @@ static void G_WideTrace(
 	}
 
 	// Calculate box to use for trace
-	VectorSet( maxs, width, width, height );
-	VectorNegate( maxs, mins );
-	halfDiagonal = VectorLength( maxs );
+	glm::vec3 maxs{ width, width, height };
+	glm::vec3 mins = -maxs;
+	halfDiagonal = glm::length( maxs );
 
-	G_UnlaggedOn( ent, &muzzle[ 0 ], range + halfDiagonal );
+	G_UnlaggedOn( ent, GLM4READ( muzzle ), range + halfDiagonal );
 
 	// Trace box against entities
+	glm::vec3 end;
 	VectorMA( muzzle, range, forward, end );
-	trap_Trace( tr, &muzzle[ 0 ], mins, maxs, end, ent->s.number, CONTENTS_BODY, 0 );
+	trap_Trace( tr, muzzle, mins, maxs, end, ent->s.number, CONTENTS_BODY, 0 );
 
 	if ( tr->entityNum != ENTITYNUM_NONE )
 	{
@@ -349,8 +349,9 @@ static void G_WideTrace(
 	// Line trace against the world, so we never hit through obstacles.
 	// The range is reduced according to the former trace so we don't hit something behind the
 	// current target.
-	VectorMA( muzzle, Distance( &muzzle[ 0 ], tr->endpos ) + halfDiagonal, forward, end );
-	trap_Trace( tr, &muzzle[ 0 ], nullptr, nullptr, end, ent->s.number, CONTENTS_SOLID, 0 );
+	float scale = glm::distance( muzzle, VEC2GLM( tr->endpos ) ) + halfDiagonal;
+	VectorMA( muzzle, scale, forward, end );
+	trap_Trace( tr, muzzle, {}, {}, end, ent->s.number, CONTENTS_SOLID, 0 );
 
 	// In case we hit a different target, which can happen if two potential targets are close,
 	// switch to it, so we will end up with the target we were looking at.
@@ -390,7 +391,7 @@ void G_SnapVectorTowards( vec3_t v, const vec3_t to )
 static void SendRangedHitEvent( gentity_t *attacker, const glm::vec3 &muzzle, gentity_t *target, trace_t *tr )
 {
 	// snap the endpos to integers, but nudged towards the line
-	G_SnapVectorTowards( tr->endpos, &muzzle[ 0 ] );
+	G_SnapVectorTowards( tr->endpos, GLM4READ( muzzle ) );
 
 	entity_event_t evType = HasComponents<HealthComponent>(*target->entity) ? EV_WEAPON_HIT_ENTITY : EV_WEAPON_HIT_ENVIRONMENT;
 	SendHitEvent( attacker, target, VEC2GLM( tr->endpos ), VEC2GLM( tr->plane.normal ), evType );
@@ -401,7 +402,7 @@ static void SendHitEvent( gentity_t *attacker, gentity_t *target, glm::vec3 cons
 	gentity_t *event = G_NewTempEntity( origin, evType );
 
 	// normal
-	event->s.eventParm = DirToByte( &normal[0] );
+	event->s.eventParm = DirToByte( GLM4READ( normal ) );
 
 	// victim
 	event->s.otherEntityNum = target->s.number;
@@ -488,7 +489,7 @@ MACHINEGUN
 static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeath_t mod, int other )
 {
 	trace_t   tr;
-	vec3_t    end;
+	glm::vec3 end;
 	gentity_t *target;
 
 	glm::vec3 forward, right, up, muzzle;
@@ -516,13 +517,13 @@ static void FireBullet( gentity_t *self, float spread, float damage, meansOfDeat
 	// don't use unlagged if this is not a client (e.g. turret)
 	if ( self->client )
 	{
-		G_UnlaggedOn( self, &muzzle[ 0 ], 8192 * 16 );
-		trap_Trace( &tr, &muzzle[ 0 ], nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
+		G_UnlaggedOn( self, GLM4READ( muzzle ), 8192 * 16 );
+		trap_Trace( &tr, muzzle, {}, {}, end, self->s.number, MASK_SHOT, 0 );
 		G_UnlaggedOff();
 	}
 	else
 	{
-		trap_Trace( &tr, &muzzle[ 0 ], nullptr, nullptr, end, self->s.number, MASK_SHOT, 0 );
+		trap_Trace( &tr, muzzle, {}, {}, end, self->s.number, MASK_SHOT, 0 );
 	}
 
 	if ( tr.surfaceFlags & SURF_NOIMPACT )
@@ -612,7 +613,7 @@ static void FireShotgun( gentity_t *self ) //TODO merge with FireBullet
 	tent->s.otherEntityNum = self->s.number;
 
 	// calculate the pattern and do the damage
-	G_UnlaggedOn( self, &muzzle[ 0 ], SHOTGUN_RANGE );
+	G_UnlaggedOn( self, GLM4READ( muzzle ), SHOTGUN_RANGE );
 	ShotgunPattern( tent->s.pos.trBase, tent->s.origin2, tent->s.eventParm, self );
 	G_UnlaggedOff();
 }
@@ -704,7 +705,7 @@ static void FireLcannonPrimary( gentity_t *self, int damage )
 		params.oldEnt = m;
 		params.Missile_attributes = &attr;
 		m->entity = new DumbMissileEntity{ params };
-		G_SetUpMissile( m, self, &start[ 0 ], &dir[ 0 ] );
+		G_SetUpMissile( m, self, GLM4READ( start ), GLM4READ( dir ) );
 
 		// pass the missile charge through
 		charge = ( float )( damage - BG_Missile( MIS_LCANNON2 )->damage ) / LCANNON_DAMAGE;

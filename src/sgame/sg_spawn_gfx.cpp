@@ -121,11 +121,11 @@ static void findEmptySpot( glm::vec3 const& origin, float radius, glm::vec3& spo
 				glm::vec3 test = origin + delta;
 
 				trace_t trace;
-				trap_Trace( &trace, &test[0], nullptr, nullptr, &test[0], ENTITYNUM_NONE, MASK_SOLID, 0 );
+				trap_Trace( &trace, test, {}, {}, test, ENTITYNUM_NONE, MASK_SOLID, 0 );
 
 				if ( !trace.allsolid )
 				{
-					trap_Trace( &trace, &test[0], nullptr, nullptr, &origin[0], ENTITYNUM_NONE, MASK_SOLID, 0 );
+					trap_Trace( &trace, test, {}, {}, origin, ENTITYNUM_NONE, MASK_SOLID, 0 );
 					delta *= trace.fraction;
 					total += delta;
 				}
@@ -152,7 +152,7 @@ void SP_gfx_light_flare( gentity_t *self )
 	//is used to facilitate visibility testing
 	glm::vec3 angles2 = VEC2GLM( self->s.angles2 );
 	findEmptySpot( VEC2GLM( self->s.origin ), 8.0f, angles2 );
-	VectorCopy( &angles2[0], self->s.angles2 );
+	VectorCopy( angles2, self->s.angles2 );
 
 	self->act = gfx_light_flare_toggle;
 

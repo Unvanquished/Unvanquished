@@ -422,7 +422,7 @@ bool G_MissileImpact( gentity_t *ent, const trace2_t *trace )
 
 		// Save net bandwidth.
 		glm::vec3 snappedPosition = VEC2GLM( trace->endpos );
-		G_SnapVectorTowards( &snappedPosition[ 0 ], ent->s.pos.trBase );
+		G_SnapVectorTowards( GLM4RW( snappedPosition ), ent->s.pos.trBase );
 		G_SetOrigin( ent, snappedPosition );
 
 		trap_LinkEntity( ent );
@@ -495,7 +495,7 @@ gentity_t *G_SpawnDumbMissile( missile_t missile, gentity_t *parent, const glm::
 	params.oldEnt = m;
 	params.Missile_attributes = BG_Missile( missile );
 	m->entity = new DumbMissileEntity{ params };
-	G_SetUpMissile( m, parent, &start[ 0 ], &dir[ 0 ] );
+	G_SetUpMissile( m, parent, GLM4READ( start ), GLM4READ( dir ) );
 	return m;
 }
 

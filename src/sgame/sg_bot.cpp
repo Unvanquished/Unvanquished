@@ -814,7 +814,7 @@ static std::string BotGoalToString( gentity_t *bot )
 	}
 	else if ( target.targetsCoordinates() )
 	{
-		return vtos( &target.getPos()[0] );
+		return vtos( GLM4READ( target.getPos() ) );
 	}
 
 	return "<unknown goal>";

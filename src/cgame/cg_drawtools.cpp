@@ -411,7 +411,7 @@ float CG_FadeAlpha( int startMsec, int totalMsec )
 CG_WorldToScreen
 ================
 */
-bool CG_WorldToScreen( vec3_t point, float *x, float *y )
+bool CG_WorldToScreen( const vec3_t point, float *x, float *y )
 {
 	vec3_t trans;
 	float  xc, yc;

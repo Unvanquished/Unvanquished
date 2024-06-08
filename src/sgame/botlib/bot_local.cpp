@@ -42,8 +42,8 @@ bot_local.cpp
 All vectors used as inputs and outputs to functions here are assumed to
 use detour/recast's coordinate system
 
-Callers should use recast2quake() and quake2recast() where appropriate to
-make sure the vectors use the same coordinate system
+The rVec( const glm::vec3 & ) constructor can be used to convert vector
+from the Quake to the Recast coordinate system
 ====================
 */
 
@@ -54,8 +54,8 @@ void BotCalcSteerDir( Bot_t *bot, rVec &dir )
 	//old code follow, for reference, because I'm not sure at all that the fix is valid.
 	//const int ip1 = std::min( 1, bot->numCorners - 1 );
 	const int ip1 = std::min( 1, bot->numCorners );
-	const float* p0 = &bot->cornerVerts[ ip0 * 3 ];
-	const float* p1 = &bot->cornerVerts[ ip1 * 3 ];
+	const rVec p0 = rVec::Load( bot->cornerVerts + ip0 * 3 );
+	const rVec p1 = rVec::Load( bot->cornerVerts + ip1 * 3 );
 	rVec dir0, dir1;
 	float len0, len1;
 	rVec spos;
@@ -103,7 +103,7 @@ bool PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents )
 	}
 
 	// use the bot's bbox as an epsilon because the navmesh is always at least that far from a boundary
-	float maxRad = std::max( extents[ 0 ], extents[ 1 ] ) + 1;
+	float maxRad = std::max( extents[ 0 ], extents[ 2 ] ) + 1;
 
 	if ( fabsf( point[ 0 ] - closest[ 0 ] ) > maxRad )
 	{
@@ -122,7 +122,7 @@ bool PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point )
 {
 	gentity_t *ent = g_entities + bot->clientNum;
 
-	return PointInPolyExtents( bot, ref, point, ent->r.maxs );
+	return PointInPolyExtents( bot, ref, point, rVec( VEC2GLM( ent->r.maxs ) ) );
 }
 
 bool BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint )

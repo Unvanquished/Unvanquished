@@ -193,7 +193,8 @@ void trap_Trace( trace_t *results, const vec3_t start, const vec3_t mins, const 
 void trap_Trace( trace_t *results, const glm::vec3& start, const glm::vec3& mins, const glm::vec3& maxs,
                  const glm::vec3& end, int passEntityNum, int contentmask , int skipmask)
 {
-	trap_Trace( results, &start[0], &mins[0], &maxs[0], &end[0], passEntityNum, contentmask, skipmask );
+	trap_Trace( results, GLM4READ( start ), GLM4READ( mins ), GLM4READ( maxs ), GLM4READ( end ),
+		passEntityNum, contentmask, skipmask );
 }
 
 int trap_PointContents(const vec3_t point, int passEntityNum)
