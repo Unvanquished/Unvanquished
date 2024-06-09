@@ -436,12 +436,12 @@ bool CG_WorldToScreen( const vec3_t point, float *x, float *y )
 
 	if ( x )
 	{
-		*x = 320.0f - DotProduct( trans, cg.refdef.viewaxis[ 1 ] ) * xc / ( z * px );
+		*x = !z ? -999999 : 320.0f - DotProduct( trans, cg.refdef.viewaxis[ 1 ] ) * xc / ( z * px );
 	}
 
 	if ( y )
 	{
-		*y = 240.0f - DotProduct( trans, cg.refdef.viewaxis[ 2 ] ) * yc / ( z * py );
+		*y = !z ? -999999 : 240.0f - DotProduct( trans, cg.refdef.viewaxis[ 2 ] ) * yc / ( z * py );
 	}
 
 	return front;
