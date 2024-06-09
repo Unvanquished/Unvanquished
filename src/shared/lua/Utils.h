@@ -31,8 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
-
 #ifndef SHARED_LUA_UTILS_H_
 #define SHARED_LUA_UTILS_H_
 
@@ -59,5 +57,3 @@ int CreatePairsHelper(lua_State* L, std::function<int(lua_State*, size_t)> next_
 
 
 #endif  // SHARED_LUA_UTILS_H_
-
-#endif  // BUILD_CGAME

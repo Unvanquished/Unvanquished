@@ -31,8 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
-
 #include "shared/lua/Classes.h"
 #include "shared/lua/Utils.h"
 
@@ -165,5 +163,3 @@ LUACORETYPEDEFINE(Classes)
 
 } // namespace Lua
 }  // namespace Shared
-
- #endif // BUILD_CGAME

@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 #ifndef BG_LUA_H
 #define BG_LUA_H
+
 extern "C"
 {
 	#include <lua.h>

@@ -31,8 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#if defined(BUILD_CGAME)
-
 #include "shared/bg_lua.h"
 #include "shared/lua/LuaLib.h"
 #include "shared/lua/Buildables.h"
@@ -123,5 +121,3 @@ void BG_InitializeLuaConstants( lua_State* L )
 	LuaLib< UnvGlobal>::push( L, &global );
 	lua_setglobal( L, "Unv" );
 }
-
-#endif // BUILD_CGAME

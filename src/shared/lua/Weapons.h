@@ -31,8 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
-
 #ifndef SHARED_LUA_WEAPONS_H_
 #define SHARED_LUA_WEAPONS_H_
 
@@ -68,4 +66,3 @@ void ExtraInit<WeaponProxy>( lua_State* L, int metatable_index );
 }  // namespace Shared
 
 #endif  // SHARED_LUA_WEAPONS_H_
-#endif  // BUILD_CGAME
