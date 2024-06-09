@@ -559,23 +559,16 @@ static void DrawBeacon( cbeacon_t *b )
 	b->pos[ 1 ] *= cgs.glconfig.vidHeight / 480.0;
 
 	// clamp to edges
-	if( !front ||
-	    b->pos[ 0 ] < cgs.bc.hudRect[0][0] + b->size/2 ||
-	    b->pos[ 0 ] > cgs.bc.hudRect[1][0] - b->size/2 ||
-	    b->pos[ 1 ] < cgs.bc.hudRect[0][1] + b->size/2 ||
-	    b->pos[ 1 ] > cgs.bc.hudRect[1][1] - b->size/2 )
+	glm::vec2 mins = VEC2GLM2( cgs.bc.hudRect[0] ) + b->size/2;
+	glm::vec2 maxs = VEC2GLM2( cgs.bc.hudRect[1] ) - b->size/2;
+	glm::vec2 pos = VEC2GLM2( b->pos );
+	b->clamped =
+		CG_ClampToRectangleAlongLine( mins, maxs, VEC2GLM2( cgs.bc.hudCenter ), front, pos );
+	if ( b->clamped )
 	{
-		vec2_t screen[ 2 ];
-		Vector2Set( screen[ 0 ], cgs.bc.hudRect[0][0] + b->size/2,
-		                         cgs.bc.hudRect[0][1] + b->size/2 );
-		Vector2Set( screen[ 1 ], cgs.bc.hudRect[1][0] - b->size/2,
-		                         cgs.bc.hudRect[1][1] - b->size/2 );
-		Vector2Subtract( b->pos, cgs.bc.hudCenter, b->clamp_dir );
-		ProjectPointOntoRectangleOutwards( b->pos, cgs.bc.hudCenter, b->clamp_dir, (const vec2_t*)screen );
-		b->clamped = true;
+		Vector2Copy( pos - VEC2GLM2( cgs.bc.hudCenter ), b->clamp_dir );
 	}
-	else
-		b->clamped = false;
+	Vector2Copy( pos, b->pos );
 }
 
 /**
