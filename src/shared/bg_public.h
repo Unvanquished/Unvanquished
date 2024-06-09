@@ -38,8 +38,15 @@ template<typename T>
 inline glm::vec3 VEC2GLM( const T& v ) {
 	return glm::vec3( v[0], v[1], v[2] );
 }
+template<typename T>
+inline glm::vec2 VEC2GLM2( const T& v ) {
+	return glm::vec2( v[0], v[1] );
+}
 // A specialised version to warn about useless VEC2GLM mistakes
 DEPRECATED inline glm::vec3 VEC2GLM( glm::vec3 v ) {
+	return v;
+}
+DEPRECATED inline glm::vec2 VEC2GLM2( glm::vec2 v ) {
 	return v;
 }
 

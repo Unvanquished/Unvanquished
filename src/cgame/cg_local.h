@@ -1995,6 +1995,8 @@ void CG_DrawActive();
 void       CG_RunMenuScript( char **args );
 void       CG_ResetPainBlend();
 void       CG_DrawField( float x, float y, int width, float cw, float ch, int value );
+bool CG_ClampToRectangleAlongLine(
+	const glm::vec2 &mins, const glm::vec2 &maxs, const glm::vec2 &center, bool allowInterior, glm::vec2 &point );
 
 //
 // cg_players.c
