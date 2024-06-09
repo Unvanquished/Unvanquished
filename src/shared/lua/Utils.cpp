@@ -31,8 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
-
 #include "shared/lua/Utils.h"
 
 #include "shared/bg_public.h"
@@ -131,5 +129,3 @@ int CreatePairsHelper( lua_State* L, std::function<int( lua_State* L, size_t ind
 
 }  // namespace Lua
 }  // namespace Shared
-
-#endif  // BUILD_CGAME
