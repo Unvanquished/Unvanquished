@@ -32,17 +32,13 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef REGISTER_LUA_EXTENSIONS_H_
-#define REGISTER_LUA_EXTENSIONS_H_
+#ifndef ROCKET_REGISTER_LUA_EXTENSIONS_H_
+#define ROCKET_REGISTER_LUA_EXTENSIONS_H_
 
-#include <RmlUi/Lua/IncludeLua.h>
+#include "shared/bg_lua.h"
 
 void CG_Rocket_RegisterLuaCDataSource(lua_State* L);
-void CG_Rocket_RegisterLuaCmd(lua_State* L);
-void CG_Rocket_RegisterLuaCvar(lua_State* L);
 void CG_Rocket_RegisterLuaEvents(lua_State* L);
-void CG_Rocket_RegisterLuaTimer(lua_State* L);
+void CG_Rocket_InitializeLuaPlayer( lua_State* L );
 
-void CG_Rocket_UpdateLuaTimers(int time);
-
-#endif
+#endif  // ROCKET_REGISTER_LUA_EXTENSIONS_H_

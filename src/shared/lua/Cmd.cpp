@@ -2,7 +2,7 @@
 ===========================================================================
 
 Unvanquished GPL Source Code
-Copyright (C) 2024 Unvanquished Developers
+Copyright (C) 2012 Unvanquished Developers
 
 This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
@@ -32,12 +32,30 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef ROCKET_LUA_PLAYER_H_
-#define ROCKET_LUA_PLAYER_H_
+#include "register_lua_extensions.h"
+#include "shared/CommonProxies.h"
 
-#include "../rocket.h"
-#include "shared/lua/LuaLib.h"
+namespace Shared {
+namespace Lua {
 
-void CG_InitializeLuaPlayer( lua_State* L );
+namespace {
 
-#endif  // ROCKET_LUA_PLAYER_H_
+int Cmd_exec(lua_State* L)
+{
+	const char *cmd = luaL_checkstring(L, 1);
+	trap_SendConsoleCommand(cmd);
+	return 0;
+}
+
+}  // namespace
+
+void RegisterCmd(lua_State* L)
+{
+	lua_newtable(L);
+	lua_pushcfunction(L, Cmd_exec);
+	lua_setfield(L, -2, "exec");
+	lua_setglobal(L, "Cmd");
+}
+
+}  // namespace Lua
+}  // namespace Shared

@@ -32,21 +32,87 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#include <list>
+
 #include "common/Common.h"
-#include "../../cg_local.h"
 #include "register_lua_extensions.h"
 
-static int Cmd_exec(lua_State* L)
+namespace Shared {
+namespace Lua {
+
+namespace {
+
+class Timer
 {
-	const char *cmd = luaL_checkstring(L, 1);
-	trap_SendConsoleCommand(cmd);
+   public:
+	void Add( int delayMs, int callbackRef, lua_State* L )
+	{
+		events.push_back( { delayMs, callbackRef, L } );
+	}
+
+	void RunUpdate( int time )
+	{
+		int dtMs = time - lastTime;
+		lastTime = time;
+
+		auto it = events.begin();
+		while ( it != events.end() )
+		{
+			it->delayMs -= dtMs;
+			if ( it->delayMs <= 0 )
+			{
+				lua_rawgeti( it->L, LUA_REGISTRYINDEX, it->callbackRef );
+				luaL_unref( it->L, LUA_REGISTRYINDEX, it->callbackRef );
+				if ( lua_pcall( it->L, 0, 0, 0 ) != 0 )
+					Log::Warn( "Could not run lua timer callback: %s", lua_tostring( it->L, -1 ) );
+				it = events.erase( it );
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+
+   private:
+	struct TimerEvent
+	{
+		int delayMs;
+		int callbackRef;
+		lua_State* L;
+	};
+
+	int lastTime;
+	std::list<TimerEvent> events;
+};
+
+static Timer timer;
+
+int Timer_add( lua_State* L )
+{
+	int delayMs = luaL_checkinteger( L, 1 );
+	int ref = luaL_ref( L, LUA_REGISTRYINDEX );
+	timer.Add( delayMs, ref, L );
 	return 0;
 }
 
-void CG_Rocket_RegisterLuaCmd(lua_State* L)
+
+}  // namespace
+
+
+
+void RegisterTimer( lua_State* L )
 {
-	lua_newtable(L);
-	lua_pushcfunction(L, Cmd_exec);
-	lua_setfield(L, -2, "exec");
-	lua_setglobal(L, "Cmd");
+	lua_newtable( L );
+	lua_pushcfunction( L, Timer_add );
+	lua_setfield( L, -2, "add" );
+	lua_setglobal( L, "Timer" );
 }
+
+void UpdateTimers( int time )
+{
+	timer.RunUpdate( time );
+}
+
+}  // namespace Lua
+}  // namespace Shared

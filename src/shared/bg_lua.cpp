@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include "shared/lua/Weapons.h"
 #include "shared/lua/Classes.h"
 #include "shared/lua/Upgrades.h"
+#include "shared/lua/register_lua_extensions.h"
 #include "common/Log.h"
 
 
@@ -109,6 +110,11 @@ LUACORETYPEDEFINE(UnvGlobal)
 void BG_InitializeLuaConstants( lua_State* L )
 {
 	using namespace Shared::Lua;
+
+	RegisterCmd( L );
+	RegisterCvar( L );
+	RegisterTimer( L );
+
 	LuaLib< UnvGlobal >::Register( L );
 	LuaLib< Weapons >::Register( L );
 	LuaLib< WeaponProxy >::Register( L );

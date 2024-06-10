@@ -2,7 +2,7 @@
 ===========================================================================
 
 Unvanquished GPL Source Code
-Copyright (C) 2012 Unvanquished Developers
+Copyright (C) 2024 Unvanquished Developers
 
 This file is part of the Unvanquished GPL Source Code (Unvanquished Source Code).
 
@@ -31,40 +31,22 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
+#ifndef SHARED_LUA_REGISTER_LUA_EXTENSIONS_H_
+#define SHARED_LUA_REGISTER_LUA_EXTENSIONS_H_
 
-#include "common/Common.h"
-#include "register_lua_extensions.h"
+#include "shared/bg_lua.h"
 
-static int Cvar_get(lua_State* L)
-{
-	const char *cvar = luaL_checkstring(L, 1);
-	lua_pushstring(L, Cvar::GetValue(cvar).c_str());
-	return 1;
-}
+namespace Shared {
+namespace Lua {
 
-static int Cvar_set(lua_State* L)
-{
-	const char *cvar = luaL_checkstring(L, 1);
-	const char *value = luaL_checkstring(L, 2);
-	Cvar::SetValue(cvar, value);
-	return 0;
-}
+void RegisterCmd(lua_State* L);
+void RegisterCvar(lua_State* L);
+void RegisterTimer(lua_State* L);
 
-static int Cvar_archive(lua_State* L)
-{
-	const char *cvar  = luaL_checkstring(L, 1);
-	Cvar::AddFlags(cvar, Cvar::USER_ARCHIVE);
-	return 0;
-}
+void UpdateTimers(int time);
 
-void CG_Rocket_RegisterLuaCvar(lua_State* L)
-{
-	lua_newtable(L);
-	lua_pushcfunction(L, Cvar_get);
-	lua_setfield(L, -2, "get");
-	lua_pushcfunction(L, Cvar_set);
-	lua_setfield(L, -2, "set");
-	lua_pushcfunction(L, Cvar_archive);
-	lua_setfield(L, -2, "archive");
-	lua_setglobal(L, "Cvar");
-}
+
+}  // namespace Lua
+}  // namespace Shared
+
+#endif  // SHARED_LUA_REGISTER_LUA_EXTENSIONS_H_
