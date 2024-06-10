@@ -40,6 +40,7 @@ Maryland 20850 USA.
 #include "sgame/lua/EntityProxy.h"
 #include "sgame/lua/Client.h"
 #include "sgame/lua/Bot.h"
+#include "sgame/lua/Level.h"
 
 namespace {
 
@@ -48,6 +49,7 @@ using Shared::Lua::RegType;
 using Shared::Lua::CheckVec3;
 
 static Lua::Entity entity;
+static Lua::Level level;
 
 /// SGame global to access SGame related fields.
 // Accessed via the sgame global.
@@ -64,6 +66,16 @@ class SGameGlobal
 	static int GetEntity( lua_State* L )
 	{
 		LuaLib<Lua::Entity>::push( L, &entity );
+		return 1;
+	}
+
+	/// Get globals related to the game.
+	// @field level Get globals related to the game. Analogous to the level global in C++.
+	// @see level.Level
+	// @usage sgame.level.aliens.total_budget = 500 -- Give aliens more build points.
+	static int GetLevel( lua_State* L )
+	{
+		LuaLib<Lua::Level>::push( L, &level );
 		return 1;
 	}
 
@@ -92,6 +104,7 @@ RegType<SGameGlobal> SGameGlobalMethods[] = {
 
 luaL_Reg SGameGlobalGetters[] = {
 	{ "entity", SGameGlobal::GetEntity },
+	{ "level", SGameGlobal::GetLevel },
 
 	{ nullptr, nullptr },
 };
@@ -109,10 +122,12 @@ namespace Lua {
 void InitializeSGameGlobal( lua_State* L )
 {
 	LuaLib<SGameGlobal>::Register( L );
-	LuaLib<Entity>::Register(L);
-	LuaLib<EntityProxy>::Register(L);
-	LuaLib<Client>::Register(L);
-	LuaLib<Bot>::Register(L);
+	LuaLib<Entity>::Register( L );
+	LuaLib<EntityProxy>::Register( L );
+	LuaLib<Client>::Register( L );
+	LuaLib<Bot>::Register( L );
+	LuaLib<Level>::Register( L );
+	LuaLib<TeamProxy>::Register( L );
 
 	LuaLib<SGameGlobal>::push( L, &sgame );
 	lua_setglobal( L, "sgame" );
