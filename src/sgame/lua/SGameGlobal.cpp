@@ -42,6 +42,7 @@ Maryland 20850 USA.
 #include "sgame/lua/Bot.h"
 #include "sgame/lua/Level.h"
 #include "sgame/lua/Buildable.h"
+#include "sgame/lua/Hooks.h"
 
 namespace {
 
@@ -51,6 +52,7 @@ using Shared::Lua::CheckVec3;
 
 static Lua::Entity entity;
 static Lua::Level level;
+static Lua::Hooks hooks;
 
 /// SGame global to access SGame related fields.
 // Accessed via the sgame global.
@@ -77,6 +79,16 @@ class SGameGlobal
 	static int GetLevel( lua_State* L )
 	{
 		LuaLib<Lua::Level>::push( L, &level );
+		return 1;
+	}
+
+	/// Get object used to install hooks in various places.
+	// @field hooks Get object used to install hooks in various places.
+	// @see hooks
+	// @usage sgame.hooks.RegisterChatHook(function(ent, team, message) print(ent.client.name .. ' says: ' .. message) end) -- Print out the message every time.
+	static int GetHooks( lua_State* L )
+	{
+		LuaLib<Lua::Hooks>::push( L, &hooks );
 		return 1;
 	}
 
@@ -148,6 +160,7 @@ RegType<SGameGlobal> SGameGlobalMethods[] = {
 luaL_Reg SGameGlobalGetters[] = {
 	{ "entity", SGameGlobal::GetEntity },
 	{ "level", SGameGlobal::GetLevel },
+	{ "hooks", SGameGlobal::GetHooks },
 
 	{ nullptr, nullptr },
 };
@@ -172,6 +185,7 @@ void InitializeSGameGlobal( lua_State* L )
 	LuaLib<Level>::Register( L );
 	LuaLib<TeamProxy>::Register( L );
 	LuaLib<Buildable>::Register( L );
+	LuaLib<Hooks>::Register( L );
 
 	LuaLib<SGameGlobal>::push( L, &sgame );
 	lua_setglobal( L, "sgame" );
