@@ -41,6 +41,7 @@ Maryland 20850 USA.
 #include "sgame/lua/Client.h"
 #include "sgame/lua/Bot.h"
 #include "sgame/lua/Level.h"
+#include "sgame/lua/Buildable.h"
 
 namespace {
 
@@ -96,6 +97,48 @@ class SGameGlobal
 		trap_SendServerCommand( entNum, cmd );
 		return 0;
 	}
+
+	/// Spawn a buildable.
+	// You can find the information about the origin, angle, and normal from a layout file.
+	// @function SpawnBuildable
+	// @tparam string buildable Name of the buildable (eg, trapper, medistat, etc)
+	// @tparam array origin Position of the buildable.
+	// @tparam array angles Orientation of the buildable.
+	// @tparam array normal Normal of the buildable.
+	// @treturn buildable.BuildableProxy The buildable.
+	// @usage -- trapper -328.875000 -1913.489868 69.430603 0.000000 100.000000 91.000000 1.000000 0.000000 0.000000 30.000000 100.000000 0.000000
+	// @usage buildable = sgame.SpawnBuildable('trapper', {328.875000,-1913.489868,-1913.489868}, {0, 100, 91}, {1, 0, 0}) -- You can ignore the last three numbers from the layout line.
+	static int SpawnBuildable( lua_State* L )
+	{
+		vec3_t origin;
+		vec3_t normal;
+		vec3_t angles;
+		if (!CheckVec3( L, 2, origin ) || !CheckVec3( L, 4, normal ) || !CheckVec3( L, 3, angles ) || !lua_isstring( L, 1 ))
+		{
+			Log::Warn( "invalid arguemnts to SpawnBuildable." );
+			return 0;
+		}
+
+		const char *buildableName = luaL_checkstring(L, 1);
+		const buildableAttributes_t *ba = BG_BuildableByName( buildableName );
+		if (ba->number == BA_NONE)
+		{
+			Log::Warn( "invalid buildable: %s", buildableName );
+			return 0;
+		}
+		gentity_t *builder = G_NewEntity(initEntityStyle_t::NO_CBSE);
+		VectorCopy( origin, builder->s.pos.trBase );
+		VectorCopy( angles, builder->s.angles );
+		VectorCopy( normal, builder->s.origin2 );
+		gentity_t* buildable = G_SpawnBuildableImmediately( builder, ba->number );
+		if ( !buildable )
+		{
+			return 0;
+		}
+		Lua::EntityProxy* proxy = Lua::Entity::CreateProxy( buildable, L );
+		LuaLib<Lua::EntityProxy>::push( L, proxy );
+		return 1;
+	}
 };
 
 RegType<SGameGlobal> SGameGlobalMethods[] = {
@@ -128,6 +171,7 @@ void InitializeSGameGlobal( lua_State* L )
 	LuaLib<Bot>::Register( L );
 	LuaLib<Level>::Register( L );
 	LuaLib<TeamProxy>::Register( L );
+	LuaLib<Buildable>::Register( L );
 
 	LuaLib<SGameGlobal>::push( L, &sgame );
 	lua_setglobal( L, "sgame" );
@@ -144,6 +188,8 @@ void ExtraInit<SGameGlobal>( lua_State* L, int metatable_index )
 {
 	lua_pushcfunction( L, SGameGlobal::SendServerCommand );
 	lua_setfield( L, metatable_index - 1, "SendServerCommand" );
+	lua_pushcfunction( L, SGameGlobal::SpawnBuildable );
+	lua_setfield( L, metatable_index - 1, "SpawnBuildable" );
 }
 
 }  // namespace Lua

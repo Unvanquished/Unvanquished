@@ -765,7 +765,7 @@ bool G_DeconstructDead( gentity_t *buildable )
 	return false;
 }
 
-static void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
+void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
 	if ( !self || self->s.eType != entityType_t::ET_BUILDABLE )
 	{
@@ -1878,6 +1878,16 @@ void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 	// spawns until the third frame so they can ride trains
 	ent->nextthink = level.time + FRAMETIME * 2;
 	ent->think = SpawnBuildableThink;
+}
+
+// Immediately spawn buildable instead of waiting a few frames. Also return the newly built buildable.
+// Assumes that ent is a placeholder entity that will be freed automatically by this function.
+gentity_t* G_SpawnBuildableImmediately( gentity_t *ent, buildable_t buildable )
+{
+	ent->s.modelindex = buildable;
+	gentity_t* ret = FinishSpawningBuildable( ent, false );
+	G_FreeEntity( ent );
+	return ret;
 }
 
 void G_LayoutSave( const char *name )

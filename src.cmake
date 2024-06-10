@@ -354,7 +354,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/lua/Bot.h
     ${GAMELOGIC_DIR}/sgame/lua/Level.cpp
     ${GAMELOGIC_DIR}/sgame/lua/Level.h
-
+    ${GAMELOGIC_DIR}/sgame/lua/Buildable.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Buildable.h
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h

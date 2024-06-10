@@ -90,6 +90,8 @@ bool              G_BuildIfValid( gentity_t *ent, buildable_t buildable );
 void              G_SetBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation, bool force);
 void              G_SetIdleBuildableAnim(gentity_t *ent, buildableAnimNumber_t animation);
 void              G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
+gentity_t         *G_SpawnBuildableImmediately(gentity_t *ent, buildable_t buildable);
+void              G_Deconstruct(gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType);
 void              G_LayoutSave( const char *name );
 int               G_LayoutList( const char *map, char *list, int len );
 bool G_LayoutExists( Str::StringRef map, Str::StringRef layout );
