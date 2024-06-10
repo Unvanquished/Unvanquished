@@ -1751,7 +1751,7 @@ static bool FindRoomForClassChangeVertically(
 	temp[ 2 ] += nudgeHeight;
 	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->num(), MASK_PLAYERSOLID, 0 );
 
-	if ( tr.fraction == 0.0f )
+	if ( tr.allsolid )
 	{
 		// it's not helping, we are probably too close to something horizontally
 		return false;
@@ -1783,7 +1783,7 @@ static bool FindRoomForClassChangeLaterally(
 	// each 4 directions, but this is close enough.
 	// This is correct assuming the bbox is centered on the
 	// origin on x and y.
-	float distance = std::min(max_x, max_y);
+	float distance = std::min(max_x, max_y) + 0.5f;
 
 	vec3_t origin;
 	origin[0] = ent->client->ps.origin[0];
@@ -1802,7 +1802,7 @@ static bool FindRoomForClassChangeLaterally(
 		trap_Trace( &trace, start_point, toMins, toMaxs,
 				origin, ent->num(),
 				MASK_PLAYERSOLID, 0 );
-		if ( trace.fraction == 0.0f )
+		if ( trace.allsolid )
 		{
 			continue;
 		}
