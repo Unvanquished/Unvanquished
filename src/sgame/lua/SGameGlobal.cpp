@@ -36,6 +36,8 @@ Maryland 20850 USA.
 #include "shared/lua/LuaLib.h"
 #include "shared/lua/Utils.h"
 #include "sgame/lua/register_lua_extensions.h"
+#include "sgame/lua/Entity.h"
+#include "sgame/lua/EntityProxy.h"
 
 namespace {
 
@@ -43,6 +45,7 @@ using Shared::Lua::LuaLib;
 using Shared::Lua::RegType;
 using Shared::Lua::CheckVec3;
 
+static Lua::Entity entity;
 
 /// SGame global to access SGame related fields.
 // Accessed via the sgame global.
@@ -50,6 +53,17 @@ using Shared::Lua::CheckVec3;
 class SGameGlobal
 {
 	public:
+
+	/// Get in game entities.
+	// @field entity Get in game entities. Analogous to the g_entities global in C++.
+	// @usage print(sgame.entiites[0].client.name) -- Print first connected client's name.
+	// @see entity
+	// @see entityproxy.EntityProxy
+	static int GetEntity( lua_State* L )
+	{
+		LuaLib<Lua::Entity>::push( L, &entity );
+		return 1;
+	}
 
 	/// Send a server command to a client or clients. Equivalent to trap_SendServerCommand.
 	// @function SendServerCommand
@@ -75,6 +89,8 @@ RegType<SGameGlobal> SGameGlobalMethods[] = {
 };
 
 luaL_Reg SGameGlobalGetters[] = {
+	{ "entity", SGameGlobal::GetEntity },
+
 	{ nullptr, nullptr },
 };
 
@@ -91,6 +107,8 @@ namespace Lua {
 void InitializeSGameGlobal( lua_State* L )
 {
 	LuaLib<SGameGlobal>::Register( L );
+	LuaLib<Entity>::Register(L);
+	LuaLib<EntityProxy>::Register(L);
 
 	LuaLib<SGameGlobal>::push( L, &sgame );
 	lua_setglobal( L, "sgame" );

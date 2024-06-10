@@ -31,29 +31,53 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef SHARED_LUA_UTILS_H_
-#define SHARED_LUA_UTILS_H_
 
-#include "common/Common.h"
-#include "shared/bg_public.h"
+#ifndef LUA_ENTITYPROXY_H_
+#define LUA_ENTITYPROXY_H_
+
+#include <unordered_map>
+
+#include "sgame/sg_local.h"
 #include "shared/bg_lua.h"
 
-namespace Shared {
 namespace Lua {
 
-// Report errors
-void Report(lua_State* L, Str::StringRef place);
+struct EntityProxy
+{
+	EntityProxy( gentity_t *ent, lua_State *L );
+	gentity_t *ent;
 
-// Push a vec3 onto the stack as a table.
-void PushVec3(lua_State* L, const vec3_t vec);
+	enum FunctionType
+	{
+		THINK,
+		RESET,
+		TOUCH,
+		USE,
+		PAIN,
+		DIE,
+	};
 
-// Convert a lua table into a vec3.
-bool CheckVec3(lua_State* L, int pos, vec3_t vec);
+	struct EntityFunction
+	{
+		FunctionType type;
+		int luaRef;
 
-int CreatePairsHelper(lua_State* L, std::function<int(lua_State*, size_t&)> next_funcmake);
+		union
+		{
+			// Storage for the original gentity's functions.
+			void ( *think )( gentity_t *self );
+			void ( *reset )( gentity_t *self );
+			void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
+			void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
+			void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
+			void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
+		};
+	};
 
-} // namespace Lua
-} // namespace Shared
+	std::unordered_map<FunctionType, EntityFunction, std::hash<int>> funcs;
+	lua_State *L;
+};
 
+}  // namespace Lua
 
-#endif  // SHARED_LUA_UTILS_H_
+#endif  // LUA_ENTITYPROXY_H_
