@@ -350,6 +350,9 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/lua/EntityProxy.h
     ${GAMELOGIC_DIR}/sgame/lua/Client.cpp
     ${GAMELOGIC_DIR}/sgame/lua/Client.h
+    ${GAMELOGIC_DIR}/sgame/lua/Bot.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Bot.h
+
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h

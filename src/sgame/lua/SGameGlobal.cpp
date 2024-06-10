@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include "sgame/lua/Entity.h"
 #include "sgame/lua/EntityProxy.h"
 #include "sgame/lua/Client.h"
+#include "sgame/lua/Bot.h"
 
 namespace {
 
@@ -111,6 +112,7 @@ void InitializeSGameGlobal( lua_State* L )
 	LuaLib<Entity>::Register(L);
 	LuaLib<EntityProxy>::Register(L);
 	LuaLib<Client>::Register(L);
+	LuaLib<Bot>::Register(L);
 
 	LuaLib<SGameGlobal>::push( L, &sgame );
 	lua_setglobal( L, "sgame" );

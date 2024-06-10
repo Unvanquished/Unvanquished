@@ -31,59 +31,22 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-
-#ifndef LUA_ENTITYPROXY_H_
-#define LUA_ENTITYPROXY_H_
-
-#include <unordered_map>
+#ifndef LUA_BOT_H_
+#define LUA_BOT_H_
 
 #include "sgame/sg_local.h"
+
 #include "shared/bg_lua.h"
-#include "sgame/lua/Client.h"
-#include "sgame/lua/Bot.h"
 
 namespace Lua {
 
-struct EntityProxy
+struct Bot
 {
-	EntityProxy( gentity_t *ent, lua_State *L );
+	Bot( gentity_t *ent ) : ent( ent ) {}
+
 	gentity_t *ent;
-
-	enum FunctionType
-	{
-		THINK,
-		RESET,
-		TOUCH,
-		USE,
-		PAIN,
-		DIE,
-	};
-
-	struct EntityFunction
-	{
-		FunctionType type;
-		int luaRef;
-
-		union
-		{
-			// Storage for the original gentity's functions.
-			void ( *think )( gentity_t *self );
-			void ( *reset )( gentity_t *self );
-			void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
-			void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
-			void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
-			void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int mod );
-		};
-
-	};
-
-    std::unique_ptr<Client> client;  // If the stored entity is a client, this will be set, else nullptr.
-    std::unique_ptr<Bot> bot;  // If the stored entity is a bot, this will be set, else nullptr.
-
-	std::unordered_map<FunctionType, EntityFunction, std::hash<int>> funcs;
-	lua_State *L;
 };
 
 }  // namespace Lua
 
-#endif  // LUA_ENTITYPROXY_H_
+#endif  // LUA_BOT_H_

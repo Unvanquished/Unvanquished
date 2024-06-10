@@ -156,6 +156,25 @@ static int Getclient(lua_State* L)
 	return 1;
 }
 
+/// Fields related to bots. Will be nil if the entity is not a bot.
+// @tfield Bot bot Read/Write.
+// @within EntityProxy
+// @see bot
+static int Getbot(lua_State* L)
+{
+	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+	if (!proxy || !proxy->ent || !proxy->ent->botMind)
+	{
+		proxy->bot.reset();
+		return 0;
+	}
+	if (!proxy->bot || proxy->bot->ent != proxy->ent)
+	{
+		proxy->bot.reset(new Bot(proxy->ent));
+	}
+	LuaLib<Bot>::push(L, proxy->bot.get());
+	return 1;
+}
 
 static int Setorigin( lua_State* L )
 {
@@ -420,6 +439,7 @@ luaL_Reg EntityProxyGetters[] = {
     GETTER( die ),
 
     GETTER( client ),
+    GETTER( bot ),
 
     { nullptr, nullptr }
 };
