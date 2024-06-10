@@ -201,6 +201,7 @@ static const fieldDescriptor_t fields[] =
 	{ "dmg",                 FOFS( mapEntity.config.damage ),        F_INT,        ENT_V_UNCLEAR, nullptr },
 	{ "gravity",             FOFS( mapEntity.config.amount ),        F_INT,        ENT_V_UNCLEAR, "amount" },
 	{ "health",              FOFS( mapEntity.config.health ),        F_INT,        ENT_V_UNCLEAR, nullptr },
+	{ "id",                  FOFS( id ),                             F_STRING,     ENT_V_UNCLEAR, nullptr },
 	{ "message",             FOFS( mapEntity.message ),              F_STRING,     ENT_V_UNCLEAR, nullptr },
 	{ "model",               FOFS( mapEntity.model ),                F_STRING,     ENT_V_UNCLEAR, nullptr },
 	{ "model2",              FOFS( mapEntity.model2 ),               F_STRING,     ENT_V_UNCLEAR, nullptr },

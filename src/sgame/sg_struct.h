@@ -133,6 +133,8 @@ struct gentity_t
 
 	int          flags; // FL_* variables
 
+	char     *id;  // arbitrary id currently only used by Lua. Expected to be unique, but not enforced.
+
 	//entity creation time, i.e. when a building was build or a missile was fired (for diminishing missile damage)
 	int          creationTime;
 
