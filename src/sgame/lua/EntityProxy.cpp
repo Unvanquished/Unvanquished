@@ -139,6 +139,24 @@ static int Getteam( lua_State* L )
 	return 1;
 }
 
+/// Fields related to players. Will be nil if the entity is not a player.
+// @tfield Client client Read/Write.
+// @within EntityProxy
+// @see client
+// @usage if ent.client ~= nil then print(ent.client.name) end -- Print client name
+static int Getclient(lua_State* L)
+{
+	EntityProxy* proxy = LuaLib<EntityProxy>::check( L, 1 );
+	if (!proxy || !proxy->ent || !proxy->ent->client) return 0;
+	if (!proxy->client || proxy->client->ent != proxy->ent)
+	{
+		proxy->client.reset(new Client(proxy->ent));
+	}
+	LuaLib<Client>::push(L, proxy->client.get());
+	return 1;
+}
+
+
 static int Setorigin( lua_State* L )
 {
 	if ( lua_istable( L, 2 ) )
@@ -400,6 +418,8 @@ luaL_Reg EntityProxyGetters[] = {
     GETTER( use ),
     GETTER( pain ),
     GETTER( die ),
+
+    GETTER( client ),
 
     { nullptr, nullptr }
 };
