@@ -132,9 +132,9 @@ void G_WriteSessionData()
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
-		if ( level.clients[ i ].pers.connected == CON_CONNECTED )
+		if ( level.clients[ i ].pers.connected == CON_CONNECTED &&
+		     !( g_entities[ i ].r.svFlags & SVF_BOT ) )
 		{
-			ASSERT( !( g_entities[ i ].r.svFlags & SVF_BOT ) );
 			G_WriteClientSessionData( i );
 		}
 	}
