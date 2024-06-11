@@ -1621,7 +1621,7 @@ static void Think_SpawnNewDoorTrigger( gentity_t *self )
 	other->r.contents = CONTENTS_TRIGGER;
 	other->touch = door_trigger_touch;
 	// remember the thinnest axis
-	other->customNumber = best;
+	other->mapEntity.customNumber = best;
 	trap_LinkEntity( other );
 
 	if ( self->mapEntity.moverState < MODEL_POS1 )

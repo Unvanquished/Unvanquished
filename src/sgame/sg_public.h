@@ -46,25 +46,21 @@ const char        *G_quoted_admin_name( gentity_t *ent );
 namespace Beacon
 {
 	void Frame();
-	void Move( gentity_t *ent, const vec3_t origin );
-	gentity_t *New( const vec3_t origin, beaconType_t type, int data, team_t team,
-	                int owner = ENTITYNUM_NONE,
-	                beaconConflictHandler_t conflictHandler = BCH_NONE );
-	gentity_t *NewArea( beaconType_t type, const vec3_t point, team_t team );
+	void Move( gentity_t *ent, glm::vec3 const& origin );
+	gentity_t *New( glm::vec3 const& origin, beaconType_t type, int data, team_t team,
+		int owner = ENTITYNUM_NONE,
+		beaconConflictHandler_t conflictHandler = BCH_NONE );
+	gentity_t *NewArea( beaconType_t type, glm::vec3 const& point, team_t team );
 	void Delete( gentity_t *ent, bool verbose = false );
-	void MoveTowardsRoom( vec3_t origin );
-	gentity_t *FindSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
-	                        float radius = 128.0f, int eFlags = 0, int eFlagsRelevant = 0 );
-	int RemoveSimilar( const vec3_t origin, beaconType_t type, int data, int team, int owner,
-	                   float radius = 128.0f, int eFlags = 0, int eFlagsRelevant = 0 );
-	gentity_t *MoveSimilar( const vec3_t from, const vec3_t to, beaconType_t type, int data,
-	                        int team, int owner, float radius = 128.0f, int eFlags = 0,
-	                        int eFlagsRelevant = 0 );
+	glm::vec3 MoveTowardsRoom( glm::vec3 const& origin );
+	gentity_t *MoveSimilar( glm::vec3 const& from, glm::vec3 const& to, beaconType_t type, int data,
+		int team, int owner, float radius = 128.0f, int eFlags = 0,
+		int eFlagsRelevant = 0 );
 	void Propagate( gentity_t *ent );
 	void PropagateAll();
 	void RemoveOrphaned( int clientNum );
 	bool EntityTaggable( int num, team_t team, bool trace );
-	gentity_t *TagTrace( const vec3_t begin, const vec3_t end, int skip, int mask, team_t team, bool refreshTagged );
+	gentity_t *TagTrace( glm::vec3 const& begin, glm::vec3 const& end, int skip, int mask, team_t team, bool refreshTagged );
 	void Tag( gentity_t *ent, team_t team, bool permanent );
 	void Tag( gentity_t *ent, team_t team, bool permanent, int scoreDelta );
 	void UpdateTags( gentity_t *ent );
@@ -301,7 +297,7 @@ int               G_ReverbEffectIndex( const char *name );
 int               G_LocationIndex( const char *name );
 void              G_KillBox( gentity_t *ent );
 void              G_KillBrushModel( gentity_t *ent, gentity_t *activator );
-void              G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
+void              G_TeleportPlayer( gentity_t *player, const glm::vec3 &origin, const glm::vec3 &angles, float speed );
 void              G_Sound( gentity_t *ent, soundChannel_t channel, int soundIndex );
 char              *vtos( const vec3_t v );
 void              G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
@@ -318,14 +314,13 @@ void              G_TeamToClientmask( team_t team, int *loMask, int *hiMask );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to, int mask, bool useTrajBase );
 bool          G_LineOfSight( const gentity_t *from, const gentity_t *to );
 bool          G_LineOfFire( const gentity_t *from, const gentity_t *to );
-bool          G_LineOfSight( const vec3_t point1, const vec3_t point2 );
 bool              G_IsPlayableTeam( team_t team );
 bool              G_IsPlayableTeam( int team );
 team_t            G_IterateTeams( team_t team );
 std::string G_EscapeServerCommandArg( Str::StringRef str );
 char *Quote( Str::StringRef str );
 float             G_Distance( gentity_t *ent1, gentity_t *ent2 );
-float G_DistanceToBBox( const vec3_t origin, gentity_t* ent );
+float G_DistanceToBBox( const glm::vec3 &origin, gentity_t* ent );
 int BG_FOpenGameOrPakPath( Str::StringRef filename, fileHandle_t &handle );
 bool G_IsOnFire( const gentity_t *ent );
 

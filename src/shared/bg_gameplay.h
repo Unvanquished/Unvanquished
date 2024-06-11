@@ -384,4 +384,6 @@ extern int   MEDKIT_STARTUP_SPEED;
 #define MIN_WALK_NORMAL   0.7f // can't walk on very steep slopes
 #define STEPSIZE          18
 
+#define MISSILE_PRESTEP_TIME 50
+
 #endif // G_GAMEPLAY_H_

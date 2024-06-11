@@ -183,7 +183,7 @@ void SP_fx_rumble( gentity_t *self )
 		}
 		else
 		{
-			self->customNumber = 10;
+			self->mapEntity.customNumber = 10;
 		}
 	}
 

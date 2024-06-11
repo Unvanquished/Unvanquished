@@ -185,7 +185,7 @@ struct gentity_t
 	 */
 	float        momentumEarned;
 
-	GentityRef   target; // target of trapper, hive, rocketpod, builder's +deconstruct
+	GentityRef   target; // target of hive, rocketpod, builder's +deconstruct
 
 	/* path chaining, not unlike the target/tracker relationship */
 	gentity_t    *nextPathSegment;
@@ -247,8 +247,6 @@ struct gentity_t
 	 * but prefer them over semantically abusing other variables if you are into that sort of thing
 	 */
 	int       damage;
-	int       customNumber;
-
 
 	team_t      buildableTeam; // buildable item team
 	namelog_t   *builtBy; // clientNum of person that built this

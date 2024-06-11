@@ -47,8 +47,6 @@ static Cvar::Cvar<float> g_firefightReward(
 		"how much alien evos removing fire gives a granger",
 		Cvar::NONE, 0.2f);
 
-#define MISSILE_PRESTEP_TIME 50
-
 enum missileTimePowerMod_t {
 	MTPR_LINEAR_DECREASE,
 	MTPR_LINEAR_INCREASE,

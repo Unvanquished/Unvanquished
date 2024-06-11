@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "common/KeyIdentification.h"
 #include "engine/qcommon/q_shared.h"
 #include "engine/renderer/tr_types.h"
-#include "engine/client/cg_api.h"
+#include "shared/client/cg_api.h"
 #include "shared/bg_public.h"
 #include "engine/client/keycodes.h"
 #include "cg_ui.h"
@@ -2000,6 +2000,8 @@ void CG_DrawActive();
 void       CG_RunMenuScript( char **args );
 void       CG_ResetPainBlend();
 void       CG_DrawField( float x, float y, int width, float cw, float ch, int value );
+bool CG_ClampToRectangleAlongLine(
+	const glm::vec2 &mins, const glm::vec2 &maxs, const glm::vec2 &center, bool allowInterior, glm::vec2 &point );
 
 //
 // cg_players.c

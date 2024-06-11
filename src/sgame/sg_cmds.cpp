@@ -1694,7 +1694,7 @@ static void Cmd_SetViewpos_f( gentity_t *ent )
 		}
 	}
 
-	G_TeleportPlayer( ent, origin, angles, 0.0f );
+	G_TeleportPlayer( ent, VEC2GLM( origin ), VEC2GLM( angles ), 0.0f );
 }
 
 static bool FindRoomForClassChangeVertically(
@@ -1751,7 +1751,7 @@ static bool FindRoomForClassChangeVertically(
 	temp[ 2 ] += nudgeHeight;
 	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->num(), MASK_PLAYERSOLID, 0 );
 
-	if ( tr.fraction == 0.0f )
+	if ( tr.allsolid )
 	{
 		// it's not helping, we are probably too close to something horizontally
 		return false;
@@ -1783,7 +1783,7 @@ static bool FindRoomForClassChangeLaterally(
 	// each 4 directions, but this is close enough.
 	// This is correct assuming the bbox is centered on the
 	// origin on x and y.
-	float distance = std::min(max_x, max_y);
+	float distance = std::min(max_x, max_y) + 0.5f;
 
 	vec3_t origin;
 	origin[0] = ent->client->ps.origin[0];
@@ -1802,7 +1802,7 @@ static bool FindRoomForClassChangeLaterally(
 		trap_Trace( &trace, start_point, toMins, toMaxs,
 				origin, ent->num(),
 				MASK_PLAYERSOLID, 0 );
-		if ( trace.fraction == 0.0f )
+		if ( trace.allsolid )
 		{
 			continue;
 		}
@@ -3369,7 +3369,7 @@ void G_StopFollowing( gentity_t *ent )
 		BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 		VectorCopy( ent->client->ps.viewangles, angles );
 		angles[ ROLL ] = 0;
-		G_TeleportPlayer( ent, viewOrigin, angles, false );
+		G_TeleportPlayer( ent, VEC2GLM( viewOrigin ), VEC2GLM( angles ), false );
 	}
 
 	CalculateRanks();
@@ -4139,10 +4139,12 @@ static void Cmd_Beacon_f( gentity_t *ent )
 	if( G_FloodLimited( ent ) )
 		return;
 
-	if ( !( flags & BCF_PRECISE ) )
-		Beacon::MoveTowardsRoom( tr.endpos );
+	glm::vec3 position = VEC2GLM( tr.endpos );
 
-	Beacon::Propagate( Beacon::New( tr.endpos, type, 0, team, ent->num(), BCH_REMOVE ) );
+	if ( !( flags & BCF_PRECISE ) )
+		position = Beacon::MoveTowardsRoom( position );
+
+	Beacon::Propagate( Beacon::New( position, type, 0, team, ent->num(), BCH_REMOVE));
 	return;
 }
 

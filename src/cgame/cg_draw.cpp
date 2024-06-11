@@ -31,6 +31,63 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "cg_local.h"
 #include "rocket/rocket.h"
 
+// Moves `point` to (if !allowInterior) an edge of the rectangle, or (if allowInterior) to
+// any point on/inside the rectangle. Returns whether point was clamped.
+//
+// If `allowInterior` is false OR `point` is outside the bounds, set `point` to the intersection
+// of the bounding rectangle and the ray from `center` toward `point`. Otherwise, return false
+// and leave `point` unchanged.
+// `center` must be inside the bounds but doesn't have to be the true center.
+bool CG_ClampToRectangleAlongLine(
+	const glm::vec2 &mins, const glm::vec2 &maxs, const glm::vec2 &center, bool allowInterior, glm::vec2 &point )
+{
+	ASSERT( center.x >= mins.x && center.x <= maxs.x );
+	ASSERT( center.y >= mins.y && center.y <= maxs.y );
+
+	glm::vec2 dir = point - center;
+	float fraction = std::numeric_limits<float>::max();
+
+	if ( dir.x > 0 )
+	{
+		fraction = ( maxs.x - center.x ) / dir.x;
+	}
+	else if ( dir.x < 0 )
+	{
+		fraction = ( mins.x - center.x ) / dir.x;
+	}
+
+	if ( dir.y > 0 )
+	{
+		fraction = std::min( fraction, ( maxs.y - center.y ) / dir.y );
+	}
+	else if ( dir.y < 0 )
+	{
+		fraction = std::min( fraction, ( mins.y - center.y ) / dir.y );
+	}
+
+	ASSERT_GT( fraction, 0.0f );
+
+	if ( allowInterior )
+	{
+		if ( fraction >= 1.0f )
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if ( fraction > 1.0e6f )
+		{
+			// ill-conditioned, return an arbitrary boundary point
+			point.y = maxs.y;
+			return true;
+		}
+	}
+
+	point = center + dir * fraction;
+	return true;
+}
+
 /*
 ==============
 CG_DrawField
@@ -238,13 +295,14 @@ static void CG_DrawBeacon( cbeacon_t *b )
 		{
 			float h, tw;
 			const char *p;
-			vec2_t pos, dir, rect[ 2 ];
 			int i, l, frame;
 
 			h = b->size * 0.4f;
 			p = va( "%d", num );
 			l = strlen( p );
 			tw = h * l;
+
+			glm::vec2 pos;
 
 			if( !b->clamped )
 			{
@@ -253,15 +311,12 @@ static void CG_DrawBeacon( cbeacon_t *b )
 			}
 			else
 			{
-				rect[ 0 ][ 0 ] = b->pos[ 0 ] - b->size/2 - tw/2;
-				rect[ 1 ][ 0 ] = b->pos[ 0 ] + b->size/2 + tw/2;
-				rect[ 0 ][ 1 ] = b->pos[ 1 ] - b->size/2 - h/2;
-				rect[ 1 ][ 1 ] = b->pos[ 1 ] + b->size/2 + h/2;
-
-				for( i = 0; i < 2; i++ )
-					dir[ i ] = - b->clamp_dir[ i ];
-
-				ProjectPointOntoRectangleOutwards( pos, b->pos, dir, (const vec2_t*)rect );
+				glm::vec2 pos0 = VEC2GLM2( b->pos );
+				glm::vec2 extent(0.5f * ( b->size + tw ), 0.5f * ( b->size + h ));
+				glm::vec2 rectMins = pos0 - extent;
+				glm::vec2 rectMaxs = pos0 + extent;
+				pos = VEC2GLM2( cgs.bc.hudCenter );
+				CG_ClampToRectangleAlongLine( rectMins, rectMaxs, pos0, false, pos );
 			}
 
 			pos[ 0 ] -= tw/2;

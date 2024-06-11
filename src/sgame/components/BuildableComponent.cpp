@@ -79,7 +79,7 @@ void BuildableComponent::HandleDie(gentity_t* killer, meansOfDeath_t meansOfDeat
 			bool inBase = G_InsideBase(entity.oldEnt);
 
 			G_BroadcastEvent(EV_WARN_ATTACK, inBase ? MAX_LOCATIONS : location->s.generic1, team);
-			Beacon::NewArea(BCT_DEFEND, entity.oldEnt->s.origin, team);
+			Beacon::NewArea(BCT_DEFEND, VEC2GLM(entity.oldEnt->s.origin), team);
 			location->mapEntity.warnTimer[team] = level.time + ATTACKWARN_NEARBY_PERIOD;
 		}
 	}
