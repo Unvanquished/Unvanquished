@@ -96,7 +96,7 @@ int LuaLib<T>::push( lua_State* L, T* obj )
 	T** ptrHold = ( T** )lua_newuserdata( L, sizeof( T** ) ); //->[2] = empty userdata
 	int ud = lua_gettop( L ); //ud = 2
 
-	if ( ptrHold != NULL )
+	if ( ptrHold != nullptr )
 	{
 		*ptrHold = obj;
 		lua_pushvalue( L, mt ); // ->[3] = copy of [1]
@@ -115,8 +115,8 @@ T* LuaLib<T>::check( lua_State* L, int narg )
 {
 	T** ptrHold = static_cast<T**>( lua_touserdata( L, narg ) );
 
-	if ( ptrHold == NULL )
-		return NULL;
+	if ( ptrHold == nullptr )
+		return nullptr;
 
 	return ( *ptrHold );
 }
@@ -133,9 +133,9 @@ int LuaLib<T>::thunk( lua_State* L )
 	// get member function from upvalue
 	RegType* l = static_cast<RegType*>( lua_touserdata( L, lua_upvalueindex( 1 ) ) );
 
-	//at the moment, there isn't a case where NULL is acceptable to be used in the function, so check
+	//at the moment, there isn't a case where nullptr is acceptable to be used in the function, so check
 	//for it here, rather than individually for each function
-	if ( obj == NULL )
+	if ( obj == nullptr )
 	{
 		lua_pushnil( L );
 		return 1;
