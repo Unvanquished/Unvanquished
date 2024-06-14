@@ -128,6 +128,6 @@ LUACORETYPEDEFINE(Player)
 void CG_InitializeLuaPlayer(lua_State* L)
 {
 	LuaLib<Player>::Register( L );
-	LuaLib<Player>::push( L, &player, false );
+	LuaLib<Player>::push( L, &player );
 	lua_setglobal( L, "player" );
 }

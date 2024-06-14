@@ -55,25 +55,25 @@ class UnvGlobal
 public:
 	static int GetWeapons( lua_State* L )
 	{
-		LuaLib<Weapons>::push( L, &weapons, false );
+		LuaLib<Weapons>::push( L, &weapons );
 		return 1;
 	}
 
 	static int GetUpgrades( lua_State* L )
 	{
-		LuaLib<Upgrades>::push( L, &upgrades, false );
+		LuaLib<Upgrades>::push( L, &upgrades );
 		return 1;
 	}
 
 	static int GetBuildables( lua_State* L )
 	{
-		LuaLib<Buildables>::push( L, &buildables, false );
+		LuaLib<Buildables>::push( L, &buildables );
 		return 1;
 	}
 
 	static int GetClasses( lua_State* L )
 	{
-			LuaLib<Classes>::push( L, &classes, false );
+			LuaLib<Classes>::push( L, &classes );
 			return 1;
 	}
 };
@@ -120,7 +120,7 @@ void BG_InitializeLuaConstants( lua_State* L )
 	LuaLib< ClassProxy >::Register( L );
 	LuaLib< Upgrades >::Register( L );
 	LuaLib< UpgradeProxy >::Register( L );
-	LuaLib< UnvGlobal>::push( L, &global, false );
+	LuaLib< UnvGlobal>::push( L, &global );
 	lua_setglobal( L, "unv" );
 }
 

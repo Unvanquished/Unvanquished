@@ -114,7 +114,7 @@ int Buildables::index( lua_State* L )
 	buildable_t buildable = BG_BuildableByName( buildableName )->number;
 	if ( buildable > 0 && static_cast<size_t>( buildable ) - 1 < buildables.size() )
 	{
-		LuaLib<BuildableProxy>::push( L, &buildables[ buildable - 1 ], false );
+		LuaLib<BuildableProxy>::push( L, &buildables[ buildable - 1 ] );
 		return 1;
 	}
 	return 0;
@@ -132,7 +132,7 @@ int Buildables::pairs( lua_State* L )
 	else
 	{
 		lua_pushstring( L, buildables[ *pindex ].attributes->name );
-		LuaLib<BuildableProxy>::push( L, &buildables[ (*pindex)++ ], false );
+		LuaLib<BuildableProxy>::push( L, &buildables[ (*pindex)++ ] );
 	}
 	return 2;
 }
