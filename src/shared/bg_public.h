@@ -883,6 +883,8 @@ enum playerAnimNumber_t
   BOTH_DEATH2,
   BOTH_DEATH3,
 
+  // IMPORTANT: Must be first in gesture list, and these should generally follow the
+  // the order of the WP_ enum because we do enum math that assumes this.
   TORSO_GESTURE_BLASTER,
   TORSO_GESTURE,
   TORSO_GESTURE_PSAW,
@@ -893,6 +895,8 @@ enum playerAnimNumber_t
   TORSO_GESTURE_PRIFLE,
   TORSO_GESTURE_FLAMER,
   TORSO_GESTURE_LUCI,
+  // IMPORTANT: Must be last in gesture list.
+  // We do enum math and special cases that assume that this is the last entry.
   TORSO_GESTURE_CKIT,
 
   TORSO_RALLY,
