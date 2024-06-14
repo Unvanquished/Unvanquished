@@ -110,7 +110,7 @@ int Classes::index( lua_State* L )
 	class_t clazz = BG_ClassByName( className )->number;
 	if ( clazz > 0 && static_cast<size_t>( clazz ) - 1 < classes.size() )
 	{
-		LuaLib<ClassProxy>::push( L, &classes[ clazz - 1 ], false );
+		LuaLib<ClassProxy>::push( L, &classes[ clazz - 1 ] );
 		return 1;
 	}
 	return 0;
@@ -128,7 +128,7 @@ int Classes::pairs( lua_State* L )
 	else
 	{
 		lua_pushstring( L, classes[ *pindex ].attributes->name );
-		LuaLib<ClassProxy>::push( L, &classes[ (*pindex)++ ], false );
+		LuaLib<ClassProxy>::push( L, &classes[ (*pindex)++ ] );
 	}
 	return 2;
 }

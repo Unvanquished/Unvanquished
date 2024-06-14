@@ -104,7 +104,7 @@ int Upgrades::index( lua_State* L )
 	upgrade_t upgrade = BG_UpgradeByName( upgradeName )->number;
 	if ( upgrade > 0 && static_cast<size_t>( upgrade ) - 1 < upgrades.size() )
 	{
-		LuaLib<UpgradeProxy>::push( L, &upgrades[ upgrade - 1 ], false );
+		LuaLib<UpgradeProxy>::push( L, &upgrades[ upgrade - 1 ] );
 		return 1;
 	}
 	return 0;
@@ -122,7 +122,7 @@ int Upgrades::pairs( lua_State* L )
 	else
 	{
 		lua_pushstring( L, upgrades[ *pindex ].attributes->name );
-		LuaLib<UpgradeProxy>::push( L, &upgrades[ (*pindex)++ ], false );
+		LuaLib<UpgradeProxy>::push( L, &upgrades[ (*pindex)++ ] );
 	}
 	return 2;
 }

@@ -123,7 +123,7 @@ int Weapons::index( lua_State* L )
 	weapon_t weapon = BG_WeaponNumberByName( weaponName );
 	if ( weapon > 0 && static_cast<size_t>( weapon ) - 1 < weapons.size() )
 	{
-		LuaLib<WeaponProxy>::push( L, &weapons[ weapon - 1 ], false );
+		LuaLib<WeaponProxy>::push( L, &weapons[ weapon - 1 ] );
 		return 1;
 	}
 	return 0;
@@ -141,7 +141,7 @@ int Weapons::pairs( lua_State* L )
 	else
 	{
 		lua_pushstring( L, weapons[ *pindex ].attributes->name );
-		LuaLib<WeaponProxy>::push( L, &weapons[ (*pindex)++ ], false );
+		LuaLib<WeaponProxy>::push( L, &weapons[ (*pindex)++ ] );
 	}
 	return 2;
 }

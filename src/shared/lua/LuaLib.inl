@@ -50,9 +50,6 @@ void LuaLib<T>::Register( lua_State* L )
 	luaL_newmetatable( L, GetTClassName<T>() ); //[2] = metatable named <ClassName>, referred in here by ClassMT
 	int metatable = lua_gettop( L ); //metatable = 2
 
-	luaL_newmetatable( L, "DO NOT TRASH" ); //[3] = metatable named "DO NOT TRASH"
-	lua_pop( L, 1 ); //remove the above metatable -> [-1 = 2]
-
 	//store method table in globals so that scripts can add functions written in Lua
 	lua_pushvalue( L, methods ); //[methods = 1] -> [3] = copy (reference) of methods table
 	lua_setglobal( L, GetTClassName<T>() ); // -> <ClassName> = [3 = 1], pop top [3]
@@ -66,9 +63,6 @@ void LuaLib<T>::Register( lua_State* L )
 
 	lua_pushcfunction( L, newindex );
 	lua_setfield( L, metatable, "__newindex" );
-
-	lua_pushcfunction( L, gc_T );
-	lua_setfield( L, metatable, "__gc" );
 
 	lua_pushcfunction( L, tostring_T );
 	lua_setfield( L, metatable, "__tostring" );
@@ -85,7 +79,7 @@ void LuaLib<T>::Register( lua_State* L )
 
 
 template<typename T>
-int LuaLib<T>::push( lua_State* L, T* obj, bool gc )
+int LuaLib<T>::push( lua_State* L, T* obj )
 {
 	//for annotations, starting at index 1, but it is a relative number, not always 1
 	if ( !obj )
@@ -107,33 +101,6 @@ int LuaLib<T>::push( lua_State* L, T* obj, bool gc )
 		*ptrHold = obj;
 		lua_pushvalue( L, mt ); // ->[3] = copy of [1]
 		lua_setmetatable( L, -2 ); //[-2 = 2] -> [2]'s metatable = [3]; pop [3]
-		char name[32];
-		tostring( name, sizeof( name ), ptrHold );
-		lua_getfield( L, LUA_REGISTRYINDEX, "DO NOT TRASH" ); //->[3] = value returned from function
-
-		if ( lua_isnil( L, -1 ) ) //if [3] hasn't been created yet, then create it
-		{
-			luaL_newmetatable( L, "DO NOT TRASH" ); //[4] = the new metatable
-			lua_pop( L, 1 ); //pop [4]
-		}
-
-		lua_pop( L, 1 ); //pop [3]
-		lua_getfield( L, LUA_REGISTRYINDEX, "DO NOT TRASH" ); //->[3] = value returned from function
-
-		if ( gc == false ) //if we shouldn't garbage collect it, then put the name in to [3]
-		{
-			lua_pushboolean( L, 1 ); // ->[4] = true
-			lua_setfield( L, -2, name ); //represents t[k] = v, [-2 = 3] = t -> v = [4], k = <ClassName>; pop [4]
-		}
-		else
-		{
-			//In case this is an address that has been pushed
-			//to lua before, we need to set it to nil
-			lua_pushnil( L ); // ->[4] = nil
-			lua_setfield( L, -2, name ); //represents t[k] = v, [-2 = 3] = t -> v = [4], k = <ClassName>; pop [4]
-		}
-
-		lua_pop( L, 1 ); // -> pop [3]
 	}
 
 	lua_settop( L, ud ); //[ud = 2] -> remove everything that is above 2, top = [2]
@@ -183,37 +150,6 @@ template<typename T>
 void LuaLib<T>::tostring( char* buff, size_t buff_size, void* obj )
 {
 	snprintf(buff, buff_size, "%p", obj);
-}
-
-
-
-template<typename T>
-int LuaLib<T>::gc_T( lua_State* L )
-{
-	T* obj = check( L, 1 ); //[1] = this userdata
-
-	if ( obj == NULL )
-		return 0;
-
-	lua_getfield( L, LUA_REGISTRYINDEX, "DO NOT TRASH" ); //->[2] = return value from this
-
-	if ( lua_istable( L, -1 ) ) //[-1 = 2], if it is a table
-	{
-		char name[32];
-		void* ptrHold = lua_touserdata( L,1 );
-		tostring( name, sizeof( name ), ptrHold );
-		lua_getfield( L, -1, std::string( name ).c_str() ); //[-1 = 2] -> [3] = the value returned from if <ClassName> exists in the table to not gc
-
-		if ( lua_isnoneornil( L, -1 ) ) //[-1 = 3] if it doesn't exist, then we are free to garbage collect c++ side
-		{
-			Log::Debug("GC'ing %s", name);
-			delete obj;
-			obj = NULL;
-		}
-	}
-
-	lua_pop( L, 3 ); //balance function
-	return 0;
 }
 
 

@@ -131,10 +131,9 @@ public:
     static inline void Register(lua_State *L);
     /** Pushes on to the Lua stack a userdata representing a pointer of T
     @param obj[in] The object to push to the stack
-    @param gc[in] If the obj should be deleted or decrease reference count upon the garbage collection
     metamethod being called from the object in Lua
     @return Position on the stack where the userdata resides   */
-    static inline int push(lua_State *L, T* obj, bool gc=false);
+    static inline int push(lua_State *L, T* obj);
     /** Statically casts the item at the position on the Lua stack
     @param narg[in] Position of the item to cast on the Lua stack
     @return A pointer to an object of type T or @c NULL   */
