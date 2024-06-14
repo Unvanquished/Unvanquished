@@ -36,6 +36,8 @@ Maryland 20850 USA.
 #include "cg_local.h"
 #include "shared/parse.h"
 
+static Cvar::Cvar<std::string> g_defaultMap("g_defaultMap", "default map to play", Cvar::ARCHIVE, "plat23");
+
 static bool AddToServerList( const char *name, const char *label, int clients, int bots, int ping, int maxClients, char *mapName, char *addr, int netSrc )
 {
 	server_t *node;
@@ -1112,16 +1114,30 @@ static void CG_Rocket_BuildMapList( const char* )
 	Rocket_DSClearTable( "mapList", "default" );
 	CG_LoadMapList();
 
+	rocketInfo.data.mapIndex = -1;
+
 	for ( size_t i = 0; i < rocketInfo.data.mapList.size(); ++i )
 	{
 		char buf[ MAX_INFO_STRING ] = { 0 };
+
+		Str::StringRef mapLoadName = rocketInfo.data.mapList[ i ].mapLoadName;
+
 		Info_SetValueForKey( buf, "num", std::to_string( i ).c_str(), false );
-		Info_SetValueForKey( buf, "mapName", rocketInfo.data.mapList[ i ].mapLoadName.c_str(), false );
-		Info_SetValueForKey( buf, "mapLoadName", rocketInfo.data.mapList[ i ].mapLoadName.c_str(), false );
+		Info_SetValueForKey( buf, "mapName", mapLoadName.c_str(), false );
+		Info_SetValueForKey( buf, "mapLoadName", mapLoadName.c_str(), false );
+
+		if ( mapLoadName == g_defaultMap.Get() )
+		{
+			rocketInfo.data.mapIndex = i;
+		}
 
 		Rocket_DSAddRow( "mapList", "default", buf );
 	}
 
+	if ( rocketInfo.data.mapIndex == -1 && !rocketInfo.data.mapList.empty() )
+	{
+		rocketInfo.data.mapIndex = 0;
+	}
 }
 
 static void CG_Rocket_CleanUpMapList( const char* )
@@ -1130,7 +1146,20 @@ static void CG_Rocket_CleanUpMapList( const char* )
 
 static void CG_Rocket_SetMapListIndex( const char*, int index )
 {
-	rocketInfo.data.mapIndex = index;
+	if ( index >= 0 && index < int( rocketInfo.data.mapList.size() ) )
+	{
+		rocketInfo.data.mapIndex = index;
+		g_defaultMap.Set( rocketInfo.data.mapList[ index ].mapLoadName );
+	}
+}
+
+static int CG_Rocket_GetMapListIndex( const char* )
+{
+	if ( rocketInfo.data.mapList.size() != 0 )
+	{
+		CG_Rocket_BuildMapList( nullptr );
+	}
+	return rocketInfo.data.mapIndex;
 }
 
 
@@ -1623,7 +1652,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
 	{ "humanBuildList", &CG_Rocket_BuildHumanBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetLanguageListIndex },
-	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetMapListIndex },
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "playerList", &CG_Rocket_BuildPlayerList, &CG_Rocket_SortPlayerList, &CG_Rocket_CleanUpPlayerList, &CG_Rocket_SetPlayerListPlayer, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &nullSortFunc, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetResolutionListIndex},
