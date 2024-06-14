@@ -2668,11 +2668,81 @@ static const NetcodeTable playerStateFields =
 };
 static_assert( (1<<LOW_OXYGEN_TIME_BITS) > OXYGEN_MAX_TIME, "you need to make LOW_OXYGEN_TIME_BITS large enough to accomodate OXYGEN_MAX_TIME" );
 
+// using the stringizing operator to save typing...
+#define ESF( x ) # x, offsetof( entityState_t, x )
+
+static const NetcodeTable entityStateFields =
+{
+	{ ESF( eType ),             8              , 0 },
+	{ ESF( eFlags ),            24             , 0 },
+	{ ESF( pos.trType ),        8              , 0 },
+	{ ESF( pos.trTime ),        32             , 0 },
+	{ ESF( pos.trDuration ),    32             , 0 },
+	{ ESF( pos.trBase[ 0 ] ),   0              , 0 },
+	{ ESF( pos.trBase[ 1 ] ),   0              , 0 },
+	{ ESF( pos.trBase[ 2 ] ),   0              , 0 },
+	{ ESF( pos.trDelta[ 0 ] ),  0              , 0 },
+	{ ESF( pos.trDelta[ 1 ] ),  0              , 0 },
+	{ ESF( pos.trDelta[ 2 ] ),  0              , 0 },
+	{ ESF( apos.trType ),       8              , 0 },
+	{ ESF( apos.trTime ),       32             , 0 },
+	{ ESF( apos.trDuration ),   32             , 0 },
+	{ ESF( apos.trBase[ 0 ] ),  0              , 0 },
+	{ ESF( apos.trBase[ 1 ] ),  0              , 0 },
+	{ ESF( apos.trBase[ 2 ] ),  0              , 0 },
+	{ ESF( apos.trDelta[ 0 ] ), 0              , 0 },
+	{ ESF( apos.trDelta[ 1 ] ), 0              , 0 },
+	{ ESF( apos.trDelta[ 2 ] ), 0              , 0 },
+	{ ESF( time ),              32             , 0 },
+	{ ESF( time2 ),             32             , 0 },
+	{ ESF( origin[ 0 ] ),       0              , 0 },
+	{ ESF( origin[ 1 ] ),       0              , 0 },
+	{ ESF( origin[ 2 ] ),       0              , 0 },
+	{ ESF( origin2[ 0 ] ),      0              , 0 },
+	{ ESF( origin2[ 1 ] ),      0              , 0 },
+	{ ESF( origin2[ 2 ] ),      0              , 0 },
+	{ ESF( angles[ 0 ] ),       0              , 0 },
+	{ ESF( angles[ 1 ] ),       0              , 0 },
+	{ ESF( angles[ 2 ] ),       0              , 0 },
+	{ ESF( angles2[ 0 ] ),      0              , 0 },
+	{ ESF( angles2[ 1 ] ),      0              , 0 },
+	{ ESF( angles2[ 2 ] ),      0              , 0 },
+	{ ESF( otherEntityNum ),    GENTITYNUM_BITS, 0 },
+	{ ESF( otherEntityNum2 ),   GENTITYNUM_BITS, 0 },
+	{ ESF( groundEntityNum ),   GENTITYNUM_BITS, 0 },
+	{ ESF( loopSound ),         8              , 0 },
+	{ ESF( constantLight ),     32             , 0 },
+	{ ESF( modelindex ),        MODELINDEX_BITS, 0 },
+	{ ESF( modelindex2 ),       MODELINDEX_BITS, 0 },
+	{ ESF( frame ),             16             , 0 },
+	{ ESF( clientNum ),         8              , 0 },
+	{ ESF( solid ),             24             , 0 },
+	{ ESF( event ),             10             , 0 },
+	{ ESF( eventParm ),         8              , 0 },
+	{ ESF( eventSequence ),     8              , 0 },  // warning: need to modify cg_event.c at "// check the sequencial list" if you change this
+	{ ESF( events[ 0 ] ),       8              , 0 },
+	{ ESF( events[ 1 ] ),       8              , 0 },
+	{ ESF( events[ 2 ] ),       8              , 0 },
+	{ ESF( events[ 3 ] ),       8              , 0 },
+	{ ESF( eventParms[ 0 ] ),   8              , 0 },
+	{ ESF( eventParms[ 1 ] ),   8              , 0 },
+	{ ESF( eventParms[ 2 ] ),   8              , 0 },
+	{ ESF( eventParms[ 3 ] ),   8              , 0 },
+	{ ESF( weapon ),            8              , 0 },
+	{ ESF( legsAnim ),          ANIM_BITS      , 0 },
+	{ ESF( torsoAnim ),         ANIM_BITS      , 0 },
+	{ ESF( generic1 ),          10             , 0 },
+	{ ESF( misc ),              MAX_MISC       , 0 },
+	{ ESF( weaponAnim ),        ANIM_BITS      , 0 },
+};
+
 namespace VM {
-	void GetNetcodeTables(NetcodeTable& playerStateTable, int& playerStateSize);
-	void GetNetcodeTables(NetcodeTable& playerStateTable, int& playerStateSize) {
+	void GetNetcodeTables(NetcodeTable& playerStateTable, NetcodeTable& entityStateTable, int& playerStateSize, int& entityStateSize);
+	void GetNetcodeTables(NetcodeTable& playerStateTable, NetcodeTable& entityStateTable, int& playerStateSize, int& entityStateSize) {
 		playerStateTable = playerStateFields;
+		entityStateTable = entityStateFields;
 		playerStateSize = sizeof(playerState_t);
+		entityStateSize = sizeof(entityState_t);
 	}
 }
 
