@@ -121,7 +121,7 @@ void BG_InitializeLuaConstants( lua_State* L )
 	LuaLib< Upgrades >::Register( L );
 	LuaLib< UpgradeProxy >::Register( L );
 	LuaLib< UnvGlobal>::push( L, &global );
-	lua_setglobal( L, "unv" );
+	lua_setglobal( L, "Unv" );
 }
 
 #endif // BUILD_CGAME
