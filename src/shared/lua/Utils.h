@@ -52,6 +52,8 @@ void PushVec3(lua_State* L, const vec3_t vec);
 // Convert a lua table into a vec3.
 bool CheckVec3(lua_State* L, int pos, vec3_t vec);
 
+int CreatePairsHelper(lua_State* L, std::function<int(lua_State*, size_t)> next_funcmake);
+
 } // namespace Lua
 } // namespace Shared
 
