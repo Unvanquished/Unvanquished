@@ -116,7 +116,9 @@ T* LuaLib<T>::check( lua_State* L, int narg )
 	T** ptrHold = static_cast<T**>( lua_touserdata( L, narg ) );
 
 	if ( ptrHold == nullptr )
-		return nullptr;
+	{
+		Sys::Drop( "null value when checking %s", GetTClassName<T>() );
+	}
 
 	return ( *ptrHold );
 }
