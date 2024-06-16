@@ -140,6 +140,7 @@ bool        G_admin_readconfig( gentity_t *ent );
 bool        G_admin_permission( gentity_t *ent, const char *flag );
 bool        G_admin_name_check( gentity_t *ent, const char *name, char *err, int len );
 g_admin_admin_t *G_admin_admin( const char *guid );
+int         G_admin_admin_level( gentity_t *ent );
 void            G_admin_authlog( gentity_t *ent );
 
 g_admin_spec_t  *G_admin_match_spec( gentity_t *ent );

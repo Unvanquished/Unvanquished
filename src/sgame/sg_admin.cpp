@@ -781,6 +781,14 @@ g_admin_admin_t *G_admin_admin( const char *guid )
 	return nullptr;
 }
 
+
+int G_admin_admin_level( gentity_t *ent )
+{
+	if ( !ent || !ent->client || !ent->client->pers.admin ) return 0;
+	// Does not handle local client.
+	return ent->client->pers.admin->level;
+}
+
 static g_admin_command_t *G_admin_command( const char *cmd )
 {
 	g_admin_command_t *c;

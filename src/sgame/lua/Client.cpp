@@ -116,6 +116,10 @@ GET_FUNC( god, lua_pushboolean( L, c->ent->flags& FL_GODMODE ) )
 // @tfield bool notarget Read/Write.
 // @within Client
 GET_FUNC( notarget, lua_pushboolean( L, c->ent->flags& FL_NOTARGET ) )
+/// Admin level of the client.
+// @tfield integer Read only.
+// @within Client
+GET_FUNC( admin_level, lua_pushinteger( L, G_admin_admin_level( c->ent ) ) )
 
 /// The client's name without color codes or other escapes or emoticon. Useful for programatic comparisons.
 // @tfield string clean_name Read only.
@@ -345,6 +349,7 @@ luaL_Reg ClientGetters[] = {
 	GETTER( score ),
 	GETTER( god ),
 	GETTER( notarget ),
+	GETTER( admin_level ),
 
 	{ nullptr, nullptr },
 };
