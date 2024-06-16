@@ -2411,7 +2411,7 @@ static void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int attacke
 		{
 			dummy.weapon          = WP_SHOTGUN;
 			dummy.generic1        = WPM_PRIMARY;
-			dummy.eventParm       = DirToByte( tr.plane.normal );
+			VectorCopy( tr.plane.normal, dummy.angles2 );
 			dummy.otherEntityNum  = tr.entityNum;
 			dummy.otherEntityNum2 = attackerNum;
 			dummy.torsoAnim       = 0; // Make sure it is not used uninitialized
@@ -2523,7 +2523,7 @@ void CG_HandleWeaponHitEntity( entityState_t *es, vec3_t origin )
 	victimNum   = es->otherEntityNum;
 	attackerNum = es->otherEntityNum2;
 	psCharge    = es->torsoAnim;
-	ByteToDir( es->eventParm, normal );
+	VectorCopy( es->angles2, normal );
 
 	if ( weaponMode <= WPM_NONE || weaponMode >= WPM_NUM_WEAPONMODES )
 	{
@@ -2579,7 +2579,7 @@ void CG_HandleWeaponHitWall( entityState_t *es, vec3_t origin )
 	//victimNum   = es->otherEntityNum;
 	attackerNum = es->otherEntityNum2;
 	psCharge    = es->torsoAnim;
-	ByteToDir( es->eventParm, normal );
+	VectorCopy( es->angles2, normal );
 
 	if ( weaponMode <= WPM_NONE || weaponMode >= WPM_NUM_WEAPONMODES )
 	{
