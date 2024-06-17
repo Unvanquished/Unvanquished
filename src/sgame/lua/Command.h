@@ -40,9 +40,13 @@ Maryland 20850 USA.
 
 namespace Lua {
 
+int RegisterServerCommand( lua_State* L );
+
 int RegisterClientCommand( lua_State* L );
 
 bool RunClientCommand( gentity_t* ent );
+
+void CleanupCommands();
 
 }  // namespace Lua
 

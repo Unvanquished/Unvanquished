@@ -42,6 +42,7 @@ Maryland 20850 USA.
 #include "shared/lua/Utils.h"
 #include "sgame/sg_local.h"
 #include "sgame/lua/register_lua_extensions.h"
+#include "sgame/lua/Command.h"
 
 using Shared::Lua::LuaLib;
 
@@ -189,6 +190,7 @@ void Initialize()
 
 void Shutdown()
 {
+	CleanupCommands();
 	lua_close( L );
 	L = nullptr;
 }

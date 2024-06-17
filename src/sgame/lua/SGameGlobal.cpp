@@ -161,10 +161,24 @@ class SGameGlobal
 	// @tparam string Command name
 	// @tparam function Function to execute. The function should accept two arguments: an EntityProxy (which can be nil if the caller is console)
 	//                  and an array of arguments.
-	// @usage sgame.RegisterServerCommand('LuaHello', function(ent, args) print('Hello', args) end)
+	// @usage sgame.RegisterClientCommand('LuaHello', function(ent, args) print('Hello', args) end)
 	static int RegisterClientCommand( lua_State* L )
 	{
 		return ::Lua::RegisterClientCommand( L );
+	}
+
+	/// Register server Command
+	//
+	// This allow registering commands that can only be run from the server console.
+	//
+	// @function RegisterServerCommand
+	// @tparam string Command name
+	// @tparam string Command description
+	// @tparam function Function to execute. The function should accept one argument: an array of arguments.
+	// @usage sgame.RegisterServerCommand('LuaHello', function(args) print('Hello', args) end)
+	static int RegisterServerCommand( lua_State* L )
+	{
+		return ::Lua::RegisterServerCommand( L );
 	}
 };
 
@@ -221,6 +235,8 @@ void ExtraInit<SGameGlobal>( lua_State* L, int metatable_index )
 	lua_setfield( L, metatable_index - 1, "SpawnBuildable" );
 	lua_pushcfunction( L, SGameGlobal::RegisterClientCommand );
 	lua_setfield( L, metatable_index - 1, "RegisterClientCommand" );
+	lua_pushcfunction( L, SGameGlobal::RegisterServerCommand );
+	lua_setfield( L, metatable_index - 1, "RegisterServerCommand" );
 }
 
 }  // namespace Lua

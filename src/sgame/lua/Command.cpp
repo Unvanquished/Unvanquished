@@ -40,8 +40,83 @@ Maryland 20850 USA.
 
 namespace Lua {
 
+struct LuaServerCommand : public Cmd::LambdaCmd
+{
+	LuaServerCommand( std::string name, std::string description, int ref )
+		: Cmd::LambdaCmd(
+			  std::move( name ),
+			  Cmd::SGAME_VM,
+			  std::move( description ), [this]( const Cmd::Args& args ) {
+				  lua_State* L = State();
+
+				  // Push the function onto the stack.
+				  lua_rawgeti( L, LUA_REGISTRYINDEX, this->ref );
+
+				  // Push arguments to Lua too.
+				  lua_createtable( L, args.Argc(), 0 );
+				  for ( int i = 1; i < args.Argc(); ++i )
+				  {
+					  lua_pushstring( L, args.Argv( i ).c_str() );
+					  lua_rawseti( L, -2, i );  // lua arrays start at 1
+				  }
+
+				  // Call the above function with one argument and zero return values.
+				  if ( lua_pcall( L, 1, 0, 0 ) != 0 )
+				  {
+					  Log::Warn( "Could not run lua server callback: %s: %s", args.Argv( 0 ), lua_tostring( L, -1 ) );
+				  }
+
+				  return true;
+			  },
+			  nullptr ), ref( ref )
+	{}
+
+    virtual ~LuaServerCommand()
+    {
+        luaL_unref( State(), LUA_REGISTRYINDEX, this->ref );
+    }
+
+	int ref;
+};
+
 // Map of the lower case command name to the lua function reference.
-std::unordered_map<std::string, int> cmdMap;
+std::unordered_map<std::string, std::unique_ptr<LuaServerCommand>> serverCmdMap;
+// Map of the lower case command name to the lua function reference.
+std::unordered_map<std::string, int> clientCmdMap;
+
+
+int RegisterServerCommand( lua_State* L )
+{
+    const char* cmd = luaL_checkstring( L, 1 );
+    if ( !cmd || strlen( cmd ) == 0 )
+    {
+        Log::Warn( "Lua tried to register an empty command" );
+        return 0;
+    }
+
+    const char* desc = luaL_checkstring( L, 2 );
+
+    if ( lua_type( L, 3 ) != LUA_TFUNCTION )
+    {
+        Log::Warn( "Lua must pass in a function as the 3rd arg" );
+        return 0;
+    }
+
+    // Make sure commands are case insensitive.
+    auto lowerCmd = Str::ToLower( cmd );
+
+    // We don't allow overriding server commands.
+    auto it = serverCmdMap.find( lowerCmd );
+    if ( it != serverCmdMap.end() )
+    {
+        Log::Warn( "Lua tried to re-register server command `%s`. Ignoring.", lowerCmd );
+        return 0;
+    }
+
+    int ref = luaL_ref( L, LUA_REGISTRYINDEX );
+    serverCmdMap[ cmd ] = std::make_unique<LuaServerCommand>( lowerCmd, desc, ref );
+    return 0;
+}
 
 int RegisterClientCommand( lua_State* L )
 {
@@ -64,14 +139,14 @@ int RegisterClientCommand( lua_State* L )
     // If the command already exists, remove the reference to the old one.
     // This should allow Lua to GC it. On shutdown, the Lua shutdown should
     // cleanup the remaining references.
-    auto it = cmdMap.find( lowerCmd );
-    if ( it != cmdMap.end() )
+    auto it = clientCmdMap.find( lowerCmd );
+    if ( it != clientCmdMap.end() )
     {
         luaL_unref( State(), LUA_REGISTRYINDEX, it->second );
     }
 
     int ref = luaL_ref( L, LUA_REGISTRYINDEX );
-    cmdMap[ cmd ] = ref;
+    clientCmdMap[ cmd ] = ref;
     return 0;
 }
 
@@ -79,8 +154,8 @@ bool RunClientCommand( gentity_t* ent )
 {
     Cmd::Args args = trap_Args();
     auto lowerCmd = Str::ToLower( args.Argv( 0 ) );
-    auto it = cmdMap.find( lowerCmd );
-    if ( it == cmdMap.end() )
+    auto it = clientCmdMap.find( lowerCmd );
+    if ( it == clientCmdMap.end() )
     {
         return false;
     }
@@ -110,10 +185,20 @@ bool RunClientCommand( gentity_t* ent )
     // Call the above function with two arguments and zero return values.
     if ( lua_pcall( L, 2, 0, 0 ) != 0 )
     {
-        Log::Warn( "Could not run lua timer callback: %s", lua_tostring( L, -1 ) );
+        Log::Warn( "Could not run lua client command %s: %s", lowerCmd, lua_tostring( L, -1 ) );
     }
 
     return true;
+}
+
+void CleanupCommands()
+{
+    serverCmdMap.clear();
+
+    for (const auto& it : clientCmdMap )
+    {
+        luaL_unref( State(), LUA_REGISTRYINDEX, it.second );
+    }
 }
 
 }  // namespace Lua
