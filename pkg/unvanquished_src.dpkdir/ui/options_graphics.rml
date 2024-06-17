@@ -93,9 +93,9 @@
 			<panel>
 				<h2><translate>Lights</translate></h2>
 				<row>
-					<select cvar="r_vertexLighting">
-						<option value="0"><translate>Light mapping</translate>&nbsp;(<translate>normal</translate>)</option>
-						<option value="1"><translate>Grid lighting</translate>&nbsp;(<translate>low, ugly</translate>)</option>
+					<select cvar="r_lightMode">
+						<option value="3"><translate>Light mapping</translate>&nbsp;(<translate>normal</translate>)</option>
+						<option value="1"><translate>Vertex lighting</translate>&nbsp;(<translate>low, ugly</translate>)</option>
 					</select>
 					<h3><translate>Lighting system</translate></h3>
 				</row>
