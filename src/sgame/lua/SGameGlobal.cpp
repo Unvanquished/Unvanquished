@@ -44,6 +44,7 @@ Maryland 20850 USA.
 #include "sgame/lua/Buildable.h"
 #include "sgame/lua/Hooks.h"
 #include "sgame/lua/Command.h"
+#include "sgame/lua/Votes.h"
 
 namespace {
 
@@ -180,6 +181,18 @@ class SGameGlobal
 	{
 		return ::Lua::RegisterServerCommand( L );
 	}
+
+	/// Register a custom vote
+	//
+	// @function RegisterVote
+	// @tparam string Vote name
+	// @tparam table Vote definition. Should be a table with the following fields: type (string, see admin.dat), target (string, see admin.dat), stopOnIntermission (bool), adminImmune (bool), quorum (bool), and reasonNeeded (bool)
+	// @tparam function Function to set vote command and display. Function should accept (ent: EntityProxy, team: String, args: Array) and return 3 values: bool if the vote args are valid, the vote command to execute, and the vote string to display.
+	// @usage sgame.RegisterVote("echo_no", {type = "V_ANY", target = "T_NONE"}, function(ent, team, args) return true, 'echo no', 'ECHOING NO' end)
+	static int RegisterVote( lua_State* L )
+	{
+		return ::Lua::RegisterVote( L );
+	}
 };
 
 RegType<SGameGlobal> SGameGlobalMethods[] = {
@@ -237,6 +250,8 @@ void ExtraInit<SGameGlobal>( lua_State* L, int metatable_index )
 	lua_setfield( L, metatable_index - 1, "RegisterClientCommand" );
 	lua_pushcfunction( L, SGameGlobal::RegisterServerCommand );
 	lua_setfield( L, metatable_index - 1, "RegisterServerCommand" );
+	lua_pushcfunction( L, SGameGlobal::RegisterVote );
+	lua_setfield( L, metatable_index - 1, "RegisterVote" );
 }
 
 }  // namespace Lua

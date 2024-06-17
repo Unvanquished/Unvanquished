@@ -360,6 +360,9 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/lua/Hooks.h
     ${GAMELOGIC_DIR}/sgame/lua/Command.cpp
     ${GAMELOGIC_DIR}/sgame/lua/Command.h
+    ${GAMELOGIC_DIR}/sgame/lua/Votes.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Votes.h
+
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h

@@ -1066,16 +1066,6 @@ static std::string G_HandleVoteTemplate( Str::StringRef str, gentity_t* ent, tea
 bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemplate,
                       std::string displayTemplate )
 {
-	if ( vote.empty() )
-	{
-		return false;
-	}
-	auto it = voteInfo.find( vote );
-	if ( it != voteInfo.end() )
-	{
-		return false;
-	}
-	it = voteInfo.emplace( std::move( vote ), std::move( def ) ).first;
 	auto handler = [ vt = std::move( voteTemplate ), dt = std::move( displayTemplate ) ](
 					   gentity_t* ent, team_t team, const std::string& cmd, const std::string& arg,
 					   std::string& reason, const std::string& name, int clientNum, int id )
@@ -1105,7 +1095,24 @@ bool G_AddCustomVote( std::string vote, VoteDefinition def, std::string voteTemp
 		            sizeof( level.team[ team ].voteDisplayString ) );
 		return true;
 	};
-	it->second.handler = std::move( handler );
+	def.handler = std::move( handler );
+	return G_AddCustomVoteRaw( vote, std::move( def ) );
+}
+
+
+bool G_AddCustomVoteRaw( std::string vote, VoteDefinition def )
+{
+	if ( vote.empty() )
+	{
+		return false;
+	}
+	auto it = voteInfo.find( vote );
+	if ( it != voteInfo.end() )
+	{
+		return false;
+	}
+	it = voteInfo.emplace( std::move( vote ), std::move( def ) ).first;
+
 	return true;
 }
 
