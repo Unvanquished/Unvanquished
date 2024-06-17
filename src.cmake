@@ -358,6 +358,8 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/lua/Buildable.h
     ${GAMELOGIC_DIR}/sgame/lua/Hooks.cpp
     ${GAMELOGIC_DIR}/sgame/lua/Hooks.h
+    ${GAMELOGIC_DIR}/sgame/lua/Command.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Command.h
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h

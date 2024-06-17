@@ -43,6 +43,7 @@ Maryland 20850 USA.
 #include "sgame/lua/Level.h"
 #include "sgame/lua/Buildable.h"
 #include "sgame/lua/Hooks.h"
+#include "sgame/lua/Command.h"
 
 namespace {
 
@@ -151,6 +152,20 @@ class SGameGlobal
 		LuaLib<Lua::EntityProxy>::push( L, proxy );
 		return 1;
 	}
+
+	/// Register Client Command
+	//
+	// This allow registering commands that clients can run that executes Lua code on the server.
+	//
+	// @function RegisterClientCommand
+	// @tparam string Command name
+	// @tparam function Function to execute. The function should accept two arguments: an EntityProxy (which can be nil if the caller is console)
+	//                  and an array of arguments.
+	// @usage sgame.RegisterServerCommand('LuaHello', function(ent, args) print('Hello', args) end)
+	static int RegisterClientCommand( lua_State* L )
+	{
+		return ::Lua::RegisterClientCommand( L );
+	}
 };
 
 RegType<SGameGlobal> SGameGlobalMethods[] = {
@@ -204,6 +219,8 @@ void ExtraInit<SGameGlobal>( lua_State* L, int metatable_index )
 	lua_setfield( L, metatable_index - 1, "SendServerCommand" );
 	lua_pushcfunction( L, SGameGlobal::SpawnBuildable );
 	lua_setfield( L, metatable_index - 1, "SpawnBuildable" );
+	lua_pushcfunction( L, SGameGlobal::RegisterClientCommand );
+	lua_setfield( L, metatable_index - 1, "RegisterClientCommand" );
 }
 
 }  // namespace Lua

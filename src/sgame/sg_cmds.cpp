@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "sg_votes.h"
 #include "sgame/lua/Hooks.h"
+#include "sgame/lua/Command.h"
 
 #define CMD_CHEAT        0x0001
 #define CMD_CHEAT_TEAM   0x0002 // is a cheat when used on a team
@@ -4279,7 +4280,7 @@ void ClientCommand( int clientNum )
 
 	if ( !command )
 	{
-		if ( !G_admin_cmd_check( ent ) )
+		if ( !G_admin_cmd_check( ent ) && !Lua::RunClientCommand( ent ) )
 		{
 			trap_SendServerCommand( clientNum,
 			                        va( "print_tr %s %s", QQ( N_("Unknown command $1$") ), Quote( cmd ) ) );
