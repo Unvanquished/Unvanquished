@@ -647,6 +647,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// Initialize build point counts for the intial layout.
 	G_UpdateBuildPointBudgets();
+
+	// If devmap, enable instant building.
+	g_instantBuilding.Set( g_cheats );
 }
 
 /*
