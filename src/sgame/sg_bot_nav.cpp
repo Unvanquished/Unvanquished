@@ -872,8 +872,6 @@ static int WallclimbStopTime( gentity_t *self )
 // check if a wall climbing bot is running into an attackable human entity, if so: attack it
 static void BotMaybeAttackWhileClimbing( gentity_t *self )
 {
-	ASSERT( self->botMind->lastNavconDistance > 0 );
-
 	int ownClass = self->client->ps.stats[ STAT_CLASS ];
 	glm::vec3 playerMins, playerMaxs;
 	BG_BoundingBox( static_cast<class_t>( ownClass ), &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
