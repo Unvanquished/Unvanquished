@@ -152,6 +152,14 @@ try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
 try_flag(WARNINGS           "-Woverloaded-virtual")
 try_flag(WARNINGS           "-Wstrict-null-sentinel")
 
+# Since OSX uses newer compilers, they complain about some of header only libs.
+# So, ignore deprecation warnings on OSX.
+if (APPLE)
+    # Do not error for GLM vsprintf deprecation warnings.
+    try_flag(WARNINGS "-Wno-error=deprecated-declarations")
+endif()
+
+
 # remove
 try_flag(WARNINGS           "-Wno-maybe-uninitialized")
 try_flag(WARNINGS "/wd4127")  # conditional expression is constant
