@@ -379,7 +379,7 @@ static void PRINTF_LIKE(2) Parse_ScriptError( const script_t *script, const char
 	if ( script->flags & SCFL_NOERRORS ) { return; }
 
 	va_start( ap, str );
-	vsprintf( text, str, ap );
+	Q_vsnprintf( text, sizeof( text ), str, ap );
 	va_end( ap );
 	Log::Notice( "file %s, line %d: %s\n", script->filename, script->line, text );
 }
@@ -397,7 +397,7 @@ static void PRINTF_LIKE(2) Parse_ScriptWarning( const script_t *script, const ch
 	if ( script->flags & SCFL_NOWARNINGS ) { return; }
 
 	va_start( ap, str );
-	vsprintf( text, str, ap );
+	Q_vsnprintf( text, sizeof( text ), str, ap );
 	va_end( ap );
 	Log::Notice( "file %s, line %d: %s\n", script->filename, script->line, text );
 }
@@ -1256,7 +1256,7 @@ static void PRINTF_LIKE(2) Parse_SourceError( const source_t *source, const char
 	va_list ap;
 
 	va_start( ap, str );
-	vsprintf( text, str, ap );
+	Q_vsnprintf( text, sizeof( text ), str, ap );
 	va_end( ap );
 	Log::Notice( "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text );
 }
@@ -1272,7 +1272,7 @@ static void PRINTF_LIKE(2) Parse_SourceWarning( const source_t *source, const ch
 	va_list ap;
 
 	va_start( ap, str );
-	vsprintf( text, str, ap );
+	Q_vsnprintf( text, sizeof( text ), str, ap );
 	va_end( ap );
 	Log::Notice( "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text );
 }
@@ -3142,7 +3142,7 @@ static int Parse_Directive_eval( source_t *source )
 	token.whitespace_p = source->scriptstack->script_p;
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
-	sprintf( token.string, "%ld", std::abs( value ) );
+	Com_sprintf( token.string, sizeof( token.string ), "%ld", std::abs( value ) );
 	token.type = tokenType_t::TT_NUMBER;
 	token.subtype = TT_INTEGER | TT_LONG | TT_DECIMAL;
 	Parse_UnreadSourceToken( source, &token );
@@ -3168,7 +3168,7 @@ static int Parse_Directive_evalfloat( source_t *source )
 	token.whitespace_p = source->scriptstack->script_p;
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
-	sprintf( token.string, "%1.2f", fabs( value ) );
+	Com_sprintf( token.string, sizeof( token.string ), "%1.2f", fabs( value ) );
 	token.type = tokenType_t::TT_NUMBER;
 	token.subtype = TT_FLOAT | TT_LONG | TT_DECIMAL;
 	Parse_UnreadSourceToken( source, &token );
@@ -3195,7 +3195,7 @@ static int Parse_DollarDirective_evalint( source_t *source )
 	token.whitespace_p = source->scriptstack->script_p;
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
-	sprintf( token.string, "%ld", std::abs( value ) );
+	Com_sprintf( token.string, sizeof( token.string ), "%ld", std::abs( value ) );
 	token.type = tokenType_t::TT_NUMBER;
 	token.subtype = TT_INTEGER | TT_LONG | TT_DECIMAL;
 	token.intvalue = value;
@@ -3223,7 +3223,7 @@ static int Parse_DollarDirective_evalfloat( source_t *source )
 	token.whitespace_p = source->scriptstack->script_p;
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
-	sprintf( token.string, "%1.2f", fabs( value ) );
+	Com_sprintf( token.string, sizeof( token.string ), "%1.2f", fabs( value ) );
 	token.type = tokenType_t::TT_NUMBER;
 	token.subtype = TT_FLOAT | TT_LONG | TT_DECIMAL;
 	token.intvalue = ( unsigned long ) value;

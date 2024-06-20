@@ -3263,7 +3263,7 @@ void Cmd_TeamStatus_f( gentity_t * ent )
 	char maxMinersStr[16] = "";
 	if ( g_maxMiners.Get() > -1 )
 	{
-		sprintf( maxMinersStr, "^3/^5%d", g_maxMiners.Get() );
+		Com_sprintf( maxMinersStr, sizeof( maxMinersStr ), "^3/^5%d", g_maxMiners.Get() );
 	}
 
 	if ( G_Team( ent ) == TEAM_ALIENS )
