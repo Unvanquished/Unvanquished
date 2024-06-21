@@ -608,23 +608,30 @@ void G_admin_action( const char *action, const char *translation,
 
 	for ( int i = 0; i < level.maxclients; i++ )
 	{
+		gentity_t *ent = &g_entities[ i ];
+
+		// If the client is local, don't send it to them again, because they see console output.
+		if ( ( level.inClient && i == 0 ) || !ent->inuse )
+		{
+			continue;
+		}
 		std::string name = qAdminNetName;
 
 		if ( G_admin_stealthed( admin ) == 1
-		     && !G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
+		     && !G_admin_permission( ent, ADMF_SEES_STEALTH ) )
 		{
 			name = qAdminAdminName;
 		}
 
 		if ( G_admin_stealthed( admin ) == 2
-		     && !G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
+		     && !G_admin_permission( ent, ADMF_SEES_STEALTH ) )
 		{
 			name = qAdminStealthName;
 		}
 
 		if ( ( G_admin_stealthed( admin ) > 0
-		       && G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
-		     || admin == &g_entities[ i ] ) // let the admin know they are stealthed
+		       && G_admin_permission( ent, ADMF_SEES_STEALTH ) )
+		     || admin == ent ) // let the admin know they are stealthed
 		{
 			name = qAdminTaggedName;
 		}
