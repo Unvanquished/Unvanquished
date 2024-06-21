@@ -1094,7 +1094,7 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	value = Info_ValueForKey( userinfo, "ip" );
 
 	// check for local client
-	if ( !strcmp( value, "localhost" ) )
+	if ( !strcmp( value, "localhost" ) || !strcmp( value, "loopback" ) )
 	{
 		client->pers.localClient = true;
 	}
