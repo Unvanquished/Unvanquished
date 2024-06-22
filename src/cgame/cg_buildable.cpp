@@ -1128,6 +1128,7 @@ void CG_GhostBuildable( int buildableInfo )
 	ps = &cg.predictedPlayerState;
 
 	refEntity_t ent{};
+	ent.renderfx = RF_FIRST_PERSON; // Don't draw in portals
 
 	BG_BuildableBoundingBox( buildable, mins, maxs );
 
