@@ -1658,7 +1658,7 @@ static void Cmd_SetViewpos_f( gentity_t *ent )
 
 		if (entityId >= level.num_entities || entityId < MAX_CLIENTS)
 		{
-			Log::Warn("entityId %d is out of range", entityId);
+			Log::Warn("entityNum %d is out of range", entityId);
 			return;
 		}
 		selection = &g_entities[entityId];
