@@ -33,20 +33,48 @@ Maryland 20850 USA.
 */
 
 #include "common/Common.h"
-#include "../../cg_local.h"
 #include "register_lua_extensions.h"
 
-static int Cmd_exec(lua_State* L)
+namespace Shared {
+namespace Lua {
+
+namespace {
+
+int Cvar_get(lua_State* L)
 {
-	const char *cmd = luaL_checkstring(L, 1);
-	trap_SendConsoleCommand(cmd);
+	const char *cvar = luaL_checkstring(L, 1);
+	lua_pushstring(L, Cvar::GetValue(cvar).c_str());
+	return 1;
+}
+
+int Cvar_set(lua_State* L)
+{
+	const char *cvar = luaL_checkstring(L, 1);
+	const char *value = luaL_checkstring(L, 2);
+	Cvar::SetValue(cvar, value);
 	return 0;
 }
 
-void CG_Rocket_RegisterLuaCmd(lua_State* L)
+int Cvar_archive(lua_State* L)
+{
+	const char *cvar  = luaL_checkstring(L, 1);
+	Cvar::AddFlags(cvar, Cvar::USER_ARCHIVE);
+	return 0;
+}
+
+}  // namespace
+
+void RegisterCvar(lua_State* L)
 {
 	lua_newtable(L);
-	lua_pushcfunction(L, Cmd_exec);
-	lua_setfield(L, -2, "exec");
-	lua_setglobal(L, "Cmd");
+	lua_pushcfunction(L, Cvar_get);
+	lua_setfield(L, -2, "get");
+	lua_pushcfunction(L, Cvar_set);
+	lua_setfield(L, -2, "set");
+	lua_pushcfunction(L, Cvar_archive);
+	lua_setfield(L, -2, "archive");
+	lua_setglobal(L, "Cvar");
 }
+
+}  // namespace Lua
+}  // namespace Shared

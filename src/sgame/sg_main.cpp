@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "backend/CBSEBackend.h"
 #include "botlib/bot_api.h"
 #include "common/FileSystem.h"
+#include "lua/Interpreter.h"
 
 #define INTERMISSION_DELAY_TIME 1000
 
@@ -647,6 +648,9 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// Initialize build point counts for the intial layout.
 	G_UpdateBuildPointBudgets();
+
+	// Initialize Lua
+	Lua::Initialize();
 }
 
 /*
@@ -737,6 +741,8 @@ void G_ShutdownGame( int /* restart */ )
 	level.restarted = false;
 	level.surrenderTeam = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "" );
+
+	Lua::Shutdown();
 
 	/*
 	 * delete cbse entities attached to gentities

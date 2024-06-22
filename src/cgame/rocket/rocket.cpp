@@ -60,7 +60,7 @@ Maryland 20850 USA.
 #include "rocketCvarInlineElement.h"
 #include <RmlUi/Debugger.h>
 #include "lua/register_lua_extensions.h"
-#include "lua/Player.h"
+#include "shared/lua/register_lua_extensions.h"
 #include "../cg_local.h"
 #include "shared/bg_lua.h"
 
@@ -344,12 +344,9 @@ void Rocket_Init()
 	Rml::Lua::Initialise();
 	Rml::Lua::Interpreter::DoString("math.randomseed(os.time())");
 	CG_Rocket_RegisterLuaCDataSource(Rml::Lua::Interpreter::GetLuaState());
-	CG_Rocket_RegisterLuaCmd(Rml::Lua::Interpreter::GetLuaState());
-	CG_Rocket_RegisterLuaCvar(Rml::Lua::Interpreter::GetLuaState());
 	CG_Rocket_RegisterLuaEvents(Rml::Lua::Interpreter::GetLuaState());
-	CG_Rocket_RegisterLuaTimer(Rml::Lua::Interpreter::GetLuaState());
+	CG_Rocket_InitializeLuaPlayer(Rml::Lua::Interpreter::GetLuaState());
 	BG_InitializeLuaConstants(Rml::Lua::Interpreter::GetLuaState());
-	CG_InitializeLuaPlayer(Rml::Lua::Interpreter::GetLuaState());
 
 	// Register custom properties.
 	UnvPropertyId::Orientation = Rml::StyleSheetSpecification::RegisterProperty("orientation", "left", false, true)
@@ -489,7 +486,7 @@ void Rocket_Update()
 	{
 		hudContext->Update();
 	}
-	CG_Rocket_UpdateLuaTimers(rocketInfo.realtime);
+	Shared::Lua::UpdateTimers(rocketInfo.realtime);
 }
 
 std::string CG_EscapeHTMLText( Str::StringRef text )

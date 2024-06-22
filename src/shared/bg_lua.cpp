@@ -31,14 +31,13 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#if defined(BUILD_CGAME)
-
 #include "shared/bg_lua.h"
 #include "shared/lua/LuaLib.h"
 #include "shared/lua/Buildables.h"
 #include "shared/lua/Weapons.h"
 #include "shared/lua/Classes.h"
 #include "shared/lua/Upgrades.h"
+#include "shared/lua/register_lua_extensions.h"
 #include "common/Log.h"
 
 
@@ -95,7 +94,7 @@ luaL_Reg UnvGlobalGetters[] =
 	{ "buildables", UnvGlobal::GetBuildables },
 	{ "classes", UnvGlobal::GetClasses },
 
-     { nullptr, nullptr  },
+    { nullptr, nullptr },
 };
 
 luaL_Reg UnvGlobalSetters[] =
@@ -111,6 +110,11 @@ LUACORETYPEDEFINE(UnvGlobal)
 void BG_InitializeLuaConstants( lua_State* L )
 {
 	using namespace Shared::Lua;
+
+	RegisterCmd( L );
+	RegisterCvar( L );
+	RegisterTimer( L );
+
 	LuaLib< UnvGlobal >::Register( L );
 	LuaLib< Weapons >::Register( L );
 	LuaLib< WeaponProxy >::Register( L );
@@ -123,5 +127,3 @@ void BG_InitializeLuaConstants( lua_State* L )
 	LuaLib< UnvGlobal>::push( L, &global );
 	lua_setglobal( L, "Unv" );
 }
-
-#endif // BUILD_CGAME

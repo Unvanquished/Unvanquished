@@ -31,8 +31,6 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
-
 #include "shared/lua/Utils.h"
 
 #include "shared/bg_public.h"
@@ -90,7 +88,44 @@ bool CheckVec3(lua_State* L, int pos, vec3_t vec)
 	return true;
 }
 
+namespace {
+
+struct PairsHelper
+{
+	size_t cur;
+	std::function<int( lua_State* L, size_t index )> next_func;
+};
+
+int next( lua_State* L )
+{
+	PairsHelper* self = static_cast<PairsHelper*>( lua_touserdata( L, lua_upvalueindex( 1 ) ) );
+	return self->next_func( L, self->cur++ );
+}
+
+int destroy( lua_State* L )
+{
+	static_cast<PairsHelper*>( lua_touserdata( L, 1 ) )->~PairsHelper();
+	return 0;
+}
+
+}  // namespace
+
+int CreatePairsHelper( lua_State* L, std::function<int( lua_State* L, size_t index )> next_func )
+{
+	void* storage = lua_newuserdata( L, sizeof( PairsHelper ) );
+	if ( luaL_newmetatable( L, "Shared::Lua::PairsHelper" ) )
+	{
+		static luaL_Reg mt[] = {
+			{ "__gc", destroy },
+			{ NULL, NULL },
+		};
+		luaL_setfuncs( L, mt, 0 );
+	}
+	lua_setmetatable( L, -2 );
+	lua_pushcclosure( L, next, 1 );
+	new ( storage ) PairsHelper{ 0, next_func };
+	return 1;
+}
+
 }  // namespace Lua
 }  // namespace Shared
-
-#endif  // BUILD_CGAME

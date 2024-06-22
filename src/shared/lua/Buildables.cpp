@@ -31,9 +31,9 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
 
 #include "shared/lua/Buildables.h"
+#include "shared/lua/Utils.h"
 
 namespace Shared {
 namespace Lua {
@@ -122,19 +122,15 @@ int Buildables::index( lua_State* L )
 
 int Buildables::pairs( lua_State* L )
 {
-	int* pindex = static_cast<int*>( lua_touserdata( L, 3 ) );
-	if ( *pindex < 0 ) *pindex = 0;
-	if ( static_cast<size_t>( *pindex ) >= buildables.size() )
-	{
-		lua_pushnil( L );
-		lua_pushnil( L );
-	}
-	else
-	{
-		lua_pushstring( L, buildables[ *pindex ].attributes->name );
-		LuaLib<BuildableProxy>::push( L, &buildables[ (*pindex)++ ] );
-	}
-	return 2;
+	return CreatePairsHelper( L, [](lua_State* L, size_t i ) {
+		if ( i >= buildables.size() )
+		{
+			return 0;
+		}
+		lua_pushstring( L, buildables[ i ].attributes->name );
+		LuaLib<BuildableProxy>::push( L, &buildables[ i ] );
+		return 2;
+	});
 }
 
 std::vector<BuildableProxy> Buildables::buildables;
@@ -172,5 +168,3 @@ LUACORETYPEDEFINE(Buildables)
 
 } // namespace Lua
 } // namespace Shared
-
-#endif // BUILD_CGAME

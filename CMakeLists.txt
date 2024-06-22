@@ -82,7 +82,7 @@ include(src.cmake)
 option(BUILD_CGAME "Build client-side gamelogic" 1)
 option(BUILD_SGAME "Build server-side gamelogic" 1)
 
-if (BUILD_CGAME AND (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL))
+if (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL)
     if (NACL)
         set(FREETYPE_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/libfreetype.a)
         set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY} ${DEPS_DIR}/pnacl_deps/lib/libpng16.a)
@@ -152,6 +152,14 @@ try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
 try_flag(WARNINGS           "-Woverloaded-virtual")
 try_flag(WARNINGS           "-Wstrict-null-sentinel")
 
+# Since OSX uses newer compilers, they complain about some of header only libs.
+# So, ignore deprecation warnings on OSX.
+if (APPLE)
+    # Do not error for GLM vsprintf deprecation warnings.
+    try_flag(WARNINGS "-Wno-error=deprecated-declarations")
+endif()
+
+
 # remove
 try_flag(WARNINGS           "-Wno-maybe-uninitialized")
 try_flag(WARNINGS "/wd4127")  # conditional expression is constant
@@ -174,6 +182,7 @@ if (BUILD_SGAME)
             ${SGAMELIST}
             ${sgame_GENERATED_CBSE}
         LIBS
+            ${LUA_LIBRARY}
             srclibs-detour
             srclibs-recast
             srclibs-fastlz

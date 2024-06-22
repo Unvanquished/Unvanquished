@@ -84,6 +84,7 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/navgen/nav.cpp
     ${GAMELOGIC_DIR}/shared/navgen/navgen.h
 
+    ${GAMELOGIC_DIR}/shared/lua/register_lua_extensions.h
     ${GAMELOGIC_DIR}/shared/lua/Utils.h
     ${GAMELOGIC_DIR}/shared/lua/Utils.cpp
     ${GAMELOGIC_DIR}/shared/lua/LuaLib.h
@@ -96,6 +97,9 @@ set(GAMESHAREDLIST
     ${GAMELOGIC_DIR}/shared/lua/Classes.cpp
     ${GAMELOGIC_DIR}/shared/lua/Upgrades.h
     ${GAMELOGIC_DIR}/shared/lua/Upgrades.cpp
+    ${GAMELOGIC_DIR}/shared/lua/Timer.cpp
+    ${GAMELOGIC_DIR}/shared/lua/Cmd.cpp
+    ${GAMELOGIC_DIR}/shared/lua/Cvar.cpp
 )
 
 set(CGAMELIST
@@ -173,13 +177,9 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_events.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_hud.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/rocket_keys.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Cmd.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Cvar.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.cpp
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Timer.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/register_lua_extensions.h
-    ${GAMELOGIC_DIR}/cgame/rocket/lua/Player.h
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/CDataSource.cpp
+    ${GAMELOGIC_DIR}/cgame/rocket/lua/Events.cpp
     ${GAMELOGIC_DIR}/cgame/rocket/lua/Player.cpp
 
     ${ENGINE_DIR}/client/cg_api.h
@@ -339,6 +339,9 @@ set(SGAMELIST
     ${GAMELOGIC_DIR}/sgame/components/TrapperComponent.h
     ${GAMELOGIC_DIR}/sgame/components/TurretComponent.cpp
     ${GAMELOGIC_DIR}/sgame/components/TurretComponent.h
+
+    ${GAMELOGIC_DIR}/sgame/lua/Interpreter.cpp
+    ${GAMELOGIC_DIR}/sgame/lua/Interpreter.h
 
     ${ENGINE_DIR}/server/sg_api.h
     ${ENGINE_DIR}/server/sg_msgdef.h

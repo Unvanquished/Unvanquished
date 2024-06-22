@@ -31,8 +31,9 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifdef BUILD_CGAME
+
 #include "shared/lua/Upgrades.h"
+#include "shared/lua/Utils.h"
 
 namespace Shared {
 namespace Lua {
@@ -112,19 +113,15 @@ int Upgrades::index( lua_State* L )
 
 int Upgrades::pairs( lua_State* L )
 {
-	int* pindex = static_cast<int*>( lua_touserdata( L, 3 ) );
-	if ( *pindex < 0 ) *pindex = 0;
-	if ( static_cast<size_t>( *pindex ) >= upgrades.size() )
-	{
-		lua_pushnil( L );
-		lua_pushnil( L );
-	}
-	else
-	{
-		lua_pushstring( L, upgrades[ *pindex ].attributes->name );
-		LuaLib<UpgradeProxy>::push( L, &upgrades[ (*pindex)++ ] );
-	}
-	return 2;
+	return CreatePairsHelper( L, [](lua_State* L, size_t i ) {
+		if ( i >= upgrades.size() )
+		{
+			return 0;
+		}
+		lua_pushstring( L, upgrades[ i ].attributes->name );
+		LuaLib<UpgradeProxy>::push( L, &upgrades[ i ] );
+		return 2;
+	});
 }
 
 std::vector<UpgradeProxy> Upgrades::upgrades;
@@ -162,5 +159,3 @@ LUACORETYPEDEFINE(Upgrades)
 
 }  // namespace Lua
 }  // namespace Shared
-
-#endif // BUILD_CGAME

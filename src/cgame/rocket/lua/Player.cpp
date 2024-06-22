@@ -32,7 +32,10 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "Player.h"
+#include "common/Common.h"
+#include "shared/bg_lua.h"
+#include "shared/lua/LuaLib.h"
+#include "register_lua_extensions.h"
 #include "../../cg_local.h"
 
 using Shared::Lua::RegType;
@@ -125,7 +128,7 @@ LUACORETYPEDEFINE(Player)
 }  // namespace Lua
 }  // namespace Shared
 
-void CG_InitializeLuaPlayer(lua_State* L)
+void CG_Rocket_InitializeLuaPlayer(lua_State* L)
 {
 	LuaLib<Player>::Register( L );
 	LuaLib<Player>::push( L, &player );
