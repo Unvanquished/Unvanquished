@@ -13,7 +13,7 @@ CircleMenu = {
 
 CircleMenu.__index = CircleMenu
 
-function CircleMenu:New(handle, idPrefix) 
+function CircleMenu:New(handle, idPrefix)
 	local instance = {}
 	setmetatable(instance, self)
 	instance.idPrefix = idPrefix
@@ -32,7 +32,7 @@ end
 function CircleMenu:BuildMenu()
 	local menu_rml, hints_rml
 	menu_rml= string.format(
-		'<button class="cancelButton" onmouseover="%s:Highlight(0)" onclick="%s:Quit(event)"><span>X</span></button>', 
+		'<button class="cancelButton" onmouseover="%s:Highlight(0)" onclick="%s:Quit(event)"><span>X</span></button>',
 		self.handle, self.handle)
 	hints_rml = ''
 	local tau = 2 * math.pi / #self.items
@@ -66,6 +66,10 @@ function CircleMenu:Hover(index)
 end
 
 function CircleMenu:Click(index, event)
+	if event.parameters["button"] == 1 then
+		self:Quit(event)
+		return
+	end
 	self:Select(index, event)
 end
 
@@ -77,6 +81,10 @@ function CircleMenu:BackdropCapture(event)
 end
 
 function CircleMenu:BackdropClick(event)
+	if event.parameters["button"] == 1 then
+		self:Quit(event)
+		return
+	end
 	local index = CirclemenuMouseToIndex(self.document, event, #self.items)
 	self:Select(index, event)
 end
@@ -115,7 +123,7 @@ function CircleMenu:Quit(event)
 		-- Fallback option
 		self.document:Hide()
 	else
-		Events.pushevent(string.format("hide %s", self.document.attributes.id), event)
+		Events.pushcmd(string.format("hide %s", self.document.attributes.id))
 	end
 end
 
