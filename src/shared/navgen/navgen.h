@@ -201,7 +201,7 @@ public:
 private:
 	std::vector<std::thread> threads_;
 	int numActiveThreads_;
-	std::atomic<bool> canceled_;
+	std::atomic<bool> canceled_{false};
 	std::vector<std::unique_ptr<NavgenTask>> finishedTasks_;
 
 	// guards taskQueue_, finishedTasks_, numActiveThreads_ during multithreading
