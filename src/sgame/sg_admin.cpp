@@ -608,23 +608,30 @@ void G_admin_action( const char *action, const char *translation,
 
 	for ( int i = 0; i < level.maxclients; i++ )
 	{
+		gentity_t *ent = &g_entities[ i ];
+
+		// If the client is local, don't send it to them again, because they see console output.
+		if ( ( level.inClient && i == 0 ) || !ent->inuse )
+		{
+			continue;
+		}
 		std::string name = qAdminNetName;
 
 		if ( G_admin_stealthed( admin ) == 1
-		     && !G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
+		     && !G_admin_permission( ent, ADMF_SEES_STEALTH ) )
 		{
 			name = qAdminAdminName;
 		}
 
 		if ( G_admin_stealthed( admin ) == 2
-		     && !G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
+		     && !G_admin_permission( ent, ADMF_SEES_STEALTH ) )
 		{
 			name = qAdminStealthName;
 		}
 
 		if ( ( G_admin_stealthed( admin ) > 0
-		       && G_admin_permission( &g_entities[ i ], ADMF_SEES_STEALTH ) )
-		     || admin == &g_entities[ i ] ) // let the admin know they are stealthed
+		       && G_admin_permission( ent, ADMF_SEES_STEALTH ) )
+		     || admin == ent ) // let the admin know they are stealthed
 		{
 			name = qAdminTaggedName;
 		}
@@ -2108,14 +2115,13 @@ bool G_admin_readconfig( gentity_t *ent )
 		{
 			if ( l )
 			{
-				l = l->next = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
+				l = l->next = (g_admin_level_t*) BG_Calloc( sizeof( g_admin_level_t ) );
 			}
 			else
 			{
-				l = g_admin_levels = (g_admin_level_t*) BG_Alloc( sizeof( g_admin_level_t ) );
+				l = g_admin_levels = (g_admin_level_t*) BG_Calloc( sizeof( g_admin_level_t ) );
 			}
 
-			memset( l, 0, sizeof( *l ) );
 			level_open = true;
 			admin_open = ban_open = command_open = vote_open = false;
 			lc++;
@@ -2124,14 +2130,13 @@ bool G_admin_readconfig( gentity_t *ent )
 		{
 			if ( a )
 			{
-				a = a->next = (g_admin_admin_t*) BG_Alloc( sizeof( g_admin_admin_t ) );
+				a = a->next = (g_admin_admin_t*) BG_Calloc( sizeof( g_admin_admin_t ) );
 			}
 			else
 			{
-				a = g_admin_admins = (g_admin_admin_t*) BG_Alloc( sizeof( g_admin_admin_t ) );
+				a = g_admin_admins = (g_admin_admin_t*) BG_Calloc( sizeof( g_admin_admin_t ) );
 			}
 
-			memset( a, 0, sizeof( *a ) );
 			admin_open = true;
 			level_open = ban_open = command_open = vote_open = false;
 			ac++;
@@ -6392,8 +6397,15 @@ bool G_admin_bot( gentity_t *ent )
 			ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "bot", Quote( err ) ) );
 			return false;
 		}
-		g_entities[ clientNum ].botMind->userSpecifiedPosition = Util::nullopt;
-		g_entities[ clientNum ].botMind->userSpecifiedClientNum = Util::nullopt;
+
+		if ( !( g_entities[ clientNum ].r.svFlags & SVF_BOT ) )
+		{
+			ADMP( QQ( "^3bot:^* client is not a bot" ) );
+			return false;
+		}
+
+		Util::optional<int> specifiedClientNum;
+		Util::optional<glm::vec3> specifiedPosition;
 
 		if ( args.Argc() == 5 )
 		{
@@ -6404,7 +6416,8 @@ bool G_admin_bot( gentity_t *ent )
 				ADMP( va( "%s %s %s", QQ( "^3$1$:^* $2t$" ), "bot", Quote( err ) ) );
 				return false;
 			}
-			g_entities[ clientNum ].botMind->userSpecifiedClientNum = followPid;
+
+			specifiedClientNum = followPid;
 		}
 		else if ( args.Argc() == 7 )
 		{
@@ -6418,8 +6431,11 @@ bool G_admin_bot( gentity_t *ent )
 					return false;
 				}
 			}
-			g_entities[ clientNum ].botMind->userSpecifiedPosition = glm::vec3( coords[0], coords[1], coords[2] );
+			specifiedPosition = glm::vec3( coords[0], coords[1], coords[2] );
 		}
+
+		g_entities[ clientNum ].botMind->userSpecifiedClientNum = specifiedClientNum;
+		g_entities[ clientNum ].botMind->userSpecifiedPosition = specifiedPosition;
 		const char *behavior = args[3].data();
 		G_BotChangeBehavior( clientNum, behavior );
 		if ( ent )

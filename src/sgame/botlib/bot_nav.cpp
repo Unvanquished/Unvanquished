@@ -405,7 +405,7 @@ bool G_BotNavTrace( int botClientNum, botTrace_t *trace, const glm::vec3& start,
 	rVec spos(start);
 	rVec epos(end);
 
-	memset( trace, 0, sizeof( *trace ) );
+	*trace = {};
 
 	Bot_t *bot = &agents[ botClientNum ];
 

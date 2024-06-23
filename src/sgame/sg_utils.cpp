@@ -79,7 +79,7 @@ const char *BuildShaderStateConfig()
 	char        out[ MAX_QPATH * 2 + 5 ];
 	int         i;
 
-	memset( buff, 0, sizeof(buff) );
+	buff[ 0 ] = '\0';
 
 	for ( i = 0; i < remapCount; i++ )
 	{
@@ -557,7 +557,7 @@ static const char *addr4parse( const char *str, addr_t *addr )
 	int i;
 	int octet = 0;
 	int num = 0;
-	memset( addr, 0, sizeof( addr_t ) );
+	*addr = {};
 	addr->type = IPv4;
 
 	for ( i = 0; octet < 4; i++ )
@@ -682,7 +682,7 @@ static const char *addr6parse( const char *str, addr_t *addr )
 		return nullptr;
 	}
 
-	memset( addr, 0, sizeof( addr_t ) );
+	*addr = {};
 	addr->type = IPv6;
 
 	if ( before )

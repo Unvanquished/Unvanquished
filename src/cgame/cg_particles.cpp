@@ -157,7 +157,7 @@ static particle_t *CG_SpawnNewParticle( baseParticle_t *bp, particleEjector_t *p
 		//FIXME: the + 1 may be unnecessary
 		if ( !p->valid && cg.clientFrame > p->frameWhenInvalidated + 1 )
 		{
-			memset( p, 0, sizeof( particle_t ) );
+			*p = {};
 
 			//found a free slot
 			p->class_ = bp;
@@ -467,7 +467,7 @@ static particleEjector_t *CG_SpawnNewParticleEjector( baseParticleEjector_t *bpe
 
 		if ( !pe->valid )
 		{
-			memset( pe, 0, sizeof( particleEjector_t ) );
+			*pe = {};
 
 			//found a free slot
 			pe->class_ = bpe;
@@ -1488,7 +1488,7 @@ CG_InitialiseBaseParticle
 */
 static void CG_InitialiseBaseParticle( baseParticle_t *bp )
 {
-	memset( bp, 0, sizeof( baseParticle_t ) );
+	*bp = {};
 
 	memset( bp->initialColor, 0xFF, sizeof( bp->initialColor ) );
 	memset( bp->finalColor, 0xFF, sizeof( bp->finalColor ) );
@@ -1823,19 +1823,19 @@ void CG_LoadParticleSystems()
 	for ( int i = 0; i < MAX_BASEPARTICLE_SYSTEMS; i++ )
 	{
 		baseParticleSystem_t *bps = &baseParticleSystems[ i ];
-		memset( bps, 0, sizeof( baseParticleSystem_t ) );
+		*bps = {};
 	}
 
 	for ( int i = 0; i < MAX_BASEPARTICLE_EJECTORS; i++ )
 	{
 		baseParticleEjector_t *bpe = &baseParticleEjectors[ i ];
-		memset( bpe, 0, sizeof( baseParticleEjector_t ) );
+		*bpe = {};
 	}
 
 	for ( int i = 0; i < MAX_BASEPARTICLES; i++ )
 	{
 		baseParticle_t *bp = &baseParticles[ i ];
-		memset( bp, 0, sizeof( baseParticle_t ) );
+		*bp = {};
 	}
 
 	//and bring in the new
@@ -2370,8 +2370,7 @@ CG_Radix
 */
 static void CG_Radix( int bits, int size, particle_t **source, particle_t **dest )
 {
-	int count[ 256 ];
-	memset( count, 0, sizeof( count ) );
+	int count[ 256 ]{};
 
 	for ( int i = 0; i < size; i++ )
 	{

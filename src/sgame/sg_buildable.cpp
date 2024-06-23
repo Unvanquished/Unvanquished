@@ -271,7 +271,7 @@ static void ABarricade_Think( gentity_t *self )
 	ABarricade_Shrink( self, !self->powered );
 }
 
-static void ABarricade_Touch( gentity_t *self, gentity_t *other, trace_t* )
+static void ABarricade_Touch( gentity_t *self, gentity_t *other )
 {
 	gclient_t *client = other->client;
 	int       client_z, min_z;
@@ -322,7 +322,7 @@ static void ABooster_Think( gentity_t *self )
 	}
 }
 
-static void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t* )
+static void ABooster_Touch( gentity_t *self, gentity_t *other )
 {
 	gclient_t *client = other->client;
 
@@ -491,7 +491,6 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 	int              i, num;
 	int              touch[ MAX_GENTITIES ];
 	gentity_t        *hit;
-	trace_t          trace;
 	vec3_t           mins, maxs;
 	vec3_t           bmins, bmaxs;
 	static    vec3_t range = { 10, 10, 10 };
@@ -545,11 +544,9 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 			continue;
 		}
 
-		memset( &trace, 0, sizeof( trace ) );
-
 		if ( hit->touch )
 		{
-			hit->touch( hit, ent, &trace );
+			hit->touch( hit, ent );
 		}
 	}
 }

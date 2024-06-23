@@ -111,7 +111,7 @@ void G_InitSessionData( gclient_t *client )
 	sess->spectatorState = SPECTATOR_FREE;
 	sess->spectatorClient = -1;
 
-	memset( &sess->ignoreList, 0, sizeof( sess->ignoreList ) );
+	sess->ignoreList = {};
 	sess->seenWelcome = 0;
 
 	G_WriteClientSessionData( client->num() );

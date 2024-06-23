@@ -53,7 +53,7 @@ public:
 
 	void FormatData( Rml::String &formatted_data, const Rml::StringList &raw_data )
 	{
-		memset( &data, 0, sizeof( data ) );
+		data[ 0 ] = '\0';
 
 		for ( size_t i = 0; i < raw_data.size(); ++i )
 		{

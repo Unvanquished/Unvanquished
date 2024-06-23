@@ -634,7 +634,7 @@ static AIValue_t *newValueLiteral( pc_token_list **list )
 	pc_token_list *current = *list;
 	pc_token_stripped_t *token = &current->token;
 
-	ret = ( AIValue_t * ) BG_Alloc( sizeof( *ret ) );
+	ret = ( AIValue_t * ) BG_Malloc( sizeof( *ret ) );
 
 	*ret = AIBoxToken( token );
 
@@ -733,12 +733,11 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 static AIValueFunc_t *newValueFunc( pc_token_list **list )
 {
 	AIValueFunc_t *ret = nullptr;
-	AIValueFunc_t v;
 	pc_token_list *current = *list;
 	pc_token_list *parenBegin = nullptr;
 	struct AIConditionMap_s *f;
 
-	memset( &v, 0, sizeof( v ) );
+	AIValueFunc_t v{};
 
 	f = (struct AIConditionMap_s*) bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
 
@@ -996,7 +995,6 @@ static AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 {
 	pc_token_list *current = *list;
 	struct AIDecoratorMap_s *dec;
-	AIDecoratorNode_t       node;
 	AIDecoratorNode_t       *ret;
 	pc_token_list           *parenBegin;
 
@@ -1023,7 +1021,7 @@ static AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
 
 	parenBegin = current->next;
 
-	memset( &node, 0, sizeof( node ) );
+	AIDecoratorNode_t node{};
 
 	BotInitNode( DECORATOR_NODE, dec->run, &node );
 

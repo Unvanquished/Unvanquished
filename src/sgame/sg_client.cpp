@@ -1087,14 +1087,14 @@ const char *ClientConnect( int clientNum, bool firstTime )
 	}
 
 	ent->client = client;
-	memset( client, 0, sizeof( *client ) );
+	ResetStruct( *client );
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
 	value = Info_ValueForKey( userinfo, "ip" );
 
 	// check for local client
-	if ( !strcmp( value, "localhost" ) )
+	if ( !strcmp( value, "localhost" ) || !strcmp( value, "loopback" ) )
 	{
 		client->pers.localClient = true;
 	}
@@ -1235,7 +1235,7 @@ const char *ClientBotConnect( int clientNum, bool firstTime )
 	client = &level.clients[ clientNum ];
 
 	ent->client = client;
-	memset( client, 0, sizeof( *client ) );
+	ResetStruct( *client );
 
 	client->pers.localClient = true;
 	G_AddressParse( "localhost", &client->pers.ip );
@@ -1323,8 +1323,8 @@ void ClientBegin( int clientNum )
 	// so the viewpoint doesn't interpolate through the
 	// world to the new position
 	flags = client->ps.eFlags;
-	memset( &client->ps, 0, sizeof( client->ps ) );
-	memset( &client->pmext, 0, sizeof( client->pmext ) );
+	client->ps = {};
+	client->pmext = {};
 	client->ps.eFlags = flags;
 
 	// locate ent at a spawn point
@@ -1576,7 +1576,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	}
 
 	eventSequence = client->ps.eventSequence;
-	memset( client, 0, sizeof( *client ) );
+	ResetStruct( *client );
 
 	client->pers = saved;
 	client->sess = savedSess;

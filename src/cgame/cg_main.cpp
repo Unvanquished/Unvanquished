@@ -750,7 +750,7 @@ static void CG_RegisterGraphics()
 	};
 
 	// clear any references to old media
-	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
+	cg.refdef = {};
 	trap_R_ClearScene();
 
 	CG_UpdateLoadingStep( LOAD_GEOMETRY );
