@@ -1,3 +1,7 @@
+// this is a minimal example behavior
+// it makes a bot attack constantly
+// see attack.bt for a more elaborate variant of this to use in serious games
+
 selector
 {
 	behavior unstick
