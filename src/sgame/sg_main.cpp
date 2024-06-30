@@ -260,7 +260,7 @@ Cvar::Cvar<bool> g_bot_painsaw("g_bot_painsaw", "whether bots buy the Painsaw", 
 Cvar::Cvar<bool> g_bot_shotgun("g_bot_shotgun", "whether bots buy the Shotgun", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_lasgun("g_bot_lasgun", "whether bots buy the Lasgun", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_mdriver("g_bot_mdriver", "whether bots buy the Mass Driver", Cvar::NONE, true);
-Cvar::Cvar<bool> g_bot_chaingun("g_bot_chain", "whether bots buy the Chaingun", Cvar::NONE, true);
+Cvar::Cvar<bool> g_bot_chaingun("g_bot_chain", "whether bots buy the Chaingun", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_prifle("g_bot_prifle", "whether bots buy the Pulse Rifle", Cvar::NONE, true);
 Cvar::Cvar<bool> g_bot_flamer("g_bot_flamer", "whether bots buy the Flamethrower", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_lcannon("g_bot_lcannon", "whether bots buy the Lucifer Cannon", Cvar::NONE, true);
