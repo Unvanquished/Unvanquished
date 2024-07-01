@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-12 14:47+0200\n"
-"PO-Revision-Date: 2024-03-26 16:01+0000\n"
-"Last-Translator: ZobBillZeButt <joelekiffeur@yahoo.fr>\n"
+"PO-Revision-Date: 2024-06-16 02:01+0000\n"
+"Last-Translator: Grise <Grise@users.noreply.hosted.weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -3323,17 +3323,17 @@ msgstr "%s%s ^*a été découpé par le mantis de %s%s%s^*'"
 #: src/cgame/cg_event.cpp:476
 msgctxt "male"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* à été tranché parle mantis de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "female"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* à été tranchée parle mantis de %s%s%s^* ; aidée par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:476
 msgctxt "neuter"
 msgid "%s%s ^*was sliced by %s%s%s^*'s mantis; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^* à été tranché parle mantis de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:480
 msgctxt "male"
@@ -3353,22 +3353,23 @@ msgstr "%s%s ^*a été déchiqueté par le marauder de %s%s%s^*"
 #: src/cgame/cg_event.cpp:481
 msgctxt "male"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s^* a été déchiqueté par le marauder de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "female"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
 msgstr ""
+"%s%s^* a été déchiquetée par le marauder de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:481
 msgctxt "neuter"
 msgid "%s%s ^*was shredded by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s^* a été déchiqueté par le marauder de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:485
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder"
-msgstr ""
+msgstr "%s%s ^*à été électrocuté par le marauder de %s%s%s"
 
 #: src/cgame/cg_event.cpp:485
 msgctxt "female"
@@ -3383,17 +3384,17 @@ msgstr "%s%s ^*a été électrocuté par le marauder de %s%s%s^*"
 #: src/cgame/cg_event.cpp:486
 msgctxt "male"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*à été électrocuté par le marauder de %s%s%s ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "female"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*à été électrocutée par le marauder de %s%s%s ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:486
 msgctxt "neuter"
 msgid "%s%s ^*was electrocuted by %s%s%s^*'s marauder; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*à été électrocuté par le marauder de %s%s%s ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:490
 msgctxt "male"
@@ -3413,77 +3414,77 @@ msgstr "%s%s ^*a été éviscéré par le dragoon de %s%s%s^*"
 #: src/cgame/cg_event.cpp:491
 msgctxt "male"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été éviscéré par le dragoon de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "female"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été éviscérée par le dragoon de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:491
 msgctxt "neuter"
 msgid "%s%s ^*was eviscerated by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s ^*a été éviscéré par le dragoon de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:495
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%S ^* à été attaqué par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:495
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%S ^* à été attaquée par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:495
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%S ^* à été attaqué par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "male"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%S ^* à été attaqué par le dragoon de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "female"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%S ^* à été attaquée par le dragoon de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:496
 msgctxt "neuter"
 msgid "%s%s ^*was pounced upon by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%S ^* à été attaqué par le dragoon de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s^* à été piqué par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s^* à été piquée par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:500
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon"
-msgstr ""
+msgstr "%s%s^* à été piqué par le dragoon de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "male"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s^* à été piqué par le dragoon de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "female"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s^* à été piquée par le dragoon de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:501
 msgctxt "neuter"
 msgid "%s%s ^*was barbed by %s%s%s^*'s dragoon; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s^* à été piquée par le dragoon de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:502
 msgctxt "male"
@@ -3513,22 +3514,22 @@ msgstr "%s%s ^*a été massacrée par le tyrant de %s%s%s^*"
 #: src/cgame/cg_event.cpp:506
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant"
-msgstr ""
+msgstr "%s%s^* à été mutilé par le tyrant de %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "male"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s^* à été mutilé par le tyrant de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "female"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s^* à été mutilée par le tyrant de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:507
 msgctxt "neuter"
 msgid "%s%s ^*was mauled by %s%s%s^*'s tyrant; %s%s%s^* assisted"
-msgstr ""
+msgstr "%s%s^* à été mutilé par le tyrant de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:511
 msgctxt "male"
@@ -3550,21 +3551,21 @@ msgctxt "male"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr ""
+msgstr "%s%s^* aurait dû s'écarter du tyran de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "female"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr ""
+msgstr "%s%s^* aurait dû s'écarter du tyran de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:512
 msgctxt "neuter"
 msgid ""
 "%s%s ^*should have gotten out of the way of %s%s%s^*'s tyrant; %s%s%s^* "
 "assisted"
-msgstr ""
+msgstr "%s%s^* aurait dû s'écarter du tyran de %s%s%s^* ; aidé par %s%s%s^*"
 
 #: src/cgame/cg_event.cpp:517
 msgctxt "male"
@@ -4772,12 +4773,12 @@ msgstr "Attendre que les autres joueurs soient prêts."
 #: src/cgame/cg_tutorial.cpp:614
 #, c-format
 msgid "Press %s to chat with all players."
-msgstr ""
+msgstr "Appuis sur %s pour parler à tout les joueurs."
 
 #: src/cgame/cg_tutorial.cpp:616
 #, c-format
 msgid "Press %s to chat with your team."
-msgstr ""
+msgstr "Appuis sur %s pour parler à ton équipe."
 
 #: src/cgame/cg_tutorial.cpp:618
 #, c-format
@@ -4821,11 +4822,11 @@ msgstr "$1$ ^* s'est déconnecté"
 
 #: src/sgame/sg_bot_nav.cpp:159
 msgid "^1Bot navmesh generation failed!"
-msgstr ""
+msgstr "^1La génération de navmesh des bots a échoué !"
 
 #: src/sgame/sg_bot_nav.cpp:172
 msgid "Server: generating bot navigation meshes... $1$%"
-msgstr ""
+msgstr "Serveur : génération des maillages de navigation des bots... $1$%"
 
 #: src/sgame/sg_buildable.cpp:1881
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
