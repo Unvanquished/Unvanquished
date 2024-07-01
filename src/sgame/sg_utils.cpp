@@ -281,6 +281,8 @@ void G_TeleportPlayer( gentity_t *player, glm::vec3 const& origin, glm::vec3 con
 		player->client->ps.pm_time = 160;
 	if ( player->client->ps.pm_time != 0 )
 		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	else
+		player->client->ps.pm_flags &= ~PMF_ALL_TIMES;
 
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
@@ -296,7 +298,7 @@ void G_TeleportPlayer( gentity_t *player, glm::vec3 const& origin, glm::vec3 con
 	BG_PlayerStateToEntityState( &player->client->ps, &player->s, true );
 
 	// use the precise origin for linking
-	VectorCopy( player->client->ps.origin, player->r.currentOrigin );
+	G_SetOrigin( player, origin );
 
 	if ( player->client->sess.spectatorState == SPECTATOR_NOT )
 	{
