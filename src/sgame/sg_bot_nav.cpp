@@ -951,7 +951,8 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 		{
 			self->botMind->cmdBuffer.forwardmove = 127;
 			self->botMind->cmdBuffer.rightmove = 0;
-			self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( -60.f );
+			float pitch = AngleSubtract( -60.f, SHORT2ANGLE( self->client->ps.delta_angles[ PITCH ] ) );
+			self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( pitch );
 			BotJump( self );
 			break;
 		}
@@ -975,7 +976,13 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 	if ( wpm != WPM_NONE )
 	{
 		usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
-		botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, nextCorner, magnitude ) - g_bot_upwardLeapAngleCorr.Get() );
+
+		float pitch = Math::Clamp(
+			-CalcAimPitch( self, nextCorner, magnitude ) - g_bot_upwardLeapAngleCorr.Get(),
+			-90.f, 90.f );
+		pitch = AngleSubtract( pitch, SHORT2ANGLE( self->client->ps.delta_angles[ PITCH ] ) );
+		self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( pitch );
+
 		BotFireWeapon( wpm, &botCmdBuffer );
 	}
 }
@@ -1181,7 +1188,9 @@ bool BotMoveToGoal( gentity_t *self )
 		if ( magnitude )
 		{
 			glm::vec3 target = self->botMind->nav().tpos;
-			botCmdBuffer.angles[PITCH] = ANGLE2SHORT( -CalcAimPitch( self, target, magnitude ) / 3 );
+			float pitch = -CalcAimPitch( self, target, magnitude ) / 3;
+			pitch = AngleSubtract( pitch, SHORT2ANGLE( self->client->ps.delta_angles[ PITCH ] ) );
+			self->botMind->cmdBuffer.angles[ PITCH ] = ANGLE2SHORT( pitch );
 		}
 		BotFireWeapon( wpm, &botCmdBuffer );
 	}
