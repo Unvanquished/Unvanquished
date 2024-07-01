@@ -299,6 +299,10 @@ Cvar::Cvar<int> g_bot_aliensenseRange("g_bot_aliensenseRange", "custom aliensens
 
 //</bot stuff>
 
+// Lua cvars
+static Cvar::Cvar<std::string> g_luaScript("g_luaScript", "Lua script to load on map load. Will only take effect when a map loads.", Cvar::NONE, "");
+
+
 static Cvar::Cvar<std::string> gamename("gamename", "game/mod identifier", Cvar::SERVERINFO | Cvar::ROM, GAME_VERSION);
 static Cvar::Cvar<std::string> gamedate("gamedate", "date the sgame was compiled", Cvar::ROM, __DATE__);
 
@@ -651,6 +655,14 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 
 	// Initialize Lua
 	Lua::Initialize();
+
+	if ( !g_luaScript.Get().empty() )
+	{
+		if ( !Lua::ExecScript( g_luaScript.Get() ) )
+		{
+			Log::Warn( "error loading g_luaScript: '%s'", g_luaScript.Get() );
+		}
+	}
 }
 
 /*
