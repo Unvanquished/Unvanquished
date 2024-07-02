@@ -499,6 +499,8 @@ void G_BotThink( gentity_t *self )
 	self->botMind->willSprint( false ); //let the BT decide that
 	AINodeStatus_t status =
 		self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
+	self->botMind->lastThink = level.time;
+
 	if ( traceClient.Get() == self->num() )
 	{
 		ShowRunningNode( self, status );
