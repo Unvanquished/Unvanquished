@@ -466,6 +466,8 @@ void Rocket_Render()
 		menuContext->Render();
 	}
 
+	trap_R_ResetMatrixTransform();
+
 }
 
 void Rocket_Update()
