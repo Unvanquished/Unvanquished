@@ -34,10 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "CBSE.h"
 #include "sg_cm_world.h"
 
-static Cvar::Cvar<bool> g_indestructibleBuildables(
-		"g_indestructibleBuildables",
-		"make buildables impossible to destroy (Note: this only applies only to buildings built after the variable is set, This also means it must be set before map load for the default buildables to be protected)", Cvar::NONE, false);
-
 /**
  * @return Whether the means of death allow for an under-attack warning.
  */

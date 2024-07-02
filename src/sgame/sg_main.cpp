@@ -167,6 +167,29 @@ Cvar::Cvar<bool> g_alienAllowBuilding(
 		Cvar::NONE,
 		true);
 
+Cvar::Callback<Cvar::Cvar<bool>> g_indestructibleBuildables(
+		"g_indestructibleBuildables",
+		"make buildables impossible to destroy.",
+		Cvar::NONE,
+		false,
+		[](bool enabled) {
+			gentity_t *ent = nullptr;
+			int flags = FL_GODMODE | FL_NOTARGET;
+			while( ( ent = G_IterateEntities( ent ) ) )
+			{
+				if ( ent->s.eType != entityType_t::ET_BUILDABLE ) continue;
+				if ( enabled )
+				{
+					ent->flags |= flags;
+				}
+				else
+				{
+					ent->flags &= ~( flags );
+				}
+			}
+		});
+
+
 Cvar::Cvar<float> g_alienOffCreepRegenHalfLife("g_alienOffCreepRegenHalfLife", "half-life in seconds for decay of creep's healing bonus", Cvar::NONE, 0);
 
 Cvar::Cvar<int> g_teamImbalanceWarnings("g_teamImbalanceWarnings", "send 'Teams are imbalanced' messages every x seconds if >0", Cvar::NONE, 0);
