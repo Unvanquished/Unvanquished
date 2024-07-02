@@ -103,6 +103,7 @@ extern Cvar::Cvar<float> g_momentumDestroyMod;
 
 extern Cvar::Cvar<bool> g_humanAllowBuilding;
 extern Cvar::Cvar<bool> g_alienAllowBuilding;
+extern Cvar::Callback<Cvar::Cvar<bool>> g_indestructibleBuildables;
 
 extern Cvar::Cvar<float> g_alienOffCreepRegenHalfLife;
 
