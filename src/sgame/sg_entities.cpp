@@ -190,6 +190,11 @@ void G_FreeEntity( gentity_t *entity )
 
 	unsigned generation = entity->generation;
 
+	if ( entity->id )
+	{
+		BG_Free( entity->id );
+	}
+
 	entity->~gentity_t();
 	new(entity) gentity_t{};
 

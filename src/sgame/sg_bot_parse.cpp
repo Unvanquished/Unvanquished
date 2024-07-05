@@ -437,6 +437,7 @@ static AIValue_t numUsersInTeam( gentity_t *self, const AIValue_t* )
 	return AIBoxInt( level.team[ G_Team( self ) ].numPlayers );
 }
 
+// Resets to 0 when bot spawns
 static AIValue_t myTimer( gentity_t *self, const AIValue_t* )
 {
 	return AIBoxInt( level.time - self->botMind->myTimer );

@@ -133,66 +133,85 @@ struct AIBehaviorTree_t;
 struct AIGenericNode_t;
 struct botMemory_t
 {
-	enemyQueue_t enemyQueue;
-	int enemyLastSeen;
+	// Permanent memory {
+		int         skillLevel;
+		skillSet_t  skillSet; // boolean flags
+		std::string skillSetExplaination;
+	// }
 
-	//team the bot is on when added
-	team_t botTeam;
+	// Reinitialized on behavior change {
+		AIBehaviorTree_t* behaviorTree;
 
-	botTarget_t goal;
+		Util::optional<glm::vec3> userSpecifiedPosition;
+		Util::optional<int> userSpecifiedClientNum;
+	// }
+
+	// Alive state, reset when bot spawns {
+		int spawnTime;
+		int lastThink;
+
+		int stuckTime;
+		glm::vec3 stuckPosition;
+
+		int         futureAimTime;
+		int         futureAimTimeInterval;
+		glm::vec3   futureAim;
+
+		enemyQueue_t enemyQueue;
+		int enemyLastSeen;
+
+		bool exhausted;
+	// }
+
+	// Behavior-specific state. Reset when the bot spawns or the behavior is changed {
+		AIGenericNode_t* currentNode;
+		BoundedVector<AIGenericNode_t*, MAX_NODE_DEPTH> runningNodes;
+
+		botTarget_t goal;
+
+		int myTimer;
+
+private:
+		botNavCmd_t m_nav;
+public:
+		int lastNavconTime;
+		int lastNavconDistance;
+		bool hasOffmeshGoal;
+	// }
+
+	// Reset every frame *while alive*. Reset when behavior changes. Settable by BT
+	int blackboardTransient; // queryable by other bots
+
+	// Transient caches. These are populated before each think and valid for only one frame {
+		botEntityAndDistance_t bestEnemy;
+		botEntityAndDistance_t closestDamagedBuilding; // friendly only
+
+		// For allied buildable types: closest alive and active buildable
+		// For enemy buildable types: closest alive buildable with a tag beacon
+		botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
+	// }
+
+	// Scratch area, reset each frame {
+		// The bot's "output" (movement and attacks)
+		usercmd_t cmdBuffer;
+
+private:
+		bool wantSprinting = false;
+public:
+	// }
+
+	// Functions
+	botNavCmd_t const& nav() const { return m_nav; };
 	void willSprint( bool enable );
 	void doSprint( int jumpCost, int stamina, usercmd_t& cmd );
-	usercmd_t   cmdBuffer;
-
-	int         skillLevel;
-	skillSet_t  skillSet; // boolean flags
-	std::string skillSetExplaination;
-
-	botEntityAndDistance_t bestEnemy;
-	botEntityAndDistance_t closestDamagedBuilding;
-
-	// For allied buildable types: closest alive and active buildable
-	// For enemy buildable types: closest alive buildable with a tag beacon
-	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
-
-	AIBehaviorTree_t *behaviorTree;
-	AIGenericNode_t  *currentNode;
-	BoundedVector<AIGenericNode_t*, MAX_NODE_DEPTH> runningNodes;
-	int              numRunningNodes;
-
-	int         futureAimTime;
-	int         futureAimTimeInterval;
-	glm::vec3   futureAim;
-private:
-	botNavCmd_t m_nav;
-public:
-	botNavCmd_t const& nav() const { return m_nav; };
 	void clearNav() { m_nav = {}; }
 	void setGoal( botTarget_t target, bool direct ) { goal = target; m_nav.directPathToGoal = direct; }
+	void setHasOffmeshGoal( bool val ) { hasOffmeshGoal = val; }
 	friend void G_BotThink( gentity_t * );
 	friend bool BotChangeGoal( gentity_t *, botTarget_t );
-
-	int lastThink;
-	int stuckTime;
-	glm::vec3 stuckPosition;
-
-	int spawnTime;
-	int lastNavconTime;
-	int lastNavconDistance;
-
-	void setHasOffmeshGoal( bool val ) { hasOffmeshGoal = val; }
-	bool hasOffmeshGoal;
-
-	int myTimer;
-	int blackboardTransient;
-
-	Util::optional< glm::vec3 > userSpecifiedPosition;
-	Util::optional< int > userSpecifiedClientNum;
-private:
-	//avoid relying on buttons to remember what AI was doing
-	bool wantSprinting = false;
-	bool exhausted = false;
 };
+
+void G_Bot_ResetBehaviorState( botMemory_t &memory );
 
 struct NavgenConfig;
 navMeshStatus_t G_BotSetupNav( const NavgenConfig &config, class_t species );
