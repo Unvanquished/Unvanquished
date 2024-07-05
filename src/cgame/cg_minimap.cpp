@@ -437,14 +437,14 @@ CG_MinimapDrawPlayer
 */
 static void CG_MinimapDrawPlayer( const minimap_t* m )
 {
-	Color::Color oldColor = currentMinimapColor;
-	// draw outline
-	currentMinimapColor = { 0.f, 0.f, 0.f, 1.f };
+    Color::Color oldColor = currentMinimapColor;
+    // draw outline
+    currentMinimapColor = { 0.f, 0.f, 0.f, 1.f };
     CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.2, MINIMAP_PLAYER_DISPLAY_SIZE, 1.0 );
-	// draw actual player arrow
-	currentMinimapColor = { 1.f, 0.66f, 0.2f, 1.f };
+    // draw actual player arrow
+    currentMinimapColor = { 1.f, 0.66f, 0.2f, 1.f };
     CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, MINIMAP_PLAYER_DISPLAY_SIZE, 1.0 );
-	currentMinimapColor = oldColor;
+    currentMinimapColor = oldColor;
 }
 
 /*
