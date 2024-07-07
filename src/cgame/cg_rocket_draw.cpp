@@ -3401,143 +3401,93 @@ static qhandle_t CG_GetUnlockableIcon( int num )
 	}
 }
 
-static void CG_Rocket_DrawPlayerUnlockedItems()
-{
-	rectDef_t     rect;
-	Color::Color  foreColour, backColour;
-	momentumThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
-
+static void CG_Rocket_DrawPlayerUnlockedItems() {
+	uint counts = 0;
+	uint count[32] = { 0 };
+	int thresholds[32];
+	int prevThreshold = 0;
+	uint icons = 0;
+	uint prevIcons = 0;
+	struct {
+		qhandle_t shader;
+		bool unlocked;
+	} icon[NUM_UNLOCKABLES]; // more than enough(!)
 	team_t team = CG_MyTeam();
-
-	// display
-	float x, y, w, h, iw, ih, borderSize;
-	bool  vertical;
-
-	int   icons, counts;
-	int   count[ 32 ] = { 0 };
-	struct
-	{
+	momentumThresholdIterator_t unlockableIter = { -1, 1 }, previousIter;
+	for ( ;; ) {
 		qhandle_t shader;
-		bool  unlocked;
-	} icon[ NUM_UNLOCKABLES ]; // more than enough(!)
-
-	CG_GetRocketElementRect( &rect );
-	Rocket_GetProperty( "cell-color", &backColour, sizeof(Color::Color), rocketVarType_t::ROCKET_COLOR );
-	CG_GetRocketElementColor( foreColour );
-	Rocket_GetProperty( "momentum-border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
-
-	w = rect.w - 2 * borderSize;
-	h = rect.h - 2 * borderSize;
-
-	vertical = ( h > w );
-
-	ih = vertical ? w : h;
-	iw = ih * cgs.aspectScale;
-
-	x = rect.x + borderSize;
-	y = rect.y + borderSize + ( h - ih ) * vertical;
-
-	icons = counts = 0;
-
-	for ( ;; )
-	{
-		qhandle_t shader;
-		int       threshold;
-		bool  unlocked;
+		int threshold;
+		bool unlocked;
 
 		previousIter = unlockableIter;
 		unlockableIter = BG_IterateMomentumThresholds( unlockableIter, team, &threshold, &unlocked );
 
-		if ( previousIter.threshold != unlockableIter.threshold && icons )
-		{
-			count[ counts++ ] = icons;
+		if ( previousIter.threshold != unlockableIter.threshold && icons ) {
+			count[ counts++ ] = icons - prevIcons;
+			prevIcons = icons;
+		}
+
+		if( threshold != prevThreshold ) {
+			thresholds[counts] = threshold - prevThreshold;
+			prevThreshold = threshold;
 		}
 
 		// maybe exit the loop?
-		if ( unlockableIter.num < 0 )
-		{
+		if ( unlockableIter.num < 0 ) {
 			break;
 		}
 
 		// okay, next icon
 		shader = CG_GetUnlockableIcon( unlockableIter.num );
 
-		if ( shader )
-		{
-			icon[ icons ].shader = shader;
-			icon[ icons].unlocked = unlocked;
-			++icons;
+		if ( shader ) {
+			icon[icons].shader = shader;
+			icon[icons].unlocked = unlocked;
+			icons++;
 		}
 	}
 
+	rectDef_t rect;
+	float borderSize;
+	Color::Color foreColour, backColour;
+	CG_GetRocketElementRect( &rect );
+	Rocket_GetProperty( "cell-color", &backColour, sizeof( Color::Color ), rocketVarType_t::ROCKET_COLOR );
+	CG_GetRocketElementColor( foreColour );
+	Rocket_GetProperty( "momentum-border-width", &borderSize, sizeof( borderSize ), rocketVarType_t::ROCKET_FLOAT );
+
+	float w = rect.w - 2 * borderSize;
+	float h = rect.h - 2 * borderSize;
+
+	bool vertical = ( h > w );
+
+	float ih = vertical ? w : h;
+	float iw = ih * cgs.aspectScale;
+
+	float x = rect.x + borderSize;
+	float y = rect.y + borderSize + ( h - ih ) * vertical;
+
+	uint currentIcon = 0;
+	float barX = x;
+	float barY = y;
+	for ( uint i = 0; i < counts; ++i )
 	{
-		float gap;
-		int i, j;
-		Color::Color unlockedBg, lockedBg;
-
-		unlockedBg = foreColour;
-		unlockedBg.SetAlpha( 0.0f );  // No background
-		lockedBg = backColour;
-		lockedBg.SetAlpha( 0.0f );  // No background
-
-		gap = vertical ? ( h - icons * ih ) : ( w - icons * iw );
-
-		if ( counts > 2 )
-		{
-			gap /= counts - 1;
+		if ( vertical ) {
+			barY += ( thresholds[i] / MOMENTUM_MAX ) * h;
+		} else {
+			barX += ( thresholds[i] / MOMENTUM_MAX ) * w;
 		}
 
-		for ( i = 0, j = 0; count[ i ]; ++i )
-		{
-			if ( vertical )
-			{
-				float yb = y - count[ i ] * ih - i * gap;
-				float hb = ( count[ i ] - j ) * ih;
-				CG_DrawRect( x - borderSize, yb - borderSize, iw + 2 * borderSize, hb, borderSize, backColour );
-				CG_FillRect( x, yb, iw, hb - 2 * borderSize, icon[ j ].unlocked ? unlockedBg : lockedBg );
+		float unlockableX = vertical ? barX : barX - count[i] * iw / 2;
+		float unlockableY = vertical ? barY - count[i] * ih / 2 : barY;
+		for ( uint j = 0; j < count[i]; j++ ) {
+			trap_R_SetColor( icon[currentIcon].unlocked ? foreColour : backColour );
+			CG_DrawPic( unlockableX, unlockableY, iw, ih, icon[currentIcon].shader );
+			if ( vertical ) {
+				unlockableY += ih;
+			} else {
+				unlockableX += iw;
 			}
-
-			else
-			{
-				float xb = x + j * iw + i * gap;
-				float wb = ( count[ i ] - j ) * iw + 2;
-				CG_DrawRect( xb - borderSize, y - borderSize, wb, ih + 2 * borderSize, borderSize, backColour );
-				CG_FillRect( xb, y, wb - 2 * borderSize, ih, icon[ j ].unlocked ? unlockedBg : lockedBg );
-			}
-
-			j = count[ i ];
-		}
-
-		for ( i = 0, j = 0; i < icons; ++i )
-		{
-			trap_R_SetColor( icon[ i ].unlocked ? foreColour : backColour );
-
-			if ( i == count[ j ] )
-			{
-				++j;
-
-				if ( vertical )
-				{
-					y -= gap;
-				}
-
-				else
-				{
-					x += gap;
-				}
-			}
-
-			CG_DrawPic( x, y, iw, ih, icon[ i ].shader );
-
-			if ( vertical )
-			{
-				y -= ih;
-			}
-
-			else
-			{
-				x += iw;
-			}
+			currentIcon++;
 		}
 	}
 
