@@ -2015,10 +2015,10 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, unsigned in
 
 	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
-		count = MAX_NUM_PACKED_ENTITY_NUMS;
 		Log::Warn( "A maximum of %d entity numbers can be "
 		            "packed, but BG_PackEntityNumbers was passed %d entities",
 		            MAX_NUM_PACKED_ENTITY_NUMS, count );
+		count = MAX_NUM_PACKED_ENTITY_NUMS;
 	}
 
 	es->misc = es->time = es->time2 = es->constantLight = 0;
