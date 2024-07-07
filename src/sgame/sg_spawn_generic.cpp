@@ -46,11 +46,20 @@ target_print
 */
 static void target_print_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
+	// 1 = h
+	// 2 = a
+	// 4 = private
+	// 8 = also chat
 	if ( self->mapEntity.spawnflags & 4 )
 	{
 		if ( activator && activator->client )
 		{
 			trap_SendServerCommand( activator->num(), va( "cp %s", Quote( self->mapEntity.message ) ) );
+
+			if ( self->mapEntity.spawnflags & 8 )
+			{
+				trap_SendServerCommand( activator->num(), va( "print %s", Quote( self->mapEntity.message ) ) );
+			}
 		}
 
 		return;
@@ -61,17 +70,32 @@ static void target_print_act( gentity_t *self, gentity_t*, gentity_t *activator 
 		if ( self->mapEntity.spawnflags & 1 )
 		{
 			G_TeamCommand( TEAM_HUMANS, va( "cp %s", Quote( self->mapEntity.message ) ) );
+
+			if ( self->mapEntity.spawnflags & 8 )
+			{
+				G_TeamCommand( TEAM_HUMANS, va( "print %s", Quote( self->mapEntity.message ) ) );
+			}
 		}
 
 		if ( self->mapEntity.spawnflags & 2 )
 		{
 			G_TeamCommand( TEAM_ALIENS, va( "cp %s", Quote( self->mapEntity.message ) ) );
+
+			if ( self->mapEntity.spawnflags & 8 )
+			{
+				G_TeamCommand( TEAM_ALIENS, va( "print %s", Quote( self->mapEntity.message ) ) );
+			}
 		}
 
 		return;
 	}
 
 	trap_SendServerCommand( -1, va( "cp %s", Quote( self->mapEntity.message ) ) );
+
+	if ( self->mapEntity.spawnflags & 8 )
+	{
+		trap_SendServerCommand( -1, va( "print %s", Quote( self->mapEntity.message ) ) );
+	}
 }
 
 void SP_target_print( gentity_t *self )
