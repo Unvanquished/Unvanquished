@@ -398,7 +398,7 @@ static void CG_TouchTriggerPrediction()
 			continue;
 		}
 
-		if ( ent->eType == entityType_t::ET_TELEPORTER )
+		if ( ent->eType == entityType_t::ET_TELEPORTER && !( ent->eFlags & EF_NODRAW ) )
 		{
 			cg.hyperspace = true;
 		}
