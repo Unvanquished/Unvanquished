@@ -402,11 +402,7 @@ bool BotTraceForFloor( gentity_t *self, uint32_t dir )
 	BG_BoundingBox( pClass, &playerMins, &playerMaxs, nullptr, nullptr, nullptr );
 	float radius = playerMaxs.x - playerMins.x;
 	float height = playerMaxs.z - playerMins.z;
-	// use dirVec * ( 2.f * radius ) as direction offset
-	// in theory, sqrtf(2.f) instead of 2.f would be enough
-	// the slight increase is to safeguard against unexpected map geometry
-	// a bot not dancing is less problematic than a bot falling down
-	glm::vec3 start = VEC2GLM( self->s.origin ) + dirVec * ( 2.f * radius );
+	glm::vec3 start = VEC2GLM( self->s.origin ) + dirVec * ( 1.414214f * radius );
 	glm::vec3 end = start;
 	end.z -= height;
 	trap_Trace( &trace, &start[ 0 ], nullptr, nullptr, &end[ 0 ], self->num(), MASK_SOLID, 0 );
