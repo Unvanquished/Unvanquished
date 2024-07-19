@@ -147,6 +147,10 @@ static void CG_ClipMoveToEntities( const vec3_t start, const vec3_t mins,
 			if ( ent->eType == entityType_t::ET_BUILDABLE )
 			{
 				BG_BuildableBoundingBox( ent->modelindex, bmins, bmaxs );
+				if ( ent->modelindex == BA_A_BARRICADE && ent->torsoAnim == BANIM_IDLE_UNPOWERED )
+				{
+					bmaxs[ 2 ] = static_cast<int>( bmaxs[ 2 ] * BARRICADE_SHRINKPROP );
+				}
 			}
 			else
 			{
@@ -398,7 +402,7 @@ static void CG_TouchTriggerPrediction()
 			continue;
 		}
 
-		if ( ent->eType == entityType_t::ET_TELEPORTER )
+		if ( ent->eType == entityType_t::ET_TELEPORTER && !( ent->eFlags & EF_NODRAW ) )
 		{
 			cg.hyperspace = true;
 		}

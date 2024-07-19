@@ -319,6 +319,7 @@ Cvar::Cvar<int> g_bot_reactiontime("g_bot_reactiontime", "bots' reaction time to
 Cvar::Cvar<bool> g_bot_infiniteFunds("g_bot_infiniteFunds", "give bots unlimited funds", Cvar::NONE, false);
 Cvar::Cvar<bool> g_bot_infiniteMomentum("g_bot_infiniteMomentum", "allow bots to ignore momentum, but not other restrictions", Cvar::NONE, false);
 Cvar::Cvar<int> g_bot_aliensenseRange("g_bot_aliensenseRange", "custom aliensense range for bots", Cvar::NONE, ALIENSENSE_RANGE);
+Cvar::Cvar<std::string> g_bot_defaultBehavior("g_bot_defaultBehavior", "name of the default .bt file", Cvar::NONE, BOT_DEFAULT_BEHAVIOR);
 
 //</bot stuff>
 
