@@ -437,7 +437,14 @@ CG_MinimapDrawPlayer
 */
 static void CG_MinimapDrawPlayer( const minimap_t* m )
 {
+    Color::Color oldColor = currentMinimapColor;
+    // draw outline
+    currentMinimapColor = { 0.f, 0.f, 0.f, 1.f };
+    CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.2, MINIMAP_PLAYER_DISPLAY_SIZE, 1.0 );
+    // draw actual player arrow
+    currentMinimapColor = { 1.f, 0.66f, 0.2f, 1.f };
     CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, MINIMAP_PLAYER_DISPLAY_SIZE, 1.0 );
+    currentMinimapColor = oldColor;
 }
 
 /*
@@ -659,13 +666,17 @@ void CG_DrawMinimap( const rectDef_t* rect640, const Color::Color& teamColor )
     CG_EnableScissor( true );
     {
         CG_MinimapDrawMap( m, z );
-        CG_MinimapDrawPlayer( m );
         //CG_MinimapDrawTeammates( m );
     }
     CG_EnableScissor( false );
 
 		//(experimental) Draw beacons without the scissor
     CG_MinimapDrawBeacons( &rect );
+
+	// draw player arrow on top of everything else
+	CG_EnableScissor( true );
+	CG_MinimapDrawPlayer( m );
+	CG_EnableScissor( false );
 
     //Reset the color for other hud elements
     trap_R_ClearColor();
