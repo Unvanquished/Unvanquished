@@ -167,6 +167,18 @@ static void ParseOption( Str::StringRef name, Str::StringRef value, Str::StringR
 			return;
 		}
 	}
+	else if ( Str::IsIEqual( name, "walkableRadiusFactor" ) )
+	{
+		if ( floatValue < 0.6f || 2.f < floatValue )
+		{
+			Log::Warn( "%s: incorrect value for walkableRadiusFactor '%f': must be between 0.6 and 2", file, floatValue );
+		}
+		else
+		{
+			config.walkableRadiusFactor = floatValue;
+			return;
+		}
+	}
 	else
 	{
 		Log::Warn( "%s: unknown navgen setting '%s'", file, name );
