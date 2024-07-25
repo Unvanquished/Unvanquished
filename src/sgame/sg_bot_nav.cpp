@@ -403,8 +403,9 @@ bool BotTraceForFloor( gentity_t *self, uint32_t dir )
 	float radius = playerMaxs.x - playerMins.x;
 	float height = playerMaxs.z - playerMins.z;
 	glm::vec3 start = VEC2GLM( self->s.origin ) + dirVec * ( 1.414214f * radius );
+	start.z += playerMaxs.z;
 	glm::vec3 end = start;
-	end.z -= height;
+	end.z -= height * 1.5f;
 	trap_Trace( &trace, &start[ 0 ], nullptr, nullptr, &end[ 0 ], self->num(), MASK_SOLID, 0 );
 	return trace.fraction < 1.f;
 }
