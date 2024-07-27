@@ -6,17 +6,17 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-12 14:47+0200\n"
-"PO-Revision-Date: 2024-01-14 12:30+0000\n"
-"Last-Translator: 777yur0k <kost19641964@gmail.com>\n"
+"PO-Revision-Date: 2024-07-28 18:09+0000\n"
+"Last-Translator: - <hitekex@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.7-dev\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -149,24 +149,28 @@ msgstr ""
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
 msgstr ""
+"Больше информации можно найти на нашем веб-сайте и в других местах "
+"сообщества!"
 
 #: ui/help_gameplay.rml:25
 msgid ""
 "Chat with players and developers on Libera.Chat IRC, Matrix or Discord: <web "
 "dest=\"chat\" />"
 msgstr ""
+"Общайтесь с игроками и разработчиками в Libera.Chat IRC, Matrix или Discord: "
+"<web dest=\"chat\" />"
 
 #: ui/help_gameplay.rml:26
 msgid "Discuss news in the forums: <web dest=\"forums\" />"
-msgstr ""
+msgstr "Обсуждайте новости на форумах: <web dest=\"forums\" />"
 
 #: ui/help_gameplay.rml:27
 msgid "Discover more about the game in the wiki: <web dest=\"wiki\" />"
-msgstr ""
+msgstr "Узнайте больше об игре на вики: <web dest=\"wiki\" />"
 
 #: ui/help_gameplay.rml:29
 msgid "Please report bugs on: <web dest=\"bugs\" />"
-msgstr ""
+msgstr "Пожалуйста, сообщайте о ошибках здесь: <web dest=\"bugs\" />"
 
 #: ui/help_gameplay.rml:33
 msgid "Income &amp; evolution"
@@ -653,7 +657,7 @@ msgstr ""
 
 #: ui/menu_ingame.rml:22
 msgid "Match"
-msgstr ""
+msgstr "Матч"
 
 #: ui/menu_ingame.rml:25
 msgid "Leave match"
@@ -773,7 +777,7 @@ msgstr "Угол обзора"
 
 #: ui/options_fov.rml:11
 msgid "FOV = wideness of player's vision, measured in degrees."
-msgstr ""
+msgstr "FOV = широта обзора игрока, измеряемая в градусах."
 
 #: ui/options_fov.rml:12
 msgid ""
@@ -813,7 +817,7 @@ msgstr "Тиран"
 
 #: ui/options_fov.rml:71
 msgid "View bobbing"
-msgstr ""
+msgstr "Покачивание камеры"
 
 #: ui/options_fov.rml:74
 msgid "Camera pitching"
@@ -825,7 +829,7 @@ msgstr "Отключено"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr ""
+msgstr "Легкий"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
@@ -833,19 +837,19 @@ msgstr "По умолчанию"
 
 #: ui/options_fov.rml:79 ui/options_fov.rml:90
 msgid "Strong"
-msgstr ""
+msgstr "Сильный"
 
 #: ui/options_fov.rml:81
 msgid "Up and down movement"
-msgstr ""
+msgstr "Движение вверх и вниз"
 
 #: ui/options_fov.rml:85
 msgid "Camera rolling"
-msgstr ""
+msgstr "Вращение камеры"
 
 #: ui/options_fov.rml:92
 msgid "Twisting movement"
-msgstr ""
+msgstr "Круговое движение"
 
 #: ui/options_graphics.rml:17 ui/options.rml:15
 msgid "Graphics"
@@ -982,7 +986,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:94
 msgid "normal"
-msgstr ""
+msgstr "нормальный"
 
 #: ui/options_graphics.rml:95
 msgid "Grid lighting"
@@ -990,7 +994,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:95
 msgid "low, ugly"
-msgstr ""
+msgstr "низкий, уродливый"
 
 #: ui/options_graphics.rml:97
 msgid "Lighting system"
@@ -1211,7 +1215,7 @@ msgstr "Симулировать тёмные углы."
 
 #: ui/options_graphics.rml:228
 msgid "Marks"
-msgstr ""
+msgstr "Метки"
 
 #: ui/options_graphics.rml:230
 msgid "Draw marks (such as bullet holes or creep) on surfaces"
@@ -1690,7 +1694,7 @@ msgstr ""
 
 #: ui/options_player.rml:186
 msgid "Others"
-msgstr ""
+msgstr "Другие"
 
 #: ui/options_player.rml:214
 msgid "Tutorial mode"
@@ -1754,11 +1758,11 @@ msgstr "Пользовательский интерфейс"
 
 #: ui/options_ui.rml:20
 msgid "Main"
-msgstr ""
+msgstr "Главный"
 
 #: ui/options_ui.rml:24
 msgid "Language"
-msgstr ""
+msgstr "Язык"
 
 #: ui/options_ui.rml:25 ui/options_welcome.rml:19
 msgid "Some languages are not fully translated."
@@ -1822,23 +1826,23 @@ msgstr ""
 
 #: ui/options_ui.rml:78 ui/options_ui.rml:157 ui/options_ui.rml:201
 msgid "Red:"
-msgstr ""
+msgstr "Красный:"
 
 #: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
 msgid "Green:"
-msgstr ""
+msgstr "Зеленый:"
 
 #: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
 msgid "Blue:"
-msgstr ""
+msgstr "Синий:"
 
 #: ui/options_ui.rml:90 ui/options_ui.rml:169 ui/options_ui.rml:213
 msgid "Alpha:"
-msgstr ""
+msgstr "Прозрачность:"
 
 #: ui/options_ui.rml:95
 msgid "Crosshair"
-msgstr ""
+msgstr "Перекрестие"
 
 #: ui/options_ui.rml:99
 msgid "WARN: Preview only works in game."
@@ -1846,15 +1850,15 @@ msgstr ""
 
 #: ui/options_ui.rml:103
 msgid "Weapon"
-msgstr ""
+msgstr "Оружие"
 
 #: ui/options_ui.rml:106
 msgid "Blaster"
-msgstr ""
+msgstr "Бластер"
 
 #: ui/options_ui.rml:107
 msgid "Rifle"
-msgstr ""
+msgstr "Винтовка"
 
 #: ui/options_ui.rml:108
 msgid "Pain Saw"
@@ -1862,11 +1866,11 @@ msgstr ""
 
 #: ui/options_ui.rml:109
 msgid "Shotgun"
-msgstr ""
+msgstr "Дробовик"
 
 #: ui/options_ui.rml:110
 msgid "Lasgun"
-msgstr ""
+msgstr "Лазерная пушка"
 
 #: ui/options_ui.rml:111
 msgid "Mass Driver"
@@ -1878,7 +1882,7 @@ msgstr ""
 
 #: ui/options_ui.rml:113
 msgid "Flamer"
-msgstr ""
+msgstr "Огнемет"
 
 #: ui/options_ui.rml:114
 msgid "Pulse Rifle"
@@ -1959,11 +1963,11 @@ msgstr ""
 
 #: ui/options_ui.rml:188
 msgid "Scale:"
-msgstr ""
+msgstr "Масштаб:"
 
 #: ui/options_ui.rml:192
 msgid "Offset:"
-msgstr ""
+msgstr "Смещение:"
 
 #: ui/options_ui.rml:197
 msgid "Crosshair outline colours"
@@ -4365,7 +4369,7 @@ msgstr "cgame: debug: нет такого меню %d"
 
 #: src/cgame/cg_servercmds.cpp:850
 msgid "^1*DEAD*^*"
-msgstr ""
+msgstr "^1*МЕРТВ*^*"
 
 #: src/cgame/cg_servercmds.cpp:911
 #, c-format
@@ -4693,12 +4697,12 @@ msgstr "Ожидаем готовности остальных игроков."
 #: src/cgame/cg_tutorial.cpp:614
 #, c-format
 msgid "Press %s to chat with all players."
-msgstr ""
+msgstr "Нажмите %s, чтобы общаться со всеми игроками."
 
 #: src/cgame/cg_tutorial.cpp:616
 #, c-format
 msgid "Press %s to chat with your team."
-msgstr ""
+msgstr "Нажмите %s, чтобы общаться со своей командой."
 
 #: src/cgame/cg_tutorial.cpp:618
 #, c-format
@@ -4773,7 +4777,7 @@ msgstr ""
 
 #: src/sgame/sg_client.cpp:1155
 msgid "Your GUID is not secure"
-msgstr ""
+msgstr "Ваш GUID не защищен"
 
 #: src/sgame/sg_client.cpp:1196
 msgid "$1$^* connected"
@@ -4805,11 +4809,11 @@ msgstr "Время вышло"
 
 #: src/sgame/sg_main.cpp:1957
 msgid "$1$ minutes remaining!"
-msgstr ""
+msgstr "осталось $1$ минут!"
 
 #: src/sgame/sg_main.cpp:1965
 msgid "1 minute remaining!"
-msgstr ""
+msgstr "осталась 1 минута!"
 
 #: src/sgame/sg_main.cpp:1978
 msgid "Humans win"
@@ -4825,7 +4829,7 @@ msgstr ""
 
 #: src/sgame/sg_main.cpp:2170
 msgid "The game has been paused. Please wait."
-msgstr ""
+msgstr "Игра была приостановлена. Пожалуйста, подождите."
 
 #: src/sgame/sg_main.cpp:2174
 msgid "Server: Game will auto-unpause in $1$ seconds"
@@ -4841,7 +4845,7 @@ msgstr ""
 
 #: src/sgame/sg_spawn_mover.cpp:1077
 msgid "^1This door is locked!"
-msgstr ""
+msgstr "^1Эта дверь заперта!"
 
 #: src/sgame/sg_svcmds.cpp:501
 msgid "Alien team has admitted defeat"
@@ -4985,7 +4989,7 @@ msgstr ""
 
 #: src/sgame/sg_votes.cpp:658
 msgid "$1$: player is a bot"
-msgstr ""
+msgstr "$1$: игрок является ботом"
 
 #: src/sgame/sg_votes.cpp:666 src/sgame/sg_votes.cpp:680
 msgid "$1$: admin is immune"
