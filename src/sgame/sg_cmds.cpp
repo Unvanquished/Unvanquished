@@ -4351,24 +4351,6 @@ void ClientCommand( int clientNum )
 	command->cmdHandler( ent );
 }
 
-void G_UnEscapeString( const char *in, char *out, int len )
-{
-	len--;
-
-	while ( *in && len > 0 )
-	{
-		if ( (unsigned char)*in >= ' ' || *in == '\n' )
-		{
-			*out++ = *in;
-			len--;
-		}
-
-		in++;
-	}
-
-	*out = '\0';
-}
-
 void Cmd_PrivateMessage_f( gentity_t *ent )
 {
 	int      pids[ MAX_CLIENTS ];

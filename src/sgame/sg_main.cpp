@@ -1576,8 +1576,7 @@ void PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 
 	if ( !level.inClient )
 	{
-		G_UnEscapeString( string, decolored, sizeof( decolored ) );
-		Log::Notice( decolored + 7 );
+		Log::Notice( string + 7 );
 	}
 
 	if ( !level.logFile )

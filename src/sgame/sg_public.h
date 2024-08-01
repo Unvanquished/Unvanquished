@@ -159,7 +159,6 @@ int               G_ClientNumbersFromString( const char *s, int *plist, int max 
 char              *ConcatArgs( int start );
 char              *ConcatArgsPrintable( int start );
 void              G_Say( gentity_t *ent, saymode_t mode, const char *chatText );
-void              G_UnEscapeString( const char *in, char *out, int len );
 void              G_SanitiseString( const char *in, char *out, int len );
 void              Cmd_PrivateMessage_f( gentity_t *ent );
 void              Cmd_AdminMessage_f( gentity_t *ent );
