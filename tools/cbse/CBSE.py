@@ -508,8 +508,8 @@ class PreprocessingLoader(jinja2.BaseLoader):
                 line = line[1:]
         return line
 
-    blockstart = re.compile('^\s*{%-?\s*(if|for).*$')
-    blockend = re.compile('^\s*{%-?\s*end(if|for).*$')
+    blockstart = re.compile(r'^\s*{%-?\s*(if|for).*$')
+    blockend = re.compile(r'^\s*{%-?\s*end(if|for).*$')
 
     def my_filter(self, text):
         lines = []
