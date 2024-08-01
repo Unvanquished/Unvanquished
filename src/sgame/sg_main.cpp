@@ -41,6 +41,8 @@ level_locals_t level;
 gentity_t          *g_entities;
 gclient_t          *g_clients;
 
+static Util::optional<Log::Logger> gameEventLog;
+
 Cvar::Range<Cvar::Cvar<int>> g_showWelcome("g_showWelcome", "show MN_WELCOME on connect (0 = none, 1 = all, 2 = unregistered)", Cvar::NONE, 0, 0, 2);
 
 Cvar::Range<Cvar::Cvar<int>> g_gravity(
@@ -483,6 +485,12 @@ void G_InitGame( int levelTime, int randomSeed, bool inClient )
 	level.inClient = inClient;
 	level.startTime = levelTime;
 	level.snd_fry = G_SoundIndex( "sound/misc/fry" );  // FIXME standing in lava / slime
+
+	// Hide this by default for local clients so they aren't forced to read secret information
+	// about enemy building etc.
+	gameEventLog = Log::Logger("sgame.gameEvents", "",
+	                           level.inClient ? Log::Level::WARNING : Log::Level::NOTICE)
+	               .WithoutSuppression();
 
 	// TODO: Move this in a seperate function
 	if ( !g_logFile.Get().empty() )
@@ -1544,20 +1552,17 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	             msg );
 }
 
-/*
-=================
-G_LogPrintf
-
-Print to the logfile with a time stamp if it is open, and to the server console.
-Will append a newline for you.
-=================
-*/
-void PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
+void G_LogPrintfImpl( const std::string &msg )
 {
-	va_list argptr;
+	gameEventLog->Notice( msg );
+
+	if ( !level.logFile )
+	{
+		return;
+	}
+
 	char    string[ 1024 ], decolored[ 1024 ];
 	int     min, tens, sec;
-	size_t  tslen;
 
 	sec = level.matchTime / 1000;
 
@@ -1568,21 +1573,7 @@ void PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 
 	Com_sprintf( string, sizeof( string ), "%3i:%i%i ", min, tens, sec );
 
-	tslen = strlen( string );
-
-	va_start( argptr, fmt );
-	Q_vsnprintf( string + tslen, sizeof( string ) - tslen, fmt, argptr );
-	va_end( argptr );
-
-	if ( !level.inClient )
-	{
-		Log::Notice( string + 7 );
-	}
-
-	if ( !level.logFile )
-	{
-		return;
-	}
+	Q_strcat( string, sizeof( string ), msg.c_str() );
 
 	Color::StripColors( string, decolored, sizeof( decolored ) );
 	trap_FS_Write( decolored, strlen( decolored ), level.logFile );

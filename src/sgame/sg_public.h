@@ -216,7 +216,7 @@ void              CalculateRanks();
 void              FindIntermissionPoint();
 void              G_RunThink( gentity_t *ent );
 void              G_AdminMessage( gentity_t *ent, const char *string );
-void              G_LogPrintf( const char *fmt, ... ) PRINTF_LIKE(1);
+void              G_LogPrintfImpl( const std::string &message );
 void              SendScoreboardMessageToAllClients();
 void              G_Vote( gentity_t *ent, team_t team, bool voting );
 void              G_ResetVote( team_t team );
@@ -230,6 +230,23 @@ void              G_CheckPmoveParamChanges();
 void              G_SendClientPmoveParams(int client);
 void              G_PrepareEntityNetCode();
 Str::StringRef G_NextMapCommand();
+
+/*
+=================
+G_LogPrintf
+
+Print to the logfile with a time stamp if it is open, and to the server console (via the
+sgame.gameEvents logger).
+Color codes are stripped when printing to the logfile.
+Will append a newline for you.
+=================
+*/
+template<typename... T>
+void G_LogPrintf( Str::StringRef fmt, const T&... args )
+{
+	std::string msg = Str::Format( fmt, args... );
+	G_LogPrintfImpl( msg );
+}
 
 // sg_maprotation.c
 void              G_PrintRotations();

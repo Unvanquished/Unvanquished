@@ -4420,7 +4420,7 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 		             teamonly ? "TPrivMsg" : "PrivMsg",
 		             ent ? ent->num() : -1,
 		             ent ? ent->client->pers.netname : "console",
-		             name, color.c_str(), msg );
+		             name, color, msg );
 	}
 }
 
