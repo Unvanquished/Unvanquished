@@ -126,7 +126,7 @@
 						<!-- Implementations for those options are broken and can make the game unusable
 						<option value="3"><translate>Exponential mapping</translate></option>
 						<option value="5"><translate>Variance mapping</translate></option>
-						<option value="6"><translate>Exponential + variance</translate>&nbsp;(<translate>high</translate>)</option>
+						<option value="6"><translate>Exponential + variance (high)</option>
 						-->
 					</select>
 					<h3><translate>Shadows</translate></h3>
