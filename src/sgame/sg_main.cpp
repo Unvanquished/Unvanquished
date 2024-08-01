@@ -1552,7 +1552,7 @@ void G_AdminMessage( gentity_t *ent, const char *msg )
 	             msg );
 }
 
-void G_LogPrintfImpl( const std::string &msg )
+void G_LogPrintfImpl( bool stripColors, const std::string &msg )
 {
 	gameEventLog->Notice( msg );
 
@@ -1561,7 +1561,7 @@ void G_LogPrintfImpl( const std::string &msg )
 		return;
 	}
 
-	char    string[ 1024 ], decolored[ 1024 ];
+	char    string[ 1024 ];
 	int     min, tens, sec;
 
 	sec = level.matchTime / 1000;
@@ -1573,10 +1573,9 @@ void G_LogPrintfImpl( const std::string &msg )
 
 	Com_sprintf( string, sizeof( string ), "%3i:%i%i ", min, tens, sec );
 
-	Q_strcat( string, sizeof( string ), msg.c_str() );
+	Q_strcat( string, sizeof( string ), ( stripColors? Color::StripColors( msg ) : msg ).c_str() );
 
-	Color::StripColors( string, decolored, sizeof( decolored ) );
-	trap_FS_Write( decolored, strlen( decolored ), level.logFile );
+	trap_FS_Write( string, strlen( string ), level.logFile );
     trap_FS_Write( "\n", 1, level.logFile );
 }
 

@@ -216,7 +216,7 @@ void              CalculateRanks();
 void              FindIntermissionPoint();
 void              G_RunThink( gentity_t *ent );
 void              G_AdminMessage( gentity_t *ent, const char *string );
-void              G_LogPrintfImpl( const std::string &message );
+void              G_LogPrintfImpl( bool stripColors, const std::string &message );
 void              SendScoreboardMessageToAllClients();
 void              G_Vote( gentity_t *ent, team_t team, bool voting );
 void              G_ResetVote( team_t team );
@@ -245,7 +245,15 @@ template<typename... T>
 void G_LogPrintf( Str::StringRef fmt, const T&... args )
 {
 	std::string msg = Str::Format( fmt, args... );
-	G_LogPrintfImpl( msg );
+	G_LogPrintfImpl( true, msg );
+}
+
+// Like G_LogPrintf but colors are retained in the logfile.
+template<typename... T>
+void G_LogPrintfColored( Str::StringRef fmt, const T&... args )
+{
+	std::string msg = Str::Format( fmt, args... );
+	G_LogPrintfImpl( false, msg );
 }
 
 // sg_maprotation.c
