@@ -30,3 +30,4 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 "${script_dir}/generate_pot.sh"
 "${script_dir}/update_po.sh"
+"${script_dir}/ignore_incomplete.sh"
