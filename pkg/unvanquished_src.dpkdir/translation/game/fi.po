@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-12 14:47+0200\n"
-"PO-Revision-Date: 2024-03-08 15:01+0000\n"
+"PO-Revision-Date: 2024-05-28 21:09+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -2269,7 +2269,7 @@ msgstr "Toimii vain uusille boteille."
 
 #: ui/transition_connecting.rml:24 ui/transition_downloading.rml:55
 msgid "Disconnect"
-msgstr ""
+msgstr "Katkaise yhteys"
 
 #: ui/transition_downloading.rml:57
 msgid "Additional files are required. Please be patient while they download."
@@ -4690,12 +4690,12 @@ msgstr "Odotetaan muiden pelaajien valmistautumista."
 #: src/cgame/cg_tutorial.cpp:614
 #, c-format
 msgid "Press %s to chat with all players."
-msgstr ""
+msgstr "Paina %s jutellaksesi kaikille pelaajille."
 
 #: src/cgame/cg_tutorial.cpp:616
 #, c-format
 msgid "Press %s to chat with your team."
-msgstr ""
+msgstr "Paina %s jutellaksesi joukkueellesi."
 
 #: src/cgame/cg_tutorial.cpp:618
 #, c-format
@@ -4741,7 +4741,7 @@ msgstr "^1Botin kulkuverkon muodostus epäonnistui!"
 
 #: src/sgame/sg_bot_nav.cpp:172
 msgid "Server: generating bot navigation meshes... $1$%"
-msgstr ""
+msgstr "Palvelin: luodaan bottien kulkuverkostoja... $1$%"
 
 #: src/sgame/sg_buildable.cpp:1881
 msgid "$1$ ^2built^* by $2$^*, ^3replacing^* $3$"
