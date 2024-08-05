@@ -1838,6 +1838,7 @@ static gentity_t *FinishSpawningBuildable( gentity_t *ent, bool force )
 	{
 		Log::Debug( "^3G_FinishSpawningBuildable: %s startsolid at %s",
 		          built->classname, vtos( built->s.origin ) );
+		Entities::Kill( built, MOD_SUICIDE );
 		G_FreeEntity( built );
 		return nullptr;
 	}
