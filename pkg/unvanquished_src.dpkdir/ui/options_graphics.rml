@@ -105,9 +105,14 @@
 					<p><translate>Precomputed dynamic lights emitted by static map objects.</translate></p>
 				</row>
 				<row>
-					<h3><translate>Dynamic lights</translate></h3>
+					<h3><translate>Realtime dynamic lights</translate></h3>
 					<input cvar="r_dynamicLight" type="checkbox" />
 					<p><translate>Realtime dynamic lights emitted by moving objects like weapons and buildings.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Realtime static lights</translate></h3>
+					<input cvar="r_staticLight" type="checkbox" />
+					<p><translate>Realtime static lights emitted by map objects.</translate></p>
 				</row>
 				<row>
 					<h3><translate>Rim lighting</translate></h3>
