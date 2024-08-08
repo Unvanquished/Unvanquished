@@ -329,4 +329,16 @@ struct mapEntity_t
 
 void     G_ResetIntField( int* target, bool fallbackIfNegativ, int instanceField, int classField, int fallback );
 
-#endif // SG_MAP_ENTITY_H
+
+/*
+===============
+G_SetMovedir
+
+The editor only specifies a single value for angles (yaw),
+but we have special constants to generate an up or down direction.
+Angles will be cleared, because it is being used to represent a direction
+instead of an orientation.
+===============
+*/
+void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir );
+#endif
