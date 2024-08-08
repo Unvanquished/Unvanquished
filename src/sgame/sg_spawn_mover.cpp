@@ -39,6 +39,10 @@ Maryland 20850 USA.
 #include "CBSE.h"
 #include "shared/math.hpp"
 
+#include <glm/gtx/range.hpp>
+
+#include <glm/gtx/range.hpp>
+
 #define DEFAULT_FUNC_TRAIN_SPEED 100
 
 static Cvar::Range<Cvar::Cvar<int>> g_bot_ignoreSmallObstacles(
@@ -61,8 +65,8 @@ PUSHMOVE
 struct pushed_t
 {
 	gentity_t *ent;
-	vec3_t    origin;
-	vec3_t    angles;
+	glm::vec3 origin;
+	glm::vec3 angles;
 	float     deltayaw;
 };
 
@@ -112,9 +116,9 @@ static bool G_SpawnVector( const char *key, const char *defaultString, glm::vec3
 G_CreateRotationMatrix
 ================
 */
-static void G_CreateRotationMatrix( vec3_t angles, vec3_t matrix[ 3 ] )
+static void G_CreateRotationMatrix( glm::vec3 const& angles, vec3_t matrix[ 3 ] )
 {
-	AngleVectors( angles, matrix[ 0 ], matrix[ 1 ], matrix[ 2 ] );
+	AngleVectors( &angles[0], matrix[ 0 ], matrix[ 1 ], matrix[ 2 ] );
 	VectorInverse( matrix[ 1 ] );
 }
 
@@ -141,14 +145,12 @@ static void G_TransposeMatrix( vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
 G_RotatePoint
 ================
 */
-static void G_RotatePoint( vec3_t point, vec3_t matrix[ 3 ] )
+static void G_RotatePoint( glm::vec3 & point, vec3_t matrix[ 3 ] )
 {
-	vec3_t tvec;
-
-	VectorCopy( point, tvec );
-	point[ 0 ] = DotProduct( matrix[ 0 ], tvec );
-	point[ 1 ] = DotProduct( matrix[ 1 ], tvec );
-	point[ 2 ] = DotProduct( matrix[ 2 ], tvec );
+	glm::vec3 tvec = point;
+	point[ 0 ] = glm::dot( VEC2GLM( matrix[ 0 ] ), tvec );
+	point[ 1 ] = glm::dot( VEC2GLM( matrix[ 1 ] ), tvec );
+	point[ 2 ] = glm::dot( VEC2GLM( matrix[ 2 ] ), tvec );
 }
 
 /*
@@ -158,10 +160,9 @@ G_TryPushingEntity
 Returns false if the move is blocked
 ==================
 */
-static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move, vec3_t amove )
+static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, glm::vec3 const& move, glm::vec3 const& amove )
 {
 	vec3_t    matrix[ 3 ], transpose[ 3 ];
-	vec3_t    org, org2, move2;
 	gentity_t *block;
 
 	// EF_MOVER_STOP will just stop when contacting another entity
@@ -202,18 +203,19 @@ static bool G_TryPushingEntity( gentity_t *check, gentity_t *pusher, vec3_t move
 	G_CreateRotationMatrix( amove, transpose );
 	G_TransposeMatrix( transpose, matrix );
 
+	glm::vec3 org, org2, move2;
 	if ( check->client )
 	{
-		VectorSubtract( check->client->ps.origin, pusher->r.currentOrigin, org );
+		org = VEC2GLM( check->client->ps.origin ) - VEC2GLM( pusher->r.currentOrigin );
 	}
 	else
 	{
-		VectorSubtract( check->s.pos.trBase, pusher->r.currentOrigin, org );
+		org = VEC2GLM( check->s.pos.trBase ) - VEC2GLM( pusher->r.currentOrigin );
 	}
 
-	VectorCopy( org, org2 );
+	org2 = org;
 	G_RotatePoint( org2, matrix );
-	VectorSubtract( org2, org, move2 );
+	move2 = org2 - org;
 	// add movement
 	VectorAdd( check->s.pos.trBase, move, check->s.pos.trBase );
 	VectorAdd( check->s.pos.trBase, move2, check->s.pos.trBase );
@@ -283,45 +285,40 @@ otherwise riders would continue to slide.
 If false is returned, *obstacle will be the blocking entity
 ============
 */
-static bool G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **obstacle )
+static bool G_MoverPush( gentity_t *pusher, glm::vec3 const& move, glm::vec3 const& amove, gentity_t **obstacle )
 {
 	int       i, e;
 	gentity_t *check;
-	vec3_t    mins, maxs;
 	pushed_t  *p;
 	int       entityList[ MAX_GENTITIES ];
 	int       listedEntities;
-	vec3_t    totalMins, totalMaxs;
+	glm::vec3 mins, maxs;
+	glm::vec3 totalMins, totalMaxs;
 
 	*obstacle = nullptr;
 
 	// mins/maxs are the bounds at the destination
 	// totalMins / totalMaxs are the bounds for the entire move
-	if ( pusher->r.currentAngles[ 0 ] || pusher->r.currentAngles[ 1 ] || pusher->r.currentAngles[ 2 ]
-	     || amove[ 0 ] || amove[ 1 ] || amove[ 2 ] )
+	if ( pusher->r.currentAngles[ 0 ]
+			|| pusher->r.currentAngles[ 1 ]
+			|| pusher->r.currentAngles[ 2 ]
+			|| amove[ 0 ]
+			|| amove[ 1 ]
+			|| amove[ 2 ] )
 	{
-		float radius;
+		float radius = RadiusFromBounds( pusher->r.mins, pusher->r.maxs );
 
-		radius = RadiusFromBounds( pusher->r.mins, pusher->r.maxs );
-
-		for ( i = 0; i < 3; i++ )
-		{
-			mins[ i ] = pusher->r.currentOrigin[ i ] + move[ i ] - radius;
-			maxs[ i ] = pusher->r.currentOrigin[ i ] + move[ i ] + radius;
-			totalMins[ i ] = mins[ i ] - move[ i ];
-			totalMaxs[ i ] = maxs[ i ] - move[ i ];
-		}
+		mins = VEC2GLM( pusher->r.currentOrigin ) + move - radius;
+		maxs = VEC2GLM( pusher->r.currentOrigin ) + move + radius;
+		totalMins = mins - move;
+		totalMaxs = maxs - move;
 	}
 	else
 	{
-		for ( i = 0; i < 3; i++ )
-		{
-			mins[ i ] = pusher->r.absmin[ i ] + move[ i ];
-			maxs[ i ] = pusher->r.absmax[ i ] + move[ i ];
-		}
-
-		VectorCopy( pusher->r.absmin, totalMins );
-		VectorCopy( pusher->r.absmax, totalMaxs );
+		mins = VEC2GLM( pusher->r.absmin ) + move;
+		maxs = VEC2GLM( pusher->r.absmax ) + move;
+		totalMins = VEC2GLM( pusher->r.absmin );
+		totalMaxs = VEC2GLM( pusher->r.absmax );
 
 		for ( i = 0; i < 3; i++ )
 		{
@@ -452,7 +449,7 @@ static void G_MoverGroup( gentity_t *ent )
 		glm::vec3 move = origin - VEC2GLM( part->r.currentOrigin );
 		glm::vec3 amove = angles - VEC2GLM( part->r.currentAngles );
 
-		if ( !G_MoverPush( part, &move[0], &amove[0], &obstacle ) )
+		if ( !G_MoverPush( part, move, amove, &obstacle ) )
 		{
 			break; // move was blocked
 		}
@@ -659,7 +656,7 @@ void BotHandleDoor( gentity_t *ent, moverState_t moverState )
 
 static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 {
-	vec3_t delta;
+	glm::vec3 delta;
 	float  f;
 
 	ent->mapEntity.moverState = moverState;
@@ -681,7 +678,7 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 
 		case MOVER_1TO2:
 			VectorCopy( ent->mapEntity.restingPosition, ent->s.pos.trBase );
-			VectorSubtract( ent->mapEntity.activatedPosition, ent->mapEntity.restingPosition, delta );
+			delta = ent->mapEntity.activatedPosition - ent->mapEntity.restingPosition;
 			f = 1000.0 / ent->s.pos.trDuration;
 			VectorScale( delta, f, ent->s.pos.trDelta );
 			ent->s.pos.trType = trType_t::TR_LINEAR_STOP;
@@ -689,7 +686,7 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 
 		case MOVER_2TO1:
 			VectorCopy( ent->mapEntity.activatedPosition, ent->s.pos.trBase );
-			VectorSubtract( ent->mapEntity.restingPosition, ent->mapEntity.activatedPosition, delta );
+			delta = ent->mapEntity.restingPosition - ent->mapEntity.activatedPosition;
 			f = 1000.0 / ent->s.pos.trDuration;
 			VectorScale( delta, f, ent->s.pos.trDelta );
 			ent->s.pos.trType = trType_t::TR_LINEAR_STOP;
@@ -707,7 +704,7 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 
 		case ROTATOR_1TO2:
 			VectorCopy( ent->mapEntity.restingPosition, ent->s.apos.trBase );
-			VectorSubtract( ent->mapEntity.activatedPosition, ent->mapEntity.restingPosition, delta );
+			delta = ent->mapEntity.activatedPosition - ent->mapEntity.restingPosition;
 			f = 1000.0 / ent->s.apos.trDuration;
 			VectorScale( delta, f, ent->s.apos.trDelta );
 			ent->s.apos.trType = trType_t::TR_LINEAR_STOP;
@@ -715,7 +712,7 @@ static void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 
 		case ROTATOR_2TO1:
 			VectorCopy( ent->mapEntity.activatedPosition, ent->s.apos.trBase );
-			VectorSubtract( ent->mapEntity.restingPosition, ent->mapEntity.activatedPosition, delta );
+			delta = ent->mapEntity.restingPosition - ent->mapEntity.activatedPosition;
 			f = 1000.0 / ent->s.apos.trDuration;
 			VectorScale( delta, f, ent->s.apos.trDelta );
 			ent->s.apos.trType = trType_t::TR_LINEAR_STOP;
@@ -812,14 +809,7 @@ static moverState_t GetMoverGroupState( gentity_t *ent )
 		}
 	}
 
-	if ( restingPosition )
-	{
-		return MOVER_POS1;
-	}
-	else
-	{
-		return MOVER_POS2;
-	}
+	return restingPosition ? MOVER_POS1 : MOVER_POS2;
 }
 
 /*
@@ -1338,9 +1328,6 @@ static void G_ResetFloatField( float* result, bool fallbackIfNegative, float ins
 
 static void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 {
-	vec3_t   move;
-	float    distance;
-
 	if(!fallbackSpeed)
 		Sys::Drop("No default speed was supplied to reset_moverspeed for entity #%i of type %s.", self->num(), self->classname);
 
@@ -1350,8 +1337,8 @@ static void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	if ( self->s.pos.trType != trType_t::TR_SINE )
 	{
 		// calculate time to reach second position from speed
-		VectorSubtract( self->mapEntity.activatedPosition, self->mapEntity.restingPosition, move );
-		distance = VectorLength( move );
+		glm::vec3 move = self->mapEntity.activatedPosition - self->mapEntity.restingPosition;
+		float distance = glm::length( move );
 
 		VectorScale( move, self->mapEntity.speed, self->s.pos.trDelta );
 		self->s.pos.trDuration = distance * 1000 / self->mapEntity.speed;
@@ -1365,47 +1352,40 @@ static void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 
 static void SP_ConstantLightField( gentity_t *self )
 {
-	bool  lightSet, colorSet;
 	float     light;
 	glm::vec3 color;
 
 	// if the "color" or "light" keys are set, setup constantLight
-	lightSet = G_SpawnFloat( "light", "100", &light );
-	colorSet = G_SpawnVector( "color", "1 1 1", color );
+	bool lightSet = G_SpawnFloat( "light", "100", &light );
+	bool colorSet = G_SpawnVector( "color", "1 1 1", color );
 
 	if ( lightSet || colorSet )
 	{
-		int r, g, b, i;
+		glm::ivec3 rgb( color * 255.f );
 
-		r = color[ 0 ] * 255;
-
-		if ( r > 255 )
+		if ( rgb.r > 255 )
 		{
-			r = 255;
+			rgb.r = 255;
 		}
 
-		g = color[ 1 ] * 255;
-
-		if ( g > 255 )
+		if ( rgb.g > 255 )
 		{
-			g = 255;
+			rgb.g = 255;
 		}
 
-		b = color[ 2 ] * 255;
-
-		if ( b > 255 )
+		if ( rgb.b > 255 )
 		{
-			b = 255;
+			rgb.b = 255;
 		}
 
-		i = light / 4;
+		int i = light / 4;
 
 		if ( i > 255 )
 		{
 			i = 255;
 		}
 
-		self->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
+		self->s.constantLight = rgb.r | ( rgb.g << 8 ) | ( rgb.b << 16 ) | ( i << 24 );
 	}
 }
 
@@ -1455,15 +1435,12 @@ static void InitMover( gentity_t *ent )
 
 static void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 {
-	vec3_t   move;
-	float    angle;
-
 	if(!fallbackSpeed)
 		Sys::Drop("No default speed was supplied to reset_rotatorspeed for entity #%i of type %s.", self->num(), self->classname);
 
 	// calculate time to reach second position from speed
-	VectorSubtract( self->mapEntity.activatedPosition, self->mapEntity.restingPosition, move );
-	angle = VectorLength( move );
+	glm::vec3 move = self->mapEntity.activatedPosition - self->mapEntity.restingPosition;
+	float angle = glm::length( move );
 
 	G_ResetFloatField(&self->mapEntity.speed, true, self->mapEntity.config.speed, self->mapEntity.eclass->config.speed, fallbackSpeed);
 
@@ -1602,25 +1579,24 @@ a trigger that encloses all of them
 static void Think_SpawnNewDoorTrigger( gentity_t *self )
 {
 	gentity_t *other;
-	vec3_t    mins, maxs;
-	int       i, best;
 
 	// find the bounds of everything on the group
-	VectorCopy( self->r.absmin, mins );
-	VectorCopy( self->r.absmax, maxs );
+	glm::vec3 mins = VEC2GLM( self->r.absmin );
+	glm::vec3 maxs = VEC2GLM( self->r.absmax );
 
 	for ( other = self->mapEntity.groupChain; other; other = other->mapEntity.groupChain )
 	{
-		AddPointToBounds( other->r.absmin, mins, maxs );
-		AddPointToBounds( other->r.absmax, mins, maxs );
+		AddPointToBounds( other->r.absmin, &mins[0], &maxs[0] );
+		AddPointToBounds( other->r.absmax, &mins[0], &maxs[0] );
 	}
 
 	// find the thinnest axis, which will be the one we expand
-	best = 0;
+	int best = 0;
 
-	for ( i = 1; i < 3; i++ )
+	glm::vec3 diff = maxs - mins;
+	for ( int i = 1; i < 3; i++ )
 	{
-		if ( maxs[ i ] - mins[ i ] < maxs[ best ] - mins[ best ] )
+		if ( diff[ i ] < diff[ best ] )
 		{
 			best = i;
 		}
@@ -1671,9 +1647,6 @@ static void func_door_use( gentity_t *self, gentity_t *caller, gentity_t *activa
 
 void SP_func_door( gentity_t *self )
 {
-	vec3_t abs_movedir;
-	float  distance;
-	vec3_t size;
 	float  lip;
 
 	if( !self->mapEntity.sound1to2 )
@@ -1716,32 +1689,24 @@ void SP_func_door( gentity_t *self )
 	G_SpawnFloat( "lip", "8", &lip );
 
 	// first position at start
-	VectorCopy( self->s.origin, self->mapEntity.restingPosition );
+	self->mapEntity.restingPosition = VEC2GLM( self->s.origin );
 
 	// calculate second position
 	trap_SetBrushModel( self, self->mapEntity.model );
 
 	glm::vec3 angles = VEC2GLM( self->s.angles );
-	glm::vec3 movedir = VEC2GLM( self->mapEntity.movedir );
-	G_SetMovedir( angles, movedir );
-	VectorCopy( angles, self->s.angles );
-	VectorCopy( movedir, self->mapEntity.movedir );
+	G_SetMovedir( angles, self->mapEntity.movedir );
 
-	abs_movedir[ 0 ] = fabs( self->mapEntity.movedir[ 0 ] );
-	abs_movedir[ 1 ] = fabs( self->mapEntity.movedir[ 1 ] );
-	abs_movedir[ 2 ] = fabs( self->mapEntity.movedir[ 2 ] );
-	VectorSubtract( self->r.maxs, self->r.mins, size );
-	distance = DotProduct( abs_movedir, size ) - lip;
-	VectorMA( self->mapEntity.restingPosition, distance, self->mapEntity.movedir, self->mapEntity.activatedPosition );
+	glm::vec3 abs_movedir = glm::abs( self->mapEntity.movedir );
+	glm::vec3 size = VEC2GLM( self->r.maxs ) - VEC2GLM( self->r.mins );
+	float distance = glm::dot( abs_movedir, size ) - lip;
+	self->mapEntity.activatedPosition = self->mapEntity.restingPosition + distance * self->mapEntity.movedir;
 
 	// if "start_open", reverse position 1 and 2
 	if ( self->mapEntity.spawnflags & 1 )
 	{
-		vec3_t temp;
-
-		VectorCopy( self->mapEntity.activatedPosition, temp );
-		VectorCopy( self->s.origin, self->mapEntity.activatedPosition );
-		VectorCopy( temp, self->mapEntity.restingPosition );
+		self->mapEntity.restingPosition = self->mapEntity.activatedPosition;
+		self->mapEntity.activatedPosition = VEC2GLM( self->s.origin );
 	}
 
 	InitMover( self );
@@ -1831,7 +1796,7 @@ void SP_func_door_rotating( gentity_t *self )
 	}
 
 	// set the axis of rotation
-	VectorClear( self->mapEntity.movedir );
+	self->mapEntity.movedir = glm::vec3();
 	VectorClear( self->s.angles );
 
 	if ( self->mapEntity.spawnflags & 32 )
@@ -1850,7 +1815,7 @@ void SP_func_door_rotating( gentity_t *self )
 	// reverse direction if necessary
 	if ( self->mapEntity.spawnflags & 8 )
 	{
-		VectorNegate( self->mapEntity.movedir, self->mapEntity.movedir );
+		self->mapEntity.movedir = -self->mapEntity.movedir;
 	}
 
 	G_SpawnFloat( "rotatorAngle", "0", &self->mapEntity.rotatorAngle );
@@ -1860,19 +1825,16 @@ void SP_func_door_rotating( gentity_t *self )
 		self->mapEntity.rotatorAngle = 90.0;
 	}
 
-	VectorCopy( self->s.angles, self->mapEntity.restingPosition );
+	self->mapEntity.restingPosition = VEC2GLM( self->s.angles );
 	trap_SetBrushModel( self, self->mapEntity.model );
-	VectorMA( self->mapEntity.restingPosition, self->mapEntity.rotatorAngle, self->mapEntity.movedir, self->mapEntity.activatedPosition );
+	self->mapEntity.activatedPosition = self->mapEntity.restingPosition + self->mapEntity.rotatorAngle * self->mapEntity.movedir;
 
 	// if "start_open", reverse position 1 and 2
 	if ( self->mapEntity.spawnflags & 1 )
 	{
-		vec3_t temp;
-
-		VectorCopy( self->mapEntity.activatedPosition, temp );
-		VectorCopy( self->s.angles, self->mapEntity.activatedPosition );
-		VectorCopy( temp, self->mapEntity.restingPosition );
-		VectorNegate( self->mapEntity.movedir, self->mapEntity.movedir );
+		self->mapEntity.restingPosition = self->mapEntity.activatedPosition;
+		self->mapEntity.activatedPosition = VEC2GLM( self->s.angles );
+		self->mapEntity.movedir = -self->mapEntity.movedir;
 	}
 
 	// set origin
@@ -2115,7 +2077,6 @@ not just sit on top of it.
 static void SpawnPlatSensor( gentity_t *self )
 {
 	gentity_t *sensor;
-	vec3_t    tmin, tmax;
 
 	// the middle trigger will be a thin trigger just
 	// above the starting position
@@ -2125,13 +2086,11 @@ static void SpawnPlatSensor( gentity_t *self )
 	sensor->r.contents = CONTENTS_TRIGGER;
 	sensor->parent = self;
 
-	tmin[ 0 ] = self->mapEntity.restingPosition[ 0 ] + self->r.mins[ 0 ] + 33;
-	tmin[ 1 ] = self->mapEntity.restingPosition[ 1 ] + self->r.mins[ 1 ] + 33;
-	tmin[ 2 ] = self->mapEntity.restingPosition[ 2 ] + self->r.mins[ 2 ];
+	glm::vec3 tmin = self->mapEntity.restingPosition + VEC2GLM( self->r.mins ) + 33.f;
+	tmin[2] -= 33.f;
 
-	tmax[ 0 ] = self->mapEntity.restingPosition[ 0 ] + self->r.maxs[ 0 ] - 33;
-	tmax[ 1 ] = self->mapEntity.restingPosition[ 1 ] + self->r.maxs[ 1 ] - 33;
-	tmax[ 2 ] = self->mapEntity.restingPosition[ 2 ] + self->r.maxs[ 2 ] + 8;
+	glm::vec3 tmax = self->mapEntity.restingPosition + VEC2GLM( self->r.maxs ) - 33.f;
+	tmax[2] += 33 + 8;
 
 	if ( tmax[ 0 ] <= tmin[ 0 ] )
 	{
@@ -2192,8 +2151,8 @@ void SP_func_plat( gentity_t *self )
 	}
 
 	// pos1 is the rest (bottom) position, pos2 is the top
-	VectorCopy( self->s.origin, self->mapEntity.activatedPosition );
-	VectorCopy( self->mapEntity.activatedPosition, self->mapEntity.restingPosition );
+	self->mapEntity.activatedPosition = VEC2GLM( self->s.origin );
+	self->mapEntity.restingPosition = self->mapEntity.activatedPosition;
 	self->mapEntity.restingPosition[ 2 ] -= height;
 
 	InitMover( self );
@@ -2250,11 +2209,6 @@ static void func_button_reset( gentity_t *self )
 
 void SP_func_button( gentity_t *self )
 {
-	vec3_t abs_movedir;
-	float  distance;
-	vec3_t size;
-	float  lip;
-
 	if( !self->mapEntity.sound1to2 )
 	{
 		self->mapEntity.sound1to2 = G_SoundIndex( "sound/movers/switches/button1" );
@@ -2270,25 +2224,21 @@ void SP_func_button( gentity_t *self )
 	self->mapEntity.config.wait.time *= 1000;
 
 	// first position
-	VectorCopy( self->s.origin, self->mapEntity.restingPosition );
+	self->mapEntity.restingPosition = VEC2GLM( self->s.origin );
 
 	// calculate second position
 	trap_SetBrushModel( self, self->mapEntity.model );
 
+	float  lip;
 	G_SpawnFloat( "lip", "4", &lip );
 
 	glm::vec3 angles = VEC2GLM( self->s.angles );
-	glm::vec3 movedir = VEC2GLM( self->mapEntity.movedir );
-	G_SetMovedir( angles, movedir );
-	VectorCopy( angles, self->s.angles );
-	VectorCopy( movedir, self->mapEntity.movedir );
+	G_SetMovedir( angles, self->mapEntity.movedir );
 
-	abs_movedir[ 0 ] = fabs( self->mapEntity.movedir[ 0 ] );
-	abs_movedir[ 1 ] = fabs( self->mapEntity.movedir[ 1 ] );
-	abs_movedir[ 2 ] = fabs( self->mapEntity.movedir[ 2 ] );
-	VectorSubtract( self->r.maxs, self->r.mins, size );
-	distance = abs_movedir[ 0 ] * size[ 0 ] + abs_movedir[ 1 ] * size[ 1 ] + abs_movedir[ 2 ] * size[ 2 ] - lip;
-	VectorMA( self->mapEntity.restingPosition, distance, self->mapEntity.movedir, self->mapEntity.activatedPosition );
+	glm::vec3 size = VEC2GLM( self->r.maxs ) - VEC2GLM( self->r.mins );
+	glm::vec3 temp = glm::abs( self->mapEntity.movedir ) * size;
+	float distance = std::accumulate( glm::begin( temp ), glm::end( temp ), -lip );
+	self->mapEntity.activatedPosition = self->mapEntity.restingPosition + distance * self->mapEntity.movedir;
 
 	// touchable button by default
 	self->touch = Touch_Button;
@@ -2344,8 +2294,6 @@ Reached_Train
 static void func_train_reached( gentity_t *self )
 {
 	gentity_t *next;
-	vec3_t    move;
-	float     length;
 
 	// copy the appropriate values
 	next = self->nextPathSegment;
@@ -2360,8 +2308,8 @@ static void func_train_reached( gentity_t *self )
 
 	// set the new trajectory
 	self->nextPathSegment = next->nextPathSegment;
-	VectorCopy( next->s.origin, self->mapEntity.restingPosition );
-	VectorCopy( next->nextPathSegment->s.origin, self->mapEntity.activatedPosition );
+	self->mapEntity.restingPosition = VEC2GLM( next->s.origin );
+	self->mapEntity.activatedPosition = VEC2GLM( next->nextPathSegment->s.origin );
 
 	// if the path_corner has a speed, use that otherwise use the train's speed
 	G_ResetFloatField( &self->mapEntity.speed, true, next->mapEntity.config.speed, next->mapEntity.eclass->config.speed, 0);
@@ -2370,8 +2318,8 @@ static void func_train_reached( gentity_t *self )
 	}
 
 	// calculate duration
-	VectorSubtract( self->mapEntity.activatedPosition, self->mapEntity.restingPosition, move );
-	length = VectorLength( move );
+	glm::vec3 move = self->mapEntity.activatedPosition - self->mapEntity.restingPosition;
+	float length = glm::length( move );
 
 	self->s.pos.trDuration = length * 1000 / self->mapEntity.speed;
 
@@ -2420,12 +2368,10 @@ Start_Train
 */
 static void Start_Train( gentity_t *self )
 {
-	vec3_t move;
-
 	//recalculate duration as the mover is highly
 	//unlikely to be right on a path_corner
-	VectorSubtract( self->mapEntity.activatedPosition, self->mapEntity.restingPosition, move );
-	self->s.pos.trDuration = VectorLength( move ) * 1000 / self->mapEntity.speed;
+	glm::vec3 move = self->mapEntity.activatedPosition - self->mapEntity.restingPosition;
+	self->s.pos.trDuration = glm::length( move ) * 1000 / self->mapEntity.speed;
 	self->s.pos.trDuration = std::max( 1, self->s.pos.trDuration );
 
 	SetMoverState( self, MOVER_1TO2, level.time );
@@ -2552,20 +2498,17 @@ static void func_train_blocked( gentity_t *self, gentity_t *other )
 			//dealt fatal amounts of damage they won't instantly become non-solid
 			if ( other->s.eType == entityType_t::ET_BUILDABLE && other->spawned )
 			{
-				vec3_t    dir;
-				gentity_t *tent;
-
 				if ( other->buildableTeam == TEAM_ALIENS )
 				{
-					VectorCopy( other->s.origin2, dir );
-					tent = G_NewTempEntity( VEC2GLM( other->s.origin ), EV_ALIEN_BUILDABLE_EXPLOSION );
-					tent->s.eventParm = DirToByte( dir );
+					glm::vec3 dir = VEC2GLM( other->s.origin2 );
+					gentity_t *tent = G_NewTempEntity( VEC2GLM( other->s.origin ), EV_ALIEN_BUILDABLE_EXPLOSION );
+					tent->s.eventParm = DirToByte( &dir[0] );
 				}
 				else if ( other->buildableTeam == TEAM_HUMANS )
 				{
-					VectorSet( dir, 0.0f, 0.0f, 1.0f );
-					tent = G_NewTempEntity( VEC2GLM( other->s.origin ), EV_HUMAN_BUILDABLE_EXPLOSION );
-					tent->s.eventParm = DirToByte( dir );
+					glm::vec3 dir( 0.f, 0.f, 1.f );
+					gentity_t *tent = G_NewTempEntity( VEC2GLM( other->s.origin ), EV_HUMAN_BUILDABLE_EXPLOSION );
+					tent->s.eventParm = DirToByte( &dir[0] );
 				}
 			}
 
@@ -2867,8 +2810,6 @@ Use_func_spawn
 */
 static void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 {
-	vec3_t    mins, maxs;
-
 	if( self->r.linked )
 	{
 		G_BotRemoveObstacle( self->num() );
@@ -2876,24 +2817,24 @@ static void func_spawn_act( gentity_t *self, gentity_t*, gentity_t *activator )
 	}
 	else
 	{
-		VectorAdd( self->mapEntity.restingPosition, self->r.mins, mins );
-		VectorAdd( self->mapEntity.restingPosition, self->r.maxs, maxs );
-		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), self->num() );
+		glm::vec3 mins = self->mapEntity.restingPosition + VEC2GLM( self->r.mins );
+		glm::vec3 maxs = self->mapEntity.restingPosition + VEC2GLM( self->r.maxs );
+		G_BotAddObstacle( mins, maxs, self->num() );
 		trap_LinkEntity( self );
 		if( !( self->mapEntity.spawnflags & 2 ) )
+		{
 			G_KillBrushModel( self, activator );
+		}
 	}
 }
 
 static void func_spawn_reset( gentity_t *self )
 {
-	vec3_t    mins, maxs;
-
 	if( self->mapEntity.spawnflags & 1 )
 	{
-		VectorAdd( self->mapEntity.restingPosition, self->r.mins, mins );
-		VectorAdd( self->mapEntity.restingPosition, self->r.maxs, maxs );
-		G_BotAddObstacle( VEC2GLM(mins), VEC2GLM(maxs), self->num() );
+		glm::vec3 mins = self->mapEntity.restingPosition + VEC2GLM( self->r.mins );
+		glm::vec3 maxs = self->mapEntity.restingPosition + VEC2GLM( self->r.maxs );
+		G_BotAddObstacle( mins, maxs, self->num() );
 		trap_LinkEntity( self );
 	}
 	else
@@ -2933,7 +2874,7 @@ static void func_destructable_die( gentity_t *self, gentity_t*, gentity_t *attac
 	G_BotRemoveObstacle( self->num() );
 	trap_UnlinkEntity( self );
 
-	G_RadiusDamage( self->mapEntity.restingPosition, attacker, self->splashDamage, self->splashRadius, self,
+	G_RadiusDamage( &self->mapEntity.restingPosition[0], attacker, self->splashDamage, self->splashRadius, self,
 	                DAMAGE_KNOCKBACK, MOD_TRIGGER_HURT );
 }
 

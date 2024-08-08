@@ -219,7 +219,7 @@ struct mapEntity_t
 	// "ent->s.pos.trBase = $NAME" when "moverState == moverState_t::.*_$NAME"
 	// In case $NAME is 1TO2 or 2TO1:
 	// ent->s.pos.trDelta = scale( ( last - next ), ( 1000 / ent->s.pos.trDuration ) )
-	vec3_t restingPosition, activatedPosition;
+	glm::vec3 restingPosition, activatedPosition;
 
 	// sounds played when "moverState == moverState_t::.*_$NAME"
 	int soundPos1, soundPos2;
@@ -276,7 +276,7 @@ struct mapEntity_t
 
 	int customNumber;
 
-	vec3_t       movedir;
+	glm::vec3       movedir;
 
 	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
 	void ( *blocked )( gentity_t *self, gentity_t *other );
