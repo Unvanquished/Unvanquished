@@ -97,6 +97,16 @@ static gentity_t *G_TestEntityPosition( gentity_t *ent )
 	return nullptr;
 }
 
+static bool G_SpawnVector( const char *key, const char *defaultString, glm::vec3& out )
+{
+	char     *s;
+	bool present;
+
+	present = G_SpawnString( key, defaultString, &s );
+	sscanf( s, "%f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ] );
+	return present;
+}
+
 /*
 ================
 G_CreateRotationMatrix
@@ -1357,7 +1367,7 @@ static void SP_ConstantLightField( gentity_t *self )
 {
 	bool  lightSet, colorSet;
 	float     light;
-	vec3_t    color;
+	glm::vec3 color;
 
 	// if the "color" or "light" keys are set, setup constantLight
 	lightSet = G_SpawnFloat( "light", "100", &light );
@@ -1966,9 +1976,12 @@ void SP_func_door_model( gentity_t *self )
 	VectorCopy( clipBrush->r.mins, self->r.mins );
 	VectorCopy( clipBrush->r.maxs, self->r.maxs );
 
-	G_SpawnVector( "modelOrigin", "0 0 0", self->s.origin );
+	glm::vec3 tmp;
+	G_SpawnVector( "modelOrigin", "0 0 0", tmp );
+	VectorCopy( tmp, self->s.origin );
 
-	G_SpawnVector( "scale", "1 1 1", self->s.origin2 );
+	G_SpawnVector( "scale", "1 1 1", tmp );
+	VectorCopy( tmp, self->s.origin2 );
 
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes

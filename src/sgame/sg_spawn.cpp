@@ -137,28 +137,6 @@ bool G_SpawnInt( const char *key, const char *defaultString, int *out )
 	return present;
 }
 
-bool G_SpawnVector( const char *key, const char *defaultString, vec3_t out )
-{
-	char     *s;
-
-	if ( G_SpawnString( key, defaultString, &s ) )
-	{
-		if ( 3 == sscanf( s, "%f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ] ) )
-		{
-			return true;
-		}
-
-		Log::Warn( "G_SpawnVector: invalid string '%s'", s );
-	}
-
-	if ( 3 != sscanf( defaultString, "%f %f %f", &out[ 0 ], &out[ 1 ], &out[ 2 ] ) )
-	{
-		ASSERT_UNREACHABLE();
-	}
-
-	return false;
-}
-
 //
 // fields are needed for spawning from the entity string
 //
@@ -1179,4 +1157,27 @@ void G_SpawnFakeEntities()
 	level.locationHead = level.fakeLocation;
 
 	G_SetOrigin( level.fakeLocation, VEC2GLM( level.fakeLocation->s.origin ) );
+}
+
+void G_SetMovedir( glm::vec3& angles, glm::vec3& movedir )
+{
+	static glm::vec3 VEC_UP = { 0, -1, 0 };
+	static glm::vec3 MOVEDIR_UP = { 0, 0, 1 };
+	static glm::vec3 VEC_DOWN = { 0, -2, 0 };
+	static glm::vec3 MOVEDIR_DOWN = { 0, 0, -1 };
+
+	if ( angles == VEC_UP )
+	{
+		movedir = MOVEDIR_UP;
+	}
+	else if ( angles == VEC_DOWN )
+	{
+		movedir = MOVEDIR_DOWN;
+	}
+	else
+	{
+		AngleVectors( angles, &movedir, nullptr, nullptr );
+	}
+
+	angles = glm::vec3();
 }
