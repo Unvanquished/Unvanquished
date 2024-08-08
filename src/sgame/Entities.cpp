@@ -25,6 +25,7 @@ along with Unvanquished.  If not, see <http://www.gnu.org/licenses/>.
 #include "common/Common.h"
 #include "Entities.h"
 #include "CBSE.h"
+#include "shared/math.hpp"
 
 bool Entities::OnSameTeam(Entity const &firstEntity, Entity const &secndEntity) {
 	TeamComponent const* firstTeamComponent = firstEntity.Get<TeamComponent>();
@@ -152,6 +153,7 @@ bool Entities::KnockbackRadiusDamage(Entity& entity, float amount, float range, 
 		if (!G_IsVisible(entity.oldEnt, other.oldEnt, MASK_SOLID)) return;
 
 		glm::vec3 knockbackDir = VEC2GLM( other.oldEnt->s.origin ) - VEC2GLM( entity.oldEnt->s.origin );
+		normalize_warn( knockbackDir );
 
 		if (other.Damage(damage, entity.oldEnt, {}, knockbackDir, DAMAGE_NO_LOCDAMAGE | DAMAGE_KNOCKBACK, mod)) {
 			hit = true;
