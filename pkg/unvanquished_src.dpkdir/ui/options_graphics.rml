@@ -144,6 +144,11 @@
 					<p><translate>Lower texture size is useful for cards with limited video memory (VRAM).</translate></p>
 				</row>
 
+				<h2><translate>High-precision rendering</translate></h2>
+				<row>
+					<input cvar="r_highPrecisionRendering" type="checkbox" />
+					<p><translate>Use high-precision pixel buffers, which reduce color banding.</translate></p>
+				</row>
 				<h2><translate>Mip-mapping</translate></h2>
 				<p><translate>Mip-mapping makes distant surfaces look better by using lower-resolution textures on them. This generally does not affect performance.</translate></p>
 				<row>
