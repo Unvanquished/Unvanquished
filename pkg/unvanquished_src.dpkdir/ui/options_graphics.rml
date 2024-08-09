@@ -93,21 +93,26 @@
 			<panel>
 				<h2><translate>Lights</translate></h2>
 				<row>
-					<select cvar="r_vertexLighting">
-						<option value="0"><translate>Light mapping</translate>&nbsp;(<translate>normal</translate>)</option>
-						<option value="1"><translate>Grid lighting</translate>&nbsp;(<translate>low, ugly</translate>)</option>
+					<select cvar="r_lightMode">
+						<option value="3"><translate>Light mapping</translate>&nbsp;(<translate>normal</translate>)</option>
+						<option value="1"><translate>Vertex lighting</translate>&nbsp;(<translate>low, ugly</translate>)</option>
 					</select>
 					<h3><translate>Lighting system</translate></h3>
 				</row>
 				<row>
 					<h3><translate>Light styles</translate></h3>
-					<input cvar="r_lightStyles" type="checkbox" checked-value="1" />
+					<input cvar="r_lightStyles" type="checkbox" />
 					<p><translate>Precomputed dynamic lights emitted by static map objects.</translate></p>
 				</row>
 				<row>
-					<h3><translate>Dynamic lights</translate></h3>
-					<input cvar="r_dynamicLight" type="checkbox" checked-value="2" />
+					<h3><translate>Realtime dynamic lights</translate></h3>
+					<input cvar="r_dynamicLight" type="checkbox" />
 					<p><translate>Realtime dynamic lights emitted by moving objects like weapons and buildings.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Realtime static lights</translate></h3>
+					<input cvar="r_staticLight" type="checkbox" />
+					<p><translate>Realtime static lights emitted by map objects.</translate></p>
 				</row>
 				<row>
 					<h3><translate>Rim lighting</translate></h3>
@@ -126,7 +131,7 @@
 						<!-- Implementations for those options are broken and can make the game unusable
 						<option value="3"><translate>Exponential mapping</translate></option>
 						<option value="5"><translate>Variance mapping</translate></option>
-						<option value="6"><translate>Exponential + variance</translate>&nbsp;(<translate>high</translate>)</option>
+						<option value="6"><translate>Exponential + variance (high)</option>
 						-->
 					</select>
 					<h3><translate>Shadows</translate></h3>
@@ -149,6 +154,11 @@
 					<p><translate>Lower texture size is useful for cards with limited video memory (VRAM).</translate></p>
 				</row>
 
+				<h2><translate>High-precision rendering</translate></h2>
+				<row>
+					<input cvar="r_highPrecisionRendering" type="checkbox" />
+					<p><translate>Use high-precision images for rendering, reduce color banding.</translate></p>
+				</row>
 				<h2><translate>Mip-mapping</translate></h2>
 				<p><translate>Mip-mapping makes distant surfaces look better by using lower-resolution textures on them. This generally does not affect performance.</translate></p>
 				<row>
