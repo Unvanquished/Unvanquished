@@ -554,6 +554,62 @@ private:
 	float fps_;
 };
 
+class PerfTimersHudElement : public TextHudElement {
+	public:
+	PerfTimersHudElement( const Rml::String& tag )
+		: TextHudElement( tag, ELEMENT_ALL ) {
+	}
+
+	void DoOnUpdate() override {
+		if ( !cg_drawPerfTimers.Get() ) {
+			SetText( "" );
+			return;
+		}
+
+		bool glTimer = false;
+
+		std::string& perfTimers = cg_perfTimers.Get();
+		std::istringstream perfTimersTextStream( perfTimers );
+		std::string line;
+		while ( std::getline( perfTimersTextStream, line, ' ' ) ) {
+			if ( line.compare( "all" ) ) {
+				glTimer = true;
+				break;
+			} else if ( line.compare( "gl" ) ) {
+				glTimer = true;
+			}
+		}
+
+		std::string out;
+		std::string out1;
+		std::string out2;
+		std::string out3;
+		int divisor = 1000000;
+
+		/* F xxx L  xxx
+		   D xxx O  xxx T  xxx
+		   C xxx DR xxx PP xxx */
+		if ( glTimer ) {
+			out += "                  gl:";
+			EngineTimers* e = trap_R_GetEngineTimers();
+
+			out1 += " F " + Str::Format( "%03u", e->glTime[SharedTimer::FRAME] / divisor );
+			out1 += " L " + Str::Format( "%03u", e->glTime[SharedTimer::FRAME] / divisor );
+			out1 += "             ";
+
+			out2 += " D " + Str::Format( "%03u", e->glTime[SharedTimer::DEPTH] / divisor );
+			out2 += " O  " + Str::Format( "%03u", e->glTime[SharedTimer::OPAQUE] / divisor );
+			out2 += " T  " + Str::Format( "%03u", e->glTime[SharedTimer::TRANSPARENT] / divisor );
+
+			out3 += " C " + Str::Format( "%03u", e->glTime[SharedTimer::CULL] / divisor );
+			out3 += " DR " + Str::Format( "%03u", e->glTime[SharedTimer::DEPTH_REDUCTION] / divisor );
+			out3 += " PP " + Str::Format( "%03u", e->glTime[SharedTimer::POST_PROCESS] / divisor );
+		}
+
+		SetInnerRML( out + "<br/>" + out1 + "<br/>" + out2 + "<br/>" + out3 );
+	}
+};
+
 #define CROSSHAIR_INDICATOR_HITFADE 500
 
 class CrosshairIndicatorHudElement : public HudElement
@@ -3814,6 +3870,7 @@ void CG_Rocket_RegisterElements()
 	RegisterElement<AmmoHudElement>( "ammo" );
 	RegisterElement<ClipsHudElement>( "clips" );
 	RegisterElement<FpsHudElement>( "fps" );
+	RegisterElement<PerfTimersHudElement>( "perfTimers" );
 	RegisterElement<CrosshairIndicatorHudElement>( "crosshair_indicator" );
 	RegisterElement<CrosshairHudElement>( "crosshair" );
 	RegisterElement<SpeedGraphElement>( "speedometer" );

@@ -1792,6 +1792,8 @@ extern Cvar::Cvar<bool> cg_buildableShadows;
 extern Cvar::Cvar<bool> cg_drawTimer;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawClock;
 extern Cvar::Cvar<bool> cg_drawFPS;
+extern Cvar::Cvar<bool> cg_drawPerfTimers;
+extern Cvar::Cvar<std::string> cg_perfTimers;
 extern Cvar::Range<Cvar::Cvar<int>> cg_drawCrosshair;
 extern Cvar::Cvar<bool> cg_drawCrosshairHit;
 extern Cvar::Range<Cvar::Cvar<int>> cg_crosshairStyle;
