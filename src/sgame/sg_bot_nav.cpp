@@ -736,7 +736,7 @@ static bool BotAvoidObstacles( gentity_t *self, glm::vec3 &dir, bool ignoreGeome
 	}
 
 	// check for crouching
-	if ( g_bot_autocrouch.Get() )
+	if ( G_Team( self ) == TEAM_HUMANS && g_bot_autocrouch.Get() )
 	{
 		glm::vec3 playerMins;
 		glm::vec3 playerCMaxs;
