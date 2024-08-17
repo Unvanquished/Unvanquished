@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-12 14:47+0200\n"
-"PO-Revision-Date: 2024-04-26 13:07+0000\n"
-"Last-Translator: Mr Abdusalam <abdusalamalshehri2010@gmail.com>\n"
+"PO-Revision-Date: 2024-08-17 09:20+0000\n"
+"Last-Translator: saif hseen <saifhseen6@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ar/>\n"
 "Language: ar\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.5.1\n"
+"X-Generator: Weblate 5.7\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -203,16 +203,21 @@ msgid ""
 "then they can uses those credits to buy new [lcannon] weapons, body armours "
 "or [bsuit] battlesuit, and accessories like a radar or a jetpack."
 msgstr ""
+"يمكن للبشر كسب النقاط عن طريق قتل الفضائيين  وتدمير مواد الفضائيين القابلة "
+"للبناء, بعدها يمكن استخدام النقاط لشراء  اسحلة [lcannon]  جديدة, دروع قتال "
+"او [bsuit] بدلة قتال , وملحقات مثل الرادار و jetpack."
 
 #: ui/help_gameplay.rml:50
 msgid ""
 "Humans buy and sell weapons at the [armoury] armoury, make sure one is "
 "built! Use the construction kit to build an armoury if it's missing."
 msgstr ""
+"البشر يشترون ويبيعون الاسلحة في المستودع [armoury], تأكد طلقة واحدة! استعمل "
+"عدة البناء لبناء المستودع اذا كان غير موجود"
 
 #: ui/help_gameplay.rml:54
 msgid "Powering buildables"
-msgstr ""
+msgstr "تشغيل الأجهزة القابلة للبناء"
 
 #: ui/help_gameplay.rml:57
 msgid ""
@@ -222,6 +227,10 @@ msgid ""
 "the available power and provide more build points. Be wary that you will "
 "loose the build points if the mining structures are destroyed."
 msgstr ""
+"يتطلب بناء هيكل نقاط بناء. سيبدأ فريقك بمجموعة صغيرة من نقاط البناء ولكن إذا "
+"كنت ترغب في وضع عدد أكبر من العناصر القابلة للبناء في منطقة ما ، فيمكنك بناء "
+"هيكل تعدين [] لزيادة الطاقة المتاحة وتوفير المزيد من نقاط البناء. كن حذرا من "
+"أنك ستفقد نقاط البناء إذا تم تدمير هياكل التعدين."
 
 #: ui/help_gameplay.rml:60
 msgid ""
