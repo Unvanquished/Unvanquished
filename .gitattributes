@@ -1,6 +1,8 @@
-*					text=auto
+*                                       text=auto
 
-*.sh					eol=lf
-*.pl					eol=lf
-*.vcxproj				eol=crlf
-*.vcxproj.filter			eol=crlf
+*.sh                                    eol=lf
+*.pl                                    eol=lf
+download-paks                           eol=lf
+
+*.vcxproj                               eol=crlf
+*.vcxproj.filter                        eol=crlf
