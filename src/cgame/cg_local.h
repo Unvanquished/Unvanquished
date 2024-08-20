@@ -1224,6 +1224,8 @@ struct cg_t
 	char                    testModelName[ MAX_QPATH ];
 	char                    testModelBarrelName[ MAX_QPATH ];
 	bool                testGun;
+	qhandle_t hTestShader;
+	polyVert_t testShaderPoly[ 4 ];
 
 	int                     spawnTime; // fovwarp
 	int                     weapon1Time; // time when BTN_ATTACK went t->f f->t
