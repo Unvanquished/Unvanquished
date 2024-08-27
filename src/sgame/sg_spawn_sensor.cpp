@@ -259,6 +259,10 @@ void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
 				== !entities->mapEntity.conditions.negated)
 		{
 			G_FireEntity(entities, entities);
+			// remove this entity now to prevent subsequent activation
+			// TODO: when implementing stage down triggers, we will probably
+			// want to keep the entity forever, and remove this line
+			G_FreeEntity( entities );
 		}
 	}
 }
