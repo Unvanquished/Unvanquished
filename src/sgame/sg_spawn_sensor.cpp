@@ -262,6 +262,9 @@ void G_notify_sensor_stage( team_t team, int previousStage, int newStage )
 			// remove this entity now to prevent subsequent activation
 			// TODO: when implementing stage down triggers, we will probably
 			// want to keep the entity forever, and remove this line
+			// comparison to tremulous: trigger_stage could be fired more than
+			// once by not specifying a team (thus, it could be fired twice - once for each team)
+			// but there is no known tremulous map doing this
 			G_FreeEntity( entities );
 		}
 	}
