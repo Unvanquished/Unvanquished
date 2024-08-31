@@ -222,6 +222,49 @@ static void CG_AddTestModel()
 	}
 }
 
+// Textures may be subject to the map's light grid
+// Some textures don't work: deformvertexes autosprite/autosprite2, sky...
+class TestShaderCmd : public Cmd::StaticCmd
+{
+public:
+	TestShaderCmd() : StaticCmd("testshader", "draw a polygon with specified q3shader") {}
+
+	void Run( const Cmd::Args &args ) const override
+	{
+		if ( args.Argc() < 2 )
+		{
+			Print("Disabling test shader");
+			cg.hTestShader = 0;
+			return;
+		}
+
+		cg.hTestShader = trap_R_RegisterShader( args.Argv( 1 ).c_str(), RSF_DEFAULT );
+		if ( !cg.hTestShader )
+		{
+			Print( "Shader %s not found", args.Argv( 1 ) );
+			return;
+		}
+
+		glm::vec3 center = VEC2GLM( cg.refdef.vieworg ) + 200.0f * VEC2GLM( cg.refdef.viewaxis[ 0 ] );
+		glm::vec3 left = 50.0f * VEC2GLM( cg.refdef.viewaxis[ 1 ] );
+		glm::vec3 up = 50.0f * VEC2GLM( cg.refdef.viewaxis[ 2 ] );
+		VectorCopy( center + left + up, cg.testShaderPoly[ 0 ].xyz );
+		VectorCopy( center - left + up, cg.testShaderPoly[ 1 ].xyz );
+		VectorCopy( center - left - up, cg.testShaderPoly[ 2 ].xyz );
+		VectorCopy( center + left - up, cg.testShaderPoly[ 3 ].xyz );
+		Vector2Set( cg.testShaderPoly[ 0 ].st, 0, 0 );
+		Vector2Set( cg.testShaderPoly[ 1 ].st, 1, 0 );
+		Vector2Set( cg.testShaderPoly[ 2 ].st, 1, 1 );
+		Vector2Set( cg.testShaderPoly[ 3 ].st, 0, 1 );
+
+		for ( polyVert_t &v : cg.testShaderPoly )
+		{
+			Vector4Set( v.modulate, 255, 255, 255, 255 );
+		}
+	}
+};
+static TestShaderCmd testShaderCmdRegistration;
+
 //============================================================================
 
 /*
@@ -1945,6 +1988,11 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	if ( cg.testModelEntity.hModel )
 	{
 		CG_AddTestModel();
+	}
+
+	if ( cg.hTestShader )
+	{
+		trap_R_AddPolyToScene( cg.hTestShader, 4, cg.testShaderPoly );
 	}
 
 	cg.refdef.time = cg.time;

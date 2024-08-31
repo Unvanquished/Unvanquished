@@ -1169,11 +1169,11 @@ static void SetMapInfoFromArenaInfo( arenaInfo_t arenaInfo )
 			}
 			else if ( author == arenaInfo.authors.back() )
 			{
-				authorNames = Str::Format( "%s and %s", authorNames, author );
+				authorNames = Str::Format( "%s^* and %s", authorNames, author );
 			}
 			else
 			{
-				authorNames = Str::Format( "%s, %s", authorNames, author );
+				authorNames = Str::Format( "%s^*, %s^*", authorNames, author );
 			}
 		}
 
