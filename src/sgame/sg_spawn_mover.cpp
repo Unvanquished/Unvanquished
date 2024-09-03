@@ -1083,7 +1083,7 @@ void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	// only the master should be used
 	if ( ent->flags & FL_GROUPSLAVE )
 	{
-		BinaryMover_act( ent->mapEntity.groupMaster, other, activator );
+		ent->mapEntity.groupMaster->act( ent->mapEntity.groupMaster, other, activator );
 		return;
 	}
 
@@ -2697,7 +2697,7 @@ static void FuncRotating_act( gentity_t *ent, gentity_t *other, gentity_t *activ
 	// only the master should be used
 	if ( ent->flags & FL_GROUPSLAVE )
 	{
-		FuncRotating_act( ent->mapEntity.groupMaster, other, activator );
+		ent->mapEntity.groupMaster->act( ent->mapEntity.groupMaster, other, activator );
 		return;
 	}
 
