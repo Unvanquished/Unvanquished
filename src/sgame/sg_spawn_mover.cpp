@@ -2665,20 +2665,26 @@ check either the X_AXIS or Y_AXIS box to change that.
 ===============================================================================
 */
 
-static void FuncRotatingSetSpeedAccordingToSpawnflags( gentity_t *self )
+
+static int FuncRotatingVectorComponentOffset( gentity_t *self )
 {
 	if ( self->mapEntity.spawnflags & 4 )
 	{
-		self->s.apos.trDelta[ 2 ] = self->mapEntity.speed;
+		return 2;
 	}
 	else if ( self->mapEntity.spawnflags & 8 )
 	{
-		self->s.apos.trDelta[ 0 ] = self->mapEntity.speed;
+		return 0;
 	}
 	else
 	{
-		self->s.apos.trDelta[ 1 ] = self->mapEntity.speed;
+		return 1;
 	}
+}
+
+static void FuncRotatingSetSpeedAccordingToSpawnflags( gentity_t *self )
+{
+	self->s.apos.trDelta[ FuncRotatingVectorComponentOffset( self ) ] = self->mapEntity.speed;
 }
 
 // custom act function exclusively for func_rotating
@@ -2698,10 +2704,23 @@ static void FuncRotating_act( gentity_t *ent, gentity_t *other, gentity_t *activ
 	ent->activator = activator;
 	master = MasterOf( ent );
 
+	// every entity in the group must be a func_rotating
+	// TODO: ensure, or at least assert, this
 	for ( ent = master; ent; ent = ent->mapEntity.groupChain )
 	{
 		if ( ent->s.apos.trDelta[ 0 ] == 0.f && ent->s.apos.trDelta[ 1 ] == 0.f && ent->s.apos.trDelta[ 2 ] == 0.f )
 		{
+			// we are out of phase with a rotation that started with euler angle = 0 at
+			// level.time = 0 now, since we had stopped the rotator for some time.
+			// so we calculate the phase shift of the new rotation, and correct the new
+			// value of the euler angle accordingly.
+
+			int periodLength = 360000 / ent->mapEntity.speed;  // milliseconds
+			int positionInPeriod = level.time % periodLength;
+			int phaseShiftAngle = 360 * positionInPeriod / periodLength;
+
+			ent->s.apos.trBase[ FuncRotatingVectorComponentOffset( ent ) ] -= phaseShiftAngle;
+			VectorCopy( ent->s.apos.trBase, ent->r.currentAngles );
 			FuncRotatingSetSpeedAccordingToSpawnflags( ent );
 		}
 		else
