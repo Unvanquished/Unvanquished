@@ -2688,12 +2688,6 @@ static void FuncRotating_act( gentity_t *ent, gentity_t *other, gentity_t *activ
 {
 	gentity_t *master;
 
-	// if this is a non-client-usable thing, return
-	if ( ent->mapEntity.names[ 0 ] && other && other->client )
-	{
-		return;
-	}
-
 	// only the master should be used
 	if ( ent->flags & FL_GROUPSLAVE )
 	{
