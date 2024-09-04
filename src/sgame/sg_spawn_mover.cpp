@@ -2746,7 +2746,6 @@ void SP_func_rotating( gentity_t *self )
 	trap_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
 	self->act = FuncRotating_act;
-	reset_moverspeed( self, 100 );
 
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
