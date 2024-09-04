@@ -2711,16 +2711,9 @@ static void FuncRotating_act( gentity_t *ent, gentity_t *other, gentity_t *activ
 		if ( ent->s.apos.trDelta[ 0 ] == 0.f && ent->s.apos.trDelta[ 1 ] == 0.f && ent->s.apos.trDelta[ 2 ] == 0.f )
 		{
 			// we are out of phase with a rotation that started with euler angle = 0 at
-			// level.time = 0 now, since we had stopped the rotator for some time.
-			// so we calculate the phase shift of the new rotation, and correct the new
-			// value of the euler angle accordingly.
-
-			int periodLength = 360000 / ent->mapEntity.speed;  // milliseconds
-			int positionInPeriod = level.time % periodLength;
-			int phaseShiftAngle = 360 * positionInPeriod / periodLength;
-
-			ent->s.apos.trBase[ FuncRotatingVectorComponentOffset( ent ) ] -= phaseShiftAngle;
-			VectorCopy( ent->s.apos.trBase, ent->r.currentAngles );
+			// level.time = 0 now, since we had stopped the rotator for some time
+			// set trTime to account for this
+			ent->s.apos.trTime = level.time;
 			FuncRotatingSetSpeedAccordingToSpawnflags( ent );
 		}
 		else
@@ -2730,7 +2723,7 @@ static void FuncRotating_act( gentity_t *ent, gentity_t *other, gentity_t *activ
 				// set the rotation speed to zero
 				ent->s.apos.trDelta[ i ] = 0.f;
 
-				// set the current angle as new base position angle
+				// set the current euler angle as new base euler angle
 				// restricting the angle to the interval 0..360 is not
 				// strictly neccessary, but feels like a safe choice
 				ent->s.apos.trBase[ i ] = fmod( ent->r.currentAngles[ i ], 360.f );
