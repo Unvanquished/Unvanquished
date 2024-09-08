@@ -2665,6 +2665,73 @@ check either the X_AXIS or Y_AXIS box to change that.
 ===============================================================================
 */
 
+
+static int FuncRotatingVectorComponentOffset( gentity_t *self )
+{
+	if ( self->mapEntity.spawnflags & 4 )
+	{
+		return 2;
+	}
+	else if ( self->mapEntity.spawnflags & 8 )
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+static void FuncRotatingSetSpeedAccordingToSpawnflags( gentity_t *self )
+{
+	self->s.apos.trDelta[ FuncRotatingVectorComponentOffset( self ) ] = self->mapEntity.speed;
+}
+
+// custom act function exclusively for func_rotating
+// firing a func_rotating stops the rotation
+// firing it again resumes the rotation
+static void FuncRotating_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
+{
+	gentity_t *master;
+
+	// only the master should be used
+	if ( ent->flags & FL_GROUPSLAVE )
+	{
+		FuncRotating_act( ent->mapEntity.groupMaster, other, activator );
+		return;
+	}
+
+	ent->activator = activator;
+	master = MasterOf( ent );
+
+	// every entity in the group must be a func_rotating
+	// TODO: ensure, or at least assert, this
+	for ( ent = master; ent; ent = ent->mapEntity.groupChain )
+	{
+		if ( ent->s.apos.trDelta[ 0 ] == 0.f && ent->s.apos.trDelta[ 1 ] == 0.f && ent->s.apos.trDelta[ 2 ] == 0.f )
+		{
+			// we are out of phase with a rotation that started with euler angle = 0 at
+			// level.time = 0 now, since we had stopped the rotator for some time
+			// set trTime to account for this
+			ent->s.apos.trTime = level.time;
+			FuncRotatingSetSpeedAccordingToSpawnflags( ent );
+		}
+		else
+		{
+			for ( int i = 0; i < 3; i++ )
+			{
+				// set the rotation speed to zero
+				ent->s.apos.trDelta[ i ] = 0.f;
+
+				// set the current euler angle as new base euler angle
+				// restricting the angle to the interval 0..360 is not
+				// strictly neccessary, but feels like a safe choice
+				ent->s.apos.trBase[ i ] = fmod( ent->r.currentAngles[ i ], 360.f );
+			}
+		}
+	}
+}
+
 void SP_func_rotating( gentity_t *self )
 {
 	G_ResetFloatField(&self->mapEntity.speed, false, self->mapEntity.config.speed, self->mapEntity.eclass->config.speed, 100);
@@ -2672,24 +2739,13 @@ void SP_func_rotating( gentity_t *self )
 	// set the axis of rotation
 	self->s.apos.trType = trType_t::TR_LINEAR;
 
-	if ( self->mapEntity.spawnflags & 4 )
-	{
-		self->s.apos.trDelta[ 2 ] = self->mapEntity.speed;
-	}
-	else if ( self->mapEntity.spawnflags & 8 )
-	{
-		self->s.apos.trDelta[ 0 ] = self->mapEntity.speed;
-	}
-	else
-	{
-		self->s.apos.trDelta[ 1 ] = self->mapEntity.speed;
-	}
+	FuncRotatingSetSpeedAccordingToSpawnflags( self );
 
 	G_ResetIntField(&self->damage, true, self->mapEntity.config.damage, self->mapEntity.eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->mapEntity.model );
 	InitMover( self );
-	reset_moverspeed( self, 100 );
+	self->act = FuncRotating_act;
 
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
