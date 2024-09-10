@@ -25,12 +25,12 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Allow overriding the python path with a cached variable.
-set(DAEMON_CBSE_PYTHON_PATH "NOTFOUND" CACHE FILEPATH "Python executable for CBSE code generation")
-if (NOT DAEMON_CBSE_PYTHON_PATH OR NOT EXISTS ${DAEMON_CBSE_PYTHON_PATH})
+set(CBSE_PYTHON_PATH "NOTFOUND" CACHE FILEPATH "Python executable for CBSE code generation")
+if (NOT CBSE_PYTHON_PATH OR NOT EXISTS ${CBSE_PYTHON_PATH})
     find_package(Python REQUIRED)
-    set(DAEMON_CBSE_PYTHON_PATH "${Python_EXECUTABLE}" CACHE FILEPATH "Python executable for CBSE code generation" FORCE)
+    set(CBSE_PYTHON_PATH "${Python_EXECUTABLE}" CACHE FILEPATH "Python executable for CBSE code generation" FORCE)
 endif()
-message(STATUS "Using CBSE Python executable: ${DAEMON_CBSE_PYTHON_PATH}")
+message(STATUS "Using CBSE Python executable: ${CBSE_PYTHON_PATH}")
 
 function(maybe_add_dep target dep)
     if (TARGET ${target})
@@ -42,7 +42,7 @@ function(CBSE target definition output)
     # Check if python has all the dependencies
     # TODO: Execute pip directly here and install them
     execute_process(
-        COMMAND ${DAEMON_CBSE_PYTHON_PATH} -c "import jinja2, yaml, collections, argparse, sys, os.path, re"
+        COMMAND ${CBSE_PYTHON_PATH} -c "import jinja2, yaml, collections, argparse, sys, os.path, re"
         RESULT_VARIABLE RET)
     if (NOT RET EQUAL 0)
         message(FATAL_ERROR "Missing dependences for CBSE generation. Please ensure you have python ≥ 2, python-yaml, and python-jinja installed.
@@ -66,7 +66,7 @@ function(CBSE target definition output)
                 ${CMAKE_SOURCE_DIR}/tools/cbse/templates/Helper.h
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tools/cbse
         COMMAND
-                ${DAEMON_CBSE_PYTHON_PATH}
+                ${CBSE_PYTHON_PATH}
                 ${CMAKE_SOURCE_DIR}/tools/cbse/CBSE.py
                 -s -o
                 "${output}"
