@@ -40,7 +40,7 @@ before_build:
     --sub-ref=%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%:has=/sync$
     --print
   - python --version
-  - pip install -r tools/cbse/requirements.txt --upgrade
+  - python -m pip install -r tools/cbse/requirements.txt --upgrade
 
 build_script:
   - cmd: cmake --version
