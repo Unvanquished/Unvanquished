@@ -40,13 +40,12 @@ endfunction()
 
 function(CBSE target definition output)
     # Check if python has all the dependencies
-    # TODO: Execute pip directly here and install them
     execute_process(
         COMMAND ${CBSE_PYTHON_PATH} -c "import jinja2, yaml, collections, argparse, sys, os.path, re"
         RESULT_VARIABLE RET)
     if (NOT RET EQUAL 0)
         message(FATAL_ERROR "Missing dependences for CBSE generation. Please ensure you have python ≥ 2, python-yaml, and python-jinja installed.
-                             Use pip install -r tools/cbse/requirements.txt to install")
+                             Use python -m pip install -r tools/cbse/requirements.txt to install")
     endif()
     set(GENERATED_CBSE ${output}/backend/CBSEBackend.cpp
                        ${output}/backend/CBSEBackend.h
