@@ -99,6 +99,24 @@ void G_BotSetNavMesh( int botClientNum, class_t newClass )
 {
 	newClass = NavmeshForClass( newClass, g_bot_navmeshReduceTypes.Get() );
 
+	gentity_t *self = &g_entities[ botClientNum ];
+	switch ( self->client->ps.stats[ STAT_CLASS ] )
+	{
+	case PCL_HUMAN_NAKED:
+	case PCL_HUMAN_LIGHT:
+	case PCL_HUMAN_MEDIUM:
+		if ( BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
+		{
+			newClass = PCL_HUMAN_LIGHT;
+		}
+		else
+		{
+			newClass = PCL_HUMAN_NAKED;
+		}
+	default:
+		break;
+	}
+
 	NavData_t *nav = nullptr;
 
 	for ( int i = 0; i < numNavData; i++ )

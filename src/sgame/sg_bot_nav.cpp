@@ -1051,6 +1051,57 @@ void BotMoveUpward( gentity_t *self, glm::vec3 nextCorner )
 	}
 }
 
+static Cvar::Cvar<float>  g_bot_jetpackLandingZ("g_bot_jetpackLandingZ", "how far below the desired height the landing manouver is initiated", Cvar::NONE, 100);
+static Cvar::Cvar<float>  g_bot_jetpackOvershootZ("g_bot_jetpackOvershootZ", "how far above the desired height the jetpack is stopped", Cvar::NONE, 0);
+
+static bool BotFlyUpward( gentity_t *self, glm::vec3 &ownPos, glm::vec3 &nextCorner )
+{
+	switch ( self->botMind->jetpackState )
+	{
+	case BOT_JETPACK_NONE:
+		if ( level.time - self->botMind->lastNavconTime < 500 && self->botMind->lastNavconDistance > 50 )
+		{
+			self->botMind->jetpackState = BOT_JETPACK_NAVCON_WAITING;
+			return true;
+		}
+		return false;
+	case BOT_JETPACK_NAVCON_WAITING:
+		{
+			// firing a full fuel tank will reach a relative height of about 1500 quake units
+			// use a little less here for safety
+			float maxDistance = 1200.f;
+			float actualDistance = static_cast<float>( self->botMind->lastNavconDistance );
+			float maxFuel = static_cast<float>( JETPACK_FUEL_MAX );
+			int requiredFuel = static_cast<int>( maxFuel * actualDistance / maxDistance );
+			if ( self->client->ps.stats[ STAT_FUEL ] >= requiredFuel && level.time - self->botMind->lastNavconTime > 500 )
+			{
+				self->botMind->jetpackState = BOT_JETPACK_NAVCON_FLYING;
+			}
+		}
+		BotResetStuckTime( self );
+		BotStandStill( self );
+		return true;
+	case BOT_JETPACK_NAVCON_FLYING:
+		if ( nextCorner.z < ownPos.z + g_bot_jetpackLandingZ.Get() )
+		{
+			self->botMind->jetpackState = BOT_JETPACK_NAVCON_LANDING;
+		}
+		BotStandStill( self );
+		self->botMind->cmdBuffer.upmove = 127;
+		return true;
+	case BOT_JETPACK_NAVCON_LANDING:
+		if ( nextCorner.z + g_bot_jetpackOvershootZ.Get() < ownPos.z )
+		{
+			self->botMind->jetpackState = BOT_JETPACK_NONE;
+			return false;
+		}
+		self->botMind->cmdBuffer.upmove = 127;
+		return true;
+	default:
+		return false;
+	}
+}
+
 static bool BotTryMoveUpward( gentity_t *self )
 {
 	int selfClientNum = self->client->num();
@@ -1068,6 +1119,11 @@ static bool BotTryMoveUpward( gentity_t *self )
 	{
 		switch ( self->client->ps.stats [ STAT_CLASS ] )
 		{
+		case PCL_HUMAN_NAKED:
+		case PCL_HUMAN_LIGHT:
+		case PCL_HUMAN_MEDIUM:
+			// might have a jetpack, that case is handled below
+			break;
 		case PCL_ALIEN_BUILDER0_UPG:
 		case PCL_ALIEN_LEVEL0:
 		case PCL_ALIEN_LEVEL1:
@@ -1085,6 +1141,14 @@ static bool BotTryMoveUpward( gentity_t *self )
 	int limit = LEVEL3_POUNCE_TIME_UPG * 3 / 2;  // seems to be reasonable for all classes
 	switch ( self->client->ps.stats [ STAT_CLASS ] )
 	{
+	case PCL_HUMAN_NAKED:
+	case PCL_HUMAN_LIGHT:
+	case PCL_HUMAN_MEDIUM:
+		if ( !BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
+		{
+			return false;
+		}
+		return BotFlyUpward( self, ownPos, nextCorner );
 	case PCL_ALIEN_LEVEL0:
 	case PCL_ALIEN_LEVEL1:
 	case PCL_ALIEN_LEVEL2:
