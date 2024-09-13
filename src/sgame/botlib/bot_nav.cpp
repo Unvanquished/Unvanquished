@@ -89,6 +89,7 @@ static void BotSetPolyFlags(
 #endif
 
 // must be called on class or upgrade change
+// sets navmesh and polyflag filter
 void G_BotSetNavMesh( gentity_t *ent )
 {
 	class_t newClass = NavmeshForClass( static_cast<class_t>( ent->client->ps.stats[ STAT_CLASS ] ),
@@ -128,6 +129,13 @@ void G_BotSetNavMesh( gentity_t *ent )
 			Sys::Drop( "Out of memory (bot corridor init)" );
 		}
 	}
+
+	int polyflags = POLYFLAGS_WALK;
+	if ( BG_InventoryContainsUpgrade( UP_JETPACK, ent->client->ps.stats ) )
+	{
+		polyflags |= POLYFLAGS_JETPACK;
+	}
+	nav->filter.setIncludeFlags( polyflags );
 
 	bot.nav = nav;
 	float clearVec[3]{};

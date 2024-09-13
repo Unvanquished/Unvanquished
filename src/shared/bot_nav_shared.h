@@ -52,6 +52,7 @@ enum navPolyFlags
 {
 	POLYFLAGS_DISABLED = 0,
 	POLYFLAGS_WALK     = 1 << 0,
+	POLYFLAGS_JETPACK  = 1 << 1,
 	POLYFLAGS_ALL      = 0xffff, // All abilities.
 };
 
