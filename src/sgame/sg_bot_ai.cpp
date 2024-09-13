@@ -873,14 +873,18 @@ static bool TargetInOffmeshAttackRange( gentity_t *self )
 	}
 }
 
-static void BotActivateJetpack( gentity_t *self )
+static void BotActivateJetpack( gentity_t *self, int fuelLimit )
 {
-	if ( BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats )
-		 && self->client->ps.stats[ STAT_FUEL ] > JETPACK_FUEL_MAX / 4
-		 )
+	if ( !BG_InventoryContainsUpgrade( UP_JETPACK, self->client->ps.stats ) )
 	{
-		self->botMind->cmdBuffer.upmove = 127;
+		return;
 	}
+	int fuel = self->client->ps.stats[ STAT_FUEL ];
+	if ( fuel < fuelLimit )
+	{
+		return;
+	}
+	self->botMind->cmdBuffer.upmove = 127;
 }
 
 // TODO: Move decision making out of these actions and into the rest of the behavior tree
@@ -1047,8 +1051,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	glm::vec3 targetPos = mind->goal.getPos();
 	if ( ownPos.z < targetPos.z + 400 )
 	{
-		// activate the jetpack if we have it, but do not fly too high above the enemy
-		BotActivateJetpack( self );
+		BotActivateJetpack( self, JETPACK_FUEL_MAX / 4 );
 	}
 
 	if ( mind->skillLevel >= 3 && goalDist < Square( MAX_HUMAN_DANCE_DIST )
@@ -1079,6 +1082,25 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	if ( inAttackRange && self->botMind->goal.getTargetType() == entityType_t::ET_BUILDABLE )
 	{
 		BotStandStill( self );
+		// try to complete navcon flight: fire jetpack and move to target
+		switch ( self->botMind->jetpackState )
+		{
+		case BOT_JETPACK_NAVCON_FLYING:
+		case BOT_JETPACK_NAVCON_LANDING:
+			BotActivateJetpack( self, 0 );
+			if ( targetPos.z - 100 > ownPos.z )
+			{
+				BotMoveInDir( self, MOVE_FORWARD );
+			}
+			if ( targetPos.z < ownPos.z // maybe use g_bot_jetpackOvershootZ
+				|| self->client->ps.stats[ STAT_FUEL ] < JETPACK_FUEL_MAX / 16 )
+			{
+				self->botMind->jetpackState = BOT_JETPACK_NONE;
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 	if ( !BotWalkIfStaminaLow( self ) )
@@ -1837,9 +1859,12 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		{
 			if ( !BotBuyUpgrade( self, upgrades[i] ) )
 			{
+				G_BotSetNavMesh( self );
 				return STATUS_FAILURE;
 			}
 		}
+
+		G_BotSetNavMesh( self );
 
 		if ( weapon != WP_NONE )
 		{

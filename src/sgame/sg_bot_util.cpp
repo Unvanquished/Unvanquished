@@ -2252,7 +2252,6 @@ static bool BotChangeHumanClass( gentity_t *self, class_t newClass )
 	VectorCopy( newOrigin, self->client->ps.origin );
 	self->client->ps.stats[ STAT_CLASS ] = newClass;
 	self->client->pers.classSelection = newClass;
-	G_BotSetNavMesh( self );
 	self->client->ps.eFlags ^= EF_TELEPORT_BIT;
 	return true;
 }
