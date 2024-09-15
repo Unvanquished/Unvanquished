@@ -32,12 +32,6 @@ if (NOT CBSE_PYTHON_PATH OR NOT EXISTS ${CBSE_PYTHON_PATH})
 endif()
 message(STATUS "Using CBSE Python executable: ${CBSE_PYTHON_PATH}")
 
-function(maybe_add_dep target dep)
-    if (TARGET ${target})
-        add_dependencies(${target} ${dep})
-    endif()
-endfunction()
-
 function(CBSE target definition output)
     # Check if python has all the dependencies
     execute_process(
