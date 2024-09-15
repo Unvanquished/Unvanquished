@@ -167,6 +167,10 @@ try_flag(WARNINGS "/wd4458")  # declaration of 'XXX' hides class member
 try_flag(WARNINGS "/wd4459")  # declaration of 'XXX' hides global declaration
 try_flag(WARNINGS "/wd4701")  # potentially uninitialized local variable 'XXX' used
 try_flag(WARNINGS "/wd26812") # The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'
+if (NACL)
+    # https://stackoverflow.com/a/48413842
+    set(WARNINGS ${WARNINGS} "-Wno-missing-braces")
+endif()
 
 if (BUILD_SGAME)
     include(tools/cbse/CBSE.cmake)
