@@ -202,9 +202,16 @@ endif()
 
 if (BUILD_SGAME)
     include(tools/cbse/CBSE.cmake)
-    CBSE("sgame"
-         "${GAMELOGIC_DIR}/sgame/entities.yaml"
-         "${GAMELOGIC_DIR}/sgame/")
+
+    # Avoid generating CBSE in the NaCl subproject.
+    if (FORK EQUAL 2)
+        CBSEFileList("${GAMELOGIC_DIR}/sgame/" sgame_GENERATED_CBSE)
+    else()
+        CBSE("sgame"
+             "${GAMELOGIC_DIR}/sgame/entities.yaml"
+             "${GAMELOGIC_DIR}/sgame/")
+    endif()
+
     GAMEMODULE(NAME sgame
         DEFINITIONS
             BUILD_SGAME
@@ -219,6 +226,14 @@ if (BUILD_SGAME)
             srclibs-recast
             srclibs-fastlz
     )
+
+    if (BUILD_GAME_NACL AND NOT (FORK EQUAL 2))
+        include(ExternalProject)
+        ExternalProject_Add_Step(nacl-vms cbse-trigger
+                                 COMMENT "Finished CBSE generation, ready to build NaCl"
+                                 DEPENDS ${sgame_GENERATED_CBSE}
+                                 DEPENDERS build)
+    endif()
 endif()
 
 if (BUILD_CGAME)
