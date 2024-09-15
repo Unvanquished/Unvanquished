@@ -122,6 +122,12 @@ if (BUILDING_ANY_GAMELOGIC AND BUILD_CGAME)
     include_directories(${RMLUI_INCLUDE_DIRS})
 endif()
 
+# Configuration for Recast
+set(RC_MAX_LAYERS 63 CACHE STRING "Must be 255 or smaller.")
+set(RC_MAX_NEIS 16 CACHE STRING "")
+# This does not set the cache variable but rather a normal variable that shadows it.
+set(NACL_VM_INHERITED_OPTIONS ${NACL_VM_INHERITED_OPTIONS} RC_MAX_LAYERS RC_MAX_NEIS)
+
 if (BUILDING_ANY_GAMELOGIC)
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
@@ -136,9 +142,6 @@ if (BUILDING_ANY_GAMELOGIC)
                         ${LIB_DIR}/recastnavigation/DetourCrowd/Include)
 
     # Recast
-    set(RC_MAX_LAYERS 63 CACHE STRING "Must be 255 or smaller.")
-    set(RC_MAX_NEIS 16 CACHE STRING "")
-
     if (RC_MAX_LAYERS GREATER 255)
         message(FATAL_ERROR "RC_MAX_LAYERS must be 255 or smaller")
     endif()
