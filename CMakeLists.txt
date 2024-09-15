@@ -82,28 +82,47 @@ include(src.cmake)
 option(BUILD_CGAME "Build client-side gamelogic" 1)
 option(BUILD_SGAME "Build server-side gamelogic" 1)
 
-if (BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL)
-    if (NACL)
-        set(FREETYPE_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/libfreetype.a)
-        set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY} ${DEPS_DIR}/pnacl_deps/lib/libpng16.a)
-        set(FREETYPE_INCLUDE_DIRS ${DEPS_DIR}/pnacl_deps/include/freetype2)
-        set(LUA_INCLUDE_DIR ${DEPS_DIR}/pnacl_deps/include)
-        set(LUA_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/liblua.a)
-    else()
+# Whether we are building any gamelogic with the current toolchain
+if ((BUILD_GAME_NATIVE_DLL OR BUILD_GAME_NATIVE_EXE OR NACL) AND (BUILD_CGAME OR BUILD_SGAME))
+    set(BUILDING_ANY_GAMELOGIC 1)
+endif()
+
+#########################################
+# Externally built library dependencies #
+#########################################
+if (NACL)
+    set(FREETYPE_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/libfreetype.a)
+    set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY} ${DEPS_DIR}/pnacl_deps/lib/libpng16.a)
+    set(FREETYPE_INCLUDE_DIRS ${DEPS_DIR}/pnacl_deps/include/freetype2)
+    set(LUA_INCLUDE_DIR ${DEPS_DIR}/pnacl_deps/include)
+    set(LUA_LIBRARY ${DEPS_DIR}/pnacl_deps/lib/liblua.a)
+elseif (BUILDING_ANY_GAMELOGIC)
+    find_package(Lua REQUIRED)
+
+    if (BUILD_CGAME)
+        # Freetype (RmlUi dependency)
         find_package(Freetype REQUIRED)
         if (APPLE OR WIN32)
             find_package(ZLIB REQUIRED)
             set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARIES} ${ZLIB_LIBRARIES})
         endif()
-        find_package(Lua REQUIRED)
     endif()
+endif()
+include_directories(${LUA_INCLUDE_DIR})
+
+##################################
+# Libraries we build from source #
+##################################
+
+if (BUILDING_ANY_GAMELOGIC AND BUILD_CGAME)
+    # RmlUi
+    include_directories(${FREETYPE_INCLUDE_DIRS})
     include(${CMAKE_CURRENT_SOURCE_DIR}/rmlui.cmake)
-    include_directories(${FREETYPE_INCLUDE_DIRS} ${LUA_INCLUDE_DIR})
     set_target_properties(RMLUI_LIB PROPERTIES FOLDER "libs")
     include_directories(${RMLUI_INCLUDE_DIRS})
 endif()
 
-if (BUILD_SGAME OR BUILD_CGAME)
+if (BUILDING_ANY_GAMELOGIC)
     # Fastlz
     add_library(srclibs-fastlz EXCLUDE_FROM_ALL ${FASTLZLIST})
     set_target_properties(srclibs-fastlz PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
@@ -133,44 +152,53 @@ if (BUILD_SGAME OR BUILD_CGAME)
         ${LIB_DIR}/recastnavigation/Recast/Include
         ${LIB_DIR}/recastnavigation/RecastDemo/Include)
 
-    # GLM
+    # GLM (header-only)
     include_directories(${LIB_DIR}/glm)
+    add_definitions(-DGLM_FORCE_EXPLICIT_CTOR)
+
+    # tinygettext
+    add_library(srclibs-tinygettext EXCLUDE_FROM_ALL ${TINYGETTEXTLIST})
+    set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
+    target_include_directories(srclibs-tinygettext PUBLIC ${LIB_DIR}/tinygettext/include)
+    target_compile_definitions(srclibs-tinygettext PUBLIC TINYGETTEXT_UTF8_ONLY)
 endif()
 
-add_definitions( -DGLM_FORCE_EXPLICIT_CTOR )
+################################################
+# Warning options for Unvanquished source code #
+################################################
 
-add_library(srclibs-tinygettext EXCLUDE_FROM_ALL ${TINYGETTEXTLIST})
-set_target_properties(srclibs-tinygettext PROPERTIES POSITION_INDEPENDENT_CODE 1 FOLDER "libs")
-target_include_directories(srclibs-tinygettext PUBLIC ${LIB_DIR}/tinygettext/include)
-target_compile_definitions(srclibs-tinygettext PUBLIC TINYGETTEXT_UTF8_ONLY)
+if (BUILDING_ANY_GAMELOGIC)
+    # keep
+    try_flag(WARNINGS           "-Wno-pragmas")
+    try_flag(WARNINGS           "-Wno-unknown-pragmas")
+    try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
+    try_flag(WARNINGS           "-Woverloaded-virtual")
+    try_flag(WARNINGS           "-Wstrict-null-sentinel")
 
-# Warning options for Unvanquished source code
-# keep
-try_flag(WARNINGS           "-Wno-pragmas")
-try_flag(WARNINGS           "-Wno-unknown-pragmas")
-try_flag(WARNINGS           "-W${WARNMODE}old-style-cast")
-try_flag(WARNINGS           "-Woverloaded-virtual")
-try_flag(WARNINGS           "-Wstrict-null-sentinel")
+    # Since OSX uses newer compilers, they complain about some of header only libs.
+    # So, ignore deprecation warnings on OSX.
+    if (APPLE)
+        # Do not error for GLM vsprintf deprecation warnings.
+        try_flag(WARNINGS "-Wno-error=deprecated-declarations")
+    endif()
 
-# Since OSX uses newer compilers, they complain about some of header only libs.
-# So, ignore deprecation warnings on OSX.
-if (APPLE)
-    # Do not error for GLM vsprintf deprecation warnings.
-    try_flag(WARNINGS "-Wno-error=deprecated-declarations")
+    # remove
+    try_flag(WARNINGS           "-Wno-maybe-uninitialized")
+    try_flag(WARNINGS "/wd4127")  # conditional expression is constant
+    try_flag(WARNINGS "/wd4458")  # declaration of 'XXX' hides class member
+    try_flag(WARNINGS "/wd4459")  # declaration of 'XXX' hides global declaration
+    try_flag(WARNINGS "/wd4701")  # potentially uninitialized local variable 'XXX' used
+    try_flag(WARNINGS "/wd26812") # The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'
 endif()
 
-
-# remove
-try_flag(WARNINGS           "-Wno-maybe-uninitialized")
-try_flag(WARNINGS "/wd4127")  # conditional expression is constant
-try_flag(WARNINGS "/wd4458")  # declaration of 'XXX' hides class member
-try_flag(WARNINGS "/wd4459")  # declaration of 'XXX' hides global declaration
-try_flag(WARNINGS "/wd4701")  # potentially uninitialized local variable 'XXX' used
-try_flag(WARNINGS "/wd26812") # The enum 'XXX' is unscoped. Prefer 'enum class' over 'enum'
 if (NACL)
     # https://stackoverflow.com/a/48413842
     set(WARNINGS ${WARNINGS} "-Wno-missing-braces")
 endif()
+
+#####################
+# Gamelogic modules #
+#####################
 
 if (BUILD_SGAME)
     include(tools/cbse/CBSE.cmake)
