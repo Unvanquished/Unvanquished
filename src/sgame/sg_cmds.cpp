@@ -4444,7 +4444,6 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 }
 
 
-
 /*
 =================
 Cmd_ReplyPrivateMessage_f
