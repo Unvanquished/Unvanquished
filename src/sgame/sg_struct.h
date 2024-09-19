@@ -346,6 +346,8 @@ struct clientPersistant_t
 	weapon_t          humanItemSelection; // humans have a starting item
 
 	int               teamChangeTime; // level.time of last team change
+	int		  lastPrivateMessageSender; // last private message sender
+
 	namelog_t         *namelog;
 	g_admin_admin_t   *admin;
 
