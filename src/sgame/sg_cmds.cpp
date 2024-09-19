@@ -4408,12 +4408,13 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	for ( i = 0; i < pcount; i++ )
 	{
 		if ( G_SayTo( ent, &g_entities[ pids[ i ] ],
-		              teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg ) )
-		{
-			count++;
-			Q_strcat( recipients, sizeof( recipients ), va( "%s^*, ",
-			          level.clients[ pids[ i ] ].pers.netname ) );
-		}
+                teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg ) )
+                {
+                         count++;
+                         Q_strcat( recipients, sizeof( recipients ), va( "%s^*, ",
+                                 level.clients[ pids[ i ] ].pers.netname ) );
+                         level.clients[ pids[ i ] ].pers.lastPrivateMessageSender = ent - g_entities;
+                }
 	}
 
 	// report the results
