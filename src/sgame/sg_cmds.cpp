@@ -4224,6 +4224,7 @@ static const commands_t cmds[] =
 	{ "listmaps",        CMD_MESSAGE | CMD_INTERMISSION,      Cmd_ListMaps_f         },
 	{ "listrotation",    CMD_MESSAGE | CMD_INTERMISSION,      G_PrintCurrentRotation },
 	{ "m",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
+	{ "r",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_ReplyPrivateMessage_f   },
 	{ "maplog",          CMD_MESSAGE | CMD_INTERMISSION,      Cmd_MapLog_f           },
 	{ "me",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
 	{ "me_team",         CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Me_f               },
@@ -4441,6 +4442,53 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 		             name, color.c_str(), msg );
 	}
 }
+
+
+
+/*
+=================
+Cmd_ReplyPrivateMessage_f
+
+Reply by private message to the last private message sender
+=================
+*/
+
+void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
+{
+    char *msg;
+    int target;
+    bool teamonly = false;
+
+    if (!g_privateMessages.Get() && ent)
+    {
+        ADMP( "\"" N_("Sorry, but private messages have been disabled") "\"" );
+        return;
+    }
+
+    if (trap_Argc() < 2)
+    {
+        ADMP( QQ( N_("usage: /r [message]") ) );
+        return;
+    }
+
+    target = ent->client->pers.lastPrivateMessageSender;
+    if (target == -1 || !g_entities[target].client)
+    {
+        ADMP( "\"" N_("No one to reply to.") "\"" );
+        return;
+    }
+
+    msg = ConcatArgs(1);
+
+    if (G_SayTo(ent, &g_entities[target], teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg))
+    {
+        ADMP(va("%s %s", QQ(N_("Private message: ^7$1$")), Quote(msg)));
+        G_LogPrintf("PrivMsg: %d \"%s^*\" \"%s\": %s",
+                     ent->num(), ent->client->pers.netname,
+                     g_entities[target].client->pers.netname, msg);
+    }
+}
+
 
 /*
 =================
