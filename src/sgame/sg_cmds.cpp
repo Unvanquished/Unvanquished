@@ -4410,13 +4410,18 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 	for ( i = 0; i < pcount; i++ )
 	{
 		if ( G_SayTo( ent, &g_entities[ pids[ i ] ],
-                teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg ) )
-                {
-                         count++;
-                         Q_strcat( recipients, sizeof( recipients ), va( "%s^*, ",
-                                 level.clients[ pids[ i ] ].pers.netname ) );
-                         level.clients[ pids[ i ] ].pers.lastPrivateMessageSender = ent - g_entities;
-                }
+		              teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg ) )
+		{
+			count++;
+			Q_strcat( recipients, sizeof( recipients ), va( "%s^*, ",
+			          level.clients[ pids[ i ] ].pers.netname ) );
+			int playerNum = ent - g_entities;
+			if ( level.clients[ pids[ i ] ].pers.lastPrivateMessageSender != playerNum )
+			{
+				level.clients[ pids[ i ] ].pers.lastPrivateMessageSenderTime = level.time;
+			}
+			level.clients[ pids[ i ] ].pers.lastPrivateMessageSender = playerNum;
+		}
 	}
 
 	// report the results
@@ -4472,6 +4477,12 @@ void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
         ADMP( QQ( N_("usage: /r [message]") ) );
         return;
     }
+
+	if ( level.time - ent->client->pers.lastPrivateMessageSenderTime < 3000 )
+	{
+		ADMP( "\"" N_("More than one possible recipient, refusing to send.") "\"" );
+        return;
+	}
 
     target = ent->client->pers.lastPrivateMessageSender;
     if (target == -1 || !g_entities[target].client)

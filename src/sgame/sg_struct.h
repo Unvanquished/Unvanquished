@@ -347,6 +347,7 @@ struct clientPersistant_t
 
 	int               teamChangeTime; // level.time of last team change
 	int		  lastPrivateMessageSender; // last private message sender
+	int		  lastPrivateMessageSenderTime; // when private message sender last changed
 
 	namelog_t         *namelog;
 	g_admin_admin_t   *admin;
