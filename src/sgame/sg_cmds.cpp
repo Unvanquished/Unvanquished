@@ -4462,21 +4462,21 @@ Reply by private message to the last private message sender
 
 void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
 {
-    char *msg;
-    int target;
-    bool teamonly = false;
+	char *msg;
+	int target;
+	bool teamonly = false;
 
-    if (!g_privateMessages.Get() && ent)
-    {
-        ADMP( "\"" N_("Sorry, but private messages have been disabled") "\"" );
-        return;
-    }
+	if (!g_privateMessages.Get() && ent)
+	{
+		ADMP( "\"" N_("Sorry, but private messages have been disabled") "\"" );
+		return;
+	}
 
-    if (trap_Argc() < 2)
-    {
-        ADMP( QQ( N_("usage: /r [message]") ) );
-        return;
-    }
+	if (trap_Argc() < 2)
+	{
+	ADMP( QQ( N_("usage: /r [message]") ) );
+	return;
+	}
 
 	if ( level.time - ent->client->pers.lastPrivateMessageSenderTime < 3000 )
 	{
@@ -4484,22 +4484,22 @@ void Cmd_ReplyPrivateMessage_f(gentity_t *ent)
         return;
 	}
 
-    target = ent->client->pers.lastPrivateMessageSender;
-    if (target == -1 || !g_entities[target].client)
-    {
-        ADMP( "\"" N_("No one to reply to.") "\"" );
-        return;
-    }
+	target = ent->client->pers.lastPrivateMessageSender;
+	if (target == -1 || !g_entities[target].client)
+	{
+		ADMP( "\"" N_("No one to reply to.") "\"" );
+		return;
+	}
 
-    msg = ConcatArgs(1);
+	msg = ConcatArgs(1);
 
-    if (G_SayTo(ent, &g_entities[target], teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg))
-    {
-        ADMP(va("%s %s", QQ(N_("Private message: ^7$1$")), Quote(msg)));
-        G_LogPrintf("PrivMsg: %d \"%s^*\" \"%s\": %s",
-                     ent->num(), ent->client->pers.netname,
-                     g_entities[target].client->pers.netname, msg);
-    }
+	if (G_SayTo(ent, &g_entities[target], teamonly ? SAY_TPRIVMSG : SAY_PRIVMSG, msg))
+	{
+		ADMP(va("%s %s", QQ(N_("Private message: ^7$1$")), Quote(msg)));
+		G_LogPrintf("PrivMsg: %d \"%s^*\" \"%s\": %s",
+			ent->num(), ent->client->pers.netname,
+			g_entities[target].client->pers.netname, msg);
+	}
 }
 
 
