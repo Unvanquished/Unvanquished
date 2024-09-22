@@ -156,7 +156,7 @@ Cvar::Cvar<bool> cg_chatTeamPrefix("cg_chatTeamPrefix", "show [H] or [A] before 
 Cvar::Cvar<bool> cg_animSpeed("cg_animspeed", "run animations? (for debugging)", Cvar::CHEAT, true);
 Cvar::Cvar<float> cg_animBlend("cg_animblend", "I don't know", Cvar::NONE, 5.0);
 
-Cvar::Cvar<float> cg_motionblur("cg_motionblur", "strength of motion blur", Cvar::NONE, 0.05);
+Cvar::Cvar<float> cg_motionblur("cg_motionblur", "strength of motion blur", Cvar::NONE, 0);
 Cvar::Cvar<float> cg_motionblurMinSpeed("cg_motionblurMinSpeed", "minimum speed to trigger motion blur", Cvar::NONE, 600);
 Cvar::Cvar<bool> cg_spawnEffects("cg_spawnEffects", "desaturate world view when dead or spawning", Cvar::NONE, true);
 
