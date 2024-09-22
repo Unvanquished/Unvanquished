@@ -32,11 +32,12 @@ if (NOT CBSE_PYTHON_PATH OR NOT EXISTS ${CBSE_PYTHON_PATH})
 endif()
 message(STATUS "Using CBSE Python executable: ${CBSE_PYTHON_PATH}")
 
-function(maybe_add_dep target dep)
-    if (TARGET ${target})
-        add_dependencies(${target} ${dep})
-    endif()
-endfunction()
+macro(CBSEFileList outputDir variable)
+    set(${variable} ${outputDir}/backend/CBSEBackend.cpp
+                    ${outputDir}/backend/CBSEBackend.h
+                    ${outputDir}/backend/CBSEComponents.h
+                    ${outputDir}/backend/CBSEEntities.h)
+endmacro()
 
 function(CBSE target definition output)
     # Check if python has all the dependencies
@@ -47,10 +48,7 @@ function(CBSE target definition output)
         message(FATAL_ERROR "Missing dependences for CBSE generation. Please ensure you have python ≥ 2, python-yaml, and python-jinja installed.
                              Use python -m pip install -r tools/cbse/requirements.txt to install")
     endif()
-    set(GENERATED_CBSE ${output}/backend/CBSEBackend.cpp
-                       ${output}/backend/CBSEBackend.h
-                       ${output}/backend/CBSEComponents.h
-                       ${output}/backend/CBSEEntities.h)
+    CBSEFileList(${output} GENERATED_CBSE)
     add_custom_command(
         OUTPUT ${GENERATED_CBSE}
         COMMENT "Generating CBSE entities for ${definition}"
