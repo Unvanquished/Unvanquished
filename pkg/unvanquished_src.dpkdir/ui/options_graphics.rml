@@ -93,11 +93,12 @@
 			<panel>
 				<h2><translate>Lights</translate></h2>
 				<row>
-					<select cvar="r_vertexLighting">
-						<option value="0"><translate>Light mapping</translate>&nbsp;(<translate>normal</translate>)</option>
-						<option value="1"><translate>Grid lighting</translate>&nbsp;(<translate>low, ugly</translate>)</option>
+					<h3><translate>Map lighting system</translate></h3>
+					<select cvar="r_lightMode">
+						<option value="3"><translate>Light mapping</translate>&nbsp;(<translate>normal</translate>)</option>
+						<option value="1"><translate>Vertex lighting</translate>&nbsp;(<translate>low, ugly</translate>)</option>
 					</select>
-					<h3><translate>Lighting system</translate></h3>
+					<p><translate>Precomputed static lighting for the map.</translate></p>
 				</row>
 				<row>
 					<h3><translate>Light styles</translate></h3>
@@ -105,9 +106,9 @@
 					<p><translate>Precomputed dynamic lights emitted by static map objects.</translate></p>
 				</row>
 				<row>
-					<h3><translate>Dynamic lights</translate></h3>
-					<input cvar="r_dynamicLight" type="checkbox" checked-value="2" />
-					<p><translate>Realtime dynamic lights emitted by moving objects like weapons and buildings.</translate></p>
+					<h3><translate>Real-time lighting</translate></h3>
+					<input cvar="r_realtimeLighting" type="checkbox" />
+					<p><translate>Real-time dynamic lights emitted by moving objects like weapons and buildings.</translate></p>
 				</row>
 				<row>
 					<h3><translate>Rim lighting</translate></h3>
