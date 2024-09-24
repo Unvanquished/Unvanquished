@@ -144,6 +144,16 @@
 					<p><translate>Lower texture size is useful for cards with limited video memory (VRAM).</translate></p>
 				</row>
 
+				<row>
+					<select cvar="r_imageFitScreen">
+						<option value="2"><translate>No larger than screen</translate></option>
+						<option value="1"><translate>No smaller than screen</translate></option>
+						<option value="0"><translate>No limit</translate></option>
+					</select>
+					<h3><translate>Menu image size limit</translate></h3>
+					<p><translate>Limit menu image size to save on memory.</translate></p>
+				</row>
+
 				<h2><translate>High-precision rendering</translate></h2>
 				<row>
 					<input cvar="r_highPrecisionRendering" type="checkbox" />
