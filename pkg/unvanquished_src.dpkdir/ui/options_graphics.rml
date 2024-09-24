@@ -25,7 +25,7 @@
 				<h2><translate>Presets</translate></h2>
 				<row>
 					<button onclick='Cmd.exec("preset presets/graphics/lowest.cfg")'><translate>Lowest</translate></button>
-					<span><translate>Low subdivisions, no sky, no shadow, no bouncing particles, 64-pixel textures…</translate></span>
+					<span><translate>Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel textures…</translate></span>
 				</row>
 				<row>
 					<button onclick='Cmd.exec("preset presets/graphics/low.cfg")'><translate>Low</translate></button>
@@ -135,13 +135,16 @@
 			<panel>
 				<h2><translate>General</translate></h2>
 				<row>
-					<select cvar="r_picmip" style="width: 20em;">
-						<option value="2"><translate>Low</translate>&nbsp;(1:4)</option>
-						<option value="1"><translate>Medium</translate>&nbsp;(1:2)</option>
-						<option value="0"><translate>Full</translate>&nbsp;(1:1)</option>
+					<select cvar="r_imageMaxDimension">
+						<option value="0"><translate>No limit</translate></option>
+						<option value="4096">4096&nbsp;<translate>(ultra)</translate></option>
+						<option value="2048">2048&nbsp;<translate>(high)</translate></option>
+						<option value="512">512&nbsp;<translate>(medium)</translate></option>
+						<option value="256">256&nbsp;<translate>(low)</translate></option>
+						<option value="16">64&nbsp;<translate>(lowest)</translate></option>
 					</select>
-					<h3><translate>Texture size</translate></h3>
-					<p><translate>Lower texture size is useful for cards with limited video memory (VRAM).</translate></p>
+					<h3><translate>Image size limit</translate></h3>
+					<p><translate>Limit image size to save on memory.</translate></p>
 				</row>
 
 				<row>
