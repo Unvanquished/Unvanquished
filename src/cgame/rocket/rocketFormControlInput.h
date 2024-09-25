@@ -43,7 +43,7 @@ class CvarElementFormControlInput : public Rml::ElementFormControlInput, public 
 public:
 	CvarElementFormControlInput( const Rml::String &tag ) : Rml::ElementFormControlInput( tag ), owner( nullptr ) { }
 
-	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes ) override
 	{
 		Rml::ElementFormControlInput::OnAttributeChange( changed_attributes );
 		Rml::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
@@ -60,7 +60,7 @@ public:
 		}
 	}
 
-	virtual void OnChildAdd( Element *child )
+	void OnChildAdd( Element *child ) override
 	{
 		Rml::ElementFormControlInput::OnChildAdd( child );
 		if ( child == this )
@@ -74,7 +74,7 @@ public:
 		}
 	}
 
-	virtual void OnChildRemove( Element *child )
+	void OnChildRemove( Element *child ) override
 	{
 		Rml::ElementFormControlInput::OnChildRemove( child );
 		if ( child == this )
@@ -83,13 +83,13 @@ public:
 		}
 	}
 
-	virtual void ProcessDefaultAction( Rml::Event &event )
+	void ProcessDefaultAction( Rml::Event &event ) override
 	{
 		ElementFormControlInput::ProcessDefaultAction( event );
 		ProcessEvent( event );
 	}
 
-	virtual void ProcessEvent( Rml::Event &event )
+	void ProcessEvent( Rml::Event &event ) override
 	{
 		if ( !cvar.empty() )
 		{

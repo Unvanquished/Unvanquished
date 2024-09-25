@@ -54,7 +54,7 @@ public:
 		text_element = AppendChild( Rml::Factory::InstanceElement( this, "div", "*", Rml::XMLAttributes() ) );
 	}
 
-	void OnRender()
+	void OnRender() override
 	{
 		UpdateCursorPosition();
 		if ( cursor_geometry.GetVertices().empty() )
@@ -64,7 +64,7 @@ public:
 		cursor_geometry.Render( cursor_position );
 	}
 
-	virtual void OnChildAdd( Element *child )
+	void OnChildAdd( Element *child ) override
 	{
 		Element::OnChildAdd( child );
 		if ( child == this )
@@ -77,7 +77,7 @@ public:
 		}
 	}
 
-	virtual void OnAttributeChange( const Rml::ElementAttributes& changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes& changed_attributes ) override
 	{
 		Element::OnAttributeChange( changed_attributes );
 		if (changed_attributes.find( "exec" ) != changed_attributes.end() )
@@ -86,7 +86,7 @@ public:
 		}
 	}
 
-	void ProcessEvent( Rml::Event &event )
+	void ProcessEvent( Rml::Event &event ) override
 	{
 		// Cannot move mouse while this element is in view
 		// FIXME: Does not work? You can move the mouse out of the window.
@@ -219,7 +219,7 @@ public:
 		}
 	}
 
-	bool GetIntrinsicDimensions( Rml::Vector2f &dimension, float& /*ratio*/ )
+	bool GetIntrinsicDimensions( Rml::Vector2f &dimension, float& /*ratio*/ ) override
 	{
 		Rml::FontFaceHandle font = text_element->GetFontFaceHandle();
 		if ( font == 0 )

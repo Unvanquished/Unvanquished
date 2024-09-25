@@ -46,7 +46,7 @@ public:
 			owner( nullptr ),
 			ignore_value_change( false ) { }
 
-	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes ) override
 	{
 		Rml::ElementFormControlSelect::OnAttributeChange( changed_attributes );
 		Rml::ElementAttributes::const_iterator it = changed_attributes.find( "cvar" );
@@ -63,7 +63,7 @@ public:
 		}
 	}
 
-	virtual void OnChildAdd( Element *child )
+	void OnChildAdd( Element *child ) override
 	{
 		Rml::ElementFormControlSelect::OnChildAdd( child );
 		if ( child == this )
@@ -80,7 +80,7 @@ public:
 		}
 	}
 
-	virtual void OnChildRemove( Element *child )
+	void OnChildRemove( Element *child ) override
 	{
 		Rml::ElementFormControlSelect::OnChildRemove( child );
 		if ( child == this && owner )
@@ -90,7 +90,7 @@ public:
 		}
 	}
 
-	virtual void ProcessEvent( Rml::Event &event )
+	void ProcessEvent( Rml::Event &event ) override
 	{
 		if ( !owner )
 		{
