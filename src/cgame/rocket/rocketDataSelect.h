@@ -41,7 +41,8 @@ Maryland 20850 USA.
 class RocketDataSelect : public Rml::ElementFormControlDataSelect, public Rml::EventListener
 {
 public:
-	RocketDataSelect( const Rml::String &tag ) : Rml::ElementFormControlDataSelect( tag ), selection( -2 ), owner( nullptr) { }
+	RocketDataSelect( const Rml::String &tag )
+		: Rml::ElementFormControlDataSelect( tag ), selectionInit( false ), owner( nullptr ) { }
 	~RocketDataSelect() { }
 
 	virtual void OnChildAdd( Element *child )
@@ -51,7 +52,7 @@ public:
 		if ( child == this )
 		{
 			owner = GetOwnerDocument();
-			owner->AddEventListener( "show", this );
+			owner->AddEventListener( Rml::EventId::Show, this );
 		}
 	}
 
@@ -59,11 +60,11 @@ public:
 	{
 		ElementFormControlDataSelect::OnChildRemove( child );
 
-		if (  child == this )
+		if ( child == this )
 		{
 			if ( owner )
 			{
-				owner->RemoveEventListener( "show", this );
+				owner->RemoveEventListener( Rml::EventId::Show, this );
 			}
 		}
 	}
@@ -85,35 +86,36 @@ public:
 	{
 		extern std::queue< RocketEvent_t * > eventQueue;
 
-		if ( event.GetTargetElement() == owner && event == "show" )
+		if ( event == Rml::EventId::Show )
 		{
-			eventQueue.push( new RocketEvent_t( this, va( "setDataSelectValue %s %s", dsName.c_str(), tableName.c_str() ) ) );
+			if ( event.GetTargetElement() != owner ) return;
+
+			if ( !selectionInit )
+			{
+				selectionInit = true;
+				int index = CG_Rocket_GetDataSourceIndex( dsName.c_str(), tableName.c_str() );
+
+				if ( index >= 0 )
+				{
+					SetSelection( index );
+				}
+
+				// only add this after initializing the selection to avoid a spurious setDS
+				this->AddEventListener( Rml::EventId::Change, this );
+			}
 		}
-	}
-
-	void OnUpdate()
-	{
-		extern std::queue< RocketEvent_t * > eventQueue;
-
-		ElementFormControlDataSelect::OnUpdate();
-
-		if ( GetSelection() != selection )
+		else if ( event == Rml::EventId::Change )
 		{
-			selection = GetSelection();
+			if ( event.GetTargetElement() != this ) return;
 
 			// dispatch event so cgame knows about it
-			eventQueue.push( new RocketEvent_t( Rml::String( va( "setDS %s %s %d", dsName.c_str(), tableName.c_str(), selection ) ) ) );
-
-			// dispatch event so rocket knows about it
-			Rml::Dictionary parameters;
-			parameters[ "index" ] = va( "%d", selection );
-			parameters[ "datasource" ] = dsName;
-			parameters[ "table" ] = tableName;
-			DispatchEvent( "rowselect", parameters );
+			eventQueue.push( new RocketEvent_t( Str::Format(
+				"setDS %s %s %d", dsName.c_str(), tableName.c_str(), GetSelection() ) ) );
 		}
 	}
+
 private:
-	int selection;
+	bool selectionInit;
 	Rml::Element *owner;
 	Rml::String dsName;
 	Rml::String tableName;
