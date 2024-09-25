@@ -72,7 +72,7 @@ public:
 		}
 	}
 
-	virtual void OnChildAdd( Element *child ) override
+	void OnChildAdd( Element *child ) override
 	{
 		Element::OnChildAdd( child );
 		if ( child == this )
@@ -83,7 +83,7 @@ public:
 		}
 	}
 
-	virtual void OnChildRemove( Element *child ) override
+	void OnChildRemove( Element *child ) override
 	{
 		Element::OnChildRemove( child );
 		if ( child == this )

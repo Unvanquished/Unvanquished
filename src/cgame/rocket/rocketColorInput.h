@@ -45,7 +45,7 @@ public:
 	{
 	}
 
-	virtual void OnChildAdd( Element *child )
+	void OnChildAdd( Element *child ) override
 	{
 		Element::OnChildAdd( child );
 		if ( child == this )
@@ -64,7 +64,7 @@ public:
 		}
 	}
 
-	virtual void OnAttributeChange( const Rml::ElementAttributes &changed_attributes )
+	void OnAttributeChange( const Rml::ElementAttributes &changed_attributes ) override
 	{
 		Rml::Element::OnAttributeChange( changed_attributes );
 
@@ -72,13 +72,13 @@ public:
 		if ( input ) input->SetAttributes( changed_attributes );
 	}
 
-	virtual void ProcessDefaultAction( Rml::Event &event )
+	void ProcessDefaultAction( Rml::Event &event ) override
 	{
 		Element::ProcessDefaultAction( event );
 		ProcessEvent( event );
 	}
 
-	virtual void ProcessEvent( Rml::Event &event )
+	void ProcessEvent( Rml::Event &event ) override
 	{
 		if ( !input || !color_value ) return;
 
