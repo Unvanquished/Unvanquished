@@ -580,10 +580,6 @@ static void CG_Rocket_BuildResolutionList( const char* )
 
 static int CG_Rocket_GetResolutionListIndex( const char* )
 {
-	if ( rocketInfo.data.resolutions.empty() )
-	{
-		CG_Rocket_BuildResolutionList( nullptr );
-	}
 	return rocketInfo.data.resolutionIndex;
 }
 
@@ -624,6 +620,7 @@ static void CG_Rocket_BuildAlOutputs( const char* )
 	trap_Cvar_VariableStringBuffer( "audio.al.device", currentDevice, sizeof( currentDevice ) );
 	trap_Cvar_VariableStringBuffer( "audio.al.availableDevices", buf, sizeof( buf ) );
 	head = buf;
+	rocketInfo.data.alOutputIndex = -1;
 
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
@@ -647,6 +644,11 @@ static void CG_Rocket_BuildAlOutputs( const char* )
 
 		Rocket_DSAddRow( "alOutputs", "default", buf );
 	}
+}
+
+static int CG_Rocket_GetAlOutputIndex( const char* )
+{
+	return rocketInfo.data.alOutputIndex;
 }
 
 static void CG_Rocket_CleanUpAlOutputs( const char* )
@@ -990,6 +992,7 @@ static void CG_Rocket_BuildMapList( const char* )
 		Rocket_DSAddRow( "mapList", "default", buf );
 	}
 
+	rocketInfo.data.mapIndex = -1;
 }
 
 static void CG_Rocket_CleanUpMapList( const char* )
@@ -1485,7 +1488,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 {
 	{ "alienBuildList", &CG_Rocket_BuildAlienBuildList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "alienEvolveList", &CG_Rocket_BuildAlienEvolveList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
-	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
+	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc, &CG_Rocket_GetAlOutputIndex },
 	{ "armouryBuyList", &CG_Rocket_BuildArmouryBuyList, &nullSortFunc, &CG_Rocket_CleanUpArmouryBuyList, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "beaconList", &CG_Rocket_BuildBeaconList, &nullSortFunc, &nullCleanFunc, &nullSetFunc, &nullFilterFunc, &nullExecFunc, &nullGetFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList, &nullGetFunc },
