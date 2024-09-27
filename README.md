@@ -45,6 +45,26 @@ and a C++14 compiler. The following are actively supported:
 `clang` ≥ 11,
 Visual Studio/MSVC (at least Visual Studio 2019).
 
+For Windows:
+
+Git: Download and install from git-scm.com.
+
+CMake: Download and install from cmake.org.
+
+Python: Download and install from python.org.
+
+python-yaml and python-jinja: Open the command prompt terminal and run the following:
+`pip install pyyaml jinja2`
+
+C++14 Compiler:
+
+If you want GCC ≥ 9: Install MSYS2 (also read the following section about MSYS2 under "Dependencies" when installing MSYS2) and run the following in MSYS2:
+`pacman -S mingw-w64-x86_64-gcc`
+
+If you want Clang ≥ 11: Install from the LLVM website.
+
+Visual Studio 2019 or later: Download and install Visual Studio. Ensure you select the "Desktop development with C++" workload during installation.
+
 ## Dependencies
 
 Required:
@@ -65,8 +85,79 @@ Required:
 `libopus`,
 `libopusfile`.
 
+zlib: Open the MSYS2 terminal and run the following:
+`pacman -S mingw-w64-x86_64-zlib`
+
+libgmp: Open the MSYS2 terminal and run the following:
+`pacman -S mingw-w64-x86_64-gmp`
+
+libnettle: 
+`pacman -S mingw-w64-x86_64-nettle`
+
+libcurl:
+`pacman -S mingw-w64-x86_64-curl`
+
+SDL2:
+`pacman -S mingw-w64-x86_64-SDL2`
+
+libpng:
+`pacman -S mingw-w64-x86_64-libpng`
+
+libjpeg:
+`pacman -S mingw-w64-x86_64-libjpeg-turbo`
+
+libwebp:
+`pacman -S mingw-w64-x86_64-libwebp`
+
+Freetype:
+`pacman -S mingw-w64-x86_64-freetype`
+
+Lua: 
+1. Go to the official Lua website: Lua Downloads.
+2. Choose a precompiled binary suitable for Windows, often found under the "Windows Binaries" section.
+3. Extract the Archive.
+4. Extract the downloaded ZIP file to a location on your system (e.g., C:\Lua).
+5. Add Lua to Your System Path.
+6. Right-click on This PC or My Computer, then select Properties.
+7. Click on Advanced system settings, then click on Environment Variables.
+8. Under System variables, find the Path variable, select it, and click Edit.
+9. Click New and add the path to the Lua directory (e.g., C:\Lua).
+10. Verify Installation:
+11. Open a command prompt and type the following to check the Lua version number:
+`lua -v`
+
+OpenAL:
+1. Go to the official OpenAL website: OpenAL Downloads.
+2. Look for the OpenAL Soft binaries, which is a popular implementation of OpenAL.
+3. Extract the Archive.
+4. Extract the downloaded ZIP file to a location on your system (e.g., C:\OpenAL).
+5. Add OpenAL to Your System Path (if necessary):
+6. Right-click on This PC or My Computer, then select Properties.
+7. Click on Advanced system settings, then click on Environment Variables.
+8. Under System variables, find the Path variable, select it, and click Edit.
+9. Click New and add the path to the OpenAL directory (e.g., C:\OpenAL\bin).
+10. Verify Installation.
+11. Open a command prompt and type the following to check the OpenAL number:
+`where openal32.dll`
+
+libogg: Open the MSYS2 terminal and run the following:
+`pacman -S mingw-w64-x86_64-libogg`
+
+libvorbis:
+`pacman -S mingw-w64-x86_64-libvorbis`
+
+libopus:
+`pacman -S mingw-w64-x86_64-opus`
+
+libopusfile:
+`pacman -S mingw-w64-x86_64-opusfile`
+
 Optional:
 `ncurses`.
+
+ncurses: Open the MSYS2 terminal and run the following:
+`pacman -S mingw-w64-x86_64-ncurses`
+
 
 ### MSYS2
 
