@@ -89,7 +89,7 @@ public:
 				UpdateValue();
 			}
 
-			else if ( event == "blur" )
+			else if ( event == Rml::EventId::Blur )
 			{
 				input->SetProperty( "display", "none" );
 				color_value->SetProperty( "display", "inline" );

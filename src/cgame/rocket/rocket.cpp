@@ -405,10 +405,9 @@ void Rocket_Init()
 	menuContext->EnableMouseCursor( true );
 
 	// Add the listener so we know where to give mouse/keyboard control to
-	menuContext->GetRootElement()->AddEventListener( "show", &fm, true );
-	menuContext->GetRootElement()->AddEventListener( "hide", &fm, true );
-	menuContext->GetRootElement()->AddEventListener( "close", &fm, true );
-	menuContext->GetRootElement()->AddEventListener( "load", &fm, true );
+	menuContext->GetRootElement()->AddEventListener( Rml::EventId::Show, &fm, true );
+	menuContext->GetRootElement()->AddEventListener( Rml::EventId::Hide, &fm, true );
+	menuContext->GetRootElement()->AddEventListener( Rml::EventId::Load, &fm, true );
 
 	// Create the HUD context
 	hudContext = Rml::CreateContext( "hudContext", Rml::Vector2i( cgs.glconfig.vidWidth, cgs.glconfig.vidHeight ) );
