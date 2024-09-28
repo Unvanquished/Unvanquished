@@ -161,7 +161,6 @@ set(CGAMELIST
     ${GAMELOGIC_DIR}/cgame/rocket/rocketDataGrid.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketDataSelect.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketDataSource.h
-    ${GAMELOGIC_DIR}/cgame/rocket/rocketDataSourceSingle.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketElement.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketEventInstancer.h
     ${GAMELOGIC_DIR}/cgame/rocket/rocketFocusManager.h
