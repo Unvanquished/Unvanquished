@@ -47,7 +47,6 @@ Maryland 20850 USA.
 #include "rocketProgressBar.h"
 #include "rocketDataSelect.h"
 #include "rocketConsoleTextElement.h"
-#include "rocketDataSourceSingle.h"
 #include "rocketFocusManager.h"
 #include "rocketDataSource.h"
 #include "rocketKeyBinder.h"
@@ -419,7 +418,6 @@ void Rocket_Init()
 	RegisterElement<RocketProgressBar>( "progress" );
 	RegisterElement<RocketDataSelect>( "dataselect" );
 	RegisterElement<RocketConsoleTextElement>( "console_text" );
-	RegisterElement<RocketDataSourceSingle>( "datasource_single" );
 	RegisterElement<RocketDataSource>( "datasource" );
 	RegisterElement<RocketKeyBinder>( "keybind" );
 	RegisterElement<RocketChatField>( "chatfield" );
