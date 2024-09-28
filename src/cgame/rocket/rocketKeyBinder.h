@@ -117,7 +117,7 @@ public:
 
 	void ProcessEvent( Rml::Event &event ) override
 	{
-		if ( !waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
+		if ( !waitingForKeypress && event == Rml::EventId::Mousedown && event.GetTargetElement() == this )
 		{
 			waitingForKeypress = true;
 			SetInnerRML( "Enter desired key..." );
@@ -128,7 +128,7 @@ public:
 			rocketInfo.cursorFreezeY = event.GetParameter<int>( "mouse_y", 0 );
 		}
 
-		else if ( waitingForKeypress && event == "keydown" )
+		else if ( waitingForKeypress && event == Rml::EventId::Keydown )
 		{
 			auto keyIdentifier = ( Rml::Input::KeyIdentifier ) event.GetParameter< int >( "key_identifier", 0 );
 
@@ -141,7 +141,7 @@ public:
 			return;
 		}
 
-		else if ( waitingForKeypress && event == "mousedown" && event.GetTargetElement() == this )
+		else if ( waitingForKeypress && event == Rml::EventId::Mousedown && event.GetTargetElement() == this )
 		{
 			int button = event.GetParameter<int>( "button", 0 );
 

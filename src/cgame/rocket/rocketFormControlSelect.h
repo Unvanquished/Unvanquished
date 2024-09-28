@@ -75,8 +75,8 @@ public:
 			{
 				return;
 			}
-			owner->AddEventListener( "show", this );
-			owner->AddEventListener( "change", this );
+			owner->AddEventListener( Rml::EventId::Show, this );
+			owner->AddEventListener( Rml::EventId::Change, this );
 		}
 	}
 
@@ -85,8 +85,8 @@ public:
 		Rml::ElementFormControlSelect::OnChildRemove( child );
 		if ( child == this && owner )
 		{
-			owner->RemoveEventListener( "show", this );
-			owner->RemoveEventListener( "change", this );
+			owner->RemoveEventListener( Rml::EventId::Show, this );
+			owner->RemoveEventListener( Rml::EventId::Change, this );
 		}
 	}
 
@@ -98,11 +98,11 @@ public:
 		}
 		if ( !cvar.empty() )
 		{
-			if ( owner == event.GetTargetElement() && event == "show" )
+			if ( owner == event.GetTargetElement() && event == Rml::EventId::Show )
 			{
 				UpdateValue();
 			}
-			else if ( this == event.GetTargetElement() && event == "change" )
+			else if ( this == event.GetTargetElement() && event == Rml::EventId::Change )
 			{
 				if ( ignore_value_change )
 				{
