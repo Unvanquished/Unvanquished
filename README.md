@@ -85,31 +85,33 @@ Required:
 `libopus`,
 `libopusfile`.
 
+If you don't have all (or any) of the dependencies installed, download and open the MSYS2 terminal and run the specific command for each dependency that you need.
+
 zlib: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-zlib`
 
 libgmp: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-gmp`
 
-libnettle: 
+libnettle: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-nettle`
 
-libcurl:
+libcurl: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-curl`
 
-SDL2:
+SDL2: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-SDL2`
 
-libpng:
+libpng: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-libpng`
 
-libjpeg:
+libjpeg: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-libjpeg-turbo`
 
-libwebp:
+libwebp: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-libwebp`
 
-Freetype:
+Freetype: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-freetype`
 
 Lua: 
@@ -143,13 +145,13 @@ OpenAL:
 libogg: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-libogg`
 
-libvorbis:
+libvorbis: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-libvorbis`
 
-libopus:
+libopus: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-opus`
 
-libopusfile:
+libopusfile: Open the MSYS2 terminal and run the following:
 `pacman -S mingw-w64-x86_64-opusfile`
 
 Optional:
