@@ -231,6 +231,11 @@
 					<p><translate>Makes bright areas on your screen glow.</translate></p>
 				</row>
 				<row>
+					<h3><translate>Color grading</translate></h3>
+					<input cvar="r_colorGrading" type="checkbox" />
+					<p><translate>Alter colors to create specific ambiences.</translate></p>
+				</row>
+				<row>
 					<h3><translate>Heat-haze</translate></h3>
 					<input cvar="r_heatHaze" type="checkbox" />
 					<p><translate>Simulate air refraction in severe heat.</translate></p>
