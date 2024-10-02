@@ -241,24 +241,6 @@ static void CG_Rocket_EventExecForm()
 	}
 }
 
-static void CG_Rocket_SetDataSelectValue()
-{
-	char src[ 100 ];
-	char tbl[ 100 ];
-	int index;
-
-	Q_strncpyz( src, CG_Argv( 1 ), sizeof ( src ) );
-	Q_strncpyz( tbl, CG_Argv( 2 ), sizeof( tbl ) );
-
-	index = CG_Rocket_GetDataSourceIndex( src, tbl );
-
-	if ( index > -1 )
-	{
-		Rocket_SetDataSelectIndex( index );
-	}
-
-}
-
 static void CG_Rocket_EventPlay()
 {
 	const char *track = nullptr;
@@ -311,7 +293,6 @@ static const eventCmd_t eventCmdList[] =
 	{ "play", &CG_Rocket_EventPlay },
 	{ "resetPings", &CG_Rocket_ResetPings },
 	{ "setChatCommand", &CG_Rocket_SetChatCommand },
-	{ "setDataSelectValue", &CG_Rocket_SetDataSelectValue },
 	{ "setDS", &CG_Rocket_SetDS },
 	{ "show", &CG_Rocket_EventShow },
 	{ "sortDS", &CG_Rocket_SortDS }

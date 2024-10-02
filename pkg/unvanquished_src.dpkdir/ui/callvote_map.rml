@@ -35,7 +35,7 @@
 				<h3><translate>Method</translate></h3>
 			</row>
 			<row>
-				<dataselect source="mapList.default" fields="mapName" valuefield="mapLoadName" name="map" cvar="ui_dialogCvar1"/>
+				<dataselect source="mapList.default" fields="mapName" valuefield="mapLoadName" name="map" />
 				<h3><translate>Map</translate></h3>
 			</row>
 
