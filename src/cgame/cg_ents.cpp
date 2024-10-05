@@ -141,12 +141,10 @@ tag location
 ======================
 */
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-                             qhandle_t parentModel, const char *tagName )
+                             const char *tagName )
 {
 	int           i;
 	orientation_t lerped;
-
-	Q_UNUSED(parentModel);
 
 	// lerp the tag
 	trap_R_LerpTag( &lerped, parent, tagName, 0 );
@@ -173,13 +171,12 @@ tag location
 ======================
 */
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-                                    qhandle_t parentModel, const char *tagName )
+                                    const char *tagName )
 {
 	int           i;
 	orientation_t lerped;
 	vec3_t        tempAxis[ 3 ];
 
-	Q_UNUSED(parentModel);
 //AxisClear( entity->axis );
 	// lerp the tag
 	trap_R_LerpTag( &lerped, parent, tagName, 0 );
