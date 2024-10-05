@@ -2399,7 +2399,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		AxisCopy( axisDefault, jetpack.axis );
 
 		// FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &jetpack, torso, torso->hModel, "tag_gear" );
+		CG_PositionRotatedEntityOnTag( &jetpack, torso, "tag_gear" );
 
 		CG_JetpackAnimation( cent, &jetpack.oldframe, &jetpack.frame, &jetpack.backlerp );
 		jetpack.skeleton = jetpackSkeleton;
@@ -2496,7 +2496,7 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 		AxisCopy( axisDefault, radar.axis );
 
 		//FIXME: change to tag_back when it exists
-		CG_PositionRotatedEntityOnTag( &radar, torso, torso->hModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &radar, torso, "tag_head" );
 
 		trap_R_AddRefEntityToScene( &radar );
 	}
@@ -3155,7 +3155,7 @@ void CG_Player( centity_t *cent )
 
 		VectorCopy( cent->lerpOrigin, torso.lightingOrigin );
 
-		CG_PositionRotatedEntityOnTag( &torso, &legs, ci->legsModel, "tag_torso" );
+		CG_PositionRotatedEntityOnTag( &torso, &legs, "tag_torso" );
 
 		torso.renderfx = renderfx;
 
@@ -3176,7 +3176,7 @@ void CG_Player( centity_t *cent )
 
 		VectorCopy( cent->lerpOrigin, head.lightingOrigin );
 
-		CG_PositionRotatedEntityOnTag( &head, &torso, ci->torsoModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &head, &torso, "tag_head" );
 
 		head.renderfx = renderfx;
 
@@ -3390,7 +3390,7 @@ void CG_Corpse( centity_t *cent )
 
 		VectorCopy( origin, torso.lightingOrigin );
 
-		CG_PositionRotatedEntityOnTag( &torso, &legs, ci->legsModel, "tag_torso" );
+		CG_PositionRotatedEntityOnTag( &torso, &legs, "tag_torso" );
 
 		torso.renderfx = renderfx;
 
@@ -3412,7 +3412,7 @@ void CG_Corpse( centity_t *cent )
 
 		VectorCopy( origin, head.lightingOrigin );
 
-		CG_PositionRotatedEntityOnTag( &head, &torso, ci->torsoModel, "tag_head" );
+		CG_PositionRotatedEntityOnTag( &head, &torso, "tag_head" );
 
 		head.renderfx = renderfx;
 

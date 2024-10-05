@@ -2077,9 +2077,9 @@ void CG_AddPacketEntities();
 void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out,
                                 vec3_t angles_in, vec3_t angles_out );
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-                             qhandle_t parentModel, const char *tagName );
+                             const char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
-                                    qhandle_t parentModel, const char *tagName );
+                                    const char *tagName );
 void CG_TransformSkeleton( refSkeleton_t *skel, const vec_t scale );
 
 team_t CG_Team(const entityState_t &es);
