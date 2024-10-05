@@ -1532,7 +1532,12 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		flash.hModel = weapon->flashModel;
 	}
 
-	if ( flash.hModel )
+	bool flashDlight = weapon->wim[ weaponMode ].flashDlightColor[ 0 ] ||
+	                   weapon->wim[ weaponMode ].flashDlightColor[ 1 ] ||
+	                   weapon->wim[ weaponMode ].flashDlightColor[ 2 ];
+
+	// If there is no model, we may still use flash.origin for a light.
+	if ( flash.hModel || flashDlight )
 	{
 		angles[ YAW ] = 0;
 		angles[ PITCH ] = 0;
@@ -1548,7 +1553,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			CG_PositionRotatedEntityOnTag( &flash, &gun, "tag_flash" );
 		}
 
-		trap_R_AddRefEntityToScene( &flash );
+		if ( flash.hModel )
+		{
+			trap_R_AddRefEntityToScene( &flash );
+		}
 	}
 
 	if ( ps || cg.renderingThirdPerson ||
@@ -1577,9 +1585,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 
 		// make a dlight for the flash
-		if ( weapon->wim[ weaponMode ].flashDlightColor[ 0 ] ||
-		     weapon->wim[ weaponMode ].flashDlightColor[ 1 ] ||
-		     weapon->wim[ weaponMode ].flashDlightColor[ 2 ] )
+		if ( flashDlight )
 		{
 			trap_R_AddLightToScene( flash.origin, weapon->wim[ weaponMode ].flashDlight,
 			                        weapon->wim[ weaponMode ].flashDlightIntensity,
