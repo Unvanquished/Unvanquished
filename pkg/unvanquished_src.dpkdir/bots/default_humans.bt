@@ -31,12 +31,11 @@ selector
 					{
 						action suicide
 					}
-					sequence
+					selector
 					{
-						decorator return( STATUS_SUCCESS )
-						{
-							action equip
-						}
+						action buy( WP_HBUILD, UP_BATTLESUIT )
+						action buy( WP_HBUILD, UP_MEDIUMARMOUR )
+						action buy( WP_HBUILD, UP_LIGHTARMOUR )
 						action buy( WP_HBUILD )
 					}
 					condition alertedToEnemy
