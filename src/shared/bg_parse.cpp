@@ -1528,10 +1528,6 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 
 			defined |= SHOULDEROFFSETS;
 		}
-		else if ( !Q_stricmp( token, "useNavMesh" ) ) // TODO(0.55): remove
-		{
-			PARSE(text, token);
-		}
 		else
 		{
 			Log::Warn( "%s: unknown token '%s'", filename, token );
