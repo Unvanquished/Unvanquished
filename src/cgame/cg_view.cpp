@@ -216,7 +216,7 @@ static void CG_AddTestModel()
 	if ( cg.testModelBarrelEntity.hModel )
 	{
 		CG_PositionEntityOnTag( &cg.testModelBarrelEntity, &cg.testModelEntity,
-		                        cg.testModelEntity.hModel, "tag_barrel" );
+		                        "tag_barrel" );
 
 		trap_R_AddRefEntityToScene( &cg.testModelBarrelEntity );
 	}

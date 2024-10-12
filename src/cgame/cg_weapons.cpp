@@ -1398,7 +1398,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	if ( !noGunModel )
 	{
-		CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
+		CG_PositionEntityOnTag( &gun, parent, "tag_weapon" );
 		if ( ps )
 		{
 			CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
@@ -1477,7 +1477,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 			angles[ ROLL ] = CG_MachinegunSpinAngle( cent, firing );
 			AnglesToAxis( angles, barrel.axis );
 
-			CG_PositionRotatedEntityOnTag( &barrel, &gun, gun.hModel, "tag_barrel" );
+			CG_PositionRotatedEntityOnTag( &barrel, &gun, "tag_barrel" );
 
 			trap_R_AddRefEntityToScene( &barrel );
 		}
@@ -1532,7 +1532,12 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		flash.hModel = weapon->flashModel;
 	}
 
-	if ( flash.hModel )
+	bool flashDlight = weapon->wim[ weaponMode ].flashDlightColor[ 0 ] ||
+	                   weapon->wim[ weaponMode ].flashDlightColor[ 1 ] ||
+	                   weapon->wim[ weaponMode ].flashDlightColor[ 2 ];
+
+	// If there is no model, we may still use flash.origin for a light.
+	if ( flash.hModel || flashDlight )
 	{
 		angles[ YAW ] = 0;
 		angles[ PITCH ] = 0;
@@ -1541,14 +1546,17 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 		if ( noGunModel )
 		{
-			CG_PositionRotatedEntityOnTag( &flash, parent, parent->hModel, "tag_weapon" );
+			CG_PositionRotatedEntityOnTag( &flash, parent, "tag_weapon" );
 		}
 		else
 		{
-			CG_PositionRotatedEntityOnTag( &flash, &gun, gun.hModel, "tag_flash" );
+			CG_PositionRotatedEntityOnTag( &flash, &gun, "tag_flash" );
 		}
 
-		trap_R_AddRefEntityToScene( &flash );
+		if ( flash.hModel )
+		{
+			trap_R_AddRefEntityToScene( &flash );
+		}
 	}
 
 	if ( ps || cg.renderingThirdPerson ||
@@ -1577,9 +1585,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		}
 
 		// make a dlight for the flash
-		if ( weapon->wim[ weaponMode ].flashDlightColor[ 0 ] ||
-		     weapon->wim[ weaponMode ].flashDlightColor[ 1 ] ||
-		     weapon->wim[ weaponMode ].flashDlightColor[ 2 ] )
+		if ( flashDlight )
 		{
 			trap_R_AddLightToScene( flash.origin, weapon->wim[ weaponMode ].flashDlight,
 			                        weapon->wim[ weaponMode ].flashDlightIntensity,
