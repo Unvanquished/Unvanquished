@@ -320,8 +320,6 @@ static void G_WideTrace(
 		trace_t *tr, gentity_t *ent, const glm::vec3& muzzle, const glm::vec3& forward,
 		const float range, const float width, const float height, gentity_t **target )
 {
-	float  halfDiagonal;
-
 	*target = nullptr;
 
 	if ( !ent->client )
@@ -332,9 +330,8 @@ static void G_WideTrace(
 	// Calculate box to use for trace
 	glm::vec3 maxs{ width, width, height };
 	glm::vec3 mins = -maxs;
-	halfDiagonal = glm::length( maxs );
 
-	G_UnlaggedOn( ent, GLM4READ( muzzle ), range + halfDiagonal );
+	G_UnlaggedOn( ent, GLM4READ( muzzle ), range + width );
 
 	// Trace box against entities
 	glm::vec3 end;
@@ -349,7 +346,7 @@ static void G_WideTrace(
 	// Line trace against the world, so we never hit through obstacles.
 	// The range is reduced according to the former trace so we don't hit something behind the
 	// current target.
-	float scale = glm::distance( muzzle, VEC2GLM( tr->endpos ) ) + halfDiagonal;
+	float scale = glm::distance( muzzle, VEC2GLM( tr->endpos ) ) + width;
 	VectorMA( muzzle, scale, forward, end );
 	trap_Trace( tr, muzzle, {}, {}, end, ent->s.number, CONTENTS_SOLID, 0 );
 
