@@ -79,8 +79,8 @@ static void CG_Rocket_DFResolution( int handle, const char *data )
 	}
 	else if ( w == 0 )
 	{
-		// TODO(0.55): show dimensions of screen
-		std::string displayString = _( "Same as screen" );
+		std::string displayString = Str::Format(
+			_( "Same as screen (%dx%d)" ), cgs.glconfig.displayWidth, cgs.glconfig.displayHeight );
 		Rocket_DataFormatterFormattedData( handle, displayString.c_str(), false);
 	}
 	else
