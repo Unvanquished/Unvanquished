@@ -227,6 +227,49 @@
 				</buttonbar>
 			</panel>
 
+			<tab><translate>Reflections</translate></tab>
+			<panel>
+				<h2><translate>Reflections</translate></h2>
+				<row>
+					<h3><translate>Static reflections</translate></h3>
+					<input cvar="r_reflectionMapping" type="checkbox" />
+					<p><translate>Adds static cubemap reflections on supported surfaces. Requires normal, specular and deluxe mapping. Currently unsupported with physical mapping.</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+				<row>
+					<select cvar="r_cubeProbeSize">
+						<option value="32"><translate>Very low</translate>&nbsp;(32)</option>
+						<option value="64"><translate>Low</translate>&nbsp;(64)</option>
+						<option value="256"><translate>Moderate</translate>&nbsp;(256)</option>
+						<option value="1024"><translate>High</translate>&nbsp;(1024)</option>
+						<option value="4096"><translate>Very high</translate>&nbsp;(4096)</option>
+					</select>
+					<h3><translate>Quality</translate></h3>
+					<p><translate>Quality of static reflection cubemaps.</translate></p>
+				</row>
+				<row>
+					<h3><translate>Cubemap grid spacing</translate></h3>
+					<br/>
+					<input type="range" min="64" max="1024" step="64" cvar="r_cubeProbeSpacing"/>
+					<p class="inline">
+						<translate>Current:</translate>&nbsp;<inlinecvar cvar="r_cubeProbeSpacing" type="number" format="%.0f"/>
+						&nbsp;<ilink onclick='Cmd.exec("reset r_cubeProbeSpacing")'>(<translate>reset</translate>)</ilink>
+					</p>
+				</row>
+				<row>
+					<select cvar="r_autoBuildCubeMaps">
+						<option value="0"><translate>Never</translate></option>
+						<option value="1"><translate>Cache on disk</translate></option>
+						<option value="2"><translate>Always rebuild</translate></option>
+					</select>
+					<h3><translate>Static reflection cubemaps autobuild</translate></h3>
+					<p><translate>Automatically build/load/save reflection cubemaps.</translate></p>
+				</row>
+
+				<buttonbar>
+					<button onclick='Cmd.exec("vid_restart")'><translate>Apply now</translate></button>
+				</buttonbar>
+			</panel>
+
 			<tab>Effects</tab>
 			<panel>
 				<h2><translate>Effects</translate></h2>
