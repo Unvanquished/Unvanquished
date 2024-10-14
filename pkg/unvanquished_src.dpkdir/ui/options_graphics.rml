@@ -162,6 +162,13 @@
 					<h3><translate>High-precision rendering</translate></h3>
 					<p><translate>Use high-precision pixel buffers, which reduce color banding.</translate></p>
 				</row>
+
+				<row>
+					<h3><translate>Use bindless textures if possible</translate></h3>
+					<input cvar="r_preferBindlessTextures" type="checkbox" />
+					<p><translate>Use bindless textures if supported by hardware/driver. This might improve performance.</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+
 				<h2><translate>Mip-mapping</translate></h2>
 				<p><translate>Mip-mapping makes distant surfaces look better by using lower-resolution textures on them. This generally does not affect performance.</translate></p>
 				<row>
