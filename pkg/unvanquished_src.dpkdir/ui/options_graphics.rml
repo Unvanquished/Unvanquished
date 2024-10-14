@@ -278,6 +278,14 @@
 					</select>
 					<h3><translate>Building ranges</translate></h3>
 				</row>
+				<h2><translate>Models</translate></h2>
+				<row>
+					<select cvar="cg_lowQualityModels">
+						<option value="off"><translate>High</translate></option>
+						<option value="on"><translate>Low</translate></option>
+					</select>
+					<h3><translate>Quality</translate></h3>
+				</row>
 				<h2><translate>Motion blur</translate></h2>
 				<row>
 					<select cvar="cg_motionblur">
