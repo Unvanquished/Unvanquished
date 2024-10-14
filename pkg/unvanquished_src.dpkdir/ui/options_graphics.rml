@@ -308,6 +308,29 @@
 				</buttonbar>
 			</panel>
 
+			<tab><translate>Renderer</translate></tab>
+			<panel>
+				<h2><translate>Material system</translate></h2>
+				<row>
+					<h3><translate>Material system</translate></h3>
+					<input cvar="r_materialSystem" type="checkbox" />
+					<p><translate>Use a new system that significantly improves performance. Some drivers may fail with this on (e. g. Mesa and AMD proprietary drivers).</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+				<row>
+					<h3><translate>GPU frustum culling</translate></h3>
+					<input cvar="r_gpuFrustumCulling" type="checkbox" />
+					<p><translate>Cull surfaces that are out of view.</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+				<row>
+					<h3><translate>GPU occlusion culling</translate></h3>
+					<input cvar="r_gpuOcclusionCulling" type="checkbox" />
+					<p><translate>Cull hidden surfaces.</translate>&nbsp;<translate>Experimental.</translate></p>
+				</row>
+				<buttonbar>
+					<button onclick='Cmd.exec("vid_restart")'><translate>Apply now</translate></button>
+				</buttonbar>
+			</panel>
+
 			<tab><translate>Gameplay</translate></tab>
 			<panel>
 				<h2><translate>Building markers</translate></h2>
