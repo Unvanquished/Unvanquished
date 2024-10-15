@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 02:44+0200\n"
-"PO-Revision-Date: 2024-08-02 11:09+0000\n"
+"PO-Revision-Date: 2024-10-15 05:01+0000\n"
 "Last-Translator: Thomas Debesse <dev@illwieckz.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fr/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.7-dev\n"
+"X-Generator: Weblate 5.8-rc\n"
 "X-POOTLE-MTIME: 1398307008.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -895,6 +895,8 @@ msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
 "textures…"
 msgstr ""
+"Faibles subdivisions, pas de ciel, d’ombres, ni de particules "
+"rebondissantes, textures de 16 pixels…"
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:286
 msgid "Low"
@@ -3981,7 +3983,7 @@ msgstr "%s^* a quitté les %s et a rejoint les %s"
 #: src/cgame/cg_rocket_dataformatter.cpp:77
 #, c-format
 msgid "Custom: %dx%d"
-msgstr ""
+msgstr "Personalisée : %dx%d"
 
 #: src/cgame/cg_rocket_dataformatter.cpp:83
 msgid "Same as screen"
