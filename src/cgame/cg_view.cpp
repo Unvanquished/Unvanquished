@@ -1906,6 +1906,8 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 	cg.demoPlayback = demoPlayback;
 	cg.currentCmdNumber = trap_GetCurrentCmdNumber();
 
+	CG_ResetImpactMarks();
+
 	CG_NotifyHooks();
 
 	// any looped sounds will be respecified as entities
@@ -1997,6 +1999,8 @@ void CG_DrawActiveFrame( int serverTime, bool demoPlayback )
 
 	// update audio positions
 	trap_S_Respatialize( cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater );
+
+	CG_ProcessImpactMarks();
 
 	cg.frametime = cg.time - cg.oldTime;
 
