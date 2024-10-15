@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 02:44+0200\n"
-"PO-Revision-Date: 2024-09-27 18:15+0000\n"
-"Last-Translator: Dmitrii <dmitryblum@tutanota.com>\n"
+"PO-Revision-Date: 2024-10-15 15:40+0000\n"
+"Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
 "Language: ru\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.8-dev\n"
+"X-Generator: Weblate 5.8-rc\n"
 "X-POOTLE-MTIME: 1398357469.0\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
@@ -550,7 +550,7 @@ msgstr "Здоровье"
 
 #: ui/hud_basics.rml:203
 msgid "fps"
-msgstr "fps"
+msgstr "к/с"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
@@ -885,6 +885,8 @@ msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
 "textures…"
 msgstr ""
+"Упрощённые кривые, без неба, без теней, частицы не отскакивают, 16-"
+"пиксельные текстуры…"
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:286
 msgid "Low"
@@ -960,7 +962,7 @@ msgstr "Полный экран"
 
 #: ui/options_graphics.rml:74 ui/options_graphics.rml:287
 msgid "Off"
-msgstr "Выкл"
+msgstr "Откл"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
@@ -1012,7 +1014,7 @@ msgstr "нормальный"
 
 #: ui/options_graphics.rml:98
 msgid "Vertex lighting"
-msgstr ""
+msgstr "Вершинное освещение"
 
 #: ui/options_graphics.rml:98
 msgid "low, ugly"
@@ -1086,59 +1088,61 @@ msgstr "Общие"
 
 #: ui/options_graphics.rml:139 ui/options_graphics.rml:154
 msgid "No limit"
-msgstr ""
+msgstr "Без ограничения"
 
 #: ui/options_graphics.rml:140
 msgid "(ultra)"
-msgstr ""
+msgstr "(сверхвысокое)"
 
 #: ui/options_graphics.rml:141
 msgid "(high)"
-msgstr ""
+msgstr "(высокое)"
 
 #: ui/options_graphics.rml:142
 msgid "(medium)"
-msgstr ""
+msgstr "(среднее)"
 
 #: ui/options_graphics.rml:143
 msgid "(low)"
-msgstr ""
+msgstr "(низкое)"
 
 #: ui/options_graphics.rml:144
 msgid "(lowest)"
-msgstr ""
+msgstr "(самое низкое)"
 
 #: ui/options_graphics.rml:146
 msgid "Image size limit"
-msgstr ""
+msgstr "Предел размера изображения"
 
 #: ui/options_graphics.rml:147
 msgid "Limit image size to save on memory."
-msgstr ""
+msgstr "Ограничение размера изображения с целью экономии памяти."
 
 #: ui/options_graphics.rml:152
 msgid "No larger than screen"
-msgstr ""
+msgstr "Не больше экрана"
 
 #: ui/options_graphics.rml:153
 msgid "No smaller than screen"
-msgstr ""
+msgstr "Не меньше экрана"
 
 #: ui/options_graphics.rml:156
 msgid "Menu image size limit"
-msgstr ""
+msgstr "Предел размера изображения меню"
 
 #: ui/options_graphics.rml:157
 msgid "Limit menu image size to save on memory."
-msgstr ""
+msgstr "Ограничение размера изображения меню с целью экономии памяти."
 
 #: ui/options_graphics.rml:160
 msgid "High-precision rendering"
-msgstr ""
+msgstr "Высокоточная отрисовка"
 
 #: ui/options_graphics.rml:163
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
+"Использовать высокоточные пиксельные буферы, уменьшающие цветовую "
+"полосатость."
 
 #: ui/options_graphics.rml:165
 msgid "Mip-mapping"
@@ -1244,11 +1248,11 @@ msgstr "Делает яркие области на экране светящи�
 
 #: ui/options_graphics.rml:234
 msgid "Color grading"
-msgstr ""
+msgstr "Цветовая градация"
 
 #: ui/options_graphics.rml:236
 msgid "Alter colors to create specific ambiences."
-msgstr ""
+msgstr "Подправлять цвета для создания определённой атмосферы."
 
 #: ui/options_graphics.rml:239
 msgid "Heat-haze"
@@ -1292,7 +1296,7 @@ msgstr "Строительные метки"
 
 #: ui/options_graphics.rml:268
 msgid "disabled"
-msgstr "выключено"
+msgstr "отключено"
 
 #: ui/options_graphics.rml:269
 msgid "All structures"
@@ -1528,7 +1532,7 @@ msgstr "Меню маяка:"
 
 #: ui/options_keys.rml:159
 msgid "Toggle console:"
-msgstr "Включить/выключить консоль:"
+msgstr "Показать/скрыть консоль:"
 
 #: ui/options_keys.rml:163
 msgid "Screenshot:"
@@ -1608,15 +1612,15 @@ msgstr "Свободный обзор"
 
 #: ui/options_mouse.rml:32
 msgid "Turn off only if you are a Quake junkie."
-msgstr "Выключите, только если вы Quake-наркоман."
+msgstr "Отключайте только в том случае, если вы обожаете Quake."
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
-msgstr ""
+msgstr "Круговой захват мыши в меню"
 
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
-msgstr ""
+msgstr "Круговые меню (за исключением меню «Оружия») принимают ввод с мыши"
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
@@ -1664,7 +1668,7 @@ msgstr "Внешний вид"
 
 #: ui/options_movements_cosmetic.rml:38
 msgid "Disable"
-msgstr "Выключить"
+msgstr "Отключить"
 
 #: ui/options_movements_cosmetic.rml:39
 msgid "Humans only"
@@ -1773,7 +1777,7 @@ msgstr "Показывать только командный чат"
 
 #: ui/options_player.rml:222
 msgid "Show obituaries"
-msgstr ""
+msgstr "Показывать журнал смертей"
 
 #: ui/options.rml:11
 msgid "Player"
@@ -3927,11 +3931,11 @@ msgstr "%s^* покинул %s и присоединился к %s"
 #: src/cgame/cg_rocket_dataformatter.cpp:77
 #, c-format
 msgid "Custom: %dx%d"
-msgstr ""
+msgstr "Своё: %dx%d"
 
 #: src/cgame/cg_rocket_dataformatter.cpp:83
 msgid "Same as screen"
-msgstr ""
+msgstr "Такое же, как у экрана"
 
 #: src/cgame/cg_rocket_draw.cpp:2534
 msgid "You are at the front of the spawn queue"
@@ -3966,7 +3970,7 @@ msgstr "Ожидание испытания…%i"
 
 #: src/cgame/cg_rocket_draw.cpp:3139
 msgid "Awaiting gamestate…"
-msgstr "Awaiting gamestate…"
+msgstr "Ожидается состояние игры…"
 
 #: src/cgame/cg_rocket_draw.cpp:3221
 msgid "Say:"
@@ -4958,7 +4962,7 @@ msgstr "$1$: игрок уже может строить"
 
 #: src/sgame/sg_votes.cpp:197 src/sgame/sg_votes.cpp:263
 msgid "$1$: map name not specified"
-msgstr ""
+msgstr "$1 $: имя карты не указано"
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
