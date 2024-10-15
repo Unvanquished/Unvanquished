@@ -33,7 +33,7 @@ pot_dir="${dpk_dir}/translation"
 
 . "${script_dir}/translation.conf"
 
-cd "${dpk_dir}"
+cd "${pot_dir}"
 
 for name in 'game' 'commands'
 do
