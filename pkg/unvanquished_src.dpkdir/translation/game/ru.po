@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 02:44+0200\n"
-"PO-Revision-Date: 2024-10-15 15:40+0000\n"
+"PO-Revision-Date: 2024-10-16 10:45+0000\n"
 "Last-Translator: Andrei Stepanov <adem4ik@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/ru/>\n"
@@ -142,8 +142,8 @@ msgid ""
 "In this section you will find a summary of major gameplay elements to know "
 "to become a successful player."
 msgstr ""
-"В этом разделе вы найдете словарь основных геймплейных элементов, которые "
-"нужно знать, чтобы стать успешным игроком."
+"В этом разделе вы найдёте краткое описание основных нюансов игрового "
+"процесса, которые необходимо знать, чтобы стать успешным игроком."
 
 #: ui/help_gameplay.rml:23
 msgid "More can be found on our website and other community places!"
@@ -529,8 +529,8 @@ msgid ""
 "The basilisk was replaced by the mantis, it cannot grab anymore but its bite "
 "slows down their victims, and it can lunge for very fast approachs."
 msgstr ""
-"Василиск был заменен богомолом, он не может больше захватывать но его укус "
-"замедляет жертву и он может напрыгивать/ускоряться на врагов."
+"Василиск был заменён богомолом, он не может больше захватывать, но его укус "
+"замедляет жертву, и он может совершать быстрый выпад на врагов."
 
 #: ui/help_gameplay.rml:176
 msgid ""
@@ -554,7 +554,7 @@ msgstr "к/с"
 
 #: ui/hud_basics.rml:206
 msgid "ms"
-msgstr "ms"
+msgstr "мс"
 
 #: ui/hud_bp.rml:29
 msgid "build points"
@@ -724,7 +724,7 @@ msgstr "Настройки"
 
 #: ui/menu_ingame.rml:55 ui/menu_main.rml:35
 msgid "Gameplay guide"
-msgstr "Гайд по геймплею"
+msgstr "Руководство по игре"
 
 #: ui/menu_ingame.rml:58 ui/menu_main.rml:37
 msgid "Quit game"
@@ -799,8 +799,8 @@ msgid ""
 "Many players suffer mild motion sickness from playing first-person shooters. "
 "A higher FOV can help combat this."
 msgstr ""
-"Большое количество игроков страдает в процессе игры в стрелялки от "
-"укачивания. Это можно решить установив более большой угол обзора (FOV)."
+"Многие игроки страдают от лёгкого укачивания при игре в шутеры от первого "
+"лица. Более высокий угол обзора (FOV) может помочь справиться с этим."
 
 #: ui/options_fov.rml:17 ui/options_fov.rml:25 ui/options_fov.rml:33
 #: ui/options_fov.rml:42 ui/options_fov.rml:50 ui/options_fov.rml:58
@@ -846,7 +846,7 @@ msgstr "Отключено"
 
 #: ui/options_fov.rml:77 ui/options_fov.rml:88
 msgid "Mild"
-msgstr "Легкий"
+msgstr "Лёгкий"
 
 #: ui/options_fov.rml:78 ui/options_fov.rml:89
 msgid "Default"
@@ -966,15 +966,15 @@ msgstr "Откл"
 
 #: ui/options_graphics.rml:75
 msgid "Flexible Vsync"
-msgstr "Адаптивный Vsync"
+msgstr "Адаптивная верт. синхронизация"
 
 #: ui/options_graphics.rml:76
 msgid "Full Vsync"
-msgstr "Полный Vsync"
+msgstr "Полная верт. синхронизация"
 
 #: ui/options_graphics.rml:78
 msgid "Vsync"
-msgstr "Vsync"
+msgstr "Верт. синхронизация"
 
 #: ui/options_graphics.rml:79
 msgid ""
@@ -982,9 +982,10 @@ msgid ""
 "only activates when the frame-rate is above the refresh-rate of the monitor, "
 "avoiding stuttering when the FPS drops."
 msgstr ""
-"Vsync предотвращает визуальные разрывы, но увеличивает задержку ввода. "
-"Гибкий Vsync активируется только тогда, когда частота кадров превышает "
-"частоту обновления монитора, избегая эффекта т.н. заикания при падении FPS."
+"Вертикальная синхронизация предотвращает визуальные разрывы, но увеличивает "
+"задержку ввода. Адаптивная вертикальная синхронизация активируется только "
+"тогда, когда частота кадров превышает частоту обновления монитора, избавляя "
+"от эффекта «заикания» при падении кадровой часты."
 
 #: ui/options_graphics.rml:84
 msgid "Fast approximate anti-aliasing (FXAA)"
@@ -1288,7 +1289,7 @@ msgstr "Позволить частицам отскакивать от пове
 
 #: ui/options_graphics.rml:263
 msgid "Gameplay"
-msgstr "Геймплей"
+msgstr "Игровой процесс"
 
 #: ui/options_graphics.rml:265
 msgid "Building markers"
@@ -1524,7 +1525,7 @@ msgstr "Отметить структуру для перепостройки:"
 
 #: ui/options_keys.rml:152
 msgid "Hold the key to deconstruct structure."
-msgstr "Удерживайте клавишу для деконструкции структуры."
+msgstr "Удерживайте клавишу для разборки структуры."
 
 #: ui/options_keys.rml:155
 msgid "Beacon menu:"
@@ -1734,11 +1735,11 @@ msgstr ""
 
 #: ui/options_player.rml:67
 msgid "Emoticons"
-msgstr "Эмодзи"
+msgstr "Смайлики"
 
 #: ui/options_player.rml:68
 msgid "You can put emoticons in your nickname too."
-msgstr "Можно устанавливать эмодзи в никнейм тоже."
+msgstr "Также можно помещать смайлики в никнейм."
 
 #: ui/options_player.rml:70
 msgid ""
@@ -1749,7 +1750,7 @@ msgstr ""
 
 #: ui/options_player.rml:75
 msgid "Here is the list of the available emoticons:"
-msgstr "Вот лист возможных эмодзи:"
+msgstr "Вот список доступных смайликов:"
 
 #: ui/options_player.rml:134
 msgid "Human buildables"
@@ -1813,7 +1814,7 @@ msgstr "Интенсивность эффекта Допплера"
 
 #: ui/options_sound.rml:28
 msgid "Pitch-shift effect when moving from or toward a sound."
-msgstr "Эффект смещения частоты звука когда обьект движется к вам или от вас."
+msgstr "Эффект смещения частоты звука когда объект движется к вам или от вас."
 
 #: ui/options_sound.rml:31
 msgid "OpenAL device"
@@ -1901,7 +1902,7 @@ msgstr "Красный:"
 
 #: ui/options_ui.rml:82 ui/options_ui.rml:161 ui/options_ui.rml:205
 msgid "Green:"
-msgstr "Зеленый:"
+msgstr "Зелёный:"
 
 #: ui/options_ui.rml:86 ui/options_ui.rml:165 ui/options_ui.rml:209
 msgid "Blue:"
@@ -3763,7 +3764,7 @@ msgstr "Вы убили ^1TEAMMATE^* %s"
 
 #: src/cgame/cg_event.cpp:1218
 msgid "The Overmind is under attack!"
-msgstr "Сверхразум атакуют!"
+msgstr "Сверхразум атакован!"
 
 #: src/cgame/cg_event.cpp:1225
 msgid "The reactor is under attack!"
@@ -4324,8 +4325,8 @@ msgid ""
 "There can only be one Overmind. Deconstruct the existing one if you wish to "
 "move it."
 msgstr ""
-"Может существовать только один Сверхразум. Разрушьте существующий Сверхразум "
-"если хотите построить его здесь."
+"Может существовать только один Сверхразум. Разберите существующий, если "
+"хотите перенести его сюда."
 
 # 76%
 # 100%
@@ -4342,7 +4343,7 @@ msgid ""
 "The Overmind cannot control any more structures. Deconstruct existing "
 "structures to build more."
 msgstr ""
-"Сверхразум не может контролировать новые постройки. Разрушьте существующие "
+"Сверхразум не может контролировать новые постройки. Разберите существующие "
 "постройки, чтобы возвести новые."
 
 #: src/cgame/cg_servercmds.cpp:680
@@ -4569,7 +4570,7 @@ msgstr "Нажмите %s, чтобы пометить эту структуру
 #: src/cgame/cg_tutorial.cpp:206
 #, c-format
 msgid "Hold %s to deconstruct this structure."
-msgstr "Удерживайте %s, чтобы деконструировать структуру."
+msgstr "Удерживайте %s, чтобы разобрать структуру."
 
 #: src/cgame/cg_tutorial.cpp:222 src/cgame/cg_tutorial.cpp:262
 #: src/cgame/cg_tutorial.cpp:321
@@ -5002,7 +5003,7 @@ msgstr "Заполнить команду Инопланетян ботами д
 
 #: src/sgame/sg_votes.cpp:477
 msgid "$1$: voting not allowed here"
-msgstr "$1$: голосование недоступно здеесь"
+msgstr "$1$: голосование недоступно здесь"
 
 #: src/sgame/sg_votes.cpp:486
 msgid "$1$: you are not permitted to call $2$ votes"
@@ -5062,7 +5063,7 @@ msgstr "$1$: Игрок не в вашей команде"
 
 #: src/sgame/sg_votes.cpp:716
 msgid "$1$: You must provide a reason"
-msgstr "$1$: Вам необходимо предоставить разьяснение"
+msgstr "$1$: Вы должны указать причину"
 
 #: src/sgame/sg_votes.cpp:738
 msgid "$1$^* called a vote: $2$"
