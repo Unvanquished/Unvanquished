@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-15 02:44+0200\n"
-"PO-Revision-Date: 2024-05-28 21:09+0000\n"
+"PO-Revision-Date: 2024-10-16 10:45+0000\n"
 "Last-Translator: 4sc <4sc@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/unvanquished/"
 "unvanquished/fi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.8-rc\n"
 
 #: ui/alien_build.rml:126 ui/human_build.rml:127
 msgid "Build"
@@ -878,6 +878,8 @@ msgid ""
 "Low subdivisions, no sky, no shadow, no bouncing particles, 16-pixel "
 "textures…"
 msgstr ""
+"Matalat alijaot, ei taivasta, ei varjoa, ei kimpoilevia partikkeleita, 16-"
+"pikseliset tekstuurit…"
 
 #: ui/options_graphics.rml:31 ui/options_graphics.rml:286
 msgid "Low"
@@ -989,7 +991,7 @@ msgstr "Käytä heti"
 
 #: ui/options_graphics.rml:92
 msgid "Lighting"
-msgstr "Valaistus"
+msgstr "Valaisu"
 
 #: ui/options_graphics.rml:94
 msgid "Lights"
@@ -1005,7 +1007,7 @@ msgstr "normaali"
 
 #: ui/options_graphics.rml:98
 msgid "Vertex lighting"
-msgstr ""
+msgstr "Verteksivalaisu"
 
 #: ui/options_graphics.rml:98
 msgid "low, ugly"
@@ -1013,7 +1015,7 @@ msgstr "alhainen, ruma"
 
 #: ui/options_graphics.rml:100
 msgid "Lighting system"
-msgstr "Valaistusjärjestelmä"
+msgstr "Valaisujärjestelmä"
 
 #: ui/options_graphics.rml:103
 msgid "Light styles"
@@ -1037,7 +1039,7 @@ msgstr ""
 
 #: ui/options_graphics.rml:113
 msgid "Rim lighting"
-msgstr "Reunusvalaistus"
+msgstr "Reunusvalaisu"
 
 #: ui/options_graphics.rml:115
 msgid "Light the edges of models from behind."
@@ -1045,12 +1047,11 @@ msgstr "Valaise kohteiden reunat takaapäin."
 
 #: ui/options_graphics.rml:118
 msgid "Half Lambert lighting"
-msgstr "Half Lambert ‐valaistus"
+msgstr "Half Lambert ‐valaisu"
 
 #: ui/options_graphics.rml:120
 msgid "Non-physical lighting technique to make models less dark."
-msgstr ""
-"Ei‐fyysinen valaistustekniikka, jolla tehdään kohteista vähemmän hämäriä."
+msgstr "Ei‐fyysinen valaisutekniikka, jolla tehdään kohteista vähemmän hämäriä."
 
 #: ui/options_graphics.rml:124 ui/options_graphics.rml:268
 #: ui/options_ui.rml:176
@@ -1079,59 +1080,61 @@ msgstr "Yleinen"
 
 #: ui/options_graphics.rml:139 ui/options_graphics.rml:154
 msgid "No limit"
-msgstr ""
+msgstr "Ei rajaa"
 
 #: ui/options_graphics.rml:140
 msgid "(ultra)"
-msgstr ""
+msgstr "(ultra)"
 
 #: ui/options_graphics.rml:141
 msgid "(high)"
-msgstr ""
+msgstr "(korkea)"
 
 #: ui/options_graphics.rml:142
 msgid "(medium)"
-msgstr ""
+msgstr "(keskitaso)"
 
 #: ui/options_graphics.rml:143
 msgid "(low)"
-msgstr ""
+msgstr "(matala)"
 
 #: ui/options_graphics.rml:144
 msgid "(lowest)"
-msgstr ""
+msgstr "(matalin)"
 
 #: ui/options_graphics.rml:146
 msgid "Image size limit"
-msgstr ""
+msgstr "Kuvan koon raja"
 
 #: ui/options_graphics.rml:147
 msgid "Limit image size to save on memory."
-msgstr ""
+msgstr "Rajoita kuvan kokoa muistin säästämiseksi."
 
 #: ui/options_graphics.rml:152
 msgid "No larger than screen"
-msgstr ""
+msgstr "Ei kuvaruutua suurempi"
 
 #: ui/options_graphics.rml:153
 msgid "No smaller than screen"
-msgstr ""
+msgstr "Ei kuvaruutua pienempi"
 
 #: ui/options_graphics.rml:156
 msgid "Menu image size limit"
-msgstr ""
+msgstr "Valikon kuvan koon raja"
 
 #: ui/options_graphics.rml:157
 msgid "Limit menu image size to save on memory."
-msgstr ""
+msgstr "Rajoita valikon kuvan kokoa muistin säästämiseksi."
 
 #: ui/options_graphics.rml:160
 msgid "High-precision rendering"
-msgstr ""
+msgstr "Korkeatarkkuuksinen renderöinti"
 
 #: ui/options_graphics.rml:163
 msgid "Use high-precision pixel buffers, which reduce color banding."
 msgstr ""
+"Käytä korkeatarkkuuksisia pikselipuskureita, jotka vähentävät värin "
+"raidoittumista."
 
 #: ui/options_graphics.rml:165
 msgid "Mip-mapping"
@@ -1184,7 +1187,7 @@ msgstr "Normaalikartoitus"
 
 #: ui/options_graphics.rml:197
 msgid "Simulates extra lighting detail on flat surfaces."
-msgstr "Simuloi ylimääräistä valaistusdetaljia tasaisilla pinnoilla."
+msgstr "Simuloi ylimääräistä valaisudetaljia tasaisilla pinnoilla."
 
 #: ui/options_graphics.rml:200
 msgid "Deluxe mapping"
@@ -1236,11 +1239,11 @@ msgstr "Saa kirkkaat alueet ruudullasi loistamaan."
 
 #: ui/options_graphics.rml:234
 msgid "Color grading"
-msgstr ""
+msgstr "Värin tasapainotus"
 
 #: ui/options_graphics.rml:236
 msgid "Alter colors to create specific ambiences."
-msgstr ""
+msgstr "Muuta värejä tiettyjen ambienssien luontia varten."
 
 #: ui/options_graphics.rml:239
 msgid "Heat-haze"
@@ -1603,11 +1606,12 @@ msgstr "Poista käytöstä vain, jos olet koukussa Quakeen."
 
 #: ui/options_mouse.rml:35
 msgid "Circle menu mouse capture"
-msgstr ""
+msgstr "Ympyrävalikon hiiren kaappaus"
 
 #: ui/options_mouse.rml:37
 msgid "Circle menus (excluding Armoury menu) take mouse inputs"
 msgstr ""
+"Ympyrävalikot (paitsi Asevarikon valikko) antavat tehdä valintoja hiirellä"
 
 #: ui/options_movements_cosmetic.rml:7 ui/options.rml:13
 msgid "Movement and Cosmetic"
@@ -1762,7 +1766,7 @@ msgstr "Näytä ainoastaan joukkuekeskustelu"
 
 #: ui/options_player.rml:222
 msgid "Show obituaries"
-msgstr ""
+msgstr "Luettele kuolemat"
 
 #: ui/options.rml:11
 msgid "Player"
@@ -3924,11 +3928,11 @@ msgstr "%s^* poistui joukkueesta %s ja siirtyi joukkueeseen %s"
 #: src/cgame/cg_rocket_dataformatter.cpp:77
 #, c-format
 msgid "Custom: %dx%d"
-msgstr ""
+msgstr "Kustomoitu: %dx%d"
 
 #: src/cgame/cg_rocket_dataformatter.cpp:83
 msgid "Same as screen"
-msgstr ""
+msgstr "Sama kuin kuvaruutu"
 
 #: src/cgame/cg_rocket_draw.cpp:2534
 msgid "You are at the front of the spawn queue"
@@ -4951,7 +4955,7 @@ msgstr "$1$: pelaajalla on jo rakenteluoikeudet"
 
 #: src/sgame/sg_votes.cpp:197 src/sgame/sg_votes.cpp:263
 msgid "$1$: map name not specified"
-msgstr ""
+msgstr "$1$: kentän nimi puuttuu"
 
 #: src/sgame/sg_votes.cpp:205 src/sgame/sg_votes.cpp:280
 msgid "$1$: 'maps/$2$.bsp' could not be found on the server"
